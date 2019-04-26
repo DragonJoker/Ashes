@@ -2,11 +2,14 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "D3D11Renderer/Core/D3D11DebugReportCallback.hpp"
+#include "renderer/D3D11Renderer/Core/D3D11DebugReportCallback.hpp"
 
-#include "D3D11Renderer/Core/D3D11Instance.hpp"
-#include "D3D11Renderer/Image/D3D11Image.hpp"
-#include <Ashes/Miscellaneous/BufferImageCopy.hpp>
+#include "renderer/D3D11Renderer/Core/D3D11Instance.hpp"
+#include "renderer/D3D11Renderer/Image/D3D11Image.hpp"
+
+#include <sstream>
+
+#include "ashesd3d11_api.hpp"
 
 namespace ashes::d3d11
 {
@@ -23,7 +26,7 @@ namespace ashes::d3d11
 			return stream.str();
 		}
 
-		void check( DebugReportCallback & callback
+		void check( DebugReportCallbackEXT & callback
 			, ReportData report
 			, bool condition
 			, std::string message )
@@ -40,7 +43,7 @@ namespace ashes::d3d11
 		}
 
 		template< typename T >
-		void checkEqual( DebugReportCallback callback
+		void checkEqual( DebugReportCallbackEXT callback
 			, ReportData report
 			, T const & lhs
 			, T const & rhs )
@@ -70,20 +73,20 @@ namespace ashes::d3d11
 
 	//*************************************************************************
 
-	DebugLayer::DebugLayer( DebugReportCallback & callback )
+	DebugLayer::DebugLayer( DebugReportCallbackEXT & callback )
 		: m_callback{ callback }
 	{
 	}
 
 	bool DebugLayer::onBufferImageCommand( VkCommandBuffer cmd
-		, ashes::BufferImageCopy const & copyInfo
+		, VkBufferImageCopy const & copyInfo
 		, VkBuffer buffer
 		, VkImage image )const
 	{
 		static ReportData const baseReport
 		{
-			ashes::DebugReportFlag::eError,
-			VkDebugReportObjectTypeEXT::eCommandBuffer,
+			VK_DEBUG_REPORT_ERROR_BIT_EXT,
+			VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT,
 			0u,
 			0u,
 			0u,
@@ -91,7 +94,7 @@ namespace ashes::d3d11
 		};
 		ReportData report{ baseReport };
 		report.object = uint64_t( &cmd );
-		auto format = image.getFormat();
+		auto format = get( image )->getFormat();
 		VkExtent3D texelBlockExtent{ 1u, 1u, 1u };
 
 		if ( ashes::isCompressedFormat( format ) )
@@ -136,28 +139,28 @@ namespace ashes::d3d11
 			, report
 			, ( copyInfo.bufferImageHeight == 0 ) || ( copyInfo.bufferImageHeight >= copyInfo.imageExtent.height )
 			, "bufferImageHeight must be 0, or greater than or equal to the height member of imageExtent" );
-		auto subresourceWidth = texelBlockWidth * image.getDimensions().width >> copyInfo.imageSubresource.mipLevel;
+		auto subresourceWidth = texelBlockWidth * get( image )->getDimensions().width >> copyInfo.imageSubresource.mipLevel;
 		check( m_callback
 			, report
 			, ( copyInfo.imageOffset.x >= 0 && copyInfo.imageOffset.x <= int32_t( subresourceWidth ) )
 				&& ( copyInfo.imageExtent.width + copyInfo.imageOffset.x >= 0
 					&& copyInfo.imageExtent.width + copyInfo.imageOffset.x <= int32_t( subresourceWidth ) )
 			, "imageOffset.x and (imageExtent.width + imageOffset.x) must both be greater than or equal to 0 and less than or equal to the image subresource width" );
-		auto subresourceHeight = texelBlockHeight * image.getDimensions().height >> copyInfo.imageSubresource.mipLevel;
+		auto subresourceHeight = texelBlockHeight * get( image )->getDimensions().height >> copyInfo.imageSubresource.mipLevel;
 		check( m_callback
 			, report
 			, ( copyInfo.imageOffset.y >= 0 && copyInfo.imageOffset.y <= int32_t( subresourceHeight ) )
 				&& ( copyInfo.imageExtent.height + copyInfo.imageOffset.y >= 0
 					&& copyInfo.imageExtent.height + copyInfo.imageOffset.y <= int32_t( subresourceHeight ) )
 			, "imageOffset.y and (imageExtent.height + imageOffset.y) must both be greater than or equal to 0 and less than or equal to the image subresource height" );
-		auto subresourceDepth = texelBlockDepth * image.getDimensions().depth;
+		auto subresourceDepth = texelBlockDepth * get( image )->getDimensions().depth;
 		check( m_callback
 			, report
 			, ( copyInfo.imageOffset.z >= 0 && copyInfo.imageOffset.z <= int32_t( subresourceDepth ) )
 			&& ( copyInfo.imageExtent.depth + copyInfo.imageOffset.z >= 0
 				&& copyInfo.imageExtent.depth + copyInfo.imageOffset.z <= int32_t( subresourceDepth ) )
 			, "imageOffset.z and (imageExtent.depth + imageOffset.z) must both be greater than or equal to 0 and less than or equal to the image subresource depth" );
-		auto imageType = image.getType();
+		auto imageType = get( image )->getType();
 		check( m_callback
 			, report
 			, ( imageType != VK_IMAGE_TYPE_1D
@@ -228,7 +231,7 @@ namespace ashes::d3d11
 	}
 
 	bool DebugLayer::onCopyToImageCommand( VkCommandBuffer cmd
-		, ashes::VkBufferImageCopyArray const & copyInfos
+		, VkBufferImageCopyArray const & copyInfos
 		, VkBuffer src
 		, VkImage dst )const
 	{
@@ -245,8 +248,8 @@ namespace ashes::d3d11
 	{
 		static ReportData const baseReport
 		{
-			ashes::DebugReportFlag::eError,
-			VkDebugReportObjectTypeEXT::eUnknown,
+			VK_DEBUG_REPORT_ERROR_BIT_EXT,
+			VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT,
 			0u,
 			0u,
 			0u,
@@ -256,7 +259,7 @@ namespace ashes::d3d11
 		struct Error
 		{
 			std::string name;
-			ashes::Result result;
+			VkResult result;
 		};
 #if !defined( DXGI_ERROR_INVALID_CALL )
 #	define DXGI_ERROR_INVALID_CALL D3DERR_INVALIDCALL
@@ -266,42 +269,42 @@ namespace ashes::d3d11
 #endif
 		static std::map< HRESULT, Error > Errors
 		{
-			{ D3D11_ERROR_FILE_NOT_FOUND, { "The file was not found.", ashes::Result::eErrorRenderer } },
-			{ D3D11_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS, { "There are too many unique instances of a particular type of state object.", ashes::Result::eErrorRenderer } },
-			{ D3D11_ERROR_TOO_MANY_UNIQUE_VIEW_OBJECTS, { "There are too many unique instances of a particular type of view object.", ashes::Result::eErrorRenderer } },
-			{ D3D11_ERROR_DEFERRED_CONTEXT_MAP_WITHOUT_INITIAL_DISCARD, { "The first call to ID3D11DeviceContext::Map after either ID3D11Device::CreateDeferredContext or ID3D11DeviceContext::FinishCommandList per Resource was not D3D11_MAP_WRITE_DISCARD.", ashes::Result::eErrorRenderer } },
-			{ E_FAIL, { "Attempted to create a device with the debug layer enabled and the layer is not installed.", ashes::Result::eErrorRenderer } },
-			{ E_INVALIDARG, { "An invalid parameter was passed to the returning function.", ashes::Result::eErrorRenderer } },
-			{ E_OUTOFMEMORY, { "Direct3D could not allocate sufficient memory to complete the call.", ashes::Result::eErrorOutOfDeviceMemory } },
-			{ E_NOTIMPL, { "The method call isn't implemented with the passed parameter combination.", ashes::Result::eErrorRenderer } },
-			{ S_FALSE, { "Alternate success value, indicating a successful but nonstandard completion( the precise meaning depends on context ).", ashes::Result::eErrorRenderer } },
-			{ DXGI_ERROR_INVALID_CALL, { "The method call is invalid.For example, a method's parameter may not be a valid pointer.", ashes::Result::eErrorRenderer } },
-			{ DXGI_ERROR_ACCESS_DENIED, { "You tried to use a resource to which you did not have the required access privileges.This error is most typically caused when you write to a shared resource with read - only access.", ashes::Result::eErrorRenderer } },
-			{ DXGI_ERROR_ACCESS_LOST, { "The desktop duplication interface is invalid.The desktop duplication interface typically becomes invalid when a different type of image is displayed on the desktop.", ashes::Result::eErrorRenderer } },
+			{ D3D11_ERROR_FILE_NOT_FOUND, { "The file was not found.", VK_ERROR_INITIALIZATION_FAILED } },
+			{ D3D11_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS, { "There are too many unique instances of a particular type of state object.", VK_ERROR_INITIALIZATION_FAILED } },
+			{ D3D11_ERROR_TOO_MANY_UNIQUE_VIEW_OBJECTS, { "There are too many unique instances of a particular type of view object.", VK_ERROR_INITIALIZATION_FAILED } },
+			{ D3D11_ERROR_DEFERRED_CONTEXT_MAP_WITHOUT_INITIAL_DISCARD, { "The first call to ID3D11DeviceContext::Map after either ID3D11Device::CreateDeferredContext or ID3D11DeviceContext::FinishCommandList per Resource was not D3D11_MAP_WRITE_DISCARD.", VK_ERROR_INITIALIZATION_FAILED } },
+			{ E_FAIL, { "Attempted to create a device with the debug layer enabled and the layer is not installed.", VK_ERROR_INITIALIZATION_FAILED } },
+			{ E_INVALIDARG, { "An invalid parameter was passed to the returning function.", VK_ERROR_INITIALIZATION_FAILED } },
+			{ E_OUTOFMEMORY, { "Direct3D could not allocate sufficient memory to complete the call.", VK_ERROR_OUT_OF_DEVICE_MEMORY } },
+			{ E_NOTIMPL, { "The method call isn't implemented with the passed parameter combination.", VK_ERROR_INITIALIZATION_FAILED } },
+			{ S_FALSE, { "Alternate success value, indicating a successful but nonstandard completion( the precise meaning depends on context ).", VK_ERROR_INITIALIZATION_FAILED } },
+			{ DXGI_ERROR_INVALID_CALL, { "The method call is invalid.For example, a method's parameter may not be a valid pointer.", VK_ERROR_INITIALIZATION_FAILED } },
+			{ DXGI_ERROR_ACCESS_DENIED, { "You tried to use a resource to which you did not have the required access privileges.This error is most typically caused when you write to a shared resource with read - only access.", VK_ERROR_INITIALIZATION_FAILED } },
+			{ DXGI_ERROR_ACCESS_LOST, { "The desktop duplication interface is invalid.The desktop duplication interface typically becomes invalid when a different type of image is displayed on the desktop.", VK_ERROR_INITIALIZATION_FAILED } },
 #if defined( DXGI_ERROR_ALREADY_EXISTS )
-			{ DXGI_ERROR_ALREADY_EXISTS, { "The desired element already exists.This is returned by DXGIDeclareAdapterRemovalSupport if it is not the first time that the function is called.", ashes::Result::eErrorRenderer } },
+			{ DXGI_ERROR_ALREADY_EXISTS, { "The desired element already exists.This is returned by DXGIDeclareAdapterRemovalSupport if it is not the first time that the function is called.", VK_ERROR_INITIALIZATION_FAILED } },
 #endif
-			{ DXGI_ERROR_CANNOT_PROTECT_CONTENT, { "DXGI can't provide content protection on the swap chain. This error is typically caused by an older driver, or when you use a swap chain that is incompatible with content protection.", ashes::Result::eErrorRenderer } },
-			{ DXGI_ERROR_DEVICE_HUNG, { "The application's device failed due to badly formed commands sent by the application. This is an design-time issue that should be investigated and fixed.", ashes::Result::eErrorRenderer } },
-			{ DXGI_ERROR_DEVICE_REMOVED, { "The video card has been physically removed from the system, or a driver upgrade for the video card has occurred.The application should destroy and recreate the device.For help debugging the problem, call ID3D10Device::GetDeviceRemovedReason.", ashes::Result::eErrorDeviceLost } },
-			{ DXGI_ERROR_DEVICE_RESET, { "The device failed due to a badly formed command.This is a run - time issue; The application should destroy and recreate the device.", ashes::Result::eErrorDeviceLost } },
-			{ DXGI_ERROR_DRIVER_INTERNAL_ERROR, { "The driver encountered a problem and was put into the device removed state.", ashes::Result::eErrorRenderer } },
-			{ DXGI_ERROR_FRAME_STATISTICS_DISJOINT, { "An event( for example, a power cycle ) interrupted the gathering of presentation statistics.", ashes::Result::eErrorRenderer } },
-			{ DXGI_ERROR_GRAPHICS_VIDPN_SOURCE_IN_USE, { "The application attempted to acquire exclusive ownership of an output, but failed because some other application( or device within the application ) already acquired ownership.", ashes::Result::eErrorRenderer } },
-			{ DXGI_ERROR_MORE_DATA, { "The buffer supplied by the application is not big enough to hold the requested data.", ashes::Result::eErrorRenderer } },
-			{ DXGI_ERROR_NAME_ALREADY_EXISTS, { "The supplied name of a resource in a call to IDXGIResource1::CreateSharedHandle is already associated with some other resource.", ashes::Result::eErrorRenderer } },
-			{ DXGI_ERROR_NONEXCLUSIVE, { "A global counter resource is in use, and the Direct3D device can't currently use the counter resource.", ashes::Result::eErrorRenderer } },
-			{ DXGI_ERROR_NOT_CURRENTLY_AVAILABLE, { "The resource or request is not currently available, but it might become available later.", ashes::Result::eErrorRenderer } },
-			{ DXGI_ERROR_NOT_FOUND, { "When calling IDXGIObject::GetPrivateData, the GUID passed in is not recognized as one previously passed to IDXGIObject::SetPrivateData or IDXGIObject::SetPrivateDataInterface.When calling IDXGIFactory::EnumAdapters or IDXGIAdapter::EnumOutputs, the enumerated ordinal is out of range.", ashes::Result::eErrorRenderer } },
-			{ DXGI_ERROR_REMOTE_CLIENT_DISCONNECTED, { "Reserved", ashes::Result::eErrorRenderer } },
-			{ DXGI_ERROR_REMOTE_OUTOFMEMORY, { "Reserved", ashes::Result::eErrorRenderer } },
-			{ DXGI_ERROR_RESTRICT_TO_OUTPUT_STALE, { "The DXGI output( monitor ) to which the swap chain content was restricted is now disconnected or changed.", ashes::Result::eErrorRenderer } },
-			{ DXGI_ERROR_SDK_COMPONENT_MISSING, { "The operation depends on an SDK component that is missing or mismatched.", ashes::Result::eErrorRenderer } },
-			{ DXGI_ERROR_SESSION_DISCONNECTED, { "The Remote Desktop Services session is currently disconnected.", ashes::Result::eErrorRenderer } },
-			{ DXGI_ERROR_UNSUPPORTED, { "The requested functionality is not supported by the device or the driver.", ashes::Result::eErrorRenderer } },
-			{ DXGI_ERROR_WAIT_TIMEOUT, { "The time - out interval elapsed before the next desktop frame was available.", ashes::Result::eTimeout } },
-			{ DXGI_ERROR_WAS_STILL_DRAWING, { "The GPU was busy at the moment when a call was made to perform an operation, and did not execute or schedule the operation.", ashes::Result::eErrorRenderer } },
-			{ S_OK, { "No error occurred.", ashes::Result::eSuccess } },
+			{ DXGI_ERROR_CANNOT_PROTECT_CONTENT, { "DXGI can't provide content protection on the swap chain. This error is typically caused by an older driver, or when you use a swap chain that is incompatible with content protection.", VK_ERROR_INITIALIZATION_FAILED } },
+			{ DXGI_ERROR_DEVICE_HUNG, { "The application's device failed due to badly formed commands sent by the application. This is an design-time issue that should be investigated and fixed.", VK_ERROR_INITIALIZATION_FAILED } },
+			{ DXGI_ERROR_DEVICE_REMOVED, { "The video card has been physically removed from the system, or a driver upgrade for the video card has occurred.The application should destroy and recreate the device.For help debugging the problem, call ID3D10Device::GetDeviceRemovedReason.", VK_ERROR_DEVICE_LOST } },
+			{ DXGI_ERROR_DEVICE_RESET, { "The device failed due to a badly formed command.This is a run - time issue; The application should destroy and recreate the device.", VK_ERROR_DEVICE_LOST } },
+			{ DXGI_ERROR_DRIVER_INTERNAL_ERROR, { "The driver encountered a problem and was put into the device removed state.", VK_ERROR_INITIALIZATION_FAILED } },
+			{ DXGI_ERROR_FRAME_STATISTICS_DISJOINT, { "An event( for example, a power cycle ) interrupted the gathering of presentation statistics.", VK_ERROR_INITIALIZATION_FAILED } },
+			{ DXGI_ERROR_GRAPHICS_VIDPN_SOURCE_IN_USE, { "The application attempted to acquire exclusive ownership of an output, but failed because some other application( or device within the application ) already acquired ownership.", VK_ERROR_INITIALIZATION_FAILED } },
+			{ DXGI_ERROR_MORE_DATA, { "The buffer supplied by the application is not big enough to hold the requested data.", VK_ERROR_INITIALIZATION_FAILED } },
+			{ DXGI_ERROR_NAME_ALREADY_EXISTS, { "The supplied name of a resource in a call to IDXGIResource1::CreateSharedHandle is already associated with some other resource.", VK_ERROR_INITIALIZATION_FAILED } },
+			{ DXGI_ERROR_NONEXCLUSIVE, { "A global counter resource is in use, and the Direct3D device can't currently use the counter resource.", VK_ERROR_INITIALIZATION_FAILED } },
+			{ DXGI_ERROR_NOT_CURRENTLY_AVAILABLE, { "The resource or request is not currently available, but it might become available later.", VK_ERROR_INITIALIZATION_FAILED } },
+			{ DXGI_ERROR_NOT_FOUND, { "When calling IDXGIObject::GetPrivateData, the GUID passed in is not recognized as one previously passed to IDXGIObject::SetPrivateData or IDXGIObject::SetPrivateDataInterface.When calling IDXGIFactory::EnumAdapters or IDXGIAdapter::EnumOutputs, the enumerated ordinal is out of range.", VK_ERROR_INITIALIZATION_FAILED } },
+			{ DXGI_ERROR_REMOTE_CLIENT_DISCONNECTED, { "Reserved", VK_ERROR_INITIALIZATION_FAILED } },
+			{ DXGI_ERROR_REMOTE_OUTOFMEMORY, { "Reserved", VK_ERROR_INITIALIZATION_FAILED } },
+			{ DXGI_ERROR_RESTRICT_TO_OUTPUT_STALE, { "The DXGI output( monitor ) to which the swap chain content was restricted is now disconnected or changed.", VK_ERROR_INITIALIZATION_FAILED } },
+			{ DXGI_ERROR_SDK_COMPONENT_MISSING, { "The operation depends on an SDK component that is missing or mismatched.", VK_ERROR_INITIALIZATION_FAILED } },
+			{ DXGI_ERROR_SESSION_DISCONNECTED, { "The Remote Desktop Services session is currently disconnected.", VK_ERROR_INITIALIZATION_FAILED } },
+			{ DXGI_ERROR_UNSUPPORTED, { "The requested functionality is not supported by the device or the driver.", VK_ERROR_INITIALIZATION_FAILED } },
+			{ DXGI_ERROR_WAIT_TIMEOUT, { "The time - out interval elapsed before the next desktop frame was available.", VK_TIMEOUT } },
+			{ DXGI_ERROR_WAS_STILL_DRAWING, { "The GPU was busy at the moment when a call was made to perform an operation, and did not execute or schedule the operation.", VK_ERROR_INITIALIZATION_FAILED } },
+			{ S_OK, { "No error occurred.", VK_SUCCESS } },
 		};
 		bool result = hresult == S_OK;
 
@@ -312,7 +315,7 @@ namespace ashes::d3d11
 			stream << "Error calling [" << message << "]: " << std::hex << hresult;
 			LPTSTR error = 0;
 			auto it = Errors.find( hresult );
-			ashes::Result result{ ashes::Result::eErrorRenderer };
+			VkResult result{ VK_ERROR_INITIALIZATION_FAILED };
 
 			if ( it != Errors.end() )
 			{
@@ -331,23 +334,43 @@ namespace ashes::d3d11
 		return false;
 	}
 
+	void DebugLayer::onReportMessage( VkDebugReportFlagsEXT flags
+		, VkDebugReportObjectTypeEXT objectType
+		, uint64_t object
+		, size_t location
+		, int32_t messageCode
+		, const char * pLayerPrefix
+		, const char * pMessage )const
+	{
+		m_callback.report( ReportData
+		{
+			flags,
+			objectType,
+			object,
+			location,
+			messageCode,
+			pLayerPrefix,
+			pMessage,
+		} );
+	}
 
 	//*************************************************************************
 
-	DebugReportCallback::DebugReportCallback( Instance const & instance
-		, ashes::DebugReportCallbackCreateInfo createInfo )
-		: ashes::DebugReportCallback{ instance, std::move( createInfo ) }
+	DebugReportCallbackEXT::DebugReportCallbackEXT( VkInstance instance
+		, VkDebugReportCallbackCreateInfoEXT createInfo )
+		: m_instance{ instance }
+		, m_createInfo{ std::move( createInfo ) }
 		, m_layer{ *this }
 	{
-		instance.registerLayer( &m_layer );
+		get( m_instance )->registerLayer( &m_layer );
 	}
 
-	DebugReportCallback::~DebugReportCallback()
+	DebugReportCallbackEXT::~DebugReportCallbackEXT()
 	{
-		static_cast< Instance const & >( m_instance ).unregisterLayer( &m_layer );
+		get( m_instance )->unregisterLayer( &m_layer );
 	}
 
-	bool DebugReportCallback::report( ReportData report )
+	bool DebugReportCallbackEXT::report( ReportData report )
 	{
 		if ( report.flags & m_createInfo.flags )
 		{

@@ -9,22 +9,25 @@ See LICENSE file in root folder.
 #include "RenderPass/D3D11FrameBuffer.hpp"
 #include "RenderPass/D3D11RenderPass.hpp"
 
-#include <Ashes/RenderPass/ClearValue.hpp>
+#include "ashesd3d11_api.hpp"
 
 namespace ashes::d3d11
 {
 	BeginRenderPassCommand::BeginRenderPassCommand( VkDevice device
-		, ashes::RenderPass const & renderPass
-		, ashes::FrameBuffer const & frameBuffer
-		, ashes::ClearValueArray const & clearValues )
+		, VkRenderPass renderPass
+		, VkFramebuffer frameBuffer
+		, VkClearValueArray const & clearValues )
 		: CommandBase{ device }
-		, m_renderPass{ static_cast< RenderPass const & >( renderPass ) }
-		, m_frameBuffer{ static_cast< FrameBuffer const & >( frameBuffer ) }
-		, m_scissor{ makeScissor( m_frameBuffer.getDimensions() ) }
+		, m_renderPass{ renderPass }
+		, m_frameBuffer{ frameBuffer }
+		, m_scissor{ makeScissor( get( m_frameBuffer )->getDimensions() ) }
 	{
+		assert( clearValues.size() == get( renderPass )->getAttachments().size() );
+		auto it = get( renderPass )->getAttachments().begin();
+
 		for ( auto & clearValue : clearValues )
 		{
-			if ( clearValue.isColour() )
+			if ( ashes::isDepthOrStencilFormat( it->format ) )
 			{
 				m_rtClearValues.push_back( clearValue );
 			}
@@ -38,27 +41,27 @@ namespace ashes::d3d11
 	void BeginRenderPassCommand::apply( Context const & context )const
 	{
 		context.context->RSSetScissorRects( 1u, &m_scissor );
-		auto & views = m_frameBuffer.getAllViews();
+		auto & views = get( m_frameBuffer )->getAllViews();
 		uint32_t clearIndex = 0u;
 
 		for ( auto viewIndex = 0u; viewIndex < views.size(); ++viewIndex )
 		{
-			auto & attach = m_renderPass.getAttachments()[viewIndex];
+			auto & attach = get( m_renderPass )->getAttachments()[viewIndex];
 
-			if ( attach.loadOp == ashes::AttachmentLoadOp::eClear )
+			if ( attach.loadOp == VK_ATTACHMENT_LOAD_OP_CLEAR )
 			{
 				if ( getAspectMask( attach.format ) == VK_IMAGE_ASPECT_COLOR_BIT )
 				{
 					context.context->ClearRenderTargetView( reinterpret_cast< ID3D11RenderTargetView * >( views[viewIndex] )
-						, m_rtClearValues[clearIndex].colour().float32.data() );
+						, m_rtClearValues[clearIndex].color.float32 );
 					++clearIndex;
 				}
 				else
 				{
 					context.context->ClearDepthStencilView( reinterpret_cast< ID3D11DepthStencilView * >( views[viewIndex] )
-						, m_frameBuffer.getDSViewFlags()
-						, m_dsClearValue.depthStencil().depth
-						, m_dsClearValue.depthStencil().stencil );
+						, get( m_frameBuffer )->getDSViewFlags()
+						, m_dsClearValue.depthStencil.depth
+						, m_dsClearValue.depthStencil.stencil );
 				}
 			}
 		}

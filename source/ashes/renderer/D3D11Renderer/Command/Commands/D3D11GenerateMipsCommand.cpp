@@ -6,29 +6,32 @@ See LICENSE file in root folder.
 
 #include "Image/D3D11Image.hpp"
 
+#include "ashesd3d11_api.hpp"
+
 namespace ashes::d3d11
 {
 	namespace
 	{
-		ashes::ImageViewCreateInfo getCreateInfos( Image const & texture )
+		VkImageViewCreateInfo getCreateInfos( VkImage texture )
 		{
-			ashes::ImageViewCreateInfo result;
-			result.viewType = VkImageViewType( texture.getType() );
-			result.format = texture.getFormat();
-			result.subresourceRange.aspectMask = getAspectMask( texture.getFormat() );
+			VkImageViewCreateInfo result;
+			result.image = texture;
+			result.viewType = VkImageViewType( get( texture )->getType() );
+			result.format = get( texture )->getFormat();
+			result.subresourceRange.aspectMask = getAspectMask( get( texture )->getFormat() );
 			result.subresourceRange.baseArrayLayer = 0u;
 			result.subresourceRange.baseMipLevel = 0u;
-			result.subresourceRange.layerCount = texture.getLayerCount();
-			result.subresourceRange.levelCount = texture.getMipmapLevels();
+			result.subresourceRange.layerCount = get( texture )->getLayerCount();
+			result.subresourceRange.levelCount = get( texture )->getMipmapLevels();
 			return result;
 		}
 	}
 
 	GenerateMipsCommand::GenerateMipsCommand( VkDevice device
-		, Image const & texture )
+		, VkImage texture )
 		: CommandBase{ device }
 		, m_texture{ texture }
-		, m_view{ device, texture, getCreateInfos( texture ) }
+		, m_view{ device, getCreateInfos( texture ) }
 	{
 	}
 

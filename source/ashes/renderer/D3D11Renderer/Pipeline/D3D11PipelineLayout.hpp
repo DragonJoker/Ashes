@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/D3D11RendererPrerequisites.hpp"
-
-#include <Ashes/Pipeline/PipelineLayout.hpp>
+#include "renderer/D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
 namespace ashes::d3d11
 {
@@ -15,7 +13,6 @@ namespace ashes::d3d11
 	*	Wrapper de TestPipelineLayout.
 	*/
 	class PipelineLayout
-		: public ashes::PipelineLayout
 	{
 	public:
 		/**
@@ -39,23 +36,17 @@ namespace ashes::d3d11
 		*	Les intervalles de push constants.
 		*/
 		PipelineLayout( VkDevice device
-			, ashes::VkDescriptorSetLayoutArray const & setLayouts
-			, ashes::VkPushConstantRangeArray const & pushConstantRanges );
+			, VkPipelineLayoutCreateInfo createInfo );
 		/**
 		*\brief
 		*	Destructeur.
 		*/
 		~PipelineLayout();
-		/**
-		*\copydoc	ashes::PipelineLayout::createPipeline
-		*/
-		ashes::PipelinePtr createPipeline( ashes::GraphicsPipelineCreateInfo createInfo )const;
-		/**
-		*\copydoc	ashes::PipelineLayout::createPipeline
-		*/
-		ashes::ComputePipelinePtr createPipeline( ashes::ComputePipelineCreateInfo createInfo )const;
 
 	private:
 		VkDevice m_device;
+		VkDescriptorSetLayoutArray m_setLayouts;
+		VkPushConstantRangeArray m_pushConstantRanges;
+		VkPipelineLayoutCreateInfo m_createInfo;
 	};
 }

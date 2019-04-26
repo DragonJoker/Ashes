@@ -10,42 +10,41 @@ See LICENSE file in root folder.
 #include "Buffer/D3D11Buffer.hpp"
 #include "Image/D3D11Image.hpp"
 #include "Image/D3D11ImageView.hpp"
+#include "Miscellaneous/D3D11DeviceMemory.hpp"
 
-#include <Ashes/Image/ImageSubresource.hpp>
-#include <Ashes/Image/ImageSubresourceRange.hpp>
-#include <Ashes/Image/SubresourceLayout.hpp>
+#include "ashesd3d11_api.hpp"
 
 namespace ashes::d3d11
 {
 	namespace
 	{
-		uint32_t getBufferRowPitch( ashes::BufferImageCopy const & copyInfo )
+		uint32_t getBufferRowPitch( VkBufferImageCopy const & copyInfo )
 		{
 			return ( copyInfo.bufferRowLength
 				? copyInfo.bufferRowLength
 				: copyInfo.imageExtent.width );
 		}
 		
-		uint32_t getBufferHeightPitch( ashes::BufferImageCopy const & copyInfo )
+		uint32_t getBufferHeightPitch( VkBufferImageCopy const & copyInfo )
 		{
 			return ( copyInfo.bufferImageHeight
 				? copyInfo.bufferImageHeight
 				: copyInfo.imageExtent.height );
 		}
 
-		uint32_t getBufferDepthPitch( ashes::BufferImageCopy const & copyInfo )
+		uint32_t getBufferDepthPitch( VkBufferImageCopy const & copyInfo )
 		{
 			return copyInfo.imageExtent.depth;
 		}
 		
-		uint32_t getBufferLayerPitch( ashes::BufferImageCopy const & copyInfo )
+		uint32_t getBufferLayerPitch( VkBufferImageCopy const & copyInfo )
 		{
 			return getBufferRowPitch( copyInfo )
 				* getBufferHeightPitch( copyInfo );
 		}
 
-		std::vector< D3D11_BOX > doGetSrcBoxes( Image const & image
-			, ashes::VkBufferImageCopyArray const & copyInfos )
+		std::vector< D3D11_BOX > doGetSrcBoxes( VkImage image
+			, VkBufferImageCopyArray const & copyInfos )
 		{
 			std::vector< D3D11_BOX > result;
 
@@ -57,7 +56,7 @@ namespace ashes::d3d11
 						std::max( 1u, getBufferHeightPitch( copyInfo ) ),
 						std::max( 1u, getBufferDepthPitch( copyInfo ) )
 					}
-					, image.getFormat() );
+					, get( image )->getFormat() );
 				result.push_back(
 					{
 						UINT( copyInfo.bufferOffset ),
@@ -74,8 +73,8 @@ namespace ashes::d3d11
 		}
 
 		std::vector< VkSubresourceLayout > doGetDstLayouts( VkDevice device
-			, Image const & image
-			, ashes::VkBufferImageCopyArray const & copyInfos )
+			, VkImage image
+			, VkBufferImageCopyArray const & copyInfos )
 		{
 			std::vector< VkSubresourceLayout > result;
 			result.reserve( copyInfos.size() );
@@ -83,7 +82,7 @@ namespace ashes::d3d11
 			for ( auto & copyInfo : copyInfos )
 			{
 				result.push_back( {} );
-				device.getImageSubresourceLayout( image
+				get( device )->getImageSubresourceLayout( image
 					, VkImageSubresource
 					{
 						copyInfo.imageSubresource.aspectMask,
@@ -132,7 +131,7 @@ namespace ashes::d3d11
 		}
 
 		void doCopyMapped( VkFormat format
-			, ashes::BufferImageCopy const & copyInfo
+			, VkBufferImageCopy const & copyInfo
 			, uint8_t const * srcBuffer
 			, D3D11_BOX const & srcBox
 			, uint8_t * dstBuffer
@@ -185,64 +184,104 @@ namespace ashes::d3d11
 
 		VkBuffer getStagingBuffer( VkDevice device
 			, VkBuffer buffer
-			, uint32_t size )
+			, uint32_t size
+			, VkDeviceMemory & memory )
 		{
-			VkBuffer result = std::make_unique< Buffer >( device
-				, size
-				, VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT );
-			auto requirements = result->getMemoryRequirements();
+			VkBuffer result;
+			allocate( result
+				, nullptr
+				, device
+				, VkBufferCreateInfo
+				{
+					VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+					nullptr,
+					0u,
+					size,
+					VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+					VK_SHARING_MODE_EXCLUSIVE,
+					0u,
+					nullptr,
+				} );
+			auto requirements = get( result )->getMemoryRequirements();
 			uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
 				, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
-			result->bindMemory( device.allocateMemory( { requirements.size, deduced } ) );
+			allocate( memory
+				, nullptr
+				, device
+				, VkMemoryAllocateInfo
+				{
+					VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+					nullptr,
+					requirements.size,
+					deduced
+				} );
+			get( result )->bindMemory( memory, 0u );
 			return result;
 		}
 
 		VkImage getStagingTexture( VkDevice device
 			, VkImage image
-			, VkExtent3D dimensions )
+			, VkExtent3D dimensions
+			, VkDeviceMemory & memory )
 		{
-			VkImage result = std::make_unique< Image >( device
+			VkImage result;
+			allocate( result
+				, nullptr
+				, device
 				, VkImageCreateInfo
 				{
+					VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+					nullptr,
 					0u,
-					image.getType(),
-					image.getFormat(),
+					get( image )->getType(),
+					get( image )->getFormat(),
 					VkExtent3D
-				{
-					dimensions.width,
-					dimensions.height,
-					dimensions.depth,
-				},
-				1u,
-				image.getLayerCount(),
-				VK_SAMPLE_COUNT_1_BIT,
-				VK_IMAGE_TILING_LINEAR,
-				VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
-				VK_SHARING_MODE_EXCLUSIVE,
-				{},
-				VK_IMAGE_LAYOUT_UNDEFINED,
+					{
+						dimensions.width,
+						dimensions.height,
+						dimensions.depth,
+					},
+					1u,
+					get( image )->getLayerCount(),
+					VK_SAMPLE_COUNT_1_BIT,
+					VK_IMAGE_TILING_LINEAR,
+					VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+					VK_SHARING_MODE_EXCLUSIVE,
+					0u,
+					nullptr,
+					VK_IMAGE_LAYOUT_UNDEFINED,
 				} );
-			auto requirements = result->getMemoryRequirements();
+			auto requirements = get( result )->getMemoryRequirements();
 			uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
 				, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
-			result->bindMemory( device.allocateMemory( { requirements.size, deduced } ) );
+			allocate( memory
+				, nullptr
+				, device
+				, VkMemoryAllocateInfo
+				{
+					VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+					nullptr,
+					requirements.size,
+					deduced
+				} );
+			get( result )->bindMemory( memory, 0u );
 			return result;
 		}
 	}
 
 	CopyBufferToImageCommand::CopyBufferToImageCommand( VkDevice device
-		, ashes::VkBufferImageCopyArray const & copyInfo
+		, VkBufferImageCopyArray const & copyInfo
 		, VkBuffer src
 		, VkImage dst )
 		: CommandBase{ device }
 		, m_copyInfo{ copyInfo }
-		, m_src{ static_cast< Buffer const & >( src ) }
-		, m_dst{ static_cast< Image const & >( dst ) }
-		, m_format{ getSRVFormat( m_dst.getFormat() ) }
+		, m_src{ src }
+		, m_dst{ dst }
+		, m_format{ getSRVFormat( get( m_dst )->getFormat() ) }
 		, m_srcBoxes{ doGetSrcBoxes( m_dst, copyInfo ) }
 		, m_dstLayouts{ doGetDstLayouts( device, m_dst, copyInfo ) }
-		, m_srcMappable{ m_src.getMemoryRequirements().memoryTypeBits == VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT }
-		, m_dstMappable{ m_dst.getMemoryRequirements().memoryTypeBits == VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT }
+		, m_srcMappable{ get( m_src )->getMemoryRequirements().memoryTypeBits == VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT }
+		, m_dstMappable{ get( m_dst )->getMemoryRequirements().memoryTypeBits == VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT }
 	{
 	}
 
@@ -263,12 +302,14 @@ namespace ashes::d3d11
 	}
 
 	void CopyBufferToImageCommand::applyOne( Context const & context
-		, ashes::BufferImageCopy const & copyInfo
+		, VkBufferImageCopy const & copyInfo
 		, D3D11_BOX const & srcBox
 		, VkSubresourceLayout const & dstLayout )const
 	{
-		VkBuffer stagingSrc;
-		VkImage stagingDst;
+		VkBuffer stagingSrc{ VK_NULL_HANDLE };
+		VkImage stagingDst{ VK_NULL_HANDLE };
+		VkDeviceMemory stagingSrcMemory{ VK_NULL_HANDLE };
+		VkDeviceMemory stagingDstMemory{ VK_NULL_HANDLE };
 		VkBuffer const * src = &m_src;
 		VkImage const * dst = &m_dst;
 
@@ -276,75 +317,99 @@ namespace ashes::d3d11
 		{
 			stagingSrc = getStagingBuffer( m_device
 				, m_src
-				, srcBox.right - srcBox.left );
+				, srcBox.right - srcBox.left
+				, stagingSrcMemory );
 			doCopyToStaging( context
 				, copyInfo
 				, *src
-				, *stagingSrc
+				, stagingSrc
 				, srcBox );
-			src = stagingSrc.get();
+			src = &stagingSrc;
 		}
 
 		if ( !m_dstMappable )
 		{
 			stagingDst = getStagingTexture( m_device
 				, m_dst
-				, copyInfo.imageExtent );
-			dst = stagingDst.get();
+				, copyInfo.imageExtent
+				, stagingDstMemory );
+			dst = &stagingDst;
 		}
 
 		doMapCopy( copyInfo
 			, srcBox
 			, dstLayout
-			, *src
-			, *dst );
+			, get( *dst )->getFormat()
+			, get( *src )->getMemory()
+			, get( *dst )->getMemory() );
 
 		if ( !m_dstMappable )
 		{
 			doCopyFromStaging( context
 				, copyInfo
-				, *stagingDst
+				, stagingDst
 				, m_dst );
+		}
+
+		if ( stagingDst )
+		{
+			deallocate( stagingDstMemory, nullptr );
+			deallocate( stagingDst, nullptr );
+		}
+
+		if ( stagingSrc )
+		{
+			deallocate( stagingSrcMemory, nullptr );
+			deallocate( stagingSrc, nullptr );
 		}
 	}
 
-	void CopyBufferToImageCommand::doMapCopy( ashes::BufferImageCopy const & copyInfo
+	void CopyBufferToImageCommand::doMapCopy( VkBufferImageCopy const & copyInfo
 		, D3D11_BOX const & srcBox
 		, VkSubresourceLayout const & dstLayout
-		, VkBuffer src
-		, VkImage dst )const
+		, VkFormat format
+		, VkDeviceMemory src
+		, VkDeviceMemory dst )const
 	{
-		if ( auto srcBuffer = src.lock( srcBox.left
+		uint8_t * srcBuffer{ nullptr };
+
+		if ( VK_SUCCESS == get( src )->lock( srcBox.left
 			, srcBox.right - srcBox.left
-			, VkMemoryMapFlagBits::eRead ) )
+			, 0u 
+			, reinterpret_cast< void ** >( &srcBuffer ) ) )
 		{
-			if ( auto dstBuffer = dst.lock( dstLayout
-				, VkMemoryMapFlagBits::eWrite ) )
+			uint8_t * dstBuffer{ nullptr };
+
+			if ( VK_SUCCESS == get( dst )->lock( dstLayout.offset
+				, dstLayout.size
+				, 0u
+				, reinterpret_cast< void ** >( &dstBuffer ) ) )
 			{
-				doCopyMapped( dst.getFormat()
+				doCopyMapped( format
 					, copyInfo
 					, srcBuffer
 					, srcBox
 					, dstBuffer
 					, dstLayout );
-				dst.flush( dstLayout );
-				dst.unlock();
+				get( dst )->flush( dstLayout.offset
+					, dstLayout.size );
+				get( dst )->unlock();
 			}
 
-			src.flush( srcBox.left
+			get( src )->flush( srcBox.left
 				, srcBox.right - srcBox.left );
-			src.unlock();
+			get( src )->unlock();
 		}
 	}
 
 	void CopyBufferToImageCommand::doCopyToStaging( Context const & context
-		, ashes::BufferImageCopy const & copyInfo
+		, VkBufferImageCopy const & copyInfo
 		, VkBuffer src
 		, VkBuffer staging
 		, D3D11_BOX const & srcBox )const
 	{
 		CopyBufferCommand command{ m_device
-			, ashes::BufferCopy
+			, VkBufferCopy
 			{
 				copyInfo.bufferOffset,
 				0u,
@@ -356,15 +421,15 @@ namespace ashes::d3d11
 	}
 
 	void CopyBufferToImageCommand::doCopyFromStaging( Context const & context
-		, ashes::BufferImageCopy const & copyInfo
+		, VkBufferImageCopy const & copyInfo
 		, VkImage staging
 		, VkImage dst )const
 	{
-		ashes::ImageSubresourceLayers stagingSurbresouce{ copyInfo.imageSubresource };
+		VkImageSubresourceLayers stagingSurbresouce{ copyInfo.imageSubresource };
 		stagingSurbresouce.mipLevel = 0u;
 		stagingSurbresouce.baseArrayLayer = 0u;
 		CopyImageCommand command{ m_device
-			, ashes::ImageCopy
+			, VkImageCopy
 			{
 				stagingSurbresouce,
 				VkOffset3D{},

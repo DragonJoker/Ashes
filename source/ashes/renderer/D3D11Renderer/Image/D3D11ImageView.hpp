@@ -8,9 +8,7 @@
 #define ___D3D11Renderer_TextureView_HPP___
 #pragma once
 
-#include "D3D11Renderer/D3D11RendererPrerequisites.hpp"
-
-#include <Ashes/Image/ImageView.hpp>
+#include "renderer/D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
 namespace ashes::d3d11
 {
@@ -23,12 +21,10 @@ namespace ashes::d3d11
 	*	Vulkan image view wrapper.
 	*/
 	class ImageView
-		: public ashes::ImageView
 	{
 	public:
 		ImageView( VkDevice device
-			, Image const & image
-			, ashes::ImageViewCreateInfo const & createInfo );
+			, VkImageViewCreateInfo createInfo );
 		~ImageView();
 
 		inline ID3D11RenderTargetView * getRenderTargetView()const
@@ -51,6 +47,16 @@ namespace ashes::d3d11
 			return m_shaderView;
 		}
 
+		inline VkFormat getFormat()const
+		{
+			return m_createInfo.format;
+		}
+
+		inline VkImageSubresourceRange const & getSubResourceRange()const
+		{
+			return m_createInfo.subresourceRange;
+		}
+
 	private:
 		void doCreate1D();
 		void doCreate1DArray();
@@ -62,7 +68,8 @@ namespace ashes::d3d11
 
 	private:
 		VkDevice m_device;
-		Image const & m_image;
+		VkImage m_image;
+		VkImageViewCreateInfo m_createInfo;
 		ID3D11RenderTargetView * m_renderTargetView{ nullptr };
 		ID3D11DepthStencilView * m_depthStencilView{ nullptr };
 		ID3D11UnorderedAccessView * m_unorderedAccessView{ nullptr };

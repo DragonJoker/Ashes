@@ -4,10 +4,8 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include "D3D11Renderer/D3D11RendererPrerequisites.hpp"
-#include "D3D11Renderer/Shader/D3D11ShaderDesc.hpp"
-
-#include <Ashes/Shader/ShaderModule.hpp>
+#include "renderer/D3D11Renderer/D3D11RendererPrerequisites.hpp"
+#include "renderer/D3D11Renderer/Shader/D3D11ShaderDesc.hpp"
 
 #include <d3d11shader.h>
 
@@ -22,8 +20,8 @@ namespace ashes::d3d11
 		CompiledShaderModule & operator=( CompiledShaderModule && rhs );
 
 		CompiledShaderModule( VkDevice device
-			, ashes::UInt32Array const & spv
-			, ashes::ShaderStageState const & state );
+			, UInt32Array const & spv
+			, VkPipelineShaderStageCreateInfo const & state );
 		~CompiledShaderModule();
 
 		inline ID3D11ComputeShader * getCSShader()const
@@ -103,21 +101,18 @@ namespace ashes::d3d11
 	*	TestShaderModule wrapper.
 	*/
 	class ShaderModule
-		: public ashes::ShaderModule
 	{
 	public:
 		ShaderModule( VkDevice device
-			, VkShaderStageFlagBits stage );
+			, VkShaderModuleCreateInfo createInfo );
 		~ShaderModule();
-		/**
-		*\~copydoc	ashes::ShaderModule::loadShader
-		*/
-		void loadShader( ashes::UInt32Array const & shader )override;
 
-		CompiledShaderModule compile( ashes::ShaderStageState const & state );
+		CompiledShaderModule compile( VkPipelineShaderStageCreateInfo const & state )const;
 
 	private:
 		VkDevice m_device;
-		ashes::UInt32Array m_spv;
+		VkShaderModuleCreateInfo m_createInfo;
+		UInt32Array m_code;
+		mutable std::string m_source;
 	};
 }

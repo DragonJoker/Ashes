@@ -9,15 +9,13 @@
 #include "Command/D3D11Queue.hpp"
 #include "Image/D3D11ImageView.hpp"
 
-#include <Ashes/Miscellaneous/Extent2D.hpp>
-#include <Ashes/Sync/ImageMemoryBarrier.hpp>
-#include <Ashes/Image/ImageSubresourceRange.hpp>
+#include "ashesd3d11_api.hpp"
 
 namespace ashes::d3d11
 {
 	Image::Image( Image && rhs )
-		: VkImage{ std::move( rhs ) }
-		, m_device{ rhs.m_device }
+		: m_device{ rhs.m_device }
+		, m_createInfo{ std::move( rhs.m_createInfo ) }
 		, m_image{ rhs.m_image }
 	{
 		rhs.m_image.tex1D = nullptr;
@@ -25,16 +23,16 @@ namespace ashes::d3d11
 
 	Image & Image::operator=( Image && rhs )
 	{
-		VkImage::operator=( std::move( rhs ) );
 		m_image = rhs.m_image;
+		m_createInfo = std::move( rhs.m_createInfo );
 		rhs.m_image.tex1D = nullptr;
 		return *this;
 	}
 
 	Image::Image( VkDevice device
-		, VkImageCreateInfo const & createInfo )
-		: VkImage{ device, createInfo }
-		, m_device{ device }
+		, VkImageCreateInfo createInfo )
+		: m_device{ device }
+		, m_createInfo{ std::move( createInfo ) }
 		, m_image{ nullptr }
 	{
 	}
@@ -43,8 +41,10 @@ namespace ashes::d3d11
 		, VkFormat format
 		, VkExtent2D const & dimensions
 		, ID3D11Texture2D * image )
-		: VkImage{ device
+		: Image{ device
 			, {
+				VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+				nullptr,
 				0u,
 				VK_IMAGE_TYPE_2D,
 				format,
@@ -53,15 +53,14 @@ namespace ashes::d3d11
 				1u,
 				VK_SAMPLE_COUNT_1_BIT,
 				VK_IMAGE_TILING_OPTIMAL,
-				( isDepthOrStencilFormat( format )
+				VkImageUsageFlags( isDepthOrStencilFormat( format )
 					? VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
 					: VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT ),
 				VK_SHARING_MODE_EXCLUSIVE,
-				{},
+				0u,
+				nullptr,
 				VK_IMAGE_LAYOUT_UNDEFINED
 			} }
-		, m_device{ device }
-		, m_image{ nullptr }
 	{
 		m_image.tex2D = image;
 	}
@@ -74,6 +73,8 @@ namespace ashes::d3d11
 		, VkMemoryPropertyFlags memoryFlags )
 		: Image{ device
 			, {
+				VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+				nullptr,
 				0u,
 				VK_IMAGE_TYPE_2D,
 				format,
@@ -84,7 +85,8 @@ namespace ashes::d3d11
 				tiling,
 				usageFlags,
 				VK_SHARING_MODE_EXCLUSIVE,
-				{},
+				0u,
+				nullptr,
 				VK_IMAGE_LAYOUT_UNDEFINED
 			} }
 	{
@@ -99,7 +101,6 @@ namespace ashes::d3d11
 	{
 		VkMemoryRequirements result{};
 		result.size = ashes::getSize( getDimensions(), getFormat() );
-		result.type = ashes::ResourceType::eImage;
 		auto extent = ashes::getMinimalExtent3D( getFormat() );
 		result.alignment = ashes::getSize( extent, getFormat() );
 		result.memoryTypeBits = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
@@ -110,33 +111,37 @@ namespace ashes::d3d11
 		return result;
 	}
 
-	ashes::ImageViewPtr Image::createView( ashes::ImageViewCreateInfo const & createInfo )const
+	void Image::generateMipmaps( VkCommandBuffer commandBuffer )const
 	{
-		return std::make_shared< ImageView >( m_device
-			, *this
-			, createInfo );
+		get( commandBuffer )->generateMipmaps( get( this ) );
 	}
 
-	void Image::generateMipmaps( ashes::CommandBuffer & commandBuffer )const
+	VkResult Image::bindMemory( VkDeviceMemory memory
+		, VkDeviceSize memoryOffset )
 	{
-		static_cast< CommandBuffer & >( commandBuffer ).generateMips( *this );
-	}
+		VkResult result = VK_SUCCESS;
 
-	void Image::doBindMemory()
-	{
 		switch ( getType() )
 		{
 		case VK_IMAGE_TYPE_1D:
-			m_image.tex1D = static_cast< DeviceMemory & >( *m_storage ).bindToTexture1D( m_createInfo );
+			result = get( m_memory )->bindToImage( get( this )
+				, memoryOffset
+				, m_image.tex1D );
 			break;
 
 		case VK_IMAGE_TYPE_2D:
-			m_image.tex2D = static_cast< DeviceMemory & >( *m_storage ).bindToTexture2D( m_createInfo );
+			result = get( m_memory )->bindToImage( get( this )
+				, memoryOffset
+				, m_image.tex2D );
 			break;
 
 		case VK_IMAGE_TYPE_3D:
-			m_image.tex3D = static_cast< DeviceMemory & >( *m_storage ).bindToTexture3D( m_createInfo );
+			result = get( m_memory )->bindToImage( get( this )
+				, memoryOffset
+				, m_image.tex3D );
 			break;
 		}
+
+		return result;
 	}
 }

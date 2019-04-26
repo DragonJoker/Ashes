@@ -18,17 +18,4 @@ namespace ashes::d3d11
 			viewport.maxDepth
 		};
 	}
-
-	std::vector< D3D11_VIEWPORT > makeViewports( ashes::VkViewportArray::const_iterator const & begin
-		, ashes::VkViewportArray::const_iterator const & end )
-	{
-		std::vector< D3D11_VIEWPORT > result;
-
-		for ( auto it = begin; it != end; ++it )
-		{
-			result.push_back( makeViewport( *it ) );
-		}
-
-		return result;
-	}
 }

@@ -8,34 +8,32 @@
 #define ___D3D11Renderer_Pipeline_HPP___
 #pragma once
 
-#include "D3D11Renderer/Shader/D3D11ShaderDesc.hpp"
-#include "D3D11Renderer/Shader/D3D11ShaderModule.hpp"
-
-#include <Ashes/Pipeline/Pipeline.hpp>
-
-#include <optional>
+#include "renderer/D3D11Renderer/Shader/D3D11ShaderDesc.hpp"
+#include "renderer/D3D11Renderer/Shader/D3D11ShaderModule.hpp"
 
 namespace ashes::d3d11
 {
 	class Pipeline
-		: public ashes::Pipeline
 	{
 	public:
 		Pipeline( VkDevice device
-			, ashes::PipelineLayout const & layout
-			, ashes::GraphicsPipelineCreateInfo createInfo );
+			, VkGraphicsPipelineCreateInfo createInfo );
+		Pipeline( VkDevice device
+			, VkComputePipelineCreateInfo createInfo );
 		~Pipeline();
 		PushConstantsBuffer findPushConstantBuffer( PushConstantsDesc const & pushConstants )const;
 
-		inline ashes::InputAssemblyState const & getInputAssemblyState()const
+		inline VkPipelineInputAssemblyStateCreateInfo const & getInputAssemblyState()const
 		{
-			return m_createInfo.inputAssemblyState;
+			assert( m_graphicsCreateInfo.pInputAssemblyState );
+			return *m_graphicsCreateInfo.pInputAssemblyState;
 		}
 
 		inline bool hasVertexLayout()const
 		{
-			return !m_createInfo.vertexInputState.vertexBindingDescriptions.empty()
-				&& !m_createInfo.vertexInputState.vertexAttributeDescriptions.empty();
+			return m_graphicsCreateInfo.pVertexInputState
+				&& m_graphicsCreateInfo.pVertexInputState->vertexBindingDescriptionCount > 0
+				&& m_graphicsCreateInfo.pVertexInputState->vertexAttributeDescriptionCount > 0;
 		}
 
 		inline std::vector< PushConstantsBuffer > const & getConstantsPcbs()const
@@ -63,9 +61,10 @@ namespace ashes::d3d11
 			return m_bdState;
 		}
 
-		inline ashes::VertexInputState const & getVertexInputState()const
+		inline VkPipelineVertexInputStateCreateInfo const & getVertexInputState()const
 		{
-			return this->m_createInfo.vertexInputState;
+			assert( m_graphicsCreateInfo.pVertexInputState );
+			return *m_graphicsCreateInfo.pVertexInputState;
 		}
 
 		inline bool hasViewport()const
@@ -78,22 +77,24 @@ namespace ashes::d3d11
 			return !m_scissors.empty();
 		}
 
-		inline std::array< FLOAT, 4u > getBlendFactor()const
+		inline float const * getBlendFactor()const
 		{
-			return m_createInfo.colourBlendState.blendConstants;
+			assert( m_graphicsCreateInfo.pColorBlendState );
+			return m_graphicsCreateInfo.pColorBlendState->blendConstants;
 		}
 
 		inline UINT getSampleMask()const
 		{
-			return m_createInfo.colourBlendState.attachs.empty()
+			assert( m_graphicsCreateInfo.pColorBlendState );
+			return m_graphicsCreateInfo.pColorBlendState->attachmentCount == 0u
 				? 0u
-				: m_createInfo.colourBlendState.attachs.begin()->colorWriteMask;
+				: m_graphicsCreateInfo.pColorBlendState->pAttachments->colorWriteMask;
 		}
 
 		inline UINT getStencilRef()const
 		{
-			return m_createInfo.depthStencilState
-				? m_createInfo.depthStencilState.value().front.reference
+			return m_graphicsCreateInfo.pDepthStencilState
+				? m_graphicsCreateInfo.pDepthStencilState->front.reference
 				: 0u;
 		}
 
@@ -114,9 +115,19 @@ namespace ashes::d3d11
 			return m_programModules;
 		}
 
+		inline CompiledShaderModule const & getShaderStage()const
+		{
+			return m_programModules.front();
+		}
+
 		inline ProgramLayout const & getProgramLayout()const
 		{
 			return m_programLayout;
+		}
+
+		inline VkPipelineLayout getLayout()const
+		{
+			return m_layout;
 		}
 
 		inline size_t getVertexInputStateHash()const
@@ -124,22 +135,28 @@ namespace ashes::d3d11
 			return m_vertexInputStateHash;
 		}
 
-		inline bool hasDynamicStateEnable( ashes::DynamicStateEnable state )const
+		inline bool hasDynamicStateEnable( VkDynamicState state )const
 		{
-			return bool( m_createInfo.dynamicState )
-				&& m_createInfo.dynamicState.value().dynamicStates.end() != std::find( m_createInfo.dynamicState.value().dynamicStates.begin()
-				, m_createInfo.dynamicState.value().dynamicStates.end()
-				, state );
+			return bool( m_graphicsCreateInfo.pDynamicState )
+				&& ( m_graphicsCreateInfo.pDynamicState->pDynamicStates + m_graphicsCreateInfo.pDynamicState->dynamicStateCount )
+					!= std::find( m_graphicsCreateInfo.pDynamicState->pDynamicStates
+						, m_graphicsCreateInfo.pDynamicState->pDynamicStates + m_graphicsCreateInfo.pDynamicState->dynamicStateCount
+						, state );
 		}
 
 	private:
 		void doCreateBlendState( VkDevice device );
 		void doCreateRasterizerState( VkDevice device );
 		void doCreateDepthStencilState( VkDevice device );
-		void doCompileProgram( VkDevice device );
+		void doCompileProgram( VkDevice device
+			, VkPipelineShaderStageCreateInfoArray const & stages );
 		void doCreateInputLayout( VkDevice device );
 
 	private:
+		VkDevice m_device;
+		VkPipelineLayout m_layout;
+		VkGraphicsPipelineCreateInfo m_graphicsCreateInfo;
+		VkComputePipelineCreateInfo m_computeCreateInfo;
 		ID3D11DepthStencilState * m_dsState{ nullptr };
 		ID3D11RasterizerState * m_rsState{ nullptr };
 		ID3D11InputLayout * m_iaState{ nullptr };

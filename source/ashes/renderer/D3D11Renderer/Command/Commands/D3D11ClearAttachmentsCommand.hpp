@@ -4,34 +4,34 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
-
-#include <Ashes/RenderPass/ClearAttachment.hpp>
-#include <Ashes/RenderPass/ClearRect.hpp>
+#include "renderer/D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
 namespace ashes::d3d11
 {
 	struct ClearAttachmentView
 	{
-		ashes::ClearAttachment clear;
+		VkClearAttachment clear;
 		ID3D11View * view;
 	};
+
+	using ClearAttachmentViewArray = std::vector< ClearAttachmentView >;
+
 	class ClearAttachmentsCommand
 		: public CommandBase
 	{
 	public:
 		ClearAttachmentsCommand( VkDevice device
-			, RenderPass const & renderPass
-			, ashes::SubpassDescription const & subpass
-			, FrameBuffer const & framebuffer
-			, ashes::ClearAttachmentArray const & clearAttaches
-			, ashes::ClearRectArray const & clearRects );
+			, VkRenderPass renderPass
+			, VkSubpassDescription const & subpass
+			, VkFramebuffer framebuffer
+			, VkClearAttachmentArray const & clearAttaches
+			, VkClearRectArray const & clearRects );
 
 		void apply( Context const & context )const;
 		CommandPtr clone()const;
 
 	private:
-		ashes::ClearRectArray m_clearRects;
-		std::vector< ClearAttachmentView > m_clearViews;
+		VkClearRectArray m_clearRects;
+		ClearAttachmentViewArray m_clearViews;
 	};
 }

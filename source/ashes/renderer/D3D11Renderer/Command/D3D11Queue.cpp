@@ -11,17 +11,20 @@ See LICENSE file in root folder.
 #include "Sync/D3D11Fence.hpp"
 #include "Sync/D3D11Semaphore.hpp"
 
+#include "ashesd3d11_api.hpp"
+
 namespace ashes::d3d11
 {
 	Queue::Queue( VkDevice device
 		, VkDeviceQueueCreateInfo createInfo
 		, uint32_t index )
-		: ashes::Queue{ device, std::move( createInfo ), index }
-		, m_device{ device }
+		: m_device{ device }
+		, m_createInfo{ std::move( createInfo ) }
+		, m_index{ index }
 	{
 		D3D11_QUERY_DESC desc{};
 		desc.Query = D3D11_QUERY_EVENT;
-		m_device.getDevice()->CreateQuery( &desc, &m_waitIdleQuery );
+		get( m_device )->getDevice()->CreateQuery( &desc, &m_waitIdleQuery );
 	}
 	
 	Queue::~Queue()
@@ -29,40 +32,50 @@ namespace ashes::d3d11
 		safeRelease( m_waitIdleQuery );
 	}
 
-	void Queue::submit( ashes::CommandBufferCRefArray const & commandBuffers
-		, ashes::SemaphoreCRefArray const & semaphoresToWait
-		, ashes::VkPipelineStageFlagsArray const & semaphoresStage
-		, ashes::SemaphoreCRefArray const & semaphoresToSignal
-		, ashes::Fence const * fence )const
+	VkResult Queue::submit( VkSubmitInfoArray const & infos
+		, VkFence fence )const
 	{
-		Context context{ m_device.getFeatureLevel(), m_device };
-
-		for ( auto & commandBuffer : commandBuffers )
+		for ( auto & info : infos )
 		{
-			auto & dxCommandBuffer = static_cast< CommandBuffer const & >( commandBuffer.get() );
-			dxCommandBuffer.execute( context );
-			context.uavs.clear();
-		}
-	}
-
-	ashes::VkResultArray Queue::present( ashes::SwapChainCRefArray const & swapChains
-		, ashes::UInt32Array const & imagesIndex
-		, ashes::SemaphoreCRefArray const & semaphoresToWait )const
-	{
-		ashes::VkResultArray result{ swapChains.size(), ashes::Result::eSuccess };
-
-		for ( auto & swapChain : swapChains )
-		{
-			static_cast< SwapChain const & >( swapChain.get() ).getSwapChain()->Present( 0u, 0u );
+			doSubmit( { info.pCommandBuffers, info.pCommandBuffers + info.commandBufferCount }
+				, { info.pWaitSemaphores, info.pWaitSemaphores + info.waitSemaphoreCount }
+				, { info.pWaitDstStageMask, info.pWaitDstStageMask + info.waitSemaphoreCount }
+				, { info.pSignalSemaphores, info.pSignalSemaphores + info.signalSemaphoreCount }
+				, fence );
 		}
 
-		return result;
+		return VK_SUCCESS;
 	}
 
-	void Queue::waitIdle()const
+	VkResult Queue::present( VkPresentInfoKHR const & presentInfo )const
+	{
+		if ( presentInfo.pResults )
+		{
+			auto itResult = presentInfo.pResults;
+
+			for ( auto & swapChain : makeArrayView( presentInfo.pSwapchains, presentInfo.swapchainCount ) )
+			{
+				*itResult = checkError( m_device, get( swapChain )->getSwapChain()->Present( 0u, 0u ), "Presentation" )
+					? VK_SUCCESS
+					: VK_ERROR_SURFACE_LOST_KHR;
+				++itResult;
+			}
+		}
+		else
+		{
+			for ( auto & swapChain : makeArrayView( presentInfo.pSwapchains, presentInfo.swapchainCount ) )
+			{
+				get( swapChain )->getSwapChain()->Present( 0u, 0u );
+			}
+		}
+
+		return VK_SUCCESS;
+	}
+
+	VkResult Queue::waitIdle()const
 	{
 		ID3D11DeviceContext * context;
-		m_device.getDevice()->GetImmediateContext( &context );
+		get( m_device )->getDevice()->GetImmediateContext( &context );
 		context->End( m_waitIdleQuery );
 		context->Flush();
 		BOOL data{ FALSE };
@@ -77,5 +90,26 @@ namespace ashes::d3d11
 		}
 
 		safeRelease( context );
+		return data
+			? VK_SUCCESS
+			: VK_TIMEOUT;
+	}
+
+	VkResult Queue::doSubmit( VkCommandBufferArray const & commandBuffers
+		, VkSemaphoreArray const & semaphoresToWait
+		, VkPipelineStageFlagsArray const & semaphoresStage
+		, VkSemaphoreArray const & semaphoresToSignal
+		, VkFence fence )const
+	{
+		Context context{ get( m_device )->getFeatureLevel(), m_device };
+
+		for ( auto & commandBuffer : commandBuffers )
+		{
+			auto & dxCommandBuffer = *get( commandBuffer );
+			dxCommandBuffer.execute( context );
+			context.uavs.clear();
+		}
+
+		return VK_SUCCESS;
 	}
 }

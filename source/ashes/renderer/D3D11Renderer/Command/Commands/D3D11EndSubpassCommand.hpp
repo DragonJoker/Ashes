@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
+#include "renderer/D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
 namespace ashes::d3d11
 {
@@ -13,15 +13,15 @@ namespace ashes::d3d11
 	{
 	public:
 		EndSubpassCommand( VkDevice device
-			, ashes::FrameBuffer const & frameBuffer
-			, ashes::SubpassDescription const & subpass );
+			, VkFramebuffer frameBuffer
+			, VkSubpassDescription const & subpass );
 
 		void apply( Context const & context )const;
 		CommandPtr clone()const;
 
 	private:
-		FrameBuffer const & m_frameBuffer;
-		ashes::SubpassDescription const & m_subpass;
+		VkFramebuffer m_frameBuffer;
+		VkSubpassDescription const & m_subpass;
 		std::vector< ID3D11RenderTargetView * > m_attaches;
 	};
 }

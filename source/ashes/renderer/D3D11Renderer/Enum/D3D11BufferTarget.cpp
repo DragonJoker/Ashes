@@ -11,7 +11,7 @@ namespace ashes::d3d11
 			|| checkFlag( targets, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT );
 	}
 
-	UINT getBufferUsage( VkBufferUsageFlags const & targets )
+	UINT getBindFlags( VkBufferUsageFlags const & targets )
 	{
 		UINT result{};
 

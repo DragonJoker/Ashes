@@ -17,19 +17,6 @@ namespace ashes::d3d11
 		};
 	}
 
-	std::vector< RECT > makeScissors( ashes::VkScissorArray::const_iterator const & begin
-		, ashes::VkScissorArray::const_iterator const & end )
-	{
-		std::vector< RECT > result;
-
-		for ( auto it = begin; it != end; ++it )
-		{
-			result.push_back( makeScissor( *it ) );
-		}
-
-		return result;
-	}
-
 	RECT makeScissor( VkExtent2D const & extent )
 	{
 		return RECT

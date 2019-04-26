@@ -1,6 +1,6 @@
-#include <ashes/ashes.hpp>
+#include <ashes/ashes.h>
 
-#include "renderer/D3D11Renderer/Core/D3D11Device.hpp"
+#include "Core/D3D11Device.hpp"
 
 #include "ashesd3d11_api.hpp"
 
@@ -17,7 +17,7 @@ namespace ashes
 	}
 }
 
-namespace ashes::gl4
+namespace ashes::d3d11
 {
 #pragma region Vulkan 1.0
 #ifdef VK_VERSION_1_0
@@ -57,13 +57,13 @@ namespace ashes::gl4
 
 		try
 		{
+			auto gpus = get( instance )->enumeratePhysicalDevices();
+
 			if ( !pPhysicalDevices )
 			{
-				*pPhysicalDeviceCount = 1u;
+				*pPhysicalDeviceCount = uint32_t( gpus.size() );
 				return result;
 			}
-
-			auto gpus = get( instance )->enumeratePhysicalDevices();
 
 			for ( auto & gpu : gpus )
 			{
@@ -159,7 +159,6 @@ namespace ashes::gl4
 			, pAllocator
 			, instance
 			, physicalDevice
-			, get( instance )->getContext()
 			, *pCreateInfo );
 	}
 
@@ -182,7 +181,7 @@ namespace ashes::gl4
 			{
 				VkExtensionProperties result;
 				result.specVersion = makeVersion( 1, 0, 0 );
-				strncpy( result.extensionName, VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME, VK_MAX_EXTENSION_NAME_SIZE );
+				strncpy( result.extensionName, VK_KHR_WIN32_SURFACE_EXTENSION_NAME, VK_MAX_EXTENSION_NAME_SIZE );
 				return result;
 			}(),
 			VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, makeVersion( 1, 0, 0 ) },
@@ -349,7 +348,7 @@ namespace ashes::gl4
 		VkDeviceMemory memory,
 		VkDeviceSize memoryOffset )
 	{
-		return get( memory )->bindToBuffer( buffer, memoryOffset );
+		return get( buffer )->bindMemory( memory, memoryOffset );
 	}
 
 	VkResult VKAPI_CALL vkBindImageMemory(
@@ -358,7 +357,7 @@ namespace ashes::gl4
 		VkDeviceMemory memory,
 		VkDeviceSize memoryOffset )
 	{
-		return get( memory )->bindToImage( image, memoryOffset );
+		return get( image )->bindMemory( memory, memoryOffset );
 	}
 
 	void VKAPI_CALL vkGetBufferMemoryRequirements(
@@ -943,6 +942,7 @@ namespace ashes::gl4
 			{
 				result = allocate( *itSet
 					, nullptr
+					, device
 					, pAllocateInfo->descriptorPool
 					, *itLayout );
 			}
@@ -1074,7 +1074,8 @@ namespace ashes::gl4
 				result = allocate( *it
 					, nullptr
 					, device
-					, pAllocateInfo->level );
+					, pAllocateInfo->commandPool
+					, pAllocateInfo->level == VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 			}
 		}
 
@@ -1969,6 +1970,7 @@ namespace ashes::gl4
 	{
 		if ( !pPresentModes )
 		{
+			get( surface )->getSurfaceInfos( physicalDevice );
 			*pPresentModeCount = uint32_t( get( surface )->getPresentModes().size() );
 			return VK_SUCCESS;
 		}
@@ -2776,7 +2778,7 @@ namespace ashes::gl4
 		const char* pLayerPrefix,
 		const char* pMessage )
 	{
-		get( instance )->reportMessage( flags
+		get( instance )->onReportMessage( flags
 			, objectType
 			, object
 			, location
@@ -4010,14 +4012,14 @@ namespace ashes::gl4
 #pragma endregion
 }
 
-namespace ashes::gl4
+namespace ashes::d3d11
 {
 	struct GlLibrary
 	{
 		AshPluginDescription description
 		{
-			"gl4",
-			"OpenGL 4.2 renderer for Ashes.",
+			"d3d11",
+			"Direct3D 11 renderer for Ashes",
 		};
 
 		VkResult init()
@@ -4060,9 +4062,9 @@ namespace ashes::gl4
 	};
 }
 
-thread_local ashes::gl4::GlLibrary g_library;
+thread_local ashes::d3d11::GlLibrary g_library;
 
-namespace ashes::gl4
+namespace ashes::d3d11
 {
 	PFN_vkVoidFunction VKAPI_CALL vkGetInstanceProcAddr(
 		VkInstance instance,
@@ -4127,7 +4129,7 @@ extern "C"
 {
 #endif
 
-	Gl4Renderer_API VkResult VKAPI_PTR ashGetPluginDescription( AshPluginDescription * pDescription )
+	D3D11Renderer_API VkResult VKAPI_PTR ashGetPluginDescription( AshPluginDescription * pDescription )
 	{
 		auto result = g_library.init();
 

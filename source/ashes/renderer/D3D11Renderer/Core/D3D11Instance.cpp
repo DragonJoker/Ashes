@@ -6,12 +6,15 @@
 #include "Core/D3D11PhysicalDevice.hpp"
 #include "Core/D3D11SwapChain.hpp"
 
-#include <renderer/RendererCommon/Helper/Exception.hpp>
+#include <ashes/common/Exception.hpp>
+#include <ashes/ashes.hpp>
 
 #include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <locale>
+
+#include "ashesd3d11_api.hpp"
 
 namespace ashes::d3d11
 {
@@ -71,11 +74,13 @@ namespace ashes::d3d11
 
 	Instance::Instance( VkInstanceCreateInfo createInfo )
 		: m_flags{ createInfo.flags }
-		, m_enabledLayerNames{ convert( createInfo.ppEnabledLayerNames, createInfo.enabledLayerCount ) }
-		, m_enabledExtensions{ convert( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) }
+		, m_enabledLayerNames{ ashes::convert( CharPtrArray{ createInfo.ppEnabledLayerNames, createInfo.ppEnabledLayerNames + createInfo.enabledLayerCount } ) }
+		, m_enabledExtensions{ ashes::convert( CharPtrArray{ createInfo.ppEnabledExtensionNames, createInfo.ppEnabledExtensionNames + createInfo.enabledExtensionCount } ) }
 	{
 		doCreateDXGIFactory();
 		doLoadAdapters();
+		doInitialisePhysicalDevices();
+
 		m_features.hasTexBufferRange = m_maxFeatureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.hasImageTexture = m_maxFeatureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.hasBaseInstance = m_maxFeatureLevel >= D3D_FEATURE_LEVEL_11_0;
@@ -87,6 +92,11 @@ namespace ashes::d3d11
 
 	Instance::~Instance()
 	{
+		for ( auto & physicalDevice : m_physicalDevices )
+		{
+			deallocate( physicalDevice, nullptr );
+		}
+		
 		for ( auto & info : m_adapters )
 		{
 			safeRelease( info.adapter2 );
@@ -99,14 +109,7 @@ namespace ashes::d3d11
 
 	VkPhysicalDeviceArray Instance::enumeratePhysicalDevices()const
 	{
-		VkPhysicalDeviceArray result;
-
-		for ( auto adapter : m_adapters )
-		{
-			result.emplace_back( std::make_unique< PhysicalDevice >( *this, std::move( adapter ) ) );
-		}
-
-		return result;
+		return m_physicalDevices;
 	}
 
 	std::array< float, 16 > Instance::frustum( float left
@@ -180,7 +183,7 @@ namespace ashes::d3d11
 	}
 
 	bool Instance::onCopyToImageCommand( VkCommandBuffer cmd
-		, ashes::VkBufferImageCopyArray const & copyInfo
+		, VkBufferImageCopyArray const & copyInfo
 		, VkBuffer src
 		, VkImage dst )const
 	{
@@ -188,7 +191,10 @@ namespace ashes::d3d11
 		{
 			for ( auto & layer : m_layers )
 			{
-				layer->onCopyToImageCommand( cmd, copyInfo, src, dst );
+				layer->onCopyToImageCommand( cmd
+					, copyInfo
+					, src
+					, dst );
 			}
 		}
 		catch ( LayerException & exc )
@@ -207,7 +213,8 @@ namespace ashes::d3d11
 		{
 			for ( auto & layer : m_layers )
 			{
-				layer->onCheckHResultCommand( hresult, message );
+				layer->onCheckHResultCommand( hresult
+					, message );
 			}
 		}
 		catch ( LayerException & exc )
@@ -217,6 +224,33 @@ namespace ashes::d3d11
 		}
 
 		return false;
+	}
+
+	void Instance::onReportMessage( VkDebugReportFlagsEXT flags
+		, VkDebugReportObjectTypeEXT objectType
+		, uint64_t object
+		, size_t location
+		, int32_t messageCode
+		, const char * pLayerPrefix
+		, const char * pMessage )
+	{
+		try
+		{
+			for ( auto & layer : m_layers )
+			{
+				layer->onReportMessage( flags
+					, objectType
+					, object
+					, location
+					, messageCode
+					, pLayerPrefix
+					, pMessage );
+			}
+		}
+		catch ( LayerException & exc )
+		{
+			std::cerr << exc.what() << std::endl;
+		}
 	}
 
 	void Instance::doCreateDXGIFactory()
@@ -260,5 +294,21 @@ namespace ashes::d3d11
 				} );
 			++index;
 		}
+	}
+
+	void Instance::doInitialisePhysicalDevices()
+	{
+		m_physicalDevices.resize( m_adapters.size() );
+		uint32_t index = 0u;
+
+		for ( auto adapter : m_adapters )
+		{
+			allocate( m_physicalDevices[index]
+				, nullptr
+				, get( this )
+				, std::move( adapter ) );
+			++index;
+		}
+
 	}
 }

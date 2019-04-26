@@ -18,7 +18,17 @@ namespace ashes::d3d11
 		Buffer( VkDevice device
 			, VkBufferCreateInfo createInfo );
 		~Buffer();
+		VkResult bindMemory( VkDeviceMemory memory
+			, VkDeviceSize memoryOffset );
+
 		VkMemoryRequirements getMemoryRequirements()const;
+		bool isMapped()const;
+
+		inline VkDeviceMemory getMemory()const
+		{
+			assert( m_memory != VK_NULL_HANDLE );
+			return m_memory;
+		}
 
 		inline ID3D11Buffer * getBuffer()const
 		{
@@ -30,9 +40,17 @@ namespace ashes::d3d11
 			return m_unorderedAccessView;
 		}
 
-	private:
-		void doBindMemory();
+		inline VkBufferUsageFlags getUsage()const
+		{
+			return m_createInfo.usage;
+		}
 
+		inline VkDeviceSize getSize()const
+		{
+			return m_createInfo.size;
+		}
+
+	private:
 	private:
 		VkDevice m_device;
 		VkBufferCreateInfo m_createInfo;

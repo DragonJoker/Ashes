@@ -4,9 +4,9 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
+#include "renderer/D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
-#include "D3D11Renderer/Shader/D3D11ShaderDesc.hpp"
+#include "renderer/D3D11Renderer/Shader/D3D11ShaderDesc.hpp"
 
 namespace ashes::d3d11
 {

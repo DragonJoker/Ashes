@@ -6,21 +6,23 @@ See LICENSE file in root folder.
 
 #include "Buffer/D3D11Buffer.hpp"
 
+#include "ashesd3d11_api.hpp"
+
 namespace ashes::d3d11
 {
 	DrawIndirectCommand::DrawIndirectCommand( VkDevice device
 		, VkBuffer buffer
-		, uint32_t offset
+		, VkDeviceSize offset
 		, uint32_t drawCount
 		, uint32_t stride
 		, VkPrimitiveTopology mode
 		, VbosBindingArray const & vbos )
 		: CommandBase{ device }
-		, m_buffer{ static_cast< Buffer const & >( buffer ) }
-		, m_offset{ offset }
+		, m_buffer{ buffer }
+		, m_offset{ UINT( offset ) }
 		, m_drawCount{ drawCount }
 		, m_stride{ stride }
-		, m_mode{ convert( mode ) }
+		, m_mode{ getPrimitiveTopology( mode ) }
 		, m_vbos{ vbos }
 	{
 	}
@@ -38,7 +40,7 @@ namespace ashes::d3d11
 				, binding.offsets.data() );
 		}
 
-		context.context->DrawInstancedIndirect( m_buffer.getBuffer()
+		context.context->DrawInstancedIndirect( get( m_buffer )->getBuffer()
 			, m_offset );
 	}
 

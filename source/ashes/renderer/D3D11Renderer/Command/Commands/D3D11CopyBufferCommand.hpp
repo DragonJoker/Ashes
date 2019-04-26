@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
-
-#include <Ashes/Miscellaneous/BufferCopy.hpp>
+#include "renderer/D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
 namespace ashes::d3d11
 {
@@ -29,7 +27,7 @@ namespace ashes::d3d11
 		*	Le tampon destination.
 		*/
 		CopyBufferCommand( VkDevice device
-			, ashes::BufferCopy const & copyInfo
+			, VkBufferCopy const & copyInfo
 			, VkBuffer src
 			, VkBuffer dst );
 
@@ -37,8 +35,8 @@ namespace ashes::d3d11
 		CommandPtr clone()const;
 
 	private:
-		Buffer const & m_src;
-		Buffer const & m_dst;
+		VkBuffer m_src;
+		VkBuffer m_dst;
 		UINT m_dstOffset;
 		D3D11_BOX m_srcBox;
 	};

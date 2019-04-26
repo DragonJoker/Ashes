@@ -111,6 +111,16 @@ typedef uint8_t UINT8;
 #include <string>
 #include <vector>
 
+#if defined( _WIN32 ) && !defined( D3D11Renderer_STATIC )
+#	ifdef D3D11Renderer_EXPORTS
+#		define D3D11Renderer_API __declspec( dllexport )
+#	else
+#		define D3D11Renderer_API __declspec( dllimport )
+#	endif
+#else
+#	define D3D11Renderer_API
+#endif
+
 #ifdef min
 #	undef min
 #	undef max
@@ -242,6 +252,15 @@ namespace ashes::d3d11
 	class VertexBufferBase;
 	class VertexLayout;
 
+	class SamplerYcbcrConversion;
+	class DescriptorUpdateTemplate;
+	class DisplayKHR;
+	class DisplayModeKHR;
+	class ObjectTableNVX;
+	class IndirectCommandsLayoutNVX;
+	class DebugUtilsMessengerEXT;
+	class ValidationCacheEXT;
+
 	using AttributeArray = std::vector< Attribute >;
 
 	using CommandPtr = std::unique_ptr< CommandBase >;
@@ -251,8 +270,6 @@ namespace ashes::d3d11
 	using RenderSubpassPtr = std::unique_ptr< RenderSubpass >;
 	using SurfacePtr = std::unique_ptr< Surface >;
 	using ImageViewPtr = std::unique_ptr< ImageView >;
-
-	using RenderSubpassPtrArray = std::vector< RenderSubpassPtr >;
 
 	using BufferCRef = std::reference_wrapper< Buffer const >;
 	using CommandBufferCRef = std::reference_wrapper< CommandBuffer const >;
@@ -265,18 +282,6 @@ namespace ashes::d3d11
 	using ImageViewCRef = std::reference_wrapper< ImageView const >;
 	using VertexLayoutCRef = std::reference_wrapper< VertexLayout const >;
 	using VertexBufferCRef = std::reference_wrapper< VertexBufferBase const >;
-
-	using BufferCRefArray = std::vector< BufferCRef >;
-	using CommandBufferCRefArray = std::vector< CommandBufferCRef >;
-	using DescriptorSetCRefArray = std::vector< DescriptorSetCRef >;
-	using DescriptorSetLayoutCRefArray = std::vector< DescriptorSetLayoutCRef >;
-	using RenderSubpassCRefArray = std::vector< RenderSubpassCRef >;
-	using SemaphoreCRefArray = std::vector< SemaphoreCRef >;
-	using SwapChainCRefArray = std::vector< SwapChainCRef >;
-	using TextureCRefArray = std::vector< TextureCRef >;
-	using ImageViewCRefArray = std::vector< ImageViewCRef >;
-	using VertexLayoutCRefArray = std::vector< VertexLayoutCRef >;
-	using VertexBufferCRefArray = std::vector< VertexBufferCRef >;
 
 	using CommandArray = std::vector< CommandPtr >;
 
@@ -313,9 +318,10 @@ namespace ashes::d3d11
 
 	struct PushConstantsBuffer
 	{
-		std::shared_ptr< Buffer > ubo;
+		VkBuffer ubo;
 		UINT location;
 		PushConstantsDesc data;
+		VkDeviceMemory memory;
 	};
 
 	struct VbosBinding
@@ -326,14 +332,15 @@ namespace ashes::d3d11
 		std::vector< UINT > strides;
 	};
 
-	struct WriteDescriptorSetBinding
-	{
-		VkWriteDescriptorSet write;
-		VkDescriptorSetLayoutBinding binding;
-	};
-
 	using VbosBindingArray = std::vector< VbosBinding >;
-	using WriteDescriptorSetBindingArray = std::vector< WriteDescriptorSetBinding >;
+
+	struct LayoutBindingWrites
+	{
+		VkDescriptorSetLayoutBinding binding;
+		VkWriteDescriptorSetArray writes;
+	};
+	using LayoutBindingWritesArray = std::vector< LayoutBindingWrites * >;
+	using LayoutBindingWritesMap = std::map< uint32_t, LayoutBindingWrites >;
 
 	std::string getLastErrorText();
 	bool checkError( VkDevice device, HRESULT hResult, char const * const text );

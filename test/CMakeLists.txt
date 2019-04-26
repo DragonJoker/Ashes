@@ -77,7 +77,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 	if ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/Vulkan/CMakeLists.txt )
 		set( Vulkan_FOUND ON )
 		set( Vulkan_INCLUDE_DIR ${Vulkan_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/include )
-		set( Vulkan_LIBRARY ashes ${ENABLED_RENDERERS} )
+		set( Vulkan_LIBRARY ashes )
 		add_subdirectory( Vulkan )
 		set(EXAMPLES
 			bloom

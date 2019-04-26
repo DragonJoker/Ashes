@@ -9,30 +9,29 @@ See LICENSE file in root folder.
 #include "RenderPass/D3D11FrameBuffer.hpp"
 #include "RenderPass/D3D11RenderPass.hpp"
 
-#include <Ashes/RenderPass/ClearValue.hpp>
-#include <Ashes/RenderPass/AttachmentDescription.hpp>
+#include "ashesd3d11_api.hpp"
 
 namespace ashes::d3d11
 {
 	BeginSubpassCommand::BeginSubpassCommand( VkDevice device
-		, ashes::RenderPass const & renderPass
-		, ashes::FrameBuffer const & frameBuffer
-		, ashes::SubpassDescription const & subpass )
+		, VkRenderPass renderPass
+		, VkFramebuffer frameBuffer
+		, VkSubpassDescription const & subpass )
 		: CommandBase{ device }
-		, m_renderPass{ static_cast< RenderPass const & >( renderPass ) }
+		, m_renderPass{ renderPass }
 		, m_subpass{ subpass }
-		, m_frameBuffer{ static_cast< FrameBuffer const & >( frameBuffer ) }
+		, m_frameBuffer{ frameBuffer }
 	{
-		auto & allViews = m_frameBuffer.getAllViews();
+		auto & allViews = get( m_frameBuffer )->getAllViews();
 
-		for ( auto & attach : m_subpass.colorAttachments )
+		for ( auto & attach : makeArrayView( m_subpass.pColorAttachments, subpass.colorAttachmentCount ) )
 		{
 			m_attaches.push_back( reinterpret_cast< ID3D11RenderTargetView * >( allViews[attach.attachment] ) );
 		}
 
-		if ( bool( subpass.depthStencilAttachment ) )
+		if ( subpass.pDepthStencilAttachment )
 		{
-			m_depthAttach = m_frameBuffer.getDSView();
+			m_depthAttach = get( m_frameBuffer )->getDSView();
 		}
 	}
 
@@ -48,18 +47,21 @@ namespace ashes::d3d11
 		{
 			std::vector< ID3D11UnorderedAccessView * > uavs;
 
-			for ( auto & write : context.uavs )
+			for ( auto & writes : context.uavs )
 			{
-				for ( auto & uav : write.write.bufferInfo )
+				for ( auto & write : writes->writes )
 				{
-					auto & buffer = static_cast< Buffer const & >( uav.buffer.get() );
-					uavs.push_back( buffer.getUnorderedAccessView() );
-				}
+					for ( auto & uav : makeArrayView( write.pBufferInfo, write.descriptorCount ) )
+					{
+						auto buffer = uav.buffer;
+						uavs.push_back( get( buffer )->getUnorderedAccessView() );
+					}
 
-				for ( auto & uav : write.write.imageInfo )
-				{
-					auto & view = static_cast< ImageView const & >( uav.imageView.value().get() );
-					uavs.push_back( view.getUnorderedAccessView() );
+					for ( auto & uav : makeArrayView( write.pImageInfo, write.descriptorCount ) )
+					{
+						auto view = uav.imageView;
+						uavs.push_back( get( view )->getUnorderedAccessView() );
+					}
 				}
 			}
 

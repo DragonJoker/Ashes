@@ -86,20 +86,15 @@ add_target_precompiled_header_ex( ${PROJECT_NAME}
 )
 
 target_link_libraries( ${PROJECT_NAME}
-	Ashes
 	${BinLibraries}
-	common
-	ashes
-	RendererCommon
+	${RendererDependencies}
 	d3d11
 	dxgi
 	d3dcompiler
 )
 
 add_dependencies( ${PROJECT_NAME}
-	common
-	ashes
-	RendererCommon
+	${RendererDependencies}
 )
 
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Buffer "Buffer" )

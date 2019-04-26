@@ -3,7 +3,7 @@
 #include "Core/D3D11Instance.hpp"
 #include "Core/D3D11Device.hpp"
 
-#include <renderer/RendererCommon/Helper/Exception.hpp>
+#include <ashes/common/Exception.hpp>
 
 #include <iostream>
 
@@ -47,6 +47,8 @@ DEFINE_GUID( IID_ID3D11Device, 0xdb6f6ddb, 0xac77, 0x4e88, 0x82, 0x53, 0x81, 0x9
 DEFINE_GUID( IID_IDXGIFactory, 0x7b7166ec, 0x21c7, 0x44ae, 0xb2, 0x1a, 0xc9, 0xae, 0x32, 0x1a, 0xe3, 0x69 );
 #endif
 
+#include "ashesd3d11_api.hpp"
+
 namespace ashes::d3d11
 {
 	std::string getLastErrorText()
@@ -71,7 +73,7 @@ namespace ashes::d3d11
 
 	bool checkError( VkDevice device, HRESULT hResult, char const * const text )
 	{
-		return !device.onCheckHResultCommand( hResult, text );
+		return !get( device )->onCheckHResultCommand( hResult, text );
 	}
 
 	std::string toString( std::wstring const & text )
@@ -125,7 +127,7 @@ namespace ashes::d3d11
 		// Recherche parmi les types de m�moire la premi�re ayant les propri�t�s voulues.
 		uint32_t i{ 0 };
 
-		while ( i < memoryProperties.memoryTypes.size() && !found )
+		while ( i < memoryProperties.memoryTypeCount && !found )
 		{
 			if ( ( typeBits & 1 ) == 1 )
 			{

@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
+#include "renderer/D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
 namespace ashes::d3d11
 {
@@ -29,17 +29,17 @@ namespace ashes::d3d11
 		*	Indique la manière dont les commandes de la première sous-passe sont fournies.
 		*/
 		BeginSubpassCommand( VkDevice device
-			, ashes::RenderPass const & renderPass
-			, ashes::FrameBuffer const & frameBuffer
-			, ashes::SubpassDescription const & subpass );
+			, VkRenderPass renderPass
+			, VkFramebuffer frameBuffer
+			, VkSubpassDescription const & subpass );
 
 		void apply( Context const & context )const;
 		CommandPtr clone()const;
 
 	private:
-		RenderPass const & m_renderPass;
-		ashes::SubpassDescription const & m_subpass;
-		FrameBuffer const & m_frameBuffer;
+		VkRenderPass m_renderPass;
+		VkSubpassDescription const & m_subpass;
+		VkFramebuffer m_frameBuffer;
 		std::vector< ID3D11RenderTargetView * > m_attaches;
 		ID3D11DepthStencilView * m_depthAttach{ nullptr };
 	};

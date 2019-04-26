@@ -4,10 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
-
-#include <Ashes/Image/ImageView.hpp>
-#include <Ashes/Miscellaneous/BufferImageCopy.hpp>
+#include "renderer/D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
 namespace ashes::d3d11
 {
@@ -30,7 +27,7 @@ namespace ashes::d3d11
 		*	Le tampon destination.
 		*/
 		CopyImageToBufferCommand( VkDevice device
-			, ashes::VkBufferImageCopyArray const & copyInfo
+			, VkBufferImageCopyArray const & copyInfo
 			, VkImage src
 			, VkBuffer dst );
 
@@ -39,28 +36,29 @@ namespace ashes::d3d11
 
 	private:
 		void applyOne( Context const & context
-			, ashes::BufferImageCopy const & copyInfo
+			, VkBufferImageCopy const & copyInfo
 			, VkSubresourceLayout const & srcLayout
 			, D3D11_BOX const & dstBox )const;
-		void doMapCopy( ashes::BufferImageCopy const & copyInfo
+		void doMapCopy( VkBufferImageCopy const & copyInfo
 			, VkSubresourceLayout const & srcLayout
 			, D3D11_BOX const & dstBox
-			, VkImage src
-			, VkBuffer dst )const;
+			, VkFormat format
+			, VkDeviceMemory src
+			, VkDeviceMemory dst )const;
 		void doCopyToStaging( Context const & context
-			, ashes::BufferImageCopy const & copyInfo
+			, VkBufferImageCopy const & copyInfo
 			, VkImage src
 			, VkImage staging )const;
 		void doCopyFromStaging( Context const & context
-			, ashes::BufferImageCopy const & copyInfo
+			, VkBufferImageCopy const & copyInfo
 			, VkBuffer staging
 			, VkBuffer dst
 			, D3D11_BOX const & dstBox )const;
 
 	private:
-		Image const & m_src;
-		Buffer const & m_dst;
-		ashes::VkBufferImageCopyArray m_copyInfo;
+		VkImage m_src;
+		VkBuffer m_dst;
+		VkBufferImageCopyArray m_copyInfo;
 		DXGI_FORMAT m_format;
 		std::vector< VkSubresourceLayout > m_srcLayouts;
 		std::vector< D3D11_BOX > m_dstBoxes;

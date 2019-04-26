@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
-
-#include <Ashes/Miscellaneous/ImageCopy.hpp>
+#include "renderer/D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
 namespace ashes::d3d11
 {
@@ -29,7 +27,7 @@ namespace ashes::d3d11
 		*	L'image destination.
 		*/
 		CopyImageCommand( VkDevice device
-			, ashes::ImageCopy const & copyInfo
+			, VkImageCopy const & copyInfo
 			, VkImage src
 			, VkImage dst );
 
@@ -37,9 +35,9 @@ namespace ashes::d3d11
 		CommandPtr clone()const;
 
 	private:
-		Image const & m_src;
-		Image const & m_dst;
-		ashes::ImageCopy m_copyInfo;
+		VkImage m_src;
+		VkImage m_dst;
+		VkImageCopy m_copyInfo;
 		D3D11_BOX m_srcBox;
 		UINT m_srcSubresource;
 		UINT m_dstSubresource;

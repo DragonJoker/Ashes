@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
+#include "renderer/D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
 namespace ashes::d3d11
 {
@@ -17,9 +17,9 @@ namespace ashes::d3d11
 	{
 	public:
 		BeginQueryCommand( VkDevice device
-			, ashes::QueryPool const & pool
+			, VkQueryPool pool
 			, uint32_t query
-			, ashes::QueryControlFlags flags );
+			, VkQueryControlFlags flags );
 		void apply( Context const & context )const;
 		CommandPtr clone()const;
 

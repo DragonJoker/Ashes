@@ -58,6 +58,11 @@ else ()
 endif ()
 
 if ( ASHES_BUILD_PLUGINS )
+	set( RendererDependencies
+		common
+		ashes
+		RendererCommon
+	)
 	add_subdirectory( RendererCommon )
 
 	if ( ASHES_BUILD_OGL3 )

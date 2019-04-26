@@ -31,7 +31,9 @@ See LICENSE file in root folder.
 #include "Sync/D3D11Fence.hpp"
 #include "Sync/D3D11Semaphore.hpp"
 
-#include <renderer/RendererCommon/Helper/Exception.hpp>
+#include <ashes/common/Exception.hpp>
+
+#include <iostream>
 
 namespace ashes::d3d11
 {
@@ -130,6 +132,7 @@ namespace ashes::d3d11
 		}
 		catch ( Exception & exc )
 		{
+			std::cerr << exc.what() << std::endl;
 			result = exc.getResult();
 		}
 		catch ( std::exception & exc )
@@ -138,6 +141,7 @@ namespace ashes::d3d11
 		}
 		catch ( ... )
 		{
+			std::cerr << "Unknown error" << std::endl;
 		}
 
 		return result;

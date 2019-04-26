@@ -17,7 +17,7 @@ namespace ashes::d3d11
 			INT( state.depthBiasConstantFactor ),
 			state.depthBiasClamp,
 			state.depthBiasSlopeFactor,
-			state.depthClampEnable,
+			BOOL( state.depthClampEnable ),
 			FALSE,
 			ms.rasterizationSamples != VK_SAMPLE_COUNT_1_BIT,
 			FALSE,

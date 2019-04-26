@@ -6,22 +6,24 @@ See LICENSE file in root folder.
 
 #include "Buffer/D3D11Buffer.hpp"
 
+#include "ashesd3d11_api.hpp"
+
 namespace ashes::d3d11
 {
 	BindIndexBufferCommand::BindIndexBufferCommand( VkDevice device
-		, Buffer const & ibo
+		, VkBuffer ibo
 		, uint64_t offset
 		, VkIndexType indexType )
 		: CommandBase{ device }
 		, m_ibo{ ibo }
 		, m_offset{ UINT( offset ) }
-		, m_indexType{ convert( indexType ) }
+		, m_indexType{ getIndexFormat( indexType ) }
 	{
 	}
 
 	void BindIndexBufferCommand::apply( Context const & context )const
 	{
-		context.context->IASetIndexBuffer( m_ibo.getBuffer()
+		context.context->IASetIndexBuffer( get( m_ibo )->getBuffer()
 			, m_indexType
 			, m_offset );
 	}

@@ -18,7 +18,7 @@ namespace ashes::d3d11
 		, m_instCount{ instCount }
 		, m_firstVertex{ firstVertex }
 		, m_firstInstance{ firstInstance }
-		, m_mode{ convert( mode ) }
+		, m_mode{ getPrimitiveTopology( mode ) }
 		, m_vbos{ vbos }
 	{
 	}

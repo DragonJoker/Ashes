@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/D3D11RendererPrerequisites.hpp"
-
-#include "D3D11Renderer/Core/D3D11Device.hpp"
+#include "renderer/D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
 namespace ashes::d3d11
 {
@@ -39,16 +37,11 @@ namespace ashes::d3d11
 		VkDevice device;
 		ID3D11DeviceContext * context;
 		ID3D11DeviceContext1 * context1;
-		WriteDescriptorSetBindingArray uavs;
+		LayoutBindingWritesArray uavs;
 		D3D_FEATURE_LEVEL featureLevel;
 
 	private:
-		static inline ID3D11DeviceContext * getImmediateContext( VkDevice device )
-		{
-			ID3D11DeviceContext * result;
-			device.getDevice()->GetImmediateContext( &result );
-			return result;
-		}
+		static ID3D11DeviceContext * getImmediateContext( VkDevice device );
 	};
 
 	class CommandBase

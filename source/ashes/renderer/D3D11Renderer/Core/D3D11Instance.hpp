@@ -6,7 +6,7 @@
 */
 #pragma once
 
-#include "D3D11Renderer/Core/D3D11Layer.hpp"
+#include "renderer/D3D11Renderer/Core/D3D11Layer.hpp"
 
 #include <array>
 
@@ -64,11 +64,18 @@ namespace ashes::d3d11
 		void registerLayer( Layer * layer )const;
 		void unregisterLayer( Layer * layer )const;
 		bool onCopyToImageCommand( VkCommandBuffer cmd
-			, ashes::VkBufferImageCopyArray const & copyInfo
+			, VkBufferImageCopyArray const & copyInfo
 			, VkBuffer src
 			, VkImage dst )const;
 		bool onCheckHResultCommand( HRESULT hresult
 			, std::string message )const;
+		void onReportMessage( VkDebugReportFlagsEXT flags
+			, VkDebugReportObjectTypeEXT objectType
+			, uint64_t object
+			, size_t location
+			, int32_t messageCode
+			, const char * pLayerPrefix
+			, const char * pMessage );
 		/**@}*/
 
 		inline IDXGIFactory * getDXGIFactory()const
@@ -84,6 +91,7 @@ namespace ashes::d3d11
 	private:
 		void doCreateDXGIFactory();
 		void doLoadAdapters();
+		void doInitialisePhysicalDevices();
 
 	private:
 		AshPluginFeatures m_features;

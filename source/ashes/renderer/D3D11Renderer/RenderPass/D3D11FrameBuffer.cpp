@@ -8,74 +8,63 @@ See LICENSE file in root folder.
 #include "Image/D3D11ImageView.hpp"
 #include "RenderPass/D3D11RenderPass.hpp"
 
+#include "ashesd3d11_api.hpp"
+
 namespace ashes::d3d11
 {
 	namespace
 	{
-		ImageViewCRefArray convert( ashes::ImageViewPtrArray const & attachs )
-		{
-			ImageViewCRefArray result;
-			result.reserve( attachs.size() );
-
-			for ( auto & attach : attachs )
-			{
-				result.emplace_back( static_cast< ImageView const & >( attach.getView() ) );
-			}
-
-			return result;
-		}
-
-		std::vector< ID3D11View * > getAllViews( ImageViewCRefArray const & views )
+		std::vector< ID3D11View * > getAllViews( VkImageViewArray const & views )
 		{
 			std::vector< ID3D11View * > result;
 
 			for ( auto & view : views )
 			{
-				if ( isDepthOrStencilFormat( view.get().getFormat() ) )
+				if ( isDepthOrStencilFormat( get( view )->getFormat() ) )
 				{
-					result.push_back( view.get().getDepthStencilView() );
+					result.push_back( get( view )->getDepthStencilView() );
 				}
 				else
 				{
-					result.push_back( view.get().getRenderTargetView() );
+					result.push_back( get( view )->getRenderTargetView() );
 				}
 			}
 
 			return result;
 		}
 
-		std::vector< ID3D11RenderTargetView * > getRenderTargetViews( ImageViewCRefArray const & views )
+		std::vector< ID3D11RenderTargetView * > getRenderTargetViews( VkImageViewArray const & views )
 		{
 			std::vector< ID3D11RenderTargetView * > result;
 
 			for ( auto & view : views )
 			{
-				if ( !isDepthOrStencilFormat( view.get().getFormat() ) )
+				if ( !isDepthOrStencilFormat( get( view )->getFormat() ) )
 				{
-					result.push_back( view.get().getRenderTargetView() );
+					result.push_back( get( view )->getRenderTargetView() );
 				}
 			}
 
 			return result;
 		}
 
-		ImageView const * doGetDepthStencilView( ImageViewCRefArray const & views )
+		ImageView const * doGetDepthStencilView( VkImageViewArray const & views )
 		{
 			ImageView const * result{ nullptr };
 
 			for ( auto & view : views )
 			{
 				if ( !result
-					&& isDepthOrStencilFormat( view.get().getFormat() ) )
+					&& isDepthOrStencilFormat( get( view )->getFormat() ) )
 				{
-					result = &view.get();
+					result = get( view );
 				}
 			}
 
 			return result;
 		}
 
-		ID3D11DepthStencilView * getDepthStencilView( ImageViewCRefArray const & views )
+		ID3D11DepthStencilView * getDepthStencilView( VkImageViewArray const & views )
 		{
 			ID3D11DepthStencilView * result{ nullptr };
 			auto view = doGetDepthStencilView( views );
@@ -88,7 +77,7 @@ namespace ashes::d3d11
 			return result;
 		}
 
-		UINT getDepthStencilFlags( ImageViewCRefArray const & views )
+		UINT getDepthStencilFlags( VkImageViewArray const & views )
 		{
 			UINT result{ 0u };
 			auto view = doGetDepthStencilView( views );
@@ -111,13 +100,11 @@ namespace ashes::d3d11
 	}
 
 	Framebuffer::Framebuffer( VkDevice device
-		, RenderPass const & renderPass
-		, VkExtent2D const & dimensions
-		, ashes::ImageViewPtrArray attachments )
-		: ashes::FrameBuffer{ renderPass, dimensions, std::move( attachments ) }
-		, m_device{ device }
-		, m_views{ convert( m_attachments ) }
-		, m_dimensions{ dimensions }
+		, VkFramebufferCreateInfo createInfo )
+		: m_device{ device }
+		, m_createInfo{ std::move( createInfo ) }
+		, m_views{ m_createInfo.pAttachments, m_createInfo.pAttachments + m_createInfo.attachmentCount }
+		, m_dimensions{ m_createInfo.width, m_createInfo.height }
 		, m_allViews{ ashes::d3d11::getAllViews( m_views ) }
 		, m_rtViews{ getRenderTargetViews( m_views ) }
 		, m_dsView{ getDepthStencilView( m_views ) }

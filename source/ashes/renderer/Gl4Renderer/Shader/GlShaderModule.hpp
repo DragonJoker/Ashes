@@ -13,6 +13,7 @@ namespace ashes::gl4
 	public:
 		ShaderModule( VkDevice device
 			, VkShaderModuleCreateInfo createInfo );
+
 		GLuint compile( VkPipelineShaderStageCreateInfo const & state
 			, bool isRtot )const;
 

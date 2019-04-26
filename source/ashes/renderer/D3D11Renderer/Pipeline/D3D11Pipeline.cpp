@@ -4,10 +4,7 @@
 #include "Pipeline/D3D11VertexInputState.hpp"
 #include "Shader/D3D11ShaderModule.hpp"
 
-#include <Ashes/Buffer/PushConstantsBuffer.hpp>
-#include <Ashes/Buffer/UniformBuffer.hpp>
-#include <Ashes/Miscellaneous/MemoryRequirements.hpp>
-#include <Ashes/Pipeline/SpecialisationInfo.hpp>
+#include "ashesd3d11_api.hpp"
 
 namespace ashes::d3d11
 {
@@ -28,7 +25,7 @@ namespace ashes::d3d11
 			seed = static_cast< std::size_t >( b * kMul );
 		}
 
-		size_t doHash( ashes::VertexInputAttributeDescription const & desc )
+		size_t doHash( VkVertexInputAttributeDescription const & desc )
 		{
 			size_t result = 0u;
 			doHashCombine( result, desc.binding );
@@ -38,7 +35,7 @@ namespace ashes::d3d11
 			return result;
 		}
 
-		size_t doHash( ashes::VertexInputBindingDescription const & desc )
+		size_t doHash( VkVertexInputBindingDescription const & desc )
 		{
 			size_t result = 0u;
 			doHashCombine( result, desc.binding );
@@ -47,16 +44,16 @@ namespace ashes::d3d11
 			return result;
 		}
 
-		size_t doHash( ashes::VertexInputState const & state )
+		size_t doHash( VkPipelineVertexInputStateCreateInfo const & state )
 		{
 			size_t result = 0u;
 
-			for ( auto & desc : state.vertexAttributeDescriptions )
+			for ( auto & desc : makeArrayView( state.pVertexAttributeDescriptions, state.vertexAttributeDescriptionCount ) )
 			{
 				doHashCombine( result, doHash( desc ) );
 			}
 
-			for ( auto & desc : state.vertexBindingDescriptions )
+			for ( auto & desc : makeArrayView( state.pVertexBindingDescriptions, state.vertexBindingDescriptionCount ) )
 			{
 				doHashCombine( result, doHash( desc ) );
 			}
@@ -66,20 +63,28 @@ namespace ashes::d3d11
 	}
 
 	Pipeline::Pipeline( VkDevice device
-		, ashes::PipelineLayout const & layout
-		, ashes::GraphicsPipelineCreateInfo createInfo )
-		: ashes::Pipeline{ device
-			, layout
-			, std::move( createInfo ) }
-		, m_scissors{ makeScissors( m_createInfo.viewportState.scissors.begin(), m_createInfo.viewportState.scissors.end() ) }
-		, m_viewports{ makeViewports( m_createInfo.viewportState.viewports.begin(), m_createInfo.viewportState.viewports.end() ) }
-		, m_vertexInputStateHash{ doHash( m_createInfo.vertexInputState ) }
+		, VkGraphicsPipelineCreateInfo createInfo )
+		: m_device{ device }
+		, m_layout{ createInfo.layout }
+		, m_graphicsCreateInfo{ std::move( createInfo ) }
+		, m_scissors{ makeScissors( m_graphicsCreateInfo.pViewportState->pScissors, m_graphicsCreateInfo.pViewportState->scissorCount ) }
+		, m_viewports{ makeViewports( m_graphicsCreateInfo.pViewportState->pViewports, m_graphicsCreateInfo.pViewportState->viewportCount ) }
+		, m_vertexInputStateHash{ doHash( *m_graphicsCreateInfo.pVertexInputState ) }
 	{
 		doCreateBlendState( device );
 		doCreateRasterizerState( device );
 		doCreateDepthStencilState( device );
-		doCompileProgram( device );
+		doCompileProgram( device, { m_graphicsCreateInfo.pStages, m_graphicsCreateInfo.pStages + m_graphicsCreateInfo.stageCount } );
 		doCreateInputLayout( device );
+	}
+
+	Pipeline::Pipeline( VkDevice device
+		, VkComputePipelineCreateInfo createInfo )
+		: m_device{ device }
+		, m_layout{ createInfo.layout }
+		, m_computeCreateInfo{ std::move( createInfo ) }
+	{
+		doCompileProgram( device, { createInfo.stage } );
 	}
 
 	PushConstantsBuffer Pipeline::findPushConstantBuffer( PushConstantsDesc const & pushConstants )const
@@ -145,8 +150,8 @@ namespace ashes::d3d11
 
 	void Pipeline::doCreateBlendState( VkDevice device )
 	{
-		auto d3ddevice = device.getDevice();
-		auto blendDesc = convert( m_createInfo.colourBlendState );
+		auto d3ddevice = get( device )->getDevice();
+		auto blendDesc = convert( *m_graphicsCreateInfo.pColorBlendState );
 		HRESULT hr = d3ddevice->CreateBlendState( &blendDesc, &m_bdState );
 
 		if ( !checkError( device, hr, "CreateBlendState" ) )
@@ -159,9 +164,9 @@ namespace ashes::d3d11
 
 	void Pipeline::doCreateRasterizerState( VkDevice device )
 	{
-		auto d3ddevice = device.getDevice();
-		auto rasterizerDesc = convert( m_createInfo.rasterisationState
-			, m_createInfo.multisampleState );
+		auto d3ddevice = get( device )->getDevice();
+		auto rasterizerDesc = convert( *m_graphicsCreateInfo.pRasterizationState
+			, *m_graphicsCreateInfo.pMultisampleState );
 		auto hr = d3ddevice->CreateRasterizerState( &rasterizerDesc, &m_rsState );
 
 		if ( !checkError( device, hr, "CreateRasterizerState" ) )
@@ -174,10 +179,10 @@ namespace ashes::d3d11
 
 	void Pipeline::doCreateDepthStencilState( VkDevice device )
 	{
-		if ( m_createInfo.depthStencilState )
+		if ( m_graphicsCreateInfo.pDepthStencilState )
 		{
-			auto d3ddevice = device.getDevice();
-			auto depthStencilDesc = convert( m_createInfo.depthStencilState.value() );
+			auto d3ddevice = get( device )->getDevice();
+			auto depthStencilDesc = convert( *m_graphicsCreateInfo.pDepthStencilState );
 			auto hr = d3ddevice->CreateDepthStencilState( &depthStencilDesc, &m_dsState );
 
 			if ( !checkError( device, hr, "CreateDepthStencilState" ) )
@@ -189,13 +194,14 @@ namespace ashes::d3d11
 		}
 	}
 
-	void Pipeline::doCompileProgram( VkDevice device )
+	void Pipeline::doCompileProgram( VkDevice device
+		, VkPipelineShaderStageCreateInfoArray const & stages )
 	{
-		for ( auto & state : m_createInfo.stages )
+		for ( auto & state : stages )
 		{
-			auto module = std::static_pointer_cast< ShaderModule >( state.module );
+			auto module = get( state.module );
 			m_programModules.push_back( module->compile( state ) );
-			m_programLayout.emplace( state.module->getStage(), m_programModules.back().getLayout() );
+			m_programLayout.emplace( state.stage, m_programModules.back().getLayout() );
 		}
 
 		for ( auto & shaderLayoutIt : m_programLayout )
@@ -204,21 +210,43 @@ namespace ashes::d3d11
 			{
 				PushConstantsBuffer pcb
 				{
-					std::make_shared< ashes::UniformBufferBase >( device
-						, 1u
-						, blockLayout.size
-						, 0u ),
+					VK_NULL_HANDLE,
 					blockLayout.binding,
-					{
-						shaderLayoutIt.first,
-						0u,
-						blockLayout.size
-					}
+				{
+					VkShaderStageFlags( shaderLayoutIt.first ),
+					0u,
+					blockLayout.size
+				},
+					VK_NULL_HANDLE,
 				};
-				auto requirements = pcb.ubo->getMemoryRequirements();
+				allocate( pcb.ubo
+					, nullptr
+					, device
+					, VkBufferCreateInfo
+					{
+						VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+						nullptr,
+						0u,
+						blockLayout.size,
+						VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+						VK_SHARING_MODE_EXCLUSIVE,
+						0u,
+						nullptr,
+					} );
+				auto requirements = get( pcb.ubo )->getMemoryRequirements();
 				auto deduced = deduceMemoryType( requirements.memoryTypeBits
 					, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
-				pcb.ubo->bindMemory( device.allocateMemory( { requirements.size, deduced } ) );
+				allocate( pcb.memory
+					, nullptr
+					, m_device
+					, VkMemoryAllocateInfo
+					{
+						VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+						nullptr,
+						requirements.size,
+						deduced
+					} );
+				get( pcb.ubo )->bindMemory( pcb.memory, 0u );
 				m_constantsPcbs.push_back( std::move( pcb ) );
 			}
 		}
@@ -232,8 +260,8 @@ namespace ashes::d3d11
 		{
 			auto compiled = it->second.module->getCompiled();
 			auto & inputLayout = it->second.inputLayout;
-			auto d3ddevice = device.getDevice();
-			auto inputDesc = convert( m_createInfo.vertexInputState, inputLayout );
+			auto d3ddevice = get( device )->getDevice();
+			auto inputDesc = convert( *m_graphicsCreateInfo.pVertexInputState, inputLayout );
 
 			if ( !inputDesc.empty() )
 			{
@@ -255,6 +283,12 @@ namespace ashes::d3d11
 
 	Pipeline::~Pipeline()
 	{
+		for ( auto & pcb : m_constantsPcbs )
+		{
+			deallocate( pcb.memory, nullptr );
+			deallocate( pcb.ubo, nullptr );
+		}
+
 		safeRelease( m_bdState );
 		safeRelease( m_rsState );
 		safeRelease( m_iaState );

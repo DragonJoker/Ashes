@@ -14,9 +14,26 @@ namespace ashes::d3d11
 		virtual bool onCopyToImageCommand( VkCommandBuffer cmd
 			, VkBufferImageCopyArray const & copyInfo
 			, VkBuffer src
-			, VkImage dst )const = 0;
+			, VkImage dst )const
+		{
+			return true;
+		}
+
 		virtual bool onCheckHResultCommand( HRESULT hresult
-			, std::string message )const = 0;
+			, std::string message )const
+		{
+			return true;
+		}
+
+		virtual void onReportMessage( VkDebugReportFlagsEXT flags
+			, VkDebugReportObjectTypeEXT objectType
+			, uint64_t object
+			, size_t location
+			, int32_t messageCode
+			, const char * pLayerPrefix
+			, const char * pMessage )const
+		{
+		}
 	};
 
 	class LayerException

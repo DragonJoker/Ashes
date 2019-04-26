@@ -159,19 +159,25 @@ namespace ashes
 	template< typename T >
 	ArrayView< T > makeArrayView( T * begin, uint32_t size )
 	{
-		return ArrayView< T >( begin, begin + size );
+		return begin 
+			? ArrayView< T >( begin, begin + size )
+			: ArrayView< T >( begin, begin );
 	}
 
 	template< typename T >
 	ArrayView< T > makeArrayView( T * begin, size_t size )
 	{
-		return ArrayView< T >( begin, begin + size );
+		return begin
+			? ArrayView< T >( begin, begin + size )
+			: ArrayView< T >( begin, begin );
 	}
 
 	template< typename T >
 	ArrayView< T > makeArrayView( T * begin, T * end )
 	{
-		return ArrayView< T >( begin, end );
+		return begin
+			? ArrayView< T >( begin, end )
+			: ArrayView< T >( begin, begin );
 	}
 
 	template< typename T, size_t N >

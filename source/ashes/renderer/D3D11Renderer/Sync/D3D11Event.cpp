@@ -9,7 +9,6 @@ See LICENSE file in root folder.
 namespace ashes::d3d11
 {
 	Event::Event( VkDevice device )
-		: ashes::Event{ device }
 	{
 	}
 
@@ -17,18 +16,20 @@ namespace ashes::d3d11
 	{
 	}
 
-	ashes::EventStatus Event::getStatus()const
+	VkResult Event::getStatus()const
 	{
 		return m_status;
 	}
 
-	void Event::set()const
+	VkResult Event::set()const
 	{
-		m_status = ashes::EventStatus::eSet;
+		m_status = VK_EVENT_SET;
+		return VK_SUCCESS;
 	}
 
-	void Event::reset()const
+	VkResult Event::reset()const
 	{
-		m_status = ashes::EventStatus::eReset;
+		m_status = VK_EVENT_RESET;
+		return VK_SUCCESS;
 	}
 }

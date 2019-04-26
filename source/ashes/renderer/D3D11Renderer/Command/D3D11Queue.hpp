@@ -4,14 +4,11 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include "D3D11Renderer/D3D11RendererPrerequisites.hpp"
-
-#include <Ashes/Command/Queue.hpp>
+#include "renderer/D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
 namespace ashes::d3d11
 {
 	class Queue
-		: public ashes::Queue
 	{
 	public:
 		Queue( VkDevice device
@@ -21,25 +18,29 @@ namespace ashes::d3d11
 		/**
 		*\copydoc		ashes::Queue::submit
 		*/ 
-		void submit( ashes::CommandBufferCRefArray const & commandBuffers
-			, ashes::SemaphoreCRefArray const & semaphoresToWait
-			, ashes::VkPipelineStageFlagsArray const & semaphoresStage
-			, ashes::SemaphoreCRefArray const & semaphoresToSignal
-			, ashes::Fence const * fence )const;
+		VkResult submit( VkSubmitInfoArray const & infos
+			, VkFence fence )const;
 		/**
-		*\copydoc		ashes::Queue::present
+		*\copydoc		Queue::present
 		*/
-		ashes::VkResultArray present( ashes::SwapChainCRefArray const & swapChains
-			, ashes::UInt32Array const & imagesIndex
-			, ashes::SemaphoreCRefArray const & semaphoresToWait )const;
+		VkResult present( VkPresentInfoKHR const & presentInfo )const;
 		/**
 		/**
 		*\copydoc		ashes::Queue::waitIdle
 		*/
-		void waitIdle()const;
+		VkResult waitIdle()const;
+
+	private:
+		VkResult doSubmit( VkCommandBufferArray const & commandBuffers
+			, VkSemaphoreArray const & semaphoresToWait
+			, VkPipelineStageFlagsArray const & semaphoresStage
+			, VkSemaphoreArray const & semaphoresToSignal
+			, VkFence fence )const;
 
 	private:
 		VkDevice m_device;
+		VkDeviceQueueCreateInfo m_createInfo;
+		uint32_t m_index;
 		ID3D11Query * m_waitIdleQuery{ nullptr };
 	};
 }

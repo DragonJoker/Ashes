@@ -38,8 +38,8 @@ namespace ashes::d3d11
 		, m_firstIndex{ firstIndex }
 		, m_vertexOffset{ vertexOffset }
 		, m_firstInstance{ firstInstance }
-		, m_mode{ convert( mode ) }
-		, m_type{ convert( type ) }
+		, m_mode{ getPrimitiveTopology( mode ) }
+		, m_type{ getIndexFormat( type ) }
 		, m_size{ getSize( type ) }
 		, m_vbos{ vbos }
 	{

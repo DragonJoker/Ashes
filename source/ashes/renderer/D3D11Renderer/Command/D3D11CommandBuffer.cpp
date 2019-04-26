@@ -56,55 +56,23 @@ See LICENSE file in root folder.
 #include "Command/Commands/D3D11WaitEventsCommand.hpp"
 #include "Command/Commands/D3D11WriteTimestampCommand.hpp"
 
-#include <Ashes/Buffer/PushConstantsBuffer.hpp>
-#include <Ashes/Buffer/StagingBuffer.hpp>
-#include <Ashes/Buffer/UniformBuffer.hpp>
-#include <Ashes/Buffer/VertexBuffer.hpp>
-#include <Ashes/RenderPass/FrameBufferAttachment.hpp>
+#include "ashesd3d11_api.hpp"
 
 #define AshesD3D_UseCommandsList 0
 
 namespace ashes::d3d11
 {
-	namespace
-	{
-		CommandBufferCRefArray convert( ashes::CommandBufferCRefArray const & commands )
-		{
-			CommandBufferCRefArray result;
-
-			for ( auto & command : commands )
-			{
-				result.emplace_back( static_cast< CommandBuffer const & >( command.get() ) );
-			}
-
-			return result;
-		}
-
-		DescriptorSetCRefArray convert( ashes::DescriptorSetCRefArray const & descriptors )
-		{
-			DescriptorSetCRefArray result;
-
-			for ( auto & descriptor : descriptors )
-			{
-				result.emplace_back( static_cast< DescriptorSet const & >( descriptor.get() ) );
-			}
-
-			return result;
-		}
-	}
-
 	CommandBuffer::CommandBuffer( VkDevice device
-		, CommandPool const & pool
+		, VkCommandPool commandPool
 		, bool primary )
-		: ashes::CommandBuffer{ device, pool, primary }
-		, m_device{ device }
-		, m_pool{ pool }
+		: m_device{ device }
 	{
+		get( commandPool )->registerCommands( get( this ) );
 #if AshesD3D_UseCommandsList
 
 		if ( !primary )
 		{
-			m_device.getDevice()->CreateDeferredContext( 0u, &m_deferredContext );
+			get( m_device )->getDevice()->CreateDeferredContext( 0u, &m_deferredContext );
 		}
 
 #endif
@@ -138,15 +106,16 @@ namespace ashes::d3d11
 		}
 	}
 
-	void CommandBuffer::begin( ashes::CommandBufferBeginInfo const & info )const
+	VkResult CommandBuffer::begin( VkCommandBufferBeginInfo info )const
 	{
 		m_commands.clear();
 		m_afterSubmitActions.clear();
 		m_state = State{};
-		m_state.beginInfo = info;
+		m_state.beginInfo = std::move( info );
+		return VK_SUCCESS;
 	}
 
-	void CommandBuffer::end()const
+	VkResult CommandBuffer::end()const
 	{
 		m_state.pushConstantBuffers.clear();
 
@@ -162,40 +131,43 @@ namespace ashes::d3d11
 		}
 
 #endif
+
+		return VK_SUCCESS;
 	}
 
-	void CommandBuffer::reset( ashes::CommandBufferResetFlags flags )const
+	VkResult CommandBuffer::reset( VkCommandBufferResetFlags flags )const
 	{
 		m_commands.clear();
+		return VK_SUCCESS;
 	}
 
-	void CommandBuffer::beginRenderPass( ashes::RenderPassBeginInfo const & beginInfo
-		, ashes::SubpassContents contents )const
+	void CommandBuffer::beginRenderPass( VkRenderPassBeginInfo beginInfo
+		, VkSubpassContents contents )const
 	{
-		m_state.currentRenderPass = static_cast< RenderPass const * >( beginInfo.renderPass );
+		m_state.currentRenderPass = beginInfo.renderPass;
 		m_state.currentFrameBuffer = beginInfo.framebuffer;
 		m_state.currentSubpassIndex = 0u;
-		m_state.currentSubpass = &m_state.currentRenderPass->getSubpasses()[m_state.currentSubpassIndex++];
+		m_state.currentSubpass = &get( m_state.currentRenderPass )->getSubpasses()[m_state.currentSubpassIndex++];
 		m_state.vbos.clear();
 		m_commands.emplace_back( std::make_unique< BeginRenderPassCommand >( m_device
-			, *m_state.currentRenderPass
-			, *m_state.currentFrameBuffer
-			, beginInfo.clearValues ) );
+			, m_state.currentRenderPass
+			, m_state.currentFrameBuffer
+			, VkClearValueArray{ beginInfo.pClearValues, beginInfo.pClearValues + beginInfo.clearValueCount } ) );
 		m_commands.emplace_back( std::make_unique< BeginSubpassCommand >( m_device
-			, *m_state.currentRenderPass
-			, *m_state.currentFrameBuffer
+			, m_state.currentRenderPass
+			, m_state.currentFrameBuffer
 			, *m_state.currentSubpass ) );
 	}
 
-	void CommandBuffer::nextSubpass( ashes::SubpassContents contents )const
+	void CommandBuffer::nextSubpass( VkSubpassContents contents )const
 	{
 		m_commands.emplace_back( std::make_unique< EndSubpassCommand >( m_device
-			, *m_state.currentFrameBuffer
+			, m_state.currentFrameBuffer
 			, *m_state.currentSubpass ) );
-		m_state.currentSubpass = &m_state.currentRenderPass->getSubpasses()[m_state.currentSubpassIndex++];
+		m_state.currentSubpass = &get( m_state.currentRenderPass )->getSubpasses()[m_state.currentSubpassIndex++];
 		m_commands.emplace_back( std::make_unique< BeginSubpassCommand >( m_device
-			, *m_state.currentRenderPass
-			, *m_state.currentFrameBuffer
+			, m_state.currentRenderPass
+			, m_state.currentFrameBuffer
 			, *m_state.currentSubpass ) );
 		m_state.vbos.clear();
 	}
@@ -203,15 +175,15 @@ namespace ashes::d3d11
 	void CommandBuffer::endRenderPass()const
 	{
 		m_commands.emplace_back( std::make_unique< EndSubpassCommand >( m_device
-			, *m_state.currentFrameBuffer
+			, m_state.currentFrameBuffer
 			, *m_state.currentSubpass ) );
 		m_commands.emplace_back( std::make_unique< EndRenderPassCommand >( m_device
-			, *m_state.currentRenderPass
-			, *m_state.currentFrameBuffer ) );
+			, m_state.currentRenderPass
+			, m_state.currentFrameBuffer ) );
 		m_state.vbos.clear();
 	}
 
-	void CommandBuffer::executeCommands( ashes::CommandBufferCRefArray const & commands )const
+	void CommandBuffer::executeCommands( VkCommandBufferArray commands )const
 	{
 #if AshesD3D_UseCommandsList
 
@@ -225,7 +197,7 @@ namespace ashes::d3d11
 
 		for ( auto & commandBuffer : commands )
 		{
-			auto & dxCommandBuffer = static_cast< CommandBuffer const & >( commandBuffer.get() );
+			auto & dxCommandBuffer = *get( commandBuffer );
 
 			for ( auto & command : dxCommandBuffer.getCommands() )
 			{
@@ -240,88 +212,92 @@ namespace ashes::d3d11
 #endif
 	}
 
-	void CommandBuffer::clear( ashes::ImageView const & image
-		, VkClearColorValue const & colour )const
+	void CommandBuffer::clearColorImage( VkImage image
+		, VkImageLayout imageLayout
+		, VkClearColorValue colour
+		, VkImageSubresourceRangeArray ranges )const
 	{
 		m_commands.emplace_back( std::make_unique< ClearColourCommand >( m_device
 			, image
+			, ranges
 			, colour ) );
 	}
 
-	void CommandBuffer::clear( ashes::ImageView const & image
-		, ashes::DepthStencilClearValue const & value )const
+	void CommandBuffer::clearDepthStencilImage( VkImage image
+		, VkImageLayout imageLayout
+		, VkClearDepthStencilValue value
+		, VkImageSubresourceRangeArray ranges )const
 	{
 		m_commands.emplace_back( std::make_unique< ClearDepthStencilCommand >( m_device
 			, image
+			, ranges
 			, value ) );
 	}
 
-	void CommandBuffer::clearAttachments( ashes::ClearAttachmentArray const & clearAttachments
-		, ashes::ClearRectArray const & clearRects )
+	void CommandBuffer::clearAttachments( VkClearAttachmentArray clearAttachments
+		, VkClearRectArray clearRects )
 	{
 		m_commands.emplace_back( std::make_unique< ClearAttachmentsCommand >( m_device
-			, *m_state.currentRenderPass
+			, m_state.currentRenderPass
 			, *m_state.currentSubpass
-			, static_cast< FrameBuffer const & >( *m_state.currentFrameBuffer )
+			, m_state.currentFrameBuffer
 			, clearAttachments
 			, clearRects ) );
 	}
 
-	void CommandBuffer::bindPipeline( ashes::Pipeline const & pipeline
-		, ashes::PipelineBindPoint bindingPoint )const
+	void CommandBuffer::bindPipeline( VkPipeline pipeline
+		, VkPipelineBindPoint bindingPoint )const
 	{
-		auto & dxpipeline = static_cast< Pipeline const & >( pipeline );
-
-		if ( m_state.currentPipeline )
+		if ( bindingPoint == VK_PIPELINE_BIND_POINT_GRAPHICS )
 		{
-			auto src = m_state.currentPipeline->getVertexInputStateHash();
-			auto dst = static_cast< Pipeline const & >( pipeline ).getVertexInputStateHash();
-
-			if ( src != dst )
+			if ( m_state.currentPipeline )
 			{
-				m_state.vbos.clear();
+				auto src = get( m_state.currentPipeline )->getVertexInputStateHash();
+				auto dst = get( pipeline )->getVertexInputStateHash();
+
+				if ( src != dst )
+				{
+					m_state.vbos.clear();
+				}
 			}
-		}
 
-		m_state.currentPipeline = &dxpipeline;
-		m_commands.emplace_back( std::make_unique< BindPipelineCommand >( m_device
-			, pipeline
-			, bindingPoint ) );
-		doAddAfterSubmitAction();
-
-		for ( auto & pcb : m_state.pushConstantBuffers )
-		{
-			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
-				, m_state.currentPipeline->findPushConstantBuffer( pcb.second ) ) );
+			m_state.currentPipeline = pipeline;
+			m_commands.emplace_back( std::make_unique< BindPipelineCommand >( m_device
+				, pipeline
+				, bindingPoint ) );
 			doAddAfterSubmitAction();
+
+			for ( auto & pcb : m_state.pushConstantBuffers )
+			{
+				m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
+					, get( m_state.currentPipeline )->findPushConstantBuffer( pcb.second ) ) );
+				doAddAfterSubmitAction();
+			}
+
+			m_state.pushConstantBuffers.clear();
 		}
-
-		m_state.pushConstantBuffers.clear();
-	}
-
-	void CommandBuffer::bindPipeline( ashes::ComputePipeline const & pipeline
-		, ashes::PipelineBindPoint bindingPoint )const
-	{
-		auto & dxpipeline = static_cast< ComputePipeline const & >( pipeline );
-		m_state.currentComputePipeline = &dxpipeline;
-		m_commands.emplace_back( std::make_unique< BindComputePipelineCommand >( m_device
-			, pipeline
-			, bindingPoint ) );
-		doAddAfterSubmitAction();
-
-		for ( auto & pcb : m_state.pushConstantBuffers )
+		else
 		{
-			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
-				, m_state.currentPipeline->findPushConstantBuffer( pcb.second ) ) );
+			m_state.currentComputePipeline = pipeline;
+			m_commands.emplace_back( std::make_unique< BindComputePipelineCommand >( m_device
+				, pipeline
+				, bindingPoint ) );
 			doAddAfterSubmitAction();
-		}
 
-		m_state.pushConstantBuffers.clear();
+			for ( auto & pcb : m_state.pushConstantBuffers )
+			{
+				m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
+					, get( m_state.currentPipeline )->findPushConstantBuffer( pcb.second ) ) );
+				doAddAfterSubmitAction();
+			}
+
+			m_state.pushConstantBuffers.clear();
+		}
 	}
 
 	void CommandBuffer::bindVertexBuffers( uint32_t firstBinding
-		, ashes::BufferCRefArray const & buffers
-		, ashes::UInt64Array offsets )const
+		, VkBufferArray buffers
+		, UInt64Array offsets )const
 	{
 		assert( buffers.size() == offsets.size() );
 		VbosBinding binding;
@@ -329,7 +305,7 @@ namespace ashes::d3d11
 
 		for ( auto i = 0u; i < buffers.size(); ++i )
 		{
-			binding.buffers.push_back( static_cast< Buffer const & >( buffers[i].get() ).getBuffer() );
+			binding.buffers.push_back( get( buffers[i] )->getBuffer() );
 			binding.offsets.push_back( UINT( offsets[i] ) );
 		}
 
@@ -342,22 +318,23 @@ namespace ashes::d3d11
 		, VkIndexType indexType )const
 	{
 		m_commands.emplace_back( std::make_unique< BindIndexBufferCommand >( m_device
-			, static_cast< Buffer const & >( buffer )
+			, static_cast< VkBuffer >( buffer )
 			, offset
 			, indexType ) );
 		doAddAfterSubmitAction();
 		m_state.indexType = indexType;
 	}
 
-	void CommandBuffer::bindDescriptorSets( ashes::DescriptorSetCRefArray const & descriptorSets
-		, ashes::PipelineLayout const & layout
-		, ashes::UInt32Array const & dynamicOffsets
-		, ashes::PipelineBindPoint bindingPoint )const
+	void CommandBuffer::bindDescriptorSets( VkPipelineBindPoint bindingPoint
+		, VkPipelineLayout layout
+		, uint32_t firstSet
+		, VkDescriptorSetArray descriptorSets
+		, UInt32Array dynamicOffsets )const
 	{
 		for ( auto & descriptorSet : descriptorSets )
 		{
 			m_commands.emplace_back( std::make_unique< BindDescriptorSetCommand >( m_device
-				, descriptorSet.get()
+				, descriptorSet
 				, layout
 				, dynamicOffsets
 				, bindingPoint ) );
@@ -366,13 +343,13 @@ namespace ashes::d3d11
 	}
 
 	void CommandBuffer::setViewport( uint32_t firstViewport
-		, ashes::VkViewportArray const & viewports )const
+		, VkViewportArray viewports )const
 	{
 		m_commands.emplace_back( std::make_unique< ViewportCommand >( m_device, firstViewport, viewports ) );
 	}
 
 	void CommandBuffer::setScissor( uint32_t firstScissor
-		, ashes::VkScissorArray const & scissors )const
+		, VkScissorArray scissors )const
 	{
 		m_commands.emplace_back( std::make_unique< ScissorCommand >( m_device, firstScissor, scissors ) );
 	}
@@ -384,16 +361,16 @@ namespace ashes::d3d11
 	{
 		doFillVboStrides();
 
-		if ( !m_state.currentPipeline->hasVertexLayout() )
+		if ( !get( m_state.currentPipeline )->hasVertexLayout() )
 		{
-			bindIndexBuffer( m_device.getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
+			bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
 			m_commands.emplace_back( std::make_unique< DrawIndexedCommand >( m_device
 				, vtxCount
 				, instCount
 				, 0u
 				, firstVertex
 				, firstInstance
-				, m_state.currentPipeline->getInputAssemblyState().topology
+				, get( m_state.currentPipeline )->getInputAssemblyState().topology
 				, m_state.indexType
 				, m_state.vbos ) );
 		}
@@ -404,7 +381,7 @@ namespace ashes::d3d11
 				, instCount
 				, firstVertex
 				, firstInstance
-				, m_state.currentPipeline->getInputAssemblyState().topology
+				, get( m_state.currentPipeline )->getInputAssemblyState().topology
 				, m_state.vbos ) );
 		}
 	}
@@ -415,9 +392,9 @@ namespace ashes::d3d11
 		, uint32_t vertexOffset
 		, uint32_t firstInstance )const
 	{
-		if ( !m_state.currentPipeline->hasVertexLayout() )
+		if ( !get( m_state.currentPipeline )->hasVertexLayout() )
 		{
-			bindIndexBuffer( m_device.getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
+			bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
 		}
 
 		doFillVboStrides();
@@ -427,13 +404,13 @@ namespace ashes::d3d11
 			, firstIndex
 			, vertexOffset
 			, firstInstance
-			, m_state.currentPipeline->getInputAssemblyState().topology
+			, get( m_state.currentPipeline )->getInputAssemblyState().topology
 			, m_state.indexType
 			, m_state.vbos ) );
 	}
 
 	void CommandBuffer::drawIndirect( VkBuffer buffer
-		, uint32_t offset
+		, VkDeviceSize offset
 		, uint32_t drawCount
 		, uint32_t stride )const
 	{
@@ -443,18 +420,18 @@ namespace ashes::d3d11
 			, offset
 			, drawCount
 			, stride
-			, m_state.currentPipeline->getInputAssemblyState().topology
+			, get( m_state.currentPipeline )->getInputAssemblyState().topology
 			, m_state.vbos ) );
 	}
 
 	void CommandBuffer::drawIndexedIndirect( VkBuffer buffer
-		, uint32_t offset
+		, VkDeviceSize offset
 		, uint32_t drawCount
 		, uint32_t stride )const
 	{
-		if ( !m_state.currentPipeline->hasVertexLayout() )
+		if ( !get( m_state.currentPipeline )->hasVertexLayout() )
 		{
-			bindIndexBuffer( m_device.getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
+			bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
 		}
 
 		doFillVboStrides();
@@ -463,61 +440,69 @@ namespace ashes::d3d11
 			, offset
 			, drawCount
 			, stride
-			, m_state.currentPipeline->getInputAssemblyState().topology
+			, get( m_state.currentPipeline )->getInputAssemblyState().topology
 			, m_state.indexType
 			, m_state.vbos ) );
 	}
 
-	void CommandBuffer::copyToImage( ashes::VkBufferImageCopyArray const & copyInfo
-		, VkBuffer src
-		, VkImage dst )const
+	void CommandBuffer::copyToImage( VkBuffer src
+		, VkImage dst
+		, VkImageLayout dstLayout
+		, VkBufferImageCopyArray copyInfos )const
 	{
-		if ( !m_device.onCopyToImageCommand( *this, copyInfo, src, dst ) )
+		if ( !get( m_device )->onCopyToImageCommand( get( this ), copyInfos, src, dst ) )
 		{
 			m_commands.emplace_back( std::make_unique< CopyBufferToImageCommand >( m_device
+				, std::move( copyInfos )
+				, src
+				, dst ) );
+		}
+	}
+
+	void CommandBuffer::copyToBuffer( VkImage src
+		, VkImageLayout srcLayout
+		, VkBuffer dst
+		, VkBufferImageCopyArray copyInfos )const
+	{
+		m_commands.emplace_back( std::make_unique< CopyImageToBufferCommand >( m_device
+			, std::move( copyInfos )
+			, src
+			, dst ) );
+	}
+
+	void CommandBuffer::copyBuffer( VkBuffer src
+		, VkBuffer dst
+		, VkBufferCopyArray copyInfos )const
+	{
+		for ( auto & copyInfo : copyInfos )
+		{
+			m_commands.emplace_back( std::make_unique< CopyBufferCommand >( m_device
+				, std::move( copyInfo )
+				, src
+				, dst ) );
+		}
+	}
+
+	void CommandBuffer::copyImage( VkImage src
+		, VkImageLayout srcLayout
+		, VkImage dst
+		, VkImageLayout dstLayout
+		, VkImageCopyArray copyInfos )const
+	{
+		for ( auto & copyInfo : copyInfos )
+		{
+			m_commands.emplace_back( std::make_unique< CopyImageCommand >( m_device
 				, copyInfo
 				, src
 				, dst ) );
 		}
 	}
 
-	void CommandBuffer::copyToBuffer( ashes::VkBufferImageCopyArray const & copyInfo
-		, VkImage src
-		, VkBuffer dst )const
-	{
-		m_commands.emplace_back( std::make_unique< CopyImageToBufferCommand >( m_device
-			, copyInfo
-			, src
-			, dst ) );
-	}
-
-	void CommandBuffer::copyBuffer( ashes::BufferCopy const & copyInfo
-		, VkBuffer src
-		, VkBuffer dst )const
-	{
-		m_commands.emplace_back( std::make_unique< CopyBufferCommand >( m_device
-			, copyInfo
-			, src
-			, dst ) );
-	}
-
-	void CommandBuffer::copyImage( ashes::ImageCopy const & copyInfo
-		, VkImage src
-		, VkImageLayout srcLayout
-		, VkImage dst
-		, VkImageLayout dstLayout )const
-	{
-		m_commands.emplace_back( std::make_unique< CopyImageCommand >( m_device
-			, copyInfo
-			, src
-			, dst ) );
-	}
-
 	void CommandBuffer::blitImage( VkImage srcImage
 		, VkImageLayout srcLayout
 		, VkImage dstImage
 		, VkImageLayout dstLayout
-		, std::vector< ashes::ImageBlit > const & regions
+		, VkImageBlitArray regions
 		, VkFilter filter )const
 	{
 		m_commands.emplace_back( std::make_unique< BlitImageCommand >( m_device
@@ -527,7 +512,7 @@ namespace ashes::d3d11
 			, filter ) );
 	}
 
-	void CommandBuffer::resetQueryPool( ashes::QueryPool const & pool
+	void CommandBuffer::resetQueryPool( VkQueryPool pool
 		, uint32_t firstQuery
 		, uint32_t queryCount )const
 	{
@@ -537,9 +522,9 @@ namespace ashes::d3d11
 			, queryCount ) );
 	}
 
-	void CommandBuffer::beginQuery( ashes::QueryPool const & pool
+	void CommandBuffer::beginQuery( VkQueryPool pool
 		, uint32_t query
-		, ashes::QueryControlFlags flags )const
+		, VkQueryControlFlags flags )const
 	{
 		m_commands.emplace_back( std::make_unique< BeginQueryCommand >( m_device
 			, pool
@@ -547,7 +532,7 @@ namespace ashes::d3d11
 			, flags ) );
 	}
 
-	void CommandBuffer::endQuery( ashes::QueryPool const & pool
+	void CommandBuffer::endQuery( VkQueryPool pool
 		, uint32_t query )const
 	{
 		m_commands.emplace_back( std::make_unique< EndQueryCommand >( m_device
@@ -556,7 +541,7 @@ namespace ashes::d3d11
 	}
 
 	void CommandBuffer::writeTimestamp( VkPipelineStageFlagBits pipelineStage
-		, ashes::QueryPool const & pool
+		, VkQueryPool pool
 		, uint32_t query )const
 	{
 		m_commands.emplace_back( std::make_unique< WriteTimestampCommand >( m_device
@@ -565,7 +550,7 @@ namespace ashes::d3d11
 			, query ) );
 	}
 
-	void CommandBuffer::pushConstants( ashes::PipelineLayout const & layout
+	void CommandBuffer::pushConstants( VkPipelineLayout layout
 		, VkShaderStageFlags stageFlags
 		, uint32_t offset
 		, uint32_t size
@@ -582,18 +567,18 @@ namespace ashes::d3d11
 		if ( m_state.currentPipeline )
 		{
 			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
-				, m_state.currentPipeline->findPushConstantBuffer( desc ) ) );
+				, get( m_state.currentPipeline )->findPushConstantBuffer( desc ) ) );
 			doAddAfterSubmitAction();
 		}
 		else if ( m_state.currentComputePipeline )
 		{
 			m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
-				, m_state.currentComputePipeline->findPushConstantBuffer( desc ) ) );
+				, get( m_state.currentComputePipeline )->findPushConstantBuffer( desc ) ) );
 			doAddAfterSubmitAction();
 		}
 		else
 		{
-			m_state.pushConstantBuffers.emplace_back( &layout, desc );
+			m_state.pushConstantBuffers.emplace_back( layout, desc );
 		}
 	}
 
@@ -608,7 +593,7 @@ namespace ashes::d3d11
 	}
 
 	void CommandBuffer::dispatchIndirect( VkBuffer buffer
-		, uint32_t offset )const
+		, VkDeviceSize offset )const
 	{
 		m_commands.emplace_back( std::make_unique< DispatchIndirectCommand >( m_device
 			, buffer
@@ -631,7 +616,7 @@ namespace ashes::d3d11
 			, slopeFactor ) );
 	}
 
-	void CommandBuffer::setEvent( ashes::Event const & event
+	void CommandBuffer::setEvent( VkEvent event
 		, VkPipelineStageFlags stageMask )const
 	{
 		m_commands.emplace_back( std::make_unique< SetEventCommand >( m_device
@@ -639,7 +624,7 @@ namespace ashes::d3d11
 			, stageMask ) );
 	}
 
-	void CommandBuffer::resetEvent( ashes::Event const & event
+	void CommandBuffer::resetEvent( VkEvent event
 		, VkPipelineStageFlags stageMask )const
 	{
 		m_commands.emplace_back( std::make_unique< ResetEventCommand >( m_device
@@ -647,11 +632,12 @@ namespace ashes::d3d11
 			, stageMask ) );
 	}
 
-	void CommandBuffer::waitEvents( ashes::EventCRefArray const & events
+	void CommandBuffer::waitEvents( VkEventArray events
 		, VkPipelineStageFlags srcStageMask
 		, VkPipelineStageFlags dstStageMask
-		, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
-		, ashes::VkImageMemoryBarrierArray const & imageMemoryBarriers )const
+		, VkMemoryBarrierArray memoryBarriers
+		, VkBufferMemoryBarrierArray bufferMemoryBarriers
+		, VkImageMemoryBarrierArray imageMemoryBarriers )const
 	{
 		m_commands.emplace_back( std::make_unique< WaitEventsCommand >( m_device
 			, events
@@ -661,18 +647,12 @@ namespace ashes::d3d11
 			, imageMemoryBarriers ) );
 	}
 
-	void CommandBuffer::generateMips( Image const & texture )const
-	{
-		m_commands.emplace_back( std::make_unique< GenerateMipsCommand >( m_device
-			, texture ) );
-	}
-
 	void CommandBuffer::pipelineBarrier( VkPipelineStageFlags after
 		, VkPipelineStageFlags before
-		, ashes::DependencyFlags dependencyFlags
-		, ashes::MemoryBarrierArray const & memoryBarriers
-		, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
-		, ashes::VkImageMemoryBarrierArray const & imageMemoryBarriers )const
+		, VkDependencyFlags dependencyFlags
+		, VkMemoryBarrierArray memoryBarriers
+		, VkBufferMemoryBarrierArray bufferMemoryBarriers
+		, VkImageMemoryBarrierArray imageMemoryBarriers )const
 	{
 		m_commands.emplace_back( std::make_unique< MemoryBarrierCommand >( m_device
 			, after
@@ -682,14 +662,22 @@ namespace ashes::d3d11
 			, imageMemoryBarriers ) );
 	}
 
+	void CommandBuffer::generateMipmaps( VkImage texture )const
+	{
+		m_commands.emplace_back( std::make_unique< GenerateMipsCommand >( m_device
+			, texture ) );
+	}
+
 	void CommandBuffer::doFillVboStrides()const
 	{
-		auto & state = m_state.currentPipeline->getVertexInputState();
+		auto & state = get( m_state.currentPipeline )->getVertexInputState();
 
-		if ( state.vertexBindingDescriptions.empty() )
+		if ( !state.vertexBindingDescriptionCount )
 		{
 			m_state.vbos.clear();
 		}
+
+		auto bindingsEnd = state.pVertexBindingDescriptions + state.vertexBindingDescriptionCount;
 
 		for ( auto & binding : m_state.vbos )
 		{
@@ -698,14 +686,14 @@ namespace ashes::d3d11
 
 			for ( auto i = 0u; i < binding.buffers.size(); ++i )
 			{
-				auto it = std::find_if( state.vertexBindingDescriptions.begin()
-					, state.vertexBindingDescriptions.end()
-					, [startIndex]( ::ashes::VertexInputBindingDescription const & desc )
+				auto it = std::find_if( state.pVertexBindingDescriptions
+					, bindingsEnd
+					, [startIndex]( ::VkVertexInputBindingDescription const & desc )
 					{
 						return desc.binding == startIndex;
 					} );
 
-				if ( it != state.vertexBindingDescriptions.end() )
+				if ( it != bindingsEnd )
 				{
 					binding.strides.push_back( it->stride );
 				}

@@ -16,8 +16,8 @@ namespace ashes::d3d11
 		desc.Format = getSRVFormat( m_createInfo.format );
 		desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
 		auto elemSize = getSize( m_createInfo.format );
-		desc.Buffer.FirstElement = m_createInfo.offset / elemSize;
-		desc.Buffer.NumElements = m_createInfo.range / elemSize;
+		desc.Buffer.FirstElement = UINT( m_createInfo.offset / elemSize );
+		desc.Buffer.NumElements = UINT( m_createInfo.range / elemSize );
 
 		auto hr = get( device )->getDevice()->CreateShaderResourceView( get( m_createInfo.buffer )->getBuffer()
 			, &desc

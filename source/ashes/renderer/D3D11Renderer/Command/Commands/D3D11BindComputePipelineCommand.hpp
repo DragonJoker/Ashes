@@ -4,8 +4,8 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
-#include "D3D11Renderer/Shader/D3D11ShaderDesc.hpp"
+#include "renderer/D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
+#include "renderer/D3D11Renderer/Shader/D3D11ShaderDesc.hpp"
 
 namespace ashes::d3d11
 {
@@ -26,17 +26,17 @@ namespace ashes::d3d11
 		*	Le point d'attache du pipeline.
 		*/
 		BindComputePipelineCommand( VkDevice device
-			, ashes::ComputePipeline const & pipeline
-			, ashes::PipelineBindPoint bindingPoint );
+			, VkPipeline pipeline
+			, VkPipelineBindPoint bindingPoint );
 
 		void apply( Context const & context )const;
 		void remove( Context const & context )const;
 		CommandPtr clone()const;
 
 	private:
-		ComputePipeline const & m_pipeline;
-		PipelineLayout const & m_layout;
+		VkPipeline m_pipeline;
+		VkPipelineLayout m_layout;
 		CompiledShaderModule const & m_program;
-		ashes::PipelineBindPoint m_bindingPoint;
+		VkPipelineBindPoint m_bindingPoint;
 	};
 }

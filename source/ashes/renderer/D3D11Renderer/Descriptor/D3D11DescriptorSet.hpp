@@ -8,81 +8,80 @@
 #define ___D3D11Renderer_DescriptorSet_HPP___
 #pragma once
 
-#include "D3D11Renderer/D3D11RendererPrerequisites.hpp"
-
-#include <Ashes/Descriptor/DescriptorSet.hpp>
-#include <Ashes/Descriptor/DescriptorSetLayoutBinding.hpp>
-#include <Ashes/Descriptor/WriteDescriptorSet.hpp>
+#include "renderer/D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
 #include <vector>
 
 namespace ashes::d3d11
 {
 	class DescriptorSet
-		: public ashes::DescriptorSet
 	{
 	public:
 		DescriptorSet( VkDevice device
-			, DescriptorPool const & pool
-			, DescriptorSetLayout const & layout
-			, uint32_t bindingPoint );
-		~DescriptorSet();
+			, VkDescriptorPool pool
+			, VkDescriptorSetLayout layout );
 
-		void update()const;
+		void update( VkWriteDescriptorSet const & write );
+		void update( VkCopyDescriptorSet const & write );
 
-		inline WriteDescriptorSetBindingArray const & getCombinedTextureSamplers()const
+		inline LayoutBindingWritesArray const & getCombinedTextureSamplers()const
 		{
 			return m_combinedTextureSamplers;
 		}
 
-		inline WriteDescriptorSetBindingArray const & getSamplers()const
+		inline LayoutBindingWritesArray const & getSamplers()const
 		{
 			return m_samplers;
 		}
 
-		inline WriteDescriptorSetBindingArray const & getSampledTextures()const
+		inline LayoutBindingWritesArray const & getSampledTextures()const
 		{
 			return m_sampledTextures;
 		}
 
-		inline WriteDescriptorSetBindingArray const & getStorageTextures()const
+		inline LayoutBindingWritesArray const & getStorageTextures()const
 		{
 			return m_storageTextures;
 		}
 
-		inline WriteDescriptorSetBindingArray const & getUniformBuffers()const
+		inline LayoutBindingWritesArray const & getUniformBuffers()const
 		{
 			return m_uniformBuffers;
 		}
 
-		inline WriteDescriptorSetBindingArray const & getStorageBuffers()const
+		inline LayoutBindingWritesArray const & getStorageBuffers()const
 		{
 			return m_storageBuffers;
 		}
 
-		inline WriteDescriptorSetBindingArray const & getTexelBuffers()const
+		inline LayoutBindingWritesArray const & getTexelBuffers()const
 		{
 			return m_texelBuffers;
 		}
 
-		inline WriteDescriptorSetBindingArray const & getDynamicBuffers()const
+		inline LayoutBindingWritesArray const & getDynamicBuffers()const
 		{
 			return m_dynamicBuffers;
 		}
 
 	private:
-		DescriptorPool const & m_pool;
-		DescriptorSetLayout const & m_layout;
-		mutable WriteDescriptorSetBindingArray m_combinedTextureSamplers;
-		mutable WriteDescriptorSetBindingArray m_samplers;
-		mutable WriteDescriptorSetBindingArray m_sampledTextures;
-		mutable WriteDescriptorSetBindingArray m_storageTextures;
-		mutable WriteDescriptorSetBindingArray m_uniformBuffers;
-		mutable WriteDescriptorSetBindingArray m_storageBuffers;
-		mutable WriteDescriptorSetBindingArray m_texelBuffers;
-		mutable WriteDescriptorSetBindingArray m_dynamicUniformBuffers;
-		mutable WriteDescriptorSetBindingArray m_dynamicStorageBuffers;
-		mutable WriteDescriptorSetBindingArray m_dynamicBuffers;
+		void mergeWrites( LayoutBindingWrites & writes, VkWriteDescriptorSet const & write );
+
+	private:
+		VkDescriptorSetLayout m_layout;
+		std::vector< std::unique_ptr< VkDescriptorImageInfo > > m_imagesInfos;
+		std::vector< std::unique_ptr< VkDescriptorBufferInfo > > m_buffersInfos;
+		LayoutBindingWritesMap m_writes;
+		LayoutBindingWritesArray m_combinedTextureSamplers;
+		LayoutBindingWritesArray m_samplers;
+		LayoutBindingWritesArray m_sampledTextures;
+		LayoutBindingWritesArray m_storageTextures;
+		LayoutBindingWritesArray m_uniformBuffers;
+		LayoutBindingWritesArray m_storageBuffers;
+		LayoutBindingWritesArray m_texelBuffers;
+		LayoutBindingWritesArray m_dynamicUniformBuffers;
+		LayoutBindingWritesArray m_dynamicStorageBuffers;
+		LayoutBindingWritesArray m_dynamicBuffers;
 	};
 }
 

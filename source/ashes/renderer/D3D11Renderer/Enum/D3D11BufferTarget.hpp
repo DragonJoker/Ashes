@@ -7,5 +7,5 @@ See LICENSE file in root folder
 namespace ashes::d3d11
 {
 	bool isPipelineBindable( VkBufferUsageFlags const & targets );
-	UINT getBufferUsage( VkBufferUsageFlags const & targets );
+	UINT getBindFlags( VkBufferUsageFlags const & targets );
 }

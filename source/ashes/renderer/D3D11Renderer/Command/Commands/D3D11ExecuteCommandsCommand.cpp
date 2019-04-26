@@ -6,12 +6,14 @@ See LICENSE file in root folder.
 
 #include "Command/D3D11CommandBuffer.hpp"
 
+#include "ashesd3d11_api.hpp"
+
 namespace ashes::d3d11
 {
 	ExecuteCommandsCommand::ExecuteCommandsCommand( VkDevice device
 		, VkCommandBuffer commandBuffer )
 		: CommandBase{ device }
-		, m_commandBuffer{ static_cast< CommandBuffer const & >( commandBuffer ) }
+		, m_commandBuffer{ commandBuffer }
 	{
 	}
 
@@ -21,7 +23,7 @@ namespace ashes::d3d11
 
 	void ExecuteCommandsCommand::apply( Context const & context )const
 	{
-		context.context->ExecuteCommandList( m_commandBuffer.getCommandList()
+		context.context->ExecuteCommandList( get( m_commandBuffer )->getCommandList()
 			, FALSE );
 	}
 

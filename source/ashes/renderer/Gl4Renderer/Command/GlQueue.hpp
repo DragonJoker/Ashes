@@ -34,9 +34,7 @@ namespace ashes::gl4
 
 	private:
 		VkDevice m_device;
-		VkDeviceQueueCreateFlags m_flags;
-		uint32_t m_queueFamilyIndex;
-		float m_queuePriority;
+		VkDeviceQueueCreateInfo m_createInfo;
 		uint32_t m_index;
 	};
 }

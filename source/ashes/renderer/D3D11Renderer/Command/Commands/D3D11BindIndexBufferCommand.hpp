@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
+#include "renderer/D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
 namespace ashes::d3d11
 {
@@ -21,7 +21,7 @@ namespace ashes::d3d11
 		*	Constructeur.
 		*/
 		BindIndexBufferCommand( VkDevice device
-			, Buffer const & ibo
+			, VkBuffer ibo
 			, uint64_t offset
 			, VkIndexType indexType );
 
@@ -30,7 +30,7 @@ namespace ashes::d3d11
 		CommandPtr clone()const;
 
 	private:
-		Buffer const & m_ibo;
+		VkBuffer m_ibo;
 		UINT m_offset;
 		DXGI_FORMAT m_indexType;
 	};

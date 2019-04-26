@@ -6,23 +6,25 @@ See LICENSE file in root folder.
 
 #include "Buffer/D3D11Buffer.hpp"
 
+#include "ashesd3d11_api.hpp"
+
 namespace ashes::d3d11
 {
 	namespace
 	{
-		std::vector< ID3D11Buffer * > convert( BufferCRefArray const & vbos )
+		std::vector< ID3D11Buffer * > convert( VkBufferArray const & vbos )
 		{
 			std::vector< ID3D11Buffer * > result;
 
 			for ( auto & vbo : vbos )
 			{
-				result.push_back( vbo.get().getBuffer() );
+				result.push_back( get( vbo )->getBuffer() );
 			}
 
 			return result;
 		}
 
-		std::vector< UINT > convert( ashes::UInt64Array const & array )
+		std::vector< UINT > convert( UInt64Array const & array )
 		{
 			std::vector< UINT > result;
 
@@ -37,11 +39,11 @@ namespace ashes::d3d11
 
 	BindVertexBuffersCommand::BindVertexBuffersCommand( VkDevice device
 		, uint32_t firstBinding
-		, ashes::BufferCRefArray const & buffers
-		, ashes::UInt64Array const & offsets )
+		, VkBufferArray const & buffers
+		, UInt64Array const & offsets )
 		: CommandBase{ device }
 		, m_firstBinding{ firstBinding }
-		, m_vbos{ staticCast< Buffer >( buffers ) }
+		, m_vbos{ buffers }
 		, m_buffers{ convert( m_vbos ) }
 		, m_offsets{ convert( offsets ) }
 		, m_strides( m_offsets.size(), 24u )

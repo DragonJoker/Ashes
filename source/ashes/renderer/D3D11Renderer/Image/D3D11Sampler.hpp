@@ -8,18 +8,15 @@
 #define ___D3D11Renderer_Sampler_HPP___
 #pragma once
 
-#include "D3D11Renderer/D3D11RendererPrerequisites.hpp"
-
-#include <Ashes/Image/Sampler.hpp>
+#include "renderer/D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
 namespace ashes::d3d11
 {
 	class Sampler
-		: public ashes::Sampler
 	{
 	public:
 		Sampler( VkDevice device
-			, VkSamplerCreateInfo const & createInfo );
+			, VkSamplerCreateInfo createInfo );
 		~Sampler();
 
 		inline ID3D11SamplerState * getSampler()const
@@ -28,6 +25,8 @@ namespace ashes::d3d11
 		}
 
 	private:
+		VkDevice m_device;
+		VkSamplerCreateInfo m_createInfo;
 		ID3D11SamplerState * m_sampler;
 	};
 }

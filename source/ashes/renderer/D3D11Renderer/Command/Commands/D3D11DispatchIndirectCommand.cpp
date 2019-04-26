@@ -6,20 +6,22 @@ See LICENSE file in root folder.
 
 #include "Buffer/D3D11Buffer.hpp"
 
+#include "ashesd3d11_api.hpp"
+
 namespace ashes::d3d11
 {
 	DispatchIndirectCommand::DispatchIndirectCommand( VkDevice device
 		, VkBuffer buffer
-		, uint32_t offset )
+		, VkDeviceSize offset )
 		: CommandBase{ device }
-		, m_buffer{ static_cast< Buffer const & >( buffer ) }
-		, m_offset{ offset }
+		, m_buffer{ buffer }
+		, m_offset{ UINT( offset ) }
 	{
 	}
 
 	void DispatchIndirectCommand::apply( Context const & context )const
 	{
-		context.context->DispatchIndirect( m_buffer.getBuffer(), m_offset );
+		context.context->DispatchIndirect( get( m_buffer )->getBuffer(), m_offset );
 	}
 
 	CommandPtr DispatchIndirectCommand::clone()const

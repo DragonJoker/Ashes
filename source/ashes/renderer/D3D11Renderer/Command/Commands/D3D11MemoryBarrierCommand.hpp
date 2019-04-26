@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
+#include "renderer/D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
 namespace ashes::d3d11
 {
@@ -23,11 +23,22 @@ namespace ashes::d3d11
 		MemoryBarrierCommand( VkDevice device
 			, VkPipelineStageFlags after
 			, VkPipelineStageFlags before
-			, ashes::MemoryBarrierArray const & memoryBarriers
-			, ashes::BufferMemoryBarrierArray const & bufferBarriers
-			, ashes::VkImageMemoryBarrierArray const & imageBarriers );
+			, VkMemoryBarrierArray const & memoryBarriers
+			, VkBufferMemoryBarrierArray const & bufferBarriers
+			, VkImageMemoryBarrierArray const & imageBarriers );
 
 		void apply( Context const & context )const;
 		CommandPtr clone()const;
+
+	private:
+		struct BufferLock
+		{
+			VkDeviceSize offset;
+			VkDeviceSize size;
+			VkBuffer buffer;
+		};
+		using BufferLockArray = std::vector< BufferLock >;
+		BufferLockArray m_uploadBuffers;
+		BufferLockArray m_downloadBuffers;
 	};
 }

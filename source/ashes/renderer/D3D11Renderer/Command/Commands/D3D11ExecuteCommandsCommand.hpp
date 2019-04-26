@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
+#include "renderer/D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
 namespace ashes::d3d11
 {
@@ -19,6 +19,6 @@ namespace ashes::d3d11
 		CommandPtr clone()const;
 
 	private:
-		CommandBuffer const & m_commandBuffer;
+		VkCommandBuffer m_commandBuffer;
 	};
 }

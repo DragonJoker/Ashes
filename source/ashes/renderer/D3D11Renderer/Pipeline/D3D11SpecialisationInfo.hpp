@@ -7,7 +7,7 @@ See LICENSE file in root folder.
 namespace ashes::d3d11
 {
 	//ashes::PushConstantArray convert( VkShaderStageFlagBits stage
-	//	, std::vector< ashes::SpecialisationMapEntry > const & entries );
+	//	, std::vector< VkSpecialisationMapEntry > const & entries );
 	//ashes::PushConstantsBufferPtr convert( VkDevice device
 	//	, uint32_t location
 	//	, VkShaderStageFlagBits stage

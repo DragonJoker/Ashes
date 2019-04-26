@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
-
-#include <Ashes/RenderPass/ClearValue.hpp>
+#include "renderer/D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
 namespace ashes::d3d11
 {
@@ -27,14 +25,19 @@ namespace ashes::d3d11
 		*	La couleur de vidage.
 		*/
 		ClearColourCommand( VkDevice device
-			, ashes::ImageView const & image
+			, VkImage image
+			, VkImageSubresourceRangeArray ranges
 			, VkClearColorValue const & colour );
+		ClearColourCommand( ClearColourCommand  const & rhs );
+		~ClearColourCommand();
 
 		void apply( Context const & context )const;
 		CommandPtr clone()const;
 
 	private:
-		ImageView const & m_image;
+		VkImage m_image;
+		VkImageSubresourceRangeArray m_ranges;
 		VkClearColorValue m_colour;
+		VkImageViewArray m_views;
 	};
 }

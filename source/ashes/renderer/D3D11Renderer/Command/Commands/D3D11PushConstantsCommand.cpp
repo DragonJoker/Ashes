@@ -7,9 +7,7 @@ See LICENSE file in root folder.
 #include "Buffer/D3D11Buffer.hpp"
 #include "Shader/D3D11ShaderModule.hpp"
 
-#include <Ashes/Buffer/UniformBuffer.hpp>
-#include <Ashes/Pipeline/PipelineLayout.hpp>
-#include <Ashes/Miscellaneous/PushConstantRange.hpp>
+#include "ashesd3d11_api.hpp"
 
 namespace ashes::d3d11
 {
@@ -24,7 +22,7 @@ namespace ashes::d3d11
 	{
 		if ( m_pcb.ubo )
 		{
-			auto buffer = static_cast< Buffer const & >( m_pcb.ubo->getBuffer() ).getBuffer();
+			auto buffer = get( m_pcb.ubo )->getBuffer();
 			D3D11_MAPPED_SUBRESOURCE mapped;
 			auto hr = context.context->Map( buffer
 				, 0u

@@ -8,22 +8,17 @@
 #define ___D3D11Renderer_DescriptorPool_HPP___
 #pragma once
 
-#include "D3D11Renderer/D3D11RendererPrerequisites.hpp"
-
-#include <Ashes/Descriptor/DescriptorPool.hpp>
+#include "renderer/D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
 #include <vector>
 
 namespace ashes::d3d11
 {
 	class DescriptorPool
-		: public ashes::DescriptorPool
 	{
 	public:
 		DescriptorPool( VkDevice device
-			, VkDescriptorPoolCreateFlags flags
-			, uint32_t maxSets
-			, ashes::VkDescriptorPoolSizeArray poolSizes );
+			, VkDescriptorPoolCreateInfo createInfos );
 		/**
 		*\~french
 		*\brief
@@ -33,14 +28,17 @@ namespace ashes::d3d11
 		*	Destructor.
 		*/
 		~DescriptorPool();
-		/**
-		*\copydoc	ashes::DescriptorSetPool::createDescriptorSet
-		*/
-		ashes::DescriptorSetPtr createDescriptorSet( ashes::DescriptorSetLayout const & layout
-			, uint32_t bindingPoint )const;
+
+		void registerSet( VkDescriptorSet set );
+		VkResult reset( VkDescriptorPoolResetFlags flags );
+		VkResult free( VkDescriptorSetArray sets );
 
 	private:
 		VkDevice m_device;
+		VkDescriptorPoolSizeArray m_poolSizes;
+		VkDescriptorPoolCreateInfo m_createInfos;
+		VkDescriptorSetArray m_sets;
+		VkDescriptorSetArray m_allSets;
 	};
 }
 

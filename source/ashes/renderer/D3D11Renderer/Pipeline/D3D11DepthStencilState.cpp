@@ -10,12 +10,12 @@ namespace ashes::d3d11
 	{
 		return D3D11_DEPTH_STENCIL_DESC
 		{
-			state.depthTestEnable,
+			BOOL( state.depthTestEnable ),
 			( state.depthWriteEnable
 				? D3D11_DEPTH_WRITE_MASK_ALL
 				: D3D11_DEPTH_WRITE_MASK_ZERO ),
 			getComparisonFunc( state.depthCompareOp ),
-			state.stencilTestEnable,
+			BOOL( state.stencilTestEnable ),
 			UINT8( state.front.compareMask ),
 			UINT8( state.front.writeMask ),
 			convert( state.front ),

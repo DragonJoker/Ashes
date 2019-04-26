@@ -8,93 +8,107 @@
 #include "Image/D3D11Sampler.hpp"
 #include "Image/D3D11ImageView.hpp"
 
-#include <Ashes/Buffer/UniformBuffer.hpp>
+#include "ashesd3d11_api.hpp"
 
 namespace ashes::d3d11
 {
-	namespace
-	{
-		WriteDescriptorSetBinding doCreateBinding( ashes::DescriptorSetLayout const & layout
-			, VkWriteDescriptorSet const & write )
-		{
-			return { write, layout.getBinding( write.dstBinding, write.dstArrayElement ) };
-		}
-	}
-
 	DescriptorSet::DescriptorSet( VkDevice device
-		, DescriptorPool const & pool
-		, DescriptorSetLayout const & layout
-		, uint32_t bindingPoint )
-		: ashes::DescriptorSet{ pool, bindingPoint }
-		, m_pool{ pool }
-		, m_layout{ layout }
+		, VkDescriptorPool pool
+		, VkDescriptorSetLayout layout )
+		: m_layout{ layout }
 	{
-	}
+		get( pool )->registerSet( get( this ) );
 
-	DescriptorSet::~DescriptorSet()
-	{
-	}
-
-	void DescriptorSet::update()const
-	{
-		m_combinedTextureSamplers.clear();
-		m_samplers.clear();
-		m_sampledTextures.clear();
-		m_storageTextures.clear();
-		m_uniformBuffers.clear();
-		m_storageBuffers.clear();
-		m_texelBuffers.clear();
-		m_dynamicUniformBuffers.clear();
-		m_dynamicStorageBuffers.clear();
-		m_dynamicBuffers.clear();
+		for ( auto & binding : *get( layout ) )
+		{
+			LayoutBindingWrites bindingWrites
+			{
+				binding,
+				{},
+			};
+			m_writes.insert( { binding.binding, bindingWrites } );
+		}
 
 		for ( auto & write : m_writes )
 		{
-			switch ( write.descriptorType )
+			switch ( write.second.binding.descriptorType )
 			{
-			case ashes::DescriptorType::eSampler:
-				m_samplers.push_back( doCreateBinding( m_layout, write ) );
+			case VK_DESCRIPTOR_TYPE_SAMPLER:
+				m_samplers.push_back( &write.second );
 				break;
-			case ashes::DescriptorType::eCombinedImageSampler:
-				m_combinedTextureSamplers.push_back( doCreateBinding( m_layout, write ) );
+			case VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:
+				m_combinedTextureSamplers.push_back( &write.second );
 				break;
-			case ashes::DescriptorType::eSampledImage:
-				m_sampledTextures.push_back( doCreateBinding( m_layout, write ) );
+			case VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE:
+				m_sampledTextures.push_back( &write.second );
 				break;
-			case ashes::DescriptorType::eStorageImage:
-				m_storageTextures.push_back( doCreateBinding( m_layout, write ) );
+			case VK_DESCRIPTOR_TYPE_STORAGE_IMAGE:
+				m_storageTextures.push_back( &write.second );
 				break;
-			case ashes::DescriptorType::eUniformTexelBuffer:
-				m_texelBuffers.push_back( doCreateBinding( m_layout, write ) );
+			case VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER:
+				m_texelBuffers.push_back( &write.second );
 				break;
-			case ashes::DescriptorType::eStorageTexelBuffer:
-				m_texelBuffers.push_back( doCreateBinding( m_layout, write ) );
+			case VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER:
+				m_texelBuffers.push_back( &write.second );
 				break;
-			case ashes::DescriptorType::eUniformBuffer:
-				m_uniformBuffers.push_back( doCreateBinding( m_layout, write ) );
+			case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER:
+				m_uniformBuffers.push_back( &write.second );
 				break;
-			case ashes::DescriptorType::eStorageBuffer:
-				m_storageBuffers.push_back( doCreateBinding( m_layout, write ) );
+			case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER:
+				m_storageBuffers.push_back( &write.second );
 				break;
-			case ashes::DescriptorType::eUniformBufferDynamic:
-				m_dynamicUniformBuffers.push_back( doCreateBinding( m_layout, write ) );
-				m_dynamicBuffers.push_back( doCreateBinding( m_layout, write ) );
+			case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:
+				m_dynamicUniformBuffers.push_back( &write.second );
+				m_dynamicBuffers.push_back( &write.second );
 				break;
-			case ashes::DescriptorType::eStorageBufferDynamic:
-				m_dynamicStorageBuffers.push_back( doCreateBinding( m_layout, write ) );
-				m_dynamicBuffers.push_back( doCreateBinding( m_layout, write ) );
+			case VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
+				m_dynamicStorageBuffers.push_back( &write.second );
+				m_dynamicBuffers.push_back( &write.second );
 				break;
-			case ashes::DescriptorType::eInputAttachment:
+			case VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT:
 				break;
 			}
 		}
 
 		std::sort( m_dynamicBuffers.begin()
 			, m_dynamicBuffers.end()
-			, []( WriteDescriptorSetBinding const & lhs
-				, WriteDescriptorSetBinding const & rhs )
+			, []( LayoutBindingWrites const * lhs
+				, LayoutBindingWrites const * rhs )
 			{
-				return lhs.write.dstBinding < rhs.write.dstBinding;
+				return lhs->binding.binding < rhs->binding.binding;
 			} );
+	}
+
+	void DescriptorSet::mergeWrites( LayoutBindingWrites & writes, VkWriteDescriptorSet const & write )
+	{
+		writes.writes.push_back( write );
+
+		if ( write.pImageInfo )
+		{
+			m_imagesInfos.emplace_back( std::make_unique< VkDescriptorImageInfo >( *write.pImageInfo ) );
+			writes.writes.back().pImageInfo = m_imagesInfos.back().get();
+		}
+
+		if ( write.pBufferInfo )
+		{
+			m_buffersInfos.emplace_back( std::make_unique< VkDescriptorBufferInfo >( *write.pBufferInfo ) );
+			writes.writes.back().pBufferInfo = m_buffersInfos.back().get();
+		}
+	}
+
+	void DescriptorSet::update( VkWriteDescriptorSet const & write )
+	{
+		auto it = m_writes.find( write.dstBinding );
+		assert( it != m_writes.end() );
+		assert( it->second.binding.descriptorType == write.descriptorType );
+		assert( it->second.binding.descriptorCount >= write.dstArrayElement + write.descriptorCount );
+		assert( write.dstSet == get( this ) );
+		mergeWrites( it->second, write );
+	}
+
+	void DescriptorSet::update( VkCopyDescriptorSet const & copy )
+	{
+		//m_writes[copy.dstBinding].dstBinding = copy.srcBinding;
+		//m_writes[copy.dstBinding].dstArrayElement = copy.srcArrayElement;
 	}
 }

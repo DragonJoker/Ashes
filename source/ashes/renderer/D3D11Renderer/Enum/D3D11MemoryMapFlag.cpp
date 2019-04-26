@@ -2,7 +2,7 @@
 
 namespace ashes::d3d11
 {
-	D3D11_MAP getMapFlags( VkMemoryPropertyFlags const & memory
+	D3D11_MAP getBufferMapFlags( VkMemoryPropertyFlags const & memory
 		, VkBufferUsageFlags const & usage )
 	{
 		UINT result{ 0 };
@@ -26,7 +26,7 @@ namespace ashes::d3d11
 		return D3D11_MAP( result );
 	}
 
-	D3D11_MAP getMapFlags( VkMemoryPropertyFlags const & memory
+	D3D11_MAP getImageMapFlags( VkMemoryPropertyFlags const & memory
 		, VkImageUsageFlags const & usage )
 	{
 		UINT result{ 0 };

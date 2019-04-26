@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
+#include "renderer/D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
 namespace ashes::d3d11
 {
@@ -13,15 +13,15 @@ namespace ashes::d3d11
 	{
 	public:
 		WaitEventsCommand( VkDevice device
-			, ashes::EventCRefArray const & events
+			, VkEventArray const & events
 			, VkPipelineStageFlags srcStageMask
 			, VkPipelineStageFlags dstStageMask
-			, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
-			, ashes::VkImageMemoryBarrierArray const & imageMemoryBarriers );
+			, VkBufferMemoryBarrierArray const & bufferMemoryBarriers
+			, VkImageMemoryBarrierArray const & imageMemoryBarriers );
 		void apply( Context const & context )const;
 		CommandPtr clone()const;
 
 	private:
-		ashes::EventCRefArray const & m_events;
+		VkEventArray m_events;
 	};
 }

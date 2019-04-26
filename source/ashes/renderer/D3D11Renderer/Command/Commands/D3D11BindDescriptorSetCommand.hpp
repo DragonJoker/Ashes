@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
+#include "renderer/D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
 namespace ashes::d3d11
 {
@@ -27,10 +27,10 @@ namespace ashes::d3d11
 		*	Le point d'attache du set.
 		*/
 		BindDescriptorSetCommand( VkDevice device
-			, ashes::DescriptorSet const & descriptorSet
-			, ashes::PipelineLayout const & layout
-			, ashes::UInt32Array const & dynamicOffsets
-			, ashes::PipelineBindPoint bindingPoint );
+			, VkDescriptorSet descriptorSet
+			, VkPipelineLayout layout
+			, UInt32Array const & dynamicOffsets
+			, VkPipelineBindPoint bindingPoint );
 
 		void apply( Context const & context )const;
 		void remove( Context const & context )const;
@@ -44,9 +44,9 @@ namespace ashes::d3d11
 		void remove11_1( Context const & context )const;
 
 	private:
-		DescriptorSet const & m_descriptorSet;
-		PipelineLayout const & m_layout;
-		ashes::PipelineBindPoint m_bindingPoint;
-		ashes::UInt32Array m_dynamicOffsets;
+		VkDescriptorSet m_descriptorSet;
+		VkPipelineLayout m_layout;
+		VkPipelineBindPoint m_bindingPoint;
+		UInt32Array m_dynamicOffsets;
 	};
 }

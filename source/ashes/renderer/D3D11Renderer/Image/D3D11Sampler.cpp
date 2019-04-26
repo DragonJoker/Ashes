@@ -2,6 +2,8 @@
 
 #include "Core/D3D11Device.hpp"
 
+#include "ashesd3d11_api.hpp"
+
 namespace ashes::d3d11
 {
 	D3D11_TEXTURE_ADDRESS_MODE convert( VkSamplerAddressMode mode )
@@ -28,27 +30,27 @@ namespace ashes::d3d11
 		return D3D11_TEXTURE_ADDRESS_WRAP;
 	}
 
-	void convert( ashes::BorderColour colour
+	void convert( VkBorderColor colour
 		, float output[4] )
 	{
 		switch ( colour )
 		{
-		case ashes::BorderColour::eFloatTransparentBlack:
-		case ashes::BorderColour::eIntTransparentBlack:
+		case VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK:
+		case VK_BORDER_COLOR_INT_TRANSPARENT_BLACK:
 			output[0] = 0.0;
 			output[1] = 0.0;
 			output[2] = 0.0;
 			output[3] = 0.0;
 			break;
-		case ashes::BorderColour::eFloatOpaqueBlack:
-		case ashes::BorderColour::eIntOpaqueBlack:
+		case VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK:
+		case VK_BORDER_COLOR_INT_OPAQUE_BLACK:
 			output[0] = 0.0;
 			output[1] = 0.0;
 			output[2] = 0.0;
 			output[3] = 1.0;
 			break;
-		case ashes::BorderColour::eFloatOpaqueWhite:
-		case ashes::BorderColour::eIntOpaqueWhite:
+		case VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE:
+		case VK_BORDER_COLOR_INT_OPAQUE_WHITE:
 			output[0] = 1.0;
 			output[1] = 1.0;
 			output[2] = 1.0;
@@ -67,28 +69,28 @@ namespace ashes::d3d11
 			{
 				switch ( mip )
 				{
-				case VkSamplerMipmapMode::eNone:
-					return D3D11_FILTER_MIN_MAG_MIP_POINT;
-
 				case VK_SAMPLER_MIPMAP_MODE_NEAREST:
 					return D3D11_FILTER_MIN_MAG_MIP_POINT;
 
 				case VK_SAMPLER_MIPMAP_MODE_LINEAR:
 					return D3D11_FILTER_MIN_MAG_POINT_MIP_LINEAR;
+
+				default:
+					return D3D11_FILTER_MIN_MAG_MIP_POINT;
 				}
 			}
 			else
 			{
 				switch ( mip )
 				{
-				case VkSamplerMipmapMode::eNone:
-					return D3D11_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;
-
 				case VK_SAMPLER_MIPMAP_MODE_NEAREST:
 					return D3D11_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;
 
 				case VK_SAMPLER_MIPMAP_MODE_LINEAR:
 					return D3D11_FILTER_MIN_POINT_MAG_MIP_LINEAR;
+
+				default:
+					return D3D11_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;
 				}
 			}
 		}
@@ -98,28 +100,28 @@ namespace ashes::d3d11
 			{
 				switch ( mip )
 				{
-				case VkSamplerMipmapMode::eNone:
-					return D3D11_FILTER_MIN_LINEAR_MAG_MIP_POINT;
-
 				case VK_SAMPLER_MIPMAP_MODE_NEAREST:
 					return D3D11_FILTER_MIN_LINEAR_MAG_MIP_POINT;
 
 				case VK_SAMPLER_MIPMAP_MODE_LINEAR:
 					return D3D11_FILTER_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
+
+				default:
+					return D3D11_FILTER_MIN_LINEAR_MAG_MIP_POINT;
 				}
 			}
 			else
 			{
 				switch ( mip )
 				{
-				case VkSamplerMipmapMode::eNone:
-					return D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
-
 				case VK_SAMPLER_MIPMAP_MODE_NEAREST:
 					return D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
 
 				case VK_SAMPLER_MIPMAP_MODE_LINEAR:
 					return D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+
+				default:
+					return D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
 				}
 			}
 		}
@@ -129,16 +131,17 @@ namespace ashes::d3d11
 	}
 
 	Sampler::Sampler( VkDevice device
-		, VkSamplerCreateInfo const & createInfo )
-		: ashes::Sampler{ device, createInfo }
+		, VkSamplerCreateInfo createInfo )
+		: m_device{ device }
+		, m_createInfo{ std::move( createInfo ) }
 	{
-		auto d3ddevice = device.getDevice();
+		auto d3ddevice = get( device )->getDevice();
 		D3D11_SAMPLER_DESC desc{};
 		desc.AddressU = convert( createInfo.addressModeU );
 		desc.AddressV = convert( createInfo.addressModeV );
 		desc.AddressW = convert( createInfo.addressModeW );
 		convert( createInfo.borderColor, desc.BorderColor );
-		desc.ComparisonFunc = convert( createInfo.compareOp );
+		desc.ComparisonFunc = getComparisonFunc( createInfo.compareOp );
 		desc.Filter = convert( createInfo.minFilter
 			, createInfo.magFilter
 			, createInfo.mipmapMode );

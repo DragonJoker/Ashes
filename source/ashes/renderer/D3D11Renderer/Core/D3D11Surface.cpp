@@ -7,6 +7,8 @@ See LICENSE file in root folder.
 #include "Core/D3D11PhysicalDevice.hpp"
 #include "Core/D3D11Instance.hpp"
 
+#include "ashesd3d11_api.hpp"
+
 namespace ashes::d3d11
 {
 	namespace
@@ -206,41 +208,26 @@ namespace ashes::d3d11
 		, VkSurfaceCreateInfoKHR createInfo )
 		: m_createInfo{ std::move( createInfo ) }
 	{
-		getSurfaceInfos();
 		m_type = "VK_KHR_win32_surface";
+		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
 	}
 
 	SurfaceKHR::~SurfaceKHR()
 	{
 	}
 
-	void SurfaceKHR::getSurfaceInfos()
+	void SurfaceKHR::getSurfaceInfos( VkPhysicalDevice physicalDevice )
 	{
-		m_displayModes = getDisplayModesList( get().getOutput() );
+		m_displayModes = getDisplayModesList( get( physicalDevice )->getOutput() );
 
 		m_surfaceFormats = getSurfaceFormats( m_displayModes );
-
-		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
-
-		m_surfaceCapabilities.minImageCount = 1u;
-		m_surfaceCapabilities.maxImageCount = 1u;
-		m_surfaceCapabilities.currentExtent.width = ~( 0u );
-		m_surfaceCapabilities.currentExtent.height = ~( 0u );
-		m_surfaceCapabilities.minImageExtent = m_surfaceCapabilities.currentExtent;
-		m_surfaceCapabilities.maxImageExtent = m_surfaceCapabilities.currentExtent;
-		m_surfaceCapabilities.maxImageArrayLayers = 1u;
-		m_surfaceCapabilities.supportedUsageFlags = 0u;
-		m_surfaceCapabilities.supportedTransforms = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
-		m_surfaceCapabilities.currentTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
-		m_surfaceCapabilities.supportedCompositeAlpha = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR;
 
 		auto hWnd = m_createInfo.hwnd;
 		RECT rect{};
 		::GetWindowRect( hWnd, &rect );
-		VkSurfaceCapabilitiesKHR result;
 		m_descs = updateSurfaceCapabilities( m_displayModes
 			, rect
-			, result );
+			, m_surfaceCapabilities );
 	}
 
 	bool SurfaceKHR::getSupport( uint32_t queueFamilyIndex )const

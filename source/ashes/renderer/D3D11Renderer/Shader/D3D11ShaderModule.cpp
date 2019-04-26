@@ -12,13 +12,17 @@ See LICENSE file in root folder.
 #	include "spirv_hlsl.hpp"
 #endif
 
-#include <Ashes/Pipeline/ShaderStageState.hpp>
-
+#include <iostream>
 #include <locale>
 #include <regex>
+
+#define CreateEvent CreateEventA
 #include <atlbase.h>
+#undef CreateEvent
 
 #include <D3DCompiler.h>
+
+#include "ashesd3d11_api.hpp"
 
 namespace ashes::d3d11
 {
@@ -86,8 +90,8 @@ namespace ashes::d3d11
 			return result;
 		}
 
-		void doFillConstant( ashes::SpecialisationInfoBase const & specialisationInfo
-			, ashes::SpecialisationMapEntry const & entry
+		void doFillConstant( VkSpecializationInfo const & specialisationInfo
+			, VkSpecializationMapEntry const & entry
 			, spirv_cross::SPIRType const & type
 			, spirv_cross::SPIRConstant & constant )
 		{
@@ -99,21 +103,21 @@ namespace ashes::d3d11
 				for ( auto vec = 0u; vec < type.vecsize; ++vec )
 				{
 					std::memcpy( &constant.m.c[col].r[vec]
-						, specialisationInfo.getData() + offset
+						, reinterpret_cast< uint8_t const * >( specialisationInfo.pData ) + offset
 						, size );
 					offset += size;
 				}
 			}
 		}
 
-		void doProcessSpecializationConstants( ashes::ShaderStageState const & state
+		void doProcessSpecializationConstants( VkPipelineShaderStageCreateInfo const & state
 			, spirv_cross::CompilerHLSL & compiler )
 		{
-			if ( state.specialisationInfo )
+			if ( state.pSpecializationInfo )
 			{
 				auto constants = compiler.get_specialization_constants();
 
-				for ( auto & spec : *state.specialisationInfo )
+				for ( auto & spec : makeArrayView( state.pSpecializationInfo->pMapEntries, state.pSpecializationInfo->mapEntryCount ) )
 				{
 					auto it = std::find_if( constants.begin()
 						, constants.end()
@@ -126,7 +130,7 @@ namespace ashes::d3d11
 					{
 						auto & constant = compiler.get_constant( it->id );
 						auto & type = compiler.get_type( constant.constant_type );
-						doFillConstant( *state.specialisationInfo
+						doFillConstant( *state.pSpecializationInfo
 							, spec
 							, type
 							, constant );
@@ -151,7 +155,7 @@ namespace ashes::d3d11
 
 			if ( entryPoint.empty() )
 			{
-				throw std::runtime_error{ "Could not find an entry point with stage: " + getName( stage ) };
+				throw std::runtime_error{ "Could not find an entry point." };
 			}
 
 			compiler.set_entry_point( entryPoint, model );
@@ -181,9 +185,9 @@ namespace ashes::d3d11
 #endif
 
 		std::string compileSpvToHlsl( VkDevice device
-			, ashes::UInt32Array const & shader
+			, UInt32Array const & shader
 			, VkShaderStageFlagBits stage
-			, ashes::ShaderStageState const & state )
+			, VkPipelineShaderStageCreateInfo const & state )
 		{
 			if ( shader[0] == OpCodeSPIRV )
 			{
@@ -268,10 +272,10 @@ namespace ashes::d3d11
 	}
 
 	CompiledShaderModule::CompiledShaderModule( VkDevice device
-		, ashes::UInt32Array const & spv
-		, ashes::ShaderStageState const & state )
+		, UInt32Array const & spv
+		, VkPipelineShaderStageCreateInfo const & state )
 		: m_shader{ nullptr }
-		, m_stage{ state.module->getStage() }
+		, m_stage{ state.stage }
 	{
 		static std::map< D3D_FEATURE_LEVEL, std::map< VkShaderStageFlagBits, std::string > > Profiles
 		{
@@ -339,7 +343,7 @@ namespace ashes::d3d11
 			, spv
 			, m_stage
 			, state );
-		std::string profile = Profiles[device.getFeatureLevel()][m_stage];
+		std::string profile = Profiles[get( device )->getFeatureLevel()][m_stage];
 		assert( !profile.empty() && "Unsupported shader stage for currently supported feature level" );
 		CComPtr< ID3DBlob > errors;
 		UINT flags = 0;
@@ -353,7 +357,7 @@ namespace ashes::d3d11
 			, nullptr
 			, nullptr
 			, nullptr
-			, state.entryPoint.c_str()
+			, state.pName
 			, profile.c_str()
 			, flags
 			, 0
@@ -367,13 +371,13 @@ namespace ashes::d3d11
 
 			if ( errors )
 			{
-				ashes::Logger::logWarning( reinterpret_cast< char * >( errors->GetBufferPointer() ) );
+				std::cerr << reinterpret_cast< char * >( errors->GetBufferPointer() ) << std::endl;
 			}
 		}
 		else if ( errors )
 		{
-			ashes::Logger::logError( reinterpret_cast< char * >( errors->GetBufferPointer() ) );
-			ashes::Logger::logError( m_source );
+			std::cerr << reinterpret_cast< char * >( errors->GetBufferPointer() ) << std::endl;
+			std::cerr << m_source << std::endl;
 		}
 	}
 
@@ -411,7 +415,7 @@ namespace ashes::d3d11
 
 	void CompiledShaderModule::doRetrieveShader( VkDevice device )
 	{
-		auto dxDevice = device.getDevice();
+		auto dxDevice = get( device )->getDevice();
 		HRESULT hr;
 
 		switch ( m_stage )
@@ -595,24 +599,21 @@ namespace ashes::d3d11
 	//*************************************************************************
 
 	ShaderModule::ShaderModule( VkDevice device
-		, VkShaderStageFlagBits stage )
-		: ashes::ShaderModule{ device, stage }
-		, m_device{ device }
+		, VkShaderModuleCreateInfo createInfo )
+		: m_device{ device }
+		, m_createInfo{ std::move( createInfo ) }
+		, m_code{ UInt32Array( m_createInfo.pCode, m_createInfo.pCode + ( m_createInfo.codeSize / sizeof( uint32_t ) ) ) }
 	{
+		m_createInfo.pCode = m_code.data();
 	}
 
 	ShaderModule::~ShaderModule()
 	{
 	}
 
-	void ShaderModule::loadShader( ashes::UInt32Array const & shader )
+	CompiledShaderModule ShaderModule::compile( VkPipelineShaderStageCreateInfo const & state )const
 	{
-		m_spv = shader;
-	}
-
-	CompiledShaderModule ShaderModule::compile( ashes::ShaderStageState const & state )
-	{
-		return CompiledShaderModule{ m_device, m_spv, state };
+		return CompiledShaderModule{ m_device, m_code, state };
 	}
 
 	//*************************************************************************

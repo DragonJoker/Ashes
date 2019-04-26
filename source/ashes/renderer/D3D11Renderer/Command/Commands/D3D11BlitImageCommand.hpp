@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
-
-#include <Ashes/Miscellaneous/ImageBlit.hpp>
+#include "renderer/D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
 namespace ashes::d3d11
 {
@@ -16,8 +14,8 @@ namespace ashes::d3d11
 	public:
 		struct Attachment
 		{
-			Attachment( ashes::ImageSubresourceLayers & subresource
-				, Image const & image
+			Attachment( VkImageSubresourceLayers & subresource
+				, VkImage image
 				, uint32_t layer );
 
 			ID3D11Resource * image;
@@ -25,9 +23,9 @@ namespace ashes::d3d11
 		};
 		struct LayerCopy
 		{
-			LayerCopy( ashes::ImageBlit region
-				, Image const & srcImage
-				, Image const & dstImage
+			LayerCopy( VkImageBlit region
+				, VkImage srcImage
+				, VkImage dstImage
 				, uint32_t layer );
 
 			VkOffset3D dstOffset;
@@ -40,7 +38,7 @@ namespace ashes::d3d11
 		BlitImageCommand( VkDevice device
 			, VkImage srcImage
 			, VkImage dstImage
-			, std::vector< ashes::ImageBlit > const & regions
+			, VkImageBlitArray const & regions
 			, VkFilter filter );
 		~BlitImageCommand();
 
@@ -48,8 +46,8 @@ namespace ashes::d3d11
 		CommandPtr clone()const;
 
 	private:
-		Image const & m_srcTexture;
-		Image const & m_dstTexture;
+		VkImage m_srcTexture;
+		VkImage m_dstTexture;
 		std::vector< std::shared_ptr< LayerCopy > > m_layerCopies;
 		D3D11_FILTER_TYPE m_filter;
 	};

@@ -89,15 +89,11 @@ if ( OpenGL_FOUND )
 	target_link_libraries( ${PROJECT_NAME}
 		${OPENGL_gl_LIBRARY}
 		${BinLibraries}
-		common
-		ashes
-		RendererCommon
+		${RendererDependencies}
 	)
 
 	add_dependencies( ${PROJECT_NAME}
-		common
-		ashes
-		RendererCommon
+		${RendererDependencies}
 	)
 
 	parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Buffer "Buffer" )

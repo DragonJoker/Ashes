@@ -2,18 +2,19 @@
 
 namespace ashes::d3d11
 {
-	std::vector< D3D11_INPUT_ELEMENT_DESC > convert( ashes::VertexInputState const & state
+	std::vector< D3D11_INPUT_ELEMENT_DESC > convert( VkPipelineVertexInputStateCreateInfo const & state
 		, InputLayout const & inputLayout )
 	{
 		static uint32_t id = 0u;
 		std::vector< D3D11_INPUT_ELEMENT_DESC > result;
 		UINT index = 0u;
 
-		for ( auto attribute : state.vertexAttributeDescriptions )
+		for ( auto attribute : makeArrayView( state.pVertexAttributeDescriptions, state.vertexAttributeDescriptionCount ) )
 		{
-			auto bindingIt = std::find_if( state.vertexBindingDescriptions.begin()
-				, state.vertexBindingDescriptions.end()
-				, [&attribute]( ashes::VertexInputBindingDescription const & lookup )
+			auto vertexBindingDescriptions = makeArrayView( state.pVertexBindingDescriptions, state.vertexBindingDescriptionCount );
+			auto bindingIt = std::find_if( vertexBindingDescriptions.begin()
+				, vertexBindingDescriptions.end()
+				, [&attribute]( VkVertexInputBindingDescription const & lookup )
 				{
 					return attribute.binding == lookup.binding;
 				} );
@@ -25,7 +26,7 @@ namespace ashes::d3d11
 				} );
 
 			if ( inputDescIt != inputLayout.end()
-				&& bindingIt != state.vertexBindingDescriptions.end() )
+				&& bindingIt != vertexBindingDescriptions.end() )
 			{
 				auto & inputDesc = *inputDescIt;
 				auto & binding = *bindingIt;
@@ -36,7 +37,7 @@ namespace ashes::d3d11
 						getBufferFormat( attribute.format ),
 						attribute.binding,
 						attribute.offset,
-						convert( binding.inputRate ),
+						getInputClassification( binding.inputRate ),
 						( binding.inputRate == VK_VERTEX_INPUT_RATE_INSTANCE
 							? 1u
 							: 0u )

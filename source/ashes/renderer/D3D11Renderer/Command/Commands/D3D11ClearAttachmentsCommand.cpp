@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 #include "Image/D3D11ImageView.hpp"
 #include "RenderPass/D3D11FrameBuffer.hpp"
 
-#include <Ashes/RenderPass/RenderSubpass.hpp>
+#include "ashesd3d11_api.hpp"
 
 namespace ashes::d3d11
 {
@@ -19,15 +19,13 @@ namespace ashes::d3d11
 		{
 			if ( ashes::checkFlag( clearAttach.clear.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT ) )
 			{
-				assert( clearAttach.clear.clearValue.isColour() );
-				auto & colour = clearAttach.clear.clearValue.colour();
+				auto & colour = clearAttach.clear.clearValue.color;
 				context.context->ClearRenderTargetView( reinterpret_cast< ID3D11RenderTargetView * >( clearAttach.view )
-					, colour.float32.data() );
+					, colour.float32 );
 			}
 			else
 			{
-				assert( !clearAttach.clear.clearValue.isColour() );
-				auto & depthStencil = clearAttach.clear.clearValue.depthStencil();
+				auto & depthStencil = clearAttach.clear.clearValue.depthStencil;
 				UINT flags = ( ashes::checkFlag( clearAttach.clear.aspectMask, VK_IMAGE_ASPECT_DEPTH_BIT )
 						? D3D11_CLEAR_DEPTH
 						: 0u )
@@ -40,15 +38,14 @@ namespace ashes::d3d11
 					, depthStencil.stencil );
 			}
 		}
-
 	}
 
 	ClearAttachmentsCommand::ClearAttachmentsCommand( VkDevice device
-		, RenderPass const & renderPass
-		, ashes::SubpassDescription const & subpass
-		, FrameBuffer const & framebuffer
-		, ashes::ClearAttachmentArray const & clearAttaches
-		, ashes::ClearRectArray const & clearRects )
+		, VkRenderPass renderPass
+		, VkSubpassDescription const & subpass
+		, VkFramebuffer framebuffer
+		, VkClearAttachmentArray const & clearAttaches
+		, VkClearRectArray const & clearRects )
 		: CommandBase{ device }
 		, m_clearRects{ clearRects }
 	{
@@ -56,12 +53,12 @@ namespace ashes::d3d11
 		{
 			if ( checkFlag( attach.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT ) )
 			{
-				auto ref = subpass.colorAttachments[attach.colourAttachment];
-				m_clearViews.push_back( { attach, framebuffer.getAllViews()[ref.attachment] } );
+				auto ref = subpass.pColorAttachments[attach.colorAttachment];
+				m_clearViews.push_back( { attach, get( framebuffer )->getAllViews()[ref.attachment] } );
 			}
 			else if ( attach.aspectMask )
 			{
-				m_clearViews.push_back( { attach, framebuffer.getDSView() } );
+				m_clearViews.push_back( { attach, get( framebuffer )->getDSView() } );
 			}
 		}
 	}
@@ -74,10 +71,10 @@ namespace ashes::d3d11
 			{
 				D3D11_RECT scissor
 				{
-					LONG( rect.offset.x ),
-					LONG( rect.offset.y ),
-					LONG( rect.extent.width ),
-					LONG( rect.extent.height ),
+					LONG( rect.rect.offset.x ),
+					LONG( rect.rect.offset.y ),
+					LONG( rect.rect.extent.width ),
+					LONG( rect.rect.extent.height ),
 				};
 				context.context->RSSetScissorRects( 1u, &scissor );
 				doClear( context, clearAttach );

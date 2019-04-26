@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
-
-#include <Ashes/RenderPass/ClearValue.hpp>
+#include "renderer/D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
 namespace ashes::d3d11
 {
@@ -27,15 +25,20 @@ namespace ashes::d3d11
 		*	La couleur de vidage.
 		*/
 		ClearDepthStencilCommand( VkDevice device
-			, ashes::ImageView const & image
-			, ashes::DepthStencilClearValue const & value );
+			, VkImage image
+			, VkImageSubresourceRangeArray ranges
+			, VkClearDepthStencilValue value );
+		ClearDepthStencilCommand( ClearDepthStencilCommand const & rhs );
+		~ClearDepthStencilCommand();
 
 		void apply( Context const & context )const;
 		CommandPtr clone()const;
 
 	private:
-		ImageView const & m_image;
-		ashes::DepthStencilClearValue m_value;
+		VkImage m_image;
+		VkImageSubresourceRangeArray m_ranges;
+		VkClearDepthStencilValue m_value;
 		UINT m_flags;
+		VkImageViewArray m_views;
 	};
 }

@@ -33,9 +33,19 @@ namespace ashes::d3d11
 		return result;
 	}
 
-	void Buffer::doBindMemory()
+	bool Buffer::isMapped()const
 	{
-		m_buffer = get( m_memory )->bindToBuffer( m_createInfo.usage );
+		assert( m_memory != VK_NULL_HANDLE );
+		return get( m_memory )->isMapped();
+	}
+
+	VkResult Buffer::bindMemory( VkDeviceMemory memory
+		, VkDeviceSize memoryOffset )
+	{
+		m_memory = memory;
+		auto result = get( m_memory )->bindToBuffer( get( this )
+			, memoryOffset
+			, m_buffer );
 
 		if ( checkFlag( m_createInfo.usage, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT )
 			&& get( m_device )->getFeatureLevel() >= D3D_FEATURE_LEVEL_11_0 )
@@ -46,12 +56,14 @@ namespace ashes::d3d11
 			desc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
 			auto elemSize = 1u;
 			desc.Buffer.FirstElement = 0u;
-			desc.Buffer.NumElements = m_createInfo.size;
+			desc.Buffer.NumElements = UINT( m_createInfo.size );
 			auto hr = device->CreateUnorderedAccessView( m_buffer
 				, &desc
 				, &m_unorderedAccessView );
-			checkError( *get( m_device ), hr, "CreateUnorderedAccessViewBuffer" );
+			checkError( m_device, hr, "CreateUnorderedAccessViewBuffer" );
 			dxDebugName( m_unorderedAccessView, UnorderedAccessViewBuffer );
 		}
+
+		return result;
 	}
 }

@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
+#include "renderer/D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
 namespace ashes::d3d11
 {
@@ -18,7 +18,7 @@ namespace ashes::d3d11
 	public:
 		WriteTimestampCommand( VkDevice device
 			, VkPipelineStageFlagBits pipelineStage
-			, ashes::QueryPool const & pool
+			, VkQueryPool pool
 			, uint32_t query );
 		void apply( Context const & context )const;
 		CommandPtr clone()const;

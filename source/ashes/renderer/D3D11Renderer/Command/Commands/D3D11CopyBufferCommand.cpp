@@ -6,17 +6,17 @@ See LICENSE file in root folder.
 
 #include "Buffer/D3D11Buffer.hpp"
 
-#include <Ashes/Miscellaneous/BufferCopy.hpp>
+#include "ashesd3d11_api.hpp"
 
 namespace ashes::d3d11
 {
 	CopyBufferCommand::CopyBufferCommand( VkDevice device
-		, ashes::BufferCopy const & copyInfo
+		, VkBufferCopy const & copyInfo
 		, VkBuffer src
 		, VkBuffer dst )
 		: CommandBase{ device }
-		, m_src{ static_cast< Buffer const & >( src ) }
-		, m_dst{ static_cast< Buffer const & >( dst ) }
+		, m_src{ src }
+		, m_dst{ dst }
 		, m_dstOffset{ UINT( copyInfo.dstOffset ) }
 		, m_srcBox{ UINT( copyInfo.srcOffset ), 0u, 0u, UINT( copyInfo.srcOffset + copyInfo.size ), 1u, 1u }
 	{
@@ -24,12 +24,12 @@ namespace ashes::d3d11
 
 	void CopyBufferCommand::apply( Context const & context )const
 	{
-		context.context->CopySubresourceRegion( m_dst.getBuffer()
+		context.context->CopySubresourceRegion( get( m_dst )->getBuffer()
 			, 0u
 			, m_dstOffset
 			, 0u
 			, 0u
-			, m_src.getBuffer()
+			, get( m_src )->getBuffer()
 			, 0u
 			, &m_srcBox );
 	}

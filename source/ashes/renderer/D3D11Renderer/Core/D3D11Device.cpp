@@ -27,13 +27,9 @@ See LICENSE file in root folder.
 #include "Sync/D3D11Fence.hpp"
 #include "Sync/D3D11Semaphore.hpp"
 
-#include <Ashes/Core/PlatformWindowHandle.hpp>
-#include <Ashes/Image/ImageSubresource.hpp>
-#include <Ashes/Image/SubresourceLayout.hpp>
-#include <Ashes/Miscellaneous/MemoryRequirements.hpp>
-#include <Ashes/RenderPass/RenderPassCreateInfo.hpp>
-
 #include <D3DCommon.h>
+
+#include "ashesd3d11_api.hpp"
 
 namespace ashes::d3d11
 {
@@ -47,7 +43,7 @@ namespace ashes::d3d11
 
 			switch ( objectType )
 			{
-			case VkDebugReportObjectTypeEXT::eDeviceMemory:
+			case VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT:
 				break;
 			case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT:
 				result = reinterpret_cast< Buffer const * >( object )->getBuffer();
@@ -58,7 +54,7 @@ namespace ashes::d3d11
 			case VK_DEBUG_REPORT_OBJECT_TYPE_QUERY_POOL_EXT:
 				result = ( *reinterpret_cast< QueryPool const * >( object )->begin() );
 				break;
-			case VkDebugReportObjectTypeEXT::eBufferView:
+			case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT:
 				result = reinterpret_cast< BufferView const * >( object )->getView();
 				break;
 			case VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT:
@@ -118,24 +114,30 @@ namespace ashes::d3d11
 		}
 	}
 
-	Device::Device( Instance const & instance
-		, PhysicalDevice const & physicalDevice
+	Device::Device( VkInstance instance
+		, VkPhysicalDevice physicalDevice
 		, VkDeviceCreateInfo createInfos )
-		: ashes::Device{ instance
-			, physicalDevice
-			, std::move( createInfos ) }
-		, m_instance{ instance }
+		: m_instance{ instance }
 		, m_physicalDevice{ physicalDevice }
+		, m_createInfos{ std::move( createInfos ) }
 	{
 		doCreateD3D11Device();
-		m_timestampPeriod = m_gpu.getProperties().limits.timestampPeriod;
 		doCreateDummyIndexBuffer();
 		doCreateQueues();
 	}
 
 	Device::~Device()
 	{
-		m_dummyIndexed.reset();
+		for ( auto creates : m_queues )
+		{
+			for ( auto queue : creates.second.queues )
+			{
+				deallocate( queue, nullptr );
+			}
+		}
+
+		deallocate( m_dummyIndexed.memory, nullptr );
+		deallocate( m_dummyIndexed.buffer, nullptr );
 
 		m_deviceContext->ClearState();
 		m_deviceContext->Flush();
@@ -151,150 +153,33 @@ namespace ashes::d3d11
 #endif
 	}
 
-	VkRenderPass Device::createRenderPass( VkRenderPassCreateInfo createInfo )const
-	{
-		return std::make_unique< RenderPass >( *this, std::move( createInfo ) );
-	}
-
-	VkPipelineLayout Device::createPipelineLayout( ashes::VkDescriptorSetLayoutArray const & setLayouts
-			, ashes::VkPushConstantRangeArray const & pushConstantRanges )const
-	{
-		return std::make_unique< PipelineLayout >( *this
-			, setLayouts
-			, pushConstantRanges );
-	}
-
-	VkDescriptorSetLayout Device::createDescriptorSetLayout( VkDescriptorSetLayoutBindingArray bindings )const
-	{
-		return std::make_unique< DescriptorSetLayout >( *this, std::move( bindings ) );
-	}
-
-	VkDescriptorPool Device::createDescriptorPool( VkDescriptorPoolCreateFlags flags
-		, uint32_t maxSets
-		, ashes::VkDescriptorPoolSizeArray poolSizes )const
-	{
-		return std::make_unique< DescriptorPool >( *this, flags, maxSets, poolSizes );
-	}
-
-	VkDeviceMemory Device::allocateMemory( VkMemoryAllocateInfo allocateInfo )const
-	{
-		return std::make_unique< DeviceMemory >( *this
-			, std::move( allocateInfo ) );
-	}
-
-	VkImage Device::createImage( VkImageCreateInfo const & createInfo )const
-	{
-		return std::make_unique< Image >( *this, createInfo );
-	}
-
 	void Device::getImageSubresourceLayout( VkImage image
 		, VkImageSubresource const & subresource
 		, VkSubresourceLayout & layout )const
 	{
-		auto extent = getTexelBlockExtent( image.getFormat() );
-		auto byteSize = getTexelBlockByteSize( extent, image.getFormat() );
-		auto mipWidth = getSubresourceValue( image.getDimensions().width, subresource.mipLevel );
-		auto mipHeight = getSubresourceValue( image.getDimensions().height, subresource.mipLevel );
+		auto extent = getTexelBlockExtent( get( image )->getFormat() );
+		auto byteSize = getTexelBlockByteSize( extent, get( image )->getFormat() );
+		auto mipWidth = getSubresourceValue( get( image )->getDimensions().width, subresource.mipLevel );
+		auto mipHeight = getSubresourceValue( get( image )->getDimensions().height, subresource.mipLevel );
 		layout.rowPitch = byteSize * mipWidth / ( extent.width * extent.height * extent.depth );
 		layout.arrayPitch = layout.rowPitch * mipHeight * extent.height / ( extent.width * extent.depth );
 		layout.depthPitch = layout.arrayPitch;
 		layout.offset = subresource.arrayLayer * layout.arrayPitch * byteSize;
-		layout.size = layout.arrayPitch * image.getDimensions().depth;
-	}
-
-	VkSampler Device::createSampler( VkSamplerCreateInfo const & createInfo )const
-	{
-		return std::make_unique< Sampler >( *this, createInfo );
-	}
-
-	VkBuffer Device::createBuffer( uint32_t size
-		, VkBufferUsageFlags target )const
-	{
-		return std::make_unique< Buffer >( *this
-			, size
-			, target );
-	}
-
-	VkBufferView Device::createBufferView( VkBuffer buffer
-		, VkFormat format
-		, uint32_t offset
-		, uint32_t range )const
-	{
-		return std::make_unique< BufferView >( *this
-			, static_cast< Buffer const & >( buffer )
-			, format
-			, offset
-			, range );
-	}
-
-	VkSwapchainKHR Device::createSwapChain( VkSwapchainCreateInfoKHR createInfo )const
-	{
-		VkSwapchainKHR result;
-
-		try
-		{
-			result = std::make_unique< SwapChain >( *this, std::move( createInfo ) );
-		}
-		catch ( std::exception & exc )
-		{
-			ashes::Logger::logError( std::string{ "Could not create the swap chain:\n" } + exc.what() );
-		}
-		catch ( ... )
-		{
-			ashes::Logger::logError( "Could not create the swap chain:\nUnknown error" );
-		}
-
-		return result;
-	}
-
-	VkSemaphore Device::createSemaphore()const
-	{
-		return std::make_unique< Semaphore >( *this );
-	}
-
-	VkFence Device::createFence( VkFenceCreateFlags flags )const
-	{
-		return std::make_unique< Fence >( *this, flags );
-	}
-
-	VkEvent Device::createEvent()const
-	{
-		return std::make_unique< Event >( *this );
-	}
-
-	VkCommandPool Device::createCommandPool( uint32_t queueFamilyIndex
-		, VkCommandPoolCreateFlags const & flags )const
-	{
-		return std::make_unique< CommandPool >( *this
-			, queueFamilyIndex
-			, flags );
-	}
-
-	VkShaderModule Device::createShaderModule( VkShaderStageFlagBits stage )const
-	{
-		return std::make_shared< ShaderModule >( *this, stage );
-	}
-
-	VkQueryPool Device::createQueryPool( VkQueryType type
-		, uint32_t count
-		, VkQueryPipelineStatisticFlags pipelineStatistics )const
-	{
-		return std::make_unique< QueryPool >( *this
-			, type
-			, count
-			, pipelineStatistics );
+		layout.size = layout.arrayPitch * get( image )->getDimensions().depth;
 	}
 
 	void Device::debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const
 	{
 #if !defined( NDEBUG )
-		auto * resource = getResource( *this, nameInfo.objectType, nameInfo.object );
+		auto * resource = getResource( get( this )
+			, nameInfo.objectType
+			, (void*)nameInfo.object );
 
 		if ( resource )
 		{
 			resource->SetPrivateData( WKPDID_D3DDebugObjectName
-				, UINT( nameInfo.objectName.size() )
-				, nameInfo.objectName.c_str() );
+				, UINT( strnlen( nameInfo.pObjectName, 256 ) )
+				, nameInfo.pObjectName );
 		}
 #endif
 	}
@@ -306,18 +191,18 @@ namespace ashes::d3d11
 
 		if ( it == m_queues.end() )
 		{
-			throw ashes::Exception{ ashes::Result::eErrorRenderer, "Couldn't find family index within created queues" };
+			throw ashes::Exception{ VK_ERROR_INITIALIZATION_FAILED, "Couldn't find family index within created queues" };
 		}
 
-		if ( it->second.second <= index )
+		if ( it->second.queues.size() <= index )
 		{
-			throw ashes::Exception{ ashes::Result::eErrorRenderer, "Couldn't find queue with wanted index within its family" };
+			throw ashes::Exception{ VK_ERROR_INITIALIZATION_FAILED, "Couldn't find queue with wanted index within its family" };
 		}
 
-		return std::make_unique< Queue >( *this, it->second.first, index );
+		return it->second.queues[index];
 	}
 
-	void Device::waitIdle()const
+	VkResult Device::waitIdle()const
 	{
 		m_deviceContext->End( m_waitIdleQuery );
 		m_deviceContext->Flush();
@@ -331,25 +216,29 @@ namespace ashes::d3d11
 		{
 			std::this_thread::sleep_for( std::chrono::microseconds{ 1ull } );
 		}
+
+		return data
+			? VK_SUCCESS
+			: VK_TIMEOUT;
 	}
 
 	bool Device::onCopyToImageCommand( VkCommandBuffer cmd
-		, ashes::VkBufferImageCopyArray const & copyInfo
+		, VkBufferImageCopyArray const & copyInfo
 		, VkBuffer src
 		, VkImage dst )const
 	{
-		return m_instance.onCopyToImageCommand( cmd, copyInfo, src, dst );
+		return get( m_instance )->onCopyToImageCommand( cmd, copyInfo, src, dst );
 	}
 
 	bool Device::onCheckHResultCommand( HRESULT hresult
 		, std::string message )const
 	{
-		return m_instance.onCheckHResultCommand( hresult, std::move( message ) );
+		return get( m_instance )->onCheckHResultCommand( hresult, std::move( message ) );
 	}
 
 	void Device::doCreateD3D11Device()
 	{
-		auto factory = m_instance.getDXGIFactory();
+		auto factory = get( m_instance )->getDXGIFactory();
 
 		std::vector< D3D_FEATURE_LEVEL > requestedFeatureLevels
 		{
@@ -377,13 +266,13 @@ namespace ashes::d3d11
 		//}
 
 		UINT flags = 0;
-		auto adapter = m_physicalDevice.getAdapter();
+		auto adapter = get( m_physicalDevice )->getAdapter();
 
 #if !defined( NDEBUG )
 		flags = D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-		D3D_FEATURE_LEVEL supportedFeatureLevel = m_physicalDevice.getFeatureLevel();
+		D3D_FEATURE_LEVEL supportedFeatureLevel = get( m_physicalDevice )->getFeatureLevel();
 		hr = D3D11CreateDevice( nullptr
 			, D3D_DRIVER_TYPE_HARDWARE
 			, nullptr
@@ -413,32 +302,63 @@ namespace ashes::d3d11
 
 	void Device::doCreateDummyIndexBuffer()
 	{
-		auto count = uint32_t( sizeof( dummyIndex ) / sizeof( dummyIndex[0] ) );
-		m_dummyIndexed = ashes::makeBuffer< uint32_t >( *this
-			, count
-			, VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT );
-		auto requirements = m_dummyIndexed->getBuffer().getMemoryRequirements();
+		auto size = uint32_t( sizeof( dummyIndex ) );
+		auto count = uint32_t( size / sizeof( dummyIndex[0] ) );
+		allocate( m_dummyIndexed.buffer
+			, nullptr
+			, get( this )
+			, VkBufferCreateInfo
+			{
+				VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+				nullptr,
+				0u,
+				size,
+				VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+				VK_SHARING_MODE_EXCLUSIVE,
+				0u,
+				nullptr,
+			} );
+		auto requirements = get( m_dummyIndexed.buffer )->getMemoryRequirements();
 		auto deduced = deduceMemoryType( requirements.memoryTypeBits
 			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
-		m_dummyIndexed->bindMemory( allocateMemory( { requirements.size, deduced } ) );
+		allocate( m_dummyIndexed.memory
+			, nullptr
+			, get( this )
+			, VkMemoryAllocateInfo
+			{
+				VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+				nullptr,
+				requirements.size,
+				deduced
+			} );
+		get( m_dummyIndexed.buffer )->bindMemory( m_dummyIndexed.memory, 0u );
+		uint32_t * buffer;
 
-		if ( auto * buffer = m_dummyIndexed->lock( 0u
-			, count
-			, VkMemoryMapFlagBits::eWrite ) )
+		if ( VK_SUCCESS == get( m_dummyIndexed.memory )->lock( 0u
+			, size
+			, 0u
+			, reinterpret_cast< void ** >( &buffer ) ) )
 		{
 			std::copy( dummyIndex, dummyIndex + count, buffer );
-			m_dummyIndexed->flush( 0, count );
-			m_dummyIndexed->unlock();
+			get( m_dummyIndexed.memory )->flush( 0, size );
+			get( m_dummyIndexed.memory )->unlock();
 		}
 	}
 
 	void Device::doCreateQueues()
 	{
-		for ( auto & queueCreateInfo : m_createInfos.queueCreateInfos )
+		for ( auto & queueCreateInfo : makeArrayView( m_createInfos.pQueueCreateInfos, m_createInfos.queueCreateInfoCount ) )
 		{
 			auto it = m_queues.emplace( queueCreateInfo.queueFamilyIndex
-				, QueueCreateCount{ queueCreateInfo, 0u } ).first;
-			it->second.second++;
+				, QueueCreates{ queueCreateInfo, {} } ).first;
+
+			VkQueue queue;
+			allocate( queue
+				, nullptr
+				, get( this )
+				, it->second.createInfo
+				, uint32_t( it->second.queues.size() ) );
+			it->second.queues.emplace_back( queue );
 		}
 	}
 }

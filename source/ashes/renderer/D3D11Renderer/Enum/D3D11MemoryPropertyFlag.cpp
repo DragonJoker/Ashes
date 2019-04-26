@@ -9,7 +9,7 @@ namespace ashes::d3d11
 			|| checkFlag( flags, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT );
 	}
 
-	D3D11_USAGE getUsage( VkMemoryPropertyFlags const & flags
+	D3D11_USAGE getBufferUsage( VkMemoryPropertyFlags const & flags
 		, VkBufferUsageFlags const & targets )
 	{
 		D3D11_USAGE result{ D3D11_USAGE_DEFAULT };
@@ -38,7 +38,7 @@ namespace ashes::d3d11
 		return result;
 	}
 
-	UINT getCpuAccessFlags( VkMemoryPropertyFlags const & flags
+	UINT getCpuBufferAccessFlags( VkMemoryPropertyFlags const & flags
 		, VkBufferUsageFlags const & targets )
 	{
 		UINT result{};
@@ -63,7 +63,7 @@ namespace ashes::d3d11
 		return result;
 	}
 
-	D3D11_USAGE getUsage( VkMemoryPropertyFlags const & flags
+	D3D11_USAGE getImageUsage( VkMemoryPropertyFlags const & flags
 		, VkImageUsageFlags const & usage )
 	{
 		D3D11_USAGE result{ D3D11_USAGE_DEFAULT };
@@ -87,7 +87,7 @@ namespace ashes::d3d11
 		return result;
 	}
 
-	UINT getCpuAccessFlags( VkMemoryPropertyFlags const & flags
+	UINT getCpuImageAccessFlags( VkMemoryPropertyFlags const & flags
 		, VkImageUsageFlags const & usage )
 	{
 		UINT result{};

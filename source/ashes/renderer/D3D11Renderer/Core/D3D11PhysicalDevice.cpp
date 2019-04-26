@@ -9,13 +9,11 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	PhysicalDevice::PhysicalDevice( Instance const & instance
+	PhysicalDevice::PhysicalDevice( VkInstance instance
 		, AdapterInfo adapterInfo )
-		: ashes::PhysicalDevice{ instance }
-		, m_instance{ instance }
+		: m_instance{ instance }
 		, m_adapterInfo{ std::move( adapterInfo ) }
 	{
-		m_shaderVersion = 450u;
 		doInitialise();
 	}
 
@@ -24,39 +22,44 @@ namespace ashes::d3d11
 		safeRelease( m_output );
 	}
 
-	ashes::VkLayerPropertiesArray PhysicalDevice::enumerateLayerProperties()const
+	VkBool32 PhysicalDevice::getPresentationSupport( uint32_t queueFamilyIndex )const
 	{
-		ashes::VkLayerPropertiesArray result;
+		return VK_TRUE;
+	}
+
+	VkLayerPropertiesArray PhysicalDevice::enumerateLayerProperties()const
+	{
+		VkLayerPropertiesArray result;
 		return result;
 	}
 
-	ashes::VkExtensionPropertiesArray PhysicalDevice::enumerateExtensionProperties( std::string const & layerName )const
+	VkExtensionPropertiesArray PhysicalDevice::enumerateExtensionProperties( std::string const & layerName )const
 	{
-		ashes::VkExtensionPropertiesArray result;
+		VkExtensionPropertiesArray result;
 		return result;
 	}
 
-	ashes::PhysicalDeviceProperties PhysicalDevice::getProperties()const
+	VkPhysicalDeviceProperties PhysicalDevice::getProperties()const
 	{
 		return m_properties;
 	}
 
-	ashes::PhysicalDeviceMemoryProperties PhysicalDevice::getMemoryProperties()const
+	VkPhysicalDeviceMemoryProperties PhysicalDevice::getMemoryProperties()const
 	{
 		return Instance::getMemoryProperties();
 	}
 
-	ashes::PhysicalDeviceFeatures PhysicalDevice::getFeatures()const
+	VkPhysicalDeviceFeatures PhysicalDevice::getFeatures()const
 	{
 		return m_features;
 	}
 
-	ashes::QueueFamilyPropertiesArray PhysicalDevice::getQueueFamilyProperties()const
+	VkQueueFamilyPropertiesArray PhysicalDevice::getQueueFamilyProperties()const
 	{
 		return m_queueProperties;
 	}
 
-	ashes::FormatProperties PhysicalDevice::getFormatProperties( VkFormat fmt )const
+	VkFormatProperties PhysicalDevice::getFormatProperties( VkFormat fmt )const
 	{
 		return m_formatProperties[fmt];
 	}
@@ -68,7 +71,9 @@ namespace ashes::d3d11
 		if ( m_adapterInfo.adapter2
 			&& SUCCEEDED( m_adapterInfo.adapter2->GetDesc2( &adapterDesc ) ) )
 		{
-			m_properties.deviceName = toString( adapterDesc.Description );
+			strncpy( m_properties.deviceName
+				, toString( adapterDesc.Description ).c_str()
+				, sizeof( m_properties.deviceName ) - 1u );
 			m_properties.deviceID = adapterDesc.DeviceId;
 			m_properties.vendorID = adapterDesc.VendorId;
 			m_properties.driverVersion = adapterDesc.Revision;
@@ -85,7 +90,7 @@ namespace ashes::d3d11
 		uint32_t major = m_adapterInfo.featureLevel >> 12;
 		uint32_t minor = ( m_adapterInfo.featureLevel >> 8 ) & 0x01;
 		m_properties.apiVersion = ( major << 22 ) | ( minor << 12 );
-		m_properties.deviceType = ashes::PhysicalDeviceType::eDiscreteGpu;
+		m_properties.deviceType = VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
 
 		m_features.robustBufferAccess = true;
 		m_features.fullDrawIndexUint32 = true;

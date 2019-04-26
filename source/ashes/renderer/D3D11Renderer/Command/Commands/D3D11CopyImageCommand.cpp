@@ -7,13 +7,13 @@ See LICENSE file in root folder.
 #include "Image/D3D11Image.hpp"
 #include "Image/D3D11ImageView.hpp"
 
-#include <Ashes/Image/ImageSubresourceRange.hpp>
+#include "ashesd3d11_api.hpp"
 
 namespace ashes::d3d11
 {
 	namespace
 	{
-		D3D11_BOX doGetSrcBox( ashes::ImageCopy const & copyInfo )
+		D3D11_BOX doGetSrcBox( VkImageCopy const & copyInfo )
 		{
 			return
 			{
@@ -28,44 +28,44 @@ namespace ashes::d3d11
 	}
 
 	CopyImageCommand::CopyImageCommand( VkDevice device
-		, ashes::ImageCopy const & copyInfo
+		, VkImageCopy const & copyInfo
 		, VkImage src
 		, VkImage dst )
 		: CommandBase{ device }
 		, m_copyInfo{ copyInfo }
-		, m_src{ static_cast< Image const & >( src ) }
-		, m_dst{ static_cast< Image const & >( dst ) }
+		, m_src{ src }
+		, m_dst{ dst }
 		, m_srcBox{ doGetSrcBox( m_copyInfo ) }
 		, m_srcSubresource{ D3D11CalcSubresource( m_copyInfo.srcSubresource.mipLevel
 			, m_copyInfo.srcSubresource.baseArrayLayer
-			, m_src.getMipmapLevels() ) }
+			, get( m_src )->getMipmapLevels() ) }
 		, m_dstSubresource{ D3D11CalcSubresource( m_copyInfo.dstSubresource.mipLevel
 			, m_copyInfo.dstSubresource.baseArrayLayer
-			, m_dst.getMipmapLevels() ) }
+			, get( m_dst )->getMipmapLevels() ) }
 	{
 	}
 
 	void CopyImageCommand::apply( Context const & context )const
 	{
-		if ( isDepthOrStencilFormat( m_src.getFormat() ) )
+		if ( isDepthOrStencilFormat( get( m_src )->getFormat() ) )
 		{
-			context.context->CopySubresourceRegion( m_dst.getResource()
+			context.context->CopySubresourceRegion( get( m_dst )->getResource()
 				, m_dstSubresource
 				, 0
 				, 0
 				, 0
-				, m_src.getResource()
+				, get( m_src )->getResource()
 				, m_srcSubresource
 				, nullptr );
 		}
 		else
 		{
-			context.context->CopySubresourceRegion( m_dst.getResource()
+			context.context->CopySubresourceRegion( get( m_dst )->getResource()
 				, m_dstSubresource
 				, m_copyInfo.dstOffset.x
 				, m_copyInfo.dstOffset.y
 				, m_copyInfo.dstOffset.z
-				, m_src.getResource()
+				, get( m_src )->getResource()
 				, m_srcSubresource
 				, &m_srcBox );
 		}

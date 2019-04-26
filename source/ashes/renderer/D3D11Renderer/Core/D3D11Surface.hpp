@@ -15,6 +15,7 @@ namespace ashes::d3d11
 			, VkSurfaceCreateInfoKHR createInfo );
 		~SurfaceKHR();
 
+		void getSurfaceInfos( VkPhysicalDevice physicalDevice );
 		bool getSupport( uint32_t queueFamilyIndex )const;
 
 		VkSurfaceCapabilitiesKHR getCapabilities()const
@@ -32,14 +33,15 @@ namespace ashes::d3d11
 			return m_surfaceFormats;
 		}
 
+		HWND getHwnd()const
+		{
+			return m_createInfo.hwnd;
+		}
 
 		inline std::vector< DXGI_MODE_DESC > const & getDescs( VkFormat format )const
 		{
 			return m_descs[format];
 		}
-
-	private:
-		void getSurfaceInfos();
 
 	private:
 		VkSurfaceCreateInfoKHR m_createInfo;

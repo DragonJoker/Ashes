@@ -7,24 +7,56 @@ See LICENSE file in root folder.
 #include "Command/D3D11CommandBuffer.hpp"
 #include "Core/D3D11Device.hpp"
 
+#include "ashesd3d11_api.hpp"
+
 namespace ashes::d3d11
 {
 	CommandPool::CommandPool( VkDevice device
-		, uint32_t queueFamilyIndex
-		, VkCommandPoolCreateFlags flags )
-		: ashes::CommandPool{ device, queueFamilyIndex, flags }
-		, m_device{ device }
+		, VkCommandPoolCreateInfo createInfo )
+		: m_device{ device }
+		, m_createInfo{ std::move( createInfo ) }
 	{
 	}
 
 	CommandPool::~CommandPool()
 	{
+		for ( auto & command : m_commands )
+		{
+			deallocate( command, nullptr );
+		}
 	}
 
-	ashes::CommandBufferPtr CommandPool::createCommandBuffer( bool primary )const
+	void CommandPool::registerCommands( VkCommandBuffer commands )
 	{
-		return std::make_unique< CommandBuffer >( m_device
-			, *this
-			, primary );
+		m_commands.push_back( commands );
+	}
+
+	VkResult CommandPool::reset( VkCommandPoolResetFlags flags )
+	{
+		for ( auto & command : m_commands )
+		{
+			deallocate( command, nullptr );
+		}
+
+		m_commands.clear();
+		return VK_SUCCESS;
+	}
+
+	VkResult CommandPool::free( VkCommandBufferArray commands )
+	{
+		for ( auto & command : commands )
+		{
+			auto it = std::find( m_commands.begin()
+				, m_commands.end()
+				, command );
+
+			if ( it != m_commands.end() )
+			{
+				deallocate( command, nullptr );
+				m_commands.erase( it );
+			}
+		}
+
+		return VK_SUCCESS;
 	}
 }

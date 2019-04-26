@@ -6,13 +6,15 @@ See LICENSE file in root folder.
 
 #include "Miscellaneous/D3D11QueryPool.hpp"
 
+#include "ashesd3d11_api.hpp"
+
 namespace ashes::d3d11
 {
 	EndQueryCommand::EndQueryCommand( VkDevice device
-		, ashes::QueryPool const & pool
+		, VkQueryPool pool
 		, uint32_t query )
 		: CommandBase{ device }
-		, m_query{ *( static_cast< QueryPool const & >( pool ).begin() + query ) }
+		, m_query{ *( get( pool )->begin() + query ) }
 	{
 	}
 

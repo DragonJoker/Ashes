@@ -2,6 +2,8 @@
 
 #include "Core/D3D11Device.hpp"
 
+#include "ashesd3d11_api.hpp"
+
 namespace ashes::d3d11
 {
 	namespace
@@ -53,20 +55,18 @@ namespace ashes::d3d11
 	}
 
 	QueryPool::QueryPool( VkDevice device
-		, VkQueryType type
-		, uint32_t count
-		, VkQueryPipelineStatisticFlags pipelineStatistics )
-		: ashes::QueryPool{ device, type, count, pipelineStatistics }
-		, m_device{ device }
+		, VkQueryPoolCreateInfo createInfo )
+		: m_device{ device }
+		, m_createInfo{ std::move( createInfo ) }
 	{
 		D3D11_QUERY_DESC desc;
 		desc.MiscFlags = 0u;
-		desc.Query = convert( type );
-		m_queries.resize( count );
+		desc.Query = convert( m_createInfo.queryType );
+		m_queries.resize( m_createInfo.queryCount );
 
 		for ( auto & query : m_queries )
 		{
-			auto hr = device.getDevice()->CreateQuery( &desc, &query );
+			auto hr = get( m_device )->getDevice()->CreateQuery( &desc, &query );
 
 			if ( checkError( m_device, hr, "CreateQuery" ) )
 			{
@@ -74,7 +74,7 @@ namespace ashes::d3d11
 			}
 		}
 
-		switch ( type )
+		switch ( m_createInfo.queryType )
 		{
 		case VK_QUERY_TYPE_OCCLUSION:
 			m_data.resize( sizeof( uint64_t ) );
@@ -124,16 +124,17 @@ namespace ashes::d3d11
 		}
 	}
 
-	void QueryPool::getResults( uint32_t firstQuery
+	VkResult QueryPool::getResults( uint32_t firstQuery
 		, uint32_t queryCount
-		, uint32_t stride
+		, VkDeviceSize stride
 		, VkQueryResultFlags flags
-		, ashes::UInt32Array & datas )const
+		, UInt32Array & datas )const
 	{
 		auto max = firstQuery + queryCount;
 		assert( max <= m_queries.size() );
 		ID3D11DeviceContext * context;
-		m_device.getDevice()->GetImmediateContext( &context );
+		get( m_device )->getDevice()->GetImmediateContext( &context );
+		VkResult result = VK_SUCCESS;
 
 		for ( auto i = firstQuery; i < max; ++i )
 		{
@@ -152,21 +153,27 @@ namespace ashes::d3d11
 			{
 				datas[i - firstQuery] = getUint32( i );
 			}
+			else
+			{
+				result = VK_INCOMPLETE;
+			}
 		}
 
 		safeRelease( context );
+		return result;
 	}
 
-	void QueryPool::getResults( uint32_t firstQuery
+	VkResult QueryPool::getResults( uint32_t firstQuery
 		, uint32_t queryCount
-		, uint32_t stride
+		, VkDeviceSize stride
 		, VkQueryResultFlags flags
-		, ashes::UInt64Array & datas )const
+		, UInt64Array & datas )const
 	{
 		auto max = firstQuery + queryCount;
 		assert( max <= m_queries.size() );
 		ID3D11DeviceContext * context;
-		m_device.getDevice()->GetImmediateContext( &context );
+		get( m_device )->getDevice()->GetImmediateContext( &context );
+		VkResult result = VK_SUCCESS;
 
 		for ( auto i = firstQuery; i < max; ++i )
 		{
@@ -185,8 +192,13 @@ namespace ashes::d3d11
 			{
 				datas[i - firstQuery] = getUint64( i );
 			}
+			else
+			{
+				result = VK_INCOMPLETE;
+			}
 		}
 
 		safeRelease( context );
+		return result;
 	}
 }

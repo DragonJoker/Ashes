@@ -6,8 +6,8 @@ See LICENSE file in root folder
 
 namespace ashes::d3d11
 {
-	D3D11_MAP getMapFlags( VkMemoryPropertyFlags const & memory
+	D3D11_MAP getBufferMapFlags( VkMemoryPropertyFlags const & memory
 		, VkBufferUsageFlags const & usage );
-	D3D11_MAP getMapFlags( VkMemoryPropertyFlags const & memory
+	D3D11_MAP getImageMapFlags( VkMemoryPropertyFlags const & memory
 		, VkImageUsageFlags const & usage );
 }

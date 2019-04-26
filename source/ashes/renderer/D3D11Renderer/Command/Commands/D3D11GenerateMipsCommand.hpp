@@ -4,8 +4,8 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
-#include "D3D11Renderer/Image/D3D11ImageView.hpp"
+#include "renderer/D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
+#include "renderer/D3D11Renderer/Image/D3D11ImageView.hpp"
 
 namespace ashes::d3d11
 {
@@ -14,12 +14,12 @@ namespace ashes::d3d11
 	{
 	public:
 		GenerateMipsCommand( VkDevice device
-			, Image const & texture );
+			, VkImage texture );
 		void apply( Context const & context )const;
 		CommandPtr clone()const;
 
 	private:
-		Image const & m_texture;
+		VkImage m_texture;
 		ImageView m_view;
 	};
 }

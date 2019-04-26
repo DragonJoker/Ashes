@@ -4,9 +4,7 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include "D3D11Renderer/D3D11RendererPrerequisites.hpp"
-
-#include <Ashes/Sync/Semaphore.hpp>
+#include "renderer/D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
 namespace ashes::d3d11
 {
@@ -23,7 +21,6 @@ namespace ashes::d3d11
 	*	Semaphores are used to synchronise queues.
 	*/
 	class Semaphore
-		: public ashes::Semaphore
 	{
 	public:
 		/**

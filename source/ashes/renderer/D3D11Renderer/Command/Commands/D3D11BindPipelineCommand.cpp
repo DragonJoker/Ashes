@@ -9,6 +9,10 @@ See LICENSE file in root folder.
 #include "Pipeline/D3D11PipelineLayout.hpp"
 #include "Shader/D3D11ShaderModule.hpp"
 
+#include <array>
+
+#include "ashesd3d11_api.hpp"
+
 namespace ashes::d3d11
 {
 	void apply( ID3D11DeviceContext * context
@@ -28,11 +32,11 @@ namespace ashes::d3d11
 
 	void apply( ID3D11DeviceContext * context
 		, ID3D11BlendState * state
-		, std::array< FLOAT, 4u > const & blendFactor
+		, float const * blendFactor
 		, UINT sampleMask )
 	{
 		context->OMSetBlendState( state
-			, blendFactor.data()
+			, blendFactor
 			, sampleMask );
 	}
 
@@ -49,7 +53,7 @@ namespace ashes::d3d11
 	}
 
 	void apply( ID3D11DeviceContext * context
-		, ashes::TessellationState const & state )
+		, VkPipelineTessellationStateCreateInfo const & state )
 	{
 	}
 
@@ -66,53 +70,53 @@ namespace ashes::d3d11
 	}
 
 	BindPipelineCommand::BindPipelineCommand( VkDevice device
-		, ashes::Pipeline const & pipeline
-		, ashes::PipelineBindPoint bindingPoint )
+		, VkPipeline pipeline
+		, VkPipelineBindPoint bindingPoint )
 		: CommandBase{ device }
-		, m_pipeline{ static_cast< Pipeline const & > ( pipeline ) }
-		, m_layout{ static_cast< PipelineLayout const & > ( m_pipeline.getLayout() ) }
+		, m_pipeline{ pipeline }
+		, m_layout{ get( m_pipeline )->getLayout() }
 		, m_bindingPoint{ bindingPoint }
-		, m_dynamicLineWidth{ m_pipeline.hasDynamicStateEnable( ashes::DynamicStateEnable::eLineWidth ) }
-		, m_dynamicDepthBias{ m_pipeline.hasDynamicStateEnable( ashes::DynamicStateEnable::eDepthBias ) }
-		, m_dynamicScissor{ m_pipeline.hasDynamicStateEnable( ashes::DynamicStateEnable::eScissor ) }
-		, m_dynamicViewport{ m_pipeline.hasDynamicStateEnable( ashes::DynamicStateEnable::eViewport ) }
+		, m_dynamicLineWidth{ get( m_pipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_LINE_WIDTH ) }
+		, m_dynamicDepthBias{ get( m_pipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_DEPTH_BIAS ) }
+		, m_dynamicScissor{ get( m_pipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_SCISSOR ) }
+		, m_dynamicViewport{ get( m_pipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_VIEWPORT ) }
 	{
 	}
 
 	void BindPipelineCommand::apply( Context const & context )const
 	{
 		ashes::d3d11::apply( context.context
-			, m_pipeline.getIAState() );
+			, get( m_pipeline )->getIAState() );
 		ashes::d3d11::apply( context.context
-			, m_pipeline.getBDState()
-			, m_pipeline.getBlendFactor()
-			, m_pipeline.getSampleMask() );
+			, get( m_pipeline )->getBDState()
+			, get( m_pipeline )->getBlendFactor()
+			, get( m_pipeline )->getSampleMask() );
 		ashes::d3d11::apply( context.context
-			, m_pipeline.getRSState() );
+			, get( m_pipeline )->getRSState() );
 		ashes::d3d11::apply( context.context
-			, m_pipeline.getDSState()
-			, m_pipeline.getStencilRef() );
+			, get( m_pipeline )->getDSState()
+			, get( m_pipeline )->getStencilRef() );
 		//ashes::d3d11::apply( context
-		//	, m_pipeline.getMultisampleState() );
+		//	, get( m_pipeline )->getMultisampleState() );
 		//ashes::d3d11::apply( context
-		//	, m_pipeline.getTessellationState() );
+		//	, get( m_pipeline )->getTessellationState() );
 
 		if ( !m_dynamicViewport )
 		{
-			assert( m_pipeline.hasViewport() );
+			assert( get( m_pipeline )->hasViewport() );
 			ashes::d3d11::apply( context.context
-				, m_pipeline.getViewports() );
+				, get( m_pipeline )->getViewports() );
 		}
 
 		if ( !m_dynamicScissor )
 		{
-			assert( m_pipeline.hasScissor() );
+			assert( get( m_pipeline )->hasScissor() );
 			ashes::d3d11::apply( context.context
-				, m_pipeline.getScissors() );
+				, get( m_pipeline )->getScissors() );
 		}
 
 		// Bind program
-		for ( auto & stage : m_pipeline.getShaderStages() )
+		for ( auto & stage : get( m_pipeline )->getShaderStages() )
 		{
 			switch ( stage.getStage() )
 			{
@@ -156,20 +160,20 @@ namespace ashes::d3d11
 			, ( ID3D11InputLayout * )nullptr );
 		ashes::d3d11::apply( context.context
 			, nullptr
-			, m_pipeline.getBlendFactor()
-			, m_pipeline.getSampleMask() );
+			, get( m_pipeline )->getBlendFactor()
+			, get( m_pipeline )->getSampleMask() );
 		ashes::d3d11::apply( context.context
 			, ( ID3D11RasterizerState * )nullptr );
 		ashes::d3d11::apply( context.context
 			, ( ID3D11DepthStencilState * )nullptr
-			, m_pipeline.getStencilRef() );
+			, get( m_pipeline )->getStencilRef() );
 		//ashes::d3d11::apply( context
-		//	, m_pipeline.getMultisampleState() );
+		//	, get( m_pipeline )->getMultisampleState() );
 		//ashes::d3d11::apply( context
-		//	, m_pipeline.getTessellationState() );
+		//	, get( m_pipeline )->getTessellationState() );
 
 		// Bind program
-		for ( auto & stage : m_pipeline.getShaderStages() )
+		for ( auto & stage : get( m_pipeline )->getShaderStages() )
 		{
 			switch ( stage.getStage() )
 			{

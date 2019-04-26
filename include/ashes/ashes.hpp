@@ -124,6 +124,18 @@ namespace ashes
 		return result;
 	}
 
+	inline StringArray convert( CharPtrArray const & values )
+	{
+		StringArray result;
+
+		for ( auto & value : values )
+		{
+			result.push_back( value );
+		}
+
+		return result;
+	}
+
 	template< typename VkType, typename LibType >
 	std::vector< VkType > convert( std::vector< LibType > const & values )
 	{

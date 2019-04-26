@@ -4,38 +4,52 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include "D3D11Renderer/D3D11RendererPrerequisites.hpp"
-
-#include <Ashes/RenderPass/RenderPass.hpp>
-#include <Ashes/RenderPass/AttachmentDescription.hpp>
-#include <Ashes/RenderPass/RenderSubpassState.hpp>
+#include "renderer/D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
 namespace ashes::d3d11
 {
 	class RenderPass
-		: public ashes::RenderPass
 	{
 	public:
 		RenderPass( VkDevice device
 			, VkRenderPassCreateInfo createInfo );
 		~RenderPass();
-		/**
-		*\copydoc	ashes::RenderPass::createFrameBuffer
-		*/
-		ashes::FrameBufferPtr createFrameBuffer( VkExtent2D const & dimensions
-			, ashes::ImageViewPtrArray textures )const;
+
+		uint32_t getAttachmentIndex( VkAttachmentDescription const & attach )const;
+
+		inline VkAttachmentDescriptionArray const & getAttachments()const
+		{
+			return m_attachments;
+		}
+
+		inline VkSubpassDescriptionArray const & getSubpasses()const
+		{
+			return m_subpasses;
+		}
+
+		inline VkExtent2D getRenderAreaGranularity()const
+		{
+			return VkExtent2D{ 1u, 1u };
+		}
 
 	private:
-		struct Subpass
+		struct SubpassDescriptionData
 		{
-			std::vector< ashes::AttachmentReference > inputAttachments;
-			std::vector< ashes::AttachmentReference > colorAttachments;
-			std::vector< ashes::AttachmentReference > resolveAttachments;
-			ashes::AttachmentReference depthStencilAttachment;
+			VkAttachmentReferenceArray inputAttachments;
+			VkAttachmentReferenceArray colorAttachments;
+			VkAttachmentReferenceArray resolveAttachments;
+			Optional< VkAttachmentReference > depthStencilAttachment;
+			UInt32Array reserveAttachments;
 		};
+		using SubpassDescriptionDataPtr = std::unique_ptr< SubpassDescriptionData >;
+		using SubpassDescriptionDataPtrMap = std::map< VkSubpassDescription const *, SubpassDescriptionDataPtr >;
 
 	private:
 		VkDevice m_device;
-		std::vector< Subpass > m_subpassInfos;
+		VkRenderPassCreateInfo m_createInfo;
+		VkAttachmentDescriptionArray m_attachments;
+		VkSubpassDescriptionArray m_subpasses;
+		VkSubpassDependencyArray m_dependencies;
+		SubpassDescriptionDataPtrMap m_subpassInfos;
 	};
 }

@@ -6,15 +6,13 @@
 */
 #pragma once
 
-#include "D3D11Renderer/Core/D3D11Layer.hpp"
-
-#include <Ashes/Core/DebugReportCallback.hpp>
+#include "renderer/D3D11Renderer/Core/D3D11Layer.hpp"
 
 namespace ashes::d3d11
 {
 	struct ReportData
 	{
-		ashes::DebugReportFlags flags;
+		VkDebugReportFlagsEXT flags;
 		VkDebugReportObjectTypeEXT objectType;
 		uint64_t object;
 		size_t location;
@@ -23,35 +21,41 @@ namespace ashes::d3d11
 		std::string message;
 	};
 
-	class DebugReportCallback;
+	class DebugReportCallbackEXT;
 
 	class DebugLayer
 		: public Layer
 	{
 	public:
-		DebugLayer( DebugReportCallback & callback );
+		DebugLayer( DebugReportCallbackEXT & callback );
 		bool onBufferImageCommand( VkCommandBuffer cmd
-			, ashes::BufferImageCopy const & copyInfo
+			, VkBufferImageCopy const & copyInfo
 			, VkBuffer buffer
 			, VkImage image )const;
 		bool onCopyToImageCommand( VkCommandBuffer cmd
-			, ashes::VkBufferImageCopyArray const & copyInfos
+			, VkBufferImageCopyArray const & copyInfos
 			, VkBuffer src
-			, VkImage dst )const;
+			, VkImage dst )const override;
 		bool onCheckHResultCommand( HRESULT hresult
-			, std::string message )const;
+			, std::string message )const override;
+		void onReportMessage( VkDebugReportFlagsEXT flags
+			, VkDebugReportObjectTypeEXT objectType
+			, uint64_t object
+			, size_t location
+			, int32_t messageCode
+			, const char * pLayerPrefix
+			, const char * pMessage )const override;
 
 	private:
-		DebugReportCallback & m_callback;
+		DebugReportCallbackEXT & m_callback;
 	};
 
-	class DebugReportCallback
-		: public ashes::DebugReportCallback
+	class DebugReportCallbackEXT
 	{
 	public:
-		DebugReportCallback( Instance const & instance
-			, ashes::DebugReportCallbackCreateInfo createInfo );
-		~DebugReportCallback();
+		DebugReportCallbackEXT( VkInstance instance
+			, VkDebugReportCallbackCreateInfoEXT createInfo );
+		~DebugReportCallbackEXT();
 
 		bool report( ReportData report );
 
@@ -61,6 +65,8 @@ namespace ashes::d3d11
 		}
 
 	private:
+		VkInstance m_instance;
+		VkDebugReportCallbackCreateInfoEXT m_createInfo;
 		DebugLayer m_layer;
 	};
 }

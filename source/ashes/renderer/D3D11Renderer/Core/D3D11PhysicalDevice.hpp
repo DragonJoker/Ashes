@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/D3D11RendererPrerequisites.hpp"
-
-#include <Ashes/Core/PhysicalDevice.hpp>
+#include "renderer/D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
 namespace ashes::d3d11
 {
@@ -19,40 +17,43 @@ namespace ashes::d3d11
 	*	Wraps informations about physical GPU.
 	*/
 	class PhysicalDevice
-		: public ashes::PhysicalDevice
 	{
 	public:
-		PhysicalDevice( Instance const & instance
+		PhysicalDevice( VkInstance instance
 			, AdapterInfo adapterInfo );
 		~PhysicalDevice();
 		/**
+		*\copydoc	ashes::Instance::getPresentationSupport
+		*/
+		VkBool32 getPresentationSupport( uint32_t queueFamilyIndex )const;
+		/**
 		*\copydoc	ashes::Instance::enumerateLayerProperties
 		*/
-		ashes::VkLayerPropertiesArray enumerateLayerProperties()const;
+		VkLayerPropertiesArray enumerateLayerProperties()const;
 		/**
 		*\copydoc	ashes::Instance::enumerateExtensionProperties
 		*/
-		ashes::VkExtensionPropertiesArray enumerateExtensionProperties( std::string const & layerName )const;
+		VkExtensionPropertiesArray enumerateExtensionProperties( std::string const & layerName )const;
 		/**
 		*\copydoc	ashes::Instance::getProperties
 		*/
-		ashes::PhysicalDeviceProperties getProperties()const;
+		VkPhysicalDeviceProperties getProperties()const;
 		/**
 		*\copydoc	ashes::Instance::getMemoryProperties
 		*/
-		ashes::PhysicalDeviceMemoryProperties getMemoryProperties()const;
+		VkPhysicalDeviceMemoryProperties getMemoryProperties()const;
 		/**
 		*\copydoc	ashes::Instance::getFeatures
 		*/
-		ashes::PhysicalDeviceFeatures getFeatures()const;
+		VkPhysicalDeviceFeatures getFeatures()const;
 		/**
 		*\copydoc	ashes::Instance::getQueueFamilyProperties
 		*/
-		ashes::QueueFamilyPropertiesArray getQueueFamilyProperties()const;
+		VkQueueFamilyPropertiesArray getQueueFamilyProperties()const;
 		/**
 		*\copydoc	ashes::Instance::getFormatProperties
 		*/
-		ashes::FormatProperties getFormatProperties( VkFormat fmt )const;
+		VkFormatProperties getFormatProperties( VkFormat fmt )const;
 
 		inline IDXGIAdapter * getAdapter()const
 		{
@@ -79,16 +80,21 @@ namespace ashes::d3d11
 			return m_adapterInfo.featureLevel;
 		}
 
+		inline VkInstance getInstance()const
+		{
+			return m_instance;
+		}
+
 	private:
 		void doInitialise();
 
 	private:
-		Instance const & m_instance;
+		VkInstance m_instance;
 		AdapterInfo m_adapterInfo;
 		IDXGIOutput * m_output;
-		ashes::PhysicalDeviceFeatures m_features{};
-		ashes::PhysicalDeviceProperties m_properties{};
-		ashes::QueueFamilyPropertiesArray m_queueProperties{};
-		mutable std::map< VkFormat, ashes::FormatProperties > m_formatProperties;
+		VkPhysicalDeviceFeatures m_features{};
+		VkPhysicalDeviceProperties m_properties{};
+		VkQueueFamilyPropertiesArray m_queueProperties{};
+		mutable std::map< VkFormat, VkFormatProperties > m_formatProperties;
 	};
 }

@@ -9,20 +9,18 @@
 #include "RenderPass/D3D11RenderPass.hpp"
 #include "Sync/D3D11Semaphore.hpp"
 
-#include <Ashes/Core/PlatformWindowHandle.hpp>
-#include <Ashes/Miscellaneous/MemoryRequirements.hpp>
+#include "ashesd3d11_api.hpp"
 
 namespace ashes::d3d11
 {
-	SwapChain::SwapChain( VkDevice device
+	SwapchainKHR::SwapchainKHR( VkDevice device
 		, VkSwapchainCreateInfoKHR createInfo )
-		: ashes::SwapChain{ device, std::move( createInfo ) }
-		, m_device{ device }
-		, m_surface{ static_cast< Surface const & >( m_createInfo.surface.get() ) }
+		: m_device{ device }
+		, m_createInfo{ std::move( createInfo ) }
 	{
 		auto desc = doInitPresentParameters();
-		auto factory = m_device.getInstance().getDXGIFactory();
-		auto d3ddevice = m_device.getDevice();
+		auto factory = get( get( m_device )->getInstance() )->getDXGIFactory();
+		auto d3ddevice = get( m_device )->getDevice();
 		HRESULT hr = factory->CreateSwapChain( d3ddevice
 			, &desc
 			, &m_swapChain );
@@ -35,12 +33,17 @@ namespace ashes::d3d11
 		dxDebugName( m_swapChain, SwapChain );
 	}
 
-	SwapChain::~SwapChain()
+	SwapchainKHR::~SwapchainKHR()
 	{
 		safeRelease( m_swapChain );
 	}
 
-	ashes::ImagePtrArray SwapChain::getImages()const
+	uint32_t SwapchainKHR::getImageCount()const
+	{
+		return 1u;
+	}
+
+	VkImageArray SwapchainKHR::getImages()const
 	{
 		ID3D11Texture2D * rtTex = nullptr;
 		auto hr = m_swapChain->GetBuffer( 0
@@ -53,29 +56,33 @@ namespace ashes::d3d11
 		}
 
 		// Et on crée des BackBuffers à partir de ces images.
-		ashes::ImagePtrArray result;
-		result.emplace_back( std::make_unique< Image >( m_device
-			, getFormat()
-			, getDimensions()
-			, rtTex ) );
+		VkImageArray result;
+		VkImage img;
+		allocate( img
+			, nullptr
+			, m_device
+			, m_createInfo.imageFormat
+			, m_createInfo.imageExtent
+			, rtTex );
+		result.emplace_back( img );
 		return result;
 	}
 
-	ashes::Result SwapChain::acquireNextImage( uint64_t timeout
-		, ashes::Semaphore const * semaphore
-		, ashes::Fence const * fence
+	VkResult SwapchainKHR::acquireNextImage( uint64_t timeout
+		, VkSemaphore semaphore
+		, VkFence fence
 		, uint32_t & imageIndex )const
 	{
 		imageIndex = 0u;
-		return ashes::Result::eSuccess;
+		return VK_SUCCESS;
 	}
 
-	DXGI_SWAP_CHAIN_DESC SwapChain::doInitPresentParameters()
+	DXGI_SWAP_CHAIN_DESC SwapchainKHR::doInitPresentParameters()
 	{
-		auto caps = m_surface.getCapabilities();
-		auto & descs = m_surface.getDescs( m_createInfo.imageFormat );
+		auto caps = get( m_createInfo.surface )->getCapabilities();
+		auto & descs = get( m_createInfo.surface )->getDescs( m_createInfo.imageFormat );
 		assert( !descs.empty() );
-		auto hWnd = m_surface.getHandle().getInternal< ashes::IMswWindowHandle >().getHwnd();
+		auto hWnd = get( m_createInfo.surface )->getHwnd();
 
 		auto & displayMode = descs.back();
 

@@ -10,14 +10,16 @@ See LICENSE file in root folder.
 #include <chrono>
 #include <thread>
 
+#include "ashesd3d11_api.hpp"
+
 namespace ashes::d3d11
 {
 	WaitEventsCommand::WaitEventsCommand( VkDevice device
-		, ashes::EventCRefArray const & events
+		, VkEventArray const & events
 		, VkPipelineStageFlags srcStageMask
 		, VkPipelineStageFlags dstStageMask
-		, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
-		, ashes::VkImageMemoryBarrierArray const & imageMemoryBarriers )
+		, VkBufferMemoryBarrierArray const & bufferMemoryBarriers
+		, VkImageMemoryBarrierArray const & imageMemoryBarriers )
 		: CommandBase{ device }
 		, m_events{ events }
 	{
@@ -31,10 +33,10 @@ namespace ashes::d3d11
 		{
 			count = uint32_t( std::count_if( m_events.begin()
 				, m_events.end()
-				, []( ashes::EventCRef const & event )
+				, []( VkEvent const & event )
 				{
-					return event.get().getStatus() != ashes::EventStatus::eSet
-						&& event.get().getStatus() != ashes::EventStatus::eError;
+					return get( event )->getStatus() != VK_EVENT_SET
+						&& get( event )->getStatus() != VK_TIMEOUT;
 				} ) );
 			std::this_thread::sleep_for( std::chrono::nanoseconds{ 10 } );
 		}

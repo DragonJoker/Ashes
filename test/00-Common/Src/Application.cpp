@@ -325,11 +325,13 @@ namespace common
 
 		if ( result )
 		{
-			m_rendererName = wxT( "vk" );
+			AshPluginDescription desc;
+			ashGetCurrentPluginDescription( &desc );
+			m_rendererName = desc.name;
 
 			for ( auto & plugin : m_renderers )
 			{
-				if ( m_rendererName == wxT( "vk" ) )
+				if ( m_rendererName == desc.name )
 				{
 					if ( parser.Found( plugin.name ) )
 					{

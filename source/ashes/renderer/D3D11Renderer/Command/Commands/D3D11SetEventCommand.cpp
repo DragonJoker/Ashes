@@ -6,10 +6,12 @@ See LICENSE file in root folder.
 
 #include "Sync/D3D11Event.hpp"
 
+#include "ashesd3d11_api.hpp"
+
 namespace ashes::d3d11
 {
 	SetEventCommand::SetEventCommand( VkDevice device
-		, ashes::Event const & event
+		, VkEvent event
 		, VkPipelineStageFlags stageFlags )
 		: CommandBase{ device }
 		, m_event{ event }
@@ -18,7 +20,7 @@ namespace ashes::d3d11
 
 	void SetEventCommand::apply( Context const & context )const
 	{
-		m_event.reset();
+		get( m_event )->reset();
 	}
 
 	CommandPtr SetEventCommand::clone()const

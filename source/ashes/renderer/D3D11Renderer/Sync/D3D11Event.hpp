@@ -4,14 +4,11 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/D3D11RendererPrerequisites.hpp"
-
-#include <Ashes/Sync/Event.hpp>
+#include "renderer/D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
 namespace ashes::d3d11
 {
 	class Event
-		: public ashes::Event
 	{
 	public:
 		Event( VkDevice device );
@@ -19,17 +16,17 @@ namespace ashes::d3d11
 		/**
 		*\copydoc	ashes::Event::getStatus
 		*/
-		ashes::EventStatus getStatus()const;
+		VkResult getStatus()const;
 		/**
 		*\copydoc	ashes::Event::getStatus
 		*/
-		void set()const;
+		VkResult set()const;
 		/**
 		*\copydoc	ashes::Event::getStatus
 		*/
-		void reset()const;
+		VkResult reset()const;
 
 	private:
-		mutable ashes::EventStatus m_status{ ashes::EventStatus::eReset };
+		mutable VkResult m_status{ VK_EVENT_RESET };
 	};
 }

@@ -12,15 +12,17 @@ See LICENSE file in root folder.
 #include "Pipeline/D3D11PipelineLayout.hpp"
 #include "Shader/D3D11ShaderModule.hpp"
 
+#include "ashesd3d11_api.hpp"
+
 namespace ashes::d3d11
 {
 	BindComputePipelineCommand::BindComputePipelineCommand( VkDevice device
-		, ashes::ComputePipeline const & pipeline
-		, ashes::PipelineBindPoint bindingPoint )
+		, VkPipeline pipeline
+		, VkPipelineBindPoint bindingPoint )
 		: CommandBase{ device }
-		, m_pipeline{ static_cast< ComputePipeline const & > ( pipeline ) }
-		, m_layout{ static_cast< PipelineLayout const & > ( m_pipeline.getLayout() ) }
-		, m_program{ m_pipeline.getProgram() }
+		, m_pipeline{ pipeline }
+		, m_layout{ get( m_pipeline )->getLayout() }
+		, m_program{ get( m_pipeline )->getShaderStage() }
 		, m_bindingPoint{ bindingPoint }
 	{
 	}

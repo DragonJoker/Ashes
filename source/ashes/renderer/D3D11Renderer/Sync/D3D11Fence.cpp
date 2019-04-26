@@ -4,13 +4,10 @@ See LICENSE file in root folder.
 */
 #include "Sync/D3D11Fence.hpp"
 
-#include "Core/D3D11Device.hpp"
-
 namespace ashes::d3d11
 {
 	Fence::Fence( VkDevice device
 		, VkFenceCreateFlags flags )
-		: ashes::Fence{ device, flags }
 	{
 	}
 
@@ -18,9 +15,9 @@ namespace ashes::d3d11
 	{
 	}
 
-	ashes::WaitResult Fence::wait( uint64_t timeout )const
+	VkResult Fence::wait( uint64_t timeout )const
 	{
-		return ashes::WaitResult::eSuccess;
+		return VK_SUCCESS;
 	}
 
 	void Fence::reset()const

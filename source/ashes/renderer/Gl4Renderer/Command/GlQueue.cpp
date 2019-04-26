@@ -297,9 +297,7 @@ namespace ashes::gl4
 		, VkDeviceQueueCreateInfo createInfo
 		, uint32_t index )
 		: m_device{ device }
-		, m_flags{ createInfo.flags }
-		, m_queueFamilyIndex{ createInfo.queueFamilyIndex }
-		, m_queuePriority{ createInfo.pQueuePriorities[index] }
+		, m_createInfo{ std::move( createInfo ) }
 		, m_index{ index }
 	{
 	}

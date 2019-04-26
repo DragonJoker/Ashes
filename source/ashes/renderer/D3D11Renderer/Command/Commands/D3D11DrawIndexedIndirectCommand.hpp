@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
+#include "renderer/D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
 
 namespace ashes::d3d11
 {
@@ -14,7 +14,7 @@ namespace ashes::d3d11
 	public:
 		DrawIndexedIndirectCommand( VkDevice device
 			, VkBuffer buffer
-			, uint32_t offset
+			, VkDeviceSize offset
 			, uint32_t drawCount
 			, uint32_t stride
 			, VkPrimitiveTopology mode
@@ -25,8 +25,8 @@ namespace ashes::d3d11
 		CommandPtr clone()const;
 
 	private:
-		Buffer const & m_buffer;
-		uint32_t m_offset;
+		VkBuffer m_buffer;
+		UINT m_offset;
 		uint32_t m_drawCount;
 		uint32_t m_stride;
 		D3D11_PRIMITIVE_TOPOLOGY m_mode;
