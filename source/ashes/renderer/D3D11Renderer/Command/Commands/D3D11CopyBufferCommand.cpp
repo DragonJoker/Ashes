@@ -24,14 +24,10 @@ namespace ashes::d3d11
 
 	void CopyBufferCommand::apply( Context const & context )const
 	{
-		context.context->CopySubresourceRegion( get( m_dst )->getBuffer()
-			, 0u
-			, m_dstOffset
-			, 0u
-			, 0u
-			, get( m_src )->getBuffer()
-			, 0u
-			, &m_srcBox );
+		get( m_dst )->copyFrom( context.context
+			, m_src
+			, m_srcBox
+			, m_dstOffset );
 	}
 
 	CommandPtr CopyBufferCommand::clone()const

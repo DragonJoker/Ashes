@@ -29,4 +29,48 @@ namespace ashes::d3d11
 	{
 		return makeScissors( begin, begin + count );
 	}
+
+	inline std::vector< RECT > makeScissors( VkRect2D const * begin
+		, size_t count )
+	{
+		if ( !begin )
+		{
+			return std::vector< RECT >{};
+		}
+
+		return makeScissors( begin, begin + count );
+	}
+
+	inline std::vector< RECT > makeScissors( VkRect2D * begin
+		, size_t count )
+	{
+		if ( !begin )
+		{
+			return std::vector< RECT >{};
+		}
+
+		return makeScissors( begin, begin + count );
+	}
+
+	inline std::vector< RECT > makeScissors( VkExtent2D const * begin
+		, size_t count )
+	{
+		if ( !begin )
+		{
+			return std::vector< RECT >{};
+		}
+
+		return makeScissors( begin, begin + count );
+	}
+
+	inline std::vector< RECT > makeScissors( VkExtent2D * begin
+		, size_t count )
+	{
+		if ( !begin )
+		{
+			return std::vector< RECT >{};
+		}
+
+		return makeScissors( begin, begin + count );
+	}
 }

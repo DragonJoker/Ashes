@@ -119,6 +119,7 @@ namespace ashes::d3d11
 	VkResult Image::bindMemory( VkDeviceMemory memory
 		, VkDeviceSize memoryOffset )
 	{
+		m_memory = memory;
 		VkResult result = VK_SUCCESS;
 
 		switch ( getType() )

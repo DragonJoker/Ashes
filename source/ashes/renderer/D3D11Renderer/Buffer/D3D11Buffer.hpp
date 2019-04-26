@@ -23,6 +23,10 @@ namespace ashes::d3d11
 
 		VkMemoryRequirements getMemoryRequirements()const;
 		bool isMapped()const;
+		void copyFrom( ID3D11DeviceContext * context
+			, VkBuffer src
+			, D3D11_BOX const & srcBox
+			, UINT dstOffset )const;
 
 		inline VkDeviceMemory getMemory()const
 		{

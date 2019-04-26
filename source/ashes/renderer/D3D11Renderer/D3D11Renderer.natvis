@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+  <Type Name="VkDevice_T">
+    <DisplayString>{{value={(ashes::d3d11::Device*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::Device*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkBuffer_T">
+    <DisplayString>{{value={(ashes::d3d11::Buffer*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::Buffer*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkPipeline_T">
+    <DisplayString>{{value={(ashes::d3d11::Pipeline*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::Pipeline*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkInstance_T">
+    <DisplayString>{{value={(ashes::d3d11::Instance*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::Instance*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkPhysicalDevice_T">
+    <DisplayString>{{value={(ashes::d3d11::PhysicalDevice*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::PhysicalDevice*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkDeviceMemory_T">
+    <DisplayString>{{value={(ashes::d3d11::DeviceMemory*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::DeviceMemory*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkQueue_T">
+    <DisplayString>{{value={(ashes::d3d11::Queue*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::Queue*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkSemaphore_T">
+    <DisplayString>{{value={(ashes::d3d11::Semaphore*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::Semaphore*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkCommandBuffer_T">
+    <DisplayString>{{value={(ashes::d3d11::CommandBuffer*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::CommandBuffer*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkFence_T">
+    <DisplayString>{{value={(ashes::d3d11::Fence*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::Fence*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkImage_T">
+    <DisplayString>{{value={(ashes::d3d11::Image*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::Image*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkEvent_T">
+    <DisplayString>{{value={(ashes::d3d11::Event*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::Event*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkQueryPool_T">
+    <DisplayString>{{value={(ashes::d3d11::QueryPool*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::QueryPool*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkBufferView_T">
+    <DisplayString>{{value={(ashes::d3d11::BufferView*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::BufferView*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkImageView_T">
+    <DisplayString>{{value={(ashes::d3d11::ImageView*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::ImageView*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkShaderModule_T">
+    <DisplayString>{{value={(ashes::d3d11::ShaderModule*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::ShaderModule*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkPipelineCache_T">
+    <DisplayString>{{value={(ashes::d3d11::PipelineCache*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::PipelineCache*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkPipelineLayout_T">
+    <DisplayString>{{value={(ashes::d3d11::PipelineLayout*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::PipelineLayout*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkRenderPass_T">
+    <DisplayString>{{value={(ashes::d3d11::RenderPass*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::RenderPass*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkDescriptorSetLayout_T">
+    <DisplayString>{{value={(ashes::d3d11::DescriptorSetLayout*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::DescriptorSetLayout*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkSampler_T">
+    <DisplayString>{{value={(ashes::d3d11::Sampler*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::Sampler*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkDescriptorPool_T">
+    <DisplayString>{{value={(ashes::d3d11::DescriptorPool*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::DescriptorPool*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkDescriptorSet_T">
+    <DisplayString>{{value={(ashes::d3d11::DescriptorSet*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::DescriptorSet*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkCommandPool_T">
+    <DisplayString>{{value={(ashes::d3d11::CommandPool*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::CommandPool*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkFramebuffer_T">
+    <DisplayString>{{value={(ashes::d3d11::Framebuffer*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::Framebuffer*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkSurfaceKHR_T">
+    <DisplayString>{{value={(ashes::d3d11::SurfaceKHR*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::SurfaceKHR*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkSwapchainKHR_T">
+    <DisplayString>{{value={(ashes::d3d11::SwapchainKHR*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::d3d11::SwapchainKHR*)this</Item>
+    </Expand>
+  </Type>
+
+</AutoVisualizer>

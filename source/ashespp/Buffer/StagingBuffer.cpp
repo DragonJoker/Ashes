@@ -260,7 +260,7 @@ namespace ashes
 		, uint32_t size )
 		: m_device{ device }
 		, m_buffer{ device.createBuffer( size
-			, target | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT ) }
+			, target | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT ) }
 		, m_storage{ device.allocateMemory( getAllocateInfo( device, *m_buffer ) ) }
 	{
 		m_buffer->bindMemory( m_storage );

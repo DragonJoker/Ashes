@@ -50,13 +50,13 @@ namespace ashes::d3d11
 	{
 		for ( auto & buffer : m_uploadBuffers )
 		{
-			get( get( buffer.buffer )->getMemory() )->upload( buffer.offset
+			get( get( buffer.buffer )->getMemory() )->updateUpload( buffer.offset
 				, buffer.size );
 		}
 
 		for ( auto & buffer : m_uploadBuffers )
 		{
-			get( get( buffer.buffer )->getMemory() )->download( buffer.offset
+			get( get( buffer.buffer )->getMemory() )->updateDownload( buffer.offset
 				, buffer.size );
 		}
 	}

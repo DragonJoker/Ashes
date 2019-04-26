@@ -79,7 +79,7 @@ namespace ashes::d3d11
 
 	DXGI_SWAP_CHAIN_DESC SwapchainKHR::doInitPresentParameters()
 	{
-		auto caps = get( m_createInfo.surface )->getCapabilities();
+		auto caps = get( m_createInfo.surface )->getCapabilities( get( m_device )->getGpu() );
 		auto & descs = get( m_createInfo.surface )->getDescs( m_createInfo.imageFormat );
 		assert( !descs.empty() );
 		auto hWnd = get( m_createInfo.surface )->getHwnd();

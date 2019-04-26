@@ -39,6 +39,26 @@ namespace ashes::d3d11
 		return get( m_memory )->isMapped();
 	}
 
+	void Buffer::copyFrom( ID3D11DeviceContext * context
+		, VkBuffer src
+		, D3D11_BOX const & srcBox
+		, UINT dstOffset )const
+	{
+		VkDeviceSize size = srcBox.right - srcBox.left;
+		get( m_memory )->updateData( get( src )->m_memory
+			, VkDeviceSize( srcBox.left )
+			, VkDeviceSize( dstOffset )
+			, size );
+		context->CopySubresourceRegion( getBuffer()
+			, 0u
+			, dstOffset
+			, 0u
+			, 0u
+			, get( src )->getBuffer()
+			, 0u
+			, &srcBox );
+	}
+
 	VkResult Buffer::bindMemory( VkDeviceMemory memory
 		, VkDeviceSize memoryOffset )
 	{

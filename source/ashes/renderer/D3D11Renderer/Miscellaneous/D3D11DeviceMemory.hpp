@@ -26,21 +26,12 @@ namespace ashes::d3d11
 				, VkMemoryAllocateInfo allocateInfo );
 			virtual ~DeviceMemoryImpl() = default;
 
-			void upload( ByteArray const & data
+			virtual void upload( ByteArray const & data
 				, VkDeviceSize offset
-				, VkDeviceSize size )const;
-			void download( ByteArray & data
+				, VkDeviceSize size )const = 0;
+			virtual void download( ByteArray & data
 				, VkDeviceSize offset
-				, VkDeviceSize size )const;
-
-			virtual VkResult lock( VkDeviceSize offset
-				, VkDeviceSize size
-				, void ** data )const = 0;
-			virtual VkResult flush( VkDeviceSize offset
 				, VkDeviceSize size )const = 0;
-			virtual VkResult invalidate( VkDeviceSize offset
-				, VkDeviceSize size )const = 0;
-			virtual void unlock()const = 0;
 
 		protected:
 			VkDevice m_device;
@@ -65,10 +56,14 @@ namespace ashes::d3d11
 			, VkDeviceSize memoryOffset
 			, ID3D11Texture3D *& texture );
 
-		void upload( VkDeviceSize offset
+		void updateUpload( VkDeviceSize offset
 			, VkDeviceSize size )const;
-		void download( VkDeviceSize offset
+		void updateDownload( VkDeviceSize offset
 			, VkDeviceSize size )const;
+		void updateData( VkDeviceMemory src
+			, VkDeviceSize srcOffset
+			, VkDeviceSize dstOffset
+			, VkDeviceSize size );
 
 		VkResult lock( VkDeviceSize offset
 			, VkDeviceSize size
@@ -94,6 +89,12 @@ namespace ashes::d3d11
 		{
 			download( m_mappedOffset, m_mappedSize );
 		}
+
+	private:
+		void upload( VkDeviceSize offset
+			, VkDeviceSize size )const;
+		void download( VkDeviceSize offset
+			, VkDeviceSize size )const;
 
 	private:
 		VkDevice m_device;

@@ -15,21 +15,23 @@ namespace ashes::d3d11
 			, VkSurfaceCreateInfoKHR createInfo );
 		~SurfaceKHR();
 
-		void getSurfaceInfos( VkPhysicalDevice physicalDevice );
 		bool getSupport( uint32_t queueFamilyIndex )const;
 
-		VkSurfaceCapabilitiesKHR getCapabilities()const
+		VkSurfaceCapabilitiesKHR getCapabilities( VkPhysicalDevice physicalDevice )const
 		{
+			doUpdate( physicalDevice );
 			return m_surfaceCapabilities;
 		}
 
-		VkPresentModeArrayKHR getPresentModes()const
+		VkPresentModeArrayKHR getPresentModes( VkPhysicalDevice physicalDevice )const
 		{
+			doUpdate( physicalDevice );
 			return m_presentModes;
 		}
 
-		VkSurfaceFormatArrayKHR getFormats()const
+		VkSurfaceFormatArrayKHR getFormats( VkPhysicalDevice physicalDevice )const
 		{
+			doUpdate( physicalDevice );
 			return m_surfaceFormats;
 		}
 
@@ -44,12 +46,16 @@ namespace ashes::d3d11
 		}
 
 	private:
+		void doUpdate( VkPhysicalDevice physicalDevice )const;
+
+	private:
 		VkSurfaceCreateInfoKHR m_createInfo;
-		VkSurfaceFormatArrayKHR m_surfaceFormats;
-		VkSurfaceCapabilitiesKHR m_surfaceCapabilities;
-		VkPresentModeArrayKHR m_presentModes;
 		std::string m_type;
-		std::vector< DXGI_MODE_DESC > m_displayModes;
+		mutable VkSurfaceFormatArrayKHR m_surfaceFormats;
+		mutable VkSurfaceCapabilitiesKHR m_surfaceCapabilities;
+		mutable VkPresentModeArrayKHR m_presentModes;
+		mutable VkPhysicalDevice m_currentPhysicalDevice{ VK_NULL_HANDLE };
+		mutable std::vector< DXGI_MODE_DESC > m_displayModes;
 		mutable std::map< VkFormat, std::vector< DXGI_MODE_DESC > > m_descs;
 	};
 }

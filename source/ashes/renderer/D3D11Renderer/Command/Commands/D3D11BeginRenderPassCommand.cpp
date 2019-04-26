@@ -29,12 +29,14 @@ namespace ashes::d3d11
 		{
 			if ( ashes::isDepthOrStencilFormat( it->format ) )
 			{
-				m_rtClearValues.push_back( clearValue );
+				m_dsClearValue = clearValue;
 			}
 			else
 			{
-				m_dsClearValue = clearValue;
+				m_rtClearValues.push_back( clearValue );
 			}
+
+			++it;
 		}
 	}
 

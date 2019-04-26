@@ -1935,7 +1935,7 @@ namespace ashes::d3d11
 		VkSurfaceKHR surface,
 		VkSurfaceCapabilitiesKHR* pSurfaceCapabilities )
 	{
-		*pSurfaceCapabilities = get( surface )->getCapabilities();
+		*pSurfaceCapabilities = get( surface )->getCapabilities( physicalDevice );
 		return VK_SUCCESS;
 	}
 
@@ -1947,11 +1947,11 @@ namespace ashes::d3d11
 	{
 		if ( !pSurfaceFormats )
 		{
-			*pSurfaceFormatCount = uint32_t( get( surface )->getFormats().size() );
+			*pSurfaceFormatCount = uint32_t( get( surface )->getFormats( physicalDevice ).size() );
 			return VK_SUCCESS;
 		}
 
-		auto formats = get( surface )->getFormats();
+		auto formats = get( surface )->getFormats( physicalDevice );
 
 		for ( auto & format : formats )
 		{
@@ -1970,12 +1970,11 @@ namespace ashes::d3d11
 	{
 		if ( !pPresentModes )
 		{
-			get( surface )->getSurfaceInfos( physicalDevice );
-			*pPresentModeCount = uint32_t( get( surface )->getPresentModes().size() );
+			*pPresentModeCount = uint32_t( get( surface )->getPresentModes( physicalDevice ).size() );
 			return VK_SUCCESS;
 		}
 
-		auto modes = get( surface )->getPresentModes();
+		auto modes = get( surface )->getPresentModes( physicalDevice );
 
 		for ( auto & mode : modes )
 		{

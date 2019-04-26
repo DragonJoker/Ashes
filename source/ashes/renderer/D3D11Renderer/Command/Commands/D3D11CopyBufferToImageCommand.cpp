@@ -351,17 +351,17 @@ namespace ashes::d3d11
 				, m_dst );
 		}
 
-		if ( stagingDst )
-		{
-			deallocate( stagingDstMemory, nullptr );
-			deallocate( stagingDst, nullptr );
-		}
+		//if ( stagingDst )
+		//{
+		//	deallocate( stagingDstMemory, nullptr );
+		//	deallocate( stagingDst, nullptr );
+		//}
 
-		if ( stagingSrc )
-		{
-			deallocate( stagingSrcMemory, nullptr );
-			deallocate( stagingSrc, nullptr );
-		}
+		//if ( stagingSrc )
+		//{
+		//	deallocate( stagingSrcMemory, nullptr );
+		//	deallocate( stagingSrc, nullptr );
+		//}
 	}
 
 	void CopyBufferToImageCommand::doMapCopy( VkBufferImageCopy const & copyInfo

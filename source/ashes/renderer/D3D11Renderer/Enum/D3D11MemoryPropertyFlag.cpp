@@ -96,7 +96,8 @@ namespace ashes::d3d11
 		{
 			if ( !isRenderTarget( usage ) )
 			{
-				result = D3D11_CPU_ACCESS_WRITE;
+				result |= D3D11_CPU_ACCESS_WRITE;
+				result |= D3D11_CPU_ACCESS_READ;
 			}
 			else
 			{

@@ -28,4 +28,26 @@ namespace ashes::d3d11
 	{
 		return makeViewports( begin, begin + count );
 	}
+
+	inline std::vector< D3D11_VIEWPORT > makeViewports( VkViewport * begin
+		, size_t count )
+	{
+		if ( !begin )
+		{
+			return std::vector< D3D11_VIEWPORT >{};
+		}
+
+		return makeViewports( begin, begin + count );
+	}
+
+	inline std::vector< D3D11_VIEWPORT > makeViewports( VkViewport const * begin
+		, size_t count )
+	{
+		if ( !begin )
+		{
+			return std::vector< D3D11_VIEWPORT >{};
+		}
+
+		return makeViewports( begin, begin + count );
+	}
 }

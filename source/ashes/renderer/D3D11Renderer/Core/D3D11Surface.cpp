@@ -207,8 +207,8 @@ namespace ashes::d3d11
 	SurfaceKHR::SurfaceKHR( VkInstance instance
 		, VkSurfaceCreateInfoKHR createInfo )
 		: m_createInfo{ std::move( createInfo ) }
+		, m_type{ "VK_KHR_win32_surface" }
 	{
-		m_type = "VK_KHR_win32_surface";
 		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
 	}
 
@@ -216,18 +216,23 @@ namespace ashes::d3d11
 	{
 	}
 
-	void SurfaceKHR::getSurfaceInfos( VkPhysicalDevice physicalDevice )
+	void SurfaceKHR::doUpdate( VkPhysicalDevice physicalDevice )const
 	{
-		m_displayModes = getDisplayModesList( get( physicalDevice )->getOutput() );
+		if ( m_currentPhysicalDevice != physicalDevice )
+		{
+			m_currentPhysicalDevice = physicalDevice;
 
-		m_surfaceFormats = getSurfaceFormats( m_displayModes );
+			m_displayModes = getDisplayModesList( get( physicalDevice )->getOutput() );
 
-		auto hWnd = m_createInfo.hwnd;
-		RECT rect{};
-		::GetWindowRect( hWnd, &rect );
-		m_descs = updateSurfaceCapabilities( m_displayModes
-			, rect
-			, m_surfaceCapabilities );
+			m_surfaceFormats = getSurfaceFormats( m_displayModes );
+
+			auto hWnd = m_createInfo.hwnd;
+			RECT rect{};
+			::GetWindowRect( hWnd, &rect );
+			m_descs = updateSurfaceCapabilities( m_displayModes
+				, rect
+				, m_surfaceCapabilities );
+		}
 	}
 
 	bool SurfaceKHR::getSupport( uint32_t queueFamilyIndex )const
