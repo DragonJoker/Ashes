@@ -186,13 +186,13 @@ if ( ASHES_BUILD_TESTS OR ASHES_BUILD_SAMPLES OR ASHES_BUILD_TEMPLATES )
 endif ()
 
 if ( ASHES_BUILD_TEMPLATES )
-	add_subdirectory( Templates )
+	add_subdirectory( templates )
 endif ()
 
 if ( ASHES_BUILD_TESTS )
-	add_subdirectory( Test )
+	add_subdirectory( test )
 endif ()
 
 if ( ASHES_BUILD_SAMPLES )
-	add_subdirectory( Samples )
+	add_subdirectory( samples )
 endif ()
