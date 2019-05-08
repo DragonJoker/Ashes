@@ -108,7 +108,7 @@ namespace ashes::d3d11
 			texelBlockExtent.width = ashes::getSize( format );
 		}
 
-		uint32_t texelBlockSize;
+		VkDeviceSize texelBlockSize;
 
 		if ( !ashes::isDepthStencilFormat( format ) )
 		{

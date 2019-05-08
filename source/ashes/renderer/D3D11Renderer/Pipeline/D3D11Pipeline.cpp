@@ -66,15 +66,38 @@ namespace ashes::d3d11
 		, VkGraphicsPipelineCreateInfo createInfo )
 		: m_device{ device }
 		, m_layout{ createInfo.layout }
-		, m_graphicsCreateInfo{ std::move( createInfo ) }
-		, m_scissors{ makeScissors( m_graphicsCreateInfo.pViewportState->pScissors, m_graphicsCreateInfo.pViewportState->scissorCount ) }
-		, m_viewports{ makeViewports( m_graphicsCreateInfo.pViewportState->pViewports, m_graphicsCreateInfo.pViewportState->viewportCount ) }
-		, m_vertexInputStateHash{ doHash( *m_graphicsCreateInfo.pVertexInputState ) }
+		, m_vertexInputState{ ( createInfo.pVertexInputState
+			? deepCopy( *createInfo.pVertexInputState, m_vertexBindingDescriptions, m_vertexAttributeDescriptions )
+			: VkPipelineVertexInputStateCreateInfo{} ) }
+		, m_inputAssemblyState{ ( createInfo.pInputAssemblyState
+			? deepCopy( *createInfo.pInputAssemblyState )
+			: VkPipelineInputAssemblyStateCreateInfo{} ) }
+		, m_viewportState{ ( createInfo.pViewportState
+			? deepCopy( *createInfo.pViewportState, m_stateViewports, m_stateScissors )
+			: VkPipelineViewportStateCreateInfo{} ) }
+		, m_rasterizationState{ ( createInfo.pRasterizationState
+			? deepCopy( *createInfo.pRasterizationState )
+			: VkPipelineRasterizationStateCreateInfo{} ) }
+		, m_multisampleState{ ( createInfo.pMultisampleState
+			? deepCopy( *createInfo.pMultisampleState )
+			: VkPipelineMultisampleStateCreateInfo{} ) }
+		, m_depthStencilState{ ( createInfo.pDepthStencilState
+			? Optional< VkPipelineDepthStencilStateCreateInfo >( deepCopy( *createInfo.pDepthStencilState ) )
+			: std::nullopt ) }
+		, m_colorBlendState{ ( createInfo.pColorBlendState
+			? deepCopy( *createInfo.pColorBlendState, m_colorBlendStateAttachments )
+			: VkPipelineColorBlendStateCreateInfo{} ) }
+		, m_dynamicState{ ( createInfo.pDynamicState
+			? deepCopy( *createInfo.pDynamicState, m_dynamicStates )
+			: VkPipelineDynamicStateCreateInfo{} ) }
+		, m_scissors{ makeScissors( m_stateScissors.begin(), m_stateScissors.end() ) }
+		, m_viewports{ makeViewports( m_stateViewports.begin(), m_stateViewports.end() ) }
+		, m_vertexInputStateHash{ doHash( m_vertexInputState ) }
 	{
 		doCreateBlendState( device );
 		doCreateRasterizerState( device );
 		doCreateDepthStencilState( device );
-		doCompileProgram( device, { m_graphicsCreateInfo.pStages, m_graphicsCreateInfo.pStages + m_graphicsCreateInfo.stageCount } );
+		doCompileProgram( device, { createInfo.pStages, createInfo.pStages + createInfo.stageCount } );
 		doCreateInputLayout( device );
 	}
 
@@ -82,7 +105,6 @@ namespace ashes::d3d11
 		, VkComputePipelineCreateInfo createInfo )
 		: m_device{ device }
 		, m_layout{ createInfo.layout }
-		, m_computeCreateInfo{ std::move( createInfo ) }
 	{
 		doCompileProgram( device, { createInfo.stage } );
 	}
@@ -151,7 +173,7 @@ namespace ashes::d3d11
 	void Pipeline::doCreateBlendState( VkDevice device )
 	{
 		auto d3ddevice = get( device )->getDevice();
-		auto blendDesc = convert( *m_graphicsCreateInfo.pColorBlendState );
+		auto blendDesc = convert( m_colorBlendState );
 		HRESULT hr = d3ddevice->CreateBlendState( &blendDesc, &m_bdState );
 
 		if ( !checkError( device, hr, "CreateBlendState" ) )
@@ -165,8 +187,8 @@ namespace ashes::d3d11
 	void Pipeline::doCreateRasterizerState( VkDevice device )
 	{
 		auto d3ddevice = get( device )->getDevice();
-		auto rasterizerDesc = convert( *m_graphicsCreateInfo.pRasterizationState
-			, *m_graphicsCreateInfo.pMultisampleState );
+		auto rasterizerDesc = convert( m_rasterizationState
+			, m_multisampleState );
 		auto hr = d3ddevice->CreateRasterizerState( &rasterizerDesc, &m_rsState );
 
 		if ( !checkError( device, hr, "CreateRasterizerState" ) )
@@ -179,10 +201,10 @@ namespace ashes::d3d11
 
 	void Pipeline::doCreateDepthStencilState( VkDevice device )
 	{
-		if ( m_graphicsCreateInfo.pDepthStencilState )
+		if ( m_depthStencilState )
 		{
 			auto d3ddevice = get( device )->getDevice();
-			auto depthStencilDesc = convert( *m_graphicsCreateInfo.pDepthStencilState );
+			auto depthStencilDesc = convert( *m_depthStencilState );
 			auto hr = d3ddevice->CreateDepthStencilState( &depthStencilDesc, &m_dsState );
 
 			if ( !checkError( device, hr, "CreateDepthStencilState" ) )
@@ -261,7 +283,7 @@ namespace ashes::d3d11
 			auto compiled = it->second.module->getCompiled();
 			auto & inputLayout = it->second.inputLayout;
 			auto d3ddevice = get( device )->getDevice();
-			auto inputDesc = convert( *m_graphicsCreateInfo.pVertexInputState, inputLayout );
+			auto inputDesc = convert( m_vertexInputState, inputLayout );
 
 			if ( !inputDesc.empty() )
 			{

@@ -17,7 +17,7 @@ namespace ashes::d3d11
 	struct BlockSize
 	{
 		VkExtent2D block;
-		uint32_t size;
+		VkDeviceSize size;
 	};
 
 	BlockSize getBlockSize( VkFormat format );

@@ -27,16 +27,18 @@ namespace ashes::d3d11
 			virtual ~DeviceMemoryImpl() = default;
 
 			virtual void upload( ByteArray const & data
+				, UINT subresource
 				, VkDeviceSize offset
 				, VkDeviceSize size )const = 0;
 			virtual void download( ByteArray & data
+				, UINT subresource
 				, VkDeviceSize offset
 				, VkDeviceSize size )const = 0;
 
 		protected:
 			VkDevice m_device;
 			VkMemoryAllocateInfo m_allocateInfo;
-			VkMemoryPropertyFlags m_flags;
+			VkMemoryPropertyFlags m_propertyFlags;
 		};
 
 	public:
@@ -57,9 +59,11 @@ namespace ashes::d3d11
 			, ID3D11Texture3D *& texture );
 
 		void updateUpload( VkDeviceSize offset
-			, VkDeviceSize size )const;
+			, VkDeviceSize size
+			, UINT subresource )const;
 		void updateDownload( VkDeviceSize offset
-			, VkDeviceSize size )const;
+			, VkDeviceSize size
+			, UINT subresource )const;
 		void updateData( VkDeviceMemory src
 			, VkDeviceSize srcOffset
 			, VkDeviceSize dstOffset
@@ -92,20 +96,35 @@ namespace ashes::d3d11
 
 	private:
 		void upload( VkDeviceSize offset
-			, VkDeviceSize size )const;
+			, VkDeviceSize size
+			, UINT subresource )const;
 		void download( VkDeviceSize offset
-			, VkDeviceSize size )const;
+			, VkDeviceSize size
+			, UINT subresource )const;
+
+		void upload( VkDeviceSize offset
+			, VkDeviceSize size )const
+		{
+			upload( offset, size, m_mappedSubresource );
+		}
+
+		void download( VkDeviceSize offset
+			, VkDeviceSize size )const
+		{
+			download( offset, size, m_mappedSubresource );
+		}
 
 	private:
 		VkDevice m_device;
 		VkMemoryAllocateInfo m_allocateInfo;
-		VkMemoryPropertyFlags m_flags;
+		VkMemoryPropertyFlags m_propertyFlags;
 		VkMemoryRequirements m_requirements;
 		std::unique_ptr< DeviceMemoryImpl > m_impl;
-		mutable bool m_dirty = true;
-		mutable bool m_mapped = false;
-		mutable VkDeviceSize m_mappedOffset;
-		mutable VkDeviceSize m_mappedSize;
+		mutable bool m_dirty{ true };
+		mutable bool m_mapped{ false };
+		mutable VkDeviceSize m_mappedOffset{ 0u };
+		mutable VkDeviceSize m_mappedSize{ 0u };
+		mutable UINT m_mappedSubresource{ 0u };
 		mutable ByteArray m_data;
 	};
 }

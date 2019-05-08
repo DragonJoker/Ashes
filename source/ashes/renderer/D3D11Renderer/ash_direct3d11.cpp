@@ -574,6 +574,9 @@ namespace ashes::d3d11
 				, stride
 				, flags
 				, results );
+			stride = ( stride < sizeof( uint64_t )
+				? sizeof( uint64_t )
+				: stride );
 			auto data = reinterpret_cast< uint8_t * >( pData );
 
 			for ( auto & result : results )
@@ -591,6 +594,9 @@ namespace ashes::d3d11
 				, stride
 				, flags
 				, results );
+			stride = ( stride < sizeof( uint32_t )
+				? sizeof( uint32_t )
+				: stride );
 			auto data = reinterpret_cast< uint8_t * >( pData );
 
 			for ( auto & result : results )

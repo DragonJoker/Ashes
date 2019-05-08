@@ -43,56 +43,47 @@ namespace ashes::d3d11
 				* getBufferHeightPitch( copyInfo );
 		}
 
-		std::vector< D3D11_BOX > doGetSrcBoxes( VkImage image
-			, VkBufferImageCopyArray const & copyInfos )
+		VkDeviceSize doGetBufferSize( VkFormat format
+			, VkBufferImageCopy const & copyInfo )
 		{
-			std::vector< D3D11_BOX > result;
-
-			for ( auto & copyInfo : copyInfos )
+			VkExtent3D bufferPitch
 			{
-				auto size = getSize( VkExtent3D
-					{
-						std::max( 1u, getBufferRowPitch( copyInfo ) ),
-						std::max( 1u, getBufferHeightPitch( copyInfo ) ),
-						std::max( 1u, getBufferDepthPitch( copyInfo ) )
-					}
-					, get( image )->getFormat() );
-				result.push_back(
-					{
-						UINT( copyInfo.bufferOffset ),
-						0u,
-						0u,
-						UINT( copyInfo.bufferOffset + size ),
-						1u,
-						1u
-					}
-				);
-			}
-
-			return result;
+				std::max( 1u, getBufferRowPitch( copyInfo ) ),
+				std::max( 1u, getBufferHeightPitch( copyInfo ) ),
+				std::max( 1u, getBufferDepthPitch( copyInfo ) )
+			};
+			return getSize( bufferPitch, format );
 		}
 
-		std::vector< VkSubresourceLayout > doGetDstLayouts( VkDevice device
-			, VkImage image
-			, VkBufferImageCopyArray const & copyInfos )
+		D3D11_BOX doGetSrcBox( VkFormat format
+			, VkBufferImageCopy const & copyInfo )
 		{
-			std::vector< VkSubresourceLayout > result;
-			result.reserve( copyInfos.size() );
 
-			for ( auto & copyInfo : copyInfos )
+			return
 			{
-				result.push_back( {} );
-				get( device )->getImageSubresourceLayout( image
-					, VkImageSubresource
-					{
-						copyInfo.imageSubresource.aspectMask,
-						copyInfo.imageSubresource.mipLevel,
-						copyInfo.imageSubresource.baseArrayLayer,
-					}
-					, result.back() );
-			}
+				UINT( copyInfo.bufferOffset ),
+				0u,
+				0u,
+				UINT( copyInfo.bufferOffset + doGetBufferSize( format, copyInfo ) ),
+				1u,
+				1u
+			};
+		}
 
-			return result;
+		VkSubresourceLayout doGetDstLayout( VkDevice device
+			, VkImage image
+			, VkBufferImageCopy const & copyInfo )
+		{
+			VkSubresourceLayout layout{};
+			get( device )->getImageSubresourceLayout( image
+				, VkImageSubresource
+				{
+					copyInfo.imageSubresource.aspectMask,
+					copyInfo.imageSubresource.mipLevel,
+					copyInfo.imageSubresource.baseArrayLayer,
+				}
+				, layout );
+			return layout;
 		}
 
 		VkExtent3D getTexelBlockExtent( VkFormat format )
@@ -116,7 +107,7 @@ namespace ashes::d3d11
 		uint32_t getTexelBlockByteSize( VkExtent3D const & texelBlockExtent
 			, VkFormat format )
 		{
-			uint32_t texelBlockSize;
+			VkDeviceSize texelBlockSize;
 
 			if ( !isDepthStencilFormat( format ) )
 			{
@@ -127,7 +118,7 @@ namespace ashes::d3d11
 				texelBlockSize = texelBlockExtent.width;
 			}
 
-			return texelBlockSize;
+			return uint32_t( texelBlockSize );
 		}
 
 		void doCopyMapped( VkFormat format
@@ -184,7 +175,7 @@ namespace ashes::d3d11
 
 		VkBuffer getStagingBuffer( VkDevice device
 			, VkBuffer buffer
-			, uint32_t size
+			, VkDeviceSize size
 			, VkDeviceMemory & memory )
 		{
 			VkBuffer result;
@@ -221,7 +212,6 @@ namespace ashes::d3d11
 
 		VkImage getStagingTexture( VkDevice device
 			, VkImage image
-			, VkExtent3D dimensions
 			, VkDeviceMemory & memory )
 		{
 			VkImage result;
@@ -235,14 +225,9 @@ namespace ashes::d3d11
 					0u,
 					get( image )->getType(),
 					get( image )->getFormat(),
-					VkExtent3D
-					{
-						dimensions.width,
-						dimensions.height,
-						dimensions.depth,
-					},
-					1u,
-					get( image )->getLayerCount(),
+					get( image )->getDimensions(),
+					get( image )->getMipmapLevels(),
+					1u, // layerCount, we process images layer per layer.
 					VK_SAMPLE_COUNT_1_BIT,
 					VK_IMAGE_TILING_LINEAR,
 					VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
@@ -267,32 +252,257 @@ namespace ashes::d3d11
 			get( result )->bindMemory( memory, 0u );
 			return result;
 		}
+
+		VkBufferCopy doGetCopyToStaging( VkFormat format
+			, VkBufferImageCopyArray const & copyInfos )
+		{
+			static auto constexpr MaxValue = std::numeric_limits< VkDeviceSize >::max();
+			static auto constexpr MinValue = std::numeric_limits< VkDeviceSize >::lowest();
+			VkDeviceSize minOffset = MaxValue;
+			VkDeviceSize maxSize = MinValue;
+
+			for ( auto & copyInfo : copyInfos )
+			{
+				auto size = doGetBufferSize( format, copyInfo );
+				minOffset = std::min( minOffset, copyInfo.bufferOffset );
+				maxSize = std::max( maxSize, copyInfo.bufferOffset + size );
+			}
+
+			return VkBufferCopy
+			{
+				minOffset,
+				0u,
+				maxSize - minOffset,
+			};
+		}
+
+		Optional< CopyToStagingProcess > getCopyToStagingProcess( VkDevice device
+			, VkImage dst
+			, VkBufferImageCopyArray const & copyInfos
+			, bool srcMappable
+			, VkBuffer & src
+			, VkBufferImageCopy & mapCopyInfo )
+		{
+			Optional< CopyToStagingProcess > result = std::nullopt;
+
+			if ( !srcMappable )
+			{
+				auto copyToStaging = doGetCopyToStaging( get( dst )->getFormat(), copyInfos );
+				CopyToStagingProcess process;
+				process.copyToStaging = copyToStaging;
+				process.stagingSrc = getStagingBuffer( device
+					, src
+					, process.copyToStaging.size
+					, process.stagingSrcMemory );
+
+				mapCopyInfo.bufferOffset = copyToStaging.srcOffset;
+				src = process.stagingSrc;
+				result = process;
+			}
+			else
+			{
+				mapCopyInfo.bufferOffset = 0u;
+			}
+
+			return result;
+		}
+
+		void getCopyFromStagingProcess( VkDevice device
+			, VkImage image
+			, bool dstMappable
+			, VkBufferImageCopy bufferImageCopy
+			, MapCopyImage & mapCopyImage )
+		{
+			if ( !dstMappable )
+			{
+				auto stagingImageSubresource = bufferImageCopy.imageSubresource;
+				stagingImageSubresource.layerCount = 1u;
+				stagingImageSubresource.baseArrayLayer = 0u;
+
+				CopyFromStagingProcess process;
+				process.stagingDst = getStagingTexture( device
+					, image
+					, process.stagingDstMemory );
+
+				mapCopyImage.dst = process.stagingDst;
+				mapCopyImage.dstMemory = process.stagingDstMemory;
+				mapCopyImage.dstSubresource = D3D11CalcSubresource( stagingImageSubresource.mipLevel
+					, stagingImageSubresource.baseArrayLayer
+					, 1u );
+				process.stagingDstSubresource = mapCopyImage.dstSubresource;
+
+				process.copyFromStaging.srcOffset = bufferImageCopy.imageOffset;
+				process.copyFromStaging.srcSubresource = stagingImageSubresource;
+
+				process.copyFromStaging.dstOffset = bufferImageCopy.imageOffset;
+				process.copyFromStaging.dstSubresource = bufferImageCopy.imageSubresource;
+				assert( process.copyFromStaging.dstSubresource.layerCount == 1u );
+
+				process.copyFromStaging.extent = bufferImageCopy.imageExtent;
+
+				// We copy to layer 0 of staging image (it has only 1 layer).
+				bufferImageCopy.imageSubresource.baseArrayLayer = 0u;
+				mapCopyImage.dstLayout = doGetDstLayout( device, mapCopyImage.dst, bufferImageCopy );
+				mapCopyImage.copyFromStaging = process;
+			}
+		}
+
+		MapCopyProcess getMapCopyProcess( VkDevice device
+			, VkBuffer src
+			, VkImage dst
+			, Optional< CopyToStagingProcess > const & copyToStaging
+			, VkBufferImageCopyArray const & copyInfos
+			, VkBufferImageCopy const & baseBufferImageCopy
+			, bool dstMappable )
+		{
+			MapCopyProcess result
+			{
+				src,
+				get( src )->getMemory(),
+			};
+
+			for ( auto & copy : copyInfos )
+			{
+				auto copyInfo = copy;
+				copyInfo.imageSubresource.layerCount = 1u;
+				copyInfo.bufferOffset -= baseBufferImageCopy.bufferOffset;
+				auto layerPitch = getBufferRowPitch( copyInfo ) * getBufferHeightPitch( copyInfo );
+
+				for ( uint32_t layer = 0u; layer < copy.imageSubresource.layerCount; ++layer )
+				{
+					auto srcBox = doGetSrcBox( get( dst )->getFormat(), copyInfo );
+					auto dstLayout = doGetDstLayout( device, dst, copyInfo );
+					MapCopyImage mapCopyImage
+					{
+						dst,
+						get( dst )->getMemory(),
+						copyInfo,
+						srcBox,
+						D3D11CalcSubresource( copyInfo.imageSubresource.mipLevel
+							, copyInfo.imageSubresource.baseArrayLayer
+							, 1u ),
+						dstLayout,
+					};
+					getCopyFromStagingProcess( device
+						, dst
+						, dstMappable
+						, copyInfo
+						, mapCopyImage );
+					result.mapCopyImages.push_back( mapCopyImage );
+					copyInfo.imageSubresource.baseArrayLayer++;
+					copyInfo.bufferOffset += layerPitch;
+				}
+			}
+
+			return result;
+		}
+
+		BufferToImageCopyProcess buildProcess( VkDevice device
+			, VkBufferImageCopyArray const & copyInfos
+			, VkBuffer src
+			, VkImage dst
+			, bool srcMappable
+			, bool dstMappable )
+		{
+			VkBufferImageCopy baseBufferImageCopy;
+			auto copyToStaging = getCopyToStagingProcess( device
+				, dst
+				, copyInfos
+				, srcMappable
+				, src
+				, baseBufferImageCopy );
+
+			auto mapCopy = getMapCopyProcess( device
+				, src
+				, dst
+				, copyToStaging
+				, copyInfos
+				, baseBufferImageCopy
+				, dstMappable );
+			return BufferToImageCopyProcess
+			{
+				copyToStaging,
+				mapCopy,
+			};
+		}
 	}
 
 	CopyBufferToImageCommand::CopyBufferToImageCommand( VkDevice device
-		, VkBufferImageCopyArray const & copyInfo
+		, VkBufferImageCopyArray const & copyInfos
 		, VkBuffer src
 		, VkImage dst )
 		: CommandBase{ device }
-		, m_copyInfo{ copyInfo }
 		, m_src{ src }
 		, m_dst{ dst }
 		, m_format{ getSRVFormat( get( m_dst )->getFormat() ) }
-		, m_srcBoxes{ doGetSrcBoxes( m_dst, copyInfo ) }
-		, m_dstLayouts{ doGetDstLayouts( device, m_dst, copyInfo ) }
 		, m_srcMappable{ get( m_src )->getMemoryRequirements().memoryTypeBits == VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT }
 		, m_dstMappable{ get( m_dst )->getMemoryRequirements().memoryTypeBits == VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT }
+		, m_process{ buildProcess ( device, copyInfos, src, dst, m_srcMappable, m_dstMappable ) }
 	{
+	}
+
+	CopyBufferToImageCommand::~CopyBufferToImageCommand()
+	{
+		//for ( auto & copies : m_copies )
+		//{
+		//	if ( copies.stagingDst )
+		//	{
+		//		deallocate( copies.stagingDstMemory, nullptr );
+		//		deallocate( copies.stagingDst, nullptr );
+		//	}
+		//}
+
+		//if ( m_stagingSrc )
+		//{
+		//	deallocate( m_stagingSrcMemory, nullptr );
+		//	deallocate( m_stagingSrc, nullptr );
+		//}
 	}
 
 	void CopyBufferToImageCommand::apply( Context const & context )const
 	{
-		for ( auto i = 0u; i < m_copyInfo.size(); ++i )
+		if ( m_process.copyToStaging )
 		{
-			applyOne( context
-				, m_copyInfo[i]
-				, m_srcBoxes[i]
-				, m_dstLayouts[i] );
+			apply( context, *m_process.copyToStaging );
+		}
+
+		apply( context, m_process.mapCopy );
+	}
+
+	void CopyBufferToImageCommand::apply( Context const & context
+		, CopyToStagingProcess const & process )const
+	{
+		CopyBufferCommand command{ m_device
+			, process.copyToStaging
+			, m_src
+			, process.stagingSrc };
+		command.apply( context );
+	}
+
+	void CopyBufferToImageCommand::apply( Context const & context
+		, CopyFromStagingProcess const & process )const
+	{
+		CopyImageCommand command{ m_device
+			, process.copyFromStaging
+			, process.stagingDst
+			, m_dst };
+		command.apply( context );
+	}
+
+	void CopyBufferToImageCommand::apply( Context const & context
+		, MapCopyProcess const & process )const
+	{
+		for ( auto & mapCopyImage : process.mapCopyImages )
+		{
+			doMapCopy( mapCopyImage
+				, get( mapCopyImage.dst )->getFormat()
+				, process.srcMemory
+				, mapCopyImage.dstMemory );
+
+			if ( mapCopyImage.copyFromStaging )
+			{
+				apply( context, *mapCopyImage.copyFromStaging );
+			}
 		}
 	}
 
@@ -301,119 +511,54 @@ namespace ashes::d3d11
 		return std::make_unique< CopyBufferToImageCommand >( *this );
 	}
 
-	void CopyBufferToImageCommand::applyOne( Context const & context
-		, VkBufferImageCopy const & copyInfo
-		, D3D11_BOX const & srcBox
-		, VkSubresourceLayout const & dstLayout )const
-	{
-		VkBuffer stagingSrc{ VK_NULL_HANDLE };
-		VkImage stagingDst{ VK_NULL_HANDLE };
-		VkDeviceMemory stagingSrcMemory{ VK_NULL_HANDLE };
-		VkDeviceMemory stagingDstMemory{ VK_NULL_HANDLE };
-		VkBuffer const * src = &m_src;
-		VkImage const * dst = &m_dst;
-
-		if ( !m_srcMappable )
-		{
-			stagingSrc = getStagingBuffer( m_device
-				, m_src
-				, srcBox.right - srcBox.left
-				, stagingSrcMemory );
-			doCopyToStaging( context
-				, copyInfo
-				, *src
-				, stagingSrc
-				, srcBox );
-			src = &stagingSrc;
-		}
-
-		if ( !m_dstMappable )
-		{
-			stagingDst = getStagingTexture( m_device
-				, m_dst
-				, copyInfo.imageExtent
-				, stagingDstMemory );
-			dst = &stagingDst;
-		}
-
-		doMapCopy( copyInfo
-			, srcBox
-			, dstLayout
-			, get( *dst )->getFormat()
-			, get( *src )->getMemory()
-			, get( *dst )->getMemory() );
-
-		if ( !m_dstMappable )
-		{
-			doCopyFromStaging( context
-				, copyInfo
-				, stagingDst
-				, m_dst );
-		}
-
-		//if ( stagingDst )
-		//{
-		//	deallocate( stagingDstMemory, nullptr );
-		//	deallocate( stagingDst, nullptr );
-		//}
-
-		//if ( stagingSrc )
-		//{
-		//	deallocate( stagingSrcMemory, nullptr );
-		//	deallocate( stagingSrc, nullptr );
-		//}
-	}
-
-	void CopyBufferToImageCommand::doMapCopy( VkBufferImageCopy const & copyInfo
-		, D3D11_BOX const & srcBox
-		, VkSubresourceLayout const & dstLayout
+	void CopyBufferToImageCommand::doMapCopy( MapCopyImage const & mapCopy
 		, VkFormat format
 		, VkDeviceMemory src
 		, VkDeviceMemory dst )const
 	{
 		uint8_t * srcBuffer{ nullptr };
 
-		if ( VK_SUCCESS == get( src )->lock( srcBox.left
-			, srcBox.right - srcBox.left
-			, 0u 
+		if ( VK_SUCCESS == get( src )->lock( mapCopy.srcBox.left
+			, mapCopy.srcBox.right - mapCopy.srcBox.left
+			, 0u
 			, reinterpret_cast< void ** >( &srcBuffer ) ) )
 		{
 			uint8_t * dstBuffer{ nullptr };
 
-			if ( VK_SUCCESS == get( dst )->lock( dstLayout.offset
-				, dstLayout.size
-				, 0u
+			if ( VK_SUCCESS == get( dst )->lock( mapCopy.dstLayout.offset
+				, mapCopy.dstLayout.size
+				, mapCopy.dstSubresource
 				, reinterpret_cast< void ** >( &dstBuffer ) ) )
 			{
 				doCopyMapped( format
-					, copyInfo
+					, mapCopy.mapCopy
 					, srcBuffer
-					, srcBox
+					, mapCopy.srcBox
 					, dstBuffer
-					, dstLayout );
-				get( dst )->flush( dstLayout.offset
-					, dstLayout.size );
+					, mapCopy.dstLayout );
+				get( dst )->flush( mapCopy.dstLayout.offset
+					, mapCopy.dstLayout.arrayPitch );
 				get( dst )->unlock();
 			}
 
-			get( src )->flush( srcBox.left
-				, srcBox.right - srcBox.left );
+			get( src )->flush( mapCopy.srcBox.left
+				, mapCopy.srcBox.right - mapCopy.srcBox.left );
 			get( src )->unlock();
 		}
 	}
 
 	void CopyBufferToImageCommand::doCopyToStaging( Context const & context
-		, VkBufferImageCopy const & copyInfo
+		, VkDeviceSize srcOffset
+		, VkDeviceSize size
 		, VkBuffer src
-		, VkBuffer staging
-		, D3D11_BOX const & srcBox )const
+		, VkBuffer staging )const
 	{
 		CopyBufferCommand command{ m_device
 			, VkBufferCopy
 			{
-				copyInfo.bufferOffset,
+				srcOffset,
 				0u,
-				srcBox.right - srcBox.left
+				size
 			}
 			, src
 			, staging };

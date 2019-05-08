@@ -207,7 +207,7 @@ DECLARE_GUID( IID_IDXGIFactory, 0x7b7166ec, 0x21c7, 0x44ae, 0xb2, 0x1a, 0xc9, 0x
 			}
 #	endif
 #else
-#	define dxDebugName( obj, txt )
+#	define dxDebugName( obj, type )
 #endif
 
 namespace ashes::d3d11
@@ -217,6 +217,7 @@ namespace ashes::d3d11
 		IDXGIAdapter * adapter{ nullptr };
 		IDXGIAdapter1 * adapter1{ nullptr };
 		IDXGIAdapter2 * adapter2{ nullptr };
+		IDXGIOutput * output{ nullptr };
 		D3D_FEATURE_LEVEL featureLevel;
 	};
 

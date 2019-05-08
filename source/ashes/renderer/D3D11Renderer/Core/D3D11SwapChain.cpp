@@ -13,16 +13,64 @@
 
 namespace ashes::d3d11
 {
+	namespace
+	{
+		VkImage createImage( VkDevice device
+			, VkFormat format
+			, VkExtent2D dimensions
+			, VkDeviceMemory & deviceMemory )
+		{
+			VkImage result;
+			allocate( result
+				, nullptr
+				, device
+				, format
+				, std::move( dimensions )
+				, nullptr );
+			auto requirements = get( result )->getMemoryRequirements();
+			uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
+				, VK_MEMORY_HEAP_DEVICE_LOCAL_BIT );
+			allocate( deviceMemory
+				, nullptr
+				, device
+				, VkMemoryAllocateInfo{ VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, requirements.size, deduced } );
+			get( result )->bindMemory( deviceMemory, 0u );
+			return result;
+		}
+
+		VkImageView createImageView( VkDevice device
+			, VkImage image
+			, VkFormat format )
+		{
+			VkImageView result;
+			allocate( result
+				, nullptr
+				, device
+				, VkImageViewCreateInfo
+				{
+					VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+					nullptr,
+					0,
+					image,
+					VK_IMAGE_VIEW_TYPE_2D,
+					format,
+					VkComponentMapping{},
+					VkImageSubresourceRange{ VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT, 0u, 1u, 0u, 1u },
+				} );
+			return result;
+		}
+	}
+
 	SwapchainKHR::SwapchainKHR( VkDevice device
-		, VkSwapchainCreateInfoKHR createInfo )
+		, VkSwapchainCreateInfoKHR createInfo ) try
 		: m_device{ device }
 		, m_createInfo{ std::move( createInfo ) }
 	{
-		auto desc = doInitPresentParameters();
+		doInitPresentParameters();
 		auto factory = get( get( m_device )->getInstance() )->getDXGIFactory();
 		auto d3ddevice = get( m_device )->getDevice();
 		HRESULT hr = factory->CreateSwapChain( d3ddevice
-			, &desc
+			, &m_presentDesc
 			, &m_swapChain );
 
 		if ( !checkError( m_device, hr, "CreateSwapChain" ) )
@@ -31,10 +79,49 @@ namespace ashes::d3d11
 		}
 
 		dxDebugName( m_swapChain, SwapChain );
+		ID3D11Texture2D * rtTex = nullptr;
+		hr = m_swapChain->GetBuffer( 0
+			, __uuidof( ID3D11Texture2D )
+			, reinterpret_cast< void ** >( &rtTex ) );
+
+		if ( !checkError( m_device, hr, "SwapChain::GetBuffer" ) )
+		{
+			throw std::runtime_error( "GetBuffer() failed" );
+		}
+
+		allocate( m_swapChainImage
+			, nullptr
+			, m_device
+			, m_createInfo.imageFormat
+			, VkExtent2D{ m_presentDesc.BufferDesc.Width, m_presentDesc.BufferDesc.Height }
+			, rtTex );
+		dxDebugName( get( m_swapChainImage )->getResource(), SwapChainImage );
+
+		m_image = createImage( device
+			, m_createInfo.imageFormat
+			, m_createInfo.imageExtent
+			, m_deviceMemory );
+		dxDebugName( get( m_image )->getResource(), SwapChainFakeImage );
+		m_view = createImageView( device
+			, m_image
+			, m_createInfo.imageFormat );
+		dxDebugName( get( m_view )->getRenderTargetView(), SwapChainFakeImageView );
+	}
+	catch ( std::exception & exc )
+	{
+		deallocate( m_view, nullptr );
+		deallocate( m_image, nullptr );
+		deallocate( m_swapChainImage, nullptr );
+		safeRelease( m_swapChain );
+		std::cerr << "Swapchain creation failed: " << exc.what() << std::endl;
+		throw exc;
 	}
 
 	SwapchainKHR::~SwapchainKHR()
 	{
+		deallocate( m_view, nullptr );
+		deallocate( m_image, nullptr );
+		deallocate( m_swapChainImage, nullptr );
 		safeRelease( m_swapChain );
 	}
 
@@ -45,27 +132,30 @@ namespace ashes::d3d11
 
 	VkImageArray SwapchainKHR::getImages()const
 	{
-		ID3D11Texture2D * rtTex = nullptr;
-		auto hr = m_swapChain->GetBuffer( 0
-			, __uuidof( ID3D11Texture2D )
-			, reinterpret_cast< void ** >( &rtTex ) );
-
-		if ( !checkError( m_device, hr, "SwapChain::GetBuffer" ) )
-		{
-			throw std::runtime_error( "GetBuffer() failed" );
-		}
-
-		// Et on crée des BackBuffers à partir de ces images.
 		VkImageArray result;
-		VkImage img;
-		allocate( img
-			, nullptr
-			, m_device
-			, m_createInfo.imageFormat
-			, m_createInfo.imageExtent
-			, rtTex );
-		result.emplace_back( img );
+		result.emplace_back( m_image );
 		return result;
+	}
+
+	VkResult SwapchainKHR::present( uint32_t imageIndex )const
+	{
+		ID3D11DeviceContext * context;
+		get( m_device )->getDevice()->GetImmediateContext( &context );
+		D3D11_BOX srcBox{};
+		srcBox.right = m_createInfo.imageExtent.width;
+		srcBox.bottom = m_createInfo.imageExtent.height;
+		srcBox.back = 1u;
+		context->CopySubresourceRegion( get( m_swapChainImage )->getResource()
+			, 0u
+			, 0u
+			, 0u
+			, 0u
+			, get( m_image )->getResource()
+			, 0u
+			, &srcBox );
+		return checkError( m_device, getSwapChain()->Present( 0u, 0u ), "Presentation" )
+			? VK_SUCCESS
+			: VK_ERROR_SURFACE_LOST_KHR;
 	}
 
 	VkResult SwapchainKHR::acquireNextImage( uint64_t timeout
@@ -77,7 +167,7 @@ namespace ashes::d3d11
 		return VK_SUCCESS;
 	}
 
-	DXGI_SWAP_CHAIN_DESC SwapchainKHR::doInitPresentParameters()
+	void SwapchainKHR::doInitPresentParameters()
 	{
 		auto caps = get( m_createInfo.surface )->getCapabilities( get( m_device )->getGpu() );
 		auto & descs = get( m_createInfo.surface )->getDescs( m_createInfo.imageFormat );
@@ -126,6 +216,6 @@ namespace ashes::d3d11
 		// Don't set the advanced flags.
 		result.Flags = 0;
 
-		return result;
+		m_presentDesc = result;
 	}
 }

@@ -157,7 +157,7 @@ namespace ashes::d3d11
 		uint32_t getTexelBlockByteSize( VkExtent3D const & texelBlockExtent
 			, VkFormat format )
 		{
-			uint32_t texelBlockSize;
+			VkDeviceSize texelBlockSize;
 
 			if ( !isDepthStencilFormat( format ) )
 			{
@@ -168,7 +168,7 @@ namespace ashes::d3d11
 				texelBlockSize = texelBlockExtent.width;
 			}
 
-			return texelBlockSize;
+			return uint32_t( texelBlockSize );
 		}
 
 		void doCopyMapped( VkFormat format

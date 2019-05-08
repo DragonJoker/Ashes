@@ -99,7 +99,7 @@ namespace ashes::d3d11
 		uint32_t getTexelBlockByteSize( VkExtent3D const & texelBlockExtent
 			, VkFormat format )
 		{
-			uint32_t texelBlockSize;
+			VkDeviceSize texelBlockSize;
 
 			if ( !isDepthStencilFormat( format ) )
 			{
@@ -110,7 +110,7 @@ namespace ashes::d3d11
 				texelBlockSize = texelBlockExtent.width;
 			}
 
-			return texelBlockSize;
+			return uint32_t( texelBlockSize );
 		}
 	}
 
@@ -164,7 +164,7 @@ namespace ashes::d3d11
 		layout.rowPitch = byteSize * mipWidth / ( extent.width * extent.height * extent.depth );
 		layout.arrayPitch = layout.rowPitch * mipHeight * extent.height / ( extent.width * extent.depth );
 		layout.depthPitch = layout.arrayPitch;
-		layout.offset = subresource.arrayLayer * layout.arrayPitch * byteSize;
+		layout.offset = subresource.arrayLayer * layout.arrayPitch;
 		layout.size = layout.arrayPitch * get( image )->getDimensions().depth;
 	}
 
@@ -251,20 +251,6 @@ namespace ashes::d3d11
 			D3D_FEATURE_LEVEL_9_1,
 		};
 		HRESULT hr;
-		//HWND hWnd = m_surface->getHandle().getInternal< ashes::IMswWindowHandle >().getHwnd();
-		//hr = factory->MakeWindowAssociation( hWnd, 0 );
-
-		//if ( SUCCEEDED( hr ) )
-		//{
-		//	HWND hWnd2;
-		//	hr = factory->GetWindowAssociation( &hWnd2 );
-
-		//	if ( hWnd2 )
-		//	{
-		//		hWnd = hWnd2;
-		//	}
-		//}
-
 		UINT flags = 0;
 		auto adapter = get( m_physicalDevice )->getAdapter();
 

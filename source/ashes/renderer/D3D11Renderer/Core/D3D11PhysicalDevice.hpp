@@ -72,7 +72,7 @@ namespace ashes::d3d11
 
 		inline IDXGIOutput * getOutput()const
 		{
-			return m_output;
+			return m_adapterInfo.output;
 		}
 
 		inline D3D_FEATURE_LEVEL getFeatureLevel()const
@@ -91,7 +91,6 @@ namespace ashes::d3d11
 	private:
 		VkInstance m_instance;
 		AdapterInfo m_adapterInfo;
-		IDXGIOutput * m_output;
 		VkPhysicalDeviceFeatures m_features{};
 		VkPhysicalDeviceProperties m_properties{};
 		VkQueueFamilyPropertiesArray m_queueProperties{};

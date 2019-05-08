@@ -44,9 +44,9 @@ namespace ashes::d3d11
 			{
 				D3D11_BUFFER_DESC desc{};
 				desc.ByteWidth = size;
-				desc.Usage = getBufferUsage( m_flags, m_bufferTargets );
+				desc.Usage = getBufferUsage( m_propertyFlags, m_bufferTargets );
 				desc.BindFlags = getBindFlags( m_bufferTargets );
-				desc.CPUAccessFlags = getCpuBufferAccessFlags( m_flags, m_bufferTargets );
+				desc.CPUAccessFlags = getCpuBufferAccessFlags( m_propertyFlags, m_bufferTargets );
 				desc.MiscFlags = ( ( checkFlag( m_bufferTargets, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT )
 						|| checkFlag( m_bufferTargets, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT ) )
 					? D3D11_RESOURCE_MISC_DRAWINDIRECT_ARGS
@@ -68,6 +68,7 @@ namespace ashes::d3d11
 		}
 
 		void upload( ByteArray const & data
+			, UINT subresource
 			, VkDeviceSize offset
 			, VkDeviceSize size )const override
 		{
@@ -82,8 +83,8 @@ namespace ashes::d3d11
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 
 			HRESULT hr = context->Map( m_buffer
-				, 0
-				, getBufferMapFlags( m_flags, m_bufferTargets )
+				, subresource
+				, getBufferMapFlags( m_propertyFlags, m_bufferTargets )
 				, 0
 				, &mappedResource );
 			uint8_t * dst;
@@ -99,6 +100,7 @@ namespace ashes::d3d11
 		}
 
 		void download( ByteArray & data
+			, UINT subresource
 			, VkDeviceSize offset
 			, VkDeviceSize size )const override
 		{
@@ -113,7 +115,7 @@ namespace ashes::d3d11
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 
 			HRESULT hr = context->Map( m_buffer
-				, 0
+				, subresource
 				, D3D11_MAP_READ
 				, 0
 				, &mappedResource );
@@ -141,15 +143,18 @@ namespace ashes::d3d11
 	
 	//*********************************************************************************************
 
-	UINT getBindFlags( VkImageCreateInfo const & createInfo )
+	UINT getBindFlags( VkImageCreateInfo const & createInfo
+		, VkMemoryPropertyFlags propertyFlags )
 	{
 		return ( ( isSampled( createInfo.usage )
 				? D3D11_BIND_SHADER_RESOURCE
 				: 0 )
 			| ( isRenderable( createInfo.usage, createInfo.format, createInfo.mipLevels )
-				? ( isDepthOrStencilFormat( createInfo.format )
-					? D3D11_BIND_DEPTH_STENCIL
-					: D3D11_BIND_RENDER_TARGET )
+				? ( isHostVisible( propertyFlags )
+					? 0
+					: ( isDepthOrStencilFormat( createInfo.format )
+						? D3D11_BIND_DEPTH_STENCIL
+						: D3D11_BIND_RENDER_TARGET ) )
 				: 0 )
 			| ( isStorage( createInfo.usage )
 				? D3D11_BIND_UNORDERED_ACCESS
@@ -158,9 +163,10 @@ namespace ashes::d3d11
 
 	UINT getMiscFlags( VkImageCreateInfo const & createInfo )
 	{
-		return ( isMipmapped( createInfo.usage, createInfo.format, createInfo.mipLevels )
-				? D3D11_RESOURCE_MISC_GENERATE_MIPS
-				: 0 )
+		return 0u
+			//| ( isMipmapped( createInfo.usage, createInfo.format, createInfo.mipLevels )
+			//	? D3D11_RESOURCE_MISC_GENERATE_MIPS
+			//	: 0 )
 			| ( checkFlag( createInfo.flags, VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT )
 				? D3D11_RESOURCE_MISC_TEXTURECUBE
 				: 0u );
@@ -196,6 +202,7 @@ namespace ashes::d3d11
 		}
 
 		void upload( ByteArray const & data
+			, UINT subresource
 			, VkDeviceSize offset
 			, VkDeviceSize size )const override
 		{
@@ -210,8 +217,8 @@ namespace ashes::d3d11
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 
 			HRESULT hr = context->Map( m_texture
-				, 0
-				, getImageMapFlags( m_flags, m_usage )
+				, subresource
+				, getImageMapFlags( m_propertyFlags, m_usage )
 				, 0
 				, &mappedResource );
 			void * dst;
@@ -227,6 +234,7 @@ namespace ashes::d3d11
 		}
 
 		void download( ByteArray & data
+			, UINT subresource
 			, VkDeviceSize offset
 			, VkDeviceSize size )const override
 		{
@@ -241,7 +249,7 @@ namespace ashes::d3d11
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 
 			HRESULT hr = context->Map( m_texture
-				, 0
+				, subresource
 				, D3D11_MAP_READ
 				, 0
 				, &mappedResource );
@@ -270,10 +278,10 @@ namespace ashes::d3d11
 			desc.Width = createInfo.extent.width;
 			desc.Format = getTextureFormat( createInfo.format );
 			desc.ArraySize = createInfo.arrayLayers;
-			desc.Usage = getImageUsage( m_flags, m_usage );
-			desc.CPUAccessFlags = getCpuImageAccessFlags( m_flags, m_usage );
+			desc.Usage = getImageUsage( m_propertyFlags, m_usage );
+			desc.CPUAccessFlags = getCpuImageAccessFlags( m_propertyFlags, m_usage );
 			desc.MipLevels = createInfo.mipLevels;
-			desc.BindFlags = getBindFlags( createInfo );
+			desc.BindFlags = getBindFlags( createInfo, m_propertyFlags );
 			desc.MiscFlags = getMiscFlags( createInfo );
 
 			if ( get( m_device )->getFeatureLevel() < D3D_FEATURE_LEVEL_11_0 )
@@ -317,6 +325,7 @@ namespace ashes::d3d11
 		}
 
 		void upload( ByteArray const & data
+			, UINT subresource
 			, VkDeviceSize offset
 			, VkDeviceSize size )const override
 		{
@@ -331,8 +340,8 @@ namespace ashes::d3d11
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 
 			HRESULT hr = context->Map( m_texture
-				, 0
-				, getImageMapFlags( m_flags, m_usage )
+				, subresource
+				, getImageMapFlags( m_propertyFlags, m_usage )
 				, 0
 				, &mappedResource );
 			void * dst;
@@ -348,6 +357,7 @@ namespace ashes::d3d11
 		}
 
 		void download( ByteArray & data
+			, UINT subresource
 			, VkDeviceSize offset
 			, VkDeviceSize size )const override
 		{
@@ -362,7 +372,7 @@ namespace ashes::d3d11
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 
 			HRESULT hr = context->Map( m_texture
-				, 0
+				, subresource
 				, D3D11_MAP_READ
 				, 0
 				, &mappedResource );
@@ -392,12 +402,12 @@ namespace ashes::d3d11
 			desc.Height = createInfo.extent.height;
 			desc.Format = getTextureFormat( createInfo.format );
 			desc.ArraySize = createInfo.arrayLayers;
-			desc.Usage = getImageUsage( m_flags, m_usage );
-			desc.CPUAccessFlags = getCpuImageAccessFlags( m_flags, m_usage );
+			desc.Usage = getImageUsage( m_propertyFlags, m_usage );
+			desc.CPUAccessFlags = getCpuImageAccessFlags( m_propertyFlags, m_usage );
 			desc.MipLevels = createInfo.mipLevels;
 			desc.SampleDesc.Count = UINT( createInfo.samples );
 			desc.SampleDesc.Quality = 0;
-			desc.BindFlags = getBindFlags( createInfo );
+			desc.BindFlags = getBindFlags( createInfo, m_propertyFlags );
 			desc.MiscFlags = getMiscFlags( createInfo );
 
 			if ( desc.SampleDesc.Count > 1 )
@@ -453,6 +463,7 @@ namespace ashes::d3d11
 		}
 
 		void upload( ByteArray const & data
+			, UINT subresource
 			, VkDeviceSize offset
 			, VkDeviceSize size )const override
 		{
@@ -467,8 +478,8 @@ namespace ashes::d3d11
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 
 			HRESULT hr = context->Map( m_texture
-				, 0
-				, getImageMapFlags( m_flags, m_usage )
+				, subresource
+				, getImageMapFlags( m_propertyFlags, m_usage )
 				, 0
 				, &mappedResource );
 			void * dst;
@@ -484,6 +495,7 @@ namespace ashes::d3d11
 		}
 
 		void download( ByteArray & data
+			, UINT subresource
 			, VkDeviceSize offset
 			, VkDeviceSize size )const override
 		{
@@ -498,7 +510,7 @@ namespace ashes::d3d11
 			D3D11_MAPPED_SUBRESOURCE mappedResource;
 
 			HRESULT hr = context->Map( m_texture
-				, 0
+				, subresource
 				, D3D11_MAP_READ
 				, 0
 				, &mappedResource );
@@ -528,10 +540,10 @@ namespace ashes::d3d11
 			desc.Height = createInfo.extent.height;
 			desc.Depth = createInfo.extent.depth;
 			desc.Format = getTextureFormat( createInfo.format );
-			desc.Usage = getImageUsage( m_flags, m_usage );
-			desc.CPUAccessFlags = getCpuImageAccessFlags( m_flags, m_usage );
+			desc.Usage = getImageUsage( m_propertyFlags, m_usage );
+			desc.CPUAccessFlags = getCpuImageAccessFlags( m_propertyFlags, m_usage );
 			desc.MipLevels = createInfo.mipLevels;
-			desc.BindFlags = getBindFlags( createInfo );
+			desc.BindFlags = getBindFlags( createInfo, m_propertyFlags );
 			desc.MiscFlags = getMiscFlags( createInfo );
 
 			if ( get( m_device )->getFeatureLevel() < D3D_FEATURE_LEVEL_11_0 )
@@ -551,7 +563,7 @@ namespace ashes::d3d11
 		, VkMemoryAllocateInfo allocateInfo )
 		: m_device{ device }
 		, m_allocateInfo{ std::move( allocateInfo ) }
-		, m_flags{ getFlags( m_allocateInfo.memoryTypeIndex ) }
+		, m_propertyFlags{ getFlags( m_allocateInfo.memoryTypeIndex ) }
 	{
 	}
 
@@ -561,11 +573,11 @@ namespace ashes::d3d11
 		, VkMemoryAllocateInfo allocateInfo )
 		: m_device{ device }
 		, m_allocateInfo{ std::move( allocateInfo ) }
-		, m_flags{ getFlags( m_allocateInfo.memoryTypeIndex ) }
+		, m_propertyFlags{ getFlags( m_allocateInfo.memoryTypeIndex ) }
 	{
 		thread_local uint8_t count = 10u;
 
-		if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
+		if ( ashes::checkFlag( m_propertyFlags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
 		{
 			m_data.resize( allocateInfo.allocationSize, count++ );
 		}
@@ -588,6 +600,7 @@ namespace ashes::d3d11
 				, get( buffer )->getUsage() );
 			retBuffer = impl->getBuffer();
 			m_impl = std::move( impl );
+			upload( 0u, m_data.size() );
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )
@@ -620,6 +633,7 @@ namespace ashes::d3d11
 				, get( image )->getCreateInfo() );
 			texture = impl->getImage();
 			m_impl = std::move( impl );
+			upload();
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )
@@ -652,6 +666,7 @@ namespace ashes::d3d11
 				, get( image )->getCreateInfo() );
 			texture = impl->getImage();
 			m_impl = std::move( impl );
+			upload();
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )
@@ -684,6 +699,7 @@ namespace ashes::d3d11
 				, get( image )->getCreateInfo() );
 			texture = impl->getImage();
 			m_impl = std::move( impl );
+			upload();
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )
@@ -704,21 +720,23 @@ namespace ashes::d3d11
 	}
 
 	void DeviceMemory::updateUpload( VkDeviceSize offset
-		, VkDeviceSize size )const
+		, VkDeviceSize size
+		, UINT subresource )const
 	{
-		if ( !m_data.empty() )
+		if ( !m_data.empty() && m_impl )
 		{
-			m_impl->upload( m_data, offset, size );
+			m_impl->upload( m_data, subresource, offset, size );
 			m_dirty = false;
 		}
 	}
 
 	void DeviceMemory::updateDownload( VkDeviceSize offset
-		, VkDeviceSize size )const
+		, VkDeviceSize size
+		, UINT subresource )const
 	{
-		if ( !m_data.empty() )
+		if ( !m_data.empty() && m_impl )
 		{
-			m_impl->download( m_data, offset, size );
+			m_impl->download( m_data, subresource, offset, size );
 			m_dirty = false;
 		}
 	}
@@ -744,11 +762,20 @@ namespace ashes::d3d11
 	{
 		assert( !m_mapped && "VkDeviceMemory should not be mapped" );
 		assert( !m_data.empty() && "VkDeviceMemory should be mappable" );
+		size = (size == ~( 0ull )
+			? m_allocateInfo.allocationSize
+			: size);
+
+		if ( m_data.size() <= offset 
+			|| m_data.size() < ( offset + size ) )
+		{
+			return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+		}
+
 		*data = m_data.data() + offset;
 		m_mappedOffset = offset;
-		m_mappedSize = size == ~( 0ull )
-			? m_allocateInfo.allocationSize
-			: size;
+		m_mappedSubresource = flags;
+		m_mappedSize = size;
 		m_mapped = *data != nullptr;
 		m_dirty = true;
 		return VK_SUCCESS;
@@ -759,7 +786,17 @@ namespace ashes::d3d11
 	{
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
 		assert( !m_data.empty() && "VkDeviceMemory should be mappable" );
-		upload( offset, size );
+		size = ( size == ~( 0ull )
+			? m_allocateInfo.allocationSize
+			: size );
+
+		if ( m_data.size() <= offset
+			|| m_data.size() < ( offset + size ) )
+		{
+			return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+		}
+
+		updateUpload( offset, size, m_mappedSubresource );
 		return VK_SUCCESS;
 	}
 
@@ -768,6 +805,16 @@ namespace ashes::d3d11
 	{
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
 		assert( !m_data.empty() && "VkDeviceMemory should be mappable" );
+		size = ( size == ~( 0ull )
+			? m_allocateInfo.allocationSize
+			: size );
+
+		if ( m_data.size() <= offset
+			|| m_data.size() < ( offset + size ) )
+		{
+			return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+		}
+
 		m_dirty = true;
 		return VK_SUCCESS;
 	}
@@ -777,24 +824,26 @@ namespace ashes::d3d11
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
 		assert( !m_data.empty() && "VkDeviceMemory should be mappable" );
 		m_mapped = false;
-		upload( m_mappedOffset, m_mappedSize );
+		updateUpload( m_mappedOffset, m_mappedSize, m_mappedSubresource );
 	}
 
 	void DeviceMemory::upload( VkDeviceSize offset
-		, VkDeviceSize size )const
+		, VkDeviceSize size
+		, UINT subresource )const
 	{
 		if ( m_dirty )
 		{
-			updateUpload( offset, size );
+			updateUpload( offset, size, subresource );
 		}
 	}
 
 	void DeviceMemory::download( VkDeviceSize offset
-		, VkDeviceSize size )const
+		, VkDeviceSize size
+		, UINT subresource )const
 	{
 		if ( m_dirty )
 		{
-			updateDownload( offset, size );
+			updateDownload( offset, size, subresource );
 		}
 	}
 

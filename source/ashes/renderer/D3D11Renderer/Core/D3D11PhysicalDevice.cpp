@@ -7,6 +7,8 @@ See LICENSE file in root folder.
 #include "Core/D3D11Instance.hpp"
 #include "Core/D3D11Device.hpp"
 
+#include "ashesd3d11_api.hpp"
+
 namespace ashes::d3d11
 {
 	PhysicalDevice::PhysicalDevice( VkInstance instance
@@ -19,7 +21,6 @@ namespace ashes::d3d11
 
 	PhysicalDevice::~PhysicalDevice()
 	{
-		safeRelease( m_output );
 	}
 
 	VkBool32 PhysicalDevice::getPresentationSupport( uint32_t queueFamilyIndex )const
@@ -79,12 +80,6 @@ namespace ashes::d3d11
 			m_properties.driverVersion = adapterDesc.Revision;
 			// Store the dedicated video card memory in megabytes.
 			auto videoCardMemory = int( adapterDesc.DedicatedVideoMemory / 1024 / 1024 );
-		}
-
-		if ( SUCCEEDED( m_adapterInfo.adapter->EnumOutputs( 0, &m_output ) ) )
-		{
-			DXGI_OUTPUT_DESC desc{};
-			m_output->GetDesc( &desc );
 		}
 
 		uint32_t major = m_adapterInfo.featureLevel >> 12;
@@ -269,7 +264,6 @@ namespace ashes::d3d11
 		m_properties.sparseProperties.residencyStandard2DMultisampleBlockShape = false;
 		m_properties.sparseProperties.residencyStandard3DBlockShape = false;
 
-
 		// Et enfin les propriétés des familles de files du GPU.
 		m_queueProperties.reserve( 1u );
 		m_queueProperties.push_back(
@@ -283,5 +277,89 @@ namespace ashes::d3d11
 					1u,
 				}
 			} );
+
+		auto factory = get( m_instance )->getDXGIFactory();
+
+		std::vector< D3D_FEATURE_LEVEL > requestedFeatureLevels
+		{
+			D3D_FEATURE_LEVEL_11_1,
+			D3D_FEATURE_LEVEL_11_0,
+			D3D_FEATURE_LEVEL_10_1,
+			D3D_FEATURE_LEVEL_10_0,
+			D3D_FEATURE_LEVEL_9_3,
+			D3D_FEATURE_LEVEL_9_2,
+			D3D_FEATURE_LEVEL_9_1,
+		};
+		HRESULT hr;
+		UINT flags = 0;
+
+#if !defined( NDEBUG )
+		flags = D3D11_CREATE_DEVICE_DEBUG;
+#endif
+
+		D3D_FEATURE_LEVEL supportedFeatureLevel = getFeatureLevel();
+		D3D_FEATURE_LEVEL featureLevel;
+		ID3D11Device * d3dDevice;
+		hr = D3D11CreateDevice( nullptr
+			, D3D_DRIVER_TYPE_HARDWARE
+			, nullptr
+			, flags
+			, &supportedFeatureLevel
+			, 1
+			, D3D11_SDK_VERSION
+			, &d3dDevice
+			, &featureLevel
+			, nullptr );
+
+		if ( d3dDevice )
+		{
+			for ( VkFormat fmt = VkFormat( VK_FORMAT_BEGIN_RANGE + 1 ); fmt != VK_FORMAT_END_RANGE; fmt = VkFormat( fmt + 1 ) )
+			{
+				VkFormatProperties props{};
+				UINT support;
+				d3dDevice->CheckFormatSupport( getDxgiFormat( fmt ), &support );
+
+				if ( checkFlag( support, D3D11_FORMAT_SUPPORT_IA_VERTEX_BUFFER ) )
+				{
+					props.bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
+				}
+
+				if ( checkFlag( support, D3D11_FORMAT_SUPPORT_DEPTH_STENCIL ) )
+				{
+					props.linearTilingFeatures |= VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
+				}
+
+				if ( checkFlag( support, D3D11_FORMAT_SUPPORT_RENDER_TARGET ) )
+				{
+					props.linearTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT;
+
+				}
+
+				if ( checkFlag( support, D3D11_FORMAT_SUPPORT_SHADER_LOAD ) )
+				{
+					props.linearTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT;
+					props.linearTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT;
+				}
+
+				if ( checkFlag( support, D3D11_FORMAT_SUPPORT_SHADER_SAMPLE ) )
+				{
+					props.linearTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
+					props.linearTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT;
+					props.linearTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT_EXT;
+					props.linearTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_EXT;
+				}
+
+				if ( checkFlag( support, D3D11_FORMAT_SUPPORT_CPU_LOCKABLE ) )
+				{
+					props.linearTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;
+					props.linearTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
+				}
+
+				props.optimalTilingFeatures = props.linearTilingFeatures;
+				m_formatProperties[fmt] = props;
+			}
+
+			safeRelease( d3dDevice );
+		}
 	}
 }

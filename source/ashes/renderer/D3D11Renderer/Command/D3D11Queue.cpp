@@ -49,23 +49,25 @@ namespace ashes::d3d11
 
 	VkResult Queue::present( VkPresentInfoKHR const & presentInfo )const
 	{
+		auto itIndices = presentInfo.pImageIndices;
+
 		if ( presentInfo.pResults )
 		{
 			auto itResult = presentInfo.pResults;
 
 			for ( auto & swapChain : makeArrayView( presentInfo.pSwapchains, presentInfo.swapchainCount ) )
 			{
-				*itResult = checkError( m_device, get( swapChain )->getSwapChain()->Present( 0u, 0u ), "Presentation" )
-					? VK_SUCCESS
-					: VK_ERROR_SURFACE_LOST_KHR;
+				*itResult = get( swapChain )->present( *itIndices );
 				++itResult;
+				++itIndices;
 			}
 		}
 		else
 		{
 			for ( auto & swapChain : makeArrayView( presentInfo.pSwapchains, presentInfo.swapchainCount ) )
 			{
-				get( swapChain )->getSwapChain()->Present( 0u, 0u );
+				get( swapChain )->present( *itIndices );
+				++itIndices;
 			}
 		}
 

@@ -99,6 +99,7 @@ namespace ashes::d3d11
 		
 		for ( auto & info : m_adapters )
 		{
+			safeRelease( info.output );
 			safeRelease( info.adapter2 );
 			safeRelease( info.adapter1 );
 			safeRelease( info.adapter );
@@ -272,26 +273,25 @@ namespace ashes::d3d11
 
 		while ( m_factory->EnumAdapters( index, &adapter ) != DXGI_ERROR_NOT_FOUND )
 		{
-			IDXGIAdapter1 * adapter1{ nullptr };
-			IDXGIAdapter2 * adapter2{ nullptr };
+			AdapterInfo info;
+			info.adapter = adapter;
 			auto hr = adapter->QueryInterface( __uuidof( IDXGIAdapter1 )
-				, reinterpret_cast< void ** >( &adapter1 ) );
+				, reinterpret_cast< void ** >( &info.adapter1 ) );
 
 			if ( SUCCEEDED( hr ) )
 			{
-				hr = adapter1->QueryInterface( __uuidof( IDXGIAdapter2 )
-					, reinterpret_cast< void ** >( &adapter2 ) );
+				hr = info.adapter1->QueryInterface( __uuidof( IDXGIAdapter2 )
+					, reinterpret_cast< void ** >( &info.adapter2 ) );
 			}
 
-			auto featureLevel = doGetSupportedFeatureLevel( m_factory, adapter );
-			m_maxFeatureLevel = std::max( featureLevel, m_maxFeatureLevel );
-			m_adapters.push_back(
-				{
-					adapter,
-					adapter1,
-					adapter2,
-					featureLevel
-				} );
+			if ( SUCCEEDED( adapter->EnumOutputs( 0, &info.output ) )
+				&& info.output )
+			{
+				info.featureLevel = doGetSupportedFeatureLevel( m_factory, adapter );
+				m_maxFeatureLevel = std::max( info.featureLevel, m_maxFeatureLevel );
+				m_adapters.push_back( info );
+			}
+
 			++index;
 		}
 	}

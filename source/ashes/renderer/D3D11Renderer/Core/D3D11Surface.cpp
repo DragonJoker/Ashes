@@ -97,9 +97,8 @@ namespace ashes::d3d11
 
 			// Now go through all the display modes and find the one that matches the screen width and height.
 			std::vector< DXGI_MODE_DESC > matchingDisplayModes;
-			std::set< DXGI_FORMAT > supportedFormats;
-			auto const width = UINT( rect.right - rect.left );
-			auto const height = UINT( rect.bottom - rect.top );
+			auto width = UINT( rect.right - rect.left );
+			auto height = UINT( rect.bottom - rect.top );
 
 			for ( auto & displayMode : displayModeList )
 			{
@@ -112,8 +111,13 @@ namespace ashes::d3d11
 					, displayMode.Width );
 				capabilities.maxImageExtent.height = std::max( capabilities.minImageExtent.height
 					, displayMode.Height );
+			}
 
-				supportedFormats.insert( displayMode.Format );
+			width = std::min( width, capabilities.maxImageExtent.width );
+			height = std::min( height, capabilities.maxImageExtent.height );
+
+			for ( auto & displayMode : displayModeList )
+			{
 
 				if ( displayMode.Width == width
 					&& displayMode.Height == height )
@@ -176,9 +180,19 @@ namespace ashes::d3d11
 
 			if ( !matchingDisplayModes.empty() )
 			{
-				auto & displayMode = matchingDisplayModes.back();
-				capabilities.currentExtent.width = displayMode.Width;
-				capabilities.currentExtent.height = displayMode.Height;
+				float ratio = float( width ) / height;
+				std::sort( matchingDisplayModes.begin()
+					, matchingDisplayModes.end()
+					, []( DXGI_MODE_DESC const & lhs, DXGI_MODE_DESC const & rhs )
+					{
+						return lhs.Width < rhs.Width
+							|| ( lhs.Width == rhs.Width
+								&& lhs.Height < rhs.Height );
+					} );
+
+				auto & displayMode = matchingDisplayModes.front();
+				capabilities.currentExtent.width = width;
+				capabilities.currentExtent.height = height;
 			}
 
 			return result;
