@@ -8,6 +8,8 @@ See LICENSE file in root folder.
 
 #include "renderer/Gl4Renderer/GlRendererPrerequisites.hpp"
 
+#include "renderer/Gl4Renderer/Shader/GlShaderDesc.hpp"
+
 namespace ashes::gl4
 {
 	class GeometryBuffers
@@ -18,11 +20,13 @@ namespace ashes::gl4
 			VBO( VkBuffer vbo
 				, VkDeviceSize offset
 				, VkVertexInputBindingDescription binding
-				, VkVertexInputAttributeDescriptionArray attributes )
+				, VkVertexInputAttributeDescriptionArray attributes
+				, VkVertexInputAttributeDescriptionArray programAttributes )
 				: vbo{ vbo }
 				, offset{ offset }
 				, binding{ binding }
 				, attributes{ attributes }
+				, programAttributes{ programAttributes }
 			{
 			}
 
@@ -30,6 +34,7 @@ namespace ashes::gl4
 			VkDeviceSize offset;
 			VkVertexInputBindingDescription binding;
 			VkVertexInputAttributeDescriptionArray attributes;
+			VkVertexInputAttributeDescriptionArray programAttributes;
 		};
 
 		struct IBO
@@ -53,13 +58,15 @@ namespace ashes::gl4
 			, VboBindings const & vbos
 			, IboBinding const & ibo
 			, VkPipelineVertexInputStateCreateInfo const & vertexInputState
+			, InputLayout const & inputLayout
 			, VkIndexType type );
 		~GeometryBuffers()noexcept;
 
 		void initialise();
 
 		static std::vector< VBO > createVBOs( VboBindings const & vbos
-			, VkPipelineVertexInputStateCreateInfo const & vertexInputState );
+			, VkPipelineVertexInputStateCreateInfo const & vertexInputState
+			, InputLayout const & inputLayout );
 
 		inline GLuint getVao()const
 		{
@@ -81,6 +88,13 @@ namespace ashes::gl4
 			assert( m_ibo != nullptr );
 			return *m_ibo;
 		}
+
+	private:
+		void enableAttribute( ContextLock & context
+			, VkVertexInputBindingDescription const & binding
+			, VkVertexInputAttributeDescription const & attribute
+			, VkDeviceSize offset
+			, VkVertexInputAttributeDescription const * programAttribute );
 
 	private:
 		VkDevice m_device;

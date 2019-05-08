@@ -77,20 +77,18 @@ namespace ashes::gl4
 		uint32_t index = 0u;
 		std::vector< uint32_t > indices;
 
-		for ( auto itAttach = createInfo.pAttachments;
-			itAttach != createInfo.pAttachments + createInfo.attachmentCount;
-			++itAttach )
+		for ( auto & attach : m_attachments )
 		{
-			if ( isDepthOrStencilFormat( itAttach->format ) )
+			if ( isDepthOrStencilFormat( attach.format ) )
 			{
 				m_hasDepthAttach = true;
-				m_depthAttach = *itAttach;
+				m_depthAttach = attach;
 				indices.push_back( 0u );
 			}
 			else
 			{
 				indices.push_back( index );
-				m_colourAttaches.push_back( { index, *itAttach } );
+				m_colourAttaches.push_back( { index, attach } );
 				++index;
 			}
 		}

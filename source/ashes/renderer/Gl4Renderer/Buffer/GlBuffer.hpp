@@ -46,9 +46,6 @@ namespace ashes::gl4
 			return m_memory;
 		}
 
-	public:
-		mutable BufferDestroySignal onDestroy;
-
 	private:
 		inline void setInternal( GLuint value )
 		{

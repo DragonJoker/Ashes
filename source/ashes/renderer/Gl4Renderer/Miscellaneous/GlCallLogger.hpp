@@ -59,7 +59,7 @@ See LICENSE file in root folder
 #include <sstream>
 
 #if !defined( NDEBUG )
-#	define GL_LOG_CALLS 1
+#	define GL_LOG_CALLS 0
 #else
 #	define GL_LOG_CALLS 0
 #endif

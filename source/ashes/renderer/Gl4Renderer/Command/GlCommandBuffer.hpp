@@ -30,6 +30,7 @@ namespace ashes::gl4
 		*/
 		CommandBuffer( VkDevice device
 			, VkCommandBufferLevel level );
+		~CommandBuffer();
 		/**
 		*\copydoc	CommandBuffer::begin
 		*/
@@ -277,12 +278,32 @@ namespace ashes::gl4
 		void initialiseGeometryBuffers()const;
 
 	private:
+		struct BufferIndex
+		{
+			BufferIndex( GLuint name
+				, size_t index
+				, DeviceMemoryDestroyConnection connection )
+				: name{ name }
+				, index{ index }
+				, connection{ std::move( connection ) }
+			{
+			}
+
+			GLuint name;
+			size_t index;
+			DeviceMemoryDestroyConnection connection;
+		};
+
+	private:
+		void doReset()const;
 		void doSelectVao()const;
 		void doProcessMappedBoundDescriptorBuffersIn( VkDescriptorSet descriptor )const;
 		void doProcessMappedBoundDescriptorsBuffersOut()const;
 		void doProcessMappedBoundVaoBuffersIn()const;
 		void doProcessMappedBoundBufferIn( VkBuffer buffer )const;
 		void doProcessMappedBoundBufferOut( VkBuffer buffer )const;
+		BufferIndex & doAddMappedBuffer( VkBuffer buffer, bool isInput )const;
+		void doRemoveMappedBuffer( GLuint internal )const;
 
 	private:
 		VkDevice m_device;
@@ -291,6 +312,7 @@ namespace ashes::gl4
 		mutable CmdBuffer m_cmds;
 		mutable CmdList m_cmdAfterSubmit;
 		mutable CmdBuffer m_cmdsAfterSubmit;
+		mutable std::vector< BufferIndex > m_mappedBuffers;
 		struct State
 		{
 			VkCommandBufferUsageFlags beginFlags{ 0u };
@@ -309,5 +331,6 @@ namespace ashes::gl4
 			VkDescriptorSetArray boundDescriptors;
 		};
 		mutable State m_state;
+		mutable VkImageViewArray m_blitViews;
 	};
 }

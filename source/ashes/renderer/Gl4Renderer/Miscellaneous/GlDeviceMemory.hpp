@@ -91,6 +91,9 @@ namespace ashes::gl4
 			return m_mapped;
 		}
 
+	public:
+		mutable DeviceMemoryDestroySignal onDestroy;
+
 	private:
 		VkDevice m_device;
 		VkMemoryAllocateInfo m_allocateInfo;

@@ -52,7 +52,6 @@ namespace ashes::gl4
 		{
 			if ( get( image )->getArrayLayers() > 1u )
 			{
-				VkImageView view;
 				allocate( view
 					, nullptr
 					, device
@@ -78,7 +77,7 @@ namespace ashes::gl4
 			}
 		}
 
-		VkImageView view;
+		VkImageView view{ VK_NULL_HANDLE };
 		GlAttachmentPoint point;
 		GLuint object;
 		GlAttachmentType type;
@@ -123,7 +122,8 @@ namespace ashes::gl4
 		, VkImage dstImage
 		, VkImageBlit region
 		, VkFilter filter
-		, CmdList & list )
+		, CmdList & list
+		, VkImageViewArray & views )
 	{
 		assert( get( srcImage )->getArrayLayers() == get( dstImage )->getArrayLayers() );
 
@@ -137,6 +137,16 @@ namespace ashes::gl4
 				dstImage,
 				layer
 			};
+
+			if ( layerCopy.src.view != VK_NULL_HANDLE )
+			{
+				views.push_back( layerCopy.src.view );
+			}
+
+			if ( layerCopy.dst.view != VK_NULL_HANDLE )
+			{
+				views.push_back( layerCopy.dst.view );
+			}
 
 			// Setup source FBO
 			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER

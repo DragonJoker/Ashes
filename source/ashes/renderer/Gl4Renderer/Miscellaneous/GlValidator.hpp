@@ -14,6 +14,8 @@ namespace ashes::gl4
 {
 	InterfaceBlockLayout getInterfaceBlockLayout( ContextLock const & context
 		, GLuint program );
+	InputLayout getInputLayout( ContextLock const & context
+		, GLuint program );
 	ConstantsLayout getConstantsLayout( ContextLock const & context
 		, GLuint program );
 	inline ShaderDesc getShaderDesc( ContextLock const & context
@@ -22,6 +24,7 @@ namespace ashes::gl4
 		return
 		{
 			0u,
+			getInputLayout( context, program ),
 			getConstantsLayout( context, program ),
 			getInterfaceBlockLayout( context, program )
 		};

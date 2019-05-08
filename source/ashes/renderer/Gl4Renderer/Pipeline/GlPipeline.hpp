@@ -163,6 +163,7 @@ namespace ashes::gl4
 		VkVertexInputAttributeDescriptionArray m_vertexAttributeDescriptions;
 		Optional< VkPipelineVertexInputStateCreateInfo > m_vertexInputState;
 		ContextState m_backContextState;
+		ShaderDesc m_shaderDesc;
 		Optional< VkPipelineRasterizationStateCreateInfo > m_rtotRasterizationState;
 		ContextState m_rtotContextState;
 		VkPipelineLayout m_layout;
@@ -175,7 +176,7 @@ namespace ashes::gl4
 		std::unique_ptr< ShaderProgram > m_rtotProgram;
 		std::unique_ptr< ShaderProgram > m_compProgram;
 		mutable std::vector< std::pair< size_t, GeometryBuffersPtr > > m_geometryBuffers;
-		mutable std::unordered_map< GLuint, BufferDestroyConnection > m_connections;
+		mutable std::unordered_map< GLuint, DeviceMemoryDestroyConnection > m_connections;
 		size_t m_vertexInputStateHash;
 	};
 }

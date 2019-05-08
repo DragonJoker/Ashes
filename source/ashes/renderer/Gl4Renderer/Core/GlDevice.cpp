@@ -101,7 +101,7 @@ namespace ashes::gl4
 		uint32_t getTexelBlockByteSize( VkExtent3D const & texelBlockExtent
 			, VkFormat format )
 		{
-			uint32_t texelBlockSize;
+			VkDeviceSize texelBlockSize;
 
 			if ( !isDepthStencilFormat( format ) )
 			{
@@ -112,7 +112,7 @@ namespace ashes::gl4
 				texelBlockSize = texelBlockExtent.width;
 			}
 
-			return texelBlockSize;
+			return uint32_t( texelBlockSize );
 		}
 
 		UInt32Array convert( std::string const & value )
@@ -472,7 +472,8 @@ void main()
 			, VboBindings{}
 			, BufferObjectBinding{ indexBuffer->getInternal(), 0u, m_dummyIndexed.indexBuffer }
 			, VkPipelineVertexInputStateCreateInfo{}
-		, VK_INDEX_TYPE_UINT32 );
+			, InputLayout{}
+			, VK_INDEX_TYPE_UINT32 );
 		m_dummyIndexed.geometryBuffers->initialise();
 	}
 

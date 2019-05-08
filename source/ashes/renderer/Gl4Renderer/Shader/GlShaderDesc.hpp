@@ -6,8 +6,44 @@ See LICENSE file in root folder.
 
 #include "renderer/Gl4Renderer/GlRendererPrerequisites.hpp"
 
+inline bool operator==( VkVertexInputBindingDescription const & lhs
+	, VkVertexInputBindingDescription const & rhs )
+{
+	return lhs.binding == rhs.binding
+		&& lhs.stride == rhs.stride
+		&& lhs.inputRate == rhs.inputRate;
+}
+
+inline bool operator==( VkVertexInputAttributeDescription const & lhs
+	, VkVertexInputAttributeDescription const & rhs )
+{
+	return lhs.location == rhs.location
+		&&lhs.binding == rhs.binding
+		&& lhs.format == rhs.format
+		&& lhs.offset == rhs.offset;
+}
+
 namespace ashes::gl4
 {
+	struct InputLayout
+	{
+		VkVertexInputBindingDescriptionArray vertexBindingDescriptions;
+		VkVertexInputAttributeDescriptionArray vertexAttributeDescriptions;
+	};
+
+	inline bool operator==( InputLayout const & lhs
+		, InputLayout const & rhs )
+	{
+		return lhs.vertexBindingDescriptions == rhs.vertexBindingDescriptions
+			&& lhs.vertexAttributeDescriptions == rhs.vertexAttributeDescriptions;
+	}
+
+	inline bool operator!=( InputLayout const & lhs
+		, InputLayout const & rhs )
+	{
+		return !operator==( lhs, rhs );
+	}
+
 	struct ConstantDesc
 	{
 		std::string name;
@@ -18,7 +54,8 @@ namespace ashes::gl4
 		uint32_t offset{ 0u };
 	};
 
-	inline bool operator==( ConstantDesc const & lhs, ConstantDesc const & rhs )
+	inline bool operator==( ConstantDesc const & lhs
+		, ConstantDesc const & rhs )
 	{
 		return lhs.name == rhs.name
 			&& lhs.location == rhs.location
@@ -28,14 +65,16 @@ namespace ashes::gl4
 			&& lhs.offset == rhs.offset;
 	}
 
-	inline bool operator!=( ConstantDesc const & lhs, ConstantDesc const & rhs )
+	inline bool operator!=( ConstantDesc const & lhs
+		, ConstantDesc const & rhs )
 	{
 		return !operator==( lhs, rhs );
 	}
 
 	using ConstantsLayout = std::vector< ConstantDesc >;
 
-	inline bool operator==( ConstantsLayout const & lhs, ConstantsLayout const & rhs )
+	inline bool operator==( ConstantsLayout const & lhs
+		, ConstantsLayout const & rhs )
 	{
 		auto result = lhs.size() == rhs.size();
 
@@ -56,7 +95,8 @@ namespace ashes::gl4
 		return result;
 	}
 
-	inline bool operator!=( ConstantsLayout const & lhs, ConstantsLayout const & rhs )
+	inline bool operator!=( ConstantsLayout const & lhs
+		, ConstantsLayout const & rhs )
 	{
 		return !operator==( lhs, rhs );
 	}
@@ -69,7 +109,8 @@ namespace ashes::gl4
 		ConstantsLayout constants;
 	};
 
-	inline bool operator==( ConstantBufferDesc const & lhs, ConstantBufferDesc const & rhs )
+	inline bool operator==( ConstantBufferDesc const & lhs
+		, ConstantBufferDesc const & rhs )
 	{
 		return lhs.name == rhs.name
 			&& lhs.binding == rhs.binding
@@ -77,14 +118,16 @@ namespace ashes::gl4
 			&& lhs.constants == rhs.constants;
 	}
 
-	inline bool operator!=( ConstantBufferDesc const & lhs, ConstantBufferDesc const & rhs )
+	inline bool operator!=( ConstantBufferDesc const & lhs
+		, ConstantBufferDesc const & rhs )
 	{
 		return !operator==( lhs, rhs );
 	}
 
 	using InterfaceBlockLayout = std::vector< ConstantBufferDesc >;
 
-	inline bool operator==( InterfaceBlockLayout const & lhs, InterfaceBlockLayout const & rhs )
+	inline bool operator==( InterfaceBlockLayout const & lhs
+		, InterfaceBlockLayout const & rhs )
 	{
 		auto result = lhs.size() == rhs.size();
 
@@ -105,7 +148,8 @@ namespace ashes::gl4
 		return result;
 	}
 
-	inline bool operator!=( InterfaceBlockLayout const & lhs, InterfaceBlockLayout const & rhs )
+	inline bool operator!=( InterfaceBlockLayout const & lhs
+		, InterfaceBlockLayout const & rhs )
 	{
 		return !operator==( lhs, rhs );
 	}
@@ -113,6 +157,7 @@ namespace ashes::gl4
 	struct ShaderDesc
 	{
 		VkShaderStageFlags stageFlags;
+		InputLayout inputLayout;
 		ConstantsLayout constantsLayout;
 		InterfaceBlockLayout interfaceBlockLayout;
 	};
@@ -120,6 +165,7 @@ namespace ashes::gl4
 	inline bool operator==( ShaderDesc const & lhs, ShaderDesc const & rhs )
 	{
 		return lhs.stageFlags == rhs.stageFlags
+			&& lhs.inputLayout == rhs.inputLayout
 			&& lhs.constantsLayout == rhs.constantsLayout
 			&& lhs.interfaceBlockLayout == rhs.interfaceBlockLayout;
 	}

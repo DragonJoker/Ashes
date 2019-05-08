@@ -924,10 +924,10 @@ namespace ashes::gl4
 				auto it = std::find_if( attributes.begin()
 					, attributes.end()
 					, [&glslType, &location]( AttrSpec const & lookup )
-				{
-					return areCompatibleInputs( lookup.format, convertAttribute( glslType ) )
-						&& lookup.location == location;
-				} );
+					{
+						return areCompatibleInputs( lookup.format, convertAttribute( glslType ) )
+							&& lookup.location == location;
+					} );
 
 				if ( it != attributes.end() )
 				{
@@ -1191,6 +1191,51 @@ namespace ashes::gl4
 						, ( offset == -1
 							? 0u
 							: uint32_t( offset ) ) } );
+				}
+			} );
+		return result;
+	}
+
+	InputLayout getInputLayout( ContextLock const & context
+		, GLuint program )
+	{
+		InputLayout result;
+		getProgramInterfaceInfos( context
+			, program
+			, GLSL_INTERFACE_PROGRAM_INPUT
+			, { GLSL_PROPERTY_TYPE, GLSL_PROPERTY_ARRAY_SIZE, GLSL_PROPERTY_LOCATION }
+			, [&result]( std::string const & name, std::vector< GLint > const & values )
+			{
+				auto glslType = GlslAttributeType( values[0] );
+				auto location = uint32_t( values[2] );
+				auto offset = 0u;
+
+				switch ( glslType )
+				{
+				case GLSL_ATTRIBUTE_FLOAT_MAT2:
+					result.vertexAttributeDescriptions.push_back( { location + 0u, 0u, VK_FORMAT_R32G32_SFLOAT, offset } );
+					offset += 2 * sizeof( float );
+					result.vertexAttributeDescriptions.push_back( { location + 1u, 0u, VK_FORMAT_R32G32_SFLOAT, offset } );
+					break;
+				case GLSL_ATTRIBUTE_FLOAT_MAT3:
+					result.vertexAttributeDescriptions.push_back( { location + 0u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offset } );
+					offset += 3 * sizeof( float );
+					result.vertexAttributeDescriptions.push_back( { location + 1u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offset } );
+					offset += 3 * sizeof( float );
+					result.vertexAttributeDescriptions.push_back( { location + 2u, 0u, VK_FORMAT_R32G32B32_SFLOAT , offset } );
+					break;
+				case GLSL_ATTRIBUTE_FLOAT_MAT4:
+					result.vertexAttributeDescriptions.push_back( { location + 0u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offset } );
+					offset += 4 * sizeof( float );
+					result.vertexAttributeDescriptions.push_back( { location + 1u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offset } );
+					offset += 4 * sizeof( float );
+					result.vertexAttributeDescriptions.push_back( { location + 2u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offset } );
+					offset += 4 * sizeof( float );
+					result.vertexAttributeDescriptions.push_back( { location + 2u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offset } );
+					break;
+				default:
+					result.vertexAttributeDescriptions.push_back( { location + 0u, 0u, convertAttribute( glslType ), offset } );
+					break;
 				}
 			} );
 		return result;

@@ -63,12 +63,14 @@ namespace ashes::gl4
 			{
 				auto & vbo = binding.second;
 				doHashCombine( result, vbo.bo );
+				doHashCombine( result, vbo.buffer );
 				doHashCombine( result, vbo.offset );
 			}
 
 			if ( bool( ibo ) )
 			{
 				doHashCombine( result, ibo.value().bo );
+				doHashCombine( result, ibo.value().buffer );
 				doHashCombine( result, ibo.value().offset );
 			}
 
@@ -177,11 +179,11 @@ namespace ashes::gl4
 				, *get( device )
 				, m_backContextState );
 
-			ShaderDesc shaderDesc = m_backProgram->link( context );
-			m_constantsPcb.stageFlags = shaderDesc.stageFlags;
+			m_shaderDesc = m_backProgram->link( context );
+			m_constantsPcb.stageFlags = m_shaderDesc.stageFlags;
 			uint32_t offset = 0u;
 
-			for ( auto & constant : shaderDesc.constantsLayout )
+			for ( auto & constant : m_shaderDesc.constantsLayout )
 			{
 				m_constantsPcb.constants.push_back( { constant.format
 					, constant.location
@@ -276,13 +278,14 @@ namespace ashes::gl4
 				, vbos
 				, ibo
 				, m_vertexInputState.value()
+				, m_shaderDesc.inputLayout
 				, type ) );
 
 		for ( auto & binding : vbos )
 		{
 			auto & vbo = binding.second;
 			m_connections.emplace( vbo.bo
-				, get( vbo.buffer )->onDestroy.connect( [this]( GLuint name )
+				, get( get( vbo.buffer )->getMemory() )->onDestroy.connect( [this]( GLuint name )
 					{
 						auto it = std::remove_if( m_geometryBuffers.begin()
 							, m_geometryBuffers.end()

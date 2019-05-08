@@ -50,7 +50,6 @@ namespace ashes::gl4
 	private:
 		VkDevice m_device;
 		VkSwapchainCreateInfoKHR m_createInfo;
-		VkImageArray m_images;
 		VkImage m_image;
 		VkDeviceMemory m_deviceMemory;
 		VkImageView m_view;

@@ -71,6 +71,35 @@ namespace ashes
 
 namespace ashes::gl4
 {
+	namespace
+	{
+		void mergeList( CmdList const & list
+			, CmdBuffer & cmds )
+		{
+			size_t totalSize = size_t( std::accumulate( list.begin()
+				, list.end()
+				, size_t( 0u )
+				, []( size_t value, CmdBuffer const & lookup )
+				{
+					return value + lookup.size();
+				} ) );
+
+			if ( totalSize )
+			{
+				cmds.resize( totalSize );
+				auto it = cmds.begin();
+
+				for ( auto & cmd : list )
+				{
+					std::copy( cmd.begin()
+						, cmd.end()
+						, it );
+					it += cmd.size();
+				}
+			}
+		}
+	}
+
 	CommandBuffer::CommandBuffer( VkDevice device
 		, VkCommandBufferLevel level )
 		: m_device{ device }
@@ -78,41 +107,17 @@ namespace ashes::gl4
 	{
 	}
 
+	CommandBuffer::~CommandBuffer()
+	{
+		doReset();
+	}
+
 	VkResult CommandBuffer::begin( VkCommandBufferBeginInfo info )const
 	{
-		m_cmdList.clear();
-		m_cmds.clear();
-		m_cmdAfterSubmit.clear();
-		m_cmdsAfterSubmit.clear();
+		doReset();
 		m_state = State{};
 		m_state.beginFlags = info.flags;
 		return VK_SUCCESS;
-	}
-
-	void mergeList( CmdList const & list
-		, CmdBuffer & cmds )
-	{
-		size_t totalSize = size_t( std::accumulate( list.begin()
-			, list.end()
-			, size_t( 0u )
-			, []( size_t value, CmdBuffer const & lookup )
-			{
-				return value + lookup.size();
-			} ) );
-
-		if ( totalSize )
-		{
-			cmds.resize( totalSize );
-			auto it = cmds.begin();
-
-			for ( auto & cmd : list )
-			{
-				std::copy( cmd.begin()
-					, cmd.end()
-					, it );
-				it += cmd.size();
-			}
-		}
 	}
 
 	VkResult CommandBuffer::end()const
@@ -125,10 +130,7 @@ namespace ashes::gl4
 
 	VkResult CommandBuffer::reset( VkCommandBufferResetFlags flags )const
 	{
-		m_cmdList.clear();
-		m_cmds.clear();
-		m_cmdAfterSubmit.clear();
-		m_cmdsAfterSubmit.clear();
+		doReset();
 		return VK_SUCCESS;
 	}
 
@@ -548,7 +550,8 @@ namespace ashes::gl4
 				, dstImage
 				, std::move( region )
 				, filter
-				, m_cmdList );
+				, m_cmdList
+				, m_blitViews );
 		}
 	}
 
@@ -720,6 +723,22 @@ namespace ashes::gl4
 		m_state.vaos.clear();
 	}
 
+	void CommandBuffer::doReset()const
+	{
+		m_mappedBuffers.clear();
+		m_cmdList.clear();
+		m_cmds.clear();
+		m_cmdAfterSubmit.clear();
+		m_cmdsAfterSubmit.clear();
+
+		for ( auto & view : m_blitViews )
+		{
+			deallocate( view, nullptr );
+		}
+
+		m_blitViews.clear();
+	}
+
 	void CommandBuffer::doSelectVao()const
 	{
 		m_state.selectedVao = get( m_state.currentPipeline )->findGeometryBuffers( m_state.boundVbos, m_state.boundIbo );
@@ -815,21 +834,80 @@ namespace ashes::gl4
 
 	void CommandBuffer::doProcessMappedBoundBufferIn( VkBuffer buffer )const
 	{
-		auto buf = get( buffer );
-
-		if ( buf->isMapped() )
+		if ( get( buffer )->isMapped() )
 		{
-			m_cmdList.emplace_back( makeCmd< OpType::eUploadMemory >( buf->getMemory() ) );
+			doAddMappedBuffer( buffer, true );
 		}
 	}
 
 	void CommandBuffer::doProcessMappedBoundBufferOut( VkBuffer buffer )const
 	{
-		auto buf = get( buffer );
+		if ( get( buffer )->isMapped() )
+		{
+			doAddMappedBuffer( buffer, false );
+		}
+	}
 
-		if ( buf->isMapped() )
+	CommandBuffer::BufferIndex & CommandBuffer::doAddMappedBuffer( VkBuffer buffer, bool isInput )const
+	{
+		auto buf = get( buffer );
+		auto internal = buf->getInternal();
+
+		if ( isInput )
+		{
+			m_cmdList.emplace_back( makeCmd< OpType::eUploadMemory >( buf->getMemory() ) );
+		}
+		else
 		{
 			m_cmdList.emplace_back( makeCmd< OpType::eDownloadMemory >( buf->getMemory() ) );
+		}
+
+		auto it = std::find_if( m_mappedBuffers.begin()
+			, m_mappedBuffers.end()
+			, [internal]( BufferIndex const & lookup )
+		{
+			return lookup.name == internal;
+		} );
+
+		CommandBuffer::BufferIndex * result;
+
+		if ( it == m_mappedBuffers.end() )
+		{
+			result = &m_mappedBuffers.emplace_back( internal
+				, m_cmdList.size() - 1u
+				, get( buf->getMemory() )->onDestroy.connect( [this]( GLuint name )
+				{
+					doRemoveMappedBuffer( name );
+				} ) );
+		}
+		else
+		{
+			result = &( *it );
+		}
+
+		return *result;
+	}
+
+	void CommandBuffer::doRemoveMappedBuffer( GLuint internal )const
+	{
+		auto it = std::find_if( m_mappedBuffers.begin()
+			, m_mappedBuffers.end()
+			, [internal]( BufferIndex const & lookup )
+			{
+				return lookup.name == internal;
+			} );
+
+		if ( it != m_mappedBuffers.end() )
+		{
+			auto index = it->index;
+			m_cmdList.erase( m_cmdList.begin() + index );
+			it = m_mappedBuffers.erase( it );
+
+			while ( it != m_mappedBuffers.end() )
+			{
+				it->index--;
+				++it;
+			}
 		}
 	}
 }

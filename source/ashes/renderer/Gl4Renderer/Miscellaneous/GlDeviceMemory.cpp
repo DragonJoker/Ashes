@@ -299,7 +299,7 @@ namespace ashes::gl4
 							, copyInfo.imageOffset.x
 							, copyInfo.imageExtent.width
 							, m_internal
-							, layerSize
+							, GLsizei( layerSize )
 							, getBufferOffset( copyInfo.bufferOffset ) );
 						break;
 
@@ -313,7 +313,7 @@ namespace ashes::gl4
 							, copyInfo.imageExtent.width
 							, copyInfo.imageExtent.height
 							, m_internal
-							, layerSize
+							, GLsizei( layerSize )
 							, getBufferOffset( copyInfo.bufferOffset ) );
 						break;
 
@@ -329,7 +329,7 @@ namespace ashes::gl4
 							, copyInfo.imageExtent.height
 							, copyInfo.imageExtent.depth
 							, m_internal
-							, layerSize
+							, GLsizei( layerSize )
 							, getBufferOffset( copyInfo.bufferOffset ) );
 
 					case GL_TEXTURE_1D_ARRAY:
@@ -342,7 +342,7 @@ namespace ashes::gl4
 							, copyInfo.imageExtent.width
 							, copyInfo.imageSubresource.layerCount
 							, m_internal
-							, layerSize
+							, GLsizei( layerSize )
 							, getBufferOffset( copyInfo.bufferOffset ) );
 						break;
 
@@ -358,7 +358,7 @@ namespace ashes::gl4
 							, copyInfo.imageExtent.height
 							, copyInfo.imageSubresource.layerCount
 							, m_internal
-							, layerSize
+							, GLsizei( layerSize )
 							, getBufferOffset( copyInfo.bufferOffset ) );
 						break;
 					}
@@ -673,6 +673,7 @@ namespace ashes::gl4
 
 	DeviceMemory::~DeviceMemory()
 	{
+		onDestroy( m_buffer );
 		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glDeleteBuffers
@@ -774,7 +775,7 @@ namespace ashes::gl4
 		, VkDeviceSize size )const
 	{
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
-		upload( offset, size );
+		m_impl->upload( m_data, offset, size );
 		return VK_SUCCESS;
 	}
 
@@ -790,7 +791,7 @@ namespace ashes::gl4
 	{
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
 		m_mapped = false;
-		upload( m_mappedOffset, m_mappedSize );
+		m_impl->upload( m_data, m_mappedOffset, m_mappedSize );
 	}
 
 	//************************************************************************************************

@@ -143,9 +143,9 @@ namespace ashes::gl4
 	using VboBindings = std::map< uint32_t, BufferObjectBinding >;
 	using IboBinding = Optional< BufferObjectBinding >;
 
-	using BufferDestroyFunc = std::function< void( GLuint ) >;
-	using BufferDestroySignal = Signal< BufferDestroyFunc >;
-	using BufferDestroyConnection = SignalConnection< BufferDestroySignal >;
+	using DeviceMemoryDestroyFunc = std::function< void( GLuint ) >;
+	using DeviceMemoryDestroySignal = Signal< DeviceMemoryDestroyFunc >;
+	using DeviceMemoryDestroyConnection = SignalConnection< DeviceMemoryDestroySignal >;
 
 	uint32_t deduceMemoryType( uint32_t typeBits
 		, VkMemoryPropertyFlags requirements );

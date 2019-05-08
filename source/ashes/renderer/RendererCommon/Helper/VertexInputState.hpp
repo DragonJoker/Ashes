@@ -38,27 +38,10 @@ namespace ashes
 		return !( lhs == rhs );
 	}
 
-	inline bool operator==( VkVertexInputAttributeDescription const & lhs
-		, VkVertexInputAttributeDescription const & rhs )
-	{
-		return lhs.binding == rhs.binding
-			&& lhs.format == rhs.format
-			&& lhs.location == rhs.location
-			&& lhs.offset == rhs.offset;
-	}
-
 	inline bool operator!=( VkVertexInputAttributeDescription const & lhs
 		, VkVertexInputAttributeDescription const & rhs )
 	{
 		return !( lhs == rhs );
-	}
-
-	inline bool operator==( VkVertexInputBindingDescription const & lhs
-		, VkVertexInputBindingDescription const & rhs )
-	{
-		return lhs.binding == rhs.binding
-			&& lhs.inputRate == rhs.inputRate
-			&& lhs.stride == rhs.stride;
 	}
 
 	inline bool operator!=( VkVertexInputBindingDescription const & lhs

@@ -592,14 +592,15 @@ namespace ashes::gl4
 			{
 				if ( isSupportedInternal( fmt ) )
 				{
+					auto internal = getInternalFormat( fmt );
 					GLint value;
-					glGetInternalformativ( GL_TEXTURE_2D, getInternalFormat( fmt ), GL_INTERNALFORMAT_SUPPORTED, 1, &value );
-					m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
-					m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
+					glGetInternalformativ( GL_TEXTURE_2D, internal, GL_INTERNALFORMAT_SUPPORTED, 1, &value );
 
 					if ( value == GL_TRUE )
 					{
-						glGetInternalformativ( GL_TEXTURE_2D, getInternalFormat( fmt ), GL_FRAMEBUFFER_RENDERABLE, 1, &value );
+						m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+						m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
+						glGetInternalformativ( GL_TEXTURE_2D, internal, GL_FRAMEBUFFER_RENDERABLE, 1, &value );
 
 						if ( value == GL_FULL_SUPPORT )
 						{
@@ -613,28 +614,29 @@ namespace ashes::gl4
 							}
 						}
 
-						glGetInternalformativ( GL_TEXTURE_2D, getInternalFormat( fmt ), GL_FRAMEBUFFER_BLEND, 1, &value );
+						glGetInternalformativ( GL_TEXTURE_2D, internal, GL_FRAMEBUFFER_BLEND, 1, &value );
 
 						if ( value == GL_FULL_SUPPORT )
 						{
+							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT;
 							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT;
 						}
 
-						glGetInternalformativ( GL_TEXTURE_2D, getInternalFormat( fmt ), GL_FRAGMENT_TEXTURE, 1, &value );
+						glGetInternalformativ( GL_TEXTURE_2D, internal, GL_FRAGMENT_TEXTURE, 1, &value );
 
 						if ( value == GL_FULL_SUPPORT )
 						{
 							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
 						}
 
-						glGetInternalformativ( GL_TEXTURE_2D, getInternalFormat( fmt ), GL_FILTER, 1, &value );
+						glGetInternalformativ( GL_TEXTURE_2D, internal, GL_FILTER, 1, &value );
 
 						if ( value == GL_FULL_SUPPORT )
 						{
 							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT;
 						}
 
-						glGetInternalformativ( GL_TEXTURE_2D, getInternalFormat( fmt ), GL_READ_PIXELS, 1, &value );
+						glGetInternalformativ( GL_TEXTURE_2D, internal, GL_READ_PIXELS, 1, &value );
 
 						if ( value == GL_FULL_SUPPORT )
 						{

@@ -28,7 +28,11 @@ namespace ashes::gl4
 
 	Buffer::~Buffer()
 	{
-		onDestroy( m_internal );
+		m_copyTarget = GlBufferTarget( 0u );
+		m_memory = VK_NULL_HANDLE;
+		m_target = GlBufferTarget( 0u );
+		m_internal = GL_INVALID_INDEX;
+		m_queueFamilyIndices.clear();
 	}
 
 	VkMemoryRequirements Buffer::getMemoryRequirements()const
