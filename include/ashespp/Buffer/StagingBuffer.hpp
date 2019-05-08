@@ -45,7 +45,7 @@ namespace ashes
 		*/
 		StagingBuffer( Device const & device
 			, VkBufferUsageFlags target
-			, uint32_t size = 10000000u );
+			, VkDeviceSize size = 10000000u );
 		/**
 		*\name
 		*	Upload.

@@ -257,7 +257,7 @@ namespace vkapp
 				, layer ) );
 			commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 				, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
-				, views.back().makeShaderInputResource( VK_IMAGE_LAYOUT_UNDEFINED, 0u ) );
+				, views.back().makeShaderInputResource( VK_IMAGE_LAYOUT_UNDEFINED ) );
 		}
 
 		commandBuffer->end();

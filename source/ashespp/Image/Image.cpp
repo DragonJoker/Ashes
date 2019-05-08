@@ -14,6 +14,124 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
+	namespace
+	{
+		VkImageMemoryBarrier makeTransition( VkImage image
+			, VkImageLayout srcLayout
+			, VkImageLayout dstLayout
+			, VkImageSubresourceRange mipSubRange
+			, uint32_t mipLevel )
+		{
+			mipSubRange.baseMipLevel = mipLevel;
+			return VkImageMemoryBarrier
+			{
+				VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+				nullptr,
+				getAccessMask( srcLayout ),
+				getAccessMask( dstLayout ),
+				srcLayout,
+				dstLayout,
+				~( 0u ),
+				~( 0u ),
+				image,
+				std::move( mipSubRange ),
+			};
+		}
+
+		VkImageMemoryBarrier makeTransition( VkImage image
+			, VkImageLayout prv
+			, VkImageLayout cur
+			, VkImageSubresourceRange mipSubRange )
+		{
+			auto mipLevel = mipSubRange.baseMipLevel;
+			return makeTransition( image
+				, prv
+				, cur
+				, std::move( mipSubRange )
+				, mipLevel );
+		}
+	}
+
+	VkAccessFlags getAccessMask( VkImageLayout layout )
+	{
+		VkAccessFlags result{ 0u };
+
+		switch ( layout )
+		{
+		case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
+		case VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR:
+			result |= VK_ACCESS_MEMORY_READ_BIT;
+			break;
+		case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+			result |= VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			break;
+		case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+			result |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+			break;
+		case VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL:
+			result |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
+			break;
+		case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
+			result |= VK_ACCESS_SHADER_READ_BIT;
+			break;
+		case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
+			result |= VK_ACCESS_TRANSFER_READ_BIT;
+			break;
+		case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+			result |= VK_ACCESS_TRANSFER_WRITE_BIT;
+			break;
+		case VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL:
+		case VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL:
+			result |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
+			result |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+			break;
+		case VK_IMAGE_LAYOUT_SHADING_RATE_OPTIMAL_NV:
+			result |= VK_ACCESS_SHADING_RATE_IMAGE_READ_BIT_NV;
+			break;
+		case VK_IMAGE_LAYOUT_FRAGMENT_DENSITY_MAP_OPTIMAL_EXT:
+			result |= VK_ACCESS_FRAGMENT_DENSITY_MAP_READ_BIT_EXT;
+			break;
+		}
+
+		return result;
+	}
+
+	VkPipelineStageFlags getStageMask( VkImageLayout layout )
+	{
+		VkPipelineStageFlags result{ 0u };
+
+		switch ( layout )
+		{
+		case VK_IMAGE_LAYOUT_UNDEFINED:
+			result |= VK_PIPELINE_STAGE_HOST_BIT;
+			break;
+		case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
+		case VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR:
+			result |= VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+			break;
+		case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+		case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+		case VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL:
+		case VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL:
+		case VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL:
+			result |= VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			break;
+		case VK_IMAGE_LAYOUT_FRAGMENT_DENSITY_MAP_OPTIMAL_EXT:
+		case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
+			result |= VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+			break;
+		case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
+		case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+			result |= VK_PIPELINE_STAGE_TRANSFER_BIT;
+			break;
+		case VK_IMAGE_LAYOUT_SHADING_RATE_OPTIMAL_NV:
+			result |= VK_PIPELINE_STAGE_SHADING_RATE_IMAGE_BIT_NV;
+			break;
+		}
+
+		return result;
+	}
+
 	Image::Image()
 	{
 	}
@@ -171,152 +289,120 @@ namespace ashes
 	}
 
 	void Image::generateMipmaps( CommandPool const & commandPool
-		, Queue const & queue )const
+		, Queue const & queue
+		, VkImageLayout dstImageLayout )const
 	{
+		if ( getMipmapLevels() <= 1u )
+		{
+			return;
+		}
+
 		auto commandBuffer = commandPool.createCommandBuffer();
-		commandBuffer->begin( VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
-		generateMipmaps( *commandBuffer );
+		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
+		generateMipmaps( *commandBuffer, dstImageLayout );
 		commandBuffer->end();
 		auto fence = m_device->createFence();
 		queue.submit( *commandBuffer, fence.get() );
 		fence->wait( MaxTimeout );
 	}
 
-	void Image::generateMipmaps( CommandBuffer & commandBuffer )const
+	void Image::generateMipmaps( CommandBuffer & commandBuffer
+		, VkImageLayout dstImageLayout )const
 	{
+		if ( getMipmapLevels() <= 1u )
+		{
+			return;
+		}
+
 		auto const width = int32_t( getDimensions().width );
 		auto const height = int32_t( getDimensions().height );
+		auto const depth = int32_t( getDimensions().depth );
+		auto const aspectMask = getAspectMask( getFormat() );
+		auto const dstAccessMask = getAccessMask( dstImageLayout );
+		auto const dstStageMask = getStageMask( dstImageLayout );
+		auto const imageViewType = VkImageViewType( getType() );
 
 		for ( uint32_t layer = 0u; layer < getLayerCount(); ++layer )
 		{
-			auto srcView = createView( VkImageViewCreateInfo
-				{
-					VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-					nullptr,
-					0u,
-					*this,
-					VkImageViewType( getType() ),
-					getFormat(),
-					VkComponentMapping{},
-					VkImageSubresourceRange
-					{
-						getAspectMask( getFormat() ),
-						0,
-						1u,
-						layer,
-						1u
-					}
-				} );
-			commandBuffer.memoryBarrier( VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
-				, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
-				, srcView.makeTransferSource( VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED, 0u ) );
-
-			// Copy down mips from n-1 to n
-			for ( uint32_t level = 1u; level < getMipmapLevels(); level++ )
+			VkImageSubresourceRange mipSubRange
 			{
-				VkImageBlit imageBlit{};
+				aspectMask,
+				0u,
+				1u,
+				layer,
+				1u
+			};
+			VkImageBlit imageBlit{};
+			imageBlit.dstSubresource.aspectMask = aspectMask;
+			imageBlit.dstSubresource.baseArrayLayer = mipSubRange.baseArrayLayer;
+			imageBlit.dstSubresource.layerCount = 1;
+			imageBlit.dstSubresource.mipLevel = mipSubRange.baseMipLevel;
+			imageBlit.dstOffsets[0].x = 0;
+			imageBlit.dstOffsets[0].y = 0;
+			imageBlit.dstOffsets[0].z = 0;
+			imageBlit.dstOffsets[1].x = getSubresourceDimension( width, mipSubRange.baseMipLevel );
+			imageBlit.dstOffsets[1].y = getSubresourceDimension( height, mipSubRange.baseMipLevel );
+			imageBlit.dstOffsets[1].z = depth;
 
-				// Source
-				imageBlit.srcSubresource.aspectMask = VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
-				imageBlit.srcSubresource.baseArrayLayer = layer;
-				imageBlit.srcSubresource.layerCount = 1;
-				imageBlit.srcSubresource.mipLevel = level - 1;
-				imageBlit.srcOffsets[0].x;
-				imageBlit.srcOffsets[0].y;
-				imageBlit.srcOffsets[0].z;
-				imageBlit.srcOffsets[1].x = getSubresourceDimension( width, ( level - 1 ) );
-				imageBlit.srcOffsets[1].y = getSubresourceDimension( height, ( level - 1 ) );
-				imageBlit.srcOffsets[1].z = 1;
+			// Transition first mip level to transfer source layout
+			commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+				, VK_PIPELINE_STAGE_TRANSFER_BIT
+				, makeTransition( VK_IMAGE_LAYOUT_UNDEFINED
+					, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
+					, mipSubRange ) );
 
-				// Destination
-				imageBlit.dstSubresource.aspectMask = VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
-				imageBlit.dstSubresource.baseArrayLayer = layer;
-				imageBlit.dstSubresource.layerCount = 1;
-				imageBlit.dstSubresource.mipLevel = level;
-				imageBlit.dstOffsets[0].x;
-				imageBlit.dstOffsets[0].y;
-				imageBlit.dstOffsets[0].z;
-				imageBlit.dstOffsets[1].x = getSubresourceDimension( width, level );
-				imageBlit.dstOffsets[1].y = getSubresourceDimension( height, level );
-				imageBlit.dstOffsets[1].z = 1;
-
-				VkImageSubresourceRange mipSubRange
-				{
-					VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT,
-					level,
-					1u,
-					layer,
-					1u
-				};
-
-				// Transiton current mip level to transfer dest
-				VkImageMemoryBarrier dstTransitionBarrier
-				{
-					VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-					nullptr,
-					0u,
-					VkAccessFlagBits::VK_ACCESS_TRANSFER_WRITE_BIT,
-					VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED,
-					VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-					~( 0u ),
-					~( 0u ),
-					*this,
-					mipSubRange
-				};
-				commandBuffer.memoryBarrier( VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
-					, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
-					, dstTransitionBarrier );
-
+			// Copy down mips
+			while ( ++mipSubRange.baseMipLevel < getMipmapLevels() )
+			{
 				// Blit from previous level
+				// Blit source is previous blit destination
+				imageBlit.srcSubresource = imageBlit.dstSubresource;
+				imageBlit.srcOffsets[0] = imageBlit.dstOffsets[0];
+				imageBlit.srcOffsets[1] = imageBlit.dstOffsets[1];
+
+				// Update blit destination
+				imageBlit.dstSubresource.mipLevel = mipSubRange.baseMipLevel;
+				imageBlit.dstOffsets[1].x = getSubresourceDimension( width, mipSubRange.baseMipLevel );
+				imageBlit.dstOffsets[1].y = getSubresourceDimension( height, mipSubRange.baseMipLevel );
+
+				// Transition current mip level to transfer dest
+				commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+					, VK_PIPELINE_STAGE_TRANSFER_BIT
+					, makeTransition( VK_IMAGE_LAYOUT_UNDEFINED
+						, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+						, mipSubRange ) );
+
+				// Perform blit
 				commandBuffer.blitImage( *this
-					, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
+					, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
 					, *this
-					, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+					, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
 					, { imageBlit }
 					, VkFilter::VK_FILTER_LINEAR );
 
-				// Transiton current mip level to transfer source for read in next iteration
-				VkImageMemoryBarrier srcTransitionBarrier
-				{
-					VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-					nullptr,
-					VkAccessFlagBits::VK_ACCESS_TRANSFER_WRITE_BIT,
-					VkAccessFlagBits::VK_ACCESS_TRANSFER_READ_BIT,
-					VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-					VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-					~( 0u ),
-					~( 0u ),
-					*this,
-					mipSubRange
-				};
-				commandBuffer.memoryBarrier( VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
-					, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
-					, srcTransitionBarrier );
+				// Transition current mip level to transfer source for read in next iteration
+				commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+					, VK_PIPELINE_STAGE_TRANSFER_BIT
+					, makeTransition( VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+						, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
+						, mipSubRange ) );
+
+				// Transition previous mip level to wanted destination layout
+				commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+					, dstStageMask
+					, makeTransition( VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
+						, dstImageLayout
+						, mipSubRange
+						, mipSubRange.baseMipLevel - 1u ) );
 			}
 
-			destroyView( std::move( srcView ) );
-			srcView = createView(
-				{
-					VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-					nullptr,
-					0u,
-					*this,
-					VkImageViewType( getType() ),
-					getFormat(),
-					VkComponentMapping{},
-					VkImageSubresourceRange
-					{
-						getAspectMask( getFormat() ),
-						0,
-						getMipmapLevels(),
-						layer,
-						1u
-					}
-				} );
-			commandBuffer.memoryBarrier( VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
-				, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
-				, srcView.makeShaderInputResource( VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED, 0u ) );
-			destroyView( std::move( srcView ) );
+			// Transition last mip level to wanted destination layout
+			commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+				, dstStageMask
+				, makeTransition( VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
+					, dstImageLayout
+					, mipSubRange
+					, mipSubRange.baseMipLevel - 1u ) );
 		}
 	}
 
@@ -371,6 +457,28 @@ namespace ashes
 				layerCount
 			}
 		} );
+	}
+
+	VkImageMemoryBarrier Image::makeTransition( VkImageLayout srcLayout
+		, VkImageLayout dstLayout
+		, VkImageSubresourceRange mipSubRange
+		, uint32_t mipLevel )const
+	{
+		return ashes::makeTransition( *this
+			, srcLayout
+			, dstLayout
+			, mipSubRange
+			, mipLevel );
+	}
+
+	VkImageMemoryBarrier Image::makeTransition( VkImageLayout srcLayout
+		, VkImageLayout dstLayout
+		, VkImageSubresourceRange mipSubRange )const
+	{
+		return ashes::makeTransition( *this
+			, srcLayout
+			, dstLayout
+			, mipSubRange );
 	}
 
 	void Image::destroyView( VkImageView view )const

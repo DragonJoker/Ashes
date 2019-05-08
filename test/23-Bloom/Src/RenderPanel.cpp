@@ -87,6 +87,67 @@ namespace vkapp
 				, sizeof( float ) * std::min( size_t( 60u ), kernel.size() ) );
 			return result;
 		}
+
+		ashes::RenderPassPtr createRenderPass( ashes::Device const & device
+			, VkFormat format
+			, VkImageLayout initialImageLayout
+			, VkImageLayout finalImageLayout )
+		{
+			ashes::VkAttachmentDescriptionArray attaches
+			{
+				{
+					0u,
+					format,
+					VK_SAMPLE_COUNT_1_BIT,
+					VK_ATTACHMENT_LOAD_OP_CLEAR,
+					VK_ATTACHMENT_STORE_OP_STORE,
+					VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+					VK_ATTACHMENT_STORE_OP_DONT_CARE,
+					initialImageLayout,
+					finalImageLayout,
+				}
+			};
+			ashes::SubpassDescriptionArray subpasses;
+			subpasses.emplace_back( ashes::SubpassDescription
+				{
+					0u,
+					VK_PIPELINE_BIND_POINT_GRAPHICS,
+					{},
+					{ { 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } },
+					{},
+					std::nullopt,
+					{},
+				} );
+			ashes::VkSubpassDependencyArray dependencies
+			{
+				{
+					VK_SUBPASS_EXTERNAL,
+					0u,
+					ashes::getStageMask( initialImageLayout ),
+					VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+					ashes::getAccessMask( initialImageLayout ),
+					VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+					VK_DEPENDENCY_BY_REGION_BIT,
+				},
+				{
+					0u,
+					VK_SUBPASS_EXTERNAL,
+					VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+					ashes::getStageMask( finalImageLayout ),
+					VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+					ashes::getAccessMask( finalImageLayout ),
+					VK_DEPENDENCY_BY_REGION_BIT,
+				}
+			};
+			ashes::RenderPassCreateInfo createInfo
+			{
+				0u,
+				std::move( attaches ),
+				std::move( subpasses ),
+				std::move( dependencies ),
+			};
+			return device.createRenderPass( std::move( createInfo ) );
+		}
 	}
 
 	RenderPanel::RenderPanel( wxWindow * parent
@@ -228,7 +289,6 @@ namespace vkapp
 		{
 			m_device->getDevice().waitIdle();
 
-			m_blurMipView.reset();
 			m_mipSampler.reset();
 
 			{
@@ -264,7 +324,6 @@ namespace vkapp
 			m_commandBuffers.clear();
 			m_frameBuffers.clear();
 			m_sampler.reset();
-			m_view.reset();
 			m_texture.reset();
 			m_stagingBuffer.reset();
 
@@ -290,7 +349,6 @@ namespace vkapp
 			m_offscreenRenderPass.reset();
 
 			m_frameBuffer.reset();
-			m_renderTargetColourView.reset();
 			m_renderTargetColour.reset();
 
 			m_swapChain.reset();
@@ -424,16 +482,16 @@ namespace vkapp
 			m_stagingBuffer->uploadTextureData( *m_graphicsQueue
 				, *m_commandPool
 				, {
-					m_view->getSubResourceRange().aspectMask,
-					m_view->getSubResourceRange().baseMipLevel,
+					m_view->subresourceRange.aspectMask,
+					m_view->subresourceRange.baseMipLevel,
 					uint32_t( i ),
 					1u,
 				}
 				, image.format
-				, { 0, 0 }
+				, { 0, 0, 0 }
 				, { image.size.width, image.size.height }
 				, image.data
-				, *m_view );
+				, m_view );
 		}
 	}
 
@@ -460,15 +518,15 @@ namespace vkapp
 	{
 		ashes::VkDescriptorSetLayoutBindingArray bindings
 		{
-			VkDescriptorSetLayoutBinding{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT },
-			VkDescriptorSetLayoutBinding{ 1u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT },
-			VkDescriptorSetLayoutBinding{ 2u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT },
+			{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
+			{ 1u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_VERTEX_BIT, nullptr },
+			{ 2u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_VERTEX_BIT, nullptr },
 		};
 		m_offscreenDescriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
 		m_offscreenDescriptorPool = m_offscreenDescriptorLayout->createPool( 1u );
 		m_offscreenDescriptorSet = m_offscreenDescriptorPool->createDescriptorSet();
 		m_offscreenDescriptorSet->createBinding( m_offscreenDescriptorLayout->getBinding( 0u )
-			, *m_view
+			, m_view
 			, *m_sampler );
 		m_offscreenDescriptorSet->createBinding( m_offscreenDescriptorLayout->getBinding( 1u )
 			, *m_matrixUbo
@@ -486,6 +544,7 @@ namespace vkapp
 		ashes::VkAttachmentDescriptionArray attaches
 		{
 			{
+				0u,
 				VK_FORMAT_R8G8B8A8_UNORM,
 				VK_SAMPLE_COUNT_1_BIT,
 				VK_ATTACHMENT_LOAD_OP_CLEAR,
@@ -496,21 +555,46 @@ namespace vkapp
 				VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 			}
 		};
-		ashes::VkAttachmentReferenceArray subAttaches
+		ashes::SubpassDescriptionArray subpasses;
+		subpasses.emplace_back( ashes::SubpassDescription
+			{
+				0u,
+				VK_PIPELINE_BIND_POINT_GRAPHICS,
+				{},
+				{ { 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } },
+				{},
+				std::nullopt,
+				{},
+			} );
+		ashes::VkSubpassDependencyArray dependencies
 		{
-			{ 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }
+			{
+				VK_SUBPASS_EXTERNAL,
+				0u,
+				VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+				VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+				VK_ACCESS_MEMORY_READ_BIT,
+				VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
+				VK_DEPENDENCY_BY_REGION_BIT,
+			},
+			{
+				0u,
+				VK_SUBPASS_EXTERNAL,
+				VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+				VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+				VK_ACCESS_SHADER_READ_BIT,
+				VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
+				VK_DEPENDENCY_BY_REGION_BIT,
+			}
 		};
-		ashes::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( std::make_unique< ashes::RenderSubpass >( VkPipelineBindPoint::eGraphics
-			, ashes::RenderSubpassState{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-				, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT }
-			, subAttaches ) );
-		m_offscreenRenderPass = m_device->getDevice().createRenderPass( attaches
-			, std::move( subpasses )
-			, ashes::RenderSubpassState{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-				, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT }
-			, ashes::RenderSubpassState{ VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
-				, VK_ACCESS_SHADER_READ_BIT } );
+		ashes::RenderPassCreateInfo createInfo
+		{
+			0u,
+			std::move( attaches ),
+			std::move( subpasses ),
+			std::move( dependencies ),
+		};
+		m_offscreenRenderPass = m_device->getDevice().createRenderPass( std::move( createInfo ) );
 	}
 
 	void RenderPanel::doCreateFrameBuffer()
@@ -531,19 +615,14 @@ namespace vkapp
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 		m_renderTargetColourView = m_renderTargetColour->createView( VK_IMAGE_VIEW_TYPE_2D
 			, m_renderTargetColour->getFormat() );
-		ashes::ImageViewPtrArray attaches;
-		attaches.emplace_back( *( m_offscreenRenderPass->getAttachments().begin() + 0u ), m_renderTargetColourView );
+		ashes::ImageViewArray attaches;
+		attaches.emplace_back( m_renderTargetColourView );
 		m_frameBuffer = m_offscreenRenderPass->createFrameBuffer( { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) }
 			, std::move( attaches ) );
 	}
 
 	void RenderPanel::doCreateOffscreenVertexBuffer()
 	{
-		m_offscreenVertexLayout = ashes::makeLayout< NonTexturedVertexData >( 0 );
-		m_offscreenVertexLayout->createAttribute( 0u
-			, VK_FORMAT_R32G32B32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, position ) ) );
-
 		m_offscreenVertexBuffer = utils::makeVertexBuffer< NonTexturedVertexData >( *m_device
 			, uint32_t( m_offscreenVertexData.size() )
 			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
@@ -575,42 +654,69 @@ namespace vkapp
 		{
 			throw std::runtime_error{ "Shader files are missing" };
 		}
+		
+		ashes::PipelineVertexInputStateCreateInfo vertexLayout
+		{
+			0u,
+			{
+				{ 0u, sizeof( NonTexturedVertexData ), VK_VERTEX_INPUT_RATE_VERTEX },
+			},
+			{
+				{ 0u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offsetof( NonTexturedVertexData, position ) },
+			},
+		};
 
 		ashes::PipelineShaderStageCreateInfoArray shaderStages;
-		shaderStages.push_back( { m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
-			, VK_SHADER_STAGE_VERTEX_BIT
-			, shadersFolder / "offscreen.vert" ) ) } );
-		shaderStages.push_back( { m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
-			, VK_SHADER_STAGE_FRAGMENT_BIT
-			, shadersFolder / "offscreen.frag" ) ) } );
+		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
+			{
+				0u,
+				VK_SHADER_STAGE_VERTEX_BIT,
+				m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+					, VK_SHADER_STAGE_VERTEX_BIT
+					, shadersFolder / "offscreen.vert" ) ),
+				"main",
+				std::nullopt,
+			} );
+		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
+			{
+				0u,
+				VK_SHADER_STAGE_FRAGMENT_BIT,
+				m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+					, VK_SHADER_STAGE_FRAGMENT_BIT
+					, shadersFolder / "offscreen.frag" ) ),
+				"main",
+				std::nullopt,
+			} );
 
-		VkPipelineRasterizationStateCreateInfo rasterisationState;
-		rasterisationState.cullMode = VK_CULL_MODE_NONE;
-
-		m_offscreenPipeline = m_offscreenPipelineLayout->createPipeline( ashes::GraphicsPipelineCreateInfo
-		{
-			std::move( shaderStages ),
-			*m_offscreenRenderPass,
-			ashes::VertexInputState::create( *m_offscreenVertexLayout ),
-			ashes::InputAssemblyState{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST },
-			rasterisationState,
-			VkPipelineMultisampleStateCreateInfo{},
-			VkPipelineColorBlendStateCreateInfo::createDefault(),
-			{ VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR }
-		} );
+		m_offscreenPipeline = m_device->getDevice().createPipeline( ashes::GraphicsPipelineCreateInfo
+			{
+				0u,
+				std::move( shaderStages ),
+				std::move( vertexLayout ),
+				ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST },
+				std::nullopt,
+				ashes::PipelineViewportStateCreateInfo{},
+				ashes::PipelineRasterizationStateCreateInfo{ 0u, VK_FALSE, VK_FALSE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE },
+				ashes::PipelineMultisampleStateCreateInfo{},
+				std::nullopt,
+				ashes::PipelineColorBlendStateCreateInfo{},
+				ashes::PipelineDynamicStateCreateInfo{ 0u, { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR } },
+				*m_offscreenPipelineLayout,
+				*m_offscreenRenderPass,
+			} );
 	}
 
 	void RenderPanel::doCreateMainDescriptorSet()
 	{
 		ashes::VkDescriptorSetLayoutBindingArray bindings
 		{
-			VkDescriptorSetLayoutBinding{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT },
+			{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
 		};
 		m_mainDescriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
 		m_mainDescriptorPool = m_mainDescriptorLayout->createPool( 1u );
 		m_mainDescriptorSet = m_mainDescriptorPool->createDescriptorSet();
 		m_mainDescriptorSet->createBinding( m_mainDescriptorLayout->getBinding( 0u )
-			, *m_passes.combine.views[0]
+			, m_passes.combine.views[0]
 			, *m_sampler );
 		m_mainDescriptorSet->update();
 	}
@@ -620,6 +726,7 @@ namespace vkapp
 		ashes::VkAttachmentDescriptionArray attaches
 		{
 			{
+				0u,
 				m_swapChain->getFormat(),
 				VK_SAMPLE_COUNT_1_BIT,
 				VK_ATTACHMENT_LOAD_OP_CLEAR,
@@ -630,21 +737,46 @@ namespace vkapp
 				VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
 			}
 		};
-		ashes::VkAttachmentReferenceArray subAttaches
+		ashes::SubpassDescriptionArray subpasses;
+		subpasses.emplace_back( ashes::SubpassDescription
+			{
+				0u,
+				VK_PIPELINE_BIND_POINT_GRAPHICS,
+				{},
+				{ { 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } },
+				{},
+				std::nullopt,
+				{},
+			} );
+		ashes::VkSubpassDependencyArray dependencies
 		{
-			{ 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }
+			{
+				VK_SUBPASS_EXTERNAL,
+				0u,
+				VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+				VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+				VK_ACCESS_MEMORY_READ_BIT,
+				VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
+				VK_DEPENDENCY_BY_REGION_BIT,
+			},
+			{
+				0u,
+				VK_SUBPASS_EXTERNAL,
+				VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+				VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+				VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
+				VK_ACCESS_MEMORY_READ_BIT,
+				VK_DEPENDENCY_BY_REGION_BIT,
+			}
 		};
-		ashes::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( std::make_unique< ashes::RenderSubpass >( VkPipelineBindPoint::eGraphics
-			, ashes::RenderSubpassState{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-				, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT }
-			, subAttaches ) );
-		m_mainRenderPass = m_device->getDevice().createRenderPass( attaches
-			, std::move( subpasses )
-			, ashes::RenderSubpassState{ VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
-				, VK_ACCESS_MEMORY_READ_BIT }
-			, ashes::RenderSubpassState{ VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
-				, VK_ACCESS_MEMORY_READ_BIT } );
+		ashes::RenderPassCreateInfo createInfo
+		{
+			0u,
+			std::move( attaches ),
+			std::move( subpasses ),
+			std::move( dependencies ),
+		};
+		m_mainRenderPass = m_device->getDevice().createRenderPass( std::move( createInfo ) );
 	}
 
 	void RenderPanel::doPrepareOffscreenFrame()
@@ -690,87 +822,61 @@ namespace vkapp
 		auto dimensions = m_swapChain->getDimensions();
 		ashes::VkDescriptorSetLayoutBindingArray bindings
 		{
-			VkDescriptorSetLayoutBinding{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT },
+			{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
 		};
 		m_passes.hi.descriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
 		m_passes.hi.descriptorPool = m_passes.hi.descriptorLayout->createPool( 1u );
 		m_passes.hi.descriptorSet = m_passes.hi.descriptorPool->createDescriptorSet();
 		m_passes.hi.descriptorSet->createBinding( m_passes.hi.descriptorLayout->getBinding( 0u )
-			, *m_renderTargetColourView
+			, m_renderTargetColourView
 			, *m_sampler );
 		m_passes.hi.descriptorSet->update();
 		m_passes.hi.semaphore = m_device->getDevice().createSemaphore();
 		m_passes.hi.pipelineLayout = m_device->getDevice().createPipelineLayout( *m_passes.hi.descriptorLayout );
 
-		ashes::ImageCreateInfo image{};
-		image.arrayLayers = 1u;
-		image.extent = VkExtent3D{ dimensions.width, dimensions.height, 1u };
-		image.flags = 0u;
-		image.format = m_renderTargetColourView->getFormat();
-		image.imageType = VK_IMAGE_TYPE_2D;
-		image.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		image.mipLevels = uint32_t( m_passes.blurX.size() );
-		image.samples = VK_SAMPLE_COUNT_1_BIT;
-		image.tiling = VK_IMAGE_TILING_OPTIMAL;
-		image.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
-			| VK_IMAGE_USAGE_SAMPLED_BIT
-			| VK_IMAGE_USAGE_TRANSFER_DST_BIT
-			| VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
-		m_passes.hi.image = m_device->createImage( image, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
+		m_passes.hi.image = m_device->createImage( ashes::ImageCreateInfo
+			{
+				0u,
+				VK_IMAGE_TYPE_2D,
+				m_renderTargetColourView->format,
+				VkExtent3D{ dimensions.width, dimensions.height, 1u },
+				uint32_t( m_passes.blurX.size() ),
+				1u,
+				VK_SAMPLE_COUNT_1_BIT,
+				VK_IMAGE_TILING_OPTIMAL,
+				( VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+					| VK_IMAGE_USAGE_SAMPLED_BIT
+					| VK_IMAGE_USAGE_TRANSFER_DST_BIT
+					| VK_IMAGE_USAGE_TRANSFER_SRC_BIT ),
+			}, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 
-		ashes::ImageViewCreateInfo view{};
-		view.format = image.format;
-		view.viewType = VK_IMAGE_VIEW_TYPE_2D;
-		view.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		view.subresourceRange.baseArrayLayer = 0u;
-		view.subresourceRange.layerCount = 1u;
-		view.subresourceRange.levelCount = 1u;
+		ashes::ImageViewCreateInfo view
+		{
+			0u,
+			*m_passes.hi.image,
+			VK_IMAGE_VIEW_TYPE_2D,
+			m_passes.hi.image->getFormat(),
+			{},
+			{ VK_IMAGE_ASPECT_COLOR_BIT, 0u, 1u, 0u, 1u },
+		};
 
 		for ( auto i = 0u; i < m_passes.blurX.size(); ++i )
 		{
-			view.subresourceRange.baseMipLevel = uint32_t( i );
+			view->subresourceRange.baseMipLevel = uint32_t( i );
 			m_passes.hi.views.emplace_back( m_passes.hi.image->createView( view ) );
 		}
 
-		ashes::RenderPassCreateInfo renderPass{};
-		renderPass.attachments.resize( 1u );
-		renderPass.attachments[0].format = image.format;
-		renderPass.attachments[0].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-		renderPass.attachments[0].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-		renderPass.attachments[0].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-		renderPass.attachments[0].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		renderPass.attachments[0].samples = VK_SAMPLE_COUNT_1_BIT;
-		renderPass.attachments[0].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		renderPass.attachments[0].finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		m_passes.hi.renderPass = createRenderPass( *m_device
+			, m_passes.hi.image->getFormat()
+			, VK_IMAGE_LAYOUT_UNDEFINED
+			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
 
-		renderPass.subpasses.resize( 1u );
-		renderPass.subpasses[0].colorAttachments = { { 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } };
-
-		renderPass.dependencies.resize( 2u );
-		renderPass.dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
-		renderPass.dependencies[0].dstSubpass = 0u;
-		renderPass.dependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-		renderPass.dependencies[0].srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-		renderPass.dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-		renderPass.dependencies[0].srcStageMask = VK_PIPELINE_STAGE_HOST_BIT;
-		renderPass.dependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-
-		renderPass.dependencies[1].srcSubpass = 0u;
-		renderPass.dependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
-		renderPass.dependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-		renderPass.dependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-		renderPass.dependencies[1].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-		renderPass.dependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		renderPass.dependencies[1].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-
-		m_passes.hi.renderPass = m_device->getDevice().createRenderPass( renderPass );
-
-		ashes::ImageViewPtrArray attaches
+		ashes::ImageViewArray views
 		{
-			{ *m_passes.hi.renderPass->getAttachments().begin(), m_passes.hi.views[0] }
+			m_passes.hi.views[0]
 		};
 		m_passes.hi.frameBuffer = m_passes.hi.renderPass->createFrameBuffer( dimensions
-			, std::move( attaches ) );
+			, std::move( views ) );
 
 		std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
@@ -780,30 +886,63 @@ namespace vkapp
 			throw std::runtime_error{ "Shader files are missing" };
 		}
 
-		ashes::ShaderStageStateArray shaderStages;
-		shaderStages.push_back( { m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
-			, VK_SHADER_STAGE_VERTEX_BIT
-			, shadersFolder / "hipass.vert" ) ) } );
-		shaderStages.push_back( { m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
-			, VK_SHADER_STAGE_FRAGMENT_BIT
-			, shadersFolder / "hipass.frag" ) ) } );
-
-		ashes::GraphicsPipelineCreateInfo pipeline
+		ashes::PipelineShaderStageCreateInfoArray shaderStages;
+		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
+			{
+				0u,
+				VK_SHADER_STAGE_VERTEX_BIT,
+				m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+					, VK_SHADER_STAGE_VERTEX_BIT
+					, shadersFolder / "hipass.vert" ) ),
+				"main",
+				std::nullopt,
+			} );
+		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
+			{
+				0u,
+				VK_SHADER_STAGE_FRAGMENT_BIT,
+				m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+					, VK_SHADER_STAGE_FRAGMENT_BIT
+					, shadersFolder / "hipass.frag" ) ),
+				"main",
+				std::nullopt,
+			} );
+		
+		ashes::PipelineVertexInputStateCreateInfo vertexLayout
 		{
-			shaderStages,
-			*m_passes.hi.renderPass,
-			ashes::VertexInputState::create( *m_mainVertexLayout ),
-			ashes::InputAssemblyState{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
-			VkPipelineRasterizationStateCreateInfo{},
-			VkPipelineMultisampleStateCreateInfo{},
-			VkPipelineColorBlendStateCreateInfo::createDefault(),
-			{},
-			ashes::nullopt,
-			ashes::nullopt,
-			VkViewport{ { 0, 0 }, dimensions },
-			VkRect2D{ { 0, 0 }, dimensions }
+			0u,
+			{
+				{ 0u, sizeof( TexturedVertexData ), VK_VERTEX_INPUT_RATE_VERTEX },
+			},
+			{
+				{ 0u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof( TexturedVertexData, position ) },
+				{ 1u, 0u, VK_FORMAT_R32G32_SFLOAT, offsetof( TexturedVertexData, uv ) },
+			},
 		};
-		m_passes.hi.pipeline = m_passes.hi.pipelineLayout->createPipeline( pipeline );
+
+		m_passes.hi.pipeline = m_device->getDevice().createPipeline( ashes::GraphicsPipelineCreateInfo
+			{
+				0u,
+				std::move( shaderStages ),
+				std::move( vertexLayout ),
+				ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
+				std::nullopt,
+				ashes::PipelineViewportStateCreateInfo
+				{
+					0u,
+					1u,
+					{ VkViewport{ 0.0f, 0.0f, float( dimensions.width ), float( dimensions.height ), 0.0f, 1.0f } },
+					1u,
+					{ VkRect2D{ { 0, 0 }, dimensions } },
+				},
+				ashes::PipelineRasterizationStateCreateInfo{},
+				ashes::PipelineMultisampleStateCreateInfo{},
+				std::nullopt,
+				ashes::PipelineColorBlendStateCreateInfo{},
+				ashes::nullopt,
+				*m_passes.hi.pipelineLayout,
+				*m_passes.hi.renderPass,
+			} );
 
 		m_passes.hi.commandBuffer = m_commandPool->createCommandBuffer( true );
 		auto & cmd = *m_passes.hi.commandBuffer;
@@ -811,7 +950,7 @@ namespace vkapp
 		cmd.begin();
 		cmd.beginRenderPass( *m_passes.hi.renderPass
 			, *m_passes.hi.frameBuffer
-			, { VkClearColorValue{ 0.0, 0.0, 0.0, 0.0 } }
+			, { ashes::makeClearValue( VkClearColorValue{ 0.0, 0.0, 0.0, 0.0 } ) }
 			, VK_SUBPASS_CONTENTS_INLINE );
 		cmd.bindPipeline( *m_passes.hi.pipeline );
 		cmd.bindDescriptorSet( *m_passes.hi.descriptorSet, *m_passes.hi.pipelineLayout );
@@ -858,69 +997,51 @@ namespace vkapp
 
 		m_blurConfiguration->upload( 0u, uint32_t( m_passes.blurX.size() ) );
 
-		ashes::ImageCreateInfo image{};
-		image.arrayLayers = 1u;
-		image.extent = VkExtent3D{ dimensions.width, dimensions.height, 1u };
-		image.flags = 0u;
-		image.format = m_renderTargetColourView->getFormat();
-		image.imageType = VK_IMAGE_TYPE_2D;
-		image.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		image.mipLevels = uint32_t( m_passes.blurX.size() );
-		image.samples = VK_SAMPLE_COUNT_1_BIT;
-		image.tiling = VK_IMAGE_TILING_OPTIMAL;
-		image.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
-			| VK_IMAGE_USAGE_SAMPLED_BIT
-			| VK_IMAGE_USAGE_TRANSFER_DST_BIT
-			| VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
-		m_passes.blurX[0].image = m_device->createImage( image, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
+		m_passes.blurX[0].image = m_device->createImage( ashes::ImageCreateInfo
+			{
+				0u,
+				VK_IMAGE_TYPE_2D,
+				m_renderTargetColourView->format,
+				VkExtent3D{ dimensions.width, dimensions.height, 1u },
+				uint32_t( m_passes.blurX.size() ),
+				1u,
+				VK_SAMPLE_COUNT_1_BIT,
+				VK_IMAGE_TILING_OPTIMAL,
+				( VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+					| VK_IMAGE_USAGE_SAMPLED_BIT
+					| VK_IMAGE_USAGE_TRANSFER_DST_BIT
+					| VK_IMAGE_USAGE_TRANSFER_SRC_BIT ),
+			}, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 
-		ashes::RenderPassCreateInfo renderPass{};
-		renderPass.attachments.resize( 1u );
-		renderPass.attachments[0].format = image.format;
-		renderPass.attachments[0].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-		renderPass.attachments[0].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-		renderPass.attachments[0].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-		renderPass.attachments[0].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		renderPass.attachments[0].samples = VK_SAMPLE_COUNT_1_BIT;
-		renderPass.attachments[0].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		renderPass.attachments[0].finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		m_passes.blurX[0].renderPass = createRenderPass( *m_device
+			, m_passes.blurX[0].image->getFormat()
+			, VK_IMAGE_LAYOUT_UNDEFINED
+			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
 
-		renderPass.subpasses.resize( 1u );
-		renderPass.subpasses[0].colorAttachments = { { 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } };
+		ashes::ImageViewCreateInfo view
+		{
+			0u,
+			*m_passes.blurX[0].image,
+			VK_IMAGE_VIEW_TYPE_2D,
+			m_passes.blurX[0].image->getFormat(),
+			{},
+			{ VK_IMAGE_ASPECT_COLOR_BIT,0u, 1u, 0u, 1u },
+		};
 
-		renderPass.dependencies.resize( 2u );
-		renderPass.dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
-		renderPass.dependencies[0].dstSubpass = 0u;
-		renderPass.dependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-		renderPass.dependencies[0].srcAccessMask = VK_ACCESS_HOST_WRITE_BIT;
-		renderPass.dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-		renderPass.dependencies[0].srcStageMask = VK_PIPELINE_STAGE_HOST_BIT;
-		renderPass.dependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-
-		renderPass.dependencies[1].srcSubpass = 0u;
-		renderPass.dependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
-		renderPass.dependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-		renderPass.dependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-		renderPass.dependencies[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-		renderPass.dependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		renderPass.dependencies[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-
-		m_passes.blurX[0].renderPass = m_device->getDevice().createRenderPass( renderPass );
-
-		for ( auto i = 0u; i < m_passes.blurX.size(); ++i )
+		for ( uint32_t i = 0u; i < m_passes.blurX.size(); ++i )
 		{
 			auto & blur = m_passes.blurX[i];
 			ashes::VkDescriptorSetLayoutBindingArray bindings
 			{
-				VkDescriptorSetLayoutBinding{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT },
-				VkDescriptorSetLayoutBinding{ 1u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT },
-				VkDescriptorSetLayoutBinding{ 2u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT },
+				{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
+				{ 1u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
+				{ 2u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
 			};
 			blur.descriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
 			blur.descriptorPool = blur.descriptorLayout->createPool( 1u );
 			blur.descriptorSet = blur.descriptorPool->createDescriptorSet();
 			blur.descriptorSet->createBinding( blur.descriptorLayout->getBinding( 0u )
-				, *m_passes.hi.views[i]
+				, m_passes.hi.views[i]
 				, *m_blurSamplers[i] );
 			blur.descriptorSet->createBinding( blur.descriptorLayout->getBinding( 1u )
 				, *m_blurConfiguration
@@ -931,23 +1052,16 @@ namespace vkapp
 			blur.descriptorSet->update();
 			blur.semaphore = m_device->getDevice().createSemaphore();
 			blur.pipelineLayout = m_device->getDevice().createPipelineLayout( *blur.descriptorLayout );
-
-			ashes::ImageViewCreateInfo view{};
-			view.format = image.format;
-			view.viewType = VK_IMAGE_VIEW_TYPE_2D;
-			view.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-			view.subresourceRange.baseArrayLayer = 0u;
-			view.subresourceRange.layerCount = 1u;
-			view.subresourceRange.levelCount = 1u;
-			view.subresourceRange.baseMipLevel = uint32_t( i );
+			
+			view->subresourceRange.baseMipLevel = i;
 			blur.views.emplace_back( m_passes.blurX[0].image->createView( view ) );
 
-			ashes::ImageViewPtrArray attaches
+			ashes::ImageViewArray views
 			{
-				{ *m_passes.blurX[0].renderPass->getAttachments().begin(), blur.views.back() }
+				blur.views.back()
 			};
 			blur.frameBuffer = m_passes.blurX[0].renderPass->createFrameBuffer( dimensions
-				, std::move( attaches ) );
+				, std::move( views ) );
 
 			std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
@@ -957,30 +1071,63 @@ namespace vkapp
 				throw std::runtime_error{ "Shader files are missing" };
 			}
 
-			ashes::ShaderStageStateArray shaderStages;
-			shaderStages.push_back( { m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
-				, VK_SHADER_STAGE_VERTEX_BIT
-				, shadersFolder / "blur.vert" ) ) } );
-			shaderStages.push_back( { m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
-				, VK_SHADER_STAGE_FRAGMENT_BIT
-				, shadersFolder / "blur.frag" ) ) } );
-
-			ashes::GraphicsPipelineCreateInfo pipeline
+			ashes::PipelineVertexInputStateCreateInfo vertexLayout
 			{
-				shaderStages,
-				*m_passes.blurX[0].renderPass,
-				ashes::VertexInputState::create( *m_mainVertexLayout ),
-				ashes::InputAssemblyState{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
-				VkPipelineRasterizationStateCreateInfo{},
-				VkPipelineMultisampleStateCreateInfo{},
-				VkPipelineColorBlendStateCreateInfo::createDefault(),
-				{},
-				ashes::nullopt,
-				ashes::nullopt,
-				VkViewport{ 0.0f, 0.0f, float( dimensions.width ), float( dimensions.height ) },
-				VkRect2D{ { 0, 0 }, dimensions }
+				0u,
+				{
+					{ 0u, sizeof( TexturedVertexData ), VK_VERTEX_INPUT_RATE_VERTEX },
+				},
+				{
+					{ 0u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof( TexturedVertexData, position ) },
+					{ 1u, 0u, VK_FORMAT_R32G32_SFLOAT, offsetof( TexturedVertexData, uv ) },
+				},
 			};
-			blur.pipeline = blur.pipelineLayout->createPipeline( pipeline );
+
+			ashes::PipelineShaderStageCreateInfoArray shaderStages;
+			shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
+				{
+					0u,
+					VK_SHADER_STAGE_VERTEX_BIT,
+					m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+						, VK_SHADER_STAGE_VERTEX_BIT
+						, shadersFolder / "blur.vert" ) ),
+					"main",
+					std::nullopt,
+				} );
+			shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
+				{
+					0u,
+					VK_SHADER_STAGE_FRAGMENT_BIT,
+					m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+						, VK_SHADER_STAGE_FRAGMENT_BIT
+						, shadersFolder / "blur.frag" ) ),
+					"main",
+					std::nullopt,
+				} );
+
+			blur.pipeline = m_device->getDevice().createPipeline( ashes::GraphicsPipelineCreateInfo
+				{
+					0u,
+					std::move( shaderStages ),
+					std::move( vertexLayout ),
+					ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
+					std::nullopt,
+					ashes::PipelineViewportStateCreateInfo
+					{
+						0u,
+						1u,
+						{ VkViewport{ 0.0f, 0.0f, float( dimensions.width ), float( dimensions.height ), 0.0f, 1.0f } },
+						1u,
+						{ VkRect2D{ { 0, 0 }, dimensions } },
+					},
+					ashes::PipelineRasterizationStateCreateInfo{},
+					ashes::PipelineMultisampleStateCreateInfo{},
+					std::nullopt,
+					ashes::PipelineColorBlendStateCreateInfo{},
+					std::nullopt,
+					*blur.pipelineLayout,
+					*m_passes.blurX[0].renderPass,
+				} );
 
 			blur.commandBuffer = m_commandPool->createCommandBuffer( true );
 			auto & cmd = *blur.commandBuffer;
@@ -988,8 +1135,8 @@ namespace vkapp
 			cmd.begin();
 			cmd.beginRenderPass( *m_passes.blurX[0].renderPass
 				, *blur.frameBuffer
-				, { VkClearColorValue{ 0.0, 0.0, 0.0, 0.0 } }
-			, VK_SUBPASS_CONTENTS_INLINE );
+				, { ashes::makeClearValue( VkClearColorValue{ 0.0, 0.0, 0.0, 0.0 } ) }
+				, VK_SUBPASS_CONTENTS_INLINE );
 			cmd.bindPipeline( *blur.pipeline );
 			cmd.bindDescriptorSet( *blur.descriptorSet, *blur.pipelineLayout );
 			cmd.bindVertexBuffer( 0u, m_mainVertexBuffer->getBuffer(), 0u );
@@ -1005,53 +1152,25 @@ namespace vkapp
 	void RenderPanel::doPrepareBlurYPass()
 	{
 		auto dimensions = m_swapChain->getDimensions();
-		ashes::RenderPassCreateInfo renderPass{};
-		renderPass.attachments.resize( 1u );
-		renderPass.attachments[0].format = m_passes.hi.views[0]->getFormat();
-		renderPass.attachments[0].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-		renderPass.attachments[0].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-		renderPass.attachments[0].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-		renderPass.attachments[0].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		renderPass.attachments[0].samples = VK_SAMPLE_COUNT_1_BIT;
-		renderPass.attachments[0].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		renderPass.attachments[0].finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-		renderPass.subpasses.resize( 1u );
-		renderPass.subpasses[0].colorAttachments = { { 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } };
-
-		renderPass.dependencies.resize( 2u );
-		renderPass.dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
-		renderPass.dependencies[0].dstSubpass = 0u;
-		renderPass.dependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-		renderPass.dependencies[0].srcAccessMask = VK_ACCESS_HOST_WRITE_BIT;
-		renderPass.dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-		renderPass.dependencies[0].srcStageMask = VK_PIPELINE_STAGE_HOST_BIT;
-		renderPass.dependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-
-		renderPass.dependencies[1].srcSubpass = 0u;
-		renderPass.dependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
-		renderPass.dependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-		renderPass.dependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-		renderPass.dependencies[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-		renderPass.dependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		renderPass.dependencies[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-
-		m_passes.blurY[0].renderPass = m_device->getDevice().createRenderPass( renderPass );
+		m_passes.blurY[0].renderPass = createRenderPass( *m_device
+			, m_passes.hi.views[0]->format
+			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
 
 		for ( auto i = 0u; i < m_passes.blurY.size(); ++i )
 		{
 			auto & blur = m_passes.blurY[i];
 			ashes::VkDescriptorSetLayoutBindingArray bindings
 			{
-				VkDescriptorSetLayoutBinding{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT },
-				VkDescriptorSetLayoutBinding{ 1u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT },
-				VkDescriptorSetLayoutBinding{ 2u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT },
+				{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
+				{ 1u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
+				{ 2u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
 			};
 			blur.descriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
 			blur.descriptorPool = blur.descriptorLayout->createPool( 1u );
 			blur.descriptorSet = blur.descriptorPool->createDescriptorSet();
 			blur.descriptorSet->createBinding( blur.descriptorLayout->getBinding( 0u )
-				, *m_passes.blurX[i].views[0]
+				, m_passes.blurX[i].views[0]
 				, *m_blurSamplers[i] );
 			blur.descriptorSet->createBinding( blur.descriptorLayout->getBinding( 1u )
 				, *m_blurConfiguration
@@ -1063,9 +1182,9 @@ namespace vkapp
 			blur.semaphore = m_device->getDevice().createSemaphore();
 			blur.pipelineLayout = m_device->getDevice().createPipelineLayout( *blur.descriptorLayout );
 
-			ashes::ImageViewPtrArray attaches
+			ashes::ImageViewArray attaches
 			{
-				{ *m_passes.blurY[0].renderPass->getAttachments().begin(), m_passes.hi.views[i] }
+				m_passes.hi.views[i]
 			};
 			blur.frameBuffer = m_passes.blurY[0].renderPass->createFrameBuffer( dimensions
 				, std::move( attaches ) );
@@ -1078,30 +1197,63 @@ namespace vkapp
 				throw std::runtime_error{ "Shader files are missing" };
 			}
 
-			ashes::ShaderStageStateArray shaderStages;
-			shaderStages.push_back( { m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
-				, VK_SHADER_STAGE_VERTEX_BIT
-				, shadersFolder / "blur.vert" ) ) } );
-			shaderStages.push_back( { m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
-				, VK_SHADER_STAGE_FRAGMENT_BIT
-				, shadersFolder / "blur.frag" ) ) } );
-
-			ashes::GraphicsPipelineCreateInfo pipeline
+			ashes::PipelineVertexInputStateCreateInfo vertexLayout
 			{
-				shaderStages,
-				*m_passes.blurY[0].renderPass,
-				ashes::VertexInputState::create( *m_mainVertexLayout ),
-				ashes::InputAssemblyState{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
-				VkPipelineRasterizationStateCreateInfo{},
-				VkPipelineMultisampleStateCreateInfo{},
-				VkPipelineColorBlendStateCreateInfo::createDefault(),
-				{},
-				ashes::nullopt,
-				ashes::nullopt,
-				VkViewport{ { 0, 0 }, dimensions },
-				VkRect2D{ { 0, 0 }, dimensions }
+				0u,
+				{
+					{ 0u, sizeof( TexturedVertexData ), VK_VERTEX_INPUT_RATE_VERTEX },
+				},
+				{
+					{ 0u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof( TexturedVertexData, position ) },
+					{ 1u, 0u, VK_FORMAT_R32G32_SFLOAT, offsetof( TexturedVertexData, uv ) },
+				},
 			};
-			blur.pipeline = blur.pipelineLayout->createPipeline( pipeline );
+
+			ashes::PipelineShaderStageCreateInfoArray shaderStages;
+			shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
+				{
+					0u,
+					VK_SHADER_STAGE_VERTEX_BIT,
+					m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+						, VK_SHADER_STAGE_VERTEX_BIT
+						, shadersFolder / "blur.vert" ) ),
+					"main",
+					std::nullopt,
+				} );
+			shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
+				{
+					0u,
+					VK_SHADER_STAGE_FRAGMENT_BIT,
+					m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+						, VK_SHADER_STAGE_FRAGMENT_BIT
+						, shadersFolder / "blur.frag" ) ),
+					"main",
+					std::nullopt,
+				} );
+
+			blur.pipeline = m_device->getDevice().createPipeline( ashes::GraphicsPipelineCreateInfo
+				{
+					0u,
+					std::move( shaderStages ),
+					std::move( vertexLayout ),
+					ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
+					std::nullopt,
+					ashes::PipelineViewportStateCreateInfo
+					{
+						0u,
+						1u,
+						{ VkViewport{ 0.0f, 0.0f, float( dimensions.width ), float( dimensions.height ), 0.0f, 1.0f } },
+						1u,
+						{ VkRect2D{ { 0, 0 }, dimensions } },
+					},
+					ashes::PipelineRasterizationStateCreateInfo{},
+					ashes::PipelineMultisampleStateCreateInfo{},
+					std::nullopt,
+					ashes::PipelineColorBlendStateCreateInfo{},
+					std::nullopt,
+					*blur.pipelineLayout,
+					*m_passes.blurY[0].renderPass,
+				} );
 
 			blur.commandBuffer = m_commandPool->createCommandBuffer( true );
 			auto & cmd = *blur.commandBuffer;
@@ -1109,8 +1261,8 @@ namespace vkapp
 			cmd.begin();
 			cmd.beginRenderPass( *m_passes.blurY[0].renderPass
 				, *blur.frameBuffer
-				, { VkClearColorValue{ 0.0, 0.0, 0.0, 0.0 } }
-			, VK_SUBPASS_CONTENTS_INLINE );
+				, { ashes::makeClearValue( VkClearColorValue{ 0.0, 0.0, 0.0, 0.0 } ) }
+				, VK_SUBPASS_CONTENTS_INLINE );
 			cmd.bindPipeline( *blur.pipeline );
 			cmd.bindDescriptorSet( *blur.descriptorSet, *blur.pipelineLayout );
 			cmd.bindVertexBuffer( 0u, m_mainVertexBuffer->getBuffer(), 0u );
@@ -1125,15 +1277,15 @@ namespace vkapp
 
 	void RenderPanel::doPrepareCombinePass()
 	{
-		ashes::ImageViewCreateInfo view{};
-		view.format = m_renderTargetColourView->getFormat();
-		view.viewType = VK_IMAGE_VIEW_TYPE_2D;
-		view.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		view.subresourceRange.baseArrayLayer = 0u;
-		view.subresourceRange.layerCount = 1u;
-		view.subresourceRange.levelCount = uint32_t( m_passes.blurY.size() );
-		view.subresourceRange.baseMipLevel = 0u;
-		m_blurMipView = m_passes.hi.image->createView( view );
+		m_blurMipView = m_passes.hi.image->createView( ashes::ImageViewCreateInfo
+			{
+				0u,
+				*m_passes.hi.image,
+				VK_IMAGE_VIEW_TYPE_2D,
+				m_renderTargetColourView->format,
+				{},
+				{ VK_IMAGE_ASPECT_COLOR_BIT, 0u, uint32_t( m_passes.blurY.size() ), 0u, 1u },
+			} );
 
 		m_mipSampler = m_device->getDevice().createSampler( VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
 			, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
@@ -1147,86 +1299,56 @@ namespace vkapp
 		auto dimensions = m_swapChain->getDimensions();
 		ashes::VkDescriptorSetLayoutBindingArray bindings
 		{
-			VkDescriptorSetLayoutBinding{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT },
-			VkDescriptorSetLayoutBinding{ 1u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT },
+			{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
+			{ 1u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
 		};
 
 		m_passes.combine.descriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
 		m_passes.combine.descriptorPool = m_passes.combine.descriptorLayout->createPool( 1u );
 		m_passes.combine.descriptorSet = m_passes.combine.descriptorPool->createDescriptorSet();
 		m_passes.combine.descriptorSet->createBinding( m_passes.combine.descriptorLayout->getBinding( 0u )
-			, *m_renderTargetColourView
+			, m_renderTargetColourView
 			, *m_sampler );
 		m_passes.combine.descriptorSet->createBinding( m_passes.combine.descriptorLayout->getBinding( 1u )
-			, *m_blurMipView
+			, m_blurMipView
 			, *m_mipSampler );
 
 		m_passes.combine.descriptorSet->update();
 		m_passes.combine.semaphore = m_device->getDevice().createSemaphore();
 		m_passes.combine.pipelineLayout = m_device->getDevice().createPipelineLayout( *m_passes.combine.descriptorLayout );
 
-		ashes::ImageCreateInfo image{};
-		image.arrayLayers = 1u;
-		image.extent = VkExtent3D{ dimensions.width, dimensions.height, 1u };
-		image.flags = 0u;
-		image.format = m_renderTargetColourView->getFormat();
-		image.imageType = VK_IMAGE_TYPE_2D;
-		image.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		image.mipLevels = uint32_t( m_passes.blurX.size() );
-		image.samples = VK_SAMPLE_COUNT_1_BIT;
-		image.tiling = VK_IMAGE_TILING_OPTIMAL;
-		image.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
-			| VK_IMAGE_USAGE_SAMPLED_BIT
-			| VK_IMAGE_USAGE_TRANSFER_DST_BIT
-			| VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
-		m_passes.combine.image = m_device->createImage( image, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
+		m_passes.combine.image = m_device->createImage( ashes::ImageCreateInfo
+			{
+				0u,
+				VK_IMAGE_TYPE_2D,
+				m_renderTargetColourView->format,
+				VkExtent3D{ dimensions.width, dimensions.height, 1u },
+				1u,
+				1u,
+				VK_SAMPLE_COUNT_1_BIT,
+				VK_IMAGE_TILING_OPTIMAL,
+				( VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+				| VK_IMAGE_USAGE_SAMPLED_BIT
+					| VK_IMAGE_USAGE_TRANSFER_DST_BIT
+					| VK_IMAGE_USAGE_TRANSFER_SRC_BIT ),
+			}, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
+		m_passes.combine.views.emplace_back( m_passes.combine.image->createView( ashes::ImageViewCreateInfo
+			{
+				0u,
+				*m_passes.combine.image,
+				VK_IMAGE_VIEW_TYPE_2D,
+				m_passes.combine.image->getFormat(),
+				{},
+				{ VK_IMAGE_ASPECT_COLOR_BIT, 0u, 1u, 0u, 1u },
+			} ) );
+		m_passes.combine.renderPass = createRenderPass( *m_device
+			, m_passes.combine.views[0]->format
+			, VK_IMAGE_LAYOUT_UNDEFINED
+			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
 
-		view = ashes::ImageViewCreateInfo{};
-		view.format = image.format;
-		view.viewType = VK_IMAGE_VIEW_TYPE_2D;
-		view.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		view.subresourceRange.baseArrayLayer = 0u;
-		view.subresourceRange.layerCount = 1u;
-		view.subresourceRange.levelCount = 1u;
-		view.subresourceRange.baseMipLevel = 0u;
-		m_passes.combine.views.emplace_back( m_passes.combine.image->createView( view ) );
-
-		ashes::RenderPassCreateInfo renderPass{};
-		renderPass.attachments.resize( 1u );
-		renderPass.attachments[0].format = image.format;
-		renderPass.attachments[0].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-		renderPass.attachments[0].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-		renderPass.attachments[0].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-		renderPass.attachments[0].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		renderPass.attachments[0].samples = VK_SAMPLE_COUNT_1_BIT;
-		renderPass.attachments[0].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		renderPass.attachments[0].finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-		renderPass.subpasses.resize( 1u );
-		renderPass.subpasses[0].colorAttachments = { { 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } };
-
-		renderPass.dependencies.resize( 2u );
-		renderPass.dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
-		renderPass.dependencies[0].dstSubpass = 0u;
-		renderPass.dependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-		renderPass.dependencies[0].srcAccessMask = VK_ACCESS_HOST_WRITE_BIT;
-		renderPass.dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-		renderPass.dependencies[0].srcStageMask = VK_PIPELINE_STAGE_HOST_BIT;
-		renderPass.dependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-
-		renderPass.dependencies[1].srcSubpass = 0u;
-		renderPass.dependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
-		renderPass.dependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-		renderPass.dependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-		renderPass.dependencies[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-		renderPass.dependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		renderPass.dependencies[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-
-		m_passes.combine.renderPass = m_device->getDevice().createRenderPass( renderPass );
-
-		ashes::ImageViewPtrArray attaches
+		ashes::ImageViewArray attaches
 		{
-			{ *m_passes.combine.renderPass->getAttachments().begin(), m_passes.combine.views[0] }
+			m_passes.combine.views[0]
 		};
 		m_passes.combine.frameBuffer = m_passes.combine.renderPass->createFrameBuffer( dimensions
 			, std::move( attaches ) );
@@ -1239,30 +1361,63 @@ namespace vkapp
 			throw std::runtime_error{ "Shader files are missing" };
 		}
 
-		ashes::ShaderStageStateArray shaderStages;
-		shaderStages.push_back( { m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
-			, VK_SHADER_STAGE_VERTEX_BIT
-			, shadersFolder / "combine.vert" ) ) } );
-		shaderStages.push_back( { m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
-			, VK_SHADER_STAGE_FRAGMENT_BIT
-			, shadersFolder / "combine.frag" ) ) } );
-
-		ashes::GraphicsPipelineCreateInfo pipeline
+		ashes::PipelineVertexInputStateCreateInfo vertexLayout
 		{
-			shaderStages,
-			*m_passes.combine.renderPass,
-			ashes::VertexInputState::create( *m_mainVertexLayout ),
-			ashes::InputAssemblyState{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
-			VkPipelineRasterizationStateCreateInfo{},
-			VkPipelineMultisampleStateCreateInfo{},
-			VkPipelineColorBlendStateCreateInfo::createDefault(),
-			{},
-			ashes::nullopt,
-			ashes::nullopt,
-			VkViewport{ { 0, 0 }, dimensions },
-			VkRect2D{ { 0, 0 }, dimensions }
+			0u,
+			{
+				{ 0u, sizeof( TexturedVertexData ), VK_VERTEX_INPUT_RATE_VERTEX },
+			},
+			{
+				{ 0u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof( TexturedVertexData, position ) },
+				{ 1u, 0u, VK_FORMAT_R32G32_SFLOAT, offsetof( TexturedVertexData, uv ) },
+			},
 		};
-		m_passes.combine.pipeline = m_passes.combine.pipelineLayout->createPipeline( pipeline );
+
+		ashes::PipelineShaderStageCreateInfoArray shaderStages;
+		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
+			{
+				0u,
+				VK_SHADER_STAGE_VERTEX_BIT,
+				m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+					, VK_SHADER_STAGE_VERTEX_BIT
+					, shadersFolder / "combine.vert" ) ),
+				"main",
+				std::nullopt,
+			} );
+		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
+			{
+				0u,
+				VK_SHADER_STAGE_FRAGMENT_BIT,
+				m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+					, VK_SHADER_STAGE_FRAGMENT_BIT
+					, shadersFolder / "combine.frag" ) ),
+				"main",
+				std::nullopt,
+			} );
+
+		m_passes.combine.pipeline = m_device->getDevice().createPipeline( ashes::GraphicsPipelineCreateInfo
+			{
+				0u,
+				std::move( shaderStages ),
+				std::move( vertexLayout ),
+				ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
+				std::nullopt,
+				ashes::PipelineViewportStateCreateInfo
+				{
+					0u,
+					1u,
+					{ VkViewport{ 0.0f, 0.0f, float( dimensions.width ), float( dimensions.height ), 0.0f, 1.0f } },
+					1u,
+					{ VkRect2D{ { 0, 0 }, dimensions } },
+				},
+				ashes::PipelineRasterizationStateCreateInfo{},
+				ashes::PipelineMultisampleStateCreateInfo{},
+				std::nullopt,
+				ashes::PipelineColorBlendStateCreateInfo{},
+				std::nullopt,
+				*m_passes.combine.pipelineLayout,
+				*m_passes.combine.renderPass,
+			} );
 
 		m_passes.combine.commandBuffer = m_commandPool->createCommandBuffer( true );
 		auto & cmd = *m_passes.combine.commandBuffer;
@@ -1270,7 +1425,7 @@ namespace vkapp
 		cmd.begin();
 		cmd.beginRenderPass( *m_passes.combine.renderPass
 			, *m_passes.combine.frameBuffer
-			, { VkClearColorValue{ 0.0, 0.0, 0.0, 0.0 } }
+			, { ashes::makeClearValue( VkClearColorValue{ 0.0, 0.0, 0.0, 0.0 } ) }
 			, VK_SUBPASS_CONTENTS_INLINE );
 		cmd.bindPipeline( *m_passes.combine.pipeline );
 		cmd.bindDescriptorSet( *m_passes.combine.descriptorSet, *m_passes.combine.pipelineLayout );
@@ -1282,14 +1437,6 @@ namespace vkapp
 
 	void RenderPanel::doCreateMainVertexBuffer()
 	{
-		m_mainVertexLayout = ashes::makeLayout< TexturedVertexData >( 0 );
-		m_mainVertexLayout->createAttribute( 0u
-			, VK_FORMAT_R32G32B32A32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, position ) ) );
-		m_mainVertexLayout->createAttribute( 1u
-			, VK_FORMAT_R32G32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
-
 		m_mainVertexBuffer = utils::makeVertexBuffer< TexturedVertexData >( *m_device
 			, uint32_t( m_mainVertexData.size() )
 			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
@@ -1312,25 +1459,56 @@ namespace vkapp
 			throw std::runtime_error{ "Shader files are missing" };
 		}
 
-		ashes::PipelineShaderStageCreateInfoArray shaderStages;
-		shaderStages.push_back( { m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
-			, VK_SHADER_STAGE_VERTEX_BIT
-			, shadersFolder / "main.vert" ) ) } );
-		shaderStages.push_back( { m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
-			, VK_SHADER_STAGE_FRAGMENT_BIT
-			, shadersFolder / "main.frag" ) ) } );
-
-		m_mainPipeline = m_mainPipelineLayout->createPipeline( ashes::GraphicsPipelineCreateInfo
+		ashes::PipelineVertexInputStateCreateInfo vertexLayout
 		{
-			std::move( shaderStages ),
-			*m_mainRenderPass,
-			ashes::VertexInputState::create( *m_mainVertexLayout ),
-			ashes::InputAssemblyState{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
-			VkPipelineRasterizationStateCreateInfo{},
-			VkPipelineMultisampleStateCreateInfo{},
-			VkPipelineColorBlendStateCreateInfo::createDefault(),
-			{ VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR }
-		} );
+			0u,
+			{
+				{ 0u, sizeof( TexturedVertexData ), VK_VERTEX_INPUT_RATE_VERTEX },
+			},
+			{
+				{ 0u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof( TexturedVertexData, position ) },
+				{ 1u, 0u, VK_FORMAT_R32G32_SFLOAT, offsetof( TexturedVertexData, uv ) },
+			},
+		};
+
+		ashes::PipelineShaderStageCreateInfoArray shaderStages;
+		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
+			{
+				0u,
+				VK_SHADER_STAGE_VERTEX_BIT,
+				m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+					, VK_SHADER_STAGE_VERTEX_BIT
+					, shadersFolder / "main.vert" ) ),
+				"main",
+				std::nullopt,
+			} );
+		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
+			{
+				0u,
+				VK_SHADER_STAGE_FRAGMENT_BIT,
+				m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+					, VK_SHADER_STAGE_FRAGMENT_BIT
+					, shadersFolder / "main.frag" ) ),
+				"main",
+				std::nullopt,
+			} );
+
+		m_mainPipeline = m_device->getDevice().createPipeline( ashes::GraphicsPipelineCreateInfo
+			{
+				0u,
+				std::move( shaderStages ),
+				std::move( vertexLayout ),
+				ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
+				std::nullopt,
+				ashes::PipelineViewportStateCreateInfo{},
+				ashes::PipelineRasterizationStateCreateInfo{},
+				ashes::PipelineMultisampleStateCreateInfo{},
+				std::nullopt,
+				ashes::PipelineColorBlendStateCreateInfo{},
+				ashes::PipelineDynamicStateCreateInfo{ 0u, { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR } },
+				*m_mainPipelineLayout,
+				*m_mainRenderPass,
+			} );
 	}
 
 	void RenderPanel::doPrepareMainFrames()

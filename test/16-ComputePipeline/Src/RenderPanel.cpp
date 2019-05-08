@@ -788,7 +788,7 @@ namespace vkapp
 			, 1u );
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT
 			, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
-			, ( *m_frameBuffer->begin() ).makeShaderInputResource( VK_IMAGE_LAYOUT_GENERAL, 0u ) );
+			, ( *m_frameBuffer->begin() ).makeShaderInputResource( VK_IMAGE_LAYOUT_GENERAL ) );
 		commandBuffer.writeTimestamp( VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
 			, *m_computeQueryPool
 			, 1u );

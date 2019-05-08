@@ -336,8 +336,7 @@ namespace vkapp
 		{
 			commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 				, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-				, ( *facePipeline.frameBuffer->begin() ).makeColourAttachment( VK_IMAGE_LAYOUT_UNDEFINED
-					, 0u ) );
+				, ( *facePipeline.frameBuffer->begin() ).makeColourAttachment( VK_IMAGE_LAYOUT_UNDEFINED ) );
 			commandBuffer.beginRenderPass( *m_renderPass
 				, *facePipeline.frameBuffer
 				, { ashes::makeClearValue( VkClearColorValue{ 0, 0, 0, 0 } ) }

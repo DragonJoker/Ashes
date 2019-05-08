@@ -111,7 +111,7 @@ namespace vkapp
 			doCreateStagingBuffer();
 			std::cout << "Staging buffer created." << std::endl;
 			doCreateTexture();
-			std::cout << "Truck texture created." << std::endl;
+			std::cout << "Cube texture created." << std::endl;
 			doCreateUniformBuffer();
 			std::cout << "Uniform buffer created." << std::endl;
 			doCreateOffscreenDescriptorSet();

@@ -11,6 +11,8 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
+	VkAccessFlags getAccessMask( VkImageLayout layout );
+	VkPipelineStageFlags getStageMask( VkImageLayout layout );
 	/**
 	*\~english
 	*\brief
@@ -189,7 +191,8 @@ namespace ashes
 		*\param[in] commandBuffer
 		*	A command buffer, in record state.
 		*/
-		void generateMipmaps( CommandBuffer & commandBuffer )const;
+		void generateMipmaps( CommandBuffer & commandBuffer
+			, VkImageLayout dstImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
 		/**
 		*\~french
 		*\brief
@@ -199,7 +202,8 @@ namespace ashes
 		*	Generates the texture mipmaps.
 		*/
 		void generateMipmaps( CommandPool const & commandPool
-			, Queue const & queue )const;
+			, Queue const & queue
+			, VkImageLayout dstImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
 		/**
 		*\~english
 		*\return
@@ -265,6 +269,13 @@ namespace ashes
 			, uint32_t baseArrayLayer = 0u
 			, uint32_t layerCount = 1u
 			, VkComponentMapping const & mapping = VkComponentMapping{} )const;
+		VkImageMemoryBarrier makeTransition( VkImageLayout srcLayout
+			, VkImageLayout dstLayout
+			, VkImageSubresourceRange mipSubRange
+			, uint32_t mipLevel )const;
+		VkImageMemoryBarrier makeTransition( VkImageLayout srcLayout
+			, VkImageLayout dstLayout
+			, VkImageSubresourceRange mipSubRange )const;
 		/**
 		*\name
 		*	Getters.

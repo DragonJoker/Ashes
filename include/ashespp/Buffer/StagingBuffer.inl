@@ -101,7 +101,7 @@ namespace ashes
 		, Buffer< T > const & buffer )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( true );
-		commandBuffer->begin( VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
+		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		uploadBufferData( *commandBuffer
 			, data
 			, size
@@ -279,7 +279,7 @@ namespace ashes
 		, VertexBuffer< T > const & buffer )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( true );
-		commandBuffer->begin( VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
+		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		uploadVertexData( *commandBuffer
 			, data
 			, size
@@ -435,7 +435,7 @@ namespace ashes
 		, VkPipelineStageFlags dstStageFlags )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( true );
-		commandBuffer->begin( VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
+		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		uploadUniformData( *commandBuffer
 			, data
 			, count
@@ -690,7 +690,7 @@ namespace ashes
 		, Buffer< T > const & buffer )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( true );
-		commandBuffer->begin( VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
+		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		doCopyToStagingBuffer( *commandBuffer
 			, size
 			, offset
@@ -793,7 +793,7 @@ namespace ashes
 		, VertexBuffer< T > const & buffer )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( true );
-		commandBuffer->begin( VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
+		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		doCopyToStagingBuffer( *commandBuffer
 			, size
 			, offset
@@ -874,7 +874,7 @@ namespace ashes
 		, VkPipelineStageFlags dstStageFlags )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( true );
-		commandBuffer->begin( VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
+		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 
 		auto elemAlignedSize = buffer.getAlignedSize();
 		doCopyToStagingBuffer( *commandBuffer

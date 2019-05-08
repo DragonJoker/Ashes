@@ -96,7 +96,7 @@ namespace ashes
 		uint32_t getTexelBlockByteSize( VkExtent3D const & texelBlockExtent
 			, VkFormat format )
 		{
-			uint32_t texelBlockSize;
+			VkDeviceSize texelBlockSize;
 
 			if ( !ashes::isDepthStencilFormat( format ) )
 			{
@@ -107,7 +107,7 @@ namespace ashes
 				texelBlockSize = texelBlockExtent.width;
 			}
 
-			return texelBlockSize;
+			return uint32_t( texelBlockSize );
 		}
 
 		VkBufferImageCopy makeValidCopyInfo( Device const & device
@@ -257,7 +257,7 @@ namespace ashes
 
 	StagingBuffer::StagingBuffer( Device const & device
 		, VkBufferUsageFlags target
-		, uint32_t size )
+		, VkDeviceSize size )
 		: m_device{ device }
 		, m_buffer{ device.createBuffer( size
 			, target | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT ) }
@@ -377,8 +377,7 @@ namespace ashes
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
 			, VK_PIPELINE_STAGE_TRANSFER_BIT
-			, view.makeTransferSource( VK_IMAGE_LAYOUT_UNDEFINED
-				, 0u ) );
+			, view.makeTransferSource( VK_IMAGE_LAYOUT_UNDEFINED ) );
 		doCopyToStagingBuffer( *commandBuffer
 			, extent
 			, offset
@@ -392,8 +391,7 @@ namespace ashes
 			} );
 		commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 			, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
-			, view.makeShaderInputResource( VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
-				, VK_ACCESS_TRANSFER_READ_BIT ) );
+			, view.makeShaderInputResource( VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL ) );
 		commandBuffer->end();
 
 		auto fence = m_device.createFence();
@@ -542,14 +540,13 @@ namespace ashes
 			, getBuffer().makeTransferSource() );
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
 			, VK_PIPELINE_STAGE_TRANSFER_BIT
-			, view.makeTransferDestination( VK_IMAGE_LAYOUT_UNDEFINED, 0u ) );
+			, view.makeTransferDestination( VK_IMAGE_LAYOUT_UNDEFINED ) );
 		commandBuffer.copyToImage( makeValidCopyInfos( m_device, view, subresourceLayers, size, offset )
 			, getBuffer()
 			, *view.image );
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 			, dstStageFlags
-			, view.makeShaderInputResource( VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
-				, VK_ACCESS_TRANSFER_WRITE_BIT ) );
+			, view.makeShaderInputResource( VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL ) );
 	}
 
 	void StagingBuffer::doCopyFromStagingBuffer( uint8_t * data
@@ -649,7 +646,7 @@ namespace ashes
 	{
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
 			, VK_PIPELINE_STAGE_TRANSFER_BIT
-			, view.makeTransferSource( VK_IMAGE_LAYOUT_UNDEFINED, 0u ) );
+			, view.makeTransferSource( VK_IMAGE_LAYOUT_UNDEFINED ) );
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
 			, VK_PIPELINE_STAGE_TRANSFER_BIT
 			, getBuffer().makeTransferDestination() );
@@ -658,7 +655,6 @@ namespace ashes
 			, getBuffer() );
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 			, dstStageFlags
-			, view.makeShaderInputResource( VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
-				, VK_ACCESS_TRANSFER_WRITE_BIT ) );
+			, view.makeShaderInputResource( VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL ) );
 	}
 }

@@ -22,7 +22,7 @@ namespace ashes
 		, ImageView const & texture )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( true );
-		commandBuffer->begin( VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
+		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		uploadTextureData( *commandBuffer
 			, subresourceLayers
 			, format
@@ -44,7 +44,7 @@ namespace ashes
 		, ImageView const & texture )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( true );
-		commandBuffer->begin( VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
+		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		uploadTextureData( *commandBuffer
 			, format
 			, data.data()

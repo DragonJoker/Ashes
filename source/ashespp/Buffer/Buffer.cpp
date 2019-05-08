@@ -90,7 +90,7 @@ namespace ashes
 	VkBufferMemoryBarrier BufferBase::makeTransferDestination( uint32_t srcQueueFamily
 		, uint32_t dstQueueFamily )const
 	{
-		return makeMemoryTransitionBarrier( VkAccessFlagBits::VK_ACCESS_TRANSFER_WRITE_BIT
+		return makeMemoryTransitionBarrier( VK_ACCESS_TRANSFER_WRITE_BIT
 			, srcQueueFamily
 			, dstQueueFamily );
 	}
@@ -98,7 +98,7 @@ namespace ashes
 	VkBufferMemoryBarrier BufferBase::makeTransferSource( uint32_t srcQueueFamily
 		, uint32_t dstQueueFamily )const
 	{
-		return makeMemoryTransitionBarrier( VkAccessFlagBits::VK_ACCESS_TRANSFER_READ_BIT
+		return makeMemoryTransitionBarrier( VK_ACCESS_TRANSFER_READ_BIT
 			, srcQueueFamily
 			, dstQueueFamily );
 	}
@@ -106,7 +106,7 @@ namespace ashes
 	VkBufferMemoryBarrier BufferBase::makeVertexShaderInputResource( uint32_t srcQueueFamily
 		, uint32_t dstQueueFamily )const
 	{
-		return makeMemoryTransitionBarrier( VkAccessFlagBits::VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT
+		return makeMemoryTransitionBarrier( VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT
 			, srcQueueFamily
 			, dstQueueFamily );
 	}
@@ -114,7 +114,7 @@ namespace ashes
 	VkBufferMemoryBarrier BufferBase::makeUniformBufferInput( uint32_t srcQueueFamily
 		, uint32_t dstQueueFamily )const
 	{
-		return makeMemoryTransitionBarrier( VkAccessFlagBits::VK_ACCESS_UNIFORM_READ_BIT
+		return makeMemoryTransitionBarrier( VK_ACCESS_UNIFORM_READ_BIT
 			, srcQueueFamily
 			, dstQueueFamily );
 	}
@@ -137,48 +137,48 @@ namespace ashes
 		};
 		m_currentAccessFlags = dstAccessFlags;
 
-		if ( ( m_currentAccessFlags & VkAccessFlagBits::VK_ACCESS_INDIRECT_COMMAND_READ_BIT ) )
+		if ( ( m_currentAccessFlags & VK_ACCESS_INDIRECT_COMMAND_READ_BIT ) )
 		{
-			m_compatibleStageFlags = VkPipelineStageFlagBits::VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT;
+			m_compatibleStageFlags = VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT;
 		}
-		else if ( ( m_currentAccessFlags & VkAccessFlagBits::VK_ACCESS_INDEX_READ_BIT )
-			|| ( m_currentAccessFlags & VkAccessFlagBits::VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT ) )
+		else if ( ( m_currentAccessFlags & VK_ACCESS_INDEX_READ_BIT )
+			|| ( m_currentAccessFlags & VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT ) )
 		{
-			m_compatibleStageFlags = VkPipelineStageFlagBits::VK_PIPELINE_STAGE_VERTEX_INPUT_BIT;
+			m_compatibleStageFlags = VK_PIPELINE_STAGE_VERTEX_INPUT_BIT;
 		}
-		else if ( ( m_currentAccessFlags & VkAccessFlagBits::VK_ACCESS_INPUT_ATTACHMENT_READ_BIT ) )
+		else if ( ( m_currentAccessFlags & VK_ACCESS_INPUT_ATTACHMENT_READ_BIT ) )
 		{
-			m_compatibleStageFlags = VkPipelineStageFlagBits::VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+			m_compatibleStageFlags = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 		}
-		else if ( ( m_currentAccessFlags & VkAccessFlagBits::VK_ACCESS_SHADER_READ_BIT )
-			|| ( m_currentAccessFlags & VkAccessFlagBits::VK_ACCESS_SHADER_WRITE_BIT )
-			|| ( m_currentAccessFlags & VkAccessFlagBits::VK_ACCESS_UNIFORM_READ_BIT ) )
+		else if ( ( m_currentAccessFlags & VK_ACCESS_SHADER_READ_BIT )
+			|| ( m_currentAccessFlags & VK_ACCESS_SHADER_WRITE_BIT )
+			|| ( m_currentAccessFlags & VK_ACCESS_UNIFORM_READ_BIT ) )
 		{
-			m_compatibleStageFlags = VkPipelineStageFlagBits::VK_PIPELINE_STAGE_VERTEX_SHADER_BIT;
+			m_compatibleStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT;
 		}
-		else if ( ( m_currentAccessFlags & VkAccessFlagBits::VK_ACCESS_COLOR_ATTACHMENT_READ_BIT )
-			|| ( m_currentAccessFlags & VkAccessFlagBits::VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT ) )
+		else if ( ( m_currentAccessFlags & VK_ACCESS_COLOR_ATTACHMENT_READ_BIT )
+			|| ( m_currentAccessFlags & VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT ) )
 		{
-			m_compatibleStageFlags = VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			m_compatibleStageFlags = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 		}
-		else if ( ( m_currentAccessFlags & VkAccessFlagBits::VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT )
-			|| ( m_currentAccessFlags & VkAccessFlagBits::VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT ) )
+		else if ( ( m_currentAccessFlags & VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT )
+			|| ( m_currentAccessFlags & VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT ) )
 		{
-			m_compatibleStageFlags = VkPipelineStageFlagBits::VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+			m_compatibleStageFlags = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 		}
-		else if ( ( m_currentAccessFlags & VkAccessFlagBits::VK_ACCESS_TRANSFER_READ_BIT )
-			|| ( m_currentAccessFlags & VkAccessFlagBits::VK_ACCESS_TRANSFER_WRITE_BIT ) )
+		else if ( ( m_currentAccessFlags & VK_ACCESS_TRANSFER_READ_BIT )
+			|| ( m_currentAccessFlags & VK_ACCESS_TRANSFER_WRITE_BIT ) )
 		{
-			m_compatibleStageFlags = VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT;
+			m_compatibleStageFlags = VK_PIPELINE_STAGE_TRANSFER_BIT;
 		}
-		else if ( ( m_currentAccessFlags & VkAccessFlagBits::VK_ACCESS_HOST_READ_BIT )
-			|| ( m_currentAccessFlags & VkAccessFlagBits::VK_ACCESS_HOST_WRITE_BIT ) )
+		else if ( ( m_currentAccessFlags & VK_ACCESS_HOST_READ_BIT )
+			|| ( m_currentAccessFlags & VK_ACCESS_HOST_WRITE_BIT ) )
 		{
-			m_compatibleStageFlags = VkPipelineStageFlagBits::VK_PIPELINE_STAGE_HOST_BIT;
+			m_compatibleStageFlags = VK_PIPELINE_STAGE_HOST_BIT;
 		}
 		else
 		{
-			m_compatibleStageFlags = VkPipelineStageFlagBits::VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+			m_compatibleStageFlags = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
 		}
 
 		return result;

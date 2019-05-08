@@ -9,7 +9,7 @@ layout( location = 0 ) out vec4 pxl_fragColor;
 
 void main()
 {
-	vec2 texcoords = ashesTopDownToBottomUp( vtx_texture );
+	vec2 texcoords = vec2( vtx_texture.x, 1.0 - vtx_texture.y );
 	pxl_fragColor = texture( c3d_mapScene, vtx_texture );
 	pxl_fragColor += textureLod( c3d_mapPasses, texcoords, 0.0 );
 	pxl_fragColor += textureLod( c3d_mapPasses, texcoords, 1.0 );

@@ -47,7 +47,7 @@ namespace ashes
 		, ImageView const & view )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( true );
-		commandBuffer->begin( VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
+		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		uploadTextureData( *commandBuffer
 			, subresourceLayers
 			, format
@@ -69,7 +69,7 @@ namespace ashes
 		, ImageView const & view )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( true );
-		commandBuffer->begin( VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
+		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		uploadTextureData( *commandBuffer
 			, format
 			, data
@@ -87,7 +87,7 @@ namespace ashes
 		, ImageView const & view )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( true );
-		commandBuffer->begin( VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
+		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		copyTextureData( *commandBuffer
 			, format
 			, view );
@@ -107,7 +107,7 @@ namespace ashes
 		, ImageView const & view )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( true );
-		commandBuffer->begin( VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
+		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		copyTextureData( *commandBuffer
 			, subresourceLayers
 			, format
@@ -132,20 +132,18 @@ namespace ashes
 		doCopyToStagingTexture( data
 			, format
 			, extent );
-		commandBuffer.memoryBarrier( VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
-			, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
-			, view.makeTransferDestination( VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED
-				, 0u ) );
+		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
+			, VK_PIPELINE_STAGE_TRANSFER_BIT
+			, view.makeTransferDestination( VK_IMAGE_LAYOUT_UNDEFINED ) );
 		doCopyStagingToDestination( commandBuffer
 			, subresourceLayers
 			, format
 			, offset
 			, extent
 			, view );
-		commandBuffer.memoryBarrier( VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
-			, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
-			, view.makeShaderInputResource( VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
-				, VkAccessFlagBits::VK_ACCESS_TRANSFER_WRITE_BIT ) );
+		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+			, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+			, view.makeShaderInputResource( VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL ) );
 	}
 
 	void StagingTexture::uploadTextureData( CommandBuffer const & commandBuffer
@@ -199,20 +197,18 @@ namespace ashes
 		, VkExtent2D const & extent
 		, ImageView const & view )const
 	{
-		commandBuffer.memoryBarrier( VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
-			, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
-			, view.makeTransferDestination( VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED
-				, 0u ) );
+		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
+			, VK_PIPELINE_STAGE_TRANSFER_BIT
+			, view.makeTransferDestination( VK_IMAGE_LAYOUT_UNDEFINED ) );
 		doCopyStagingToDestination( commandBuffer
 			, subresourceLayers
 			, format
 			, offset
 			, extent
 			, view );
-		commandBuffer.memoryBarrier( VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
-			, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
-			, view.makeShaderInputResource( VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
-				, VkAccessFlagBits::VK_ACCESS_TRANSFER_WRITE_BIT ) );
+		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+			, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+			, view.makeShaderInputResource( VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL ) );
 	}
 
 	void StagingTexture::downloadTextureData( Queue const & queue
@@ -225,21 +221,19 @@ namespace ashes
 		, ImageView const & view )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( true );
-		commandBuffer->begin( VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
-		commandBuffer->memoryBarrier( VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
-			, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
-			, view.makeTransferSource( VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED
-				, 0u ) );
+		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
+		commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
+			, VK_PIPELINE_STAGE_TRANSFER_BIT
+			, view.makeTransferSource( VK_IMAGE_LAYOUT_UNDEFINED ) );
 		doCopyDestinationToStaging( *commandBuffer
 			, subresourceLayers
 			, format
 			, offset
 			, extent
 			, view );
-		commandBuffer->memoryBarrier( VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
-			, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
-			, view.makeShaderInputResource( VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
-				, VkAccessFlagBits::VK_ACCESS_TRANSFER_READ_BIT ) );
+		commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+			, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+			, view.makeShaderInputResource( VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL ) );
 		commandBuffer->end();
 
 		auto fence = m_device.createFence();
@@ -281,10 +275,10 @@ namespace ashes
 		, VkFormat format
 		, VkExtent2D const & extent )const
 	{
-		uint32_t size = getSize( extent, format );
+		VkDeviceSize size = getSize( extent, format );
 		assert( size <= m_buffer.getSize() );
 		auto mappedSize = getAlignedSize( size
-			, uint32_t( m_device.getProperties().limits.nonCoherentAtomSize ) );
+			, m_device.getProperties().limits.nonCoherentAtomSize );
 		assert( size <= m_buffer.getSize() );
 		auto buffer = m_buffer.lock( 0u
 			, mappedSize
@@ -311,10 +305,10 @@ namespace ashes
 		, VkExtent2D const & extent
 		, ImageView const & texture )const
 	{
-		uint32_t size = getSize( extent, format );
+		VkDeviceSize size = getSize( extent, format );
 		assert( size <= m_buffer.getSize() );
-		commandBuffer.memoryBarrier( VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
-			, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT
+		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+			, VK_PIPELINE_STAGE_TRANSFER_BIT
 			, m_buffer.makeTransferSource() );
 		commandBuffer.copyToImage( VkBufferImageCopy
 			{
@@ -341,7 +335,7 @@ namespace ashes
 		, VkExtent2D const & extent
 		, ImageView const & texture )const
 	{
-		uint32_t size = getSize( extent, format );
+		VkDeviceSize size = getSize( extent, format );
 		assert( size <= m_buffer.getSize() );
 		commandBuffer.copyToBuffer( VkBufferImageCopy
 			{
@@ -365,7 +359,7 @@ namespace ashes
 		, VkFormat format
 		, VkExtent2D const & extent )const
 	{
-		uint32_t size = getSize( extent, format );
+		VkDeviceSize size = getSize( extent, format );
 		auto mappedSize = getAlignedSize( size
 			, uint32_t( m_device.getProperties().limits.nonCoherentAtomSize ) );
 		assert( size <= m_buffer.getSize() );

@@ -15,106 +15,111 @@ namespace ashes
 	}
 
 	VkImageMemoryBarrier ImageView::makeGeneralLayout( VkImageLayout srcLayout
-		, VkAccessFlags srcAccessFlags
 		, VkAccessFlags dstAccessFlags
 		, uint32_t srcQueueFamily
 		, uint32_t dstQueueFamily )const
 	{
 		return doMakeLayoutTransition( srcLayout
-			, VkImageLayout::VK_IMAGE_LAYOUT_GENERAL
-			, srcAccessFlags
+			, VK_IMAGE_LAYOUT_GENERAL
+			, getAccessMask( srcLayout )
 			, dstAccessFlags
 			, srcQueueFamily
 			, dstQueueFamily );
 	}
 
 	VkImageMemoryBarrier ImageView::makeTransferDestination( VkImageLayout srcLayout
-		, VkAccessFlags srcAccessFlags
 		, uint32_t srcQueueFamily
 		, uint32_t dstQueueFamily )const
 	{
 		return doMakeLayoutTransition( srcLayout
-			, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
-			, srcAccessFlags
-			, VkAccessFlagBits::VK_ACCESS_TRANSFER_WRITE_BIT
+			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
 			, srcQueueFamily
 			, dstQueueFamily );
 	}
 
 	VkImageMemoryBarrier ImageView::makeTransferSource( VkImageLayout srcLayout
-		, VkAccessFlags srcAccessFlags
 		, uint32_t srcQueueFamily
 		, uint32_t dstQueueFamily )const
 	{
 		return doMakeLayoutTransition( srcLayout
-			, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
-			, srcAccessFlags
-			, VkAccessFlagBits::VK_ACCESS_TRANSFER_READ_BIT
+			, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
 			, srcQueueFamily
 			, dstQueueFamily );
 	}
 
 	VkImageMemoryBarrier ImageView::makeShaderInputResource( VkImageLayout srcLayout
-		, VkAccessFlags srcAccessFlags
 		, uint32_t srcQueueFamily
 		, uint32_t dstQueueFamily )const
 	{
 		return doMakeLayoutTransition( srcLayout
-			, VkImageLayout::VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-			, srcAccessFlags
-			, VkAccessFlagBits::VK_ACCESS_SHADER_READ_BIT
+			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
 			, srcQueueFamily
 			, dstQueueFamily );
 	}
 
 	VkImageMemoryBarrier ImageView::makeDepthStencilReadOnly( VkImageLayout srcLayout
-		, VkAccessFlags srcAccessFlags
 		, uint32_t srcQueueFamily
 		, uint32_t dstQueueFamily )const
 	{
 		return doMakeLayoutTransition( srcLayout
-			, VkImageLayout::VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL
-			, srcAccessFlags
-			, VkAccessFlagBits::VK_ACCESS_SHADER_READ_BIT
+			, VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL
 			, srcQueueFamily
 			, dstQueueFamily );
 	}
 
 	VkImageMemoryBarrier ImageView::makeColourAttachment( VkImageLayout srcLayout
-		, VkAccessFlags srcAccessFlags
 		, uint32_t srcQueueFamily
 		, uint32_t dstQueueFamily )const
 	{
 		return doMakeLayoutTransition( srcLayout
-			, VkImageLayout::VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-			, srcAccessFlags
-			, VkAccessFlagBits::VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT
+			, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
 			, srcQueueFamily
 			, dstQueueFamily );
 	}
 
 	VkImageMemoryBarrier ImageView::makeDepthStencilAttachment( VkImageLayout srcLayout
-		, VkAccessFlags srcAccessFlags
 		, uint32_t srcQueueFamily
 		, uint32_t dstQueueFamily )const
 	{
 		return doMakeLayoutTransition( srcLayout
-			, VkImageLayout::VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
-			, srcAccessFlags
-			, VkAccessFlagBits::VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT
+			, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
 			, srcQueueFamily
 			, dstQueueFamily );
 	}
 
 	VkImageMemoryBarrier ImageView::makePresentSource( VkImageLayout srcLayout
+		, uint32_t srcQueueFamily
+		, uint32_t dstQueueFamily )const
+	{
+		return doMakeLayoutTransition( srcLayout
+			, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+			, srcQueueFamily
+			, dstQueueFamily );
+	}
+
+	VkImageMemoryBarrier ImageView::doMakeLayoutTransition( VkImageLayout srcLayout
+		, VkImageLayout dstLayout
+		, uint32_t srcQueueFamily
+		, uint32_t dstQueueFamily )const
+	{
+		return doMakeLayoutTransition( srcLayout
+			, dstLayout
+			, getAccessMask( srcLayout )
+			, getAccessMask( dstLayout )
+			, srcQueueFamily
+			, dstQueueFamily );
+	}
+
+	VkImageMemoryBarrier ImageView::doMakeLayoutTransition( VkImageLayout srcLayout
+		, VkImageLayout dstLayout
 		, VkAccessFlags srcAccessFlags
 		, uint32_t srcQueueFamily
 		, uint32_t dstQueueFamily )const
 	{
 		return doMakeLayoutTransition( srcLayout
-			, VkImageLayout::VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+			, dstLayout
 			, srcAccessFlags
-			, VkAccessFlagBits::VK_ACCESS_MEMORY_READ_BIT
+			, getAccessMask( dstLayout )
 			, srcQueueFamily
 			, dstQueueFamily );
 	}

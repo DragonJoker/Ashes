@@ -37,6 +37,16 @@ namespace ashes
 			return vk;
 		}
 
+		inline VkImageViewCreateInfo const * operator->()const
+		{
+			return &vk;
+		}
+
+		inline VkImageViewCreateInfo * operator->()
+		{
+			return &vk;
+		}
+
 	private:
 		VkImageViewCreateInfo vk;
 	};

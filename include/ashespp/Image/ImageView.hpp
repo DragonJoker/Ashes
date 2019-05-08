@@ -8,6 +8,8 @@ See LICENSE file in root folder.
 
 #include "ashespp/AshesPPPrerequisites.hpp"
 
+#include "ImageViewCreateInfo.hpp"
+
 namespace ashes
 {
 	/**
@@ -60,7 +62,6 @@ namespace ashes
 		*	The memory barrier.
 		*/
 		VkImageMemoryBarrier makeGeneralLayout( VkImageLayout srcLayout
-			, VkAccessFlags srcAccessFlags
 			, VkAccessFlags dstAccessFlags
 			, uint32_t srcQueueFamily = ~( 0u )
 			, uint32_t dstQueueFamily = ~( 0u ) )const;
@@ -93,7 +94,6 @@ namespace ashes
 		*	The memory barrier.
 		*/
 		VkImageMemoryBarrier makeTransferDestination( VkImageLayout srcLayout
-			, VkAccessFlags srcAccessFlags
 			, uint32_t srcQueueFamily = ~( 0u )
 			, uint32_t dstQueueFamily = ~( 0u ) )const;
 		/**
@@ -125,7 +125,6 @@ namespace ashes
 		*	The memory barrier.
 		*/
 		VkImageMemoryBarrier makeTransferSource( VkImageLayout srcLayout
-			, VkAccessFlags srcAccessFlags
 			, uint32_t srcQueueFamily = ~( 0u )
 			, uint32_t dstQueueFamily = ~( 0u ) )const;
 		/**
@@ -157,7 +156,6 @@ namespace ashes
 		*	The memory barrier.
 		*/
 		VkImageMemoryBarrier makeShaderInputResource( VkImageLayout srcLayout
-			, VkAccessFlags srcAccessFlags
 			, uint32_t srcQueueFamily = ~( 0u )
 			, uint32_t dstQueueFamily = ~( 0u ) )const;
 		/**
@@ -189,7 +187,6 @@ namespace ashes
 		*	The memory barrier.
 		*/
 		VkImageMemoryBarrier makeDepthStencilReadOnly( VkImageLayout srcLayout
-			, VkAccessFlags srcAccessFlags
 			, uint32_t srcQueueFamily = ~( 0u )
 			, uint32_t dstQueueFamily = ~( 0u ) )const;
 		/**
@@ -221,7 +218,6 @@ namespace ashes
 		*	The memory barrier.
 		*/
 		VkImageMemoryBarrier makeColourAttachment( VkImageLayout srcLayout
-			, VkAccessFlags srcAccessFlags
 			, uint32_t srcQueueFamily = ~( 0u )
 			, uint32_t dstQueueFamily = ~( 0u ) )const;
 		/**
@@ -253,7 +249,6 @@ namespace ashes
 		*	The memory barrier.
 		*/
 		VkImageMemoryBarrier makeDepthStencilAttachment( VkImageLayout srcLayout
-			, VkAccessFlags srcAccessFlags
 			, uint32_t srcQueueFamily = ~( 0u )
 			, uint32_t dstQueueFamily = ~( 0u ) )const;
 		/**
@@ -285,7 +280,6 @@ namespace ashes
 		*	The memory barrier.
 		*/
 		VkImageMemoryBarrier makePresentSource( VkImageLayout srcLayout
-			, VkAccessFlags srcAccessFlags
 			, uint32_t srcQueueFamily = ~( 0u )
 			, uint32_t dstQueueFamily = ~( 0u ) )const;
 		/**
@@ -326,6 +320,15 @@ namespace ashes
 		}
 
 	private:
+		VkImageMemoryBarrier doMakeLayoutTransition( VkImageLayout srcLayout
+			, VkImageLayout dstLayout
+			, uint32_t srcQueueFamily
+			, uint32_t dstQueueFamily )const;
+		VkImageMemoryBarrier doMakeLayoutTransition( VkImageLayout srcLayout
+			, VkImageLayout dstLayout
+			, VkAccessFlags srcAccessFlags
+			, uint32_t srcQueueFamily
+			, uint32_t dstQueueFamily )const;
 		VkImageMemoryBarrier doMakeLayoutTransition( VkImageLayout srcLayout
 			, VkImageLayout dstLayout
 			, VkAccessFlags srcAccessFlags

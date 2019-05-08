@@ -288,8 +288,8 @@ namespace ashes
 		VkBufferUsageFlags m_target;
 		VkBuffer m_internal{ VK_NULL_HANDLE };
 		DeviceMemoryPtr m_storage;
-		mutable VkAccessFlags m_currentAccessFlags{ VkAccessFlagBits::VK_ACCESS_MEMORY_WRITE_BIT };
-		mutable VkPipelineStageFlags m_compatibleStageFlags{ VkPipelineStageFlagBits::VK_PIPELINE_STAGE_HOST_BIT };
+		mutable VkAccessFlags m_currentAccessFlags{ VK_ACCESS_MEMORY_WRITE_BIT };
+		mutable VkPipelineStageFlags m_compatibleStageFlags{ VK_PIPELINE_STAGE_HOST_BIT };
 	};
 	/**
 	*\~english

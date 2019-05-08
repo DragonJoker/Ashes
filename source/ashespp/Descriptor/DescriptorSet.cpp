@@ -94,7 +94,7 @@ namespace ashes
 		, Sampler const & sampler
 		, uint32_t index )
 	{
-		m_imageBindings.push_back( VkDescriptorImageInfo{ sampler, VK_NULL_HANDLE, VkImageLayout::VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL } );
+		m_imageBindings.push_back( VkDescriptorImageInfo{ sampler, VK_NULL_HANDLE, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL } );
 		m_writes.push_back(
 			{
 				VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
@@ -135,7 +135,7 @@ namespace ashes
 		, ImageView const & view
 		, uint32_t index )
 	{
-		m_imageBindings.push_back( VkDescriptorImageInfo{ VK_NULL_HANDLE, view, VkImageLayout::VK_IMAGE_LAYOUT_GENERAL } );
+		m_imageBindings.push_back( VkDescriptorImageInfo{ VK_NULL_HANDLE, view, VK_IMAGE_LAYOUT_GENERAL } );
 		m_writes.push_back(
 			{
 				VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,

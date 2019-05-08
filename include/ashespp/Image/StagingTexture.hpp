@@ -244,7 +244,7 @@ namespace ashes
 	private:
 		Device const & m_device;
 		VkExtent2D m_extent;
-		VkAccessFlags m_currentAccessMask{ VkAccessFlagBits::VK_ACCESS_MEMORY_WRITE_BIT };
+		VkAccessFlags m_currentAccessMask{ VK_ACCESS_MEMORY_WRITE_BIT };
 		BufferBase m_buffer;
 	};
 }

@@ -96,7 +96,7 @@ namespace ashes
 		void createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
 			, ImageView const & view
 			, Sampler const & sampler
-			, VkImageLayout layout = VkImageLayout::VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+			, VkImageLayout layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
 			, uint32_t index = 0u );
 		/**
 		*\~french
