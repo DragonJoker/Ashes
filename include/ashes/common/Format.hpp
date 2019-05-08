@@ -380,7 +380,7 @@ namespace ashes
 	*\return
 	*	Le nombre d'octets.
 	*/
-	uint32_t getSize( VkExtent2D const & extent
+	VkDeviceSize getSize( VkExtent2D const & extent
 		, VkFormat format )noexcept;
 	/**
 	*\~english
@@ -447,7 +447,7 @@ namespace ashes
 	*\return
 	*	Le nombre d'octets.
 	*/
-	inline uint32_t getSize( VkExtent3D const & extent
+	inline VkDeviceSize getSize( VkExtent3D const & extent
 		, VkFormat format )noexcept
 	{
 		return getSize( VkExtent2D{ extent.width, extent.height }, format )
@@ -555,7 +555,7 @@ namespace ashes
 	*\return
 	*	Le nombre d'octets.
 	*/
-	inline uint32_t getSize( VkExtent3D const & extent
+	inline VkDeviceSize getSize( VkExtent3D const & extent
 		, VkFormat format
 		, uint32_t mipLevel )noexcept
 	{
@@ -610,7 +610,7 @@ namespace ashes
 	*\return
 	*	Le nombre d'octets.
 	*/
-	inline uint32_t getSize( VkExtent2D const & extent
+	inline VkDeviceSize getSize( VkExtent2D const & extent
 		, VkFormat format
 		, uint32_t mipLevel )noexcept
 	{

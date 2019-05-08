@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -82,6 +83,16 @@ bool operator==( AshPluginDescription const & lhs, AshPluginDescription const & 
 
 struct PluginLibrary
 {
+	inline PluginLibrary()
+	{
+		getSelectedDesc = [this]() -> AshPluginDescription &
+		{
+			auto res = init();
+			assert( res == VK_SUCCESS );
+			return getSelectedDesc();
+		};
+	}
+
 	inline VkResult init()
 	{
 		VkResult result = VK_SUCCESS;
@@ -99,6 +110,11 @@ struct PluginLibrary
 				selectedPlugin = &plugins.front();
 				result = VK_SUCCESS;
 			}
+
+			getSelectedDesc = [this]() -> AshPluginDescription &
+			{
+				return selectedPlugin->description;
+			};
 		}
 
 		return result;
@@ -124,13 +140,8 @@ struct PluginLibrary
 		return VK_SUCCESS;
 	}
 
-	inline AshPluginDescription & getSelectedDesc()
-	{
-		auto res = init();
-		assert( res == VK_SUCCESS );
-		return selectedPlugin->description;
-	}
-
+	using SelectedDescGetter = std::function< AshPluginDescription & () >;
 	PluginArray plugins;
 	Plugin * selectedPlugin{ nullptr };
+	SelectedDescGetter getSelectedDesc;
 };

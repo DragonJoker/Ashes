@@ -27,14 +27,20 @@ namespace ashes
 		SignalConnection( SignalConnection< my_signal > const & ) = delete;
 		SignalConnection & operator=( SignalConnection< my_signal > const & ) = delete;
 
+		SignalConnection( uint32_t connection
+			, my_signal_ptr signal )
+			: m_connection{ connection }
+			, m_signal{ signal }
+		{
+		}
+
 	public:
 		/**
 		*\brief
 		*	Constructeur.
 		*/
 		SignalConnection()
-			: m_connection{ 0u }
-			, m_signal{ nullptr }
+			: SignalConnection{ 0u, nullptr }
 		{
 		}
 		/**
@@ -44,13 +50,22 @@ namespace ashes
 		*	L'objet à déplacer.
 		*/
 		SignalConnection( SignalConnection< my_signal > && rhs )
-			: m_connection{ rhs.m_connection }
-			, m_signal{ rhs.m_signal }
+			: SignalConnection{ 0u, nullptr }
 		{
-			rhs.m_signal = nullptr;
-			rhs.m_connection = 0u;
-			m_signal->remConnection( rhs );
-			m_signal->addConnection( *this );
+			swap( *this, rhs );
+		}
+		/**
+		*\brief
+		*	Constructeur.
+		*\param[in] connection
+		*	La connection au signal.
+		*\param[in] signal
+		*	Le signal.
+		*/
+		SignalConnection( uint32_t connection, my_signal & signal )
+			: SignalConnection{ connection, &signal }
+		{
+			signal.addConnection( *this );
 		}
 		/**
 		*\brief
@@ -62,23 +77,7 @@ namespace ashes
 		{
 			SignalConnection tmp{ std::move( rhs ) };
 			swap( *this, tmp );
-			m_signal->remConnection( tmp );
-			m_signal->addConnection( *this );
 			return *this;
-		}
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] connection
-		*	La connection au signal.
-		*\param[in] signal
-		*	Le signal.
-		*/
-		SignalConnection( uint32_t connection, my_signal & signal )
-			: m_connection{ connection }
-			, m_signal{ &signal }
-		{
-			signal.addConnection( *this );
 		}
 		/**
 		*\brief
@@ -106,23 +105,34 @@ namespace ashes
 		}
 
 	private:
-		/**
-		*\brief
-		*	Echange deux connections.
-		*/
 		void swap( SignalConnection & lhs, SignalConnection & rhs )
 		{
-			if ( &rhs != &lhs )
+			if ( lhs.m_signal )
 			{
-				std::swap( lhs.m_signal, rhs.m_signal );
-				std::swap( lhs.m_connection, rhs.m_connection );
+				lhs.m_signal->remConnection( lhs );
+			}
+
+			if ( rhs.m_signal )
+			{
+				rhs.m_signal->remConnection( rhs );
+			}
+
+			std::swap( lhs.m_signal, rhs.m_signal );
+			std::swap( lhs.m_connection, rhs.m_connection );
+
+			if ( lhs.m_signal )
+			{
+				lhs.m_signal->addConnection( lhs );
+			}
+
+			if ( rhs.m_signal )
+			{
+				rhs.m_signal->addConnection( rhs );
 			}
 		}
 
 	private:
-		//! L'identifiant de la connection.
 		uint32_t m_connection;
-		//! Le signal.
 		my_signal_ptr m_signal;
 	};
 	/**
@@ -193,9 +203,26 @@ namespace ashes
 		template< typename ... Params >
 		void operator()( Params && ... params )const
 		{
-			for ( auto it : m_slots )
+			auto it = m_slots.begin();
+			auto size = m_slots.size();
+			auto index = 0u;
+
+			while ( it != m_slots.end() )
 			{
-				it.second( std::forward< Params >( params )... );
+				it->second( std::forward< Params >( params )... );
+
+				if ( size != m_slots.size() )
+				{
+					// Slots changed by the slot itself.
+					size = m_slots.size();
+					it = m_slots.begin();
+					std::advance( it, index );
+				}
+				else
+				{
+					++index;
+					++it;
+				}
 			}
 		}
 

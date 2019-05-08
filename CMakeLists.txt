@@ -27,7 +27,6 @@ option( ASHES_BUILD_SAMPLES "Build Ashes sample applications" TRUE )
 set_property( GLOBAL PROPERTY USE_FOLDERS ON )
 
 if ( ANDROID OR CMAKE_COMPILER_IS_GNUCXX )
-	set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y" )
 	add_definitions(
 		-fdiagnostics-color=auto
 		-fPIC

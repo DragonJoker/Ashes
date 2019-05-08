@@ -885,10 +885,10 @@ namespace ashes
 		return result;
 	}
 
-	uint32_t getSize( VkExtent2D const & extent
+	VkDeviceSize getSize( VkExtent2D const & extent
 		, VkFormat format )noexcept
 	{
-		auto result = std::max( 1u, extent.width )
+		VkDeviceSize result = std::max( 1u, extent.width )
 			* std::max( 1u, extent.height );
 
 		if ( !ashes::isCompressedFormat( format ) )
