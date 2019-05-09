@@ -7,7 +7,14 @@ layout( location = 0 ) in vec2 vtx_texcoord;
 
 layout( location = 0 ) out vec4 pxl_colour;
 
+layout( set=0, binding=1 ) uniform LodSelect
+{
+	float src;
+	float dst;
+	float percent;
+};
+
 void main()
 {
-	pxl_colour = texture( mapColour, vtx_texcoord );
+	pxl_colour = mix( texture( mapColour, vtx_texcoord, src ), texture( mapColour, vtx_texcoord, dst ), percent );
 }

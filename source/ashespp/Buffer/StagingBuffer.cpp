@@ -137,8 +137,8 @@ namespace ashes
 
 			VkExtent3D imageExtent
 			{
-				size.width,
-				size.height,
+				getSubresourceValue( size.width, subresourceLayers.mipLevel ),
+				getSubresourceValue( size.height, subresourceLayers.mipLevel ),
 				1u,
 			};
 			imageExtent.width = getAligned( imageExtent.width, texelBlockExtent.width );
@@ -153,8 +153,8 @@ namespace ashes
 
 			VkExtent3D subresourceExtent
 			{
-				getSubresourceValue( image.getDimensions().width, subresourceLayers.mipLevel ),
-				getSubresourceValue( image.getDimensions().height, subresourceLayers.mipLevel ),
+				getSubresourceValue( size.width, subresourceLayers.mipLevel ),
+				getSubresourceValue( size.height, subresourceLayers.mipLevel ),
 				image.getDimensions().depth,
 			};
 			subresourceExtent.width = getAligned( subresourceExtent.width, texelBlockExtent.width );
@@ -345,8 +345,6 @@ namespace ashes
 	{
 		auto extent = VkExtent3D{ view.image->getDimensions() };
 		auto mipLevel = view->subresourceRange.baseMipLevel;
-		extent.width = getSubresourceValue( extent.width, mipLevel );
-		extent.height = getSubresourceValue( extent.height, mipLevel );
 		uploadTextureData( commandBuffer
 			, {
 				getAspectMask( view->format ),
@@ -416,8 +414,6 @@ namespace ashes
 	{
 		auto extent = view.image->getDimensions();
 		auto mipLevel = view->subresourceRange.baseMipLevel;
-		extent.width = getSubresourceValue( extent.width, mipLevel );
-		extent.height = getSubresourceValue( extent.height, mipLevel );
 		downloadTextureData( queue
 			, commandPool
 			, {

@@ -10,7 +10,7 @@ namespace vkapp
 		utils::Vec2 uv;
 	};
 
-	static wxString const AppName = wxT( "17-CompressedTexture2D" );
+	static wxString const AppName = wxT( "18-Texture2DMipmaps" );
 
 	class RenderPanel;
 	class MainFrame;

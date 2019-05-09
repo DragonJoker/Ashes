@@ -70,6 +70,8 @@ namespace vkapp
 			std::cout << "Staging buffer created." << std::endl;
 			doCreateTexture();
 			std::cout << "Image created." << std::endl;
+			doCreateUniformBuffer();
+			std::cout << "Uniform buffer created." << std::endl;
 			doCreateDescriptorSet();
 			std::cout << "Descriptor set created." << std::endl;
 			doCreateRenderPass();
@@ -109,6 +111,7 @@ namespace vkapp
 			m_descriptorSet.reset();
 			m_descriptorPool.reset();
 			m_descriptorLayout.reset();
+			m_uniformBuffer.reset();
 			m_sampler.reset();
 			m_texture.reset();
 			m_stagingBuffer.reset();
@@ -225,11 +228,20 @@ namespace vkapp
 			, VK_FILTER_LINEAR );
 	}
 
+	void RenderPanel::doCreateUniformBuffer()
+	{
+		m_uniformBuffer = utils::makeUniformBuffer< LodSelect >( *m_device
+			, 1u
+			, 0u
+			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT );
+	}
+
 	void RenderPanel::doCreateDescriptorSet()
 	{
 		ashes::VkDescriptorSetLayoutBindingArray bindings
 		{
-			{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr }
+			{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
+			{ 1u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr }
 		};
 		m_descriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
 		m_descriptorPool = m_descriptorLayout->createPool( 1u );
@@ -237,6 +249,8 @@ namespace vkapp
 		m_descriptorSet->createBinding( m_descriptorLayout->getBinding( 0u )
 			, m_view
 			, *m_sampler );
+		m_descriptorSet->createBinding( m_descriptorLayout->getBinding( 1u )
+			, *m_uniformBuffer );
 		m_descriptorSet->update();
 	}
 
@@ -422,6 +436,29 @@ namespace vkapp
 		}
 	}
 
+	void RenderPanel::doUpdate()
+	{
+		auto & data = m_uniformBuffer->getData( 0u );
+		data.src = float( m_src );
+		data.dst = float( m_dst );
+		m_uniformBuffer->upload();
+
+		data.percent += 1.0f / 16.0f;
+
+		if ( data.percent > 1.0f )
+		{
+			m_src++;
+			m_dst++;
+			data.percent = 0.0f;
+		}
+
+		if ( m_dst >= m_texture->getMipmapLevels() )
+		{
+			m_src = 0;
+			m_dst = 1;
+		}
+	}
+
 	void RenderPanel::doDraw()
 	{
 		auto resources = m_swapChain->getResources();
@@ -463,6 +500,7 @@ namespace vkapp
 	{
 		if ( event.GetId() == int( Ids::RenderTimer ) )
 		{
+			doUpdate();
 			doDraw();
 		}
 	}

@@ -36,6 +36,7 @@ namespace vkapp
 			, ashes::Surface const & surface );
 		void doCreateSwapChain( ashes::SurfacePtr surface );
 		void doCreateTexture();
+		void doCreateUniformBuffer();
 		void doCreateDescriptorSet();
 		void doCreateRenderPass();
 		void doCreateVertexBuffer();
@@ -48,6 +49,7 @@ namespace vkapp
 		*	Rendering.
 		*/
 		/**@{*/
+		void doUpdate();
 		void doDraw();
 		void doResetSwapChain();
 		/**@}*/
@@ -63,6 +65,14 @@ namespace vkapp
 	private:
 		wxTimer * m_timer{ nullptr };
 		std::vector< TexturedVertexData > m_vertexData;
+		struct LodSelect
+		{
+			float src = 0.0f;
+			float dst = 0.0f;
+			float percent = 0.0f;
+		};
+		uint32_t m_src{ 0u };
+		uint32_t m_dst{ 1u };
 		/**
 		*\name
 		*	Global.
@@ -82,6 +92,7 @@ namespace vkapp
 		ashes::ImagePtr m_texture;
 		ashes::ImageView m_view;
 		ashes::SamplerPtr m_sampler;
+		ashes::UniformBufferPtr< LodSelect > m_uniformBuffer;
 		ashes::DescriptorSetLayoutPtr m_descriptorLayout;
 		ashes::DescriptorSetPoolPtr m_descriptorPool;
 		ashes::DescriptorSetPtr m_descriptorSet;

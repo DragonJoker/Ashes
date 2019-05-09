@@ -13,6 +13,70 @@
 
 namespace ashes::d3d11
 {
+	namespace
+	{
+		VkExtent2D getTexelBlockExtent( VkFormat format )
+		{
+			VkExtent2D texelBlockExtent{ 1u, 1u };
+
+			if ( isCompressedFormat( format ) )
+			{
+				texelBlockExtent = getMinimalExtent2D( format );
+			}
+
+			return texelBlockExtent;
+		}
+
+		uint32_t getTexelBlockByteSize( VkExtent2D const & texelBlockExtent
+			, VkFormat format )
+		{
+			VkDeviceSize texelBlockSize;
+
+			if ( !ashes::isDepthStencilFormat( format ) )
+			{
+				texelBlockSize = ashes::getSize( texelBlockExtent, format );
+			}
+			else
+			{
+				texelBlockSize = texelBlockExtent.width;
+			}
+
+			return uint32_t( texelBlockSize );
+		}
+
+		uint32_t getLevelSize( VkExtent3D extent
+			, uint32_t level
+			, VkExtent2D texelBlockExtent
+			, uint32_t texelBlockSize )
+		{
+			extent.width >>= level;
+			extent.height >>= level;
+			return ( texelBlockSize
+				* extent.width
+				* extent.height ) / ( texelBlockExtent.width * texelBlockExtent.height );
+		}
+
+		uint32_t getTotalSize( VkExtent3D const & extent
+			, VkFormat format
+			, uint32_t layerCount
+			, uint32_t levelCount )
+		{
+			auto texelBlockExtent = getTexelBlockExtent( format );
+			auto texelBlockSize = getTexelBlockByteSize( texelBlockExtent, format );
+			uint32_t result = 0u;
+
+			for ( uint32_t level = 0u; level < levelCount; ++level )
+			{
+				result += getLevelSize( extent
+					, level
+					, texelBlockExtent
+					, texelBlockSize );
+			}
+
+			return result * layerCount * extent.depth;
+		}
+	}
+
 	Image::Image( Image && rhs )
 		: m_device{ rhs.m_device }
 		, m_createInfo{ std::move( rhs.m_createInfo ) }
@@ -100,7 +164,7 @@ namespace ashes::d3d11
 	VkMemoryRequirements Image::getMemoryRequirements()const
 	{
 		VkMemoryRequirements result{};
-		result.size = ashes::getSize( getDimensions(), getFormat() );
+		result.size = getTotalSize( getDimensions(), getFormat(), getLayerCount(), getMipmapLevels() );
 		auto extent = ashes::getMinimalExtent3D( getFormat() );
 		result.alignment = ashes::getSize( extent, getFormat() );
 		result.memoryTypeBits = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
