@@ -83,6 +83,12 @@ namespace ashes::d3d11
 					copyInfo.imageSubresource.baseArrayLayer,
 				}
 				, layout );
+
+			if ( copyInfo.imageOffset.z )
+			{
+				layout.offset += layout.depthPitch * copyInfo.imageOffset.z;
+			}
+
 			return layout;
 		}
 
@@ -145,7 +151,7 @@ namespace ashes::d3d11
 			auto imageDepth = copyInfo.imageExtent.depth;
 			auto imageLayers = copyInfo.imageSubresource.layerCount;
 			auto srcData = reinterpret_cast< uint8_t * >( srcBuffer.pData );
-			auto dstData = reinterpret_cast< uint8_t * >( dstBuffer.pData );
+			auto dstData = reinterpret_cast< uint8_t * >( dstBuffer.pData ) + ( copyInfo.imageOffset.z * dstBuffer.DepthPitch );
 
 			if ( imageRowPitch >= imageSize )
 			{

@@ -272,14 +272,14 @@ namespace vkapp
 
 		for ( uint32_t i = 0u; i < image.size.depth; ++i )
 		{
-			ashes::ByteArray layer( buffer, buffer + size );
+			ashes::ByteArray slice( buffer, buffer + size );
 			m_stagingBuffer->uploadTextureData( *m_graphicsQueue
 				, *m_commandPool
 				, subresourceLayers
 				, image.format
 				, { 0, 0, int32_t( i ) }
 				, extent
-				, layer
+				, slice
 				, m_view );
 			buffer += size;
 		}
