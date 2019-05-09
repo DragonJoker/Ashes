@@ -43,6 +43,11 @@ namespace ashes::d3d11
 		*/
 		~PipelineLayout();
 
+		inline VkDescriptorSetLayoutArray const & getDescriptorsLayouts()const
+		{
+			return m_setLayouts;
+		}
+
 	private:
 		VkDevice m_device;
 		VkDescriptorSetLayoutArray m_setLayouts;

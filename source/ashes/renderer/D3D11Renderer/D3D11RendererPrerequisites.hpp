@@ -233,6 +233,7 @@ namespace ashes::d3d11
 	class DescriptorSetLayout;
 	class DescriptorSetLayoutBinding;
 	class Device;
+	class DeviceMemory;
 	class FrameBuffer;
 	class GeometryBuffers;
 	class Pipeline;
@@ -328,7 +329,8 @@ namespace ashes::d3d11
 	struct VbosBinding
 	{
 		UINT startIndex;
-		std::vector< ID3D11Buffer * > buffers;
+		std::vector< VkBuffer > buffers;
+		std::vector< ID3D11Buffer * > d3dBuffers;
 		std::vector< UINT > offsets;
 		std::vector< UINT > strides;
 	};
@@ -348,6 +350,10 @@ namespace ashes::d3d11
 	std::string toString( std::wstring const & text );
 	uint32_t deduceMemoryType( uint32_t typeBits
 		, VkMemoryPropertyFlags requirements );
+
+	using DeviceMemoryDestroyFunc = std::function< void( VkDeviceMemory ) >;
+	using DeviceMemoryDestroySignal = Signal< DeviceMemoryDestroyFunc >;
+	using DeviceMemoryDestroyConnection = SignalConnection< DeviceMemoryDestroySignal >;
 }
 
 #endif

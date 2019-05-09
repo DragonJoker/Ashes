@@ -22,6 +22,7 @@ namespace ashes::d3d11
 			, VkComputePipelineCreateInfo createInfo );
 		~Pipeline();
 		PushConstantsBuffer findPushConstantBuffer( PushConstantsDesc const & pushConstants )const;
+		VkDescriptorSetLayoutArray const & getDescriptorsLayouts()const;
 
 		inline VkPipelineInputAssemblyStateCreateInfo const & getInputAssemblyState()const
 		{

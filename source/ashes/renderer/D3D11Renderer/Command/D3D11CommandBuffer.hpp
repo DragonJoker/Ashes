@@ -146,12 +146,38 @@ namespace ashes::d3d11
 		}
 
 	private:
+		struct BufferIndex
+		{
+			BufferIndex( ID3D11Buffer * name
+				, size_t index
+				, DeviceMemoryDestroyConnection connection )
+				: name{ name }
+				, index{ index }
+				, connection{ std::move( connection ) }
+			{
+			}
+
+			ID3D11Buffer * name;
+			size_t index;
+			DeviceMemoryDestroyConnection connection;
+		};
+
+
+	private:
 		void doFillVboStrides()const;
 		void doAddAfterSubmitAction()const;
+		void doProcessMappedBoundDescriptorBuffersIn( VkDescriptorSet descriptor )const;
+		void doProcessMappedBoundDescriptorsBuffersOut()const;
+		void doProcessMappedBoundVaoBuffersIn()const;
+		void doProcessMappedBoundBufferIn( VkBuffer buffer )const;
+		void doProcessMappedBoundBufferOut( VkBuffer buffer )const;
+		BufferIndex & doAddMappedBuffer( VkBuffer buffer, bool isInput )const;
+		void doRemoveMappedBuffer( ID3D11Buffer * internal )const;
 
 	private:
 		VkDevice m_device;
 		mutable CommandArray m_commands;
+		mutable std::vector< BufferIndex > m_mappedBuffers;
 		struct State
 		{
 			VkCommandBufferBeginInfo beginInfo;
@@ -164,6 +190,7 @@ namespace ashes::d3d11
 			uint32_t currentSubpassIndex{ 0u };
 			mutable VbosBindingArray vbos;
 			VkIndexType indexType;
+			VkDescriptorSetArray boundDescriptors;
 		};
 		mutable State m_state;
 		mutable std::vector< std::function< void( Context const & ) > > m_afterSubmitActions;

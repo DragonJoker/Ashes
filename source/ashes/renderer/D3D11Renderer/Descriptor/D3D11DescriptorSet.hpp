@@ -24,6 +24,11 @@ namespace ashes::d3d11
 		void update( VkWriteDescriptorSet const & write );
 		void update( VkCopyDescriptorSet const & write );
 
+		inline VkDescriptorSetLayout getLayout()const
+		{
+			return m_layout;
+		}
+
 		inline LayoutBindingWritesArray const & getCombinedTextureSamplers()const
 		{
 			return m_combinedTextureSamplers;

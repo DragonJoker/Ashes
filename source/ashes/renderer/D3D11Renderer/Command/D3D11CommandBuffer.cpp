@@ -35,6 +35,7 @@ See LICENSE file in root folder.
 #include "Command/Commands/D3D11CopyImageToBufferCommand.hpp"
 #include "Command/Commands/D3D11DispatchCommand.hpp"
 #include "Command/Commands/D3D11DispatchIndirectCommand.hpp"
+#include "Command/Commands/D3D11DownloadMemoryCommand.hpp"
 #include "Command/Commands/D3D11DrawCommand.hpp"
 #include "Command/Commands/D3D11DrawIndexedCommand.hpp"
 #include "Command/Commands/D3D11DrawIndexedIndirectCommand.hpp"
@@ -52,6 +53,7 @@ See LICENSE file in root folder.
 #include "Command/Commands/D3D11SetDepthBiasCommand.hpp"
 #include "Command/Commands/D3D11SetEventCommand.hpp"
 #include "Command/Commands/D3D11SetLineWidthCommand.hpp"
+#include "Command/Commands/D3D11UploadMemoryCommand.hpp"
 #include "Command/Commands/D3D11ViewportCommand.hpp"
 #include "Command/Commands/D3D11WaitEventsCommand.hpp"
 #include "Command/Commands/D3D11WriteTimestampCommand.hpp"
@@ -293,6 +295,21 @@ namespace ashes::d3d11
 
 			m_state.pushConstantBuffers.clear();
 		}
+
+		for ( auto & layout : get( pipeline )->getDescriptorsLayouts() )
+		{
+			auto it = std::remove_if( m_state.boundDescriptors.begin()
+				, m_state.boundDescriptors.end()
+				, [&layout]( VkDescriptorSet lookup )
+				{
+					return get( lookup )->getLayout() == layout;
+				} );
+
+			if ( it != m_state.boundDescriptors.begin() )
+			{
+				m_state.boundDescriptors.erase( m_state.boundDescriptors.begin(), it );
+			}
+		}
 	}
 
 	void CommandBuffer::bindVertexBuffers( uint32_t firstBinding
@@ -305,7 +322,8 @@ namespace ashes::d3d11
 
 		for ( auto i = 0u; i < buffers.size(); ++i )
 		{
-			binding.buffers.push_back( get( buffers[i] )->getBuffer() );
+			binding.buffers.push_back( buffers[i] );
+			binding.d3dBuffers.push_back( get( buffers[i] )->getBuffer() );
 			binding.offsets.push_back( UINT( offsets[i] ) );
 		}
 
@@ -333,6 +351,8 @@ namespace ashes::d3d11
 	{
 		for ( auto & descriptorSet : descriptorSets )
 		{
+			m_state.boundDescriptors.push_back( descriptorSet );
+			doProcessMappedBoundDescriptorBuffersIn( descriptorSet );
 			m_commands.emplace_back( std::make_unique< BindDescriptorSetCommand >( m_device
 				, descriptorSet
 				, layout
@@ -364,6 +384,7 @@ namespace ashes::d3d11
 		if ( !get( m_state.currentPipeline )->hasVertexLayout() )
 		{
 			bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
+			doProcessMappedBoundVaoBuffersIn();
 			m_commands.emplace_back( std::make_unique< DrawIndexedCommand >( m_device
 				, vtxCount
 				, instCount
@@ -376,6 +397,7 @@ namespace ashes::d3d11
 		}
 		else
 		{
+			doProcessMappedBoundVaoBuffersIn();
 			m_commands.emplace_back( std::make_unique< DrawCommand >( m_device
 				, vtxCount
 				, instCount
@@ -384,6 +406,8 @@ namespace ashes::d3d11
 				, get( m_state.currentPipeline )->getInputAssemblyState().topology
 				, m_state.vbos ) );
 		}
+
+		doProcessMappedBoundDescriptorsBuffersOut();
 	}
 
 	void CommandBuffer::drawIndexed( uint32_t indexCount
@@ -398,6 +422,7 @@ namespace ashes::d3d11
 		}
 
 		doFillVboStrides();
+		doProcessMappedBoundVaoBuffersIn();
 		m_commands.emplace_back( std::make_unique< DrawIndexedCommand >( m_device
 			, indexCount
 			, instCount
@@ -407,6 +432,7 @@ namespace ashes::d3d11
 			, get( m_state.currentPipeline )->getInputAssemblyState().topology
 			, m_state.indexType
 			, m_state.vbos ) );
+		doProcessMappedBoundDescriptorsBuffersOut();
 	}
 
 	void CommandBuffer::drawIndirect( VkBuffer buffer
@@ -415,6 +441,7 @@ namespace ashes::d3d11
 		, uint32_t stride )const
 	{
 		doFillVboStrides();
+		doProcessMappedBoundVaoBuffersIn();
 		m_commands.emplace_back( std::make_unique< DrawIndirectCommand >( m_device
 			, buffer
 			, offset
@@ -422,6 +449,7 @@ namespace ashes::d3d11
 			, stride
 			, get( m_state.currentPipeline )->getInputAssemblyState().topology
 			, m_state.vbos ) );
+		doProcessMappedBoundDescriptorsBuffersOut();
 	}
 
 	void CommandBuffer::drawIndexedIndirect( VkBuffer buffer
@@ -435,6 +463,7 @@ namespace ashes::d3d11
 		}
 
 		doFillVboStrides();
+		doProcessMappedBoundVaoBuffersIn();
 		m_commands.emplace_back( std::make_unique< DrawIndexedIndirectCommand >( m_device
 			, buffer
 			, offset
@@ -443,6 +472,7 @@ namespace ashes::d3d11
 			, get( m_state.currentPipeline )->getInputAssemblyState().topology
 			, m_state.indexType
 			, m_state.vbos ) );
+		doProcessMappedBoundDescriptorsBuffersOut();
 	}
 
 	void CommandBuffer::copyToImage( VkBuffer src
@@ -590,6 +620,7 @@ namespace ashes::d3d11
 			, groupCountX
 			, groupCountY
 			, groupCountZ ) );
+		doProcessMappedBoundDescriptorsBuffersOut();
 	}
 
 	void CommandBuffer::dispatchIndirect( VkBuffer buffer
@@ -598,6 +629,7 @@ namespace ashes::d3d11
 		m_commands.emplace_back( std::make_unique< DispatchIndirectCommand >( m_device
 			, buffer
 			, offset ) );
+		doProcessMappedBoundDescriptorsBuffersOut();
 	}
 
 	void CommandBuffer::setLineWidth( float width )const
@@ -711,5 +743,153 @@ namespace ashes::d3d11
 			{
 				command.remove( context );
 			} );
+	}
+
+	void CommandBuffer::doProcessMappedBoundDescriptorBuffersIn( VkDescriptorSet descriptor )const
+	{
+		for ( auto & writes : get( descriptor )->getDynamicBuffers() )
+		{
+			for ( auto & write : writes->writes )
+			{
+				doProcessMappedBoundBufferIn( write.pBufferInfo->buffer );
+			}
+		}
+
+		for ( auto & writes : get( descriptor )->getStorageBuffers() )
+		{
+			for ( auto & write : writes->writes )
+			{
+				doProcessMappedBoundBufferIn( write.pBufferInfo->buffer );
+			}
+		}
+
+		for ( auto & writes : get( descriptor )->getUniformBuffers() )
+		{
+			for ( auto & write : writes->writes )
+			{
+				doProcessMappedBoundBufferIn( write.pBufferInfo->buffer );
+			}
+		}
+	}
+
+	void CommandBuffer::doProcessMappedBoundDescriptorsBuffersOut()const
+	{
+		for ( auto descriptor : m_state.boundDescriptors )
+		{
+			for ( auto & writes : get( descriptor )->getDynamicBuffers() )
+			{
+				if ( writes->binding.descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC )
+				{
+					for ( auto & write : writes->writes )
+					{
+						if ( write.descriptorType )
+							doProcessMappedBoundBufferOut( write.pBufferInfo->buffer );
+					}
+				}
+			}
+
+			for ( auto & writes : get( descriptor )->getStorageBuffers() )
+			{
+				for ( auto & write : writes->writes )
+				{
+					doProcessMappedBoundBufferOut( write.pBufferInfo->buffer );
+				}
+			}
+		}
+	}
+
+	void CommandBuffer::doProcessMappedBoundVaoBuffersIn()const
+	{
+		for ( auto & vbo : m_state.vbos )
+		{
+			for ( auto & buffer : vbo.buffers )
+			{
+				doProcessMappedBoundBufferIn( buffer );
+			}
+		}
+	}
+
+	void CommandBuffer::doProcessMappedBoundBufferIn( VkBuffer buffer )const
+	{
+		if ( get( buffer )->isMapped() )
+		{
+			doAddMappedBuffer( buffer, true );
+		}
+	}
+
+	void CommandBuffer::doProcessMappedBoundBufferOut( VkBuffer buffer )const
+	{
+		if ( get( buffer )->isMapped() )
+		{
+			doAddMappedBuffer( buffer, false );
+		}
+	}
+
+	CommandBuffer::BufferIndex & CommandBuffer::doAddMappedBuffer( VkBuffer buffer, bool isInput )const
+	{
+		auto buf = get( buffer );
+		auto internal = buf->getBuffer();
+
+		if ( isInput )
+		{
+			m_commands.emplace_back( std::make_unique< UploadMemoryCommand >( m_device
+				, buf->getMemory() ) );
+		}
+		else
+		{
+			m_commands.emplace_back( std::make_unique< DownloadMemoryCommand >( m_device
+				, buf->getMemory() ) );
+		}
+
+		auto it = std::find_if( m_mappedBuffers.begin()
+			, m_mappedBuffers.end()
+			, [internal]( BufferIndex const & lookup )
+		{
+			return lookup.name == internal;
+		} );
+
+		CommandBuffer::BufferIndex * result;
+
+		if ( it == m_mappedBuffers.end() )
+		{
+			result = &m_mappedBuffers.emplace_back( internal
+				, m_commands.size() - 1u
+				, get( buf->getMemory() )->onDestroy.connect( [this]( VkDeviceMemory deviceMemory )
+					{
+						if ( get( deviceMemory )->hasBuffer() )
+						{
+							doRemoveMappedBuffer( get( deviceMemory )->getBuffer() );
+						}
+					} ) );
+		}
+		else
+		{
+			result = &( *it );
+		}
+
+		return *result;
+	}
+
+	void CommandBuffer::doRemoveMappedBuffer( ID3D11Buffer * internal )const
+	{
+		auto it = std::find_if( m_mappedBuffers.begin()
+			, m_mappedBuffers.end()
+			, [internal]( BufferIndex const & lookup )
+		{
+			return lookup.name == internal;
+		} );
+
+		if ( it != m_mappedBuffers.end() )
+		{
+			auto index = it->index;
+			m_commands.erase( m_commands.begin() + index );
+			it = m_mappedBuffers.erase( it );
+
+			while ( it != m_mappedBuffers.end() )
+			{
+				it->index--;
+				++it;
+			}
+		}
 	}
 }

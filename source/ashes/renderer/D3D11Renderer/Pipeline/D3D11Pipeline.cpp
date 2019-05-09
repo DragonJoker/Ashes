@@ -170,6 +170,11 @@ namespace ashes::d3d11
 		return dummy;
 	}
 
+	VkDescriptorSetLayoutArray const & Pipeline::getDescriptorsLayouts()const
+	{
+		return get( m_layout )->getDescriptorsLayouts();
+	}
+
 	void Pipeline::doCreateBlendState( VkDevice device )
 	{
 		auto d3ddevice = get( device )->getDevice();

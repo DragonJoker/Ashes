@@ -67,68 +67,24 @@ namespace ashes::d3d11
 			safeRelease( m_buffer );
 		}
 
-		void upload( ByteArray const & data
+		VkResult lock( ID3D11DeviceContext * context
 			, UINT subresource
-			, VkDeviceSize offset
-			, VkDeviceSize size )const override
+			, D3D11_MAPPED_SUBRESOURCE & data )const override
 		{
-			if ( size == WholeSize )
-			{
-				assert( offset == 0ull );
-				size = m_allocateInfo.allocationSize;
-			}
-
-			ID3D11DeviceContext * context;
-			get( m_device )->getDevice()->GetImmediateContext( &context );
-			D3D11_MAPPED_SUBRESOURCE mappedResource;
-
 			HRESULT hr = context->Map( m_buffer
 				, subresource
 				, getBufferMapFlags( m_propertyFlags, m_bufferTargets )
 				, 0
-				, &mappedResource );
-			uint8_t * dst;
-
-			if ( checkError( m_device, hr, "LockBuffer" ) )
-			{
-				dst = static_cast< uint8_t * >( mappedResource.pData ) + offset;
-				std::memcpy( dst, data.data() + offset, size );
-				context->Unmap( m_buffer, 0 );
-			}
-
-			safeRelease( context );
+				, &data );
+			return checkError( m_device, hr, "LockBuffer" )
+				? VK_SUCCESS
+				: VK_ERROR_MEMORY_MAP_FAILED;
 		}
 
-		void download( ByteArray & data
-			, UINT subresource
-			, VkDeviceSize offset
-			, VkDeviceSize size )const override
+		void unlock( ID3D11DeviceContext * context
+			, UINT subresource )const override
 		{
-			if ( size == WholeSize )
-			{
-				assert( offset == 0ull );
-				size = m_allocateInfo.allocationSize;
-			}
-
-			ID3D11DeviceContext * context;
-			get( m_device )->getDevice()->GetImmediateContext( &context );
-			D3D11_MAPPED_SUBRESOURCE mappedResource;
-
-			HRESULT hr = context->Map( m_buffer
-				, subresource
-				, D3D11_MAP_READ
-				, 0
-				, &mappedResource );
-			uint8_t * dst;
-
-			if ( checkError( m_device, hr, "LockBuffer" ) )
-			{
-				dst = static_cast< uint8_t * >( mappedResource.pData ) + offset;
-				std::memcpy( data.data() + offset, dst, size );
-				context->Unmap( m_buffer, 0 );
-			}
-
-			safeRelease( context );
+			context->Unmap( m_buffer, subresource );
 		}
 
 		inline ID3D11Buffer * getBuffer()const
@@ -201,68 +157,24 @@ namespace ashes::d3d11
 		{
 		}
 
-		void upload( ByteArray const & data
+		VkResult lock( ID3D11DeviceContext * context
 			, UINT subresource
-			, VkDeviceSize offset
-			, VkDeviceSize size )const override
+			, D3D11_MAPPED_SUBRESOURCE & data )const override
 		{
-			if ( size == WholeSize )
-			{
-				assert( offset == 0ull );
-				size = m_allocateInfo.allocationSize;
-			}
-
-			ID3D11DeviceContext * context;
-			get( m_device )->getDevice()->GetImmediateContext( &context );
-			D3D11_MAPPED_SUBRESOURCE mappedResource;
-
 			HRESULT hr = context->Map( m_texture
 				, subresource
 				, getImageMapFlags( m_propertyFlags, m_usage )
 				, 0
-				, &mappedResource );
-			void * dst;
-
-			if ( checkError( m_device, hr, "LockTexture1D" ) )
-			{
-				dst = mappedResource.pData;
-				std::memcpy( dst, data.data() + offset, size );
-				context->Unmap( m_texture, 0 );
-			}
-
-			safeRelease( context );
+				, &data );
+			return checkError( m_device, hr, "LockTexture1D" )
+				? VK_SUCCESS
+				: VK_ERROR_MEMORY_MAP_FAILED;
 		}
 
-		void download( ByteArray & data
-			, UINT subresource
-			, VkDeviceSize offset
-			, VkDeviceSize size )const override
+		void unlock( ID3D11DeviceContext * context
+			, UINT subresource )const override
 		{
-			if ( size == WholeSize )
-			{
-				assert( offset == 0ull );
-				size = m_allocateInfo.allocationSize;
-			}
-
-			ID3D11DeviceContext * context;
-			get( m_device )->getDevice()->GetImmediateContext( &context );
-			D3D11_MAPPED_SUBRESOURCE mappedResource;
-
-			HRESULT hr = context->Map( m_texture
-				, subresource
-				, D3D11_MAP_READ
-				, 0
-				, &mappedResource );
-			void * dst;
-
-			if ( checkError( m_device, hr, "LockTexture1D" ) )
-			{
-				dst = mappedResource.pData;
-				std::memcpy( data.data() + offset, dst, size );
-				context->Unmap( m_texture, 0 );
-			}
-
-			safeRelease( context );
+			context->Unmap( m_texture, subresource );
 		}
 
 		inline ID3D11Texture1D * getImage()const
@@ -324,68 +236,24 @@ namespace ashes::d3d11
 		{
 		}
 
-		void upload( ByteArray const & data
+		VkResult lock( ID3D11DeviceContext * context
 			, UINT subresource
-			, VkDeviceSize offset
-			, VkDeviceSize size )const override
+			, D3D11_MAPPED_SUBRESOURCE & data )const override
 		{
-			if ( size == WholeSize )
-			{
-				assert( offset == 0ull );
-				size = m_allocateInfo.allocationSize;
-			}
-
-			ID3D11DeviceContext * context;
-			get( m_device )->getDevice()->GetImmediateContext( &context );
-			D3D11_MAPPED_SUBRESOURCE mappedResource;
-
 			HRESULT hr = context->Map( m_texture
 				, subresource
 				, getImageMapFlags( m_propertyFlags, m_usage )
 				, 0
-				, &mappedResource );
-			void * dst;
-
-			if ( checkError( m_device, hr, "LockTexture2D" ) )
-			{
-				dst = mappedResource.pData;
-				std::memcpy( dst, data.data() + offset, size );
-				context->Unmap( m_texture, 0 );
-			}
-
-			safeRelease( context );
+				, &data );
+			return checkError( m_device, hr, "LockTexture2D" )
+				? VK_SUCCESS
+				: VK_ERROR_MEMORY_MAP_FAILED;
 		}
 
-		void download( ByteArray & data
-			, UINT subresource
-			, VkDeviceSize offset
-			, VkDeviceSize size )const override
+		void unlock( ID3D11DeviceContext * context
+			, UINT subresource )const override
 		{
-			if ( size == WholeSize )
-			{
-				assert( offset == 0ull );
-				size = m_allocateInfo.allocationSize;
-			}
-
-			ID3D11DeviceContext * context;
-			get( m_device )->getDevice()->GetImmediateContext( &context );
-			D3D11_MAPPED_SUBRESOURCE mappedResource;
-
-			HRESULT hr = context->Map( m_texture
-				, subresource
-				, D3D11_MAP_READ
-				, 0
-				, &mappedResource );
-			void * dst;
-
-			if ( checkError( m_device, hr, "LockTexture2D" ) )
-			{
-				dst = mappedResource.pData;
-				std::memcpy( data.data() + offset, dst, size );
-				context->Unmap( m_texture, 0 );
-			}
-
-			safeRelease( context );
+			context->Unmap( m_texture, subresource );
 		}
 
 		inline ID3D11Texture2D * getImage()const
@@ -462,68 +330,24 @@ namespace ashes::d3d11
 		{
 		}
 
-		void upload( ByteArray const & data
+		VkResult lock( ID3D11DeviceContext * context
 			, UINT subresource
-			, VkDeviceSize offset
-			, VkDeviceSize size )const override
+			, D3D11_MAPPED_SUBRESOURCE & data )const override
 		{
-			if ( size == WholeSize )
-			{
-				assert( offset == 0ull );
-				size = m_allocateInfo.allocationSize;
-			}
-
-			ID3D11DeviceContext * context;
-			get( m_device )->getDevice()->GetImmediateContext( &context );
-			D3D11_MAPPED_SUBRESOURCE mappedResource;
-
 			HRESULT hr = context->Map( m_texture
 				, subresource
 				, getImageMapFlags( m_propertyFlags, m_usage )
 				, 0
-				, &mappedResource );
-			void * dst;
-
-			if ( checkError( m_device, hr, "LockTexture3D" ) )
-			{
-				dst = mappedResource.pData;
-				std::memcpy( dst, data.data() + offset, size );
-				context->Unmap( m_texture, 0 );
-			}
-
-			safeRelease( context );
+				, &data );
+			return checkError( m_device, hr, "LockTexture3D" )
+				? VK_SUCCESS
+				: VK_ERROR_MEMORY_MAP_FAILED;
 		}
 
-		void download( ByteArray & data
-			, UINT subresource
-			, VkDeviceSize offset
-			, VkDeviceSize size )const override
+		void unlock( ID3D11DeviceContext * context
+			, UINT subresource )const override
 		{
-			if ( size == WholeSize )
-			{
-				assert( offset == 0ull );
-				size = m_allocateInfo.allocationSize;
-			}
-
-			ID3D11DeviceContext * context;
-			get( m_device )->getDevice()->GetImmediateContext( &context );
-			D3D11_MAPPED_SUBRESOURCE mappedResource;
-
-			HRESULT hr = context->Map( m_texture
-				, subresource
-				, D3D11_MAP_READ
-				, 0
-				, &mappedResource );
-			void * dst;
-
-			if ( checkError( m_device, hr, "LockTexture3D" ) )
-			{
-				dst = mappedResource.pData;
-				std::memcpy( data.data() + offset, dst, size );
-				context->Unmap( m_texture, 0 );
-			}
-
-			safeRelease( context );
+			context->Unmap( m_texture, subresource );
 		}
 
 		inline ID3D11Texture3D * getImage()const
@@ -567,6 +391,56 @@ namespace ashes::d3d11
 	{
 	}
 
+	void DeviceMemory::DeviceMemoryImpl::upload( ByteArray const & data
+		, UINT subresource
+		, VkDeviceSize offset
+		, VkDeviceSize size )const
+	{
+		if ( size == WholeSize )
+		{
+			assert( offset == 0ull );
+			size = m_allocateInfo.allocationSize;
+		}
+
+		ID3D11DeviceContext * context;
+		get( m_device )->getDevice()->GetImmediateContext( &context );
+		D3D11_MAPPED_SUBRESOURCE mapped{};
+
+		if ( lock( context, subresource, mapped ) == VK_SUCCESS )
+		{
+			uint8_t * dst = static_cast< uint8_t * >( mapped.pData ) + offset;
+			std::memcpy( dst, data.data() + offset, size );
+			unlock( context, subresource );
+		}
+
+		safeRelease( context );
+	}
+
+	void DeviceMemory::DeviceMemoryImpl::download( ByteArray & data
+		, UINT subresource
+		, VkDeviceSize offset
+		, VkDeviceSize size )const
+	{
+		if ( size == WholeSize )
+		{
+			assert( offset == 0ull );
+			size = m_allocateInfo.allocationSize;
+		}
+
+		ID3D11DeviceContext * context;
+		get( m_device )->getDevice()->GetImmediateContext( &context );
+		D3D11_MAPPED_SUBRESOURCE mapped{};
+
+		if ( lock( context, subresource, mapped ) == VK_SUCCESS )
+		{
+			uint8_t * dst = static_cast< uint8_t * >( mapped.pData ) + offset;
+			std::memcpy( data.data() + offset, dst, size );
+			unlock( context, subresource );
+		}
+
+		safeRelease( context );
+	}
+
 	//*********************************************************************************************
 
 	DeviceMemory::DeviceMemory( VkDevice device
@@ -585,6 +459,10 @@ namespace ashes::d3d11
 
 	DeviceMemory::~DeviceMemory()
 	{
+		if ( m_impl )
+		{
+			onDestroy( get( this ) );
+		}
 	}
 
 	VkResult DeviceMemory::bindToBuffer( VkBuffer buffer
@@ -598,7 +476,8 @@ namespace ashes::d3d11
 			auto impl = std::make_unique< BufferDeviceMemory >( m_device
 				, m_allocateInfo
 				, get( buffer )->getUsage() );
-			retBuffer = impl->getBuffer();
+			m_buffer = impl->getBuffer();
+			retBuffer = m_buffer;
 			m_impl = std::move( impl );
 			upload( 0u, m_data.size() );
 			result = VK_SUCCESS;
@@ -831,20 +710,14 @@ namespace ashes::d3d11
 		, VkDeviceSize size
 		, UINT subresource )const
 	{
-		if ( m_dirty )
-		{
-			updateUpload( offset, size, subresource );
-		}
+		updateUpload( offset, size, subresource );
 	}
 
 	void DeviceMemory::download( VkDeviceSize offset
 		, VkDeviceSize size
 		, UINT subresource )const
 	{
-		if ( m_dirty )
-		{
-			updateDownload( offset, size, subresource );
-		}
+		updateDownload( offset, size, subresource );
 	}
 
 	//*********************************************************************************************

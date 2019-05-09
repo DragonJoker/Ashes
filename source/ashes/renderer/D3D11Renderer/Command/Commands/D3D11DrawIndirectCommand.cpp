@@ -34,8 +34,8 @@ namespace ashes::d3d11
 		for ( auto & binding : m_vbos )
 		{
 			context.context->IASetVertexBuffers( binding.startIndex
-				, UINT( binding.buffers.size() )
-				, binding.buffers.data()
+				, UINT( binding.d3dBuffers.size() )
+				, binding.d3dBuffers.data()
 				, binding.strides.data()
 				, binding.offsets.data() );
 		}
