@@ -75,6 +75,8 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 	add_subdirectory( AshesInfo )
 	
 	if ( EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/Vulkan/CMakeLists.txt )
+		include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../external/glm )
+		include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../external/gli )
 		set( Vulkan_FOUND ON )
 		set( Vulkan_INCLUDE_DIR ${Vulkan_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/include )
 		set( Vulkan_LIBRARY ashes )

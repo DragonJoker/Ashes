@@ -21,12 +21,12 @@ namespace common
 		void draw( ashes::Queue const & queue
 			, std::chrono::microseconds & gpu );
 
-		inline ashes::ImageViewPtr getColourView()const
+		inline ashes::ImageView getColourView()const
 		{
 			return m_colourView;
 		}
 
-		inline ashes::ImageViewPtr getDepthView()const
+		inline ashes::ImageView getDepthView()const
 		{
 			return m_depthView;
 		}
@@ -80,9 +80,9 @@ namespace common
 		TextureNodePtrArray m_textureNodes;
 		utils::Mat4 m_rotate;
 		ashes::ImagePtr m_colour;
-		ashes::ImageViewPtr m_colourView;
+		ashes::ImageView m_colourView;
 		ashes::ImagePtr m_depth;
-		ashes::ImageViewPtr m_depthView;
+		ashes::ImageView m_depthView;
 		ashes::CommandBufferPtr m_commandBuffer;
 		std::shared_ptr< OpaqueRendering > m_opaque;
 		std::shared_ptr< TransparentRendering > m_transparent;

@@ -11,7 +11,7 @@
 #include <ashespp/Image/Sampler.hpp>
 #include <ashespp/Core/SwapChain.hpp>
 
-#include <ashespp/Utils/Signal.hpp>
+#include <ashes/common/Signal.hpp>
 
 #include <wx/panel.h>
 
@@ -96,7 +96,6 @@ namespace common
 		ashes::SamplerPtr m_sampler;
 		ashes::RenderPassPtr m_renderPass;
 		ashes::VertexBufferPtr< TexturedVertexData > m_vertexBuffer;
-		ashes::VertexLayoutPtr m_vertexLayout;
 		ashes::DescriptorSetLayoutPtr m_descriptorLayout;
 		ashes::DescriptorSetPoolPtr m_descriptorPool;
 		ashes::DescriptorSetPtr m_descriptorSet;

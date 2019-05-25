@@ -215,7 +215,6 @@ namespace common
 			m_pipelineLayout.reset();
 
 			m_vertexBuffer.reset();
-			m_vertexLayout.reset();
 			m_renderPass.reset();
 			m_sampler.reset();
 			m_stagingBuffer.reset();
@@ -276,10 +275,10 @@ namespace common
 		m_descriptorPool = m_descriptorLayout->createPool( 1u );
 		m_descriptorSet = m_descriptorPool->createDescriptorSet();
 		m_descriptorSet->createBinding( m_descriptorLayout->getBinding( 0u )
-			, *m_renderTarget->getColourView()
+			, m_renderTarget->getColourView()
 			, *m_sampler );
 		m_descriptorSet->createBinding( m_descriptorLayout->getBinding( 1u )
-			, *m_gui->getTargetView()
+			, m_gui->getTargetView()
 			, *m_sampler );
 		m_descriptorSet->update();
 	}
@@ -289,6 +288,7 @@ namespace common
 		ashes::VkAttachmentDescriptionArray attaches
 		{
 			{
+				0u,
 				m_swapChain->getFormat(),
 				VK_SAMPLE_COUNT_1_BIT,
 				VK_ATTACHMENT_LOAD_OP_CLEAR,
@@ -299,33 +299,50 @@ namespace common
 				VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
 			}
 		};
-		ashes::VkAttachmentReferenceArray subAttaches
+		ashes::SubpassDescriptionArray subpasses;
+		subpasses.emplace_back( ashes::SubpassDescription
+			{
+				0u,
+				VK_PIPELINE_BIND_POINT_GRAPHICS,
+				{},
+				{ { 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } },
+				{},
+				std::nullopt,
+				{},
+			} );
+		ashes::VkSubpassDependencyArray dependencies
 		{
-			{ 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }
+			{
+				VK_SUBPASS_EXTERNAL,
+				0u,
+				VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+				VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+				VK_ACCESS_MEMORY_READ_BIT,
+				VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
+				VK_DEPENDENCY_BY_REGION_BIT,
+			},
+			{
+				0u,
+				VK_SUBPASS_EXTERNAL,
+				VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+				VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+				VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
+				VK_ACCESS_MEMORY_READ_BIT,
+				VK_DEPENDENCY_BY_REGION_BIT,
+			}
 		};
-		ashes::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( std::make_unique< ashes::RenderSubpass >( VkPipelineBindPoint::eGraphics
-			, ashes::RenderSubpassState{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-				, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT }
-			, subAttaches ) );
-		m_renderPass = m_device->getDevice().createRenderPass( attaches
-			, std::move( subpasses )
-			, ashes::RenderSubpassState{ VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
-				, VK_ACCESS_MEMORY_READ_BIT }
-			, ashes::RenderSubpassState{ VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
-				, VK_ACCESS_MEMORY_READ_BIT } );
+		ashes::RenderPassCreateInfo createInfo
+		{
+			0u,
+			std::move( attaches ),
+			std::move( subpasses ),
+			std::move( dependencies ),
+		};
+		m_renderPass = m_device->getDevice().createRenderPass( std::move( createInfo ) );
 	}
 
 	void RenderPanel::doCreateVertexBuffer()
 	{
-		m_vertexLayout = ashes::makeLayout< TexturedVertexData >( 0 );
-		m_vertexLayout->createAttribute( 0u
-			, VK_FORMAT_R32G32B32A32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, position ) ) );
-		m_vertexLayout->createAttribute( 1u
-			, VK_FORMAT_R32G32_SFLOAT
-			, uint32_t( offsetof( TexturedVertexData, uv ) ) );
-
 		m_vertexBuffer = utils::makeVertexBuffer< TexturedVertexData >( *m_device
 			, uint32_t( m_vertexData.size() )
 			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
@@ -346,10 +363,40 @@ namespace common
 		{
 			throw std::runtime_error{ "Shader files are missing" };
 		}
-
+		
+		ashes::PipelineVertexInputStateCreateInfo vertexLayout
+		{
+			0u,
+			{
+				{ 0u, sizeof( TexturedVertexData ), VK_VERTEX_INPUT_RATE_VERTEX },
+			},
+			{
+				{ 0u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof( TexturedVertexData, position ) },
+				{ 1u, 0u, VK_FORMAT_R32G32_SFLOAT, offsetof( TexturedVertexData, uv ) },
+			},
+		};
+		
 		ashes::PipelineShaderStageCreateInfoArray shaderStages;
-		shaderStages.push_back( { m_device->getDevice().createShaderModule( dumpShaderFile( m_device->getDevice(), VK_SHADER_STAGE_VERTEX_BIT, shadersFolder / "main.vert" ) ) } );
-		shaderStages.push_back( { m_device->getDevice().createShaderModule( dumpShaderFile( m_device->getDevice(), VK_SHADER_STAGE_FRAGMENT_BIT, shadersFolder / "main.frag" ) ) } );
+		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
+			{
+				0u,
+				VK_SHADER_STAGE_VERTEX_BIT,
+				m_device->getDevice().createShaderModule( dumpShaderFile( *m_device
+					, VK_SHADER_STAGE_VERTEX_BIT
+					, shadersFolder / "main.vert" ) ),
+				"main",
+				std::nullopt,
+			} );
+		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
+			{
+				0u,
+				VK_SHADER_STAGE_FRAGMENT_BIT,
+				m_device->getDevice().createShaderModule( dumpShaderFile( *m_device
+					, VK_SHADER_STAGE_FRAGMENT_BIT
+					, shadersFolder / "main.frag" ) ),
+				"main",
+				std::nullopt,
+			} );
 
 		std::vector< VkDynamicState > dynamicStateEnables
 		{
@@ -358,17 +405,22 @@ namespace common
 		};
 
 		m_pipelineLayout = m_device->getDevice().createPipelineLayout( *m_descriptorLayout );
-		m_pipeline = m_device->getDevice().createPipeline(
-		{
-			std::move( shaderStages ),
-			*m_renderPass,
-			ashes::VertexInputState::create( *m_vertexLayout ),
-			{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
-			VkPipelineRasterizationStateCreateInfo{ 0u, false, false, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE },
-			VkPipelineMultisampleStateCreateInfo{},
-			VkPipelineColorBlendStateCreateInfo::createDefault(),
-			dynamicStateEnables,
-		} );
+		m_pipeline = m_device->getDevice().createPipeline( ashes::GraphicsPipelineCreateInfo
+			{
+				0u,
+				std::move( shaderStages ),
+				std::move( vertexLayout ),
+				ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
+				std::nullopt,
+				ashes::PipelineViewportStateCreateInfo{},
+				ashes::PipelineRasterizationStateCreateInfo{ 0u, VK_FALSE, VK_FALSE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE },
+				ashes::PipelineMultisampleStateCreateInfo{},
+				std::nullopt,
+				ashes::PipelineColorBlendStateCreateInfo{},
+				ashes::PipelineDynamicStateCreateInfo{ 0u, { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR } },
+				*m_pipelineLayout,
+				*m_renderPass,
+			} );
 	}
 
 	void RenderPanel::doPrepareFrames()

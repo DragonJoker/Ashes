@@ -2,9 +2,6 @@
 
 #include "Scene.hpp"
 
-#include <ashespp/Pipeline/VertexLayout.hpp>
-#include <ashespp/RenderPass/RenderSubpass.hpp>
-
 namespace common
 {
 	OpaqueRendering::OpaqueRendering( NodesInstancePtr renderer

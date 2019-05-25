@@ -10,9 +10,7 @@ layout( location = 0 ) out vec4 pxl_colour;
 
 void main()
 {
-	vec2 guicoord = ashesBottomUpToTopDown( vtx_texcoord );
-	vec2 colcoord = ashesTopDownToBottomUp( vtx_texcoord );
-	vec4 gui = texture( mapGui, guicoord );
-	vec4 colour = texture( mapColour, colcoord );
+	vec4 gui = texture( mapGui, vtx_texcoord );
+	vec4 colour = texture( mapColour, vtx_texcoord );
 	pxl_colour.rgb = gui.rgb * gui.a + colour.rgb * (1.0 - gui.a);
 }

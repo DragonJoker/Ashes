@@ -7,7 +7,7 @@ namespace vkapp
 	struct GeometryPassTexture
 	{
 		ashes::ImagePtr texture;
-		ashes::ImageViewPtr view;
+		ashes::ImageView view;
 	};
 
 	using GeometryPassResult = std::array < GeometryPassTexture, 5u >;

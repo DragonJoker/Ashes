@@ -13,12 +13,8 @@
 #include <ashespp/Image/ImageView.hpp>
 #include <ashespp/Pipeline/PipelineLayout.hpp>
 #include <ashespp/Pipeline/GraphicsPipeline.hpp>
-#include <ashespp/Pipeline/VertexLayout.hpp>
 #include <ashespp/RenderPass/FrameBuffer.hpp>
 #include <ashespp/RenderPass/RenderPass.hpp>
-#include <ashespp/RenderPass/RenderSubpass.hpp>
-#include <ashespp/RenderPass/RenderSubpassState.hpp>
-#include <ashespp/Sync/ImageMemoryBarrier.hpp>
 
 #include <util/GlslToSpv.hpp>
 #include <util/Transform.hpp>
@@ -115,9 +111,7 @@ namespace common
 
 		m_transparent.reset();
 		m_opaque.reset();
-		m_depthView.reset();
 		m_depth.reset();
-		m_colourView.reset();
 		m_colour.reset();
 
 		m_images.clear();
@@ -158,12 +152,12 @@ namespace common
 				, 4u );
 			auto view = textureNode->texture->createView( VkImageViewType( textureNode->texture->getType() )
 				, textureNode->texture->getFormat() );
-			auto staging = ashes::StagingBuffer{ m_device, 0u, getSize( image->size, image->format ) };
+			auto staging = ashes::StagingBuffer{ m_device, 0u, ashes::getSize( image->size, image->format ) };
 			staging.uploadTextureData( m_transferQueue
 				, m_commandPool
 				, image->format
 				, image->data
-				, *view );
+				, view );
 			textureNode->texture->generateMipmaps( m_commandPool
 				, m_transferQueue );
 			m_textureNodes.emplace_back( textureNode );
@@ -177,7 +171,6 @@ namespace common
 
 	void RenderTarget::doUpdateRenderViews()
 	{
-		m_colourView.reset();
 		m_colour = m_device.createImage(
 			{
 				0,
@@ -195,7 +188,6 @@ namespace common
 		m_colourView = m_colour->createView( VK_IMAGE_VIEW_TYPE_2D
 			, m_colour->getFormat() );
 
-		m_depthView.reset();
 		m_depth = m_device.createImage(
 			{
 				0,
