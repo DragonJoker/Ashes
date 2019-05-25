@@ -282,6 +282,11 @@ namespace ashes
 		VkImageMemoryBarrier makePresentSource( VkImageLayout srcLayout
 			, uint32_t srcQueueFamily = ~( 0u )
 			, uint32_t dstQueueFamily = ~( 0u ) )const;
+
+		inline VkFormat getFormat()const
+		{
+			return createInfo.format;
+		}
 		/**
 		*\~french
 		*\brief

@@ -41,8 +41,26 @@ namespace common
 			}
 
 			ashes::PipelineShaderStageCreateInfoArray result;
-			result.push_back( { device.createShaderModule( dumpShaderFile( device, VK_SHADER_STAGE_VERTEX_BIT, shadersFolder / "object.vert" ) ) } );
-			result.push_back( { device.createShaderModule( dumpShaderFile( device, VK_SHADER_STAGE_FRAGMENT_BIT, fragmentShaderFile ) ) } );
+			result.push_back( ashes::PipelineShaderStageCreateInfo
+				{
+					0u,
+					VK_SHADER_STAGE_VERTEX_BIT,
+					device.createShaderModule( dumpShaderFile( device
+						, VK_SHADER_STAGE_VERTEX_BIT
+						, shadersFolder / "object.vert" ) ),
+					"main",
+					std::nullopt,
+				} );
+			result.push_back( ashes::PipelineShaderStageCreateInfo
+				{
+					0u,
+					VK_SHADER_STAGE_FRAGMENT_BIT,
+					device.createShaderModule( dumpShaderFile( device
+						, VK_SHADER_STAGE_FRAGMENT_BIT
+						, fragmentShaderFile ) ),
+					"main",
+					std::nullopt,
+				} );
 			return result;
 		}
 
@@ -58,8 +76,26 @@ namespace common
 			}
 
 			ashes::PipelineShaderStageCreateInfoArray result;
-			result.push_back( { device.createShaderModule( dumpShaderFile( device, VK_SHADER_STAGE_VERTEX_BIT, shadersFolder / "billboard.vert" ) ) } );
-			result.push_back( { device.createShaderModule( dumpShaderFile( device, VK_SHADER_STAGE_FRAGMENT_BIT, fragmentShaderFile ) ) } );
+			result.push_back( ashes::PipelineShaderStageCreateInfo
+				{
+					0u,
+					VK_SHADER_STAGE_VERTEX_BIT,
+					device.createShaderModule( dumpShaderFile( device
+						, VK_SHADER_STAGE_VERTEX_BIT
+						, shadersFolder / "billboard.vert" ) ),
+					"main",
+					std::nullopt,
+				} );
+			result.push_back( ashes::PipelineShaderStageCreateInfo
+				{
+					0u,
+					VK_SHADER_STAGE_FRAGMENT_BIT,
+					device.createShaderModule( dumpShaderFile( device
+						, VK_SHADER_STAGE_FRAGMENT_BIT
+						, fragmentShaderFile ) ),
+					"main",
+					std::nullopt,
+				} );
 			return result;
 		}
 
@@ -68,71 +104,96 @@ namespace common
 			, bool clearViews )
 		{
 			uint32_t index{ 0u };
-			ashes::RenderPassCreateInfo renderPass;
-			renderPass.subpasses.resize( 1u );
+			ashes::VkAttachmentDescriptionArray attaches;
+			ashes::VkAttachmentReferenceArray colorAttachments;
+			ashes::Optional< VkAttachmentReference > depthStencilAttachment;
 
 			for ( auto format : formats )
 			{
 				if ( ashes::isDepthOrStencilFormat( format ) )
 				{
-					renderPass.attachments.push_back(
-					{
-						format,
-						VK_SAMPLE_COUNT_1_BIT,
-						( clearViews
-							? VK_ATTACHMENT_LOAD_OP_CLEAR
-							: VK_ATTACHMENT_LOAD_OP_DONT_CARE ),
-						VK_ATTACHMENT_STORE_OP_STORE,
-						( ( clearViews && ashes::isStencilFormat( format ) )
-							? VK_ATTACHMENT_LOAD_OP_CLEAR
-							: VK_ATTACHMENT_LOAD_OP_DONT_CARE ),
-						VK_ATTACHMENT_STORE_OP_DONT_CARE,
-						VK_IMAGE_LAYOUT_UNDEFINED,
-						VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
-					} );
-					renderPass.subpasses[0].depthStencilAttachment = { index, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
+					attaches.push_back( VkAttachmentDescription
+						{
+							index,
+							format,
+							VK_SAMPLE_COUNT_1_BIT,
+							( clearViews
+								? VK_ATTACHMENT_LOAD_OP_CLEAR
+								: VK_ATTACHMENT_LOAD_OP_DONT_CARE ),
+							VK_ATTACHMENT_STORE_OP_STORE,
+							( ( clearViews && ashes::isStencilFormat( format ) )
+								? VK_ATTACHMENT_LOAD_OP_CLEAR
+								: VK_ATTACHMENT_LOAD_OP_DONT_CARE ),
+							VK_ATTACHMENT_STORE_OP_DONT_CARE,
+							VK_IMAGE_LAYOUT_UNDEFINED,
+							VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
+						} );
+					depthStencilAttachment = { index, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
 				}
 				else
 				{
-					renderPass.attachments.push_back(
-					{
-						format,
-						VK_SAMPLE_COUNT_1_BIT,
-						( clearViews
-							? VK_ATTACHMENT_LOAD_OP_CLEAR
-							: VK_ATTACHMENT_LOAD_OP_DONT_CARE ),
-						VK_ATTACHMENT_STORE_OP_STORE,
-						VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-						VK_ATTACHMENT_STORE_OP_DONT_CARE,
-						VK_IMAGE_LAYOUT_UNDEFINED,
-						( clearViews
-							? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-							: VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )
-					} );
-					renderPass.subpasses[0].colorAttachments.emplace_back( VkAttachmentReference{ index, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
+					attaches.push_back(
+						{
+							index,
+							format,
+							VK_SAMPLE_COUNT_1_BIT,
+							( clearViews
+								? VK_ATTACHMENT_LOAD_OP_CLEAR
+								: VK_ATTACHMENT_LOAD_OP_DONT_CARE ),
+							VK_ATTACHMENT_STORE_OP_STORE,
+							VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+							VK_ATTACHMENT_STORE_OP_DONT_CARE,
+							VK_IMAGE_LAYOUT_UNDEFINED,
+							( clearViews
+								? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+								: VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )
+						} );
+					colorAttachments.emplace_back( VkAttachmentReference{ index, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
 				}
 
 				++index;
 			}
-
-			renderPass.dependencies.resize( 2u );
-			renderPass.dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
-			renderPass.dependencies[0].dstSubpass = 0u;
-			renderPass.dependencies[0].srcStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-			renderPass.dependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-			renderPass.dependencies[0].srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
-			renderPass.dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-			renderPass.dependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-
-			renderPass.dependencies[1].srcSubpass = 0u;
-			renderPass.dependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
-			renderPass.dependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-			renderPass.dependencies[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-			renderPass.dependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-			renderPass.dependencies[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-			renderPass.dependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-
-			return device.createRenderPass( renderPass );
+			
+			ashes::SubpassDescriptionArray subpasses;
+			subpasses.emplace_back( ashes::SubpassDescription
+				{
+					0u,
+					VK_PIPELINE_BIND_POINT_GRAPHICS,
+					{},
+					std::move( colorAttachments ),
+					{},
+					std::move( depthStencilAttachment ),
+					{},
+				} );
+			ashes::VkSubpassDependencyArray dependencies
+			{
+				{
+					VK_SUBPASS_EXTERNAL,
+					0u,
+					VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+					VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+					VK_ACCESS_SHADER_READ_BIT,
+					VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
+					VK_DEPENDENCY_BY_REGION_BIT,
+				},
+				{
+					0u,
+					VK_SUBPASS_EXTERNAL,
+					VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+					VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+					VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
+					VK_ACCESS_SHADER_READ_BIT,
+					VK_DEPENDENCY_BY_REGION_BIT,
+				}
+			};
+			ashes::RenderPassCreateInfo createInfo
+			{
+				0u,
+				std::move( attaches ),
+				std::move( subpasses ),
+				std::move( dependencies ),
+			};
+			return device.createRenderPass( std::move( createInfo ) );
 		}
 
 		ashes::FrameBufferPtr doCreateFrameBuffer( ashes::RenderPass const & renderPass
@@ -142,11 +203,11 @@ namespace common
 			assert( views.size() == renderPass.getAttachmentCount() );
 			ashes::ImageViewArray attaches;
 			auto it = renderPass.getAttachments().begin();
-			auto dimensions = views[0]->getImage().getDimensions();
+			auto dimensions = views[0].image->getDimensions();
 
 			for ( auto & view : views )
 			{
-				attaches.emplace_back( *it, std::move( view ) );
+				attaches.emplace_back( view );
 				++it;
 			}
 
@@ -198,7 +259,7 @@ namespace common
 
 			for ( auto & view : views )
 			{
-				result.emplace_back( view.get().image->createView( *view.get() ) );
+				result.emplace_back( view.get().image->createView( view.get().createInfo ) );
 			}
 
 			return result;
@@ -282,7 +343,7 @@ namespace common
 	void NodesRenderer::doUpdate( ashes::ImageViewArray views )
 	{
 		assert( !views.empty() );
-		auto dimensions = views[0]->getImage().getDimensions();
+		auto dimensions = views[0].image->getDimensions();
 		auto size = VkExtent2D{ dimensions.width, dimensions.height };
 
 		if ( size != m_size )
@@ -294,13 +355,13 @@ namespace common
 
 			for ( auto & view : views )
 			{
-				if ( !ashes::isDepthOrStencilFormat( view->getFormat() ) )
+				if ( !ashes::isDepthOrStencilFormat( view.createInfo.format ) )
 				{
-					clearValues.emplace_back( colour );
+					clearValues.emplace_back( ashes::makeClearValue( colour ) );
 				}
 				else
 				{
-					clearValues.emplace_back( depth );
+					clearValues.emplace_back( ashes::makeClearValue( depth ) );
 				}
 			}
 
@@ -371,30 +432,23 @@ namespace common
 			m_billboardDescriptorPool = m_billboardDescriptorLayout->createPool( m_billboardsCount );
 
 			// Initialise vertex layout.
-			m_billboardVertexLayout = ashes::makeLayout< Vertex >( 0u, VK_VERTEX_INPUT_RATE_VERTEX );
-			m_billboardVertexLayout->createAttribute( 0u
-				, VK_FORMAT_R32G32B32_SFLOAT
-				, offsetof( Vertex, position ) );
-			m_billboardVertexLayout->createAttribute( 1u
-				, VK_FORMAT_R32G32B32_SFLOAT
-				, offsetof( Vertex, normal ) );
-			m_billboardVertexLayout->createAttribute( 2u
-				, VK_FORMAT_R32G32B32_SFLOAT
-				, offsetof( Vertex, tangent ) );
-			m_billboardVertexLayout->createAttribute( 3u
-				, VK_FORMAT_R32G32B32_SFLOAT
-				, offsetof( Vertex, bitangent ) );
-			m_billboardVertexLayout->createAttribute( 4u
-				, VK_FORMAT_R32G32_SFLOAT
-				, offsetof( Vertex, texture ) );
-			// Initialise instance layout.
-			m_billboardInstanceLayout = ashes::makeLayout< BillboardInstanceData >( 1u, VK_VERTEX_INPUT_RATE_INSTANCE );
-			m_billboardInstanceLayout->createAttribute( 5u
-				, VK_FORMAT_R32G32B32_SFLOAT
-				, offsetof( BillboardInstanceData, offset ) );
-			m_billboardInstanceLayout->createAttribute( 6u
-				, VK_FORMAT_R32G32_SFLOAT
-				, offsetof( BillboardInstanceData, dimensions ) );
+			ashes::PipelineVertexInputStateCreateInfo vertexLayout
+			{
+				0u,
+				{
+					{ 0u, sizeof( Vertex ), VK_VERTEX_INPUT_RATE_VERTEX },
+					{ 1u, sizeof( BillboardInstanceData ), VK_VERTEX_INPUT_RATE_INSTANCE },
+				},
+				{
+					{ 0u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offsetof( Vertex, position ) },
+					{ 1u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offsetof( Vertex, normal ) },
+					{ 2u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offsetof( Vertex, tangent ) },
+					{ 3u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offsetof( Vertex, bitangent ) },
+					{ 4u, 0u, VK_FORMAT_R32G32_SFLOAT, offsetof( Vertex, texture ) },
+					{ 5u, 1u, VK_FORMAT_R32G32B32_SFLOAT, offsetof( BillboardInstanceData, offset ) },
+					{ 6u, 1u, VK_FORMAT_R32G32_SFLOAT, offsetof( BillboardInstanceData, dimensions ) },
+				},
+			};
 
 			if ( billboard.material.hasOpacity == !m_opaqueNodes )
 			{
@@ -456,7 +510,14 @@ namespace common
 
 				// Initialise descriptor set for textures.
 				ashes::VkDescriptorSetLayoutBindingArray bindings;
-				bindings.emplace_back( 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 6u );
+				bindings.push_back(
+					{
+						0u,
+						VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+						6u,
+						VK_SHADER_STAGE_FRAGMENT_BIT,
+						nullptr
+					} );
 				materialNode.layout = m_device.getDevice().createDescriptorSetLayout( std::move( bindings ) );
 				materialNode.pool = materialNode.layout->createPool( 1u );
 				materialNode.descriptorSetTextures = materialNode.pool->createDescriptorSet( 1u );
@@ -464,15 +525,13 @@ namespace common
 				for ( uint32_t index = 0u; index < material.data.texturesCount; ++index )
 				{
 					materialNode.descriptorSetTextures->createBinding( materialNode.layout->getBinding( 0u, index )
-						, *materialNode.textures[index]->view
+						, materialNode.textures[index]->view
 						, *m_sampler
 						, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
 						, index );
 				}
 
 				materialNode.descriptorSetTextures->update();
-				VkPipelineRasterizationStateCreateInfo rasterisationState;
-				rasterisationState.cullMode = VK_CULL_MODE_NONE;
 
 				// Initialise the pipeline
 				if ( materialNode.layout )
@@ -484,34 +543,42 @@ namespace common
 					materialNode.pipelineLayout = m_device.getDevice().createPipelineLayout( *m_billboardDescriptorLayout );
 				}
 
-				VkPipelineColorBlendStateCreateInfo blendState;
+				ashes::VkPipelineColorBlendAttachmentStateArray bsAttaches;
 
 				for ( auto & attach : m_renderPass->getAttachments() )
 				{
 					if ( !ashes::isDepthOrStencilFormat( attach.format ) )
 					{
-						blendState.attachs.push_back( ashes::ColourBlendStateAttachment{} );
+						bsAttaches.push_back( VkPipelineColorBlendAttachmentState
+							{
+								VK_FALSE,
+								VK_BLEND_FACTOR_ONE,
+								VK_BLEND_FACTOR_ZERO,
+								VK_BLEND_OP_ADD,
+								VK_BLEND_FACTOR_ONE,
+								VK_BLEND_FACTOR_ZERO,
+								VK_BLEND_OP_ADD,
+								VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT
+							} );
 					}
 				}
 
-				std::vector< VkDynamicState > dynamicStateEnables
-				{
-					VK_DYNAMIC_STATE_VIEWPORT,
-					VK_DYNAMIC_STATE_SCISSOR
-				};
-
-				materialNode.pipeline = materialNode.pipelineLayout->createPipeline( 
-				{
-					doCreateBillboardProgram( m_device.getDevice(), m_fragmentShaderFile ),
-					*m_renderPass,
-					ashes::VertexInputState::create( { *m_billboardVertexLayout, *m_billboardInstanceLayout } ),
-					{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
-					rasterisationState,
-					VkPipelineMultisampleStateCreateInfo{},
-					blendState,
-					dynamicStateEnables,
-					VkPipelineDepthStencilStateCreateInfo{}
-				} );
+				materialNode.pipeline = m_device->createPipeline( ashes::GraphicsPipelineCreateInfo
+					{
+						0u,
+						doCreateBillboardProgram( m_device.getDevice(), m_fragmentShaderFile ),
+						std::move( vertexLayout ),
+						ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
+						std::nullopt,
+						ashes::PipelineViewportStateCreateInfo{},
+						ashes::PipelineRasterizationStateCreateInfo{ 0u, VK_FALSE, VK_FALSE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE },
+						ashes::PipelineMultisampleStateCreateInfo{},
+						std::nullopt,
+						ashes::PipelineColorBlendStateCreateInfo{ 0u, VK_FALSE, VK_LOGIC_OP_COPY, std::move( bsAttaches ) },
+						ashes::PipelineDynamicStateCreateInfo{ 0u, { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR } },
+						*materialNode.pipelineLayout,
+						*m_renderPass,
+					} );
 				m_billboardRenderNodes.emplace_back( std::move( materialNode ) );
 				++matIndex;
 			}
@@ -525,29 +592,27 @@ namespace common
 	{
 		ashes::VkDescriptorSetLayoutBindingArray bindings
 		{
-			VkDescriptorSetLayoutBinding{ 0u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT },
+			VkDescriptorSetLayoutBinding{ 0u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
 		};
 		doFillObjectDescriptorLayoutBindings( bindings );
 		m_objectDescriptorLayout = m_device.getDevice().createDescriptorSetLayout( std::move( bindings ) );
 		m_objectDescriptorPool = m_objectDescriptorLayout->createPool( m_objectsCount );
 
 		// Initialise vertex layout.
-		m_objectVertexLayout = ashes::makeLayout< Vertex >( 0u );
-		m_objectVertexLayout->createAttribute( 0u
-			, VK_FORMAT_R32G32B32_SFLOAT
-			, offsetof( common::Vertex, position ) );
-		m_objectVertexLayout->createAttribute( 1u
-			, VK_FORMAT_R32G32B32_SFLOAT
-			, offsetof( common::Vertex, normal ) );
-		m_objectVertexLayout->createAttribute( 2u
-			, VK_FORMAT_R32G32B32_SFLOAT
-			, offsetof( common::Vertex, tangent ) );
-		m_objectVertexLayout->createAttribute( 3u
-			, VK_FORMAT_R32G32B32_SFLOAT
-			, offsetof( common::Vertex, bitangent ) );
-		m_objectVertexLayout->createAttribute( 4u
-			, VK_FORMAT_R32G32_SFLOAT
-			, offsetof( common::Vertex, texture ) );
+		ashes::PipelineVertexInputStateCreateInfo vertexLayout
+		{
+			0u,
+			{
+				{ 0u, sizeof( Vertex ), VK_VERTEX_INPUT_RATE_VERTEX },
+			},
+			{
+				{ 0u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offsetof( Vertex, position ) },
+				{ 1u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offsetof( Vertex, normal ) },
+				{ 2u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offsetof( Vertex, tangent ) },
+				{ 3u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offsetof( Vertex, bitangent ) },
+				{ 4u, 0u, VK_FORMAT_R32G32_SFLOAT, offsetof( Vertex, texture ) },
+			},
+		};
 
 		for ( auto & submesh : object )
 		{
@@ -615,7 +680,7 @@ namespace common
 
 					// Initialise descriptor set for textures.
 					ashes::VkDescriptorSetLayoutBindingArray bindings;
-					bindings.emplace_back( 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 6u );
+					bindings.push_back( { 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 6u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr } );
 					materialNode.layout = m_device.getDevice().createDescriptorSetLayout( std::move( bindings ) );
 					materialNode.pool = materialNode.layout->createPool( 1u );
 					materialNode.descriptorSetTextures = materialNode.pool->createDescriptorSet( 1u );
@@ -623,19 +688,13 @@ namespace common
 					for ( uint32_t index = 0u; index < material.data.texturesCount; ++index )
 					{
 						materialNode.descriptorSetTextures->createBinding( materialNode.layout->getBinding( 0u, index )
-							, *materialNode.textures[index]->view
+							, materialNode.textures[index]->view
 							, *m_sampler
 							, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
 							, index );
 					}
 
 					materialNode.descriptorSetTextures->update();
-					VkPipelineRasterizationStateCreateInfo rasterisationState;
-
-					if ( material.data.backFace )
-					{
-						rasterisationState.cullMode = VK_CULL_MODE_FRONT_BIT;
-					}
 
 					// Initialise the pipeline
 					if ( materialNode.layout )
@@ -647,34 +706,42 @@ namespace common
 						materialNode.pipelineLayout = m_device.getDevice().createPipelineLayout( *m_objectDescriptorLayout );
 					}
 
-					VkPipelineColorBlendStateCreateInfo blendState;
+					ashes::VkPipelineColorBlendAttachmentStateArray bsAttaches;
 
 					for ( auto & attach : m_renderPass->getAttachments() )
 					{
 						if ( !ashes::isDepthOrStencilFormat( attach.format ) )
 						{
-							blendState.attachs.push_back( ashes::ColourBlendStateAttachment{} );
+							bsAttaches.push_back( VkPipelineColorBlendAttachmentState
+								{
+									VK_FALSE,
+									VK_BLEND_FACTOR_ONE,
+									VK_BLEND_FACTOR_ZERO,
+									VK_BLEND_OP_ADD,
+									VK_BLEND_FACTOR_ONE,
+									VK_BLEND_FACTOR_ZERO,
+									VK_BLEND_OP_ADD,
+									VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT
+								} );
 						}
 					}
 
-					std::vector< VkDynamicState > dynamicStateEnables
-					{
-						VK_DYNAMIC_STATE_VIEWPORT,
-						VK_DYNAMIC_STATE_SCISSOR
-					};
-
-					materialNode.pipeline = materialNode.pipelineLayout->createPipeline(
-					{
-						doCreateObjectProgram( m_device.getDevice(), m_fragmentShaderFile ),
-						*m_renderPass,
-						ashes::VertexInputState::create( *m_objectVertexLayout ),
-						{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST },
-						rasterisationState,
-						VkPipelineMultisampleStateCreateInfo{},
-						blendState,
-						dynamicStateEnables,
-						VkPipelineDepthStencilStateCreateInfo{}
-					} );
+					materialNode.pipeline = m_device->createPipeline( ashes::GraphicsPipelineCreateInfo
+						{
+							0u,
+							doCreateObjectProgram( m_device.getDevice(), m_fragmentShaderFile ),
+							std::move( vertexLayout ),
+							ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST },
+							std::nullopt,
+							ashes::PipelineViewportStateCreateInfo{},
+							ashes::PipelineRasterizationStateCreateInfo{ 0u, VK_FALSE, VK_FALSE, VK_POLYGON_MODE_FILL, VkCullModeFlags( material.data.backFace ? VK_CULL_MODE_FRONT_BIT : VK_CULL_MODE_BACK_BIT ) },
+							ashes::PipelineMultisampleStateCreateInfo{},
+							std::nullopt,
+							ashes::PipelineColorBlendStateCreateInfo{ 0u, VK_FALSE, VK_LOGIC_OP_COPY, std::move( bsAttaches ) },
+							ashes::PipelineDynamicStateCreateInfo{ 0u, { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR } },
+							*materialNode.pipelineLayout,
+							*m_renderPass,
+						} );
 					m_submeshRenderNodes.emplace_back( std::move( materialNode ) );
 					++matIndex;
 				}

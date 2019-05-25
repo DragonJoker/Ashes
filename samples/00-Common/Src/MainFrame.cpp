@@ -56,7 +56,7 @@ namespace common
 			};
 			m_instance = std::make_unique< utils::Instance >( m_renderers
 				, m_rendererName.ToStdString()
-				, config );
+				, std::move( config ) );
 
 			std::cout << "Instance instance created." << std::endl;
 			m_panel = doCreatePanel( WindowSize, *m_instance );

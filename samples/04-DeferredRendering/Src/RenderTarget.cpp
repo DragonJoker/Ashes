@@ -76,7 +76,7 @@ namespace vkapp
 				, m_transferQueue
 				, ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "opaque_gp.frag"
 				, m_gbuffer
-				, views[0]->getFormat()
+				, views[0]->format
 				, *m_sceneUbo
 				, *m_objectUbo )
 			, scene
@@ -180,8 +180,8 @@ namespace vkapp
 		size_t index = 0u;
 		VkExtent2D size
 		{
-			getColourView()->getImage().getDimensions().width,
-			getColourView()->getImage().getDimensions().height,
+			getColourView().image->getDimensions().width,
+			getColourView().image->getDimensions().height,
 		};
 
 		for ( auto & texture : m_gbuffer )
@@ -191,7 +191,7 @@ namespace vkapp
 					0,
 					VK_IMAGE_TYPE_2D,
 					formats[index],
-					getColourView()->getImage().getDimensions(),
+					getColourView().image->getDimensions(),
 					1u,
 					1u,
 					VK_SAMPLE_COUNT_1_BIT,

@@ -98,12 +98,9 @@ namespace common
 
 		ashes::DescriptorSetLayoutPtr m_objectDescriptorLayout;
 		ashes::DescriptorSetPoolPtr m_objectDescriptorPool;
-		ashes::VertexLayoutPtr m_objectVertexLayout;
 
 		ashes::DescriptorSetLayoutPtr m_billboardDescriptorLayout;
 		ashes::DescriptorSetPoolPtr m_billboardDescriptorPool;
-		ashes::VertexLayoutPtr m_billboardVertexLayout;
-		ashes::VertexLayoutPtr m_billboardInstanceLayout;
 
 		ashes::RenderPassPtr m_renderPass;
 		ashes::FrameBufferPtr m_frameBuffer;

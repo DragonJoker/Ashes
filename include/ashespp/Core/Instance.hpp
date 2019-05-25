@@ -250,6 +250,16 @@ namespace ashes
 			return m_features;
 		}
 
+		inline std::string getName()const
+		{
+			return m_plugin.name;
+		}
+
+		inline std::string getDescription()const
+		{
+			return m_plugin.description;
+		}
+
 		inline StringArray const & getEnabledLayerNames()const
 		{
 			return m_createInfo.enabledLayerNames;
