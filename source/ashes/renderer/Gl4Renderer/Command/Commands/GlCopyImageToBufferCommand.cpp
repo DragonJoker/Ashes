@@ -55,14 +55,6 @@ namespace ashes::gl4
 	}
 
 	void apply( ContextLock const & context
-		, CmdReadBuffer const & cmd )
-	{
-		glLogCall( context
-			, glReadBuffer
-			, cmd.point );
-	}
-
-	void apply( ContextLock const & context
 		, CmdReadPixels const & cmd )
 	{
 		glLogCall( context
@@ -101,7 +93,7 @@ namespace ashes::gl4
 			, 0u ) );
 		list.push_back( makeCmd< OpType::eReadBuffer >( GL_ATTACHMENT_POINT_COLOR0 ) );
 		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
-			, 0u ) );
+			, nullptr ) );
 
 		// Read pixels
 		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
@@ -113,7 +105,7 @@ namespace ashes::gl4
 			, format
 			, type ) );
 		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
-			, 0u ) );
+			, nullptr ) );
 
 		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK
 			, 0u ) );

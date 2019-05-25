@@ -221,9 +221,8 @@ namespace ashes::gl4
 		}
 	}
 
-	void GeometryBuffers::initialise()
+	void GeometryBuffers::initialise( ContextLock & context )
 	{
-		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glGenVertexArrays
 			, 1

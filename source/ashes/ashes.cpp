@@ -1,6 +1,6 @@
 #include "ashes_plugin.hpp"
 
-thread_local PluginLibrary g_library;
+PluginLibrary g_library;
 
 extern "C"
 {

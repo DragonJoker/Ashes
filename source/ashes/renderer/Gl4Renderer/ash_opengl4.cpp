@@ -292,14 +292,16 @@ namespace ashes::gl4
 		VkMemoryMapFlags flags,
 		void** ppData )
 	{
-		return get( memory )->lock( offset, size, flags, ppData );
+		auto context = get( device )->getContext();
+		return get( memory )->lock( context, offset, size, flags, ppData );
 	}
 
 	void VKAPI_CALL vkUnmapMemory(
 		VkDevice device,
 		VkDeviceMemory memory )
 	{
-		get( memory )->unlock();
+		auto context = get( device )->getContext();
+		get( memory )->unlock( context );
 	}
 
 	VkResult VKAPI_CALL vkFlushMappedMemoryRanges(
@@ -307,11 +309,12 @@ namespace ashes::gl4
 		uint32_t memoryRangeCount,
 		const VkMappedMemoryRange* pMemoryRanges )
 	{
+		auto context = get( device )->getContext();
 		VkResult result = VK_SUCCESS;
 
 		for ( uint32_t i = 0u; i < memoryRangeCount; ++i )
 		{
-			result = get( pMemoryRanges->memory )->flush( pMemoryRanges->offset, pMemoryRanges->size );
+			result = get( pMemoryRanges->memory )->flush( context, pMemoryRanges->offset, pMemoryRanges->size );
 			++pMemoryRanges;
 		}
 
@@ -323,11 +326,12 @@ namespace ashes::gl4
 		uint32_t memoryRangeCount,
 		const VkMappedMemoryRange* pMemoryRanges )
 	{
+		auto context = get( device )->getContext();
 		VkResult result = VK_SUCCESS;
 
 		for ( uint32_t i = 0u; i < memoryRangeCount; ++i )
 		{
-			result = get( pMemoryRanges->memory )->invalidate( pMemoryRanges->offset, pMemoryRanges->size );
+			result = get( pMemoryRanges->memory )->invalidate( context, pMemoryRanges->offset, pMemoryRanges->size );
 			++pMemoryRanges;
 		}
 
@@ -440,9 +444,11 @@ namespace ashes::gl4
 		uint32_t fenceCount,
 		const VkFence* pFences )
 	{
+		auto context = get( device )->getContext();
+
 		for ( uint32_t i = 0u; i < fenceCount; ++i )
 		{
-			get( *pFences )->reset();
+			get( *pFences )->reset( context );
 		}
 
 		return VK_SUCCESS;
@@ -464,9 +470,11 @@ namespace ashes::gl4
 		VkBool32 waitAll,
 		uint64_t timeout )
 	{
+		auto context = get( device )->getContext();
+
 		for ( uint32_t i = 0u; i < fenceCount; ++i )
 		{
-			get( *pFences )->wait( timeout );
+			get( *pFences )->wait( context, timeout );
 		}
 
 		return VK_SUCCESS;

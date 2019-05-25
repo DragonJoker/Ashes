@@ -42,6 +42,7 @@ namespace ashes::gl4
 		eBindVextexArray,
 		eBindVextexArrayObject,
 		eBindContextState,
+		eBindPipelineProgram,
 		eFramebufferTexture2D,
 		eBlitFramebuffer,
 		eClearTexColor,
@@ -361,16 +362,16 @@ namespace ashes::gl4
 	struct alignas( uint64_t ) CmdT< OpType::eBindFramebuffer >
 	{
 		inline CmdT( uint32_t target
-			, uint32_t name )
+			, VkFramebuffer fbo )
 			: cmd{ { OpType::eBindFramebuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, target{ std::move( target ) }
-			, name{ std::move( name ) }
+			, fbo{ fbo }
 		{
 		}
 
 		Command cmd;
 		uint32_t target;
-		uint32_t name;
+		VkFramebuffer fbo;
 	};
 	using CmdBindFramebuffer = CmdT< OpType::eBindFramebuffer >;
 
@@ -647,6 +648,31 @@ namespace ashes::gl4
 
 	void apply( ContextLock const & context
 		, CmdDownloadMemory const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eReadBuffer >
+	{
+		static Op constexpr value = { OpType::eReadBuffer, 2u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eReadBuffer >
+	{
+		inline CmdT( uint32_t point )
+			: cmd{ { OpType::eReadBuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, point{ std::move( point ) }
+		{
+		}
+
+		Command cmd;
+		uint32_t point;
+	};
+	using CmdReadBuffer = CmdT< OpType::eReadBuffer >;
+
+	void apply( ContextLock const & context
+		, CmdReadBuffer const & cmd );
 
 	//*************************************************************************
 

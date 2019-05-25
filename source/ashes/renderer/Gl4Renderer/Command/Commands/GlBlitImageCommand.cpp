@@ -156,6 +156,8 @@ namespace ashes::gl4
 				, GL_TEXTURE_2D
 				, layerCopy.src.object
 				, layerCopy.region.srcSubresource.mipLevel ) );
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+				, nullptr ) );
 
 			// Setup dst FBO
 			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
@@ -165,12 +167,16 @@ namespace ashes::gl4
 				, GL_TEXTURE_2D
 				, layerCopy.dst.object
 				, layerCopy.region.dstSubresource.mipLevel ) );
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+				, nullptr ) );
 
 			// Perform the blit
 			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
 				, get( device )->getBlitSrcFbo() ) );
+			list.push_back( makeCmd< OpType::eReadBuffer >( uint32_t( layerCopy.src.point ) ) );
 			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_DRAW_FRAMEBUFFER
 				, get( device )->getBlitDstFbo() ) );
+			list.push_back( makeCmd< OpType::eDrawBuffer >( uint32_t( layerCopy.dst.point ) ) );
 			list.push_back( makeCmd< OpType::eBlitFramebuffer >( layerCopy.region.srcOffsets[0].x
 				, layerCopy.region.srcOffsets[0].y
 				, layerCopy.region.srcOffsets[1].x
@@ -182,9 +188,9 @@ namespace ashes::gl4
 				, getMask( get( srcImage )->getFormat() )
 				, convert( filter ) ) );
 			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
-				, 0u ) );
+				, nullptr ) );
 			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_DRAW_FRAMEBUFFER
-				, 0u ) );
+				, nullptr ) );
 		}
 	}
 }

@@ -322,16 +322,22 @@ namespace ashes::d3d11
 				if ( checkFlag( support, D3D11_FORMAT_SUPPORT_IA_VERTEX_BUFFER ) )
 				{
 					props.bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
+					props.bufferFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+					props.bufferFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
 				}
 
 				if ( checkFlag( support, D3D11_FORMAT_SUPPORT_DEPTH_STENCIL ) )
 				{
 					props.linearTilingFeatures |= VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
+					props.linearTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+					props.linearTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
 				}
 
 				if ( checkFlag( support, D3D11_FORMAT_SUPPORT_RENDER_TARGET ) )
 				{
 					props.linearTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT;
+					props.linearTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+					props.linearTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
 
 				}
 
@@ -339,6 +345,8 @@ namespace ashes::d3d11
 				{
 					props.linearTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT;
 					props.linearTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT;
+					props.linearTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+					props.linearTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
 				}
 
 				if ( checkFlag( support, D3D11_FORMAT_SUPPORT_SHADER_SAMPLE ) )
@@ -347,12 +355,16 @@ namespace ashes::d3d11
 					props.linearTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT;
 					props.linearTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT_EXT;
 					props.linearTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_EXT;
+					props.linearTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+					props.linearTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
 				}
 
 				if ( checkFlag( support, D3D11_FORMAT_SUPPORT_CPU_LOCKABLE ) )
 				{
 					props.linearTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;
 					props.linearTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
+					props.linearTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+					props.linearTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
 				}
 
 				props.optimalTilingFeatures = props.linearTilingFeatures;

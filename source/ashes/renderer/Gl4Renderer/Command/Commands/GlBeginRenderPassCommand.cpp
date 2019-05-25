@@ -100,7 +100,7 @@ namespace ashes::gl4
 		}
 		
 		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
-			, get( frameBuffer )->getInternal() ) );
+			, frameBuffer ) );
 
 		uint32_t clearIndex = 0u;
 		auto & attaches = get( frameBuffer )->getAllAttaches();
@@ -108,6 +108,9 @@ namespace ashes::gl4
 
 		if ( get( frameBuffer )->getInternal() )
 		{
+			list.insert( list.end()
+				, get( frameBuffer )->getBindAttaches().begin()
+				, get( frameBuffer )->getBindAttaches().end() );
 			auto & attachments = get( frameBuffer )->getAttachments();
 
 			for ( auto & attach : get( renderPass )->getColourAttaches() )

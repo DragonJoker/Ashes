@@ -83,30 +83,42 @@ namespace ashes::gl4
 		}
 
 		bool doCheckCompileErrors( VkDevice device
+			, VkShaderModule module
 			, bool compiled
 			, GLuint shaderName
 			, std::string const & source )
 		{
 			auto compilerLog = doRetrieveCompilerLog( device
 				, shaderName );
+			auto reportType = compiled
+				? VK_DEBUG_REPORT_WARNING_BIT_EXT
+				: VK_DEBUG_REPORT_ERROR_BIT_EXT;
 
 			if ( !compilerLog.empty() )
 			{
-				if ( !compiled )
-				{
-					std::cerr << compilerLog << std::endl;
-					std::cerr << source << std::endl;
-				}
-				else
-				{
-					std::cout << compilerLog << std::endl;
-					std::cout << source << std::endl;
-				}
+				std::stringstream stream;
+				stream << compilerLog << std::endl;
+				stream << source << std::endl;
+				get( get( device )->getInstance() )->reportMessage( reportType
+					, VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT
+					, uint64_t( module )
+					, 0u
+					, 0u
+					, "CORE"
+					, stream.str().c_str() );
 			}
 			else if ( !compiled )
 			{
-				std::cerr << "Shader compilation failed" << std::endl;
-				std::cerr << source << std::endl;
+				std::stringstream stream;
+				stream << "Shader compilation failed" << std::endl;
+				stream << source << std::endl;
+				get( get( device )->getInstance() )->reportMessage( reportType
+					, VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT
+					, uint64_t( module )
+					, 0u
+					, 0u
+					, "CORE"
+					, stream.str().c_str() );
 			}
 
 			return compiled;
@@ -234,13 +246,145 @@ namespace ashes::gl4
 			compiler.set_common_options( options );
 		}
 
+		ConstantFormat getIntFormat( uint32_t size )
+		{
+			switch ( size )
+			{
+			case 1:
+				return ConstantFormat::eInt;
+			case 2:
+				return ConstantFormat::eVec2i;
+			case 3:
+				return ConstantFormat::eVec3i;
+			case 4:
+				return ConstantFormat::eVec4i;
+			default:
+				assert( false && "Unsupported row count" );
+				return ConstantFormat::eInt;
+			}
+		}
+
+		ConstantFormat getUIntFormat( uint32_t size )
+		{
+			switch ( size )
+			{
+			case 1:
+				return ConstantFormat::eUInt;
+			case 2:
+				return ConstantFormat::eVec2ui;
+			case 3:
+				return ConstantFormat::eVec3ui;
+			case 4:
+				return ConstantFormat::eVec4ui;
+			default:
+				assert( false && "Unsupported row count" );
+				return ConstantFormat::eUInt;
+			}
+		}
+
+		ConstantFormat getFloatFormat( uint32_t size )
+		{
+			switch ( size )
+			{
+			case 1:
+				return ConstantFormat::eFloat;
+			case 2:
+				return ConstantFormat::eVec2f;
+			case 3:
+				return ConstantFormat::eVec3f;
+			case 4:
+				return ConstantFormat::eVec4f;
+			default:
+				assert( false && "Unsupported row count" );
+				return ConstantFormat::eFloat;
+			}
+		}
+
+		ConstantFormat getFloatFormat( uint32_t cols
+			, uint32_t rows )
+		{
+			switch ( cols )
+			{
+			case 1:
+				return getFloatFormat( rows );
+			case 2:
+				return ConstantFormat::eMat2f;
+			case 3:
+				return ConstantFormat::eMat3f;
+			case 4:
+				return ConstantFormat::eMat4f;
+			default:
+				assert( false && "Unsupported column count" );
+				return ConstantFormat::eFloat;
+			}
+		}
+
+		ConstantFormat getFormat( spirv_cross::SPIRType const & type )
+		{
+			switch ( type.basetype )
+			{
+			case spirv_cross::SPIRType::Int:
+				return getIntFormat( type.vecsize );
+
+			case spirv_cross::SPIRType::UInt:
+				return getUIntFormat( type.vecsize );
+
+			case spirv_cross::SPIRType::Float:
+				return getFloatFormat( type.columns, type.vecsize );
+
+			default:
+				assert( false && "Unsupported SPIRType" );
+				return ConstantFormat::eVec4f;
+			}
+		}
+
+		uint32_t getArraySize( spirv_cross::SPIRType const & type )
+		{
+			return uint32_t( type.array.size() );
+		}
+
+		ConstantsLayout doRetrievePushConstants( spirv_cross::CompilerGLSL & compiler )
+		{
+			ConstantsLayout result;
+			spirv_cross::ShaderResources resources = compiler.get_shader_resources();
+
+			for ( auto & pcb : resources.push_constant_buffers )
+			{
+				auto & pcbType = compiler.get_type( pcb.type_id );
+				assert( pcbType.parent_type );
+				auto & structType = compiler.get_type( pcbType.parent_type );
+
+				uint32_t offset = 0u;
+				uint32_t index = 0u;
+
+				for ( auto & mbrTypeId : structType.member_types )
+				{
+					spirv_cross::SPIRType const & mbrType = compiler.get_type( mbrTypeId );
+
+					result.push_back( ConstantDesc
+						{
+							compiler.get_name( pcb.id ) + "." + compiler.get_member_name( structType.self, index++ ),
+							0u,
+							getFormat( mbrType ),
+							getSize( getFormat( mbrType ) ),
+							getArraySize( mbrType ),
+							offset,
+						} );
+					offset += result.back().size;
+				}
+			}
+
+			return result;
+		}
+
 #endif
 
 		std::string compileSpvToGlsl( VkDevice device
 			, UInt32Array const & shader
 			, VkShaderStageFlagBits stage
 			, VkPipelineShaderStageCreateInfo const & state
-			, bool isRtot )
+			, bool isRtot
+			, ConstantsLayout & constants )
 		{
 			if ( shader[0] == OpCodeSPIRV )
 			{
@@ -251,6 +395,8 @@ namespace ashes::gl4
 				doProcessSpecializationConstants( state, *compiler );
 				doSetEntryPoint( stage, *compiler );
 				doSetupOptions( device, *compiler, isRtot );
+				constants = doRetrievePushConstants( *compiler );
+
 				return compiler->compile();
 
 #else
@@ -329,7 +475,8 @@ namespace ashes::gl4
 				, m_code
 				, state.stage
 				, state
-				, isRtot );
+				, isRtot
+				, m_constants );
 			auto length = int( m_source.size() );
 			char const * data = m_source.data();
 			glLogCall( context
@@ -350,7 +497,7 @@ namespace ashes::gl4
 			, GL_INFO_COMPILE_STATUS
 			, &compiled );
 
-		if ( !doCheckCompileErrors( m_device, compiled != 0, result, m_source ) )
+		if ( !doCheckCompileErrors( m_device, get( this ), compiled != 0, result, m_source ) )
 		{
 			throw std::runtime_error{ "Shader compilation failed." };
 		}

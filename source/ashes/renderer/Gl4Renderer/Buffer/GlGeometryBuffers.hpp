@@ -62,7 +62,7 @@ namespace ashes::gl4
 			, VkIndexType type );
 		~GeometryBuffers()noexcept;
 
-		void initialise();
+		void initialise( ContextLock & context );
 
 		static std::vector< VBO > createVBOs( VboBindings const & vbos
 			, VkPipelineVertexInputStateCreateInfo const & vertexInputState

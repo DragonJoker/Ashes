@@ -148,6 +148,16 @@ namespace ashes::gl4
 			, GL_READ_FRAMEBUFFER
 			, m_fbo );
 		glLogCall( context
+			, glFramebufferTexture2D
+			, GL_READ_FRAMEBUFFER
+			, GL_ATTACHMENT_POINT_COLOR0
+			, GL_TEXTURE_2D
+			, get( m_view )->getInternal()
+			, 0u );
+		glLogCall( context
+			, glReadBuffer
+			, GL_ATTACHMENT_POINT_COLOR0 );
+		glLogCall( context
 			, glBindFramebuffer
 			, GL_DRAW_FRAMEBUFFER
 			, 0 );

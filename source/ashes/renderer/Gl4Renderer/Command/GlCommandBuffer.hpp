@@ -275,7 +275,7 @@ namespace ashes::gl4
 			return m_cmdsAfterSubmit;
 		}
 
-		void initialiseGeometryBuffers()const;
+		void initialiseGeometryBuffers( ContextLock & context )const;
 
 	private:
 		struct BufferIndex

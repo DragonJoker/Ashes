@@ -97,11 +97,22 @@ namespace ashes::gl4
 	void apply( ContextLock const & context
 		, CmdBindFramebuffer const & cmd )
 	{
-		glLogCall( context
-			, glBindFramebuffer
-			, cmd.target
-			, cmd.name );
-		context->setCurrentFramebuffer( cmd.name );
+		if ( cmd.fbo != VK_NULL_HANDLE )
+		{
+			glLogCall( context
+				, glBindFramebuffer
+				, cmd.target
+				, get( cmd.fbo )->getInternal() );
+		}
+		else
+		{
+			glLogCall( context
+				, glBindFramebuffer
+				, cmd.target
+				, 0u );
+		}
+
+		context->setCurrentFramebuffer( cmd.fbo );
 	}
 
 	void apply( ContextLock const & context
@@ -195,12 +206,20 @@ namespace ashes::gl4
 	void apply( ContextLock const & context
 		, CmdUploadMemory const & cmd )
 	{
-		get( cmd.memory )->upload( 0u, WholeSize );
+		get( cmd.memory )->upload( context, 0u, WholeSize );
 	}
 
 	void apply( ContextLock const & context
 		, CmdDownloadMemory const & cmd )
 	{
-		get( cmd.memory )->download( 0u, WholeSize );
+		get( cmd.memory )->download( context, 0u, WholeSize );
+	}
+
+	void apply( ContextLock const & context
+		, CmdReadBuffer const & cmd )
+	{
+		glLogCall( context
+			, glReadBuffer
+			, cmd.point );
 	}
 }

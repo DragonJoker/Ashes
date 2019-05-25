@@ -36,9 +36,9 @@ namespace ashes::gl4
 			, m_fence );
 	}
 
-	VkResult Fence::wait( uint64_t timeout )const
+	VkResult Fence::wait( ContextLock & context
+		, uint64_t timeout )const
 	{
-		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glFlush );
 		auto res = glLogCall( context
@@ -53,9 +53,14 @@ namespace ashes::gl4
 				: VK_NOT_READY );
 	}
 
-	void Fence::reset()const
+	VkResult Fence::wait( uint64_t timeout )const
 	{
 		auto context = get( m_device )->getContext();
+		return wait( context, timeout );
+	}
+
+	void Fence::reset( ContextLock & context )const
+	{
 		glLogCall( context
 			, glDeleteSync
 			, m_fence );
@@ -63,5 +68,11 @@ namespace ashes::gl4
 			, glFenceSync
 			, GL_WAIT_FLAG_SYNC_GPU_COMMANDS_COMPLETE
 			, 0u );
+	}
+
+	void Fence::reset()const
+	{
+		auto context = get( m_device )->getContext();
+		reset( context );
 	}
 }

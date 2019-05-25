@@ -193,7 +193,24 @@ namespace ashes::gl4
 			++itPassAttach;
 		}
 
+		applyList( context, m_bindAttaches );
 		checkCompleteness( context->glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
+		glLogCall( context
+			, glBindFramebuffer
+			, GL_FRAMEBUFFER
+			, 0 );
+	}
+
+	Framebuffer::Framebuffer( VkDevice device
+		, GLuint name )
+		: m_device{ device }
+		, m_internal{ name }
+	{
+		auto context = get( m_device )->getContext();
+		glLogCall( context
+			, glBindFramebuffer
+			, GL_FRAMEBUFFER
+			, m_internal );
 		glLogCall( context
 			, glBindFramebuffer
 			, GL_FRAMEBUFFER
@@ -202,7 +219,7 @@ namespace ashes::gl4
 
 	Framebuffer::~Framebuffer()
 	{
-		if ( m_internal > 0u )
+		if ( m_internal != GL_INVALID_INDEX )
 		{
 			auto context = get( m_device )->getContext();
 			glLogCall( context
@@ -305,7 +322,14 @@ namespace ashes::gl4
 			getAttachmentPoint( view ),
 			internal,
 			getAttachmentType( view ),
+			( get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT
+				? GL_TEXTURE_2D_MULTISAMPLE
+				: GL_TEXTURE_2D ),
+			mipLevel,
+			index,
 		};
+
+		m_allAttaches.push_back( attachment );
 
 		if ( attachment.point == GL_ATTACHMENT_POINT_DEPTH_STENCIL
 			|| attachment.point == GL_ATTACHMENT_POINT_DEPTH
@@ -319,21 +343,10 @@ namespace ashes::gl4
 			m_srgb |= isSRGBFormat( get( view )->getFormat() );
 		}
 
-		m_allAttaches.push_back( attachment );
-		auto target = GL_TEXTURE_2D;
-
-		if ( get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT )
-		{
-			target = GL_TEXTURE_2D_MULTISAMPLE;
-		}
-
-		glLogCall( context
-			, glFramebufferTexture2D
-			, GL_FRAMEBUFFER
-			, GlAttachmentPoint( attachment.point + index )
-			, target
+		m_bindAttaches.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
+			, GlAttachmentPoint( attachment.point + attachment.index )
+			, attachment.target
 			, attachment.object
-			, mipLevel );
-		checkCompleteness( context->glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
+			, attachment.mipLevel ) );
 	}
 }

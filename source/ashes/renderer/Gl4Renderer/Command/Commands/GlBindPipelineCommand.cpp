@@ -15,31 +15,41 @@ namespace ashes::gl4
 	void apply( ContextLock const & context
 		, CmdBindContextState const & cmd )
 	{
-		context->apply( context
-			, *get( cmd.device )
-			, *cmd.state );
+		context.apply( *get( cmd.device ), *cmd.state );
+	}
+
+	void apply( ContextLock const & context
+		, CmdBindPipelineProgram const & cmd )
+	{
+		glLogCommand( "BindPipelineCommand" );
+		GLuint program;
+
+		if ( !get( context->getCurrentFramebuffer() )->hasSwapchainImage() )
+		{
+			context.apply( *get( cmd.device )
+				, get( cmd.pipeline )->getRtotContextState() );
+			program = get( cmd.pipeline )->getRtotProgram();
+		}
+		else
+		{
+			context.apply( *get( cmd.device )
+				, get( cmd.pipeline )->getBackContextState() );
+			program = get( cmd.pipeline )->getBackProgram();
+		}
+
+		glLogCall( context
+			, glUseProgram
+			, program );
+		context->setCurrentProgram( program );
 	}
 
 	void buildBindPipelineCommand( VkDevice device
 		, VkPipeline pipeline
 		, VkPipelineBindPoint bindingPoint
-		, bool isRtot
 		, CmdList & list )
 	{
 		glLogCommand( "BindPipelineCommand" );
-
-		if ( isRtot )
-		{
-			list.push_back( makeCmd< OpType::eBindContextState >( device
-				, &get( pipeline )->getRtotContextState() ) );
-			list.push_back( makeCmd< OpType::eUseProgram >( get( pipeline )->getRtotProgram() ) );
-		}
-		else
-		{
-			list.push_back( makeCmd< OpType::eBindContextState >( device
-				, &get( pipeline )->getBackContextState() ) );
-			list.push_back( makeCmd< OpType::eUseProgram >( get( pipeline )->getBackProgram() ) );
-		}
+		list.push_back( makeCmd< OpType::eBindPipelineProgram >( device, pipeline ) );
 	}
 
 	void buildUnbindPipelineCommand( VkDevice device

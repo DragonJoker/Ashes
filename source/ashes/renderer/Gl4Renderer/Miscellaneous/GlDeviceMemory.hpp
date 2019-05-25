@@ -33,17 +33,20 @@ namespace ashes::gl4
 				, GLuint buffer );
 			virtual ~DeviceMemoryImpl() = default;
 
-			void upload( ByteArray const & data
+			void upload( ContextLock const & context
+				, ByteArray const & data
 				, VkDeviceSize offset
 				, VkDeviceSize size )const;
-			void download( ByteArray & data
+			void download( ContextLock const & context
+				, ByteArray & data
 				, VkDeviceSize offset
 				, VkDeviceSize size )const;
 
-			virtual VkResult lock( VkDeviceSize offset
+			virtual VkResult lock( ContextLock const & context
+				, VkDeviceSize offset
 				, VkDeviceSize size
 				, void ** data )const = 0;
-			virtual void unlock()const = 0;
+			virtual void unlock( ContextLock const & context )const = 0;
 
 			inline GLuint getInternal()const
 			{
@@ -71,20 +74,25 @@ namespace ashes::gl4
 		VkResult bindToImage( VkImage texture
 			, VkDeviceSize memoryOffset );
 
-		void upload( VkDeviceSize offset
+		void upload( ContextLock const & context
+			, VkDeviceSize offset
 			, VkDeviceSize size )const;
-		void download( VkDeviceSize offset
+		void download( ContextLock const & context
+			, VkDeviceSize offset
 			, VkDeviceSize size )const;
 
-		VkResult lock( VkDeviceSize offset
+		VkResult lock( ContextLock const & context
+			, VkDeviceSize offset
 			, VkDeviceSize size
 			, VkMemoryMapFlags flags
 			, void ** data )const;
-		VkResult flush( VkDeviceSize offset
+		VkResult flush( ContextLock const & context
+			, VkDeviceSize offset
 			, VkDeviceSize size )const;
-		VkResult invalidate( VkDeviceSize offset
+		VkResult invalidate( ContextLock const & context
+			, VkDeviceSize offset
 			, VkDeviceSize size )const;
-		void unlock()const;
+		void unlock( ContextLock const & context )const;
 
 		bool isMapped()const
 		{

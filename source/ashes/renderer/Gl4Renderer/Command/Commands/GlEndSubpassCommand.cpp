@@ -37,6 +37,7 @@ namespace ashes::gl4
 					{
 						list.push_back( makeCmd< OpType::eBindBuffer >( GL_DRAW_FRAMEBUFFER
 							, get( frameBuffer )->getInternal() ) );
+						list.push_back( makeCmd< OpType::eDrawBuffer >( dstattach.point ) );
 					}
 					else
 					{
@@ -47,9 +48,6 @@ namespace ashes::gl4
 					list.push_back( makeCmd< OpType::eBindBuffer >( GL_READ_FRAMEBUFFER
 						, get( frameBuffer )->getInternal() ) );
 					list.push_back( makeCmd< OpType::eReadBuffer >( srcattach.point ) );
-					UInt32Array attaches;
-					attaches.push_back( dstattach.point );
-					list.push_back( makeCmd< OpType::eDrawBuffers >( std::move( attaches ) ) );
 					list.push_back( makeCmd< OpType::eBlitFramebuffer >( 
 						0, 0, int32_t( get( frameBuffer )->getWidth() ), int32_t( get( frameBuffer )->getHeight() ),
 						0, 0, int32_t( get( frameBuffer )->getWidth() ), int32_t( get( frameBuffer )->getHeight() ),

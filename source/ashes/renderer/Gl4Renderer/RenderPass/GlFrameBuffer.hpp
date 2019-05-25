@@ -5,6 +5,7 @@ See LICENSE file in root folder
 #pragma once
 
 #include "renderer/Gl4Renderer/GlRendererPrerequisites.hpp"
+#include "renderer/Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 #include "renderer/Gl4Renderer/Enum/GlAttachmentPoint.hpp"
 #include "renderer/Gl4Renderer/Enum/GlAttachmentType.hpp"
 
@@ -36,6 +37,8 @@ namespace ashes::gl4
 		*/
 		Framebuffer( VkDevice device
 			, VkFramebufferCreateInfo createInfo );
+		Framebuffer( VkDevice device
+			, GLuint name );
 		/**
 		*\brief
 		*	Destructeur
@@ -130,6 +133,11 @@ namespace ashes::gl4
 		{
 			return m_height;
 		}
+
+		CmdList const & getBindAttaches()const
+		{
+			return m_bindAttaches;
+		}
 		/**@}*/
 
 	private:
@@ -142,6 +150,9 @@ namespace ashes::gl4
 			GlAttachmentPoint point;
 			GLuint object;
 			GlAttachmentType type;
+			GlTextureType target;
+			uint32_t mipLevel;
+			uint32_t index;
 		};
 		VkDevice m_device;
 		VkFramebufferCreateFlags m_flags;
@@ -155,6 +166,7 @@ namespace ashes::gl4
 		std::vector< Attachment > m_colourAttaches;
 		Optional< Attachment > m_depthStencilAttach;
 		mutable UInt32Array m_drawBuffers;
+		CmdList m_bindAttaches;
 		bool m_srgb{ false };
 	};
 }

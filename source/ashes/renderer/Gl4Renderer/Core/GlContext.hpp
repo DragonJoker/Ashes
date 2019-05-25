@@ -7,6 +7,13 @@ See LICENSE file in root folder
 
 #include <atomic>
 #include <mutex>
+#include <thread>
+
+#ifndef NDEBUG
+#	define Ashes_LogContextLocking 0
+#else
+#	define Ashes_LogContextLocking 0
+#endif
 
 namespace ashes::gl4
 {
@@ -60,6 +67,9 @@ namespace ashes::gl4
 			, ContextState const & state );
 		void onBaseContextCreated();
 
+		void lock();
+		void unlock();
+
 		static ContextPtr create( VkInstance instance
 			, VkSurfaceCreateInfoKHR createInfo
 			, Context const * mainContext );
@@ -74,12 +84,8 @@ namespace ashes::gl4
 
 		inline bool isEnabled()const
 		{
-			return m_enabled;
-		}
-
-		inline GLuint getCurrentFramebuffer()const
-		{
-			return m_fbo;
+			return m_enabled
+				&& m_activeThread == std::this_thread::get_id();
 		}
 
 		inline ContextImpl const & getImpl()const
@@ -102,25 +108,6 @@ namespace ashes::gl4
 			return m_currentProgram;
 		}
 
-		inline void lock()
-		{
-			m_mutex.lock();
-			m_enabled = true;
-			m_impl->enable();
-		}
-
-		inline void unlock()
-		{
-			m_impl->disable();
-			m_enabled = false;
-			m_mutex.unlock();
-		}
-
-		inline void setCurrentFramebuffer( GLuint value )
-		{
-			m_fbo = value;
-		}
-
 		inline void setCurrentProgram( GLuint value )
 		{
 			m_currentProgram = value;
@@ -134,6 +121,22 @@ namespace ashes::gl4
 		inline void setCurrentViewport( VkViewport const & value )
 		{
 			m_viewport = value;
+		}
+
+		inline void setCurrentFramebuffer( VkFramebuffer value )
+		{
+			m_currentFbo = value;
+		}
+
+		inline bool hasCurrentFramebuffer()const
+		{
+			return m_currentFbo != VK_NULL_HANDLE;
+		}
+
+		inline VkFramebuffer getCurrentFramebuffer()const
+		{
+			assert( hasCurrentFramebuffer() );
+			return m_currentFbo;
 		}
 
 #define GL_LIB_BASE_FUNCTION( fun )\
@@ -194,12 +197,14 @@ namespace ashes::gl4
 		VkSurfaceCreateInfoKHR const & createInfo;
 
 	protected:
+		VkInstance m_instance;
 		std::mutex m_mutex;
 		ContextState m_state;
-		GLuint m_fbo{ 0u };
 		VkRect2D m_scissor{ 0, 0, 0, 0 };
 		VkViewport m_viewport{ 0, 0, 0, 0 };
 		GLuint m_currentProgram;
+		VkFramebuffer m_currentFbo{ VK_NULL_HANDLE };
 		std::atomic< bool > m_enabled{ false };
+		std::atomic< std::thread::id > m_activeThread;
 	};
 }

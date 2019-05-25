@@ -91,20 +91,20 @@ namespace common
 		auto averageCpuTime = std::accumulate( m_cpuFramesTimes.begin()
 			, m_cpuFramesTimes.begin() + count
 			, std::chrono::microseconds{ 0 } ).count() / float( count );
+		auto cpuAvgMs = averageCpuTime / 1000.0f;
 		auto cpuMs = durationCpu.count() / 1000.0f;
-		auto cpuAvgms = averageCpuTime / 1000.0f;
-		title << " [CPU: I " << std::setw( 6 ) << std::setprecision( 4 ) << cpuMs << "ms";
-		title << " (" << std::setw( 5 ) << int( 1000.0f / cpuMs ) << "fps)";
-		title << ", A " << std::setw( 6 ) << std::setprecision( 4 ) << cpuAvgms << "ms";
-		title << " (" << std::setw( 5 ) << int( 1000.0f / cpuAvgms ) << "fps)";
+		title << " [CPU: I " << std::setw( 6 ) << std::setprecision( 4 ) << cpuMs << " ms";
+		title << ", A " << std::setw( 6 ) << std::setprecision( 4 ) << cpuAvgMs << " ms";
+		title << " (" << std::setw( 5 ) << int( 1000.0f / cpuAvgMs ) << " fps)";
 
 		auto averageGpuTime = std::accumulate( m_gpuFramesTimes.begin()
 			, m_gpuFramesTimes.begin() + count
 			, std::chrono::microseconds{ 0 } ).count() / float( count );
+		auto gpuAvgMs = averageGpuTime / 1000.0f;
 		auto gpuMs = durationGpu.count() / 1000.0f;
-		auto gpuAvgms = averageGpuTime / 1000.0f;
-		title << " [GPU: I " << std::setw( 6 ) << std::setprecision( 4 ) << gpuMs << "ms";
-		title << ", A " << std::setw( 6 ) << std::setprecision( 4 ) << gpuAvgms << "ms";
+		title << " [GPU: I " << std::setw( 6 ) << std::setprecision( 4 ) << gpuMs << " ms";
+		title << ", A " << std::setw( 6 ) << std::setprecision( 4 ) << gpuAvgMs << " ms";
+		title << " (" << std::setw( 5 ) << int( 1000.0f / gpuAvgMs ) << " fps)";
 
 		SetTitle( m_name + wxT( " (" ) + m_rendererName + wxT( ")" ) + wxString( title.str() ) );
 	}

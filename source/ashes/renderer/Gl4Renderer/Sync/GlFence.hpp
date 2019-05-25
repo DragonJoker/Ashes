@@ -38,7 +38,22 @@ namespace ashes::gl4
 		*\return
 		*	\p WaitResult::eSuccess ou \p WaitResult::eTimeOut en cas de succès.
 		*/ 
+		VkResult wait( ContextLock & context
+			, uint64_t timeout )const;
+		/**
+		*\brief
+		*	Attend que la barrière soit signalée.
+		*\param[in] timeout
+		*	Le temps à attendre pour le signalement.
+		*\return
+		*	\p WaitResult::eSuccess ou \p WaitResult::eTimeOut en cas de succès.
+		*/ 
 		VkResult wait( uint64_t timeout )const;
+		/**
+		*\brief
+		*	Remet la barrière en non signalée.
+		*/ 
+		void reset( ContextLock & context )const;
 		/**
 		*\brief
 		*	Remet la barrière en non signalée.

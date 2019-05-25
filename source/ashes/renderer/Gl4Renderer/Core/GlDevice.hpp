@@ -81,12 +81,12 @@ namespace ashes::gl4
 			return m_dummyIndexed.indexBuffer;
 		}
 
-		inline GLuint getBlitSrcFbo()const
+		inline VkFramebuffer getBlitSrcFbo()const
 		{
 			return m_blitFbos[0];
 		}
 
-		inline GLuint getBlitDstFbo()const
+		inline VkFramebuffer getBlitDstFbo()const
 		{
 			return m_blitFbos[1];
 		}
@@ -136,7 +136,7 @@ namespace ashes::gl4
 			VkDeviceMemory vertexMemory;
 			GeometryBuffersPtr geometryBuffers;
 		} m_dummyIndexed;
-		mutable GLuint m_blitFbos[2];
+		mutable VkFramebuffer m_blitFbos[2];
 		VkPipelineColorBlendAttachmentStateArray m_cbStateAttachments;
 		VkDynamicStateArray m_dyState;
 		ContextState m_rtocContextState;

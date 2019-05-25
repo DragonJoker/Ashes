@@ -272,6 +272,7 @@ namespace ashes::d3d11
 	}
 
 	CompiledShaderModule::CompiledShaderModule( VkDevice device
+		, VkShaderModule module
 		, UInt32Array const & spv
 		, VkPipelineShaderStageCreateInfo const & state )
 		: m_shader{ nullptr }
@@ -371,13 +372,30 @@ namespace ashes::d3d11
 
 			if ( errors )
 			{
-				std::cerr << reinterpret_cast< char * >( errors->GetBufferPointer() ) << std::endl;
+				std::stringstream stream;
+				stream << reinterpret_cast< char * >( errors->GetBufferPointer() ) << std::endl;
+				stream << m_source << std::endl;
+				get( get( device )->getInstance() )->onReportMessage( VK_DEBUG_REPORT_WARNING_BIT_EXT
+					, VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT
+					, uint64_t( module )
+					, 0u
+					, 0u
+					, "CORE"
+					, stream.str().c_str() );
 			}
 		}
 		else if ( errors )
 		{
-			std::cerr << reinterpret_cast< char * >( errors->GetBufferPointer() ) << std::endl;
-			std::cerr << m_source << std::endl;
+			std::stringstream stream;
+			stream << reinterpret_cast< char * >( errors->GetBufferPointer() ) << std::endl;
+			stream << m_source << std::endl;
+			get( get( device )->getInstance() )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT
+				, uint64_t( module )
+				, 0u
+				, 0u
+				, "CORE"
+				, stream.str().c_str() );
 		}
 	}
 
@@ -613,7 +631,7 @@ namespace ashes::d3d11
 
 	CompiledShaderModule ShaderModule::compile( VkPipelineShaderStageCreateInfo const & state )const
 	{
-		return CompiledShaderModule{ m_device, m_code, state };
+		return CompiledShaderModule{ m_device, get( this ), m_code, state };
 	}
 
 	//*************************************************************************

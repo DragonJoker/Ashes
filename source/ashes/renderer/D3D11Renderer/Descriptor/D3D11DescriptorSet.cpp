@@ -85,14 +85,14 @@ namespace ashes::d3d11
 
 		if ( write.pImageInfo )
 		{
-			m_imagesInfos.emplace_back( std::make_unique< VkDescriptorImageInfo >( *write.pImageInfo ) );
-			writes.writes.back().pImageInfo = m_imagesInfos.back().get();
+			m_imagesInfos.emplace_back( std::vector< VkDescriptorImageInfo >{ write.pImageInfo, write.pImageInfo + write.descriptorCount } );
+			writes.writes.back().pImageInfo = m_imagesInfos.back().data();
 		}
 
 		if ( write.pBufferInfo )
 		{
-			m_buffersInfos.emplace_back( std::make_unique< VkDescriptorBufferInfo >( *write.pBufferInfo ) );
-			writes.writes.back().pBufferInfo = m_buffersInfos.back().get();
+			m_buffersInfos.emplace_back( std::vector< VkDescriptorBufferInfo >{ write.pBufferInfo, write.pBufferInfo + write.descriptorCount } );
+			writes.writes.back().pBufferInfo = m_buffersInfos.back().data();
 		}
 	}
 

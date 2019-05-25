@@ -199,18 +199,26 @@ namespace ashes::d3d11
 					auto srcPlane = srcLayer;
 					auto dstPlane = dstLayer;
 
-					if ( bufferRowPitch == imageRowPitch
-						|| bufferRowPitch == bufferSize
-						|| ( bufferRowPitch > imageRowPitch && ( bufferRowPitch % imageRowPitch ) )
-						|| ( imageRowPitch > bufferRowPitch && ( imageRowPitch % bufferRowPitch ) ) )
+					if ( bufferRowPitch == bufferSize )
 					{
-						if ( bufferRowPitch == bufferSize )
+						if ( bufferRowPitch == imageRowPitch )
 						{
-							bufferRowPitch /= imageHeight;
-							assert( bufferSize == ( bufferRowPitch * imageHeight ) );
+							imageRowPitch /= imageHeight;
 						}
 
-						for ( auto y = 0u; y < imageHeight; ++y )
+						bufferRowPitch /= imageHeight;
+						assert( bufferSize == ( bufferRowPitch * imageHeight ) );
+					}
+
+					auto bufferSteps = bufferDepthPitch / bufferRowPitch;
+					auto imageSteps = imageDepthPitch / imageRowPitch;
+					assert( bufferSteps == imageSteps
+						|| ( bufferSteps > imageSteps && ( bufferSteps % imageSteps ) == 0 )
+						|| ( imageSteps > bufferSteps && ( imageSteps % bufferSteps ) == 0 ) );
+
+					if ( bufferSteps == imageSteps )
+					{
+						for ( auto y = 0u; y < bufferSteps; ++y )
 						{
 							std::memcpy( dstPlane
 								, srcPlane
@@ -219,28 +227,30 @@ namespace ashes::d3d11
 							dstPlane += imageRowPitch;
 						}
 					}
-					else if ( bufferRowPitch > imageRowPitch )
+					else if ( bufferSteps > imageSteps )
 					{
-						// bufferRowPitch = n * imageRowPitch
-						for ( auto y = 0u; y < imageHeight; ++y )
-						{
-							std::memcpy( dstPlane
-								, srcPlane
-								, bufferRowPitch );
-							srcPlane += bufferRowPitch;
-							dstPlane += bufferRowPitch;
-						}
-					}
-					else
-					{
-						// imageRowPitch = n * bufferRowPitch
-						for ( auto y = 0u; y < imageHeight; ++y )
+						// bufferSteps = n * imageSteps
+						// => imageRowPitch = n * bufferRowPitch
+						for ( auto y = 0u; y < imageSteps; ++y )
 						{
 							std::memcpy( dstPlane
 								, srcPlane
 								, imageRowPitch );
 							srcPlane += imageRowPitch;
 							dstPlane += imageRowPitch;
+						}
+					}
+					else
+					{
+						// imageSteps = n * bufferSteps
+						// => bufferRowPitch = n * imageRowPitch
+						for ( auto y = 0u; y < bufferSteps; ++y )
+						{
+							std::memcpy( dstPlane
+								, srcPlane
+								, bufferRowPitch );
+							srcPlane += bufferRowPitch;
+							dstPlane += bufferRowPitch;
 						}
 					}
 

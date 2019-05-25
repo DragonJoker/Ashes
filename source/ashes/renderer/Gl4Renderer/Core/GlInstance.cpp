@@ -502,11 +502,11 @@ namespace ashes::gl4
 		, PFNGLDEBUGPROC callback
 		, void * userParam )const
 	{
-		m_debugCallbacks.push_back( { report, callback, userParam } );
 		auto context = ContextLock{ *m_context };
 
 		if ( context->m_glDebugMessageCallback )
 		{
+			m_debugCallbacks.push_back( { report, callback, userParam } );
 			glLogCall( context
 				, glDebugMessageCallback
 				, callback
@@ -521,11 +521,11 @@ namespace ashes::gl4
 		, PFNGLDEBUGAMDPROC callback
 		, void * userParam )const
 	{
-		m_debugAMDCallbacks.push_back( { report, callback, userParam } );
 		auto context = ContextLock{ *m_context };
 
 		if ( context->m_glDebugMessageCallbackAMD )
 		{
+			m_debugAMDCallbacks.push_back( { report, callback, userParam } );
 			glLogCall( context
 				, glDebugMessageCallbackAMD
 				, callback
@@ -571,36 +571,27 @@ namespace ashes::gl4
 	{
 		ContextLock lock( context );
 
-		if ( lock->m_glDebugMessageCallbackAMD || lock->m_glDebugMessageCallback )
+		for ( auto & callback : m_debugCallbacks )
 		{
-			if ( lock->m_glDebugMessageCallback )
-			{
-				for ( auto & callback : m_debugCallbacks )
-				{
-					glLogCall( lock
-						, glDebugMessageCallback
-						, callback.callback
-						, callback.userParam );
-				}
-			}
+			glLogCall( lock
+				, glDebugMessageCallback
+				, callback.callback
+				, callback.userParam );
+		}
 
-			if ( lock->m_glDebugMessageCallbackAMD )
-			{
-				for ( auto & callback : m_debugAMDCallbacks )
-				{
-					glLogCall( lock
-						, glDebugMessageCallbackAMD
-						, callback.callback
-						, callback.userParam );
-				}
-			}
+		for ( auto & callback : m_debugAMDCallbacks )
+		{
+			glLogCall( lock
+				, glDebugMessageCallbackAMD
+				, callback.callback
+				, callback.userParam );
+		}
 
-			if ( !m_debugCallbacks.empty() || !m_debugAMDCallbacks.empty() )
-			{
-				glLogCall( lock
-					, glEnable
-					, GL_DEBUG_OUTPUT_SYNC );
-			}
+		if ( !m_debugCallbacks.empty() || !m_debugAMDCallbacks.empty() )
+		{
+			glLogCall( lock
+				, glEnable
+				, GL_DEBUG_OUTPUT_SYNC );
 		}
 	}
 }

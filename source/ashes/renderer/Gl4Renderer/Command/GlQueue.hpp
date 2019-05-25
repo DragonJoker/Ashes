@@ -5,9 +5,15 @@ See LICENSE file in root folder.
 #pragma once
 
 #include "renderer/Gl4Renderer/GlRendererPrerequisites.hpp"
+#include "renderer/Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 
 namespace ashes::gl4
 {
+	void applyBuffer( ContextLock & lock
+		, CmdBuffer const & cmds );
+	void applyList( ContextLock & lock
+		, CmdList const & cmds );
+
 	class Queue
 	{
 	public:
@@ -29,7 +35,8 @@ namespace ashes::gl4
 		VkResult waitIdle()const;
 
 	private:
-		void submit( VkSubmitInfo const & value
+		void submit( ContextLock & context
+			, VkSubmitInfo const & value
 			, VkFence fence )const;
 
 	private:

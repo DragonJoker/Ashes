@@ -122,14 +122,14 @@ namespace ashes::gl4
 				}
 			}
 
-			VkResult lock( VkDeviceSize offset
+			VkResult lock( ContextLock const & context
+				, VkDeviceSize offset
 				, VkDeviceSize size
 				, void ** data )const override
 			{
 				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local texture" );
 
-				auto context = get( m_device )->getContext();
 				auto copySize = size == WholeSize
 					? m_allocateInfo.allocationSize
 					: size;
@@ -150,12 +150,11 @@ namespace ashes::gl4
 					: VK_ERROR_MEMORY_MAP_FAILED;
 			}
 
-			void unlock()const override
+			void unlock( ContextLock const & context )const override
 			{
 				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local texture" );
 
-				auto context = get( m_device )->getContext();
 				glLogCall( context
 					, glBindTexture
 					, m_boundTarget
@@ -503,13 +502,14 @@ namespace ashes::gl4
 				}
 			}
 
-			VkResult lock( VkDeviceSize offset
+			VkResult lock( ContextLock const & context
+				, VkDeviceSize offset
 				, VkDeviceSize size
 				, void ** data )const override
 			{
 				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local buffer" );
-				auto context = get( m_device )->getContext();
+
 				glLogCall( context
 					, glBindBuffer
 					, GlBufferTarget( m_boundTarget )
@@ -526,11 +526,11 @@ namespace ashes::gl4
 					: VK_ERROR_MEMORY_MAP_FAILED;
 			}
 
-			void unlock()const override
+			void unlock( ContextLock const & context )const override
 			{
 				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local buffer" );
-				auto context = get( m_device )->getContext();
+
 				glLogCall( context
 					, glUnmapBuffer
 					, GlBufferTarget( m_boundTarget ) );
@@ -580,7 +580,8 @@ namespace ashes::gl4
 		}
 	}
 
-	void DeviceMemory::DeviceMemoryImpl::upload( ByteArray const & data
+	void DeviceMemory::DeviceMemoryImpl::upload( ContextLock const & context
+		, ByteArray const & data
 		, VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
@@ -592,14 +593,15 @@ namespace ashes::gl4
 
 		void * dst{ nullptr };
 
-		if ( lock( offset, size, &dst ) == VK_SUCCESS )
+		if ( lock( context, offset, size, &dst ) == VK_SUCCESS )
 		{
 			std::memcpy( dst, data.data() + offset, size );
-			unlock();
+			unlock( context );
 		}
 	}
 
-	void DeviceMemory::DeviceMemoryImpl::download( ByteArray & data
+	void DeviceMemory::DeviceMemoryImpl::download( ContextLock const & context
+		, ByteArray & data
 		, VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
@@ -611,10 +613,10 @@ namespace ashes::gl4
 
 		void * src{ nullptr };
 
-		if ( lock( offset, size, &src ) == VK_SUCCESS )
+		if ( lock( context, offset, size, &src ) == VK_SUCCESS )
 		{
 			std::memcpy( data.data() + offset, src, size );
-			unlock();
+			unlock( context );
 		}
 	}
 
@@ -735,19 +737,22 @@ namespace ashes::gl4
 		return result;
 	}
 
-	void DeviceMemory::upload( VkDeviceSize offset
+	void DeviceMemory::upload( ContextLock const & context
+		, VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
-		m_impl->upload( m_data, offset, size );
+		m_impl->upload( context, m_data, offset, size );
 	}
 
-	void DeviceMemory::download( VkDeviceSize offset
+	void DeviceMemory::download( ContextLock const & context
+		, VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
-		m_impl->download( m_data, offset, size );
+		m_impl->download( context, m_data, offset, size );
 	}
 
-	VkResult DeviceMemory::lock( VkDeviceSize offset
+	VkResult DeviceMemory::lock( ContextLock const & context
+		, VkDeviceSize offset
 		, VkDeviceSize size
 		, VkMemoryMapFlags flags
 		, void ** data )const
@@ -763,15 +768,17 @@ namespace ashes::gl4
 		return VK_SUCCESS;
 	}
 
-	VkResult DeviceMemory::flush( VkDeviceSize offset
+	VkResult DeviceMemory::flush( ContextLock const & context
+		, VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
-		upload( offset, size );
+		upload( context, offset, size );
 		return VK_SUCCESS;
 	}
 
-	VkResult DeviceMemory::invalidate( VkDeviceSize offset
+	VkResult DeviceMemory::invalidate( ContextLock const & context
+		, VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
@@ -779,11 +786,11 @@ namespace ashes::gl4
 		return VK_SUCCESS;
 	}
 
-	void DeviceMemory::unlock()const
+	void DeviceMemory::unlock( ContextLock const & context )const
 	{
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
 		m_mapped = false;
-		upload( m_mappedOffset, m_mappedSize );
+		upload( context, m_mappedOffset, m_mappedSize );
 	}
 
 	//************************************************************************************************

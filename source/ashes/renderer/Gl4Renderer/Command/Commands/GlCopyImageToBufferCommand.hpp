@@ -11,31 +11,6 @@ namespace ashes::gl4
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eReadBuffer >
-	{
-		static Op constexpr value = { OpType::eReadBuffer, 2u };
-	};
-
-	template<>
-	struct alignas( uint64_t ) CmdT< OpType::eReadBuffer >
-	{
-		inline CmdT( uint32_t point )
-			: cmd{ { OpType::eReadBuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, point{ std::move( point ) }
-		{
-		}
-
-		Command cmd;
-		uint32_t point;
-	};
-	using CmdReadBuffer = CmdT< OpType::eReadBuffer >;
-
-	void apply( ContextLock const & context
-		, CmdReadBuffer const & cmd );
-	
-	//*************************************************************************
-
-	template<>
 	struct CmdConfig< OpType::eReadPixels >
 	{
 		static Op constexpr value = { OpType::eReadPixels, 7u };

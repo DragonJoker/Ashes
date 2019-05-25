@@ -73,13 +73,13 @@ namespace ashes
 			return uint32_t( 4u * sizeof( float ) );
 
 		case ConstantFormat::eMat2f:
-			return uint32_t( 2u * 2u * sizeof( float ) );
+			return uint32_t( 2u * getSize( ConstantFormat::eVec2f ) );
 
 		case ConstantFormat::eMat3f:
-			return uint32_t( 3u * 3u * sizeof( float ) );
+			return uint32_t( 3u * getSize( ConstantFormat::eVec3f ) );
 
 		case ConstantFormat::eMat4f:
-			return uint32_t( 4u * 4u * sizeof( float ) );
+			return uint32_t( 4u * getSize( ConstantFormat::eVec4f ) );
 
 		case ConstantFormat::eColour:
 			return uint32_t( 4 * sizeof( uint8_t ) );

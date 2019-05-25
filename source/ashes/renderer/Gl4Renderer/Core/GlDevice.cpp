@@ -226,6 +226,7 @@ void main()
 
 			context->apply( context, *get( device ), state );
 			auto result = std::make_unique< ShaderProgram >( device
+				, nullptr
 				, std::move( shaderStages )
 				, true );
 			result->link( context );
@@ -259,7 +260,16 @@ void main()
 		doInitialiseQueues();
 		auto lock = getContext();
 		doInitialiseDummy( lock );
-		lock->glGenFramebuffers( 2, m_blitFbos );
+		GLuint fbos[2];
+		lock->glGenFramebuffers( 2, fbos );
+		allocate( m_blitFbos[0]
+			, nullptr
+			, get( this )
+			, fbos[0] );
+		allocate( m_blitFbos[1]
+			, nullptr
+			, get( this )
+			, fbos[1] );
 		doInitialiseRtoc( lock );
 	}
 
@@ -277,7 +287,8 @@ void main()
 				}
 			}
 
-			context->glDeleteFramebuffers( 2, m_blitFbos );
+			deallocate( m_blitFbos[0], nullptr );
+			deallocate( m_blitFbos[1], nullptr );
 			deallocate( m_dummyIndexed.indexMemory, nullptr );
 			deallocate( m_dummyIndexed.indexBuffer, nullptr );
 		}
@@ -461,11 +472,11 @@ void main()
 		uint8_t * buffer{ nullptr };
 		auto size = count * sizeof( uint32_t );
 
-		if ( memory->lock( 0u, size, 0u, reinterpret_cast< void ** >( &buffer ) ) == VK_SUCCESS )
+		if ( memory->lock( context, 0u, size, 0u, reinterpret_cast< void ** >( &buffer ) ) == VK_SUCCESS )
 		{
 			std::copy( dummyIndex, dummyIndex + size, buffer );
-			memory->flush( 0, size );
-			memory->unlock();
+			memory->flush( context, 0, size );
+			memory->unlock( context );
 		}
 
 		m_dummyIndexed.geometryBuffers = std::make_unique< GeometryBuffers >( get( this )
@@ -474,7 +485,7 @@ void main()
 			, VkPipelineVertexInputStateCreateInfo{}
 			, InputLayout{}
 			, VK_INDEX_TYPE_UINT32 );
-		m_dummyIndexed.geometryBuffers->initialise();
+		m_dummyIndexed.geometryBuffers->initialise( context );
 	}
 
 	void Device::doInitialiseRtoc( ContextLock & context )

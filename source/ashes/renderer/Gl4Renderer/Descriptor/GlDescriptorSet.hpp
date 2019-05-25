@@ -117,8 +117,8 @@ namespace ashes::gl4
 
 	private:
 		VkDescriptorSetLayout m_layout;
-		std::vector< std::unique_ptr< VkDescriptorImageInfo > > m_imagesInfos;
-		std::vector< std::unique_ptr< VkDescriptorBufferInfo > > m_buffersInfos;
+		std::vector< std::vector< VkDescriptorImageInfo > > m_imagesInfos;
+		std::vector< std::vector< VkDescriptorBufferInfo > > m_buffersInfos;
 		LayoutBindingWritesMap m_writes;
 		LayoutBindingWritesArray m_combinedTextureSamplers;
 		LayoutBindingWritesArray m_samplers;

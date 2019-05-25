@@ -13,6 +13,40 @@
 #include "ashesgl4_api.hpp"
 
 #include <iostream>
+#include <locale>
+
+#if Ashes_LogContextLocking
+
+#define logContextLock()\
+	std::stringstream stream;\
+	stream.imbue( std::locale{ "C" } );\
+	stream << "Context [0x" << std::setfill( '0' ) << std::setw( 8 ) << std::hex << this << "] locked by thread [" << std::this_thread::get_id() << "]";\
+	get( m_instance )->reportMessage( VK_DEBUG_REPORT_DEBUG_BIT_EXT\
+		, VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT\
+		, uint64_t( m_instance )\
+		, 0u\
+		, 0u\
+		, "CONTEXT"\
+		, stream.str().c_str() )
+
+#define logContextUnlock()\
+	std::stringstream stream;\
+	stream.imbue( std::locale{ "C" } );\
+	stream << "Context [0x" << std::setfill( '0' ) << std::setw( 8 ) << std::hex << this << "] unlocked by thread [" << std::this_thread::get_id() << "]";\
+	get( m_instance )->reportMessage( VK_DEBUG_REPORT_DEBUG_BIT_EXT\
+		, VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT\
+		, uint64_t( m_instance )\
+		, 0u\
+		, 0u\
+		, "CONTEXT"\
+		, stream.str().c_str() )
+
+#else
+
+#define logContextLock()
+#define logContextUnlock()
+
+#endif
 
 namespace ashes::gl4
 {
@@ -381,6 +415,7 @@ namespace ashes::gl4
 
 	Context::Context( std::unique_ptr< ContextImpl > impl )
 		: m_impl{ std::move( impl ) }
+		, m_instance{ m_impl->instance }
 		, createInfo{ m_impl->createInfo }
 		, m_state{}
 	{
@@ -587,6 +622,23 @@ ContextPtr Context::create( VkInstance instance
 	{
 		loadBaseFunctions();
 		loadDebugFunctions();
+	}
+
+	void Context::lock()
+	{
+		m_mutex.lock();
+		m_enabled = true;
+		m_activeThread = std::this_thread::get_id();
+		m_impl->enable();
+		logContextLock();
+	}
+
+	void Context::unlock()
+	{
+		logContextUnlock();
+		m_impl->disable();
+		m_enabled = false;
+		m_mutex.unlock();
 	}
 
 	void Context::loadBaseFunctions()

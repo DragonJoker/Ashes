@@ -46,96 +46,118 @@ namespace ashes::gl4
 		*name
 		*	Getters.
 		*/
-		ContextState const & getBackContextState()const
+		inline bool isCompute()const
 		{
+			return m_compProgram != nullptr;
+		}
+
+		inline ContextState const & getBackContextState()const
+		{
+			assert( !isCompute() );
 			return m_backContextState;
 		}
 
-		ContextState const & getRtotContextState()const
+		inline ContextState const & getRtotContextState()const
 		{
+			assert( !isCompute() );
 			return m_rtotContextState;
 		}
 
 		inline GLuint getBackProgram()const
 		{
+			assert( !isCompute() );
 			assert( m_backProgram );
 			return m_backProgram->getProgram();
 		}
 
 		inline GLuint getRtotProgram()const
 		{
+			assert( !isCompute() );
 			assert( m_rtotProgram );
 			return m_rtotProgram->getProgram();
 		}
 
 		inline GLuint getCompProgram()const
 		{
-			assert( m_compProgram );
+			assert( isCompute() );
 			return m_compProgram->getProgram();
 		}
 
 		inline auto const & getInputAssemblyState()const
 		{
+			assert( !isCompute() );
 			return m_backContextState.iaState;
 		}
 
 		inline auto const & getColourBlendState()const
 		{
+			assert( !isCompute() );
 			return m_backContextState.cbState;
 		}
 
 		inline auto const & getRasterisationState()const
 		{
+			assert( !isCompute() );
 			return m_backContextState.rsState;
 		}
 
 		inline auto const & getDepthStencilState()const
 		{
+			assert( !isCompute() );
 			return m_backContextState.dsState;
 		}
 
 		inline auto const & getMultisampleState()const
 		{
+			assert( !isCompute() );
 			return m_backContextState.msState;
 		}
 
 		inline auto const & getTessellationState()const
 		{
+			assert( !isCompute() );
 			return m_backContextState.tsState;
 		}
 
 		inline auto const & getVertexInputState()const
 		{
+			assert( !isCompute() );
 			return m_vertexInputState.value();
 		}
 
 		inline auto const & getViewportState()const
 		{
+			assert( !isCompute() );
 			return m_backContextState.vpState;
 		}
 
 		inline bool hasViewport()const
 		{
+			assert( !isCompute() );
 			return m_backContextState.vpState.viewportCount > 0;
 		}
 
 		inline bool hasScissor()const
 		{
+			assert( !isCompute() );
 			return m_backContextState.vpState.scissorCount > 0;
 		}
 
 		inline VkViewportArray const & getViewports()const
 		{
+			assert( !isCompute() );
 			return m_backContextState.viewports;
 		}
 
 		inline VkScissorArray const & getScissors()const
 		{
+			assert( !isCompute() );
 			return m_backContextState.scissors;
 		}
 
 		inline bool hasDynamicStateEnable( VkDynamicState state )const
 		{
+			assert( !isCompute() );
 			auto view = makeArrayView( m_backContextState.dyState.pDynamicStates
 				, m_backContextState.dyState.dynamicStateCount );
 			return view.end() != std::find( view.begin()
@@ -151,6 +173,7 @@ namespace ashes::gl4
 
 		inline size_t getVertexInputStateHash()const
 		{
+			assert( !isCompute() );
 			return m_vertexInputStateHash;
 		}
 		/**@}*/

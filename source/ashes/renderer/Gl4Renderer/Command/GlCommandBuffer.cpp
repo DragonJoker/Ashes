@@ -179,7 +179,10 @@ namespace ashes::gl4
 		for ( auto & commandBuffer : commands )
 		{
 			auto glCommandBuffer = get( commandBuffer );
-			glCommandBuffer->initialiseGeometryBuffers();
+			m_state.vaos.insert( m_state.vaos.end()
+				, glCommandBuffer->m_state.vaos.begin()
+				, glCommandBuffer->m_state.vaos.end() );
+			glCommandBuffer->m_state.vaos.clear();
 			m_cmdList.insert( m_cmdList.end()
 				, glCommandBuffer->m_cmdList.begin()
 				, glCommandBuffer->m_cmdList.end() );
@@ -242,12 +245,9 @@ namespace ashes::gl4
 			}
 
 			m_state.currentPipeline = pipeline;
-			assert( m_state.currentFrameBuffer
-				&& "Binding a graphics pipeline without framebuffer." );
 			buildBindPipelineCommand( m_device
 				, pipeline
 				, bindingPoint
-				, !get( m_state.currentFrameBuffer )->hasSwapchainImage()
 				, m_cmdList );
 
 			for ( auto & pcb : m_state.pushConstantBuffers )
@@ -713,11 +713,11 @@ namespace ashes::gl4
 			, m_cmdList );
 	}
 
-	void CommandBuffer::initialiseGeometryBuffers()const
+	void CommandBuffer::initialiseGeometryBuffers( ContextLock & context )const
 	{
 		for ( auto & vao : m_state.vaos )
 		{
-			vao.get().initialise();
+			vao.get().initialise( context );
 		}
 
 		m_state.vaos.clear();

@@ -157,9 +157,10 @@ namespace ashes::gl4
 			createInfo.pTessellationState,
 			createInfo.pInputAssemblyState,
 			createInfo.pViewportState,
-			( bool( m_rtotRasterizationState )
-				? &m_rtotRasterizationState.value()
-				: nullptr ),
+			createInfo.pRasterizationState,
+			//( bool( m_rtotRasterizationState )
+			//	? &m_rtotRasterizationState.value()
+			//	: nullptr ),
 			createInfo.pDynamicState,
 		}
 		, m_layout{ createInfo.layout }
@@ -170,8 +171,8 @@ namespace ashes::gl4
 		, m_vertexInputStateHash{ ( m_vertexInputState
 			? doHash( m_vertexInputState.value() )
 			: 0u ) }
-		, m_backProgram{ std::make_unique< ShaderProgram >( m_device, m_stages, false ) }
-		, m_rtotProgram{ std::make_unique< ShaderProgram >( m_device, m_stages, true ) }
+		, m_backProgram{ std::make_unique< ShaderProgram >( m_device, get( this ), m_stages, false ) }
+		, m_rtotProgram{ std::make_unique< ShaderProgram >( m_device, get( this ), m_stages, true ) }
 	{
 		{
 			auto context = get( device )->getContext();
@@ -181,19 +182,19 @@ namespace ashes::gl4
 
 			m_shaderDesc = m_backProgram->link( context );
 			m_constantsPcb.stageFlags = m_shaderDesc.stageFlags;
-			uint32_t offset = 0u;
+			uint32_t size = 0u;
 
 			for ( auto & constant : m_shaderDesc.constantsLayout )
 			{
 				m_constantsPcb.constants.push_back( { constant.format
 					, constant.location
-					, offset
+					, constant.offset
 					, constant.size
 					, constant.arraySize } );
-				offset += constant.size;
+				size += constant.size;
 			}
 
-			m_constantsPcb.size = offset;
+			m_constantsPcb.size = size;
 
 			if ( get( get( m_device )->getInstance() )->isValidationEnabled() )
 			{
@@ -220,24 +221,24 @@ namespace ashes::gl4
 		, m_layout{ createInfo.layout }
 		, m_basePipelineHandle{ createInfo.basePipelineHandle }
 		, m_basePipelineIndex{ createInfo.basePipelineIndex }
-		, m_compProgram{ std::make_unique< ShaderProgram >( m_device, m_stages.back() ) }
+		, m_compProgram{ std::make_unique< ShaderProgram >( m_device, get( this ), m_stages.back() ) }
 	{
 		auto context = get( device )->getContext();
-		ShaderDesc shaderDesc = m_compProgram->link( context );
-		m_constantsPcb.stageFlags = shaderDesc.stageFlags;
-		uint32_t offset = 0u;
+		m_shaderDesc = m_compProgram->link( context );
+		m_constantsPcb.stageFlags = m_shaderDesc.stageFlags;
+		uint32_t size = 0u;
 
-		for ( auto & constant : shaderDesc.constantsLayout )
+		for ( auto & constant : m_shaderDesc.constantsLayout )
 		{
 			m_constantsPcb.constants.push_back( { constant.format
 				, constant.location
-				, offset
+				, constant.offset
 				, constant.size
 				, constant.arraySize } );
-			offset += constant.size;
+			size += constant.size;
 		}
 
-		m_constantsPcb.size = offset;
+		m_constantsPcb.size = size;
 
 		if ( get( get( m_device )->getInstance() )->isValidationEnabled() )
 		{

@@ -48,67 +48,57 @@ namespace ashes::gl4
 			return log;
 		}
 
-		std::string doRetrieveCompilerLog( ContextLock const & context
-			, GLuint shaderName )
+		ConstantsLayout mergeConstants( VkPipelineShaderStageCreateInfoArray const & stages )
 		{
-			std::string log;
-			int infologLength = 0;
-			int charsWritten = 0;
-			glLogCall( context
-				, glGetShaderiv
-				, shaderName
-				, GL_INFO_LOG_LENGTH
-				, &infologLength );
+			ConstantsLayout result;
 
-			if ( infologLength > 0 )
+			for ( auto & stage : stages )
 			{
-				std::vector< char > infoLog( infologLength + 1 );
-				glLogCall( context
-					, glGetShaderInfoLog
-					, shaderName
-					, infologLength
-					, &charsWritten
-					, infoLog.data() );
-				log = infoLog.data();
-			}
+				auto & constants = get( stage.module )->getConstants();
 
-			if ( !log.empty() )
-			{
-				log = log.substr( 0, log.size() - 1 );
-			}
-
-			return log;
-		}
-
-		bool doCheckCompileErrors( ContextLock const & context
-			, bool compiled
-			, GLuint shaderName )
-		{
-			auto compilerLog = doRetrieveCompilerLog( context
-				, shaderName );
-
-			if ( !compilerLog.empty() )
-			{
-				if ( !compiled )
+				if ( !constants.empty() )
 				{
-					std::cerr << "Shader compilation failed" << std::endl;
+					if ( result.empty() )
+					{
+						result = constants;
+					}
+					else
+					{
+						for ( auto & constant : constants )
+						{
+							auto it = std::find_if( result.begin()
+								, result.end()
+								, [&constant]( ConstantDesc const & lookup )
+								{
+									return lookup.name == constant.name;
+								} );
+
+							if ( it == result.end() )
+							{
+								result.push_back( constant );
+							}
+						}
+					}
 				}
-
-				std::cerr << compilerLog << std::endl;
-			}
-			else if ( !compiled )
-			{
-				std::cerr << "Shader compilation failed" << std::endl;
 			}
 
-			return compiled;
+			std::sort( result.begin()
+				, result.end()
+				, []( ConstantDesc const & lhs, ConstantDesc const & rhs )
+				{
+					return lhs.offset < rhs.offset;
+				} );
+
+			return result;
 		}
 	}
 
 	ShaderProgram::ShaderProgram( VkDevice device
+		, VkPipeline pipeline
 		, VkPipelineShaderStageCreateInfoArray stages
 		, bool isRtot )
 		: m_device{ device }
+		, m_pipeline{ pipeline }
 		, m_stages{ std::move( stages ) }
 	{
 		auto context = get( m_device )->getContext();
@@ -126,8 +116,9 @@ namespace ashes::gl4
 	}
 
 	ShaderProgram::ShaderProgram( VkDevice device
+		, VkPipeline pipeline
 		, VkPipelineShaderStageCreateInfo const & stage )
-		: ShaderProgram{ device, { 1u, stage }, false }
+		: ShaderProgram{ device, pipeline, { 1u, stage }, false }
 	{
 	}
 
@@ -181,40 +172,86 @@ namespace ashes::gl4
 			if ( !linkerLog.empty()
 				|| !validated )
 			{
-				std::cerr << "ShaderProgram::link" << std::endl;
+				std::stringstream stream;
+				stream << "Shader program link: " << std::endl;
 
 				if ( !validated )
 				{
-					std::cerr << "  Not validated" << std::endl;
+					stream << "Not validated - " << std::endl;
 				}
 
 				if ( !linkerLog.empty() )
 				{
-					std::cerr << linkerLog << std::endl;
+					stream << linkerLog << std::endl;
 				}
+
+				get( get( m_device )->getInstance() )->reportMessage( VK_DEBUG_REPORT_WARNING_BIT_EXT
+					, VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT
+					, uint64_t( m_pipeline )
+					, 0u
+					, 0u
+					, "CORE"
+					, stream.str().c_str() );
 			}
 
 			result = getShaderDesc( context, m_program );
+			auto constants = mergeConstants( m_stages );
+
+			if ( !constants.empty() )
+			{
+				assert( constants.size() == result.constantsLayout.size() );
+				for ( auto & constant : result.constantsLayout )
+				{
+					auto it = std::find_if( constants.begin()
+						, constants.end()
+						, [&constant]( ConstantDesc const & lookup )
+						{
+							return lookup.name == constant.name;
+						} );
+					assert( it != constants.end() );
+					constant.offset = it->offset;
+				}
+			}
+			else
+			{
+				uint32_t offset = 0u;
+
+				for ( auto & constant : result.constantsLayout )
+				{
+					constant.offset = offset;
+					offset += constant.size;
+				}
+			}
+
 			result.stageFlags = m_stageFlags;
 		}
 		else
 		{
-			std::cerr << "ShaderProgram::link" << std::endl;
+			std::stringstream stream;
+			stream << "Shader program link: " << std::endl;
 
 			if ( !linked )
 			{
-				std::cerr << "  Not linked" << std::endl;
+				stream << "Not linked - " << std::endl;
 			}
 
 			if ( attached != int( m_shaders.size() ) )
 			{
-				std::cerr << "  The linked shaders count doesn't match the active shaders count." << std::endl;
+				stream << "The linked shaders count doesn't match the active shaders count. - " << std::endl;
 			}
 
 			if ( !linkerLog.empty() )
 			{
-				std::cerr << linkerLog << std::endl;
+				stream << linkerLog << std::endl;
 			}
+
+			get( get( m_device )->getInstance() )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT
+				, uint64_t( m_pipeline )
+				, 0u
+				, 0u
+				, "CORE"
+				, stream.str().c_str() );
 		}
 
 		return result;

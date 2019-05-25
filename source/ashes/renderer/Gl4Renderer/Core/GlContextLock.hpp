@@ -60,6 +60,12 @@ namespace ashes::gl4
 			return *m_context;
 		}
 
+		inline void apply( Device const & device
+			, ContextState const & state )const
+		{
+			m_context->apply( *this, device, state );
+		}
+
 	private:
 		Context * m_context;
 		bool m_disable;

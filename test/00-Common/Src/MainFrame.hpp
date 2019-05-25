@@ -30,7 +30,7 @@ namespace common
 		void OnClose( wxCloseEvent & event );
 
 	private:
-		static size_t constexpr FrameSamplesCount = 1000;
+		static size_t constexpr FrameSamplesCount = 100;
 		std::string m_name;
 		wxString m_rendererName;
 		utils::InstancePtr m_instance;

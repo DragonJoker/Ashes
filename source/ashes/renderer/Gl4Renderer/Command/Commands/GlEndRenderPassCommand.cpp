@@ -13,6 +13,6 @@ namespace ashes::gl4
 	void buildEndRenderPassCommand( CmdList & list )
 	{
 		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
-			, 0u ) );
+			, nullptr ) );
 	}
 }

@@ -36,13 +36,40 @@ namespace ashes::gl4
 
 	void apply( ContextLock const & context
 		, CmdBindContextState const & cmd );
+	
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eBindPipelineProgram >
+	{
+		static Op constexpr value = { OpType::eBindPipelineProgram, 5u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eBindPipelineProgram >
+	{
+		inline CmdT( VkDevice device
+			, VkPipeline pipeline )
+			: cmd{ { OpType::eBindPipelineProgram, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, device{ device }
+			, pipeline{ pipeline }
+		{
+		}
+
+		Command cmd;
+		VkDevice device;
+		VkPipeline pipeline;
+	};
+	using CmdBindPipelineProgram = CmdT< OpType::eBindPipelineProgram >;
+
+	void apply( ContextLock const & context
+		, CmdBindPipelineProgram const & cmd );
 
 	//*************************************************************************
 
 	void buildBindPipelineCommand( VkDevice device
 		, VkPipeline pipeline
 		, VkPipelineBindPoint bindingPoint
-		, bool isRtot
 		, CmdList & list );
 
 	void buildUnbindPipelineCommand( VkDevice device
