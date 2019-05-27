@@ -20,8 +20,8 @@ It is still a WIP, the library is far from complete!!
 ## Documentation
 
 The API is documented using Doxygen, and a version can be found here :
-- [English version](http://DragonJoker.github.com/RendererLib/doc/Ashes/English)
-- [French version](http://DragonJoker.github.com/RendererLib/doc/Ashes/French)
+- [English version](./doc/Ashes/English)
+- [French version](./doc/Ashes/French)
 
 ## Build
 
