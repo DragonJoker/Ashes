@@ -276,7 +276,7 @@ namespace common
 
 		ashes::VkDescriptorSetLayoutBindingArray bindings
 		{
-			{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT }
+			{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr }
 		};
 		m_descriptorSetLayout = m_device.getDevice().createDescriptorSetLayout( std::move( bindings ) );
 		m_descriptorPool = m_descriptorSetLayout->createPool( 2u );
@@ -457,8 +457,7 @@ namespace common
 		m_commandBuffer->begin();
 		m_commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 			, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
-			, m_fontView.makeShaderInputResource( VK_IMAGE_LAYOUT_UNDEFINED
-				, 0u ) );
+			, m_fontView.makeShaderInputResource( VK_IMAGE_LAYOUT_UNDEFINED ) );
 		m_commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 			, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
 			, m_vertexBuffer->getBuffer().makeVertexShaderInputResource() );

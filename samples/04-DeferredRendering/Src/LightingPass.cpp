@@ -332,8 +332,7 @@ namespace vkapp
 		{
 			commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
 				, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
-				, texture.view.makeShaderInputResource( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-					, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT ) );
+				, texture.view.makeShaderInputResource( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL ) );
 		}
 
 		commandBuffer.beginRenderPass( *m_renderPass

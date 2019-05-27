@@ -66,6 +66,13 @@ namespace common
 			, ashes::StagingBuffer & stagingBuffer
 			, TextureNodePtrArray const & textureNodes
 			, uint32_t & matIndex );
+		void doFillTextures( ashes::DescriptorSetLayout const & layout
+			, ashes::DescriptorSet & descriptorSet
+			, TextureNodePtrArray const & textures );
+		ashes::GraphicsPipelinePtr doCreatePipeline( ashes::PipelineLayout const & pipelineLayout
+			, ashes::PipelineVertexInputStateCreateInfo vertexLayout
+			, VkPrimitiveTopology topology
+			, VkCullModeFlagBits cullMode );
 
 		virtual void doFillObjectDescriptorLayoutBindings( ashes::VkDescriptorSetLayoutBindingArray & bindings )
 		{
@@ -85,10 +92,13 @@ namespace common
 		{
 		}
 
+
 	protected:
 		utils::Device const & m_device;
 		ashes::CommandPool const & m_commandPool;
 		ashes::Queue const & m_transferQueue;
+		ashes::ImagePtr m_dummyImage;
+		ashes::ImageView m_dummyView;
 		bool m_opaqueNodes;
 		VkExtent2D m_size;
 		std::string m_fragmentShaderFile;
