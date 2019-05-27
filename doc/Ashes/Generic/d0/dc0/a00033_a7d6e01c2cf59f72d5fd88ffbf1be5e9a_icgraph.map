@@ -1,0 +1,4 @@
+<map id="ashes::getSize" name="ashes::getSize">
+<area shape="rect" id="node1" title="Retrieves the byte size of given non compressed pixel format." alt="" coords="163,5,272,32"/>
+<area shape="rect" id="node2" href="$d0/dc0/a00033.html#a689a5a166f8d1c85f74f8eed0e36efc1" title="Retrieves the byte size of given pixel format and dimensions." alt="" coords="5,5,115,32"/>
+</map>

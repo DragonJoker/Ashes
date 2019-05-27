@@ -1,0 +1,7 @@
+<map id="ashes::DescriptorSet::createBinding" name="ashes::DescriptorSet::createBinding">
+<area shape="rect" id="node1" title="Creates a uniform buffer binding." alt="" coords="5,71,149,112"/>
+<area shape="rect" id="node2" href="$df/dbc/a00931.html#a862ebf276ac4a97c4d4d8bc0de7ca188" title="Creates a combined image and sampler binding." alt="" coords="197,5,341,47"/>
+<area shape="rect" id="node3" href="$d3/d95/a00779.html#ae983d2a509217d04dccf5829a03c01dc" title="Retrieves the aligned size for an element." alt="" coords="198,71,341,112"/>
+<area shape="rect" id="node5" href="$d3/d95/a00779.html#af5bf305c4177ac7ac99de6ee762c1f5b" title=" " alt="" coords="198,136,341,177"/>
+<area shape="rect" id="node4" href="$d7/d4f/a00819.html#a0f6adf07583201ca2b0b4c84fd957303" title="Retrieves the aligned size for an element." alt="" coords="389,71,561,112"/>
+</map>

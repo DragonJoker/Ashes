@@ -1,0 +1,9 @@
+<map id="ashes::UniformBuffer::upload" name="ashes::UniformBuffer::upload">
+<area shape="rect" id="node1" title="Uploads the buffer data to VRAM." alt="" coords="5,136,148,177"/>
+<area shape="rect" id="node2" href="$d0/d7d/a00799.html#ac2b353deee070d94c51f19c0d771bda2" title="Updates the VRAM." alt="" coords="214,5,350,47"/>
+<area shape="rect" id="node3" href="$d3/d95/a00779.html#ae983d2a509217d04dccf5829a03c01dc" title="Retrieves the aligned size for an element." alt="" coords="211,71,353,112"/>
+<area shape="rect" id="node5" href="$d7/d4f/a00819.html#ad9c4a55a4fc7f3a47c3a5ae5c1c00969" title=" " alt="" coords="196,136,368,177"/>
+<area shape="rect" id="node6" href="$d0/d7d/a00799.html#a1aabf8cda0066d25c6067efcda837b5c" title="Maps a range of the buffer&#39;s memory in RAM." alt="" coords="202,202,362,229"/>
+<area shape="rect" id="node7" href="$d0/d7d/a00799.html#adf4aefe36d311076913a0efbcb990289" title="Unmaps the buffer&#39;s memory from RAM." alt="" coords="214,253,350,295"/>
+<area shape="rect" id="node4" href="$d7/d4f/a00819.html#a0f6adf07583201ca2b0b4c84fd957303" title="Retrieves the aligned size for an element." alt="" coords="416,71,588,112"/>
+</map>

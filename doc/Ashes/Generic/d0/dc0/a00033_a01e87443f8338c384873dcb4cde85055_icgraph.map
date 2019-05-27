@@ -1,0 +1,5 @@
+<map id="ashes::getSubresourceDimension" name="ashes::getSubresourceDimension">
+<area shape="rect" id="node1" title="Retrieves the real extent for the given mipmap level." alt="" coords="435,5,652,32"/>
+<area shape="rect" id="node2" href="$d0/dc0/a00033.html#a5fba243ba4ff4d283e27c25886f05fb5" title="Retrieves the real extent for the given mipmap level." alt="" coords="163,5,387,32"/>
+<area shape="rect" id="node3" href="$d0/dc0/a00033.html#ae0c7d938280d7b2cd6e648b0e1cbdce5" title="Retrieves the byte size of given pixel format and dimensions." alt="" coords="5,5,115,32"/>
+</map>

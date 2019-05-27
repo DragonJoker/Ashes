@@ -1,0 +1,6 @@
+<map id="ashes::UniformBuffer::getAlignedSize" name="ashes::UniformBuffer::getAlignedSize">
+<area shape="rect" id="node1" title="Retrieves the aligned size for an element." alt="" coords="213,71,356,112"/>
+<area shape="rect" id="node2" href="$df/dbc/a00931.html#a9deb76578e7b62ea9ccc8dcb136c820d" title="Creates a uniform buffer binding." alt="" coords="13,5,157,47"/>
+<area shape="rect" id="node3" href="$df/dbc/a00931.html#a22707cdc787b207262a72ebde33b3e04" title="Creates a dynamic uniform buffer binding." alt="" coords="5,71,165,112"/>
+<area shape="rect" id="node4" href="$d3/d95/a00779.html#a4dc2e34bd2f11ac84ce5d03bd82f5aa2" title="Uploads the buffer data to VRAM." alt="" coords="14,136,157,177"/>
+</map>

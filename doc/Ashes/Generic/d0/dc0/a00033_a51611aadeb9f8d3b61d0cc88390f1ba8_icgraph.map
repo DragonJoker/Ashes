@@ -1,0 +1,5 @@
+<map id="ashes::isDepthFormat" name="ashes::isDepthFormat">
+<area shape="rect" id="node1" title="Tells if the given VkFormat is usable in depth buffers." alt="" coords="257,31,408,57"/>
+<area shape="rect" id="node2" href="$d0/dc0/a00033.html#a3741a411b4a39c196988a21b94d2d5de" title="Retrieves the aspects mask matching given VkFormat." alt="" coords="29,5,185,32"/>
+<area shape="rect" id="node3" href="$d0/dc0/a00033.html#afc383aeb9644e81f08344a8a22af705d" title="Tells if the given VkFormat is usable in depth and/or stencil buffers." alt="" coords="5,56,209,83"/>
+</map>

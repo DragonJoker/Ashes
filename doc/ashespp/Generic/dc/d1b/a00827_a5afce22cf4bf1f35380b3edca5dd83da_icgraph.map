@@ -1,0 +1,5 @@
+<map id="ashes::CommandBuffer::bindDescriptorSets" name="ashes::CommandBuffer::bindDescriptorSets">
+<area shape="rect" id="node1" title="Binds descriptor sets to the command buffer." alt="" coords="211,39,368,80"/>
+<area shape="rect" id="node2" href="$dc/d1b/a00827.html#a6454a7aacfe3265cff8278f336b98c41" title="Binds a descriptor set to the command buffer." alt="" coords="5,5,163,47"/>
+<area shape="rect" id="node3" href="$dc/d1b/a00827.html#a7cb117b132eba38269d0022c2cec3c2a" title="Binds descriptor sets to the command buffer." alt="" coords="5,71,163,112"/>
+</map>

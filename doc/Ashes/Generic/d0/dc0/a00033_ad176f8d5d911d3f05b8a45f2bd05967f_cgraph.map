@@ -1,0 +1,9 @@
+<map id="ashes::isCompressedFormat" name="ashes::isCompressedFormat">
+<area shape="rect" id="node1" title="Tells if given pixel format is a compressed pixel format." alt="" coords="5,132,195,159"/>
+<area shape="rect" id="node2" href="$d0/dc0/a00033.html#a1e6af0cb8f822a4a3656a1aaad956719" title="Tells if given pixel format is a ASTC compressed pixel format." alt="" coords="248,5,399,32"/>
+<area shape="rect" id="node3" href="$d0/dc0/a00033.html#acdca018c3dc4830b56d4b104fa8011c1" title="Tells if given pixel format is a BC compressed pixel format." alt="" coords="256,56,391,83"/>
+<area shape="rect" id="node4" href="$d0/dc0/a00033.html#a0bd7664c7101644294b8ea1156a9faa4" title="Tells if given pixel format is a EAC compressed pixel format." alt="" coords="252,107,395,133"/>
+<area shape="rect" id="node5" href="$d0/dc0/a00033.html#a0c19bf414f701fee201c4418429ebc2b" title="Tells if given pixel format is a ETC2 compressed pixel format." alt="" coords="249,157,397,184"/>
+<area shape="rect" id="node6" href="$d0/dc0/a00033.html#a47df6ba7fd4d2a96572a043b118a2ad3" title="Tells if given pixel format is a PVRTC pixel format." alt="" coords="244,208,403,235"/>
+<area shape="rect" id="node7" href="$d0/dc0/a00033.html#ae85f2663e70f7f53cc0cffaa54c80650" title="Tells if given pixel format is a YCBCR pixel format." alt="" coords="243,259,404,285"/>
+</map>

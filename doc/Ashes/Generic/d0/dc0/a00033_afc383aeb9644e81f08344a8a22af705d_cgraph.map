@@ -1,0 +1,6 @@
+<map id="ashes::isDepthOrStencilFormat" name="ashes::isDepthOrStencilFormat">
+<area shape="rect" id="node1" title="Tells if the given VkFormat is usable in depth and/or stencil buffers." alt="" coords="5,56,209,83"/>
+<area shape="rect" id="node2" href="$d0/dc0/a00033.html#a51611aadeb9f8d3b61d0cc88390f1ba8" title="Tells if the given VkFormat is usable in depth buffers." alt="" coords="277,5,428,32"/>
+<area shape="rect" id="node3" href="$d0/dc0/a00033.html#a25965ce5bbe83fb2d27d422dd0d45af3" title="Tells if the given VkFormat is usable in depth and stencil buffers." alt="" coords="257,56,448,83"/>
+<area shape="rect" id="node4" href="$d0/dc0/a00033.html#af5d8bd4c951e00b3f7912f98a12a7c09" title="Tells if the given VkFormat is usable in stencil buffers." alt="" coords="275,107,431,133"/>
+</map>

@@ -1,5 +1,0 @@
-<map id="renderer::DescriptorSet::createDynamicBinding" name="renderer::DescriptorSet::createDynamicBinding">
-<area shape="rect" id="node2" href="$da/d1f/a01203.html#a47fd325d4ca59d38fd024492fc2e335f" title="Crée une attache de type tampon uniforme dynamique. " alt="" coords="213,5,373,47"/>
-<area shape="rect" id="node3" href="$df/dd5/a01115.html#afe6c8eb375f2057fbdf5804262c854a9" title="Récupère la taille alignée pour un élément. " alt="" coords="216,71,371,112"/>
-<area shape="rect" id="node4" href="$df/dd5/a01115.html#a6c37de6b1732c1f8051ae73e065659ce" title="renderer::UniformBuffer\l::getUbo" alt="" coords="216,136,371,177"/>
-</map>

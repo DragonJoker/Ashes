@@ -1,0 +1,4 @@
+<map id="ashes::isBCFormat" name="ashes::isBCFormat">
+<area shape="rect" id="node1" title="Tells if given pixel format is a BC compressed pixel format." alt="" coords="243,5,377,32"/>
+<area shape="rect" id="node2" href="$d0/dc0/a00033.html#ad176f8d5d911d3f05b8a45f2bd05967f" title="Tells if given pixel format is a compressed pixel format." alt="" coords="5,5,195,32"/>
+</map>

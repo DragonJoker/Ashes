@@ -1,0 +1,4 @@
+<map id="ashes::BufferBase::unlock" name="ashes::BufferBase::unlock">
+<area shape="rect" id="node1" title="Unmaps the buffer&#39;s memory from RAM." alt="" coords="196,5,332,47"/>
+<area shape="rect" id="node2" href="$d3/d95/a00779.html#a4dc2e34bd2f11ac84ce5d03bd82f5aa2" title="Uploads the buffer data to VRAM." alt="" coords="5,5,148,47"/>
+</map>

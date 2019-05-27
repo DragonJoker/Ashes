@@ -1,0 +1,6 @@
+<map id="ashes::getAspectMask" name="ashes::getAspectMask">
+<area shape="rect" id="node1" title="Retrieves the aspects mask matching given VkFormat." alt="" coords="5,56,161,83"/>
+<area shape="rect" id="node2" href="$d0/dc0/a00033.html#a51611aadeb9f8d3b61d0cc88390f1ba8" title="Tells if the given VkFormat is usable in depth buffers." alt="" coords="229,5,380,32"/>
+<area shape="rect" id="node3" href="$d0/dc0/a00033.html#a25965ce5bbe83fb2d27d422dd0d45af3" title="Tells if the given VkFormat is usable in depth and stencil buffers." alt="" coords="209,56,400,83"/>
+<area shape="rect" id="node4" href="$d0/dc0/a00033.html#af5d8bd4c951e00b3f7912f98a12a7c09" title="Tells if the given VkFormat is usable in stencil buffers." alt="" coords="227,107,383,133"/>
+</map>

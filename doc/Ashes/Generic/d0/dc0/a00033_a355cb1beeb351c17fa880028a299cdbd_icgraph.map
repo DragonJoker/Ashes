@@ -1,0 +1,6 @@
+<map id="ashes::getMinimalExtent2D" name="ashes::getMinimalExtent2D">
+<area shape="rect" id="node1" title="Retrieves the minimal VkExtent2D for given pixel format." alt="" coords="423,31,605,57"/>
+<area shape="rect" id="node2" href="$d0/dc0/a00033.html#a07055e4d22fc388081c4e956f0d48a42" title="Checks if the given extent fits the given format." alt="" coords="214,5,353,32"/>
+<area shape="rect" id="node4" href="$d0/dc0/a00033.html#a3518b470696c4bbc9612c24b972ab6b9" title="Retrieves the minimal VkExtent2D for given pixel format." alt="" coords="192,56,375,83"/>
+<area shape="rect" id="node3" href="$d0/dc0/a00033.html#aaea621d1af3faa78426317f310f03bfe" title="Checks if the given extent fits the given format." alt="" coords="5,5,144,32"/>
+</map>

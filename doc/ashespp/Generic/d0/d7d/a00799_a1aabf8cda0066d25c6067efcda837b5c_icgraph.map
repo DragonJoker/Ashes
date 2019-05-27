@@ -1,0 +1,4 @@
+<map id="ashes::BufferBase::lock" name="ashes::BufferBase::lock">
+<area shape="rect" id="node1" title="Maps a range of the buffer&#39;s memory in RAM." alt="" coords="196,13,356,39"/>
+<area shape="rect" id="node2" href="$d3/d95/a00779.html#a4dc2e34bd2f11ac84ce5d03bd82f5aa2" title="Uploads the buffer data to VRAM." alt="" coords="5,5,148,47"/>
+</map>
