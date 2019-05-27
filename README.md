@@ -1,26 +1,27 @@
-RendererLib
-===========
+Ashes
+=====
 
-RendererLib is a rendering library written in C++14, matching closely Vulkan interfaces. 
-The final goal of this library is to expose as much of Vulkan features as possible. 
-It comes with a set of test applications, to validate the API. 
+Ashes is a rendering library written in C++17, matching closely Vulkan interfaces.
+The final goal of this library is to expose as much of Vulkan features as possible.
+It comes with a set of test applications, to validate the API.
 
 
-I've started this project because I need to upgrade my 3D engine (Castor3D), to use Vulkan, and I needed that kind of library, to replace my current renderer (OpenGL). 
-I needed a way to work with OpenGL like we need to work with Vulkan. 
-It is still a WIP, even though I've implemented a lot of Vulkan features. 
+I've started this project because I need to upgrade my 3D engine (Castor3D), to use Vulkan, and I needed that kind of library, to replace my current renderer (OpenGL).
+I needed a way to work with OpenGL like we need to work with Vulkan.
+It is still a WIP, the library is far from complete!!
 
 ## Available renderers
 
 - VkRenderer : A Vulkan renderer.
 - Gl3Renderer : An OpenGL 3.X renderer, based upon OpenGL 3.2.
-- GlRenderer : An OpenGL 4.X renderer, based upon OpenGL 4.2.
+- Gl4Renderer : An OpenGL 4.X renderer, based upon OpenGL 4.2.
+- D3D11Renderer : A Direct3D 11 renderer.
 
 ## Documentation
 
 The API is documented using Doxygen, and a version can be found here :
-- [English version](http://DragonJoker.github.com/RendererLib/doc/Renderer/English)
-- [French version](http://DragonJoker.github.com/RendererLib/doc/Renderer/French)
+- [English version](http://DragonJoker.github.com/RendererLib/doc/Ashes/English)
+- [French version](http://DragonJoker.github.com/RendererLib/doc/Ashes/French)
 
 ## Build
 
@@ -128,6 +129,21 @@ Tests loading a texture 2D array, compressed in either BC3, ASTC 8x8 or ETC2, de
 <img src="./img/screenshots/20.png" height="72px" align="right">
 
 Takes the push constant test case and uses dynamic buffer descriptor instead of multiple descriptors.
+
+### Specialisation Constants
+<img src="./img/screenshots/21.png" height="72px" align="right">
+
+Tests the specialisation constants in Vulkan (matching them with uniforms in OpenGL renderers).
+
+### SPIR-V Specialisation Constants
+<img src="./img/screenshots/22.png" height="72px" align="right">
+
+Tests the specialisation constants in Vulkan and OpenGL renderers (as long as they support SPIRV shaders).
+
+### Bloom
+<img src="./img/screenshots/23.png" height="72px" align="right">
+
+Bloom implementation using downscale through mipmaps.
 
 
 ## Sample applications
