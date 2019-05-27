@@ -30,11 +30,12 @@ namespace common
 	namespace
 	{
 		ashes::PipelineShaderStageCreateInfoArray doCreateObjectProgram( ashes::Device const & device
+			, std::string const & vertexShaderFile
 			, std::string const & fragmentShaderFile )
 		{
 			std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
 
-			if ( !wxFileExists( shadersFolder / "object.vert" )
+			if ( !wxFileExists( shadersFolder / vertexShaderFile )
 				|| !wxFileExists( fragmentShaderFile ) )
 			{
 				throw std::runtime_error{ "Shader files are missing" };
@@ -47,7 +48,7 @@ namespace common
 					VK_SHADER_STAGE_VERTEX_BIT,
 					device.createShaderModule( dumpShaderFile( device
 						, VK_SHADER_STAGE_VERTEX_BIT
-						, shadersFolder / "object.vert" ) ),
+						, shadersFolder / vertexShaderFile ) ),
 					"main",
 					std::nullopt,
 				} );
@@ -64,39 +65,16 @@ namespace common
 			return result;
 		}
 
+		ashes::PipelineShaderStageCreateInfoArray doCreateObjectProgram( ashes::Device const & device
+			, std::string const & fragmentShaderFile )
+		{
+			return doCreateObjectProgram( device, "object.vert", fragmentShaderFile );
+		}
+
 		ashes::PipelineShaderStageCreateInfoArray doCreateBillboardProgram( ashes::Device const & device
 			, std::string const & fragmentShaderFile )
 		{
-			std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
-
-			if ( !wxFileExists( shadersFolder / "billboard.vert" )
-				|| !wxFileExists( fragmentShaderFile ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
-
-			ashes::PipelineShaderStageCreateInfoArray result;
-			result.push_back( ashes::PipelineShaderStageCreateInfo
-				{
-					0u,
-					VK_SHADER_STAGE_VERTEX_BIT,
-					device.createShaderModule( dumpShaderFile( device
-						, VK_SHADER_STAGE_VERTEX_BIT
-						, shadersFolder / "billboard.vert" ) ),
-					"main",
-					std::nullopt,
-				} );
-			result.push_back( ashes::PipelineShaderStageCreateInfo
-				{
-					0u,
-					VK_SHADER_STAGE_FRAGMENT_BIT,
-					device.createShaderModule( dumpShaderFile( device
-						, VK_SHADER_STAGE_FRAGMENT_BIT
-						, fragmentShaderFile ) ),
-					"main",
-					std::nullopt,
-				} );
-			return result;
+			return doCreateObjectProgram( device, "billboard.vert", fragmentShaderFile );
 		}
 
 		ashes::RenderPassPtr doCreateRenderPass( ashes::Device const & device
@@ -539,6 +517,7 @@ namespace common
 
 				materialNode.pipelineLayout = m_device.getDevice().createPipelineLayout( { *m_billboardDescriptorLayout, *materialNode.layout } );
 				materialNode.pipeline = doCreatePipeline( *materialNode.pipelineLayout
+					, doCreateBillboardProgram( m_device.getDevice(), m_fragmentShaderFile )
 					, std::move( vertexLayout )
 					, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP 
 					, VK_CULL_MODE_NONE );
@@ -654,6 +633,7 @@ namespace common
 
 						materialNode.pipelineLayout = m_device.getDevice().createPipelineLayout( { *m_objectDescriptorLayout, *materialNode.layout } );
 						materialNode.pipeline = doCreatePipeline( *materialNode.pipelineLayout
+							, doCreateObjectProgram( m_device.getDevice(), m_fragmentShaderFile )
 							, std::move( vertexLayout )
 							, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST
 							, VkCullModeFlagBits( material.data.backFace ? VK_CULL_MODE_FRONT_BIT : VK_CULL_MODE_BACK_BIT ) );
@@ -689,6 +669,7 @@ namespace common
 	}
 
 	ashes::GraphicsPipelinePtr NodesRenderer::doCreatePipeline( ashes::PipelineLayout const & pipelineLayout
+		, ashes::PipelineShaderStageCreateInfoArray shaderStages
 		, ashes::PipelineVertexInputStateCreateInfo vertexLayout
 		, VkPrimitiveTopology topology
 		, VkCullModeFlagBits cullMode )
@@ -716,7 +697,7 @@ namespace common
 		return m_device->createPipeline( ashes::GraphicsPipelineCreateInfo
 			{
 				0u,
-				doCreateBillboardProgram( m_device.getDevice(), m_fragmentShaderFile ),
+				std::move( shaderStages ),
 				std::move( vertexLayout ),
 				ashes::PipelineInputAssemblyStateCreateInfo{ 0u, topology },
 				std::nullopt,

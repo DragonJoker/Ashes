@@ -84,6 +84,7 @@ namespace ashes::gl4
 			, get( dst )->getInternal() ) );
 
 		// Setup source FBO
+		list.push_back( makeCmd< OpType::eInitFramebuffer >( &get( get( device )->getBlitSrcFbo() )->getInternal() ) );
 		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
 			, get( device )->getBlitSrcFbo() ) );
 		list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER

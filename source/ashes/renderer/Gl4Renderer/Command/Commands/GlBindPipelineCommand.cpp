@@ -62,6 +62,7 @@ namespace ashes::gl4
 		//	list.push_back( makeCmd< OpType::eBindContextState >( device
 		//		, &get( device )->getRtocContextState() ) );
 		//	list.push_back( makeCmd< OpType::eUseProgram >( get( device )->getRtocProgram() ) );
+		//	list.push_back( makeCmd< OpType::eInitFramebuffer >( &get( get( device )->getBlitDstFbo() )->getInternal() ) );
 		//	list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
 		//		, get( device )->getBlitDstFbo() ) );
 		//	list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER

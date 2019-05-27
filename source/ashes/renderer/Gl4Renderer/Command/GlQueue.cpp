@@ -98,6 +98,9 @@ namespace ashes::gl4
 			case OpType::eApplyViewport:
 				apply( lock, map< OpType::eApplyViewport >( cmd ) );
 				break;
+			case OpType::eInitFramebuffer:
+				apply( lock, map< OpType::eInitFramebuffer >( cmd ) );
+				break;
 			case OpType::eBindFramebuffer:
 				apply( lock, map< OpType::eBindFramebuffer >( cmd ) );
 				break;

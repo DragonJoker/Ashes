@@ -70,6 +70,7 @@ namespace common
 			, ashes::DescriptorSet & descriptorSet
 			, TextureNodePtrArray const & textures );
 		ashes::GraphicsPipelinePtr doCreatePipeline( ashes::PipelineLayout const & pipelineLayout
+			, ashes::PipelineShaderStageCreateInfoArray shaderStages
 			, ashes::PipelineVertexInputStateCreateInfo vertexLayout
 			, VkPrimitiveTopology topology
 			, VkCullModeFlagBits cullMode );

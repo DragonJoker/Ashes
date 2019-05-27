@@ -402,7 +402,7 @@ namespace common
 			{
 				{ 0u, 0u, VK_FORMAT_R32G32_SFLOAT, offsetof( ImDrawVert, pos ) },
 				{ 1u, 0u, VK_FORMAT_R32G32_SFLOAT, offsetof( ImDrawVert, uv ) },
-				{ 2u, 0u, VK_FORMAT_R32_UINT, offsetof( ImDrawVert, col ) },
+				{ 2u, 0u, VK_FORMAT_R8G8B8A8_UNORM, offsetof( ImDrawVert, col ) },
 			},
 		};
 

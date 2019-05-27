@@ -30,6 +30,7 @@ namespace ashes::gl4
 		eClearBackDepthStencil,
 		eApplyScissor,
 		eApplyViewport,
+		eInitFramebuffer,
 		eBindFramebuffer,
 		eDrawBuffer,
 		eDrawBuffers,
@@ -349,6 +350,31 @@ namespace ashes::gl4
 
 	void apply( ContextLock const & context
 		, CmdUseProgram const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eInitFramebuffer >
+	{
+		static Op constexpr value = { OpType::eInitFramebuffer, 4u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eInitFramebuffer >
+	{
+		inline CmdT( GLuint * fbo )
+			: cmd{ { OpType::eInitFramebuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, fbo{ fbo }
+		{
+		}
+
+		Command cmd;
+		GLuint * fbo;
+	};
+	using CmdInitFramebuffer = CmdT< OpType::eInitFramebuffer >;
+
+	void apply( ContextLock const & context
+		, CmdInitFramebuffer const & cmd );
 
 	//*************************************************************************
 

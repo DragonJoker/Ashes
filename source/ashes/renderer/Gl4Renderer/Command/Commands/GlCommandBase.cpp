@@ -95,6 +95,18 @@ namespace ashes::gl4
 	}
 
 	void apply( ContextLock const & context
+		, CmdInitFramebuffer const & cmd )
+	{
+		if ( ( *cmd.fbo ) == GL_INVALID_INDEX )
+		{
+			glLogCall( context
+				, glGenFramebuffers
+				, 1
+				, cmd.fbo );
+		}
+	}
+
+	void apply( ContextLock const & context
 		, CmdBindFramebuffer const & cmd )
 	{
 		if ( cmd.fbo != VK_NULL_HANDLE )

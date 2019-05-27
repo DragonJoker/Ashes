@@ -3,7 +3,7 @@
 
 layout( location = 0 ) in vec2 position;
 layout( location = 1 ) in vec2 texcoord;
-layout( location = 2 ) in uint colour;
+layout( location = 2 ) in vec4 colour;
 
 layout( push_constant ) uniform PushConstants
 {
@@ -21,11 +21,7 @@ out gl_PerVertex
 
 void main() 
 {
-	vtx_colour = vec4(
-		float((colour >>  0) & 0xFF) / 255.0,
-		float((colour >>  8) & 0xFF) / 255.0,
-		float((colour >> 16) & 0xFF) / 255.0,
-		float((colour >> 24) & 0xFF) / 255.0);
+	vtx_colour = colour;
 	vtx_texcoord = texcoord;
 	gl_Position = vec4( position * pushConstants.scale + pushConstants.translate, 0.0, 1.0 );
 }

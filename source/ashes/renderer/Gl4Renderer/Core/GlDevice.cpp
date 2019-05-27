@@ -260,16 +260,14 @@ void main()
 		doInitialiseQueues();
 		auto lock = getContext();
 		doInitialiseDummy( lock );
-		GLuint fbos[2];
-		lock->glGenFramebuffers( 2, fbos );
 		allocate( m_blitFbos[0]
 			, nullptr
 			, get( this )
-			, fbos[0] );
+			, GL_INVALID_INDEX );
 		allocate( m_blitFbos[1]
 			, nullptr
 			, get( this )
-			, fbos[1] );
+			, GL_INVALID_INDEX );
 		doInitialiseRtoc( lock );
 	}
 
