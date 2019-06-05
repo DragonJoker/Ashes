@@ -4045,7 +4045,7 @@ namespace ashes::gl4
 				description.getInstanceProcAddr = &vkGetInstanceProcAddr;
 				description.features =
 				{
-					true, // hasTexBufferRange
+					true, // hasBufferRange
 					true, // hasImageTexture
 					true, // hasBaseInstance
 					true, // hasClearTexImage

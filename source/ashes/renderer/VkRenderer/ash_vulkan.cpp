@@ -36,7 +36,7 @@ struct VkLibrary
 				: VK_ERROR_INITIALIZATION_FAILED;
 			description.features =
 			{
-				true, // hasTexBufferRange
+				true, // hasBufferRange
 				true, // hasImageTexture
 				true, // hasBaseInstance
 				true, // hasClearTexImage

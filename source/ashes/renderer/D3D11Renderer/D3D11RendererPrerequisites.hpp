@@ -221,13 +221,14 @@ namespace ashes::d3d11
 		D3D_FEATURE_LEVEL featureLevel;
 	};
 
+	struct Context;
+
 	class Attribute;
 	class Buffer;
 	class BufferView;
 	class CommandBase;
 	class CommandBuffer;
 	class CommandPool;
-	class ComputePipeline;
 	class DescriptorPool;
 	class DescriptorSet;
 	class DescriptorSetLayout;
@@ -263,10 +264,14 @@ namespace ashes::d3d11
 	class DebugUtilsMessengerEXT;
 	class ValidationCacheEXT;
 
+	using Action = std::function< void( Context const & ) >;
+	using ActionArray = std::vector< Action >;
+
 	using AttributeArray = std::vector< Attribute >;
 
 	using CommandPtr = std::unique_ptr< CommandBase >;
 	using CommandPoolPtr = std::unique_ptr< CommandPool >;
+	using PipelinePtr = std::unique_ptr< Pipeline >;
 	using PhysicalDevicePtr = std::unique_ptr< PhysicalDevice >;
 	using QueuePtr = std::unique_ptr< Queue >;
 	using RenderSubpassPtr = std::unique_ptr< RenderSubpass >;

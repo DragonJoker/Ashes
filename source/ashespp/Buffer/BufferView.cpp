@@ -19,7 +19,7 @@ namespace ashes
 		, m_offset{ offset }
 		, m_range{ range }
 	{
-		if ( !device.getInstance().getFeatures().hasTexBufferRange
+		if ( !device.getInstance().getFeatures().hasBufferRange
 			&& ( offset != 0 || range != buffer.getSize() ) )
 		{
 			throw Exception{ VkResult::VK_ERROR_FEATURE_NOT_PRESENT, "Buffer range" };
