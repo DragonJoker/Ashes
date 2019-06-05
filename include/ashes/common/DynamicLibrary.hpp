@@ -15,11 +15,6 @@ namespace ashes
 	*	Platform independant shared library (.dll or .so).
 	*\remarks
 	*	Loads a library and gives access to it's functions in a platform independant way.
-	*\~french
-	*\brief
-	*	Bibliothèque dynamique (Dll, shared lib).
-	*\remarks
-	*	Charge une bibliothèque et permet l'accès a ses fonction de manière indépendante de l'OS.
 	*/
 	class DynamicLibrary
 	{
@@ -29,33 +24,20 @@ namespace ashes
 		DynamicLibrary( DynamicLibrary && rhs );
 		DynamicLibrary & operator=( DynamicLibrary && rhs );
 		/**
-		*\~english
 		*\brief
 		*	Constructor, ppens a library from a path.
 		*\remarks
 		*	If the library couldn't be loaded, throws a std::runtime_error.
 		*\param[in] path
 		*	The file path.
-		*\~french
-		*\brief
-		*	Charge une bibliothèque à partir d'un chemin.
-		*\remarks
-		*	Si la bibliothèque n'a pas pu être chargée, une std::runtime_error est lancée.
-		*\param[in] path
-		*	Le chemin du fichier.
 		*/
 		DynamicLibrary( std::string const & path );
 		/**
-		*\~english
 		*\brief
 		*	Destructor.
-		*\~french
-		*\brief
-		*	Destructeur
 		*/
 		~DynamicLibrary()noexcept;
 		/**
-		*\~english
 		*\brief
 		*	Retrieves a function.
 		*\param[in] name
@@ -63,16 +45,7 @@ namespace ashes
 		*\param[out] function
 		*	Receives the function.
 		*\return
-		*	\p true if the function was correctly retrieved.
-		*\~french
-		*\brief
-		*	Récupère une fonction.
-		*\param[out] function
-		*	Reçoit la fonction.
-		*\param[in] name
-		*	Le nom de la fonction.
-		*\return
-		*	\p true si la fonction a été correctement récupérée
+		*	\p true if the function was successfully retrieved.
 		*/
 		template< typename FuncType >
 		bool getFunction( std::string const & name, FuncType & function )noexcept
@@ -81,12 +54,8 @@ namespace ashes
 			return function != nullptr;
 		}
 		/**
-		*\~english
 		*\return
-		*	The file path.
-		*\~french
-		*\return
-		*	Le chemin vers le fichier.
+		*	The file path to the library.
 		*/
 		inline std::string const & getPath()const
 		{

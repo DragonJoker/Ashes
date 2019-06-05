@@ -9,12 +9,8 @@ See LICENSE file in root folder
 namespace ashes
 {
 	/**
-	*\~english
 	*\brief
 	*	Templated class that provides std::vector style buffer view.
-	*\~french
-	*\brief
-	*	Classe template qui fournit une vue sur un tampon, à la manière d'un std::vector.
 	*/
 	template< typename T >
 	class ArrayView

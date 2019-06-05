@@ -22,7 +22,6 @@ See LICENSE file in root folder
 namespace ashes
 {
 	/**
-	*\~english
 	*\brief
 	*	Computes an aligned size.
 	*\param[in] size
@@ -31,15 +30,6 @@ namespace ashes
 	*	The alignment value.
 	*\return
 	*	The aligned size.
-	*\~french
-	*\brief
-	*	Calcule une taille alignée.
-	*\param[in] size
-	*	La taille non alignée.
-	*\param[in] align
-	*	La valeur d'alignement.
-	*\return
-	*	La taille alignée.
 	*/
 	inline VkDeviceSize getAlignedSize( VkDeviceSize size, VkDeviceSize align )
 	{
@@ -54,89 +44,41 @@ namespace ashes
 		return result + align;
 	}
 	/**
-	*\~english
-	*\brief
-	*	Retrieves the byte size of given non compressed pixel format.
 	*\param[in] format
 	*	The pixel format.
 	*\return
-	*	The byte size.
-	*\~french
-	*\brief
-	*	Donne le nombre d'octets du format de pixels non compressé donné.
-	*\param[in] format
-	*	Le format de pixel.
-	*\return
-	*	Le nombre d'octets.
+	*	The byte size of given non compressed pixel format.
 	*/
 	uint32_t getSize( VkFormat format )noexcept;
 	/**
 	*\return
-	*	le nombre de composantes du format donné.
+	*	The given format components count.
 	*\param[in] format
-	*	Le VkFormat.
+	*	The VkFormat.
 	*/
 	uint32_t getCount( VkFormat format )noexcept;
 	/**
-	*\~english
-	*\brief
-	*	Retrieves the byte size of given BC compressed pixel format, for a 4x4 pixels block.
 	*\param[in] format
 	*	The pixel format.
 	*\return
-	*	The byte size.
-	*\~french
-	*\brief
-	*	Donne le nombre d'octets du format de pixels compressé BC donné, pour un bloc de 4x4 pixels.
-	*\param[in] format
-	*	Le format de pixel.
-	*\return
-	*	Le nombre d'octets.
+	*	The byte size of given BC compressed pixel format, for a 4x4 pixels block.
 	*/
 	uint32_t getBCSize( VkFormat format )noexcept;
 	/**
-	*\~english
-	*\brief
-	*	Retrieves the byte size of given ETC2 compressed pixel format, for a 4x4 pixels block.
 	*\param[in] format
 	*	The pixel format.
 	*\return
-	*	The byte size.
-	*\~french
-	*\brief
-	*	Donne le nombre d'octets du format de pixels compressé ETC2 donné, pour un bloc de 4x4 pixels.
-	*\param[in] format
-	*	Le format de pixel.
-	*\return
-	*	Le nombre d'octets.
+	*	The byte size of given ETC2 compressed pixel format, for a 4x4 pixels block.
 	*/
 	uint32_t getETC2Size( VkFormat format )noexcept;
 	/**
-	*\~english
-	*\brief
-	*	Retrieves the byte size of given EAC compressed pixel format, for a 4x4 pixels block.
 	*\param[in] format
 	*	The pixel format.
 	*\return
-	*	The byte size.
-	*\~french
-	*\brief
-	*	Donne le nombre d'octets du format de pixels compressé EAC donné, pour un bloc de 4x4 pixels.
-	*\param[in] format
-	*	Le format de pixel.
-	*\return
-	*	Le nombre d'octets.
+	*	The byte size of given EAC compressed pixel format, for a 4x4 pixels block.
 	*/
 	uint32_t getEACSize( VkFormat format )noexcept;
 	/**
-	*\~french
-	*\brief
-	*	Dit si le VkFormat donné est un format utilisable pour les tampons de profondeur et stencil.
-	*\param[in] format
-	*	Le VkFormat à tester.
-	*\return
-	*	\p true s'il l'est...
-	*\~english
 	*\brief
 	*	Tells if the given VkFormat is usable in depth and stencil buffers.
 	*\param[in] format
@@ -146,14 +88,6 @@ namespace ashes
 	*/
 	bool isDepthStencilFormat( VkFormat format )noexcept;
 	/**
-	*\~french
-	*\brief
-	*	Dit si le VkFormat donné est un format utilisable pour les tampons de stencil.
-	*\param[in] format
-	*	Le VkFormat à tester.
-	*\return
-	*	\p true s'il l'est...
-	*\~english
 	*\brief
 	*	Tells if the given VkFormat is usable in stencil buffers.
 	*\param[in] format
@@ -163,14 +97,6 @@ namespace ashes
 	*/
 	bool isStencilFormat( VkFormat format )noexcept;
 	/**
-	*\~french
-	*\brief
-	*	Dit si le VkFormat donné est un format utilisable pour les tampons de profondeur.
-	*\param[in] format
-	*	Le VkFormat à tester.
-	*\return
-	*	\p true s'il l'est...
-	*\~english
 	*\brief
 	*	Tells if the given VkFormat is usable in depth buffers.
 	*\param[in] format
@@ -180,94 +106,52 @@ namespace ashes
 	*/
 	bool isDepthFormat( VkFormat format )noexcept;
 	/**
-	*\~english
-	*\brief
-	*	Tells if given pixel format is a BC compressed pixel format.
+	*\return
+	*	\p true if given pixel format is a BC pixel format.
 	*\param[in] format
 	*	The pixel format.
-	*\~french
-	*\brief
-	*	Dit si le format de pixels donné est un format compressé BC.
-	*\param[in] format
-	*	Le format de pixel.
 	*/
 	bool isBCFormat( VkFormat format )noexcept;
 	/**
-	*\~english
-	*\brief
-	*	Tells if given pixel format is a ETC2 compressed pixel format.
+	*\return
+	*	\p true if given pixel format is a ETC2 pixel format.
 	*\param[in] format
 	*	The pixel format.
-	*\~french
-	*\brief
-	*	Dit si le format de pixels donné est un format compressé ETC2.
-	*\param[in] format
-	*	Le format de pixel.
 	*/
 	bool isETC2Format( VkFormat format )noexcept;
 	/**
-	*\~english
-	*\brief
-	*	Tells if given pixel format is a EAC compressed pixel format.
+	*\return
+	*	\p true if given pixel format is a EAC pixel format.
 	*\param[in] format
 	*	The pixel format.
-	*\~french
-	*\brief
-	*	Dit si le format de pixels donné est un format compressé EAC.
-	*\param[in] format
-	*	Le format de pixel.
 	*/
 	bool isEACFormat( VkFormat format )noexcept;
 	/**
-	*\~english
-	*\brief
-	*	Tells if given pixel format is a ASTC compressed pixel format.
+	*\return
+	*	\p true if given pixel format is a ASTC pixel format.
 	*\param[in] format
 	*	The pixel format.
-	*\~french
-	*\brief
-	*	Dit si le format de pixels donné est un format compressé ASTC.
-	*\param[in] format
-	*	Le format de pixel.
 	*/
 	bool isASTCFormat( VkFormat format )noexcept;
 	/**
-	*\~english
-	*\brief
-	*	Tells if given pixel format is a YCBCR pixel format.
+	*\return
+	*	\p true if given pixel format is a YCBCR pixel format.
 	*\param[in] format
 	*	The pixel format.
-	*\~french
-	*\brief
-	*	Dit si le format de pixels donné est un format YCBCR.
-	*\param[in] format
-	*	Le format de pixel.
 	*/
 	bool isYCBCRFormat( VkFormat format )noexcept;
 	/**
-	*\~english
-	*\brief
-	*	Tells if given pixel format is a PVRTC pixel format.
+	*\return
+	*	\p true if given pixel format is a PVRTC pixel format.
 	*\param[in] format
 	*	The pixel format.
-	*\~french
-	*\brief
-	*	Dit si le format de pixels donné est un format PVRTC.
-	*\param[in] format
-	*	Le format de pixel.
 	*/
 	bool isPVRTCFormat( VkFormat format )noexcept;
 	/**
-	*\~english
-	*\brief
-	*	Tells if given pixel format is a compressed pixel format.
+	*\return
+	*	\p true if given pixel format is a compressed pixel format.
 	*\param[in] format
 	*	The pixel format.
-	*\~french
-	*\brief
-	*	Dit si le format de pixels donné est un format compressé.
-	*\param[in] format
-	*	Le format de pixel.
 	*/
 	inline bool isCompressedFormat( VkFormat format )noexcept
 	{
@@ -279,14 +163,6 @@ namespace ashes
 			|| isPVRTCFormat( format );
 	}
 	/**
-	*\~french
-	*\brief
-	*	Dit si le VkFormat donné est un format utilisable pour les tampons de profondeur et/ou stencil.
-	*\param[in] format
-	*	Le VkFormat à tester.
-	*\return
-	*	\p true s'il l'est...
-	*\~english
 	*\brief
 	*	Tells if the given VkFormat is usable in depth and/or stencil buffers.
 	*\param[in] format
@@ -301,41 +177,24 @@ namespace ashes
 			|| isDepthFormat( format );
 	}
 	/**
-	*\~english
 	*\brief
 	*	Gets the name of the given element.
 	*\param[in] value
 	*	The element.
 	*\return
 	*	The name.
-	*\~french
-	*\brief
-	*	Récupère le nom de l'élément donné.
-	*\param[in] value
-	*	L'élément.
-	*\return
-	*	Le nom.
 	*/
 	std::string getName( VkFormat value );
 	/**
-	*\~english
 	*\brief
 	*	Retrieves the minimal VkExtent2D for given pixel format.
 	*\param[in] format
 	*	The pixel format.
 	*\return
 	*	The VkExtent2D.
-	*\~french
-	*\brief
-	*	Donne l'VkExtent2D minimales pour le format de pixels donné.
-	*\param[in] format
-	*	Le format de pixel.
-	*\return
-	*	L'VkExtent2D.
 	*/
 	VkExtent2D getMinimalExtent2D( VkFormat format )noexcept;
 	/**
-	*\~english
 	*\brief
 	*	Checks if the given extent fits the given format.
 	*\param[in] extent
@@ -344,15 +203,6 @@ namespace ashes
 	*	The pixel format.
 	*\return
 	*	\p true if the extent is compatible with the format.
-	*\~french
-	*\brief
-	*	Vérifie que les dimensiosn données sont compatibles avec le format donné.
-	*\param[in] extent
-	*	Les dimensions.
-	*\param[in] format
-	*	Le format de pixel.
-	*\return
-	*	\p true si les dimensiosn sont compatibles avec le format.
 	*/
 	inline bool checkExtent( VkFormat format, VkExtent2D const & extent )
 	{
@@ -361,7 +211,6 @@ namespace ashes
 			&& extent.height >= minimal.height;
 	}
 	/**
-	*\~english
 	*\brief
 	*	Retrieves the byte size of given pixel format and dimensions.
 	*\param[in] extent
@@ -370,33 +219,16 @@ namespace ashes
 	*	The pixel format.
 	*\return
 	*	The byte size.
-	*\~french
-	*\brief
-	*	Donne le nombre d'octets du format de pixels et les dimensions donnés.
-	*\param[in] extent
-	*	Les dimensions.
-	*\param[in] format
-	*	Le format de pixel.
-	*\return
-	*	Le nombre d'octets.
 	*/
 	VkDeviceSize getSize( VkExtent2D const & extent
 		, VkFormat format )noexcept;
 	/**
-	*\~english
 	*\brief
 	*	Retrieves the minimal VkExtent2D for given pixel format.
 	*\param[in] format
 	*	The pixel format.
 	*\return
 	*	The VkExtent2D.
-	*\~french
-	*\brief
-	*	Donne l'VkExtent2D minimales pour le format de pixels donné.
-	*\param[in] format
-	*	Le format de pixel.
-	*\return
-	*	L'VkExtent2D.
 	*/
 	inline VkExtent3D getMinimalExtent3D( VkFormat format )noexcept
 	{
@@ -404,7 +236,6 @@ namespace ashes
 		return VkExtent3D{ minimal.width, minimal.height, 1 };
 	}
 	/**
-	*\~english
 	*\brief
 	*	Checks if the given extent fits the given format.
 	*\param[in] extent
@@ -413,22 +244,12 @@ namespace ashes
 	*	The pixel format.
 	*\return
 	*	\p true if the extent is compatible with the format.
-	*\~french
-	*\brief
-	*	Vérifie que les dimensiosn données sont compatibles avec le format donné.
-	*\param[in] extent
-	*	Les dimensions.
-	*\param[in] format
-	*	Le format de pixel.
-	*\return
-	*	\p true si les dimensions sont compatibles avec le format.
 	*/
 	inline bool checkExtent( VkFormat format, VkExtent3D const & extent )
 	{
 		return checkExtent( format, VkExtent2D{ extent.width, extent.height } );
 	}
 	/**
-	*\~english
 	*\brief
 	*	Retrieves the byte size of given pixel format and dimensions.
 	*\param[in] extent
@@ -437,15 +258,6 @@ namespace ashes
 	*	The pixel format.
 	*\return
 	*	The byte size.
-	*\~french
-	*\brief
-	*	Donne le nombre d'octets du format de pixels et les dimensions donnés.
-	*\param[in] extent
-	*	Les dimensions.
-	*\param[in] format
-	*	Le format de pixel.
-	*\return
-	*	Le nombre d'octets.
 	*/
 	inline VkDeviceSize getSize( VkExtent3D const & extent
 		, VkFormat format )noexcept
@@ -454,14 +266,6 @@ namespace ashes
 			* std::max( 1u, extent.depth );
 	}
 	/**
-	*\~french
-	*\brief
-	*	Récupère le masque d'aspects correspondant au VkFormat donné.
-	*\param[in] format
-	*	Le VkFormat.
-	*\return
-	*	Les aspects.
-	*\~english
 	*\brief
 	*	Retrieves the aspects mask matching given VkFormat.
 	*\param[in] format
@@ -480,16 +284,6 @@ namespace ashes
 					: VK_IMAGE_ASPECT_COLOR_BIT ) );
 	}
 	/**
-	*\~french
-	*\brief
-	*	Récupère une dimension réelle du niveau de mipmap donné.
-	*\param[in] extent
-	*	La dimension du niveau 0.
-	*\param[in] mipLevel
-	*	Le niveau de mipmap.
-	*\return
-	*	La dimension du niveau de mipmap.
-	*\~english
 	*\brief
 	*	Retrieves the real extent for the given mipmap level.
 	*\param[in] extent
@@ -506,16 +300,6 @@ namespace ashes
 		return extent >> mipLevel;
 	}
 	/**
-	*\~french
-	*\brief
-	*	Récupère les dimensions réelles du niveau de mipmap donné.
-	*\param[in] extent
-	*	Les dimensions du niveau 0.
-	*\param[in] mipLevel
-	*	Le niveau de mipmap.
-	*\return
-	*	Les dimensions.
-	*\~english
 	*\brief
 	*	Retrieves the real extent for the given mipmap level.
 	*\param[in] extent
@@ -536,24 +320,14 @@ namespace ashes
 		};
 	}
 	/**
-	*\~english
-	*\brief
-	*	Retrieves the byte size of given pixel format and dimensions.
 	*\param[in] extent
 	*	The dimensions.
 	*\param[in] format
 	*	The pixel format.
+	*\param[in] mipLevel
+	*	The mipmap level for which dimensions are computed.
 	*\return
-	*	The byte size.
-	*\~french
-	*\brief
-	*	Donne le nombre d'octets du format de pixels et les dimensions donnés.
-	*\param[in] extent
-	*	Les dimensions.
-	*\param[in] format
-	*	Le format de pixel.
-	*\return
-	*	Le nombre d'octets.
+	*	The byte size of given pixel format and dimensions.
 	*/
 	inline VkDeviceSize getSize( VkExtent3D const & extent
 		, VkFormat format
@@ -562,22 +336,12 @@ namespace ashes
 		return getSize( getSubresourceDimensions( extent, mipLevel ), format );
 	}
 	/**
-	*\~french
-	*\brief
-	*	Récupère les dimensions réelles du niveau de mipmap donné.
-	*\param[in] extent
-	*	Les dimensions du niveau 0.
-	*\param[in] mipLevel
-	*	Le niveau de mipmap.
-	*\return
-	*	Les dimensions.
-	*\~english
 	*\brief
 	*	Retrieves the real extent for the given mipmap level.
 	*\param[in] extent
 	*	The level 0 extent.
 	*\param[in] mipLevel
-	*	The mipmap level.
+	*	The mipmap level for which dimensions are computed.
 	*\return
 	*	The dimensions.
 	*/
@@ -591,24 +355,16 @@ namespace ashes
 		};
 	}
 	/**
-	*\~english
 	*\brief
 	*	Retrieves the byte size of given pixel format and dimensions.
 	*\param[in] extent
 	*	The dimensions.
 	*\param[in] format
 	*	The pixel format.
+	*\param[in] mipLevel
+	*	The mipmap level for which dimensions are computed.
 	*\return
 	*	The byte size.
-	*\~french
-	*\brief
-	*	Donne le nombre d'octets du format de pixels et les dimensions donnés.
-	*\param[in] extent
-	*	Les dimensions.
-	*\param[in] format
-	*	Le format de pixel.
-	*\return
-	*	Le nombre d'octets.
 	*/
 	inline VkDeviceSize getSize( VkExtent2D const & extent
 		, VkFormat format

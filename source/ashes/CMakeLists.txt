@@ -81,8 +81,7 @@ set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
 set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes/Core" )
 
 if ( BUILD_ASHES )
-	target_add_doc( ${PROJECT_NAME} "French" "*.h *.hpp" )
-	target_add_doc( ${PROJECT_NAME} "English" "*.h *.hpp" )
+	target_add_doc( ${PROJECT_NAME} "" "*.h *.hpp" )
 endif ()
 
 install(

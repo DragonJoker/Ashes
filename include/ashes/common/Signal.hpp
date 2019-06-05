@@ -16,7 +16,7 @@ namespace ashes
 {
 	/**
 	*\brief
-	*	Représente une connexion à un signal.
+	*	A connection to a signal.
 	*/
 	template< typename SignalT >
 	class SignalConnection
@@ -36,62 +36,42 @@ namespace ashes
 
 	public:
 		/**
-		*\brief
-		*	Constructeur.
+		*\name
+		*	Construction/Destruction.
 		*/
+		/**\{*/
 		SignalConnection()
 			: SignalConnection{ 0u, nullptr }
 		{
 		}
-		/**
-		*\brief
-		*	Constructeur par déplacement.
-		*\param[in,out] rhs
-		*	L'objet à déplacer.
-		*/
+
 		SignalConnection( SignalConnection< my_signal > && rhs )
 			: SignalConnection{ 0u, nullptr }
 		{
 			swap( *this, rhs );
 		}
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] connection
-		*	La connection au signal.
-		*\param[in] signal
-		*	Le signal.
-		*/
+
 		SignalConnection( uint32_t connection, my_signal & signal )
 			: SignalConnection{ connection, &signal }
 		{
 			signal.addConnection( *this );
 		}
-		/**
-		*\brief
-		*	Opérateur d'affectation par déplacement.
-		*\param[in,out] rhs
-		*	L'objet à déplacer.
-		*/
+
 		SignalConnection & operator=( SignalConnection< my_signal > && rhs )
 		{
 			SignalConnection tmp{ std::move( rhs ) };
 			swap( *this, tmp );
 			return *this;
 		}
-		/**
-		*\brief
-		*	Destructeur.
-		*\remarks
-		*	Déconnecte la fonction du signal.
-		*/
+
 		~SignalConnection()
 		{
 			disconnect();
 		}
+		/**\}*/
 		/**
 		*\brief
-		*	Déconnecte la fonction du signal.
+		*	Disconnects from the signal.
 		*/
 		void disconnect()
 		{
@@ -137,7 +117,7 @@ namespace ashes
 	};
 	/**
 	*\brief
-	*	Classe basique de signal.
+	*	Signal implementation.
 	*/
 	template< typename Function >
 	class Signal
@@ -149,9 +129,9 @@ namespace ashes
 	public:
 		/**
 		*\brief
-		*	Destructeur.
+		*	Destructor.
 		*\remarks
-		*	Déconnecte toutes les connexions restantes.
+		*	Disconnects all remaining connections.
 		*/
 		~Signal()
 		{
@@ -170,12 +150,11 @@ namespace ashes
 		}
 		/**
 		*\brief
-		*	Connecte une nouvelle fonction, qui sera appelée lorsque le signal
-		*	est émis.
+		*	Connects a new function, called when the signal is emitted.
 		*\param[in] function
-		*	La fonction.
+		*	The function.
 		*\return
-		*	L'indice de la fonction, afin de pouvoir la déconnecter.
+		*	The connection.
 		*/
 		my_connection connect( Function function )
 		{
@@ -185,7 +164,7 @@ namespace ashes
 		}
 		/**
 		*\brief
-		*	Emet le signal, appelant toutes les fonctions connectées.
+		*	Emits the signal, calling all connected functions.
 		*/
 		void operator()()const
 		{
@@ -196,9 +175,9 @@ namespace ashes
 		}
 		/**
 		*\brief
-		*	Emet le signal, appelant toutes les fonctions connectées.
+		*	Emits the signal, calling all connected functions.
 		*\param[in] params
-		*	Les paramètres des fonctions.
+		*	The functions parameters.
 		*/
 		template< typename ... Params >
 		void operator()( Params && ... params )const
@@ -229,9 +208,9 @@ namespace ashes
 	private:
 		/**
 		*\brief
-		*	Déconnecte une fonction.
+		*	Disconnects a function.
 		*\param[in] index
-		*	L'indice de la fonction.
+		*	The function index.
 		*/
 		void disconnect( uint32_t index )
 		{
@@ -244,9 +223,9 @@ namespace ashes
 		}
 		/**
 		*\brief
-		*	Ajoute une connexion à la liste.
+		*	Adds a connection to the list.
 		*\param[in] connection
-		*	La connexion à ajouter.
+		*	The connection to add.
 		*/
 		void addConnection( my_connection & connection )
 		{
@@ -255,9 +234,9 @@ namespace ashes
 		}
 		/**
 		*\brief
-		*	Enlève une connexion de la liste.
+		*	Removes a connection from the list.
 		*\param[in] connection
-		*	La connexion à enlever.
+		*	The connection to remove.
 		*/
 		void remConnection( my_connection & connection )
 		{
@@ -267,9 +246,7 @@ namespace ashes
 		}
 
 	private:
-		//! La liste des fonctions connectées.
 		std::map< uint32_t, Function > m_slots;
-		//! La liste des connections à ce signal.
 		std::set< my_connection_ptr > m_connections;
 		std::recursive_mutex m_mutex;
 	};
