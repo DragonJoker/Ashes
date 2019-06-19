@@ -19,7 +19,7 @@ namespace ashes::d3d11
 		desc.Buffer.FirstElement = UINT( m_createInfo.offset / elemSize );
 		desc.Buffer.NumElements = UINT( m_createInfo.range / elemSize );
 
-		auto hr = get( device )->getDevice()->CreateShaderResourceView( get( m_createInfo.buffer )->getBuffer()
+		auto hr = get( device )->getDevice()->CreateShaderResourceView( get( m_createInfo.buffer )->getResource()
 			, &desc
 			, &m_view );
 

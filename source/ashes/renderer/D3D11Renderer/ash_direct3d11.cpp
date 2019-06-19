@@ -9,14 +9,6 @@
 #include <cstring>
 #include <iostream>
 
-namespace ashes
-{
-	inline VkPipelineCache deepCopy( VkPipelineCache const & rhs )
-	{
-		return rhs;
-	}
-}
-
 namespace ashes::d3d11
 {
 #pragma region Vulkan 1.0

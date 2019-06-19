@@ -38,10 +38,11 @@ namespace ashes::d3d11
 		void generateMipmaps( VkCommandBuffer commandBuffer )const;
 		VkResult bindMemory( VkDeviceMemory memory
 			, VkDeviceSize memoryOffset );
+		bool isMapped()const;
 
 		inline ID3D11Resource * getResource()const
 		{
-			return m_image.tex1D;
+			return m_image.resource;
 		}
 
 		inline ID3D11Texture1D * getTexture1D()const
@@ -61,6 +62,7 @@ namespace ashes::d3d11
 			assert( getType() == VK_IMAGE_TYPE_3D );
 			return m_image.tex3D;
 		}
+
 
 		inline bool isRenderTarget()const
 		{
@@ -93,6 +95,11 @@ namespace ashes::d3d11
 			return m_memory;
 		}
 
+		inline VkDeviceSize getMemoryOffset()const
+		{
+			return m_memoryOffset;
+		}
+
 		inline VkImageCreateInfo const & getCreateInfo()const
 		{
 			return m_createInfo;
@@ -113,16 +120,25 @@ namespace ashes::d3d11
 			return m_createInfo.imageType;
 		}
 
+		inline ObjectMemory const & getObjectMemory()const
+		{
+			assert( m_objectMemory != nullptr );
+			return *m_objectMemory;
+		}
+
 	private:
 		VkDevice m_device;
 		VkImageCreateInfo m_createInfo;
 		union
 		{
+			ID3D11Resource * resource;
 			ID3D11Texture1D * tex1D;
 			ID3D11Texture2D * tex2D;
 			ID3D11Texture3D * tex3D;
 		} m_image;
 		VkDeviceMemory m_memory{ VK_NULL_HANDLE };
+		VkDeviceSize m_memoryOffset{ 0u };
+		ObjectMemory * m_objectMemory{ nullptr };
 	};
 }
 

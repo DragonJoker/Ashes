@@ -18,6 +18,27 @@ namespace ashes::d3d11
 {
 	namespace
 	{
+		uint32_t getBufferRowPitch( uint32_t bufferRowLength
+			, uint32_t imageWidth )
+		{
+			return ( bufferRowLength
+				? bufferRowLength
+				: imageWidth );
+		}
+		
+		uint32_t getBufferHeightPitch( uint32_t bufferImageHeight
+			, uint32_t imageHeight )
+		{
+			return ( bufferImageHeight
+				? bufferImageHeight
+				: imageHeight );
+		}
+
+		uint32_t getBufferDepthPitch( uint32_t imageDepth )
+		{
+			return imageDepth;
+		}
+		
 		uint32_t getBufferRowPitch( VkBufferImageCopy const & copyInfo )
 		{
 			return ( copyInfo.bufferRowLength
@@ -44,7 +65,8 @@ namespace ashes::d3d11
 		}
 
 		VkDeviceSize doGetBufferSize( VkFormat format
-			, VkBufferImageCopy const & copyInfo )
+			, VkBufferImageCopy const & copyInfo
+			, uint32_t mipLevel )
 		{
 			VkExtent3D bufferPitch
 			{
@@ -56,17 +78,19 @@ namespace ashes::d3d11
 		}
 
 		D3D11_BOX doGetSrcBox( VkFormat format
-			, VkBufferImageCopy const & copyInfo )
+			, VkBufferImageCopy const & copyInfo
+			, uint32_t slice )
 		{
-
+			auto begin = copyInfo.bufferOffset;
+			auto end = begin + doGetBufferSize( format, copyInfo, 0u );
 			return
 			{
-				UINT( copyInfo.bufferOffset ),
-				0u,
-				0u,
-				UINT( copyInfo.bufferOffset + doGetBufferSize( format, copyInfo ) ),
-				1u,
-				1u
+				UINT( begin ),    // left
+				0u,               // top
+				slice,            // front
+				UINT( end ),      // right
+				1u,               // bottom
+				slice + 1u        // back
 			};
 		}
 
@@ -127,6 +151,88 @@ namespace ashes::d3d11
 			return uint32_t( texelBlockSize );
 		}
 
+		void doCopy( uint8_t const * srcData
+			, uint8_t * dstData
+			, uint32_t layers
+			, VkDeviceSize srcLayerPitch
+			, VkDeviceSize dstLayerPitch
+			, uint32_t depth
+			, VkDeviceSize srcDepthPitch
+			, VkDeviceSize dstDepthPitch
+			, uint32_t height
+			, VkDeviceSize srcRowPitch
+			, VkDeviceSize dstRowPitch )
+		{
+			auto size = std::min( srcRowPitch, dstRowPitch );
+
+			for ( auto l = 0u; l < layers; ++l )
+			{
+				auto srcLayer = srcData;
+				auto dstLayer = dstData;
+
+				for ( auto z = 0u; z < depth; ++z )
+				{
+					auto srcSlice = srcLayer;
+					auto dstSlice = dstLayer;
+
+					for ( auto y = 0u; y < height; ++y )
+					{
+						std::memcpy( dstSlice, srcSlice, size );
+						srcSlice += srcRowPitch;
+						dstSlice += dstRowPitch;
+					}
+				}
+
+				srcLayer += srcDepthPitch;
+				dstLayer += dstDepthPitch;
+			}
+
+			srcData += srcLayerPitch;
+			dstData += dstLayerPitch;
+		}
+
+		void doAdjustPitches( uint32_t bufferSize
+			, uint32_t height
+			, UINT & srcRowPitch
+			, UINT & dstRowPitch
+			, uint32_t depth
+			, UINT & srcDepthPitch
+			, UINT & dstDepthPitch )
+		{
+			auto checkedSize = bufferSize;
+
+			if ( srcRowPitch == checkedSize )
+			{
+				if ( srcRowPitch == dstRowPitch )
+				{
+					dstRowPitch /= height;
+				}
+
+				srcRowPitch /= height;
+			}
+
+			if ( srcDepthPitch == checkedSize )
+			{
+				if ( srcDepthPitch == dstDepthPitch )
+				{
+					dstDepthPitch /= depth;
+				}
+
+				srcDepthPitch /= depth;
+				checkedSize = srcDepthPitch;
+			}
+
+			if ( srcRowPitch == checkedSize )
+			{
+				if ( srcRowPitch == dstRowPitch )
+				{
+					dstRowPitch /= height;
+				}
+
+				srcRowPitch /= height;
+			}
+		}
+
 		void doCopyMapped( VkFormat format
 			, VkBufferImageCopy const & copyInfo
 			, D3D11_MAPPED_SUBRESOURCE srcBuffer
@@ -134,23 +240,18 @@ namespace ashes::d3d11
 			, D3D11_MAPPED_SUBRESOURCE dstBuffer
 			, VkSubresourceLayout const & dstLayout )
 		{
-			auto extent = getTexelBlockExtent( format );
-			auto extentCombined = extent.width * extent.height * extent.depth;
-			auto byteSize = getTexelBlockByteSize( extent, format );
-			auto bufferSize = srcBox.right - srcBox.left;
+			auto bufferSize = ( srcBox.right - srcBox.left ) * ( srcBox.back - srcBox.front );
 			auto bufferRowPitch = srcBuffer.RowPitch;
-			auto bufferHeightPitch = getBufferHeightPitch( copyInfo );
 			auto bufferDepthPitch = srcBuffer.DepthPitch;
 			auto bufferLayerPitch = bufferDepthPitch;
 			auto imageSize = dstLayout.size;
 			auto imageRowPitch = dstBuffer.RowPitch;
 			auto imageLayerPitch = dstLayout.arrayPitch;
 			auto imageDepthPitch = dstBuffer.DepthPitch;
-			auto imageWidth = copyInfo.imageExtent.width;
 			auto imageHeight = copyInfo.imageExtent.height;
-			auto imageDepth = copyInfo.imageExtent.depth;
+			auto imageDepth = srcBox.back - srcBox.front;
 			auto imageLayers = copyInfo.imageSubresource.layerCount;
-			auto srcData = reinterpret_cast< uint8_t * >( srcBuffer.pData );
+			auto srcData = reinterpret_cast< uint8_t * >( srcBuffer.pData ) + srcBox.left;
 			auto dstData = reinterpret_cast< uint8_t * >( dstBuffer.pData ) + ( copyInfo.imageOffset.z * dstBuffer.DepthPitch );
 
 			if ( imageRowPitch >= imageSize )
@@ -159,107 +260,82 @@ namespace ashes::d3d11
 				bufferDepthPitch = bufferRowPitch * imageHeight;
 				bufferLayerPitch = bufferDepthPitch;
 
-				for ( auto l = 0u; l < imageLayers; ++l )
-				{
-					auto srcLayer = srcData;
-					auto dstLayer = dstData;
-
-					for ( auto z = 0u; z < imageDepth; ++z )
-					{
-						auto srcPlane = srcLayer;
-						auto dstPlane = dstLayer;
-
-						for ( auto y = 0u; y < imageHeight; ++y )
-						{
-							std::memcpy( dstPlane
-								, srcPlane
-								, std::min( bufferRowPitch, imageRowPitch ) );
-							srcPlane += bufferRowPitch;
-							dstPlane += imageRowPitch;
-						}
-
-						srcLayer += bufferDepthPitch;
-						dstLayer += imageDepthPitch;
-					}
-
-					srcData += bufferLayerPitch;
-					dstData += imageLayerPitch;
-				}
-
+				doCopy( srcData
+					, dstData
+					, imageLayers
+					, bufferLayerPitch
+					, imageLayerPitch
+					, imageDepth
+					, bufferDepthPitch
+					, imageDepthPitch
+					, imageHeight
+					, bufferRowPitch
+					, imageRowPitch );
 				return;
 			}
 
-			for ( auto l = 0u; l < imageLayers; ++l )
+			doAdjustPitches( bufferSize
+				, imageHeight
+				, bufferRowPitch
+				, imageRowPitch
+				, imageDepth
+				, bufferDepthPitch
+				, imageDepthPitch );
+
+			if ( bufferRowPitch && imageRowPitch )
 			{
-				auto srcLayer = srcData;
-				auto dstLayer = dstData;
+				auto bufferSteps = bufferDepthPitch / bufferRowPitch;
+				auto imageSteps = imageDepthPitch / imageRowPitch;
+				assert( bufferSteps == imageSteps
+					|| ( bufferSteps > imageSteps && ( bufferSteps % imageSteps ) == 0 )
+					|| ( imageSteps > bufferSteps && ( imageSteps % bufferSteps ) == 0 ) );
 
-				for ( auto z = 0u; z < imageDepth; ++z )
+				if ( bufferSteps == imageSteps )
 				{
-					auto srcPlane = srcLayer;
-					auto dstPlane = dstLayer;
-
-					if ( bufferRowPitch == bufferSize )
-					{
-						if ( bufferRowPitch == imageRowPitch )
-						{
-							imageRowPitch /= imageHeight;
-						}
-
-						bufferRowPitch /= imageHeight;
-						assert( bufferSize == ( bufferRowPitch * imageHeight ) );
-					}
-
-					auto bufferSteps = bufferDepthPitch / bufferRowPitch;
-					auto imageSteps = imageDepthPitch / imageRowPitch;
-					assert( bufferSteps == imageSteps
-						|| ( bufferSteps > imageSteps && ( bufferSteps % imageSteps ) == 0 )
-						|| ( imageSteps > bufferSteps && ( imageSteps % bufferSteps ) == 0 ) );
-
-					if ( bufferSteps == imageSteps )
-					{
-						for ( auto y = 0u; y < bufferSteps; ++y )
-						{
-							std::memcpy( dstPlane
-								, srcPlane
-								, std::min( bufferRowPitch, imageRowPitch ) );
-							srcPlane += bufferRowPitch;
-							dstPlane += imageRowPitch;
-						}
-					}
-					else if ( bufferSteps > imageSteps )
-					{
-						// bufferSteps = n * imageSteps
-						// => imageRowPitch = n * bufferRowPitch
-						for ( auto y = 0u; y < imageSteps; ++y )
-						{
-							std::memcpy( dstPlane
-								, srcPlane
-								, imageRowPitch );
-							srcPlane += imageRowPitch;
-							dstPlane += imageRowPitch;
-						}
-					}
-					else
-					{
-						// imageSteps = n * bufferSteps
-						// => bufferRowPitch = n * imageRowPitch
-						for ( auto y = 0u; y < bufferSteps; ++y )
-						{
-							std::memcpy( dstPlane
-								, srcPlane
-								, bufferRowPitch );
-							srcPlane += bufferRowPitch;
-							dstPlane += bufferRowPitch;
-						}
-					}
-
-					srcLayer += bufferDepthPitch;
-					dstLayer += imageDepthPitch;
+					doCopy( srcData
+						, dstData
+						, imageLayers
+						, bufferLayerPitch
+						, imageLayerPitch
+						, imageDepth
+						, bufferDepthPitch
+						, imageDepthPitch
+						, bufferSteps
+						, bufferRowPitch
+						, imageRowPitch );
 				}
-
-				srcData += bufferLayerPitch;
-				dstData += imageLayerPitch;
+				else if ( bufferSteps > imageSteps )
+				{
+					// bufferSteps = n * imageSteps
+					// => imageRowPitch = n * bufferRowPitch
+					doCopy( srcData
+						, dstData
+						, imageLayers
+						, bufferLayerPitch
+						, imageLayerPitch
+						, imageDepth
+						, bufferDepthPitch
+						, imageDepthPitch
+						, imageSteps
+						, imageRowPitch
+						, imageRowPitch );
+				}
+				else
+				{
+					// imageSteps = n * bufferSteps
+					// => bufferRowPitch = n * imageRowPitch
+					doCopy( srcData
+						, dstData
+						, imageLayers
+						, bufferLayerPitch
+						, imageLayerPitch
+						, imageDepth
+						, bufferDepthPitch
+						, imageDepthPitch
+						, bufferSteps
+						, bufferRowPitch
+						, bufferRowPitch );
+				}
 			}
 		}
 
@@ -300,49 +376,6 @@ namespace ashes::d3d11
 			return result;
 		}
 
-		VkImage getStagingTexture( VkDevice device
-			, VkImage image
-			, VkDeviceMemory & memory )
-		{
-			VkImage result;
-			allocate( result
-				, nullptr
-				, device
-				, VkImageCreateInfo
-				{
-					VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-					nullptr,
-					0u,
-					get( image )->getType(),
-					get( image )->getFormat(),
-					get( image )->getDimensions(),
-					get( image )->getMipmapLevels(),
-					1u, // layerCount, we process images layer per layer.
-					VK_SAMPLE_COUNT_1_BIT,
-					VK_IMAGE_TILING_LINEAR,
-					VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
-					VK_SHARING_MODE_EXCLUSIVE,
-					0u,
-					nullptr,
-					VK_IMAGE_LAYOUT_UNDEFINED,
-				} );
-			auto requirements = get( result )->getMemoryRequirements();
-			uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
-				, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
-			allocate( memory
-				, nullptr
-				, device
-				, VkMemoryAllocateInfo
-				{
-					VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-					nullptr,
-					requirements.size,
-					deduced
-				} );
-			get( result )->bindMemory( memory, 0u );
-			return result;
-		}
-
 		VkBufferCopy doGetCopyToStaging( VkFormat format
 			, VkBufferImageCopyArray const & copyInfos )
 		{
@@ -353,7 +386,7 @@ namespace ashes::d3d11
 
 			for ( auto & copyInfo : copyInfos )
 			{
-				auto size = doGetBufferSize( format, copyInfo );
+				auto size = doGetBufferSize( format, copyInfo, 0u );
 				minOffset = std::min( minOffset, copyInfo.bufferOffset );
 				maxSize = std::max( maxSize, copyInfo.bufferOffset + size );
 			}
@@ -405,13 +438,12 @@ namespace ashes::d3d11
 		{
 			if ( !dstMappable )
 			{
-				auto stagingImageSubresource = bufferImageCopy.imageSubresource;
+				VkImageSubresourceLayers stagingImageSubresource = bufferImageCopy.imageSubresource;
 				stagingImageSubresource.layerCount = 1u;
 				stagingImageSubresource.baseArrayLayer = 0u;
 
 				CopyFromStagingProcess process;
-				process.stagingDst = getStagingTexture( device
-					, image
+				process.stagingDst = get( device )->getStagingImage( image
 					, process.stagingDstMemory );
 
 				mapCopyImage.dst = process.stagingDst;
@@ -454,33 +486,42 @@ namespace ashes::d3d11
 			for ( auto & copy : copyInfos )
 			{
 				auto copyInfo = copy;
+				// We process images array level per array level
 				copyInfo.imageSubresource.layerCount = 1u;
+				// We process images depth slice per depth slice
+				copyInfo.imageExtent.depth = 1u;
 				copyInfo.bufferOffset -= baseBufferImageCopy.bufferOffset;
-				auto layerPitch = getBufferRowPitch( copyInfo ) * getBufferHeightPitch( copyInfo );
+				auto layerDepthPitch = getSize( VkExtent3D{ getBufferRowPitch( copyInfo ), getBufferHeightPitch( copyInfo ), 1u }, get( dst )->getFormat() );
 
 				for ( uint32_t layer = 0u; layer < copy.imageSubresource.layerCount; ++layer )
 				{
-					auto srcBox = doGetSrcBox( get( dst )->getFormat(), copyInfo );
-					auto dstLayout = doGetDstLayout( device, dst, copyInfo );
-					MapCopyImage mapCopyImage
+					for ( uint32_t slice = copy.imageOffset.z; slice < copy.imageOffset.z + copy.imageExtent.depth; ++slice )
 					{
-						dst,
-						get( dst )->getMemory(),
-						copyInfo,
-						srcBox,
-						D3D11CalcSubresource( copyInfo.imageSubresource.mipLevel
-							, copyInfo.imageSubresource.baseArrayLayer
-							, 1u ),
-						dstLayout,
-					};
-					getCopyFromStagingProcess( device
-						, dst
-						, dstMappable
-						, copyInfo
-						, mapCopyImage );
-					result.mapCopyImages.push_back( mapCopyImage );
+						auto srcBox = doGetSrcBox( get( dst )->getFormat(), copyInfo, slice );
+						auto dstLayout = doGetDstLayout( device, dst, copyInfo );
+						MapCopyImage mapCopyImage
+						{
+							dst,
+							get( dst )->getMemory(),
+							copyInfo,
+							srcBox,
+							D3D11CalcSubresource( copyInfo.imageSubresource.mipLevel
+								, copyInfo.imageSubresource.baseArrayLayer
+								, 1u ),
+							dstLayout,
+						};
+						getCopyFromStagingProcess( device
+							, dst
+							, dstMappable
+							, copyInfo
+							, mapCopyImage );
+						result.mapCopyImages.push_back( mapCopyImage );
+						copyInfo.imageOffset.z++;
+						copyInfo.bufferOffset += layerDepthPitch;
+					}
+
 					copyInfo.imageSubresource.baseArrayLayer++;
-					copyInfo.bufferOffset += layerPitch;
+					copyInfo.bufferOffset += layerDepthPitch;
 				}
 			}
 
@@ -525,22 +566,22 @@ namespace ashes::d3d11
 		, m_src{ src }
 		, m_dst{ dst }
 		, m_format{ getSRVFormat( get( m_dst )->getFormat() ) }
-		, m_srcMappable{ get( m_src )->getMemoryRequirements().memoryTypeBits == VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT }
-		, m_dstMappable{ get( m_dst )->getMemoryRequirements().memoryTypeBits == VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT }
+		, m_srcMappable{ checkFlag( get( get( m_src )->getMemory() )->getMemoryPropertyFlags(), VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) }
+		, m_dstMappable{ checkFlag( get( get( m_dst )->getMemory() )->getMemoryPropertyFlags(), VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) }
 		, m_process{ buildProcess ( device, copyInfos, src, dst, m_srcMappable, m_dstMappable ) }
 	{
 	}
 
 	CopyBufferToImageCommand::~CopyBufferToImageCommand()
 	{
-		for ( auto & mapCopies : m_process.mapCopy.mapCopyImages )
-		{
-			if ( mapCopies.copyFromStaging )
-			{
-				deallocate( mapCopies.copyFromStaging->stagingDstMemory, nullptr );
-				deallocate( mapCopies.copyFromStaging->stagingDst, nullptr );
-			}
-		}
+		//for ( auto & mapCopies : m_process.mapCopy.mapCopyImages )
+		//{
+		//	if ( mapCopies.copyFromStaging )
+		//	{
+		//		deallocate( mapCopies.copyFromStaging->stagingDstMemory, nullptr );
+		//		deallocate( mapCopies.copyFromStaging->stagingDst, nullptr );
+		//	}
+		//}
 
 		if ( m_process.copyToStaging )
 		{
@@ -584,10 +625,11 @@ namespace ashes::d3d11
 	{
 		for ( auto & mapCopyImage : process.mapCopyImages )
 		{
-			doMapCopy( mapCopyImage
+			doMapCopy( context
+				, mapCopyImage
 				, get( mapCopyImage.dst )->getFormat()
-				, process.srcMemory
-				, mapCopyImage.dstMemory );
+				, get( process.src )->getObjectMemory()
+				, get( mapCopyImage.dst )->getObjectMemory() );
 
 			if ( mapCopyImage.copyFromStaging )
 			{
@@ -601,24 +643,41 @@ namespace ashes::d3d11
 		return std::make_unique< CopyBufferToImageCommand >( *this );
 	}
 
-	void CopyBufferToImageCommand::doMapCopy( MapCopyImage const & mapCopy
+	void CopyBufferToImageCommand::doMapCopy( Context const & context
+		, MapCopyImage const & mapCopy
 		, VkFormat format
-		, VkDeviceMemory src
-		, VkDeviceMemory dst )const
+		, ObjectMemory const & src
+		, ObjectMemory const & dst )const
 	{
-		ID3D11DeviceContext * context;
-		get( m_device )->getDevice()->GetImmediateContext( &context );
 		D3D11_MAPPED_SUBRESOURCE srcMapped{};
 
-		if ( VK_SUCCESS == get( src )->getImpl().lock( context
+		if ( VK_SUCCESS == src.lock( context.context
 			, 0u
-			, srcMapped ) )
+			, srcMapped )
+			&& srcMapped.pData )
 		{
+			auto bufferSize = ( mapCopy.srcBox.right - mapCopy.srcBox.left ) * ( mapCopy.srcBox.back - mapCopy.srcBox.front );
+			auto imageSize = getSize( VkExtent3D{ mapCopy.mapCopy.imageExtent.width, mapCopy.mapCopy.imageExtent.height, 1u }, format );
+
+			if ( srcMapped.RowPitch > bufferSize )
+			{
+				// Use destination row pitch.
+				assert( bufferSize >= imageSize );
+				srcMapped.RowPitch = UINT( imageSize / mapCopy.mapCopy.imageExtent.height );
+			}
+
+			if ( srcMapped.DepthPitch > bufferSize )
+			{
+				// Use destination depth pitch.
+				srcMapped.DepthPitch = UINT( imageSize );
+			}
+
 			D3D11_MAPPED_SUBRESOURCE dstMapped{};
 
-			if ( VK_SUCCESS == get( dst )->getImpl().lock( context
+			if ( VK_SUCCESS == dst.lock( context.context
 				, mapCopy.dstSubresource
-				, dstMapped ) )
+				, dstMapped )
+				&& dstMapped.pData )
 			{
 				doCopyMapped( format
 					, mapCopy.mapCopy
@@ -626,13 +685,11 @@ namespace ashes::d3d11
 					, mapCopy.srcBox
 					, dstMapped
 					, mapCopy.dstLayout );
-				get( dst )->getImpl().unlock( context, mapCopy.dstSubresource );
+				dst.unlock( context.context, mapCopy.dstSubresource );
 			}
 
-			get( src )->getImpl().unlock( context, 0u );
+			src.unlock( context.context, 0u );
 		}
-
-		safeRelease( context );
 	}
 
 	void CopyBufferToImageCommand::doCopyToStaging( Context const & context

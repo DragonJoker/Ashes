@@ -126,7 +126,163 @@ namespace ashes::d3d11
 		default: return DXGI_FORMAT_UNKNOWN;
 		}
 	}
-	
+
+	DXGI_FORMAT getDxgiFormatGroup( DXGI_FORMAT fmt )noexcept
+	{
+		switch ( fmt )
+		{
+		case DXGI_FORMAT_R32G32B32A32_TYPELESS:
+		case DXGI_FORMAT_R32G32B32A32_FLOAT:
+		case DXGI_FORMAT_R32G32B32A32_UINT:
+		case DXGI_FORMAT_R32G32B32A32_SINT:
+			return DXGI_FORMAT_R32G32B32A32_TYPELESS;
+
+		case DXGI_FORMAT_R32G32B32_TYPELESS:
+		case DXGI_FORMAT_R32G32B32_FLOAT:
+		case DXGI_FORMAT_R32G32B32_UINT:
+		case DXGI_FORMAT_R32G32B32_SINT:
+			return DXGI_FORMAT_R32G32B32_TYPELESS;
+
+		case DXGI_FORMAT_R16G16B16A16_TYPELESS:
+		case DXGI_FORMAT_R16G16B16A16_FLOAT:
+		case DXGI_FORMAT_R16G16B16A16_UNORM:
+		case DXGI_FORMAT_R16G16B16A16_UINT:
+		case DXGI_FORMAT_R16G16B16A16_SNORM:
+		case DXGI_FORMAT_R16G16B16A16_SINT:
+			return DXGI_FORMAT_R16G16B16A16_TYPELESS;
+
+		case DXGI_FORMAT_R32G32_TYPELESS:
+		case DXGI_FORMAT_R32G32_FLOAT:
+		case DXGI_FORMAT_R32G32_UINT:
+		case DXGI_FORMAT_R32G32_SINT:
+			return DXGI_FORMAT_R32G32_TYPELESS;
+
+		case DXGI_FORMAT_R32G8X24_TYPELESS:
+		case DXGI_FORMAT_D32_FLOAT_S8X24_UINT:
+			return DXGI_FORMAT_R32G8X24_TYPELESS;
+
+		case DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS:
+		case DXGI_FORMAT_X32_TYPELESS_G8X24_UINT:
+			return DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS;
+
+		case DXGI_FORMAT_R10G10B10A2_TYPELESS:
+		case DXGI_FORMAT_R10G10B10A2_UNORM:
+		case DXGI_FORMAT_R10G10B10A2_UINT:
+		case DXGI_FORMAT_R11G11B10_FLOAT:
+			return DXGI_FORMAT_R10G10B10A2_TYPELESS;
+
+		case DXGI_FORMAT_R8G8B8A8_TYPELESS:
+		case DXGI_FORMAT_R8G8B8A8_UNORM:
+		case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
+		case DXGI_FORMAT_R8G8B8A8_UINT:
+		case DXGI_FORMAT_R8G8B8A8_SNORM:
+		case DXGI_FORMAT_R8G8B8A8_SINT:
+			return DXGI_FORMAT_R8G8B8A8_TYPELESS;
+
+		case DXGI_FORMAT_R16G16_TYPELESS:
+		case DXGI_FORMAT_R16G16_FLOAT:
+		case DXGI_FORMAT_R16G16_UNORM:
+		case DXGI_FORMAT_R16G16_UINT:
+		case DXGI_FORMAT_R16G16_SNORM:
+		case DXGI_FORMAT_R16G16_SINT:
+			return DXGI_FORMAT_R16G16_TYPELESS;
+
+		case DXGI_FORMAT_R32_TYPELESS:
+		case DXGI_FORMAT_D32_FLOAT:
+		case DXGI_FORMAT_R32_FLOAT:
+		case DXGI_FORMAT_R32_UINT:
+		case DXGI_FORMAT_R32_SINT:
+			return DXGI_FORMAT_R32_TYPELESS;
+
+		case DXGI_FORMAT_R24G8_TYPELESS:
+		case DXGI_FORMAT_D24_UNORM_S8_UINT:
+			return DXGI_FORMAT_R24G8_TYPELESS;
+
+		case DXGI_FORMAT_R24_UNORM_X8_TYPELESS:
+		case DXGI_FORMAT_X24_TYPELESS_G8_UINT:
+			return DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+
+		case DXGI_FORMAT_R8G8_TYPELESS:
+		case DXGI_FORMAT_R8G8_UNORM:
+		case DXGI_FORMAT_R8G8_UINT:
+		case DXGI_FORMAT_R8G8_SNORM:
+		case DXGI_FORMAT_R8G8_SINT:
+			return DXGI_FORMAT_R8G8_TYPELESS;
+
+		case DXGI_FORMAT_R16_TYPELESS:
+		case DXGI_FORMAT_R16_FLOAT:
+		case DXGI_FORMAT_D16_UNORM:
+		case DXGI_FORMAT_R16_UNORM:
+		case DXGI_FORMAT_R16_UINT:
+		case DXGI_FORMAT_R16_SNORM:
+		case DXGI_FORMAT_R16_SINT:
+			return DXGI_FORMAT_R16_TYPELESS;
+
+		case DXGI_FORMAT_R8_TYPELESS:
+		case DXGI_FORMAT_R8_UNORM:
+		case DXGI_FORMAT_R8_UINT:
+		case DXGI_FORMAT_R8_SNORM:
+		case DXGI_FORMAT_R8_SINT:
+		case DXGI_FORMAT_A8_UNORM:
+		case DXGI_FORMAT_R1_UNORM:
+		case DXGI_FORMAT_R9G9B9E5_SHAREDEXP:
+		case DXGI_FORMAT_R8G8_B8G8_UNORM:
+		case DXGI_FORMAT_G8R8_G8B8_UNORM:
+			return DXGI_FORMAT_R8_TYPELESS;
+
+		case DXGI_FORMAT_BC1_TYPELESS:
+		case DXGI_FORMAT_BC1_UNORM:
+		case DXGI_FORMAT_BC1_UNORM_SRGB:
+			return DXGI_FORMAT_BC1_TYPELESS;
+
+		case DXGI_FORMAT_BC2_TYPELESS:
+		case DXGI_FORMAT_BC2_UNORM:
+		case DXGI_FORMAT_BC2_UNORM_SRGB:
+			return DXGI_FORMAT_BC2_TYPELESS;
+
+		case DXGI_FORMAT_BC3_TYPELESS:
+		case DXGI_FORMAT_BC3_UNORM:
+		case DXGI_FORMAT_BC3_UNORM_SRGB:
+			return DXGI_FORMAT_BC3_TYPELESS;
+
+		case DXGI_FORMAT_BC4_TYPELESS:
+		case DXGI_FORMAT_BC4_UNORM:
+		case DXGI_FORMAT_BC4_SNORM:
+			return DXGI_FORMAT_BC4_TYPELESS;
+
+		case DXGI_FORMAT_BC5_TYPELESS:
+		case DXGI_FORMAT_BC5_UNORM:
+		case DXGI_FORMAT_BC5_SNORM:
+		case DXGI_FORMAT_B5G6R5_UNORM:
+		case DXGI_FORMAT_B5G5R5A1_UNORM:
+		case DXGI_FORMAT_B8G8R8A8_UNORM:
+		case DXGI_FORMAT_B8G8R8X8_UNORM:
+		case DXGI_FORMAT_R10G10B10_XR_BIAS_A2_UNORM:
+			return DXGI_FORMAT_BC5_TYPELESS;
+
+		case DXGI_FORMAT_B8G8R8A8_TYPELESS:
+		case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
+			return DXGI_FORMAT_B8G8R8A8_TYPELESS;
+
+		case DXGI_FORMAT_B8G8R8X8_TYPELESS:
+		case DXGI_FORMAT_B8G8R8X8_UNORM_SRGB:
+			return DXGI_FORMAT_B8G8R8X8_TYPELESS;
+
+		case DXGI_FORMAT_BC6H_TYPELESS:
+		case DXGI_FORMAT_BC6H_UF16:
+		case DXGI_FORMAT_BC6H_SF16:
+			return DXGI_FORMAT_BC6H_TYPELESS;
+
+		case DXGI_FORMAT_BC7_TYPELESS:
+		case DXGI_FORMAT_BC7_UNORM:
+		case DXGI_FORMAT_BC7_UNORM_SRGB:
+			return DXGI_FORMAT_BC7_TYPELESS;
+
+		default:
+			return fmt;
+		}
+	}
+
 	DXGI_FORMAT getTextureFormat( VkFormat const & format )noexcept
 	{
 		switch ( format )
@@ -733,102 +889,5 @@ namespace ashes::d3d11
 			assert( false && "Unsupported pixel format." );
 			return VK_FORMAT_R8G8B8A8_UNORM;
 		}
-	}
-
-	BlockSize getBlockSize( VkFormat format )
-	{
-		BlockSize result{ { 1u, 1u }, 0u };
-
-		if ( isCompressedFormat( format ) )
-		{
-			if ( format >= VK_FORMAT_BC1_RGB_UNORM_BLOCK
-				&& format <= VK_FORMAT_EAC_R11G11_SNORM_BLOCK )
-			{
-				result.block.width = 4u;
-				result.block.height = 4u;
-			}
-			else
-			{
-				switch ( format )
-				{
-				case VK_FORMAT_ASTC_4x4_UNORM_BLOCK:
-				case VK_FORMAT_ASTC_4x4_SRGB_BLOCK:
-					result.block.width = 4u;
-					result.block.height = 4u;
-					break;
-				case VK_FORMAT_ASTC_5x4_UNORM_BLOCK:
-				case VK_FORMAT_ASTC_5x4_SRGB_BLOCK:
-					result.block.width = 5u;
-					result.block.height = 4u;
-					break;
-				case VK_FORMAT_ASTC_5x5_UNORM_BLOCK:
-				case VK_FORMAT_ASTC_5x5_SRGB_BLOCK:
-					result.block.width = 5u;
-					result.block.height = 5u;
-					break;
-				case VK_FORMAT_ASTC_6x5_UNORM_BLOCK:
-				case VK_FORMAT_ASTC_6x5_SRGB_BLOCK:
-					result.block.width = 6u;
-					result.block.height = 5u;
-					break;
-				case VK_FORMAT_ASTC_6x6_UNORM_BLOCK:
-				case VK_FORMAT_ASTC_6x6_SRGB_BLOCK:
-					result.block.width = 6u;
-					result.block.height = 6u;
-					break;
-				case VK_FORMAT_ASTC_8x5_UNORM_BLOCK:
-				case VK_FORMAT_ASTC_8x5_SRGB_BLOCK:
-					result.block.width = 8u;
-					result.block.height = 5u;
-					break;
-				case VK_FORMAT_ASTC_8x6_UNORM_BLOCK:
-				case VK_FORMAT_ASTC_8x6_SRGB_BLOCK:
-					result.block.width = 8u;
-					result.block.height = 6u;
-					break;
-				case VK_FORMAT_ASTC_8x8_UNORM_BLOCK:
-				case VK_FORMAT_ASTC_8x8_SRGB_BLOCK:
-					result.block.width = 8u;
-					result.block.height = 8u;
-					break;
-				case VK_FORMAT_ASTC_10x5_UNORM_BLOCK:
-				case VK_FORMAT_ASTC_10x5_SRGB_BLOCK:
-					result.block.width = 10u;
-					result.block.height = 5u;
-					break;
-				case VK_FORMAT_ASTC_10x6_UNORM_BLOCK:
-				case VK_FORMAT_ASTC_10x6_SRGB_BLOCK:
-					result.block.width = 10u;
-					result.block.height = 6u;
-					break;
-				case VK_FORMAT_ASTC_10x8_UNORM_BLOCK:
-				case VK_FORMAT_ASTC_10x8_SRGB_BLOCK:
-					result.block.width = 10u;
-					result.block.height = 8u;
-					break;
-				case VK_FORMAT_ASTC_10x10_UNORM_BLOCK:
-				case VK_FORMAT_ASTC_10x10_SRGB_BLOCK:
-					result.block.width = 10u;
-					result.block.height = 10u;
-					break;
-				case VK_FORMAT_ASTC_12x10_UNORM_BLOCK:
-				case VK_FORMAT_ASTC_12x10_SRGB_BLOCK:
-					result.block.width = 12u;
-					result.block.height = 10u;
-					break;
-				case VK_FORMAT_ASTC_12x12_UNORM_BLOCK:
-				case VK_FORMAT_ASTC_12x12_SRGB_BLOCK:
-					result.block.width = 12u;
-					result.block.height = 12u;
-					break;
-				default:
-					assert( false && "Unsupported pixel format." );
-					break;
-				}
-			}
-		}
-
-		result.size = getSize( result.block, format );
-		return result;
 	}
 }

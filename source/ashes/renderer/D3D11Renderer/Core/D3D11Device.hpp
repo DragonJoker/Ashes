@@ -18,6 +18,8 @@ namespace ashes::d3d11
 			, VkPhysicalDevice physicalDevice
 			, VkDeviceCreateInfo createInfos );
 		~Device();
+		VkImage getStagingImage( VkImage image
+			, VkDeviceMemory & memory );
 		/**
 		*\copydoc	ashes::Device::getImageSubresourceLayout
 		*/
@@ -135,5 +137,6 @@ namespace ashes::d3d11
 			VkDeviceMemory memory;
 		};
 		Buffer m_dummyIndexed;
+		std::unordered_map< size_t, std::pair< VkImage, VkDeviceMemory > > m_stagingTextures;
 	};
 }

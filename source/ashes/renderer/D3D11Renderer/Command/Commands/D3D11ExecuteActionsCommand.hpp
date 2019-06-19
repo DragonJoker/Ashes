@@ -8,21 +8,25 @@ See LICENSE file in root folder
 
 namespace ashes::d3d11
 {
-	class DownloadMemoryCommand
+	/**
+	*\brief
+	*	Classe de base d'une commande.
+	*/
+	class ExecuteActionsCommand
 		: public CommandBase
 	{
 	public:
-		DownloadMemoryCommand( VkDevice device
-			, ObjectMemory const * memory
-			, VkDeviceSize offset
-			, VkDeviceSize size
-			, UINT subresource );
+		/**
+		*\brief
+		*	Constructeur.
+		*/
+		ExecuteActionsCommand( VkDevice device
+			, ActionArray actions );
+
 		void apply( Context const & context )const;
 		CommandPtr clone()const;
 
 	private:
-		ObjectMemory const * m_memory;
-		std::pair< VkDeviceSize, VkDeviceSize > m_range;
-		UINT m_subresource;
+		ActionArray m_actions;
 	};
 }

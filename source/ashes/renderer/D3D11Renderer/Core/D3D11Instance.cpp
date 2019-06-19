@@ -65,8 +65,6 @@ namespace ashes::d3d11
 		// Emulate all combinations of device local memory types
 		// and all combinations of host visible memory types
 		result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_HEAP_DEVICE_LOCAL_BIT, 0u };
-		result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, 1u };
-		result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 1u };
 		result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT, 1u };
 
 		return result;
@@ -81,7 +79,7 @@ namespace ashes::d3d11
 		doLoadAdapters();
 		doInitialisePhysicalDevices();
 
-		m_features.hasTexBufferRange = m_maxFeatureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.hasBufferRange = m_maxFeatureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.hasImageTexture = m_maxFeatureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.hasBaseInstance = m_maxFeatureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.hasClearTexImage = true;

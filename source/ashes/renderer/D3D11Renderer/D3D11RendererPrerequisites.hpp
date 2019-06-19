@@ -193,7 +193,7 @@ DECLARE_GUID( IID_IDXGIFactory, 0x7b7166ec, 0x21c7, 0x44ae, 0xb2, 0x1a, 0xc9, 0x
 				uint64_t address = uint64_t( obj );\
 				sprintf_s( name, "%30s [0x%0I64X]", #type, address );\
 				obj->SetPrivateData( WKPDID_D3DDebugObjectName, UINT( strlen( name ) ), name );\
-				ashes::Logger::logDebug( name );\
+				std::clog << name << "\n";\
 			}
 #	else
 #		define dxDebugName( obj, type )\
@@ -203,7 +203,7 @@ DECLARE_GUID( IID_IDXGIFactory, 0x7b7166ec, 0x21c7, 0x44ae, 0xb2, 0x1a, 0xc9, 0x
 				uint64_t address = uint64_t( obj );\
 				sprintf( name, "%30s [0x%016X]", #type, address );\
 				obj->SetPrivateData( WKPDID_D3DDebugObjectName, UINT( strlen( name ) ), name );\
-				ashes::Logger::logDebug( name );\
+				std::clog << name << "\n";\
 			}
 #	endif
 #else
@@ -237,6 +237,7 @@ namespace ashes::d3d11
 	class DeviceMemory;
 	class FrameBuffer;
 	class GeometryBuffers;
+	class ObjectMemory;
 	class Pipeline;
 	class PipelineLayout;
 	class PhysicalDevice;

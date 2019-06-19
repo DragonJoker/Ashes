@@ -6,14 +6,6 @@
 
 #include "ashesd3d11_api.hpp"
 
-namespace ashes
-{
-	VkDescriptorPoolSize deepCopy( VkDescriptorPoolSize const & rhs )
-	{
-		return rhs;
-	}
-}
-
 namespace ashes::d3d11
 {
 	DescriptorPool::DescriptorPool( VkDevice device

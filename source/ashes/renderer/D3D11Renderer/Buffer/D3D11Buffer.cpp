@@ -21,15 +21,15 @@ namespace ashes::d3d11
 	VkMemoryRequirements Buffer::getMemoryRequirements()const
 	{
 		VkMemoryRequirements result{};
-		result.alignment = 0u;
-		result.memoryTypeBits = ~result.memoryTypeBits;
-		result.size = m_createInfo.size;
+		result.memoryTypeBits = ~( 0u );
+		result.alignment = 1u;
 
 		if ( checkFlag( m_createInfo.usage, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT ) )
 		{
-			result.size = ashes::getAlignedSize( result.size, 16u );
+			result.alignment = 256u;
 		}
 
+		result.size = ashes::getAlignedSize( m_createInfo.size, result.alignment );
 		return result;
 	}
 
@@ -49,12 +49,12 @@ namespace ashes::d3d11
 			, VkDeviceSize( srcBox.left )
 			, VkDeviceSize( dstOffset )
 			, size );
-		context->CopySubresourceRegion( getBuffer()
+		context->CopySubresourceRegion( getResource()
 			, 0u
 			, dstOffset
 			, 0u
 			, 0u
-			, get( src )->getBuffer()
+			, get( src )->getResource()
 			, 0u
 			, &srcBox );
 	}
@@ -63,9 +63,10 @@ namespace ashes::d3d11
 		, VkDeviceSize memoryOffset )
 	{
 		m_memory = memory;
+		m_memoryOffset = memoryOffset;
 		auto result = get( m_memory )->bindToBuffer( get( this )
-			, memoryOffset
-			, m_buffer );
+			, m_memoryOffset
+			, m_objectMemory );
 
 		if ( checkFlag( m_createInfo.usage, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT )
 			&& get( m_device )->getFeatureLevel() >= D3D_FEATURE_LEVEL_11_0 )
@@ -77,7 +78,7 @@ namespace ashes::d3d11
 			auto elemSize = 1u;
 			desc.Buffer.FirstElement = 0u;
 			desc.Buffer.NumElements = UINT( m_createInfo.size );
-			auto hr = device->CreateUnorderedAccessView( m_buffer
+			auto hr = device->CreateUnorderedAccessView( m_objectMemory->resource
 				, &desc
 				, &m_unorderedAccessView );
 			checkError( m_device, hr, "CreateUnorderedAccessViewBuffer" );
