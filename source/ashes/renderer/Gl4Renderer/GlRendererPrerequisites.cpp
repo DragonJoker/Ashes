@@ -1,4 +1,4 @@
-#include "GlRendererPrerequisites.hpp"
+﻿#include "GlRendererPrerequisites.hpp"
 
 #include "Buffer/GlBuffer.hpp"
 #include "Buffer/GlBufferView.hpp"
@@ -41,14 +41,15 @@ namespace ashes::gl4
 		uint32_t result = 0xFFFFFFFFu;
 		bool found{ false };
 
-		// Recherche parmi les types de m�moire la premi�re ayant les propri�t�s voulues.
+		// Recherche parmi les types de mémoire la première ayant les propriétés voulues.
 		uint32_t i{ 0 };
+		uint32_t lookup = 1u;
 
 		while ( i < memoryProperties.memoryTypeCount && !found )
 		{
-			if ( ( typeBits & 1 ) == 1 )
+			if ( ( typeBits & lookup ) == lookup )
 			{
-				// Le type de m�moire est disponible, a-t-il les propri�t�s demand�es?
+				// Le type de mémoire est disponible, a-t-il les propriétés demandées?
 				if ( ( memoryProperties.memoryTypes[i].propertyFlags & requirements ) == requirements )
 				{
 					result = i;
@@ -56,13 +57,13 @@ namespace ashes::gl4
 				}
 			}
 
-			typeBits >>= 1;
+			++lookup;
 			++i;
 		}
 
 		if ( !found )
 		{
-			throw Exception{ VK_ERROR_INITIALIZATION_FAILED, "Could not deduce memory type" };
+			throw ashes::Exception{ VK_ERROR_OUT_OF_DEVICE_MEMORY, "Could not deduce memory type" };
 		}
 
 		return result;

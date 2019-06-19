@@ -14,14 +14,6 @@ See LICENSE file in root folder.
 
 #include <iostream>
 
-namespace ashes
-{
-	inline VkImageView deepCopy( VkImageView const & rhs )
-	{
-		return rhs;
-	}
-}
-
 namespace ashes::gl4
 {
 	enum GlFramebufferStatus

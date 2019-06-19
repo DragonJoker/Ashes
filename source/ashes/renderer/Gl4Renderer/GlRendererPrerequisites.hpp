@@ -70,11 +70,16 @@ namespace ashes::gl4
 		void * userParam;
 	};
 
+	struct ContextState;
+
 	class Buffer;
 	class BufferView;
 	class CommandBase;
 	class CommandBuffer;
 	class CommandPool;
+	class Context;
+	class ContextLock;
+	class ContextStateStack;
 	class DebugReportCallbackEXT;
 	class DescriptorPool;
 	class DescriptorSet;
@@ -117,6 +122,7 @@ namespace ashes::gl4
 	class ContextLock;
 	struct ContextState;
 	using ContextPtr = std::unique_ptr< Context >;
+	using ContextStateArray = std::vector< ContextState >;
 
 	using CommandPtr = std::unique_ptr< CommandBase >;
 	using CommandArray = std::vector< CommandPtr >;
@@ -146,6 +152,9 @@ namespace ashes::gl4
 	using DeviceMemoryDestroyFunc = std::function< void( GLuint ) >;
 	using DeviceMemoryDestroySignal = Signal< DeviceMemoryDestroyFunc >;
 	using DeviceMemoryDestroyConnection = SignalConnection< DeviceMemoryDestroySignal >;
+
+	using CmdBuffer = UInt32Array;
+	using CmdList = std::vector< CmdBuffer >;
 
 	uint32_t deduceMemoryType( uint32_t typeBits
 		, VkMemoryPropertyFlags requirements );

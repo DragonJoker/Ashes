@@ -114,124 +114,6 @@ namespace ashes::gl4
 
 			return uint32_t( texelBlockSize );
 		}
-
-		UInt32Array convert( std::string const & value )
-		{
-			auto size = getAlignedSize( value.size(), sizeof( uint32_t ) );
-			UInt32Array result;
-			result.resize( size / sizeof( uint32_t ) );
-			std::memcpy( result.data(), value.data(), value.size() );
-			return result;
-		}
-
-		UInt32Array getVertexShader()
-		{
-			static std::string const glsl
-			{
-				R"(#version 420
-
-vec4 points[4] = vec4[4](
-	vec4( -1.0, -1.0, 1.0, 1.0 ),
-	vec4( -1.0,  1.0, 1.0, 1.0 ),
-	vec4(  1.0,  1.0, 1.0, 1.0 ),
-	vec4(  1.0, -1.0, 1.0, 1.0 ),
-);
-
-layout( location = 0 ) out vec2 vtx_texture;
-
-void main()
-{
-	vec4 position = points[gl_VertexID % 4];
-	vtx_texture = ( position.xy + 1.0 ) / 2.0;
-	gl_Position = position;
-}
-)"
-			};
-			return convert( glsl );
-		}
-
-		UInt32Array getPixelShader()
-		{
-			static std::string const glsl
-			{
-				R"(#version 420
-
-layout( binding = 0 ) uniform sampler2D mapColour;
-
-layout( location = 0 ) in vec2 vtx_texture;
-
-layout( location = 0 ) out vec4 pxl_colour;
-
-void main()
-{
-	pxl_colour = texture( mapColour, vtx_texture );
-}
-)"
-			};
-			return convert( glsl );
-		}
-
-		std::unique_ptr< ShaderProgram > doCreateShaderProgram( VkDevice device
-			, ContextLock & context
-			, ContextState const & state )
-		{
-			VkPipelineShaderStageCreateInfoArray shaderStages;
-			UInt32Array vtx = getVertexShader();
-			UInt32Array pxl = getPixelShader();
-			VkShaderModule vtxModule;
-			allocate( vtxModule
-				, nullptr
-				, device
-				, VkShaderModuleCreateInfo
-				{
-					VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
-					nullptr,
-					0u,
-					uint32_t( vtx.size() * sizeof( uint32_t ) ),
-					vtx.data()
-				} );
-			VkShaderModule pxlModule;
-			allocate( pxlModule
-				, nullptr
-				, device
-				, VkShaderModuleCreateInfo
-				{
-					VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
-					nullptr,
-					0u,
-					uint32_t( vtx.size() * sizeof( uint32_t ) ),
-					vtx.data()
-				} );
-
-			shaderStages.push_back( VkPipelineShaderStageCreateInfo
-				{
-					VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-					nullptr,
-					0u,
-					VK_SHADER_STAGE_VERTEX_BIT,
-					vtxModule,
-					"main",
-					nullptr,
-				} );
-			shaderStages.push_back( VkPipelineShaderStageCreateInfo
-				{
-					VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-					nullptr,
-					0u,
-					VK_SHADER_STAGE_FRAGMENT_BIT,
-					pxlModule,
-					"main",
-					nullptr,
-				} );
-
-			context->apply( context, *get( device ), state );
-			auto result = std::make_unique< ShaderProgram >( device
-				, nullptr
-				, std::move( shaderStages )
-				, true );
-			result->link( context );
-			return result;
-		}
 	}
 
 	Device::Device( VkInstance instance
@@ -243,18 +125,6 @@ void main()
 		, m_createInfos{ std::move( createInfos ) }
 		, m_currentContext{ &context }
 		, m_dyState{ VK_DYNAMIC_STATE_SCISSOR, VK_DYNAMIC_STATE_VIEWPORT }
-		, m_rtocContextState
-		{
-			getDefaultColorBlendState( m_cbStateAttachments ),
-			std::nullopt,
-			std::nullopt,
-			std::nullopt,
-			{ VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO, nullptr, 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP, VK_FALSE },
-			{ VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO, nullptr, 0u, 1, nullptr, 1u, nullptr },
-			{ VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO, nullptr, 0u, VK_FALSE, VK_FALSE, VK_POLYGON_MODE_FILL, GL_CULL_MODE_NONE, VK_FRONT_FACE_COUNTER_CLOCKWISE, VK_FALSE, 0.0f, 0.0f, 0.0f, 1.0f },
-			{ VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO, nullptr, 0u, uint32_t( m_dyState.size() ), m_dyState.data() },
-		}
-		, m_rtocCommands{ get( this ), VK_COMMAND_BUFFER_LEVEL_PRIMARY }
 	{
 		//m_timestampPeriod = 1;
 		doInitialiseQueues();
@@ -268,7 +138,6 @@ void main()
 			, nullptr
 			, get( this )
 			, GL_INVALID_INDEX );
-		doInitialiseRtoc( lock );
 	}
 
 	Device::~Device()
@@ -414,12 +283,6 @@ void main()
 	{
 	}
 
-	GLuint Device::getRtocProgram()const
-	{
-		assert( m_rtocProgram );
-		return m_rtocProgram->getProgram();
-	}
-
 	void Device::doInitialiseQueues()
 	{
 		for ( auto itQueue = m_createInfos.pQueueCreateInfos;
@@ -484,13 +347,5 @@ void main()
 			, InputLayout{}
 			, VK_INDEX_TYPE_UINT32 );
 		m_dummyIndexed.geometryBuffers->initialise( context );
-	}
-
-	void Device::doInitialiseRtoc( ContextLock & context )
-	{
-		//m_rtocProgram = doCreateShaderProgram( get( this )
-		//	, context
-		//	, m_rtocContextState );
-		//m_rtocCommands.begin( );
 	}
 }

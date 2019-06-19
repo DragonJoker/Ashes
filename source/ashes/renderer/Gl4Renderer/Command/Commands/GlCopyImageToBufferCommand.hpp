@@ -50,7 +50,8 @@ namespace ashes::gl4
 
 	//*************************************************************************
 
-	void buildCopyImageToBufferCommand( VkDevice device
+	void buildCopyImageToBufferCommand( ContextStateStack & stack
+		, VkDevice device
 		, VkBufferImageCopy copyInfo
 		, VkImage src
 		, VkBuffer dst

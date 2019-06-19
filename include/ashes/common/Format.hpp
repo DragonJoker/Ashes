@@ -44,6 +44,30 @@ namespace ashes
 		return result + align;
 	}
 	/**
+	*\brief
+	*	The size of a pixel for specific format.
+	*/
+	struct BlockSize
+	{
+		/**
+		*\brief
+		*	The block extent.
+		*/
+		VkExtent3D extent;
+		/**
+		*\brief
+		*	The block byte size.
+		*/
+		VkDeviceSize size;
+	};
+	/**
+	*\param[in] format
+	*	The pixel format.
+	*\return
+	*	The block size for given pixel format.
+	*/
+	BlockSize getBlockSize( VkFormat format );
+	/**
 	*\param[in] format
 	*	The pixel format.
 	*\return
@@ -196,6 +220,33 @@ namespace ashes
 	VkExtent2D getMinimalExtent2D( VkFormat format )noexcept;
 	/**
 	*\brief
+	*	Retrieves the byte size of given pixel format, for its minimal extent.
+	*\param[in] format
+	*	The pixel format.
+	*\return
+	*	The byte size.
+	*/
+	VkDeviceSize getMinimalSize( VkFormat format )noexcept;
+	/**
+	*\brief
+	*	Retrieves the byte size of given pixel format and dimensions.
+	*\param[in] format
+	*	The pixel format.
+	*\param[in] extent
+	*	The mip 0 dimensions.
+	*\param[in] texel
+	*	The texel dimensions for the format.
+	*\param[in] mipLevel
+	*	The wanted mipmap level.
+	*\return
+	*	The byte size.
+	*/
+	VkDeviceSize getSize( VkFormat format
+		, VkExtent3D const & extent
+		, BlockSize const & texel
+		, uint32_t mipLevel )noexcept;
+	/**
+	*\brief
 	*	Checks if the given extent fits the given format.
 	*\param[in] extent
 	*	The dimensions.
@@ -204,24 +255,12 @@ namespace ashes
 	*\return
 	*	\p true if the extent is compatible with the format.
 	*/
-	inline bool checkExtent( VkFormat format, VkExtent2D const & extent )
+	inline bool checkExtent( VkFormat format, VkExtent2D const & extent )noexcept
 	{
 		auto minimal = getMinimalExtent2D( format );
 		return extent.width >= minimal.width
 			&& extent.height >= minimal.height;
 	}
-	/**
-	*\brief
-	*	Retrieves the byte size of given pixel format and dimensions.
-	*\param[in] extent
-	*	The dimensions.
-	*\param[in] format
-	*	The pixel format.
-	*\return
-	*	The byte size.
-	*/
-	VkDeviceSize getSize( VkExtent2D const & extent
-		, VkFormat format )noexcept;
 	/**
 	*\brief
 	*	Retrieves the minimal VkExtent2D for given pixel format.
@@ -245,25 +284,9 @@ namespace ashes
 	*\return
 	*	\p true if the extent is compatible with the format.
 	*/
-	inline bool checkExtent( VkFormat format, VkExtent3D const & extent )
+	inline bool checkExtent( VkFormat format, VkExtent3D const & extent )noexcept
 	{
 		return checkExtent( format, VkExtent2D{ extent.width, extent.height } );
-	}
-	/**
-	*\brief
-	*	Retrieves the byte size of given pixel format and dimensions.
-	*\param[in] extent
-	*	The dimensions.
-	*\param[in] format
-	*	The pixel format.
-	*\return
-	*	The byte size.
-	*/
-	inline VkDeviceSize getSize( VkExtent3D const & extent
-		, VkFormat format )noexcept
-	{
-		return getSize( VkExtent2D{ extent.width, extent.height }, format )
-			* std::max( 1u, extent.depth );
 	}
 	/**
 	*\brief
@@ -295,9 +318,29 @@ namespace ashes
 	*/
 	template< typename T >
 	inline T getSubresourceDimension( T const & extent
-		, uint32_t mipLevel )
+		, uint32_t mipLevel )noexcept
 	{
 		return extent >> mipLevel;
+	}
+	/**
+	*\brief
+	*	Retrieves the real extent for the given mipmap level.
+	*\param[in] extent
+	*	The level 0 extent.
+	*\param[in] mipLevel
+	*	The mipmap level for which dimensions are computed.
+	*\return
+	*	The dimensions.
+	*/
+	inline VkExtent3D getSubresourceDimensions( VkExtent2D const & extent
+		, uint32_t mipLevel )noexcept
+	{
+		return
+		{
+			getSubresourceDimension( extent.width, mipLevel ),
+			getSubresourceDimension( extent.height, mipLevel ),
+			1u
+		};
 	}
 	/**
 	*\brief
@@ -310,7 +353,7 @@ namespace ashes
 	*	The dimensions.
 	*/
 	inline VkExtent3D getSubresourceDimensions( VkExtent3D const & extent
-		, uint32_t mipLevel )
+		, uint32_t mipLevel )noexcept
 	{
 		return
 		{
@@ -331,28 +374,12 @@ namespace ashes
 	*/
 	inline VkDeviceSize getSize( VkExtent3D const & extent
 		, VkFormat format
-		, uint32_t mipLevel )noexcept
+		, uint32_t mipLevel = 0u )noexcept
 	{
-		return getSize( getSubresourceDimensions( extent, mipLevel ), format );
-	}
-	/**
-	*\brief
-	*	Retrieves the real extent for the given mipmap level.
-	*\param[in] extent
-	*	The level 0 extent.
-	*\param[in] mipLevel
-	*	The mipmap level for which dimensions are computed.
-	*\return
-	*	The dimensions.
-	*/
-	inline VkExtent3D getSubresourceDimensions( VkExtent2D const & extent
-		, uint32_t mipLevel )
-	{
-		return
-		{
-			getSubresourceDimension( extent.width, mipLevel ),
-			getSubresourceDimension( extent.height, mipLevel ),
-		};
+		return getSize( format
+			, extent
+			, getBlockSize( format )
+			, mipLevel );
 	}
 	/**
 	*\brief
@@ -368,9 +395,89 @@ namespace ashes
 	*/
 	inline VkDeviceSize getSize( VkExtent2D const & extent
 		, VkFormat format
-		, uint32_t mipLevel )noexcept
+		, uint32_t mipLevel = 0u )noexcept
 	{
-		return getSize( getSubresourceDimensions( extent, mipLevel ), format );
+		return getSize( format
+			, VkExtent3D{ extent.width, extent.height, 1u }
+			, getBlockSize( format )
+			, mipLevel );
+	}
+	/**
+	*\brief
+	*	Retrieves the byte size of given pixel format and dimensions, for given mipmap levels range.
+	*\param[in] extent
+	*	The dimensions.
+	*\param[in] format
+	*	The pixel format.
+	*\param[in] baseMipLevel, levelCount
+	*	The mipmap levels range.
+	*\return
+	*	The byte size.
+	*/
+	inline VkDeviceSize getLevelsSize( VkExtent2D const & extent
+		, VkFormat format
+		, uint32_t baseMipLevel
+		, uint32_t levelCount )noexcept
+	{
+		VkDeviceSize result = 0u;
+		auto blockSize = getBlockSize( format );
+		auto imageExtent = VkExtent3D{ extent.width, extent.height, 1u };
+
+		for ( auto mipLevel = baseMipLevel; mipLevel < baseMipLevel + levelCount; ++mipLevel )
+		{
+			result += getSize( format
+				, imageExtent
+				, blockSize
+				, mipLevel );
+		}
+
+		return result;
+	}
+	/**
+	*\brief
+	*	Retrieves the byte size of given pixel format and dimensions, for given mipmap levels range.
+	*\param[in] extent
+	*	The dimensions.
+	*\param[in] format
+	*	The pixel format.
+	*\param[in] baseMipLevel, levelCount
+	*	The mipmap levels range.
+	*\return
+	*	The byte size.
+	*/
+	inline VkDeviceSize getLevelsSize( VkExtent3D const & extent
+		, VkFormat format
+		, uint32_t baseMipLevel
+		, uint32_t levelCount )noexcept
+	{
+		VkDeviceSize result = 0u;
+		auto blockSize = getBlockSize( format );
+
+		for ( auto mipLevel = baseMipLevel; mipLevel < baseMipLevel + levelCount; ++mipLevel )
+		{
+			result += getSize( format
+				, extent
+				, blockSize
+				, mipLevel );
+		}
+
+		return result;
+	}
+
+	inline VkDeviceSize getTotalSize( VkExtent2D const & extent
+		, VkFormat format
+		, uint32_t layerCount
+		, uint32_t levelCount )noexcept
+	{
+		return layerCount * getLevelsSize( extent, format, 0u, levelCount );
+	}
+
+	inline VkDeviceSize getTotalSize( VkExtent3D const & extent
+		, VkFormat format
+		, uint32_t layerCount
+		, uint32_t levelCount )noexcept
+	{
+		return layerCount * getLevelsSize( extent, format, 0u, levelCount );
 	}
 }
 

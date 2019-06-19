@@ -5,14 +5,6 @@
 
 #include "ashesgl4_api.hpp"
 
-namespace ashes
-{
-	inline VkDescriptorPoolSize deepCopy( VkDescriptorPoolSize const & rhs )
-	{
-		return rhs;
-	}
-}
-
 namespace ashes::gl4
 {
 	DescriptorPool::DescriptorPool( VkDevice device

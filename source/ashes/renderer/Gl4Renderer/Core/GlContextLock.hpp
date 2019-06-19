@@ -5,6 +5,8 @@ See LICENSE file in root folder
 
 #include "GlContext.hpp"
 
+#include <cassert>
+
 namespace ashes::gl4
 {
 	class ContextLock
@@ -32,13 +34,9 @@ namespace ashes::gl4
 
 		inline ContextLock & operator=( ContextLock && rhs )
 		{
-			if ( &rhs != this )
-			{
-				m_context = rhs.m_context;
-				m_disable = rhs.m_disable;
-				rhs.m_context = nullptr;
-			}
-
+			m_context = rhs.m_context;
+			m_disable = rhs.m_disable;
+			rhs.m_context = nullptr;
 			return *this;
 		}
 
@@ -57,13 +55,8 @@ namespace ashes::gl4
 
 		inline Context const & getContext()const
 		{
+			assert( m_context != nullptr );
 			return *m_context;
-		}
-
-		inline void apply( Device const & device
-			, ContextState const & state )const
-		{
-			m_context->apply( *this, device, state );
 		}
 
 	private:

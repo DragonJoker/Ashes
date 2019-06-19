@@ -62,9 +62,7 @@ namespace ashes::gl4
 	public:
 		~Context();
 
-		void apply( ContextLock const & context
-			, Device const & device
-			, ContextState const & state );
+		ContextState & getState();
 		void onBaseContextCreated();
 
 		void lock();
@@ -91,52 +89,6 @@ namespace ashes::gl4
 		inline ContextImpl const & getImpl()const
 		{
 			return *m_impl;
-		}
-
-		inline VkRect2D const & getCurrentScissor()const
-		{
-			return m_scissor;
-		}
-
-		inline VkViewport const & getCurrentViewport()const
-		{
-			return m_viewport;
-		}
-
-		inline GLuint const & getCurrentProgram()const
-		{
-			return m_currentProgram;
-		}
-
-		inline void setCurrentProgram( GLuint value )
-		{
-			m_currentProgram = value;
-		}
-
-		inline void setCurrentScissor( VkRect2D const & value )
-		{
-			m_scissor = value;
-		}
-
-		inline void setCurrentViewport( VkViewport const & value )
-		{
-			m_viewport = value;
-		}
-
-		inline void setCurrentFramebuffer( VkFramebuffer value )
-		{
-			m_currentFbo = value;
-		}
-
-		inline bool hasCurrentFramebuffer()const
-		{
-			return m_currentFbo != VK_NULL_HANDLE;
-		}
-
-		inline VkFramebuffer getCurrentFramebuffer()const
-		{
-			assert( hasCurrentFramebuffer() );
-			return m_currentFbo;
 		}
 
 #define GL_LIB_BASE_FUNCTION( fun )\
@@ -174,21 +126,8 @@ namespace ashes::gl4
 	private:
 		void loadBaseFunctions();
 		void loadDebugFunctions();
-		void apply( ContextLock const & context
-			, VkPipelineInputAssemblyStateCreateInfo const & state );
-		void apply( ContextLock const & context
-			, VkPipelineColorBlendStateCreateInfo const & newState );
-		void apply( ContextLock const & context
-			, VkPipelineRasterizationStateCreateInfo const & newState
-			, VkPipelineDynamicStateCreateInfo newDyState );
-		void apply( ContextLock const & context
-			, VkPipelineMultisampleStateCreateInfo const & newState );
-		void apply( ContextLock const & context
-			, VkPipelineDepthStencilStateCreateInfo const & newState );
-		void apply( ContextLock const & context
-			, VkPipelineTessellationStateCreateInfo const & newState );
-		void apply( ContextLock const & context
-			, VkPipelineViewportStateCreateInfo const & newState );
+
+		void initialiseThreadState( ContextState const & state );
 
 	private:
 		std::unique_ptr< ContextImpl > m_impl;
@@ -199,12 +138,8 @@ namespace ashes::gl4
 	protected:
 		VkInstance m_instance;
 		std::mutex m_mutex;
-		ContextState m_state;
-		VkRect2D m_scissor{ 0, 0, 0, 0 };
-		VkViewport m_viewport{ 0, 0, 0, 0 };
-		GLuint m_currentProgram;
-		VkFramebuffer m_currentFbo{ VK_NULL_HANDLE };
 		std::atomic< bool > m_enabled{ false };
 		std::atomic< std::thread::id > m_activeThread;
+		std::map< std::thread::id, std::unique_ptr< ContextState > > m_state;
 	};
 }

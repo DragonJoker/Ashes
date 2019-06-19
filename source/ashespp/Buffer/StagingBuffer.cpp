@@ -16,37 +16,6 @@ namespace ashes
 {
 	namespace
 	{
-		uint32_t deduceMemoryType( uint32_t typeBits
-			, VkMemoryPropertyFlags requirements
-			, VkPhysicalDeviceMemoryProperties const & memoryProperties )
-		{
-			uint32_t result = 0xFFFFFFFFu;
-			bool found{ false };
-			uint32_t i{ 0 };
-
-			while ( i < memoryProperties.memoryTypeCount && !found )
-			{
-				if ( ( typeBits & 1 ) == 1 )
-				{
-					if ( ( memoryProperties.memoryTypes[i].propertyFlags & requirements ) == requirements )
-					{
-						result = i;
-						found = true;
-					}
-				}
-
-				typeBits >>= 1;
-				++i;
-			}
-
-			if ( !found )
-			{
-				throw Exception{ VkResult::VK_ERROR_VALIDATION_FAILED_EXT, "Could not deduce memory type" };
-			}
-
-			return result;
-		}
-
 		template< typename T, typename U >
 		T getAligned( T value, U align )
 		{
@@ -63,9 +32,8 @@ namespace ashes
 			, BufferBase const & buffer )
 		{
 			auto requirements = buffer.getMemoryRequirements();
-			auto deduced = deduceMemoryType( requirements.memoryTypeBits
-				, VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
-				, device.getMemoryProperties() );
+			auto deduced = device.deduceMemoryType( requirements.memoryTypeBits
+				, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
 			return
 			{
 				VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
@@ -73,41 +41,6 @@ namespace ashes
 				requirements.size,
 				deduced
 			};
-		}
-
-		VkExtent3D getTexelBlockExtent( VkFormat format )
-		{
-			VkExtent3D texelBlockExtent{ 1u, 1u, 1u };
-
-			if ( isCompressedFormat( format ) )
-			{
-				auto extent = getMinimalExtent2D( format );
-				texelBlockExtent.width = extent.width;
-				texelBlockExtent.height = extent.height;
-			}
-			else
-			{
-				texelBlockExtent.width = 1u;
-			}
-
-			return texelBlockExtent;
-		}
-
-		uint32_t getTexelBlockByteSize( VkExtent3D const & texelBlockExtent
-			, VkFormat format )
-		{
-			VkDeviceSize texelBlockSize;
-
-			if ( !ashes::isDepthStencilFormat( format ) )
-			{
-				texelBlockSize = ashes::getSize( texelBlockExtent, format );
-			}
-			else
-			{
-				texelBlockSize = texelBlockExtent.width;
-			}
-
-			return uint32_t( texelBlockSize );
 		}
 
 		VkBufferImageCopy makeValidCopyInfo( Device const & device
@@ -118,8 +51,7 @@ namespace ashes
 		{
 			auto format = image.getFormat();
 			auto type = image.getType();
-			auto texelBlockExtent = getTexelBlockExtent( format );
-			uint32_t texelBlockSize = getTexelBlockByteSize( texelBlockExtent, format );
+			auto texelBlockExtent = getMinimalExtent3D( format );
 
 			VkImageSubresource subresource
 			{
@@ -210,49 +142,6 @@ namespace ashes
 				, subresourceLayers ) );
 			return copyInfos;
 		}
-
-		uint32_t getLevelSize( VkExtent2D extent
-			, uint32_t level
-			, VkExtent3D texelBlockExtent
-			, uint32_t texelBlockSize )
-		{
-			extent.width >>= level;
-			extent.height >>= level;
-			return ( texelBlockSize
-				* extent.width
-				* extent.height ) / ( texelBlockExtent.width * texelBlockExtent.height );
-		}
-
-		uint32_t getLevelSize( VkExtent2D const & extent
-			, VkFormat format
-			, uint32_t level )
-		{
-			auto texelBlockExtent = getTexelBlockExtent( format );
-			return getLevelSize( extent
-				, level
-				, texelBlockExtent
-				, getTexelBlockByteSize( texelBlockExtent, format ) );
-		}
-
-		uint32_t getAllLevelsSize( VkExtent2D const & extent
-			, VkFormat format
-			, uint32_t baseMipLevel
-			, uint32_t levelCount )
-		{
-			auto texelBlockExtent = getTexelBlockExtent( format );
-			auto texelBlockSize = getTexelBlockByteSize( texelBlockExtent, format );
-			uint32_t result = 0u;
-
-			for ( uint32_t level = baseMipLevel; level < baseMipLevel + levelCount; ++level )
-			{
-				result += getLevelSize( extent
-					, level
-					, texelBlockExtent
-					, texelBlockSize );
-			}
-
-			return result;
-		}
 	}
 
 	StagingBuffer::StagingBuffer( Device const & device
@@ -323,12 +212,12 @@ namespace ashes
 		, VkPipelineStageFlags dstStageFlags )const
 	{
 		auto range = view->subresourceRange;
-		auto layerSize = getAllLevelsSize( extent
+		auto layerSize = getLevelsSize( extent
 			, format
 			, range.baseMipLevel
 			, range.levelCount );
 		doCopyToStagingBuffer( data
-			, layerSize );
+			, uint32_t( layerSize ) );
 		doCopyFromStagingBuffer( commandBuffer
 			, extent
 			, offset
@@ -399,10 +288,10 @@ namespace ashes
 
 		auto range = view->subresourceRange;
 		doCopyFromStagingBuffer( data
-			, getAllLevelsSize( extent
+			, uint32_t( getLevelsSize( extent
 				, format
 				, range.baseMipLevel
-				, range.levelCount ) );
+				, range.levelCount ) ) );
 	}
 
 	void StagingBuffer::downloadTextureData( Queue const & queue
@@ -525,7 +414,7 @@ namespace ashes
 		, VkPipelineStageFlags dstStageFlags
 		, VkImageSubresourceLayers const & subresourceLayers )const
 	{
-		auto realSize = getAllLevelsSize( size
+		auto realSize = getLevelsSize( size
 			, view->format
 			, view->subresourceRange.baseMipLevel
 			, view->subresourceRange.levelCount );

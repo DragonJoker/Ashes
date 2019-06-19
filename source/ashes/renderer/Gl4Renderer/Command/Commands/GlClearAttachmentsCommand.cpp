@@ -9,6 +9,9 @@ See LICENSE file in root folder.
 
 #include "ashesgl4_api.hpp"
 
+using ashes::operator==;
+using ashes::operator!=;
+
 namespace ashes::gl4
 {
 	namespace
@@ -60,7 +63,8 @@ namespace ashes::gl4
 
 	}
 
-	void buildClearAttachmentsCommand( VkClearAttachmentArray clearAttaches
+	void buildClearAttachmentsCommand( ContextStateStack & stack
+		, VkClearAttachmentArray clearAttaches
 		, VkClearRectArray clearRects
 		, CmdList & list )
 	{
@@ -70,7 +74,13 @@ namespace ashes::gl4
 		{
 			for ( auto & rect : clearRects )
 			{
-				list.push_back( makeCmd< OpType::eApplyScissor >( rect.rect ) );
+				auto & scissor = rect.rect;
+
+				if ( stack.getCurrentScissor() != scissor )
+				{
+					list.push_back( makeCmd< OpType::eApplyScissor >( scissor ) );
+					stack.setCurrentScissor( scissor );
+				}
 
 				if ( ashes::checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT ) )
 				{

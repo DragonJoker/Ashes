@@ -8,7 +8,8 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	void buildViewportCommand( uint32_t firstViewport
+	void buildViewportCommand( ContextStateStack & stack
+		, uint32_t firstViewport
 		, VkViewportArray viewports
 		, CmdList & list );
 }

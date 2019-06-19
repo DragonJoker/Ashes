@@ -5,6 +5,13 @@
 
 namespace ashes
 {
+	BlockSize getBlockSize( VkFormat format )
+	{
+		BlockSize result{ getMinimalExtent3D( format ), 0u };
+		result.size = getMinimalSize( format );
+		return result;
+	}
+
 	uint32_t getSize( VkFormat format )noexcept
 	{
 		assert( !isCompressedFormat( format ) );
@@ -885,59 +892,39 @@ namespace ashes
 		return result;
 	}
 
-	VkDeviceSize getSize( VkExtent2D const & extent
-		, VkFormat format )noexcept
+	VkDeviceSize getMinimalSize( VkFormat format )noexcept
 	{
-		VkDeviceSize result = std::max( 1u, extent.width )
-			* std::max( 1u, extent.height );
-
 		if ( !ashes::isCompressedFormat( format ) )
 		{
-			result *= ashes::getSize( format );
+			return ashes::getSize( format );
 		}
-		else
+
+		if ( ashes::isBCFormat( format ) )
 		{
-			auto minimal = getMinimalExtent2D( format );
-			auto size = minimal.width * minimal.height;
-
-			if ( ( result % size ) == 0 )
-			{
-				result /= size;
-
-				if ( ashes::isBCFormat( format ) )
-				{
-					result *= ashes::getBCSize( format );
-				}
-				else if ( ashes::isETC2Format( format ) )
-				{
-					result *= ashes::getETC2Size( format );
-				}
-				else if ( ashes::isEACFormat( format ) )
-				{
-					result *= ashes::getEACSize( format );
-				}
-			}
-			else if ( result < size )
-			{
-				if ( ashes::isBCFormat( format ) )
-				{
-					result = ashes::getBCSize( format );
-				}
-				else if ( ashes::isETC2Format( format ) )
-				{
-					result = ashes::getETC2Size( format );
-				}
-				else if ( ashes::isEACFormat( format ) )
-				{
-					result = ashes::getEACSize( format );
-				}
-			}
-			else
-			{
-				assert( false );
-			}
+			return ashes::getBCSize( format );
 		}
 
+		if ( ashes::isETC2Format( format ) )
+		{
+			return ashes::getETC2Size( format );
+		}
+
+		if ( ashes::isEACFormat( format ) )
+		{
+			return ashes::getEACSize( format );
+		}
+
+		return 1u;
+	}
+
+	VkDeviceSize getSize( VkFormat format
+		, VkExtent3D const & extent
+		, BlockSize const & texel
+		, uint32_t mipLevel )noexcept
+	{
+		auto levelExtent = getSubresourceDimensions( extent, mipLevel );
+		auto result = texel.size * ( levelExtent.width * levelExtent.height * levelExtent.depth );
+		result /= ( texel.extent.width * texel.extent.height * texel.extent.depth );
 		return result;
 	}
 

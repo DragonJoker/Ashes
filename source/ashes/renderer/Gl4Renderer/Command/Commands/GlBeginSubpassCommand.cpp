@@ -9,14 +9,6 @@ See LICENSE file in root folder.
 
 #include "ashesgl4_api.hpp"
 
-namespace ashes
-{
-	inline VkAttachmentReference deepCopy( VkAttachmentReference const & rhs )
-	{
-		return rhs;
-	}
-}
-
 namespace ashes::gl4
 {
 	void buildBeginSubpassCommand( VkRenderPass renderPass

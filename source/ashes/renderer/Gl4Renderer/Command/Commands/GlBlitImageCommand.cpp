@@ -117,7 +117,8 @@ namespace ashes::gl4
 			, cmd.filter );
 	}
 
-	void buildBlitImageCommand( VkDevice device
+	void buildBlitImageCommand( ContextStateStack & stack
+		, VkDevice device
 		, VkImage srcImage
 		, VkImage dstImage
 		, VkImageBlit region
@@ -193,6 +194,11 @@ namespace ashes::gl4
 				, nullptr ) );
 			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_DRAW_FRAMEBUFFER
 				, nullptr ) );
+
+			if ( stack.hasCurrentFramebuffer() )
+			{
+				stack.setCurrentFramebuffer( VK_NULL_HANDLE );
+			}
 		}
 	}
 }

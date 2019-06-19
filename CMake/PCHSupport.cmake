@@ -148,5 +148,5 @@ MACRO( add_target_precompiled_header_ex TARGET_NAME PROJ_GROUP PCH_HEADER PCH_SO
 	endif ()
 ENDMACRO( add_target_precompiled_header_ex )
 MACRO( add_target_precompiled_header TARGET_NAME PCH_HEADER PCH_SOURCE TARGET_CXX_FLAGS )
-	add_target_precompiled_header_ex( ${TARGET_NAME} "" ${PCH_HEADER} ${PCH_SOURCE} ${TARGET_CXX_FLAGS} )
+	add_target_precompiled_header_ex( ${TARGET_NAME} "" ${PCH_HEADER} ${PCH_SOURCE} "${TARGET_CXX_FLAGS}" )
 ENDMACRO( add_target_precompiled_header )

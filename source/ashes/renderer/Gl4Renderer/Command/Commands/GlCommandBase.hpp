@@ -6,6 +6,8 @@ See LICENSE file in root folder
 
 #include "renderer/Gl4Renderer/GlRendererPrerequisites.hpp"
 
+#include <common/ArrayView.hpp>
+
 #include <array>
 
 namespace ashes::gl4
@@ -19,6 +21,9 @@ namespace ashes::gl4
 		eDisable,
 		eBeginQuery,
 		eEndQuery,
+		eBlendConstants,
+		eBlendEquation,
+		eBlendFunc,
 		eClearColour,
 		eClearDepth,
 		eClearStencil,
@@ -28,6 +33,21 @@ namespace ashes::gl4
 		eClearBackDepth,
 		eClearBackStencil,
 		eClearBackDepthStencil,
+		eCullFace,
+		eDepthFunc,
+		eDepthMask,
+		eDepthRange,
+		eFrontFace,
+		eLineWidth,
+		eLogicOp,
+		eMinSampleShading,
+		ePatchParameter,
+		ePolygonMode,
+		ePolygonOffset,
+		ePrimitiveRestartIndex,
+		eStencilFunc,
+		eStencilMask,
+		eStencilOp,
 		eApplyScissor,
 		eApplyViewport,
 		eInitFramebuffer,
@@ -43,7 +63,6 @@ namespace ashes::gl4
 		eBindVextexArray,
 		eBindVextexArrayObject,
 		eBindContextState,
-		eBindPipelineProgram,
 		eFramebufferTexture2D,
 		eBlitFramebuffer,
 		eClearTexColor,
@@ -115,9 +134,6 @@ namespace ashes::gl4
 
 	template< OpType OpT >
 	static Op constexpr CmdConfigT = CmdConfig< OpT >::value;
-
-	using CmdBuffer = UInt32Array;
-	using CmdList = std::vector< CmdBuffer >;
 
 	//*************************************************************************
 
@@ -257,7 +273,7 @@ namespace ashes::gl4
 			static_assert( N <= 16u, "No more that 16 draw buffers" );
 			uint32_t i = 0u;
 
-			for ( auto & target : targets )
+			for ( auto & target : makeArrayView( targets, targets + N ) )
 			{
 				this->targets[i++] = target;
 			}
@@ -463,9 +479,111 @@ namespace ashes::gl4
 	//*************************************************************************
 
 	template<>
+	struct CmdConfig< OpType::eBlendConstants >
+	{
+		static Op constexpr value = { OpType::eBlendConstants, 6u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eBlendConstants >
+	{
+		inline CmdT( float c0
+			, float c1
+			, float c2
+			, float c3 )
+			: cmd{ { OpType::eBlendConstants, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, blendConstant0{ std::move( c0 ) }
+			, blendConstant1{ std::move( c1 ) }
+			, blendConstant2{ std::move( c2 ) }
+			, blendConstant3{ std::move( c3 ) }
+		{
+		}
+
+		Command cmd;
+		float blendConstant0;
+		float blendConstant1;
+		float blendConstant2;
+		float blendConstant3;
+	};
+	using CmdBlendConstants = CmdT< OpType::eBlendConstants >;
+
+	void apply( ContextLock const & context
+		, CmdBlendConstants const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eBlendEquation >
+	{
+		static Op constexpr value = { OpType::eBlendEquation, 5u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eBlendEquation >
+	{
+		inline CmdT( uint32_t index
+			, GlBlendOp color
+			, GlBlendOp alpha )
+			: cmd{ { OpType::eBlendEquation, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, index{ std::move( index ) }
+			, color{ std::move( color ) }
+			, alpha{ std::move( alpha ) }
+		{
+		}
+
+		Command cmd;
+		uint32_t index;
+		GlBlendOp color;
+		GlBlendOp alpha;
+	};
+	using CmdBlendEquation = CmdT< OpType::eBlendEquation >;
+
+	void apply( ContextLock const & context
+		, CmdBlendEquation const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eBlendFunc >
+	{
+		static Op constexpr value = { OpType::eBlendFunc, 5u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eBlendFunc >
+	{
+		inline CmdT( uint32_t index
+			, GlBlendFactor colorSrc
+			, GlBlendFactor colorDst
+			, GlBlendFactor alphaSrc
+			, GlBlendFactor alphaDst )
+			: cmd{ { OpType::eBlendFunc, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, index{ std::move( index ) }
+			, colorSrc{ std::move( colorSrc ) }
+			, colorDst{ std::move( colorDst ) }
+			, alphaSrc{ std::move( alphaSrc ) }
+			, alphaDst{ std::move( alphaDst ) }
+		{
+		}
+
+		Command cmd;
+		uint32_t index;
+		GlBlendFactor colorSrc;
+		GlBlendFactor colorDst;
+		GlBlendFactor alphaSrc;
+		GlBlendFactor alphaDst;
+	};
+	using CmdBlendFunc = CmdT< OpType::eBlendFunc >;
+
+	void apply( ContextLock const & context
+		, CmdBlendFunc const & cmd );
+
+	//*************************************************************************
+
+	template<>
 	struct CmdConfig< OpType::eClearColour >
 	{
-		static Op constexpr value = { OpType::eClearColour, 6u };
+		static Op constexpr value = { OpType::eClearColour, 7u };
 	};
 
 	template<>
@@ -562,6 +680,414 @@ namespace ashes::gl4
 
 	void apply( ContextLock const & context
 		, CmdClearDepthStencil const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eCullFace >
+	{
+		static Op constexpr value = { OpType::eCullFace, 2u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eCullFace >
+	{
+		inline CmdT( GlCullMode value )
+			: cmd{ { OpType::eCullFace, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, value{ std::move( value ) }
+		{
+		}
+
+		Command cmd;
+		GlCullMode value;
+	};
+	using CmdCullFace = CmdT< OpType::eCullFace >;
+
+	void apply( ContextLock const & context
+		, CmdCullFace const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eDepthFunc >
+	{
+		static Op constexpr value = { OpType::eDepthFunc, 2u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eDepthFunc >
+	{
+		inline CmdT( GlCompareOp value )
+			: cmd{ { OpType::eDepthFunc, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, value{ std::move( value ) }
+		{
+		}
+
+		Command cmd;
+		GlCompareOp value;
+	};
+	using CmdDepthFunc = CmdT< OpType::eDepthFunc >;
+
+	void apply( ContextLock const & context
+		, CmdDepthFunc const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eDepthMask >
+	{
+		static Op constexpr value = { OpType::eDepthMask, 3u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eDepthMask >
+	{
+		inline CmdT( uint32_t value )
+			: cmd{ { OpType::eDepthMask, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, value{ std::move( value ) }
+		{
+		}
+
+		Command cmd;
+		uint32_t value;
+	};
+	using CmdDepthMask = CmdT< OpType::eDepthMask >;
+
+	void apply( ContextLock const & context
+		, CmdDepthMask const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eDepthRange >
+	{
+		static Op constexpr value = { OpType::eDepthRange, 2u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eDepthRange >
+	{
+		inline CmdT( float min
+			, float max )
+			: cmd{ { OpType::eDepthRange, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, min{ std::move( min ) }
+			, max{ std::move( max ) }
+		{
+		}
+
+		Command cmd;
+		float min;
+		float max;
+	};
+	using CmdDepthRange = CmdT< OpType::eDepthRange >;
+
+	void apply( ContextLock const & context
+		, CmdDepthRange const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eFrontFace >
+	{
+		static Op constexpr value = { OpType::eFrontFace, 2u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eFrontFace >
+	{
+		inline CmdT( GlFrontFace value )
+			: cmd{ { OpType::eFrontFace, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, value{ std::move( value ) }
+		{
+		}
+
+		Command cmd;
+		GlFrontFace value;
+	};
+	using CmdFrontFace = CmdT< OpType::eFrontFace >;
+
+	void apply( ContextLock const & context
+		, CmdFrontFace const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eLineWidth >
+	{
+		static Op constexpr value = { OpType::eLineWidth, 3u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eLineWidth >
+	{
+		inline CmdT( float value )
+			: cmd{ { OpType::eLineWidth, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, value{ std::move( value ) }
+		{
+		}
+
+		Command cmd;
+		float value;
+	};
+	using CmdLineWidth = CmdT< OpType::eLineWidth >;
+
+	void apply( ContextLock const & context
+		, CmdLineWidth const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eLogicOp >
+	{
+		static Op constexpr value = { OpType::eLogicOp, 3u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eLogicOp >
+	{
+		inline CmdT( GlLogicOp value )
+			: cmd{ { OpType::eLogicOp, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, value{ std::move( value ) }
+		{
+		}
+
+		Command cmd;
+		GlLogicOp value;
+	};
+	using CmdLogicOp = CmdT< OpType::eLogicOp >;
+
+	void apply( ContextLock const & context
+		, CmdLogicOp const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eMinSampleShading >
+	{
+		static Op constexpr value = { OpType::eMinSampleShading, 3u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eMinSampleShading >
+	{
+		inline CmdT( float value )
+			: cmd{ { OpType::eMinSampleShading, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, value{ std::move( value ) }
+		{
+		}
+
+		Command cmd;
+		float value;
+	};
+	using CmdMinSampleShading = CmdT< OpType::eMinSampleShading >;
+
+	void apply( ContextLock const & context
+		, CmdMinSampleShading const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::ePatchParameter >
+	{
+		static Op constexpr value = { OpType::ePatchParameter, 3u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::ePatchParameter >
+	{
+		inline CmdT( PatchParameter param
+			, int value )
+			: cmd{ { OpType::ePatchParameter, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, param{ std::move( param ) }
+			, value{ std::move( value ) }
+		{
+		}
+
+		Command cmd;
+		PatchParameter param;
+		int value;
+	};
+	using CmdPatchParameter = CmdT< OpType::ePatchParameter >;
+
+	void apply( ContextLock const & context
+		, CmdPatchParameter const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::ePolygonMode >
+	{
+		static Op constexpr value = { OpType::ePolygonMode, 3u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::ePolygonMode >
+	{
+		inline CmdT( GlPolygonMode value )
+			: cmd{ { OpType::ePolygonMode, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, value{ std::move( value ) }
+		{
+		}
+
+		Command cmd;
+		GlPolygonMode value;
+	};
+	using CmdPolygonMode = CmdT< OpType::ePolygonMode >;
+
+	void apply( ContextLock const & context
+		, CmdPolygonMode const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::ePolygonOffset >
+	{
+		static Op constexpr value = { OpType::ePolygonOffset, 5u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::ePolygonOffset >
+	{
+		inline CmdT( float constantFactor
+			, float clamp
+			, float slopeFactor )
+			: cmd{ { OpType::ePolygonOffset, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, constantFactor{ std::move( constantFactor ) }
+			, clamp{ std::move( clamp ) }
+			, slopeFactor{ std::move( slopeFactor ) }
+		{
+		}
+
+		Command cmd;
+		float constantFactor;
+		float clamp;
+		float slopeFactor;
+	};
+	using CmdPolygonOffset = CmdT< OpType::ePolygonOffset >;
+
+	void apply( ContextLock const & context
+		, CmdPolygonOffset const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::ePrimitiveRestartIndex >
+	{
+		static Op constexpr value = { OpType::ePrimitiveRestartIndex, 3u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::ePrimitiveRestartIndex >
+	{
+		inline CmdT( uint32_t index )
+			: cmd{ { OpType::ePrimitiveRestartIndex, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, index{ std::move( index ) }
+		{
+		}
+
+		Command cmd;
+		uint32_t index;
+	};
+	using CmdPrimitiveRestartIndex = CmdT< OpType::ePrimitiveRestartIndex >;
+
+	void apply( ContextLock const & context
+		, CmdPrimitiveRestartIndex const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eStencilFunc >
+	{
+		static Op constexpr value = { OpType::eStencilFunc, 4u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eStencilFunc >
+	{
+		inline CmdT( GlCullMode face
+			, GlCompareOp op
+			, uint32_t ref
+			, uint32_t compMask )
+			: cmd{ { OpType::eStencilFunc, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, face{ std::move( face ) }
+			, op{ std::move( op ) }
+			, ref{ std::move( ref ) }
+			, compMask{ std::move( compMask ) }
+		{
+		}
+
+		Command cmd;
+		GlCullMode face;
+		GlCompareOp op;
+		uint32_t ref;
+		uint32_t compMask;
+	};
+	using CmdStencilFunc = CmdT< OpType::eStencilFunc >;
+
+	void apply( ContextLock const & context
+		, CmdStencilFunc const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eStencilMask >
+	{
+		static Op constexpr value = { OpType::eStencilMask, 4u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eStencilMask >
+	{
+		inline CmdT( GlCullMode face
+			, uint32_t mask )
+			: cmd{ { OpType::eStencilMask, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, face{ std::move( face ) }
+			, mask{ std::move( mask ) }
+		{
+		}
+
+		Command cmd;
+		GlCullMode face;
+		uint32_t mask;
+	};
+	using CmdStencilMask = CmdT< OpType::eStencilMask >;
+
+	void apply( ContextLock const & context
+		, CmdStencilMask const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eStencilOp >
+	{
+		static Op constexpr value = { OpType::eStencilOp, 4u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eStencilOp >
+	{
+		inline CmdT( GlCullMode face
+			, GlStencilOp fail
+			, GlStencilOp depthFail
+			, GlStencilOp pass )
+			: cmd{ { OpType::eStencilOp, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, face{ std::move( face ) }
+			, fail{ std::move( fail ) }
+			, depthFail{ std::move( depthFail ) }
+			, pass{ std::move( pass ) }
+		{
+		}
+
+		Command cmd;
+		GlCullMode face;
+		GlStencilOp fail;
+		GlStencilOp depthFail;
+		GlStencilOp pass;
+	};
+	using CmdStencilOp = CmdT< OpType::eStencilOp >;
+
+	void apply( ContextLock const & context
+		, CmdStencilOp const & cmd );
 
 	//*************************************************************************
 
@@ -708,7 +1234,8 @@ namespace ashes::gl4
 		CmdT< OpT > cmd{ std::forward< ParamsT && >( params )... };
 		CmdBuffer result;
 		result.resize( cmd.cmd.op.size );
-		push( result.begin(), result.end(), cmd );
+		auto it = result.begin();
+		push( it, result.end(), cmd );
 		return result;
 	}
 

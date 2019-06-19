@@ -236,7 +236,7 @@ namespace vkapp
 		std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / "Assets";
 		common::ImageData image;
 		image.size = VkExtent3D{ 256u, 256u, 109u };
-		image.format = VK_FORMAT_R8G8B8A8_UNORM;
+		image.format = VK_FORMAT_R8_UNORM;
 		readFile( shadersFolder / "head256x256x109", image.size, image.data );
 		m_texture = m_device->createImage(
 			{
@@ -259,7 +259,7 @@ namespace vkapp
 		m_view = m_texture->createView( VK_IMAGE_VIEW_TYPE_3D
 			, image.format );
 		auto buffer = image.data.data();
-		auto size = image.size.width * image.size.height * 4;
+		size_t bufferSliceSize = image.data.size() / image.size.depth;
 		auto range = m_view->subresourceRange;
 		VkImageSubresourceLayers subresourceLayers
 		{
@@ -270,18 +270,17 @@ namespace vkapp
 		};
 		VkExtent2D extent{ image.size.width, image.size.height };
 
-		for ( uint32_t i = 0u; i < image.size.depth; ++i )
+		for ( uint32_t slice = 0u; slice < image.size.depth; ++slice )
 		{
-			ashes::ByteArray slice( buffer, buffer + size );
 			m_stagingBuffer->uploadTextureData( *m_graphicsQueue
 				, *m_commandPool
 				, subresourceLayers
 				, image.format
-				, { 0, 0, int32_t( i ) }
+				, { 0, 0, int32_t( slice ) }
 				, extent
-				, slice
+				, ashes::makeArrayView( buffer, bufferSliceSize )
 				, m_view );
-			buffer += size;
+			buffer += bufferSliceSize;
 		}
 	}
 

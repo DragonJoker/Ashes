@@ -19,18 +19,17 @@ namespace ashes::gl4
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBindContextState >
 	{
-		inline CmdT( VkDevice device
-			, ContextState const * state )
+		inline CmdT( ContextStateStack * stack
+			, ContextState * state )
 			: cmd{ { OpType::eBindContextState, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, device{ device }
+			, stack{ stack }
 			, state{ state }
 		{
 		}
 
 		Command cmd;
-		uint32_t dummy{ 0u }; // Here for alignment purpose
-		VkDevice device;
-		ContextState const * state;
+		ContextStateStack * stack;
+		ContextState * state;
 	};
 	using CmdBindContextState = CmdT< OpType::eBindContextState >;
 
@@ -39,40 +38,14 @@ namespace ashes::gl4
 	
 	//*************************************************************************
 
-	template<>
-	struct CmdConfig< OpType::eBindPipelineProgram >
-	{
-		static Op constexpr value = { OpType::eBindPipelineProgram, 5u };
-	};
-
-	template<>
-	struct alignas( uint64_t ) CmdT< OpType::eBindPipelineProgram >
-	{
-		inline CmdT( VkDevice device
-			, VkPipeline pipeline )
-			: cmd{ { OpType::eBindPipelineProgram, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, device{ device }
-			, pipeline{ pipeline }
-		{
-		}
-
-		Command cmd;
-		VkDevice device;
-		VkPipeline pipeline;
-	};
-	using CmdBindPipelineProgram = CmdT< OpType::eBindPipelineProgram >;
-
-	void apply( ContextLock const & context
-		, CmdBindPipelineProgram const & cmd );
-
-	//*************************************************************************
-
-	void buildBindPipelineCommand( VkDevice device
+	void buildBindPipelineCommand( ContextStateStack & stack
+		, VkDevice device
 		, VkPipeline pipeline
 		, VkPipelineBindPoint bindingPoint
 		, CmdList & list );
 
-	void buildUnbindPipelineCommand( VkDevice device
+	void buildUnbindPipelineCommand( ContextStateStack & stack
+		, VkDevice device
 		, VkPipeline pipeline
 		, VkImageView view
 		, CmdList & list );

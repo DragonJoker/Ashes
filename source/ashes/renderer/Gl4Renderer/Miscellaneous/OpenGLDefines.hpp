@@ -291,6 +291,7 @@ namespace ashes::gl4
 	using PFN_glPixelStorei = void ( GLAPIENTRY * )( GLenum pname, GLint param );
 	using PFN_glPolygonMode = void ( GLAPIENTRY * )( GLenum face, GLenum mode );
 	using PFN_glPolygonOffsetClampEXT = void ( GLAPIENTRY * )( GLfloat factor, GLfloat units, GLfloat clamp );
+	using PFN_glPrimitiveRestartIndex = void ( GLAPIENTRY * )( GLuint index );
 	using PFN_glQueryCounter = void ( GLAPIENTRY * )( GLuint id, GLenum target );
 	using PFN_glReadBuffer = void ( GLAPIENTRY * )( GLenum mode );
 	using PFN_glReadPixels = void( GLAPIENTRY * )( GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, void *pixels );

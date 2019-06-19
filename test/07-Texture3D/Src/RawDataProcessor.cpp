@@ -16,21 +16,8 @@ namespace vkapp
 		}
 
 		// Holds the luminance buffer
-		ashes::ByteArray luminance( size.width * size.height * size.depth );
-		fread( luminance.data(), 1u, luminance.size(), file );
+		data.resize( size.width * size.height * size.depth );
+		fread( data.data(), 1u, data.size(), file );
 		fclose( file );
-
-		// Convert the data to RGBA data.
-		data.resize( size.width * size.height * size.depth * 4 );
-		auto buffer = data.data();
-
-		for ( auto & c : luminance )
-		{
-			buffer[0] = c;
-			buffer[1] = c;
-			buffer[2] = c;
-			buffer[3] = c;
-			buffer += 4;
-		}
 	}
 }

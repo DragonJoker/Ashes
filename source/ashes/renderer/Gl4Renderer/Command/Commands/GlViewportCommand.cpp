@@ -8,13 +8,23 @@ See LICENSE file in root folder.
 
 #include "ashesgl4_api.hpp"
 
+using ashes::operator==;
+using ashes::operator!=;
+
 namespace ashes::gl4
 {
-	void buildViewportCommand( uint32_t firstViewport
+	void buildViewportCommand( ContextStateStack & stack
+		, uint32_t firstViewport
 		, VkViewportArray viewports
 		, CmdList & list )
 	{
 		glLogCommand( "ViewportCommand" );
-		list.push_back( makeCmd< OpType::eApplyViewport >( *viewports.begin() ) );
+		auto & viewport = *viewports.begin();
+
+		if ( stack.getCurrentViewport() != viewport )
+		{
+			list.push_back( makeCmd< OpType::eApplyViewport >( viewport ) );
+			stack.setCurrentViewport( viewport );
+		}
 	}
 }

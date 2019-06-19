@@ -68,7 +68,8 @@ namespace ashes::gl4
 			, nullptr );
 	}
 
-	void buildCopyImageToBufferCommand( VkDevice device
+	void buildCopyImageToBufferCommand( ContextStateStack & stack
+		, VkDevice device
 		, VkBufferImageCopy copyInfo
 		, VkImage src
 		, VkBuffer dst
@@ -110,5 +111,10 @@ namespace ashes::gl4
 
 		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK
 			, 0u ) );
+
+		if ( stack.hasCurrentFramebuffer() )
+		{
+			stack.setCurrentFramebuffer( VK_NULL_HANDLE );
+		}
 	}
 }

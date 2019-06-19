@@ -8,5 +8,6 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	void buildEndRenderPassCommand( CmdList & list );
+	void buildEndRenderPassCommand( ContextStateStack & stack
+		, CmdList & list );
 }

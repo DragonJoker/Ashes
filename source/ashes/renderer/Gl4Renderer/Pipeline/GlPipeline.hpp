@@ -51,13 +51,13 @@ namespace ashes::gl4
 			return m_compProgram != nullptr;
 		}
 
-		inline ContextState const & getBackContextState()const
+		inline ContextState & getBackContextState()const
 		{
 			assert( !isCompute() );
 			return m_backContextState;
 		}
 
-		inline ContextState const & getRtotContextState()const
+		inline ContextState & getRtotContextState()const
 		{
 			assert( !isCompute() );
 			return m_rtotContextState;
@@ -179,16 +179,20 @@ namespace ashes::gl4
 		/**@}*/
 
 	private:
+		void doInitialise( ContextLock const & context
+			, ShaderProgram const & program );
+
+	private:
 		VkDevice m_device;
 		VkPipelineCreateFlags m_flags;
 		VkPipelineShaderStageCreateInfoArray m_stages;
 		VkVertexInputBindingDescriptionArray m_vertexBindingDescriptions;
 		VkVertexInputAttributeDescriptionArray m_vertexAttributeDescriptions;
 		Optional< VkPipelineVertexInputStateCreateInfo > m_vertexInputState;
-		ContextState m_backContextState;
+		mutable ContextState m_backContextState;
 		ShaderDesc m_shaderDesc;
 		Optional< VkPipelineRasterizationStateCreateInfo > m_rtotRasterizationState;
-		ContextState m_rtotContextState;
+		mutable ContextState m_rtotContextState;
 		VkPipelineLayout m_layout;
 		VkRenderPass m_renderPass;
 		uint32_t m_subpass;

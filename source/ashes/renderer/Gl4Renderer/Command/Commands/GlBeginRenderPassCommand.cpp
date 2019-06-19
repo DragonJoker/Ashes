@@ -10,6 +10,9 @@ See LICENSE file in root folder.
 
 #include "ashesgl4_api.hpp"
 
+using ashes::operator==;
+using ashes::operator!=;
+
 namespace ashes::gl4
 {
 	void apply( ContextLock const & context
@@ -58,7 +61,8 @@ namespace ashes::gl4
 			, cmd.stencil );
 	}
 
-	void buildBeginRenderPassCommand( VkRenderPass renderPass
+	void buildBeginRenderPassCommand( ContextStateStack & stack
+		, VkRenderPass renderPass
 		, VkFramebuffer frameBuffer
 		, VkClearValueArray clearValues
 		, VkSubpassContents contents
@@ -84,11 +88,17 @@ namespace ashes::gl4
 		}
 
 		glLogCommand( "BeginRenderPassCommand" );
-		list.push_back( makeCmd< OpType::eApplyScissor >( VkRect2D
-			{
-				{ 0, 0 },
-				{ get( frameBuffer )->getWidth(), get( frameBuffer )->getHeight() }
-			} ) );
+		VkRect2D scissor
+		{
+			{ 0, 0 },
+			{ get( frameBuffer )->getWidth(), get( frameBuffer )->getHeight() }
+		};
+
+		if ( stack.getCurrentScissor() != scissor )
+		{
+			list.push_back( makeCmd< OpType::eApplyScissor >( scissor ) );
+			stack.setCurrentScissor( scissor );
+		}
 
 		if ( get( frameBuffer )->isSRGB() )
 		{
@@ -98,9 +108,14 @@ namespace ashes::gl4
 		{
 			list.push_back( makeCmd< OpType::eDisable >( GL_FRAMEBUFFER_SRGB ) );
 		}
-		
-		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
-			, frameBuffer ) );
+
+		if ( !stack.hasCurrentFramebuffer()
+			|| stack.getCurrentFramebuffer() != frameBuffer )
+		{
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+				, frameBuffer ) );
+			stack.setCurrentFramebuffer( frameBuffer );
+		}
 
 		uint32_t clearIndex = 0u;
 		auto & attaches = get( frameBuffer )->getAllAttaches();

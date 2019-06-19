@@ -209,33 +209,6 @@ namespace utils
 	uint32_t Device::deduceMemoryType( VkMemoryPropertyFlags typeBits
 		, VkMemoryPropertyFlags requirements )const
 	{
-		uint32_t result = 0xFFFFFFFFu;
-		bool found{ false };
-
-		// Recherche parmi les types de mémoire la première ayant les propriétés voulues.
-		uint32_t i{ 0 };
-
-		while ( i < m_memoryProperties.memoryTypeCount && !found )
-		{
-			if ( ( ashes::checkFlag( typeBits, 1u ) ) == 1 )
-			{
-				// Le type de mémoire est disponible, a-t-il les propriétés demandées?
-				if ( ( m_memoryProperties.memoryTypes[i].propertyFlags & requirements ) == requirements )
-				{
-					result = i;
-					found = true;
-				}
-			}
-
-			typeBits = typeBits >> 1;
-			++i;
-		}
-
-		if ( !found )
-		{
-			throw ashes::Exception{ VK_ERROR_VALIDATION_FAILED_EXT, "Could not deduce memory type" };
-		}
-
-		return result;
+		return m_device->deduceMemoryType( typeBits, requirements );
 	}
 }

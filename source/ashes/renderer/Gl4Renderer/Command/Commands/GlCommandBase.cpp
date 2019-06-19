@@ -9,6 +9,9 @@ See LICENSE file in root folder.
 
 #include "ashesgl4_api.hpp"
 
+using ashes::operator==;
+using ashes::operator!=;
+
 namespace ashes::gl4
 {
 	void apply( ContextLock const & context
@@ -30,39 +33,27 @@ namespace ashes::gl4
 	void apply( ContextLock const & context
 		, CmdApplyScissor const & cmd )
 	{
-		auto & save = context->getCurrentScissor();
-
-		if ( save != cmd.scissor )
-		{
-			glLogCall( context
-				, glScissor
-				, cmd.scissor.offset.x
-				, cmd.scissor.offset.y
-				, cmd.scissor.extent.width
-				, cmd.scissor.extent.height );
-			context->setCurrentScissor( cmd.scissor );
-		}
+		glLogCall( context
+			, glScissor
+			, cmd.scissor.offset.x
+			, cmd.scissor.offset.y
+			, cmd.scissor.extent.width
+			, cmd.scissor.extent.height );
 	}
 
 	void apply( ContextLock const & context
 		, CmdApplyViewport const & cmd )
 	{
-		auto & save = context->getCurrentViewport();
-
-		if ( save != cmd.viewport )
-		{
-			glLogCall( context
-				, glViewport
-				, GLint( cmd.viewport.x )
-				, GLint( cmd.viewport.y )
-				, GLsizei( cmd.viewport.width )
-				, GLsizei( cmd.viewport.height ) );
-			glLogCall( context
-				, glDepthRange
-				, cmd.viewport.minDepth
-				, cmd.viewport.maxDepth );
-			context->setCurrentViewport( cmd.viewport );
-		}
+		glLogCall( context
+			, glViewport
+			, GLint( cmd.viewport.x )
+			, GLint( cmd.viewport.y )
+			, GLsizei( cmd.viewport.width )
+			, GLsizei( cmd.viewport.height ) );
+		glLogCall( context
+			, glDepthRange
+			, cmd.viewport.minDepth
+			, cmd.viewport.maxDepth );
 	}
 
 	void apply( ContextLock const & context
@@ -85,13 +76,9 @@ namespace ashes::gl4
 	void apply( ContextLock const & context
 		, CmdUseProgram const & cmd )
 	{
-		if ( cmd.program != context->getCurrentProgram() )
-		{
-			glLogCall( context
-				, glUseProgram
-				, cmd.program );
-			context->setCurrentProgram( cmd.program );
-		}
+		glLogCall( context
+			, glUseProgram
+			, cmd.program );
 	}
 
 	void apply( ContextLock const & context
@@ -123,8 +110,6 @@ namespace ashes::gl4
 				, cmd.target
 				, 0u );
 		}
-
-		context->setCurrentFramebuffer( cmd.fbo );
 	}
 
 	void apply( ContextLock const & context
@@ -143,6 +128,39 @@ namespace ashes::gl4
 			, glBindTexture
 			, cmd.type
 			, cmd.name );
+	}
+
+	void apply( ContextLock const & context
+		, CmdBlendConstants const & cmd )
+	{
+		glLogCall( context
+			, glBlendColor
+			, cmd.blendConstant0
+			, cmd.blendConstant1
+			, cmd.blendConstant2
+			, cmd.blendConstant3 );
+	}
+
+	void apply( ContextLock const & context
+		, CmdBlendEquation const & cmd )
+	{
+		glLogCall( context
+			, glBlendEquationSeparatei
+			, cmd.index
+			, cmd.color
+			, cmd.alpha );
+	}
+
+	void apply( ContextLock const & context
+		, CmdBlendFunc const & cmd )
+	{
+		glLogCall( context
+			, glBlendFuncSeparatei
+			, cmd.index
+			, cmd.colorSrc
+			, cmd.colorDst
+			, cmd.alphaSrc
+			, cmd.alphaDst );
 	}
 
 	void apply( ContextLock const & context
@@ -193,6 +211,139 @@ namespace ashes::gl4
 			, 0u
 			, cmd.depthStencil.depth
 			, cmd.depthStencil.stencil );
+	}
+
+	void apply( ContextLock const & context
+		, CmdCullFace const & cmd )
+	{
+		glLogCall( context
+			, glCullFace
+			, cmd.value );
+	}
+
+	void apply( ContextLock const & context
+		, CmdDepthFunc const & cmd )
+	{
+		glLogCall( context
+			, glDepthFunc
+			, cmd.value );
+	}
+
+	void apply( ContextLock const & context
+		, CmdDepthMask const & cmd )
+	{
+		glLogCall( context
+			, glDepthMask
+			, cmd.value );
+	}
+
+	void apply( ContextLock const & context
+		, CmdDepthRange const & cmd )
+	{
+		glLogCall( context
+			, glDepthRange
+			, cmd.min
+			, cmd.max );
+	}
+
+	void apply( ContextLock const & context
+		, CmdFrontFace const & cmd )
+	{
+		glLogCall( context
+			, glFrontFace
+			, cmd.value );
+	}
+
+	void apply( ContextLock const & context
+		, CmdLineWidth const & cmd )
+	{
+		glLogCall( context
+			, glLineWidth
+			, cmd.value );
+	}
+
+	void apply( ContextLock const & context
+		, CmdLogicOp const & cmd )
+	{
+		glLogCall( context
+			, glLogicOp
+			, cmd.value );
+	}
+
+	void apply( ContextLock const & context
+		, CmdMinSampleShading const & cmd )
+	{
+		glLogCall( context
+			, glMinSampleShading
+			, cmd.value );
+	}
+
+	void apply( ContextLock const & context
+		, CmdPatchParameter const & cmd )
+	{
+		glLogCall( context
+			, glPatchParameteri
+			, cmd.param
+			, cmd.value );
+	}
+
+	void apply( ContextLock const & context
+		, CmdPolygonMode const & cmd )
+	{
+		glLogCall( context
+			, glPolygonMode
+			, GL_CULL_MODE_FRONT_AND_BACK
+			, cmd.value );
+	}
+
+	void apply( ContextLock const & context
+		, CmdPolygonOffset const & cmd )
+	{
+		glLogCall( context
+			, glPolygonOffsetClampEXT
+			, cmd.constantFactor
+			, cmd.slopeFactor
+			, cmd.clamp );
+	}
+
+	void apply( ContextLock const & context
+		, CmdPrimitiveRestartIndex const & cmd )
+	{
+		glLogCall( context
+			, glPrimitiveRestartIndex
+			, cmd.index );
+		
+	}
+
+	void apply( ContextLock const & context
+		, CmdStencilFunc const & cmd )
+	{
+		glLogCall( context
+			, glStencilFuncSeparate
+			, cmd.face
+			, cmd.op
+			, cmd.ref
+			, cmd.compMask );
+	}
+
+	void apply( ContextLock const & context
+		, CmdStencilMask const & cmd )
+	{
+		glLogCall( context
+			, glStencilMaskSeparate
+			, cmd.face
+			, cmd.mask );
+	}
+
+	void apply( ContextLock const & context
+		, CmdStencilOp const & cmd )
+	{
+		glLogCall( context
+			, glStencilOpSeparate
+			, cmd.face
+			, cmd.fail
+			, cmd.depthFail
+			, cmd.pass );
 	}
 
 	void apply( ContextLock const & context

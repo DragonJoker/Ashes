@@ -24,6 +24,11 @@ file( GLOB ${PROJECT_NAME}_SRC_FILES
 )
 
 file( GLOB ${PROJECT_NAME}_HDR_FILES
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.h
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hh
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hpp
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inl
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inc
 	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.h
 	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hh
 	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hpp

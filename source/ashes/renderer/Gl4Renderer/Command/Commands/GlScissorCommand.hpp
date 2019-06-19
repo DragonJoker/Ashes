@@ -8,7 +8,8 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	void buildScissorCommand( uint32_t firstScissor
+	void buildScissorCommand( ContextStateStack & stack
+		, uint32_t firstScissor
 		, VkScissorArray scissors
 		, CmdList & list );
 }
