@@ -11,14 +11,6 @@ See LICENSE file in root folder
 namespace ashes
 {
 	/**
-	*\~french
-	*\brief
-	*	Classe template d'itérateur sur une combinaison binaire d'indicateurs.
-	*\remarks
-	*	Le parcours se fait uniquement vers "l'avant", en déplaçant un index servant à construire un masque.
-	*\param FlagType
-	*	Le type de scoped enum.
-	*\~english
 	*\brief
 	*	Template iterator class on a binary combination of flags.
 	*\remarks
@@ -31,7 +23,6 @@ namespace ashes
 	struct FlagIterator
 	{
 	public:
-		//!@~french		Le type entier de base de l'enum.
 		//!@~english	The basic integer integer.
 		using BaseType = typename std::underlying_type< FlagType >::type;
 
@@ -102,16 +93,6 @@ namespace ashes
 		FlagType m_value;
 	};
 	/**
-	*\~french
-	*\brief
-	*	Classe template qui fournit une conversion implicite depuis un scoped
-	*	enum vers un type entier de base.
-	*\remarks
-	*	Permet de définir des indicateurs via des combinaisons binaires (&, |),
-	*	dont les opérandes seront obligatoirement de même taille binaire.
-	*\param FlagType
-	*	Le type de scoped enum.
-	*\~english
 	*\brief
 	*	Template class providing implicit conversion from a scoped enum to a
 	*	basic integer type.
@@ -125,18 +106,11 @@ namespace ashes
 	class FlagCombination
 	{
 	public:
-		//!@~french		Le type entier de base de l'enum.
 		//!@~english	The basic integer integer.
 		using BaseType = typename std::underlying_type< FlagType >::type;
 
 	public:
 		/**
-		*\~french
-		*\brief
-		*	Constructeur depuis le type d'indicateur.
-		*\param[in]	value
-		*	La valeur.
-		*\~french
 		*\brief
 		*	Constructor from flag type.
 		*\param[in]	value
@@ -149,12 +123,6 @@ namespace ashes
 				, "Can't combine different size parameters" );
 		}
 		/**
-		*\~french
-		*\brief
-		*	Constructeur depuis des indicateurs combinés.
-		*\param[in] value
-		*	La valeur.
-		*\~french
 		*\brief
 		*	Constructor from combined flags.
 		*\param[in] value
@@ -167,34 +135,22 @@ namespace ashes
 				, "Can't combine different size parameters" );
 		}
 		/**
-		*\~french
 		*\brief
-		*	Conversion implicite vers le type entier de base.
-		*\~english
-		*\brief
-		*	Implicit convertion to the basic integer type.
+		*	Implicit cast to the basic integer type.
 		*/
 		inline operator BaseType const &()const noexcept
 		{
 			return m_value;
 		}
 		/**
-		*\~french
 		*\brief
-		*	Conversion implicite vers le type entier de base.
-		*\~english
-		*\brief
-		*	Implicit convertion to the basic integer type.
+		*	Implicit cast to the basic integer type.
 		*/
 		inline BaseType value()const noexcept
 		{
 			return m_value;
 		}
 		/**
-		*\~french
-		*\return
-		*	L'itérateur de début.
-		*\~english
 		*\brief
 		*	The beginning iterator.
 		*/
@@ -203,10 +159,6 @@ namespace ashes
 			return FlagIterator< FlagType >( m_value );
 		}
 		/**
-		*\~french
-		*\return
-		*	L'itérateur de fin (0).
-		*\~english
 		*\brief
 		*	The end iterator (0).
 		*/
@@ -215,10 +167,8 @@ namespace ashes
 			return FlagIterator< FlagType >();
 		}
 		/**
-		*\~french
-		*\name Opérateurs binaires membres.
-		*\~english
-		*\name Member binary operators.
+		*\name
+		*	Member binary operators.
 		*/
 		/**\{*/
 		inline FlagCombination & operator&=( BaseType rhs )noexcept
@@ -261,14 +211,11 @@ namespace ashes
 		/**\}*/
 
 	private:
-		//! La valeur résultant des combinaisons.
 		BaseType m_value;
 	};
 	/**
-	*\~french
-	*\name Opérateurs de comparaison.
-	*\~english
-	*\name Comparison operators.
+	*\name
+	*	Comparison operators.
 	*/
 	/**\{*/
 	template< typename FlagType >
@@ -304,10 +251,8 @@ namespace ashes
 	}
 	/**\}*/
 	/**
-	*\~french
-	*\name Opérateurs binaires.
-	*\~english
-	*\name Binary operators.
+	*\name
+	*	Binary operators.
 	*/
 	/**\{*/
 	template< typename FlagType >
@@ -347,16 +292,6 @@ namespace ashes
 	}
 	/**\}*/
 	/**
-	*\~french
-	*\brief
-	*	Vérifie si l'indicateur donné est présent dans la combinaison donnée.
-	*\param[in] value
-	*	La combinaison.
-	*\param[in] flag
-	*	L'indicateur recherché.
-	*\return
-	*	\p true si \p value contient \p flag.
-	*\~english
 	*\brief
 	*	Checks if the given flag is part of the given combination.
 	*\param[in] value
@@ -374,16 +309,6 @@ namespace ashes
 		return U( value & T( flag ) ) == flag;
 	}
 	/**
-	*\~french
-	*\brief
-	*	Vérifie si l'indicateur donné est présent dans la combinaison donnée.
-	*\param[in] value
-	*	La combinaison.
-	*\param[in] flag
-	*	L'indicateur recherché.
-	*\return
-	*	\p true si \p value contient \p flag.
-	*\~english
 	*\brief
 	*	Checks if the given flag is part of the given combination.
 	*\param[in] value
@@ -401,16 +326,6 @@ namespace ashes
 		return Type( value & flag ) == Type( flag );
 	}
 	/**
-	*\~french
-	*\brief
-	*	Vérifie si l'indicateur donné est présent dans la combinaison donnée.
-	*\param[in] value
-	*	La combinaison.
-	*\param[in] flag
-	*	L'indicateur recherché.
-	*\return
-	*	\p true si value contient flag.
-	*\~english
 	*\brief
 	*	Checks if the given flag is part of the given combination.
 	*\param[in] value
@@ -429,16 +344,6 @@ namespace ashes
 		return Type( value & flag ) == flag;
 	}
 	/**
-	*\~french
-	*\brief
-	*	Ajoute un indicateur à la valeur donnée.
-	*\param[in,out] value
-	*	La valeur.
-	*\param[in] flag
-	*	L'indicateur à ajouter.
-	*\return
-	*	La valeur.
-	*\~english
 	*\brief
 	*	Adds a flag to given combination.
 	*\param[in,out] value
@@ -457,16 +362,6 @@ namespace ashes
 		return value;
 	}
 	/**
-	*\~french
-	*\brief
-	*	Enlève un indicateur de la valeur donnée.
-	*\param[in,out] value
-	*	La valeur.
-	*\param[in] flag
-	*	L'indicateur à enlever.
-	*\return
-	*	La valeur.
-	*\~english
 	*\brief
 	*	Removes a flag from given combination.
 	*\param[in,out] value
@@ -486,16 +381,6 @@ namespace ashes
 		return value;
 	}
 	/**
-	*\~french
-	*\brief
-	*	Ajoute un indicateur à la valeur donnée.
-	*\param[in] value
-	*	La valeur.
-	*\param[in] flag
-	*	L'indicateur à ajouter.
-	*\return
-	*	La nouvelle valeur.
-	*\~english
 	*\brief
 	*	Adds a flag to given combination.
 	*\param[in] value
@@ -513,16 +398,6 @@ namespace ashes
 		return ( value | flag );
 	}
 	/**
-	*\~french
-	*\brief
-	*	Enlève un indicateur de la valeur donnée.
-	*\param[in] value
-	*	La valeur.
-	*\param[in] flag
-	*	L'indicateur à enlever.
-	*\return
-	*	La nouvelle valeur.
-	*\~english
 	*\brief
 	*	Removes a flag from given combination.
 	*\param[in] value
@@ -542,10 +417,6 @@ namespace ashes
 	}
 }
 /**
-*\~french
-*\brief
-*	Implémente les opérateurs de combinaison binaire sur un scoped enum.
-*\~english
 *\brief
 *	Implements binary combination operators on a scoped enum.
 */

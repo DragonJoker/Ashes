@@ -1,4 +1,4 @@
-﻿/*
+/*
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
@@ -12,6 +12,7 @@ See LICENSE file in root folder.
 #include "common/Optional.hpp"
 #include "common/FlagCombination.hpp"
 #include "common/Signal.hpp"
+#include "common/Format.hpp"
 
 #if defined( MemoryBarrier )
 #	undef MemoryBarrier
@@ -289,6 +290,171 @@ namespace ashes
 
 #endif
 
+	inline int8_t deepCopy( int8_t const & rhs )
+	{
+		return rhs;
+	}
+
+	inline uint8_t deepCopy( uint8_t const & rhs )
+	{
+		return rhs;
+	}
+
+	inline int16_t deepCopy( int16_t const & rhs )
+	{
+		return rhs;
+	}
+
+	inline uint16_t deepCopy( uint16_t const & rhs )
+	{
+		return rhs;
+	}
+
+	inline int32_t deepCopy( int32_t const & rhs )
+	{
+		return rhs;
+	}
+
+	inline uint32_t deepCopy( uint32_t const & rhs )
+	{
+		return rhs;
+	}
+
+	inline int64_t deepCopy( int64_t const & rhs )
+	{
+		return rhs;
+	}
+
+	inline uint64_t deepCopy( uint64_t const & rhs )
+	{
+		return rhs;
+	}
+
+	inline float deepCopy( float const & rhs )
+	{
+		return rhs;
+	}
+
+	inline double deepCopy( double const & rhs )
+	{
+		return rhs;
+	}
+
+	inline VkDescriptorPoolSize deepCopy( VkDescriptorPoolSize const & rhs )
+	{
+		return rhs;
+	}
+
+	inline VkDescriptorSetLayoutBinding deepCopy( VkDescriptorSetLayoutBinding const & rhs )
+	{
+		return rhs;
+	}
+
+	inline VkPipelineShaderStageCreateInfo deepCopy( VkPipelineShaderStageCreateInfo const & rhs )
+	{
+		return rhs;
+	}
+
+	inline VkImageView deepCopy( VkImageView const & rhs )
+	{
+		return rhs;
+	}
+
+	inline VkAttachmentDescription deepCopy( VkAttachmentDescription const & rhs )
+	{
+		return rhs;
+	}
+
+	inline VkSubpassDescription deepCopy( VkSubpassDescription const & rhs )
+	{
+		return rhs;
+	}
+
+	inline VkSubpassDependency deepCopy( VkSubpassDependency const & rhs )
+	{
+		return rhs;
+	}
+
+	inline VkAttachmentReference deepCopy( VkAttachmentReference const & rhs )
+	{
+		return rhs;
+	}
+
+	inline VkPipelineCache deepCopy( VkPipelineCache const & rhs )
+	{
+		return rhs;
+	}
+
+	inline VkClearValue deepCopy( VkClearValue const & rhs )
+	{
+		return rhs;
+	}
+
+	inline VkSpecializationMapEntry deepCopy( VkSpecializationMapEntry const & rhs )
+	{
+		return rhs;
+	}
+
+	inline VkPipelineColorBlendAttachmentState deepCopy( VkPipelineColorBlendAttachmentState const & rhs )
+	{
+		return rhs;
+	}
+
+	inline VkStencilOpState deepCopy( VkStencilOpState const & rhs )
+	{
+		return rhs;
+	}
+
+	inline VkPipelineDepthStencilStateCreateInfo deepCopy( VkPipelineDepthStencilStateCreateInfo const & rhs )
+	{
+		return rhs;
+	}
+
+	inline VkDynamicState deepCopy( VkDynamicState const & rhs )
+	{
+		return rhs;
+	}
+
+	inline VkPipelineInputAssemblyStateCreateInfo deepCopy( VkPipelineInputAssemblyStateCreateInfo const & rhs )
+	{
+		return rhs;
+	}
+
+	inline VkPipelineMultisampleStateCreateInfo deepCopy( VkPipelineMultisampleStateCreateInfo const & rhs )
+	{
+		return rhs;
+	}
+
+	inline VkPipelineRasterizationStateCreateInfo deepCopy( VkPipelineRasterizationStateCreateInfo const & rhs )
+	{
+		return rhs;
+	}
+
+	inline VkPipelineTessellationStateCreateInfo deepCopy( VkPipelineTessellationStateCreateInfo const & rhs )
+	{
+		return rhs;
+	}
+
+	inline VkVertexInputAttributeDescription deepCopy( VkVertexInputAttributeDescription const & rhs )
+	{
+		return rhs;
+	}
+
+	inline VkVertexInputBindingDescription deepCopy( VkVertexInputBindingDescription const & rhs )
+	{
+		return rhs;
+	}
+
+	inline VkViewport deepCopy( VkViewport const & rhs )
+	{
+		return rhs;
+	}
+
+	inline VkRect2D deepCopy( VkRect2D const & rhs )
+	{
+		return rhs;
+	}
+
 	template< typename Type, typename ... Params >
 	inline std::vector< Type > makeVector( Type const * ptr
 		, size_t count
@@ -334,16 +500,6 @@ namespace ashes
 		: nullopt;
 	}
 
-	inline VkSpecializationMapEntry deepCopy( VkSpecializationMapEntry const & rhs )
-	{
-		return rhs;
-	}
-
-	inline uint8_t deepCopy( uint8_t const & rhs )
-	{
-		return rhs;
-	}
-
 	inline VkSpecializationInfo deepCopy( VkSpecializationInfo const & rhs
 		, VkSpecializationMapEntryArray & entries
 		, ByteArray & data )
@@ -374,11 +530,6 @@ namespace ashes
 		return result;
 	}
 
-	inline VkPipelineColorBlendAttachmentState deepCopy( VkPipelineColorBlendAttachmentState const & rhs )
-	{
-		return rhs;
-	}
-
 	inline VkPipelineColorBlendStateCreateInfo deepCopy( VkPipelineColorBlendStateCreateInfo const & rhs
 		, VkPipelineColorBlendAttachmentStateArray & attachments )
 	{
@@ -388,21 +539,6 @@ namespace ashes
 		return result;
 	}
 
-	inline VkStencilOpState deepCopy( VkStencilOpState const & rhs )
-	{
-		return rhs;
-	}
-
-	inline VkPipelineDepthStencilStateCreateInfo deepCopy( VkPipelineDepthStencilStateCreateInfo const & rhs )
-	{
-		return rhs;
-	}
-
-	inline VkDynamicState deepCopy( VkDynamicState const & rhs )
-	{
-		return rhs;
-	}
-
 	inline VkPipelineDynamicStateCreateInfo deepCopy( VkPipelineDynamicStateCreateInfo const & rhs
 		, VkDynamicStateArray & states )
 	{
@@ -410,36 +546,6 @@ namespace ashes
 		states = makeVector( rhs.pDynamicStates, rhs.dynamicStateCount );
 		result.pDynamicStates = states.data();
 		return result;
-	}
-
-	inline VkPipelineInputAssemblyStateCreateInfo deepCopy( VkPipelineInputAssemblyStateCreateInfo const & rhs )
-	{
-		return rhs;
-	}
-
-	inline VkPipelineMultisampleStateCreateInfo deepCopy( VkPipelineMultisampleStateCreateInfo const & rhs )
-	{
-		return rhs;
-	}
-
-	inline VkPipelineRasterizationStateCreateInfo deepCopy( VkPipelineRasterizationStateCreateInfo const & rhs )
-	{
-		return rhs;
-	}
-
-	inline VkPipelineTessellationStateCreateInfo deepCopy( VkPipelineTessellationStateCreateInfo const & rhs )
-	{
-		return rhs;
-	}
-
-	inline VkVertexInputAttributeDescription deepCopy( VkVertexInputAttributeDescription const & rhs )
-	{
-		return rhs;
-	}
-
-	inline VkVertexInputBindingDescription deepCopy( VkVertexInputBindingDescription const & rhs )
-	{
-		return rhs;
 	}
 
 	inline VkPipelineVertexInputStateCreateInfo deepCopy( VkPipelineVertexInputStateCreateInfo const & rhs
@@ -452,16 +558,6 @@ namespace ashes
 		result.pVertexBindingDescriptions = bindings.data();
 		result.pVertexAttributeDescriptions = attributes.data();
 		return result;
-	}
-
-	inline VkViewport deepCopy( VkViewport const & rhs )
-	{
-		return rhs;
-	}
-
-	inline VkRect2D deepCopy( VkRect2D const & rhs )
-	{
-		return rhs;
 	}
 
 	inline VkPipelineViewportStateCreateInfo deepCopy( VkPipelineViewportStateCreateInfo const & rhs
@@ -483,6 +579,96 @@ namespace ashes
 		result.pViewports = viewports.data();
 		result.pScissors = scissors.data();
 		return result;
+	}
+
+	inline bool operator==( VkOffset2D const & lhs, VkOffset2D const & rhs )
+	{
+		return lhs.x == rhs.x
+			&& lhs.y == rhs.y;
+	}
+
+	inline bool operator!=( VkOffset2D const & lhs, VkOffset2D const & rhs )
+	{
+		return !( lhs == rhs );
+	}
+
+	inline bool operator==( VkOffset3D const & lhs, VkOffset3D const & rhs )
+	{
+		return lhs.x == rhs.x
+			&& lhs.y == rhs.y
+			&& lhs.z == rhs.z;
+	}
+
+	inline bool operator!=( VkOffset3D const & lhs, VkOffset3D const & rhs )
+	{
+		return !( lhs == rhs );
+	}
+
+	inline bool operator==( VkExtent2D const & lhs, VkExtent2D const & rhs )
+	{
+		return lhs.width == rhs.width
+			&& lhs.height == rhs.height;
+	}
+
+	inline bool operator!=( VkExtent2D const & lhs, VkExtent2D const & rhs )
+	{
+		return !( lhs == rhs );
+	}
+
+	inline bool operator==( VkExtent3D const & lhs, VkExtent3D const & rhs )
+	{
+		return lhs.width == rhs.width
+			&& lhs.height == rhs.height
+			&& lhs.depth == rhs.depth;
+	}
+
+	inline bool operator!=( VkExtent3D const & lhs, VkExtent3D const & rhs )
+	{
+		return !( lhs == rhs );
+	}
+
+	inline bool operator==( VkRect2D const & lhs, VkRect2D const & rhs )
+	{
+		return lhs.offset == rhs.offset
+			&& lhs.extent == rhs.extent;
+	}
+
+	inline bool operator!=( VkRect2D const & lhs, VkRect2D const & rhs )
+	{
+		return !( lhs == rhs );
+	}
+
+	inline bool operator==( VkViewport const & lhs, VkViewport const & rhs )
+	{
+		return lhs.x == rhs.x
+			&& lhs.y == rhs.y
+			&& lhs.width == rhs.width
+			&& lhs.height == rhs.height
+			&& lhs.minDepth == rhs.minDepth
+			&& lhs.maxDepth == rhs.maxDepth;
+	}
+
+	inline bool operator!=( VkViewport const & lhs, VkViewport const & rhs )
+	{
+		return !( lhs == rhs );
+	}
+
+	inline bool operator==( VkAttachmentDescription const & lhs, VkAttachmentDescription const & rhs )
+	{
+		return lhs.flags == rhs.flags
+			&& lhs.format == rhs.format
+			&& lhs.samples == rhs.samples
+			&& lhs.loadOp == rhs.loadOp
+			&& lhs.storeOp == rhs.storeOp
+			&& lhs.stencilLoadOp == rhs.stencilLoadOp
+			&& lhs.stencilStoreOp == rhs.stencilStoreOp
+			&& lhs.initialLayout == rhs.initialLayout
+			&& lhs.finalLayout == rhs.finalLayout;
+	}
+
+	inline bool operator!=( VkAttachmentDescription const & lhs, VkAttachmentDescription const & rhs )
+	{
+		return !( lhs == rhs );
 	}
 }
 

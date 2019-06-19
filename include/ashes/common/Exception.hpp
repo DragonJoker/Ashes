@@ -102,9 +102,6 @@ namespace ashes
 	*\~english
 	*\brief
 	*	API exception class.
-	*\~french
-	*\brief
-	*	Classe d'exception de l'API.
 	*/
 	class Exception
 		: public std::exception
@@ -118,13 +115,6 @@ namespace ashes
 		*	Le résultat de l'action.
 		*\param[in] text
 		*	Le texte de l'exception.
-		*\~english
-		*\brief
-		*	Constructor.
-		*\param[in] result
-		*	The action result.
-		*\param[in] text
-		*	The exception text.
 		*/
 		Exception( VkResult result
 			, std::string text )
@@ -137,9 +127,6 @@ namespace ashes
 		*\~english
 		*name
 		*	Getters.
-		*\~french
-		*name
-		*	Accesseurs.
 		*/
 		/**@{*/
 		inline VkResult getResult()const

@@ -12,34 +12,6 @@ See LICENSE file in root folder.
 
 #include <algorithm>
 
-namespace ashes
-{
-	inline VkAttachmentDescription deepCopy( VkAttachmentDescription const & rhs )
-	{
-		return rhs;
-	}
-
-	inline VkSubpassDescription deepCopy( VkSubpassDescription const & rhs )
-	{
-		return rhs;
-	}
-
-	inline VkSubpassDependency deepCopy( VkSubpassDependency const & rhs )
-	{
-		return rhs;
-	}
-
-	inline VkAttachmentReference deepCopy( VkAttachmentReference const & rhs )
-	{
-		return rhs;
-	}
-
-	inline uint32_t deepCopy( uint32_t const & rhs )
-	{
-		return rhs;
-	}
-}
-
 namespace ashes::d3d11
 {
 	RenderPass::RenderPass( VkDevice device

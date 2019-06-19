@@ -10,22 +10,12 @@
 #include <ashespp/Core/Device.hpp>
 #include <ashespp/Descriptor/DescriptorSet.hpp>
 #include <ashespp/Descriptor/DescriptorSetLayout.hpp>
-#include <ashespp/Descriptor/DescriptorSetLayoutBinding.hpp>
 #include <ashespp/Descriptor/DescriptorSetPool.hpp>
 #include <ashespp/Image/Image.hpp>
 #include <ashespp/Image/ImageView.hpp>
-#include <ashespp/Pipeline/DepthStencilState.hpp>
-#include <ashespp/Pipeline/MultisampleState.hpp>
 #include <ashespp/Pipeline/GraphicsPipeline.hpp>
 #include <ashespp/Pipeline/PipelineLayout.hpp>
-#include <ashespp/Pipeline/Scissor.hpp>
-#include <ashespp/Pipeline/VertexLayout.hpp>
-#include <ashespp/Pipeline/Viewport.hpp>
 #include <ashespp/RenderPass/RenderPass.hpp>
-#include <ashespp/RenderPass/RenderSubpass.hpp>
-#include <ashespp/RenderPass/RenderSubpassState.hpp>
-#include <ashespp/RenderPass/FrameBufferAttachment.hpp>
-#include <ashespp/Sync/ImageMemoryBarrier.hpp>
 
 #include <util/GlslToSpv.hpp>
 

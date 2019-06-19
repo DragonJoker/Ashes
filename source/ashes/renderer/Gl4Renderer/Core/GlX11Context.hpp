@@ -12,7 +12,7 @@ See LICENSE file in root folder
 namespace ashes::gl4
 {
 	class X11Context
-		: public ContextImpl
+		: public Context::ContextImpl
 	{
 	public:
 		X11Context( VkInstance instance

@@ -94,7 +94,7 @@ namespace common
 
 		for ( auto view : views )
 		{
-			result.push_back( view->getFormat() );
+			result.push_back( view->format );
 		}
 
 		return result;

@@ -14,27 +14,16 @@ namespace ashes
 		, uint32_t maxSets
 		, VkDescriptorPoolSizeArray poolSizes )
 		: m_device{ device }
-		, m_automaticFree{ ( flags & ( ~VkDescriptorPoolCreateFlagBits::VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT ) ) == 0 }
+		, m_automaticFree{ !checkFlag( flags, VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT ) }
 	{
-		std::vector< VkDescriptorPoolSize > vkpoolSizes;
-
-		for ( auto const & poolSize : poolSizes )
-		{
-			vkpoolSizes.push_back(
-				{
-					poolSize.type,
-					poolSize.descriptorCount
-				} );
-		}
-
 		VkDescriptorPoolCreateInfo createInfo
 		{
 			VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,      // sType
 			nullptr,                                            // pNext
 			flags,                                              // flags
 			maxSets,                                            // maxSets
-			uint32_t( vkpoolSizes.size() ),                     // poolSizeCount
-			vkpoolSizes.data()                                  // pPoolSizes
+			uint32_t( poolSizes.size() ),                       // poolSizeCount
+			poolSizes.data()                                    // pPoolSizes
 		};
 		DEBUG_DUMP( createInfo );
 		auto res = m_device.vkCreateDescriptorPool( m_device
@@ -58,5 +47,12 @@ namespace ashes
 			, *this
 			, layout
 			, bindingPoint );
+	}
+
+	void DescriptorPool::freeDescriptorSet( DescriptorSetPtr set )const
+	{
+		assert( ( !m_automaticFree ) && "freeDescriptorSet can only be used if VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT is set" );
+		auto res = m_device.vkFreeDescriptorSets( m_device, m_internal, 1u, &static_cast< VkDescriptorSet const & >( *set ) );
+		checkError( res, "DescriptorPool::freeDescriptorSet" );
 	}
 }

@@ -172,17 +172,20 @@ namespace ashes::gl4
 		, int length
 		, const char * const message )
 	{
-		auto layer = convert( source );
-		auto flags = convert( type );
-		flags |= convert( severity );
-		m_createInfo.pfnCallback( flags
-			, VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT
-			, 0ull
-			, 0u
-			, id
-			, layer
-			, message
-			, m_createInfo.pUserData );
+		if ( id != 131185 )
+		{
+			auto layer = convert( source );
+			auto flags = convert( type );
+			flags |= convert( severity );
+			m_createInfo.pfnCallback( flags
+				, VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT
+				, 0ull
+				, 0u
+				, id
+				, layer
+				, message
+				, m_createInfo.pUserData );
+		}
 	}
 
 	void DebugReportCallbackEXT::report( uint32_t id
@@ -191,15 +194,18 @@ namespace ashes::gl4
 		, int length
 		, const char * const message )
 	{
-		auto layer = convert( category );
-		auto flags = convert( severity );
-		m_createInfo.pfnCallback( flags
-			, VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT
-			, 0ull
-			, 0u
-			, id
-			, layer
-			, message
-			, m_createInfo.pUserData );
+		if ( id != 131185 )
+		{
+			auto layer = convert( category );
+			auto flags = convert( severity );
+			m_createInfo.pfnCallback( flags
+				, VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT
+				, 0ull
+				, 0u
+				, id
+				, layer
+				, message
+				, m_createInfo.pUserData );
+		}
 	}
 }

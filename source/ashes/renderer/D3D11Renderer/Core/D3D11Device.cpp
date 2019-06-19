@@ -31,6 +31,8 @@ See LICENSE file in root folder.
 
 #include "ashesd3d11_api.hpp"
 
+#include <common/Hash.hpp>
+
 namespace ashes::d3d11
 {
 	namespace
@@ -112,6 +114,20 @@ namespace ashes::d3d11
 
 			return uint32_t( texelBlockSize );
 		}
+
+		size_t makeKey( VkImageType type
+			, VkFormat format
+			, VkExtent3D const & extent
+			, uint32_t mipLevels )
+		{
+			auto result = std::hash< VkImageType >{}( type );
+			ashes::hashCombine( result, format );
+			ashes::hashCombine( result, extent.width );
+			ashes::hashCombine( result, extent.height );
+			ashes::hashCombine( result, extent.depth );
+			ashes::hashCombine( result, mipLevels );
+			return result;
+		}
 	}
 
 	Device::Device( VkInstance instance
@@ -136,6 +152,12 @@ namespace ashes::d3d11
 			}
 		}
 
+		for ( auto & it : m_stagingTextures )
+		{
+			deallocate( it.second.first, nullptr );
+			deallocate( it.second.second, nullptr );
+		}
+
 		deallocate( m_dummyIndexed.memory, nullptr );
 		deallocate( m_dummyIndexed.buffer, nullptr );
 
@@ -151,6 +173,61 @@ namespace ashes::d3d11
 		safeRelease( m_debug );
 
 #endif
+	}
+
+	VkImage Device::getStagingImage( VkImage image
+		, VkDeviceMemory & memory )
+	{
+		auto key = makeKey( get( image )->getType()
+			, get( image )->getFormat()
+			, get( image )->getDimensions()
+			, get( image )->getMipmapLevels() );
+		auto it = m_stagingTextures.find( key );
+
+		if ( it == m_stagingTextures.end() )
+		{
+			VkImage result;
+			allocate( result
+				, nullptr
+				, get( this )
+				, VkImageCreateInfo
+				{
+					VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+					nullptr,
+					0u,
+					get( image )->getType(),
+					get( image )->getFormat(),
+					get( image )->getDimensions(),
+					get( image )->getMipmapLevels(),
+					1u, // layerCount, we process images layer per layer.
+					VK_SAMPLE_COUNT_1_BIT,
+					VK_IMAGE_TILING_LINEAR,
+					VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+					VK_SHARING_MODE_EXCLUSIVE,
+					0u,
+					nullptr,
+					VK_IMAGE_LAYOUT_UNDEFINED,
+				} );
+			auto requirements = get( result )->getMemoryRequirements();
+			uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
+				, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
+			VkDeviceMemory resMem;
+			allocate( resMem
+				, nullptr
+				, get( this )
+				, VkMemoryAllocateInfo
+				{
+					VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+					nullptr,
+					requirements.size,
+					deduced
+				} );
+			get( result )->bindMemory( resMem, 0u );
+			it = m_stagingTextures.emplace( key, std::make_pair( result, resMem ) ).first;
+		}
+
+		memory = it->second.second;
+		return it->second.first;
 	}
 
 	void Device::getImageSubresourceLayout( VkImage image

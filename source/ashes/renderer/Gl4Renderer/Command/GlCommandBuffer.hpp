@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "renderer/Gl4Renderer/Command/Commands/GlCommandBase.hpp"
 #include "renderer/Gl4Renderer/Command/GlCommandPool.hpp"
-
+#include "renderer/Gl4Renderer/Core/GlContextStateStack.hpp"
 #include "renderer/Gl4Renderer/Shader/GlShaderDesc.hpp"
 
 namespace ashes::gl4
@@ -315,6 +315,7 @@ namespace ashes::gl4
 		mutable std::vector< BufferIndex > m_mappedBuffers;
 		struct State
 		{
+			std::unique_ptr< ContextStateStack > stack;
 			VkCommandBufferUsageFlags beginFlags{ 0u };
 			VkPipeline currentPipeline{ nullptr };
 			std::vector< std::pair < VkPipelineLayout, PushConstantsDesc > > pushConstantBuffers;

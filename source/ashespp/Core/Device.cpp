@@ -286,12 +286,13 @@ namespace ashes
 
 		// Recherche parmi les types de m�moire la premi�re ayant les propri�t�s voulues.
 		uint32_t i{ 0 };
+		uint32_t lookup = 1u;
 
 		while ( i < m_memoryProperties.memoryTypeCount && !found )
 		{
-			if ( ( typeBits & 1 ) == 1 )
+			if ( ( typeBits & lookup ) == lookup )
 			{
-				// Le type de m�moire est disponible, a-t-il les propri�t�s demand�es?
+				// Le type de mémoire est disponible, a-t-il les propriétés demandées?
 				if ( ( m_memoryProperties.memoryTypes[i].propertyFlags & requirements ) == requirements )
 				{
 					result = i;
@@ -299,7 +300,7 @@ namespace ashes
 				}
 			}
 
-			typeBits >>= 1;
+			++lookup;
 			++i;
 		}
 

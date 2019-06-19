@@ -38,18 +38,19 @@ namespace ashes::gl4
 			, VkPipelineDynamicStateCreateInfo const * dyState = nullptr );
 		ContextState();
 
+		ContextState & swap( ContextState && rhs );
+
 		inline ContextState & operator=( ContextState const & rhs )
 		{
 			ContextState tmp = rhs;
-			std::swap( tmp, *this );
+			swap( std::move( tmp ) );
 			doInit();
 			return *this;
 		}
 
 		inline ContextState & operator=( ContextState && rhs )
 		{
-			ContextState tmp = std::move( rhs );
-			std::swap( tmp, *this );
+			swap( std::move( rhs ) );
 			doInit();
 			return *this;
 		}

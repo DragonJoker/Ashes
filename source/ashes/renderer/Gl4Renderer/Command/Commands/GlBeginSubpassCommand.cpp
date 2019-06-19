@@ -9,14 +9,6 @@ See LICENSE file in root folder.
 
 #include "ashesgl4_api.hpp"
 
-namespace ashes
-{
-	inline VkAttachmentReference deepCopy( VkAttachmentReference const & rhs )
-	{
-		return rhs;
-	}
-}
-
 namespace ashes::gl4
 {
 	void buildBeginSubpassCommand( VkRenderPass renderPass
@@ -29,22 +21,12 @@ namespace ashes::gl4
 		if ( get( frameBuffer )->getInternal() != GL_INVALID_INDEX )
 		{
 			UInt32Array drawBuffers;
-			auto & colourAttaches = get( frameBuffer )->getColourAttaches();
 			auto attaches = makeVector( subpass.pColorAttachments
 				, subpass.colorAttachmentCount );
 
-			if ( colourAttaches.empty()
-				&& attaches.size() == 1 )
+			for ( auto & fboAttach : get( frameBuffer )->getColourAttaches() )
 			{
-				drawBuffers.push_back( GL_ATTACHMENT_POINT_BACK );
-			}
-			else
-			{
-				for ( auto & attach : attaches )
-				{
-					auto & fboAttach = colourAttaches[attach.attachment];
-					drawBuffers.push_back( fboAttach.point + attach.attachment );
-				}
+				drawBuffers.push_back( fboAttach.point + fboAttach.index );
 			}
 
 			list.push_back( makeCmd< OpType::eDrawBuffers >( drawBuffers ) );

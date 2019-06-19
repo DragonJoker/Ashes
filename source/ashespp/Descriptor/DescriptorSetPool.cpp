@@ -33,7 +33,9 @@ namespace ashes
 		, bool automaticFree )
 		: m_layout{ layout }
 		, m_maxSets{ maxSets }
-		, m_pool{ device.createDescriptorPool( automaticFree ? VkDescriptorPoolCreateFlagBits::VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT : VkDescriptorPoolCreateFlagBits( 0u )
+		, m_pool{ device.createDescriptorPool( ( ( !automaticFree )
+				? VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT
+				: VkDescriptorPoolCreateFlagBits( 0u ) )
 			, maxSets
 			, convert( layout.getBindings(), maxSets ) ) }
 	{
@@ -42,5 +44,10 @@ namespace ashes
 	DescriptorSetPtr DescriptorSetPool::createDescriptorSet( uint32_t bindingPoint )const
 	{
 		return m_pool->createDescriptorSet( m_layout, bindingPoint );
+	}
+
+	void DescriptorSetPool::freeDescriptorSet( DescriptorSetPtr set )const
+	{
+		m_pool->freeDescriptorSet( std::move( set ) );
 	}
 }

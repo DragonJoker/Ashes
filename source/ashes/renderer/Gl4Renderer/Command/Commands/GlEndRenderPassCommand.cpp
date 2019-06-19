@@ -10,9 +10,14 @@ See LICENSE file in root folder.
 
 namespace ashes::gl4
 {
-	void buildEndRenderPassCommand( CmdList & list )
+	void buildEndRenderPassCommand( ContextStateStack & stack
+		, CmdList & list )
 	{
-		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
-			, nullptr ) );
+		if ( stack.hasCurrentFramebuffer() )
+		{
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+				, nullptr ) );
+			stack.setCurrentFramebuffer( VK_NULL_HANDLE );
+		}
 	}
 }

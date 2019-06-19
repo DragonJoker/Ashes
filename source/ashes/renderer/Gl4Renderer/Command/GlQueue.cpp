@@ -49,7 +49,7 @@ namespace ashes::gl4
 {
 	namespace
 	{
-		void applyCmd( ContextLock & lock, Command const & cmd )
+		void applyCmd( ContextLock const & lock, Command const & cmd )
 		{
 			switch ( cmd.op.type )
 			{
@@ -64,6 +64,15 @@ namespace ashes::gl4
 				break;
 			case OpType::eEndQuery:
 				apply( lock, map< OpType::eEndQuery >( cmd ) );
+				break;
+			case OpType::eBlendConstants:
+				apply( lock, map< OpType::eBlendConstants >( cmd ) );
+				break;
+			case OpType::eBlendEquation:
+				apply( lock, map< OpType::eBlendEquation >( cmd ) );
+				break;
+			case OpType::eBlendFunc:
+				apply( lock, map< OpType::eBlendFunc >( cmd ) );
 				break;
 			case OpType::eClearColour:
 				apply( lock, map< OpType::eClearColour >( cmd ) );
@@ -92,11 +101,59 @@ namespace ashes::gl4
 			case OpType::eClearBackDepthStencil:
 				apply( lock, map< OpType::eClearBackDepthStencil >( cmd ) );
 				break;
+			case OpType::eCullFace:
+				apply( lock, map< OpType::eCullFace >( cmd ) );
+				break;
+			case OpType::eDepthFunc:
+				apply( lock, map< OpType::eDepthFunc >( cmd ) );
+				break;
+			case OpType::eDepthMask:
+				apply( lock, map< OpType::eDepthMask >( cmd ) );
+				break;
+			case OpType::eDepthRange:
+				apply( lock, map< OpType::eDepthRange >( cmd ) );
+				break;
+			case OpType::eFrontFace:
+				apply( lock, map< OpType::eFrontFace >( cmd ) );
+				break;
+			case OpType::eLineWidth:
+				apply( lock, map< OpType::eLineWidth >( cmd ) );
+				break;
+			case OpType::eLogicOp:
+				apply( lock, map< OpType::eLogicOp >( cmd ) );
+				break;
+			case OpType::eMinSampleShading:
+				apply( lock, map< OpType::eMinSampleShading >( cmd ) );
+				break;
+			case OpType::ePatchParameter:
+				apply( lock, map< OpType::ePatchParameter >( cmd ) );
+				break;
+			case OpType::ePolygonMode:
+				apply( lock, map< OpType::ePolygonMode >( cmd ) );
+				break;
+			case OpType::ePolygonOffset:
+				apply( lock, map< OpType::ePolygonOffset >( cmd ) );
+				break;
+			case OpType::ePrimitiveRestartIndex:
+				apply( lock, map< OpType::ePrimitiveRestartIndex >( cmd ) );
+				break;
+			case OpType::eStencilFunc:
+				apply( lock, map< OpType::eStencilFunc >( cmd ) );
+				break;
+			case OpType::eStencilMask:
+				apply( lock, map< OpType::eStencilMask >( cmd ) );
+				break;
+			case OpType::eStencilOp:
+				apply( lock, map< OpType::eStencilOp >( cmd ) );
+				break;
 			case OpType::eApplyScissor:
 				apply( lock, map< OpType::eApplyScissor >( cmd ) );
 				break;
 			case OpType::eApplyViewport:
 				apply( lock, map< OpType::eApplyViewport >( cmd ) );
+				break;
+			case OpType::eInitFramebuffer:
+				apply( lock, map< OpType::eInitFramebuffer >( cmd ) );
 				break;
 			case OpType::eBindFramebuffer:
 				apply( lock, map< OpType::eBindFramebuffer >( cmd ) );
@@ -130,9 +187,6 @@ namespace ashes::gl4
 				break;
 			case OpType::eBindContextState:
 				apply( lock, map< OpType::eBindContextState >( cmd ) );
-				break;
-			case OpType::eBindPipelineProgram:
-				apply( lock, map< OpType::eBindPipelineProgram >( cmd ) );
 				break;
 			case OpType::eFramebufferTexture2D:
 				apply( lock, map< OpType::eFramebufferTexture2D >( cmd ) );
@@ -288,14 +342,16 @@ namespace ashes::gl4
 		}
 	}
 
-	void applyList( ContextLock & lock
+	void applyList( ContextLock const & lock
 		, CmdList const & cmds )
 	{
 		Command const * pCmd = nullptr;
 
-		for ( auto & cmdBuf : cmds )
+		for ( CmdBuffer const & cmdBuf : cmds )
 		{
-			if ( map( cmdBuf.begin(), cmdBuf.end(), pCmd ) )
+			auto it = cmdBuf.begin();
+
+			if ( map( it, cmdBuf.end(), pCmd ) )
 			{
 				auto & cmd = *pCmd;
 				applyCmd( lock, cmd );
@@ -303,7 +359,7 @@ namespace ashes::gl4
 		}
 	}
 
-	void applyBuffer( ContextLock & lock
+	void applyBuffer( ContextLock const & lock
 		, CmdBuffer const & cmds )
 	{
 		auto it = cmds.begin();

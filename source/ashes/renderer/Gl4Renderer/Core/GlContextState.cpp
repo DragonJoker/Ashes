@@ -122,6 +122,25 @@ namespace ashes::gl4
 		doInit();
 	}
 
+	ContextState & ContextState::swap( ContextState && rhs )
+	{
+		std::swap( rhs.cbStateAttachments, cbStateAttachments );
+		std::swap( rhs.cbState, cbState );
+		std::swap( rhs.dsState, dsState );
+		std::swap( rhs.sampleMask, sampleMask );
+		std::swap( rhs.msState, msState );
+		std::swap( rhs.tsState, tsState );
+		std::swap( rhs.iaState, iaState );
+		std::swap( rhs.viewports, viewports );
+		std::swap( rhs.scissors, scissors );
+		std::swap( rhs.vpState, vpState );
+		std::swap( rhs.rsState, rsState );
+		std::swap( rhs.dynamicStates, dynamicStates );
+		std::swap( rhs.dyState, dyState );
+		doInit();
+		return *this;
+	}
+
 	void ContextState::doInit()
 	{
 		cbState.pAttachments = cbStateAttachments.data();

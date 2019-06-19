@@ -13,11 +13,16 @@ namespace ashes::d3d11
 	{
 	public:
 		DownloadMemoryCommand( VkDevice device
-			, VkDeviceMemory deviceMemory );
+			, ObjectMemory const * memory
+			, VkDeviceSize offset
+			, VkDeviceSize size
+			, UINT subresource );
 		void apply( Context const & context )const;
 		CommandPtr clone()const;
 
 	private:
-		VkDeviceMemory m_deviceMemory;
+		ObjectMemory const * m_memory;
+		std::pair< VkDeviceSize, VkDeviceSize > m_range;
+		UINT m_subresource;
 	};
 }

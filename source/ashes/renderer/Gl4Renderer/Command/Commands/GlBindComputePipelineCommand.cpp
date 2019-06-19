@@ -10,11 +10,17 @@ See LICENSE file in root folder.
 
 namespace ashes::gl4
 {
-	void buildBindComputePipelineCommand( VkPipeline pipeline
+	void buildBindComputePipelineCommand( ContextStateStack & stack
+		, VkPipeline pipeline
 		, VkPipelineBindPoint bindingPoint
 		, CmdList & list )
 	{
 		glLogCommand( "BindComputePipelineCommand" );
-		list.push_back( makeCmd< OpType::eUseProgram >( get( pipeline )->getCompProgram() ) );
+
+		if ( stack.getCurrentProgram() != get( pipeline )->getCompProgram() )
+		{
+			list.push_back( makeCmd< OpType::eUseProgram >( get( pipeline )->getCompProgram() ) );
+			stack.setCurrentProgram( get( pipeline )->getCompProgram() );
+		}
 	}
 }

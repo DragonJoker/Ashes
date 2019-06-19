@@ -193,7 +193,7 @@ DECLARE_GUID( IID_IDXGIFactory, 0x7b7166ec, 0x21c7, 0x44ae, 0xb2, 0x1a, 0xc9, 0x
 				uint64_t address = uint64_t( obj );\
 				sprintf_s( name, "%30s [0x%0I64X]", #type, address );\
 				obj->SetPrivateData( WKPDID_D3DDebugObjectName, UINT( strlen( name ) ), name );\
-				ashes::Logger::logDebug( name );\
+				std::clog << name << "\n";\
 			}
 #	else
 #		define dxDebugName( obj, type )\
@@ -203,7 +203,7 @@ DECLARE_GUID( IID_IDXGIFactory, 0x7b7166ec, 0x21c7, 0x44ae, 0xb2, 0x1a, 0xc9, 0x
 				uint64_t address = uint64_t( obj );\
 				sprintf( name, "%30s [0x%016X]", #type, address );\
 				obj->SetPrivateData( WKPDID_D3DDebugObjectName, UINT( strlen( name ) ), name );\
-				ashes::Logger::logDebug( name );\
+				std::clog << name << "\n";\
 			}
 #	endif
 #else
@@ -221,13 +221,14 @@ namespace ashes::d3d11
 		D3D_FEATURE_LEVEL featureLevel;
 	};
 
+	struct Context;
+
 	class Attribute;
 	class Buffer;
 	class BufferView;
 	class CommandBase;
 	class CommandBuffer;
 	class CommandPool;
-	class ComputePipeline;
 	class DescriptorPool;
 	class DescriptorSet;
 	class DescriptorSetLayout;
@@ -236,6 +237,7 @@ namespace ashes::d3d11
 	class DeviceMemory;
 	class FrameBuffer;
 	class GeometryBuffers;
+	class ObjectMemory;
 	class Pipeline;
 	class PipelineLayout;
 	class PhysicalDevice;
@@ -263,10 +265,14 @@ namespace ashes::d3d11
 	class DebugUtilsMessengerEXT;
 	class ValidationCacheEXT;
 
+	using Action = std::function< void( Context const & ) >;
+	using ActionArray = std::vector< Action >;
+
 	using AttributeArray = std::vector< Attribute >;
 
 	using CommandPtr = std::unique_ptr< CommandBase >;
 	using CommandPoolPtr = std::unique_ptr< CommandPool >;
+	using PipelinePtr = std::unique_ptr< Pipeline >;
 	using PhysicalDevicePtr = std::unique_ptr< PhysicalDevice >;
 	using QueuePtr = std::unique_ptr< Queue >;
 	using RenderSubpassPtr = std::unique_ptr< RenderSubpass >;

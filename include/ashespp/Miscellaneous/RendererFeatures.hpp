@@ -18,16 +18,7 @@ namespace ashes
 	*\brief
 	*	Les fonctionnalités du renderer.
 	*/
-	struct RendererFeatures
-	{
-		bool hasTexBufferRange;
-		bool hasImageTexture;
-		bool hasBaseInstance;
-		bool hasClearTexImage;
-		bool hasComputeShaders;
-		bool hasStorageBuffers;
-		bool supportsPersistentMapping;
-	};
+	using RendererFeatures = AshPluginFeatures;
 }
 
 #endif

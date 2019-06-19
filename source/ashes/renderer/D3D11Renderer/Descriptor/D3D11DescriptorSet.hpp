@@ -69,6 +69,11 @@ namespace ashes::d3d11
 			return m_dynamicBuffers;
 		}
 
+		inline LayoutBindingWritesArray const & getDynamicStorageBuffers()const
+		{
+			return m_dynamicStorageBuffers;
+		}
+
 	private:
 		void mergeWrites( LayoutBindingWrites & writes, VkWriteDescriptorSet const & write );
 

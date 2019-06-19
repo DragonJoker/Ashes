@@ -20,7 +20,7 @@ namespace ashes::gl4
 	struct alignas( uint64_t ) CmdT< OpType::eWaitEvents >
 	{
 		inline CmdT( VkEventArray events )
-			: cmd{ { CmdConfigT< OpType::eWaitEvents >.type, CmdConfigT< OpType::eWaitEvents >.size + uint16_t( events.size() ) * 2u } }
+			: cmd{ { OpType::eWaitEvents, uint16_t( sizeof( Command ) + events.size() * 2u ) } }
 			, events{ std::move( events ) }
 		{
 		}

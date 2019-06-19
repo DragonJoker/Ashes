@@ -543,6 +543,33 @@ namespace ashes
 			, fence.get() );
 		fence->wait( ashes::MaxTimeout );
 	}
+	
+	inline void StagingBuffer::uploadTextureData( Queue const & queue
+		, CommandPool const & commandPool
+		, VkImageSubresourceLayers const & subresourceLayers
+		, VkFormat format
+		, VkOffset3D const & offset
+		, VkExtent2D const & extent
+		, ArrayView< uint8_t > data
+		, ImageView const & texture
+		, VkPipelineStageFlags dstStageFlags )const
+	{
+		auto commandBuffer = commandPool.createCommandBuffer( true );
+		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
+		uploadTextureData( *commandBuffer
+			, subresourceLayers
+			, format
+			, offset
+			, extent
+			, data.data()
+			, texture
+			, dstStageFlags );
+		commandBuffer->end();
+		auto fence = m_device.createFence();
+		queue.submit( *commandBuffer
+			, fence.get() );
+		fence->wait( ashes::MaxTimeout );
+	}
 
 	inline void StagingBuffer::uploadTextureData( Queue const & queue
 		, CommandPool const & commandPool

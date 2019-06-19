@@ -8,7 +8,7 @@
 #define ___D3D11Renderer_Buffer_HPP___
 #pragma once
 
-#include "renderer/D3D11Renderer/D3D11RendererPrerequisites.hpp"
+#include "renderer/D3D11Renderer/Miscellaneous/D3D11DeviceMemory.hpp"
 
 namespace ashes::d3d11
 {
@@ -34,14 +34,30 @@ namespace ashes::d3d11
 			return m_memory;
 		}
 
-		inline ID3D11Buffer * getBuffer()const
+		inline VkDeviceSize getMemoryOffset()const
 		{
-			return m_buffer;
+			return m_memoryOffset;
+		}
+
+		inline ObjectMemory const & getObjectMemory()const
+		{
+			assert( m_objectMemory != nullptr );
+			return *m_objectMemory;
 		}
 
 		inline ID3D11UnorderedAccessView * getUnorderedAccessView()const
 		{
 			return m_unorderedAccessView;
+		}
+
+		inline ID3D11Resource * getResource()const
+		{
+			return getObjectMemory().resource;
+		}
+
+		inline ID3D11Buffer * getBuffer()const
+		{
+			return reinterpret_cast< ID3D11Buffer * >( getResource() );
 		}
 
 		inline VkBufferUsageFlags getUsage()const
@@ -59,7 +75,8 @@ namespace ashes::d3d11
 		VkDevice m_device;
 		VkBufferCreateInfo m_createInfo;
 		VkDeviceMemory m_memory{ VK_NULL_HANDLE };
-		ID3D11Buffer * m_buffer{ nullptr };
+		VkDeviceSize m_memoryOffset{ 0u };
+		ObjectMemory * m_objectMemory{ nullptr };
 		ID3D11UnorderedAccessView * m_unorderedAccessView{ nullptr };
 	};
 }

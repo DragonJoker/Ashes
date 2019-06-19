@@ -68,7 +68,8 @@ namespace ashes::gl4
 			, nullptr );
 	}
 
-	void buildCopyImageToBufferCommand( VkDevice device
+	void buildCopyImageToBufferCommand( ContextStateStack & stack
+		, VkDevice device
 		, VkBufferImageCopy copyInfo
 		, VkImage src
 		, VkBuffer dst
@@ -84,6 +85,7 @@ namespace ashes::gl4
 			, get( dst )->getInternal() ) );
 
 		// Setup source FBO
+		list.push_back( makeCmd< OpType::eInitFramebuffer >( &get( get( device )->getBlitSrcFbo() )->getInternal() ) );
 		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
 			, get( device )->getBlitSrcFbo() ) );
 		list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
@@ -109,5 +111,10 @@ namespace ashes::gl4
 
 		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK
 			, 0u ) );
+
+		if ( stack.hasCurrentFramebuffer() )
+		{
+			stack.setCurrentFramebuffer( VK_NULL_HANDLE );
+		}
 	}
 }

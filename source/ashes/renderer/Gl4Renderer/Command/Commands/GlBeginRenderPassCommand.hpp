@@ -141,7 +141,8 @@ namespace ashes::gl4
 
 	//*************************************************************************
 
-	void buildBeginRenderPassCommand( VkRenderPass renderPass
+	void buildBeginRenderPassCommand( ContextStateStack & stack
+		, VkRenderPass renderPass
 		, VkFramebuffer frameBuffer
 		, VkClearValueArray clearValues
 		, VkSubpassContents contents

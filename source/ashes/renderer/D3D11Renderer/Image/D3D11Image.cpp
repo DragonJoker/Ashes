@@ -13,70 +13,6 @@
 
 namespace ashes::d3d11
 {
-	namespace
-	{
-		VkExtent2D getTexelBlockExtent( VkFormat format )
-		{
-			VkExtent2D texelBlockExtent{ 1u, 1u };
-
-			if ( isCompressedFormat( format ) )
-			{
-				texelBlockExtent = getMinimalExtent2D( format );
-			}
-
-			return texelBlockExtent;
-		}
-
-		uint32_t getTexelBlockByteSize( VkExtent2D const & texelBlockExtent
-			, VkFormat format )
-		{
-			VkDeviceSize texelBlockSize;
-
-			if ( !ashes::isDepthStencilFormat( format ) )
-			{
-				texelBlockSize = ashes::getSize( texelBlockExtent, format );
-			}
-			else
-			{
-				texelBlockSize = texelBlockExtent.width;
-			}
-
-			return uint32_t( texelBlockSize );
-		}
-
-		uint32_t getLevelSize( VkExtent3D extent
-			, uint32_t level
-			, VkExtent2D texelBlockExtent
-			, uint32_t texelBlockSize )
-		{
-			extent.width >>= level;
-			extent.height >>= level;
-			return ( texelBlockSize
-				* extent.width
-				* extent.height ) / ( texelBlockExtent.width * texelBlockExtent.height );
-		}
-
-		uint32_t getTotalSize( VkExtent3D const & extent
-			, VkFormat format
-			, uint32_t layerCount
-			, uint32_t levelCount )
-		{
-			auto texelBlockExtent = getTexelBlockExtent( format );
-			auto texelBlockSize = getTexelBlockByteSize( texelBlockExtent, format );
-			uint32_t result = 0u;
-
-			for ( uint32_t level = 0u; level < levelCount; ++level )
-			{
-				result += getLevelSize( extent
-					, level
-					, texelBlockExtent
-					, texelBlockSize );
-			}
-
-			return result * layerCount * extent.depth;
-		}
-	}
-
 	Image::Image( Image && rhs )
 		: m_device{ rhs.m_device }
 		, m_createInfo{ std::move( rhs.m_createInfo ) }
@@ -167,11 +103,10 @@ namespace ashes::d3d11
 		result.size = getTotalSize( getDimensions(), getFormat(), getLayerCount(), getMipmapLevels() );
 		auto extent = ashes::getMinimalExtent3D( getFormat() );
 		result.alignment = ashes::getSize( extent, getFormat() );
-		result.memoryTypeBits = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
-			| ( ( checkFlag( m_createInfo.usage, VK_IMAGE_USAGE_TRANSFER_DST_BIT )
-				&& checkFlag( m_createInfo.usage, VK_IMAGE_USAGE_TRANSFER_SRC_BIT ) )
-				? VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
-				: VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
+		result.memoryTypeBits = ( checkFlag( m_createInfo.usage, VK_IMAGE_USAGE_TRANSFER_DST_BIT )
+				|| checkFlag( m_createInfo.usage, VK_IMAGE_USAGE_TRANSFER_SRC_BIT ) )
+			? VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+			: VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 		return result;
 	}
 
@@ -184,29 +119,37 @@ namespace ashes::d3d11
 		, VkDeviceSize memoryOffset )
 	{
 		m_memory = memory;
+		m_memoryOffset = memoryOffset;
 		VkResult result = VK_SUCCESS;
 
 		switch ( getType() )
 		{
 		case VK_IMAGE_TYPE_1D:
-			result = get( m_memory )->bindToImage( get( this )
-				, memoryOffset
-				, m_image.tex1D );
+			result = get( m_memory )->bindToImage1D( get( this )
+				, m_memoryOffset
+				, m_objectMemory );
 			break;
 
 		case VK_IMAGE_TYPE_2D:
-			result = get( m_memory )->bindToImage( get( this )
-				, memoryOffset
-				, m_image.tex2D );
+			result = get( m_memory )->bindToImage2D( get( this )
+				, m_memoryOffset
+				, m_objectMemory );
 			break;
 
 		case VK_IMAGE_TYPE_3D:
-			result = get( m_memory )->bindToImage( get( this )
-				, memoryOffset
-				, m_image.tex3D );
+			result = get( m_memory )->bindToImage3D( get( this )
+				, m_memoryOffset
+				, m_objectMemory );
 			break;
 		}
 
+		m_image.resource = m_objectMemory->resource;
 		return result;
+	}
+
+	bool Image::isMapped()const
+	{
+		assert( m_memory != VK_NULL_HANDLE );
+		return get( m_memory )->isMapped();
 	}
 }

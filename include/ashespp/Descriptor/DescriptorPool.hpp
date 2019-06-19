@@ -70,6 +70,7 @@ namespace ashes
 		*/
 		DescriptorSetPtr createDescriptorSet( DescriptorSetLayout const & layout
 			, uint32_t bindingPoint = 0u )const;
+		void freeDescriptorSet( DescriptorSetPtr set )const;
 		/**
 		*\~english
 		*name

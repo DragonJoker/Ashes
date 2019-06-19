@@ -519,8 +519,8 @@ namespace ashes::d3d11
 						, bindingIndex
 						, flags
 						, buffer
-						, UINT( write.pBufferInfo[i].offset / 16 )
-						, UINT( ashes::getAlignedSize( range / 16ull, 16u ) ) );
+						, UINT( write.pBufferInfo[i].offset ) / 16
+						, UINT( ashes::getAlignedSize( range / 16ull, 16ull ) ) );
 				}
 			}
 		}
@@ -585,7 +585,7 @@ namespace ashes::d3d11
 						, flags
 						, buffer
 						, UINT( ( offset + write.pBufferInfo[i].offset ) / 16 )
-						, UINT( ashes::getAlignedSize( range / 16ull, 16u ) ) );
+						, UINT( ashes::getAlignedSize( range / 16ull, 16ull ) ) );
 				}
 			}
 		}

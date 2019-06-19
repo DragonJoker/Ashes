@@ -117,7 +117,8 @@ namespace ashes::gl4
 			, cmd.filter );
 	}
 
-	void buildBlitImageCommand( VkDevice device
+	void buildBlitImageCommand( ContextStateStack & stack
+		, VkDevice device
 		, VkImage srcImage
 		, VkImage dstImage
 		, VkImageBlit region
@@ -149,6 +150,7 @@ namespace ashes::gl4
 			}
 
 			// Setup source FBO
+			list.push_back( makeCmd< OpType::eInitFramebuffer >( &get( get( device )->getBlitSrcFbo() )->getInternal() ) );
 			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
 				, get( device )->getBlitSrcFbo() ) );
 			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
@@ -160,6 +162,7 @@ namespace ashes::gl4
 				, nullptr ) );
 
 			// Setup dst FBO
+			list.push_back( makeCmd< OpType::eInitFramebuffer >( &get( get( device )->getBlitDstFbo() )->getInternal() ) );
 			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
 				, get( device )->getBlitDstFbo() ) );
 			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
@@ -191,6 +194,11 @@ namespace ashes::gl4
 				, nullptr ) );
 			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_DRAW_FRAMEBUFFER
 				, nullptr ) );
+
+			if ( stack.hasCurrentFramebuffer() )
+			{
+				stack.setCurrentFramebuffer( VK_NULL_HANDLE );
+			}
 		}
 	}
 }

@@ -9,14 +9,6 @@
 #include <cstring>
 #include <iostream>
 
-namespace ashes
-{
-	inline VkPipelineCache deepCopy( VkPipelineCache const & rhs )
-	{
-		return rhs;
-	}
-}
-
 namespace ashes::gl4
 {
 #pragma region Vulkan 1.0
@@ -4045,7 +4037,7 @@ namespace ashes::gl4
 				description.getInstanceProcAddr = &vkGetInstanceProcAddr;
 				description.features =
 				{
-					true, // hasTexBufferRange
+					true, // hasBufferRange
 					true, // hasImageTexture
 					true, // hasBaseInstance
 					true, // hasClearTexImage

@@ -276,7 +276,7 @@ namespace common
 
 		ashes::VkDescriptorSetLayoutBindingArray bindings
 		{
-			{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT }
+			{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr }
 		};
 		m_descriptorSetLayout = m_device.getDevice().createDescriptorSetLayout( std::move( bindings ) );
 		m_descriptorPool = m_descriptorSetLayout->createPool( 2u );
@@ -291,17 +291,6 @@ namespace common
 			, range );
 
 		m_fence = m_device.getDevice().createFence();
-
-		m_vertexLayout = ashes::makeLayout< ImDrawVert >( 0u );
-		m_vertexLayout->createAttribute( 0u
-			, VK_FORMAT_R32G32_SFLOAT
-			, offsetof( ImDrawVert, pos ) );
-		m_vertexLayout->createAttribute( 1u
-			, VK_FORMAT_R32G32_SFLOAT
-			, offsetof( ImDrawVert, uv ) );
-		m_vertexLayout->createAttribute( 2u
-			, VK_FORMAT_R32_UINT
-			, offsetof( ImDrawVert, col ) );
 	}
 
 	void Gui::doPreparePipeline()
@@ -323,10 +312,11 @@ namespace common
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 		m_targetView = m_target->createView( VK_IMAGE_VIEW_TYPE_2D
 			, m_target->getFormat() );
-		
+
 		ashes::VkAttachmentDescriptionArray rpAttaches
 		{
 			{
+				0u,
 				m_targetView.createInfo.format,
 				VK_SAMPLE_COUNT_1_BIT,
 				VK_ATTACHMENT_LOAD_OP_CLEAR,
@@ -337,69 +327,124 @@ namespace common
 				VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 			}
 		};
-		ashes::VkAttachmentReferenceArray subAttaches
+		ashes::SubpassDescriptionArray subpasses;
+		subpasses.emplace_back( ashes::SubpassDescription
+			{
+				0u,
+				VK_PIPELINE_BIND_POINT_GRAPHICS,
+				{},
+				{ { 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } },
+				{},
+				std::nullopt,
+				{},
+			} );
+		ashes::VkSubpassDependencyArray dependencies
 		{
-			{ 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }
-		};
-		ashes::RenderSubpassPtrArray subpasses;
-		subpasses.emplace_back( std::make_unique< ashes::RenderSubpass >( VkPipelineBindPoint::eGraphics
-			, ashes::RenderSubpassState{
+			{
+				VK_SUBPASS_EXTERNAL,
+				0u,
+				VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
 				VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-				VkAccessFlagBits::eColourAttachmentRead | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT
+				VK_ACCESS_MEMORY_READ_BIT,
+				VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
+				VK_DEPENDENCY_BY_REGION_BIT,
+			},
+			{
+				0u,
+				VK_SUBPASS_EXTERNAL,
+				VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+				VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+				VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
+				VK_ACCESS_SHADER_READ_BIT,
+				VK_DEPENDENCY_BY_REGION_BIT,
 			}
-			, subAttaches ) );
-		m_renderPass = m_device.getDevice().createRenderPass( rpAttaches
-			, std::move( subpasses )
-			, ashes::RenderSubpassState{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-				, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT }
-			, ashes::RenderSubpassState{ VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
-				, VK_ACCESS_SHADER_READ_BIT } );
+		};
+		ashes::RenderPassCreateInfo createInfo
+		{
+			0u,
+			std::move( rpAttaches ),
+			std::move( subpasses ),
+			std::move( dependencies ),
+		};
+		m_renderPass = m_device->createRenderPass( std::move( createInfo ) );
 
 		ashes::ImageViewArray attaches
 		{
-			{ *m_renderPass->getAttachments().begin(), m_targetView }
+			m_targetView
 		};
 		m_frameBuffer = m_renderPass->createFrameBuffer( size
 			, std::move( attaches ) );
 
-		VkPipelineColorBlendStateCreateInfo cbState;
-		cbState.attachs.push_back( ashes::ColourBlendStateAttachment
+		ashes::PipelineColorBlendStateCreateInfo cbState
 		{
-			true,
-			VK_BLEND_FACTOR_SRC_ALPHA,
-			VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
-			VK_BLEND_OP_ADD,
-			VK_BLEND_FACTOR_SRC_ALPHA,
-			VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
-			VK_BLEND_OP_ADD
-		} );
+			0u,
+			VK_FALSE,
+			VK_LOGIC_OP_COPY,
+			{
+				{
+					VK_TRUE,
+					VK_BLEND_FACTOR_SRC_ALPHA,
+					VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
+					VK_BLEND_OP_ADD,
+					VK_BLEND_FACTOR_SRC_ALPHA,
+					VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
+					VK_BLEND_OP_ADD
+				}
+			}
+		};
+
+		ashes::PipelineVertexInputStateCreateInfo vertexLayout
+		{
+			0u,
+			{
+				{ 0u, sizeof( ImDrawVert ), VK_VERTEX_INPUT_RATE_VERTEX },
+			},
+			{
+				{ 0u, 0u, VK_FORMAT_R32G32_SFLOAT, offsetof( ImDrawVert, pos ) },
+				{ 1u, 0u, VK_FORMAT_R32G32_SFLOAT, offsetof( ImDrawVert, uv ) },
+				{ 2u, 0u, VK_FORMAT_R8G8B8A8_UNORM, offsetof( ImDrawVert, col ) },
+			},
+		};
 
 		std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
 		ashes::PipelineShaderStageCreateInfoArray shaderStages;
-		shaderStages.push_back( { m_device.getDevice().createShaderModule( dumpShaderFile( m_device.getDevice(), VK_SHADER_STAGE_VERTEX_BIT, shadersFolder / "gui.vert" ) ) } );
-		shaderStages.push_back( { m_device.getDevice().createShaderModule( dumpShaderFile( m_device.getDevice(), VK_SHADER_STAGE_FRAGMENT_BIT, shadersFolder / "gui.frag" ) ) } );
+		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
+			{
+				0u,
+				VK_SHADER_STAGE_VERTEX_BIT,
+				m_device->createShaderModule( dumpShaderFile( m_device
+					, VK_SHADER_STAGE_VERTEX_BIT
+					, shadersFolder / "gui.vert" ) ),
+				"main",
+				std::nullopt,
+			} );
+		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
+			{
+				0u,
+				VK_SHADER_STAGE_FRAGMENT_BIT,
+				m_device->createShaderModule( dumpShaderFile( m_device
+					, VK_SHADER_STAGE_FRAGMENT_BIT
+					, shadersFolder / "gui.frag" ) ),
+				"main",
+				std::nullopt,
+			} );
 
-		std::vector< VkDynamicState > dynamicStateEnables
-		{
-			VK_DYNAMIC_STATE_VIEWPORT,
-			VK_DYNAMIC_STATE_SCISSOR
-		};
-
-		VkPipelineRasterizationStateCreateInfo rasterisationState;
-		rasterisationState.cullMode = VK_CULL_MODE_NONE;
-
-		m_pipeline = m_pipelineLayout->createPipeline(
-		{
-			std::move( shaderStages ),
-			*m_renderPass,
-			ashes::VertexInputState::create( *m_vertexLayout ),
-			ashes::InputAssemblyState{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST },
-			rasterisationState,
-			VkPipelineMultisampleStateCreateInfo{},
-			cbState,
-			dynamicStateEnables,
-			VkPipelineDepthStencilStateCreateInfo{},
-		} );
+		m_pipeline = m_device->createPipeline( ashes::GraphicsPipelineCreateInfo
+			{
+				0u,
+				std::move( shaderStages ),
+				std::move( vertexLayout ),
+				ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST },
+				std::nullopt,
+				ashes::PipelineViewportStateCreateInfo{},
+				ashes::PipelineRasterizationStateCreateInfo{ 0u, VK_FALSE, VK_FALSE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE },
+				ashes::PipelineMultisampleStateCreateInfo{},
+				ashes::PipelineDepthStencilStateCreateInfo{},
+				std::move( cbState ),
+				ashes::PipelineDynamicStateCreateInfo{ 0u, { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR } },
+				*m_pipelineLayout,
+				*m_renderPass,
+			} );
 	}
 
 	void Gui::doUpdateCommandBuffers()
@@ -412,8 +457,7 @@ namespace common
 		m_commandBuffer->begin();
 		m_commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 			, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
-			, m_fontView.makeShaderInputResource( VK_IMAGE_LAYOUT_UNDEFINED
-				, 0u ) );
+			, m_fontView.makeShaderInputResource( VK_IMAGE_LAYOUT_UNDEFINED ) );
 		m_commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 			, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
 			, m_vertexBuffer->getBuffer().makeVertexShaderInputResource() );
@@ -430,7 +474,7 @@ namespace common
 		m_commandBuffer->bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
 		m_commandBuffer->bindIndexBuffer( m_indexBuffer->getBuffer(), 0u, VK_INDEX_TYPE_UINT16 );
 		m_commandBuffer->setViewport( { 0.0f, 0.0f, float( ImGui::GetIO().DisplaySize.x ), float( ImGui::GetIO().DisplaySize.y ), 0.0f, 1.0f } );
-		m_commandBuffer->setScissor( { { 0, 0 }, { ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y } } );
+		m_commandBuffer->setScissor( { { 0, 0 }, { uint32_t( ImGui::GetIO().DisplaySize.x ), uint32_t( ImGui::GetIO().DisplaySize.y ) } } );
 		m_commandBuffer->pushConstants( *m_pipelineLayout, m_pushConstants );
 		ImDrawData * imDrawData = ImGui::GetDrawData();
 		int32_t vertexOffset = 0;

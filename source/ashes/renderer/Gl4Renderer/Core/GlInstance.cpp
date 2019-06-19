@@ -385,7 +385,7 @@ namespace ashes::gl4
 		, m_dummyWindow{ new RenderWindow }
 	{
 		m_extensions.initialise();
-		m_features.hasTexBufferRange = m_extensions.find( ARB_texture_buffer_range );
+		m_features.hasBufferRange = m_extensions.find( ARB_texture_buffer_range );
 		m_features.hasImageTexture = m_extensions.find( ARB_shader_image_load_store );
 		m_features.hasBaseInstance = m_extensions.find( ARB_base_instance );
 		m_features.hasClearTexImage = m_extensions.find( ARB_clear_texture );

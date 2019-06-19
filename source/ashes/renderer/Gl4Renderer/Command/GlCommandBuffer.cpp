@@ -61,13 +61,8 @@ See LICENSE file in root folder.
 #include <algorithm>
 #include <numeric>
 
-namespace ashes
-{
-	inline VkClearValue deepCopy( VkClearValue const & rhs )
-	{
-		return rhs;
-	}
-}
+using ashes::operator==;
+using ashes::operator!=;
 
 namespace ashes::gl4
 {
@@ -116,6 +111,7 @@ namespace ashes::gl4
 	{
 		doReset();
 		m_state = State{};
+		m_state.stack = std::make_unique< ContextStateStack >( m_device );
 		m_state.beginFlags = info.flags;
 		return VK_SUCCESS;
 	}
@@ -140,7 +136,8 @@ namespace ashes::gl4
 		m_state.currentRenderPass = beginInfo.renderPass;
 		m_state.currentFrameBuffer = beginInfo.framebuffer;
 		m_state.currentSubpassIndex = 0u;
-		buildBeginRenderPassCommand( m_state.currentRenderPass
+		buildBeginRenderPassCommand( *m_state.stack
+			, m_state.currentRenderPass
 			, m_state.currentFrameBuffer
 			, makeVector( beginInfo.pClearValues, beginInfo.clearValueCount )
 			, contents
@@ -170,7 +167,8 @@ namespace ashes::gl4
 		buildEndSubpassCommand( m_state.currentFrameBuffer
 			, *m_state.currentSubpass
 			, m_cmdList );
-		buildEndRenderPassCommand( m_cmdList );
+		buildEndRenderPassCommand( *m_state.stack
+			, m_cmdList );
 		m_state.boundVbos.clear();
 	}
 
@@ -221,7 +219,8 @@ namespace ashes::gl4
 	void CommandBuffer::clearAttachments( VkClearAttachmentArray clearAttachments
 		, VkClearRectArray clearRects )
 	{
-		buildClearAttachmentsCommand( std::move( clearAttachments )
+		buildClearAttachmentsCommand( *m_state.stack
+			, std::move( clearAttachments )
 			, std::move( clearRects )
 			, m_cmdList );
 	}
@@ -245,7 +244,8 @@ namespace ashes::gl4
 			}
 
 			m_state.currentPipeline = pipeline;
-			buildBindPipelineCommand( m_device
+			buildBindPipelineCommand( *m_state.stack
+				, m_device
 				, pipeline
 				, bindingPoint
 				, m_cmdList );
@@ -258,7 +258,8 @@ namespace ashes::gl4
 
 			m_state.pushConstantBuffers.clear();
 
-			buildUnbindPipelineCommand( m_device
+			buildUnbindPipelineCommand( *m_state.stack
+				, m_device
 				, pipeline
 				, VK_NULL_HANDLE
 				, m_cmdAfterSubmit );
@@ -266,7 +267,8 @@ namespace ashes::gl4
 		else if ( bindingPoint == VK_PIPELINE_BIND_POINT_COMPUTE )
 		{
 			m_state.currentComputePipeline = pipeline;
-			buildBindComputePipelineCommand( pipeline
+			buildBindComputePipelineCommand( *m_state.stack
+				, pipeline
 				, bindingPoint
 				, m_cmdList );
 
@@ -280,6 +282,7 @@ namespace ashes::gl4
 
 			m_cmdAfterSubmit.insert( m_cmdAfterSubmit.begin()
 				, makeCmd< OpType::eUseProgram >( 0u ) );
+			m_state.stack->setCurrentProgram( 0u );
 		}
 
 		for ( auto & layout : get( pipeline )->getDescriptorsLayouts() )
@@ -344,13 +347,25 @@ namespace ashes::gl4
 	void CommandBuffer::setViewport( uint32_t firstViewport
 		, VkViewportArray viewports )const
 	{
-		m_cmdList.push_back( makeCmd< OpType::eApplyViewport >( viewports[firstViewport] ) );
+		auto & viewport = viewports[firstViewport];
+
+		if ( m_state.stack->getCurrentViewport() != viewport )
+		{
+			m_cmdList.push_back( makeCmd< OpType::eApplyViewport >( viewport ) );
+			m_state.stack->setCurrentViewport( viewport );
+		}
 	}
 
 	void CommandBuffer::setScissor( uint32_t firstScissor
 		, VkScissorArray scissors )const
 	{
-		m_cmdList.push_back( makeCmd< OpType::eApplyScissor >( scissors[firstScissor] ) );
+		auto & scissor = scissors[firstScissor];
+
+		if ( m_state.stack->getCurrentScissor() != scissor )
+		{
+			m_cmdList.push_back( makeCmd< OpType::eApplyScissor >( scissor ) );
+			m_state.stack->setCurrentScissor( scissor );
+		}
 	}
 
 	void CommandBuffer::draw( uint32_t vtxCount
@@ -362,6 +377,12 @@ namespace ashes::gl4
 		{
 			bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
 			m_state.selectedVao = &get( m_device )->getEmptyIndexedVao();
+
+			if ( m_state.stack->isPrimitiveRestartEnabled() )
+			{
+				m_cmdList.emplace_back( makeCmd< OpType::ePrimitiveRestartIndex >( 0xFFFFFFFFu ) );
+			}
+
 			doProcessMappedBoundVaoBuffersIn();
 			buildBindGeometryBuffersCommand( *m_state.selectedVao
 				, m_cmdList );
@@ -410,6 +431,13 @@ namespace ashes::gl4
 		else if ( !m_state.selectedVao )
 		{
 			doSelectVao();
+		}
+
+		if ( m_state.stack->isPrimitiveRestartEnabled() )
+		{
+			m_cmdList.emplace_back( makeCmd< OpType::ePrimitiveRestartIndex >( m_state.indexType == VK_INDEX_TYPE_UINT32
+				? 0xFFFFFFFFu
+				: 0x0000FFFFu ) );
 		}
 
 		doProcessMappedBoundVaoBuffersIn();
@@ -465,6 +493,13 @@ namespace ashes::gl4
 			doSelectVao();
 		}
 
+		if ( m_state.stack->isPrimitiveRestartEnabled() )
+		{
+			m_cmdList.emplace_back( makeCmd< OpType::ePrimitiveRestartIndex >( m_state.indexType == VK_INDEX_TYPE_UINT32
+				? 0xFFFFFFFFu
+				: 0x0000FFFFu ) );
+		}
+
 		doProcessMappedBoundVaoBuffersIn();
 		buildBindGeometryBuffersCommand( *m_state.selectedVao
 			, m_cmdList );
@@ -500,7 +535,8 @@ namespace ashes::gl4
 	{
 		for ( auto & copyInfo : copyInfos )
 		{
-			buildCopyImageToBufferCommand( m_device
+			buildCopyImageToBufferCommand( *m_state.stack
+				, m_device
 				, std::move( copyInfo )
 				, src
 				, dst
@@ -545,7 +581,8 @@ namespace ashes::gl4
 	{
 		for ( auto & region : regions )
 		{
-			buildBlitImageCommand( m_device
+			buildBlitImageCommand( *m_state.stack
+				, m_device
 				, srcImage
 				, dstImage
 				, std::move( region )

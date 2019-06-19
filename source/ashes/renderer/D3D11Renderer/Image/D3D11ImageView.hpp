@@ -27,6 +27,8 @@ namespace ashes::d3d11
 			, VkImageViewCreateInfo createInfo );
 		~ImageView();
 
+		UINT getSubresource( uint32_t layer )const;
+
 		inline ID3D11RenderTargetView * getRenderTargetView()const
 		{
 			return m_renderTargetView;
@@ -52,6 +54,11 @@ namespace ashes::d3d11
 			return m_createInfo.format;
 		}
 
+		inline VkImage getImage()const
+		{
+			return m_createInfo.image;
+		}
+
 		inline VkImageSubresourceRange const & getSubResourceRange()const
 		{
 			return m_createInfo.subresourceRange;
@@ -68,7 +75,6 @@ namespace ashes::d3d11
 
 	private:
 		VkDevice m_device;
-		VkImage m_image;
 		VkImageViewCreateInfo m_createInfo;
 		ID3D11RenderTargetView * m_renderTargetView{ nullptr };
 		ID3D11DepthStencilView * m_depthStencilView{ nullptr };

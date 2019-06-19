@@ -272,6 +272,15 @@ namespace ashes
 			, ByteArray const & data
 			, ImageView const & texture
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT )const;
+		inline void uploadTextureData( Queue const & queue
+			, CommandPool const & commandPool
+			, VkImageSubresourceLayers const & subresourceLayers
+			, VkFormat format
+			, VkOffset3D const & offset
+			, VkExtent2D const & extent
+			, ArrayView< uint8_t > data
+			, ImageView const & texture
+			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT )const;
 		void uploadTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, VkFormat format

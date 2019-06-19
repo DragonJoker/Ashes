@@ -47,62 +47,6 @@ namespace ashes
 	{
 		return !( lhs == rhs );
 	}
-
-	inline bool operator==( VkViewport const & lhs
-		, VkViewport const & rhs )
-	{
-		return lhs.width == rhs.width
-			&& lhs.height == rhs.height
-			&& lhs.x == rhs.x
-			&& lhs.y == rhs.y
-			&& lhs.minDepth == rhs.minDepth
-			&& lhs.maxDepth == rhs.maxDepth;
-	}
-
-	inline bool operator!=( VkViewport const & lhs
-		, VkViewport const & rhs )
-	{
-		return !( lhs == rhs );
-	}
-
-	inline bool operator==( VkOffset2D const & lhs
-		, VkOffset2D const & rhs )
-	{
-		return lhs.x == rhs.x
-			&& lhs.y == rhs.y;
-	}
-
-	inline bool operator!=( VkOffset2D const & lhs
-		, VkOffset2D const & rhs )
-	{
-		return !( lhs == rhs );
-	}
-
-	inline bool operator==( VkExtent2D const & lhs
-		, VkExtent2D const & rhs )
-	{
-		return lhs.width == rhs.width
-			&& lhs.height == rhs.height;
-	}
-
-	inline bool operator!=( VkExtent2D const & lhs
-		, VkExtent2D const & rhs )
-	{
-		return !( lhs == rhs );
-	}
-
-	inline bool operator==( VkRect2D const & lhs
-		, VkRect2D const & rhs )
-	{
-		return lhs.offset == rhs.offset
-			&& lhs.extent == rhs.extent;
-	}
-
-	inline bool operator!=( VkRect2D const & lhs
-		, VkRect2D const & rhs )
-	{
-		return !( lhs == rhs );
-	}
 }
 
 #endif

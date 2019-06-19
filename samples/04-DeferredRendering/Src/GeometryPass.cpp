@@ -37,7 +37,7 @@ namespace vkapp
 
 			for ( auto & texture : gbuffer )
 			{
-				result.push_back( texture.view->getFormat() );
+				result.push_back( texture.view.getFormat() );
 			}
 
 			return result;
@@ -45,13 +45,7 @@ namespace vkapp
 
 		ashes::ImageView doCloneView( ashes::ImageView const & view )
 		{
-			return view.image->createView(
-				{
-					view->viewType,
-					view->format,
-					view->components,
-					view->subresourceRange,
-				} );
+			return view.image->createView( view.createInfo );
 		}
 
 		ashes::ImageViewArray doGetViews( GeometryPassResult const & gbuffer
@@ -97,8 +91,8 @@ namespace vkapp
 
 	void GeometryPass::doFillObjectDescriptorLayoutBindings( ashes::VkDescriptorSetLayoutBindingArray & bindings )
 	{
-		bindings.emplace_back( 1u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT );
-		bindings.emplace_back( 2u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT );
+		bindings.push_back( { 1u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_VERTEX_BIT, nullptr } );
+		bindings.push_back( { 2u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_VERTEX_BIT, nullptr } );
 	}
 
 	void GeometryPass::doFillObjectDescriptorSet( ashes::DescriptorSetLayout & descriptorLayout

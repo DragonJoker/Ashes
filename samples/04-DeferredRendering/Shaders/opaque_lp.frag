@@ -98,7 +98,7 @@ vec3 computeWorldSpacePosition( float depth
 
 void main()
 {
-	vec2 texcoord = ashesTopDownToBottomUp( vtx_texcoord );
+	vec2 texcoord = vtx_texcoord;
 	float depth = texture( depthMap, texcoord ).x;
 	vec3 worldPosition = computeWorldSpacePosition( depth, texcoord, mtxInvViewProj );
 	vec3 normal = texture( normalMap, texcoord ).xyz;

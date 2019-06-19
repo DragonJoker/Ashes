@@ -14,14 +14,6 @@ See LICENSE file in root folder.
 
 #include <iostream>
 
-namespace ashes
-{
-	inline VkImageView deepCopy( VkImageView const & rhs )
-	{
-		return rhs;
-	}
-}
-
 namespace ashes::gl4
 {
 	enum GlFramebufferStatus
@@ -206,15 +198,6 @@ namespace ashes::gl4
 		: m_device{ device }
 		, m_internal{ name }
 	{
-		auto context = get( m_device )->getContext();
-		glLogCall( context
-			, glBindFramebuffer
-			, GL_FRAMEBUFFER
-			, m_internal );
-		glLogCall( context
-			, glBindFramebuffer
-			, GL_FRAMEBUFFER
-			, 0 );
 	}
 
 	Framebuffer::~Framebuffer()

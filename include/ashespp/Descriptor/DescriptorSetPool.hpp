@@ -64,6 +64,7 @@ namespace ashes
 		*	Le descriptor set créé.
 		*/
 		DescriptorSetPtr createDescriptorSet( uint32_t bindingPoint = 0u )const;
+		void freeDescriptorSet( DescriptorSetPtr set )const;
 		/**
 		*\~english
 		*\return

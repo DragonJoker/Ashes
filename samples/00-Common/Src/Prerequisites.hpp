@@ -18,6 +18,31 @@
 #include <array>
 #include <chrono>
 
+inline bool operator==( VkExtent2D const & lhs
+	, VkExtent2D const & rhs )
+{
+	return lhs.width == rhs.width
+		&& lhs.height == rhs.height;
+}
+
+inline bool operator!=( VkExtent2D const & lhs
+	, VkExtent2D const & rhs )
+{
+	return !( lhs == rhs );
+}
+
+inline bool operator==( VkOffset2D const & lhs
+	, VkOffset2D const & rhs )
+{
+	return lhs.x == rhs.x
+		&& lhs.y == rhs.y;
+}
+
+inline bool operator!=( VkOffset2D const & lhs
+	, VkOffset2D const & rhs )
+{
+	return !( lhs == rhs );
+}
 namespace common
 {
 	static wxSize const WindowSize{ 800, 600 };

@@ -18,24 +18,13 @@
 #include <ashespp/Descriptor/DescriptorSet.hpp>
 #include <ashespp/Descriptor/DescriptorSetLayout.hpp>
 #include <ashespp/Descriptor/DescriptorSetPool.hpp>
-#include <ashespp/Enum/SubpassContents.hpp>
 #include <ashespp/Image/Sampler.hpp>
 #include <ashespp/Image/Image.hpp>
 #include <ashespp/Image/ImageView.hpp>
-#include <ashespp/Pipeline/DepthStencilState.hpp>
-#include <ashespp/Pipeline/MultisampleState.hpp>
 #include <ashespp/Pipeline/GraphicsPipeline.hpp>
 #include <ashespp/Pipeline/PipelineLayout.hpp>
-#include <ashespp/Pipeline/Scissor.hpp>
-#include <ashespp/Pipeline/VertexLayout.hpp>
-#include <ashespp/Pipeline/Viewport.hpp>
 #include <ashespp/RenderPass/FrameBuffer.hpp>
 #include <ashespp/RenderPass/RenderPass.hpp>
-#include <ashespp/RenderPass/RenderSubpass.hpp>
-#include <ashespp/RenderPass/RenderSubpassState.hpp>
-#include <ashespp/Sync/BufferMemoryBarrier.hpp>
-#include <ashespp/Sync/ImageMemoryBarrier.hpp>
-#include <ashespp/Utils/Signal.hpp>
 
 #include <util/GlslToSpv.hpp>
 #include <util/Transform.hpp>

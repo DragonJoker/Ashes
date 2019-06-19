@@ -15,68 +15,43 @@ namespace ashes::gl4
 	void apply( ContextLock const & context
 		, CmdBindContextState const & cmd )
 	{
-		context.apply( *get( cmd.device ), *cmd.state );
+		cmd.stack->apply( context, *cmd.state );
 	}
 
-	void apply( ContextLock const & context
-		, CmdBindPipelineProgram const & cmd )
-	{
-		glLogCommand( "BindPipelineCommand" );
-		GLuint program;
-
-		if ( !get( context->getCurrentFramebuffer() )->hasSwapchainImage() )
-		{
-			context.apply( *get( cmd.device )
-				, get( cmd.pipeline )->getRtotContextState() );
-			program = get( cmd.pipeline )->getRtotProgram();
-		}
-		else
-		{
-			context.apply( *get( cmd.device )
-				, get( cmd.pipeline )->getBackContextState() );
-			program = get( cmd.pipeline )->getBackProgram();
-		}
-
-		glLogCall( context
-			, glUseProgram
-			, program );
-		context->setCurrentProgram( program );
-	}
-
-	void buildBindPipelineCommand( VkDevice device
+	void buildBindPipelineCommand( ContextStateStack & stack
+		, VkDevice device
 		, VkPipeline pipeline
 		, VkPipelineBindPoint bindingPoint
 		, CmdList & list )
 	{
 		glLogCommand( "BindPipelineCommand" );
-		list.push_back( makeCmd< OpType::eBindPipelineProgram >( device, pipeline ) );
+		GLuint program;
+
+		if ( get( stack.getCurrentFramebuffer() )->hasSwapchainImage() )
+		{
+			stack.apply( list, get( pipeline )->getBackContextState() );
+			program = get( pipeline )->getBackProgram();
+		}
+		else
+		{
+			stack.apply( list, get( pipeline )->getRtotContextState() );
+			program = get( pipeline )->getRtotProgram();
+		}
+
+		if ( stack.getCurrentProgram() != program )
+		{
+			list.push_back( makeCmd< OpType::eUseProgram >( program ) );
+			stack.setCurrentProgram( program );
+		}
 	}
 
-	void buildUnbindPipelineCommand( VkDevice device
+	void buildUnbindPipelineCommand( ContextStateStack & stack
+		, VkDevice device
 		, VkPipeline pipeline
 		, VkImageView view
 		, CmdList & list )
 	{
-		//if ( view != VK_NULL_HANDLE )
-		//{
-		//	list.push_back( makeCmd< OpType::eBindContextState >( device
-		//		, &get( device )->getRtocContextState() ) );
-		//	list.push_back( makeCmd< OpType::eUseProgram >( get( device )->getRtocProgram() ) );
-		//	list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
-		//		, get( device )->getBlitDstFbo() ) );
-		//	list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
-		//		, GL_ATTACHMENT_POINT_COLOR0
-		//		, GL_TEXTURE_2D
-		//		, get( view )->getInternal()
-		//		, 0u ) );
-		//	list.push_back( makeCmd< OpType::eBindVextexArray >( get( device )->getRtocVao() ) );
-		//	list.push_back( makeCmd< OpType::eActiveTexture >( 0u ) );
-		//	list.push_back( makeCmd< OpType::eBindTexture >( GL_TEXTURE_2D
-		//		, get( view )->getInternal() ) );
-		//	list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
-		//		, 0u ) );
-		//}
-
+		stack.setCurrentProgram( 0u );
 		list.push_back( makeCmd< OpType::eUseProgram >( 0u ) );
 	}
 }

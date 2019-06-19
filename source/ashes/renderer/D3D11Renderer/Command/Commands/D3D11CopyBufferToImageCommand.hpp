@@ -81,10 +81,11 @@ namespace ashes::d3d11
 			, CopyFromStagingProcess const & process )const;
 		void apply( Context const & context
 			, MapCopyProcess const & process )const;
-		void doMapCopy( MapCopyImage const & mapCopy
+		void doMapCopy( Context const & context
+			, MapCopyImage const & mapCopy
 			, VkFormat format
-			, VkDeviceMemory src
-			, VkDeviceMemory dst )const;
+			, ObjectMemory const & src
+			, ObjectMemory const & dst )const;
 		void doCopyToStaging( Context const & context
 			, VkDeviceSize srcOffset
 			, VkDeviceSize size

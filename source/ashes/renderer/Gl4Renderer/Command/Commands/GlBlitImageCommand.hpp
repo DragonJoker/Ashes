@@ -67,7 +67,8 @@ namespace ashes::gl4
 
 	//*************************************************************************
 
-	void buildBlitImageCommand( VkDevice device
+	void buildBlitImageCommand( ContextStateStack & stack
+		, VkDevice device
 		, VkImage srcImage
 		, VkImage dstImage
 		, VkImageBlit region

@@ -9,9 +9,9 @@ See LICENSE file in root folder.
 
 namespace ashes::gl4
 {
-	void applyBuffer( ContextLock & lock
+	void applyBuffer( ContextLock const & lock
 		, CmdBuffer const & cmds );
-	void applyList( ContextLock & lock
+	void applyList( ContextLock const & lock
 		, CmdList const & cmds );
 
 	class Queue

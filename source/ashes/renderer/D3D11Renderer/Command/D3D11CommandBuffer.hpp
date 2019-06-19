@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "renderer/D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
+#include "renderer/D3D11Renderer/Command/Commands/D3D11BlitImageCommand.hpp"
 
 namespace ashes::d3d11
 {
@@ -146,18 +146,18 @@ namespace ashes::d3d11
 		}
 
 	private:
-		struct BufferIndex
+		struct ResourceIndex
 		{
-			BufferIndex( ID3D11Buffer * name
+			ResourceIndex( ObjectMemory const * memory
 				, size_t index
 				, DeviceMemoryDestroyConnection connection )
-				: name{ name }
+				: memory{ memory }
 				, index{ index }
 				, connection{ std::move( connection ) }
 			{
 			}
 
-			ID3D11Buffer * name;
+			ObjectMemory const * memory;
 			size_t index;
 			DeviceMemoryDestroyConnection connection;
 		};
@@ -166,18 +166,31 @@ namespace ashes::d3d11
 	private:
 		void doFillVboStrides()const;
 		void doAddAfterSubmitAction()const;
-		void doProcessMappedBoundDescriptorBuffersIn( VkDescriptorSet descriptor )const;
-		void doProcessMappedBoundDescriptorsBuffersOut()const;
+		void doProcessMappedBoundDescriptorResourcesIn( VkDescriptorSet descriptor )const;
+		void doProcessMappedBoundDescriptorsResourcesOut()const;
 		void doProcessMappedBoundVaoBuffersIn()const;
-		void doProcessMappedBoundBufferIn( VkBuffer buffer )const;
-		void doProcessMappedBoundBufferOut( VkBuffer buffer )const;
-		BufferIndex & doAddMappedBuffer( VkBuffer buffer, bool isInput )const;
-		void doRemoveMappedBuffer( ID3D11Buffer * internal )const;
+		void doProcessMappedBoundResourceIn( VkBuffer buffer
+			, VkDeviceSize offset
+			, VkDeviceSize range )const;
+		void doProcessMappedBoundResourceIn( VkImageView image )const;
+		void doProcessMappedBoundResourceOut( VkBuffer buffer
+			, VkDeviceSize offset
+			, VkDeviceSize range )const;
+		void doProcessMappedBoundResourceOut( VkImageView image )const;
+		ResourceIndex & doAddMappedResource( ObjectMemory const * memory
+			, VkDeviceSize offset
+			, VkDeviceSize range
+			, UINT subresource
+			, bool isInput )const;
+		ResourceIndex & doAddMappedResource( ObjectMemory const * memory )const;
+		void doRemoveMappedResource( ObjectMemory const * memory )const;
+		BlitPipeline const & doGetBlitPipeline( VkFormat src, VkFormat dst )const;
 
 	private:
 		VkDevice m_device;
+		VkCommandPool m_commandPool;
 		mutable CommandArray m_commands;
-		mutable std::vector< BufferIndex > m_mappedBuffers;
+		mutable std::vector< ResourceIndex > m_mappedResources;
 		struct State
 		{
 			VkCommandBufferBeginInfo beginInfo;
@@ -196,5 +209,6 @@ namespace ashes::d3d11
 		mutable std::vector< std::function< void( Context const & ) > > m_afterSubmitActions;
 		mutable ID3D11DeviceContext * m_deferredContext{ nullptr };
 		mutable ID3D11CommandList * m_commandList{ nullptr };
+		mutable std::map< uint64_t, std::unique_ptr< BlitPipeline > > m_blitPipelines;
 	};
 }

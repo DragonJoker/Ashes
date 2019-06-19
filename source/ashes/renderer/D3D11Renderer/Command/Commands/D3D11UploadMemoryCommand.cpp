@@ -11,15 +11,23 @@ See LICENSE file in root folder.
 namespace ashes::d3d11
 {
 	UploadMemoryCommand::UploadMemoryCommand( VkDevice device
-		, VkDeviceMemory deviceMemory )
+		, ObjectMemory const * memory
+		, VkDeviceSize offset
+		, VkDeviceSize size
+		, UINT subresource )
 		: CommandBase{ device }
-		, m_deviceMemory{ deviceMemory }
+		, m_memory{ memory }
+		, m_range{ offset, size }
+		, m_subresource{ subresource }
 	{
 	}
 
 	void UploadMemoryCommand::apply( Context const & context )const
 	{
-		get( m_deviceMemory )->upload();
+		get( m_memory->deviceMemory )->updateUpload( *m_memory
+			, m_range.first
+			, m_range.second
+			, m_subresource );
 	}
 
 	CommandPtr UploadMemoryCommand::clone()const

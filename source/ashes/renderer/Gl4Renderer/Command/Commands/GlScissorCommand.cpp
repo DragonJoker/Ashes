@@ -8,13 +8,23 @@ See LICENSE file in root folder.
 
 #include "ashesgl4_api.hpp"
 
+using ashes::operator==;
+using ashes::operator!=;
+
 namespace ashes::gl4
 {
-	void buildScissorCommand( uint32_t firstScissor
+	void buildScissorCommand( ContextStateStack & stack
+		, uint32_t firstScissor
 		, VkScissorArray scissors
 		, CmdList & list )
 	{
 		glLogCommand( "ScissorCommand" );
-		list.push_back( makeCmd< OpType::eApplyScissor >( *scissors.begin() ) );
+		auto & scissor = *scissors.begin();
+
+		if ( stack.getCurrentScissor() != scissor )
+		{
+			list.push_back( makeCmd< OpType::eApplyScissor >( scissor ) );
+			stack.setCurrentScissor( scissor );
+		}
 	}
 }

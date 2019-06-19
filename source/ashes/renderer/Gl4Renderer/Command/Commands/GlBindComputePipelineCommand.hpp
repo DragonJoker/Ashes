@@ -8,7 +8,8 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	void buildBindComputePipelineCommand( VkPipeline pipeline
+	void buildBindComputePipelineCommand( ContextStateStack & stack
+		, VkPipeline pipeline
 		, VkPipelineBindPoint bindingPoint
 		, CmdList & list );
 }
