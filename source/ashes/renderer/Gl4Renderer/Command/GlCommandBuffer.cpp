@@ -113,6 +113,16 @@ namespace ashes::gl4
 		m_state = State{};
 		m_state.stack = std::make_unique< ContextStateStack >( m_device );
 		m_state.beginFlags = info.flags;
+
+		if ( info.pInheritanceInfo )
+		{
+			// Fake a bound framebuffer here : the one in the inheritance info.
+			m_state.stack->setCurrentFramebuffer( info.pInheritanceInfo->framebuffer );
+			m_state.currentFrameBuffer = info.pInheritanceInfo->framebuffer;
+			m_state.currentRenderPass = info.pInheritanceInfo->renderPass;
+			m_state.currentSubpassIndex = info.pInheritanceInfo->subpass;
+		}
+
 		return VK_SUCCESS;
 	}
 
