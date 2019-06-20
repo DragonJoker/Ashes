@@ -120,35 +120,8 @@ namespace ashes::d3d11
 	uint32_t deduceMemoryType( uint32_t typeBits
 		, VkMemoryPropertyFlags requirements )
 	{
-		auto & memoryProperties = Instance::getMemoryProperties();
-		uint32_t result = 0xFFFFFFFFu;
-		bool found{ false };
-
-		// Recherche parmi les types de mémoire la première ayant les propriétés voulues.
-		uint32_t i{ 0 };
-		uint32_t lookup = 1u;
-
-		while ( i < memoryProperties.memoryTypeCount && !found )
-		{
-			if ( ( typeBits & lookup ) == lookup )
-			{
-				// Le type de mémoire est disponible, a-t-il les propriétés demandées?
-				if ( ( memoryProperties.memoryTypes[i].propertyFlags & requirements ) == requirements )
-				{
-					result = i;
-					found = true;
-				}
-			}
-
-			++lookup;
-			++i;
-		}
-
-		if ( !found )
-		{
-			throw ashes::Exception{ VK_ERROR_OUT_OF_DEVICE_MEMORY, "Could not deduce memory type" };
-		}
-
-		return result;
+		return ashes::deduceMemoryType( typeBits
+			, requirements
+			, Instance::getMemoryProperties() );
 	}
 }

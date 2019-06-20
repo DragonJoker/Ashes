@@ -9,8 +9,9 @@ See LICENSE file in root folder.
 #include "ashes.h"
 
 #include "common/ArrayView.hpp"
-#include "common/Optional.hpp"
+#include "common/Exception.hpp"
 #include "common/FlagCombination.hpp"
+#include "common/Optional.hpp"
 #include "common/Signal.hpp"
 #include "common/Format.hpp"
 
@@ -669,6 +670,29 @@ namespace ashes
 	inline bool operator!=( VkAttachmentDescription const & lhs, VkAttachmentDescription const & rhs )
 	{
 		return !( lhs == rhs );
+	}
+
+	inline uint32_t deduceMemoryType( uint32_t typeBits
+		, VkMemoryPropertyFlags requirements
+		, VkPhysicalDeviceMemoryProperties const & memoryProperties )
+	{
+		bool found{ false };
+
+		for ( uint32_t i = 0; i < memoryProperties.memoryTypeCount; ++i )
+		{
+			if ( ( typeBits & 1 ) == 1 )
+			{
+				if ( ( memoryProperties.memoryTypes[i].propertyFlags & requirements ) == requirements )
+				{
+					return i;
+				}
+			}
+
+			typeBits >>= 1;
+		}
+
+		throw ashes::Exception{ VK_ERROR_OUT_OF_DEVICE_MEMORY, "Could not deduce memory type" };
+		return 0;
 	}
 }
 

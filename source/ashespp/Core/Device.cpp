@@ -281,35 +281,9 @@ namespace ashes
 	uint32_t Device::deduceMemoryType( uint32_t typeBits
 		, VkMemoryPropertyFlags requirements )const
 	{
-		uint32_t result = 0xFFFFFFFFu;
-		bool found{ false };
-
-		// Recherche parmi les types de m�moire la premi�re ayant les propri�t�s voulues.
-		uint32_t i{ 0 };
-		uint32_t lookup = 1u;
-
-		while ( i < m_memoryProperties.memoryTypeCount && !found )
-		{
-			if ( ( typeBits & lookup ) == lookup )
-			{
-				// Le type de mémoire est disponible, a-t-il les propriétés demandées?
-				if ( ( m_memoryProperties.memoryTypes[i].propertyFlags & requirements ) == requirements )
-				{
-					result = i;
-					found = true;
-				}
-			}
-
-			++lookup;
-			++i;
-		}
-
-		if ( !found )
-		{
-			throw ashes::Exception{ VkResult::VK_ERROR_VALIDATION_FAILED_EXT, "Could not deduce memory type" };
-		}
-
-		return result;
+		return ashes::deduceMemoryType( typeBits
+			, requirements
+			, m_memoryProperties );
 	}
 
 	PipelineLayoutPtr Device::createPipelineLayout()const
