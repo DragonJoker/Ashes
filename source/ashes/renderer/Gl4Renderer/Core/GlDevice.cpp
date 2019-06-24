@@ -161,6 +161,11 @@ namespace ashes::gl4
 		}
 	}
 
+	VkPhysicalDeviceLimits const & Device::getLimits()const
+	{
+		return get( m_physicalDevice )->getProperties().limits;
+	}
+
 	void Device::getImageSubresourceLayout( VkImage image
 		, VkImageSubresource const & subresource
 		, VkSubresourceLayout & layout )const

@@ -136,14 +136,13 @@ namespace ashes::gl4
 	VkMemoryRequirements Image::getMemoryRequirements()const
 	{
 		VkMemoryRequirements result{};
-		result.size = getSize( getDimensions(), getFormat() );
-		auto extent = getMinimalExtent3D( getFormat() );
+		result.size = getTotalSize( getDimensions(), getFormat(), getArrayLayers(), getMipLevels() );
+		auto extent = ashes::getMinimalExtent3D( getFormat() );
 		result.alignment = getSize( extent, getFormat() );
-		result.memoryTypeBits = VK_MEMORY_HEAP_DEVICE_LOCAL_BIT
-			| ( ( ashes::checkFlag( getUsage(), VK_IMAGE_USAGE_TRANSFER_DST_BIT )
-				&& ashes::checkFlag( getUsage(), VK_IMAGE_USAGE_TRANSFER_SRC_BIT ) )
-				? VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
-				: 0u );
+		result.memoryTypeBits = ( checkFlag( getUsage(), VK_IMAGE_USAGE_TRANSFER_DST_BIT )
+			|| checkFlag( getUsage(), VK_IMAGE_USAGE_TRANSFER_SRC_BIT ) )
+			? VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+			: VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 		return result;
 	}
 }

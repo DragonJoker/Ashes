@@ -14,6 +14,11 @@ file( GLOB HEADER_FILES
 	Src/*.inl
 )
 
+file( GLOB GLSL_SHADER_FILES
+	${CMAKE_CURRENT_SOURCE_DIR}/Shaders/*.vert
+	${CMAKE_CURRENT_SOURCE_DIR}/Shaders/*.frag
+)
+
 file( GLOB SHADER_FILES
 	${CMAKE_CURRENT_SOURCE_DIR}/Shaders/*.*
 )
@@ -21,13 +26,13 @@ file( GLOB SHADER_FILES
 include_directories( ${TestIncludeDirectories} )
 add_definitions( ${TestAdditionalDefinitions} )
 
-source_group( "Shader Files" FILES ${SHADER_FILES} )
+source_group( "Shader Files" FILES ${GLSL_SHADER_FILES} )
 include_directories( ${CMAKE_SOURCE_DIR}/Test/00-Common/Src )
 
 add_executable( ${PROJECT_NAME} WIN32
 	${SOURCE_FILES}
 	${HEADER_FILES}
-	${SHADER_FILES}
+	${GLSL_SHADER_FILES}
 )
 
 target_link_libraries( ${PROJECT_NAME}

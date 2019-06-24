@@ -149,6 +149,18 @@ namespace ashes::gl4
 	using VboBindings = std::map< uint32_t, BufferObjectBinding >;
 	using IboBinding = Optional< BufferObjectBinding >;
 
+	struct FboAttachment
+	{
+		GlAttachmentPoint point;
+		GLuint object;
+		GlAttachmentType type;
+		GlTextureType target;
+		uint32_t mipLevel;
+		uint32_t index;
+	};
+
+	using FboAttachmentArray = std::vector< FboAttachment >;
+
 	using DeviceMemoryDestroyFunc = std::function< void( GLuint ) >;
 	using DeviceMemoryDestroySignal = Signal< DeviceMemoryDestroyFunc >;
 	using DeviceMemoryDestroyConnection = SignalConnection< DeviceMemoryDestroySignal >;

@@ -52,6 +52,7 @@ namespace ashes::gl4
 		eApplyViewport,
 		eInitFramebuffer,
 		eBindFramebuffer,
+		eCleanupFramebuffer,
 		eDrawBuffer,
 		eDrawBuffers,
 		eUseProgram,
@@ -391,6 +392,31 @@ namespace ashes::gl4
 
 	void apply( ContextLock const & context
 		, CmdInitFramebuffer const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eCleanupFramebuffer >
+	{
+		static Op constexpr value = { OpType::eCleanupFramebuffer, 4u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eCleanupFramebuffer >
+	{
+		inline CmdT( GLuint * fbo )
+			: cmd{ { OpType::eCleanupFramebuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, fbo{ fbo }
+		{
+		}
+
+		Command cmd;
+		GLuint * fbo;
+	};
+	using CmdCleanupFramebuffer = CmdT< OpType::eCleanupFramebuffer >;
+
+	void apply( ContextLock const & context
+		, CmdCleanupFramebuffer const & cmd );
 
 	//*************************************************************************
 

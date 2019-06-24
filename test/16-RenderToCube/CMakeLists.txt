@@ -65,3 +65,4 @@ foreach( SHADER ${SHADER_FILES} )
 			$<$<CONFIG:RelWithDebInfo>:${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/share/${FOLDER_NAME}/Shaders>
 	)
 endforeach()
+

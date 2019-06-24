@@ -161,7 +161,8 @@ namespace ashes::gl4
 
 	void CommandBuffer::nextSubpass( VkSubpassContents contents )const
 	{
-		buildEndSubpassCommand( m_state.currentFrameBuffer
+		buildEndSubpassCommand( m_device
+			, m_state.currentFrameBuffer
 			, *m_state.currentSubpass
 			, m_cmdList );
 		m_state.currentSubpass = &get( m_state.currentRenderPass )->getSubpasses()[m_state.currentSubpassIndex++];
@@ -174,7 +175,8 @@ namespace ashes::gl4
 
 	void CommandBuffer::endRenderPass()const
 	{
-		buildEndSubpassCommand( m_state.currentFrameBuffer
+		buildEndSubpassCommand( m_device
+			, m_state.currentFrameBuffer
 			, *m_state.currentSubpass
 			, m_cmdList );
 		buildEndRenderPassCommand( *m_state.stack

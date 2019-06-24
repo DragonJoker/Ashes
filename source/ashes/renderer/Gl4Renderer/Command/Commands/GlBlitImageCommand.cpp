@@ -40,48 +40,51 @@ namespace ashes::gl4
 		}
 	}
 
-	struct Attachment
+	FboAttachment makeFboAttachment( VkDevice device
+		, VkImageSubresourceLayers & subresource
+		, VkImage image
+		, uint32_t layer
+		, VkImageView & view )
 	{
-		Attachment( VkDevice device
-			, VkImageSubresourceLayers & subresource
-			, VkImage image
-			, uint32_t layer )
-			: object{ get( image )->getInternal() }
-			, point{ getAttachmentPoint( get( image )->getFormat() ) }
-			, type{ getAttachmentType( get( image )->getFormat() ) }
+		FboAttachment result
 		{
-			if ( get( image )->getArrayLayers() > 1u )
-			{
-				allocate( view
-					, nullptr
-					, device
-					, VkImageViewCreateInfo
+			getAttachmentPoint( get( image )->getFormat() ),
+			get( image )->getInternal(),
+			getAttachmentType( get( image )->getFormat() ),
+			get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D,
+			subresource.mipLevel,
+			0u,
+		};
+
+		if ( get( image )->getArrayLayers() > 1u )
+		{
+			allocate( view
+				, nullptr
+				, device
+				, VkImageViewCreateInfo
+				{
+					VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+					nullptr,
+					0u,
+					image,
+					VkImageViewType( get( image )->getType() ),
+					get( image )->getFormat(),
+					VkComponentMapping{},
 					{
-						VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-						nullptr,
-						0u,
-						image,
-						VkImageViewType( get( image )->getType() ),
-						get( image )->getFormat(),
-						VkComponentMapping{},
-						{
-							subresource.aspectMask,
-							subresource.mipLevel,
-							1u,
-							layer,
-							1u
-						},
-					} );
-				object = get( view )->getInternal();
-				subresource.mipLevel = 0u;
-			}
+						subresource.aspectMask,
+						subresource.mipLevel,
+						1u,
+						layer,
+						1u
+					},
+				} );
+			result.object = get( view )->getInternal();
+			result.mipLevel = 0u;
 		}
 
-		VkImageView view{ VK_NULL_HANDLE };
-		GlAttachmentPoint point;
-		GLuint object;
-		GlAttachmentType type;
-	};
+		return result;
+	}
+
 	struct LayerCopy
 	{
 		LayerCopy( VkDevice device
@@ -90,14 +93,16 @@ namespace ashes::gl4
 			, VkImage dstImage
 			, uint32_t layer )
 			: region{ region }
-			, src{ device, region.srcSubresource, srcImage, layer }
-			, dst{ device, region.dstSubresource, dstImage, layer }
+			, src{ makeFboAttachment( device, region.srcSubresource, srcImage, layer, srcView ) }
+			, dst{ makeFboAttachment( device, region.dstSubresource, dstImage, layer, dstView ) }
 		{
 		}
 
 		VkImageBlit region;
-		Attachment src;
-		Attachment dst;
+		VkImageView srcView{ VK_NULL_HANDLE };
+		VkImageView dstView{ VK_NULL_HANDLE };
+		FboAttachment src;
+		FboAttachment dst;
 	};
 
 	void apply( ContextLock const & context
@@ -115,6 +120,19 @@ namespace ashes::gl4
 			, cmd.dstB
 			, cmd.mask
 			, cmd.filter );
+	}
+
+	void buildBlitImageCommand( ContextStateStack & stack
+		, GlTextureType srcTarget
+		, GlTextureType dstTarget
+		, VkDevice device
+		, VkImage srcImage
+		, VkImage dstImage
+		, VkImageBlit region
+		, VkFilter filter
+		, CmdList & list
+		, VkImageViewArray & views )
+	{
 	}
 
 	void buildBlitImageCommand( ContextStateStack & stack
@@ -139,14 +157,14 @@ namespace ashes::gl4
 				layer
 			};
 
-			if ( layerCopy.src.view != VK_NULL_HANDLE )
+			if ( layerCopy.srcView != VK_NULL_HANDLE )
 			{
-				views.push_back( layerCopy.src.view );
+				views.push_back( layerCopy.srcView );
 			}
 
-			if ( layerCopy.dst.view != VK_NULL_HANDLE )
+			if ( layerCopy.dstView != VK_NULL_HANDLE )
 			{
-				views.push_back( layerCopy.dst.view );
+				views.push_back( layerCopy.dstView );
 			}
 
 			// Setup source FBO
@@ -155,7 +173,7 @@ namespace ashes::gl4
 				, get( device )->getBlitSrcFbo() ) );
 			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
 				, layerCopy.src.point
-				, GL_TEXTURE_2D
+				, layerCopy.src.target
 				, layerCopy.src.object
 				, layerCopy.region.srcSubresource.mipLevel ) );
 			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
@@ -167,7 +185,7 @@ namespace ashes::gl4
 				, get( device )->getBlitDstFbo() ) );
 			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
 				, layerCopy.dst.point
-				, GL_TEXTURE_2D
+				, layerCopy.dst.target
 				, layerCopy.dst.object
 				, layerCopy.region.dstSubresource.mipLevel ) );
 			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
@@ -190,6 +208,8 @@ namespace ashes::gl4
 				, layerCopy.region.dstOffsets[1].y
 				, getMask( get( srcImage )->getFormat() )
 				, convert( filter ) ) );
+
+			// Unbind
 			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
 				, nullptr ) );
 			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_DRAW_FRAMEBUFFER

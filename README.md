@@ -6,23 +6,160 @@
 
 Ashes
 =====
-
-Ashes is a rendering library written in C++17, matching closely Vulkan interfaces.
-The final goal of this library is to expose as much of Vulkan features as possible.
-It comes with a set of test applications, to validate the API.
-
-I've started this project because I need to upgrade my 3D engine (Castor3D), to use Vulkan, and I needed that kind of library, to replace my current renderer (OpenGL).
-I needed a way to work with OpenGL like we need to work with Vulkan.
-It is still a WIP, the library is far from complete!!
-
-To build it, you can use either CMake or premake.
+Ashes is a drop-in replacement to Vulkan.  
+It allows to write Vulkan code, and to select the rendering API that will be used.  
+  
+It is still a WIP, the library is far from complete!!  
+  
+To build it, you can use CMake.
 
 ## Renderers available
 
-- VkRenderer : A Vulkan renderer.
-- Gl3Renderer : An OpenGL 3.X renderer, based upon OpenGL 3.2.
-- Gl4Renderer : An OpenGL 4.X renderer, based upon OpenGL 4.2.
-- D3D11Renderer : A Direct3D 11 renderer.
+- Vulkan: Ashes is a passthrough, when using Vulkan rendering API, and it has no additional cost if dynamic loader is used.
+- OpenGL 4.X
+- Direct3D 11.
+
+## How to use it
+
+Two workflows are possible:
+
+### Automatic mode
+
+You load Ashes' shared library instead of Vulkan's, and you're done.  
+The API selection will be done on first call of `vkGetInstanceProcAddr` (for dynamic loader), or on first Vulkan API call (for static loader).  
+  
+With this mode, the only change you have to make is the dynamic library's name (ashes.so.1/ashes-1.dll instead of libvulkan.so.1/vulkan-1.dll).
+
+### Manual mode
+
+You can ask for the list of loaded plugins, through a call to the function `int ashEnumeratePlugins( uint32_t * count , AshPluginDescription * plugins );`.  
+It works as Vulkan ones : if `plugins` is set to `NULL`, `count` will then contain the number of loaded plugins.  
+
+### API
+
+The following API is available, in `ashes.h`:  
+
+```c
+typedef struct AshPluginFeatures
+{
+	// Whether or not the plugin supports buffer ranges.
+	VkBool32 hasBufferRange;
+	// Whether or not the plugin supports image textures.
+	VkBool32 hasImageTexture;
+	// Whether or not the plugin supports vertex base instance.
+	VkBool32 hasBaseInstance;
+	// Whether or not the plugin supports clearing of single images.
+	VkBool32 hasClearTexImage;
+	// Whether or not the plugin supports compute shaders.
+	VkBool32 hasComputeShaders;
+	// Whether or not the plugin supports shader storage buffers.
+	VkBool32 hasStorageBuffers;
+} AshPluginFeatures;
+
+typedef struct AshPluginSupport
+{
+	// The plugin's priority (from 1 (low) to 10 (high)).
+	uint32_t priority;
+	// Whether or not the plugin is supported.
+	VkBool32 supported;
+} AshPluginSupport;
+
+typedef struct AshPluginDescription
+{
+	//The plugin's short name.
+	char name[16];
+	//The plugin's description.
+	char description[64];
+	//The plugin's main entry point.
+	PFN_vkGetInstanceProcAddr getInstanceProcAddr;
+	//The plugin's supported features.
+	AshPluginFeatures features;
+	//The plugin's static functions (for static loader support).
+	AshPluginStaticFunction functions;
+	//The plugin's support informations.
+	AshPluginSupport support;
+} AshPluginDescription;
+
+// Enumerates the available rendering APIs.
+typedef void( VKAPI_PTR * PFN_ashEnumeratePluginsDescriptions )( uint32_t *, AshPluginDescription * );
+Ashes_API void VKAPI_PTR ashEnumeratePluginsDescriptions( uint32_t * count
+	, AshPluginDescription * pDescriptions );
+
+// Defines the active rendering API.
+typedef VkResult( VKAPI_PTR * PFN_ashSelectPlugin )( AshPluginDescription );
+Ashes_API VkResult VKAPI_PTR ashSelectPlugin( AshPluginDescription description );
+
+// Retrieves the active rendering API informations.
+typedef VkResult( VKAPI_PTR * PFN_ashGetPluginDescription )( AshPluginDescription * );
+Ashes_API VkResult VKAPI_PTR ashGetCurrentPluginDescription( AshPluginDescription * description );
+
+```
+
+From this, you can retrieve the supported rendering APIs, check the features they support, activate the one you want/can use.
+
+Here is a small example, to select the rendering API from a command-line option:
+```c
+#define ASHES_VK_PROTOTYPES
+#include <ashes/ashes.h>
+
+AshPluginDescription * enumeratePlugins( uint32_t * pluginsCount )
+{
+	AshPluginDescription * result = NULL;
+	ashEnumeratePluginsDescriptions( pluginsCount, NULL );
+
+	if ( *pluginsCount )
+	{
+		result = malloc( ( *pluginsCount ) * sizeof( AshPluginDescription ) );
+		ashEnumeratePluginsDescriptions( pluginsCount, result );
+	}
+
+	return result;
+}
+
+int selectPlugin( AshPluginDescription * plugins, uint32_t pluginsCount, char * option )
+{
+	int selectedPlugin = -1;
+
+	if ( pluginsCount > 0 )
+	{
+		char name[17];
+
+		for ( uint32_t i = 0; i < pluginsCount; ++i )
+		{
+			strncpy( name, "-", 16 );
+			strncat( name, plugins[i].name, 16 );
+
+			if ( strcmp( option, name ) == 0 )
+			{
+				selectedPlugin = i;
+			}
+		}
+	}
+
+	return selectedPlugin;
+}
+
+int main( int argc, char ** argv )
+{
+	uint32_t pluginsCount = 0u;
+	int selectedPlugin = -1;
+	AshPluginDescription * plugins = enumeratePlugins( &pluginsCount );
+
+	for ( int i = 1; i < argc; ++i )
+	{
+		if ( selectedPlugin == -1 )
+		{
+			selectedPlugin = selectPlugin( plugins, pluginsCount, argv[i] );
+		}
+	}
+
+	ashSelectPlugin( selectPlugin );
+
+	// Now write classic Vulkan code.
+	// ...
+	//
+}
+```
 
 ## Test applications
 

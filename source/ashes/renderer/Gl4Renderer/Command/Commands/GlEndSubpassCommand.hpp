@@ -8,7 +8,8 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	void buildEndSubpassCommand( VkFramebuffer frameBuffer
+	void buildEndSubpassCommand( VkDevice device
+		, VkFramebuffer frameBuffer
 		, VkSubpassDescription const & subpass
 		, CmdList & list );
 }

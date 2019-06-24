@@ -32,6 +32,7 @@ namespace ashes::gl4
 			, Context & context
 			, VkDeviceCreateInfo createInfos );
 		~Device();
+		VkPhysicalDeviceLimits const & getLimits()const;
 		/**
 		*\copydoc	Device::getImageSubresourceLayout
 		*/

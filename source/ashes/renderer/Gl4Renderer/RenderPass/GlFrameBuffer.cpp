@@ -158,39 +158,9 @@ namespace ashes::gl4
 		, m_height{ createInfo.height }
 		, m_layers{ createInfo.layers }
 	{
-		auto context = get( m_device )->getContext();
-		glLogCall( context
-			, glGenFramebuffers
-			, 1
-			, &m_internal );
-		glLogCall( context
-			, glBindFramebuffer
-			, GL_FRAMEBUFFER
-			, m_internal );
-		uint32_t index = 0u;
-		auto renderPass = get( m_renderPass );
-		auto itPassAttach = renderPass->getAttachments().begin();
-
-		for ( auto & attachment : m_attachments )
-		{
-			if ( ashes::isDepthOrStencilFormat( itPassAttach->format ) )
-			{
-				doInitialiseAttach( attachment, 0u );
-			}
-			else
-			{
-				doInitialiseAttach( attachment, index++ );
-			}
-
-			++itPassAttach;
-		}
-
-		applyList( context, m_bindAttaches );
-		checkCompleteness( context->glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
-		glLogCall( context
-			, glBindFramebuffer
-			, GL_FRAMEBUFFER
-			, 0 );
+		doInitialiseAttaches();
+		doBindAttaches();
+		doCreateFramebuffer();
 	}
 
 	Framebuffer::Framebuffer( VkDevice device
@@ -280,6 +250,85 @@ namespace ashes::gl4
 			} );
 	}
 
+	void Framebuffer::doInitialiseAttaches()
+	{
+		auto renderPass = get( m_renderPass );
+		auto itPassAttach = renderPass->begin();
+		uint32_t index = 0u;
+		uint32_t msIndex = 0u;
+		auto fboAttachIt = m_attachments.begin();
+
+		for ( auto & passAttach : *renderPass )
+		{
+			assert( fboAttachIt != m_attachments.end() );
+			auto attach = renderPass->getAttachment( passAttach );
+			doInitialiseAttach( *fboAttachIt
+				, ( ashes::isDepthOrStencilFormat( get( *fboAttachIt )->getFormat() )
+					? 0u
+					: ( get( get( *fboAttachIt )->getImage() )->getSamples() > VK_SAMPLE_COUNT_1_BIT
+						? msIndex++
+						: index++ ) ) );
+			++fboAttachIt;
+		}
+	}
+
+	void Framebuffer::doBindAttaches()
+	{
+		auto bindAttach = [this]( FboAttachment const & attachment )
+		{
+			m_bindAttaches.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
+				, GlAttachmentPoint( attachment.point + attachment.index )
+				, attachment.target
+				, attachment.object
+				, attachment.mipLevel ) );
+		};
+
+		if ( !m_multisampled )
+		{
+			if ( m_depthStencilAttach )
+			{
+				bindAttach( *m_depthStencilAttach );
+			}
+
+			for ( auto & attachment : m_colourAttaches )
+			{
+				bindAttach( attachment );
+			}
+		}
+		else
+		{
+			if ( m_depthStencilMsAttach )
+			{
+				bindAttach( *m_depthStencilMsAttach );
+			}
+
+			for ( auto & attachment : m_colourMsAttaches )
+			{
+				bindAttach( attachment );
+			}
+		}
+
+	}
+
+	void Framebuffer::doCreateFramebuffer()
+	{
+		auto context = get( m_device )->getContext();
+		glLogCall( context
+			, glGenFramebuffers
+			, 1
+			, &m_internal );
+		glLogCall( context
+			, glBindFramebuffer
+			, GL_FRAMEBUFFER
+			, m_internal );
+		applyList( context, m_bindAttaches );
+		checkCompleteness( context->glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
+		glLogCall( context
+			, glBindFramebuffer
+			, GL_FRAMEBUFFER
+			, 0 );
+	}
+
 	void Framebuffer::doInitialiseAttach( VkImageView view
 		, uint32_t index )
 	{
@@ -300,36 +349,51 @@ namespace ashes::gl4
 			}
 		}
 
-		Attachment attachment
+		bool multisampled = get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT;
+		FboAttachment attachment
 		{
 			getAttachmentPoint( view ),
 			internal,
 			getAttachmentType( view ),
-			( get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT
+			( multisampled
 				? GL_TEXTURE_2D_MULTISAMPLE
 				: GL_TEXTURE_2D ),
 			mipLevel,
 			index,
 		};
 
-		m_allAttaches.push_back( attachment );
+		m_multisampled = m_multisampled || multisampled;
 
 		if ( attachment.point == GL_ATTACHMENT_POINT_DEPTH_STENCIL
 			|| attachment.point == GL_ATTACHMENT_POINT_DEPTH
 			|| attachment.point == GL_ATTACHMENT_POINT_STENCIL )
 		{
-			m_depthStencilAttach = attachment;
+			assert( attachment.index == 0u );
+
+			if ( multisampled )
+			{
+				m_depthStencilMsAttach = attachment;
+			}
+			else
+			{
+				m_depthStencilAttach = attachment;
+			}
 		}
 		else
 		{
-			m_colourAttaches.push_back( attachment );
+			if ( multisampled )
+			{
+				m_colourMsAttaches.push_back( attachment );
+			}
+			else
+			{
+				m_colourAttaches.push_back( attachment );
+			}
+
+			m_allColourAttaches.push_back( attachment );
 			m_srgb |= isSRGBFormat( get( view )->getFormat() );
 		}
 
-		m_bindAttaches.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
-			, GlAttachmentPoint( attachment.point + attachment.index )
-			, attachment.target
-			, attachment.object
-			, attachment.mipLevel ) );
+		m_allAttaches.push_back( attachment );
 	}
 }

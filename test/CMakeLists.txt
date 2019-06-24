@@ -47,7 +47,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 		ashespp
 		util
 	)
-	
+
 	file( GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*-* )
 
 	foreach ( child ${children} )

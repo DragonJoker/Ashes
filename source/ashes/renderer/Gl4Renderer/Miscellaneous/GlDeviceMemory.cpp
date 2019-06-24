@@ -197,7 +197,7 @@ namespace ashes::gl4
 					, glTexStorage1D
 					, m_boundTarget
 					, GLsizei( m_texture->getMipLevels() )
-					, getInternalFormat( m_texture->getFormat() )
+					, m_internal
 					, m_texture->getDimensions().width );
 			}
 
@@ -207,7 +207,7 @@ namespace ashes::gl4
 					, glTexStorage2D
 					, m_boundTarget
 					, GLsizei( m_texture->getMipLevels() )
-					, getInternalFormat( m_texture->getFormat() )
+					, m_internal
 					, m_texture->getDimensions().width
 					, m_texture->getDimensions().height );
 			}
@@ -219,7 +219,7 @@ namespace ashes::gl4
 					, glTexStorage3D
 					, m_boundTarget
 					, GLsizei( m_texture->getMipLevels() )
-					, getInternalFormat( m_texture->getFormat() )
+					, m_internal
 					, m_texture->getDimensions().width
 					, m_texture->getDimensions().height
 					, depth );
@@ -231,7 +231,7 @@ namespace ashes::gl4
 					, glTexStorage2DMultisample
 					, m_boundTarget
 					, GLsizei( m_texture->getSamples() )
-					, getInternalFormat( m_texture->getFormat() )
+					, m_internal
 					, m_texture->getDimensions().width
 					, m_texture->getDimensions().height
 					, GL_TRUE );
@@ -243,7 +243,7 @@ namespace ashes::gl4
 					, glTexStorage3DMultisample
 					, m_boundTarget
 					, GLsizei( m_texture->getSamples() )
-					, getInternalFormat( m_texture->getFormat() )
+					, m_internal
 					, m_texture->getDimensions().width
 					, m_texture->getDimensions().height
 					, m_texture->getDimensions().depth

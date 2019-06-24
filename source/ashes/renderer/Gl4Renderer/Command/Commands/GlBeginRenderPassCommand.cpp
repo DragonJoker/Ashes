@@ -61,6 +61,87 @@ namespace ashes::gl4
 			, cmd.stencil );
 	}
 
+	GLbitfield clearAttaches( VkFramebuffer framebuffer
+		, VkRenderPass renderPass
+		, VkClearValueArray rtClearValues
+		, VkClearValue dsClearValue
+		, CmdList & list
+		, bool back )
+	{
+		uint32_t clearIndex = 0u;
+		auto & attaches = get( framebuffer )->getAllAttaches();
+		GLbitfield mask{ 0u };
+
+		for ( auto viewIndex = 0u; viewIndex < attaches.size(); ++viewIndex )
+		{
+			auto & attach = attaches[viewIndex];
+
+			if ( auto attachDesc = get( renderPass )->findAttachment( viewIndex ) )
+			{
+				if ( attachDesc->loadOp == VK_ATTACHMENT_LOAD_OP_CLEAR )
+				{
+					if ( getAspectMask( attachDesc->format ) == VK_IMAGE_ASPECT_COLOR_BIT )
+					{
+						if ( back )
+						{
+							list.push_back( makeCmd< OpType::eClearBackColour >( rtClearValues[clearIndex].color
+								, clearIndex ) );
+						}
+						else
+						{
+							list.push_back( makeCmd< OpType::eClearColour >( rtClearValues[clearIndex].color
+								, clearIndex ) );
+						}
+						mask |= GL_COLOR_BUFFER_BIT;
+						++clearIndex;
+					}
+					else
+					{
+						if ( isDepthStencilFormat( attachDesc->format ) )
+						{
+							if ( back )
+							{
+								list.push_back( makeCmd< OpType::eClearBackDepthStencil >( dsClearValue.depthStencil.depth
+									, int32_t( dsClearValue.depthStencil.stencil ) ) );
+							}
+							else
+							{
+								list.push_back( makeCmd< OpType::eClearDepthStencil >( dsClearValue.depthStencil ) );
+							}
+							mask |= GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
+						}
+						else if ( isDepthFormat( attachDesc->format ) )
+						{
+							if ( back )
+							{
+								list.push_back( makeCmd< OpType::eClearBackDepth >( dsClearValue.depthStencil.depth ) );
+							}
+							else
+							{
+								list.push_back( makeCmd< OpType::eClearDepth >( dsClearValue.depthStencil.depth ) );
+							}
+							mask |= GL_DEPTH_BUFFER_BIT;
+						}
+						else if ( isStencilFormat( attachDesc->format ) )
+						{
+							if ( back )
+							{
+								list.push_back( makeCmd< OpType::eClearBackStencil >( int32_t( dsClearValue.depthStencil.stencil ) ) );
+							}
+							else
+							{
+								list.push_back( makeCmd< OpType::eClearStencil >( int32_t( dsClearValue.depthStencil.stencil ) ) );
+							}
+							mask |= GL_STENCIL_BUFFER_BIT;
+						}
+					}
+				}
+			}
+		}
+
+		return mask;
+	}
+
 	void buildBeginRenderPassCommand( ContextStateStack & stack
 		, VkRenderPass renderPass
 		, VkFramebuffer frameBuffer
@@ -70,21 +151,24 @@ namespace ashes::gl4
 	{
 		VkClearValueArray rtClearValues;
 		VkClearValue dsClearValue;
-		assert( clearValues.size() == get( renderPass )->getAttachments().size() );
-		auto it = get( renderPass )->getAttachments().begin();
+		assert( clearValues.size() == get( renderPass )->size() );
+		auto index = 0u;
 
 		for ( auto & clearValue : clearValues )
 		{
-			if ( ashes::isDepthOrStencilFormat( it->format ) )
+			if ( auto attach = get( renderPass )->findAttachment( index ) )
 			{
-				dsClearValue = clearValue;
-			}
-			else
-			{
-				rtClearValues.push_back( clearValue );
+				if ( ashes::isDepthOrStencilFormat( attach->format ) )
+				{
+					dsClearValue = clearValue;
+				}
+				else
+				{
+					rtClearValues.push_back( clearValue );
+				}
 			}
 
-			++it;
+			++index;
 		}
 
 		glLogCommand( "BeginRenderPassCommand" );
@@ -145,78 +229,11 @@ namespace ashes::gl4
 			}
 
 			list.push_back( makeCmd< OpType::eDrawBuffers >( std::move( drawBuffers ) ) );
-
-			for ( auto viewIndex = 0u; viewIndex < attaches.size(); ++viewIndex )
-			{
-				auto & attach = attaches[viewIndex];
-				auto & attachDesc = get( renderPass )->getAttachments()[viewIndex];
-
-				if ( attachDesc.loadOp == VK_ATTACHMENT_LOAD_OP_CLEAR )
-				{
-					if ( getAspectMask( attachDesc.format ) == VK_IMAGE_ASPECT_COLOR_BIT )
-					{
-						list.push_back( makeCmd< OpType::eClearColour >( rtClearValues[clearIndex].color
-								, clearIndex) );
-						++clearIndex;
-					}
-					else
-					{
-						if ( isDepthStencilFormat( attachDesc.format ) )
-						{
-							list.push_back( makeCmd< OpType::eClearDepthStencil >( dsClearValue.depthStencil ) );
-						}
-						else if ( isDepthFormat( attachDesc.format ) )
-						{
-							list.push_back( makeCmd< OpType::eClearDepth >( dsClearValue.depthStencil.depth ) );
-						}
-						else if ( isStencilFormat( attachDesc.format ) )
-						{
-							list.push_back( makeCmd< OpType::eClearStencil >( int32_t( dsClearValue.depthStencil.stencil ) ) );
-						}
-					}
-				}
-			}
+			clearAttaches( frameBuffer, renderPass, rtClearValues, dsClearValue, list, false );
 		}
 		else
 		{
-			GLbitfield mask{ 0u };
-
-			for ( auto viewIndex = 0u; viewIndex < attaches.size(); ++viewIndex )
-			{
-				auto & attach = attaches[viewIndex];
-				auto & attachDesc = get( renderPass )->getAttachments()[viewIndex];
-
-				if ( attachDesc.loadOp == VK_ATTACHMENT_LOAD_OP_CLEAR )
-				{
-					if ( getAspectMask( attachDesc.format ) == VK_IMAGE_ASPECT_COLOR_BIT )
-					{
-						list.push_back( makeCmd< OpType::eClearBackColour >( rtClearValues[clearIndex].color
-							, clearIndex ) );
-						mask |= GL_COLOR_BUFFER_BIT;
-						++clearIndex;
-					}
-					else
-					{
-						if ( isDepthStencilFormat( attachDesc.format ) )
-						{
-							list.push_back( makeCmd< OpType::eClearBackDepthStencil >( dsClearValue.depthStencil.depth
-								, int32_t( dsClearValue.depthStencil.stencil ) ) );
-							mask |= GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
-						}
-						else if ( isDepthFormat( attachDesc.format ) )
-						{
-							list.push_back( makeCmd< OpType::eClearBackDepth >( dsClearValue.depthStencil.depth ) );
-							mask |= GL_DEPTH_BUFFER_BIT;
-						}
-						else if ( isStencilFormat( attachDesc.format ) )
-						{
-							list.push_back( makeCmd< OpType::eClearBackStencil >( int32_t( dsClearValue.depthStencil.stencil ) ) );
-							mask |= GL_STENCIL_BUFFER_BIT;
-						}
-					}
-				}
-			}
-
+			auto mask = clearAttaches( frameBuffer, renderPass, rtClearValues, dsClearValue, list, true );
 			list.push_back( makeCmd< OpType::eClearBack >( mask ) );
 		}
 	}

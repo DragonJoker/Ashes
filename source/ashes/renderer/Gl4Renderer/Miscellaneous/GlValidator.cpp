@@ -993,9 +993,9 @@ namespace ashes::gl4
 		{
 			std::set< VkAttachmentDescription const * > attaches;
 
-			for ( auto & attach : get( renderPass )->getAttachments() )
+			for ( auto & reference : *get( renderPass ) )
 			{
-				attaches.insert( &attach );
+				attaches.insert( &get( renderPass )->getAttachment( reference ) );
 			}
 
 			struct GlslOutput

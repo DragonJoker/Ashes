@@ -103,9 +103,19 @@ namespace ashes::gl4
 			return m_allAttaches;
 		}
 
+		inline auto const & getMsColourAttaches()const
+		{
+			return m_colourMsAttaches;
+		}
+
 		inline auto const & getColourAttaches()const
 		{
 			return m_colourAttaches;
+		}
+
+		inline auto const & getAllColourAttaches()const
+		{
+			return m_allColourAttaches;
 		}
 
 		inline bool hasDepthStencilAttach()const
@@ -134,6 +144,11 @@ namespace ashes::gl4
 			return m_height;
 		}
 
+		inline bool isMultisampled()const
+		{
+			return m_multisampled;
+		}
+
 		CmdList const & getBindAttaches()const
 		{
 			return m_bindAttaches;
@@ -141,19 +156,13 @@ namespace ashes::gl4
 		/**@}*/
 
 	private:
+		void doInitialiseAttaches();
+		void doBindAttaches();
+		void doCreateFramebuffer();
 		void doInitialiseAttach( VkImageView view
 			, uint32_t index );
 
 	private:
-		struct Attachment
-		{
-			GlAttachmentPoint point;
-			GLuint object;
-			GlAttachmentType type;
-			GlTextureType target;
-			uint32_t mipLevel;
-			uint32_t index;
-		};
 		VkDevice m_device;
 		VkFramebufferCreateFlags m_flags;
 		VkRenderPass m_renderPass;
@@ -162,11 +171,15 @@ namespace ashes::gl4
 		uint32_t m_height;
 		uint32_t m_layers;
 		GLuint m_internal{ GL_INVALID_INDEX };
-		std::vector< Attachment > m_allAttaches;
-		std::vector< Attachment > m_colourAttaches;
-		Optional< Attachment > m_depthStencilAttach;
+		FboAttachmentArray m_allAttaches;
+		FboAttachmentArray m_allColourAttaches;
+		FboAttachmentArray m_colourAttaches;
+		FboAttachmentArray m_colourMsAttaches;
+		Optional< FboAttachment > m_depthStencilAttach;
+		Optional< FboAttachment > m_depthStencilMsAttach;
 		mutable UInt32Array m_drawBuffers;
 		CmdList m_bindAttaches;
 		bool m_srgb{ false };
+		bool m_multisampled{ false };
 	};
 }

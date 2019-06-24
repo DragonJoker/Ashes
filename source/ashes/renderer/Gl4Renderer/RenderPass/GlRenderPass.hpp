@@ -16,10 +16,8 @@ namespace ashes::gl4
 
 		uint32_t getAttachmentIndex( VkAttachmentDescription const & attach )const;
 
-		inline VkAttachmentDescriptionArray const & getAttachments()const
-		{
-			return m_attachments;
-		}
+		VkAttachmentDescription const * findAttachment( uint32_t referenceIndex )const;
+		VkAttachmentDescription const & getAttachment( VkAttachmentReference const & reference )const;
 
 		inline VkSubpassDescriptionArray const & getSubpasses()const
 		{
@@ -36,14 +34,39 @@ namespace ashes::gl4
 			return m_hasDepthAttach;
 		}
 
-		inline VkAttachmentDescription const & getDepthAttach()const
-		{
-			return m_depthAttach;
-		}
-
 		inline VkExtent2D getRenderAreaGranularity()const
 		{
 			return VkExtent2D{ 1u, 1u };
+		}
+
+		inline auto empty()const
+		{
+			return m_referencedAttachments.empty();
+		}
+
+		inline auto size()const
+		{
+			return m_referencedAttachments.size();
+		}
+
+		inline auto begin()
+		{
+			return m_referencedAttachments.begin();
+		}
+
+		inline auto end()
+		{
+			return m_referencedAttachments.end();
+		}
+
+		inline auto begin()const
+		{
+			return m_referencedAttachments.begin();
+		}
+
+		inline auto end()const
+		{
+			return m_referencedAttachments.end();
 		}
 
 	public:
@@ -59,15 +82,21 @@ namespace ashes::gl4
 		using SubpassDescriptionDataPtrMap = std::map< VkSubpassDescription const *, SubpassDescriptionDataPtr >;
 
 	private:
+		void referenceAttaches( VkAttachmentReference const & value );
+		void referenceAttaches( Optional< VkAttachmentReference > const & value );
+		void referenceAttaches( VkAttachmentReferenceArray const & value );
+
+	private:
 		VkDevice m_device;
 		VkRenderPassCreateFlags m_flags;
 		uint32_t m_attachmentCount;
 		VkAttachmentDescriptionArray m_attachments;
+		VkAttachmentReferenceArray m_referencedAttachments;
 		VkSubpassDescriptionArray m_subpasses;
 		SubpassDescriptionDataPtrMap m_subpassesDatas;
 		VkSubpassDependencyArray m_dependencies;
 		bool m_hasDepthAttach{ false };
-		VkAttachmentDescription m_depthAttach;
+		VkAttachmentDescriptionArray m_depthAttaches;
 		AttachmentDescriptionArray m_colourAttaches;
 	};
 }

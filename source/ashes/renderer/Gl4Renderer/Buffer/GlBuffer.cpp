@@ -31,8 +31,15 @@ namespace ashes::gl4
 	{
 		VkMemoryRequirements result{};
 		result.size = m_createInfo.size;
-		result.alignment = 1u;
 		result.memoryTypeBits = ~( 0u );
+		result.alignment = get( m_device )->getLimits().nonCoherentAtomSize;
+
+		if ( checkFlag( m_createInfo.usage, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT ) )
+		{
+			result.alignment = get( m_device )->getLimits().minUniformBufferOffsetAlignment;
+		}
+
+		result.size = ashes::getAlignedSize( m_createInfo.size, result.alignment );
 		return result;
 	}
 
