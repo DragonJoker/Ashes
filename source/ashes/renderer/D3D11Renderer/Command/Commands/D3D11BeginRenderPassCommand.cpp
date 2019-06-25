@@ -48,23 +48,23 @@ namespace ashes::d3d11
 
 		for ( auto viewIndex = 0u; viewIndex < views.size(); ++viewIndex )
 		{
-			auto attach = get( m_renderPass )->findAttachment( viewIndex );
-			assert( attach != nullptr );
-
-			if ( attach->loadOp == VK_ATTACHMENT_LOAD_OP_CLEAR )
+			if ( auto attachDesc = get( m_renderPass )->findAttachment( viewIndex ) )
 			{
-				if ( getAspectMask( attach->format ) == VK_IMAGE_ASPECT_COLOR_BIT )
+				if ( attachDesc->loadOp == VK_ATTACHMENT_LOAD_OP_CLEAR )
 				{
-					context.context->ClearRenderTargetView( reinterpret_cast< ID3D11RenderTargetView * >( views[viewIndex] )
-						, m_rtClearValues[clearIndex].color.float32 );
-					++clearIndex;
-				}
-				else
-				{
-					context.context->ClearDepthStencilView( reinterpret_cast< ID3D11DepthStencilView * >( views[viewIndex] )
-						, get( m_frameBuffer )->getDSViewFlags()
-						, m_dsClearValue.depthStencil.depth
-						, m_dsClearValue.depthStencil.stencil );
+					if ( getAspectMask( attachDesc->format ) == VK_IMAGE_ASPECT_COLOR_BIT )
+					{
+						context.context->ClearRenderTargetView( reinterpret_cast< ID3D11RenderTargetView * >( views[viewIndex]->view )
+							, m_rtClearValues[clearIndex].color.float32 );
+						++clearIndex;
+					}
+					else
+					{
+						context.context->ClearDepthStencilView( reinterpret_cast< ID3D11DepthStencilView * >( views[viewIndex]->view )
+							, get( m_frameBuffer )->getDSViewFlags()
+							, m_dsClearValue.depthStencil.depth
+							, m_dsClearValue.depthStencil.stencil );
+					}
 				}
 			}
 		}

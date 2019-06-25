@@ -13,6 +13,34 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
+	namespace
+	{
+		std::vector< ID3D11UnorderedAccessView * > doListUavs( LayoutBindingWritesArray uavs )
+		{
+			std::vector< ID3D11UnorderedAccessView * > result;
+
+			for ( auto & writes : uavs )
+			{
+				for ( auto & write : writes->writes )
+				{
+					for ( auto & uav : makeArrayView( write.pBufferInfo, write.descriptorCount ) )
+					{
+						auto buffer = uav.buffer;
+						result.push_back( get( buffer )->getUnorderedAccessView() );
+					}
+
+					for ( auto & uav : makeArrayView( write.pImageInfo, write.descriptorCount ) )
+					{
+						auto view = uav.imageView;
+						result.push_back( get( view )->getUnorderedAccessView() );
+					}
+				}
+			}
+
+			return result;
+		}
+	}
+
 	BeginSubpassCommand::BeginSubpassCommand( VkDevice device
 		, VkRenderPass renderPass
 		, VkFramebuffer frameBuffer
@@ -23,15 +51,18 @@ namespace ashes::d3d11
 		, m_frameBuffer{ frameBuffer }
 	{
 		auto & allViews = get( m_frameBuffer )->getAllViews();
+		auto attaches = makeArrayView( m_subpass.pColorAttachments
+			, subpass.colorAttachmentCount );
 
-		for ( auto & attach : makeArrayView( m_subpass.pColorAttachments, subpass.colorAttachmentCount ) )
+		for ( auto & attach : attaches )
 		{
-			m_attaches.push_back( reinterpret_cast< ID3D11RenderTargetView * >( allViews[attach.attachment] ) );
+			m_attaches.push_back( reinterpret_cast< ID3D11RenderTargetView * >( allViews[attach.attachment]->view ) );
 		}
 
 		if ( subpass.pDepthStencilAttachment )
 		{
-			m_depthAttach = get( m_frameBuffer )->getDSView();
+			auto & attach = *subpass.pDepthStencilAttachment;
+			m_depthAttach = reinterpret_cast< ID3D11DepthStencilView * >( allViews[attach.attachment]->view );
 		}
 	}
 
@@ -45,26 +76,7 @@ namespace ashes::d3d11
 		}
 		else
 		{
-			std::vector< ID3D11UnorderedAccessView * > uavs;
-
-			for ( auto & writes : context.uavs )
-			{
-				for ( auto & write : writes->writes )
-				{
-					for ( auto & uav : makeArrayView( write.pBufferInfo, write.descriptorCount ) )
-					{
-						auto buffer = uav.buffer;
-						uavs.push_back( get( buffer )->getUnorderedAccessView() );
-					}
-
-					for ( auto & uav : makeArrayView( write.pImageInfo, write.descriptorCount ) )
-					{
-						auto view = uav.imageView;
-						uavs.push_back( get( view )->getUnorderedAccessView() );
-					}
-				}
-			}
-
+			auto uavs = doListUavs( context.uavs );
 			context.context->OMSetRenderTargetsAndUnorderedAccessViews( UINT( m_attaches.size() )
 				, m_attaches.data()
 				, m_depthAttach

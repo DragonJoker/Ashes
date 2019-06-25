@@ -57,6 +57,23 @@ namespace ashes::d3d11
 				, uavs.data()
 				, nullptr );
 		}
+
+		if ( m_subpass.pResolveAttachments )
+		{
+			uint32_t index = 0u;
+
+			for ( auto & resolveAttach : makeArrayView( m_subpass.pResolveAttachments, m_subpass.colorAttachmentCount ) )
+			{
+				auto & srcAttach = get( m_frameBuffer )->getMsRTViews()[index++];
+				auto & dstAttach = get( m_frameBuffer )->getAllViews()[resolveAttach.attachment];
+
+				context.context->ResolveSubresource( dstAttach->resource
+					, dstAttach->subresource
+					, srcAttach->resource
+					, srcAttach->subresource
+					, getDxgiFormat( get( srcAttach->imageView )->getFormat() ) );
+			}
+		}
 	}
 
 	CommandPtr EndSubpassCommand::clone()const

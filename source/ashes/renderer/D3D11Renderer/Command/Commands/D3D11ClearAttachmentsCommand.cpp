@@ -54,11 +54,11 @@ namespace ashes::d3d11
 			if ( checkFlag( attach.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT ) )
 			{
 				auto ref = subpass.pColorAttachments[attach.colorAttachment];
-				m_clearViews.push_back( { attach, get( framebuffer )->getAllViews()[ref.attachment] } );
+				m_clearViews.push_back( { attach, get( framebuffer )->getAllViews()[ref.attachment]->view } );
 			}
 			else if ( attach.aspectMask )
 			{
-				m_clearViews.push_back( { attach, get( framebuffer )->getDSView() } );
+				m_clearViews.push_back( { attach, get( framebuffer )->getDSView()->view } );
 			}
 		}
 	}

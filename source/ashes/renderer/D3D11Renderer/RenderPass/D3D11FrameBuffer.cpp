@@ -14,76 +14,117 @@ namespace ashes::d3d11
 {
 	namespace
 	{
-		std::vector< ID3D11View * > getAllViews( VkImageViewArray const & views )
+		std::vector< FboAttachPtr > getAllAttaches( VkImageViewArray const & views )
 		{
-			std::vector< ID3D11View * > result;
+			std::vector< FboAttachPtr > result;
 
 			for ( auto & view : views )
 			{
-				if ( isDepthOrStencilFormat( get( view )->getFormat() ) )
+				auto apiview = get( view );
+
+				if ( isDepthOrStencilFormat( apiview->getFormat() ) )
 				{
-					result.push_back( get( view )->getDepthStencilView() );
+					result.emplace_back( std::make_unique< FboAttach >( view
+							, apiview->getDepthStencilView()
+							, get( apiview->getImage() )->getResource()
+							, apiview->getSubresource( apiview->getSubResourceRange().baseArrayLayer ) ) );
 				}
 				else
 				{
-					result.push_back( get( view )->getRenderTargetView() );
+					result.emplace_back( std::make_unique< FboAttach >( view
+						, apiview->getRenderTargetView()
+						, get( apiview->getImage() )->getResource()
+						, apiview->getSubresource( apiview->getSubResourceRange().baseArrayLayer ) ) );
 				}
 			}
 
 			return result;
 		}
 
-		std::vector< ID3D11RenderTargetView * > getRenderTargetViews( VkImageViewArray const & views )
+		std::vector< FboAttach * > getRenderTargetViews( std::vector< FboAttachPtr > const & attaches
+			, bool msaa )
 		{
-			std::vector< ID3D11RenderTargetView * > result;
+			std::vector< FboAttach * > result;
 
-			for ( auto & view : views )
+			for ( auto & attach : attaches )
 			{
-				if ( !isDepthOrStencilFormat( get( view )->getFormat() ) )
+				auto apiview = get( attach->imageView );
+
+				if ( !isDepthOrStencilFormat( apiview->getFormat() ) )
 				{
-					result.push_back( get( view )->getRenderTargetView() );
+					auto apiimage = get( apiview->getImage() );
+					auto multisampled = apiimage->getSamplesCount() > VK_SAMPLE_COUNT_1_BIT;
+
+					if ( ( msaa && multisampled )
+						|| ( !msaa && !multisampled ) )
+					{
+						result.push_back( attach.get() );
+					}
 				}
 			}
 
 			return result;
 		}
 
-		ImageView const * doGetDepthStencilView( VkImageViewArray const & views )
+		FboAttach * doGetDepthStencilAttach( std::vector< FboAttachPtr > const & attaches
+			, bool msaa )
 		{
-			ImageView const * result{ nullptr };
+			FboAttach * result{ nullptr };
 
-			for ( auto & view : views )
+			for ( auto & attach : attaches )
 			{
+				auto apiview = get( attach->imageView );
+
 				if ( !result
-					&& isDepthOrStencilFormat( get( view )->getFormat() ) )
+					&& isDepthOrStencilFormat( apiview->getFormat() ) )
 				{
-					result = get( view );
+					auto multisampled = get( apiview->getImage() )->getSamplesCount() > VK_SAMPLE_COUNT_1_BIT;
+
+					if ( ( msaa && multisampled )
+						|| ( !msaa && !multisampled ) )
+					{
+						result = attach.get();
+					}
 				}
 			}
 
 			return result;
 		}
 
-		ID3D11DepthStencilView * getDepthStencilView( VkImageViewArray const & views )
+		FboAttach * getDepthStencilView( std::vector< FboAttachPtr > const & attaches
+			, bool msaa )
 		{
-			ID3D11DepthStencilView * result{ nullptr };
-			auto view = doGetDepthStencilView( views );
+			FboAttach * result{ nullptr };
+			auto attach = doGetDepthStencilAttach( attaches, msaa );
 
-			if ( view )
+			if ( attach )
 			{
-				result = view->getDepthStencilView();
+				auto view = get( attach->imageView );
+				auto multisampled = get( view->getImage() )->getSamplesCount() > VK_SAMPLE_COUNT_1_BIT;
+
+				if ( ( msaa && multisampled )
+					|| ( !msaa && !multisampled ) )
+				{
+					result = attach;
+				}
 			}
 
 			return result;
 		}
 
-		UINT getDepthStencilFlags( VkImageViewArray const & views )
+		UINT getDepthStencilFlags( std::vector< FboAttachPtr > const & attaches )
 		{
 			UINT result{ 0u };
-			auto view = doGetDepthStencilView( views );
+			auto attach = doGetDepthStencilAttach( attaches, false );
 
-			if ( view )
+			if ( !attach )
 			{
+				attach = doGetDepthStencilAttach( attaches, true );
+			}
+
+			if ( attach )
+			{
+				auto view = get( attach->imageView );
 				result = ( isDepthStencilFormat( view->getFormat() )
 						? D3D11_CLEAR_STENCIL | D3D11_CLEAR_DEPTH
 						: 0u )
@@ -105,10 +146,13 @@ namespace ashes::d3d11
 		, m_createInfo{ std::move( createInfo ) }
 		, m_views{ m_createInfo.pAttachments, m_createInfo.pAttachments + m_createInfo.attachmentCount }
 		, m_dimensions{ m_createInfo.width, m_createInfo.height }
-		, m_allViews{ ashes::d3d11::getAllViews( m_views ) }
-		, m_rtViews{ getRenderTargetViews( m_views ) }
-		, m_dsView{ getDepthStencilView( m_views ) }
-		, m_dsViewFlags{ getDepthStencilFlags( m_views ) }
+		, m_allViews{ getAllAttaches( m_views ) }
+		, m_rtViews{ getRenderTargetViews( m_allViews, false ) }
+		, m_msRtViews{ getRenderTargetViews( m_allViews, true ) }
+		, m_dsView{ getDepthStencilView( m_allViews, false ) }
+		, m_msDsView{ getDepthStencilView( m_allViews, true ) }
+		, m_dsViewFlags{ getDepthStencilFlags( m_allViews ) }
+		, m_multisampled{ ( !m_msRtViews.empty() ) || ( m_msDsView != nullptr ) }
 	{
 	}
 
