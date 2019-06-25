@@ -21,12 +21,20 @@ namespace ashes::gl4
 		if ( get( frameBuffer )->getInternal() != GL_INVALID_INDEX )
 		{
 			UInt32Array drawBuffers;
-			auto attaches = makeVector( subpass.pColorAttachments
-				, subpass.colorAttachmentCount );
 
-			for ( auto & fboAttach : get( frameBuffer )->getColourAttaches() )
+			if ( get( frameBuffer )->isMultisampled() )
 			{
-				drawBuffers.push_back( fboAttach.point + fboAttach.index );
+				for ( auto & fboAttach : get( frameBuffer )->getMsColourAttaches() )
+				{
+					drawBuffers.push_back( fboAttach.point + fboAttach.index );
+				}
+			}
+			else
+			{
+				for ( auto & fboAttach : get( frameBuffer )->getColourAttaches() )
+				{
+					drawBuffers.push_back( fboAttach.point + fboAttach.index );
+				}
 			}
 
 			list.push_back( makeCmd< OpType::eDrawBuffers >( drawBuffers ) );

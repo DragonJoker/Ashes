@@ -14,7 +14,7 @@ namespace ashes::gl4
 		glLogCall( context
 			, glUniform1fv
 			, cmd.location
-			, cmd.arraySize
+			, 1u
 			, &cmd.buffer );
 	}
 	
@@ -24,7 +24,7 @@ namespace ashes::gl4
 		glLogCall( context
 			, glUniform2fv
 			, cmd.location
-			, cmd.arraySize
+			, 1u
 			, cmd.buffer );
 	}
 	
@@ -34,7 +34,7 @@ namespace ashes::gl4
 		glLogCall( context
 			, glUniform3fv
 			, cmd.location
-			, cmd.arraySize
+			, 1u
 			, cmd.buffer );
 	}
 	
@@ -44,7 +44,7 @@ namespace ashes::gl4
 		glLogCall( context
 			, glUniform4fv
 			, cmd.location
-			, cmd.arraySize
+			, 1u
 			, cmd.buffer );
 	}
 	
@@ -54,7 +54,7 @@ namespace ashes::gl4
 		glLogCall( context
 			, glUniformMatrix2fv
 			, cmd.location
-			, cmd.arraySize
+			, 1u
 			, cmd.transpose
 			, cmd.buffer );
 	}
@@ -65,7 +65,7 @@ namespace ashes::gl4
 		glLogCall( context
 			, glUniformMatrix3fv
 			, cmd.location
-			, cmd.arraySize
+			, 1u
 			, cmd.transpose
 			, cmd.buffer );
 	}
@@ -76,7 +76,7 @@ namespace ashes::gl4
 		glLogCall( context
 			, glUniformMatrix4fv
 			, cmd.location
-			, cmd.arraySize
+			, 1u
 			, cmd.transpose
 			, cmd.buffer );
 	}
@@ -87,7 +87,7 @@ namespace ashes::gl4
 		glLogCall( context
 			, glUniform1iv
 			, cmd.location
-			, cmd.arraySize
+			, 1u
 			, &cmd.buffer );
 	}
 
@@ -97,7 +97,7 @@ namespace ashes::gl4
 		glLogCall( context
 			, glUniform2iv
 			, cmd.location
-			, cmd.arraySize
+			, 1u
 			, cmd.buffer );
 	}
 
@@ -107,7 +107,7 @@ namespace ashes::gl4
 		glLogCall( context
 			, glUniform3iv
 			, cmd.location
-			, cmd.arraySize
+			, 1u
 			, cmd.buffer );
 	}
 
@@ -117,7 +117,7 @@ namespace ashes::gl4
 		glLogCall( context
 			, glUniform4iv
 			, cmd.location
-			, cmd.arraySize
+			, 1u
 			, cmd.buffer );
 	}
 
@@ -127,7 +127,7 @@ namespace ashes::gl4
 		glLogCall( context
 			, glUniform1uiv
 			, cmd.location
-			, cmd.arraySize
+			, 1u
 			, &cmd.buffer );
 	}
 
@@ -137,7 +137,7 @@ namespace ashes::gl4
 		glLogCall( context
 			, glUniform2uiv
 			, cmd.location
-			, cmd.arraySize
+			, 1u
 			, cmd.buffer );
 	}
 
@@ -147,7 +147,7 @@ namespace ashes::gl4
 		glLogCall( context
 			, glUniform3uiv
 			, cmd.location
-			, cmd.arraySize
+			, 1u
 			, cmd.buffer );
 	}
 
@@ -157,8 +157,39 @@ namespace ashes::gl4
 		glLogCall( context
 			, glUniform4uiv
 			, cmd.location
-			, cmd.arraySize
+			, 1u
 			, cmd.buffer );
+	}
+
+	template< OpType OpT, typename T >
+	void buildPushConstantMtxCommand( PushConstantDesc const & constant
+		, uint8_t const *& buffer
+		, CmdList & list )
+	{
+		auto arraySize = std::min( 1u, constant.arraySize );
+
+		for ( auto layer = 0u; layer < arraySize; ++layer )
+		{
+			list.push_back( makeCmd< OpT >( constant.location + layer
+				, GL_FALSE
+				, reinterpret_cast< T const * >( buffer ) ) );
+			buffer += constant.size;
+		}
+	}
+
+	template< OpType OpT, typename T >
+	void buildPushConstantCommand( PushConstantDesc const & constant
+		, uint8_t const *& buffer
+		, CmdList & list )
+	{
+		auto arraySize = std::max( 1u, constant.arraySize );
+
+		for ( auto layer = 0u; layer < arraySize; ++layer )
+		{
+			list.push_back( makeCmd< OpT >( constant.location + layer
+				, reinterpret_cast< T const * >( buffer ) ) );
+			buffer += constant.size;
+		}
 	}
 
 	void buildPushConstantsCommand( PushConstantsDesc const & pcb
@@ -173,102 +204,67 @@ namespace ashes::gl4
 			switch ( constant.format )
 			{
 			case ConstantFormat::eFloat:
-				list.push_back( makeCmd< OpType::eUniform1fv >( constant.location
-					, constant.arraySize
-					, reinterpret_cast< GLfloat const * >( buffer ) ) );
+				buildPushConstantCommand< OpType::eUniform1fv, GLfloat >( constant, buffer, list );
 				break;
 
 			case ConstantFormat::eVec2f:
-				list.push_back( makeCmd< OpType::eUniform2fv >( constant.location
-					, constant.arraySize
-					, reinterpret_cast< GLfloat const * >( buffer ) ) );
+				buildPushConstantCommand< OpType::eUniform2fv, GLfloat >( constant, buffer, list );
 				break;
 
 			case ConstantFormat::eVec3f:
-				list.push_back( makeCmd< OpType::eUniform3fv >( constant.location
-					, constant.arraySize
-					, reinterpret_cast< GLfloat const * >( buffer ) ) );
+				buildPushConstantCommand< OpType::eUniform3fv, GLfloat >( constant, buffer, list );
 				break;
 
 			case ConstantFormat::eVec4f:
-				list.push_back( makeCmd< OpType::eUniform4fv >( constant.location
-					, constant.arraySize
-					, reinterpret_cast< GLfloat const * >( buffer ) ) );
+				buildPushConstantCommand< OpType::eUniform4fv, GLfloat >( constant, buffer, list );
 				break;
 
 			case ConstantFormat::eMat2f:
-				list.push_back( makeCmd< OpType::eUniformMatrix2fv >( constant.location
-					, constant.arraySize
-					, GL_FALSE
-					, reinterpret_cast< GLfloat const * >( buffer ) ) );
+				buildPushConstantMtxCommand< OpType::eUniformMatrix2fv, GLfloat >( constant, buffer, list );
 				break;
 
 			case ConstantFormat::eMat3f:
-				list.push_back( makeCmd< OpType::eUniformMatrix3fv >( constant.location
-					, constant.arraySize
-					, GL_FALSE
-					, reinterpret_cast< GLfloat const * >( buffer ) ) );
+				buildPushConstantMtxCommand< OpType::eUniformMatrix3fv, GLfloat >( constant, buffer, list );
 				break;
 
 			case ConstantFormat::eMat4f:
-				list.push_back( makeCmd< OpType::eUniformMatrix4fv >( constant.location
-					, constant.arraySize
-					, GL_FALSE
-					, reinterpret_cast< GLfloat const * >( buffer ) ) );
+				buildPushConstantMtxCommand< OpType::eUniformMatrix4fv, GLfloat >( constant, buffer, list );
 				break;
 
 			case ConstantFormat::eInt:
-				list.push_back( makeCmd< OpType::eUniform1iv >( constant.location
-					, constant.arraySize
-					, reinterpret_cast< GLint const * >( buffer ) ) );
+				buildPushConstantCommand< OpType::eUniform1iv, GLint >( constant, buffer, list );
 				break;
 
 			case ConstantFormat::eVec2i:
-				list.push_back( makeCmd< OpType::eUniform2iv >( constant.location
-					, constant.arraySize
-					, reinterpret_cast< GLint const * >( buffer ) ) );
+				buildPushConstantCommand< OpType::eUniform2iv, GLint >( constant, buffer, list );
 				break;
 
 			case ConstantFormat::eVec3i:
-				list.push_back( makeCmd< OpType::eUniform3iv >( constant.location
-					, constant.arraySize
-					, reinterpret_cast< GLint const * >( buffer ) ) );
+				buildPushConstantCommand< OpType::eUniform3iv, GLint >( constant, buffer, list );
 				break;
 
 			case ConstantFormat::eVec4i:
-				list.push_back( makeCmd< OpType::eUniform4iv >( constant.location
-					, constant.arraySize
-					, reinterpret_cast< GLint const * >( buffer ) ) );
+				buildPushConstantCommand< OpType::eUniform4iv, GLint >( constant, buffer, list );
 				break;
 
 			case ConstantFormat::eUInt:
-				list.push_back( makeCmd< OpType::eUniform1uiv >( constant.location
-					, constant.arraySize
-					, reinterpret_cast< GLuint const * >( buffer ) ) );
+				buildPushConstantCommand< OpType::eUniform1uiv, GLuint >( constant, buffer, list );
 				break;
 
 			case ConstantFormat::eVec2ui:
-				list.push_back( makeCmd< OpType::eUniform2uiv >( constant.location
-					, constant.arraySize
-					, reinterpret_cast< GLuint const * >( buffer ) ) );
+				buildPushConstantCommand< OpType::eUniform2uiv, GLuint >( constant, buffer, list );
 				break;
 
 			case ConstantFormat::eVec3ui:
-				list.push_back( makeCmd< OpType::eUniform3uiv >( constant.location
-					, constant.arraySize
-					, reinterpret_cast< GLuint const * >( buffer ) ) );
+				buildPushConstantCommand< OpType::eUniform3uiv, GLuint >( constant, buffer, list );
 				break;
 
 			case ConstantFormat::eVec4ui:
-				list.push_back( makeCmd< OpType::eUniform4uiv >( constant.location
-					, constant.arraySize
-					, reinterpret_cast< GLuint const * >( buffer ) ) );
+				buildPushConstantCommand< OpType::eUniform4uiv, GLuint >( constant, buffer, list );
 				break;
 
 			case ConstantFormat::eColour:
-				list.push_back( makeCmd< OpType::eUniform4fv >( constant.location
-					, constant.arraySize
-					, reinterpret_cast< GLfloat const * >( buffer ) ) );
+				buildPushConstantCommand< OpType::eUniform4fv, GLfloat >( constant, buffer, list );
 				break;
 
 			default:

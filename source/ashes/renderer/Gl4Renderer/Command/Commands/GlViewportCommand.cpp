@@ -16,12 +16,17 @@ namespace ashes::gl4
 {
 	namespace
 	{
-		VkViewport adjustViewport( VkFramebuffer fbo
+		VkViewport adjustViewport( ContextStateStack const & stack
 			, VkViewport const & in )
 		{
 			VkViewport result{ in };
-			auto height = get( fbo )->getHeight();
-			result.y = height - ( result.height + result.y );
+
+			if ( stack.hasCurrentFramebuffer() )
+			{
+				auto height = get( stack.getCurrentFramebuffer() )->getHeight();
+				result.y = height - ( result.height + result.y );
+			}
+
 			return result;
 		}
 	}
@@ -32,7 +37,7 @@ namespace ashes::gl4
 		, CmdList & list )
 	{
 		glLogCommand( "ViewportCommand" );
-		auto viewport = adjustViewport( stack.getCurrentFramebuffer(), *viewports.begin() );
+		auto viewport = adjustViewport( stack, *viewports.begin() );
 
 		if ( stack.getCurrentViewport() != viewport )
 		{

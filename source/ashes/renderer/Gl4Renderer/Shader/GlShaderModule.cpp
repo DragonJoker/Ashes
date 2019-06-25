@@ -338,9 +338,14 @@ namespace ashes::gl4
 			}
 		}
 
-		uint32_t getArraySize( spirv_cross::SPIRType const & type )
+		uint32_t getArraySize( spirv_cross::CompilerGLSL & compiler
+			, spirv_cross::SPIRType const & type )
 		{
-			return uint32_t( type.array.size() );
+			return !type.array.empty()
+				? ( type.array_size_literal[0]
+					? type.array[0]
+					: uint32_t( compiler.get_constant( type.array[0] ).scalar_u64() ) )
+				: 0u;
 		}
 
 		ConstantsLayout doRetrievePushConstants( spirv_cross::CompilerGLSL & compiler )
@@ -367,9 +372,15 @@ namespace ashes::gl4
 							0u,
 							getFormat( mbrType ),
 							getSize( getFormat( mbrType ) ),
-							getArraySize( mbrType ),
+							getArraySize( compiler, mbrType ),
 							offset,
 						} );
+
+					if ( result.back().arraySize > 0 )
+					{
+						result.back().name += "[0]";
+					}
+
 					offset += result.back().size;
 				}
 			}

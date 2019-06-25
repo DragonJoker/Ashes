@@ -22,18 +22,15 @@ namespace ashes::gl4
 	struct alignas( uint64_t ) CmdT< OpType::eUniform1fv >
 	{
 		inline CmdT( uint32_t location
-			, uint32_t arraySize
 			, float const * buffer )
 			: cmd{ { OpType::eUniform1fv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
-			, arraySize{ std::move( arraySize ) }
 			, buffer{ *buffer }
 		{
 		}
 
 		Command cmd;
 		uint32_t location;
-		uint32_t arraySize;
 		float buffer;
 	};
 	using CmdUniform1fv = CmdT< OpType::eUniform1fv >;
@@ -53,18 +50,15 @@ namespace ashes::gl4
 	struct alignas( uint64_t ) CmdT< OpType::eUniform2fv >
 	{
 		inline CmdT( uint32_t location
-			, uint32_t arraySize
 			, float const * buffer )
 			: cmd{ { OpType::eUniform2fv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
-			, arraySize{ std::move( arraySize ) }
 			, buffer{ buffer[0], buffer[1] }
 		{
 		}
 
 		Command cmd;
 		uint32_t location;
-		uint32_t arraySize;
 		float buffer[2];
 	};
 	using CmdUniform2fv = CmdT< OpType::eUniform2fv >;
@@ -84,18 +78,15 @@ namespace ashes::gl4
 	struct alignas( uint64_t ) CmdT< OpType::eUniform3fv >
 	{
 		inline CmdT( uint32_t location
-			, uint32_t arraySize
 			, float const * buffer )
 			: cmd{ { OpType::eUniform3fv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
-			, arraySize{ std::move( arraySize ) }
 			, buffer{ buffer[0], buffer[1], buffer[2] }
 		{
 		}
 
 		Command cmd;
 		uint32_t location;
-		uint32_t arraySize;
 		float buffer[3];
 	};
 	using CmdUniform3fv = CmdT< OpType::eUniform3fv >;
@@ -115,18 +106,15 @@ namespace ashes::gl4
 	struct alignas( uint64_t ) CmdT< OpType::eUniform4fv >
 	{
 		inline CmdT( uint32_t location
-			, uint32_t arraySize
 			, float const * buffer )
 			: cmd{ { OpType::eUniform4fv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
-			, arraySize{ std::move( arraySize ) }
 			, buffer{ buffer[0], buffer[1], buffer[2], buffer[3] }
 		{
 		}
 
 		Command cmd;
 		uint32_t location;
-		uint32_t arraySize;
 		float buffer[4];
 	};
 	using CmdUniform4fv = CmdT< OpType::eUniform4fv >;
@@ -146,12 +134,10 @@ namespace ashes::gl4
 	struct alignas( uint64_t ) CmdT< OpType::eUniformMatrix2fv >
 	{
 		inline CmdT( uint32_t location
-			, uint32_t arraySize
 			, uint32_t transpose
 			, float const * buffer )
 			: cmd{ { OpType::eUniformMatrix2fv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
-			, arraySize{ std::move( arraySize ) }
 			, transpose{ std::move( transpose ) }
 			, buffer
 			{
@@ -163,7 +149,6 @@ namespace ashes::gl4
 
 		Command cmd;
 		uint32_t location;
-		uint32_t arraySize;
 		uint32_t transpose;
 		float buffer[4];
 	};
@@ -184,12 +169,10 @@ namespace ashes::gl4
 	struct alignas( uint64_t ) CmdT< OpType::eUniformMatrix3fv >
 	{
 		inline CmdT( uint32_t location
-			, uint32_t arraySize
 			, uint32_t transpose
 			, float const * buffer )
 			: cmd{ { OpType::eUniformMatrix3fv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
-			, arraySize{ std::move( arraySize ) }
 			, transpose{ std::move( transpose ) }
 			, buffer
 			{
@@ -202,7 +185,6 @@ namespace ashes::gl4
 
 		Command cmd;
 		uint32_t location;
-		uint32_t arraySize;
 		uint32_t transpose;
 		float buffer[9];
 	};
@@ -223,12 +205,10 @@ namespace ashes::gl4
 	struct alignas( uint64_t ) CmdT< OpType::eUniformMatrix4fv >
 	{
 		inline CmdT( uint32_t location
-			, uint32_t arraySize
 			, uint32_t transpose
 			, float const * buffer )
 			: cmd{ { OpType::eUniformMatrix4fv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
-			, arraySize{ std::move( arraySize ) }
 			, transpose{ std::move( transpose ) }
 			, buffer
 			{
@@ -242,7 +222,6 @@ namespace ashes::gl4
 
 		Command cmd;
 		uint32_t location;
-		uint32_t arraySize;
 		uint32_t transpose;
 		float buffer[16];
 	};
@@ -263,18 +242,15 @@ namespace ashes::gl4
 	struct alignas( uint64_t ) CmdT< OpType::eUniform1iv >
 	{
 		inline CmdT( uint32_t location
-			, uint32_t arraySize
 			, int32_t const * buffer )
 			: cmd{ { OpType::eUniform1iv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
-			, arraySize{ std::move( arraySize ) }
 			, buffer{ *buffer }
 		{
 		}
 
 		Command cmd;
 		uint32_t location;
-		uint32_t arraySize;
 		int32_t buffer;
 	};
 	using CmdUniform1iv = CmdT< OpType::eUniform1iv >;
@@ -294,18 +270,15 @@ namespace ashes::gl4
 	struct alignas( uint64_t ) CmdT< OpType::eUniform2iv >
 	{
 		inline CmdT( uint32_t location
-			, uint32_t arraySize
 			, int32_t const * buffer )
 			: cmd{ { OpType::eUniform2iv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
-			, arraySize{ std::move( arraySize ) }
 			, buffer{ buffer[0], buffer[1] }
 		{
 		}
 
 		Command cmd;
 		uint32_t location;
-		uint32_t arraySize;
 		int32_t buffer[2];
 	};
 	using CmdUniform2iv = CmdT< OpType::eUniform2iv >;
@@ -325,18 +298,15 @@ namespace ashes::gl4
 	struct alignas( uint64_t ) CmdT< OpType::eUniform3iv >
 	{
 		inline CmdT( uint32_t location
-			, uint32_t arraySize
 			, int32_t const * buffer )
 			: cmd{ { OpType::eUniform3iv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
-			, arraySize{ std::move( arraySize ) }
 			, buffer{ buffer[0], buffer[1], buffer[2] }
 		{
 		}
 
 		Command cmd;
 		uint32_t location;
-		uint32_t arraySize;
 		int32_t buffer[3];
 	};
 	using CmdUniform3iv = CmdT< OpType::eUniform3iv >;
@@ -356,18 +326,15 @@ namespace ashes::gl4
 	struct alignas( uint64_t ) CmdT< OpType::eUniform4iv >
 	{
 		inline CmdT( uint32_t location
-			, uint32_t arraySize
 			, int32_t const * buffer )
 			: cmd{ { OpType::eUniform4iv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
-			, arraySize{ std::move( arraySize ) }
 			, buffer{ buffer[0], buffer[1], buffer[2], buffer[3] }
 		{
 		}
 
 		Command cmd;
 		uint32_t location;
-		uint32_t arraySize;
 		int32_t buffer[4];
 	};
 	using CmdUniform4iv = CmdT< OpType::eUniform4iv >;
@@ -387,18 +354,15 @@ namespace ashes::gl4
 	struct alignas( uint64_t ) CmdT< OpType::eUniform1uiv >
 	{
 		inline CmdT( uint32_t location
-			, uint32_t arraySize
 			, uint32_t const * buffer )
 			: cmd{ { OpType::eUniform1uiv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
-			, arraySize{ std::move( arraySize ) }
 			, buffer{ *buffer }
 		{
 		}
 
 		Command cmd;
 		uint32_t location;
-		uint32_t arraySize;
 		uint32_t buffer;
 	};
 	using CmdUniform1uiv = CmdT< OpType::eUniform1uiv >;
@@ -418,18 +382,15 @@ namespace ashes::gl4
 	struct alignas( uint64_t ) CmdT< OpType::eUniform2uiv >
 	{
 		inline CmdT( uint32_t location
-			, uint32_t arraySize
 			, uint32_t const * buffer )
 			: cmd{ { OpType::eUniform2uiv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
-			, arraySize{ std::move( arraySize ) }
 			, buffer{ buffer[0], buffer[1] }
 		{
 		}
 
 		Command cmd;
 		uint32_t location;
-		uint32_t arraySize;
 		uint32_t buffer[2];
 	};
 	using CmdUniform2uiv = CmdT< OpType::eUniform2uiv >;
@@ -449,18 +410,15 @@ namespace ashes::gl4
 	struct alignas( uint64_t ) CmdT< OpType::eUniform3uiv >
 	{
 		inline CmdT( uint32_t location
-			, uint32_t arraySize
 			, uint32_t const * buffer )
 			: cmd{ { OpType::eUniform3uiv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
-			, arraySize{ std::move( arraySize ) }
 			, buffer{ buffer[0], buffer[1], buffer[2] }
 		{
 		}
 
 		Command cmd;
 		uint32_t location;
-		uint32_t arraySize;
 		uint32_t buffer[3];
 	};
 	using CmdUniform3uiv = CmdT< OpType::eUniform3uiv >;
@@ -480,18 +438,15 @@ namespace ashes::gl4
 	struct alignas( uint64_t ) CmdT< OpType::eUniform4uiv >
 	{
 		inline CmdT( uint32_t location
-			, uint32_t arraySize
 			, uint32_t const * buffer )
 			: cmd{ { OpType::eUniform4uiv, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, location{ std::move( location ) }
-			, arraySize{ std::move( arraySize ) }
 			, buffer{ buffer[0], buffer[1], buffer[2], buffer[3] }
 		{
 		}
 
 		Command cmd;
 		uint32_t location;
-		uint32_t arraySize;
 		uint32_t buffer[4];
 	};
 	using CmdUniform4uiv = CmdT< OpType::eUniform4uiv >;
