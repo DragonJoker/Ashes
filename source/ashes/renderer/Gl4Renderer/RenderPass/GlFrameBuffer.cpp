@@ -240,6 +240,16 @@ namespace ashes::gl4
 		}
 	}
 
+	bool Framebuffer::hasOnlySwapchainImage()const
+	{
+		return m_attachments.end() == std::find_if( m_attachments.begin()
+			, m_attachments.end()
+			, []( VkImageView view )
+			{
+				return !get( get( view )->getImage() )->isSwapchainImage();
+			} );
+	}
+
 	bool Framebuffer::hasSwapchainImage()const
 	{
 		return m_attachments.end() != std::find_if( m_attachments.begin()

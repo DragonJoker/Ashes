@@ -181,7 +181,7 @@ int main( int argc, char * argv[] )
 	{
 		VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT,
 		nullptr,
-		VkDebugReportFlagBitsEXT::VK_DEBUG_REPORT_ERROR_BIT_EXT | VkDebugReportFlagBitsEXT::VK_DEBUG_REPORT_WARNING_BIT_EXT,
+		VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT,
 		DbgCallback,
 		nullptr,
 	};
@@ -227,8 +227,7 @@ int main( int argc, char * argv[] )
 	app.graphicsQueue = app.device->getQueue( app.graphicsQueueFamilyIndex, 0u );
 	app.presentQueue = app.device->getQueue( app.presentQueueFamilyIndex, 0u );
 	app.commandPool = app.device->createCommandPool( app.graphicsQueueFamilyIndex
-		, VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT
-			| VkCommandPoolCreateFlagBits::VK_COMMAND_POOL_CREATE_TRANSIENT_BIT );
+		, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT | VK_COMMAND_POOL_CREATE_TRANSIENT_BIT );
 
 	// Create the swapchain and set it up.
 	app.dimensions.width = width;
@@ -255,7 +254,7 @@ int main( int argc, char * argv[] )
 			// Submit the command buffer to the graphics queue.
 			app.graphicsQueue->submit( *app.commandBuffers[resources->imageIndex]
 				, *resources->imageAvailableSemaphore
-				, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+				, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
 				, *resources->finishedRenderingSemaphore
 				, resources->fence.get() );
 
@@ -373,6 +372,7 @@ std::vector< VkExtensionProperties > enumerateExtensionProperties( PFN_vkEnumera
 
 	return result;
 }
+
 void doInitialiseQueueFamilies( ashes::Instance const & instance
 	, ashes::Surface const & surface
 	, ashes::PhysicalDevice const & gpu
@@ -394,7 +394,7 @@ void doInitialiseQueueFamilies( ashes::Instance const & instance
 
 		if ( queueProps[i].queueCount > 0 )
 		{
-			if ( queueProps[i].queueFlags & VkQueueFlagBits::VK_QUEUE_GRAPHICS_BIT )
+			if ( queueProps[i].queueFlags & VK_QUEUE_GRAPHICS_BIT )
 			{
 				// Tout d'abord on choisit une file graphique
 				if ( graphicsQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
@@ -403,7 +403,7 @@ void doInitialiseQueueFamilies( ashes::Instance const & instance
 				}
 
 				// Si la file supporte aussi les calculs, on la choisit en compute queue
-				if ( queueProps[i].queueFlags & VkQueueFlagBits::VK_QUEUE_COMPUTE_BIT
+				if ( queueProps[i].queueFlags & VK_QUEUE_COMPUTE_BIT
 					&& computeQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
 				{
 					computeQueueFamilyIndex = i;
@@ -417,7 +417,7 @@ void doInitialiseQueueFamilies( ashes::Instance const & instance
 					break;
 				}
 			}
-			else if ( queueProps[i].queueFlags & VkQueueFlagBits::VK_QUEUE_COMPUTE_BIT
+			else if ( queueProps[i].queueFlags & VK_QUEUE_COMPUTE_BIT
 				&& computeQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
 			{
 				computeQueueFamilyIndex = i;
@@ -446,7 +446,7 @@ void doInitialiseQueueFamilies( ashes::Instance const & instance
 		|| presentQueueFamilyIndex == std::numeric_limits< uint32_t >::max()
 		|| computeQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
 	{
-		throw ashes::Exception{ VkResult::VK_ERROR_INITIALIZATION_FAILED
+		throw ashes::Exception{ VK_ERROR_INITIALIZATION_FAILED
 			, "Queue families retrieval" };
 	}
 }
@@ -510,6 +510,7 @@ ashes::DeviceCreateInfo getDeviceCreateInfo( ashes::Instance const & instance
 		gpu.getFeatures(),
 	};
 }
+
 uint32_t doGetImageCount( ashes::Surface const & surface )
 {
 	auto surfaceCaps = surface.getCapabilities();
@@ -532,10 +533,10 @@ VkSurfaceFormatKHR doSelectFormat( ashes::Surface const & surface )
 	// Si la liste de formats ne contient qu'une entr�e VK_FORMAT_UNDEFINED,
 	// la surface n'a pas de format préféré. Sinon, au moins un format supporté
 	// sera renvoyé.
-	if ( formats.size() == 1u && formats[0].format == VkFormat::VK_FORMAT_UNDEFINED )
+	if ( formats.size() == 1u && formats[0].format == VK_FORMAT_UNDEFINED )
 	{
-		result.format = VkFormat::VK_FORMAT_R8G8B8A8_UNORM;
-		result.colorSpace = VkColorSpaceKHR::VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
+		result.format = VK_FORMAT_R8G8B8A8_UNORM;
+		result.colorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
 	}
 	else
 	{
@@ -544,7 +545,7 @@ VkSurfaceFormatKHR doSelectFormat( ashes::Surface const & surface )
 			, formats.end()
 			, []( VkSurfaceFormatKHR const & lookup )
 			{
-				return lookup.format == VkFormat::VK_FORMAT_R8G8B8A8_UNORM;
+				return lookup.format == VK_FORMAT_R8G8B8A8_UNORM;
 			} );
 
 		if ( it != formats.end() )
@@ -567,18 +568,18 @@ VkPresentModeKHR doSelectPresentMode( ashes::Surface const & surface )
 	// minimum de latence dans tearing.
 	// Sinon, on essaye le mode IMMEDIATE, qui est normalement disponible, et est le plus rapide
 	// (bien qu'il y ait du tearing). Sinon on utilise le mode FIFO qui est toujours disponible.
-	VkPresentModeKHR result{ VkPresentModeKHR::VK_PRESENT_MODE_FIFO_KHR };
+	VkPresentModeKHR result{ VK_PRESENT_MODE_FIFO_KHR };
 
 	for ( auto mode : presentModes )
 	{
-		if ( mode == VkPresentModeKHR::VK_PRESENT_MODE_MAILBOX_KHR )
+		if ( mode == VK_PRESENT_MODE_MAILBOX_KHR )
 		{
 			result = mode;
 			break;
 		}
 
-		if ( ( result != VkPresentModeKHR::VK_PRESENT_MODE_MAILBOX_KHR )
-			&& ( mode == VkPresentModeKHR::VK_PRESENT_MODE_IMMEDIATE_KHR ) )
+		if ( ( result != VK_PRESENT_MODE_MAILBOX_KHR )
+			&& ( mode == VK_PRESENT_MODE_IMMEDIATE_KHR ) )
 		{
 			result = mode;
 		}
@@ -616,9 +617,9 @@ VkSwapchainCreateInfoKHR doGetSwapChainCreateInfo( ashes::Surface const & surfac
 	// nous l'utilisons, sinon nous utiliserons la même transformation que la transformation courante.
 	VkSurfaceTransformFlagBitsKHR preTransform{};
 
-	if ( ( surfaceCaps.supportedTransforms & VkSurfaceTransformFlagBitsKHR::VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR ) )
+	if ( ( surfaceCaps.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR ) )
 	{
-		preTransform = VkSurfaceTransformFlagBitsKHR::VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
+		preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
 	}
 	else
 	{
@@ -639,11 +640,11 @@ VkSwapchainCreateInfoKHR doGetSwapChainCreateInfo( ashes::Surface const & surfac
 		swapChainExtent,
 		1u,
 		surfaceCaps.supportedUsageFlags,
-		VkSharingMode::VK_SHARING_MODE_EXCLUSIVE,
+		VK_SHARING_MODE_EXCLUSIVE,
 		0u,
 		nullptr,
 		preTransform,
-		VkCompositeAlphaFlagBitsKHR::VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+		VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
 		presentMode,
 		VK_TRUE,
 		nullptr
@@ -658,7 +659,7 @@ void doCreateRenderingResources( Application & application )
 	{
 		application.renderingResources.emplace_back( std::make_unique< RenderingResources >( application.device->createSemaphore()
 			, application.device->createSemaphore()
-			, application.device->createFence( VkFenceCreateFlagBits::VK_FENCE_CREATE_SIGNALED_BIT )
+			, application.device->createFence( VK_FENCE_CREATE_SIGNALED_BIT )
 			, application.commandPool->createCommandBuffer()
 			, 0u ) );
 	}
@@ -684,21 +685,21 @@ ashes::RenderPassPtr createRenderPass( ashes::Device const & device
 			// The format is the swapchain's pixel format.
 			swapChain.getFormat(),
 			// Multisampling is disabled for this attach.
-			VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT,
+			VK_SAMPLE_COUNT_1_BIT,
 			// We want to clear the attach at the beginning of the render pass.
-			VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_CLEAR,
+			VK_ATTACHMENT_LOAD_OP_CLEAR,
 			// And we want its result to be stored at the end of the render pass.
-			VkAttachmentStoreOp::VK_ATTACHMENT_STORE_OP_STORE,
+			VK_ATTACHMENT_STORE_OP_STORE,
 			// We don't care about stencil attachment.
-			VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+			VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 			// We don't care about stencil attachment.
-			VkAttachmentStoreOp::VK_ATTACHMENT_STORE_OP_DONT_CARE,
+			VK_ATTACHMENT_STORE_OP_DONT_CARE,
 			// The initial layout is the layout expected for the attachment at the beginning of the render pass.
 			// We expect the attach to have been presented to the surface, so it should be either a present source or undefined.
-			VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED,
+			VK_IMAGE_LAYOUT_UNDEFINED,
 			// The final layout is the layouts into which the attachment is transitioned at the end of the render pass.
 			// We want the attach to be presented to the surface, so we make it a present source.
-			VkImageLayout::VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+			VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
 		} );
 	// A render pass always has at least one subpass.
 	// In our case, this subpass is also the only one,
@@ -710,7 +711,7 @@ ashes::RenderPassPtr createRenderPass( ashes::Device const & device
 	subpasses.emplace_back( 0u
 		, VK_PIPELINE_BIND_POINT_GRAPHICS
 		, ashes::VkAttachmentReferenceArray{}
-		, ashes::VkAttachmentReferenceArray{ VkAttachmentReference{ 0u, VkImageLayout::VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } }
+		, ashes::VkAttachmentReferenceArray{ VkAttachmentReference{ 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } }
 		, ashes::VkAttachmentReferenceArray{}
 		, std::nullopt
 		, ashes::UInt32Array{} );
@@ -719,19 +720,19 @@ ashes::RenderPassPtr createRenderPass( ashes::Device const & device
 	dependencies.resize( 2u );
 	dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
 	dependencies[0].dstSubpass = 0u;
-	dependencies[0].srcAccessMask = VkAccessFlagBits::VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VkAccessFlagBits::VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
-	dependencies[0].dstAccessMask = VkAccessFlagBits::VK_ACCESS_SHADER_READ_BIT;
-	dependencies[0].srcStageMask = VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	dependencies[0].dstStageMask = VkPipelineStageFlagBits::VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-	dependencies[0].dependencyFlags = VkDependencyFlagBits::VK_DEPENDENCY_BY_REGION_BIT;
+	dependencies[0].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
+	dependencies[0].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+	dependencies[0].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependencies[0].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+	dependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
 	dependencies[1].srcSubpass = 0u;
 	dependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
-	dependencies[1].srcAccessMask = VkAccessFlagBits::VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VkAccessFlagBits::VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
-	dependencies[1].dstAccessMask = VkAccessFlagBits::VK_ACCESS_SHADER_READ_BIT;
-	dependencies[1].srcStageMask = VkPipelineStageFlagBits::VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	dependencies[1].dstStageMask = VkPipelineStageFlagBits::VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-	dependencies[1].dependencyFlags = VkDependencyFlagBits::VK_DEPENDENCY_BY_REGION_BIT;
+	dependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
+	dependencies[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+	dependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependencies[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+	dependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
 	ashes::RenderPassCreateInfo createInfo
 	{
@@ -808,11 +809,11 @@ void prepareFrames( Application & application )
 		auto & frameBuffer = *application.frameBuffers[i];
 		auto & commandBuffer = *application.commandBuffers[i];
 
-		commandBuffer.begin( VkCommandBufferUsageFlagBits::VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT );
+		commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT );
 		commandBuffer.beginRenderPass( *application.renderPass
 			, frameBuffer
 			, ashes::VkClearValueArray{ { application.clearColour } }
-			, VkSubpassContents::VK_SUBPASS_CONTENTS_INLINE );
+			, VK_SUBPASS_CONTENTS_INLINE );
 		commandBuffer.endRenderPass();
 		commandBuffer.end();
 	}
@@ -864,11 +865,11 @@ bool checkNeedReset( Application & application
 
 	switch ( errCode )
 	{
-	case VkResult::VK_SUCCESS:
+	case VK_SUCCESS:
 		result = true;
 		break;
 
-	case VkResult::VK_ERROR_OUT_OF_DATE_KHR:
+	case VK_ERROR_OUT_OF_DATE_KHR:
 		if ( !acquisition )
 		{
 			doResetSwapChain( application );
@@ -879,7 +880,7 @@ bool checkNeedReset( Application & application
 		}
 		break;
 
-	case VkResult::VK_SUBOPTIMAL_KHR:
+	case VK_SUBOPTIMAL_KHR:
 		doResetSwapChain( application );
 		break;
 

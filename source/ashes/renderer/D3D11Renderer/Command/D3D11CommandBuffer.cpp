@@ -125,6 +125,7 @@ namespace ashes::d3d11
 	VkResult CommandBuffer::begin( VkCommandBufferBeginInfo info )const
 	{
 		m_commands.clear();
+		m_mappedResources.clear();
 		m_afterSubmitActions.clear();
 		m_state = State{};
 		m_state.beginInfo = std::move( info );
@@ -356,6 +357,7 @@ namespace ashes::d3d11
 			, indexType ) );
 		doAddAfterSubmitAction();
 		m_state.indexType = indexType;
+		m_state.newlyBoundIbo = buffer;
 	}
 
 	void CommandBuffer::bindDescriptorSets( VkPipelineBindPoint bindingPoint
@@ -431,7 +433,8 @@ namespace ashes::d3d11
 		, uint32_t vertexOffset
 		, uint32_t firstInstance )const
 	{
-		if ( !get( m_state.currentPipeline )->hasVertexLayout() )
+		if ( !get( m_state.currentPipeline )->hasVertexLayout()
+			&& m_state.newlyBoundIbo == VK_NULL_HANDLE )
 		{
 			bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
 		}
@@ -448,6 +451,7 @@ namespace ashes::d3d11
 			, m_state.indexType
 			, m_state.vbos ) );
 		doProcessMappedBoundDescriptorsResourcesOut();
+		m_state.newlyBoundIbo = VK_NULL_HANDLE;
 	}
 
 	void CommandBuffer::drawIndirect( VkBuffer buffer
@@ -472,7 +476,8 @@ namespace ashes::d3d11
 		, uint32_t drawCount
 		, uint32_t stride )const
 	{
-		if ( !get( m_state.currentPipeline )->hasVertexLayout() )
+		if ( !get( m_state.currentPipeline )->hasVertexLayout()
+			&& m_state.newlyBoundIbo == VK_NULL_HANDLE )
 		{
 			bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
 		}
@@ -488,6 +493,7 @@ namespace ashes::d3d11
 			, m_state.indexType
 			, m_state.vbos ) );
 		doProcessMappedBoundDescriptorsResourcesOut();
+		m_state.newlyBoundIbo = VK_NULL_HANDLE;
 	}
 
 	void CommandBuffer::copyToImage( VkBuffer src

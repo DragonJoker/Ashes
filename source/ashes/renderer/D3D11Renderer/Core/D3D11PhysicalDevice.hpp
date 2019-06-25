@@ -37,7 +37,7 @@ namespace ashes::d3d11
 		/**
 		*\copydoc	ashes::Instance::getProperties
 		*/
-		VkPhysicalDeviceProperties getProperties()const;
+		VkPhysicalDeviceProperties const & getProperties()const;
 		/**
 		*\copydoc	ashes::Instance::getMemoryProperties
 		*/

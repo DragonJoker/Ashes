@@ -27,15 +27,15 @@ namespace ashes::gl4
 		glLogCommand( "BindPipelineCommand" );
 		GLuint program;
 
-		if ( get( stack.getCurrentFramebuffer() )->hasSwapchainImage() )
-		{
-			stack.apply( list, get( pipeline )->getBackContextState() );
-			program = get( pipeline )->getBackProgram();
-		}
-		else
+		if ( !get( stack.getCurrentFramebuffer() )->hasSwapchainImage() )
 		{
 			stack.apply( list, get( pipeline )->getRtotContextState() );
 			program = get( pipeline )->getRtotProgram();
+		}
+		else
+		{
+			stack.apply( list, get( pipeline )->getBackContextState() );
+			program = get( pipeline )->getBackProgram();
 		}
 
 		if ( stack.getCurrentProgram() != program )

@@ -22,12 +22,12 @@ namespace ashes::d3d11
 		, m_frameBuffer{ frameBuffer }
 		, m_scissor{ makeScissor( get( m_frameBuffer )->getDimensions() ) }
 	{
-		assert( clearValues.size() == get( renderPass )->getAttachments().size() );
-		auto it = get( renderPass )->getAttachments().begin();
+		assert( clearValues.size() == get( renderPass )->size() );
+		auto it = get( renderPass )->begin();
 
 		for ( auto & clearValue : clearValues )
 		{
-			if ( ashes::isDepthOrStencilFormat( it->format ) )
+			if ( ashes::isDepthOrStencilFormat( get( renderPass )->getAttachment( *it ).format ) )
 			{
 				m_dsClearValue = clearValue;
 			}
@@ -48,11 +48,12 @@ namespace ashes::d3d11
 
 		for ( auto viewIndex = 0u; viewIndex < views.size(); ++viewIndex )
 		{
-			auto & attach = get( m_renderPass )->getAttachments()[viewIndex];
+			auto attach = get( m_renderPass )->findAttachment( viewIndex );
+			assert( attach != nullptr );
 
-			if ( attach.loadOp == VK_ATTACHMENT_LOAD_OP_CLEAR )
+			if ( attach->loadOp == VK_ATTACHMENT_LOAD_OP_CLEAR )
 			{
-				if ( getAspectMask( attach.format ) == VK_IMAGE_ASPECT_COLOR_BIT )
+				if ( getAspectMask( attach->format ) == VK_IMAGE_ASPECT_COLOR_BIT )
 				{
 					context.context->ClearRenderTargetView( reinterpret_cast< ID3D11RenderTargetView * >( views[viewIndex] )
 						, m_rtClearValues[clearIndex].color.float32 );

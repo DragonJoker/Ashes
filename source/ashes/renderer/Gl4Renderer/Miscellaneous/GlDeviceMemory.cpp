@@ -554,7 +554,8 @@ namespace ashes::gl4
 		, GLuint boundTarget
 		, VkDeviceSize memoryOffset
 		, GLuint buffer )
-		: m_device{ device }
+		: m_parent{ parent }
+		, m_device{ device }
 		, m_allocateInfo{ allocateInfo }
 		, m_mapFlags{ 0u }
 		, m_boundResource{ boundResource }
@@ -696,7 +697,7 @@ namespace ashes::gl4
 				, get( buffer )->getTarget()
 				, memoryOffset
 				, m_buffer );
-			get( buffer )->setInternal( m_impl->getInternal() );
+			get( buffer )->setInternal( m_impl->getInternal(), memoryOffset );
 			get( buffer )->setMemory( get( this ) );
 			result = VK_SUCCESS;
 		}

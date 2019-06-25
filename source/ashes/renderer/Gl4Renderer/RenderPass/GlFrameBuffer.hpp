@@ -81,6 +81,7 @@ namespace ashes::gl4
 		*	Accesseurs.
 		*/
 		/**@{*/
+		bool hasOnlySwapchainImage()const;
 		bool hasSwapchainImage()const;
 		inline GLuint getInternal()const
 		{

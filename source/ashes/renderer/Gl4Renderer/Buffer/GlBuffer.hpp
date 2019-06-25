@@ -31,6 +31,12 @@ namespace ashes::gl4
 			return m_internal;
 		}
 
+		inline VkDeviceSize getInternalOffset()const
+		{
+			assert( m_internal != GL_INVALID_INDEX );
+			return m_internalOffset;
+		}
+
 		inline GlBufferTarget getTarget()const
 		{
 			return m_target;
@@ -47,10 +53,11 @@ namespace ashes::gl4
 		}
 
 	private:
-		inline void setInternal( GLuint value )
+		inline void setInternal( GLuint value, VkDeviceSize internalOffset )
 		{
 			assert( m_internal == GL_INVALID_INDEX );
 			m_internal = value;
+			m_internalOffset = internalOffset;
 		}
 
 	private:
@@ -58,6 +65,7 @@ namespace ashes::gl4
 		UInt32Array m_queueFamilyIndices;
 		VkBufferCreateInfo m_createInfo;
 		GLuint m_internal{ GL_INVALID_INDEX };
+		VkDeviceSize m_internalOffset{ 0u };
 		GlBufferTarget m_target;
 		VkDeviceMemory m_memory{ VK_NULL_HANDLE };
 		mutable GlBufferTarget m_copyTarget;

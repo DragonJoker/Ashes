@@ -33,7 +33,7 @@ namespace ashes::gl4
 			, GL_BUFFER_TARGET_TEXTURE
 			, getInternalFormat( m_format )
 			, get( createInfo.buffer )->getInternal()
-			, m_offset
+			, get( createInfo.buffer )->getInternalOffset() + m_offset
 			, m_range );
 		glLogCall( context
 			, glBindTexture

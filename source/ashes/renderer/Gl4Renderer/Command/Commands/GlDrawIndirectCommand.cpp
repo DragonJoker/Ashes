@@ -31,7 +31,7 @@ namespace ashes::gl4
 		glLogCommand( "DrawIndirectCommand" );
 		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_DRAW_INDIRECT
 			, get( buffer )->getInternal() ) );
-		list.push_back( makeCmd< OpType::eDrawIndirect >( uint32_t( offset )
+		list.push_back( makeCmd< OpType::eDrawIndirect >( uint32_t( get( buffer )->getInternalOffset() + offset )
 			, drawCount
 			, stride
 			, convert( mode ) ) );

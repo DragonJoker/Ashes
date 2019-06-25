@@ -18,6 +18,7 @@ namespace ashes::d3d11
 			, VkPhysicalDevice physicalDevice
 			, VkDeviceCreateInfo createInfos );
 		~Device();
+		VkPhysicalDeviceLimits const & getLimits()const;
 		VkImage getStagingImage( VkImage image
 			, VkDeviceMemory & memory );
 		/**

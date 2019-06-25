@@ -25,7 +25,7 @@ namespace ashes::gl4
 		glLogCommand( "DispatchIndirectCommand" );
 		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_DISPATCH_INDIRECT
 			, get( buffer )->getInternal() ) );
-		list.push_back( makeCmd< OpType::eDispatchIndirect >( offset ) );
+		list.push_back( makeCmd< OpType::eDispatchIndirect >( get( buffer )->getInternalOffset() + offset ) );
 		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_DISPATCH_INDIRECT
 			, 0u ) );
 	}

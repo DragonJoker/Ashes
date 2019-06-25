@@ -40,7 +40,7 @@ namespace ashes::d3d11
 		return result;
 	}
 
-	VkPhysicalDeviceProperties PhysicalDevice::getProperties()const
+	VkPhysicalDeviceProperties const & PhysicalDevice::getProperties()const
 	{
 		return m_properties;
 	}

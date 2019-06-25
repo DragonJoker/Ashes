@@ -110,9 +110,19 @@ namespace ashes::d3d11
 			return m_createInfo.extent;
 		}
 
+		inline VkImageUsageFlags getUsage()const noexcept
+		{
+			return m_createInfo.usage;
+		}
+
 		inline VkFormat getFormat()const
 		{
 			return m_createInfo.format;
+		}
+
+		inline VkSampleCountFlagBits getSamplesCount()const
+		{
+			return m_createInfo.samples;
 		}
 
 		inline VkImageType getType()const

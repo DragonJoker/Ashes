@@ -175,6 +175,11 @@ namespace ashes::d3d11
 #endif
 	}
 
+	VkPhysicalDeviceLimits const & Device::getLimits()const
+	{
+		return get( m_physicalDevice )->getProperties().limits;
+	}
+
 	VkImage Device::getStagingImage( VkImage image
 		, VkDeviceMemory & memory )
 	{

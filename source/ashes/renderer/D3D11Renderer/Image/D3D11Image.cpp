@@ -103,8 +103,8 @@ namespace ashes::d3d11
 		result.size = getTotalSize( getDimensions(), getFormat(), getLayerCount(), getMipmapLevels() );
 		auto extent = ashes::getMinimalExtent3D( getFormat() );
 		result.alignment = ashes::getSize( extent, getFormat() );
-		result.memoryTypeBits = ( checkFlag( m_createInfo.usage, VK_IMAGE_USAGE_TRANSFER_DST_BIT )
-				|| checkFlag( m_createInfo.usage, VK_IMAGE_USAGE_TRANSFER_SRC_BIT ) )
+		result.memoryTypeBits = ( checkFlag( getUsage(), VK_IMAGE_USAGE_TRANSFER_DST_BIT )
+				|| checkFlag( getUsage(), VK_IMAGE_USAGE_TRANSFER_SRC_BIT ) )
 			? VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
 			: VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 		return result;

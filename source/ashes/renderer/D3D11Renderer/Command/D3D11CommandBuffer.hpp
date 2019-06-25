@@ -204,6 +204,7 @@ namespace ashes::d3d11
 			mutable VbosBindingArray vbos;
 			VkIndexType indexType;
 			VkDescriptorSetArray boundDescriptors;
+			VkBuffer newlyBoundIbo{ VK_NULL_HANDLE };
 		};
 		mutable State m_state;
 		mutable std::vector< std::function< void( Context const & ) > > m_afterSubmitActions;

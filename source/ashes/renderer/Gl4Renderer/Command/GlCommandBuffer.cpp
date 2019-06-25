@@ -334,6 +334,7 @@ namespace ashes::gl4
 		, VkIndexType indexType )const
 	{
 		m_state.boundIbo = BufferObjectBinding{ get( buffer )->getInternal(), offset, buffer };
+		m_state.newlyBoundIbo = m_state.boundIbo;
 		m_state.indexType = indexType;
 		m_state.selectedVao = nullptr;
 	}
@@ -359,25 +360,13 @@ namespace ashes::gl4
 	void CommandBuffer::setViewport( uint32_t firstViewport
 		, VkViewportArray viewports )const
 	{
-		auto & viewport = viewports[firstViewport];
-
-		if ( m_state.stack->getCurrentViewport() != viewport )
-		{
-			m_cmdList.push_back( makeCmd< OpType::eApplyViewport >( viewport ) );
-			m_state.stack->setCurrentViewport( viewport );
-		}
+		buildViewportCommand( *m_state.stack, firstViewport, viewports, m_cmdList );
 	}
 
 	void CommandBuffer::setScissor( uint32_t firstScissor
 		, VkScissorArray scissors )const
 	{
-		auto & scissor = scissors[firstScissor];
-
-		if ( m_state.stack->getCurrentScissor() != scissor )
-		{
-			m_cmdList.push_back( makeCmd< OpType::eApplyScissor >( scissor ) );
-			m_state.stack->setCurrentScissor( scissor );
-		}
+		buildScissorCommand( *m_state.stack, firstScissor, scissors, m_cmdList );
 	}
 
 	void CommandBuffer::draw( uint32_t vtxCount
@@ -435,7 +424,8 @@ namespace ashes::gl4
 		, uint32_t vertexOffset
 		, uint32_t firstInstance )const
 	{
-		if ( isEmpty( get( m_state.currentPipeline )->getVertexInputState() ) )
+		if ( isEmpty( get( m_state.currentPipeline )->getVertexInputState() )
+			&& !m_state.newlyBoundIbo )
 		{
 			bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
 			m_state.selectedVao = &get( m_device )->getEmptyIndexedVao();
@@ -465,6 +455,7 @@ namespace ashes::gl4
 			, m_cmdList );
 		m_cmdList.push_back( makeCmd< OpType::eBindVextexArray >( nullptr ) );
 		doProcessMappedBoundDescriptorsBuffersOut();
+		m_state.newlyBoundIbo = std::nullopt;
 	}
 
 	void CommandBuffer::drawIndirect( VkBuffer buffer
@@ -495,7 +486,8 @@ namespace ashes::gl4
 		, uint32_t drawCount
 		, uint32_t stride )const
 	{
-		if ( isEmpty( get( m_state.currentPipeline )->getVertexInputState() ) )
+		if ( isEmpty( get( m_state.currentPipeline )->getVertexInputState() )
+			&& !m_state.newlyBoundIbo )
 		{
 			bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
 			m_state.selectedVao = &get( m_device )->getEmptyIndexedVao();
@@ -524,6 +516,7 @@ namespace ashes::gl4
 			, m_cmdList );
 		m_cmdList.push_back( makeCmd< OpType::eBindVextexArray >( nullptr ) );
 		doProcessMappedBoundDescriptorsBuffersOut();
+		m_state.newlyBoundIbo = std::nullopt;
 	}
 
 	void CommandBuffer::copyToImage( VkBuffer src

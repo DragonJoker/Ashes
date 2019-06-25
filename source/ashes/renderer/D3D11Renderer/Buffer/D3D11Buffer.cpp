@@ -22,11 +22,11 @@ namespace ashes::d3d11
 	{
 		VkMemoryRequirements result{};
 		result.memoryTypeBits = ~( 0u );
-		result.alignment = 1u;
+		result.alignment = get( m_device )->getLimits().nonCoherentAtomSize;
 
 		if ( checkFlag( m_createInfo.usage, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT ) )
 		{
-			result.alignment = 256u;
+			result.alignment = get( m_device )->getLimits().minUniformBufferOffsetAlignment;
 		}
 
 		result.size = ashes::getAlignedSize( m_createInfo.size, result.alignment );

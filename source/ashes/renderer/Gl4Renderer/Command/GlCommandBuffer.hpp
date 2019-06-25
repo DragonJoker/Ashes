@@ -326,6 +326,7 @@ namespace ashes::gl4
 			VkFramebuffer currentFrameBuffer{ nullptr };
 			VboBindings boundVbos;
 			IboBinding boundIbo;
+			IboBinding newlyBoundIbo;
 			VkIndexType indexType;
 			GeometryBuffers * selectedVao{ nullptr };
 			GeometryBuffersRefArray vaos;

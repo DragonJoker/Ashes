@@ -38,6 +38,10 @@ namespace ashes::d3d11
 						: std::nullopt ),
 					makeVector( subpass.pPreserveAttachments, subpass.preserveAttachmentCount )
 				} );
+			referenceAttaches( data->colorAttachments );
+			referenceAttaches( data->inputAttachments );
+			referenceAttaches( data->resolveAttachments );
+			referenceAttaches( data->depthStencilAttachment );
 			subpass.pColorAttachments = data->colorAttachments.data();
 			subpass.pInputAttachments = data->inputAttachments.data();
 			subpass.pResolveAttachments = data->resolveAttachments.data();
@@ -52,5 +56,52 @@ namespace ashes::d3d11
 
 	RenderPass::~RenderPass()
 	{
+	}
+
+	VkAttachmentDescription const * RenderPass::findAttachment( uint32_t referenceIndex )const
+	{
+		if ( referenceIndex >= m_referencedAttachments.size() )
+		{
+			return nullptr;
+		}
+
+		return &getAttachment( m_referencedAttachments[referenceIndex] );
+	}
+
+	VkAttachmentDescription const & RenderPass::getAttachment( VkAttachmentReference const & reference )const
+	{
+		return m_attachments[reference.attachment];
+	}
+
+	void RenderPass::referenceAttaches( VkAttachmentReference const & value )
+	{
+		auto it = std::find_if( m_referencedAttachments.begin()
+			, m_referencedAttachments.end()
+			, [&value]( VkAttachmentReference const & lookup )
+			{
+				return value.attachment == lookup.attachment;
+			} );
+
+		if ( it == m_referencedAttachments.end() )
+		{
+			assert( value.attachment < m_attachments.size() && "Trying to reference a non existing attachment." );
+			m_referencedAttachments.push_back( value );
+		}
+	}
+
+	void RenderPass::referenceAttaches( Optional< VkAttachmentReference > const & value )
+	{
+		if ( bool( value ) )
+		{
+			referenceAttaches( value.value() );
+		}
+	}
+
+	void RenderPass::referenceAttaches( VkAttachmentReferenceArray const & values )
+	{
+		for ( auto & value : values )
+		{
+			referenceAttaches( value );
+		}
 	}
 }

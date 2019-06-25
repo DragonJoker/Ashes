@@ -249,6 +249,7 @@ namespace ashes::gl4
 					} );
 			};
 
+			auto bufferOffset = get( vbo.vbo )->getInternalOffset();
 			glLogCall( context
 				, glBindBuffer
 				, GL_BUFFER_TARGET_ARRAY
@@ -262,11 +263,11 @@ namespace ashes::gl4
 
 					if ( it == vbo.programAttributes.end() )
 					{
-						enableAttribute( context, vbo.binding, attribute, vbo.offset, nullptr );
+						enableAttribute( context, vbo.binding, attribute, bufferOffset + vbo.offset, nullptr );
 					}
 					else
 					{
-						enableAttribute( context, vbo.binding, attribute, vbo.offset, &( *it ) );
+						enableAttribute( context, vbo.binding, attribute, bufferOffset + vbo.offset, &( *it ) );
 					}
 				}
 			}
@@ -278,11 +279,11 @@ namespace ashes::gl4
 
 					if ( it == vbo.programAttributes.end() )
 					{
-						enableAttribute( context, vbo.binding, attribute, vbo.offset, nullptr );
+						enableAttribute( context, vbo.binding, attribute, bufferOffset + vbo.offset, nullptr );
 					}
 					else
 					{
-						enableAttribute( context, vbo.binding, attribute, vbo.offset, &( *it ) );
+						enableAttribute( context, vbo.binding, attribute, bufferOffset + vbo.offset, &( *it ) );
 					}
 
 					glLogCall( context
@@ -311,7 +312,6 @@ namespace ashes::gl4
 		, InputLayout const & inputLayout )
 	{
 		std::vector< GeometryBuffers::VBO > result;
-		assert( vbos.size() == vertexInputState.vertexBindingDescriptionCount );
 		result.reserve( vbos.size() );
 
 		for ( auto & binding : vbos )
@@ -322,17 +322,20 @@ namespace ashes::gl4
 			{
 				return lookup.binding == binding.first;
 			} );
-			assert( it != vertexInputState.pVertexBindingDescriptions + vertexInputState.vertexBindingDescriptionCount );
-			auto & vbo = binding.second;
-			result.emplace_back( vbo.buffer
-				, vbo.offset
-				, *it
-				, getAttributes( vertexInputState.pVertexAttributeDescriptions
-					, vertexInputState.pVertexAttributeDescriptions + vertexInputState.vertexAttributeDescriptionCount
-					, it->binding )
-				, getAttributes( inputLayout.vertexAttributeDescriptions.data()
-					, inputLayout.vertexAttributeDescriptions.data() + inputLayout.vertexAttributeDescriptions.size()
-					, it->binding ) );
+
+			if ( it != vertexInputState.pVertexBindingDescriptions + vertexInputState.vertexBindingDescriptionCount )
+			{
+				auto & vbo = binding.second;
+				result.emplace_back( vbo.buffer
+					, vbo.offset
+					, *it
+					, getAttributes( vertexInputState.pVertexAttributeDescriptions
+						, vertexInputState.pVertexAttributeDescriptions + vertexInputState.vertexAttributeDescriptionCount
+						, it->binding )
+					, getAttributes( inputLayout.vertexAttributeDescriptions.data()
+						, inputLayout.vertexAttributeDescriptions.data() + inputLayout.vertexAttributeDescriptions.size()
+						, it->binding ) );
+			}
 		}
 
 		return result;
