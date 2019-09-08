@@ -6,6 +6,7 @@
 */
 #pragma once
 
+#define VK_NO_PROTOTYPES
 #include <ashes/ashes.h>
 
 #include "renderer/Gl4Renderer/Miscellaneous/GlDebug.hpp"

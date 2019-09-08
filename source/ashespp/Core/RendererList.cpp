@@ -11,7 +11,11 @@ See LICENSE file in root folder.
 namespace ashes
 {
 #if defined( _WIN32 )
+#if defined( NDEBUG )
 	static std::string const libraryName = "ashes.dll";
+#else
+	static std::string const libraryName = "ashesd.dll";
+#endif
 #elif defined( __linux__ )
 	static std::string const libraryName = "libashes.so";
 #else

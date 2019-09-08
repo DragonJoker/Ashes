@@ -1,3 +1,4 @@
+#define VK_NO_PROTOTYPES
 #include "ashes/ashes.h"
 
 #include <common/DynamicLibrary.hpp>
@@ -41,8 +42,13 @@ inline PluginArray listPlugins()
 	{
 		for ( auto & file : files )
 		{
+#if defined( NDEBUG )
 			if ( file.find( ".dll" ) != std::string::npos
 				|| file.find( ".so" ) != std::string::npos )
+#else
+			if ( file.find( "d.dll" ) != std::string::npos
+				|| file.find( "d.so" ) != std::string::npos )
+#endif
 			try
 			{
 				result.emplace_back( std::make_unique< ashes::DynamicLibrary >( file ) );

@@ -8,9 +8,6 @@ See LICENSE file in root folder.
 
 #include "ashes/ash_platform.h"
 
-#ifndef ASHES_VK_PROTOTYPES
-#	define VK_NO_PROTOTYPES
-#endif
 #include <vulkan/vulkan.h>
 
 #if ASHES_WIN32

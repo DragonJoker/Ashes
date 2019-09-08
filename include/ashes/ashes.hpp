@@ -6,6 +6,7 @@ See LICENSE file in root folder.
 #define ___Ashes_CPP_H___
 #pragma once
 
+#define VK_NO_PROTOTYPES
 #include "ashes.h"
 
 #include "common/ArrayView.hpp"

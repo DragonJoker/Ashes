@@ -1,3 +1,4 @@
+#define VK_NO_PROTOTYPES
 #include <ashes/ashes.h>
 
 #include "Core/GlContext.hpp"
