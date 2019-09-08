@@ -216,7 +216,7 @@ namespace ashes::d3d11
 
 				if ( checkError( device, hr, "CreateBuffer" ) )
 				{
-					dxDebugName( m_buffer, Buffer );
+					dxDebugName( result, Buffer );
 				}
 			}
 

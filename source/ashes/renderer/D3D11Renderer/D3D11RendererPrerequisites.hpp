@@ -179,7 +179,7 @@ DECLARE_GUID( IID_IDXGIFactory, 0x7b7166ec, 0x21c7, 0x44ae, 0xb2, 0x1a, 0xc9, 0x
 #endif
 
 #if !defined( NDEBUG )
-#	define dxRenderer_DebugNames 0
+#	define dxRenderer_DebugNames 1
 #else
 #	define dxRenderer_DebugNames 0
 #endif
