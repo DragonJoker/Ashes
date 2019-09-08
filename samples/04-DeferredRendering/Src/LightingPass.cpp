@@ -152,7 +152,7 @@ namespace vkapp
 			, ashes::ImageView colourView )
 		{
 			auto formats = doGetFormats( depthView, colourView );
-			ashes::ImageViewArray attaches;
+			ashes::ImageViewCRefArray attaches;
 			attaches.emplace_back( depthView );
 			attaches.emplace_back( colourView );
 			auto dimensions = colourView.image->getDimensions();

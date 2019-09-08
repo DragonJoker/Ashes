@@ -309,11 +309,11 @@ namespace utils
 		resources.setImageIndex( ~0u );
 	}
 
-	ashes::ImageViewArray SwapChain::doPrepareAttaches( uint32_t backBuffer
+	ashes::ImageViewCRefArray SwapChain::doPrepareAttaches( uint32_t backBuffer
 		, ashes::VkAttachmentDescriptionArray const & attaches
 		, ashes::Image const * depthImage )const
 	{
-		ashes::ImageViewArray result;
+		ashes::ImageViewCRefArray result;
 
 		for ( auto & attach : attaches )
 		{
@@ -321,7 +321,7 @@ namespace utils
 
 			if ( !ashes::isDepthOrStencilFormat( attach.format ) )
 			{
-				result.emplace_back( image.createView( VkImageViewCreateInfo
+				m_swapChainImageViews.emplace_back( image.createView( VkImageViewCreateInfo
 					{
 						VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
 						nullptr,
@@ -343,9 +343,11 @@ namespace utils
 			{
 				assert( depthImage
 					&& "Asked for a depth stencil attachment in RenderPass, but no depth stencil view provided." );
-				result.emplace_back( depthImage->createView( VK_IMAGE_VIEW_TYPE_2D
+				m_swapChainImageViews.emplace_back( depthImage->createView( VK_IMAGE_VIEW_TYPE_2D
 					, depthImage->getFormat() ) );
 			}
+
+			result.emplace_back( m_swapChainImageViews.back() );
 		}
 
 		return result;

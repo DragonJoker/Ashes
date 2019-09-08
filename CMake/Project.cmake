@@ -36,12 +36,12 @@ macro( target_install_dir_headers TARGET_NAME SRCDIR DSTDIR )
 	file(
 		GLOB
 			_HEADERS
-			${CMAKE_SOURCE_DIR}/${SRCDIR}/*.h
-			${CMAKE_SOURCE_DIR}/${SRCDIR}/*.hpp
-			${CMAKE_SOURCE_DIR}/${SRCDIR}/*.inl
-			${CMAKE_BINARY_DIR}/${SRCDIR}/*.h
-			${CMAKE_BINARY_DIR}/${SRCDIR}/*.hpp
-			${CMAKE_BINARY_DIR}/${SRCDIR}/*.inl
+				${SRCDIR}/*.h
+				${SRCDIR}/*.hpp
+				${SRCDIR}/*.inl
+				${SRCDIR}/*.h
+				${SRCDIR}/*.hpp
+				${SRCDIR}/*.inl
 	)
 	install(
 		FILES ${_HEADERS}

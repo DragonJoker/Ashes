@@ -8,6 +8,7 @@ See LICENSE file in root folder.
 
 #include <ashespp/Core/SwapChain.hpp>
 #include <ashespp/Core/SwapChainCreateInfo.hpp>
+#include <ashespp/Image/ImageView.hpp>
 #include <ashes/common/Signal.hpp>
 
 namespace utils
@@ -132,7 +133,7 @@ namespace utils
 		}
 
 	private:
-		ashes::ImageViewArray doPrepareAttaches( uint32_t backBuffer
+		ashes::ImageViewCRefArray doPrepareAttaches( uint32_t backBuffer
 			, ashes::VkAttachmentDescriptionArray const & attaches
 			, ashes::Image const * depthImage )const;
 		bool doCheckNeedReset( VkResult errCode
@@ -154,6 +155,7 @@ namespace utils
 		VkExtent2D m_dimensions;
 		ashes::SwapChainPtr m_swapChain;
 		ashes::ImageArray m_swapChainImages;
+		mutable ashes::ImageViewArray m_swapChainImageViews;
 		RenderingResourcesArray m_renderingResources;
 		mutable size_t m_resourceIndex{ 0u };
 	};

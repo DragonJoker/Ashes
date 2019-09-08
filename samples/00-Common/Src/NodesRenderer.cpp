@@ -179,7 +179,7 @@ namespace common
 		{
 			assert( !views.empty() );
 			assert( views.size() == renderPass.getAttachmentCount() );
-			ashes::ImageViewArray attaches;
+			ashes::ImageViewCRefArray attaches;
 			auto it = renderPass.getAttachments().begin();
 			auto dimensions = views[0].image->getDimensions();
 
@@ -190,7 +190,7 @@ namespace common
 			}
 
 			return renderPass.createFrameBuffer( VkExtent2D{ dimensions.width, dimensions.height }
-			, std::move( attaches ) );
+				, std::move( attaches ) );
 		}
 
 		ashes::UniformBufferPtr< common::MaterialData > doCreateMaterialsUbo( utils::Device const & device

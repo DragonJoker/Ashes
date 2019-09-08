@@ -368,7 +368,7 @@ namespace common
 		};
 		m_renderPass = m_device->createRenderPass( std::move( createInfo ) );
 
-		ashes::ImageViewArray attaches
+		ashes::ImageViewCRefArray attaches
 		{
 			m_targetView
 		};
