@@ -109,7 +109,7 @@ namespace ashes::gl4
 		case VK_LOGIC_OP_NAND:
 			return GL_LOGIC_OP_NAND;
 
-		case VkLogicOp::VK_LOGIC_OP_SET:
+		case VK_LOGIC_OP_SET:
 			return GL_LOGIC_OP_SET;
 
 		default:

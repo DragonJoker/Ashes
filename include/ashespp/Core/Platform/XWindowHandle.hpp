@@ -2,8 +2,8 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___Ashes_XWindowHandle_HPP___
-#define ___Ashes_XWindowHandle_HPP___
+#ifndef ___AshesPP_XWindowHandle_HPP___
+#define ___AshesPP_XWindowHandle_HPP___
 
 #include <GL/glx.h>
 

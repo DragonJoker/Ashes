@@ -7,10 +7,10 @@ namespace ashes
 	template< typename T >
 	inline VertexBuffer< T >::VertexBuffer( Device const & device
 		, VkDeviceSize count
-		, VkBufferUsageFlags target )
+		, VkBufferUsageFlags usage )
 		: VertexBufferBase{ device
 			, count * sizeof( T )
-			, target }
+			, usage }
 	{
 	}
 }

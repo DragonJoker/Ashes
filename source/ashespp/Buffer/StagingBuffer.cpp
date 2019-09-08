@@ -145,11 +145,11 @@ namespace ashes
 	}
 
 	StagingBuffer::StagingBuffer( Device const & device
-		, VkBufferUsageFlags target
+		, VkBufferUsageFlags usage
 		, VkDeviceSize size )
 		: m_device{ device }
 		, m_buffer{ device.createBuffer( size
-			, target | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT ) }
+			, usage | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT ) }
 		, m_storage{ device.allocateMemory( getAllocateInfo( device, *m_buffer ) ) }
 	{
 		m_buffer->bindMemory( m_storage );
@@ -334,7 +334,7 @@ namespace ashes
 
 		if ( !buffer )
 		{
-			throw Exception{ VkResult::VK_ERROR_MEMORY_MAP_FAILED, "Staging buffer storage memory mapping" };
+			throw Exception{ VK_ERROR_MEMORY_MAP_FAILED, "Staging buffer storage memory mapping" };
 		}
 
 		std::memcpy( buffer
@@ -449,7 +449,7 @@ namespace ashes
 
 		if ( !buffer )
 		{
-			throw Exception{ VkResult::VK_ERROR_MEMORY_MAP_FAILED, "Staging buffer storage memory mapping failed." };
+			throw Exception{ VK_ERROR_MEMORY_MAP_FAILED, "Staging buffer storage memory mapping failed." };
 		}
 
 		std::memcpy( data

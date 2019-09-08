@@ -31,8 +31,8 @@ namespace ashes
 				getAccessMask( dstLayout ),
 				srcLayout,
 				dstLayout,
-				~( 0u ),
-				~( 0u ),
+				VK_QUEUE_FAMILY_IGNORED,
+				VK_QUEUE_FAMILY_IGNORED,
 				image,
 				std::move( mipSubRange ),
 			};

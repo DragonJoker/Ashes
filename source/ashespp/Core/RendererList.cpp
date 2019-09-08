@@ -21,24 +21,33 @@ namespace ashes
 	RendererList::RendererList()
 		: m_library{ libraryName }
 	{
-		if ( !m_library.getFunction( "ashEnumeratePluginsDescriptions", m_enumeratePluginDescriptions ) )
-		{
-			throw std::runtime_error{ "[" + ashes::getFileName( m_library.getPath() ) + "] is not a renderer plugin" };
-		}
-
 		if ( !m_library.getFunction( "ashSelectPlugin", m_selectPlugin ) )
 		{
-			throw std::runtime_error{ "[" + ashes::getFileName( m_library.getPath() ) + "] is not a renderer plugin" };
+			throw std::runtime_error{ "[" + ashes::getFileName( m_library.getPath() ) + "] is not Ashes" };
+		}
+
+		PFN_ashEnumeratePluginsDescriptions enumeratePluginDescriptions;
+		if ( !m_library.getFunction( "ashEnumeratePluginsDescriptions", enumeratePluginDescriptions ) )
+		{
+			throw std::runtime_error{ "[" + ashes::getFileName( m_library.getPath() ) + "] is not Ashes" };
+		}
+
+		PFN_ashGetPluginDescription getCurrentPluginDescription;
+		if ( !m_library.getFunction( "ashGetCurrentPluginDescription", getCurrentPluginDescription ) )
+		{
+			throw std::runtime_error{ "[" + ashes::getFileName( m_library.getPath() ) + "] is not Ashes" };
 		}
 
 		uint32_t count = 0u;
-		m_enumeratePluginDescriptions( &count, nullptr );
+		enumeratePluginDescriptions( &count, nullptr );
 
 		if ( count > 0 )
 		{
 			m_plugins.resize( count );
-			m_enumeratePluginDescriptions( &count, m_plugins.data() );
+			enumeratePluginDescriptions( &count, m_plugins.data() );
 		}
+
+		getCurrentPluginDescription( &m_current );
 	}
 
 	RendererList::~RendererList()
@@ -61,7 +70,18 @@ namespace ashes
 			throw std::runtime_error{ Error };
 		}
 
-		m_selectPlugin( *it );
+		m_current = *it;
+		m_selectPlugin( m_current );
 		return *it;
+	}
+
+	std::vector< AshPluginDescription >::const_iterator RendererList::find( std::string const & name )const
+	{
+		return std::find_if( m_plugins.begin()
+			, m_plugins.end()
+			, [&name]( AshPluginDescription const & lookup )
+			{
+				return lookup.name == name;
+			} );
 	}
 }

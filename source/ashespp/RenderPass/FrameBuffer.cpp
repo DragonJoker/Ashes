@@ -13,7 +13,7 @@ namespace ashes
 {
 	FrameBuffer::FrameBuffer( RenderPass const & renderPass
 		, VkExtent2D const & dimensions
-		, ImageViewArray views )
+		, ImageViewCRefArray views )
 		: m_device{ renderPass.getDevice() }
 		, m_dimensions{ dimensions }
 		, m_views{ std::move( views ) }

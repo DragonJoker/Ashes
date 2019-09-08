@@ -2,8 +2,8 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___Ashes_AndroidWindowHandle_HPP___
-#define ___Ashes_AndroidWindowHandle_HPP___
+#ifndef ___AshesPP_AndroidWindowHandle_HPP___
+#define ___AshesPP_AndroidWindowHandle_HPP___
 
 #include "ashespp/Core/WindowHandle.hpp"
 #include <vulkan/vulkan_android.h>

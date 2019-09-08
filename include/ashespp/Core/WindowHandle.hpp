@@ -2,8 +2,10 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___Ashes_WindowHandle_HPP___
-#define ___Ashes_WindowHandle_HPP___
+#ifndef ___AshesPP_WindowHandle_HPP___
+#define ___AshesPP_WindowHandle_HPP___
+
+#include "ashespp/AshesPPPrerequisites.hpp"
 
 #include <memory>
 #include <string>
@@ -11,23 +13,15 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	/**
-	*\~english
 	*\brief
 	*	A window handle, platform dependant.
-	*\~french
-	*\brief
-	*	Implémentation d'un handle de fenêtre, dépendant de l'OS.
 	*/
 	class IWindowHandle
 	{
 	protected:
 		/**
-		*\~english
 		*\brief
 		*	Constructor.
-		*\~french
-		*\brief
-		*	Constructeur.
 		*/
 		IWindowHandle( std::string surfaceName )
 			: m_surfaceName{ std::move( surfaceName ) }
@@ -36,21 +30,13 @@ namespace ashes
 
 	public:
 		/**
-		*\~english
 		*\brief
 		*	Boolean convertion operator.
-		*\~french
-		*\brief
-		*	Opérateur de conversion en booléen.
 		*/
 		virtual operator bool() = 0;
 		/**
-		*\~english
 		*\return
 		*	The surface type name.
-		*\~french
-		*\return
-		*	Le nom du type de la surface.
 		*/
 		inline std::string const & getSurfaceName()const
 		{
@@ -62,12 +48,8 @@ namespace ashes
 	};
 	using IWindowHandlePtr = std::unique_ptr< IWindowHandle >;
 	/**
-	*\~english
 	*\brief
 	*	A window handle, platform independant.
-	*\~french
-	*\brief
-	*	Implémentation d'un handle de fenêtre, indépendant de la plateforme.
 	*/
 	class WindowHandle
 	{
@@ -77,43 +59,25 @@ namespace ashes
 		WindowHandle( WindowHandle && rhs ) = default;
 		WindowHandle & operator=( WindowHandle && rhs ) = default;
 		/**
-		*\~english
 		*\brief
 		*	Constructor.
 		*\param[in] handle
 		*	The allocated handle.
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] handle
-		*	Le handle alloué.
 		*/
 		explicit WindowHandle( IWindowHandlePtr handle );
 		/**
-		*\~english
 		*\brief
 		*	Destructor.
-		*\~french
-		*\brief
-		*	Destructeur.
 		*/
 		~WindowHandle() = default;
 		/**
-		*\~english
 		*\brief
 		*	Boolean convertion operator.
-		*\~french
-		*\brief
-		*	Opérateur de conversion en booléen.
 		*/
 		operator bool();
 		/**
-		*\~english
 		*\return
 		*	The window handle, cast in wanted format (IMswWindowHandle, IXWindowHandle, ...).
-		*\~french
-		*\return
-		*	Le handle de la fenêtre, casté dans le format voulu (IMswWindowHandle, IXWindowHandle, ...).
 		*/
 		template< class T >
 		inline T const & getInternal()const
@@ -121,20 +85,33 @@ namespace ashes
 			return static_cast< T const & >( *m_handle );
 		}
 		/**
-		*\~english
 		*\return
 		*	The surface type name.
-		*\~french
-		*\return
-		*	Le nom du type de la surface.
 		*/
 		inline std::string const & getSurfaceName()const
 		{
 			return m_handle->getSurfaceName();
 		}
+		/**
+		*\return
+		*	The surface.
+		*/
+		inline Surface const & getSurface()const
+		{
+			return *m_surface;
+		}
+		/**
+		*\param[in] surface
+		*	The surface.
+		*/
+		inline void setSurface( Surface const & surface )
+		{
+			m_surface = &surface;
+		}
 
 	private:
 		IWindowHandlePtr m_handle;
+		Surface const * m_surface;
 	};
 }
 

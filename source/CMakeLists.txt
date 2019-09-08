@@ -6,6 +6,7 @@ include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${ASHES_SOURCE_DIR}/include
 	${ASHES_BINARY_DIR}/include
+	${Vulkan_INCLUDE_DIRS}
 )
 
 if ( WIN32 )

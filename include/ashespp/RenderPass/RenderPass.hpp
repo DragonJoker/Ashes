@@ -75,7 +75,7 @@ namespace ashes
 		*	The created frame buffer.
 		*/
 		FrameBufferPtr createFrameBuffer( VkExtent2D const & dimensions
-			, ImageViewArray views )const;
+			, ImageViewCRefArray views )const;
 		/**
 		*\~english
 		*name

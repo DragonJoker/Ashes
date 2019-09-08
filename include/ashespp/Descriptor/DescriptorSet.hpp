@@ -12,6 +12,74 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
+	struct WriteDescriptorSet
+	{
+		WriteDescriptorSet( uint32_t dstBinding
+			, uint32_t dstArrayElement
+			, uint32_t descriptorCount
+			, VkDescriptorType descriptorType )
+			: vk{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, VK_NULL_HANDLE, dstBinding, dstArrayElement, descriptorCount, descriptorType }
+			, needsUpdate{ true }
+		{
+		}
+		
+		WriteDescriptorSet( uint32_t dstBinding
+			, uint32_t dstArrayElement
+			, VkDescriptorType descriptorType
+			, VkDescriptorImageInfoArray imageInfos )
+			: vk{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, VK_NULL_HANDLE, dstBinding, dstArrayElement, uint32_t( imageInfos.size() ), descriptorType }
+			, needsUpdate{ true }
+			, imageInfo{ std::move( imageInfos ) }
+		{
+		}
+
+		WriteDescriptorSet( VkDescriptorSet set
+			, uint32_t dstBinding
+			, uint32_t dstArrayElement
+			, uint32_t descriptorCount
+			, VkDescriptorType descriptorType
+			, VkDescriptorImageInfo const * imageInfo
+			, VkDescriptorBufferInfo const * bufferInfo
+			, VkBufferView const * texelBufferView )
+			: vk{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, set, dstBinding, dstArrayElement, descriptorCount, descriptorType, imageInfo, bufferInfo, texelBufferView }
+			, needsUpdate{ false }
+		{
+		}
+
+		void update( VkDescriptorSet descriptorSet )const
+		{
+			if ( needsUpdate )
+			{
+				vk.dstSet = descriptorSet;
+				vk.pImageInfo = imageInfo.data();
+				vk.pBufferInfo = bufferInfo.data();
+				vk.pTexelBufferView = texelBufferView.data();
+			}
+		}
+
+		operator VkWriteDescriptorSet const &()const
+		{
+			return vk;
+		}
+
+		inline VkWriteDescriptorSet const * operator->()const
+		{
+			return &vk;
+		}
+
+		inline VkWriteDescriptorSet * operator->()
+		{
+			return &vk;
+		}
+
+		VkDescriptorImageInfoArray imageInfo;
+		VkDescriptorBufferInfoArray bufferInfo;
+		VkBufferViewArray texelBufferView;
+
+	private:
+		mutable VkWriteDescriptorSet vk;
+		bool needsUpdate;
+	};
 	/**
 	*\~french
 	*\brief
@@ -64,7 +132,7 @@ namespace ashes
 		*\param[in] bindings
 		*	The bindings.
 		*/
-		void setBindings( VkWriteDescriptorSetArray bindings );
+		void setBindings( WriteDescriptorSetArray bindings );
 		/**
 		*\~french
 		*\brief
@@ -377,8 +445,8 @@ namespace ashes
 		{
 			createBinding( layoutBinding
 				, uniformBuffer.getUbo()
-				, offset * uniformBuffer.getAlignedSize()
-				, range * uniformBuffer.getAlignedSize()
+				, uint32_t( offset * uniformBuffer.getAlignedSize() )
+				, uint32_t( range * uniformBuffer.getAlignedSize() )
 				//, range * sizeof( T )
 				, index );
 		}
@@ -419,8 +487,8 @@ namespace ashes
 		{
 			createBinding( layoutBinding
 				, storageBuffer.getBuffer()
-				, offset * uint32_t( sizeof( T ) )
-				, range * uint32_t( sizeof( T ) )
+				, uint32_t( offset * sizeof( T ) )
+				, uint32_t( range * sizeof( T ) )
 				, index );
 		}
 		/**
@@ -534,8 +602,8 @@ namespace ashes
 		{
 			createDynamicBinding( layoutBinding
 				, uniformBuffer.getUbo()
-				, offset * uniformBuffer.getAlignedSize()
-				, range * uniformBuffer.getAlignedSize()
+				, uint32_t( offset * uniformBuffer.getAlignedSize() )
+				, uint32_t( range * uniformBuffer.getAlignedSize() )
 				//, range * sizeof( T )
 				, index );
 		}
@@ -580,8 +648,8 @@ namespace ashes
 		{
 			createDynamicBinding( layoutBinding
 				, storageBuffer.getBuffer()
-				, offset * uint32_t( sizeof( T ) )
-				, range * uint32_t( sizeof( T ) )
+				, uint32_t( offset * sizeof( T ) )
+				, uint32_t( range * sizeof( T ) )
 				, index );
 		}
 		/**
@@ -613,7 +681,7 @@ namespace ashes
 		*\return
 		*	The descriptor at given index.
 		*/
-		inline VkWriteDescriptorSet const & getBinding( uint32_t index )const
+		inline WriteDescriptorSet const & getBinding( uint32_t index )const
 		{
 			assert( index < m_writes.size() );
 			return m_writes[index];
@@ -626,7 +694,7 @@ namespace ashes
 		*\return
 		*	The descriptor at given index.
 		*/
-		inline VkWriteDescriptorSet & getBinding( uint32_t index )
+		inline WriteDescriptorSet & getBinding( uint32_t index )
 		{
 			assert( index < m_writes.size() );
 			return m_writes[index];
@@ -657,7 +725,7 @@ namespace ashes
 		}
 
 	protected:
-		VkWriteDescriptorSetArray m_writes;
+		WriteDescriptorSetArray m_writes;
 
 	private:
 		Device const & m_device;

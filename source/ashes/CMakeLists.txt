@@ -5,12 +5,18 @@ set( ${PROJECT_NAME}_VERSION_MAJOR 1 )
 set( ${PROJECT_NAME}_VERSION_MINOR 0 )
 set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 
+set( ASHES_CONFIG_DIR ${CMAKE_BINARY_DIR} )
+
 include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
+	${ASHES_CONFIG_DIR}/include
+	${ASHES_CONFIG_DIR}/include/${PROJECT_NAME}
 	${ASHES_SOURCE_DIR}/include
-	${ASHES_SOURCE_DIR}/include/ashes
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}
 	${ASHES_SOURCE_DIR}/source
-	${ASHES_SOURCE_DIR}/source/ashes
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}
+	${ASHES_CONFIG_DIR}/source
+	${ASHES_CONFIG_DIR}/source/${PROJECT_NAME}
 	${Vulkan_INCLUDE_DIRS}
 )
 
@@ -61,7 +67,7 @@ else ()
 endif ()
 
 set( ${PROJECT_NAME}_CONFIG_HEADER
-	${CMAKE_BINARY_DIR}/include/${PROJECT_NAME}/ash_platform.h
+	${ASHES_CONFIG_DIR}/ash_platform.h
 )
 
 configure_file(
@@ -119,3 +125,4 @@ target_install_dir_headers( ${PROJECT_NAME}
 
 add_subdirectory( renderer )
 set( ENABLED_RENDERERS ${ENABLED_RENDERERS} PARENT_SCOPE )
+set( ASHES_CONFIG_DIR ${ASHES_CONFIG_DIR} PARENT_SCOPE )

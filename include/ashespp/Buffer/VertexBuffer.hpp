@@ -26,12 +26,12 @@ namespace ashes
 		*	Le périphérique logique.
 		*\param[in] size
 		*	La taille du tampon.
-		*\param[in] target
+		*\param[in] usage
 		*	Les indicateurs d'utilisation du tampon.
 		*/
 		VertexBufferBase( Device const & device
 			, VkDeviceSize size
-			, VkBufferUsageFlags target );
+			, VkBufferUsageFlags usage );
 		/**
 		*\~english
 		*\brief
@@ -81,11 +81,31 @@ namespace ashes
 		}
 		/**
 		*\return
+		*	Le tampon GPU.
+		*/
+		inline BufferBase & getBuffer()
+		{
+			return *m_buffer;
+		}
+		/**
+		*\return
 		*	Le périphérique logique.
 		*/
 		inline Device const & getDevice()const
 		{
 			return m_device;
+		}
+		/**
+		*\~french
+		*\brief
+		*	Conversion implicite vers VkBuffer.
+		*\~english
+		*\brief
+		*	VkBuffer implicit cast operator.
+		*/
+		inline operator VkBuffer const & ()const
+		{
+			return *m_buffer;
 		}
 
 	protected:
@@ -93,6 +113,28 @@ namespace ashes
 		VkDeviceSize m_size;
 		BufferBasePtr m_buffer;
 	};
+	/**
+	*\brief
+	*	Fonction d'aide à la création d'un Buffer.
+	*\param[in] device
+	*	Le périphérique logique.
+	*\param[in] count
+	*	La nombre d'éléments dans le tampon.
+	*\param[in] usage
+	*	Les indicateurs d'utilisation du tampon.
+	*\param[in] flags
+	*	Les indicateurs de mémoire du tampon.
+	*\return
+	*	Le tampon créé.
+	*/
+	inline VertexBufferBasePtr makeVertexBufferBase( Device const & device
+		, VkDeviceSize size
+		, VkBufferUsageFlags usage )
+	{
+		return std::make_unique< VertexBufferBase >( device
+			, size
+			, usage );
+	}
 	/**
 	*\brief
 	*	Tampon de sommets, typé.
@@ -109,12 +151,12 @@ namespace ashes
 		*	Le périphérique logique.
 		*\param[in] count
 		*	La nombre d'éléments dans le tampon.
-		*\param[in] target
+		*\param[in] usage
 		*	Les indicateurs d'utilisation du tampon.
 		*/
 		inline VertexBuffer( Device const & device
 			, VkDeviceSize count
-			, VkBufferUsageFlags target );
+			, VkBufferUsageFlags usage );
 		/**
 		*\~english
 		*\brief
@@ -238,6 +280,18 @@ namespace ashes
 		{
 			m_buffer->unlock();
 		}
+		/**
+		*\~french
+		*\brief
+		*	Conversion implicite vers VkBuffer.
+		*\~english
+		*\brief
+		*	VkBuffer implicit cast operator.
+		*/
+		inline operator VkBuffer const & ()const
+		{
+			return *m_buffer;
+		}
 
 	private:
 		uint64_t doComputeSize( VkDeviceSize count
@@ -265,7 +319,7 @@ namespace ashes
 	*	Le périphérique logique.
 	*\param[in] count
 	*	La nombre d'éléments dans le tampon.
-	*\param[in] target
+	*\param[in] usage
 	*	Les indicateurs d'utilisation du tampon.
 	*\param[in] flags
 	*	Les indicateurs de mémoire du tampon.
@@ -275,11 +329,11 @@ namespace ashes
 	template< typename T >
 	inline VertexBufferPtr< T > makeVertexBuffer( Device const & device
 		, VkDeviceSize count
-		, VkBufferUsageFlags target )
+		, VkBufferUsageFlags usage )
 	{
 		return std::make_unique< VertexBuffer< T > >( device
 			, count
-			, target );
+			, usage );
 	}
 }
 

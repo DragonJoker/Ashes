@@ -2,8 +2,8 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___Ashes_XcbWindowHandle_HPP___
-#define ___Ashes_XcbWindowHandle_HPP___
+#ifndef ___AshesPP_XcbWindowHandle_HPP___
+#define ___AshesPP_XcbWindowHandle_HPP___
 
 #include <xcbint.h>
 #include <xcb/xproto.h>

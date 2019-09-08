@@ -61,7 +61,7 @@ namespace ashes::d3d11
 				m_dynamicUniformBuffers.push_back( &write.second );
 				m_dynamicBuffers.push_back( &write.second );
 				break;
-			case VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
+			case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
 				m_dynamicStorageBuffers.push_back( &write.second );
 				m_dynamicBuffers.push_back( &write.second );
 				break;

@@ -131,7 +131,7 @@ namespace ashes
 		*/
 		inline operator VkSurfaceKHR const & ( )const
 		{
-			return m_surface;
+			return m_internal;
 		}
 
 	private:
@@ -141,7 +141,7 @@ namespace ashes
 		Instance const & m_instance;
 		PhysicalDevice const & m_gpu;
 		WindowHandle m_handle;
-		VkSurfaceKHR m_surface;
+		VkSurfaceKHR m_internal;
 		std::string m_type;
 		uint32_t m_imageCount;
 	};

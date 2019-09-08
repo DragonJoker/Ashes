@@ -32,7 +32,7 @@ namespace ashes
 		*	The logical device.
 		*\param[in] size
 		*	The buffer size.
-		*\param[in] target
+		*\param[in] usage
 		*	The buffer usage flags.
 		*\~french
 		*\brief
@@ -41,12 +41,12 @@ namespace ashes
 		*	Le périphérique logique.
 		*\param[in] size
 		*	La taille du tampon.
-		*\param[in] target
+		*\param[in] usage
 		*	Les indicateurs d'utilisation du tampon.
 		*/
 		BufferBase( Device const & device
 			, VkDeviceSize size
-			, VkBufferUsageFlags target );
+			, VkBufferUsageFlags usage );
 		/**
 		*\~english
 		*\brief
@@ -165,8 +165,8 @@ namespace ashes
 		*\return
 		*	La barrière mémoire.
 		*/
-		VkBufferMemoryBarrier makeTransferDestination( uint32_t srcQueueFamily = ~( 0u )
-			, uint32_t dstQueueFamily = ~( 0u ) )const;
+		VkBufferMemoryBarrier makeTransferDestination( uint32_t srcQueueFamily = VK_QUEUE_FAMILY_IGNORED
+			, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED )const;
 		/**
 		*\~english
 		*\brief
@@ -179,8 +179,8 @@ namespace ashes
 		*\return
 		*	La barrière mémoire.
 		*/
-		VkBufferMemoryBarrier makeTransferSource( uint32_t srcQueueFamily = ~( 0u )
-			, uint32_t dstQueueFamily = ~( 0u ) )const;
+		VkBufferMemoryBarrier makeTransferSource( uint32_t srcQueueFamily = VK_QUEUE_FAMILY_IGNORED
+			, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED )const;
 		/**
 		*\~english
 		*\brief
@@ -193,8 +193,8 @@ namespace ashes
 		*\return
 		*	La barrière mémoire.
 		*/
-		VkBufferMemoryBarrier makeVertexShaderInputResource( uint32_t srcQueueFamily = ~( 0u )
-			, uint32_t dstQueueFamily = ~( 0u ) )const;
+		VkBufferMemoryBarrier makeVertexShaderInputResource( uint32_t srcQueueFamily = VK_QUEUE_FAMILY_IGNORED
+			, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED )const;
 		/**
 		*\~english
 		*\brief
@@ -207,8 +207,36 @@ namespace ashes
 		*\return
 		*	La barrière mémoire.
 		*/
-		VkBufferMemoryBarrier makeUniformBufferInput( uint32_t srcQueueFamily = ~( 0u )
-			, uint32_t dstQueueFamily = ~( 0u ) )const;
+		VkBufferMemoryBarrier makeUniformBufferInput( uint32_t srcQueueFamily = VK_QUEUE_FAMILY_IGNORED
+			, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED )const;
+		/**
+		*\~english
+		*\brief
+		*	Prepares a buffer memory barrier, to a host read layout.
+		*\return
+		*	The memory barrier.
+		*\~french
+		*\brief
+		*	Prépare une barrière mémoire de transition vers un layout de lecture pour l'hôte.
+		*\return
+		*	La barrière mémoire.
+		*/
+		VkBufferMemoryBarrier makeHostRead( uint32_t srcQueueFamily = VK_QUEUE_FAMILY_IGNORED
+			, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED )const;
+		/**
+		*\~english
+		*\brief
+		*	Prepares a buffer memory barrier, to a host write layout.
+		*\return
+		*	The memory barrier.
+		*\~french
+		*\brief
+		*	Prépare une barrière mémoire de transition vers un layout d'écriture pour l'hôte.
+		*\return
+		*	La barrière mémoire.
+		*/
+		VkBufferMemoryBarrier makeHostWrite( uint32_t srcQueueFamily = VK_QUEUE_FAMILY_IGNORED
+			, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED )const;
 		/**
 		*\~english
 		*\brief
@@ -234,8 +262,8 @@ namespace ashes
 		*	La barrière mémoire.
 		*/
 		VkBufferMemoryBarrier makeMemoryTransitionBarrier( VkAccessFlags dstAccessFlags
-			, uint32_t srcQueueFamily = ~( 0u )
-			, uint32_t dstQueueFamily = ~( 0u ) )const;
+			, uint32_t srcQueueFamily = VK_QUEUE_FAMILY_IGNORED
+			, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED )const;
 		/**
 		*\~english
 		*\return
@@ -265,9 +293,9 @@ namespace ashes
 		*\return
 		*	Les cibles du tampon.
 		*/
-		inline VkBufferUsageFlags getTargets()const
+		inline VkBufferUsageFlags getUsage()const
 		{
-			return m_target;
+			return m_usage;
 		}
 		/**
 		*\~french
@@ -285,12 +313,48 @@ namespace ashes
 	private:
 		Device const & m_device;
 		VkDeviceSize m_size;
-		VkBufferUsageFlags m_target;
+		VkBufferUsageFlags m_usage;
 		VkBuffer m_internal{ VK_NULL_HANDLE };
 		DeviceMemoryPtr m_storage;
 		mutable VkAccessFlags m_currentAccessFlags{ VK_ACCESS_MEMORY_WRITE_BIT };
 		mutable VkPipelineStageFlags m_compatibleStageFlags{ VK_PIPELINE_STAGE_HOST_BIT };
 	};
+	/**
+	*\~english
+	*\brief
+	*	Helper function tor create a Buffer< T >.
+	*\param[in] device
+	*	The logical device.
+	*\param[in] size
+	*	The buffer size.
+	*\param[in] usage
+	*	The buffer usage flags.
+	*\param[in] flags
+	*	The buffer memory flags.
+	*\return
+	*	The created buffer.
+	*\~french
+	*\brief
+	*	Fonction d'aide à la création d'un Buffer< T >.
+	*\param[in] device
+	*	Les périphérique logique.
+	*\param[in] size
+	*	Les dimensions du tampon.
+	*\param[in] usage
+	*	Les indicateurs d'utilisation du tampon.
+	*\param[in] flags
+	*	Les indicateurs de mémoire du tampon.
+	*\return
+	*	Le tampon créé.
+	*/
+	inline BufferBasePtr makeBufferBase( Device const & device
+		, VkDeviceSize size
+		, VkBufferUsageFlags usage )
+	{
+		return std::make_unique< BufferBase >( device
+			, size
+			, usage );
+	}
 	/**
 	*\~english
 	*\brief
@@ -311,7 +375,7 @@ namespace ashes
 		*	The logical device.
 		*\param[in] count
 		*	The buffer elements count.
-		*\param[in] target
+		*\param[in] usage
 		*	The buffer usage flags.
 		*\~french
 		*\brief
@@ -320,12 +384,12 @@ namespace ashes
 		*	Le périphérique logique.
 		*\param[in] count
 		*	Le nombre d'éléments du tampon.
-		*\param[in] target
+		*\param[in] usage
 		*	Les indicateurs d'utilisation du tampon.
 		*/
 		Buffer( Device const & device
 			, VkDeviceSize count
-			, VkBufferUsageFlags target );
+			, VkBufferUsageFlags usage );
 		/**
 		*\~english
 		*\return
@@ -375,6 +439,18 @@ namespace ashes
 		*	Le tampon GPU.
 		*/
 		inline BufferBase const & getBuffer()const
+		{
+			return *m_buffer;
+		}
+		/**
+		*\~english
+		*\return
+		*	The GPU buffer.
+		*\~french
+		*\return
+		*	Le tampon GPU.
+		*/
+		inline BufferBase & getBuffer()
 		{
 			return *m_buffer;
 		}
@@ -508,7 +584,7 @@ namespace ashes
 	*	The logical device.
 	*\param[in] count
 	*	The buffer elements count.
-	*\param[in] target
+	*\param[in] usage
 	*	The buffer usage flags.
 	*\param[in] flags
 	*	The buffer memory flags.
@@ -521,7 +597,7 @@ namespace ashes
 	*	Les périphérique logique.
 	*\param[in] count
 	*	Le nombre d'éléments du tampon.
-	*\param[in] target
+	*\param[in] usage
 	*	Les indicateurs d'utilisation du tampon.
 	*\param[in] flags
 	*	Les indicateurs de mémoire du tampon.
@@ -531,11 +607,11 @@ namespace ashes
 	template< typename T >
 	BufferPtr< T > makeBuffer( Device const & device
 		, VkDeviceSize count
-		, VkBufferUsageFlags target )
+		, VkBufferUsageFlags usage )
 	{
 		return std::make_unique< Buffer< T > >( device
 			, count
-			, target );
+			, usage );
 	}
 }
 

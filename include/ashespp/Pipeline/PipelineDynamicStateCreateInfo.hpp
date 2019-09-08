@@ -2,8 +2,8 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___Ashes_PipelineDynamicStateCreateInfo_HPP___
-#define ___Ashes_PipelineDynamicStateCreateInfo_HPP___
+#ifndef ___AshesPP_PipelineDynamicStateCreateInfo_HPP___
+#define ___AshesPP_PipelineDynamicStateCreateInfo_HPP___
 #pragma once
 
 #include "ashespp/AshesPPPrerequisites.hpp"

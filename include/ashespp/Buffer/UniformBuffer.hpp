@@ -30,7 +30,7 @@ namespace ashes
 		*	The number of instances of the data.
 		*\param[in] size
 		*	The size of an instance, in bytes.
-		*\param[in] target
+		*\param[in] usage
 		*	The buffer usage flags.
 		*\~french
 		*\brief
@@ -41,13 +41,13 @@ namespace ashes
 		*	Le nombre d'instance des données.
 		*\param[in] size
 		*	La taille d'une instance des données, en octets.
-		*\param[in] target
+		*\param[in] usage
 		*	Les indicateurs d'utilisation du tampon.
 		*/
 		UniformBufferBase( Device const & device
 			, VkDeviceSize count
 			, VkDeviceSize size
-			, VkBufferUsageFlags target );
+			, VkBufferUsageFlags usage );
 		/**
 		*\~english
 		*\brief
@@ -111,6 +111,18 @@ namespace ashes
 		/**
 		*\~english
 		*\return
+		*	The GPU buffer.
+		*\~french
+		*\return
+		*	Le tampon GPU.
+		*/
+		inline BufferBase & getBuffer()
+		{
+			return *m_buffer;
+		}
+		/**
+		*\~english
+		*\return
 		*	The size of one element in the buffer.
 		*\~french
 		*\return
@@ -120,6 +132,18 @@ namespace ashes
 		{
 			return m_size;
 		}
+		/**
+		*\~french
+		*\brief
+		*	Conversion implicite vers VkBuffer.
+		*\~english
+		*\brief
+		*	VkBuffer implicit cast operator.
+		*/
+		inline operator VkBuffer const & ()const
+		{
+			return *m_buffer;
+		}
 
 	protected:
 		Device const & m_device;
@@ -127,6 +151,44 @@ namespace ashes
 		VkDeviceSize m_size;
 		BufferBasePtr m_buffer;
 	};
+	/**
+	*\~french
+	*\brief
+	*	UniformBuffer creation helper function.
+	*\param[in] device
+	*	The logical device.
+	*\param[in] count
+	*	The number of instances of the data.
+	*\param[in] size
+	*	The size of an instance, in bytes.
+	*\param[in] usage
+	*	The buffer usage flags.
+	*\return
+	*	The created buffer.
+	*\~french
+	*\brief
+	*	Fonction d'aide à la création d'un UniformBuffer.
+	*\param[in] device
+	*	Le périphérique logique.
+	*\param[in] count
+	*	Le nombre d'instance des données.
+	*\param[in] size
+	*	La taille d'une instance des données, en octets.
+	*\param[in] usage
+	*	Les indicateurs d'utilisation du tampon.
+	*\return
+	*	Le tampon créé.
+	*/
+	inline UniformBufferBasePtr makeUniformBufferBase( Device const & device
+		, VkDeviceSize count
+		, VkDeviceSize size
+		, VkBufferUsageFlags usage )
+	{
+		return std::make_unique< UniformBufferBase >( device
+			, count
+			, size
+			, usage );
+	}
 	/**
 	*\~french
 	*\brief
@@ -146,10 +208,8 @@ namespace ashes
 		*	The logical device.
 		*\param[in] count
 		*	The number of instances of the data.
-		*\param[in] target
+		*\param[in] usage
 		*	The buffer usage flags.
-		*\param[in] flags
-		*	The memory property flags.
 		*\~french
 		*\brief
 		*	Constructeur.
@@ -157,14 +217,12 @@ namespace ashes
 		*	Le périphérique logique.
 		*\param[in] count
 		*	Le nombre d'instance des données.
-		*\param[in] target
+		*\param[in] usage
 		*	Les indicateurs d'utilisation du tampon.
-		*\param[in] flags
-		*	Les indicateurs de mémoire du tampon.
 		*/
 		inline UniformBuffer( Device const & device
 			, VkDeviceSize count
-			, VkBufferUsageFlags target );
+			, VkBufferUsageFlags usage );
 		/**
 		*\~english
 		*\brief
@@ -271,6 +329,18 @@ namespace ashes
 		}
 		/**
 		*\~english
+		*\return
+		*	The GPU buffer.
+		*\~french
+		*\return
+		*	Le tampon GPU.
+		*/
+		inline UniformBufferBase & getUbo()
+		{
+			return m_ubo;
+		}
+		/**
+		*\~english
 		*\brief
 		*	Uploads the buffer data to VRAM
 		*\param[in] offset
@@ -305,6 +375,18 @@ namespace ashes
 				m_ubo.getBuffer().unlock();
 			}
 		}
+		/**
+		*\~french
+		*\brief
+		*	Conversion implicite vers VkBuffer.
+		*\~english
+		*\brief
+		*	VkBuffer implicit cast operator.
+		*/
+		inline operator VkBuffer const & ()const
+		{
+			return m_ubo;
+		}
 
 	private:
 		UniformBufferBase m_ubo;
@@ -318,10 +400,8 @@ namespace ashes
 	*	The logical device.
 	*\param[in] count
 	*	The number of instances of the data.
-	*\param[in] target
+	*\param[in] usage
 	*	The buffer usage flags.
-	*\param[in] flags
-	*	The memory property flags.
 	*\return
 	*	The created buffer.
 	*\~french
@@ -331,21 +411,19 @@ namespace ashes
 	*	Le périphérique logique.
 	*\param[in] count
 	*	La nombre d'éléments dans le tampon.
-	*\param[in] target
+	*\param[in] usage
 	*	Les indicateurs d'utilisation du tampon.
-	*\param[in] flags
-	*	Les indicateurs de mémoire du tampon.
 	*\return
 	*	Le tampon créé.
 	*/
 	template< typename T >
 	inline UniformBufferPtr< T > makeUniformBuffer( Device const & device
 		, VkDeviceSize count
-		, VkBufferUsageFlags target )
+		, VkBufferUsageFlags usage )
 	{
 		return std::make_unique< UniformBuffer< T > >( device
 			, count
-			, target );
+			, usage );
 	}
 }
 

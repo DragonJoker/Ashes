@@ -2,8 +2,8 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___Ashes_PipelineDepthStencilStateCreateInfo_HPP___
-#define ___Ashes_PipelineDepthStencilStateCreateInfo_HPP___
+#ifndef ___AshesPP_PipelineDepthStencilStateCreateInfo_HPP___
+#define ___AshesPP_PipelineDepthStencilStateCreateInfo_HPP___
 #pragma once
 
 #include "ashespp/AshesPPPrerequisites.hpp"
@@ -75,6 +75,16 @@ namespace ashes
 		inline operator VkPipelineDepthStencilStateCreateInfo const &()const
 		{
 			return vk;
+		}
+
+		inline VkPipelineDepthStencilStateCreateInfo const * operator->()const
+		{
+			return &vk;
+		}
+
+		inline VkPipelineDepthStencilStateCreateInfo * operator->()
+		{
+			return &vk;
 		}
 
 	private:

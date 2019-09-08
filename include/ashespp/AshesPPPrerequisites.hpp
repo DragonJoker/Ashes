@@ -8,6 +8,79 @@ See LICENSE file in root folder.
 
 #include <ashes/ashes.hpp>
 
+#include "Enum/AccessFlags.hpp"
+#include "Enum/AttachmentLoadOp.hpp"
+#include "Enum/AttachmentStoreOp.hpp"
+#include "Enum/BlendFactor.hpp"
+#include "Enum/BlendOp.hpp"
+#include "Enum/BorderColor.hpp"
+#include "Enum/BufferUsageFlags.hpp"
+#include "Enum/ClipDirection.hpp"
+#include "Enum/ColorComponentFlags.hpp"
+#include "Enum/ColorSpace.hpp"
+#include "Enum/CommandBufferResetFlags.hpp"
+#include "Enum/CommandBufferUsageFlags.hpp"
+#include "Enum/CommandPoolCreateFlags.hpp"
+#include "Enum/CompareOp.hpp"
+#include "Enum/ComponentSwizzle.hpp"
+#include "Enum/CompositeAlphaFlags.hpp"
+#include "Enum/ConstantFormat.hpp"
+#include "Enum/CullModeFlags.hpp"
+#include "Enum/DebugReportFlags.hpp"
+#include "Enum/DebugReportObjectType.hpp"
+#include "Enum/DependencyFlags.hpp"
+#include "Enum/DescriptorPoolCreateFlags.hpp"
+#include "Enum/DeviceCreateFlags.hpp"
+#include "Enum/DeviceQueueCreateFlags.hpp"
+#include "Enum/DynamicStateEnable.hpp"
+#include "Enum/FenceCreateFlags.hpp"
+#include "Enum/Filter.hpp"
+#include "Enum/FormatFeatureFlags.hpp"
+#include "Enum/FrontFace.hpp"
+#include "Enum/ImageAspectFlags.hpp"
+#include "Enum/ImageCreateFlags.hpp"
+#include "Enum/ImageLayout.hpp"
+#include "Enum/ImageTiling.hpp"
+#include "Enum/ImageType.hpp"
+#include "Enum/ImageUsageFlags.hpp"
+#include "Enum/ImageViewType.hpp"
+#include "Enum/IndexType.hpp"
+#include "Enum/InstanceCreateFlags.hpp"
+#include "Enum/LogicOp.hpp"
+#include "Enum/MemoryHeapFlags.hpp"
+#include "Enum/MemoryMapFlags.hpp"
+#include "Enum/MemoryPropertyFlags.hpp"
+#include "Enum/PhysicalDeviceType.hpp"
+#include "Enum/PipelineBindPoint.hpp"
+#include "Enum/PipelineDepthStencilStateCreateFlags.hpp"
+#include "Enum/PipelineDynamicStateCreateFlags.hpp"
+#include "Enum/PipelineMultisampleStateCreateFlags.hpp"
+#include "Enum/PipelineRasterizationStateCreateFlags.hpp"
+#include "Enum/PipelineStageFlags.hpp"
+#include "Enum/PipelineTessellationStateCreateFlags.hpp"
+#include "Enum/PipelineViewportStateCreateFlags.hpp"
+#include "Enum/PolygonMode.hpp"
+#include "Enum/PresentMode.hpp"
+#include "Enum/PrimitiveTopology.hpp"
+#include "Enum/QueryControlFlags.hpp"
+#include "Enum/QueryPipelineStatisticFlags.hpp"
+#include "Enum/QueryResultFlags.hpp"
+#include "Enum/QueryType.hpp"
+#include "Enum/QueueFlags.hpp"
+#include "Enum/RenderPassCreateFlags.hpp"
+#include "Enum/SampleCountFlags.hpp"
+#include "Enum/SamplerAddressMode.hpp"
+#include "Enum/SamplerMipmapMode.hpp"
+#include "Enum/ShaderStageFlags.hpp"
+#include "Enum/SharingMode.hpp"
+#include "Enum/StencilOp.hpp"
+#include "Enum/SubpassContents.hpp"
+#include "Enum/SubpassDescriptionFlags.hpp"
+#include "Enum/SurfaceCounterFlags.hpp"
+#include "Enum/SurfaceTransformFlags.hpp"
+#include "Enum/SwapChainCreateFlags.hpp"
+#include "Enum/VertexInputRate.hpp"
+#include "Enum/Flags.hpp"
 #include "Miscellaneous/Debug.hpp"
 #include "Miscellaneous/Error.hpp"
 #include "Miscellaneous/Log.hpp"
@@ -40,6 +113,8 @@ namespace ashes
 
 	struct PushConstant;
 	struct ImageView;
+	struct PipelineVertexInputStateCreateInfo;
+	struct WriteDescriptorSet;
 
 	class BufferBase;
 	class BufferView;
@@ -127,6 +202,7 @@ namespace ashes
 	using IWindowHandlePtr = std::unique_ptr< IWindowHandle >;
 	using PhysicalDevicePtr = std::unique_ptr< PhysicalDevice >;
 	using PipelineLayoutPtr = std::unique_ptr< PipelineLayout >;
+	using PipelineVertexInputStateCreateInfoPtr = std::unique_ptr< PipelineVertexInputStateCreateInfo >;
 	using PushConstantsBufferPtr = std::unique_ptr< PushConstantsBufferBase >;
 	using QueryPoolPtr = std::unique_ptr< QueryPool >;
 	using QueuePtr = std::unique_ptr< Queue >;
@@ -148,6 +224,7 @@ namespace ashes
 	using PushConstantArray = std::vector< PushConstant >;
 	using ImageArray = std::vector< Image >;
 	using ImageViewArray = std::vector< ImageView >;
+	using WriteDescriptorSetArray = std::vector< WriteDescriptorSet >;
 
 	using FrameBufferPtrArray = std::vector< FrameBufferPtr >;
 	using CommandBufferPtrArray = std::vector< CommandBufferPtr >;
@@ -170,6 +247,7 @@ namespace ashes
 	using SurfaceCRef = std::reference_wrapper< Surface const >;
 	using ImageViewCRef = std::reference_wrapper< ImageView const >;
 	using VertexBufferCRef = std::reference_wrapper< VertexBufferBase const >;
+	using PipelineVertexInputStateCreateInfoCRef = std::reference_wrapper< PipelineVertexInputStateCreateInfo const >;
 
 	using BufferCRefArray = std::vector< BufferCRef >;
 	using CommandBufferCRefArray = std::vector< CommandBufferCRef >;
@@ -181,6 +259,7 @@ namespace ashes
 	using SwapChainCRefArray = std::vector< SwapChainCRef >;
 	using ImageViewCRefArray = std::vector< ImageViewCRef >;
 	using VertexBufferCRefArray = std::vector< VertexBufferCRef >;
+	using PipelineVertexInputStateCreateInfoCRefArray = std::vector< PipelineVertexInputStateCreateInfoCRef >;
 	/**\}*/
 }
 

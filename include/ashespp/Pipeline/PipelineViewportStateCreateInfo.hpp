@@ -2,8 +2,8 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___Ashes_PipelineViewportStateCreateInfo_HPP___
-#define ___Ashes_PipelineViewportStateCreateInfo_HPP___
+#ifndef ___AshesPP_PipelineViewportStateCreateInfo_HPP___
+#define ___AshesPP_PipelineViewportStateCreateInfo_HPP___
 #pragma once
 
 #include "ashespp/AshesPPPrerequisites.hpp"
@@ -15,11 +15,11 @@ namespace ashes
 		PipelineViewportStateCreateInfo( PipelineViewportStateCreateInfo const & ) = delete;
 		PipelineViewportStateCreateInfo & operator=( PipelineViewportStateCreateInfo const & ) = delete;
 
-		PipelineViewportStateCreateInfo( VkPipelineViewportStateCreateFlags flags = 0u
-			, uint32_t viewportCount = 1u
-			, VkViewportArray viewports = {}
-			, uint32_t scissorCount = 1u
-			, VkScissorArray scissors = {} )
+		PipelineViewportStateCreateInfo( VkPipelineViewportStateCreateFlags flags
+			, uint32_t viewportCount
+			, VkViewportArray viewports
+			, uint32_t scissorCount
+			, VkScissorArray scissors )
 			: viewports{ std::move( viewports ) }
 			, scissors{ std::move( scissors ) }
 			, vk
@@ -31,6 +31,20 @@ namespace ashes
 				this->viewports.data(),
 				scissorCount,
 				this->scissors.data(),
+			}
+		{
+		}
+
+		PipelineViewportStateCreateInfo( VkPipelineViewportStateCreateFlags flags = 0u
+			, VkViewportArray viewports = {}
+			, VkScissorArray scissors = {} )
+			: PipelineViewportStateCreateInfo
+			{
+				flags,
+				std::max( 1u, uint32_t( viewports.size() ) ),
+				viewports,
+				std::max( 1u, uint32_t( scissors.size() ) ),
+				scissors,
 			}
 		{
 		}
@@ -72,6 +86,16 @@ namespace ashes
 		inline operator VkPipelineViewportStateCreateInfo const &()const
 		{
 			return vk;
+		}
+
+		inline VkPipelineViewportStateCreateInfo const * operator->()const
+		{
+			return &vk;
+		}
+
+		inline VkPipelineViewportStateCreateInfo * operator->()
+		{
+			return &vk;
 		}
 
 	private:

@@ -9,8 +9,8 @@ namespace ashes
 	template< typename T >
 	UniformBuffer< T >::UniformBuffer( Device const & device
 		, VkDeviceSize count
-		, VkBufferUsageFlags target )
-		: m_ubo{ device, count, sizeof( T ), target }
+		, VkBufferUsageFlags usage )
+		: m_ubo{ device, count, sizeof( T ), usage }
 		, m_data( count, T{} )
 	{
 	}

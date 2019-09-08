@@ -22,7 +22,7 @@ namespace ashes
 		if ( !device.getInstance().getFeatures().hasBufferRange
 			&& ( offset != 0 || range != buffer.getSize() ) )
 		{
-			throw Exception{ VkResult::VK_ERROR_FEATURE_NOT_PRESENT, "Buffer range" };
+			throw Exception{ VK_ERROR_FEATURE_NOT_PRESENT, "Buffer range" };
 		}
 
 		VkBufferViewCreateInfo createInfo

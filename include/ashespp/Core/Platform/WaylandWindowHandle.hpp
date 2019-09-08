@@ -2,8 +2,8 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___Ashes_WaylandWindowHandle_HPP___
-#define ___Ashes_WaylandWindowHandle_HPP___
+#ifndef ___AshesPP_WaylandWindowHandle_HPP___
+#define ___AshesPP_WaylandWindowHandle_HPP___
 
 #include <wayland-client-core.h>
 

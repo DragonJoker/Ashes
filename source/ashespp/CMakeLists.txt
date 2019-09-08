@@ -11,7 +11,9 @@ include_directories(
 	${ASHES_BINARY_DIR}/include
 	${ASHES_SOURCE_DIR}/include/ashes
 	${ASHES_BINARY_DIR}/include/ashes
+	${ASHES_CONFIG_DIR}/include
 	${ASHES_SOURCE_DIR}/source/ashes
+	${ASHES_CONFIG_DIR}/source
 	${Vulkan_INCLUDE_DIRS}
 )
 

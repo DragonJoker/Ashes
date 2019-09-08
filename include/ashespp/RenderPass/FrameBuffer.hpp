@@ -43,7 +43,7 @@ namespace ashes
 		*/
 		FrameBuffer( RenderPass const & renderPass
 			, VkExtent2D const & dimensions
-			, ImageViewArray views );
+			, ImageViewCRefArray views );
 		/**
 		*\~english
 		*\brief
@@ -89,7 +89,7 @@ namespace ashes
 	protected:
 		Device const & m_device;
 		VkExtent2D m_dimensions;
-		ImageViewArray m_views;
+		ImageViewCRefArray m_views;
 		VkFramebuffer m_internal{ VK_NULL_HANDLE };
 	};
 }

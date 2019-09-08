@@ -2,19 +2,19 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___Ashes_PipelineVertexInputStateCreateInfo_HPP___
-#define ___Ashes_PipelineVertexInputStateCreateInfo_HPP___
+#ifndef ___AshesPP_PipelineVertexInputStateCreateInfo_HPP___
+#define ___AshesPP_PipelineVertexInputStateCreateInfo_HPP___
 #pragma once
 
 #include "ashespp/AshesPPPrerequisites.hpp"
+
+#include <type_traits>
+#include <vector>
 
 namespace ashes
 {
 	struct PipelineVertexInputStateCreateInfo
 	{
-		PipelineVertexInputStateCreateInfo( PipelineVertexInputStateCreateInfo const & ) = delete;
-		PipelineVertexInputStateCreateInfo & operator=( PipelineVertexInputStateCreateInfo const & ) = delete;
-
 		PipelineVertexInputStateCreateInfo( VkPipelineVertexInputStateCreateFlags flags
 			, VkVertexInputBindingDescriptionArray vertexBindingDescriptions
 			, VkVertexInputAttributeDescriptionArray vertexAttributeDescriptions )
@@ -33,6 +33,22 @@ namespace ashes
 		{
 		}
 
+		PipelineVertexInputStateCreateInfo( PipelineVertexInputStateCreateInfo const & rhs )
+			: vertexBindingDescriptions{ rhs.vertexBindingDescriptions }
+			, vertexAttributeDescriptions{ rhs.vertexAttributeDescriptions }
+			, vk
+			{
+				VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
+				nullptr,
+				rhs.vk.flags,
+				uint32_t( vertexBindingDescriptions.size() ),
+				vertexBindingDescriptions.data(),
+				uint32_t( vertexAttributeDescriptions.size() ),
+				vertexAttributeDescriptions.data(),
+			}
+		{
+		}
+
 		PipelineVertexInputStateCreateInfo( PipelineVertexInputStateCreateInfo && rhs )
 			: vertexBindingDescriptions{ std::move( rhs.vertexBindingDescriptions ) }
 			, vertexAttributeDescriptions{ std::move( rhs.vertexAttributeDescriptions ) }
@@ -47,6 +63,24 @@ namespace ashes
 				this->vertexAttributeDescriptions.data(),
 			}
 		{
+		}
+
+		PipelineVertexInputStateCreateInfo & operator=( PipelineVertexInputStateCreateInfo const & rhs )
+		{
+			vertexBindingDescriptions = rhs.vertexBindingDescriptions;
+			vertexAttributeDescriptions = rhs.vertexAttributeDescriptions;
+			vk =
+			{
+				VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
+				nullptr,
+				rhs.vk.flags,
+				uint32_t( vertexBindingDescriptions.size() ),
+				vertexBindingDescriptions.data(),
+				uint32_t( vertexAttributeDescriptions.size() ),
+				vertexAttributeDescriptions.data(),
+			};
+
+			return *this;
 		}
 
 		PipelineVertexInputStateCreateInfo & operator=( PipelineVertexInputStateCreateInfo && rhs )
@@ -72,9 +106,10 @@ namespace ashes
 			return vk;
 		}
 
-	private:
 		VkVertexInputBindingDescriptionArray vertexBindingDescriptions;
 		VkVertexInputAttributeDescriptionArray vertexAttributeDescriptions;
+
+	private:
 		VkPipelineVertexInputStateCreateInfo vk;
 	};
 }

@@ -171,7 +171,8 @@ namespace ashes
 		*\return
 		*	\p nullptr si le mapping a échoué.
 		*/
-		uint8_t * lock( VkExtent2D const & size
+		uint8_t * lock( VkDeviceSize offset
+			, VkDeviceSize size
 			, VkMemoryMapFlags flags )const;
 		/**
 		*\~english
@@ -185,7 +186,8 @@ namespace ashes
 		*\param[in] size
 		*	La taille en octets de la mémoire mappée.
 		*/
-		void invalidate( VkExtent2D const & size )const;
+		void invalidate( VkDeviceSize offset
+			, VkDeviceSize size )const;
 		/**
 		*\~english
 		*\brief
@@ -198,7 +200,8 @@ namespace ashes
 		*\param[in] size
 		*	La taille en octets de la mémoire mappée.
 		*/
-		void flush( VkExtent2D const & size )const;
+		void flush( VkDeviceSize offset
+			, VkDeviceSize size )const;
 		/**
 		*\~english
 		*\brief

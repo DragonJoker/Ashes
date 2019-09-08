@@ -63,8 +63,8 @@ namespace ashes
 		*/
 		VkImageMemoryBarrier makeGeneralLayout( VkImageLayout srcLayout
 			, VkAccessFlags dstAccessFlags
-			, uint32_t srcQueueFamily = ~( 0u )
-			, uint32_t dstQueueFamily = ~( 0u ) )const;
+			, uint32_t srcQueueFamily = VK_QUEUE_FAMILY_IGNORED
+			, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED )const;
 		/**
 		*\~french
 		*\brief
@@ -94,8 +94,8 @@ namespace ashes
 		*	The memory barrier.
 		*/
 		VkImageMemoryBarrier makeTransferDestination( VkImageLayout srcLayout
-			, uint32_t srcQueueFamily = ~( 0u )
-			, uint32_t dstQueueFamily = ~( 0u ) )const;
+			, uint32_t srcQueueFamily = VK_QUEUE_FAMILY_IGNORED
+			, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED )const;
 		/**
 		*\~french
 		*\brief
@@ -125,8 +125,8 @@ namespace ashes
 		*	The memory barrier.
 		*/
 		VkImageMemoryBarrier makeTransferSource( VkImageLayout srcLayout
-			, uint32_t srcQueueFamily = ~( 0u )
-			, uint32_t dstQueueFamily = ~( 0u ) )const;
+			, uint32_t srcQueueFamily = VK_QUEUE_FAMILY_IGNORED
+			, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED )const;
 		/**
 		*\~french
 		*\brief
@@ -156,8 +156,8 @@ namespace ashes
 		*	The memory barrier.
 		*/
 		VkImageMemoryBarrier makeShaderInputResource( VkImageLayout srcLayout
-			, uint32_t srcQueueFamily = ~( 0u )
-			, uint32_t dstQueueFamily = ~( 0u ) )const;
+			, uint32_t srcQueueFamily = VK_QUEUE_FAMILY_IGNORED
+			, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED )const;
 		/**
 		*\~french
 		*\brief
@@ -187,8 +187,8 @@ namespace ashes
 		*	The memory barrier.
 		*/
 		VkImageMemoryBarrier makeDepthStencilReadOnly( VkImageLayout srcLayout
-			, uint32_t srcQueueFamily = ~( 0u )
-			, uint32_t dstQueueFamily = ~( 0u ) )const;
+			, uint32_t srcQueueFamily = VK_QUEUE_FAMILY_IGNORED
+			, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED )const;
 		/**
 		*\~french
 		*\brief
@@ -218,8 +218,8 @@ namespace ashes
 		*	The memory barrier.
 		*/
 		VkImageMemoryBarrier makeColourAttachment( VkImageLayout srcLayout
-			, uint32_t srcQueueFamily = ~( 0u )
-			, uint32_t dstQueueFamily = ~( 0u ) )const;
+			, uint32_t srcQueueFamily = VK_QUEUE_FAMILY_IGNORED
+			, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED )const;
 		/**
 		*\~french
 		*\brief
@@ -249,8 +249,8 @@ namespace ashes
 		*	The memory barrier.
 		*/
 		VkImageMemoryBarrier makeDepthStencilAttachment( VkImageLayout srcLayout
-			, uint32_t srcQueueFamily = ~( 0u )
-			, uint32_t dstQueueFamily = ~( 0u ) )const;
+			, uint32_t srcQueueFamily = VK_QUEUE_FAMILY_IGNORED
+			, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED )const;
 		/**
 		*\~french
 		*\brief
@@ -280,8 +280,8 @@ namespace ashes
 		*	The memory barrier.
 		*/
 		VkImageMemoryBarrier makePresentSource( VkImageLayout srcLayout
-			, uint32_t srcQueueFamily = ~( 0u )
-			, uint32_t dstQueueFamily = ~( 0u ) )const;
+			, uint32_t srcQueueFamily = VK_QUEUE_FAMILY_IGNORED
+			, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED )const;
 
 		inline VkFormat getFormat()const
 		{

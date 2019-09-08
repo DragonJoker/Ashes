@@ -2,8 +2,8 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___Ashes_ComputePipelineCreateInfo_HPP___
-#define ___Ashes_ComputePipelineCreateInfo_HPP___
+#ifndef ___AshesPP_ComputePipelineCreateInfo_HPP___
+#define ___AshesPP_ComputePipelineCreateInfo_HPP___
 #pragma once
 
 #include "PipelineShaderStageCreateInfo.hpp"

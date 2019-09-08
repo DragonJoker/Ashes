@@ -2,8 +2,8 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___Ashes_SamplerCreateInfo_HPP___
-#define ___Ashes_SamplerCreateInfo_HPP___
+#ifndef ___AshesPP_SamplerCreateInfo_HPP___
+#define ___AshesPP_SamplerCreateInfo_HPP___
 #pragma once
 
 #include "ashespp/AshesPPPrerequisites.hpp"
@@ -55,6 +55,16 @@ namespace ashes
 		inline operator VkSamplerCreateInfo const &()const
 		{
 			return vk;
+		}
+
+		inline VkSamplerCreateInfo const * operator->()const
+		{
+			return &vk;
+		}
+
+		inline VkSamplerCreateInfo * operator->()
+		{
+			return &vk;
 		}
 
 	private:

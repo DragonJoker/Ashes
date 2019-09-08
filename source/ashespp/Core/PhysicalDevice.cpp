@@ -10,36 +10,6 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	namespace
-	{
-		std::string getName( VkPhysicalDeviceType value )
-		{
-			switch ( value )
-			{
-			case VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_OTHER:
-				return "OTHER";
-
-			case VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU:
-				return "INTEGRATED_GPU";
-
-			case VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU:
-				return "DISCRETE_GPU";
-
-			case VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU:
-				return "VIRTUAL_GPU";
-
-			case VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_CPU:
-				return "CPU";
-
-			default:
-				assert( false && "Unsupported PhysicalDeviceType." );
-				throw std::runtime_error{ "Unsupported PhysicalDeviceType" };
-			}
-
-			return std::string{};
-		}
-	}
-
 	PhysicalDevice::PhysicalDevice( Instance const & instance
 		, VkPhysicalDevice gpu )
 		: m_instance{ instance }

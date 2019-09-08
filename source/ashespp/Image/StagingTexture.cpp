@@ -286,7 +286,7 @@ namespace ashes
 
 		if ( !buffer )
 		{
-			throw Exception{ VkResult::VK_ERROR_MEMORY_MAP_FAILED
+			throw Exception{ VK_ERROR_MEMORY_MAP_FAILED
 				, "Staging buffer storage memory mapping" };
 		}
 
@@ -369,7 +369,7 @@ namespace ashes
 
 		if ( !buffer )
 		{
-			throw Exception{ VkResult::VK_ERROR_MEMORY_MAP_FAILED, "Staging buffer storage memory mapping" };
+			throw Exception{ VK_ERROR_MEMORY_MAP_FAILED, "Staging buffer storage memory mapping" };
 		}
 
 		std::memcpy( data
@@ -378,5 +378,29 @@ namespace ashes
 		m_buffer.flush( 0u, mappedSize );
 		m_buffer.unlock();
 		m_device.waitIdle();
+	}
+
+	uint8_t * StagingTexture::lock( VkDeviceSize offset
+		, VkDeviceSize size
+		, VkMemoryMapFlags flags )const
+	{
+		return m_buffer.lock( offset, size, flags );
+	}
+
+	void StagingTexture::invalidate( VkDeviceSize offset
+		, VkDeviceSize size )const
+	{
+		return m_buffer.invalidate( offset, size );
+	}
+
+	void StagingTexture::flush( VkDeviceSize offset
+		, VkDeviceSize size )const
+	{
+		return m_buffer.flush( offset, size );
+	}
+
+	void StagingTexture::unlock()const
+	{
+		return m_buffer.unlock();
 	}
 }

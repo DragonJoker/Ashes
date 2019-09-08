@@ -11,12 +11,12 @@ namespace ashes
 	UniformBufferBase::UniformBufferBase( Device const & device
 		, VkDeviceSize count
 		, VkDeviceSize size
-		, VkBufferUsageFlags target )
+		, VkBufferUsageFlags usage )
 		: m_device{ device }
 		, m_count{ count }
 		, m_size{ size }
 		, m_buffer{ m_device.createBuffer( count * getAlignedSize( getElementSize() )
-			, target | VkBufferUsageFlagBits::VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT ) }
+			, usage | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT ) }
 	{
 	}
 

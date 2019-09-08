@@ -4,8 +4,8 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/Descriptor/WriteDescriptorSet.hpp>
-#include <Ashes/Descriptor/DescriptorSetLayoutBinding.hpp>
+#include <ashespp/Descriptor/WriteDescriptorSet.hpp>
+#include <ashespp/Descriptor/DescriptorSetLayoutBinding.hpp>
 
 #include <list>
 

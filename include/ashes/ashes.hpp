@@ -194,16 +194,119 @@ namespace ashes
 		return result;
 	}
 
+	inline VkViewport makeViewport( VkOffset2D const & offset
+		, VkExtent2D const & extent
+		, float zmin = 0.0f
+		, float zmax = 1.0f )
+	{
+		return VkViewport
+		{
+			float( offset.x ),
+			float( offset.y ),
+			float( extent.width ),
+			float( extent.height ),
+			zmin,
+			zmax,
+		};
+	}
+
+	inline VkViewport makeViewport( VkExtent2D const & extent
+		, float zmin = 0.0f
+		, float zmax = 1.0f )
+	{
+		return VkViewport
+		{
+			0.0f,
+			0.0f,
+			float( extent.width ),
+			float( extent.height ),
+			zmin,
+			zmax,
+		};
+	}
+
+	inline VkViewport makeViewport( VkOffset3D const & offset
+		, VkExtent3D const & extent
+		, float zmin = 0.0f
+		, float zmax = 1.0f )
+	{
+		return VkViewport
+		{
+			float( offset.x ),
+			float( offset.y ),
+			float( extent.width ),
+			float( extent.height ),
+			zmin,
+			zmax,
+		};
+	}
+
+	inline VkViewport makeViewport( VkExtent3D const & extent
+		, float zmin = 0.0f
+		, float zmax = 1.0f )
+	{
+		return VkViewport
+		{
+			0.0f,
+			0.0f,
+			float( extent.width ),
+			float( extent.height ),
+			zmin,
+			zmax,
+		};
+	}
+
+	inline VkRect2D makeScissor( VkOffset2D const & offset
+		, VkExtent2D const & extent )
+	{
+		return VkRect2D
+		{
+			offset,
+			extent,
+		};
+	}
+
+	inline VkRect2D makeScissor( VkExtent2D const & extent )
+	{
+		return VkRect2D
+		{
+			{},
+			extent,
+		};
+	}
+
+	inline VkRect2D makeScissor( VkOffset3D const & offset
+		, VkExtent3D const & extent )
+	{
+		return VkRect2D
+		{
+			{ offset.x, offset.y },
+			{ extent.width, extent.height },
+		};
+	}
+
+	inline VkRect2D makeScissor( VkExtent3D const & extent )
+	{
+		return VkRect2D
+		{
+			{},
+			{ extent.width, extent.height },
+		};
+	}
+
 	using VkAttachmentDescriptionArray = std::vector< VkAttachmentDescription >;
 	using VkAttachmentReferenceArray = std::vector< VkAttachmentReference >;
 	using VkBufferArray = std::vector< VkBuffer >;
 	using VkBufferCopyArray = std::vector< VkBufferCopy >;
 	using VkBufferImageCopyArray = std::vector< VkBufferImageCopy >;
 	using VkBufferMemoryBarrierArray = std::vector< VkBufferMemoryBarrier >;
+	using VkBufferViewArray = std::vector< VkBufferView >;
 	using VkClearAttachmentArray = std::vector< VkClearAttachment >;
 	using VkClearRectArray = std::vector< VkClearRect >;
 	using VkClearValueArray = std::vector< VkClearValue >;
 	using VkCommandBufferArray = std::vector< VkCommandBuffer >;
+	using VkDescriptorBufferInfoArray = std::vector< VkDescriptorBufferInfo >;
+	using VkDescriptorImageInfoArray = std::vector< VkDescriptorImageInfo >;
 	using VkDescriptorPoolSizeArray = std::vector< VkDescriptorPoolSize >;
 	using VkDescriptorSetArray = std::vector< VkDescriptorSet >;
 	using VkDescriptorSetLayoutArray = std::vector< VkDescriptorSetLayout >;

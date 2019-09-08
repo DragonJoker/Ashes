@@ -1,8 +1,8 @@
 /*
 See LICENSE file in root folder
 */
-#ifndef ___Ashes_QueryPool_H___
-#define ___Ashes_QueryPool_H___
+#ifndef ___AshesPP_QueryPool_H___
+#define ___AshesPP_QueryPool_H___
 
 #include "ashespp/AshesPPPrerequisites.hpp"
 

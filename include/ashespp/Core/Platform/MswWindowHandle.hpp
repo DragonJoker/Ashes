@@ -2,8 +2,8 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___Ashes_MswWindowHandle_HPP___
-#define ___Ashes_MswWindowHandle_HPP___
+#ifndef ___AshesPP_MswWindowHandle_HPP___
+#define ___AshesPP_MswWindowHandle_HPP___
 
 #ifndef NOMINMAX
 #	define NOMINMAX

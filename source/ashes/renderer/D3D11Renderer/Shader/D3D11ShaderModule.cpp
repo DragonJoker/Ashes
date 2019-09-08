@@ -15,6 +15,7 @@ See LICENSE file in root folder.
 #include <iostream>
 #include <locale>
 #include <regex>
+#include <sstream>
 
 #define CreateEvent CreateEventA
 #include <atlbase.h>

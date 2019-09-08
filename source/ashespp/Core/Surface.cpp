@@ -17,14 +17,15 @@ namespace ashes
 		, m_gpu{ gpu }
 	{
 		doCreate();
+		m_handle.setSurface( *this );
 	}
 
 	Surface::~Surface()
 	{
-		if ( m_surface != VK_NULL_HANDLE )
+		if ( m_internal != VK_NULL_HANDLE )
 		{
 			m_instance.vkDestroySurfaceKHR( m_instance
-				, m_surface
+				, m_internal
 				, nullptr );
 		}
 	}
@@ -34,7 +35,7 @@ namespace ashes
 		VkBool32 result;
 		auto res = m_instance.vkGetPhysicalDeviceSurfaceSupportKHR( m_gpu
 			, queueFamilyIndex
-			, m_surface
+			, m_internal
 			, &result );
 		checkError( res, "Presentation surface support check" );
 		return result == VK_TRUE;
@@ -44,7 +45,7 @@ namespace ashes
 	{
 		VkSurfaceCapabilitiesKHR caps;
 		auto res = m_instance.vkGetPhysicalDeviceSurfaceCapabilitiesKHR( m_gpu
-			, m_surface
+			, m_internal
 			, &caps );
 		checkError( res, "Surface capabilities check" );
 		return caps;
@@ -55,7 +56,7 @@ namespace ashes
 		std::vector < VkPresentModeKHR > result;
 		uint32_t presentModeCount{};
 		auto res = m_instance.vkGetPhysicalDeviceSurfacePresentModesKHR( m_gpu
-			, m_surface
+			, m_internal
 			, &presentModeCount
 			, nullptr );
 		checkError( res, "Surface present modes enumeration" );
@@ -64,7 +65,7 @@ namespace ashes
 		{
 			result.resize( presentModeCount );
 			res = m_instance.vkGetPhysicalDeviceSurfacePresentModesKHR( m_gpu
-				, m_surface
+				, m_internal
 				, &presentModeCount
 				, result.data() );
 			checkError( res, "Surface present modes enumeration" );
@@ -78,7 +79,7 @@ namespace ashes
 		std::vector< VkSurfaceFormatKHR > result;
 		uint32_t formatCount{ 0u };
 		auto res = m_instance.vkGetPhysicalDeviceSurfaceFormatsKHR( m_gpu
-			, m_surface
+			, m_internal
 			, &formatCount
 			, nullptr );
 		checkError( res, "Surface formats enumeration" );
@@ -87,7 +88,7 @@ namespace ashes
 		{
 			result.resize( formatCount );
 			res = m_instance.vkGetPhysicalDeviceSurfaceFormatsKHR( m_gpu
-				, m_surface
+				, m_internal
 				, &formatCount
 				, result.data() );
 			checkError( res, "Surface formats enumeration" );
@@ -112,7 +113,7 @@ namespace ashes
 		auto res = m_instance.vkCreateWin32SurfaceKHR( m_instance
 			, &createInfo
 			, nullptr
-			, &m_surface );
+			, &m_internal );
 		checkError( res, "Presentation surface creation" );
 		m_type = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
 	}
@@ -132,7 +133,7 @@ namespace ashes
 		auto res = m_instance.vkCreateAndroidSurfaceKHR( m_instance
 			, &createInfo
 			, nullptr
-			, &m_surface );
+			, &m_internal );
 		checkError( res, "Presentation surface creation" );
 		m_type = VK_KHR_ANDROID_SURFACE_EXTENSION_NAME;
 	}
@@ -152,7 +153,7 @@ namespace ashes
 		auto res = m_instance.vkCreateXcbSurfaceKHR( m_instance
 			, &createInfo
 			, nullptr
-			, &m_surface );
+			, &m_internal );
 		checkError( res, "Presentation surface creation" );
 		m_type = VK_KHR_XCB_SURFACE_EXTENSION_NAME;
 	}
@@ -172,7 +173,7 @@ namespace ashes
 		auto res = m_instance.vkCreateMirSurfaceKHR( m_instance
 			, &createInfo
 			, nullptr
-			, &m_surface );
+			, &m_internal );
 		checkError( res, "Presentation surface creation" );
 		m_type = VK_KHR_MIR_SURFACE_EXTENSION_NAME;
 	}
@@ -192,7 +193,7 @@ namespace ashes
 		auto res = m_instance.vkCreateWaylandSurfaceKHR( m_instance
 			, &createInfo
 			, nullptr
-			, &m_surface );
+			, &m_internal );
 		checkError( res, "Presentation surface creation" );
 		m_type = VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME;
 	}
@@ -212,7 +213,7 @@ namespace ashes
 		auto res = m_instance.vkCreateXlibSurfaceKHR( m_instance
 			, &createInfo
 			, nullptr
-			, &m_surface );
+			, &m_internal );
 		checkError( res, "Presentation surface creation" );
 		m_type = VK_KHR_XLIB_SURFACE_EXTENSION_NAME;
 	}

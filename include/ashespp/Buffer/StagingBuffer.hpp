@@ -29,7 +29,7 @@ namespace ashes
 		*	Constructor.
 		*\param[in] device
 		*	The logical device.
-		*\param[in] target
+		*\param[in] usage
 		*	The buffer targets.
 		*\param[in] size
 		*	The buffer size.
@@ -38,13 +38,13 @@ namespace ashes
 		*	Constructeur.
 		*\param[in] device
 		*	Le LogicalDevice parent.
-		*\param[in] target
+		*\param[in] usage
 		*	Les cibles du tampon.
 		*\param[in] size
 		*	La taille du tampon.
 		*/
 		StagingBuffer( Device const & device
-			, VkBufferUsageFlags target
+			, VkBufferUsageFlags usage
 			, VkDeviceSize size = 10000000u );
 		/**
 		*\name

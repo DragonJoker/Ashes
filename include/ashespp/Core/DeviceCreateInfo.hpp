@@ -2,8 +2,8 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___Ashes_DeviceCreateInfo_HPP___
-#define ___Ashes_DeviceCreateInfo_HPP___
+#ifndef ___AshesPP_DeviceCreateInfo_HPP___
+#define ___AshesPP_DeviceCreateInfo_HPP___
 #pragma once
 
 #include "DeviceQueueCreateInfo.hpp"

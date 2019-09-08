@@ -45,10 +45,8 @@ namespace ashes
 		{
 		case ClipDirection::eBottomUp:
 			return "bottom_up";
-
 		case ClipDirection::eTopDown:
 			return "top_down";
-
 		default:
 			assert( false && "Unsupported ClipDirection." );
 			throw std::runtime_error{ "Unsupported ClipDirection" };

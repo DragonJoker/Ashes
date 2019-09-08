@@ -2,8 +2,8 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___Ashes_PipelineRasterizationStateCreateInfo_HPP___
-#define ___Ashes_PipelineRasterizationStateCreateInfo_HPP___
+#ifndef ___AshesPP_PipelineRasterizationStateCreateInfo_HPP___
+#define ___AshesPP_PipelineRasterizationStateCreateInfo_HPP___
 #pragma once
 
 #include "ashespp/AshesPPPrerequisites.hpp"
@@ -90,6 +90,16 @@ namespace ashes
 		inline operator VkPipelineRasterizationStateCreateInfo const &()const
 		{
 			return vk;
+		}
+
+		inline VkPipelineRasterizationStateCreateInfo const * operator->()const
+		{
+			return &vk;
+		}
+
+		inline VkPipelineRasterizationStateCreateInfo * operator->()
+		{
+			return &vk;
 		}
 
 	private:

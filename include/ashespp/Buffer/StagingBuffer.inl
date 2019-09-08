@@ -501,7 +501,7 @@ namespace ashes
 		, UniformBuffer< T > const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
-		auto elemAlignedSize = buffer.getAlignedSize();
+		auto elemAlignedSize = uint32_t( buffer.getAlignedSize() );
 		doCopyUniformDataToStagingBuffer( data
 			, count
 			, elemAlignedSize );

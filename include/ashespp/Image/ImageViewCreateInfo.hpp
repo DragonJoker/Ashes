@@ -2,8 +2,8 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___Ashes_ImageViewCreateInfo_HPP___
-#define ___Ashes_ImageViewCreateInfo_HPP___
+#ifndef ___AshesPP_ImageViewCreateInfo_HPP___
+#define ___AshesPP_ImageViewCreateInfo_HPP___
 #pragma once
 
 #include "ashespp/AshesPPPrerequisites.hpp"

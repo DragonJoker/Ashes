@@ -12,10 +12,10 @@ namespace ashes
 {
 	BufferBase::BufferBase( Device const & device
 		, VkDeviceSize size
-		, VkBufferUsageFlags target )
+		, VkBufferUsageFlags usage )
 		: m_device{ device }
 		, m_size{ size }
-		, m_target{ target }
+		, m_usage{ usage }
 	{
 		VkBufferCreateInfo bufferCreate
 		{
@@ -23,7 +23,7 @@ namespace ashes
 			nullptr,
 			0,                                                // flags
 			size,                                             // size
-			target,                                           // usage
+			m_usage,                                          // usage
 			VK_SHARING_MODE_EXCLUSIVE,                        // sharingMode
 			0,                                                // queueFamilyIndexCount
 			nullptr                                           // pQueueFamilyIndices
@@ -115,6 +115,22 @@ namespace ashes
 		, uint32_t dstQueueFamily )const
 	{
 		return makeMemoryTransitionBarrier( VK_ACCESS_UNIFORM_READ_BIT
+			, srcQueueFamily
+			, dstQueueFamily );
+	}
+
+	VkBufferMemoryBarrier BufferBase::makeHostRead( uint32_t srcQueueFamily
+		, uint32_t dstQueueFamily )const
+	{
+		return makeMemoryTransitionBarrier( VK_ACCESS_HOST_READ_BIT
+			, srcQueueFamily
+			, dstQueueFamily );
+	}
+
+	VkBufferMemoryBarrier BufferBase::makeHostWrite( uint32_t srcQueueFamily
+		, uint32_t dstQueueFamily )const
+	{
+		return makeMemoryTransitionBarrier( VK_ACCESS_HOST_WRITE_BIT
 			, srcQueueFamily
 			, dstQueueFamily );
 	}

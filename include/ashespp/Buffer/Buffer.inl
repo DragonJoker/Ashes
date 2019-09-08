@@ -7,10 +7,10 @@ namespace ashes
 	template< typename T >
 	Buffer< T >::Buffer( Device const & device
 		, VkDeviceSize count
-		, VkBufferUsageFlags target )
+		, VkBufferUsageFlags usage )
 		: m_device{ device }
 		, m_buffer{ device.createBuffer( count * sizeof( T )
-			, target ) }
+			, usage ) }
 	{
 	}
 }
