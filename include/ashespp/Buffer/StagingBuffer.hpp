@@ -45,7 +45,8 @@ namespace ashes
 		*/
 		StagingBuffer( Device const & device
 			, VkBufferUsageFlags usage
-			, VkDeviceSize size = 10000000u );
+			, VkDeviceSize size = 10000000u
+			, QueueShare sharingMode = {} );
 		/**
 		*\name
 		*	Upload.

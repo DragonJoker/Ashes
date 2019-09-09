@@ -47,7 +47,8 @@ namespace ashes
 		UniformBufferBase( Device const & device
 			, VkDeviceSize count
 			, VkDeviceSize size
-			, VkBufferUsageFlags usage );
+			, VkBufferUsageFlags usage
+			, QueueShare sharingMode = {} );
 		/**
 		*\~english
 		*\brief
@@ -182,12 +183,14 @@ namespace ashes
 	inline UniformBufferBasePtr makeUniformBufferBase( Device const & device
 		, VkDeviceSize count
 		, VkDeviceSize size
-		, VkBufferUsageFlags usage )
+		, VkBufferUsageFlags usage
+		, QueueShare sharingMode = {} )
 	{
 		return std::make_unique< UniformBufferBase >( device
 			, count
 			, size
-			, usage );
+			, usage
+			, std::move( sharingMode ) );
 	}
 	/**
 	*\~french
@@ -222,7 +225,8 @@ namespace ashes
 		*/
 		inline UniformBuffer( Device const & device
 			, VkDeviceSize count
-			, VkBufferUsageFlags usage );
+			, VkBufferUsageFlags usage
+			, QueueShare sharingMode = {} );
 		/**
 		*\~english
 		*\brief
@@ -419,11 +423,13 @@ namespace ashes
 	template< typename T >
 	inline UniformBufferPtr< T > makeUniformBuffer( Device const & device
 		, VkDeviceSize count
-		, VkBufferUsageFlags usage )
+		, VkBufferUsageFlags usage
+		, QueueShare sharingMode = {} )
 	{
 		return std::make_unique< UniformBuffer< T > >( device
 			, count
-			, usage );
+			, usage
+			, std::move( sharingMode ) );
 	}
 }
 

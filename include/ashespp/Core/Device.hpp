@@ -13,6 +13,7 @@ See LICENSE file in root folder.
 #include "ashespp/Core/PhysicalDevice.hpp"
 #include "ashespp/Image/ImageCreateInfo.hpp"
 #include "ashespp/Image/SamplerCreateInfo.hpp"
+#include "ashespp/Miscellaneous/QueueShare.hpp"
 #include "ashespp/Pipeline/ComputePipelineCreateInfo.hpp"
 #include "ashespp/Pipeline/GraphicsPipelineCreateInfo.hpp"
 #include "ashespp/RenderPass/RenderPassCreateInfo.hpp"
@@ -394,18 +395,19 @@ namespace ashes
 		*	Creates a GPU buffer.
 		*\param[in] size
 		*	The buffer size.
-		*\param[in] target
+		*\param[in] usage
 		*	The buffer usage flags.
 		*\~french
 		*\brief
 		*	Crée un tampon GPU.
 		*\param[in] size
 		*	La taille du tampon.
-		*\param[in] target
+		*\param[in] usage
 		*	Les indicateurs d'utilisation du tampon.
 		*/
 		BufferBasePtr createBuffer( VkDeviceSize size
-			, VkBufferUsageFlags target )const;
+			, VkBufferUsageFlags usage
+			, QueueShare sharingMode = {} )const;
 		/**
 		*\~french
 		*\brief

@@ -11,26 +11,30 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	BufferBase::BufferBase( Device const & device
-		, VkDeviceSize size
-		, VkBufferUsageFlags usage )
+		, VkBufferCreateInfo createInfo )
 		: m_device{ device }
-		, m_size{ size }
-		, m_usage{ usage }
+		, m_createInfo{ std::move( createInfo ) }
 	{
-		VkBufferCreateInfo bufferCreate
-		{
-			VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-			nullptr,
-			0,                                                // flags
-			size,                                             // size
-			m_usage,                                          // usage
-			VK_SHARING_MODE_EXCLUSIVE,                        // sharingMode
-			0,                                                // queueFamilyIndexCount
-			nullptr                                           // pQueueFamilyIndices
-		};
 		DEBUG_DUMP( bufferCreate );
 		auto res = m_device.vkCreateBuffer( m_device
-			, &bufferCreate
+			, &m_createInfo
+			, nullptr
+			, &m_internal );
+		checkError( res, "Buffer creation" );
+		registerObject( m_device, "Buffer", this );
+	}
+
+	BufferBase::BufferBase( Device const & device
+		, VkDeviceSize size
+		, VkBufferUsageFlags usage
+		, QueueShare sharingMode )
+		: m_device{ device }
+		, m_sharingMode{ std::move( sharingMode ) }
+		, m_createInfo{ makeCreateInfo ( size, usage, m_sharingMode ) }
+	{
+		DEBUG_DUMP( bufferCreate );
+		auto res = m_device.vkCreateBuffer( m_device
+			, &m_createInfo
 			, nullptr
 			, &m_internal );
 		checkError( res, "Buffer creation" );

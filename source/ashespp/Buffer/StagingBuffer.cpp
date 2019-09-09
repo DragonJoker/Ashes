@@ -146,10 +146,12 @@ namespace ashes
 
 	StagingBuffer::StagingBuffer( Device const & device
 		, VkBufferUsageFlags usage
-		, VkDeviceSize size )
+		, VkDeviceSize size
+		, QueueShare sharingMode )
 		: m_device{ device }
 		, m_buffer{ device.createBuffer( size
-			, usage | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT ) }
+			, usage | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT
+			, std::move( sharingMode ) ) }
 		, m_storage{ device.allocateMemory( getAllocateInfo( device, *m_buffer ) ) }
 	{
 		m_buffer->bindMemory( m_storage );

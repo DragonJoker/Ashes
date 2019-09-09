@@ -31,7 +31,8 @@ namespace ashes
 		*/
 		VertexBufferBase( Device const & device
 			, VkDeviceSize size
-			, VkBufferUsageFlags usage );
+			, VkBufferUsageFlags usage
+			, QueueShare sharingMode = {} );
 		/**
 		*\~english
 		*\brief
@@ -129,11 +130,13 @@ namespace ashes
 	*/
 	inline VertexBufferBasePtr makeVertexBufferBase( Device const & device
 		, VkDeviceSize size
-		, VkBufferUsageFlags usage )
+		, VkBufferUsageFlags usage
+		, QueueShare sharingMode = {} )
 	{
 		return std::make_unique< VertexBufferBase >( device
 			, size
-			, usage );
+			, usage
+			, std::move( sharingMode ) );
 	}
 	/**
 	*\brief
@@ -156,7 +159,8 @@ namespace ashes
 		*/
 		inline VertexBuffer( Device const & device
 			, VkDeviceSize count
-			, VkBufferUsageFlags usage );
+			, VkBufferUsageFlags usage
+			, QueueShare sharingMode = {} );
 		/**
 		*\~english
 		*\brief
@@ -329,11 +333,13 @@ namespace ashes
 	template< typename T >
 	inline VertexBufferPtr< T > makeVertexBuffer( Device const & device
 		, VkDeviceSize count
-		, VkBufferUsageFlags usage )
+		, VkBufferUsageFlags usage
+		, QueueShare sharingMode = {} )
 	{
 		return std::make_unique< VertexBuffer< T > >( device
 			, count
-			, usage );
+			, usage
+			, std::move( sharingMode ) );
 	}
 }
 

@@ -67,7 +67,7 @@ else ()
 endif ()
 
 set( ${PROJECT_NAME}_CONFIG_HEADER
-	${ASHES_CONFIG_DIR}/ash_platform.h
+	${ASHES_CONFIG_DIR}/include/${PROJECT_NAME}/ash_platform.h
 )
 
 configure_file(

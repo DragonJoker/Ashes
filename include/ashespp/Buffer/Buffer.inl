@@ -7,10 +7,12 @@ namespace ashes
 	template< typename T >
 	Buffer< T >::Buffer( Device const & device
 		, VkDeviceSize count
-		, VkBufferUsageFlags usage )
+		, VkBufferUsageFlags usage
+		, QueueShare sharingMode )
 		: m_device{ device }
 		, m_buffer{ device.createBuffer( count * sizeof( T )
-			, usage ) }
+			, usage
+			, std::move( sharingMode ) ) }
 	{
 	}
 }

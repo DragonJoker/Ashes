@@ -160,11 +160,13 @@ namespace ashes
 	}
 
 	BufferBasePtr Device::createBuffer( VkDeviceSize size
-		, VkBufferUsageFlags target )const
+		, VkBufferUsageFlags usage
+		, QueueShare sharingMode )const
 	{
 		return std::make_unique< BufferBase >( *this
 			, size
-			, target );
+			, usage
+			, std::move( sharingMode ) );
 	}
 
 	BufferViewPtr Device::createBufferView( BufferBase const & buffer

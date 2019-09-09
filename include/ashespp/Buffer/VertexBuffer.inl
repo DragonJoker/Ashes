@@ -7,10 +7,12 @@ namespace ashes
 	template< typename T >
 	inline VertexBuffer< T >::VertexBuffer( Device const & device
 		, VkDeviceSize count
-		, VkBufferUsageFlags usage )
+		, VkBufferUsageFlags usage
+		, QueueShare sharingMode )
 		: VertexBufferBase{ device
 			, count * sizeof( T )
-			, usage }
+			, usage
+			, std::move( sharingMode ) }
 	{
 	}
 }
