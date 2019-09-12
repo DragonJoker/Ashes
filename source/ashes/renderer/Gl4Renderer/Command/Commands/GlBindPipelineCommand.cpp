@@ -27,7 +27,13 @@ namespace ashes::gl4
 		glLogCommand( "BindPipelineCommand" );
 		GLuint program;
 
-		if ( !get( stack.getCurrentFramebuffer() )->hasSwapchainImage() )
+		if ( !stack.hasCurrentFramebuffer() )
+		{
+			// Can happen in case of secondary command buffers
+			stack.apply( list, get( pipeline )->getRtotContextState() );
+			program = get( pipeline )->getRtotProgram();
+		}
+		else if ( !get( stack.getCurrentFramebuffer() )->hasSwapchainImage() )
 		{
 			stack.apply( list, get( pipeline )->getRtotContextState() );
 			program = get( pipeline )->getRtotProgram();

@@ -149,8 +149,8 @@ namespace ashes::gl4
 		, VkSubpassContents contents
 		, CmdList & list )
 	{
-		VkClearValueArray rtClearValues;
-		VkClearValue dsClearValue;
+		VkClearValueArray rtClearValues{};
+		VkClearValue dsClearValue{};
 		assert( clearValues.size() == get( renderPass )->size() );
 		auto index = 0u;
 
