@@ -250,7 +250,7 @@ namespace ashes
 		, VkBufferUsageFlags usage
 		, QueueShare sharingMode )
 	{
-		return makeBufferBase( device
+		return std::make_unique< BufferBase >( device
 			, size
 			, usage
 			, std::move( sharingMode ) );

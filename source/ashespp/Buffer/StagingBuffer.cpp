@@ -390,7 +390,7 @@ namespace ashes
 	void StagingBuffer::doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
 		, uint32_t size
 		, uint32_t offset
-		, UniformBufferBase const & buffer
+		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
@@ -505,7 +505,7 @@ namespace ashes
 	void StagingBuffer::doCopyToStagingBuffer( CommandBuffer const & commandBuffer
 		, uint32_t size
 		, uint32_t offset
-		, UniformBufferBase const & buffer
+		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT

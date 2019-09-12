@@ -641,7 +641,7 @@ namespace ashes
 	}
 
 	void CommandBuffer::copyBuffer( BufferBase const & src
-		, UniformBufferBase const & dst
+		, UniformBuffer const & dst
 		, uint32_t size
 		, uint32_t offset )const
 	{
@@ -654,7 +654,7 @@ namespace ashes
 		copyBuffer( copyInfo, src, dst.getBuffer() );
 	}
 
-	void CommandBuffer::copyBuffer( UniformBufferBase const & src
+	void CommandBuffer::copyBuffer( UniformBuffer const & src
 		, BufferBase const & dst
 		, uint32_t size
 		, uint32_t offset )const
@@ -668,8 +668,8 @@ namespace ashes
 		copyBuffer( copyInfo, src.getBuffer(), dst );
 	}
 
-	void CommandBuffer::copyBuffer( UniformBufferBase const & src
-		, UniformBufferBase const & dst
+	void CommandBuffer::copyBuffer( UniformBuffer const & src
+		, UniformBuffer const & dst
 		, uint32_t size
 		, uint32_t offset )const
 	{

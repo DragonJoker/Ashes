@@ -103,8 +103,6 @@ namespace ashes
 	template< typename T >
 	class Buffer;
 	template< typename T >
-	class UniformBuffer;
-	template< typename T >
 	class PushConstantsBuffer;
 	template< typename T >
 	class SpecialisationInfo;
@@ -149,7 +147,7 @@ namespace ashes
 	class StagingTexture;
 	class Surface;
 	class SwapChain;
-	class UniformBufferBase;
+	class UniformBuffer;
 	class VertexBufferBase;
 
 	/**
@@ -177,8 +175,6 @@ namespace ashes
 	using BufferPtr = std::unique_ptr< Buffer< T > >;
 	template< typename T >
 	using PushConstantsBufferTPtr = std::unique_ptr< PushConstantsBuffer< T > >;
-	template< typename T >
-	using UniformBufferPtr = std::unique_ptr< UniformBuffer< T > >;
 	template< typename T >
 	using VertexBufferPtr = std::unique_ptr< VertexBuffer< T > >;
 	template< typename T >
@@ -214,7 +210,7 @@ namespace ashes
 	using SurfacePtr = std::unique_ptr< Surface >;
 	using SwapChainPtr = std::unique_ptr< SwapChain >;
 	using VertexBufferBasePtr = std::unique_ptr< VertexBufferBase >;
-	using UniformBufferBasePtr = std::unique_ptr< UniformBufferBase >;
+	using UniformBufferPtr = std::unique_ptr< UniformBuffer >;
 
 	using DevicePtr = std::shared_ptr< Device >;
 	using ShaderModulePtr = std::shared_ptr< ShaderModule >;

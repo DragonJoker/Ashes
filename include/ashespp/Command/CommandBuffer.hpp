@@ -1328,7 +1328,7 @@ namespace ashes
 		*	The offset in the source buffer.
 		*/
 		void copyBuffer( BufferBase const & src
-			, UniformBufferBase const & dst
+			, UniformBuffer const & dst
 			, uint32_t size
 			, uint32_t offset = 0 )const;
 		/**
@@ -1354,7 +1354,7 @@ namespace ashes
 		*\param[in] offset
 		*	The offset in the source buffer.
 		*/
-		void copyBuffer( UniformBufferBase const & src
+		void copyBuffer( UniformBuffer const & src
 			, BufferBase const & dst
 			, uint32_t size
 			, uint32_t offset = 0 )const;
@@ -1381,8 +1381,8 @@ namespace ashes
 		*\param[in] offset
 		*	The offset in the source buffer.
 		*/
-		void copyBuffer( UniformBufferBase const & src
-			, UniformBufferBase const & dst
+		void copyBuffer( UniformBuffer const & src
+			, UniformBuffer const & dst
 			, uint32_t size
 			, uint32_t offset = 0 )const;
 		/**

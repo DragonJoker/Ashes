@@ -8,7 +8,7 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	UniformBufferBase::UniformBufferBase( Device const & device
+	UniformBuffer::UniformBuffer( Device const & device
 		, VkDeviceSize count
 		, VkDeviceSize size
 		, VkBufferUsageFlags usage
@@ -16,27 +16,24 @@ namespace ashes
 		: m_device{ device }
 		, m_count{ count }
 		, m_size{ size }
-		, m_buffer{ m_device.createBuffer( count * getAlignedSize( getElementSize() )
+		, m_buffer{ std::make_unique< BufferBase >( device
+			, count * getAlignedSize( getElementSize() )
 			, usage | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT
 			, std::move( sharingMode ) ) }
 	{
 	}
 
-	UniformBufferBase::~UniformBufferBase()
-	{
-	}
-
-	void UniformBufferBase::bindMemory( DeviceMemoryPtr memory )
+	void UniformBuffer::bindMemory( DeviceMemoryPtr memory )
 	{
 		m_buffer->bindMemory( std::move( memory ) );
 	}
 
-	VkMemoryRequirements UniformBufferBase::getMemoryRequirements()const
+	VkMemoryRequirements UniformBuffer::getMemoryRequirements()const
 	{
 		return m_buffer->getMemoryRequirements();
 	}
 
-	VkDeviceSize UniformBufferBase::getAlignedSize( VkDeviceSize size )const
+	VkDeviceSize UniformBuffer::getAlignedSize( VkDeviceSize size )const
 	{
 		return ashes::getAlignedSize( size
 			, m_device.getProperties().limits.minUniformBufferOffsetAlignment );

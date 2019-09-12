@@ -8,6 +8,8 @@ See LICENSE file in root folder.
 
 #include "ashespp/AshesPPPrerequisites.hpp"
 
+#include "ashespp/Buffer/UniformBuffer.hpp"
+
 #include <list>
 
 namespace ashes
@@ -269,7 +271,7 @@ namespace ashes
 		*	The array index.
 		*/
 		void createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
-			, UniformBufferBase const & uniformBuffer
+			, UniformBuffer const & uniformBuffer
 			, uint32_t offset
 			, uint32_t range
 			, uint32_t index = 0u );
@@ -367,10 +369,10 @@ namespace ashes
 		*	The array index.
 		*/
 		void createDynamicBinding( VkDescriptorSetLayoutBinding const & layoutBinding
-			, UniformBufferBase const & uniformBuffer
+			, UniformBuffer const & uniformBuffer
 			, uint32_t offset
 			, uint32_t range
-			, uint32_t index = 0u );
+			, uint32_t index );
 		/**
 		*\~french
 		*\brief
@@ -436,18 +438,58 @@ namespace ashes
 		*\param[in] index
 		*	The array index.
 		*/
-		template< typename T >
-		inline void createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
-			, UniformBuffer< T > const & uniformBuffer
+		inline void createSizedBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+			, UniformBuffer const & uniformBuffer
+			, uint32_t elemSize
+			, uint32_t offset
+			, uint32_t range
+			, uint32_t index )
+		{
+			createBinding( layoutBinding
+				, uniformBuffer
+				, uint32_t( offset * uniformBuffer.getAlignedSize( elemSize ) )
+				, uint32_t( range * uniformBuffer.getAlignedSize( elemSize ) )
+				, index );
+		}
+		/**
+		*\~french
+		*\brief
+		*	Crée une attache de type tampon de variables uniformes.
+		*\param[in] layoutBinding
+		*	L'attache de layout.
+		*\param[in] uniformBuffer
+		*	Le tampon.
+		*\param[in] offset
+		*	Le décalage de l'attache dans le tampon.
+		*\param[in] range
+		*	Le décompte des données pouvant être lues depuis l'attache dans le tampon.
+		*\param[in] index
+		*	L'indice dans le tableau.
+		*\~english
+		*\brief
+		*	Creates a uniform buffer binding.
+		*\param[in] layoutBinding
+		*	The layout binding.
+		*\param[in] uniformBuffer
+		*	The buffer.
+		*\param[in] offset
+		*	The attach's offset in the buffer.
+		*\param[in] range
+		*	The amount of data that can be read from the buffer.
+		*\param[in] index
+		*	The array index.
+		*/
+		inline void createSizedBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+			, UniformBuffer const & uniformBuffer
 			, uint32_t offset = 0u
 			, uint32_t range = 1u
 			, uint32_t index = 0u )
 		{
-			createBinding( layoutBinding
-				, uniformBuffer.getUbo()
-				, uint32_t( offset * uniformBuffer.getAlignedSize() )
-				, uint32_t( range * uniformBuffer.getAlignedSize() )
-				//, range * sizeof( T )
+			createSizedBinding( layoutBinding
+				, uniformBuffer
+				, uint32_t( uniformBuffer.getElementSize() )
+				, offset
+				, range
 				, index );
 		}
 		/**
@@ -515,14 +557,13 @@ namespace ashes
 		*\param[in] index
 		*	The array index.
 		*/
-		template< typename T >
 		inline void createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
-			, UniformBuffer< T > const & buffer
+			, UniformBuffer const & buffer
 			, BufferView const & view
 			, uint32_t index = 0u )
 		{
 			createBinding( layoutBinding
-				, buffer.getUbo()
+				, buffer.getBuffer()
 				, view
 				, index );
 		}
@@ -593,18 +634,62 @@ namespace ashes
 		*\param[in] index
 		*	The array index.
 		*/
-		template< typename T >
-		inline void createDynamicBinding( VkDescriptorSetLayoutBinding const & layoutBinding
-			, UniformBuffer< T > const & uniformBuffer
+		inline void createSizedDynamicBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+			, UniformBuffer const & uniformBuffer
+			, uint32_t elemSize
 			, uint32_t offset = 0u
 			, uint32_t range = 1u
 			, uint32_t index = 0u )
 		{
 			createDynamicBinding( layoutBinding
-				, uniformBuffer.getUbo()
-				, uint32_t( offset * uniformBuffer.getAlignedSize() )
-				, uint32_t( range * uniformBuffer.getAlignedSize() )
-				//, range * sizeof( T )
+				, uniformBuffer
+				, uint32_t( offset * uniformBuffer.getAlignedSize( elemSize ) )
+				, uint32_t( range * uniformBuffer.getAlignedSize( elemSize ) )
+				, index );
+		}
+		/**
+		*\~french
+		*\brief
+		*	Crée une attache de type tampon de variables uniformes dynamique.
+		*\remarks
+		*	Permet de spécifier un offset supplémentaire au moment du binding du descripteur.
+		*\param[in] layoutBinding
+		*	L'attache de layout.
+		*\param[in] uniformBuffer
+		*	Le tampon.
+		*\param[in] offset
+		*	Le décalage de l'attache dans le tampon.
+		*\param[in] range
+		*	Le décompte des données pouvant être lues depuis l'attache dans le tampon.
+		*\param[in] index
+		*	L'indice dans le tableau.
+		*\~english
+		*\brief
+		*	Creates a dynamic uniform buffer binding.
+		*\remarks
+		*	Allow specification of an additional offset at descriptor's binding time.
+		*\param[in] layoutBinding
+		*	The layout binding.
+		*\param[in] uniformBuffer
+		*	The buffer.
+		*\param[in] offset
+		*	The attach's offset in the buffer.
+		*\param[in] range
+		*	The amount of data that can be read from the buffer.
+		*\param[in] index
+		*	The array index.
+		*/
+		inline void createSizedDynamicBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+			, UniformBuffer const & uniformBuffer
+			, uint32_t offset = 0u
+			, uint32_t range = 1u
+			, uint32_t index = 0u )
+		{
+			createSizedDynamicBinding( layoutBinding
+				, uniformBuffer
+				, uint32_t( uniformBuffer.getElementSize() )
+				, offset
+				, range
 				, index );
 		}
 		/**

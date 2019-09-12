@@ -379,7 +379,7 @@ namespace ashes
 	inline void StagingBuffer::uploadUniformData( Queue const & queue
 		, CommandPool const & commandPool
 		, std::vector< T > const & data
-		, UniformBuffer< T > const & buffer
+		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
 		uploadUniformData( queue
@@ -396,7 +396,7 @@ namespace ashes
 		, CommandPool const & commandPool
 		, T const * const data
 		, uint32_t count
-		, UniformBuffer< T > const & buffer
+		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
 		uploadUniformData( queue
@@ -413,7 +413,7 @@ namespace ashes
 		, CommandPool const & commandPool
 		, std::vector< T > const & data
 		, uint32_t offset
-		, UniformBuffer< T > const & buffer
+		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
 		uploadUniformData( queue
@@ -431,7 +431,7 @@ namespace ashes
 		, T const * const data
 		, uint32_t count
 		, uint32_t offset
-		, UniformBuffer< T > const & buffer
+		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( true );
@@ -452,7 +452,7 @@ namespace ashes
 	template< typename T >
 	inline void StagingBuffer::uploadUniformData( CommandBuffer const & commandBuffer
 		, std::vector< T > const & data
-		, UniformBuffer< T > const & buffer
+		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
 		uploadUniformData( commandBuffer
@@ -467,7 +467,7 @@ namespace ashes
 	inline void StagingBuffer::uploadUniformData( CommandBuffer const & commandBuffer
 		, T const * const data
 		, uint32_t count
-		, UniformBuffer< T > const & buffer
+		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
 		uploadUniformData( commandBuffer
@@ -482,7 +482,7 @@ namespace ashes
 	inline void StagingBuffer::uploadUniformData( CommandBuffer const & commandBuffer
 		, std::vector< T > const & data
 		, uint32_t offset
-		, UniformBuffer< T > const & buffer
+		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
 		uploadUniformData( commandBuffer
@@ -498,7 +498,7 @@ namespace ashes
 		, T const * const data
 		, uint32_t count
 		, uint32_t offset
-		, UniformBuffer< T > const & buffer
+		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
 		auto elemAlignedSize = uint32_t( buffer.getAlignedSize() );
@@ -508,7 +508,7 @@ namespace ashes
 		doCopyFromStagingBuffer( commandBuffer
 			, elemAlignedSize * count
 			, elemAlignedSize * offset
-			, buffer.getUbo()
+			, buffer
 			, dstStageFlags );
 	}
 	/**@}*/
@@ -845,7 +845,7 @@ namespace ashes
 	inline void StagingBuffer::downloadUniformData( Queue const & queue
 		, CommandPool const & commandPool
 		, std::vector< T > & data
-		, UniformBuffer< T > const & buffer
+		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
 		downloadUniformData( queue
@@ -862,7 +862,7 @@ namespace ashes
 		, CommandPool const & commandPool
 		, T * data
 		, uint32_t count
-		, UniformBuffer< T > const & buffer
+		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
 		downloadUniformData( queue
@@ -879,7 +879,7 @@ namespace ashes
 		, CommandPool const & commandPool
 		, std::vector< T > & data
 		, uint32_t offset
-		, UniformBuffer< T > const & buffer
+		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
 		downloadUniformData( queue
@@ -897,7 +897,7 @@ namespace ashes
 		, T * data
 		, uint32_t count
 		, uint32_t offset
-		, UniformBuffer< T > const & buffer
+		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( true );
@@ -907,7 +907,7 @@ namespace ashes
 		doCopyToStagingBuffer( *commandBuffer
 			, elemAlignedSize * count
 			, elemAlignedSize * offset
-			, buffer.getUbo()
+			, buffer
 			, dstStageFlags );
 		commandBuffer->end();
 

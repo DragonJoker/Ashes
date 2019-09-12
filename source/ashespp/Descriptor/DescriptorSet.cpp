@@ -134,7 +134,7 @@ namespace ashes
 	}
 
 	void DescriptorSet::createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
-		, UniformBufferBase const & uniformBuffer
+		, UniformBuffer const & uniformBuffer
 		, uint32_t offset
 		, uint32_t range
 		, uint32_t index )
@@ -186,7 +186,7 @@ namespace ashes
 	}
 
 	void DescriptorSet::createDynamicBinding( VkDescriptorSetLayoutBinding const & layoutBinding
-		, UniformBufferBase const & uniformBuffer
+		, UniformBuffer const & uniformBuffer
 		, uint32_t offset
 		, uint32_t range
 		, uint32_t index )

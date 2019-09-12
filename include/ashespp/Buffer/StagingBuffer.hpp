@@ -201,21 +201,21 @@ namespace ashes
 		inline void uploadUniformData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::vector< T > const & data
-			, UniformBuffer< T > const & buffer
+			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
 		inline void uploadUniformData( Queue const & queue
 			, CommandPool const & commandPool
 			, T const * const data
 			, uint32_t count
-			, UniformBuffer< T > const & buffer
+			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
 		inline void uploadUniformData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::vector< T > const & data
 			, uint32_t offset
-			, UniformBuffer< T > const & buffer
+			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
 		inline void uploadUniformData( Queue const & queue
@@ -223,31 +223,31 @@ namespace ashes
 			, T const * const data
 			, uint32_t count
 			, uint32_t offset
-			, UniformBuffer< T > const & buffer
+			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
 		inline void uploadUniformData( CommandBuffer const & commandBuffer
 			, std::vector< T > const & data
-			, UniformBuffer< T > const & buffer
+			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
 		inline void uploadUniformData( CommandBuffer const & commandBuffer
 			, T const * const data
 			, uint32_t count
-			, UniformBuffer< T > const & buffer
+			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
 		inline void uploadUniformData( CommandBuffer const & commandBuffer
 			, std::vector< T > const & data
 			, uint32_t offset
-			, UniformBuffer< T > const & buffer
+			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
 		inline void uploadUniformData( CommandBuffer const & commandBuffer
 			, T const * const data
 			, uint32_t count
 			, uint32_t offset
-			, UniformBuffer< T > const & buffer
+			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		/**@}*/
 		/**
@@ -418,21 +418,21 @@ namespace ashes
 		inline void downloadUniformData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::vector< T > & data
-			, UniformBuffer< T > const & buffer
+			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
 		inline void downloadUniformData( Queue const & queue
 			, CommandPool const & commandPool
 			, T * data
 			, uint32_t count
-			, UniformBuffer< T > const & buffer
+			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
 		inline void downloadUniformData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::vector< T > & data
 			, uint32_t offset
-			, UniformBuffer< T > const & buffer
+			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
 		inline void downloadUniformData( Queue const & queue
@@ -440,7 +440,7 @@ namespace ashes
 			, T * data
 			, uint32_t count
 			, uint32_t offset
-			, UniformBuffer< T > const & buffer
+			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		/**@}*/
 		/**
@@ -512,7 +512,7 @@ namespace ashes
 		void doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
 			, uint32_t size
 			, uint32_t offset
-			, UniformBufferBase const & buffer
+			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags )const;
 		void doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
 			, VkExtent2D const & size
@@ -543,7 +543,7 @@ namespace ashes
 		void doCopyToStagingBuffer( CommandBuffer const & commandBuffer
 			, uint32_t size
 			, uint32_t offset
-			, UniformBufferBase const & buffer
+			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags )const;
 		void doCopyToStagingBuffer( CommandBuffer const & commandBuffer
 			, VkExtent2D const & size
