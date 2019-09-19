@@ -2,6 +2,7 @@
 #include <ashes/ashes.h>
 
 #include "Core/D3D11Device.hpp"
+#include "Shader/D3D11ShaderModule.hpp"
 
 #include "ashesd3d11_api.hpp"
 
@@ -2803,9 +2804,7 @@ namespace ashes::d3d11
 		VkDevice device,
 		const VkDebugMarkerObjectNameInfoEXT* pNameInfo )
 	{
-		// TODO
-		std::cerr << "vkDebugMarkerSetObjectNameEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return get( device )->debugMarkerSetObjectName( *pNameInfo );
 	}
 
 	void VKAPI_CALL vkCmdDebugMarkerBeginEXT(

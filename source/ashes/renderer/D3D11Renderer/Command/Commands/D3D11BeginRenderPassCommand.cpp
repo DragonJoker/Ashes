@@ -22,12 +22,13 @@ namespace ashes::d3d11
 		, m_frameBuffer{ frameBuffer }
 		, m_scissor{ makeScissor( get( m_frameBuffer )->getDimensions() ) }
 	{
-		assert( clearValues.size() == get( renderPass )->size() );
-		auto it = get( renderPass )->begin();
-
-		for ( auto & clearValue : clearValues )
+		auto rp = get( renderPass );
+		assert( clearValues.size() == rp->size() );
+		for ( auto & attach : *rp )
 		{
-			if ( ashes::isDepthOrStencilFormat( get( renderPass )->getAttachment( *it ).format ) )
+			auto & clearValue = clearValues[attach.attachment];
+
+			if ( ashes::isDepthOrStencilFormat( rp->getAttachment( attach ).format ) )
 			{
 				m_dsClearValue = clearValue;
 			}
@@ -35,8 +36,6 @@ namespace ashes::d3d11
 			{
 				m_rtClearValues.push_back( clearValue );
 			}
-
-			++it;
 		}
 	}
 

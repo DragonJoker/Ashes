@@ -188,6 +188,7 @@ namespace ashes::gl4
 	using PFN_glBlendEquationSeparatei = void ( GLAPIENTRY * )( GLuint buf, GLenum modeRGB, GLenum modeAlpha );
 	using PFN_glBlendFuncSeparatei = void ( GLAPIENTRY * )( GLuint buf, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha );
 	using PFN_glBlitFramebuffer = void ( GLAPIENTRY * )( GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter );
+	using PFN_glBufferData = void ( GLAPIENTRY * )( GlBufferTarget target, GLsizeiptr size, const void * data, GlBufferDataUsageFlags usage );
 	using PFN_glBufferStorage = void ( GLAPIENTRY * )( GlBufferTarget target, GLsizeiptr size, const void * data, GlMemoryPropertyFlags flags );
 	using PFN_glCheckFramebufferStatus = GLenum( GLAPIENTRY * )( GLenum target );
 	using PFN_glClear = void ( GLAPIENTRY * )( GLbitfield mask );
@@ -255,6 +256,7 @@ namespace ashes::gl4
 	using PFN_glGenTextures = void ( GLAPIENTRY * )( GLsizei n, GLuint * textures );
 	using PFN_glGenerateMipmap = void ( GLAPIENTRY * )( GLenum target );
 	using PFN_glGenVertexArrays = void ( GLAPIENTRY * )( GLsizei n, GLuint * arrays );
+	using PFN_glGetBufferParameteriv = GLenum( GLAPIENTRY * )( GlBufferTarget target, GLenum value, GLint * data );
 	using PFN_glGetError = GLenum( GLAPIENTRY * )( void );
 	using PFN_glGetFloatv = void ( GLAPIENTRY * )( GLenum pname, GLfloat * data );
 	using PFN_glGetIntegerv = void ( GLAPIENTRY * )( GLenum pname, GLint * data );

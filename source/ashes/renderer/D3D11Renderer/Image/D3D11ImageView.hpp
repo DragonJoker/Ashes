@@ -29,6 +29,20 @@ namespace ashes::d3d11
 
 		UINT getSubresource( uint32_t layer )const;
 
+		inline ID3D11View * getView()const
+		{
+			using ViewPtr = ID3D11View*;
+			return m_renderTargetView
+				? ViewPtr( m_renderTargetView )
+				: ( m_depthStencilView
+					? ViewPtr( m_depthStencilView )
+					: ( m_unorderedAccessView
+						? ViewPtr( m_unorderedAccessView )
+						: ( m_shaderView 
+							? ViewPtr( m_shaderView )
+							: nullptr ) ) );
+		}
+
 		inline ID3D11RenderTargetView * getRenderTargetView()const
 		{
 			return m_renderTargetView;

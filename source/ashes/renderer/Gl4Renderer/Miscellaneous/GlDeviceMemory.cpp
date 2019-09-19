@@ -138,7 +138,7 @@ namespace ashes::gl4
 					, GL_BUFFER_TARGET_PIXEL_UNPACK
 					, m_buffer );
 				doSetupUpdateRegions( offset, size );
-				auto result = glLogCall( context
+				auto result = glLogNonVoidCall( context
 					, glMapBufferRange
 					, GL_BUFFER_TARGET_PIXEL_UNPACK
 					, GLintptr( offset )
@@ -466,9 +466,10 @@ namespace ashes::gl4
 				, GLuint buffer )
 				: DeviceMemory::DeviceMemoryImpl{ parent, device, std::move( allocateInfo ), buffer, target, memoryOffset, buffer }
 			{
+				auto context = get( m_device )->getContext();
+
 				if ( !checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
 				{
-					auto context = get( m_device )->getContext();
 					glLogCall( context
 						, glGenBuffers
 						, 1u
@@ -488,6 +489,22 @@ namespace ashes::gl4
 						, GlBufferTarget( m_boundTarget )
 						, 0u );
 				}
+
+				glLogCall( context
+					, glBindBuffer
+					, GL_BUFFER_TARGET_COPY_WRITE
+					, m_boundResource );
+				GLint size = 0;
+				glLogCall( context
+					, glGetBufferParameteriv
+					, GL_BUFFER_TARGET_COPY_WRITE
+					, 34660
+					, &size );
+				glLogCall( context
+					, glBindBuffer
+					, GL_BUFFER_TARGET_COPY_WRITE
+					, 0u );
+				assert( size >= m_allocateInfo.allocationSize );
 			}
 
 			~BufferMemory()
@@ -509,12 +526,18 @@ namespace ashes::gl4
 			{
 				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local buffer" );
-
 				glLogCall( context
 					, glBindBuffer
 					, GlBufferTarget( m_boundTarget )
 					, m_boundResource );
-				auto result = glLogCall( context
+				GLint bufferSize = 0;
+				glLogCall( context
+					, glGetBufferParameteriv
+					, GlBufferTarget( m_boundTarget )
+					, 34660
+					, &bufferSize );
+				assert( size + offset <= bufferSize );
+				auto result = glLogNonVoidCall( context
 					, glMapBufferRange
 					, GlBufferTarget( m_boundTarget )
 					, GLintptr( offset )
@@ -568,16 +591,21 @@ namespace ashes::gl4
 		{
 			m_mapFlags |= GL_MEMORY_MAP_READ_BIT;
 			m_mapFlags |= GL_MEMORY_MAP_WRITE_BIT;
-			//m_mapFlags |= GL_MEMORY_MAP_PERSISTENT_BIT;
 
-			//if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) )
-			//{
-			//	m_mapFlags |= GL_MEMORY_MAP_COHERENT_BIT;
-			//}
-			//else
-			//{
-			//	m_mapFlags |= GL_MEMORY_MAP_FLUSH_EXPLICIT_BIT;
-			//}
+#if AshesGL4_UsePersistentMapping
+
+			m_mapFlags |= GL_MEMORY_MAP_PERSISTENT_BIT;
+
+			if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) )
+			{
+				m_mapFlags |= GL_MEMORY_MAP_COHERENT_BIT;
+			}
+			else
+			{
+				m_mapFlags |= GL_MEMORY_MAP_FLUSH_EXPLICIT_BIT;
+			}
+
+#endif
 		}
 	}
 
@@ -633,16 +661,21 @@ namespace ashes::gl4
 		{
 			m_mapFlags |= GL_MEMORY_MAP_READ_BIT;
 			m_mapFlags |= GL_MEMORY_MAP_WRITE_BIT;
-			//m_mapFlags |= GL_MEMORY_MAP_PERSISTENT_BIT;
 
-			//if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) )
-			//{
-			//	m_mapFlags |= GL_MEMORY_MAP_COHERENT_BIT;
-			//}
-			//else
-			//{
-			//	m_mapFlags |= GL_MEMORY_MAP_FLUSH_EXPLICIT_BIT;
-			//}
+#if AshesGL4_UsePersistentMapping
+
+			m_mapFlags |= GL_MEMORY_MAP_PERSISTENT_BIT;
+
+			if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) )
+			{
+				m_mapFlags |= GL_MEMORY_MAP_COHERENT_BIT;
+			}
+			else
+			{
+				m_mapFlags |= GL_MEMORY_MAP_FLUSH_EXPLICIT_BIT;
+			}
+
+#endif
 
 			m_data.resize( allocateInfo.allocationSize );
 

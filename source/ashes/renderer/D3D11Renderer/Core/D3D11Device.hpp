@@ -30,7 +30,7 @@ namespace ashes::d3d11
 		/**
 		*\copydoc	ashes::Device::debugMarkerSetObjectName
 		*/
-		void debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const;
+		VkResult debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const;
 		/**
 		*\copydoc	ashes::Device::getQueue
 		*/

@@ -16,6 +16,7 @@ namespace ashes::d3d11
 
 	Buffer::~Buffer()
 	{
+		safeRelease( m_unorderedAccessView );
 	}
 
 	VkMemoryRequirements Buffer::getMemoryRequirements()const
@@ -67,6 +68,13 @@ namespace ashes::d3d11
 		auto result = get( m_memory )->bindToBuffer( get( this )
 			, m_memoryOffset
 			, m_objectMemory );
+
+		if ( !m_debugName.empty() )
+		{
+			m_objectMemory->resource->SetPrivateData( WKPDID_D3DDebugObjectName
+				, UINT( m_debugName.size() )
+				, m_debugName.c_str() );
+		}
 
 		if ( checkFlag( m_createInfo.usage, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT )
 			&& get( m_device )->getFeatureLevel() >= D3D_FEATURE_LEVEL_11_0 )

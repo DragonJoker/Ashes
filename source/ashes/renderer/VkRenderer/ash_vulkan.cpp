@@ -19,7 +19,7 @@ struct VkLibrary
 	AshPluginDescription description
 	{
 		"vk",
-		"Vulkan renderer for Ashes.",
+		"Vulkan renderer for Ashes",
 	};
 
 	VkResult init()

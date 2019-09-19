@@ -313,61 +313,76 @@ namespace ashes::d3d11
 
 		if ( d3dDevice )
 		{
+			auto fillProps = [&d3dDevice]( VkFormat fmt
+				, VkFormatProperties & props
+				, DXGI_FORMAT ( *convertFmt )( VkFormat const & ) )
+			{
+				auto dxgi = convertFmt( fmt );
+
+				if ( dxgi != DXGI_FORMAT_UNKNOWN )
+				{
+					UINT support;
+					d3dDevice->CheckFormatSupport( dxgi, &support );
+
+					if ( checkFlag( support, D3D11_FORMAT_SUPPORT_IA_VERTEX_BUFFER ) )
+					{
+						props.bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
+						props.bufferFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+						props.bufferFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
+					}
+
+					if ( checkFlag( support, D3D11_FORMAT_SUPPORT_DEPTH_STENCIL ) )
+					{
+						props.optimalTilingFeatures |= VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
+						props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+						props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
+					}
+
+					if ( checkFlag( support, D3D11_FORMAT_SUPPORT_RENDER_TARGET ) )
+					{
+						props.optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT;
+						props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+						props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
+					}
+
+					if ( checkFlag( support, D3D11_FORMAT_SUPPORT_SHADER_LOAD ) )
+					{
+						props.optimalTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT;
+						props.optimalTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT;
+						props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+						props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
+					}
+
+					if ( checkFlag( support, D3D11_FORMAT_SUPPORT_SHADER_SAMPLE ) )
+					{
+						props.optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
+						props.optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT;
+						props.optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT_EXT;
+						props.optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_EXT;
+						props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+						props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
+					}
+
+					if ( checkFlag( support, D3D11_FORMAT_SUPPORT_CPU_LOCKABLE ) )
+					{
+						props.optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;
+						props.optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
+						props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+						props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
+					}
+				}
+			};
+
 			for ( VkFormat fmt = VkFormat( VK_FORMAT_BEGIN_RANGE + 1 ); fmt != VK_FORMAT_END_RANGE; fmt = VkFormat( fmt + 1 ) )
 			{
 				VkFormatProperties props{};
-				UINT support;
-				d3dDevice->CheckFormatSupport( getDxgiFormat( fmt ), &support );
-
-				if ( checkFlag( support, D3D11_FORMAT_SUPPORT_IA_VERTEX_BUFFER ) )
-				{
-					props.bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
-					props.bufferFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
-					props.bufferFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
-				}
-
-				if ( checkFlag( support, D3D11_FORMAT_SUPPORT_DEPTH_STENCIL ) )
-				{
-					props.linearTilingFeatures |= VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
-					props.linearTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
-					props.linearTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
-				}
-
-				if ( checkFlag( support, D3D11_FORMAT_SUPPORT_RENDER_TARGET ) )
-				{
-					props.linearTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT;
-					props.linearTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
-					props.linearTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
-
-				}
-
-				if ( checkFlag( support, D3D11_FORMAT_SUPPORT_SHADER_LOAD ) )
-				{
-					props.linearTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT;
-					props.linearTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT;
-					props.linearTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
-					props.linearTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
-				}
-
-				if ( checkFlag( support, D3D11_FORMAT_SUPPORT_SHADER_SAMPLE ) )
-				{
-					props.linearTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
-					props.linearTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT;
-					props.linearTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT_EXT;
-					props.linearTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_EXT;
-					props.linearTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
-					props.linearTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
-				}
-
-				if ( checkFlag( support, D3D11_FORMAT_SUPPORT_CPU_LOCKABLE ) )
-				{
-					props.linearTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;
-					props.linearTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
-					props.linearTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
-					props.linearTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
-				}
-
-				props.optimalTilingFeatures = props.linearTilingFeatures;
+				fillProps( fmt, props, getDxgiFormat );
+				fillProps( fmt, props, getTextureFormat );
+				fillProps( fmt, props, getSRVFormat );
+				fillProps( fmt, props, getRTVFormat );
+				fillProps( fmt, props, getUAVFormat );
+				fillProps( fmt, props, getBufferFormat );
+				props.linearTilingFeatures = props.optimalTilingFeatures;
 				m_formatProperties[fmt] = props;
 			}
 

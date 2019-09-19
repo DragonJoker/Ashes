@@ -28,6 +28,11 @@ namespace ashes::d3d11
 			, D3D11_BOX const & srcBox
 			, UINT dstOffset )const;
 
+		inline void setDebugName( std::string name )
+		{
+			m_debugName = std::move( name );
+		}
+
 		inline VkDeviceMemory getMemory()const
 		{
 			assert( m_memory != VK_NULL_HANDLE );
@@ -78,6 +83,7 @@ namespace ashes::d3d11
 		VkDeviceSize m_memoryOffset{ 0u };
 		ObjectMemory * m_objectMemory{ nullptr };
 		ID3D11UnorderedAccessView * m_unorderedAccessView{ nullptr };
+		std::string m_debugName;
 	};
 }
 

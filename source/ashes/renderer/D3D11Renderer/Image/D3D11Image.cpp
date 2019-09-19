@@ -94,7 +94,6 @@ namespace ashes::d3d11
 
 	Image::~Image()
 	{
-		safeRelease( m_image.tex1D );
 	}
 
 	VkMemoryRequirements Image::getMemoryRequirements()const
@@ -141,6 +140,13 @@ namespace ashes::d3d11
 				, m_memoryOffset
 				, m_objectMemory );
 			break;
+		}
+
+		if ( !m_debugName.empty() )
+		{
+			m_objectMemory->resource->SetPrivateData( WKPDID_D3DDebugObjectName
+				, UINT( m_debugName.size() )
+				, m_debugName.c_str() );
 		}
 
 		m_image.resource = m_objectMemory->resource;

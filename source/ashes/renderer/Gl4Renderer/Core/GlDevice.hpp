@@ -46,7 +46,7 @@ namespace ashes::gl4
 		/**
 		*\copydoc	Device::debugMarkerSetObjectName
 		*/
-		void debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const;
+		VkResult debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const;
 		/**
 		*\copydoc	Device::getQueue
 		*/

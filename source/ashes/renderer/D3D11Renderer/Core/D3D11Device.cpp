@@ -33,41 +33,12 @@ See LICENSE file in root folder.
 
 #include <common/Hash.hpp>
 
+#include <iomanip>
+
 namespace ashes::d3d11
 {
 	namespace
 	{
-		ID3D11DeviceChild * getResource( VkDevice device
-			, VkDebugReportObjectTypeEXT objectType
-			, void const * object )
-		{
-			ID3D11DeviceChild * result = nullptr;
-
-			switch ( objectType )
-			{
-			case VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT:
-				break;
-			case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT:
-				result = reinterpret_cast< Buffer const * >( object )->getBuffer();
-				break;
-			case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT:
-				result = reinterpret_cast< Image const * >( object )->getResource();
-				break;
-			case VK_DEBUG_REPORT_OBJECT_TYPE_QUERY_POOL_EXT:
-				result = ( *reinterpret_cast< QueryPool const * >( object )->begin() );
-				break;
-			case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT:
-				result = reinterpret_cast< BufferView const * >( object )->getView();
-				break;
-			case VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT:
-				result = reinterpret_cast< Sampler const * >( object )->getSampler();
-				break;
-			default:
-				break;
-			}
-			return result;
-		}
-
 		template< typename T, typename U >
 		T getAligned( T value, U align )
 		{
@@ -250,20 +221,50 @@ namespace ashes::d3d11
 		layout.size = layout.arrayPitch * get( image )->getDimensions().depth;
 	}
 
-	void Device::debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const
+	VkResult Device::debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const
 	{
 #if !defined( NDEBUG )
-		auto * resource = getResource( get( this )
-			, nameInfo.objectType
-			, (void*)nameInfo.object );
+		HRESULT hr = S_OK;
 
-		if ( resource )
+		switch ( nameInfo.objectType )
 		{
-			resource->SetPrivateData( WKPDID_D3DDebugObjectName
-				, UINT( strnlen( nameInfo.pObjectName, 256 ) )
+		case VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT:
+			hr = get( VkDevice( nameInfo.object ) )->getDevice()->SetPrivateData( WKPDID_D3DDebugObjectName
+				, UINT( strlen( nameInfo.pObjectName ) )
 				, nameInfo.pObjectName );
+			break;
+		case VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT:
+			hr = get( VkSwapchainKHR( nameInfo.object ) )->getSwapChain()->SetPrivateData( WKPDID_D3DDebugObjectName
+				, UINT( strlen( nameInfo.pObjectName ) )
+				, nameInfo.pObjectName );
+			break;
+		case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT:
+			get( VkBuffer( nameInfo.object ) )->setDebugName( nameInfo.pObjectName );
+			break;
+		case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT:
+			get( VkImage( nameInfo.object ) )->setDebugName( nameInfo.pObjectName );
+			break;
+		default:
+			if ( auto object = getObject( nameInfo.object, nameInfo.objectType ) )
+			{
+				hr = object->SetPrivateData( WKPDID_D3DDebugObjectName
+					, UINT( strlen( nameInfo.pObjectName ) )
+					, nameInfo.pObjectName );
+			}
+			break;
 		}
+
+		if ( hr == S_OK )
+		{
+			std::clog << "0x" << std::hex << std::setfill( '0' ) << std::setw( 16u ) << nameInfo.object << " - " << nameInfo.pObjectName << "\n";
+		}
+
+		return checkError( get( this ), hr, "SetPrivateData" )
+			? VK_SUCCESS
+			: VK_ERROR_INVALID_DEVICE_ADDRESS_EXT;
 #endif
+
+		return VK_SUCCESS;
 	}
 
 	VkQueue Device::getQueue( uint32_t familyIndex

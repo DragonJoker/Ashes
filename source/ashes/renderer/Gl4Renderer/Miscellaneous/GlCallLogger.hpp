@@ -11,6 +11,7 @@ See LICENSE file in root folder
 #include "renderer/Gl4Renderer/Enum/GlBlendFactor.hpp"
 #include "renderer/Gl4Renderer/Enum/GlBlendOp.hpp"
 #include "renderer/Gl4Renderer/Enum/GlBorderColour.hpp"
+#include "renderer/Gl4Renderer/Enum/GlBufferDataUsageFlag.hpp"
 #include "renderer/Gl4Renderer/Enum/GlBufferTarget.hpp"
 #include "renderer/Gl4Renderer/Enum/GlClearTarget.hpp"
 #include "renderer/Gl4Renderer/Enum/GlClipInfo.hpp"
@@ -420,7 +421,20 @@ namespace ashes::gl4
 	};
 
 	template< typename FuncT, typename ... ParamsT >
-	inline auto executeFunction( FuncT function
+	inline bool executeFunction( FuncT function
+		, char const * const name
+		, ParamsT ... params )
+	{
+		std::stringstream stream;
+		GlFuncCaller< FuncT, ParamsT... >::call( stream
+			, function
+			, name
+			, std::forward< ParamsT >( params )... );
+		return glCheckError( name );
+	}
+
+	template< typename FuncT, typename ... ParamsT >
+	inline auto executeNonVoidFunction( FuncT function
 		, char const * const name
 		, ParamsT ... params )
 	{
@@ -434,14 +448,20 @@ namespace ashes::gl4
 #if GL_LOG_CALLS
 #	define glLogCall( lock, name, ... )\
 	executeFunction( ashes::gl4::getContext( lock ).m_##name, #name, __VA_ARGS__ )
+#	define glLogNonVoidCall( lock, name, ... )\
+	executeNonVoidFunction( ashes::gl4::getContext( lock ).m_##name, #name, __VA_ARGS__ )
 #	define glLogCommand( name )\
 	std::cout << "Command: " << name << std::endl
 #elif defined( NDEBUG )
 #	define glLogCall( lock, name, ... )\
+	( ( lock->m_##name( __VA_ARGS__ ) ), true )
+#	define glLogNonVoidCall( lock, name, ... )\
 	( lock->m_##name( __VA_ARGS__ ) )
 #	define glLogCommand( name )
 #	else
 #	define glLogCall( lock, name, ... )\
+	( ( lock->m_##name( __VA_ARGS__ ) ), glCheckError( #name ) )
+#	define glLogNonVoidCall( lock, name, ... )\
 	( lock->m_##name( __VA_ARGS__ ) );\
 	glCheckError( #name )
 #	define glLogCommand( name )

@@ -203,39 +203,49 @@ namespace ashes::gl4
 		return VK_SUCCESS;
 	}
 
-	void Device::debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const
+	VkResult Device::debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const
 	{
 #if !defined( NDEBUG )
 		auto context = getContext();
+		bool isOk = true;
 
 		if ( nameInfo.objectType == VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT )
 		{
-			glLogCall( context
-				, glObjectPtrLabel
-				, get( VkFence( nameInfo.object ) )->getInternal()
-				, GLsizei( strlen( nameInfo.pObjectName ) )
-				, nameInfo.pObjectName );
+			if ( context->m_glObjectPtrLabel )
+			{
+				isOk = glLogCall( context
+					, glObjectPtrLabel
+					, get( VkFence( nameInfo.object ) )->getInternal()
+					, GLsizei( strlen( nameInfo.pObjectName ) )
+					, nameInfo.pObjectName );
+			}
 		}
 		else
 		{
-			auto objectType = convert( nameInfo.objectType );
-
-			if ( objectType != GlDebugReportObjectType::eUnknown )
+			if ( context->m_glObjectLabel )
 			{
-				auto name = getObjectName( objectType, nameInfo.object );
+				auto objectType = convert( nameInfo.objectType );
 
-				if ( name != GL_INVALID_INDEX )
+				if ( objectType != GlDebugReportObjectType::eUnknown )
 				{
-					glLogCall( context
-						, glObjectLabel
-						, GLenum( objectType )
-						, name
-						, GLsizei( strlen( nameInfo.pObjectName ) )
-						, nameInfo.pObjectName );
+					auto name = getObjectName( objectType, nameInfo.object );
+
+					if ( name != GL_INVALID_INDEX )
+					{
+						isOk = glLogCall( context
+							, glObjectLabel
+							, GLenum( objectType )
+							, name
+							, GLsizei( strlen( nameInfo.pObjectName ) )
+							, nameInfo.pObjectName );
+					}
 				}
 			}
 		}
 #endif
+		return isOk
+			? VK_SUCCESS
+			: VK_ERROR_INVALID_DEVICE_ADDRESS_EXT;
 	}
 
 	VkQueue Device::getQueue( uint32_t familyIndex

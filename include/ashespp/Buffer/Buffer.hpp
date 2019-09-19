@@ -117,10 +117,7 @@ namespace ashes
 		*\return
 		*	The compatible pipeline stage flags for current access.
 		*/
-		inline VkPipelineStageFlags getCompatibleStageFlags()const
-		{
-			return m_compatibleStageFlags;
-		}
+		VkPipelineStageFlags getCompatibleStageFlags()const;
 		/**
 		*\brief
 		*	Prepares a buffer memory barrier, to a transfer destination layout.

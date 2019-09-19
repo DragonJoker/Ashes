@@ -136,6 +136,11 @@ namespace ashes::d3d11
 			return *m_objectMemory;
 		}
 
+		inline void setDebugName( std::string name )
+		{
+			m_debugName = std::move( name );
+		}
+
 	private:
 		VkDevice m_device;
 		VkImageCreateInfo m_createInfo;
@@ -149,6 +154,7 @@ namespace ashes::d3d11
 		VkDeviceMemory m_memory{ VK_NULL_HANDLE };
 		VkDeviceSize m_memoryOffset{ 0u };
 		ObjectMemory * m_objectMemory{ nullptr };
+		std::string m_debugName;
 	};
 }
 

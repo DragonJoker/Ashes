@@ -22,7 +22,7 @@ namespace ashes::gl4
 		: m_device{ device }
 	{
 		auto context = get( m_device )->getContext();
-		m_fence = glLogCall( context
+		m_fence = glLogNonVoidCall( context
 			, glFenceSync
 			, GL_WAIT_FLAG_SYNC_GPU_COMMANDS_COMPLETE
 			, 0u );
@@ -41,7 +41,7 @@ namespace ashes::gl4
 	{
 		glLogCall( context
 			, glFlush );
-		auto res = glLogCall( context
+		auto res = glLogNonVoidCall( context
 			, glClientWaitSync
 			, m_fence
 			, GL_WAIT_FLAG_SYNC_FLUSH_COMMANDS_BIT
@@ -64,7 +64,7 @@ namespace ashes::gl4
 		glLogCall( context
 			, glDeleteSync
 			, m_fence );
-		m_fence = glLogCall( context
+		m_fence = glLogNonVoidCall( context
 			, glFenceSync
 			, GL_WAIT_FLAG_SYNC_GPU_COMMANDS_COMPLETE
 			, 0u );

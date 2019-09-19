@@ -15,12 +15,17 @@ namespace ashes::d3d11
 		friend class DeviceMemory;
 
 	public:
+		ObjectMemory( ObjectMemory const & ) = delete;
+		ObjectMemory & operator=( ObjectMemory const & ) = delete;
 		ObjectMemory( VkDevice device
 			, VkDeviceMemory deviceMemory
 			, ID3D11Resource * resource
 			, VkDeviceSize offset
 			, VkMemoryAllocateInfo allocateInfo
 			, D3D11_MAP mapFlags );
+		ObjectMemory( ObjectMemory && rhs )noexcept;
+		ObjectMemory & operator=( ObjectMemory && rhs )noexcept;
+		~ObjectMemory()noexcept;
 
 		VkResult lock( ID3D11DeviceContext * context
 			, UINT subresource

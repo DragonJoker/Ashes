@@ -2811,8 +2811,7 @@ namespace ashes::gl4
 		const VkDebugMarkerObjectNameInfoEXT* pNameInfo )
 	{
 		// TODO
-		std::cerr << "vkDebugMarkerSetObjectNameEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return get( device )->debugMarkerSetObjectName( *pNameInfo );
 	}
 
 	void VKAPI_CALL vkCmdDebugMarkerBeginEXT(
@@ -4024,7 +4023,7 @@ namespace ashes::gl4
 		AshPluginDescription description
 		{
 			"gl4",
-			"OpenGL 4.2 renderer for Ashes.",
+			"OpenGL 4.2 renderer for Ashes",
 		};
 
 		VkResult init()

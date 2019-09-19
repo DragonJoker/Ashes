@@ -1,4 +1,4 @@
-﻿#include "D3D11RendererPrerequisites.hpp"
+#include "D3D11RendererPrerequisites.hpp"
 
 #include "Core/D3D11Instance.hpp"
 #include "Core/D3D11Device.hpp"
@@ -123,5 +123,25 @@ namespace ashes::d3d11
 		return ashes::deduceMemoryType( typeBits
 			, requirements
 			, Instance::getMemoryProperties() );
+	}
+
+	ID3D11DeviceChild * getObject( uint64_t object
+		, VkDebugReportObjectTypeEXT objectType )
+	{
+		switch ( objectType )
+		{
+		case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT:
+			return get( VkBuffer( object ) )->getBuffer();
+		case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT:
+			return get( VkImage( object ) )->getResource();
+		case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT:
+			return get( VkBufferView( object ) )->getView();
+		case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT:
+			return get( VkImageView( object ) )->getView();
+		case VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT:
+			return get( VkSampler( object ) )->getSampler();
+		default:
+			return nullptr;
+		}
 	}
 }

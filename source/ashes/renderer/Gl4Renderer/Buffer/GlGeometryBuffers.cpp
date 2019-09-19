@@ -305,6 +305,15 @@ namespace ashes::gl4
 		glLogCall( context
 			, glBindVertexArray
 			, 0u );
+
+		glLogCall( context
+			, glBindBuffer
+			, GL_BUFFER_TARGET_ELEMENT_ARRAY
+			, 0 );
+		glLogCall( context
+			, glBindBuffer
+			, GL_BUFFER_TARGET_ARRAY
+			, 0 );
 	}
 
 	std::vector< GeometryBuffers::VBO > GeometryBuffers::createVBOs( VboBindings const & vbos

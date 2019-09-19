@@ -179,7 +179,7 @@ DECLARE_GUID( IID_IDXGIFactory, 0x7b7166ec, 0x21c7, 0x44ae, 0xb2, 0x1a, 0xc9, 0x
 #endif
 
 #if !defined( NDEBUG )
-#	define dxRenderer_DebugNames 1
+#	define dxRenderer_DebugNames 0
 #else
 #	define dxRenderer_DebugNames 0
 #endif
@@ -356,6 +356,8 @@ namespace ashes::d3d11
 	std::string toString( std::wstring const & text );
 	uint32_t deduceMemoryType( uint32_t typeBits
 		, VkMemoryPropertyFlags requirements );
+	ID3D11DeviceChild * getObject( uint64_t object
+		, VkDebugReportObjectTypeEXT objectType );
 
 	using DeviceMemoryDestroyFunc = std::function< void( VkDeviceMemory ) >;
 	using DeviceMemoryDestroySignal = Signal< DeviceMemoryDestroyFunc >;

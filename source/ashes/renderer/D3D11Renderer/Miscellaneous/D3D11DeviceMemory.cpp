@@ -72,6 +72,44 @@ namespace ashes::d3d11
 	{
 	}
 
+	ObjectMemory::ObjectMemory( ObjectMemory && rhs )noexcept
+		: device{ rhs.device }
+		, deviceMemory{ rhs.deviceMemory }
+		, resource{ rhs.resource }
+		, offset{ rhs.offset }
+		, allocateInfo{ std::move( rhs.allocateInfo ) }
+		, mapFlags{ rhs.mapFlags }
+	{
+		rhs.device = VK_NULL_HANDLE;
+		rhs.deviceMemory = VK_NULL_HANDLE;
+		rhs.resource = nullptr;
+		rhs.offset = 0;
+		rhs.mapFlags = D3D11_MAP( 0 );
+	}
+
+	ObjectMemory & ObjectMemory::operator=( ObjectMemory && rhs )noexcept
+	{
+		device = rhs.device;
+		deviceMemory = rhs.deviceMemory;
+		resource = rhs.resource;
+		offset = rhs.offset;
+		allocateInfo = std::move( rhs.allocateInfo );
+		mapFlags = rhs.mapFlags;
+
+		rhs.device = VK_NULL_HANDLE;
+		rhs.deviceMemory = VK_NULL_HANDLE;
+		rhs.resource = nullptr;
+		rhs.offset = 0;
+		rhs.mapFlags = D3D11_MAP( 0 );
+
+		return *this;
+	}
+
+	ObjectMemory::~ObjectMemory()noexcept
+	{
+		safeRelease( resource );
+	}
+
 	VkResult ObjectMemory::lock( ID3D11DeviceContext * context
 		, UINT subresource
 		, D3D11_MAPPED_SUBRESOURCE & data )const
@@ -284,7 +322,7 @@ namespace ashes::d3d11
 			, D3D11_TEXTURE1D_DESC & desc )const
 		{
 			desc.Width = createInfo.extent.width;
-			desc.Format = getTextureFormat( createInfo.format );
+			desc.Format = getDxgiFormatGroup( getTextureFormat( createInfo.format ) );
 			desc.ArraySize = createInfo.arrayLayers;
 			desc.Usage = getImageUsage( m_propertyFlags, m_usage );
 			desc.CPUAccessFlags = getCpuImageAccessFlags( m_propertyFlags, m_usage );
@@ -360,7 +398,7 @@ namespace ashes::d3d11
 			auto d3ddevice = get( device )->getDevice();
 			desc.Width = createInfo.extent.width;
 			desc.Height = createInfo.extent.height;
-			desc.Format = getTextureFormat( createInfo.format );
+			desc.Format = getDxgiFormatGroup( getTextureFormat( createInfo.format ) );
 			desc.ArraySize = createInfo.arrayLayers;
 			desc.Usage = getImageUsage( m_propertyFlags, m_usage );
 			desc.CPUAccessFlags = getCpuImageAccessFlags( m_propertyFlags, m_usage );
@@ -450,7 +488,7 @@ namespace ashes::d3d11
 			desc.Width = createInfo.extent.width;
 			desc.Height = createInfo.extent.height;
 			desc.Depth = createInfo.extent.depth;
-			desc.Format = getTextureFormat( createInfo.format );
+			desc.Format = getDxgiFormatGroup( getTextureFormat( createInfo.format ) );
 			desc.Usage = getImageUsage( m_propertyFlags, m_usage );
 			desc.CPUAccessFlags = getCpuImageAccessFlags( m_propertyFlags, m_usage );
 			desc.MipLevels = createInfo.mipLevels;

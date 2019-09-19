@@ -24,14 +24,14 @@ namespace ashes
 			, needsUpdate{ true }
 		{
 		}
-		
+
 		WriteDescriptorSet( uint32_t dstBinding
 			, uint32_t dstArrayElement
 			, VkDescriptorType descriptorType
 			, VkDescriptorImageInfoArray imageInfos )
-			: vk{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, VK_NULL_HANDLE, dstBinding, dstArrayElement, uint32_t( imageInfos.size() ), descriptorType }
+			: imageInfo{ std::move( imageInfos ) }
+			, vk{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, VK_NULL_HANDLE, dstBinding, dstArrayElement, uint32_t( this->imageInfo.size() ), descriptorType }
 			, needsUpdate{ true }
-			, imageInfo{ std::move( imageInfos ) }
 		{
 		}
 

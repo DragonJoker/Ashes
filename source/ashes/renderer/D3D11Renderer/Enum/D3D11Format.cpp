@@ -406,7 +406,6 @@ namespace ashes::d3d11
 		case VK_FORMAT_G16_B16_R16_3PLANE_422_UNORM: return DXGI_FORMAT_Y216;
 
 		default:
-			assert( false && "Unsupported pixel format." );
 			return DXGI_FORMAT_UNKNOWN;
 		}
 	}
@@ -534,7 +533,6 @@ namespace ashes::d3d11
 		case VK_FORMAT_G16_B16_R16_3PLANE_422_UNORM: return DXGI_FORMAT_R16G16B16A16_UNORM;
 
 		default:
-			assert( false && "Unsupported pixel format." );
 			return DXGI_FORMAT_UNKNOWN;
 		}
 	}
@@ -662,7 +660,6 @@ namespace ashes::d3d11
 		case VK_FORMAT_G16_B16_R16_3PLANE_422_UNORM: return DXGI_FORMAT_R16G16B16A16_UNORM;
 
 		default:
-			assert( false && "Unsupported pixel format." );
 			return DXGI_FORMAT_UNKNOWN;
 		}
 	}
@@ -790,7 +787,6 @@ namespace ashes::d3d11
 		case VK_FORMAT_G16_B16_R16_3PLANE_422_UNORM: return DXGI_FORMAT_R16G16B16A16_UNORM;
 
 		default:
-			assert( false && "Unsupported pixel format." );
 			return DXGI_FORMAT_UNKNOWN;
 		}
 	}

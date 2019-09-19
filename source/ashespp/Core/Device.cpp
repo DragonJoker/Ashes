@@ -51,8 +51,8 @@ namespace ashes
 
 	Device::~Device()
 	{
-		vkDestroyDevice( m_internal, nullptr );
 		reportRegisteredObjects();
+		vkDestroyDevice( m_internal, nullptr );
 	}
 
 	std::array< float, 16u > Device::frustum( float left
@@ -241,12 +241,10 @@ namespace ashes
 
 	void Device::debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const
 	{
-#if LOAD_VALIDATION_LAYERS
 		if ( vkDebugMarkerSetObjectNameEXT )
 		{
 			vkDebugMarkerSetObjectNameEXT( m_internal, &nameInfo );
 		}
-#endif
 	}
 
 	QueuePtr Device::getQueue( uint32_t familyIndex

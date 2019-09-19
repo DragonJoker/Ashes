@@ -22,7 +22,7 @@ namespace ashes
 			: attachments{ std::move( attachments ) }
 			, subpasses{ std::move( subpasses ) }
 			, dependencies{ std::move( dependencies ) }
-			, vkSubpasses{ makeVkArray< VkSubpassDescription >( subpasses ) }
+			, vkSubpasses{ makeVkArray< VkSubpassDescription >( this->subpasses ) }
 			, vk
 			{
 				VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
@@ -42,7 +42,7 @@ namespace ashes
 			: attachments{ std::move( rhs.attachments ) }
 			, subpasses{ std::move( rhs.subpasses ) }
 			, dependencies{ std::move( rhs.dependencies ) }
-			, vkSubpasses{ makeVkArray< VkSubpassDescription >( subpasses ) }
+			, vkSubpasses{ makeVkArray< VkSubpassDescription >( this->subpasses ) }
 			, vk
 			{
 				VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
@@ -63,7 +63,7 @@ namespace ashes
 			attachments = std::move( rhs.attachments );
 			subpasses = std::move( rhs.subpasses );
 			dependencies = std::move( rhs.dependencies );
-			vkSubpasses = makeVkArray< VkSubpassDescription >( subpasses );
+			vkSubpasses = makeVkArray< VkSubpassDescription >( this->subpasses );
 			vk =
 			{
 				VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
