@@ -32,6 +32,6 @@ if( GLFW_FOUND )
 		)
 	endif ()
 	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Templates" )
+        set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "templates" )
 
 endif ()

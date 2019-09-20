@@ -26,7 +26,7 @@ file( GLOB SHADER_FILES
 )
 
 source_group( "Shader Files" FILES ${GLSL_SHADER_FILES} )
-include_directories( ${CMAKE_SOURCE_DIR}/Test/00-Common/Src )
+include_directories( ${CMAKE_SOURCE_DIR}/test/00-Common/Src )
 
 add_executable( ${PROJECT_NAME} WIN32
 	${SOURCE_FILES}
@@ -46,7 +46,7 @@ add_dependencies( ${PROJECT_NAME}
 )
 
 set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Test" )
+set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "test" )
 
 foreach( SHADER ${SHADER_FILES} )
 	add_custom_command(

@@ -28,7 +28,7 @@ add_dependencies( ${PROJECT_NAME}
 )
 
 set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Test" )
+set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "test" )
 
 set( ASSETS_FOLDER ${CMAKE_SOURCE_DIR}/Test/Assets )
 

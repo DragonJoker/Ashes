@@ -1,6 +1,7 @@
 find_package( wxWidgets COMPONENTS core base )
 if( NOT WIN32 )
 	find_package( GTK2 )
+        find_package( HarfBuzz )
 else()
 	set( GTK2_FOUND TRUE )
 endif()
@@ -38,6 +39,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 		${CMAKE_SOURCE_DIR}/external/glm
 		${CMAKE_SOURCE_DIR}/external/imgui
 		${wxWidgets_INCLUDE_DIRS}
+                ${HARFBUZZ_INCLUDE_DIRS}
 		${GTK2_INCLUDE_DIRS}
 	)
 

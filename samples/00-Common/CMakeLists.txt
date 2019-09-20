@@ -48,7 +48,7 @@ add_target_precompiled_header( ${PROJECT_NAME}
 )
 
 set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Samples" )
+set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "samples" )
 
 foreach( SHADER ${SHADER_FILES} )
 	add_custom_command(
