@@ -205,9 +205,10 @@ namespace ashes::gl4
 
 	VkResult Device::debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const
 	{
+		bool isOk = true;
+
 #if !defined( NDEBUG )
 		auto context = getContext();
-		bool isOk = true;
 
 		if ( nameInfo.objectType == VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT )
 		{

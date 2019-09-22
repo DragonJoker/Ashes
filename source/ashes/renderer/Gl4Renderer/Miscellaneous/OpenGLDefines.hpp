@@ -282,6 +282,7 @@ namespace ashes::gl4
 	using PFN_glLineWidth = void ( GLAPIENTRY * )( GLfloat width );
 	using PFN_glLinkProgram = void ( GLAPIENTRY * )( GLuint program );
 	using PFN_glLogicOp = void ( GLAPIENTRY * )( GLenum opcode );
+	using PFN_glMapBuffer = void * ( GLAPIENTRY * )( GlBufferTarget target, GLbitfield access );
 	using PFN_glMapBufferRange = void * ( GLAPIENTRY * )( GlBufferTarget target, GLintptr offset, GLsizeiptr length, GLbitfield access );
 	using PFN_glMemoryBarrier = void ( GLAPIENTRY * )( GLbitfield barriers );
 	using PFN_glMinSampleShading = void ( GLAPIENTRY * )( GLfloat value );

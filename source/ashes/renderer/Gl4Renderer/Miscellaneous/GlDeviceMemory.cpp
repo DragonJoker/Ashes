@@ -12,9 +12,12 @@ See LICENSE file in root folder
 
 #include "ashesgl4_api.hpp"
 
+#include <algorithm>
+#include <map>
+
 namespace ashes::gl4
 {
-	//*********************************************************************************************
+	//************************************************************************************************
 
 	VkMemoryPropertyFlags getFlags( uint32_t memoryTypeIndex )
 	{
@@ -27,6 +30,134 @@ namespace ashes::gl4
 
 	namespace
 	{
+		struct BufferAlloc
+		{
+			GLuint name;
+			GlBufferTarget target;
+			GLsizeiptr size;
+			GlMemoryPropertyFlags flags;
+		};
+		using BufferAllocCont = std::vector< BufferAlloc >;
+
+		BufferAllocCont & getAllocatedBuffers()
+		{
+			static BufferAllocCont result;
+			return result;
+		}
+
+		GLint getBufferSize( ContextLock const & context
+			, GLuint buffer )
+		{
+			GLint result = 0;
+			glLogCall( context
+				, glBindBuffer
+				, GL_BUFFER_TARGET_COPY_WRITE
+				, buffer );
+			GLint realSize = 0;
+			glLogCall( context
+				, glGetBufferParameteriv
+				, GL_BUFFER_TARGET_COPY_WRITE
+				, 34660
+				, &result );
+			glLogCall( context
+				, glBindBuffer
+				, GL_BUFFER_TARGET_COPY_WRITE
+				, 0u );
+			return result;
+		}
+
+		BufferAllocCont::iterator findBuffer( GLuint buffer )
+		{
+			return std::find_if( getAllocatedBuffers().begin()
+				, getAllocatedBuffers().end()
+				, [buffer]( BufferAlloc const & lookup )
+				{
+					return lookup.name == buffer;
+				} );
+		}
+
+		BufferAllocCont::iterator findBuffer( GLuint buffer
+			, GLsizeiptr size )
+		{
+			return std::find_if( getAllocatedBuffers().begin()
+				, getAllocatedBuffers().end()
+				, [buffer, size]( BufferAlloc const & lookup )
+				{
+					return lookup.name == buffer
+						&& lookup.size == size;
+				} );
+		}
+
+		GLuint createBuffer( ContextLock const & context
+			, GlBufferTarget target
+			, GLsizeiptr size
+			, GlMemoryPropertyFlags flags )
+		{
+			auto allocateBuffer = [&context, &target]( GLuint result
+				, GlBufferTarget target
+				, GLsizeiptr size
+				, GlMemoryPropertyFlags flags )
+			{
+				glLogCall( context
+					, glBindBuffer
+					, target
+					, result );
+				glLogCall( context
+					, glBufferStorage
+					, target
+					, size
+					, nullptr
+					, flags );
+				glLogCall( context
+					, glBindBuffer
+					, target
+					, 0u );
+				return result;
+			};
+
+			auto & cache = getAllocatedBuffers();
+			GLuint result;
+			glLogCall( context
+				, glGenBuffers
+				, 1u
+				, &result );
+			auto it = findBuffer( result );
+
+			while ( it != cache.end() )
+			{
+				assert( false && "Buffer reuse should never happen" );
+				allocateBuffer( it->name, it->target, it->size, it->flags );
+				glLogCall( context
+					, glGenBuffers
+					, 1u
+					, &result );
+				it = findBuffer( result );
+			}
+
+			allocateBuffer( result, target, size, flags );
+			GLint realSize = getBufferSize( context, result );
+			assert( realSize >= size );
+			getAllocatedBuffers().push_back( { result, target, GLsizeiptr( realSize ), flags } );
+			return result;
+		}
+
+		void deleteBuffer( ContextLock const & context
+			, GLuint buffer )
+		{
+			if ( buffer != GL_INVALID_INDEX )
+			{
+				GLint size = getBufferSize( context, buffer );
+				auto it = findBuffer( buffer, size );
+				assert( it != getAllocatedBuffers().end() );
+				getAllocatedBuffers().erase( it );
+
+				glLogCall( context
+					, glDeleteBuffers
+					, 1u
+					, &buffer );
+			}
+		}
+
 		class ImageMemory
 			: public DeviceMemory::DeviceMemoryImpl
 		{
@@ -35,14 +166,14 @@ namespace ashes::gl4
 				, VkDevice device
 				, VkMemoryAllocateInfo allocateInfo
 				, VkImage texture
-				, VkDeviceSize memoryOffset
-				, GLuint buffer )
-				: DeviceMemory::DeviceMemoryImpl{ parent, device, std::move( allocateInfo ), get( texture )->getInternal(), get( texture )->getTarget(), memoryOffset, buffer }
+				, VkDeviceSize memoryOffset )
+				: DeviceMemory::DeviceMemoryImpl{ parent, device, std::move( allocateInfo ), get( texture )->getTarget(), memoryOffset }
 				, m_texture{ get( texture ) }
 				, m_internal{ getInternalFormat( m_texture->getFormat() ) }
 				, m_format{ getFormat( m_internal ) }
 				, m_type{ getType( m_internal ) }
 			{
+				m_boundResource = get( texture )->getInternal();
 				auto context = get( m_device )->getContext();
 				glLogCall( context
 					, glBindTexture
@@ -91,9 +222,14 @@ namespace ashes::gl4
 					, m_boundTarget
 					, 0 );
 
-				// If the texture is visible to the host, we'll need a PBO to map it to RAM.
 				if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
 				{
+					// Create the PBO
+					m_buffer = createBuffer( context
+						, GL_BUFFER_TARGET_COPY_WRITE
+						, GLsizeiptr( m_allocateInfo.allocationSize )
+						, convertMemoryPropertyFlags( m_flags ) );
+
 					// Prepare update regions, layer by layer.
 					uint32_t offset = 0;
 					VkBufferImageCopy bufferCopyRegion = {};
@@ -115,11 +251,6 @@ namespace ashes::gl4
 
 			~ImageMemory()
 			{
-				if ( m_pbo != GL_INVALID_INDEX )
-				{
-					auto context = get( m_device )->getContext();
-					context->glDeleteBuffers( 1u, &m_pbo );
-				}
 			}
 
 			VkResult lock( ContextLock const & context
@@ -447,7 +578,6 @@ namespace ashes::gl4
 			GlFormat m_format;
 			GlType m_type;
 			std::vector< VkBufferImageCopy > m_updateRegions;
-			GLuint m_pbo{ GL_INVALID_INDEX };
 			mutable size_t m_beginRegion{ 0u };
 			mutable size_t m_endRegion{ 0u };
 		};
@@ -462,61 +592,26 @@ namespace ashes::gl4
 				, VkDevice device
 				, VkMemoryAllocateInfo allocateInfo
 				, GlBufferTarget target
-				, VkDeviceSize memoryOffset
-				, GLuint buffer )
-				: DeviceMemory::DeviceMemoryImpl{ parent, device, std::move( allocateInfo ), buffer, target, memoryOffset, buffer }
+				, VkDeviceSize memoryOffset )
+				: DeviceMemory::DeviceMemoryImpl
+				{
+					parent,
+					device,
+					std::move( allocateInfo ),
+					target,
+					memoryOffset
+				}
 			{
 				auto context = get( m_device )->getContext();
-
-				if ( !checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
-				{
-					glLogCall( context
-						, glGenBuffers
-						, 1u
-						, &m_boundResource );
-					glLogCall( context
-						, glBindBuffer
-						, GlBufferTarget( m_boundTarget )
-						, m_boundResource );
-					glLogCall( context
-						, glBufferStorage
-						, GlBufferTarget( m_boundTarget )
-						, GLsizeiptr( m_allocateInfo.allocationSize )
-						, nullptr
-						, convertMemoryPropertyFlags( m_flags ) );
-					glLogCall( context
-						, glBindBuffer
-						, GlBufferTarget( m_boundTarget )
-						, 0u );
-				}
-
-				glLogCall( context
-					, glBindBuffer
-					, GL_BUFFER_TARGET_COPY_WRITE
-					, m_boundResource );
-				GLint size = 0;
-				glLogCall( context
-					, glGetBufferParameteriv
-					, GL_BUFFER_TARGET_COPY_WRITE
-					, 34660
-					, &size );
-				glLogCall( context
-					, glBindBuffer
-					, GL_BUFFER_TARGET_COPY_WRITE
-					, 0u );
-				assert( size >= m_allocateInfo.allocationSize );
+				m_buffer = createBuffer( context
+					, GlBufferTarget( m_boundTarget )
+					, m_allocateInfo.allocationSize
+					, convertMemoryPropertyFlags( m_flags ) );
+				m_boundResource = m_buffer;
 			}
 
 			~BufferMemory()
 			{
-				if ( m_boundResource != m_buffer )
-				{
-					auto context = get( m_device )->getContext();
-					glLogCall( context
-						, glDeleteBuffers
-						, 1u
-						, &m_boundResource );
-				}
 			}
 
 			VkResult lock( ContextLock const & context
@@ -529,7 +624,7 @@ namespace ashes::gl4
 				glLogCall( context
 					, glBindBuffer
 					, GlBufferTarget( m_boundTarget )
-					, m_boundResource );
+					, m_buffer );
 				GLint bufferSize = 0;
 				glLogCall( context
 					, glGetBufferParameteriv
@@ -537,6 +632,7 @@ namespace ashes::gl4
 					, 34660
 					, &bufferSize );
 				assert( size + offset <= bufferSize );
+
 				auto result = glLogNonVoidCall( context
 					, glMapBufferRange
 					, GlBufferTarget( m_boundTarget )
@@ -573,39 +669,25 @@ namespace ashes::gl4
 	DeviceMemory::DeviceMemoryImpl::DeviceMemoryImpl( VkDeviceMemory parent
 		, VkDevice device
 		, VkMemoryAllocateInfo allocateInfo
-		, GLuint boundResource
 		, GLuint boundTarget
-		, VkDeviceSize memoryOffset
-		, GLuint buffer )
+		, VkDeviceSize memoryOffset )
 		: m_parent{ parent }
 		, m_device{ device }
 		, m_allocateInfo{ allocateInfo }
-		, m_mapFlags{ 0u }
-		, m_boundResource{ boundResource }
+		, m_flags{ getFlags( m_allocateInfo.memoryTypeIndex ) }
+		, m_mapFlags{ convertMemoryMapFlags( m_allocateInfo.memoryTypeIndex ) }
+		, m_buffer{ GL_INVALID_INDEX }
 		, m_boundTarget{ boundTarget }
 		, m_memoryOffset{ memoryOffset }
-		, m_buffer{ buffer }
-		, m_flags{ getFlags( m_allocateInfo.memoryTypeIndex ) }
 	{
-		if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
+	}
+
+	DeviceMemory::DeviceMemoryImpl::~DeviceMemoryImpl()
+	{
+		if ( m_buffer != GL_INVALID_INDEX )
 		{
-			m_mapFlags |= GL_MEMORY_MAP_READ_BIT;
-			m_mapFlags |= GL_MEMORY_MAP_WRITE_BIT;
-
-#if AshesGL4_UsePersistentMapping
-
-			m_mapFlags |= GL_MEMORY_MAP_PERSISTENT_BIT;
-
-			if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) )
-			{
-				m_mapFlags |= GL_MEMORY_MAP_COHERENT_BIT;
-			}
-			else
-			{
-				m_mapFlags |= GL_MEMORY_MAP_FLUSH_EXPLICIT_BIT;
-			}
-
-#endif
+			auto context = get( m_device )->getContext();
+			deleteBuffer( context, m_buffer );
 		}
 	}
 
@@ -656,65 +738,16 @@ namespace ashes::gl4
 		: m_device{ device }
 		, m_allocateInfo{ std::move( allocateInfo ) }
 		, m_flags{ getFlags( m_allocateInfo.memoryTypeIndex ) }
+		, m_mapFlags{ convertMemoryMapFlags( m_flags ) }
 	{
 		if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
 		{
-			m_mapFlags |= GL_MEMORY_MAP_READ_BIT;
-			m_mapFlags |= GL_MEMORY_MAP_WRITE_BIT;
-
-#if AshesGL4_UsePersistentMapping
-
-			m_mapFlags |= GL_MEMORY_MAP_PERSISTENT_BIT;
-
-			if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) )
-			{
-				m_mapFlags |= GL_MEMORY_MAP_COHERENT_BIT;
-			}
-			else
-			{
-				m_mapFlags |= GL_MEMORY_MAP_FLUSH_EXPLICIT_BIT;
-			}
-
-#endif
-
 			m_data.resize( allocateInfo.allocationSize );
-
-			auto context = get( m_device )->getContext();
-			glLogCall( context
-				, glGenBuffers
-				, 1u
-				, &m_buffer );
-			glLogCall( context
-				, glBindBuffer
-				, GL_BUFFER_TARGET_COPY_WRITE
-				, m_buffer );
-			glLogCall( context
-				, glBufferStorage
-				, GL_BUFFER_TARGET_COPY_WRITE
-				, GLsizeiptr( m_allocateInfo.allocationSize )
-				, nullptr
-				, convertMemoryPropertyFlags( m_flags ) );
-			glLogCall( context
-				, glBindBuffer
-				, GL_BUFFER_TARGET_COPY_WRITE
-				, 0u );
-			m_impl = std::make_unique< BufferMemory >( get( this )
-				, m_device
-				, m_allocateInfo
-				, GL_BUFFER_TARGET_COPY_WRITE
-				, 0u
-				, m_buffer );
 		}
 	}
 
 	DeviceMemory::~DeviceMemory()
 	{
-		onDestroy( m_buffer );
-		auto context = get( m_device )->getContext();
-		glLogCall( context
-			, glDeleteBuffers
-			, 1u
-			, &m_buffer );
 	}
 
 	VkResult DeviceMemory::bindToBuffer( VkBuffer buffer
@@ -728,10 +761,19 @@ namespace ashes::gl4
 				, m_device
 				, m_allocateInfo
 				, get( buffer )->getTarget()
-				, memoryOffset
-				, m_buffer );
+				, memoryOffset );
 			get( buffer )->setInternal( m_impl->getInternal(), memoryOffset );
 			get( buffer )->setMemory( get( this ) );
+
+			if ( !m_data.empty() )
+			{
+				auto context = get( m_device )->getContext();
+				m_impl->upload( context
+					, m_data
+					, 0u
+					, m_data.size() );
+			}
+
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )
@@ -756,8 +798,7 @@ namespace ashes::gl4
 				, m_device
 				, m_allocateInfo
 				, image
-				, memoryOffset
-				, m_buffer );
+				, memoryOffset );
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )

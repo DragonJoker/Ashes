@@ -27,11 +27,9 @@ namespace ashes::gl4
 			DeviceMemoryImpl( VkDeviceMemory parent
 				, VkDevice device
 				, VkMemoryAllocateInfo allocateInfo
-				, GLuint boundResource
 				, GLenum boundTarget
-				, VkDeviceSize memoryOffset
-				, GLuint buffer );
-			virtual ~DeviceMemoryImpl() = default;
+				, VkDeviceSize memoryOffset );
+			virtual ~DeviceMemoryImpl();
 
 			void upload( ContextLock const & context
 				, ByteArray const & data
