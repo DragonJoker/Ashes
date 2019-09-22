@@ -70,7 +70,8 @@ namespace vkapp
 		void doCreateRenderingResources();
 		void doCreateFrameBuffers();
 		void doCreateCommandBuffers();
-		ashes::ImageViewArray doPrepareAttaches( uint32_t backBuffer )const;
+		ashes::ImageViewCRefArray doPrepareAttaches( uint32_t backBuffer
+			, ashes::ImageViewArray & views )const;
 		/**@}*/
 		/**
 		*\name
@@ -117,6 +118,7 @@ namespace vkapp
 		*	Swapchain.
 		*/
 		/**@{*/
+		std::vector< ashes::ImageViewArray > m_views;
 		std::vector< ashes::FrameBufferPtr > m_frameBuffers;
 		ashes::CommandBufferPtrArray m_commandBuffers;
 		/**@}*/

@@ -10,7 +10,7 @@ namespace vkapp
 		utils::Vec2 uv;
 	};
 
-	static wxString const AppName = wxT( "11-CompressedTexture2DArray" );
+	static wxString const AppName{ common::makeName( TEST_ID, wxT( "CompressedTexture2DArray" ) ) };
 
 	class RenderPanel;
 	class MainFrame;

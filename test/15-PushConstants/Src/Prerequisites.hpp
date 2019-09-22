@@ -10,7 +10,7 @@ namespace vkapp
 		utils::Vec2 uv;
 	};
 
-	static wxString const AppName = wxT( "15-PushConstants" );
+	static wxString const AppName{ common::makeName( TEST_ID, wxT( "PushConstants" ) ) };
 
 	class RenderPanel;
 	class MainFrame;

@@ -69,8 +69,8 @@ namespace vkapp
 		, std::string const & fragmentShaderFile
 		, GeometryPassResult const & gbuffer
 		, VkFormat depthFormat
-		, ashes::UniformBuffer< common::SceneData > const & sceneUbo
-		, ashes::UniformBuffer< common::ObjectData > const & objectUbo )
+		, ashes::UniformBuffer const & sceneUbo
+		, ashes::UniformBuffer const & objectUbo )
 		: common::NodesRenderer{ device
 			, commandPool
 			, transferQueue

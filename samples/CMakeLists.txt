@@ -10,24 +10,6 @@ find_package( ASSIMP )
 if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 	string( COMPARE EQUAL "${wxWidgets_USE_DEBUG}" "ON" IsWxDebug )
 
-	add_definitions(
-		-D_FILE_OFFSET_BITS=64
-		-D_LARGE_FILES
-		-D_UNICODE
-	)
-
-	if( NOT WIN32 )
-		add_definitions(
-			-D__WXGTK__
-		)
-	endif()
-
-	if( IsWxDebug )
-		add_definitions(
-			-D__WXDEBUG__
-		)
-	endif()
-
 	include_directories(
 		${CMAKE_BINARY_DIR}/include
 		${CMAKE_SOURCE_DIR}/include
@@ -47,10 +29,32 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 		util
 	)
 
-	add_subdirectory( 00-Common )
-	add_subdirectory( 01-ObjectLoading )
-	add_subdirectory( 02-Lighting )
-	add_subdirectory( 03-NormalMapping )
-	add_subdirectory( 04-DeferredRendering )
-	add_subdirectory( 05-Billboards )
+	file( GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*-* )
+	set( SAMPLE_ID 0 )
+
+	foreach ( child ${children} )
+		if ( IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${child} )
+			add_subdirectory( ${child} )
+			target_compile_definitions( Sample-${child} PRIVATE
+				SAMPLE_ID=${SAMPLE_ID}
+				_FILE_OFFSET_BITS=64
+				_LARGE_FILES
+				_UNICODE
+			)
+
+			if( NOT WIN32 )
+				target_compile_definitions( Test-${child} PRIVATE
+					__WXGTK__
+				)
+			endif()
+
+			if( IsWxDebug )
+				target_compile_definitions( Test-${child} PRIVATE
+					__WXDEBUG__
+				)
+			endif()
+
+			math( EXPR SAMPLE_ID "${SAMPLE_ID} + 1" )
+		endif ()
+	endforeach ()
 endif ()

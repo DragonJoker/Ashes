@@ -193,7 +193,7 @@ namespace common
 				, std::move( attaches ) );
 		}
 
-		ashes::UniformBufferPtr< common::MaterialData > doCreateMaterialsUbo( utils::Device const & device
+		ashes::UniformBufferPtr doCreateMaterialsUbo( utils::Device const & device
 			, Scene const & scene
 			, bool m_opaqueNodes
 			, uint32_t & objectsCount
@@ -218,12 +218,13 @@ namespace common
 				++billboardsCount;
 			}
 
-			ashes::UniformBufferPtr< common::MaterialData > result;
+			ashes::UniformBufferPtr result;
 
 			if ( objectsCount + billboardsCount )
 			{
-				result = utils::makeUniformBuffer< common::MaterialData >( device
+				result = utils::makeUniformBuffer( device
 					, objectsCount + billboardsCount
+					, uint32_t( sizeof( common::MaterialData ) )
 					, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 					, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 			}
@@ -295,6 +296,7 @@ namespace common
 			, m_opaqueNodes
 			, m_objectsCount
 			, m_billboardsCount );
+		m_materialsData.resize( m_objectsCount + m_billboardsCount );
 		m_dummyImage = m_device.createImage( ashes::ImageCreateInfo
 			{
 				0u,
@@ -326,7 +328,7 @@ namespace common
 		{
 			stagingBuffer.uploadUniformData( m_transferQueue
 				, m_commandPool
-				, m_materialsUbo->getDatas()
+				, m_materialsData
 				, *m_materialsUbo
 				, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT );
 		}
@@ -476,7 +478,7 @@ namespace common
 					materialNode.textures.push_back( *it );
 				}
 
-				m_materialsUbo->getData( matIndex ) = material.data;
+				m_materialsData[matIndex] = material.data;
 
 				// Initialise descriptor set for UBOs
 				materialNode.descriptorSetUbos = m_billboardDescriptorPool->createDescriptorSet( 0u );
@@ -595,7 +597,7 @@ namespace common
 							materialNode.textures.push_back( *it );
 						}
 
-						m_materialsUbo->getData( matIndex ) = material.data;
+						m_materialsData[matIndex] = material.data;
 
 						// Initialise descriptor set for UBOs
 						materialNode.descriptorSetUbos = m_objectDescriptorPool->createDescriptorSet( 0u );

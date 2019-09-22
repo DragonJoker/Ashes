@@ -10,7 +10,7 @@ namespace vkapp
 		utils::Vec2 uv;
 	};
 
-	static wxString const AppName = wxT( "13-TextureMipmapGeneration" );
+	static wxString const AppName{ common::makeName( TEST_ID, wxT( "TextureMipmapGeneration" ) ) }; 
 
 	class RenderPanel;
 	class MainFrame;

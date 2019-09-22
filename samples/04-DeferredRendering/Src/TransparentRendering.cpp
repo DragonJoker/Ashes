@@ -7,9 +7,9 @@ namespace vkapp
 		, ashes::Queue const & transferQueue
 		, std::string const & fragmentShaderFile
 		, std::vector< VkFormat > const & formats
-		, ashes::UniformBuffer< common::SceneData > const & sceneUbo
-		, ashes::UniformBuffer< common::ObjectData > const & objectUbo
-		, ashes::UniformBuffer< common::LightsData > const & lightsUbo )
+		, ashes::UniformBuffer const & sceneUbo
+		, ashes::UniformBuffer const & objectUbo
+		, ashes::UniformBuffer const & lightsUbo )
 		: common::NodesRenderer{ device
 			, commandPool
 			, transferQueue

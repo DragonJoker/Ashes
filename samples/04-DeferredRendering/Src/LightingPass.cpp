@@ -184,8 +184,8 @@ namespace vkapp
 		}
 
 		ashes::DescriptorSetPtr doCreateUboDescriptorSet( ashes::DescriptorSetPool const & pool
-			, ashes::UniformBuffer< common::LightsData > const & lightsUbo
-			, ashes::UniformBuffer< common::SceneData > const & sceneUbo )
+			, ashes::UniformBuffer const & lightsUbo
+			, ashes::UniformBuffer const & sceneUbo )
 		{
 			auto & layout = pool.getLayout();
 			auto result = pool.createDescriptorSet( 1u );
@@ -243,7 +243,7 @@ namespace vkapp
 	LightingPass::LightingPass( utils::Device const & device
 		, ashes::CommandPool const & commandPool
 		, ashes::Queue const & transferQueue
-		, ashes::UniformBuffer< common::LightsData > const & lightsUbo
+		, ashes::UniformBuffer const & lightsUbo
 		, ashes::StagingBuffer & stagingBuffer
 		, ashes::ImageViewArray views )
 		: m_device{ device }
@@ -251,7 +251,8 @@ namespace vkapp
 		, m_transferQueue{ transferQueue }
 		, m_lightsUbo{ lightsUbo }
 		, m_commandBuffer{ commandPool.createCommandBuffer() }
-		, m_sceneUbo{ utils::makeUniformBuffer< common::SceneData >( device, 1u, VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) }
+		, m_sceneUbo{ utils::makeUniformBuffer( device, 1u, uint32_t( sizeof( common::SceneData ) ), VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) }
+		, m_sceneData{ 1u }
 		, m_gbufferDescriptorLayout{ doCreateGBufferDescriptorLayout( m_device.getDevice() ) }
 		, m_gbufferDescriptorPool{ m_gbufferDescriptorLayout->createPool( 1u, false ) }
 		, m_uboDescriptorLayout{ doCreateUboDescriptorLayout( m_device.getDevice() ) }
@@ -295,10 +296,10 @@ namespace vkapp
 		m_depthView = views[0];
 		m_colourView = views[1];
 
-		m_sceneUbo->getData( 0u ).mtxProjection = utils::inverse( sceneData.mtxProjection );
+		m_sceneData[0].mtxProjection = utils::inverse( sceneData.mtxProjection );
 		stagingBuffer.uploadUniformData( m_transferQueue
 			, m_commandPool
-			, m_sceneUbo->getDatas()
+			, m_sceneData
 			, *m_sceneUbo
 			, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT );
 

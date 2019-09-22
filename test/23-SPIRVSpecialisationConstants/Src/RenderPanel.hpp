@@ -95,9 +95,13 @@ namespace vkapp
 		ashes::SamplerPtr m_sampler;
 		ashes::ImagePtr m_renderTargetColour;
 		ashes::ImagePtr m_renderTargetDepth;
+		ashes::ImageView m_renderTargetColourView;
+		ashes::ImageView m_renderTargetDepthView;
 		ashes::FrameBufferPtr m_frameBuffer;
-		ashes::UniformBufferPtr< utils::Mat4 > m_matrixUbo;
-		ashes::UniformBufferPtr< utils::Mat4 > m_objectUbo;
+		ashes::UniformBufferPtr m_matrixUbo;
+		utils::Mat4 m_matrixData;
+		ashes::UniformBufferPtr m_objectUbo;
+		std::array< utils::Mat4, 2 > m_objectData;
 		ashes::PushConstantsBufferTPtr< utils::Vec4 > m_objectPcb;
 		/**@}*/
 		/**

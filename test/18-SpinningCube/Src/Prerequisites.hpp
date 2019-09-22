@@ -10,7 +10,7 @@ namespace vkapp
 		utils::Vec2 uv;
 	};
 
-	static wxString const AppName = wxT( "18-SpinningCube" );
+	static wxString const AppName{ common::makeName( TEST_ID, wxT( "SpinningCube" ) ) };
 
 	class RenderPanel;
 	class MainFrame;

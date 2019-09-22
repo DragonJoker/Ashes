@@ -17,7 +17,7 @@ namespace vkapp
 			, std::vector< VkFormat > const & formats
 			, bool clearViews
 			, bool opaqueNodes
-			, ashes::UniformBuffer< common::SceneData > const & sceneUbo );
+			, ashes::UniformBuffer const & sceneUbo );
 
 	private:
 		void doFillBillboardDescriptorLayoutBindings( ashes::VkDescriptorSetLayoutBindingArray & bindings )override;
@@ -25,6 +25,6 @@ namespace vkapp
 			, ashes::DescriptorSet & descriptorSet )override;
 
 	private:
-		ashes::UniformBuffer< common::SceneData > const & m_sceneUbo;
+		ashes::UniformBuffer const & m_sceneUbo;
 	};
 }

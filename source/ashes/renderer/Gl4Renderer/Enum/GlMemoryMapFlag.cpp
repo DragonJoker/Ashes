@@ -65,7 +65,7 @@ namespace ashes::gl4
 		{
 			result |= GL_MEMORY_MAP_READ_BIT;
 			result |= GL_MEMORY_MAP_WRITE_BIT;
-			result |= GL_MEMORY_MAP_INVALIDATE_RANGE_BIT;
+			//result |= GL_MEMORY_MAP_INVALIDATE_RANGE_BIT;
 
 #if AshesGL4_UsePersistentMapping
 

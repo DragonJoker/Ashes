@@ -94,9 +94,12 @@ namespace vkapp
 		ashes::ImageView m_view;
 		ashes::SamplerPtr m_sampler;
 		ashes::ImagePtr m_renderTargetColour;
+		ashes::ImageView m_renderTargetColourView;
 		ashes::FrameBufferPtr m_frameBuffer;
-		ashes::UniformBufferPtr< utils::Mat4 > m_matrixUbo;
-		ashes::UniformBufferPtr< utils::Mat4 > m_objectUbo;
+		ashes::UniformBufferPtr m_matrixUbo;
+		utils::Mat4 m_matrixData;
+		ashes::UniformBufferPtr m_objectUbo;
+		utils::Mat4 m_objectData;
 		std::shared_ptr< EquirectangularToCube > m_equiToCube;
 		/**@}*/
 		/**

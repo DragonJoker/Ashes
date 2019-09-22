@@ -10,7 +10,7 @@ namespace vkapp
 		utils::Vec2 uv;
 	};
 
-	static wxString const AppName = wxT( "19-Instantiation" );
+	static wxString const AppName{ common::makeName( TEST_ID, wxT( "Instantiation" ) ) };
 
 	class RenderPanel;
 	class MainFrame;

@@ -93,8 +93,10 @@ namespace vkapp
 		ashes::DescriptorSetLayoutPtr m_descriptorLayout;
 		ashes::DescriptorSetPoolPtr m_descriptorPool;
 		ashes::DescriptorSetPtr m_descriptorSet;
-		ashes::UniformBufferPtr< utils::Mat4 > m_matrixUbo;
-		ashes::UniformBufferPtr< utils::Mat4 > m_objectUbo;
+		ashes::UniformBufferPtr m_matrixUbo;
+		utils::Mat4 m_matrixData;
+		ashes::UniformBufferPtr m_objectUbo;
+		utils::Mat4 m_objectData;
 		ashes::QueryPoolPtr m_queryPool;
 		/**@}*/
 		/**

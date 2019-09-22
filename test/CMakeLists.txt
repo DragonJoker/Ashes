@@ -8,26 +8,6 @@ endif()
 if( wxWidgets_FOUND AND GTK2_FOUND )
 	string( COMPARE EQUAL "${wxWidgets_USE_DEBUG}" "ON" IsWxDebug )
 
-	set( TestAdditionalDefinitions
-		"-D_FILE_OFFSET_BITS=64"
-		"-D_LARGE_FILES"
-		"-D_UNICODE"
-	)
-
-	if( NOT WIN32 )
-		set( TestAdditionalDefinitions
-			${TestAdditionalDefinitions}
-			"-D__WXGTK__"
-		)
-	endif()
-
-	if( IsWxDebug )
-		set( TestAdditionalDefinitions
-			${TestAdditionalDefinitions}
-			"-D__WXDEBUG__"
-		)
-	endif()
-
 	set( TestIncludeDirectories
 		${CMAKE_SOURCE_DIR}/util/Src
 		${CMAKE_BINARY_DIR}/util/Src
@@ -49,10 +29,31 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 	)
 
 	file( GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*-* )
+	set( TEST_ID 0 )
 
 	foreach ( child ${children} )
 		if ( IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${child} )
 			add_subdirectory( ${child} )
+			target_compile_definitions( Test-${child} PRIVATE
+				TEST_ID=${TEST_ID}
+				_FILE_OFFSET_BITS=64
+				_LARGE_FILES
+				_UNICODE
+			)
+
+			if( NOT WIN32 )
+				target_compile_definitions( Test-${child} PRIVATE
+					__WXGTK__
+				)
+			endif()
+
+			if( IsWxDebug )
+				target_compile_definitions( Test-${child} PRIVATE
+					__WXDEBUG__
+				)
+			endif()
+
+			math( EXPR TEST_ID "${TEST_ID} + 1" )
 		endif ()
 	endforeach ()
 

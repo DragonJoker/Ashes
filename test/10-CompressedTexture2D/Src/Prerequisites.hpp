@@ -10,7 +10,7 @@ namespace vkapp
 		utils::Vec2 uv;
 	};
 
-	static wxString const AppName = wxT( "10-CompressedTexture2D" );
+	static wxString const AppName{ common::makeName( TEST_ID, wxT( "CompressedTexture2D" ) ) };
 
 	class RenderPanel;
 	class MainFrame;

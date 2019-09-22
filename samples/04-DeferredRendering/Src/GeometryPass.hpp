@@ -16,8 +16,8 @@ namespace vkapp
 			, std::string const & fragmentShaderFile
 			, GeometryPassResult const & gbuffer
 			, VkFormat depthFormat
-			, ashes::UniformBuffer< common::SceneData > const & sceneUbo
-			, ashes::UniformBuffer< common::ObjectData > const & objectUbo );
+			, ashes::UniformBuffer const & sceneUbo
+			, ashes::UniformBuffer const & objectUbo );
 		void update( common::RenderTarget const & target )override;
 
 	private:
@@ -26,7 +26,7 @@ namespace vkapp
 			, ashes::DescriptorSet & descriptorSet )override;
 
 	private:
-		ashes::UniformBuffer< common::SceneData > const & m_sceneUbo;
-		ashes::UniformBuffer< common::ObjectData > const & m_objectUbo;
+		ashes::UniformBuffer const & m_sceneUbo;
+		ashes::UniformBuffer const & m_objectUbo;
 	};
 }

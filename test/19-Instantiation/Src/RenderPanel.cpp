@@ -231,8 +231,9 @@ namespace vkapp
 
 	void RenderPanel::doCreateUniformBuffer()
 	{
-		m_matrixUbo = utils::makeUniformBuffer< utils::Mat4 >( *m_device
+		m_matrixUbo = utils::makeUniformBuffer( *m_device
 			, 1u
+			, uint32_t( sizeof( utils::Mat4 ) )
 			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 	}
@@ -581,10 +582,11 @@ namespace vkapp
 	void RenderPanel::doUpdate()
 	{
 		m_camera.update();
-		m_matrixUbo->getData( 0u ) = m_projection * m_camera.getView();
+		m_matrixData = m_projection * m_camera.getView();
 		m_stagingBuffer->uploadUniformData( *m_graphicsQueue
 			, *m_commandPool
-			, m_matrixUbo->getDatas()
+			, &m_matrixData
+			, 1u
 			, *m_matrixUbo
 			, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 	}

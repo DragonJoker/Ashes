@@ -33,8 +33,10 @@ namespace vkapp
 		void doUpdateMatrixUbo( VkExtent2D const & size );
 
 	private:
-		ashes::UniformBufferPtr< common::SceneData > m_sceneUbo;
-		ashes::UniformBufferPtr< common::ObjectData > m_objectUbo;
+		ashes::UniformBufferPtr m_sceneUbo;
+		std::vector< common::SceneData > m_sceneData;
+		ashes::UniformBufferPtr m_objectUbo;
+		std::vector< common::ObjectData > m_objectData;
 		utils::Mat4 m_rotate;
 	};
 }

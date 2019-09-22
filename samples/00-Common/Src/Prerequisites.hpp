@@ -268,6 +268,8 @@ namespace common
 
 	std::vector< VkFormat > getFormats( ashes::ImageViewArray const & views );
 
+	wxString makeName( int index, wxString const & name );
+
 	struct Scene;
 
 	class Application;

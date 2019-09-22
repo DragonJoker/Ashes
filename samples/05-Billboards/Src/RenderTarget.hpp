@@ -44,7 +44,8 @@ namespace vkapp
 			, common::TextureNodePtrArray const & textureNodes )override;
 
 	private:
-		ashes::UniformBufferPtr< common::SceneData > m_sceneUbo;
+		ashes::UniformBufferPtr m_sceneUbo;
+		std::vector< common::SceneData > m_sceneData;
 		VkOffset2D m_previousMousePosition;
 		VkOffset2D m_currentMousePosition;
 		common::Camera m_camera;

@@ -16,7 +16,7 @@ namespace vkapp
 		utils::Vec3 uvw;
 	};
 
-	static wxString const AppName = wxT( "07-Texture3D" );
+	static wxString const AppName{ common::makeName( TEST_ID, wxT( "Texture3D" ) ) };
 
 	class RenderPanel;
 	class MainFrame;

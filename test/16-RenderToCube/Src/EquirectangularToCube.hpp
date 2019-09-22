@@ -36,6 +36,7 @@ namespace vkapp
 	private:
 		struct FacePipeline
 		{
+			ashes::ImageView view;
 			ashes::FrameBufferPtr frameBuffer;
 			ashes::GraphicsPipelinePtr pipeline;
 			ashes::DescriptorSetPtr descriptorSet;
@@ -49,7 +50,8 @@ namespace vkapp
 		ashes::ImagePtr m_texture;
 		ashes::ImageView m_view;
 		ashes::SamplerPtr m_sampler;
-		ashes::UniformBufferPtr< utils::Mat4 > m_matrixUbo;
+		std::array< utils::Mat4, 6u > m_matrixData;
+		ashes::UniformBufferPtr m_matrixUbo;
 		ashes::VertexBufferPtr< VertexData > m_vertexBuffer;
 		ashes::PipelineVertexInputStateCreateInfo m_vertexLayout;
 		ashes::DescriptorSetLayoutPtr m_descriptorLayout;

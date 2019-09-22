@@ -15,7 +15,7 @@ namespace vkapp
 		utils::Vec2 uv;
 	};
 
-	static wxString const AppName = wxT( "24-Bloom" );
+	static wxString const AppName{ common::makeName( TEST_ID, wxT( "Bloom" ) ) };
 
 	class RenderPanel;
 	class MainFrame;

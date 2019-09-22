@@ -4,7 +4,7 @@
 
 namespace vkapp
 {
-	static wxString const AppName = wxT( "05-Billboards" );
+	static wxString const AppName{ common::makeName( SAMPLE_ID, wxT( "Billboards" ) ) };
 	static wxString const AppDesc = wxT( "Billboards" );
 
 	class RenderPanel;

@@ -10,7 +10,7 @@ namespace vkapp
 		LightingPass( utils::Device const & device
 			, ashes::CommandPool const & commandPool
 			, ashes::Queue const & transferQueue
-			, ashes::UniformBuffer< common::LightsData > const & lightsUbo
+			, ashes::UniformBuffer const & lightsUbo
 			, ashes::StagingBuffer & stagingBuffer
 			, ashes::ImageViewArray views );
 		void update( common::SceneData const & sceneData
@@ -24,13 +24,14 @@ namespace vkapp
 		utils::Device const & m_device;
 		ashes::CommandPool const & m_commandPool;
 		ashes::Queue const & m_transferQueue;
-		ashes::UniformBuffer< common::LightsData > const & m_lightsUbo;
+		ashes::UniformBuffer const & m_lightsUbo;
 		ashes::ImageView m_colourView;
 		ashes::ImageView m_depthView;
 		GeometryPassResult const * m_geometryBuffers{ nullptr };
 
 		ashes::CommandBufferPtr m_commandBuffer;
-		ashes::UniformBufferPtr< common::SceneData > m_sceneUbo;
+		ashes::UniformBufferPtr m_sceneUbo;
+		std::vector< common::SceneData > m_sceneData;
 		ashes::DescriptorSetLayoutPtr m_uboDescriptorLayout;
 		ashes::DescriptorSetPoolPtr m_uboDescriptorPool;
 		ashes::DescriptorSetPtr m_uboDescriptorSet;

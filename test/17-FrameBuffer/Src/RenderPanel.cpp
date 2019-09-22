@@ -184,7 +184,7 @@ namespace vkapp
 		auto size = m_swapChain->getDimensions();
 		float halfWidth = static_cast< float >( size.width ) * 0.5f;
 		float halfHeight = static_cast< float >( size.height ) * 0.5f;
-		m_matrixUbo->getData( 0u ) = utils::Mat4{ m_device->getDevice().ortho( -halfWidth
+		m_matrixData = utils::Mat4{ m_device->getDevice().ortho( -halfWidth
 			, halfWidth
 			, -halfHeight
 			, halfHeight
@@ -192,7 +192,8 @@ namespace vkapp
 			, 1.0f ) };
 		m_stagingBuffer->uploadUniformData( *m_graphicsQueue
 			, *m_commandPool
-			, m_matrixUbo->getDatas()
+			, &m_matrixData
+			, 1u
 			, *m_matrixUbo
 			, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 	}
@@ -266,8 +267,9 @@ namespace vkapp
 
 	void RenderPanel::doCreateUniformBuffer()
 	{
-		m_matrixUbo = utils::makeUniformBuffer< utils::Mat4 >( *m_device
+		m_matrixUbo = utils::makeUniformBuffer( *m_device
 			, 1u
+			, uint32_t( sizeof( utils::Mat4 ) )
 			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 	}
@@ -374,9 +376,10 @@ namespace vkapp
 			}
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 
-		ashes::ImageViewArray attaches;
-		attaches.emplace_back( m_renderTargetColour->createView( VK_IMAGE_VIEW_TYPE_2D
-				, VK_FORMAT_R8G8B8A8_UNORM ) );
+		ashes::ImageViewCRefArray attaches;
+		m_renderTargetColourView = m_renderTargetColour->createView( VK_IMAGE_VIEW_TYPE_2D
+				, VK_FORMAT_R8G8B8A8_UNORM );
+		attaches.emplace_back( m_renderTargetColourView );
 		m_frameBuffer = m_offscreenRenderPass->createFrameBuffer( { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) }
 			, std::move( attaches ) );
 	}

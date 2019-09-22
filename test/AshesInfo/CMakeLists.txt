@@ -17,11 +17,17 @@ file( GLOB HEADER_FILES
 )
 
 include_directories( ${TestIncludeDirectories} )
-add_definitions( ${TestAdditionalDefinitions} )
 
 add_executable( ${PROJECT_NAME}
 	${SOURCE_FILES}
 	${HEADER_FILES}
+)
+
+target_compile_definitions( ${PROJECT_NAME} PRIVATE
+	TEST_ID=${TEST_ID}
+	_FILE_OFFSET_BITS=64
+	_LARGE_FILES
+	_UNICODE
 )
 
 target_link_libraries( ${PROJECT_NAME}

@@ -224,13 +224,14 @@ namespace vkapp
 		auto size = m_swapChain->getDimensions();
 		auto width = float( size.width );
 		auto height = float( size.height );
-		m_matrixUbo->getData( 0u ) = utils::Mat4{ m_device->getDevice().perspective( float( utils::toRadians( 90.0_degrees ) )
+		m_matrixData = utils::Mat4{ m_device->getDevice().perspective( float( utils::toRadians( 90.0_degrees ) )
 			, width / height
 			, 0.01f
 			, 100.0f ) };
 		m_stagingBuffer->uploadUniformData( *m_graphicsQueue
 			, *m_commandPool
-			, m_matrixUbo->getDatas()
+			, &m_matrixData
+			, 1u
 			, *m_matrixUbo
 			, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 	}
@@ -308,12 +309,14 @@ namespace vkapp
 
 	void RenderPanel::doCreateUniformBuffer()
 	{
-		m_matrixUbo = utils::makeUniformBuffer< utils::Mat4 >( *m_device
+		m_matrixUbo = utils::makeUniformBuffer( *m_device
 			, 1u
+			, uint32_t( sizeof( utils::Mat4 ) )
 			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
-		m_objectUbo = utils::makeUniformBuffer< utils::Mat4 >( *m_device
+		m_objectUbo = utils::makeUniformBuffer( *m_device
 			, 2u
+			, uint32_t( sizeof( utils::Mat4 ) )
 			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 	}
@@ -347,7 +350,8 @@ namespace vkapp
 		m_offscreenDescriptorSet->createDynamicBinding( m_offscreenDescriptorLayout->getBinding( 2u )
 			, *m_objectUbo
 			, 0u
-			, 1u );
+			, 1u
+			, 0u );
 		m_offscreenDescriptorSet->update();
 	}
 
@@ -450,11 +454,13 @@ namespace vkapp
 				VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
 			}
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
-		ashes::ImageViewArray attaches;
-		attaches.emplace_back( m_renderTargetColour->createView( VK_IMAGE_VIEW_TYPE_2D
-			, m_renderTargetColour->getFormat() ) );
-		attaches.emplace_back( m_renderTargetDepth->createView( VK_IMAGE_VIEW_TYPE_2D
-			, m_renderTargetDepth->getFormat() ) );
+		ashes::ImageViewCRefArray attaches;
+		m_renderTargetColourView = m_renderTargetColour->createView( VK_IMAGE_VIEW_TYPE_2D
+			, m_renderTargetColour->getFormat() );
+		m_renderTargetDepthView = m_renderTargetDepth->createView( VK_IMAGE_VIEW_TYPE_2D
+			, m_renderTargetDepth->getFormat() );
+		attaches.emplace_back( m_renderTargetColourView );
+		attaches.emplace_back( m_renderTargetDepthView );
 		m_frameBuffer = m_offscreenRenderPass->createFrameBuffer( { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) }
 			, std::move( attaches ) );
 	}
@@ -519,20 +525,17 @@ namespace vkapp
 		{
 			{ 0u, 0u, 4u }
 		};
-		std::vector< int > dataRed;
-		dataRed.push_back( 0 );
+		int dataRed = 0;
 		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
 			{
 				0u,
 				VK_SHADER_STAGE_FRAGMENT_BIT,
 				m_device->getDevice().createShaderModule( common::dumpSpvFile( shadersFolder / "offscreen.frag.spv" ) ),
 				"main",
-				VkSpecializationInfo
+				ashes::SpecializationInfo
 				{
-					uint32_t( specializationEntries.size() ),
-					specializationEntries.data(),
-					uint32_t( dataRed.size() * sizeof( int ) ),
-					dataRed.data(),
+					specializationEntries,
+					utils::makeByteArray( dataRed ),
 				},
 			} );
 
@@ -573,20 +576,17 @@ namespace vkapp
 				"main",
 				std::nullopt,
 			} );
-		std::vector< int > dataGreen;
-		dataGreen.push_back( 1 );
+		int dataGreen = 1;
 		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
 			{
 				0u,
 				VK_SHADER_STAGE_FRAGMENT_BIT,
 				m_device->getDevice().createShaderModule( common::dumpSpvFile( shadersFolder / "offscreen.frag.spv" ) ),
 				"main",
-				VkSpecializationInfo
+				ashes::SpecializationInfo
 				{
-					uint32_t( specializationEntries.size() ),
-					specializationEntries.data(),
-					uint32_t( dataGreen.size() * sizeof( int ) ),
-					dataGreen.data(),
+					specializationEntries,
+					utils::makeByteArray( dataGreen ),
 				},
 			} );
 
@@ -869,11 +869,11 @@ namespace vkapp
 		m_rotate[1] = utils::rotate( m_rotate[1]
 			, -float( utils::DegreeToRadian )
 			, { 0, 1, 0 } );
-		m_objectUbo->getData( 0u ) = originalTranslate1 * m_rotate[0] * originalRotate;
-		m_objectUbo->getData( 1u ) = originalTranslate2 * m_rotate[1] * originalRotate;
+		m_objectData[0] = originalTranslate1 * m_rotate[0] * originalRotate;
+		m_objectData[1] = originalTranslate2 * m_rotate[1] * originalRotate;
 		m_stagingBuffer->uploadUniformData( *m_graphicsQueue
 			, *m_commandPool
-			, m_objectUbo->getDatas()
+			, m_objectData
 			, *m_objectUbo
 			, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 	}

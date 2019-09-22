@@ -28,7 +28,8 @@ namespace ashes::gl4
 				, VkDevice device
 				, VkMemoryAllocateInfo allocateInfo
 				, GLenum boundTarget
-				, VkDeviceSize memoryOffset );
+				, VkDeviceSize memoryOffset
+				, VkDeviceSize align );
 			virtual ~DeviceMemoryImpl();
 
 			void upload( ContextLock const & context
@@ -61,6 +62,7 @@ namespace ashes::gl4
 			GLuint m_boundResource;
 			GLenum m_boundTarget;
 			VkDeviceSize m_memoryOffset;
+			VkDeviceSize m_align;
 		};
 
 	public:

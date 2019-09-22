@@ -15,7 +15,7 @@ namespace vkapp
 		utils::Vec2 uv;
 	};
 
-	static wxString const AppName = wxT( "16-RenderToCube" );
+	static wxString const AppName{ common::makeName( TEST_ID, wxT( "RenderToCube" ) ) };
 
 	class RenderPanel;
 	class MainFrame;

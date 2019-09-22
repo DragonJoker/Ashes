@@ -10,7 +10,7 @@ namespace vkapp
 		utils::Vec2 uv;
 	};
 
-	static wxString const AppName = wxT( "12-Texture2DMipmaps" );
+	static wxString const AppName{ common::makeName( TEST_ID, wxT( "Texture2DMipmaps" ) ) };
 
 	class RenderPanel;
 	class MainFrame;

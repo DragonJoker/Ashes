@@ -15,9 +15,9 @@ namespace vkapp
 			, ashes::Queue const & transferQueue
 			, std::string const & fragmentShaderFile
 			, std::vector< VkFormat > const & formats
-			, ashes::UniformBuffer< common::SceneData > const & sceneUbo
-			, ashes::UniformBuffer< common::ObjectData > const & objectUbo
-			, ashes::UniformBuffer< common::LightsData > const & lightsUbo );
+			, ashes::UniformBuffer const & sceneUbo
+			, ashes::UniformBuffer const & objectUbo
+			, ashes::UniformBuffer const & lightsUbo );
 
 	private:
 		void doFillObjectDescriptorLayoutBindings( ashes::VkDescriptorSetLayoutBindingArray & bindings )override;
@@ -25,8 +25,8 @@ namespace vkapp
 			, ashes::DescriptorSet & descriptorSet )override;
 
 	private:
-		ashes::UniformBuffer< common::SceneData > const & m_sceneUbo;
-		ashes::UniformBuffer< common::ObjectData > const & m_objectUbo;
-		ashes::UniformBuffer< common::LightsData > const & m_lightsUbo;
+		ashes::UniformBuffer const & m_sceneUbo;
+		ashes::UniformBuffer const & m_objectUbo;
+		ashes::UniformBuffer const & m_lightsUbo;
 	};
 }

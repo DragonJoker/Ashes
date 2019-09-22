@@ -10,7 +10,7 @@ namespace vkapp
 		float uv;
 	};
 
-	static wxString const AppName = wxT( "09-TextureBuffer" );
+	static wxString const AppName{ common::makeName( TEST_ID, wxT( "TextureBuffer" ) ) };
 
 	class RenderPanel;
 	class MainFrame;

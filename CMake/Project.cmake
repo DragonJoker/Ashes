@@ -69,3 +69,5 @@ macro( target_install_headers TARGET_NAME HDR_FOLDER )
 		${TARGET_NAME}
 	)
 endmacro()
+
+set( CMAKE_DEBUG_POSTFIX "d" CACHE STRING "" FORCE )

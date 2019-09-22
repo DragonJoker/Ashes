@@ -164,8 +164,9 @@ namespace vkapp
 
 	void RenderPanel::doCreateUniformBuffer()
 	{
-		m_uniformBuffer = utils::makeUniformBuffer< LayerSelect >( *m_device
+		m_uniformBuffer = utils::makeUniformBuffer( *m_device
 			, 1u
+			, uint32_t( sizeof( LayerSelect ) )
 			, 0u
 			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT );
 	}
@@ -288,7 +289,9 @@ namespace vkapp
 			, m_view
 			, *m_sampler );
 		m_descriptorSet->createBinding( m_descriptorLayout->getBinding( 1u )
-			, *m_uniformBuffer );
+			, *m_uniformBuffer
+			, 0u
+			, 1u );
 		m_descriptorSet->update();
 	}
 
@@ -476,14 +479,13 @@ namespace vkapp
 
 	void RenderPanel::doUpdate()
 	{
-		auto & data = m_uniformBuffer->getData( 0u );
-		data.percent += 0.1f;
+		m_uniformData.percent += 0.1f;
 
-		if ( data.percent > 1.0f )
+		if ( m_uniformData.percent > 1.0f )
 		{
 			m_src++;
 			m_dst++;
-			data.percent = 0.0f;
+			m_uniformData.percent = 0.0f;
 		}
 
 		if ( m_src >= m_texture->getLayerCount() )
@@ -496,9 +498,15 @@ namespace vkapp
 			m_dst = 0;
 		}
 
-		data.src = float( m_src );
-		data.dst = float( m_dst );
-		m_uniformBuffer->upload();
+		m_uniformData.src = float( m_src );
+		m_uniformData.dst = float( m_dst );
+
+		if ( auto buffer = m_uniformBuffer->getBuffer().lock( 0u, VK_WHOLE_SIZE, 0u ) )
+		{
+			std::memcpy( buffer, &m_uniformData, sizeof( m_uniformData ) );
+			m_uniformBuffer->getBuffer().flush( 0u, VK_WHOLE_SIZE );
+			m_uniformBuffer->getBuffer().unlock();
+		}
 	}
 
 	void RenderPanel::doDraw()

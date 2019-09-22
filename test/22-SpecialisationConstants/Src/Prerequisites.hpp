@@ -10,7 +10,7 @@ namespace vkapp
 		utils::Vec2 uv;
 	};
 
-	static wxString const AppName = wxT( "22-SpecialisationConstants" );
+	static wxString const AppName{ common::makeName( TEST_ID, wxT( "SpecialisationConstants" ) ) };
 
 	class RenderPanel;
 	class MainFrame;

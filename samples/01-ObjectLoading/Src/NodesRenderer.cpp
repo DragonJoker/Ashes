@@ -9,8 +9,8 @@ namespace vkapp
 		, std::vector< VkFormat > const & formats
 		, bool clearViews
 		, bool opaqueNodes
-		, ashes::UniformBuffer< common::SceneData > const & sceneUbo
-		, ashes::UniformBuffer< common::ObjectData > const & objectUbo )
+		, ashes::UniformBuffer const & sceneUbo
+		, ashes::UniformBuffer const & objectUbo )
 		: common::NodesRenderer{ device
 			, commandPool
 			, transferQueue

@@ -99,8 +99,10 @@ namespace vkapp
 		ashes::ImagePtr m_renderTargetColour;
 		ashes::ImageView m_renderTargetColourView;
 		ashes::FrameBufferPtr m_frameBuffer;
-		ashes::UniformBufferPtr< utils::Mat4 > m_matrixUbo;
-		ashes::UniformBufferPtr< utils::Mat4 > m_objectUbo;
+		ashes::UniformBufferPtr m_matrixUbo;
+		utils::Mat4 m_matrixData;
+		ashes::UniformBufferPtr m_objectUbo;
+		utils::Mat4 m_objectData;
 		/**@}*/
 		/**
 		*\name
@@ -157,8 +159,10 @@ namespace vkapp
 			uint32_t dump;
 			std::array< utils::Vec4, 15u > coefficients;
 		};
-		ashes::UniformBufferPtr< Configuration > m_blurConfiguration;
-		ashes::UniformBufferPtr< int > m_blurDirection;
+		ashes::UniformBufferPtr m_blurConfigurationUbo;
+		std::vector< Configuration > m_blurConfigurationData;
+		ashes::UniformBufferPtr m_blurDirectionUbo;
+		std::array< int, 2u > m_blurDirectionData;
 		/**@}*/
 		/**
 		*\name

@@ -4,7 +4,7 @@
 
 namespace vkapp
 {
-	static wxString const AppName = wxT( "01-ObjectLoading" );
+	static wxString const AppName{ common::makeName( SAMPLE_ID, wxT( "ObjectLoading" ) ) };
 	static wxString const AppDesc = wxT( "Object Loading" );
 
 	class RenderPanel;

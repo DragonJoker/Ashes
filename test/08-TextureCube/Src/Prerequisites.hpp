@@ -15,7 +15,7 @@ namespace vkapp
 		utils::Vec2 uv;
 	};
 
-	static wxString const AppName = wxT( "08-TextureCube" );
+	static wxString const AppName{ common::makeName( TEST_ID, wxT( "TextureCube" ) ) };
 
 	class RenderPanel;
 	class MainFrame;

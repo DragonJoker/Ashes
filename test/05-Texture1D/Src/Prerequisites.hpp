@@ -10,7 +10,7 @@ namespace vkapp
 		float uv;
 	};
 
-	static wxString const AppName = wxT( "05-Texture1D" );
+	static wxString const AppName{ common::makeName( TEST_ID, wxT( "Texture1D" ) ) };
 
 	class RenderPanel;
 	class MainFrame;

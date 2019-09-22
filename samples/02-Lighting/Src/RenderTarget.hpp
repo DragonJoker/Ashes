@@ -34,9 +34,12 @@ namespace vkapp
 		void doInitialiseLights();
 
 	private:
-		ashes::UniformBufferPtr< common::SceneData > m_sceneUbo;
-		ashes::UniformBufferPtr< common::ObjectData > m_objectUbo;
-		ashes::UniformBufferPtr< common::LightsData > m_lightsUbo;
+		ashes::UniformBufferPtr m_sceneUbo;
+		std::vector< common::SceneData > m_sceneData;
+		ashes::UniformBufferPtr m_objectUbo;
+		std::vector< common::ObjectData > m_objectData;
+		ashes::UniformBufferPtr m_lightsUbo;
+		std::vector< common::LightsData > m_lightsData;
 		utils::Mat4 m_rotate;
 	};
 }

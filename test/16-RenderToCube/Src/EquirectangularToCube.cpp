@@ -66,13 +66,14 @@ namespace vkapp
 				, VK_FILTER_LINEAR );
 		}
 
-		ashes::UniformBufferPtr< Mat4 > doCreateMatrixUbo( utils::Device const & device
+		ashes::UniformBufferPtr doCreateMatrixUbo( utils::Device const & device
 			, ashes::Queue const & queue
 			, ashes::CommandPool const & commandPool
-			, ashes::StagingBuffer & stagingBuffer )
+			, ashes::StagingBuffer & stagingBuffer
+			, std::array< utils::Mat4, 6u > & matrixData )
 		{
 			static Mat4 const projection = utils::Mat4{ device->perspective( float( utils::toRadians( 90.0_degrees ) ), 1.0f, 0.1f, 10.0f ) };
-			static std::array< Mat4, 6u > const views = [&device]()
+			matrixData = [&device]()
 			{
 				std::array< Mat4, 6u > result
 				{
@@ -92,21 +93,22 @@ namespace vkapp
 				return result;
 			}();
 
-			auto result = utils::makeUniformBuffer< utils::Mat4 >( device
+			auto result = utils::makeUniformBuffer( device
 				, 6u
+				, uint32_t( sizeof( utils::Mat4 ) )
 				, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 				, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
 
-			result->getData( 0u ) = projection * views[0];
-			result->getData( 1u ) = projection * views[1];
-			result->getData( 2u ) = projection * views[2];
-			result->getData( 3u ) = projection * views[3];
-			result->getData( 4u ) = projection * views[4];
-			result->getData( 5u ) = projection * views[5];
+			matrixData[0] = projection * matrixData[0];
+			matrixData[1] = projection * matrixData[1];
+			matrixData[2] = projection * matrixData[2];
+			matrixData[3] = projection * matrixData[3];
+			matrixData[4] = projection * matrixData[4];
+			matrixData[5] = projection * matrixData[5];
 
 			stagingBuffer.uploadUniformData( queue
 				, commandPool
-				, result->getDatas()
+				, matrixData
 				, *result
 				, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 			return result;
@@ -275,7 +277,7 @@ namespace vkapp
 		, m_texture{ doCreateTexture( m_device, queue, commandPool, m_image ) }
 		, m_view{ m_texture->createView( VK_IMAGE_VIEW_TYPE_2D, m_image.format ) }
 		, m_sampler{ doCreateSampler( m_device ) }
-		, m_matrixUbo{ doCreateMatrixUbo( m_device, queue, commandPool, m_stagingBuffer ) }
+		, m_matrixUbo{ doCreateMatrixUbo( m_device, queue, commandPool, m_stagingBuffer, m_matrixData ) }
 		, m_vertexBuffer{ doCreateVertexBuffer( m_device, queue, commandPool, m_stagingBuffer ) }
 		, m_vertexLayout{ doCreateVertexLayout( m_device ) }
 		, m_descriptorLayout{ doCreateDescriptorSetLayout( m_device ) }
@@ -290,13 +292,14 @@ namespace vkapp
 
 		for ( auto & facePipeline : m_faces )
 		{
-			ashes::ImageViewArray attaches;
-			attaches.emplace_back( texture.createView( VK_IMAGE_VIEW_TYPE_2D
+			ashes::ImageViewCRefArray attaches;
+			facePipeline.view = texture.createView( VK_IMAGE_VIEW_TYPE_2D
 				, texture.getFormat()
 				, 0u
 				, 1u
 				, face
-				, 1u ) );
+				, 1u );
+			attaches.emplace_back( facePipeline.view );
 			facePipeline.frameBuffer = m_renderPass->createFrameBuffer( size
 				, std::move( attaches ) );
 
@@ -336,7 +339,7 @@ namespace vkapp
 		{
 			commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 				, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
-				, ( *facePipeline.frameBuffer->begin() ).makeColourAttachment( VK_IMAGE_LAYOUT_UNDEFINED ) );
+				, ( *facePipeline.frameBuffer->begin() ).get().makeColourAttachment( VK_IMAGE_LAYOUT_UNDEFINED ) );
 			commandBuffer.beginRenderPass( *m_renderPass
 				, *facePipeline.frameBuffer
 				, { ashes::makeClearValue( VkClearColorValue{ 0, 0, 0, 0 } ) }

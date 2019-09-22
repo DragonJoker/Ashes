@@ -350,10 +350,11 @@ namespace vkapp
 	void RenderPanel::doCreateFrameBuffers()
 	{
 		m_frameBuffers.resize( m_swapChainImages.size() );
+		m_views.resize( m_frameBuffers.size() );
 
 		for ( size_t i = 0u; i < m_frameBuffers.size(); ++i )
 		{
-			auto attaches = doPrepareAttaches( uint32_t( i ) );
+			auto attaches = doPrepareAttaches( uint32_t( i ), m_views[i] );
 			m_frameBuffers[i] = m_renderPass->createFrameBuffer( m_swapChain->getDimensions()
 				, std::move( attaches ) );
 		}
@@ -369,13 +370,14 @@ namespace vkapp
 		}
 	}
 
-	ashes::ImageViewArray RenderPanel::doPrepareAttaches( uint32_t backBuffer )const
+	ashes::ImageViewCRefArray RenderPanel::doPrepareAttaches( uint32_t backBuffer
+		, ashes::ImageViewArray & views )const
 	{
-		ashes::ImageViewArray attaches;
+		views.clear();
 
 		for ( auto & attach : m_renderPass->getAttachments() )
 		{
-			attaches.emplace_back( m_swapChainImages[backBuffer].createView( VkImageViewCreateInfo
+			views.push_back( m_swapChainImages[backBuffer].createView( VkImageViewCreateInfo
 				{
 						VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
 						nullptr,
@@ -392,6 +394,13 @@ namespace vkapp
 							1u,
 						}
 				} ) );
+		}
+
+		ashes::ImageViewCRefArray attaches;
+
+		for ( auto & view : views )
+		{
+			attaches.emplace_back( view );
 		}
 
 		return attaches;

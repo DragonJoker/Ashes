@@ -12,7 +12,7 @@ namespace vkapp
 
 	using GeometryPassResult = std::array < GeometryPassTexture, 5u >;
 
-	static wxString const AppName = wxT( "04-DeferredRendering" );
+	static wxString const AppName{ common::makeName( SAMPLE_ID, wxT( "DeferredRendering" ) ) };
 	static wxString const AppDesc = wxT( "Deferred Rendering" );
 
 	class Application;

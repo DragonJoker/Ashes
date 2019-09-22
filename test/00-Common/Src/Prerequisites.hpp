@@ -61,6 +61,9 @@ namespace common
 	*/
 	ashes::WindowHandle makeWindowHandle( wxWindow const & window );
 
+	wxString makeName( int index
+		, wxString const & name );
+
 	class Application;
 	class MainFrame;
 }

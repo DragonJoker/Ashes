@@ -141,6 +141,20 @@ namespace ashes::gl4
 			return result;
 		}
 
+		void * mapBuffer( ContextLock const & context
+			, GlBufferTarget target
+			, VkDeviceSize offset
+			, VkDeviceSize size
+			, GlMemoryMapFlags mapFlags )
+		{
+			return glLogNonVoidCall( context
+				, glMapBufferRange
+				, target
+				, GLintptr( offset )
+				, GLsizei( size )
+				, mapFlags );
+		}
+
 		void deleteBuffer( ContextLock const & context
 			, GLuint buffer )
 		{
@@ -167,7 +181,15 @@ namespace ashes::gl4
 				, VkMemoryAllocateInfo allocateInfo
 				, VkImage texture
 				, VkDeviceSize memoryOffset )
-				: DeviceMemory::DeviceMemoryImpl{ parent, device, std::move( allocateInfo ), get( texture )->getTarget(), memoryOffset }
+				: DeviceMemory::DeviceMemoryImpl
+				{
+					parent,
+					device,
+					std::move( allocateInfo ),
+					get( texture )->getTarget(),
+					memoryOffset,
+					get( device )->getLimits().nonCoherentAtomSize,
+				}
 				, m_texture{ get( texture ) }
 				, m_internal{ getInternalFormat( m_texture->getFormat() ) }
 				, m_format{ getFormat( m_internal ) }
@@ -269,11 +291,10 @@ namespace ashes::gl4
 					, GL_BUFFER_TARGET_PIXEL_UNPACK
 					, m_buffer );
 				doSetupUpdateRegions( offset, size );
-				auto result = glLogNonVoidCall( context
-					, glMapBufferRange
+				auto result = mapBuffer( context
 					, GL_BUFFER_TARGET_PIXEL_UNPACK
-					, GLintptr( offset )
-					, GLsizei( copySize )
+					, offset
+					, copySize
 					, m_mapFlags );
 				*data = result;
 				return result
@@ -599,7 +620,8 @@ namespace ashes::gl4
 					device,
 					std::move( allocateInfo ),
 					target,
-					memoryOffset
+					memoryOffset,
+					get( device )->getLimits().nonCoherentAtomSize,
 				}
 			{
 				auto context = get( m_device )->getContext();
@@ -633,11 +655,10 @@ namespace ashes::gl4
 					, &bufferSize );
 				assert( size + offset <= bufferSize );
 
-				auto result = glLogNonVoidCall( context
-					, glMapBufferRange
+				auto result = mapBuffer( context
 					, GlBufferTarget( m_boundTarget )
-					, GLintptr( offset )
-					, GLsizei( size == WholeSize ? m_allocateInfo.allocationSize : size )
+					, offset
+					, size == WholeSize ? m_allocateInfo.allocationSize : size
 					, m_mapFlags );
 				*data = result;
 				return result
@@ -670,15 +691,17 @@ namespace ashes::gl4
 		, VkDevice device
 		, VkMemoryAllocateInfo allocateInfo
 		, GLuint boundTarget
-		, VkDeviceSize memoryOffset )
+		, VkDeviceSize memoryOffset
+		, VkDeviceSize align )
 		: m_parent{ parent }
 		, m_device{ device }
 		, m_allocateInfo{ allocateInfo }
 		, m_flags{ getFlags( m_allocateInfo.memoryTypeIndex ) }
-		, m_mapFlags{ convertMemoryMapFlags( m_allocateInfo.memoryTypeIndex ) }
+		, m_mapFlags{ convertMemoryMapFlags( m_flags ) }
 		, m_buffer{ GL_INVALID_INDEX }
 		, m_boundTarget{ boundTarget }
 		, m_memoryOffset{ memoryOffset }
+		, m_align{ align }
 	{
 	}
 
@@ -700,6 +723,14 @@ namespace ashes::gl4
 		{
 			assert( offset == 0ull );
 			size = m_allocateInfo.allocationSize;
+		}
+		else
+		{
+			size = ashes::getAlignedSize( size, m_align );
+			offset = ashes::getAlignedSize( offset, m_align );
+			size = offset + size < m_allocateInfo.allocationSize
+				? size
+				: size = m_allocateInfo.allocationSize - offset;
 		}
 
 		void * dst{ nullptr };

@@ -163,7 +163,7 @@ namespace vkapp
 			auto size = m_swapChain->getDimensions();
 			float halfWidth = static_cast< float >( size.width ) * 0.5f;
 			float halfHeight = static_cast< float >( size.height ) * 0.5f;
-			m_uniformBuffer->getData( 0u ) = utils::Mat4{ m_device->getDevice().ortho( -halfWidth
+			m_uniformData = utils::Mat4{ m_device->getDevice().ortho( -halfWidth
 				, halfWidth
 				, -halfHeight
 				, halfHeight
@@ -171,7 +171,8 @@ namespace vkapp
 				, 1.0f ) };
 			m_stagingBuffer->uploadUniformData( *m_graphicsQueue
 				, *m_commandPool
-				, m_uniformBuffer->getDatas()
+				, &m_uniformData
+				, 1u
 				, *m_uniformBuffer
 				, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 			doPrepareFrames();
@@ -211,14 +212,15 @@ namespace vkapp
 
 	void RenderPanel::doCreateUniformBuffer()
 	{
-		m_uniformBuffer = utils::makeUniformBuffer< utils::Mat4 >( *m_device
+		m_uniformBuffer = utils::makeUniformBuffer( *m_device
 			, 1u
+			, uint32_t( sizeof( utils::Mat4 ) )
 			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 		auto size = m_swapChain->getDimensions();
 		float halfWidth = static_cast< float >( size.width ) * 0.5f;
 		float halfHeight = static_cast< float >( size.height ) * 0.5f;
-		m_uniformBuffer->getData( 0u ) = utils::Mat4{ m_device->getDevice().ortho( -halfWidth
+		m_uniformData = utils::Mat4{ m_device->getDevice().ortho( -halfWidth
 			, halfWidth
 			, -halfHeight
 			, halfHeight
@@ -226,7 +228,8 @@ namespace vkapp
 			, 1.0f ) };
 		m_stagingBuffer->uploadUniformData( *m_graphicsQueue
 			, *m_commandPool
-			, m_uniformBuffer->getDatas()
+			, &m_uniformData
+			, 1u
 			, *m_uniformBuffer
 			, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 	}

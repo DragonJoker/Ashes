@@ -105,7 +105,8 @@ namespace common
 		std::string m_fragmentShaderFile;
 		ashes::SamplerPtr m_sampler;
 		ashes::CommandBufferPtr m_commandBuffer;
-		ashes::UniformBufferPtr< MaterialData > m_materialsUbo;
+		ashes::UniformBufferPtr m_materialsUbo;
+		std::vector< common::MaterialData > m_materialsData;
 
 		ashes::DescriptorSetLayoutPtr m_objectDescriptorLayout;
 		ashes::DescriptorSetPoolPtr m_objectDescriptorPool;

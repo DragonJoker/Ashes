@@ -19,6 +19,20 @@ namespace ashes
 	*	Buffer.
 	**/
 	/**@{*/
+	template< typename T, size_t N >
+	inline void StagingBuffer::uploadBufferData( Queue const & queue
+		, CommandPool const & commandPool
+		, std::array< T, N > const & data
+		, Buffer< T > const & buffer )const
+	{
+		uploadBufferData( queue
+			, commandPool
+			, reinterpret_cast< uint8_t const * const >( data.data() )
+			, uint32_t( N * sizeof( T ) )
+			, 0u
+			, buffer );
+	}
+	
 	template< typename T >
 	inline void StagingBuffer::uploadBufferData( Queue const & queue
 		, CommandPool const & commandPool
@@ -59,6 +73,21 @@ namespace ashes
 			, data
 			, size
 			, 0u
+			, buffer );
+	}
+
+	template< typename T, size_t N >
+	inline void StagingBuffer::uploadBufferData( Queue const & queue
+		, CommandPool const & commandPool
+		, std::array< T, N > const & data
+		, uint32_t offset
+		, Buffer< T > const & buffer )const
+	{
+		uploadBufferData( queue
+			, commandPool
+			, reinterpret_cast< uint8_t const * const >( data.data() )
+			, uint32_t( N * sizeof( T ) )
+			, uint32_t( offset * sizeof( T ) )
 			, buffer );
 	}
 
@@ -114,6 +143,18 @@ namespace ashes
 		fence->wait( MaxTimeout );
 	}
 
+	template< typename T, size_t N >
+	inline void StagingBuffer::uploadBufferData( CommandBuffer const & commandBuffer
+		, std::array< T, N > const & data
+		, Buffer< T > const & buffer )const
+	{
+		uploadBufferData( commandBuffer
+			, reinterpret_cast< uint8_t const * const >( data.data() )
+			, uint32_t( N * sizeof( T ) )
+			, 0u
+			, buffer );
+	}
+
 	template< typename T >
 	inline void StagingBuffer::uploadBufferData( CommandBuffer const & commandBuffer
 		, std::vector< T > const & data
@@ -148,6 +189,19 @@ namespace ashes
 			, data
 			, size
 			, 0u
+			, buffer );
+	}
+
+	template< typename T, size_t N >
+	inline void StagingBuffer::uploadBufferData( CommandBuffer const & commandBuffer
+		, std::array< T, N > const & data
+		, uint32_t offset
+		, Buffer< T > const & buffer )const
+	{
+		uploadBufferData( commandBuffer
+			, reinterpret_cast< uint8_t const * const >( data.data() )
+			, uint32_t( N * sizeof( T ) )
+			, uint32_t( offset * sizeof( T ) )
 			, buffer );
 	}
 
@@ -197,6 +251,20 @@ namespace ashes
 	*	Vertex buffer.
 	**/
 	/**@{*/
+	template< typename T, size_t N >
+	inline void StagingBuffer::uploadVertexData( Queue const & queue
+		, CommandPool const & commandPool
+		, std::array< T, N > const & data
+		, VertexBuffer< T > const & buffer )const
+	{
+		uploadVertexData( queue
+			, commandPool
+			, reinterpret_cast< uint8_t const * const >( data.data() )
+			, uint32_t( N * sizeof( T ) )
+			, 0u
+			, buffer );
+	}
+	
 	template< typename T >
 	inline void StagingBuffer::uploadVertexData( Queue const & queue
 		, CommandPool const & commandPool
@@ -237,6 +305,21 @@ namespace ashes
 			, data
 			, size
 			, 0u
+			, buffer );
+	}
+
+	template< typename T, size_t N >
+	inline void StagingBuffer::uploadVertexData( Queue const & queue
+		, CommandPool const & commandPool
+		, std::array< T, N > const & data
+		, uint32_t offset
+		, VertexBuffer< T > const & buffer )const
+	{
+		uploadVertexData( queue
+			, commandPool
+			, reinterpret_cast< uint8_t const * const >( data.data() )
+			, uint32_t( N * sizeof( T ) )
+			, uint32_t( offset * sizeof( T ) )
 			, buffer );
 	}
 
@@ -292,6 +375,18 @@ namespace ashes
 		fence->wait( MaxTimeout );
 	}
 
+	template< typename T, size_t N >
+	inline void StagingBuffer::uploadVertexData( CommandBuffer const & commandBuffer
+		, std::array< T, N > const & data
+		, VertexBuffer< T > const & buffer )const
+	{
+		uploadVertexData( commandBuffer
+			, reinterpret_cast< uint8_t const * const >( data.data() )
+			, uint32_t( N * sizeof( T ) )
+			, 0u
+			, buffer );
+	}
+
 	template< typename T >
 	inline void StagingBuffer::uploadVertexData( CommandBuffer const & commandBuffer
 		, std::vector< T > const & data
@@ -326,6 +421,19 @@ namespace ashes
 			, data
 			, size
 			, 0u
+			, buffer );
+	}
+
+	template< typename T, size_t N >
+	inline void StagingBuffer::uploadVertexData( CommandBuffer const & commandBuffer
+		, std::array< T, N > const & data
+		, uint32_t offset
+		, VertexBuffer< T > const & buffer )const
+	{
+		uploadVertexData( commandBuffer
+			, reinterpret_cast< uint8_t const * const >( data.data() )
+			, uint32_t( N * sizeof( T ) )
+			, uint32_t( offset * sizeof( T ) )
 			, buffer );
 	}
 
@@ -375,6 +483,22 @@ namespace ashes
 	*	Uniform buffer.
 	**/
 	/**@{*/
+	template< typename T, size_t N >
+	inline void StagingBuffer::uploadUniformData( Queue const & queue
+		, CommandPool const & commandPool
+		, std::array< T, N > const & data
+		, UniformBuffer const & buffer
+		, VkPipelineStageFlags dstStageFlags )const
+	{
+		uploadUniformData( queue
+			, commandPool
+			, data.data()
+			, uint32_t( N )
+			, 0u
+			, buffer
+			, dstStageFlags );
+	}
+	
 	template< typename T >
 	inline void StagingBuffer::uploadUniformData( Queue const & queue
 		, CommandPool const & commandPool
@@ -420,6 +544,23 @@ namespace ashes
 			, commandPool
 			, data.data()
 			, uint32_t( data.size() )
+			, 0u
+			, buffer
+			, dstStageFlags );
+	}
+
+	template< typename T, size_t N >
+	inline void StagingBuffer::uploadUniformData( Queue const & queue
+		, CommandPool const & commandPool
+		, std::array< T, N > const & data
+		, uint32_t offset
+		, UniformBuffer const & buffer
+		, VkPipelineStageFlags dstStageFlags )const
+	{
+		uploadUniformData( queue
+			, commandPool
+			, data.data()
+			, uint32_t( N )
 			, 0u
 			, buffer
 			, dstStageFlags );
@@ -449,6 +590,20 @@ namespace ashes
 		fence->wait( MaxTimeout );
 	}
 
+	template< typename T, size_t N >
+	inline void StagingBuffer::uploadUniformData( CommandBuffer const & commandBuffer
+		, std::array< T, N > const & data
+		, UniformBuffer const & buffer
+		, VkPipelineStageFlags dstStageFlags )const
+	{
+		uploadUniformData( commandBuffer
+			, data.data()
+			, uint32_t( N )
+			, 0u
+			, buffer
+			, dstStageFlags );
+	}
+
 	template< typename T >
 	inline void StagingBuffer::uploadUniformData( CommandBuffer const & commandBuffer
 		, std::vector< T > const & data
@@ -473,6 +628,21 @@ namespace ashes
 		uploadUniformData( commandBuffer
 			, data
 			, count
+			, 0u
+			, buffer
+			, dstStageFlags );
+	}
+
+	template< typename T, size_t N >
+	inline void StagingBuffer::uploadUniformData( CommandBuffer const & commandBuffer
+		, std::array< T, N > const & data
+		, uint32_t offset
+		, UniformBuffer const & buffer
+		, VkPipelineStageFlags dstStageFlags )const
+	{
+		uploadUniformData( commandBuffer
+			, data.data()
+			, uint32_t( N )
 			, 0u
 			, buffer
 			, dstStageFlags );

@@ -168,10 +168,10 @@ namespace utils
 	}
 
 	ashes::BufferBasePtr Device::createBuffer( uint32_t size
-		, VkBufferUsageFlags target
+		, VkBufferUsageFlags usage
 		, VkMemoryPropertyFlags flags )const
 	{
-		auto result = m_device->createBuffer( size, target );
+		auto result = m_device->createBuffer( size, usage );
 		auto requirements = result->getMemoryRequirements();
 		uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
 			, flags );
@@ -190,20 +190,16 @@ namespace utils
 		return result;
 	}
 
-	ashes::UniformBufferBasePtr Device::createUniformBuffer( uint32_t count
+	ashes::UniformBufferPtr Device::createUniformBuffer( uint32_t count
 		, uint32_t size
-		, VkBufferUsageFlags target
+		, VkBufferUsageFlags usage
 		, VkMemoryPropertyFlags memoryFlags )const
 	{
-		auto result = std::make_unique< ashes::UniformBufferBase >( *m_device
+		return makeUniformBuffer( *this
 			, count
 			, size
-			, target );
-		auto requirements = result->getMemoryRequirements();
-		uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
+			, usage
 			, memoryFlags );
-		result->bindMemory( m_device->allocateMemory( { VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, requirements.size, deduced } ) );
-		return result;
 	}
 
 	uint32_t Device::deduceMemoryType( VkMemoryPropertyFlags typeBits

@@ -136,13 +136,14 @@ namespace vkapp
 		auto size = m_swapChain->getDimensions();
 		auto width = float( size.width );
 		auto height = float( size.height );
-		m_matrixUbo->getData( 0u ) = utils::Mat4{ m_device->getDevice().perspective( float( utils::toRadians( 90.0_degrees ) )
+		m_matrixData = utils::Mat4{ m_device->getDevice().perspective( float( utils::toRadians( 90.0_degrees ) )
 			, width / height
 			, 0.01f
 			, 100.0f ) };
 		m_stagingBuffer->uploadUniformData( *m_graphicsQueue
 			, *m_commandPool
-			, m_matrixUbo->getDatas()
+			, &m_matrixData
+			, 1u
 			, *m_matrixUbo
 			, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 	}
@@ -214,12 +215,14 @@ namespace vkapp
 
 	void RenderPanel::doCreateUniformBuffer()
 	{
-		m_matrixUbo = utils::makeUniformBuffer< utils::Mat4 >( *m_device
+		m_matrixUbo = utils::makeUniformBuffer( *m_device
 			, 1u
+			, uint32_t( sizeof( utils::Mat4 ) )
 			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
-		m_objectUbo = utils::makeUniformBuffer< utils::Mat4 >( *m_device
+		m_objectUbo = utils::makeUniformBuffer( *m_device
 			, 1u
+			, uint32_t( sizeof( utils::Mat4 ) )
 			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 	}
@@ -542,10 +545,11 @@ namespace vkapp
 		m_rotate = utils::rotate( m_rotate
 			, float( utils::DegreeToRadian )
 			, { 1, 0, 0 } );
-		m_objectUbo->getData( 0 ) = originalTranslate * m_rotate * originalRotate;
+		m_objectData = originalTranslate * m_rotate * originalRotate;
 		m_stagingBuffer->uploadUniformData( *m_graphicsQueue
 			, *m_commandPool
-			, m_objectUbo->getDatas()
+			, &m_objectData
+			, 1u
 			, *m_objectUbo
 			, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 	}

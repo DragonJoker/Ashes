@@ -68,5 +68,11 @@ namespace utils
 	VkOffset3D makeOffset3D( IVec3 const & value );
 	VkClearColorValue makeClearColorValue( RgbColour const & value );
 	VkClearColorValue makeClearColorValue( RgbaColour const & value );
+	template< typename T >
+	ashes::ByteArray makeByteArray( T const & value );
+	template< typename T >
+	ashes::ByteArray makeByteArray( std::vector< T > const & values );
 	/**\}*/
 }
+
+#include "UtilsPrerequisites.inl"

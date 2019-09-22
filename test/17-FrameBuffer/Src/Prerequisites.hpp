@@ -13,5 +13,5 @@ namespace vkapp
 	class MainFrame;
 	class Application;
 
-	static wxString const AppName = wxT( "17-FrameBuffer" );
+	static wxString const AppName{ common::makeName( TEST_ID, wxT( "FrameBuffer" ) ) };
 }

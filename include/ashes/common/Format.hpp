@@ -41,7 +41,9 @@ namespace ashes
 			result += align;
 		}
 
-		return result + align;
+		return size == 0
+			? size
+			: result + align;
 	}
 	/**
 	*\brief

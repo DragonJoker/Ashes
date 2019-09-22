@@ -92,7 +92,8 @@ namespace vkapp
 		ashes::ImagePtr m_texture;
 		ashes::ImageView m_view;
 		ashes::SamplerPtr m_sampler;
-		ashes::UniformBufferPtr< LayerSelect > m_uniformBuffer;
+		ashes::UniformBufferPtr m_uniformBuffer;
+		LayerSelect m_uniformData;
 		ashes::DescriptorSetLayoutPtr m_descriptorLayout;
 		ashes::DescriptorSetPoolPtr m_descriptorPool;
 		ashes::DescriptorSetPtr m_descriptorSet;

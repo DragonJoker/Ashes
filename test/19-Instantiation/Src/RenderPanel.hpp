@@ -94,7 +94,8 @@ namespace vkapp
 		ashes::ImagePtr m_texture;
 		ashes::ImageView m_view;
 		ashes::SamplerPtr m_sampler;
-		ashes::UniformBufferPtr< utils::Mat4 > m_matrixUbo;
+		ashes::UniformBufferPtr m_matrixUbo;
+		utils::Mat4 m_matrixData;
 		/**@}*/
 		/**
 		*\name

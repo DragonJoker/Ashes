@@ -35,7 +35,7 @@ namespace utils
 		*	This version will also create the DeviceMemory and bind it to the buffer.
 		*\param[in] size
 		*	The buffer size.
-		*\param[in] target
+		*\param[in] usage
 		*	The buffer usage flags.
 		*\param[in] flags
 		*	The memory property flags for the DeviceMemory object.
@@ -46,13 +46,13 @@ namespace utils
 		*	Cette version va aussi créer le DeviceMemory et le lier au tampon.
 		*\param[in] size
 		*	La taille du tampon.
-		*\param[in] target
+		*\param[in] usage
 		*	Les indicateurs d'utilisation du tampon.
 		*\param[in] flags
 		*	Les indicateurs de propriétés de mémoire pour l'objet DeviceMemory.
 		*/
 		ashes::BufferBasePtr createBuffer( uint32_t size
-			, VkBufferUsageFlags target
+			, VkBufferUsageFlags usage
 			, VkMemoryPropertyFlags flags )const;
 		/**
 		*\~english
@@ -62,7 +62,7 @@ namespace utils
 		*	The buffer elements count.
 		*\param[in] size
 		*	The size of one element in the buffer.
-		*\param[in] target
+		*\param[in] usage
 		*	The buffer usage flags.
 		*\param[in] memoryFlags
 		*	The buffer memory flags.
@@ -73,14 +73,14 @@ namespace utils
 		*	Le nombre d'éléments du tampon.
 		*\param[in] size
 		*	La taille d'un élément.
-		*\param[in] target
+		*\param[in] usage
 		*	Les indicateurs d'utilisation du tampon.
 		*\param[in] memoryFlags
 		*	Les indicateurs de mémoire du tampon.
 		*/
-		ashes::UniformBufferBasePtr createUniformBuffer( uint32_t count
+		ashes::UniformBufferPtr createUniformBuffer( uint32_t count
 			, uint32_t size
-			, VkBufferUsageFlags target
+			, VkBufferUsageFlags usage
 			, VkMemoryPropertyFlags memoryFlags )const;
 		/**
 		*\~english
@@ -151,14 +151,14 @@ namespace utils
 	using DevicePtr = std::unique_ptr< Device >;
 
 	template< typename T >
-	ashes::BufferPtr< T > makeBuffer( Device const & device
+	inline ashes::BufferPtr< T > makeBuffer( Device const & device
 		, uint32_t count
-		, VkBufferUsageFlags target
+		, VkBufferUsageFlags usage
 		, VkMemoryPropertyFlags flags )
 	{
 		auto result = ashes::makeBuffer< T >( device.getDevice()
 			, count
-			, target );
+			, usage );
 		auto requirements = result->getMemoryRequirements();
 		auto deduced = device.deduceMemoryType( requirements.memoryTypeBits, flags );
 		result->bindMemory( device.getDevice().allocateMemory( { VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, 0u, requirements.size, deduced } ) );
@@ -166,29 +166,30 @@ namespace utils
 	}
 
 	template< typename T >
-	ashes::VertexBufferPtr< T > makeVertexBuffer( Device const & device
+	inline ashes::VertexBufferPtr< T > makeVertexBuffer( Device const & device
 		, uint32_t count
-		, VkBufferUsageFlags target
+		, VkBufferUsageFlags usage
 		, VkMemoryPropertyFlags flags )
 	{
 		auto result = ashes::makeVertexBuffer< T >( device.getDevice()
 			, count
-			, target );
+			, usage );
 		auto requirements = result->getMemoryRequirements();
 		auto deduced = device.deduceMemoryType( requirements.memoryTypeBits, flags );
 		result->bindMemory( device.getDevice().allocateMemory( { VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, 0u, requirements.size, deduced } ) );
 		return result;
 	}
 
-	template< typename T >
-	ashes::UniformBufferPtr< T > makeUniformBuffer( Device const & device
-		, uint32_t count
-		, VkBufferUsageFlags target
+	inline ashes::UniformBufferPtr makeUniformBuffer( Device const & device
+		, uint32_t elemCount
+		, uint32_t elemSize
+		, VkBufferUsageFlags usage
 		, VkMemoryPropertyFlags flags )
 	{
-		auto result = ashes::makeUniformBuffer< T >( device.getDevice()
-			, count
-			, target );
+		auto result = ashes::makeUniformBuffer( device.getDevice()
+			, elemCount
+			, elemSize
+			, usage );
 		auto requirements = result->getMemoryRequirements();
 		auto deduced = device.deduceMemoryType( requirements.memoryTypeBits, flags );
 		result->bindMemory( device.getDevice().allocateMemory( { VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, 0u, requirements.size, deduced } ) );

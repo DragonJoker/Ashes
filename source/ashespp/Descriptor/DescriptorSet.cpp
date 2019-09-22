@@ -146,7 +146,12 @@ namespace ashes
 				1u,
 				VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
 			} );
-		m_writes.back().bufferInfo.push_back( VkDescriptorBufferInfo{ uniformBuffer.getBuffer(), offset, range } );
+		m_writes.back().bufferInfo.push_back( VkDescriptorBufferInfo
+			{
+				uniformBuffer.getBuffer(),
+				offset * uniformBuffer.getAlignedSize( uniformBuffer.getElementSize() ),
+				range * uniformBuffer.getAlignedSize( uniformBuffer.getElementSize() )
+			} );
 	}
 
 	void DescriptorSet::createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
@@ -198,7 +203,12 @@ namespace ashes
 				1u,
 				VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC,
 			} );
-		m_writes.back().bufferInfo.push_back( VkDescriptorBufferInfo{ uniformBuffer.getBuffer(), offset, range } );
+		m_writes.back().bufferInfo.push_back( VkDescriptorBufferInfo
+			{
+				uniformBuffer.getBuffer(),
+				offset * uniformBuffer.getAlignedSize( uniformBuffer.getElementSize() ),
+				range * uniformBuffer.getAlignedSize( uniformBuffer.getElementSize() )
+			} );
 	}
 
 	void DescriptorSet::createDynamicBinding( VkDescriptorSetLayoutBinding const & layoutBinding

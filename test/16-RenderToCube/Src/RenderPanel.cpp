@@ -214,13 +214,14 @@ namespace vkapp
 		auto width = float( size.width );
 		auto height = float( size.height );
 		auto ratio = width / height;
-		m_matrixUbo->getData( 0u ) = utils::Mat4{ m_device->getDevice().perspective( float( utils::toRadians( 90.0_degrees ) / ratio )
+		m_matrixData = utils::Mat4{ m_device->getDevice().perspective( float( utils::toRadians( 90.0_degrees ) / ratio )
 			, width / height
 			, 0.01f
 			, 100.0f ) };
 		m_stagingBuffer->uploadUniformData( *m_graphicsQueue
 			, *m_commandPool
-			, m_matrixUbo->getDatas()
+			, &m_matrixData
+			, 1u
 			, *m_matrixUbo
 			, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 	}
@@ -299,12 +300,14 @@ namespace vkapp
 
 	void RenderPanel::doCreateUniformBuffer()
 	{
-		m_matrixUbo = utils::makeUniformBuffer< utils::Mat4 >( *m_device
+		m_matrixUbo = utils::makeUniformBuffer( *m_device
 			, 1u
+			, uint32_t( sizeof( utils::Mat4 ) )
 			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
-		m_objectUbo = utils::makeUniformBuffer< utils::Mat4 >( *m_device
+		m_objectUbo = utils::makeUniformBuffer( *m_device
 			, 1u
+			, uint32_t( sizeof( utils::Mat4 ) )
 			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 	}
@@ -415,9 +418,10 @@ namespace vkapp
 				VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT
 			}
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
-		ashes::ImageViewArray attaches;
-		attaches.emplace_back( m_renderTargetColour->createView( VK_IMAGE_VIEW_TYPE_2D
-			, m_renderTargetColour->getFormat() ) );
+		ashes::ImageViewCRefArray attaches;
+		m_renderTargetColourView = m_renderTargetColour->createView( VK_IMAGE_VIEW_TYPE_2D
+			, m_renderTargetColour->getFormat() );
+		attaches.emplace_back( m_renderTargetColourView );
 		m_frameBuffer = m_offscreenRenderPass->createFrameBuffer( { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) }
 			, std::move( attaches ) );
 	}
@@ -739,10 +743,11 @@ namespace vkapp
 		m_rotate = utils::rotate( m_rotate
 			, float( utils::DegreeToRadian )
 			, { 0, 1, 0 } );
-		m_objectUbo->getData( 0 ) = m_rotate * originalRotate;
+		m_objectData = m_rotate * originalRotate;
 		m_stagingBuffer->uploadUniformData( *m_graphicsQueue
 			, *m_commandPool
-			, m_objectUbo->getDatas()
+			, &m_objectData
+			, 1u
 			, *m_objectUbo
 			, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 		std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / "Assets";

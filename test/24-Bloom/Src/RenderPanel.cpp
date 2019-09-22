@@ -312,8 +312,8 @@ namespace vkapp
 				Pass dummyHi;
 				std::swap( m_passes.hi, dummyHi );
 			}
-			m_blurConfiguration.reset();
-			m_blurDirection.reset();
+			m_blurConfigurationUbo.reset();
+			m_blurDirectionUbo.reset();
 
 			for ( auto & sampler : m_blurSamplers )
 			{
@@ -365,13 +365,14 @@ namespace vkapp
 		auto width = float( size.width );
 		auto height = float( size.height );
 		auto ratio = width / height;
-		m_matrixUbo->getData( 0u ) = utils::Mat4{ m_device->getDevice().perspective( float( utils::toRadians( 90.0_degrees ) / ratio )
+		m_matrixData = utils::Mat4{ m_device->getDevice().perspective( float( utils::toRadians( 90.0_degrees ) / ratio )
 			, width / height
 			, 0.01f
 			, 100.0f ) };
 		m_stagingBuffer->uploadUniformData( *m_graphicsQueue
 			, *m_commandPool
-			, m_matrixUbo->getDatas()
+			, &m_matrixData
+			, 1u
 			, *m_matrixUbo
 			, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 	}
@@ -497,12 +498,14 @@ namespace vkapp
 
 	void RenderPanel::doCreateUniformBuffer()
 	{
-		m_matrixUbo = utils::makeUniformBuffer< utils::Mat4 >( *m_device
+		m_matrixUbo = utils::makeUniformBuffer( *m_device
 			, 1u
+			, uint32_t( sizeof( utils::Mat4 ) )
 			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
-		m_objectUbo = utils::makeUniformBuffer< utils::Mat4 >( *m_device
+		m_objectUbo = utils::makeUniformBuffer( *m_device
 			, 1u
+			, uint32_t( sizeof( utils::Mat4 ) )
 			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 	}
@@ -615,7 +618,7 @@ namespace vkapp
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 		m_renderTargetColourView = m_renderTargetColour->createView( VK_IMAGE_VIEW_TYPE_2D
 			, m_renderTargetColour->getFormat() );
-		ashes::ImageViewArray attaches;
+		ashes::ImageViewCRefArray attaches;
 		attaches.emplace_back( m_renderTargetColourView );
 		m_frameBuffer = m_offscreenRenderPass->createFrameBuffer( { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) }
 			, std::move( attaches ) );
@@ -871,7 +874,7 @@ namespace vkapp
 			, VK_IMAGE_LAYOUT_UNDEFINED
 			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
 
-		ashes::ImageViewArray views
+		ashes::ImageViewCRefArray views
 		{
 			m_passes.hi.views[0]
 		};
@@ -964,23 +967,38 @@ namespace vkapp
 	void RenderPanel::doPrepareBlurXPass()
 	{
 		auto dimensions = m_swapChain->getDimensions();
-		m_blurConfiguration = utils::makeUniformBuffer< Configuration >( *m_device
+		m_blurConfigurationUbo = utils::makeUniformBuffer( *m_device
 			, uint32_t( m_passes.blurX.size() )
+			, uint32_t( sizeof( Configuration ) )
 			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
-		m_blurDirection = utils::makeUniformBuffer< int >( *m_device
+		m_blurConfigurationData.resize( m_passes.blurX.size() );
+		m_blurDirectionUbo = utils::makeUniformBuffer( *m_device
 			, 2u
+			, uint32_t( sizeof( int ) )
 			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
-		m_blurDirection->getData( 0 ) = 0;
-		m_blurDirection->getData( 1 ) = 1;
-		m_blurDirection->upload( 0u, 2u );
+		m_blurDirectionData[0] = 0;
+		m_blurDirectionData[1] = 1;
+
+		if ( auto buffer = m_blurDirectionUbo->getBuffer().lock( 0u, VK_WHOLE_SIZE, 0u ) )
+		{
+			for ( auto & data : m_blurDirectionData )
+			{
+				std::memcpy( buffer, &data, sizeof( int ) );
+				buffer += m_blurDirectionUbo->getAlignedSize();
+			}
+
+			m_blurDirectionUbo->getBuffer().flush( 0u, VK_WHOLE_SIZE );
+			m_blurDirectionUbo->getBuffer().unlock();
+		}
+
 		auto coefficientsCount = 5u;
 		auto kernel = doCreateKernel( coefficientsCount );
 
 		for ( auto i = 0u; i < uint32_t( m_passes.blurX.size() ); ++i )
 		{
-			auto & data = m_blurConfiguration->getData( i );
+			auto & data = m_blurConfigurationData[i];
 			data.textureSize = { dimensions.width >> i, dimensions.height >> i };
 			data.coefficientsCount = coefficientsCount;
 			data.coefficients = kernel;
@@ -995,7 +1013,17 @@ namespace vkapp
 				, float( i + 1u ) );
 		}
 
-		m_blurConfiguration->upload( 0u, uint32_t( m_passes.blurX.size() ) );
+		if ( auto buffer = m_blurConfigurationUbo->getBuffer().lock( 0u, VK_WHOLE_SIZE, 0u ) )
+		{
+			for ( auto & data : m_blurConfigurationData )
+			{
+				std::memcpy( buffer, &data, sizeof( int ) );
+				buffer += m_blurConfigurationUbo->getAlignedSize();
+			}
+
+			m_blurConfigurationUbo->getBuffer().flush( 0u, VK_WHOLE_SIZE );
+			m_blurConfigurationUbo->getBuffer().unlock();
+		}
 
 		m_passes.blurX[0].image = m_device->createImage( ashes::ImageCreateInfo
 			{
@@ -1044,11 +1072,13 @@ namespace vkapp
 				, m_passes.hi.views[i]
 				, *m_blurSamplers[i] );
 			blur.descriptorSet->createBinding( blur.descriptorLayout->getBinding( 1u )
-				, *m_blurConfiguration
-				, i );
+				, *m_blurConfigurationUbo
+				, i
+				, 1u );
 			blur.descriptorSet->createBinding( blur.descriptorLayout->getBinding( 2u )
-				, *m_blurDirection
-				, 0u );
+				, *m_blurDirectionUbo
+				, 0u
+				, 1u );
 			blur.descriptorSet->update();
 			blur.semaphore = m_device->getDevice().createSemaphore();
 			blur.pipelineLayout = m_device->getDevice().createPipelineLayout( *blur.descriptorLayout );
@@ -1056,7 +1086,7 @@ namespace vkapp
 			view->subresourceRange.baseMipLevel = i;
 			blur.views.emplace_back( m_passes.blurX[0].image->createView( view ) );
 
-			ashes::ImageViewArray views
+			ashes::ImageViewCRefArray views
 			{
 				blur.views.back()
 			};
@@ -1173,16 +1203,18 @@ namespace vkapp
 				, m_passes.blurX[i].views[0]
 				, *m_blurSamplers[i] );
 			blur.descriptorSet->createBinding( blur.descriptorLayout->getBinding( 1u )
-				, *m_blurConfiguration
-				, i );
+				, *m_blurConfigurationUbo
+				, i
+				, 1u );
 			blur.descriptorSet->createBinding( blur.descriptorLayout->getBinding( 2u )
-				, *m_blurDirection
+				, *m_blurDirectionUbo
+				, 1u
 				, 1u );
 			blur.descriptorSet->update();
 			blur.semaphore = m_device->getDevice().createSemaphore();
 			blur.pipelineLayout = m_device->getDevice().createPipelineLayout( *blur.descriptorLayout );
 
-			ashes::ImageViewArray attaches
+			ashes::ImageViewCRefArray attaches
 			{
 				m_passes.hi.views[i]
 			};
@@ -1346,7 +1378,7 @@ namespace vkapp
 			, VK_IMAGE_LAYOUT_UNDEFINED
 			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
 
-		ashes::ImageViewArray attaches
+		ashes::ImageViewCRefArray attaches
 		{
 			m_passes.combine.views[0]
 		};
@@ -1558,10 +1590,11 @@ namespace vkapp
 		m_rotate = utils::rotate( m_rotate
 			, float( utils::DegreeToRadian ) * factor
 			, { 0, 1.0f, 0 } );
-		m_objectUbo->getData( 0 ) = m_rotate * originalRotate;
+		m_objectData = m_rotate * originalRotate;
 		m_stagingBuffer->uploadUniformData( *m_graphicsQueue
 			, *m_commandPool
-			, m_objectUbo->getDatas()
+			, &m_objectData
+			, 1u
 			, *m_objectUbo
 			, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 		save = std::chrono::high_resolution_clock::now();

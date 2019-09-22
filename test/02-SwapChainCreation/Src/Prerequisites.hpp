@@ -4,7 +4,7 @@
 
 namespace vkapp
 {
-	static wxString const AppName{ wxT( "02-SwapChainCreation" ) };
+	static wxString const AppName{ common::makeName( TEST_ID, wxT( "SwapChainCreation" ) ) };
 
 	class Application;
 	class MainFrame;
