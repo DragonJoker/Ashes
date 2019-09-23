@@ -32,6 +32,7 @@ namespace ashes
 			return "fragment";
 		case VK_SHADER_STAGE_COMPUTE_BIT:
 			return "compute";
+#ifdef VK_NV_ray_tracing
 		case VK_SHADER_STAGE_RAYGEN_BIT_NV:
 			return "raygen";
 		case VK_SHADER_STAGE_ANY_HIT_BIT_NV:
@@ -44,10 +45,13 @@ namespace ashes
 			return "intersection";
 		case VK_SHADER_STAGE_CALLABLE_BIT_NV:
 			return "callable";
+#endif
+#ifdef VK_NV_mesh_shader
 		case VK_SHADER_STAGE_TASK_BIT_NV:
 			return "task";
 		case VK_SHADER_STAGE_MESH_BIT_NV:
 			return "mesh";
+#endif
 		default:
 			assert( false && "Unsupported VkShaderStageFlagBits." );
 			throw std::runtime_error{ "Unsupported VkShaderStageFlagBits" };

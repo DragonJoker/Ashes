@@ -5,7 +5,7 @@ See LICENSE file in root folder.
 #include "Command/Commands/GlViewportCommand.hpp"
 
 #include "Core/GlDevice.hpp"
-#include "RenderPass/GlFramebuffer.hpp"
+#include "RenderPass/GlFrameBuffer.hpp"
 
 #include "ashesgl4_api.hpp"
 

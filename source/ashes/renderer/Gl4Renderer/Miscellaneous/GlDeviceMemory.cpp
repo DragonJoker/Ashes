@@ -13,6 +13,7 @@ See LICENSE file in root folder
 #include "ashesgl4_api.hpp"
 
 #include <algorithm>
+#include <cstring>
 #include <map>
 
 namespace ashes::gl4

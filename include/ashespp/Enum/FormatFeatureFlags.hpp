@@ -64,12 +64,18 @@ namespace ashes
 			return "disjoint";
 		case VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT:
 			return "cosited_chroma_samples";
+#ifdef VK_EXT_filter_cubic
 		case VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG:
 			return "sampled_image_filter_cubic";
+#endif
+#ifdef VK_EXT_sampler_filter_minmax
 		case VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT_EXT:
 			return "sampled_image_filter_minmax";
+#endif
+#ifdef VK_EXT_fragment_density_map
 		case VK_FORMAT_FEATURE_FRAGMENT_DENSITY_MAP_BIT_EXT:
 			return "fragment_density_map";
+#endif
 		default:
 			assert( false && "Unsupported VkDeviceQueueCreateFlagBits." );
 			throw std::runtime_error{ "Unsupported VkDeviceQueueCreateFlagBits" };

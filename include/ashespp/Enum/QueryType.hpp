@@ -26,10 +26,14 @@ namespace ashes
 			return "statistics";
 		case VK_QUERY_TYPE_TIMESTAMP:
 			return "timestamp";
+#ifdef VK_EXT_transform_feedback
 		case VK_QUERY_TYPE_TRANSFORM_FEEDBACK_STREAM_EXT:
 			return "transform_feedback_stream";
+#endif
+#ifdef VK_NV_ray_tracing
 		case VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_NV:
 			return "acceleration_structure_compacted_size";
+#endif
 		default:
 			assert( false && "Unsupported VkQueryType." );
 			throw std::runtime_error{ "Unsupported VkQueryType" };

@@ -19,7 +19,7 @@ namespace ashes
 			, VkSampleCountFlagBits rasterizationSamples = VK_SAMPLE_COUNT_1_BIT
 			, VkBool32 sampleShadingEnable = VK_FALSE
 			, float minSampleShading = 1.0f
-			, Optional< VkSampleMask > sampleMask = std::nullopt
+			, Optional< VkSampleMask > sampleMask = Optional< VkSampleMask >{}
 			, VkBool32 alphaToCoverageEnable = VK_FALSE
 			, VkBool32 alphaToOneEnable = VK_FALSE )
 			: sampleMask{ std::move( sampleMask ) }

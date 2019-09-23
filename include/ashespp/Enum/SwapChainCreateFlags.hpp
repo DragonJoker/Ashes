@@ -24,8 +24,10 @@ namespace ashes
 			return "split_instance_bind_regions";
 		case VK_SWAPCHAIN_CREATE_PROTECTED_BIT_KHR:
 			return "protected";
+#ifdef VK_EXT_swapchain_mutable_format
 		case VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR:
 			return "mutable_format";
+#endif
 		default:
 			assert( false && "Unsupported VkSwapchainCreateFlagBitsKHR." );
 			throw std::runtime_error{ "Unsupported VkSwapchainCreateFlagBitsKHR" };

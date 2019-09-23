@@ -5,6 +5,7 @@ See LICENSE file in root folder
 #define ___Ashes_common_ArrayView_H___
 
 #include <iterator>
+#include <type_traits>
 
 namespace ashes
 {
@@ -27,7 +28,7 @@ namespace ashes
 	constexpr bool IsPointerIteratorV = false;
 
 	template< class TypeT >
-	constexpr bool IsPointerIteratorV< TypeT, std::enable_if_t< IsIteratorV< TypeT > && std::is_same_v< TypeT, IteratorPointerT< TypeT > > > > = true;
+	constexpr bool IsPointerIteratorV< TypeT, typename std::enable_if< IsIteratorV< TypeT > && std::is_same< TypeT, IteratorPointerT< TypeT > >::value >::type > = true;
 
 	template< typename TypeT >
 	struct RemovePtr
@@ -66,7 +67,7 @@ namespace ashes
 	};
 
 	template< typename IterT
-		, bool Enable = std::is_object_v< IterT > >
+		, bool Enable = std::is_object< IterT >::value >
 	struct IteratorValueBase
 		: std::iterator_traits< IterT * >
 	{
@@ -128,12 +129,12 @@ namespace ashes
 	};
 
 	template< typename ValueT
-		, bool Enable = std::is_object_v< ValueT > >
+		, bool Enable = std::is_object< ValueT >::value >
 	struct BaseArrayIterator
 		: std::iterator_traits< ValueT * >
 	{
 		using type = ValueT *;
-		
+
 		template< typename IterT1, typename IterT2 >
 		static void checkRange( IterT1 begin, IterT1 end
 			, IterT2 & outBegin, IterT2 & outEnd )
@@ -168,7 +169,7 @@ namespace ashes
 	struct ArrayViewTypeTraits
 	{
 		using iterator_category = IteratorCategoryT< IterT >;
-		static_assert( std::is_convertible_v< iterator_category, std::random_access_iterator_tag > );
+		static_assert( std::is_convertible< iterator_category, std::random_access_iterator_tag >::value );
 
 		using value_type = IteratorValueT< IterT >;
 		using reference = IteratorReferenceT< IterT >;
@@ -177,8 +178,8 @@ namespace ashes
 		using iterator = IterT;
 		using const_iterator = const iterator;
 
-		template< typename IterT >
-		static void checkRange( IterT begin, IterT end
+		template< typename IterType >
+		static void checkRange( IterType begin, IterType end
 			, iterator & outBegin, iterator & outEnd )
 		{
 			ArrayIterator< IterT >::checkRange( std::move( begin ), std::move( end )

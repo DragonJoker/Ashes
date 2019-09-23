@@ -78,22 +78,32 @@ namespace ashes
 			return "Swapchain";
 		case VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT_EXT:
 			return "DebugReport";
+#ifdef VK_EXT_display
 		case VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_KHR_EXT:
 			return "Display";
 		case VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_MODE_KHR_EXT:
 			return "DisplayMode";
+#endif
+#ifdef VK_NV_device_generated_commands
 		case VK_DEBUG_REPORT_OBJECT_TYPE_OBJECT_TABLE_NVX_EXT:
 			return "ObjectTable";
 		case VK_DEBUG_REPORT_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX_EXT:
 			return "IndirectCommandsLayout";
+#endif
+#ifdef VK_EXT_validation_cache
 		case VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT_EXT:
 			return "ValidationCache";
+#endif
+#ifdef VK_VERSION_1_1
 		case VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION_EXT:
 			return "SamplerYcbcrConversion";
 		case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_EXT:
 			return "DescriptorUpdateTemplate";
+#endif
+#ifdef VK_NV_ray_tracing
 		case VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_NV_EXT:
 			return "AccelerationStructure";
+#endif
 		default:
 			assert( false && "Unsupported VkDebugReportObjectTypeEXT." );
 			throw std::runtime_error{ "Unsupported VkDebugReportObjectTypeEXT" };

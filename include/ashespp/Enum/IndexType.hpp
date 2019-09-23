@@ -24,8 +24,10 @@ namespace ashes
 			return "uint16";
 		case VK_INDEX_TYPE_UINT32:
 			return "uint32";
+#ifdef VK_NV_ray_tracing
 		case VK_INDEX_TYPE_NONE_NV:
 			return "none";
+#endif
 		default:
 			assert( false && "Unsupported VkIndexType." );
 			throw std::runtime_error{ "Unsupported VkIndexType" };

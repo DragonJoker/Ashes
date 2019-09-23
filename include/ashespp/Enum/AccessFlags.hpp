@@ -54,28 +54,42 @@ namespace ashes
 			return "memory_read";
 		case VK_ACCESS_MEMORY_WRITE_BIT:
 			return "memory_write";
+#ifdef VK_EXT_transform_feedback
 		case VK_ACCESS_TRANSFORM_FEEDBACK_WRITE_BIT_EXT:
 			return "transform_feedback_write";
 		case VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_READ_BIT_EXT:
 			return "transform_feedback_counter_read";
 		case VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_WRITE_BIT_EXT:
 			return "transform_feedback_counter_write";
+#endif
+#ifdef VK_EXT_conditional_rendering
 		case VK_ACCESS_CONDITIONAL_RENDERING_READ_BIT_EXT:
 			return "conditional_rendering_read";
+#endif
+#ifdef VK_NVX_device_generated_commands
 		case VK_ACCESS_COMMAND_PROCESS_READ_BIT_NVX:
 			return "command_process_read";
 		case VK_ACCESS_COMMAND_PROCESS_WRITE_BIT_NVX:
 			return "command_process_write";
+#endif
+#ifdef VK_EXT_blend_operation_advanced
 		case VK_ACCESS_COLOR_ATTACHMENT_READ_NONCOHERENT_BIT_EXT:
 			return "color_attachment_read_noncoherent";
+#endif
+#ifdef VK_NV_shading_rate_image
 		case VK_ACCESS_SHADING_RATE_IMAGE_READ_BIT_NV:
 			return "shading_rate_image_read";
+#endif
+#ifdef VK_NV_ray_tracing
 		case VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_NV:
 			return "acceleration_structure_read";
 		case VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_NV:
 			return "acceleration_structure_write";
+#endif
+#ifdef VK_EXT_fragment_density_map
 		case VK_ACCESS_FRAGMENT_DENSITY_MAP_READ_BIT_EXT:
 			return "fragment_density_map_read";
+#endif
 		default:
 			assert( false && "Unsupported VkAccessFlagBits." );
 			throw std::runtime_error{ "Unsupported VkAccessFlagBits" };

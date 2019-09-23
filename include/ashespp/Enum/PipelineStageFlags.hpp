@@ -54,24 +54,38 @@ namespace ashes
 			return "all_graphics";
 		case VK_PIPELINE_STAGE_ALL_COMMANDS_BIT:
 			return "all_commands";
+#ifdef VK_EXT_transform_feedback
 		case VK_PIPELINE_STAGE_TRANSFORM_FEEDBACK_BIT_EXT:
 			return "transform_feedback";
+#endif
+#ifdef VK_EXT_conditional_rendering
 		case VK_PIPELINE_STAGE_CONDITIONAL_RENDERING_BIT_EXT:
 			return "conditional_rendering";
+#endif
+#ifdef VK_NVX_device_generated_commands
 		case VK_PIPELINE_STAGE_COMMAND_PROCESS_BIT_NVX:
 			return "command_process";
+#endif
+#ifdef VK_NV_shading_rate_image
 		case VK_PIPELINE_STAGE_SHADING_RATE_IMAGE_BIT_NV:
 			return "shading_rate_image";
+#endif
+#ifdef VK_NV_ray_tracing
 		case VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_NV:
 			return "ray_tracing_shader";
 		case VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_NV:
 			return "acceleration_structure_build";
+#endif
+#ifdef VK_NV_mesh_shader
 		case VK_PIPELINE_STAGE_TASK_SHADER_BIT_NV:
 			return "task_shader";
 		case VK_PIPELINE_STAGE_MESH_SHADER_BIT_NV:
 			return "mesh_shader";
+#endif
+#ifdef VK_EXT_fragment_density_map
 		case VK_PIPELINE_STAGE_FRAGMENT_DENSITY_PROCESS_BIT_EXT:
 			return "fragment_density_process";
+#endif
 		default:
 			assert( false && "Unsupported VkPipelineStageFlagBits." );
 			throw std::runtime_error{ "Unsupported VkPipelineStageFlagBits" };

@@ -24,8 +24,10 @@ namespace ashes
 			return "graphics";
 		case VK_PIPELINE_BIND_POINT_COMPUTE:
 			return "compute";
+#ifdef VK_NV_ray_tracing
 		case VK_PIPELINE_BIND_POINT_RAY_TRACING_NV:
 			return "ray_tracing";
+#endif
 		default:
 			assert( false && "Unsupported VkPipelineBindPoint." );
 			throw std::runtime_error{ "Unsupported VkPipelineBindPoint" };

@@ -74,6 +74,7 @@ struct Application
 	VkExtent2D dimensions;
 	ashes::SwapChainPtr swapChain;
 	ashes::ImageArray swapChainImages;
+	ashes::ImageViewArray views;
 	std::vector< ashes::FrameBufferPtr > frameBuffers;
 	ashes::CommandPoolPtr commandPool;
 	ashes::CommandBufferPtrArray commandBuffers;
@@ -713,7 +714,7 @@ ashes::RenderPassPtr createRenderPass( ashes::Device const & device
 		, ashes::VkAttachmentReferenceArray{}
 		, ashes::VkAttachmentReferenceArray{ VkAttachmentReference{ 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } }
 		, ashes::VkAttachmentReferenceArray{}
-		, std::nullopt
+		, ashes::Optional< VkAttachmentReference >{}
 		, ashes::UInt32Array{} );
 
 	ashes::VkSubpassDependencyArray dependencies;
@@ -745,15 +746,16 @@ ashes::RenderPassPtr createRenderPass( ashes::Device const & device
 	return device.createRenderPass( std::move( createInfo ) );
 }
 
-ashes::ImageViewArray doPrepareAttaches( Application const & application
-	, uint32_t backBuffer )
+ashes::ImageViewCRefArray doPrepareAttaches( Application const & application
+	, uint32_t backBuffer
+       	, ashes::ImageViewArray & views )
 {
-	ashes::ImageViewArray attaches;
+	ashes::ImageViewCRefArray attaches;
 
 	for ( auto & attach : application.renderPass->getAttachments() )
 	{
 		auto & image = application.swapChainImages[backBuffer];
-		attaches.emplace_back( image.createView( VkImageViewCreateInfo
+		views.push_back( image.createView( VkImageViewCreateInfo
 			{
 				VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
 				nullptr,
@@ -772,6 +774,11 @@ ashes::ImageViewArray doPrepareAttaches( Application const & application
 			} ) );
 	}
 
+	for ( auto & view : views )
+	{
+		attaches.emplace_back( view );
+	}
+
 	return attaches;
 }
 
@@ -781,7 +788,7 @@ void doCreateFrameBuffers( Application & application )
 
 	for ( size_t i = 0u; i < application.frameBuffers.size(); ++i )
 	{
-		auto attaches = doPrepareAttaches( application, uint32_t( i ) );
+		auto attaches = doPrepareAttaches( application, uint32_t( i ), application.views );
 		application.frameBuffers[i] = application.renderPass->createFrameBuffer( application.swapChain->getDimensions()
 			, std::move( attaches ) );
 	}

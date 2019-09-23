@@ -38,16 +38,24 @@ namespace ashes
 			return "vertex_buffer";
 		case VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT:
 			return "indirect_buffer";
+#ifdef VK_EXT_tranform_feedback
 		case VK_BUFFER_USAGE_TRANSFORM_FEEDBACK_BUFFER_BIT_EXT:
 			return "transform_feedback_buffer";
 		case VK_BUFFER_USAGE_TRANSFORM_FEEDBACK_COUNTER_BUFFER_BIT_EXT:
 			return "transform_feedback_counter_buffer";
+#endif
+#ifdef VK_EXT_conditional_rendering
 		case VK_BUFFER_USAGE_CONDITIONAL_RENDERING_BIT_EXT:
 			return "conditional_rendering";
+#endif
+#ifdef VK_NV_ray_tracing
 		case VK_BUFFER_USAGE_RAY_TRACING_BIT_NV:
 			return "ray_tracing";
+#endif
+#ifdef VK_EXT_device_address
 		case VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT_EXT:
 			return "shader_device_address";
+#endif
 		default:
 			assert( false && "Unsupported VkBufferUsageFlagBits." );
 			throw std::runtime_error{ "Unsupported VkBufferUsageFlagBits" };

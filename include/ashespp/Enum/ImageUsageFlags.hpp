@@ -36,10 +36,14 @@ namespace ashes
 			return "transient_attachment";
 		case VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT:
 			return "input_attachment";
+#ifdef VK_NV_shading_rate_image
 		case VK_IMAGE_USAGE_SHADING_RATE_IMAGE_BIT_NV:
 			return "shading_rate_image";
+#endif
+#ifdef VK_EXT_fragment_density_map
 		case VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT:
 			return "fragment_density_map";
+#endif
 		default:
 			assert( false && "Unsupported VkImageUsageFlagBits." );
 			throw std::runtime_error{ "Unsupported VkImageUsageFlagBits" };

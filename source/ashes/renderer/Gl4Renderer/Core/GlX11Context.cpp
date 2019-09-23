@@ -133,7 +133,7 @@ namespace ashes::gl4
 			loadSystemFunctions();
 			disable();
 
-			auto & extensions = get( m_instance )->getExtensions();
+			auto & extensions = get( instance )->getExtensions();
 
 			if ( extensions.getMajor() < 4 )
 			{
@@ -172,12 +172,10 @@ namespace ashes::gl4
 	void X11Context::enable()const
 	{
 		glXMakeCurrent( createInfo.dpy, createInfo.window, m_glxContext );
-		m_enabled = true;
 	}
 
 	void X11Context::disable()const
 	{
-		m_enabled = false;
 		glXMakeCurrent( createInfo.dpy, 0, nullptr );
 	}
 
@@ -234,7 +232,7 @@ namespace ashes::gl4
 
 	bool X11Context::doCreateGl3Context( X11Context const * mainContext )
 	{
-		auto & extensions = get( m_instance )->getExtensions();
+		auto & extensions = get( instance )->getExtensions();
 		using PFNGLCREATECONTEXTATTRIBS = GLXContext ( * )( Display *dpy, GLXFBConfig config, GLXContext share_context, Bool direct, const int *attrib_list );
 		PFNGLCREATECONTEXTATTRIBS glCreateContextAttribs;
 		bool result = false;

@@ -455,7 +455,7 @@ namespace ashes::gl4
 			, m_cmdList );
 		m_cmdList.push_back( makeCmd< OpType::eBindVextexArray >( nullptr ) );
 		doProcessMappedBoundDescriptorsBuffersOut();
-		m_state.newlyBoundIbo = std::nullopt;
+		m_state.newlyBoundIbo = IboBinding{};
 	}
 
 	void CommandBuffer::drawIndirect( VkBuffer buffer
@@ -516,7 +516,7 @@ namespace ashes::gl4
 			, m_cmdList );
 		m_cmdList.push_back( makeCmd< OpType::eBindVextexArray >( nullptr ) );
 		doProcessMappedBoundDescriptorsBuffersOut();
-		m_state.newlyBoundIbo = std::nullopt;
+		m_state.newlyBoundIbo = IboBinding{};
 	}
 
 	void CommandBuffer::copyToImage( VkBuffer src

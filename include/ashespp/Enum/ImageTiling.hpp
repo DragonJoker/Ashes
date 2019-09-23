@@ -24,8 +24,10 @@ namespace ashes
 			return "optimal";
 		case VK_IMAGE_TILING_LINEAR:
 			return "linear";
+#ifdef VK_EXT_image_drm_format_modifier
 		case VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT:
 			return "drm_format_modifier";
+#endif
 		default:
 			assert( false && "Unsupported VkImageTiling." );
 			throw std::runtime_error{ "Unsupported VkImageTiling" };

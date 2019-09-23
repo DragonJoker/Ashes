@@ -33,6 +33,7 @@ See LICENSE file in root folder.
 #include "ashesgl4_api.hpp"
 
 #include <iostream>
+#include <cstring>
 
 namespace ashes::gl4
 {
@@ -246,7 +247,7 @@ namespace ashes::gl4
 #endif
 		return isOk
 			? VK_SUCCESS
-			: VK_ERROR_INVALID_DEVICE_ADDRESS_EXT;
+			: VK_ERROR_INCOMPATIBLE_DRIVER;
 	}
 
 	VkQueue Device::getQueue( uint32_t familyIndex

@@ -104,7 +104,7 @@ namespace ashes::gl4
 				return result;
 			}
 
-			return std::nullopt;
+			return Optional< VkPipelineRasterizationStateCreateInfo >{};
 		}
 	}
 

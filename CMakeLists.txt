@@ -3,6 +3,9 @@ cmake_minimum_required( VERSION 2.8 )
 set( MAIN_PROJECT_NAME "Ashes" )
 set( BUILD_ASHES 1 )
 
+set( CMAKE_CXX_STANDARD 17 )
+set( CMAKE_CXX_EXTENSIONS OFF )
+
 # Used to look for external modules
 set( CMAKE_MODULE_PATH
 	${CMAKE_SOURCE_DIR}/CMake

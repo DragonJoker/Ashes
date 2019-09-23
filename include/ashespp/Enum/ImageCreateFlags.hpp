@@ -44,12 +44,18 @@ namespace ashes
 			return "protected";
 		case VK_IMAGE_CREATE_DISJOINT_BIT:
 			return "disjoint";
+#ifdef VK_NV_corner_sampled_image
 		case VK_IMAGE_CREATE_CORNER_SAMPLED_BIT_NV:
 			return "corner_sampled";
+#endif
+#ifdef VK_EXT_sample_locations
 		case VK_IMAGE_CREATE_SAMPLE_LOCATIONS_COMPATIBLE_DEPTH_BIT_EXT:
 			return "sample_locations_compatible_depth";
+#endif
+#ifdef VK_EXT_fragment_density_map
 		case VK_IMAGE_CREATE_SUBSAMPLED_BIT_EXT:
 			return "subsampled";
+#endif
 		default:
 			assert( false && "Unsupported VkImageCreateFlagBits." );
 			throw std::runtime_error{ "Unsupported VkImageCreateFlagBits" };

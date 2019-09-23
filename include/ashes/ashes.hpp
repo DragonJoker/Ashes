@@ -20,6 +20,11 @@ See LICENSE file in root folder.
 #	undef MemoryBarrier
 #endif
 
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <vector>
+
 namespace ashes
 {
 	using ByteArray = std::vector< uint8_t >;
@@ -395,6 +400,18 @@ namespace ashes
 
 #endif
 
+        template< typename Type, typename ... Params >
+        inline std::vector< Type > makeVector( Type const * ptr
+                , size_t count
+                , Params && ... params );
+        template< typename Type, typename ... Params >
+        inline std::vector< Type > makeVector( Type const * ptr
+                , uint32_t count
+                , Params && ... params );
+        template< typename Type, typename ... Params >
+        inline Optional< Type > makeOptional( Type const * ptr
+                , Params && ... params );
+
 	inline int8_t deepCopy( int8_t const & rhs )
 	{
 		return rhs;
@@ -560,51 +577,6 @@ namespace ashes
 		return rhs;
 	}
 
-	template< typename Type, typename ... Params >
-	inline std::vector< Type > makeVector( Type const * ptr
-		, size_t count
-		, Params && ... params )
-	{
-		std::vector< Type > result;
-
-		if ( ptr )
-		{
-			for ( auto & elem : makeArrayView( ptr, count ) )
-			{
-				result.push_back( deepCopy( elem, std::forward< Params && >( params )... ) );
-			}
-		}
-
-		return result;
-	}
-
-	template< typename Type, typename ... Params >
-	inline std::vector< Type > makeVector( Type const * ptr
-		, uint32_t count
-		, Params && ... params )
-	{
-		std::vector< Type > result;
-
-		if ( ptr )
-		{
-			for ( auto & elem : makeArrayView( ptr, count ) )
-			{
-				result.push_back( deepCopy( elem, std::forward< Params && >( params )... ) );
-			}
-		}
-
-		return result;
-	}
-
-	template< typename Type, typename ... Params >
-	inline Optional< Type > makeOptional( Type const * ptr
-		, Params && ... params )
-	{
-		return ptr
-			? Optional< Type >{ deepCopy( *ptr, std::forward< Params && >( params )... ) }
-		: nullopt;
-	}
-
 	inline VkSpecializationInfo deepCopy( VkSpecializationInfo const & rhs
 		, VkSpecializationMapEntryArray & entries
 		, ByteArray & data )
@@ -685,6 +657,51 @@ namespace ashes
 		result.pScissors = scissors.data();
 		return result;
 	}
+
+        template< typename Type, typename ... Params >
+        inline std::vector< Type > makeVector( Type const * ptr
+                , size_t count
+                , Params && ... params )
+        {
+                std::vector< Type > result;
+
+                if ( ptr )
+                {
+                        for ( auto & elem : makeArrayView( ptr, count ) )
+                        {
+                                result.push_back( deepCopy( elem, std::forward< Params && >( params )... ) );
+                        }
+                }
+
+                return result;
+        }
+
+        template< typename Type, typename ... Params >
+        inline std::vector< Type > makeVector( Type const * ptr
+                , uint32_t count
+                , Params && ... params )
+        {
+                std::vector< Type > result;
+
+                if ( ptr )
+                {
+                        for ( auto & elem : makeArrayView( ptr, count ) )
+                        {
+                                result.push_back( deepCopy( elem, std::forward< Params && >( params )... ) );
+                        }
+                }
+
+                return result;
+        }
+
+        template< typename Type, typename ... Params >
+        inline Optional< Type > makeOptional( Type const * ptr
+                , Params && ... params )
+        {
+                return ptr
+                        ? Optional< Type >{ deepCopy( *ptr, std::forward< Params && >( params )... ) }
+                : Optional< Type >{};
+        }
 
 	inline bool operator==( VkOffset2D const & lhs, VkOffset2D const & rhs )
 	{

@@ -44,12 +44,18 @@ namespace ashes
 			return "depth_attachment_stencil_read_only_optimal";
 		case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
 			return "present_src";
+#ifdef VK_KHR_shared_presentable_image
 		case VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR:
 			return "shared_present";
+#endif
+#ifdef VK_NV_shading_rate_image
 		case VK_IMAGE_LAYOUT_SHADING_RATE_OPTIMAL_NV:
 			return "shading_rate_optimal";
+#endif
+#ifdef VK_EXT_fragment_density_map
 		case VK_IMAGE_LAYOUT_FRAGMENT_DENSITY_MAP_OPTIMAL_EXT:
 			return "fragment_density_map_optimal";
+#endif
 		default:
 			assert( false && "Unsupported VkImageLayout." );
 			throw std::runtime_error{ "Unsupported VkImageLayout" };

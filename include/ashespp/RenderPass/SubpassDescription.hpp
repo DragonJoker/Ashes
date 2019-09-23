@@ -20,7 +20,7 @@ namespace ashes
 			, VkAttachmentReferenceArray inputAttachments
 			, VkAttachmentReferenceArray colorAttachments
 			, VkAttachmentReferenceArray resolveAttachments
-			, Optional< VkAttachmentReference > depthStencilAttachment = std::nullopt
+			, Optional< VkAttachmentReference > depthStencilAttachment = Optional< VkAttachmentReference >{}
 			, UInt32Array reserveAttachments = {} )
 			: inputAttachments{ std::move( inputAttachments ) }
 			, colorAttachments{ std::move( colorAttachments ) }

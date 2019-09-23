@@ -34,6 +34,7 @@ namespace ashes
 			return "plane_1";
 		case VK_IMAGE_ASPECT_PLANE_2_BIT:
 			return "plane_2";
+#ifdef VK_EXT_image_drm_format_modifier
 		case VK_IMAGE_ASPECT_MEMORY_PLANE_0_BIT_EXT:
 			return "memory_plane_0";
 		case VK_IMAGE_ASPECT_MEMORY_PLANE_1_BIT_EXT:
@@ -42,6 +43,7 @@ namespace ashes
 			return "memory_plane_2";
 		case VK_IMAGE_ASPECT_MEMORY_PLANE_3_BIT_EXT:
 			return "memory_plane_3";
+#endif
 		default:
 			assert( false && "Unsupported VkImageAspectFlagBits." );
 			throw std::runtime_error{ "Unsupported VkImageAspectFlagBits" };

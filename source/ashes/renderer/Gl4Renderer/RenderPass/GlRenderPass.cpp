@@ -32,7 +32,7 @@ namespace ashes::gl4
 					makeVector( subpass.pResolveAttachments, subpass.colorAttachmentCount ),
 					( subpass.pDepthStencilAttachment
 						? Optional< VkAttachmentReference >( *subpass.pDepthStencilAttachment )
-						: std::nullopt ),
+						: Optional< VkAttachmentReference >{} ),
 					makeVector( subpass.pPreserveAttachments, subpass.preserveAttachmentCount )
 				} );
 			referenceAttaches( data->colorAttachments );

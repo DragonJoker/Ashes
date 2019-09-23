@@ -85,12 +85,16 @@ namespace ashes
 			result |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
 			result |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 			break;
+#ifdef VK_NV_shading_rate_image
 		case VK_IMAGE_LAYOUT_SHADING_RATE_OPTIMAL_NV:
 			result |= VK_ACCESS_SHADING_RATE_IMAGE_READ_BIT_NV;
 			break;
+#endif
+#ifdef VK_EXT_fragment_density_map
 		case VK_IMAGE_LAYOUT_FRAGMENT_DENSITY_MAP_OPTIMAL_EXT:
 			result |= VK_ACCESS_FRAGMENT_DENSITY_MAP_READ_BIT_EXT;
 			break;
+#endif
 		}
 
 		return result;
@@ -116,7 +120,9 @@ namespace ashes
 		case VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL:
 			result |= VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 			break;
+#ifdef VK_EXT_fragment_density_map
 		case VK_IMAGE_LAYOUT_FRAGMENT_DENSITY_MAP_OPTIMAL_EXT:
+#endif
 		case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
 			result |= VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 			break;
@@ -124,9 +130,11 @@ namespace ashes
 		case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
 			result |= VK_PIPELINE_STAGE_TRANSFER_BIT;
 			break;
+#ifdef VK_NV_shading_rate_image
 		case VK_IMAGE_LAYOUT_SHADING_RATE_OPTIMAL_NV:
 			result |= VK_PIPELINE_STAGE_SHADING_RATE_IMAGE_BIT_NV;
 			break;
+#endif
 		}
 
 		return result;
