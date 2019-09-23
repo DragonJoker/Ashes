@@ -945,9 +945,10 @@ namespace vkapp
 			, *m_objectUbo
 			, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 		m_computeData.roll = ( m_frame % GetClientSize().GetWidth() ) * 0.03f;
-		m_stagingBuffer->uploadUniformData( *m_graphicsQueue
-			, *m_commandPool
-			, m_objectData
+		m_stagingBuffer->uploadUniformData( *m_computeQueue
+			, *m_computeCommandPool
+			, &m_computeData
+			, 1u
 			, *m_computeUbo
 			, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT );
 		++m_frame;
@@ -985,7 +986,7 @@ namespace vkapp
 				, 2u
 				, 0u
 				, VK_QUERY_RESULT_WAIT_BIT
-				, values1 );
+				, values2 );
 
 			// Elapsed time in nanoseconds
 			auto elapsed1 = std::chrono::nanoseconds{ uint64_t( ( values1[1] - values1[0] ) / float( m_device->getDevice().getTimestampPeriod() ) ) };

@@ -84,7 +84,7 @@ namespace vkapp
 		};
 
 		wxTimer * m_timer{ nullptr };
-		utils::Mat4 m_rotate[2];
+		std::array< utils::Mat4, 2u > m_rotate;
 		uint32_t m_frame{ 0u };
 		/**
 		*\name

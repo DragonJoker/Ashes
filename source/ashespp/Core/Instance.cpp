@@ -212,7 +212,7 @@ namespace ashes
 
 		if ( !result )
 		{
-			Logger::logError( std::string{ "Instance: Couldn't load function [" } + name + "]" );
+			Logger::logDebug( std::string{ "Instance: Couldn't load function [" } + name + "]" );
 		}
 
 		return result;
