@@ -376,7 +376,7 @@ namespace ashes::d3d11
 				std::stringstream stream;
 				stream << reinterpret_cast< char * >( errors->GetBufferPointer() ) << std::endl;
 				stream << m_source << std::endl;
-				get( get( device )->getInstance() )->onReportMessage( VK_DEBUG_REPORT_WARNING_BIT_EXT
+				get( device )->onReportMessage( VK_DEBUG_REPORT_WARNING_BIT_EXT
 					, VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT
 					, uint64_t( module )
 					, 0u
@@ -390,7 +390,7 @@ namespace ashes::d3d11
 			std::stringstream stream;
 			stream << reinterpret_cast< char * >( errors->GetBufferPointer() ) << std::endl;
 			stream << m_source << std::endl;
-			get( get( device )->getInstance() )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+			get( device )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
 				, VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT
 				, uint64_t( module )
 				, 0u

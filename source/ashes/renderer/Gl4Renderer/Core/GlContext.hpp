@@ -65,6 +65,14 @@ namespace ashes::gl4
 		ContextState & getState();
 		void onBaseContextCreated();
 
+		void reportMessage( VkDebugReportFlagsEXT flags
+			, VkDebugReportObjectTypeEXT objectType
+			, uint64_t object
+			, size_t location
+			, int32_t messageCode
+			, const char * pLayerPrefix
+			, const char * pMessage );
+
 		void lock();
 		void unlock();
 

@@ -31,7 +31,8 @@ namespace ashes::d3d11
 			return list;
 		}
 
-		std::vector< DXGI_MODE_DESC > getDisplayModesList( IDXGIOutput * adapterOutput )
+		std::vector< DXGI_MODE_DESC > getDisplayModesList( VkInstance instance
+			, IDXGIOutput * adapterOutput )
 		{
 			std::vector< DXGI_MODE_DESC > result;
 
@@ -50,7 +51,13 @@ namespace ashes::d3d11
 
 					if ( FAILED( hr ) )
 					{
-						throw std::runtime_error( "GetDisplayModeList(numModes) failed" );
+						get( instance )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+							, VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT
+							, uint64_t( instance )
+							, 0u
+							, VK_ERROR_INCOMPATIBLE_DRIVER
+							, "Direct3D11"
+							, "GetDisplayModeList(numModes) failed" );
 					}
 
 					if ( numModes )
@@ -64,7 +71,13 @@ namespace ashes::d3d11
 
 						if ( FAILED( hr ) )
 						{
-							throw std::runtime_error( "GetDisplayModeList(displayModeList) failed" );
+							get( instance )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+								, VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT
+								, uint64_t( instance )
+								, 0u
+								, VK_ERROR_INCOMPATIBLE_DRIVER
+								, "Direct3D11"
+								, "GetDisplayModeList(displayModeList) failed" );
 						}
 
 						result.insert( result.end()
@@ -220,7 +233,8 @@ namespace ashes::d3d11
 
 	SurfaceKHR::SurfaceKHR( VkInstance instance
 		, VkSurfaceCreateInfoKHR createInfo )
-		: m_createInfo{ std::move( createInfo ) }
+		: m_instance{ instance }
+		, m_createInfo{ std::move( createInfo ) }
 		, m_type{ "VK_KHR_win32_surface" }
 	{
 		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
@@ -236,7 +250,7 @@ namespace ashes::d3d11
 		{
 			m_currentPhysicalDevice = physicalDevice;
 
-			m_displayModes = getDisplayModesList( get( physicalDevice )->getOutput() );
+			m_displayModes = getDisplayModesList( m_instance, get( physicalDevice )->getOutput() );
 
 			m_surfaceFormats = getSurfaceFormats( m_displayModes );
 

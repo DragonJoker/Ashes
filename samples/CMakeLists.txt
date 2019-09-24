@@ -34,22 +34,25 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 
 	foreach ( child ${children} )
 		if ( IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${child} )
+			set( TARGET_NAME Sample-${child} )
 			add_subdirectory( ${child} )
-			target_compile_definitions( Sample-${child} PRIVATE
+			target_compile_definitions( ${TARGET_NAME} PRIVATE
 				SAMPLE_ID=${SAMPLE_ID}
 				_FILE_OFFSET_BITS=64
 				_LARGE_FILES
 				_UNICODE
 			)
+			set_property( TARGET ${TARGET_NAME} PROPERTY CXX_STANDARD 17 )
+			set_property( TARGET ${TARGET_NAME} PROPERTY FOLDER "Samples" )
 
 			if( NOT WIN32 )
-				target_compile_definitions( Test-${child} PRIVATE
+				target_compile_definitions( ${TARGET_NAME} PRIVATE
 					__WXGTK__
 				)
 			endif()
 
 			if( IsWxDebug )
-				target_compile_definitions( Test-${child} PRIVATE
+				target_compile_definitions( ${TARGET_NAME} PRIVATE
 					__WXDEBUG__
 				)
 			endif()

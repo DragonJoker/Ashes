@@ -183,7 +183,14 @@ namespace ashes::d3d11
 
 		if ( !checkError( device, hr, "CreateBlendState" ) )
 		{
-			throw std::runtime_error( "CreateBlendState() failed" );
+			get( device )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT
+				, uint64_t( get( this ) )
+				, 0u
+				, VK_ERROR_INCOMPATIBLE_DRIVER
+				, "Direct3D11"
+				, "CreateBlendState() failed" );
+			return;
 		}
 
 		dxDebugName( m_bdState, PipelineBlendState );
@@ -198,7 +205,14 @@ namespace ashes::d3d11
 
 		if ( !checkError( device, hr, "CreateRasterizerState" ) )
 		{
-			throw std::runtime_error( "CreateRasterizerState() failed" );
+			get( device )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT
+				, uint64_t( get( this ) )
+				, 0u
+				, VK_ERROR_INCOMPATIBLE_DRIVER
+				, "Direct3D11"
+				, "CreateRasterizerState() failed" );
+			return;
 		}
 
 		dxDebugName( m_rsState, PipelineRasterizerState );
@@ -214,7 +228,14 @@ namespace ashes::d3d11
 
 			if ( !checkError( device, hr, "CreateDepthStencilState" ) )
 			{
-				throw std::runtime_error( "CreateDepthStencilState() failed" );
+				get( device )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+					, VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT
+					, uint64_t( get( this ) )
+					, 0u
+					, VK_ERROR_INCOMPATIBLE_DRIVER
+					, "Direct3D11"
+					, "CreateDepthStencilState() failed" );
+				return;
 			}
 
 			dxDebugName( m_dsState, PipelineDepthStencilState );
@@ -300,7 +321,14 @@ namespace ashes::d3d11
 
 				if ( !checkError( device, hr, "CreateInputLayout" ) )
 				{
-					throw std::runtime_error( "CreateInputLayout() failed" );
+					get( device )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+						, VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT
+						, uint64_t( get( this ) )
+						, 0u
+						, VK_ERROR_INCOMPATIBLE_DRIVER
+						, "Direct3D11"
+						, "CreateInputLayout() failed" );
+					return;
 				}
 
 				dxDebugName( m_iaState, PipelineInputLayout );

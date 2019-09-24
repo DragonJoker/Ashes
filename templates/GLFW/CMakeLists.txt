@@ -16,6 +16,8 @@ if( GLFW_FOUND )
 	add_executable( ${PROJECT_NAME}
 		${SOURCE_FILES}
 	)
+	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
+	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Templates" )
 
 	target_link_libraries( ${PROJECT_NAME}
 		common
@@ -34,7 +36,5 @@ if( GLFW_FOUND )
 			dl
 		)
 	endif ()
-	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Templates" )
 
 endif ()

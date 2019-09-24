@@ -133,6 +133,12 @@ if( Vulkan_FOUND )
 		target_install_subdir_headers( glslang external/glslang/glslang/ MachineIndependent "" )
 		target_install_subdir_headers( SPIRV external/glslang/SPIRV/ "" "" )
 
+		set_property( TARGET glslang PROPERTY FOLDER "Common/glslang" )
+		set_property( TARGET OGLCompiler PROPERTY FOLDER "Common/glslang" )
+		set_property( TARGET OSDependent PROPERTY FOLDER "Common/glslang" )
+		set_property( TARGET SPIRV PROPERTY FOLDER "Common/glslang" )
+		set_property( TARGET SPVRemapper PROPERTY FOLDER "Common/glslang" )
+
 		if ( MSVC )
 			install(
 				FILES
@@ -140,7 +146,7 @@ if( Vulkan_FOUND )
 					${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/OGLCompiler.lib
 					${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/OSDependent.lib
 					${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/SPIRV.lib
-					${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/SpvRemapper.lib
+					${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/SPVRemapper.lib
 				COMPONENT glslang
 				CONFIGURATIONS Release
 				EXPORT glslang
@@ -152,7 +158,7 @@ if( Vulkan_FOUND )
 					${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/OGLCompiler.lib
 					${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/OSDependent.lib
 					${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/SPIRV.lib
-					${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/SpvRemapper.lib
+					${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/SPVRemapper.lib
 				COMPONENT glslang_dev
 				CONFIGURATIONS RelWithDebInfo
 				ARCHIVE DESTINATION lib/RelWithDebInfo
@@ -163,7 +169,7 @@ if( Vulkan_FOUND )
 					${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/OGLCompilerd.lib
 					${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/OSDependentd.lib
 					${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/SPIRVd.lib
-					${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/SpvRemapperd.lib
+					${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/SPVRemapperd.lib
 				COMPONENT glslang_dev
 				CONFIGURATIONS Debug
 				ARCHIVE DESTINATION lib/Debug
@@ -175,7 +181,7 @@ if( Vulkan_FOUND )
 					${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/libOGLCompiler.a
 					${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/libOSDependent.a
 					${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/libSPIRV.a
-					${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/libSpvRemapper.a
+					${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/libSPVRemapper.a
 				COMPONENT glslang
 				CONFIGURATIONS Release
 				EXPORT glslang
@@ -187,7 +193,7 @@ if( Vulkan_FOUND )
 					${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/libOGLCompiler.a
 					${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/libOSDependent.a
 					${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/libSPIRV.a
-					${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/libSpvRemapper.a
+					${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/libSPVRemapper.a
 				COMPONENT glslang_dev
 				CONFIGURATIONS RelWithDebInfo
 				ARCHIVE DESTINATION lib/RelWithDebInfo
@@ -198,7 +204,7 @@ if( Vulkan_FOUND )
 					${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/libOGLCompilerd.a
 					${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/libOSDependentd.a
 					${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/libSPIRVd.a
-					${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/libSpvRemapperd.a
+					${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/libSPVRemapperd.a
 				COMPONENT glslang_dev
 				CONFIGURATIONS Debug
 				ARCHIVE DESTINATION lib/Debug

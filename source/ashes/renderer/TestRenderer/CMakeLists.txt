@@ -60,7 +60,8 @@ else ()
 			SOVERSION ${PROJECT_SOVERSION}
 	)
 endif ()
-
+set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
+set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes/Renderer" )
 add_target_precompiled_header_ex( ${PROJECT_NAME}
 	ashes/renderer
 	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/${PROJECT_NAME}Pch.hpp
@@ -94,9 +95,6 @@ parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer RenderPass "RenderPass
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Shader "Shader" )
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Sync "Sync" )
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer vulkan "vulkan" )
-
-set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes" )
 
 set( ENABLED_RENDERERS
 	${ENABLED_RENDERERS}

@@ -39,13 +39,12 @@ add_library( ${PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES}
 	${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
 )
+set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
+set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes/Core" )
 
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes Platform "Platform" )
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes Win32 "Win32" )
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes Linux "Linux" )
-
-set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes/Core" )
 
 #We install each lib in <install_dir>/lib folder
 install(

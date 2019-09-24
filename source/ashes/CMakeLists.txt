@@ -83,13 +83,11 @@ add_library( ${PROJECT_NAME} SHARED
 	${${PROJECT_NAME}_HDR_FILES}
 	${${PROJECT_NAME}_CONFIG_HEADER}
 )
-
+set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
+set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes/Core" )
 target_link_libraries( ${PROJECT_NAME}
 	common
 )
-
-set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes/Core" )
 
 if ( BUILD_ASHES )
 	target_add_doc( ${PROJECT_NAME} "" "*.h *.hpp" )

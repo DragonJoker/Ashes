@@ -39,30 +39,30 @@ namespace ashes::gl4
 {
 	namespace
 	{
-		GLuint getObjectName( GlDebugReportObjectType const & value
+		GLuint getObjectName( VkDebugReportObjectTypeEXT const & value
 			, uint64_t object )
 		{
-			GLuint result = GL_INVALID_INDEX;
+			GLuint result = 0;
 
 			switch ( value )
 			{
-			case GlDebugReportObjectType::eBuffer:
+			case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT:
 				result = reinterpret_cast< Buffer const * >( object )->getInternal();
 				break;
-			case GlDebugReportObjectType::eTexture:
+			case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT:
 				result = reinterpret_cast< Image const * >( object )->getInternal();
 				break;
-			case GlDebugReportObjectType::eQuery:
+			case VK_DEBUG_REPORT_OBJECT_TYPE_QUERY_POOL_EXT:
 				result = *reinterpret_cast< QueryPool const * >( object )->begin();
 				break;
-			case GlDebugReportObjectType::eShaderModule:
-				result = GL_INVALID_INDEX;
-				break;
-			case GlDebugReportObjectType::eSampler:
+			case VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT:
 				result = reinterpret_cast< Sampler const * >( object )->getInternal();
 				break;
-			case GlDebugReportObjectType::eFrameBuffer:
+			case VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT:
 				result = reinterpret_cast< Framebuffer const * >( object )->getInternal();
+				break;
+			default:
+				result = GL_INVALID_INDEX;
 				break;
 			}
 
@@ -206,10 +206,20 @@ namespace ashes::gl4
 
 	VkResult Device::debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const
 	{
-		bool isOk = true;
-
-#if !defined( NDEBUG )
 		auto context = getContext();
+		bool isOk = ( context->m_glObjectPtrLabel || context->m_glObjectLabel );
+
+		if ( !isOk )
+		{
+			get( m_instance )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+				, uint64_t( get( this ) )
+				, 0u
+				, VK_ERROR_INCOMPATIBLE_DRIVER
+				, "OpenGL"
+				, "Either debug marker layer is not enabled or functions are not available on your GPU" );
+			return VK_ERROR_INCOMPATIBLE_DRIVER;
+		}
 
 		if ( nameInfo.objectType == VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT )
 		{
@@ -226,28 +236,40 @@ namespace ashes::gl4
 		{
 			if ( context->m_glObjectLabel )
 			{
-				auto objectType = convert( nameInfo.objectType );
+				auto name = getObjectName( nameInfo.objectType, nameInfo.object );
 
-				if ( objectType != GlDebugReportObjectType::eUnknown )
+				if ( name != GL_INVALID_INDEX )
 				{
-					auto name = getObjectName( objectType, nameInfo.object );
-
-					if ( name != GL_INVALID_INDEX )
-					{
-						isOk = glLogCall( context
-							, glObjectLabel
-							, GLenum( objectType )
-							, name
-							, GLsizei( strlen( nameInfo.pObjectName ) )
-							, nameInfo.pObjectName );
-					}
+					isOk = glLogCall( context
+						, glObjectLabel
+						, GLenum( convert( nameInfo.objectType ) )
+						, name
+						, GLsizei( strlen( nameInfo.pObjectName ) )
+						, nameInfo.pObjectName );
 				}
 			}
 		}
-#endif
+
 		return isOk
 			? VK_SUCCESS
 			: VK_ERROR_INCOMPATIBLE_DRIVER;
+	}
+
+	void Device::reportMessage( VkDebugReportFlagsEXT flags
+		, VkDebugReportObjectTypeEXT objectType
+		, uint64_t object
+		, size_t location
+		, int32_t messageCode
+		, const char * pLayerPrefix
+		, const char * pMessage )
+	{
+		get( m_instance )->reportMessage( flags
+			, objectType
+			, object
+			, location
+			, messageCode
+			, pLayerPrefix
+			, pMessage );
 	}
 
 	VkQueue Device::getQueue( uint32_t familyIndex
@@ -257,14 +279,26 @@ namespace ashes::gl4
 
 		if ( it == m_queues.end() )
 		{
-			throw Exception{ VK_ERROR_INCOMPATIBLE_DRIVER
-				, "Couldn't find family index within created queues" };
+			get( m_instance )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+				, uint64_t( get( this ) )
+				, 0u
+				, VK_ERROR_INCOMPATIBLE_DRIVER
+				, "OpenGL"
+				, "Couldn't find family index within created queues" );
+			return VK_NULL_HANDLE;
 		}
 
 		if ( it->second.queues.size() <= index )
 		{
-			throw Exception{ VK_ERROR_INCOMPATIBLE_DRIVER
-				, "Couldn't find queue with wanted index within its family" };
+			get( m_instance )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+				, uint64_t( get( this ) )
+				, 0u
+				, VK_ERROR_INCOMPATIBLE_DRIVER
+				, "OpenGL"
+				, "Couldn't find queue with wanted index within its family" );
+			return VK_NULL_HANDLE;
 		}
 
 		return it->second.queues[index];
@@ -291,7 +325,13 @@ namespace ashes::gl4
 		}
 		catch ( std::exception & exc )
 		{
-			std::cerr << exc.what() << std::endl;
+			get( m_instance )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+				, uint64_t( get( this ) )
+				, 0u
+				, VK_ERROR_INCOMPATIBLE_DRIVER
+				, "OpenGL"
+				, exc.what() );
 			throw;
 		}
 	}

@@ -223,7 +223,6 @@ namespace ashes::d3d11
 
 	VkResult Device::debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const
 	{
-#if !defined( NDEBUG )
 		HRESULT hr = S_OK;
 
 		switch ( nameInfo.objectType )
@@ -245,11 +244,15 @@ namespace ashes::d3d11
 			get( VkImage( nameInfo.object ) )->setDebugName( nameInfo.pObjectName );
 			break;
 		default:
-			if ( auto object = getObject( nameInfo.object, nameInfo.objectType ) )
 			{
-				hr = object->SetPrivateData( WKPDID_D3DDebugObjectName
-					, UINT( strlen( nameInfo.pObjectName ) )
-					, nameInfo.pObjectName );
+				auto object = getObject( nameInfo.object, nameInfo.objectType );
+
+				if ( object )
+				{
+					hr = object->SetPrivateData( WKPDID_D3DDebugObjectName
+						, UINT( strlen( nameInfo.pObjectName ) )
+						, nameInfo.pObjectName );
+				}
 			}
 			break;
 		}
@@ -262,9 +265,6 @@ namespace ashes::d3d11
 		return checkError( get( this ), hr, "SetPrivateData" )
 			? VK_SUCCESS
 			: VK_ERROR_INVALID_DEVICE_ADDRESS_EXT;
-#endif
-
-		return VK_SUCCESS;
 	}
 
 	VkQueue Device::getQueue( uint32_t familyIndex
@@ -274,12 +274,26 @@ namespace ashes::d3d11
 
 		if ( it == m_queues.end() )
 		{
-			throw ashes::Exception{ VK_ERROR_INITIALIZATION_FAILED, "Couldn't find family index within created queues" };
+			get( m_instance )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+				, uint64_t( get( this ) )
+				, 0u
+				, VK_ERROR_INCOMPATIBLE_DRIVER
+				, "Direct3D11"
+				, "Couldn't find family index within created queues" );
+			return VK_NULL_HANDLE;
 		}
 
 		if ( it->second.queues.size() <= index )
 		{
-			throw ashes::Exception{ VK_ERROR_INITIALIZATION_FAILED, "Couldn't find queue with wanted index within its family" };
+			get( m_instance )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+				, uint64_t( get( this ) )
+				, 0u
+				, VK_ERROR_INCOMPATIBLE_DRIVER
+				, "Direct3D11"
+				, "Couldn't find queue with wanted index within its family" );
+			return VK_NULL_HANDLE;
 		}
 
 		return it->second.queues[index];
@@ -317,6 +331,23 @@ namespace ashes::d3d11
 		, std::string message )const
 	{
 		return get( m_instance )->onCheckHResultCommand( hresult, std::move( message ) );
+	}
+
+	void Device::onReportMessage( VkDebugReportFlagsEXT flags
+		, VkDebugReportObjectTypeEXT objectType
+		, uint64_t object
+		, size_t location
+		, int32_t messageCode
+		, const char * pLayerPrefix
+		, const char * pMessage )
+	{
+		get( m_instance )->onReportMessage( flags
+			, objectType
+			, object
+			, location
+			, messageCode
+			, pLayerPrefix
+			, pMessage );
 	}
 
 	void Device::doCreateD3D11Device()

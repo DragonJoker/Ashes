@@ -43,7 +43,8 @@ add_library( ${PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_SRC_FILES}
 	${${PROJECT_NAME}_HDR_FILES}
 )
-
+set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
+set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes/Core" )
 add_dependencies( ${PROJECT_NAME}
 	common
 	ashes
@@ -69,9 +70,6 @@ parse_subdir_files( ${ASHES_SOURCE_DIR} RenderPass "RenderPass" )
 parse_subdir_files( ${ASHES_SOURCE_DIR} Shader "Shader" )
 parse_subdir_files( ${ASHES_SOURCE_DIR} Sync "Sync" )
 parse_subdir_files( ${ASHES_SOURCE_DIR} Utils "Utils" )
-
-set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes" )
 
 if ( BUILD_ASHES )
 	target_add_doc( ${PROJECT_NAME} "" "*.h *.hpp" )

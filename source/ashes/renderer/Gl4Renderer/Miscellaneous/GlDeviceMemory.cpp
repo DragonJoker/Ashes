@@ -428,7 +428,13 @@ namespace ashes::gl4
 				if ( m_beginRegion >= m_updateRegions.size()
 					|| m_endRegion > m_updateRegions.size() )
 				{
-					throw std::runtime_error{ "Invalid offset and/or size." };
+					get( m_device )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+						, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT
+						, uint64_t( get( m_parent ) )
+						, 0u
+						, VK_ERROR_VALIDATION_FAILED_EXT
+						, "OpenGL"
+						, "Invalid offset and/or size." );
 				}
 			}
 

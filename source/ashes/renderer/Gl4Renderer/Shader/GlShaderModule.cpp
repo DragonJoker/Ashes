@@ -510,7 +510,13 @@ namespace ashes::gl4
 
 		if ( !doCheckCompileErrors( m_device, get( this ), compiled != 0, result, m_source ) )
 		{
-			throw std::runtime_error{ "Shader compilation failed." };
+			context->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT
+				, uint64_t( get( this ) )
+				, 0u
+				, VK_ERROR_VALIDATION_FAILED_EXT
+				, "OpenGL"
+				, "Shader compilation failed." );
 		}
 
 		return result;

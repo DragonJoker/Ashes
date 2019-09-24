@@ -44,6 +44,9 @@
 #include <io.h>
 #endif  // _WIN32
 
+#define ASHES_VK_PROTOTYPES
+#include <ashes/ashes.h>
+
 #if defined(VK_USE_PLATFORM_XLIB_KHR) || defined(VK_USE_PLATFORM_XCB_KHR)
 #include <X11/Xutil.h>
 #endif
@@ -51,9 +54,6 @@
 #if defined(VK_USE_PLATFORM_MACOS_MVK)
 #include "metal_view.h"
 #endif
-
-#define ASHES_VK_PROTOTYPES
-#include <ashes/ashes.h>
 
 #define ERR(err) fprintf(stderr, "%s:%d: failed with %s\n", __FILE__, __LINE__, VkResultString(err));
 
@@ -272,10 +272,18 @@ static const char *VkResultString( VkResult err )
 		STR( VK_ERROR_OUT_OF_DATE_KHR );
 		STR( VK_ERROR_INCOMPATIBLE_DISPLAY_KHR );
 		STR( VK_ERROR_VALIDATION_FAILED_EXT );
+#ifdef VK_NV_glsl_shader
 		STR( VK_ERROR_INVALID_SHADER_NV );
+#endif
+#ifdef VK_EXT_image_drm_format_modifier
 		STR( VK_ERROR_INVALID_DRM_FORMAT_MODIFIER_PLANE_LAYOUT_EXT );
+#endif
+#ifdef VK_EXT_descriptor_indexing
 		STR( VK_ERROR_FRAGMENTATION_EXT );
+#endif
+#ifdef VK_EXT_global_priority
 		STR( VK_ERROR_NOT_PERMITTED_EXT );
+#endif
 #undef STR
 	default:
 		return "UNKNOWN_RESULT";
@@ -985,33 +993,60 @@ static void AppGpuInit( struct AppGpu *gpu, struct AppInstance *inst, uint32_t i
 
 	vkGetPhysicalDeviceProperties( gpu->obj, &gpu->props );
 
+#ifdef VK_KHR_get_physical_device_properties2
 	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 		gpu->inst->inst_extensions_count ) )
 	{
 		struct pNextChainBuildingBlockInfo chain_info[] = {
+#ifdef VK_EXT_blend_operation_advanced
 			{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_PROPERTIES_EXT,
-			.mem_size = sizeof( VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT ) },
-		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_POINT_CLIPPING_PROPERTIES_KHR,
-		.mem_size = sizeof( VkPhysicalDevicePointClippingPropertiesKHR ) },
-		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PUSH_DESCRIPTOR_PROPERTIES_KHR,
-		.mem_size = sizeof( VkPhysicalDevicePushDescriptorPropertiesKHR ) },
-		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DISCARD_RECTANGLE_PROPERTIES_EXT,
-		.mem_size = sizeof( VkPhysicalDeviceDiscardRectanglePropertiesEXT ) },
-		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PROPERTIES_KHR,
-		.mem_size = sizeof( VkPhysicalDeviceMultiviewPropertiesKHR ) },
-		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_3_PROPERTIES_KHR,
-		.mem_size = sizeof( VkPhysicalDeviceMaintenance3PropertiesKHR ) },
-		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ID_PROPERTIES_KHR, .mem_size = sizeof( VkPhysicalDeviceIDPropertiesKHR ) },
-		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES_KHR,
-		.mem_size = sizeof( VkPhysicalDeviceDriverPropertiesKHR ) },
-		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT_CONTROLS_PROPERTIES_KHR,
-		.mem_size = sizeof( VkPhysicalDeviceFloatControlsPropertiesKHR ) },
-		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PCI_BUS_INFO_PROPERTIES_EXT,
-		.mem_size = sizeof( VkPhysicalDevicePCIBusInfoPropertiesEXT ) },
-		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_PROPERTIES_EXT,
-		.mem_size = sizeof( VkPhysicalDeviceTransformFeedbackPropertiesEXT ) },
-		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_PROPERTIES_EXT,
-		.mem_size = sizeof( VkPhysicalDeviceFragmentDensityMapPropertiesEXT ) } };
+			  .mem_size = sizeof( VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT ) },
+#endif
+#ifdef VK_KHR_maintenance2
+			{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_POINT_CLIPPING_PROPERTIES_KHR,
+			  .mem_size = sizeof( VkPhysicalDevicePointClippingPropertiesKHR ) },
+#endif
+#ifdef VK_KHR_push_descriptor
+			{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PUSH_DESCRIPTOR_PROPERTIES_KHR,
+			  .mem_size = sizeof( VkPhysicalDevicePushDescriptorPropertiesKHR ) },
+#endif
+#ifdef VK_EXT_discard_rectangles
+			{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DISCARD_RECTANGLE_PROPERTIES_EXT,
+			  .mem_size = sizeof( VkPhysicalDeviceDiscardRectanglePropertiesEXT ) },
+#endif
+#ifdef VK_KHR_multiview
+			{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PROPERTIES_KHR,
+			  .mem_size = sizeof( VkPhysicalDeviceMultiviewPropertiesKHR ) },
+#endif
+#ifdef VK_KHR_maintenance3
+			{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_3_PROPERTIES_KHR,
+			  .mem_size = sizeof( VkPhysicalDeviceMaintenance3PropertiesKHR ) },
+#endif
+#ifdef VK_KHR_external_fence_capabilities
+			{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ID_PROPERTIES_KHR,
+			  .mem_size = sizeof( VkPhysicalDeviceIDPropertiesKHR ) },
+#endif
+#ifdef VK_KHR_driver_properties
+			{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES_KHR,
+			  .mem_size = sizeof( VkPhysicalDeviceDriverPropertiesKHR ) },
+#endif
+#ifdef VK_KHR_shader_float_controls
+			{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT_CONTROLS_PROPERTIES_KHR,
+			  .mem_size = sizeof( VkPhysicalDeviceFloatControlsPropertiesKHR ) },
+#endif
+#ifdef VK_EXT_pci_bus_info
+			{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PCI_BUS_INFO_PROPERTIES_EXT,
+			  .mem_size = sizeof( VkPhysicalDevicePCIBusInfoPropertiesEXT ) },
+#endif
+#ifdef VK_EXT_transform_feedback
+			{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_PROPERTIES_EXT,
+			  .mem_size = sizeof( VkPhysicalDeviceTransformFeedbackPropertiesEXT ) },
+#endif
+#ifdef VK_EXT_fragment_density_map
+			{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_PROPERTIES_EXT,
+			  .mem_size = sizeof( VkPhysicalDeviceFragmentDensityMapPropertiesEXT ) },
+#endif
+		};
 
 		uint32_t chain_info_len = ARRAY_SIZE( chain_info );
 
@@ -1020,6 +1055,7 @@ static void AppGpuInit( struct AppGpu *gpu, struct AppInstance *inst, uint32_t i
 
 		inst->vkGetPhysicalDeviceProperties2KHR( gpu->obj, &gpu->props2 );
 	}
+#endif
 
 	/* get queue count */
 	vkGetPhysicalDeviceQueueFamilyProperties( gpu->obj, &gpu->queue_count, NULL );
@@ -1032,6 +1068,7 @@ static void AppGpuInit( struct AppGpu *gpu, struct AppInstance *inst, uint32_t i
 	}
 	vkGetPhysicalDeviceQueueFamilyProperties( gpu->obj, &gpu->queue_count, gpu->queue_props );
 
+#ifdef VK_KHR_get_physical_device_properties2
 	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 		gpu->inst->inst_extensions_count ) )
 	{
@@ -1050,6 +1087,7 @@ static void AppGpuInit( struct AppGpu *gpu, struct AppInstance *inst, uint32_t i
 
 		inst->vkGetPhysicalDeviceQueueFamilyProperties2KHR( gpu->obj, &gpu->queue_count, gpu->queue_props2 );
 	}
+#endif
 
 	/* set up queue requests */
 	gpu->queue_reqs = malloc( sizeof( *gpu->queue_reqs ) * gpu->queue_count );
@@ -1060,12 +1098,14 @@ static void AppGpuInit( struct AppGpu *gpu, struct AppInstance *inst, uint32_t i
 	for ( i = 0; i < gpu->queue_count; ++i )
 	{
 		float *queue_priorities = NULL;
+#ifdef VK_KHR_get_physical_device_properties2
 		if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 			gpu->inst->inst_extensions_count ) )
 		{
 			queue_priorities = malloc( gpu->queue_props2[i].queueFamilyProperties.queueCount * sizeof( float ) );
 		}
 		else
+#endif
 		{
 			queue_priorities = malloc( gpu->queue_props[i].queueCount * sizeof( float ) );
 		}
@@ -1074,12 +1114,14 @@ static void AppGpuInit( struct AppGpu *gpu, struct AppInstance *inst, uint32_t i
 			ERR_EXIT( VK_ERROR_OUT_OF_HOST_MEMORY );
 		}
 
+#ifdef VK_KHR_get_physical_device_properties2
 		if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 			gpu->inst->inst_extensions_count ) )
 		{
 			memset( queue_priorities, 0, gpu->queue_props2[i].queueFamilyProperties.queueCount * sizeof( float ) );
 		}
 		else
+#endif
 		{
 			memset( queue_priorities, 0, gpu->queue_props[i].queueCount * sizeof( float ) );
 		}
@@ -1089,12 +1131,14 @@ static void AppGpuInit( struct AppGpu *gpu, struct AppInstance *inst, uint32_t i
 		gpu->queue_reqs[i].flags = 0;
 		gpu->queue_reqs[i].queueFamilyIndex = i;
 
+#ifdef VK_KHR_get_physical_device_properties2
 		if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 			gpu->inst->inst_extensions_count ) )
 		{
 			gpu->queue_reqs[i].queueCount = gpu->queue_props2[i].queueFamilyProperties.queueCount;
 		}
 		else
+#endif
 		{
 			gpu->queue_reqs[i].queueCount = gpu->queue_props[i].queueCount;
 		}
@@ -1106,6 +1150,7 @@ static void AppGpuInit( struct AppGpu *gpu, struct AppInstance *inst, uint32_t i
 
 	vkGetPhysicalDeviceFeatures( gpu->obj, &gpu->features );
 
+#ifdef VK_KHR_get_physical_device_properties2
 	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 		gpu->inst->inst_extensions_count ) )
 	{
@@ -1115,28 +1160,51 @@ static void AppGpuInit( struct AppGpu *gpu, struct AppInstance *inst, uint32_t i
 		inst->vkGetPhysicalDeviceMemoryProperties2KHR( gpu->obj, &gpu->memory_props2 );
 
 		struct pNextChainBuildingBlockInfo chain_info[] = {
+#ifdef VK_KHR_8bit_storage
 			{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES_KHR,
-			.mem_size = sizeof( VkPhysicalDevice8BitStorageFeaturesKHR ) },
-		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_16BIT_STORAGE_FEATURES_KHR,
-		.mem_size = sizeof( VkPhysicalDevice16BitStorageFeaturesKHR ) },
-		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES_KHR,
-		.mem_size = sizeof( VkPhysicalDeviceSamplerYcbcrConversionFeaturesKHR ) },
-		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTER_FEATURES_KHR,
-		.mem_size = sizeof( VkPhysicalDeviceVariablePointerFeaturesKHR ) },
-		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_FEATURES_EXT,
-		.mem_size = sizeof( VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT ) },
-		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES_KHR,
-		.mem_size = sizeof( VkPhysicalDeviceMultiviewFeaturesKHR ) },
-		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT16_INT8_FEATURES_KHR,
-		.mem_size = sizeof( VkPhysicalDeviceFloat16Int8FeaturesKHR ) },
-		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_INT64_FEATURES_KHR,
-		.mem_size = sizeof( VkPhysicalDeviceShaderAtomicInt64FeaturesKHR ) },
-		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_FEATURES_EXT,
-		.mem_size = sizeof( VkPhysicalDeviceTransformFeedbackFeaturesEXT ) },
-		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES_EXT,
-		.mem_size = sizeof( VkPhysicalDeviceScalarBlockLayoutFeaturesEXT ) },
-		{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_FEATURES_EXT,
-		.mem_size = sizeof( VkPhysicalDeviceFragmentDensityMapFeaturesEXT ) } };
+			  .mem_size = sizeof( VkPhysicalDevice8BitStorageFeaturesKHR ) },
+#endif
+#ifdef VK_KHR_16bit_storage
+			{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_16BIT_STORAGE_FEATURES_KHR,
+			  .mem_size = sizeof( VkPhysicalDevice16BitStorageFeaturesKHR ) },
+#endif
+#ifdef VK_KHR_sampler_ycbcr_conversion
+			{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES_KHR,
+			  .mem_size = sizeof( VkPhysicalDeviceSamplerYcbcrConversionFeaturesKHR ) },
+#endif
+#ifdef VK_KHR_variable_pointers
+			{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTER_FEATURES_KHR,
+			  .mem_size = sizeof( VkPhysicalDeviceVariablePointerFeaturesKHR ) },
+#endif
+#ifdef VK_EXT_blend_operation_advanced
+			{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_FEATURES_EXT,
+			  .mem_size = sizeof( VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT ) },
+#endif
+#ifdef VK_KHR_multiview
+			{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES_KHR,
+			  .mem_size = sizeof( VkPhysicalDeviceMultiviewFeaturesKHR ) },
+#endif
+#ifdef VK_KHR_shader_float16_int8
+			{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT16_INT8_FEATURES_KHR,
+			  .mem_size = sizeof( VkPhysicalDeviceFloat16Int8FeaturesKHR ) },
+#endif
+#ifdef VK_KHR_shader_atomic_int64
+			{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_INT64_FEATURES_KHR,
+			  .mem_size = sizeof( VkPhysicalDeviceShaderAtomicInt64FeaturesKHR ) },
+#endif
+#ifdef VK_EXT_transform_feedback
+			{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_FEATURES_EXT,
+			  .mem_size = sizeof( VkPhysicalDeviceTransformFeedbackFeaturesEXT ) },
+#endif
+#ifdef VK_EXT_scalar_block_layout
+			{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES_EXT,
+			  .mem_size = sizeof( VkPhysicalDeviceScalarBlockLayoutFeaturesEXT ) },
+#endif
+#ifdef VK_EXT_fragment_density_map
+			{ .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_FEATURES_EXT,
+			  .mem_size = sizeof( VkPhysicalDeviceFragmentDensityMapFeaturesEXT ) }
+#endif
+		};
 
 		uint32_t chain_info_len = ARRAY_SIZE( chain_info );
 
@@ -1145,6 +1213,7 @@ static void AppGpuInit( struct AppGpu *gpu, struct AppInstance *inst, uint32_t i
 
 		inst->vkGetPhysicalDeviceFeatures2KHR( gpu->obj, &gpu->features2 );
 	}
+#endif
 
 	AppGetPhysicalDeviceLayerExtensions( gpu, NULL, &gpu->device_extension_count, &gpu->device_extensions );
 }
@@ -1153,11 +1222,13 @@ static void AppGpuDestroy( struct AppGpu *gpu )
 {
 	free( gpu->device_extensions );
 
+#ifdef VK_KHR_get_physical_device_properties2
 	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 		gpu->inst->inst_extensions_count ) )
 	{
 		freepNextChain( gpu->features2.pNext );
 	}
+#endif
 
 	for ( uint32_t i = 0; i < gpu->queue_count; ++i )
 	{
@@ -1166,6 +1237,7 @@ static void AppGpuDestroy( struct AppGpu *gpu )
 	free( gpu->queue_reqs );
 
 	free( gpu->queue_props );
+#ifdef VK_KHR_get_physical_device_properties2
 	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 		gpu->inst->inst_extensions_count ) )
 	{
@@ -1173,6 +1245,7 @@ static void AppGpuDestroy( struct AppGpu *gpu )
 
 		freepNextChain( gpu->props2.pNext );
 	}
+#endif
 }
 
 //-----------------------------------------------------------
@@ -2734,6 +2807,7 @@ static void AppGpuDumpFeatures( const struct AppGpu *gpu, FILE *out )
 {
 	VkPhysicalDeviceFeatures features;
 
+#ifdef VK_KHR_get_physical_device_properties2
 	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 		gpu->inst->inst_extensions_count ) )
 	{
@@ -2741,6 +2815,7 @@ static void AppGpuDumpFeatures( const struct AppGpu *gpu, FILE *out )
 		features = *features2_const;
 	}
 	else
+#endif
 	{
 		const VkPhysicalDeviceFeatures *features_const = &gpu->features;
 		features = *features_const;
@@ -3093,6 +3168,7 @@ static void AppGpuDumpFeatures( const struct AppGpu *gpu, FILE *out )
 		printf( "\t}" );
 	}
 
+#ifdef VK_KHR_get_physical_device_properties2
 	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 		gpu->inst->inst_extensions_count ) )
 	{
@@ -3100,6 +3176,7 @@ static void AppGpuDumpFeatures( const struct AppGpu *gpu, FILE *out )
 		while ( place )
 		{
 			struct VkStructureHeader *structure = ( struct VkStructureHeader * )place;
+#ifdef VK_KHR_8bit_storage
 			if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES_KHR &&
 				CheckPhysicalDeviceExtensionIncluded( VK_KHR_8BIT_STORAGE_EXTENSION_NAME, gpu->device_extensions,
 					gpu->device_extension_count ) )
@@ -3131,7 +3208,10 @@ static void AppGpuDumpFeatures( const struct AppGpu *gpu, FILE *out )
 					printf( "\tstoragePushConstant8              = %u\n", b8_store_features->storagePushConstant8 );
 				}
 			}
-			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_16BIT_STORAGE_FEATURES_KHR &&
+			else
+#endif
+#ifdef VK_KHR_16bit_storage
+				if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_16BIT_STORAGE_FEATURES_KHR &&
 				CheckPhysicalDeviceExtensionIncluded( VK_KHR_16BIT_STORAGE_EXTENSION_NAME, gpu->device_extensions,
 					gpu->device_extension_count ) )
 			{
@@ -3167,7 +3247,10 @@ static void AppGpuDumpFeatures( const struct AppGpu *gpu, FILE *out )
 					printf( "\tstorageInputOutput16               = %u\n", b16_store_features->storageInputOutput16 );
 				}
 			}
-			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES_KHR &&
+			else
+#endif
+#ifdef VK_KHR_sampler_ycbcr_conversion
+				if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES_KHR &&
 				CheckPhysicalDeviceExtensionIncluded( VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME, gpu->device_extensions,
 					gpu->device_extension_count ) )
 			{
@@ -3189,7 +3272,10 @@ static void AppGpuDumpFeatures( const struct AppGpu *gpu, FILE *out )
 					printf( "\tsamplerYcbcrConversion = %u\n", sampler_ycbcr_features->samplerYcbcrConversion );
 				}
 			}
-			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTER_FEATURES_KHR &&
+			else
+#endif
+#ifdef VK_KHR_variable_pointers
+				if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTER_FEATURES_KHR &&
 				CheckPhysicalDeviceExtensionIncluded( VK_KHR_VARIABLE_POINTERS_EXTENSION_NAME, gpu->device_extensions,
 					gpu->device_extension_count ) )
 			{
@@ -3216,7 +3302,10 @@ static void AppGpuDumpFeatures( const struct AppGpu *gpu, FILE *out )
 					printf( "\tvariablePointers              = %u\n", var_pointer_features->variablePointers );
 				}
 			}
-			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_FEATURES_EXT &&
+			else
+#endif
+#ifdef VK_EXT_blend_operation_advanced
+				if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_FEATURES_EXT &&
 				CheckPhysicalDeviceExtensionIncluded( VK_EXT_BLEND_OPERATION_ADVANCED_EXTENSION_NAME, gpu->device_extensions,
 					gpu->device_extension_count ) )
 			{
@@ -3238,7 +3327,10 @@ static void AppGpuDumpFeatures( const struct AppGpu *gpu, FILE *out )
 					printf( "\tadvancedBlendCoherentOperations = %u\n", blend_op_adv_features->advancedBlendCoherentOperations );
 				}
 			}
-			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES_KHR &&
+			else
+#endif
+#ifdef VK_KHR_multiview
+				if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES_KHR &&
 				CheckPhysicalDeviceExtensionIncluded( VK_KHR_MULTIVIEW_EXTENSION_NAME, gpu->device_extensions,
 					gpu->device_extension_count ) )
 			{
@@ -3269,7 +3361,10 @@ static void AppGpuDumpFeatures( const struct AppGpu *gpu, FILE *out )
 					printf( "\tmultiviewTessellationShader = %u\n", multiview_features->multiviewTessellationShader );
 				}
 			}
-			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT16_INT8_FEATURES_KHR &&
+			else
+#endif
+#ifdef VK_KHR_shader_float16_int8
+				if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT16_INT8_FEATURES_KHR &&
 				CheckPhysicalDeviceExtensionIncluded( VK_KHR_SHADER_FLOAT16_INT8_EXTENSION_NAME, gpu->device_extensions,
 					gpu->device_extension_count ) )
 			{
@@ -3295,7 +3390,10 @@ static void AppGpuDumpFeatures( const struct AppGpu *gpu, FILE *out )
 					printf( "\tshaderInt8    = %" PRIuLEAST32 "\n", float_int_features->shaderInt8 );
 				}
 			}
-			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_INT64_FEATURES_KHR &&
+			else
+#endif
+#ifdef VK_KHR_shader_atomic_int64
+				if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_INT64_FEATURES_KHR &&
 				CheckPhysicalDeviceExtensionIncluded( VK_KHR_SHADER_ATOMIC_INT64_EXTENSION_NAME, gpu->device_extensions,
 					gpu->device_extension_count ) )
 			{
@@ -3324,7 +3422,10 @@ static void AppGpuDumpFeatures( const struct AppGpu *gpu, FILE *out )
 						shader_atomic_int64_features->shaderSharedInt64Atomics );
 				}
 			}
-			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_FEATURES_EXT &&
+			else
+#endif
+#ifdef VK_EXT_transform_feedback
+				if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_FEATURES_EXT &&
 				CheckPhysicalDeviceExtensionIncluded( VK_EXT_TRANSFORM_FEEDBACK_EXTENSION_NAME, gpu->device_extensions,
 					gpu->device_extension_count ) )
 			{
@@ -3351,7 +3452,10 @@ static void AppGpuDumpFeatures( const struct AppGpu *gpu, FILE *out )
 					printf( "\tgeometryStreams   = %" PRIuLEAST32 "\n", transform_feedback_features->geometryStreams );
 				}
 			}
-			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES_EXT &&
+			else
+#endif
+#ifdef VK_EXT_scalar_block_layout
+				if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES_EXT &&
 				CheckPhysicalDeviceExtensionIncluded( VK_EXT_SCALAR_BLOCK_LAYOUT_EXTENSION_NAME, gpu->device_extensions,
 					gpu->device_extension_count ) )
 			{
@@ -3373,7 +3477,10 @@ static void AppGpuDumpFeatures( const struct AppGpu *gpu, FILE *out )
 					printf( "\tscalarBlockLayout = %" PRIuLEAST32 "\n", scalar_block_layout_features->scalarBlockLayout );
 				}
 			}
-			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_FEATURES_EXT &&
+			else
+#endif
+#ifdef VK_EXT_fragment_density_map
+					if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_FEATURES_EXT &&
 				CheckPhysicalDeviceExtensionIncluded( VK_EXT_FRAGMENT_DENSITY_MAP_EXTENSION_NAME, gpu->device_extensions,
 					gpu->device_extension_count ) )
 			{
@@ -3408,9 +3515,11 @@ static void AppGpuDumpFeatures( const struct AppGpu *gpu, FILE *out )
 						fragment_density_map_features->fragmentDensityMapNonSubsampledImages );
 				}
 			}
+#endif
 			place = structure->pNext;
 		}
 	}
+#endif
 }
 
 static void AppDumpSparseProps( const VkPhysicalDeviceSparseProperties *sparse_props, FILE *out )
@@ -4190,6 +4299,7 @@ static void AppGpuDumpProps( const struct AppGpu *gpu, FILE *out )
 {
 	VkPhysicalDeviceProperties props;
 
+#ifdef VK_KHR_get_physical_device_properties2
 	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 		gpu->inst->inst_extensions_count ) )
 	{
@@ -4197,6 +4307,7 @@ static void AppGpuDumpProps( const struct AppGpu *gpu, FILE *out )
 		props = *props2_const;
 	}
 	else
+#endif
 	{
 		const VkPhysicalDeviceProperties *props_const = &gpu->props;
 		props = *props_const;
@@ -4261,22 +4372,26 @@ static void AppGpuDumpProps( const struct AppGpu *gpu, FILE *out )
 		printf( "\t\t]" );
 	}
 
+#ifdef VK_KHR_get_physical_device_properties2
 	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 		gpu->inst->inst_extensions_count ) )
 	{
 		AppDumpLimits( &gpu->props2.properties.limits, out );
 	}
 	else
+#endif
 	{
 		AppDumpLimits( &gpu->props.limits, out );
 	}
 
+#ifdef VK_KHR_get_physical_device_properties2
 	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 		gpu->inst->inst_extensions_count ) )
 	{
 		AppDumpSparseProps( &gpu->props2.properties.sparseProperties, out );
 	}
 	else
+#endif
 	{
 		AppDumpSparseProps( &gpu->props.sparseProperties, out );
 	}
@@ -4286,6 +4401,7 @@ static void AppGpuDumpProps( const struct AppGpu *gpu, FILE *out )
 		printf( "\n\t}" );
 	}
 
+#ifdef VK_KHR_get_physical_device_properties2
 	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 		gpu->inst->inst_extensions_count ) )
 	{
@@ -4293,6 +4409,7 @@ static void AppGpuDumpProps( const struct AppGpu *gpu, FILE *out )
 		while ( place )
 		{
 			struct VkStructureHeader *structure = ( struct VkStructureHeader * )place;
+#ifdef VK_EXT_blend_operation_advanced
 			if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_PROPERTIES_EXT &&
 				CheckPhysicalDeviceExtensionIncluded( VK_EXT_BLEND_OPERATION_ADVANCED_EXTENSION_NAME, gpu->device_extensions,
 					gpu->device_extension_count ) )
@@ -4346,7 +4463,10 @@ static void AppGpuDumpProps( const struct AppGpu *gpu, FILE *out )
 						blend_op_adv_props->advancedBlendAllOperations );
 				}
 			}
-			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_POINT_CLIPPING_PROPERTIES_KHR &&
+			else
+#endif
+#ifdef VK_KHR_maintenance2
+				if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_POINT_CLIPPING_PROPERTIES_KHR &&
 				CheckPhysicalDeviceExtensionIncluded( VK_KHR_MAINTENANCE2_EXTENSION_NAME, gpu->device_extensions,
 					gpu->device_extension_count ) )
 			{
@@ -4367,7 +4487,10 @@ static void AppGpuDumpProps( const struct AppGpu *gpu, FILE *out )
 					printf( "\tpointClippingBehavior               = %u\n", pt_clip_props->pointClippingBehavior );
 				}
 			}
-			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PUSH_DESCRIPTOR_PROPERTIES_KHR &&
+			else
+#endif
+#ifdef VK_KHR_push_descriptor
+				if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PUSH_DESCRIPTOR_PROPERTIES_KHR &&
 				CheckPhysicalDeviceExtensionIncluded( VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME, gpu->device_extensions,
 					gpu->device_extension_count ) )
 			{
@@ -4389,7 +4512,10 @@ static void AppGpuDumpProps( const struct AppGpu *gpu, FILE *out )
 					printf( "\tmaxPushDescriptors               = %u\n", push_desc_props->maxPushDescriptors );
 				}
 			}
-			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DISCARD_RECTANGLE_PROPERTIES_EXT &&
+			else
+#endif
+#ifdef VK_EXT_discard_rectangles
+				if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DISCARD_RECTANGLE_PROPERTIES_EXT &&
 				CheckPhysicalDeviceExtensionIncluded( VK_EXT_DISCARD_RECTANGLES_EXTENSION_NAME, gpu->device_extensions,
 					gpu->device_extension_count ) )
 			{
@@ -4411,7 +4537,10 @@ static void AppGpuDumpProps( const struct AppGpu *gpu, FILE *out )
 					printf( "\tmaxDiscardRectangles               = %u\n", discard_rect_props->maxDiscardRectangles );
 				}
 			}
-			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PROPERTIES_KHR &&
+			else
+#endif
+#ifdef VK_KHR_multiview
+				if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PROPERTIES_KHR &&
 				CheckPhysicalDeviceExtensionIncluded( VK_KHR_MULTIVIEW_EXTENSION_NAME, gpu->device_extensions,
 					gpu->device_extension_count ) )
 			{
@@ -4437,7 +4566,10 @@ static void AppGpuDumpProps( const struct AppGpu *gpu, FILE *out )
 					printf( "\tmaxMultiviewInstanceIndex = %u\n", multiview_props->maxMultiviewInstanceIndex );
 				}
 			}
-			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_3_PROPERTIES_KHR )
+			else
+#endif
+#ifdef VK_KHR_maintenance3
+				if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_3_PROPERTIES_KHR )
 			{
 				VkPhysicalDeviceMaintenance3PropertiesKHR *maintenance3_props =
 					( VkPhysicalDeviceMaintenance3PropertiesKHR * )structure;
@@ -4462,7 +4594,10 @@ static void AppGpuDumpProps( const struct AppGpu *gpu, FILE *out )
 					printf( "\tmaxMemoryAllocationSize = %" PRIuLEAST64 "\n", maintenance3_props->maxMemoryAllocationSize );
 				}
 			}
-			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ID_PROPERTIES_KHR )
+			else
+#endif
+#ifdef VK_KHR_external_memory_capabilities
+				if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ID_PROPERTIES_KHR )
 			{
 				const VkPhysicalDeviceIDPropertiesKHR *id_props = ( VkPhysicalDeviceIDPropertiesKHR * )structure;
 				if ( html_output )
@@ -4543,7 +4678,10 @@ static void AppGpuDumpProps( const struct AppGpu *gpu, FILE *out )
 					}
 				}
 			}
-			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES_KHR &&
+			else
+#endif
+#ifdef VK_KHR_driver_properties
+				if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES_KHR &&
 				CheckPhysicalDeviceExtensionIncluded( VK_KHR_DRIVER_PROPERTIES_EXTENSION_NAME, gpu->device_extensions,
 					gpu->device_extension_count ) )
 			{
@@ -4590,7 +4728,10 @@ static void AppGpuDumpProps( const struct AppGpu *gpu, FILE *out )
 					printf( "\t\tpatch    = %" PRIuLEAST8 "\n", driver_props->conformanceVersion.patch );
 				}
 			}
-			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT_CONTROLS_PROPERTIES_KHR &&
+			else
+#endif
+#ifdef VK_KHR_shader_float_controls
+					if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT_CONTROLS_PROPERTIES_KHR &&
 				CheckPhysicalDeviceExtensionIncluded( VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME, gpu->device_extensions,
 					gpu->device_extension_count ) )
 			{
@@ -4708,7 +4849,10 @@ static void AppGpuDumpProps( const struct AppGpu *gpu, FILE *out )
 						float_control_props->shaderRoundingModeRTZFloat64 );
 				}
 			}
-			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PCI_BUS_INFO_PROPERTIES_EXT &&
+			else
+#endif
+#ifdef VK_EXT_pci_bus_info
+			if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PCI_BUS_INFO_PROPERTIES_EXT &&
 				CheckPhysicalDeviceExtensionIncluded( VK_EXT_PCI_BUS_INFO_EXTENSION_NAME, gpu->device_extensions,
 					gpu->device_extension_count ) )
 			{
@@ -4743,7 +4887,10 @@ static void AppGpuDumpProps( const struct AppGpu *gpu, FILE *out )
 					printf( "\tpciFunction = %" PRIuLEAST32 "\n", pci_bus_properties->pciFunction );
 				}
 			}
-			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_PROPERTIES_EXT &&
+			else
+#endif
+#ifdef VK_EXT_transform_feedback
+				if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_PROPERTIES_EXT &&
 				CheckPhysicalDeviceExtensionIncluded( VK_EXT_TRANSFORM_FEEDBACK_EXTENSION_NAME, gpu->device_extensions,
 					gpu->device_extension_count ) )
 			{
@@ -4829,7 +4976,10 @@ static void AppGpuDumpProps( const struct AppGpu *gpu, FILE *out )
 						transform_feedback_properties->transformFeedbackDraw );
 				}
 			}
-			else if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_PROPERTIES_EXT &&
+			else
+#endif
+#ifdef VK_EXT_fragment_density_map
+				if ( structure->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_PROPERTIES_EXT &&
 				CheckPhysicalDeviceExtensionIncluded( VK_EXT_FRAGMENT_DENSITY_MAP_EXTENSION_NAME, gpu->device_extensions,
 					gpu->device_extension_count ) )
 			{
@@ -4873,9 +5023,11 @@ static void AppGpuDumpProps( const struct AppGpu *gpu, FILE *out )
 						fragment_density_map_properties->fragmentDensityInvocations );
 				}
 			}
+#endif
 			place = structure->pNext;
 		}
 	}
+#endif
 
 	fflush( out );
 	fflush( stdout );
@@ -5004,6 +5156,7 @@ static void AppGpuDumpQueueProps( const struct AppGpu *gpu, uint32_t id, FILE *o
 {
 	VkQueueFamilyProperties props;
 
+#ifdef VK_KHR_get_physical_device_properties2
 	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 		gpu->inst->inst_extensions_count ) )
 	{
@@ -5011,6 +5164,7 @@ static void AppGpuDumpQueueProps( const struct AppGpu *gpu, uint32_t id, FILE *o
 		props = *props2_const;
 	}
 	else
+#endif
 	{
 		const VkQueueFamilyProperties *props_const = &gpu->queue_props[id];
 		props = *props_const;
@@ -5116,6 +5270,7 @@ static void AppGpuDumpMemoryProps( const struct AppGpu *gpu, FILE *out )
 {
 	VkPhysicalDeviceMemoryProperties props;
 
+#ifdef VK_KHR_get_physical_device_properties2
 	if ( CheckExtensionEnabled( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, gpu->inst->inst_extensions,
 		gpu->inst->inst_extensions_count ) )
 	{
@@ -5123,6 +5278,7 @@ static void AppGpuDumpMemoryProps( const struct AppGpu *gpu, FILE *out )
 		props = *props2_const;
 	}
 	else
+#endif
 	{
 		const VkPhysicalDeviceMemoryProperties *props_const = &gpu->memory_props;
 		props = *props_const;

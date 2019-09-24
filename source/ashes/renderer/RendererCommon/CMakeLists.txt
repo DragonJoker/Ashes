@@ -32,7 +32,8 @@ add_library( ${PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES}
 	${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
 )
-
+set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
+set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes/Renderer" )
 add_dependencies( ${PROJECT_NAME}
 	ashes
 	common
@@ -44,9 +45,6 @@ parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Linux "Linux" )
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Platform "Platform" )
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Util "Util" )
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Win32 "Win32" )
-
-set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes/Renderer" )
 
 #We install each lib in <install_dir>/lib folder
 install(

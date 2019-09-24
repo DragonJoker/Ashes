@@ -2,6 +2,8 @@
 
 #include "Core/D3D11Device.hpp"
 
+#include "ashesd3d11_api.hpp"
+
 namespace ashes::d3d11
 {
 	DescriptorSetLayout::DescriptorSetLayout( VkDevice device
@@ -30,7 +32,15 @@ namespace ashes::d3d11
 
 		if ( it == m_bindings.end() )
 		{
-			throw std::range_error{ "Descriptor set layout binding was not found." };
+			get( m_device )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT_EXT
+				, uint64_t( get( this ) )
+				, 0u
+				, VK_ERROR_INCOMPATIBLE_DRIVER
+				, "Direct3D11"
+				, "Descriptor set layout binding was not found." );
+			static VkDescriptorSetLayoutBinding dummy;
+			return dummy;
 		}
 
 		return *it;

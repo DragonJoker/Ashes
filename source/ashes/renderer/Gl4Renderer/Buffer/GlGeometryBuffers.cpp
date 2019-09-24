@@ -180,11 +180,14 @@ namespace ashes::gl4
 
 	GeometryBuffers::~GeometryBuffers()noexcept
 	{
-		auto context = get( m_device )->getContext();
-		glLogCall( context
-			, glDeleteVertexArrays
-			, 1
-			, &m_vao );
+		if ( m_vao != GL_INVALID_INDEX )
+		{
+			auto context = get( m_device )->getContext();
+			glLogCall( context
+				, glDeleteVertexArrays
+				, 1
+				, &m_vao );
+		}
 	}
 
 	void GeometryBuffers::enableAttribute( ContextLock & context
@@ -230,7 +233,14 @@ namespace ashes::gl4
 
 		if ( m_vao == GL_INVALID_INDEX )
 		{
-			throw std::runtime_error{ "Couldn't create VAO" };
+			get( m_device )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+				, uint64_t( get( m_device ) )
+				, 0u
+				, VK_ERROR_INCOMPATIBLE_DRIVER
+				, "OpenGL"
+				, "Couldn't create VAO" );
+			return;
 		}
 
 		glLogCall( context

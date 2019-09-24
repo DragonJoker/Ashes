@@ -261,6 +261,23 @@ ContextPtr Context::create( VkInstance instance
 		loadDebugFunctions();
 	}
 
+	void Context::reportMessage( VkDebugReportFlagsEXT flags
+		, VkDebugReportObjectTypeEXT objectType
+		, uint64_t object
+		, size_t location
+		, int32_t messageCode
+		, const char * pLayerPrefix
+		, const char * pMessage )
+	{
+		get( m_instance )->reportMessage( flags
+			, objectType
+			, object
+			, location
+			, messageCode
+			, pLayerPrefix
+			, pMessage );
+	}
+
 	void Context::lock()
 	{
 		m_mutex.lock();

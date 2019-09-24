@@ -11,6 +11,8 @@
 
 #include "ashesd3d11_api.hpp"
 
+#include <sstream>
+
 namespace ashes::d3d11
 {
 	namespace
@@ -113,8 +115,16 @@ namespace ashes::d3d11
 		deallocate( m_image, nullptr );
 		deallocate( m_swapChainImage, nullptr );
 		safeRelease( m_swapChain );
-		std::cerr << "Swapchain creation failed: " << exc.what() << std::endl;
-		throw exc;
+
+		std::stringstream stream;
+		stream << "Swapchain creation failed: " << exc.what() << std::endl;
+		get( device )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+			, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+			, uint64_t( device )
+			, 0u
+			, VK_ERROR_INCOMPATIBLE_DRIVER
+			, "Direct3D11"
+			, stream.str().c_str() );
 	}
 
 	SwapchainKHR::~SwapchainKHR()

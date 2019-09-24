@@ -10,52 +10,31 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	/**
-	*\brief
-	*	Classe contenant les informations liées au GPU logique.
-	*/
 	class Device
 	{
 		friend class Instance;
 
 	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] renderer
-		*	L'instance.
-		*\param[in] connection
-		*	La connection à l'application.
-		*/
 		Device( VkInstance instance
 			, VkPhysicalDevice gpu
 			, Context & context
 			, VkDeviceCreateInfo createInfos );
 		~Device();
 		VkPhysicalDeviceLimits const & getLimits()const;
-		/**
-		*\copydoc	Device::getImageSubresourceLayout
-		*/
 		void getImageSubresourceLayout( VkImage image
 			, VkImageSubresource const & subresource
 			, VkSubresourceLayout & layout )const;
-		/**
-		*\copydoc	Device::createQueryPool
-		*/
 		VkResult waitIdle()const;
-		/**
-		*\copydoc	Device::debugMarkerSetObjectName
-		*/
 		VkResult debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const;
-		/**
-		*\copydoc	Device::getQueue
-		*/
+		void reportMessage( VkDebugReportFlagsEXT flags
+			, VkDebugReportObjectTypeEXT objectType
+			, uint64_t object
+			, size_t location
+			, int32_t messageCode
+			, const char * pLayerPrefix
+			, const char * pMessage );
 		VkQueue getQueue( uint32_t familyIndex
 			, uint32_t index )const;
-		/**
-		*\brief
-		*	Echange les tampons.
-		*/
 		void swapBuffers()const;
 
 		void registerContext( VkSurfaceKHR surface )const;

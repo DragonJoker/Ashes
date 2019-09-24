@@ -72,6 +72,8 @@ if ( OpenGL_FOUND )
 		${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES}
 		${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
 	)
+	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
+	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes/Renderer" )
 	set_target_properties( ${PROJECT_NAME}
 		PROPERTIES
 			VERSION ${PROJECT_VERSION}
@@ -112,9 +114,6 @@ if ( OpenGL_FOUND )
 	source_group( "Header Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES} )
 	source_group( "Source Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES} )
 	source_group( "Natvis Files" FILES ${${PROJECT_NAME}_NVS_FILES} )
-
-	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes/Renderer" )
 
 	set( ENABLED_RENDERERS
 		${ENABLED_RENDERERS}

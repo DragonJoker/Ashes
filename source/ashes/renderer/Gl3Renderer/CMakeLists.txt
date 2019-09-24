@@ -84,7 +84,8 @@ if ( OpenGL_FOUND )
 				SOVERSION ${PROJECT_SOVERSION}
 		)
 	endif ()
-
+	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
+	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes/Renderer" )
 	add_target_precompiled_header_ex( ${PROJECT_NAME}
 		ashes/renderer
 		${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/GlRendererPch.hpp
@@ -120,11 +121,8 @@ if ( OpenGL_FOUND )
 	parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Shader "Shader" )
 	parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Sync "Sync" )
 
-	source_group( "Header Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES} )
-	source_group( "Source Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES} )
-
-	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes" )
+	source_group( "Header Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES} )
+	source_group( "Source Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES} )
 
 	set( ENABLED_RENDERERS
 		${ENABLED_RENDERERS}

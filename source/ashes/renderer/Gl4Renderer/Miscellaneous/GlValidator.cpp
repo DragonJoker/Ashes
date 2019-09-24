@@ -917,7 +917,7 @@ namespace ashes::gl4
 				attributes.push_back( { it->format, it->location } );
 			}
 
-			auto findAttribute = [&attributes]( std::string const & name
+			auto findAttribute = [&attributes, &context]( std::string const & name
 				, GlslAttributeType glslType
 				, uint32_t location )
 			{
@@ -936,13 +936,17 @@ namespace ashes::gl4
 				else if ( name.find( "gl_" ) != 0u )
 				{
 					std::stringstream stream;
-					stream << ValidationError
-						<< "Attribute [" << name
+					stream << "Attribute [" << name
 						<< "], of type: " << getName( glslType )
 						<< ", at location: " << location
 						<< " is used in the shader program, but is not listed in the vertex layouts" << std::endl;
-					std::cerr << stream.str();
-					throw std::logic_error{ stream.str() };
+					context->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+						, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+						, 0ull
+						, 0u
+						, VK_ERROR_VALIDATION_FAILED_EXT
+						, "OpenGL"
+						, stream.str().c_str() );
 				}
 			};
 
@@ -980,10 +984,17 @@ namespace ashes::gl4
 
 			for ( auto & attribute : attributes )
 			{
-				std::cerr << ValidationWarning
-					<< "Vertex layout has attribute of type " << ashes::getName( attribute.format )
+				std::stringstream stream;
+				stream << "Vertex layout has attribute of type " << ashes::getName( attribute.format )
 					<< ", at location " << attribute.location
 					<< ", which is not used by the program";
+				context->reportMessage( VK_DEBUG_REPORT_WARNING_BIT_EXT
+					, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+					, 0ull
+					, 0u
+					, VK_ERROR_VALIDATION_FAILED_EXT
+					, "OpenGL"
+					, stream.str().c_str() );
 			}
 		}
 
@@ -1034,11 +1045,18 @@ namespace ashes::gl4
 
 					if ( !found )
 					{
-						std::cerr << ValidationError
-							<< "Attachment [" << output.name
+						std::stringstream stream;
+						stream << "Attachment [" << output.name
 							<< "], of type: " << getName( output.type )
 							<< ", at location: " << output.location
 							<< " is used in the shader program, but is not listed in the render pass attachments";
+						context->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+							, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+							, 0ull
+							, 0u
+							, VK_ERROR_VALIDATION_FAILED_EXT
+							, "OpenGL"
+							, stream.str().c_str() );
 					}
 				}
 				else
@@ -1061,9 +1079,16 @@ namespace ashes::gl4
 			{
 				if ( !isDepthOrStencilFormat( attach->format ) )
 				{
-					std::cerr << ValidationWarning
-						<< "Render pass has an attahment of type " << ashes::getName( attach->format )
+					std::stringstream stream;
+					stream << "Render pass has an attahment of type " << ashes::getName( attach->format )
 						<< ", which is not used by the program";
+					context->reportMessage( VK_DEBUG_REPORT_WARNING_BIT_EXT
+						, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+						, 0ull
+						, 0u
+						, VK_ERROR_VALIDATION_FAILED_EXT
+						, "OpenGL"
+						, stream.str().c_str() );
 				}
 			}
 		}

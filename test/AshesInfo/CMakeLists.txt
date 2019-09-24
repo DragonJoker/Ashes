@@ -22,6 +22,8 @@ add_executable( ${PROJECT_NAME}
 	${SOURCE_FILES}
 	${HEADER_FILES}
 )
+set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
+set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Utils" )
 
 target_compile_definitions( ${PROJECT_NAME} PRIVATE
 	TEST_ID=${TEST_ID}
@@ -37,13 +39,13 @@ target_link_libraries( ${PROJECT_NAME}
 if ( NOT WIN32 )
 	target_link_libraries( ${PROJECT_NAME}
 		X11
+		dl
+	)
+	target_compile_definitions( ${PROJECT_NAME} PRIVATE
+		VK_USE_PLATFORM_XLIB_KHR=1
 	)
 endif ()
 
 add_dependencies( ${PROJECT_NAME}
 	${ENABLED_RENDERERS}
 )
-
-set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Utils" )
-

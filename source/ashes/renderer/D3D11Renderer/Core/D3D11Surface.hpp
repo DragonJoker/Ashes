@@ -40,6 +40,11 @@ namespace ashes::d3d11
 		{
 			return m_createInfo.hwnd;
 		}
+		
+		VkInstance getInstance()const
+		{
+			return m_instance;
+		}
 
 		inline std::vector< DXGI_MODE_DESC > const & getDescs( VkFormat format )const
 		{
@@ -50,6 +55,7 @@ namespace ashes::d3d11
 		void doUpdate( VkPhysicalDevice physicalDevice )const;
 
 	private:
+		VkInstance m_instance;
 		VkSurfaceCreateInfoKHR m_createInfo;
 		std::string m_type;
 		mutable VkSurfaceFormatArrayKHR m_surfaceFormats;

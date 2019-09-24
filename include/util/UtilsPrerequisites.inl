@@ -14,7 +14,7 @@ namespace utils
 		}
 
 		template< typename T >
-		ashes::ByteArray fillByteArray( std::vector< T > const & values
+		void fillByteArray( std::vector< T > const & values
 			, ashes::ByteArray & result )
 		{
 			for ( auto & value : values )
