@@ -45,7 +45,11 @@ namespace ashes
 			, &m_internal );
 		checkError( res, "LogicalDevice creation" );
 
-#define VK_LIB_DEVICE_FUNCTION( fun ) vk##fun = reinterpret_cast< PFN_vk##fun >( m_instance.vkGetDeviceProcAddr( m_internal, "vk"#fun ) );
+#define VK_LIB_DEVICE_FUNCTION( fun )\
+		vk##fun = reinterpret_cast< PFN_vk##fun >( m_instance.vkGetDeviceProcAddr( m_internal, "vk"#fun ) );
+#define VK_LIB_DEVICE_FUNCTION_EXT( ext, fun )\
+		if ( doCheckExtension( ext ) )\
+			vk##fun = reinterpret_cast< PFN_vk##fun >( m_instance.vkGetDeviceProcAddr( m_internal, "vk"#fun ) );
 #include <common/VulkanFunctionsList.inl>
 	}
 
@@ -391,4 +395,11 @@ namespace ashes
 	}
 
 #endif
+
+	bool Device::doCheckExtension( std::string const & name )const
+	{
+		return m_createInfos.enabledExtensionNames.end() != std::find( m_createInfos.enabledExtensionNames.begin()
+			, m_createInfos.enabledExtensionNames.end()
+			, name );
+	}
 }

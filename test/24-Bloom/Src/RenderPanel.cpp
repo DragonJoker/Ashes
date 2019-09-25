@@ -292,26 +292,25 @@ namespace vkapp
 			m_mipSampler.reset();
 
 			{
-				Pass dummyCombine;
-				std::swap( m_passes.combine, dummyCombine );
-			}
-
-			for ( auto & blur : m_passes.blurY )
-			{
-				Pass dummy;
-				std::swap( blur, dummy );
-			}
-
-			for ( auto & blur : m_passes.blurX )
-			{
-				Pass dummy;
-				std::swap( blur, dummy );
+				Passes< 1u > dummy;
+				std::swap( m_passes.combine, dummy );
 			}
 
 			{
-				Pass dummyHi;
-				std::swap( m_passes.hi, dummyHi );
+				Passes< PassCount > dummy;
+				std::swap( m_passes.blurY, dummy );
 			}
+
+			{
+				Passes< PassCount > dummy;
+				std::swap( m_passes.blurX, dummy );
+			}
+
+			{
+				Passes< PassCount > dummy;
+				std::swap( m_passes.hi, dummy );
+			}
+
 			m_blurConfigurationUbo.reset();
 			m_blurDirectionUbo.reset();
 
@@ -409,27 +408,27 @@ namespace vkapp
 			doCreateFrameBuffer();
 			doPrepareOffscreenFrame();
 			m_mainDescriptorSet.reset();
-			{
-				Pass dummyCombine;
-				std::swap( m_passes.combine, dummyCombine );
-			}
 
-			for ( auto & blur : m_passes.blurY )
 			{
-				Pass dummy;
-				std::swap( blur, dummy );
-			}
-
-			for ( auto & blur : m_passes.blurX )
-			{
-				Pass dummy;
-				std::swap( blur, dummy );
+				Passes< 1u > dummy;
+				std::swap( m_passes.combine, dummy );
 			}
 
 			{
-				Pass dummyHi;
-				std::swap( m_passes.hi, dummyHi );
+				Passes< PassCount > dummy;
+				std::swap( m_passes.blurY, dummy );
 			}
+
+			{
+				Passes< PassCount > dummy;
+				std::swap( m_passes.blurX, dummy );
+			}
+
+			{
+				Passes< PassCount > dummy;
+				std::swap( m_passes.hi, dummy );
+			}
+
 			doPrepareHiPass();
 			doPrepareBlurXPass();
 			doPrepareBlurYPass();
@@ -464,7 +463,10 @@ namespace vkapp
 			, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
 			, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
 			, VK_FILTER_LINEAR
-			, VK_FILTER_LINEAR );
+			, VK_FILTER_LINEAR
+			, VK_SAMPLER_MIPMAP_MODE_NEAREST
+			, 0.0f
+			, 1.0f );
 
 		std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / "Assets";
 		std::array< std::string, 6u > paths
@@ -508,6 +510,59 @@ namespace vkapp
 			, uint32_t( sizeof( utils::Mat4 ) )
 			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
+		m_blurDirectionUbo = utils::makeUniformBuffer( *m_device
+			, 2u
+			, uint32_t( sizeof( int ) )
+			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
+			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
+		m_blurConfigurationUbo = utils::makeUniformBuffer( *m_device
+			, uint32_t( PassCount )
+			, uint32_t( sizeof( Configuration ) )
+			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
+			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
+
+		// Initialise blur direction UBO.
+		m_blurDirectionData[0] = 0;
+		m_blurDirectionData[1] = 1;
+
+		if ( auto buffer = m_blurDirectionUbo->getBuffer().lock( 0u, VK_WHOLE_SIZE, 0u ) )
+		{
+			for ( auto & data : m_blurDirectionData )
+			{
+				std::memcpy( buffer, &data, sizeof( data ) );
+				buffer += m_blurDirectionUbo->getAlignedSize();
+			}
+
+			m_blurDirectionUbo->getBuffer().flush( 0u, VK_WHOLE_SIZE );
+			m_blurDirectionUbo->getBuffer().unlock();
+		}
+
+		// Initialise blur configuration data.
+		auto dimensions = m_swapChain->getDimensions();
+		auto coefficientsCount = 5u;
+		auto kernel = doCreateKernel( coefficientsCount );
+
+		for ( auto & data : m_blurConfigurationData )
+		{
+			data.textureSize = utils::Vec2{ dimensions.width, dimensions.height };
+			data.coefficientsCount = coefficientsCount;
+			data.coefficients = kernel;
+			dimensions.width >>= 1;
+			dimensions.height >>= 1;
+		}
+
+		// Initialise blur configuration UBO.
+		if ( auto buffer = m_blurConfigurationUbo->getBuffer().lock( 0u, VK_WHOLE_SIZE, 0u ) )
+		{
+			for ( auto & data : m_blurConfigurationData )
+			{
+				std::memcpy( buffer, &data, sizeof( data ) );
+				buffer += m_blurConfigurationUbo->getAlignedSize();
+			}
+
+			m_blurConfigurationUbo->getBuffer().flush( 0u, VK_WHOLE_SIZE );
+			m_blurConfigurationUbo->getBuffer().unlock();
+		}
 	}
 
 	void RenderPanel::doCreateStagingBuffer()
@@ -719,7 +774,7 @@ namespace vkapp
 		m_mainDescriptorPool = m_mainDescriptorLayout->createPool( 1u );
 		m_mainDescriptorSet = m_mainDescriptorPool->createDescriptorSet();
 		m_mainDescriptorSet->createBinding( m_mainDescriptorLayout->getBinding( 0u )
-			, m_passes.combine.views[0]
+			, m_passes.combine.passes[0].view
 			, *m_sampler );
 		m_mainDescriptorSet->update();
 	}
@@ -823,27 +878,13 @@ namespace vkapp
 	void RenderPanel::doPrepareHiPass()
 	{
 		auto dimensions = m_swapChain->getDimensions();
-		ashes::VkDescriptorSetLayoutBindingArray bindings
-		{
-			{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
-		};
-		m_passes.hi.descriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
-		m_passes.hi.descriptorPool = m_passes.hi.descriptorLayout->createPool( 1u );
-		m_passes.hi.descriptorSet = m_passes.hi.descriptorPool->createDescriptorSet();
-		m_passes.hi.descriptorSet->createBinding( m_passes.hi.descriptorLayout->getBinding( 0u )
-			, m_renderTargetColourView
-			, *m_sampler );
-		m_passes.hi.descriptorSet->update();
-		m_passes.hi.semaphore = m_device->getDevice().createSemaphore();
-		m_passes.hi.pipelineLayout = m_device->getDevice().createPipelineLayout( *m_passes.hi.descriptorLayout );
-
 		m_passes.hi.image = m_device->createImage( ashes::ImageCreateInfo
 			{
 				0u,
 				VK_IMAGE_TYPE_2D,
 				m_renderTargetColourView->format,
 				VkExtent3D{ dimensions.width, dimensions.height, 1u },
-				uint32_t( m_passes.blurX.size() ),
+				uint32_t( PassCount ),
 				1u,
 				VK_SAMPLE_COUNT_1_BIT,
 				VK_IMAGE_TILING_OPTIMAL,
@@ -853,6 +894,11 @@ namespace vkapp
 					| VK_IMAGE_USAGE_TRANSFER_SRC_BIT ),
 			}, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 
+		m_passes.hi.renderPass = createRenderPass( *m_device
+			, m_passes.hi.image->getFormat()
+			, VK_IMAGE_LAYOUT_UNDEFINED
+			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
+		
 		ashes::ImageViewCreateInfo view
 		{
 			0u,
@@ -862,24 +908,13 @@ namespace vkapp
 			{},
 			{ VK_IMAGE_ASPECT_COLOR_BIT, 0u, 1u, 0u, 1u },
 		};
-
-		for ( auto i = 0u; i < m_passes.blurX.size(); ++i )
+		ashes::VkDescriptorSetLayoutBindingArray bindings
 		{
-			view->subresourceRange.baseMipLevel = uint32_t( i );
-			m_passes.hi.views.emplace_back( m_passes.hi.image->createView( view ) );
-		}
-
-		m_passes.hi.renderPass = createRenderPass( *m_device
-			, m_passes.hi.image->getFormat()
-			, VK_IMAGE_LAYOUT_UNDEFINED
-			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
-
-		ashes::ImageViewCRefArray views
-		{
-			m_passes.hi.views[0]
+			{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
 		};
-		m_passes.hi.frameBuffer = m_passes.hi.renderPass->createFrameBuffer( dimensions
-			, std::move( views ) );
+		m_passes.hi.descriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
+		m_passes.hi.descriptorPool = m_passes.hi.descriptorLayout->createPool( m_passes.hi.passes.size() );
+		m_passes.hi.pipelineLayout = m_device->getDevice().createPipelineLayout( *m_passes.hi.descriptorLayout );
 
 		std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
@@ -910,6 +945,168 @@ namespace vkapp
 				"main",
 				std::nullopt,
 			} );
+
+			ashes::PipelineVertexInputStateCreateInfo vertexLayout
+			{
+				0u,
+				{
+					{ 0u, sizeof( TexturedVertexData ), VK_VERTEX_INPUT_RATE_VERTEX },
+				},
+				{
+					{ 0u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof( TexturedVertexData, position ) },
+					{ 1u, 0u, VK_FORMAT_R32G32_SFLOAT, offsetof( TexturedVertexData, uv ) },
+				},
+			};
+
+		for ( uint32_t i = 0u; i < uint32_t( m_passes.hi.passes.size() ); ++i )
+		{
+			auto & hi = m_passes.hi.passes[i];
+			hi.descriptorSet = m_passes.hi.descriptorPool->createDescriptorSet();
+			hi.descriptorSet->createBinding( m_passes.hi.descriptorLayout->getBinding( 0u )
+				, m_renderTargetColourView
+				, *m_sampler );
+			hi.descriptorSet->update();
+			hi.semaphore = m_device->getDevice().createSemaphore();
+
+			view->subresourceRange.baseMipLevel = i;
+			hi.view = m_passes.hi.image->createView( view );
+
+			ashes::ImageViewCRefArray views
+			{
+				hi.view
+			};
+			hi.frameBuffer = m_passes.hi.renderPass->createFrameBuffer( dimensions
+				, std::move( views ) );
+
+			hi.pipeline = m_device->getDevice().createPipeline( ashes::GraphicsPipelineCreateInfo
+				{
+					0u,
+					shaderStages,
+					vertexLayout,
+					ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
+					std::nullopt,
+					ashes::PipelineViewportStateCreateInfo
+					{
+						0u,
+						1u,
+						{ VkViewport{ 0.0f, 0.0f, float( dimensions.width ), float( dimensions.height ), 0.0f, 1.0f } },
+						1u,
+						{ VkRect2D{ { 0, 0 }, dimensions } },
+					},
+					ashes::PipelineRasterizationStateCreateInfo{},
+					ashes::PipelineMultisampleStateCreateInfo{},
+					std::nullopt,
+					ashes::PipelineColorBlendStateCreateInfo{},
+					ashes::nullopt,
+					*m_passes.hi.pipelineLayout,
+					*m_passes.hi.renderPass,
+				} );
+
+			hi.commandBuffer = m_commandPool->createCommandBuffer( true );
+			auto & cmd = *hi.commandBuffer;
+
+			cmd.begin();
+			cmd.beginRenderPass( *m_passes.hi.renderPass
+				, *hi.frameBuffer
+				, { ashes::makeClearValue( VkClearColorValue{ 0.0, 0.0, 0.0, 0.0 } ) }
+				, VK_SUBPASS_CONTENTS_INLINE );
+			cmd.bindPipeline( *hi.pipeline );
+			cmd.bindDescriptorSet( *hi.descriptorSet, *m_passes.hi.pipelineLayout );
+			cmd.bindVertexBuffer( 0u, m_mainVertexBuffer->getBuffer(), 0u );
+			cmd.draw( m_mainVertexBuffer->getCount() );
+			cmd.endRenderPass();
+			cmd.end();
+
+			//dimensions.width >>= 1;
+			//dimensions.height >>= 1;
+		}
+	}
+
+	void RenderPanel::doPrepareBlurXPass()
+	{
+		auto dimensions = m_swapChain->getDimensions();
+
+		for ( auto i = 0u; i < uint32_t( PassCount ); ++i )
+		{
+			m_blurSamplers[i] = m_device->getDevice().createSampler( VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER
+				, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER
+				, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER
+				, VK_FILTER_NEAREST
+				, VK_FILTER_NEAREST
+				, VK_SAMPLER_MIPMAP_MODE_NEAREST
+				, float( i )
+				, float( i + 1u ) );
+		}
+
+		m_passes.blurX.image = m_device->createImage( ashes::ImageCreateInfo
+			{
+				0u,
+				VK_IMAGE_TYPE_2D,
+				m_renderTargetColourView->format,
+				VkExtent3D{ dimensions.width, dimensions.height, 1u },
+				uint32_t( PassCount ),
+				1u,
+				VK_SAMPLE_COUNT_1_BIT,
+				VK_IMAGE_TILING_OPTIMAL,
+				( VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+					| VK_IMAGE_USAGE_SAMPLED_BIT
+					| VK_IMAGE_USAGE_TRANSFER_DST_BIT
+					| VK_IMAGE_USAGE_TRANSFER_SRC_BIT ),
+			}, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
+
+		m_passes.blurX.renderPass = createRenderPass( *m_device
+			, m_passes.blurX.image->getFormat()
+			, VK_IMAGE_LAYOUT_UNDEFINED
+			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
+
+		ashes::ImageViewCreateInfo view
+		{
+			0u,
+			*m_passes.blurX.image,
+			VK_IMAGE_VIEW_TYPE_2D,
+			m_passes.blurX.image->getFormat(),
+			{},
+			{ VK_IMAGE_ASPECT_COLOR_BIT,0u, 1u, 0u, 1u },
+		};
+		ashes::VkDescriptorSetLayoutBindingArray bindings
+		{
+			{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
+			{ 1u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
+			{ 2u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
+		};
+		m_passes.blurX.descriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
+		m_passes.blurX.descriptorPool = m_passes.blurX.descriptorLayout->createPool( m_passes.blurX.passes.size() );
+		m_passes.blurX.pipelineLayout = m_device->getDevice().createPipelineLayout( *m_passes.blurX.descriptorLayout );
+		
+		std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+
+		if ( !wxFileExists( shadersFolder / "blur.vert" )
+			|| !wxFileExists( shadersFolder / "blur.frag" ) )
+		{
+			throw std::runtime_error{ "Shader files are missing" };
+		}
+
+		ashes::PipelineShaderStageCreateInfoArray shaderStages;
+		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
+			{
+				0u,
+				VK_SHADER_STAGE_VERTEX_BIT,
+				m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+					, VK_SHADER_STAGE_VERTEX_BIT
+					, shadersFolder / "blur.vert" ) ),
+				"main",
+				std::nullopt,
+			} );
+		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
+			{
+				0u,
+				VK_SHADER_STAGE_FRAGMENT_BIT,
+				m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+					, VK_SHADER_STAGE_FRAGMENT_BIT
+					, shadersFolder / "blur.frag" ) ),
+				"main",
+				std::nullopt,
+			} );
 		
 		ashes::PipelineVertexInputStateCreateInfo vertexLayout
 		{
@@ -923,223 +1120,39 @@ namespace vkapp
 			},
 		};
 
-		m_passes.hi.pipeline = m_device->getDevice().createPipeline( ashes::GraphicsPipelineCreateInfo
-			{
-				0u,
-				std::move( shaderStages ),
-				std::move( vertexLayout ),
-				ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
-				std::nullopt,
-				ashes::PipelineViewportStateCreateInfo
-				{
-					0u,
-					1u,
-					{ VkViewport{ 0.0f, 0.0f, float( dimensions.width ), float( dimensions.height ), 0.0f, 1.0f } },
-					1u,
-					{ VkRect2D{ { 0, 0 }, dimensions } },
-				},
-				ashes::PipelineRasterizationStateCreateInfo{},
-				ashes::PipelineMultisampleStateCreateInfo{},
-				std::nullopt,
-				ashes::PipelineColorBlendStateCreateInfo{},
-				ashes::nullopt,
-				*m_passes.hi.pipelineLayout,
-				*m_passes.hi.renderPass,
-			} );
-
-		m_passes.hi.commandBuffer = m_commandPool->createCommandBuffer( true );
-		auto & cmd = *m_passes.hi.commandBuffer;
-
-		cmd.begin();
-		cmd.beginRenderPass( *m_passes.hi.renderPass
-			, *m_passes.hi.frameBuffer
-			, { ashes::makeClearValue( VkClearColorValue{ 0.0, 0.0, 0.0, 0.0 } ) }
-			, VK_SUBPASS_CONTENTS_INLINE );
-		cmd.bindPipeline( *m_passes.hi.pipeline );
-		cmd.bindDescriptorSet( *m_passes.hi.descriptorSet, *m_passes.hi.pipelineLayout );
-		cmd.bindVertexBuffer( 0u, m_mainVertexBuffer->getBuffer(), 0u );
-		cmd.draw( m_mainVertexBuffer->getCount() );
-		cmd.endRenderPass();
-		m_passes.hi.image->generateMipmaps( cmd );
-		cmd.end();
-	}
-
-	void RenderPanel::doPrepareBlurXPass()
-	{
-		auto dimensions = m_swapChain->getDimensions();
-		m_blurConfigurationUbo = utils::makeUniformBuffer( *m_device
-			, uint32_t( m_passes.blurX.size() )
-			, uint32_t( sizeof( Configuration ) )
-			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
-			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
-		m_blurConfigurationData.resize( m_passes.blurX.size() );
-		m_blurDirectionUbo = utils::makeUniformBuffer( *m_device
-			, 2u
-			, uint32_t( sizeof( int ) )
-			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
-			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
-		m_blurDirectionData[0] = 0;
-		m_blurDirectionData[1] = 1;
-
-		if ( auto buffer = m_blurDirectionUbo->getBuffer().lock( 0u, VK_WHOLE_SIZE, 0u ) )
+		for ( uint32_t i = 0u; i < PassCount; ++i )
 		{
-			for ( auto & data : m_blurDirectionData )
-			{
-				std::memcpy( buffer, &data, sizeof( int ) );
-				buffer += m_blurDirectionUbo->getAlignedSize();
-			}
-
-			m_blurDirectionUbo->getBuffer().flush( 0u, VK_WHOLE_SIZE );
-			m_blurDirectionUbo->getBuffer().unlock();
-		}
-
-		auto coefficientsCount = 5u;
-		auto kernel = doCreateKernel( coefficientsCount );
-
-		for ( auto i = 0u; i < uint32_t( m_passes.blurX.size() ); ++i )
-		{
-			auto & data = m_blurConfigurationData[i];
-			data.textureSize = { dimensions.width >> i, dimensions.height >> i };
-			data.coefficientsCount = coefficientsCount;
-			data.coefficients = kernel;
-
-			m_blurSamplers[i] = m_device->getDevice().createSampler( VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER
-				, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER
-				, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER
-				, VK_FILTER_NEAREST
-				, VK_FILTER_NEAREST
-				, VK_SAMPLER_MIPMAP_MODE_NEAREST
-				, float( i )
-				, float( i + 1u ) );
-		}
-
-		if ( auto buffer = m_blurConfigurationUbo->getBuffer().lock( 0u, VK_WHOLE_SIZE, 0u ) )
-		{
-			for ( auto & data : m_blurConfigurationData )
-			{
-				std::memcpy( buffer, &data, sizeof( int ) );
-				buffer += m_blurConfigurationUbo->getAlignedSize();
-			}
-
-			m_blurConfigurationUbo->getBuffer().flush( 0u, VK_WHOLE_SIZE );
-			m_blurConfigurationUbo->getBuffer().unlock();
-		}
-
-		m_passes.blurX[0].image = m_device->createImage( ashes::ImageCreateInfo
-			{
-				0u,
-				VK_IMAGE_TYPE_2D,
-				m_renderTargetColourView->format,
-				VkExtent3D{ dimensions.width, dimensions.height, 1u },
-				uint32_t( m_passes.blurX.size() ),
-				1u,
-				VK_SAMPLE_COUNT_1_BIT,
-				VK_IMAGE_TILING_OPTIMAL,
-				( VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
-					| VK_IMAGE_USAGE_SAMPLED_BIT
-					| VK_IMAGE_USAGE_TRANSFER_DST_BIT
-					| VK_IMAGE_USAGE_TRANSFER_SRC_BIT ),
-			}, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
-
-		m_passes.blurX[0].renderPass = createRenderPass( *m_device
-			, m_passes.blurX[0].image->getFormat()
-			, VK_IMAGE_LAYOUT_UNDEFINED
-			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
-
-		ashes::ImageViewCreateInfo view
-		{
-			0u,
-			*m_passes.blurX[0].image,
-			VK_IMAGE_VIEW_TYPE_2D,
-			m_passes.blurX[0].image->getFormat(),
-			{},
-			{ VK_IMAGE_ASPECT_COLOR_BIT,0u, 1u, 0u, 1u },
-		};
-
-		for ( uint32_t i = 0u; i < m_passes.blurX.size(); ++i )
-		{
-			auto & blur = m_passes.blurX[i];
-			ashes::VkDescriptorSetLayoutBindingArray bindings
-			{
-				{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
-				{ 1u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
-				{ 2u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
-			};
-			blur.descriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
-			blur.descriptorPool = blur.descriptorLayout->createPool( 1u );
-			blur.descriptorSet = blur.descriptorPool->createDescriptorSet();
-			blur.descriptorSet->createBinding( blur.descriptorLayout->getBinding( 0u )
-				, m_passes.hi.views[i]
+			auto & blur = m_passes.blurX.passes[i];
+			blur.descriptorSet = m_passes.blurX.descriptorPool->createDescriptorSet();
+			blur.descriptorSet->createBinding( m_passes.blurX.descriptorLayout->getBinding( 0u )
+				, m_passes.hi.passes[i].view
 				, *m_blurSamplers[i] );
-			blur.descriptorSet->createBinding( blur.descriptorLayout->getBinding( 1u )
+			blur.descriptorSet->createBinding( m_passes.blurX.descriptorLayout->getBinding( 1u )
 				, *m_blurConfigurationUbo
 				, i
 				, 1u );
-			blur.descriptorSet->createBinding( blur.descriptorLayout->getBinding( 2u )
+			blur.descriptorSet->createBinding( m_passes.blurX.descriptorLayout->getBinding( 2u )
 				, *m_blurDirectionUbo
 				, 0u
 				, 1u );
 			blur.descriptorSet->update();
 			blur.semaphore = m_device->getDevice().createSemaphore();
-			blur.pipelineLayout = m_device->getDevice().createPipelineLayout( *blur.descriptorLayout );
 			
 			view->subresourceRange.baseMipLevel = i;
-			blur.views.emplace_back( m_passes.blurX[0].image->createView( view ) );
+			blur.view = m_passes.blurX.image->createView( view );
 
 			ashes::ImageViewCRefArray views
 			{
-				blur.views.back()
+				blur.view
 			};
-			blur.frameBuffer = m_passes.blurX[0].renderPass->createFrameBuffer( dimensions
+			blur.frameBuffer = m_passes.blurX.renderPass->createFrameBuffer( dimensions
 				, std::move( views ) );
-
-			std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders";
-
-			if ( !wxFileExists( shadersFolder / "blur.vert" )
-				|| !wxFileExists( shadersFolder / "blur.frag" ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
-
-			ashes::PipelineVertexInputStateCreateInfo vertexLayout
-			{
-				0u,
-				{
-					{ 0u, sizeof( TexturedVertexData ), VK_VERTEX_INPUT_RATE_VERTEX },
-				},
-				{
-					{ 0u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof( TexturedVertexData, position ) },
-					{ 1u, 0u, VK_FORMAT_R32G32_SFLOAT, offsetof( TexturedVertexData, uv ) },
-				},
-			};
-
-			ashes::PipelineShaderStageCreateInfoArray shaderStages;
-			shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
-				{
-					0u,
-					VK_SHADER_STAGE_VERTEX_BIT,
-					m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
-						, VK_SHADER_STAGE_VERTEX_BIT
-						, shadersFolder / "blur.vert" ) ),
-					"main",
-					std::nullopt,
-				} );
-			shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
-				{
-					0u,
-					VK_SHADER_STAGE_FRAGMENT_BIT,
-					m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
-						, VK_SHADER_STAGE_FRAGMENT_BIT
-						, shadersFolder / "blur.frag" ) ),
-					"main",
-					std::nullopt,
-				} );
 
 			blur.pipeline = m_device->getDevice().createPipeline( ashes::GraphicsPipelineCreateInfo
 				{
 					0u,
-					std::move( shaderStages ),
-					std::move( vertexLayout ),
+					shaderStages,
+					vertexLayout,
 					ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
 					std::nullopt,
 					ashes::PipelineViewportStateCreateInfo
@@ -1155,20 +1168,20 @@ namespace vkapp
 					std::nullopt,
 					ashes::PipelineColorBlendStateCreateInfo{},
 					std::nullopt,
-					*blur.pipelineLayout,
-					*m_passes.blurX[0].renderPass,
+					*m_passes.blurX.pipelineLayout,
+					*m_passes.blurX.renderPass,
 				} );
 
 			blur.commandBuffer = m_commandPool->createCommandBuffer( true );
 			auto & cmd = *blur.commandBuffer;
 
 			cmd.begin();
-			cmd.beginRenderPass( *m_passes.blurX[0].renderPass
+			cmd.beginRenderPass( *m_passes.blurX.renderPass
 				, *blur.frameBuffer
 				, { ashes::makeClearValue( VkClearColorValue{ 0.0, 0.0, 0.0, 0.0 } ) }
 				, VK_SUBPASS_CONTENTS_INLINE );
 			cmd.bindPipeline( *blur.pipeline );
-			cmd.bindDescriptorSet( *blur.descriptorSet, *blur.pipelineLayout );
+			cmd.bindDescriptorSet( *blur.descriptorSet, *m_passes.blurX.pipelineLayout );
 			cmd.bindVertexBuffer( 0u, m_mainVertexBuffer->getBuffer(), 0u );
 			cmd.draw( m_mainVertexBuffer->getCount() );
 			cmd.endRenderPass();
@@ -1182,92 +1195,93 @@ namespace vkapp
 	void RenderPanel::doPrepareBlurYPass()
 	{
 		auto dimensions = m_swapChain->getDimensions();
-		m_passes.blurY[0].renderPass = createRenderPass( *m_device
-			, m_passes.hi.views[0]->format
+		m_passes.blurY.renderPass = createRenderPass( *m_device
+			, m_passes.hi.image->getFormat()
 			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
 			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
 
-		for ( auto i = 0u; i < m_passes.blurY.size(); ++i )
+		ashes::VkDescriptorSetLayoutBindingArray bindings
 		{
-			auto & blur = m_passes.blurY[i];
-			ashes::VkDescriptorSetLayoutBindingArray bindings
+			{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
+			{ 1u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
+			{ 2u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
+		};
+		m_passes.blurY.descriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
+		m_passes.blurY.descriptorPool = m_passes.blurY.descriptorLayout->createPool( m_passes.blurY.passes.size() );
+		m_passes.blurY.pipelineLayout = m_device->getDevice().createPipelineLayout( *m_passes.blurY.descriptorLayout );
+
+		std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders";
+
+		if ( !wxFileExists( shadersFolder / "blur.vert" )
+			|| !wxFileExists( shadersFolder / "blur.frag" ) )
+		{
+			throw std::runtime_error{ "Shader files are missing" };
+		}
+
+		ashes::PipelineShaderStageCreateInfoArray shaderStages;
+		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
 			{
-				{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
-				{ 1u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
-				{ 2u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
-			};
-			blur.descriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
-			blur.descriptorPool = blur.descriptorLayout->createPool( 1u );
-			blur.descriptorSet = blur.descriptorPool->createDescriptorSet();
-			blur.descriptorSet->createBinding( blur.descriptorLayout->getBinding( 0u )
-				, m_passes.blurX[i].views[0]
+				0u,
+				VK_SHADER_STAGE_VERTEX_BIT,
+				m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+					, VK_SHADER_STAGE_VERTEX_BIT
+					, shadersFolder / "blur.vert" ) ),
+				"main",
+				std::nullopt,
+			} );
+		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
+			{
+				0u,
+				VK_SHADER_STAGE_FRAGMENT_BIT,
+				m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+					, VK_SHADER_STAGE_FRAGMENT_BIT
+					, shadersFolder / "blur.frag" ) ),
+				"main",
+				std::nullopt,
+			} );
+
+		ashes::PipelineVertexInputStateCreateInfo vertexLayout
+		{
+			0u,
+			{
+				{ 0u, sizeof( TexturedVertexData ), VK_VERTEX_INPUT_RATE_VERTEX },
+			},
+			{
+				{ 0u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof( TexturedVertexData, position ) },
+				{ 1u, 0u, VK_FORMAT_R32G32_SFLOAT, offsetof( TexturedVertexData, uv ) },
+			},
+		};
+
+		for ( auto i = 0u; i < PassCount; ++i )
+		{
+			auto & blur = m_passes.blurY.passes[i];
+			blur.descriptorSet = m_passes.blurY.descriptorPool->createDescriptorSet();
+			blur.descriptorSet->createBinding( m_passes.blurY.descriptorLayout->getBinding( 0u )
+				, m_passes.blurX.passes[i].view
 				, *m_blurSamplers[i] );
-			blur.descriptorSet->createBinding( blur.descriptorLayout->getBinding( 1u )
+			blur.descriptorSet->createBinding( m_passes.blurY.descriptorLayout->getBinding( 1u )
 				, *m_blurConfigurationUbo
 				, i
 				, 1u );
-			blur.descriptorSet->createBinding( blur.descriptorLayout->getBinding( 2u )
+			blur.descriptorSet->createBinding( m_passes.blurY.descriptorLayout->getBinding( 2u )
 				, *m_blurDirectionUbo
 				, 1u
 				, 1u );
 			blur.descriptorSet->update();
 			blur.semaphore = m_device->getDevice().createSemaphore();
-			blur.pipelineLayout = m_device->getDevice().createPipelineLayout( *blur.descriptorLayout );
 
 			ashes::ImageViewCRefArray attaches
 			{
-				m_passes.hi.views[i]
+				m_passes.hi.passes[i].view
 			};
-			blur.frameBuffer = m_passes.blurY[0].renderPass->createFrameBuffer( dimensions
+			blur.frameBuffer = m_passes.blurY.renderPass->createFrameBuffer( dimensions
 				, std::move( attaches ) );
-
-			std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders";
-
-			if ( !wxFileExists( shadersFolder / "blur.vert" )
-				|| !wxFileExists( shadersFolder / "blur.frag" ) )
-			{
-				throw std::runtime_error{ "Shader files are missing" };
-			}
-
-			ashes::PipelineVertexInputStateCreateInfo vertexLayout
-			{
-				0u,
-				{
-					{ 0u, sizeof( TexturedVertexData ), VK_VERTEX_INPUT_RATE_VERTEX },
-				},
-				{
-					{ 0u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof( TexturedVertexData, position ) },
-					{ 1u, 0u, VK_FORMAT_R32G32_SFLOAT, offsetof( TexturedVertexData, uv ) },
-				},
-			};
-
-			ashes::PipelineShaderStageCreateInfoArray shaderStages;
-			shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
-				{
-					0u,
-					VK_SHADER_STAGE_VERTEX_BIT,
-					m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
-						, VK_SHADER_STAGE_VERTEX_BIT
-						, shadersFolder / "blur.vert" ) ),
-					"main",
-					std::nullopt,
-				} );
-			shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
-				{
-					0u,
-					VK_SHADER_STAGE_FRAGMENT_BIT,
-					m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
-						, VK_SHADER_STAGE_FRAGMENT_BIT
-						, shadersFolder / "blur.frag" ) ),
-					"main",
-					std::nullopt,
-				} );
 
 			blur.pipeline = m_device->getDevice().createPipeline( ashes::GraphicsPipelineCreateInfo
 				{
 					0u,
-					std::move( shaderStages ),
-					std::move( vertexLayout ),
+					shaderStages,
+					vertexLayout,
 					ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
 					std::nullopt,
 					ashes::PipelineViewportStateCreateInfo
@@ -1283,20 +1297,20 @@ namespace vkapp
 					std::nullopt,
 					ashes::PipelineColorBlendStateCreateInfo{},
 					std::nullopt,
-					*blur.pipelineLayout,
-					*m_passes.blurY[0].renderPass,
+					*m_passes.blurY.pipelineLayout,
+					*m_passes.blurY.renderPass,
 				} );
 
 			blur.commandBuffer = m_commandPool->createCommandBuffer( true );
 			auto & cmd = *blur.commandBuffer;
 
 			cmd.begin();
-			cmd.beginRenderPass( *m_passes.blurY[0].renderPass
+			cmd.beginRenderPass( *m_passes.blurY.renderPass
 				, *blur.frameBuffer
 				, { ashes::makeClearValue( VkClearColorValue{ 0.0, 0.0, 0.0, 0.0 } ) }
 				, VK_SUBPASS_CONTENTS_INLINE );
 			cmd.bindPipeline( *blur.pipeline );
-			cmd.bindDescriptorSet( *blur.descriptorSet, *blur.pipelineLayout );
+			cmd.bindDescriptorSet( *blur.descriptorSet, *m_passes.blurY.pipelineLayout );
 			cmd.bindVertexBuffer( 0u, m_mainVertexBuffer->getBuffer(), 0u );
 			cmd.draw( m_mainVertexBuffer->getCount() );
 			cmd.endRenderPass();
@@ -1316,7 +1330,7 @@ namespace vkapp
 				VK_IMAGE_VIEW_TYPE_2D,
 				m_renderTargetColourView->format,
 				{},
-				{ VK_IMAGE_ASPECT_COLOR_BIT, 0u, uint32_t( m_passes.blurY.size() ), 0u, 1u },
+				{ VK_IMAGE_ASPECT_COLOR_BIT, 0u, uint32_t( PassCount ), 0u, 1u },
 			} );
 
 		m_mipSampler = m_device->getDevice().createSampler( VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
@@ -1326,29 +1340,9 @@ namespace vkapp
 			, VK_FILTER_LINEAR
 			, VK_SAMPLER_MIPMAP_MODE_NEAREST
 			, 0.0f
-			, float( m_passes.blurY.size() ) );
+			, float( PassCount ) );
 
 		auto dimensions = m_swapChain->getDimensions();
-		ashes::VkDescriptorSetLayoutBindingArray bindings
-		{
-			{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
-			{ 1u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
-		};
-
-		m_passes.combine.descriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
-		m_passes.combine.descriptorPool = m_passes.combine.descriptorLayout->createPool( 1u );
-		m_passes.combine.descriptorSet = m_passes.combine.descriptorPool->createDescriptorSet();
-		m_passes.combine.descriptorSet->createBinding( m_passes.combine.descriptorLayout->getBinding( 0u )
-			, m_renderTargetColourView
-			, *m_sampler );
-		m_passes.combine.descriptorSet->createBinding( m_passes.combine.descriptorLayout->getBinding( 1u )
-			, m_blurMipView
-			, *m_mipSampler );
-
-		m_passes.combine.descriptorSet->update();
-		m_passes.combine.semaphore = m_device->getDevice().createSemaphore();
-		m_passes.combine.pipelineLayout = m_device->getDevice().createPipelineLayout( *m_passes.combine.descriptorLayout );
-
 		m_passes.combine.image = m_device->createImage( ashes::ImageCreateInfo
 			{
 				0u,
@@ -1364,26 +1358,21 @@ namespace vkapp
 					| VK_IMAGE_USAGE_TRANSFER_DST_BIT
 					| VK_IMAGE_USAGE_TRANSFER_SRC_BIT ),
 			}, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
-		m_passes.combine.views.emplace_back( m_passes.combine.image->createView( ashes::ImageViewCreateInfo
-			{
-				0u,
-				*m_passes.combine.image,
-				VK_IMAGE_VIEW_TYPE_2D,
-				m_passes.combine.image->getFormat(),
-				{},
-				{ VK_IMAGE_ASPECT_COLOR_BIT, 0u, 1u, 0u, 1u },
-			} ) );
+
 		m_passes.combine.renderPass = createRenderPass( *m_device
-			, m_passes.combine.views[0]->format
+			, m_passes.combine.image->getFormat()
 			, VK_IMAGE_LAYOUT_UNDEFINED
 			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
 
-		ashes::ImageViewCRefArray attaches
+		ashes::VkDescriptorSetLayoutBindingArray bindings
 		{
-			m_passes.combine.views[0]
+			{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
+			{ 1u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
 		};
-		m_passes.combine.frameBuffer = m_passes.combine.renderPass->createFrameBuffer( dimensions
-			, std::move( attaches ) );
+
+		m_passes.combine.descriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
+		m_passes.combine.descriptorPool = m_passes.combine.descriptorLayout->createPool( m_passes.combine.passes.size() );
+		m_passes.combine.pipelineLayout = m_device->getDevice().createPipelineLayout( *m_passes.combine.descriptorLayout );
 
 		std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
@@ -1392,18 +1381,6 @@ namespace vkapp
 		{
 			throw std::runtime_error{ "Shader files are missing" };
 		}
-
-		ashes::PipelineVertexInputStateCreateInfo vertexLayout
-		{
-			0u,
-			{
-				{ 0u, sizeof( TexturedVertexData ), VK_VERTEX_INPUT_RATE_VERTEX },
-			},
-			{
-				{ 0u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof( TexturedVertexData, position ) },
-				{ 1u, 0u, VK_FORMAT_R32G32_SFLOAT, offsetof( TexturedVertexData, uv ) },
-			},
-		};
 
 		ashes::PipelineShaderStageCreateInfoArray shaderStages;
 		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
@@ -1427,44 +1404,89 @@ namespace vkapp
 				std::nullopt,
 			} );
 
-		m_passes.combine.pipeline = m_device->getDevice().createPipeline( ashes::GraphicsPipelineCreateInfo
+		ashes::PipelineVertexInputStateCreateInfo vertexLayout
+		{
+			0u,
 			{
-				0u,
-				std::move( shaderStages ),
-				std::move( vertexLayout ),
-				ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
-				std::nullopt,
-				ashes::PipelineViewportStateCreateInfo
+				{ 0u, sizeof( TexturedVertexData ), VK_VERTEX_INPUT_RATE_VERTEX },
+			},
+			{
+				{ 0u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof( TexturedVertexData, position ) },
+			},
+		};
+
+		for ( auto i = 0u; i < m_passes.combine.passes.size(); ++i )
+		{
+			auto & combine = m_passes.combine.passes[i];
+			combine.descriptorSet = m_passes.combine.descriptorPool->createDescriptorSet();
+			combine.descriptorSet->createBinding( m_passes.combine.descriptorLayout->getBinding( 0u )
+				, m_renderTargetColourView
+				, *m_sampler );
+			combine.descriptorSet->createBinding( m_passes.combine.descriptorLayout->getBinding( 1u )
+				, m_blurMipView
+				, *m_mipSampler );
+			combine.descriptorSet->update();
+			combine.semaphore = m_device->getDevice().createSemaphore();
+
+			combine.view = m_passes.combine.image->createView( ashes::ImageViewCreateInfo
 				{
 					0u,
-					1u,
-					{ VkViewport{ 0.0f, 0.0f, float( dimensions.width ), float( dimensions.height ), 0.0f, 1.0f } },
-					1u,
-					{ VkRect2D{ { 0, 0 }, dimensions } },
-				},
-				ashes::PipelineRasterizationStateCreateInfo{},
-				ashes::PipelineMultisampleStateCreateInfo{},
-				std::nullopt,
-				ashes::PipelineColorBlendStateCreateInfo{},
-				std::nullopt,
-				*m_passes.combine.pipelineLayout,
-				*m_passes.combine.renderPass,
-			} );
+					*m_passes.combine.image,
+					VK_IMAGE_VIEW_TYPE_2D,
+					m_passes.combine.image->getFormat(),
+					{},
+					{ VK_IMAGE_ASPECT_COLOR_BIT, 0u, 1u, 0u, 1u },
+				} );
 
-		m_passes.combine.commandBuffer = m_commandPool->createCommandBuffer( true );
-		auto & cmd = *m_passes.combine.commandBuffer;
+			ashes::ImageViewCRefArray attaches
+			{
+				combine.view
+			};
+			combine.frameBuffer = m_passes.combine.renderPass->createFrameBuffer( dimensions
+				, std::move( attaches ) );
 
-		cmd.begin();
-		cmd.beginRenderPass( *m_passes.combine.renderPass
-			, *m_passes.combine.frameBuffer
-			, { ashes::makeClearValue( VkClearColorValue{ 0.0, 0.0, 0.0, 0.0 } ) }
-			, VK_SUBPASS_CONTENTS_INLINE );
-		cmd.bindPipeline( *m_passes.combine.pipeline );
-		cmd.bindDescriptorSet( *m_passes.combine.descriptorSet, *m_passes.combine.pipelineLayout );
-		cmd.bindVertexBuffer( 0u, m_mainVertexBuffer->getBuffer(), 0u );
-		cmd.draw( m_mainVertexBuffer->getCount() );
-		cmd.endRenderPass();
-		cmd.end();
+			combine.pipeline = m_device->getDevice().createPipeline( ashes::GraphicsPipelineCreateInfo
+				{
+					0u,
+					shaderStages,
+					vertexLayout,
+					ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
+					std::nullopt,
+					ashes::PipelineViewportStateCreateInfo
+					{
+						0u,
+						1u,
+						{ VkViewport{ 0.0f, 0.0f, float( dimensions.width ), float( dimensions.height ), 0.0f, 1.0f } },
+						1u,
+						{ VkRect2D{ { 0, 0 }, dimensions } },
+					},
+					ashes::PipelineRasterizationStateCreateInfo{},
+					ashes::PipelineMultisampleStateCreateInfo{},
+					std::nullopt,
+					ashes::PipelineColorBlendStateCreateInfo{},
+					std::nullopt,
+					*m_passes.combine.pipelineLayout,
+					*m_passes.combine.renderPass,
+				} );
+
+			combine.commandBuffer = m_commandPool->createCommandBuffer( true );
+			auto & cmd = *combine.commandBuffer;
+
+			cmd.begin();
+			cmd.beginRenderPass( *m_passes.combine.renderPass
+				, *combine.frameBuffer
+				, { ashes::makeClearValue( VkClearColorValue{ 0.0, 0.0, 0.0, 0.0 } ) }
+				, VK_SUBPASS_CONTENTS_INLINE );
+			cmd.bindPipeline( *combine.pipeline );
+			cmd.bindDescriptorSet( *combine.descriptorSet, *m_passes.combine.pipelineLayout );
+			cmd.bindVertexBuffer( 0u, m_mainVertexBuffer->getBuffer(), 0u );
+			cmd.draw( m_mainVertexBuffer->getCount() );
+			cmd.endRenderPass();
+			cmd.end();
+
+			dimensions.width >>= 1;
+			dimensions.height >>= 1;
+		}
 	}
 
 	void RenderPanel::doCreateMainVertexBuffer()
@@ -1609,23 +1631,30 @@ namespace vkapp
 			auto before = std::chrono::high_resolution_clock::now();
 			m_graphicsQueue->submit( *m_commandBuffer
 				, nullptr );
-			m_graphicsQueue->submit( *m_passes.hi.commandBuffer
-				, nullptr );
 
-			for ( auto & blur : m_passes.blurX )
+			for ( auto & hi : m_passes.hi.passes )
+			{
+				m_graphicsQueue->submit( *hi.commandBuffer
+					, nullptr );
+			}
+
+			for ( auto & blur : m_passes.blurX.passes )
 			{
 				m_graphicsQueue->submit( *blur.commandBuffer
 					, nullptr );
 			}
 
-			for ( auto & blur : m_passes.blurY )
+			for ( auto & blur : m_passes.blurY.passes )
 			{
 				m_graphicsQueue->submit( *blur.commandBuffer
 					, nullptr );
 			}
 
-			m_graphicsQueue->submit( *m_passes.combine.commandBuffer
-				, nullptr );
+			for ( auto & combine : m_passes.combine.passes )
+			{
+				m_graphicsQueue->submit( *combine.commandBuffer
+					, nullptr );
+			}
 
 			m_graphicsQueue->submit( *m_commandBuffers[resources->getImageIndex()]
 				, resources->getImageAvailableSemaphore()

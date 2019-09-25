@@ -47,7 +47,7 @@ namespace common
 					VK_API_VERSION_1_0,
 				} );
 
-			std::cout << "Instance instance created." << std::endl;
+			std::cout << "Instance created." << std::endl;
 			m_panel = doCreatePanel( WindowSize, *m_instance );
 
 			wxBoxSizer * sizer{ new wxBoxSizer{ wxVERTICAL } };

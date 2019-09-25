@@ -274,6 +274,7 @@ namespace ashes
 	private:
 		void doInitInstance();
 		PFN_vkVoidFunction getInstanceProcAddr( char const * const name );
+		bool doCheckExtension( std::string const & name )const;
 
 	private:
 		AshPluginDescription m_plugin;

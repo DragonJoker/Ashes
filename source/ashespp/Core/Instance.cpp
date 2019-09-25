@@ -31,7 +31,8 @@ namespace ashes
 		m_features.hasStorageBuffers = true;
 		m_features.supportsPersistentMapping = true;
 
-#define VK_LIB_GLOBAL_FUNCTION( fun ) vk##fun = reinterpret_cast< PFN_vk##fun >( m_plugin.getInstanceProcAddr( nullptr, "vk"#fun ) );
+#define VK_LIB_GLOBAL_FUNCTION( fun )\
+		vk##fun = reinterpret_cast< PFN_vk##fun >( m_plugin.getInstanceProcAddr( nullptr, "vk"#fun ) );
 #include <common/VulkanFunctionsList.inl>
 
 		doInitInstance();
@@ -202,7 +203,11 @@ namespace ashes
 			, &m_instance );
 		checkError( res, "Instance creation" );
 
-#define VK_LIB_INSTANCE_FUNCTION( fun ) vk##fun = reinterpret_cast< PFN_vk##fun >( getInstanceProcAddr( "vk"#fun ) );
+#define VK_LIB_INSTANCE_FUNCTION( fun )\
+			vk##fun = reinterpret_cast< PFN_vk##fun >( getInstanceProcAddr( "vk"#fun ) );
+#define VK_LIB_INSTANCE_FUNCTION_EXT( ext, fun )\
+		if ( doCheckExtension( ext ) )\
+			vk##fun = reinterpret_cast< PFN_vk##fun >( getInstanceProcAddr( "vk"#fun ) );
 #include <common/VulkanFunctionsList.inl>
 	}
 
@@ -216,5 +221,12 @@ namespace ashes
 		}
 
 		return result;
+	}
+
+	bool Instance::doCheckExtension( std::string const & name )const
+	{
+		return m_createInfo.enabledExtensionNames.end() != std::find( m_createInfo.enabledExtensionNames.begin()
+			, m_createInfo.enabledExtensionNames.end()
+			, name );
 	}
 }

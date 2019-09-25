@@ -9,7 +9,7 @@ layout( location = 0 ) out vec4 pxl_colour;
 
 vec2 sampleSphericalMap( vec3 v )
 {
-	vec2 uv = vec2( atan( v.z, v.x ), asin( v.y ) );
+	vec2 uv = vec2( atan( v.z, v.x ), asin( -v.y ) );
 	uv *= vec2( 0.1591, 0.3183 );
 	uv += 0.5;
 	return uv;

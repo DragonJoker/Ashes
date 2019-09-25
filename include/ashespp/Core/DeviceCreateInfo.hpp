@@ -21,11 +21,11 @@ namespace ashes
 			, StringArray enabledExtensionNames
 			, VkPhysicalDeviceFeatures enabledFeatures )
 			: queueCreateInfos{ std::move( queueCreateInfos ) }
-			, vkQueueCreateInfos{ makeVkArray< VkDeviceQueueCreateInfo >( this->queueCreateInfos ) }
 			, enabledLayerNames{ std::move( enabledLayerNames ) }
 			, enabledExtensionNames{ std::move( enabledExtensionNames ) }
 			, ptrEnabledLayerNames{ convert( this->enabledLayerNames ) }
 			, ptrEnabledExtensionNames{ convert( this->enabledExtensionNames ) }
+			, vkQueueCreateInfos{ makeVkArray< VkDeviceQueueCreateInfo >( this->queueCreateInfos ) }
 			, enabledFeatures{ std::move( enabledFeatures ) }
 			, vk
 			{
@@ -45,11 +45,11 @@ namespace ashes
 
 		DeviceCreateInfo( DeviceCreateInfo && rhs )
 			: queueCreateInfos{ std::move( rhs.queueCreateInfos ) }
-			, vkQueueCreateInfos{ makeVkArray< VkDeviceQueueCreateInfo >( this->queueCreateInfos ) }
 			, enabledLayerNames{ std::move( rhs.enabledLayerNames ) }
 			, enabledExtensionNames{ std::move( rhs.enabledExtensionNames ) }
 			, ptrEnabledLayerNames{ convert( this->enabledLayerNames ) }
 			, ptrEnabledExtensionNames{ convert( this->enabledExtensionNames ) }
+			, vkQueueCreateInfos{ makeVkArray< VkDeviceQueueCreateInfo >( this->queueCreateInfos ) }
 			, enabledFeatures{ std::move( rhs.enabledFeatures ) }
 			, vk
 			{
@@ -70,11 +70,11 @@ namespace ashes
 		DeviceCreateInfo & operator=( DeviceCreateInfo && rhs )
 		{
 			queueCreateInfos = std::move( rhs.queueCreateInfos );
-			vkQueueCreateInfos = makeVkArray< VkDeviceQueueCreateInfo >( this->queueCreateInfos );
 			enabledLayerNames = std::move( rhs.enabledLayerNames );
 			enabledExtensionNames = std::move( rhs.enabledExtensionNames );
 			ptrEnabledLayerNames = convert( this->enabledLayerNames );
 			ptrEnabledExtensionNames = convert( this->enabledExtensionNames );
+			vkQueueCreateInfos = makeVkArray< VkDeviceQueueCreateInfo >( this->queueCreateInfos );
 			enabledFeatures = std::move( rhs.enabledFeatures );
 			vk =
 			{
@@ -98,14 +98,15 @@ namespace ashes
 			return vk;
 		}
 
-	private:
 		DeviceQueueCreateInfoArray queueCreateInfos;
-		VkDeviceQueueCreateInfoArray vkQueueCreateInfos;
 		StringArray enabledLayerNames;
 		StringArray enabledExtensionNames;
 		CharPtrArray ptrEnabledLayerNames;
 		CharPtrArray ptrEnabledExtensionNames;
 		VkPhysicalDeviceFeatures enabledFeatures;
+
+	private:
+		VkDeviceQueueCreateInfoArray vkQueueCreateInfos;
 		VkDeviceCreateInfo vk;
 	};
 }

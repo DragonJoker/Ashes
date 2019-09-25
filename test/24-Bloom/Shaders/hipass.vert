@@ -2,6 +2,7 @@
 #extension GL_KHR_vulkan_glsl : enable
 
 layout( location = 0 ) in vec4 position;
+layout( location = 1 ) in vec2 texcoord;
 layout( location = 0 ) out vec2 vtx_texture;
 
 out gl_PerVertex
@@ -11,6 +12,6 @@ out gl_PerVertex
 
 void  main()
 {
-    vtx_texture = ( position.xy + 1.0 ) / 2.0;
+    vtx_texture = texcoord;
     gl_Position = vec4( position.xy, 0.0, 1.0 );
 }

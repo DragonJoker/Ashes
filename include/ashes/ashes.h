@@ -85,9 +85,9 @@ extern "C"
 		PFN_vk##x x;
 #define VK_LIB_DEVICE_FUNCTION( x )\
 		PFN_vk##x x;
-#define VK_LIB_GLOBAL_FUNCTION_EXT( x )
-#define VK_LIB_INSTANCE_FUNCTION_EXT( x )
-#define VK_LIB_DEVICE_FUNCTION_EXT( x )
+#define VK_LIB_GLOBAL_FUNCTION_EXT( n, x )
+#define VK_LIB_INSTANCE_FUNCTION_EXT( n, x )
+#define VK_LIB_DEVICE_FUNCTION_EXT( n, x )
 #include <ashes/common/VulkanFunctionsList.inl>
 	} AshPluginStaticFunction;
 

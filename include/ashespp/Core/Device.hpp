@@ -887,6 +887,9 @@ namespace ashes
 #	define unregisterObject( Dev, Object )
 #	define reportRegisteredObjects()
 #endif
+
+	private:
+		bool doCheckExtension( std::string const & name )const;
 	};
 }
 

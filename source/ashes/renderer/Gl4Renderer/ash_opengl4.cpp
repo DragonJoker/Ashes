@@ -4051,9 +4051,9 @@ namespace ashes::gl4
 				description.functions.x = vk##x;
 #define VK_LIB_DEVICE_FUNCTION( x )\
 				description.functions.x = vk##x;
-#define VK_LIB_GLOBAL_FUNCTION_EXT( x )
-#define VK_LIB_INSTANCE_FUNCTION_EXT( x )
-#define VK_LIB_DEVICE_FUNCTION_EXT( x )
+#define VK_LIB_GLOBAL_FUNCTION_EXT( n, x )
+#define VK_LIB_INSTANCE_FUNCTION_EXT( n, x )
+#define VK_LIB_DEVICE_FUNCTION_EXT( n, x )
 #include <common/VulkanFunctionsList.inl>
 				result = VK_SUCCESS;
 

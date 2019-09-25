@@ -79,6 +79,7 @@ namespace vkapp
 		/**@}*/
 
 	private:
+		static size_t constexpr PassCount = 4u;
 		wxTimer * m_timer{ nullptr };
 		utils::Mat4 m_rotate;
 		/**
@@ -131,27 +132,32 @@ namespace vkapp
 		struct Pass
 		{
 			ashes::CommandBufferPtr commandBuffer;
+			ashes::DescriptorSetPtr descriptorSet;
+			ashes::ImageView view;
+			ashes::FrameBufferPtr frameBuffer;
+			ashes::SemaphorePtr semaphore;
+			ashes::GraphicsPipelinePtr pipeline;
+		};
+		template< size_t N >
+		struct Passes
+		{
 			ashes::DescriptorSetLayoutPtr descriptorLayout;
 			ashes::DescriptorSetPoolPtr descriptorPool;
-			ashes::DescriptorSetPtr descriptorSet;
 			ashes::PipelineLayoutPtr pipelineLayout;
 			ashes::RenderPassPtr renderPass;
-			ashes::FrameBufferPtr frameBuffer;
-			ashes::GraphicsPipelinePtr pipeline;
 			ashes::ImagePtr image;
-			ashes::ImageViewArray views;
-			ashes::SemaphorePtr semaphore;
+			std::array< Pass, N > passes;
 		};
 		struct
 		{
-			Pass hi;
-			std::array< Pass, 4u > blurX;
-			std::array< Pass, 4u > blurY;
-			Pass combine;
+			Passes< PassCount > hi;
+			Passes< PassCount > blurX;
+			Passes< PassCount > blurY;
+			Passes< 1 > combine;
 		} m_passes;
 		ashes::ImageView m_blurMipView;
 		ashes::SamplerPtr m_mipSampler;
-		std::array< ashes::SamplerPtr, 4 > m_blurSamplers;
+		std::array< ashes::SamplerPtr, PassCount > m_blurSamplers;
 		struct Configuration
 		{
 			utils::Vec2 textureSize;
@@ -160,7 +166,7 @@ namespace vkapp
 			std::array< utils::Vec4, 15u > coefficients;
 		};
 		ashes::UniformBufferPtr m_blurConfigurationUbo;
-		std::vector< Configuration > m_blurConfigurationData;
+		std::array< Configuration, PassCount > m_blurConfigurationData;
 		ashes::UniformBufferPtr m_blurDirectionUbo;
 		std::array< int, 2u > m_blurDirectionData;
 		/**@}*/
