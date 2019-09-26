@@ -126,7 +126,7 @@ namespace ashes::gl4
 
 			while ( it != cache.end() )
 			{
-				assert( false && "Buffer reuse should never happen" );
+				std::cerr << "Buffer " << result << " is being reused" << std::endl;
 				allocateBuffer( it->name, it->target, it->size, it->flags );
 				glLogCall( context
 					, glGenBuffers
@@ -163,13 +163,19 @@ namespace ashes::gl4
 			{
 				GLint size = getBufferSize( context, buffer );
 				auto it = findBuffer( buffer, size );
-				assert( it != getAllocatedBuffers().end() );
-				getAllocatedBuffers().erase( it );
+				if ( it != getAllocatedBuffers().end() )
+				{
+					getAllocatedBuffers().erase( it );
 
-				glLogCall( context
-					, glDeleteBuffers
-					, 1u
-					, &buffer );
+					glLogCall( context
+						, glDeleteBuffers
+						, 1u
+						, &buffer );
+				}
+				else
+				{
+					std::cerr << "Couldn't find buffer " << buffer << " it has probably been reused" << std::endl;
+				}
 			}
 		}
 

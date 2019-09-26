@@ -836,7 +836,7 @@ namespace ashes
 			return m_internal;
 		}
 
-#define VK_LIB_DEVICE_FUNCTION( fun ) PFN_vk##fun vk##fun;
+#define VK_LIB_DEVICE_FUNCTION( fun ) PFN_vk##fun vk##fun{ nullptr };
 #	include <ashes/common/VulkanFunctionsList.inl>
 
 	protected:

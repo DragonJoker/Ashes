@@ -446,7 +446,7 @@ namespace ashes
 			, uint32_t index )
 		{
 			createBinding( layoutBinding
-				, uniformBuffer
+				, uniformBuffer.getBuffer()
 				, uint32_t( offset * uniformBuffer.getAlignedSize( elemSize ) )
 				, uint32_t( range * uniformBuffer.getAlignedSize( elemSize ) )
 				, index );
