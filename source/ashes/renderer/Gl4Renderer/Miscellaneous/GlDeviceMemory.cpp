@@ -860,6 +860,7 @@ namespace ashes::gl4
 		, VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
+		assert( m_impl && "VkDeviceMemory should be bound to a buffer or an image, at this point" );
 		m_impl->upload( context, m_data, offset, size );
 	}
 
@@ -867,6 +868,7 @@ namespace ashes::gl4
 		, VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
+		assert( m_impl && "VkDeviceMemory should be bound to a buffer or an image, at this point" );
 		m_impl->download( context, m_data, offset, size );
 	}
 
@@ -892,7 +894,12 @@ namespace ashes::gl4
 		, VkDeviceSize size )const
 	{
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
-		upload( context, offset, size );
+
+		if ( m_impl )
+		{
+			upload( context, offset, size );
+		}
+
 		return VK_SUCCESS;
 	}
 
@@ -909,7 +916,11 @@ namespace ashes::gl4
 	{
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
 		m_mapped = false;
-		upload( context, m_mappedOffset, m_mappedSize );
+
+		if ( m_impl )
+		{
+			upload( context, m_mappedOffset, m_mappedSize );
+		}
 	}
 
 	//************************************************************************************************
