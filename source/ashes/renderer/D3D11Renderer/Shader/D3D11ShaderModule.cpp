@@ -180,6 +180,8 @@ namespace ashes::d3d11
 		{
 			auto hlslOptions = compiler.get_hlsl_options();
 			hlslOptions.shader_model = 50;
+			hlslOptions.point_coord_compat = true;
+			hlslOptions.point_size_compat = true;
 			compiler.set_hlsl_options( hlslOptions );
 		}
 
