@@ -79,6 +79,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 				computeheadless
 				computenbody
 				computeparticles
+				computeraytracing
 				computeshader
 				conditionalrender
 				conservativeraster
@@ -103,6 +104,9 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 				multithreading
 				multiview
 				negativeviewportheight
+				nv_ray_tracing_basic
+				nv_ray_tracing_shadows
+				nv_ray_tracing_reflections
 				occlusionquery
 				offscreen
 				parallaxmapping
@@ -115,7 +119,6 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 				pushconstants
 				pushdescriptors
 				radialblur
-				raytracing
 				renderheadless
 				scenerendering
 				screenshot
@@ -142,7 +145,9 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 				vulkanscene
 			)
 			foreach ( EXAMPLE ${EXAMPLES} )
-				set_property( TARGET ${EXAMPLE} PROPERTY FOLDER "Samples/SaschaWillems" )
+				if ( TARGET ${EXAMPLE} )
+					set_property( TARGET ${EXAMPLE} PROPERTY FOLDER "Samples/SaschaWillems" )
+				endif ()
 			endforeach ( EXAMPLE )
 			set_property( TARGET base PROPERTY FOLDER "Samples/SaschaWillems" )
 		endif ()
