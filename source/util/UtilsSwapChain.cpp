@@ -143,11 +143,20 @@ namespace utils
 		ashes::SwapChainCreateInfo doGetSwapChainResetInfo( ashes::Surface const & surface
 			, VkExtent2D const & size )
 		{
+			static uint32_t constexpr invalidSize = ~( 0u );
 			auto surfaceCaps = surface.getCapabilities();
-			surfaceCaps.currentExtent.width = std::min( size.width, surfaceCaps.maxImageExtent.width );
-			surfaceCaps.currentExtent.height = std::min( size.height, surfaceCaps.maxImageExtent.height );
-			surfaceCaps.currentExtent.width = std::max( surfaceCaps.currentExtent.width, surfaceCaps.minImageExtent.width );
-			surfaceCaps.currentExtent.height = std::max( surfaceCaps.currentExtent.height, surfaceCaps.minImageExtent.height );
+			surfaceCaps.currentExtent.width = ( surfaceCaps.maxImageExtent.width == invalidSize
+				? size.width
+				: std::min( surfaceCaps.currentExtent.width, surfaceCaps.maxImageExtent.width ) );
+			surfaceCaps.currentExtent.height = ( surfaceCaps.maxImageExtent.height == invalidSize
+				? size.height
+				: std::min( surfaceCaps.currentExtent.height, surfaceCaps.maxImageExtent.height ) );
+			surfaceCaps.currentExtent.width = ( surfaceCaps.minImageExtent.width == invalidSize
+				? surfaceCaps.currentExtent.width
+				:std::max( surfaceCaps.currentExtent.width, surfaceCaps.minImageExtent.width ) );
+			surfaceCaps.currentExtent.height = ( surfaceCaps.minImageExtent.height == invalidSize
+				? surfaceCaps.currentExtent.height
+				: std::max( surfaceCaps.currentExtent.height, surfaceCaps.minImageExtent.height ) );
 			return doGetSwapChainCreateInfo( surface, surfaceCaps );
 		}
 

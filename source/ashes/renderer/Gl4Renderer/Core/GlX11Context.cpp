@@ -141,7 +141,7 @@ namespace ashes::gl4
 				throw std::runtime_error{ "The supported OpenGL version is insufficient." };
 			}
 
-			if ( !doCreateGl3Context( &static_cast< X11Context const & >( m_mainContext->getImpl() ) ) )
+			if ( !doCreateGl3Context( m_mainContext ) )
 			{
 				glXDestroyContext( createInfo.dpy, m_glxContext );
 				throw std::runtime_error{ "The supported OpenGL version is insufficient." };
@@ -230,30 +230,37 @@ namespace ashes::gl4
 		return result;
 	}
 
-	bool X11Context::doCreateGl3Context( X11Context const * mainContext )
+	bool X11Context::doCreateGl3Context( Context const * mainContext )
 	{
-		auto & extensions = get( instance )->getExtensions();
-		using PFNGLCREATECONTEXTATTRIBS = GLXContext ( * )( Display *dpy, GLXFBConfig config, GLXContext share_context, Bool direct, const int *attrib_list );
-		PFNGLCREATECONTEXTATTRIBS glCreateContextAttribs;
 		bool result = false;
-		std::vector< int > attribList
-		{
-			GLX_CONTEXT_MAJOR_VERSION_ARB, extensions.getMajor(),
-			GLX_CONTEXT_MINOR_VERSION_ARB, extensions.getMinor(),
-			GLX_CONTEXT_FLAGS_ARB, GL_CONTEXT_CREATION_DEFAULT_FLAGS,
-			GLX_CONTEXT_PROFILE_MASK_ARB, GL_CONTEXT_CREATION_DEFAULT_MASK,
-			0
-		};
+		auto & extensions = get( instance )->getExtensions();
 
-		enable();
-		::glGetError();
-
-		if ( getFunction( "glXCreateContextAttribsARB", glCreateContextAttribs ) )
+		try
 		{
+			using PFNGLCREATECONTEXTATTRIBS = GLXContext ( * )( Display *dpy, GLXFBConfig config, GLXContext share_context, Bool direct, const int *attrib_list );
+			PFNGLCREATECONTEXTATTRIBS glCreateContextAttribs;
+			std::vector< int > attribList
+			{
+				GLX_CONTEXT_MAJOR_VERSION_ARB, extensions.getMajor(),
+				GLX_CONTEXT_MINOR_VERSION_ARB, extensions.getMinor(),
+				GLX_CONTEXT_FLAGS_ARB, GL_CONTEXT_CREATION_DEFAULT_FLAGS,
+				GLX_CONTEXT_PROFILE_MASK_ARB, GL_CONTEXT_CREATION_DEFAULT_MASK,
+				0
+			};
+
+			enable();
+			::glGetError();
+
+			if ( !getFunction( "glXCreateContextAttribsARB", glCreateContextAttribs ) )
+			{
+				disable();
+				throw std::runtime_error{ "Couldn't retrieve glXCreateContextAttribsARB" };
+			}
+
 			auto glxContext = glCreateContextAttribs( createInfo.dpy
 				, m_fbConfig[0]
 				, ( mainContext
-					? static_cast< X11Context const * >( mainContext )->m_glxContext
+					? static_cast< X11Context const & >( mainContext->getImpl() ).m_glxContext
 					: nullptr )
 				, true
 				, attribList.data() );
@@ -263,12 +270,19 @@ namespace ashes::gl4
 
 			if ( !result )
 			{
-				std::cerr << "Failed to create an OpenGL " << extensions.getMajor() << "." << extensions.getMinor() << " context." << std::endl;
+				std::stringstream error;
+				error << "Failed to create an OpenGL " << extensions.getMajor() << "." << extensions.getMinor() << " context (0x" << std::hex << ::glGetError() << ").";
+				throw std::runtime_error{ error.str() };
 			}
 		}
-		else
+		catch ( std::exception & exc )
 		{
-			std::cerr << "Couldn't load glXCreateContextAttribsARB function." << std::endl;
+			std::cerr << exc.what() << std::endl;
+			result = false;
+		}
+		catch ( ... )
+		{
+			result = false;
 		}
 
 		return result;

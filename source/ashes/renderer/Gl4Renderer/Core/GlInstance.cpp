@@ -276,6 +276,7 @@ namespace ashes::gl4
 
 				glXMakeCurrent( m_display, m_xWindow, m_glxContext );
 				XFree( vi );
+				XUnmapWindow( m_display, m_xWindow );
 			}
 			catch ( std::exception & p_exc )
 			{
@@ -300,22 +301,28 @@ namespace ashes::gl4
 
 		~RenderWindow()
 		{
-			glXMakeCurrent( m_display, 0, nullptr );
-			glXDestroyContext( m_display, m_glxContext );
-			XFree( m_fbConfig );
-
-			if ( m_xWindow )
-			{
-				XDestroyWindow( m_display, m_xWindow );
-			}
-
-			if ( m_map )
-			{
-				XFreeColormap( m_display, m_map );
-			}
-
 			if ( m_display )
 			{
+				if ( m_xWindow )
+				{
+					XMapWindow( m_display, m_xWindow );
+				}
+
+				glXMakeCurrent( m_display, 0, nullptr );
+				glXDestroyContext( m_display, m_glxContext );
+
+				XFree( m_fbConfig );
+
+				if ( m_xWindow )
+				{
+					XDestroyWindow( m_display, m_xWindow );
+				}
+
+				if ( m_map )
+				{
+					XFreeColormap( m_display, m_map );
+				}
+
 				XCloseDisplay( m_display );
 			}
 		}

@@ -46,7 +46,7 @@ namespace ashes::gl4
 	private:
 		XVisualInfo * doCreateVisualInfoWithFBConfig( std::vector< int > arrayAttribs, int screen );
 		XVisualInfo * doCreateVisualInfoWithoutFBConfig( std::vector< int > arrayAttribs, int screen );
-		bool doCreateGl3Context( X11Context const * mainContext );
+		bool doCreateGl3Context( Context const * mainContext );
 
 	protected:
 		GLXContext m_glxContext;

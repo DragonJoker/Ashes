@@ -544,7 +544,7 @@ namespace ashes
 			, commandPool
 			, data.data()
 			, uint32_t( data.size() )
-			, 0u
+			, offset
 			, buffer
 			, dstStageFlags );
 	}
@@ -561,7 +561,7 @@ namespace ashes
 			, commandPool
 			, data.data()
 			, uint32_t( N )
-			, 0u
+			, offset
 			, buffer
 			, dstStageFlags );
 	}

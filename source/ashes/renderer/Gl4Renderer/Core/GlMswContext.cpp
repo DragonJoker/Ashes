@@ -192,7 +192,13 @@ namespace ashes::gl4
 
 			enable();
 			::glGetError();
-			getFunction( "wglCreateContextAttribsARB", glCreateContextAttribs );
+
+			if ( !getFunction( "wglCreateContextAttribsARB", glCreateContextAttribs ) )
+			{
+				disable();
+				throw std::runtime_error{ "Couldn't retrieve wglCreateContextAttribsARB" };
+			}
+
 			hContext = glCreateContextAttribs( m_hDC
 				, ( mainContext
 					? static_cast< MswContext const & >( mainContext->getImpl() ).m_hContext

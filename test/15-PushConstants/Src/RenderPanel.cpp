@@ -339,27 +339,21 @@ namespace vkapp
 		m_offscreenDescriptorSets[0]->createBinding( m_offscreenDescriptorLayout->getBinding( 0u )
 			, m_view
 			, *m_sampler );
-		m_offscreenDescriptorSets[0]->createBinding( m_offscreenDescriptorLayout->getBinding( 1u )
-			, *m_matrixUbo
-			, 0u
-			, 1u );
-		m_offscreenDescriptorSets[0]->createBinding( m_offscreenDescriptorLayout->getBinding( 2u )
+		m_offscreenDescriptorSets[0]->createSizedBinding( m_offscreenDescriptorLayout->getBinding( 1u )
+			, *m_matrixUbo );
+		m_offscreenDescriptorSets[0]->createSizedBinding( m_offscreenDescriptorLayout->getBinding( 2u )
 			, *m_objectUbo
-			, 0u
-			, 1u );
+			, 0u );
 		m_offscreenDescriptorSets[0]->update();
 
 		m_offscreenDescriptorSets[1] = m_offscreenDescriptorPool->createDescriptorSet();
 		m_offscreenDescriptorSets[1]->createBinding( m_offscreenDescriptorLayout->getBinding( 0u )
 			, m_view
 			, *m_sampler );
-		m_offscreenDescriptorSets[1]->createBinding( m_offscreenDescriptorLayout->getBinding( 1u )
-			, *m_matrixUbo
-			, 0u
-			, 1u );
-		m_offscreenDescriptorSets[1]->createBinding( m_offscreenDescriptorLayout->getBinding( 2u )
+		m_offscreenDescriptorSets[1]->createSizedBinding( m_offscreenDescriptorLayout->getBinding( 1u )
+			, *m_matrixUbo );
+		m_offscreenDescriptorSets[1]->createSizedBinding( m_offscreenDescriptorLayout->getBinding( 2u )
 			, *m_objectUbo
-			, 1u
 			, 1u );
 		m_offscreenDescriptorSets[1]->update();
 	}
