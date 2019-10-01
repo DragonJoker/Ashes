@@ -22,10 +22,12 @@ namespace ashes
 		{
 		case VK_DEPENDENCY_BY_REGION_BIT:
 			return "by_region";
+#ifdef VK_EXT_device_group
 		case VK_DEPENDENCY_DEVICE_GROUP_BIT:
 			return "device_group";
 		case VK_DEPENDENCY_VIEW_LOCAL_BIT:
 			return "view_local";
+#endif
 		default:
 			assert( false && "Unsupported VkDependencyFlagBits." );
 			throw std::runtime_error{ "Unsupported VkDependencyFlagBits" };

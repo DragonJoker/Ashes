@@ -8,17 +8,8 @@ endif()
 if( wxWidgets_FOUND AND GTK2_FOUND )
 	string( COMPARE EQUAL "${wxWidgets_USE_DEBUG}" "ON" IsWxDebug )
 
-	set( TestIncludeDirectories
-		${CMAKE_SOURCE_DIR}/util/Src
-		${CMAKE_BINARY_DIR}/util/Src
-		${CMAKE_SOURCE_DIR}/include
-		${CMAKE_BINARY_DIR}/include
-		${CMAKE_SOURCE_DIR}/external/gli
-		${CMAKE_SOURCE_DIR}/external/glm
-		${CMAKE_SOURCE_DIR}/external/imgui
-		${wxWidgets_INCLUDE_DIRS}
-		${GTK2_INCLUDE_DIRS}
-	)
+	file( GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*-* )
+	set( TEST_ID 0 )
 
 	set( BinLibraries
 		${BinLibraries}
@@ -28,34 +19,59 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 		util
 	)
 
-	file( GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*-* )
-	set( TEST_ID 0 )
+	if( NOT WIN32 )
+		set( TARGET_CXX_DEFINITIONS
+			${TARGET_CXX_DEFINITIONS}
+			__WXGTK__
+		)
+	endif()
+
+	if( IsWxDebug )
+		set( TARGET_CXX_DEFINITIONS
+			${TARGET_CXX_DEFINITIONS}
+			__WXDEBUG__
+		)
+	endif()
 
 	foreach ( child ${children} )
 		if ( IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${child} )
 			set( TARGET_NAME Test-${child} )
 			add_subdirectory( ${child} )
+			target_include_directories( ${TARGET_NAME} PRIVATE
+				${TARGET_INCLUDE_DIRS}
+				${CMAKE_SOURCE_DIR}/util/Src
+				${CMAKE_BINARY_DIR}/util/Src
+				${CMAKE_SOURCE_DIR}/include
+				${CMAKE_BINARY_DIR}/include
+				${CMAKE_SOURCE_DIR}/external/gli
+				${CMAKE_SOURCE_DIR}/external/glm
+				${CMAKE_SOURCE_DIR}/external/imgui
+				${CMAKE_SOURCE_DIR}/external/imgui
+				${CMAKE_SOURCE_DIR}/test/00-Common/Src
+				${wxWidgets_INCLUDE_DIRS}
+				${GTK2_INCLUDE_DIRS}
+			)
+			target_compile_features( ${TARGET_NAME} PRIVATE
+				cxx_std_17
+			)
 			target_compile_definitions( ${TARGET_NAME} PRIVATE
 				TEST_ID=${TEST_ID}
 				_FILE_OFFSET_BITS=64
 				_LARGE_FILES
 				_UNICODE
+				${TARGET_CXX_DEFINITIONS}
 			)
-			set_property( TARGET ${TARGET_NAME} PROPERTY CXX_STANDARD 17 )
-			set_property( TARGET ${TARGET_NAME} PROPERTY FOLDER "Tests" )
-
-			if( NOT WIN32 )
-				target_compile_definitions( ${TARGET_NAME} PRIVATE
-					__WXGTK__
-				)
-			endif()
-
-			if( IsWxDebug )
-				target_compile_definitions( ${TARGET_NAME} PRIVATE
-					__WXDEBUG__
-				)
-			endif()
-
+			target_compile_options( ${TARGET_NAME} PRIVATE
+				${TARGET_CXX_OPTIONS}
+			)
+			set_target_properties( ${TARGET_NAME} PROPERTIES
+				CXX_STANDARD 17
+				CXX_EXTENSIONS OFF
+				FOLDER "Tests"
+			)
+			add_dependencies( ${TARGET_NAME}
+				${ENABLED_RENDERERS}
+			)
 			math( EXPR TEST_ID "${TEST_ID} + 1" )
 		endif ()
 	endforeach ()
@@ -153,3 +169,4 @@ if( wxWidgets_FOUND AND GTK2_FOUND )
 		endif ()
 	endif ()
 endif ()
+

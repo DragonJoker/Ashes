@@ -38,12 +38,21 @@ namespace ashes
 			return "transfer_dst_optimal";
 		case VK_IMAGE_LAYOUT_PREINITIALIZED:
 			return "preinitialized";
+#ifdef VK_API_VERSION_1_1
 		case VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL:
 			return "depth_read_only_stencil_attachment_optimal";
 		case VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL:
 			return "depth_attachment_stencil_read_only_optimal";
+#elif defined( VK_KHR_maintenance2
+		case VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL_KHR:
+			return "depth_read_only_stencil_attachment_optimal";
+		case VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL_KHR:
+			return "depth_attachment_stencil_read_only_optimal";
+#endif
+#ifdef VK_KHR_swapchain
 		case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
 			return "present_src";
+#endif
 #ifdef VK_KHR_shared_presentable_image
 		case VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR:
 			return "shared_present";

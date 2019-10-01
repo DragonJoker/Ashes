@@ -33,7 +33,7 @@ namespace ashes
 
 #define VK_LIB_GLOBAL_FUNCTION( fun )\
 		vk##fun = reinterpret_cast< PFN_vk##fun >( m_plugin.getInstanceProcAddr( nullptr, "vk"#fun ) );
-#include <common/VulkanFunctionsList.inl>
+#	include <ashes/ashes_functions_list.hpp>
 
 		doInitInstance();
 	}
@@ -208,7 +208,7 @@ namespace ashes
 #define VK_LIB_INSTANCE_FUNCTION_EXT( ext, fun )\
 		if ( doCheckExtension( ext ) )\
 			vk##fun = reinterpret_cast< PFN_vk##fun >( getInstanceProcAddr( "vk"#fun ) );
-#include <common/VulkanFunctionsList.inl>
+#include <ashes/ashes_functions_list.hpp>
 	}
 
 	PFN_vkVoidFunction Instance::getInstanceProcAddr( char const * const name )

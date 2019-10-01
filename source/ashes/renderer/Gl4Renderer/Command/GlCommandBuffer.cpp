@@ -915,12 +915,13 @@ namespace ashes::gl4
 
 		if ( it == m_mappedBuffers.end() )
 		{
-			result = &m_mappedBuffers.emplace_back( internal
+			m_mappedBuffers.emplace_back( internal
 				, m_cmdList.size() - 1u
 				, get( buf->getMemory() )->onDestroy.connect( [this]( GLuint name )
 				{
 					doRemoveMappedBuffer( name );
 				} ) );
+			result = &m_mappedBuffers.back();
 		}
 		else
 		{

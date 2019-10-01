@@ -10,7 +10,14 @@
 #include <functional>
 #include <iostream>
 #include <memory>
+#include <regex>
 #include <vector>
+
+namespace details
+{
+	std::string const & getSharedLibExt();
+	bool isSharedLibrary( std::string const & filePath );
+}
 
 struct Plugin
 {
@@ -28,6 +35,7 @@ struct Plugin
 		}
 
 		getPluginDescription( &description );
+		std::clog << description.name << " - " << description.description << " - " << library->getPath() << std::endl;
 	}
 };
 
@@ -42,20 +50,16 @@ inline PluginArray listPlugins()
 	{
 		for ( auto & file : files )
 		{
-#if defined( NDEBUG )
-			if ( file.find( ".dll" ) != std::string::npos
-				|| file.find( ".so" ) != std::string::npos )
-#else
-			if ( file.find( "d.dll" ) != std::string::npos
-				|| file.find( "d.so" ) != std::string::npos )
-#endif
-			try
+			if ( details::isSharedLibrary( file ) )
 			{
-				result.emplace_back( std::make_unique< ashes::DynamicLibrary >( file ) );
-			}
-			catch ( std::exception & exc )
-			{
-				std::clog << exc.what() << std::endl;
+				try
+				{
+					result.emplace_back( std::make_unique< ashes::DynamicLibrary >( file ) );
+				}
+				catch ( std::exception & exc )
+				{
+					std::clog << exc.what() << std::endl;
+				}
 			}
 		}
 
@@ -65,6 +69,11 @@ inline PluginArray listPlugins()
 			{
 				return lhs.description.support.priority > rhs.description.support.priority;
 			} );
+
+		for ( auto & plugin : result )
+		{
+			std::clog << plugin.description.name << " - " << plugin.description.description << " - " << plugin.library->getPath() << std::endl;
+		}
 	}
 
 	return result;

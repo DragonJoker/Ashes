@@ -88,7 +88,7 @@ extern "C"
 #define VK_LIB_GLOBAL_FUNCTION_EXT( n, x )
 #define VK_LIB_INSTANCE_FUNCTION_EXT( n, x )
 #define VK_LIB_DEVICE_FUNCTION_EXT( n, x )
-#include <ashes/common/VulkanFunctionsList.inl>
+#include "ashes_functions_list.hpp"
 	} AshPluginStaticFunction;
 
 	typedef struct AshPluginDescription

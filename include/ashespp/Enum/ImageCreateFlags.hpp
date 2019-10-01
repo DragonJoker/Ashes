@@ -30,6 +30,7 @@ namespace ashes
 			return "mutable_format";
 		case VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT:
 			return "cube_compatible";
+#ifdef VK_API_VERSION_1_1
 		case VK_IMAGE_CREATE_ALIAS_BIT:
 			return "alias";
 		case VK_IMAGE_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT:
@@ -44,6 +45,30 @@ namespace ashes
 			return "protected";
 		case VK_IMAGE_CREATE_DISJOINT_BIT:
 			return "disjoint";
+#else
+#	ifdef VK_KHR_bind_memory2
+		case VK_IMAGE_CREATE_ALIAS_BIT_KHR:
+			return "alias";
+#	endif
+#	ifdef VK_KHR_device_group
+		case VK_IMAGE_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT_KHR:
+			return "split_instance_bind_regions";
+#	endif
+#	ifdef VK_KHR_maintenance1
+		case VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT_KHR:
+			return "2d_array_compatible";
+#	endif
+#	ifdef VK_KHR_maintenance2
+		case VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT_KHR:
+			return "block_texel_view_compatible";
+		case VK_IMAGE_CREATE_EXTENDED_USAGE_BIT_KHR:
+			return "extended_usage";
+#	endif
+#	ifdef VK_KHR_sampler_ycbcr_conversion
+		case VK_IMAGE_CREATE_DISJOINT_BIT_KHR:
+			return "disjoint";
+#	endif
+#endif
 #ifdef VK_NV_corner_sampled_image
 		case VK_IMAGE_CREATE_CORNER_SAMPLED_BIT_NV:
 			return "corner_sampled";

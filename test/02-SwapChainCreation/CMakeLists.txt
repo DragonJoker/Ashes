@@ -14,9 +14,6 @@ file( GLOB HEADER_FILES
 	Src/*.inl
 )
 
-include_directories( ${TestIncludeDirectories} )
-add_definitions( ${TestAdditionalDefinitions} )
-
 include_directories( ${CMAKE_SOURCE_DIR}/Test/00-Common/Src )
 
 add_executable( ${PROJECT_NAME} WIN32
@@ -34,7 +31,4 @@ target_link_libraries( ${PROJECT_NAME}
 add_dependencies( ${PROJECT_NAME}
 	Test-00-Common
 )
-
-set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Test" )
 

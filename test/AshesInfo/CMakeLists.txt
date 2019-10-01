@@ -10,21 +10,23 @@ file( GLOB SOURCE_FILES
 	Src/*.cc
 	Src/*.cpp
 )
-
 file( GLOB HEADER_FILES
 	Src/*.hpp
 	Src/*.inl
 )
 
-include_directories( ${TestIncludeDirectories} )
-
 add_executable( ${PROJECT_NAME}
 	${SOURCE_FILES}
 	${HEADER_FILES}
 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Utils" )
-
+set_target_properties( ${TARGET_NAME} PROPERTIES
+	CXX_STANDARD 17
+	CXX_EXTENSIONS OFF
+	FOLDER "Utils"
+)
+target_include_directories( ${PROJECT_NAME} PRIVATE
+	${TestIncludeDirectories}
+)
 target_compile_definitions( ${PROJECT_NAME} PRIVATE
 	TEST_ID=${TEST_ID}
 	_FILE_OFFSET_BITS=64
@@ -32,17 +34,18 @@ target_compile_definitions( ${PROJECT_NAME} PRIVATE
 	_UNICODE
 )
 
-target_link_libraries( ${PROJECT_NAME}
-	${BinLibraries}
-)
-
 if ( NOT WIN32 )
-	target_link_libraries( ${PROJECT_NAME}
+	target_link_libraries( ${PROJECT_NAME} PRIVATE
+		${BinLibraries}
 		X11
 		dl
 	)
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE
 		VK_USE_PLATFORM_XLIB_KHR=1
+	)
+else ()
+	target_link_libraries( ${PROJECT_NAME} PRIVATE
+		${BinLibraries}
 	)
 endif ()
 

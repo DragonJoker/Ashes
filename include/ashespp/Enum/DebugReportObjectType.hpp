@@ -76,8 +76,13 @@ namespace ashes
 			return "Surface";
 		case VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT:
 			return "Swapchain";
+#if VK_EXT_debug_report >= 8
 		case VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT_EXT:
 			return "DebugReport";
+#elif defined( VK_EXT_debug_report )
+		case VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_EXT:
+			return "DebugReport";
+#endif
 #ifdef VK_EXT_display
 		case VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_KHR_EXT:
 			return "Display";

@@ -2058,6 +2058,11 @@ namespace ashes::gl4
 		return get( queue )->present( *pPresentInfo );
 	}
 
+#endif
+#pragma endregion
+#pragma region VK_KHR_device_group
+#ifdef VK_KHR_device_group
+
 	VkResult VKAPI_CALL vkGetDeviceGroupPresentCapabilitiesKHR(
 		VkDevice device,
 		VkDeviceGroupPresentCapabilitiesKHR* pDeviceGroupPresentCapabilities )
@@ -2186,7 +2191,7 @@ namespace ashes::gl4
 
 	void VKAPI_CALL vkGetPhysicalDeviceFeatures2KHR(
 		VkPhysicalDevice physicalDevice,
-		VkPhysicalDeviceFeatures2* pFeatures )
+		VkPhysicalDeviceFeatures2KHR * pFeatures )
 	{
 		// TODO
 		std::cerr << "vkGetPhysicalDeviceFeatures2KHR Unsupported" << std::endl;
@@ -2194,7 +2199,7 @@ namespace ashes::gl4
 
 	void VKAPI_CALL vkGetPhysicalDeviceProperties2KHR(
 		VkPhysicalDevice physicalDevice,
-		VkPhysicalDeviceProperties2* pProperties )
+		VkPhysicalDeviceFeatures2KHR* pProperties )
 	{
 		// TODO
 		std::cerr << "vkGetPhysicalDeviceProperties2KHR Unsupported" << std::endl;
@@ -2203,7 +2208,7 @@ namespace ashes::gl4
 	void VKAPI_CALL vkGetPhysicalDeviceFormatProperties2KHR(
 		VkPhysicalDevice physicalDevice,
 		VkFormat format,
-		VkFormatProperties2* pFormatProperties )
+		VkFormatProperties2KHR * pFormatProperties )
 	{
 		// TODO
 		std::cerr << "vkGetPhysicalDeviceFormatProperties2KHR Unsupported" << std::endl;
@@ -2211,8 +2216,8 @@ namespace ashes::gl4
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceImageFormatProperties2KHR(
 		VkPhysicalDevice physicalDevice,
-		const VkPhysicalDeviceImageFormatInfo2* pImageFormatInfo,
-		VkImageFormatProperties2* pImageFormatProperties )
+		const VkPhysicalDeviceImageFormatInfo2KHR * pImageFormatInfo,
+		VkImageFormatProperties2KHR * pImageFormatProperties )
 	{
 		// TODO
 		std::cerr << "vkGetPhysicalDeviceImageFormatProperties2KHR Unsupported" << std::endl;
@@ -2222,7 +2227,7 @@ namespace ashes::gl4
 	void VKAPI_CALL vkGetPhysicalDeviceQueueFamilyProperties2KHR(
 		VkPhysicalDevice physicalDevice,
 		uint32_t* pQueueFamilyPropertyCount,
-		VkQueueFamilyProperties2* pQueueFamilyProperties )
+		VkQueueFamilyProperties2KHR * pQueueFamilyProperties )
 	{
 		// TODO
 		std::cerr << "vkGetPhysicalDeviceQueueFamilyProperties2KHR Unsupported" << std::endl;
@@ -2230,7 +2235,7 @@ namespace ashes::gl4
 
 	void VKAPI_CALL vkGetPhysicalDeviceMemoryProperties2KHR(
 		VkPhysicalDevice physicalDevice,
-		VkPhysicalDeviceMemoryProperties2* pMemoryProperties )
+		VkPhysicalDeviceMemoryProperties2KHR * pMemoryProperties )
 	{
 		// TODO
 		std::cerr << "vkGetPhysicalDeviceMemoryProperties2KHR Unsupported" << std::endl;
@@ -2238,9 +2243,9 @@ namespace ashes::gl4
 
 	void VKAPI_CALL vkGetPhysicalDeviceSparseImageFormatProperties2KHR(
 		VkPhysicalDevice physicalDevice,
-		const VkPhysicalDeviceSparseImageFormatInfo2* pFormatInfo,
+		const VkPhysicalDeviceSparseImageFormatInfo2KHR * pFormatInfo,
 		uint32_t* pPropertyCount,
-		VkSparseImageFormatProperties2* pProperties )
+		VkSparseImageFormatProperties2KHR* pProperties )
 	{
 		// TODO
 		std::cerr << "vkGetPhysicalDeviceSparseImageFormatProperties2KHR Unsupported" << std::endl;
@@ -2291,7 +2296,7 @@ namespace ashes::gl4
 	void VKAPI_CALL vkTrimCommandPoolKHR(
 		VkDevice device,
 		VkCommandPool commandPool,
-		VkCommandPoolTrimFlags flags )
+		VkCommandPoolTrimFlagsKHR flags )
 	{
 		// TODO
 		std::cerr << "vkTrimCommandPoolKHR Unsupported" << std::endl;
@@ -4054,7 +4059,7 @@ namespace ashes::gl4
 #define VK_LIB_GLOBAL_FUNCTION_EXT( n, x )
 #define VK_LIB_INSTANCE_FUNCTION_EXT( n, x )
 #define VK_LIB_DEVICE_FUNCTION_EXT( n, x )
-#include <common/VulkanFunctionsList.inl>
+#include <ashes/ashes_functions_list.hpp>
 				result = VK_SUCCESS;
 
 				description.support.priority = 7u;
@@ -4066,7 +4071,11 @@ namespace ashes::gl4
 	};
 }
 
-thread_local ashes::gl4::GlLibrary g_library;
+ashes::gl4::GlLibrary & getLibrary()
+{
+	thread_local ashes::gl4::GlLibrary library;
+	return library;
+}
 
 namespace ashes::gl4
 {
@@ -4075,7 +4084,7 @@ namespace ashes::gl4
 		const char* pName )
 	{
 		PFN_vkVoidFunction result{ nullptr };
-		auto init = g_library.init();
+		auto init = getLibrary().init();
 
 		if ( init == VK_SUCCESS )
 		{
@@ -4085,7 +4094,7 @@ namespace ashes::gl4
 				{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
 #define VK_LIB_INSTANCE_FUNCTION( x )\
 				{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
-#include <common/VulkanFunctionsList.inl>
+#	include <ashes/ashes_functions_list.hpp>
 			};
 
 			auto it = functions.find( pName );
@@ -4104,7 +4113,7 @@ namespace ashes::gl4
 		const char* pName )
 	{
 		PFN_vkVoidFunction result{ nullptr };
-		auto init = g_library.init();
+		auto init = getLibrary().init();
 
 		if ( init == VK_SUCCESS )
 		{
@@ -4112,7 +4121,7 @@ namespace ashes::gl4
 			{
 #define VK_LIB_DEVICE_FUNCTION( x )\
 				{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
-#include <common/VulkanFunctionsList.inl>
+#include <ashes/ashes_functions_list.hpp>
 			};
 
 			auto it = functions.find( pName );
@@ -4135,11 +4144,11 @@ extern "C"
 
 	Gl4Renderer_API VkResult VKAPI_PTR ashGetPluginDescription( AshPluginDescription * pDescription )
 	{
-		auto result = g_library.init();
+		auto result = getLibrary().init();
 
 		if ( result == VK_SUCCESS )
 		{
-			*pDescription = g_library.description;
+			*pDescription = getLibrary().description;
 		}
 
 		return result;

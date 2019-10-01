@@ -43,8 +43,17 @@ add_library( ${PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_SRC_FILES}
 	${${PROJECT_NAME}_HDR_FILES}
 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes/Core" )
+target_compile_features( ${PROJECT_NAME} PUBLIC
+	cxx_std_17
+)
+target_compile_definitions( ${PROJECT_NAME} PUBLIC
+	${TARGET_CXX_DEFINITIONS}
+)
+set_target_properties( ${PROJECT_NAME} PROPERTIES
+	CXX_STANDARD 17
+	CXX_EXTENSIONS OFF
+	FOLDER "Ashes/Core"
+)
 add_dependencies( ${PROJECT_NAME}
 	common
 	ashes
@@ -99,3 +108,4 @@ install(
 #For libs, we install headers to <install_dir>/include/${PROJECT_NAME}
 target_install_headers( ${PROJECT_NAME}
 	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME} )
+

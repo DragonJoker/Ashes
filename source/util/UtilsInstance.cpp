@@ -174,7 +174,9 @@ namespace utils
 
 	Instance::~Instance()
 	{
+#if LOAD_VALIDATION_LAYERS
 		m_instance->vkDestroyDebugReportCallbackEXT( *m_instance, m_debugCallback, nullptr );
+#endif
 	}
 
 	void Instance::completeLayerNames( ashes::StringArray & names )const

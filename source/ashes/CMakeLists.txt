@@ -7,7 +7,8 @@ set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 
 set( ASHES_CONFIG_DIR ${CMAKE_BINARY_DIR} )
 
-include_directories(
+set( TARGET_INCLUDE_DIRS
+ 	${TARGET_INCLUDE_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR}
 	${ASHES_CONFIG_DIR}/include
 	${ASHES_CONFIG_DIR}/include/${PROJECT_NAME}
@@ -76,18 +77,43 @@ configure_file(
 	NEWLINE_STYLE LF
 )
 
-add_definitions( -DAshesC_EXPORTS )
+# I hate to have to do that, but I found no other to force gcc to use --std=c++17
+if ( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" )
+	set( TARGET_CXX_OPTIONS --std=c++17 )
+elseif ( CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
+	set( TARGET_CXX_OPTIONS --std=c++17 )
+elseif ( CMAKE_CXX_COMPILER_ID STREQUAL "XLClang" )
+	set( TARGET_CXX_OPTIONS --std=c++17 )
+elseif ( CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" )
+	set( TARGET_CXX_OPTIONS --std=c++17 )
+endif ()
 
 add_library( ${PROJECT_NAME} SHARED
 	${${PROJECT_NAME}_SRC_FILES}
 	${${PROJECT_NAME}_HDR_FILES}
 	${${PROJECT_NAME}_CONFIG_HEADER}
 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes/Core" )
-target_link_libraries( ${PROJECT_NAME}
+target_include_directories( ${PROJECT_NAME} PRIVATE
+	${TARGET_INCLUDE_DIRS}
+)
+target_link_libraries( ${PROJECT_NAME} PRIVATE
 	common
 )
+target_compile_definitions( ${PROJECT_NAME} PRIVATE
+	AshesC_EXPORTS
+	${TARGET_CXX_DEFINITIONS}
+)
+target_compile_features( ${PROJECT_NAME} PRIVATE
+	cxx_std_17
+)
+target_compile_options( ${PROJECT_NAME} PRIVATE
+	${TARGET_CXX_OPTIONS}
+)
+set_target_properties( ${PROJECT_NAME} PROPERTIES
+	CXX_STANDARD 17
+	CXX_EXTENSIONS OFF
+	FOLDER "Ashes/Core" )
+
 
 if ( BUILD_ASHES )
 	target_add_doc( ${PROJECT_NAME} "" "*.h *.hpp" )
@@ -131,6 +157,8 @@ install(
 	COMPONENT ${PROJECT_NAME}_dev
 )
 
+
 add_subdirectory( renderer )
 set( ENABLED_RENDERERS ${ENABLED_RENDERERS} PARENT_SCOPE )
 set( ASHES_CONFIG_DIR ${ASHES_CONFIG_DIR} PARENT_SCOPE )
+

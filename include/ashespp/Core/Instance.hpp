@@ -230,12 +230,12 @@ namespace ashes
 		*/
 		inline operator VkInstance const & ()const
 		{
-			return m_instance;
+			return this->m_instance;
 		}
 
 #define VK_LIB_GLOBAL_FUNCTION( fun ) PFN_vk##fun vk##fun;
 #define VK_LIB_INSTANCE_FUNCTION( fun ) PFN_vk##fun vk##fun;
-#	include <ashes/common/VulkanFunctionsList.inl>
+#	include <ashes/ashes_functions_list.hpp>
 		/**
 		*\~english
 		*name

@@ -4047,7 +4047,7 @@ namespace ashes::d3d11
 #define VK_LIB_GLOBAL_FUNCTION_EXT( n, x )
 #define VK_LIB_INSTANCE_FUNCTION_EXT( n, x )
 #define VK_LIB_DEVICE_FUNCTION_EXT( n, x )
-#include <common/VulkanFunctionsList.inl>
+#include <ashes/ashes_functions_list.hpp>
 				result = VK_SUCCESS;
 
 				description.support.priority = 6u;
@@ -4078,7 +4078,7 @@ namespace ashes::d3d11
 				{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
 #define VK_LIB_INSTANCE_FUNCTION( x )\
 				{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
-#include <common/VulkanFunctionsList.inl>
+#include <ashes/ashes_functions_list.hpp>
 			};
 
 			auto it = functions.find( pName );
@@ -4105,7 +4105,7 @@ namespace ashes::d3d11
 			{
 #define VK_LIB_DEVICE_FUNCTION( x )\
 				{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
-#include <common/VulkanFunctionsList.inl>
+#include <ashes/ashes_functions_list.hpp>
 			};
 
 			auto it = functions.find( pName );

@@ -1,7 +1,7 @@
 get_filename_component( ASHES_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY )
 get_filename_component( ASHES_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} DIRECTORY )
 
-include_directories(
+set( TARGET_INCLUDE_DIRS
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
 	${ASHES_SOURCE_DIR}/include
@@ -14,7 +14,7 @@ if ( WIN32 )
 		Dbghelp
 	)
 	if ( MSVC )
-		add_definitions(
+		set( TARGET_CXX_DEFINITIONS
 			-D_ENFORCE_MATCHING_ALLOCATORS=0
 			-DNOMINMAX
 			# -DWIN32_LEAN_AND_MEAN

@@ -46,6 +46,7 @@ namespace ashes
 			return "blit_dst";
 		case VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT:
 			return "sampled_image_filter_linear";
+#ifdef VK_API_VERSION_1_1
 		case VK_FORMAT_FEATURE_TRANSFER_SRC_BIT:
 			return "transfer_src";
 		case VK_FORMAT_FEATURE_TRANSFER_DST_BIT:
@@ -64,6 +65,30 @@ namespace ashes
 			return "disjoint";
 		case VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT:
 			return "cosited_chroma_samples";
+#else
+#	ifdef VK_KHR_maintenance1
+		case VK_FORMAT_FEATURE_TRANSFER_SRC_BIT_KHR:
+			return "transfer_src";
+		case VK_FORMAT_FEATURE_TRANSFER_DST_BIT_KHR:
+			return "transfer_dst";
+#	endif
+#	ifdef VK_KHR_sampler_ycbcr_conversion
+		case VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT_KHR:
+			return "midpoint_chroma_samples";
+		case VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT_KHR:
+			return "sampled_image_ycbcr_conversion_linear_filter";
+		case VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER_BIT_KHR:
+			return "sampled_image_ycbcr_conversion_separate_reconstruction_filter";
+		case VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT_KHR:
+			return "sampled_image_ycbcr_conversion_chroma_reconstruction_explicit";
+		case VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE_BIT_KHR:
+			return "sampled_image_ycbcr_conversion_chroma_reconstruction_explicit_forceable";
+		case VK_FORMAT_FEATURE_DISJOINT_BIT_KHR:
+			return "disjoint";
+		case VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT_KHR:
+			return "cosited_chroma_samples";
+#	endif
+#endif
 #ifdef VK_EXT_filter_cubic
 		case VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG:
 			return "sampled_image_filter_cubic";

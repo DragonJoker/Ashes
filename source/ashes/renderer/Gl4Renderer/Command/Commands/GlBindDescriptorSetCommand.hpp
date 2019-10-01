@@ -94,7 +94,7 @@ namespace ashes::gl4
 			, int64_t range )
 			: cmd{ { OpType::eBindBufferRange, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, binding{ std::move( binding ) }
-			, target{ std::move( target ) }
+			, target{ GlBufferTarget( target ) }
 			, name{ std::move( name ) }
 			, offset{ std::move( offset ) }
 			, range{ std::move( range ) }

@@ -148,6 +148,12 @@ namespace vkapp
 			};
 			return device.createRenderPass( std::move( createInfo ) );
 		}
+
+		bool areValidDimensions( VkExtent2D const & dimensions
+			, uint32_t mipLevel )
+		{
+			return mipLevel <= std::floor( std::log2( std::max( dimensions.height, dimensions.width ) ) ) + 1;
+		}
 	}
 
 	RenderPanel::RenderPanel( wxWindow * parent
@@ -239,21 +245,26 @@ namespace vkapp
 			std::cout << "Offscreen frame prepared." << std::endl;
 			doCreateMainVertexBuffer();
 			std::cout << "Main vertex buffer created." << std::endl;
-			doPrepareHiPass();
-			std::cout << "Hi pass created." << std::endl;
-			doPrepareBlurXPass();
-			std::cout << "Horizontal blur pass created." << std::endl;
-			doPrepareBlurYPass();
-			std::cout << "Vertical blur pass created." << std::endl;
-			doPrepareCombinePass();
-			std::cout << "Combine pass created." << std::endl;
-			doCreateMainDescriptorSet();
-			std::cout << "Main descriptor set created." << std::endl;
 			doCreateMainRenderPass();
 			std::cout << "Main render pass created." << std::endl;
 			doCreateMainPipeline();
 			std::cout << "Main pipeline created." << std::endl;
-			doPrepareMainFrames();
+
+			if ( areValidDimensions( m_swapChain->getDimensions()
+				, uint32_t( PassCount ) ) )
+			{
+				doPrepareHiPass();
+				std::cout << "Hi pass created." << std::endl;
+				doPrepareBlurXPass();
+				std::cout << "Horizontal blur pass created." << std::endl;
+				doPrepareBlurYPass();
+				std::cout << "Vertical blur pass created." << std::endl;
+				doPrepareCombinePass();
+				std::cout << "Combine pass created." << std::endl;
+				doCreateMainDescriptorSet();
+				std::cout << "Main descriptor set created." << std::endl;
+				doPrepareMainFrames();
+			}
 		}
 		catch ( std::exception & )
 		{
@@ -429,12 +440,16 @@ namespace vkapp
 				std::swap( m_passes.hi, dummy );
 			}
 
-			doPrepareHiPass();
-			doPrepareBlurXPass();
-			doPrepareBlurYPass();
-			doPrepareCombinePass();
-			doCreateMainDescriptorSet();
-			doPrepareMainFrames();
+			if ( areValidDimensions( m_swapChain->getDimensions()
+				, uint32_t( PassCount ) ) )
+			{
+				doPrepareHiPass();
+				doPrepareBlurXPass();
+				doPrepareBlurYPass();
+				doPrepareCombinePass();
+				doCreateMainDescriptorSet();
+				doPrepareMainFrames();
+			}
 		} );
 	}
 
@@ -658,6 +673,8 @@ namespace vkapp
 	void RenderPanel::doCreateFrameBuffer()
 	{
 		auto size = GetClientSize();
+		m_frameBuffer.reset();
+		m_renderTargetColour.reset();
 		m_renderTargetColour = m_device->createImage(
 			{
 				0u,
@@ -766,11 +783,6 @@ namespace vkapp
 
 	void RenderPanel::doCreateMainDescriptorSet()
 	{
-		ashes::VkDescriptorSetLayoutBindingArray bindings
-		{
-			{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
-		};
-		m_mainDescriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
 		m_mainDescriptorPool = m_mainDescriptorLayout->createPool( 1u );
 		m_mainDescriptorSet = m_mainDescriptorPool->createDescriptorSet();
 		m_mainDescriptorSet->createBinding( m_mainDescriptorLayout->getBinding( 0u )
@@ -1017,8 +1029,8 @@ namespace vkapp
 			cmd.endRenderPass();
 			cmd.end();
 
-			//dimensions.width >>= 1;
-			//dimensions.height >>= 1;
+			dimensions.width >>= 1;
+			dimensions.height >>= 1;
 		}
 	}
 
@@ -1503,6 +1515,11 @@ namespace vkapp
 
 	void RenderPanel::doCreateMainPipeline()
 	{
+		ashes::VkDescriptorSetLayoutBindingArray bindings
+		{
+			{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
+		};
+		m_mainDescriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
 		m_mainPipelineLayout = m_device->getDevice().createPipelineLayout( *m_mainDescriptorLayout );
 		wxSize size{ GetClientSize() };
 		std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders";

@@ -30,6 +30,7 @@ namespace ashes
 			return "min";
 		case VK_BLEND_OP_MAX:
 			return "max";
+#ifdef VK_EXT_blend_operation_advanced
 		case VK_BLEND_OP_ZERO_EXT:
 			return "zero";
 		case VK_BLEND_OP_SRC_EXT:
@@ -122,6 +123,7 @@ namespace ashes
 			return "green";
 		case VK_BLEND_OP_BLUE_EXT:
 			return "blue";
+#endif
 		default:
 			assert( false && "Unsupported VkBlendOp." );
 			throw std::runtime_error{ "Unsupported VkBlendOp" };

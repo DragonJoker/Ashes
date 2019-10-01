@@ -367,6 +367,8 @@ namespace vkapp
 			{ 2u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_VERTEX_BIT, nullptr },
 		};
 		m_offscreenDescriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
+		m_offscreenDescriptorSets[0].reset();
+		m_offscreenDescriptorSets[1].reset();
 		m_offscreenDescriptorPool = m_offscreenDescriptorLayout->createPool( 2u );
 
 		m_offscreenDescriptorSets[0] = m_offscreenDescriptorPool->createDescriptorSet();
@@ -602,6 +604,7 @@ namespace vkapp
 			{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
 		};
 		m_mainDescriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
+		m_mainDescriptorSet.reset();
 		m_mainDescriptorPool = m_mainDescriptorLayout->createPool( 1u );
 		m_mainDescriptorSet = m_mainDescriptorPool->createDescriptorSet();
 		m_mainDescriptorSet->createBinding( m_mainDescriptorLayout->getBinding( 0u )
@@ -721,6 +724,7 @@ namespace vkapp
 			{ 1u, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1u, VK_SHADER_STAGE_COMPUTE_BIT, nullptr },
 		};
 		m_computeDescriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
+		m_computeDescriptorSet.reset();
 		m_computeDescriptorPool = m_computeDescriptorLayout->createPool( 1u );
 		m_computeDescriptorSet = m_computeDescriptorPool->createDescriptorSet();
 		m_computeDescriptorSet->createBinding( m_computeDescriptorLayout->getBinding( 0u )

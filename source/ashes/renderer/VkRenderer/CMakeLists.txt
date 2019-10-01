@@ -7,12 +7,6 @@ set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 set( PROJECT_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}" )
 set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_BUILD}" )
 
-include_directories(
-	${CMAKE_CURRENT_BINARY_DIR}
-	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
-	${Vulkan_INCLUDE_DIRS}
-)
-
 file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
 	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.c
 	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.cc
@@ -27,28 +21,39 @@ file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
 	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.inc
 )
 
-add_definitions(
-	-D${PROJECT_NAME}_EXPORTS
-)
 add_library( ${PROJECT_NAME} SHARED
 	${${PROJECT_NAME}_SRC_FILES}
 	${${PROJECT_NAME}_HDR_FILES}
 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes/Renderer" )
-set_target_properties( ${PROJECT_NAME}
-	PROPERTIES
-		VERSION ${PROJECT_VERSION}
-		SOVERSION ${PROJECT_SOVERSION}
+target_include_directories( ${PROJECT_NAME} PRIVATE
+	${TARGET_INCLUDE_DIRS}
+	${CMAKE_CURRENT_BINARY_DIR}
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
+	${Vulkan_INCLUDE_DIRS}
 )
-
-target_link_libraries( ${PROJECT_NAME}
+target_link_libraries( ${PROJECT_NAME} PRIVATE
 	${BinLibraries}
 	common
 	ashes
 	${Vulkan_LIBRARY}
 )
-
+target_compile_definitions( ${PROJECT_NAME} PRIVATE
+	${PROJECT_NAME}_EXPORTS
+	${TARGET_CXX_DEFINITIONS}
+)
+target_compile_features( ${PROJECT_NAME} PRIVATE
+	cxx_std_17
+)
+target_compile_options( ${PROJECT_NAME} PRIVATE
+	${TARGET_CXX_OPTIONS}
+)
+set_target_properties( ${PROJECT_NAME} PROPERTIES
+	CXX_STANDARD 17
+	CXX_EXTENSIONS OFF
+	FOLDER "Ashes/Renderer"
+	VERSION ${PROJECT_VERSION}
+	SOVERSION ${PROJECT_SOVERSION}
+)
 add_dependencies( ${PROJECT_NAME}
 	common
 	ashes

@@ -22,6 +22,7 @@ namespace ashes
 		{
 		case VK_COLORSPACE_SRGB_NONLINEAR_KHR:
 			return "srgb_nonlinear";
+#if defined( VK_EXT_swapchain_colorspace ) && VK_HEADER_VERSION > 39
 		case VK_COLOR_SPACE_DISPLAY_P3_NONLINEAR_EXT:
 			return "display_p3_nonlinear";
 		case VK_COLOR_SPACE_EXTENDED_SRGB_LINEAR_EXT:
@@ -50,6 +51,7 @@ namespace ashes
 			return "pass_through";
 		case VK_COLOR_SPACE_EXTENDED_SRGB_NONLINEAR_EXT:
 			return "extended_srgb_nonlinear";
+#endif
 		default:
 			assert( false && "Unsupported VkColorSpaceKHR." );
 			throw std::runtime_error{ "Unsupported VkColorSpaceKHR" };

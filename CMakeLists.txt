@@ -1,10 +1,10 @@
-cmake_minimum_required( VERSION 2.8 )
+cmake_minimum_required( VERSION 3.13 )
+cmake_policy( VERSION 3.13 )
+cmake_policy( SET CMP0072 OLD )
+cmake_policy( SET CMP0077 NEW )
 
 set( MAIN_PROJECT_NAME "Ashes" )
 set( BUILD_ASHES 1 )
-
-set( CMAKE_CXX_STANDARD 17 )
-set( CMAKE_CXX_EXTENSIONS OFF )
 
 # Used to look for external modules
 set( CMAKE_MODULE_PATH
@@ -35,7 +35,7 @@ if ( ANDROID OR CMAKE_COMPILER_IS_GNUCXX )
 		-fPIC
 	)
 elseif ( MSVC )
-  add_definitions(
+	add_definitions(
 		-D_CRT_SECURE_NO_WARNINGS
 		-D_SCL_SECURE_NO_WARNINGS
 		-D_ENFORCE_MATCHING_ALLOCATORS=0
@@ -226,3 +226,4 @@ if( Vulkan_FOUND )
 else ()
 	
 endif ()
+

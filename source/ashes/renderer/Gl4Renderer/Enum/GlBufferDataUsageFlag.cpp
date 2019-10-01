@@ -31,7 +31,7 @@ namespace ashes::gl4
 
 	GlBufferDataUsageFlags getBufferDataUsageFlags( VkMemoryPropertyFlags const & flags )
 	{
-		GlBufferDataUsageFlags result{ 0 };
+		auto result{ GlBufferDataUsageFlags( 0 ) };
 
 		if ( ashes::checkFlag( flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
 		{

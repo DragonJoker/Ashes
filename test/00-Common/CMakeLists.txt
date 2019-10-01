@@ -13,26 +13,14 @@ file( GLOB HEADER_FILES
 	Src/*.inl
 )
 
-include_directories( ${TestIncludeDirectories} )
-add_definitions( ${TestAdditionalDefinitions} )
 
 add_library( ${PROJECT_NAME} STATIC
 	${SOURCE_FILES}
 	${HEADER_FILES}
 )
 
-target_link_libraries( ${PROJECT_NAME}
-	${BinLibraries}
-)
 
-add_dependencies( ${PROJECT_NAME}
-	${ENABLED_RENDERERS}
-)
-
-set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Test" )
-
-set( ASSETS_FOLDER ${CMAKE_SOURCE_DIR}/Test/Assets )
+set( ASSETS_FOLDER ${CMAKE_SOURCE_DIR}/test/Assets )
 
 file( GLOB_RECURSE ASSETS_FILES
 	${ASSETS_FOLDER}/*

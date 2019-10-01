@@ -24,8 +24,10 @@ namespace ashes
 			return "transient";
 		case VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT:
 			return "reset_command_buffer";
+#ifdef VK_API_VERSION_1_1
 		case VK_COMMAND_POOL_CREATE_PROTECTED_BIT:
 			return "protected";
+#endif
 		default:
 			assert( false && "Unsupported VkCommandPoolCreateFlagBits." );
 			throw std::runtime_error{ "Unsupported VkCommandPoolCreateFlagBits" };

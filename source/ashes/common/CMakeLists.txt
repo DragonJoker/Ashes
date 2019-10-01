@@ -7,7 +7,8 @@ set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 set( PROJECT_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}" )
 set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_BUILD}" )
 
-include_directories(
+set( TARGET_INCLUDE_DIRS
+	${TARGET_INCLUDE_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR}
 	${ASHES_SOURCE_DIR}/include
 	${ASHES_SOURCE_DIR}/include/ashes
@@ -39,8 +40,22 @@ add_library( ${PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES}
 	${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes/Core" )
+target_include_directories( ${PROJECT_NAME} PUBLIC
+	${TARGET_INCLUDE_DIRS}
+)
+target_compile_features( ${PROJECT_NAME} PUBLIC
+	cxx_std_17
+)
+target_compile_definitions( ${PROJECT_NAME} PUBLIC
+	${TARGET_CXX_DEFINITIONS}
+)
+target_compile_options( ${PROJECT_NAME} PRIVATE
+	${TARGET_CXX_OPTIONS}
+)
+set_target_properties( ${PROJECT_NAME} PROPERTIES
+	CXX_STANDARD 17
+	CXX_EXTENSIONS OFF
+	FOLDER "Ashes/Core" )
 
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes Platform "Platform" )
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes Win32 "Win32" )

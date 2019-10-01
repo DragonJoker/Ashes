@@ -4,7 +4,7 @@
 
 namespace vkapp
 {
-	static wxString const AppName{ common::makeName( SAMPLE_ID, wxT( "NormalMapping" ) ) };
+	static wxString const AppName{ wxT( SAMPLE_FOLDER ) };
 	static wxString const AppDesc = wxT( "Normal Mapping" );
 
 	class RenderPanel;

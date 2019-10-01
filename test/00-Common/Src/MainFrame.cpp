@@ -32,6 +32,7 @@ namespace common
 	void MainFrame::initialise()
 	{
 		SetClientSize( WindowSize );
+		SetMinClientSize( WindowSize );
 		Show( true );
 
 		try

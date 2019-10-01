@@ -2,6 +2,49 @@
 
 PluginLibrary g_library;
 
+namespace details
+{
+	namespace
+	{
+		bool endsWith( std::string const & value
+			, std::string const & lookup )
+		{
+			auto it = value.find( lookup );
+			bool result = it != std::string::npos;
+
+			if ( result )
+			{
+				result = ( it + lookup.size() ) == value.size();
+			}
+
+			return result;
+		}
+	}
+
+	std::string const & getSharedLibExt()
+	{
+#if defined( NDEBUG )
+#	if defined( _WIN32 )
+		static std::string result{ R"(.dll)" };
+#	else
+		static std::string result{ R"(.so)" };
+#	endif
+#else
+#	if defined( _WIN32 )
+		static std::string result{ R"(d.dll)" };
+#	else
+		static std::string result{ R"(d.so)" };
+#	endif
+#endif
+		return result;
+	}
+
+	bool isSharedLibrary( std::string const & filePath )
+	{
+		return endsWith( filePath, getSharedLibExt() );
+	}
+}
+
 extern "C"
 {
 	Ashes_API PFN_vkVoidFunction VKAPI_PTR vkGetInstanceProcAddr( VkInstance instance
@@ -918,7 +961,6 @@ extern "C"
 #pragma endregion
 #pragma region VK_KHR_swapchain
 #ifdef VK_KHR_swapchain
-
 	Ashes_API VkResult VKAPI_CALL vkCreateSwapchainKHR( VkDevice device, const  VkSwapchainCreateInfoKHR* pCreateInfo, const  VkAllocationCallbacks* pAllocator, VkSwapchainKHR* pSwapchain )
 	{
 		return g_library.getSelectedDesc().functions.CreateSwapchainKHR( device, pCreateInfo, pAllocator, pSwapchain );
@@ -944,6 +986,8 @@ extern "C"
 		return g_library.getSelectedDesc().functions.QueuePresentKHR( queue, pPresentInfo );
 	}
 
+#	ifdef VK_API_VERSION_1_1
+
 	Ashes_API VkResult VKAPI_CALL vkGetDeviceGroupPresentCapabilitiesKHR( VkDevice device, VkDeviceGroupPresentCapabilitiesKHR* pDeviceGroupPresentCapabilities )
 	{
 		return g_library.getSelectedDesc().functions.GetDeviceGroupPresentCapabilitiesKHR( device, pDeviceGroupPresentCapabilities );
@@ -964,6 +1008,35 @@ extern "C"
 		return g_library.getSelectedDesc().functions.AcquireNextImage2KHR( device, pAcquireInfo, pImageIndex );
 	}
 
+#	endif
+
+#endif
+#pragma endregion
+#pragma region VK_KHR_device_group
+#if defined( VK_KHR_device_group )
+#	ifndef VK_API_VERSION_1_1
+
+	Ashes_API VkResult VKAPI_CALL vkGetDeviceGroupPresentCapabilitiesKHR( VkDevice device, VkDeviceGroupPresentCapabilitiesKHR* pDeviceGroupPresentCapabilities )
+	{
+		return g_library.getSelectedDesc().functions.GetDeviceGroupPresentCapabilitiesKHR( device, pDeviceGroupPresentCapabilities );
+	}
+
+	Ashes_API VkResult VKAPI_CALL vkGetDeviceGroupSurfacePresentModesKHR( VkDevice device, VkSurfaceKHR surface, VkDeviceGroupPresentModeFlagsKHR*  pModes )
+	{
+		return g_library.getSelectedDesc().functions.GetDeviceGroupSurfacePresentModesKHR( device, surface, pModes );
+	}
+
+	Ashes_API VkResult VKAPI_CALL vkGetPhysicalDevicePresentRectanglesKHR( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32_t* pRectCount, VkRect2D* pRects )
+	{
+		return g_library.getSelectedDesc().functions.GetPhysicalDevicePresentRectanglesKHR( physicalDevice, surface, pRectCount, pRects );
+	}
+
+	Ashes_API VkResult VKAPI_CALL vkAcquireNextImage2KHR( VkDevice device, const  VkAcquireNextImageInfoKHR* pAcquireInfo, uint32_t* pImageIndex )
+	{
+		return g_library.getSelectedDesc().functions.AcquireNextImage2KHR( device, pAcquireInfo, pImageIndex );
+	}
+
+#	endif
 #endif
 #pragma endregion
 #pragma region VK_KHR_android_surface

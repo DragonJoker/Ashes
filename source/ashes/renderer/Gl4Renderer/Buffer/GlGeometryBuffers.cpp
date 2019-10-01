@@ -102,6 +102,7 @@ namespace ashes::gl4
 				|| format == VK_FORMAT_ASTC_10x10_UNORM_BLOCK
 				|| format == VK_FORMAT_ASTC_12x10_UNORM_BLOCK
 				|| format == VK_FORMAT_ASTC_12x12_UNORM_BLOCK
+#ifdef VK_API_VERSION_1_1
 				|| format == VK_FORMAT_G8B8G8R8_422_UNORM
 				|| format == VK_FORMAT_B8G8R8G8_422_UNORM
 				|| format == VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM
@@ -139,7 +140,9 @@ namespace ashes::gl4
 				|| format == VK_FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG
 				|| format == VK_FORMAT_PVRTC1_4BPP_UNORM_BLOCK_IMG
 				|| format == VK_FORMAT_PVRTC2_2BPP_UNORM_BLOCK_IMG
-				|| format == VK_FORMAT_PVRTC2_4BPP_UNORM_BLOCK_IMG;
+				|| format == VK_FORMAT_PVRTC2_4BPP_UNORM_BLOCK_IMG
+#endif
+			;
 		}
 
 		bool isInteger( VkFormat format )

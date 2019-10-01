@@ -25,6 +25,7 @@ namespace vkapp
 			, uint32_t( sizeof( common::SceneData ) )
 			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) }
+		, m_sceneData{ 1u }
 	{
 		doInitialise();
 		doUpdateProjection( size );

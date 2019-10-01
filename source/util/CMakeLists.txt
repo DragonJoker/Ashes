@@ -1,12 +1,5 @@
 project( util )
 
-include_directories(
-	${CMAKE_CURRENT_BINARY_DIR}
-	${ASHES_BINARY_DIR}
-	${ASHES_SOURCE_DIR}/include
-	${CMAKE_SOURCE_DIR}/external/glslang
-)
-
 file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
 	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.c
 	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cc
@@ -15,7 +8,6 @@ file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
 	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.cc
 	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.cpp
 )
-
 file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
 	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.h
 	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hh
@@ -29,13 +21,6 @@ file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
 	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inc
 )
 
-add_library( ${PROJECT_NAME} STATIC
-	${${PROJECT_NAME}_SRC_FILES}
-	${${PROJECT_NAME}_HDR_FILES}
-)
-set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Common" )
-
 if ( MSVC )
 	set( BinLibraries
 		${BinLibraries}
@@ -48,7 +33,18 @@ if ( MSVC )
 	)
 endif ()
 
-target_link_libraries( ${PROJECT_NAME}
+add_library( ${PROJECT_NAME} STATIC
+	${${PROJECT_NAME}_SRC_FILES}
+	${${PROJECT_NAME}_HDR_FILES}
+)
+target_include_directories( ${PROJECT_NAME} INTERFACE
+	${TARGET_INCLUDE_DIRS}
+	${CMAKE_CURRENT_BINARY_DIR}
+	${ASHES_BINARY_DIR}
+	${ASHES_SOURCE_DIR}/include
+	${CMAKE_SOURCE_DIR}/external/glslang
+)
+target_link_libraries( ${PROJECT_NAME} PRIVATE
 	common
 	ashes
 	ashespp
@@ -57,6 +53,20 @@ target_link_libraries( ${PROJECT_NAME}
 	OSDependent
 	SPVRemapper
 	SPIRV
+)
+target_compile_features( ${PROJECT_NAME} INTERFACE
+	cxx_std_17
+)
+target_compile_definitions( ${PROJECT_NAME} PRIVATE
+	${TARGET_CXX_DEFINITIONS}
+)
+target_compile_options( ${PROJECT_NAME} PRIVATE
+	${TARGET_CXX_OPTIONS}
+)
+set_target_properties( ${PROJECT_NAME} PROPERTIES
+	CXX_STANDARD 17
+	CXX_EXTENSIONS OFF
+	FOLDER "Common"
 )
 
 #We copy each lib in <install_dir>/lib folder
@@ -90,3 +100,4 @@ install(
 
 #For libs, we install headers to <install_dir>/include/${PROJECT_NAME}
 target_install_headers( ${PROJECT_NAME} ../../include/${PROJECT_NAME} )
+

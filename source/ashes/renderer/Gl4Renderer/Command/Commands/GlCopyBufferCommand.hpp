@@ -23,8 +23,8 @@ namespace ashes::gl4
 			, uint32_t dstTarget
 			, VkBufferCopy copy )
 			: cmd{ { OpType::eCopyBufferSubData, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, srcTarget{ std::move( srcTarget ) }
-			, dstTarget{ std::move( dstTarget ) }
+			, srcTarget{ GlBufferTarget( srcTarget ) }
+			, dstTarget{ GlBufferTarget( dstTarget ) }
 			, copy{ std::move( copy ) }
 		{
 		}

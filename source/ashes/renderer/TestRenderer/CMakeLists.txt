@@ -17,11 +17,6 @@ configure_file(
 	NEWLINE_STYLE LF
 )
 
-include_directories(
-	${CMAKE_CURRENT_BINARY_DIR}
-	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
-)
-
 file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
 	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.c
 	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.cc
@@ -35,33 +30,39 @@ file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
 	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.inl
 	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.inc
 )
-
-if ( ASHES_STATIC_RENDERERS )
-	add_definitions(
-		-D${PROJECT_NAME}_STATIC
-	)
-	add_library( ${PROJECT_NAME} STATIC
-		${${PROJECT_NAME}_SRC_FILES}
-		${${PROJECT_NAME}_HDR_FILES}
-		${${PROJECT_NAME}_CONFIG_HEADER}
-	)
-else ()
-	add_definitions(
-		-D${PROJECT_NAME}_EXPORTS
-	)
-	add_library( ${PROJECT_NAME} SHARED
-		${${PROJECT_NAME}_SRC_FILES}
-		${${PROJECT_NAME}_HDR_FILES}
-		${${PROJECT_NAME}_CONFIG_HEADER}
-	)
-	set_target_properties( ${PROJECT_NAME}
-		PROPERTIES
-			VERSION ${PROJECT_VERSION}
-			SOVERSION ${PROJECT_SOVERSION}
-	)
-endif ()
-set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes/Renderer" )
+add_library( ${PROJECT_NAME} SHARED
+	${${PROJECT_NAME}_SRC_FILES}
+	${${PROJECT_NAME}_HDR_FILES}
+	${${PROJECT_NAME}_CONFIG_HEADER}
+)
+target_include_directories( ${PROJECT_NAME} PRIVATE
+	${TARGET_INCLUDE_DIRS}
+	${CMAKE_CURRENT_BINARY_DIR}
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
+)
+target_link_libraries( ${PROJECT_NAME} PRIVATE
+	${BinLibraries}
+	common
+	ashes
+	RendererCommon
+)
+target_compile_definitions( ${PROJECT_NAME} PRIVATE
+	${PROJECT_NAME}_EXPORTS
+	${TARGET_CXX_DEFINITIONS}
+)
+target_compile_features( ${PROJECT_NAME} PRIVATE
+	cxx_std_17
+)
+target_compile_options( ${TARGET_NAME} PRIVATE
+	${TARGET_CXX_OPTIONS}
+)
+set_target_properties( ${PROJECT_NAME} PROPERTIES
+	CXX_STANDARD 17
+	CXX_EXTENSIONS OFF
+	FOLDER "Ashes/Renderer"
+	VERSION ${PROJECT_VERSION}
+	SOVERSION ${PROJECT_SOVERSION}
+)
 add_target_precompiled_header_ex( ${PROJECT_NAME}
 	ashes/renderer
 	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/${PROJECT_NAME}Pch.hpp
@@ -69,14 +70,6 @@ add_target_precompiled_header_ex( ${PROJECT_NAME}
 	"${CMAKE_CXX_FLAGS}"
 	${${PROJECT_NAME}_SRC_FILES}
 )
-
-target_link_libraries( ${PROJECT_NAME}
-	${BinLibraries}
-	common
-	ashes
-	RendererCommon
-)
-
 add_dependencies( ${PROJECT_NAME}
 	common
 	ashes

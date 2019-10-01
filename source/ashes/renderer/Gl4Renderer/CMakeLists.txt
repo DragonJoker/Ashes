@@ -10,12 +10,6 @@ set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_BUILD}" )
 find_package( OpenGL )
 
 if ( OpenGL_FOUND )
-	include_directories(
-		${CMAKE_CURRENT_BINARY_DIR}
-		${SPIRV_CROSS_DIR}
-		${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
-	)
-
 	file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
 		${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.c
 		${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.cc
@@ -58,13 +52,6 @@ if ( OpenGL_FOUND )
 		)
 	endif ()
 
-	add_definitions(
-		-D${PROJECT_NAME}_USE_SPIRV_CROSS=${${PROJECT_NAME}_USE_SPIRV_CROSS}
-	)
-
-	add_definitions(
-		-D${PROJECT_NAME}_EXPORTS
-	)
 	add_library( ${PROJECT_NAME} SHARED
 		${${PROJECT_NAME}_SRC_FILES}
 		${${PROJECT_NAME}_HDR_FILES}
@@ -72,14 +59,35 @@ if ( OpenGL_FOUND )
 		${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES}
 		${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
 	)
-	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Ashes/Renderer" )
-	set_target_properties( ${PROJECT_NAME}
-		PROPERTIES
-			VERSION ${PROJECT_VERSION}
-			SOVERSION ${PROJECT_SOVERSION}
+	target_include_directories( ${PROJECT_NAME} PRIVATE
+		${TARGET_INCLUDE_DIRS}
+		${CMAKE_CURRENT_BINARY_DIR}
+		${SPIRV_CROSS_DIR}
+		${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
 	)
-
+	target_link_libraries( ${PROJECT_NAME} PRIVATE
+		${OPENGL_gl_LIBRARY}
+		${BinLibraries}
+		${RendererDependencies}
+	)
+	target_compile_features( ${PROJECT_NAME} PRIVATE
+		cxx_std_17
+	)
+	target_compile_definitions( ${PROJECT_NAME} PRIVATE
+		${PROJECT_NAME}_USE_SPIRV_CROSS=${${PROJECT_NAME}_USE_SPIRV_CROSS}
+		${PROJECT_NAME}_EXPORTS
+		${TARGET_CXX_DEFINITIONS}
+	)
+	target_compile_options( ${PROJECT_NAME} PRIVATE
+		${TARGET_CXX_OPTIONS}
+	)
+	set_target_properties( ${PROJECT_NAME} PROPERTIES
+		CXX_STANDARD 17
+		CXX_EXTENSIONS OFF
+		FOLDER "Ashes/Renderer"
+		VERSION ${PROJECT_VERSION}
+		SOVERSION ${PROJECT_SOVERSION}
+	)
 	add_target_precompiled_header_ex( ${PROJECT_NAME}
 		ashes/renderer
 		${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/GlRendererPch.hpp
@@ -87,13 +95,6 @@ if ( OpenGL_FOUND )
 		"${CMAKE_CXX_FLAGS}"
 		${${PROJECT_NAME}_SRC_FILES}
 	)
-
-	target_link_libraries( ${PROJECT_NAME}
-		${OPENGL_gl_LIBRARY}
-		${BinLibraries}
-		${RendererDependencies}
-	)
-
 	add_dependencies( ${PROJECT_NAME}
 		${RendererDependencies}
 	)

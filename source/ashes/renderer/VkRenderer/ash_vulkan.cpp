@@ -13,57 +13,64 @@ static char const * const libraryName = "libvulkan.so.1";
 #	error Unsupported platform
 #endif
 
-struct VkLibrary
+namespace ashes::vk
 {
-	std::unique_ptr< ashes::DynamicLibrary > library;
-	AshPluginDescription description
+	struct VkLibrary
 	{
-		"vk",
-		"Vulkan renderer for Ashes",
-	};
-
-	VkResult init()
-	{
-		VkResult result = VK_SUCCESS;
-
-		if ( !description.getInstanceProcAddr )
+		AshPluginDescription description
 		{
-			result = VK_ERROR_INITIALIZATION_FAILED;
-			library = std::make_unique< ashes::DynamicLibrary >( libraryName );
-			library->getFunction( "vkGetInstanceProcAddr", description.getInstanceProcAddr );
-			result = description.getInstanceProcAddr
-				? VK_SUCCESS
-				: VK_ERROR_INITIALIZATION_FAILED;
-			description.features =
+			"vk",
+			"Vulkan renderer for Ashes",
+		};
+		std::unique_ptr< ashes::DynamicLibrary > library;
+
+		VkResult init()
+		{
+			VkResult result = VK_SUCCESS;
+
+			if ( !description.getInstanceProcAddr )
 			{
-				true, // hasBufferRange
-				true, // hasImageTexture
-				true, // hasBaseInstance
-				true, // hasClearTexImage
-				true, // hasComputeShaders
-				true, // hasStorageBuffers
-				true, // supportsPersistentMapping
-			};
+				result = VK_ERROR_INITIALIZATION_FAILED;
+				library = std::make_unique< ashes::DynamicLibrary >( libraryName );
+				library->getFunction( "vkGetInstanceProcAddr", description.getInstanceProcAddr );
+				result = description.getInstanceProcAddr
+					? VK_SUCCESS
+					: VK_ERROR_INITIALIZATION_FAILED;
+				description.features =
+				{
+					true, // hasBufferRange
+					true, // hasImageTexture
+					true, // hasBaseInstance
+					true, // hasClearTexImage
+					true, // hasComputeShaders
+					true, // hasStorageBuffers
+					true, // supportsPersistentMapping
+				};
 #define VK_LIB_GLOBAL_FUNCTION( x )\
-			library->getFunction( "vk"#x, description.functions.x );
+				library->getFunction( "vk"#x, description.functions.x );
 #define VK_LIB_INSTANCE_FUNCTION( x )\
-			library->getFunction( "vk"#x, description.functions.x );
+				library->getFunction( "vk"#x, description.functions.x );
 #define VK_LIB_DEVICE_FUNCTION( x )\
-			library->getFunction( "vk"#x, description.functions.x );
+				library->getFunction( "vk"#x, description.functions.x );
 #define VK_LIB_GLOBAL_FUNCTION_EXT( n, x )
 #define VK_LIB_INSTANCE_FUNCTION_EXT( n, x )
 #define VK_LIB_DEVICE_FUNCTION_EXT( n, x )
-#include <common/VulkanFunctionsList.inl>
+#	include <ashes/ashes_functions_list.hpp>
 
-			description.support.priority = 10u;
-			description.support.supported = VK_TRUE;
+				description.support.priority = 10u;
+				description.support.supported = VK_TRUE;
+			}
+
+			return result;
 		}
+	};
+}
 
-		return result;
-	}
-};
-
-thread_local VkLibrary g_library;
+ashes::vk::VkLibrary & getLibrary()
+{
+	thread_local ashes::vk::VkLibrary library;
+	return library;
+}
 
 #if ASHES_WIN32
 #	ifdef VkRenderer_EXPORTS
@@ -79,11 +86,11 @@ extern "C"
 {
 	VkRenderer_API VkResult VKAPI_PTR ashGetPluginDescription( AshPluginDescription * pDescription )
 	{
-		auto result = g_library.init();
+		auto result = getLibrary().init();
 
 		if ( result == VK_SUCCESS )
 		{
-			*pDescription = g_library.description;
+			*pDescription = getLibrary().description;
 		}
 
 		return result;

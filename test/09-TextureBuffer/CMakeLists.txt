@@ -8,18 +8,13 @@ set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 file( GLOB SOURCE_FILES
 	Src/*.cpp
 )
-
 file( GLOB HEADER_FILES
 	Src/*.hpp
 	Src/*.inl
 )
-
 file( GLOB SHADER_FILES
 	${CMAKE_CURRENT_SOURCE_DIR}/Shaders/*.*
 )
-
-include_directories( ${TestIncludeDirectories} )
-add_definitions( ${TestAdditionalDefinitions} )
 
 source_group( "Shader Files" FILES ${SHADER_FILES} )
 include_directories( ${CMAKE_SOURCE_DIR}/Test/00-Common/Src )
@@ -40,9 +35,6 @@ target_link_libraries( ${PROJECT_NAME}
 add_dependencies( ${PROJECT_NAME}
 	Test-00-Common
 )
-
-set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Test" )
 
 foreach( SHADER ${SHADER_FILES} )
 	add_custom_command(

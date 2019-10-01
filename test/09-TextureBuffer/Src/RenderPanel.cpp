@@ -193,6 +193,7 @@ namespace vkapp
 			{ 0u, VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr }
 		};
 		m_descriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
+		m_descriptorSet.reset();
 		m_descriptorPool = m_descriptorLayout->createPool( 1u );
 		m_descriptorSet = m_descriptorPool->createDescriptorSet();
 		m_descriptorSet->createBinding( m_descriptorLayout->getBinding( 0u )

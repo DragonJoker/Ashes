@@ -2,7 +2,7 @@
 
 #include "Prerequisites.hpp"
 
-#include <ashespp/RenderPass/Framebuffer.hpp>
+#include <ashespp/RenderPass/FrameBuffer.hpp>
 #include <ashespp/RenderPass/RenderPass.hpp>
 #include <ashespp/Core/SwapChain.hpp>
 
@@ -35,7 +35,7 @@ namespace vkapp
 		void doCreatePipeline();
 		bool doPrepareFrames();
 		/**@}*/
-		/**
+		/**œ	
 		*\name
 		*	Rendering.
 		*/

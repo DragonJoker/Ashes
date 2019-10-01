@@ -50,7 +50,7 @@ namespace ashes
 #define VK_LIB_DEVICE_FUNCTION_EXT( ext, fun )\
 		if ( doCheckExtension( ext ) )\
 			vk##fun = reinterpret_cast< PFN_vk##fun >( m_instance.vkGetDeviceProcAddr( m_internal, "vk"#fun ) );
-#include <common/VulkanFunctionsList.inl>
+#include <ashes/ashes_functions_list.hpp>
 	}
 
 	Device::~Device()

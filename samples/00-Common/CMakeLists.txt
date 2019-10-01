@@ -1,4 +1,4 @@
-project( Sample-00-Common )
+project( ${TARGET_NAME} )
 
 set( ${PROJECT_NAME}_VERSION_MAJOR 0 )
 set( ${PROJECT_NAME}_VERSION_MINOR 1 )
@@ -9,48 +9,40 @@ file( GLOB SOURCE_FILES
 	../../external/imgui/imgui.cpp
 	../../external/imgui/imgui_draw.cpp
 )
-
 file( GLOB HEADER_FILES
 	Src/*.hpp
 	Src/*.inl
 )
-
 file( GLOB GLSL_SHADER_FILES
 	${CMAKE_CURRENT_SOURCE_DIR}/Shaders/*.vert
 	${CMAKE_CURRENT_SOURCE_DIR}/Shaders/*.frag
 )
-
 file( GLOB SHADER_FILES
 	${CMAKE_CURRENT_SOURCE_DIR}/Shaders/*.*
 )
 
 source_group( "Shader Files" FILES ${GLSL_SHADER_FILES} )
+
 add_library( ${PROJECT_NAME} STATIC
 	${SOURCE_FILES}
 	${HEADER_FILES}
 	${GLSL_SHADER_FILES}
 )
-
-target_link_libraries( ${PROJECT_NAME}
+target_link_libraries( ${PROJECT_NAME} PRIVATE
 	common
 	ashes
 	ashespp
 	util
 )
-
 add_dependencies( ${PROJECT_NAME}
 	${ENABLED_RENDERERS}
 )
-
 add_target_precompiled_header( ${PROJECT_NAME}
 	${CMAKE_CURRENT_SOURCE_DIR}/Src/PrecompiledHeader.hpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Src/PrecompiledHeader.cpp
 	"${CMAKE_CXX_FLAGS}"
 	${SOURCE_FILES}
 )
-
-set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Samples" )
 
 foreach( SHADER ${SHADER_FILES} )
 	add_custom_command(
@@ -67,7 +59,7 @@ foreach( SHADER ${SHADER_FILES} )
 	)
 endforeach()
 
-set( ASSETS_FOLDER ${CMAKE_SOURCE_DIR}/Samples/Assets )
+set( ASSETS_FOLDER ${CMAKE_SOURCE_DIR}/samples/Assets )
 
 file( GLOB_RECURSE ASSETS_FILES
 	${ASSETS_FOLDER}/*

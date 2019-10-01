@@ -8,6 +8,7 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
+#ifdef VK_API_VERSION_1_1
 	/**
 	*\brief
 	*	Gets the name of the given element type.
@@ -29,6 +30,7 @@ namespace ashes
 
 		return 0;
 	}
+#endif
 }
 
 #endif

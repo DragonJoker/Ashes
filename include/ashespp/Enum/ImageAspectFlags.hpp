@@ -28,12 +28,21 @@ namespace ashes
 			return "stencil";
 		case VK_IMAGE_ASPECT_METADATA_BIT:
 			return "metadata";
+#ifdef VK_API_VERSION_1_1
 		case VK_IMAGE_ASPECT_PLANE_0_BIT:
 			return "plane_0";
 		case VK_IMAGE_ASPECT_PLANE_1_BIT:
 			return "plane_1";
 		case VK_IMAGE_ASPECT_PLANE_2_BIT:
 			return "plane_2";
+#elif defined( VK_KHR_sampler_ycbcr_conversion )
+		case VK_IMAGE_ASPECT_PLANE_0_BIT_KHR:
+			return "plane_0";
+		case VK_IMAGE_ASPECT_PLANE_1_BIT_KHR:
+			return "plane_1";
+		case VK_IMAGE_ASPECT_PLANE_2_BIT_KHR:
+			return "plane_2";
+#endif
 #ifdef VK_EXT_image_drm_format_modifier
 		case VK_IMAGE_ASPECT_MEMORY_PLANE_0_BIT_EXT:
 			return "memory_plane_0";

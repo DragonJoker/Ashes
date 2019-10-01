@@ -9,7 +9,6 @@ See LICENSE file in root folder.
 namespace ashes::gl4
 {
 	enum GlConstantFormatBaseType
-		: GLenum
 	{
 		GL_CONSTANT_FORMAT_BASE_TYPE_UNSIGNED_BYTE = 0x1401,
 		GL_CONSTANT_FORMAT_BASE_TYPE_INT = 0x1404,

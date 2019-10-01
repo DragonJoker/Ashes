@@ -17,7 +17,11 @@ namespace ashes
 	static std::string const libraryName = "ashesd.dll";
 #endif
 #elif defined( __linux__ )
+#if defined( NDEBUG )
 	static std::string const libraryName = "libashes.so";
+#else
+	static std::string const libraryName = "libashesd.so";
+#endif
 #else
 #	error Unsupported platform
 #endif

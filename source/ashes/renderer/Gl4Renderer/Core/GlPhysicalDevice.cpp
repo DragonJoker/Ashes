@@ -598,8 +598,10 @@ namespace ashes::gl4
 
 					if ( value == GL_TRUE )
 					{
+#if defined( VK_KHR_maintenance ) || defined( VK_API_VERSION_1_1 )
 						m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
 						m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
+#endif
 						glGetInternalformativ( GL_TEXTURE_2D, internal, GL_FRAMEBUFFER_RENDERABLE, 1, &value );
 
 						if ( value == GL_FULL_SUPPORT )
@@ -638,11 +640,13 @@ namespace ashes::gl4
 
 						glGetInternalformativ( GL_TEXTURE_2D, internal, GL_READ_PIXELS, 1, &value );
 
+#if defined( VK_KHR_maintenance ) || defined( VK_API_VERSION_1_1 )
 						if ( value == GL_FULL_SUPPORT )
 						{
 							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;
 							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
 						}
+#endif
 					}
 				}
 

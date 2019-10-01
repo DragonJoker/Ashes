@@ -433,7 +433,7 @@ namespace vkapp
 		ashes::ImageViewCRefArray attaches;
 		m_renderTargetColourView = m_renderTargetColour->createView( VK_IMAGE_VIEW_TYPE_2D
 			, m_renderTargetColour->getFormat() );
-		m_renderTargetDepthView = m_renderTargetColour->createView( VK_IMAGE_VIEW_TYPE_2D
+		m_renderTargetDepthView = m_renderTargetDepth->createView( VK_IMAGE_VIEW_TYPE_2D
 			, m_renderTargetDepth->getFormat() );
 		attaches.emplace_back( m_renderTargetColourView );
 		attaches.emplace_back( m_renderTargetDepthView );
@@ -546,6 +546,7 @@ namespace vkapp
 			{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
 		};
 		m_mainDescriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
+		m_mainDescriptorSet.reset();
 		m_mainDescriptorPool = m_mainDescriptorLayout->createPool( 1u );
 		m_mainDescriptorSet = m_mainDescriptorPool->createDescriptorSet();
 		m_mainDescriptorSet->createBinding( m_mainDescriptorLayout->getBinding( 0u )

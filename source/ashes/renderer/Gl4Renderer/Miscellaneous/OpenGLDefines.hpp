@@ -229,7 +229,6 @@ namespace ashes::gl4
 	using PFN_glDisable = void ( GLAPIENTRY * )( GlTweak cap );
 	using PFN_glDispatchCompute = void ( GLAPIENTRY * )( GLuint num_groups_x, GLuint num_groups_y, GLuint num_groups_z );
 	using PFN_glDispatchComputeIndirect = void ( GLAPIENTRY * )( GLintptr indirect );
-	using PFN_glDrawArrays = void ( GLAPIENTRY * )( GLenum mode, GLint first, GLsizei count );
 	using PFN_glDrawArraysInstancedBaseInstance = void ( GLAPIENTRY * )( GLenum mode, GLint first, GLsizei count, GLsizei primcount, GLuint baseinstance );
 	using PFN_glDrawBuffer = void ( GLAPIENTRY * )( GLenum buf );
 	using PFN_glDrawBuffers = void ( GLAPIENTRY * )( GLsizei n, const GLenum* bufs );

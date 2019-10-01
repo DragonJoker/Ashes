@@ -30,8 +30,10 @@ namespace ashes
 			return "host_cached";
 		case VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT:
 			return "lazily_allocated";
+#ifdef VK_API_VERSION_1_1
 		case VK_MEMORY_PROPERTY_PROTECTED_BIT:
 			return "protected";
+#endif
 		default:
 			assert( false && "Unsupported VkMemoryPropertyFlagBits." );
 			throw std::runtime_error{ "Unsupported VkMemoryPropertyFlagBits" };

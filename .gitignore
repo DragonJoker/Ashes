@@ -254,3 +254,4 @@ ModelManifest.xml
 include/AshesOld
 source/AshesOld
 data
+source/premake5.exe

@@ -144,7 +144,10 @@ namespace utils
 			, VkExtent2D const & size )
 		{
 			auto surfaceCaps = surface.getCapabilities();
-			surfaceCaps.currentExtent = size;
+			surfaceCaps.currentExtent.width = std::min( size.width, surfaceCaps.maxImageExtent.width );
+			surfaceCaps.currentExtent.height = std::min( size.height, surfaceCaps.maxImageExtent.height );
+			surfaceCaps.currentExtent.width = std::max( surfaceCaps.currentExtent.width, surfaceCaps.minImageExtent.width );
+			surfaceCaps.currentExtent.height = std::max( surfaceCaps.currentExtent.height, surfaceCaps.minImageExtent.height );
 			return doGetSwapChainCreateInfo( surface, surfaceCaps );
 		}
 

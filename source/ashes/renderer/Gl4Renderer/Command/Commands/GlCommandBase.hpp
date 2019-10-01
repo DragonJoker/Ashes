@@ -460,7 +460,7 @@ namespace ashes::gl4
 		inline CmdT( uint32_t target
 			, uint32_t name )
 			: cmd{ { OpType::eBindBuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, target{ std::move( target ) }
+			, target{ GlBufferTarget( target ) }
 			, name{ std::move( name ) }
 		{
 		}
