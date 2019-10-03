@@ -25,7 +25,15 @@ namespace ashes::gl4
 			, VkImageSubresource const & subresource
 			, VkSubresourceLayout & layout )const;
 		VkResult waitIdle()const;
+#if VK_EXT_debug_utils
+		VkResult setDebugUtilsObjectName( VkDebugUtilsObjectNameInfoEXT const & nameInfo )const;
+		VkResult setDebugUtilsObjectTag( VkDebugUtilsObjectTagInfoEXT const & tagInfo )const;
+#endif
+#if VK_EXT_debug_marker
+		VkResult debugMarkerSetObjectTag( VkDebugMarkerObjectTagInfoEXT const & nameInfo )const;
 		VkResult debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const;
+#endif
+#if VK_EXT_debug_report
 		void reportMessage( VkDebugReportFlagsEXT flags
 			, VkDebugReportObjectTypeEXT objectType
 			, uint64_t object
@@ -33,6 +41,7 @@ namespace ashes::gl4
 			, int32_t messageCode
 			, const char * pLayerPrefix
 			, const char * pMessage );
+#endif
 		VkQueue getQueue( uint32_t familyIndex
 			, uint32_t index )const;
 		void swapBuffers()const;

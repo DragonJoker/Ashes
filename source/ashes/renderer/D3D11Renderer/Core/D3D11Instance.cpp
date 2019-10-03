@@ -190,7 +190,7 @@ namespace ashes::d3d11
 		{
 			for ( auto & layer : m_layers )
 			{
-				layer->onCopyToImageCommand( cmd
+				layer->copyToImageCommand( cmd
 					, copyInfo
 					, src
 					, dst );
@@ -212,7 +212,7 @@ namespace ashes::d3d11
 		{
 			for ( auto & layer : m_layers )
 			{
-				layer->onCheckHResultCommand( hresult
+				layer->checkHResultCommand( hresult
 					, message );
 			}
 		}
@@ -224,6 +224,30 @@ namespace ashes::d3d11
 
 		return false;
 	}
+
+#if VK_EXT_debug_utils
+
+	void Instance::onSubmitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
+		, VkDebugUtilsMessageTypeFlagsEXT messageTypes
+		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const
+	{
+		try
+		{
+			for ( auto & layer : m_layers )
+			{
+				layer->submitDebugUtilsMessenger( messageSeverity
+					, messageTypes
+					, callbackData );
+			}
+		}
+		catch ( LayerException & exc )
+		{
+			std::cerr << exc.what() << std::endl;
+		}
+	}
+
+#endif
+#if VK_EXT_debug_report
 
 	void Instance::onReportMessage( VkDebugReportFlagsEXT flags
 		, VkDebugReportObjectTypeEXT objectType
@@ -237,7 +261,7 @@ namespace ashes::d3d11
 		{
 			for ( auto & layer : m_layers )
 			{
-				layer->onReportMessage( flags
+				layer->reportMessage( flags
 					, objectType
 					, object
 					, location
@@ -251,6 +275,8 @@ namespace ashes::d3d11
 			std::cerr << exc.what() << std::endl;
 		}
 	}
+
+#endif
 
 	void Instance::doCreateDXGIFactory()
 	{

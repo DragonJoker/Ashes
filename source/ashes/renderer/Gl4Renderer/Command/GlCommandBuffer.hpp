@@ -262,6 +262,16 @@ namespace ashes::gl4
 			, VkImageMemoryBarrierArray imageMemoryBarriers )const;
 
 		void generateMipmaps( VkImage texture );
+#if VK_EXT_debug_utils
+		void beginDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const;
+		void endDebugUtilsLabel()const;
+		void insertDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const;
+#endif
+#if VK_EXT_debug_marker
+		void debugMarkerBegin( VkDebugMarkerMarkerInfoEXT const & labelInfo )const;
+		void debugMarkerEnd()const;
+		void debugMarkerInsert( VkDebugMarkerMarkerInfoEXT const & labelInfo )const;
+#endif
 		/**
 		*\return
 		*	Le tableau de commandes.
@@ -334,5 +344,6 @@ namespace ashes::gl4
 		};
 		mutable State m_state;
 		mutable VkImageViewArray m_blitViews;
+		mutable Optional< DebugLabel > m_label;
 	};
 }

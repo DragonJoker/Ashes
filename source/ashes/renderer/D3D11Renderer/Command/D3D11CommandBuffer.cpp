@@ -726,6 +726,59 @@ namespace ashes::d3d11
 			, texture ) );
 	}
 
+#if VK_EXT_debug_utils
+
+	void CommandBuffer::beginDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const
+	{
+		m_label = DebugLabel
+		{
+			{ labelInfo.color[0], labelInfo.color[1], labelInfo.color[2], labelInfo.color[3] },
+			labelInfo.pLabelName,
+		};
+	}
+
+	void CommandBuffer::endDebugUtilsLabel()const
+	{
+		m_label = std::nullopt;
+	}
+
+	void CommandBuffer::insertDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const
+	{
+		m_label = DebugLabel
+		{
+			{ labelInfo.color[0], labelInfo.color[1], labelInfo.color[2], labelInfo.color[3] },
+			labelInfo.pLabelName,
+		};
+	}
+
+#endif
+#if VK_EXT_debug_marker
+
+	void CommandBuffer::debugMarkerBegin( VkDebugMarkerMarkerInfoEXT const & labelInfo )const
+	{
+		m_label = DebugLabel
+		{
+			{ labelInfo.color[0], labelInfo.color[1], labelInfo.color[2], labelInfo.color[3] },
+			labelInfo.pMarkerName,
+		};
+	}
+
+	void CommandBuffer::debugMarkerEnd()const
+	{
+		m_label = std::nullopt;
+	}
+
+	void CommandBuffer::debugMarkerInsert( VkDebugMarkerMarkerInfoEXT const & labelInfo )const
+	{
+		m_label = DebugLabel
+		{
+			{ labelInfo.color[0], labelInfo.color[1], labelInfo.color[2], labelInfo.color[3] },
+			labelInfo.pMarkerName,
+		};
+	}
+
+#endif
+
 	void CommandBuffer::doFillVboStrides()const
 	{
 		auto & state = get( m_state.currentPipeline )->getVertexInputState();

@@ -30,4 +30,33 @@ namespace ashes::gl4
 
 		return result;
 	}
+
+	GlDebugReportObjectType convert( VkObjectType const & value )
+	{
+		GlDebugReportObjectType result = GlDebugReportObjectType::eUnknown;
+
+		switch ( value )
+		{
+		case VK_OBJECT_TYPE_BUFFER:
+			result = GlDebugReportObjectType::eBuffer;
+			break;
+		case VK_OBJECT_TYPE_IMAGE:
+			result = GlDebugReportObjectType::eTexture;
+			break;
+		case VK_OBJECT_TYPE_QUERY_POOL:
+			result = GlDebugReportObjectType::eQuery;
+			break;
+		case VK_OBJECT_TYPE_SHADER_MODULE:
+			result = GlDebugReportObjectType::eShaderModule;
+			break;
+		case VK_OBJECT_TYPE_SAMPLER:
+			result = GlDebugReportObjectType::eSampler;
+			break;
+		case VK_OBJECT_TYPE_FRAMEBUFFER:
+			result = GlDebugReportObjectType::eFrameBuffer;
+			break;
+		}
+
+		return result;
+	}
 }

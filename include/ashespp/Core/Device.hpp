@@ -534,6 +534,14 @@ namespace ashes
 		QueryPoolPtr createQueryPool( VkQueryType type
 			, uint32_t count
 			, VkQueryPipelineStatisticFlags pipelineStatistics )const;
+
+#if VK_EXT_debug_utils
+
+		inline bool hasDebugUtils()const
+		{
+			return vkSetDebugUtilsObjectNameEXT
+				&& vkSetDebugUtilsObjectTagEXT;
+		}
 		/**
 		*\~english
 		*\brief
@@ -546,7 +554,98 @@ namespace ashes
 		*\param[in] nameInfo
 		*	Les paramètres du nom à définir pour l'objet.
 		*/
-		void debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const;
+		inline VkResult setDebugUtilsObjectName( VkDebugUtilsObjectNameInfoEXT const & nameInfo )const
+		{
+			VkResult result = VK_ERROR_EXTENSION_NOT_PRESENT;
+
+			if ( vkSetDebugUtilsObjectNameEXT )
+			{
+				result = vkSetDebugUtilsObjectNameEXT( m_internal, &nameInfo );
+			}
+
+			return result;
+		}
+		/**
+		*\~english
+		*\brief
+		*	Gives an object a tag.
+		*\param[in] tagInfo
+		*	The parameters of the tag to set on the object.
+		*\~french
+		*\brief
+		*	Donne un tag à un objet.
+		*\param[in] tagInfo
+		*	Les paramètres du tag à définir pour l'objet.
+		*/
+		inline VkResult setDebugUtilsObjectTag( VkDebugUtilsObjectTagInfoEXT const & tagInfo )const
+		{
+			VkResult result = VK_ERROR_EXTENSION_NOT_PRESENT;
+
+			if ( vkSetDebugUtilsObjectTagEXT )
+			{
+				vkSetDebugUtilsObjectTagEXT( m_internal, &tagInfo );
+			}
+
+			return result;
+		}
+
+#endif
+#if VK_EXT_debug_marker
+
+		inline bool hasDebugMarker()const
+		{
+			return vkDebugMarkerSetObjectTagEXT
+				&& vkDebugMarkerSetObjectNameEXT;
+		}
+		/**
+		*\~english
+		*\brief
+		*	Gives an object a tag.
+		*\param[in] nameInfo
+		*	The parameters of the tag to set on the object.
+		*\~french
+		*\brief
+		*	Donne un tag à un objet.
+		*\param[in] nameInfo
+		*	Les paramètres du tag à définir pour l'objet.
+		*/
+		inline VkResult debugMarkerSetObjectTag( VkDebugMarkerObjectTagInfoEXT const & tagInfo )const
+		{
+			VkResult result = VK_ERROR_EXTENSION_NOT_PRESENT;
+
+			if ( vkDebugMarkerSetObjectTagEXT )
+			{
+				vkDebugMarkerSetObjectTagEXT( m_internal, &tagInfo );
+			}
+
+			return result;
+		}
+		/**
+		*\~english
+		*\brief
+		*	Gives an object a user-friendly name.
+		*\param[in] nameInfo
+		*	The parameters of the name to set on the object.
+		*\~french
+		*\brief
+		*	Donne un nom user-friendly à un objet.
+		*\param[in] nameInfo
+		*	Les paramètres du nom à définir pour l'objet.
+		*/
+		inline VkResult debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const
+		{
+			VkResult result = VK_ERROR_EXTENSION_NOT_PRESENT;
+
+			if ( vkDebugMarkerSetObjectNameEXT )
+			{
+				vkDebugMarkerSetObjectNameEXT( m_internal, &nameInfo );
+			}
+
+			return result;
+		}
+
+#endif
+
 		/**
 		*\~english
 		*\brief

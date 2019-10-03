@@ -8,6 +8,8 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
+#if VK_EXT_debug_report
+
 	/**
 	*\brief
 	*	Gets the name of the given object type.
@@ -72,43 +74,47 @@ namespace ashes
 			return "Framebuffer";
 		case VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT:
 			return "CommandPool";
+#	ifdef VK_KHR_surface
 		case VK_DEBUG_REPORT_OBJECT_TYPE_SURFACE_KHR_EXT:
 			return "Surface";
+#	endif
+#	ifdef VK_KHR_swapchain
 		case VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT:
 			return "Swapchain";
-#if VK_EXT_debug_report >= 8
+#	endif
+#	if VK_EXT_DEBUG_REPORT_SPEC_VERSION >= 8
 		case VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT_EXT:
 			return "DebugReport";
-#elif defined( VK_EXT_debug_report )
+#	else
 		case VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_EXT:
 			return "DebugReport";
-#endif
-#ifdef VK_EXT_display
+#	endif
+#	ifdef VK_EXT_display
 		case VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_KHR_EXT:
 			return "Display";
 		case VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_MODE_KHR_EXT:
 			return "DisplayMode";
-#endif
-#ifdef VK_NV_device_generated_commands
+#	endif
+#	ifdef VK_NV_device_generated_commands
 		case VK_DEBUG_REPORT_OBJECT_TYPE_OBJECT_TABLE_NVX_EXT:
 			return "ObjectTable";
 		case VK_DEBUG_REPORT_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX_EXT:
 			return "IndirectCommandsLayout";
-#endif
-#ifdef VK_EXT_validation_cache
+#	endif
+#	ifdef VK_EXT_validation_cache
 		case VK_DEBUG_REPORT_OBJECT_TYPE_VALIDATION_CACHE_EXT_EXT:
 			return "ValidationCache";
-#endif
-#ifdef VK_VERSION_1_1
+#	endif
+#	ifdef VK_VERSION_1_1
 		case VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION_EXT:
 			return "SamplerYcbcrConversion";
 		case VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_EXT:
 			return "DescriptorUpdateTemplate";
-#endif
-#ifdef VK_NV_ray_tracing
+#	endif
+#	ifdef VK_NV_ray_tracing
 		case VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_NV_EXT:
 			return "AccelerationStructure";
-#endif
+#	endif
 		default:
 			assert( false && "Unsupported VkDebugReportObjectTypeEXT." );
 			throw std::runtime_error{ "Unsupported VkDebugReportObjectTypeEXT" };
@@ -116,6 +122,8 @@ namespace ashes
 
 		return 0;
 	}
+
+#endif
 }
 
 #endif

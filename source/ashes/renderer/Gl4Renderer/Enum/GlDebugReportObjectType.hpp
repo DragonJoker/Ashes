@@ -26,4 +26,13 @@ namespace ashes::gl4
 	*	Le GlDebugReportObjectType.
 	*/
 	GlDebugReportObjectType convert( VkDebugReportObjectTypeEXT const & value );
+	/**
+	*\brief
+	*	Convertit un VkObjectType en GlDebugReportObjectType.
+	*\param[in] value
+	*	Le VkObjectType.
+	*\return
+	*	Le GlDebugReportObjectType.
+	*/
+	GlDebugReportObjectType convert( VkObjectType const & value );
 }

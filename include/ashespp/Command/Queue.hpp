@@ -11,10 +11,6 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	/**
-	*\~french
-	*\brief
-	*	File de tampons de commandes.
-	*\~english
 	*\brief
 	*	Command buffers queue.
 	*/
@@ -26,22 +22,6 @@ namespace ashes
 			, uint32_t index );
 		~Queue();
 		/**
-		*\~french
-		*\brief
-		*	Met des tampons de commandes dans la file.
-		*\param[in] commandBuffers
-		*	Les tampons de commandes.
-		*\param[in] semaphoresToWait
-		*	Les sémaphores à attendre lors de l'éxécution de la file.
-		*\param[in] semaphoresStage
-		*	Les étapes respectives des sémaphores.
-		*\param[in] semaphoresToSignal
-		*	Les sémaphores à signaler à la fin de l'éxécution de la file.
-		*\param[in] fence
-		*	Une barrière optionnelle.
-		*\return
-		*	\p true si tout s'est bien passé.
-		*\~english
 		*\brief
 		*	Submits given command buffers.
 		*\param[in] commandBuffers
@@ -63,18 +43,6 @@ namespace ashes
 			, SemaphoreCRefArray const & semaphoresToSignal
 			, Fence const * fence )const;
 		/**
-		*\~french
-		*\brief
-		*	Présente les swapchains données.
-		*\param[in] swapChains
-		*	Les swapchains.
-		*\param[in] imagesIndex
-		*	L'image à présenter pour chaque swapchain.
-		*\param[in] semaphoresToWait
-		*	Le sémaphores à attendre pour chaque swapchain.
-		*\return
-		*	Le résultat de la présentation de chaque swapchain.
-		*\~english
 		*\brief
 		*	Presents the swapchains.
 		*\param[in] swapChains
@@ -90,31 +58,6 @@ namespace ashes
 			, UInt32Array const & imagesIndex
 			, SemaphoreCRefArray const & semaphoresToWait )const;
 		/**
-		*\~french
-		*\brief
-		*	Attend que la file soit inactive.
-		*\return
-		*	\p true si tout s'est bien passé.
-		*\~english
-		*\brief
-		*	Waits for the queue to be idle.
-		*\return
-		*	\p true on ok.
-		*/
-		void waitIdle()const;
-		/**
-		*\~french
-		*\brief
-		*	Présente une swapchain.
-		*\param[in] swapChain
-		*	La swapchain.
-		*\param[in] imageIndex
-		*	L'image à présenter.
-		*\param[in] semaphoreToWait
-		*	Le sémaphore à attendre.
-		*\return
-		*	Le résultat de la présentation.
-		*\~english
 		*\brief
 		*	Presents a swapchain.
 		*\param[in] swapChain
@@ -130,10 +73,34 @@ namespace ashes
 			, uint32_t imageIndex
 			, Semaphore const & semaphoreToWait )const;
 		/**
-		*\~french
+		*\brief
+		*	Waits for the queue to be idle.
 		*\return
-		*	L'index de la famille de la file.
-		*\~english
+		*	\p true on ok.
+		*/
+		void waitIdle()const;
+#if VK_EXT_debug_utils
+		/**
+		*\brief
+		*	Begins a queue label.
+		*\param[in] labelInfo
+		*	The parameters of the label to begin.
+		*/
+		void beginDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const;
+		/**
+		*\brief
+		*	Ends the queue label.
+		*/
+		void endDebugUtilsLabel()const;
+		/**
+		*\brief
+		*	Inserts a queue label.
+		*\param[in] labelInfo
+		*	The parameters of the label to begin.
+		*/
+		void insertDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const;
+#endif
+		/**
 		*\return
 		*	The queue family index.
 		*/
@@ -142,10 +109,6 @@ namespace ashes
 			return m_familyIndex;
 		}
 		/**
-		*\~french
-		*\return
-		*	L'index de la file dans sa famille de file.
-		*\~english
 		*\return
 		*	The queue index within its family.
 		*/
@@ -154,16 +117,6 @@ namespace ashes
 			return m_index;
 		}
 		/**
-		*\~french
-		*\brief
-		*	Met en attente des tampons de commandes.
-		*\param[in] commandBuffer
-		*	Le tampon de commandes.
-		*\param[in] fence
-		*	Une barrière optionnelle.
-		*\return
-		*	\p true si tout s'est bien passé.
-		*\~english
 		*\brief
 		*	Submits given command buffer.
 		*\param[in] commandBuffer
@@ -183,22 +136,6 @@ namespace ashes
 				, fence );
 		}
 		/**
-		*\~french
-		*\brief
-		*	Met en attente un tampon de commandes.
-		*\param[in] commandBuffer
-		*	Le tampon de commandes.
-		*\param[in] semaphoreToWait
-		*	Le sémaphore à attendre lors de l'éxécution de la file.
-		*\param[in] semaphoreStage
-		*	L'étape du sémaphore.
-		*\param[in] semaphoreToSignal
-		*	Le sémaphore à signaler à la fin de l'éxécution de la file.
-		*\param[in] fence
-		*	Une barrière optionnelle.
-		*\return
-		*	\p true si tout s'est bien passé.
-		*\~english
 		*\brief
 		*	Submits given command buffer.
 		*\param[in] commandBuffer
@@ -227,10 +164,6 @@ namespace ashes
 				, fence );
 		}
 		/**
-		*\~french
-		*\brief
-		*	Conversion implicite vers VkQueue.
-		*\~english
 		*\brief
 		*	VkQueue implicit cast operator.
 		*/

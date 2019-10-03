@@ -33,6 +33,20 @@ namespace ashes::gl4
 		*\copydoc		Queue::waitIdle
 		*/
 		VkResult waitIdle()const;
+#if VK_EXT_debug_utils
+		/**
+		*\copydoc		Queue::beginDebugUtilsLabel
+		*/
+		void beginDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const;
+		/**
+		*\copydoc		Queue::endDebugUtilsLabel
+		*/
+		void endDebugUtilsLabel()const;
+		/**
+		*\copydoc		Queue::insertDebugUtilsLabel
+		*/
+		void insertDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const;
+#endif
 
 	private:
 		void submit( ContextLock & context
@@ -43,5 +57,6 @@ namespace ashes::gl4
 		VkDevice m_device;
 		VkDeviceQueueCreateInfo m_createInfo;
 		uint32_t m_index;
+		mutable Optional< DebugLabel > m_label;
 	};
 }

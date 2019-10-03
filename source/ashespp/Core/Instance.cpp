@@ -184,6 +184,39 @@ namespace ashes
 			, std::move( handle ) );
 	}
 
+#if VK_EXT_debug_utils
+
+	VkDebugUtilsMessengerEXT Instance::createDebugUtilsMessenger( VkDebugUtilsMessengerCreateInfoEXT & createInfo )const
+	{
+		VkDebugUtilsMessengerEXT result;
+		auto res = vkCreateDebugUtilsMessengerEXT( m_instance
+			, &createInfo
+			, nullptr
+			, &result );
+		checkError( res, "Debug utils messenger creation" );
+		return result;
+	}
+
+	void Instance::destroyDebugUtilsMessenger( VkDebugUtilsMessengerEXT messenger )const
+	{
+		vkDestroyDebugUtilsMessengerEXT( m_instance
+			, messenger
+			, nullptr );
+	}
+
+	void Instance::submitDebugMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
+		, VkDebugUtilsMessageTypeFlagsEXT messageTypes
+		, VkDebugUtilsMessengerCallbackDataEXT const * pCallbackData )const
+	{
+		vkSubmitDebugUtilsMessageEXT( m_instance
+			, messageSeverity
+			, messageTypes
+			, pCallbackData );
+	}
+
+#endif
+#if VK_EXT_debug_report
+
 	VkDebugReportCallbackEXT Instance::createDebugReportCallback( VkDebugReportCallbackCreateInfoEXT & createInfo )const
 	{
 		VkDebugReportCallbackEXT result;
@@ -194,6 +227,8 @@ namespace ashes
 		checkError( res, "Debug report callback creation" );
 		return result;
 	}
+
+#endif
 
 	void Instance::doInitInstance()
 	{

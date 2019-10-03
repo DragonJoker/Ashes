@@ -69,6 +69,12 @@ namespace ashes::d3d11
 			, VkImage dst )const;
 		bool onCheckHResultCommand( HRESULT hresult
 			, std::string message )const;
+#if VK_EXT_debug_utils
+		void onSubmitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
+			, VkDebugUtilsMessageTypeFlagsEXT messageTypes
+			, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const;
+#endif
+#if VK_EXT_debug_report
 		void onReportMessage( VkDebugReportFlagsEXT flags
 			, VkDebugReportObjectTypeEXT objectType
 			, uint64_t object
@@ -76,6 +82,7 @@ namespace ashes::d3d11
 			, int32_t messageCode
 			, const char * pLayerPrefix
 			, const char * pMessage );
+#endif
 		/**@}*/
 
 		inline IDXGIFactory * getDXGIFactory()const

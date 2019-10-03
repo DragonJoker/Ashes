@@ -2806,16 +2806,13 @@ namespace ashes::gl4
 		VkDevice device,
 		const VkDebugMarkerObjectTagInfoEXT* pTagInfo )
 	{
-		// TODO
-		std::cerr << "vkDebugMarkerSetObjectTagEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return get( device )->debugMarkerSetObjectTag( *pTagInfo );
 	}
 
 	VkResult VKAPI_CALL vkDebugMarkerSetObjectNameEXT(
 		VkDevice device,
 		const VkDebugMarkerObjectNameInfoEXT* pNameInfo )
 	{
-		// TODO
 		return get( device )->debugMarkerSetObjectName( *pNameInfo );
 	}
 
@@ -2823,23 +2820,20 @@ namespace ashes::gl4
 		VkCommandBuffer commandBuffer,
 		const VkDebugMarkerMarkerInfoEXT* pMarkerInfo )
 	{
-		// TODO
-		std::cerr << "vkCmdDebugMarkerBeginEXT Unsupported" << std::endl;
+		return get( commandBuffer )->debugMarkerBegin( *pMarkerInfo );
 	}
 
 	void VKAPI_CALL vkCmdDebugMarkerEndEXT(
 		VkCommandBuffer commandBuffer )
 	{
-		// TODO
-		std::cerr << "vkCmdDebugMarkerEndEXT Unsupported" << std::endl;
+		return get( commandBuffer )->debugMarkerEnd();
 	}
 
 	void VKAPI_CALL vkCmdDebugMarkerInsertEXT(
 		VkCommandBuffer commandBuffer,
 		const VkDebugMarkerMarkerInfoEXT* pMarkerInfo )
 	{
-		// TODO
-		std::cerr << "vkCmdDebugMarkerInsertEXT Unsupported" << std::endl;
+		return get( commandBuffer )->debugMarkerInsert( *pMarkerInfo );
 	}
 
 #endif
@@ -3256,64 +3250,54 @@ namespace ashes::gl4
 		VkDevice device,
 		const VkDebugUtilsObjectNameInfoEXT* pNameInfo )
 	{
-		// TODO
-		std::cerr << "vkSetDebugUtilsObjectNameEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return get( device )->setDebugUtilsObjectName( *pNameInfo );
 	}
 
 	VkResult VKAPI_CALL vkSetDebugUtilsObjectTagEXT(
 		VkDevice device,
 		const VkDebugUtilsObjectTagInfoEXT* pTagInfo )
 	{
-		// TODO
-		std::cerr << "vkSetDebugUtilsObjectTagEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return get( device )->setDebugUtilsObjectTag( *pTagInfo );
 	}
 
 	void VKAPI_CALL vkQueueBeginDebugUtilsLabelEXT(
 		VkQueue queue,
 		const VkDebugUtilsLabelEXT* pLabelInfo )
 	{
-		// TODO
-		std::cerr << "vkQueueBeginDebugUtilsLabelEXT Unsupported" << std::endl;
+		return get( queue )->beginDebugUtilsLabel( *pLabelInfo );
 	}
 
 	void VKAPI_CALL vkQueueEndDebugUtilsLabelEXT(
 		VkQueue queue )
 	{
-		// TODO
-		std::cerr << "vkQueueEndDebugUtilsLabelEXT Unsupported" << std::endl;
+		return get( queue )->endDebugUtilsLabel();
 	}
 
 	void VKAPI_CALL vkQueueInsertDebugUtilsLabelEXT(
 		VkQueue queue,
 		const VkDebugUtilsLabelEXT* pLabelInfo )
 	{
-		// TODO
-		std::cerr << "vkQueueInsertDebugUtilsLabelEXT Unsupported" << std::endl;
+		return get( queue )->insertDebugUtilsLabel( *pLabelInfo );
 	}
 
 	void VKAPI_CALL vkCmdBeginDebugUtilsLabelEXT(
 		VkCommandBuffer commandBuffer,
 		const VkDebugUtilsLabelEXT* pLabelInfo )
 	{
-		// TODO
-		std::cerr << "vkCmdBeginDebugUtilsLabelEXT Unsupported" << std::endl;
+		return get( commandBuffer )->beginDebugUtilsLabel( *pLabelInfo );
 	}
 
 	void VKAPI_CALL vkCmdEndDebugUtilsLabelEXT(
 		VkCommandBuffer commandBuffer )
 	{
-		// TODO
-		std::cerr << "vkCmdEndDebugUtilsLabelEXT Unsupported" << std::endl;
+		return get( commandBuffer )->endDebugUtilsLabel();
 	}
 
 	void VKAPI_CALL vkCmdInsertDebugUtilsLabelEXT(
 		VkCommandBuffer commandBuffer,
 		const VkDebugUtilsLabelEXT* pLabelInfo )
 	{
-		// TODO
-		std::cerr << "vkCmdInsertDebugUtilsLabelEXT Unsupported" << std::endl;
+		return get( commandBuffer )->insertDebugUtilsLabel( *pLabelInfo );
 	}
 
 	VkResult VKAPI_CALL vkCreateDebugUtilsMessengerEXT(
@@ -3322,9 +3306,12 @@ namespace ashes::gl4
 		const VkAllocationCallbacks* pAllocator,
 		VkDebugUtilsMessengerEXT* pMessenger )
 	{
-		// TODO
-		std::cerr << "vkCreateDebugUtilsMessengerEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		assert( pMessenger );
+		return allocate( *pMessenger
+			, pAllocator
+			, instance
+			, *pCreateInfo );
+		return VK_SUCCESS;
 	}
 
 	void VKAPI_CALL vkDestroyDebugUtilsMessengerEXT(
@@ -3332,8 +3319,7 @@ namespace ashes::gl4
 		VkDebugUtilsMessengerEXT messenger,
 		const VkAllocationCallbacks* pAllocator )
 	{
-		// TODO
-		std::cerr << "vkDestroyDebugUtilsMessengerEXT Unsupported" << std::endl;
+		deallocate( messenger, pAllocator );
 	}
 
 	void VKAPI_CALL vkSubmitDebugUtilsMessageEXT(
@@ -3342,8 +3328,9 @@ namespace ashes::gl4
 		VkDebugUtilsMessageTypeFlagsEXT messageTypes,
 		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData )
 	{
-		// TODO
-		std::cerr << "vkSubmitDebugUtilsMessageEXT Unsupported" << std::endl;
+		return get( instance )->submitDebugUtilsMessenger( messageSeverity
+			, messageTypes
+			, *pCallbackData );
 	}
 
 #endif

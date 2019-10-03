@@ -243,14 +243,6 @@ namespace ashes
 			, pipelineStatistics );
 	}
 
-	void Device::debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const
-	{
-		if ( vkDebugMarkerSetObjectNameEXT )
-		{
-			vkDebugMarkerSetObjectNameEXT( m_internal, &nameInfo );
-		}
-	}
-
 	QueuePtr Device::getQueue( uint32_t familyIndex
 		, uint32_t index )const
 	{

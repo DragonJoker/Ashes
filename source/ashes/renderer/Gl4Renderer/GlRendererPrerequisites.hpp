@@ -57,6 +57,25 @@ namespace ashes::gl4
 		return reinterpret_cast< void * >( reinterpret_cast< uint8_t * >( 0u ) + value );
 	}
 
+#if VK_EXT_debug_utils
+
+	struct DebugUtilsMessengerData
+	{
+		VkDebugUtilsMessengerEXT debugMessenger;
+		PFNGLDEBUGPROC callback;
+		void * userParam;
+	};
+
+	struct DebugUtilsAMDMessengerData
+	{
+		VkDebugUtilsMessengerEXT debugMessenger;
+		PFNGLDEBUGAMDPROC callback;
+		void * userParam;
+	};
+
+#endif
+#if VK_EXT_debug_report
+
 	struct DebugReportCallbackData
 	{
 		VkDebugReportCallbackEXT debugReport;
@@ -70,6 +89,8 @@ namespace ashes::gl4
 		PFNGLDEBUGAMDPROC callback;
 		void * userParam;
 	};
+
+#endif
 
 	struct ContextState;
 

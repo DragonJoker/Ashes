@@ -1443,6 +1443,48 @@ namespace ashes
 		{
 			pushConstants( layout, pcb.getBuffer() );
 		}
+#if VK_EXT_debug_utils
+		/**
+		*\brief
+		*	Begins a command buffer label.
+		*\param[in] labelInfo
+		*	The parameters of the label to begin.
+		*/
+		void beginDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const;
+		/**
+		*\brief
+		*	Ends the command label.
+		*/
+		void endDebugUtilsLabel()const;
+		/**
+		*\brief
+		*	Inserts a command label.
+		*\param[in] labelInfo
+		*	The parameters of the label to begin.
+		*/
+		void insertDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const;
+#endif
+#if VK_EXT_debug_marker
+		/**
+		*\brief
+		*	Begins a command buffer label.
+		*\param[in] labelInfo
+		*	The parameters of the label to begin.
+		*/
+		void debugMarkerBegin( VkDebugMarkerMarkerInfoEXT const & labelInfo )const;
+		/**
+		*\brief
+		*	Ends the command label.
+		*/
+		void debugMarkerEnd()const;
+		/**
+		*\brief
+		*	Inserts a command label.
+		*\param[in] labelInfo
+		*	The parameters of the label to begin.
+		*/
+		void debugMarkerInsert( VkDebugMarkerMarkerInfoEXT const & labelInfo )const;
+#endif
 		/**
 		*\~french
 		*\brief

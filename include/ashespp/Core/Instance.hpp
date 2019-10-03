@@ -91,6 +91,50 @@ namespace ashes
 		*/
 		SurfacePtr createSurface( PhysicalDevice const & gpu
 			, ashes::WindowHandle handle )const;
+#if VK_EXT_debug_utils
+		/**
+		*\~french
+		*\brief
+		*	Crée un messager de debug.
+		*\param[in] createInfo
+		*	Les informations de création.
+		*\~french
+		*\brief
+		*	Creates a debug messenger.
+		*\param[in] createInfo
+		*	The creation informations.
+		*/
+		VkDebugUtilsMessengerEXT createDebugUtilsMessenger( VkDebugUtilsMessengerCreateInfoEXT & createInfo )const;
+		/**
+		*\~french
+		*\brief
+		*	Détruit un messager de debug.
+		*\param[in] messenger
+		*	Le messager.
+		*\~french
+		*\brief
+		*	Destroys a debug messenger.
+		*\param[in] messenger
+		*	The messenger.
+		*/
+		void destroyDebugUtilsMessenger( VkDebugUtilsMessengerEXT messenger )const;
+		/**
+		*\~french
+		*\brief
+		*	Soumet un messager de debug.
+		*\param[in] messenger
+		*	Le messager.
+		*\~french
+		*\brief
+		*	Submits a debug messenger.
+		*\param[in] messenger
+		*	The messenger.
+		*/
+		void submitDebugMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
+			, VkDebugUtilsMessageTypeFlagsEXT messageTypes
+			, VkDebugUtilsMessengerCallbackDataEXT const * pCallbackData )const;
+#endif
+#if VK_EXT_debug_report
 		/**
 		*\~french
 		*\brief
@@ -104,6 +148,7 @@ namespace ashes
 		*	The creation informations.
 		*/
 		VkDebugReportCallbackEXT createDebugReportCallback( VkDebugReportCallbackCreateInfoEXT & createInfo )const;
+#endif
 		/**
 		*\~english
 		*\brief

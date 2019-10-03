@@ -756,4 +756,59 @@ namespace ashes
 			, pcb.getSize()
 			, reinterpret_cast< void const * >( pcb.getData() ) );
 	}
+
+#if VK_EXT_debug_utils
+
+	void CommandBuffer::beginDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const
+	{
+		if ( m_device.vkCmdBeginDebugUtilsLabelEXT )
+		{
+			m_device.vkCmdBeginDebugUtilsLabelEXT( m_internal, &labelInfo );
+		}
+	}
+
+	void CommandBuffer::endDebugUtilsLabel()const
+	{
+		if ( m_device.vkCmdEndDebugUtilsLabelEXT )
+		{
+			m_device.vkCmdEndDebugUtilsLabelEXT( m_internal );
+		}
+	}
+
+	void CommandBuffer::insertDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const
+	{
+		if ( m_device.vkCmdBeginDebugUtilsLabelEXT )
+		{
+			m_device.vkCmdBeginDebugUtilsLabelEXT( m_internal, &labelInfo );
+		}
+	}
+
+#endif
+#if VK_EXT_debug_marker
+
+	void CommandBuffer::debugMarkerBegin( VkDebugMarkerMarkerInfoEXT const & labelInfo )const
+	{
+		if ( m_device.vkCmdDebugMarkerBeginEXT )
+		{
+			m_device.vkCmdDebugMarkerBeginEXT( m_internal, &labelInfo );
+		}
+	}
+
+	void CommandBuffer::debugMarkerEnd()const
+	{
+		if ( m_device.vkCmdDebugMarkerEndEXT )
+		{
+			m_device.vkCmdDebugMarkerEndEXT( m_internal );
+		}
+	}
+
+	void CommandBuffer::debugMarkerInsert( VkDebugMarkerMarkerInfoEXT const & labelInfo )const
+	{
+		if ( m_device.vkCmdDebugMarkerInsertEXT )
+		{
+			m_device.vkCmdDebugMarkerInsertEXT( m_internal, &labelInfo );
+		}
+	}
+
+#endif
 }

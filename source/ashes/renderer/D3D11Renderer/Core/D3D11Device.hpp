@@ -27,10 +27,38 @@ namespace ashes::d3d11
 		void getImageSubresourceLayout( VkImage image
 			, VkImageSubresource const & subresource
 			, VkSubresourceLayout & layout )const;
+#if VK_EXT_debug_utils
+		/**
+		*\copydoc	ashes::Device::setDebugUtilsObjectName
+		*/
+		VkResult setDebugUtilsObjectName( VkDebugUtilsObjectNameInfoEXT const & nameInfo )const;
+		/**
+		*\copydoc	ashes::Device::setDebugUtilsObjectTag
+		*/
+		VkResult setDebugUtilsObjectTag( VkDebugUtilsObjectTagInfoEXT const & tagInfo )const;
+#endif
+#if VK_EXT_debug_marker
+		/**
+		*\copydoc	ashes::Device::debugMarkerSetObjectTag
+		*/
+		VkResult debugMarkerSetObjectTag( VkDebugMarkerObjectTagInfoEXT const & nameInfo )const;
 		/**
 		*\copydoc	ashes::Device::debugMarkerSetObjectName
 		*/
 		VkResult debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const;
+#endif
+#if VK_EXT_debug_report
+		/**
+		*\copydoc	ashes::Device::reportMessage
+		*/
+		void reportMessage( VkDebugReportFlagsEXT flags
+			, VkDebugReportObjectTypeEXT objectType
+			, uint64_t object
+			, size_t location
+			, int32_t messageCode
+			, const char * pLayerPrefix
+			, const char * pMessage );
+#endif
 		/**
 		*\copydoc	ashes::Device::getQueue
 		*/

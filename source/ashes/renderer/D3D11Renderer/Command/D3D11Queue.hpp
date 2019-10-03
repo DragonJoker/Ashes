@@ -29,6 +29,16 @@ namespace ashes::d3d11
 		*\copydoc		ashes::Queue::waitIdle
 		*/
 		VkResult waitIdle()const;
+#if VK_EXT_debug_utils
+		void beginDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const;
+		void endDebugUtilsLabel()const;
+		void insertDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const;
+#endif
+#if VK_EXT_debug_marker
+		void debugMarkerBegin( VkDebugMarkerMarkerInfoEXT const & labelInfo )const;
+		void debugMarkerEnd()const;
+		void debugMarkerInsert( VkDebugMarkerMarkerInfoEXT const & labelInfo )const;
+#endif
 
 	private:
 		VkResult doSubmit( VkCommandBufferArray const & commandBuffers
@@ -42,5 +52,6 @@ namespace ashes::d3d11
 		VkDeviceQueueCreateInfo m_createInfo;
 		uint32_t m_index;
 		ID3D11Query * m_waitIdleQuery{ nullptr };
+		mutable Optional< DebugLabel > m_label;
 	};
 }

@@ -23,37 +23,6 @@ namespace ashes::gl4
 {
 	namespace
 	{
-		void GLAPIENTRY callbackDebugLog( uint32_t source
-			, uint32_t type
-			, uint32_t id
-			, uint32_t severity
-			, int length
-			, const char * message
-			, VkDebugReportCallbackEXT userParam )
-		{
-			get( userParam )->report( GlDebugSource( source )
-				, GlDebugType( type )
-				, id
-				, GlDebugSeverity( severity )
-				, length
-				, message );
-		}
-
-
-		void GLAPIENTRY callbackDebugLogAMD( uint32_t id
-			, uint32_t category
-			, uint32_t severity
-			, int length
-			, const char * message
-			, VkDebugReportCallbackEXT userParam )
-		{
-			get( userParam )->report( id
-				, GlDebugCategory( category )
-				, GlDebugSeverity( severity )
-				, length
-				, message );
-		}
-
 		char const * const convert( GlDebugSource source )
 		{
 			switch ( source )
@@ -98,6 +67,219 @@ namespace ashes::gl4
 			default:
 				return "Unknown";
 			}
+		}
+	}
+
+#if VK_EXT_debug_report
+
+	namespace
+	{
+		void GLAPIENTRY messengerDebugLog( uint32_t source
+			, uint32_t type
+			, uint32_t id
+			, uint32_t severity
+			, int length
+			, const char * message
+			, DebugUtilsMessengerEXT * userParam )
+		{
+			userParam->report( GlDebugSource( source )
+				, GlDebugType( type )
+				, id
+				, GlDebugSeverity( severity )
+				, length
+				, message );
+		}
+
+
+		void GLAPIENTRY messengerDebugLogAMD( uint32_t id
+			, uint32_t category
+			, uint32_t severity
+			, int length
+			, const char * message
+			, DebugUtilsMessengerEXT * userParam )
+		{
+			userParam->report( id
+				, GlDebugCategory( category )
+				, GlDebugSeverity( severity )
+				, length
+				, message );
+		}
+
+		VkDebugUtilsMessageTypeFlagsEXT getTypeFlags( GlDebugType type )
+		{
+			switch ( type )
+			{
+			case GL_DEBUG_TYPE_ERROR:
+			case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+				return VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT;
+			case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+			case GL_DEBUG_TYPE_PORTABILITY:
+				return VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
+			case GL_DEBUG_TYPE_PERFORMANCE:
+				return VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+			default:
+				return VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT;
+			}
+		}
+		
+		VkDebugUtilsMessageTypeFlagsEXT getTypeFlags( GlDebugCategory type )
+		{
+			switch ( type )
+			{
+			case GL_DEBUG_CATEGORY_API_ERROR_AMD:
+			case GL_DEBUG_CATEGORY_WINDOW_SYSTEM_AMD:
+			case GL_DEBUG_CATEGORY_APPLICATION_AMD:
+			case GL_DEBUG_CATEGORY_OTHER_AMD:
+				return VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT;
+			case GL_DEBUG_CATEGORY_DEPRECATION_AMD:
+			case GL_DEBUG_CATEGORY_UNDEFINED_BEHAVIOR_AMD:
+			case GL_DEBUG_CATEGORY_SHADER_COMPILER_AMD:
+				return VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
+			case GL_DEBUG_CATEGORY_PERFORMANCE_AMD:
+				return VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+			default:
+				return VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT;
+			}
+		}
+
+		VkDebugUtilsMessageSeverityFlagBitsEXT getSeverityFlag( GlDebugSeverity severity )
+		{
+			switch ( severity )
+			{
+			case GL_DEBUG_SEVERITY_HIGH:
+				return VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+			case GL_DEBUG_SEVERITY_MEDIUM:
+				return VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
+			case GL_DEBUG_SEVERITY_LOW:
+				return VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT;
+			default:
+				return VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
+			}
+		}
+	}
+
+	DebugUtilsMessengerEXT::DebugUtilsMessengerEXT( VkInstance instance
+		, VkDebugUtilsMessengerCreateInfoEXT createInfo )
+		: m_instance{ instance }
+		, m_createInfo{ std::move( createInfo ) }
+	{
+		auto glinstance = get( m_instance );
+		glinstance->registerDebugMessenger( get( this ), PFNGLDEBUGPROC( &messengerDebugLog ), this );
+		glinstance->registerDebugMessengerAMD( get( this ), PFNGLDEBUGAMDPROC( &messengerDebugLogAMD ), this );
+	}
+
+	DebugUtilsMessengerEXT::~DebugUtilsMessengerEXT()
+	{
+	}
+
+	void DebugUtilsMessengerEXT::submit( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
+		, VkDebugUtilsMessageTypeFlagsEXT messageTypes
+		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData
+		, void * userData )
+	{
+		m_createInfo.pfnUserCallback( messageSeverity
+			, messageTypes
+			, &callbackData
+			, userData );
+	}
+
+	void DebugUtilsMessengerEXT::report( GlDebugSource source
+		, GlDebugType type
+		, uint32_t id
+		, GlDebugSeverity severity
+		, int length
+		, const char * const message )
+	{
+		if ( id != 131185 )
+		{
+			auto layer = convert( source );
+			VkDebugUtilsMessengerCallbackDataEXT data
+			{
+				VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT,
+				nullptr,
+				0u,
+				layer,
+				int32_t( id ),
+				message,
+				0u,
+				nullptr,
+				0u,
+				nullptr,
+				0u,
+				nullptr,
+			};
+			m_createInfo.pfnUserCallback( getSeverityFlag( severity )
+				, getTypeFlags( type )
+				, &data
+				, m_createInfo.pUserData );
+		}
+	}
+
+	void DebugUtilsMessengerEXT::report( uint32_t id
+		, GlDebugCategory category
+		, GlDebugSeverity severity
+		, int length
+		, const char * const message )
+	{
+		if ( id != 131185 )
+		{
+			auto layer = convert( category );
+			VkDebugUtilsMessengerCallbackDataEXT data
+			{
+				VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT,
+				nullptr,
+				0u,
+				layer,
+				int32_t( id ),
+				message,
+				0u,
+				nullptr,
+				0u,
+				nullptr,
+				0u,
+				nullptr,
+			};
+			m_createInfo.pfnUserCallback( getSeverityFlag( severity )
+				, getTypeFlags( category )
+				, &data
+				, m_createInfo.pUserData );
+		}
+	}
+
+#endif
+#if VK_EXT_debug_report
+
+	namespace
+	{
+		void GLAPIENTRY callbackDebugLog( uint32_t source
+			, uint32_t type
+			, uint32_t id
+			, uint32_t severity
+			, int length
+			, const char * message
+			, VkDebugReportCallbackEXT userParam )
+		{
+			get( userParam )->report( GlDebugSource( source )
+				, GlDebugType( type )
+				, id
+				, GlDebugSeverity( severity )
+				, length
+				, message );
+		}
+
+
+		void GLAPIENTRY callbackDebugLogAMD( uint32_t id
+			, uint32_t category
+			, uint32_t severity
+			, int length
+			, const char * message
+			, VkDebugReportCallbackEXT userParam )
+		{
+			get( userParam )->report( id
+				, GlDebugCategory( category )
+				, GlDebugSeverity( severity )
+				, length
+				, message );
 		}
 
 		VkDebugReportFlagsEXT convert( GlDebugType type )
@@ -208,4 +390,6 @@ namespace ashes::gl4
 				, m_createInfo.pUserData );
 		}
 	}
+
+#endif
 }

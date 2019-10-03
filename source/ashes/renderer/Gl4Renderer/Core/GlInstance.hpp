@@ -57,6 +57,18 @@ namespace ashes::gl4
 			, float aspect
 			, float zNear )const;
 
+#if VK_EXT_debug_utils
+		void registerDebugMessenger( VkDebugUtilsMessengerEXT messenger
+			, PFNGLDEBUGPROC callback
+			, void * userParam )const;
+		void registerDebugMessengerAMD( VkDebugUtilsMessengerEXT messenger
+			, PFNGLDEBUGAMDPROC callback
+			, void * userParam )const;
+		void submitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
+			, VkDebugUtilsMessageTypeFlagsEXT messageTypes
+			, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const;
+#endif
+#if VK_EXT_debug_report
 		void registerDebugMessageCallback( VkDebugReportCallbackEXT report
 			, PFNGLDEBUGPROC callback
 			, void * userParam )const;
@@ -70,6 +82,7 @@ namespace ashes::gl4
 			, int32_t messageCode
 			, const char * pLayerPrefix
 			, const char * pMessage );
+#endif
 		void registerContext( Context & context );
 		inline bool isSPIRVSupported()const
 		{
@@ -81,6 +94,21 @@ namespace ashes::gl4
 			return m_validationEnabled;
 		}
 
+#if VK_EXT_debug_utils
+
+		inline std::vector< DebugUtilsMessengerData > const & getDebugMessengers()const
+		{
+			return m_debugMessengers;
+		}
+
+		inline std::vector< DebugUtilsAMDMessengerData > const & getDebugAMDMessengers()const
+		{
+			return m_debugAMDMessengers;
+		}
+
+#endif
+#if VK_EXT_debug_report
+
 		inline std::vector< DebugReportCallbackData > const & getDebugCallbacks()const
 		{
 			return m_debugCallbacks;
@@ -90,6 +118,8 @@ namespace ashes::gl4
 		{
 			return m_debugAMDCallbacks;
 		}
+
+#endif
 
 		inline ExtensionsHandler const & getExtensions()const
 		{
@@ -112,8 +142,14 @@ namespace ashes::gl4
 		StringArray m_enabledLayerNames;
 		StringArray m_enabledExtensions;
 		VkPhysicalDeviceArray m_physicalDevices;
+#if VK_EXT_debug_utils
+		mutable std::vector< DebugUtilsMessengerData > m_debugMessengers;
+		mutable std::vector< DebugUtilsAMDMessengerData > m_debugAMDMessengers;
+#endif
+#if VK_EXT_debug_report
 		mutable std::vector< DebugReportCallbackData > m_debugCallbacks;
 		mutable std::vector< DebugReportAMDCallbackData > m_debugAMDCallbacks;
+#endif
 		ExtensionsHandler m_extensions;
 		bool m_validationEnabled;
 		RenderWindow * m_dummyWindow;

@@ -103,6 +103,7 @@ typedef uint8_t UINT8;
 #include <common/FlagCombination.hpp>
 #include <common/Signal.hpp>
 
+#include <array>
 #include <cassert>
 #include <functional>
 #include <list>
@@ -219,6 +220,12 @@ namespace ashes::d3d11
 		IDXGIAdapter2 * adapter2{ nullptr };
 		IDXGIOutput * output{ nullptr };
 		D3D_FEATURE_LEVEL featureLevel;
+	};
+
+	struct DebugLabel
+	{
+		std::array< float, 4u > color;
+		std::string labelName;
 	};
 
 	struct Context;

@@ -69,6 +69,36 @@ namespace ashes::gl4
 			return result;
 		}
 
+		GLuint getObjectName( VkObjectType const & value
+			, uint64_t object )
+		{
+			GLuint result = 0;
+
+			switch ( value )
+			{
+			case VK_OBJECT_TYPE_BUFFER:
+				result = reinterpret_cast< Buffer const * >( object )->getInternal();
+				break;
+			case VK_OBJECT_TYPE_IMAGE:
+				result = reinterpret_cast< Image const * >( object )->getInternal();
+				break;
+			case VK_OBJECT_TYPE_QUERY_POOL:
+				result = *reinterpret_cast< QueryPool const * >( object )->begin();
+				break;
+			case VK_OBJECT_TYPE_SAMPLER:
+				result = reinterpret_cast< Sampler const * >( object )->getInternal();
+				break;
+			case VK_OBJECT_TYPE_FRAMEBUFFER:
+				result = reinterpret_cast< Framebuffer const * >( object )->getInternal();
+				break;
+			default:
+				result = GL_INVALID_INDEX;
+				break;
+			}
+
+			return result;
+		}
+
 		template< typename T, typename U >
 		T getAligned( T value, U align )
 		{
@@ -204,6 +234,72 @@ namespace ashes::gl4
 		return VK_SUCCESS;
 	}
 
+#if VK_EXT_debug_utils
+
+	VkResult Device::setDebugUtilsObjectName( VkDebugUtilsObjectNameInfoEXT const & nameInfo )const
+	{
+		auto context = getContext();
+		bool isOk = ( context->m_glObjectPtrLabel || context->m_glObjectLabel );
+
+		if ( !isOk )
+		{
+			get( m_instance )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+				, uint64_t( get( this ) )
+				, 0u
+				, VK_ERROR_INCOMPATIBLE_DRIVER
+				, "OpenGL"
+				, "Either debug utils layer is not enabled or functions are not available on your GPU" );
+			return VK_ERROR_EXTENSION_NOT_PRESENT;
+		}
+
+		if ( nameInfo.objectType == VK_OBJECT_TYPE_FENCE )
+		{
+			if ( context->m_glObjectPtrLabel )
+			{
+				isOk = glLogCall( context
+					, glObjectPtrLabel
+					, get( VkFence( nameInfo.objectHandle ) )->getInternal()
+					, GLsizei( strlen( nameInfo.pObjectName ) )
+					, nameInfo.pObjectName );
+			}
+		}
+		else
+		{
+			if ( context->m_glObjectLabel )
+			{
+				auto name = getObjectName( nameInfo.objectType, nameInfo.objectHandle );
+
+				if ( name != GL_INVALID_INDEX )
+				{
+					isOk = glLogCall( context
+						, glObjectLabel
+						, GLenum( convert( nameInfo.objectType ) )
+						, name
+						, GLsizei( strlen( nameInfo.pObjectName ) )
+						, nameInfo.pObjectName );
+				}
+			}
+		}
+
+		return isOk
+			? VK_SUCCESS
+			: VK_ERROR_INCOMPATIBLE_DRIVER;
+	}
+
+	VkResult Device::setDebugUtilsObjectTag( VkDebugUtilsObjectTagInfoEXT const & tagInfo )const
+	{
+		return VK_SUCCESS;
+	}
+
+#endif
+#if VK_EXT_debug_marker
+
+	VkResult Device::debugMarkerSetObjectTag( VkDebugMarkerObjectTagInfoEXT const & tagInfo )const
+	{
+		return VK_SUCCESS;
+	}
+
 	VkResult Device::debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const
 	{
 		auto context = getContext();
@@ -218,7 +314,7 @@ namespace ashes::gl4
 				, VK_ERROR_INCOMPATIBLE_DRIVER
 				, "OpenGL"
 				, "Either debug marker layer is not enabled or functions are not available on your GPU" );
-			return VK_ERROR_INCOMPATIBLE_DRIVER;
+			return VK_ERROR_EXTENSION_NOT_PRESENT;
 		}
 
 		if ( nameInfo.objectType == VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT )
@@ -254,6 +350,8 @@ namespace ashes::gl4
 			? VK_SUCCESS
 			: VK_ERROR_INCOMPATIBLE_DRIVER;
 	}
+
+#endif
 
 	void Device::reportMessage( VkDebugReportFlagsEXT flags
 		, VkDebugReportObjectTypeEXT objectType

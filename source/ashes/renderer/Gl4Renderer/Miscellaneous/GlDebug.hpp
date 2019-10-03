@@ -4,6 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
+#include <array>
 #include <string>
 
 #if !defined( CALLBACK )
@@ -16,6 +17,11 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
+	struct DebugLabel
+	{
+		std::array< float, 4u > color;
+		std::string labelName;
+	};
 	std::string getErrorName( uint32_t code, uint32_t category );
 	bool glCheckError( std::string const & text );
 }

@@ -50,6 +50,7 @@ See LICENSE file in root folder.
 #include "Enum/MemoryHeapFlags.hpp"
 #include "Enum/MemoryMapFlags.hpp"
 #include "Enum/MemoryPropertyFlags.hpp"
+#include "Enum/ObjectType.hpp"
 #include "Enum/PhysicalDeviceType.hpp"
 #include "Enum/PipelineBindPoint.hpp"
 #include "Enum/PipelineDepthStencilStateCreateFlags.hpp"

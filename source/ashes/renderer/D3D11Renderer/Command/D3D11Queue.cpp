@@ -97,6 +97,59 @@ namespace ashes::d3d11
 			: VK_TIMEOUT;
 	}
 
+#if VK_EXT_debug_utils
+
+	void Queue::beginDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const
+	{
+		m_label = DebugLabel
+		{
+			{ labelInfo.color[0], labelInfo.color[1], labelInfo.color[2], labelInfo.color[3] },
+			labelInfo.pLabelName,
+		};
+	}
+
+	void Queue::endDebugUtilsLabel()const
+	{
+		m_label = std::nullopt;
+	}
+
+	void Queue::insertDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const
+	{
+		m_label = DebugLabel
+		{
+			{ labelInfo.color[0], labelInfo.color[1], labelInfo.color[2], labelInfo.color[3] },
+			labelInfo.pLabelName,
+		};
+	}
+
+#endif
+#if VK_EXT_debug_marker
+
+	void Queue::debugMarkerBegin( VkDebugMarkerMarkerInfoEXT const & labelInfo )const
+	{
+		m_label = DebugLabel
+		{
+			{ labelInfo.color[0], labelInfo.color[1], labelInfo.color[2], labelInfo.color[3] },
+			labelInfo.pMarkerName,
+		};
+	}
+
+	void Queue::debugMarkerEnd()const
+	{
+		m_label = std::nullopt;
+	}
+
+	void Queue::debugMarkerInsert( VkDebugMarkerMarkerInfoEXT const & labelInfo )const
+	{
+		m_label = DebugLabel
+		{
+			{ labelInfo.color[0], labelInfo.color[1], labelInfo.color[2], labelInfo.color[3] },
+			labelInfo.pMarkerName,
+		};
+	}
+
+#endif
+
 	VkResult Queue::doSubmit( VkCommandBufferArray const & commandBuffers
 		, VkSemaphoreArray const & semaphoresToWait
 		, VkPipelineStageFlagsArray const & semaphoresStage

@@ -111,4 +111,32 @@ namespace ashes
 		auto res = m_device.vkQueueWaitIdle( m_internal );
 		checkError( res, "Queue wait idle" );
 	}
+
+#if VK_EXT_debug_utils
+
+	void Queue::beginDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const
+	{
+		if ( m_device.vkQueueBeginDebugUtilsLabelEXT )
+		{
+			m_device.vkQueueBeginDebugUtilsLabelEXT( m_internal, &labelInfo );
+		}
+	}
+
+	void Queue::endDebugUtilsLabel()const
+	{
+		if ( m_device.vkQueueEndDebugUtilsLabelEXT )
+		{
+			m_device.vkQueueEndDebugUtilsLabelEXT( m_internal );
+		}
+	}
+
+	void Queue::insertDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const
+	{
+		if ( m_device.vkQueueInsertDebugUtilsLabelEXT )
+		{
+			m_device.vkQueueInsertDebugUtilsLabelEXT( m_internal, &labelInfo );
+		}
+	}
+
+#endif
 }

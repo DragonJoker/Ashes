@@ -49,6 +49,10 @@ target_compile_features( ${PROJECT_NAME} PUBLIC
 target_compile_definitions( ${PROJECT_NAME} PUBLIC
 	${TARGET_CXX_DEFINITIONS}
 )
+target_link_libraries( ${PROJECT_NAME} PUBLIC
+	common
+	ashes
+)
 set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 17
 	CXX_EXTENSIONS OFF

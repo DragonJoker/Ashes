@@ -503,6 +503,70 @@ namespace ashes::gl4
 		return result;
 	}
 
+#if VK_EXT_debug_utils
+
+	void Instance::registerDebugMessenger( VkDebugUtilsMessengerEXT messenger
+		, PFNGLDEBUGPROC callback
+		, void * userParam )const
+	{
+		auto context = ContextLock{ *m_context };
+
+		if ( context->m_glDebugMessageCallback )
+		{
+			m_debugMessengers.push_back( { messenger, callback, userParam } );
+			glLogCall( context
+				, glDebugMessageCallback
+				, callback
+				, userParam );
+			glLogCall( context
+				, glEnable
+				, GL_DEBUG_OUTPUT_SYNC );
+		}
+	}
+
+	void Instance::registerDebugMessengerAMD( VkDebugUtilsMessengerEXT messenger
+		, PFNGLDEBUGAMDPROC callback
+		, void * userParam )const
+	{
+		auto context = ContextLock{ *m_context };
+
+		if ( context->m_glDebugMessageCallbackAMD )
+		{
+			m_debugAMDMessengers.push_back( { messenger, callback, userParam } );
+			glLogCall( context
+				, glDebugMessageCallbackAMD
+				, callback
+				, userParam );
+			glLogCall( context
+				, glEnable
+				, GL_DEBUG_OUTPUT_SYNC );
+		}
+	}
+
+	void Instance::submitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
+		, VkDebugUtilsMessageTypeFlagsEXT messageTypes
+		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const
+	{
+		for ( auto & callback : m_debugMessengers )
+		{
+			get( callback.debugMessenger )->submit( messageSeverity
+				, messageTypes
+				, callbackData
+				, callback.userParam );
+		}
+
+		for ( auto & callback : m_debugAMDMessengers )
+		{
+			get( callback.debugMessenger )->submit( messageSeverity
+				, messageTypes
+				, callbackData
+				, callback.userParam );
+		}
+	}
+
+#endif
+#if VK_EXT_debug_report
+
 	void Instance::registerDebugMessageCallback( VkDebugReportCallbackEXT report
 		, PFNGLDEBUGPROC callback
 		, void * userParam )const
@@ -572,9 +636,32 @@ namespace ashes::gl4
 		}
 	}
 
+#endif
+
 	void Instance::registerContext( Context & context )
 	{
 		ContextLock lock( context );
+
+#if VK_EXT_debug_utils
+
+		for ( auto & callback : m_debugMessengers )
+		{
+			glLogCall( lock
+				, glDebugMessageCallback
+				, callback.callback
+				, callback.userParam );
+		}
+
+		for ( auto & callback : m_debugAMDMessengers )
+		{
+			glLogCall( lock
+				, glDebugMessageCallbackAMD
+				, callback.callback
+				, callback.userParam );
+		}
+
+#endif
+#if VK_EXT_debug_report
 
 		for ( auto & callback : m_debugCallbacks )
 		{
@@ -592,7 +679,18 @@ namespace ashes::gl4
 				, callback.userParam );
 		}
 
-		if ( !m_debugCallbacks.empty() || !m_debugAMDCallbacks.empty() )
+#endif
+
+		if ( false
+#if VK_EXT_debug_utils
+			|| !m_debugMessengers.empty()
+			|| !m_debugAMDMessengers.empty()
+#endif
+#if VK_EXT_debug_report
+			|| !m_debugCallbacks.empty()
+			|| !m_debugAMDCallbacks.empty()
+#endif
+			)
 		{
 			glLogCall( lock
 				, glEnable
