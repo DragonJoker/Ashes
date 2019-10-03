@@ -89,3 +89,7 @@ install(
 	ARCHIVE DESTINATION lib/Debug
 	LIBRARY DESTINATION lib/Debug
 )
+target_install_dir_headers( ${PROJECT_NAME}
+	${ASHES_SOURCE_DIR}/include/ashes/${PROJECT_NAME}
+	ashes/${PROJECT_NAME}
+)

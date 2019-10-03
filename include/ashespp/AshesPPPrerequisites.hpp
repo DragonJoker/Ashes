@@ -161,17 +161,6 @@ namespace ashes
 	*/
 	static const uint64_t MaxTimeout = ~( 0ull );
 
-	/**
-	*\name Typedefs généralistes.
-	*/
-	/**\{*/
-	template< class Obj
-		, class Key
-		, class PtrType = std::shared_ptr< Obj >
-		, typename Creator = std::function< PtrType() >
-		, class Predicate = std::less< Key > >
-	class Factory;
-
 	template< typename T >
 	using BufferPtr = std::unique_ptr< Buffer< T > >;
 	template< typename T >
