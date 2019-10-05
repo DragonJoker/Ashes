@@ -57,6 +57,31 @@ namespace ashes::gl4
 	}
 
 	void apply( ContextLock const & context
+		, CmdApplyScissors const & cmd )
+	{
+		glLogCall( context
+			, glScissorArrayv
+			, GLuint( 0u )
+			, GLsizei( cmd.scissors.size() )
+			, cmd.scissors.data() );
+	}
+
+	void apply( ContextLock const & context
+		, CmdApplyViewports const & cmd )
+	{
+		glLogCall( context
+			, glViewportArrayv
+			, GLuint( 0 )
+			, GLsizei( cmd.viewports.size() )
+			, cmd.viewports.data() );
+		glLogCall( context
+			, glDepthRangeArrayv
+			, GLuint( 0 )
+			, GLsizei( cmd.depthRanges.size() )
+			, cmd.depthRanges.data() );
+	}
+
+	void apply( ContextLock const & context
 		, CmdDrawBuffer const & cmd )
 	{
 		glLogCall( context

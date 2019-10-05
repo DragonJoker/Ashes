@@ -54,7 +54,7 @@ namespace ashes::gl4
 			stack.setCurrentProgram( program );
 		}
 
-		if ( !glpipeline->getViewports().empty() )
+		if ( glpipeline->getViewports().size() == 1u )
 		{
 			auto & viewport = glpipeline->getViewports().front();
 
@@ -64,8 +64,12 @@ namespace ashes::gl4
 				stack.setCurrentViewport( viewport );
 			}
 		}
+		else if ( !glpipeline->getViewports().empty() )
+		{
+			list.push_back( makeCmd< OpType::eApplyViewports >( glpipeline->getViewports() ) );
+		}
 
-		if ( !glpipeline->getScissors().empty() )
+		if ( glpipeline->getScissors().size() == 1u )
 		{
 			auto & scissor = glpipeline->getScissors().front();
 
@@ -74,6 +78,10 @@ namespace ashes::gl4
 				list.push_back( makeCmd< OpType::eApplyScissor >( scissor ) );
 				stack.setCurrentScissor( scissor );
 			}
+		}
+		else if ( !glpipeline->getScissors().empty() )
+		{
+			list.push_back( makeCmd< OpType::eApplyScissors >( glpipeline->getScissors() ) );
 		}
 	}
 

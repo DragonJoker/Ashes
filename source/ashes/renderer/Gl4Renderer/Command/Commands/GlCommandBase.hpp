@@ -50,6 +50,8 @@ namespace ashes::gl4
 		eStencilOp,
 		eApplyScissor,
 		eApplyViewport,
+		eApplyScissors,
+		eApplyViewports,
 		eInitFramebuffer,
 		eBindFramebuffer,
 		eCleanupFramebuffer,
@@ -254,6 +256,86 @@ namespace ashes::gl4
 
 	void apply( ContextLock const & context
 		, CmdApplyViewport const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eApplyScissors >
+	{
+		static Op constexpr value = { OpType::eApplyScissors, 5u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eApplyScissors >
+	{
+		static uint32_t constexpr MaxElems = 16u;
+
+		inline CmdT( std::vector< VkRect2D > scissors )
+			: cmd{ { OpType::eApplyScissors, sizeof( CmdT ) / sizeof( uint32_t ) } }
+		{
+			uint32_t i = 0u;
+
+			for ( auto & scissor : scissors )
+			{
+				if ( i < this->scissors.size() )
+				{
+					this->scissors[i++] = scissor.offset.x;
+					this->scissors[i++] = scissor.offset.y;
+					this->scissors[i++] = int( scissor.extent.width );
+					this->scissors[i++] = int( scissor.extent.height );
+				}
+			}
+		}
+
+		Command cmd;
+		std::array< int, MaxElems * 4u > scissors;
+	};
+	using CmdApplyScissors = CmdT< OpType::eApplyScissors >;
+
+	void apply( ContextLock const & context
+		, CmdApplyScissors const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eApplyViewports >
+	{
+		static Op constexpr value = { OpType::eApplyViewports, 7u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eApplyViewports >
+	{
+		static uint32_t constexpr MaxElems = 16u;
+
+		inline CmdT( std::vector< VkViewport > viewports )
+			: cmd{ { OpType::eApplyViewport, sizeof( CmdT ) / sizeof( uint32_t ) } }
+		{
+			uint32_t vi = 0u;
+			uint32_t di = 0u;
+
+			for ( auto & viewport : viewports )
+			{
+				if ( vi < this->viewports.size() )
+				{
+					this->viewports[vi++] = viewport.x;
+					this->viewports[vi++] = viewport.y;
+					this->viewports[vi++] = viewport.width;
+					this->viewports[vi++] = viewport.height;
+					this->depthRanges[di++] = viewport.minDepth;
+					this->depthRanges[di++] = viewport.maxDepth;
+				}
+			}
+		}
+
+		Command cmd;
+		std::array< float, MaxElems * 4u > viewports;
+		std::array< double, MaxElems * 2u > depthRanges;
+	};
+	using CmdApplyViewports = CmdT< OpType::eApplyViewports >;
+
+	void apply( ContextLock const & context
+		, CmdApplyViewports const & cmd );
 
 	//*************************************************************************
 
