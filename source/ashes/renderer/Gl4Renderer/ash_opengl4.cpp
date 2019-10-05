@@ -178,7 +178,9 @@ namespace ashes::gl4
 				strncpy( result.extensionName, VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME, VK_MAX_EXTENSION_NAME_SIZE );
 				return result;
 			}(),
-			VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, makeVersion( 1, 0, 0 ) },
+			VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_REPORT_SPEC_VERSION, 0, 0 ) },
+			VkExtensionProperties{ VK_EXT_DEBUG_MARKER_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_MARKER_SPEC_VERSION, 0, 0 ) },
+			VkExtensionProperties{ VK_EXT_DEBUG_UTILS_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_UTILS_SPEC_VERSION, 0, 0 ) },
 		};
 
 		*pPropertyCount = uint32_t( extensions.size() );

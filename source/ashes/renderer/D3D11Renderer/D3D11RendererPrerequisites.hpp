@@ -363,8 +363,15 @@ namespace ashes::d3d11
 	std::string toString( std::wstring const & text );
 	uint32_t deduceMemoryType( uint32_t typeBits
 		, VkMemoryPropertyFlags requirements );
+
+#if VK_EXT_debug_utils
+	ID3D11DeviceChild * getObject( uint64_t object
+		, VkObjectType objectType );
+#endif
+#if VK_EXT_debug_report || VK_EXT_debug_marker
 	ID3D11DeviceChild * getObject( uint64_t object
 		, VkDebugReportObjectTypeEXT objectType );
+#endif
 
 	using DeviceMemoryDestroyFunc = std::function< void( VkDeviceMemory ) >;
 	using DeviceMemoryDestroySignal = Signal< DeviceMemoryDestroyFunc >;

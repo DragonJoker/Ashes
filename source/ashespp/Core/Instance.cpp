@@ -188,30 +188,41 @@ namespace ashes
 
 	VkDebugUtilsMessengerEXT Instance::createDebugUtilsMessenger( VkDebugUtilsMessengerCreateInfoEXT & createInfo )const
 	{
-		VkDebugUtilsMessengerEXT result;
-		auto res = vkCreateDebugUtilsMessengerEXT( m_instance
-			, &createInfo
-			, nullptr
-			, &result );
-		checkError( res, "Debug utils messenger creation" );
+		VkDebugUtilsMessengerEXT result{ VK_NULL_HANDLE };
+
+		if ( vkCreateDebugUtilsMessengerEXT )
+		{
+			auto res = vkCreateDebugUtilsMessengerEXT( m_instance
+				, &createInfo
+				, nullptr
+				, &result );
+			checkError( res, "Debug utils messenger creation" );
+		}
+
 		return result;
 	}
 
 	void Instance::destroyDebugUtilsMessenger( VkDebugUtilsMessengerEXT messenger )const
 	{
-		vkDestroyDebugUtilsMessengerEXT( m_instance
-			, messenger
-			, nullptr );
+		if ( vkDestroyDebugUtilsMessengerEXT )
+		{
+			vkDestroyDebugUtilsMessengerEXT( m_instance
+				, messenger
+				, nullptr );
+		}
 	}
 
 	void Instance::submitDebugMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
 		, VkDebugUtilsMessageTypeFlagsEXT messageTypes
 		, VkDebugUtilsMessengerCallbackDataEXT const * pCallbackData )const
 	{
-		vkSubmitDebugUtilsMessageEXT( m_instance
-			, messageSeverity
-			, messageTypes
-			, pCallbackData );
+		if ( vkSubmitDebugUtilsMessageEXT )
+		{
+			vkSubmitDebugUtilsMessageEXT( m_instance
+				, messageSeverity
+				, messageTypes
+				, pCallbackData );
+		}
 	}
 
 #endif
@@ -219,12 +230,17 @@ namespace ashes
 
 	VkDebugReportCallbackEXT Instance::createDebugReportCallback( VkDebugReportCallbackCreateInfoEXT & createInfo )const
 	{
-		VkDebugReportCallbackEXT result;
-		auto res = vkCreateDebugReportCallbackEXT( m_instance
-			, &createInfo
-			, nullptr
-			, &result );
-		checkError( res, "Debug report callback creation" );
+		VkDebugReportCallbackEXT result{ VK_NULL_HANDLE };
+
+		if ( vkCreateDebugReportCallbackEXT )
+		{
+			auto res = vkCreateDebugReportCallbackEXT( m_instance
+				, &createInfo
+				, nullptr
+				, &result );
+			checkError( res, "Debug report callback creation" );
+		}
+
 		return result;
 	}
 

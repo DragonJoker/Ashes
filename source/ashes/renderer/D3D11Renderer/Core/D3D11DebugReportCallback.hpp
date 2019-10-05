@@ -88,7 +88,7 @@ namespace ashes::d3d11
 			: messageSeverity{ messageSeverity }
 			, messageTypes{ messageTypes }
 			, callbackData{ std::move( callbackData ) }
-			, message( this->callbackData.pMessage )
+			, message( this->callbackData.pMessage ? this->callbackData.pMessage : std::string{} )
 			, objects( this->callbackData.pObjects, this->callbackData.pObjects + this->callbackData.objectCount )
 		{
 		}

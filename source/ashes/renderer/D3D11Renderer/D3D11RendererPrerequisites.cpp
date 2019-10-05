@@ -125,6 +125,31 @@ namespace ashes::d3d11
 			, Instance::getMemoryProperties() );
 	}
 
+#if VK_EXT_debug_utils
+
+	ID3D11DeviceChild * getObject( uint64_t object
+		, VkObjectType objectType )
+	{
+		switch ( objectType )
+		{
+		case VK_OBJECT_TYPE_BUFFER:
+			return get( VkBuffer( object ) )->getBuffer();
+		case VK_OBJECT_TYPE_IMAGE:
+			return get( VkImage( object ) )->getResource();
+		case VK_OBJECT_TYPE_BUFFER_VIEW:
+			return get( VkBufferView( object ) )->getView();
+		case VK_OBJECT_TYPE_IMAGE_VIEW:
+			return get( VkImageView( object ) )->getView();
+		case VK_OBJECT_TYPE_SAMPLER:
+			return get( VkSampler( object ) )->getSampler();
+		default:
+			return nullptr;
+		}
+	}
+
+#endif
+#if VK_EXT_debug_report || VK_EXT_debug_marker
+
 	ID3D11DeviceChild * getObject( uint64_t object
 		, VkDebugReportObjectTypeEXT objectType )
 	{
@@ -144,4 +169,6 @@ namespace ashes::d3d11
 			return nullptr;
 		}
 	}
+
+#endif
 }

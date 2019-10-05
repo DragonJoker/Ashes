@@ -221,6 +221,67 @@ namespace ashes::d3d11
 		layout.size = layout.arrayPitch * get( image )->getDimensions().depth;
 	}
 
+#if VK_EXT_debug_utils
+
+	VkResult Device::setDebugUtilsObjectName( VkDebugUtilsObjectNameInfoEXT const & nameInfo )const
+	{
+		HRESULT hr = S_OK;
+
+		switch ( nameInfo.objectType )
+		{
+		case VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT:
+			hr = get( VkDevice( nameInfo.objectHandle ) )->getDevice()->SetPrivateData( WKPDID_D3DDebugObjectName
+				, UINT( strlen( nameInfo.pObjectName ) )
+				, nameInfo.pObjectName );
+			break;
+		case VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT:
+			hr = get( VkSwapchainKHR( nameInfo.objectHandle ) )->getSwapChain()->SetPrivateData( WKPDID_D3DDebugObjectName
+				, UINT( strlen( nameInfo.pObjectName ) )
+				, nameInfo.pObjectName );
+			break;
+		case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT:
+			get( VkBuffer( nameInfo.objectHandle ) )->setDebugName( nameInfo.pObjectName );
+			break;
+		case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT:
+			get( VkImage( nameInfo.objectHandle ) )->setDebugName( nameInfo.pObjectName );
+			break;
+		default:
+			{
+				auto object = getObject( nameInfo.objectHandle, nameInfo.objectType );
+
+				if ( object )
+				{
+					hr = object->SetPrivateData( WKPDID_D3DDebugObjectName
+						, UINT( strlen( nameInfo.pObjectName ) )
+						, nameInfo.pObjectName );
+				}
+			}
+			break;
+		}
+
+		if ( hr == S_OK )
+		{
+			std::clog << "0x" << std::hex << std::setfill( '0' ) << std::setw( 16u ) << nameInfo.objectHandle << " - " << nameInfo.pObjectName << "\n";
+		}
+
+		return checkError( get( this ), hr, "SetPrivateData" )
+			? VK_SUCCESS
+			: VK_ERROR_INVALID_DEVICE_ADDRESS_EXT;
+	}
+
+	VkResult Device::setDebugUtilsObjectTag( VkDebugUtilsObjectTagInfoEXT const & tagInfo )const
+	{
+		return VK_SUCCESS;
+	}
+
+#endif
+#if VK_EXT_debug_marker
+
+	VkResult Device::debugMarkerSetObjectTag( VkDebugMarkerObjectTagInfoEXT const & tagInfo )const
+	{
+		return VK_SUCCESS;
+	}
+
 	VkResult Device::debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const
 	{
 		HRESULT hr = S_OK;
@@ -266,6 +327,8 @@ namespace ashes::d3d11
 			? VK_SUCCESS
 			: VK_ERROR_INVALID_DEVICE_ADDRESS_EXT;
 	}
+
+#endif
 
 	VkQueue Device::getQueue( uint32_t familyIndex
 		, uint32_t index )const

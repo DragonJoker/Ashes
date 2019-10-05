@@ -278,8 +278,8 @@ namespace ashes
 			return this->m_instance;
 		}
 
-#define VK_LIB_GLOBAL_FUNCTION( fun ) PFN_vk##fun vk##fun;
-#define VK_LIB_INSTANCE_FUNCTION( fun ) PFN_vk##fun vk##fun;
+#define VK_LIB_GLOBAL_FUNCTION( fun ) PFN_vk##fun vk##fun{ nullptr };
+#define VK_LIB_INSTANCE_FUNCTION( fun ) PFN_vk##fun vk##fun{ nullptr };
 #	include <ashes/ashes_functions_list.hpp>
 		/**
 		*\~english
