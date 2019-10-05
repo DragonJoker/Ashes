@@ -10,6 +10,9 @@ See LICENSE file in root folder.
 
 #include "ashesgl4_api.hpp"
 
+using ashes::operator==;
+using ashes::operator!=;
+
 namespace ashes::gl4
 {
 	void apply( ContextLock const & context
@@ -26,28 +29,51 @@ namespace ashes::gl4
 	{
 		glLogCommand( "BindPipelineCommand" );
 		GLuint program;
+		auto glpipeline = get( pipeline );
 
 		if ( !stack.hasCurrentFramebuffer() )
 		{
 			// Can happen in case of secondary command buffers
-			stack.apply( list, get( pipeline )->getRtotContextState() );
-			program = get( pipeline )->getRtotProgram();
+			stack.apply( list, glpipeline->getRtotContextState() );
+			program = glpipeline->getRtotProgram();
 		}
 		else if ( !get( stack.getCurrentFramebuffer() )->hasSwapchainImage() )
 		{
-			stack.apply( list, get( pipeline )->getRtotContextState() );
-			program = get( pipeline )->getRtotProgram();
+			stack.apply( list, glpipeline->getRtotContextState() );
+			program = glpipeline->getRtotProgram();
 		}
 		else
 		{
-			stack.apply( list, get( pipeline )->getBackContextState() );
-			program = get( pipeline )->getBackProgram();
+			stack.apply( list, glpipeline->getBackContextState() );
+			program = glpipeline->getBackProgram();
 		}
 
 		if ( stack.getCurrentProgram() != program )
 		{
 			list.push_back( makeCmd< OpType::eUseProgram >( program ) );
 			stack.setCurrentProgram( program );
+		}
+
+		if ( !glpipeline->getViewports().empty() )
+		{
+			auto & viewport = glpipeline->getViewports().front();
+
+			if ( stack.getCurrentViewport() != viewport )
+			{
+				list.push_back( makeCmd< OpType::eApplyViewport >( viewport ) );
+				stack.setCurrentViewport( viewport );
+			}
+		}
+
+		if ( !glpipeline->getScissors().empty() )
+		{
+			auto & scissor = glpipeline->getScissors().front();
+
+			if ( stack.getCurrentScissor() != scissor )
+			{
+				list.push_back( makeCmd< OpType::eApplyScissor >( scissor ) );
+				stack.setCurrentScissor( scissor );
+			}
 		}
 	}
 
