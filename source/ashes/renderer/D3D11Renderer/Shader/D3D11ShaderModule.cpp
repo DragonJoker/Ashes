@@ -196,13 +196,21 @@ namespace ashes::d3d11
 			{
 #if D3D11Renderer_USE_SPIRV_CROSS
 
-				BlockLocale guard;
-				auto compiler = std::make_unique< spirv_cross::CompilerHLSL >( shader );
-				doProcessSpecializationConstants( state, *compiler );
-				doSetEntryPoint( stage, *compiler );
-				doSetupOptions( device, *compiler );
-				doSetupHlslOptions( device, *compiler );
-				return compiler->compile();
+				try
+				{
+					BlockLocale guard;
+					auto compiler = std::make_unique< spirv_cross::CompilerHLSL >( shader );
+					doProcessSpecializationConstants( state, *compiler );
+					doSetEntryPoint( stage, *compiler );
+					doSetupOptions( device, *compiler );
+					doSetupHlslOptions( device, *compiler );
+					return compiler->compile();
+				}
+				catch ( std::exception & exc )
+				{
+					std::cerr << "SPIR-V to HLSL compilation failed: " << exc.what() << std::endl;
+					throw;
+				}
 
 #else
 

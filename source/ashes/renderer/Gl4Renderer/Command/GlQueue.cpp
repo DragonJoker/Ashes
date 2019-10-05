@@ -146,11 +146,14 @@ namespace ashes::gl4
 			case OpType::eStencilOp:
 				apply( lock, map< OpType::eStencilOp >( cmd ) );
 				break;
-			case OpType::eApplyScissor:
-				apply( lock, map< OpType::eApplyScissor >( cmd ) );
+			case OpType::eApplyScissors:
+				apply( lock, map< OpType::eApplyScissors >( cmd ) );
 				break;
-			case OpType::eApplyViewport:
-				apply( lock, map< OpType::eApplyViewport >( cmd ) );
+			case OpType::eApplyViewports:
+				apply( lock, map< OpType::eApplyViewports >( cmd ) );
+				break;
+			case OpType::eApplyDepthRanges:
+				apply( lock, map< OpType::eApplyDepthRanges >( cmd ) );
 				break;
 			case OpType::eInitFramebuffer:
 				apply( lock, map< OpType::eInitFramebuffer >( cmd ) );

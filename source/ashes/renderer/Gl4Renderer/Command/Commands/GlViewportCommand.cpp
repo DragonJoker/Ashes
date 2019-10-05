@@ -14,6 +14,21 @@ using ashes::operator!=;
 
 namespace ashes::gl4
 {
+	bool operator==( VkViewportArray const & lhs
+		, VkViewportArray const & rhs )
+	{
+		auto result = lhs.size() == rhs.size();
+		size_t index = 0u;
+
+		while ( result && index < lhs.size() )
+		{
+			result = lhs[index] == rhs[index];
+			++index;
+		}
+
+		return result;
+	}
+
 	namespace
 	{
 		VkViewport adjustViewport( ContextStateStack const & stack
@@ -29,6 +44,20 @@ namespace ashes::gl4
 
 			return result;
 		}
+
+		VkViewportArray adjustViewports( ContextStateStack const & stack
+			, VkViewportArray const & in )
+		{
+			VkViewportArray result;
+			result.reserve( in.size() );
+
+			for ( auto vp : in )
+			{
+				result.push_back( adjustViewport( stack, vp ) );
+			}
+
+			return result;
+		}
 	}
 
 	void buildViewportCommand( ContextStateStack & stack
@@ -37,12 +66,7 @@ namespace ashes::gl4
 		, CmdList & list )
 	{
 		glLogCommand( "ViewportCommand" );
-		auto viewport = adjustViewport( stack, *viewports.begin() );
-
-		if ( stack.getCurrentViewport() != viewport )
-		{
-			list.push_back( makeCmd< OpType::eApplyViewport >( viewport ) );
-			stack.setCurrentViewport( viewport );
-		}
+		viewports = adjustViewports( stack, viewports );
+		stack.apply( list, viewports, false );
 	}
 }

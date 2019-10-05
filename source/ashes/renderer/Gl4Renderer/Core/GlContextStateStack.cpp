@@ -517,23 +517,37 @@ namespace ashes::gl4
 	}
 
 	void ContextStateStack::apply( CmdList & list
+		, VkScissorArray const & scissors
+		, bool force )
+	{
+		if ( force || getCurrentScissors() != scissors )
+		{
+			list.push_back( makeCmd< OpType::eApplyScissors >( scissors ) );
+			setCurrentScissors( scissors );
+		}
+	}
+
+	void ContextStateStack::apply( CmdList & list
+		, VkViewportArray const & viewports
+		, bool force )
+	{
+		if ( force || getCurrentViewports() != viewports )
+		{
+			list.push_back( makeCmd< OpType::eApplyViewports >( viewports ) );
+			list.push_back( makeCmd< OpType::eApplyDepthRanges >( viewports ) );
+			setCurrentViewports( viewports );
+		}
+	}
+
+	void ContextStateStack::apply( CmdList & list
 		, VkPipelineViewportStateCreateInfo const & newState
 		, bool force )
 	{
-		auto & viewport = *newState.pViewports;
-
-		if ( force || getCurrentViewport() != viewport )
-		{
-			list.push_back( makeCmd< OpType::eApplyViewport >( viewport ) );
-			setCurrentViewport( viewport );
-		}
-
-		auto & scissor = *newState.pScissors;
-
-		if ( force || getCurrentScissor() != scissor )
-		{
-			list.push_back( makeCmd< OpType::eApplyScissor >( scissor ) );
-			setCurrentScissor( scissor );
-		}
+		apply( list
+			, VkViewportArray{ newState.pViewports, newState.pViewports + newState.scissorCount }
+			, force );
+		apply( list
+			, VkScissorArray{ newState.pScissors, newState.pScissors + newState.scissorCount }
+			, force );
 	}
 }

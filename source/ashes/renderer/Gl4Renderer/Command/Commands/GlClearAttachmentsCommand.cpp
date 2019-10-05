@@ -74,12 +74,15 @@ namespace ashes::gl4
 		{
 			for ( auto & rect : clearRects )
 			{
-				auto & scissor = rect.rect;
-
-				if ( stack.getCurrentScissor() != scissor )
+				VkScissorArray scissors
 				{
-					list.push_back( makeCmd< OpType::eApplyScissor >( scissor ) );
-					stack.setCurrentScissor( scissor );
+					rect.rect
+				};
+
+				if ( stack.getCurrentScissors() != scissors )
+				{
+					list.push_back( makeCmd< OpType::eApplyScissors >( scissors ) );
+					stack.setCurrentScissors( scissors );
 				}
 
 				if ( ashes::checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT ) )

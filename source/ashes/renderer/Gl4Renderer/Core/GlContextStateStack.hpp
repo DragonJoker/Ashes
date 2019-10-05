@@ -20,6 +20,12 @@ namespace ashes::gl4
 		void apply( CmdList & list
 			, ContextState & state
 			, bool force = false );
+		void apply( CmdList & list
+			, VkViewportArray const & viewports
+			, bool force );
+		void apply( CmdList & list
+			, VkScissorArray const & scissors
+			, bool force );
 
 		inline bool isPrimitiveRestartEnabled()const
 		{
@@ -27,24 +33,24 @@ namespace ashes::gl4
 			return m_save->iaState.primitiveRestartEnable;
 		}
 
-		inline VkRect2D const & getCurrentScissor()const
+		inline VkScissorArray const & getCurrentScissors()const
 		{
-			return m_scissor;
+			return m_scissors;
 		}
 
-		inline void setCurrentScissor( VkRect2D const & value )
+		inline void setCurrentScissors( VkScissorArray const & value )
 		{
-			m_scissor = value;
+			m_scissors = value;
 		}
 
-		inline VkViewport const & getCurrentViewport()const
+		inline VkViewportArray const & getCurrentViewports()const
 		{
-			return m_viewport;
+			return m_viewports;
 		}
 
-		inline void setCurrentViewport( VkViewport const & value )
+		inline void setCurrentViewports( VkViewportArray const & value )
 		{
-			m_viewport = value;
+			m_viewports = value;
 		}
 
 		inline GLuint getCurrentProgram()const
@@ -99,8 +105,8 @@ namespace ashes::gl4
 
 	private:
 		ContextState * m_save{ nullptr };
-		VkRect2D m_scissor{ 0, 0, 0, 0 };
-		VkViewport m_viewport{ 0, 0, 0, 0 };
+		VkScissorArray m_scissors;
+		VkViewportArray m_viewports;
 		GLuint m_currentProgram{ 0u };
 		VkFramebuffer m_currentFbo{ VK_NULL_HANDLE };
 		bool m_tessellation{ false };

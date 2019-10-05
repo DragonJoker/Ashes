@@ -28,6 +28,20 @@ namespace ashes::gl4
 
 			return result;
 		}
+
+		VkScissorArray adjustScissors( ContextStateStack const & stack
+			, VkScissorArray const & in )
+		{
+			VkScissorArray result;
+			result.reserve( in.size() );
+
+			for ( auto sc : in )
+			{
+				result.push_back( adjustScissor( stack, sc ) );
+			}
+
+			return result;
+		}
 	}
 
 	void buildScissorCommand( ContextStateStack & stack
@@ -36,12 +50,7 @@ namespace ashes::gl4
 		, CmdList & list )
 	{
 		glLogCommand( "ScissorCommand" );
-		auto scissor = adjustScissor( stack, *scissors.begin() );
-
-		if ( stack.getCurrentScissor() != scissor )
-		{
-			list.push_back( makeCmd< OpType::eApplyScissor >( scissor ) );
-			stack.setCurrentScissor( scissor );
-		}
+		scissors = adjustScissors( stack, scissors );
+		stack.apply( list, scissors, false );
 	}
 }
