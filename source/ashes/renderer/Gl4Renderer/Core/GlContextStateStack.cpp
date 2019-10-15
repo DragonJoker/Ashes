@@ -144,6 +144,7 @@ namespace ashes::gl4
 			switch ( rasterState.polygonMode )
 			{
 			case VK_POLYGON_MODE_FILL:
+			case VK_POLYGON_MODE_FILL_RECTANGLE_NV:
 				doApplyEnable( list
 					, GL_POLYGON_OFFSET_FILL
 					, rasterState.depthBiasEnable );
@@ -159,6 +160,10 @@ namespace ashes::gl4
 				doApplyEnable( list
 					, GL_POLYGON_OFFSET_POINT
 					, rasterState.depthBiasEnable );
+				break;
+
+			default:
+				assert( false && "Unsupported polygon mode." );
 				break;
 			}
 

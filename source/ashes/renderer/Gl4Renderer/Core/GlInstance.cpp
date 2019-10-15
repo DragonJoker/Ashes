@@ -36,7 +36,6 @@ namespace ashes::gl4
 		RenderWindow() try
 		{
 			m_hInstance = ::GetModuleHandle( nullptr );
-			MSG msg{};
 			WNDCLASSA wc{};
 			wc.lpfnWndProc = RenderWindow::WndProc;
 			wc.hInstance = m_hInstance;

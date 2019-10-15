@@ -147,11 +147,11 @@ namespace ashes::gl4
 		, m_subpass{ createInfo.subpass }
 		, m_basePipelineHandle{ createInfo.basePipelineHandle }
 		, m_basePipelineIndex{ createInfo.basePipelineIndex }
+		, m_backProgram{ std::make_unique< ShaderProgram >( m_device, get( this ), m_stages, false ) }
+		, m_rtotProgram{ std::make_unique< ShaderProgram >( m_device, get( this ), m_stages, true ) }
 		, m_vertexInputStateHash{ ( m_vertexInputState
 			? doHash( m_vertexInputState.value() )
 			: 0u ) }
-		, m_backProgram{ std::make_unique< ShaderProgram >( m_device, get( this ), m_stages, false ) }
-		, m_rtotProgram{ std::make_unique< ShaderProgram >( m_device, get( this ), m_stages, true ) }
 	{
 		auto context = get( device )->getContext();
 		CmdList list;

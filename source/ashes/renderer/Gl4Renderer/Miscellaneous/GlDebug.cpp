@@ -1,4 +1,7 @@
+#include "GlRendererPrerequisites.hpp"
+
 #include "Miscellaneous/GlDebug.hpp"
+#include "Miscellaneous/OpenGLDefines.hpp"
 
 #include <cstdint>
 #include <iostream>

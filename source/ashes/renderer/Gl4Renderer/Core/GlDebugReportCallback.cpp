@@ -317,8 +317,8 @@ namespace ashes::gl4
 
 	DebugReportCallbackEXT::DebugReportCallbackEXT( VkInstance instance
 		, VkDebugReportCallbackCreateInfoEXT createInfo )
-		: m_createInfo{ std::move( createInfo ) }
-		, m_instance{ instance }
+		: m_instance{ instance }
+		, m_createInfo{ std::move( createInfo ) }
 	{
 		auto glinstance = get( m_instance );
 		glinstance->registerDebugMessageCallback( get( this ), PFNGLDEBUGPROC( &callbackDebugLog ), this );

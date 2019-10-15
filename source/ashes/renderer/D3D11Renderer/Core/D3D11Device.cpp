@@ -229,20 +229,20 @@ namespace ashes::d3d11
 
 		switch ( nameInfo.objectType )
 		{
-		case VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT:
+		case VK_OBJECT_TYPE_DEVICE:
 			hr = get( VkDevice( nameInfo.objectHandle ) )->getDevice()->SetPrivateData( WKPDID_D3DDebugObjectName
 				, UINT( strlen( nameInfo.pObjectName ) )
 				, nameInfo.pObjectName );
 			break;
-		case VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT:
+		case VK_OBJECT_TYPE_SWAPCHAIN_KHR:
 			hr = get( VkSwapchainKHR( nameInfo.objectHandle ) )->getSwapChain()->SetPrivateData( WKPDID_D3DDebugObjectName
 				, UINT( strlen( nameInfo.pObjectName ) )
 				, nameInfo.pObjectName );
 			break;
-		case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT:
+		case VK_OBJECT_TYPE_BUFFER:
 			get( VkBuffer( nameInfo.objectHandle ) )->setDebugName( nameInfo.pObjectName );
 			break;
-		case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT:
+		case VK_OBJECT_TYPE_IMAGE:
 			get( VkImage( nameInfo.objectHandle ) )->setDebugName( nameInfo.pObjectName );
 			break;
 		default:
@@ -415,8 +415,6 @@ namespace ashes::d3d11
 
 	void Device::doCreateD3D11Device()
 	{
-		auto factory = get( m_instance )->getDXGIFactory();
-
 		std::vector< D3D_FEATURE_LEVEL > requestedFeatureLevels
 		{
 			D3D_FEATURE_LEVEL_11_1,
@@ -429,7 +427,6 @@ namespace ashes::d3d11
 		};
 		HRESULT hr;
 		UINT flags = 0;
-		auto adapter = get( m_physicalDevice )->getAdapter();
 
 #if !defined( NDEBUG )
 		flags = D3D11_CREATE_DEVICE_DEBUG;

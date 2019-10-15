@@ -128,23 +128,6 @@ namespace ashes::gl4
 
 			return texelBlockExtent;
 		}
-
-		uint32_t getTexelBlockByteSize( VkExtent3D const & texelBlockExtent
-			, VkFormat format )
-		{
-			VkDeviceSize texelBlockSize;
-
-			if ( !isDepthStencilFormat( format ) )
-			{
-				texelBlockSize = getSize( texelBlockExtent, format );
-			}
-			else
-			{
-				texelBlockSize = texelBlockExtent.width;
-			}
-
-			return uint32_t( texelBlockSize );
-		}
 	}
 
 	Device::Device( VkInstance instance
@@ -218,7 +201,6 @@ namespace ashes::gl4
 			, target
 			, 0 );
 		auto extent = getTexelBlockExtent( get( image )->getFormat() );
-		auto byteSize = getTexelBlockByteSize( extent, get( image )->getFormat() );
 		layout.rowPitch = getAligned( std::max( w, 1 ), extent.width );
 		layout.arrayPitch = layout.rowPitch * getAligned( std::max( h, 1 ), extent.width );
 		layout.depthPitch = layout.arrayPitch;

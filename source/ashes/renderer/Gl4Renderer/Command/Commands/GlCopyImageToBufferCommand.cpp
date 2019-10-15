@@ -21,7 +21,7 @@ namespace ashes::gl4
 			, VkBufferImageCopy const & copy )
 		{
 			VkImageType type = get( texture )->getType();
-			VkImageViewType viewType;
+			VkImageViewType viewType{};
 
 			if ( type == VK_IMAGE_TYPE_3D )
 			{

@@ -78,7 +78,6 @@ namespace ashes::d3d11
 
 	std::string toString( std::wstring const & text )
 	{
-		BOOL used = FALSE;
 		auto convertedSize = WideCharToMultiByte( CP_UTF8
 			, 0
 			, text.c_str()

@@ -463,7 +463,7 @@ namespace ashes
 			return 16u;
 
 		default:
-			assert( false && "Unsupported pixel format" );
+			assert( false && "Unsupported BC compressed format" );
 			return 0u;
 		}
 	}
@@ -487,7 +487,7 @@ namespace ashes
 			return 16u;
 
 		default:
-			assert( false && "Unsupported pixel format" );
+			assert( false && "Unsupported ETC2 compressed format" );
 			return 0u;
 		}
 	}
@@ -507,7 +507,7 @@ namespace ashes
 			return 16u;
 
 		default:
-			assert( false && "Unsupported pixel format" );
+			assert( false && "Unsupported EAC compressed format" );
 			return 0u;
 		}
 	}
@@ -898,6 +898,9 @@ namespace ashes
 				case VK_FORMAT_ASTC_12x12_SRGB_BLOCK:
 					result.width = 12;
 					result.height = 12;
+					break;
+				default:
+					assert( false && "Unsupported ASTC compressed format" );
 					break;
 				}
 			}

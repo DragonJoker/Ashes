@@ -65,6 +65,10 @@ namespace ashes::gl4
 				m_dynamicBuffers.push_back( &write.second );
 				break;
 			case VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT:
+			case VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT:
+			case VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV:
+				break;
+			default:
 				break;
 			}
 		}

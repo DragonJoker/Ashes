@@ -187,7 +187,7 @@ namespace ashes::d3d11
 		auto & displayMode = descs.back();
 
 		// Initialize the swap chain description.
-		auto result = DXGI_SWAP_CHAIN_DESC{ 0 };
+		auto result = DXGI_SWAP_CHAIN_DESC{};
 
 		// Set to a single back buffer.
 		result.BufferCount = 1;

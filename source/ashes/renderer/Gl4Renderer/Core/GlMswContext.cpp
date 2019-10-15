@@ -82,8 +82,6 @@ namespace ashes::gl4
 			loadSystemFunctions();
 			disable();
 
-			double fversion{ 0u };
-
 			if ( !doCreateGl3Context( m_mainContext ) )
 			{
 				wglDeleteContext( m_hContext );

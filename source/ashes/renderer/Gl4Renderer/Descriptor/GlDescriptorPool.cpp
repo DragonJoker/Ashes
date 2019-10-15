@@ -27,6 +27,7 @@ namespace ashes::gl4
 	{
 		if ( checkFlag( m_flags, VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT ) )
 		{
+			assert( m_maxSets > m_sets.size() );
 			m_sets.push_back( set );
 		}
 	}

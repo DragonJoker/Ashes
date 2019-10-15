@@ -110,12 +110,12 @@ namespace ashes::gl4
 		, cbState{ getDefaultColorBlendState( cbStateAttachments ) }
 		, dsState{ getDefaultDepthStencilState() }
 		, msState{ getDefaultMultisampleState() }
-		, rsState{ getDefaultRasterisationState() }
 		, tsState{ getDefaultTessellationState() }
 		, iaState{ getDefaultInputAssemblyState() }
 		, viewports{}
 		, scissors{}
 		, vpState{ getDefaultViewportState() }
+		, rsState{ getDefaultRasterisationState() }
 		, dynamicStates{}
 		, dyState{ getDefaultDynamicState() }
 	{

@@ -205,6 +205,9 @@ namespace ashes::gl4
 					, int32_t( getSize( copyInfo.imageExtent, get( dst )->getFormat() ) )
 					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
+			default:
+				// Noop
+				break;
 			}
 		}
 		else
@@ -275,6 +278,9 @@ namespace ashes::gl4
 					, format
 					, type
 					, int32_t( copyInfo.bufferOffset ) ) );
+				break;
+			default:
+				// Noop
 				break;
 			}
 		}

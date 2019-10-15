@@ -173,7 +173,6 @@ namespace ashes::gl4
 				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
 				list.push_back( makeCmd< OpType::eActiveTexture >( bindingIndex ) );
 
-				auto buffer = getBuffer( write, i );
 				list.push_back( makeCmd< OpType::eBindTexture >( GL_BUFFER_TARGET_TEXTURE
 					, get( write.pTexelBufferView[i] )->getImage() ) );
 			}
@@ -208,32 +207,6 @@ namespace ashes::gl4
 					, get( buffer )->getInternal()
 					, int64_t( get( buffer )->getInternalOffset() + write.pBufferInfo[i].offset + offset )
 					, int64_t( std::min( write.pBufferInfo[i].range, uint64_t( get( buffer )->getMemoryRequirements().size ) ) ) ) );
-			}
-		}
-
-		void bindDynamicBuffers( VkWriteDescriptorSetArray const & writes
-			, UInt32Array const & offsets
-			, CmdList & list )
-		{
-			for ( auto i = 0u; i < offsets.size(); ++i )
-			{
-				auto & write = writes[i];
-
-				switch ( write.descriptorType )
-				{
-				case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:
-					bindDynamicUniformBuffer( write, offsets[i], list );
-					break;
-
-				case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
-					bindDynamicStorageBuffer( write, offsets[i], list );
-					break;
-
-				default:
-					assert( false && "Unsupported dynamic descriptor type" );
-					throw std::runtime_error{ "Unsupported dynamic descriptor type" };
-					break;
-				}
 			}
 		}
 

@@ -64,8 +64,8 @@ namespace ashes::gl4
 
 	Context::Context( std::unique_ptr< ContextImpl > impl )
 		: m_impl{ std::move( impl ) }
-		, m_instance{ m_impl->instance }
 		, createInfo{ m_impl->createInfo }
+		, m_instance{ m_impl->instance }
 	{
 		m_impl->initialise( *this );
 	}

@@ -74,8 +74,6 @@ namespace ashes::gl4
 
 		for ( auto viewIndex = 0u; viewIndex < attaches.size(); ++viewIndex )
 		{
-			auto & attach = attaches[viewIndex];
-
 			if ( auto attachDesc = get( renderPass )->findAttachment( viewIndex ) )
 			{
 				if ( attachDesc->loadOp == VK_ATTACHMENT_LOAD_OP_CLEAR )
@@ -204,7 +202,6 @@ namespace ashes::gl4
 			stack.setCurrentFramebuffer( frameBuffer );
 		}
 
-		uint32_t clearIndex = 0u;
 		auto & attaches = get( frameBuffer )->getAllAttaches();
 		UInt32Array drawBuffers;
 

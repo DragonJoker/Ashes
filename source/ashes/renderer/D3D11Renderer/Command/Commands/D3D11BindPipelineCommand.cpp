@@ -150,6 +150,9 @@ namespace ashes::d3d11
 					, nullptr
 					, 0u );
 				break;
+			default:
+				assert( false && "Unsupported shader stage flag" );
+				break;
 			}
 		}
 	}
@@ -194,6 +197,9 @@ namespace ashes::d3d11
 				break;
 			case VK_SHADER_STAGE_COMPUTE_BIT:
 				context.context->CSSetShader( nullptr, nullptr, 0u );
+				break;
+			default:
+				assert( false && "Unsupported shader stage flag" );
 				break;
 			}
 		}

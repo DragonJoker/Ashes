@@ -34,6 +34,8 @@ namespace ashes::gl4
 			}
 
 		public:
+			virtual ~ContextImpl() = default;
+
 			virtual void initialise( Context & parent ) = 0;
 			virtual void loadSystemFunctions() = 0;
 			/**

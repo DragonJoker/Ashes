@@ -178,7 +178,7 @@ namespace ashes::d3d11
 		bool onBufferImageCommand( VkCommandBuffer cmd
 			, VkBufferImageCopy const & copyInfo
 			, VkBuffer buffer
-			, VkImage image )const;
+			, VkImage image )const override;
 		bool onCopyToImageCommand( VkCommandBuffer cmd
 			, VkBufferImageCopyArray const & copyInfos
 			, VkBuffer src
@@ -195,7 +195,7 @@ namespace ashes::d3d11
 #	if VK_EXT_debug_utils
 		void onSubmitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
 			, VkDebugUtilsMessageTypeFlagsEXT messageTypes
-			, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const;
+			, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const override;
 #	endif
 
 	private:

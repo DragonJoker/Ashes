@@ -5,9 +5,7 @@ namespace ashes::d3d11
 	std::vector< D3D11_INPUT_ELEMENT_DESC > convert( VkPipelineVertexInputStateCreateInfo const & state
 		, InputLayout const & inputLayout )
 	{
-		static uint32_t id = 0u;
 		std::vector< D3D11_INPUT_ELEMENT_DESC > result;
-		UINT index = 0u;
 
 		for ( auto attribute : makeArrayView( state.pVertexAttributeDescriptions, state.vertexAttributeDescriptionCount ) )
 		{

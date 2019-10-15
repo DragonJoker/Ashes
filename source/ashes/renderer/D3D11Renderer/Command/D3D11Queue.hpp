@@ -25,7 +25,6 @@ namespace ashes::d3d11
 		*/
 		VkResult present( VkPresentInfoKHR const & presentInfo )const;
 		/**
-		/**
 		*\copydoc		ashes::Queue::waitIdle
 		*/
 		VkResult waitIdle()const;

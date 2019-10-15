@@ -54,7 +54,6 @@ namespace ashes::gl4
 				, glBindBuffer
 				, GL_BUFFER_TARGET_COPY_WRITE
 				, buffer );
-			GLint realSize = 0;
 			glLogCall( context
 				, glGetBufferParameteriv
 				, GL_BUFFER_TARGET_COPY_WRITE
@@ -94,7 +93,7 @@ namespace ashes::gl4
 			, GLsizeiptr size
 			, GlMemoryPropertyFlags flags )
 		{
-			auto allocateBuffer = [&context, &target]( GLuint result
+			auto allocateBuffer = [&context]( GLuint result
 				, GlBufferTarget target
 				, GLsizeiptr size
 				, GlMemoryPropertyFlags flags )

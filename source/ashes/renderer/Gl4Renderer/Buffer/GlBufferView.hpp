@@ -77,8 +77,6 @@ namespace ashes::gl4
 
 	private:
 		VkDevice m_device;
-		VkBufferViewCreateFlags m_flags;
-		VkBuffer m_buffer;
 		VkFormat m_format;
 		VkDeviceSize m_offset;
 		VkDeviceSize m_range;

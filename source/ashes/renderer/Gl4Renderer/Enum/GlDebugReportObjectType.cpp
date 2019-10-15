@@ -26,6 +26,9 @@ namespace ashes::gl4
 		case VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT:
 			result = GlDebugReportObjectType::eFrameBuffer;
 			break;
+		default:
+			// Noop
+			break;
 		}
 
 		return result;
@@ -54,6 +57,9 @@ namespace ashes::gl4
 			break;
 		case VK_OBJECT_TYPE_FRAMEBUFFER:
 			result = GlDebugReportObjectType::eFrameBuffer;
+			break;
+		default:
+			// Noop
 			break;
 		}
 

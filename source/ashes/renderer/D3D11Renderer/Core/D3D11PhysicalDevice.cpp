@@ -278,8 +278,6 @@ namespace ashes::d3d11
 				}
 			} );
 
-		auto factory = get( m_instance )->getDXGIFactory();
-
 		std::vector< D3D_FEATURE_LEVEL > requestedFeatureLevels
 		{
 			D3D_FEATURE_LEVEL_11_1,

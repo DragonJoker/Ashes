@@ -4,8 +4,8 @@ namespace ashes::gl4
 {
 	DescriptorSetLayout::DescriptorSetLayout( VkDevice device
 		, VkDescriptorSetLayoutCreateInfo createInfo )
-		: m_flags{ createInfo.flags }
-		, m_bindings{ makeVector( createInfo.pBindings, createInfo.bindingCount ) }
+		: m_createInfo{ std::move( createInfo ) }
+		, m_bindings{ makeVector( m_createInfo.pBindings, m_createInfo.bindingCount ) }
 	{
 	}
 }

@@ -954,7 +954,7 @@ namespace ashes::gl4
 				, program
 				, GLSL_INTERFACE_PROGRAM_INPUT
 				, { GLSL_PROPERTY_TYPE, GLSL_PROPERTY_ARRAY_SIZE, GLSL_PROPERTY_LOCATION/*, GLSL_PROPERTY_LOCATION_COMPONENT*/ }
-				, [&attributes, &findAttribute]( std::string const & name, std::vector< GLint > const & values )
+				, [&findAttribute]( std::string const & name, std::vector< GLint > const & values )
 				{
 					auto glslType = GlslAttributeType( values[0] );
 					auto location = uint32_t( values[2] );

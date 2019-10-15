@@ -8,6 +8,7 @@ namespace ashes::gl4
 {
 	enum GlQueryResultFlag
 	{
+		GL_QUERY_NONE = 0,
 		GL_QUERY_RESULT = 0x8866,
 		GL_QUERY_RESULT_NO_WAIT = 0x9194,
 	};

@@ -797,8 +797,6 @@ namespace ashes
 		, VkMemoryPropertyFlags requirements
 		, VkPhysicalDeviceMemoryProperties const & memoryProperties )
 	{
-		bool found{ false };
-
 		for ( uint32_t i = 0; i < memoryProperties.memoryTypeCount; ++i )
 		{
 			if ( ( typeBits & 1 ) == 1 )

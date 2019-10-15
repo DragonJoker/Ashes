@@ -6,7 +6,7 @@ namespace ashes::gl4
 	{
 		switch ( value )
 		{
-		case 0u:
+		case GL_QUERY_NONE:
 			return "0";
 
 		case GL_QUERY_RESULT:

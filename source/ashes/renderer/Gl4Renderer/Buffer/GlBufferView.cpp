@@ -10,8 +10,6 @@ namespace ashes::gl4
 	BufferView::BufferView( VkDevice device
 		, VkBufferViewCreateInfo createInfo )
 		: m_device{ device }
-		, m_flags{ createInfo.flags }
-		, m_buffer{ createInfo.buffer }
 		, m_format{ createInfo.format }
 		, m_offset{ createInfo.offset }
 		, m_range{ createInfo.range }

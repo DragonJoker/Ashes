@@ -14,55 +14,6 @@ using ashes::operator!=;
 
 namespace ashes::gl4
 {
-	namespace
-	{
-		void doClear( ContextLock const & context
-			, VkClearAttachment const & clearAttach )
-		{
-			if ( ashes::checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT ) )
-			{
-				auto & colour = clearAttach.clearValue.color;
-				glLogCall( context
-					, glClearBufferfv
-					, GL_CLEAR_TARGET_COLOR
-					, clearAttach.colorAttachment
-					, colour.float32 );
-			}
-			else
-			{
-				auto & depthStencil = clearAttach.clearValue.depthStencil;
-				auto stencil = GLint( depthStencil.stencil );
-
-				if ( ashes::checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT ) )
-				{
-					glLogCall( context
-						, glClearBufferfi
-						, GL_CLEAR_TARGET_DEPTH_STENCIL
-						, 0u
-						, depthStencil.depth
-						, stencil );
-				}
-				else if ( ashes::checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_DEPTH_BIT ) )
-				{
-					glLogCall( context
-						, glClearBufferfv
-						, GL_CLEAR_TARGET_DEPTH
-						, 0u
-						, &depthStencil.depth );
-				}
-				else if ( ashes::checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_STENCIL_BIT ) )
-				{
-					glLogCall( context
-						, glClearBufferiv
-						, GL_CLEAR_TARGET_STENCIL
-						, 0u
-						, &stencil );
-				}
-			}
-		}
-
-	}
-
 	void buildClearAttachmentsCommand( ContextStateStack & stack
 		, VkClearAttachmentArray clearAttaches
 		, VkClearRectArray clearRects

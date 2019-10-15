@@ -29,7 +29,7 @@ namespace ashes::gl4
 		}
 
 	private:
-		VkDescriptorSetLayoutCreateFlags m_flags;
+		VkDescriptorSetLayoutCreateInfo m_createInfo;
 		VkDescriptorSetLayoutBindingArray m_bindings;
 	};
 }

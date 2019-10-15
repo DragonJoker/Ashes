@@ -178,7 +178,7 @@ namespace ashes::d3d11
 				, "If the calling command's VkImage parameter is a compressed image, or a single-plane, _422 image format, imageExtent.depth must be a multiple of the compressed texel block depth or (imageExtent.depth + imageOffset.z) must equal the image subresource depth." );
 			result = result && VK_SUCCESS == check( callback
 				, data
-				, ( ( copyInfo.imageSubresource.aspectMask, ashes::getAspectMask( format ) ) != 0u )
+				, ( checkFlag( copyInfo.imageSubresource.aspectMask, ashes::getAspectMask( format ) ) != 0u )
 				, "The aspectMask member of imageSubresource must specify aspects present in the calling command's VkImage parameter." );
 			result = result && VK_SUCCESS == check( callback
 				, data
@@ -404,7 +404,6 @@ namespace ashes::d3d11
 			std::stringstream stream;
 			stream.imbue( std::locale{ "C" } );
 			stream << "Error calling [" << message << "]: " << std::hex << hresult;
-			LPTSTR error = 0;
 			auto it = getErrors().find( hresult );
 			VkResult result{ VK_ERROR_INITIALIZATION_FAILED };
 
@@ -605,7 +604,6 @@ namespace ashes::d3d11
 			std::stringstream stream;
 			stream.imbue( std::locale{ "C" } );
 			stream << "Error calling [" << message << "]: " << std::hex << hresult;
-			LPTSTR error = 0;
 			auto it = getErrors().find( hresult );
 			VkResult result{ VK_ERROR_INITIALIZATION_FAILED };
 
