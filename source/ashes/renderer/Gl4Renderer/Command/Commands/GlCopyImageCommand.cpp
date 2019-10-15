@@ -16,7 +16,7 @@ namespace ashes::gl4
 	{
 		glLogCall( context
 			, glCopyImageSubData
-			, cmd.dstName
+			, cmd.srcName
 			, cmd.srcTarget
 			, cmd.copy.srcSubresource.mipLevel
 			, cmd.copy.srcOffset.x
@@ -47,18 +47,10 @@ namespace ashes::gl4
 			, get( src )->getArrayLayers() );
 		auto dstTarget = convert( get( dst )->getType()
 			, get( dst )->getArrayLayers() );
-		list.push_back( makeCmd< OpType::eBindTexture >( srcTarget
-			, get( src )->getInternal() ) );
-		list.push_back( makeCmd< OpType::eBindTexture >( dstTarget
-			, get( dst )->getInternal() ) );
 		list.push_back( makeCmd< OpType::eCopyImageSubData >( get( src )->getInternal()
 			, srcTarget
 			, get( dst )->getInternal()
 			, dstTarget
 			, std::move( copyInfo ) ) );
-		list.push_back( makeCmd< OpType::eBindTexture >( srcTarget
-			, 0u ) );
-		list.push_back( makeCmd< OpType::eBindTexture >( dstTarget
-			, 0u ) );
 	}
 }

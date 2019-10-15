@@ -344,33 +344,30 @@ namespace ashes::gl4
 	{
 		auto context = get( m_device )->getContext();
 		auto image = get( view )->getImage();
-		auto internal = get( view )->getInternal();
-		auto mipLevel = get( view )->getSubresourceRange().baseMipLevel;
+		auto multisampled = get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT;
+		FboAttachment attachment{};
+		attachment.point = getAttachmentPoint( view );
+		attachment.type = getAttachmentType( view );
+		attachment.originalObject = get( image )->getInternal();
+		attachment.originalMipLevel = get( view )->getSubresourceRange().baseMipLevel;
+		attachment.object = get( view )->getInternal();
+		attachment.mipLevel = attachment.originalMipLevel;
+		attachment.target = ( multisampled
+			? GL_TEXTURE_2D_MULTISAMPLE
+			: GL_TEXTURE_2D );
+		attachment.index = index;
 
 		if ( get( view )->getSubresourceRange().baseMipLevel )
 		{
 			if ( get( image )->getArrayLayers() == 1u )
 			{
-				internal = get( image )->getInternal();
+				attachment.object = get( image )->getInternal();
 			}
 			else
 			{
-				mipLevel = 0u;
+				attachment.mipLevel = 0u;
 			}
 		}
-
-		bool multisampled = get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT;
-		FboAttachment attachment
-		{
-			getAttachmentPoint( view ),
-			internal,
-			getAttachmentType( view ),
-			( multisampled
-				? GL_TEXTURE_2D_MULTISAMPLE
-				: GL_TEXTURE_2D ),
-			mipLevel,
-			index,
-		};
 
 		m_multisampled = m_multisampled || multisampled;
 

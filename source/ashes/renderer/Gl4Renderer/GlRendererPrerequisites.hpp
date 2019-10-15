@@ -179,6 +179,8 @@ namespace ashes::gl4
 		GlTextureType target;
 		uint32_t mipLevel;
 		uint32_t index;
+		GLuint originalObject;
+		GLuint originalMipLevel;
 	};
 
 	using FboAttachmentArray = std::vector< FboAttachment >;
