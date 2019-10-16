@@ -89,6 +89,11 @@ namespace ashes::gl4
 					, convert( state.dstColorBlendFactor )
 					, convert( state.srcAlphaBlendFactor )
 					, convert( state.dstAlphaBlendFactor ) ) );
+				list.emplace_back( makeCmd< OpType::eColorMask >( index
+					, checkFlag( state.colorWriteMask, VK_COLOR_COMPONENT_R_BIT )
+					, checkFlag( state.colorWriteMask, VK_COLOR_COMPONENT_G_BIT )
+					, checkFlag( state.colorWriteMask, VK_COLOR_COMPONENT_B_BIT )
+					, checkFlag( state.colorWriteMask, VK_COLOR_COMPONENT_A_BIT ) ) );
 			}
 
 			return state.blendEnable;

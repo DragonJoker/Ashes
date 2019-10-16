@@ -101,6 +101,9 @@ namespace ashes::gl4
 			case OpType::eClearBackDepthStencil:
 				apply( lock, map< OpType::eClearBackDepthStencil >( cmd ) );
 				break;
+			case OpType::eColorMask:
+				apply( lock, map< OpType::eColorMask >( cmd ) );
+				break;
 			case OpType::eCullFace:
 				apply( lock, map< OpType::eCullFace >( cmd ) );
 				break;

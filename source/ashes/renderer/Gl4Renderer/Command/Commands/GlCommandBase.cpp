@@ -180,6 +180,18 @@ namespace ashes::gl4
 	}
 
 	void apply( ContextLock const & context
+		, CmdColorMask const & cmd )
+	{
+		glLogCall( context
+			, glColorMaski
+			, cmd.index
+			, cmd.r
+			, cmd.g
+			, cmd.b
+			, cmd.a );
+	}
+
+	void apply( ContextLock const & context
 		, CmdClearColour const & cmd )
 	{
 		glLogCall( context

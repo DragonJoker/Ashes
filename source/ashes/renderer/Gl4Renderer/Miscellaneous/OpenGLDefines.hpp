@@ -202,6 +202,7 @@ namespace ashes::gl4
 	using PFN_glClearTexImage = void ( GLAPIENTRY * )( GLuint texture, GLint level, GLenum format, GLenum type, const void *data );
 	using PFN_glClientWaitSync = GLenum( GLAPIENTRY * )( GLsync GLsync, GLbitfield flags, GLuint64 timeout );
 	using PFN_glClipControl = void ( GLAPIENTRY * )( GLenum origin, GLenum depth );
+	using PFN_glColorMaski = void ( GLAPIENTRY * )( GLuint buf, GLboolean r, GLboolean g, GLboolean b, GLboolean a );
 	using PFN_glCompileShader = void ( GLAPIENTRY * )( GLuint shader );
 	using PFN_glCompressedTexSubImage1D = void ( GLAPIENTRY * )( GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLsizei imageSize, const GLvoid * data );
 	using PFN_glCompressedTexSubImage2D = void ( GLAPIENTRY * )( GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLsizei imageSize, const GLvoid * data );

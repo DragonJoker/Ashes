@@ -33,6 +33,7 @@ namespace ashes::gl4
 		eClearBackDepth,
 		eClearBackStencil,
 		eClearBackDepthStencil,
+		eColorMask,
 		eCullFace,
 		eDepthFunc,
 		eDepthMask,
@@ -678,6 +679,43 @@ namespace ashes::gl4
 
 	void apply( ContextLock const & context
 		, CmdBlendFunc const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eColorMask >
+	{
+		static Op constexpr value = { OpType::eColorMask, 4u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eColorMask >
+	{
+		inline CmdT( uint32_t index
+			, GLboolean r
+			, GLboolean g
+			, GLboolean b
+			, GLboolean a )
+			: cmd{ { OpType::eColorMask, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, index{ index }
+			, r{ r }
+			, g{ g }
+			, b{ b }
+			, a{ a }
+		{
+		}
+
+		Command cmd;
+		uint32_t index;
+		GLboolean r;
+		GLboolean g;
+		GLboolean b;
+		GLboolean a;
+	};
+	using CmdColorMask = CmdT< OpType::eColorMask >;
+
+	void apply( ContextLock const & context
+		, CmdColorMask const & cmd );
 
 	//*************************************************************************
 
