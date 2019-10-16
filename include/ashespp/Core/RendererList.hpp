@@ -32,6 +32,11 @@ namespace ashes
 			return m_plugins.end();
 		}
 
+		bool empty()const
+		{
+			return m_plugins.empty();
+		}
+
 	private:
 		ashes::DynamicLibrary m_library;
 		std::vector< AshPluginDescription > m_plugins;
