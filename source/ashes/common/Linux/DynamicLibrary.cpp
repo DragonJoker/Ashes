@@ -51,7 +51,6 @@ namespace ashes
 			std::stringstream stream;
 			stream << "Couldn't load dynamic library at [" << m_path << "]: ";
 			stream << "Error code: " << std::hex << dlerror();
-			std::cerr << stream.str() << std::endl;
 			throw std::runtime_error{ stream.str() };
 		}
 	}
@@ -72,7 +71,6 @@ namespace ashes
 			std::stringstream stream;
 			stream << "Couldn't load function [" + name + "]: ";
 			stream << "Error code: " << std::hex << std::string( error );
-			std::cerr << stream.str() << std::endl;
 		}
 
 		return result;

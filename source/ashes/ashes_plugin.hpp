@@ -35,7 +35,6 @@ struct Plugin
 		}
 
 		getPluginDescription( &description );
-		std::clog << description.name << " - " << description.description << " - " << library->getPath() << std::endl;
 	}
 };
 
@@ -58,7 +57,8 @@ inline PluginArray listPlugins()
 				}
 				catch ( std::exception & exc )
 				{
-					std::clog << exc.what() << std::endl;
+					// Prevent useless noisy message
+					//std::clog << exc.what() << std::endl;
 				}
 			}
 		}
@@ -69,11 +69,6 @@ inline PluginArray listPlugins()
 			{
 				return lhs.description.support.priority > rhs.description.support.priority;
 			} );
-
-		for ( auto & plugin : result )
-		{
-			std::clog << plugin.description.name << " - " << plugin.description.description << " - " << plugin.library->getPath() << std::endl;
-		}
 	}
 
 	return result;
