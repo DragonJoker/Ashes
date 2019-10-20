@@ -360,7 +360,6 @@ namespace ashes
 		auto hash = std::hash< void const * >{}( object );
 		std::stringstream stream;
 		stream << callstack::Backtrace{ 20, 4 };
-		Logger::logTrace( "Created object of type " + std::string{ type } );
 		m_allocated.emplace( hash
 			, ObjectAllocation{
 				std::string{ type },
