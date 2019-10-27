@@ -150,23 +150,20 @@ namespace ashes::gl4
 		VkClearValueArray rtClearValues{};
 		VkClearValue dsClearValue{};
 		assert( clearValues.size() == get( renderPass )->size() );
-		auto index = 0u;
 
-		for ( auto & clearValue : clearValues )
+		for ( auto & reference : *get( renderPass ) )
 		{
-			if ( auto attach = get( renderPass )->findAttachment( index ) )
-			{
-				if ( ashes::isDepthOrStencilFormat( attach->format ) )
-				{
-					dsClearValue = clearValue;
-				}
-				else
-				{
-					rtClearValues.push_back( clearValue );
-				}
-			}
+			auto & attach = get( renderPass )->getAttachment( reference );
+			auto & clearValue = clearValues[reference.attachment];
 
-			++index;
+			if ( ashes::isDepthOrStencilFormat( attach.format ) )
+			{
+				dsClearValue = clearValue;
+			}
+			else
+			{
+				rtClearValues.push_back( clearValue );
+			}
 		}
 
 		glLogCommand( "BeginRenderPassCommand" );
