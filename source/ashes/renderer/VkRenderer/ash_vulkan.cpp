@@ -18,99 +18,31 @@ namespace ashes::vk
 {
 	namespace
 	{
-		std::vector< VkExtensionProperties > enumerateExtensionProperties( PFN_vkEnumerateInstanceExtensionProperties enumInstanceExtensionProperties )
-		{
-			std::vector< VkExtensionProperties > result;
-			VkResult res;
-
-			do
-			{
-				uint32_t count{ 0u };
-				res = enumInstanceExtensionProperties( nullptr
-					, &count
-					, nullptr );
-
-				if ( count )
-				{
-					result.resize( count );
-					res = enumInstanceExtensionProperties( nullptr
-						, &count
-						, result.data() );
-				}
-			}
-			while ( res == VK_INCOMPLETE );
-
-			return result;
-		}
-
 		VkBool32 checkSupport( PFN_vkGetInstanceProcAddr getInstanceProcAddr )
 		{
-			auto createInstance = PFN_vkCreateInstance( getInstanceProcAddr( VK_NULL_HANDLE
-				, "vkCreateInstance" ) );
-			auto enumInstanceExtensionProperties = PFN_vkEnumerateInstanceExtensionProperties( getInstanceProcAddr( VK_NULL_HANDLE
-				, "vkEnumerateInstanceExtensionProperties" ) );
-
 			VkBool32 result{ VK_FALSE };
-
-			if ( createInstance && enumInstanceExtensionProperties )
+			VkInstanceCreateInfo instanceInfo
 			{
-				auto globalExtensions = enumerateExtensionProperties( enumInstanceExtensionProperties );
+				VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+				nullptr,
+				0u,
+				nullptr,
+				0u,
+				nullptr,
+				0u,
+				nullptr,
+			};
+			VkInstance instance{ VK_NULL_HANDLE };
+			auto res = vkCreateInstance( &instanceInfo, nullptr, &instance );
 
-				if ( !globalExtensions.empty() )
-				{
-					std::vector< char const * > instanceExtensions;
-
-					for ( auto & ext : globalExtensions )
-					{
-						instanceExtensions.push_back( ext.extensionName );
-					}
-
-					VkApplicationInfo appInfo
-					{
-						VK_STRUCTURE_TYPE_APPLICATION_INFO,
-						nullptr,
-						"Dummy",
-						VK_MAKE_VERSION( 1, 0, 0 ),
-						"Dummy",
-						VK_MAKE_VERSION( 1, 0, 0 ),
-						VK_MAKE_VERSION( 1, 0, 0 ),
-					};
-					VkInstanceCreateInfo instanceInfo
-					{
-						VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-						nullptr,
-						0u,
-						&appInfo,
-						0u,
-						nullptr,
-						uint32_t( instanceExtensions.size() ),
-						instanceExtensions.data(),
-					};
-					VkInstance instance{ VK_NULL_HANDLE };
-					createInstance( &instanceInfo, nullptr, &instance );
-
-					if ( instance )
-					{
-						auto enumeratePhysicalDevices = PFN_vkEnumeratePhysicalDevices( getInstanceProcAddr( instance
-							, "vkEnumeratePhysicalDevices" ) );
-
-						if ( enumeratePhysicalDevices )
-						{
-							uint32_t gpuCount{ 0u };
-							enumeratePhysicalDevices( instance
-								, &gpuCount
-								, nullptr );
-							result = gpuCount ? VK_TRUE : VK_FALSE;
-						}
-
-						auto destroyInstance = PFN_vkDestroyInstance( getInstanceProcAddr( VK_NULL_HANDLE, "vkDestroyInstance" ) );
-
-						if ( destroyInstance )
-						{
-							destroyInstance( instance, nullptr );
-						}
-					}
-				}
+			if ( instance )
+			{
+				uint32_t gpuCount{ 0u };
+				vkEnumeratePhysicalDevices( instance
+					, &gpuCount
+					, nullptr );
+				result = gpuCount ? VK_TRUE : VK_FALSE;
+				vkDestroyInstance( instance, nullptr );
 			}
 
 			return result;

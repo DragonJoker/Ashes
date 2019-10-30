@@ -43,7 +43,7 @@ namespace details
 
 	bool isSharedLibrary( std::string const & filePath )
 	{
-		return endsWith( filePath, getSharedLibExt() );
+		return endsWith( filePath, "Renderer" + getSharedLibExt() );
 	}
 
 	Plugin * findFirstSupportedPlugin( PluginArray & plugins )

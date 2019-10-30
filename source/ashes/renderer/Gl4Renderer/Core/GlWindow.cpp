@@ -243,16 +243,25 @@ namespace ashes::gl4
 			if ( m_xWindow )
 			{
 				XDestroyWindow( m_display, m_xWindow );
+				m_xWindow = 0;
 			}
 
 			if ( m_map )
 			{
 				XFreeColormap( m_display, m_map );
+				m_map = 0;
+			}
+
+			if ( m_fbConfig )
+			{
+				XFree( m_fbConfig );
+				m_fbConfig = nullptr;
 			}
 
 			if ( m_display )
 			{
 				XCloseDisplay( m_display );
+				m_display = nullptr;
 			}
 
 			throw;
@@ -266,16 +275,14 @@ namespace ashes::gl4
 			if ( m_xWindow )
 			{
 				XMapWindow( m_display, m_xWindow );
+				glXMakeCurrent( m_display, 0, nullptr );
+				glXDestroyContext( m_display, m_glxContext );
+				XDestroyWindow( m_display, m_xWindow );
 			}
 
-			glXMakeCurrent( m_display, 0, nullptr );
-			glXDestroyContext( m_display, m_glxContext );
-
-			XFree( m_fbConfig );
-
-			if ( m_xWindow )
+			if ( m_fbConfig )
 			{
-				XDestroyWindow( m_display, m_xWindow );
+				XFree( m_fbConfig );
 			}
 
 			if ( m_map )
@@ -283,7 +290,8 @@ namespace ashes::gl4
 				XFreeColormap( m_display, m_map );
 			}
 
-			XCloseDisplay( m_display );
+			// The next line produces a double free.
+			//XCloseDisplay( m_display );
 		}
 	}
 
