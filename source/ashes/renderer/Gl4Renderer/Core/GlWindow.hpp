@@ -6,6 +6,8 @@
 */
 #pragma once
 
+#include "GlRendererPrerequisites.hpp"
+
 #if ASHES_WIN32
 #	ifndef NOMINMAX
 #		define NOMINMAX
@@ -19,7 +21,7 @@
 
 namespace ashes::gl4
 {
-#if defined( _WIN32 )
+#if ASHES_WIN32
 
 	class RenderWindow
 	{
@@ -39,7 +41,7 @@ namespace ashes::gl4
 		HINSTANCE m_hInstance{ nullptr };
 	};
 
-#elif defined( __linux__ )
+#elif ASHES_XLIB
 
 	class RenderWindow
 	{

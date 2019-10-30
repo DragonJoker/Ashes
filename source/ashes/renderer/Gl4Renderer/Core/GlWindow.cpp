@@ -1,10 +1,8 @@
 #include "Core/GlWindow.hpp"
 
-#undef CreateWindow
-
 namespace ashes::gl4
 {
-#if defined( _WIN32 )
+#if ASHES_WIN32
 
 	RenderWindow::RenderWindow() try
 	{
@@ -127,7 +125,7 @@ namespace ashes::gl4
 		return 0;
 	}
 
-#elif defined( __linux__ )
+#elif ASHES_XLIB
 
 	RenderWindow::RenderWindow()
 	{
