@@ -11,12 +11,17 @@
 #include <iostream>
 #include <memory>
 #include <regex>
+#include <set>
 #include <vector>
+
+struct Plugin;
+using PluginArray = std::vector< Plugin >;
 
 namespace details
 {
 	std::string const & getSharedLibExt();
 	bool isSharedLibrary( std::string const & filePath );
+	Plugin * findFirstSupportedPlugin( PluginArray & plugins );
 }
 
 struct Plugin
@@ -38,7 +43,6 @@ struct Plugin
 	}
 };
 
-using PluginArray = std::vector< Plugin >;
 
 inline PluginArray listPlugins()
 {
@@ -55,7 +59,7 @@ inline PluginArray listPlugins()
 				{
 					result.emplace_back( std::make_unique< ashes::DynamicLibrary >( file ) );
 				}
-				catch ( std::exception & exc )
+				catch ( std::exception & /*exc*/ )
 				{
 					// Prevent useless noisy message
 					//std::clog << exc.what() << std::endl;
@@ -118,7 +122,7 @@ struct PluginLibrary
 			}
 			else
 			{
-				selectedPlugin = &plugins.front();
+				selectedPlugin = details::findFirstSupportedPlugin( plugins );
 				result = VK_SUCCESS;
 			}
 

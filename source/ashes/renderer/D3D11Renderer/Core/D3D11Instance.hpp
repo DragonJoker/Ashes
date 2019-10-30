@@ -12,6 +12,8 @@
 
 namespace ashes::d3d11
 {
+	D3D_FEATURE_LEVEL getSupportedFeatureLevel();
+
 	class Instance
 	{
 	public:
@@ -96,7 +98,6 @@ namespace ashes::d3d11
 		}
 
 	private:
-		void doCreateDXGIFactory();
 		void doLoadAdapters();
 		void doInitialisePhysicalDevices();
 

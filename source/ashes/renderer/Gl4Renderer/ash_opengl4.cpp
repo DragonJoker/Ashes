@@ -2,6 +2,7 @@
 #include <ashes/ashes.h>
 
 #include "Core/GlContext.hpp"
+#include "Core/GlWindow.hpp"
 
 #include "ashesgl4_api.hpp"
 
@@ -4022,6 +4023,11 @@ namespace ashes::gl4
 
 		VkResult init()
 		{
+			RenderWindow window;
+			ExtensionsHandler extensions;
+			extensions.initialise();
+			bool supported = extensions.getMajor() > 4
+				|| ( extensions.getMajor() == 4 && extensions.getMinor() >= 3 );
 			VkResult result = description.getInstanceProcAddr
 				? VK_SUCCESS
 				: VK_ERROR_INITIALIZATION_FAILED;
@@ -4052,7 +4058,7 @@ namespace ashes::gl4
 				result = VK_SUCCESS;
 
 				description.support.priority = 7u;
-				description.support.supported = VK_TRUE;
+				description.support.supported = supported ? VK_TRUE : VK_FALSE;
 			}
 
 			return result;

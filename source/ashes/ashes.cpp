@@ -1,5 +1,7 @@
 #include "ashes_plugin.hpp"
 
+#include <algorithm>
+
 PluginLibrary g_library;
 
 namespace details
@@ -42,6 +44,23 @@ namespace details
 	bool isSharedLibrary( std::string const & filePath )
 	{
 		return endsWith( filePath, getSharedLibExt() );
+	}
+
+	Plugin * findFirstSupportedPlugin( PluginArray & plugins )
+	{
+		auto it = std::find_if( plugins.begin()
+			, plugins.end()
+			, []( Plugin & lookup )
+			{
+				return lookup.description.support.supported == VK_TRUE;
+			} );
+
+		if ( it == plugins.end() )
+		{
+			return nullptr;
+		}
+
+		return &( *it );
 	}
 }
 

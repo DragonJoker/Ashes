@@ -20,7 +20,21 @@ namespace ashes::d3d11
 {
 	namespace
 	{
-		D3D_FEATURE_LEVEL doGetSupportedFeatureLevel( IDXGIFactory * factory
+		IDXGIFactory * createDXGIFactory()
+		{
+			IDXGIFactory * result;
+			HRESULT hr = CreateDXGIFactory( __uuidof( IDXGIFactory )
+				, reinterpret_cast< void ** >( &result ) );
+
+			if ( hr != S_OK )
+			{
+				throw std::runtime_error{ "Can't create Factory object" };
+			}
+
+			return result;
+		}
+
+		D3D_FEATURE_LEVEL getSupportedFeatureLevel( IDXGIFactory * factory
 			, IDXGIAdapter * adapter )
 		{
 			static std::vector< D3D_FEATURE_LEVEL > const requestedFeatureLevels
@@ -52,6 +66,74 @@ namespace ashes::d3d11
 
 			return result;
 		}
+
+		std::vector< AdapterInfo > listAdapters( IDXGIFactory * factory )
+		{
+			std::vector< AdapterInfo > result;
+			UINT index = 0;
+			IDXGIAdapter * adapter;
+
+			while ( factory->EnumAdapters( index, &adapter ) != DXGI_ERROR_NOT_FOUND )
+			{
+				AdapterInfo info;
+				info.adapter = adapter;
+				auto hr = adapter->QueryInterface( __uuidof( IDXGIAdapter1 )
+					, reinterpret_cast< void ** >( &info.adapter1 ) );
+
+				if ( SUCCEEDED( hr ) )
+				{
+					hr = info.adapter1->QueryInterface( __uuidof( IDXGIAdapter2 )
+						, reinterpret_cast< void ** >( &info.adapter2 ) );
+				}
+
+				if ( SUCCEEDED( adapter->EnumOutputs( 0, &info.output ) )
+					&& info.output )
+				{
+					info.featureLevel = getSupportedFeatureLevel( factory, adapter );
+					result.push_back( info );
+				}
+
+				++index;
+			}
+
+			return result;
+		}
+
+		D3D_FEATURE_LEVEL getMaxFeatureLevel( std::vector< AdapterInfo > const & adapters )
+		{
+			auto result = D3D_FEATURE_LEVEL_9_1;
+
+			for ( auto adapter : adapters )
+			{
+				result = std::max( adapter.featureLevel, result );
+			}
+
+			return result;
+		}
+	}
+
+	D3D_FEATURE_LEVEL getSupportedFeatureLevel()
+	{
+		D3D_FEATURE_LEVEL result = D3D_FEATURE_LEVEL_9_1;
+		auto factory = createDXGIFactory();
+
+		if ( factory )
+		{
+			auto adapters = listAdapters( factory );
+			result = getMaxFeatureLevel( adapters );
+
+			for ( auto & adapter : adapters )
+			{
+				safeRelease( adapter.output );
+				safeRelease( adapter.adapter2 );
+				safeRelease( adapter.adapter1 );
+				safeRelease( adapter.adapter );
+			}
+
+			safeRelease( factory );
+		}
+
+		return result;
 	}
 
 	VkPhysicalDeviceMemoryProperties const Instance::m_memoryProperties = []()
@@ -75,7 +157,7 @@ namespace ashes::d3d11
 		, m_enabledLayerNames{ ashes::convert( CharPtrArray{ createInfo.ppEnabledLayerNames, createInfo.ppEnabledLayerNames + createInfo.enabledLayerCount } ) }
 		, m_enabledExtensions{ ashes::convert( CharPtrArray{ createInfo.ppEnabledExtensionNames, createInfo.ppEnabledExtensionNames + createInfo.enabledExtensionCount } ) }
 	{
-		doCreateDXGIFactory();
+		createDXGIFactory();
 		doLoadAdapters();
 		doInitialisePhysicalDevices();
 
@@ -278,46 +360,10 @@ namespace ashes::d3d11
 
 #endif
 
-	void Instance::doCreateDXGIFactory()
-	{
-		HRESULT hr = CreateDXGIFactory( __uuidof( IDXGIFactory )
-			, reinterpret_cast< void ** >( &m_factory ) );
-
-		if ( hr != S_OK )
-		{
-			throw std::runtime_error{ "Can't create Factory object" };
-		}
-	}
-
 	void Instance::doLoadAdapters()
 	{
-		UINT index = 0;
-		IDXGIAdapter * adapter;
-		m_maxFeatureLevel = D3D_FEATURE_LEVEL_9_1;
-
-		while ( m_factory->EnumAdapters( index, &adapter ) != DXGI_ERROR_NOT_FOUND )
-		{
-			AdapterInfo info;
-			info.adapter = adapter;
-			auto hr = adapter->QueryInterface( __uuidof( IDXGIAdapter1 )
-				, reinterpret_cast< void ** >( &info.adapter1 ) );
-
-			if ( SUCCEEDED( hr ) )
-			{
-				hr = info.adapter1->QueryInterface( __uuidof( IDXGIAdapter2 )
-					, reinterpret_cast< void ** >( &info.adapter2 ) );
-			}
-
-			if ( SUCCEEDED( adapter->EnumOutputs( 0, &info.output ) )
-				&& info.output )
-			{
-				info.featureLevel = doGetSupportedFeatureLevel( m_factory, adapter );
-				m_maxFeatureLevel = std::max( info.featureLevel, m_maxFeatureLevel );
-				m_adapters.push_back( info );
-			}
-
-			++index;
-		}
+		m_adapters = listAdapters( m_factory );
+		m_maxFeatureLevel = getMaxFeatureLevel( m_adapters );
 	}
 
 	void Instance::doInitialisePhysicalDevices()
@@ -333,6 +379,5 @@ namespace ashes::d3d11
 				, std::move( adapter ) );
 			++index;
 		}
-
 	}
 }

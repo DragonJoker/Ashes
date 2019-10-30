@@ -4022,6 +4022,7 @@ namespace ashes::d3d11
 
 			if ( result != VK_SUCCESS )
 			{
+				auto maxSupport = getSupportedFeatureLevel();
 				description.getInstanceProcAddr = &vkGetInstanceProcAddr;
 				description.features =
 				{
@@ -4046,7 +4047,9 @@ namespace ashes::d3d11
 				result = VK_SUCCESS;
 
 				description.support.priority = 6u;
-				description.support.supported = VK_TRUE;
+				description.support.supported = maxSupport >= D3D_FEATURE_LEVEL_11_1
+					? VK_TRUE
+					: VK_FALSE;
 			}
 
 			return result;

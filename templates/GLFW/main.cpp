@@ -122,7 +122,18 @@ int main( int argc, char * argv[] )
 
 	// Then we check in the command line if the user has wanted a specific plugin to be used.
 	std::string rendererName = processCommandLine( argc, argv );
-	auto plugin = renderers.selectPlugin( rendererName );
+	AshPluginDescription plugin = renderers.getSelectedPlugin();
+
+	try
+	{
+		plugin = renderers.selectPlugin( rendererName );
+	}
+	catch ( std::exception & exc )
+	{
+		std::cerr << exc.what() << std::endl;
+		return EXIT_FAILURE;
+	}
+
 	PFN_vkEnumerateInstanceLayerProperties enumLayerProperties;
 	enumLayerProperties = ( PFN_vkEnumerateInstanceLayerProperties )plugin.getInstanceProcAddr( VK_NULL_HANDLE,
 		"vkEnumerateInstanceLayerProperties" );

@@ -19,6 +19,7 @@ namespace ashes
 		~RendererList();
 
 		AshPluginDescription selectPlugin( std::string const & name )const;
+		AshPluginDescription getSelectedPlugin()const;
 
 		std::vector< AshPluginDescription >::const_iterator find( std::string const & name )const;
 
