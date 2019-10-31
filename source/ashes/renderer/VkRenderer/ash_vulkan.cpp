@@ -21,28 +21,47 @@ namespace ashes::vk
 		VkBool32 checkSupport( PFN_vkGetInstanceProcAddr getInstanceProcAddr )
 		{
 			VkBool32 result{ VK_FALSE };
-			VkInstanceCreateInfo instanceInfo
-			{
-				VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-				nullptr,
-				0u,
-				nullptr,
-				0u,
-				nullptr,
-				0u,
-				nullptr,
-			};
-			VkInstance instance{ VK_NULL_HANDLE };
-			auto res = vkCreateInstance( &instanceInfo, nullptr, &instance );
+			auto createInstance = PFN_vkCreateInstance( getInstanceProcAddr( VK_NULL_HANDLE
+				, "vkCreateInstance" ) );
 
-			if ( instance )
+			if ( createInstance )
 			{
-				uint32_t gpuCount{ 0u };
-				vkEnumeratePhysicalDevices( instance
-					, &gpuCount
-					, nullptr );
-				result = gpuCount ? VK_TRUE : VK_FALSE;
-				vkDestroyInstance( instance, nullptr );
+				VkInstanceCreateInfo instanceInfo
+				{
+					VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+					nullptr,
+					0u,
+					nullptr,
+					0u,
+					nullptr,
+					0u,
+					nullptr,
+				};
+				VkInstance instance{ VK_NULL_HANDLE };
+				auto res = createInstance( &instanceInfo, nullptr, &instance );
+
+				if ( instance )
+				{
+					auto enumeratePhysicalDevices = PFN_vkEnumeratePhysicalDevices( getInstanceProcAddr( instance
+						, "vkEnumeratePhysicalDevices" ) );
+
+					if ( enumeratePhysicalDevices )
+					{
+						uint32_t gpuCount{ 0u };
+						enumeratePhysicalDevices( instance
+							, &gpuCount
+							, nullptr );
+						result = gpuCount ? VK_TRUE : VK_FALSE;
+					}
+
+					auto destroyInstance = PFN_vkDestroyInstance( getInstanceProcAddr( instance
+						, "vkDestroyInstance" ) );
+
+					if ( destroyInstance )
+					{
+						destroyInstance( instance, nullptr );
+					}
+				}
 			}
 
 			return result;

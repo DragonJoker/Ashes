@@ -357,12 +357,12 @@ std::vector< VkLayerProperties > enumerateLayerProperties( PFN_vkEnumerateInstan
 std::vector< VkExtensionProperties > enumerateExtensionProperties( PFN_vkEnumerateInstanceExtensionProperties enumInstanceExtensionProperties
 	, std::string const & layerName )
 {
-	uint32_t count;
 	std::vector< VkExtensionProperties > result;
 	VkResult res;
 
 	do
 	{
+		uint32_t count{ 0u };
 		res = enumInstanceExtensionProperties( layerName.empty() ? nullptr : layerName.c_str()
 			, &count
 			, nullptr );

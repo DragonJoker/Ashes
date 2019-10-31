@@ -14,16 +14,6 @@
 #include <set>
 #include <vector>
 
-struct Plugin;
-using PluginArray = std::vector< Plugin >;
-
-namespace details
-{
-	std::string const & getSharedLibExt();
-	bool isSharedLibrary( std::string const & filePath );
-	Plugin * findFirstSupportedPlugin( PluginArray & plugins );
-}
-
 struct Plugin
 {
 	std::unique_ptr< ashes::DynamicLibrary > library;
@@ -43,57 +33,30 @@ struct Plugin
 	}
 };
 
-
-inline PluginArray listPlugins()
-{
-	PluginArray result;
-	ashes::StringArray files;
-
-	if ( ashes::listDirectoryFiles( ashes::getExecutableDirectory(), files, false ) )
-	{
-		for ( auto & file : files )
-		{
-			if ( details::isSharedLibrary( file ) )
-			{
-				try
-				{
-					result.emplace_back( std::make_unique< ashes::DynamicLibrary >( file ) );
-				}
-				catch ( std::exception & /*exc*/ )
-				{
-					// Prevent useless noisy message
-					//std::clog << exc.what() << std::endl;
-				}
-			}
-		}
-
-		std::sort( result.begin()
-			, result.end()
-			, []( Plugin const & lhs, Plugin const & rhs )
-			{
-				return lhs.description.support.priority > rhs.description.support.priority;
-			} );
-	}
-
-	return result;
-}
-
-bool operator==( AshPluginFeatures const & lhs, AshPluginFeatures const & rhs )
+inline bool operator==( AshPluginFeatures const & lhs, AshPluginFeatures const & rhs )
 {
 	return memcmp( &lhs, &rhs, sizeof( AshPluginFeatures ) ) == 0;
 }
 
-bool operator==( AshPluginSupport const & lhs, AshPluginSupport const & rhs )
+inline bool operator==( AshPluginSupport const & lhs, AshPluginSupport const & rhs )
 {
 	return memcmp( &lhs, &rhs, sizeof( AshPluginSupport ) ) == 0;
 }
 
-bool operator==( AshPluginDescription const & lhs, AshPluginDescription const & rhs )
+inline bool operator==( AshPluginDescription const & lhs, AshPluginDescription const & rhs )
 {
 	return strncmp( lhs.description, rhs.description, 63 ) == 0
 		&& strncmp( lhs.name, rhs.name, 15 ) == 0
 		&& lhs.features == rhs.features
 		&& lhs.support == rhs.support;
+}
+
+using PluginArray = std::vector< Plugin >;
+
+namespace details
+{
+	Plugin * findFirstSupportedPlugin( PluginArray & plugins );
+	PluginArray listPlugins();
 }
 
 struct PluginLibrary
@@ -114,7 +77,7 @@ struct PluginLibrary
 
 		if ( !selectedPlugin )
 		{
-			plugins = listPlugins();
+			plugins = details::listPlugins();
 
 			if ( plugins.empty() )
 			{

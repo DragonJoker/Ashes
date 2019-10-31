@@ -21,46 +21,80 @@ namespace details
 
 			return result;
 		}
-	}
 
-	std::string const & getSharedLibExt()
-	{
+		std::string const & getSharedLibExt()
+		{
 #if defined( NDEBUG )
 #	if defined( _WIN32 )
-		static std::string result{ R"(.dll)" };
+			static std::string result{ R"(.dll)" };
 #	else
-		static std::string result{ R"(.so)" };
+			static std::string result{ R"(.so)" };
 #	endif
 #else
 #	if defined( _WIN32 )
-		static std::string result{ R"(d.dll)" };
+			static std::string result{ R"(d.dll)" };
 #	else
-		static std::string result{ R"(d.so)" };
+			static std::string result{ R"(d.so)" };
 #	endif
 #endif
-		return result;
-	}
+			return result;
+		}
 
-	bool isSharedLibrary( std::string const & filePath )
-	{
-		return endsWith( filePath, "Renderer" + getSharedLibExt() );
+		bool isAshesPlugin( std::string const & filePath )
+		{
+			return endsWith( filePath, "Renderer" + getSharedLibExt() );
+		}
+
+		uint32_t getPriority( Plugin const & plugin )
+		{
+			return plugin.description.support.priority;
+		}
 	}
 
 	Plugin * findFirstSupportedPlugin( PluginArray & plugins )
 	{
-		auto it = std::find_if( plugins.begin()
-			, plugins.end()
-			, []( Plugin & lookup )
-			{
-				return lookup.description.support.supported == VK_TRUE;
-			} );
+		Plugin * result{ nullptr };
 
-		if ( it == plugins.end() )
+		for ( auto & lookup : plugins )
 		{
-			return nullptr;
+			if ( lookup.description.support.supported )
+			{
+				if ( !result
+					|| getPriority( lookup ) > getPriority( *result ) )
+				{
+					result = &lookup;
+				}
+			}
 		}
 
-		return &( *it );
+		return result;
+	}
+
+	PluginArray listPlugins()
+	{
+		PluginArray result;
+		ashes::StringArray files;
+
+		if ( ashes::listDirectoryFiles( ashes::getExecutableDirectory(), files, false ) )
+		{
+			for ( auto & file : files )
+			{
+				if ( isAshesPlugin( file ) )
+				{
+					try
+					{
+						result.emplace_back( std::make_unique< ashes::DynamicLibrary >( file ) );
+					}
+					catch ( std::exception & /*exc*/ )
+					{
+						// Prevent useless noisy message
+						//std::clog << exc.what() << std::endl;
+					}
+				}
+			}
+		}
+
+		return result;
 	}
 }
 
