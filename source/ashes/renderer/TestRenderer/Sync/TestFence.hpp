@@ -4,76 +4,17 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "TestRendererPrerequisites.hpp"
+#include "renderer/TestRenderer/TestRendererPrerequisites.hpp"
 
-#include <Ashes/Sync/Fence.hpp>
-
-namespace test_renderer
+namespace ashes::test
 {
-	/**
-	*\~french
-	*\brief
-	*	Classe permettant la synchronisation des opérations sur une file.
-	*\~english
-	*\brief
-	*	Class allowing synchronisation operations on a queue.
-	*/
 	class Fence
-		: public ashes::Fence
 	{
 	public:
-		/**
-		*\~french
-		*\brief
-		*	Constructeur
-		*\param[in] device
-		*	Le device parent.
-		*\param[in] flags
-		*	Les indicateurs de création de la barrière.
-		*\~english
-		*\brief
-		*	Constructor.
-		*\param[in] device
-		*	The logical connection to the GPU.
-		*\param[in] flags
-		*	The fence creation flags.
-		*/
-		Fence( Device const & device
-			, ashes::FenceCreateFlags flags = 0 );
-		/**
-		*\~french
-		*\brief
-		*	Destructeur.
-		*\~english
-		*\brief
-		*	Destructor.
-		*/
-		~Fence();
-		/**
-		*\~french
-		*\brief
-		*	Attend que la barrière soit signalée.
-		*\param[in] timeout
-		*	Le temps à attendre pour le signalement.
-		*\return
-		*	\p WaitResult::eSuccess ou \p WaitResult::eTimeOut en cas de succès.
-		*\~english
-		*\brief
-		*	Waits for the fence to be signaled.
-		*\param[in] timeout
-		*	The time to wait for the signal.
-		*\return
-		*	\p WaitResult::eSuccess or \p WaitResult::eTimeOut on success.
-		*/ 
-		ashes::WaitResult wait( uint64_t timeout )const override;
-		/**
-		*\~french
-		*\brief
-		*	Remet la barrière en non signalée.
-		*\~english
-		*\brief
-		*	Resets the fence back to unsignaled.
-		*/
-		void reset()const override;
+		Fence( VkDevice device
+			, VkFenceCreateFlags flags = 0 );
+
+		VkResult wait( uint64_t timeout )const;
+		void reset()const;
 	};
 }

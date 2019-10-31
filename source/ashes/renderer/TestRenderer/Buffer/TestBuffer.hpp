@@ -4,61 +4,71 @@
 *\author
 *	Sylvain Doremus
 */
+#ifndef ___TestRenderer_Buffer_HPP___
+#define ___TestRenderer_Buffer_HPP___
 #pragma once
 
-#include "TestRendererPrerequisites.hpp"
+#include "renderer/TestRenderer/Miscellaneous/TestDeviceMemory.hpp"
 
-#include <Ashes/Buffer/Buffer.hpp>
-
-namespace test_renderer
+namespace ashes::test
 {
-	/**
-	*\~french
-	*\brief
-	*	Classe regroupant les ressources de rendu nécessaires au dessin d'une image.
-	*/
 	class Buffer
-		: public ashes::BufferBase
 	{
 	public:
-		/**
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le périphérique logique.
-		*\param[in] count
-		*	Le nombre d'éléments du tampon.
-		*\param[in] target
-		*	Les indicateurs d'utilisation du tampon.
-		*\~english
-		*\brief
-		*	Constructor.
-		*\param[in] device
-		*	The logical connection to the GPU.
-		*\param[in] size
-		*	The buffer data size.
-		*\param[in] target
-		*	The buffer usage flags.
-		*/
-		Buffer( Device const & device
-			, uint32_t size
-			, VkBufferUsageFlags target );
-		/**
-		*\~french
-		*\brief
-		*	Destructeur.
-		*\~english
-		*\brief
-		*	Destructor.
-		*/
+		Buffer( VkDevice device
+			, VkBufferCreateInfo createInfo );
 		~Buffer();
-		/**
-		*\copydoc	ashes::BufferBase::getMemoryRequirements
-		*/
-		ashes::MemoryRequirements getMemoryRequirements()const override;
+		VkResult bindMemory( VkDeviceMemory memory
+			, VkDeviceSize memoryOffset );
+
+		VkMemoryRequirements getMemoryRequirements()const;
+		bool isMapped()const;
+		void copyFrom( VkBuffer src
+			, VkDeviceSize srcOffset
+			, VkDeviceSize srcSize
+			, VkDeviceSize dstOffset )const;
+
+		inline void setDebugName( std::string name )
+		{
+			m_debugName = std::move( name );
+		}
+
+		inline VkDeviceMemory getMemory()const
+		{
+			assert( m_memory != VK_NULL_HANDLE );
+			return m_memory;
+		}
+
+		inline VkDeviceSize getMemoryOffset()const
+		{
+			return m_memoryOffset;
+		}
+
+		inline ObjectMemory const & getObjectMemory()const
+		{
+			assert( m_objectMemory != nullptr );
+			return *m_objectMemory;
+		}
+
+		inline VkBufferUsageFlags getUsage()const
+		{
+			return m_createInfo.usage;
+		}
+
+		inline VkDeviceSize getSize()const
+		{
+			return m_createInfo.size;
+		}
 
 	private:
-		void doBindMemory()override;
+	private:
+		VkDevice m_device;
+		VkBufferCreateInfo m_createInfo;
+		VkDeviceMemory m_memory{ VK_NULL_HANDLE };
+		VkDeviceSize m_memoryOffset{ 0u };
+		ObjectMemory * m_objectMemory{ nullptr };
+		std::string m_debugName;
 	};
 }
+
+#endif

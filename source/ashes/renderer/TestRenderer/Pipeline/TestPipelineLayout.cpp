@@ -1,34 +1,15 @@
 #include "Pipeline/TestPipelineLayout.hpp"
 
-#include "Core/TestDevice.hpp"
-#include "Pipeline/TestComputePipeline.hpp"
-#include "Pipeline/TestPipeline.hpp"
-
-namespace test_renderer
+namespace ashes::test
 {
-	PipelineLayout::PipelineLayout( Device const & device
-		, ashes::DescriptorSetLayoutCRefArray const & setLayouts
-		, ashes::PushConstantRangeArray const & pushConstantRanges )
-		: ashes::PipelineLayout{ device, setLayouts, pushConstantRanges }
-		, m_device{ device }
+	PipelineLayout::PipelineLayout( VkDevice device
+		, VkPipelineLayoutCreateInfo createInfo )
+		: m_device{ device }
+		, m_setLayouts{ createInfo.pSetLayouts, createInfo.pSetLayouts + createInfo.setLayoutCount }
+		, m_pushConstantRanges{ createInfo.pPushConstantRanges, createInfo.pPushConstantRanges + createInfo.pushConstantRangeCount }
+		, m_createInfo{ std::move( createInfo ) }
 	{
-	}
-
-	PipelineLayout::~PipelineLayout()
-	{
-	}
-
-	ashes::PipelinePtr PipelineLayout::createPipeline( ashes::GraphicsPipelineCreateInfo createInfo )const
-	{
-		return std::make_unique< Pipeline >( m_device
-			, *this
-			, std::move( createInfo ) );
-	}
-
-	ashes::ComputePipelinePtr PipelineLayout::createPipeline( ashes::ComputePipelineCreateInfo createInfo )const
-	{
-		return std::make_unique< ComputePipeline >( m_device
-			, *this
-			, std::move( createInfo ) );
+		m_createInfo.pSetLayouts = m_setLayouts.data();
+		m_createInfo.pPushConstantRanges = m_pushConstantRanges.data();
 	}
 }

@@ -2,15 +2,14 @@
 
 #include "Core/TestDevice.hpp"
 
-namespace test_renderer
-{
-	Sampler::Sampler( Device const & device
-		, ashes::SamplerCreateInfo const & createInfo )
-		: ashes::Sampler{ device, createInfo }
-	{
-	}
+#include "ashestest_api.hpp"
 
-	Sampler::~Sampler()
+namespace ashes::test
+{
+	Sampler::Sampler( VkDevice device
+		, VkSamplerCreateInfo createInfo )
+		: m_device{ device }
+		, m_createInfo{ std::move( createInfo ) }
 	{
 	}
 }

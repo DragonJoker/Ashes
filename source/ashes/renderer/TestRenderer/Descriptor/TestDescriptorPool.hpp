@@ -4,24 +4,21 @@
 *\author
 *	Sylvain Doremus
 */
+#ifndef ___TestRenderer_DescriptorPool_HPP___
+#define ___TestRenderer_DescriptorPool_HPP___
 #pragma once
 
-#include "TestRendererPrerequisites.hpp"
-
-#include <Ashes/Descriptor/DescriptorPool.hpp>
+#include "renderer/TestRenderer/TestRendererPrerequisites.hpp"
 
 #include <vector>
 
-namespace test_renderer
+namespace ashes::test
 {
 	class DescriptorPool
-		: public ashes::DescriptorPool
 	{
 	public:
-		DescriptorPool( Device const & device
-			, ashes::DescriptorPoolCreateFlags flags
-			, uint32_t maxSets
-			, ashes::DescriptorPoolSizeArray poolSizes );
+		DescriptorPool( VkDevice device
+			, VkDescriptorPoolCreateInfo createInfos );
 		/**
 		*\~french
 		*\brief
@@ -31,13 +28,18 @@ namespace test_renderer
 		*	Destructor.
 		*/
 		~DescriptorPool();
-		/**
-		*\copydoc	ashes::DescriptorSetPool::createDescriptorSet
-		*/
-		ashes::DescriptorSetPtr createDescriptorSet( ashes::DescriptorSetLayout const & layout
-			, uint32_t bindingPoint )const override;
+
+		void registerSet( VkDescriptorSet set );
+		VkResult reset( VkDescriptorPoolResetFlags flags );
+		VkResult free( VkDescriptorSetArray sets );
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
+		VkDescriptorPoolSizeArray m_poolSizes;
+		VkDescriptorPoolCreateInfo m_createInfos;
+		VkDescriptorSetArray m_sets;
+		VkDescriptorSetArray m_allSets;
 	};
 }
+
+#endif

@@ -4,38 +4,84 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include "TestRendererPrerequisites.hpp"
+#include "renderer/TestRenderer/TestRendererPrerequisites.hpp"
 
-#include <Ashes/RenderPass/RenderPass.hpp>
-#include <Ashes/RenderPass/AttachmentDescription.hpp>
-#include <Ashes/RenderPass/RenderSubpassState.hpp>
-
-namespace test_renderer
+namespace ashes::test
 {
 	class RenderPass
-		: public ashes::RenderPass
 	{
 	public:
-		RenderPass( Device const & device
-			, ashes::RenderPassCreateInfo createInfo );
+		RenderPass( VkDevice device
+			, VkRenderPassCreateInfo createInfo );
 		~RenderPass();
-		/**
-		*\copydoc	ashes::RenderPass::createFrameBuffer
-		*/
-		ashes::FrameBufferPtr createFrameBuffer( VkExtent2D const & dimensions
-			, ashes::ashes::ImageViewPtrArray textures )const override;
 
-	private:
-		struct Subpass
+		VkAttachmentDescription const * findAttachment( uint32_t referenceIndex )const;
+		VkAttachmentDescription const & getAttachment( VkAttachmentReference const & reference )const;
+
+		inline VkSubpassDescriptionArray const & getSubpasses()const
 		{
-			std::vector< ashes::AttachmentReference > inputAttachments;
-			std::vector< ashes::AttachmentReference > colorAttachments;
-			std::vector< ashes::AttachmentReference > resolveAttachments;
-			ashes::AttachmentReference depthStencilAttachment;
-		};
+			return m_subpasses;
+		}
+
+		inline VkExtent2D getRenderAreaGranularity()const
+		{
+			return VkExtent2D{ 1u, 1u };
+		}
+
+		inline auto empty()const
+		{
+			return m_referencedAttachments.empty();
+		}
+
+		inline auto size()const
+		{
+			return m_referencedAttachments.size();
+		}
+
+		inline auto begin()
+		{
+			return m_referencedAttachments.begin();
+		}
+
+		inline auto end()
+		{
+			return m_referencedAttachments.end();
+		}
+
+		inline auto begin()const
+		{
+			return m_referencedAttachments.begin();
+		}
+
+		inline auto end()const
+		{
+			return m_referencedAttachments.end();
+		}
 
 	private:
-		Device const & m_device;
-		std::vector< Subpass > m_subpassInfos;
+		struct SubpassDescriptionData
+		{
+			VkAttachmentReferenceArray inputAttachments;
+			VkAttachmentReferenceArray colorAttachments;
+			VkAttachmentReferenceArray resolveAttachments;
+			Optional< VkAttachmentReference > depthStencilAttachment;
+			UInt32Array reserveAttachments;
+		};
+		using SubpassDescriptionDataPtr = std::unique_ptr< SubpassDescriptionData >;
+		using SubpassDescriptionDataPtrMap = std::map< VkSubpassDescription const *, SubpassDescriptionDataPtr >;
+
+	private:
+		void referenceAttaches( VkAttachmentReference const & value );
+		void referenceAttaches( Optional< VkAttachmentReference > const & value );
+		void referenceAttaches( VkAttachmentReferenceArray const & value );
+
+	private:
+		VkDevice m_device;
+		VkRenderPassCreateInfo m_createInfo;
+		VkAttachmentDescriptionArray m_attachments;
+		VkAttachmentReferenceArray m_referencedAttachments;
+		VkSubpassDescriptionArray m_subpasses;
+		VkSubpassDependencyArray m_dependencies;
+		SubpassDescriptionDataPtrMap m_subpassInfos;
 	};
 }

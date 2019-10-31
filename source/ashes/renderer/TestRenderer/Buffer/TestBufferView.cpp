@@ -3,14 +3,14 @@
 #include "Buffer/TestBuffer.hpp"
 #include "Core/TestDevice.hpp"
 
-namespace test_renderer
+#include "ashestest_api.hpp"
+
+namespace ashes::test
 {
-	BufferView::BufferView( Device const & device
-		, Buffer const & buffer
-		, VkFormat format
-		, uint32_t offset
-		, uint32_t range )
-		: ashes::BufferView{ device, buffer, format, offset, range }
+	BufferView::BufferView( VkDevice device
+		, VkBufferViewCreateInfo createInfo )
+		: m_device{ device }
+		, m_createInfo{ std::move( createInfo ) }
 	{
 	}
 

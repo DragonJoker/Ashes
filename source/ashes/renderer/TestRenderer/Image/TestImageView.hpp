@@ -4,13 +4,13 @@
 *\author
 *	Sylvain Doremus
 */
+#ifndef ___TestRenderer_TextureView_HPP___
+#define ___TestRenderer_TextureView_HPP___
 #pragma once
 
-#include "TestRendererPrerequisites.hpp"
+#include "renderer/TestRenderer/TestRendererPrerequisites.hpp"
 
-#include <Ashes/Image/ImageView.hpp>
-
-namespace test_renderer
+namespace ashes::test
 {
 	/**
 	*\~french
@@ -21,12 +21,30 @@ namespace test_renderer
 	*	Vulkan image view wrapper.
 	*/
 	class ImageView
-		: public ashes::ImageView
 	{
 	public:
-		ImageView( Device const & device
-			, Image const & image
-			, ashes::ImageViewCreateInfo const & createInfo );
-		~ImageView();
+		ImageView( VkDevice device
+			, VkImageViewCreateInfo createInfo );
+
+		inline VkFormat getFormat()const
+		{
+			return m_createInfo.format;
+		}
+
+		inline VkImage getImage()const
+		{
+			return m_createInfo.image;
+		}
+
+		inline VkImageSubresourceRange const & getSubResourceRange()const
+		{
+			return m_createInfo.subresourceRange;
+		}
+
+	private:
+		VkDevice m_device;
+		VkImageViewCreateInfo m_createInfo;
 	};
 }
+
+#endif

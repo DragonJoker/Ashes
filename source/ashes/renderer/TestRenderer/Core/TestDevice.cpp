@@ -9,6 +9,7 @@ See LICENSE file in root folder.
 #include "Command/TestCommandPool.hpp"
 #include "Command/TestQueue.hpp"
 #include "Core/TestSurface.hpp"
+#include "Core/TestDummyIndexBuffer.hpp"
 #include "Core/TestPhysicalDevice.hpp"
 #include "Core/TestInstance.hpp"
 #include "Core/TestSwapChain.hpp"
@@ -26,186 +27,357 @@ See LICENSE file in root folder.
 #include "Sync/TestFence.hpp"
 #include "Sync/TestSemaphore.hpp"
 
-#include <Ashes/Miscellaneous/MemoryRequirements.hpp>
-#include <Ashes/RenderPass/RenderPassCreateInfo.hpp>
+#include "ashestest_api.hpp"
 
-namespace test_renderer
+#include <common/Hash.hpp>
+
+#include <iomanip>
+
+namespace ashes::test
 {
-	Device::Device( Instance const & instance
-		, PhysicalDevice const & physicalDevice
-		, ashes::DeviceCreateInfo createInfos )
-		: ashes::Device{ instance
-			, physicalDevice
-			, std::move( createInfos ) }
-		, m_instance{ instance }
-		, m_gpu{ physicalDevice }
+	namespace
 	{
-		m_timestampPeriod = m_gpu.getProperties().limits.timestampPeriod;
+		template< typename T, typename U >
+		T getAligned( T value, U align )
+		{
+			return T( ( value + align - 1 ) & ~( align - 1 ) );
+		};
+
+		template< typename T >
+		T getSubresourceValue( T value, uint32_t mipLevel )
+		{
+			return T( value >> mipLevel );
+		};
+
+		VkExtent3D getTexelBlockExtent( VkFormat format )
+		{
+			VkExtent3D texelBlockExtent{ 1u, 1u, 1u };
+
+			if ( ashes::isCompressedFormat( format ) )
+			{
+				auto extent = ashes::getMinimalExtent2D( format );
+				texelBlockExtent.width = extent.width;
+				texelBlockExtent.height = extent.height;
+			}
+			else
+			{
+				texelBlockExtent.width = 1u;
+			}
+
+			return texelBlockExtent;
+		}
+
+		uint32_t getTexelBlockByteSize( VkExtent3D const & texelBlockExtent
+			, VkFormat format )
+		{
+			VkDeviceSize texelBlockSize;
+
+			if ( !isDepthStencilFormat( format ) )
+			{
+				texelBlockSize = getSize( texelBlockExtent, format );
+			}
+			else
+			{
+				texelBlockSize = texelBlockExtent.width;
+			}
+
+			return uint32_t( texelBlockSize );
+		}
+
+		size_t makeKey( VkImageType type
+			, VkFormat format
+			, VkExtent3D const & extent
+			, uint32_t mipLevels )
+		{
+			auto result = std::hash< VkImageType >{}( type );
+			ashes::hashCombine( result, format );
+			ashes::hashCombine( result, extent.width );
+			ashes::hashCombine( result, extent.height );
+			ashes::hashCombine( result, extent.depth );
+			ashes::hashCombine( result, mipLevels );
+			return result;
+		}
+	}
+
+	Device::Device( VkInstance instance
+		, VkPhysicalDevice physicalDevice
+		, VkDeviceCreateInfo createInfos )
+		: m_instance{ instance }
+		, m_physicalDevice{ physicalDevice }
+		, m_createInfos{ std::move( createInfos ) }
+	{
+		doCreateDummyIndexBuffer();
 		doCreateQueues();
 	}
 
 	Device::~Device()
 	{
-	}
-
-	ashes::RenderPassPtr Device::createRenderPass( ashes::RenderPassCreateInfo createInfo )const
-	{
-		return std::make_unique< RenderPass >( *this, std::move( createInfo ) );
-	}
-
-	ashes::PipelineLayoutPtr Device::createPipelineLayout( ashes::DescriptorSetLayoutCRefArray const & setLayouts
-			, ashes::PushConstantRangeArray const & pushConstantRanges )const
-	{
-		return std::make_unique< PipelineLayout >( *this
-			, setLayouts
-			, pushConstantRanges );
-	}
-
-	ashes::DescriptorSetLayoutPtr Device::createDescriptorSetLayout( ashes::DescriptorSetLayoutBindingArray bindings )const
-	{
-		return std::make_unique< DescriptorSetLayout >( *this, std::move( bindings ) );
-	}
-
-	ashes::DescriptorPoolPtr Device::createDescriptorPool( ashes::DescriptorPoolCreateFlags flags
-		, uint32_t maxSets
-		, ashes::DescriptorPoolSizeArray poolSizes )const
-	{
-		return std::make_unique< DescriptorPool >( *this, flags, maxSets, poolSizes );
-	}
-
-	ashes::DeviceMemoryPtr Device::allocateMemory( ashes::MemoryAllocateInfo allocateInfo )const
-	{
-		return std::make_unique< DeviceMemory >( *this
-			, std::move( allocateInfo ) );
-	}
-
-	ashes::ImagePtr Device::createImage( ashes::ImageCreateInfo const & createInfo )const
-	{
-		return std::make_unique< Image >( *this, createInfo );
-	}
-
-	void Device::getImageSubresourceLayout( ashes::Image const & image
-		, ashes::ImageSubresource const & subresource
-		, ashes::SubresourceLayout & layout )const
-	{
-	}
-
-	ashes::SamplerPtr Device::createSampler( ashes::SamplerCreateInfo const & createInfo )const
-	{
-		return std::make_unique< Sampler >( *this, createInfo );
-	}
-
-	ashes::BufferBasePtr Device::createBuffer( uint32_t size
-		, VkBufferUsageFlags target )const
-	{
-		return std::make_unique< Buffer >( *this
-			, size
-			, target );
-	}
-
-	ashes::BufferViewPtr Device::createBufferView( ashes::BufferBase const & buffer
-		, VkFormat format
-		, uint32_t offset
-		, uint32_t range )const
-	{
-		return std::make_unique< BufferView >( *this
-			, static_cast< Buffer const & >( buffer )
-			, format
-			, offset
-			, range );
-	}
-
-	ashes::SwapChainPtr Device::createSwapChain( ashes::SwapChainCreateInfo createInfo )const
-	{
-		ashes::SwapChainPtr result;
-
-		try
+		for ( auto creates : m_queues )
 		{
-			result = std::make_unique< SwapChain >( *this, std::move( createInfo ) );
-		}
-		catch ( std::exception & exc )
-		{
-			ashes::Logger::logError( std::string{ "Could not create the swap chain:\n" } + exc.what() );
-		}
-		catch ( ... )
-		{
-			ashes::Logger::logError( "Could not create the swap chain:\nUnknown error" );
+			for ( auto queue : creates.second.queues )
+			{
+				deallocate( queue, nullptr );
+			}
 		}
 
-		return result;
+		for ( auto & it : m_stagingTextures )
+		{
+			deallocate( it.second.first, nullptr );
+			deallocate( it.second.second, nullptr );
+		}
+
+		deallocate( m_dummyIndexed.memory, nullptr );
+		deallocate( m_dummyIndexed.buffer, nullptr );
 	}
 
-	ashes::SemaphorePtr Device::createSemaphore()const
+	VkPhysicalDeviceLimits const & Device::getLimits()const
 	{
-		return std::make_unique< Semaphore >( *this );
+		return get( m_physicalDevice )->getProperties().limits;
 	}
 
-	ashes::FencePtr Device::createFence( ashes::FenceCreateFlags flags )const
+	VkImage Device::getStagingImage( VkImage image
+		, VkDeviceMemory & memory )
 	{
-		return std::make_unique< Fence >( *this, flags );
+		auto key = makeKey( get( image )->getType()
+			, get( image )->getFormat()
+			, get( image )->getDimensions()
+			, get( image )->getMipmapLevels() );
+		auto it = m_stagingTextures.find( key );
+
+		if ( it == m_stagingTextures.end() )
+		{
+			VkImage result;
+			allocate( result
+				, nullptr
+				, get( this )
+				, VkImageCreateInfo
+				{
+					VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+					nullptr,
+					0u,
+					get( image )->getType(),
+					get( image )->getFormat(),
+					get( image )->getDimensions(),
+					get( image )->getMipmapLevels(),
+					1u, // layerCount, we process images layer per layer.
+					VK_SAMPLE_COUNT_1_BIT,
+					VK_IMAGE_TILING_LINEAR,
+					VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+					VK_SHARING_MODE_EXCLUSIVE,
+					0u,
+					nullptr,
+					VK_IMAGE_LAYOUT_UNDEFINED,
+				} );
+			auto requirements = get( result )->getMemoryRequirements();
+			uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
+				, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+				, get( m_physicalDevice )->getMemoryProperties() );
+			VkDeviceMemory resMem;
+			allocate( resMem
+				, nullptr
+				, get( this )
+				, VkMemoryAllocateInfo
+				{
+					VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+					nullptr,
+					requirements.size,
+					deduced
+				} );
+			get( result )->bindMemory( resMem, 0u );
+			it = m_stagingTextures.emplace( key, std::make_pair( result, resMem ) ).first;
+		}
+
+		memory = it->second.second;
+		return it->second.first;
 	}
 
-	ashes::EventPtr Device::createEvent()const
+	void Device::getImageSubresourceLayout( VkImage image
+		, VkImageSubresource const & subresource
+		, VkSubresourceLayout & layout )const
 	{
-		return std::make_unique< Event >( *this );
+		auto extent = getTexelBlockExtent( get( image )->getFormat() );
+		auto byteSize = getTexelBlockByteSize( extent, get( image )->getFormat() );
+		auto mipWidth = getSubresourceValue( get( image )->getDimensions().width, subresource.mipLevel );
+		auto mipHeight = getSubresourceValue( get( image )->getDimensions().height, subresource.mipLevel );
+		layout.rowPitch = byteSize * mipWidth / ( extent.width * extent.height * extent.depth );
+		layout.arrayPitch = layout.rowPitch * mipHeight * extent.height / ( extent.width * extent.depth );
+		layout.depthPitch = layout.arrayPitch;
+		layout.offset = subresource.arrayLayer * layout.arrayPitch;
+		layout.size = layout.arrayPitch * get( image )->getDimensions().depth;
 	}
 
-	ashes::CommandPoolPtr Device::createCommandPool( uint32_t queueFamilyIndex
-		, ashes::CommandPoolCreateFlags const & flags )const
+#if VK_EXT_debug_utils
+
+	VkResult Device::setDebugUtilsObjectName( VkDebugUtilsObjectNameInfoEXT const & nameInfo )const
 	{
-		return std::make_unique< CommandPool >( *this
-			, queueFamilyIndex
-			, flags );
+		switch ( nameInfo.objectType )
+		{
+		case VK_OBJECT_TYPE_BUFFER:
+			get( VkBuffer( nameInfo.objectHandle ) )->setDebugName( nameInfo.pObjectName );
+			break;
+		case VK_OBJECT_TYPE_IMAGE:
+			get( VkImage( nameInfo.objectHandle ) )->setDebugName( nameInfo.pObjectName );
+			break;
+		default:
+			break;
+		}
+
+		return VK_SUCCESS;
 	}
 
-	ashes::ShaderModulePtr Device::createShaderModule( VkShaderStageFlagBits stage )const
+	VkResult Device::setDebugUtilsObjectTag( VkDebugUtilsObjectTagInfoEXT const & tagInfo )const
 	{
-		return std::make_shared< ShaderModule >( *this, stage );
+		return VK_SUCCESS;
 	}
 
-	ashes::QueryPoolPtr Device::createQueryPool( VkQueryType type
-		, uint32_t count
-		, ashes::QueryPipelineStatisticFlags pipelineStatistics )const
+#endif
+#if VK_EXT_debug_marker
+
+	VkResult Device::debugMarkerSetObjectTag( VkDebugMarkerObjectTagInfoEXT const & tagInfo )const
 	{
-		return std::make_unique< QueryPool >( *this
-			, type
-			, count
-			, pipelineStatistics );
+		return VK_SUCCESS;
 	}
 
-	void Device::debugMarkerSetObjectName( ashes::DebugMarkerObjectNameInfo const & nameInfo )const
+	VkResult Device::debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const
 	{
+		switch ( nameInfo.objectType )
+		{
+		case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT:
+			get( VkBuffer( nameInfo.object ) )->setDebugName( nameInfo.pObjectName );
+			break;
+		case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT:
+			get( VkImage( nameInfo.object ) )->setDebugName( nameInfo.pObjectName );
+			break;
+		default:
+			break;
+		}
+
+		return VK_SUCCESS;
 	}
 
-	ashes::QueuePtr Device::getQueue( uint32_t familyIndex
+#endif
+
+	VkQueue Device::getQueue( uint32_t familyIndex
 		, uint32_t index )const
 	{
 		auto it = m_queues.find( familyIndex );
 
 		if ( it == m_queues.end() )
 		{
-			throw ashes::Exception{ ashes::Result::eErrorRenderer, "Couldn't find family index within created queues" };
+			get( m_instance )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+				, uint64_t( get( this ) )
+				, 0u
+				, VK_ERROR_INCOMPATIBLE_DRIVER
+				, "Direct3D11"
+				, "Couldn't find family index within created queues" );
+			return VK_NULL_HANDLE;
 		}
 
-		if ( it->second.second <= index )
+		if ( it->second.queues.size() <= index )
 		{
-			throw ashes::Exception{ ashes::Result::eErrorRenderer, "Couldn't find queue with wanted index within its family" };
+			get( m_instance )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+				, uint64_t( get( this ) )
+				, 0u
+				, VK_ERROR_INCOMPATIBLE_DRIVER
+				, "Direct3D11"
+				, "Couldn't find queue with wanted index within its family" );
+			return VK_NULL_HANDLE;
 		}
 
-		return std::make_unique< Queue >( *this, it->second.first, index );
+		return it->second.queues[index];
 	}
 
-	void Device::waitIdle()const
+	VkResult Device::waitIdle()const
 	{
+		return VK_SUCCESS;
+	}
+
+	bool Device::onCopyToImageCommand( VkCommandBuffer cmd
+		, VkBufferImageCopyArray const & copyInfo
+		, VkBuffer src
+		, VkImage dst )const
+	{
+		return get( m_instance )->onCopyToImageCommand( cmd, copyInfo, src, dst );
+	}
+
+	void Device::onReportMessage( VkDebugReportFlagsEXT flags
+		, VkDebugReportObjectTypeEXT objectType
+		, uint64_t object
+		, size_t location
+		, int32_t messageCode
+		, const char * pLayerPrefix
+		, const char * pMessage )
+	{
+		get( m_instance )->onReportMessage( flags
+			, objectType
+			, object
+			, location
+			, messageCode
+			, pLayerPrefix
+			, pMessage );
+	}
+
+	void Device::doCreateDummyIndexBuffer()
+	{
+		auto size = uint32_t( sizeof( dummyIndex ) );
+		auto count = uint32_t( size / sizeof( dummyIndex[0] ) );
+		allocate( m_dummyIndexed.buffer
+			, nullptr
+			, get( this )
+			, VkBufferCreateInfo
+			{
+				VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+				nullptr,
+				0u,
+				size,
+				VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+				VK_SHARING_MODE_EXCLUSIVE,
+				0u,
+				nullptr,
+			} );
+		auto requirements = get( m_dummyIndexed.buffer )->getMemoryRequirements();
+		auto deduced = deduceMemoryType( requirements.memoryTypeBits
+			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+			, get( m_physicalDevice )->getMemoryProperties() );
+		allocate( m_dummyIndexed.memory
+			, nullptr
+			, get( this )
+			, VkMemoryAllocateInfo
+			{
+				VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+				nullptr,
+				requirements.size,
+				deduced
+			} );
+		get( m_dummyIndexed.buffer )->bindMemory( m_dummyIndexed.memory, 0u );
+		uint32_t * buffer;
+
+		if ( VK_SUCCESS == get( m_dummyIndexed.memory )->lock( 0u
+			, size
+			, 0u
+			, reinterpret_cast< void ** >( &buffer ) ) )
+		{
+			std::copy( dummyIndex, dummyIndex + count, buffer );
+			get( m_dummyIndexed.memory )->flush( 0, size );
+			get( m_dummyIndexed.memory )->unlock();
+		}
 	}
 
 	void Device::doCreateQueues()
 	{
-		for ( auto & queueCreateInfo : m_createInfos.queueCreateInfos )
+		for ( auto & queueCreateInfo : makeArrayView( m_createInfos.pQueueCreateInfos, m_createInfos.queueCreateInfoCount ) )
 		{
 			auto it = m_queues.emplace( queueCreateInfo.queueFamilyIndex
-				, QueueCreateCount{ queueCreateInfo, 0u } ).first;
-			it->second.second++;
+				, QueueCreates{ queueCreateInfo, {} } ).first;
+
+			VkQueue queue;
+			allocate( queue
+				, nullptr
+				, get( this )
+				, it->second.createInfo );
+			it->second.queues.emplace_back( queue );
 		}
 	}
 }

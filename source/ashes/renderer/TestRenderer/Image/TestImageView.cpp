@@ -3,18 +3,14 @@
 #include "Core/TestDevice.hpp"
 #include "Image/TestImage.hpp"
 
-namespace test_renderer
-{
-	ImageView::ImageView( Device const & device
-		, Image const & image
-		, ashes::ImageViewCreateInfo const & createInfo )
-		: ashes::ImageView{ device
-			, image
-			, createInfo }
-	{
-	}
+#include "ashestest_api.hpp"
 
-	ImageView::~ImageView()
+namespace ashes::test
+{
+	ImageView::ImageView( VkDevice device
+		, VkImageViewCreateInfo createInfo )
+		: m_device{ device }
+		, m_createInfo{ std::move( createInfo ) }
 	{
 	}
 }

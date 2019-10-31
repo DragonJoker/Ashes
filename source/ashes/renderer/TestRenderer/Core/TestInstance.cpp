@@ -6,69 +6,42 @@
 #include "Core/TestPhysicalDevice.hpp"
 #include "Core/TestSwapChain.hpp"
 
+#include <ashes/common/Exception.hpp>
+#include <ashes/ashes.hpp>
+
 #include <cmath>
 #include <iomanip>
+#include <iostream>
 #include <locale>
 
-namespace test_renderer
+#include "ashestest_api.hpp"
+
+namespace ashes::test
 {
-	ashes::PhysicalDeviceMemoryProperties const Instance::m_memoryProperties = []()
-		{
-			ashes::PhysicalDeviceMemoryProperties result;
-
-			// Emulate one device local heap
-			result.memoryHeaps.push_back(
-				{
-					~( 0ull ),
-					0u | ashes::MemoryHeapFlag::eDeviceLocal
-				} );
-			// and one host visible heap
-			result.memoryHeaps.push_back(
-				{
-					~( 0ull ),
-					0u
-				} );
-
-			// Emulate all combinations of device local memory types
-			// and all combinations of host visible memory types
-			result.memoryTypes.push_back(
-				{
-					0u | VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-					0u,
-				} );
-			result.memoryTypes.push_back(
-				{
-					0u | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
-					1u,
-				} );
-			result.memoryTypes.push_back(
-				{
-					VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VkMemoryPropertyFlagBits::eHostCoherent,
-					1u,
-				} );
-			result.memoryTypes.push_back(
-				{
-					VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VkMemoryPropertyFlagBits::eHostCached,
-					1u,
-				} );
-			result.memoryTypes.push_back(
-				{
-					VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VkMemoryPropertyFlagBits::eLazilyAllocated,
-					1u,
-				} );
-			result.memoryTypes.push_back(
-				{
-					VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VkMemoryPropertyFlagBits::eHostCoherent | VkMemoryPropertyFlagBits::eHostCached,
-					1u,
-				} );
-
-			return result;
-		}();
-
-	Instance::Instance( ashes::InstanceCreateInfo createInfo )
-		: ashes::Instance{ ashes::ClipDirection::eTopDown, "test", std::move( createInfo ) }
+	VkPhysicalDeviceMemoryProperties const Instance::m_memoryProperties = []()
 	{
-		m_features.hasTexBufferRange = true;
+		VkPhysicalDeviceMemoryProperties result{};
+		// Emulate one device local heap
+		result.memoryHeaps[result.memoryHeapCount++] = { ~( 0ull ), VK_MEMORY_HEAP_DEVICE_LOCAL_BIT };
+		// and one host visible heap
+		result.memoryHeaps[result.memoryHeapCount++] = { ~( 0ull ), 0u };
+
+		// Emulate all combinations of device local memory types
+		// and all combinations of host visible memory types
+		result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_HEAP_DEVICE_LOCAL_BIT, 0u };
+		result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT, 1u };
+
+		return result;
+	}();
+
+	Instance::Instance( VkInstanceCreateInfo createInfo )
+		: m_flags{ createInfo.flags }
+		, m_enabledLayerNames{ ashes::convert( CharPtrArray{ createInfo.ppEnabledLayerNames, createInfo.ppEnabledLayerNames + createInfo.enabledLayerCount } ) }
+		, m_enabledExtensions{ ashes::convert( CharPtrArray{ createInfo.ppEnabledExtensionNames, createInfo.ppEnabledExtensionNames + createInfo.enabledExtensionCount } ) }
+	{
+		doInitialisePhysicalDevices();
+
+		m_features.hasBufferRange = true;
 		m_features.hasImageTexture = true;
 		m_features.hasBaseInstance = true;
 		m_features.hasClearTexImage = true;
@@ -79,46 +52,15 @@ namespace test_renderer
 
 	Instance::~Instance()
 	{
-	}
-
-	ashes::PhysicalDevicePtrArray Instance::enumeratePhysicalDevices()const
-	{
-		ashes::PhysicalDevicePtrArray result;
-		result.emplace_back( std::make_unique< PhysicalDevice >( *this ) );
-		return result;
-	}
-
-	ashes::DevicePtr Instance::createDevice( ashes::PhysicalDevice const & physicalDevice
-		, ashes::DeviceCreateInfo createInfos )const
-	{
-		ashes::DevicePtr result;
-
-		try
+		for ( auto & physicalDevice : m_physicalDevices )
 		{
-			result = std::make_shared< Device >( *this
-				, static_cast< PhysicalDevice const & >( physicalDevice )
-				, std::move( createInfos ) );
+			deallocate( physicalDevice, nullptr );
 		}
-		catch ( std::exception & exc )
-		{
-			ashes::Logger::logError( std::string{ "Could not initialise logical device:\n" } + exc.what() );
-		}
-
-		return result;
 	}
 
-	ashes::SurfacePtr Instance::createSurface( ashes::PhysicalDevice const & gpu
-		, ashes::WindowHandle handle )const
+	VkPhysicalDeviceArray Instance::enumeratePhysicalDevices()const
 	{
-		return std::make_unique< Surface >( *this
-			, gpu
-			, std::move( handle ) );
-	}
-
-	ashes::DebugReportCallbackPtr Instance::createDebugReportCallback( ashes::DebugReportCallbackCreateInfo createInfo )const
-	{
-		return std::make_unique< DebugReportCallback >( *this
-			, std::move( createInfo ) );
+		return m_physicalDevices;
 	}
 
 	std::array< float, 16 > Instance::frustum( float left
@@ -148,11 +90,11 @@ namespace test_renderer
 		float const tanHalfFovy = tan( radiansFovY / float( 2 ) );
 
 		std::array< float, 16 > result{ 0.0f };
-		result[0] = float( 1 ) / ( aspect * tanHalfFovy );
-		result[5] = float( 1 ) / ( tanHalfFovy );
-		result[11] = -float( 1 );
+		result[0] = 1.0f / ( aspect * tanHalfFovy );
+		result[5] = 1.0f / tanHalfFovy;
 		result[10] = zFar / ( zNear - zFar );
-		result[14] = -( zFar * zNear ) / ( zFar - zNear );
+		result[11] = -1.0f;
+		result[14] = zNear * zFar / ( zNear - zFar );
 
 		return result;
 	}
@@ -174,5 +116,105 @@ namespace test_renderer
 		result[15] = 1.0f;
 
 		return result;
+	}
+
+	void Instance::registerLayer( Layer * layer )const
+	{
+		m_layers.push_back( layer );
+	}
+
+	void Instance::unregisterLayer( Layer * layer )const
+	{
+		auto it = std::find( m_layers.begin(), m_layers.end(), layer );
+
+		if ( it != m_layers.end() )
+		{
+			m_layers.erase( it );
+		}
+	}
+
+	bool Instance::onCopyToImageCommand( VkCommandBuffer cmd
+		, VkBufferImageCopyArray const & copyInfo
+		, VkBuffer src
+		, VkImage dst )const
+	{
+		try
+		{
+			for ( auto & layer : m_layers )
+			{
+				layer->copyToImageCommand( cmd
+					, copyInfo
+					, src
+					, dst );
+			}
+		}
+		catch ( LayerException & exc )
+		{
+			std::cerr << exc.what() << std::endl;
+			return true;
+		}
+
+		return false;
+	}
+
+#if VK_EXT_debug_utils
+
+	void Instance::onSubmitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
+		, VkDebugUtilsMessageTypeFlagsEXT messageTypes
+		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const
+	{
+		try
+		{
+			for ( auto & layer : m_layers )
+			{
+				layer->submitDebugUtilsMessenger( messageSeverity
+					, messageTypes
+					, callbackData );
+			}
+		}
+		catch ( LayerException & exc )
+		{
+			std::cerr << exc.what() << std::endl;
+		}
+	}
+
+#endif
+#if VK_EXT_debug_report
+
+	void Instance::onReportMessage( VkDebugReportFlagsEXT flags
+		, VkDebugReportObjectTypeEXT objectType
+		, uint64_t object
+		, size_t location
+		, int32_t messageCode
+		, const char * pLayerPrefix
+		, const char * pMessage )
+	{
+		try
+		{
+			for ( auto & layer : m_layers )
+			{
+				layer->reportMessage( flags
+					, objectType
+					, object
+					, location
+					, messageCode
+					, pLayerPrefix
+					, pMessage );
+			}
+		}
+		catch ( LayerException & exc )
+		{
+			std::cerr << exc.what() << std::endl;
+		}
+	}
+
+#endif
+
+	void Instance::doInitialisePhysicalDevices()
+	{
+		m_physicalDevices.resize( 1u );
+		allocate( m_physicalDevices[0]
+			, nullptr
+			, get( this ) );
 	}
 }

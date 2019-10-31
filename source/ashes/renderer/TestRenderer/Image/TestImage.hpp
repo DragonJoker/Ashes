@@ -4,84 +4,120 @@
 *\author
 *	Sylvain Doremus
 */
+#ifndef ___TestRenderer_Texture_HPP___
+#define ___TestRenderer_Texture_HPP___
 #pragma once
 
-#include "TestRendererPrerequisites.hpp"
+#include "renderer/TestRenderer/TestRendererPrerequisites.hpp"
 
-#include <Ashes/Image/Image.hpp>
-
-namespace test_renderer
+namespace ashes::test
 {
-	/**
-	*\~french
-	*\brief
-	*	Classe encapsulant le concept d'image Vulkan.
-	*\remarks
-	*	Gère la transition de layouts.
-	*	Dépendant du fait que l'image provienne de la swap chain
-	*	ou d'une ressource, la TestImage sera détruite par le parent
-	*	correspondant.
-	*\~english
-	*\brief
-	*	Class wrapping the Vulkan image concept.
-	*\remarks
-	*	Handles the layouts transition.
-	*	Depending on wheter the image comes from a resource or a swap chain,
-	*	The TestImage will be destroyed or not.
-	*/
 	class Image
-		: public ashes::Image
 	{
 	public:
-		Image( Image const & ) = delete;
-		Image & operator=( Image const & ) = delete;
+		Image( VkImage ) = delete;
+		Image & operator=( VkImage ) = delete;
 		Image( Image && rhs );
 		Image & operator=( Image && rhs );
-		/**
-		*\brief
-		*	Constructeur.
-		*/
-		Image( Device const & device
-			, ashes::ImageCreateInfo const & createInfo );
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le périphérique logique.
-		*/
-		Image( Device const & device
+
+		Image( VkDevice device
+			, VkImageCreateInfo createInfo );
+		Image( VkDevice device
 			, VkFormat format
 			, VkExtent2D const & dimensions );
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le périphérique logique.
-		*/
-		Image( Device const & device
+		Image( VkDevice device
 			, VkFormat format
 			, VkExtent2D const & dimensions
-			, ashes::ImageUsageFlags usageFlags
+			, VkImageUsageFlags usageFlags
 			, VkImageTiling tiling
 			, VkMemoryPropertyFlags memoryFlags );
-		/**
-		*\brief
-		*	Destructeur.
-		*/
-		~Image();
-		/**
-		*\copydoc	ashes::Image::createView
-		*/
-		ashes::MemoryRequirements getMemoryRequirements()const override;
-		/**
-		*\copydoc	ashes::Image::createView
-		*/
-		ashes::ImageViewPtr createView( ashes::ImageViewCreateInfo const & createInfo )const override;
+
+		VkMemoryRequirements getMemoryRequirements()const;
+		void generateMipmaps( VkCommandBuffer commandBuffer )const;
+		VkResult bindMemory( VkDeviceMemory memory
+			, VkDeviceSize memoryOffset );
+		bool isMapped()const;
+
+		inline uint32_t getMipmapLevels()const
+		{
+			return m_createInfo.mipLevels;
+		}
+
+		inline uint32_t getLayerCount()const
+		{
+			return m_createInfo.arrayLayers;
+		}
+
+		inline bool isSamplable()const
+		{
+			return checkFlag( m_createInfo.usage, VK_IMAGE_USAGE_SAMPLED_BIT );
+		}
+
+		inline bool isStorage()const
+		{
+			return checkFlag( m_createInfo.usage, VK_IMAGE_USAGE_STORAGE_BIT );
+		}
+
+		inline VkDeviceMemory getMemory()const
+		{
+			assert( m_memory != VK_NULL_HANDLE );
+			return m_memory;
+		}
+
+		inline VkDeviceSize getMemoryOffset()const
+		{
+			return m_memoryOffset;
+		}
+
+		inline VkImageCreateInfo const & getCreateInfo()const
+		{
+			return m_createInfo;
+		}
+
+		inline VkExtent3D const & getDimensions()const
+		{
+			return m_createInfo.extent;
+		}
+
+		inline VkImageUsageFlags getUsage()const noexcept
+		{
+			return m_createInfo.usage;
+		}
+
+		inline VkFormat getFormat()const
+		{
+			return m_createInfo.format;
+		}
+
+		inline VkSampleCountFlagBits getSamplesCount()const
+		{
+			return m_createInfo.samples;
+		}
+
+		inline VkImageType getType()const
+		{
+			return m_createInfo.imageType;
+		}
+
+		inline ObjectMemory const & getObjectMemory()const
+		{
+			assert( m_objectMemory != nullptr );
+			return *m_objectMemory;
+		}
+
+		inline void setDebugName( std::string name )
+		{
+			m_debugName = std::move( name );
+		}
 
 	private:
-		void doBindMemory()override;
-
-	private:
-		Device const & m_device;
+		VkDevice m_device;
+		VkImageCreateInfo m_createInfo;
+		VkDeviceMemory m_memory{ VK_NULL_HANDLE };
+		VkDeviceSize m_memoryOffset{ 0u };
+		ObjectMemory * m_objectMemory{ nullptr };
+		std::string m_debugName;
 	};
 }
+
+#endif

@@ -7,55 +7,73 @@ See LICENSE file in root folder.
 #include "Core/TestInstance.hpp"
 #include "Core/TestDevice.hpp"
 
-namespace test_renderer
+#include "ashestest_api.hpp"
+
+namespace ashes::test
 {
-	PhysicalDevice::PhysicalDevice( Instance const & instance )
-		: ashes::PhysicalDevice{ instance }
-		, m_instance{ instance }
+	PhysicalDevice::PhysicalDevice( VkInstance instance )
+		: m_instance{ instance }
 	{
-		m_shaderVersion = 450u;
 		doInitialise();
 	}
 
-	ashes::VkLayerPropertiesArray PhysicalDevice::enumerateLayerProperties()const
+	PhysicalDevice::~PhysicalDevice()
 	{
-		ashes::VkLayerPropertiesArray result;
+	}
+
+	VkBool32 PhysicalDevice::getPresentationSupport( uint32_t queueFamilyIndex )const
+	{
+		return VK_TRUE;
+	}
+
+	VkLayerPropertiesArray PhysicalDevice::enumerateLayerProperties()const
+	{
+		VkLayerPropertiesArray result;
 		return result;
 	}
 
-	ashes::VkExtensionPropertiesArray PhysicalDevice::enumerateExtensionProperties( std::string const & layerName )const
+	VkExtensionPropertiesArray PhysicalDevice::enumerateExtensionProperties( std::string const & layerName )const
 	{
-		ashes::VkExtensionPropertiesArray result;
+		VkExtensionPropertiesArray result;
 		return result;
 	}
 
-	ashes::PhysicalDeviceProperties PhysicalDevice::getProperties()const
+	VkPhysicalDeviceProperties const & PhysicalDevice::getProperties()const
 	{
 		return m_properties;
 	}
 
-	ashes::PhysicalDeviceMemoryProperties PhysicalDevice::getMemoryProperties()const
+	VkPhysicalDeviceMemoryProperties PhysicalDevice::getMemoryProperties()const
 	{
 		return Instance::getMemoryProperties();
 	}
 
-	ashes::PhysicalDeviceFeatures PhysicalDevice::getFeatures()const
+	VkPhysicalDeviceFeatures PhysicalDevice::getFeatures()const
 	{
 		return m_features;
 	}
 
-	ashes::QueueFamilyPropertiesArray PhysicalDevice::getQueueFamilyProperties()const
+	VkQueueFamilyPropertiesArray PhysicalDevice::getQueueFamilyProperties()const
 	{
 		return m_queueProperties;
 	}
 
-	ashes::FormatProperties PhysicalDevice::getFormatProperties( VkFormat fmt )const
+	VkFormatProperties PhysicalDevice::getFormatProperties( VkFormat fmt )const
 	{
 		return m_formatProperties[fmt];
 	}
 
 	void PhysicalDevice::doInitialise()
 	{
+		strncpy( m_properties.deviceName
+			, "Test"
+			, 4u );
+		m_properties.deviceID = 0u;
+		m_properties.vendorID = 0u;
+		m_properties.driverVersion = VK_MAKE_VERSION( 1, 0, 0 );
+		m_properties.apiVersion = VK_MAKE_VERSION( 1, 0, 0 );
+		m_properties.deviceType = VK_PHYSICAL_DEVICE_TYPE_CPU;
+
 		m_features.robustBufferAccess = true;
 		m_features.fullDrawIndexUint32 = true;
 		m_features.imageCubeArray = true;
@@ -111,13 +129,6 @@ namespace test_renderer
 		m_features.sparseResidencyAliased = true;
 		m_features.variableMultisampleRate = true;
 		m_features.inheritedQueries = true;
-
-		m_properties.apiVersion = 4198470u;
-		m_properties.deviceID = 1u;
-		m_properties.deviceName = "Dummy";
-		m_properties.vendorID = 1u;
-		m_properties.deviceType = ashes::PhysicalDeviceType::eCpu;
-		m_properties.driverVersion = 1u;
 
 		m_properties.limits.maxImageDimension1D = 16384u;
 		m_properties.limits.maxImageDimension2D = 16384u;
@@ -253,5 +264,35 @@ namespace test_renderer
 					1u,
 				}
 			} );
+
+		for ( VkFormat fmt = VkFormat( VK_FORMAT_BEGIN_RANGE + 1 ); fmt != VK_FORMAT_END_RANGE; fmt = VkFormat( fmt + 1 ) )
+		{
+			VkFormatProperties props{};
+			props.bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
+			props.bufferFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+			props.bufferFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
+			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
+			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
+			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT;
+			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
+			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT;
+			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT;
+			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
+			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
+			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT;
+			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT_EXT;
+			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_EXT;
+			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
+			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;
+			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
+			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
+			props.linearTilingFeatures = props.optimalTilingFeatures;
+			m_formatProperties[fmt] = props;
+		}
 	}
 }

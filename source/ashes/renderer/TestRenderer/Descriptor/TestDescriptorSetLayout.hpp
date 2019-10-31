@@ -4,46 +4,39 @@
 *\author
 *	Sylvain Doremus
 */
+#ifndef ___TestRenderer_DescriptorSetLayout_HPP___
+#define ___TestRenderer_DescriptorSetLayout_HPP___
 #pragma once
 
-#include "TestRendererPrerequisites.hpp"
+#include "renderer/TestRenderer/TestRendererPrerequisites.hpp"
 
-#include <Ashes/Descriptor/DescriptorSetLayout.hpp>
-
-namespace test_renderer
+namespace ashes::test
 {
-	/**
-	*\brief
-	*	Classe wrappant un TestDescriptorSetLayout.
-	*/
 	class DescriptorSetLayout
-		: public ashes::DescriptorSetLayout
 	{
 	public:
-		/**
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le périphérique logique.
-		*\~english
-		*\brief
-		*	Constructor.
-		*\param[in] device
-		*	The logical connection to the GPU.
-		*\param[in] bindings
-		*	The bindings.
-		*/
-		DescriptorSetLayout( Device const & device
-			, ashes::DescriptorSetLayoutBindingArray bindings );
-		/**
-		*\~french
-		*\brief
-		*	Destructeur.
-		*\~english
-		*\brief
-		*	Destructor.
-		*/
+		DescriptorSetLayout( VkDevice device
+			, VkDescriptorSetLayoutCreateInfo createInfo );
 		~DescriptorSetLayout();
+
+		VkDescriptorSetLayoutBinding const & getBinding( uint32_t bindingPoint
+			, uint32_t index )const;
+
+		auto begin()const
+		{
+			return m_bindings.begin();
+		}
+
+		auto end()const
+		{
+			return m_bindings.end();
+		}
+
+	private:
+		VkDevice m_device;
+		VkDescriptorSetLayoutBindingArray m_bindings;
+		VkDescriptorSetLayoutCreateInfo m_createInfo;
 	};
 }
+
+#endif

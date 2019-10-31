@@ -4,78 +4,134 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "TestRendererPrerequisites.hpp"
+#include "renderer/TestRenderer/TestRendererPrerequisites.hpp"
 
-#include <Ashes/Miscellaneous/DeviceMemory.hpp>
-#include <Ashes/Miscellaneous/MemoryRequirements.hpp>
+#include <cassert>
 
-namespace test_renderer
+namespace ashes::test
 {
+	class ObjectMemory
+	{
+		friend class DeviceMemory;
+
+	public:
+		ObjectMemory( ObjectMemory const & ) = delete;
+		ObjectMemory & operator=( ObjectMemory const & ) = delete;
+		ObjectMemory( VkDevice device
+			, VkDeviceMemory deviceMemory
+			, VkDeviceSize offset
+			, VkMemoryAllocateInfo allocateInfo );
+		ObjectMemory( ObjectMemory && rhs )noexcept;
+		ObjectMemory & operator=( ObjectMemory && rhs )noexcept;
+
+		VkResult lock( void ** mapped )const;
+		void unlock()const;
+
+	private:
+		void upload( uint8_t const * buffer
+			, VkDeviceSize offset
+			, VkDeviceSize size )const;
+		void download( uint8_t * buffer
+			, VkDeviceSize offset
+			, VkDeviceSize size )const;
+
+	public:
+		VkDevice device;
+		VkDeviceMemory deviceMemory;
+		VkDeviceSize offset;
+		VkDeviceSize size;
+		VkMemoryAllocateInfo allocateInfo;
+	};
+	using ObjectMemoryPtr = std::unique_ptr< ObjectMemory >;
 	/**
-	*\~french
-	*\brief
-	*	Classe encapsulant le stockage alloué à un tampon de données.
-	*\~english
 	*\brief
 	*	Class wrapping a storage allocated to a data buffer.
 	*/
 	class DeviceMemory
-		: public ashes::DeviceMemory
 	{
+		friend class ObjectMemory;
+
 	public:
-		/**
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le LogicalDevice parent.
-		*\param[in] requirements
-		*	Les exigences mémoire.
-		*\param[in] flags
-		*	Les indicateurs de propriétés voulues pour la mémoire allouée.
-		*\~english
-		*\brief
-		*	Constructor.
-		*\param[in] device
-		*	The logical connection to the GPU.
-		*\param[in] requirements
-		*	The memory requirements.
-		*\param[in] flags
-		*	The wanted memory flags.
-		*/
-		DeviceMemory( Device const & device
-			, ashes::MemoryAllocateInfo allocateInfo );
-		/**
-		*\~french
-		*\brief
-		*	Destructeur.
-		*\~english
-		*\brief
-		*	Destructor.
-		*/
+		DeviceMemory( VkDevice device
+			, VkMemoryAllocateInfo allocateInfo );
 		~DeviceMemory();
-		/**
-		*\copydoc	ashes::DeviceMemory::lock
-		*/
-		uint8_t * lock( uint64_t offset
-			, uint64_t size
-			, ashes::MemoryMapFlags flags )const override;
-		/**
-		*\copydoc	ashes::DeviceMemory::flush
-		*/
-		void flush( uint64_t offset
-			, uint64_t size )const override;
-		/**
-		*\copydoc	ashes::DeviceMemory::invalidate
-		*/
-		void invalidate( uint64_t offset
-			, uint64_t size )const override;
-		/**
-		*\copydoc	ashes::DeviceMemory::unlock
-		*/
-		void unlock()const override;
+		VkResult bindToBuffer( VkBuffer buffer
+			, VkDeviceSize memoryOffset
+			, ObjectMemory *& objectMemory );
+		VkResult bindToImage1D( VkImage image
+			, VkDeviceSize memoryOffset
+			, ObjectMemory *& objectMemory );
+		VkResult bindToImage2D( VkImage image
+			, VkDeviceSize memoryOffset
+			, ObjectMemory *& objectMemory );
+		VkResult bindToImage3D( VkImage image
+			, VkDeviceSize memoryOffset
+			, ObjectMemory *& objectMemory );
+
+		void updateUpload( ObjectMemory const & memory
+			, VkDeviceSize offset
+			, VkDeviceSize size )const;
+		void updateDownload( ObjectMemory const & memory
+			, VkDeviceSize offset
+			, VkDeviceSize size )const;
+		void updateUpload( VkDeviceSize offset
+			, VkDeviceSize size )const;
+		void updateDownload( VkDeviceSize offset
+			, VkDeviceSize size )const;
+		void updateData( VkDeviceMemory src
+			, VkDeviceSize srcOffset
+			, VkDeviceSize dstOffset
+			, VkDeviceSize size );
+
+		VkResult lock( VkDeviceSize offset
+			, VkDeviceSize size
+			, VkMemoryMapFlags flags // Effectively expects the D3D11 Subresource index
+			, void ** data )const;
+		VkResult flush( VkDeviceSize offset
+			, VkDeviceSize size )const;
+		VkResult invalidate( VkDeviceSize offset
+			, VkDeviceSize size )const;
+		void unlock()const;
+
+		inline bool isMapped()const
+		{
+			return m_mapped;
+		}
+
+		inline void upload()const
+		{
+			upload( m_mappedOffset, m_mappedSize );
+		}
+
+		inline void download()const
+		{
+			download( m_mappedOffset, m_mappedSize );
+		}
+
+		inline VkMemoryPropertyFlags getMemoryPropertyFlags()const
+		{
+			return m_propertyFlags;
+		}
+
+	public:
+		mutable DeviceMemoryDestroySignal onDestroy;
 
 	private:
-		mutable std::vector< uint8_t > m_memory;
+		void upload( VkDeviceSize offset
+			, VkDeviceSize size )const;
+		void download( VkDeviceSize offset
+			, VkDeviceSize size )const;
+
+	private:
+		VkDevice m_device;
+		VkMemoryAllocateInfo m_allocateInfo;
+		VkMemoryPropertyFlags m_propertyFlags;
+		VkMemoryRequirements m_requirements;
+		std::vector< ObjectMemoryPtr > m_objects;
+		mutable bool m_dirty{ true };
+		mutable bool m_mapped{ false };
+		mutable VkDeviceSize m_mappedOffset{ 0u };
+		mutable VkDeviceSize m_mappedSize{ 0u };
+		mutable ByteArray m_data;
 	};
 }

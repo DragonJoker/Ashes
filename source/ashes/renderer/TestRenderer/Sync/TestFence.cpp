@@ -4,23 +4,16 @@ See LICENSE file in root folder.
 */
 #include "Sync/TestFence.hpp"
 
-#include "Core/TestDevice.hpp"
-
-namespace test_renderer
+namespace ashes::test
 {
-	Fence::Fence( Device const & device
-		, ashes::FenceCreateFlags flags )
-		: ashes::Fence{ device, flags }
+	Fence::Fence( VkDevice device
+		, VkFenceCreateFlags flags )
 	{
 	}
 
-	Fence::~Fence()
+	VkResult Fence::wait( uint64_t timeout )const
 	{
-	}
-
-	ashes::WaitResult Fence::wait( uint64_t timeout )const
-	{
-		return ashes::WaitResult::eSuccess;
+		return VK_SUCCESS;
 	}
 
 	void Fence::reset()const

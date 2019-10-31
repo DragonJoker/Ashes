@@ -4,27 +4,67 @@
 #include "Descriptor/TestDescriptorSetLayout.hpp"
 #include "Core/TestDevice.hpp"
 
-namespace test_renderer
+#include "ashestest_api.hpp"
+
+namespace ashes::test
 {
-	DescriptorPool::DescriptorPool( Device const & device
-		, ashes::DescriptorPoolCreateFlags flags
-		, uint32_t maxSets
-		, ashes::DescriptorPoolSizeArray poolSizes )
-		: ashes::DescriptorPool{ device, flags }
-		, m_device{ device }
+	DescriptorPool::DescriptorPool( VkDevice device
+		, VkDescriptorPoolCreateInfo createInfos )
+		: m_device{ device }
+		, m_poolSizes{ makeVector( createInfos.pPoolSizes, createInfos.poolSizeCount ) }
+		, m_createInfos{ std::move( createInfos ) }
 	{
+		m_createInfos.pPoolSizes = m_poolSizes.data();
 	}
 
 	DescriptorPool::~DescriptorPool()
 	{
+		for ( auto & set : m_sets )
+		{
+			deallocate( set, nullptr );
+		}
 	}
 
-	ashes::DescriptorSetPtr DescriptorPool::createDescriptorSet( ashes::DescriptorSetLayout const & layout
-		, uint32_t bindingPoint )const
+	void DescriptorPool::registerSet( VkDescriptorSet set )
 	{
-		return std::make_unique< DescriptorSet >( m_device
-			, *this
-			, static_cast< DescriptorSetLayout const & >( layout )
-			, bindingPoint );
+		if ( checkFlag( m_createInfos.flags, VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT ) )
+		{
+			m_sets.push_back( set );
+		}
+
+		m_allSets.push_back( set );
+	}
+
+	VkResult DescriptorPool::reset( VkDescriptorPoolResetFlags flags )
+	{
+		for ( auto & set : m_allSets )
+		{
+			deallocate( set, nullptr );
+		}
+
+		m_allSets.clear();
+		m_sets.clear();
+		return VK_SUCCESS;
+	}
+
+	VkResult DescriptorPool::free( VkDescriptorSetArray sets )
+	{
+		if ( checkFlag( m_createInfos.flags, VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT ) )
+		{
+			for ( auto set : sets )
+			{
+				auto it = std::find( m_sets.begin()
+					, m_sets.end()
+					, set );
+
+				if ( it != m_sets.end() )
+				{
+					deallocate( *it, nullptr );
+					m_sets.erase( it );
+				}
+			}
+		}
+
+		return VK_SUCCESS;
 	}
 }
