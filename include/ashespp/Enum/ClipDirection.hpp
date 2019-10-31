@@ -11,10 +11,6 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	/**
-	*\~french
-	*\brief
-	*	Enumération des directions de clipping.
-	*\~english
 	*\brief
 	*	Filters enumeration.
 	*/
@@ -24,20 +20,12 @@ namespace ashes
 		eTopDown,
 	};
 	/**
-	*\~english
 	*\brief
 	*	Gets the name of the given element type.
 	*\param[in] value
 	*	The element type.
 	*\return
 	*	The name.
-	*\~french
-	*\brief
-	*	Récupère le nom du type d'élément donné.
-	*\param[in] value
-	*	Le type d'élément.
-	*\return
-	*	Le nom.
 	*/
 	inline std::string getName( ClipDirection value )
 	{

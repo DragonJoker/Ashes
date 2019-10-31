@@ -12,34 +12,24 @@ namespace ashes
 {
 	/**
 	*\brief
-	*	Classe de Semaphore.
-	*\remarks
-	*	Un sémaphore est un élément de synchronisation servant pour les files.
+	*	Semaphore wrapper.
 	*/
 	class Semaphore
 	{
 	public:
 		/**
 		*\brief
-		*	Constructeur.
+		*	Constructor.
 		*\param[in] device
-		*	Le LogicalDevice parent.
+		*	The logical device.
 		*/
 		explicit Semaphore( Device const & device );
 		/**
-		*\~english
 		*\brief
 		*	Destructor.
-		*\~french
-		*\brief
-		*	Destructeur.
 		*/
 		~Semaphore();
 		/**
-		*\~french
-		*\brief
-		*	Conversion implicite vers VkSemaphore.
-		*\~english
 		*\brief
 		*	VkSemaphore implicit cast operator.
 		*/

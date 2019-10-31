@@ -12,7 +12,7 @@ namespace ashes
 {
 	/**
 	*\brief
-	*	Command buffers queue.
+	*	Queue wrapper.
 	*/
 	class Queue
 	{

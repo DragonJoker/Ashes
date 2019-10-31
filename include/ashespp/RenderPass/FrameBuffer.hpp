@@ -11,18 +11,13 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	/**
-	*\~english
 	*\brief
 	*	Class wrapping the concept of a Framebuffer.
-	*\~french
-	*\brief
-	*	Classe encapsulant le concept de Framebuffer.
 	*/
 	class FrameBuffer
 	{
 	public:
 		/**
-		*\~english
 		*\brief
 		*	Creates a framebuffer compatible with the given render pass.
 		*\param[in] renderPass
@@ -31,26 +26,13 @@ namespace ashes
 		*	The frame buffer dimensions.
 		*\param[in] views
 		*	The views wanted for the framebuffer.
-		*\~french
-		*\brief
-		*	Crée un FrameBuffer compatible avec la passe de rendu donnée.
-		*\param[in] renderPass
-		*	La passe de rendu, contenant les attaches.
-		*\param[in] dimensions
-		*	Les dimensions du tampon d'images.
-		*\param[in] views
-		*	Les vues voulues pour le tampon d'images à créer.
 		*/
 		FrameBuffer( RenderPass const & renderPass
 			, VkExtent2D const & dimensions
 			, ImageViewCRefArray views );
 		/**
-		*\~english
 		*\brief
 		*	Destructor.
-		*\~french
-		*\brief
-		*	Destructeur.
 		*/
 		~FrameBuffer();
 		/**
@@ -74,10 +56,6 @@ namespace ashes
 		}
 		/**@}*/
 		/**
-		*\~french
-		*\brief
-		*	Conversion implicite vers VkFramebuffer.
-		*\~english
 		*\brief
 		*	VkFramebuffer implicit cast operator.
 		*/

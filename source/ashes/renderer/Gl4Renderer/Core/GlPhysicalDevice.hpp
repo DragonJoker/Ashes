@@ -8,61 +8,22 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	/**
-	*\~french
-	*\brief
-	*	Classe contenant les informations liées au GPU physique.
-	*\~english
-	*\brief
-	*	Wraps informations about physical GPU.
-	*/
 	class PhysicalDevice
 	{
 	public:
-		/**
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] renderer
-		*	L'instance de rendu.
-		*\~english
-		*\brief
-		*	Constructor.
-		*\param[in] renderer
-		*	The rendering instance.
-		*/
 		PhysicalDevice( VkInstance instance );
+
 		inline VkBool32 getPresentationSupport( uint32_t queueFamilyIndex )const
 		{
 			return true;
 		}
-		/**
-		*\copydoc	Instance::enumerateLayerProperties
-		*/
+
 		std::vector< VkLayerProperties > enumerateLayerProperties()const;
-		/**
-		*\copydoc	Instance::enumerateExtensionProperties
-		*/
 		std::vector< VkExtensionProperties > enumerateExtensionProperties( std::string const & layerName )const;
-		/**
-		*\copydoc	Instance::getProperties
-		*/
 		VkPhysicalDeviceProperties const & getProperties()const;
-		/**
-		*\copydoc	Instance::getMemoryProperties
-		*/
 		VkPhysicalDeviceMemoryProperties const & getMemoryProperties()const;
-		/**
-		*\copydoc	Instance::getFeatures
-		*/
 		VkPhysicalDeviceFeatures const & getFeatures()const;
-		/**
-		*\copydoc	Instance::getQueueFamilyProperties
-		*/
 		std::vector< VkQueueFamilyProperties > const & getQueueFamilyProperties()const;
-		/**
-		*\copydoc	Instance::getFormatProperties
-		*/
 		VkFormatProperties const & getFormatProperties( VkFormat fmt )const;
 
 		bool find( std::string const & name )const;

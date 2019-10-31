@@ -62,10 +62,6 @@ namespace ashes
 			return *m_pool;
 		}
 		/**
-		*\~french
-		*\brief
-		*	Conversion implicite vers VkDescriptorPool.
-		*\~english
 		*\brief
 		*	VkDescriptorPool implicit cast operator.
 		*/

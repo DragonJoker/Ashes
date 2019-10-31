@@ -11,12 +11,8 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	/**
-	*\~english
 	*\brief
 	*	The renderer features.
-	*\~french
-	*\brief
-	*	Les fonctionnalités du renderer.
 	*/
 	using RendererFeatures = AshPluginFeatures;
 }

@@ -10,14 +10,6 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	/**
-	*\~french
-	*\brief
-	*	Classe encapsulant le stockage alloué à un tampon de données.
-	*\~english
-	*\brief
-	*	Class wrapping a storage allocated to a data buffer.
-	*/
 	class DeviceMemory
 	{
 	public:

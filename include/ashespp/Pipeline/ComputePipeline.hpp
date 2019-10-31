@@ -12,43 +12,27 @@ namespace ashes
 {
 	/**
 	*\brief
-	*	Un pipeline de rendu.
+	*	A compute pipeline.
 	*/
 	class ComputePipeline
 	{
 	public:
 		/**
-		*\~english
 		*\brief
 		*	Constructor.
 		*\param[in] device
 		*	The parent logical device.
 		*\param[in] createInfo
 		*	The pipeline creation informations.
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le device parent.
-		*\param[in] createInfo
-		*	Les informations de creation du pipeline.
 		*/
 		ComputePipeline( Device const & device
 			, ComputePipelineCreateInfo createInfo );
 		/**
-		*\~english
 		*\brief
 		*	Destructor.
-		*\~french
-		*\brief
-		*	Destructeur.
 		*/
 		~ComputePipeline();
 		/**
-		*\~french
-		*\brief
-		*	Conversion implicite vers VkPipeline.
-		*\~english
 		*\brief
 		*	VkPipeline implicit cast operator.
 		*/

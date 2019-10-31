@@ -13,12 +13,8 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	/**
-	*\~english
 	*\brief
 	*	Presentation surface.
-	*\~french
-	*\brief
-	*	Surface de présentation.
 	*/
 	class Surface
 	{
@@ -30,7 +26,6 @@ namespace ashes
 
 	public:
 		/**
-		*\~english
 		*\brief
 		*	Constructor.
 		*\param[in] renderer
@@ -39,71 +34,38 @@ namespace ashes
 		*	The physical device.
 		*\param[in] handle
 		*	The window handle.
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] renderer
-		*	L'instance.
-		*\param[in] gpu
-		*	Le périphérique physique.
-		*\param[in] handle
-		*	Le descripteur de la fenêtre.
 		*/
 		Surface( Instance const & instance
 			, PhysicalDevice const & gpu
 			, WindowHandle handle );
 		/**
-		*\~english
 		*\brief
 		*	Destructor.
-		*\~french
-		*\brief
-		*	Destructeur.
 		*/
 		~Surface();
 		/**
-		*\~english
 		*\brief
 		*	Checks whether a queue family of the physical device supports presentation to the surface.
-		*\~french
-		*\brief
-		*	Vérifie si une famille de file du périphérique physique supporte la présentation à la surface.
 		*/
 		bool getSupport( uint32_t queueFamilyIndex )const;
 		/**
-		*\~english
 		*\return
 		*	The surface capabilities.
-		*\~french
-		*\brief
-		*	Les capacités de la surface.
 		*/
 		VkSurfaceCapabilitiesKHR getCapabilities()const;
 		/**
-		*\~english
 		*\return
 		*	The surface present modes.
-		*\~french
-		*\brief
-		*	Les modes de présentation de la surface.
 		*/
 		std::vector < VkPresentModeKHR > getPresentModes()const;
 		/**
-		*\~english
 		*\return
 		*	The surface supported formats.
-		*\~french
-		*\brief
-		*	Les formats supportés par la surface.
 		*/
 		std::vector< VkSurfaceFormatKHR > getFormats()const;
 		/**
-		*\~english
-		*name
+		*\name
 		*	Getters.
-		*\~french
-		*name
-		*	Accesseurs.
 		*/
 		/**@{*/
 		inline WindowHandle const & getHandle()const
@@ -122,10 +84,6 @@ namespace ashes
 		}
 		/**@}*/
 		/**
-		*\~french
-		*\brief
-		*	Conversion implicite vers VkPhysicalDevice.
-		*\~english
 		*\brief
 		*	VkPhysicalDevice implicit cast operator.
 		*/

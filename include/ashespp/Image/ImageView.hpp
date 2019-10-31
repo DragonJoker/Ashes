@@ -13,10 +13,6 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	/**
-	*\~french
-	*\brief
-	*	Description d'une vue sur une image.
-	*\~english
 	*\brief
 	*	Image view wrapper.
 	*/
@@ -30,22 +26,6 @@ namespace ashes
 			, VkImageView internal = VK_NULL_HANDLE
 			, Image const * image = nullptr );
 		/**
-		*\~french
-		*\brief
-		*	Prépare une barrière mémoire de transition vers un layout général.
-		*\param[in] srcLayout
-		*	Le layout source.
-		*\param[in] srcAccessFlags
-		*	Les accès source.
-		*\param[in] dstAccessFlags
-		*	Les accès destination.
-		*\param[in] srcQueueFamily
-		*	La famille de file source, pour un transfer de famille de file.
-		*\param[in] dstQueueFamily
-		*	La famille de file destination, pour un transfer de famille de file.
-		*\return
-		*	La barrière mémoire.
-		*\~english
 		*\brief
 		*	Prepares a transition memory barrier, for a general layout.
 		*\param[in] srcLayout
@@ -66,20 +46,6 @@ namespace ashes
 			, uint32_t srcQueueFamily = VK_QUEUE_FAMILY_IGNORED
 			, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED )const;
 		/**
-		*\~french
-		*\brief
-		*	Prépare une barrière mémoire de transition vers un layout de destination de transfert.
-		*\param[in] srcLayout
-		*	Le layout source.
-		*\param[in] srcAccessFlags
-		*	Les accès source.
-		*\param[in] srcQueueFamily
-		*	La famille de file source, pour un transfer de famille de file.
-		*\param[in] dstQueueFamily
-		*	La famille de file destination, pour un transfer de famille de file.
-		*\return
-		*	La barrière mémoire.
-		*\~english
 		*\brief
 		*	Prepares a transition memory barrier, for a transfer destination layout.
 		*\param[in] srcLayout
@@ -97,20 +63,6 @@ namespace ashes
 			, uint32_t srcQueueFamily = VK_QUEUE_FAMILY_IGNORED
 			, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED )const;
 		/**
-		*\~french
-		*\brief
-		*	Prépare une barrière mémoire de transition vers un layout de source de transfert.
-		*\param[in] srcLayout
-		*	Le layout source.
-		*\param[in] srcAccessFlags
-		*	Les accès source.
-		*\param[in] srcQueueFamily
-		*	La famille de file source, pour un transfer de famille de file.
-		*\param[in] dstQueueFamily
-		*	La famille de file destination, pour un transfer de famille de file.
-		*\return
-		*	La barrière mémoire.
-		*\~english
 		*\brief
 		*	Prepares a transition memory barrier, for a transfer source layout.
 		*\param[in] srcLayout
@@ -128,20 +80,6 @@ namespace ashes
 			, uint32_t srcQueueFamily = VK_QUEUE_FAMILY_IGNORED
 			, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED )const;
 		/**
-		*\~french
-		*\brief
-		*	Prépare une barrière mémoire de transition vers un layout de ressource d'entrée (lecture seule) d'un shader.
-		*\param[in] srcLayout
-		*	Le layout source.
-		*\param[in] srcAccessFlags
-		*	Les accès source.
-		*\param[in] srcQueueFamily
-		*	La famille de file source, pour un transfer de famille de file.
-		*\param[in] dstQueueFamily
-		*	La famille de file destination, pour un transfer de famille de file.
-		*\return
-		*	La barrière mémoire.
-		*\~english
 		*\brief
 		*	Prepares a transition memory barrier, for an input shader resource layout.
 		*\param[in] srcLayout
@@ -159,20 +97,6 @@ namespace ashes
 			, uint32_t srcQueueFamily = VK_QUEUE_FAMILY_IGNORED
 			, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED )const;
 		/**
-		*\~french
-		*\brief
-		*	Prépare une barrière mémoire de transition vers un layout de ressource de lecture de profondeur et/ou stencil.
-		*\param[in] srcLayout
-		*	Le layout source.
-		*\param[in] srcAccessFlags
-		*	Les accès source.
-		*\param[in] srcQueueFamily
-		*	La famille de file source, pour un transfer de famille de file.
-		*\param[in] dstQueueFamily
-		*	La famille de file destination, pour un transfer de famille de file.
-		*\return
-		*	La barrière mémoire.
-		*\~english
 		*\brief
 		*	Prepares a transition memory barrier, for a depth ant/or stencil read only layout.
 		*\param[in] srcLayout
@@ -190,20 +114,6 @@ namespace ashes
 			, uint32_t srcQueueFamily = VK_QUEUE_FAMILY_IGNORED
 			, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED )const;
 		/**
-		*\~french
-		*\brief
-		*	Prépare une barrière mémoire de transition vers un layout d'attache couleur.
-		*\param[in] srcLayout
-		*	Le layout source.
-		*\param[in] srcAccessFlags
-		*	Les accès source.
-		*\param[in] srcQueueFamily
-		*	La famille de file source, pour un transfer de famille de file.
-		*\param[in] dstQueueFamily
-		*	La famille de file destination, pour un transfer de famille de file.
-		*\return
-		*	La barrière mémoire.
-		*\~english
 		*\brief
 		*	Prepares a transition memory barrier, for a colour attachment layout.
 		*\param[in] srcLayout
@@ -221,20 +131,6 @@ namespace ashes
 			, uint32_t srcQueueFamily = VK_QUEUE_FAMILY_IGNORED
 			, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED )const;
 		/**
-		*\~french
-		*\brief
-		*	Prépare une barrière mémoire de transition vers un layout d'attache profondeur et/ou stencil.
-		*\param[in] srcLayout
-		*	Le layout source.
-		*\param[in] srcAccessFlags
-		*	Les accès source.
-		*\param[in] srcQueueFamily
-		*	La famille de file source, pour un transfer de famille de file.
-		*\param[in] dstQueueFamily
-		*	La famille de file destination, pour un transfer de famille de file.
-		*\return
-		*	La barrière mémoire.
-		*\~english
 		*\brief
 		*	Prepares a transition memory barrier, for a depth and/or stencil attachment layout.
 		*\param[in] srcLayout
@@ -252,20 +148,6 @@ namespace ashes
 			, uint32_t srcQueueFamily = VK_QUEUE_FAMILY_IGNORED
 			, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED )const;
 		/**
-		*\~french
-		*\brief
-		*	Prépare une barrière mémoire de transition vers un layout de source de presentation.
-		*\param[in] srcLayout
-		*	Le layout source.
-		*\param[in] srcAccessFlags
-		*	Les accès source.
-		*\param[in] srcQueueFamily
-		*	La famille de file source, pour un transfer de famille de file.
-		*\param[in] dstQueueFamily
-		*	La famille de file destination, pour un transfer de famille de file.
-		*\return
-		*	La barrière mémoire.
-		*\~english
 		*\brief
 		*	Prepares a transition memory barrier, for a presentation source layout.
 		*\param[in] srcLayout
@@ -288,10 +170,6 @@ namespace ashes
 			return createInfo.format;
 		}
 		/**
-		*\~french
-		*\brief
-		*	Forward vers VkImageView.
-		*\~english
 		*\brief
 		*	Forward to VkImageView.
 		*/
@@ -300,10 +178,6 @@ namespace ashes
 			return &createInfo;
 		}
 		/**
-		*\~french
-		*\brief
-		*	Conversion vers VkImageViewCreateInfo.
-		*\~english
 		*\brief
 		*	VkImageViewCreateInfo cast operator.
 		*/
@@ -312,10 +186,6 @@ namespace ashes
 			return createInfo;
 		}
 		/**
-		*\~french
-		*\brief
-		*	Conversion implicite vers VkImageView.
-		*\~english
 		*\brief
 		*	VkImageView implicit cast operator.
 		*/

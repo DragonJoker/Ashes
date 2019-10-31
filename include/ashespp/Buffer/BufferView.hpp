@@ -11,10 +11,6 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	/**
-	*\~french
-	*\brief
-	*	Description d'une vue sur un tampon.
-	*\~english
 	*\brief
 	*	A view on a buffer.
 	*/
@@ -22,24 +18,10 @@ namespace ashes
 	{
 	public:
 		/**
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	La connexion logique au GPU.
-		*\param[in] buffer
-		*	Le tampon sur lequel la vue est créée.
-		*\param[in] format
-		*	Le format des pixels de la vue.
-		*\param[in] offset
-		*	Le décalage dans le tampon.
-		*\param[in] range
-		*	Le nombre d'éléments dans le tampon.
-		*\~english
 		*\brief
 		*	Constructor.
 		*\param[in] device
-		*	The logical connection to the GPU.
+		*	The logical device.
 		*\param[in] buffer
 		*	The buffer from which the view is created.
 		*\param[in] format
@@ -55,19 +37,11 @@ namespace ashes
 			, VkDeviceSize offset
 			, VkDeviceSize range );
 		/**
-		*\~french
-		*\brief
-		*	Destructeur.
-		*\~english
 		*\brief
 		*	Destructor.
 		*/
 		~BufferView();
 		/**
-		*\~french
-		*\return
-		*	Le format des pixels de la vue.
-		*\~english
 		*\return
 		*	The view's pixels format.
 		*/
@@ -76,10 +50,6 @@ namespace ashes
 			return m_format;
 		}
 		/**
-		*\~french
-		*\return
-		*	Le tampon de la vue.
-		*\~english
 		*\return
 		*	The view's buffer.
 		*/
@@ -88,10 +58,6 @@ namespace ashes
 			return m_buffer;
 		}
 		/**
-		*\~french
-		*\return
-		*	Le décalage dans le tampon.
-		*\~english
 		*\return
 		*	The offset in the buffer.
 		*/
@@ -100,10 +66,6 @@ namespace ashes
 			return m_offset;
 		}
 		/**
-		*\~french
-		*\return
-		*	Le nombre d'éléments dans le tampon.
-		*\~english
 		*\return
 		*	The number of elements from the buffer.
 		*/
@@ -112,10 +74,6 @@ namespace ashes
 			return m_range;
 		}
 		/**
-		*\~french
-		*\brief
-		*	Conversion implicite vers VkBufferView.
-		*\~english
 		*\brief
 		*	VkBufferView implicit cast operator.
 		*/

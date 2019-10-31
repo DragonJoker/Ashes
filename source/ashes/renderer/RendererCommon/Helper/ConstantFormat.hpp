@@ -14,12 +14,8 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	/**
-	*\~english
 	*\brief
 	*	The suppported attribute formats list.
-	*\~french
-	*\brief
-	*	Liste des formats d'attributs supportés.
 	*/
 	enum class ConstantFormat
 	{
@@ -41,20 +37,12 @@ namespace ashes
 		eColour,
 	};
 	/**
-	*\~english
 	*\brief
 	*	Gets the size of the given element type.
 	*\param[in] value
 	*	The element type.
 	*\return
 	*	The size.
-	*\~french
-	*\brief
-	*	Récupère la taille du type d'élément donné.
-	*\param[in] value
-	*	Le type d'élément.
-	*\return
-	*	La taille.
 	*/
 	inline uint32_t getSize( ConstantFormat value )
 	{
@@ -116,20 +104,12 @@ namespace ashes
 		return 0;
 	}
 	/**
-	*\~english
 	*\brief
 	*	Gets the name of the given element type.
 	*\param[in] value
 	*	The element type.
 	*\return
 	*	The name.
-	*\~french
-	*\brief
-	*	Récupère le nom du type d'élément donné.
-	*\param[in] value
-	*	Le type d'élément.
-	*\return
-	*	Le nom.
 	*/
 	inline std::string getName( ConstantFormat value )
 	{

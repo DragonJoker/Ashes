@@ -9,18 +9,13 @@ See LICENSE file in root folder
 namespace ashes
 {
 	/**
-	*\~english
 	*\brief
 	*	GPU query pool implementation.
-	*\~french
-	*\brief
-	*	Implémentation d'un pool de requêtes GPU.
 	*/
 	class QueryPool
 	{
 	public:
 		/**
-		*\~english
 		*\brief
 		*	Constructor.
 		*\param[in] device
@@ -31,33 +26,17 @@ namespace ashes
 		*	The number of queries managed by the pool.
 		*\param[in] pipelineStatistics
 		*	Specifies the counters to be returned in queries.
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le périphérique logique.
-		*\param[in] type
-		*	Le type de requête.
-		*\param[in] count
-		*	Le nombre de requêtes gérées par le pool.
-		*\param[in] pipelineStatistics
-		*	Définit les compteurs que les requêtes retournent.
 		*/
 		QueryPool( Device const & device
 			, VkQueryType type
 			, uint32_t count
 			, VkQueryPipelineStatisticFlags pipelineStatistics );
 		/**
-		*\~english
 		*\brief
 		*	Destructor.
-		*\~french
-		*\brief
-		*	Destructeur.
 		*/
 		~QueryPool();
 		/**
-		*\~english
 		*\brief
 		*	Rerieves the status or result of a set of queries.
 		*\param[in] firstQuery
@@ -70,19 +49,6 @@ namespace ashes
 		*	Specifies how and when results are returned.
 		*\param[out] data
 		*	Receives the results.
-		*\~french
-		*\brief
-		*	Récupère le statut ou le résultat d'un ensemble de requêtes.
-		*\param[in] firstQuery
-		*	L'index de la première requête.
-		*\param[in] queryCount
-		*	Le nombre de requêtes (à partir de \p firstQuery).
-		*\param[in] stride
-		*	L'intervalle en octets entre les résultats pour chaque requête, dans \p data.
-		*\param[in] flags
-		*	Définit quand et comment les résultats sont récupérés.
-		*\param[out] data
-		*	Reçoit les résultats.
 		*/
 		void getResults( uint32_t firstQuery
 			, uint32_t queryCount
@@ -90,7 +56,6 @@ namespace ashes
 			, VkQueryResultFlags flags
 			, UInt32Array & data )const;
 		/**
-		*\~english
 		*\brief
 		*	Rerieves the status or result of a set of queries.
 		*\param[in] firstQuery
@@ -103,19 +68,6 @@ namespace ashes
 		*	Specifies how and when results are returned.
 		*\param[out] data
 		*	Receives the results.
-		*\~french
-		*\brief
-		*	Récupère le statut ou le résultat d'un ensemble de requêtes.
-		*\param[in] firstQuery
-		*	L'index de la première requête.
-		*\param[in] queryCount
-		*	Le nombre de requêtes (à partir de \p firstQuery).
-		*\param[in] stride
-		*	L'intervalle en octets entre les résultats pour chaque requête, dans \p data.
-		*\param[in] flags
-		*	Définit quand et comment les résultats sont récupérés.
-		*\param[out] data
-		*	Reçoit les résultats.
 		*/
 		void getResults( uint32_t firstQuery
 			, uint32_t queryCount
@@ -123,46 +75,26 @@ namespace ashes
 			, VkQueryResultFlags flags
 			, UInt64Array & data )const;
 		/**
-		*\~english
-		*\return
-		*	The query type.
-		*\~french
-		*\return
-		*	Le type de requête.
+		*\name
+		*	Getters.
 		*/
+		/**@{*/
 		inline VkQueryType getType()const
 		{
 			return m_type;
 		}
-		/**
-		*\~english
-		*\return
-		*	The number of queries in the pool.
-		*\~french
-		*\return
-		*	Le nombre de requêtes dans le pool.
-		*/
+
 		inline uint32_t getCount()const
 		{
 			return m_count;
 		}
-		/**
-		*\~english
-		*\return
-		*	The counters to be returned in queries.
-		*\~french
-		*\return
-		*	Les compteurs que les requêtes retournent.
-		*/
+
 		inline VkQueryPipelineStatisticFlags const & getPipelineStatistics()const
 		{
 			return m_pipelineStatistics;
 		}
+		/**@}*/
 		/**
-		*\~french
-		*\brief
-		*	Conversion implicite vers VkQueryPool.
-		*\~english
 		*\brief
 		*	VkQueryPool implicit cast operator.
 		*/

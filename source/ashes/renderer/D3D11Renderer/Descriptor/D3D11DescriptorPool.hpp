@@ -19,14 +19,6 @@ namespace ashes::d3d11
 	public:
 		DescriptorPool( VkDevice device
 			, VkDescriptorPoolCreateInfo createInfos );
-		/**
-		*\~french
-		*\brief
-		*	Destructeur.
-		*\~english
-		*\brief
-		*	Destructor.
-		*/
 		~DescriptorPool();
 
 		void registerSet( VkDescriptorSet set );

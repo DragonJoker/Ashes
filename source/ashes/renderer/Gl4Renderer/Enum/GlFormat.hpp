@@ -14,12 +14,8 @@ namespace ashes::gl4
 		: GLenum
 	{
 		/**
-		*\~english
-		*name
+		*\name
 		*	Colour formats.
-		*\~french
-		*name
-		*	Formats de couleur.
 		*/
 		/**@{*/
 		GL_INTERNAL_R4G4B4A4_UNORM_PACK16 = 0x8056,
@@ -84,12 +80,8 @@ namespace ashes::gl4
 		GL_INTERNAL_E5B9G9R9_UFLOAT_PACK32 = 0x8C3D,
 		/**@}*/
 		/**
-		*\~english
-		*name
+		*\name
 		*	Depth / stencil formats.
-		*\~french
-		*name
-		*	Formats de profondeur / stencil.
 		*/
 		/**@{*/
 		GL_INTERNAL_D16_UNORM = 0x81A5,
@@ -100,12 +92,8 @@ namespace ashes::gl4
 		GL_INTERNAL_D32_SFLOAT_S8_UINT = 0x8CAD,
 		/**@}*/
 		/**
-		*\~english
-		*name
+		*\name
 		*	BC compressed formats.
-		*\~french
-		*name
-		*	Formats de compression BC.
 		*/
 		/**@{*/
 		GL_INTERNAL_BC1_RGB_UNORM_BLOCK = 0x83F0,
@@ -126,12 +114,8 @@ namespace ashes::gl4
 		GL_INTERNAL_BC7_SRGB_BLOCK = 0x8E8D,
 		/**@}*/
 		/**
-		*\~english
-		*name
+		*\name
 		*	ETC compressed formats.
-		*\~french
-		*name
-		*	Formats de compression ETC.
 		*/
 		/**@{*/
 		GL_INTERNAL_ETC2_R8G8B8_UNORM_BLOCK = 0x9274,
@@ -142,12 +126,8 @@ namespace ashes::gl4
 		GL_INTERNAL_ETC2_R8G8B8A8_SRGB_BLOCK = 0x9279,
 		/**@}*/
 		/**
-		*\~english
-		*name
+		*\name
 		*	ETC compressed formats.
-		*\~french
-		*name
-		*	Formats de compression ETC.
 		*/
 		/**@{*/
 		GL_INTERNAL_EAC_R11_UNORM_BLOCK = 0x9270,
@@ -156,12 +136,8 @@ namespace ashes::gl4
 		GL_INTERNAL_EAC_R11G11_SNORM_BLOCK = 0x9273,
 		/**@}*/
 		/**
-		*\~english
-		*name
+		*\name
 		*	ASTC compressed formats.
-		*\~french
-		*name
-		*	Formats de compression ASTC.
 		*/
 		/**@{*/
 		GL_INTERNAL_ASTC_4x4_UNORM_BLOCK = 0x93B0,
@@ -234,40 +210,8 @@ namespace ashes::gl4
 	std::string getName( GlFormat value );
 	std::string getName( GlType value );
 	bool isSupportedInternal( VkFormat const & format )noexcept;
-	/**
-	*\brief
-	*	Convertit un VkFormat en GlInternal.
-	*\param[in] format
-	*	Le VkFormat.
-	*\return
-	*	Le GlInternal.
-	*/
 	GlInternal getInternalFormat( VkFormat const & format )noexcept;
-	/**
-	*\brief
-	*	Convertit un VkFormat en GlFormat.
-	*\param[in] format
-	*	Le VkFormat.
-	*\return
-	*	Le GlFormat.
-	*/
 	GlFormat getFormat( GlInternal format )noexcept;
-	/**
-	*\brief
-	*	Convertit un VkFormat en GlType.
-	*\param[in] format
-	*	Le VkFormat.
-	*\return
-	*	Le GlType.
-	*/
 	GlType getType( GlInternal format )noexcept;
-	/**
-	*\brief
-	*	Convertit un GlInternal en VkFormat.
-	*\param[in] format
-	*	Le GlInternal.
-	*\return
-	*	Le VkFormat.
-	*/
 	VkFormat convert( GlInternal format )noexcept;
 }

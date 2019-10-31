@@ -14,93 +14,67 @@ namespace ashes
 {
 	/**
 	*\brief
-	*	Tampon de sommets.
+	*	Base class for a vertex buffer.
 	*/
 	class VertexBufferBase
 	{
 	public:
 		/**
 		*\brief
-		*	Constructeur.
+		*	Constructor.
 		*\param[in] device
-		*	Le périphérique logique.
+		*	The logical device.
 		*\param[in] size
-		*	La taille du tampon.
+		*	The buffer size.
 		*\param[in] usage
-		*	Les indicateurs d'utilisation du tampon.
+		*	The buffer usage flags.
+		*\param[in] sharingMode
+		*	The buffer sharing mode.
 		*/
 		VertexBufferBase( Device const & device
 			, VkDeviceSize size
 			, VkBufferUsageFlags usage
 			, QueueShare sharingMode = {} );
 		/**
-		*\~english
 		*\brief
 		*	Destructor.
-		*\~french
-		*\brief
-		*	Destructeur.
 		*/
 		~VertexBufferBase() = default;
 		/**
-		*\~english
 		*\brief
 		*	Binds this buffer to given device memory object.
 		*\param[in] memory
 		*	The memory object.
-		*\~french
-		*\brief
-		*	Lie ce tampon à l'objet mémoire donné.
-		*\param[in] memory
-		*	L'object mémoire de périphérique.
 		*/
 		void bindMemory( DeviceMemoryPtr memory );
 		/**
-		*\~english
-		*\return
-		*	The memory requirements for this buffer.
-		*\~french
-		*\return
-		*	Les exigences mémoire pour ce tampon.
-		*/
+		*\name
+		*	Getters.
+		**/
+		/**@{*/
 		VkMemoryRequirements getMemoryRequirements()const;
-		/**
-		*\return
-		*	La taille du tampon.
-		*/
+
 		inline VkDeviceSize getSize()const
 		{
 			return m_size;
 		}
-		/**
-		*\return
-		*	Le tampon GPU.
-		*/
+
 		inline BufferBase const & getBuffer()const
 		{
 			return *m_buffer;
 		}
-		/**
-		*\return
-		*	Le tampon GPU.
-		*/
+
 		inline BufferBase & getBuffer()
 		{
 			return *m_buffer;
 		}
-		/**
-		*\return
-		*	Le périphérique logique.
-		*/
+
 		inline Device const & getDevice()const
 		{
 			return m_device;
 		}
+		/**@}*/
 		/**
-		*\~french
-		*\brief
-		*	Conversion implicite vers VkBuffer.
-		*\~english
 		*\brief
 		*	VkBuffer implicit cast operator.
 		*/
@@ -116,17 +90,17 @@ namespace ashes
 	};
 	/**
 	*\brief
-	*	Fonction d'aide à la création d'un Buffer.
+	*	Vertex buffer creation helper.
 	*\param[in] device
-	*	Le périphérique logique.
-	*\param[in] count
-	*	La nombre d'éléments dans le tampon.
+	*	The logical device.
+	*\param[in] size
+	*	The buffer size.
 	*\param[in] usage
-	*	Les indicateurs d'utilisation du tampon.
-	*\param[in] flags
-	*	Les indicateurs de mémoire du tampon.
+	*	The buffer usage flags.
+	*\param[in] sharingMode
+	*	The buffer sharing mode.
 	*\return
-	*	Le tampon créé.
+	*	The created buffer.
 	*/
 	inline VertexBufferBasePtr makeVertexBufferBase( Device const & device
 		, VkDeviceSize size
@@ -140,7 +114,7 @@ namespace ashes
 	}
 	/**
 	*\brief
-	*	Tampon de sommets, typé.
+	*	Typed vertex buffer.
 	*/
 	template< typename T >
 	class VertexBuffer
@@ -149,56 +123,31 @@ namespace ashes
 	public:
 		/**
 		*\brief
-		*	Constructeur.
+		*	Constructor.
 		*\param[in] device
-		*	Le périphérique logique.
+		*	The logical device.
 		*\param[in] count
-		*	La nombre d'éléments dans le tampon.
+		*	The buffer elements count.
 		*\param[in] usage
-		*	Les indicateurs d'utilisation du tampon.
+		*	The buffer usage flags.
+		*\param[in] sharingMode
+		*	The buffer sharing mode.
 		*/
 		inline VertexBuffer( Device const & device
 			, VkDeviceSize count
 			, VkBufferUsageFlags usage
 			, QueueShare sharingMode = {} );
 		/**
-		*\~english
 		*\brief
 		*	Binds this buffer to given device memory object.
 		*\param[in] memory
 		*	The memory object.
-		*\~french
-		*\brief
-		*	Lie ce tampon à l'objet mémoire donné.
-		*\param[in] memory
-		*	L'object mémoire de périphérique.
 		*/
 		inline void bindMemory( DeviceMemoryPtr memory )
 		{
 			m_buffer->bindMemory( std::move( memory ) );
 		}
 		/**
-		*\~english
-		*\return
-		*	The memory requirements for this buffer.
-		*\~french
-		*\return
-		*	Les exigences mémoire pour ce tampon.
-		*/
-		inline VkMemoryRequirements getMemoryRequirements()const
-		{
-			return m_buffer->getMemoryRequirements();
-		}
-		/**
-		*\return
-		*	Le nombre d'éléments contenus dans ce tampon.
-		*/
-		inline VkDeviceSize getCount()const
-		{
-			return m_buffer->getSize() / sizeof( T );
-		}
-		/**
-		*\~english
 		*\brief
 		*	Maps a range of the buffer's memory in RAM.
 		*\param[in] offset
@@ -209,17 +158,6 @@ namespace ashes
 		*	The mapping flags.
 		*\return
 		*	\p nullptr if mapping failed.
-		*\~french
-		*\brief
-		*	Mappe la mémoire du tampon en RAM.
-		*\param[in] offset
-		*	L'offset à partir duquel les éléments du tampon sont mappés.
-		*\param[in] count
-		*	Le nombre d'éléments à mapper.
-		*\param[in] flags
-		*	Indicateurs de configuration du mapping.
-		*\return
-		*	\p nullptr si le mapping a échoué.
 		*/
 		inline T * lock( VkDeviceSize offset
 			, VkDeviceSize count
@@ -229,20 +167,12 @@ namespace ashes
 			return reinterpret_cast< T * >( m_buffer->lock( offset, size, flags ) );
 		}
 		/**
-		*\~english
 		*\brief
 		*	Updates the VRAM.
 		*\param[in] offset
 		*	The mapped elements starting offset.
 		*\param[in] count
 		*	The range elements count.
-		*\~french
-		*\brief
-		*	Met à jour la VRAM.
-		*\param[in] offset
-		*	L'offset des éléments mappés.
-		*\param[in] count
-		*	Le nombre d'éléments mappés.
 		*/
 		inline void flush( VkDeviceSize offset
 			, VkDeviceSize count )const
@@ -251,20 +181,12 @@ namespace ashes
 			m_buffer->flush( offset, size );
 		}
 		/**
-		*\~english
 		*\brief
 		*	Invalidates the buffer content.
 		*\param[in] offset
 		*	The mapped elements starting offset.
 		*\param[in] count
 		*	The range elements count.
-		*\~french
-		*\brief
-		*	Invalide le contenu du tampon.
-		*\param[in] offset
-		*	L'offset des éléments mappés.
-		*\param[in] count
-		*	Le nombre d'éléments mappés.
 		*/
 		inline void invalidate( VkDeviceSize offset
 			, VkDeviceSize count )const
@@ -273,22 +195,29 @@ namespace ashes
 			m_buffer->invalidate( offset, size );
 		}
 		/**
-		*\~english
 		*\brief
 		*	Unmaps the buffer's memory from RAM.
-		*\~french
-		*\brief
-		*	Unmappe la mémoire du tampon de la RAM.
 		*/
 		void unlock()const
 		{
 			m_buffer->unlock();
 		}
 		/**
-		*\~french
-		*\brief
-		*	Conversion implicite vers VkBuffer.
-		*\~english
+		*\name
+		*	Getters.
+		**/
+		/**@{*/
+		inline VkMemoryRequirements getMemoryRequirements()const
+		{
+			return m_buffer->getMemoryRequirements();
+		}
+
+		inline VkDeviceSize getCount()const
+		{
+			return m_buffer->getSize() / sizeof( T );
+		}
+		/**@}*/
+		/**
 		*\brief
 		*	VkBuffer implicit cast operator.
 		*/
@@ -318,17 +247,17 @@ namespace ashes
 	};
 	/**
 	*\brief
-	*	Fonction d'aide à la création d'un Buffer.
+	*	Typed vertex buffer creation helper.
 	*\param[in] device
-	*	Le périphérique logique.
+	*	The logical device.
 	*\param[in] count
-	*	La nombre d'éléments dans le tampon.
+	*	The buffer elements count.
 	*\param[in] usage
-	*	Les indicateurs d'utilisation du tampon.
-	*\param[in] flags
-	*	Les indicateurs de mémoire du tampon.
+	*	The buffer usage flags.
+	*\param[in] sharingMode
+	*	The buffer sharing mode.
 	*\return
-	*	Le tampon créé.
+	*	The created buffer.
 	*/
 	template< typename T >
 	inline VertexBufferPtr< T > makeVertexBuffer( Device const & device

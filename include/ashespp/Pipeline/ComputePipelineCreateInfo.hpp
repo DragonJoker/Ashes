@@ -11,12 +11,8 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	/**
-	*\~english
 	*\brief
 	*	Holds the data used to create a compute pipeline.
-	*\~french
-	*\brief
-	*	Contient les données utilisées pour créer un pipeline de calcul.
 	*/
 	struct ComputePipelineCreateInfo
 	{

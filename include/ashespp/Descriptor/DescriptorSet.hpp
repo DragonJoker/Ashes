@@ -83,10 +83,6 @@ namespace ashes
 		bool needsUpdate;
 	};
 	/**
-	*\~french
-	*\brief
-	*	Set de descripteurs.
-	*\~english
 	*\brief
 	*	A descriptor set.
 	*/
@@ -94,14 +90,6 @@ namespace ashes
 	{
 	public:
 		/**
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] pool
-		*	Le pool parent.
-		*\param[in] bindingPoint
-		*	Le point d'attache du set.
-		*\~english
 		*\brief
 		*	Constructor.
 		*\param[in] pool
@@ -114,21 +102,11 @@ namespace ashes
 			, DescriptorSetLayout const & layout
 			, uint32_t bindingPoint );
 		/**
-		*\~french
-		*\brief
-		*	Destructeur.
-		*\~english
 		*\brief
 		*	Destructor.
 		*/
 		~DescriptorSet();
 		/**
-		*\~french
-		*\brief
-		*	Définit les attaches du set de descripteurs.
-		*\param[in] bindings
-		*	Les attaches.
-		*\~english
 		*\brief
 		*	Sets the descriptor set's attaches.
 		*\param[in] bindings
@@ -136,20 +114,6 @@ namespace ashes
 		*/
 		void setBindings( WriteDescriptorSetArray bindings );
 		/**
-		*\~french
-		*\brief
-		*	Crée une attache de type image et échantillonneur combinés.
-		*\param[in] layoutBinding
-		*	L'attache de layout.
-		*\param[in] view
-		*	L'image.
-		*\param[in] sampler
-		*	L'échantillonneur.
-		*\param[in] layout
-		*	Le layout de l'image voulu.
-		*\param[in] index
-		*	L'indice dans le tableau.
-		*\~english
 		*\brief
 		*	Creates a combined image and sampler binding.
 		*\param[in] layoutBinding
@@ -169,16 +133,6 @@ namespace ashes
 			, VkImageLayout layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
 			, uint32_t index = 0u );
 		/**
-		*\~french
-		*\brief
-		*	Crée une attache de type échantillonneur.
-		*\param[in] layoutBinding
-		*	L'attache de layout.
-		*\param[in] sampler
-		*	L'échantillonneur.
-		*\param[in] index
-		*	L'indice dans le tableau.
-		*\~english
 		*\brief
 		*	Creates a sampler binding.
 		*\param[in] layoutBinding
@@ -192,18 +146,6 @@ namespace ashes
 			, Sampler const & sampler
 			, uint32_t index = 0u );
 		/**
-		*\~french
-		*\brief
-		*	Crée une attache de type image échantillonée.
-		*\param[in] layoutBinding
-		*	L'attache de layout.
-		*\param[in] view
-		*	L'image.
-		*\param[in] layout
-		*	Le layout de l'image.
-		*\param[in] index
-		*	L'indice dans le tableau.
-		*\~english
 		*\brief
 		*	Creates a sampled image binding.
 		*\param[in] layoutBinding
@@ -220,16 +162,6 @@ namespace ashes
 			, VkImageLayout layout
 			, uint32_t index = 0u );
 		/**
-		*\~french
-		*\brief
-		*	Crée une attache de type image de stockage.
-		*\param[in] layoutBinding
-		*	L'attache de layout.
-		*\param[in] view
-		*	L'image.
-		*\param[in] index
-		*	L'indice dans le tableau.
-		*\~english
 		*\brief
 		*	Creates a storage image binding.
 		*\param[in] layoutBinding
@@ -243,20 +175,6 @@ namespace ashes
 			, ImageView const & view
 			, uint32_t index = 0u );
 		/**
-		*\~french
-		*\brief
-		*	Crée une attache de type tampon uniforme.
-		*\param[in] layoutBinding
-		*	L'attache de layout.
-		*\param[in] uniformBuffer
-		*	Le tampon.
-		*\param[in] offset
-		*	Le décalage de l'attache dans le tampon.
-		*\param[in] range
-		*	Le décompte des données pouvant être lues depuis l'attache dans le tampon.
-		*\param[in] index
-		*	L'indice dans le tableau.
-		*\~english
 		*\brief
 		*	Creates a uniform buffer binding.
 		*\param[in] layoutBinding
@@ -276,20 +194,6 @@ namespace ashes
 			, uint32_t range
 			, uint32_t index = 0u );
 		/**
-		*\~french
-		*\brief
-		*	Crée une attache de type tampon de stockage ou uniforme.
-		*\param[in] layoutBinding
-		*	L'attache de layout.
-		*\param[in] buffer
-		*	Le tampon.
-		*\param[in] offset
-		*	Le décalage de l'attache dans le tampon.
-		*\param[in] range
-		*	Le décompte des données pouvant être lues depuis l'attache dans le tampon.
-		*\param[in] index
-		*	L'indice dans le tableau.
-		*\~english
 		*\brief
 		*	Creates a storage or uniform buffer binding.
 		*\param[in] layoutBinding
@@ -309,18 +213,6 @@ namespace ashes
 			, uint32_t range
 			, uint32_t index = 0u );
 		/**
-		*\~french
-		*\brief
-		*	Crée une attache de type tampon de texels.
-		*\param[in] layoutBinding
-		*	L'attache de layout.
-		*\param[in] buffer
-		*	Le tampon.
-		*\param[in] view
-		*	La vue sur le tampon.
-		*\param[in] index
-		*	L'indice dans le tableau.
-		*\~english
 		*\brief
 		*	Creates a texel buffer binding.
 		*\param[in] layoutBinding
@@ -337,22 +229,6 @@ namespace ashes
 			, BufferView const & view
 			, uint32_t index = 0u );
 		/**
-		*\~french
-		*\brief
-		*	Crée une attache de type tampon uniforme dynamique.
-		*\remarks
-		*	Permet de spécifier un offset supplémentaire au moment du binding du descripteur.
-		*\param[in] layoutBinding
-		*	L'attache de layout.
-		*\param[in] uniformBuffer
-		*	Le tampon.
-		*\param[in] offset
-		*	Le décalage de l'attache dans le tampon.
-		*\param[in] range
-		*	Le décompte des données pouvant être lues depuis l'attache dans le tampon.
-		*\param[in] index
-		*	L'indice dans le tableau.
-		*\~english
 		*\brief
 		*	Creates a dynamic uniform buffer binding.
 		*\remarks
@@ -374,22 +250,6 @@ namespace ashes
 			, uint32_t range
 			, uint32_t index );
 		/**
-		*\~french
-		*\brief
-		*	Crée une attache de type tampon de stockage ou uniforme dynamique.
-		*\remarks
-		*	Permet de spécifier un offset supplémentaire au moment du binding du descripteur.
-		*\param[in] layoutBinding
-		*	L'attache de layout.
-		*\param[in] buffer
-		*	Le tampon.
-		*\param[in] offset
-		*	Le décalage de l'attache dans le tampon.
-		*\param[in] range
-		*	Le décompte des données pouvant être lues depuis l'attache dans le tampon.
-		*\param[in] index
-		*	L'indice dans le tableau.
-		*\~english
 		*\brief
 		*	Creates a dynamic storage or uniform buffer binding.
 		*\remarks
@@ -411,20 +271,6 @@ namespace ashes
 			, uint32_t range
 			, uint32_t index = 0u );
 		/**
-		*\~french
-		*\brief
-		*	Crée une attache de type tampon de variables uniformes.
-		*\param[in] layoutBinding
-		*	L'attache de layout.
-		*\param[in] uniformBuffer
-		*	Le tampon.
-		*\param[in] offset
-		*	Le décalage de l'attache dans le tampon.
-		*\param[in] range
-		*	Le décompte des données pouvant être lues depuis l'attache dans le tampon.
-		*\param[in] index
-		*	L'indice dans le tableau.
-		*\~english
 		*\brief
 		*	Creates a uniform buffer binding.
 		*\param[in] layoutBinding
@@ -452,20 +298,6 @@ namespace ashes
 				, index );
 		}
 		/**
-		*\~french
-		*\brief
-		*	Crée une attache de type tampon de variables uniformes.
-		*\param[in] layoutBinding
-		*	L'attache de layout.
-		*\param[in] uniformBuffer
-		*	Le tampon.
-		*\param[in] offset
-		*	Le décalage de l'attache dans le tampon.
-		*\param[in] range
-		*	Le décompte des données pouvant être lues depuis l'attache dans le tampon.
-		*\param[in] index
-		*	L'indice dans le tableau.
-		*\~english
 		*\brief
 		*	Creates a uniform buffer binding.
 		*\param[in] layoutBinding
@@ -493,20 +325,6 @@ namespace ashes
 				, index );
 		}
 		/**
-		*\~french
-		*\brief
-		*	Crée une attache de type tampon de stockage.
-		*\param[in] layoutBinding
-		*	L'attache de layout.
-		*\param[in] storageBuffer
-		*	Le tampon.
-		*\param[in] offset
-		*	Le décalage de l'attache dans le tampon.
-		*\param[in] range
-		*	Le décompte des données pouvant être lues depuis l'attache dans le tampon.
-		*\param[in] index
-		*	L'indice dans le tableau.
-		*\~english
 		*\brief
 		*	Creates a storage buffer binding.
 		*\param[in] layoutBinding
@@ -534,18 +352,6 @@ namespace ashes
 				, index );
 		}
 		/**
-		*\~french
-		*\brief
-		*	Crée une attache de type tampon de texels.
-		*\param[in] layoutBinding
-		*	L'attache de layout.
-		*\param[in] buffer
-		*	Le tampon.
-		*\param[in] view
-		*	La vue sur le tampon.
-		*\param[in] index
-		*	L'indice dans le tableau.
-		*\~english
 		*\brief
 		*	Creates a texel buffer binding.
 		*\param[in] layoutBinding
@@ -568,18 +374,6 @@ namespace ashes
 				, index );
 		}
 		/**
-		*\~french
-		*\brief
-		*	Crée une attache de type tampon de texels.
-		*\param[in] layoutBinding
-		*	L'attache de layout.
-		*\param[in] buffer
-		*	Le tampon.
-		*\param[in] view
-		*	La vue sur le tampon.
-		*\param[in] index
-		*	L'indice dans le tableau.
-		*\~english
 		*\brief
 		*	Creates a texel buffer binding.
 		*\param[in] layoutBinding
@@ -603,22 +397,6 @@ namespace ashes
 				, index );
 		}
 		/**
-		*\~french
-		*\brief
-		*	Crée une attache de type tampon de variables uniformes dynamique.
-		*\remarks
-		*	Permet de spécifier un offset supplémentaire au moment du binding du descripteur.
-		*\param[in] layoutBinding
-		*	L'attache de layout.
-		*\param[in] uniformBuffer
-		*	Le tampon.
-		*\param[in] offset
-		*	Le décalage de l'attache dans le tampon.
-		*\param[in] range
-		*	Le décompte des données pouvant être lues depuis l'attache dans le tampon.
-		*\param[in] index
-		*	L'indice dans le tableau.
-		*\~english
 		*\brief
 		*	Creates a dynamic uniform buffer binding.
 		*\remarks
@@ -648,22 +426,6 @@ namespace ashes
 				, index );
 		}
 		/**
-		*\~french
-		*\brief
-		*	Crée une attache de type tampon de variables uniformes dynamique.
-		*\remarks
-		*	Permet de spécifier un offset supplémentaire au moment du binding du descripteur.
-		*\param[in] layoutBinding
-		*	L'attache de layout.
-		*\param[in] uniformBuffer
-		*	Le tampon.
-		*\param[in] offset
-		*	Le décalage de l'attache dans le tampon.
-		*\param[in] range
-		*	Le décompte des données pouvant être lues depuis l'attache dans le tampon.
-		*\param[in] index
-		*	L'indice dans le tableau.
-		*\~english
 		*\brief
 		*	Creates a dynamic uniform buffer binding.
 		*\remarks
@@ -693,22 +455,6 @@ namespace ashes
 				, index );
 		}
 		/**
-		*\~french
-		*\brief
-		*	Crée une attache de type tampon de stockage dynamique.
-		*\remarks
-		*	Permet de spécifier un offset supplémentaire au moment du binding du descripteur.
-		*\param[in] layoutBinding
-		*	L'attache de layout.
-		*\param[in] storageBuffer
-		*	Le tampon.
-		*\param[in] offset
-		*	Le décalage de l'attache dans le tampon.
-		*\param[in] range
-		*	Le décompte des données pouvant être lues depuis l'attache dans le tampon.
-		*\param[in] index
-		*	L'indice dans le tableau.
-		*\~english
 		*\brief
 		*	Creates a dynamic storage buffer binding.
 		*\remarks
@@ -738,19 +484,11 @@ namespace ashes
 				, index );
 		}
 		/**
-		*\~french
-		*\brief
-		*	Met à jour toutes les attaches du set de descripteurs.
-		*\~english
 		*\brief
 		*	Updates all the bindings in the descriptor set.
 		*/
 		void update()const;
 		/**
-		*\~french
-		*\return
-		*	Le point d'attache du set.
-		*\~english
 		*\return
 		*	The binding point for the set.
 		*/
@@ -759,10 +497,6 @@ namespace ashes
 			return m_bindingPoint;
 		}
 		/**
-		*\~french
-		*\return
-		*	Le descripteur à l'indice donné.
-		*\~english
 		*\return
 		*	The descriptor at given index.
 		*/
@@ -772,10 +506,6 @@ namespace ashes
 			return m_writes[index];
 		}
 		/**
-		*\~french
-		*\return
-		*	Le descripteur à l'indice donné.
-		*\~english
 		*\return
 		*	The descriptor at given index.
 		*/
@@ -785,10 +515,6 @@ namespace ashes
 			return m_writes[index];
 		}
 		/**
-		*\~french
-		*\return
-		*	Dit si l'ensemble est vide.
-		*\~english
 		*\return
 		*	Tells if the set is empty.
 		*/
@@ -797,10 +523,6 @@ namespace ashes
 			return m_writes.empty();
 		}
 		/**
-		*\~french
-		*\brief
-		*	Conversion implicite vers VkDescriptorSet.
-		*\~english
 		*\brief
 		*	VkDescriptorSet implicit cast operator.
 		*/

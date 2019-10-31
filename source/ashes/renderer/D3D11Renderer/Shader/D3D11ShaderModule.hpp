@@ -93,14 +93,7 @@ namespace ashes::d3d11
 		ID3DBlob * m_compiled{ nullptr };
 		ShaderDesc m_layout;
 	};
-	/**
-	*\~french
-	*\brief
-	*	Classe encapsulant un TestShaderModule.
-	*\~english
-	*\brief
-	*	TestShaderModule wrapper.
-	*/
+
 	class ShaderModule
 	{
 	public:

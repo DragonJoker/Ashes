@@ -22,36 +22,25 @@ namespace ashes
 			}
 		};
 		/**
-		 *\~english
-		 *\brief		Initialises debug data.
-		 *\~french
-		 *\brief		Initialise les données de débogage.
-		 */
+		*\brief
+		*	Initialises debug data.
+		*/
 		void initialise();
 		/**
-		 *\~english
-		 *\brief		Cleans up debug data.
-		 *\~french
-		 *\brief		Nettoie les données de débogage.
-		 */
+		*\brief
+		*	Cleans up debug data.
+		*/
 		void cleanup();
 		/**
-		 *\~english
-		 *\brief			Puts the backtrace into a stream
-		 *\param[in,out]	stream	The stream
-		 *\~french
-		 *\brief			Transmet la pile d'appels dans un flux
-		 *\param[in,out]	stream	Le flux
-		 */
+		*\brief
+		*	Puts the backtrace into a stream.
+		*\param[in,out] stream
+		*	The stream.
+		*/
 		std::ostream & operator<<( std::ostream & stream, Backtrace const & trace );
-		/*!
-		\author 	Sylvain DOREMUS
-		\date		05/10/2015
-		\version	0.8.0
-		\~english
-		\brief		Helper class used to enable allocation backtrace retrieval.
-		\~french
-		\brief		Classe d'aide permettant la récupération de la pile d'appels d'allocation.
+		/**
+		*\brief
+		*	Helper class used to enable allocation backtrace retrieval.
 		*/
 		class Backtraced
 		{
