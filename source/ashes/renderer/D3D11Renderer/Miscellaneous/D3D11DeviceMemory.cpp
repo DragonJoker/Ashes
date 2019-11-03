@@ -159,6 +159,7 @@ namespace ashes::d3d11
 
 		if ( lock( context, subresource, mapped ) == VK_SUCCESS )
 		{
+			copySize = std::min( copySize, VkDeviceSize( mapped.DepthPitch ) );
 			std::memcpy( static_cast< uint8_t * >( mapped.pData ) + objectOffset
 				, data + maxOffset
 				, copySize );
@@ -194,6 +195,7 @@ namespace ashes::d3d11
 
 		if ( lock( context, subresource, mapped ) == VK_SUCCESS )
 		{
+			copySize = std::min( copySize, VkDeviceSize( mapped.DepthPitch ) );
 			std::memcpy( data + maxOffset
 				, static_cast< uint8_t * >( mapped.pData ) + objectOffset
 				, copySize );

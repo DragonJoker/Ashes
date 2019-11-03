@@ -161,6 +161,10 @@ int main( int argc, char ** argv )
 }
 ```
 
+## Contact
+
+You can reach me on the Discord server dedicated to my projects: [DragonJoker's Lair](https://discord.gg/jue8kW)
+
 ## Test applications
 
 These applications are used to validate the basic functionalities of the library.
