@@ -23,14 +23,14 @@ namespace ashes::gl4
 		switch ( value )
 		{
 		case VK_FRONT_FACE_COUNTER_CLOCKWISE:
-			return GL_FRONT_FACE_CCW;
+			return GL_FRONT_FACE_CW;
 
 		case VK_FRONT_FACE_CLOCKWISE:
-			return GL_FRONT_FACE_CW;
+			return GL_FRONT_FACE_CCW;
 
 		default:
 			assert( false && "Unsupported front face mode");
-			return GL_FRONT_FACE_CCW;
+			return GL_FRONT_FACE_CW;
 		}
 	}
 }

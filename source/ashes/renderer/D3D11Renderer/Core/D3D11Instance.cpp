@@ -156,8 +156,8 @@ namespace ashes::d3d11
 		: m_flags{ createInfo.flags }
 		, m_enabledLayerNames{ ashes::convert( CharPtrArray{ createInfo.ppEnabledLayerNames, createInfo.ppEnabledLayerNames + createInfo.enabledLayerCount } ) }
 		, m_enabledExtensions{ ashes::convert( CharPtrArray{ createInfo.ppEnabledExtensionNames, createInfo.ppEnabledExtensionNames + createInfo.enabledExtensionCount } ) }
+		, m_factory{ createDXGIFactory() }
 	{
-		createDXGIFactory();
 		doLoadAdapters();
 		doInitialisePhysicalDevices();
 
