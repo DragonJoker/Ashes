@@ -1,15 +1,15 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	std::string getName( GlIndexType value )
 	{
 		switch ( value )
 		{
-		case gl_renderer::GL_INDEX_TYPE_UINT16:
+		case GL_INDEX_TYPE_UINT16:
 			return "GL_UNSIGNED_SHORT";
 
-		case gl_renderer::GL_INDEX_TYPE_UINT32:
+		case GL_INDEX_TYPE_UINT32:
 			return "GL_UNSIGNED_INT";
 
 		default:

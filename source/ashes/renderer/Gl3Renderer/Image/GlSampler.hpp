@@ -8,34 +8,24 @@
 #define ___GlRenderer_Sampler_HPP___
 #pragma once
 
-#include "Gl3Renderer/GlRendererPrerequisites.hpp"
+#include "renderer/Gl3Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Image/Sampler.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
 	class Sampler
-		: public ashes::Sampler
 	{
 	public:
-		Sampler( Device const & device
-			, ashes::SamplerCreateInfo const & createInfo );
-		/**
-		*\brief
-		*	Destructeur.
-		*/
+		Sampler( VkDevice device
+			, VkSamplerCreateInfo const & createInfo );
 		~Sampler();
-		/**
-		*\return
-		*	L'échantillonneur OpenGL.
-		*/
-		inline GLuint getSampler()const noexcept
+
+		inline GLuint getInternal()const noexcept
 		{
 			return m_sampler;
 		}
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
 		GLuint m_sampler;
 	};
 }

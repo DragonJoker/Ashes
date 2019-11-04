@@ -4,39 +4,42 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include "Gl3Renderer/GlRendererPrerequisites.hpp"
+#include "renderer/Gl3Renderer/GlRendererPrerequisites.hpp"
+#include "renderer/Gl3Renderer/Command/Commands/GlCommandBase.hpp"
 
-#include <Ashes/Command/Queue.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
+	void applyBuffer( ContextLock const & lock
+		, CmdBuffer const & cmds );
+	void applyList( ContextLock const & lock
+		, CmdList const & cmds );
+
 	class Queue
-		: public ashes::Queue
 	{
 	public:
-		Queue( Device const & device
-			, ashes::DeviceQueueCreateInfo createInfo
+		Queue( VkDevice device
+			, VkDeviceQueueCreateInfo createInfo
 			, uint32_t index );
-		/**
-		*\copydoc		ashes::Queue::submit
-		*/
-		void submit( ashes::CommandBufferCRefArray const & commandBuffers
-			, ashes::SemaphoreCRefArray const & semaphoresToWait
-			, ashes::VkPipelineStageFlagsArray const & semaphoresStage
-			, ashes::SemaphoreCRefArray const & semaphoresToSignal
-			, ashes::Fence const * fence )const override;
-		/**
-		*\copydoc		ashes::Queue::present
-		*/
-		ashes::VkResultArray present( ashes::SwapChainCRefArray const & swapChains
-			, ashes::UInt32Array const & imagesIndex
-			, ashes::SemaphoreCRefArray const & semaphoresToWait )const override;
-		/**
-		*\copydoc		ashes::Queue::waitIdle
-		*/
-		void waitIdle()const override;
+
+		VkResult submit( VkSubmitInfoArray const & values
+			, VkFence fence )const;
+		VkResult present( VkPresentInfoKHR const & presentInfo )const;
+		VkResult waitIdle()const;
+#if VK_EXT_debug_utils
+		void beginDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const;
+		void endDebugUtilsLabel()const;
+		void insertDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const;
+#endif
 
 	private:
-		Device const & m_device;
+		void submit( ContextLock & context
+			, VkSubmitInfo const & value
+			, VkFence fence )const;
+
+	private:
+		VkDevice m_device;
+		VkDeviceQueueCreateInfo m_createInfo;
+		uint32_t m_index;
+		mutable Optional< DebugLabel > m_label;
 	};
 }

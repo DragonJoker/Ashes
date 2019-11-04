@@ -1,24 +1,24 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	std::string getName( GlWrapMode value )
 	{
 		switch ( value )
 		{
-		case gl_renderer::GL_WRAP_MODE_REPEAT:
+		case GL_WRAP_MODE_REPEAT:
 			return "GL_REPEAT";
 
-		case gl_renderer::GL_WRAP_MODE_MIRRORED_REPEAT:
+		case GL_WRAP_MODE_MIRRORED_REPEAT:
 			return "GL_MIRRORED_REPEAT";
 
-		case gl_renderer::GL_WRAP_MODE_CLAMP_TO_EDGE:
+		case GL_WRAP_MODE_CLAMP_TO_EDGE:
 			return "GL_CLAMP_TO_EDGE";
 
-		case gl_renderer::GL_WRAP_MODE_CLAMP_TO_BORDER:
+		case GL_WRAP_MODE_CLAMP_TO_BORDER:
 			return "GL_CLAMP_TO_BORDER";
 
-		case gl_renderer::GL_WRAP_MODE_MIRROR_CLAMP_TO_EDGE:
+		case GL_WRAP_MODE_MIRROR_CLAMP_TO_EDGE:
 			return "GL_CLAMP_TO_EDGE";
 
 		default:

@@ -8,18 +8,29 @@
 #define ___GlRenderer_DescriptorSetLayout_HPP___
 #pragma once
 
-#include "Gl3Renderer/GlRendererPrerequisites.hpp"
+#include "renderer/Gl3Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Descriptor/DescriptorSetLayout.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
 	class DescriptorSetLayout
-		: public ashes::DescriptorSetLayout
 	{
 	public:
-		DescriptorSetLayout( ashes::Device const & device
-			, ashes::DescriptorSetLayoutBindingArray bindings );
+		DescriptorSetLayout( VkDevice device
+			, VkDescriptorSetLayoutCreateInfo createInfo );
+
+		auto begin()const
+		{
+			return m_bindings.begin();
+		}
+
+		auto end()const
+		{
+			return m_bindings.end();
+		}
+
+	private:
+		VkDescriptorSetLayoutCreateInfo m_createInfo;
+		VkDescriptorSetLayoutBindingArray m_bindings;
 	};
 }
 

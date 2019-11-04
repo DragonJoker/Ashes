@@ -4,31 +4,28 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlSetDepthBiasCommand.hpp"
 
-namespace gl_renderer
-{
-	SetDepthBiasCommand::SetDepthBiasCommand( Device const & device
-		, float constantFactor
-		, float clamp
-		, float slopeFactor )
-		: CommandBase{ device }
-		, m_constantFactor{ constantFactor }
-		, m_clamp{ clamp }
-		, m_slopeFactor{ slopeFactor }
-	{
-	}
+#include "Core/GlContextLock.hpp"
 
-	void SetDepthBiasCommand::apply( ContextLock const & context )const
+namespace ashes::gl3
+{
+	void apply( ContextLock const & context
+		, CmdSetDepthBias const & cmd )
 	{
-		glLogCommand( "SetDepthBiasCommand" );
 		glLogCall( context
 			, glPolygonOffsetClampEXT
-			, m_slopeFactor
-			, m_constantFactor
-			, m_clamp );
+			, cmd.slopeFactor
+			, cmd.constantFactor
+			, cmd.clamp );
 	}
 
-	CommandPtr SetDepthBiasCommand::clone()const
+	void buildSetDepthBiasCommand( float constantFactor
+		, float clamp
+		, float slopeFactor
+		, CmdList & list )
 	{
-		return std::make_unique< SetDepthBiasCommand >( *this );
+		glLogCommand( "SetDepthBiasCommand" );
+		list.push_back( makeCmd< OpType::eSetDepthBias >( constantFactor
+			, clamp
+			, slopeFactor ) );
 	}
 }

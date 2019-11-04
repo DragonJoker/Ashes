@@ -2,14 +2,15 @@
 
 #include "Core/GlDevice.hpp"
 
-namespace gl_renderer
+#include "ashesgl3_api.hpp"
+
+namespace ashes::gl3
 {
-	Sampler::Sampler( Device const & device
-		, ashes::SamplerCreateInfo const & createInfo )
-		: ashes::Sampler{ device, createInfo }
-		, m_device{ device }
+	Sampler::Sampler( VkDevice device
+		, VkSamplerCreateInfo const & createInfo )
+		: m_device{ device }
 	{
-		auto context = m_device.getContext();
+		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glGenSamplers
 			, 1
@@ -54,7 +55,7 @@ namespace gl_renderer
 			, GL_SAMPLER_PARAMETER_MAX_LOD
 			, createInfo.maxLod );
 
-		if ( device.getFeatures().samplerAnisotropy && createInfo.anisotropyEnable )
+		if ( get( device )->getEnabledFeatures().samplerAnisotropy && createInfo.anisotropyEnable )
 		{
 			glLogCall( context
 				, glSamplerParameterf
@@ -82,7 +83,7 @@ namespace gl_renderer
 
 		switch ( createInfo.borderColor )
 		{
-		case ashes::BorderColour::eFloatTransparentBlack:
+		case VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK:
 			glLogCall( context
 				, glSamplerParameterfv
 				, m_sampler
@@ -90,7 +91,7 @@ namespace gl_renderer
 				, fvalues );
 			break;
 
-		case ashes::BorderColour::eIntTransparentBlack:
+		case VK_BORDER_COLOR_INT_TRANSPARENT_BLACK:
 			glLogCall( context
 				, glSamplerParameteriv
 				, m_sampler
@@ -98,7 +99,7 @@ namespace gl_renderer
 				, ivalues );
 			break;
 
-		case ashes::BorderColour::eFloatOpaqueBlack:
+		case VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK:
 			fvalues[3] = 1.0f;
 			glLogCall( context
 				, glSamplerParameterfv
@@ -107,7 +108,7 @@ namespace gl_renderer
 				, fvalues );
 			break;
 
-		case ashes::BorderColour::eIntOpaqueBlack:
+		case VK_BORDER_COLOR_INT_OPAQUE_BLACK:
 			ivalues[3] = 255;
 			glLogCall( context
 				, glSamplerParameteriv
@@ -116,7 +117,7 @@ namespace gl_renderer
 				, ivalues );
 			break;
 
-		case ashes::BorderColour::eFloatOpaqueWhite:
+		case VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE:
 			fvalues[0] = 1.0f;
 			fvalues[1] = 1.0f;
 			fvalues[2] = 1.0f;
@@ -128,7 +129,7 @@ namespace gl_renderer
 				, fvalues );
 			break;
 
-		case ashes::BorderColour::eIntOpaqueWhite:
+		case VK_BORDER_COLOR_INT_OPAQUE_WHITE:
 			ivalues[0] = 255;
 			ivalues[1] = 255;
 			ivalues[2] = 255;
@@ -144,7 +145,7 @@ namespace gl_renderer
 
 	Sampler::~Sampler()
 	{
-		auto context = m_device.getContext();
+		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glDeleteSamplers
 			, 1

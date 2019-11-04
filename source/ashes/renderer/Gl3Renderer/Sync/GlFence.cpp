@@ -6,7 +6,9 @@ See LICENSE file in root folder.
 
 #include "Core/GlDevice.hpp"
 
-namespace gl_renderer
+#include "ashesgl3_api.hpp"
+
+namespace ashes::gl3
 {
 	enum GlFenceWaitResult
 	{
@@ -15,13 +17,12 @@ namespace gl_renderer
 		GL_WAIT_RESULT_TIMEOUT_EXPIRED = 0x911B,
 	};
 
-	Fence::Fence( Device const & device
-		, ashes::FenceCreateFlags flags )
-		: ashes::Fence{ device, flags }
-		, m_device{ device }
+	Fence::Fence( VkDevice device
+		, VkFenceCreateFlags flags )
+		: m_device{ device }
 	{
-		auto context = m_device.getContext();
-		m_fence = glLogCall( context
+		auto context = get( m_device )->getContext();
+		m_fence = glLogNonVoidCall( context
 			, glFenceSync
 			, GL_WAIT_FLAG_SYNC_GPU_COMMANDS_COMPLETE
 			, 0u );
@@ -29,36 +30,49 @@ namespace gl_renderer
 
 	Fence::~Fence()
 	{
-		auto context = m_device.getContext();
+		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glDeleteSync
 			, m_fence );
 	}
 
-	ashes::WaitResult Fence::wait( uint64_t timeout )const
+	VkResult Fence::wait( ContextLock & context
+		, uint64_t timeout )const
 	{
-		auto context = m_device.getContext();
-		auto res = glLogCall( context
+		glLogCall( context
+			, glFlush );
+		auto res = glLogNonVoidCall( context
 			, glClientWaitSync
 			, m_fence
 			, GL_WAIT_FLAG_SYNC_FLUSH_COMMANDS_BIT
 			, timeout );
 		return ( res == GL_WAIT_RESULT_ALREADY_SIGNALED || res == GL_WAIT_RESULT_CONDITION_SATISFIED )
-			? ashes::WaitResult::eSuccess
+			? VK_SUCCESS
 			: ( res == GL_WAIT_RESULT_TIMEOUT_EXPIRED
-				? ashes::WaitResult::eTimeOut
-				: ashes::WaitResult::eError );
+				? VK_TIMEOUT
+				: VK_NOT_READY );
+	}
+
+	VkResult Fence::wait( uint64_t timeout )const
+	{
+		auto context = get( m_device )->getContext();
+		return wait( context, timeout );
+	}
+
+	void Fence::reset( ContextLock & context )const
+	{
+		glLogCall( context
+			, glDeleteSync
+			, m_fence );
+		m_fence = glLogNonVoidCall( context
+			, glFenceSync
+			, GL_WAIT_FLAG_SYNC_GPU_COMMANDS_COMPLETE
+			, 0u );
 	}
 
 	void Fence::reset()const
 	{
-		auto context = m_device.getContext();
-		glLogCall( context
-			, glDeleteSync
-			, m_fence );
-		m_fence = glLogCall( context
-			, glFenceSync
-			, GL_WAIT_FLAG_SYNC_GPU_COMMANDS_COMPLETE
-			, 0u );
+		auto context = get( m_device )->getContext();
+		reset( context );
 	}
 }

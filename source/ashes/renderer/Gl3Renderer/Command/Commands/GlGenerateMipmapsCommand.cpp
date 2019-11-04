@@ -6,33 +6,29 @@ See LICENSE file in root folder.
 
 #include "Image/GlImage.hpp"
 
-namespace gl_renderer
-{
-	GenerateMipmapsCommand::GenerateMipmapsCommand( Device const & device
-		, Image const & texture )
-		: CommandBase{ device }
-		, m_texture{ texture }
-	{
-	}
+#include "ashesgl3_api.hpp"
 
-	void GenerateMipmapsCommand::apply( ContextLock const & context )const
+namespace ashes::gl3
+{
+	void apply( ContextLock const & context
+		, CmdGenerateMipmaps const & cmd )
 	{
-		glLogCommand( "GenerateMipmapsCommand" );
-		glLogCall( context
-			, glBindTexture
-			, m_texture.getTarget()
-			, m_texture.getImage() );
 		glLogCall( context
 			, glGenerateMipmap
-			, m_texture.getTarget() );
-		glLogCall( context
-			, glBindTexture
-			, m_texture.getTarget()
-			, 0 );
+			, cmd.target );
 	}
 
-	CommandPtr GenerateMipmapsCommand::clone()const
+	//*************************************************************************
+
+	void buildGenerateMipmapsCommand( VkImage texture
+		, CmdList & list )
 	{
-		return std::make_unique< GenerateMipmapsCommand >( *this );
+		glLogCommand( "GenerateMipmapsCommand" );
+		auto target = convert( get( texture )->getType(), get( texture )->getArrayLayers() );
+		list.push_back( makeCmd< OpType::eBindTexture >( target
+				, get( texture )->getInternal() ) );
+		list.push_back( makeCmd< OpType::eGenerateMipmaps >( target ) );
+		list.push_back( makeCmd< OpType::eBindTexture >( target
+			, 0u ) );
 	}
 }

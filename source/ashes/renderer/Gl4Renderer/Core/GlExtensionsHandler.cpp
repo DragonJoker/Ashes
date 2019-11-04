@@ -51,9 +51,9 @@ namespace ashes::gl4
 			std::stringstream stream( sversion );
 			float fversion;
 			stream >> fversion;
-			auto version = std::min( int( fversion * 10 ), 420 );
+			auto version = std::min( int( fversion * 10 ), 42 );
 
-			if ( version < 30 )
+			if ( version < 42 )
 			{
 				throw std::runtime_error{ "OpenGL >= 4.2 is needed for this renderer." };
 			}

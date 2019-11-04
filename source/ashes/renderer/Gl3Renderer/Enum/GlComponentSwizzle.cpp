@@ -1,6 +1,6 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	std::string getName( GlSwizzle value )
 	{
@@ -52,7 +52,7 @@ namespace gl_renderer
 		}
 	}
 
-	GlComponentSwizzle convert( VkComponentSwizzle const & value )
+	GlComponentSwizzle convertComponentSwizzle( VkComponentSwizzle const & value )
 	{
 		switch ( value )
 		{

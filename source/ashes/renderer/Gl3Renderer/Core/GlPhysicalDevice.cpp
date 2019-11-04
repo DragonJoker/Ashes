@@ -7,6 +7,8 @@ See LICENSE file in root folder.
 #include "Core/GlInstance.hpp"
 #include "Core/GlDevice.hpp"
 
+#include "ashesgl3_api.hpp"
+
 #if ASHES_XLIB
 #	include <X11/Xlib.h>
 #	include <GL/glx.h>
@@ -15,17 +17,15 @@ See LICENSE file in root folder.
 #include <GL/gl.h>
 
 #include <algorithm>
+#include <cstring>
 #include <iterator>
 #include <stdexcept>
 
 #ifdef max
 #	undef max
 #endif
-#ifdef min
-#	undef min
-#endif
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	namespace
 	{
@@ -286,29 +286,6 @@ namespace gl_renderer
 		PFN_glGetStringi glGetStringi;
 		PFN_glGetInternalformativ glGetInternalformativ;
 
-#if ASHES_WIN32
-		template< typename FuncT >
-		bool getFunction( char const * const name, FuncT & function )
-		{
-			function = reinterpret_cast< FuncT >( wglGetProcAddress( name ) );
-			return function != nullptr;
-		}
-#elif ASHES_XLIB
-		template< typename FuncT >
-		bool getFunction( char const * const name, FuncT & function )
-		{
-			function = reinterpret_cast< FuncT >( glXGetProcAddressARB( reinterpret_cast< GLubyte const * >( name ) ) );
-			return function != nullptr;
-		}
-#else
-		template< typename FuncT >
-		bool getFunction( char const * const name, FuncT & function )
-		{
-			function = reinterpret_cast< FuncT >( glXGetProcAddressARB( reinterpret_cast< GLubyte const * >( name ) ) );
-			return function != nullptr;
-		}
-#endif
-
 		uint32_t doGetVendorID( std::string vendorName )
 		{
 			uint32_t result = 0u;
@@ -338,63 +315,70 @@ namespace gl_renderer
 		}
 	}
 
-	PhysicalDevice::PhysicalDevice( Instance const & instance )
-		: ashes::PhysicalDevice{ instance }
-		, m_instance{ instance }
+	PhysicalDevice::PhysicalDevice( VkInstance instance )
+		: m_instance{ instance }
 	{
 		doInitialise();
 	}
 
-	ashes::VkLayerPropertiesArray PhysicalDevice::enumerateLayerProperties()const
+	std::vector< VkLayerProperties > PhysicalDevice::enumerateLayerProperties()const
 	{
-		ashes::VkLayerPropertiesArray result;
-		return result;
+		return {};
 	}
 
-	ashes::VkExtensionPropertiesArray PhysicalDevice::enumerateExtensionProperties( std::string const & layerName )const
+	std::vector < VkExtensionProperties > PhysicalDevice::enumerateExtensionProperties( std::string const & layerName )const
 	{
-		ashes::VkExtensionPropertiesArray result;
-		return result;
+		return {};
 	}
 
-	ashes::PhysicalDeviceProperties PhysicalDevice::getProperties()const
+	VkPhysicalDeviceProperties const & PhysicalDevice::getProperties()const
 	{
 		return m_properties;
 	}
 
-	ashes::PhysicalDeviceMemoryProperties PhysicalDevice::getMemoryProperties()const
+	VkPhysicalDeviceMemoryProperties const & PhysicalDevice::getMemoryProperties()const
 	{
 		return Instance::getMemoryProperties();
 	}
 
-	ashes::PhysicalDeviceFeatures PhysicalDevice::getFeatures()const
+	VkPhysicalDeviceFeatures const & PhysicalDevice::getFeatures()const
 	{
 		return m_features;
 	}
 
-	ashes::QueueFamilyPropertiesArray PhysicalDevice::getQueueFamilyProperties()const
+	std::vector< VkQueueFamilyProperties > const & PhysicalDevice::getQueueFamilyProperties()const
 	{
 		return m_queueProperties;
 	}
 
-	ashes::FormatProperties PhysicalDevice::getFormatProperties( VkFormat fmt )const
+	VkFormatProperties const & PhysicalDevice::getFormatProperties( VkFormat fmt )const
 	{
 		return m_formatProperties[fmt];
 	}
 
 	bool PhysicalDevice::find( std::string const & name )const
 	{
-		return m_instance.getExtensions().find( name );
+		return get( m_instance )->getExtensions().find( name );
 	}
 
-	bool PhysicalDevice::findAny( ashes::StringArray const & names )const
+	bool PhysicalDevice::findAny( StringArray const & names )const
 	{
-		return m_instance.getExtensions().findAny( names );
+		return get( m_instance )->getExtensions().findAny( names );
 	}
 
-	bool PhysicalDevice::findAll( ashes::StringArray const & names )const
+	bool PhysicalDevice::findAll( StringArray const & names )const
 	{
-		return m_instance.getExtensions().findAll( names );
+		return get( m_instance )->getExtensions().findAll( names );
+	}
+
+	int PhysicalDevice::getMajor()const
+	{
+		return get( m_instance )->getExtensions().getMajor();
+	}
+
+	int PhysicalDevice::getMinor()const
+	{
+		return get( m_instance )->getExtensions().getMinor();
 	}
 
 	void PhysicalDevice::doInitialise()
@@ -406,37 +390,14 @@ namespace gl_renderer
 		getFunction( "glGetInteger64i_v", glGetInteger64i_v );
 		getFunction( "glGetStringi", glGetStringi );
 		getFunction( "glGetInternalformativ", glGetInternalformativ );
-		auto & extensions = m_instance.getExtensions();
-		auto version = extensions.getMajor() * 10 + extensions.getMinor();
-
-		if ( version < 30 )
-		{
-			throw std::runtime_error{ "OpenGL >= 3.0 is needed for this renderer." };
-		}
-
-		if ( version >= 33 )
-		{
-			m_shaderVersion = version * 10;
-		}
-		else if ( version >= 32 )
-		{
-			m_shaderVersion = 150;
-		}
-		else if ( version >= 31 )
-		{
-			m_shaderVersion = 140;
-		}
-		else
-		{
-			m_shaderVersion = 130;
-		}
+		auto & extensions = get( m_instance )->getExtensions();
 
 		m_properties.apiVersion = ( extensions.getMajor() << 22 ) | ( extensions.getMinor() << 12 );
 		m_properties.deviceID = 0u;
-		m_properties.deviceName = ( char const * )glGetString( GL_RENDERER );
+		strncpy( m_properties.deviceName, ( char const * )glGetString( GL_RENDERER ), VK_MAX_PHYSICAL_DEVICE_NAME_SIZE );
 		std::memset( m_properties.pipelineCacheUUID, 0u, sizeof( m_properties.pipelineCacheUUID ) );
 		m_properties.vendorID = doGetVendorID( ( char const * )glGetString( GL_VENDOR ) );
-		m_properties.deviceType = ashes::PhysicalDeviceType::eDiscreteGpu;
+		m_properties.deviceType = VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
 		m_properties.driverVersion = 0;
 
 		doGetValue( GL_MAX_TEXTURE_SIZE, m_properties.limits.maxImageDimension1D );
@@ -446,41 +407,41 @@ namespace gl_renderer
 		doGetValue( GL_MAX_ARRAY_TEXTURE_LAYERS, m_properties.limits.maxImageArrayLayers );
 		doGetValue( GL_MAX_TEXTURE_BUFFER_SIZE, m_properties.limits.maxTexelBufferElements );
 		doGetValue( GL_MAX_UNIFORM_BLOCK_SIZE, m_properties.limits.maxUniformBufferRange );
-		m_properties.limits.maxStorageBufferRange = ashes::NonAvailable< uint32_t >;
+		m_properties.limits.maxStorageBufferRange = NonAvailable< uint32_t >;
 		doGetValue( GL_MAX_UNIFORM_BLOCK_SIZE, m_properties.limits.maxPushConstantsSize );
-		m_properties.limits.maxMemoryAllocationCount = ashes::NonAvailable< uint32_t >;
-		m_properties.limits.maxSamplerAllocationCount = ashes::NonAvailable< uint32_t >;
-		m_properties.limits.bufferImageGranularity = ashes::NonAvailable< uint64_t >;
-		m_properties.limits.sparseAddressSpaceSize = ashes::NonAvailable< uint64_t >;
-		m_properties.limits.maxBoundDescriptorSets = ashes::NonAvailable< uint32_t >;
+		m_properties.limits.maxMemoryAllocationCount = NonAvailable< uint32_t >;
+		m_properties.limits.maxSamplerAllocationCount = NonAvailable< uint32_t >;
+		m_properties.limits.bufferImageGranularity = NonAvailable< uint64_t >;
+		m_properties.limits.sparseAddressSpaceSize = NonAvailable< uint64_t >;
+		m_properties.limits.maxBoundDescriptorSets = NonAvailable< uint32_t >;
 		doGetValue( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, m_properties.limits.maxPerStageDescriptorSamplers );
 		doGetValue( GL_MAX_COMBINED_UNIFORM_BLOCKS, m_properties.limits.maxPerStageDescriptorUniformBuffers );
-		m_properties.limits.maxPerStageDescriptorStorageBuffers = ashes::NonAvailable< uint32_t >;
+		m_properties.limits.maxPerStageDescriptorStorageBuffers = NonAvailable< uint32_t >;
 		doGetValue( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, m_properties.limits.maxPerStageDescriptorSampledImages );
 		doGetValue( GL_MAX_COMBINED_IMAGE_UNIFORMS, m_properties.limits.maxPerStageDescriptorStorageImages );
-		m_properties.limits.maxPerStageDescriptorInputAttachments = ashes::NonAvailable< uint32_t >;
-		m_properties.limits.maxPerStageResources = ashes::NonAvailable< uint32_t >;
+		m_properties.limits.maxPerStageDescriptorInputAttachments = NonAvailable< uint32_t >;
+		m_properties.limits.maxPerStageResources = NonAvailable< uint32_t >;
 		doGetValue( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, m_properties.limits.maxDescriptorSetSamplers );
 		doGetValue( GL_MAX_COMBINED_UNIFORM_BLOCKS, m_properties.limits.maxDescriptorSetUniformBuffers );
 		doGetValue( GL_MAX_COMBINED_UNIFORM_BLOCKS, m_properties.limits.maxDescriptorSetUniformBuffersDynamic );
-		m_properties.limits.maxDescriptorSetStorageBuffers = ashes::NonAvailable< uint32_t >;
-		m_properties.limits.maxDescriptorSetStorageBuffersDynamic = ashes::NonAvailable< uint32_t >;
+		m_properties.limits.maxDescriptorSetStorageBuffers = NonAvailable< uint32_t >;
+		m_properties.limits.maxDescriptorSetStorageBuffersDynamic = NonAvailable< uint32_t >;
 		doGetValue( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, m_properties.limits.maxDescriptorSetSampledImages );
 		doGetValue( GL_MAX_COMBINED_IMAGE_UNIFORMS, m_properties.limits.maxDescriptorSetStorageImages );
-		m_properties.limits.maxDescriptorSetInputAttachments = ashes::NonAvailable< uint32_t >;
+		m_properties.limits.maxDescriptorSetInputAttachments = NonAvailable< uint32_t >;
 		doGetValue( GL_MAX_VERTEX_ATTRIBS, m_properties.limits.maxVertexInputAttributes );
 		doGetValue( GL_MAX_VERTEX_ATTRIB_BINDINGS, m_properties.limits.maxVertexInputBindings );
 		doGetValue( GL_MAX_VERTEX_ATTRIB_RELATIVE_OFFSET, m_properties.limits.maxVertexInputAttributeOffset );
 		doGetValue( GL_MAX_VERTEX_ATTRIB_STRIDE, m_properties.limits.maxVertexInputBindingStride );
 		doGetValue( GL_MAX_VERTEX_OUTPUT_COMPONENTS, m_properties.limits.maxVertexOutputComponents );
-		m_properties.limits.maxTessellationGenerationLevel = ashes::NonAvailable< uint32_t >;
-		m_properties.limits.maxTessellationPatchSize = ashes::NonAvailable< uint32_t >;
-		m_properties.limits.maxTessellationControlPerVertexInputComponents = ashes::NonAvailable< uint32_t >;
-		m_properties.limits.maxTessellationControlPerVertexOutputComponents = ashes::NonAvailable< uint32_t >;
-		m_properties.limits.maxTessellationControlPerPatchOutputComponents = ashes::NonAvailable< uint32_t >;
-		m_properties.limits.maxTessellationControlTotalOutputComponents = ashes::NonAvailable< uint32_t >;
-		m_properties.limits.maxTessellationEvaluationInputComponents = ashes::NonAvailable< uint32_t >;
-		m_properties.limits.maxTessellationEvaluationOutputComponents = ashes::NonAvailable< uint32_t >;
+		m_properties.limits.maxTessellationGenerationLevel = NonAvailable< uint32_t >;
+		m_properties.limits.maxTessellationPatchSize = NonAvailable< uint32_t >;
+		m_properties.limits.maxTessellationControlPerVertexInputComponents = NonAvailable< uint32_t >;
+		m_properties.limits.maxTessellationControlPerVertexOutputComponents = NonAvailable< uint32_t >;
+		m_properties.limits.maxTessellationControlPerPatchOutputComponents = NonAvailable< uint32_t >;
+		m_properties.limits.maxTessellationControlTotalOutputComponents = NonAvailable< uint32_t >;
+		m_properties.limits.maxTessellationEvaluationInputComponents = NonAvailable< uint32_t >;
+		m_properties.limits.maxTessellationEvaluationOutputComponents = NonAvailable< uint32_t >;
 		doGetValue( GL_MAX_GEOMETRY_SHADER_INVOCATIONS, m_properties.limits.maxGeometryShaderInvocations );
 		doGetValue( GL_MAX_GEOMETRY_INPUT_COMPONENTS, m_properties.limits.maxGeometryInputComponents );
 		doGetValue( GL_MAX_GEOMETRY_OUTPUT_COMPONENTS, m_properties.limits.maxGeometryOutputComponents );
@@ -490,36 +451,36 @@ namespace gl_renderer
 		doGetValue( GL_MAX_DRAW_BUFFERS, m_properties.limits.maxFragmentOutputAttachments );
 		doGetValue( GL_MAX_DUAL_SOURCE_DRAW_BUFFERS, m_properties.limits.maxFragmentDualSrcAttachments );
 		doGetValue( GL_MAX_COLOR_ATTACHMENTS, m_properties.limits.maxFragmentCombinedOutputResources );
-		m_properties.limits.maxComputeSharedMemorySize = ashes::NonAvailable< uint32_t >;
-		m_properties.limits.maxComputeWorkGroupCount[0] = ashes::NonAvailable< uint32_t >;
-		m_properties.limits.maxComputeWorkGroupCount[1] = ashes::NonAvailable< uint32_t >;
-		m_properties.limits.maxComputeWorkGroupCount[2] = ashes::NonAvailable< uint32_t >;
-		m_properties.limits.maxComputeWorkGroupInvocations = ashes::NonAvailable< uint32_t >;
-		m_properties.limits.maxComputeWorkGroupSize[0] = ashes::NonAvailable< uint32_t >;
-		m_properties.limits.maxComputeWorkGroupSize[1] = ashes::NonAvailable< uint32_t >;
-		m_properties.limits.maxComputeWorkGroupSize[2] = ashes::NonAvailable< uint32_t >;
-		m_properties.limits.subPixelPrecisionBits = ashes::NonAvailable< uint32_t >;
-		m_properties.limits.subTexelPrecisionBits = ashes::NonAvailable< uint32_t >;
-		m_properties.limits.mipmapPrecisionBits = ashes::NonAvailable< uint32_t >;
+		m_properties.limits.maxComputeSharedMemorySize = NonAvailable< uint32_t >;
+		m_properties.limits.maxComputeWorkGroupCount[0] = NonAvailable< uint32_t >;
+		m_properties.limits.maxComputeWorkGroupCount[1] = NonAvailable< uint32_t >;
+		m_properties.limits.maxComputeWorkGroupCount[2] = NonAvailable< uint32_t >;
+		m_properties.limits.maxComputeWorkGroupInvocations = NonAvailable< uint32_t >;
+		m_properties.limits.maxComputeWorkGroupSize[0] = NonAvailable< uint32_t >;
+		m_properties.limits.maxComputeWorkGroupSize[1] = NonAvailable< uint32_t >;
+		m_properties.limits.maxComputeWorkGroupSize[2] = NonAvailable< uint32_t >;
+		m_properties.limits.subPixelPrecisionBits = NonAvailable< uint32_t >;
+		m_properties.limits.subTexelPrecisionBits = NonAvailable< uint32_t >;
+		m_properties.limits.mipmapPrecisionBits = NonAvailable< uint32_t >;
 		doGetValue( GL_MAX_ELEMENTS_INDICES, m_properties.limits.maxDrawIndexedIndexValue );
-		m_properties.limits.maxDrawIndirectCount = ashes::NonAvailable< uint32_t >;
+		m_properties.limits.maxDrawIndirectCount = NonAvailable< uint32_t >;
 		doGetValue( GL_MAX_TEXTURE_LOD_BIAS, m_properties.limits.maxSamplerLodBias );
 		doGetValue( GL_MAX_TEXTURE_MAX_ANISOTROPY, m_properties.limits.maxSamplerAnisotropy );
 		doGetValue( GL_MAX_VIEWPORTS, m_properties.limits.maxViewports );
 		doGetValues( GL_MAX_VIEWPORT_DIMS, m_properties.limits.maxViewportDimensions );
 		doGetValues( GL_MAX_VIEWPORT_DIMS, m_properties.limits.viewportBoundsRange );
-		m_properties.limits.viewportSubPixelBits = ashes::NonAvailable< uint32_t >;
-		m_properties.limits.minMemoryMapAlignment = ashes::NonAvailable< size_t >;
-		m_properties.limits.minTexelBufferOffsetAlignment = ashes::NonAvailable< uint64_t >;
+		m_properties.limits.viewportSubPixelBits = NonAvailable< uint32_t >;
+		m_properties.limits.minMemoryMapAlignment = NonAvailable< size_t >;
+		m_properties.limits.minTexelBufferOffsetAlignment = NonAvailable< uint64_t >;
 		doGetValue( GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, m_properties.limits.minUniformBufferOffsetAlignment );
-		m_properties.limits.minStorageBufferOffsetAlignment = ashes::NonAvailable< uint64_t >;
+		m_properties.limits.minStorageBufferOffsetAlignment = NonAvailable< uint64_t >;
 		doGetValue( GL_MIN_PROGRAM_TEXEL_OFFSET, m_properties.limits.minTexelOffset );
 		doGetValue( GL_MAX_PROGRAM_TEXEL_OFFSET, m_properties.limits.maxTexelOffset );
 		doGetValue( GL_MIN_PROGRAM_TEXTURE_GATHER_OFFSET, m_properties.limits.minTexelGatherOffset );
 		doGetValue( GL_MAX_PROGRAM_TEXTURE_GATHER_OFFSET, m_properties.limits.maxTexelGatherOffset );
-		m_properties.limits.minInterpolationOffset = ashes::NonAvailable< float >;
-		m_properties.limits.maxInterpolationOffset = ashes::NonAvailable< float >;
-		m_properties.limits.subPixelInterpolationOffsetBits = ashes::NonAvailable< uint32_t >;
+		m_properties.limits.minInterpolationOffset = NonAvailable< float >;
+		m_properties.limits.maxInterpolationOffset = NonAvailable< float >;
+		m_properties.limits.subPixelInterpolationOffsetBits = NonAvailable< uint32_t >;
 		doGetValue( GL_MAX_FRAMEBUFFER_WIDTH, m_properties.limits.maxFramebufferWidth );
 		doGetValue( GL_MAX_FRAMEBUFFER_HEIGHT, m_properties.limits.maxFramebufferHeight );
 		doGetValue( GL_MAX_FRAMEBUFFER_LAYERS, m_properties.limits.maxFramebufferLayers );
@@ -546,8 +507,8 @@ namespace gl_renderer
 		doGetValue( GL_LINE_WIDTH_GRANULARITY, m_properties.limits.lineWidthGranularity );
 		m_properties.limits.strictLines = true;
 		m_properties.limits.standardSampleLocations = false;
-		m_properties.limits.optimalBufferCopyOffsetAlignment = ashes::NonAvailable< uint64_t >;
-		m_properties.limits.optimalBufferCopyRowPitchAlignment = ashes::NonAvailable< uint64_t >;
+		m_properties.limits.optimalBufferCopyOffsetAlignment = NonAvailable< uint64_t >;
+		m_properties.limits.optimalBufferCopyRowPitchAlignment = NonAvailable< uint64_t >;
 		m_properties.limits.nonCoherentAtomSize = 64ull;
 
 		m_properties.sparseProperties.residencyAlignedMipSize = false;
@@ -631,49 +592,65 @@ namespace gl_renderer
 
 		if ( glGetInternalformativ )
 		{
-			for ( VkFormat fmt = VK_FORMAT_Range_BEGIN; fmt < VK_FORMAT_Range_END; fmt = VkFormat( uint32_t( fmt ) + 1 ) )
+			for ( VkFormat fmt = VK_FORMAT_BEGIN_RANGE; fmt < VK_FORMAT_END_RANGE; fmt = VkFormat( fmt + 1 ) )
 			{
 				if ( isSupportedInternal( fmt ) )
 				{
+					auto internal = getInternalFormat( fmt );
 					GLint value;
-					glGetInternalformativ( GL_TEXTURE_2D, getInternal( fmt ), GL_INTERNALFORMAT_SUPPORTED, 1, &value );
+					glGetInternalformativ( GL_TEXTURE_2D, internal, GL_INTERNALFORMAT_SUPPORTED, 1, &value );
 
 					if ( value == GL_TRUE )
 					{
-						glGetInternalformativ( GL_TEXTURE_2D, getInternal( fmt ), GL_FRAMEBUFFER_RENDERABLE, 1, &value );
+#if defined( VK_KHR_maintenance ) || defined( VK_API_VERSION_1_1 )
+						m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+						m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
+#endif
+						glGetInternalformativ( GL_TEXTURE_2D, internal, GL_FRAMEBUFFER_RENDERABLE, 1, &value );
 
 						if ( value == GL_FULL_SUPPORT )
 						{
 							if ( isDepthOrStencilFormat( fmt ) )
 							{
-								m_formatProperties[fmt].optimalTilingFeatures |= ashes::FormatFeatureFlag::eDepthStencilAttachment;
+								m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
 							}
 							else
 							{
-								m_formatProperties[fmt].optimalTilingFeatures |= ashes::FormatFeatureFlag::eColourAttachment;
+								m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT;
 							}
 						}
 
-						glGetInternalformativ( GL_TEXTURE_2D, getInternal( fmt ), GL_FRAMEBUFFER_BLEND, 1, &value );
+						glGetInternalformativ( GL_TEXTURE_2D, internal, GL_FRAMEBUFFER_BLEND, 1, &value );
 
 						if ( value == GL_FULL_SUPPORT )
 						{
-							m_formatProperties[fmt].optimalTilingFeatures |= ashes::FormatFeatureFlag::eColourAttachmentBlend;
+							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT;
+							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT;
 						}
 
-						glGetInternalformativ( GL_TEXTURE_2D, getInternal( fmt ), GL_FRAGMENT_TEXTURE, 1, &value );
+						glGetInternalformativ( GL_TEXTURE_2D, internal, GL_FRAGMENT_TEXTURE, 1, &value );
 
 						if ( value == GL_FULL_SUPPORT )
 						{
-							m_formatProperties[fmt].optimalTilingFeatures |= ashes::FormatFeatureFlag::eSampledImage;
+							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
 						}
 
-						glGetInternalformativ( GL_TEXTURE_2D, getInternal( fmt ), GL_FILTER, 1, &value );
+						glGetInternalformativ( GL_TEXTURE_2D, internal, GL_FILTER, 1, &value );
 
 						if ( value == GL_FULL_SUPPORT )
 						{
-							m_formatProperties[fmt].optimalTilingFeatures |= ashes::FormatFeatureFlag::eSampledImageFilterLinear;
+							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT;
 						}
+
+						glGetInternalformativ( GL_TEXTURE_2D, internal, GL_READ_PIXELS, 1, &value );
+
+#if defined( VK_KHR_maintenance ) || defined( VK_API_VERSION_1_1 )
+						if ( value == GL_FULL_SUPPORT )
+						{
+							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;
+							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
+						}
+#endif
 					}
 				}
 

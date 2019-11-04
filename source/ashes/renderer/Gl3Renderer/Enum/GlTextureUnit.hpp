@@ -2,13 +2,9 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___GlRenderer_TextureUnit_HPP___
-#define ___GlRenderer_TextureUnit_HPP___
 #pragma once
 
-#include <Ashes/AshesPrerequisites.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
 	enum GlTextureUnit
 		: GLenum
@@ -48,5 +44,3 @@ namespace gl_renderer
 	};
 	std::string getName( GlTextureUnit value );
 }
-
-#endif

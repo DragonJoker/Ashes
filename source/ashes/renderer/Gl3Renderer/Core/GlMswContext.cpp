@@ -1,28 +1,27 @@
 #include "Core/GlMswContext.hpp"
 
-#if defined( _WIN32 )
+#if ASHES_WIN32
 
-#include "Core/GlPhysicalDevice.hpp"
 #include "Core/GlInstance.hpp"
+#include "Core/GlPhysicalDevice.hpp"
 #include "Miscellaneous/GlDebug.hpp"
 
-#include <Ashes/Core/PlatformWindowHandle.hpp>
+#include "ashesgl3_api.hpp"
 
-#include <Windows.h>
-#include <GL/gl.h>
+#include <iostream>
+#include <sstream>
 
-namespace gl_renderer
+namespace ashes::gl3
 {
+	char const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME[VK_MAX_EXTENSION_NAME_SIZE] = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
+
+	PFN_vkVoidFunction getFunction( char const * const name )
+	{
+		return reinterpret_cast< PFN_vkVoidFunction >( wglGetProcAddress( name ) );
+	}
+
 	namespace
 	{
-		template< typename FuncT >
-		bool getFunction( char const * const name, FuncT & function )
-		{
-			function = reinterpret_cast< FuncT >( wglGetProcAddress( name ) );
-			return function != nullptr;
-		}
-
-
 #if !defined( NDEBUG )
 
 		static const int GL_CONTEXT_CREATION_DEFAULT_FLAGS =  GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT | GL_CONTEXT_FLAG_DEBUG_BIT;
@@ -36,26 +35,54 @@ namespace gl_renderer
 #endif
 	}
 
-	MswContext::MswContext( Instance const & instance
-		, ashes::WindowHandle const & handle
+	MswContext::MswContext( VkInstance instance
+		, VkSurfaceCreateInfoKHR createInfo
 		, Context const * mainContext )
-		: Context{ instance }
-		, m_hDC( nullptr )
-		, m_hContext( nullptr )
-		, m_hWnd( handle.getInternal< ashes::IMswWindowHandle >().getHwnd() )
+		: ContextImpl{ instance, createInfo }
+		, m_hDC{ ::GetDC( createInfo.hwnd ) }
+		, m_hContext{ nullptr }
+		, m_mainContext{ mainContext }
 	{
-		m_hDC = ::GetDC( m_hWnd );
+	}
 
+	MswContext::MswContext( VkInstance instance
+		, VkSurfaceKHR surface
+		, Context const * mainContext )
+		: MswContext
+		{
+			instance,
+			get( surface )->getContext()->createInfo,
+			mainContext
+		}
+	{
+	}
+
+	MswContext::~MswContext()
+	{
+		try
+		{
+			if ( m_hDC )
+			{
+				wglDeleteContext( m_hContext );
+				::ReleaseDC( createInfo.hwnd, m_hDC );
+			}
+		}
+		catch ( ... )
+		{
+		}
+	}
+
+	void MswContext::initialise( Context & parent )
+	{
 		if ( doSelectFormat() )
 		{
 			m_hContext = wglCreateContext( m_hDC );
 			enable();
-			doLoadBaseFunctions();
-			doLoadMswFunctions();
-			doLoadDebugFunctions();
+			parent.onBaseContextCreated();
+			loadSystemFunctions();
 			disable();
 
-			if ( !doCreateGl3Context( static_cast< MswContext const * >( mainContext ) ) )
+			if ( !doCreateGl3Context( m_mainContext ) )
 			{
 				wglDeleteContext( m_hContext );
 				throw std::runtime_error{ "The supported OpenGL version is insufficient." };
@@ -72,62 +99,10 @@ namespace gl_renderer
 		}
 	}
 
-	MswContext::~MswContext()
+	void MswContext::loadSystemFunctions()
 	{
-		try
-		{
-			if ( m_hDC )
-			{
-				wglDeleteContext( m_hContext );
-				::ReleaseDC( m_hWnd, m_hDC );
-			}
-		}
-		catch ( ... )
-		{
-		}
-	}
-
-	void MswContext::enable()const
-	{
-		wglMakeCurrent( m_hDC, m_hContext );
-		m_enabled = true;
-	}
-
-	void MswContext::disable()const
-	{
-		m_enabled = false;
-		wglMakeCurrent( nullptr, nullptr );
-	}
-
-	void MswContext::swapBuffers()const
-	{
-		::SwapBuffers( m_hDC );
-	}
-
-	void MswContext::doLoadBaseFunctions()
-	{
-#define GL_LIB_BASE_FUNCTION( fun )\
-		m_gl##fun = &::gl##fun;
-#define GL_LIB_FUNCTION( fun )\
-		if ( !( getFunction( "gl"#fun, m_gl##fun ) ) )\
-		{\
-			throw std::runtime_error{ std::string{ "Couldn't load function " } + "gl"#fun };\
-		}
-#define GL_LIB_FUNCTION_EXT( fun, ext, name )\
-		if ( !( getFunction( "gl"#fun, m_gl##fun##_##ext ) ) )\
-		{\
-			ashes::Logger::logError( std::string{ "Couldn't load function " } + "gl"#fun );\
-		}
-#define GL_LIB_FUNCTION_VSN( fun, version )\
-		if ( !( getFunction( "gl"#fun, m_gl##fun##_##version ) ) )\
-		{\
-			ashes::Logger::logError( std::string{ "Couldn't load function " } + "gl"#fun );\
-		}
-#include "Miscellaneous/OpenGLFunctionsList.inl"
-	}
-
-	void MswContext::doLoadMswFunctions()
-	{
+#	define WGL_LIB_BASE_FUNCTION( fun )\
+		m_wgl##fun = &::wgl##fun;
 #	define WGL_LIB_FUNCTION( fun )\
 		if ( !( getFunction( "wgl"#fun, m_wgl##fun ) ) )\
 		{\
@@ -136,67 +111,24 @@ namespace gl_renderer
 #	define WGL_LIB_FUNCTION_EXT( fun, ext, name )\
 		if ( !( getFunction( "wgl"#fun, m_wgl##fun##_##ext ) ) )\
 		{\
-			ashes::Logger::logError( std::string{ "Couldn't load function " } + "wgl"#fun );\
+			std::cerr << "Couldn't load function " << "gl"#fun << std::endl;\
 		}
 #include "Miscellaneous/OpenGLFunctionsList.inl"
 	}
 
-	void MswContext::doLoadDebugFunctions()
+	void MswContext::enable()const
 	{
-		if ( m_instance.getExtensions().find( KHR_debug ) )
-		{
-			if ( !getFunction( "glDebugMessageCallback", glDebugMessageCallback ) )
-			{
-				if ( !getFunction( "glDebugMessageCallbackKHR", glDebugMessageCallback ) )
-				{
-					ashes::Logger::logWarning( "Unable to retrieve function glDebugMessageCallback" );
-				}
-			}
-		}
-		else if ( m_instance.getExtensions().find( ARB_debug_output ) )
-		{
-			if ( !getFunction( "glDebugMessageCallback", glDebugMessageCallback ) )
-			{
-				if ( !getFunction( "glDebugMessageCallbackARB", glDebugMessageCallback ) )
-				{
-					ashes::Logger::logWarning( "Unable to retrieve function glDebugMessageCallback" );
-				}
-			}
-		}
-		else if ( m_instance.getExtensions().find( AMDX_debug_output ) )
-		{
-			if ( !getFunction( "glDebugMessageCallbackAMD", glDebugMessageCallbackAMD ) )
-			{
-				ashes::Logger::logWarning( "Unable to retrieve function glDebugMessageCallbackAMD" );
-			}
-		}
+		wglMakeCurrent( m_hDC, m_hContext );
+	}
 
-		if ( glDebugMessageCallback )
-		{
-			if ( !getFunction( "glObjectLabel", glObjectLabel ) )
-			{
-				ashes::Logger::logWarning( "Unable to retrieve function glObjectLabel" );
-			}
+	void MswContext::disable()const
+	{
+		wglMakeCurrent( nullptr, nullptr );
+	}
 
-			if ( !getFunction( "glObjectPtrLabel", glObjectPtrLabel ) )
-			{
-				ashes::Logger::logWarning( "Unable to retrieve function glObjectPtrLabel" );
-			}
-
-			for ( auto & callback : m_instance.getDebugCallbacks() )
-			{
-				glDebugMessageCallback( callback.callback, callback.userParam );
-				::glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
-			}
-		}
-		else if ( glDebugMessageCallbackAMD )
-		{
-			for ( auto & callback : m_instance.getDebugAMDCallbacks() )
-			{
-				glDebugMessageCallbackAMD( callback.callback, callback.userParam );
-				::glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
-			}
-		}
+	void MswContext::swapBuffers()const
+	{
+		::SwapBuffers( m_hDC );
 	}
 
 	HGLRC MswContext::doCreateDummyContext()
@@ -227,19 +159,20 @@ namespace gl_renderer
 		pfd.cDepthBits = 24;
 		pfd.cStencilBits = 8;
 
-		int pixelFormat = ::ChoosePixelFormat( m_hDC, &pfd );
+		int pixelFormats = ::ChoosePixelFormat( m_hDC, &pfd );
 
-		if ( pixelFormat )
+		if ( pixelFormats )
 		{
-			result = ::SetPixelFormat( m_hDC, pixelFormat, &pfd ) != FALSE;
+			result = ::SetPixelFormat( m_hDC, pixelFormats, &pfd ) != FALSE;
 		}
 
 		return result;
 	}
 
-	bool MswContext::doCreateGl3Context( MswContext const * mainContext )
+	bool MswContext::doCreateGl3Context( Context const * mainContext )
 	{
 		bool result = false;
+		auto & extensions = get( instance )->getExtensions();
 
 		try
 		{
@@ -248,8 +181,8 @@ namespace gl_renderer
 			HGLRC hContext = m_hContext;
 			std::vector< int > attribList
 			{
-				WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
-				WGL_CONTEXT_MINOR_VERSION_ARB, 2,
+				WGL_CONTEXT_MAJOR_VERSION_ARB, extensions.getMajor(),
+				WGL_CONTEXT_MINOR_VERSION_ARB, extensions.getMinor(),
 				WGL_CONTEXT_FLAGS_ARB, GL_CONTEXT_CREATION_DEFAULT_FLAGS,
 				WGL_CONTEXT_PROFILE_MASK_ARB, GL_CONTEXT_CREATION_DEFAULT_MASK,
 				0
@@ -257,10 +190,16 @@ namespace gl_renderer
 
 			enable();
 			::glGetError();
-			getFunction( "wglCreateContextAttribsARB", glCreateContextAttribs );
+
+			if ( !getFunction( "wglCreateContextAttribsARB", glCreateContextAttribs ) )
+			{
+				disable();
+				throw std::runtime_error{ "Couldn't retrieve wglCreateContextAttribsARB" };
+			}
+
 			hContext = glCreateContextAttribs( m_hDC
 				, ( mainContext
-					? mainContext->m_hContext
+					? static_cast< MswContext const & >( mainContext->getImpl() ).m_hContext
 					: nullptr )
 				, attribList.data() );
 			disable();
@@ -271,13 +210,13 @@ namespace gl_renderer
 			if ( !result )
 			{
 				std::stringstream error;
-				error << "Failed to create an OpenGL 3.2 context (0x" << std::hex << ::glGetError() << ").";
+				error << "Failed to create an OpenGL " << extensions.getMajor() << "." << extensions.getMinor() << " context (0x" << std::hex << ::glGetError() << ").";
 				throw std::runtime_error{ error.str() };
 			}
 		}
 		catch ( std::exception & exc )
 		{
-			ashes::Logger::logError( exc.what() );
+			std::cerr << exc.what() << std::endl;
 			result = false;
 		}
 		catch ( ... )

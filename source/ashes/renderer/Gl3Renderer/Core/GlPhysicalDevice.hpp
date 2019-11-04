@@ -4,62 +4,38 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Gl3Renderer/GlRendererPrerequisites.hpp"
+#include "renderer/Gl3Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Core/PhysicalDevice.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
-	/**
-	*\~french
-	*\brief
-	*	Classe contenant les informations liées au GPU physique.
-	*\~english
-	*\brief
-	*	Wraps informations about physical GPU.
-	*/
 	class PhysicalDevice
-		: public ashes::PhysicalDevice
 	{
 	public:
-		PhysicalDevice( Instance const & instance );
-		/**
-		*\copydoc	ashes::Instance::enumerateLayerProperties
-		*/
-		ashes::VkLayerPropertiesArray enumerateLayerProperties()const override;
-		/**
-		*\copydoc	ashes::Instance::enumerateExtensionProperties
-		*/
-		ashes::VkExtensionPropertiesArray enumerateExtensionProperties( std::string const & layerName )const override;
-		/**
-		*\copydoc	ashes::Instance::getProperties
-		*/
-		ashes::PhysicalDeviceProperties getProperties()const override;
-		/**
-		*\copydoc	ashes::Instance::getMemoryProperties
-		*/
-		ashes::PhysicalDeviceMemoryProperties getMemoryProperties()const override;
-		/**
-		*\copydoc	ashes::Instance::getFeatures
-		*/
-		ashes::PhysicalDeviceFeatures getFeatures()const override;
-		/**
-		*\copydoc	ashes::Instance::getQueueFamilyProperties
-		*/
-		ashes::QueueFamilyPropertiesArray getQueueFamilyProperties()const override;
-		/**
-		*\copydoc	ashes::Instance::getFormatProperties
-		*/
-		ashes::FormatProperties getFormatProperties( VkFormat fmt )const override;
+		PhysicalDevice( VkInstance instance );
 
-		inline Instance const & getInstance()const
+		inline VkBool32 getPresentationSupport( uint32_t queueFamilyIndex )const
+		{
+			return true;
+		}
+
+		std::vector< VkLayerProperties > enumerateLayerProperties()const;
+		std::vector< VkExtensionProperties > enumerateExtensionProperties( std::string const & layerName )const;
+		VkPhysicalDeviceProperties const & getProperties()const;
+		VkPhysicalDeviceMemoryProperties const & getMemoryProperties()const;
+		VkPhysicalDeviceFeatures const & getFeatures()const;
+		std::vector< VkQueueFamilyProperties > const & getQueueFamilyProperties()const;
+		VkFormatProperties const & getFormatProperties( VkFormat fmt )const;
+
+		bool find( std::string const & name )const;
+		bool findAny( StringArray const & names )const;
+		bool findAll( StringArray const & names )const;
+		int getMajor()const;
+		int getMinor()const;
+
+		inline VkInstance getInstance()const
 		{
 			return m_instance;
 		}
-
-		bool find( std::string const & name )const;
-		bool findAny( ashes::StringArray const & names )const;
-		bool findAll( ashes::StringArray const & names )const;
 
 	private:
 		void doInitialise();
@@ -90,10 +66,10 @@ namespace gl_renderer
 		void doGetValuesI( GLenum name, float( &value )[3] )const;
 
 	private:
-		Instance const & m_instance;
-		ashes::PhysicalDeviceFeatures m_features{};
-		ashes::PhysicalDeviceProperties m_properties{};
-		ashes::QueueFamilyPropertiesArray m_queueProperties{};
-		mutable std::map< VkFormat, ashes::FormatProperties > m_formatProperties;
+		VkInstance m_instance;
+		VkPhysicalDeviceFeatures m_features{};
+		VkPhysicalDeviceProperties m_properties{};
+		std::vector< VkQueueFamilyProperties > m_queueProperties{};
+		mutable std::map< VkFormat, VkFormatProperties > m_formatProperties;
 	};
 }

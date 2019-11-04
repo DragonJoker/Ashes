@@ -2,21 +2,19 @@
 
 #include "Buffer/GlBuffer.hpp"
 #include "Core/GlDevice.hpp"
-#include "Core/GlInstance.hpp"
 
-#include <Ashes/Miscellaneous/Log.hpp>
+#include "ashesgl3_api.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
-	BufferView::BufferView( Device const & device
-		, Buffer const & buffer
-		, VkFormat format
-		, uint32_t offset
-		, uint32_t range )
-		: ashes::BufferView{ device, buffer, format, offset, range }
-		, m_device{ device }
+	BufferView::BufferView( VkDevice device
+		, VkBufferViewCreateInfo createInfo )
+		: m_device{ device }
+		, m_format{ createInfo.format }
+		, m_offset{ createInfo.offset }
+		, m_range{ createInfo.range }
 	{
-		auto context = m_device.getContext();
+		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glGenTextures
 			, 1
@@ -35,9 +33,9 @@ namespace gl_renderer
 				, glTexBufferRange_ARB
 				, GL_BUFFER_TARGET_TEXTURE
 				, getInternal( format )
-				, buffer.getBuffer()
-				, offset
-				, range );
+				, get( createInfo.buffer )->getInternal()
+				, get( createInfo.buffer )->getInternalOffset() + m_offset
+				, m_range );
 		}
 		else
 		{
@@ -45,7 +43,7 @@ namespace gl_renderer
 				, glTexBuffer
 				, GL_BUFFER_TARGET_TEXTURE
 				, getInternal( format )
-				, buffer.getBuffer() );
+				, get( createInfo.buffer )->getInternal() );
 		}
 
 		glLogCall( context
@@ -56,7 +54,7 @@ namespace gl_renderer
 
 	BufferView::~BufferView()
 	{
-		auto context = m_device.getContext();
+		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glDeleteTextures
 			, 1

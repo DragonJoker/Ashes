@@ -8,63 +8,18 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	/**
-	*\~english
-	*\brief
-	*	GPU query pool implementation.
-	*\~french
-	*\brief
-	*	Implémentation d'un pool de requêtes GPU.
-	*/
 	class QueryPool
 	{
 	public:
-		/**
-		*\~english
-		*\brief
-		*	Constructor.
-		*\param[in] device
-		*	The logical device.
-		*\param[in] type
-		*	The query type.
-		*\param[in] count
-		*	The number of queries managed by the get( pool )->
-		*\param[in] pipelineStatistics
-		*	Specifies the counters to be returned in queries.
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le périphérique logique.
-		*\param[in] type
-		*	Le type de requête.
-		*\param[in] count
-		*	Le nombre de requêtes gérées par le get( pool )->
-		*\param[in] pipelineStatistics
-		*	Définit les compteurs que les requêtes retournent.
-		*/
 		QueryPool( VkDevice device
 			, VkQueryPoolCreateInfo createInfo );
-		/**
-		*\~english
-		*\brief
-		*	Destructor.
-		*\~french
-		*\brief
-		*	Destructeur.
-		*/
 		~QueryPool();
-		/**
-		*\copydoc	QueryPool:getResults
-		*/
+
 		VkResult getResults( uint32_t firstQuery
 			, uint32_t queryCount
 			, VkDeviceSize stride
 			, VkQueryResultFlags flags
 			, UInt32Array & data )const;
-		/**
-		*\copydoc	QueryPool:getResults
-		*/
 		VkResult getResults( uint32_t firstQuery
 			, uint32_t queryCount
 			, VkDeviceSize stride

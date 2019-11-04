@@ -4,34 +4,12 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Gl3Renderer/Command/Commands/GlCommandBase.hpp"
+#include "renderer/Gl3Renderer/Command/Commands/GlCommandBase.hpp"
 
-#include <Ashes/Pipeline/Scissor.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
-	/**
-	*\brief
-	*	Commande d'application d'un scissor.
-	*/
-	class ScissorCommand
-		: public CommandBase
-	{
-	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] scissor
-		*	Le scissor.
-		*/
-		ScissorCommand( Device const & device
-			, uint32_t firstScissor
-			, ashes::VkScissorArray const & scissors );
-
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
-
-	private:
-		ashes::VkScissorArray m_scissors;
-	};
+	void buildScissorCommand( ContextStateStack & stack
+		, uint32_t firstScissor
+		, VkScissorArray scissors
+		, CmdList & list );
 }

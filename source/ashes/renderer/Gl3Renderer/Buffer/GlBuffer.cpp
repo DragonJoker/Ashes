@@ -1,51 +1,51 @@
 #include "Buffer/GlBuffer.hpp"
 
+#include "Core/GlContextLock.hpp"
 #include "Core/GlDevice.hpp"
 #include "Miscellaneous/GlDeviceMemory.hpp"
 
-#include <Ashes/Miscellaneous/MemoryRequirements.hpp>
-#include <Ashes/Sync/BufferMemoryBarrier.hpp>
+#include "ashesgl4_api.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
-	Buffer::Buffer( Device const & device
-		, uint32_t size
-		, VkBufferUsageFlags target )
-		: ashes::BufferBase{ device
-			, size
-			, target }
-		, m_device{ device }
-		, m_target{ convert( target ) }
+	Buffer::Buffer( VkDevice device
+		, VkBufferCreateInfo createInfo )
+		: m_device{ device }
+		, m_queueFamilyIndices{ makeVector( createInfo.pQueueFamilyIndices, createInfo.queueFamilyIndexCount ) }
+		, m_createInfo{ createInfo }
+		, m_target{ getTargetFromUsageFlags( m_createInfo.usage ) }
 	{
-		auto context = m_device.getContext();
-		glLogCall( context
-			, glGenBuffers
-			, 1
-			, &m_name );
+		m_createInfo.pQueueFamilyIndices = m_queueFamilyIndices.data();
 	}
 
 	Buffer::~Buffer()
 	{
-		onDestroy( m_name );
-		m_storage.reset();
-		auto context = m_device.getContext();
-		glLogCall( context
-			, glDeleteBuffers
-			, 1
-			, &m_name );
+		m_copyTarget = GlBufferTarget( 0u );
+		m_memory = VK_NULL_HANDLE;
+		m_target = GlBufferTarget( 0u );
+		m_internal = GL_INVALID_INDEX;
+		m_queueFamilyIndices.clear();
 	}
 
-	ashes::MemoryRequirements Buffer::getMemoryRequirements()const
+	VkMemoryRequirements Buffer::getMemoryRequirements()const
 	{
-		ashes::MemoryRequirements result{};
-		result.size = getSize();
-		result.type = ashes::ResourceType::eBuffer;
-		result.memoryTypeBits = ~result.memoryTypeBits;
+		VkMemoryRequirements result{};
+		result.size = m_createInfo.size;
+		result.memoryTypeBits = ~( 0u );
+		result.alignment = get( m_device )->getLimits().nonCoherentAtomSize;
+
+		if ( checkFlag( m_createInfo.usage, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT ) )
+		{
+			result.alignment = get( m_device )->getLimits().minUniformBufferOffsetAlignment;
+		}
+
+		result.size = ashes::getAlignedSize( m_createInfo.size, result.alignment );
 		return result;
 	}
 
-	void Buffer::doBindMemory()
+	bool Buffer::isMapped()const
 	{
-		static_cast< DeviceMemory & >( *m_storage ).bindToBuffer( m_name, m_target );
+		assert( m_memory != VK_NULL_HANDLE );
+		return get( m_memory )->isMapped();
 	}
 }

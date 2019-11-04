@@ -4,29 +4,39 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Gl3Renderer/Command/Commands/GlCommandBase.hpp"
+#include "renderer/Gl3Renderer/Command/Commands/GlCommandBase.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
-	/**
-	*\brief
-	*	Classe de base d'une commande.
-	*/
-	class GenerateMipmapsCommand
-		: public CommandBase
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eGenerateMipmaps >
 	{
-	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*/
-		GenerateMipmapsCommand( Device const & device
-			, Image const & texture );
-
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
-
-	private:
-		Image const & m_texture;
+		static Op constexpr value = { OpType::eGenerateMipmaps, 2u };
 	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eGenerateMipmaps >
+	{
+		inline CmdT( uint32_t target )
+			: cmd{ { OpType::eGenerateMipmaps, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, target{ std::move( target ) }
+		{
+		}
+
+		Command cmd;
+		uint32_t target;
+	};
+	using CmdGenerateMipmaps = CmdT< OpType::eGenerateMipmaps >;
+
+	void apply( ContextLock const & context
+		, CmdGenerateMipmaps const & cmd );
+
+	//*************************************************************************
+
+	void buildGenerateMipmapsCommand( VkImage texture
+		, CmdList & list );
+
+	//*************************************************************************
 }

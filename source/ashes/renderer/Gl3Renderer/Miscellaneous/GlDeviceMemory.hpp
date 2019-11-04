@@ -4,83 +4,107 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Gl3Renderer/GlRendererPrerequisites.hpp"
+#include "renderer/Gl3Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Miscellaneous/DeviceMemory.hpp>
-#include <Ashes/Miscellaneous/MemoryRequirements.hpp>
+#include "renderer/Gl3Renderer/Enum/GlMemoryMapFlag.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
-	/**
-	*\~french
-	*\brief
-	*	Classe encapsulant le stockage alloué à un tampon de données.
-	*\~english
-	*\brief
-	*	Class wrapping a storage allocated to a data buffer.
-	*/
 	class DeviceMemory
-		: public ashes::DeviceMemory
 	{
 	public:
 		class DeviceMemoryImpl
 		{
 		public:
-			DeviceMemoryImpl( Device const & device
-				, ashes::MemoryAllocateInfo allocateInfo
-				, GLuint boundResource
-				, GLuint boundTarget );
-			virtual ~DeviceMemoryImpl() = default;
-			virtual uint8_t * lock( uint64_t offset
-				, uint64_t size
-				, ashes::MemoryMapFlags flags )const = 0;
-			virtual void flush( uint64_t offset
-				, uint64_t size )const = 0;
-			virtual void invalidate( uint64_t offset
-				, uint64_t size )const = 0;
-			virtual void unlock()const = 0;
+			DeviceMemoryImpl( VkDeviceMemory parent
+				, VkDevice device
+				, VkMemoryAllocateInfo allocateInfo
+				, GLenum boundTarget
+				, VkDeviceSize memoryOffset
+				, VkDeviceSize align );
+			virtual ~DeviceMemoryImpl();
+
+			void upload( ContextLock const & context
+				, ByteArray const & data
+				, VkDeviceSize offset
+				, VkDeviceSize size )const;
+			void download( ContextLock const & context
+				, ByteArray & data
+				, VkDeviceSize offset
+				, VkDeviceSize size )const;
+
+			virtual VkResult lock( ContextLock const & context
+				, VkDeviceSize offset
+				, VkDeviceSize size
+				, void ** data )const = 0;
+			virtual void unlock( ContextLock const & context )const = 0;
+
+			inline GLuint getInternal()const
+			{
+				return m_boundResource;
+			}
 
 		protected:
-			Device const & m_device;
-			ashes::MemoryAllocateInfo m_allocateInfo;
+			VkDeviceMemory m_parent;
+			VkDevice m_device;
+			VkMemoryAllocateInfo m_allocateInfo;
 			VkMemoryPropertyFlags m_flags;
 			GlMemoryMapFlags m_mapFlags;
+			GLuint m_buffer;
 			GLuint m_boundResource;
 			GLenum m_boundTarget;
-			declareDebugVariable( bool, m_isLocked, false );
+			VkDeviceSize m_memoryOffset;
+			VkDeviceSize m_align;
 		};
 
 	public:
-		DeviceMemory( Device const & device
-			, ashes::MemoryAllocateInfo allocateInfo );
+		DeviceMemory( VkDevice device
+			, VkMemoryAllocateInfo allocateInfo );
 		~DeviceMemory();
-		void bindToBuffer( GLuint resource, GLenum target );
-		void bindToImage( Image const & texture
-			, GLenum target
-			, ashes::ImageCreateInfo const & createInfo );
-		/**
-		*\copydoc	ashes::DeviceMemory::lock
-		*/
-		uint8_t * lock( uint64_t offset
-			, uint64_t size
-			, ashes::MemoryMapFlags flags )const override;
-		/**
-		*\copydoc	ashes::DeviceMemory::flush
-		*/
-		void flush( uint64_t offset
-			, uint64_t size )const override;
-		/**
-		*\copydoc	ashes::DeviceMemory::invalidate
-		*/
-		void invalidate( uint64_t offset
-			, uint64_t size )const override;
-		/**
-		*\copydoc	ashes::DeviceMemory::unlock
-		*/
-		void unlock()const override;
+		VkResult bindToBuffer( VkBuffer buffer
+			, VkDeviceSize memoryOffset );
+		VkResult bindToImage( VkImage texture
+			, VkDeviceSize memoryOffset );
+
+		void upload( ContextLock const & context
+			, VkDeviceSize offset
+			, VkDeviceSize size )const;
+		void download( ContextLock const & context
+			, VkDeviceSize offset
+			, VkDeviceSize size )const;
+
+		VkResult lock( ContextLock const & context
+			, VkDeviceSize offset
+			, VkDeviceSize size
+			, VkMemoryMapFlags flags
+			, void ** data )const;
+		VkResult flush( ContextLock const & context
+			, VkDeviceSize offset
+			, VkDeviceSize size )const;
+		VkResult invalidate( ContextLock const & context
+			, VkDeviceSize offset
+			, VkDeviceSize size )const;
+		void unlock( ContextLock const & context )const;
+
+		bool isMapped()const
+		{
+			return m_mapped;
+		}
+
+	public:
+		mutable DeviceMemoryDestroySignal onDestroy;
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
+		VkMemoryAllocateInfo m_allocateInfo;
+		VkMemoryPropertyFlags m_flags;
+		GlMemoryMapFlags m_mapFlags;
 		std::unique_ptr< DeviceMemoryImpl > m_impl;
+		GLuint m_buffer{ GL_INVALID_INDEX };
+		mutable bool m_dirty = true;
+		mutable bool m_mapped = false;
+		mutable VkDeviceSize m_mappedOffset;
+		mutable VkDeviceSize m_mappedSize;
+		mutable ByteArray m_data;
 	};
 }

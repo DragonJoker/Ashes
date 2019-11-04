@@ -4,12 +4,11 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/Enum/QueryResultFlag.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
 	enum GlQueryResultFlag
 	{
+		GL_QUERY_NONE = 0,
 		GL_QUERY_RESULT = 0x8866,
 		GL_QUERY_RESULT_NO_WAIT = 0x9194,
 	};
@@ -23,5 +22,5 @@ namespace gl_renderer
 	*\return
 	*	Le GLuint.
 	*/
-	GLuint convert( VkQueryResultFlags const & flags );
+	GlQueryResultFlags convertQueryResultFlags( VkQueryResultFlags const & flags );
 }

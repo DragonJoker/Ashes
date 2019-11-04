@@ -1,33 +1,33 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	std::string getName( GlImageLayout value )
 	{
 		switch ( value )
 		{
-		case gl_renderer::GL_LAYOUT_UNDEFINED_EXT:
+		case GL_LAYOUT_UNDEFINED_EXT:
 			return "GL_LAYOUT_UNDEFINED_EXT";
 
-		case gl_renderer::GL_LAYOUT_GENERAL_EXT:
+		case GL_LAYOUT_GENERAL_EXT:
 			return "GL_LAYOUT_GENERAL_EXT";
 
-		case gl_renderer::GL_LAYOUT_COLOR_ATTACHMENT_EXT:
+		case GL_LAYOUT_COLOR_ATTACHMENT_EXT:
 			return "GL_LAYOUT_COLOR_ATTACHMENT_EXT";
 
-		case gl_renderer::GL_LAYOUT_DEPTH_STENCIL_ATTACHMENT_EXT:
+		case GL_LAYOUT_DEPTH_STENCIL_ATTACHMENT_EXT:
 			return "GL_LAYOUT_DEPTH_STENCIL_ATTACHMENT_EXT";
 
-		case gl_renderer::GL_LAYOUT_DEPTH_STENCIL_READ_ONLY_EXT:
+		case GL_LAYOUT_DEPTH_STENCIL_READ_ONLY_EXT:
 			return "GL_LAYOUT_DEPTH_STENCIL_READ_ONLY_EXT";
 
-		case gl_renderer::GL_LAYOUT_SHADER_READ_ONLY_EXT:
+		case GL_LAYOUT_SHADER_READ_ONLY_EXT:
 			return "GL_LAYOUT_SHADER_READ_ONLY_EXT";
 
-		case gl_renderer::GL_LAYOUT_TRANSFER_SRC_EXT:
+		case GL_LAYOUT_TRANSFER_SRC_EXT:
 			return "GL_LAYOUT_TRANSFER_SRC_EXT";
 
-		case gl_renderer::GL_LAYOUT_TRANSFER_DST_EXT:
+		case GL_LAYOUT_TRANSFER_DST_EXT:
 			return "GL_LAYOUT_TRANSFER_DST_EXT";
 
 		default:
@@ -36,7 +36,7 @@ namespace gl_renderer
 		}
 	}
 
-	GlImageLayout convert( VkImageLayout const & layout )
+	GlImageLayout convert( VkImageLayout layout )
 	{
 		switch ( layout )
 		{

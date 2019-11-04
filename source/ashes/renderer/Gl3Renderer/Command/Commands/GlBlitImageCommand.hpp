@@ -4,59 +4,77 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Gl3Renderer/Command/Commands/GlCommandBase.hpp"
+#include "renderer/Gl3Renderer/Command/Commands/GlCommandBase.hpp"
 
-#include <Ashes/Miscellaneous/ImageBlit.hpp>
+#include "renderer/Gl3Renderer/Enum/GlAttachmentPoint.hpp"
+#include "renderer/Gl3Renderer/Enum/GlAttachmentType.hpp"
+#include "renderer/Gl3Renderer/Enum/GlFilter.hpp"
+#include "renderer/Gl3Renderer/Enum/GlImageAspectFlag.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
-	class BlitImageCommand
-		: public CommandBase
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eBlitFramebuffer >
 	{
-	public:
-		struct Attachment
-		{
-			Attachment( ashes::ImageSubresourceLayers & subresource
-				, Image const & image
-				, uint32_t layer );
-
-			GlAttachmentPoint point;
-			GLuint object;
-			GlAttachmentType type;
-		};
-		struct LayerCopy
-		{
-			LayerCopy( ashes::ImageBlit region
-				, Image const & srcImage
-				, Image const & dstImage
-				, uint32_t layer );
-
-			ashes::ImageBlit region;
-			Attachment src;
-			Attachment dst;
-		};
-
-	public:
-		BlitImageCommand( Device const & device
-			, ashes::Image const & srcImage
-			, ashes::Image const & dstImage
-			, std::vector< ashes::ImageBlit > const & regions
-			, VkFilter filter );
-		~BlitImageCommand();
-
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
-
-	private:
-		Image const & m_srcTexture;
-		Image const & m_dstTexture;
-		std::vector< std::shared_ptr< LayerCopy > > m_layerCopies;
-		GLuint m_srcFbo;
-		GLuint m_dstFbo;
-		GlFilter m_filter;
-		GlImageAspectFlags m_mask;
-		GLuint m_fbo;
-		GLenum m_srcTarget;
-		GLenum m_dstTarget;
+		static Op constexpr value = { OpType::eBlitFramebuffer, 11u };
 	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eBlitFramebuffer >
+	{
+		inline CmdT( int32_t srcL
+			, int32_t srcT
+			, int32_t srcR
+			, int32_t srcB
+			, int32_t dstL
+			, int32_t dstT
+			, int32_t dstR
+			, int32_t dstB
+			, uint32_t mask
+			, uint32_t filter )
+			: cmd{ { OpType::eBlitFramebuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, srcL{ srcL }
+			, srcT{ srcT }
+			, srcR{ srcR }
+			, srcB{ srcB }
+			, dstL{ dstL }
+			, dstT{ dstT }
+			, dstR{ dstR }
+			, dstB{ dstB }
+			, mask{ mask }
+			, filter{ filter }
+		{
+		}
+
+		Command cmd;
+		int32_t srcL;
+		int32_t srcT;
+		int32_t srcR;
+		int32_t srcB;
+		int32_t dstL;
+		int32_t dstT;
+		int32_t dstR;
+		int32_t dstB;
+		uint32_t mask;
+		uint32_t filter;
+	};
+	using CmdBlitFramebuffer = CmdT< OpType::eBlitFramebuffer >;
+
+	void apply( ContextLock const & context
+		, CmdBlitFramebuffer const & cmd );
+
+	//*************************************************************************
+
+	void buildBlitImageCommand( ContextStateStack & stack
+		, VkDevice device
+		, VkImage srcImage
+		, VkImage dstImage
+		, VkImageBlit region
+		, VkFilter filter
+		, CmdList & list
+		, VkImageViewArray & views );
+
+	//*************************************************************************
 }

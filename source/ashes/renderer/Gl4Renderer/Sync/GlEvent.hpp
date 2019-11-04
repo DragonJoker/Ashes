@@ -13,17 +13,9 @@ namespace ashes::gl4
 	public:
 		Event( VkDevice device );
 		~Event();
-		/**
-		*\copydoc	Event::getStatus
-		*/
+
 		VkResult getStatus()const;
-		/**
-		*\copydoc	Event::getStatus
-		*/
 		VkResult set()const;
-		/**
-		*\copydoc	Event::getStatus
-		*/
 		VkResult reset()const;
 
 	private:

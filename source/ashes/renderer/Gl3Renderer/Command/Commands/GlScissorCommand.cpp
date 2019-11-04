@@ -6,36 +6,51 @@ See LICENSE file in root folder.
 
 #include "Core/GlDevice.hpp"
 
-namespace gl_renderer
+#include "ashesgl3_api.hpp"
+
+using ashes::operator==;
+using ashes::operator!=;
+
+namespace ashes::gl3
 {
-	ScissorCommand::ScissorCommand( Device const & device
-		, uint32_t firstScissor
-		, ashes::VkScissorArray const & scissors )
-		: CommandBase{ device }
-		, m_scissors{ scissors.begin() + firstScissor, scissors.end() }
+	namespace
 	{
-	}
-
-	void ScissorCommand::apply( ContextLock const & context )const
-	{
-		auto & save = m_device.getCurrentScissor();
-		auto & scissor = *m_scissors.begin();
-
-		if ( scissor != save )
+		VkRect2D adjustScissor( ContextStateStack const & stack
+			, VkRect2D const & in )
 		{
-			glLogCommand( "ScissorCommand" );
-			glLogCall( context
-				, glScissor
-				, scissor.offset.x
-				, scissor.offset.y
-				, scissor.size.width
-				, scissor.size.height );
-			save = scissor;
+			VkRect2D result{ in };
+
+			if ( stack.hasCurrentFramebuffer() )
+			{
+				auto height = get( stack.getCurrentFramebuffer() )->getHeight();
+				result.offset.x = height - ( result.extent.height + result.offset.x );
+			}
+
+			return result;
+		}
+
+		VkScissorArray adjustScissors( ContextStateStack const & stack
+			, VkScissorArray const & in )
+		{
+			VkScissorArray result;
+			result.reserve( in.size() );
+
+			for ( auto sc : in )
+			{
+				result.push_back( adjustScissor( stack, sc ) );
+			}
+
+			return result;
 		}
 	}
 
-	CommandPtr ScissorCommand::clone()const
+	void buildScissorCommand( ContextStateStack & stack
+		, uint32_t firstScissor
+		, VkScissorArray scissors
+		, CmdList & list )
 	{
-		return std::make_unique< ScissorCommand >( *this );
+		glLogCommand( "ScissorCommand" );
+		scissors = adjustScissors( stack, scissors );
+		stack.apply( list, scissors, false );
 	}
 }

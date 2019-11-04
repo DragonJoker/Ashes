@@ -7,33 +7,37 @@ See LICENSE file in root folder.
 #include "RenderPass/GlFrameBuffer.hpp"
 #include "RenderPass/GlRenderPass.hpp"
 
-#include <Ashes/RenderPass/ClearValue.hpp>
-#include <Ashes/RenderPass/AttachmentDescription.hpp>
+#include "ashesgl3_api.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
-	BeginSubpassCommand::BeginSubpassCommand( Device const & device
-		, ashes::RenderPass const & renderPass
-		, ashes::FrameBuffer const & frameBuffer
-		, ashes::SubpassDescription const & subpass )
-		: CommandBase{ device }
-		, m_renderPass{ static_cast< RenderPass const & >( renderPass ) }
-		, m_subpass{ subpass }
-		, m_frameBuffer{ static_cast< FrameBuffer const & >( frameBuffer ) }
+	void buildBeginSubpassCommand( VkRenderPass renderPass
+		, VkFramebuffer frameBuffer
+		, VkSubpassDescription subpass
+		, CmdList & list )
 	{
-	}
+		glLogCommand( "BeginSubpassCommand" );
 
-	void BeginSubpassCommand::apply( ContextLock const & context )const
-	{
-		glLogCommand( "NextSubpassCommand" );
-		if ( m_frameBuffer.getFrameBuffer() )
+		if ( get( frameBuffer )->getInternal() != GL_INVALID_INDEX )
 		{
-			m_frameBuffer.setDrawBuffers( context, m_subpass.colorAttachments );
-		}
-	}
+			UInt32Array drawBuffers;
 
-	CommandPtr BeginSubpassCommand::clone()const
-	{
-		return std::make_unique< BeginSubpassCommand >( *this );
+			if ( get( frameBuffer )->isMultisampled() )
+			{
+				for ( auto & fboAttach : get( frameBuffer )->getMsColourAttaches() )
+				{
+					drawBuffers.push_back( fboAttach.point + fboAttach.index );
+				}
+			}
+			else
+			{
+				for ( auto & fboAttach : get( frameBuffer )->getColourAttaches() )
+				{
+					drawBuffers.push_back( fboAttach.point + fboAttach.index );
+				}
+			}
+
+			list.push_back( makeCmd< OpType::eDrawBuffers >( drawBuffers ) );
+		}
 	}
 }

@@ -4,16 +4,16 @@
 #include "Pipeline/GlPipelineLayout.hpp"
 #include "RenderPass/GlRenderPass.hpp"
 
-#include <Ashes/Pipeline/VertexInputAttributeDescription.hpp>
-#include <Ashes/Pipeline/VertexInputState.hpp>
+#include "ashesgl3_api.hpp"
 
 #include <algorithm>
+#include <sstream>
 
 #if defined( interface )
 #	undef interface
 #endif
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	namespace
 	{
@@ -158,6 +158,17 @@ namespace gl_renderer
 			GLSL_ATTRIBUTE_DOUBLE_VEC3 = 0x8FFD,
 			GLSL_ATTRIBUTE_DOUBLE_VEC4 = 0x8FFE,
 			GLSL_ATTRIBUTE_SAMPLER_CUBE_ARRAY = 0x900C,
+			GLSL_ATTRIBUTE_IMAGE_1D = 0x904C,
+			GLSL_ATTRIBUTE_IMAGE_2D = 0x904D,
+			GLSL_ATTRIBUTE_IMAGE_3D = 0x904E,
+			GLSL_ATTRIBUTE_IMAGE_2D_RECT = 0x904F,
+			GLSL_ATTRIBUTE_IMAGE_CUBE = 0x9050,
+			GLSL_ATTRIBUTE_IMAGE_BUFFER = 0x9051,
+			GLSL_ATTRIBUTE_IMAGE_1D_ARRAY = 0x9052,
+			GLSL_ATTRIBUTE_IMAGE_2D_ARRAY = 0x9053,
+			GLSL_ATTRIBUTE_IMAGE_CUBE_MAP_ARRAY = 0x9054,
+			GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE = 0x9055,
+			GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE_ARRAY = 0x9056,
 			GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE = 0x9108,
 			GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE = 0x9109,
 			GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE = 0x910A,
@@ -246,7 +257,18 @@ namespace gl_renderer
 			case GLSL_ATTRIBUTE_DOUBLE_VEC2:								return "GL_DOUBLE_VEC2";
 			case GLSL_ATTRIBUTE_DOUBLE_VEC3:								return "GL_DOUBLE_VEC3";
 			case GLSL_ATTRIBUTE_DOUBLE_VEC4:								return "GL_DOUBLE_VEC4";
-			case GLSL_ATTRIBUTE_SAMPLER_CUBE_ARRAY:							return "GL_SAMPLER_CUBEMAP_ARRAY";
+			case GLSL_ATTRIBUTE_SAMPLER_CUBE_ARRAY:							return "GL_SAMPLER_CUBE_ARRAY";
+			case GLSL_ATTRIBUTE_IMAGE_1D:									return "GL_IMAGE_1D";
+			case GLSL_ATTRIBUTE_IMAGE_2D:									return "GL_IMAGE_2D";
+			case GLSL_ATTRIBUTE_IMAGE_3D:									return "GL_IMAGE_3D";
+			case GLSL_ATTRIBUTE_IMAGE_2D_RECT:								return "GL_IMAGE_2D_RECT";
+			case GLSL_ATTRIBUTE_IMAGE_CUBE:									return "GL_IMAGE_CUBE";
+			case GLSL_ATTRIBUTE_IMAGE_BUFFER:								return "GL_IMAGE_BUFFER";
+			case GLSL_ATTRIBUTE_IMAGE_1D_ARRAY:								return "GL_IMAGE_1D_ARRAY";
+			case GLSL_ATTRIBUTE_IMAGE_2D_ARRAY:								return "GL_IMAGE_2D_ARRAY";
+			case GLSL_ATTRIBUTE_IMAGE_CUBE_MAP_ARRAY:						return "GL_IMAGE_CUBE_MAP_ARRAY";
+			case GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE:						return "GL_IMAGE_2D_MULTISAMPLE";
+			case GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE_ARRAY:					return "GL_IMAGE_2D_MULTISAMPLE_ARRAY";
 			case GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE:						return "GL_SAMPLER_2D_MULTISAMPLE";
 			case GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE:					return "GL_INT_SAMPLER_2D_MULTISAMPLE";
 			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE:		return "GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE";
@@ -337,28 +359,28 @@ namespace gl_renderer
 			}
 		}
 
-		ashes::ConstantFormat getFormat( GlslAttributeType type )noexcept
+		ConstantFormat getFormat( GlslAttributeType type )noexcept
 		{
 			switch ( type )
 			{
-			case GLSL_ATTRIBUTE_INT:										return ashes::ConstantFormat::eInt;
-			case GLSL_ATTRIBUTE_UNSIGNED_INT:								return ashes::ConstantFormat::eUInt;
-			case GLSL_ATTRIBUTE_FLOAT:										return ashes::ConstantFormat::eFloat;
-			case GLSL_ATTRIBUTE_FLOAT_VEC2:									return ashes::ConstantFormat::eVec2f;
-			case GLSL_ATTRIBUTE_FLOAT_VEC3:									return ashes::ConstantFormat::eVec3f;
-			case GLSL_ATTRIBUTE_FLOAT_VEC4:									return ashes::ConstantFormat::eVec4f;
-			case GLSL_ATTRIBUTE_INT_VEC2:									return ashes::ConstantFormat::eVec2i;
-			case GLSL_ATTRIBUTE_INT_VEC3:									return ashes::ConstantFormat::eVec3i;
-			case GLSL_ATTRIBUTE_INT_VEC4:									return ashes::ConstantFormat::eVec4i;
-			case GLSL_ATTRIBUTE_FLOAT_MAT2:									return ashes::ConstantFormat::eMat2f;
-			case GLSL_ATTRIBUTE_FLOAT_MAT3:									return ashes::ConstantFormat::eMat3f;
-			case GLSL_ATTRIBUTE_FLOAT_MAT4:									return ashes::ConstantFormat::eMat4f;
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_VEC2:							return ashes::ConstantFormat::eVec2ui;
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_VEC3:							return ashes::ConstantFormat::eVec3ui;
-			case GLSL_ATTRIBUTE_UNSIGNED_INT_VEC4:							return ashes::ConstantFormat::eVec4ui;
+			case GLSL_ATTRIBUTE_INT:										return ConstantFormat::eInt;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT:								return ConstantFormat::eUInt;
+			case GLSL_ATTRIBUTE_FLOAT:										return ConstantFormat::eFloat;
+			case GLSL_ATTRIBUTE_FLOAT_VEC2:									return ConstantFormat::eVec2f;
+			case GLSL_ATTRIBUTE_FLOAT_VEC3:									return ConstantFormat::eVec3f;
+			case GLSL_ATTRIBUTE_FLOAT_VEC4:									return ConstantFormat::eVec4f;
+			case GLSL_ATTRIBUTE_INT_VEC2:									return ConstantFormat::eVec2i;
+			case GLSL_ATTRIBUTE_INT_VEC3:									return ConstantFormat::eVec3i;
+			case GLSL_ATTRIBUTE_INT_VEC4:									return ConstantFormat::eVec4i;
+			case GLSL_ATTRIBUTE_FLOAT_MAT2:									return ConstantFormat::eMat2f;
+			case GLSL_ATTRIBUTE_FLOAT_MAT3:									return ConstantFormat::eMat3f;
+			case GLSL_ATTRIBUTE_FLOAT_MAT4:									return ConstantFormat::eMat4f;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_VEC2:							return ConstantFormat::eVec2ui;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_VEC3:							return ConstantFormat::eVec3ui;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_VEC4:							return ConstantFormat::eVec4ui;
 			default:
 				assert( false && "Unsupported GLSL attribute type" );
-				return ashes::ConstantFormat::eVec4f;
+				return ConstantFormat::eVec4f;
 			}
 		}
 
@@ -462,6 +484,21 @@ namespace gl_renderer
 			}
 		}
 
+		bool isImage( GlslAttributeType type )
+		{
+			return type == GLSL_ATTRIBUTE_IMAGE_1D
+				|| type == GLSL_ATTRIBUTE_IMAGE_2D
+				|| type == GLSL_ATTRIBUTE_IMAGE_3D
+				|| type == GLSL_ATTRIBUTE_IMAGE_CUBE
+				|| type == GLSL_ATTRIBUTE_IMAGE_BUFFER
+				|| type == GLSL_ATTRIBUTE_IMAGE_2D_RECT
+				|| type == GLSL_ATTRIBUTE_IMAGE_1D_ARRAY
+				|| type == GLSL_ATTRIBUTE_IMAGE_2D_ARRAY
+				|| type == GLSL_ATTRIBUTE_IMAGE_CUBE_MAP_ARRAY
+				|| type == GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE
+				|| type == GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE_ARRAY;
+		}
+
 		bool isSampler( GlslAttributeType type )
 		{
 			return type == GLSL_ATTRIBUTE_SAMPLER_1D
@@ -474,6 +511,7 @@ namespace gl_renderer
 				|| type == GLSL_ATTRIBUTE_SAMPLER_2D_RECT_SHADOW
 				|| type == GLSL_ATTRIBUTE_SAMPLER_1D_ARRAY
 				|| type == GLSL_ATTRIBUTE_SAMPLER_2D_ARRAY
+				|| type == GLSL_ATTRIBUTE_SAMPLER_CUBE_ARRAY
 				|| type == GLSL_ATTRIBUTE_SAMPLER_BUFFER
 				|| type == GLSL_ATTRIBUTE_SAMPLER_1D_ARRAY_SHADOW
 				|| type == GLSL_ATTRIBUTE_SAMPLER_2D_ARRAY_SHADOW
@@ -494,7 +532,6 @@ namespace gl_renderer
 				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_1D_ARRAY
 				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_ARRAY
 				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_BUFFER
-				|| type == GLSL_ATTRIBUTE_SAMPLER_CUBE_ARRAY
 				|| type == GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE
 				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE
 				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE
@@ -809,14 +846,16 @@ namespace gl_renderer
 				// Skip any uniforms that are in a block.
 				if ( values[0] == -1 )
 				{
-					std::vector< char > nameData( values[2] );
+					std::vector< char > nameData;
+					auto bufferSize = size_t( values[2] + 1u );
+					nameData.resize( bufferSize, 0 );
 					context->glGetProgramResourceName( program
 						, variableInterface
 						, unif
-						, GLsizei( nameData.size() )
+						, GLsizei( values[2] )
 						, nullptr
 						, &nameData[0] );
-					std::string variableName( nameData.begin(), nameData.end() - 1 );
+					std::string variableName = nameData.data();
 					variableFunction( variableName
 						, GlslAttributeType( values[1] )
 						, values[3]
@@ -860,24 +899,25 @@ namespace gl_renderer
 			}
 		}
 
-		struct AttrSpec
-		{
-			VkFormat format;
-			uint32_t location;
-		};
-
 		void doValidateInputs( ContextLock const & context
 			, GLuint program
-			, ashes::VertexInputState const & vertexInputState )
+			, VkPipelineVertexInputStateCreateInfo const & vertexInputState )
 		{
+			struct AttrSpec
+			{
+				VkFormat format;
+				uint32_t location;
+			};
 			std::vector< AttrSpec > attributes;
 
-			for ( auto & attribute : vertexInputState.vertexAttributeDescriptions )
+			for ( auto it = vertexInputState.pVertexAttributeDescriptions;
+				it != vertexInputState.pVertexAttributeDescriptions + vertexInputState.vertexAttributeDescriptionCount;
+				++it )
 			{
-				attributes.push_back( { attribute.format, attribute.location } );
+				attributes.push_back( { it->format, it->location } );
 			}
 
-			auto findAttribute = [&attributes]( std::string const & name
+			auto findAttribute = [&attributes, &context]( std::string const & name
 				, GlslAttributeType glslType
 				, uint32_t location )
 			{
@@ -896,13 +936,17 @@ namespace gl_renderer
 				else if ( name.find( "gl_" ) != 0u )
 				{
 					std::stringstream stream;
-					stream << ValidationError
-						<< "Attribute [" << name
+					stream << "Attribute [" << name
 						<< "], of type: " << getName( glslType )
 						<< ", at location: " << location
 						<< " is used in the shader program, but is not listed in the vertex layouts" << std::endl;
-					ashes::Logger::logError( stream.str() );
-					throw std::logic_error{ stream.str() };
+					context->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+						, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+						, 0ull
+						, 0u
+						, VK_ERROR_VALIDATION_FAILED_EXT
+						, "OpenGL"
+						, stream.str().c_str() );
 				}
 			};
 
@@ -910,7 +954,7 @@ namespace gl_renderer
 				, program
 				, GLSL_INTERFACE_PROGRAM_INPUT
 				, { GLSL_PROPERTY_TYPE, GLSL_PROPERTY_ARRAY_SIZE, GLSL_PROPERTY_LOCATION/*, GLSL_PROPERTY_LOCATION_COMPONENT*/ }
-				, [&attributes, &findAttribute]( std::string const & name, std::vector< GLint > const & values )
+				, [&findAttribute]( std::string const & name, std::vector< GLint > const & values )
 				{
 					auto glslType = GlslAttributeType( values[0] );
 					auto location = uint32_t( values[2] );
@@ -940,22 +984,29 @@ namespace gl_renderer
 
 			for ( auto & attribute : attributes )
 			{
-				ashes::Logger::logWarning( std::stringstream{} << ValidationWarning
-					<< "Vertex layout has attribute of type " << getName( attribute.format )
+				std::stringstream stream;
+				stream << "Vertex layout has attribute of type " << ashes::getName( attribute.format )
 					<< ", at location " << attribute.location
-					<< ", which is not used by the program" );
+					<< ", which is not used by the program";
+				context->reportMessage( VK_DEBUG_REPORT_WARNING_BIT_EXT
+					, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+					, 0ull
+					, 0u
+					, VK_ERROR_VALIDATION_FAILED_EXT
+					, "OpenGL"
+					, stream.str().c_str() );
 			}
 		}
 
 		void doValidateOutputs( ContextLock const & context
 			, GLuint program
-			, RenderPass const & renderPass )
+			, VkRenderPass renderPass )
 		{
-			std::set< ashes::AttachmentDescription const * > attaches;
+			std::set< VkAttachmentDescription const * > attaches;
 
-			for ( auto & attach : renderPass.getAttachments() )
+			for ( auto & reference : *get( renderPass ) )
 			{
-				attaches.insert( &attach );
+				attaches.insert( &get( renderPass )->getAttachment( reference ) );
 			}
 
 			struct GlslOutput
@@ -981,9 +1032,9 @@ namespace gl_renderer
 
 				if ( output.location != ~( 0u ) )
 				{
-					if ( renderPass.getColourAttaches().size() > output.location )
+					if ( get( renderPass )->getColourAttaches().size() > output.location )
 					{
-						auto & attach = renderPass.getColourAttaches()[output.location];
+						auto & attach = get( renderPass )->getColourAttaches()[output.location];
 
 						if ( areCompatible( attach.attach.get().format, convertFormat( output.type ) ) )
 						{
@@ -994,18 +1045,25 @@ namespace gl_renderer
 
 					if ( !found )
 					{
-						ashes::Logger::logError( std::stringstream{} << ValidationError
-							<< "Attachment [" << output.name
+						std::stringstream stream;
+						stream << "Attachment [" << output.name
 							<< "], of type: " << getName( output.type )
 							<< ", at location: " << output.location
-							<< " is used in the shader program, but is not listed in the render pass attachments" );
+							<< " is used in the shader program, but is not listed in the render pass attachments";
+						context->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+							, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+							, 0ull
+							, 0u
+							, VK_ERROR_VALIDATION_FAILED_EXT
+							, "OpenGL"
+							, stream.str().c_str() );
 					}
 				}
 				else
 				{
 					auto it = std::find_if( attaches.begin()
 						, attaches.end()
-						, [&output]( ashes::AttachmentDescription const * lookup )
+						, [&output]( VkAttachmentDescription const * lookup )
 						{
 							return areCompatible( lookup->format, convertFormat( output.type ) );
 						} );
@@ -1019,11 +1077,18 @@ namespace gl_renderer
 
 			for ( auto & attach : attaches )
 			{
-				if ( !ashes::isDepthOrStencilFormat( attach->format ) )
+				if ( !isDepthOrStencilFormat( attach->format ) )
 				{
-					ashes::Logger::logWarning( std::stringstream{} << ValidationWarning
-						<< "Render pass has an attahment of type " << ashes::getName( attach->format )
-						<< ", which is not used by the program" );
+					std::stringstream stream;
+					stream << "Render pass has an attahment of type " << ashes::getName( attach->format )
+						<< ", which is not used by the program";
+					context->reportMessage( VK_DEBUG_REPORT_WARNING_BIT_EXT
+						, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+						, 0ull
+						, 0u
+						, VK_ERROR_VALIDATION_FAILED_EXT
+						, "OpenGL"
+						, stream.str().c_str() );
 				}
 			}
 		}
@@ -1040,18 +1105,18 @@ namespace gl_renderer
 					, GLuint index
 					, GLint variables )
 				{
-					ashes::Logger::logDebug( std::stringstream{} << "   Uniform block: " << name
+					std::clog << "   Uniform block: " << name
 						<< ", at point " << point
 						<< ", and index " << index
-						<< ", active variables " << variables );
+						<< ", active variables " << variables;
 				}
 				, []( std::string name
 					, GlslAttributeType type
 					, GLint location )
 				{
-					ashes::Logger::logDebug( std::stringstream{} << "      variable: " << name
+					std::clog << "      variable: " << name
 						<< ", type " << getName( type )
-						<< ", at location " << location );
+						<< ", at location " << location;
 				} );
 		}
 
@@ -1067,18 +1132,18 @@ namespace gl_renderer
 					, GLuint index
 					, GLint variables )
 				{
-					ashes::Logger::logDebug( std::stringstream{} << "   ShaderStorage block: " << name
+					std::clog << "   ShaderStorage block: " << name
 						<< ", at point " << point
 						<< ", and index " << index
-						<< ", active variables " << variables );
+						<< ", active variables " << variables;
 				}
 				, []( std::string name
 					, GlslAttributeType type
 					, GLint location )
 				{
-					ashes::Logger::logDebug( std::stringstream{} << "      variable: " << name
+					std::clog << "      variable: " << name
 						<< ", type " << getName( type )
-						<< ", at location " << location );
+						<< ", at location " << location;
 				} );
 		}
 
@@ -1094,51 +1159,13 @@ namespace gl_renderer
 					, GLint arraySize
 					, GLint offset )
 				{
-					ashes::Logger::logDebug( std::stringstream{} << "   Uniform variable: " << name
+					std::clog << "   Uniform variable: " << name
 						<< ", type: " << getName( type )
 						<< ", location: " << location
 						<< ", arraySize: " << arraySize
-						<< ", offset: " << offset );
+						<< ", offset: " << offset;
 				} );
 		}
-	}
-
-	InputLayout getInputLayout( ContextLock const & context
-		, GLuint program )
-	{
-		InputLayout result;
-		getProgramInterfaceInfos( context
-			, program
-			, GLSL_INTERFACE_PROGRAM_INPUT
-			, { GLSL_PROPERTY_TYPE, GLSL_PROPERTY_ARRAY_SIZE, GLSL_PROPERTY_LOCATION/*, GLSL_PROPERTY_LOCATION_COMPONENT*/ }
-			, [&result]( std::string const & name, std::vector< GLint > const & values )
-			{
-				auto type = GlslAttributeType( values[0] );
-				auto location = uint32_t( values[2] );
-
-				switch ( type )
-				{
-				case GLSL_ATTRIBUTE_FLOAT_MAT2:
-					result.push_back( { name, ashes::ConstantFormat::eVec2f, location + 0u } );
-					result.push_back( { name, ashes::ConstantFormat::eVec2f, location + 1u } );
-					break;
-				case GLSL_ATTRIBUTE_FLOAT_MAT3:
-					result.push_back( { name, ashes::ConstantFormat::eVec3f, location + 0u } );
-					result.push_back( { name, ashes::ConstantFormat::eVec3f, location + 1u } );
-					result.push_back( { name, ashes::ConstantFormat::eVec3f, location + 2u } );
-					break;
-				case GLSL_ATTRIBUTE_FLOAT_MAT4:
-					result.push_back( { name, ashes::ConstantFormat::eVec4f, location + 0u } );
-					result.push_back( { name, ashes::ConstantFormat::eVec4f, location + 1u } );
-					result.push_back( { name, ashes::ConstantFormat::eVec4f, location + 2u } );
-					result.push_back( { name, ashes::ConstantFormat::eVec4f, location + 3u } );
-					break;
-				default:
-					result.push_back( { name, getFormat( type ), location } );
-					break;
-				}
-			} );
-		return result;
 	}
 
 	InterfaceBlockLayout getInterfaceBlockLayout( ContextLock const & context
@@ -1178,7 +1205,8 @@ namespace gl_renderer
 				, GLint arraySize
 				, GLint offset )
 			{
-				if ( !isSampler( type ) )
+				if ( !isSampler( type )
+					&& !isImage( type ) )
 				{
 					result.push_back( { name
 						, uint32_t( location )
@@ -1193,14 +1221,59 @@ namespace gl_renderer
 		return result;
 	}
 
+	InputLayout getInputLayout( ContextLock const & context
+		, GLuint program )
+	{
+		InputLayout result;
+		getProgramInterfaceInfos( context
+			, program
+			, GLSL_INTERFACE_PROGRAM_INPUT
+			, { GLSL_PROPERTY_TYPE, GLSL_PROPERTY_ARRAY_SIZE, GLSL_PROPERTY_LOCATION }
+			, [&result]( std::string const & name, std::vector< GLint > const & values )
+			{
+				auto glslType = GlslAttributeType( values[0] );
+				auto location = uint32_t( values[2] );
+				auto offset = 0u;
+
+				switch ( glslType )
+				{
+				case GLSL_ATTRIBUTE_FLOAT_MAT2:
+					result.vertexAttributeDescriptions.push_back( { location + 0u, 0u, VK_FORMAT_R32G32_SFLOAT, offset } );
+					offset += 2 * sizeof( float );
+					result.vertexAttributeDescriptions.push_back( { location + 1u, 0u, VK_FORMAT_R32G32_SFLOAT, offset } );
+					break;
+				case GLSL_ATTRIBUTE_FLOAT_MAT3:
+					result.vertexAttributeDescriptions.push_back( { location + 0u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offset } );
+					offset += 3 * sizeof( float );
+					result.vertexAttributeDescriptions.push_back( { location + 1u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offset } );
+					offset += 3 * sizeof( float );
+					result.vertexAttributeDescriptions.push_back( { location + 2u, 0u, VK_FORMAT_R32G32B32_SFLOAT , offset } );
+					break;
+				case GLSL_ATTRIBUTE_FLOAT_MAT4:
+					result.vertexAttributeDescriptions.push_back( { location + 0u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offset } );
+					offset += 4 * sizeof( float );
+					result.vertexAttributeDescriptions.push_back( { location + 1u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offset } );
+					offset += 4 * sizeof( float );
+					result.vertexAttributeDescriptions.push_back( { location + 2u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offset } );
+					offset += 4 * sizeof( float );
+					result.vertexAttributeDescriptions.push_back( { location + 2u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offset } );
+					break;
+				default:
+					result.vertexAttributeDescriptions.push_back( { location + 0u, 0u, convertAttribute( glslType ), offset } );
+					break;
+				}
+			} );
+		return result;
+	}
+
 	void validatePipeline( ContextLock const & context
-		, PipelineLayout const & layout
+		, VkPipelineLayout layout
 		, GLuint program
-		, ashes::VertexInputState const & vertexInputState
-		, ashes::RenderPass const & renderPass )
+		, VkPipelineVertexInputStateCreateInfo const & vertexInputState
+		, VkRenderPass renderPass )
 	{
 		doValidateInputs( context, program, vertexInputState );
-		doValidateOutputs( context, program, static_cast< RenderPass const & >( renderPass ) );
+		doValidateOutputs( context, program, renderPass );
 		//doValidateUbos( context, program );
 		//doValidateSsbos( context, program );
 		//doValidateUniforms( context, program );

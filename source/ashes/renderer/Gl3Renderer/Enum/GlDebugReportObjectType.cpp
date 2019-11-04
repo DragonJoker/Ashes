@@ -1,6 +1,6 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	GlDebugReportObjectType convert( VkDebugReportObjectTypeEXT const & value )
 	{
@@ -25,6 +25,41 @@ namespace gl_renderer
 			break;
 		case VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT:
 			result = GlDebugReportObjectType::eFrameBuffer;
+			break;
+		default:
+			// Noop
+			break;
+		}
+
+		return result;
+	}
+
+	GlDebugReportObjectType convert( VkObjectType const & value )
+	{
+		GlDebugReportObjectType result = GlDebugReportObjectType::eUnknown;
+
+		switch ( value )
+		{
+		case VK_OBJECT_TYPE_BUFFER:
+			result = GlDebugReportObjectType::eBuffer;
+			break;
+		case VK_OBJECT_TYPE_IMAGE:
+			result = GlDebugReportObjectType::eTexture;
+			break;
+		case VK_OBJECT_TYPE_QUERY_POOL:
+			result = GlDebugReportObjectType::eQuery;
+			break;
+		case VK_OBJECT_TYPE_SHADER_MODULE:
+			result = GlDebugReportObjectType::eShaderModule;
+			break;
+		case VK_OBJECT_TYPE_SAMPLER:
+			result = GlDebugReportObjectType::eSampler;
+			break;
+		case VK_OBJECT_TYPE_FRAMEBUFFER:
+			result = GlDebugReportObjectType::eFrameBuffer;
+			break;
+		default:
+			// Noop
 			break;
 		}
 

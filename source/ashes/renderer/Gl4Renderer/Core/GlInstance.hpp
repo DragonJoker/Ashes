@@ -15,44 +15,26 @@ namespace ashes::gl4
 	class Instance
 	{
 	public:
-		/**
-		*\brief
-		*	Constructeur, initialise l'instance de Vulkan.
-		*/
 		Instance( VkInstanceCreateInfo createInfo );
 		~Instance();
-		/**
-		*\copydoc	Instance::enumerateLayerProperties
-		*/
+
 		VkPhysicalDeviceArray enumeratePhysicalDevices()const;
-		/**
-		*\copydoc	Instance::frustum
-		*/
 		std::array< float, 16 > frustum( float left
 			, float right
 			, float bottom
 			, float top
 			, float zNear
 			, float zFar )const;
-		/**
-		*\copydoc	Instance::perspective
-		*/
 		std::array< float, 16 > perspective( float radiansFovY
 			, float aspect
 			, float zNear
 			, float zFar )const;
-		/**
-		*\copydoc	Instance::ortho
-		*/
 		std::array< float, 16 > ortho( float left
 			, float right
 			, float bottom
 			, float top
 			, float zNear
 			, float zFar )const;
-		/**
-		*\copydoc	Instance::infinitePerspective
-		*/
 		std::array< float, 16 > infinitePerspective( float radiansFovY
 			, float aspect
 			, float zNear )const;

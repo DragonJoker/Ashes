@@ -8,32 +8,21 @@
 #define ___GlRenderer_Pipeline_HPP___
 #pragma once
 
-#include "Gl3Renderer/Buffer/GlGeometryBuffers.hpp"
-#include "Gl3Renderer/Shader/GlShaderProgram.hpp"
-
-#include <Ashes/Buffer/PushConstantsBuffer.hpp>
-#include <Ashes/Pipeline/Pipeline.hpp>
-#include <Ashes/Pipeline/ColourBlendState.hpp>
-#include <Ashes/Pipeline/DepthStencilState.hpp>
-#include <Ashes/Pipeline/InputAssemblyState.hpp>
-#include <Ashes/Pipeline/MultisampleState.hpp>
-#include <Ashes/Pipeline/RasterisationState.hpp>
-#include <Ashes/Pipeline/Scissor.hpp>
-#include <Ashes/Pipeline/ShaderStageState.hpp>
-#include <Ashes/Pipeline/TessellationState.hpp>
-#include <Ashes/Pipeline/Viewport.hpp>
+#include "renderer/Gl3Renderer/Buffer/GlGeometryBuffers.hpp"
+#include "renderer/Gl3Renderer/Core/GlContextState.hpp"
+#include "renderer/Gl3Renderer/Shader/GlShaderDesc.hpp"
+#include "renderer/Gl3Renderer/Shader/GlShaderProgram.hpp"
 
 #include <algorithm>
 #include <unordered_map>
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	/**
 	*\brief
 	*	Un pipeline de rendu.
 	*/
 	class Pipeline
-		: public ashes::Pipeline
 	{
 	public:
 		/**
@@ -41,9 +30,10 @@ namespace gl_renderer
 		*	Construction / Destruction.
 		*/
 		/**@{*/
-		Pipeline( Device const & device
-			, PipelineLayout const & layout
-			, ashes::GraphicsPipelineCreateInfo createInfo );
+		Pipeline( VkDevice device
+			, VkGraphicsPipelineCreateInfo createInfo );
+		Pipeline( VkDevice device
+			, VkComputePipelineCreateInfo createInfo );
 		GeometryBuffers * findGeometryBuffers( VboBindings const & vbos
 			, IboBinding const & ibo )const;
 		GeometryBuffersRef createGeometryBuffers( VboBindings vbos
@@ -51,168 +41,164 @@ namespace gl_renderer
 			, VkIndexType type )const;
 		~Pipeline();
 		PushConstantsDesc findPushConstantBuffer( PushConstantsDesc const & pushConstants )const;
-		/**@}*/
-		/**
-		*\return
-		*	\p true si le Viewport est défini.
-		*/
+		VkDescriptorSetLayoutArray const & getDescriptorsLayouts()const;
+
+		inline bool isCompute()const
+		{
+			return m_compProgram != nullptr;
+		}
+
+		inline ContextState & getBackContextState()const
+		{
+			assert( !isCompute() );
+			return m_backContextState;
+		}
+
+		inline ContextState & getRtotContextState()const
+		{
+			assert( !isCompute() );
+			return m_rtotContextState;
+		}
+
+		inline GLuint getBackProgram()const
+		{
+			assert( !isCompute() );
+			assert( m_backProgram );
+			return m_backProgram->getProgram();
+		}
+
+		inline GLuint getRtotProgram()const
+		{
+			assert( !isCompute() );
+			assert( m_rtotProgram );
+			return m_rtotProgram->getProgram();
+		}
+
+		inline GLuint getCompProgram()const
+		{
+			assert( isCompute() );
+			return m_compProgram->getProgram();
+		}
+
+		inline auto const & getInputAssemblyState()const
+		{
+			assert( !isCompute() );
+			return m_backContextState.iaState;
+		}
+
+		inline auto const & getColourBlendState()const
+		{
+			assert( !isCompute() );
+			return m_backContextState.cbState;
+		}
+
+		inline auto const & getRasterisationState()const
+		{
+			assert( !isCompute() );
+			return m_backContextState.rsState;
+		}
+
+		inline auto const & getDepthStencilState()const
+		{
+			assert( !isCompute() );
+			return m_backContextState.dsState;
+		}
+
+		inline auto const & getMultisampleState()const
+		{
+			assert( !isCompute() );
+			return m_backContextState.msState;
+		}
+
+		inline auto const & getTessellationState()const
+		{
+			assert( !isCompute() );
+			return m_backContextState.tsState;
+		}
+
+		inline auto const & getVertexInputState()const
+		{
+			assert( !isCompute() );
+			return m_vertexInputState.value();
+		}
+
+		inline auto const & getViewportState()const
+		{
+			assert( !isCompute() );
+			return m_backContextState.vpState;
+		}
+
 		inline bool hasViewport()const
 		{
-			return !m_viewports.empty();
+			assert( !isCompute() );
+			return m_backContextState.vpState.viewportCount > 0;
 		}
-		/**
-		*\return
-		*	\p true si le Scissor est défini.
-		*/
+
 		inline bool hasScissor()const
 		{
-			return !m_scissors.empty();
+			assert( !isCompute() );
+			return m_backContextState.vpState.scissorCount > 0;
 		}
-		/**
-		*\return
-		*	Le ShaderStageState.
-		*/
-		inline std::vector< ashes::ShaderStageState > const & getShaderStageState()const
+
+		inline VkViewportArray const & getViewports()const
 		{
-			return m_ssState;
+			assert( !isCompute() );
+			return m_backContextState.viewports;
 		}
-		/**
-		*\return
-		*	Le InputAssemblyState.
-		*/
-		inline ashes::InputAssemblyState const & getInputAssemblyState()const
+
+		inline VkScissorArray const & getScissors()const
 		{
-			return m_iaState;
+			assert( !isCompute() );
+			return m_backContextState.scissors;
 		}
-		/**
-		*\return
-		*	Le ColourBlendState.
-		*/
-		inline ashes::ColourBlendState const & getColourBlendState()const
+
+		inline bool hasDynamicStateEnable( VkDynamicState state )const
 		{
-			return m_cbState;
+			assert( !isCompute() );
+			auto view = makeArrayView( m_backContextState.dyState.pDynamicStates
+				, m_backContextState.dyState.dynamicStateCount );
+			return view.end() != std::find( view.begin()
+				, view.end()
+				, state );
 		}
-		/**
-		*\return
-		*	Le RasterisationState.
-		*/
-		inline ashes::RasterisationState const & getRasterisationState()const
-		{
-			return m_rsState;
-		}
-		/**
-		*\return
-		*	Le DepthStencilState.
-		*/
-		inline ashes::DepthStencilState const & getDepthStencilState()const
-		{
-			return m_dsState;
-		}
-		/**
-		*\return
-		*	Le MultisampleState.
-		*/
-		inline ashes::MultisampleState const & getMultisampleState()const
-		{
-			return m_msState;
-		}
-		/**
-		*\return
-		*	Le TessellationState.
-		*/
-		inline ashes::TessellationState const & getTessellationState()const
-		{
-			return m_tsState;
-		}
-		/**
-		*\return
-		*	Le VertexInputState.
-		*/
-		inline ashes::VertexInputState const & getVertexInputState()const
-		{
-			return m_vertexInputState;
-		}
-		/**
-		*\return
-		*	Le Viewport.
-		*/
-		inline ashes::VkViewportArray const & getViewports()const
-		{
-			assert( !m_viewports.empty() );
-			return m_viewports;
-		}
-		/**
-		*\return
-		*	Le Scissor.
-		*/
-		inline ashes::VkScissorArray const & getScissors()const
-		{
-			assert( !m_scissors.empty() );
-			return m_scissors;
-		}
-		/**
-		*\return
-		*	Le PipelineLayout.
-		*/
-		inline PipelineLayout const & getLayout()const
+
+		inline VkPipelineLayout getLayout()const
 		{
 			return m_layout;
 		}
-		/**
-		*\return
-		*	Le ShaderProgram.
-		*/
-		inline GLuint getProgram()const
-		{
-			return m_program.getProgram();
-		}
-		/**
-		*\return
-		*	Dit si le pipeline a des sommets.
-		*/
-		inline bool hasVertexLayout()const
-		{
-			return !m_vertexInputState.vertexBindingDescriptions.empty()
-				&& !m_vertexInputState.vertexAttributeDescriptions.empty();
-		}
-		/**
-		*\return
-		*	Le hash du VertexInputState.
-		*/
+
 		inline size_t getVertexInputStateHash()const
 		{
+			assert( !isCompute() );
 			return m_vertexInputStateHash;
-		}
-		/**
-		*\return
-		*	\p true si l'état dynamique est dans la liste d'états dynamiques.
-		*/
-		inline bool hasDynamicStateEnable( ashes::DynamicStateEnable state )const
-		{
-			return bool( m_createInfo.dynamicState )
-				&& m_createInfo.dynamicState.value().dynamicStates.end() != std::find( m_createInfo.dynamicState.value().dynamicStates.begin()
-					, m_createInfo.dynamicState.value().dynamicStates.end()
-					, state );
 		}
 
 	private:
-		Device const & m_device;
-		PipelineLayout const & m_layout;
-		std::vector< ashes::ShaderStageState > m_ssState;
-		ashes::VertexInputState m_vertexInputState;
-		ashes::RenderPass const & m_renderPass;
-		ashes::InputAssemblyState m_iaState;
-		ashes::ColourBlendState m_cbState;
-		ashes::RasterisationState m_rsState;
-		ashes::DepthStencilState m_dsState;
-		ashes::MultisampleState m_msState;
-		ashes::TessellationState m_tsState;
-		ashes::VkViewportArray m_viewports;
-		ashes::VkScissorArray m_scissors;
+		void doInitialise( ContextLock const & context
+			, ShaderProgram const & program );
+
+	private:
+		VkDevice m_device;
+		VkPipelineCreateFlags m_flags;
+		VkPipelineShaderStageCreateInfoArray m_stages;
+		VkVertexInputBindingDescriptionArray m_vertexBindingDescriptions;
+		VkVertexInputAttributeDescriptionArray m_vertexAttributeDescriptions;
+		Optional< VkPipelineVertexInputStateCreateInfo > m_vertexInputState;
+		mutable ContextState m_backContextState;
+		ShaderDesc m_shaderDesc;
+		Optional< VkPipelineRasterizationStateCreateInfo > m_rtotRasterizationState;
+		mutable ContextState m_rtotContextState;
+		VkPipelineLayout m_layout;
+		VkRenderPass m_renderPass;
+		uint32_t m_subpass;
+		VkPipeline m_basePipelineHandle;
+		int32_t m_basePipelineIndex;
 		PushConstantsDesc m_constantsPcb;
-		ShaderProgram m_program;
+		std::unique_ptr< ShaderProgram > m_backProgram;
+		std::unique_ptr< ShaderProgram > m_rtotProgram;
+		std::unique_ptr< ShaderProgram > m_compProgram;
 		mutable std::vector< std::pair< size_t, GeometryBuffersPtr > > m_geometryBuffers;
-		mutable std::unordered_map< GLuint, BufferDestroyConnection > m_connections;
+		mutable std::unordered_map< GLuint, DeviceMemoryDestroyConnection > m_connections;
 		size_t m_vertexInputStateHash;
 	};
 }

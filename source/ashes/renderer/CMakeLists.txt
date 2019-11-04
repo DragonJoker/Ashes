@@ -6,7 +6,7 @@ if ( ASHES_BUILD_RENDERER_PLUGINS )
 	set( ASHES_BUILD_PLUGINS TRUE )
 
 	if ( NOT DEFINED ASHES_BUILD_RENDERER_OGL3 )
-		option( ASHES_BUILD_RENDERER_OGL3 "Build OpenGL 3.X renderer plugin" OFF )
+		option( ASHES_BUILD_RENDERER_OGL3 "Build OpenGL 3.X renderer plugin" ON )
 	endif ()
 	if ( ASHES_BUILD_RENDERER_OGL3 )
 		set( ASHES_BUILD_OGL3 TRUE  )

@@ -4,34 +4,44 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Gl3Renderer/Command/Commands/GlCommandBase.hpp"
+#include "renderer/Gl3Renderer/Command/Commands/GlCommandBase.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
-	/**
-	*\brief
-	*	Classe de base d'une commande.
-	*/
-	class MemoryBarrierCommand
-		: public CommandBase
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eMemoryBarrier >
 	{
-	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*/
-		MemoryBarrierCommand( Device const & device
-			, VkPipelineStageFlags after
-			, VkPipelineStageFlags before
-			, ashes::DependencyFlags dependencyFlags
-			, ashes::MemoryBarrierArray const & memoryBarriers
-			, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
-			, ashes::VkImageMemoryBarrierArray const & imageMemoryBarriers );
-
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
-
-	private:
-		GlMemoryBarrierFlags m_flags;
+		static Op constexpr value = { OpType::eMemoryBarrier, 2u };
 	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eMemoryBarrier >
+	{
+		inline CmdT( uint32_t flags )
+			: cmd{ { OpType::eMemoryBarrier, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, flags{ std::move( flags ) }
+		{
+		}
+
+		Command cmd;
+		uint32_t flags;
+	};
+	using CmdMemoryBarrier = CmdT< OpType::eMemoryBarrier >;
+
+	void apply( ContextLock const & context
+		, CmdMemoryBarrier const & cmd );
+	
+	//*************************************************************************
+
+	void buildMemoryBarrierCommand( VkPipelineStageFlags after
+		, VkPipelineStageFlags before
+		, VkDependencyFlags dependencyFlags
+		, VkMemoryBarrierArray memoryBarriers
+		, VkBufferMemoryBarrierArray bufferMemoryBarriers
+		, VkImageMemoryBarrierArray imageMemoryBarriers
+		, CmdList & list );
+
+	//*************************************************************************
 }

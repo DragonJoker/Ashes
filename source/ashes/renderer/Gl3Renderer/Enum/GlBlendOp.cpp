@@ -1,24 +1,24 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	std::string getName( GlBlendOp value )
 	{
 		switch ( value )
 		{
-		case gl_renderer::GL_BLEND_OP_ADD:
+		case GL_BLEND_OP_ADD:
 			return "GL_ADD";
 
-		case gl_renderer::GL_BLEND_OP_MIN:
+		case GL_BLEND_OP_MIN:
 			return "GL_MIN";
 
-		case gl_renderer::GL_BLEND_OP_MAX:
+		case GL_BLEND_OP_MAX:
 			return "GL_MAX";
 
-		case gl_renderer::GL_BLEND_OP_SUBTRACT:
+		case GL_BLEND_OP_SUBTRACT:
 			return "GL_SUBTRACT";
 
-		case gl_renderer::GL_BLEND_OP_REVERSE_SUBTRACT:
+		case GL_BLEND_OP_REVERSE_SUBTRACT:
 			return "GL_REVERSE_SUBTRACT";
 
 		default:

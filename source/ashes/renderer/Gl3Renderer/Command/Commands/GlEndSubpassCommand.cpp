@@ -3,65 +3,81 @@ This file belongs to GlInstance.
 See LICENSE file in root folder.
 */
 #include "Command/Commands/GlEndSubpassCommand.hpp"
+#include "Command/Commands/GlBlitImageCommand.hpp"
+#include "Command/Commands/GlCopyImageToBufferCommand.hpp"
 
 #include "Command/GlCommandBuffer.hpp"
 #include "RenderPass/GlFrameBuffer.hpp"
 
-#include <Ashes/RenderPass/ClearValue.hpp>
-#include <Ashes/RenderPass/AttachmentDescription.hpp>
-#include <Ashes/RenderPass/SubpassDescription.hpp>
+#include "ashesgl3_api.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
-	EndSubpassCommand::EndSubpassCommand( Device const & device
-		, ashes::FrameBuffer const & frameBuffer
-		, ashes::SubpassDescription const & subpass )
-		: CommandBase{ device }
-		, m_frameBuffer{ static_cast< FrameBuffer const & >( frameBuffer ) }
-		, m_subpass{ subpass }
-	{
-		assert( m_subpass.resolveAttachments.empty()
-			|| m_subpass.resolveAttachments.size() == m_subpass.colorAttachments.size() );
-	}
-
-	void EndSubpassCommand::apply( ContextLock const & context )const
+	void buildEndSubpassCommand( VkDevice device
+		, VkFramebuffer frameBuffer
+		, VkSubpassDescription const & subpass
+		, CmdList & list )
 	{
 		glLogCommand( "EndSubpassCommand" );
 
-		if ( !m_subpass.resolveAttachments.empty() )
+		if ( subpass.pResolveAttachments 
+			&& get( frameBuffer )->getInternal() )
 		{
-			if ( m_frameBuffer.getFrameBuffer() )
+			uint32_t index = 0u;
+
+			for ( auto & resolveAttach : makeArrayView( subpass.pResolveAttachments, subpass.colorAttachmentCount ) )
 			{
-				uint32_t index = 0u;
+				auto & srcAttach = get( frameBuffer )->getMsColourAttaches()[index++];
+				auto & dstAttach = get( frameBuffer )->getAllAttaches()[resolveAttach.attachment];
 
-				for ( auto & resolveAttach : m_subpass.resolveAttachments )
+				if ( srcAttach.originalObject != dstAttach.originalObject
+					|| srcAttach.originalMipLevel != dstAttach.originalMipLevel )
 				{
-					auto & srcattach = m_frameBuffer.getColourAttaches()[index++];
-					auto & dstattach = m_frameBuffer.getColourAttaches()[resolveAttach.attachment];
+					// Setup source FBO
+					auto srcFbo = get( device )->getBlitSrcFbo();
+					list.push_back( makeCmd< OpType::eInitFramebuffer >( &get( srcFbo )->getInternal() ) );
+					list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+						, srcFbo ) );
+					list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
+						, srcAttach.point
+						, srcAttach.target
+						, srcAttach.object
+						, srcAttach.mipLevel ) );
+					list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+						, nullptr ) );
 
-					if ( dstattach.object != GL_INVALID_INDEX )
-					{
-						context->glBindFramebuffer( GL_DRAW_FRAMEBUFFER, m_frameBuffer.getFrameBuffer() );
-					}
-					else
-					{
-						context->glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
-					}
+					// Setup dst FBO
+					auto dstFbo = get( device )->getBlitDstFbo();
+					list.push_back( makeCmd< OpType::eInitFramebuffer >( &get( dstFbo )->getInternal() ) );
+					list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+						, dstFbo ) );
+					list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
+						, dstAttach.point
+						, dstAttach.target
+						, dstAttach.object
+						, dstAttach.mipLevel ) );
+					list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+						, nullptr ) );
 
-					GLenum attach[1]{ dstattach.point };
-					context->glBindFramebuffer( GL_READ_FRAMEBUFFER, m_frameBuffer.getFrameBuffer() );
-					context->glReadBuffer( srcattach.point );
-					context->glDrawBuffers( 1u, attach );
-					context->glBlitFramebuffer( 0, 0, m_frameBuffer.getDimensions().width, m_frameBuffer.getDimensions().height
-						, 0, 0, m_frameBuffer.getDimensions().width, m_frameBuffer.getDimensions().height
-						, GL_COLOR_BUFFER_BIT, GL_FILTER_NEAREST );
+					// Perform blit
+					list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
+						, get( device )->getBlitSrcFbo() ) );
+					list.push_back( makeCmd< OpType::eReadBuffer >( uint32_t( srcAttach.point ) ) );
+					list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_DRAW_FRAMEBUFFER
+						, get( device )->getBlitDstFbo() ) );
+					list.push_back( makeCmd< OpType::eDrawBuffer >( uint32_t( dstAttach.point ) ) );
+					list.push_back( makeCmd< OpType::eBlitFramebuffer >(
+						0, 0, int32_t( get( frameBuffer )->getWidth() ), int32_t( get( frameBuffer )->getHeight() ),
+						0, 0, int32_t( get( frameBuffer )->getWidth() ), int32_t( get( frameBuffer )->getHeight() ),
+						GL_COLOR_BUFFER_BIT, GL_FILTER_NEAREST ) );
+
+					// Unbind
+					list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
+						, nullptr ) );
+					list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_DRAW_FRAMEBUFFER
+						, nullptr ) );
 				}
 			}
 		}
-	}
-
-	CommandPtr EndSubpassCommand::clone()const
-	{
-		return std::make_unique< EndSubpassCommand >( *this );
 	}
 }

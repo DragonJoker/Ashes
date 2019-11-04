@@ -8,26 +8,11 @@ See LICENSE file in root folder.
 
 namespace ashes::gl4
 {
-	/**
-	*\brief
-	*	Classe de Semaphore.
-	*\remarks
-	*	Un sémaphore est un élément de synchronisation servant pour les files.
-	*/
 	class Semaphore
 	{
 	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le LogicalDevice parent.
-		*/
 		explicit Semaphore( VkDevice device );
-		/**
-		*\brief
-		*	Conversion implicite vers VkSemaphore.
-		*/
+
 		inline GLuint getSemaphore()const
 		{
 			return m_semaphore;

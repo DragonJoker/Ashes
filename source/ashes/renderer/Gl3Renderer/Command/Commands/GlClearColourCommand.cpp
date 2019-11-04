@@ -4,37 +4,57 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlClearColourCommand.hpp"
 
-#include "Image/GlImageView.hpp"
 #include "Image/GlImage.hpp"
+#include "Miscellaneous/GlCallLogger.hpp"
 
-namespace gl_renderer
+#include "ashesgl3_api.hpp"
+
+namespace ashes::gl3
 {
-	ClearColourCommand::ClearColourCommand( Device const & device
-		, ashes::ImageView const & image
-		, VkClearColorValue const & colour )
-		: CommandBase{ device }
-		, m_image{ static_cast< Image const & >( image.getImage() ) }
-		, m_colour{ colour }
-		, m_internal{ getInternal( m_image.getFormat() ) }
-		, m_format{ getFormat( m_internal ) }
-		, m_type{ getType( m_internal ) }
+	void apply( ContextLock const & context
+		, CmdClearTexColor const & cmd )
 	{
+		glLogCall( context
+			, glClearTexImage
+			, cmd.name
+			, cmd.mipLevel
+			, cmd.format
+			, cmd.type
+			, cmd.color.float32 );
 	}
 
-	void ClearColourCommand::apply( ContextLock const & context )const
+	void buildClearColourCommand( VkDevice device
+		, VkImage image
+		, VkImageLayout imageLayout
+		, VkClearColorValue value
+		, VkImageSubresourceRangeArray ranges
+		, CmdList & list )
 	{
 		glLogCommand( "ClearColourCommand" );
-		glLogCall( context
-			, glClearTexImage_ARB
-			, m_image.getImage()
-			, 0
-			, m_format
-			, m_type
-			, m_colour.float32.data() );
-	}
 
-	CommandPtr ClearColourCommand::clone()const
-	{
-		return std::make_unique< ClearColourCommand >( *this );
+		if ( get( get( device )->getInstance() )->getContext().hasClearTexImage() )
+		{
+			auto internal = getInternalFormat( get( image )->getFormat() );
+			auto format = getFormat( internal );
+			auto type = getType( internal );
+
+			for ( auto & range : ranges )
+			{
+				for ( uint32_t level = range.baseMipLevel;
+					level < range.baseMipLevel + range.levelCount;
+					++level )
+				{
+					list.push_back( makeCmd< OpType::eClearTexColor >( get( image )->getInternal()
+						, level
+						, format
+						, type
+						, value ) );
+				}
+			}
+		}
+		else
+		{
+			std::cerr << "Unsupported command : ClearColourCommand" << std::endl;
+		}
 	}
 }

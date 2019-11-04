@@ -16,9 +16,9 @@ namespace ashes::gl4
 	std::string getName( GlQueryType value );
 	/**
 	*\brief
-	*	Convertit un QueryType en GlQueryType.
+	*	Convertit un VkQueryType en GlQueryType.
 	*\param[in] value
-	*	Le QueryType.
+	*	Le VkQueryType.
 	*\return
 	*	Le GlQueryType.
 	*/

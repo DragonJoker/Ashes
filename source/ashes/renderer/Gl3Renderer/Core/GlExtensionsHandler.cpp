@@ -14,6 +14,7 @@ See LICENSE file in root folder.
 #include <algorithm>
 #include <iterator>
 #include <stdexcept>
+#include <sstream>
 
 #ifdef max
 #	undef max
@@ -22,7 +23,7 @@ See LICENSE file in root folder.
 #	undef min
 #endif
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	namespace
 	{
@@ -37,29 +38,6 @@ namespace gl_renderer
 
 		using PFN_glGetStringi = const GLubyte *( GLAPIENTRY * )( GLenum name, GLuint index );
 		PFN_glGetStringi glGetStringi;
-
-#if ASHES_WIN32
-		template< typename FuncT >
-		bool getFunction( char const * const name, FuncT & function )
-		{
-			function = reinterpret_cast< FuncT >( wglGetProcAddress( name ) );
-			return function != nullptr;
-		}
-#elif ASHES_XLIB
-		template< typename FuncT >
-		bool getFunction( char const * const name, FuncT & function )
-		{
-			function = reinterpret_cast< FuncT >( glXGetProcAddressARB( reinterpret_cast< GLubyte const * >( name ) ) );
-			return function != nullptr;
-		}
-#else
-		template< typename FuncT >
-		bool getFunction( char const * const name, FuncT & function )
-		{
-			function = reinterpret_cast< FuncT >( glXGetProcAddressARB( reinterpret_cast< GLubyte const * >( name ) ) );
-			return function != nullptr;
-		}
-#endif
 	}
 
 	void ExtensionsHandler::initialise()
@@ -73,7 +51,7 @@ namespace gl_renderer
 			std::stringstream stream( sversion );
 			float fversion;
 			stream >> fversion;
-			auto version = std::min( int( fversion * 10 ), 330 );
+			auto version = std::min( int( fversion * 10 ), 33 );
 
 			if ( version < 30 )
 			{
@@ -82,6 +60,23 @@ namespace gl_renderer
 
 			m_major = version / 10;
 			m_minor = version % 10;
+
+			if ( version >= 33 )
+			{
+				m_shaderVersion = version * 10;
+			}
+			else if ( version >= 32 )
+			{
+				m_shaderVersion = 150;
+			}
+			else if ( version >= 31 )
+			{
+				m_shaderVersion = 140;
+			}
+			else
+			{
+				m_shaderVersion = 130;
+			}
 		}
 
 		auto const * cextensions = ( char const * )glGetString( GL_EXTENSIONS );
@@ -130,7 +125,7 @@ namespace gl_renderer
 			, name );
 	}
 
-	bool ExtensionsHandler::findAny( ashes::StringArray const & names )const
+	bool ExtensionsHandler::findAny( StringArray const & names )const
 	{
 		return names.end() != std::find_if( names.begin()
 			, names.end()
@@ -140,7 +135,7 @@ namespace gl_renderer
 			} );
 	}
 
-	bool ExtensionsHandler::findAll( ashes::StringArray const & names )const
+	bool ExtensionsHandler::findAll( StringArray const & names )const
 	{
 		return names.end() == std::find_if( names.begin()
 			, names.end()

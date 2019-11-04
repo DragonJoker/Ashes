@@ -6,25 +6,18 @@ See LICENSE file in root folder.
 
 #include "RenderPass/GlFrameBuffer.hpp"
 
-namespace gl_renderer
+#include "ashesgl3_api.hpp"
+
+namespace ashes::gl3
 {
-	EndRenderPassCommand::EndRenderPassCommand( Device const & device )
-		: CommandBase{ device }
+	void buildEndRenderPassCommand( ContextStateStack & stack
+		, CmdList & list )
 	{
-	}
-
-	void EndRenderPassCommand::apply( ContextLock const & context )const
-	{
-		glLogCommand( "EndRenderPassCommand" );
-		glLogCall( context
-			, glBindFramebuffer
-			, GL_FRAMEBUFFER
-			, 0u );
-		m_device.setCurrentFramebuffer( 0u );
-	}
-
-	CommandPtr EndRenderPassCommand::clone()const
-	{
-		return std::make_unique< EndRenderPassCommand >( *this );
+		if ( stack.hasCurrentFramebuffer() )
+		{
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+				, nullptr ) );
+			stack.setCurrentFramebuffer( VK_NULL_HANDLE );
+		}
 	}
 }

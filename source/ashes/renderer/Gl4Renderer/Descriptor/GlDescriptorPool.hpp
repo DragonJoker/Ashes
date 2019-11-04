@@ -15,12 +15,6 @@ namespace ashes::gl4
 	class DescriptorPool
 	{
 	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] layout
-		*	Le layout à partir duquel sera créé le get( pool )->
-		*/
 		DescriptorPool( VkDevice device
 			, VkDescriptorPoolCreateInfo createInfo );
 		~DescriptorPool();

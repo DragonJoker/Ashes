@@ -2,13 +2,9 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___GlRenderer_TextureType_HPP___
-#define ___GlRenderer_TextureType_HPP___
 #pragma once
 
-#include <Ashes/AshesPrerequisites.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
 	enum GlTextureType
 		: GLenum
@@ -42,5 +38,3 @@ namespace gl_renderer
 		, uint32_t layerCount
 		, VkImageCreateFlags flags );
 }
-
-#endif

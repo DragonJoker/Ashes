@@ -7,9 +7,13 @@ See LICENSE file in root folder.
 #pragma once
 
 #include <cstdint>
+#include <string>
 
 #if ASHES_WIN32
 #	define GLAPIENTRY __stdcall
+#	ifndef NOMINMAX
+#		define NOMINMAX
+#	endif
 #	include <Windows.h>
 #	undef MemoryBarrier
 #else
@@ -22,9 +26,8 @@ See LICENSE file in root folder.
 #endif
 
 #include <cstddef>
-#include <string>
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 #define makeGlExtension( x )\
 	static const std::string x = "GL_"#x
@@ -34,6 +37,7 @@ namespace gl_renderer
 	makeGlExtension( AMDX_debug_output );
 	makeGlExtension( ARB_texture_buffer_range );
 	makeGlExtension( ARB_shader_image_load_store );
+	makeGlExtension( ARB_shader_storage_buffer_object );
 	makeGlExtension( ARB_base_instance );
 	makeGlExtension( ARB_clear_texture );
 	makeGlExtension( ARB_compute_shader );
@@ -142,7 +146,12 @@ namespace gl_renderer
 		GL_VERSION = 0x1F02,
 		GL_EXTENSIONS = 0x1F03,
 	};
+}
 
+#include "renderer/Gl3Renderer/Miscellaneous/GlCallLogger.hpp"
+
+namespace ashes::gl3
+{
 #if ASHES_WIN32
 	using PFN_wglCreateContext = HGLRC ( GLAPIENTRY * )( HDC );
 	using PFN_wglDeleteContext = BOOL ( GLAPIENTRY * )( HGLRC );
@@ -167,9 +176,9 @@ namespace gl_renderer
 	using PFN_glActiveTexture = void ( GLAPIENTRY * )( GLenum texture );
 	using PFN_glAttachShader = void ( GLAPIENTRY * )( GLuint program, GLuint shader );
 	using PFN_glBeginQuery = void ( GLAPIENTRY * )( GLenum target, GLuint id );
-	using PFN_glBindBuffer = void ( GLAPIENTRY * )( GLenum target, GLuint buffer );
-	using PFN_glBindBufferBase = void ( GLAPIENTRY * )( GLenum target, GLuint index, GLuint buffer );
-	using PFN_glBindBufferRange = void ( GLAPIENTRY * )( GLenum target, GLuint index, GLuint buffer, GLintptr offset, GLsizeiptr size );
+	using PFN_glBindBuffer = void ( GLAPIENTRY * )( GlBufferTarget target, GLuint buffer );
+	using PFN_glBindBufferBase = void ( GLAPIENTRY * )( GlBufferTarget target, GLuint index, GLuint buffer );
+	using PFN_glBindBufferRange = void ( GLAPIENTRY * )( GlBufferTarget target, GLuint index, GLuint buffer, GLintptr offset, GLsizeiptr size );
 	using PFN_glBindFramebuffer = void ( GLAPIENTRY * )( GLenum target, GLuint framebuffer );
 	using PFN_glBindImageTexture = void ( GLAPIENTRY * )( GLuint unit, GLuint texture, GLint level, GLboolean layered, GLint layer, GLenum access, GLenum format );
 	using PFN_glBindSampler = void ( GLAPIENTRY * )( GLuint unit, GLuint sampler );
@@ -181,8 +190,8 @@ namespace gl_renderer
 	using PFN_glBlendFuncSeparate = void ( GLAPIENTRY * )( GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha );
 	using PFN_glBlendFuncSeparatei = void ( GLAPIENTRY * )( GLuint buf, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha );
 	using PFN_glBlitFramebuffer = void ( GLAPIENTRY * )( GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter );
-	using PFN_glBufferData = void ( GLAPIENTRY * ) ( GLenum target, GLsizeiptr size, const void * data, GLenum usage );
-	using PFN_glBufferStorage = void ( GLAPIENTRY * )( GLenum target, GLsizeiptr size, const void * data, GLbitfield flags );
+	using PFN_glBufferData = void ( GLAPIENTRY * )( GlBufferTarget target, GLsizeiptr size, const void * data, GlBufferDataUsageFlags usage );
+	using PFN_glBufferStorage = void ( GLAPIENTRY * )( GlBufferTarget target, GLsizeiptr size, const void * data, GlMemoryPropertyFlags flags );
 	using PFN_glCheckFramebufferStatus = GLenum( GLAPIENTRY * )( GLenum target );
 	using PFN_glClear = void ( GLAPIENTRY * )( GLbitfield mask );
 	using PFN_glClearDepth = void ( GLAPIENTRY * )( GLdouble depth );
@@ -199,12 +208,14 @@ namespace gl_renderer
 	using PFN_glCompressedTexSubImage1D = void ( GLAPIENTRY * )( GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLsizei imageSize, const GLvoid * data );
 	using PFN_glCompressedTexSubImage2D = void ( GLAPIENTRY * )( GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLsizei imageSize, const GLvoid * data );
 	using PFN_glCompressedTexSubImage3D = void ( GLAPIENTRY * )( GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLsizei imageSize, const GLvoid * data );
-	using PFN_glCopyBufferSubData = void ( GLAPIENTRY * )( GLenum readtarget, GLenum writetarget, GLintptr readoffset, GLintptr writeoffset, GLsizeiptr size );
+	using PFN_glCopyBufferSubData = void ( GLAPIENTRY * )( GlBufferTarget readtarget, GlBufferTarget writetarget, GLintptr readoffset, GLintptr writeoffset, GLsizeiptr size );
 	using PFN_glCopyImageSubData = void ( GLAPIENTRY * )( GLuint srcName, GLenum srcTarget, GLint srcLevel, GLint srcX, GLint srcY, GLint srcZ, GLuint dstName, GLenum dstTarget, GLint dstLevel, GLint dstX, GLint dstY, GLint dstZ, GLsizei srcWidth, GLsizei srcHeight, GLsizei srcDepth );
 	using PFN_glCreateProgram = GLuint( GLAPIENTRY * )( void );
 	using PFN_glCreateShader = GLuint( GLAPIENTRY * )( GLenum type );
 	using PFN_glCreateShaderProgramv = GLuint( GLAPIENTRY * )( GLenum type, GLsizei count, const char ** strings );
 	using PFN_glCullFace = void ( GLAPIENTRY * )( GLenum mode );
+	using PFN_glDebugMessageCallback = void ( GLAPIENTRY * )( PFNGLDEBUGPROC callback, void * userParam );
+	using PFN_glDebugMessageCallbackAMD = void ( GLAPIENTRY * )( PFNGLDEBUGAMDPROC callback, void * userParam );
 	using PFN_glDeleteBuffers = void ( GLAPIENTRY * )( GLsizei n, const GLuint * buffers );
 	using PFN_glDeleteFramebuffers = void ( GLAPIENTRY * )( GLsizei n, const GLuint* framebuffers );
 	using PFN_glDeleteProgram = void ( GLAPIENTRY * )( GLuint program );
@@ -217,7 +228,7 @@ namespace gl_renderer
 	using PFN_glDepthFunc = void ( GLAPIENTRY * )( GLenum func );
 	using PFN_glDepthMask = void ( GLAPIENTRY * )( GLboolean flag );
 	using PFN_glDepthRange = void ( GLAPIENTRY * )( GLclampd zNear, GLclampd zFar );
-	using PFN_glDisable = void ( GLAPIENTRY * )( GLenum cap );
+	using PFN_glDisable = void ( GLAPIENTRY * )( GlTweak cap );
 	using PFN_glDispatchCompute = void ( GLAPIENTRY * )( GLuint num_groups_x, GLuint num_groups_y, GLuint num_groups_z );
 	using PFN_glDispatchComputeIndirect = void ( GLAPIENTRY * )( GLintptr indirect );
 	using PFN_glDrawArraysInstanced = void ( GLAPIENTRY * )( GLenum mode, GLint first, GLsizei count, GLsizei primcount );
@@ -227,12 +238,13 @@ namespace gl_renderer
 	using PFN_glDrawElementsInstanced = void ( GLAPIENTRY * )( GLenum mode, GLsizei count, GLenum type, const void * indices, GLsizei primcount );
 	using PFN_glDrawElementsInstancedBaseVertex = void ( GLAPIENTRY * )( GLenum mode, GLsizei count, GLenum type, GLvoid *indices, GLsizei primcount, GLint basevertex );
 	using PFN_glDrawElementsInstancedBaseVertexBaseInstance = void ( GLAPIENTRY * )( GLenum mode, GLsizei count, GLenum type, GLvoid *indices, GLsizei primcount, GLint basevertex, GLuint baseinstance );
-	using PFN_glEnable = void ( GLAPIENTRY * )( GLenum cap );
+	using PFN_glEnable = void ( GLAPIENTRY * )( GlTweak cap );
 	using PFN_glEnableVertexAttribArray = void ( GLAPIENTRY * )( GLuint index );
 	using PFN_glEndQuery = void ( GLAPIENTRY * )( GLenum target );
 	using PFN_glFenceSync = GLsync( GLAPIENTRY * )( GLenum condition, GLbitfield flags );
 	using PFN_glFinish = void ( GLAPIENTRY * )();
-	using PFN_glFlushMappedBufferRange = void ( GLAPIENTRY * )( GLenum target, GLintptr offset, GLsizeiptr length );
+	using PFN_glFlush = void ( GLAPIENTRY * )();
+	using PFN_glFlushMappedBufferRange = void ( GLAPIENTRY * )( GlBufferTarget target, GLintptr offset, GLsizeiptr length );
 	using PFN_glFramebufferTexture1D = void ( GLAPIENTRY * )( GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level );
 	using PFN_glFramebufferTexture2D = void ( GLAPIENTRY * )( GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level );
 	using PFN_glFramebufferTexture3D = void ( GLAPIENTRY * )( GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level, GLint layer );
@@ -245,6 +257,7 @@ namespace gl_renderer
 	using PFN_glGenTextures = void ( GLAPIENTRY * )( GLsizei n, GLuint * textures );
 	using PFN_glGenerateMipmap = void ( GLAPIENTRY * )( GLenum target );
 	using PFN_glGenVertexArrays = void ( GLAPIENTRY * )( GLsizei n, GLuint * arrays );
+	using PFN_glGetBufferParameteriv = GLenum( GLAPIENTRY * )( GlBufferTarget target, GLenum value, GLint * data );
 	using PFN_glGetError = GLenum( GLAPIENTRY * )( void );
 	using PFN_glGetFloatv = void ( GLAPIENTRY * )( GLenum pname, GLfloat * data );
 	using PFN_glGetIntegerv = void ( GLAPIENTRY * )( GLenum pname, GLint * data );
@@ -260,7 +273,6 @@ namespace gl_renderer
 	using PFN_glGetQueryObjectuiv = void ( GLAPIENTRY * )( GLuint id, GLenum pname, GLuint * params );
 	using PFN_glGetShaderInfoLog = void ( GLAPIENTRY * )( GLuint shader, GLsizei bufSize, GLsizei* length, GLchar* infoLog );
 	using PFN_glGetShaderiv = void ( GLAPIENTRY * )( GLuint shader, GLenum pname, GLint* param );
-	using PFN_glGetShaderSource = void ( GLAPIENTRY * )( GLuint shader, GLsizei bufSize, GLsizei * lenbgth, GLchar * source );
 	using PFN_glGetString = const GLubyte *( GLAPIENTRY * )( GLenum name ); 
 	using PFN_glGetTexImage = void ( GLAPIENTRY * )( GLenum target, GLint level, GLenum format, GLenum type, void *pixels );
 	using PFN_glGetTexLevelParameterfv = void ( GLAPIENTRY * )( GLenum target, GLint level, GLenum pname, GLfloat * params );
@@ -271,7 +283,8 @@ namespace gl_renderer
 	using PFN_glLineWidth = void ( GLAPIENTRY * )( GLfloat width );
 	using PFN_glLinkProgram = void ( GLAPIENTRY * )( GLuint program );
 	using PFN_glLogicOp = void ( GLAPIENTRY * )( GLenum opcode );
-	using PFN_glMapBufferRange = void * ( GLAPIENTRY * )( GLenum target, GLintptr offset, GLsizeiptr length, GLbitfield access );
+	using PFN_glMapBuffer = void * ( GLAPIENTRY * )( GlBufferTarget target, GLbitfield access );
+	using PFN_glMapBufferRange = void * ( GLAPIENTRY * )( GlBufferTarget target, GLintptr offset, GLsizeiptr length, GLbitfield access );
 	using PFN_glMemoryBarrier = void ( GLAPIENTRY * )( GLbitfield barriers );
 	using PFN_glMinSampleShading = void ( GLAPIENTRY * )( GLfloat value );
 	using PFN_glMultiDrawArraysIndirect = void ( GLAPIENTRY * )( GLenum mode, const void * indirect, GLsizei drawcount, GLsizei stride );
@@ -330,7 +343,7 @@ namespace gl_renderer
 	using PFN_glUniformMatrix2fv = void ( GLAPIENTRY * )( GLint location, GLsizei count, GLboolean transpose, const GLfloat* value );
 	using PFN_glUniformMatrix3fv = void ( GLAPIENTRY * )( GLint location, GLsizei count, GLboolean transpose, const GLfloat* value );
 	using PFN_glUniformMatrix4fv = void ( GLAPIENTRY * )( GLint location, GLsizei count, GLboolean transpose, const GLfloat* value );
-	using PFN_glUnmapBuffer = GLboolean( GLAPIENTRY * )( GLenum target );
+	using PFN_glUnmapBuffer = GLboolean( GLAPIENTRY * )( GlBufferTarget target );
 	using PFN_glUseProgram = void ( GLAPIENTRY * )( GLuint program );
 	using PFN_glVertexAttribDivisor = void ( GLAPIENTRY * )( GLuint index, GLuint divisor );
 	using PFN_glVertexAttribIPointer = void ( GLAPIENTRY * )( GLuint index, GLint size, GLenum type, GLsizei stride, const void* pointer );

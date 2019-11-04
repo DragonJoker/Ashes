@@ -4,9 +4,10 @@ See LICENSE file in root folder
 */
 #pragma once
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	enum GlTweak
+		: uint32_t
 	{
 		GL_CULL_FACE = 0x0B44,
 		GL_DEPTH_RANGE = 0x0B70,
@@ -42,6 +43,7 @@ namespace gl_renderer
 		GL_PRIMITIVE_RESTART = 0x8F9D,
 		GL_SAMPLE_SHADING = 0x8C36,
 		GL_FRAMEBUFFER_SRGB = 0x8DB9,
+		GL_DEBUG_OUTPUT_SYNC = 0x8242,
 	};
 	std::string getName( GlTweak value );
 }

@@ -20,11 +20,11 @@ namespace ashes::gl4
 	std::string getShaderStageFlagName( VkShaderStageFlags value );
 	/**
 	*\brief
-	*	Convertit un ShaderStageFlags en VkShaderStageFlags.
+	*	Convertit un VkShaderStageFlags en VkShaderStageFlags.
 	*\param[in] flags
-	*	Le ShaderStageFlags.
-	*\return
 	*	Le VkShaderStageFlags.
+	*\return
+	*	Le GlShaderStageFlags.
 	*/
 	GlShaderStageFlags convertShaderStageFlags( VkShaderStageFlags const & flags );
 	/**
@@ -33,7 +33,7 @@ namespace ashes::gl4
 	*\param[in] flags
 	*	Le VkShaderStageFlagBits.
 	*\return
-	*	Le VkShaderStageFlagBits.
+	*	Le GlShaderStageFlag.
 	*/
 	GlShaderStageFlag convertShaderStageFlag( VkShaderStageFlagBits const & flag );
 }

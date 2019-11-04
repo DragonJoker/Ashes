@@ -16,6 +16,10 @@ if ( OpenGL_FOUND )
 		${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.cpp
 	)
 
+	file( GLOB_RECURSE ${PROJECT_NAME}_NVS_FILES
+		${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.natvis
+	)
+
 	file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
 		${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.h
 		${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.hh
@@ -51,6 +55,7 @@ if ( OpenGL_FOUND )
 	add_library( ${PROJECT_NAME} SHARED
 		${${PROJECT_NAME}_SRC_FILES}
 		${${PROJECT_NAME}_HDR_FILES}
+		${${PROJECT_NAME}_NVS_FILES}
 		${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES}
 		${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
 	)
@@ -63,9 +68,10 @@ if ( OpenGL_FOUND )
 	target_link_libraries( ${PROJECT_NAME} PRIVATE
 		${OPENGL_gl_LIBRARY}
 		${BinLibraries}
-		common
-		ashes
-		RendererCommon
+		${RendererDependencies}
+	)
+	target_compile_features( ${PROJECT_NAME} PRIVATE
+		cxx_std_17
 	)
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE
 		${PROJECT_NAME}_USE_SPIRV_CROSS=${${PROJECT_NAME}_USE_SPIRV_CROSS}
@@ -74,9 +80,6 @@ if ( OpenGL_FOUND )
 	)
 	target_compile_options( ${PROJECT_NAME} PRIVATE
 		${TARGET_CXX_OPTIONS}
-	)
-	target_compile_features( ${PROJECT_NAME} PRIVATE
-		cxx_std_17
 	)
 	set_target_properties( ${PROJECT_NAME} PROPERTIES
 		CXX_STANDARD 17
@@ -93,9 +96,7 @@ if ( OpenGL_FOUND )
 		${${PROJECT_NAME}_SRC_FILES}
 	)
 	add_dependencies( ${PROJECT_NAME}
-		common
-		ashes
-		RendererCommon
+		${RendererDependencies}
 	)
 
 	parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Buffer "Buffer" )
@@ -111,8 +112,9 @@ if ( OpenGL_FOUND )
 	parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Shader "Shader" )
 	parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Sync "Sync" )
 
-	source_group( "Header Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES} )
-	source_group( "Source Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES} )
+	source_group( "Header Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES} )
+	source_group( "Source Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES} )
+	source_group( "Natvis Files" FILES ${${PROJECT_NAME}_NVS_FILES} )
 
 	set( ENABLED_RENDERERS
 		${ENABLED_RENDERERS}
@@ -165,7 +167,7 @@ if ( OpenGL_FOUND )
 			CONFIGURATIONS Debug
 			LIBRARY DESTINATION lib/Debug
 		)
-	endif ()
+	endif()
 else ()
 	if ( NOT OpenGL_FOUND )
 		message( SEND_ERROR "OpenGL library not found." )

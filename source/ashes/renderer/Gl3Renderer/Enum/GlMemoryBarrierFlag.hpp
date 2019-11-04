@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/Enum/PipelineStageFlag.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
 	enum GlMemoryBarrierFlag
 		: GLbitfield
@@ -38,5 +36,5 @@ namespace gl_renderer
 	*\return
 	*	Le GlMemoryBarrierFlags.
 	*/
-	GlMemoryBarrierFlags convert( VkPipelineStageFlags const & flags );
+	GlMemoryBarrierFlags getMemoryBarrierFlags( VkPipelineStageFlags const & flags );
 }

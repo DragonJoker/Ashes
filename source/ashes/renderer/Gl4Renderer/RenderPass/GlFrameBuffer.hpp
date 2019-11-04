@@ -17,72 +17,23 @@ namespace ashes::gl4
 	GlAttachmentType getAttachmentType( VkFormat format );
 	GlAttachmentType getAttachmentType( VkImageView texture );
 	void checkCompleteness( GLenum status );
-	/**
-	*\brief
-	*	Classe encapsulant le concept de Framebuffer.
-	*\remarks
-	*	Contient les tampon de profondeur et de couleur.
-	*/
+
 	class Framebuffer
 	{
 	public:
-		/**
-		*\brief
-		*	Crée un FrameBuffer compatible avec la passe de rendu donnée.
-		*\remarks
-		*	Si la compatibilité entre les textures voulues et les formats de la passe de rendu
-		*	n'est pas possible, une std::runtime_error est lancée.
-		*\param[in] dimensions
-		*	Les dimensions du tampon d'images.
-		*/
 		Framebuffer( VkDevice device
 			, VkFramebufferCreateInfo createInfo );
 		Framebuffer( VkDevice device
 			, GLuint name );
-		/**
-		*\brief
-		*	Destructeur
-		*/
 		~Framebuffer();
-		/**
-		*\~english
-		*\brief
-		*	Sets the draw buffers.
-		*\param[in] attaches
-		*	The attaches.
-		*\~french
-		*\brief
-		*	Définit les tampons d'écriture.
-		*\param[in] attaches
-		*	Les attaches.
-		*/
+
 		void setDrawBuffers( ContextLock const & context
 			, AttachmentDescriptionArray const & attaches )const;
-		/**
-		*\~english
-		*\brief
-		*	Sets the draw buffers.
-		*\param[in] attaches
-		*	The attaches.
-		*\~french
-		*\brief
-		*	Définit les tampons d'écriture.
-		*\param[in] attaches
-		*	Les attaches.
-		*/
 		void setDrawBuffers( ContextLock const & context
 			, VkAttachmentReferenceArray const & attaches )const;
-		/**
-		*\~english
-		*name
-		*	Getters.
-		*\~french
-		*name
-		*	Accesseurs.
-		*/
-		/**@{*/
 		bool hasOnlySwapchainImage()const;
 		bool hasSwapchainImage()const;
+
 		inline GLuint getInternal()const
 		{
 			assert( m_internal != GL_INVALID_INDEX );

@@ -13,55 +13,25 @@
 
 namespace ashes::gl4
 {
-	/**
-	*\brief
-	*	Une texture, avec son image et son échantillonneur.
-	*/
 	class Image
 	{
 	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*\remarks
-		*	Used for swapchain own image.
-		*\param[in] device
-		*	Le périphérique logique.
-		*/
 		Image( VkDevice device
 			, VkFormat format
 			, VkExtent2D const & dimensions
 			, bool swapchainImage = false );
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le périphérique logique.
-		*/
 		Image( VkDevice device
 			, VkImageCreateInfo createInfo
 			, bool swapchainImage = false );
-		/**
-		*\brief
-		*	Destructeur.
-		*/
 		~Image();
-		/**
-		*\copydoc	Image::getMemoryRequirements
-		*/
+
 		VkMemoryRequirements getMemoryRequirements()const;
-		/**
-		*\return
-		*	L'image OpenGL.
-		*/
+
 		inline bool hasInternal()const noexcept
 		{
 			return m_internal != GL_INVALID_INDEX;
 		}
-		/**
-		*\return
-		*	L'image OpenGL.
-		*/
+
 		inline GLuint getInternal()const noexcept
 		{
 			assert( hasInternal() );

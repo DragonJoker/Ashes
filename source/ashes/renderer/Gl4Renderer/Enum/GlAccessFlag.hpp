@@ -16,20 +16,20 @@ namespace ashes::gl4
 	std::string getName( GlAccessType value );
 	/**
 	*\brief
-	*	Convertit un AccessFlags en VkAccessFlags.
+	*	Convertit un VkAccessFlags en GLenum.
 	*\param[in] flags
-	*	Le AccessFlags.
-	*\return
 	*	Le VkAccessFlags.
+	*\return
+	*	Le GLenum.
 	*/
 	GLenum convertAccessFlags( VkAccessFlags const & flags );
 	/**
 	*\brief
-	*	Convertit un VkAccessFlags en AccessFlags.
+	*	Convertit un GLenum en VkAccessFlags.
 	*\param[in] flags
-	*	Le VkAccessFlags.
+	*	Le GLenum.
 	*\return
-	*	Le AccessFlags.
+	*	Le VkAccessFlags.
 	*/
 	VkAccessFlags convertAccessFlags( GLenum flags );
 }

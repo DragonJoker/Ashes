@@ -6,141 +6,191 @@
 */
 #pragma once
 
+#define VK_NO_PROTOTYPES
 #include <ashes/ashes.h>
 
-#include "Miscellaneous/OpenGLDefines.hpp"
+#include "renderer/Gl3Renderer/Miscellaneous/GlDebug.hpp"
+#include "renderer/Gl3Renderer/Miscellaneous/OpenGLDefines.hpp"
 
-#include "Enum/GlAccessFlag.hpp"
-#include "Enum/GlAttachmentPoint.hpp"
-#include "Enum/GlAttachmentType.hpp"
-#include "Enum/GlBaseType.hpp"
-#include "Enum/GlBlendFactor.hpp"
-#include "Enum/GlBlendOp.hpp"
-#include "Enum/GlBorderColour.hpp"
-#include "Enum/GlBufferTarget.hpp"
-#include "Enum/GlClearTarget.hpp"
-#include "Enum/GlClipInfo.hpp"
-#include "Enum/GlColourComponentFlag.hpp"
-#include "Enum/GlCompareOp.hpp"
-#include "Enum/GlComponentSwizzle.hpp"
-#include "Enum/GlConstantFormat.hpp"
-#include "Enum/GlCullModeFlag.hpp"
-#include "Enum/GlDebugReportObjectType.hpp"
-#include "Enum/GlFenceWaitFlag.hpp"
-#include "Enum/GlFilter.hpp"
-#include "Enum/GlFormat.hpp"
-#include "Enum/GlFrameBufferTarget.hpp"
-#include "Enum/GlFrontFace.hpp"
-#include "Enum/GlGetParameter.hpp"
-#include "Enum/GlImageAspectFlag.hpp"
-#include "Enum/GlImageLayout.hpp"
-#include "Enum/GlImageTiling.hpp"
-#include "Enum/GlIndexType.hpp"
-#include "Enum/GlLogicOp.hpp"
-#include "Enum/GlMemoryBarrierFlag.hpp"
-#include "Enum/GlMemoryMapFlag.hpp"
-#include "Enum/GlMemoryPropertyFlag.hpp"
-#include "Enum/GlMipmapMode.hpp"
-#include "Enum/GlPolygonMode.hpp"
-#include "Enum/GlPrimitiveTopology.hpp"
-#include "Enum/GlQueryResultFlag.hpp"
-#include "Enum/GlQueryType.hpp"
-#include "Enum/GlSampleCountFlag.hpp"
-#include "Enum/GlSamplerParameter.hpp"
-#include "Enum/GlShaderBinaryFormat.hpp"
-#include "Enum/GlShaderInfo.hpp"
-#include "Enum/GlShaderStageFlag.hpp"
-#include "Enum/GlStencilOp.hpp"
-#include "Enum/GlTexLevelParameter.hpp"
-#include "Enum/GlTexParameter.hpp"
-#include "Enum/GlTextureType.hpp"
-#include "Enum/GlTextureViewType.hpp"
-#include "Enum/GlTextureUnit.hpp"
-#include "Enum/GlTweak.hpp"
-#include "Enum/GlWrapMode.hpp"
+#include <renderer/RendererCommon/AshesRendererPrerequisites.hpp>
+#include <renderer/RendererCommon/Helper/ConstantFormat.hpp>
 
-#include "Miscellaneous/GlCallLogger.hpp"
-#include "Pipeline/GlSpecialisationInfo.hpp"
+#include <common/Format.hpp>
 
-#include "Miscellaneous/GlDebug.hpp"
-
-#include <common/Optional.hpp>
-#include <common/Signal.hpp>
-
+#include <cassert>
 #include <functional>
 #include <map>
+#include <memory>
+#include <string>
 #include <vector>
 
-#define BufferOffset( n ) ( ( uint8_t * )nullptr + ( n ) )
+#if defined( _WIN32 ) && !defined( Gl3Renderer_STATIC )
+#	ifdef Gl3Renderer_EXPORTS
+#		define Gl3Renderer_API __declspec( dllexport )
+#	else
+#		define Gl3Renderer_API __declspec( dllimport )
+#	endif
+#else
+#	define Gl3Renderer_API
+#endif
 
-namespace gl_renderer
+namespace ashes::gl3
 {
-	struct DebugReportCallbackData
+	PFN_vkVoidFunction getFunction( char const * const name );
+
+	template< typename FuncT >
+	inline bool getFunction( char const * const name, FuncT & function )
 	{
+		function = FuncT( getFunction( name ) );
+		return function != nullptr;
+	}
+
+	template< typename FuncT >
+	inline bool getFunction( std::string const & name, FuncT & function )
+	{
+		function = FuncT( getFunction( name.c_str() ) );
+		return function != nullptr;
+	}
+
+	inline void * getBufferOffset( intptr_t value )
+	{
+		return reinterpret_cast< void * >( reinterpret_cast< uint8_t * >( 0u ) + value );
+	}
+
+#if VK_EXT_debug_utils
+
+	struct DebugUtilsMessengerData
+	{
+		VkDebugUtilsMessengerEXT debugMessenger;
 		PFNGLDEBUGPROC callback;
 		void * userParam;
 	};
 
-	struct DebugReportAMDCallbackData
+	struct DebugUtilsAMDMessengerData
 	{
+		VkDebugUtilsMessengerEXT debugMessenger;
 		PFNGLDEBUGAMDPROC callback;
 		void * userParam;
 	};
 
-	struct AttachmentDescription;
+#endif
+#if VK_EXT_debug_report
+
+	struct DebugReportCallbackData
+	{
+		VkDebugReportCallbackEXT debugReport;
+		PFNGLDEBUGPROC callback;
+		void * userParam;
+	};
+	
+	struct DebugReportAMDCallbackData
+	{
+		VkDebugReportCallbackEXT debugReport;
+		PFNGLDEBUGAMDPROC callback;
+		void * userParam;
+	};
+
+#endif
+
+	struct ContextState;
 
 	class Buffer;
 	class BufferView;
 	class CommandBase;
-	class ComputePipeline;
+	class CommandBuffer;
+	class CommandPool;
 	class Context;
 	class ContextLock;
+	class ContextStateStack;
+	class DebugReportCallbackEXT;
+	class DescriptorPool;
 	class DescriptorSet;
+	class DescriptorSetLayout;
 	class Device;
-	class FrameBuffer;
-	class GeometryBuffers;
+	class DeviceMemory;
+	class Event;
+	class Fence;
+	class Framebuffer;
+	class Image;
+	class ImageView;
 	class Instance;
 	class PhysicalDevice;
 	class Pipeline;
+	class PipelineCache;
 	class PipelineLayout;
 	class QueryPool;
 	class Queue;
-	class Instance;
 	class RenderPass;
+	class Sampler;
+	class Semaphore;
 	class ShaderModule;
-	class ShaderProgram;
-	class Image;
-	class ImageView;
+	class SurfaceKHR;
+	class SwapchainKHR;
 
+	class SamplerYcbcrConversion;
+	class DescriptorUpdateTemplate;
+	class DisplayKHR;
+	class DisplayModeKHR;
+	class ObjectTableNVX;
+	class IndirectCommandsLayoutNVX;
+	class DebugUtilsMessengerEXT;
+	class ValidationCacheEXT;
+
+	class FrameBufferAttachment;
+	class GeometryBuffers;
+	class ShaderProgram;
+
+	class Context;
+	class ContextLock;
+	struct ContextState;
 	using ContextPtr = std::unique_ptr< Context >;
+	using ContextStateArray = std::vector< ContextState >;
+
 	using CommandPtr = std::unique_ptr< CommandBase >;
-	using GeometryBuffersPtr = std::unique_ptr< GeometryBuffers >;
-	using QueuePtr = std::unique_ptr< Queue >;
-	using ImageViewPtr = std::unique_ptr< ImageView >;
+	using CommandArray = std::vector< CommandPtr >;
 
 	using GeometryBuffersRef = std::reference_wrapper< GeometryBuffers >;
-
-	using ShaderModuleCRef = std::reference_wrapper< ShaderModule const >;
-
+	using GeometryBuffersPtr = std::unique_ptr< GeometryBuffers >;
 	using GeometryBuffersRefArray = std::vector< GeometryBuffersRef >;
 
-	using ShaderModuleCRefArray = std::vector< ShaderModuleCRef >;
+	struct AttachmentDescription
+	{
+		uint32_t index;
+		std::reference_wrapper< VkAttachmentDescription const > attach;
+	};
 
-	using CommandArray = std::vector< CommandPtr >;
-	using VkAttachmentDescriptionArray = std::vector< AttachmentDescription >;
+	using AttachmentDescriptionArray = std::vector< AttachmentDescription >;
 
 	struct BufferObjectBinding
 	{
 		GLuint bo;
 		uint64_t offset;
-		Buffer const * buffer;
+		VkBuffer buffer;
 	};
-	using VboBindings = std::map< uint32_t, BufferObjectBinding >;
-	using IboBinding = ashes::Optional< BufferObjectBinding >;
 
-	using BufferDestroyFunc = std::function< void( GLuint ) >;
-	using BufferDestroySignal = ashes::Signal< BufferDestroyFunc >;
-	using BufferDestroyConnection = ashes::SignalConnection< BufferDestroySignal >;
+	using VboBindings = std::map< uint32_t, BufferObjectBinding >;
+	using IboBinding = Optional< BufferObjectBinding >;
+
+	struct FboAttachment
+	{
+		GlAttachmentPoint point;
+		GLuint object;
+		GlAttachmentType type;
+		GlTextureType target;
+		uint32_t mipLevel;
+		uint32_t index;
+		GLuint originalObject;
+		GLuint originalMipLevel;
+	};
+
+	using FboAttachmentArray = std::vector< FboAttachment >;
+
+	using DeviceMemoryDestroyFunc = std::function< void( GLuint ) >;
+	using DeviceMemoryDestroySignal = Signal< DeviceMemoryDestroyFunc >;
+	using DeviceMemoryDestroyConnection = SignalConnection< DeviceMemoryDestroySignal >;
+
+	using CmdBuffer = UInt32Array;
+	using CmdList = std::vector< CmdBuffer >;
 
 	uint32_t deduceMemoryType( uint32_t typeBits
 		, VkMemoryPropertyFlags requirements );

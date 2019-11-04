@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/Enum/BufferTarget.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
 	enum GlBufferTarget
 		: GLenum
@@ -33,5 +31,5 @@ namespace gl_renderer
 	*\return
 	*	Le GlBufferTarget.
 	*/
-	GlBufferTarget convert( VkBufferUsageFlags const & targets );
+	GlBufferTarget getTargetFromUsageFlags( VkBufferUsageFlags targets );
 }

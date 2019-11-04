@@ -6,71 +6,66 @@
 */
 #pragma once
 
-#include "Gl3Renderer/Core/GlExtensionsHandler.hpp"
+#include "renderer/Gl3Renderer/Core/GlExtensionsHandler.hpp"
 
-#include <Ashes/Core/Instance.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
 	class RenderWindow;
 
 	class Instance
-		: public ashes::Instance
 	{
 	public:
-		/**
-		*\brief
-		*	Constructeur, initialise l'instance de Vulkan.
-		*/
-		Instance( ashes::InstanceCreateInfo createInfo );
+		Instance( VkInstanceCreateInfo createInfo );
 		~Instance();
-		/**
-		*\copydoc	ashes::Instance::enumerateLayerProperties
-		*/
-		ashes::PhysicalDevicePtrArray enumeratePhysicalDevices()const override;
-		/**
-		*\copydoc	ashes::Instance::createDevice
-		*/
-		ashes::DevicePtr createDevice( ashes::PhysicalDevice const & physicalDevice
-			, ashes::DeviceCreateInfo createInfos )const override;
-		/**
-		*\copydoc	ashes::Instance::createSurface
-		*/
-		ashes::SurfacePtr createSurface( ashes::PhysicalDevice const & gpu
-			, ashes::WindowHandle handle )const override;
-		/**
-		*\copydoc	ashes::Instance::createDebugReportCallback
-		*/
-		ashes::DebugReportCallbackPtr createDebugReportCallback( ashes::DebugReportCallbackCreateInfo createInfo )const override;
-		/**
-		*\copydoc	ashes::Instance::frustum
-		*/
+
+		VkPhysicalDeviceArray enumeratePhysicalDevices()const;
 		std::array< float, 16 > frustum( float left
 			, float right
 			, float bottom
 			, float top
 			, float zNear
-			, float zFar )const override;
-		/**
-		*\copydoc	ashes::Instance::perspective
-		*/
+			, float zFar )const;
 		std::array< float, 16 > perspective( float radiansFovY
 			, float aspect
 			, float zNear
-			, float zFar )const override;
-		/**
-		*\copydoc	ashes::Instance::ortho
-		*/
+			, float zFar )const;
 		std::array< float, 16 > ortho( float left
 			, float right
 			, float bottom
 			, float top
 			, float zNear
-			, float zFar )const override;
+			, float zFar )const;
+		std::array< float, 16 > infinitePerspective( float radiansFovY
+			, float aspect
+			, float zNear )const;
 
-		void registerDebugMessageCallback( PFNGLDEBUGPROC callback, void * userParam )const;
-		void registerDebugMessageCallbackAMD( PFNGLDEBUGAMDPROC callback, void * userParam )const;
-
+#if VK_EXT_debug_utils
+		void registerDebugMessenger( VkDebugUtilsMessengerEXT messenger
+			, PFNGLDEBUGPROC callback
+			, void * userParam )const;
+		void registerDebugMessengerAMD( VkDebugUtilsMessengerEXT messenger
+			, PFNGLDEBUGAMDPROC callback
+			, void * userParam )const;
+		void submitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
+			, VkDebugUtilsMessageTypeFlagsEXT messageTypes
+			, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const;
+#endif
+#if VK_EXT_debug_report
+		void registerDebugMessageCallback( VkDebugReportCallbackEXT report
+			, PFNGLDEBUGPROC callback
+			, void * userParam )const;
+		void registerDebugMessageCallbackAMD( VkDebugReportCallbackEXT report
+			, PFNGLDEBUGAMDPROC callback
+			, void * userParam )const;
+		void reportMessage( VkDebugReportFlagsEXT flags
+			, VkDebugReportObjectTypeEXT objectType
+			, uint64_t object
+			, size_t location
+			, int32_t messageCode
+			, const char * pLayerPrefix
+			, const char * pMessage );
+#endif
+		void registerContext( Context & context );
 		inline bool isSPIRVSupported()const
 		{
 			return m_extensions.isSPIRVSupported();
@@ -80,6 +75,21 @@ namespace gl_renderer
 		{
 			return m_validationEnabled;
 		}
+
+#if VK_EXT_debug_utils
+
+		inline std::vector< DebugUtilsMessengerData > const & getDebugMessengers()const
+		{
+			return m_debugMessengers;
+		}
+
+		inline std::vector< DebugUtilsAMDMessengerData > const & getDebugAMDMessengers()const
+		{
+			return m_debugAMDMessengers;
+		}
+
+#endif
+#if VK_EXT_debug_report
 
 		inline std::vector< DebugReportCallbackData > const & getDebugCallbacks()const
 		{
@@ -91,6 +101,8 @@ namespace gl_renderer
 			return m_debugAMDCallbacks;
 		}
 
+#endif
+
 		inline ExtensionsHandler const & getExtensions()const
 		{
 			return m_extensions;
@@ -101,18 +113,29 @@ namespace gl_renderer
 			return *m_context;
 		}
 
-		static inline ashes::PhysicalDeviceMemoryProperties const & getMemoryProperties()
+		static inline VkPhysicalDeviceMemoryProperties const & getMemoryProperties()
 		{
 			return m_memoryProperties;
 		}
 
 	private:
+		AshPluginFeatures m_features;
+		VkInstanceCreateFlags m_flags;
+		StringArray m_enabledLayerNames;
+		StringArray m_enabledExtensions;
+		VkPhysicalDeviceArray m_physicalDevices;
+#if VK_EXT_debug_utils
+		mutable std::vector< DebugUtilsMessengerData > m_debugMessengers;
+		mutable std::vector< DebugUtilsAMDMessengerData > m_debugAMDMessengers;
+#endif
+#if VK_EXT_debug_report
 		mutable std::vector< DebugReportCallbackData > m_debugCallbacks;
 		mutable std::vector< DebugReportAMDCallbackData > m_debugAMDCallbacks;
+#endif
 		ExtensionsHandler m_extensions;
 		bool m_validationEnabled;
 		RenderWindow * m_dummyWindow;
 		ContextPtr m_context;
-		static ashes::PhysicalDeviceMemoryProperties const m_memoryProperties;
+		static VkPhysicalDeviceMemoryProperties const m_memoryProperties;
 	};
 }

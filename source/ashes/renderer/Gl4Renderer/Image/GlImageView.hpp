@@ -13,14 +13,6 @@
 
 namespace ashes::gl4
 {
-	/**
-	*\~french
-	*\brief
-	*	Description d'une vue sur une image Vulkan.
-	*\~english
-	*\brief
-	*	Vulkan image view wrapper.
-	*/
 	class ImageView
 	{
 	public:
@@ -28,19 +20,8 @@ namespace ashes::gl4
 			, VkImage image );
 		ImageView( VkDevice device
 			, VkImageViewCreateInfo createInfo );
-		/**
-		*\~french
-		*\brief
-		*	Destructeur.
-		*\~english
-		*\brief
-		*	Destructor.
-		*/
 		~ImageView();
-		/**
-		*\return
-		*	L'image OpenGL.
-		*/
+		
 		GLuint getInternal()const noexcept;
 
 		inline VkImageViewType getType()const noexcept

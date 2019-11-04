@@ -42,10 +42,7 @@ namespace ashes::gl4
 		~Pipeline();
 		PushConstantsDesc findPushConstantBuffer( PushConstantsDesc const & pushConstants )const;
 		VkDescriptorSetLayoutArray const & getDescriptorsLayouts()const;
-		/**
-		*name
-		*	Getters.
-		*/
+
 		inline bool isCompute()const
 		{
 			return m_compProgram != nullptr;
@@ -163,7 +160,6 @@ namespace ashes::gl4
 			return view.end() != std::find( view.begin()
 				, view.end()
 				, state );
-			return false;
 		}
 
 		inline VkPipelineLayout getLayout()const
@@ -176,7 +172,6 @@ namespace ashes::gl4
 			assert( !isCompute() );
 			return m_vertexInputStateHash;
 		}
-		/**@}*/
 
 	private:
 		void doInitialise( ContextLock const & context

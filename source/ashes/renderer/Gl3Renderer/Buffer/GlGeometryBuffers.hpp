@@ -6,40 +6,41 @@ See LICENSE file in root folder.
 #define ___GlRenderer_GeometryBuffers_HPP___
 #pragma once
 
-#include "Gl3Renderer/GlRendererPrerequisites.hpp"
+#include "renderer/Gl3Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Pipeline/VertexInputAttributeDescription.hpp>
-#include <Ashes/Pipeline/VertexInputBindingDescription.hpp>
-#include <Ashes/Pipeline/VertexInputState.hpp>
+#include "renderer/Gl3Renderer/Shader/GlShaderDesc.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	class GeometryBuffers
 	{
 	public:
 		struct VBO
 		{
-			VBO( GLuint vbo
-				, uint64_t offset
-				, ashes::VertexInputBindingDescription binding
-				, ashes::VertexInputAttributeDescriptionArray attributes )
+			VBO( VkBuffer vbo
+				, VkDeviceSize offset
+				, VkVertexInputBindingDescription binding
+				, VkVertexInputAttributeDescriptionArray attributes
+				, VkVertexInputAttributeDescriptionArray programAttributes )
 				: vbo{ vbo }
 				, offset{ offset }
 				, binding{ binding }
 				, attributes{ attributes }
+				, programAttributes{ programAttributes }
 			{
 			}
 
-			GLuint vbo;
-			uint64_t offset;
-			ashes::VertexInputBindingDescription binding;
-			ashes::VertexInputAttributeDescriptionArray attributes;
+			VkBuffer vbo;
+			VkDeviceSize offset;
+			VkVertexInputBindingDescription binding;
+			VkVertexInputAttributeDescriptionArray attributes;
+			VkVertexInputAttributeDescriptionArray programAttributes;
 		};
 
 		struct IBO
 		{
-			IBO( GLuint ibo
-				, uint64_t offset
+			IBO( VkBuffer ibo
+				, VkDeviceSize offset
 				, VkIndexType type )
 				: ibo{ ibo }
 				, offset{ offset }
@@ -47,23 +48,25 @@ namespace gl_renderer
 			{
 			}
 
-			GLuint ibo;
+			VkBuffer ibo;
 			uint64_t offset;
 			VkIndexType type;
 		};
 
 	public:
-		GeometryBuffers( Device const & device
+		GeometryBuffers( VkDevice device
 			, VboBindings const & vbos
 			, IboBinding const & ibo
-			, ashes::VertexInputState const & vertexInputState
+			, VkPipelineVertexInputStateCreateInfo const & vertexInputState
+			, InputLayout const & inputLayout
 			, VkIndexType type );
 		~GeometryBuffers()noexcept;
 
-		void initialise();
+		void initialise( ContextLock & context );
 
 		static std::vector< VBO > createVBOs( VboBindings const & vbos
-			, ashes::VertexInputState const & vertexInputState );
+			, VkPipelineVertexInputStateCreateInfo const & vertexInputState
+			, InputLayout const & inputLayout );
 
 		inline GLuint getVao()const
 		{
@@ -87,7 +90,14 @@ namespace gl_renderer
 		}
 
 	private:
-		Device const & m_device;
+		void enableAttribute( ContextLock & context
+			, VkVertexInputBindingDescription const & binding
+			, VkVertexInputAttributeDescription const & attribute
+			, VkDeviceSize offset
+			, VkVertexInputAttributeDescription const * programAttribute );
+
+	private:
+		VkDevice m_device;
 		std::vector< VBO > m_vbos;
 		std::unique_ptr< IBO > m_ibo;
 		GLuint m_vao{ GL_INVALID_INDEX };

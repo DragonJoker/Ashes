@@ -4,27 +4,41 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlBindGeometryBuffersCommand.hpp"
 
+#include "Core/GlContextLock.hpp"
+
 #include "Buffer/GlGeometryBuffers.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
-	BindGeometryBuffersCommand::BindGeometryBuffersCommand( Device const & device
-		, GeometryBuffers const & vao )
-		: CommandBase{ device }
-		, m_vao{ static_cast< GeometryBuffers const & >( vao ) }
+	void apply( ContextLock const & context
+		, CmdBindVextexArrayObject const & cmd )
 	{
-	}
-
-	void BindGeometryBuffersCommand::apply( ContextLock const & context )const
-	{
-		glLogCommand( "BindGeometryBuffersCommand" );
 		glLogCall( context
 			, glBindVertexArray
-			, m_vao.getVao() );
+			, cmd.vao );
+	}
+	
+	void apply( ContextLock const & context
+		, CmdBindVextexArray const & cmd )
+	{
+		if ( cmd.vao )
+		{
+			glLogCall( context
+				, glBindVertexArray
+				, cmd.vao->getVao() );
+		}
+		else
+		{
+			glLogCall( context
+				, glBindVertexArray
+				, 0u );
+		}
 	}
 
-	CommandPtr BindGeometryBuffersCommand::clone()const
+	void buildBindGeometryBuffersCommand( GeometryBuffers const & vao
+		, CmdList & list )
 	{
-		return std::make_unique< BindGeometryBuffersCommand >( *this );
+		glLogCommand( "BindGeometryBuffersCommand" );
+		list.push_back( makeCmd< OpType::eBindVextexArray >( &vao ) );
 	}
 }

@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/Enum/AccessFlag.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
 	enum GlTexParameter
 	{
@@ -44,6 +42,24 @@ namespace gl_renderer
 
 		case GL_TEX_PARAMETER_IMMUTABLE_FORMAT:
 			return "GL_TEXTURE_IMMUTABLE_FORMAT";
+
+		case GL_TEX_PARAMETER_MAX_LEVEL:
+			return "GL_TEXTURE_MAX_LEVEL";
+
+		case GL_TEX_PARAMETER_LOD_BIAS:
+			return "GL_TEXTURE_LOD_BIAS";
+
+		case GL_TEX_PARAMETER_SWIZZLE_R:
+			return "GL_TEXTURE_SWIZZLE_R";
+
+		case GL_TEX_PARAMETER_SWIZZLE_G:
+			return "GL_TEXTURE_SWIZZLE_G";
+
+		case GL_TEX_PARAMETER_SWIZZLE_B:
+			return "GL_TEXTURE_SWIZZLE_B";
+
+		case GL_TEX_PARAMETER_SWIZZLE_A:
+			return "GL_TEXTURE_SWIZZLE_A";
 
 		default:
 			assert( false && "Unsupported GlTexParameter" );

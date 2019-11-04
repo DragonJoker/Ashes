@@ -6,28 +6,25 @@ See LICENSE file in root folder.
 
 #include "Miscellaneous/GlQueryPool.hpp"
 
-namespace gl_renderer
-{
-	WriteTimestampCommand::WriteTimestampCommand( Device const & device
-		, VkPipelineStageFlagBits pipelineStage
-		, ashes::QueryPool const & pool
-		, uint32_t query )
-		: CommandBase{ device }
-		, m_query{ *( static_cast< QueryPool const & >( pool ).begin() + query ) }
-	{
-	}
+#include "ashesgl3_api.hpp"
 
-	void WriteTimestampCommand::apply( ContextLock const & context )const
+namespace ashes::gl3
+{
+	void apply( ContextLock const & context
+		, CmdWriteTimestamp const & cmd )
 	{
-		glLogCommand( "WriteTimestampCommand" );
 		glLogCall( context
 			, glQueryCounter
-			, m_query
+			, cmd.name
 			, GL_QUERY_TYPE_TIMESTAMP );
 	}
 
-	CommandPtr WriteTimestampCommand::clone()const
+	void buildWriteTimestampCommand( VkPipelineStageFlagBits pipelineStage
+		, VkQueryPool pool
+		, uint32_t query
+		, CmdList & list )
 	{
-		return std::make_unique< WriteTimestampCommand >( *this );
+		glLogCommand( "WriteTimestampCommand" );
+		list.push_back( makeCmd< OpType::eWriteTimestamp >( *( get( pool )->begin() + query ) ) );
 	}
 }

@@ -5,53 +5,40 @@ See LICENSE file in root folder.
 #include "Command/Commands/GlDrawIndexedIndirectCommand.hpp"
 
 #include "Buffer/GlBuffer.hpp"
-#include "Core/GlDevice.hpp"
 
-namespace gl_renderer
+#include "ashesgl3_api.hpp"
+
+namespace ashes::gl3
 {
-	DrawIndexedIndirectCommand::DrawIndexedIndirectCommand( Device const & device
-		, ashes::BufferBase const & buffer
-		, uint32_t offset
+	void apply( ContextLock const & context
+		, CmdDrawIndexedIndirect const & cmd )
+	{
+		glLogCall( context
+			, glMultiDrawElementsIndirect_ARB
+			, cmd.mode
+			, cmd.type
+			, getBufferOffset( cmd.offset )
+			, cmd.drawCount
+			, cmd.stride );
+	}
+
+	void buildDrawIndexedIndirectCommand( VkBuffer buffer
+		, VkDeviceSize offset
 		, uint32_t drawCount
 		, uint32_t stride
 		, VkPrimitiveTopology mode
-		, VkIndexType type )
-		: CommandBase{ device }
-		, m_buffer{ static_cast< Buffer const & >( buffer ) }
-		, m_offset{ offset }
-		, m_drawCount{ drawCount }
-		, m_stride{ stride }
-		, m_mode{ convert( mode ) }
-		, m_type{ convert( type ) }
-	{
-		if ( !m_device.getPhysicalDevice().getFeatures().multiDrawIndirect )
-		{
-			throw std::runtime_error( "Draw indirect is not supported" );
-		}
-	}
-
-	void DrawIndexedIndirectCommand::apply( ContextLock const & context )const
+		, VkIndexType type
+		, CmdList & list )
 	{
 		glLogCommand( "DrawIndexedIndirectCommand" );
-		glLogCall( context
-			, glBindBuffer
-			, GL_BUFFER_TARGET_DRAW_INDIRECT
-			, m_buffer.getBuffer() );
-		glLogCall( context
-			, glMultiDrawElementsIndirect_ARB
-			, m_mode
-			, m_type
-			, BufferOffset( m_offset )
-			, m_drawCount
-			, m_stride );
-		glLogCall( context
-			, glBindBuffer
-			, GL_BUFFER_TARGET_DRAW_INDIRECT
-			, 0 );
-	}
-
-	CommandPtr DrawIndexedIndirectCommand::clone()const
-	{
-		return std::make_unique< DrawIndexedIndirectCommand >( *this );
+		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_DRAW_INDIRECT
+			, get( buffer )->getInternal() ) );
+		list.push_back( makeCmd< OpType::eDrawIndexedIndirect >( uint32_t( get( buffer )->getInternalOffset() + offset )
+			, drawCount
+			, stride
+			, convert( mode )
+			, convert( type ) ) );
+		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_DRAW_INDIRECT
+			, 0u ) );
 	}
 }

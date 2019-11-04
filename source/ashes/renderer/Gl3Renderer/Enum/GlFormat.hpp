@@ -4,9 +4,11 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <Ashes/AshesPrerequisites.hpp>
+#include <common/Format.hpp>
 
-namespace gl_renderer
+#include <algorithm>
+
+namespace ashes::gl3
 {
 	enum GlInternal
 		: GLenum
@@ -195,7 +197,7 @@ namespace gl_renderer
 	enum GlFormat
 		: GLenum
 	{
-		GL_FORMAT_S = 0x1901,
+		GL_FORMAT_S = 0x1802,
 		GL_FORMAT_D = 0x1902,
 		GL_FORMAT_R = 0x1903,
 		GL_FORMAT_RGB = 0x1907,
@@ -231,57 +233,6 @@ namespace gl_renderer
 	std::string getName( GlInternal value );
 	std::string getName( GlFormat value );
 	std::string getName( GlType value );
-	/**
-	*\~french
-	*\brief
-	*	Dit si le VkFormat donné est un format utilisable pour les tampons de profondeur et stencil.
-	*\param[in] format
-	*	Le VkFormat à tester.
-	*\return
-	*	\p true s'il l'est...
-	*\~english
-	*\brief
-	*	Tells if the given VkFormat is usable in depth and stencil buffers.
-	*\param[in] format
-	*	The VkFormat.
-	*\return
-	*	\p true if it is usable in depth and stencil buffers.
-	*/
-	bool isDepthStencilFormat( GlInternal format )noexcept;
-	/**
-	*\~french
-	*\brief
-	*	Dit si le VkFormat donné est un format utilisable pour les tampons de stencil.
-	*\param[in] format
-	*	Le VkFormat à tester.
-	*\return
-	*	\p true s'il l'est...
-	*\~english
-	*\brief
-	*	Tells if the given VkFormat is usable in stencil buffers.
-	*\param[in] format
-	*	The VkFormat.
-	*\return
-	*	\p true if it is usable in stencil buffers.
-	*/
-	bool isStencilFormat( GlInternal format )noexcept;
-	/**
-	*\~french
-	*\brief
-	*	Dit si le VkFormat donné est un format utilisable pour les tampons de profondeur.
-	*\param[in] format
-	*	Le VkFormat à tester.
-	*\return
-	*	\p true s'il l'est...
-	*\~english
-	*\brief
-	*	Tells if the given VkFormat is usable in depth buffers.
-	*\param[in] format
-	*	The VkFormat.
-	*\return
-	*	\p true if it is usable in depth buffers.
-	*/
-	bool isDepthFormat( GlInternal format )noexcept;
 	bool isSupportedInternal( VkFormat const & format )noexcept;
 	/**
 	*\brief
@@ -291,7 +242,7 @@ namespace gl_renderer
 	*\return
 	*	Le GlInternal.
 	*/
-	GlInternal getInternal( VkFormat const & format )noexcept;
+	GlInternal getInternalFormat( VkFormat const & format )noexcept;
 	/**
 	*\brief
 	*	Convertit un VkFormat en GlFormat.
@@ -319,11 +270,4 @@ namespace gl_renderer
 	*	Le VkFormat.
 	*/
 	VkFormat convert( GlInternal format )noexcept;
-	/**
-	*\return
-	*	le nombre de composantes du format donné.
-	*\param[in] format
-	*	Le VkFormat.
-	*/
-	uint32_t getCount( VkFormat format )noexcept;
 }

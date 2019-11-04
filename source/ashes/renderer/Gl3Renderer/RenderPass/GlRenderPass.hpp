@@ -4,33 +4,27 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include "Gl3Renderer/GlRendererPrerequisites.hpp"
+#include "renderer/Gl3Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/RenderPass/RenderPass.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
-	struct AttachmentDescription
-	{
-		uint32_t index;
-		std::reference_wrapper< ashes::AttachmentDescription const > attach;
-	};
-
 	class RenderPass
-		: public ashes::RenderPass
 	{
 	public:
-		RenderPass( Device const & device
-			, ashes::RenderPassCreateInfo createInfo );
-		/**
-		*\copydoc	ashes::RenderPass::createFrameBuffer
-		*/
-		ashes::FrameBufferPtr createFrameBuffer( VkExtent2D const & dimensions
-			, ashes::ashes::ImageViewPtrArray textures )const override;
+		RenderPass( VkDevice device
+			, VkRenderPassCreateInfo createInfo );
 
-		uint32_t getAttachmentIndex( ashes::AttachmentDescription const & attach )const;
+		uint32_t getAttachmentIndex( VkAttachmentDescription const & attach )const;
 
-		inline std::vector< AttachmentDescription > const & getColourAttaches()const
+		VkAttachmentDescription const * findAttachment( uint32_t referenceIndex )const;
+		VkAttachmentDescription const & getAttachment( VkAttachmentReference const & reference )const;
+
+		inline VkSubpassDescriptionArray const & getSubpasses()const
+		{
+			return m_subpasses;
+		}
+
+		inline AttachmentDescriptionArray const & getColourAttaches()const
 		{
 			return m_colourAttaches;
 		}
@@ -40,15 +34,69 @@ namespace gl_renderer
 			return m_hasDepthAttach;
 		}
 
-		inline ashes::AttachmentDescription const & getDepthAttach()const
+		inline VkExtent2D getRenderAreaGranularity()const
 		{
-			return m_depthAttach;
+			return VkExtent2D{ 1u, 1u };
 		}
 
+		inline auto empty()const
+		{
+			return m_referencedAttachments.empty();
+		}
+
+		inline auto size()const
+		{
+			return m_referencedAttachments.size();
+		}
+
+		inline auto begin()
+		{
+			return m_referencedAttachments.begin();
+		}
+
+		inline auto end()
+		{
+			return m_referencedAttachments.end();
+		}
+
+		inline auto begin()const
+		{
+			return m_referencedAttachments.begin();
+		}
+
+		inline auto end()const
+		{
+			return m_referencedAttachments.end();
+		}
+
+	public:
+		struct SubpassDescriptionData
+		{
+			VkAttachmentReferenceArray inputAttachments;
+			VkAttachmentReferenceArray colorAttachments;
+			VkAttachmentReferenceArray resolveAttachments;
+			Optional< VkAttachmentReference > depthStencilAttachment;
+			UInt32Array reserveAttachments;
+		};
+		using SubpassDescriptionDataPtr = std::unique_ptr< SubpassDescriptionData >;
+		using SubpassDescriptionDataPtrMap = std::map< VkSubpassDescription const *, SubpassDescriptionDataPtr >;
+
 	private:
-		Device const & m_device;
+		void referenceAttaches( VkAttachmentReference const & value );
+		void referenceAttaches( Optional< VkAttachmentReference > const & value );
+		void referenceAttaches( VkAttachmentReferenceArray const & value );
+
+	private:
+		VkDevice m_device;
+		VkRenderPassCreateFlags m_flags;
+		uint32_t m_attachmentCount;
+		VkAttachmentDescriptionArray m_attachments;
+		VkAttachmentReferenceArray m_referencedAttachments;
+		VkSubpassDescriptionArray m_subpasses;
+		SubpassDescriptionDataPtrMap m_subpassesDatas;
+		VkSubpassDependencyArray m_dependencies;
 		bool m_hasDepthAttach{ false };
-		ashes::AttachmentDescription m_depthAttach;
-		std::vector< AttachmentDescription > m_colourAttaches;
+		VkAttachmentDescriptionArray m_depthAttaches;
+		AttachmentDescriptionArray m_colourAttaches;
 	};
 }

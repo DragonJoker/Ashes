@@ -4,53 +4,25 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Gl3Renderer/GlRendererPrerequisites.hpp"
+#include "renderer/Gl3Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Pipeline/PipelineLayout.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
-	/**
-	*\brief
-	*	Layout de pipeline.
-	*/
 	class PipelineLayout
-		: public ashes::PipelineLayout
 	{
 	public:
-		/**
-		*\~english
-		*\brief
-		*	Constructor.
-		*\param[in] device
-		*	The parent LogicalDevice.
-		*\param[in] setLayouts
-		*	The descriptor sets layouts.
-		*\param[in] pushConstantRanges
-		*	The push constants ranges.
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le LogicalDevice parent.
-		*\param[in] setLayouts
-		*	Les layouts des descripteurs du pipeline.
-		*\param[in] pushConstantRanges
-		*	Les intervalles de push constants.
-		*/
-		PipelineLayout( Device const & device
-			, ashes::DescriptorSetLayoutCRefArray const & setLayouts
-			, ashes::PushConstantRangeArray const & pushConstantRanges );
-		/**
-		*\copydoc		ashes::PipelineLayout::createPipeline
-		*/
-		ashes::PipelinePtr createPipeline( ashes::GraphicsPipelineCreateInfo createInfo )const override;
-		/**
-		*\copydoc	ashes::PipelineLayout::createPipeline
-		*/
-		ashes::ComputePipelinePtr createPipeline( ashes::ComputePipelineCreateInfo createInfo )const override;
+		PipelineLayout( VkDevice device
+			, VkPipelineLayoutCreateInfo createInfo );
+
+		inline VkDescriptorSetLayoutArray const & getDescriptorsLayouts()const
+		{
+			return m_setLayouts;
+		}
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
+		VkDescriptorSetLayoutArray m_setLayouts;
+		VkPushConstantRangeArray m_pushConstantRanges;
+		VkPipelineLayoutCreateInfo m_createInfo;
 	};
 }

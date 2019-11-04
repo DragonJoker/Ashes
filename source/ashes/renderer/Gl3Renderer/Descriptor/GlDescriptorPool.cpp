@@ -3,19 +3,42 @@
 #include "Core/GlDevice.hpp"
 #include "Descriptor/GlDescriptorSet.hpp"
 
-namespace gl_renderer
+#include "ashesgl3_api.hpp"
+
+namespace ashes::gl3
 {
-	DescriptorPool::DescriptorPool( Device const & device
-		, ashes::DescriptorPoolCreateFlags flags
-		, uint32_t maxSets
-		, ashes::DescriptorPoolSizeArray poolSizes )
-		: ashes::DescriptorPool{ device, flags }
+	DescriptorPool::DescriptorPool( VkDevice device
+		, VkDescriptorPoolCreateInfo createInfo )
+		: m_flags{ createInfo.flags }
+		, m_maxSets{ createInfo.maxSets }
+		, m_poolSizes{ makeVector( createInfo.pPoolSizes, createInfo.poolSizeCount ) }
 	{
 	}
 
-	ashes::DescriptorSetPtr DescriptorPool::createDescriptorSet( ashes::DescriptorSetLayout const & layout
-		, uint32_t bindingPoint )const
+	DescriptorPool::~DescriptorPool()
 	{
-		return std::make_unique< DescriptorSet >( *this, layout, bindingPoint );
+		for ( auto & set : m_sets )
+		{
+			delete get( set );
+		}
+	}
+
+	void DescriptorPool::registerSet( VkDescriptorSet set )
+	{
+		if ( checkFlag( m_flags, VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT ) )
+		{
+			assert( m_maxSets > m_sets.size() );
+			m_sets.push_back( set );
+		}
+	}
+
+	VkResult DescriptorPool::reset( VkDescriptorPoolResetFlags flags )
+	{
+		return VK_SUCCESS;
+	}
+
+	VkResult DescriptorPool::free( VkDescriptorSetArray sets )
+	{
+		return VK_SUCCESS;
 	}
 }

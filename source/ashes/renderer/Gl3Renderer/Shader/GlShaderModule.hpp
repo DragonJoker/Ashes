@@ -4,34 +4,30 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include "Gl3Renderer/GlRendererPrerequisites.hpp"
+#include "renderer/Gl3Renderer/GlRendererPrerequisites.hpp"
+#include "renderer/Gl3Renderer/Shader/GlShaderDesc.hpp"
 
-#include <Ashes/Shader/ShaderModule.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
 	class ShaderModule
-		: public ashes::ShaderModule
 	{
 	public:
-		ShaderModule( Device const & device
-			, VkShaderStageFlagBits stage );
-		~ShaderModule();
-		void compile( ashes::ShaderStageState const & state )const;
-		/**
-		*\~copydoc	ashes::ShaderModule::loadShader
-		*/
-		void loadShader( ashes::UInt32Array const & shader )override;
+		ShaderModule( VkDevice device
+			, VkShaderModuleCreateInfo createInfo );
 
-		inline GLuint getShader()const
+		GLuint compile( VkPipelineShaderStageCreateInfo const & state
+			, bool isRtot )const;
+
+		inline ConstantsLayout const & getConstants()const
 		{
-			return m_shader;
+			return m_constants;
 		}
 
 	private:
-		Device const & m_device;
-		GLuint m_shader;
-		ashes::UInt32Array m_spv;
+		VkDevice m_device;
+		VkShaderModuleCreateFlags m_flags;
+		UInt32Array m_code;
 		mutable std::string m_source;
+		mutable ConstantsLayout m_constants;
 	};
 }

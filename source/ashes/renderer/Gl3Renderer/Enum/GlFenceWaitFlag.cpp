@@ -1,15 +1,15 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	std::string getName( GlFenceWaitFlag value )
 	{
 		switch ( value )
 		{
-		case gl_renderer::GL_WAIT_FLAG_SYNC_GPU_COMMANDS_COMPLETE:
+		case GL_WAIT_FLAG_SYNC_GPU_COMMANDS_COMPLETE:
 			return "GL_SYNC_GPU_COMMANDS_COMPLETE";
 
-		case gl_renderer::GL_WAIT_FLAG_SYNC_FLUSH_COMMANDS_BIT:
+		case GL_WAIT_FLAG_SYNC_FLUSH_COMMANDS_BIT:
 			return "GL_SYNC_FLUSH_COMMANDS_BIT";
 
 		default:

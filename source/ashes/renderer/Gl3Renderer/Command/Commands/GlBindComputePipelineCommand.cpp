@@ -4,39 +4,23 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlBindComputePipelineCommand.hpp"
 
-#include "Core/GlDevice.hpp"
-#include "Pipeline/GlComputePipeline.hpp"
-#include "Pipeline/GlPipelineLayout.hpp"
+#include "Pipeline/GlPipeline.hpp"
 
-namespace gl_renderer
+#include "ashesgl3_api.hpp"
+
+namespace ashes::gl3
 {
-	BindComputePipelineCommand::BindComputePipelineCommand( Device const & device
-		, ashes::ComputePipeline const & pipeline
-		, ashes::PipelineBindPoint bindingPoint )
-		: CommandBase{ device }
-		, m_pipeline{ static_cast< ComputePipeline const & > ( pipeline ) }
-		, m_layout{ static_cast< PipelineLayout const & > ( m_pipeline.getLayout() ) }
-		, m_program{ m_pipeline.getProgram() }
-		, m_bindingPoint{ bindingPoint }
-	{
-	}
-
-	void BindComputePipelineCommand::apply( ContextLock const & context )const
+	void buildBindComputePipelineCommand( ContextStateStack & stack
+		, VkPipeline pipeline
+		, VkPipelineBindPoint bindingPoint
+		, CmdList & list )
 	{
 		glLogCommand( "BindComputePipelineCommand" );
-		auto & save = m_device.getCurrentProgram();
 
-		if ( m_program != save )
+		if ( stack.getCurrentProgram() != get( pipeline )->getCompProgram() )
 		{
-			glLogCall( context
-				, glUseProgram
-				, m_program );
-			save = m_program;
+			list.push_back( makeCmd< OpType::eUseProgram >( get( pipeline )->getCompProgram() ) );
+			stack.setCurrentProgram( get( pipeline )->getCompProgram() );
 		}
-	}
-
-	CommandPtr BindComputePipelineCommand::clone()const
-	{
-		return std::make_unique< BindComputePipelineCommand >( *this );
 	}
 }

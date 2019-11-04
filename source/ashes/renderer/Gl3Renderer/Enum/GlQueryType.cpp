@@ -1,18 +1,18 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	std::string getName( GlQueryType value )
 	{
 		switch ( value )
 		{
-		case gl_renderer::GL_QUERY_TYPE_SAMPLES_PASSED:
+		case GL_QUERY_TYPE_SAMPLES_PASSED:
 			return "GL_SAMPLES_PASSED";
 
-		case gl_renderer::GL_QUERY_TYPE_TIMESTAMP:
+		case GL_QUERY_TYPE_TIMESTAMP:
 			return "GL_TIMESTAMP";
 
-		case gl_renderer::GL_QUERY_TYPE_PRIMITIVES_GENERATED:
+		case GL_QUERY_TYPE_PRIMITIVES_GENERATED:
 			return "GL_PRIMITIVES_GENERATED";
 
 		default:

@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/Enum/ImageLayout.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
 	enum GlImageLayout
 		: GLenum
@@ -29,7 +27,7 @@ namespace gl_renderer
 	*\return
 	*	Le VkImageLayout.
 	*/
-	GlImageLayout convert( VkImageLayout const & layout );
+	GlImageLayout convert( VkImageLayout layout );
 	/**
 	*\brief
 	*	Convertit un VkImageLayout en VkImageLayout.
