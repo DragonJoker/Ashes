@@ -4018,7 +4018,7 @@ namespace ashes::gl3
 		AshPluginDescription description
 		{
 			"gl3",
-			"OpenGL 4.2 renderer for Ashes",
+			"OpenGL 3.1 renderer for Ashes",
 		};
 
 		VkResult init()
@@ -4026,8 +4026,8 @@ namespace ashes::gl3
 			RenderWindow window;
 			ExtensionsHandler extensions;
 			extensions.initialise();
-			bool supported = extensions.getMajor() > 4
-				|| ( extensions.getMajor() == 4 && extensions.getMinor() >= 3 );
+			bool supported = extensions.getMajor() > 3
+				|| ( extensions.getMajor() == 3 && extensions.getMinor() >= 1 );
 			VkResult result = description.getInstanceProcAddr
 				? VK_SUCCESS
 				: VK_ERROR_INITIALIZATION_FAILED;
@@ -4038,11 +4038,13 @@ namespace ashes::gl3
 				description.features =
 				{
 					true, // hasBufferRange
-					true, // hasImageTexture
-					true, // hasBaseInstance
-					true, // hasClearTexImage
-					true, // hasComputeShaders
-					true, // hasStorageBuffers
+					extensions.findAll( { "GL_ARB_texture_storage"
+						, "GL_ARB_shader_image_load_store" } ), // hasImageTexture
+					extensions.find( "GL_ARB_base_instance" ), // hasBaseInstance
+					extensions.find( "GL_ARB_clear_texture" ), // hasClearTexImage
+					extensions.find( "GL_ARB_gpu_shader5" ), // hasComputeShaders
+					extensions.findAll( { "GL_ARB_shader_storage_buffer_object"
+						, "GL_ARB_shader_image_load_store" } ), // hasStorageBuffers
 					true, // supportsPersistentMapping
 				};
 #define VK_LIB_GLOBAL_FUNCTION( x )\
@@ -4057,7 +4059,7 @@ namespace ashes::gl3
 #include <ashes/ashes_functions_list.hpp>
 				result = VK_SUCCESS;
 
-				description.support.priority = 7u;
+				description.support.priority = 5u;
 				description.support.supported = supported ? VK_TRUE : VK_FALSE;
 			}
 
