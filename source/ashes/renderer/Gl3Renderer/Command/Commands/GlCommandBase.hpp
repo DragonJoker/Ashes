@@ -17,81 +17,86 @@ namespace ashes::gl3
 	enum class OpType
 		: uint16_t
 	{
-		eEnable,
-		eDisable,
+		eActiveTexture,
 		eBeginQuery,
-		eEndQuery,
+		eBindBuffer,
+		eBindBufferRange,
+		eBindContextState,
+		eBindFramebuffer,
+		eBindImage,
+		eBindSampler,
+		eBindTexture,
+		eBindVextexArray,
 		eBlendConstants,
 		eBlendEquation,
 		eBlendFunc,
-		eClearColour,
-		eClearDepth,
-		eClearStencil,
-		eClearDepthStencil,
+		eBlitFramebuffer,
 		eClearBack,
 		eClearBackColour,
 		eClearBackDepth,
-		eClearBackStencil,
 		eClearBackDepthStencil,
+		eClearBackStencil,
+		eClearColour,
+		eClearDepth,
+		eClearDepthStencil,
+		eClearStencil,
+		eClearTexColor,
+		eClearTexDepth,
+		eClearTexDepthStencil,
+		eClearTexStencil,
 		eColorMask,
+		eCompressedTexSubImage1D,
+		eCompressedTexSubImage2D,
+		eCompressedTexSubImage3D,
+		eCopyBufferSubData,
+		eCopyImageSubData1D,
+		eCopyImageSubData2D,
+		eCopyImageSubData3D,
 		eCullFace,
 		eDepthFunc,
 		eDepthMask,
 		eDepthRange,
+		eDisable,
+		eDispatch,
+		eDispatchIndirect,
+		eDownloadMemory,
+		eDraw,
+		eDrawBaseInstance,
+		eDrawBuffers,
+		eDrawIndexed,
+		eDrawIndexedBaseInstance,
+		eDrawIndexedIndirect,
+		eDrawIndirect,
+		eEnable,
+		eEndQuery,
+		eFramebufferTexture2D,
+		eFramebufferTextureLayer,
 		eFrontFace,
+		eGenerateMipmaps,
+		eInitFramebuffer,
 		eLineWidth,
 		eLogicOp,
+		eMemoryBarrier,
 		eMinSampleShading,
 		ePatchParameter,
+		ePixelStore,
 		ePolygonMode,
 		ePolygonOffset,
 		ePrimitiveRestartIndex,
+		eReadBuffer,
+		eReadPixels,
+		eResetEvent,
+		eSetDepthBias,
+		eSetEvent,
+		eSetLineWidth,
 		eStencilFunc,
 		eStencilMask,
 		eStencilOp,
-		eApplyScissors,
-		eApplyViewports,
-		eApplyDepthRanges,
-		eInitFramebuffer,
-		eBindFramebuffer,
-		eCleanupFramebuffer,
-		eDrawBuffer,
-		eDrawBuffers,
-		eUseProgram,
-		eActiveTexture,
-		eBindTexture,
-		eBindSampler,
-		eBindImage,
-		eBindBufferRange,
-		eBindVextexArray,
-		eBindVextexArrayObject,
-		eBindContextState,
-		eFramebufferTexture2D,
-		eBlitFramebuffer,
-		eClearTexColor,
-		eClearTexDepth,
-		eClearTexStencil,
-		eClearTexDepthStencil,
-		eBindBuffer,
-		eCopyBufferSubData,
-		ePixelStore,
-		eCompressedTexSubImage1D,
-		eCompressedTexSubImage2D,
-		eCompressedTexSubImage3D,
+		eTexParameteri,
+		eTexParameterf,
 		eTexSubImage1D,
 		eTexSubImage2D,
 		eTexSubImage3D,
-		eCopyImageSubData,
-		eReadBuffer,
-		eReadPixels,
-		eDispatch,
-		eDispatchIndirect,
-		eDraw,
-		eDrawIndexed,
-		eDrawIndexedIndirect,
-		eDrawIndirect,
-		eGenerateMipmaps,
-		eMemoryBarrier,
 		eUniform1fv,
 		eUniform2fv,
 		eUniform3fv,
@@ -107,14 +112,10 @@ namespace ashes::gl3
 		eUniformMatrix2fv,
 		eUniformMatrix3fv,
 		eUniformMatrix4fv,
-		eResetEvent,
-		eSetEvent,
-		eWaitEvents,
-		eSetDepthBias,
-		eSetLineWidth,
-		eWriteTimestamp,
-		eDownloadMemory,
 		eUploadMemory,
+		eUseProgram,
+		eWaitEvents,
+		eWriteTimestamp,
 	};
 
 	struct Op
@@ -210,130 +211,6 @@ namespace ashes::gl3
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eApplyScissors >
-	{
-		static Op constexpr value = { OpType::eApplyScissors, 5u };
-	};
-
-	template<>
-	struct alignas( uint64_t ) CmdT< OpType::eApplyScissors >
-	{
-		static uint32_t constexpr MaxElems = 16u;
-		static uint32_t constexpr ElemCount = 4u;
-
-		inline CmdT( std::vector< VkRect2D > const & scissors )
-			: cmd{ { OpType::eApplyScissors, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, count{ std::min( MaxElems, uint32_t( scissors.size() ) ) }
-		{
-			uint32_t i = 0u;
-			uint32_t size = count * ElemCount;
-
-			for ( auto & scissor : scissors )
-			{
-				if ( i < size )
-				{
-					this->scissors[i++] = scissor.offset.x;
-					this->scissors[i++] = scissor.offset.y;
-					this->scissors[i++] = int( scissor.extent.width );
-					this->scissors[i++] = int( scissor.extent.height );
-				}
-			}
-		}
-
-		Command cmd;
-		uint32_t count;
-		std::array< int, MaxElems * ElemCount > scissors;
-	};
-	using CmdApplyScissors = CmdT< OpType::eApplyScissors >;
-
-	void apply( ContextLock const & context
-		, CmdApplyScissors const & cmd );
-
-	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eApplyViewports >
-	{
-		static Op constexpr value = { OpType::eApplyViewports, 7u };
-	};
-
-	template<>
-	struct alignas( uint64_t ) CmdT< OpType::eApplyViewports >
-	{
-		static uint32_t constexpr MaxElems = 16u;
-		static uint32_t constexpr ElemCount = 4u;
-
-		inline CmdT( std::vector< VkViewport > const & viewports )
-			: cmd{ { OpType::eApplyViewports, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, count{ std::min( MaxElems, uint32_t( viewports.size() ) ) }
-		{
-			uint32_t vi = 0u;
-			uint32_t size = count * ElemCount;
-
-			for ( auto & viewport : viewports )
-			{
-				if ( vi < size )
-				{
-					this->viewports[vi++] = viewport.x;
-					this->viewports[vi++] = viewport.y;
-					this->viewports[vi++] = viewport.width;
-					this->viewports[vi++] = viewport.height;
-				}
-			}
-		}
-
-		Command cmd;
-		uint32_t count;
-		std::array< float, MaxElems * ElemCount > viewports;
-	};
-	using CmdApplyViewports = CmdT< OpType::eApplyViewports >;
-
-	void apply( ContextLock const & context
-		, CmdApplyViewports const & cmd );
-
-	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eApplyDepthRanges >
-	{
-		static Op constexpr value = { OpType::eApplyDepthRanges, 7u };
-	};
-
-	template<>
-	struct alignas( uint64_t ) CmdT< OpType::eApplyDepthRanges >
-	{
-		static uint32_t constexpr MaxElems = 16u;
-		static uint32_t constexpr ElemCount = 2u;
-
-		inline CmdT( std::vector< VkViewport > const & viewports )
-			: cmd{ { OpType::eApplyDepthRanges, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, count{ std::min( MaxElems, uint32_t( viewports.size() ) ) }
-		{
-			uint32_t di = 0u;
-			uint32_t size = count * ElemCount;
-
-			for ( auto & viewport : viewports )
-			{
-				if ( di < size )
-				{
-					this->depthRanges[di++] = viewport.minDepth;
-					this->depthRanges[di++] = viewport.maxDepth;
-				}
-			}
-		}
-
-		Command cmd;
-		uint32_t count;
-		std::array< double, MaxElems * ElemCount > depthRanges;
-	};
-	using CmdApplyDepthRanges = CmdT< OpType::eApplyDepthRanges >;
-
-	void apply( ContextLock const & context
-		, CmdApplyDepthRanges const & cmd );
-
-	//*************************************************************************
-
-	template<>
 	struct CmdConfig< OpType::eDrawBuffers >
 	{
 		static Op constexpr value = { OpType::eDrawBuffers, 18u };
@@ -342,6 +219,13 @@ namespace ashes::gl3
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDrawBuffers >
 	{
+		inline CmdT( uint32_t target )
+			: cmd{ { OpType::eDrawBuffers, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, count{ 1u }
+		{
+			targets[0] = target;
+		}
+		
 		template< size_t N >
 		inline CmdT( uint32_t targets[N] )
 			: cmd{ { OpType::eDrawBuffers, sizeof( CmdT ) / sizeof( uint32_t ) } }
@@ -397,31 +281,6 @@ namespace ashes::gl3
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eDrawBuffer >
-	{
-		static Op constexpr value = { OpType::eDrawBuffer, 2u };
-	};
-
-	template<>
-	struct alignas( uint64_t ) CmdT< OpType::eDrawBuffer >
-	{
-		inline CmdT( uint32_t value )
-			: cmd{ { OpType::eDrawBuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, target{ std::move( value ) }
-		{
-		}
-
-		Command cmd;
-		uint32_t target;
-	};
-	using CmdDrawBuffer = CmdT< OpType::eDrawBuffer >;
-
-	void apply( ContextLock const & context
-		, CmdDrawBuffer const & cmd );
-
-	//*************************************************************************
-
-	template<>
 	struct CmdConfig< OpType::eUseProgram >
 	{
 		static Op constexpr value = { OpType::eUseProgram, 2u };
@@ -468,31 +327,6 @@ namespace ashes::gl3
 
 	void apply( ContextLock const & context
 		, CmdInitFramebuffer const & cmd );
-
-	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eCleanupFramebuffer >
-	{
-		static Op constexpr value = { OpType::eCleanupFramebuffer, 4u };
-	};
-
-	template<>
-	struct alignas( uint64_t ) CmdT< OpType::eCleanupFramebuffer >
-	{
-		inline CmdT( GLuint * fbo )
-			: cmd{ { OpType::eCleanupFramebuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, fbo{ fbo }
-		{
-		}
-
-		Command cmd;
-		GLuint * fbo;
-	};
-	using CmdCleanupFramebuffer = CmdT< OpType::eCleanupFramebuffer >;
-
-	void apply( ContextLock const & context
-		, CmdCleanupFramebuffer const & cmd );
 
 	//*************************************************************************
 
@@ -1264,6 +1098,43 @@ namespace ashes::gl3
 
 	void apply( ContextLock const & context
 		, CmdFramebufferTexture2D const & cmd );
+	
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eFramebufferTextureLayer >
+	{
+		static Op constexpr value = { OpType::eFramebufferTextureLayer, 6u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eFramebufferTextureLayer >
+	{
+		inline CmdT( uint32_t target
+			, uint32_t point
+			, uint32_t object
+			, uint32_t mipLevel
+			, uint32_t arrayLayer )
+			: cmd{ { OpType::eFramebufferTextureLayer, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, target{ target }
+			, point{ point }
+			, object{ object }
+			, mipLevel{ mipLevel }
+			, arrayLayer{ arrayLayer }
+		{
+		}
+
+		Command cmd;
+		uint32_t target;
+		uint32_t point;
+		uint32_t object;
+		uint32_t mipLevel;
+		uint32_t arrayLayer;
+	};
+	using CmdFramebufferTextureLayer = CmdT< OpType::eFramebufferTextureLayer >;
+
+	void apply( ContextLock const & context
+		, CmdFramebufferTextureLayer const & cmd );
 
 	//*************************************************************************
 

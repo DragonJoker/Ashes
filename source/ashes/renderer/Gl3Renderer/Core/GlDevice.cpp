@@ -100,7 +100,7 @@ namespace ashes::gl3
 		}
 
 		void doApply( ContextLock const & context
-			, ashes::ColourBlendState const & state )
+			, VkPipelineColorBlendStateCreateInfo const & state )
 		{
 			if ( state.logicOpEnable )
 			{
@@ -123,7 +123,7 @@ namespace ashes::gl3
 			{
 				uint32_t buf = 0;
 
-				for ( auto & blendState : state.attachs )
+				for ( auto & blendState : ashes::makeArrayView( state.pAttachments, state.attachmentCount ) )
 				{
 					if ( blendState.blendEnable )
 					{
@@ -147,9 +147,9 @@ namespace ashes::gl3
 			}
 			else
 			{
-				auto count = std::count_if( state.attachs.begin()
-					, state.attachs.end()
-					, []( ashes::ColourBlendStateAttachment const & attach )
+				auto count = std::count_if( state.pAttachments
+					, state.pAttachments + state.attachmentCount
+					, []( VkPipelineColorBlendAttachmentState const & attach )
 					{
 						return attach.blendEnable;
 					} );
@@ -157,14 +157,14 @@ namespace ashes::gl3
 
 				if ( count > 1 )
 				{
-					ashes::Logger::logWarning( "Separate blend equations are not available." );
+					std::cerr << "Separate blend equations are not available." << std::endl;
 				}
 
 				if ( blend )
 				{
-					auto it = std::find_if( state.attachs.begin()
-						, state.attachs.end()
-						, []( ashes::ColourBlendStateAttachment const & attach )
+					auto it = std::find_if( state.pAttachments
+						, state.pAttachments + state.attachmentCount
+						, []( VkPipelineColorBlendAttachmentState const & attach )
 						{
 							return attach.blendEnable;
 						} );
@@ -196,9 +196,9 @@ namespace ashes::gl3
 		}
 
 		void doApply( ContextLock const & context
-			, ashes::RasterisationState const & state )
+			, VkPipelineRasterizationStateCreateInfo const & state )
 		{
-			if ( state.cullMode != VkCullModeFlagBits::eNone )
+			if ( state.cullMode != VK_CULL_MODE_NONE )
 			{
 				glLogCall( context
 					, glEnable
@@ -288,7 +288,7 @@ namespace ashes::gl3
 					, GL_DEPTH_CLAMP );
 			}
 
-			if ( state.rasteriserDiscardEnable )
+			if ( state.rasterizerDiscardEnable )
 			{
 				glLogCall( context
 					, glEnable
@@ -307,9 +307,9 @@ namespace ashes::gl3
 		}
 
 		void doApply( ContextLock const & context
-			, ashes::MultisampleState const & state )
+			, VkPipelineMultisampleStateCreateInfo const & state )
 		{
-			if ( state.rasterisationSamples != VK_SAMPLE_COUNT_1_BIT )
+			if ( state.rasterizationSamples != VK_SAMPLE_COUNT_1_BIT )
 			{
 				glLogCall( context
 					, glEnable
@@ -350,7 +350,7 @@ namespace ashes::gl3
 		}
 
 		void doApply( ContextLock const & context
-			, ashes::DepthStencilState const & state )
+			, VkPipelineDepthStencilStateCreateInfo const & state )
 		{
 			if ( state.depthWriteEnable )
 			{
@@ -445,12 +445,12 @@ namespace ashes::gl3
 		}
 
 		void doApply( ContextLock const & context
-			, ashes::TessellationState const & state )
+			, VkPipelineTessellationStateCreateInfo const & state )
 		{
 		}
 
 		void doApply( ContextLock const & context
-			, ashes::InputAssemblyState const & state )
+			, VkPipelineInputAssemblyStateCreateInfo const & state )
 		{
 			if ( state.topology == VK_PRIMITIVE_TOPOLOGY_POINT_LIST )
 			{

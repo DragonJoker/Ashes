@@ -24,9 +24,15 @@ namespace ashes::gl3
 			return m_sampler;
 		}
 
+		inline float getLodBias()const
+		{
+			return m_lodBias;
+		}
+
 	private:
 		VkDevice m_device;
 		GLuint m_sampler;
+		float m_lodBias;
 	};
 }
 

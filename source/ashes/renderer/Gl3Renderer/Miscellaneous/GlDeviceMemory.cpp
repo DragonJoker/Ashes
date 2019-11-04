@@ -36,7 +36,7 @@ namespace ashes::gl3
 			GLuint name;
 			GlBufferTarget target;
 			GLsizeiptr size;
-			GlMemoryPropertyFlags flags;
+			GlBufferDataUsageFlags flags;
 		};
 		using BufferAllocCont = std::vector< BufferAlloc >;
 
@@ -91,12 +91,12 @@ namespace ashes::gl3
 		GLuint createBuffer( ContextLock const & context
 			, GlBufferTarget target
 			, GLsizeiptr size
-			, GlMemoryPropertyFlags flags )
+			, GlBufferDataUsageFlags flags )
 		{
 			auto allocateBuffer = [&context]( GLuint result
 				, GlBufferTarget target
 				, GLsizeiptr size
-				, GlMemoryPropertyFlags flags )
+				, GlBufferDataUsageFlags flags )
 			{
 				glLogCall( context
 					, glBindBuffer
@@ -265,7 +265,7 @@ namespace ashes::gl3
 					m_buffer = createBuffer( context
 						, GL_BUFFER_TARGET_COPY_WRITE
 						, GLsizeiptr( m_allocateInfo.allocationSize )
-						, convertMemoryPropertyFlags( m_flags ) );
+						, getBufferDataUsageFlags( m_flags ) );
 
 					// Prepare update regions, layer by layer.
 					uint32_t offset = 0;
@@ -681,7 +681,7 @@ namespace ashes::gl3
 				m_buffer = createBuffer( context
 					, GlBufferTarget( m_boundTarget )
 					, m_allocateInfo.allocationSize
-					, convertMemoryPropertyFlags( m_flags ) );
+					, getBufferDataUsageFlags( m_flags ) );
 				m_boundResource = m_buffer;
 			}
 
@@ -750,7 +750,7 @@ namespace ashes::gl3
 		, m_device{ device }
 		, m_allocateInfo{ allocateInfo }
 		, m_flags{ getFlags( m_allocateInfo.memoryTypeIndex ) }
-		, m_mapFlags{ convertMemoryMapFlags( m_flags ) }
+		, m_mapFlags{ getMapFlags( m_flags ) }
 		, m_buffer{ GL_INVALID_INDEX }
 		, m_boundTarget{ boundTarget }
 		, m_memoryOffset{ memoryOffset }
@@ -822,7 +822,7 @@ namespace ashes::gl3
 		: m_device{ device }
 		, m_allocateInfo{ std::move( allocateInfo ) }
 		, m_flags{ getFlags( m_allocateInfo.memoryTypeIndex ) }
-		, m_mapFlags{ convertMemoryMapFlags( m_flags ) }
+		, m_mapFlags{ getMapFlags( m_flags ) }
 	{
 		if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
 		{

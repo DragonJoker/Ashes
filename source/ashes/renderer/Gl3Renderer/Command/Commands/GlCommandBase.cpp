@@ -31,44 +31,6 @@ namespace ashes::gl3
 	}
 
 	void apply( ContextLock const & context
-		, CmdApplyScissors const & cmd )
-	{
-		glLogCall( context
-			, glScissorArrayv
-			, GLuint( 0u )
-			, GLsizei( cmd.count )
-			, cmd.scissors.data() );
-	}
-
-	void apply( ContextLock const & context
-		, CmdApplyViewports const & cmd )
-	{
-		glLogCall( context
-			, glViewportArrayv
-			, GLuint( 0 )
-			, GLsizei( cmd.count )
-			, cmd.viewports.data() );
-	}
-
-	void apply( ContextLock const & context
-		, CmdApplyDepthRanges const & cmd )
-	{
-		glLogCall( context
-			, glDepthRangeArrayv
-			, GLuint( 0 )
-			, GLsizei( cmd.count )
-			, cmd.depthRanges.data() );
-	}
-
-	void apply( ContextLock const & context
-		, CmdDrawBuffer const & cmd )
-	{
-		glLogCall( context
-			, glDrawBuffer
-			, cmd.target );
-	}
-
-	void apply( ContextLock const & context
 		, CmdDrawBuffers const & cmd )
 	{
 		glLogCall( context
@@ -92,18 +54,6 @@ namespace ashes::gl3
 		{
 			glLogCall( context
 				, glGenFramebuffers
-				, 1
-				, cmd.fbo );
-		}
-	}
-
-	void apply( ContextLock const & context
-		, CmdCleanupFramebuffer const & cmd )
-	{
-		if ( ( *cmd.fbo ) != GL_INVALID_INDEX )
-		{
-			glLogCall( context
-				, glDeleteFramebuffers
 				, 1
 				, cmd.fbo );
 		}
@@ -161,8 +111,7 @@ namespace ashes::gl3
 		, CmdBlendEquation const & cmd )
 	{
 		glLogCall( context
-			, glBlendEquationSeparatei
-			, cmd.index
+			, glBlendEquationSeparate
 			, cmd.color
 			, cmd.alpha );
 	}
@@ -171,8 +120,7 @@ namespace ashes::gl3
 		, CmdBlendFunc const & cmd )
 	{
 		glLogCall( context
-			, glBlendFuncSeparatei
-			, cmd.index
+			, glBlendFuncSeparate
 			, cmd.colorSrc
 			, cmd.colorDst
 			, cmd.alphaSrc
@@ -302,7 +250,7 @@ namespace ashes::gl3
 		, CmdMinSampleShading const & cmd )
 	{
 		glLogCall( context
-			, glMinSampleShading
+			, glMinSampleShading_ARB
 			, cmd.value );
 	}
 
@@ -310,7 +258,7 @@ namespace ashes::gl3
 		, CmdPatchParameter const & cmd )
 	{
 		glLogCall( context
-			, glPatchParameteri
+			, glPatchParameteri_ARB
 			, cmd.param
 			, cmd.value );
 	}
@@ -384,6 +332,18 @@ namespace ashes::gl3
 			, cmd.texTarget
 			, cmd.object
 			, cmd.mipLevel );
+	}
+
+	void apply( ContextLock const & context
+		, CmdFramebufferTextureLayer const & cmd )
+	{
+		glLogCall( context
+			, glFramebufferTextureLayer
+			, cmd.target
+			, cmd.point
+			, cmd.object
+			, cmd.mipLevel
+			, cmd.arrayLayer );
 	}
 
 	void apply( ContextLock const & context

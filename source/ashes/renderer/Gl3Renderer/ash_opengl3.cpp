@@ -4137,7 +4137,7 @@ extern "C"
 {
 #endif
 
-	gl3Renderer_API VkResult VKAPI_PTR ashGetPluginDescription( AshPluginDescription * pDescription )
+	Gl3Renderer_API VkResult VKAPI_PTR ashGetPluginDescription( AshPluginDescription * pDescription )
 	{
 		auto result = getLibrary().init();
 

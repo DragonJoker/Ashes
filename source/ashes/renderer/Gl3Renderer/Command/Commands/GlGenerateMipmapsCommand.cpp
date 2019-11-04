@@ -24,7 +24,9 @@ namespace ashes::gl3
 		, CmdList & list )
 	{
 		glLogCommand( "GenerateMipmapsCommand" );
-		auto target = convert( get( texture )->getType(), get( texture )->getArrayLayers() );
+		auto target = convert( get( texture )->getType()
+			, get( texture )->getArrayLayers()
+			, get( texture )->getCreateFlags() );
 		list.push_back( makeCmd< OpType::eBindTexture >( target
 				, get( texture )->getInternal() ) );
 		list.push_back( makeCmd< OpType::eGenerateMipmaps >( target ) );

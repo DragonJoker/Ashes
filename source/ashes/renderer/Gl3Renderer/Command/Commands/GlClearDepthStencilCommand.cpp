@@ -15,7 +15,7 @@ namespace ashes::gl3
 		, CmdClearTexDepth const & cmd )
 	{
 		glLogCall( context
-			, glClearTexImage
+			, glClearTexImage_ARB
 			, cmd.name
 			, cmd.mipLevel
 			, cmd.format
@@ -27,7 +27,7 @@ namespace ashes::gl3
 		, CmdClearTexStencil const & cmd )
 	{
 		glLogCall( context
-			, glClearTexImage
+			, glClearTexImage_ARB
 			, cmd.name
 			, cmd.mipLevel
 			, cmd.format
@@ -39,7 +39,7 @@ namespace ashes::gl3
 		, CmdClearTexDepthStencil const & cmd )
 	{
 		glLogCall( context
-			, glClearTexImage
+			, glClearTexImage_ARB
 			, cmd.name
 			, cmd.mipLevel
 			, cmd.format
@@ -56,7 +56,7 @@ namespace ashes::gl3
 	{
 		glLogCommand( "ClearDepthStencilCommand" );
 
-		if ( get( get( device )->getInstance() )->getContext().hasClearTexImage() )
+		if ( get( get( device )->getInstance() )->getFeatures().hasClearTexImage )
 		{
 			auto internal = getInternalFormat( get( image )->getFormat() );
 			auto format = getFormat( internal );

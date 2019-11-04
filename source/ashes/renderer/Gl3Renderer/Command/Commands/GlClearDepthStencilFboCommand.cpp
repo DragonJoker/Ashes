@@ -9,81 +9,55 @@ See LICENSE file in root folder.
 #include "Image/GlImage.hpp"
 #include "RenderPass/GlFrameBuffer.hpp"
 
-namespace gl_renderer
-{
-	ClearDepthStencilFboCommand::ClearDepthStencilFboCommand( Device const & device
-		, ashes::ImageView const & image
-		, ashes::DepthStencilClearValue const & value )
-		: CommandBase{ device }
-		, m_image{ static_cast< ImageView const & >( image ) }
-		, m_value{ value }
-		, m_internal{ getInternal( m_image.getFormat() ) }
-		, m_format{ getFormat( m_internal ) }
-		, m_type{ getType( m_internal ) }
-	{
-	}
+#include "ashesgl3_api.hpp"
 
-	void ClearDepthStencilFboCommand::apply( ContextLock const & context )const
+namespace ashes::gl3
+{
+	void buildClearDepthStencilFboCommand( VkDevice device
+		, ContextStateStack const & stack
+		, VkImage image
+		, VkImageLayout imageLayout
+		, VkClearDepthStencilValue value
+		, VkImageSubresourceRangeArray ranges
+		, CmdList & list )
 	{
 		glLogCommand( "ClearDepthStencilFboCommand" );
-		auto & image = static_cast< Image const & >( m_image.getImage() );
+		auto & glimage = *get( image );
 		auto target = GL_TEXTURE_2D;
 
-		if ( image.getSamplesCount() > VK_SAMPLE_COUNT_1_BIT )
+		if ( glimage.getSamples() > VK_SAMPLE_COUNT_1_BIT )
 		{
 			target = GL_TEXTURE_2D_MULTISAMPLE;
 		}
 
-		glLogCall( context
-			, glBindFramebuffer
-			, GL_FRAMEBUFFER
-			, m_device.getBlitDstFbo() );
-		glLogCall( context
-			, glFramebufferTexture2D
-			, GL_FRAMEBUFFER
-			, getAttachmentPoint( m_image )
-			, target
-			, image.getImage()
-			, m_image.getSubResourceRange().baseMipLevel );
-		glLogCall( context
-			, glDepthMask
-			, GL_TRUE );
-		auto stencil = GLint( m_value.stencil );
+		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+			, get( device )->getBlitDstFbo() ) );
+		GLenum point = getAttachmentPoint( glimage.getFormat() );
 
-		if ( isDepthStencilFormat( m_internal ) )
+		for ( uint32_t level = 0u; level < glimage.getMipLevels(); ++level )
 		{
-			glLogCall( context
-				, glClearBufferfi
-				, GL_CLEAR_TARGET_DEPTH_STENCIL
-				, 0u
-				, m_value.depth
-				, stencil );
-		}
-		else if ( isDepthFormat( m_internal ) )
-		{
-			glLogCall( context
-				, glClearBufferfv
-				, GL_CLEAR_TARGET_DEPTH
-				, 0u
-				, &m_value.depth );
-		}
-		else if ( isStencilFormat( m_internal ) )
-		{
-			glLogCall( context
-				, glClearBufferiv
-				, GL_CLEAR_TARGET_STENCIL
-				, 0u
-				, &stencil );
+			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
+				, point
+				, target
+				, get( image )->getInternal()
+				, level ) );
+			auto format = get( image )->getFormat();
+
+			if ( isDepthStencilFormat( format ) )
+			{
+				list.push_back( makeCmd< OpType::eClearDepthStencil >( value ) );
+			}
+			else if ( isDepthFormat( format ) )
+			{
+				list.push_back( makeCmd< OpType::eClearDepth >( value.depth ) );
+			}
+			else if ( isStencilFormat( format ) )
+			{
+				list.push_back( makeCmd< OpType::eClearStencil >( int32_t( value.stencil ) ) );
+			}
 		}
 
-		glLogCall( context
-			, glBindFramebuffer
-			, GL_FRAMEBUFFER
-			, m_device.getCurrentFramebuffer() );
-	}
-
-	CommandPtr ClearDepthStencilFboCommand::clone()const
-	{
-		return std::make_unique< ClearDepthStencilFboCommand >( *this );
+		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+			, stack.getCurrentFramebuffer() ) );
 	}
 }

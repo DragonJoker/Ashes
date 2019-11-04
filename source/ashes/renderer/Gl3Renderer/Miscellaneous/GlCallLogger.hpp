@@ -10,12 +10,10 @@ See LICENSE file in root folder
 #include "renderer/Gl3Renderer/Enum/GlBaseType.hpp"
 #include "renderer/Gl3Renderer/Enum/GlBlendFactor.hpp"
 #include "renderer/Gl3Renderer/Enum/GlBlendOp.hpp"
-#include "renderer/Gl3Renderer/Enum/GlBorderColour.hpp"
 #include "renderer/Gl3Renderer/Enum/GlBufferDataUsageFlag.hpp"
 #include "renderer/Gl3Renderer/Enum/GlBufferTarget.hpp"
 #include "renderer/Gl3Renderer/Enum/GlClearTarget.hpp"
 #include "renderer/Gl3Renderer/Enum/GlClipInfo.hpp"
-#include "renderer/Gl3Renderer/Enum/GlColourComponentFlag.hpp"
 #include "renderer/Gl3Renderer/Enum/GlCompareOp.hpp"
 #include "renderer/Gl3Renderer/Enum/GlComponentSwizzle.hpp"
 #include "renderer/Gl3Renderer/Enum/GlConstantFormat.hpp"
@@ -442,9 +440,9 @@ namespace ashes::gl3
 
 #if GL_LOG_CALLS
 #	define glLogCall( lock, name, ... )\
-	executeFunction( ashes::gl4::getContext( lock ).m_##name, #name, __VA_ARGS__ )
+	executeFunction( ashes::gl3::getContext( lock ).m_##name, #name, __VA_ARGS__ )
 #	define glLogNonVoidCall( lock, name, ... )\
-	executeNonVoidFunction( ashes::gl4::getContext( lock ).m_##name, #name, __VA_ARGS__ )
+	executeNonVoidFunction( ashes::gl3::getContext( lock ).m_##name, #name, __VA_ARGS__ )
 #	define glLogCommand( name )\
 	std::cout << "Command: " << name << std::endl
 #elif defined( NDEBUG )

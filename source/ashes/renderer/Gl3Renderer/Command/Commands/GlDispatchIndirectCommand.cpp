@@ -14,7 +14,7 @@ namespace ashes::gl3
 		, CmdDispatchIndirect const & cmd )
 	{
 		glLogCall( context
-			, glDispatchComputeIndirect
+			, glDispatchComputeIndirect_ARB
 			, GLintptr( getBufferOffset( cmd.offset ) ) );
 	}
 

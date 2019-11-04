@@ -527,7 +527,6 @@ namespace ashes::gl3
 	{
 		if ( force || getCurrentScissors() != scissors )
 		{
-			list.push_back( makeCmd< OpType::eApplyScissors >( scissors ) );
 			setCurrentScissors( scissors );
 		}
 	}
@@ -538,8 +537,6 @@ namespace ashes::gl3
 	{
 		if ( force || getCurrentViewports() != viewports )
 		{
-			list.push_back( makeCmd< OpType::eApplyViewports >( viewports ) );
-			list.push_back( makeCmd< OpType::eApplyDepthRanges >( viewports ) );
 			setCurrentViewports( viewports );
 		}
 	}

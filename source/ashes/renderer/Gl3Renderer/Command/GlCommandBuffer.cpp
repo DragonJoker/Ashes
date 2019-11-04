@@ -212,6 +212,7 @@ namespace ashes::gl3
 		if ( !get( get( m_device )->getInstance() )->getFeatures().hasClearTexImage )
 		{
 			buildClearColourFboCommand( m_device
+				, *m_state.stack
 				, image
 				, imageLayout
 				, std::move( value )
@@ -237,6 +238,7 @@ namespace ashes::gl3
 		if ( !get( get( m_device )->getInstance() )->getFeatures().hasClearTexImage )
 		{
 			buildClearDepthStencilFboCommand( m_device
+				, *m_state.stack
 				, image
 				, imageLayout
 				, std::move( value )
@@ -326,7 +328,7 @@ namespace ashes::gl3
 			}
 			else
 			{
-				ashes::Logger::logWarning( "Compute shaders are not supported" );
+				std::cerr << "Compute shaders are not supported" << std::endl;
 			}
 		}
 
@@ -647,8 +649,7 @@ namespace ashes::gl3
 				, dstImage
 				, std::move( region )
 				, filter
-				, m_cmdList
-				, m_blitViews );
+				, m_cmdList );
 		}
 	}
 
@@ -815,7 +816,7 @@ namespace ashes::gl3
 		, VkBufferMemoryBarrierArray bufferMemoryBarriers
 		, VkImageMemoryBarrierArray imageMemoryBarriers )const
 	{
-		if ( get( get( m_device )->getInstance() )->hasImageTexture )
+		if ( get( get( m_device )->getInstance() )->getFeatures().hasImageTexture )
 		{
 			buildMemoryBarrierCommand( after
 				, before

@@ -4,7 +4,7 @@
 #include "Core/GlDevice.hpp"
 #include "Miscellaneous/GlDeviceMemory.hpp"
 
-#include "ashesgl4_api.hpp"
+#include "ashesgl3_api.hpp"
 
 namespace ashes::gl3
 {

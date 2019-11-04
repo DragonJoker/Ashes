@@ -73,8 +73,7 @@ namespace ashes::gl3
 		, VkImage dstImage
 		, VkImageBlit region
 		, VkFilter filter
-		, CmdList & list
-		, VkImageViewArray & views );
+		, CmdList & list );
 
 	//*************************************************************************
 }

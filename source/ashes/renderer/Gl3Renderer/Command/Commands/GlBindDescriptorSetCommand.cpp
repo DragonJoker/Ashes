@@ -30,7 +30,7 @@ namespace ashes::gl3
 		, CmdBindImage const & cmd )
 	{
 		glLogCall( context
-			, glBindImageTexture
+			, glBindImageTexture_ARB
 			, cmd.binding
 			, cmd.name
 			, cmd.baseMipLevel
@@ -52,11 +52,28 @@ namespace ashes::gl3
 			, GLsizeiptr( cmd.range ) );
 	}
 
+	void apply( ContextLock const & context
+		, CmdTexParameteri const & cmd )
+	{
+		glLogCall( context
+			, glTexParameteri
+			, cmd.target
+			, cmd.name
+			, cmd.param );
+	}
+
+	void apply( ContextLock const & context
+		, CmdTexParameterf const & cmd )
+	{
+		glLogCall( context
+			, glTexParameterf
+			, cmd.target
+			, cmd.name
+			, cmd.param );
+	}
+
 	namespace
 	{
-		static constexpr GLenum GL_TEXTURE_FILTER_CONTROL = 0x8500;
-		static constexpr GLenum GL_TEXTURE_LOD_BIAS = 0x8501;
-
 		VkImageView getView( VkWriteDescriptorSet const & write, uint32_t index )
 		{
 			assert( index < write.descriptorCount );
@@ -75,37 +92,41 @@ namespace ashes::gl3
 			return write.pBufferInfo[index].buffer;
 		}
 
-		GlTextureType doBindTextureView( ContextLock const & context
-			, VkImageView view
-			, uint32_t bindingIndex )
+		GlTextureType doBindTextureView( VkImageView view
+			, uint32_t bindingIndex
+			, CmdList & list )
 		{
 			auto target = convert( get( view )->getType()
 				, get( get( view )->getImage() )->getArrayLayers() );
 			list.push_back( makeCmd< OpType::eBindTexture >( target
 				, get( get( view )->getImage() )->getInternal() ) );
 
-			if ( get( view )->getComponentMapping().r != VK_COMPONENT_SWIZZLE_IDENTITY )
+			if ( get( view )->getComponents().r != VK_COMPONENT_SWIZZLE_IDENTITY )
 			{
-				list.push_back( makeCmd< OpType::eTexSwizzleR >( target
-					, get( view )->getComponentMapping().r ) );
+				list.push_back( makeCmd< OpType::eTexParameteri >( target
+					, uint32_t( GL_TEX_PARAMETER_SWIZZLE_R )
+					, int32_t( convert( get( view )->getComponents().r ) ) ) );
 			}
 
-			if ( get( view )->getComponentMapping().g != VK_COMPONENT_SWIZZLE_IDENTITY )
+			if ( get( view )->getComponents().g != VK_COMPONENT_SWIZZLE_IDENTITY )
 			{
-				list.push_back( makeCmd< OpType::eTexSwizzleG >( target
-					, get( view )->getComponentMapping().g ) );
+				list.push_back( makeCmd< OpType::eTexParameteri >( target
+					, uint32_t( GL_TEX_PARAMETER_SWIZZLE_G )
+					, int32_t( convert( get( view )->getComponents().g ) ) ) );
 			}
 
-			if ( get( view )->getComponentMapping().b != VK_COMPONENT_SWIZZLE_IDENTITY )
+			if ( get( view )->getComponents().b != VK_COMPONENT_SWIZZLE_IDENTITY )
 			{
-				list.push_back( makeCmd< OpType::eTexSwizzleB >( target
-					, get( view )->getComponentMapping().b ) );
+				list.push_back( makeCmd< OpType::eTexParameteri >( target
+					, uint32_t( GL_TEX_PARAMETER_SWIZZLE_B )
+					, int32_t( convert( get( view )->getComponents().b ) ) ) );
 			}
 
-			if ( get( view )->getComponentMapping().a != VK_COMPONENT_SWIZZLE_IDENTITY )
+			if ( get( view )->getComponents().a != VK_COMPONENT_SWIZZLE_IDENTITY )
 			{
-				list.push_back( makeCmd< OpType::eTexSwizzleA >( target
-					, get( view )->getComponentMapping().a ) );
+				list.push_back( makeCmd< OpType::eTexParameteri >( target
+					, uint32_t( GL_TEX_PARAMETER_SWIZZLE_A )
+					, int32_t( convert( get( view )->getComponents().a ) ) ) );
 			}
 
 			return target;
@@ -120,13 +141,14 @@ namespace ashes::gl3
 				list.push_back( makeCmd< OpType::eActiveTexture >( bindingIndex ) );
 
 				auto view = getView( write, i );
-				auto target = doBindTextureView( context, view, bindingIndex );
+				auto target = doBindTextureView( view, bindingIndex, list );
 
 				auto sampler = getSampler( write, i );
 				list.push_back( makeCmd< OpType::eBindSampler >( bindingIndex
 					, get( sampler )->getInternal() ) );
-				list.push_back( makeCmd< OpType::eTexLodBias >( target
-					, sampler.getLodBias() );
+				list.push_back( makeCmd< OpType::eTexParameterf >( target
+					, uint32_t( GL_TEX_PARAMETER_LOD_BIAS )
+					, get( sampler )->getLodBias() ) );
 			}
 		}
 
@@ -151,7 +173,7 @@ namespace ashes::gl3
 				list.push_back( makeCmd< OpType::eActiveTexture >( bindingIndex ) );
 
 				auto view = getView( write, i );
-				doBindTextureView( context, view, bindingIndex );
+				doBindTextureView( view, bindingIndex, list );
 			}
 		}
 

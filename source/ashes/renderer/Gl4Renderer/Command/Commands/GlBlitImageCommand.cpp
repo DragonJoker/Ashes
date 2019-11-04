@@ -123,19 +123,6 @@ namespace ashes::gl4
 	}
 
 	void buildBlitImageCommand( ContextStateStack & stack
-		, GlTextureType srcTarget
-		, GlTextureType dstTarget
-		, VkDevice device
-		, VkImage srcImage
-		, VkImage dstImage
-		, VkImageBlit region
-		, VkFilter filter
-		, CmdList & list
-		, VkImageViewArray & views )
-	{
-	}
-
-	void buildBlitImageCommand( ContextStateStack & stack
 		, VkDevice device
 		, VkImage srcImage
 		, VkImage dstImage

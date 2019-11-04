@@ -12,7 +12,7 @@ namespace ashes::gl3
 		, CmdDispatch const & cmd )
 	{
 		glLogCall( context
-			, glDispatchCompute
+			, glDispatchCompute_ARB
 			, cmd.groupCountX
 			, cmd.groupCountY
 			, cmd.groupCountZ );

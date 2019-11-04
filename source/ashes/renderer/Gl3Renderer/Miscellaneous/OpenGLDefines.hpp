@@ -191,7 +191,6 @@ namespace ashes::gl3
 	using PFN_glBlendFuncSeparatei = void ( GLAPIENTRY * )( GLuint buf, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha );
 	using PFN_glBlitFramebuffer = void ( GLAPIENTRY * )( GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter );
 	using PFN_glBufferData = void ( GLAPIENTRY * )( GlBufferTarget target, GLsizeiptr size, const void * data, GlBufferDataUsageFlags usage );
-	using PFN_glBufferStorage = void ( GLAPIENTRY * )( GlBufferTarget target, GLsizeiptr size, const void * data, GlMemoryPropertyFlags flags );
 	using PFN_glCheckFramebufferStatus = GLenum( GLAPIENTRY * )( GLenum target );
 	using PFN_glClear = void ( GLAPIENTRY * )( GLbitfield mask );
 	using PFN_glClearDepth = void ( GLAPIENTRY * )( GLdouble depth );
@@ -204,6 +203,7 @@ namespace ashes::gl3
 	using PFN_glClearTexImage = void ( GLAPIENTRY * )( GLuint texture, GLint level, GLenum format, GLenum type, const void *data );
 	using PFN_glClientWaitSync = GLenum( GLAPIENTRY * )( GLsync GLsync, GLbitfield flags, GLuint64 timeout );
 	using PFN_glClipControl = void ( GLAPIENTRY * )( GLenum origin, GLenum depth );
+	using PFN_glColorMaski = void ( GLAPIENTRY * )( GLuint buf, GLboolean r, GLboolean g, GLboolean b, GLboolean a );
 	using PFN_glCompileShader = void ( GLAPIENTRY * )( GLuint shader );
 	using PFN_glCompressedTexSubImage1D = void ( GLAPIENTRY * )( GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLsizei imageSize, const GLvoid * data );
 	using PFN_glCompressedTexSubImage2D = void ( GLAPIENTRY * )( GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLsizei imageSize, const GLvoid * data );
@@ -295,6 +295,7 @@ namespace ashes::gl3
 	using PFN_glPixelStorei = void ( GLAPIENTRY * )( GLenum pname, GLint param );
 	using PFN_glPolygonMode = void ( GLAPIENTRY * )( GLenum face, GLenum mode );
 	using PFN_glPolygonOffsetClampEXT = void ( GLAPIENTRY * )( GLfloat factor, GLfloat units, GLfloat clamp );
+	using PFN_glPrimitiveRestartIndex = void ( GLAPIENTRY * )( GLuint index );
 	using PFN_glQueryCounter = void ( GLAPIENTRY * )( GLuint id, GLenum target );
 	using PFN_glReadBuffer = void ( GLAPIENTRY * )( GLenum mode );
 	using PFN_glReadPixels = void( GLAPIENTRY * )( GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, void *pixels );
@@ -322,11 +323,6 @@ namespace ashes::gl3
 	using PFN_glTexSubImage1D = void ( GLAPIENTRY * )( GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, const void *pixels );
 	using PFN_glTexSubImage2D = void ( GLAPIENTRY * )( GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void *pixels );
 	using PFN_glTexSubImage3D = void ( GLAPIENTRY * )( GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const void *pixels );
-	using PFN_glTexStorage1D = void ( GLAPIENTRY * )( GLenum target, GLsizei levels, GLenum internalformat, GLsizei width );
-	using PFN_glTexStorage2D = void ( GLAPIENTRY * )( GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height );
-	using PFN_glTexStorage2DMultisample = void ( GLAPIENTRY * )( GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLboolean fixedsamplelocations );
-	using PFN_glTexStorage3D = void ( GLAPIENTRY * )( GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth );
-	using PFN_glTexStorage3DMultisample = void ( GLAPIENTRY * )( GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLboolean fixedsamplelocations );
 	using PFN_glTextureView = void ( GLAPIENTRY * )( GLuint texture, GLenum target, GLuint origtexture, GLenum internalformat, GLuint minlevel, GLuint numlevels, GLuint minlayer, GLuint numlayers );
 	using PFN_glUniform1fv = void ( GLAPIENTRY * )( GLint location, GLsizei count, const GLfloat* value );
 	using PFN_glUniform1iv = void ( GLAPIENTRY * )( GLint location, GLsizei count, const GLint* value );

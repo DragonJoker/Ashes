@@ -27,12 +27,12 @@ namespace ashes::gl3
 			, GL_BUFFER_TARGET_TEXTURE
 			, m_name );
 
-		if ( device.getInstance().getFeatures().hasTexBufferRange )
+		if ( get( get( device )->getInstance() )->getFeatures().hasBufferRange )
 		{
 			glLogCall( context
 				, glTexBufferRange_ARB
 				, GL_BUFFER_TARGET_TEXTURE
-				, getInternal( format )
+				, getInternalFormat( createInfo.format )
 				, get( createInfo.buffer )->getInternal()
 				, get( createInfo.buffer )->getInternalOffset() + m_offset
 				, m_range );
@@ -42,7 +42,7 @@ namespace ashes::gl3
 			glLogCall( context
 				, glTexBuffer
 				, GL_BUFFER_TARGET_TEXTURE
-				, getInternal( format )
+				, getInternalFormat( createInfo.format )
 				, get( createInfo.buffer )->getInternal() );
 		}
 

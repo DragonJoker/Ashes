@@ -6,10 +6,9 @@ See LICENSE file in root folder.
 
 #include "Core/GlDevice.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
-	Event::Event( Device const & device )
-		: ashes::Event{ device }
+	Event::Event( VkDevice device )
 	{
 	}
 
@@ -17,18 +16,20 @@ namespace gl_renderer
 	{
 	}
 
-	ashes::EventStatus Event::getStatus()const
+	VkResult Event::getStatus()const
 	{
 		return m_status;
 	}
 
-	void Event::set()const
+	VkResult Event::set()const
 	{
-		m_status = ashes::EventStatus::eSet;
+		m_status = VK_EVENT_SET;
+		return VK_SUCCESS;
 	}
 
-	void Event::reset()const
+	VkResult Event::reset()const
 	{
-		m_status = ashes::EventStatus::eReset;
+		m_status = VK_EVENT_RESET;
+		return VK_SUCCESS;
 	}
 }

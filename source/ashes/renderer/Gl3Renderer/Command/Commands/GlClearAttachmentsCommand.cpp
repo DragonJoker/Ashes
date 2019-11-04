@@ -32,7 +32,6 @@ namespace ashes::gl3
 
 				if ( stack.getCurrentScissors() != scissors )
 				{
-					list.push_back( makeCmd< OpType::eApplyScissors >( scissors ) );
 					stack.setCurrentScissors( scissors );
 				}
 

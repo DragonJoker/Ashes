@@ -65,7 +65,7 @@ namespace ashes::gl3
 					list.push_back( makeCmd< OpType::eReadBuffer >( uint32_t( srcAttach.point ) ) );
 					list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_DRAW_FRAMEBUFFER
 						, get( device )->getBlitDstFbo() ) );
-					list.push_back( makeCmd< OpType::eDrawBuffer >( uint32_t( dstAttach.point ) ) );
+					list.push_back( makeCmd< OpType::eDrawBuffers >( uint32_t( dstAttach.point ) ) );
 					list.push_back( makeCmd< OpType::eBlitFramebuffer >(
 						0, 0, int32_t( get( frameBuffer )->getWidth() ), int32_t( get( frameBuffer )->getHeight() ),
 						0, 0, int32_t( get( frameBuffer )->getWidth() ), int32_t( get( frameBuffer )->getHeight() ),

@@ -113,6 +113,11 @@ namespace ashes::gl3
 			return *m_context;
 		}
 
+		inline AshPluginFeatures const & getFeatures()const
+		{
+			return m_features;
+		}
+
 		static inline VkPhysicalDeviceMemoryProperties const & getMemoryProperties()
 		{
 			return m_memoryProperties;

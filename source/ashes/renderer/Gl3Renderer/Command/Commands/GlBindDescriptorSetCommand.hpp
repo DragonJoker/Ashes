@@ -39,6 +39,68 @@ namespace ashes::gl3
 	//*************************************************************************
 
 	template<>
+	struct CmdConfig< OpType::eTexParameteri >
+	{
+		static Op constexpr value = { OpType::eTexParameteri, 4u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eTexParameteri >
+	{
+		inline CmdT( uint32_t target
+			, uint32_t name
+			, int32_t param )
+			: cmd{ { OpType::eTexParameteri, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, target{ std::move( target ) }
+			, name{ std::move( name ) }
+			, param{ std::move( param ) }
+		{
+		}
+
+		Command cmd;
+		uint32_t target;
+		uint32_t name;
+		int32_t param;
+	};
+	using CmdTexParameteri = CmdT< OpType::eTexParameteri >;
+
+	void apply( ContextLock const & context
+		, CmdTexParameteri const & cmd );
+	
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eTexParameterf >
+	{
+		static Op constexpr value = { OpType::eTexParameterf, 4u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eTexParameterf >
+	{
+		inline CmdT( uint32_t target
+			, uint32_t name
+			, float param )
+			: cmd{ { OpType::eTexParameterf, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, target{ std::move( target ) }
+			, name{ std::move( name ) }
+			, param{ std::move( param ) }
+		{
+		}
+
+		Command cmd;
+		uint32_t target;
+		uint32_t name;
+		float param;
+	};
+	using CmdTexParameterf = CmdT< OpType::eTexParameterf >;
+
+	void apply( ContextLock const & context
+		, CmdTexParameterf const & cmd );
+
+	//*************************************************************************
+
+	template<>
 	struct CmdConfig< OpType::eBindImage >
 	{
 		static Op constexpr value = { OpType::eBindImage, 7u };

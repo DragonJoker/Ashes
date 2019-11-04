@@ -9,6 +9,7 @@ namespace ashes::gl3
 	Sampler::Sampler( VkDevice device
 		, VkSamplerCreateInfo const & createInfo )
 		: m_device{ device }
+		, m_lodBias{ createInfo.mipLodBias }
 	{
 		auto context = get( m_device )->getContext();
 		glLogCall( context

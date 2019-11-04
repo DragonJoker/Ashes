@@ -11,14 +11,6 @@ See LICENSE file in root folder.
 namespace ashes::gl3
 {
 	void apply( ContextLock const & context
-		, CmdBindVextexArrayObject const & cmd )
-	{
-		glLogCall( context
-			, glBindVertexArray
-			, cmd.vao );
-	}
-	
-	void apply( ContextLock const & context
 		, CmdBindVextexArray const & cmd )
 	{
 		if ( cmd.vao )

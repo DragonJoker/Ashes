@@ -4,40 +4,17 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Gl3Renderer/Command/Commands/GlCommandBase.hpp"
+#include "renderer/Gl3Renderer/Command/Commands/GlCommandBase.hpp"
 
-#include <Ashes/RenderPass/ClearValue.hpp>
+#include "renderer/Gl3Renderer/Enum/GlFormat.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
-	/**
-	*\brief
-	*	Commande de vidage d'une image.
-	*/
-	class ClearColourFboCommand
-		: public CommandBase
-	{
-	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] image
-		*	L'image à vider.
-		*\param[in] colour
-		*	La couleur de vidage.
-		*/
-		ClearColourFboCommand( Device const & device
-			, ashes::ImageView const & image
-			, VkClearColorValue const & colour );
-
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
-
-	private:
-		ImageView const & m_image;
-		VkClearColorValue m_colour;
-		GlInternal m_internal;
-		GlFormat m_format;
-		GlType m_type;
-	};
+	void buildClearColourFboCommand( VkDevice device
+		, ContextStateStack const & stack
+		, VkImage image
+		, VkImageLayout imageLayout
+		, VkClearColorValue value
+		, VkImageSubresourceRangeArray ranges
+		, CmdList & list );
 }

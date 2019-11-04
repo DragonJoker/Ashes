@@ -83,6 +83,11 @@ namespace ashes::gl3
 		{
 			return m_instance;
 		}
+		
+		inline VkPhysicalDevice getPhysicalDevice()const
+		{
+			return m_physicalDevice;
+		}
 
 	private:
 		void doInitialiseQueues();

@@ -179,6 +179,7 @@ namespace ashes::gl3
 		GlTextureType target;
 		uint32_t mipLevel;
 		uint32_t index;
+		uint32_t baseArrayLayer;
 		GLuint originalObject;
 		GLuint originalMipLevel;
 	};

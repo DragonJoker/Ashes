@@ -52,7 +52,7 @@ namespace ashes::gl3
 			getAttachmentType( get( image )->getFormat() ),
 			( get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT
 				? GL_TEXTURE_2D_MULTISAMPLE
-				: ( checkFlag( get( image )->getCreateFlags(), VK_IMAGE_CREATE_FLAG_CUBE_COMPATIBLE_BIT )
+				: ( checkFlag( get( image )->getCreateFlags(), VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT )
 					? GL_TEXTURE_CUBE_POSITIVE_X
 					: GL_TEXTURE_2D ) ),
 			subresource.mipLevel,
@@ -100,19 +100,6 @@ namespace ashes::gl3
 			, cmd.dstB
 			, cmd.mask
 			, cmd.filter );
-	}
-
-	void buildBlitImageCommand( ContextStateStack & stack
-		, GlTextureType srcTarget
-		, GlTextureType dstTarget
-		, VkDevice device
-		, VkImage srcImage
-		, VkImage dstImage
-		, VkImageBlit region
-		, VkFilter filter
-		, CmdList & list
-		, VkImageViewArray & views )
-	{
 	}
 
 	void buildBlitImageCommand( ContextStateStack & stack
@@ -166,7 +153,7 @@ namespace ashes::gl3
 			list.push_back( makeCmd< OpType::eReadBuffer >( uint32_t( layerCopy.src.point ) ) );
 			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_DRAW_FRAMEBUFFER
 				, get( device )->getBlitDstFbo() ) );
-			list.push_back( makeCmd< OpType::eDrawBuffer >( uint32_t( layerCopy.dst.point ) ) );
+			list.push_back( makeCmd< OpType::eDrawBuffers >( uint32_t( layerCopy.dst.point ) ) );
 			list.push_back( makeCmd< OpType::eBlitFramebuffer >( layerCopy.region.srcOffsets[0].x
 				, layerCopy.region.srcOffsets[0].y
 				, layerCopy.region.srcOffsets[1].x

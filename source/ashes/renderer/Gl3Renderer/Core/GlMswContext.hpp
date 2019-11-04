@@ -4,7 +4,7 @@ See LICENSE file in root folder
 #pragma once
 
 #if _WIN32
-#	include "renderer/Gl4Renderer/Core/GlContext.hpp"
+#	include "renderer/Gl3Renderer/Core/GlContext.hpp"
 
 #	ifndef NOMINMAX
 #		define NOMINMAX

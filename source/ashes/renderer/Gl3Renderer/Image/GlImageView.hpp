@@ -23,6 +23,11 @@ namespace ashes::gl3
 		
 		GLuint getInternal()const noexcept;
 
+		inline GlTextureType getTarget()const noexcept
+		{
+			return m_target;
+		}
+		
 		inline VkImageViewType getType()const noexcept
 		{
 			return m_viewType;

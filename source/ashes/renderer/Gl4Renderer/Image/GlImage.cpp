@@ -5,7 +5,6 @@
 #include "Image/GlImageView.hpp"
 #include "Miscellaneous/GlCallLogger.hpp"
 #include "Miscellaneous/GlDeviceMemory.hpp"
-#include "Sync/GlImageMemoryBarrier.hpp"
 
 #include "ashesgl4_api.hpp"
 

@@ -9,60 +9,43 @@ See LICENSE file in root folder.
 #include "Image/GlImage.hpp"
 #include "RenderPass/GlFrameBuffer.hpp"
 
-namespace gl_renderer
-{
-	ClearColourFboCommand::ClearColourFboCommand( Device const & device
-		, ashes::ImageView const & image
-		, VkClearColorValue const & colour )
-		: CommandBase{ device }
-		, m_image{ static_cast< ImageView const & >( image ) }
-		, m_colour{ colour }
-		, m_internal{ getInternal( m_image.getFormat() ) }
-		, m_format{ getFormat( m_internal ) }
-		, m_type{ getType( m_internal ) }
-	{
-	}
+#include "ashesgl3_api.hpp"
 
-	void ClearColourFboCommand::apply( ContextLock const & context )const
+namespace ashes::gl3
+{
+	void buildClearColourFboCommand( VkDevice device
+		, ContextStateStack const & stack
+		, VkImage image
+		, VkImageLayout imageLayout
+		, VkClearColorValue value
+		, VkImageSubresourceRangeArray ranges
+		, CmdList & list )
 	{
 		glLogCommand( "ClearColourFboCommand" );
-		auto & image = static_cast< Image const & >( m_image.getImage() );
+		auto & glimage = *get( image );
 		auto target = GL_TEXTURE_2D;
 
-		if ( image.getSamplesCount() > VK_SAMPLE_COUNT_1_BIT )
+		if ( glimage.getSamples() > VK_SAMPLE_COUNT_1_BIT )
 		{
 			target = GL_TEXTURE_2D_MULTISAMPLE;
 		}
 
-		glLogCall( context
-			, glBindFramebuffer
-			, GL_FRAMEBUFFER
-			, m_device.getBlitDstFbo() );
-		GLenum point = getAttachmentPoint( m_image );
-		glLogCall( context
-			, glFramebufferTexture2D
-			, GL_FRAMEBUFFER
-			, point
-			, target
-			, image.getImage()
-			, m_image.getSubResourceRange().baseMipLevel );
-		glLogCall( context
-			, glDrawBuffers
-			, 1
-			, &point );
-		glLogCall( context
-			, glClearBufferfv
-			, GL_CLEAR_TARGET_COLOR
-			, 0u
-			, m_colour.float32.data() );
-		glLogCall( context
-			, glBindFramebuffer
-			, GL_FRAMEBUFFER
-			, m_device.getCurrentFramebuffer() );
-	}
+		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+			, get( device )->getBlitDstFbo() ) );
+		GLenum point = getAttachmentPoint( glimage.getFormat() );
 
-	CommandPtr ClearColourFboCommand::clone()const
-	{
-		return std::make_unique< ClearColourFboCommand >( *this );
+		for ( uint32_t level = 0u; level < glimage.getMipLevels(); ++level )
+		{
+			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
+				, point
+				, target
+				, get( image )->getInternal()
+				, level ) );
+			list.push_back( makeCmd< OpType::eDrawBuffers >( point ) );
+			list.push_back( makeCmd< OpType::eClearColour >( value
+				, 0u ) );
+		}
+		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+			, stack.getCurrentFramebuffer() ) );
 	}
 }

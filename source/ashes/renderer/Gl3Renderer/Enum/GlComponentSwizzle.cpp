@@ -52,7 +52,7 @@ namespace ashes::gl3
 		}
 	}
 
-	GlComponentSwizzle convertComponentSwizzle( VkComponentSwizzle const & value )
+	GlComponentSwizzle convert( VkComponentSwizzle const & value )
 	{
 		switch ( value )
 		{

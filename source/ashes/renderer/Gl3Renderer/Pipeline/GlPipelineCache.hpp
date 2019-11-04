@@ -8,9 +8,9 @@
 #define ___GlRenderer_PipelineCache_HPP___
 #pragma once
 
-#include "renderer/Gl4Renderer/GlRendererPrerequisites.hpp"
+#include "renderer/Gl3Renderer/GlRendererPrerequisites.hpp"
 
-namespace ashes::gl4
+namespace ashes::gl3
 {
 	/**
 	*\brief

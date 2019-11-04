@@ -1,6 +1,6 @@
 #include "Pipeline/GlPipelineCache.hpp"
 
-namespace ashes::gl4
+namespace ashes::gl3
 {
 	PipelineCache::PipelineCache( VkDevice device
 		, VkPipelineCacheCreateInfo createInfo )

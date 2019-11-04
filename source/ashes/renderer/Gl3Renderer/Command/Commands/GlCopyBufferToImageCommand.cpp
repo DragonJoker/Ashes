@@ -223,7 +223,7 @@ namespace ashes::gl3
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
 					, copyInfo.imageOffset.y
-					, copyInfo.imageSubresource.baseArrayLayer / 6u
+					, int32_t( copyInfo.imageSubresource.baseArrayLayer / 6u )
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, copyInfo.imageSubresource.layerCount / 6u
@@ -323,7 +323,7 @@ namespace ashes::gl3
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
 					, copyInfo.imageOffset.y
-					, copyInfo.imageSubresource.baseArrayLayer / 6u
+					, int32_t( copyInfo.imageSubresource.baseArrayLayer / 6u )
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, copyInfo.imageSubresource.layerCount / 6u
