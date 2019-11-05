@@ -46,26 +46,6 @@ namespace ashes::gl3
 			return result;
 		}
 
-		GLint getBufferSize( ContextLock const & context
-			, GLuint buffer )
-		{
-			GLint result = 0;
-			glLogCall( context
-				, glBindBuffer
-				, GL_BUFFER_TARGET_COPY_WRITE
-				, buffer );
-			glLogCall( context
-				, glGetBufferParameteriv
-				, GL_BUFFER_TARGET_COPY_WRITE
-				, 34660
-				, &result );
-			glLogCall( context
-				, glBindBuffer
-				, GL_BUFFER_TARGET_COPY_WRITE
-				, 0u );
-			return result;
-		}
-
 		BufferAllocCont::iterator findBuffer( GLuint buffer )
 		{
 			return std::find_if( getAllocatedBuffers().begin()
@@ -74,6 +54,28 @@ namespace ashes::gl3
 				{
 					return lookup.name == buffer;
 				} );
+		}
+
+		GLint getBufferSize( ContextLock const & context
+			, GLuint buffer )
+		{
+			GLint result = 0;
+			GlBufferTarget target = GL_BUFFER_TARGET_COPY_WRITE;
+			auto it = findBuffer( buffer );
+
+			if ( it != getAllocatedBuffers().end() )
+			{
+				target = it->target;
+			}
+
+			context->glBindBuffer( target
+				, buffer );
+			context->glGetBufferParameteriv( target
+				, 34660
+				, &result );
+			context->glBindBuffer( target
+				, 0u );
+			return result;
 		}
 
 		BufferAllocCont::iterator findBuffer( GLuint buffer
@@ -161,15 +163,24 @@ namespace ashes::gl3
 			if ( buffer != GL_INVALID_INDEX )
 			{
 				GLint size = getBufferSize( context, buffer );
-				auto it = findBuffer( buffer, size );
-				if ( it != getAllocatedBuffers().end() )
-				{
-					getAllocatedBuffers().erase( it );
 
-					glLogCall( context
-						, glDeleteBuffers
-						, 1u
-						, &buffer );
+				if ( size != 0 )
+				{
+					auto it = findBuffer( buffer, size );
+
+					if ( it != getAllocatedBuffers().end() )
+					{
+						getAllocatedBuffers().erase( it );
+
+						glLogCall( context
+							, glDeleteBuffers
+							, 1u
+							, &buffer );
+					}
+					else
+					{
+						std::cerr << "Couldn't find buffer " << buffer << " it has probably been reused" << std::endl;
+					}
 				}
 				else
 				{

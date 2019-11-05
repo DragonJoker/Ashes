@@ -280,6 +280,7 @@ namespace ashes::gl3
 	using PFN_glGetTexParameterfv = void ( GLAPIENTRY * )( GLenum target, GLenum pname, GLfloat * params );
 	using PFN_glGetTexParameteriv = void ( GLAPIENTRY * )( GLenum target, GLenum pname, GLint * params );
 	using PFN_glInvalidateBufferSubData = void ( GLAPIENTRY * )( GLuint buffer, GLintptr offset, GLsizeiptr length );
+	using PFN_glIsBuffer = GLboolean ( GLAPIENTRY * )( GLuint buffer );
 	using PFN_glLineWidth = void ( GLAPIENTRY * )( GLfloat width );
 	using PFN_glLinkProgram = void ( GLAPIENTRY * )( GLuint program );
 	using PFN_glLogicOp = void ( GLAPIENTRY * )( GLenum opcode );

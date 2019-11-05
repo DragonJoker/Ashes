@@ -4025,9 +4025,19 @@ namespace ashes::gl3
 		{
 			RenderWindow window;
 			ExtensionsHandler extensions;
-			extensions.initialise();
-			bool supported = extensions.getMajor() > 3
-				|| ( extensions.getMajor() == 3 && extensions.getMinor() >= 1 );
+			bool supported = false;
+
+			try
+			{
+				extensions.initialise();
+				supported = extensions.getMajor() > 3
+					|| ( extensions.getMajor() == 3 && extensions.getMinor() >= 1 );
+			}
+			catch ( std::exception & exc )
+			{
+				std::cerr << exc.what() << std::endl;
+			}
+
 			VkResult result = description.getInstanceProcAddr
 				? VK_SUCCESS
 				: VK_ERROR_INITIALIZATION_FAILED;
@@ -4042,7 +4052,7 @@ namespace ashes::gl3
 						, "GL_ARB_shader_image_load_store" } ), // hasImageTexture
 					extensions.find( "GL_ARB_base_instance" ), // hasBaseInstance
 					extensions.find( "GL_ARB_clear_texture" ), // hasClearTexImage
-					extensions.find( "GL_ARB_gpu_shader5" ), // hasComputeShaders
+					extensions.find( "GL_ARB_compute_shader" ), // hasComputeShaders
 					extensions.findAll( { "GL_ARB_shader_storage_buffer_object"
 						, "GL_ARB_shader_image_load_store" } ), // hasStorageBuffers
 					true, // supportsPersistentMapping

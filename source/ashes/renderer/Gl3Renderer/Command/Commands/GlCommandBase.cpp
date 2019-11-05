@@ -31,6 +31,37 @@ namespace ashes::gl3
 	}
 
 	void apply( ContextLock const & context
+		, CmdApplyScissors const & cmd )
+	{
+		glLogCall( context
+			, glScissor
+			, GLint( cmd.scissors[0] )
+			, GLint( cmd.scissors[1] )
+			, GLsizei( cmd.scissors[2] )
+			, GLsizei( cmd.scissors[3] ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdApplyViewports const & cmd )
+	{
+		glLogCall( context
+			, glViewport
+			, GLint( cmd.viewports[0] )
+			, GLint( cmd.viewports[1] )
+			, GLsizei( cmd.viewports[2] )
+			, GLsizei( cmd.viewports[3] ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdApplyDepthRanges const & cmd )
+	{
+		glLogCall( context
+			, glDepthRange
+			, GLclampf( cmd.depthRanges[0] )
+			, GLclampf( cmd.depthRanges[1] ) );
+	}
+
+	void apply( ContextLock const & context
 		, CmdDrawBuffers const & cmd )
 	{
 		glLogCall( context

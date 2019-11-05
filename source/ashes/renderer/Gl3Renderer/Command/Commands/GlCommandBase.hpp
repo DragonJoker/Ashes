@@ -18,6 +18,9 @@ namespace ashes::gl3
 		: uint16_t
 	{
 		eActiveTexture,
+		eApplyDepthRanges,
+		eApplyScissors,
+		eApplyViewports,
 		eBeginQuery,
 		eBindBuffer,
 		eBindBufferRange,
@@ -207,6 +210,130 @@ namespace ashes::gl3
 
 	void apply( ContextLock const & context
 		, CmdDisable const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eApplyScissors >
+	{
+		static Op constexpr value = { OpType::eApplyScissors, 5u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eApplyScissors >
+	{
+		static uint32_t constexpr MaxElems = 16u;
+		static uint32_t constexpr ElemCount = 4u;
+
+		inline CmdT( std::vector< VkRect2D > const & scissors )
+			: cmd{ { OpType::eApplyScissors, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, count{ std::min( MaxElems, uint32_t( scissors.size() ) ) }
+		{
+			uint32_t i = 0u;
+			uint32_t size = count * ElemCount;
+
+			for ( auto & scissor : scissors )
+			{
+				if ( i < size )
+				{
+					this->scissors[i++] = scissor.offset.x;
+					this->scissors[i++] = scissor.offset.y;
+					this->scissors[i++] = int( scissor.extent.width );
+					this->scissors[i++] = int( scissor.extent.height );
+				}
+			}
+		}
+
+		Command cmd;
+		uint32_t count;
+		std::array< int, MaxElems * ElemCount > scissors;
+	};
+	using CmdApplyScissors = CmdT< OpType::eApplyScissors >;
+
+	void apply( ContextLock const & context
+		, CmdApplyScissors const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eApplyViewports >
+	{
+		static Op constexpr value = { OpType::eApplyViewports, 7u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eApplyViewports >
+	{
+		static uint32_t constexpr MaxElems = 16u;
+		static uint32_t constexpr ElemCount = 4u;
+
+		inline CmdT( std::vector< VkViewport > const & viewports )
+			: cmd{ { OpType::eApplyViewports, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, count{ std::min( MaxElems, uint32_t( viewports.size() ) ) }
+		{
+			uint32_t vi = 0u;
+			uint32_t size = count * ElemCount;
+
+			for ( auto & viewport : viewports )
+			{
+				if ( vi < size )
+				{
+					this->viewports[vi++] = viewport.x;
+					this->viewports[vi++] = viewport.y;
+					this->viewports[vi++] = viewport.width;
+					this->viewports[vi++] = viewport.height;
+				}
+			}
+		}
+
+		Command cmd;
+		uint32_t count;
+		std::array< float, MaxElems * ElemCount > viewports;
+	};
+	using CmdApplyViewports = CmdT< OpType::eApplyViewports >;
+
+	void apply( ContextLock const & context
+		, CmdApplyViewports const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eApplyDepthRanges >
+	{
+		static Op constexpr value = { OpType::eApplyDepthRanges, 7u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eApplyDepthRanges >
+	{
+		static uint32_t constexpr MaxElems = 16u;
+		static uint32_t constexpr ElemCount = 2u;
+
+		inline CmdT( std::vector< VkViewport > const & viewports )
+			: cmd{ { OpType::eApplyDepthRanges, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, count{ std::min( MaxElems, uint32_t( viewports.size() ) ) }
+		{
+			uint32_t di = 0u;
+			uint32_t size = count * ElemCount;
+
+			for ( auto & viewport : viewports )
+			{
+				if ( di < size )
+				{
+					this->depthRanges[di++] = viewport.minDepth;
+					this->depthRanges[di++] = viewport.maxDepth;
+				}
+			}
+		}
+
+		Command cmd;
+		uint32_t count;
+		std::array< double, MaxElems * ElemCount > depthRanges;
+	};
+	using CmdApplyDepthRanges = CmdT< OpType::eApplyDepthRanges >;
+
+	void apply( ContextLock const & context
+		, CmdApplyDepthRanges const & cmd );
 
 	//*************************************************************************
 
