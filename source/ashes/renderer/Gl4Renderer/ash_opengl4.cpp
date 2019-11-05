@@ -4025,9 +4025,19 @@ namespace ashes::gl4
 		{
 			RenderWindow window;
 			ExtensionsHandler extensions;
-			extensions.initialise();
-			bool supported = extensions.getMajor() > 4
-				|| ( extensions.getMajor() == 4 && extensions.getMinor() >= 3 );
+			bool supported = false;
+
+			try
+			{
+				extensions.initialise();
+				supported = extensions.getMajor() > 4
+					|| ( extensions.getMajor() == 4 && extensions.getMinor() >= 2 );
+			}
+			catch ( std::exception & exc )
+			{
+				std::cerr << exc.what() << std::endl;
+			}
+
 			VkResult result = description.getInstanceProcAddr
 				? VK_SUCCESS
 				: VK_ERROR_INITIALIZATION_FAILED;
