@@ -128,7 +128,13 @@ namespace utils
 		, std::string const & name
 		, ashes::ApplicationInfo applicationInfo )
 	{
-		auto plugin = rendererList.selectPlugin( name );
+		auto plugin = rendererList.getSelectedPlugin();
+
+		if ( !name.empty() )
+		{
+			plugin = rendererList.selectPlugin( name );
+		}
+
 		PFN_vkEnumerateInstanceLayerProperties enumLayerProperties;
 		enumLayerProperties = ( PFN_vkEnumerateInstanceLayerProperties )plugin.getInstanceProcAddr( VK_NULL_HANDLE,
 			"vkEnumerateInstanceLayerProperties" );

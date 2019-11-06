@@ -6,44 +6,36 @@ See LICENSE file in root folder.
 
 #include "Buffer/GlBuffer.hpp"
 
-namespace gl_renderer
-{
-	DrawIndirectCommand::DrawIndirectCommand( Device const & device
-		, ashes::BufferBase const & buffer
-		, uint32_t offset
-		, uint32_t drawCount
-		, uint32_t stride
-		, VkPrimitiveTopology mode )
-		: CommandBase{ device }
-		, m_buffer{ static_cast< Buffer const & >( buffer ) }
-		, m_offset{ offset }
-		, m_drawCount{ drawCount }
-		, m_stride{ stride }
-		, m_mode{ convert( mode ) }
-	{
-	}
+#include "ashesgl3_api.hpp"
 
-	void DrawIndirectCommand::apply( ContextLock const & context )const
+namespace ashes::gl3
+{
+	void apply( ContextLock const & context
+		, CmdDrawIndirect const & cmd )
 	{
-		glLogCommand( "DrawIndirectCommand" );
-		glLogCall( context
-			, glBindBuffer
-			, GL_BUFFER_TARGET_DRAW_INDIRECT
-			, m_buffer.getBuffer() );
 		glLogCall( context
 			, glMultiDrawArraysIndirect_ARB
-			, m_mode
-			, BufferOffset( m_offset )
-			, m_drawCount
-			, m_stride );
-		glLogCall( context
-			, glBindBuffer
-			, GL_BUFFER_TARGET_DRAW_INDIRECT
-			, 0 );
+			, cmd.mode
+			, getBufferOffset( cmd.offset )
+			, cmd.drawCount
+			, cmd.stride );
 	}
 
-	CommandPtr DrawIndirectCommand::clone()const
+	void buildDrawIndirectCommand( VkBuffer buffer
+		, VkDeviceSize offset
+		, uint32_t drawCount
+		, uint32_t stride
+		, VkPrimitiveTopology mode
+		, CmdList & list )
 	{
-		return std::make_unique< DrawIndirectCommand >( *this );
+		glLogCommand( "DrawIndirectCommand" );
+		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_DRAW_INDIRECT
+			, get( buffer )->getInternal() ) );
+		list.push_back( makeCmd< OpType::eDrawIndirect >( uint32_t( get( buffer )->getInternalOffset() + offset )
+			, drawCount
+			, stride
+			, convert( mode ) ) );
+		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_DRAW_INDIRECT
+			, 0u ) );
 	}
 }

@@ -9,7 +9,8 @@ See LICENSE file in root folder.
 #include "Buffer/GlGeometryBuffers.hpp"
 #include "Command/GlCommandPool.hpp"
 #include "Command/GlQueue.hpp"
-#include "Core/GlContext.hpp"
+#include "Core/GlContextLock.hpp"
+#include "Core/GlSurface.hpp"
 #include "Core/GlDummyIndexBuffer.hpp"
 #include "Core/GlInstance.hpp"
 #include "Core/GlSwapChain.hpp"
@@ -18,6 +19,7 @@ See LICENSE file in root folder.
 #include "Image/GlSampler.hpp"
 #include "Image/GlImage.hpp"
 #include "Image/GlImageView.hpp"
+#include "Miscellaneous/GlCallLogger.hpp"
 #include "Miscellaneous/GlDeviceMemory.hpp"
 #include "Miscellaneous/GlQueryPool.hpp"
 #include "Pipeline/GlPipelineLayout.hpp"
@@ -28,41 +30,69 @@ See LICENSE file in root folder.
 #include "Sync/GlFence.hpp"
 #include "Sync/GlSemaphore.hpp"
 
-#include <Ashes/Image/ImageSubresource.hpp>
-#include <Ashes/Image/SubresourceLayout.hpp>
-#include <Ashes/RenderPass/RenderPassCreateInfo.hpp>
+#include "ashesgl3_api.hpp"
 
-#include <algorithm>
 #include <iostream>
+#include <cstring>
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	namespace
 	{
-		GLuint getObjectName( GlDebugReportObjectType const & value
-			, void const * object )
+		GLuint getObjectName( VkDebugReportObjectTypeEXT const & value
+			, uint64_t object )
 		{
-			GLuint result = GL_INVALID_INDEX;
+			GLuint result = 0;
 
 			switch ( value )
 			{
-			case GlDebugReportObjectType::eBuffer:
-				result = reinterpret_cast< Buffer const * >( object )->getBuffer();
+			case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT:
+				result = reinterpret_cast< Buffer const * >( object )->getInternal();
 				break;
-			case GlDebugReportObjectType::eTexture:
-				result = reinterpret_cast< Image const * >( object )->getImage();
+			case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT:
+				result = reinterpret_cast< Image const * >( object )->getInternal();
 				break;
-			case GlDebugReportObjectType::eQuery:
+			case VK_DEBUG_REPORT_OBJECT_TYPE_QUERY_POOL_EXT:
 				result = *reinterpret_cast< QueryPool const * >( object )->begin();
 				break;
-			case GlDebugReportObjectType::eShaderModule:
-				result = reinterpret_cast< ShaderModule const * >( object )->getShader();
+			case VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT:
+				result = reinterpret_cast< Sampler const * >( object )->getInternal();
 				break;
-			case GlDebugReportObjectType::eSampler:
-				result = reinterpret_cast< Sampler const * >( object )->getSampler();
+			case VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT:
+				result = reinterpret_cast< Framebuffer const * >( object )->getInternal();
 				break;
-			case GlDebugReportObjectType::eFrameBuffer:
-				result = reinterpret_cast< FrameBuffer const * >( object )->getFrameBuffer();
+			default:
+				result = GL_INVALID_INDEX;
+				break;
+			}
+
+			return result;
+		}
+
+		GLuint getObjectName( VkObjectType const & value
+			, uint64_t object )
+		{
+			GLuint result = 0;
+
+			switch ( value )
+			{
+			case VK_OBJECT_TYPE_BUFFER:
+				result = reinterpret_cast< Buffer const * >( object )->getInternal();
+				break;
+			case VK_OBJECT_TYPE_IMAGE:
+				result = reinterpret_cast< Image const * >( object )->getInternal();
+				break;
+			case VK_OBJECT_TYPE_QUERY_POOL:
+				result = *reinterpret_cast< QueryPool const * >( object )->begin();
+				break;
+			case VK_OBJECT_TYPE_SAMPLER:
+				result = reinterpret_cast< Sampler const * >( object )->getInternal();
+				break;
+			case VK_OBJECT_TYPE_FRAMEBUFFER:
+				result = reinterpret_cast< Framebuffer const * >( object )->getInternal();
+				break;
+			default:
+				result = GL_INVALID_INDEX;
 				break;
 			}
 
@@ -70,7 +100,7 @@ namespace gl_renderer
 		}
 
 		void doApply( ContextLock const & context
-			, ashes::ColourBlendState const & state )
+			, VkPipelineColorBlendStateCreateInfo const & state )
 		{
 			if ( state.logicOpEnable )
 			{
@@ -93,7 +123,7 @@ namespace gl_renderer
 			{
 				uint32_t buf = 0;
 
-				for ( auto & blendState : state.attachs )
+				for ( auto & blendState : ashes::makeArrayView( state.pAttachments, state.attachmentCount ) )
 				{
 					if ( blendState.blendEnable )
 					{
@@ -117,9 +147,9 @@ namespace gl_renderer
 			}
 			else
 			{
-				auto count = std::count_if( state.attachs.begin()
-					, state.attachs.end()
-					, []( ashes::ColourBlendStateAttachment const & attach )
+				auto count = std::count_if( state.pAttachments
+					, state.pAttachments + state.attachmentCount
+					, []( VkPipelineColorBlendAttachmentState const & attach )
 					{
 						return attach.blendEnable;
 					} );
@@ -127,14 +157,14 @@ namespace gl_renderer
 
 				if ( count > 1 )
 				{
-					ashes::Logger::logWarning( "Separate blend equations are not available." );
+					std::cerr << "Separate blend equations are not available." << std::endl;
 				}
 
 				if ( blend )
 				{
-					auto it = std::find_if( state.attachs.begin()
-						, state.attachs.end()
-						, []( ashes::ColourBlendStateAttachment const & attach )
+					auto it = std::find_if( state.pAttachments
+						, state.pAttachments + state.attachmentCount
+						, []( VkPipelineColorBlendAttachmentState const & attach )
 						{
 							return attach.blendEnable;
 						} );
@@ -166,9 +196,9 @@ namespace gl_renderer
 		}
 
 		void doApply( ContextLock const & context
-			, ashes::RasterisationState const & state )
+			, VkPipelineRasterizationStateCreateInfo const & state )
 		{
-			if ( state.cullMode != VkCullModeFlagBits::eNone )
+			if ( state.cullMode != VK_CULL_MODE_NONE )
 			{
 				glLogCall( context
 					, glEnable
@@ -258,7 +288,7 @@ namespace gl_renderer
 					, GL_DEPTH_CLAMP );
 			}
 
-			if ( state.rasteriserDiscardEnable )
+			if ( state.rasterizerDiscardEnable )
 			{
 				glLogCall( context
 					, glEnable
@@ -277,9 +307,9 @@ namespace gl_renderer
 		}
 
 		void doApply( ContextLock const & context
-			, ashes::MultisampleState const & state )
+			, VkPipelineMultisampleStateCreateInfo const & state )
 		{
-			if ( state.rasterisationSamples != VK_SAMPLE_COUNT_1_BIT )
+			if ( state.rasterizationSamples != VK_SAMPLE_COUNT_1_BIT )
 			{
 				glLogCall( context
 					, glEnable
@@ -320,7 +350,7 @@ namespace gl_renderer
 		}
 
 		void doApply( ContextLock const & context
-			, ashes::DepthStencilState const & state )
+			, VkPipelineDepthStencilStateCreateInfo const & state )
 		{
 			if ( state.depthWriteEnable )
 			{
@@ -415,19 +445,12 @@ namespace gl_renderer
 		}
 
 		void doApply( ContextLock const & context
-			, ashes::TessellationState const & state )
+			, VkPipelineTessellationStateCreateInfo const & state )
 		{
-			if ( state.patchControlPoints )
-			{
-				glLogCall( context
-					, glPatchParameteri_ARB
-					, GL_PATCH_VERTICES
-					, int( state.patchControlPoints ) );
-			}
 		}
 
 		void doApply( ContextLock const & context
-			, ashes::InputAssemblyState const & state )
+			, VkPipelineInputAssemblyStateCreateInfo const & state )
 		{
 			if ( state.topology == VK_PRIMITIVE_TOPOLOGY_POINT_LIST )
 			{
@@ -472,9 +495,9 @@ namespace gl_renderer
 		{
 			VkExtent3D texelBlockExtent{ 1u, 1u, 1u };
 
-			if ( ashes::isCompressedFormat( format ) )
+			if ( isCompressedFormat( format ) )
 			{
-				auto extent = ashes::getMinimalExtent2D( format );
+				auto extent = getMinimalExtent2D( format );
 				texelBlockExtent.width = extent.width;
 				texelBlockExtent.height = extent.height;
 			}
@@ -485,129 +508,68 @@ namespace gl_renderer
 
 			return texelBlockExtent;
 		}
-
-		uint32_t getTexelBlockByteSize( VkExtent3D const & texelBlockExtent
-			, VkFormat format )
-		{
-			uint32_t texelBlockSize;
-
-			if ( !isDepthStencilFormat( format ) )
-			{
-				texelBlockSize = getSize( texelBlockExtent, format );
-			}
-			else
-			{
-				texelBlockSize = texelBlockExtent.width;
-			}
-
-			return texelBlockSize;
-		}
 	}
 
-	Device::Device( Instance const & instance
-		, PhysicalDevice const & gpu
+	Device::Device( VkInstance instance
+		, VkPhysicalDevice gpu
 		, Context & context
-		, ashes::DeviceCreateInfo createInfos )
-		: ashes::Device{ instance
-			, gpu
-			, std::move( createInfos ) }
-		, m_instance{ instance }
-		, m_rsState{}
+		, VkDeviceCreateInfo createInfos )
+		: m_instance{ instance }
+		, m_physicalDevice{ gpu }
+		, m_createInfos{ std::move( createInfos ) }
 		, m_currentContext{ &context }
+		, m_dyState{ VK_DYNAMIC_STATE_SCISSOR, VK_DYNAMIC_STATE_VIEWPORT }
 	{
-		m_timestampPeriod = 1;
-		doCreateQueues();
+		//m_timestampPeriod = 1;
+		doInitialiseQueues();
 		auto lock = getContext();
-		doInitialiseContext( lock );
-
-		auto count = uint32_t( sizeof( dummyIndex ) / sizeof( dummyIndex[0] ) );
-		m_dummyIndexed.indexBuffer = ashes::makeBuffer< uint32_t >( *this
-			, count
-			, VK_BUFFER_USAGE_INDEX_BUFFER_BIT );
-		auto requirements = m_dummyIndexed.indexBuffer->getBuffer().getMemoryRequirements();
-		auto deduced = deduceMemoryType( requirements.memoryTypeBits
-			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
-		m_dummyIndexed.indexBuffer->bindMemory( allocateMemory( { requirements.size, deduced } ) );
-
-		if ( auto * buffer = m_dummyIndexed.indexBuffer->lock( 0u
-			, count
-			, VkMemoryPropertyFlagBits::eWrite ) )
-		{
-			std::copy( dummyIndex, dummyIndex + count, buffer );
-			m_dummyIndexed.indexBuffer->flush( 0, count );
-			m_dummyIndexed.indexBuffer->unlock();
-		}
-
-		auto & indexBuffer = static_cast< Buffer const & >( m_dummyIndexed.indexBuffer->getBuffer() );
-		m_dummyIndexed.geometryBuffers = std::make_unique< GeometryBuffers >( *this
-			, VboBindings{}
-			, BufferObjectBinding{ indexBuffer.getBuffer(), 0u, &indexBuffer }
-			, ashes::VertexInputState{}
-		, VK_INDEX_TYPE_UINT32 );
-		m_dummyIndexed.geometryBuffers->initialise();
-
-		lock->glGenFramebuffers( 2, m_blitFbos );
+		doInitialiseDummy( lock );
+		allocate( m_blitFbos[0]
+			, nullptr
+			, get( this )
+			, GL_INVALID_INDEX );
+		allocate( m_blitFbos[1]
+			, nullptr
+			, get( this )
+			, GL_INVALID_INDEX );
 	}
 
 	Device::~Device()
 	{
-		if ( m_ownContext )
+		if ( m_currentContext )
 		{
-			ContextLock context = *m_ownContext;
-			context->glDeleteFramebuffers( 2, m_blitFbos );
-			m_dummyIndexed.geometryBuffers.reset();
-			m_dummyIndexed.indexBuffer.reset();
+			auto context = getContext();
+
+			for ( auto creates : m_queues )
+			{
+				for ( auto queue : creates.second.queues )
+				{
+					deallocate( queue, nullptr );
+				}
+			}
+
+			deallocate( m_blitFbos[0], nullptr );
+			deallocate( m_blitFbos[1], nullptr );
+			deallocate( m_dummyIndexed.indexMemory, nullptr );
+			deallocate( m_dummyIndexed.indexBuffer, nullptr );
 		}
-		m_ownContext.reset();
 	}
 
-	ashes::RenderPassPtr Device::createRenderPass( ashes::RenderPassCreateInfo createInfo )const
+	VkPhysicalDeviceLimits const & Device::getLimits()const
 	{
-		return std::make_unique< RenderPass >( *this, std::move( createInfo ) );
+		return get( m_physicalDevice )->getProperties().limits;
 	}
 
-	ashes::PipelineLayoutPtr Device::createPipelineLayout( ashes::DescriptorSetLayoutCRefArray const & setLayouts
-		, ashes::PushConstantRangeArray const & pushConstantRanges )const
+	void Device::getImageSubresourceLayout( VkImage image
+		, VkImageSubresource const & subresource
+		, VkSubresourceLayout & layout )const
 	{
-		return std::make_unique< PipelineLayout >( *this
-			, setLayouts
-			, pushConstantRanges );
-	}
-
-	ashes::DescriptorSetLayoutPtr Device::createDescriptorSetLayout( ashes::DescriptorSetLayoutBindingArray bindings )const
-	{
-		return std::make_unique< DescriptorSetLayout >( *this, std::move( bindings ) );
-	}
-
-	ashes::DescriptorPoolPtr Device::createDescriptorPool( ashes::DescriptorPoolCreateFlags flags
-		, uint32_t maxSets
-		, ashes::DescriptorPoolSizeArray poolSizes )const
-	{
-		return std::make_unique< DescriptorPool >( *this, flags, maxSets, poolSizes );
-	}
-
-	ashes::DeviceMemoryPtr Device::allocateMemory( ashes::MemoryAllocateInfo allocateInfo )const
-	{
-		return std::make_unique< DeviceMemory >( *this
-			, std::move( allocateInfo ) );
-	}
-
-	ashes::ImagePtr Device::createImage( ashes::ImageCreateInfo const & createInfo )const
-	{
-		return std::make_unique< Image >( *this, createInfo );
-	}
-
-	void Device::getImageSubresourceLayout( ashes::Image const & image
-		, ashes::ImageSubresource const & subresource
-		, ashes::SubresourceLayout & layout )const
-	{
-		auto & gltex = static_cast< Image const & >( image );
 		auto context = getContext();
-		auto target = convert( gltex.getType(), gltex.getLayerCount(), gltex.getCreateFlags() );
+		auto target = convert( get( image )->getType(), get( image )->getArrayLayers(), get( image )->getCreateFlags() );
 		glLogCall( context
 			, glBindTexture
 			, target
-			, gltex.getImage() );
+			, get( image )->getInternal() );
 		int w = 0;
 		int h = 0;
 		int d = 0;
@@ -618,8 +580,7 @@ namespace gl_renderer
 			, glBindTexture
 			, target
 			, 0 );
-		auto extent = getTexelBlockExtent( image.getFormat() );
-		auto byteSize = getTexelBlockByteSize( extent, image.getFormat() );
+		auto extent = getTexelBlockExtent( get( image )->getFormat() );
 		layout.rowPitch = getAligned( std::max( w, 1 ), extent.width );
 		layout.arrayPitch = layout.rowPitch * getAligned( std::max( h, 1 ), extent.width );
 		layout.depthPitch = layout.arrayPitch;
@@ -627,147 +588,180 @@ namespace gl_renderer
 		layout.size = layout.arrayPitch * std::max( d, 1 );
 	}
 
-	ashes::SamplerPtr Device::createSampler( ashes::SamplerCreateInfo const & createInfo )const
+	VkResult Device::waitIdle()const
 	{
-		return std::make_unique< Sampler >( *this, createInfo );
-	}
-
-	ashes::BufferBasePtr Device::createBuffer( uint32_t size
-		, VkBufferUsageFlags target )const
-	{
-		return std::make_unique< Buffer >( *this
-			, size
-			, target );
-	}
-
-	ashes::BufferViewPtr Device::createBufferView( ashes::BufferBase const & buffer
-		, VkFormat format
-		, uint32_t offset
-		, uint32_t range )const
-	{
-		return std::make_unique< BufferView >( *this
-			, static_cast< Buffer const & >( buffer )
-			, format
-			, offset
-			, range );
-	}
-
-	ashes::SwapChainPtr Device::createSwapChain( ashes::SwapChainCreateInfo createInfo )const
-	{
-		ashes::SwapChainPtr result;
-
-		try
-		{
-			result = std::make_unique< SwapChain >( *this, std::move( createInfo ) );
-		}
-		catch ( std::exception & exc )
-		{
-			ashes::Logger::logError( std::string{ "Could not create the swap chain:\n" } + exc.what() );
-		}
-		catch ( ... )
-		{
-			ashes::Logger::logError( "Could not create the swap chain:\nUnknown error" );
-		}
-
-		return result;
-	}
-
-	ashes::SemaphorePtr Device::createSemaphore()const
-	{
-		return std::make_unique< Semaphore >( *this );
-	}
-
-	ashes::FencePtr Device::createFence( ashes::FenceCreateFlags flags )const
-	{
-		return std::make_unique< Fence >( *this, flags );
-	}
-
-	ashes::EventPtr Device::createEvent()const
-	{
-		return std::make_unique< Event >( *this );
-	}
-
-	ashes::CommandPoolPtr Device::createCommandPool( uint32_t queueFamilyIndex
-		, ashes::CommandPoolCreateFlags const & flags )const
-	{
-		return std::make_unique< CommandPool >( *this
-			, queueFamilyIndex
-			, flags );
-	}
-
-	ashes::ShaderModulePtr Device::createShaderModule( VkShaderStageFlagBits stage )const
-	{
-		return std::make_shared< ShaderModule >( *this, stage );
-	}
-
-	ashes::QueryPoolPtr Device::createQueryPool( VkQueryType type
-		, uint32_t count
-		, ashes::QueryPipelineStatisticFlags pipelineStatistics )const
-	{
-		return std::make_unique< QueryPool >( *this
-			, type
-			, count
-			, pipelineStatistics );
-	}
-
-	void Device::debugMarkerSetObjectName( ashes::DebugMarkerObjectNameInfo const & nameInfo )const
-	{
-#if !defined( NDEBUG )
 		auto context = getContext();
+		glLogCall( context
+			, glFinish );
+		return VK_SUCCESS;
+	}
 
-		if ( nameInfo.objectType == VkDebugReportObjectTypeEXT::eFence )
+#if VK_EXT_debug_utils
+
+	VkResult Device::setDebugUtilsObjectName( VkDebugUtilsObjectNameInfoEXT const & nameInfo )const
+	{
+		auto context = getContext();
+		bool isOk = ( context->m_glObjectPtrLabel || context->m_glObjectLabel );
+
+		if ( !isOk )
 		{
-			glLogCall( context
-				, glObjectPtrLabel
-				, reinterpret_cast< Fence const * >( nameInfo.object )->getSync()
-				, GLsizei( nameInfo.objectName.size() )
-				, nameInfo.objectName.c_str() );
+			get( m_instance )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+				, uint64_t( get( this ) )
+				, 0u
+				, VK_ERROR_INCOMPATIBLE_DRIVER
+				, "OpenGL"
+				, "Either debug utils layer is not enabled or functions are not available on your GPU" );
+			return VK_ERROR_EXTENSION_NOT_PRESENT;
+		}
+
+		if ( nameInfo.objectType == VK_OBJECT_TYPE_FENCE )
+		{
+			if ( context->m_glObjectPtrLabel )
+			{
+				isOk = glLogCall( context
+					, glObjectPtrLabel
+					, get( VkFence( nameInfo.objectHandle ) )->getInternal()
+					, GLsizei( strlen( nameInfo.pObjectName ) )
+					, nameInfo.pObjectName );
+			}
 		}
 		else
 		{
-			auto objectType = convert( nameInfo.objectType );
-
-			if ( objectType != GlDebugReportObjectType::eUnknown )
+			if ( context->m_glObjectLabel )
 			{
-				auto name = getObjectName( objectType, nameInfo.object );
+				auto name = getObjectName( nameInfo.objectType, nameInfo.objectHandle );
 
 				if ( name != GL_INVALID_INDEX )
 				{
-					glLogCall( context
+					isOk = glLogCall( context
 						, glObjectLabel
-						, GLenum( objectType )
+						, GLenum( convert( nameInfo.objectType ) )
 						, name
-						, GLsizei( nameInfo.objectName.size() )
-						, nameInfo.objectName.c_str() );
+						, GLsizei( strlen( nameInfo.pObjectName ) )
+						, nameInfo.pObjectName );
 				}
 			}
 		}
-#endif
+
+		return isOk
+			? VK_SUCCESS
+			: VK_ERROR_INCOMPATIBLE_DRIVER;
 	}
 
-	ashes::QueuePtr Device::getQueue( uint32_t familyIndex
+	VkResult Device::setDebugUtilsObjectTag( VkDebugUtilsObjectTagInfoEXT const & tagInfo )const
+	{
+		return VK_SUCCESS;
+	}
+
+#endif
+#if VK_EXT_debug_marker
+
+	VkResult Device::debugMarkerSetObjectTag( VkDebugMarkerObjectTagInfoEXT const & tagInfo )const
+	{
+		return VK_SUCCESS;
+	}
+
+	VkResult Device::debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const
+	{
+		auto context = getContext();
+		bool isOk = ( context->m_glObjectPtrLabel || context->m_glObjectLabel );
+
+		if ( !isOk )
+		{
+			get( m_instance )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+				, uint64_t( get( this ) )
+				, 0u
+				, VK_ERROR_INCOMPATIBLE_DRIVER
+				, "OpenGL"
+				, "Either debug marker layer is not enabled or functions are not available on your GPU" );
+			return VK_ERROR_EXTENSION_NOT_PRESENT;
+		}
+
+		if ( nameInfo.objectType == VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT )
+		{
+			if ( context->m_glObjectPtrLabel )
+			{
+				isOk = glLogCall( context
+					, glObjectPtrLabel
+					, get( VkFence( nameInfo.object ) )->getInternal()
+					, GLsizei( strlen( nameInfo.pObjectName ) )
+					, nameInfo.pObjectName );
+			}
+		}
+		else
+		{
+			if ( context->m_glObjectLabel )
+			{
+				auto name = getObjectName( nameInfo.objectType, nameInfo.object );
+
+				if ( name != GL_INVALID_INDEX )
+				{
+					isOk = glLogCall( context
+						, glObjectLabel
+						, GLenum( convert( nameInfo.objectType ) )
+						, name
+						, GLsizei( strlen( nameInfo.pObjectName ) )
+						, nameInfo.pObjectName );
+				}
+			}
+		}
+
+		return isOk
+			? VK_SUCCESS
+			: VK_ERROR_INCOMPATIBLE_DRIVER;
+	}
+
+#endif
+
+	void Device::reportMessage( VkDebugReportFlagsEXT flags
+		, VkDebugReportObjectTypeEXT objectType
+		, uint64_t object
+		, size_t location
+		, int32_t messageCode
+		, const char * pLayerPrefix
+		, const char * pMessage )
+	{
+		get( m_instance )->reportMessage( flags
+			, objectType
+			, object
+			, location
+			, messageCode
+			, pLayerPrefix
+			, pMessage );
+	}
+
+	VkQueue Device::getQueue( uint32_t familyIndex
 		, uint32_t index )const
 	{
 		auto it = m_queues.find( familyIndex );
 
 		if ( it == m_queues.end() )
 		{
-			throw ashes::Exception{ ashes::Result::eErrorRenderer, "Couldn't find family index within created queues" };
+			get( m_instance )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+				, uint64_t( get( this ) )
+				, 0u
+				, VK_ERROR_INCOMPATIBLE_DRIVER
+				, "OpenGL"
+				, "Couldn't find family index within created queues" );
+			return VK_NULL_HANDLE;
 		}
 
-		if ( it->second.second <= index )
+		if ( it->second.queues.size() <= index )
 		{
-			throw ashes::Exception{ ashes::Result::eErrorRenderer, "Couldn't find queue with wanted index within its family" };
+			get( m_instance )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+				, uint64_t( get( this ) )
+				, 0u
+				, VK_ERROR_INCOMPATIBLE_DRIVER
+				, "OpenGL"
+				, "Couldn't find queue with wanted index within its family" );
+			return VK_NULL_HANDLE;
 		}
 
-		return std::make_unique< Queue >( *this, it->second.first, index );
-	}
-
-	void Device::waitIdle()const
-	{
-		auto context = getContext();
-		glLogCall( context
-			, glFinish );
+		return it->second.queues[index];
 	}
 
 	void Device::swapBuffers()const
@@ -775,62 +769,100 @@ namespace gl_renderer
 		getContext()->swapBuffers();
 	}
 
-	bool Device::find( std::string const & name )const
+	void Device::registerContext( VkSurfaceKHR surface )const
 	{
-		return m_instance.getExtensions().find( name );
-	}
-
-	bool Device::findAny( ashes::StringArray const & names )const
-	{
-		return m_instance.getExtensions().findAny( names );
-	}
-
-	bool Device::findAll( ashes::StringArray const & names )const
-	{
-		return m_instance.getExtensions().findAll( names );
-	}
-	void Device::doInitialiseContext( ContextLock const & context )const
-	{
-		glLogCall( context
-			, glEnable
-			, GL_TEXTURE_CUBE_MAP_SEAMLESS );
-
-		doApply( context, m_cbState );
-		doApply( context, m_dsState );
-		doApply( context, m_msState );
-		doApply( context, m_rsState );
-		doApply( context, m_iaState );
-
-		if ( m_gpu.getFeatures().tessellationShader )
+		try
 		{
-			doApply( context, m_tsState );
+			auto context = Context::create( m_instance, surface, nullptr );
+			ContextLock lock{ *context };
+
+			if ( !m_ownContext )
+			{
+				m_ownContext = std::move( context );
+				m_currentContext = m_ownContext.get();
+				get( m_instance )->registerContext( *m_ownContext );
+			}
+		}
+		catch ( std::exception & exc )
+		{
+			get( m_instance )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+				, uint64_t( get( this ) )
+				, 0u
+				, VK_ERROR_INCOMPATIBLE_DRIVER
+				, "OpenGL"
+				, exc.what() );
+			throw;
 		}
 	}
 
-	void Device::registerContext( ashes::WindowHandle const & handle )const
-	{
-		auto context = Context::create( m_instance, handle, nullptr );
-		ContextLock lock{ *context };
-		doInitialiseContext( lock );
-
-		if ( !m_ownContext )
-		{
-			m_ownContext = std::move( context );
-			m_currentContext = m_ownContext.get();
-		}
-	}
-
-	void Device::unregisterContext( ashes::WindowHandle const & handle )const
+	void Device::unregisterContext( VkSurfaceKHR surface )const
 	{
 	}
 
-	void Device::doCreateQueues()
+	void Device::doInitialiseQueues()
 	{
-		for ( auto & queueCreateInfo : m_createInfos.queueCreateInfos )
+		for ( auto itQueue = m_createInfos.pQueueCreateInfos;
+			itQueue != m_createInfos.pQueueCreateInfos + m_createInfos.queueCreateInfoCount;
+			++itQueue )
 		{
+			auto & queueCreateInfo = *itQueue;
 			auto it = m_queues.emplace( queueCreateInfo.queueFamilyIndex
-				, QueueCreateCount{ queueCreateInfo, 0u } ).first;
-			it->second.second++;
+				, QueueCreates{ queueCreateInfo, {} } ).first;
+
+			VkQueue queue;
+			allocate( queue
+				, nullptr
+				, get( this )
+				, it->second.createInfo
+				, uint32_t( it->second.queues.size() ) );
+			it->second.queues.emplace_back( queue );
 		}
+	}
+
+	void Device::doInitialiseDummy( ContextLock & context )
+	{
+		auto count = uint32_t( sizeof( dummyIndex ) / sizeof( dummyIndex[0] ) );
+		allocate( m_dummyIndexed.indexBuffer
+			, nullptr
+			, get( this )
+			, VkBufferCreateInfo
+			{
+				VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+				nullptr,
+				0u,
+				count * sizeof( uint32_t ),
+				VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+				VK_SHARING_MODE_EXCLUSIVE,
+				0u,
+				nullptr,
+			} );
+		auto indexBuffer = get( m_dummyIndexed.indexBuffer );
+		auto requirements = indexBuffer->getMemoryRequirements();
+		auto deduced = deduceMemoryType( requirements.memoryTypeBits
+			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
+		allocate( m_dummyIndexed.indexMemory
+			, nullptr
+			, get( this )
+			, VkMemoryAllocateInfo{ VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, requirements.size, deduced } );
+		get( m_dummyIndexed.indexMemory )->bindToBuffer( m_dummyIndexed.indexBuffer, 0u );
+		auto memory = get( m_dummyIndexed.indexMemory );
+		uint8_t * buffer{ nullptr };
+		auto size = count * sizeof( uint32_t );
+
+		if ( memory->lock( context, 0u, size, 0u, reinterpret_cast< void ** >( &buffer ) ) == VK_SUCCESS )
+		{
+			std::copy( dummyIndex, dummyIndex + size, buffer );
+			memory->flush( context, 0, size );
+			memory->unlock( context );
+		}
+
+		m_dummyIndexed.geometryBuffers = std::make_unique< GeometryBuffers >( get( this )
+			, VboBindings{}
+			, BufferObjectBinding{ indexBuffer->getInternal(), 0u, m_dummyIndexed.indexBuffer }
+			, VkPipelineVertexInputStateCreateInfo{}
+			, InputLayout{}
+			, VK_INDEX_TYPE_UINT32 );
+		m_dummyIndexed.geometryBuffers->initialise( context );
 	}
 }

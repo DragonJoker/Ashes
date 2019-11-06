@@ -4,25 +4,22 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlSetLineWidthCommand.hpp"
 
-namespace gl_renderer
-{
-	SetLineWidthCommand::SetLineWidthCommand( Device const & device
-		, float width )
-		: CommandBase{ device }
-		, m_width{ width }
-	{
-	}
+#include "Core/GlContextLock.hpp"
 
-	void SetLineWidthCommand::apply( ContextLock const & context )const
+namespace ashes::gl3
+{
+	void apply( ContextLock const & context
+		, CmdSetLineWidth const & cmd )
 	{
-		glLogCommand( "SetLineWidthCommand" );
 		glLogCall( context
 			, glLineWidth
-			, m_width );
+			, cmd.width );
 	}
 
-	CommandPtr SetLineWidthCommand::clone()const
+	void buildSetLineWidthCommand( float width
+		, CmdList & list )
 	{
-		return std::make_unique< SetLineWidthCommand >( *this );
+		glLogCommand( "SetLineWidthCommand" );
+		list.push_back( makeCmd< OpType::eSetLineWidth >( width ) );
 	}
 }

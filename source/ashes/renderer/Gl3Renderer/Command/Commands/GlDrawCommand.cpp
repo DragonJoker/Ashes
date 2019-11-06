@@ -4,59 +4,57 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlDrawCommand.hpp"
 
-#include "Core/GlDevice.hpp"
-#include "Core/GlInstance.hpp"
+#include "Core/GlContextLock.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
-	DrawCommand::DrawCommand( Device const & device
-		, uint32_t vtxCount
+	void apply( ContextLock const & context
+		, CmdDrawBaseInstance const & cmd )
+	{
+		glLogCall( context
+			, glDrawArraysInstancedBaseInstance_ARB
+			, cmd.mode
+			, cmd.firstVertex
+			, cmd.vtxCount
+			, cmd.instCount
+			, cmd.firstInstance );
+	}
+
+	void apply( ContextLock const & context
+		, CmdDraw const & cmd )
+	{
+		glLogCall( context
+			, glDrawArraysInstanced
+			, cmd.mode
+			, cmd.firstVertex
+			, cmd.vtxCount
+			, cmd.instCount );
+	}
+
+	void buildDrawCommand( uint32_t vtxCount
 		, uint32_t instCount
 		, uint32_t firstVertex
 		, uint32_t firstInstance
-		, VkPrimitiveTopology mode )
-		: CommandBase{ device }
-		, m_vtxCount{ vtxCount }
-		, m_instCount{ instCount }
-		, m_firstVertex{ firstVertex }
-		, m_firstInstance{ firstInstance }
-		, m_mode{ convert( mode ) }
+		, VkPrimitiveTopology mode
+		, CmdList & list )
 	{
-		if ( m_firstInstance > 0
-			&& !m_device.getInstance().getFeatures().hasBaseInstance )
-		{
-			throw std::runtime_error( "Base instance rendering is not supported" );
-		}
-	}
-
-	void DrawCommand::apply( ContextLock const & context )const
-	{
-		assert( m_instCount >= 1 );
+		assert( instCount >= 1 );
 		glLogCommand( "DrawCommand" );
 
-		if ( m_device.getInstance().getFeatures().hasBaseInstance )
+		if ( firstInstance > 0 )
 		{
-			glLogCall( context
-				, glDrawArraysInstancedBaseInstance_ARB
-				, m_mode
-				, m_firstVertex
-				, m_vtxCount
-				, m_instCount
-				, m_firstInstance );
+			list.push_back( makeCmd< OpType::eDrawBaseInstance >( vtxCount
+				, instCount
+				, firstVertex
+				, firstInstance
+				, convert( mode ) ) );
 		}
 		else
 		{
-			glLogCall( context
-				, glDrawArraysInstanced
-				, m_mode
-				, m_firstVertex
-				, m_vtxCount
-				, m_instCount );
+			list.push_back( makeCmd< OpType::eDraw >( vtxCount
+				, instCount
+				, firstVertex
+				, convert( mode ) ) );
 		}
-	}
-
-	CommandPtr DrawCommand::clone()const
-	{
-		return std::make_unique< DrawCommand >( *this );
 	}
 }

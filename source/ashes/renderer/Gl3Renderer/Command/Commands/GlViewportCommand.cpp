@@ -5,41 +5,68 @@ See LICENSE file in root folder.
 #include "Command/Commands/GlViewportCommand.hpp"
 
 #include "Core/GlDevice.hpp"
+#include "RenderPass/GlFrameBuffer.hpp"
 
-namespace gl_renderer
+#include "ashesgl3_api.hpp"
+
+using ashes::operator==;
+using ashes::operator!=;
+
+namespace ashes::gl3
 {
-	ViewportCommand::ViewportCommand( Device const & device
-		, uint32_t firstViewport
-		, ashes::VkViewportArray const & viewports )
-		: CommandBase{ device }
-		, m_viewports{ viewports.begin() + firstViewport, viewports.end() }
+	bool operator==( VkViewportArray const & lhs
+		, VkViewportArray const & rhs )
 	{
+		auto result = lhs.size() == rhs.size();
+		size_t index = 0u;
+
+		while ( result && index < lhs.size() )
+		{
+			result = lhs[index] == rhs[index];
+			++index;
+		}
+
+		return result;
 	}
 
-	void ViewportCommand::apply( ContextLock const & context )const
+	namespace
 	{
-		auto & save = m_device.getCurrentViewport();
-		auto & viewport = *m_viewports.begin();
-
-		if ( viewport != save )
+		VkViewport adjustViewport( ContextStateStack const & stack
+			, VkViewport const & in )
 		{
-			glLogCommand( "ViewportCommand" );
-			glLogCall( context
-				, glViewport
-				, viewport.offset.x
-				, viewport.offset.y
-				, viewport.size.width
-				, viewport.size.height );
-			glLogCall( context
-				, glDepthRange
-				, viewport.minDepth
-				, viewport.maxDepth );
-			save = viewport;
+			VkViewport result{ in };
+
+			if ( stack.hasCurrentFramebuffer() )
+			{
+				auto height = get( stack.getCurrentFramebuffer() )->getHeight();
+				result.y = height - ( result.height + result.y );
+			}
+
+			return result;
+		}
+
+		VkViewportArray adjustViewports( ContextStateStack const & stack
+			, VkViewportArray const & in )
+		{
+			VkViewportArray result;
+			result.reserve( in.size() );
+
+			for ( auto vp : in )
+			{
+				result.push_back( adjustViewport( stack, vp ) );
+			}
+
+			return result;
 		}
 	}
 
-	CommandPtr ViewportCommand::clone()const
+	void buildViewportCommand( ContextStateStack & stack
+		, uint32_t firstViewport
+		, VkViewportArray viewports
+		, CmdList & list )
 	{
-		return std::make_unique< ViewportCommand >( *this );
+		glLogCommand( "ViewportCommand" );
+		viewports = adjustViewports( stack, viewports );
+		stack.apply( list, firstViewport, viewports, false );
 	}
 }

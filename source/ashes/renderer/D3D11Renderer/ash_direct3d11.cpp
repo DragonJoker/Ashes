@@ -4026,7 +4026,7 @@ namespace ashes::d3d11
 				description.getInstanceProcAddr = &vkGetInstanceProcAddr;
 				description.features =
 				{
-					true, // hasBufferRange
+					true, // hasTexBufferRange
 					true, // hasImageTexture
 					true, // hasBaseInstance
 					true, // hasClearTexImage

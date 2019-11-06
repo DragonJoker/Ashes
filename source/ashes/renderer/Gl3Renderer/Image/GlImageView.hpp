@@ -8,39 +8,61 @@
 #define ___GlRenderer_TextureView_HPP___
 #pragma once
 
-#include "Gl3Renderer/GlRendererPrerequisites.hpp"
+#include "renderer/Gl3Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Image/ImageView.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
-	/**
-	*\~french
-	*\brief
-	*	Description d'une vue sur une image Vulkan.
-	*\~english
-	*\brief
-	*	Vulkan image view wrapper.
-	*/
 	class ImageView
-		: public ashes::ImageView
 	{
 	public:
-		ImageView( Device const & device
-			, Image const & image );
-		ImageView( Device const & device
-			, Image const & image
-			, ashes::ImageViewCreateInfo const & createInfo );
+		ImageView( VkDevice device
+			, VkImage image );
+		ImageView( VkDevice device
+			, VkImageViewCreateInfo createInfo );
 		~ImageView();
+		
+		GLuint getInternal()const noexcept;
 
 		inline GlTextureType getTarget()const noexcept
 		{
 			return m_target;
 		}
+		
+		inline VkImageViewType getType()const noexcept
+		{
+			return m_viewType;
+		}
+
+		inline VkFormat getFormat()const noexcept
+		{
+			return m_format;
+		}
+
+		inline VkComponentMapping const & getComponents()const noexcept
+		{
+			return m_components;
+		}
+
+		inline VkImageSubresourceRange const & getSubresourceRange()const noexcept
+		{
+			return m_subresourceRange;
+		}
+
+		inline VkImage getImage()const noexcept
+		{
+			return m_image;
+		}
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
+		VkImageViewCreateFlags m_flags;
+		VkImage m_image;
+		VkImageViewType m_viewType;
+		VkFormat m_format;
+		VkComponentMapping m_components;
+		VkImageSubresourceRange m_subresourceRange;
 		GlTextureType m_target;
+		GLuint m_texture{ GL_INVALID_INDEX };
 	};
 }
 

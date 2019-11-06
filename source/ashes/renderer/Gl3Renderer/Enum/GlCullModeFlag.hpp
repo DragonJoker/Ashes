@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/Enum/CullModeFlag.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
 	enum GlCullMode
 		: GLenum
@@ -25,5 +23,5 @@ namespace gl_renderer
 	*\return
 	*	Le GlCullMode.
 	*/
-	GlCullMode convert( VkCullModeFlags const & flags );
+	GlCullMode convertCullModeFlags( VkCullModeFlags flags );
 }

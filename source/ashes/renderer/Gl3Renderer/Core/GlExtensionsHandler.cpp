@@ -14,6 +14,7 @@ See LICENSE file in root folder.
 #include <algorithm>
 #include <iterator>
 #include <stdexcept>
+#include <sstream>
 
 #ifdef max
 #	undef max
@@ -22,7 +23,7 @@ See LICENSE file in root folder.
 #	undef min
 #endif
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	namespace
 	{
@@ -37,29 +38,6 @@ namespace gl_renderer
 
 		using PFN_glGetStringi = const GLubyte *( GLAPIENTRY * )( GLenum name, GLuint index );
 		PFN_glGetStringi glGetStringi;
-
-#if ASHES_WIN32
-		template< typename FuncT >
-		bool getFunction( char const * const name, FuncT & function )
-		{
-			function = reinterpret_cast< FuncT >( wglGetProcAddress( name ) );
-			return function != nullptr;
-		}
-#elif ASHES_XLIB
-		template< typename FuncT >
-		bool getFunction( char const * const name, FuncT & function )
-		{
-			function = reinterpret_cast< FuncT >( glXGetProcAddressARB( reinterpret_cast< GLubyte const * >( name ) ) );
-			return function != nullptr;
-		}
-#else
-		template< typename FuncT >
-		bool getFunction( char const * const name, FuncT & function )
-		{
-			function = reinterpret_cast< FuncT >( glXGetProcAddressARB( reinterpret_cast< GLubyte const * >( name ) ) );
-			return function != nullptr;
-		}
-#endif
 	}
 
 	void ExtensionsHandler::initialise()
@@ -73,16 +51,39 @@ namespace gl_renderer
 			std::stringstream stream( sversion );
 			float fversion;
 			stream >> fversion;
-			auto version = std::min( int( fversion * 10 ), 330 );
+			auto version = std::min( int( fversion * 10 ), 33 );
 
 			if ( version < 30 )
 			{
 				throw std::runtime_error{ "OpenGL >= 3.0 is needed for this renderer." };
 			}
 
+#if Ashes_Gl3RemoveExtensions
+			version = 30;
+#endif
+
 			m_major = version / 10;
 			m_minor = version % 10;
+
+			if ( version >= 33 )
+			{
+				m_shaderVersion = version * 10;
+			}
+			else if ( version >= 32 )
+			{
+				m_shaderVersion = 150;
+			}
+			else if ( version >= 31 )
+			{
+				m_shaderVersion = 140;
+			}
+			else
+			{
+				m_shaderVersion = 130;
+			}
 		}
+
+#if !Ashes_Gl3RemoveExtensions
 
 		auto const * cextensions = ( char const * )glGetString( GL_EXTENSIONS );
 
@@ -121,6 +122,17 @@ namespace gl_renderer
 		m_spirvSupported = false
 			&& ( find( ARB_gl_spirv )
 				|| hasSPIRVShaderBinaryFormat() );
+
+		m_features.hasTexBufferRange = find( ARB_texture_buffer_range );
+		m_features.hasImageTexture = findAll( { ARB_texture_storage, ARB_shader_image_load_store } );
+		m_features.hasBaseInstance = find( ARB_base_instance );
+		m_features.hasClearTexImage = find( ARB_clear_texture );
+		m_features.hasComputeShaders = find( ARB_compute_shader );
+		m_features.hasStorageBuffers = findAll( { ARB_compute_shader, ARB_buffer_storage, ARB_shader_image_load_store, ARB_shader_storage_buffer_object } );
+
+#endif
+
+		m_features.supportsPersistentMapping = true;
 	}
 
 	bool ExtensionsHandler::find( std::string const & name )const
@@ -130,7 +142,7 @@ namespace gl_renderer
 			, name );
 	}
 
-	bool ExtensionsHandler::findAny( ashes::StringArray const & names )const
+	bool ExtensionsHandler::findAny( StringArray const & names )const
 	{
 		return names.end() != std::find_if( names.begin()
 			, names.end()
@@ -140,7 +152,7 @@ namespace gl_renderer
 			} );
 	}
 
-	bool ExtensionsHandler::findAll( ashes::StringArray const & names )const
+	bool ExtensionsHandler::findAll( StringArray const & names )const
 	{
 		return names.end() == std::find_if( names.begin()
 			, names.end()

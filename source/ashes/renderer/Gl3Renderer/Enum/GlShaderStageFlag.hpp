@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/Enum/ShaderStageFlag.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
 	enum GlShaderStageFlag
 	{
@@ -18,23 +16,24 @@ namespace gl_renderer
 		GL_SHADER_STAGE_COMPUTE = 0x91B9,
 	};
 	Ashes_ImplementFlag( GlShaderStageFlag )
-	std::string getName( GlShaderStageFlags value );
+	std::string getShaderStageFlagName( GlShaderStageFlags value );
+	std::string getShaderStageFlagName( VkShaderStageFlags value );
 	/**
 	*\brief
 	*	Convertit un VkShaderStageFlags en VkShaderStageFlags.
 	*\param[in] flags
 	*	Le VkShaderStageFlags.
 	*\return
-	*	Le VkShaderStageFlags.
+	*	Le GlShaderStageFlags.
 	*/
-	GlShaderStageFlags convert( VkShaderStageFlags const & flags );
+	GlShaderStageFlags convertShaderStageFlags( VkShaderStageFlags const & flags );
 	/**
 	*\brief
 	*	Convertit un VkShaderStageFlagBits en VkShaderStageFlagBits.
 	*\param[in] flags
 	*	Le VkShaderStageFlagBits.
 	*\return
-	*	Le VkShaderStageFlagBits.
+	*	Le GlShaderStageFlag.
 	*/
-	GlShaderStageFlag convert( VkShaderStageFlagBits const & flag );
+	GlShaderStageFlag convertShaderStageFlag( VkShaderStageFlagBits const & flag );
 }

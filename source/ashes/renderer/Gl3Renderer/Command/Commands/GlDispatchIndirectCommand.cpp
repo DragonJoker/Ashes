@@ -6,35 +6,27 @@ See LICENSE file in root folder.
 
 #include "Buffer/GlBuffer.hpp"
 
-namespace gl_renderer
-{
-	DispatchIndirectCommand::DispatchIndirectCommand( Device const & device
-		, ashes::BufferBase const & buffer
-		, uint32_t offset )
-		: CommandBase{ device }
-		, m_buffer{ static_cast< Buffer const & >( buffer ) }
-		, m_offset{ offset }
-	{
-	}
+#include "ashesgl3_api.hpp"
 
-	void DispatchIndirectCommand::apply( ContextLock const & context )const
+namespace ashes::gl3
+{
+	void apply( ContextLock const & context
+		, CmdDispatchIndirect const & cmd )
 	{
-		glLogCommand( "DispatchIndirectCommand" );
-		glLogCall( context
-			, glBindBuffer
-			, GL_BUFFER_TARGET_DISPATCH_INDIRECT
-			, m_buffer.getBuffer() );
 		glLogCall( context
 			, glDispatchComputeIndirect_ARB
-			, GLintptr( BufferOffset( m_offset ) ) );
-		glLogCall( context
-			, glBindBuffer
-			, GL_BUFFER_TARGET_DISPATCH_INDIRECT
-			, 0 );
+			, GLintptr( getBufferOffset( cmd.offset ) ) );
 	}
 
-	CommandPtr DispatchIndirectCommand::clone()const
+	void buildDispatchIndirectCommand( VkBuffer buffer
+		, VkDeviceSize offset
+		, CmdList & list )
 	{
-		return std::make_unique< DispatchIndirectCommand >( *this );
+		glLogCommand( "DispatchIndirectCommand" );
+		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_DISPATCH_INDIRECT
+			, get( buffer )->getInternal() ) );
+		list.push_back( makeCmd< OpType::eDispatchIndirect >( get( buffer )->getInternalOffset() + offset ) );
+		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_DISPATCH_INDIRECT
+			, 0u ) );
 	}
 }

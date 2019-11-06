@@ -2,13 +2,9 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___GlRenderer_TextureViewType_HPP___
-#define ___GlRenderer_TextureViewType_HPP___
 #pragma once
 
-#include <Ashes/AshesPrerequisites.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
 	/**
 	*\brief
@@ -22,5 +18,3 @@ namespace gl_renderer
 	GlTextureType convert( VkImageViewType const & mode
 		, uint32_t layers );
 }
-
-#endif

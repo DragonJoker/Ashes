@@ -4,26 +4,12 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Gl3Renderer/Command/Commands/GlCommandBase.hpp"
+#include "renderer/Gl3Renderer/Command/Commands/GlCommandBase.hpp"
 
-#include <Ashes/RenderPass/ClearAttachment.hpp>
-#include <Ashes/RenderPass/ClearRect.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
-	class ClearAttachmentsCommand
-		: public CommandBase
-	{
-	public:
-		ClearAttachmentsCommand( Device const & device
-			, ashes::ClearAttachmentArray const & clearAttaches
-			, ashes::ClearRectArray const & clearRects );
-
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
-
-	private:
-		ashes::ClearAttachmentArray m_clearAttaches;
-		ashes::ClearRectArray m_clearRects;
-	};
+	void buildClearAttachmentsCommand( ContextStateStack & stack
+		, VkClearAttachmentArray clearAttaches
+		, VkClearRectArray clearRects
+		, CmdList & list );
 }

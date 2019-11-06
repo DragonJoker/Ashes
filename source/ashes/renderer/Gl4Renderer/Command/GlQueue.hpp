@@ -20,31 +20,14 @@ namespace ashes::gl4
 		Queue( VkDevice device
 			, VkDeviceQueueCreateInfo createInfo
 			, uint32_t index );
-		/**
-		*\copydoc		Queue::submit
-		*/
+
 		VkResult submit( VkSubmitInfoArray const & values
 			, VkFence fence )const;
-		/**
-		*\copydoc		Queue::present
-		*/
 		VkResult present( VkPresentInfoKHR const & presentInfo )const;
-		/**
-		*\copydoc		Queue::waitIdle
-		*/
 		VkResult waitIdle()const;
 #if VK_EXT_debug_utils
-		/**
-		*\copydoc		Queue::beginDebugUtilsLabel
-		*/
 		void beginDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const;
-		/**
-		*\copydoc		Queue::endDebugUtilsLabel
-		*/
 		void endDebugUtilsLabel()const;
-		/**
-		*\copydoc		Queue::insertDebugUtilsLabel
-		*/
 		void insertDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const;
 #endif
 

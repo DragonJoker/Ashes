@@ -4,169 +4,273 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlPushConstantsCommand.hpp"
 
-#include "Buffer/PushConstantsBuffer.hpp"
+#include "ashesgl3_api.hpp"
 
-namespace gl_renderer
-{
-	PushConstantsCommand::PushConstantsCommand( Device const & device
-		, PushConstantsDesc const & pcb )
-		: CommandBase{ device }
-		, m_pcb{ pcb }
+namespace ashes::gl3
+{	
+	void apply( ContextLock const & context
+		, CmdUniform1fv const & cmd )
 	{
+		glLogCall( context
+			, glUniform1fv
+			, cmd.location
+			, 1u
+			, &cmd.buffer );
+	}
+	
+	void apply( ContextLock const & context
+		, CmdUniform2fv const & cmd )
+	{
+		glLogCall( context
+			, glUniform2fv
+			, cmd.location
+			, 1u
+			, cmd.buffer );
+	}
+	
+	void apply( ContextLock const & context
+		, CmdUniform3fv const & cmd )
+	{
+		glLogCall( context
+			, glUniform3fv
+			, cmd.location
+			, 1u
+			, cmd.buffer );
+	}
+	
+	void apply( ContextLock const & context
+		, CmdUniform4fv const & cmd )
+	{
+		glLogCall( context
+			, glUniform4fv
+			, cmd.location
+			, 1u
+			, cmd.buffer );
+	}
+	
+	void apply( ContextLock const & context
+		, CmdUniformMatrix2fv const & cmd )
+	{
+		glLogCall( context
+			, glUniformMatrix2fv
+			, cmd.location
+			, 1u
+			, cmd.transpose
+			, cmd.buffer );
+	}
+	
+	void apply( ContextLock const & context
+		, CmdUniformMatrix3fv const & cmd )
+	{
+		glLogCall( context
+			, glUniformMatrix3fv
+			, cmd.location
+			, 1u
+			, cmd.transpose
+			, cmd.buffer );
+	}
+	
+	void apply( ContextLock const & context
+		, CmdUniformMatrix4fv const & cmd )
+	{
+		glLogCall( context
+			, glUniformMatrix4fv
+			, cmd.location
+			, 1u
+			, cmd.transpose
+			, cmd.buffer );
 	}
 
-	void PushConstantsCommand::apply( ContextLock const & context )const
+	void apply( ContextLock const & context
+		, CmdUniform1iv const & cmd )
+	{
+		glLogCall( context
+			, glUniform1iv
+			, cmd.location
+			, 1u
+			, &cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdUniform2iv const & cmd )
+	{
+		glLogCall( context
+			, glUniform2iv
+			, cmd.location
+			, 1u
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdUniform3iv const & cmd )
+	{
+		glLogCall( context
+			, glUniform3iv
+			, cmd.location
+			, 1u
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdUniform4iv const & cmd )
+	{
+		glLogCall( context
+			, glUniform4iv
+			, cmd.location
+			, 1u
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdUniform1uiv const & cmd )
+	{
+		glLogCall( context
+			, glUniform1uiv
+			, cmd.location
+			, 1u
+			, &cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdUniform2uiv const & cmd )
+	{
+		glLogCall( context
+			, glUniform2uiv
+			, cmd.location
+			, 1u
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdUniform3uiv const & cmd )
+	{
+		glLogCall( context
+			, glUniform3uiv
+			, cmd.location
+			, 1u
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdUniform4uiv const & cmd )
+	{
+		glLogCall( context
+			, glUniform4uiv
+			, cmd.location
+			, 1u
+			, cmd.buffer );
+	}
+
+	template< OpType OpT, typename T >
+	void buildPushConstantMtxCommand( PushConstantDesc const & constant
+		, uint8_t const *& buffer
+		, CmdList & list )
+	{
+		auto arraySize = std::min( 1u, constant.arraySize );
+
+		for ( auto layer = 0u; layer < arraySize; ++layer )
+		{
+			list.push_back( makeCmd< OpT >( constant.location + layer
+				, GL_FALSE
+				, reinterpret_cast< T const * >( buffer ) ) );
+			buffer += constant.size;
+		}
+	}
+
+	template< OpType OpT, typename T >
+	void buildPushConstantCommand( PushConstantDesc const & constant
+		, uint8_t const *& buffer
+		, CmdList & list )
+	{
+		auto arraySize = std::max( 1u, constant.arraySize );
+
+		for ( auto layer = 0u; layer < arraySize; ++layer )
+		{
+			list.push_back( makeCmd< OpT >( constant.location + layer
+				, reinterpret_cast< T const * >( buffer ) ) );
+			buffer += constant.size;
+		}
+	}
+
+	void buildPushConstantsCommand( PushConstantsDesc const & pcb
+		, CmdList & list )
 	{
 		glLogCommand( "PushConstantsCommand" );
 
-		for ( auto & constant : m_pcb.constants )
+		for ( auto & constant : pcb.constants )
 		{
-			auto buffer = m_pcb.data.data() + constant.offset;
+			auto buffer = pcb.data.data() + constant.offset;
 
 			switch ( constant.format )
 			{
-			case ashes::ConstantFormat::eFloat:
-				glLogCall( context
-					, glUniform1fv
-					, constant.location
-					, constant.arraySize
-					, reinterpret_cast< GLfloat const * >( buffer ) );
+			case ConstantFormat::eFloat:
+				buildPushConstantCommand< OpType::eUniform1fv, GLfloat >( constant, buffer, list );
 				break;
 
-			case ashes::ConstantFormat::eVec2f:
-				glLogCall( context
-					, glUniform2fv
-					, constant.location
-					, constant.arraySize
-					, reinterpret_cast< GLfloat const * >( buffer ) );
+			case ConstantFormat::eVec2f:
+				buildPushConstantCommand< OpType::eUniform2fv, GLfloat >( constant, buffer, list );
 				break;
 
-			case ashes::ConstantFormat::eVec3f:
-				glLogCall( context
-					, glUniform3fv
-					, constant.location
-					, constant.arraySize
-					, reinterpret_cast< GLfloat const * >( buffer ) );
+			case ConstantFormat::eVec3f:
+				buildPushConstantCommand< OpType::eUniform3fv, GLfloat >( constant, buffer, list );
 				break;
 
-			case ashes::ConstantFormat::eVec4f:
-				glLogCall( context
-					, glUniform4fv
-					, constant.location
-					, constant.arraySize
-					, reinterpret_cast< GLfloat const * >( buffer ) );
+			case ConstantFormat::eVec4f:
+				buildPushConstantCommand< OpType::eUniform4fv, GLfloat >( constant, buffer, list );
 				break;
 
-			case ashes::ConstantFormat::eMat2f:
-				glLogCall( context
-					, glUniformMatrix2fv
-					, constant.location
-					, constant.arraySize
-					, GL_FALSE
-					, reinterpret_cast< GLfloat const * >( buffer ) );
+			case ConstantFormat::eMat2f:
+				buildPushConstantMtxCommand< OpType::eUniformMatrix2fv, GLfloat >( constant, buffer, list );
 				break;
 
-			case ashes::ConstantFormat::eMat3f:
-				glLogCall( context
-					, glUniformMatrix3fv
-					, constant.location
-					, constant.arraySize
-					, GL_FALSE
-					, reinterpret_cast< GLfloat const * >( buffer ) );
+			case ConstantFormat::eMat3f:
+				buildPushConstantMtxCommand< OpType::eUniformMatrix3fv, GLfloat >( constant, buffer, list );
 				break;
 
-			case ashes::ConstantFormat::eMat4f:
-				glLogCall( context
-					, glUniformMatrix4fv
-					, constant.location
-					, constant.arraySize
-					, GL_FALSE
-					, reinterpret_cast< GLfloat const * >( buffer ) );
+			case ConstantFormat::eMat4f:
+				buildPushConstantMtxCommand< OpType::eUniformMatrix4fv, GLfloat >( constant, buffer, list );
 				break;
 
-			case ashes::ConstantFormat::eInt:
-				glLogCall( context
-					, glUniform1iv
-					, constant.location
-					, constant.arraySize
-					, reinterpret_cast< GLint const * >( buffer ) );
+			case ConstantFormat::eInt:
+				buildPushConstantCommand< OpType::eUniform1iv, GLint >( constant, buffer, list );
 				break;
 
-			case ashes::ConstantFormat::eVec2i:
-				glLogCall( context
-					, glUniform2iv
-					, constant.location
-					, constant.arraySize
-					, reinterpret_cast< GLint const * >( buffer ) );
+			case ConstantFormat::eVec2i:
+				buildPushConstantCommand< OpType::eUniform2iv, GLint >( constant, buffer, list );
 				break;
 
-			case ashes::ConstantFormat::eVec3i:
-				glLogCall( context
-					, glUniform3iv
-					, constant.location
-					, constant.arraySize
-					, reinterpret_cast< GLint const * >( buffer ) );
+			case ConstantFormat::eVec3i:
+				buildPushConstantCommand< OpType::eUniform3iv, GLint >( constant, buffer, list );
 				break;
 
-			case ashes::ConstantFormat::eVec4i:
-				glLogCall( context
-					, glUniform4iv
-					, constant.location
-					, constant.arraySize
-					, reinterpret_cast< GLint const * >( buffer ) );
+			case ConstantFormat::eVec4i:
+				buildPushConstantCommand< OpType::eUniform4iv, GLint >( constant, buffer, list );
 				break;
 
-			case ashes::ConstantFormat::eUInt:
-				glLogCall( context
-					, glUniform1uiv
-					, constant.location
-					, constant.arraySize
-					, reinterpret_cast< GLuint const * >( buffer ) );
+			case ConstantFormat::eUInt:
+				buildPushConstantCommand< OpType::eUniform1uiv, GLuint >( constant, buffer, list );
 				break;
 
-			case ashes::ConstantFormat::eVec2ui:
-				glLogCall( context
-					, glUniform2uiv
-					, constant.location
-					, constant.arraySize
-					, reinterpret_cast< GLuint const * >( buffer ) );
+			case ConstantFormat::eVec2ui:
+				buildPushConstantCommand< OpType::eUniform2uiv, GLuint >( constant, buffer, list );
 				break;
 
-			case ashes::ConstantFormat::eVec3ui:
-				glLogCall( context
-					, glUniform3uiv
-					, constant.location
-					, constant.arraySize
-					, reinterpret_cast< GLuint const * >( buffer ) );
+			case ConstantFormat::eVec3ui:
+				buildPushConstantCommand< OpType::eUniform3uiv, GLuint >( constant, buffer, list );
 				break;
 
-			case ashes::ConstantFormat::eVec4ui:
-				glLogCall( context
-					, glUniform4uiv
-					, constant.location
-					, constant.arraySize
-					, reinterpret_cast< GLuint const * >( buffer ) );
+			case ConstantFormat::eVec4ui:
+				buildPushConstantCommand< OpType::eUniform4uiv, GLuint >( constant, buffer, list );
 				break;
 
-			case ashes::ConstantFormat::eColour:
-				glLogCall( context
-					, glUniform4fv
-					, constant.location
-					, constant.arraySize
-					, reinterpret_cast< GLfloat const * >( buffer ) );
+			case ConstantFormat::eColour:
+				buildPushConstantCommand< OpType::eUniform4fv, GLfloat >( constant, buffer, list );
 				break;
 
 			default:
 				assert( false && "Unsupported constant format" );
 				break;
 			}
-
-			buffer += getSize( constant.format );
 		}
-	}
-
-	CommandPtr PushConstantsCommand::clone()const
-	{
-		return std::make_unique< PushConstantsCommand >( *this );
 	}
 }

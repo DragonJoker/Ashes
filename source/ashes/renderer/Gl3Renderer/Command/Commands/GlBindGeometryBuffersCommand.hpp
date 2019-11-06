@@ -4,29 +4,39 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Gl3Renderer/Command/Commands/GlCommandBase.hpp"
+#include "renderer/Gl3Renderer/Command/Commands/GlCommandBase.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
-	/**
-	*\brief
-	*	Classe de base d'une commande.
-	*/
-	class BindGeometryBuffersCommand
-		: public CommandBase
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eBindVextexArray >
 	{
-	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*/
-		BindGeometryBuffersCommand( Device const & device
-			, GeometryBuffers const & vao );
-
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
-
-	private:
-		GeometryBuffers const & m_vao;
+		static Op constexpr value = { OpType::eBindVextexArray, 4u };
 	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eBindVextexArray >
+	{
+		inline CmdT( GeometryBuffers const * vao )
+			: cmd{ { OpType::eBindVextexArray, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, vao{ std::move( vao ) }
+		{
+		}
+
+		Command cmd;
+		GeometryBuffers const * vao;
+	};
+	using CmdBindVextexArray = CmdT< OpType::eBindVextexArray >;
+
+	void apply( ContextLock const & context
+		, CmdBindVextexArray const & cmd );
+
+	//*************************************************************************
+
+	void buildBindGeometryBuffersCommand( GeometryBuffers const & vao
+		, CmdList & list );
+
+	//*************************************************************************
 }

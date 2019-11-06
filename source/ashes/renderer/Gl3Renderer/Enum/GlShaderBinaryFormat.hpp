@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/AshesPrerequisites.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
 	enum GlShaderBinaryFormat
 		: GLenum
@@ -22,7 +20,7 @@ namespace gl_renderer
 			return "GL_SHADER_BINARY_FORMAT_SPIR_V";
 
 		default:
-			return "GlShaderBinaryFormat_UNKNOWN";
+			return "GL_SHADER_BINARY_FORMAT_UNKNOWN";
 		}
 	}
 }

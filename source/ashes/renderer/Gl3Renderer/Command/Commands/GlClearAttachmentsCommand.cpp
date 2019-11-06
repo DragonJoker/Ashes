@@ -7,97 +7,59 @@ See LICENSE file in root folder.
 #include "Core/GlDevice.hpp"
 #include "Image/GlImageView.hpp"
 
-namespace gl_renderer
+#include "ashesgl3_api.hpp"
+
+using ashes::operator==;
+using ashes::operator!=;
+
+namespace ashes::gl3
 {
-	namespace
-	{
-		void doClear( ContextLock const & context
-			, ashes::ClearAttachment const & clearAttach )
-		{
-			if ( ashes::checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT ) )
-			{
-				assert( clearAttach.clearValue.isColour() );
-				auto & colour = clearAttach.clearValue.colour();
-				glLogCall( context
-					, glClearBufferfv
-					, GL_CLEAR_TARGET_COLOR
-					, clearAttach.colourAttachment
-					, colour.float32.data() );
-			}
-			else
-			{
-				assert( !clearAttach.clearValue.isColour() );
-				auto & depthStencil = clearAttach.clearValue.depthStencil();
-				auto stencil = GLint( depthStencil.stencil );
-
-				if ( ashes::checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT ) )
-				{
-					glLogCall( context
-						, glClearBufferfi
-						, GL_CLEAR_TARGET_DEPTH_STENCIL
-						, 0u
-						, depthStencil.depth
-						, stencil );
-				}
-				else if ( ashes::checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_DEPTH_BIT ) )
-				{
-					glLogCall( context
-						, glClearBufferfv
-						, GL_CLEAR_TARGET_DEPTH
-						, 0u
-						, &depthStencil.depth );
-				}
-				else if ( ashes::checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_STENCIL_BIT ) )
-				{
-					glLogCall( context
-						, glClearBufferiv
-						, GL_CLEAR_TARGET_STENCIL
-						, 0u
-						, &stencil );
-				}
-			}
-		}
-
-	}
-
-	ClearAttachmentsCommand::ClearAttachmentsCommand( Device const & device
-		, ashes::ClearAttachmentArray const & clearAttaches
-		, ashes::ClearRectArray const & clearRects )
-		: CommandBase{ device }
-		, m_clearAttaches{ clearAttaches }
-		, m_clearRects{ clearRects }
-	{
-	}
-
-	void ClearAttachmentsCommand::apply( ContextLock const & context )const
+	void buildClearAttachmentsCommand( ContextStateStack & stack
+		, VkClearAttachmentArray clearAttaches
+		, VkClearRectArray clearRects
+		, CmdList & list )
 	{
 		glLogCommand( "ClearAttachmentsCommand" );
-		auto scissor = m_device.getCurrentScissor();
 
-		for ( auto & clearAttach : m_clearAttaches )
+		for ( auto & clearAttach : clearAttaches )
 		{
-			for ( auto & rect : m_clearRects )
+			for ( auto & rect : clearRects )
 			{
-				glLogCall( context
-					, glScissor
-					, rect.offset.x
-					, rect.offset.x
-					, rect.extent.width
-					, rect.extent.height );
-				doClear( context, clearAttach );
+				VkScissorArray scissors
+				{
+					rect.rect
+				};
+
+				if ( stack.getCurrentScissors() != scissors )
+				{
+					stack.setCurrentScissors( scissors );
+				}
+
+				if ( ashes::checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT ) )
+				{
+					auto & colour = clearAttach.clearValue.color;
+					list.push_back( makeCmd< OpType::eClearColour >( colour
+						, clearAttach.colorAttachment ) );
+				}
+				else
+				{
+					auto & depthStencil = clearAttach.clearValue.depthStencil;
+					auto stencil = GLint( depthStencil.stencil );
+
+					if ( ashes::checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT ) )
+					{
+						list.push_back( makeCmd< OpType::eClearDepthStencil >( depthStencil ) );
+					}
+					else if ( ashes::checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_DEPTH_BIT ) )
+					{
+						list.push_back( makeCmd< OpType::eClearDepth >( depthStencil.depth ) );
+					}
+					else if ( ashes::checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_STENCIL_BIT ) )
+					{
+						list.push_back( makeCmd< OpType::eClearStencil >( stencil ) );
+					}
+				}
 			}
 		}
-
-		glLogCall( context
-			, glScissor
-			, scissor.offset.x
-			, scissor.offset.y
-			, scissor.size.width
-			, scissor.size.height );
-	}
-
-	CommandPtr ClearAttachmentsCommand::clone()const
-	{
-		return std::make_unique< ClearAttachmentsCommand >( *this );
 	}
 }

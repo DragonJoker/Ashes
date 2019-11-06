@@ -6,26 +6,23 @@ See LICENSE file in root folder.
 
 #include "Miscellaneous/GlQueryPool.hpp"
 
-namespace gl_renderer
-{
-	EndQueryCommand::EndQueryCommand( Device const & device
-		, ashes::QueryPool const & pool
-		, uint32_t query )
-		: CommandBase{ device }
-		, m_target{ convert( pool.getType() ) }
-	{
-	}
+#include "ashesgl3_api.hpp"
 
-	void EndQueryCommand::apply( ContextLock const & context )const
+namespace ashes::gl3
+{
+	void apply( ContextLock const & context
+		, CmdEndQuery const & cmd )
 	{
-		glLogCommand( "EndQueryCommand" );
 		glLogCall( context
 			, glEndQuery
-			, m_target );
+			, cmd.target );
 	}
 
-	CommandPtr EndQueryCommand::clone()const
+	void buildEndQueryCommand( VkQueryPool pool
+		, uint32_t query
+		, CmdList & list )
 	{
-		return std::make_unique< EndQueryCommand >( *this );
+		glLogCommand( "EndQueryCommand" );
+		list.push_back( makeCmd< OpType::eEndQuery >( convert( get( pool )->getType() ) ) );
 	}
 }

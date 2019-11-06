@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/Enum/AccessFlag.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
 	enum GlAccessType
 		: GLenum
@@ -18,18 +16,18 @@ namespace gl_renderer
 	std::string getName( GlAccessType value );
 	/**
 	*\brief
-	*	Convertit un VkAccessFlags en VkAccessFlags.
+	*	Convertit un VkAccessFlags en GLenum.
 	*\param[in] flags
 	*	Le VkAccessFlags.
 	*\return
-	*	Le VkAccessFlags.
+	*	Le GLenum.
 	*/
-	GLenum convert( VkAccessFlags const & flags );
+	GLenum convertAccessFlags( VkAccessFlags const & flags );
 	/**
 	*\brief
-	*	Convertit un VkAccessFlags en VkAccessFlags.
+	*	Convertit un GLenum en VkAccessFlags.
 	*\param[in] flags
-	*	Le VkAccessFlags.
+	*	Le GLenum.
 	*\return
 	*	Le VkAccessFlags.
 	*/

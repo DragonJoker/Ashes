@@ -4,97 +4,50 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Gl3Renderer/GlRendererPrerequisites.hpp"
+#include "renderer/Gl3Renderer/GlRendererPrerequisites.hpp"
+#include "renderer/Gl3Renderer/Command/Commands/GlCommandBase.hpp"
+#include "renderer/Gl3Renderer/Enum/GlAttachmentPoint.hpp"
+#include "renderer/Gl3Renderer/Enum/GlAttachmentType.hpp"
 
-#include <Ashes/RenderPass/FrameBuffer.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
-	GlAttachmentPoint getAttachmentPoint( GlInternal format );
+	bool isSRGBFormat( VkFormat format );
 	GlAttachmentPoint getAttachmentPoint( VkFormat format );
-	GlAttachmentPoint getAttachmentPoint( ImageView const & texture );
-	GlAttachmentType getAttachmentType( GlInternal format );
+	GlAttachmentPoint getAttachmentPoint( VkImageView texture );
 	GlAttachmentType getAttachmentType( VkFormat format );
-	GlAttachmentType getAttachmentType( ImageView const & texture );
+	GlAttachmentType getAttachmentType( VkImageView texture );
 	void checkCompleteness( GLenum status );
 
-	struct FboAttachment
-	{
-		GlAttachmentPoint point;
-		GLuint object;
-		GlAttachmentType type;
-	};
-	/**
-	*\brief
-	*	Classe encapsulant le concept de Framebuffer.
-	*\remarks
-	*	Contient les tampon de profondeur et de couleur.
-	*/
-	class FrameBuffer
-		: public ashes::FrameBuffer
+	class Framebuffer
 	{
 	public:
-		/**
-		*\brief
-		*	Crée un FrameBuffer compatible avec la passe de rendu donnée.
-		*\remarks
-		*	Si la compatibilité entre les textures voulues et les formats de la passe de rendu
-		*	n'est pas possible, une std::runtime_error est lancée.
-		*\param[in] dimensions
-		*	Les dimensions du tampon d'images.
-		*\param[in] textures
-		*	Les textures voulues pour le tampon d'images à créer.
-		*/
-		FrameBuffer( Device const & device
-			, RenderPass const & renderPass
-			, VkExtent2D const & dimensions
-			, ashes::ashes::ImageViewPtrArray textures );
-		/**
-		*\brief
-		*	Destructeur
-		*/
-		~FrameBuffer();
-		/**
-		*\~english
-		*\brief
-		*	Sets the draw buffers.
-		*\param[in] attaches
-		*	The attaches.
-		*\~french
-		*\brief
-		*	Définit les tampons d'écriture.
-		*\param[in] attaches
-		*	Les attaches.
-		*/
+		Framebuffer( VkDevice device
+			, VkFramebufferCreateInfo createInfo );
+		Framebuffer( VkDevice device
+			, GLuint name );
+		~Framebuffer();
+
 		void setDrawBuffers( ContextLock const & context
-			, VkAttachmentDescriptionArray const & attaches )const;
-		/**
-		*\~english
-		*\brief
-		*	Sets the draw buffers.
-		*\param[in] attaches
-		*	The attaches.
-		*\~french
-		*\brief
-		*	Définit les tampons d'écriture.
-		*\param[in] attaches
-		*	Les attaches.
-		*/
+			, AttachmentDescriptionArray const & attaches )const;
 		void setDrawBuffers( ContextLock const & context
-			, ashes::AttachmentReferenceArray const & attaches )const;
-		/**
-		*\~english
-		*name
-		*	Getters.
-		*\~french
-		*name
-		*	Accesseurs.
-		*/
-		/**@{*/
-		inline GLuint getFrameBuffer()const
+			, VkAttachmentReferenceArray const & attaches )const;
+		bool hasOnlySwapchainImage()const;
+		bool hasSwapchainImage()const;
+
+		inline GLuint getInternal()const
 		{
-			assert( m_frameBuffer != GL_INVALID_INDEX );
-			return m_frameBuffer;
+			assert( m_internal != GL_INVALID_INDEX );
+			return m_internal;
+		}
+		
+		inline GLuint & getInternal()
+		{
+			return m_internal;
+		}
+
+		inline auto const & getAttachments()const
+		{
+			return m_attachments;
 		}
 
 		inline auto const & getAllAttaches()const
@@ -102,9 +55,19 @@ namespace gl_renderer
 			return m_allAttaches;
 		}
 
+		inline auto const & getMsColourAttaches()const
+		{
+			return m_colourMsAttaches;
+		}
+
 		inline auto const & getColourAttaches()const
 		{
 			return m_colourAttaches;
+		}
+
+		inline auto const & getAllColourAttaches()const
+		{
+			return m_allColourAttaches;
 		}
 
 		inline bool hasDepthStencilAttach()const
@@ -122,22 +85,53 @@ namespace gl_renderer
 		{
 			return m_srgb;
 		}
+
+		inline uint32_t getWidth()const
+		{
+			return m_width;
+		}
+
+		inline uint32_t getHeight()const
+		{
+			return m_height;
+		}
+
+		inline bool isMultisampled()const
+		{
+			return m_multisampled;
+		}
+
+		CmdList const & getBindAttaches()const
+		{
+			return m_bindAttaches;
+		}
 		/**@}*/
 
 	private:
-		void doInitialiseBackBuffer();
-		void doInitialiseFramebuffer();
-		void doInitialiseBackAttach( ashes::FrameBufferAttachment const & attach );
-		void doInitialiseFboAttach( ashes::FrameBufferAttachment const & attach );
+		void doInitialiseAttaches();
+		void doBindAttaches();
+		void doCreateFramebuffer();
+		void doInitialiseAttach( VkImageView view
+			, uint32_t index );
 
 	private:
-		Device const & m_device;
-		GLuint m_frameBuffer{ GL_INVALID_INDEX };
-		RenderPass const & m_renderPass;
-		std::vector< FboAttachment > m_allAttaches;
-		std::vector< FboAttachment > m_colourAttaches;
-		ashes::Optional< FboAttachment > m_depthStencilAttach;
-		mutable ashes::UInt32Array m_drawBuffers;
+		VkDevice m_device;
+		VkFramebufferCreateFlags m_flags;
+		VkRenderPass m_renderPass;
+		VkImageViewArray m_attachments;
+		uint32_t m_width;
+		uint32_t m_height;
+		uint32_t m_layers;
+		GLuint m_internal{ GL_INVALID_INDEX };
+		FboAttachmentArray m_allAttaches;
+		FboAttachmentArray m_allColourAttaches;
+		FboAttachmentArray m_colourAttaches;
+		FboAttachmentArray m_colourMsAttaches;
+		Optional< FboAttachment > m_depthStencilAttach;
+		Optional< FboAttachment > m_depthStencilMsAttach;
+		mutable UInt32Array m_drawBuffers;
+		CmdList m_bindAttaches;
 		bool m_srgb{ false };
+		bool m_multisampled{ false };
 	};
 }

@@ -4,30 +4,49 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlMemoryBarrierCommand.hpp"
 
-namespace gl_renderer
-{
-	MemoryBarrierCommand::MemoryBarrierCommand( Device const & device
-		, VkPipelineStageFlags after
-		, VkPipelineStageFlags before
-		, ashes::DependencyFlags dependencyFlags
-		, ashes::MemoryBarrierArray const & memoryBarriers
-		, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
-		, ashes::VkImageMemoryBarrierArray const & imageMemoryBarriers )
-		: CommandBase{ device }
-		, m_flags{ convert( before ) }
-	{
-	}
+#include "Core/GlContextLock.hpp"
 
-	void MemoryBarrierCommand::apply( ContextLock const & context )const
+#include "ashesgl3_api.hpp"
+
+namespace ashes::gl3
+{
+	void apply( ContextLock const & context
+		, CmdMemoryBarrier const & cmd )
 	{
-		glLogCommand( "MemoryBarrierCommand" );
 		glLogCall( context
 			, glMemoryBarrier_ARB
-			, m_flags );
+			, cmd.flags );
 	}
 
-	CommandPtr MemoryBarrierCommand::clone()const
+	void buildMemoryBarrierCommand( VkPipelineStageFlags after
+		, VkPipelineStageFlags before
+		, VkDependencyFlags dependencyFlags
+		, VkMemoryBarrierArray memoryBarriers
+		, VkBufferMemoryBarrierArray bufferMemoryBarriers
+		, VkImageMemoryBarrierArray imageMemoryBarriers
+		, CmdList & list )
 	{
-		return std::make_unique< MemoryBarrierCommand >( *this );
+		glLogCommand( "MemoryBarrierCommand" );
+
+		for ( auto & barrier : bufferMemoryBarriers )
+		{
+			if ( get( barrier.buffer )->isMapped() )
+			{
+				if ( checkFlag( barrier.srcAccessMask, VK_ACCESS_MEMORY_WRITE_BIT )
+					|| checkFlag( barrier.srcAccessMask, VK_ACCESS_HOST_WRITE_BIT )
+					|| checkFlag( barrier.srcAccessMask, VK_ACCESS_TRANSFER_WRITE_BIT ) )
+				{
+					list.push_back( makeCmd< OpType::eUploadMemory >( get( barrier.buffer )->getMemory() ) );
+				}
+				else if ( checkFlag( barrier.dstAccessMask, VK_ACCESS_TRANSFER_READ_BIT )
+					|| checkFlag( barrier.dstAccessMask, VK_ACCESS_HOST_READ_BIT )
+					|| checkFlag( barrier.dstAccessMask, VK_ACCESS_MEMORY_READ_BIT ) )
+				{
+					list.push_back( makeCmd< OpType::eDownloadMemory >( get( barrier.buffer )->getMemory() ) );
+				}
+			}
+		}
+
+		list.push_back( makeCmd< OpType::eMemoryBarrier >( getMemoryBarrierFlags( before ) ) );
 	}
 }

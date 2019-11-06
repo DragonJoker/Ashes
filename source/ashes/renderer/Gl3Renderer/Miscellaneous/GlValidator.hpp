@@ -8,13 +8,13 @@
 #define ___GlRenderer_Validator_HPP___
 #pragma once
 
-#include "Gl3Renderer/Shader/GlShaderDesc.hpp"
+#include "renderer/Gl3Renderer/Shader/GlShaderDesc.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
-	InputLayout getInputLayout( ContextLock const & context
-		, GLuint program );
 	InterfaceBlockLayout getInterfaceBlockLayout( ContextLock const & context
+		, GLuint program );
+	InputLayout getInputLayout( ContextLock const & context
 		, GLuint program );
 	ConstantsLayout getConstantsLayout( ContextLock const & context
 		, GLuint program );
@@ -31,10 +31,10 @@ namespace gl_renderer
 	}
 
 	void validatePipeline( ContextLock const & context
-		, PipelineLayout const & layout
+		, VkPipelineLayout layout
 		, GLuint program
-		, ashes::VertexInputState const & vertexInputState
-		, ashes::RenderPass const & renderPass );
+		, VkPipelineVertexInputStateCreateInfo const & vertexInputState
+		, VkRenderPass renderPass );
 }
 
 #endif

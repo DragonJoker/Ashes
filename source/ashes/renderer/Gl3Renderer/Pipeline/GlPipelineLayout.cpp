@@ -2,30 +2,18 @@
 
 #include "Core/GlDevice.hpp"
 #include "Descriptor/GlDescriptorSetLayout.hpp"
-#include "Pipeline/GlComputePipeline.hpp"
 #include "Pipeline/GlPipeline.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
-	PipelineLayout::PipelineLayout( Device const & device
-		, ashes::DescriptorSetLayoutCRefArray const & setLayouts
-		, ashes::PushConstantRangeArray const & pushConstantRanges )
-		: ashes::PipelineLayout{ device, setLayouts, pushConstantRanges }
-		, m_device{ device }
+	PipelineLayout::PipelineLayout( VkDevice device
+		, VkPipelineLayoutCreateInfo createInfo )
+		: m_device{ device }
+		, m_setLayouts{ createInfo.pSetLayouts, createInfo.pSetLayouts + createInfo.setLayoutCount }
+		, m_pushConstantRanges{ createInfo.pPushConstantRanges, createInfo.pPushConstantRanges + createInfo.pushConstantRangeCount }
+		, m_createInfo{ createInfo }
 	{
-	}
-
-	ashes::PipelinePtr PipelineLayout::createPipeline( ashes::GraphicsPipelineCreateInfo createInfo )const
-	{
-		return std::make_unique< Pipeline >( m_device
-			, *this
-			, std::move( createInfo ) );
-	}
-
-	ashes::ComputePipelinePtr PipelineLayout::createPipeline( ashes::ComputePipelineCreateInfo createInfo )const
-	{
-		return std::make_unique< ComputePipeline >( m_device
-			, *this
-			, std::move( createInfo ) );
+		m_createInfo.pSetLayouts = m_setLayouts.data();
+		m_createInfo.pPushConstantRanges = m_pushConstantRanges.data();
 	}
 }

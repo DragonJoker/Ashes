@@ -67,6 +67,6 @@ namespace ashes::gl4
 	{
 		glLogCommand( "ViewportCommand" );
 		viewports = adjustViewports( stack, viewports );
-		stack.apply( list, viewports, false );
+		stack.apply( list, firstViewport, viewports, false );
 	}
 }

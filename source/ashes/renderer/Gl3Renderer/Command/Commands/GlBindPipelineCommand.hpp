@@ -4,58 +4,51 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Gl3Renderer/Command/Commands/GlCommandBase.hpp"
+#include "renderer/Gl3Renderer/Command/Commands/GlCommandBase.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
-	void apply( Device const & device
-		, ContextLock const & context
-		, ashes::ColourBlendState const & state );
-	void apply( Device const & device
-		, ContextLock const & context
-		, ashes::RasterisationState const & state
-		, bool dynamicLineWidth
-		, bool dynamicDepthBias );
-	void apply( Device const & device
-		, ContextLock const & context
-		, ashes::MultisampleState const & state );
-	void apply( Device const & device
-		, ContextLock const & context
-		, ashes::DepthStencilState const & state );
-	void apply( Device const & device
-		, ContextLock const & context
-		, ashes::TessellationState const & state );
-	/**
-	*\brief
-	*	Commande d'activation d'un pipeline: shaders, tests, �tats, ...
-	*/
-	class BindPipelineCommand
-		: public CommandBase
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eBindContextState >
 	{
-	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] pipeline
-		*	Le pipeline � activer.
-		*\param[in] bindingPoint
-		*	Le point d'attache du pipeline.
-		*/
-		BindPipelineCommand( Device const & device
-			, ashes::Pipeline const & pipeline
-			, ashes::PipelineBindPoint bindingPoint );
-
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
-
-	private:
-		Pipeline const & m_pipeline;
-		PipelineLayout const & m_layout;
-		GLuint m_program;
-		ashes::PipelineBindPoint m_bindingPoint;
-		bool m_dynamicLineWidth;
-		bool m_dynamicDepthBias;
-		bool m_dynamicScissor;
-		bool m_dynamicViewport;
+		static Op constexpr value = { OpType::eBindContextState, 6u };
 	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eBindContextState >
+	{
+		inline CmdT( ContextStateStack * stack
+			, ContextState * state )
+			: cmd{ { OpType::eBindContextState, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, stack{ stack }
+			, state{ state }
+		{
+		}
+
+		Command cmd;
+		ContextStateStack * stack;
+		ContextState * state;
+	};
+	using CmdBindContextState = CmdT< OpType::eBindContextState >;
+
+	void apply( ContextLock const & context
+		, CmdBindContextState const & cmd );
+	
+	//*************************************************************************
+
+	void buildBindPipelineCommand( ContextStateStack & stack
+		, VkDevice device
+		, VkPipeline pipeline
+		, VkPipelineBindPoint bindingPoint
+		, CmdList & list );
+
+	void buildUnbindPipelineCommand( ContextStateStack & stack
+		, VkDevice device
+		, VkPipeline pipeline
+		, VkImageView view
+		, CmdList & list );
+
+	//*************************************************************************
 }

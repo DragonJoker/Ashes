@@ -17,15 +17,8 @@ namespace ashes::gl4
 	public:
 		Sampler( VkDevice device
 			, VkSamplerCreateInfo const & createInfo );
-		/**
-		*\brief
-		*	Destructeur.
-		*/
 		~Sampler();
-		/**
-		*\return
-		*	L'échantillonneur OpenGL.
-		*/
+
 		inline GLuint getInternal()const noexcept
 		{
 			return m_sampler;

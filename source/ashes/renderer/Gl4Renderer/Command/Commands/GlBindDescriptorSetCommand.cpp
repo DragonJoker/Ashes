@@ -51,7 +51,7 @@ namespace ashes::gl4
 			, GLintptr( cmd.offset )
 			, GLsizeiptr( cmd.range ) );
 	}
-	
+
 	namespace
 	{
 		VkImageView getView( VkWriteDescriptorSet const & write, uint32_t index )

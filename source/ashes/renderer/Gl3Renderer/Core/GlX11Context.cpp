@@ -1,12 +1,12 @@
 #include "Core/GlX11Context.hpp"
 
 #if ASHES_XLIB
-#include "Core/GlPhysicalDevice.hpp"
-#include "Core/GlInstance.hpp"
 
+#include "Core/GlInstance.hpp"
+#include "Core/GlPhysicalDevice.hpp"
 #include "Miscellaneous/GlDebug.hpp"
 
-#include <Ashes/Core/PlatformWindowHandle.hpp>
+#include "ashesgl3_api.hpp"
 
 #include <unistd.h>
 #include <iostream>
@@ -14,8 +14,15 @@
 #include <cstring>
 #include <cstdio>
 
-namespace gl_renderer
+namespace ashes::gl3
 {
+	char const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME[VK_MAX_EXTENSION_NAME_SIZE] = VK_KHR_XLIB_SURFACE_EXTENSION_NAME;
+
+	PFN_vkVoidFunction getFunction( char const * const name )
+	{
+		return reinterpret_cast< PFN_vkVoidFunction >( glXGetProcAddressARB( reinterpret_cast< GLubyte const * >( name ) ) );
+	}
+
 	namespace
 	{
 		using PFN_GLXCHOOSEFBCONFIG = GLXFBConfig *(*)( Display *, int, int const *, int * );
@@ -34,30 +41,44 @@ namespace gl_renderer
 		static const int GL_CONTEXT_CREATION_DEFAULT_MASK = GL_CONTEXT_CORE_PROFILE_BIT;
 
 #endif
+	}
 
-		template< typename FuncT >
-		bool getFunction( char const * const name, FuncT & function )
+	X11Context::X11Context( VkInstance instance
+		, VkSurfaceCreateInfoKHR createInfo
+		, Context const * mainContext )
+		: ContextImpl{ instance, createInfo }
+		, m_glxVersion( 10 )
+		, m_glxContext( nullptr )
+		, m_fbConfig( nullptr )
+		, m_mainContext{ mainContext }
+	{
+	}
+
+	X11Context::X11Context( VkInstance instance
+		, VkSurfaceKHR surface
+		, Context const * mainContext )
+		: X11Context
 		{
-			function = reinterpret_cast< FuncT >( glXGetProcAddressARB( reinterpret_cast< GLubyte const * >( name ) ) );
-			return function != nullptr;
+			instance,
+			get( surface )->getContext()->createInfo,
+			mainContext
 		}
+	{
+	}
 
-		template< typename Func >
-		bool getFunction( std::string const & name, Func & func )
+	X11Context::~X11Context()
+	{
+		try
 		{
-			return getFunction( name.c_str(), func );
+			glXDestroyContext( createInfo.dpy, m_glxContext );
+			XFree( m_fbConfig );
+		}
+		catch ( ... )
+		{
 		}
 	}
 
-	X11Context::X11Context( Instance const & instance
-		, ashes::WindowHandle const & handle
-		, Context const * mainContext )
-		: Context{ instance }
-		, m_display( handle.getInternal< ashes::IXWindowHandle >().getDisplay() )
-		, m_glxVersion( 10 )
-		, m_glxContext( nullptr )
-		, m_drawable( handle.getInternal< ashes::IXWindowHandle >().getDrawable() )
-		, m_fbConfig( nullptr )
+	void X11Context::initialise( Context & parent )
 	{
 		if ( !glXChooseFBConfig )
 		{
@@ -65,10 +86,10 @@ namespace gl_renderer
 			getFunction( "glXGetVisualFromFBConfig", glXGetVisualFromFBConfig );
 		}
 
-		int screen = DefaultScreen( m_display );
+		int screen = DefaultScreen( createInfo.dpy );
 		int major{ 0 };
 		int minor{ 0 };
-		bool ok = glXQueryVersion( m_display, &major, &minor );
+		bool ok = glXQueryVersion( createInfo.dpy, &major, &minor );
 		XVisualInfo * visualInfo = nullptr;
 
 		if ( ok )
@@ -100,22 +121,29 @@ namespace gl_renderer
 
 		if ( visualInfo )
 		{
-			m_glxContext = glXCreateContext( m_display, visualInfo, nullptr, GL_TRUE );
+			m_glxContext = glXCreateContext( createInfo.dpy, visualInfo, nullptr, GL_TRUE );
 
 			if ( !m_glxContext )
 			{
-				throw std::runtime_error{ "Could not create a rendering context->" };
+				throw std::runtime_error{ "Could not create a rendering context." };
 			}
 
 			enable();
-			doLoadBaseFunctions();
-			doLoadGLXFunctions();
-			doLoadDebugFunctions();
+			parent.onBaseContextCreated();
+			loadSystemFunctions();
 			disable();
 
-			if ( !doCreateGl3Context( static_cast< X11Context const * >( mainContext ) ) )
+			auto & extensions = get( instance )->getExtensions();
+
+			if ( extensions.getMajor() < 4 )
 			{
-				glXDestroyContext( m_display, m_glxContext );
+				glXDestroyContext( createInfo.dpy, m_glxContext );
+				throw std::runtime_error{ "The supported OpenGL version is insufficient." };
+			}
+
+			if ( !doCreateGl3Context( m_mainContext ) )
+			{
+				glXDestroyContext( createInfo.dpy, m_glxContext );
 				throw std::runtime_error{ "The supported OpenGL version is insufficient." };
 			}
 
@@ -124,167 +152,66 @@ namespace gl_renderer
 
 			if ( m_glXSwapIntervalEXT )
 			{
-				m_glXSwapIntervalEXT( m_display, m_drawable, 0 );
+				m_glXSwapIntervalEXT( createInfo.dpy, createInfo.window, 0 );
 			}
 
 			disable();
 		}
 	}
 
-	X11Context::~X11Context()
-	{
-		try
-		{
-			glXDestroyContext( m_display, m_glxContext );
-			XFree( m_fbConfig );
-		}
-		catch ( ... )
-		{
-		}
-	}
-
-	void X11Context::enable()const
-	{
-		glXMakeCurrent( m_display, m_drawable, m_glxContext );
-		m_enabled = true;
-	}
-
-	void X11Context::disable()const
-	{
-		m_enabled = false;
-		glXMakeCurrent( m_display, 0, nullptr );
-	}
-
-	void X11Context::swapBuffers()const
-	{
-		glXSwapBuffers( m_display, m_drawable );
-	}
-
-	void X11Context::doLoadBaseFunctions()
-	{
-#define GL_LIB_BASE_FUNCTION( fun )\
-		m_gl##fun = &::gl##fun;
-#define GL_LIB_FUNCTION( fun )\
-		if ( !( getFunction( "gl"#fun, m_gl##fun ) ) )\
-		{\
-			throw std::runtime_error{ std::string{ "Couldn't load function " } + "gl"#fun };\
-		}
-#define GL_LIB_FUNCTION_OPT( fun )\
-		if ( !( getFunction( "gl"#fun, m_gl##fun ) ) )\
-		{\
-			ashes::Logger::logError( std::string{ "Couldn't load function " } + "gl"#fun );\
-		}
-#include "Miscellaneous/OpenGLFunctionsList.inl"
-	}
-
-	void X11Context::doLoadGLXFunctions()
+	void X11Context::loadSystemFunctions()
 	{
 #define GLX_LIB_FUNCTION( fun )\
 		if ( !( getFunction( "glX"#fun, m_glX##fun ) ) )\
 		{\
-			std::cerr << std::string{ "Couldn't load function " } + "glX"#fun << std::endl;\
+			std::cerr << "Couldn't load function " << "gl"#fun << std::endl;\
 		}
 #include "Miscellaneous/OpenGLFunctionsList.inl"
 	}
 
-	void X11Context::doLoadDebugFunctions()
+	void X11Context::enable()const
 	{
-		if ( m_instance.getExtensions().find( KHR_debug ) )
-		{
-			if ( !getFunction( "glDebugMessageCallback", glDebugMessageCallback ) )
-			{
-				if ( !getFunction( "glDebugMessageCallbackKHR", glDebugMessageCallback ) )
-				{
-					ashes::Logger::logWarning( "Unable to retrieve function glDebugMessageCallback" );
-				}
-			}
-		}
-		else if ( m_instance.getExtensions().find( ARB_debug_output ) )
-		{
-			if ( !getFunction( "glDebugMessageCallback", glDebugMessageCallback ) )
-			{
-				if ( !getFunction( "glDebugMessageCallbackARB", glDebugMessageCallback ) )
-				{
-					ashes::Logger::logWarning( "Unable to retrieve function glDebugMessageCallback" );
-				}
-			}
-		}
-		else if ( m_instance.getExtensions().find( AMDX_debug_output ) )
-		{
-			if ( !getFunction( "glDebugMessageCallbackAMD", glDebugMessageCallbackAMD ) )
-			{
-				ashes::Logger::logWarning( "Unable to retrieve function glDebugMessageCallbackAMD" );
-			}
-		}
+		glXMakeCurrent( createInfo.dpy, createInfo.window, m_glxContext );
+	}
 
-		if ( glDebugMessageCallback )
-		{
-			if ( !getFunction( "glObjectLabel", glObjectLabel ) )
-			{
-				ashes::Logger::logWarning( "Unable to retrieve function glObjectLabel" );
-			}
+	void X11Context::disable()const
+	{
+		glXMakeCurrent( createInfo.dpy, 0, nullptr );
+	}
 
-			if ( !getFunction( "glObjectPtrLabel", glObjectPtrLabel ) )
-			{
-				ashes::Logger::logWarning( "Unable to retrieve function glObjectPtrLabel" );
-			}
-
-			for ( auto & callback : m_instance.getDebugCallbacks() )
-			{
-				glDebugMessageCallback( callback.callback, callback.userParam );
-				::glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
-			}
-		}
-		else if ( glDebugMessageCallbackAMD )
-		{
-			for ( auto & callback : m_instance.getDebugAMDCallbacks() )
-			{
-				glDebugMessageCallbackAMD( callback.callback, callback.userParam );
-				::glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS );
-			}
-		}
+	void X11Context::swapBuffers()const
+	{
+		glXSwapBuffers( createInfo.dpy, createInfo.window );
 	}
 
 	XVisualInfo * X11Context::doCreateVisualInfoWithFBConfig( std::vector< int > arrayAttribs, int screen )
 	{
 		XVisualInfo * visualInfo = nullptr;
 		int nbElements = 0;
-		m_fbConfig = glXChooseFBConfig( m_display, screen, arrayAttribs.data(), &nbElements );
+		m_fbConfig = glXChooseFBConfig( createInfo.dpy, screen, arrayAttribs.data(), &nbElements );
 
 		if ( !m_fbConfig )
 		{
 			// First try failed, we try a default FBConfig
-			ashes::Logger::logWarning( "glXChooseFBConfig failed, using default FB config" );
+			std::cerr << "glXChooseFBConfig failed, using default FB config" << std::endl;
 			int data = 0;
-			m_fbConfig = glXChooseFBConfig( m_display, screen, &data, &nbElements );
+			m_fbConfig = glXChooseFBConfig( createInfo.dpy, screen, &data, &nbElements );
 
 			if ( !m_fbConfig )
 			{
 				// Last FBConfig try failed, we try from XVisualInfo
-				ashes::Logger::logWarning( "Default glXChooseFBConfig failed" );
+				std::cerr << "Default glXChooseFBConfig failed" << std::endl;
 				visualInfo = doCreateVisualInfoWithoutFBConfig( arrayAttribs, screen );
 			}
-			else
-			{
-				ashes::Logger::logDebug( "Default glXChooseFBConfig successful" );
-			}
-		}
-		else
-		{
-			ashes::Logger::logDebug( "glXChooseFBConfig successful with detailed attributes" );
 		}
 
 		if ( m_fbConfig )
 		{
-			visualInfo = glXGetVisualFromFBConfig( m_display, m_fbConfig[0] );
+			visualInfo = glXGetVisualFromFBConfig( createInfo.dpy, m_fbConfig[0] );
 
 			if ( !visualInfo )
 			{
-				ashes::Logger::logWarning( "glXgetVisualFromFBConfig failed" );
-			}
-			else
-			{
-				ashes::Logger::logDebug( "GlXgetVisualFromFBConfig successful" );
+				std::cerr << "glXgetVisualFromFBConfig failed" << std::endl;
 			}
 		}
 
@@ -293,56 +220,69 @@ namespace gl_renderer
 
 	XVisualInfo * X11Context::doCreateVisualInfoWithoutFBConfig( std::vector< int > arrayAttribs, int screen )
 	{
-		XVisualInfo * result = glXChooseVisual( m_display, screen, arrayAttribs.data() );
+		XVisualInfo * result = glXChooseVisual( createInfo.dpy, screen, arrayAttribs.data() );
 
 		if ( !result )
 		{
-			ashes::Logger::logError( "glXChooseVisual failed" );
+			std::cerr << "glXChooseVisual failed" << std::endl;
 		}
 
 		return result;
 	}
 
-	bool X11Context::doCreateGl3Context( X11Context const * mainContext )
+	bool X11Context::doCreateGl3Context( Context const * mainContext )
 	{
-		using PFNGLCREATECONTEXTATTRIBS = GLXContext ( * )( Display *dpy, GLXFBConfig config, GLXContext share_context, Bool direct, const int *attrib_list );
-		PFNGLCREATECONTEXTATTRIBS glCreateContextAttribs;
 		bool result = false;
-		std::vector< int > attribList
-		{
-			GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
-			GLX_CONTEXT_MINOR_VERSION_ARB, 2,
-			GLX_CONTEXT_FLAGS_ARB, GL_CONTEXT_CREATION_DEFAULT_FLAGS,
-			GLX_CONTEXT_PROFILE_MASK_ARB, GL_CONTEXT_CREATION_DEFAULT_MASK,
-			0
-		};
+		auto & extensions = get( instance )->getExtensions();
 
-		enable();
-		::glGetError();
-
-		if ( getFunction( "glXCreateContextAttribsARB", glCreateContextAttribs ) )
+		try
 		{
-			auto glxContext = glCreateContextAttribs( m_display
+			using PFNGLCREATECONTEXTATTRIBS = GLXContext ( * )( Display *dpy, GLXFBConfig config, GLXContext share_context, Bool direct, const int *attrib_list );
+			PFNGLCREATECONTEXTATTRIBS glCreateContextAttribs;
+			std::vector< int > attribList
+			{
+				GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
+				GLX_CONTEXT_MINOR_VERSION_ARB, 2,
+				GLX_CONTEXT_FLAGS_ARB, GL_CONTEXT_CREATION_DEFAULT_FLAGS,
+				GLX_CONTEXT_PROFILE_MASK_ARB, GL_CONTEXT_CREATION_DEFAULT_MASK,
+				0
+			};
+
+			enable();
+			::glGetError();
+
+			if ( !getFunction( "glXCreateContextAttribsARB", glCreateContextAttribs ) )
+			{
+				disable();
+				throw std::runtime_error{ "Couldn't retrieve glXCreateContextAttribsARB" };
+			}
+
+			auto glxContext = glCreateContextAttribs( createInfo.dpy
 				, m_fbConfig[0]
 				, ( mainContext
-					? static_cast< X11Context const * >( mainContext )->m_glxContext
+					? static_cast< X11Context const & >( mainContext->getImpl() ).m_glxContext
 					: nullptr )
 				, true
 				, attribList.data() );
-			glXDestroyContext( m_display, m_glxContext );
+			glXDestroyContext( createInfo.dpy, m_glxContext );
 			m_glxContext = glxContext;
 			result = m_glxContext != nullptr;
 
 			if ( !result )
 			{
-				std::stringstream stream;
-				stream << "Failed to create an OpenGL 3.2 context->";
-				ashes::Logger::logError( stream.str() );
+				std::stringstream error;
+				error << "Failed to create an OpenGL " << extensions.getMajor() << "." << extensions.getMinor() << " context (0x" << std::hex << ::glGetError() << ").";
+				throw std::runtime_error{ error.str() };
 			}
 		}
-		else
+		catch ( std::exception & exc )
 		{
-			ashes::Logger::logError( "Couldn't load glXCreateContextAttribsARB function." );
+			std::cerr << exc.what() << std::endl;
+			result = false;
+		}
+		catch ( ... )
+		{
+			result = false;
 		}
 
 		return result;

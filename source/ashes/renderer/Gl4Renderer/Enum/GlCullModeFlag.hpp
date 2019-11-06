@@ -17,9 +17,9 @@ namespace ashes::gl4
 	std::string getName( GlCullMode value );
 	/**
 	*\brief
-	*	Convertit un CullModeFlags en GlCullMode.
+	*	Convertit un VkCullModeFlags en GlCullMode.
 	*\param[in] flags
-	*	Le CullModeFlags.
+	*	Le VkCullModeFlags.
 	*\return
 	*	Le GlCullMode.
 	*/

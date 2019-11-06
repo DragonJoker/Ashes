@@ -8,16 +8,21 @@ See LICENSE file in root folder
 #include "Core/GlDevice.hpp"
 #include "Core/GlInstance.hpp"
 #include "Image/GlImage.hpp"
+#include "Miscellaneous/GlCallLogger.hpp"
 
-#include <Ashes/Miscellaneous/MemoryRequirements.hpp>
+#include "ashesgl3_api.hpp"
 
-namespace gl_renderer
+#include <algorithm>
+#include <cstring>
+#include <map>
+
+namespace ashes::gl3
 {
-	//*********************************************************************************************
+	//************************************************************************************************
 
 	VkMemoryPropertyFlags getFlags( uint32_t memoryTypeIndex )
 	{
-		assert( memoryTypeIndex < Instance::getMemoryProperties().memoryTypes.size()
+		assert( memoryTypeIndex < Instance::getMemoryProperties().memoryTypeCount
 			&& "Wrong deduced memory type" );
 		return Instance::getMemoryProperties().memoryTypes[memoryTypeIndex].propertyFlags;
 	}
@@ -26,23 +31,189 @@ namespace gl_renderer
 
 	namespace
 	{
+		struct BufferAlloc
+		{
+			GLuint name;
+			GlBufferTarget target;
+			GLsizeiptr size;
+			GlBufferDataUsageFlags flags;
+		};
+		using BufferAllocCont = std::vector< BufferAlloc >;
+
+		BufferAllocCont & getAllocatedBuffers()
+		{
+			static BufferAllocCont result;
+			return result;
+		}
+
+		BufferAllocCont::iterator findBuffer( GLuint buffer )
+		{
+			return std::find_if( getAllocatedBuffers().begin()
+				, getAllocatedBuffers().end()
+				, [buffer]( BufferAlloc const & lookup )
+				{
+					return lookup.name == buffer;
+				} );
+		}
+
+		GLint getBufferSize( ContextLock const & context
+			, GLuint buffer )
+		{
+			GLint result = 0;
+			GlBufferTarget target = GL_BUFFER_TARGET_COPY_WRITE;
+			auto it = findBuffer( buffer );
+
+			if ( it != getAllocatedBuffers().end() )
+			{
+				target = it->target;
+			}
+
+			context->glBindBuffer( target
+				, buffer );
+			context->glGetBufferParameteriv( target
+				, 34660
+				, &result );
+			context->glBindBuffer( target
+				, 0u );
+			return result;
+		}
+
+		BufferAllocCont::iterator findBuffer( GLuint buffer
+			, GLsizeiptr size )
+		{
+			return std::find_if( getAllocatedBuffers().begin()
+				, getAllocatedBuffers().end()
+				, [buffer, size]( BufferAlloc const & lookup )
+				{
+					return lookup.name == buffer
+						&& lookup.size == size;
+				} );
+		}
+
+		GLuint createBuffer( ContextLock const & context
+			, GlBufferTarget target
+			, GLsizeiptr size
+			, GlBufferDataUsageFlags flags )
+		{
+			auto allocateBuffer = [&context]( GLuint result
+				, GlBufferTarget target
+				, GLsizeiptr size
+				, GlBufferDataUsageFlags flags )
+			{
+				glLogCall( context
+					, glBindBuffer
+					, target
+					, result );
+				glLogCall( context
+					, glBufferData
+					, target
+					, size
+					, nullptr
+					, flags );
+				glLogCall( context
+					, glBindBuffer
+					, target
+					, 0u );
+				return result;
+			};
+
+			auto & cache = getAllocatedBuffers();
+			GLuint result;
+			glLogCall( context
+				, glGenBuffers
+				, 1u
+				, &result );
+			auto it = findBuffer( result );
+
+			while ( it != cache.end() )
+			{
+				std::cerr << "Buffer " << result << " is being reused" << std::endl;
+				allocateBuffer( it->name, it->target, it->size, it->flags );
+				glLogCall( context
+					, glGenBuffers
+					, 1u
+					, &result );
+				it = findBuffer( result );
+			}
+
+			allocateBuffer( result, target, size, flags );
+			GLint realSize = getBufferSize( context, result );
+			assert( realSize >= size );
+			getAllocatedBuffers().push_back( { result, target, GLsizeiptr( realSize ), flags } );
+			return result;
+		}
+
+		void * mapBuffer( ContextLock const & context
+			, GlBufferTarget target
+			, VkDeviceSize offset
+			, VkDeviceSize size
+			, GlMemoryMapFlags mapFlags )
+		{
+			return glLogNonVoidCall( context
+				, glMapBufferRange
+				, target
+				, GLintptr( offset )
+				, GLsizei( size )
+				, mapFlags );
+		}
+
+		void deleteBuffer( ContextLock const & context
+			, GLuint buffer )
+		{
+			if ( buffer != GL_INVALID_INDEX )
+			{
+				GLint size = getBufferSize( context, buffer );
+
+				if ( size != 0 )
+				{
+					auto it = findBuffer( buffer, size );
+
+					if ( it != getAllocatedBuffers().end() )
+					{
+						getAllocatedBuffers().erase( it );
+
+						glLogCall( context
+							, glDeleteBuffers
+							, 1u
+							, &buffer );
+					}
+					else
+					{
+						std::cerr << "Couldn't find buffer " << buffer << " it has probably been reused" << std::endl;
+					}
+				}
+				else
+				{
+					std::cerr << "Couldn't find buffer " << buffer << " it has probably been reused" << std::endl;
+				}
+			}
+		}
+
 		class ImageMemory
 			: public DeviceMemory::DeviceMemoryImpl
 		{
 		public:
-			ImageMemory( Device const & device
-				, ashes::MemoryAllocateInfo allocateInfo
-				, Image const & texture
-				, GLuint boundTarget
-				, ashes::ImageCreateInfo const & createInfo )
-				: DeviceMemory::DeviceMemoryImpl{ device, std::move( allocateInfo ), texture.getImage(), boundTarget }
-				, m_texture{ &texture }
-				, m_internal{ getInternal( m_texture->getFormat() ) }
+			ImageMemory( VkDeviceMemory parent
+				, VkDevice device
+				, VkMemoryAllocateInfo allocateInfo
+				, VkImage texture
+				, VkDeviceSize memoryOffset )
+				: DeviceMemory::DeviceMemoryImpl
+				{
+					parent,
+					device,
+					std::move( allocateInfo ),
+					get( texture )->getTarget(),
+					memoryOffset,
+					get( device )->getLimits().nonCoherentAtomSize,
+				}
+				, m_texture{ get( texture ) }
+				, m_internal{ getInternalFormat( m_texture->getFormat() ) }
 				, m_format{ getFormat( m_internal ) }
 				, m_type{ getType( m_internal ) }
 			{
-				m_texture = &texture;
-				auto context = m_device.getContext();
+				m_boundResource = get( texture )->getInternal();
+				auto context = get( m_device )->getContext();
 				glLogCall( context
 					, glBindTexture
 					, m_boundTarget
@@ -50,88 +221,37 @@ namespace gl_renderer
 
 				switch ( m_boundTarget )
 				{
-				case gl_renderer::GL_TEXTURE_1D:
-					doSetImage1D( context
-						, createInfo.extent.width
-						, createInfo );
+				case GL_TEXTURE_1D:
+					doSetImage1D( context );
 					break;
-				case gl_renderer::GL_TEXTURE_2D:
-					doSetImage2D( context
-						, createInfo.extent.width
-						, createInfo.extent.height
-						, createInfo );
+				case GL_TEXTURE_2D:
+					doSetImage2D( context );
 					break;
-				case gl_renderer::GL_TEXTURE_3D:
-					doSetImage3D( context
-						, createInfo.extent.width
-						, createInfo.extent.height
-						, createInfo.extent.depth
-						, createInfo );
+				case GL_TEXTURE_3D:
+					doSetImage3D( context, m_texture->getDimensions().depth );
 					break;
-				case gl_renderer::GL_TEXTURE_1D_ARRAY:
-					doSetImage2D( context
-						, createInfo.extent.width
-						, createInfo.extent.height
-						, createInfo );
+				case GL_TEXTURE_1D_ARRAY:
+					doSetImage2D( context );
 					break;
-				case gl_renderer::GL_TEXTURE_2D_ARRAY:
-					doSetImage3D( context
-						, createInfo.extent.width
-						, createInfo.extent.height
-						, createInfo.arrayLayers
-						, createInfo );
+				case GL_TEXTURE_2D_ARRAY:
+					doSetImage3D( context, m_texture->getArrayLayers() );
 					break;
-				case gl_renderer::GL_TEXTURE_CUBE:
-					doSetImageCubeFace( context
-						, createInfo.extent.width
-						, createInfo.extent.height
-						, 0
-						, createInfo );
-					doSetImageCubeFace( context
-						, createInfo.extent.width
-						, createInfo.extent.height
-						, 1
-						, createInfo );
-					doSetImageCubeFace( context
-						, createInfo.extent.width
-						, createInfo.extent.height
-						, 2
-						, createInfo );
-					doSetImageCubeFace( context
-						, createInfo.extent.width
-						, createInfo.extent.height
-						, 3
-						, createInfo );
-					doSetImageCubeFace( context
-						, createInfo.extent.width
-						, createInfo.extent.height
-						, 4
-						, createInfo );
-					doSetImageCubeFace( context
-						, createInfo.extent.width
-						, createInfo.extent.height
-						, 5
-						, createInfo );
+				case GL_TEXTURE_CUBE:
+					doSetImageCubeFace( context, 0 );
+					doSetImageCubeFace( context, 1 );
+					doSetImageCubeFace( context, 2 );
+					doSetImageCubeFace( context, 3 );
+					doSetImageCubeFace( context, 4 );
+					doSetImageCubeFace( context, 5 );
 					break;
-				case gl_renderer::GL_TEXTURE_CUBE_ARRAY:
-					doSetImage3D( context
-						, createInfo.extent.width
-						, createInfo.extent.height
-						, createInfo.arrayLayers
-						, createInfo );
+				case GL_TEXTURE_CUBE_ARRAY:
+					doSetImage3D( context, m_texture->getArrayLayers() );
 					break;
-				case gl_renderer::GL_TEXTURE_2D_MULTISAMPLE:
-					doSetImage2DMS( context
-						, createInfo.extent.width
-						, createInfo.extent.height
-						, createInfo );
+				case GL_TEXTURE_2D_MULTISAMPLE:
+					doSetImage2DMS( context );
 					break;
-				case gl_renderer::GL_TEXTURE_2D_MULTISAMPLE_ARRAY:
-					doSetImage3DMS( context
-						, createInfo.extent.width
-						, createInfo.extent.height
-						, createInfo.arrayLayers
-						, createInfo );
+				case GL_TEXTURE_2D_MULTISAMPLE_ARRAY:
+					doSetImage3DMS( context );
 					break;
 				default:
 					break;
@@ -141,7 +261,7 @@ namespace gl_renderer
 					, glTexParameteri
 					, m_boundTarget
 					, GL_TEX_PARAMETER_MAX_LEVEL
-					, std::max( 0, GLint( createInfo.mipLevels ) - 1 ) );
+					, std::max( 0, GLint( m_texture->getMipLevels() ) - 1 ) );
 				glLogCall( context
 					, glGenerateMipmap
 					, m_boundTarget );
@@ -150,109 +270,69 @@ namespace gl_renderer
 					, m_boundTarget
 					, 0 );
 
-				// If the texture is visible to the host, we'll need a PBO to map it to RAM.
-				if ( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
+				if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
 				{
-					glLogCall( context
-						, glGenBuffers
-						, 1u
-						, &m_pbo );
-					// Initialise Upload PBO.
-					glLogCall( context
-						, glBindBuffer
-						, GL_BUFFER_TARGET_PIXEL_UNPACK
-						, m_pbo );
-					glLogCall( context
-						, glBufferData
-						, m_pbo
+					// Create the PBO
+					m_buffer = createBuffer( context
+						, GL_BUFFER_TARGET_COPY_WRITE
 						, GLsizeiptr( m_allocateInfo.allocationSize )
-						, nullptr
-						, GLbitfield( convert( m_flags ) ) );
-					glLogCall( context
-						, glBindBuffer
-						, GL_BUFFER_TARGET_PIXEL_UNPACK
-						, 0u );
+						, getBufferDataUsageFlags( m_flags ) );
 
 					// Prepare update regions, layer by layer.
 					uint32_t offset = 0;
-					ashes::BufferImageCopy bufferCopyRegion = {};
+					VkBufferImageCopy bufferCopyRegion = {};
 					bufferCopyRegion.imageSubresource.aspectMask = getAspectMask( m_texture->getFormat() );
 					bufferCopyRegion.imageSubresource.mipLevel = 0u;
 					bufferCopyRegion.imageSubresource.layerCount = 1u;
 					bufferCopyRegion.imageExtent = m_texture->getDimensions();
-					bufferCopyRegion.levelSize = uint32_t( m_allocateInfo.allocationSize / m_texture->getLayerCount() );
+					auto levelSize = uint32_t( m_allocateInfo.allocationSize / m_texture->getArrayLayers() );
 
-					for ( uint32_t layer = 0; layer < m_texture->getLayerCount(); layer++ )
+					for ( uint32_t layer = 0; layer < m_texture->getArrayLayers(); layer++ )
 					{
 						bufferCopyRegion.imageSubresource.baseArrayLayer = layer;
 						bufferCopyRegion.bufferOffset = offset;
 						m_updateRegions.push_back( bufferCopyRegion );
-						offset += bufferCopyRegion.levelSize;
+						offset += levelSize;
 					}
 				}
 			}
 
 			~ImageMemory()
 			{
-				if ( m_pbo != GL_INVALID_INDEX )
-				{
-					auto context = m_device.getContext();
-					context->glDeleteBuffers( 1u, &m_pbo );
-				}
 			}
 
-			uint8_t * lock( uint64_t offset
-				, uint64_t size
-				, ashes::MemoryMapFlags flags )const override
+			VkResult lock( ContextLock const & context
+				, VkDeviceSize offset
+				, VkDeviceSize size
+				, void ** data )const override
 			{
-				assert( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
+				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local texture" );
-				auto context = m_device.getContext();
+
+				auto copySize = size == WholeSize
+					? m_allocateInfo.allocationSize
+					: size;
 				glLogCall( context
 					, glBindBuffer
 					, GL_BUFFER_TARGET_PIXEL_UNPACK
-					, m_pbo );
+					, m_buffer );
 				doSetupUpdateRegions( offset, size );
-				auto result = glLogCall( context
-					, glMapBufferRange
+				auto result = mapBuffer( context
 					, GL_BUFFER_TARGET_PIXEL_UNPACK
-					, GLintptr( offset )
-					, GLsizei( size == ashes::WholeSize ? m_allocateInfo.allocationSize : size )
+					, offset
+					, copySize
 					, m_mapFlags );
-				assertDebugValue( m_isLocked, false );
-				setDebugValue( m_isLocked, result != nullptr );
-				return reinterpret_cast< uint8_t * >( result );
+				*data = result;
+				return result
+					? VK_SUCCESS
+					: VK_ERROR_MEMORY_MAP_FAILED;
 			}
 
-			void flush( uint64_t offset
-				, uint64_t size )const override
+			void unlock( ContextLock const & context )const override
 			{
-				assert( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
+				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local texture" );
-				assertDebugValue( m_isLocked, true );
-				auto context = m_device.getContext();
-				glLogCall( context
-					, glFlushMappedBufferRange
-					, GL_BUFFER_TARGET_PIXEL_UNPACK
-					, GLintptr( offset )
-					, GLsizei( size == ashes::WholeSize ? m_allocateInfo.allocationSize : size ) );
-			}
 
-			void invalidate( uint64_t offset
-				, uint64_t size )const override
-			{
-				assert( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
-					&& "Unsupported action on a device local texture" );
-				assertDebugValue( m_isLocked, true );
-			}
-
-			void unlock()const override
-			{
-				assert( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
-					&& "Unsupported action on a device local texture" );
-				assertDebugValue( m_isLocked, true );
-
-				auto context = m_device.getContext();
 				glLogCall( context
 					, glBindTexture
 					, m_boundTarget
@@ -271,8 +351,8 @@ namespace gl_renderer
 					, GL_BUFFER_TARGET_PIXEL_UNPACK
 					, 0u );
 
-				if ( m_texture->getMipmapLevels() > 1
-					&& !ashes::isCompressedFormat( m_texture->getFormat() ) )
+				if ( m_texture->getMipLevels() > 1
+					&& !isCompressedFormat( m_texture->getFormat() ) )
 				{
 					if ( context->hasMemoryBarrier_ARB() )
 					{
@@ -290,38 +370,32 @@ namespace gl_renderer
 					, glBindTexture
 					, m_boundTarget
 					, 0u );
-				setDebugValue( m_isLocked, false );
 			}
 
 		private:
-			void doSetImage1D( ContextLock const & context
-				, uint32_t width
-				, ashes::ImageCreateInfo const & createInfo )
+			void doSetImage1D( ContextLock const & context )
 			{
 				glLogCall( context
 					, glTexImage1D
 					, m_boundTarget
 					, 0u
 					, m_internal
-					, width
+					, m_texture->getDimensions().width
 					, 0
 					, m_format
 					, m_type
 					, nullptr );
 			}
 
-			void doSetImage2D( ContextLock const & context
-				, uint32_t width
-				, uint32_t height
-				, ashes::ImageCreateInfo const & createInfo )
+			void doSetImage2D( ContextLock const & context )
 			{
 				glLogCall( context
 					, glTexImage2D
 					, m_boundTarget
 					, 0u
 					, m_internal
-					, width
-					, height
+					, m_texture->getDimensions().width
+					, m_texture->getDimensions().height
 					, 0
 					, m_format
 					, m_type
@@ -329,18 +403,15 @@ namespace gl_renderer
 			}
 
 			void doSetImageCubeFace( ContextLock const & context
-				, uint32_t width
-				, uint32_t height
-				, int face
-				, ashes::ImageCreateInfo const & createInfo )
+				, int face )
 			{
 				glLogCall( context
 					, glTexImage2D
 					, GL_TEXTURE_CUBE_POSITIVE_X + face
 					, 0u
 					, m_internal
-					, width
-					, height
+					, m_texture->getDimensions().width
+					, m_texture->getDimensions().height
 					, 0
 					, m_format
 					, m_type
@@ -348,18 +419,15 @@ namespace gl_renderer
 			}
 
 			void doSetImage3D( ContextLock const & context
-				, uint32_t width
-				, uint32_t height
-				, uint32_t depth
-				, ashes::ImageCreateInfo const & createInfo )
+				, uint32_t depth )
 			{
 				glLogCall( context
 					, glTexImage3D
 					, m_boundTarget
 					, 0u
 					, m_internal
-					, width
-					, height
+					, m_texture->getDimensions().width
+					, m_texture->getDimensions().height
 					, depth
 					, 0
 					, m_format
@@ -367,43 +435,37 @@ namespace gl_renderer
 					, nullptr );
 			}
 
-			void doSetImage2DMS( ContextLock const & context
-				, uint32_t width
-				, uint32_t height
-				, ashes::ImageCreateInfo const & createInfo )
+			void doSetImage2DMS( ContextLock const & context )
 			{
 				glLogCall( context
 					, glTexImage2DMultisample
 					, m_boundTarget
-					, GLsizei( createInfo.samples )
+					, GLsizei( m_texture->getSamples() )
 					, m_internal
-					, width
-					, height
+					, m_texture->getDimensions().width
+					, m_texture->getDimensions().height
 					, GL_TRUE );
 			}
 
-			void doSetImage3DMS( ContextLock const & context
-				, uint32_t width
-				, uint32_t height
-				, uint32_t depth
-				, ashes::ImageCreateInfo const & createInfo )
+			void doSetImage3DMS( ContextLock const & context )
 			{
 				glLogCall( context
 					, glTexImage3DMultisample
 					, m_boundTarget
-					, GLsizei( createInfo.samples )
+					, GLsizei( m_texture->getSamples() )
 					, m_internal
-					, width
-					, height
-					, depth
+					, m_texture->getDimensions().width
+					, m_texture->getDimensions().height
+					, m_texture->getDimensions().depth
 					, GL_TRUE );
 			}
 
-			void doSetupUpdateRegions( uint64_t offset
-				, uint64_t size )const
+			void doSetupUpdateRegions( VkDeviceSize offset
+				, VkDeviceSize size )const
 			{
 				assert( !m_updateRegions.empty() && "Can't update this texture." );
-				auto layerSize = m_updateRegions[0].levelSize;
+				auto layerSize = getSize( m_updateRegions[0].imageExtent
+					, m_texture->getFormat() );
 				m_beginRegion = 0u;
 
 				while ( offset >= layerSize )
@@ -423,15 +485,25 @@ namespace gl_renderer
 				if ( m_beginRegion >= m_updateRegions.size()
 					|| m_endRegion > m_updateRegions.size() )
 				{
-					throw std::runtime_error{ "Invalid offset and/or size." };
+					get( m_device )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+						, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT
+						, uint64_t( get( m_parent ) )
+						, 0u
+						, VK_ERROR_VALIDATION_FAILED_EXT
+						, "OpenGL"
+						, "Invalid offset and/or size." );
 				}
 			}
 
 			void updateRegion( ContextLock const & context
-				, ashes::BufferImageCopy const & copyInfo )const
+				, VkBufferImageCopy const & copyInfo )const
 			{
-				if ( ashes::isCompressedFormat( m_texture->getFormat() ) )
+				if ( isCompressedFormat( m_texture->getFormat() ) )
 				{
+					auto layerSize = getSize( copyInfo.imageExtent
+						, m_texture->getFormat()
+						, copyInfo.imageSubresource.mipLevel );
+
 					switch ( m_boundTarget )
 					{
 					case GL_TEXTURE_1D:
@@ -442,8 +514,8 @@ namespace gl_renderer
 							, copyInfo.imageOffset.x
 							, copyInfo.imageExtent.width
 							, m_internal
-							, copyInfo.levelSize
-							, BufferOffset( copyInfo.bufferOffset ) );
+							, GLsizei( layerSize )
+							, getBufferOffset( copyInfo.bufferOffset ) );
 						break;
 
 					case GL_TEXTURE_2D:
@@ -456,8 +528,8 @@ namespace gl_renderer
 							, copyInfo.imageExtent.width
 							, copyInfo.imageExtent.height
 							, m_internal
-							, copyInfo.levelSize
-							, BufferOffset( copyInfo.bufferOffset ) );
+							, GLsizei( layerSize )
+							, getBufferOffset( copyInfo.bufferOffset ) );
 						break;
 
 					case GL_TEXTURE_3D:
@@ -472,8 +544,8 @@ namespace gl_renderer
 							, copyInfo.imageExtent.height
 							, copyInfo.imageExtent.depth
 							, m_internal
-							, copyInfo.levelSize
-							, BufferOffset( copyInfo.bufferOffset ) );
+							, GLsizei( layerSize )
+							, getBufferOffset( copyInfo.bufferOffset ) );
 
 					case GL_TEXTURE_1D_ARRAY:
 						glLogCall( context
@@ -485,8 +557,8 @@ namespace gl_renderer
 							, copyInfo.imageExtent.width
 							, copyInfo.imageSubresource.layerCount
 							, m_internal
-							, copyInfo.levelSize
-							, BufferOffset( copyInfo.bufferOffset ) );
+							, GLsizei( layerSize )
+							, getBufferOffset( copyInfo.bufferOffset ) );
 						break;
 
 					case GL_TEXTURE_2D_ARRAY:
@@ -501,8 +573,8 @@ namespace gl_renderer
 							, copyInfo.imageExtent.height
 							, copyInfo.imageSubresource.layerCount
 							, m_internal
-							, copyInfo.levelSize
-							, BufferOffset( copyInfo.bufferOffset ) );
+							, GLsizei( layerSize )
+							, getBufferOffset( copyInfo.bufferOffset ) );
 						break;
 					}
 				}
@@ -519,7 +591,7 @@ namespace gl_renderer
 							, copyInfo.imageExtent.width
 							, m_format
 							, m_type
-							, BufferOffset( copyInfo.bufferOffset ) );
+							, getBufferOffset( copyInfo.bufferOffset ) );
 						break;
 
 					case GL_TEXTURE_2D:
@@ -533,7 +605,7 @@ namespace gl_renderer
 							, copyInfo.imageExtent.height
 							, m_format
 							, m_type
-							, BufferOffset( copyInfo.bufferOffset ) );
+							, getBufferOffset( copyInfo.bufferOffset ) );
 						break;
 
 					case GL_TEXTURE_3D:
@@ -549,7 +621,7 @@ namespace gl_renderer
 							, copyInfo.imageExtent.depth
 							, m_format
 							, m_type
-							, BufferOffset( copyInfo.bufferOffset ) );
+							, getBufferOffset( copyInfo.bufferOffset ) );
 						break;
 
 					case GL_TEXTURE_1D_ARRAY:
@@ -563,7 +635,7 @@ namespace gl_renderer
 							, copyInfo.imageSubresource.layerCount
 							, m_format
 							, m_type
-							, BufferOffset( copyInfo.bufferOffset ) );
+							, getBufferOffset( copyInfo.bufferOffset ) );
 						break;
 
 					case GL_TEXTURE_2D_ARRAY:
@@ -579,7 +651,7 @@ namespace gl_renderer
 							, copyInfo.imageSubresource.layerCount
 							, m_format
 							, m_type
-							, BufferOffset( copyInfo.bufferOffset ) );
+							, getBufferOffset( copyInfo.bufferOffset ) );
 						break;
 					}
 				}
@@ -590,8 +662,7 @@ namespace gl_renderer
 			GlInternal m_internal;
 			GlFormat m_format;
 			GlType m_type;
-			std::vector< ashes::BufferImageCopy > m_updateRegions;
-			GLuint m_pbo{ GL_INVALID_INDEX };
+			std::vector< VkBufferImageCopy > m_updateRegions;
 			mutable size_t m_beginRegion{ 0u };
 			mutable size_t m_endRegion{ 0u };
 		};
@@ -602,87 +673,75 @@ namespace gl_renderer
 			: public DeviceMemory::DeviceMemoryImpl
 		{
 		public:
-			BufferMemory( Device const & device
-				, ashes::MemoryAllocateInfo allocateInfo
-				, GLuint boundResource
-				, GLuint boundTarget )
-				: DeviceMemory::DeviceMemoryImpl{ device, std::move( allocateInfo ), boundResource, boundTarget }
+			BufferMemory( VkDeviceMemory parent
+				, VkDevice device
+				, VkMemoryAllocateInfo allocateInfo
+				, GlBufferTarget target
+				, VkDeviceSize memoryOffset )
+				: DeviceMemory::DeviceMemoryImpl
+				{
+					parent,
+					device,
+					std::move( allocateInfo ),
+					target,
+					memoryOffset,
+					get( device )->getLimits().nonCoherentAtomSize,
+				}
 			{
-				auto context = m_device.getContext();
-				glLogCall( context
-					, glBindBuffer
-					, m_boundTarget
-					, m_boundResource );
-				glLogCall( context
-					, glBufferData
-					, m_boundTarget
-					, GLsizeiptr( m_allocateInfo.allocationSize )
-					, nullptr
-					, GLbitfield( convert( m_flags ) ) );
-				glLogCall( context
-					, glBindBuffer
-					, m_boundTarget
-					, 0u );
+				auto context = get( m_device )->getContext();
+				m_buffer = createBuffer( context
+					, GlBufferTarget( m_boundTarget )
+					, m_allocateInfo.allocationSize
+					, getBufferDataUsageFlags( m_flags ) );
+				m_boundResource = m_buffer;
 			}
 
-			uint8_t * lock( uint64_t offset
-				, uint64_t size
-				, ashes::MemoryMapFlags flags )const override
+			~BufferMemory()
 			{
-				assert( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
+			}
+
+			VkResult lock( ContextLock const & context
+				, VkDeviceSize offset
+				, VkDeviceSize size
+				, void ** data )const override
+			{
+				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local buffer" );
-				assertDebugValue( m_isLocked, false );
-				auto context = m_device.getContext();
 				glLogCall( context
 					, glBindBuffer
-					, GL_BUFFER_TARGET_COPY_WRITE
-					, m_boundResource );
-				auto result = glLogCall( context
-					, glMapBufferRange
-					, GL_BUFFER_TARGET_COPY_WRITE
-					, GLintptr( offset )
-					, GLsizei( size == ashes::WholeSize ? m_allocateInfo.allocationSize : size )
+					, GlBufferTarget( m_boundTarget )
+					, m_buffer );
+				GLint bufferSize = 0;
+				glLogCall( context
+					, glGetBufferParameteriv
+					, GlBufferTarget( m_boundTarget )
+					, 34660
+					, &bufferSize );
+				assert( size + offset <= bufferSize );
+
+				auto result = mapBuffer( context
+					, GlBufferTarget( m_boundTarget )
+					, offset
+					, size == WholeSize ? m_allocateInfo.allocationSize : size
 					, m_mapFlags );
-				setDebugValue( m_isLocked, result != nullptr );
-				return reinterpret_cast< uint8_t * >( result );
+				*data = result;
+				return result
+					? VK_SUCCESS
+					: VK_ERROR_MEMORY_MAP_FAILED;
 			}
 
-			void flush( uint64_t offset
-				, uint64_t size )const override
+			void unlock( ContextLock const & context )const override
 			{
-				assert( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
+				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
 					&& "Unsupported action on a device local buffer" );
-				assertDebugValue( m_isLocked, true );
-				auto context = m_device.getContext();
-				glLogCall( context
-					, glFlushMappedBufferRange
-					, GL_BUFFER_TARGET_COPY_WRITE
-					, GLintptr( offset )
-					, GLsizei( size == ashes::WholeSize ? m_allocateInfo.allocationSize : size ) );
-			}
 
-			void invalidate( uint64_t offset
-				, uint64_t size )const override
-			{
-				assert( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
-					&& "Unsupported action on a device local buffer" );
-				assertDebugValue( m_isLocked, true );
-			}
-
-			void unlock()const override
-			{
-				assert( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
-					&& "Unsupported action on a device local buffer" );
-				assertDebugValue( m_isLocked, true );
-				auto context = m_device.getContext();
 				glLogCall( context
 					, glUnmapBuffer
-					, GL_BUFFER_TARGET_COPY_WRITE );
+					, GlBufferTarget( m_boundTarget ) );
 				glLogCall( context
 					, glBindBuffer
-					, GL_BUFFER_TARGET_COPY_WRITE
+					, GlBufferTarget( m_boundTarget )
 					, 0u );
-				setDebugValue( m_isLocked, false );
 			}
 
 		private:
@@ -692,76 +751,227 @@ namespace gl_renderer
 
 	//************************************************************************************************
 
-	DeviceMemory::DeviceMemoryImpl::DeviceMemoryImpl( Device const & device
-		, ashes::MemoryAllocateInfo allocateInfo
-		, GLuint boundResource
-		, GLuint boundTarget )
-		: m_device{ device }
-		, m_allocateInfo{ std::move( allocateInfo ) }
-		, m_mapFlags{ 0u }
-		, m_boundResource{ boundResource }
+	DeviceMemory::DeviceMemoryImpl::DeviceMemoryImpl( VkDeviceMemory parent
+		, VkDevice device
+		, VkMemoryAllocateInfo allocateInfo
+		, GLuint boundTarget
+		, VkDeviceSize memoryOffset
+		, VkDeviceSize align )
+		: m_parent{ parent }
+		, m_device{ device }
+		, m_allocateInfo{ allocateInfo }
+		, m_flags{ getFlags( m_allocateInfo.memoryTypeIndex ) }
+		, m_mapFlags{ getMapFlags( m_flags ) }
+		, m_buffer{ GL_INVALID_INDEX }
 		, m_boundTarget{ boundTarget }
-		, m_flags{ getFlags( allocateInfo.memoryTypeIndex ) }
+		, m_memoryOffset{ memoryOffset }
+		, m_align{ align }
 	{
-		if ( checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
+	}
+
+	DeviceMemory::DeviceMemoryImpl::~DeviceMemoryImpl()
+	{
+		if ( m_buffer != GL_INVALID_INDEX )
 		{
-			m_mapFlags |= GL_MEMORY_MAP_READ_BIT | GL_MEMORY_MAP_WRITE_BIT | GL_MEMORY_MAP_FLUSH_EXPLICIT_BIT;
+			auto context = get( m_device )->getContext();
+			deleteBuffer( context, m_buffer );
+		}
+	}
+
+	void DeviceMemory::DeviceMemoryImpl::upload( ContextLock const & context
+		, ByteArray const & data
+		, VkDeviceSize offset
+		, VkDeviceSize size )const
+	{
+		if ( size == WholeSize )
+		{
+			assert( offset == 0ull );
+			size = m_allocateInfo.allocationSize;
+		}
+		else
+		{
+			size = ashes::getAlignedSize( size, m_align );
+			offset = ashes::getAlignedSize( offset, m_align );
+			size = offset + size < m_allocateInfo.allocationSize
+				? size
+				: size = m_allocateInfo.allocationSize - offset;
+		}
+
+		void * dst{ nullptr };
+
+		if ( lock( context, offset, size, &dst ) == VK_SUCCESS )
+		{
+			std::memcpy( dst, data.data() + offset, size );
+			unlock( context );
+		}
+	}
+
+	void DeviceMemory::DeviceMemoryImpl::download( ContextLock const & context
+		, ByteArray & data
+		, VkDeviceSize offset
+		, VkDeviceSize size )const
+	{
+		if ( size == WholeSize )
+		{
+			assert( offset == 0ull );
+			size = m_allocateInfo.allocationSize;
+		}
+
+		void * src{ nullptr };
+
+		if ( lock( context, offset, size, &src ) == VK_SUCCESS )
+		{
+			std::memcpy( data.data() + offset, src, size );
+			unlock( context );
 		}
 	}
 
 	//************************************************************************************************
 
-	DeviceMemory::DeviceMemory( Device const & device
-		, ashes::MemoryAllocateInfo allocateInfo )
-		: ashes::DeviceMemory{ device, std::move( allocateInfo ) }
-		, m_device{ device }
+	DeviceMemory::DeviceMemory( VkDevice device
+		, VkMemoryAllocateInfo allocateInfo )
+		: m_device{ device }
+		, m_allocateInfo{ std::move( allocateInfo ) }
+		, m_flags{ getFlags( m_allocateInfo.memoryTypeIndex ) }
+		, m_mapFlags{ getMapFlags( m_flags ) }
 	{
+		if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
+		{
+			m_data.resize( allocateInfo.allocationSize );
+		}
 	}
 
 	DeviceMemory::~DeviceMemory()
 	{
 	}
 
-	void DeviceMemory::bindToBuffer( GLuint resource, GLenum target )
+	VkResult DeviceMemory::bindToBuffer( VkBuffer buffer
+		, VkDeviceSize memoryOffset )
 	{
-		assert( !m_impl && "Memory object was already bound to a resource object" );
-		m_impl = std::make_unique< BufferMemory >( m_device, m_allocateInfo, resource, target );
+		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
+
+		try
+		{
+			m_impl = std::make_unique< BufferMemory >( get( this )
+				, m_device
+				, m_allocateInfo
+				, get( buffer )->getTarget()
+				, memoryOffset );
+			get( buffer )->setInternal( m_impl->getInternal(), memoryOffset );
+			get( buffer )->setMemory( get( this ) );
+
+			if ( !m_data.empty() )
+			{
+				auto context = get( m_device )->getContext();
+				m_impl->upload( context
+					, m_data
+					, 0u
+					, m_data.size() );
+			}
+
+			result = VK_SUCCESS;
+		}
+		catch ( Exception & exc )
+		{
+			result = exc.getResult();
+		}
+		catch ( ... )
+		{
+		}
+
+		return result;
 	}
 
-	void DeviceMemory::bindToImage( Image const & texture
-		, GLenum target
-		, ashes::ImageCreateInfo const & createInfo )
+	VkResult DeviceMemory::bindToImage( VkImage image
+		, VkDeviceSize memoryOffset )
 	{
-		assert( !m_impl && "Memory object was already bound to a resource object" );
-		m_impl = std::make_unique< ImageMemory >( m_device, m_allocateInfo, texture, target, createInfo );
+		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
+
+		try
+		{
+			m_impl = std::make_unique< ImageMemory >( get( this )
+				, m_device
+				, m_allocateInfo
+				, image
+				, memoryOffset );
+			result = VK_SUCCESS;
+		}
+		catch ( Exception & exc )
+		{
+			result = exc.getResult();
+		}
+		catch ( ... )
+		{
+		}
+
+		return result;
 	}
 
-	uint8_t * DeviceMemory::lock( uint64_t offset
-		, uint64_t size
-		, ashes::MemoryMapFlags flags )const
+	void DeviceMemory::upload( ContextLock const & context
+		, VkDeviceSize offset
+		, VkDeviceSize size )const
 	{
-		assert( m_impl && "Memory object was not bound to a resource object" );
-		return m_impl->lock( offset, size, flags );
+		assert( m_impl && "VkDeviceMemory should be bound to a buffer or an image, at this point" );
+		m_impl->upload( context, m_data, offset, size );
 	}
 
-	void DeviceMemory::flush( uint64_t offset
-		, uint64_t size )const
+	void DeviceMemory::download( ContextLock const & context
+		, VkDeviceSize offset
+		, VkDeviceSize size )const
 	{
-		assert( m_impl && "Memory object was not bound to a resource object" );
-		m_impl->flush( offset, size );
+		assert( m_impl && "VkDeviceMemory should be bound to a buffer or an image, at this point" );
+		m_impl->download( context, m_data, offset, size );
 	}
 
-	void DeviceMemory::invalidate( uint64_t offset
-		, uint64_t size )const
+	VkResult DeviceMemory::lock( ContextLock const & context
+		, VkDeviceSize offset
+		, VkDeviceSize size
+		, VkMemoryMapFlags flags
+		, void ** data )const
 	{
-		assert( m_impl && "Memory object was not bound to a resource object" );
-		m_impl->invalidate( offset, size );
+		assert( !m_mapped && "VkDeviceMemory should not be mapped" );
+		*data = m_data.data() + offset;
+		m_mappedOffset = offset;
+		m_mappedSize = size == ~( 0ull )
+			? m_allocateInfo.allocationSize
+			: size;
+		m_mapped = *data != nullptr;
+		m_dirty = true;
+		return VK_SUCCESS;
 	}
 
-	void DeviceMemory::unlock()const
+	VkResult DeviceMemory::flush( ContextLock const & context
+		, VkDeviceSize offset
+		, VkDeviceSize size )const
 	{
-		assert( m_impl && "Memory object was not bound to a resource object" );
-		m_impl->unlock();
+		assert( m_mapped && "VkDeviceMemory should be mapped" );
+
+		if ( m_impl )
+		{
+			upload( context, offset, size );
+		}
+
+		return VK_SUCCESS;
+	}
+
+	VkResult DeviceMemory::invalidate( ContextLock const & context
+		, VkDeviceSize offset
+		, VkDeviceSize size )const
+	{
+		assert( m_mapped && "VkDeviceMemory should be mapped" );
+		m_dirty = true;
+		return VK_SUCCESS;
+	}
+
+	void DeviceMemory::unlock( ContextLock const & context )const
+	{
+		assert( m_mapped && "VkDeviceMemory should be mapped" );
+		m_mapped = false;
+
+		if ( m_impl )
+		{
+			upload( context, m_mappedOffset, m_mappedSize );
+		}
 	}
 
 	//************************************************************************************************

@@ -16,20 +16,13 @@ namespace ashes
 		, ashes::InstanceCreateInfo createInfo )
 		: m_plugin{ std::move( plugin ) }
 		, m_createInfo{ std::move( createInfo ) }
+		, m_features{ plugin.features }
 	{
 #ifndef NDEBUG
 
 		callstack::initialise();
 
 #endif
-
-		m_features.hasBufferRange = true;
-		m_features.hasImageTexture = true;
-		m_features.hasBaseInstance = true;
-		m_features.hasClearTexImage = true;
-		m_features.hasComputeShaders = true;
-		m_features.hasStorageBuffers = true;
-		m_features.supportsPersistentMapping = true;
 
 #define VK_LIB_GLOBAL_FUNCTION( fun )\
 		vk##fun = reinterpret_cast< PFN_vk##fun >( m_plugin.getInstanceProcAddr( nullptr, "vk"#fun ) );

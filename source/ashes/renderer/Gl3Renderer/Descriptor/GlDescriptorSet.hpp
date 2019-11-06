@@ -1,6 +1,6 @@
 /**
 *\file
-*	VertexBuffer.h
+*	GlDescriptorSet.hpp
 *\author
 *	Sylvain Doremus
 */
@@ -8,121 +8,96 @@
 #define ___GlRenderer_DescriptorSet_HPP___
 #pragma once
 
-#include "Gl3Renderer/GlRendererPrerequisites.hpp"
+#include "renderer/Gl3Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Descriptor/DescriptorSet.hpp>
-
+#include <map>
 #include <vector>
 
-namespace gl_renderer
+namespace ashes::gl3
 {
-	/**
-	*\brief
-	*	Set de descripteurs.
-	*/
-	class DescriptorSet
-		: public ashes::DescriptorSet
+	struct LayoutBindingWrites
 	{
+		uint32_t binding;
+		uint32_t descriptorCount;
+		VkDescriptorType descriptorType;
+		VkWriteDescriptorSetArray writes;
+	};
+	using LayoutBindingWritesArray = std::vector< LayoutBindingWrites * >;
+	using LayoutBindingWritesMap = std::map< uint32_t, LayoutBindingWrites >;
+
+	class DescriptorSet
+	{
+	private:
 	public:
-		/**
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] pool
-		*	Le pool parent.
-		*\param[in] bindingPoint
-		*	Le point d'attache du set.
-		*\~english
-		*\brief
-		*	Constructor.
-		*\param[in] pool
-		*	The parent pool.
-		*\param[in] bindingPoint
-		*	The binding point for the set.
-		*/
-		DescriptorSet( ashes::DescriptorPool const & pool
-			, ashes::DescriptorSetLayout const & layout
-			, uint32_t bindingPoint );
-		/**
-		*\copydoc		ashes::DescriptorSet::update
-		*/
-		void update()const override;
-		/**
-		*\brief
-		*	Le tableau d'attaches de type sampler + texture.
-		*/
-		inline ashes::VkWriteDescriptorSetArray const & getCombinedTextureSamplers()const
+		DescriptorSet( VkDescriptorPool pool
+			, VkDescriptorSetLayout layout );
+
+		void update( VkWriteDescriptorSet const & write );
+		void update( VkCopyDescriptorSet const & write );
+
+		inline LayoutBindingWritesArray const & getCombinedTextureSamplers()const
 		{
 			return m_combinedTextureSamplers;
 		}
-		/**
-		*\brief
-		*	Le tableau d'attaches de type sampler.
-		*/
-		inline ashes::VkWriteDescriptorSetArray const & getSamplers()const
+
+		inline LayoutBindingWritesArray const & getSamplers()const
 		{
 			return m_samplers;
 		}
-		/**
-		*\brief
-		*	Le tableau d'attaches de type texture échantillonnée.
-		*/
-		inline ashes::VkWriteDescriptorSetArray const & getSampledTextures()const
+
+		inline LayoutBindingWritesArray const & getSampledTextures()const
 		{
 			return m_sampledTextures;
 		}
-		/**
-		*\brief
-		*	Le tableau d'attaches de type texture de stockage.
-		*/
-		inline ashes::VkWriteDescriptorSetArray const & getStorageTextures()const
+
+		inline LayoutBindingWritesArray const & getStorageTextures()const
 		{
 			return m_storageTextures;
 		}
-		/**
-		*\brief
-		*	Le tableau d'attaches de type tampon uniforme.
-		*/
-		inline ashes::VkWriteDescriptorSetArray const & getUniformBuffers()const
+
+		inline LayoutBindingWritesArray const & getUniformBuffers()const
 		{
 			return m_uniformBuffers;
 		}
-		/**
-		*\brief
-		*	Le tableau d'attaches de type tampon de stockage.
-		*/
-		inline ashes::VkWriteDescriptorSetArray const & getStorageBuffers()const
+
+		inline LayoutBindingWritesArray const & getStorageBuffers()const
 		{
 			return m_storageBuffers;
 		}
-		/**
-		*\brief
-		*	Le tableau d'attaches de type tampon uniforme de texels.
-		*/
-		inline ashes::VkWriteDescriptorSetArray const & getTexelBuffers()const
+
+		inline LayoutBindingWritesArray const & getTexelBuffers()const
 		{
 			return m_texelBuffers;
 		}
-		/**
-		*\brief
-		*	Le tableau d'attaches de type tampon dynamique.
-		*/
-		inline ashes::VkWriteDescriptorSetArray const & getDynamicBuffers()const
+
+		inline LayoutBindingWritesArray const & getDynamicBuffers()const
 		{
 			return m_dynamicBuffers;
 		}
 
+		inline VkDescriptorSetLayout getLayout()const
+		{
+			return m_layout;
+		}
+
 	private:
-		mutable ashes::VkWriteDescriptorSetArray m_combinedTextureSamplers;
-		mutable ashes::VkWriteDescriptorSetArray m_samplers;
-		mutable ashes::VkWriteDescriptorSetArray m_sampledTextures;
-		mutable ashes::VkWriteDescriptorSetArray m_storageTextures;
-		mutable ashes::VkWriteDescriptorSetArray m_uniformBuffers;
-		mutable ashes::VkWriteDescriptorSetArray m_storageBuffers;
-		mutable ashes::VkWriteDescriptorSetArray m_texelBuffers;
-		mutable ashes::VkWriteDescriptorSetArray m_dynamicUniformBuffers;
-		mutable ashes::VkWriteDescriptorSetArray m_dynamicStorageBuffers;
-		mutable ashes::VkWriteDescriptorSetArray m_dynamicBuffers;
+		void mergeWrites( LayoutBindingWrites & writes, VkWriteDescriptorSet const & write );
+
+	private:
+		VkDescriptorSetLayout m_layout;
+		std::vector< std::vector< VkDescriptorImageInfo > > m_imagesInfos;
+		std::vector< std::vector< VkDescriptorBufferInfo > > m_buffersInfos;
+		LayoutBindingWritesMap m_writes;
+		LayoutBindingWritesArray m_combinedTextureSamplers;
+		LayoutBindingWritesArray m_samplers;
+		LayoutBindingWritesArray m_sampledTextures;
+		LayoutBindingWritesArray m_storageTextures;
+		LayoutBindingWritesArray m_uniformBuffers;
+		LayoutBindingWritesArray m_storageBuffers;
+		LayoutBindingWritesArray m_texelBuffers;
+		LayoutBindingWritesArray m_dynamicUniformBuffers;
+		LayoutBindingWritesArray m_dynamicStorageBuffers;
+		LayoutBindingWritesArray m_dynamicBuffers;
 	};
 }
 

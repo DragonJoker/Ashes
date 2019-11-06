@@ -4,57 +4,30 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Gl3Renderer/GlRendererPrerequisites.hpp"
+#include "renderer/Gl3Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Sync/Fence.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
-	/**
-	*\brief
-	*	Classe permettant la synchronisation des opérations sur une file.
-	*/
 	class Fence
-		: public ashes::Fence
 	{
 	public:
-		/**
-		*\brief
-		*	Constructeur
-		*\param[in] device
-		*	Le device parent.
-		*\param[in] flags
-		*	Les indicateurs de création de la barrière.
-		*/ 
-		Fence( Device const & device
-			, ashes::FenceCreateFlags flags = 0 );
-		/**
-		*\brief
-		*	Destructeur
-		*/
+		Fence( VkDevice device
+			, VkFenceCreateFlags flags = 0 );
 		~Fence();
-		/**
-		*\brief
-		*	Attend que la barrière soit signalée.
-		*\param[in] timeout
-		*	Le temps à attendre pour le signalement.
-		*\return
-		*	\p WaitResult::eSuccess ou \p WaitResult::eTimeOut en cas de succès.
-		*/ 
-		ashes::WaitResult wait( uint64_t timeout )const override;
-		/**
-		*\brief
-		*	Remet la barrière en non signalée.
-		*/ 
-		void reset()const override;
 
-		inline GLsync getSync()const
+		VkResult wait( ContextLock & context
+			, uint64_t timeout )const;
+		VkResult wait( uint64_t timeout )const;
+		void reset( ContextLock & context )const;
+		void reset()const;
+
+		inline GLsync getInternal()const
 		{
 			return m_fence;
 		}
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
 		mutable GLsync m_fence{ nullptr };
 	};
 }

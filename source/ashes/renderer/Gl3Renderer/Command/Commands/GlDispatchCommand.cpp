@@ -4,31 +4,28 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlDispatchCommand.hpp"
 
-namespace gl_renderer
-{
-	DispatchCommand::DispatchCommand( Device const & device
-		, uint32_t groupCountX
-		, uint32_t groupCountY
-		, uint32_t groupCountZ )
-		: CommandBase{ device }
-		, m_groupCountX{ groupCountX }
-		, m_groupCountY{ groupCountY }
-		, m_groupCountZ{ groupCountZ }
-	{
-	}
+#include "Core/GlContextLock.hpp"
 
-	void DispatchCommand::apply( ContextLock const & context )const
+namespace ashes::gl3
+{
+	void apply( ContextLock const & context
+		, CmdDispatch const & cmd )
 	{
-		glLogCommand( "DispatchCommand" );
 		glLogCall( context
 			, glDispatchCompute_ARB
-			, m_groupCountX
-			, m_groupCountY
-			, m_groupCountZ );
+			, cmd.groupCountX
+			, cmd.groupCountY
+			, cmd.groupCountZ );
 	}
 
-	CommandPtr DispatchCommand::clone()const
+	void buildDispatchCommand( uint32_t groupCountX
+		, uint32_t groupCountY
+		, uint32_t groupCountZ
+		, CmdList & list )
 	{
-		return std::make_unique< DispatchCommand >( *this );
+		glLogCommand( "DispatchCommand" );
+		list.push_back( makeCmd< OpType::eDispatch >( groupCountX
+			, groupCountY
+			, groupCountZ ) );
 	}
 }

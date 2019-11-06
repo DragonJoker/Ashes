@@ -4,10 +4,9 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlDrawIndexedCommand.hpp"
 
-#include "Core/GlDevice.hpp"
-#include "Core/GlInstance.hpp"
+#include "ashesgl3_api.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	namespace
 	{
@@ -26,62 +25,62 @@ namespace gl_renderer
 		}
 	}
 
-	DrawIndexedCommand::DrawIndexedCommand( Device const & device
-		, uint32_t indexCount
+	void apply( ContextLock const & context
+		, CmdDrawIndexed const & cmd )
+	{
+		glLogCall( context
+			, glDrawElementsInstancedBaseVertex
+			, cmd.mode
+			, cmd.indexCount
+			, cmd.type
+			, getBufferOffset( cmd.indexOffset )
+			, cmd.instCount
+			, cmd.vertexOffset );
+	}
+
+	void apply( ContextLock const & context
+		, CmdDrawIndexedBaseInstance const & cmd )
+	{
+		glLogCall( context
+			, glDrawElementsInstancedBaseVertexBaseInstance_ARB
+			, cmd.mode
+			, cmd.indexCount
+			, cmd.type
+			, getBufferOffset( cmd.indexOffset )
+			, cmd.instCount
+			, cmd.vertexOffset
+			, cmd.firstInstance );
+	}
+
+	void buildDrawIndexedCommand( uint32_t indexCount
 		, uint32_t instCount
 		, uint32_t firstIndex
 		, uint32_t vertexOffset
 		, uint32_t firstInstance
 		, VkPrimitiveTopology mode
-		, VkIndexType type )
-		: CommandBase{ device }
-		, m_indexCount{ indexCount }
-		, m_instCount{ instCount }
-		, m_firstIndex{ firstIndex }
-		, m_vertexOffset{ vertexOffset }
-		, m_firstInstance{ firstInstance }
-		, m_mode{ convert( mode ) }
-		, m_type{ convert( type ) }
-		, m_size{ getSize( type ) }
-	{
-		if ( m_firstInstance > 0
-			&& !m_device.getInstance().getFeatures().hasBaseInstance )
-		{
-			throw std::runtime_error( "Base instance rendering is not supported" );
-		}
-	}
-
-	void DrawIndexedCommand::apply( ContextLock const & context )const
+		, VkIndexType type
+		, CmdList & list )
 	{
 		glLogCommand( "DrawIndexedCommand" );
 
-		if ( m_device.getInstance().getFeatures().hasBaseInstance )
+		if ( firstInstance > 0 )
 		{
-			glLogCall( context
-				, glDrawElementsInstancedBaseVertexBaseInstance_ARB
-				, m_mode
-				, m_indexCount
-				, m_type
-				, ( ( GLvoid * )( m_firstIndex * m_size ) )
-				, m_instCount
-				, m_vertexOffset
-				, m_firstInstance );
+			list.push_back( makeCmd< OpType::eDrawIndexedBaseInstance >( indexCount
+				, instCount
+				, firstIndex * getSize( type )
+				, vertexOffset
+				, firstInstance
+				, convert( mode )
+				, convert( type ) ) );
 		}
 		else
 		{
-			glLogCall( context
-				, glDrawElementsInstancedBaseVertex
-				, m_mode
-				, m_indexCount
-				, m_type
-				, ( ( GLvoid * )( m_firstIndex * m_size ) )
-				, m_instCount
-				, m_vertexOffset );
+			list.push_back( makeCmd< OpType::eDrawIndexed >( indexCount
+				, instCount
+				, firstIndex * getSize( type )
+				, vertexOffset
+				, convert( mode )
+				, convert( type ) ) );
 		}
-	}
-
-	CommandPtr DrawIndexedCommand::clone()const
-	{
-		return std::make_unique< DrawIndexedCommand >( *this );
 	}
 }

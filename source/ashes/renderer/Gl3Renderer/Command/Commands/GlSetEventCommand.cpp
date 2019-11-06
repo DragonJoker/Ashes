@@ -6,24 +6,21 @@ See LICENSE file in root folder.
 
 #include "Sync/GlEvent.hpp"
 
-namespace gl_renderer
+#include "ashesgl3_api.hpp"
+
+namespace ashes::gl3
 {
-	SetEventCommand::SetEventCommand( Device const & device
-		, ashes::Event const & event
-		, VkPipelineStageFlags stageFlags )
-		: CommandBase{ device }
-		, m_event{ event }
+	void apply( ContextLock const & context
+		, CmdSetEvent const & cmd )
 	{
+		get( cmd.event )->reset();
 	}
 
-	void SetEventCommand::apply( ContextLock const & context )const
+	void buildSetEventCommand( VkEvent event
+		, VkPipelineStageFlags stageFlags
+		, CmdList & list )
 	{
 		glLogCommand( "SetEventCommand" );
-		m_event.reset();
-	}
-
-	CommandPtr SetEventCommand::clone()const
-	{
-		return std::make_unique< SetEventCommand >( *this );
+		list.push_back( makeCmd< OpType::eSetEvent >( event ) );
 	}
 }

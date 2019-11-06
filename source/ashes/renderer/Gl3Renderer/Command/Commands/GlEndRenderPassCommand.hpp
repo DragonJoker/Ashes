@@ -4,25 +4,10 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Gl3Renderer/Command/Commands/GlCommandBase.hpp"
+#include "renderer/Gl3Renderer/Command/Commands/GlCommandBase.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
-	/**
-	*\brief
-	*	Commande de fin d'une passe de rendu, unbind son framebuffer.
-	*/
-	class EndRenderPassCommand
-		: public CommandBase
-	{
-	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*/
-		EndRenderPassCommand( Device const & device );
-
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
-	};
+	void buildEndRenderPassCommand( ContextStateStack & stack
+		, CmdList & list );
 }

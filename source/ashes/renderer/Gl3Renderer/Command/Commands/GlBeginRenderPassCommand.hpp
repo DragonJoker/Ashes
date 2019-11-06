@@ -4,48 +4,149 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Gl3Renderer/Command/Commands/GlCommandBase.hpp"
+#include "renderer/Gl3Renderer/Command/Commands/GlCommandBase.hpp"
 
-#include <Ashes/Pipeline/Scissor.hpp>
-#include <Ashes/RenderPass/ClearValue.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
-	/**
-	*\brief
-	*	Démarre une passe de rendu en bindant son framebuffer, et en le vidant au besoin.
-	*/
-	class BeginRenderPassCommand
-		: public CommandBase
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eClearBack >
 	{
-	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] renderPass
-		*	La passe de rendu.
-		*\param[in] frameBuffer
-		*	Le tampon d'image affecté par le rendu.
-		*\param[in] clearValues
-		*	Les valeurs de vidage, une par attache de la passe de rendu.
-		*\param[in] contents
-		*	Indique la manière dont les commandes de la première sous-passe sont fournies.
-		*/
-		BeginRenderPassCommand( Device const & device
-			, ashes::RenderPass const & renderPass
-			, ashes::FrameBuffer const & frameBuffer
-			, ashes::ClearValueArray const & clearValues
-			, ashes::SubpassContents contents
-			, ashes::SubpassDescription const & subpass );
-
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
-
-	private:
-		RenderPass const & m_renderPass;
-		FrameBuffer const & m_frameBuffer;
-		ashes::ClearValueArray m_rtClearValues;
-		ashes::ClearValue m_dsClearValue;
-		ashes::Scissor m_scissor;
+		static Op constexpr value = { OpType::eClearBack, 2u };
 	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eClearBack >
+	{
+		inline CmdT( uint32_t mask )
+			: cmd{ { OpType::eClearBack, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, mask{ std::move( mask ) }
+		{
+		}
+
+		Command cmd;
+		uint32_t mask;
+	};
+	using CmdClearBack = CmdT< OpType::eClearBack >;
+
+	void apply( ContextLock const & context
+		, CmdClearBack const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eClearBackColour >
+	{
+		static Op constexpr value = { OpType::eClearBackColour, 6u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eClearBackColour >
+	{
+		inline CmdT( VkClearColorValue color
+			, uint32_t colourIndex )
+			: cmd{ { OpType::eClearBackColour, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, color{ std::move( color ) }
+			, colourIndex{ std::move( colourIndex ) }
+		{
+		}
+
+		Command cmd;
+		VkClearColorValue color;
+		uint32_t colourIndex;
+	};
+	using CmdClearBackColour = CmdT< OpType::eClearBackColour >;
+
+	void apply( ContextLock const & context
+		, CmdClearBackColour const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eClearBackDepth >
+	{
+		static Op constexpr value = { OpType::eClearBackDepth, 2u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eClearBackDepth >
+	{
+		inline CmdT( float depth )
+			: cmd{ { OpType::eClearBackDepth, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, depth{ std::move( depth ) }
+		{
+		}
+
+		Command cmd;
+		float depth;
+	};
+	using CmdClearBackDepth = CmdT< OpType::eClearBackDepth >;
+
+	void apply( ContextLock const & context
+		, CmdClearBackDepth const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eClearBackStencil >
+	{
+		static Op constexpr value = { OpType::eClearBackStencil, 2u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eClearBackStencil >
+	{
+		inline CmdT( int32_t stencil )
+			: cmd{ { OpType::eClearBackStencil, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, stencil{ std::move( stencil ) }
+		{
+		}
+
+		Command cmd;
+		int32_t stencil;
+	};
+	using CmdClearBackStencil = CmdT< OpType::eClearBackStencil >;
+
+	void apply( ContextLock const & context
+		, CmdClearBackStencil const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eClearBackDepthStencil >
+	{
+		static Op constexpr value = { OpType::eClearBackDepthStencil, 3u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eClearBackDepthStencil >
+	{
+		inline CmdT( float depth
+			, int32_t stencil )
+			: cmd{ { OpType::eClearBackDepthStencil, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, depth{ std::move( depth ) }
+			, stencil{ std::move( stencil ) }
+		{
+		}
+
+		Command cmd;
+		float depth;
+		int32_t stencil;
+	};
+	using CmdClearBackDepthStencil = CmdT< OpType::eClearBackDepthStencil >;
+
+	void apply( ContextLock const & context
+		, CmdClearBackDepthStencil const & cmd );
+
+	//*************************************************************************
+
+	void buildBeginRenderPassCommand( ContextStateStack & stack
+		, VkRenderPass renderPass
+		, VkFramebuffer frameBuffer
+		, VkClearValueArray clearValues
+		, VkSubpassContents contents
+		, CmdList & list );
+
+	//*************************************************************************
 }

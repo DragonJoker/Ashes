@@ -4,27 +4,43 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Gl3Renderer/Command/Commands/GlCommandBase.hpp"
+#include "renderer/Gl3Renderer/Command/Commands/GlCommandBase.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
-	/**
-	*\brief
-	*	Commande de d�marrage d'une requ�te.
-	*/
-	class BeginQueryCommand
-		: public CommandBase
-	{
-	public:
-		BeginQueryCommand( Device const & device
-			, ashes::QueryPool const & pool
-			, uint32_t query
-			, ashes::QueryControlFlags flags );
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
+	//*************************************************************************
 
-	private:
-		GlQueryType m_target;
-		GLuint m_query;
+	template<>
+	struct CmdConfig< OpType::eBeginQuery >
+	{
+		static Op constexpr value = { OpType::eBeginQuery, 3u };
 	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eBeginQuery >
+	{
+		inline CmdT( uint32_t target
+			, uint32_t query )
+			: cmd{ { OpType::eBeginQuery, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, target{ std::move( target ) }
+			, query{ std::move( query ) }
+		{
+		}
+
+		Command cmd;
+		uint32_t target;
+		uint32_t query;
+	};
+	using CmdBeginQuery = CmdT< OpType::eBeginQuery >;
+
+	void apply( ContextLock const & context
+		, CmdBeginQuery const & cmd );
+
+	//*************************************************************************
+
+	void buildBeginQueryCommand( VkQueryPool pool
+		, uint32_t query
+		, CmdList & list );
+
+	//*************************************************************************
 }

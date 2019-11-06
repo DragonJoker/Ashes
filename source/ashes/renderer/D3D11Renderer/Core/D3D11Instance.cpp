@@ -161,7 +161,7 @@ namespace ashes::d3d11
 		doLoadAdapters();
 		doInitialisePhysicalDevices();
 
-		m_features.hasBufferRange = m_maxFeatureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.hasTexBufferRange = m_maxFeatureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.hasImageTexture = m_maxFeatureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.hasBaseInstance = m_maxFeatureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.hasClearTexImage = true;

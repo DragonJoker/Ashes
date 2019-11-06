@@ -4,51 +4,157 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Gl3Renderer/Command/Commands/GlCommandBase.hpp"
+#include "renderer/Gl3Renderer/Command/Commands/GlCommandBase.hpp"
 
-#include <Ashes/Miscellaneous/ImageCopy.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
-	/**
-	*\brief
-	*	Commande de copie du contenu d'une image dans une autre.
-	*/
-	class CopyImageCommand
-		: public CommandBase
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eCopyImageSubData1D >
 	{
-	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] copyInfo
-		*	Les informations de copie.
-		*\param[in] src
-		*	L'image source.
-		*\param[in] dst
-		*	L'image destination.
-		*/
-		CopyImageCommand( Device const & device
-			, ashes::ImageCopy const & copyInfo
-			, ashes::Image const & src
-			, ashes::Image const & dst );
-
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
-
-	private:
-		Image const & m_src;
-		Image const & m_dst;
-		ashes::ImageCopy m_copyInfo;
-		GlInternal m_srcInternal;
-		GlFormat m_srcFormat;
-		GlType m_srcType;
-		GlTextureType m_srcTarget;
-		GlInternal m_dstInternal;
-		GlFormat m_dstFormat;
-		GlType m_dstType;
-		GlTextureType m_dstTarget;
-		mutable ashes::ByteArray m_srcData;
-		mutable ashes::ByteArray m_dstData;
+		static Op constexpr value = { OpType::eCopyImageSubData1D, 22u };
 	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eCopyImageSubData1D >
+	{
+		inline CmdT( VkImage src
+			, uint32_t srcName
+			, uint32_t srcTarget
+			, VkImage dst
+			, uint32_t dstName
+			, uint32_t dstTarget
+			, VkImageCopy copy )
+			: cmd{ { OpType::eCopyImageSubData1D, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, src{ std::move( src ) }
+			, srcName{ std::move( srcName ) }
+			, srcTarget{ std::move( srcTarget ) }
+			, dst{ std::move( dst ) }
+			, dstName{ std::move( dstName ) }
+			, dstTarget{ std::move( dstTarget ) }
+			, copy{ std::move( copy ) }
+		{
+		}
+
+		Command cmd;
+		VkImage src;
+		uint32_t srcName;
+		uint32_t srcTarget;
+		VkImage dst;
+		uint32_t dstName;
+		uint32_t dstTarget;
+		VkImageCopy copy;
+	};
+	using CmdCopyImageSubData1D = CmdT< OpType::eCopyImageSubData1D >;
+
+	void apply( ContextLock const & context
+		, CmdCopyImageSubData1D const & cmd );
+	
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eCopyImageSubData2D >
+	{
+		static Op constexpr value = { OpType::eCopyImageSubData2D, 22u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eCopyImageSubData2D >
+	{
+		inline CmdT( VkImage src
+			, uint32_t srcName
+			, uint32_t srcTarget
+			, VkImage dst
+			, uint32_t dstName
+			, uint32_t dstTarget
+			, int32_t dstOffsetY
+			, uint32_t dstExtentY
+			, VkImageCopy copy )
+			: cmd{ { OpType::eCopyImageSubData2D, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, src{ std::move( src ) }
+			, srcName{ std::move( srcName ) }
+			, srcTarget{ std::move( srcTarget ) }
+			, dst{ std::move( dst ) }
+			, dstName{ std::move( dstName ) }
+			, dstTarget{ std::move( dstTarget ) }
+			, dstOffsetY{ std::move( dstOffsetY ) }
+			, dstExtentY{ std::move( dstExtentY ) }
+			, copy{ std::move( copy ) }
+		{
+		}
+
+		Command cmd;
+		VkImage src;
+		uint32_t srcName;
+		uint32_t srcTarget;
+		VkImage dst;
+		uint32_t dstName;
+		uint32_t dstTarget;
+		int32_t dstOffsetY;
+		uint32_t dstExtentY;
+		VkImageCopy copy;
+	};
+	using CmdCopyImageSubData2D = CmdT< OpType::eCopyImageSubData2D >;
+
+	void apply( ContextLock const & context
+		, CmdCopyImageSubData2D const & cmd );
+	
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eCopyImageSubData3D >
+	{
+		static Op constexpr value = { OpType::eCopyImageSubData3D, 22u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eCopyImageSubData3D >
+	{
+		inline CmdT( VkImage src
+			, uint32_t srcName
+			, uint32_t srcTarget
+			, VkImage dst
+			, uint32_t dstName
+			, uint32_t dstTarget
+			, int32_t dstOffsetZ
+			, uint32_t dstExtentZ
+			, VkImageCopy copy )
+			: cmd{ { OpType::eCopyImageSubData3D, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, src{ std::move( src ) }
+			, srcName{ std::move( srcName ) }
+			, srcTarget{ std::move( srcTarget ) }
+			, dst{ std::move( dst ) }
+			, dstName{ std::move( dstName ) }
+			, dstTarget{ std::move( dstTarget ) }
+			, dstOffsetZ{ std::move( dstOffsetZ ) }
+			, dstExtentZ{ std::move( dstExtentZ ) }
+			, copy{ std::move( copy ) }
+		{
+		}
+
+		Command cmd;
+		VkImage src;
+		uint32_t srcName;
+		uint32_t srcTarget;
+		VkImage dst;
+		uint32_t dstName;
+		uint32_t dstTarget;
+		int32_t dstOffsetZ;
+		uint32_t dstExtentZ;
+		VkImageCopy copy;
+	};
+	using CmdCopyImageSubData3D = CmdT< OpType::eCopyImageSubData3D >;
+
+	void apply( ContextLock const & context
+		, CmdCopyImageSubData3D const & cmd );
+
+	//*************************************************************************
+
+	void buildCopyImageCommand( VkImageCopy copyInfo
+		, VkImage src
+		, VkImage dst
+		, CmdList & list );
+
+	//*************************************************************************
 }

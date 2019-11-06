@@ -2,17 +2,20 @@
 
 #include "Core/GlDevice.hpp"
 #include "Image/GlImage.hpp"
-#include "Sync/GlImageMemoryBarrier.hpp"
+#include "Miscellaneous/GlCallLogger.hpp"
 
-namespace gl_renderer
+#include "ashesgl3_api.hpp"
+
+namespace ashes::gl3
 {
 	namespace
 	{
-		GlTextureType convert( ashes::ImageViewCreateInfo const & createInfo
+		GlTextureType convert( VkImageViewType viewType
 			, VkImageCreateFlags flags
-			, VkSampleCountFlagBits samples )
+			, VkSampleCountFlagBits samples
+			, uint32_t baseArrayLayer )
 		{
-			GlTextureType result = gl_renderer::convert( createInfo.viewType );
+			GlTextureType result = gl3::convert( viewType );
 
 			if ( samples > VK_SAMPLE_COUNT_1_BIT )
 			{
@@ -25,14 +28,14 @@ namespace gl_renderer
 					result = GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
 					break;
 				default:
-					assert( "Unsupported ImageViewType for a multisampled texture." );
+					assert( "Unsupported ImageViewType for a multisampled image" );
 					break;
 				}
 			}
 
 			if ( checkFlag( flags, VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT ) )
 			{
-				auto layer = createInfo.subresourceRange.baseArrayLayer % 6;
+				auto layer = baseArrayLayer % 6u;
 				result = GlTextureType( GL_TEXTURE_CUBE_POSITIVE_X + layer );
 			}
 
@@ -40,38 +43,45 @@ namespace gl_renderer
 		}
 	}
 
-	ImageView::ImageView( Device const & device
-		, Image const & image )
-		: ashes::ImageView{ device
-		, image
-		, {
-			VK_IMAGE_VIEW_TYPE_2D,
-			image.getFormat(),
-			ashes::ComponentMapping{},
-			{
-				VK_IMAGE_ASPECT_COLOR_BIT,
-				0u,
-				1u,
-				0u,
-				1u
-			}
-		} }
-		, m_device{ device }
+	ImageView::ImageView( VkDevice device
+		, VkImage image )
+		: m_device{ device }
+		, m_flags{ 0u }
+		, m_image{ image }
+		, m_viewType{ VK_IMAGE_VIEW_TYPE_2D }
+		, m_format{ get( image )->getFormat() }
+		, m_components{}
+		, m_subresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0u, 1u, 0u, 1u }
+		, m_target{ convert( getType()
+			, get( image )->getCreateFlags()
+			, get( image )->getSamples()
+			, 0u ) }
 	{
 	}
 
-	ImageView::ImageView( Device const & device
-		, Image const & texture
-		, ashes::ImageViewCreateInfo const & createInfo )
-		: ashes::ImageView{ device
-			, texture
-			, createInfo }
-		, m_device{ device }
-		, m_target{ convert( m_createInfo, texture.getCreateFlags(), texture.getSamplesCount() ) }
+	ImageView::ImageView( VkDevice device
+		, VkImageViewCreateInfo createInfo )
+		: m_device{ device }
+		, m_flags{ createInfo.flags }
+		, m_image{ createInfo.image }
+		, m_viewType{ createInfo.viewType }
+		, m_format{ createInfo.format }
+		, m_components{ createInfo.components }
+		, m_subresourceRange{ createInfo.subresourceRange }
+		, m_target{ convert( getType()
+			, get( createInfo.image )->getCreateFlags()
+			, get( createInfo.image )->getSamples()
+			, m_subresourceRange.baseArrayLayer ) }
 	{
 	}
 
 	ImageView::~ImageView()
 	{
+	}
+
+	GLuint ImageView::getInternal()const noexcept
+	{
+		assert( m_image != VK_NULL_HANDLE );
+		return get( m_image )->getInternal();
 	}
 }

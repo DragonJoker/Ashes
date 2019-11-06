@@ -4,9 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <Ashes/Enum/FrontFace.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
 	enum GlFrontFace
 		: GLenum
@@ -23,5 +21,5 @@ namespace gl_renderer
 	*\return
 	*	Le GlFrontFace.
 	*/
-	GlFrontFace convert( VkFrontFace const & value );
+	GlFrontFace convert( VkFrontFace value );
 }

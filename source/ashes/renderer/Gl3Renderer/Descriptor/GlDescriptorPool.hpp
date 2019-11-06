@@ -8,31 +8,26 @@
 #define ___GlRenderer_DescriptorPool_HPP___
 #pragma once
 
-#include "Gl3Renderer/GlRendererPrerequisites.hpp"
+#include "renderer/Gl3Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Descriptor/DescriptorPool.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
 	class DescriptorPool
-		: public ashes::DescriptorPool
 	{
 	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] layout
-		*	Le layout à partir duquel sera créé le pool.
-		*/
-		DescriptorPool( Device const & device
-			, ashes::DescriptorPoolCreateFlags flags
-			, uint32_t maxSets
-			, ashes::DescriptorPoolSizeArray poolSizes );
-		/**
-		*\copydoc	ashes::DescriptorSetPool::createDescriptorSet
-		*/
-		ashes::DescriptorSetPtr createDescriptorSet( ashes::DescriptorSetLayout const & layout
-			, uint32_t bindingPoint )const override;
+		DescriptorPool( VkDevice device
+			, VkDescriptorPoolCreateInfo createInfo );
+		~DescriptorPool();
+
+		void registerSet( VkDescriptorSet set );
+		VkResult reset( VkDescriptorPoolResetFlags flags );
+		VkResult free( VkDescriptorSetArray sets );
+
+	private:
+		VkDescriptorPoolCreateFlags m_flags;
+		uint32_t m_maxSets;
+		VkDescriptorPoolSizeArray m_poolSizes;
+		VkDescriptorSetArray m_sets;
 	};
 }
 

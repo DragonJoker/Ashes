@@ -4,18 +4,79 @@ See LICENSE file in root folder
 */
 #pragma once
 
+#include "renderer/Gl3Renderer/Enum/GlAccessFlag.hpp"
+#include "renderer/Gl3Renderer/Enum/GlAttachmentPoint.hpp"
+#include "renderer/Gl3Renderer/Enum/GlAttachmentType.hpp"
+#include "renderer/Gl3Renderer/Enum/GlBaseType.hpp"
+#include "renderer/Gl3Renderer/Enum/GlBlendFactor.hpp"
+#include "renderer/Gl3Renderer/Enum/GlBlendOp.hpp"
+#include "renderer/Gl3Renderer/Enum/GlBufferDataUsageFlag.hpp"
+#include "renderer/Gl3Renderer/Enum/GlBufferTarget.hpp"
+#include "renderer/Gl3Renderer/Enum/GlClearTarget.hpp"
+#include "renderer/Gl3Renderer/Enum/GlClipInfo.hpp"
+#include "renderer/Gl3Renderer/Enum/GlCompareOp.hpp"
+#include "renderer/Gl3Renderer/Enum/GlComponentSwizzle.hpp"
+#include "renderer/Gl3Renderer/Enum/GlConstantFormat.hpp"
+#include "renderer/Gl3Renderer/Enum/GlCullModeFlag.hpp"
+#include "renderer/Gl3Renderer/Enum/GlDebugReportObjectType.hpp"
+#include "renderer/Gl3Renderer/Enum/GlFenceWaitFlag.hpp"
+#include "renderer/Gl3Renderer/Enum/GlFilter.hpp"
+#include "renderer/Gl3Renderer/Enum/GlFormat.hpp"
+#include "renderer/Gl3Renderer/Enum/GlFrameBufferTarget.hpp"
+#include "renderer/Gl3Renderer/Enum/GlFrontFace.hpp"
+#include "renderer/Gl3Renderer/Enum/GlGetParameter.hpp"
+#include "renderer/Gl3Renderer/Enum/GlImageAspectFlag.hpp"
+#include "renderer/Gl3Renderer/Enum/GlImageLayout.hpp"
+#include "renderer/Gl3Renderer/Enum/GlImageTiling.hpp"
+#include "renderer/Gl3Renderer/Enum/GlIndexType.hpp"
+#include "renderer/Gl3Renderer/Enum/GlLogicOp.hpp"
+#include "renderer/Gl3Renderer/Enum/GlMemoryBarrierFlag.hpp"
+#include "renderer/Gl3Renderer/Enum/GlMemoryMapFlag.hpp"
+#include "renderer/Gl3Renderer/Enum/GlMemoryPropertyFlag.hpp"
+#include "renderer/Gl3Renderer/Enum/GlMipmapMode.hpp"
+#include "renderer/Gl3Renderer/Enum/GlPolygonMode.hpp"
+#include "renderer/Gl3Renderer/Enum/GlPrimitiveTopology.hpp"
+#include "renderer/Gl3Renderer/Enum/GlQueryResultFlag.hpp"
+#include "renderer/Gl3Renderer/Enum/GlQueryType.hpp"
+#include "renderer/Gl3Renderer/Enum/GlSampleCountFlag.hpp"
+#include "renderer/Gl3Renderer/Enum/GlSamplerParameter.hpp"
+#include "renderer/Gl3Renderer/Enum/GlShaderBinaryFormat.hpp"
+#include "renderer/Gl3Renderer/Enum/GlShaderInfo.hpp"
+#include "renderer/Gl3Renderer/Enum/GlShaderStageFlag.hpp"
+#include "renderer/Gl3Renderer/Enum/GlStencilOp.hpp"
+#include "renderer/Gl3Renderer/Enum/GlTexLevelParameter.hpp"
+#include "renderer/Gl3Renderer/Enum/GlTexParameter.hpp"
+#include "renderer/Gl3Renderer/Enum/GlTextureType.hpp"
+#include "renderer/Gl3Renderer/Enum/GlTextureUnit.hpp"
+#include "renderer/Gl3Renderer/Enum/GlTextureViewType.hpp"
+#include "renderer/Gl3Renderer/Enum/GlTweak.hpp"
+#include "renderer/Gl3Renderer/Enum/GlWrapMode.hpp"
+
 #include <iostream>
+#include <iomanip>
+#include <locale>
+#include <sstream>
 
-#define GL_LOG_CALLS 0
+#if !defined( NDEBUG )
+#	define GL_LOG_CALLS 0
+#else
+#	define GL_LOG_CALLS 0
+#endif
 
-namespace gl_renderer
+namespace ashes::gl3
 {
+	class Context;
+	class ContextLock;
+
+	Context const & getContext( ContextLock const & lock );
+
 	template< typename T >
 	struct Stringifier
 	{
 		static inline std::string toString( T const value )
 		{
 			std::stringstream stream;
+			stream.imbue( std::locale{ "C" } );
 			stream << value;
 			return stream.str();
 		}
@@ -29,7 +90,8 @@ namespace gl_renderer
 			if ( value )
 			{
 				std::stringstream stream;
-				stream << std::hex << size_t( value );
+				stream.imbue( std::locale{ "C" } );
+				stream << "0x" << std::hex << std::setw( sizeof( intptr_t ) * 2u ) << std::setfill( '0' ) << intptr_t( value );
 				return stream.str();
 			}
 
@@ -45,7 +107,8 @@ namespace gl_renderer
 			if ( value )
 			{
 				std::stringstream stream;
-				stream << std::hex << size_t( value );
+				stream.imbue( std::locale{ "C" } );
+				stream << "0x" << std::hex << std::setw( sizeof( intptr_t ) * 2u ) << std::setfill( '0' ) << intptr_t( value );
 				return stream.str();
 			}
 
@@ -231,7 +294,7 @@ namespace gl_renderer
 
 	inline std::string toString( GlShaderStageFlags value )
 	{
-		return getName( value );
+		return getShaderStageFlagName( value );
 	}
 
 	inline std::string toString( GlStencilOp value )
@@ -331,7 +394,7 @@ namespace gl_renderer
 		{
 			stream << name;
 			logParams( stream, std::forward< ParamsT >( params )... );
-			ashes::Logger::logDebug( stream );
+			std::cout << stream.str() << std::endl;
 			return function( std::forward< ParamsT >( params )... );
 		}
 	};
@@ -343,13 +406,28 @@ namespace gl_renderer
 			, FuncT function
 			, char const * const name )
 		{
-			ashes::Logger::logDebug( std::string{ name } + "()" );
+			stream << name;
+			logParams( stream );
+			std::cout << std::string{ name } << "()" << std::endl;
 			function();
 		}
 	};
 
 	template< typename FuncT, typename ... ParamsT >
-	inline auto executeFunction( FuncT function
+	inline bool executeFunction( FuncT function
+		, char const * const name
+		, ParamsT ... params )
+	{
+		std::stringstream stream;
+		GlFuncCaller< FuncT, ParamsT... >::call( stream
+			, function
+			, name
+			, std::forward< ParamsT >( params )... );
+		return glCheckError( name );
+	}
+
+	template< typename FuncT, typename ... ParamsT >
+	inline auto executeNonVoidFunction( FuncT function
 		, char const * const name
 		, ParamsT ... params )
 	{
@@ -361,18 +439,24 @@ namespace gl_renderer
 	}
 
 #if GL_LOG_CALLS
-#	define glLogCall( Context, Name, ... )\
-	executeFunction( Context->Name, #Name, __VA_ARGS__ )
-#	define glLogCommand( Name )\
-	ashes::Logger::logDebug( std::string{ "Command: " } + Name )
+#	define glLogCall( lock, name, ... )\
+	executeFunction( ashes::gl3::getContext( lock ).m_##name, #name, __VA_ARGS__ )
+#	define glLogNonVoidCall( lock, name, ... )\
+	executeNonVoidFunction( ashes::gl3::getContext( lock ).m_##name, #name, __VA_ARGS__ )
+#	define glLogCommand( name )\
+	std::cout << "Command: " << name << std::endl
 #elif defined( NDEBUG )
-#	define glLogCall( Context, Name, ... )\
-	( Context->Name( __VA_ARGS__ ) )
-#	define glLogCommand( Name )
+#	define glLogCall( lock, name, ... )\
+	( ( lock->m_##name( __VA_ARGS__ ) ), true )
+#	define glLogNonVoidCall( lock, name, ... )\
+	( lock->m_##name( __VA_ARGS__ ) )
+#	define glLogCommand( name )
 #	else
-#	define glLogCall( Context, Name, ... )\
-	( Context->Name( __VA_ARGS__ ) );\
-	glCheckError( #Name )
-#	define glLogCommand( Name )
+#	define glLogCall( lock, name, ... )\
+	( ( lock->m_##name( __VA_ARGS__ ) ), glCheckError( #name ) )
+#	define glLogNonVoidCall( lock, name, ... )\
+	( lock->m_##name( __VA_ARGS__ ) );\
+	glCheckError( #name )
+#	define glLogCommand( name )
 #endif
 }

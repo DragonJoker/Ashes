@@ -6,10 +6,9 @@ See LICENSE file in root folder.
 
 #include <renderer/RendererCommon/Helper/ConstantFormat.hpp>
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	enum GlConstantFormatBaseType
-		: GLenum
 	{
 		GL_CONSTANT_FORMAT_BASE_TYPE_UNSIGNED_BYTE = 0x1401,
 		GL_CONSTANT_FORMAT_BASE_TYPE_INT = 0x1404,
@@ -20,20 +19,20 @@ namespace gl_renderer
 
 	/**
 	*\brief
-	*	Convertit un ashes::ConstantFormat en GlConstantFormat.
+	*	Convertit un ConstantFormat en GlConstantFormat.
 	*\param[in] flags
-	*	Le ashes::ConstantFormat.
+	*	Le ConstantFormat.
 	*\return
 	*	Le GlConstantFormat.
 	*/
-	GlConstantFormatBaseType getType( ashes::ConstantFormat format );
+	GlConstantFormatBaseType getType( ConstantFormat format );
 	/**
 	*\brief
-	*	R�cup�re le nombre d'�l�ments du format donn�.
+	*	R�cup�re le nombre d'éléments du format donné.
 	*\param[in] flags
-	*	Le ashes::ConstantFormat.
+	*	Le ConstantFormat.
 	*\return
 	*	Le compte.
 	*/
-	uint32_t getCount( ashes::ConstantFormat format );
+	uint32_t getCount( ConstantFormat format );
 }

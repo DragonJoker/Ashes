@@ -89,6 +89,7 @@ namespace ashes::gl4
 	{
 		return getAttachmentType( get( texture )->getFormat() );
 	}
+
 	void checkCompleteness( GLenum status )
 	{
 		switch ( status )

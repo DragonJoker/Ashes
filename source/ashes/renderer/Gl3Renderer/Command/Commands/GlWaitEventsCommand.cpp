@@ -10,40 +10,38 @@ See LICENSE file in root folder.
 #include <chrono>
 #include <thread>
 
-namespace gl_renderer
-{
-	WaitEventsCommand::WaitEventsCommand( Device const & device
-		, ashes::EventCRefArray const & events
-		, VkPipelineStageFlags srcStageMask
-		, VkPipelineStageFlags dstStageMask
-		, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
-		, ashes::VkImageMemoryBarrierArray const & imageMemoryBarriers )
-		: CommandBase{ device }
-		, m_events{ events }
-	{
-	}
+#include "ashesgl3_api.hpp"
 
-	void WaitEventsCommand::apply( ContextLock const & context )const
+namespace ashes::gl3
+{
+	void apply( ContextLock const & context
+		, CmdWaitEvents const & cmd )
 	{
-		glLogCommand( "WaitEventsCommand" );
 		auto count = 0u;
 
 		do
 		{
-			count = uint32_t( std::count_if( m_events.begin()
-				, m_events.end()
-				, []( ashes::EventCRef const & event )
+			count = uint32_t( std::count_if( cmd.events.begin()
+				, cmd.events.end()
+				, []( VkEvent event )
 				{
-					return event.get().getStatus() != ashes::EventStatus::eSet
-						&& event.get().getStatus() != ashes::EventStatus::eError;
+					return get( event )->getStatus() == VK_EVENT_SET
+						|| get( event )->getStatus() == VK_EVENT_RESET;
 				} ) );
 			std::this_thread::sleep_for( std::chrono::nanoseconds{ 10 } );
 		}
-		while ( count != m_events.size() );
+		while ( count != cmd.events.size() );
 	}
 
-	CommandPtr WaitEventsCommand::clone()const
+	void buildWaitEventsCommand( VkEventArray events
+		, VkPipelineStageFlags srcStageMask
+		, VkPipelineStageFlags dstStageMask
+		, VkMemoryBarrierArray memoryBarriers
+		, VkBufferMemoryBarrierArray bufferMemoryBarriers
+		, VkImageMemoryBarrierArray imageMemoryBarriers
+		, CmdList & list )
 	{
-		return std::make_unique< WaitEventsCommand >( *this );
+		glLogCommand( "WaitEventsCommand" );
+		list.push_back( makeCmd< OpType::eWaitEvents >( std::move( events ) ) );
 	}
 }

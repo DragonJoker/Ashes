@@ -1,5 +1,5 @@
 /*
-This file belongs to GlInstance.
+This file belongs to Ashes.
 See LICENSE file in root folder.
 */
 #include "Command/Commands/GlCopyImageCommand.hpp"
@@ -7,37 +7,37 @@ See LICENSE file in root folder.
 #include "Image/GlImage.hpp"
 #include "Image/GlImageView.hpp"
 
-#include <Ashes/Image/ImageSubresourceRange.hpp>
+#include "ashesgl3_api.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	namespace
 	{
-		ashes::ByteArray allocateData( ashes::Image const & src )
+		ByteArray allocateData( VkImage src )
 		{
-			auto dimensions = src.getDimensions();
+			auto dimensions = get( src )->getDimensions();
 			auto texels = dimensions.width * dimensions.height * dimensions.depth;
-			return ashes::ByteArray( texels * ashes::getSize( src.getFormat() ), uint8_t( 0 ) );
+			return ByteArray( texels * ashes::getSize( get( src )->getFormat() ), uint8_t( 0 ) );
 		}
 
-		ashes::ByteArray allocateData( ashes::Image const & src
-			, ashes::ImageCopy const & copyInfo )
+		ByteArray allocateData( VkImage src
+			, VkImageCopy const & copyInfo )
 		{
 			auto dimensions = copyInfo.extent;
 			auto texels = dimensions.width * dimensions.height * dimensions.depth;
-			return ashes::ByteArray( texels * ashes::getSize( src.getFormat() ), uint8_t( 0 ) );
+			return ByteArray( texels * ashes::getSize( get( src )->getFormat() ), uint8_t( 0 ) );
 		}
 
 		void copyData( ashes::ByteArray const & srcData
-			, ashes::Image const & src
-			, ashes::ImageCopy const & copyInfo
-			, ashes::ByteArray & dstData )
+			, VkImage const & src
+			, VkImageCopy const & copyInfo
+			, ByteArray & dstData )
 		{
 			auto dimensions = copyInfo.extent;
-			auto texelSize = ashes::getSize( src.getFormat() );
+			auto texelSize = ashes::getSize( get( src )->getFormat() );
 			auto dstRowSize = dimensions.width * texelSize;
-			auto srcRowSize = src.getDimensions().width * texelSize;
-			auto planeSize = src.getDimensions().height * srcRowSize;
+			auto srcRowSize = get( src )->getDimensions().width * texelSize;
+			auto planeSize = get( src )->getDimensions().height * srcRowSize;
 			auto plane = srcData.data() + planeSize * copyInfo.srcOffset.z;
 			auto buffer = dstData.data();
 
@@ -57,174 +57,236 @@ namespace gl_renderer
 		}
 	}
 
-	CopyImageCommand::CopyImageCommand( Device const & device
-		, ashes::ImageCopy const & copyInfo
-		, ashes::Image const & src
-		, ashes::Image const & dst )
-		: CommandBase{ device }
-		, m_copyInfo{ copyInfo }
-		, m_src{ static_cast< Image const & >( src ) }
-		, m_dst{ static_cast< Image const & >( dst ) }
-		, m_srcInternal{ getInternal( m_src.getFormat() ) }
-		, m_srcFormat{ getFormat( m_srcInternal ) }
-		, m_srcType{ getType( m_srcInternal ) }
-		, m_srcTarget{ convert( m_src.getType(), m_src.getLayerCount(), m_src.getCreateFlags() ) }
-		, m_dstInternal{ getInternal( m_dst.getFormat() ) }
-		, m_dstFormat{ getFormat( m_dstInternal ) }
-		, m_dstType{ getType( m_dstInternal ) }
-		, m_dstTarget{ convert( m_dst.getType(), m_dst.getLayerCount(), m_dst.getCreateFlags() ) }
-		, m_srcData{ allocateData( src ) }
-		, m_dstData{ allocateData( src, m_copyInfo ) }
+	ByteArray retrieveData( ContextLock const & context
+		, VkImage src
+		, VkImageCopy copy
+		, uint32_t srcTarget
+		, GLuint srcName )
 	{
-	}
-
-	void CopyImageCommand::apply( ContextLock const & context )const
-	{
-		glLogCommand( "CopyImageCommand" );
+		auto srcData = allocateData( src );
+		auto dstData = allocateData( src, copy );
+		auto srcInternal{ getInternalFormat( get( src )->getFormat() ) };
 		glLogCall( context
 			, glBindTexture
-			, m_srcTarget
-			, m_src.getImage() );
+			, srcTarget
+			, srcName );
 		glLogCall( context
 			, glGetTexImage
-			, m_srcTarget
-			, m_copyInfo.srcSubresource.mipLevel
-			, m_srcFormat
-			, m_srcType
-			, m_srcData.data() );
+			, srcTarget
+			, copy.srcSubresource.mipLevel
+			, srcInternal
+			, getType( srcInternal )
+			, srcData.data() );
 		glLogCall( context
 			, glBindTexture
-			, m_srcTarget
+			, srcTarget
 			, 0u );
+		copyData( srcData
+			, src
+			, copy
+			, dstData );
+		return dstData;
+	}
+
+	void apply( ContextLock const & context
+		, CmdCopyImageSubData1D const & cmd )
+	{
+		auto srcInternal{ getInternalFormat( get( cmd.src )->getFormat() ) };
+		auto dstData = retrieveData( context
+			, cmd.src
+			, cmd.copy
+			, cmd.srcTarget
+			, cmd.srcName );
 		glLogCall( context
 			, glBindTexture
-			, m_dstTarget
-			, m_dst.getImage() );
-		copyData( m_srcData
-			, m_src
-			, m_copyInfo
-			, m_dstData );
+			, cmd.dstTarget
+			, cmd.dstName );
+		glLogCall( context
+			, glTexSubImage1D
+			, cmd.dstTarget
+			, cmd.copy.dstSubresource.mipLevel
+			, cmd.copy.dstOffset.x
+			, cmd.copy.extent.width
+			, srcInternal
+			, getType( srcInternal )
+			, dstData.data() );
+		glLogCall( context
+			, glGenerateMipmap
+			, cmd.dstTarget );
+		glLogCall( context
+			, glBindTexture
+			, cmd.dstTarget
+			, 0u );
+	}
 
-		switch ( m_dstTarget )
+	void apply( ContextLock const & context
+		, CmdCopyImageSubData2D const & cmd )
+	{
+		auto srcInternal{ getInternalFormat( get( cmd.src )->getFormat() ) };
+		auto dstData = retrieveData( context
+			, cmd.src
+			, cmd.copy
+			, cmd.srcTarget
+			, cmd.srcName );
+		glLogCall( context
+			, glBindTexture
+			, cmd.dstTarget
+			, cmd.dstName );
+		glLogCall( context
+			, glTexSubImage2D
+			, cmd.dstTarget
+			, cmd.copy.dstSubresource.mipLevel
+			, cmd.copy.dstOffset.x
+			, cmd.dstOffsetY
+			, cmd.copy.extent.width
+			, cmd.dstExtentY
+			, srcInternal
+			, getType( srcInternal )
+			, dstData.data() );
+		glLogCall( context
+			, glGenerateMipmap
+			, cmd.dstTarget );
+		glLogCall( context
+			, glBindTexture
+			, cmd.dstTarget
+			, 0u );
+	}
+
+	void apply( ContextLock const & context
+		, CmdCopyImageSubData3D const & cmd )
+	{
+		auto srcInternal{ getInternalFormat( get( cmd.src )->getFormat() ) };
+		auto dstData = retrieveData( context
+			, cmd.src
+			, cmd.copy
+			, cmd.srcTarget
+			, cmd.srcName );
+		glLogCall( context
+			, glBindTexture
+			, cmd.dstTarget
+			, cmd.dstName );
+		glLogCall( context
+			, glTexSubImage3D
+			, cmd.dstTarget
+			, cmd.copy.dstSubresource.mipLevel
+			, cmd.copy.dstOffset.x
+			, cmd.copy.dstOffset.y
+			, cmd.dstOffsetZ
+			, cmd.copy.extent.width
+			, cmd.copy.extent.height
+			, cmd.dstExtentZ
+			, srcInternal
+			, getType( srcInternal )
+			, dstData.data() );
+		glLogCall( context
+			, glGenerateMipmap
+			, cmd.dstTarget );
+		glLogCall( context
+			, glBindTexture
+			, cmd.dstTarget
+			, 0u );
+	}
+
+	void buildCopyImageCommand( VkImageCopy copyInfo
+		, VkImage src
+		, VkImage dst
+		, CmdList & list )
+	{
+		glLogCommand( "CopyImageCommand" );
+		auto srcTarget = convert( get( src )->getType()
+			, get( src )->getArrayLayers()
+			, get( src )->getCreateFlags() );
+		auto dstTarget = convert( get( dst )->getType()
+			, get( dst )->getArrayLayers()
+			, get( dst )->getCreateFlags() );
+
+		switch ( dstTarget )
 		{
 		case GL_TEXTURE_1D:
-			glLogCall( context
-				, glTexSubImage1D
-				, m_srcTarget
-				, m_copyInfo.dstSubresource.mipLevel
-				, m_copyInfo.dstOffset.x
-				, m_copyInfo.extent.width
-				, m_srcFormat
-				, m_srcType
-				, m_dstData.data() );
+			list.push_back( makeCmd< OpType::eCopyImageSubData1D >( src
+				, get( src )->getInternal()
+				, srcTarget
+				, dst
+				, get( dst )->getInternal()
+				, dstTarget
+				, std::move( copyInfo ) ) );
 			break;
 
 		case GL_TEXTURE_1D_ARRAY:
-			glLogCall( context
-				, glTexSubImage2D
-				, m_srcTarget
-				, m_copyInfo.dstSubresource.mipLevel
-				, m_copyInfo.dstOffset.x
-				, m_copyInfo.dstSubresource.baseArrayLayer
-				, m_copyInfo.extent.width
-				, m_copyInfo.extent.height
-				, m_srcFormat
-				, m_srcType
-				, m_dstData.data() );
+			list.push_back( makeCmd< OpType::eCopyImageSubData2D >( src
+				, get( src )->getInternal()
+				, srcTarget
+				, dst
+				, get( dst )->getInternal()
+				, dstTarget
+				, int32_t( copyInfo.dstSubresource.baseArrayLayer )
+				, copyInfo.dstSubresource.layerCount
+				, std::move( copyInfo ) ) );
 			break;
 
 		case GL_TEXTURE_2D:
-			glLogCall( context
-				, glTexSubImage2D
-				, m_srcTarget
-				, m_copyInfo.dstSubresource.mipLevel
-				, m_copyInfo.dstOffset.x
-				, m_copyInfo.dstOffset.y
-				, m_copyInfo.extent.width
-				, m_copyInfo.extent.height
-				, m_srcFormat
-				, m_srcType
-				, m_dstData.data() );
+			list.push_back( makeCmd< OpType::eCopyImageSubData2D >( src
+				, get( src )->getInternal()
+				, srcTarget
+				, dst
+				, get( dst )->getInternal()
+				, dstTarget
+				, copyInfo.dstOffset.y
+				, copyInfo.extent.height
+				, std::move( copyInfo ) ) );
 			break;
 
 		case GL_TEXTURE_2D_ARRAY:
-			glLogCall( context
-				, glTexSubImage3D
-				, m_srcTarget
-				, m_copyInfo.dstSubresource.mipLevel
-				, m_copyInfo.dstOffset.x
-				, m_copyInfo.dstOffset.y
-				, m_copyInfo.dstSubresource.baseArrayLayer
-				, m_copyInfo.extent.width
-				, m_copyInfo.extent.height
-				, m_copyInfo.extent.depth
-				, m_srcFormat
-				, m_srcType
-				, m_dstData.data() );
+			list.push_back( makeCmd< OpType::eCopyImageSubData3D >( src
+				, get( src )->getInternal()
+				, srcTarget
+				, dst
+				, get( dst )->getInternal()
+				, dstTarget
+				, int32_t( copyInfo.dstSubresource.baseArrayLayer )
+				, copyInfo.dstSubresource.layerCount
+				, std::move( copyInfo ) ) );
 			break;
 
 		case GL_TEXTURE_CUBE:
-			glLogCall( context
-				, glTexSubImage2D
-				, GL_TEXTURE_CUBE_POSITIVE_X + m_copyInfo.dstSubresource.baseArrayLayer
-				, m_copyInfo.dstSubresource.mipLevel
-				, m_copyInfo.dstOffset.x
-				, m_copyInfo.dstOffset.y
-				, m_copyInfo.extent.width
-				, m_copyInfo.extent.height
-				, m_srcFormat
-				, m_srcType
-				, m_dstData.data() );
+			list.push_back( makeCmd< OpType::eCopyImageSubData2D >( src
+				, get( src )->getInternal()
+				, srcTarget
+				, dst
+				, get( dst )->getInternal()
+				, GL_TEXTURE_CUBE_POSITIVE_X + copyInfo.dstSubresource.baseArrayLayer
+				, copyInfo.dstOffset.y
+				, copyInfo.extent.height
+				, std::move( copyInfo ) ) );
 			break;
 
 		case GL_TEXTURE_CUBE_ARRAY:
-			glLogCall( context
-				, glTexSubImage3D
-				, GL_TEXTURE_CUBE_POSITIVE_X + ( m_copyInfo.dstSubresource.baseArrayLayer % 6u )
-				, m_copyInfo.dstSubresource.mipLevel
-				, m_copyInfo.dstOffset.x
-				, m_copyInfo.dstOffset.y
-				, m_copyInfo.dstSubresource.baseArrayLayer / 6u
-				, m_copyInfo.extent.width
-				, m_copyInfo.extent.height
-				, m_copyInfo.dstSubresource.layerCount / 6u
-				, m_srcFormat
-				, m_srcType
-				, m_dstData.data() );
+			list.push_back( makeCmd< OpType::eCopyImageSubData3D >( src
+				, get( src )->getInternal()
+				, srcTarget
+				, dst
+				, get( dst )->getInternal()
+				, GL_TEXTURE_CUBE_POSITIVE_X + ( copyInfo.dstSubresource.baseArrayLayer % 6u )
+				, int32_t( copyInfo.dstSubresource.baseArrayLayer / 6u )
+				, copyInfo.dstSubresource.layerCount / 6u
+				, std::move( copyInfo ) ) );
 			break;
 
 		case GL_TEXTURE_3D:
-			glLogCall( context
-				, glTexSubImage3D
-				, m_srcTarget
-				, m_copyInfo.dstSubresource.mipLevel
-				, m_copyInfo.dstOffset.x
-				, m_copyInfo.dstOffset.y
-				, m_copyInfo.dstOffset.z
-				, m_copyInfo.extent.width
-				, m_copyInfo.extent.height
-				, m_copyInfo.extent.depth
-				, m_srcFormat
-				, m_srcType
-				, m_dstData.data() );
+			list.push_back( makeCmd< OpType::eCopyImageSubData3D >( src
+				, get( src )->getInternal()
+				, srcTarget
+				, dst
+				, get( dst )->getInternal()
+				, dstTarget
+				, copyInfo.dstOffset.z
+				, copyInfo.extent.depth
+				, std::move( copyInfo ) ) );
 			break;
 
 		default:
-			ashes::Logger::logError( "Unsupported texture type." );
+			std::cerr << "CopyImageCommand - Unsupported texture type." << std::endl;
 			break;
 		}
-
-		glLogCall( context
-			, glGenerateMipmap
-			, m_dstTarget );
-		glLogCall( context
-			, glBindTexture
-			, m_dstTarget
-			, 0u );
-	}
-
-	CommandPtr CopyImageCommand::clone()const
-	{
-		return std::make_unique< CopyImageCommand >( *this );
 	}
 }

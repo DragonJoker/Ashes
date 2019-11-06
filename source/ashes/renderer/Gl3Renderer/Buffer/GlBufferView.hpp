@@ -8,81 +8,27 @@
 #define ___GlRenderer_BufferView_HPP___
 #pragma once
 
-#include "Gl3Renderer/GlRendererPrerequisites.hpp"
+#include "renderer/Gl3Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Buffer/BufferView.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
-	/**
-	*\~french
-	*\brief
-	*	Une vue de texture sur un tampon.
-	*\~english
-	*\brief
-	*	A texture view to a buffer.
-	*/
 	class BufferView
-		: public ashes::BufferView
 	{
 	public:
-		/**
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le périphérique logique.
-		*\param[in] buffer
-		*	Le tampon.
-		*\param[in] format
-		*	Le format des pixels de la vue.
-		*\param[in] offset
-		*	Le décalage dans le tampon.
-		*\param[in] range
-		*	La taille occupée dans le tampon.
-		*\~english
-		*\brief
-		*	Constructor.
-		*\param[in] device
-		*	The logical device.
-		*\param[in] buffer
-		*	The buffer.
-		*\param[in] format
-		*	The view's pixel format.
-		*\param[in] offset
-		*	The offset in the buffer.
-		*\param[in] range
-		*	The range from the buffer.
-		*/
-		BufferView( Device const & device
-			, Buffer const & buffer
-			, VkFormat format
-			, uint32_t offset
-			, uint32_t range );
-		/**
-		*\~french
-		*\brief
-		*	Destructeur.
-		*\~english
-		*\brief
-		*	Destructor.
-		*/
+		BufferView( VkDevice device
+			, VkBufferViewCreateInfo createInfo );
 		~BufferView();
-		/**
-		*\~french
-		*\return
-		*	Le nom de la texture.
-		*\~english
-		*\return
-		*	The texture name.
-		*/
+
 		inline GLuint getImage()const
 		{
 			return m_name;
 		}
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
+		VkFormat m_format;
+		VkDeviceSize m_offset;
+		VkDeviceSize m_range;
 		GLuint m_name{ GL_INVALID_INDEX };
 	};
 }

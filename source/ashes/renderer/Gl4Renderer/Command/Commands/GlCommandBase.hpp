@@ -221,26 +221,37 @@ namespace ashes::gl4
 		static uint32_t constexpr MaxElems = 16u;
 		static uint32_t constexpr ElemCount = 4u;
 
-		inline CmdT( std::vector< VkRect2D > const & scissors )
+		inline CmdT( uint32_t first
+			, uint32_t count
+			, std::vector< VkRect2D > const & scissors )
 			: cmd{ { OpType::eApplyScissors, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, count{ std::min( MaxElems, uint32_t( scissors.size() ) ) }
+			, first{ first }
+			, count{ std::min( MaxElems, count ) }
 		{
-			uint32_t i = 0u;
-			uint32_t size = count * ElemCount;
+			auto it = this->scissors.begin();
+			auto end = scissors.begin() + std::min( MaxElems, uint32_t( scissors.size() ) );
 
-			for ( auto & scissor : scissors )
+			for ( auto scit = scissors.begin(); scit != end; ++scit )
 			{
-				if ( i < size )
-				{
-					this->scissors[i++] = scissor.offset.x;
-					this->scissors[i++] = scissor.offset.y;
-					this->scissors[i++] = int( scissor.extent.width );
-					this->scissors[i++] = int( scissor.extent.height );
-				}
+				auto & scissor = *scit;
+				*it = scissor.offset.x;
+				++it;
+				*it = scissor.offset.y;
+				++it;
+				*it = int( scissor.extent.width );
+				++it;
+				*it = int( scissor.extent.height );
+				++it;
 			}
 		}
 
+		inline CmdT( std::vector< VkRect2D > const & scissors )
+			: CmdT{ 0u, uint32_t( scissors.size() ), scissors }
+		{
+		}
+
 		Command cmd;
+		uint32_t first;
 		uint32_t count;
 		std::array< int, MaxElems * ElemCount > scissors;
 	};
@@ -263,26 +274,37 @@ namespace ashes::gl4
 		static uint32_t constexpr MaxElems = 16u;
 		static uint32_t constexpr ElemCount = 4u;
 
-		inline CmdT( std::vector< VkViewport > const & viewports )
+		inline CmdT( uint32_t first
+			, uint32_t count
+			, std::vector< VkViewport > const & viewports )
 			: cmd{ { OpType::eApplyViewports, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, count{ std::min( MaxElems, uint32_t( viewports.size() ) ) }
+			, first{ first }
+			, count{ std::min( MaxElems, count ) }
 		{
-			uint32_t vi = 0u;
-			uint32_t size = count * ElemCount;
+			auto it = this->viewports.begin();
+			auto end = viewports.begin() + std::min( MaxElems, uint32_t( viewports.size() ) );
 
-			for ( auto & viewport : viewports )
+			for ( auto vit = viewports.begin(); vit != end; ++vit )
 			{
-				if ( vi < size )
-				{
-					this->viewports[vi++] = viewport.x;
-					this->viewports[vi++] = viewport.y;
-					this->viewports[vi++] = viewport.width;
-					this->viewports[vi++] = viewport.height;
-				}
+				auto & viewport = *vit;
+				*it = viewport.x;
+				++it;
+				*it = viewport.y;
+				++it;
+				*it = viewport.width;
+				++it;
+				*it = viewport.height;
+				++it;
 			}
 		}
 
+		inline CmdT( std::vector< VkViewport > const & viewports )
+			: CmdT{ 0u, uint32_t( viewports.size() ), viewports }
+		{
+		}
+
 		Command cmd;
+		uint32_t first;
 		uint32_t count;
 		std::array< float, MaxElems * ElemCount > viewports;
 	};
@@ -305,24 +327,33 @@ namespace ashes::gl4
 		static uint32_t constexpr MaxElems = 16u;
 		static uint32_t constexpr ElemCount = 2u;
 
-		inline CmdT( std::vector< VkViewport > const & viewports )
+		inline CmdT( uint32_t first
+			, uint32_t count
+			, std::vector< VkViewport > const & viewports )
 			: cmd{ { OpType::eApplyDepthRanges, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, count{ std::min( MaxElems, uint32_t( viewports.size() ) ) }
+			, first{ first }
+			, count{ std::min( MaxElems, count ) }
 		{
-			uint32_t di = 0u;
-			uint32_t size = count * ElemCount;
+			auto it = this->depthRanges.begin();
+			auto end = viewports.begin() + std::min( MaxElems, uint32_t( viewports.size() ) );
 
-			for ( auto & viewport : viewports )
+			for ( auto vit = viewports.begin(); vit != end; ++vit )
 			{
-				if ( di < size )
-				{
-					this->depthRanges[di++] = viewport.minDepth;
-					this->depthRanges[di++] = viewport.maxDepth;
-				}
+				auto & viewport = *vit;
+				*it = viewport.minDepth;
+				++it;
+				*it = viewport.maxDepth;
+				++it;
 			}
 		}
 
+		inline CmdT( std::vector< VkViewport > const & viewports )
+			: CmdT{ 0u, uint32_t( viewports.size() ), viewports }
+		{
+		}
+
 		Command cmd;
+		uint32_t first;
 		uint32_t count;
 		std::array< double, MaxElems * ElemCount > depthRanges;
 	};

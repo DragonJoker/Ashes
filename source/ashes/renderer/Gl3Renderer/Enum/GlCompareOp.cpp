@@ -1,33 +1,33 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	std::string getName( GlCompareOp value )
 	{
 		switch ( value )
 		{
-		case gl_renderer::GL_COMPARE_OP_NEVER:
+		case GL_COMPARE_OP_NEVER:
 			return "GL_NEVER";
 
-		case gl_renderer::GL_COMPARE_OP_LESS:
+		case GL_COMPARE_OP_LESS:
 			return "GL_LESS";
 
-		case gl_renderer::GL_COMPARE_OP_EQUAL:
+		case GL_COMPARE_OP_EQUAL:
 			return "GL_EQUAL";
 
-		case gl_renderer::GL_COMPARE_OP_LEQUAL:
+		case GL_COMPARE_OP_LEQUAL:
 			return "GL_LEQUAL";
 
-		case gl_renderer::GL_COMPARE_OP_GREATER:
+		case GL_COMPARE_OP_GREATER:
 			return "GL_GREATER";
 
-		case gl_renderer::GL_COMPARE_OP_NOTEQUAL:
+		case GL_COMPARE_OP_NOTEQUAL:
 			return "GL_NOTEQUAL";
 
-		case gl_renderer::GL_COMPARE_OP_GEQUAL:
+		case GL_COMPARE_OP_GEQUAL:
 			return "GL_GEQUAL";
 
-		case gl_renderer::GL_COMPARE_OP_ALWAYS:
+		case GL_COMPARE_OP_ALWAYS:
 			return "GL_ALWAYS";
 
 		default:

@@ -6,41 +6,20 @@ See LICENSE file in root folder.
 
 #include "GlRendererPrerequisites.hpp"
 
-#include <Ashes/Core/DebugReportCallback.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
-	/**
-	*\~english
-	*\brief
-	*	The debug report callback class.
-	*\~french
-	*\brief
-	*	Classe de callback de rapport de debug.
-	*/
-	class DebugReportCallback
-		: public ashes::DebugReportCallback
+#if VK_EXT_debug_utils
+
+	class DebugUtilsMessengerEXT
 	{
 	public:
-		/**
-		*\~french
-		*\brief
-		*	Constructor.
-		*\~french
-		*\brief
-		*	Constructeur.
-		*/
-		DebugReportCallback( Instance const & instance
-			, ashes::DebugReportCallbackCreateInfo createInfo );
-		/**
-		*\~french
-		*\brief
-		*	Destructor.
-		*\~french
-		*\brief
-		*	Destructeur.
-		*/
-		~DebugReportCallback();
+		DebugUtilsMessengerEXT( VkInstance instance
+			, VkDebugUtilsMessengerCreateInfoEXT createInfo );
+		~DebugUtilsMessengerEXT();
+		void submit( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
+			, VkDebugUtilsMessageTypeFlagsEXT messageTypes
+			, VkDebugUtilsMessengerCallbackDataEXT const & callbackData
+			, void * userData );
 
 		void report( GlDebugSource source
 			, GlDebugType type
@@ -55,6 +34,43 @@ namespace gl_renderer
 			, const char * const message );
 
 	private:
-		Instance const & m_instance;
+		VkInstance m_instance;
+		VkDebugUtilsMessengerCreateInfoEXT m_createInfo;
 	};
+
+#endif
+#if VK_EXT_debug_report
+
+	class DebugReportCallbackEXT
+	{
+	public:
+		DebugReportCallbackEXT( VkInstance instance
+			, VkDebugReportCallbackCreateInfoEXT createInfo );
+		~DebugReportCallbackEXT();
+		void report( VkDebugReportFlagsEXT flags
+			, VkDebugReportObjectTypeEXT objectType
+			, uint64_t object
+			, size_t location
+			, int32_t messageCode
+			, const char * pLayerPrefix
+			, const char * pMessage );
+
+		void report( GlDebugSource source
+			, GlDebugType type
+			, uint32_t id
+			, GlDebugSeverity severity
+			, int length
+			, const char * const message );
+		void report( uint32_t id
+			, GlDebugCategory category
+			, GlDebugSeverity severity
+			, int length
+			, const char * const message );
+
+	private:
+		VkInstance m_instance;
+		VkDebugReportCallbackCreateInfoEXT m_createInfo;
+	};
+
+#endif
 }

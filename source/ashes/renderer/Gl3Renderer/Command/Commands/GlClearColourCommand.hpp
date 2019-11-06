@@ -4,40 +4,57 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Gl3Renderer/Command/Commands/GlCommandBase.hpp"
+#include "renderer/Gl3Renderer/Command/Commands/GlCommandBase.hpp"
 
-#include <Ashes/RenderPass/ClearValue.hpp>
+#include "renderer/Gl3Renderer/Enum/GlFormat.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
-	/**
-	*\brief
-	*	Commande de vidage d'une image.
-	*/
-	class ClearColourCommand
-		: public CommandBase
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eClearTexColor >
 	{
-	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] image
-		*	L'image à vider.
-		*\param[in] colour
-		*	La couleur de vidage.
-		*/
-		ClearColourCommand( Device const & device
-			, ashes::ImageView const & image
-			, VkClearColorValue const & colour );
-
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
-
-	private:
-		Image const & m_image;
-		VkClearColorValue m_colour;
-		GlInternal m_internal;
-		GlFormat m_format;
-		GlType m_type;
+		static Op constexpr value = { OpType::eClearTexColor, 9u };
 	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eClearTexColor >
+	{
+		inline CmdT( uint32_t name
+			, uint32_t mipLevel
+			, uint32_t format
+			, uint32_t type
+			, VkClearColorValue color )
+			: cmd{ { OpType::eClearTexColor, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, name{ std::move( name ) }
+			, mipLevel{ std::move( mipLevel ) }
+			, format{ std::move( format ) }
+			, type{ std::move( type ) }
+			, color{ std::move( color ) }
+		{
+		}
+
+		Command cmd;
+		uint32_t name;
+		uint32_t mipLevel;
+		uint32_t format;
+		uint32_t type;
+		VkClearColorValue color;
+	};
+	using CmdClearTexColor = CmdT< OpType::eClearTexColor >;
+
+	void apply( ContextLock const & context
+		, CmdClearTexColor const & cmd );
+
+	//*************************************************************************
+
+	void buildClearColourCommand( VkDevice device
+		, VkImage image
+		, VkImageLayout imageLayout
+		, VkClearColorValue value
+		, VkImageSubresourceRangeArray ranges
+		, CmdList & list );
+
+	//*************************************************************************
 }

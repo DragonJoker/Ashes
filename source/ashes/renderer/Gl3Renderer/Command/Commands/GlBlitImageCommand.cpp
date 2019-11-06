@@ -7,32 +7,31 @@ See LICENSE file in root folder.
 #include "Core/GlDevice.hpp"
 #include "Image/GlImage.hpp"
 #include "Image/GlImageView.hpp"
+#include "Miscellaneous/GlCallLogger.hpp"
 #include "RenderPass/GlFrameBuffer.hpp"
 
-#include <Ashes/Image/ImageSubresourceRange.hpp>
-#include <Ashes/RenderPass/FrameBufferAttachment.hpp>
+#include "ashesgl3_api.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	namespace
 	{
 		GlImageAspectFlags getMask( VkFormat format )
 		{
 			GlImageAspectFlags result = 0u;
-			auto internal = getInternal( format );
 
-			if ( isDepthFormat( internal ) )
+			if ( isDepthFormat( format ) )
 			{
 				result |= GL_DEPTH_BUFFER_BIT;
 			}
 
-			if ( isStencilFormat( internal ) )
+			if ( isStencilFormat( format ) )
 			{
 				result |= GL_STENCIL_BUFFER_BIT;
 			}
 
-			if ( !isDepthFormat( internal )
-				&& !isStencilFormat( internal ) )
+			if ( !isDepthFormat( format )
+				&& !isStencilFormat( format ) )
 			{
 				result |= GL_COLOR_BUFFER_BIT;
 			}
@@ -41,129 +40,141 @@ namespace gl_renderer
 		}
 	}
 
-	BlitImageCommand::Attachment::Attachment( ashes::ImageSubresourceLayers & subresource
-		, Image const & image
+	FboAttachment makeFboAttachment( VkDevice device
+		, VkImageSubresourceLayers & subresource
+		, VkImage image
 		, uint32_t layer )
-		: object{ image.getImage() }
-		, point{ getAttachmentPoint( image.getFormat() ) }
-		, type{ getAttachmentType( image.getFormat() ) }
 	{
-		if ( image.getLayerCount() > 1u )
+		FboAttachment result
 		{
-			subresource.mipLevel = 0u;
+			getAttachmentPoint( get( image )->getFormat() ),
+			get( image )->getInternal(),
+			getAttachmentType( get( image )->getFormat() ),
+			( get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT
+				? GL_TEXTURE_2D_MULTISAMPLE
+				: ( checkFlag( get( image )->getCreateFlags(), VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT )
+					? GL_TEXTURE_CUBE_POSITIVE_X
+					: GL_TEXTURE_2D ) ),
+			subresource.mipLevel,
+			0u,
+		};
+
+		if ( get( image )->getArrayLayers() > 1u )
+		{
+			result.mipLevel = 0u;
 		}
+
+		return result;
 	}
 
-	BlitImageCommand::LayerCopy::LayerCopy( ashes::ImageBlit blitRegion
-		, Image const & srcImage
-		, Image const & dstImage
-		, uint32_t layer )
-		: region{ blitRegion }
-		, src{ region.srcSubresource, srcImage, layer }
-		, dst{ region.dstSubresource, dstImage, layer }
+	struct LayerCopy
 	{
-	}
-
-	BlitImageCommand::BlitImageCommand( Device const & device
-		, ashes::Image const & srcImage
-		, ashes::Image const & dstImage
-		, std::vector< ashes::ImageBlit > const & regions
-		, VkFilter filter )
-		: CommandBase{ device }
-		, m_srcTexture{ static_cast< Image const & >( srcImage ) }
-		, m_dstTexture{ static_cast< Image const & >( dstImage ) }
-		, m_srcFbo{ device.getBlitSrcFbo() }
-		, m_dstFbo{ device.getBlitDstFbo() }
-		, m_filter{ convert( filter ) }
-		, m_mask{ getMask( m_srcTexture.getFormat() ) }
-		, m_srcTarget{ checkFlag( m_srcTexture.getCreateFlags(), VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT ) ? GL_TEXTURE_CUBE_POSITIVE_X : GL_TEXTURE_2D }
-		, m_dstTarget{ checkFlag( m_dstTexture.getCreateFlags(), VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT ) ? GL_TEXTURE_CUBE_POSITIVE_X : GL_TEXTURE_2D }
-	{
-		assert( srcImage.getLayerCount() == dstImage.getLayerCount() );
-
-		for ( auto & region : regions )
+		LayerCopy( VkDevice device
+			, VkImageBlit region
+			, VkImage srcImage
+			, VkImage dstImage
+			, uint32_t layer )
+			: region{ region }
+			, src{ makeFboAttachment( device, region.srcSubresource, srcImage, layer ) }
+			, dst{ makeFboAttachment( device, region.dstSubresource, dstImage, layer ) }
 		{
-			for ( uint32_t layer = 0u; layer < srcImage.getLayerCount(); ++layer )
+		}
+
+		VkImageBlit region;
+		FboAttachment src;
+		FboAttachment dst;
+	};
+
+	void apply( ContextLock const & context
+		, CmdBlitFramebuffer const & cmd )
+	{
+		glLogCall( context
+			, glBlitFramebuffer
+			, cmd.srcL
+			, cmd.srcT
+			, cmd.srcR
+			, cmd.srcB
+			, cmd.dstL
+			, cmd.dstT
+			, cmd.dstR
+			, cmd.dstB
+			, cmd.mask
+			, cmd.filter );
+	}
+
+	void buildBlitImageCommand( ContextStateStack & stack
+		, VkDevice device
+		, VkImage srcImage
+		, VkImage dstImage
+		, VkImageBlit region
+		, VkFilter filter
+		, CmdList & list )
+	{
+		assert( get( srcImage )->getArrayLayers() == get( dstImage )->getArrayLayers() );
+
+		for ( uint32_t layer = 0u; layer < get( srcImage )->getArrayLayers(); ++layer )
+		{
+			LayerCopy layerCopy
 			{
-				m_layerCopies.emplace_back( std::make_shared< BlitImageCommand::LayerCopy >( region
-					, m_srcTexture
-					, m_dstTexture
-					, layer ) );
-			}
-		}
-	}
+				device,
+				region,
+				srcImage,
+				dstImage,
+				layer
+			};
 
-	BlitImageCommand::~BlitImageCommand()
-	{
-	}
-
-	void BlitImageCommand::apply( ContextLock const & context )const
-	{
-		for ( auto & playerCopy : m_layerCopies )
-		{
-			auto & layerCopy = *playerCopy;
 			// Setup source FBO
-			glLogCall( context
-				, glBindFramebuffer
-				, GL_FRAMEBUFFER
-				, m_srcFbo );
-			glLogCall( context
-				, glFramebufferTexture2D
-				, GL_FRAMEBUFFER
+			list.push_back( makeCmd< OpType::eInitFramebuffer >( &get( get( device )->getBlitSrcFbo() )->getInternal() ) );
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+				, get( device )->getBlitSrcFbo() ) );
+			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
 				, layerCopy.src.point
-				, m_srcTarget
+				, layerCopy.src.target
 				, layerCopy.src.object
-				, layerCopy.region.srcSubresource.mipLevel );
-			checkCompleteness( context->glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
+				, layerCopy.region.srcSubresource.mipLevel ) );
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+				, nullptr ) );
 
 			// Setup dst FBO
-			glLogCall( context
-				, glBindFramebuffer
-				, GL_FRAMEBUFFER
-				, m_dstFbo );
-			glLogCall( context
-				, glFramebufferTexture2D
-				, GL_FRAMEBUFFER
+			list.push_back( makeCmd< OpType::eInitFramebuffer >( &get( get( device )->getBlitDstFbo() )->getInternal() ) );
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+				, get( device )->getBlitDstFbo() ) );
+			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
 				, layerCopy.dst.point
-				, m_dstTarget
+				, layerCopy.dst.target
 				, layerCopy.dst.object
-				, layerCopy.region.dstSubresource.mipLevel );
-			checkCompleteness( context->glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
+				, layerCopy.region.dstSubresource.mipLevel ) );
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+				, nullptr ) );
 
 			// Perform the blit
-			glLogCall( context
-				, glBindFramebuffer
-				, GL_READ_FRAMEBUFFER
-				, m_srcFbo );
-			glLogCall( context
-				, glBindFramebuffer
-				, GL_DRAW_FRAMEBUFFER
-				, m_dstFbo );
-			glLogCall( context
-				, glBlitFramebuffer
-				, layerCopy.region.srcOffset.x
-				, layerCopy.region.srcOffset.y
-				, layerCopy.region.srcExtent.width
-				, layerCopy.region.srcExtent.height
-				, layerCopy.region.dstOffset.x
-				, layerCopy.region.dstOffset.y
-				, layerCopy.region.dstExtent.width
-				, layerCopy.region.dstExtent.height
-				, m_mask
-				, m_filter );
-			glLogCall( context
-				, glBindFramebuffer
-				, GL_DRAW_FRAMEBUFFER
-				, m_device.getCurrentFramebuffer() );
-			glLogCall( context
-				, glBindFramebuffer
-				, GL_READ_FRAMEBUFFER
-				, 0u );
-		}
-	}
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
+				, get( device )->getBlitSrcFbo() ) );
+			list.push_back( makeCmd< OpType::eReadBuffer >( uint32_t( layerCopy.src.point ) ) );
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_DRAW_FRAMEBUFFER
+				, get( device )->getBlitDstFbo() ) );
+			list.push_back( makeCmd< OpType::eDrawBuffers >( uint32_t( layerCopy.dst.point ) ) );
+			list.push_back( makeCmd< OpType::eBlitFramebuffer >( layerCopy.region.srcOffsets[0].x
+				, layerCopy.region.srcOffsets[0].y
+				, layerCopy.region.srcOffsets[1].x
+				, layerCopy.region.srcOffsets[1].y
+				, layerCopy.region.dstOffsets[0].x
+				, layerCopy.region.dstOffsets[0].y
+				, layerCopy.region.dstOffsets[1].x
+				, layerCopy.region.dstOffsets[1].y
+				, getMask( get( srcImage )->getFormat() )
+				, convert( filter ) ) );
 
-	CommandPtr BlitImageCommand::clone()const
-	{
-		return std::make_unique< BlitImageCommand >( *this );
+			// Unbind
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
+				, nullptr ) );
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_DRAW_FRAMEBUFFER
+				, nullptr ) );
+
+			if ( stack.hasCurrentFramebuffer() )
+			{
+				stack.setCurrentFramebuffer( VK_NULL_HANDLE );
+			}
+		}
 	}
 }

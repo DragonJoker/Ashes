@@ -2,41 +2,13 @@
 
 #include "Core/GlInstance.hpp"
 
-#include <Ashes/Core/Exception.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
 	uint32_t deduceMemoryType( uint32_t typeBits
 		, VkMemoryPropertyFlags requirements )
 	{
-		auto & memoryProperties = Instance::getMemoryProperties();
-		uint32_t result = 0xFFFFFFFFu;
-		bool found{ false };
-
-		// Recherche parmi les types de mémoire la première ayant les propriétés voulues.
-		uint32_t i{ 0 };
-
-		while ( i < memoryProperties.memoryTypes.size() && !found )
-		{
-			if ( ( typeBits & 1 ) == 1 )
-			{
-				// Le type de mémoire est disponible, a-t-il les propriétés demandées?
-				if ( ( memoryProperties.memoryTypes[i].propertyFlags & requirements ) == requirements )
-				{
-					result = i;
-					found = true;
-				}
-			}
-
-			typeBits >>= 1;
-			++i;
-		}
-
-		if ( !found )
-		{
-			throw ashes::Exception{ ashes::Result::eErrorRenderer, "Could not deduce memory type" };
-		}
-
-		return result;
+		return ashes::deduceMemoryType( typeBits
+			, requirements
+			, Instance::getMemoryProperties() );
 	}
 }

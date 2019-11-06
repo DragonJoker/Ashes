@@ -4,19 +4,22 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include "Gl3Renderer/Shader/GlShaderDesc.hpp"
+#include "renderer/Gl3Renderer/Shader/GlShaderDesc.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	class ShaderProgram
 	{
 	public:
-		ShaderProgram( Device const & device
-			, std::vector< ashes::ShaderStageState > const & stages );
-		ShaderProgram( Device const & device
-			, ashes::ShaderStageState const & stage );
+		ShaderProgram( VkDevice device
+			, VkPipeline pipeline
+			, VkPipelineShaderStageCreateInfoArray stages
+			, bool isRtot );
+		ShaderProgram( VkDevice device
+			, VkPipeline pipeline
+			, VkPipelineShaderStageCreateInfo const & stage );
 		~ShaderProgram();
-		ShaderDesc link()const;
+		ShaderDesc link( ContextLock const & context )const;
 
 		inline GLuint getProgram()const
 		{
@@ -24,9 +27,11 @@ namespace gl_renderer
 		}
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
+		VkPipeline m_pipeline;
 		GLuint m_program;
-		ashes::UInt32Array m_shaders;
+		VkPipelineShaderStageCreateInfoArray m_stages;
 		VkShaderStageFlags m_stageFlags;
+		UInt32Array m_shaders;
 	};
 }

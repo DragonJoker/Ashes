@@ -1,36 +1,61 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	std::string getName( GlQueryResultFlag value )
 	{
 		switch ( value )
 		{
-		case 0u:
+		case GL_QUERY_NONE:
 			return "0";
 
-		case gl_renderer::GL_QUERY_RESULT:
+		case GL_QUERY_RESULT:
 			return "GL_QUERY_RESULT";
 
-		case gl_renderer::GL_QUERY_RESULT_NO_WAIT:
+		case GL_QUERY_RESULT_NO_WAIT:
 			return "GL_QUERY_RESULT_NO_WAIT";
 
 		default:
 			assert( false && "Unsupported GlQueryResultFlag" );
-			return "GlQueryResultFlag_UNKNOWN";
+			return "GL_QUERY_RESULT_UNKNOWN";
 		}
 	}
 
-	GLuint convert( VkQueryResultFlags const & flags )
+	std::string getName( GlQueryResultFlags value )
 	{
-		GLuint result{ 0 };
+		std::string result;
+		std::string sep;
 
-		if ( checkFlag( flags, VK_QUERY_RESULT_WAIT_BIT ) )
+		if ( checkFlag( value, GL_QUERY_RESULT ) )
+		{
+			result += sep + getName( GL_QUERY_RESULT );
+			sep = "|";
+		}
+
+		if ( checkFlag( value, GL_QUERY_RESULT_NO_WAIT ) )
+		{
+			result += sep + getName( GL_QUERY_RESULT_NO_WAIT );
+			sep = "|";
+		}
+
+		if ( !value )
+		{
+			result = "0";
+		}
+
+		return result;
+	}
+
+	GlQueryResultFlags convertQueryResultFlags( VkQueryResultFlags const & flags )
+	{
+		GlQueryResultFlags result{ 0 };
+
+		if ( ashes::checkFlag( flags, VK_QUERY_RESULT_WAIT_BIT ) )
 		{
 			return GL_QUERY_RESULT;
 		}
 
-		if ( checkFlag( flags, VK_QUERY_RESULT_WITH_AVAILABILITY_BIT ) )
+		if ( ashes::checkFlag( flags, VK_QUERY_RESULT_WITH_AVAILABILITY_BIT ) )
 		{
 			return GL_QUERY_RESULT_NO_WAIT;
 		}

@@ -6,53 +6,31 @@
 */
 #pragma once
 
-#include "Gl3Renderer/GlRendererPrerequisites.hpp"
+#include "renderer/Gl3Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Core/SwapChain.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
-	class SwapChain
-		: public ashes::SwapChain
+	class SwapchainKHR
 	{
 	public:
-		/**
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	La connexion logique au GPU.
-		*\param[in] createInfo
-		*	Les informations de cr�ation.
-		*\~english
-		*\brief
-		*	Constructor.
-		*\param[in] device
-		*	The logical connection to the GPU.
-		*\param[in] createInfo
-		*	The creation informations.
-		*/
-		SwapChain( Device const & device
-			, ashes::SwapChainCreateInfo createInfo );
-		~SwapChain();
-		/**
-		*\copydoc	ashes::SwapChain::getImages
-		*/
-		ashes::ImagePtrArray getImages()const override;
-		/**
-		*\copydoc	ashes::SwapChain::acquireNextImage
-		*/
-		ashes::Result acquireNextImage( uint64_t timeout
-			, ashes::Semaphore const * semaphore
-			, ashes::Fence const * fence
-			, uint32_t & imageIndex )const override;
+		SwapchainKHR( VkDevice device
+			, VkSwapchainCreateInfoKHR createInfo );
+		~SwapchainKHR();
 
-		void present( uint32_t imageIndex )const;
+		uint32_t getImageCount()const;
+		VkImageArray getImages()const;
+		VkResult acquireNextImage( uint64_t timeout
+			, VkSemaphore semaphore
+			, VkFence fence
+			, uint32_t & imageIndex )const;
+
+		VkResult present( uint32_t imageIndex )const;
 
 	private:
-		Device const & m_device;
-		std::unique_ptr< Image > m_image;
-		std::unique_ptr< ImageView > m_view;
+		VkDevice m_device;
+		VkSwapchainCreateInfoKHR m_createInfo;
+		VkImage m_image;
+		VkDeviceMemory m_deviceMemory;
 		GLuint m_fbo;
 	};
 }

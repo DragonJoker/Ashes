@@ -4025,9 +4025,19 @@ namespace ashes::gl4
 		{
 			RenderWindow window;
 			ExtensionsHandler extensions;
-			extensions.initialise();
-			bool supported = extensions.getMajor() > 4
-				|| ( extensions.getMajor() == 4 && extensions.getMinor() >= 3 );
+			bool supported = false;
+
+			try
+			{
+				extensions.initialise();
+				supported = extensions.getMajor() > 4
+					|| ( extensions.getMajor() == 4 && extensions.getMinor() >= 2 );
+			}
+			catch ( std::exception & exc )
+			{
+				std::cerr << exc.what() << std::endl;
+			}
+
 			VkResult result = description.getInstanceProcAddr
 				? VK_SUCCESS
 				: VK_ERROR_INITIALIZATION_FAILED;
@@ -4035,16 +4045,7 @@ namespace ashes::gl4
 			if ( result != VK_SUCCESS )
 			{
 				description.getInstanceProcAddr = &vkGetInstanceProcAddr;
-				description.features =
-				{
-					true, // hasBufferRange
-					true, // hasImageTexture
-					true, // hasBaseInstance
-					true, // hasClearTexImage
-					true, // hasComputeShaders
-					true, // hasStorageBuffers
-					true, // supportsPersistentMapping
-				};
+				description.features = extensions.getFeatures();
 #define VK_LIB_GLOBAL_FUNCTION( x )\
 				description.functions.x = vk##x;
 #define VK_LIB_INSTANCE_FUNCTION( x )\

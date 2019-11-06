@@ -9,31 +9,30 @@
 #include "RenderPass/GlRenderPass.hpp"
 #include "Shader/GlShaderModule.hpp"
 
+#include "ashesgl3_api.hpp"
+
+#include <renderer/RendererCommon/Helper/ColourBlendState.hpp>
+#include <renderer/RendererCommon/Helper/DepthStencilState.hpp>
+#include <renderer/RendererCommon/Helper/DynamicState.hpp>
+#include <renderer/RendererCommon/Helper/InputAssemblyState.hpp>
+#include <renderer/RendererCommon/Helper/MultisampleState.hpp>
+#include <renderer/RendererCommon/Helper/RasterisationState.hpp>
+#include <renderer/RendererCommon/Helper/TessellationState.hpp>
+#include <renderer/RendererCommon/Helper/VertexInputState.hpp>
+#include <renderer/RendererCommon/Helper/ViewportState.hpp>
+
+#include <common/Hash.hpp>
+
 #include <algorithm>
 
 #if defined( interface )
 #	undef interface
 #endif
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	namespace
 	{
-		template<typename T>
-		void doHashCombine( size_t & seed, T const & v )
-		{
-			const uint64_t kMul = 0x9ddfea08eb382d69ULL;
-
-			std::hash< T > hasher;
-			uint64_t a = ( hasher( v ) ^ seed ) * kMul;
-			a ^= ( a >> 47 );
-
-			uint64_t b = ( seed ^ a ) * kMul;
-			b ^= ( b >> 47 );
-
-			seed = static_cast< std::size_t >( b * kMul );
-		}
-
 		size_t doHash( VboBindings const & vbos
 			, IboBinding const & ibo )
 		{
@@ -42,132 +41,148 @@ namespace gl_renderer
 			for ( auto & binding : vbos )
 			{
 				auto & vbo = binding.second;
-				doHashCombine( result, vbo.bo );
-				doHashCombine( result, vbo.offset );
+				hashCombine( result, vbo.bo );
+				hashCombine( result, vbo.buffer );
+				hashCombine( result, vbo.offset );
 			}
 
 			if ( bool( ibo ) )
 			{
-				doHashCombine( result, ibo.value().bo );
-				doHashCombine( result, ibo.value().offset );
+				hashCombine( result, ibo.value().bo );
+				hashCombine( result, ibo.value().buffer );
+				hashCombine( result, ibo.value().offset );
 			}
 
 			return result;
 		}
 
-		size_t doHash( ashes::VertexInputAttributeDescription const & desc )
+		size_t doHash( VkVertexInputAttributeDescription const & desc )
 		{
 			size_t result = 0u;
-			doHashCombine( result, desc.binding );
-			doHashCombine( result, desc.format );
-			doHashCombine( result, desc.location );
-			doHashCombine( result, desc.offset );
+			hashCombine( result, desc.binding );
+			hashCombine( result, desc.format );
+			hashCombine( result, desc.location );
+			hashCombine( result, desc.offset );
 			return result;
 		}
 
-		size_t doHash( ashes::VertexInputBindingDescription const & desc )
+		size_t doHash( VkVertexInputBindingDescription const & desc )
 		{
 			size_t result = 0u;
-			doHashCombine( result, desc.binding );
-			doHashCombine( result, desc.inputRate );
-			doHashCombine( result, desc.stride );
+			hashCombine( result, desc.binding );
+			hashCombine( result, desc.inputRate );
+			hashCombine( result, desc.stride );
 			return result;
 		}
 
-		size_t doHash( ashes::VertexInputState const & state )
+		size_t doHash( VkPipelineVertexInputStateCreateInfo const & state )
 		{
 			size_t result = 0u;
+			auto const endAttribs = state.pVertexAttributeDescriptions + state.vertexAttributeDescriptionCount;
 
-			for ( auto & desc : state.vertexAttributeDescriptions )
+			for ( auto it = state.pVertexAttributeDescriptions; it != endAttribs; ++it )
 			{
-				doHashCombine( result, doHash( desc ) );
+				hashCombine( result, doHash( *it ) );
 			}
 
-			for ( auto & desc : state.vertexBindingDescriptions )
+			auto const endBindings = state.pVertexBindingDescriptions + state.vertexBindingDescriptionCount;
+
+			for ( auto it = state.pVertexBindingDescriptions; it != endBindings; ++it )
 			{
-				doHashCombine( result, doHash( desc ) );
+				hashCombine( result, doHash( *it ) );
 			}
 
 			return result;
+		}
+
+		Optional< VkPipelineRasterizationStateCreateInfo > invertFrontFace( VkPipelineRasterizationStateCreateInfo const * state )
+		{
+			if ( state )
+			{
+				VkPipelineRasterizationStateCreateInfo result{ *state };
+				result.frontFace = VkFrontFace( VK_FRONT_FACE_END_RANGE - result.frontFace );
+				return result;
+			}
+
+			return Optional< VkPipelineRasterizationStateCreateInfo >{};
 		}
 	}
 
-	Pipeline::Pipeline( Device const & device
-		, PipelineLayout const & layout
-		, ashes::GraphicsPipelineCreateInfo createInfo )
-		: ashes::Pipeline{ device
-			, layout
-			, std::move( createInfo ) }
-		, m_device{ device }
-		, m_layout{ layout }
-		, m_ssState{ std::move( m_createInfo.stages ) }
-		, m_vertexInputState{ m_createInfo.vertexInputState }
-		, m_renderPass{ *m_createInfo.renderPass }
-		, m_iaState{ m_createInfo.inputAssemblyState }
-		, m_cbState{ m_createInfo.colourBlendState }
-		, m_rsState{ m_createInfo.rasterisationState }
-		, m_dsState{ 0u, false, true, VK_COMPARE_OP_LESS,  }
-		, m_msState{ m_createInfo.multisampleState }
-		, m_viewports{ m_createInfo.viewportState.viewports }
-		, m_scissors{ m_createInfo.viewportState.scissors }
-		, m_vertexInputStateHash{ doHash( m_vertexInputState ) }
-		, m_program{ m_device, m_ssState }
+	Pipeline::Pipeline( VkDevice device
+		, VkGraphicsPipelineCreateInfo createInfo )
+		: m_device{ device }
+		, m_flags{ createInfo.flags }
+		, m_stages{ makeVector( createInfo.pStages, createInfo.stageCount ) }
+		, m_vertexInputState{ makeOptional( createInfo.pVertexInputState
+			, m_vertexBindingDescriptions
+			, m_vertexAttributeDescriptions ) }
+		, m_backContextState
+		{
+			*createInfo.pColorBlendState,
+			createInfo.pDepthStencilState,
+			createInfo.pMultisampleState,
+			createInfo.pTessellationState,
+			createInfo.pInputAssemblyState,
+			createInfo.pViewportState,
+			createInfo.pRasterizationState,
+			createInfo.pDynamicState,
+		}
+		, m_rtotRasterizationState{ invertFrontFace( createInfo.pRasterizationState ) }
+		, m_rtotContextState
+		{
+			*createInfo.pColorBlendState,
+			createInfo.pDepthStencilState,
+			createInfo.pMultisampleState,
+			createInfo.pTessellationState,
+			createInfo.pInputAssemblyState,
+			createInfo.pViewportState,
+			//createInfo.pRasterizationState,
+			( bool( m_rtotRasterizationState )
+				? &m_rtotRasterizationState.value()
+				: nullptr ),
+			createInfo.pDynamicState,
+		}
+		, m_layout{ createInfo.layout }
+		, m_renderPass{ createInfo.renderPass }
+		, m_subpass{ createInfo.subpass }
+		, m_basePipelineHandle{ createInfo.basePipelineHandle }
+		, m_basePipelineIndex{ createInfo.basePipelineIndex }
+		, m_backProgram{ std::make_unique< ShaderProgram >( m_device, get( this ), m_stages, false ) }
+		, m_rtotProgram{ std::make_unique< ShaderProgram >( m_device, get( this ), m_stages, true ) }
+		, m_vertexInputStateHash{ ( m_vertexInputState
+			? doHash( m_vertexInputState.value() )
+			: 0u ) }
 	{
-		if ( m_createInfo.depthStencilState )
+		auto context = get( device )->getContext();
+		CmdList list;
+		ContextStateStack stack{ device };
 		{
-			m_dsState = m_createInfo.depthStencilState.value();
+			stack.apply( context
+				, m_backContextState );
+			doInitialise( context, *m_backProgram );
 		}
-
-		if ( m_createInfo.tessellationState )
 		{
-			m_tsState = m_createInfo.tessellationState.value();
+			stack.apply( context
+				, m_rtotContextState );
+			m_rtotProgram->link( context );
 		}
+	}
 
-		auto context = m_device.getContext();
-		apply( m_device, context, m_cbState );
-		apply( m_device, context, m_rsState
-			, hasDynamicStateEnable( ashes::DynamicStateEnable::eLineWidth )
-			, hasDynamicStateEnable( ashes::DynamicStateEnable::eDepthBias ) );
-		apply( m_device, context, m_dsState );
-		apply( m_device, context, m_msState );
-		apply( m_device, context, m_tsState );
-		ShaderDesc shaderDesc = m_program.link();
-		m_constantsPcb.stageFlags = shaderDesc.stageFlags;
-		uint32_t offset = 0u;
-
-		for ( auto & constant : shaderDesc.constantsLayout )
-		{
-			m_constantsPcb.constants.push_back( { constant.format
-				, constant.location
-				, offset
-				, constant.size
-				, constant.arraySize } );
-			offset += constant.size;
-		}
-
-		m_constantsPcb.size = offset;
-
-		if ( static_cast< Instance const & >( m_device.getInstance() ).isValidationEnabled() )
-		{
-			validatePipeline( context
-				, m_layout
-				, m_program.getProgram()
-				, m_vertexInputState
-				, m_renderPass );
-		}
+	Pipeline::Pipeline( VkDevice device
+		, VkComputePipelineCreateInfo createInfo )
+		: m_device{ device }
+		, m_stages{ makeVector( &createInfo.stage, 1u ) }
+		, m_layout{ createInfo.layout }
+		, m_basePipelineHandle{ createInfo.basePipelineHandle }
+		, m_basePipelineIndex{ createInfo.basePipelineIndex }
+		, m_compProgram{ std::make_unique< ShaderProgram >( m_device, get( this ), m_stages.back() ) }
+	{
+		auto context = get( device )->getContext();
+		doInitialise( context, *m_compProgram );
 	}
 
 	Pipeline::~Pipeline()
 	{
-	}
-
-	PushConstantsDesc Pipeline::findPushConstantBuffer( PushConstantsDesc const & pushConstants )const
-	{
-		PushConstantsDesc result{ m_constantsPcb };
-		result.offset = pushConstants.offset;
-		result.size = pushConstants.size;
-		result.data = pushConstants.data;
-		return result;
 	}
 
 	GeometryBuffers * Pipeline::findGeometryBuffers( VboBindings const & vbos
@@ -177,9 +192,9 @@ namespace gl_renderer
 		auto it = std::find_if( m_geometryBuffers.begin()
 			, m_geometryBuffers.end()
 			, [&hash]( std::pair< size_t, GeometryBuffersPtr > const & pair )
-		{
-			return pair.first == hash;
-		} );
+			{
+				return pair.first == hash;
+			} );
 		return it == m_geometryBuffers.end()
 			? nullptr
 			: it->second.get();
@@ -194,43 +209,85 @@ namespace gl_renderer
 			, std::make_unique< GeometryBuffers >( m_device
 				, vbos
 				, ibo
-				, m_vertexInputState
+				, m_vertexInputState.value()
+				, m_shaderDesc.inputLayout
 				, type ) );
 
 		for ( auto & binding : vbos )
 		{
 			auto & vbo = binding.second;
-			m_connections.emplace( vbo.bo, vbo.buffer->onDestroy.connect( [this]( GLuint name )
-			{
-				auto it = std::remove_if( m_geometryBuffers.begin()
-					, m_geometryBuffers.end()
-					, [&name]( std::pair< size_t, GeometryBuffersPtr > const & pair )
-				{
-					bool result = false;
-
-					for ( auto & vbo : pair.second->getVbos() )
+			m_connections.emplace( vbo.bo
+				, get( get( vbo.buffer )->getMemory() )->onDestroy.connect( [this]( GLuint name )
 					{
-						if ( !result )
-						{
-							result = vbo.vbo == name;
-						}
-					}
+						auto it = std::remove_if( m_geometryBuffers.begin()
+							, m_geometryBuffers.end()
+							, [&name]( std::pair< size_t, GeometryBuffersPtr > const & pair )
+							{
+								bool result = false;
 
-					if ( !result && bool( pair.second->hasIbo() ) )
-					{
-						result = pair.second->getIbo().ibo == name;
-					}
+								for ( auto & vbo : pair.second->getVbos() )
+								{
+									if ( !result )
+									{
+										result = get( vbo.vbo )->getInternal() == name;
+									}
+								}
 
-					return result;
-				} );
+								if ( !result && bool( pair.second->hasIbo() ) )
+								{
+									result = get( pair.second->getIbo().ibo )->getInternal() == name;
+								}
 
-				if ( it != m_geometryBuffers.end() )
-				{
-					m_geometryBuffers.erase( it, m_geometryBuffers.end() );
-				}
-			} ) );
+								return result;
+							} );
+
+						m_geometryBuffers.erase( it, m_geometryBuffers.end() );
+					} ) );
 		}
 
 		return *m_geometryBuffers.back().second;
+	}
+
+	PushConstantsDesc Pipeline::findPushConstantBuffer( PushConstantsDesc const & pushConstants )const
+	{
+		PushConstantsDesc result{ m_constantsPcb };
+		result.offset = pushConstants.offset;
+		result.size = pushConstants.size;
+		result.data = pushConstants.data;
+		return result;
+	}
+
+	VkDescriptorSetLayoutArray const & Pipeline::getDescriptorsLayouts()const
+	{
+		return get( m_layout )->getDescriptorsLayouts();
+	}
+
+	void Pipeline::doInitialise( ContextLock const & context
+		, ShaderProgram const & program )
+	{
+		m_shaderDesc = program.link( context );
+		m_constantsPcb.stageFlags = m_shaderDesc.stageFlags;
+		uint32_t size = 0u;
+
+		for ( auto & constant : m_shaderDesc.constantsLayout )
+		{
+			m_constantsPcb.constants.push_back( { constant.format
+				, constant.location
+				, constant.offset
+				, constant.size
+				, constant.arraySize } );
+			size += constant.size;
+		}
+
+		m_constantsPcb.size = size;
+
+		if ( get( get( m_device )->getInstance() )->isValidationEnabled() )
+		{
+			validatePipeline( context
+				, m_layout
+				, program.getProgram()
+				, m_vertexInputState.value()
+				, m_renderPass );
+		}
 	}
 }

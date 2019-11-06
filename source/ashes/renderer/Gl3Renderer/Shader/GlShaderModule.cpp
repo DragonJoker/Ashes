@@ -8,9 +8,6 @@ See LICENSE file in root folder.
 #include "Core/GlPhysicalDevice.hpp"
 #include "Core/GlInstance.hpp"
 
-#include <Ashes/Core/Instance.hpp>
-#include <Ashes/Pipeline/ShaderStageState.hpp>
-
 #include <iostream>
 #include <regex>
 
@@ -20,7 +17,9 @@ See LICENSE file in root folder.
 #	include "spirv_glsl.hpp"
 #endif
 
-namespace gl_renderer
+#include "ashesgl3_api.hpp"
+
+namespace ashes::gl3
 {
 	namespace
 	{
@@ -50,9 +49,10 @@ namespace gl_renderer
 			std::locale m_prvLoc;
 		};
 
-		std::string doRetrieveCompilerLog( ContextLock const & context
+		std::string doRetrieveCompilerLog( VkDevice device
 			, GLuint shaderName )
 		{
+			auto context = get( device )->getContext();
 			std::string log;
 			int infologLength = 0;
 			int charsWritten = 0;
@@ -82,31 +82,43 @@ namespace gl_renderer
 			return log;
 		}
 
-		bool doCheckCompileErrors( ContextLock const & context
+		bool doCheckCompileErrors( VkDevice device
+			, VkShaderModule module
 			, bool compiled
 			, GLuint shaderName
 			, std::string const & source )
 		{
-			auto compilerLog = doRetrieveCompilerLog( context
+			auto compilerLog = doRetrieveCompilerLog( device
 				, shaderName );
+			auto reportType = compiled
+				? VK_DEBUG_REPORT_WARNING_BIT_EXT
+				: VK_DEBUG_REPORT_ERROR_BIT_EXT;
 
 			if ( !compilerLog.empty() )
 			{
-				if ( !compiled )
-				{
-					ashes::Logger::logError( compilerLog );
-					ashes::Logger::logError( source );
-				}
-				else
-				{
-					ashes::Logger::logWarning( compilerLog );
-					ashes::Logger::logWarning( source );
-				}
+				std::stringstream stream;
+				stream << compilerLog << std::endl;
+				stream << source << std::endl;
+				get( get( device )->getInstance() )->reportMessage( reportType
+					, VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT
+					, uint64_t( module )
+					, 0u
+					, 0u
+					, "CORE"
+					, stream.str().c_str() );
 			}
 			else if ( !compiled )
 			{
-				ashes::Logger::logError( "Shader compilation failed" );
-				ashes::Logger::logError( source );
+				std::stringstream stream;
+				stream << "Shader compilation failed" << std::endl;
+				stream << source << std::endl;
+				get( get( device )->getInstance() )->reportMessage( reportType
+					, VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT
+					, uint64_t( module )
+					, 0u
+					, 0u
+					, "CORE"
+					, stream.str().c_str() );
 			}
 
 			return compiled;
@@ -146,8 +158,8 @@ namespace gl_renderer
 			return result;
 		}
 
-		void doFillConstant( ashes::SpecialisationInfoBase const & specialisationInfo
-			, ashes::SpecialisationMapEntry const & entry
+		void doFillConstant( VkSpecializationInfo const & specialisationInfo
+			, VkSpecializationMapEntry const & entry
 			, spirv_cross::SPIRType const & type
 			, spirv_cross::SPIRConstant & constant )
 		{
@@ -159,35 +171,37 @@ namespace gl_renderer
 				for ( auto vec = 0u; vec < type.vecsize; ++vec )
 				{
 					std::memcpy( &constant.m.c[col].r[vec]
-						, specialisationInfo.getData() + offset
+						, reinterpret_cast< uint8_t const * >( specialisationInfo.pData ) + offset
 						, size );
 					offset += size;
 				}
 			}
 		}
 
-		void doProcessSpecializationConstants( ashes::ShaderStageState const & state
+		void doProcessSpecializationConstants( VkPipelineShaderStageCreateInfo const & state
 			, spirv_cross::CompilerGLSL & compiler )
 		{
-			if ( state.specialisationInfo )
+			if ( state.pSpecializationInfo )
 			{
 				auto constants = compiler.get_specialization_constants();
 
-				for ( auto & spec : *state.specialisationInfo )
+				for ( auto itEntry = state.pSpecializationInfo->pMapEntries;
+					itEntry != state.pSpecializationInfo->pMapEntries + state.pSpecializationInfo->mapEntryCount;
+					++itEntry )
 				{
 					auto it = std::find_if( constants.begin()
 						, constants.end()
-						, [&spec]( spirv_cross::SpecializationConstant const & lookup )
+						, [itEntry]( spirv_cross::SpecializationConstant const & lookup )
 						{
-							return lookup.constant_id == spec.constantID;
+							return lookup.constant_id == itEntry->constantID;
 						} );
 
 					if ( it != constants.end() )
 					{
 						auto & constant = compiler.get_constant( it->id );
 						auto & type = compiler.get_type( constant.constant_type );
-						doFillConstant( *state.specialisationInfo
-							, spec
+						doFillConstant( *state.pSpecializationInfo
+							, *itEntry
 							, type
 							, constant );
 					}
@@ -211,32 +225,177 @@ namespace gl_renderer
 
 			if ( entryPoint.empty() )
 			{
-				throw std::runtime_error{ "Could not find an entry point with stage: " + getName( stage ) };
+				throw std::runtime_error{ "Could not find an entry point with stage: " + getShaderStageFlagName( stage ) };
 			}
 
 			compiler.set_entry_point( entryPoint, model );
 		}
 
-		void doSetupOptions( Device const & device
-			, spirv_cross::CompilerGLSL & compiler )
+		void doSetupOptions( VkDevice device
+			, spirv_cross::CompilerGLSL & compiler
+			, bool isRtot )
 		{
 			auto options = compiler.get_common_options();
-			options.version = device.getShaderVersion();
+			options.version = get( get( device )->getInstance() )->getExtensions().getShaderVersion();
 			options.es = false;
 			options.separate_shader_objects = true;
 			options.enable_420pack_extension = true;
 			options.vertex.fixup_clipspace = false;
-			options.vertex.flip_vert_y = true;
-			options.vertex.support_nonzero_base_instance = true;
+			options.vertex.flip_vert_y = !isRtot;
+			options.vertex.support_nonzero_base_instance = get( get( device )->getInstance() )->getFeatures ().hasBaseInstance;
 			compiler.set_common_options( options );
+		}
+
+		ConstantFormat getIntFormat( uint32_t size )
+		{
+			switch ( size )
+			{
+			case 1:
+				return ConstantFormat::eInt;
+			case 2:
+				return ConstantFormat::eVec2i;
+			case 3:
+				return ConstantFormat::eVec3i;
+			case 4:
+				return ConstantFormat::eVec4i;
+			default:
+				assert( false && "Unsupported row count" );
+				return ConstantFormat::eInt;
+			}
+		}
+
+		ConstantFormat getUIntFormat( uint32_t size )
+		{
+			switch ( size )
+			{
+			case 1:
+				return ConstantFormat::eUInt;
+			case 2:
+				return ConstantFormat::eVec2ui;
+			case 3:
+				return ConstantFormat::eVec3ui;
+			case 4:
+				return ConstantFormat::eVec4ui;
+			default:
+				assert( false && "Unsupported row count" );
+				return ConstantFormat::eUInt;
+			}
+		}
+
+		ConstantFormat getFloatFormat( uint32_t size )
+		{
+			switch ( size )
+			{
+			case 1:
+				return ConstantFormat::eFloat;
+			case 2:
+				return ConstantFormat::eVec2f;
+			case 3:
+				return ConstantFormat::eVec3f;
+			case 4:
+				return ConstantFormat::eVec4f;
+			default:
+				assert( false && "Unsupported row count" );
+				return ConstantFormat::eFloat;
+			}
+		}
+
+		ConstantFormat getFloatFormat( uint32_t cols
+			, uint32_t rows )
+		{
+			switch ( cols )
+			{
+			case 1:
+				return getFloatFormat( rows );
+			case 2:
+				return ConstantFormat::eMat2f;
+			case 3:
+				return ConstantFormat::eMat3f;
+			case 4:
+				return ConstantFormat::eMat4f;
+			default:
+				assert( false && "Unsupported column count" );
+				return ConstantFormat::eFloat;
+			}
+		}
+
+		ConstantFormat getFormat( spirv_cross::SPIRType const & type )
+		{
+			switch ( type.basetype )
+			{
+			case spirv_cross::SPIRType::Int:
+				return getIntFormat( type.vecsize );
+
+			case spirv_cross::SPIRType::UInt:
+				return getUIntFormat( type.vecsize );
+
+			case spirv_cross::SPIRType::Float:
+				return getFloatFormat( type.columns, type.vecsize );
+
+			default:
+				assert( false && "Unsupported SPIRType" );
+				return ConstantFormat::eVec4f;
+			}
+		}
+
+		uint32_t getArraySize( spirv_cross::CompilerGLSL & compiler
+			, spirv_cross::SPIRType const & type )
+		{
+			return !type.array.empty()
+				? ( type.array_size_literal[0]
+					? type.array[0]
+					: uint32_t( compiler.get_constant( type.array[0] ).scalar_u64() ) )
+				: 0u;
+		}
+
+		ConstantsLayout doRetrievePushConstants( spirv_cross::CompilerGLSL & compiler )
+		{
+			ConstantsLayout result;
+			spirv_cross::ShaderResources resources = compiler.get_shader_resources();
+
+			for ( auto & pcb : resources.push_constant_buffers )
+			{
+				auto & pcbType = compiler.get_type( pcb.type_id );
+				assert( pcbType.parent_type );
+				auto & structType = compiler.get_type( pcbType.parent_type );
+
+				uint32_t offset = 0u;
+				uint32_t index = 0u;
+
+				for ( auto & mbrTypeId : structType.member_types )
+				{
+					spirv_cross::SPIRType const & mbrType = compiler.get_type( mbrTypeId );
+
+					result.push_back( ConstantDesc
+						{
+							compiler.get_name( pcb.id ) + "." + compiler.get_member_name( structType.self, index++ ),
+							0u,
+							getFormat( mbrType ),
+							getSize( getFormat( mbrType ) ),
+							getArraySize( compiler, mbrType ),
+							offset,
+						} );
+
+					if ( result.back().arraySize > 0 )
+					{
+						result.back().name += "[0]";
+					}
+
+					offset += result.back().size;
+				}
+			}
+
+			return result;
 		}
 
 #endif
 
-		std::string compileSpvToGlsl( Device const & device
-			, ashes::UInt32Array const & shader
+		std::string compileSpvToGlsl( VkDevice device
+			, UInt32Array const & shader
 			, VkShaderStageFlagBits stage
-			, ashes::ShaderStageState const & state )
+			, VkPipelineShaderStageCreateInfo const & state
+			, bool isRtot
+			, ConstantsLayout & constants )
 		{
 			if ( shader[0] == OpCodeSPIRV )
 			{
@@ -246,8 +405,11 @@ namespace gl_renderer
 				auto compiler = std::make_unique< spirv_cross::CompilerGLSL >( shader );
 				doProcessSpecializationConstants( state, *compiler );
 				doSetEntryPoint( stage, *compiler );
-				doSetupOptions( device, *compiler );
+				doSetupOptions( device, *compiler, isRtot );
+				constants = doRetrievePushConstants( *compiler );
+
 				return compiler->compile();
+
 #else
 
 				throw std::runtime_error{ "Can't parse SPIR-V shaders, pull submodule SpirvCross" };
@@ -259,27 +421,50 @@ namespace gl_renderer
 			std::memcpy( glslCode.data(), shader.data(), glslCode.size() );
 			return std::string( glslCode.data(), glslCode.data() + strlen( glslCode.data() ) );
 		}
+
+		void getSpecializationInfo( VkSpecializationInfo const * pSpecializationInfo
+			, std::vector< GLuint > & indices
+			, std::vector< GLuint > & values )
+		{
+			if ( pSpecializationInfo )
+			{
+				auto & specializationInfo = *pSpecializationInfo;
+				auto count = GLuint( specializationInfo.mapEntryCount );
+				indices.reserve( count );
+				values.reserve( count );
+				auto src = reinterpret_cast< GLuint const * >( specializationInfo.pData );
+
+				for ( auto itEntry = specializationInfo.pMapEntries;
+					itEntry != specializationInfo.pMapEntries + specializationInfo.mapEntryCount;
+					++itEntry )
+				{
+					indices.push_back( itEntry->constantID );
+					values.push_back( *src );
+					++src;
+				}
+			}
+		}
 	}
 
-	ShaderModule::ShaderModule( Device const & device
-		, VkShaderStageFlagBits stage )
-		: ashes::ShaderModule{ device, stage }
-		, m_device{ device }
-		, m_shader{ m_device.getContext()->glCreateShader( convert( stage ) ) }
+	ShaderModule::ShaderModule( VkDevice device
+		, VkShaderModuleCreateInfo createInfo )
+		: m_device{ device }
+		, m_flags{ createInfo.flags }
+		, m_code{ UInt32Array( createInfo.pCode, createInfo.pCode + ( createInfo.codeSize / sizeof( uint32_t ) ) ) }
 	{
 	}
 
-	ShaderModule::~ShaderModule()
+	GLuint ShaderModule::compile( VkPipelineShaderStageCreateInfo const & state
+		, bool isRtot )const
 	{
-		// Shader object is destroyed by the ShaderProgram.
-	}
-
-	void ShaderModule::compile( ashes::ShaderStageState const & state )const
-	{
+		auto context = get( m_device )->getContext();
+		auto result = context->glCreateShader( convertShaderStageFlag( state.stage ) );
 		m_source = compileSpvToGlsl( m_device
-			, m_spv
-			, m_stage
-			, state );
+			, m_code
+			, state.stage
+			, state
+			, isRtot
+			, m_constants );
 
 		if ( m_source.find( "samplerCubeArray" ) != std::string::npos )
 		{
@@ -292,33 +477,46 @@ namespace gl_renderer
 			
 		}
 
+		if ( m_source.find( "gl_ViewportIndex" ) != std::string::npos )
+		{
+			std::regex regex{ R"(#version[ ]*\d*)" };
+			m_source = std::regex_replace( m_source.data()
+				, regex
+				, R"($&
+#extension GL_ARB_viewport_array: enable
+)" );
+			
+		}
+
 		auto length = int( m_source.size() );
 		char const * data = m_source.data();
-		auto context = m_device.getContext();
 		glLogCall( context
 			, glShaderSource
-			, m_shader
+			, result
 			, 1
 			, &data
 			, &length );
 		glLogCall( context
 			, glCompileShader
-			, m_shader );
+			, result );
 		int compiled = 0;
 		glLogCall( context
 			, glGetShaderiv
-			, m_shader
+			, result
 			, GL_INFO_COMPILE_STATUS
 			, &compiled );
 
-		if ( !doCheckCompileErrors( context, compiled != 0, m_shader, m_source ) )
+		if ( !doCheckCompileErrors( m_device, get( this ), compiled != 0, result, m_source ) )
 		{
-			throw std::runtime_error{ "Shader compilation failed." };
+			context->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT
+				, uint64_t( get( this ) )
+				, 0u
+				, VK_ERROR_VALIDATION_FAILED_EXT
+				, "OpenGL"
+				, "Shader compilation failed." );
 		}
-	}
 
-	void ShaderModule::loadShader( ashes::UInt32Array const & shader )
-	{
-		m_spv = shader;
+		return result;
 	}
 }

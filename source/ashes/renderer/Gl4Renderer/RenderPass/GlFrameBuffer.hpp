@@ -31,13 +31,10 @@ namespace ashes::gl4
 			, AttachmentDescriptionArray const & attaches )const;
 		void setDrawBuffers( ContextLock const & context
 			, VkAttachmentReferenceArray const & attaches )const;
-		/**
-		*\name
-		*	Getters.
-		*/
-		/**@{*/
+
 		bool hasOnlySwapchainImage()const;
 		bool hasSwapchainImage()const;
+
 		inline GLuint getInternal()const
 		{
 			assert( m_internal != GL_INVALID_INDEX );
@@ -109,7 +106,6 @@ namespace ashes::gl4
 		{
 			return m_bindAttaches;
 		}
-		/**@}*/
 
 	private:
 		void doInitialiseAttaches();

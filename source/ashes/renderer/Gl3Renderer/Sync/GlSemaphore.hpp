@@ -4,33 +4,15 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include "Gl3Renderer/GlRendererPrerequisites.hpp"
+#include "renderer/Gl3Renderer/GlRendererPrerequisites.hpp"
 
-#include <Ashes/Sync/Semaphore.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
-	/**
-	*\brief
-	*	Classe de Semaphore.
-	*\remarks
-	*	Un sémaphore est un élément de synchronisation servant pour les files.
-	*/
 	class Semaphore
-		: public ashes::Semaphore
 	{
 	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le LogicalDevice parent.
-		*/
-		explicit Semaphore( ashes::Device const & device );
-		/**
-		*\brief
-		*	Conversion implicite vers VkSemaphore.
-		*/
+		explicit Semaphore( VkDevice device );
+
 		inline GLuint getSemaphore()const
 		{
 			return m_semaphore;

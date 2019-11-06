@@ -7,19 +7,27 @@ See LICENSE file in root folder.
 #include "Command/GlCommandBuffer.hpp"
 #include "Core/GlDevice.hpp"
 
-namespace gl_renderer
+#include "ashesgl3_api.hpp"
+
+namespace ashes::gl3
 {
-	CommandPool::CommandPool( ashes::Device const & device
-		, uint32_t queueFamilyIndex
-		, ashes::CommandPoolCreateFlags flags )
-		: ashes::CommandPool{ device, queueFamilyIndex, flags }
+	CommandPool::CommandPool( VkDevice device
+		, VkCommandPoolCreateInfo createInfo )
 	{
 	}
 
-	ashes::CommandBufferPtr CommandPool::createCommandBuffer( bool primary )const
+	VkResult CommandPool::reset( VkCommandPoolResetFlags flags )
 	{
-		return std::make_unique< CommandBuffer >( static_cast< Device const & >( m_device )
-			, *this
-			, primary );
+		return VK_SUCCESS;
+	}
+
+	VkResult CommandPool::free( VkCommandBufferArray sets )
+	{
+		for ( auto & buffer : sets )
+		{
+			deallocate( buffer, nullptr );
+		}
+
+		return VK_SUCCESS;
 	}
 }

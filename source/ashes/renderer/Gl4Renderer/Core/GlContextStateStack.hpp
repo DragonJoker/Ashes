@@ -21,9 +21,11 @@ namespace ashes::gl4
 			, ContextState & state
 			, bool force = false );
 		void apply( CmdList & list
+			, uint32_t firstViewport
 			, VkViewportArray const & viewports
 			, bool force );
 		void apply( CmdList & list
+			, uint32_t firstScissor
 			, VkScissorArray const & scissors
 			, bool force );
 

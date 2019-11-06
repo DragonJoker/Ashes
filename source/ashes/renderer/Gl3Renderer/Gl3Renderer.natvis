@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+  <Type Name="VkDevice_T">
+    <DisplayString>{{value={(ashes::gl3::Device*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::Device*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkBuffer_T">
+    <DisplayString>{{value={(ashes::gl3::Buffer*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::Buffer*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkPipeline_T">
+    <DisplayString>{{value={(ashes::gl3::Pipeline*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::Pipeline*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkInstance_T">
+    <DisplayString>{{value={(ashes::gl3::Instance*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::Instance*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkPhysicalDevice_T">
+    <DisplayString>{{value={(ashes::gl3::PhysicalDevice*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::PhysicalDevice*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkDeviceMemory_T">
+    <DisplayString>{{value={(ashes::gl3::DeviceMemory*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::DeviceMemory*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkQueue_T">
+    <DisplayString>{{value={(ashes::gl3::Queue*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::Queue*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkSemaphore_T">
+    <DisplayString>{{value={(ashes::gl3::Semaphore*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::Semaphore*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkCommandBuffer_T">
+    <DisplayString>{{value={(ashes::gl3::CommandBuffer*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::CommandBuffer*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkFence_T">
+    <DisplayString>{{value={(ashes::gl3::Fence*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::Fence*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkImage_T">
+    <DisplayString>{{value={(ashes::gl3::Image*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::Image*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkEvent_T">
+    <DisplayString>{{value={(ashes::gl3::Event*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::Event*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkQueryPool_T">
+    <DisplayString>{{value={(ashes::gl3::QueryPool*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::QueryPool*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkBufferView_T">
+    <DisplayString>{{value={(ashes::gl3::BufferView*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::BufferView*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkImageView_T">
+    <DisplayString>{{value={(ashes::gl3::ImageView*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::ImageView*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkShaderModule_T">
+    <DisplayString>{{value={(ashes::gl3::ShaderModule*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::ShaderModule*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkPipelineCache_T">
+    <DisplayString>{{value={(ashes::gl3::PipelineCache*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::PipelineCache*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkPipelineLayout_T">
+    <DisplayString>{{value={(ashes::gl3::PipelineLayout*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::PipelineLayout*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkRenderPass_T">
+    <DisplayString>{{value={(ashes::gl3::RenderPass*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::RenderPass*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkDescriptorSetLayout_T">
+    <DisplayString>{{value={(ashes::gl3::DescriptorSetLayout*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::DescriptorSetLayout*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkSampler_T">
+    <DisplayString>{{value={(ashes::gl3::Sampler*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::Sampler*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkDescriptorPool_T">
+    <DisplayString>{{value={(ashes::gl3::DescriptorPool*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::DescriptorPool*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkDescriptorSet_T">
+    <DisplayString>{{value={(ashes::gl3::DescriptorSet*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::DescriptorSet*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkCommandPool_T">
+    <DisplayString>{{value={(ashes::gl3::CommandPool*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::CommandPool*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkFramebuffer_T">
+    <DisplayString>{{value={(ashes::gl3::Framebuffer*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::Framebuffer*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkSurfaceKHR_T">
+    <DisplayString>{{value={(ashes::gl3::SurfaceKHR*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::SurfaceKHR*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkSwapchainKHR_T">
+    <DisplayString>{{value={(ashes::gl3::SwapchainKHR*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl3::SwapchainKHR*)this</Item>
+    </Expand>
+  </Type>
+
+</AutoVisualizer>

@@ -8,52 +8,66 @@
 #define ___GlRenderer_Buffer_HPP___
 #pragma once
 
-#include "Gl3Renderer/GlRendererPrerequisites.hpp"
+#include "renderer/Gl3Renderer/GlRendererPrerequisites.hpp"
+#include "renderer/Gl3Renderer/Enum/GlBufferTarget.hpp"
 
-#include <Ashes/Buffer/Buffer.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
 	class Buffer
-		: public ashes::BufferBase
 	{
+		friend class DeviceMemory;
+
 	public:
-		Buffer( Device const & device
-			, uint32_t size
-			, VkBufferUsageFlags target );
+		Buffer( VkDevice device
+			, VkBufferCreateInfo createInfo );
 		~Buffer();
-		/**
-		*\copydoc	ashes::BufferBase::getMemoryRequirements
-		*/
-		ashes::MemoryRequirements getMemoryRequirements()const override;
-		/**
-		*\return
-		*	Le tampon.
-		*/
-		inline GLuint getBuffer()const
+
+		VkMemoryRequirements getMemoryRequirements()const;
+		bool isMapped()const;
+
+		inline GLuint getInternal()const
 		{
-			assert( m_name != GL_INVALID_INDEX );
-			return m_name;
+			assert( m_internal != GL_INVALID_INDEX );
+			return m_internal;
 		}
-		/**
-		*\return
-		*	La cible du tampon.
-		*/
+
+		inline VkDeviceSize getInternalOffset()const
+		{
+			assert( m_internal != GL_INVALID_INDEX );
+			return m_internalOffset;
+		}
+
 		inline GlBufferTarget getTarget()const
 		{
 			return m_target;
 		}
 
-	private:
-		void doBindMemory()override;
+		inline void setMemory( VkDeviceMemory memory )
+		{
+			m_memory = memory;
+		}
 
-	public:
-		mutable BufferDestroySignal onDestroy;
+		inline VkDeviceMemory getMemory()const
+		{
+			return m_memory;
+		}
 
 	private:
-		Device const & m_device;
-		GLuint m_name{ GL_INVALID_INDEX };
+		inline void setInternal( GLuint value, VkDeviceSize internalOffset )
+		{
+			assert( m_internal == GL_INVALID_INDEX );
+			m_internal = value;
+			m_internalOffset = internalOffset;
+		}
+
+	private:
+		VkDevice m_device;
+		UInt32Array m_queueFamilyIndices;
+		VkBufferCreateInfo m_createInfo;
+		GLuint m_internal{ GL_INVALID_INDEX };
+		VkDeviceSize m_internalOffset{ 0u };
 		GlBufferTarget m_target;
+		VkDeviceMemory m_memory{ VK_NULL_HANDLE };
 		mutable GlBufferTarget m_copyTarget;
 	};
 }

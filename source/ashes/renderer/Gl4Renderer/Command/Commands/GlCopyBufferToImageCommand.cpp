@@ -134,10 +134,8 @@ namespace ashes::gl4
 		auto copyTarget = convert( get( dst )->getType(), get( dst )->getArrayLayers() );
 		list.push_back( makeCmd< OpType::eBindTexture >( copyTarget
 			, get( dst )->getInternal() ) );
-
 		list.push_back( makeCmd< OpType::ePixelStore >( GL_UNPACK_ALIGNMENT
 			, 1 ) );
-
 		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_UNPACK
 			, get( src )->getInternal() ) );
 

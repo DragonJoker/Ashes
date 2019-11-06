@@ -3,7 +3,6 @@
 #include "Core/GlDevice.hpp"
 #include "Image/GlImage.hpp"
 #include "Miscellaneous/GlCallLogger.hpp"
-#include "Sync/GlImageMemoryBarrier.hpp"
 
 #include "ashesgl4_api.hpp"
 

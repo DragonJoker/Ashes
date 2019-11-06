@@ -1,18 +1,18 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	std::string getName( GlPolygonMode value )
 	{
 		switch ( value )
 		{
-		case gl_renderer::GL_POLYGON_MODE_FILL:
+		case GL_POLYGON_MODE_FILL:
 			return "GL_FILL";
 
-		case gl_renderer::GL_POLYGON_MODE_LINE:
+		case GL_POLYGON_MODE_LINE:
 			return "GL_LINE";
 
-		case gl_renderer::GL_POLYGON_MODE_POINT:
+		case GL_POLYGON_MODE_POINT:
 			return "GL_POINT";
 
 		default:

@@ -3,15 +3,17 @@
 #include "Command/GlCommandBuffer.hpp"
 #include "Core/GlDevice.hpp"
 #include "Image/GlImageView.hpp"
+#include "Miscellaneous/GlCallLogger.hpp"
 #include "Miscellaneous/GlDeviceMemory.hpp"
-#include "Sync/GlImageMemoryBarrier.hpp"
+
+#include "ashesgl3_api.hpp"
 
 #ifdef max
 #	undef max
 #	undef min
 #endif
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	namespace
 	{
@@ -84,14 +86,17 @@ namespace gl_renderer
 		}
 	}
 
-	Image::Image( Device const & device
+	Image::Image( VkDevice device
 		, VkFormat format
-		, VkExtent2D const & dimensions )
+		, VkExtent2D const & dimensions
+		, bool swapchainImage )
 		: Image
 		{
 			device,
-			ashes::ImageCreateInfo
+			VkImageCreateInfo
 			{
+				VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+				nullptr,
 				0u,
 				VK_IMAGE_TYPE_2D,
 				format,
@@ -100,79 +105,57 @@ namespace gl_renderer
 				1u,
 				VK_SAMPLE_COUNT_1_BIT,
 				VK_IMAGE_TILING_OPTIMAL,
-				ashes::ImageUsageFlag::eColourAttachment | ashes::ImageUsageFlag::eTransferDst | ashes::ImageUsageFlag::eTransferSrc
-			}
+				VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT
+			},
+			swapchainImage
 		}
 	{
 	}
 
-	Image::Image( Device const & device
-		, Image const & image )
-		: ashes::Image{ device, image.m_createInfo }
+	Image::Image( VkDevice device
+		, VkImageCreateInfo createInfo
+		, bool swapchainImage )
+		: m_flags{ createInfo.flags }
+		, m_imageType{ createInfo.imageType }
+		, m_format{ createInfo.format }
+		, m_extent{ createInfo.extent }
+		, m_mipLevels{ createInfo.mipLevels }
+		, m_arrayLayers{ createInfo.arrayLayers }
+		, m_samples{ createInfo.samples }
+		, m_tiling{ createInfo.tiling }
+		, m_usage{ createInfo.usage }
+		, m_sharingMode{ createInfo.sharingMode }
+		, m_queueFamilyIndices{ createInfo.pQueueFamilyIndices, createInfo.pQueueFamilyIndices + createInfo.queueFamilyIndexCount }
 		, m_device{ device }
-		, m_target{ image.m_target }
-		, m_texture{ image.m_texture }
-		, m_ownTexture{ false }
+		, m_target{ convert( getType(), getArrayLayers(), getCreateFlags(), getSamples() ) }
+		, m_swapchainImage{ swapchainImage }
 	{
-	}
-
-	Image::Image( Device const & device
-		, ashes::ImageCreateInfo const & createInfo )
-		: ashes::Image{ device, createInfo }
-		, m_device{ device }
-		, m_target{ convert( createInfo.imageType, createInfo.arrayLayers, createInfo.flags, createInfo.samples ) }
-		, m_ownTexture{ true }
-	{
-		auto context = m_device.getContext();
+		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glGenTextures
 			, 1
-			, &m_texture );
+			, &m_internal );
 	}
 
 	Image::~Image()
 	{
-		m_storage.reset();
-
-		if ( m_ownTexture )
-		{
-			auto context = m_device.getContext();
-			glLogCall( context
-				, glDeleteTextures
-				, 1
-				, &m_texture );
-		}
+		auto context = get( m_device )->getContext();
+		glLogCall( context
+			, glDeleteTextures
+			, 1
+			, &m_internal );
 	}
 
-	void Image::generateMipmaps( ashes::CommandBuffer & commandBuffer )const
+	VkMemoryRequirements Image::getMemoryRequirements()const
 	{
-		static_cast< CommandBuffer & >( commandBuffer ).generateMipmaps( *this );
-	}
-
-	ashes::MemoryRequirements Image::getMemoryRequirements()const
-	{
-		ashes::MemoryRequirements result{};
-		result.size = ashes::getSize( getDimensions(), getFormat() );
-		result.type = ashes::ResourceType::eImage;
+		VkMemoryRequirements result{};
+		result.size = getTotalSize( getDimensions(), getFormat(), getArrayLayers(), getMipLevels() );
 		auto extent = ashes::getMinimalExtent3D( getFormat() );
-		result.alignment = ashes::getSize( extent, getFormat() );
-		result.memoryTypeBits = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
-			| ( ( checkFlag( m_createInfo.usage, ashes::ImageUsageFlag::eTransferDst )
-				&& checkFlag( m_createInfo.usage, ashes::ImageUsageFlag::eTransferSrc ) )
-				? VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
-				: VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
+		result.alignment = getSize( extent, getFormat() );
+		result.memoryTypeBits = ( checkFlag( getUsage(), VK_IMAGE_USAGE_TRANSFER_DST_BIT )
+			|| checkFlag( getUsage(), VK_IMAGE_USAGE_TRANSFER_SRC_BIT ) )
+			? VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+			: VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 		return result;
-	}
-
-	ashes::ImageViewPtr Image::createView( ashes::ImageViewCreateInfo const & createInfo )const
-	{
-		return std::make_shared< ImageView >( m_device
-			, *this
-			, createInfo );
-	}
-
-	void Image::doBindMemory()
-	{
-		static_cast< DeviceMemory & >( *m_storage ).bindToImage( *this, m_target, m_createInfo );
 	}
 }

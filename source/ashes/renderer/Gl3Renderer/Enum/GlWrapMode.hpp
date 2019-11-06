@@ -4,9 +4,7 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include <Ashes/Enum/WrapMode.hpp>
-
-namespace gl_renderer
+namespace ashes::gl3
 {
 	enum GlWrapMode
 		: GLenum

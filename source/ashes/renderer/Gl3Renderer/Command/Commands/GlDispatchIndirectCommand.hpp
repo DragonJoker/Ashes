@@ -4,23 +4,40 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Gl3Renderer/Command/Commands/GlCommandBase.hpp"
+#include "renderer/Gl3Renderer/Command/Commands/GlCommandBase.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
-	class DispatchIndirectCommand
-		: public CommandBase
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eDispatchIndirect >
 	{
-	public:
-		DispatchIndirectCommand( Device const & device
-			, ashes::BufferBase const & buffer
-			, uint32_t offset );
-
-		void apply( ContextLock const & context )const override;
-		CommandPtr clone()const override;
-
-	private:
-		Buffer const & m_buffer;
-		uint32_t m_offset;
+		static Op constexpr value = { OpType::eDispatchIndirect, 3u };
 	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eDispatchIndirect >
+	{
+		inline CmdT( uint64_t offset )
+			: cmd{ { OpType::eDispatchIndirect, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, offset{ std::move( offset ) }
+		{
+		}
+
+		Command cmd;
+		uint64_t offset;
+	};
+	using CmdDispatchIndirect = CmdT< OpType::eDispatchIndirect >;
+
+	void apply( ContextLock const & context
+		, CmdDispatchIndirect const & cmd );
+
+	//*************************************************************************
+
+	void buildDispatchIndirectCommand( VkBuffer buffer
+		, VkDeviceSize offset
+		, CmdList & list );
+
+	//*************************************************************************
 }

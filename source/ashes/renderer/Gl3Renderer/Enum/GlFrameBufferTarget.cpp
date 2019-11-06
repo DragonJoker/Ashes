@@ -1,18 +1,18 @@
 #include "GlRendererPrerequisites.hpp"
 
-namespace gl_renderer
+namespace ashes::gl3
 {
 	std::string getName( GlFrameBufferTarget value )
 	{
 		switch ( value )
 		{
-		case gl_renderer::GL_FRAMEBUFFER:
+		case GL_FRAMEBUFFER:
 			return "GL_FRAMEBUFFER";
 
-		case gl_renderer::GL_READ_FRAMEBUFFER:
+		case GL_READ_FRAMEBUFFER:
 			return "GL_READ_FRAMEBUFFER";
 
-		case gl_renderer::GL_DRAW_FRAMEBUFFER:
+		case GL_DRAW_FRAMEBUFFER:
 			return "GL_DRAW_FRAMEBUFFER";
 
 		default:
