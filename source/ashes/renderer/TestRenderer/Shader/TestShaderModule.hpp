@@ -4,11 +4,9 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include "TestRendererPrerequisites.hpp"
+#include "renderer/TestRenderer/TestRendererPrerequisites.hpp"
 
-#include <Ashes/Shader/ShaderModule.hpp>
-
-namespace test_renderer
+namespace ashes::test
 {
 	/**
 	*\~french
@@ -19,18 +17,14 @@ namespace test_renderer
 	*	TestShaderModule wrapper.
 	*/
 	class ShaderModule
-		: public ashes::ShaderModule
 	{
 	public:
-		ShaderModule( Device const & device
-			, VkShaderStageFlagBits stage );
-		~ShaderModule();
-		/**
-		*\~copydoc	ashes::ShaderModule::loadShader
-		*/
-		void loadShader( ashes::UInt32Array const & shader )override;
+		ShaderModule( VkDevice device
+			, VkShaderModuleCreateInfo createInfo );
 
 	private:
-		Device const & m_device;
+		VkDevice m_device;
+		VkShaderModuleCreateInfo m_createInfo;
+		UInt32Array m_code;
 	};
 }

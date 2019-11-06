@@ -11,10 +11,6 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	/**
-	*\~french
-	*\brief
-	*	Description d'une passe de rendu (pouvant contenir plusieurs sous-passes).
-	*\~english
 	*\brief
 	*	Describes a render pass (which can contain one or more render subpasses).
 	*/
@@ -22,46 +18,21 @@ namespace ashes
 	{
 	public:
 		/**
-		*\~english
 		*\brief
 		*	Constructor.
 		*\param[in] device
-		*	The logical connection to the GPU.
+		*	The logical device.
 		*\param[in] createInfo
 		*	The creation informations.
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	La connexion logique au GPU.
-		*\param[in] createInfo
-		*	Les informations de création.
 		*/
 		RenderPass( Device const & device
 			, RenderPassCreateInfo createInfo );
 		/**
-		*\~english
 		*\brief
 		*	Destructor.
-		*\~french
-		*\brief
-		*	Destructeur.
 		*/
 		~RenderPass();
 		/**
-		*\~french
-		*\brief
-		*	Crée un tampon d'images compatible avec la passe de rendu.
-		*\remarks
-		*	Si la compatibilité entre les textures voulues et les formats de la passe de rendu
-		*	n'est pas possible, une std::runtime_error est lancée.
-		*\param[in] dimensions
-		*	Les dimensions du tampon d'images.
-		*\param[in] views
-		*	Les vues pour le tampon d'images à créer.
-		*\return
-		*	Le FrameBuffer créé.
-		*\~english
 		*\brief
 		*	Creates a frame buffer compatible with this render pass.
 		*\remarks
@@ -77,12 +48,8 @@ namespace ashes
 		FrameBufferPtr createFrameBuffer( VkExtent2D const & dimensions
 			, ImageViewCRefArray views )const;
 		/**
-		*\~english
 		*name
 		*	Getters.
-		*\~french
-		*name
-		*	Accesseurs.
 		*/
 		/**@{*/
 		inline size_t getAttachmentCount()const
@@ -111,10 +78,6 @@ namespace ashes
 		}
 		/**@}*/
 		/**
-		*\~french
-		*\brief
-		*	Conversion implicite vers VkRenderPass.
-		*\~english
 		*\brief
 		*	VkRenderPass implicit cast operator.
 		*/

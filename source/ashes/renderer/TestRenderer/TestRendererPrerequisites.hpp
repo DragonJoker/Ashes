@@ -4,37 +4,61 @@
 *\author
 *	Sylvain Doremus
 */
+#ifndef ___TestRenderer_Prerequisites_HPP___
+#define ___TestRenderer_Prerequisites_HPP___
 #pragma once
 
-#include <Ashes/AshesConfig.hpp>
+#include <ashes/ashes.hpp>
 
-#include "TestRenderer/TestRendererConfig.hpp"
+#include <renderer/RendererCommon/AshesRendererPrerequisites.hpp>
+#include <common/ArrayView.hpp>
+#include <renderer/RendererCommon/Helper/ConstantFormat.hpp>
+#include <common/Format.hpp>
+#include <common/FlagCombination.hpp>
+#include <common/Signal.hpp>
 
-#ifdef min
-#	undef min
-#	undef max
-#	undef abs
+#include <array>
+#include <cassert>
+#include <functional>
+#include <list>
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
+
+#if defined( _WIN32 ) && !defined( TestRenderer_STATIC )
+#	ifdef TestRenderer_EXPORTS
+#		define TestRenderer_API __declspec( dllexport )
+#	else
+#		define TestRenderer_API __declspec( dllimport )
+#	endif
+#else
+#	define TestRenderer_API
 #endif
 
-#include <Ashes/AshesPrerequisites.hpp>
-
-#include <list>
-
-namespace test_renderer
+namespace ashes::test
 {
-	static const std::string ShortName = "TestLib";
+	struct DebugLabel
+	{
+		std::array< float, 4u > color;
+		std::string labelName;
+	};
 
 	class Attribute;
 	class Buffer;
 	class BufferView;
+	class CommandBase;
 	class CommandBuffer;
 	class CommandPool;
-	class ComputePipeline;
 	class DescriptorPool;
 	class DescriptorSet;
 	class DescriptorSetLayout;
 	class DescriptorSetLayoutBinding;
 	class Device;
+	class DeviceMemory;
+	class FrameBuffer;
+	class GeometryBuffers;
+	class ObjectMemory;
 	class Pipeline;
 	class PipelineLayout;
 	class PhysicalDevice;
@@ -45,26 +69,38 @@ namespace test_renderer
 	class RenderSubpass;
 	class Sampler;
 	class Semaphore;
-	class ShaderProgram;
+	class ShaderModule;
 	class Surface;
 	class SwapChain;
 	class Image;
 	class ImageView;
-	class UniformBuffer;
 	class VertexBufferBase;
 	class VertexLayout;
 
+	class SamplerYcbcrConversion;
+	class DescriptorUpdateTemplate;
+	class DisplayKHR;
+	class DisplayModeKHR;
+	class ObjectTableNVX;
+	class IndirectCommandsLayoutNVX;
+	class DebugUtilsMessengerEXT;
+	class ValidationCacheEXT;
+
+	using Action = std::function< void() >;
+	using ActionArray = std::vector< Action >;
+
 	using AttributeArray = std::vector< Attribute >;
 
+	using CommandPtr = std::unique_ptr< CommandBase >;
 	using CommandPoolPtr = std::unique_ptr< CommandPool >;
+	using PipelinePtr = std::unique_ptr< Pipeline >;
 	using PhysicalDevicePtr = std::unique_ptr< PhysicalDevice >;
 	using QueuePtr = std::unique_ptr< Queue >;
 	using RenderSubpassPtr = std::unique_ptr< RenderSubpass >;
 	using SurfacePtr = std::unique_ptr< Surface >;
 	using ImageViewPtr = std::unique_ptr< ImageView >;
 
-	using RenderSubpassPtrArray = std::vector< RenderSubpassPtr >;
-
+	using BufferCRef = std::reference_wrapper< Buffer const >;
 	using CommandBufferCRef = std::reference_wrapper< CommandBuffer const >;
 	using DescriptorSetCRef = std::reference_wrapper< DescriptorSet const >;
 	using DescriptorSetLayoutCRef = std::reference_wrapper< DescriptorSetLayout const >;
@@ -76,17 +112,58 @@ namespace test_renderer
 	using VertexLayoutCRef = std::reference_wrapper< VertexLayout const >;
 	using VertexBufferCRef = std::reference_wrapper< VertexBufferBase const >;
 
-	using CommandBufferCRefArray = std::vector< CommandBufferCRef >;
-	using DescriptorSetCRefArray = std::vector< DescriptorSetCRef >;
-	using DescriptorSetLayoutCRefArray = std::vector< DescriptorSetLayoutCRef >;
-	using RenderSubpassCRefArray = std::vector< RenderSubpassCRef >;
-	using SemaphoreCRefArray = std::vector< SemaphoreCRef >;
-	using SwapChainCRefArray = std::vector< SwapChainCRef >;
-	using TextureCRefArray = std::vector< TextureCRef >;
-	using ImageViewCRefArray = std::vector< ImageViewCRef >;
-	using VertexLayoutCRefArray = std::vector< VertexLayoutCRef >;
-	using VertexBufferCRefArray = std::vector< VertexBufferCRef >;
+	using CommandArray = std::vector< CommandPtr >;
 
-	uint32_t deduceMemoryType( uint32_t typeBits
-		, VkMemoryPropertyFlags requirements );
+	template< typename Dst, typename Src >
+	std::vector< std::reference_wrapper< Dst const > > staticCast( std::vector< std::reference_wrapper< Src const > > const & src )
+	{
+		std::vector< std::reference_wrapper< Dst const > > result;
+
+		for ( auto & s : src )
+		{
+			result.emplace_back( static_cast< Dst const & >( s.get() ) );
+		}
+
+		return result;
+	}
+
+	struct PushConstantsDesc
+	{
+		VkShaderStageFlags stageFlags;
+		uint32_t offset;
+		uint32_t size;
+		std::vector< uint8_t > data;
+	};
+
+	struct PushConstantsBuffer
+	{
+		VkBuffer ubo;
+		uint32_t location;
+		PushConstantsDesc data;
+		VkDeviceMemory memory;
+	};
+
+	struct VbosBinding
+	{
+		uint32_t startIndex;
+		std::vector< VkBuffer > buffers;
+		std::vector< uint32_t > offsets;
+		std::vector< uint32_t > strides;
+	};
+
+	using VbosBindingArray = std::vector< VbosBinding >;
+
+	struct LayoutBindingWrites
+	{
+		VkDescriptorSetLayoutBinding binding;
+		VkWriteDescriptorSetArray writes;
+	};
+	using LayoutBindingWritesArray = std::vector< LayoutBindingWrites * >;
+	using LayoutBindingWritesMap = std::map< uint32_t, LayoutBindingWrites >;
+
+	using DeviceMemoryDestroyFunc = std::function< void( VkDeviceMemory ) >;
+	using DeviceMemoryDestroySignal = Signal< DeviceMemoryDestroyFunc >;
+	using DeviceMemoryDestroyConnection = SignalConnection< DeviceMemoryDestroySignal >;
 }
+
+#endif

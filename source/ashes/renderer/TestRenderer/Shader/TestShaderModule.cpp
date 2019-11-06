@@ -4,25 +4,13 @@ See LICENSE file in root folder.
 */
 #include "Shader/TestShaderModule.hpp"
 
-#include "Core/TestDevice.hpp"
-
-#include <locale>
-#include <regex>
-
-namespace test_renderer
+namespace ashes::test
 {
-	ShaderModule::ShaderModule( Device const & device
-		, VkShaderStageFlagBits stage )
-		: ashes::ShaderModule{ device, stage }
-		, m_device{ device }
-	{
-	}
-
-	ShaderModule::~ShaderModule()
-	{
-	}
-
-	void ShaderModule::loadShader( ashes::UInt32Array const & shader )
+	ShaderModule::ShaderModule( VkDevice device
+		, VkShaderModuleCreateInfo createInfo )
+		: m_device{ device }
+		, m_createInfo{ std::move( createInfo ) }
+		, m_code{ UInt32Array( m_createInfo.pCode, m_createInfo.pCode + ( m_createInfo.codeSize / sizeof( uint32_t ) ) ) }
 	{
 	}
 }

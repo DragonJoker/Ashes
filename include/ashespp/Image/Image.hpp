@@ -14,21 +14,13 @@ namespace ashes
 	VkAccessFlags getAccessMask( VkImageLayout layout );
 	VkPipelineStageFlags getStageMask( VkImageLayout layout );
 	/**
-	*\~english
 	*\brief
 	*	A texture image.
-	*\~french
-	*\brief
-	*	L'image d'une texture.
 	*/
 	class Image
 	{
 	public:
 		/**
-		*\~french
-		*\brief
-		*	Contient les informations d'une image mappée en RAM.
-		*\~english
 		*\brief
 		*	Contains an image mapped in RAM informations.
 		*/
@@ -50,14 +42,6 @@ namespace ashes
 		Image & operator=( Image && rhs );
 		Image();
 		/**
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le périphérique logique.
-		*\param[in] createInfo
-		*	Les informations de création de l'image.
-		*\~english
 		*\brief
 		*	Constructor.
 		*\param[in] device
@@ -68,14 +52,6 @@ namespace ashes
 		Image( Device const & device
 			, ImageCreateInfo createInfo );
 		/**
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le périphérique logique.
-		*\param[in] image
-		*	L'image.
-		*\~english
 		*\brief
 		*	Constructor.
 		*\param[in] device
@@ -86,40 +62,18 @@ namespace ashes
 		Image( Device const & device
 			, VkImage image );
 		/**
-		*\~english
 		*\brief
 		*	Destructor.
-		*\~french
-		*\brief
-		*	Destructeur.
 		*/
 		~Image();
 		/**
-		*\~english
 		*\brief
 		*	Binds this buffer to given device memory object.
 		*\param[in] memory
 		*	The memory object.
-		*\~french
-		*\brief
-		*	Lie ce tampon à l'objet mémoire donné.
-		*\param[in] memory
-		*	L'object mémoire de périphérique.
 		*/
 		void bindMemory( DeviceMemoryPtr memory );
 		/**
-		*\~french
-		*\brief
-		*	Mappe la mémoire du tampon en RAM.
-		*\param[in] offset
-		*	L'offset à partir duquel la mémoire du tampon est mappée.
-		*\param[in] size
-		*	La taille en octets de la mémoire à mapper.
-		*\param[in] flags
-		*	Indicateurs de configuration du mapping.
-		*\return
-		*	\p nullptr si le mapping a échoué.
-		*\~english
 		*\brief
 		*	Maps the buffer's memory in RAM.
 		*\param[in] offset
@@ -135,57 +89,31 @@ namespace ashes
 			, uint32_t size
 			, VkMemoryMapFlags flags )const;
 		/**
-		*\~english
 		*\brief
 		*	Invalidates the buffer content.
 		*\param[in] offset
 		*	The mapped memory starting offset.
 		*\param[in] size
 		*	The range size.
-		*\~french
-		*\brief
-		*	Invalide le contenu du tampon.
-		*\param[in] offset
-		*	L'offset de la mémoire mappée.
-		*\param[in] size
-		*	La taille en octets de la mémoire mappée.
 		*/
 		void invalidate( uint32_t offset
 			, uint32_t size )const;
 		/**
-		*\~english
 		*\brief
 		*	Updates the VRAM.
 		*\param[in] offset
 		*	The mapped memory starting offset.
 		*\param[in] size
 		*	The range size.
-		*\~french
-		*\brief
-		*	Met à jour la VRAM.
-		*\param[in] offset
-		*	L'offset de la mémoire mappée.
-		*\param[in] size
-		*	La taille en octets de la mémoire mappée.
 		*/
 		void flush( uint32_t offset
 			, uint32_t size )const;
 		/**
-		*\~english
 		*\brief
 		*	Unmaps the buffer's memory from RAM.
-		*\~french
-		*\brief
-		*	Unmappe la mémoire du tampon de la RAM.
 		*/
 		void unlock()const;
 		/**
-		*\~french
-		*\brief
-		*	Génère les mipmaps de la texture.
-		*\param[in] commandBuffer
-		*	Un tampon de commandes en cours d'enregistrement.
-		*\~english
 		*\brief
 		*	Generates the texture mipmaps.
 		*\param[in] commandBuffer
@@ -194,10 +122,6 @@ namespace ashes
 		void generateMipmaps( CommandBuffer & commandBuffer
 			, VkImageLayout dstImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
 		/**
-		*\~french
-		*\brief
-		*	Génère les mipmaps de la texture.
-		*\~english
 		*\brief
 		*	Generates the texture mipmaps.
 		*/
@@ -205,21 +129,11 @@ namespace ashes
 			, Queue const & queue
 			, VkImageLayout dstImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
 		/**
-		*\~english
 		*\return
 		*	The memory requirements for this buffer.
-		*\~french
-		*\return
-		*	Les exigences mémoire pour ce tampon.
 		*/
 		VkMemoryRequirements getMemoryRequirements()const;
 		/**
-		*\~french
-		*\brief
-		*	Crée une vue sur la texture.
-		*\param[in] createInfo
-		*	Les informations de création de la vue.
-		*\~english
 		*\brief
 		*	Creates a view to the texture.
 		*\param[in] createInfo
@@ -227,24 +141,6 @@ namespace ashes
 		*/
 		ImageView createView( VkImageViewCreateInfo createInfo )const;
 		/**
-		*\~french
-		*\brief
-		*	Crée une vue sur la texture.
-		*\param[in] type
-		*	Le type de texture de la vue.
-		*\param[in] format
-		*	Le format des pixels de la vue.
-		*\param[in] baseMipLevel
-		*	Le premier niveau de mipmap accessible à la vue.
-		*\param[in] levelCount
-		*	Le nombre de niveaux de mipmap (à partir de \p baseMipLevel) accessibles à la vue.
-		*\param[in] baseArrayLayer
-		*	La première couche de tableau accessible à la vue.
-		*\param[in] layerCount
-		*	Le nombre de couches de tableau (à partir de \p baseArrayLayer) accessibles à la vue.
-		*\param[in] mapping
-		*	Le mapping des composantes de couleur.
-		*\~english
 		*\brief
 		*	Creates a view to the texture.
 		*\param[in] type
@@ -317,10 +213,6 @@ namespace ashes
 		}
 		/**@}*/
 		/**
-		*\~french
-		*\brief
-		*	Conversion implicite vers VkImage.
-		*\~english
 		*\brief
 		*	VkImage implicit cast operator.
 		*/

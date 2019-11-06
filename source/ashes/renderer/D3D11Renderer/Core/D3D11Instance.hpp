@@ -17,37 +17,20 @@ namespace ashes::d3d11
 	class Instance
 	{
 	public:
-		/**
-		*\brief
-		*	Constructeur, initialise l'instance de Vulkan.
-		*/
 		Instance( VkInstanceCreateInfo createInfo );
-		/**
-		*\brief
-		*	Destructeur.
-		*/
 		~Instance();
 
 		VkPhysicalDeviceArray enumeratePhysicalDevices()const;
-		/**
-		*\copydoc	ashes::Instance::frustum
-		*/
 		std::array< float, 16 > frustum( float left
 			, float right
 			, float bottom
 			, float top
 			, float zNear
 			, float zFar )const;
-		/**
-		*\copydoc	ashes::Instance::perspective
-		*/
 		std::array< float, 16 > perspective( float radiansFovY
 			, float aspect
 			, float zNear
 			, float zFar )const;
-		/**
-		*\copydoc	ashes::Instance::ortho
-		*/
 		std::array< float, 16 > ortho( float left
 			, float right
 			, float bottom
@@ -55,12 +38,8 @@ namespace ashes::d3d11
 			, float zNear
 			, float zFar )const;
 		/**
-		*\~english
-		*name
+		*\name
 		*	Layers delegation.
-		*\~french
-		*name
-		*	D�l�gation aux layers.
 		*/
 		/**@{*/
 		void registerLayer( Layer * layer )const;

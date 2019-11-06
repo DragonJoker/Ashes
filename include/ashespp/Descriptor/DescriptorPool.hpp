@@ -14,42 +14,29 @@ namespace ashes
 {
 	/**
 	*\brief
-	*	Pool de descripteurs.
+	*	Descriptor pool wrapper.
 	*/
 	class DescriptorPool
 	{
 	public:
 		/**
-		*\~english
 		*\brief
 		*	Constructor.
 		*\param[in] device
 		*	The logical device.
 		*\param[in] flags
 		*	The creation flags.
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le périphérique logique.
-		*\param[in] flags
-		*	Les indicateurs de création.
 		*/
 		DescriptorPool( Device const & device
 			, VkDescriptorPoolCreateFlags flags
 			, uint32_t maxSets
 			, VkDescriptorPoolSizeArray poolSizes );
 		/**
-		*\~english
 		*\brief
 		*	Destructor.
-		*\~french
-		*\brief
-		*	Destructeur.
 		*/
 		~DescriptorPool();
 		/**
-		*\~english
 		*\brief
 		*	Creates a descriptor set matching the given layout.
 		*\param[in] layout
@@ -58,33 +45,16 @@ namespace ashes
 		*	The binding point for the set.
 		*\return
 		*	The created descriptor set.
-		*\~french
-		*\brief
-		*	Crée un descriptor set correspondant au layout donné.
-		*\param[in] layout
-		*	Le layout décrivant l'ensemble.
-		*\param[in] bindingPoint
-		*	Le point d'attache du set.
-		*\return
-		*	Le descriptor set créé.
 		*/
 		DescriptorSetPtr createDescriptorSet( DescriptorSetLayout const & layout
 			, uint32_t bindingPoint = 0u )const;
 		void freeDescriptorSet( DescriptorSetPtr set )const;
 		/**
-		*\~english
-		*name
+		*\name
 		*	Getters.
-		*\~french
-		*name
-		*	Accesseurs.
 		*/
 		/**@{*/
 		/**
-		*\~french
-		*\brief
-		*	Dit si le pool désalloue automatiquement les descripteurs à sa propre destruction.
-		*\~english
 		*\return
 		*	Tells if the pool automatically deallocates the descriptor sets during its on destruction.
 		*/
@@ -99,10 +69,6 @@ namespace ashes
 		}
 		/**@}*/
 		/**
-		*\~french
-		*\brief
-		*	Conversion implicite vers VkDescriptorPool.
-		*\~english
 		*\brief
 		*	VkDescriptorPool implicit cast operator.
 		*/

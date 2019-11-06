@@ -6,14 +6,6 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	/**
-	*\~english
-	*\brief
-	*	Specifies how an image component is swizzled.
-	*\~french
-	*\brief
-	*	Définit comment une composante d'une image est réarrangée.
-	*/
 	enum GlSwizzle
 		: GLenum
 	{
@@ -23,14 +15,7 @@ namespace ashes::gl4
 		GL_SWIZZLE_A = 0x8E45,
 	};
 	std::string getName( GlSwizzle value );
-	/**
-	*\~english
-	*\brief
-	*	Specifies how an image component is swizzled.
-	*\~french
-	*\brief
-	*	Définit comment une composante d'une image est réarrangée.
-	*/
+
 	enum GlComponentSwizzle
 		: GLenum
 	{
@@ -43,13 +28,5 @@ namespace ashes::gl4
 		GL_COMPONENT_SWIZZLE_ALPHA = 0x1906,
 	};
 	std::string getName( GlComponentSwizzle value );
-	/**
-	*\brief
-	*	Convertit un VkCompareOp en GlComponentSwizzle.
-	*\param[in] value
-	*	Le VkCompareOp.
-	*\return
-	*	Le GlComponentSwizzle.
-	*/
 	GlComponentSwizzle convertComponentSwizzle( VkComponentSwizzle const & value );
 }

@@ -21,36 +21,18 @@ namespace ashes::d3d11
 		VkPhysicalDeviceLimits const & getLimits()const;
 		VkImage getStagingImage( VkImage image
 			, VkDeviceMemory & memory );
-		/**
-		*\copydoc	ashes::Device::getImageSubresourceLayout
-		*/
 		void getImageSubresourceLayout( VkImage image
 			, VkImageSubresource const & subresource
 			, VkSubresourceLayout & layout )const;
 #if VK_EXT_debug_utils
-		/**
-		*\copydoc	ashes::Device::setDebugUtilsObjectName
-		*/
 		VkResult setDebugUtilsObjectName( VkDebugUtilsObjectNameInfoEXT const & nameInfo )const;
-		/**
-		*\copydoc	ashes::Device::setDebugUtilsObjectTag
-		*/
 		VkResult setDebugUtilsObjectTag( VkDebugUtilsObjectTagInfoEXT const & tagInfo )const;
 #endif
 #if VK_EXT_debug_marker
-		/**
-		*\copydoc	ashes::Device::debugMarkerSetObjectTag
-		*/
 		VkResult debugMarkerSetObjectTag( VkDebugMarkerObjectTagInfoEXT const & nameInfo )const;
-		/**
-		*\copydoc	ashes::Device::debugMarkerSetObjectName
-		*/
 		VkResult debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const;
 #endif
 #if VK_EXT_debug_report
-		/**
-		*\copydoc	ashes::Device::reportMessage
-		*/
 		void reportMessage( VkDebugReportFlagsEXT flags
 			, VkDebugReportObjectTypeEXT objectType
 			, uint64_t object
@@ -59,23 +41,12 @@ namespace ashes::d3d11
 			, const char * pLayerPrefix
 			, const char * pMessage );
 #endif
-		/**
-		*\copydoc	ashes::Device::getQueue
-		*/
 		VkQueue getQueue( uint32_t familyIndex
 			, uint32_t index )const;
-		/**
-		*\brief
-		*	Attend que le périphérique soit inactif.
-		*/
 		VkResult waitIdle()const;
 		/**
-		*\~english
 		*name
 		*	Layers delegation.
-		*\~french
-		*name
-		*	Délégation aux layers.
 		*/
 		/**@{*/
 		bool onCopyToImageCommand( VkCommandBuffer cmd
@@ -93,25 +64,15 @@ namespace ashes::d3d11
 			, const char * pMessage );
 		/**@}*/
 		/**
-		*\~french
-		*\return
-		*	L'API de rendu.
-		*\~english
-		*\return
-		*	The rendering API.
+		*name
+		*	Getters.
 		*/
+		/**@{*/
 		inline VkInstance getInstance()const
 		{
 			return m_instance;
 		}
-		/**
-		*\~french
-		*\return
-		*	La connection à l'application.
-		*\~english
-		*\return
-		*	The connection to the application.
-		*/
+
 		inline D3D_FEATURE_LEVEL getFeatureLevel()const
 		{
 			return m_featureLevel;
@@ -140,6 +101,7 @@ namespace ashes::d3d11
 		}
 
 #endif
+		/**@}*/
 
 	private:
 		void doCreateD3D11Device();

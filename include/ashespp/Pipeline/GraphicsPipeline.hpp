@@ -11,18 +11,13 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	/**
-	*\~english
 	*\brief
 	*	A rendering pipeline.
-	*\~french
-	*\brief
-	*	Un pipeline de rendu.
 	*/
 	class GraphicsPipeline
 	{
 	public:
 		/**
-		*\~english
 		*\brief
 		*	Constructor.
 		*\param[in] device
@@ -31,34 +26,17 @@ namespace ashes
 		*	The pipeline layout.
 		*\param[in] createInfo
 		*	The creation informations.
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le LogicalDevice parent.
-		*\param[in] layout
-		*	Le layout du pipeline.
-		*\param[in] createInfo
-		*	Les informations de création.
 		*/
 		GraphicsPipeline( Device const & device
 			, GraphicsPipelineCreateInfo createInfo );
 		/**
-		*\~english
 		*\brief
 		*	Destructor.
-		*\~french
-		*\brief
-		*	Destructeur.
 		*/
 		~GraphicsPipeline();
 		/**
-		*\~french
 		*\brief
 		*	Conversion implicite vers VkPipeline.
-		*\~english
-		*\brief
-		*	VkPipeline implicit cast operator.
 		*/
 		inline operator VkPipeline const & ()const
 		{

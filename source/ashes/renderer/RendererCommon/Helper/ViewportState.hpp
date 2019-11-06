@@ -11,12 +11,8 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	/**
-	*\~english
 	*\brief
 	*	The viewport state.
-	*\~french
-	*\brief
-	*	L'état de viewport.
 	*/
 	inline VkPipelineViewportStateCreateInfo getDefaultViewportState()
 	{

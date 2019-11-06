@@ -12,14 +12,6 @@
 
 namespace ashes::d3d11
 {
-	/**
-	*\~french
-	*\brief
-	*	Description d'une vue sur une image Vulkan.
-	*\~english
-	*\brief
-	*	Vulkan image view wrapper.
-	*/
 	class ImageView
 	{
 	public:

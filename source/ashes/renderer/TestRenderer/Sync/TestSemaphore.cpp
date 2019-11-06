@@ -4,16 +4,9 @@ See LICENSE file in root folder.
 */
 #include "Sync/TestSemaphore.hpp"
 
-#include "Core/TestDevice.hpp"
-
-namespace test_renderer
+namespace ashes::test
 {
-	Semaphore::Semaphore( Device const & device )
-		: ashes::Semaphore{ device }
-	{
-	}
-
-	Semaphore::~Semaphore()
+	Semaphore::Semaphore( VkDevice device )
 	{
 	}
 }

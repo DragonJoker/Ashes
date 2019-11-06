@@ -4,69 +4,60 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "TestRendererPrerequisites.hpp"
+#include "renderer/TestRenderer/TestRendererPrerequisites.hpp"
 
-#include <Ashes/RenderPass/FrameBuffer.hpp>
-
-namespace test_renderer
+namespace ashes::test
 {
-	/**
-	*\brief
-	*	Classe encapsulant le concept de Framebuffer.
-	*\remarks
-	*	Contient les tampon de profondeur et de couleur.
-	*/
-	class FrameBuffer
-		: public ashes::FrameBuffer
+	class Framebuffer
 	{
 	public:
-		/**
-		*\brief
-		*	Constructeur, crée un FrameBuffer compatible avec la passe de rendu donnée.
-		*\remarks
-		*	Si la compatibilité entre les textures voulues et les formats de la passe de rendu
-		*	n'est pas possible, une std::runtime_error est lancée.
-		*\param[in] dimensions
-		*	Les dimensions du tampon d'images.
-		*\param[in] textures
-		*	Les textures voulues pour le tampon d'images à créer.
-		*\~english
-		*\brief
-		*	Constructor, creates a frame buffer compatible with given render pass.
-		*\param[in] device
-		*	The logical connection to the GPU.
-		*\param[in] renderPass
-		*	The render pass with which this framebuffer is compatible.
-		*\param[in] dimensions
-		*	The frame buffer's dimensions.
-		*\param[in] textures
-		*	The attachments.
-		*/
-		FrameBuffer( Device const & device
-			, RenderPass const & renderPass
-			, VkExtent2D const & dimensions
-			, ashes::ashes::ImageViewPtrArray attachments );
-		/**
-		*\~french
-		*\brief
-		*	Destructeur.
-		*\~english
-		*\brief
-		*	Destructor.
-		*/
-		~FrameBuffer();
-		/**
-		*\return
-		*	Les dimensions du tampon.
-		*/
+		Framebuffer( VkDevice device
+			, VkFramebufferCreateInfo createInfo );
+
 		inline VkExtent2D const & getDimensions()const noexcept
 		{
 			return m_dimensions;
 		}
 
+		inline VkImageViewArray const & getAllViews()const
+		{
+			return m_views;
+		}
+
+		inline VkImageViewArray const & getRTViews()const
+		{
+			return m_rtViews;
+		}
+
+		inline VkImageViewArray const & getMsRTViews()const
+		{
+			return m_msRtViews;
+		}
+
+		inline VkImageView getDSView()const
+		{
+			return m_dsView;
+		}
+
+		inline VkImageView getMsDSView()const
+		{
+			return m_msDsView;
+		}
+
+		bool isMultisampled()const
+		{
+			return m_multisampled;
+		}
+
 	private:
-		Device const & m_device;
-		ImageViewCRefArray m_views;
+		VkDevice m_device;
+		VkFramebufferCreateInfo m_createInfo;
+		VkImageViewArray m_views;
 		VkExtent2D m_dimensions;
+		VkImageViewArray m_rtViews;
+		VkImageViewArray m_msRtViews;
+		VkImageView m_dsView{ VK_NULL_HANDLE };
+		VkImageView m_msDsView{ VK_NULL_HANDLE };
+		bool m_multisampled{ false };
 	};
 }

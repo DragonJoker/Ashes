@@ -17,10 +17,6 @@ namespace ashes
 		eError
 	};
 	/**
-	*\~french
-	*\brief
-	*	Primitive de synchronisation pouvant être utilisée pour instaurer des dépendances entre des commandes d'une même file, ou entre l'hôte et la file.
-	*\~ench
 	*\brief
 	*	Synchronization primitive that can be used to insert a fine-grained dependency between commands submitted to the same queue, or between the host and a queue.
 	*/
@@ -28,12 +24,6 @@ namespace ashes
 	{
 	public:
 		/**
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le device parent.
-		*\~french
 		*\brief
 		*	Constructor.
 		*\param[in] device
@@ -41,43 +31,30 @@ namespace ashes
 		*/ 
 		Event( Device const & device );
 		/**
-		*\~english
 		*\brief
 		*	Destructor.
-		*\~french
-		*\brief
-		*	Destructeur.
 		*/
 		~Event();
 		/**
-		*\~french
-		*\brief
-		*	S'enquiert de l'état de l'évènement
 		*\return
-		*	\p EventStatus::eSet ou \p EventStatus::eReset en cas de succès.
-		*/ 
+		*	The event status.
+		*/
 		EventStatus getStatus()const;
 		/**
-		*\~french
 		*\brief
-		*	Définit l'état de l'évènement comme signalé.
+		*	Signals the event.
 		*/ 
 		void set()const;
 		/**
-		*\~french
 		*\brief
-		*	Définit l'état de l'évènement comme non signalé.
+		*	Unsignals the event.
 		*/ 
 		void reset()const;
 		/**
-		*\~french
-		*\brief
-		*	Conversion implicite vers VkEvent.
-		*\~english
 		*\brief
 		*	VkEvent implicit cast operator.
 		*/
-		inline operator VkEvent const & ( )const
+		inline operator VkEvent const & ()const
 		{
 			return m_internal;
 		}

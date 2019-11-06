@@ -152,10 +152,6 @@ namespace ashes
 	class VertexBufferBase;
 
 	/**
-	*\~french
-	*\brief
-	*	Temps en maximal à attendre, en nanosecondes.
-	*\~english
 	*\brief
 	*	Maximum time to wait in nanoseconds.
 	*/
@@ -246,7 +242,6 @@ namespace ashes
 	using ImageViewCRefArray = std::vector< ImageViewCRef >;
 	using VertexBufferCRefArray = std::vector< VertexBufferCRef >;
 	using PipelineVertexInputStateCreateInfoCRefArray = std::vector< PipelineVertexInputStateCreateInfoCRef >;
-	/**\}*/
 }
 
 #endif

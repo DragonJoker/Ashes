@@ -12,47 +12,39 @@ namespace ashes
 {
 	/**
 	*\brief
-	*	Pool de tampons de commandes.
+	*	Command buffers pool wrapper.
 	*/
 	class CommandPool
 	{
 	public:
 		/**
 		*\brief
-		*	Constructeur.
+		*	Constructor.
 		*\param[in] device
-		*	Le device parent.
+		*	The logical device.
 		*\param[in] queueFamilyIndex
-		*	L'index de la famille à laquelle appartient le pool.
+		*	The index of que queue family to which the pool belongs.
 		*\param[in] flags
-		*	Combinaison binaire de VkCommandPoolCreateFlagBits.
+		*	VkCommandPoolCreateFlagBits combination.
 		*/
 		CommandPool( Device const & device
 			, uint32_t queueFamilyIndex
 			, VkCommandPoolCreateFlags flags = 0 );
 		/**
-		*\~english
 		*\brief
-		*	Destructor.
-		*\~french
-		*\brief
-		*	Destructeur.
+		*	Destructor..
 		*/
 		~CommandPool();
 		/**
 		*\brief
-		*	Crée un tampon de commandes.
+		*	Creates a command buffer.
 		*\param[in] primary
-		*	Dit si le tampon est un tampon de commandes primaire (\p true) ou secondaire (\p false).
+		*	Tells if the command buffer is primary (\p true) or secondary (\p false).
 		*\return
-		*	Le tampon de commandes créé.
+		*	The created command buffer.
 		*/
 		CommandBufferPtr createCommandBuffer( bool primary = true )const;
 		/**
-		*\~french
-		*\brief
-		*	Conversion implicite vers VkCommandPool.
-		*\~english
 		*\brief
 		*	VkCommandPool implicit cast operator.
 		*/

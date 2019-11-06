@@ -13,31 +13,19 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	/**
-	*\~english
 	*\brief
 	*	Class grouping the functions to transfer texture data from/to VRAM.
-	*\~french
-	*\brief
-	*	Classe regroupant les fonctions nécessaires au transfert de données de texture depuis/vers la VRAM.
 	*/
 	class StagingTexture
 	{
 	public:
 		/**
-		*\~english
 		*\brief
 		*	Constructor.
 		*\param[in] device
 		*	The logical device.
 		*\param[in] extent
 		*	The texture dimensions.
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le LogicalDevice parent.
-		*\param[in] extent
-		*	Les dimensions de la texture.
 		*/
 		StagingTexture( Device const & device
 			, VkFormat format
@@ -152,7 +140,6 @@ namespace ashes
 			, ImageView const & texture )const;
 		/**@}*/
 		/**
-		*\~english
 		*\brief
 		*	Maps a range of the buffer's memory in RAM.
 		*\param[in] size
@@ -161,54 +148,29 @@ namespace ashes
 		*	The mapping flags.
 		*\return
 		*	\p nullptr if mapping failed.
-		*\~french
-		*\brief
-		*	Mappe la mémoire du tampon en RAM.
-		*\param[in] size
-		*	La taille en octets de la mémoire à mapper.
-		*\param[in] flags
-		*	Indicateurs de configuration du mapping.
-		*\return
-		*	\p nullptr si le mapping a échoué.
 		*/
 		uint8_t * lock( VkDeviceSize offset
 			, VkDeviceSize size
 			, VkMemoryMapFlags flags )const;
 		/**
-		*\~english
 		*\brief
 		*	Invalidates the buffer content.
 		*\param[in] size
 		*	The range size.
-		*\~french
-		*\brief
-		*	Invalide le contenu du tampon.
-		*\param[in] size
-		*	La taille en octets de la mémoire mappée.
 		*/
 		void invalidate( VkDeviceSize offset
 			, VkDeviceSize size )const;
 		/**
-		*\~english
 		*\brief
 		*	Updates the VRAM.
 		*\param[in] size
 		*	The range size.
-		*\~french
-		*\brief
-		*	Met à jour la VRAM.
-		*\param[in] size
-		*	La taille en octets de la mémoire mappée.
 		*/
 		void flush( VkDeviceSize offset
 			, VkDeviceSize size )const;
 		/**
-		*\~english
 		*\brief
 		*	Unmaps the buffer's memory from RAM.
-		*\~french
-		*\brief
-		*	Unmappe la mémoire du tampon de la RAM.
 		*/
 		void unlock()const;
 

@@ -12,7 +12,7 @@ namespace ashes
 {
 	/**
 	*\brief
-	*	Enumération des retours possibles pour une attente.
+	*	Possible returns while waiting for a fence.
 	*/
 	enum class WaitResult
 	{
@@ -22,49 +22,41 @@ namespace ashes
 	};
 	/**
 	*\brief
-	*	Classe permettant la synchronisation des opérations sur une file.
+	*	Allows synchronisations of operations on a queue.
 	*/
 	class Fence
 	{
 	public:
 		/**
 		*\brief
-		*	Constructeur
+		*	Constructor
 		*\param[in] device
-		*	Le device parent.
+		*	The logical device.
 		*\param[in] flags
-		*	Les indicateurs de création de la barrière.
+		*	The creation flags.
 		*/ 
 		Fence( Device const & device
 			, VkFenceCreateFlags flags );
 		/**
-		*\~english
 		*\brief
 		*	Destructor.
-		*\~french
-		*\brief
-		*	Destructeur.
 		*/
 		~Fence();
 		/**
 		*\brief
-		*	Attend que la barrière soit signalée.
+		*	Waits for the fence to be signaled.
 		*\param[in] timeout
-		*	Le temps à attendre pour le signalement.
+		*	The time to wait for.
 		*\return
-		*	\p WaitResult::eSuccess ou \p WaitResult::eTimeOut en cas de succès.
+		*	\p WaitResult::eSuccess or \p WaitResult::eTimeOut on success.
 		*/ 
 		WaitResult wait( uint64_t timeout )const;
 		/**
 		*\brief
-		*	Remet la barrière en non signalée.
+		*	Unsignals the fence.
 		*/ 
 		void reset()const;
 		/**
-		*\~french
-		*\brief
-		*	Conversion implicite vers VkFence.
-		*\~english
 		*\brief
 		*	VkFence implicit cast operator.
 		*/

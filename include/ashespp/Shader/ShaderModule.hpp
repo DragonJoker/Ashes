@@ -12,43 +12,27 @@ namespace ashes
 {
 	/**
 	*\brief
-	*	Gère un module shader qu'un pipeline peut utiliser.
+	*	Wrapper to a pipeline shader module.
 	*/
 	class ShaderModule
 	{
 	public:
 		/**
-		*\~english
 		*\brief
 		*	Constructeur.
 		*\param[in] device
 		*	The logical device.
 		*\param[in] shader
 		*	The module's SPIR-V code.
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le périphérique logique.
-		*\param[in] shader
-		*	Le code SPIR-V du module.
 		*/
 		ShaderModule( Device const & device
 			, UInt32Array const & shader );
 		/**
-		*\~english
 		*\brief
 		*	Destructor.
-		*\~french
-		*\brief
-		*	Destructeur.
 		*/
 		~ShaderModule();
 		/**
-		*\~french
-		*\brief
-		*	Conversion implicite vers VkShaderModule.
-		*\~english
 		*\brief
 		*	VkShaderModule implicit cast operator.
 		*/

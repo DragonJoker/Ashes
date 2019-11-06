@@ -4,64 +4,95 @@
 *\author
 *	Sylvain Doremus
 */
+#ifndef ___TestRenderer_DescriptorSet_HPP___
+#define ___TestRenderer_DescriptorSet_HPP___
 #pragma once
 
-#include "TestRendererPrerequisites.hpp"
-
-#include <Ashes/Descriptor/DescriptorSet.hpp>
+#include "renderer/TestRenderer/TestRendererPrerequisites.hpp"
 
 #include <vector>
 
-namespace test_renderer
+namespace ashes::test
 {
-	/**
-	*\brief
-	*	Classe wrappant un TestDescriptorSet.
-	*/
 	class DescriptorSet
-		: public ashes::DescriptorSet
 	{
 	public:
-		/**
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le périphérique logique.
-		*\param[in] pool
-		*	Le pool parent.
-		*\param[in] bindingPoint
-		*	Le point d'attache du set.
-		*\~english
-		*\brief
-		*	Constructor.
-		*\param[in] device
-		*	The logical connection to the GPU.
-		*\param[in] pool
-		*	The parent pool.
-		*\param[in] bindingPoint
-		*	The binding point for the set.
-		*/
-		DescriptorSet( Device const & device
-			, DescriptorPool const & pool
-			, DescriptorSetLayout const & layout
-			, uint32_t bindingPoint );
-		/**
-		*\~french
-		*\brief
-		*	Destructeur.
-		*\~english
-		*\brief
-		*	Destructor.
-		*/
-		~DescriptorSet();
-		/**
-		*\copydoc	ashes::DescriptorSet::update
-		*/
-		void update()const override;
+		DescriptorSet( VkDevice device
+			, VkDescriptorPool pool
+			, VkDescriptorSetLayout layout );
+
+		void update( VkWriteDescriptorSet const & write );
+		void update( VkCopyDescriptorSet const & write );
+
+		inline VkDescriptorSetLayout getLayout()const
+		{
+			return m_layout;
+		}
+
+		inline LayoutBindingWritesArray const & getCombinedTextureSamplers()const
+		{
+			return m_combinedTextureSamplers;
+		}
+
+		inline LayoutBindingWritesArray const & getSamplers()const
+		{
+			return m_samplers;
+		}
+
+		inline LayoutBindingWritesArray const & getSampledTextures()const
+		{
+			return m_sampledTextures;
+		}
+
+		inline LayoutBindingWritesArray const & getStorageTextures()const
+		{
+			return m_storageTextures;
+		}
+
+		inline LayoutBindingWritesArray const & getUniformBuffers()const
+		{
+			return m_uniformBuffers;
+		}
+
+		inline LayoutBindingWritesArray const & getStorageBuffers()const
+		{
+			return m_storageBuffers;
+		}
+
+		inline LayoutBindingWritesArray const & getTexelBuffers()const
+		{
+			return m_texelBuffers;
+		}
+
+		inline LayoutBindingWritesArray const & getDynamicBuffers()const
+		{
+			return m_dynamicBuffers;
+		}
+
+		inline LayoutBindingWritesArray const & getDynamicStorageBuffers()const
+		{
+			return m_dynamicStorageBuffers;
+		}
 
 	private:
-		DescriptorPool const & m_pool;
-		DescriptorSetLayout const & m_layout;
+		void mergeWrites( LayoutBindingWrites & writes, VkWriteDescriptorSet const & write );
+
+	private:
+		VkDescriptorSetLayout m_layout;
+		std::vector< std::vector< VkDescriptorImageInfo > > m_imagesInfos;
+		std::vector< std::vector< VkDescriptorBufferInfo > > m_buffersInfos;
+		LayoutBindingWritesMap m_writes;
+		LayoutBindingWritesArray m_combinedTextureSamplers;
+		LayoutBindingWritesArray m_samplers;
+		LayoutBindingWritesArray m_sampledTextures;
+		LayoutBindingWritesArray m_storageTextures;
+		LayoutBindingWritesArray m_uniformBuffers;
+		LayoutBindingWritesArray m_storageBuffers;
+		LayoutBindingWritesArray m_texelBuffers;
+		LayoutBindingWritesArray m_dynamicUniformBuffers;
+		LayoutBindingWritesArray m_dynamicStorageBuffers;
+		LayoutBindingWritesArray m_dynamicBuffers;
 	};
 }
+
+#endif

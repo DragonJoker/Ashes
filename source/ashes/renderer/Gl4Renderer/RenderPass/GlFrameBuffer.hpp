@@ -31,6 +31,7 @@ namespace ashes::gl4
 			, AttachmentDescriptionArray const & attaches )const;
 		void setDrawBuffers( ContextLock const & context
 			, VkAttachmentReferenceArray const & attaches )const;
+
 		bool hasOnlySwapchainImage()const;
 		bool hasSwapchainImage()const;
 
@@ -105,7 +106,6 @@ namespace ashes::gl4
 		{
 			return m_bindAttaches;
 		}
-		/**@}*/
 
 	private:
 		void doInitialiseAttaches();

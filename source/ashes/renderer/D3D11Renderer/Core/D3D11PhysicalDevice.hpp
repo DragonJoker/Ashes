@@ -8,51 +8,20 @@ See LICENSE file in root folder
 
 namespace ashes::d3d11
 {
-	/**
-	*\~french
-	*\brief
-	*	Classe contenant les informations liées au GPU physique.
-	*\~english
-	*\brief
-	*	Wraps informations about physical GPU.
-	*/
 	class PhysicalDevice
 	{
 	public:
 		PhysicalDevice( VkInstance instance
 			, AdapterInfo adapterInfo );
 		~PhysicalDevice();
-		/**
-		*\copydoc	ashes::Instance::getPresentationSupport
-		*/
+
 		VkBool32 getPresentationSupport( uint32_t queueFamilyIndex )const;
-		/**
-		*\copydoc	ashes::Instance::enumerateLayerProperties
-		*/
 		VkLayerPropertiesArray enumerateLayerProperties()const;
-		/**
-		*\copydoc	ashes::Instance::enumerateExtensionProperties
-		*/
 		VkExtensionPropertiesArray enumerateExtensionProperties( std::string const & layerName )const;
-		/**
-		*\copydoc	ashes::Instance::getProperties
-		*/
 		VkPhysicalDeviceProperties const & getProperties()const;
-		/**
-		*\copydoc	ashes::Instance::getMemoryProperties
-		*/
 		VkPhysicalDeviceMemoryProperties getMemoryProperties()const;
-		/**
-		*\copydoc	ashes::Instance::getFeatures
-		*/
 		VkPhysicalDeviceFeatures getFeatures()const;
-		/**
-		*\copydoc	ashes::Instance::getQueueFamilyProperties
-		*/
 		VkQueueFamilyPropertiesArray getQueueFamilyProperties()const;
-		/**
-		*\copydoc	ashes::Instance::getFormatProperties
-		*/
 		VkFormatProperties getFormatProperties( VkFormat fmt )const;
 
 		inline IDXGIAdapter * getAdapter()const

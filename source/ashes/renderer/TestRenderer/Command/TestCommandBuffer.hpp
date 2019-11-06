@@ -4,309 +4,213 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "TestRendererPrerequisites.hpp"
+#include "renderer/TestRenderer/Command/Commands/TestBlitImageCommand.hpp"
 
-#include <Ashes/Command/CommandBuffer.hpp>
-
-namespace test_renderer
+namespace ashes::test
 {
-	/**
-	*\~french
-	*\brief
-	*	Encapsulation d'un TestCommandBuffer.
-	*/
 	class CommandBuffer
-		: public ashes::CommandBuffer
 	{
 	public:
-		/**
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le périphérique logique.
-		*\param[in] pool
-		*	Le pool de tampons de commandes.
-		*\param[in] primary
-		*	Dit si le tampon est un tampon de commandes primaire (\p true) ou secondaire (\p false).
-		*\~english
-		*\brief
-		*	Constructor.
-		*\param[in] device
-		*	The logical connection to the GPU.
-		*\param[in] pool
-		*	The pool from which the command buffer is allocated.
-		*\param[in] primary
-		*	Specifies if the command buffer is primary (\p true) or secondary (\p false).
-		*/
-		CommandBuffer( Device const & device
-			, CommandPool const & pool
+		CommandBuffer( VkDevice device
+			, VkCommandPool commandPool
 			, bool primary );
-		/**
-		*\~french
-		*\brief
-		*	Destructeur.
-		*\~english
-		*\brief
-		*	Destructor.
-		*/
 		~CommandBuffer();
-		/**
-		*\copydoc	ashes::CommandBuffer:begin
-		*/
-		void begin( ashes::CommandBufferBeginInfo const & info )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:end
-		*/
-		void end()const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:reset
-		*/
-		void reset( ashes::CommandBufferResetFlags flags )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:beginRenderPass
-		*/
-		void beginRenderPass( ashes::RenderPassBeginInfo const & beginInfo
-			, ashes::SubpassContents contents )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:nextSubpass
-		*/
-		void nextSubpass( ashes::SubpassContents contents )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:endRenderPass
-		*/
-		void endRenderPass()const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:executeCommands
-		*/
-		void executeCommands( ashes::CommandBufferCRefArray const & commands )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:clear
-		*/
-		void clear( ashes::ImageView const & image
-			, VkClearColorValue const & colour )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:clear
-		*/
-		void clear( ashes::ImageView const & image
-			, ashes::DepthStencilClearValue const & colour )const override;
-		/**
-		*\copydoc	ashes::clearAttachments:clear
-		*/
-		void clearAttachments( ashes::ClearAttachmentArray const & clearAttachments
-			, ashes::ClearRectArray const & clearRects )override;
-		/**
-		*\copydoc	ashes::CommandBuffer:bindPipeline
-		*/
-		void bindPipeline( ashes::Pipeline const & pipeline
-			, ashes::PipelineBindPoint bindingPoint )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:bindPipeline
-		*/
-		void bindPipeline( ashes::ComputePipeline const & pipeline
-			, ashes::PipelineBindPoint bindingPoint )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:bindVertexBuffers
-		*/
+
+		void execute()const;
+
+		VkResult begin( VkCommandBufferBeginInfo info )const;
+		VkResult end()const;
+		VkResult reset( VkCommandBufferResetFlags flags )const;
+		void beginRenderPass( VkRenderPassBeginInfo beginInfo
+			, VkSubpassContents contents )const;
+		void nextSubpass( VkSubpassContents contents )const;
+		void endRenderPass()const;
+		void executeCommands( VkCommandBufferArray commands )const;
+		void clearColorImage( VkImage image
+			, VkImageLayout imageLayout
+			, VkClearColorValue colour
+			, VkImageSubresourceRangeArray ranges )const;
+		void clearDepthStencilImage( VkImage image
+			, VkImageLayout imageLayout
+			, VkClearDepthStencilValue value
+			, VkImageSubresourceRangeArray ranges )const;
+		void clearAttachments( VkClearAttachmentArray clearAttachments
+			, VkClearRectArray clearRects );
+		void bindPipeline( VkPipeline pipeline
+			, VkPipelineBindPoint bindingPoint )const;
 		void bindVertexBuffers( uint32_t firstBinding
-			, ashes::BufferCRefArray const & buffers
-			, ashes::UInt64Array offsets )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:bindIndexBuffer
-		*/
-		void bindIndexBuffer( ashes::BufferBase const & buffer
-			, uint64_t offset
-			, VkIndexType indexType )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:bindDescriptorSet
-		*/
-		void bindDescriptorSets( ashes::DescriptorSetCRefArray const & descriptorSets
-			, ashes::PipelineLayout const & layout
-			, ashes::UInt32Array const & dynamicOffsets
-			, ashes::PipelineBindPoint bindingPoint )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:setViewport
-		*/
+			, VkBufferArray buffers
+			, VkDeviceSizeArray offsets )const;
+		void bindIndexBuffer( VkBuffer buffer
+			, VkDeviceSize offset
+			, VkIndexType indexType )const;
+		void bindDescriptorSets( VkPipelineBindPoint bindingPoint
+			, VkPipelineLayout layout
+			, uint32_t firstSet
+			, VkDescriptorSetArray descriptorSets
+			, UInt32Array dynamicOffsets )const;
 		void setViewport( uint32_t firstViewport
-			, ashes::VkViewportArray const & viewports )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:setScissor
-		*/
+			, VkViewportArray viewports )const;
 		void setScissor( uint32_t firstScissor
-			, ashes::VkScissorArray const & scissors )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:draw
-		*/
+			, VkScissorArray scissors )const;
 		void draw( uint32_t vtxCount
 			, uint32_t instCount
 			, uint32_t firstVertex
-			, uint32_t firstInstance )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:drawIndexed
-		*/
+			, uint32_t firstInstance )const;
 		void drawIndexed( uint32_t indexCount
 			, uint32_t instCount
 			, uint32_t firstIndex
 			, uint32_t vertexOffset
-			, uint32_t firstInstance )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:drawIndirect
-		*/
-		void drawIndirect( ashes::BufferBase const & buffer
-			, uint32_t offset
+			, uint32_t firstInstance )const;
+		void drawIndirect( VkBuffer buffer
+			, VkDeviceSize offset
 			, uint32_t drawCount
-			, uint32_t stride )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:drawIndexedIndirect
-		*/
-		void drawIndexedIndirect( ashes::BufferBase const & buffer
-			, uint32_t offset
+			, uint32_t stride )const;
+		void drawIndexedIndirect( VkBuffer buffer
+			, VkDeviceSize offset
 			, uint32_t drawCount
-			, uint32_t stride )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer::copyToImage
-		*/
-		void copyToImage( ashes::VkBufferImageCopyArray const & copyInfo
-			, ashes::BufferBase const & src
-			, ashes::Image const & dst )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer::copyToBuffer
-		*/
-		void copyToBuffer( ashes::VkBufferImageCopyArray const & copyInfo
-			, ashes::Image const & src
-			, ashes::BufferBase const & dst )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:copyBuffer
-		*/
-		void copyBuffer( ashes::BufferCopy const & copyInfo
-			, ashes::BufferBase const & src
-			, ashes::BufferBase const & dst )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:copyImage
-		*/
-		void copyImage( ashes::ImageCopy const & copyInfo
-			, ashes::Image const & src
-			, VkImageLayout srcLayout
-			, ashes::Image const & dst
-			, VkImageLayout dstLayout )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:blitImage
-		*/
-		void blitImage( ashes::Image const & srcImage
-			, VkImageLayout srcLayout
-			, ashes::Image const & dstImage
+			, uint32_t stride )const;
+		void copyToImage( VkBuffer src
+			, VkImage dst
 			, VkImageLayout dstLayout
-			, std::vector< ashes::ImageBlit > const & regions
-			, VkFilter filter )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:resetQueryPool
-		*/
-		void resetQueryPool( ashes::QueryPool const & pool
+			, VkBufferImageCopyArray copyInfos )const;
+		void copyToBuffer( VkImage src
+			, VkImageLayout srcLayout
+			, VkBuffer dst
+			, VkBufferImageCopyArray copyInfos )const;
+		void copyBuffer( VkBuffer src
+			, VkBuffer dst
+			, VkBufferCopyArray copyInfos )const;
+		void copyImage( VkImage src
+			, VkImageLayout srcLayout
+			, VkImage dst
+			, VkImageLayout dstLayout
+			, VkImageCopyArray copyInfos )const;
+		void blitImage( VkImage srcImage
+			, VkImageLayout srcLayout
+			, VkImage dstImage
+			, VkImageLayout dstLayout
+			, VkImageBlitArray regions
+			, VkFilter filter )const;
+		void resetQueryPool( VkQueryPool pool
 			, uint32_t firstQuery
-			, uint32_t queryCount )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:beginQuery
-		*/
-		void beginQuery( ashes::QueryPool const & pool
+			, uint32_t queryCount )const;
+		void beginQuery( VkQueryPool pool
 			, uint32_t query
-			, ashes::QueryControlFlags flags )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:endQuery
-		*/
-		void endQuery( ashes::QueryPool const & pool
-			, uint32_t query )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:writeTimestamp
-		*/
+			, VkQueryControlFlags flags )const;
+		void endQuery( VkQueryPool pool
+			, uint32_t query )const;
 		void writeTimestamp( VkPipelineStageFlagBits pipelineStage
-			, ashes::QueryPool const & pool
-			, uint32_t query )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:pushConstants
-		*/
-		void pushConstants( ashes::PipelineLayout const & layout
+			, VkQueryPool pool
+			, uint32_t query )const;
+		void pushConstants( VkPipelineLayout layout
 			, VkShaderStageFlags stageFlags
 			, uint32_t offset
 			, uint32_t size
-			, void const * data )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:dispatch
-		*/
+			, void const * data )const;
 		void dispatch( uint32_t groupCountX
 			, uint32_t groupCountY
-			, uint32_t groupCountZ )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer:dispatchIndirect
-		*/
-		void dispatchIndirect( ashes::BufferBase const & buffer
-			, uint32_t offset )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer::setLineWidth
-		*/
-		void setLineWidth( float width )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer::setDepthBias
-		*/
+			, uint32_t groupCountZ )const;
+		void dispatchIndirect( VkBuffer buffer
+			, VkDeviceSize offset )const;
+		void setLineWidth( float width )const;
 		void setDepthBias( float constantFactor
 			, float clamp
-			, float slopeFactor )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer::setEvent
-		*/
-		void setEvent( ashes::Event const & event
-			, VkPipelineStageFlags stageMask )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer::resetEvent
-		*/
-		void resetEvent( ashes::Event const & event
-			, VkPipelineStageFlags stageMask )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer::waitEvents
-		*/
-		void waitEvents( ashes::EventCRefArray const & events
+			, float slopeFactor )const;
+		void setEvent( VkEvent event
+			, VkPipelineStageFlags stageMask )const;
+		void resetEvent( VkEvent event
+			, VkPipelineStageFlags stageMask )const;
+		void waitEvents( VkEventArray events
 			, VkPipelineStageFlags srcStageMask
 			, VkPipelineStageFlags dstStageMask
-			, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
-			, ashes::VkImageMemoryBarrierArray const & imageMemoryBarriers )const override;
-		/**
-		*\copydoc	ashes::CommandBuffer::pipelineBarrier
-		*/
+			, VkMemoryBarrierArray memoryBarriers
+			, VkBufferMemoryBarrierArray bufferMemoryBarriers
+			, VkImageMemoryBarrierArray imageMemoryBarriers )const;
 		void pipelineBarrier( VkPipelineStageFlags after
 			, VkPipelineStageFlags before
-			, ashes::DependencyFlags dependencyFlags
-			, ashes::MemoryBarrierArray const & memoryBarriers
-			, ashes::BufferMemoryBarrierArray const & bufferMemoryBarriers
-			, ashes::VkImageMemoryBarrierArray const & imageMemoryBarriers )const;
-		/**
-		*\~french
-		*\return
-		*	Le pipeline actuellement actif.
-		*\~english
-		*\return
-		*	The currently active pipeline.
-		*/
-		inline Pipeline const & getCurrentPipeline()const
+			, VkDependencyFlags dependencyFlags
+			, VkMemoryBarrierArray memoryBarriers
+			, VkBufferMemoryBarrierArray bufferMemoryBarriers
+			, VkImageMemoryBarrierArray imageMemoryBarriers )const;
+		void generateMipmaps( VkImage texture )const;
+#if VK_EXT_debug_utils
+		void beginDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const;
+		void endDebugUtilsLabel()const;
+		void insertDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const;
+#endif
+#if VK_EXT_debug_marker
+		void debugMarkerBegin( VkDebugMarkerMarkerInfoEXT const & labelInfo )const;
+		void debugMarkerEnd()const;
+		void debugMarkerInsert( VkDebugMarkerMarkerInfoEXT const & labelInfo )const;
+#endif
+
+		inline CommandArray const & getCommands()const
 		{
-			assert( m_currentPipeline && "No pipeline bound." );
-			return *m_currentPipeline;
-		}
-		/**
-		*\~french
-		*\return
-		*	Dit si un pipeline est actif.
-		*\~english
-		*\return
-		*	Tells if a pipeline is active.
-		*/
-		inline bool isPipelineBound()const
-		{
-			return m_currentPipeline != nullptr;
+			return m_commands;
 		}
 
 	private:
-		Device const & m_device;
-		CommandPool const & m_pool;
-		mutable Pipeline const * m_currentPipeline{ nullptr };
-		mutable ComputePipeline const * m_currentComputePipeline{ nullptr };
+		struct ResourceIndex
+		{
+			ResourceIndex( ObjectMemory const * memory
+				, size_t index
+				, DeviceMemoryDestroyConnection connection )
+				: memory{ memory }
+				, index{ index }
+				, connection{ std::move( connection ) }
+			{
+			}
+
+			ObjectMemory const * memory;
+			size_t index;
+			DeviceMemoryDestroyConnection connection;
+		};
+
+
+	private:
+		void doFillVboStrides()const;
+		void doAddAfterSubmitAction()const;
+		void doProcessMappedBoundDescriptorResourcesIn( VkDescriptorSet descriptor )const;
+		void doProcessMappedBoundDescriptorsResourcesOut()const;
+		void doProcessMappedBoundVaoBuffersIn()const;
+		void doProcessMappedBoundResourceIn( VkBuffer buffer
+			, VkDeviceSize offset
+			, VkDeviceSize range )const;
+		void doProcessMappedBoundResourceIn( VkImageView image )const;
+		void doProcessMappedBoundResourceOut( VkBuffer buffer
+			, VkDeviceSize offset
+			, VkDeviceSize range )const;
+		void doProcessMappedBoundResourceOut( VkImageView image )const;
+		ResourceIndex & doAddMappedResource( ObjectMemory const * memory
+			, VkDeviceSize offset
+			, VkDeviceSize range
+			, bool isInput )const;
+		ResourceIndex & doAddMappedResource( ObjectMemory const * memory )const;
+		void doRemoveMappedResource( ObjectMemory const * memory )const;
+
+	private:
+		VkDevice m_device;
+		VkCommandPool m_commandPool;
+		mutable CommandArray m_commands;
+		mutable std::vector< ResourceIndex > m_mappedResources;
+		struct State
+		{
+			VkCommandBufferBeginInfo beginInfo;
+			VkPipeline currentPipeline{ VK_NULL_HANDLE };
+			std::vector< std::pair < VkPipelineLayout, PushConstantsDesc > > pushConstantBuffers;
+			VkPipeline currentComputePipeline{ VK_NULL_HANDLE };
+			VkSubpassDescription const * currentSubpass{ VK_NULL_HANDLE };
+			VkRenderPass currentRenderPass{ VK_NULL_HANDLE };
+			VkFramebuffer currentFrameBuffer{ VK_NULL_HANDLE };
+			uint32_t currentSubpassIndex{ 0u };
+			mutable VbosBindingArray vbos;
+			VkIndexType indexType;
+			VkDescriptorSetArray boundDescriptors;
+			VkBuffer newlyBoundIbo{ VK_NULL_HANDLE };
+		};
+		mutable State m_state;
+		mutable ActionArray m_afterSubmitActions;
+		mutable Optional< DebugLabel > m_label;
 	};
 }

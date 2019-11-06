@@ -7,24 +7,56 @@ See LICENSE file in root folder.
 #include "Command/TestCommandBuffer.hpp"
 #include "Core/TestDevice.hpp"
 
-namespace test_renderer
+#include "ashestest_api.hpp"
+
+namespace ashes::test
 {
-	CommandPool::CommandPool( Device const & device
-		, uint32_t queueFamilyIndex
-		, ashes::CommandPoolCreateFlags flags )
-		: ashes::CommandPool{ device, queueFamilyIndex, flags }
-		, m_device{ device }
+	CommandPool::CommandPool( VkDevice device
+		, VkCommandPoolCreateInfo createInfo )
+		: m_device{ device }
+		, m_createInfo{ std::move( createInfo ) }
 	{
 	}
 
 	CommandPool::~CommandPool()
 	{
+		for ( auto & command : m_commands )
+		{
+			deallocate( command, nullptr );
+		}
 	}
 
-	ashes::CommandBufferPtr CommandPool::createCommandBuffer( bool primary )const
+	void CommandPool::registerCommands( VkCommandBuffer commands )
 	{
-		return std::make_unique< CommandBuffer >( m_device
-			, *this
-			, primary );
+		m_commands.push_back( commands );
+	}
+
+	VkResult CommandPool::reset( VkCommandPoolResetFlags flags )
+	{
+		for ( auto & command : m_commands )
+		{
+			deallocate( command, nullptr );
+		}
+
+		m_commands.clear();
+		return VK_SUCCESS;
+	}
+
+	VkResult CommandPool::free( VkCommandBufferArray commands )
+	{
+		for ( auto & command : commands )
+		{
+			auto it = std::find( m_commands.begin()
+				, m_commands.end()
+				, command );
+
+			if ( it != m_commands.end() )
+			{
+				deallocate( command, nullptr );
+				m_commands.erase( it );
+			}
+		}
+
+		return VK_SUCCESS;
 	}
 }

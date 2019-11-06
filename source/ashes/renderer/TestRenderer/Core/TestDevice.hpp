@@ -4,131 +4,92 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "Core/TestSurface.hpp"
+#include "renderer/TestRenderer/Core/TestLayer.hpp"
 
-#include <Ashes/Core/Device.hpp>
-#include <Ashes/Miscellaneous/SwapChainCreateInfo.hpp>
+#include "renderer/TestRenderer/Buffer/TestBuffer.hpp"
+#include "renderer/TestRenderer/Core/TestSurface.hpp"
 
-namespace test_renderer
+namespace ashes::test
 {
-	/**
-	*\brief
-	*	Classe contenant les informations liées au GPU logique.
-	*/
 	class Device
-		: public ashes::Device
 	{
 	public:
-		/**
-		*\brief
-		*	Constructeur.
-		*\param[in] test_renderer
-		*	L'instance.
-		*\param[in] connection
-		*	La connection à l'application.
-		*/
-		Device( Instance const & instance
-			, PhysicalDevice const & physicalDevice
-			, ashes::DeviceCreateInfo createInfos );
-		/**
-		*\brief
-		*	Destructeur.
-		*/
+		Device( VkInstance instance
+			, VkPhysicalDevice physicalDevice
+			, VkDeviceCreateInfo createInfos );
 		~Device();
-		/**
-		*\copydoc	ashes::Device::createRenderPass
-		*/
-		ashes::RenderPassPtr createRenderPass( ashes::RenderPassCreateInfo createInfo )const override;
-		/**
-		*\copydoc	ashes::Device::createPipelineLayout
-		*/
-		ashes::PipelineLayoutPtr createPipelineLayout( ashes::DescriptorSetLayoutCRefArray const & setLayouts
-			, ashes::PushConstantRangeArray const & pushConstantRanges )const override;
-		/**
-		*\copydoc	ashes::Device::createDescriptorSetLayout
-		*/
-		ashes::DescriptorSetLayoutPtr createDescriptorSetLayout( ashes::DescriptorSetLayoutBindingArray bindings )const override;
-		/**
-		*\copydoc	ashes::Device::createDescriptorPool
-		*/
-		ashes::DescriptorPoolPtr createDescriptorPool( ashes::DescriptorPoolCreateFlags flags
-			, uint32_t maxSets
-			, ashes::DescriptorPoolSizeArray poolSizes )const override;
-		/**
-		*\copydoc	ashes::Device::allocateMemory
-		*/
-		ashes::DeviceMemoryPtr allocateMemory( ashes::MemoryAllocateInfo allocateInfo )const override;
-		/**
-		*\copydoc	ashes::Device::createImage
-		*/
-		ashes::ImagePtr createImage( ashes::ImageCreateInfo const & createInfo )const override;
+		VkPhysicalDeviceLimits const & getLimits()const;
+		VkImage getStagingImage( VkImage image
+			, VkDeviceMemory & memory );
 		/**
 		*\copydoc	ashes::Device::getImageSubresourceLayout
 		*/
-		void getImageSubresourceLayout( ashes::Image const & image
-			, ashes::ImageSubresource const & subresource
-			, ashes::SubresourceLayout & layout )const override;
+		void getImageSubresourceLayout( VkImage image
+			, VkImageSubresource const & subresource
+			, VkSubresourceLayout & layout )const;
+#if VK_EXT_debug_utils
 		/**
-		*\copydoc	ashes::Device::createSampler
+		*\copydoc	ashes::Device::setDebugUtilsObjectName
 		*/
-		ashes::SamplerPtr createSampler( ashes::SamplerCreateInfo const & createInfo )const override;
+		VkResult setDebugUtilsObjectName( VkDebugUtilsObjectNameInfoEXT const & nameInfo )const;
 		/**
-		*\copydoc	ashes::Device::createBuffer
+		*\copydoc	ashes::Device::setDebugUtilsObjectTag
 		*/
-		ashes::BufferBasePtr createBuffer( uint32_t size
-			, VkBufferUsageFlags target )const override;
+		VkResult setDebugUtilsObjectTag( VkDebugUtilsObjectTagInfoEXT const & tagInfo )const;
+#endif
+#if VK_EXT_debug_marker
 		/**
-		*\copydoc	ashes::Device::createBufferView
+		*\copydoc	ashes::Device::debugMarkerSetObjectTag
 		*/
-		ashes::BufferViewPtr createBufferView( ashes::BufferBase const & buffer
-			, VkFormat format
-			, uint32_t offset
-			, uint32_t range )const override;
-		/**
-		*\copydoc	ashes::Device::createSwapChain
-		*/
-		ashes::SwapChainPtr createSwapChain( ashes::SwapChainCreateInfo createInfo )const override;
-		/**
-		*\copydoc	ashes::Device::createSemaphore
-		*/
-		ashes::SemaphorePtr createSemaphore()const override;
-		/**
-		*\copydoc	ashes::Device::createFence
-		*/
-		ashes::FencePtr createFence( ashes::FenceCreateFlags flags )const override;
-		/**
-		*\copydoc	ashes::Device::createEvent
-		*/
-		ashes::EventPtr createEvent()const override;
-		/**
-		*\copydoc	ashes::Device::createCommandPool
-		*/
-		ashes::CommandPoolPtr createCommandPool( uint32_t queueFamilyIndex
-			, ashes::CommandPoolCreateFlags const & flags )const override;
-		/**
-		*\copydoc	ashes::Device::createShaderProgram
-		*/
-		virtual ashes::ShaderModulePtr createShaderModule( VkShaderStageFlagBits stage )const override;
-		/**
-		*\copydoc	ashes::Device::createQueryPool
-		*/
-		ashes::QueryPoolPtr createQueryPool( VkQueryType type
-			, uint32_t count
-			, ashes::QueryPipelineStatisticFlags pipelineStatistics )const override;
+		VkResult debugMarkerSetObjectTag( VkDebugMarkerObjectTagInfoEXT const & nameInfo )const;
 		/**
 		*\copydoc	ashes::Device::debugMarkerSetObjectName
 		*/
-		void debugMarkerSetObjectName( ashes::DebugMarkerObjectNameInfo const & nameInfo )const override;
+		VkResult debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const;
+#endif
+#if VK_EXT_debug_report
+		/**
+		*\copydoc	ashes::Device::reportMessage
+		*/
+		void reportMessage( VkDebugReportFlagsEXT flags
+			, VkDebugReportObjectTypeEXT objectType
+			, uint64_t object
+			, size_t location
+			, int32_t messageCode
+			, const char * pLayerPrefix
+			, const char * pMessage );
+#endif
 		/**
 		*\copydoc	ashes::Device::getQueue
 		*/
-		ashes::QueuePtr getQueue( uint32_t familyIndex
-			, uint32_t index )const override;
+		VkQueue getQueue( uint32_t familyIndex
+			, uint32_t index )const;
 		/**
 		*\brief
 		*	Attend que le périphérique soit inactif.
 		*/
-		void waitIdle()const override;
+		VkResult waitIdle()const;
+		/**
+		*\~english
+		*name
+		*	Layers delegation.
+		*\~french
+		*name
+		*	Délégation aux layers.
+		*/
+		/**@{*/
+		bool onCopyToImageCommand( VkCommandBuffer cmd
+			, VkBufferImageCopyArray const & copyInfo
+			, VkBuffer src
+			, VkImage dst )const;
+		void onReportMessage( VkDebugReportFlagsEXT flags
+			, VkDebugReportObjectTypeEXT objectType
+			, uint64_t object
+			, size_t location
+			, int32_t messageCode
+			, const char * pLayerPrefix
+			, const char * pMessage );
+		/**@}*/
 		/**
 		*\~french
 		*\return
@@ -137,18 +98,52 @@ namespace test_renderer
 		*\return
 		*	The rendering API.
 		*/
-		inline Instance const & getInstance()const
+		inline VkInstance getInstance()const
 		{
 			return m_instance;
 		}
+		/**
+		*\~french
+		*\return
+		*	La connection à l'application.
+		*\~english
+		*\return
+		*	The connection to the application.
+		*/
+		inline VkBuffer getEmptyIndexedVaoIdx()const
+		{
+			return m_dummyIndexed.buffer;
+		}
+
+		inline VkPhysicalDevice getGpu()const
+		{
+			return m_physicalDevice;
+		}
 
 	private:
+		void doCreateDummyIndexBuffer();
 		void doCreateQueues();
 
 	private:
-		Instance const & m_instance;
-		PhysicalDevice const & m_gpu;
-		using QueueCreateCount = std::pair< ashes::DeviceQueueCreateInfo, uint32_t >;
-		std::map< uint32_t, QueueCreateCount > m_queues;
+		struct QueueCreates
+		{
+			VkDeviceQueueCreateInfo createInfo;
+			std::vector< VkQueue > queues;
+		};
+		using QueueCreateCountMap = std::map< uint32_t, QueueCreates >;
+
+	private:
+		VkInstance m_instance;
+		VkPhysicalDevice m_physicalDevice;
+		VkDeviceCreateInfo m_createInfos;
+		QueueCreateCountMap m_queues;
+		// Mimic the behavior in Vulkan, when no IBO nor VBO is bound.
+		struct Buffer
+		{
+			VkBuffer buffer;
+			VkDeviceMemory memory;
+		};
+		Buffer m_dummyIndexed;
+		std::unordered_map< size_t, std::pair< VkImage, VkDeviceMemory > > m_stagingTextures;
 	};
 }

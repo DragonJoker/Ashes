@@ -4,37 +4,42 @@ See LICENSE file in root folder.
 */
 #pragma once
 
-#include "TestRendererPrerequisites.hpp"
+#include "renderer/TestRenderer/TestRendererPrerequisites.hpp"
 
-#include <Ashes/Command/Queue.hpp>
-
-namespace test_renderer
+namespace ashes::test
 {
 	class Queue
-		: public ashes::Queue
 	{
 	public:
-		Queue( Device const & device
-			, ashes::DeviceQueueCreateInfo createInfo
-			, uint32_t index );
-		/**
-		*\copydoc		ashes::Queue::submit
-		*/ 
-		void submit( ashes::CommandBufferCRefArray const & commandBuffers
-			, ashes::SemaphoreCRefArray const & semaphoresToWait
-			, ashes::VkPipelineStageFlagsArray const & semaphoresStage
-			, ashes::SemaphoreCRefArray const & semaphoresToSignal
-			, ashes::Fence const * fence )const override;
-		/**
-		*\copydoc		ashes::Queue::present
-		*/
-		ashes::VkResultArray present( ashes::SwapChainCRefArray const & swapChains
-			, ashes::UInt32Array const & imagesIndex
-			, ashes::SemaphoreCRefArray const & semaphoresToWait )const override;
-		/**
-		/**
-		*\copydoc		ashes::Queue::waitIdle
-		*/
-		void waitIdle()const override;
+		Queue( VkDevice device
+			, VkDeviceQueueCreateInfo createInfo );
+
+		VkResult submit( VkSubmitInfoArray const & infos
+			, VkFence fence )const;
+		VkResult present( VkPresentInfoKHR const & presentInfo )const;
+		VkResult waitIdle()const;
+
+#if VK_EXT_debug_utils
+		void beginDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const;
+		void endDebugUtilsLabel()const;
+		void insertDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const;
+#endif
+#if VK_EXT_debug_marker
+		void debugMarkerBegin( VkDebugMarkerMarkerInfoEXT const & labelInfo )const;
+		void debugMarkerEnd()const;
+		void debugMarkerInsert( VkDebugMarkerMarkerInfoEXT const & labelInfo )const;
+#endif
+
+	private:
+		VkResult doSubmit( VkCommandBufferArray const & commandBuffers
+			, VkSemaphoreArray const & semaphoresToWait
+			, VkPipelineStageFlagsArray const & semaphoresStage
+			, VkSemaphoreArray const & semaphoresToSignal
+			, VkFence fence )const;
+
+	private:
+		VkDevice m_device;
+		VkDeviceQueueCreateInfo m_createInfo;
+		mutable Optional< DebugLabel > m_label;
 	};
 }

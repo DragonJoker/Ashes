@@ -21,7 +21,7 @@ namespace ashes::gl4
 		ImageView( VkDevice device
 			, VkImageViewCreateInfo createInfo );
 		~ImageView();
-		
+
 		GLuint getInternal()const noexcept;
 
 		inline VkImageViewType getType()const noexcept

@@ -15,10 +15,6 @@ namespace ashes
 {
 	class Instance;
 	/**
-	*\~french
-	*\brief
-	*	Structure permettant de nommer statiquement les types Vulkan.
-	*\~english
 	*\brief
 	*	Allows to statically name Vulkan types.
 	*/
@@ -28,10 +24,6 @@ namespace ashes
 		static std::string const Name;
 	};
 	/**
-	*\~french
-	*\brief
-	*	Classe permettant de tracer les valeurs des objets vulkan.
-	*\~english
 	*\brief
 	*	Allows to trace values for Vulkan objects.
 	*/
@@ -39,12 +31,6 @@ namespace ashes
 	{
 	public:
 		/**
-		*\~french
-		*\brief
-		*	Ecrit le contenu du dump dans un flux.
-		*\param[in,out] stream
-		*	Le flux.
-		*\~english
 		*\brief
 		*	Writes the trace content to a stream.
 		*\param[in,out] stream
@@ -59,12 +45,6 @@ namespace ashes
 			}
 		}
 		/**
-		*\~french
-		*\brief
-		*	Dump une variable Vulkan.
-		*\param[in] value
-		*	La valeur à dumper.
-		*\~english
 		*\brief
 		*	Dumps a Vulkan variable.
 		*\param[in] value
@@ -77,12 +57,6 @@ namespace ashes
 			m_dump.emplace( Namer::Name, subDump( value, std::string{} ) );
 		}
 		/**
-		*\~french
-		*\brief
-		*	Dump un tableau de variables Vulkan.
-		*\param[in] value
-		*	Le vecteur de valeurs à dumper.
-		*\~english
 		*\brief
 		*	Dumps a Vulkan variables array.
 		*\param[in] value
@@ -1425,25 +1399,31 @@ namespace ashes
 
 #if ENABLE_DEBUG_DUMP
 
-//!@~french		Dump une/des variable(s) Vulkan
-//!@~english	Dumps Vulkan variable(s)
+	/**
+	*\brief
+	*	Dumps Vulkan variable(s)
+	*/
 #	define DEBUG_DUMP( value )\
 	vk_renderer::Debug::dump( value )
-
-//!@~french		Ecrit le contenu du dump dans un flux.
-//!@~english	Writes the trace content to a stream.
+	/**
+	*\brief
+	*	Writes the trace content to a stream.
+	*/
 #	define DEBUG_WRITE( file )\
 	std::ofstream debugDumpFile{ file };\
 	vk_renderer::Debug::write( debugDumpFile )
 
 #else
 
-//!@~french		Dump une/des variable(s) Vulkan
-//!@~english	Dumps Vulkan variable(s)
+	/**
+	*\brief
+	*	Dumps Vulkan variable(s)
+	*/
 #	define DEBUG_DUMP( value )
-
-//!@~french		Ecrit le contenu du dump dans un flux.
-//!@~english	Writes the trace content to a stream.
+	/**
+	*\brief
+	*	Writes the trace content to a stream.
+	*/
 #	define DEBUG_WRITE( file )
 
 #endif

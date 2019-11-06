@@ -13,18 +13,13 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	/**
-	*\~english
 	*\brief
 	*	Class grouping the functions to transfer data from/to VRAM.
-	*\~french
-	*\brief
-	*	Classe regroupant les fonctions nécessaires au transfert de données depuis/vers la VRAM.
 	*/
 	class StagingBuffer
 	{
 	public:
 		/**
-		*\~english
 		*\brief
 		*	Constructor.
 		*\param[in] device
@@ -33,15 +28,6 @@ namespace ashes
 		*	The buffer targets.
 		*\param[in] size
 		*	The buffer size.
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	Le LogicalDevice parent.
-		*\param[in] usage
-		*	Les cibles du tampon.
-		*\param[in] size
-		*	La taille du tampon.
 		*/
 		StagingBuffer( Device const & device
 			, VkBufferUsageFlags usage

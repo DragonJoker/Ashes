@@ -6,57 +6,30 @@
 */
 #pragma once
 
-#include "TestRendererPrerequisites.hpp"
+#include "renderer/TestRenderer/TestRendererPrerequisites.hpp"
 
-#include <Ashes/Core/SwapChain.hpp>
-
-namespace test_renderer
+namespace ashes::test
 {
-	class SwapChain
-		: public ashes::SwapChain
+	class SwapchainKHR
 	{
 	public:
-		/**
-		*\~french
-		*\brief
-		*	Constructeur.
-		*\param[in] device
-		*	La connexion logique au GPU.
-		*\param[in] createInfo
-		*	Les informations de cr�ation.
-		*\~english
-		*\brief
-		*	Constructor.
-		*\param[in] device
-		*	The logical connection to the GPU.
-		*\param[in] createInfo
-		*	The creation informations.
-		*/
-		SwapChain( Device const & device
-			, ashes::SwapChainCreateInfo createInfo );
-		/**
-		*\~french
-		*\brief
-		*	Destructeur.
-		*\~english
-		*\brief
-		*	Destructor.
-		*/
-		~SwapChain();
-		/**
-		*\copydoc	ashes::SwapChain::getImages
-		*/
-		ashes::ImagePtrArray getImages()const override;
-		/**
-		*\copydoc	ashes::SwapChain::acquireNextImage
-		*/
-		ashes::Result acquireNextImage( uint64_t timeout
-			, ashes::Semaphore const * semaphore
-			, ashes::Fence const * fence
-			, uint32_t & imageIndex )const override;
+		SwapchainKHR( VkDevice device
+			, VkSwapchainCreateInfoKHR createInfo );
+		~SwapchainKHR();
+
+		uint32_t getImageCount()const;
+		VkImageArray getImages()const;
+		VkResult acquireNextImage( uint64_t timeout
+			, VkSemaphore semaphore
+			, VkFence fence
+			, uint32_t & imageIndex )const;
+		VkResult present( uint32_t imageIndex )const;
 
 	protected:
-		Device const & m_device;
-		uint32_t m_currentBuffer{};
+		VkDevice m_device;
+		VkSwapchainCreateInfoKHR m_createInfo;
+		VkImage m_image{ VK_NULL_HANDLE };
+		VkDeviceMemory m_deviceMemory{ VK_NULL_HANDLE };
+		VkImageView m_view{ VK_NULL_HANDLE };
 	};
 }

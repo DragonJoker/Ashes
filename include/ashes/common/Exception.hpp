@@ -99,7 +99,6 @@ namespace ashes
 		return 0;
 	}
 	/**
-	*\~english
 	*\brief
 	*	API exception class.
 	*/
@@ -108,13 +107,12 @@ namespace ashes
 	{
 	public:
 		/**
-		*\~french
 		*\brief
-		*	Constructeur.
+		*	Constructor.
 		*\param[in] result
-		*	Le résultat de l'action.
+		*	The Vullkan result.
 		*\param[in] text
-		*	Le texte de l'exception.
+		*	The exception text.
 		*/
 		Exception( VkResult result
 			, std::string text )
@@ -124,7 +122,6 @@ namespace ashes
 			m_text += " - " + getName( result );
 		}
 		/**
-		*\~english
 		*name
 		*	Getters.
 		*/
