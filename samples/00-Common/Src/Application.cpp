@@ -283,11 +283,11 @@ namespace common
 			}
 
 			flushLogFile();
-			m_rendererName = wxT( "vk" );
+			m_rendererName = wxEmptyString;
 
 			for ( auto & renderer : m_renderers )
 			{
-				if ( m_rendererName == wxT( "vk" ) )
+				if ( m_rendererName.empty() )
 				{
 					if ( parser.Found( renderer.name ) )
 					{

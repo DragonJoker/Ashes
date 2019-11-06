@@ -19,19 +19,25 @@ add_executable( ${PROJECT_NAME}
 	${SOURCE_FILES}
 	${HEADER_FILES}
 )
-set_target_properties( ${TARGET_NAME} PROPERTIES
+set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 17
 	CXX_EXTENSIONS OFF
 	FOLDER "Utils"
 )
 target_include_directories( ${PROJECT_NAME} PRIVATE
-	${TestIncludeDirectories}
+	${TARGET_INCLUDE_DIRS}
 )
 target_compile_definitions( ${PROJECT_NAME} PRIVATE
 	TEST_ID=${TEST_ID}
 	_FILE_OFFSET_BITS=64
 	_LARGE_FILES
 	_UNICODE
+)
+
+set( BinLibraries
+	${BinLibraries}
+	common
+	ashes
 )
 
 if ( NOT WIN32 )

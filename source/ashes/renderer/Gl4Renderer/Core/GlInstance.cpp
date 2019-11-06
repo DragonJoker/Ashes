@@ -68,13 +68,7 @@ namespace ashes::gl4
 		, m_dummyWindow{ new RenderWindow }
 	{
 		m_extensions.initialise();
-		m_features.hasBufferRange = m_extensions.find( ARB_texture_buffer_range );
-		m_features.hasImageTexture = m_extensions.find( ARB_shader_image_load_store );
-		m_features.hasBaseInstance = m_extensions.find( ARB_base_instance );
-		m_features.hasClearTexImage = m_extensions.find( ARB_clear_texture );
-		m_features.hasComputeShaders = m_extensions.find( ARB_compute_shader );
-		m_features.hasStorageBuffers = m_extensions.findAll( { ARB_compute_shader, ARB_buffer_storage, ARB_shader_image_load_store, ARB_shader_storage_buffer_object } );
-		m_features.supportsPersistentMapping = m_extensions.find( ARB_buffer_storage );
+		m_features = m_extensions.getFeatures();
 		auto it = std::find_if( m_enabledLayerNames.begin()
 			, m_enabledLayerNames.end()
 			, []( std::string const & lookup )

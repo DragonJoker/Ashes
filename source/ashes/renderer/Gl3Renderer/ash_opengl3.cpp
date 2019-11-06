@@ -4045,18 +4045,7 @@ namespace ashes::gl3
 			if ( result != VK_SUCCESS )
 			{
 				description.getInstanceProcAddr = &vkGetInstanceProcAddr;
-				description.features =
-				{
-					true, // hasBufferRange
-					extensions.findAll( { "GL_ARB_texture_storage"
-						, "GL_ARB_shader_image_load_store" } ), // hasImageTexture
-					extensions.find( "GL_ARB_base_instance" ), // hasBaseInstance
-					extensions.find( "GL_ARB_clear_texture" ), // hasClearTexImage
-					extensions.find( "GL_ARB_compute_shader" ), // hasComputeShaders
-					extensions.findAll( { "GL_ARB_shader_storage_buffer_object"
-						, "GL_ARB_shader_image_load_store" } ), // hasStorageBuffers
-					true, // supportsPersistentMapping
-				};
+				description.features = extensions.getFeatures();
 #define VK_LIB_GLOBAL_FUNCTION( x )\
 				description.functions.x = vk##x;
 #define VK_LIB_INSTANCE_FUNCTION( x )\

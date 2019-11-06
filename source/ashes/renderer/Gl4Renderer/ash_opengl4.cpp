@@ -4045,16 +4045,7 @@ namespace ashes::gl4
 			if ( result != VK_SUCCESS )
 			{
 				description.getInstanceProcAddr = &vkGetInstanceProcAddr;
-				description.features =
-				{
-					true, // hasBufferRange
-					true, // hasImageTexture
-					true, // hasBaseInstance
-					true, // hasClearTexImage
-					true, // hasComputeShaders
-					true, // hasStorageBuffers
-					true, // supportsPersistentMapping
-				};
+				description.features = extensions.getFeatures();
 #define VK_LIB_GLOBAL_FUNCTION( x )\
 				description.functions.x = vk##x;
 #define VK_LIB_INSTANCE_FUNCTION( x )\

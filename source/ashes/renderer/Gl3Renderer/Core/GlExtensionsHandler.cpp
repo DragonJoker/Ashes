@@ -116,6 +116,14 @@ namespace ashes::gl3
 		m_spirvSupported = false
 			&& ( find( ARB_gl_spirv )
 				|| hasSPIRVShaderBinaryFormat() );
+
+		m_features.hasBufferRange = find( ARB_texture_buffer_range );
+		m_features.hasImageTexture = findAll( { ARB_texture_storage, ARB_shader_image_load_store } );
+		m_features.hasBaseInstance = find( ARB_base_instance );
+		m_features.hasClearTexImage = find( ARB_clear_texture );
+		m_features.hasComputeShaders = find( ARB_compute_shader );
+		m_features.hasStorageBuffers = findAll( { ARB_compute_shader, ARB_buffer_storage, ARB_shader_image_load_store, ARB_shader_storage_buffer_object } );
+		m_features.supportsPersistentMapping = true;
 	}
 
 	bool ExtensionsHandler::find( std::string const & name )const

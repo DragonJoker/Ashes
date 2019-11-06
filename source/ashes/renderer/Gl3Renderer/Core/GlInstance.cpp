@@ -68,13 +68,7 @@ namespace ashes::gl3
 		, m_dummyWindow{ new RenderWindow }
 	{
 		m_extensions.initialise();
-		m_features.hasBufferRange = false;
-		m_features.hasImageTexture = false;
-		m_features.hasBaseInstance = false;
-		m_features.hasClearTexImage = false;
-		m_features.hasComputeShaders = false;
-		m_features.hasStorageBuffers = false;
-		m_features.supportsPersistentMapping = false;
+		m_features = m_extensions.getFeatures();
 		auto it = std::find_if( m_enabledLayerNames.begin()
 			, m_enabledLayerNames.end()
 			, []( std::string const & lookup )

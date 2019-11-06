@@ -328,7 +328,13 @@ namespace ashes::gl3
 			}
 			else
 			{
-				std::cerr << "Compute shaders are not supported" << std::endl;
+				get( m_device )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+					, VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT
+					, 0ull
+					, 0u
+					, VK_ERROR_VALIDATION_FAILED_EXT
+					, "OpenGL"
+					, "Compute shaders are not supported" );
 			}
 		}
 
@@ -412,51 +418,59 @@ namespace ashes::gl3
 		if ( firstInstance > 0
 			&& !get( get( m_device )->getInstance() )->getFeatures().hasBaseInstance )
 		{
-			throw std::runtime_error( "Base instance rendering is not supported" );
-		}
-
-		if ( isEmpty( get( m_state.currentPipeline )->getVertexInputState() ) )
-		{
-			bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
-			m_state.selectedVao = &get( m_device )->getEmptyIndexedVao();
-
-			if ( m_state.stack->isPrimitiveRestartEnabled() )
-			{
-				m_cmdList.emplace_back( makeCmd< OpType::ePrimitiveRestartIndex >( 0xFFFFFFFFu ) );
-			}
-
-			doProcessMappedBoundVaoBuffersIn();
-			buildBindGeometryBuffersCommand( *m_state.selectedVao
-				, m_cmdList );
-			buildDrawIndexedCommand( vtxCount
-				, instCount
+			get( m_device )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT
+				, 0ull
 				, 0u
-				, firstVertex
-				, firstInstance
-				, get( m_state.currentPipeline )->getInputAssemblyState().topology
-				, m_state.indexType
-				, m_cmdList );
+				, VK_ERROR_VALIDATION_FAILED_EXT
+				, "OpenGL"
+				, "Base instance rendering is not supported" );
 		}
 		else
 		{
-			if ( !m_state.selectedVao )
+			if ( isEmpty( get( m_state.currentPipeline )->getVertexInputState() ) )
 			{
-				doSelectVao();
+				bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
+				m_state.selectedVao = &get( m_device )->getEmptyIndexedVao();
+
+				if ( m_state.stack->isPrimitiveRestartEnabled() )
+				{
+					m_cmdList.emplace_back( makeCmd< OpType::ePrimitiveRestartIndex >( 0xFFFFFFFFu ) );
+				}
+
+				doProcessMappedBoundVaoBuffersIn();
+				buildBindGeometryBuffersCommand( *m_state.selectedVao
+					, m_cmdList );
+				buildDrawIndexedCommand( vtxCount
+					, instCount
+					, 0u
+					, firstVertex
+					, firstInstance
+					, get( m_state.currentPipeline )->getInputAssemblyState().topology
+					, m_state.indexType
+					, m_cmdList );
+			}
+			else
+			{
+				if ( !m_state.selectedVao )
+				{
+					doSelectVao();
+				}
+
+				doProcessMappedBoundVaoBuffersIn();
+				buildBindGeometryBuffersCommand( *m_state.selectedVao
+					, m_cmdList );
+				buildDrawCommand( vtxCount
+					, instCount
+					, firstVertex
+					, firstInstance
+					, get( m_state.currentPipeline )->getInputAssemblyState().topology
+					, m_cmdList );
 			}
 
-			doProcessMappedBoundVaoBuffersIn();
-			buildBindGeometryBuffersCommand( *m_state.selectedVao
-				, m_cmdList );
-			buildDrawCommand( vtxCount
-				, instCount
-				, firstVertex
-				, firstInstance
-				, get( m_state.currentPipeline )->getInputAssemblyState().topology
-				, m_cmdList );
+			m_cmdList.push_back( makeCmd< OpType::eBindVextexArray >( nullptr ) );
+			doProcessMappedBoundDescriptorsBuffersOut();
 		}
-
-		m_cmdList.push_back( makeCmd< OpType::eBindVextexArray >( nullptr ) );
-		doProcessMappedBoundDescriptorsBuffersOut();
 	}
 
 	void CommandBuffer::drawIndexed( uint32_t indexCount
@@ -468,41 +482,49 @@ namespace ashes::gl3
 		if ( firstInstance > 0
 			&& !get( get( m_device )->getInstance() )->getFeatures().hasBaseInstance )
 		{
-			throw std::runtime_error( "Base instance rendering is not supported" );
+			get( m_device )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT
+				, 0ull
+				, 0u
+				, VK_ERROR_VALIDATION_FAILED_EXT
+				, "OpenGL"
+				, "Base instance rendering is not supported" );
 		}
-
-		if ( isEmpty( get( m_state.currentPipeline )->getVertexInputState() )
-			&& !m_state.newlyBoundIbo )
+		else
 		{
-			bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
-			m_state.selectedVao = &get( m_device )->getEmptyIndexedVao();
-		}
-		else if ( !m_state.selectedVao )
-		{
-			doSelectVao();
-		}
+			if ( isEmpty( get( m_state.currentPipeline )->getVertexInputState() )
+				&& !m_state.newlyBoundIbo )
+			{
+				bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
+				m_state.selectedVao = &get( m_device )->getEmptyIndexedVao();
+			}
+			else if ( !m_state.selectedVao )
+			{
+				doSelectVao();
+			}
 
-		if ( m_state.stack->isPrimitiveRestartEnabled() )
-		{
-			m_cmdList.emplace_back( makeCmd< OpType::ePrimitiveRestartIndex >( m_state.indexType == VK_INDEX_TYPE_UINT32
-				? 0xFFFFFFFFu
-				: 0x0000FFFFu ) );
-		}
+			if ( m_state.stack->isPrimitiveRestartEnabled() )
+			{
+				m_cmdList.emplace_back( makeCmd< OpType::ePrimitiveRestartIndex >( m_state.indexType == VK_INDEX_TYPE_UINT32
+					? 0xFFFFFFFFu
+					: 0x0000FFFFu ) );
+			}
 
-		doProcessMappedBoundVaoBuffersIn();
-		buildBindGeometryBuffersCommand( *m_state.selectedVao
-			, m_cmdList );
-		buildDrawIndexedCommand( indexCount
-			, instCount
-			, firstIndex
-			, vertexOffset
-			, firstInstance
-			, get( m_state.currentPipeline )->getInputAssemblyState().topology
-			, m_state.indexType
-			, m_cmdList );
-		m_cmdList.push_back( makeCmd< OpType::eBindVextexArray >( nullptr ) );
-		doProcessMappedBoundDescriptorsBuffersOut();
-		m_state.newlyBoundIbo = IboBinding{};
+			doProcessMappedBoundVaoBuffersIn();
+			buildBindGeometryBuffersCommand( *m_state.selectedVao
+				, m_cmdList );
+			buildDrawIndexedCommand( indexCount
+				, instCount
+				, firstIndex
+				, vertexOffset
+				, firstInstance
+				, get( m_state.currentPipeline )->getInputAssemblyState().topology
+				, m_state.indexType
+				, m_cmdList );
+			m_cmdList.push_back( makeCmd< OpType::eBindVextexArray >( nullptr ) );
+			doProcessMappedBoundDescriptorsBuffersOut();
+			m_state.newlyBoundIbo = IboBinding{};
+		}
 	}
 
 	void CommandBuffer::drawIndirect( VkBuffer buffer
@@ -512,25 +534,33 @@ namespace ashes::gl3
 	{
 		if ( !get( get( m_device )->getPhysicalDevice() )->getFeatures().multiDrawIndirect )
 		{
-			throw std::runtime_error( "Draw indirect is not supported" );
+			get( m_device )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT
+				, 0ull
+				, 0u
+				, VK_ERROR_VALIDATION_FAILED_EXT
+				, "OpenGL"
+				, "Multi draw indirect is not supported" );
 		}
-
-		if ( !m_state.selectedVao )
+		else
 		{
-			doSelectVao();
-		}
+			if ( !m_state.selectedVao )
+			{
+				doSelectVao();
+			}
 
-		doProcessMappedBoundVaoBuffersIn();
-		buildBindGeometryBuffersCommand( *m_state.selectedVao
-			, m_cmdList );
-		buildDrawIndirectCommand( buffer
-			, offset
-			, drawCount
-			, stride
-			, get( m_state.currentPipeline )->getInputAssemblyState().topology
-			, m_cmdList );
-		m_cmdList.push_back( makeCmd< OpType::eBindVextexArray >( nullptr ) );
-		doProcessMappedBoundDescriptorsBuffersOut();
+			doProcessMappedBoundVaoBuffersIn();
+			buildBindGeometryBuffersCommand( *m_state.selectedVao
+				, m_cmdList );
+			buildDrawIndirectCommand( buffer
+				, offset
+				, drawCount
+				, stride
+				, get( m_state.currentPipeline )->getInputAssemblyState().topology
+				, m_cmdList );
+			m_cmdList.push_back( makeCmd< OpType::eBindVextexArray >( nullptr ) );
+			doProcessMappedBoundDescriptorsBuffersOut();
+		}
 	}
 
 	void CommandBuffer::drawIndexedIndirect( VkBuffer buffer
@@ -540,40 +570,48 @@ namespace ashes::gl3
 	{
 		if ( !get( get( m_device )->getPhysicalDevice() )->getFeatures().multiDrawIndirect )
 		{
-			throw std::runtime_error( "Draw indirect is not supported" );
+			get( m_device )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT
+				, 0ull
+				, 0u
+				, VK_ERROR_VALIDATION_FAILED_EXT
+				, "OpenGL"
+				, "Multi draw indirect is not supported" );
 		}
-
-		if ( isEmpty( get( m_state.currentPipeline )->getVertexInputState() )
-			&& !m_state.newlyBoundIbo )
+		else
 		{
-			bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
-			m_state.selectedVao = &get( m_device )->getEmptyIndexedVao();
-		}
-		else if ( !m_state.selectedVao )
-		{
-			doSelectVao();
-		}
+			if ( isEmpty( get( m_state.currentPipeline )->getVertexInputState() )
+				&& !m_state.newlyBoundIbo )
+			{
+				bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
+				m_state.selectedVao = &get( m_device )->getEmptyIndexedVao();
+			}
+			else if ( !m_state.selectedVao )
+			{
+				doSelectVao();
+			}
 
-		if ( m_state.stack->isPrimitiveRestartEnabled() )
-		{
-			m_cmdList.emplace_back( makeCmd< OpType::ePrimitiveRestartIndex >( m_state.indexType == VK_INDEX_TYPE_UINT32
-				? 0xFFFFFFFFu
-				: 0x0000FFFFu ) );
-		}
+			if ( m_state.stack->isPrimitiveRestartEnabled() )
+			{
+				m_cmdList.emplace_back( makeCmd< OpType::ePrimitiveRestartIndex >( m_state.indexType == VK_INDEX_TYPE_UINT32
+					? 0xFFFFFFFFu
+					: 0x0000FFFFu ) );
+			}
 
-		doProcessMappedBoundVaoBuffersIn();
-		buildBindGeometryBuffersCommand( *m_state.selectedVao
-			, m_cmdList );
-		buildDrawIndexedIndirectCommand( buffer
-			, offset
-			, drawCount
-			, stride
-			, get( m_state.currentPipeline )->getInputAssemblyState().topology
-			, m_state.indexType
-			, m_cmdList );
-		m_cmdList.push_back( makeCmd< OpType::eBindVextexArray >( nullptr ) );
-		doProcessMappedBoundDescriptorsBuffersOut();
-		m_state.newlyBoundIbo = IboBinding{};
+			doProcessMappedBoundVaoBuffersIn();
+			buildBindGeometryBuffersCommand( *m_state.selectedVao
+				, m_cmdList );
+			buildDrawIndexedIndirectCommand( buffer
+				, offset
+				, drawCount
+				, stride
+				, get( m_state.currentPipeline )->getInputAssemblyState().topology
+				, m_state.indexType
+				, m_cmdList );
+			m_cmdList.push_back( makeCmd< OpType::eBindVextexArray >( nullptr ) );
+			doProcessMappedBoundDescriptorsBuffersOut();
+			m_state.newlyBoundIbo = IboBinding{};
+		}
 	}
 
 	void CommandBuffer::copyToImage( VkBuffer src
@@ -735,7 +773,13 @@ namespace ashes::gl3
 		}
 		else
 		{
-			std::cerr << "Compute shaders are not supported" << std::endl;
+			get( m_device )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT
+				, 0ull
+				, 0u
+				, VK_ERROR_VALIDATION_FAILED_EXT
+				, "OpenGL"
+				, "Compute shaders are not supported" );
 		}
 	}
 
@@ -751,7 +795,13 @@ namespace ashes::gl3
 		}
 		else
 		{
-			std::cerr << "Compute shaders are not supported" << std::endl;
+			get( m_device )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT
+				, 0ull
+				, 0u
+				, VK_ERROR_VALIDATION_FAILED_EXT
+				, "OpenGL"
+				, "Compute shaders are not supported" );
 		}
 	}
 

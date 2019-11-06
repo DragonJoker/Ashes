@@ -39,10 +39,16 @@ namespace ashes::gl3
 			return m_shaderVersion;
 		}
 
+		inline AshPluginFeatures const & getFeatures()const
+		{
+			return m_features;
+		}
+
 	private:
 		StringArray m_deviceExtensionNames;
 		StringArray m_deviceSPIRVExtensionNames;
 		std::vector< GlShaderBinaryFormat > m_shaderBinaryFormats;
+		AshPluginFeatures m_features;
 		int m_major{ 0 };
 		int m_minor{ 0 };
 		int m_shaderVersion{ 0 };

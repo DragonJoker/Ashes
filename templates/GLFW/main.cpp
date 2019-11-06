@@ -121,17 +121,20 @@ int main( int argc, char * argv[] )
 	ashes::RendererList renderers;
 
 	// Then we check in the command line if the user has wanted a specific plugin to be used.
-	std::string rendererName = processCommandLine( argc, argv );
 	AshPluginDescription plugin = renderers.getSelectedPlugin();
+	std::string rendererName = processCommandLine( argc, argv );
 
-	try
+	if ( !rendererName.empty() )
 	{
-		plugin = renderers.selectPlugin( rendererName );
-	}
-	catch ( std::exception & exc )
-	{
-		std::cerr << exc.what() << std::endl;
-		return EXIT_FAILURE;
+		try
+		{
+			plugin = renderers.selectPlugin( rendererName );
+		}
+		catch ( std::exception & exc )
+		{
+			std::cerr << exc.what() << std::endl;
+			return EXIT_FAILURE;
+		}
 	}
 
 	PFN_vkEnumerateInstanceLayerProperties enumLayerProperties;
@@ -311,7 +314,7 @@ int main( int argc, char * argv[] )
 
 std::string processCommandLine( int argc, char ** argv )
 {
-	std::string result = "vk";
+	std::string result;
 
 	if ( argc > 1 )
 	{

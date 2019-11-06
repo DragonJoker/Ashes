@@ -36,6 +36,7 @@ namespace ashes::gl3
 	makeGlExtension( ARB_debug_output );
 	makeGlExtension( AMDX_debug_output );
 	makeGlExtension( ARB_texture_buffer_range );
+	makeGlExtension( ARB_texture_storage );
 	makeGlExtension( ARB_shader_image_load_store );
 	makeGlExtension( ARB_shader_storage_buffer_object );
 	makeGlExtension( ARB_base_instance );
