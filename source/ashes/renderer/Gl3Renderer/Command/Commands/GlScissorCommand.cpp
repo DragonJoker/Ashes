@@ -51,6 +51,6 @@ namespace ashes::gl3
 	{
 		glLogCommand( "ScissorCommand" );
 		scissors = adjustScissors( stack, scissors );
-		stack.apply( list, scissors, false );
+		stack.apply( list, firstScissor, scissors, false );
 	}
 }

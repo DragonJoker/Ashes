@@ -75,6 +75,11 @@ namespace ashes::gl3
 		{
 			return m_validationEnabled;
 		}
+		
+		inline bool hasViewportArray()const
+		{
+			return m_hasViewportArray;
+		}
 
 #if VK_EXT_debug_utils
 
@@ -129,6 +134,7 @@ namespace ashes::gl3
 		StringArray m_enabledLayerNames;
 		StringArray m_enabledExtensions;
 		VkPhysicalDeviceArray m_physicalDevices;
+		bool m_hasViewportArray;
 #if VK_EXT_debug_utils
 		mutable std::vector< DebugUtilsMessengerData > m_debugMessengers;
 		mutable std::vector< DebugUtilsAMDMessengerData > m_debugAMDMessengers;

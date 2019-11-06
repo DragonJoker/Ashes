@@ -302,13 +302,16 @@ namespace ashes::gl3
 		}
 	}
 
-	ContextStateStack::ContextStateStack( bool tessellation )
+	ContextStateStack::ContextStateStack( bool tessellation
+		, bool viewportArrays )
 		: m_tessellation{ tessellation }
+		, m_viewportArrays{ viewportArrays }
 	{
 	}
 
 	ContextStateStack::ContextStateStack( VkDevice device )
-		: ContextStateStack{ get( device )->getEnabledFeatures().tessellationShader != VK_FALSE }
+		: ContextStateStack{ get( device )->getEnabledFeatures().tessellationShader != VK_FALSE
+			, get( get( device )->getInstance() )->hasViewportArray() }
 	{
 	}
 
@@ -522,24 +525,48 @@ namespace ashes::gl3
 	}
 
 	void ContextStateStack::apply( CmdList & list
+		, uint32_t firstScissor
 		, VkScissorArray const & scissors
 		, bool force )
 	{
 		if ( force || getCurrentScissors() != scissors )
 		{
-			list.push_back( makeCmd< OpType::eApplyScissors >( scissors ) );
+			if ( m_viewportArrays )
+			{
+				list.push_back( makeCmd< OpType::eApplyScissors >( firstScissor
+					, uint32_t( scissors.size() )
+					, scissors ) );
+			}
+			else
+			{
+				list.push_back( makeCmd< OpType::eApplyScissor >( scissors.front() ) );
+			}
+
 			setCurrentScissors( scissors );
 		}
 	}
 
 	void ContextStateStack::apply( CmdList & list
+		, uint32_t firstViewport
 		, VkViewportArray const & viewports
 		, bool force )
 	{
 		if ( force || getCurrentViewports() != viewports )
 		{
-			list.push_back( makeCmd< OpType::eApplyViewports >( viewports ) );
-			list.push_back( makeCmd< OpType::eApplyDepthRanges >( viewports ) );
+			if ( m_viewportArrays )
+			{
+				list.push_back( makeCmd< OpType::eApplyViewports >( firstViewport
+					, uint32_t( viewports.size() )
+					, viewports ) );
+				list.push_back( makeCmd< OpType::eApplyDepthRanges >( firstViewport
+					, uint32_t( viewports.size() )
+					, viewports ) );
+			}
+			else
+			{
+				list.push_back( makeCmd< OpType::eApplyViewport >( viewports.front() ) );
+			}
+
 			setCurrentViewports( viewports );
 		}
 	}
@@ -549,9 +576,11 @@ namespace ashes::gl3
 		, bool force )
 	{
 		apply( list
+			, 0u
 			, VkViewportArray{ newState.pViewports, newState.pViewports + newState.scissorCount }
 			, force );
 		apply( list
+			, 0u
 			, VkScissorArray{ newState.pScissors, newState.pScissors + newState.scissorCount }
 			, force );
 	}

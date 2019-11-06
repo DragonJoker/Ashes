@@ -56,12 +56,12 @@ namespace ashes::gl4
 
 		if ( !glpipeline->getViewports().empty() )
 		{
-			stack.apply( list, glpipeline->getViewports(), false );
+			stack.apply( list, 0u, glpipeline->getViewports(), false );
 		}
 
 		if ( !glpipeline->getScissors().empty() )
 		{
-			stack.apply( list, glpipeline->getScissors(), false );
+			stack.apply( list, 0u, glpipeline->getScissors(), false );
 		}
 	}
 

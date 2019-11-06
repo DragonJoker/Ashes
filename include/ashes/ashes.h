@@ -30,7 +30,7 @@ extern "C"
 		*\brief
 		*	Whether or not the plugin supports texture buffer ranges.
 		*/
-		VkBool32 hasBufferRange;
+		VkBool32 hasTexBufferRange;
 		/**
 		*\brief
 		*	Whether or not the plugin supports image textures.

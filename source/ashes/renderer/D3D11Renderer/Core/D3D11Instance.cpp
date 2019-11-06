@@ -156,12 +156,12 @@ namespace ashes::d3d11
 		: m_flags{ createInfo.flags }
 		, m_enabledLayerNames{ ashes::convert( CharPtrArray{ createInfo.ppEnabledLayerNames, createInfo.ppEnabledLayerNames + createInfo.enabledLayerCount } ) }
 		, m_enabledExtensions{ ashes::convert( CharPtrArray{ createInfo.ppEnabledExtensionNames, createInfo.ppEnabledExtensionNames + createInfo.enabledExtensionCount } ) }
+		, m_factory{ createDXGIFactory() }
 	{
-		createDXGIFactory();
 		doLoadAdapters();
 		doInitialisePhysicalDevices();
 
-		m_features.hasBufferRange = m_maxFeatureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.hasTexBufferRange = m_maxFeatureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.hasImageTexture = m_maxFeatureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.hasBaseInstance = m_maxFeatureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.hasClearTexImage = true;

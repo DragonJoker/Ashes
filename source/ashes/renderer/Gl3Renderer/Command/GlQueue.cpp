@@ -61,8 +61,14 @@ namespace ashes::gl3
 			case OpType::eApplyDepthRanges:
 				apply( lock, map< OpType::eApplyDepthRanges >( cmd ) );
 				break;
+			case OpType::eApplyScissor:
+				apply( lock, map< OpType::eApplyScissor >( cmd ) );
+				break;
 			case OpType::eApplyScissors:
 				apply( lock, map< OpType::eApplyScissors >( cmd ) );
+				break;
+			case OpType::eApplyViewport:
+				apply( lock, map< OpType::eApplyViewport >( cmd ) );
 				break;
 			case OpType::eApplyViewports:
 				apply( lock, map< OpType::eApplyViewports >( cmd ) );

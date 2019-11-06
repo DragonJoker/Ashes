@@ -48,10 +48,10 @@ namespace ashes::gl3
 		StringArray m_deviceExtensionNames;
 		StringArray m_deviceSPIRVExtensionNames;
 		std::vector< GlShaderBinaryFormat > m_shaderBinaryFormats;
-		AshPluginFeatures m_features;
+		AshPluginFeatures m_features{};
 		int m_major{ 0 };
 		int m_minor{ 0 };
 		int m_shaderVersion{ 0 };
-		bool m_spirvSupported;
+		bool m_spirvSupported{ false };
 	};
 }

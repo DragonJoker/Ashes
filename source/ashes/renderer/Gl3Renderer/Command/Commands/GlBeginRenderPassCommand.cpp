@@ -167,19 +167,18 @@ namespace ashes::gl3
 		}
 
 		glLogCommand( "BeginRenderPassCommand" );
-		VkScissorArray scissors
+		VkRect2D scissor
 		{
-			VkRect2D
-			{
-				{ 0, 0 },
-				{ get( frameBuffer )->getWidth(), get( frameBuffer )->getHeight() }
-			}
+			{ 0, 0 },
+			{ get( frameBuffer )->getWidth(), get( frameBuffer )->getHeight() }
 		};
 
-		if ( stack.getCurrentScissors() != scissors )
+		if ( stack.getCurrentScissors() != VkScissorArray{ scissor } )
 		{
-			stack.setCurrentScissors( scissors );
+			list.push_back( makeCmd< OpType::eApplyScissor >( scissor ) );
+			stack.setCurrentScissors( { scissor } );
 		}
+
 
 		if ( get( frameBuffer )->isSRGB() )
 		{

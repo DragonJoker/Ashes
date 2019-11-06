@@ -304,16 +304,18 @@ ContextPtr Context::create( VkInstance instance
 		{\
 			throw std::runtime_error{ std::string{ "Couldn't load function " } + "gl"#fun };\
 		}
-#define GL_LIB_FUNCTION_EXT( fun, ext, name )\
+#if Ashes_Gl3RemoveExtensions
+#	define GL_LIB_FUNCTION_EXT( fun, ext, name )\
 		if ( !( getFunction( "gl"#fun, m_gl##fun##_##ext ) ) )\
 		{\
 			std::cerr << "Couldn't load function " << "gl"#fun << std::endl;\
 		}
-#define GL_LIB_FUNCTION_VSN( fun, version )\
+#	define GL_LIB_FUNCTION_VSN( fun, version )\
 		if ( !( getFunction( "gl"#fun, m_gl##fun##_##version ) ) )\
 		{\
 			std::cerr << "Couldn't load function " << "gl"#fun << std::endl;\
 		}
+#endif
 #include "Miscellaneous/OpenGLFunctionsList.inl"
 	}
 

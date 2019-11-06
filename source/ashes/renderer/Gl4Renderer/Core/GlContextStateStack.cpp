@@ -527,24 +527,32 @@ namespace ashes::gl4
 	}
 
 	void ContextStateStack::apply( CmdList & list
+		, uint32_t firstScissor
 		, VkScissorArray const & scissors
 		, bool force )
 	{
 		if ( force || getCurrentScissors() != scissors )
 		{
-			list.push_back( makeCmd< OpType::eApplyScissors >( scissors ) );
+			list.push_back( makeCmd< OpType::eApplyScissors >( firstScissor
+				, uint32_t( scissors.size() )
+				, scissors ) );
 			setCurrentScissors( scissors );
 		}
 	}
 
 	void ContextStateStack::apply( CmdList & list
+		, uint32_t firstViewport
 		, VkViewportArray const & viewports
 		, bool force )
 	{
 		if ( force || getCurrentViewports() != viewports )
 		{
-			list.push_back( makeCmd< OpType::eApplyViewports >( viewports ) );
-			list.push_back( makeCmd< OpType::eApplyDepthRanges >( viewports ) );
+			list.push_back( makeCmd< OpType::eApplyViewports >( firstViewport
+				, uint32_t( viewports.size() )
+				, viewports ) );
+			list.push_back( makeCmd< OpType::eApplyDepthRanges >( firstViewport
+				, uint32_t( viewports.size() )
+				, viewports ) );
 			setCurrentViewports( viewports );
 		}
 	}
@@ -554,9 +562,11 @@ namespace ashes::gl4
 		, bool force )
 	{
 		apply( list
+			, 0u
 			, VkViewportArray{ newState.pViewports, newState.pViewports + newState.scissorCount }
 			, force );
 		apply( list
+			, 0u
 			, VkScissorArray{ newState.pScissors, newState.pScissors + newState.scissorCount }
 			, force );
 	}

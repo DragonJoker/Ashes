@@ -101,7 +101,7 @@ namespace ashes::gl4
 			&& ( find( ARB_gl_spirv )
 				|| hasSPIRVShaderBinaryFormat() );
 
-		m_features.hasBufferRange = find( ARB_texture_buffer_range );
+		m_features.hasTexBufferRange = find( ARB_texture_buffer_range );
 		m_features.hasImageTexture = findAll( { ARB_texture_storage, ARB_shader_image_load_store } );
 		m_features.hasBaseInstance = find( ARB_base_instance );
 		m_features.hasClearTexImage = find( ARB_clear_texture );

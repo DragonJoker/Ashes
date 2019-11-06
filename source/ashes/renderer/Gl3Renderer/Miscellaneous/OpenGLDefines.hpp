@@ -229,6 +229,7 @@ namespace ashes::gl3
 	using PFN_glDepthFunc = void ( GLAPIENTRY * )( GLenum func );
 	using PFN_glDepthMask = void ( GLAPIENTRY * )( GLboolean flag );
 	using PFN_glDepthRange = void ( GLAPIENTRY * )( GLclampd zNear, GLclampd zFar );
+	using PFN_glDepthRangeArrayv = void ( GLAPIENTRY * )( GLuint first, GLsizei count, const GLdouble * v );
 	using PFN_glDisable = void ( GLAPIENTRY * )( GlTweak cap );
 	using PFN_glDispatchCompute = void ( GLAPIENTRY * )( GLuint num_groups_x, GLuint num_groups_y, GLuint num_groups_z );
 	using PFN_glDispatchComputeIndirect = void ( GLAPIENTRY * )( GLintptr indirect );
@@ -306,6 +307,7 @@ namespace ashes::gl3
 	using PFN_glSamplerParameteri = void ( GLAPIENTRY * )( GLuint sampler, GLenum pname, GLint param );
 	using PFN_glSamplerParameteriv = void ( GLAPIENTRY * )( GLuint sampler, GLenum pname, const GLint * param );
 	using PFN_glScissor = void ( GLAPIENTRY * )( GLint x, GLint y, GLsizei width, GLsizei height );
+	using PFN_glScissorArrayv = void ( GLAPIENTRY * )( GLuint first, GLsizei count, const GLint * v );
 	using PFN_glShaderBinary = void ( GLAPIENTRY * )( GLsizei count, const GLuint *shaders, GLenum binaryFormat, const void * binary, GLsizei length );
 	using PFN_glShaderSource = void ( GLAPIENTRY * )( GLuint shader, GLsizei count, const GLchar *const* string, const GLint* length );
 	using PFN_glSpecializeShader = void ( GLAPIENTRY * )( GLuint shader, const GLchar * pEntryPoint, GLuint numSpecializationConstants, const GLuint * pConstantIndex, const GLuint *pConstantValue );
@@ -347,6 +349,7 @@ namespace ashes::gl3
 	using PFN_glVertexAttribIPointer = void ( GLAPIENTRY * )( GLuint index, GLint size, GLenum type, GLsizei stride, const void* pointer );
 	using PFN_glVertexAttribPointer = void ( GLAPIENTRY * )( GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer );
 	using PFN_glViewport = void ( GLAPIENTRY * )( GLint x, GLint y, GLsizei width, GLsizei height );
+	using PFN_glViewportArrayv = void ( GLAPIENTRY * )( GLuint first, GLsizei count, const GLfloat * v );
 }
 
 #endif

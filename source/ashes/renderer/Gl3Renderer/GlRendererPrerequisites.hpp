@@ -34,6 +34,8 @@
 #	define Gl3Renderer_API
 #endif
 
+#define Ashes_Gl3RemoveExtensions 0
+
 namespace ashes::gl3
 {
 	PFN_vkVoidFunction getFunction( char const * const name );

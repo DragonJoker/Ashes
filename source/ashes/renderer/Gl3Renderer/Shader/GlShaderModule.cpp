@@ -242,7 +242,7 @@ namespace ashes::gl3
 			options.enable_420pack_extension = true;
 			options.vertex.fixup_clipspace = false;
 			options.vertex.flip_vert_y = !isRtot;
-			options.vertex.support_nonzero_base_instance = true;
+			options.vertex.support_nonzero_base_instance = get( get( device )->getInstance() )->getFeatures ().hasBaseInstance;
 			compiler.set_common_options( options );
 		}
 
@@ -457,8 +457,8 @@ namespace ashes::gl3
 	GLuint ShaderModule::compile( VkPipelineShaderStageCreateInfo const & state
 		, bool isRtot )const
 	{
-		auto result = get( m_device )->getContext()->glCreateShader( convertShaderStageFlag( state.stage ) );
 		auto context = get( m_device )->getContext();
+		auto result = context->glCreateShader( convertShaderStageFlag( state.stage ) );
 		m_source = compileSpvToGlsl( m_device
 			, m_code
 			, state.stage
@@ -473,6 +473,17 @@ namespace ashes::gl3
 				, regex
 				, R"($&
 #extension GL_ARB_texture_cube_map_array: enable
+)" );
+			
+		}
+
+		if ( m_source.find( "gl_ViewportIndex" ) != std::string::npos )
+		{
+			std::regex regex{ R"(#version[ ]*\d*)" };
+			m_source = std::regex_replace( m_source.data()
+				, regex
+				, R"($&
+#extension GL_ARB_viewport_array: enable
 )" );
 			
 		}

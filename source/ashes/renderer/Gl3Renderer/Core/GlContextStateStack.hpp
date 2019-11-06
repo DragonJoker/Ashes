@@ -12,7 +12,8 @@ namespace ashes::gl3
 	class ContextStateStack
 	{
 	public:
-		ContextStateStack( bool tessellation );
+		ContextStateStack( bool tessellation
+			, bool viewportArrays );
 		ContextStateStack( VkDevice device );
 
 		void apply( ContextLock const & context
@@ -21,9 +22,11 @@ namespace ashes::gl3
 			, ContextState & state
 			, bool force = false );
 		void apply( CmdList & list
+			, uint32_t firstViewport
 			, VkViewportArray const & viewports
 			, bool force );
 		void apply( CmdList & list
+			, uint32_t firstScissor
 			, VkScissorArray const & scissors
 			, bool force );
 
@@ -110,5 +113,6 @@ namespace ashes::gl3
 		GLuint m_currentProgram{ 0u };
 		VkFramebuffer m_currentFbo{ VK_NULL_HANDLE };
 		bool m_tessellation{ false };
+		bool m_viewportArrays{ false };
 	};
 }

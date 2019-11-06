@@ -34,31 +34,56 @@ namespace ashes::gl3
 		, CmdApplyScissors const & cmd )
 	{
 		glLogCall( context
-			, glScissor
-			, GLint( cmd.scissors[0] )
-			, GLint( cmd.scissors[1] )
-			, GLsizei( cmd.scissors[2] )
-			, GLsizei( cmd.scissors[3] ) );
+			, glScissorArrayv_ARB
+			, GLuint( cmd.first )
+			, GLsizei( cmd.count )
+			, cmd.scissors.data() );
 	}
 
 	void apply( ContextLock const & context
 		, CmdApplyViewports const & cmd )
 	{
 		glLogCall( context
-			, glViewport
-			, GLint( cmd.viewports[0] )
-			, GLint( cmd.viewports[1] )
-			, GLsizei( cmd.viewports[2] )
-			, GLsizei( cmd.viewports[3] ) );
+			, glViewportArrayv_ARB
+			, GLuint( cmd.first )
+			, GLsizei( cmd.count )
+			, cmd.viewports.data() );
 	}
 
 	void apply( ContextLock const & context
 		, CmdApplyDepthRanges const & cmd )
 	{
 		glLogCall( context
+			, glDepthRangeArrayv_ARB
+			, GLuint( cmd.first )
+			, GLsizei( cmd.count )
+			, cmd.depthRanges.data() );
+	}
+
+	void apply( ContextLock const & context
+		, CmdApplyScissor const & cmd )
+	{
+		glLogCall( context
+			, glScissor
+			, GLint( cmd.scissor.offset.x )
+			, GLint( cmd.scissor.offset.y )
+			, GLsizei( cmd.scissor.extent.width )
+			, GLsizei( cmd.scissor.extent.height ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdApplyViewport const & cmd )
+	{
+		glLogCall( context
+			, glViewport
+			, GLint( cmd.viewport.x )
+			, GLint( cmd.viewport.y )
+			, GLsizei( cmd.viewport.width )
+			, GLsizei( cmd.viewport.height ) );
+		glLogCall( context
 			, glDepthRange
-			, GLclampf( cmd.depthRanges[0] )
-			, GLclampf( cmd.depthRanges[1] ) );
+			, GLclampf( cmd.viewport.minDepth )
+			, GLclampf( cmd.viewport.maxDepth ) );
 	}
 
 	void apply( ContextLock const & context

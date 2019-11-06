@@ -35,7 +35,7 @@ namespace ashes::gl4
 	{
 		glLogCall( context
 			, glScissorArrayv
-			, GLuint( 0u )
+			, GLuint( cmd.first )
 			, GLsizei( cmd.count )
 			, cmd.scissors.data() );
 	}
@@ -45,7 +45,7 @@ namespace ashes::gl4
 	{
 		glLogCall( context
 			, glViewportArrayv
-			, GLuint( 0 )
+			, GLuint( cmd.first )
 			, GLsizei( cmd.count )
 			, cmd.viewports.data() );
 	}
@@ -55,7 +55,7 @@ namespace ashes::gl4
 	{
 		glLogCall( context
 			, glDepthRangeArrayv
-			, GLuint( 0 )
+			, GLuint( cmd.first )
 			, GLsizei( cmd.count )
 			, cmd.depthRanges.data() );
 	}

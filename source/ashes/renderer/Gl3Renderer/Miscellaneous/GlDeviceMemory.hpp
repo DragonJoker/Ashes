@@ -91,6 +91,11 @@ namespace ashes::gl3
 			return m_mapped;
 		}
 
+		VkDeviceSize getSize()const
+		{
+			return m_allocateInfo.allocationSize;
+		}
+
 	public:
 		mutable DeviceMemoryDestroySignal onDestroy;
 

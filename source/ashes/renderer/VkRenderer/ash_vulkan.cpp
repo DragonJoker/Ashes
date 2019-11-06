@@ -91,7 +91,7 @@ namespace ashes::vk
 					: VK_ERROR_INITIALIZATION_FAILED;
 				description.features =
 				{
-					true, // hasBufferRange
+					true, // hasTexBufferRange
 					true, // hasImageTexture
 					true, // hasBaseInstance
 					true, // hasClearTexImage
