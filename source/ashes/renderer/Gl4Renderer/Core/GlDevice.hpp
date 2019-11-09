@@ -84,6 +84,11 @@ namespace ashes::gl4
 			return m_instance;
 		}
 
+		inline VkSampler getSampler()const
+		{
+			return m_sampler;
+		}
+
 	private:
 		void doInitialiseQueues();
 		void doInitialiseDummy( ContextLock & context );
@@ -119,6 +124,7 @@ namespace ashes::gl4
 			GeometryBuffersPtr geometryBuffers;
 		} m_dummyIndexed;
 		mutable VkFramebuffer m_blitFbos[2];
+		mutable VkSampler m_sampler;
 		VkPipelineColorBlendAttachmentStateArray m_cbStateAttachments;
 		VkDynamicStateArray m_dyState;
 	};

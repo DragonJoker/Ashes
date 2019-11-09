@@ -115,7 +115,8 @@ namespace ashes::gl4
 
 	//*************************************************************************
 
-	void buildBindDescriptorSetCommand( VkDescriptorSet descriptorSet
+	void buildBindDescriptorSetCommand( VkDevice device
+		, VkDescriptorSet descriptorSet
 		, VkPipelineLayout layout
 		, UInt32Array const & dynamicOffsets
 		, VkPipelineBindPoint bindingPoint

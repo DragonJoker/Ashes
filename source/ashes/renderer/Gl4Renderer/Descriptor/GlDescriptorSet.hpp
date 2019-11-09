@@ -35,6 +35,11 @@ namespace ashes::gl4
 		void update( VkWriteDescriptorSet const & write );
 		void update( VkCopyDescriptorSet const & write );
 
+		inline LayoutBindingWritesArray const & getInputAttachments()const
+		{
+			return m_inputAttachments;
+		}
+
 		inline LayoutBindingWritesArray const & getCombinedTextureSamplers()const
 		{
 			return m_combinedTextureSamplers;
@@ -98,6 +103,7 @@ namespace ashes::gl4
 		LayoutBindingWritesArray m_dynamicUniformBuffers;
 		LayoutBindingWritesArray m_dynamicStorageBuffers;
 		LayoutBindingWritesArray m_dynamicBuffers;
+		LayoutBindingWritesArray m_inputAttachments;
 	};
 }
 

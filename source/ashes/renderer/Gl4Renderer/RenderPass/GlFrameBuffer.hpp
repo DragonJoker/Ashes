@@ -107,6 +107,11 @@ namespace ashes::gl4
 			return m_bindAttaches;
 		}
 
+		VkRenderPass getRenderPass()const
+		{
+			return m_renderPass;
+		}
+
 	private:
 		void doInitialiseAttaches();
 		void doBindAttaches();
