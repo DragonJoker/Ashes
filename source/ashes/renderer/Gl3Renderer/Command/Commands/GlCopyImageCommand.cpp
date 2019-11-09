@@ -9,6 +9,8 @@ See LICENSE file in root folder.
 
 #include "ashesgl3_api.hpp"
 
+#include <cstring>
+
 namespace ashes::gl3
 {
 	namespace

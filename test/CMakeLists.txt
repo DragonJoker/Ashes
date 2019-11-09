@@ -77,9 +77,9 @@ if ( ASHES_BUILD_TESTS )
 			endif ()
 		endforeach ()
 	endif ()
-endif ()
 
-add_subdirectory( AshesInfo )
+	add_subdirectory( AshesInfo )
+endif ()
 
 if ( ASHES_BUILD_SW_SAMPLES )
 	include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../external/glm )
