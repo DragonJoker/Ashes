@@ -99,7 +99,7 @@ namespace ashes::d3d11
 			return m_layer;
 		}
 
-		const char * what()const
+		char const * what()const noexcept override
 		{
 			return m_message.c_str();
 		}

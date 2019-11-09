@@ -9,6 +9,8 @@ See LICENSE file in root folder.
 
 #include "ashestest_api.hpp"
 
+#include <cstring>
+
 namespace ashes::test
 {
 	PhysicalDevice::PhysicalDevice( VkInstance instance )
@@ -284,7 +286,7 @@ namespace ashes::test
 			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
 			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT;
 			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT_EXT;
-			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_EXT;
+			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG;
 			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
 			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
 			props.optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;

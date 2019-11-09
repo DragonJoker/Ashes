@@ -211,7 +211,18 @@ namespace ashes::gl4
 			swa.background_pixmap = 0;
 			swa.border_pixel = 0;
 			swa.event_mask = StructureNotifyMask;
-			m_xWindow = XCreateWindow( m_display, root, 0, 0, 640, 480, 0, vi->depth, InputOutput, vi->visual, CWBorderPixel | CWColormap | CWEventMask, &swa );
+			m_xWindow = XCreateWindow( m_display
+				, root
+				, 0
+				, 0
+				, 640
+				, 480
+				, 0
+				, vi->depth
+				, InputOutput
+				, vi->visual
+				, CWBorderPixel | CWColormap | CWEventMask
+				, &swa );
 
 			if ( !m_xWindow )
 			{
@@ -219,7 +230,6 @@ namespace ashes::gl4
 			}
 
 			XStoreName( m_display, m_xWindow, "DummyWindow" );
-			XMapWindow( m_display, m_xWindow );
 			XSync( m_display, False );
 
 			int screen = DefaultScreen( m_display );
@@ -236,7 +246,6 @@ namespace ashes::gl4
 
 			glXMakeCurrent( m_display, m_xWindow, m_glxContext );
 			XFree( vi );
-			XUnmapWindow( m_display, m_xWindow );
 		}
 		catch ( std::exception & p_exc )
 		{
@@ -272,11 +281,14 @@ namespace ashes::gl4
 	{
 		if ( m_display )
 		{
-			if ( m_xWindow )
+			if ( m_glxContext )
 			{
-				XMapWindow( m_display, m_xWindow );
 				glXMakeCurrent( m_display, 0, nullptr );
 				glXDestroyContext( m_display, m_glxContext );
+			}
+
+			if ( m_xWindow )
+			{
 				XDestroyWindow( m_display, m_xWindow );
 			}
 

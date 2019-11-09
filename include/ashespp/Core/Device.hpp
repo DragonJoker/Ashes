@@ -581,6 +581,7 @@ namespace ashes
 			return m_internal;
 		}
 
+		PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr;
 #define VK_LIB_DEVICE_FUNCTION( fun ) PFN_vk##fun vk##fun{ nullptr };
 #	include <ashes/ashes_functions_list.hpp>
 

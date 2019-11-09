@@ -4101,6 +4101,7 @@ namespace ashes::d3d11
 		{
 			static std::map< std::string, PFN_vkVoidFunction > functions
 			{
+				{ "vkGetDeviceProcAddr", PFN_vkVoidFunction( vkGetDeviceProcAddr ) },
 #define VK_LIB_DEVICE_FUNCTION( x )\
 				{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
 #include <ashes/ashes_functions_list.hpp>

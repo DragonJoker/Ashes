@@ -41,7 +41,7 @@ namespace ashes::test
 	{
 		doInitialisePhysicalDevices();
 
-		m_features.hasBufferRange = true;
+		m_features.hasTexBufferRange = true;
 		m_features.hasImageTexture = true;
 		m_features.hasBaseInstance = true;
 		m_features.hasClearTexImage = true;

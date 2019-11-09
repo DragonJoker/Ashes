@@ -45,6 +45,7 @@ namespace ashes
 			, &m_internal );
 		checkError( res, "LogicalDevice creation" );
 
+		vkGetDeviceProcAddr = reinterpret_cast< PFN_vkGetDeviceProcAddr >( m_instance.vkGetDeviceProcAddr( m_internal, "vkGetDeviceProcAddr" ) );
 #define VK_LIB_DEVICE_FUNCTION( fun )\
 		vk##fun = reinterpret_cast< PFN_vk##fun >( m_instance.vkGetDeviceProcAddr( m_internal, "vk"#fun ) );
 #define VK_LIB_DEVICE_FUNCTION_EXT( ext, fun )\

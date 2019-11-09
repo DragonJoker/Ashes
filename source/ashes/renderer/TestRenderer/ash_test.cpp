@@ -175,7 +175,7 @@ namespace ashes::test
 			{
 				VkExtensionProperties result;
 				result.specVersion = makeVersion( 1, 0, 0 );
-				strncpy( result.extensionName, VK_KHR_WIN32_SURFACE_EXTENSION_NAME, VK_MAX_EXTENSION_NAME_SIZE );
+				strncpy( result.extensionName, ashes::KHR_PLATFORM_SURFACE_EXTENSION_NAME.c_str(), VK_MAX_EXTENSION_NAME_SIZE );
 				return result;
 			}(),
 			VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_REPORT_SPEC_VERSION, 0, 0 ) },
@@ -4052,18 +4052,19 @@ namespace ashes::test
 			return result;
 		}
 	};
-}
 
-thread_local ashes::test::GlLibrary g_library;
+	GlLibrary & getLibrary()
+	{
+		thread_local GlLibrary library;
+		return library;
+	}
 
-namespace ashes::test
-{
 	PFN_vkVoidFunction VKAPI_CALL vkGetInstanceProcAddr(
 		VkInstance instance,
 		const char* pName )
 	{
 		PFN_vkVoidFunction result{ nullptr };
-		auto init = g_library.init();
+		auto init = getLibrary().init();
 
 		if ( init == VK_SUCCESS )
 		{
@@ -4092,12 +4093,13 @@ namespace ashes::test
 		const char* pName )
 	{
 		PFN_vkVoidFunction result{ nullptr };
-		auto init = g_library.init();
+		auto init = getLibrary().init();
 
 		if ( init == VK_SUCCESS )
 		{
 			static std::map< std::string, PFN_vkVoidFunction > functions
 			{
+				{ "vkGetDeviceProcAddr", PFN_vkVoidFunction( vkGetDeviceProcAddr ) },
 #define VK_LIB_DEVICE_FUNCTION( x )\
 				{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
 #include <ashes/ashes_functions_list.hpp>
@@ -4123,11 +4125,11 @@ extern "C"
 
 	TestRenderer_API VkResult VKAPI_PTR ashGetPluginDescription( AshPluginDescription * pDescription )
 	{
-		auto result = g_library.init();
+		auto result = ashes::test::getLibrary().init();
 
 		if ( result == VK_SUCCESS )
 		{
-			*pDescription = g_library.description;
+			*pDescription = ashes::test::getLibrary().description;
 		}
 
 		return result;

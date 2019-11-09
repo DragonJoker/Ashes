@@ -4023,27 +4023,27 @@ namespace ashes::gl4
 
 		VkResult init()
 		{
-			RenderWindow window;
-			ExtensionsHandler extensions;
-			bool supported = false;
-
-			try
-			{
-				extensions.initialise();
-				supported = extensions.getMajor() > 4
-					|| ( extensions.getMajor() == 4 && extensions.getMinor() >= 2 );
-			}
-			catch ( std::exception & exc )
-			{
-				std::cerr << exc.what() << std::endl;
-			}
-
 			VkResult result = description.getInstanceProcAddr
 				? VK_SUCCESS
 				: VK_ERROR_INITIALIZATION_FAILED;
 
 			if ( result != VK_SUCCESS )
 			{
+				RenderWindow window;
+				ExtensionsHandler extensions;
+				bool supported = false;
+
+				try
+				{
+					extensions.initialise();
+					supported = extensions.getMajor() > 4
+						|| ( extensions.getMajor() == 4 && extensions.getMinor() >= 2 );
+				}
+				catch ( std::exception & exc )
+				{
+					std::cerr << exc.what() << std::endl;
+				}
+
 				description.getInstanceProcAddr = &vkGetInstanceProcAddr;
 				description.features = extensions.getFeatures();
 #define VK_LIB_GLOBAL_FUNCTION( x )\
@@ -4065,16 +4065,13 @@ namespace ashes::gl4
 			return result;
 		}
 	};
-}
 
-ashes::gl4::GlLibrary & getLibrary()
-{
-	thread_local ashes::gl4::GlLibrary library;
-	return library;
-}
+	GlLibrary & getLibrary()
+	{
+		thread_local GlLibrary library;
+		return library;
+	}
 
-namespace ashes::gl4
-{
 	PFN_vkVoidFunction VKAPI_CALL vkGetInstanceProcAddr(
 		VkInstance instance,
 		const char* pName )
@@ -4115,6 +4112,7 @@ namespace ashes::gl4
 		{
 			static std::map< std::string, PFN_vkVoidFunction > functions
 			{
+				{ "vkGetDeviceProcAddr", PFN_vkVoidFunction( vkGetDeviceProcAddr ) },
 #define VK_LIB_DEVICE_FUNCTION( x )\
 				{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
 #include <ashes/ashes_functions_list.hpp>
@@ -4140,11 +4138,11 @@ extern "C"
 
 	Gl4Renderer_API VkResult VKAPI_PTR ashGetPluginDescription( AshPluginDescription * pDescription )
 	{
-		auto result = getLibrary().init();
+		auto result = ashes::gl4::getLibrary().init();
 
 		if ( result == VK_SUCCESS )
 		{
-			*pDescription = getLibrary().description;
+			*pDescription = ashes::gl4::getLibrary().description;
 		}
 
 		return result;

@@ -12,6 +12,7 @@ See LICENSE file in root folder
 
 #include <iostream>
 #include <cstdlib>
+#include <cstring>
 
 #include "ashestest_api.hpp"
 

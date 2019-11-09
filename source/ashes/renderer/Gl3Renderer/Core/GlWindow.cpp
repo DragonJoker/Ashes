@@ -219,7 +219,6 @@ namespace ashes::gl3
 			}
 
 			XStoreName( m_display, m_xWindow, "DummyWindow" );
-			XMapWindow( m_display, m_xWindow );
 			XSync( m_display, False );
 
 			int screen = DefaultScreen( m_display );
@@ -236,7 +235,6 @@ namespace ashes::gl3
 
 			glXMakeCurrent( m_display, m_xWindow, m_glxContext );
 			XFree( vi );
-			XUnmapWindow( m_display, m_xWindow );
 		}
 		catch ( std::exception & p_exc )
 		{
@@ -272,11 +270,14 @@ namespace ashes::gl3
 	{
 		if ( m_display )
 		{
-			if ( m_xWindow )
+			if ( m_glxContext )
 			{
-				XMapWindow( m_display, m_xWindow );
 				glXMakeCurrent( m_display, 0, nullptr );
 				glXDestroyContext( m_display, m_glxContext );
+			}
+
+			if ( m_xWindow )
+			{
 				XDestroyWindow( m_display, m_xWindow );
 			}
 
