@@ -240,7 +240,7 @@ namespace ashes::gl3
 			options.es = false;
 			options.separate_shader_objects = true;
 			options.enable_420pack_extension = true;
-			options.vertex.fixup_clipspace = false;
+			options.vertex.fixup_clipspace = true;
 			options.vertex.flip_vert_y = !isRtot;
 			options.vertex.support_nonzero_base_instance = get( get( device )->getInstance() )->getFeatures ().hasBaseInstance;
 			compiler.set_common_options( options );
