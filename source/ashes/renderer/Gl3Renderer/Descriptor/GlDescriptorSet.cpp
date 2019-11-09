@@ -56,6 +56,9 @@ namespace ashes::gl3
 			case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER:
 				m_storageBuffers.push_back( &write.second );
 				break;
+			case VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT:
+				m_inputAttachments.push_back( &write.second );
+				break;
 			case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:
 				m_dynamicUniformBuffers.push_back( &write.second );
 				m_dynamicBuffers.push_back( &write.second );
@@ -64,7 +67,6 @@ namespace ashes::gl3
 				m_dynamicStorageBuffers.push_back( &write.second );
 				m_dynamicBuffers.push_back( &write.second );
 				break;
-			case VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT:
 			case VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT:
 			case VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV:
 				break;

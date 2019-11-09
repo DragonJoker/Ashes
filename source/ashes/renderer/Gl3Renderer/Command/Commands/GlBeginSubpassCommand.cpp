@@ -21,20 +21,13 @@ namespace ashes::gl3
 		if ( get( frameBuffer )->getInternal() != GL_INVALID_INDEX )
 		{
 			UInt32Array drawBuffers;
+			auto references = ashes::makeArrayView( subpass.pColorAttachments
+				, subpass.colorAttachmentCount );
 
-			if ( get( frameBuffer )->isMultisampled() )
+			for ( auto & reference : references )
 			{
-				for ( auto & fboAttach : get( frameBuffer )->getMsColourAttaches() )
-				{
-					drawBuffers.push_back( fboAttach.point + fboAttach.index );
-				}
-			}
-			else
-			{
-				for ( auto & fboAttach : get( frameBuffer )->getColourAttaches() )
-				{
-					drawBuffers.push_back( fboAttach.point + fboAttach.index );
-				}
+				auto & attach = get( renderPass )->getAttachment( reference );
+				drawBuffers.push_back( getAttachmentPoint( attach.format ) + reference.attachment );
 			}
 
 			list.push_back( makeCmd< OpType::eDrawBuffers >( drawBuffers ) );

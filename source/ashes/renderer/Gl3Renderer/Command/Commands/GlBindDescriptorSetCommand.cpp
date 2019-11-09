@@ -92,6 +92,13 @@ namespace ashes::gl3
 			return write.pBufferInfo[index].buffer;
 		}
 
+		void bindSampler( GLuint name
+			, uint32_t bindingIndex
+			, CmdList & list )
+		{
+			list.push_back( makeCmd< OpType::eBindSampler >( bindingIndex, name ) );
+		}
+
 		GlTextureType doBindTextureView( VkImageView view
 			, uint32_t bindingIndex
 			, CmdList & list )
@@ -174,6 +181,26 @@ namespace ashes::gl3
 
 				auto view = getView( write, i );
 				doBindTextureView( view, bindingIndex, list );
+			}
+		}
+
+		void bindInputAttachment( VkWriteDescriptorSet const & write
+			, VkSampler sampler
+			, CmdList & list )
+		{
+			for ( auto i = 0u; i < write.descriptorCount; ++i )
+			{
+				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+				list.push_back( makeCmd< OpType::eActiveTexture >( bindingIndex ) );
+
+				auto view = getView( write, 0u );
+				auto target = doBindTextureView( view, bindingIndex, list );
+
+				list.push_back( makeCmd< OpType::eBindSampler >( bindingIndex
+					, get( sampler )->getInternal() ) );
+				list.push_back( makeCmd< OpType::eTexParameterf >( target
+					, uint32_t( GL_TEX_PARAMETER_LOD_BIAS )
+					, get( sampler )->getLodBias() ) );
 			}
 		}
 
@@ -298,6 +325,16 @@ namespace ashes::gl3
 			}
 		}
 
+		void bindInputAttachment( LayoutBindingWrites const * writes
+			, VkSampler sampler
+			, CmdList & list )
+		{
+			for ( auto & write : writes->writes )
+			{
+				bindInputAttachment( write, sampler, list );
+			}
+		}
+
 		void bindStorageTexture( LayoutBindingWrites const * writes
 			, CmdList & list )
 		{
@@ -381,7 +418,8 @@ namespace ashes::gl3
 		}
 	}
 
-	void buildBindDescriptorSetCommand( VkDescriptorSet descriptorSet
+	void buildBindDescriptorSetCommand( VkDevice device
+		, VkDescriptorSet descriptorSet
 		, VkPipelineLayout layout
 		, UInt32Array const & dynamicOffsets
 		, VkPipelineBindPoint bindingPoint
@@ -391,6 +429,11 @@ namespace ashes::gl3
 			&& "Dynamic descriptors and dynamic offsets sizes must match." );
 		glLogCommand( "BindDescriptorSetCommand" );
 
+		for ( auto & write : get( descriptorSet )->getInputAttachments() )
+		{
+			bindInputAttachment( write, get( device )->getSampler(), list );
+		}
+		
 		for ( auto & write : get( descriptorSet )->getCombinedTextureSamplers() )
 		{
 			bindCombinedSampler( write, list );

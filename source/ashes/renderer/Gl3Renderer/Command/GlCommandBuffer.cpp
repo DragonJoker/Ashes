@@ -390,7 +390,8 @@ namespace ashes::gl3
 		{
 			m_state.boundDescriptors.push_back( descriptorSet );
 			doProcessMappedBoundDescriptorBuffersIn( descriptorSet );
-			buildBindDescriptorSetCommand( descriptorSet
+			buildBindDescriptorSetCommand( m_device
+				, descriptorSet
 				, layout
 				, dynamicOffsets
 				, bindingPoint

@@ -532,6 +532,30 @@ namespace ashes::gl3
 			, nullptr
 			, get( this )
 			, GL_INVALID_INDEX );
+		allocate( m_sampler
+			, nullptr
+			, get( this )
+			, VkSamplerCreateInfo
+			{
+				VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+				nullptr,
+				0u,
+				VK_FILTER_NEAREST,
+				VK_FILTER_NEAREST,
+				VK_SAMPLER_MIPMAP_MODE_NEAREST,
+				VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+				VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+				VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+				0.0f,
+				VK_FALSE,
+				1.0f,
+				VK_FALSE,
+				VK_COMPARE_OP_ALWAYS,
+				0.0f,
+				1.0f,
+				VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK,
+				VK_FALSE,
+			} );
 	}
 
 	Device::~Device()
@@ -548,6 +572,7 @@ namespace ashes::gl3
 				}
 			}
 
+			deallocate( m_sampler, nullptr );
 			deallocate( m_blitFbos[0], nullptr );
 			deallocate( m_blitFbos[1], nullptr );
 			deallocate( m_dummyIndexed.indexMemory, nullptr );
