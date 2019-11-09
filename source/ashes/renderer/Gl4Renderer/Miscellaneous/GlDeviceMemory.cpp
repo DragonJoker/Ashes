@@ -36,33 +36,13 @@ namespace ashes::gl4
 			GLuint name;
 			GlBufferTarget target;
 			GLsizeiptr size;
-			GlMemoryPropertyFlags flags;
+			GlBufferDataUsageFlags flags;
 		};
 		using BufferAllocCont = std::vector< BufferAlloc >;
 
 		BufferAllocCont & getAllocatedBuffers()
 		{
 			static BufferAllocCont result;
-			return result;
-		}
-
-		GLint getBufferSize( ContextLock const & context
-			, GLuint buffer )
-		{
-			GLint result = 0;
-			glLogCall( context
-				, glBindBuffer
-				, GL_BUFFER_TARGET_COPY_WRITE
-				, buffer );
-			glLogCall( context
-				, glGetBufferParameteriv
-				, GL_BUFFER_TARGET_COPY_WRITE
-				, 34660
-				, &result );
-			glLogCall( context
-				, glBindBuffer
-				, GL_BUFFER_TARGET_COPY_WRITE
-				, 0u );
 			return result;
 		}
 
@@ -74,6 +54,28 @@ namespace ashes::gl4
 				{
 					return lookup.name == buffer;
 				} );
+		}
+
+		GLint getBufferSize( ContextLock const & context
+			, GLuint buffer )
+		{
+			GLint result = 0;
+			GlBufferTarget target = GL_BUFFER_TARGET_COPY_WRITE;
+			auto it = findBuffer( buffer );
+
+			if ( it != getAllocatedBuffers().end() )
+			{
+				target = it->target;
+			}
+
+			context->glBindBuffer( target
+				, buffer );
+			context->glGetBufferParameteriv( target
+				, 34660
+				, &result );
+			context->glBindBuffer( target
+				, 0u );
+			return result;
 		}
 
 		BufferAllocCont::iterator findBuffer( GLuint buffer
@@ -91,19 +93,19 @@ namespace ashes::gl4
 		GLuint createBuffer( ContextLock const & context
 			, GlBufferTarget target
 			, GLsizeiptr size
-			, GlMemoryPropertyFlags flags )
+			, GlBufferDataUsageFlags flags )
 		{
 			auto allocateBuffer = [&context]( GLuint result
 				, GlBufferTarget target
 				, GLsizeiptr size
-				, GlMemoryPropertyFlags flags )
+				, GlBufferDataUsageFlags flags )
 			{
 				glLogCall( context
 					, glBindBuffer
 					, target
 					, result );
 				glLogCall( context
-					, glBufferStorage
+					, glBufferData
 					, target
 					, size
 					, nullptr
@@ -161,15 +163,24 @@ namespace ashes::gl4
 			if ( buffer != GL_INVALID_INDEX )
 			{
 				GLint size = getBufferSize( context, buffer );
-				auto it = findBuffer( buffer, size );
-				if ( it != getAllocatedBuffers().end() )
-				{
-					getAllocatedBuffers().erase( it );
 
-					glLogCall( context
-						, glDeleteBuffers
-						, 1u
-						, &buffer );
+				if ( size != 0 )
+				{
+					auto it = findBuffer( buffer, size );
+
+					if ( it != getAllocatedBuffers().end() )
+					{
+						getAllocatedBuffers().erase( it );
+
+						glLogCall( context
+							, glDeleteBuffers
+							, 1u
+							, &buffer );
+					}
+					else
+					{
+						std::cerr << "Couldn't find buffer " << buffer << " it has probably been reused" << std::endl;
+					}
 				}
 				else
 				{
@@ -256,7 +267,7 @@ namespace ashes::gl4
 					m_buffer = createBuffer( context
 						, GL_BUFFER_TARGET_COPY_WRITE
 						, GLsizeiptr( m_allocateInfo.allocationSize )
-						, convertMemoryPropertyFlags( m_flags ) );
+						, getBufferDataUsageFlags( m_flags ) );
 
 					// Prepare update regions, layer by layer.
 					uint32_t offset = 0;
@@ -640,7 +651,7 @@ namespace ashes::gl4
 				m_buffer = createBuffer( context
 					, GlBufferTarget( m_boundTarget )
 					, m_allocateInfo.allocationSize
-					, convertMemoryPropertyFlags( m_flags ) );
+					, getBufferDataUsageFlags( m_flags ) );
 				m_boundResource = m_buffer;
 			}
 
@@ -665,17 +676,21 @@ namespace ashes::gl4
 					, GlBufferTarget( m_boundTarget )
 					, 34660
 					, &bufferSize );
-				assert( size + offset <= bufferSize );
 
-				auto result = mapBuffer( context
-					, GlBufferTarget( m_boundTarget )
-					, offset
-					, size == WholeSize ? m_allocateInfo.allocationSize : size
-					, m_mapFlags );
-				*data = result;
-				return result
-					? VK_SUCCESS
-					: VK_ERROR_MEMORY_MAP_FAILED;
+				if ( size + offset <= bufferSize )
+				{
+					auto result = mapBuffer( context
+						, GlBufferTarget( m_boundTarget )
+						, offset
+						, size == WholeSize ? m_allocateInfo.allocationSize : size
+						, m_mapFlags );
+					*data = result;
+					return result
+						? VK_SUCCESS
+						: VK_ERROR_MEMORY_MAP_FAILED;
+				}
+				
+				return VK_ERROR_MEMORY_MAP_FAILED;
 			}
 
 			void unlock( ContextLock const & context )const override
