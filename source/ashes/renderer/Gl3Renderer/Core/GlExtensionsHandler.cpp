@@ -51,7 +51,7 @@ namespace ashes::gl3
 			std::stringstream stream( sversion );
 			float fversion;
 			stream >> fversion;
-			auto version = std::min( int( fversion * 10 ), 33 );
+			auto version = std::min( int( fversion * 10 ), 42 );
 
 			if ( version < 30 )
 			{
