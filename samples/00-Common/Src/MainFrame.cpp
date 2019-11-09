@@ -98,6 +98,7 @@ namespace common
 
 	wxBEGIN_EVENT_TABLE( MainFrame, wxFrame )
 		EVT_CLOSE( MainFrame::onClose )
+		EVT_KEY_UP( MainFrame::onKeyUp )
 	wxEND_EVENT_TABLE()
 
 	void MainFrame::onClose( wxCloseEvent & event )
@@ -123,5 +124,15 @@ namespace common
 					, wxICON_ERROR );
 			}
 		}
+	}
+
+	void MainFrame::onKeyUp( wxKeyEvent & event )
+	{
+		if ( event.GetRawKeyCode() == WXK_ESCAPE )
+		{
+			Close( true );
+		}
+
+		event.Skip( true );
 	}
 }

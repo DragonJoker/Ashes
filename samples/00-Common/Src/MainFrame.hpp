@@ -27,6 +27,7 @@ namespace common
 		wxDECLARE_EVENT_TABLE();
 		void onClose( wxCloseEvent & event );
 		void onTimer( wxTimerEvent & event );
+		void onKeyUp( wxKeyEvent & event );
 
 	private:
 		wxTimer * m_timer{ nullptr };

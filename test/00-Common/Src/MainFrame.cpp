@@ -134,11 +134,22 @@ namespace common
 
 	wxBEGIN_EVENT_TABLE( MainFrame, wxFrame )
 		EVT_CLOSE( MainFrame::OnClose )
+		EVT_KEY_UP( MainFrame::OnKeyUp )
 	wxEND_EVENT_TABLE()
 
 	void MainFrame::OnClose( wxCloseEvent & event )
 	{
 		cleanup();
+		event.Skip( true );
+	}
+
+	void MainFrame::OnKeyUp( wxKeyEvent & event )
+	{
+		if ( event.GetRawKeyCode() == WXK_ESCAPE )
+		{
+			Close( true );
+		}
+
 		event.Skip( true );
 	}
 }

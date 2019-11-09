@@ -28,6 +28,7 @@ namespace common
 
 		wxDECLARE_EVENT_TABLE();
 		void OnClose( wxCloseEvent & event );
+		void OnKeyUp( wxKeyEvent & event );
 
 	private:
 		static size_t constexpr FrameSamplesCount = 100;
