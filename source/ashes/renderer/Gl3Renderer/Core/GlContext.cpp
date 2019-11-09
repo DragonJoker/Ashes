@@ -304,7 +304,7 @@ ContextPtr Context::create( VkInstance instance
 		{\
 			throw std::runtime_error{ std::string{ "Couldn't load function " } + "gl"#fun };\
 		}
-#if Ashes_Gl3RemoveExtensions
+#if !Ashes_Gl3RemoveExtensions
 #	define GL_LIB_FUNCTION_EXT( fun, ext, name )\
 		if ( !( getFunction( "gl"#fun, m_gl##fun##_##ext ) ) )\
 		{\

@@ -866,7 +866,7 @@ namespace ashes::gl3
 		, VkBufferMemoryBarrierArray bufferMemoryBarriers
 		, VkImageMemoryBarrierArray imageMemoryBarriers )const
 	{
-		if ( get( get( m_device )->getInstance() )->getFeatures().hasImageTexture )
+		if ( get( m_device )->hasMemoryBarrier() )
 		{
 			buildMemoryBarrierCommand( after
 				, before

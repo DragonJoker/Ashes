@@ -88,6 +88,11 @@ namespace ashes::gl3
 		{
 			return m_physicalDevice;
 		}
+		
+		inline bool hasMemoryBarrier()const
+		{
+			return m_ownContext->hasMemoryBarrier_ARB();
+		}
 
 	private:
 		void doInitialiseQueues();
