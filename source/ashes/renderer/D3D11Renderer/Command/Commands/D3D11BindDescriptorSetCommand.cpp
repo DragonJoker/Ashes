@@ -446,6 +446,24 @@ namespace ashes::d3d11
 				}
 			}
 		}
+		
+		template< bool Supports11_1 >
+		void bindInputAttachment( ID3D11DeviceContext1 * context
+			, VkSampler sampler
+			, LayoutBindingWrites const & writeBinding )
+		{
+			for ( auto & write : writeBinding.writes )
+			{
+				auto flags = writeBinding.binding.stageFlags;
+
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
+				{
+					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+					auto view = getView( write, i );
+					tryBind< Supports11_1 >( context, bindingIndex, flags, view, get( sampler )->getSampler() );
+				}
+			}
+		}
 
 		template< bool Supports11_1 >
 		void bindSampler( ID3D11DeviceContext1 * context
@@ -640,6 +658,26 @@ namespace ashes::d3d11
 
 		template< bool Supports11_1 >
 		void unbindCombinedSampler( ID3D11DeviceContext1 * context
+			, LayoutBindingWrites const & writeBinding )
+		{
+			for ( auto & write : writeBinding.writes )
+			{
+				auto flags = writeBinding.binding.stageFlags;
+
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
+				{
+					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+					tryBind< Supports11_1 >( context
+						, bindingIndex
+						, flags
+						, ( ID3D11ShaderResourceView * )nullptr
+						, ( ID3D11SamplerState * )nullptr );
+				}
+			}
+		}
+		
+		template< bool Supports11_1 >
+		void unbindInputAttachment( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding )
 		{
 			for ( auto & write : writeBinding.writes )
@@ -889,6 +927,11 @@ namespace ashes::d3d11
 
 	void BindDescriptorSetCommand::apply11_0( Context const & context )const
 	{
+		for ( auto & write : get( m_descriptorSet )->getInputAttachments() )
+		{
+			bindInputAttachment< false >( context.context1, get( context.device )->getSampler(), *write );
+		}
+
 		for ( auto & write : get( m_descriptorSet )->getCombinedTextureSamplers() )
 		{
 			bindCombinedSampler< false >( context.context1, *write );
@@ -929,6 +972,11 @@ namespace ashes::d3d11
 
 	void BindDescriptorSetCommand::apply11_1( Context const & context )const
 	{
+		for ( auto & write : get( m_descriptorSet )->getInputAttachments() )
+		{
+			bindInputAttachment< true >( context.context1, get( context.device )->getSampler(), *write );
+		}
+
 		for ( auto & write : get( m_descriptorSet )->getCombinedTextureSamplers() )
 		{
 			bindCombinedSampler< true >( context.context1, *write );
@@ -969,6 +1017,11 @@ namespace ashes::d3d11
 
 	void BindDescriptorSetCommand::remove11_0( Context const & context )const
 	{
+		for ( auto & write : get( m_descriptorSet )->getInputAttachments() )
+		{
+			unbindInputAttachment< false >( context.context1, *write );
+		}
+
 		for ( auto & write : get( m_descriptorSet )->getCombinedTextureSamplers() )
 		{
 			unbindCombinedSampler< false >( context.context1, *write );
@@ -1009,6 +1062,11 @@ namespace ashes::d3d11
 
 	void BindDescriptorSetCommand::remove11_1( Context const & context )const
 	{
+		for ( auto & write : get( m_descriptorSet )->getInputAttachments() )
+		{
+			unbindInputAttachment< true >( context.context1, *write );
+		}
+
 		for ( auto & write : get( m_descriptorSet )->getCombinedTextureSamplers() )
 		{
 			unbindCombinedSampler< true >( context.context1, *write );

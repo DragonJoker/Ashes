@@ -52,16 +52,16 @@ namespace ashes::d3d11
 	{
 		auto & allViews = get( m_frameBuffer )->getAllViews();
 		auto attaches = makeArrayView( m_subpass.pColorAttachments
-			, subpass.colorAttachmentCount );
+			, m_subpass.colorAttachmentCount );
 
 		for ( auto & attach : attaches )
 		{
 			m_attaches.push_back( reinterpret_cast< ID3D11RenderTargetView * >( allViews[attach.attachment]->view ) );
 		}
 
-		if ( subpass.pDepthStencilAttachment )
+		if ( m_subpass.pDepthStencilAttachment )
 		{
-			auto & attach = *subpass.pDepthStencilAttachment;
+			auto & attach = *m_subpass.pDepthStencilAttachment;
 			m_depthAttach = reinterpret_cast< ID3D11DepthStencilView * >( allViews[attach.attachment]->view );
 		}
 	}

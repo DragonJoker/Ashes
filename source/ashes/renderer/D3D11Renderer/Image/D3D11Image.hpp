@@ -81,7 +81,8 @@ namespace ashes::d3d11
 
 		inline bool isSamplable()const
 		{
-			return checkFlag( m_createInfo.usage, VK_IMAGE_USAGE_SAMPLED_BIT );
+			return checkFlag( m_createInfo.usage, VK_IMAGE_USAGE_SAMPLED_BIT )
+				|| checkFlag( m_createInfo.usage, VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT );
 		}
 
 		inline bool isStorage()const

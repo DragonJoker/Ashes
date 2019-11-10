@@ -29,6 +29,11 @@ namespace ashes::d3d11
 			return m_layout;
 		}
 
+		inline LayoutBindingWritesArray const & getInputAttachments()const
+		{
+			return m_inputAttachments;
+		}
+
 		inline LayoutBindingWritesArray const & getCombinedTextureSamplers()const
 		{
 			return m_combinedTextureSamplers;
@@ -92,6 +97,7 @@ namespace ashes::d3d11
 		LayoutBindingWritesArray m_dynamicUniformBuffers;
 		LayoutBindingWritesArray m_dynamicStorageBuffers;
 		LayoutBindingWritesArray m_dynamicBuffers;
+		LayoutBindingWritesArray m_inputAttachments;
 	};
 }
 

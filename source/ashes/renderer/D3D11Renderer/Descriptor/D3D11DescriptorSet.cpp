@@ -66,6 +66,7 @@ namespace ashes::d3d11
 				m_dynamicBuffers.push_back( &write.second );
 				break;
 			case VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT:
+				m_inputAttachments.push_back( &write.second );
 				break;
 			}
 		}

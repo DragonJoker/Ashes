@@ -93,6 +93,11 @@ namespace ashes::d3d11
 			return m_physicalDevice;
 		}
 
+		inline VkSampler getSampler()const
+		{
+			return m_sampler;
+		}
+
 #if !defined( NDEBUG )
 
 		inline ID3D11Debug * getDebug()
@@ -135,6 +140,7 @@ namespace ashes::d3d11
 			VkDeviceMemory memory;
 		};
 		Buffer m_dummyIndexed;
+		VkSampler m_sampler;
 		std::unordered_map< size_t, std::pair< VkImage, VkDeviceMemory > > m_stagingTextures;
 	};
 }
