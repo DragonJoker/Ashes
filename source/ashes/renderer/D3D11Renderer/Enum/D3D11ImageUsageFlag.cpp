@@ -18,6 +18,7 @@ namespace ashes::d3d11
 	bool isSampled( VkImageUsageFlags const & flags )
 	{
 		return checkFlag( flags, VK_IMAGE_USAGE_SAMPLED_BIT )
+			|| checkFlag( flags, VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT )
 			/*|| checkFlag( flags, VK_IMAGE_USAGE_TRANSFER_SRC_BIT )*/;
 	}
 
