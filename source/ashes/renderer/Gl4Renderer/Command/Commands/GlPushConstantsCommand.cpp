@@ -12,7 +12,8 @@ namespace ashes::gl4
 		, CmdUniform1fv const & cmd )
 	{
 		glLogCall( context
-			, glUniform1fv
+			, glProgramUniform1fv
+			, cmd.program
 			, cmd.location
 			, 1u
 			, &cmd.buffer );
@@ -22,7 +23,8 @@ namespace ashes::gl4
 		, CmdUniform2fv const & cmd )
 	{
 		glLogCall( context
-			, glUniform2fv
+			, glProgramUniform2fv
+			, cmd.program
 			, cmd.location
 			, 1u
 			, cmd.buffer );
@@ -32,7 +34,8 @@ namespace ashes::gl4
 		, CmdUniform3fv const & cmd )
 	{
 		glLogCall( context
-			, glUniform3fv
+			, glProgramUniform3fv
+			, cmd.program
 			, cmd.location
 			, 1u
 			, cmd.buffer );
@@ -42,7 +45,8 @@ namespace ashes::gl4
 		, CmdUniform4fv const & cmd )
 	{
 		glLogCall( context
-			, glUniform4fv
+			, glProgramUniform4fv
+			, cmd.program
 			, cmd.location
 			, 1u
 			, cmd.buffer );
@@ -52,7 +56,8 @@ namespace ashes::gl4
 		, CmdUniformMatrix2fv const & cmd )
 	{
 		glLogCall( context
-			, glUniformMatrix2fv
+			, glProgramUniformMatrix2fv
+			, cmd.program
 			, cmd.location
 			, 1u
 			, cmd.transpose
@@ -63,7 +68,8 @@ namespace ashes::gl4
 		, CmdUniformMatrix3fv const & cmd )
 	{
 		glLogCall( context
-			, glUniformMatrix3fv
+			, glProgramUniformMatrix3fv
+			, cmd.program
 			, cmd.location
 			, 1u
 			, cmd.transpose
@@ -74,7 +80,8 @@ namespace ashes::gl4
 		, CmdUniformMatrix4fv const & cmd )
 	{
 		glLogCall( context
-			, glUniformMatrix4fv
+			, glProgramUniformMatrix4fv
+			, cmd.program
 			, cmd.location
 			, 1u
 			, cmd.transpose
@@ -85,7 +92,8 @@ namespace ashes::gl4
 		, CmdUniform1iv const & cmd )
 	{
 		glLogCall( context
-			, glUniform1iv
+			, glProgramUniform1iv
+			, cmd.program
 			, cmd.location
 			, 1u
 			, &cmd.buffer );
@@ -95,7 +103,8 @@ namespace ashes::gl4
 		, CmdUniform2iv const & cmd )
 	{
 		glLogCall( context
-			, glUniform2iv
+			, glProgramUniform2iv
+			, cmd.program
 			, cmd.location
 			, 1u
 			, cmd.buffer );
@@ -105,7 +114,8 @@ namespace ashes::gl4
 		, CmdUniform3iv const & cmd )
 	{
 		glLogCall( context
-			, glUniform3iv
+			, glProgramUniform3iv
+			, cmd.program
 			, cmd.location
 			, 1u
 			, cmd.buffer );
@@ -115,7 +125,8 @@ namespace ashes::gl4
 		, CmdUniform4iv const & cmd )
 	{
 		glLogCall( context
-			, glUniform4iv
+			, glProgramUniform4iv
+			, cmd.program
 			, cmd.location
 			, 1u
 			, cmd.buffer );
@@ -125,7 +136,8 @@ namespace ashes::gl4
 		, CmdUniform1uiv const & cmd )
 	{
 		glLogCall( context
-			, glUniform1uiv
+			, glProgramUniform1uiv
+			, cmd.program
 			, cmd.location
 			, 1u
 			, &cmd.buffer );
@@ -135,7 +147,8 @@ namespace ashes::gl4
 		, CmdUniform2uiv const & cmd )
 	{
 		glLogCall( context
-			, glUniform2uiv
+			, glProgramUniform2uiv
+			, cmd.program
 			, cmd.location
 			, 1u
 			, cmd.buffer );
@@ -145,7 +158,8 @@ namespace ashes::gl4
 		, CmdUniform3uiv const & cmd )
 	{
 		glLogCall( context
-			, glUniform3uiv
+			, glProgramUniform3uiv
+			, cmd.program
 			, cmd.location
 			, 1u
 			, cmd.buffer );
@@ -155,7 +169,8 @@ namespace ashes::gl4
 		, CmdUniform4uiv const & cmd )
 	{
 		glLogCall( context
-			, glUniform4uiv
+			, glProgramUniform4uiv
+			, cmd.program
 			, cmd.location
 			, 1u
 			, cmd.buffer );
@@ -170,7 +185,8 @@ namespace ashes::gl4
 
 		for ( auto layer = 0u; layer < arraySize; ++layer )
 		{
-			list.push_back( makeCmd< OpT >( constant.location + layer
+			list.push_back( makeCmd< OpT >( constant.program
+				, constant.location + layer
 				, GL_FALSE
 				, reinterpret_cast< T const * >( buffer ) ) );
 			buffer += constant.size;
@@ -186,7 +202,8 @@ namespace ashes::gl4
 
 		for ( auto layer = 0u; layer < arraySize; ++layer )
 		{
-			list.push_back( makeCmd< OpT >( constant.location + layer
+			list.push_back( makeCmd< OpT >( constant.program
+				, constant.location + layer
 				, reinterpret_cast< T const * >( buffer ) ) );
 			buffer += constant.size;
 		}

@@ -173,6 +173,9 @@ namespace ashes::gl4
 			case OpType::eUseProgram:
 				apply( lock, map< OpType::eUseProgram >( cmd ) );
 				break;
+			case OpType::eUseProgramPipeline:
+				apply( lock, map< OpType::eUseProgramPipeline >( cmd ) );
+				break;
 			case OpType::eActiveTexture:
 				apply( lock, map< OpType::eActiveTexture >( cmd ) );
 				break;

@@ -1183,11 +1183,11 @@ namespace ashes::gl4
 			{
 				result.push_back( { name, uint32_t( point ), 0u } );
 			}
-			, [&result]( std::string name
+			, [&result, &program]( std::string name
 				, GlslAttributeType type
 				, GLint location )
 			{
-				result.back().constants.push_back( { name, uint32_t( location ), getFormat( type ), getSize( type ) } );
+				result.back().constants.push_back( { program, name, uint32_t( location ), getFormat( type ), getSize( type ) } );
 			} );
 		return result;
 	}
@@ -1199,7 +1199,7 @@ namespace ashes::gl4
 		getVariableInfos( context
 			, program
 			, GLSL_INTERFACE_UNIFORM
-			, [&result]( std::string name
+			, [&result, &program]( std::string name
 				, GlslAttributeType type
 				, GLint location
 				, GLint arraySize
@@ -1208,7 +1208,8 @@ namespace ashes::gl4
 				if ( !isSampler( type )
 					&& !isImage( type ) )
 				{
-					result.push_back( { name
+					result.push_back( { program
+						, name
 						, uint32_t( location )
 						, getFormat( type )
 						, getSize( type )

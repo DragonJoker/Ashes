@@ -13,4 +13,5 @@ void main()
 	vec4 gui = texture( mapGui, vtx_texcoord );
 	vec4 colour = texture( mapColour, vtx_texcoord );
 	pxl_colour.rgb = gui.rgb * gui.a + colour.rgb * (1.0 - gui.a);
+	pxl_colour.a = 1.0;
 }

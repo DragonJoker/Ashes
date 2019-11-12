@@ -164,7 +164,7 @@ int main( int argc, char ** argv )
 
 ## Contact
 
-You can reach me on the Discord server dedicated to my projects: [DragonJoker's Lair](https://discord.gg/jue8kW)
+You can reach me on the Discord server dedicated to my projects: [DragonJoker's Lair](https://discord.gg/yVmaAvQ)
 
 ## Test applications
 

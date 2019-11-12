@@ -58,6 +58,7 @@ namespace ashes::gl4
 		eDrawBuffer,
 		eDrawBuffers,
 		eUseProgram,
+		eUseProgramPipeline,
 		eActiveTexture,
 		eBindTexture,
 		eBindSampler,
@@ -474,6 +475,31 @@ namespace ashes::gl4
 
 	void apply( ContextLock const & context
 		, CmdUseProgram const & cmd );
+	
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eUseProgramPipeline >
+	{
+		static Op constexpr value = { OpType::eUseProgramPipeline, 2u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eUseProgramPipeline >
+	{
+		inline CmdT( uint32_t value )
+			: cmd{ { OpType::eUseProgramPipeline, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, program{ std::move( value ) }
+		{
+		}
+
+		Command cmd;
+		uint32_t program;
+	};
+	using CmdUseProgramPipeline = CmdT< OpType::eUseProgramPipeline >;
+
+	void apply( ContextLock const & context
+		, CmdUseProgramPipeline const & cmd );
 
 	//*************************************************************************
 

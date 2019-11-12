@@ -292,9 +292,14 @@ namespace ashes::gl4
 		return getName( value );
 	}
 
+	inline std::string toString( GlShaderStage value )
+	{
+		return getShaderStageName( value );
+	}
+
 	inline std::string toString( GlShaderStageFlags value )
 	{
-		return getShaderStageFlagName( value );
+		return getShaderStageFlagsName( value );
 	}
 
 	inline std::string toString( GlStencilOp value )
