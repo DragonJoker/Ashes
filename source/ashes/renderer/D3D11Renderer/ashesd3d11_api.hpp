@@ -244,4 +244,7 @@ namespace ashes::d3d11
 	{
 		return !( lhs == rhs );
 	}
+
+	std::vector< VkExtensionProperties > const & getSupportedInstanceExtensions();
+	std::vector< VkExtensionProperties > const & getSupportedDeviceExtensions();
 }

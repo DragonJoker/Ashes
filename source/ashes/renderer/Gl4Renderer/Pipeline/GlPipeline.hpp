@@ -11,7 +11,6 @@
 #include "renderer/Gl4Renderer/Buffer/GlGeometryBuffers.hpp"
 #include "renderer/Gl4Renderer/Core/GlContextState.hpp"
 #include "renderer/Gl4Renderer/Shader/GlShaderDesc.hpp"
-#include "renderer/Gl4Renderer/Shader/GlShaderProgram.hpp"
 
 #include <algorithm>
 #include <unordered_map>

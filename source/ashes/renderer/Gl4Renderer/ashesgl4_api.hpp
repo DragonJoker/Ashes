@@ -168,4 +168,7 @@ namespace ashes::gl4
 		vkValue = nullptr;
 		return VK_SUCCESS;
 	}
+
+	std::vector< VkExtensionProperties > const & getSupportedInstanceExtensions();
+	std::vector< VkExtensionProperties > const & getSupportedDeviceExtensions();
 }

@@ -136,6 +136,24 @@ namespace ashes::d3d11
 		return result;
 	}
 
+	void doCheckEnabledExtensions( ashes::ArrayView< char const * const > const & extensions )
+	{
+		auto & available = getSupportedInstanceExtensions();
+
+		for ( auto & extension : extensions )
+		{
+			if ( available.end() == std::find_if( available.begin()
+				, available.end()
+				, [&extension]( VkExtensionProperties const & lookup )
+				{
+					return lookup.extensionName == std::string{ extension };
+				} ) )
+			{
+				throw ashes::Exception{ VK_ERROR_EXTENSION_NOT_PRESENT, extension };
+			}
+		}
+	}
+
 	VkPhysicalDeviceMemoryProperties const Instance::m_memoryProperties = []()
 	{
 		VkPhysicalDeviceMemoryProperties result{};
@@ -168,6 +186,8 @@ namespace ashes::d3d11
 		m_features.hasComputeShaders = m_maxFeatureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.hasStorageBuffers = m_maxFeatureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.supportsPersistentMapping = false;
+
+		doCheckEnabledExtensions( ashes::makeArrayView( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) );
 	}
 
 	Instance::~Instance()

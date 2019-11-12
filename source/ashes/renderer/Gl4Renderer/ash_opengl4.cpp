@@ -169,21 +169,7 @@ namespace ashes::gl4
 		uint32_t* pPropertyCount,
 		VkExtensionProperties* pProperties )
 	{
-		static std::vector< VkExtensionProperties > const extensions
-		{
-			VkExtensionProperties{ VK_KHR_SURFACE_EXTENSION_NAME, makeVersion( 1, 0, 0 ) },
-			[]()
-			{
-				VkExtensionProperties result;
-				result.specVersion = makeVersion( 1, 0, 0 );
-				strncpy( result.extensionName, VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME, VK_MAX_EXTENSION_NAME_SIZE );
-				return result;
-			}(),
-			VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_REPORT_SPEC_VERSION, 0, 0 ) },
-			VkExtensionProperties{ VK_EXT_DEBUG_MARKER_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_MARKER_SPEC_VERSION, 0, 0 ) },
-			VkExtensionProperties{ VK_EXT_DEBUG_UTILS_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_UTILS_SPEC_VERSION, 0, 0 ) },
-		};
-
+		auto & extensions = getSupportedInstanceExtensions();
 		*pPropertyCount = uint32_t( extensions.size() );
 
 		if ( pProperties )
@@ -204,8 +190,18 @@ namespace ashes::gl4
 		uint32_t* pPropertyCount,
 		VkExtensionProperties* pProperties )
 	{
-		// TODO
-		*pPropertyCount = 0;
+		auto & extensions = getSupportedDeviceExtensions();
+		*pPropertyCount = uint32_t( extensions.size() );
+
+		if ( pProperties )
+		{
+			for ( auto & extension : extensions )
+			{
+				*pProperties = extension;
+				++pProperties;
+			}
+		}
+
 		return VK_SUCCESS;
 	}
 
@@ -4013,6 +4009,37 @@ namespace ashes::gl4
 
 namespace ashes::gl4
 {
+	std::vector< VkExtensionProperties > const & getSupportedInstanceExtensions()
+	{
+		static std::vector< VkExtensionProperties > const extensions
+		{
+			VkExtensionProperties{ VK_KHR_SURFACE_EXTENSION_NAME, makeVersion( 1, 0, 0 ) },
+			[]()
+			{
+				VkExtensionProperties result;
+				result.specVersion = makeVersion( 1, 0, 0 );
+				strncpy( result.extensionName, VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME, VK_MAX_EXTENSION_NAME_SIZE );
+				return result;
+			}(),
+			VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_REPORT_SPEC_VERSION, 0, 0 ) },
+			VkExtensionProperties{ VK_EXT_DEBUG_MARKER_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_MARKER_SPEC_VERSION, 0, 0 ) },
+			VkExtensionProperties{ VK_EXT_DEBUG_UTILS_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_UTILS_SPEC_VERSION, 0, 0 ) },
+		};
+		return extensions;
+	}
+	
+	std::vector< VkExtensionProperties > const & getSupportedDeviceExtensions()
+	{
+		static std::vector< VkExtensionProperties > const extensions
+		{
+			VkExtensionProperties{ VK_KHR_SWAPCHAIN_EXTENSION_NAME, makeVersion( VK_KHR_SWAPCHAIN_SPEC_VERSION, 0, 0 ) },
+			VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_REPORT_SPEC_VERSION, 0, 0 ) },
+			VkExtensionProperties{ VK_EXT_DEBUG_MARKER_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_MARKER_SPEC_VERSION, 0, 0 ) },
+			VkExtensionProperties{ VK_EXT_DEBUG_UTILS_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_UTILS_SPEC_VERSION, 0, 0 ) },
+		};
+		return extensions;
+	}
+
 	struct GlLibrary
 	{
 		AshPluginDescription description

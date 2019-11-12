@@ -61,6 +61,24 @@ namespace ashes::gl4
 		return result;
 	}
 
+	void doCheckEnabledExtensions( ashes::ArrayView< char const * const > const & extensions )
+	{
+		auto & available = getSupportedInstanceExtensions();
+
+		for ( auto & extension : extensions )
+		{
+			if ( available.end() == std::find_if( available.begin()
+				, available.end()
+				, [&extension]( VkExtensionProperties const & lookup )
+				{
+					return lookup.extensionName == std::string{ extension };
+				} ) )
+			{
+				throw ashes::Exception{ VK_ERROR_EXTENSION_NOT_PRESENT, extension };
+			}
+		}
+	}
+
 	Instance::Instance( VkInstanceCreateInfo createInfo )
 		: m_flags{ createInfo.flags }
 		, m_enabledLayerNames{ convert( createInfo.ppEnabledLayerNames, createInfo.enabledLayerCount ) }
@@ -81,6 +99,7 @@ namespace ashes::gl4
 			, nullptr );
 		ContextLock context{ *m_context };
 		m_physicalDevices.emplace_back( VkPhysicalDevice( new PhysicalDevice{ VkInstance( this ) } ) );
+		doCheckEnabledExtensions( ashes::makeArrayView( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) );
 	}
 
 	Instance::~Instance()

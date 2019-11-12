@@ -128,6 +128,24 @@ namespace ashes::gl4
 
 			return texelBlockExtent;
 		}
+
+		void doCheckEnabledExtensions( ashes::ArrayView< char const * const > const & extensions )
+		{
+			auto & available = getSupportedDeviceExtensions();
+
+			for ( auto & extension : extensions )
+			{
+				if ( available.end() == std::find_if( available.begin()
+					, available.end()
+					, [&extension]( VkExtensionProperties const & lookup )
+					{
+						return lookup.extensionName == std::string{ extension };
+					} ) )
+				{
+					throw ashes::Exception{ VK_ERROR_EXTENSION_NOT_PRESENT, extension };
+				}
+			}
+		}
 	}
 
 	Device::Device( VkInstance instance
@@ -140,7 +158,7 @@ namespace ashes::gl4
 		, m_currentContext{ &context }
 		, m_dyState{ VK_DYNAMIC_STATE_SCISSOR, VK_DYNAMIC_STATE_VIEWPORT }
 	{
-		//m_timestampPeriod = 1;
+		doCheckEnabledExtensions( ashes::makeArrayView( m_createInfos.ppEnabledExtensionNames, m_createInfos.enabledExtensionCount ) );
 		doInitialiseQueues();
 		auto lock = getContext();
 		doInitialiseDummy( lock );

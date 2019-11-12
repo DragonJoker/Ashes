@@ -99,6 +99,24 @@ namespace ashes::d3d11
 			ashes::hashCombine( result, mipLevels );
 			return result;
 		}
+
+		void doCheckEnabledExtensions( ashes::ArrayView< char const * const > const & extensions )
+		{
+			auto & available = getSupportedDeviceExtensions();
+
+			for ( auto & extension : extensions )
+			{
+				if ( available.end() == std::find_if( available.begin()
+					, available.end()
+					, [&extension]( VkExtensionProperties const & lookup )
+					{
+						return lookup.extensionName == std::string{ extension };
+					} ) )
+				{
+					throw ashes::Exception{ VK_ERROR_EXTENSION_NOT_PRESENT, extension };
+				}
+			}
+		}
 	}
 
 	Device::Device( VkInstance instance
@@ -108,6 +126,7 @@ namespace ashes::d3d11
 		, m_physicalDevice{ physicalDevice }
 		, m_createInfos{ std::move( createInfos ) }
 	{
+		doCheckEnabledExtensions( ashes::makeArrayView( m_createInfos.ppEnabledExtensionNames, m_createInfos.enabledExtensionCount ) );
 		doCreateD3D11Device();
 		doCreateDummyIndexBuffer();
 		doCreateQueues();
