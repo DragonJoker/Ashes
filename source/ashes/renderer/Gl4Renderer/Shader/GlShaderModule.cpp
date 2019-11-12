@@ -7,6 +7,7 @@ See LICENSE file in root folder.
 #include "Core/GlDevice.hpp"
 #include "Core/GlPhysicalDevice.hpp"
 #include "Core/GlInstance.hpp"
+#include "Miscellaneous/GlValidator.hpp"
 
 #include <iostream>
 #include <regex>
@@ -49,16 +50,15 @@ namespace ashes::gl4
 			std::locale m_prvLoc;
 		};
 
-		std::string doRetrieveCompilerLog( VkDevice device
-			, GLuint shaderName )
+		std::string retrieveLinkerLog( ContextLock const & context
+			, GLuint programName )
 		{
-			auto context = get( device )->getContext();
 			std::string log;
 			int infologLength = 0;
 			int charsWritten = 0;
 			glLogCall( context
-				, glGetShaderiv
-				, shaderName
+				, glGetProgramiv
+				, programName
 				, GL_INFO_LOG_LENGTH
 				, &infologLength );
 
@@ -66,8 +66,8 @@ namespace ashes::gl4
 			{
 				std::vector< char > infoLog( infologLength + 1 );
 				glLogCall( context
-					, glGetShaderInfoLog
-					, shaderName
+					, glGetProgramInfoLog
+					, programName
 					, infologLength
 					, &charsWritten
 					, infoLog.data() );
@@ -80,48 +80,6 @@ namespace ashes::gl4
 			}
 
 			return log;
-		}
-
-		bool doCheckCompileErrors( VkDevice device
-			, VkShaderModule module
-			, bool compiled
-			, GLuint shaderName
-			, std::string const & source )
-		{
-			auto compilerLog = doRetrieveCompilerLog( device
-				, shaderName );
-			auto reportType = compiled
-				? VK_DEBUG_REPORT_WARNING_BIT_EXT
-				: VK_DEBUG_REPORT_ERROR_BIT_EXT;
-
-			if ( !compilerLog.empty() )
-			{
-				std::stringstream stream;
-				stream << compilerLog << std::endl;
-				stream << source << std::endl;
-				get( get( device )->getInstance() )->reportMessage( reportType
-					, VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT
-					, uint64_t( module )
-					, 0u
-					, 0u
-					, "CORE"
-					, stream.str().c_str() );
-			}
-			else if ( !compiled )
-			{
-				std::stringstream stream;
-				stream << "Shader compilation failed" << std::endl;
-				stream << source << std::endl;
-				get( get( device )->getInstance() )->reportMessage( reportType
-					, VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT
-					, uint64_t( module )
-					, 0u
-					, 0u
-					, "CORE"
-					, stream.str().c_str() );
-			}
-
-			return compiled;
 		}
 
 #if Gl4Renderer_USE_SPIRV_CROSS
@@ -225,7 +183,7 @@ namespace ashes::gl4
 
 			if ( entryPoint.empty() )
 			{
-				throw std::runtime_error{ "Could not find an entry point with stage: " + getShaderStageFlagName( stage ) };
+				throw std::runtime_error{ "Could not find an entry point with stage: " + getShaderStageFlagsName( convertShaderStageFlag( stage ) ) };
 			}
 
 			compiler.set_entry_point( entryPoint, model );
@@ -368,6 +326,7 @@ namespace ashes::gl4
 
 					result.push_back( ConstantDesc
 						{
+							0u,
 							compiler.get_name( pcb.id ) + "." + compiler.get_member_name( structType.self, index++ ),
 							0u,
 							getFormat( mbrType ),
@@ -421,29 +380,6 @@ namespace ashes::gl4
 			std::memcpy( glslCode.data(), shader.data(), glslCode.size() );
 			return std::string( glslCode.data(), glslCode.data() + strlen( glslCode.data() ) );
 		}
-
-		void getSpecializationInfo( VkSpecializationInfo const * pSpecializationInfo
-			, std::vector< GLuint > & indices
-			, std::vector< GLuint > & values )
-		{
-			if ( pSpecializationInfo )
-			{
-				auto & specializationInfo = *pSpecializationInfo;
-				auto count = GLuint( specializationInfo.mapEntryCount );
-				indices.reserve( count );
-				values.reserve( count );
-				auto src = reinterpret_cast< GLuint const * >( specializationInfo.pData );
-
-				for ( auto itEntry = specializationInfo.pMapEntries;
-					itEntry != specializationInfo.pMapEntries + specializationInfo.mapEntryCount;
-					++itEntry )
-				{
-					indices.push_back( itEntry->constantID );
-					values.push_back( *src );
-					++src;
-				}
-			}
-		}
 	}
 
 	ShaderModule::ShaderModule( VkDevice device
@@ -454,71 +390,120 @@ namespace ashes::gl4
 	{
 	}
 
-	GLuint ShaderModule::compile( VkPipelineShaderStageCreateInfo const & state
-		, bool isRtot )const
+	ShaderDesc ShaderModule::compile( VkPipelineShaderStageCreateInfo const & state
+		, bool isRtot )
 	{
-		auto result = get( m_device )->getContext()->glCreateShader( convertShaderStageFlag( state.stage ) );
 		auto context = get( m_device )->getContext();
+		ShaderDesc result{};
+		m_source = compileSpvToGlsl( m_device
+			, m_code
+			, state.stage
+			, state
+			, isRtot
+			, m_constants );
 
-		if ( get( get( m_device )->getInstance() )->isSPIRVSupported() )
+		char const * data = m_source.data();
+		auto program = glLogNonVoidCall( context
+			, glCreateShaderProgramv
+			, getShaderStage( state.stage )
+			, 1u
+			, &data );
+		auto linkerLog = retrieveLinkerLog( context, program );
+
+		if ( linkerLog.find( "ERROR" ) == std::string::npos )
 		{
-			context->glShaderBinary( 1u
-				, &result
-				, GL_SHADER_BINARY_FORMAT_SPIR_V
-				, m_code.data()
-				, GLsizei( m_code.size() * sizeof( uint32_t ) ) );
-			std::vector< GLuint > indices;
-			std::vector< GLuint > values;
-			getSpecializationInfo( state.pSpecializationInfo
-				, indices
-				, values );
+			int validated = 0;
 			glLogCall( context
-				, glSpecializeShader
-				, result
-				, state.pName
-				, GLuint( indices.size() )
-				, indices.data()
-				, values.data() );
+				, glGetProgramiv
+				, program
+				, GL_INFO_VALIDATE_STATUS
+				, &validated );
+
+			if ( !linkerLog.empty()
+				|| !validated )
+			{
+				std::stringstream stream;
+				stream << "Shader program link: " << std::endl;
+
+				if ( !validated )
+				{
+					stream << "Not validated - " << std::endl;
+				}
+
+				if ( !linkerLog.empty() )
+				{
+					stream << linkerLog << std::endl;
+				}
+
+				get( get( m_device )->getInstance() )->reportMessage( VK_DEBUG_REPORT_WARNING_BIT_EXT
+					, VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT
+					, uint64_t( get( this ) )
+					, 0u
+					, 0u
+					, "CORE"
+					, stream.str().c_str() );
+			}
+
+			for ( auto & constant : m_constants )
+			{
+				constant.program = program;
+			}
+
+			result = getShaderDesc( context, program );
+
+			if ( !m_constants.empty() )
+			{
+				assert( m_constants.size() == result.constantsLayout.size() );
+				for ( auto & constant : result.constantsLayout )
+				{
+					auto it = std::find_if( m_constants.begin()
+						, m_constants.end()
+						, [&constant]( ConstantDesc const & lookup )
+						{
+							return lookup.name == constant.name;
+						} );
+					assert( it != m_constants.end() );
+					constant.program = program;
+					constant.offset = it->offset;
+				}
+			}
+			else
+			{
+				uint32_t offset = 0u;
+
+				for ( auto & constant : result.constantsLayout )
+				{
+					constant.offset = offset;
+					offset += constant.size;
+				}
+			}
+
+			result.stageFlags = state.stage;
 		}
 		else
 		{
-			m_source = compileSpvToGlsl( m_device
-				, m_code
-				, state.stage
-				, state
-				, isRtot
-				, m_constants );
-			auto length = int( m_source.size() );
-			char const * data = m_source.data();
-			glLogCall( context
-				, glShaderSource
-				, result
-				, 1
-				, &data
-				, &length );
-			glLogCall( context
-				, glCompileShader
-				, result );
-		}
+			std::stringstream stream;
+			stream << "Shader program link: " << std::endl;
 
-		int compiled = 0;
-		glLogCall( context
-			, glGetShaderiv
-			, result
-			, GL_INFO_COMPILE_STATUS
-			, &compiled );
+			if ( !linkerLog.empty() )
+			{
+				stream << linkerLog << std::endl;
+			}
 
-		if ( !doCheckCompileErrors( m_device, get( this ), compiled != 0, result, m_source ) )
-		{
-			context->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+			get( get( m_device )->getInstance() )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
 				, VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT
 				, uint64_t( get( this ) )
 				, 0u
-				, VK_ERROR_VALIDATION_FAILED_EXT
-				, "OpenGL"
-				, "Shader compilation failed." );
+				, 0u
+				, "CORE"
+				, stream.str().c_str() );
+			glLogCall( context
+				, glDeleteProgram
+				, program );
+			program = 0;
 		}
 
+		result.program = program;
 		return result;
 	}
 }

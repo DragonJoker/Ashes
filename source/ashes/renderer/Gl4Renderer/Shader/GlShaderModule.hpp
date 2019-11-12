@@ -15,8 +15,8 @@ namespace ashes::gl4
 		ShaderModule( VkDevice device
 			, VkShaderModuleCreateInfo createInfo );
 
-		GLuint compile( VkPipelineShaderStageCreateInfo const & state
-			, bool isRtot )const;
+		ShaderDesc compile( VkPipelineShaderStageCreateInfo const & state
+			, bool isRtot );
 
 		inline ConstantsLayout const & getConstants()const
 		{
@@ -27,7 +27,7 @@ namespace ashes::gl4
 		VkDevice m_device;
 		VkShaderModuleCreateFlags m_flags;
 		UInt32Array m_code;
-		mutable std::string m_source;
-		mutable ConstantsLayout m_constants;
+		std::string m_source;
+		ConstantsLayout m_constants;
 	};
 }

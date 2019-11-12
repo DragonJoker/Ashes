@@ -50,7 +50,7 @@ namespace ashes::gl4
 
 		if ( stack.getCurrentProgram() != program )
 		{
-			list.push_back( makeCmd< OpType::eUseProgram >( program ) );
+			list.push_back( makeCmd< OpType::eUseProgramPipeline >( program ) );
 			stack.setCurrentProgram( program );
 		}
 
@@ -72,6 +72,6 @@ namespace ashes::gl4
 		, CmdList & list )
 	{
 		stack.setCurrentProgram( 0u );
-		list.push_back( makeCmd< OpType::eUseProgram >( 0u ) );
+		list.push_back( makeCmd< OpType::eUseProgramPipeline >( 0u ) );
 	}
 }

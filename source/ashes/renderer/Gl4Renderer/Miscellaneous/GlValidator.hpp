@@ -24,6 +24,7 @@ namespace ashes::gl4
 		return
 		{
 			0u,
+			0u,
 			getInputLayout( context, program ),
 			getConstantsLayout( context, program ),
 			getInterfaceBlockLayout( context, program )

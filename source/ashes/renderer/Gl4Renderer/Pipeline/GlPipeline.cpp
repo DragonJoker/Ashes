@@ -106,6 +106,147 @@ namespace ashes::gl4
 
 			return Optional< VkPipelineRasterizationStateCreateInfo >{};
 		}
+
+		ConstantsLayout mergeConstants( ConstantsLayout const & lhs
+			, ConstantsLayout const & rhs )
+		{
+			ConstantsLayout result{ lhs };
+
+			if ( !rhs.empty() )
+			{
+				if ( result.empty() )
+				{
+					result = rhs;
+				}
+				else
+				{
+					for ( auto & constant : rhs )
+					{
+						auto it = std::find_if( result.begin()
+							, result.end()
+							, [&constant]( ConstantDesc const & lookup )
+							{
+								return lookup.name == constant.name
+									&& lookup.program == constant.program;
+							} );
+
+						if ( it == result.end() )
+						{
+							result.push_back( constant );
+						}
+					}
+				}
+			}
+
+			std::sort( result.begin()
+				, result.end()
+				, []( ConstantDesc const & lhs, ConstantDesc const & rhs )
+				{
+					return lhs.offset < rhs.offset;
+				} );
+
+			return result;
+		}
+
+		ShaderDesc mergeDescs( std::vector< ShaderDesc > const & descs )
+		{
+			ShaderDesc result{};
+
+			for ( auto & desc : descs )
+			{
+				result.inputLayout.vertexAttributeDescriptions.insert( result.inputLayout.vertexAttributeDescriptions.end()
+					, desc.inputLayout.vertexAttributeDescriptions.begin()
+					, desc.inputLayout.vertexAttributeDescriptions.end() );
+				result.inputLayout.vertexBindingDescriptions.insert( result.inputLayout.vertexBindingDescriptions.end()
+					, desc.inputLayout.vertexBindingDescriptions.begin()
+					, desc.inputLayout.vertexBindingDescriptions.end() );
+				result.stageFlags |= desc.stageFlags;
+				result.constantsLayout = mergeConstants( result.constantsLayout 
+					, desc.constantsLayout );
+			}
+
+			return result;
+		}
+
+		Pipeline::ProgramPipeline createProgramPipeline( VkDevice device
+			, ContextState * state
+			, VkPipeline pipeline
+			, VkPipelineShaderStageCreateInfoArray stages
+			, VkPipelineLayout layout
+			, VkRenderPass renderPass
+			, Optional< VkPipelineVertexInputStateCreateInfo > const & vertexInputState
+			, bool isRtot = false )
+		{
+			auto context = get( device )->getContext();
+
+			if ( state )
+			{
+				ContextStateStack stack{ device };
+				stack.apply( context
+					, *state );
+			}
+
+			std::vector< ShaderDesc > descs;
+
+			for ( auto & stage : stages )
+			{
+				descs.push_back( get( stage.module )->compile( stage, isRtot ) );
+			}
+
+			Pipeline::ProgramPipeline result;
+			result.program = mergeDescs( descs );
+			glLogCall( context
+				, glGenProgramPipelines
+				, 1
+				, &result.program.program );
+			glLogCall( context
+				, glBindProgramPipeline
+				, result.program.program );
+			uint32_t index = 0u;
+
+			for ( auto & desc : descs )
+			{
+				glLogCall( context
+					, glUseProgramStages
+					, result.program.program
+					, convertShaderStageFlag( stages[index].stage )
+					, descs[index].program );
+				result.modules.push_back( descs[index].program );
+				++index;
+			}
+
+			glLogCall( context
+				, glBindProgramPipeline
+				, 0 );
+
+			result.constantsPcb.stageFlags = result.program.stageFlags;
+			uint32_t size = 0u;
+
+			for ( auto & constant : result.program.constantsLayout )
+			{
+				result.constantsPcb.constants.push_back( { constant.program
+					, constant.format
+					, constant.location
+					, constant.offset
+					, constant.size
+					, constant.arraySize } );
+				size += constant.size;
+			}
+
+			result.constantsPcb.size = size;
+
+			if ( get( get( device )->getInstance() )->isValidationEnabled()
+				&& renderPass != VK_NULL_HANDLE )
+			{
+				validatePipeline( context
+					, layout
+					, result.program.program
+					, vertexInputState.value()
+					, renderPass );
+			}
+
+			return result;
+		}
 	}
 
 	Pipeline::Pipeline( VkDevice device
@@ -147,25 +288,12 @@ namespace ashes::gl4
 		, m_subpass{ createInfo.subpass }
 		, m_basePipelineHandle{ createInfo.basePipelineHandle }
 		, m_basePipelineIndex{ createInfo.basePipelineIndex }
-		, m_backProgram{ std::make_unique< ShaderProgram >( m_device, get( this ), m_stages, false ) }
-		, m_rtotProgram{ std::make_unique< ShaderProgram >( m_device, get( this ), m_stages, true ) }
+		, m_backPipeline{ createProgramPipeline( m_device, &m_backContextState, get( this ), m_stages, m_layout, m_renderPass, m_vertexInputState, false ) }
+		, m_rtotPipeline{ createProgramPipeline( m_device, &m_rtotContextState, get( this ), m_stages, m_layout, m_renderPass, m_vertexInputState, true ) }
 		, m_vertexInputStateHash{ ( m_vertexInputState
 			? doHash( m_vertexInputState.value() )
 			: 0u ) }
 	{
-		auto context = get( device )->getContext();
-		CmdList list;
-		ContextStateStack stack{ device };
-		{
-			stack.apply( context
-				, m_backContextState );
-			doInitialise( context, *m_backProgram );
-		}
-		{
-			stack.apply( context
-				, m_rtotContextState );
-			m_rtotProgram->link( context );
-		}
 	}
 
 	Pipeline::Pipeline( VkDevice device
@@ -175,14 +303,54 @@ namespace ashes::gl4
 		, m_layout{ createInfo.layout }
 		, m_basePipelineHandle{ createInfo.basePipelineHandle }
 		, m_basePipelineIndex{ createInfo.basePipelineIndex }
-		, m_compProgram{ std::make_unique< ShaderProgram >( m_device, get( this ), m_stages.back() ) }
+		, m_compPipeline{ createProgramPipeline( m_device, nullptr, get( this ), m_stages, m_layout, m_renderPass, m_vertexInputState ) }
 	{
-		auto context = get( device )->getContext();
-		doInitialise( context, *m_compProgram );
 	}
 
 	Pipeline::~Pipeline()
 	{
+		auto context = get( m_device )->getContext();
+
+		if ( isCompute() )
+		{
+			glLogCall( context
+				, glDeleteProgramPipelines
+				, 1u
+				, &m_compPipeline.program.program );
+
+			for ( auto & module : m_compPipeline.modules )
+			{
+				glLogCall( context
+					, glDeleteProgram
+					, module );
+			}
+		}
+		else
+		{
+			glLogCall( context
+				, glDeleteProgramPipelines
+				, 1u
+				, &m_backPipeline.program.program );
+
+			for ( auto & module : m_backPipeline.modules )
+			{
+				glLogCall( context
+					, glDeleteProgram
+					, module );
+			}
+
+			glLogCall( context
+				, glDeleteProgramPipelines
+				, 1u
+				, &m_rtotPipeline.program.program );
+
+			for ( auto & module : m_rtotPipeline.modules )
+			{
+				glLogCall( context
+					, glDeleteProgram
+					, module );
+			}
+		}
 	}
 
 	GeometryBuffers * Pipeline::findGeometryBuffers( VboBindings const & vbos
@@ -210,7 +378,7 @@ namespace ashes::gl4
 				, vbos
 				, ibo
 				, m_vertexInputState.value()
-				, m_shaderDesc.inputLayout
+				, m_backPipeline.program.inputLayout
 				, type ) );
 
 		for ( auto & binding : vbos )
@@ -248,9 +416,24 @@ namespace ashes::gl4
 		return *m_geometryBuffers.back().second;
 	}
 
-	PushConstantsDesc Pipeline::findPushConstantBuffer( PushConstantsDesc const & pushConstants )const
+	PushConstantsDesc Pipeline::findPushConstantBuffer( PushConstantsDesc const & pushConstants
+		, bool isRtot )const
 	{
-		PushConstantsDesc result{ m_constantsPcb };
+		PushConstantsDesc result;
+
+		if ( isCompute() )
+		{
+			result = m_compPipeline.constantsPcb;
+		}
+		else if ( isRtot )
+		{
+			result = m_rtotPipeline.constantsPcb;
+		}
+		else
+		{
+			result = m_backPipeline.constantsPcb;
+		}
+
 		result.offset = pushConstants.offset;
 		result.size = pushConstants.size;
 		result.data = pushConstants.data;
@@ -260,34 +443,5 @@ namespace ashes::gl4
 	VkDescriptorSetLayoutArray const & Pipeline::getDescriptorsLayouts()const
 	{
 		return get( m_layout )->getDescriptorsLayouts();
-	}
-
-	void Pipeline::doInitialise( ContextLock const & context
-		, ShaderProgram const & program )
-	{
-		m_shaderDesc = program.link( context );
-		m_constantsPcb.stageFlags = m_shaderDesc.stageFlags;
-		uint32_t size = 0u;
-
-		for ( auto & constant : m_shaderDesc.constantsLayout )
-		{
-			m_constantsPcb.constants.push_back( { constant.format
-				, constant.location
-				, constant.offset
-				, constant.size
-				, constant.arraySize } );
-			size += constant.size;
-		}
-
-		m_constantsPcb.size = size;
-
-		if ( get( get( m_device )->getInstance() )->isValidationEnabled() )
-		{
-			validatePipeline( context
-				, m_layout
-				, program.getProgram()
-				, m_vertexInputState.value()
-				, m_renderPass );
-		}
 	}
 }

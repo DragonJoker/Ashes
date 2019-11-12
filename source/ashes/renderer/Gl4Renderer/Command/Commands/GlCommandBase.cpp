@@ -86,6 +86,14 @@ namespace ashes::gl4
 	}
 
 	void apply( ContextLock const & context
+		, CmdUseProgramPipeline const & cmd )
+	{
+		glLogCall( context
+			, glBindProgramPipeline
+			, cmd.program );
+	}
+
+	void apply( ContextLock const & context
 		, CmdInitFramebuffer const & cmd )
 	{
 		if ( ( *cmd.fbo ) == GL_INVALID_INDEX )

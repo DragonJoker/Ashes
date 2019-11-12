@@ -46,6 +46,7 @@ namespace ashes::gl4
 
 	struct ConstantDesc
 	{
+		uint32_t program;
 		std::string name;
 		uint32_t location{ 0u };
 		ConstantFormat format{};
@@ -156,6 +157,7 @@ namespace ashes::gl4
 
 	struct ShaderDesc
 	{
+		GLuint program;
 		VkShaderStageFlags stageFlags;
 		InputLayout inputLayout;
 		ConstantsLayout constantsLayout;
@@ -205,6 +207,7 @@ namespace ashes::gl4
 
 	struct PushConstantDesc
 	{
+		uint32_t program{};
 		ConstantFormat format{};
 		uint32_t location{ 0u };
 		uint32_t offset{ 0u };

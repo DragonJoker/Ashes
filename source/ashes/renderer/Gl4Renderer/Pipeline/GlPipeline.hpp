@@ -40,12 +40,13 @@ namespace ashes::gl4
 			, IboBinding const & ibo
 			, VkIndexType type )const;
 		~Pipeline();
-		PushConstantsDesc findPushConstantBuffer( PushConstantsDesc const & pushConstants )const;
+		PushConstantsDesc findPushConstantBuffer( PushConstantsDesc const & pushConstants
+			, bool isRtot )const;
 		VkDescriptorSetLayoutArray const & getDescriptorsLayouts()const;
 
 		inline bool isCompute()const
 		{
-			return m_compProgram != nullptr;
+			return m_compPipeline.program.program != 0;
 		}
 
 		inline ContextState & getBackContextState()const
@@ -63,21 +64,21 @@ namespace ashes::gl4
 		inline GLuint getBackProgram()const
 		{
 			assert( !isCompute() );
-			assert( m_backProgram );
-			return m_backProgram->getProgram();
+			assert( m_backPipeline.program.program != 0 );
+			return m_backPipeline.program.program;
 		}
 
 		inline GLuint getRtotProgram()const
 		{
 			assert( !isCompute() );
-			assert( m_rtotProgram );
-			return m_rtotProgram->getProgram();
+			assert( m_rtotPipeline.program.program != 0 );
+			return m_rtotPipeline.program.program;
 		}
 
 		inline GLuint getCompProgram()const
 		{
 			assert( isCompute() );
-			return m_compProgram->getProgram();
+			return m_compPipeline.modules.front();
 		}
 
 		inline auto const & getInputAssemblyState()const
@@ -173,30 +174,32 @@ namespace ashes::gl4
 			return m_vertexInputStateHash;
 		}
 
-	private:
-		void doInitialise( ContextLock const & context
-			, ShaderProgram const & program );
+	public:
+		struct ProgramPipeline
+		{
+			PushConstantsDesc constantsPcb{};
+			std::vector< GLuint > modules;
+			ShaderDesc program{};
+		};
 
 	private:
 		VkDevice m_device;
-		VkPipelineCreateFlags m_flags;
+		VkPipelineCreateFlags m_flags{};
 		VkPipelineShaderStageCreateInfoArray m_stages;
 		VkVertexInputBindingDescriptionArray m_vertexBindingDescriptions;
 		VkVertexInputAttributeDescriptionArray m_vertexAttributeDescriptions;
-		Optional< VkPipelineVertexInputStateCreateInfo > m_vertexInputState;
+		Optional< VkPipelineVertexInputStateCreateInfo > m_vertexInputState{};
 		mutable ContextState m_backContextState;
-		ShaderDesc m_shaderDesc;
 		Optional< VkPipelineRasterizationStateCreateInfo > m_rtotRasterizationState;
 		mutable ContextState m_rtotContextState;
-		VkPipelineLayout m_layout;
-		VkRenderPass m_renderPass;
-		uint32_t m_subpass;
-		VkPipeline m_basePipelineHandle;
-		int32_t m_basePipelineIndex;
-		PushConstantsDesc m_constantsPcb;
-		std::unique_ptr< ShaderProgram > m_backProgram;
-		std::unique_ptr< ShaderProgram > m_rtotProgram;
-		std::unique_ptr< ShaderProgram > m_compProgram;
+		VkPipelineLayout m_layout{};
+		VkRenderPass m_renderPass{};
+		uint32_t m_subpass{};
+		VkPipeline m_basePipelineHandle{};
+		int32_t m_basePipelineIndex{};
+		ProgramPipeline m_backPipeline{};
+		ProgramPipeline m_rtotPipeline{};
+		ProgramPipeline m_compPipeline{};
 		mutable std::vector< std::pair< size_t, GeometryBuffersPtr > > m_geometryBuffers;
 		mutable std::unordered_map< GLuint, DeviceMemoryDestroyConnection > m_connections;
 		size_t m_vertexInputStateHash;

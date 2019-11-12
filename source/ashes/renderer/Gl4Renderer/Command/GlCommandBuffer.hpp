@@ -185,6 +185,7 @@ namespace ashes::gl4
 		void doProcessMappedBoundBufferOut( VkBuffer buffer )const;
 		BufferIndex & doAddMappedBuffer( VkBuffer buffer, bool isInput )const;
 		void doRemoveMappedBuffer( GLuint internal )const;
+		bool doIsRtotFbo()const;
 
 	private:
 		VkDevice m_device;
