@@ -388,6 +388,24 @@ namespace ashes::gl3
 			return result;
 		}
 
+		void doUpdateUboNames( spirv_cross::CompilerGLSL & compiler
+			, std::string const & postfix )
+		{
+			spirv_cross::ShaderResources resources = compiler.get_shader_resources();
+
+			for ( auto & ubo : resources.uniform_buffers )
+			{
+				auto name = compiler.get_name( ubo.base_type_id );
+				compiler.set_name( ubo.base_type_id, name + "_" + postfix );
+			}
+
+			for ( auto & ssbo : resources.storage_buffers )
+			{
+				auto name = compiler.get_name( ssbo.base_type_id );
+				compiler.set_name( ssbo.base_type_id, name + "_" + postfix );
+			}
+		}
+
 #endif
 
 		std::string compileSpvToGlsl( VkDevice device
@@ -402,13 +420,14 @@ namespace ashes::gl3
 #if Gl3Renderer_USE_SPIRV_CROSS
 
 				BlockLocale guard;
-				auto compiler = std::make_unique< spirv_cross::CompilerGLSL >( shader );
-				doProcessSpecializationConstants( state, *compiler );
-				doSetEntryPoint( stage, *compiler );
-				doSetupOptions( device, *compiler, isRtot );
-				constants = doRetrievePushConstants( *compiler );
+				spirv_cross::CompilerGLSL compiler{ shader };
+				doProcessSpecializationConstants( state, compiler );
+				doSetEntryPoint( stage, compiler );
+				doSetupOptions( device, compiler, isRtot );
+				constants = doRetrievePushConstants( compiler );
+				doUpdateUboNames( compiler, std::to_string( stage ) );
 
-				return compiler->compile();
+				return compiler.compile();
 
 #else
 
