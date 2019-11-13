@@ -56,7 +56,7 @@ namespace ashes::gl4
 
 		inline VkPhysicalDeviceFeatures const & getEnabledFeatures()const
 		{
-			return *m_createInfos.pEnabledFeatures;
+			return m_enabledFeatures;
 		}
 
 		inline GeometryBuffers & getEmptyIndexedVao()const
@@ -107,6 +107,7 @@ namespace ashes::gl4
 		VkInstance m_instance;
 		VkPhysicalDevice m_physicalDevice;
 		VkDeviceCreateInfo m_createInfos;
+		VkPhysicalDeviceFeatures m_enabledFeatures{};
 		QueueCreateCountMap m_queues;
 		mutable ContextPtr m_ownContext;
 		mutable Context * m_currentContext;

@@ -155,6 +155,7 @@ namespace ashes::gl4
 		: m_instance{ instance }
 		, m_physicalDevice{ gpu }
 		, m_createInfos{ std::move( createInfos ) }
+		, m_enabledFeatures{ m_createInfos.pEnabledFeatures ? *m_createInfos.pEnabledFeatures : get( m_physicalDevice )->getFeatures() }
 		, m_currentContext{ &context }
 		, m_dyState{ VK_DYNAMIC_STATE_SCISSOR, VK_DYNAMIC_STATE_VIEWPORT }
 	{
