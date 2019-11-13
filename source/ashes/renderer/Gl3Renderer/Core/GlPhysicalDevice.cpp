@@ -642,9 +642,25 @@ namespace ashes::gl3
 							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT;
 						}
 
-						glGetInternalformativ( GL_TEXTURE_2D, internal, GL_READ_PIXELS, 1, &value );
+						value = 0;
+						glGetInternalformativ( GL_TEXTURE_2D, internal, GL_SHADER_IMAGE_LOAD, 1, &value );
+
+						if ( value == GL_FULL_SUPPORT )
+						{
+							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT;
+						}
+
+						value = 0;
+						glGetInternalformativ( GL_TEXTURE_2D, internal, GL_SHADER_IMAGE_ATOMIC, 1, &value );
+
+						if ( value == GL_FULL_SUPPORT )
+						{
+							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT;
+						}
 
 #if defined( VK_KHR_maintenance ) || defined( VK_API_VERSION_1_1 )
+						glGetInternalformativ( GL_TEXTURE_2D, internal, GL_READ_PIXELS, 1, &value );
+
 						if ( value == GL_FULL_SUPPORT )
 						{
 							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;

@@ -453,6 +453,8 @@ namespace ashes::gl4
 	executeFunction( ashes::gl4::getContext( lock ).m_##name, #name, __VA_ARGS__ )
 #	define glLogNonVoidCall( lock, name, ... )\
 	executeNonVoidFunction( ashes::gl4::getContext( lock ).m_##name, #name, __VA_ARGS__ )
+#	define glLogCallNoContext( name, ... )\
+	executeFunction( name, #name, __VA_ARGS__ )
 #	define glLogCommand( name )\
 	std::cout << "Command: " << name << std::endl
 #elif defined( NDEBUG )
@@ -460,6 +462,8 @@ namespace ashes::gl4
 	( ( lock->m_##name( __VA_ARGS__ ) ), true )
 #	define glLogNonVoidCall( lock, name, ... )\
 	( lock->m_##name( __VA_ARGS__ ) )
+#	define glLogCallNoContext( name, ... )\
+	( name( __VA_ARGS__ ) )
 #	define glLogCommand( name )
 #	else
 #	define glLogCall( lock, name, ... )\
@@ -467,6 +471,8 @@ namespace ashes::gl4
 #	define glLogNonVoidCall( lock, name, ... )\
 	( lock->m_##name( __VA_ARGS__ ) );\
 	glCheckError( #name )
+#	define glLogCallNoContext( name, ... )\
+	( ( name( __VA_ARGS__ ) ), glCheckError( #name ) )
 #	define glLogCommand( name )
 #endif
 }

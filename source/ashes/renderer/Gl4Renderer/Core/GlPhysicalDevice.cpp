@@ -529,9 +529,13 @@ namespace ashes::gl4
 		m_features.fillModeNonSolid = true;
 		m_features.depthBounds = true;
 		GLint range[2];
-		glGetIntegerv( GL_ALIASED_LINE_WIDTH_RANGE, range );
+		glLogCallNoContext( glGetIntegerv
+			, GL_ALIASED_LINE_WIDTH_RANGE
+			, range );
 		m_features.wideLines = ( range[1] > 1 );
-		glGetIntegerv( GL_SMOOTH_LINE_WIDTH_RANGE, range );
+		glLogCallNoContext( glGetIntegerv
+			, GL_SMOOTH_LINE_WIDTH_RANGE
+			, range );
 		m_features.wideLines &= ( range[1] > 1 );
 		m_features.largePoints = true;
 		m_features.alphaToOne = findAny( { "GL_ARB_multisample", "GLX_ARB_multisample", "WGL_ARB_multisample" } );
@@ -602,7 +606,12 @@ namespace ashes::gl4
 						m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
 						m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
 #endif
-						glGetInternalformativ( GL_TEXTURE_2D, internal, GL_FRAMEBUFFER_RENDERABLE, 1, &value );
+						glLogCallNoContext( glGetInternalformativ
+							, GL_TEXTURE_2D
+							, internal
+							, GL_FRAMEBUFFER_RENDERABLE
+							, 1
+							, &value );
 
 						if ( value == GL_FULL_SUPPORT )
 						{
@@ -616,7 +625,12 @@ namespace ashes::gl4
 							}
 						}
 
-						glGetInternalformativ( GL_TEXTURE_2D, internal, GL_FRAMEBUFFER_BLEND, 1, &value );
+						glLogCallNoContext( glGetInternalformativ
+							, GL_TEXTURE_2D
+							, internal
+							, GL_FRAMEBUFFER_BLEND
+							, 1
+							, &value );
 
 						if ( value == GL_FULL_SUPPORT )
 						{
@@ -624,28 +638,48 @@ namespace ashes::gl4
 							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT;
 						}
 
-						glGetInternalformativ( GL_TEXTURE_2D, internal, GL_FRAGMENT_TEXTURE, 1, &value );
+						glLogCallNoContext( glGetInternalformativ
+							, GL_TEXTURE_2D
+							, internal
+							, GL_FRAGMENT_TEXTURE
+							, 1
+							, &value );
 
 						if ( value == GL_FULL_SUPPORT )
 						{
 							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
 						}
 
-						glGetInternalformativ( GL_TEXTURE_2D, internal, GL_FILTER, 1, &value );
+						glLogCallNoContext( glGetInternalformativ
+							, GL_TEXTURE_2D
+							, internal
+							, GL_FILTER
+							, 1
+							, &value );
 
 						if ( value == GL_FULL_SUPPORT )
 						{
 							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT;
 						}
 
-						glGetInternalformativ( GL_SHADER_IMAGE_LOAD, internal, GL_FILTER, 1, &value );
+						glLogCallNoContext( glGetInternalformativ
+							, GL_TEXTURE_2D
+							, internal
+							, GL_SHADER_IMAGE_LOAD
+							, 1
+							, &value );
 
 						if ( value == GL_FULL_SUPPORT )
 						{
 							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT;
 						}
 
-						glGetInternalformativ( GL_SHADER_IMAGE_ATOMIC, internal, GL_FILTER, 1, &value );
+						glLogCallNoContext( glGetInternalformativ
+							, GL_TEXTURE_2D
+							, internal
+							, GL_SHADER_IMAGE_ATOMIC
+							, 1
+							, &value );
 
 						if ( value == GL_FULL_SUPPORT )
 						{
@@ -653,7 +687,12 @@ namespace ashes::gl4
 						}
 
 #if defined( VK_KHR_maintenance ) || defined( VK_API_VERSION_1_1 )
-						glGetInternalformativ( GL_TEXTURE_2D, internal, GL_READ_PIXELS, 1, &value );
+						glLogCallNoContext( glGetInternalformativ
+							, GL_TEXTURE_2D
+							, internal
+							, GL_READ_PIXELS
+							, 1
+							, &value );
 
 						if ( value == GL_FULL_SUPPORT )
 						{
@@ -671,38 +710,50 @@ namespace ashes::gl4
 
 	void PhysicalDevice::doGetValue( GLenum name, int32_t & value )const
 	{
-		glGetIntegerv( name, &value );
+		glLogCallNoContext( glGetIntegerv
+			, name
+			, &value );
 	}
 
 	void PhysicalDevice::doGetValue( GLenum name, uint32_t & value )const
 	{
 		int v;
-		glGetIntegerv( name, &v );
+		glLogCallNoContext( glGetIntegerv
+			, name
+			, &v );
 		value = uint32_t( v );
 	}
 
 	void PhysicalDevice::doGetValues( GLenum name, int32_t( &value )[2] )const
 	{
-		glGetIntegerv( name, value );
+		glLogCallNoContext( glGetIntegerv
+			, name
+			, value );
 	}
 
 	void PhysicalDevice::doGetValues( GLenum name, uint32_t( &value )[2] )const
 	{
 		int v[2];
-		glGetIntegerv( name, v );
+		glLogCallNoContext( glGetIntegerv
+			, name
+			, v );
 		value[0] = v[0];
 		value[1] = v[1];
 	}
 
 	void PhysicalDevice::doGetValues( GLenum name, int32_t( &value )[3] )const
 	{
-		glGetIntegerv( name, value );
+		glLogCallNoContext( glGetIntegerv
+			, name
+			, value );
 	}
 
 	void PhysicalDevice::doGetValues( GLenum name, uint32_t( &value )[3] )const
 	{
 		int v[3];
-		glGetIntegerv( name, v );
+		glLogCallNoContext( glGetIntegerv
+			, name
+			, v );
 		value[0] = v[0];
 		value[1] = v[1];
 		value[2] = v[2];
@@ -710,32 +761,62 @@ namespace ashes::gl4
 
 	void PhysicalDevice::doGetValuesI( GLenum name, int32_t( &value )[2] )const
 	{
-		glGetIntegeri_v( name, 0, &value[0] );
-		glGetIntegeri_v( name, 1, &value[1] );
+		glLogCallNoContext( glGetIntegeri_v
+			, name
+			, 0
+			, &value[0] );
+		glLogCallNoContext( glGetIntegeri_v
+			, name
+			, 1
+			, &value[1] );
 	}
 
 	void PhysicalDevice::doGetValuesI( GLenum name, uint32_t( &value )[2] )const
 	{
 		int v[2];
-		glGetIntegeri_v( name, 0, &v[0] );
-		glGetIntegeri_v( name, 1, &v[1] );
+		glLogCallNoContext( glGetIntegeri_v
+			, name
+			, 0
+			, &v[0] );
+		glLogCallNoContext( glGetIntegeri_v
+			, name
+			, 1
+			, &v[1] );
 		value[0] = v[0];
 		value[1] = v[1];
 	}
 
 	void PhysicalDevice::doGetValuesI( GLenum name, int32_t( &value )[3] )const
 	{
-		glGetIntegeri_v( name, 0, &value[0] );
-		glGetIntegeri_v( name, 1, &value[1] );
-		glGetIntegeri_v( name, 2, &value[2] );
+		glLogCallNoContext( glGetIntegeri_v
+			, name
+			, 0
+			, &value[0] );
+		glLogCallNoContext( glGetIntegeri_v
+			, name
+			, 1
+			, &value[1] );
+		glLogCallNoContext( glGetIntegeri_v
+			, name
+			, 2
+			, &value[2] );
 	}
 
 	void PhysicalDevice::doGetValuesI( GLenum name, uint32_t( &value )[3] )const
 	{
 		int v[3];
-		glGetIntegeri_v( name, 0, &v[0] );
-		glGetIntegeri_v( name, 1, &v[1] );
-		glGetIntegeri_v( name, 2, &v[2] );
+		glLogCallNoContext( glGetIntegeri_v
+			, name
+			, 0
+			, &v[0] );
+		glLogCallNoContext( glGetIntegeri_v
+			, name
+			, 1
+			, &v[1] );
+		glLogCallNoContext( glGetIntegeri_v
+			, name
+			, 2
+			, &v[2] );
 		value[0] = v[0];
 		value[1] = v[1];
 		value[2] = v[2];
@@ -743,38 +824,50 @@ namespace ashes::gl4
 
 	void PhysicalDevice::doGetValue( GLenum name, int64_t & value )const
 	{
-		glGetInteger64v( name, &value );
+		glLogCallNoContext( glGetInteger64v
+			, name
+			, &value );
 	}
 
 	void PhysicalDevice::doGetValue( GLenum name, uint64_t & value )const
 	{
 		int64_t v;
-		glGetInteger64v( name, &v );
+		glLogCallNoContext( glGetInteger64v
+			, name
+			, &v );
 		value = uint64_t( v );
 	}
 
 	void PhysicalDevice::doGetValues( GLenum name, int64_t( &value )[2] )const
 	{
-		glGetInteger64v( name, value );
+		glLogCallNoContext( glGetInteger64v
+			, name
+			, value );
 	}
 
 	void PhysicalDevice::doGetValues( GLenum name, uint64_t( &value )[2] )const
 	{
 		int64_t v[2];
-		glGetInteger64v( name, v );
+		glLogCallNoContext( glGetInteger64v
+			, name
+			, v );
 		value[0] = v[0];
 		value[1] = v[1];
 	}
 
 	void PhysicalDevice::doGetValues( GLenum name, int64_t( &value )[3] )const
 	{
-		glGetInteger64v( name, value );
+		glLogCallNoContext( glGetInteger64v
+			, name
+			, value );
 	}
 
 	void PhysicalDevice::doGetValues( GLenum name, uint64_t( &value )[3] )const
 	{
 		int64_t v[3];
-		glGetInteger64v( name, v );
+		glLogCallNoContext( glGetInteger64v
+			, name
+			, v );
 		value[0] = v[0];
 		value[1] = v[1];
 		value[2] = v[2];
@@ -782,32 +875,62 @@ namespace ashes::gl4
 
 	void PhysicalDevice::doGetValuesI( GLenum name, int64_t( &value )[2] )const
 	{
-		glGetInteger64i_v( name, 0, &value[0] );
-		glGetInteger64i_v( name, 1, &value[1] );
+		glLogCallNoContext( glGetInteger64i_v
+			, name
+			, 0
+			, &value[0] );
+		glLogCallNoContext( glGetInteger64i_v
+			, name
+			, 1
+			, &value[1] );
 	}
 
 	void PhysicalDevice::doGetValuesI( GLenum name, uint64_t( &value )[2] )const
 	{
 		int64_t v[2];
-		glGetInteger64i_v( name, 0, &v[0] );
-		glGetInteger64i_v( name, 1, &v[1] );
+		glLogCallNoContext( glGetInteger64i_v
+			, name
+			, 0
+			, &v[0] );
+		glLogCallNoContext( glGetInteger64i_v
+			, name
+			, 1
+			, &v[1] );
 		value[0] = v[0];
 		value[1] = v[1];
 	}
 
 	void PhysicalDevice::doGetValuesI( GLenum name, int64_t( &value )[3] )const
 	{
-		glGetInteger64i_v( name, 0, &value[0] );
-		glGetInteger64i_v( name, 1, &value[1] );
-		glGetInteger64i_v( name, 2, &value[2] );
+		glLogCallNoContext( glGetInteger64i_v
+			, name
+			, 0
+			, &value[0] );
+		glLogCallNoContext( glGetInteger64i_v
+			, name
+			, 1
+			, &value[1] );
+		glLogCallNoContext( glGetInteger64i_v
+			, name
+			, 2
+			, &value[2] );
 	}
 
 	void PhysicalDevice::doGetValuesI( GLenum name, uint64_t( &value )[3] )const
 	{
 		int64_t v[3];
-		glGetInteger64i_v( name, 0, &v[0] );
-		glGetInteger64i_v( name, 1, &v[1] );
-		glGetInteger64i_v( name, 2, &v[2] );
+		glLogCallNoContext( glGetInteger64i_v
+			, name
+			, 0
+			, &v[0] );
+		glLogCallNoContext( glGetInteger64i_v
+			, name
+			, 1
+			, &v[1] );
+		glLogCallNoContext( glGetInteger64i_v
+			, name
+			, 2
+			, &v[2] );
 		value[0] = v[0];
 		value[1] = v[1];
 		value[2] = v[2];
@@ -815,29 +938,50 @@ namespace ashes::gl4
 
 	void PhysicalDevice::doGetValue( GLenum name, float & value )const
 	{
-		glGetFloatv( name, &value );
+		glLogCallNoContext( glGetFloatv
+			, name
+			, &value );
 	}
 
 	void PhysicalDevice::doGetValues( GLenum name, float( &value )[2] )const
 	{
-		glGetFloatv( name, value );
+		glLogCallNoContext( glGetFloatv
+			, name
+			, value );
 	}
 
 	void PhysicalDevice::doGetValues( GLenum name, float( &value )[3] )const
 	{
-		glGetFloatv( name, value );
+		glLogCallNoContext( glGetFloatv
+			, name
+			, value );
 	}
 
 	void PhysicalDevice::doGetValuesI( GLenum name, float( &value )[2] )const
 	{
-		glGetFloati_v( name, 0, &value[0] );
-		glGetFloati_v( name, 1, &value[1] );
+		glLogCallNoContext( glGetFloati_v
+			, name
+			, 0
+			, &value[0] );
+		glLogCallNoContext( glGetFloati_v
+			, name
+			, 1
+			, &value[1] );
 	}
 
 	void PhysicalDevice::doGetValuesI( GLenum name, float( &value )[3] )const
 	{
-		glGetFloati_v( name, 0, &value[0] );
-		glGetFloati_v( name, 1, &value[1] );
-		glGetFloati_v( name, 2, &value[2] );
+		glLogCallNoContext( glGetFloati_v
+			, name
+			, 0
+			, &value[0] );
+		glLogCallNoContext( glGetFloati_v
+			, name
+			, 1
+			, &value[1] );
+		glLogCallNoContext( glGetFloati_v
+			, name
+			, 2
+			, &value[2] );
 	}
 }

@@ -964,6 +964,12 @@ namespace ashes::gl3
 	{
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
 		m_dirty = true;
+
+		if ( m_impl )
+		{
+			download( context, m_mappedOffset, m_mappedSize );
+		}
+
 		return VK_SUCCESS;
 	}
 

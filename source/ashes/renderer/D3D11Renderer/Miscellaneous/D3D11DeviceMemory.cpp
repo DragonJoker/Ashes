@@ -859,6 +859,7 @@ namespace ashes::d3d11
 		}
 
 		m_dirty = true;
+		updateDownload( offset, size, m_mappedSubresource );
 		return VK_SUCCESS;
 	}
 

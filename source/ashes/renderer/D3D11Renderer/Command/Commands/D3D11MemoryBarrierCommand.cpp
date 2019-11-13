@@ -55,7 +55,7 @@ namespace ashes::d3d11
 				, 0u );
 		}
 
-		for ( auto & buffer : m_uploadBuffers )
+		for ( auto & buffer : m_downloadBuffers )
 		{
 			get( get( buffer.buffer )->getMemory() )->updateDownload( buffer.offset
 				, buffer.size

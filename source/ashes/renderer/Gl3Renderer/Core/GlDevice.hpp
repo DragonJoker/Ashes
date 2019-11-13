@@ -93,7 +93,7 @@ namespace ashes::gl3
 		
 		inline bool hasMemoryBarrier()const
 		{
-			return m_ownContext->hasMemoryBarrier_ARB();
+			return m_currentContext->hasMemoryBarrier_ARB();
 		}
 
 		inline VkSampler getSampler()const

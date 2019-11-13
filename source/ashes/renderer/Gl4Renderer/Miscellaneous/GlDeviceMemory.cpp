@@ -664,8 +664,6 @@ namespace ashes::gl4
 				, VkDeviceSize size
 				, void ** data )const override
 			{
-				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
-					&& "Unsupported action on a device local buffer" );
 				glLogCall( context
 					, glBindBuffer
 					, GlBufferTarget( m_boundTarget )
@@ -695,9 +693,6 @@ namespace ashes::gl4
 
 			void unlock( ContextLock const & context )const override
 			{
-				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
-					&& "Unsupported action on a device local buffer" );
-
 				glLogCall( context
 					, glUnmapBuffer
 					, GlBufferTarget( m_boundTarget ) );
@@ -923,6 +918,12 @@ namespace ashes::gl4
 	{
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
 		m_dirty = true;
+
+		if ( m_impl )
+		{
+			download( context, m_mappedOffset, m_mappedSize );
+		}
+
 		return VK_SUCCESS;
 	}
 

@@ -38,7 +38,16 @@ namespace ashes::gl3
 				{
 					list.push_back( makeCmd< OpType::eUploadMemory >( get( barrier.buffer )->getMemory() ) );
 				}
-				else if ( checkFlag( barrier.dstAccessMask, VK_ACCESS_TRANSFER_READ_BIT )
+			}
+		}
+
+		list.push_back( makeCmd< OpType::eMemoryBarrier >( getMemoryBarrierFlags( before ) ) );
+
+		for ( auto & barrier : bufferMemoryBarriers )
+		{
+			if ( get( barrier.buffer )->isMapped() )
+			{
+				if ( checkFlag( barrier.dstAccessMask, VK_ACCESS_TRANSFER_READ_BIT )
 					|| checkFlag( barrier.dstAccessMask, VK_ACCESS_HOST_READ_BIT )
 					|| checkFlag( barrier.dstAccessMask, VK_ACCESS_MEMORY_READ_BIT ) )
 				{
@@ -46,7 +55,5 @@ namespace ashes::gl3
 				}
 			}
 		}
-
-		list.push_back( makeCmd< OpType::eMemoryBarrier >( getMemoryBarrierFlags( before ) ) );
 	}
 }

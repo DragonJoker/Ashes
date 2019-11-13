@@ -98,6 +98,7 @@ namespace ashes::gl4
 			, m_dummyWindow->getCreateInfo()
 			, nullptr );
 		ContextLock context{ *m_context };
+		glCheckError( "ContextInitialisation" );
 		m_physicalDevices.emplace_back( VkPhysicalDevice( new PhysicalDevice{ VkInstance( this ) } ) );
 		doCheckEnabledExtensions( ashes::makeArrayView( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) );
 	}
