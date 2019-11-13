@@ -717,17 +717,21 @@ namespace ashes::gl3
 					, GlBufferTarget( m_boundTarget )
 					, 34660
 					, &bufferSize );
-				assert( size + offset <= bufferSize );
 
-				auto result = mapBuffer( context
-					, GlBufferTarget( m_boundTarget )
-					, offset
-					, size == WholeSize ? m_allocateInfo.allocationSize : size
-					, m_mapFlags );
-				*data = result;
-				return result
-					? VK_SUCCESS
-					: VK_ERROR_MEMORY_MAP_FAILED;
+				if ( size + offset <= bufferSize )
+				{
+					auto result = mapBuffer( context
+						, GlBufferTarget( m_boundTarget )
+						, offset
+						, size == WholeSize ? m_allocateInfo.allocationSize : size
+						, m_mapFlags );
+					*data = result;
+					return result
+						? VK_SUCCESS
+						: VK_ERROR_MEMORY_MAP_FAILED;
+				}
+
+				return VK_ERROR_MEMORY_MAP_FAILED;
 			}
 
 			void unlock( ContextLock const & context )const override
