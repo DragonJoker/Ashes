@@ -541,7 +541,6 @@ namespace ashes::gl3
 		doCheckEnabledExtensions( ashes::makeArrayView( m_createInfos.ppEnabledExtensionNames, m_createInfos.enabledExtensionCount ) );
 		doInitialiseQueues();
 		auto lock = getContext();
-		doInitialiseDummy( lock );
 		allocate( m_blitFbos[0]
 			, nullptr
 			, get( this )
@@ -863,49 +862,53 @@ namespace ashes::gl3
 		}
 	}
 
-	void Device::doInitialiseDummy( ContextLock & context )
+	void Device::doInitialiseDummy()const
 	{
-		auto count = uint32_t( sizeof( dummyIndex ) / sizeof( dummyIndex[0] ) );
-		allocate( m_dummyIndexed.indexBuffer
-			, nullptr
-			, get( this )
-			, VkBufferCreateInfo
-			{
-				VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-				nullptr,
-				0u,
-				count * sizeof( uint32_t ),
-				VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-				VK_SHARING_MODE_EXCLUSIVE,
-				0u,
-				nullptr,
-			} );
-		auto indexBuffer = get( m_dummyIndexed.indexBuffer );
-		auto requirements = indexBuffer->getMemoryRequirements();
-		auto deduced = deduceMemoryType( requirements.memoryTypeBits
-			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
-		allocate( m_dummyIndexed.indexMemory
-			, nullptr
-			, get( this )
-			, VkMemoryAllocateInfo{ VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, requirements.size, deduced } );
-		get( m_dummyIndexed.indexMemory )->bindToBuffer( m_dummyIndexed.indexBuffer, 0u );
-		auto memory = get( m_dummyIndexed.indexMemory );
-		uint8_t * buffer{ nullptr };
-		auto size = count * sizeof( uint32_t );
-
-		if ( memory->lock( context, 0u, size, 0u, reinterpret_cast< void ** >( &buffer ) ) == VK_SUCCESS )
+		if ( !m_dummyIndexed.indexBuffer )
 		{
-			std::copy( dummyIndex, dummyIndex + size, buffer );
-			memory->flush( context, 0, size );
-			memory->unlock( context );
-		}
+			auto context = getContext();
+			auto count = uint32_t( sizeof( dummyIndex ) / sizeof( dummyIndex[0] ) );
+			allocate( m_dummyIndexed.indexBuffer
+				, nullptr
+				, get( this )
+				, VkBufferCreateInfo
+				{
+					VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+					nullptr,
+					0u,
+					count * sizeof( uint32_t ),
+					VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+					VK_SHARING_MODE_EXCLUSIVE,
+					0u,
+					nullptr,
+				} );
+			auto indexBuffer = get( m_dummyIndexed.indexBuffer );
+			auto requirements = indexBuffer->getMemoryRequirements();
+			auto deduced = deduceMemoryType( requirements.memoryTypeBits
+				, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
+			allocate( m_dummyIndexed.indexMemory
+				, nullptr
+				, get( this )
+				, VkMemoryAllocateInfo{ VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, requirements.size, deduced } );
+			get( m_dummyIndexed.indexMemory )->bindToBuffer( m_dummyIndexed.indexBuffer, 0u );
+			auto memory = get( m_dummyIndexed.indexMemory );
+			uint8_t * buffer{ nullptr };
+			auto size = count * sizeof( uint32_t );
 
-		m_dummyIndexed.geometryBuffers = std::make_unique< GeometryBuffers >( get( this )
-			, VboBindings{}
-			, BufferObjectBinding{ indexBuffer->getInternal(), 0u, m_dummyIndexed.indexBuffer }
-			, VkPipelineVertexInputStateCreateInfo{}
-			, InputLayout{}
-			, VK_INDEX_TYPE_UINT32 );
-		m_dummyIndexed.geometryBuffers->initialise( context );
+			if ( memory->lock( context, 0u, size, 0u, reinterpret_cast< void ** >( &buffer ) ) == VK_SUCCESS )
+			{
+				std::memcpy( buffer, dummyIndex, size );
+				memory->flush( context, 0, size );
+				memory->unlock( context );
+			}
+
+			m_dummyIndexed.geometryBuffers = std::make_unique< GeometryBuffers >( get( this )
+				, VboBindings{}
+				, BufferObjectBinding{ indexBuffer->getInternal(), 0u, m_dummyIndexed.indexBuffer }
+				, VkPipelineVertexInputStateCreateInfo{}
+				, InputLayout{}
+				, VK_INDEX_TYPE_UINT32 );
+			m_dummyIndexed.geometryBuffers->initialise( context );
+		}
 	}
 }

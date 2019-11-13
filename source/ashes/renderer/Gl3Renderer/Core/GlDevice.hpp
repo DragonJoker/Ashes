@@ -61,11 +61,13 @@ namespace ashes::gl3
 
 		inline GeometryBuffers & getEmptyIndexedVao()const
 		{
+			doInitialiseDummy();
 			return *m_dummyIndexed.geometryBuffers;
 		}
 
 		inline VkBuffer getEmptyIndexedVaoIdx()const
 		{
+			doInitialiseDummy();
 			return m_dummyIndexed.indexBuffer;
 		}
 
@@ -101,7 +103,7 @@ namespace ashes::gl3
 
 	private:
 		void doInitialiseQueues();
-		void doInitialiseDummy( ContextLock & context );
+		void doInitialiseDummy()const;
 
 	private:
 		struct QueueCreates
@@ -127,10 +129,10 @@ namespace ashes::gl3
 		// Mimic the behavior in Vulkan, when no IBO nor VBO is bound.
 		mutable struct
 		{
-			VkBuffer indexBuffer;
-			VkBuffer vertexBuffer;
-			VkDeviceMemory indexMemory;
-			VkDeviceMemory vertexMemory;
+			VkBuffer indexBuffer{};
+			VkBuffer vertexBuffer{};
+			VkDeviceMemory indexMemory{};
+			VkDeviceMemory vertexMemory{};
 			GeometryBuffersPtr geometryBuffers;
 		} m_dummyIndexed;
 		mutable VkFramebuffer m_blitFbos[2];
