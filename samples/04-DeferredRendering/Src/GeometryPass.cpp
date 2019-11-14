@@ -2,33 +2,22 @@
 
 #include "RenderTarget.hpp"
 
-#include <Ashes/Buffer/Buffer.hpp>
-#include <Ashes/Buffer/StagingBuffer.hpp>
-#include <Ashes/Buffer/VertexBuffer.hpp>
-#include <Ashes/Command/CommandBuffer.hpp>
-#include <Ashes/Command/CommandPool.hpp>
-#include <Ashes/Core/Device.hpp>
-#include <Ashes/Descriptor/DescriptorSet.hpp>
-#include <Ashes/Descriptor/DescriptorSetLayout.hpp>
-#include <Ashes/Descriptor/DescriptorSetLayoutBinding.hpp>
-#include <Ashes/Descriptor/DescriptorSetPool.hpp>
-#include <Ashes/Image/Image.hpp>
-#include <Ashes/Image/ImageView.hpp>
-#include <Ashes/Pipeline/DepthStencilState.hpp>
-#include <Ashes/Pipeline/InputAssemblyState.hpp>
-#include <Ashes/Pipeline/MultisampleState.hpp>
-#include <Ashes/Pipeline/Pipeline.hpp>
-#include <Ashes/Pipeline/PipelineLayout.hpp>
-#include <Ashes/Pipeline/Scissor.hpp>
-#include <Ashes/Pipeline/VertexLayout.hpp>
-#include <Ashes/Pipeline/Viewport.hpp>
-#include <Ashes/RenderPass/RenderPass.hpp>
-#include <Ashes/RenderPass/RenderSubpass.hpp>
-#include <Ashes/RenderPass/RenderSubpassState.hpp>
-#include <Ashes/RenderPass/FrameBufferAttachment.hpp>
-#include <Ashes/Sync/ImageMemoryBarrier.hpp>
+#include <ashespp/Buffer/Buffer.hpp>
+#include <ashespp/Buffer/StagingBuffer.hpp>
+#include <ashespp/Buffer/VertexBuffer.hpp>
+#include <ashespp/Command/CommandBuffer.hpp>
+#include <ashespp/Command/CommandPool.hpp>
+#include <ashespp/Core/Device.hpp>
+#include <ashespp/Descriptor/DescriptorSet.hpp>
+#include <ashespp/Descriptor/DescriptorSetLayout.hpp>
+#include <ashespp/Descriptor/DescriptorSetPool.hpp>
+#include <ashespp/Image/Image.hpp>
+#include <ashespp/Image/ImageView.hpp>
+#include <ashespp/Pipeline/GraphicsPipeline.hpp>
+#include <ashespp/Pipeline/PipelineLayout.hpp>
+#include <ashespp/RenderPass/RenderPass.hpp>
 
-#include <Utils/GlslToSpv.hpp>
+#include <util/GlslToSpv.hpp>
 
 #include <FileUtils.hpp>
 
@@ -38,37 +27,31 @@ namespace vkapp
 {
 	namespace
 	{
-		std::vector< ashes::Format > doGetFormats( GeometryPassResult const & gbuffer
-			, ashes::Format depthFormat )
+		std::vector< VkFormat > doGetFormats( GeometryPassResult const & gbuffer
+			, VkFormat depthFormat )
 		{
-			std::vector< ashes::Format > result
+			std::vector< VkFormat > result
 			{
 				depthFormat,
 			};
 
 			for ( auto & texture : gbuffer )
 			{
-				result.push_back( texture.view->getFormat() );
+				result.push_back( texture.view.getFormat() );
 			}
 
 			return result;
 		}
 
-		ashes::ImageViewPtr doCloneView( ashes::ImageView const & view )
+		ashes::ImageView doCloneView( ashes::ImageView const & view )
 		{
-			return view.getImage().createView(
-				{
-					view.getType(),
-					view.getFormat(),
-					view.getComponentMapping(),
-					view.getSubResourceRange(),
-				} );
+			return view.image->createView( view.createInfo );
 		}
 
-		ashes::ImageViewPtrArray doGetViews( GeometryPassResult const & gbuffer
-			, ashes::ImageViewPtr depthview )
+		ashes::ImageViewArray doGetViews( GeometryPassResult const & gbuffer
+			, ashes::ImageView depthview )
 		{
-			ashes::ImageViewPtrArray result;
+			ashes::ImageViewArray result;
 			result.emplace_back( depthview );
 
 			for ( auto & texture : gbuffer )
@@ -85,9 +68,9 @@ namespace vkapp
 		, ashes::Queue const & transferQueue
 		, std::string const & fragmentShaderFile
 		, GeometryPassResult const & gbuffer
-		, ashes::Format depthFormat
-		, ashes::UniformBuffer< common::SceneData > const & sceneUbo
-		, ashes::UniformBuffer< common::ObjectData > const & objectUbo )
+		, VkFormat depthFormat
+		, ashes::UniformBuffer const & sceneUbo
+		, ashes::UniformBuffer const & objectUbo )
 		: common::NodesRenderer{ device
 			, commandPool
 			, transferQueue
@@ -106,10 +89,10 @@ namespace vkapp
 			, target.getDepthView() ) );
 	}
 
-	void GeometryPass::doFillObjectDescriptorLayoutBindings( ashes::DescriptorSetLayoutBindingArray & bindings )
+	void GeometryPass::doFillObjectDescriptorLayoutBindings( ashes::VkDescriptorSetLayoutBindingArray & bindings )
 	{
-		bindings.emplace_back( 1u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eVertex );
-		bindings.emplace_back( 2u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eVertex );
+		bindings.push_back( { 1u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_VERTEX_BIT, nullptr } );
+		bindings.push_back( { 2u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_VERTEX_BIT, nullptr } );
 	}
 
 	void GeometryPass::doFillObjectDescriptorSet( ashes::DescriptorSetLayout & descriptorLayout

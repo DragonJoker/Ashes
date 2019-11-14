@@ -3,11 +3,12 @@
 #include "Application.hpp"
 #include "MainFrame.hpp"
 
-#include <Core/Surface.hpp>
-#include <Core/Device.hpp>
-#include <Core/Exception.hpp>
+#include <ashespp/Core/Surface.hpp>
+#include <ashespp/Core/Device.hpp>
 
-#include <Transform.hpp>
+#include <ashes/common/Exception.hpp>
+
+#include <util/Transform.hpp>
 
 #include <chrono>
 
@@ -20,9 +21,9 @@ namespace vkapp
 	{
 		try
 		{
-			m_surface = doCreateSurface( instance );
+			doCreateSurface( instance );
 			std::cout << "Surface created." << std::endl;
-			doCreateDevice( instance, *m_surface );
+			doCreateDevice( instance );
 			std::cout << "Logical device created." << std::endl;
 		}
 		catch ( std::exception & )
@@ -46,28 +47,28 @@ namespace vkapp
 		}
 	}
 
-	ashes::SurfacePtr RenderPanel::doCreateSurface( utils::Instance const & instance )
+	void RenderPanel::doCreateSurface( utils::Instance const & instance )
 	{
 		auto handle = common::makeWindowHandle( *this );
 		auto & gpu = instance.getPhysicalDevice( 0u );
-		return instance.getInstance().createSurface( gpu
+		m_surface = instance.getInstance().createSurface( gpu
 			, std::move( handle ) );
 	}
 
-	void RenderPanel::doCreateDevice( utils::Instance const & instance
-		, ashes::Surface const & surface )
+	void RenderPanel::doCreateDevice( utils::Instance const & instance )
 	{
-		ashes::DeviceCreateInfo createInfo;
-		createInfo.enabledFeatures = surface.getGpu().getFeatures();
-		createInfo.enabledLayerNames = instance.getLayerNames();
-		createInfo.enabledExtensionNames = instance.getExtensionNames();
-		createInfo.queueCreateInfos.push_back( ashes::DeviceQueueCreateInfo
-			{
-				0u,
-				0u,
-				{ 1.0f },
-			} );
-		m_device = instance.getInstance().createDevice( surface.getGpu()
+		auto & gpu = m_surface->getGpu();
+		ashes::DeviceQueueCreateInfoArray queueCreateInfos;
+		queueCreateInfos.emplace_back( 0u, 0u, ashes::FloatArray{ 1.0f } );
+		ashes::DeviceCreateInfo createInfo
+		{
+			0u,
+			std::move( queueCreateInfos ),
+			instance.getLayerNames(),
+			{},//instance.getExtensionNames(),
+			gpu.getFeatures(),
+		};
+		m_device = instance.getInstance().createDevice( gpu
 			, std::move( createInfo ) );
 
 		if ( m_device )

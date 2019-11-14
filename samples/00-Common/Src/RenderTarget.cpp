@@ -3,25 +3,21 @@
 #include "OpaqueRendering.hpp"
 #include "TransparentRendering.hpp"
 
-#include <Ashes/Buffer/StagingBuffer.hpp>
-#include <Ashes/Buffer/UniformBuffer.hpp>
-#include <Ashes/Command/Queue.hpp>
-#include <Ashes/Descriptor/DescriptorSet.hpp>
-#include <Ashes/Descriptor/DescriptorSetLayout.hpp>
-#include <Ashes/Descriptor/DescriptorSetPool.hpp>
-#include <Ashes/Image/Image.hpp>
-#include <Ashes/Image/ImageView.hpp>
-#include <Ashes/Pipeline/PipelineLayout.hpp>
-#include <Ashes/Pipeline/Pipeline.hpp>
-#include <Ashes/Pipeline/VertexLayout.hpp>
-#include <Ashes/RenderPass/FrameBuffer.hpp>
-#include <Ashes/RenderPass/RenderPass.hpp>
-#include <Ashes/RenderPass/RenderSubpass.hpp>
-#include <Ashes/RenderPass/RenderSubpassState.hpp>
-#include <Ashes/Sync/ImageMemoryBarrier.hpp>
+#include <ashespp/Buffer/StagingBuffer.hpp>
+#include <ashespp/Buffer/UniformBuffer.hpp>
+#include <ashespp/Command/Queue.hpp>
+#include <ashespp/Descriptor/DescriptorSet.hpp>
+#include <ashespp/Descriptor/DescriptorSetLayout.hpp>
+#include <ashespp/Descriptor/DescriptorSetPool.hpp>
+#include <ashespp/Image/Image.hpp>
+#include <ashespp/Image/ImageView.hpp>
+#include <ashespp/Pipeline/PipelineLayout.hpp>
+#include <ashespp/Pipeline/GraphicsPipeline.hpp>
+#include <ashespp/RenderPass/FrameBuffer.hpp>
+#include <ashespp/RenderPass/RenderPass.hpp>
 
-#include <Utils/GlslToSpv.hpp>
-#include <Utils/Transform.hpp>
+#include <util/GlslToSpv.hpp>
+#include <util/Transform.hpp>
 
 #include <chrono>
 
@@ -29,14 +25,14 @@ namespace common
 {
 	namespace
 	{
-		static ashes::Format const DepthFormat = ashes::Format::eD24_UNORM_S8_UINT;
-		static ashes::Format const ColourFormat = ashes::Format::eR8G8B8A8_UNORM;
+		static VkFormat const DepthFormat = VK_FORMAT_D24_UNORM_S8_UINT;
+		static VkFormat const ColourFormat = VK_FORMAT_R8G8B8A8_UNORM;
 	}
 
 	RenderTarget::RenderTarget( utils::Device const & device
 		, ashes::CommandPool const & commandPool
 		, ashes::Queue const & transferQueue
-		, ashes::Extent2D const & size
+		, VkExtent2D const & size
 		, Scene scene
 		, ImagePtrArray images )
 		: m_device{ device }
@@ -68,7 +64,7 @@ namespace common
 		doCleanup();
 	}
 
-	void RenderTarget::resize( ashes::Extent2D const & size )
+	void RenderTarget::resize( VkExtent2D const & size )
 	{
 		if ( size != m_size )
 		{
@@ -115,9 +111,7 @@ namespace common
 
 		m_transparent.reset();
 		m_opaque.reset();
-		m_depthView.reset();
 		m_depth.reset();
-		m_colourView.reset();
 		m_colour.reset();
 
 		m_images.clear();
@@ -140,30 +134,30 @@ namespace common
 			textureNode->texture = m_device.createImage(
 				{
 					0u,
-					ashes::ImageType::e2D,
+					VK_IMAGE_TYPE_2D,
 					image->format,
-					ashes::Extent3D{ image->size.width, image->size.height, 1u },
+					VkExtent3D{ image->size.width, image->size.height, 1u },
 					4u,
 					1u,
-					ashes::SampleCountFlag::e1,
-					ashes::ImageTiling::eOptimal,
-					( ashes::ImageUsageFlag::eTransferSrc
-						| ashes::ImageUsageFlag::eTransferDst
-						| ashes::ImageUsageFlag::eSampled )
+					VK_SAMPLE_COUNT_1_BIT,
+					VK_IMAGE_TILING_OPTIMAL,
+					( VK_IMAGE_USAGE_TRANSFER_SRC_BIT
+						| VK_IMAGE_USAGE_TRANSFER_DST_BIT
+						| VK_IMAGE_USAGE_SAMPLED_BIT )
 				}
-				, ashes::MemoryPropertyFlag::eDeviceLocal );
-			textureNode->view = textureNode->texture->createView( ashes::ImageViewType( textureNode->texture->getType() )
+				, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
+			textureNode->view = textureNode->texture->createView( VkImageViewType( textureNode->texture->getType() )
 				, textureNode->texture->getFormat()
 				, 0u
 				, 4u );
-			auto view = textureNode->texture->createView( ashes::ImageViewType( textureNode->texture->getType() )
+			auto view = textureNode->texture->createView( VkImageViewType( textureNode->texture->getType() )
 				, textureNode->texture->getFormat() );
-			auto staging = ashes::StagingBuffer{ m_device, 0u, getSize( image->size, image->format ) };
+			auto staging = ashes::StagingBuffer{ m_device, 0u, ashes::getSize( image->size, image->format ) };
 			staging.uploadTextureData( m_transferQueue
 				, m_commandPool
 				, image->format
 				, image->data
-				, *view );
+				, view );
 			textureNode->texture->generateMipmaps( m_commandPool
 				, m_transferQueue );
 			m_textureNodes.emplace_back( textureNode );
@@ -177,39 +171,37 @@ namespace common
 
 	void RenderTarget::doUpdateRenderViews()
 	{
-		m_colourView.reset();
 		m_colour = m_device.createImage(
 			{
 				0,
-				ashes::ImageType::e2D,
+				VK_IMAGE_TYPE_2D,
 				ColourFormat,
-				ashes::Extent3D{ m_size.width, m_size.height, 1u },
+				VkExtent3D{ m_size.width, m_size.height, 1u },
 				1u,
 				1u,
-				ashes::SampleCountFlag::e1,
-				ashes::ImageTiling::eOptimal,
-				( ashes::ImageUsageFlag::eColourAttachment
-					| ashes::ImageUsageFlag::eSampled )
+				VK_SAMPLE_COUNT_1_BIT,
+				VK_IMAGE_TILING_OPTIMAL,
+				( VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+					| VK_IMAGE_USAGE_SAMPLED_BIT )
 			}
-			, ashes::MemoryPropertyFlag::eDeviceLocal );
-		m_colourView = m_colour->createView( ashes::ImageViewType::e2D
+			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
+		m_colourView = m_colour->createView( VK_IMAGE_VIEW_TYPE_2D
 			, m_colour->getFormat() );
 
-		m_depthView.reset();
 		m_depth = m_device.createImage(
 			{
 				0,
-				ashes::ImageType::e2D,
+				VK_IMAGE_TYPE_2D,
 				DepthFormat,
-				ashes::Extent3D{ m_size.width, m_size.height, 1u },
+				VkExtent3D{ m_size.width, m_size.height, 1u },
 				1u,
 				1u,
-				ashes::SampleCountFlag::e1,
-				ashes::ImageTiling::eOptimal,
-				ashes::ImageUsageFlag::eDepthStencilAttachment
+				VK_SAMPLE_COUNT_1_BIT,
+				VK_IMAGE_TILING_OPTIMAL,
+				VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
 			}
-			, ashes::MemoryPropertyFlag::eDeviceLocal );
-		m_depthView = m_depth->createView( ashes::ImageViewType::e2D
+			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
+		m_depthView = m_depth->createView( VK_IMAGE_VIEW_TYPE_2D
 			, m_depth->getFormat() );
 	}
 }

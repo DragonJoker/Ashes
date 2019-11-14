@@ -1,0 +1,28 @@
+/*
+This file belongs to Ashes.
+See LICENSE file in root folder
+*/
+#pragma once
+
+#include "renderer/D3D11Renderer/Command/Commands/D3D11CommandBase.hpp"
+
+namespace ashes::d3d11
+{
+	class UploadMemoryCommand
+		: public CommandBase
+	{
+	public:
+		UploadMemoryCommand( VkDevice device
+			, ObjectMemory const * memory
+			, VkDeviceSize offset
+			, VkDeviceSize size
+			, UINT subresource );
+		void apply( Context const & context )const;
+		CommandPtr clone()const;
+
+	private:
+		ObjectMemory const * m_memory;
+		std::pair< VkDeviceSize, VkDeviceSize > m_range;
+		UINT m_subresource;
+	};
+}

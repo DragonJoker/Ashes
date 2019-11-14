@@ -1,15 +1,13 @@
 #pragma once
 
-#include <Ashes/Core/Surface.hpp>
-#include <Ashes/Core/Instance.hpp>
+#include <ashespp/Core/Surface.hpp>
+#include <ashespp/Core/Instance.hpp>
 
-#include <Utils/Factory.hpp>
-#include <Utils/Quaternion.hpp>
-#include <Utils/UtilsDebug.hpp>
-#include <Utils/UtilsDevice.hpp>
-#include <Utils/UtilsInstance.hpp>
-#include <Utils/UtilsPlugin.hpp>
-#include <Utils/UtilsSwapChain.hpp>
+#include <util/Quaternion.hpp>
+#include <util/UtilsDebug.hpp>
+#include <util/UtilsDevice.hpp>
+#include <util/UtilsInstance.hpp>
+#include <util/UtilsSwapChain.hpp>
 
 #pragma warning( disable: 4996 )
 #include <wx/wx.h>
@@ -33,13 +31,13 @@ namespace common
 	{
 		//!\~english	The image dimensions.
 		//!\~french		Les dimensions de l'image.
-		ashes::Extent3D size;
+		VkExtent3D size;
 		//!\~english	The image buffer.
 		//!\~french		Le tampon de l'image.
 		ashes::ByteArray data;
 		//!\~english	The image pixel format.
 		//!\~french		Les format des pixels de l'image.
-		ashes::Format format;
+		VkFormat format;
 	};
 	/**
 	*\~french
@@ -62,6 +60,9 @@ namespace common
 	*	The GPU chosen to bind the window and the GPU.
 	*/
 	ashes::WindowHandle makeWindowHandle( wxWindow const & window );
+
+	wxString makeName( int index
+		, wxString const & name );
 
 	class Application;
 	class MainFrame;

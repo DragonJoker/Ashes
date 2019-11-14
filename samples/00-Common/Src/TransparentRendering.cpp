@@ -2,15 +2,12 @@
 
 #include "Scene.hpp"
 
-#include <Ashes/Pipeline/VertexLayout.hpp>
-#include <Ashes/RenderPass/RenderSubpass.hpp>
-
 namespace common
 {
 	TransparentRendering::TransparentRendering( NodesInstancePtr renderer
 		, Scene const & scene
 		, ashes::StagingBuffer & stagingBuffer
-		, ashes::ImageViewPtrArray views
+		, ashes::ImageViewArray views
 		, common::TextureNodePtrArray const & textureNodes )
 		: m_instance{ std::move( renderer ) }
 	{

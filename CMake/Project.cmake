@@ -10,18 +10,43 @@ macro( list_subdirs RESULT CURDIR )
 	set( ${RESULT} ${_SUBFOLDERS} )
 endmacro()
 
-macro( target_install_subdir_headers TARGET_NAME SRCDIR SUBDIR CURDIR )
+macro( __target_install_headers TARGET_NAME SRCDIR DSTDIR )
 	file(
 		GLOB
 			_HEADERS
-			${SRCDIR}/${CURDIR}${SUBDIR}/*.h
-			${SRCDIR}/${CURDIR}${SUBDIR}/*.hpp
-			${SRCDIR}/${CURDIR}${SUBDIR}/*.inl
+			${SRCDIR}/*.h
+			${SRCDIR}/*.hpp
+			${SRCDIR}/*.inl
 	)
 	install(
 		FILES ${_HEADERS}
 		COMPONENT ${TARGET_NAME}_dev
-		DESTINATION include/${TARGET_NAME}/${CURDIR}${SUBDIR}
+		DESTINATION include/${DSTDIR}
+	)
+endmacro()
+
+macro( target_install_subdir_headers TARGET_NAME SRCDIR SUBDIR CURDIR )
+	__target_install_headers( ${TARGET_NAME}
+		${SRCDIR}/${CURDIR}${SUBDIR}
+		${TARGET_NAME}/${CURDIR}${SUBDIR}
+	)
+endmacro()
+
+macro( target_install_dir_headers TARGET_NAME SRCDIR DSTDIR )
+	file(
+		GLOB
+			_HEADERS
+				${SRCDIR}/*.h
+				${SRCDIR}/*.hpp
+				${SRCDIR}/*.inl
+				${SRCDIR}/*.h
+				${SRCDIR}/*.hpp
+				${SRCDIR}/*.inl
+	)
+	install(
+		FILES ${_HEADERS}
+		COMPONENT ${TARGET_NAME}_dev
+		DESTINATION include/${DSTDIR}
 	)
 endmacro()
 
@@ -39,16 +64,10 @@ macro( target_install_headers TARGET_NAME HDR_FOLDER )
 		endforeach()
 	endforeach()
 
-	file(
-		GLOB
-			TARGET_HEADERS
-			${HDR_FOLDER}/*.h
-			${HDR_FOLDER}/*.hpp
-			${HDR_FOLDER}/*.inl
-	)
-	install(
-		FILES ${TARGET_HEADERS}
-		COMPONENT ${TARGET_NAME}_dev
-		DESTINATION include/${TARGET_NAME}
+	target_install_dir_headers( ${TARGET_NAME}
+		${HDR_FOLDER}
+		${TARGET_NAME}
 	)
 endmacro()
+
+set( CMAKE_DEBUG_POSTFIX "d" CACHE STRING "" FORCE )

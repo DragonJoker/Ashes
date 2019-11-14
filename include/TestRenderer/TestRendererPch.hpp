@@ -1,1 +1,0 @@
-#include "TestRendererPrerequisites.hpp"

@@ -5,7 +5,7 @@
 #include <AssimpLoader.hpp>
 #include <FileUtils.hpp>
 
-#include <Ashes/Buffer/UniformBuffer.hpp>
+#include <ashespp/Buffer/UniformBuffer.hpp>
 
 namespace vkapp
 {
@@ -19,11 +19,11 @@ namespace vkapp
 	}
 
 	void RenderPanel::doInitialise( utils::Device const & device
-		, ashes::Extent2D const & size )
+		, VkExtent2D const & size )
 	{
 		common::ImagePtrArray images;
 		common::Scene scene;
-		scene.object = common::loadObject( utils::getPath( utils::getExecutableDirectory() ) / "share" / "Assets" / "Nyra", "Nyra_pose.fbx", images );
+		scene.object = common::loadObject( ashes::getPath( ashes::getExecutableDirectory() ) / "share" / "Assets" / "Nyra", "Nyra_pose.fbx", images );
 		m_renderTarget = std::make_unique< RenderTarget >( device
 			, *m_commandPool
 			, *m_graphicsQueue

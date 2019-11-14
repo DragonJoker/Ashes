@@ -2,21 +2,21 @@
 
 #include "Prerequisites.hpp"
 
-#include <Utils/GlslToSpv.hpp>
-#include <Utils/UtilsDevice.hpp>
+#include <util/GlslToSpv.hpp>
+#include <util/UtilsDevice.hpp>
 
-#include <Ashes/Buffer/UniformBuffer.hpp>
-#include <Ashes/Command/CommandBuffer.hpp>
-#include <Ashes/Descriptor/DescriptorSet.hpp>
-#include <Ashes/Descriptor/DescriptorSetLayout.hpp>
-#include <Ashes/Descriptor/DescriptorSetPool.hpp>
-#include <Ashes/Image/Sampler.hpp>
-#include <Ashes/Miscellaneous/QueryPool.hpp>
-#include <Ashes/Pipeline/Pipeline.hpp>
-#include <Ashes/Pipeline/PipelineLayout.hpp>
-#include <Ashes/RenderPass/RenderPass.hpp>
-#include <Ashes/RenderPass/FrameBuffer.hpp>
-#include <Ashes/RenderPass/RenderPass.hpp>
+#include <ashespp/Buffer/UniformBuffer.hpp>
+#include <ashespp/Command/CommandBuffer.hpp>
+#include <ashespp/Descriptor/DescriptorSet.hpp>
+#include <ashespp/Descriptor/DescriptorSetLayout.hpp>
+#include <ashespp/Descriptor/DescriptorSetPool.hpp>
+#include <ashespp/Image/Sampler.hpp>
+#include <ashespp/Miscellaneous/QueryPool.hpp>
+#include <ashespp/Pipeline/GraphicsPipeline.hpp>
+#include <ashespp/Pipeline/PipelineLayout.hpp>
+#include <ashespp/RenderPass/RenderPass.hpp>
+#include <ashespp/RenderPass/FrameBuffer.hpp>
+#include <ashespp/RenderPass/RenderPass.hpp>
 
 namespace common
 {
@@ -27,7 +27,7 @@ namespace common
 			, ashes::CommandPool const & commandPool
 			, ashes::Queue const & transferQueue
 			, std::string const & fragmentShaderFile
-			, std::vector< ashes::Format > const & formats
+			, std::vector< VkFormat > const & formats
 			, bool clearViews
 			, bool opaqueNodes );
 		virtual ~NodesRenderer() = default;
@@ -36,7 +36,7 @@ namespace common
 			, std::chrono::nanoseconds & gpu )const;
 		void initialise( Scene const & scene
 			, ashes::StagingBuffer & stagingBuffer
-			, ashes::ImageViewPtrArray views
+			, ashes::ImageViewArray views
 			, TextureNodePtrArray const & textureNodes );
 
 		inline utils::Device const & getDevice()const
@@ -55,7 +55,7 @@ namespace common
 		}
 
 	protected:
-		void doUpdate( ashes::ImageViewPtrArray views );
+		void doUpdate( ashes::ImageViewArray views );
 
 	private:
 		void doInitialiseObject( Object const & object
@@ -66,8 +66,16 @@ namespace common
 			, ashes::StagingBuffer & stagingBuffer
 			, TextureNodePtrArray const & textureNodes
 			, uint32_t & matIndex );
+		void doFillTextures( ashes::DescriptorSetLayout const & layout
+			, ashes::DescriptorSet & descriptorSet
+			, TextureNodePtrArray const & textures );
+		ashes::GraphicsPipelinePtr doCreatePipeline( ashes::PipelineLayout const & pipelineLayout
+			, ashes::PipelineShaderStageCreateInfoArray shaderStages
+			, ashes::PipelineVertexInputStateCreateInfo vertexLayout
+			, VkPrimitiveTopology topology
+			, VkCullModeFlagBits cullMode );
 
-		virtual void doFillObjectDescriptorLayoutBindings( ashes::DescriptorSetLayoutBindingArray & bindings )
+		virtual void doFillObjectDescriptorLayoutBindings( ashes::VkDescriptorSetLayoutBindingArray & bindings )
 		{
 		}
 
@@ -76,7 +84,7 @@ namespace common
 		{
 		}
 
-		virtual void doFillBillboardDescriptorLayoutBindings( ashes::DescriptorSetLayoutBindingArray & bindings )
+		virtual void doFillBillboardDescriptorLayoutBindings( ashes::VkDescriptorSetLayoutBindingArray & bindings )
 		{
 		}
 
@@ -85,25 +93,26 @@ namespace common
 		{
 		}
 
+
 	protected:
 		utils::Device const & m_device;
 		ashes::CommandPool const & m_commandPool;
 		ashes::Queue const & m_transferQueue;
+		ashes::ImagePtr m_dummyImage;
+		ashes::ImageView m_dummyView;
 		bool m_opaqueNodes;
-		ashes::Extent2D m_size;
+		VkExtent2D m_size;
 		std::string m_fragmentShaderFile;
 		ashes::SamplerPtr m_sampler;
 		ashes::CommandBufferPtr m_commandBuffer;
-		ashes::UniformBufferPtr< MaterialData > m_materialsUbo;
+		ashes::UniformBufferPtr m_materialsUbo;
+		std::vector< common::MaterialData > m_materialsData;
 
 		ashes::DescriptorSetLayoutPtr m_objectDescriptorLayout;
 		ashes::DescriptorSetPoolPtr m_objectDescriptorPool;
-		ashes::VertexLayoutPtr m_objectVertexLayout;
 
 		ashes::DescriptorSetLayoutPtr m_billboardDescriptorLayout;
 		ashes::DescriptorSetPoolPtr m_billboardDescriptorPool;
-		ashes::VertexLayoutPtr m_billboardVertexLayout;
-		ashes::VertexLayoutPtr m_billboardInstanceLayout;
 
 		ashes::RenderPassPtr m_renderPass;
 		ashes::FrameBufferPtr m_frameBuffer;

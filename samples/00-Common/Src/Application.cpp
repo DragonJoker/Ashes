@@ -3,7 +3,7 @@
 #include "FileUtils.hpp"
 #include "MainFrame.hpp"
 
-#include <Utils/GlslToSpv.hpp>
+#include <util/GlslToSpv.hpp>
 
 #include <wx/cmdline.h>
 
@@ -13,14 +13,6 @@ namespace common
 {
 	namespace
 	{
-		/**
-		*\brief
-		*	Surcharge de std::streambuf, permettant de personnaliser la sortie.
-		*\param LogStreambufTraits
-		*	Permet la personnalisation de la sortie.\n
-		*	Doit impl�menter la fonction statique suivante :\n
-		*	Log( string_type appName, string_type buffer )
-		*/
 		template< typename LogStreambufTraits >
 		class LogStreambuf
 			: public std::streambuf
@@ -32,24 +24,14 @@ namespace common
 			using streambuf_type = std::basic_streambuf< CharType >;
 			using int_type = typename std::basic_streambuf< CharType >::int_type;
 			using traits_type = typename std::basic_streambuf< CharType >::traits_type;
-			/**
-			*\brief
-			*	Constructeur, �change le tampon du flux donn� avec celui-ci.
-			*\param[in] appName
-			*	Le nom de l'application.
-			*\param[in,out] stream
-			*	Le flux recevant ce tampon de flux.
-			*/
+
 			LogStreambuf( string_type const & appName, ostream_type & stream )
 				: m_stream( stream )
 				, m_appName{ appName }
 			{
 				m_old = m_stream.rdbuf( this );
 			}
-			/**
-			*\brief
-			*	Destructeur, r�tablit le tampon d'origine du flux.
-			*/
+
 			~LogStreambuf()
 			{
 				m_stream.rdbuf( m_old );
@@ -115,59 +97,11 @@ namespace common
 			eWarning,
 			eError,
 		};
-		/**
-		*\brief
-		*	Affiche la ligne donn�e dans la console de d�bogage.
-		*\param[in] log
-		*	La ligne � logger.
-		*/
-		void logDebugString( std::string const & log );
-		/**
-		*\brief
-		*	Classe trait, pour afficher une ligne dans le logcat.
-		*/
-		template< LogType Type >
-		struct TLogStreambufTraits
-		{
-			using CharType = char;
-			using string_type = std::basic_string< CharType >;
 
-			/**
-			*\brief
-			*	Affiche la ligne donn�e dans le logcat.
-			*\param[in] appName
-			*	Le nom de l'application.
-			*\param[in] text
-			*	La ligne � logger.
-			*/
-			static void Log( string_type const & appName
-				, string_type const & text )
-			{
-				static std::string const LogName[]
-				{
-					"Debug",
-					"Info",
-					"Warning",
-					"Error",
-				};
-				auto log = appName + " - " + LogName[size_t( Type )] + ": " + text + "\n";
-				printf( "%s", log.c_str() );
-				logDebugString( log );
-			}
-		};
+		std::string logFileName = "Debug.log";
 
-		//! Sp�cialisation de TLogStreambufTraits pour les logs de d�bogage.
-		using DebugLogStreambufTraits = TLogStreambufTraits< LogType::eDebug >;
-		//! Sp�cialisation de TLogStreambufTraits pour les logs informatifs.
-		using InfoLogStreambufTraits = TLogStreambufTraits< LogType::eInfo >;
-		//! Sp�cialisation de TLogStreambufTraits pour les logs de warning.
-		using WarningLogStreambufTraits = TLogStreambufTraits< LogType::eWarning >;
-		//! Sp�cialisation de TLogStreambufTraits pour les logs d'erreur.
-		using ErrorLogStreambufTraits = TLogStreambufTraits< LogType::eError >;
-
-		std::string const LogFileName = "Debug.log";
-
-		void logDebugString( std::string const & log )
+		void logDebugString( std::string const & log
+			, FILE * stdStream )
 		{
 #if _MSC_VER
 			::OutputDebugStringA( log.c_str() );
@@ -184,21 +118,56 @@ namespace common
 			strftime( buffer, 32, "%Y-%m-%d %H:%M:%S", &today );
 			std::string timeStamp = buffer;
 
-			std::ofstream file{ LogFileName, std::ios::app };
+			std::ofstream file{ logFileName, std::ios::app };
 
 			if ( file )
 			{
 				file << timeStamp << " - " << log;
 			}
+
+			fprintf( stdStream, "%s", log.c_str() );
 		}
 
 		void flushLogFile()
 		{
-			if ( wxFileExists( LogFileName ) )
+			if ( wxFileExists( logFileName ) )
 			{
-				wxRemoveFile( LogFileName );
+				wxRemoveFile( logFileName );
 			}
 		}
+
+		template< LogType Type >
+		struct TLogStreambufTraits
+		{
+			using CharType = char;
+			using string_type = std::basic_string< CharType >;
+
+			static void Log( string_type const & appName
+				, string_type const & text )
+			{
+				static std::string const logTypeName[]
+				{
+					"Debug",
+					"Info",
+					"Warning",
+					"Error",
+				};
+				static FILE * const stdStream[]
+				{
+					stdout,
+					stdout,
+					stdout,
+					stderr,
+				};
+				logDebugString( appName + " - " + logTypeName[size_t( Type )] + ": " + text + "\n"
+					, stdStream[size_t( Type )] );
+			}
+		};
+
+		using DebugLogStreambufTraits = TLogStreambufTraits< LogType::eDebug >;
+		using InfoLogStreambufTraits = TLogStreambufTraits< LogType::eInfo >;
+		using WarningLogStreambufTraits = TLogStreambufTraits< LogType::eWarning >;
+		using ErrorLogStreambufTraits = TLogStreambufTraits< LogType::eError >;
 	}
 
 	App::App ( wxString const & name )
@@ -208,7 +177,6 @@ namespace common
 
 	bool App::OnInit()
 	{
-		flushLogFile();
 		m_cout = new LogStreambuf< InfoLogStreambufTraits >( m_name.ToStdString()
 			, std::cout );
 		m_cerr = new LogStreambuf< ErrorLogStreambufTraits >( m_name.ToStdString()
@@ -244,30 +212,6 @@ namespace common
 		wxInitAllImageHandlers();
 		utils::initialiseGlslang();
 		bool result = false;
-		utils::StringArray files;
-
-		if ( utils::listDirectoryFiles( utils::getExecutableDirectory(), files, false ) )
-		{
-			for ( auto file : files )
-			{
-				if ( file.find( ".dll" ) != std::string::npos 
-					|| file.find( ".so" ) != std::string::npos )
-				try
-				{
-					ashes::DynamicLibrary lib{ file };
-					m_plugins.emplace_back( std::move( lib ) );
-				}
-				catch ( std::exception & exc )
-				{
-					std::clog << exc.what() << std::endl;
-				}
-			}
-
-			for ( auto & plugin : m_plugins )
-			{
-				m_factory.registerType( plugin.getShortName(), &plugin );
-			}
-		}
 
 		try
 		{
@@ -303,7 +247,6 @@ namespace common
 #	endif
 #endif
 
-		m_plugins.clear();
 		delete m_cout;
 		delete m_cerr;
 		delete m_clog;
@@ -314,10 +257,11 @@ namespace common
 	{
 		wxCmdLineParser parser( wxApp::argc, wxApp::argv );
 		parser.AddSwitch( wxT( "h" ), wxT( "help" ), _( "Displays this help" ) );
+		parser.AddOption( wxT( "l" ), wxT( "log" ), _( "Specifies the log file" ) );
 
-		for ( auto & plugin : m_plugins )
+		for ( auto & renderer : m_renderers )
 		{
-			parser.AddSwitch( plugin.getShortName(), wxEmptyString, _( "Defines the renderer to " ) + plugin.getFullName() );
+			parser.AddSwitch( renderer.name, wxEmptyString, _( "Defines the renderer to " ) + renderer.description );
 		}
 
 		bool result = parser.Parse( false ) == 0;
@@ -331,15 +275,23 @@ namespace common
 
 		if ( result )
 		{
-			m_rendererName = wxT( "vk" );
+			wxString fileName;
 
-			for ( auto & plugin : m_plugins )
+			if ( parser.Found( wxT( "l" ), &fileName ) )
 			{
-				if ( m_rendererName == wxT( "vk" ) )
+				logFileName = fileName;
+			}
+
+			flushLogFile();
+			m_rendererName = wxEmptyString;
+
+			for ( auto & renderer : m_renderers )
+			{
+				if ( m_rendererName.empty() )
 				{
-					if ( parser.Found( plugin.getShortName() ) )
+					if ( parser.Found( renderer.name ) )
 					{
-						m_rendererName = plugin.getShortName();
+						m_rendererName = renderer.name;
 					}
 				}
 			}

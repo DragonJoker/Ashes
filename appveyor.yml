@@ -1,54 +1,50 @@
 version: '{branch}-rev{build}'
 
-os:
-  - Visual Studio 2017
-
-platform:
-  - Win32
-  - x64
-
-environment:
-  MSVC_DEFAULT_OPTIONS: ON
-
-configuration:
-  - Release
-  - Debug
-
-clone_folder:
-  C:\projects\Ashes
-
 branches:
   only:
     - master
     - appveyor
 
-install:
-  - cmd: git submodule init
-  - cmd: git submodule update
-  - cmd: if "%platform%"=="Win32" set CMAKE_GENERATOR_NAME=Visual Studio 15 2017
-  - cmd: if "%platform%"=="x64"   set CMAKE_GENERATOR_NAME=Visual Studio 15 2017 Win64
-  - cmd: if "%platform%"=="Win32" set PLATFORM_NAME=x86
-  - cmd: if "%platform%"=="x64"   set PLATFORM_NAME=x64
-  - cmd: if "%platform%"=="Win32" set PCH_USAGE=ON
-  - cmd: if "%platform%"=="x64"   set PCH_USAGE=ON
-  - cmd: cd C:\projects\Ashes\dependencies
-  - cmd: 7z x glslang.7z
-  - cmd: 7z x glslang-lib-%PLATFORM_NAME%.7z
-  - cmd: cd ..
-  - cmd: md build
-  - cmd: cd build
-  - cmake -G "%CMAKE_GENERATOR_NAME%" ../ -DPROJECTS_USE_PRECOMPILED_HEADERS=%PCH_USAGE% -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_SAMPLES=OFF -DCMAKE_INSTALL_PREFIX=C:\projects\Ashes\package\Ashes
+image:
+  - Ubuntu1804
+  - Visual Studio 2019
 
-build:
-  project: build/Ashes.sln
-  parallel: true
+platform:
+  - x64
+
+configuration:
+  - Release
+
+install:
+  - ps: if ($isLinux) {sudo apt-get install libgl1-mesa-dev -y}
+  - git submodule init
+  - git submodule update --init -- "external/SPIRV-Cross"
+  - git submodule update --init -- "external/Vulkan-Headers"
+  - ps: $PLATFORM_NAME="x64"
+  - ps: $OS_NAME="linux"
+  - ps: $PROJECT_DIR="/home/appveyor/projects/rendererlib"
+  - ps: if (!$isLinux) {$OS_NAME="win32"}
+  - ps: if (!$isLinux) {$PROJECT_DIR="C:\projects\rendererlib"}
+  - ps: md build
+  - ps: cd build
+  - ps: if ($isLinux) {cmake -Wno-dev -G "Unix Makefiles" -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DPROJECTS_OUTPUT_DIR=/home/appveyor/projects/rendererlib -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/home/appveyor/projects/rendererlib/package/ashes -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_SAMPLES=OFF ../}
+  - ps: if (!$isLinux) {cmake -Wno-dev -G "Visual Studio 16 2019" -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DPROJECTS_OUTPUT_DIR=C:\projects\rendererlib -DCMAKE_INSTALL_PREFIX=C:\projects\rendererlib\package\ashes -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_SAMPLES=OFF ../}
+
+build_script:
+  - ps: cd $PROJECT_DIR/build
+  - ps: if ($isLinux) {cmake --build . --target install --parallel 4}
+  - ps: if (!$isLinux) {cmake --build . --target install --parallel 4 --config Release}
 
 after_build:
-  - cmd: cd C:\projects\Ashes\build
-  - cmake --build . --target install --config %CONFIGURATION%
-  - cmd: cd ..
-  - cmd: 7z a Ashes-%PLATFORM_NAME%.zip .\package\Ashes\*
+  - ps: if ($isLinux) {cd /home/appveyor/projects/rendererlib}
+  - ps: if (!$isLinux) {cd C:\projects\rendererlib}
+  - ps: 7z a Ashes-$OS_NAME-$PLATFORM_NAME.zip ./package/ashes/*
+  - ps: Push-AppveyorArtifact Ashes-$OS_NAME-$PLATFORM_NAME.zip
 
-artifacts:
-  - path: Ashes-%PLATFORM_NAME%.zip
-    name: Ashes binaries %PLATFORM_NAME%
+on_success:
+  - ps: Invoke-RestMethod https://raw.githubusercontent.com/DiscordHooks/appveyor-discord-webhook/master/send.ps1 -o send.ps1
+  - ps: ./send.ps1 success $env:WEBHOOK_URL
+
+on_failure:
+  - ps: Invoke-RestMethod https://raw.githubusercontent.com/DiscordHooks/appveyor-discord-webhook/master/send.ps1 -o send.ps1
+  - ps: ./send.ps1 failure $env:WEBHOOK_URL

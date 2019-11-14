@@ -1,6 +1,6 @@
 #include "Prerequisites.hpp"
 
-#include <Core/PlatformWindowHandle.hpp>
+#include <ashespp/Core/PlatformWindowHandle.hpp>
 
 #if defined( __WXGTK__ )
 #	include <gdk/gdkx.h>
@@ -15,6 +15,7 @@
 #endif
 
 #include <fstream>
+#include <iomanip>
 
 namespace common
 {
@@ -83,5 +84,13 @@ namespace common
 			-( far + near ) / ( far - near ),
 			1.0f
 		};
+	}
+
+	wxString makeName( int index
+		, wxString const & name )
+	{
+		std::stringstream stream;
+		stream << std::setfill( '0' ) << std::setw( 2 ) << index;
+		return wxString( stream.str() ) + wxT( "-" ) + name;
 	}
 }

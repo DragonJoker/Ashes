@@ -15,17 +15,17 @@ namespace vkapp
 			, common::Scene const & scene
 			, ashes::StagingBuffer & stagingBuffer
 			, GeometryPassResult const & gbuffer
-			, ashes::ImageViewPtrArray views
+			, ashes::ImageViewArray views
 			, common::TextureNodePtrArray const & textureNodes
-			, ashes::UniformBuffer< common::SceneData > const & sceneUbo
-			, ashes::UniformBuffer< common::LightsData > const & lightsUbo );
+			, std::vector< common::SceneData > const & sceneData
+			, ashes::UniformBuffer const & lightsUbo );
 		void update( common::RenderTarget const & target )override;
 		void draw( ashes::Queue const & queue
 			, std::chrono::nanoseconds & gpu )const override;
 
 	private:
-		ashes::UniformBuffer< common::SceneData > const & m_sceneUbo;
-		ashes::UniformBuffer< common::LightsData > const & m_lightsUbo;
+		std::vector< common::SceneData > const & m_sceneData;
+		ashes::UniformBuffer const & m_lightsUbo;
 		ashes::StagingBuffer & m_stagingBuffer;
 		LightingPass m_lightingPass;
 	};

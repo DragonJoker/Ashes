@@ -2,7 +2,7 @@
 
 #include "Prerequisites.hpp"
 
-#include <Utils/UtilsInstance.hpp>
+#include <util/UtilsInstance.hpp>
 
 #include <wx/frame.h>
 
@@ -14,7 +14,7 @@ namespace common
 	public:
 		MainFrame( wxString const & name
 			, wxString const & rendererName
-			, utils::InstanceFactory & factory );
+			, ashes::RendererList const & renderers );
 		virtual ~MainFrame() = default;
 
 		void initialise();
@@ -28,13 +28,14 @@ namespace common
 
 		wxDECLARE_EVENT_TABLE();
 		void OnClose( wxCloseEvent & event );
+		void OnKeyUp( wxKeyEvent & event );
 
 	private:
-		static size_t constexpr FrameSamplesCount = 1000;
-		wxString m_name;
+		static size_t constexpr FrameSamplesCount = 100;
+		std::string m_name;
 		wxString m_rendererName;
 		utils::InstancePtr m_instance;
-		utils::InstanceFactory & m_factory;
+		ashes::RendererList const & m_renderers;
 		wxPanel * m_panel{ nullptr };
 		std::array< std::chrono::microseconds, FrameSamplesCount > m_cpuFramesTimes;
 		std::array< std::chrono::microseconds, FrameSamplesCount > m_gpuFramesTimes;

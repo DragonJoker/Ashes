@@ -2,10 +2,10 @@
 
 #include "Prerequisites.hpp"
 
-#include <Core/Device.hpp>
-#include <Core/SwapChain.hpp>
+#include <ashespp/Core/Device.hpp>
+#include <ashespp/Core/SwapChain.hpp>
 
-#include <Utils/Signal.hpp>
+#include <ashes/common/Signal.hpp>
 
 #include <wx/panel.h>
 
@@ -30,6 +30,14 @@ namespace vkapp
 				, commandBuffer{ std::move( commandBuffer ) }
 				, imageIndex{ imageIndex }
 			{
+			}
+
+			~RenderingResources()
+			{
+				imageAvailableSemaphore.reset();
+				finishedRenderingSemaphore.reset();
+				fence.reset();
+				commandBuffer.reset();
 			}
 
 			ashes::SemaphorePtr imageAvailableSemaphore;
@@ -62,7 +70,8 @@ namespace vkapp
 		void doCreateRenderingResources();
 		void doCreateFrameBuffers();
 		void doCreateCommandBuffers();
-		ashes::FrameBufferAttachmentArray doPrepareAttaches( uint32_t backBuffer )const;
+		ashes::ImageViewCRefArray doPrepareAttaches( uint32_t backBuffer
+			, ashes::ImageViewArray & views )const;
 		/**@}*/
 		/**
 		*\name
@@ -72,7 +81,7 @@ namespace vkapp
 		void doDraw();
 		RenderingResources * getResources();
 		void present( RenderingResources & resources );
-		bool doCheckNeedReset( ashes::Result errCode
+		bool doCheckNeedReset( VkResult errCode
 			, bool acquisition
 			, char const * const action );
 		void doResetSwapChain();
@@ -98,8 +107,8 @@ namespace vkapp
 		ashes::CommandPoolPtr m_commandPool;
 		ashes::SurfacePtr m_surface;
 		ashes::SwapChainPtr m_swapChain;
-		ashes::ImagePtrArray m_swapChainImages;
-		ashes::ClearColorValue m_clearColour;
+		ashes::ImageArray m_swapChainImages;
+		VkClearColorValue m_clearColour;
 		ashes::RenderPassPtr m_renderPass;
 		RenderingResourcesArray m_renderingResources;
 		size_t m_resourceIndex{ 0u };
@@ -109,6 +118,7 @@ namespace vkapp
 		*	Swapchain.
 		*/
 		/**@{*/
+		std::vector< ashes::ImageViewArray > m_views;
 		std::vector< ashes::FrameBufferPtr > m_frameBuffers;
 		ashes::CommandBufferPtrArray m_commandBuffers;
 		/**@}*/

@@ -13,6 +13,6 @@ namespace vkapp
 
 	common::MainFrame * Application::doCreateMainFrame( wxString const & rendererName )
 	{
-		return new MainFrame{ rendererName, m_factory };
+		return new MainFrame{ rendererName, m_renderers };
 	}
 };

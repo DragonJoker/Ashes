@@ -2,8 +2,7 @@
 
 #include "Scene.hpp"
 
-#include <Ashes/Core/Device.hpp>
-#include <Ashes/Miscellaneous/Extent2D.hpp>
+#include <ashespp/Core/Device.hpp>
 
 namespace common
 {
@@ -13,21 +12,21 @@ namespace common
 		RenderTarget( utils::Device const & device
 			, ashes::CommandPool const & commandPool
 			, ashes::Queue const & transferQueue
-			, ashes::Extent2D const & size
+			, VkExtent2D const & size
 			, Scene scene
 			, ImagePtrArray images );
 		virtual ~RenderTarget();
-		void resize( ashes::Extent2D const & size );
+		void resize( VkExtent2D const & size );
 		void update( std::chrono::microseconds const & duration );
 		void draw( ashes::Queue const & queue
 			, std::chrono::microseconds & gpu );
 
-		inline ashes::ImageViewPtr getColourView()const
+		inline ashes::ImageView getColourView()const
 		{
 			return m_colourView;
 		}
 
-		inline ashes::ImageViewPtr getDepthView()const
+		inline ashes::ImageView getDepthView()const
 		{
 			return m_depthView;
 		}
@@ -55,16 +54,16 @@ namespace common
 		void doUpdateRenderViews();
 
 		virtual void doUpdate( std::chrono::microseconds const & duration ) = 0;
-		virtual void doResize( ashes::Extent2D const & size ) = 0;
+		virtual void doResize( VkExtent2D const & size ) = 0;
 
 		virtual OpaqueRenderingPtr doCreateOpaqueRendering( utils::Device const & device
 			, ashes::StagingBuffer & stagingBuffer
-			, ashes::ImageViewPtrArray views
+			, ashes::ImageViewArray views
 			, Scene const & scene
 			, TextureNodePtrArray const & textureNodes ) = 0;
 		virtual TransparentRenderingPtr doCreateTransparentRendering( utils::Device const & device
 			, ashes::StagingBuffer & stagingBuffer
-			, ashes::ImageViewPtrArray views
+			, ashes::ImageViewArray views
 			, Scene const & scene
 			, TextureNodePtrArray const & textureNodes ) = 0;
 
@@ -73,7 +72,7 @@ namespace common
 		ashes::CommandPool const & m_commandPool;
 		ashes::Queue const & m_transferQueue;
 		ashes::StagingBufferPtr m_stagingBuffer;
-		ashes::Extent2D m_size;
+		VkExtent2D m_size;
 
 	private:
 		ImagePtrArray m_images;
@@ -81,9 +80,9 @@ namespace common
 		TextureNodePtrArray m_textureNodes;
 		utils::Mat4 m_rotate;
 		ashes::ImagePtr m_colour;
-		ashes::ImageViewPtr m_colourView;
+		ashes::ImageView m_colourView;
 		ashes::ImagePtr m_depth;
-		ashes::ImageViewPtr m_depthView;
+		ashes::ImageView m_depthView;
 		ashes::CommandBufferPtr m_commandBuffer;
 		std::shared_ptr< OpaqueRendering > m_opaque;
 		std::shared_ptr< TransparentRendering > m_transparent;

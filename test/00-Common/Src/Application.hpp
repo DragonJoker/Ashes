@@ -2,8 +2,6 @@
 
 #include "Prerequisites.hpp"
 
-#include <Utils/Factory.hpp>
-
 #include <wx/app.h>
 
 namespace common
@@ -40,7 +38,6 @@ namespace common
 		std::streambuf * m_cout{ nullptr };
 		std::streambuf * m_cerr{ nullptr };
 		std::streambuf * m_clog{ nullptr };
-		std::vector< utils::Plugin > m_plugins;
-		utils::InstanceFactory m_factory;
+		ashes::RendererList m_renderers;
 	};
 }

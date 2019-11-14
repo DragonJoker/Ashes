@@ -4,7 +4,7 @@
 #include <fstream>
 #include <sstream>
 
-#include <Utils/StringUtils.hpp>
+#include <util/StringUtils.hpp>
 
 #include <assimp/Importer.hpp> // C++ importer interface
 #include <assimp/scene.h> // Output data structure

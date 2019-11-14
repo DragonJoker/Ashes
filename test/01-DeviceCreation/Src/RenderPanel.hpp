@@ -2,9 +2,9 @@
 
 #include "Prerequisites.hpp"
 
-#include <Core/Device.hpp>
+#include <ashespp/Core/Device.hpp>
 
-#include <Utils/Signal.hpp>
+#include <ashes/common/Signal.hpp>
 
 #include <wx/panel.h>
 
@@ -23,9 +23,8 @@ namespace vkapp
 
 	private:
 		void doCleanup();
-		ashes::SurfacePtr doCreateSurface( utils::Instance const & instance );
-		void doCreateDevice( utils::Instance const & instance
-			, ashes::Surface const & surface );
+		void doCreateSurface( utils::Instance const & instance );
+		void doCreateDevice( utils::Instance const & instance );
 
 	private:
 		ashes::SurfacePtr m_surface;

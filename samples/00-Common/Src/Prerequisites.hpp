@@ -1,20 +1,15 @@
 #pragma once
 
-#include <Ashes/Core/Surface.hpp>
-#include <Ashes/Core/Instance.hpp>
-#include <Ashes/Image/Image.hpp>
-#include <Ashes/Image/ImageView.hpp>
-#include <Ashes/Miscellaneous/Extent2D.hpp>
-#include <Ashes/Pipeline/VertexLayout.hpp>
-#include <Ashes/RenderPass/RenderSubpass.hpp>
+#include <ashespp/Core/Surface.hpp>
+#include <ashespp/Core/Instance.hpp>
+#include <ashespp/Image/Image.hpp>
+#include <ashespp/Image/ImageView.hpp>
 
-#include <Utils/Factory.hpp>
-#include <Utils/Mat4.hpp>
-#include <Utils/UtilsDebug.hpp>
-#include <Utils/UtilsDevice.hpp>
-#include <Utils/UtilsInstance.hpp>
-#include <Utils/UtilsPlugin.hpp>
-#include <Utils/UtilsSwapChain.hpp>
+#include <util/Mat4.hpp>
+#include <util/UtilsDebug.hpp>
+#include <util/UtilsDevice.hpp>
+#include <util/UtilsInstance.hpp>
+#include <util/UtilsSwapChain.hpp>
 
 #pragma warning( disable: 4996 )
 #include <wx/wx.h>
@@ -23,6 +18,31 @@
 #include <array>
 #include <chrono>
 
+inline bool operator==( VkExtent2D const & lhs
+	, VkExtent2D const & rhs )
+{
+	return lhs.width == rhs.width
+		&& lhs.height == rhs.height;
+}
+
+inline bool operator!=( VkExtent2D const & lhs
+	, VkExtent2D const & rhs )
+{
+	return !( lhs == rhs );
+}
+
+inline bool operator==( VkOffset2D const & lhs
+	, VkOffset2D const & rhs )
+{
+	return lhs.x == rhs.x
+		&& lhs.y == rhs.y;
+}
+
+inline bool operator!=( VkOffset2D const & lhs
+	, VkOffset2D const & rhs )
+{
+	return !( lhs == rhs );
+}
 namespace common
 {
 	static wxSize const WindowSize{ 800, 600 };
@@ -67,9 +87,9 @@ namespace common
 	/**\{*/
 	struct Image
 	{
-		ashes::Extent2D size;
+		VkExtent2D size;
 		ashes::ByteArray data;
-		ashes::Format format;
+		VkFormat format;
 		bool opacity{ false };
 	};
 
@@ -201,7 +221,7 @@ namespace common
 	{
 		ImagePtr image;
 		ashes::ImagePtr texture;
-		ashes::ImageViewPtr view;
+		ashes::ImageView view;
 	};
 
 	using TextureNodePtr = std::shared_ptr< TextureNode >;
@@ -217,7 +237,7 @@ namespace common
 		ashes::DescriptorSetPtr descriptorSetTextures;
 		ashes::DescriptorSetPtr descriptorSetUbos;
 		ashes::PipelineLayoutPtr pipelineLayout;
-		ashes::PipelinePtr pipeline;
+		ashes::GraphicsPipelinePtr pipeline;
 	};
 
 	struct SubmeshNode
@@ -246,7 +266,9 @@ namespace common
 
 	ashes::WindowHandle makeWindowHandle( wxWindow const & window );
 
-	std::vector< ashes::Format > getFormats( ashes::ImageViewPtrArray const & views );
+	std::vector< VkFormat > getFormats( ashes::ImageViewArray const & views );
+
+	wxString makeName( int index, wxString const & name );
 
 	struct Scene;
 
