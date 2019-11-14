@@ -1,0 +1,164 @@
+project( ashes )
+
+set( ${PROJECT_NAME}_DESCRIPTION "${PROJECT_NAME} library" )
+set( ${PROJECT_NAME}_VERSION_MAJOR 1 )
+set( ${PROJECT_NAME}_VERSION_MINOR 0 )
+set( ${PROJECT_NAME}_VERSION_BUILD 0 )
+
+set( ASHES_CONFIG_DIR ${CMAKE_BINARY_DIR} )
+
+set( TARGET_INCLUDE_DIRS
+ 	${TARGET_INCLUDE_DIRS}
+	${CMAKE_CURRENT_BINARY_DIR}
+	${ASHES_CONFIG_DIR}/include
+	${ASHES_CONFIG_DIR}/include/${PROJECT_NAME}
+	${ASHES_SOURCE_DIR}/include
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}
+	${ASHES_SOURCE_DIR}/source
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}
+	${ASHES_CONFIG_DIR}/source
+	${ASHES_CONFIG_DIR}/source/${PROJECT_NAME}
+	${Vulkan_INCLUDE_DIRS}
+)
+
+file( GLOB ${PROJECT_NAME}_SRC_FILES
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.c
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.cc
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.cpp
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.c
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cc
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cpp
+)
+
+file( GLOB ${PROJECT_NAME}_HDR_FILES
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.h
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hh
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hpp
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inl
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inc
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.h
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hh
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hpp
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inl
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inc
+)
+
+set( ${PROJECT_NAME}_HDR_FILES
+	${${PROJECT_NAME}_HDR_FILES}
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/ashes.h
+)
+
+set( ASHES_WIN32 0 )
+set( ASHES_XCB 0 )
+set( ASHES_XLIB 0 )
+set( ASHES_ANDROID 0 )
+set( ASHES_MIR 0 )
+set( ASHES_WAYLAND 0 )
+set( ASHES_IOS 0 )
+set( ASHES_MACOS 0 )
+set( ASHES_VI 0 )
+set( ASHES_XLIB_XRANDR 0 )
+
+if ( WIN32 )
+	set( ASHES_WIN32 1 )
+elseif ( ANDROID )
+	set( ASHES_ANDROID 1 )
+else ()
+	set( ASHES_XLIB 1 )
+endif ()
+
+set( ${PROJECT_NAME}_CONFIG_HEADER
+	${ASHES_CONFIG_DIR}/include/${PROJECT_NAME}/ash_platform.h
+)
+
+configure_file(
+	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/ash_platform.h.in
+	${${PROJECT_NAME}_CONFIG_HEADER}
+	NEWLINE_STYLE LF
+)
+
+# I hate to have to do that, but I found no other to force gcc to use --std=c++17
+if ( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" )
+	set( TARGET_CXX_OPTIONS --std=c++17 )
+elseif ( CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
+	set( TARGET_CXX_OPTIONS --std=c++17 )
+elseif ( CMAKE_CXX_COMPILER_ID STREQUAL "XLClang" )
+	set( TARGET_CXX_OPTIONS --std=c++17 )
+elseif ( CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" )
+	set( TARGET_CXX_OPTIONS --std=c++17 )
+endif ()
+
+add_library( ${PROJECT_NAME} SHARED
+	${${PROJECT_NAME}_SRC_FILES}
+	${${PROJECT_NAME}_HDR_FILES}
+	${${PROJECT_NAME}_CONFIG_HEADER}
+)
+target_include_directories( ${PROJECT_NAME} PRIVATE
+	${TARGET_INCLUDE_DIRS}
+)
+target_link_libraries( ${PROJECT_NAME} PRIVATE
+	common
+)
+target_compile_definitions( ${PROJECT_NAME} PRIVATE
+	AshesC_EXPORTS
+	${TARGET_CXX_DEFINITIONS}
+)
+target_compile_features( ${PROJECT_NAME} PRIVATE
+	cxx_std_17
+)
+target_compile_options( ${PROJECT_NAME} PRIVATE
+	${TARGET_CXX_OPTIONS}
+)
+set_target_properties( ${PROJECT_NAME} PROPERTIES
+	CXX_STANDARD 17
+	CXX_EXTENSIONS OFF
+	FOLDER "Ashes/Core" )
+
+
+if ( BUILD_ASHES )
+	target_add_doc( ${PROJECT_NAME} "" "*.h *.hpp" )
+endif ()
+
+install(
+	TARGETS ${PROJECT_NAME}
+	COMPONENT ${PROJECT_NAME}
+	CONFIGURATIONS Release
+	EXPORT ${PROJECT_NAME}
+	RUNTIME DESTINATION bin
+	ARCHIVE DESTINATION lib
+	LIBRARY DESTINATION lib
+)
+install(
+	TARGETS ${PROJECT_NAME}
+	COMPONENT ${PROJECT_NAME}_dev
+	CONFIGURATIONS RelWithDebInfo
+	EXPORT ${PROJECT_NAME}
+	RUNTIME DESTINATION bin/RelWithDebInfo
+	ARCHIVE DESTINATION lib/RelWithDebInfo
+	LIBRARY DESTINATION lib/RelWithDebInfo
+)
+install(
+	TARGETS ${PROJECT_NAME}
+	COMPONENT ${PROJECT_NAME}_dev
+	CONFIGURATIONS Debug
+	EXPORT ${PROJECT_NAME}
+	RUNTIME DESTINATION bin/Debug
+	ARCHIVE DESTINATION lib/Debug
+	LIBRARY DESTINATION lib/Debug
+)
+target_install_dir_headers( ${PROJECT_NAME}
+	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}
+	${PROJECT_NAME}
+)
+
+install(
+	FILES ${${PROJECT_NAME}_CONFIG_HEADER}
+	DESTINATION include/${PROJECT_NAME}
+	COMPONENT ${PROJECT_NAME}_dev
+)
+
+
+add_subdirectory( renderer )
+set( ENABLED_RENDERERS ${ENABLED_RENDERERS} PARENT_SCOPE )
+set( ASHES_CONFIG_DIR ${ASHES_CONFIG_DIR} PARENT_SCOPE )
+

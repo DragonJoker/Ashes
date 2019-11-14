@@ -15,7 +15,7 @@ namespace vkapp
 
 	private:
 		void doInitialise( utils::Device const & device
-			, ashes::Extent2D const & size )override;
+			, VkExtent2D const & size )override;
 		void doUpdateOverlays( common::Gui const & overlay )override;
 		void doUpdate()override;
 

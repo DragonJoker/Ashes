@@ -3,9 +3,6 @@ project( GLFW-Template )
 find_package( GLFW )
 
 if( GLFW_FOUND )
-	include_directories(
-		${GLFW_INCLUDE_DIR}
-	)
 
 	file( GLOB SOURCE_FILES
 		*.cpp
@@ -15,23 +12,31 @@ if( GLFW_FOUND )
 	add_executable( ${PROJECT_NAME}
 		${SOURCE_FILES}
 	)
-
-	target_link_libraries( ${PROJECT_NAME}
-		Ashes
+	target_include_directories( ${PROJECT_NAME} PRIVATE
+		${TARGET_INCLUDE_DIRS}
+		${GLFW_INCLUDE_DIR}
+		${Vulkan_INCLUDE_DIRS}
+	)
+	target_link_libraries( ${PROJECT_NAME} PRIVATE
+		common
+		ashes
+		ashespp
 		${GLFW_LIBRARIES}
 		${BinLibraries}
 	)
-
-	add_dependencies(
+	target_compile_definitions( ${PROJECT_NAME} PRIVATE
+		${TARGET_CXX_DEFINITIONS}
+	)
+	target_compile_options( ${PROJECT_NAME} PRIVATE
+		${TARGET_CXX_OPTIONS}
+	)
+	set_target_properties( ${PROJECT_NAME} PROPERTIES
+		CXX_STANDARD 17
+		CXX_EXTENSIONS OFF
+		FOLDER "Templates"
+	)
+	add_dependencies( ${PROJECT_NAME}
 		${ENABLED_RENDERERS}
 	)
-
-	if ( UNIX )
-		target_link_libraries( ${PROJECT_NAME}
-			dl
-		)
-	endif ()
-	set_property( TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17 )
-	set_property( TARGET ${PROJECT_NAME} PROPERTY FOLDER "Templates" )
 
 endif ()

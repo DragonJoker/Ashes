@@ -14,17 +14,17 @@ namespace vkapp
 			, ashes::CommandPool const & commandPool
 			, ashes::Queue const & transferQueue
 			, std::string const & fragmentShaderFile
-			, std::vector< ashes::Format > const & formats
+			, std::vector< VkFormat > const & formats
 			, bool clearViews
 			, bool opaqueNodes
-			, ashes::UniformBuffer< common::SceneData > const & sceneUbo );
+			, ashes::UniformBuffer const & sceneUbo );
 
 	private:
-		void doFillBillboardDescriptorLayoutBindings( ashes::DescriptorSetLayoutBindingArray & bindings )override;
+		void doFillBillboardDescriptorLayoutBindings( ashes::VkDescriptorSetLayoutBindingArray & bindings )override;
 		void doFillBillboardDescriptorSet( ashes::DescriptorSetLayout & descriptorLayout
 			, ashes::DescriptorSet & descriptorSet )override;
 
 	private:
-		ashes::UniformBuffer< common::SceneData > const & m_sceneUbo;
+		ashes::UniformBuffer const & m_sceneUbo;
 	};
 }

@@ -2,11 +2,11 @@
 
 #include "Prerequisites.hpp"
 
-#include <RenderPass/FrameBuffer.hpp>
-#include <RenderPass/RenderPass.hpp>
-#include <Core/SwapChain.hpp>
+#include <ashespp/RenderPass/FrameBuffer.hpp>
+#include <ashespp/RenderPass/RenderPass.hpp>
+#include <ashespp/Core/SwapChain.hpp>
 
-#include <Utils/Signal.hpp>
+#include <ashes/common/Signal.hpp>
 
 namespace vkapp
 {
@@ -35,7 +35,7 @@ namespace vkapp
 		void doCreatePipeline();
 		bool doPrepareFrames();
 		/**@}*/
-		/**
+		/**œ	
 		*\name
 		*	Rendering.
 		*/
@@ -63,12 +63,11 @@ namespace vkapp
 		ashes::QueuePtr m_presentQueue;
 		ashes::CommandPoolPtr m_commandPool;
 		utils::SwapChainPtr m_swapChain;
-		ashes::ClearColorValue m_clearColour;
+		VkClearColorValue m_clearColour;
 		ashes::RenderPassPtr m_renderPass;
 		ashes::PipelineLayoutPtr m_pipelineLayout;
-		ashes::PipelinePtr m_pipeline;
+		ashes::GraphicsPipelinePtr m_pipeline;
 		ashes::VertexBufferPtr< VertexData > m_vertexBuffer;
-		ashes::VertexLayoutPtr m_vertexLayout;
 		ashes::QueryPoolPtr m_queryPool;
 		/**@}*/
 		/**

@@ -1,9 +1,9 @@
 #include "Prerequisites.hpp"
 
-#include <Ashes/Core/Surface.hpp>
-#include <Ashes/Core/PlatformWindowHandle.hpp>
-#include <Ashes/Core/Instance.hpp>
-#include <Ashes/Image/ImageView.hpp>
+#include <ashespp/Core/Surface.hpp>
+#include <ashespp/Core/PlatformWindowHandle.hpp>
+#include <ashespp/Core/Instance.hpp>
+#include <ashespp/Image/ImageView.hpp>
 
 #if defined( __WXGTK__ )
 #	include <gdk/gdkx.h>
@@ -18,6 +18,7 @@
 #endif
 
 #include <fstream>
+#include <iomanip>
 
 namespace common
 {
@@ -88,15 +89,22 @@ namespace common
 		};
 	}
 
-	std::vector< ashes::Format > getFormats( ashes::ImageViewPtrArray const & views )
+	std::vector< VkFormat > getFormats( ashes::ImageViewArray const & views )
 	{
-		std::vector< ashes::Format > result;
+		std::vector< VkFormat > result;
 
 		for ( auto view : views )
 		{
-			result.push_back( view->getFormat() );
+			result.push_back( view->format );
 		}
 
 		return result;
+	}
+
+	wxString makeName( int index, wxString const & name )
+	{
+		std::stringstream stream;
+		stream << std::setfill( '0' ) << std::setw( 2 ) << index;
+		return wxString( stream.str() ) + wxT( "-" ) + name;
 	}
 }

@@ -6,35 +6,37 @@
 #include <OpaqueRendering.hpp>
 #include <TransparentRendering.hpp>
 
-#include <Ashes/Buffer/StagingBuffer.hpp>
-#include <Ashes/Buffer/UniformBuffer.hpp>
+#include <ashespp/Buffer/StagingBuffer.hpp>
+#include <ashespp/Buffer/UniformBuffer.hpp>
 
-#include <Utils/Transform.hpp>
+#include <util/Transform.hpp>
 
 namespace vkapp
 {
 	RenderTarget::RenderTarget( utils::Device const & device
 		, ashes::CommandPool const & commandPool
 		, ashes::Queue const & transferQueue
-		, ashes::Extent2D const & size
+		, VkExtent2D const & size
 		, common::Scene scene
 		, common::ImagePtrArray images )
 		: common::RenderTarget{ device, commandPool, transferQueue, size, std::move( scene ), std::move( images ) }
-		, m_sceneUbo{ utils::makeUniformBuffer< common::SceneData >( device
+		, m_sceneUbo{ utils::makeUniformBuffer( device
 			, 1u
-			, ashes::BufferTarget::eTransferDst
-			, ashes::MemoryPropertyFlag::eDeviceLocal ) }
+			, uint32_t( sizeof( common::SceneData ) )
+			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
+			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) }
+		, m_sceneData{ 1u }
 	{
 		doInitialise();
 		doUpdateProjection( size );
 		m_camera.update();
 	}
 
-	void RenderTarget::doUpdateProjection( ashes::Extent2D const & size )
+	void RenderTarget::doUpdateProjection( VkExtent2D const & size )
 	{
 		auto width = float( size.width );
 		auto height = float( size.height );
-		m_sceneUbo->getData( 0u ).mtxProjection = utils::Mat4{ m_device.getDevice().perspective( float( utils::toRadians( 90.0_degrees ) )
+		m_sceneData[0].mtxProjection = utils::Mat4{ m_device.getDevice().perspective( float( utils::toRadians( 90.0_degrees ) )
 			, width / height
 			, 0.01f
 			, 100.0f ) };
@@ -45,7 +47,7 @@ namespace vkapp
 		if ( m_currentMousePosition != m_previousMousePosition
 			&& m_moveCamera )
 		{
-			ashes::Offset2D delta = {
+			VkOffset2D delta = {
 				m_currentMousePosition.x - m_previousMousePosition.x,
 				m_currentMousePosition.y - m_previousMousePosition.y,
 			};
@@ -56,32 +58,32 @@ namespace vkapp
 		}
 
 		m_previousMousePosition = m_currentMousePosition;
-		auto & data = m_sceneUbo->getData( 0u );
+		auto & data = m_sceneData[0];
 		data.mtxView = m_camera.getView();
 		auto & pos = m_camera.getPosition();
 		data.cameraPosition = utils::Vec4{ pos[0], pos[1], pos[2], 0.0f };
 		m_stagingBuffer->uploadUniformData( m_transferQueue
 			, m_commandPool
-			, m_sceneUbo->getDatas()
+			, m_sceneData
 			, *m_sceneUbo
-			, ashes::PipelineStageFlag::eVertexShader );
+			, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 	}
 
-	void RenderTarget::doResize( ashes::Extent2D const & size )
+	void RenderTarget::doResize( VkExtent2D const & size )
 	{
 		doUpdateProjection( size );
 	}
 
 	common::OpaqueRenderingPtr RenderTarget::doCreateOpaqueRendering( utils::Device const & device
 		, ashes::StagingBuffer & stagingBuffer
-		, ashes::ImageViewPtrArray views
+		, ashes::ImageViewArray views
 		, common::Scene const & scene
 		, common::TextureNodePtrArray const & textureNodes )
 	{
 		return std::make_unique< common::OpaqueRendering >( std::make_unique< NodesRenderer >( device
 				, m_commandPool
 				, m_transferQueue
-				, utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "offscreen.frag"
+				, ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "offscreen.frag"
 				, common::getFormats( views )
 				, true
 				, true
@@ -94,14 +96,14 @@ namespace vkapp
 
 	common::TransparentRenderingPtr RenderTarget::doCreateTransparentRendering( utils::Device const & device
 		, ashes::StagingBuffer & stagingBuffer
-		, ashes::ImageViewPtrArray views
+		, ashes::ImageViewArray views
 		, common::Scene const & scene
 		, common::TextureNodePtrArray const & textureNodes )
 	{
 		return std::make_unique< common::TransparentRendering >( std::make_unique< NodesRenderer >( device
 				, m_commandPool
 				, m_transferQueue
-				, utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "offscreen.frag"
+				, ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "offscreen.frag"
 				, common::getFormats( views )
 				, false
 				, false

@@ -13,7 +13,7 @@ namespace vkapp
 		RenderTarget( utils::Device const & device
 			, ashes::CommandPool const & commandPool
 			, ashes::Queue const & transferQueue
-			, ashes::Extent2D const & size
+			, VkExtent2D const & size
 			, common::Scene scene
 			, common::ImagePtrArray images );
 
@@ -24,25 +24,28 @@ namespace vkapp
 
 	private:
 		void doUpdate( std::chrono::microseconds const & duration )override;
-		virtual void doResize( ashes::Extent2D const & size )override;
+		virtual void doResize( VkExtent2D const & size )override;
 		common::OpaqueRenderingPtr doCreateOpaqueRendering( utils::Device const & device
 			, ashes::StagingBuffer & stagingBuffer
-			, ashes::ImageViewPtrArray views
+			, ashes::ImageViewArray views
 			, common::Scene const & scene
 			, common::TextureNodePtrArray const & textureNodes )override;
 		common::TransparentRenderingPtr doCreateTransparentRendering( utils::Device const & device
 			, ashes::StagingBuffer & stagingBuffer
-			, ashes::ImageViewPtrArray views
+			, ashes::ImageViewArray views
 			, common::Scene const & scene
 			, common::TextureNodePtrArray const & textureNodes )override;
-		void doUpdateMatrixUbo( ashes::Extent2D const & size );
+		void doUpdateMatrixUbo( VkExtent2D const & size );
 		void doInitialiseLights();
 		void doCreateGBuffer();
 
 	private:
-		ashes::UniformBufferPtr< common::SceneData > m_sceneUbo;
-		ashes::UniformBufferPtr< common::ObjectData > m_objectUbo;
-		ashes::UniformBufferPtr< common::LightsData > m_lightsUbo;
+		ashes::UniformBufferPtr m_sceneUbo;
+		std::vector< common::SceneData > m_sceneData;
+		ashes::UniformBufferPtr m_objectUbo;
+		std::vector< common::ObjectData > m_objectData;
+		ashes::UniformBufferPtr m_lightsUbo;
+		std::vector< common::LightsData > m_lightsData;
 		utils::Mat4 m_rotate;
 		GeometryPassResult m_gbuffer;
 	};

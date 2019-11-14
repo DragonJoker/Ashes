@@ -5,7 +5,7 @@
 #include <AssimpLoader.hpp>
 #include <FileUtils.hpp>
 
-#include <Ashes/Buffer/UniformBuffer.hpp>
+#include <ashespp/Buffer/UniformBuffer.hpp>
 
 namespace vkapp
 {
@@ -24,13 +24,13 @@ namespace vkapp
 	}
 
 	void RenderPanel::doInitialise( utils::Device const & device
-		, ashes::Extent2D const & size )
+		, VkExtent2D const & size )
 	{
 		common::ImagePtrArray images;
 		common::Scene scene;
 
 		// Initialise material.
-		std::string shadersFolder = utils::getPath( utils::getExecutableDirectory() ) / "share" / "Assets";
+		std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / "Assets";
 		images.emplace_back( std::make_shared< common::Image >( common::loadImage( shadersFolder / "texture.png" ) ) );
 		auto init = ObjectCount * -2.0f;
 		utils::Vec3 position{ init, init, init };

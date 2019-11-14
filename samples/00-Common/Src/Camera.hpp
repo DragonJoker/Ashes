@@ -2,7 +2,7 @@
 
 #include "Prerequisites.hpp"
 
-#include <Utils/Quaternion.hpp>
+#include <util/Quaternion.hpp>
 
 namespace common
 {

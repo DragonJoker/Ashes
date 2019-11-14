@@ -10,7 +10,7 @@ namespace vkapp
 		utils::Vec4 colour;
 	};
 
-	static wxString const AppName = wxT( "03-VertexLayout" );
+	static wxString const AppName{ common::makeName( TEST_ID, wxT( "VertexLayout" ) ) };
 
 	class RenderPanel;
 	class MainFrame;

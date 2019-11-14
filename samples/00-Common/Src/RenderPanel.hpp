@@ -4,14 +4,14 @@
 #include "RenderTarget.hpp"
 #include "Gui.hpp"
 
-#include <Ashes/Core/Surface.hpp>
-#include <Ashes/Core/Device.hpp>
-#include <Ashes/Pipeline/Pipeline.hpp>
-#include <Ashes/Pipeline/PipelineLayout.hpp>
-#include <Ashes/Image/Sampler.hpp>
-#include <Ashes/Core/SwapChain.hpp>
+#include <ashespp/Core/Surface.hpp>
+#include <ashespp/Core/Device.hpp>
+#include <ashespp/Pipeline/GraphicsPipeline.hpp>
+#include <ashespp/Pipeline/PipelineLayout.hpp>
+#include <ashespp/Image/Sampler.hpp>
+#include <ashespp/Core/SwapChain.hpp>
 
-#include <Ashes/Utils/Signal.hpp>
+#include <ashes/common/Signal.hpp>
 
 #include <wx/panel.h>
 
@@ -25,7 +25,7 @@ namespace common
 	private:
 		struct MouseState
 		{
-			ashes::Offset2D position;
+			VkOffset2D position;
 			bool left{ false };
 			bool right{ false };
 		};
@@ -42,7 +42,7 @@ namespace common
 
 	private:
 		virtual void doInitialise( utils::Device const & device
-			, ashes::Extent2D const & size ) = 0;
+			, VkExtent2D const & size ) = 0;
 		virtual void doUpdateOverlays( Gui const & gui ) = 0;
 
 		virtual void doUpdate()
@@ -90,18 +90,17 @@ namespace common
 
 		utils::DevicePtr m_device;
 		utils::SwapChainPtr m_swapChain;
-		ashes::ClearColorValue m_clearColour;
+		VkClearColorValue m_clearColour;
 		ashes::StagingBufferPtr m_stagingBuffer;
 
 		ashes::SamplerPtr m_sampler;
 		ashes::RenderPassPtr m_renderPass;
 		ashes::VertexBufferPtr< TexturedVertexData > m_vertexBuffer;
-		ashes::VertexLayoutPtr m_vertexLayout;
 		ashes::DescriptorSetLayoutPtr m_descriptorLayout;
 		ashes::DescriptorSetPoolPtr m_descriptorPool;
 		ashes::DescriptorSetPtr m_descriptorSet;
 		ashes::PipelineLayoutPtr m_pipelineLayout;
-		ashes::PipelinePtr m_pipeline;
+		ashes::GraphicsPipelinePtr m_pipeline;
 
 		std::vector< ashes::FrameBufferPtr > m_frameBuffers;
 		std::vector< ashes::CommandBufferPtr > m_commandBuffers;

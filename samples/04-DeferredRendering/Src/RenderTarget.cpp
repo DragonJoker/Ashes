@@ -7,32 +7,38 @@
 #include <OpaqueRendering.hpp>
 #include <TransparentRendering.hpp>
 
-#include <Ashes/Buffer/StagingBuffer.hpp>
-#include <Ashes/Buffer/UniformBuffer.hpp>
+#include <ashespp/Buffer/StagingBuffer.hpp>
+#include <ashespp/Buffer/UniformBuffer.hpp>
 
-#include <Utils/Transform.hpp>
+#include <util/Transform.hpp>
 
 namespace vkapp
 {
 	RenderTarget::RenderTarget( utils::Device const & device
 		, ashes::CommandPool const & commandPool
 		, ashes::Queue const & transferQueue
-		, ashes::Extent2D const & size
+		, VkExtent2D const & size
 		, common::Scene scene
 		, common::ImagePtrArray images )
 		: common::RenderTarget{ device, commandPool, transferQueue, size, std::move( scene ), std::move( images ) }
-		, m_sceneUbo{ utils::makeUniformBuffer< common::SceneData >( device
+		, m_sceneUbo{ utils::makeUniformBuffer( device
 			, 1u
-			, ashes::BufferTarget::eTransferDst
-			, ashes::MemoryPropertyFlag::eDeviceLocal ) }
-		, m_objectUbo{ utils::makeUniformBuffer< common::ObjectData >( device
+			, uint32_t( sizeof( common::SceneData ) )
+			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
+			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) }
+		, m_sceneData{ 1u }
+		, m_objectUbo{ utils::makeUniformBuffer( device
 			, 1u
-			, ashes::BufferTarget::eTransferDst
-			, ashes::MemoryPropertyFlag::eDeviceLocal ) }
-		, m_lightsUbo{ utils::makeUniformBuffer< common::LightsData >( device
+			, uint32_t( sizeof( common::ObjectData ) )
+			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
+			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) }
+		, m_objectData{ 1u }
+		, m_lightsUbo{ utils::makeUniformBuffer( device
 			, 1u
-			, ashes::BufferTarget::eTransferDst
-			, ashes::MemoryPropertyFlag::eDeviceLocal ) }
+			, uint32_t( sizeof( common::LightsData ) )
+			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
+			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) }
+		, m_lightsData{ 1u }
 	{
 		doCreateGBuffer();
 		doInitialise();
@@ -51,15 +57,15 @@ namespace vkapp
 		m_rotate = utils::rotate( m_rotate
 			, float( utils::DegreeToRadian ) * ( duration.count() / 20000.0f )
 			, { 0, 1, 0 } );
-		m_objectUbo->getData( 0 ).mtxModel = originalTranslate * m_rotate;
+		m_objectData[0].mtxModel = originalTranslate * m_rotate;
 		m_stagingBuffer->uploadUniformData( m_transferQueue
 			, m_commandPool
-			, m_objectUbo->getDatas()
+			, m_objectData
 			, *m_objectUbo
-			, ashes::PipelineStageFlag::eVertexShader );
+			, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 	}
 
-	void RenderTarget::doResize( ashes::Extent2D const & size )
+	void RenderTarget::doResize( VkExtent2D const & size )
 	{
 		doUpdateMatrixUbo( size );
 		doCreateGBuffer();
@@ -67,16 +73,16 @@ namespace vkapp
 
 	common::OpaqueRenderingPtr RenderTarget::doCreateOpaqueRendering( utils::Device const & device
 		, ashes::StagingBuffer & stagingBuffer
-		, ashes::ImageViewPtrArray views
+		, ashes::ImageViewArray views
 		, common::Scene const & scene
 		, common::TextureNodePtrArray const & textureNodes )
 	{
 		return std::make_unique< OpaqueRendering >( std::make_unique< GeometryPass >( device
 				, m_commandPool
 				, m_transferQueue
-				, utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "opaque_gp.frag"
+				, ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "opaque_gp.frag"
 				, m_gbuffer
-				, views[0]->getFormat()
+				, views[0]->format
 				, *m_sceneUbo
 				, *m_objectUbo )
 			, scene
@@ -84,20 +90,20 @@ namespace vkapp
 			, m_gbuffer
 			, views
 			, textureNodes
-			, *m_sceneUbo
+			, m_sceneData
 			, *m_lightsUbo );
 	}
 
 	common::TransparentRenderingPtr RenderTarget::doCreateTransparentRendering( utils::Device const & device
 		, ashes::StagingBuffer & stagingBuffer
-		, ashes::ImageViewPtrArray views
+		, ashes::ImageViewArray views
 		, common::Scene const & scene
 		, common::TextureNodePtrArray const & textureNodes )
 	{
 		return std::make_unique< common::TransparentRendering >( std::make_unique< TransparentRendering >( device
 				, m_commandPool
 				, m_transferQueue
-				, utils::getPath( utils::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "transparent.frag"
+				, ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "transparent.frag"
 				, common::getFormats( views )
 				, *m_sceneUbo
 				, *m_objectUbo
@@ -108,7 +114,7 @@ namespace vkapp
 			, textureNodes );
 	}
 
-	void RenderTarget::doUpdateMatrixUbo( ashes::Extent2D const & size )
+	void RenderTarget::doUpdateMatrixUbo( VkExtent2D const & size )
 	{
 #if 0
 		float halfWidth = static_cast< float >( size[0] ) * 0.5f;
@@ -134,21 +140,21 @@ namespace vkapp
 #else
 		auto width = float( size.width );
 		auto height = float( size.height );
-		m_sceneUbo->getData( 0u ).mtxProjection = utils::Mat4{ m_device.getDevice().perspective( float( utils::toRadians( 90.0_degrees ) )
+		m_sceneData[0].mtxProjection = utils::Mat4{ m_device.getDevice().perspective( float( utils::toRadians( 90.0_degrees ) )
 			, width / height
 			, 0.01f
 			, 100.0f ) };
 #endif
 		m_stagingBuffer->uploadUniformData( m_transferQueue
 			, m_commandPool
-			, m_sceneUbo->getDatas()
+			, m_sceneData
 			, *m_sceneUbo
-			, ashes::PipelineStageFlag::eVertexShader );
+			, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
 	}
 
 	void RenderTarget::doInitialiseLights()
 	{
-		auto & lights = m_lightsUbo->getData( 0u );
+		auto & lights = m_lightsData[0];
 		lights.lightsCount[0] = 1;
 		common::DirectionalLight directional
 		{
@@ -162,26 +168,26 @@ namespace vkapp
 
 		m_stagingBuffer->uploadUniformData( m_transferQueue
 			, m_commandPool
-			, m_lightsUbo->getDatas()
+			, m_lightsData
 			, *m_lightsUbo
-			, ashes::PipelineStageFlag::eFragmentShader );
+			, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT );
 	}
 
 	void RenderTarget::doCreateGBuffer()
 	{
-		static ashes::Format const formats[]
+		static VkFormat const formats[]
 		{
-			ashes::Format::eR32_SFLOAT,
-			ashes::Format::eR32G32B32A32_SFLOAT,
-			ashes::Format::eR32G32B32A32_SFLOAT,
-			ashes::Format::eR32G32B32A32_SFLOAT,
-			ashes::Format::eR32G32B32A32_SFLOAT,
+			VK_FORMAT_R32_SFLOAT,
+			VK_FORMAT_R32G32B32A32_SFLOAT,
+			VK_FORMAT_R32G32B32A32_SFLOAT,
+			VK_FORMAT_R32G32B32A32_SFLOAT,
+			VK_FORMAT_R32G32B32A32_SFLOAT,
 		};
 		size_t index = 0u;
-		ashes::Extent2D size
+		VkExtent2D size
 		{
-			getColourView()->getImage().getDimensions().width,
-			getColourView()->getImage().getDimensions().height,
+			getColourView().image->getDimensions().width,
+			getColourView().image->getDimensions().height,
 		};
 
 		for ( auto & texture : m_gbuffer )
@@ -189,17 +195,17 @@ namespace vkapp
 			texture.texture = m_device.createImage(
 				{
 					0,
-					ashes::ImageType::e2D,
+					VK_IMAGE_TYPE_2D,
 					formats[index],
-					getColourView()->getImage().getDimensions(),
+					getColourView().image->getDimensions(),
 					1u,
 					1u,
-					ashes::SampleCountFlag::e1,
-					ashes::ImageTiling::eOptimal,
-					ashes::ImageUsageFlag::eColourAttachment | ashes::ImageUsageFlag::eSampled
+					VK_SAMPLE_COUNT_1_BIT,
+					VK_IMAGE_TILING_OPTIMAL,
+					VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT
 				}
-				, ashes::MemoryPropertyFlag::eDeviceLocal );
-			texture.view = texture.texture->createView( ashes::ImageViewType::e2D
+				, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
+			texture.view = texture.texture->createView( VK_IMAGE_VIEW_TYPE_2D
 				, texture.texture->getFormat() );
 			++index;
 		}

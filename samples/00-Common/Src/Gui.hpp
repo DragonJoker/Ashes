@@ -3,8 +3,8 @@
 #include "Prerequisites.hpp"
 #include "imgui.h"
 
-#include <Ashes/Buffer/PushConstantsBuffer.hpp>
-#include <Ashes/Image/Sampler.hpp>
+#include <ashespp/Buffer/PushConstantsBuffer.hpp>
+#include <ashespp/Image/Sampler.hpp>
 
 namespace common
 {
@@ -14,10 +14,10 @@ namespace common
 		Gui( utils::Device const & device
 			, ashes::Queue const & queue
 			, ashes::CommandPool const & commandPool
-			, ashes::Extent2D const & size );
-		void updateView( ashes::ImageViewPtr colourView );
+			, VkExtent2D const & size );
+		void updateView( ashes::ImageView colourView );
 		void update();
-		void resize( ashes::Extent2D const & size );
+		void resize( VkExtent2D const & size );
 		void submit( ashes::Queue const & queue );
 
 		bool header( char const * caption );
@@ -30,7 +30,7 @@ namespace common
 		bool button( char const * caption );
 		void text( char const * formatstr, ... );
 
-		inline ashes::ImageViewPtr getTargetView()const
+		inline ashes::ImageView const & getTargetView()const
 		{
 			return m_targetView;
 		}
@@ -49,13 +49,13 @@ namespace common
 		};
 
 		utils::Device const & m_device;
-		ashes::ImageViewPtr m_colourView;
-		ashes::Extent2D m_size;
+		ashes::ImageView m_colourView;
+		VkExtent2D m_size;
 		ashes::PushConstantsBuffer< PushConstBlock > m_pushConstants;
 		ashes::VertexBufferPtr< ImDrawVert > m_vertexBuffer;
 		ashes::BufferPtr< ImDrawIdx > m_indexBuffer;
 		ashes::ImagePtr m_target;
-		ashes::ImageViewPtr m_targetView;
+		ashes::ImageView m_targetView;
 		uint32_t m_vertexCount = 0;
 		uint32_t m_indexCount = 0;
 
@@ -65,14 +65,13 @@ namespace common
 		ashes::PipelineLayoutPtr m_pipelineLayout;
 		ashes::RenderPassPtr m_renderPass;
 		ashes::FrameBufferPtr m_frameBuffer;
-		ashes::VertexLayoutPtr m_vertexLayout;
-		ashes::PipelinePtr m_pipeline;
+		ashes::GraphicsPipelinePtr m_pipeline;
 		ashes::CommandPoolPtr m_commandPool;
 		ashes::CommandBufferPtr m_commandBuffer;
 		ashes::FencePtr m_fence;
 
 		ashes::ImagePtr m_fontImage;
-		ashes::ImageViewPtr m_fontView;
+		ashes::ImageView m_fontView;
 		ashes::SamplerPtr m_sampler;
 	};
 }

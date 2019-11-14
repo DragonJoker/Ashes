@@ -6,10 +6,10 @@ namespace vkapp
 		, ashes::CommandPool const & commandPool
 		, ashes::Queue const & transferQueue
 		, std::string const & fragmentShaderFile
-		, std::vector< ashes::Format > const & formats
-		, ashes::UniformBuffer< common::SceneData > const & sceneUbo
-		, ashes::UniformBuffer< common::ObjectData > const & objectUbo
-		, ashes::UniformBuffer< common::LightsData > const & lightsUbo )
+		, std::vector< VkFormat > const & formats
+		, ashes::UniformBuffer const & sceneUbo
+		, ashes::UniformBuffer const & objectUbo
+		, ashes::UniformBuffer const & lightsUbo )
 		: common::NodesRenderer{ device
 			, commandPool
 			, transferQueue
@@ -23,11 +23,11 @@ namespace vkapp
 	{
 	}
 
-	void TransparentRendering::doFillObjectDescriptorLayoutBindings( ashes::DescriptorSetLayoutBindingArray & bindings )
+	void TransparentRendering::doFillObjectDescriptorLayoutBindings( ashes::VkDescriptorSetLayoutBindingArray & bindings )
 	{
-		bindings.emplace_back( 1u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eVertex );
-		bindings.emplace_back( 2u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eVertex );
-		bindings.emplace_back( 3u, ashes::DescriptorType::eUniformBuffer, ashes::ShaderStageFlag::eFragment );
+		bindings.push_back( { 1u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_VERTEX_BIT, nullptr } );
+		bindings.push_back( { 2u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_VERTEX_BIT, nullptr } );
+		bindings.push_back( { 3u, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr } );
 	}
 
 	void TransparentRendering::doFillObjectDescriptorSet( ashes::DescriptorSetLayout & descriptorLayout

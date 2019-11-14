@@ -6,7 +6,13 @@ See LICENSE file in root folder
 
 #include "Prerequisites.hpp"
 
-#include <Utils/UtilsFile.hpp>
+#include <util/UtilsFile.hpp>
+
+#ifdef min
+#	undef min
+#	undef max
+#	undef abs
+#endif
 
 namespace common
 {
@@ -44,7 +50,7 @@ namespace common
 	*	The file content.
 	*/
 	ashes::UInt32Array parseShaderFile( ashes::Device const & device
-		, ashes::ShaderStageFlag stage
+		, VkShaderStageFlagBits stage
 		, std::string const & file );
 	/**
 	*\~french

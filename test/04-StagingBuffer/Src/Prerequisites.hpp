@@ -10,7 +10,7 @@ namespace vkapp
 		utils::Vec4 colour;
 	};
 
-	static wxString const AppName = wxT( "04-StagingBuffer" );
+	static wxString const AppName{ common::makeName( TEST_ID, wxT( "StagingBuffer" ) ) };
 
 	class RenderPanel;
 	class MainFrame;
