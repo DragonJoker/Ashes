@@ -190,7 +190,7 @@ namespace ashes::gl4
 
 			for ( auto & stage : stages )
 			{
-				descs.push_back( get( stage.module )->compile( stage, isRtot ) );
+				descs.push_back( get( stage.module )->compile( stage, layout, isRtot ) );
 			}
 
 			Pipeline::ProgramPipeline result;
@@ -277,7 +277,6 @@ namespace ashes::gl4
 			createInfo.pTessellationState,
 			createInfo.pInputAssemblyState,
 			createInfo.pViewportState,
-			//createInfo.pRasterizationState,
 			( bool( m_rtotRasterizationState )
 				? &m_rtotRasterizationState.value()
 				: nullptr ),

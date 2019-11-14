@@ -224,11 +224,17 @@ namespace ashes::gl3
 		}
 
 		void bindUniformBuffer( VkWriteDescriptorSet const & write
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
 			, CmdList & list )
 		{
+			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+			assert( it != bindings.end() );
+			auto dstBinding = it->second;
+
 			for ( auto i = 0u; i < write.descriptorCount; ++i )
 			{
-				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 				auto buffer = getBuffer( write, i );
 				list.push_back( makeCmd< OpType::eBindBufferRange >( bindingIndex
 					, GL_BUFFER_TARGET_UNIFORM
@@ -239,11 +245,17 @@ namespace ashes::gl3
 		}
 
 		void bindStorageBuffer( VkWriteDescriptorSet const & write
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
 			, CmdList & list )
 		{
+			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+			assert( it != bindings.end() );
+			auto dstBinding = it->second;
+
 			for ( auto i = 0u; i < write.descriptorCount; ++i )
 			{
-				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 				auto buffer = getBuffer( write, i );
 				list.push_back( makeCmd< OpType::eBindBufferRange >( bindingIndex
 					, GL_BUFFER_TARGET_SHADER_STORAGE
@@ -267,12 +279,18 @@ namespace ashes::gl3
 		}
 
 		void bindDynamicUniformBuffer( VkWriteDescriptorSet const & write
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
 			, uint32_t offset
 			, CmdList & list )
 		{
+			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+			assert( it != bindings.end() );
+			auto dstBinding = it->second;
+
 			for ( auto i = 0u; i < write.descriptorCount; ++i )
 			{
-				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 				auto buffer = getBuffer( write, i );
 				list.push_back( makeCmd< OpType::eBindBufferRange >( bindingIndex
 					, GL_BUFFER_TARGET_UNIFORM
@@ -283,12 +301,18 @@ namespace ashes::gl3
 		}
 
 		void bindDynamicStorageBuffer( VkWriteDescriptorSet const & write
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
 			, uint32_t offset
 			, CmdList & list )
 		{
+			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+			assert( it != bindings.end() );
+			auto dstBinding = it->second;
+
 			for ( auto i = 0u; i < write.descriptorCount; ++i )
 			{
-				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 				auto buffer = getBuffer( write, i );
 				list.push_back( makeCmd< OpType::eBindBufferRange >( bindingIndex
 					, GL_BUFFER_TARGET_SHADER_STORAGE
@@ -345,20 +369,24 @@ namespace ashes::gl3
 		}
 
 		void bindUniformBuffer( LayoutBindingWrites const * writes
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
 			, CmdList & list )
 		{
 			for ( auto & write : writes->writes )
 			{
-				bindUniformBuffer( write, list );
+				bindUniformBuffer( write, bindings, setIndex, list );
 			}
 		}
 
 		void bindStorageBuffer( LayoutBindingWrites const * writes
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
 			, CmdList & list )
 		{
 			for ( auto & write : writes->writes )
 			{
-				bindStorageBuffer( write, list );
+				bindStorageBuffer( write, bindings, setIndex, list );
 			}
 		}
 
@@ -372,26 +400,32 @@ namespace ashes::gl3
 		}
 
 		void bindDynamicUniformBuffer( LayoutBindingWrites const * writes
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
 			, uint32_t offset
 			, CmdList & list )
 		{
 			for ( auto & write : writes->writes )
 			{
-				bindDynamicUniformBuffer( write, offset, list );
+				bindDynamicUniformBuffer( write, bindings, setIndex, offset, list );
 			}
 		}
 
 		void bindDynamicStorageBuffer( LayoutBindingWrites const * writes
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
 			, uint32_t offset
 			, CmdList & list )
 		{
 			for ( auto & write : writes->writes )
 			{
-				bindDynamicStorageBuffer( write, offset, list );
+				bindDynamicStorageBuffer( write, bindings, setIndex, offset, list );
 			}
 		}
 
 		void bindDynamicBuffers( LayoutBindingWritesArray const & writes
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
 			, UInt32Array const & offsets
 			, CmdList & list )
 		{
@@ -402,11 +436,11 @@ namespace ashes::gl3
 				switch ( write->descriptorType )
 				{
 				case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:
-					bindDynamicUniformBuffer( write, offsets[i], list );
+					bindDynamicUniformBuffer( write, bindings, setIndex, offsets[i], list );
 					break;
 
 				case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
-					bindDynamicStorageBuffer( write, offsets[i], list );
+					bindDynamicStorageBuffer( write, bindings, setIndex, offsets[i], list );
 					break;
 
 				default:
@@ -420,7 +454,7 @@ namespace ashes::gl3
 
 	void buildBindDescriptorSetCommand( VkDevice device
 		, VkDescriptorSet descriptorSet
-		, VkPipelineLayout layout
+		, VkPipelineLayout pipelineLayout
 		, UInt32Array const & dynamicOffsets
 		, VkPipelineBindPoint bindingPoint
 		, CmdList & list )
@@ -428,6 +462,8 @@ namespace ashes::gl3
 		assert( get( descriptorSet )->getDynamicBuffers().size() == dynamicOffsets.size()
 			&& "Dynamic descriptors and dynamic offsets sizes must match." );
 		glLogCommand( "BindDescriptorSetCommand" );
+		auto & bindings = get( pipelineLayout )->getShaderBindings();
+		auto setIndex = get( pipelineLayout )->getDescriptorSetIndex( descriptorSet );
 
 		for ( auto & write : get( descriptorSet )->getInputAttachments() )
 		{
@@ -456,12 +492,12 @@ namespace ashes::gl3
 
 		for ( auto & write : get( descriptorSet )->getUniformBuffers() )
 		{
-			bindUniformBuffer( write, list );
+			bindUniformBuffer( write, bindings, setIndex, list );
 		}
 
 		for ( auto & write : get( descriptorSet )->getStorageBuffers() )
 		{
-			bindStorageBuffer( write, list );
+			bindStorageBuffer( write, bindings, setIndex, list );
 		}
 
 		for ( auto & write : get( descriptorSet )->getTexelBuffers() )
@@ -470,6 +506,8 @@ namespace ashes::gl3
 		}
 
 		bindDynamicBuffers( get( descriptorSet )->getDynamicBuffers()
+			, bindings
+			, setIndex
 			, dynamicOffsets
 			, list );
 	}

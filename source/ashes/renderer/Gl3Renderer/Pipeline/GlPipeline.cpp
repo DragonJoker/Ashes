@@ -136,7 +136,6 @@ namespace ashes::gl3
 			createInfo.pTessellationState,
 			createInfo.pInputAssemblyState,
 			createInfo.pViewportState,
-			//createInfo.pRasterizationState,
 			( bool( m_rtotRasterizationState )
 				? &m_rtotRasterizationState.value()
 				: nullptr ),

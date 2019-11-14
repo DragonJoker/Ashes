@@ -107,7 +107,7 @@ namespace ashes::gl3
 		for ( auto & stage : m_stages )
 		{
 			m_stageFlags |= stage.stage;
-			m_shaders.push_back( get( stage.module )->compile( stage, isRtot ) );
+			m_shaders.push_back( get( stage.module )->compile( stage, get( pipeline )->getLayout(), isRtot ) );
 			glLogCall( context
 				, glAttachShader
 				, m_program

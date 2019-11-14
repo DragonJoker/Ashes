@@ -406,9 +406,38 @@ namespace ashes::gl3
 			}
 		}
 
+		void doReworkBufferBindings( VkPipelineLayout pipelineLayout
+			, spirv_cross::CompilerGLSL & compiler )
+		{
+			uint32_t const ssboMask = ( 1u << 16u );
+			spirv_cross::ShaderResources resources = compiler.get_shader_resources();
+			auto & bindings = get( pipelineLayout )->getShaderBindings();
+
+			for ( auto & ubo : resources.uniform_buffers )
+			{
+				auto binding = compiler.get_decoration( ubo.id, spv::DecorationBinding );
+				auto set = compiler.get_decoration( ubo.id, spv::DecorationDescriptorSet );
+				compiler.unset_decoration( ubo.id, spv::DecorationDescriptorSet );
+				auto it = bindings.find( makeShaderBindingKey( set, binding ) );
+				assert( it != bindings.end() );
+				compiler.set_decoration( ubo.id, spv::DecorationBinding, it->second );
+			}
+
+			for ( auto & ssbo : resources.storage_buffers )
+			{
+				auto binding = compiler.get_decoration( ssbo.id, spv::DecorationBinding );
+				auto set = compiler.get_decoration( ssbo.id, spv::DecorationDescriptorSet );
+				compiler.unset_decoration( ssbo.id, spv::DecorationDescriptorSet );
+				auto it = bindings.find( makeShaderBindingKey( set, binding ) );
+				assert( it != bindings.end() );
+				compiler.set_decoration( ssbo.id, spv::DecorationBinding, it->second );
+			}
+		}
+
 #endif
 
 		std::string compileSpvToGlsl( VkDevice device
+			, VkPipelineLayout pipelineLayout
 			, UInt32Array const & shader
 			, VkShaderStageFlagBits stage
 			, VkPipelineShaderStageCreateInfo const & state
@@ -426,6 +455,7 @@ namespace ashes::gl3
 				doSetupOptions( device, compiler, isRtot );
 				constants = doRetrievePushConstants( compiler );
 				doUpdateUboNames( compiler, std::to_string( stage ) );
+				doReworkBufferBindings( pipelineLayout, compiler );
 
 				return compiler.compile();
 
@@ -474,11 +504,13 @@ namespace ashes::gl3
 	}
 
 	GLuint ShaderModule::compile( VkPipelineShaderStageCreateInfo const & state
+		, VkPipelineLayout pipelineLayout
 		, bool isRtot )const
 	{
 		auto context = get( m_device )->getContext();
 		auto result = context->glCreateShader( convertShaderStageFlag( state.stage ) );
 		m_source = compileSpvToGlsl( m_device
+			, pipelineLayout
 			, m_code
 			, state.stage
 			, state

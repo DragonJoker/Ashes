@@ -153,6 +153,8 @@ namespace ashes::gl4
 	using GeometryBuffersPtr = std::unique_ptr< GeometryBuffers >;
 	using GeometryBuffersRefArray = std::vector< GeometryBuffersRef >;
 
+	using ShaderBindingMap = std::map< uint32_t, uint32_t >;
+
 	struct AttachmentDescription
 	{
 		uint32_t index;

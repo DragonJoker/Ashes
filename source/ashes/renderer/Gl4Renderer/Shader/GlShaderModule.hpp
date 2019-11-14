@@ -16,6 +16,7 @@ namespace ashes::gl4
 			, VkShaderModuleCreateInfo createInfo );
 
 		ShaderDesc compile( VkPipelineShaderStageCreateInfo const & state
+			, VkPipelineLayout pipelineLayout
 			, bool isRtot );
 
 		inline ConstantsLayout const & getConstants()const

@@ -8,11 +8,19 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
+	inline uint32_t makeShaderBindingKey( uint32_t set, uint32_t binding )
+	{
+		return ( set << 16u ) | ( binding << 0u );
+	}
+
 	class PipelineLayout
 	{
 	public:
 		PipelineLayout( VkDevice device
 			, VkPipelineLayoutCreateInfo createInfo );
+
+		ShaderBindingMap const & getShaderBindings()const;
+		uint32_t getDescriptorSetIndex( VkDescriptorSet set )const;
 
 		inline VkDescriptorSetLayoutArray const & getDescriptorsLayouts()const
 		{
@@ -24,5 +32,6 @@ namespace ashes::gl4
 		VkDescriptorSetLayoutArray m_setLayouts;
 		VkPushConstantRangeArray m_pushConstantRanges;
 		VkPipelineLayoutCreateInfo m_createInfo;
+		ShaderBindingMap m_shaderBindings;
 	};
 }
