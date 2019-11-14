@@ -20,15 +20,15 @@ install:
   - git submodule update
   - ps: $PLATFORM_NAME="x64"
   - ps: $OS_NAME="linux"
-  - ps: $PROJECT_DIR="/home/appveyor/projects/ashes"
+  - ps: $PROJECT_DIR="/home/appveyor/projects/rendererlib"
   - ps: if (!$isLinux) {$OS_NAME="win32"}
-  - ps: if (!$isLinux) {$PROJECT_DIR="C:\projects\ashes"}
+  - ps: if (!$isLinux) {$PROJECT_DIR="C:\projects\rendererlib"}
   - ps: if (!$isLinux) {curl -L --silent --show-error --output VulkanSDK.exe https://vulkan.lunarg.com/sdk/download/1.1.101.0/windows/VulkanSDK-1.1.101.0-Installer.exe?Human=true}
   - ps: if (!$isLinux) {.\VulkanSDK.exe /S}
-  - cmd: md build
-  - cmd: cd build
-  - ps: if ($isLinux) {cmake -Wno-dev -G "Unix Makefiles" -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DPROJECTS_OUTPUT_DIR=/home/appveyor/projects/ashes -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/home/appveyor/projects/ashes/package/ashes -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_SAMPLES=OFF ../}
-  - ps: if (!$isLinux) {cmake -Wno-dev -G "Visual Studio 16 2019" -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DPROJECTS_OUTPUT_DIR=C:\projects\ashes -DCMAKE_INSTALL_PREFIX=C:\projects\ashes\package\ashes -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_SAMPLES=OFF ../}
+  - ps: md build
+  - ps: cd build
+  - ps: if ($isLinux) {cmake -Wno-dev -G "Unix Makefiles" -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DPROJECTS_OUTPUT_DIR=/home/appveyor/projects/rendererlib -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/home/appveyor/projects/rendererlib/package/ashes -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_SAMPLES=OFF ../}
+  - ps: if (!$isLinux) {cmake -Wno-dev -G "Visual Studio 16 2019" -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DPROJECTS_OUTPUT_DIR=C:\projects\rendererlib -DCMAKE_INSTALL_PREFIX=C:\projects\rendererlib\package\ashes -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_SAMPLES=OFF ../}
 
 build_script:
   - ps: cd $PROJECT_DIR/build
@@ -36,8 +36,8 @@ build_script:
   - ps: if (!$isLinux) {cmake --build . --target install --parallel 4 --config Release}
 
 after_build:
-  - ps: if ($isLinux) {cd /home/appveyor/projects/ashes}
-  - ps: if (!$isLinux) {cd C:\projects\ashes}
+  - ps: if ($isLinux) {cd /home/appveyor/projects/rendererlib}
+  - ps: if (!$isLinux) {cd C:\projects\rendererlib}
   - ps: 7z a Ashes-$OS_NAME-$PLATFORM_NAME.zip ./package/ashes/*
   - ps: Push-AppveyorArtifact Ashes-$OS_NAME-$PLATFORM_NAME.zip
 
