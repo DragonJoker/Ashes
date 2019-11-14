@@ -10,6 +10,8 @@
 
 #include "renderer/Gl3Renderer/GlRendererPrerequisites.hpp"
 
+#include <renderer/RendererCommon/InlineUniformBlocks.hpp>
+
 #include <map>
 #include <vector>
 
@@ -31,6 +33,7 @@ namespace ashes::gl3
 	public:
 		DescriptorSet( VkDescriptorPool pool
 			, VkDescriptorSetLayout layout );
+		~DescriptorSet();
 
 		void update( VkWriteDescriptorSet const & write );
 		void update( VkCopyDescriptorSet const & write );
@@ -65,6 +68,11 @@ namespace ashes::gl3
 			return m_uniformBuffers;
 		}
 
+		inline LayoutBindingWritesArray const & getInlineUniforms()const
+		{
+			return m_inlineUniforms;
+		}
+
 		inline LayoutBindingWritesArray const & getStorageBuffers()const
 		{
 			return m_storageBuffers;
@@ -89,15 +97,18 @@ namespace ashes::gl3
 		void mergeWrites( LayoutBindingWrites & writes, VkWriteDescriptorSet const & write );
 
 	private:
+		VkDescriptorPool m_pool;
 		VkDescriptorSetLayout m_layout;
 		std::vector< std::vector< VkDescriptorImageInfo > > m_imagesInfos;
 		std::vector< std::vector< VkDescriptorBufferInfo > > m_buffersInfos;
+		InlineUboArray m_inlineUbos;
 		LayoutBindingWritesMap m_writes;
 		LayoutBindingWritesArray m_combinedTextureSamplers;
 		LayoutBindingWritesArray m_samplers;
 		LayoutBindingWritesArray m_sampledTextures;
 		LayoutBindingWritesArray m_storageTextures;
 		LayoutBindingWritesArray m_uniformBuffers;
+		LayoutBindingWritesArray m_inlineUniforms;
 		LayoutBindingWritesArray m_storageBuffers;
 		LayoutBindingWritesArray m_texelBuffers;
 		LayoutBindingWritesArray m_dynamicUniformBuffers;

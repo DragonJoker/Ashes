@@ -26,6 +26,19 @@ namespace ashes::gl3
 		std::vector< VkQueueFamilyProperties > const & getQueueFamilyProperties()const;
 		VkFormatProperties const & getFormatProperties( VkFormat fmt )const;
 
+#ifdef VK_KHR_get_physical_device_properties2
+
+		VkPhysicalDeviceFeatures2KHR const & getFeatures2()const;
+		VkPhysicalDeviceProperties2KHR const & getProperties2()const;
+		VkFormatProperties2KHR const & getFormatProperties2( VkFormat format )const;
+		VkResult getImageFormatProperties2( VkPhysicalDeviceImageFormatInfo2KHR const & imageFormatInfo
+			, VkImageFormatProperties2KHR & imageFormatProperties )const;
+		std::vector< VkQueueFamilyProperties2KHR > getQueueFamilyProperties2()const;
+		VkPhysicalDeviceMemoryProperties2KHR const & getMemoryProperties2()const;
+		std::vector< VkSparseImageFormatProperties2KHR > getSparseImageFormatProperties2( VkPhysicalDeviceSparseImageFormatInfo2KHR const & formatInfo )const;
+
+#endif
+
 		bool find( std::string const & name )const;
 		bool findAny( StringArray const & names )const;
 		bool findAll( StringArray const & names )const;
@@ -71,5 +84,12 @@ namespace ashes::gl3
 		VkPhysicalDeviceProperties m_properties{};
 		std::vector< VkQueueFamilyProperties > m_queueProperties{};
 		mutable std::map< VkFormat, VkFormatProperties > m_formatProperties;
+#ifdef VK_KHR_get_physical_device_properties2
+		VkPhysicalDeviceFeatures2KHR m_features2{};
+		VkPhysicalDeviceProperties2KHR m_properties2{};
+		std::vector< VkQueueFamilyProperties2KHR > m_queueProperties2{};
+		mutable std::map< VkFormat, VkFormatProperties2KHR > m_formatProperties2;
+		std::vector< VkSparseImageFormatProperties2KHR > m_sparseImageFormatProperties2;
+#endif
 	};
 }

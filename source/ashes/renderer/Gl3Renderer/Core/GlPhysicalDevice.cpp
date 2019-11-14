@@ -356,6 +356,47 @@ namespace ashes::gl3
 		return m_formatProperties[fmt];
 	}
 
+#if VK_KHR_get_physical_device_properties2
+
+	VkPhysicalDeviceFeatures2KHR const & PhysicalDevice::getFeatures2()const
+	{
+		return m_features2;
+	}
+
+	VkPhysicalDeviceProperties2KHR const & PhysicalDevice::getProperties2()const
+	{
+		return m_properties2;
+	}
+
+	VkFormatProperties2KHR const & PhysicalDevice::getFormatProperties2( VkFormat format )const
+	{
+		return m_formatProperties2[format];
+	}
+
+	VkResult PhysicalDevice::getImageFormatProperties2( VkPhysicalDeviceImageFormatInfo2KHR const & imageFormatInfo
+		, VkImageFormatProperties2KHR & imageFormatProperties )const
+	{
+		imageFormatProperties = VkImageFormatProperties2KHR{};
+		return VK_SUCCESS;
+	}
+
+	std::vector< VkQueueFamilyProperties2KHR > PhysicalDevice::getQueueFamilyProperties2()const
+	{
+		return m_queueProperties2;
+	}
+
+	VkPhysicalDeviceMemoryProperties2KHR const & PhysicalDevice::getMemoryProperties2()const
+	{
+		return Instance::getMemoryProperties2();
+	}
+
+	std::vector< VkSparseImageFormatProperties2KHR > PhysicalDevice::getSparseImageFormatProperties2( VkPhysicalDeviceSparseImageFormatInfo2KHR const & formatInfo )const
+	{
+		return m_sparseImageFormatProperties2;
+	}
+
+#endif
+
 	bool PhysicalDevice::find( std::string const & name )const
 	{
 		return get( m_instance )->getExtensions().find( name );

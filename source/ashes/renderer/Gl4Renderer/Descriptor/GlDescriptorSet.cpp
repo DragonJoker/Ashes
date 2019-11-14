@@ -110,7 +110,7 @@ namespace ashes::gl4
 		if ( myWrite.pImageInfo )
 		{
 			m_imagesInfos.emplace_back( std::vector< VkDescriptorImageInfo >{ myWrite.pImageInfo, myWrite.pImageInfo + myWrite.descriptorCount } );
-			writes.writes.back().pImageInfo = m_imagesInfos.back().data();
+			myWrite.pImageInfo = m_imagesInfos.back().data();
 		}
 
 #if VK_EXT_inline_uniform_block
@@ -141,7 +141,7 @@ namespace ashes::gl4
 		if ( myWrite.pBufferInfo )
 		{
 			m_buffersInfos.emplace_back( std::vector< VkDescriptorBufferInfo >{ myWrite.pBufferInfo, myWrite.pBufferInfo + myWrite.descriptorCount } );
-			writes.writes.back().pBufferInfo = m_buffersInfos.back().data();
+			myWrite.pBufferInfo = m_buffersInfos.back().data();
 		}
 	}
 

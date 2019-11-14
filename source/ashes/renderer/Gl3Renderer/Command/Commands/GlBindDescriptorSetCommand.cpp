@@ -543,6 +543,11 @@ namespace ashes::gl3
 			bindUniformBuffer( write, bindings.ubo, setIndex, list );
 		}
 
+		for ( auto & write : get( descriptorSet )->getInlineUniforms() )
+		{
+			bindUniformBuffer( write, bindings.ubo, setIndex, list );
+		}
+
 		for ( auto & write : get( descriptorSet )->getStorageBuffers() )
 		{
 			bindStorageBuffer( write, bindings.sbo, setIndex, list );
