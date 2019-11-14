@@ -406,7 +406,7 @@ namespace ashes::d3d11
 			, VkBuffer & src
 			, VkBufferImageCopy & mapCopyInfo )
 		{
-			Optional< CopyToStagingProcess > result = std::nullopt;
+			Optional< CopyToStagingProcess > result = ashes::nullopt;
 
 			if ( !srcMappable )
 			{

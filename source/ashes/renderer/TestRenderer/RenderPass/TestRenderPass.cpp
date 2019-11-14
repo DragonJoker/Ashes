@@ -35,7 +35,7 @@ namespace ashes::test
 					makeVector( subpass.pResolveAttachments, subpass.colorAttachmentCount ),
 					( subpass.pDepthStencilAttachment
 						? Optional< VkAttachmentReference >( *subpass.pDepthStencilAttachment )
-						: std::nullopt ),
+						: ashes::nullopt ),
 					makeVector( subpass.pPreserveAttachments, subpass.preserveAttachmentCount )
 				} );
 			referenceAttaches( data->colorAttachments );

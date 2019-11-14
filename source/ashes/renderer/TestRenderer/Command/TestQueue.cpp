@@ -82,7 +82,7 @@ namespace ashes::test
 
 	void Queue::endDebugUtilsLabel()const
 	{
-		m_label = std::nullopt;
+		m_label = ashes::nullopt;
 	}
 
 	void Queue::insertDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const
@@ -108,7 +108,7 @@ namespace ashes::test
 
 	void Queue::debugMarkerEnd()const
 	{
-		m_label = std::nullopt;
+		m_label = ashes::nullopt;
 	}
 
 	void Queue::debugMarkerInsert( VkDebugMarkerMarkerInfoEXT const & labelInfo )const

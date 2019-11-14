@@ -335,7 +335,7 @@ namespace common
 				{},
 				{ { 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } },
 				{},
-				std::nullopt,
+				ashes::nullopt,
 				{},
 			} );
 		ashes::VkSubpassDependencyArray dependencies
@@ -416,7 +416,7 @@ namespace common
 					, VK_SHADER_STAGE_VERTEX_BIT
 					, shadersFolder / "gui.vert" ) ),
 				"main",
-				std::nullopt,
+				ashes::nullopt,
 			} );
 		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
 			{
@@ -426,7 +426,7 @@ namespace common
 					, VK_SHADER_STAGE_FRAGMENT_BIT
 					, shadersFolder / "gui.frag" ) ),
 				"main",
-				std::nullopt,
+				ashes::nullopt,
 			} );
 
 		m_pipeline = m_device->createPipeline( ashes::GraphicsPipelineCreateInfo
@@ -435,7 +435,7 @@ namespace common
 				std::move( shaderStages ),
 				std::move( vertexLayout ),
 				ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST },
-				std::nullopt,
+				ashes::nullopt,
 				ashes::PipelineViewportStateCreateInfo{},
 				ashes::PipelineRasterizationStateCreateInfo{ 0u, VK_FALSE, VK_FALSE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE },
 				ashes::PipelineMultisampleStateCreateInfo{},

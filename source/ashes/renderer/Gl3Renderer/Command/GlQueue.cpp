@@ -491,7 +491,7 @@ namespace ashes::gl3
 
 	void Queue::endDebugUtilsLabel()const
 	{
-		m_label = std::nullopt;
+		m_label = ashes::nullopt;
 	}
 
 	void Queue::insertDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const

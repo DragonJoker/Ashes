@@ -50,7 +50,7 @@ namespace common
 						, VK_SHADER_STAGE_VERTEX_BIT
 						, shadersFolder / vertexShaderFile ) ),
 					"main",
-					std::nullopt,
+					ashes::nullopt,
 				} );
 			result.push_back( ashes::PipelineShaderStageCreateInfo
 				{
@@ -60,7 +60,7 @@ namespace common
 						, VK_SHADER_STAGE_FRAGMENT_BIT
 						, fragmentShaderFile ) ),
 					"main",
-					std::nullopt,
+					ashes::nullopt,
 				} );
 			return result;
 		}
@@ -702,7 +702,7 @@ namespace common
 				std::move( shaderStages ),
 				std::move( vertexLayout ),
 				ashes::PipelineInputAssemblyStateCreateInfo{ 0u, topology },
-				std::nullopt,
+				ashes::nullopt,
 				ashes::PipelineViewportStateCreateInfo{},
 				ashes::PipelineRasterizationStateCreateInfo{ 0u, VK_FALSE, VK_FALSE, VK_POLYGON_MODE_FILL, VkCullModeFlags( cullMode ) },
 				ashes::PipelineMultisampleStateCreateInfo{},
