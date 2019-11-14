@@ -9,7 +9,8 @@ namespace ashes::gl4
 {
 	DescriptorPool::DescriptorPool( VkDevice device
 		, VkDescriptorPoolCreateInfo createInfo )
-		: m_flags{ createInfo.flags }
+		: m_device{ device }
+		, m_flags{ createInfo.flags }
 		, m_maxSets{ createInfo.maxSets }
 		, m_poolSizes{ makeVector( createInfo.pPoolSizes, createInfo.poolSizeCount ) }
 	{

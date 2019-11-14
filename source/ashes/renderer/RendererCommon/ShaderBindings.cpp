@@ -15,7 +15,11 @@ namespace ashes
 		bool isUniformBuffer( VkDescriptorType type )
 		{
 			return type == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
-				|| type == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+				|| type == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC
+#if VK_EXT_inline_uniform_block
+				|| type == VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT
+#endif
+				;
 		}
 		
 		bool isStorageBuffer( VkDescriptorType type )

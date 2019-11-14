@@ -27,22 +27,6 @@
 
 namespace ashes::gl4
 {
-	VkPhysicalDeviceMemoryProperties const Instance::m_memoryProperties = []()
-	{
-		VkPhysicalDeviceMemoryProperties result{};
-		// Emulate one device local heap
-		result.memoryHeaps[result.memoryHeapCount++] = { ~( 0ull ), VK_MEMORY_HEAP_DEVICE_LOCAL_BIT };
-		// and one host visible heap
-		result.memoryHeaps[result.memoryHeapCount++] = { ~( 0ull ), 0u };
-
-		// Emulate all combinations of device local memory types
-		// and all combinations of host visible memory types
-		result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_HEAP_DEVICE_LOCAL_BIT, 0u };
-		result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT, 1u };
-
-		return result;
-	}();
-
 	std::string convert( const char * ptr )
 	{
 		return std::string{ ptr };
@@ -388,5 +372,36 @@ namespace ashes::gl4
 				, glEnable
 				, GL_DEBUG_OUTPUT_SYNC );
 		}
+	}
+
+	VkPhysicalDeviceMemoryProperties const & Instance::getMemoryProperties()
+	{
+		static VkPhysicalDeviceMemoryProperties const memoryProperties = []()
+		{
+			VkPhysicalDeviceMemoryProperties result{};
+			// Emulate one device local heap
+			result.memoryHeaps[result.memoryHeapCount++] = { ~( 0ull ), VK_MEMORY_HEAP_DEVICE_LOCAL_BIT };
+			// and one host visible heap
+			result.memoryHeaps[result.memoryHeapCount++] = { ~( 0ull ), 0u };
+
+			// Emulate all combinations of device local memory types
+			// and all combinations of host visible memory types
+			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_HEAP_DEVICE_LOCAL_BIT, 0u };
+			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT, 1u };
+
+			return result;
+		}( );
+		return memoryProperties;
+	}
+
+	VkPhysicalDeviceMemoryProperties2KHR const & Instance::getMemoryProperties2()
+	{
+		static VkPhysicalDeviceMemoryProperties2KHR const memoryProperties2 = []()
+		{
+			VkPhysicalDeviceMemoryProperties2KHR result{};
+			result.memoryProperties = Instance::getMemoryProperties();
+			return result;
+		}( );
+		return memoryProperties2;
 	}
 }

@@ -66,6 +66,12 @@ namespace ashes::gl4
 			, const char * pMessage );
 #endif
 		void registerContext( Context & context );
+
+		static VkPhysicalDeviceMemoryProperties const & getMemoryProperties();
+#ifdef VK_KHR_get_physical_device_properties2
+		static VkPhysicalDeviceMemoryProperties2KHR const & getMemoryProperties2();
+#endif
+
 		inline bool isSPIRVSupported()const
 		{
 			return m_extensions.isSPIRVSupported();
@@ -113,11 +119,6 @@ namespace ashes::gl4
 			return *m_context;
 		}
 
-		static inline VkPhysicalDeviceMemoryProperties const & getMemoryProperties()
-		{
-			return m_memoryProperties;
-		}
-
 	private:
 		AshPluginFeatures m_features;
 		VkInstanceCreateFlags m_flags;
@@ -136,6 +137,5 @@ namespace ashes::gl4
 		bool m_validationEnabled;
 		RenderWindow * m_dummyWindow;
 		ContextPtr m_context;
-		static VkPhysicalDeviceMemoryProperties const m_memoryProperties;
 	};
 }

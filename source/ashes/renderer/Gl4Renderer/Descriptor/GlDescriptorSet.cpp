@@ -7,13 +7,16 @@
 
 #include "ashesgl4_api.hpp"
 
+#include <ashes/common/VkTypeTraits.hpp>
+
 #include <algorithm>
 
 namespace ashes::gl4
 {
 	DescriptorSet::DescriptorSet( VkDescriptorPool pool
 		, VkDescriptorSetLayout layout )
-		: m_layout{ layout }
+		: m_pool{ pool }
+		, m_layout{ layout }
 	{
 		get( pool )->registerSet( get( this ) );
 
@@ -67,9 +70,15 @@ namespace ashes::gl4
 				m_dynamicStorageBuffers.push_back( &write.second );
 				m_dynamicBuffers.push_back( &write.second );
 				break;
+#if VK_EXT_inline_uniform_block
 			case VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT:
+				m_inlineUniforms.push_back( &write.second );
+				break;
+#endif
+#if VK_NV_ray_tracing
 			case VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV:
 				break;
+#endif
 			default:
 				break;
 			}
@@ -84,19 +93,54 @@ namespace ashes::gl4
 			} );
 	}
 
+	DescriptorSet::~DescriptorSet()
+	{
+		for ( auto & inlineUbo : m_inlineUbos )
+		{
+			deallocate( inlineUbo->buffer, nullptr );
+			deallocate( inlineUbo->memory, nullptr );
+		}
+	}
+
 	void DescriptorSet::mergeWrites( LayoutBindingWrites & writes, VkWriteDescriptorSet const & write )
 	{
 		writes.writes.push_back( write );
+		auto & myWrite = writes.writes.back();
 
-		if ( write.pImageInfo )
+		if ( myWrite.pImageInfo )
 		{
-			m_imagesInfos.emplace_back( std::vector< VkDescriptorImageInfo >{ write.pImageInfo, write.pImageInfo + write.descriptorCount } );
+			m_imagesInfos.emplace_back( std::vector< VkDescriptorImageInfo >{ myWrite.pImageInfo, myWrite.pImageInfo + myWrite.descriptorCount } );
 			writes.writes.back().pImageInfo = m_imagesInfos.back().data();
 		}
 
-		if ( write.pBufferInfo )
+#if VK_EXT_inline_uniform_block
+
+		auto inlineUniform = tryGet< VkWriteDescriptorSetInlineUniformBlockEXT >( myWrite.pNext );
+
+		if ( inlineUniform )
 		{
-			m_buffersInfos.emplace_back( std::vector< VkDescriptorBufferInfo >{ write.pBufferInfo, write.pBufferInfo + write.descriptorCount } );
+			writes.descriptorCount /= inlineUniform->dataSize;
+			myWrite.descriptorCount /= inlineUniform->dataSize;
+			auto device = get( m_pool )->getDevice();
+			auto inlineUbo = createInlineUbo( device
+				, *inlineUniform
+				, Instance::getMemoryProperties()
+				, ashes::gl4::vkCreateBuffer
+				, ashes::gl4::vkGetBufferMemoryRequirements
+				, ashes::gl4::vkAllocateMemory
+				, ashes::gl4::vkBindBufferMemory
+				, ashes::gl4::vkMapMemory
+				, ashes::gl4::vkFlushMappedMemoryRanges
+				, ashes::gl4::vkUnmapMemory );
+			myWrite.pBufferInfo = &inlineUbo->info;
+			m_inlineUbos.emplace_back( std::move( inlineUbo ) );
+		}
+
+#endif
+
+		if ( myWrite.pBufferInfo )
+		{
+			m_buffersInfos.emplace_back( std::vector< VkDescriptorBufferInfo >{ myWrite.pBufferInfo, myWrite.pBufferInfo + myWrite.descriptorCount } );
 			writes.writes.back().pBufferInfo = m_buffersInfos.back().data();
 		}
 	}
@@ -106,7 +150,6 @@ namespace ashes::gl4
 		auto it = m_writes.find( write.dstBinding );
 		assert( it != m_writes.end() );
 		assert( it->second.descriptorType == write.descriptorType );
-		assert( it->second.descriptorCount >= write.dstArrayElement + write.descriptorCount );
 		assert( write.dstSet == get( this ) );
 		mergeWrites( it->second, write );
 	}

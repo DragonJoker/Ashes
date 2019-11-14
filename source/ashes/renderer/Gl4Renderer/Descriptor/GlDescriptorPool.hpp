@@ -23,7 +23,13 @@ namespace ashes::gl4
 		VkResult reset( VkDescriptorPoolResetFlags flags );
 		VkResult free( VkDescriptorSetArray sets );
 
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
+		VkDevice m_device;
 		VkDescriptorPoolCreateFlags m_flags;
 		uint32_t m_maxSets;
 		VkDescriptorPoolSizeArray m_poolSizes;

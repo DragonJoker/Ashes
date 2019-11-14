@@ -51,13 +51,13 @@ namespace ashes::gl4
 
 		try
 		{
+			auto gpus = get( instance )->enumeratePhysicalDevices();
+			*pPhysicalDeviceCount = uint32_t( gpus.size() );
+
 			if ( !pPhysicalDevices )
 			{
-				*pPhysicalDeviceCount = 1u;
 				return result;
 			}
-
-			auto gpus = get( instance )->enumeratePhysicalDevices();
 
 			for ( auto & gpu : gpus )
 			{
@@ -118,13 +118,13 @@ namespace ashes::gl4
 		uint32_t* pQueueFamilyPropertyCount,
 		VkQueueFamilyProperties* pQueueFamilyProperties )
 	{
+		auto props = get( physicalDevice )->getQueueFamilyProperties();
+		*pQueueFamilyPropertyCount = uint32_t( props.size() );
+
 		if ( !pQueueFamilyProperties )
 		{
-			*pQueueFamilyPropertyCount = 1u;
 			return;
 		}
-
-		auto props = get( physicalDevice )->getQueueFamilyProperties();
 
 		for ( auto & prop : props )
 		{
@@ -2192,16 +2192,14 @@ namespace ashes::gl4
 		VkPhysicalDevice physicalDevice,
 		VkPhysicalDeviceFeatures2KHR * pFeatures )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceFeatures2KHR Unsupported" << std::endl;
+		*pFeatures = get( physicalDevice )->getFeatures2();
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceProperties2KHR(
 		VkPhysicalDevice physicalDevice,
-		VkPhysicalDeviceFeatures2KHR* pProperties )
+		VkPhysicalDeviceProperties2KHR * pProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceProperties2KHR Unsupported" << std::endl;
+		*pProperties = get( physicalDevice )->getProperties2();
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceFormatProperties2KHR(
@@ -2209,8 +2207,7 @@ namespace ashes::gl4
 		VkFormat format,
 		VkFormatProperties2KHR * pFormatProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceFormatProperties2KHR Unsupported" << std::endl;
+		*pFormatProperties = get( physicalDevice )->getFormatProperties2( format );
 	}
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceImageFormatProperties2KHR(
@@ -2218,9 +2215,7 @@ namespace ashes::gl4
 		const VkPhysicalDeviceImageFormatInfo2KHR * pImageFormatInfo,
 		VkImageFormatProperties2KHR * pImageFormatProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceImageFormatProperties2KHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return get( physicalDevice )->getImageFormatProperties2( *pImageFormatInfo, *pImageFormatProperties );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceQueueFamilyProperties2KHR(
@@ -2228,16 +2223,26 @@ namespace ashes::gl4
 		uint32_t* pQueueFamilyPropertyCount,
 		VkQueueFamilyProperties2KHR * pQueueFamilyProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceQueueFamilyProperties2KHR Unsupported" << std::endl;
+		auto props = get( physicalDevice )->getQueueFamilyProperties2();
+		*pQueueFamilyPropertyCount = uint32_t( props.size() );
+
+		if ( !pQueueFamilyProperties )
+		{
+			return;
+		}
+
+		for ( auto & prop : props )
+		{
+			( *pQueueFamilyProperties ) = prop;
+			++pQueueFamilyProperties;
+		}
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceMemoryProperties2KHR(
 		VkPhysicalDevice physicalDevice,
 		VkPhysicalDeviceMemoryProperties2KHR * pMemoryProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceMemoryProperties2KHR Unsupported" << std::endl;
+		*pMemoryProperties = get( physicalDevice )->getMemoryProperties2();
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceSparseImageFormatProperties2KHR(
@@ -2246,8 +2251,19 @@ namespace ashes::gl4
 		uint32_t* pPropertyCount,
 		VkSparseImageFormatProperties2KHR* pProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceSparseImageFormatProperties2KHR Unsupported" << std::endl;
+		auto props = get( physicalDevice )->getSparseImageFormatProperties2( *pFormatInfo );
+		*pPropertyCount = uint32_t( props.size() );
+
+		if ( !pProperties )
+		{
+			return;
+		}
+
+		for ( auto & prop : props )
+		{
+			( *pProperties ) = prop;
+			++pProperties;
+		}
 	}
 
 #endif
@@ -2297,8 +2313,6 @@ namespace ashes::gl4
 		VkCommandPool commandPool,
 		VkCommandPoolTrimFlagsKHR flags )
 	{
-		// TODO
-		std::cerr << "vkTrimCommandPoolKHR Unsupported" << std::endl;
 	}
 
 #endif
@@ -4013,6 +4027,7 @@ namespace ashes::gl4
 	{
 		static std::vector< VkExtensionProperties > const extensions
 		{
+#if VK_KHR_surface
 			VkExtensionProperties{ VK_KHR_SURFACE_EXTENSION_NAME, makeVersion( 1, 0, 0 ) },
 			[]()
 			{
@@ -4021,9 +4036,19 @@ namespace ashes::gl4
 				strncpy( result.extensionName, VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME, VK_MAX_EXTENSION_NAME_SIZE );
 				return result;
 			}(),
+#endif
+#if VK_EXT_debug_report
 			VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_REPORT_SPEC_VERSION, 0, 0 ) },
+#endif
+#if VK_EXT_debug_marker
 			VkExtensionProperties{ VK_EXT_DEBUG_MARKER_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_MARKER_SPEC_VERSION, 0, 0 ) },
+#endif
+#if VK_EXT_debug_utils
 			VkExtensionProperties{ VK_EXT_DEBUG_UTILS_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_UTILS_SPEC_VERSION, 0, 0 ) },
+#endif
+#if VK_KHR_get_physical_device_properties2
+			VkExtensionProperties{ VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, makeVersion( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_SPEC_VERSION, 0, 0 ) },
+#endif
 		};
 		return extensions;
 	}
@@ -4032,10 +4057,24 @@ namespace ashes::gl4
 	{
 		static std::vector< VkExtensionProperties > const extensions
 		{
+#if VK_KHR_swapchain
 			VkExtensionProperties{ VK_KHR_SWAPCHAIN_EXTENSION_NAME, makeVersion( VK_KHR_SWAPCHAIN_SPEC_VERSION, 0, 0 ) },
+#endif
+#if VK_EXT_debug_report
 			VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_REPORT_SPEC_VERSION, 0, 0 ) },
+#endif
+#if VK_EXT_debug_marker
 			VkExtensionProperties{ VK_EXT_DEBUG_MARKER_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_MARKER_SPEC_VERSION, 0, 0 ) },
+#endif
+#if VK_EXT_debug_utils
 			VkExtensionProperties{ VK_EXT_DEBUG_UTILS_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_UTILS_SPEC_VERSION, 0, 0 ) },
+#endif
+#if VK_EXT_inline_uniform_block
+			VkExtensionProperties{ VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME, makeVersion( VK_EXT_INLINE_UNIFORM_BLOCK_SPEC_VERSION, 0, 0 ) },
+#endif
+#if VK_KHR_maintenance1
+			VkExtensionProperties{ VK_KHR_MAINTENANCE1_EXTENSION_NAME, makeVersion( VK_KHR_MAINTENANCE1_SPEC_VERSION, 0, 0 ) },
+#endif
 		};
 		return extensions;
 	}
@@ -4155,7 +4194,6 @@ namespace ashes::gl4
 
 		return result;
 	}
-
 }
 
 #ifdef __cplusplus
