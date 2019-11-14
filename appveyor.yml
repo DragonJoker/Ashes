@@ -24,7 +24,7 @@ install:
   - ps: if (!$isLinux) {$OS_NAME="win32"}
   - ps: if (!$isLinux) {$PROJECT_DIR="C:\projects\ashes"}
   - ps: if (!$isLinux) {curl -L --silent --show-error --output VulkanSDK.exe https://vulkan.lunarg.com/sdk/download/1.1.101.0/windows/VulkanSDK-1.1.101.0-Installer.exe?Human=true}
-  - .\VulkanSDK.exe /S}
+  - ps: if (!$isLinux) {.\VulkanSDK.exe /S}
   - cmd: md build
   - cmd: cd build
   - ps: if ($isLinux) {cmake -Wno-dev -G "Unix Makefiles" -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DPROJECTS_OUTPUT_DIR=/home/appveyor/projects/ashes -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/home/appveyor/projects/ashes/package/ashes -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_SAMPLES=OFF ../}
