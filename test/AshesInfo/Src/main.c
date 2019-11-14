@@ -4740,6 +4740,7 @@ static void AppGpuDumpProps( const struct AppGpu *gpu, FILE *out )
 				if ( html_output )
 				{
 					fprintf( out, "\n\t\t\t\t\t<details><summary>VkPhysicalDeviceFloatControlsProperties</summary>\n" );
+#if VK_KHR_SHADER_FLOAT_CONTROLS_SPEC_VERSION == 1
 					fprintf( out,
 						"\t\t\t\t\t\t<details><summary>separateDenormSettings       = <div class='val'>%" PRIuLEAST32
 						"</div></summary></details>\n",
@@ -4748,6 +4749,7 @@ static void AppGpuDumpProps( const struct AppGpu *gpu, FILE *out )
 						"\t\t\t\t\t\t<details><summary>separateRoundingModeSettings = <div class='val'>%" PRIuLEAST32
 						"</div></summary></details>\n",
 						float_control_props->separateRoundingModeSettings );
+#endif
 					fprintf( out,
 						"\t\t\t\t\t\t<details><summary>shaderSignedZeroInfNanPreserveFloat16 = <div class='val'>%" PRIuLEAST32
 						"</div></summary></details>\n",
@@ -4814,9 +4816,11 @@ static void AppGpuDumpProps( const struct AppGpu *gpu, FILE *out )
 				{
 					printf( "\nVkPhysicalDeviceFloatControlsProperties:\n" );
 					printf( "========================================\n" );
+#if VK_KHR_SHADER_FLOAT_CONTROLS_SPEC_VERSION == 1
 					printf( "\tseparateDenormSettings       = %" PRIuLEAST32 "\n", float_control_props->separateDenormSettings );
 					printf( "\tseparateRoundingModeSettings = %" PRIuLEAST32 "\n",
 						float_control_props->separateRoundingModeSettings );
+#endif
 					printf( "\tshaderSignedZeroInfNanPreserveFloat16 = %" PRIuLEAST32 "\n",
 						float_control_props->shaderSignedZeroInfNanPreserveFloat16 );
 					printf( "\tshaderSignedZeroInfNanPreserveFloat32 = %" PRIuLEAST32 "\n",

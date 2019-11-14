@@ -51,6 +51,7 @@ if ( ASHES_BUILD_TESTS )
 					${CMAKE_SOURCE_DIR}/test/00-Common/Src
 					${wxWidgets_INCLUDE_DIRS}
 					${GTK2_INCLUDE_DIRS}
+					${Vulkan_INCLUDE_DIRS}
 				)
 				target_compile_features( ${TARGET_NAME} PRIVATE
 					cxx_std_17
@@ -85,7 +86,7 @@ if ( ASHES_BUILD_SW_SAMPLES )
 	include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../external/glm )
 	include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../external/gli )
 	set( Vulkan_FOUND ON )
-	set( Vulkan_INCLUDE_DIR ${Vulkan_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/include )
+	set( Vulkan_INCLUDE_DIR ${Vulkan_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/include )
 	set( Vulkan_LIBRARY ashes )
 	add_subdirectory( Vulkan )
 	set(EXAMPLES

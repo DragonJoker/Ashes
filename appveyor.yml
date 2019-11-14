@@ -17,14 +17,13 @@ configuration:
 
 install:
   - git submodule init
-  - git submodule update
+  - git submodule update --init -- "external/SPIRV-Cross"
+  - git submodule update --init -- "external/Vulkan-Headers"
   - ps: $PLATFORM_NAME="x64"
   - ps: $OS_NAME="linux"
   - ps: $PROJECT_DIR="/home/appveyor/projects/rendererlib"
   - ps: if (!$isLinux) {$OS_NAME="win32"}
   - ps: if (!$isLinux) {$PROJECT_DIR="C:\projects\rendererlib"}
-  - ps: if (!$isLinux) {curl -L --silent --show-error --output VulkanSDK.exe https://vulkan.lunarg.com/sdk/download/1.1.101.0/windows/VulkanSDK-1.1.101.0-Installer.exe?Human=true}
-  - ps: if (!$isLinux) {.\VulkanSDK.exe /S}
   - ps: md build
   - ps: cd build
   - ps: if ($isLinux) {cmake -Wno-dev -G "Unix Makefiles" -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DPROJECTS_OUTPUT_DIR=/home/appveyor/projects/rendererlib -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/home/appveyor/projects/rendererlib/package/ashes -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_SAMPLES=OFF ../}
