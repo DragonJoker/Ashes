@@ -50,6 +50,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 				${ASSIMP_INCLUDE_DIR}
 				${CMAKE_SOURCE_DIR}/external/imgui
 				${CMAKE_SOURCE_DIR}/samples/00-Common/Src
+				${Vulkan_INCLUDE_DIRS}
 			)
 			target_compile_features( ${TARGET_NAME} PRIVATE
 				cxx_std_17

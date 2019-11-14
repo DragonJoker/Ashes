@@ -1,7 +1,6 @@
 |         Server     | Result |
 |:------------------:|--------|
-|  Travis CI (Linux) | [![Build Status](https://travis-ci.org/DragonJoker/Ashes.svg?branch=master)](https://travis-ci.org/DragonJoker/Ashes) |
-| AppVeyor (Windows) | [![Build status](https://ci.appveyor.com/api/projects/status/418lak7ca1u0d97c?svg=true)](https://ci.appveyor.com/project/DragonJoker/rendererlib) |
+| AppVeyor           | [![Build status](https://ci.appveyor.com/api/projects/status/418lak7ca1u0d97c?svg=true)](https://ci.appveyor.com/project/DragonJoker/rendererlib) |
 
 
 Ashes

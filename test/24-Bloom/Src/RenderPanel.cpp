@@ -115,7 +115,7 @@ namespace vkapp
 					{},
 					{ { 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } },
 					{},
-					std::nullopt,
+					ashes::nullopt,
 					{},
 				} );
 			ashes::VkSubpassDependencyArray dependencies
@@ -636,7 +636,7 @@ namespace vkapp
 				{},
 				{ { 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } },
 				{},
-				std::nullopt,
+				ashes::nullopt,
 				{},
 			} );
 		ashes::VkSubpassDependencyArray dependencies
@@ -750,7 +750,7 @@ namespace vkapp
 					, VK_SHADER_STAGE_VERTEX_BIT
 					, shadersFolder / "offscreen.vert" ) ),
 				"main",
-				std::nullopt,
+				ashes::nullopt,
 			} );
 		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
 			{
@@ -760,7 +760,7 @@ namespace vkapp
 					, VK_SHADER_STAGE_FRAGMENT_BIT
 					, shadersFolder / "offscreen.frag" ) ),
 				"main",
-				std::nullopt,
+				ashes::nullopt,
 			} );
 
 		m_offscreenPipeline = m_device->getDevice().createPipeline( ashes::GraphicsPipelineCreateInfo
@@ -769,11 +769,11 @@ namespace vkapp
 				std::move( shaderStages ),
 				std::move( vertexLayout ),
 				ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST },
-				std::nullopt,
+				ashes::nullopt,
 				ashes::PipelineViewportStateCreateInfo{},
 				ashes::PipelineRasterizationStateCreateInfo{ 0u, VK_FALSE, VK_FALSE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE },
 				ashes::PipelineMultisampleStateCreateInfo{},
-				std::nullopt,
+				ashes::nullopt,
 				ashes::PipelineColorBlendStateCreateInfo{},
 				ashes::PipelineDynamicStateCreateInfo{ 0u, { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR } },
 				*m_offscreenPipelineLayout,
@@ -815,7 +815,7 @@ namespace vkapp
 				{},
 				{ { 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } },
 				{},
-				std::nullopt,
+				ashes::nullopt,
 				{},
 			} );
 		ashes::VkSubpassDependencyArray dependencies
@@ -945,7 +945,7 @@ namespace vkapp
 					, VK_SHADER_STAGE_VERTEX_BIT
 					, shadersFolder / "hipass.vert" ) ),
 				"main",
-				std::nullopt,
+				ashes::nullopt,
 			} );
 		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
 			{
@@ -955,7 +955,7 @@ namespace vkapp
 					, VK_SHADER_STAGE_FRAGMENT_BIT
 					, shadersFolder / "hipass.frag" ) ),
 				"main",
-				std::nullopt,
+				ashes::nullopt,
 			} );
 
 			ashes::PipelineVertexInputStateCreateInfo vertexLayout
@@ -996,7 +996,7 @@ namespace vkapp
 					shaderStages,
 					vertexLayout,
 					ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
-					std::nullopt,
+					ashes::nullopt,
 					ashes::PipelineViewportStateCreateInfo
 					{
 						0u,
@@ -1007,7 +1007,7 @@ namespace vkapp
 					},
 					ashes::PipelineRasterizationStateCreateInfo{},
 					ashes::PipelineMultisampleStateCreateInfo{},
-					std::nullopt,
+					ashes::nullopt,
 					ashes::PipelineColorBlendStateCreateInfo{},
 					ashes::nullopt,
 					*m_passes.hi.pipelineLayout,
@@ -1107,7 +1107,7 @@ namespace vkapp
 					, VK_SHADER_STAGE_VERTEX_BIT
 					, shadersFolder / "blur.vert" ) ),
 				"main",
-				std::nullopt,
+				ashes::nullopt,
 			} );
 		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
 			{
@@ -1117,7 +1117,7 @@ namespace vkapp
 					, VK_SHADER_STAGE_FRAGMENT_BIT
 					, shadersFolder / "blur.frag" ) ),
 				"main",
-				std::nullopt,
+				ashes::nullopt,
 			} );
 		
 		ashes::PipelineVertexInputStateCreateInfo vertexLayout
@@ -1166,7 +1166,7 @@ namespace vkapp
 					shaderStages,
 					vertexLayout,
 					ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
-					std::nullopt,
+					ashes::nullopt,
 					ashes::PipelineViewportStateCreateInfo
 					{
 						0u,
@@ -1177,9 +1177,9 @@ namespace vkapp
 					},
 					ashes::PipelineRasterizationStateCreateInfo{},
 					ashes::PipelineMultisampleStateCreateInfo{},
-					std::nullopt,
+					ashes::nullopt,
 					ashes::PipelineColorBlendStateCreateInfo{},
-					std::nullopt,
+					ashes::nullopt,
 					*m_passes.blurX.pipelineLayout,
 					*m_passes.blurX.renderPass,
 				} );
@@ -1239,7 +1239,7 @@ namespace vkapp
 					, VK_SHADER_STAGE_VERTEX_BIT
 					, shadersFolder / "blur.vert" ) ),
 				"main",
-				std::nullopt,
+				ashes::nullopt,
 			} );
 		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
 			{
@@ -1249,7 +1249,7 @@ namespace vkapp
 					, VK_SHADER_STAGE_FRAGMENT_BIT
 					, shadersFolder / "blur.frag" ) ),
 				"main",
-				std::nullopt,
+				ashes::nullopt,
 			} );
 
 		ashes::PipelineVertexInputStateCreateInfo vertexLayout
@@ -1295,7 +1295,7 @@ namespace vkapp
 					shaderStages,
 					vertexLayout,
 					ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
-					std::nullopt,
+					ashes::nullopt,
 					ashes::PipelineViewportStateCreateInfo
 					{
 						0u,
@@ -1306,9 +1306,9 @@ namespace vkapp
 					},
 					ashes::PipelineRasterizationStateCreateInfo{},
 					ashes::PipelineMultisampleStateCreateInfo{},
-					std::nullopt,
+					ashes::nullopt,
 					ashes::PipelineColorBlendStateCreateInfo{},
-					std::nullopt,
+					ashes::nullopt,
 					*m_passes.blurY.pipelineLayout,
 					*m_passes.blurY.renderPass,
 				} );
@@ -1403,7 +1403,7 @@ namespace vkapp
 					, VK_SHADER_STAGE_VERTEX_BIT
 					, shadersFolder / "combine.vert" ) ),
 				"main",
-				std::nullopt,
+				ashes::nullopt,
 			} );
 		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
 			{
@@ -1413,7 +1413,7 @@ namespace vkapp
 					, VK_SHADER_STAGE_FRAGMENT_BIT
 					, shadersFolder / "combine.frag" ) ),
 				"main",
-				std::nullopt,
+				ashes::nullopt,
 			} );
 
 		ashes::PipelineVertexInputStateCreateInfo vertexLayout
@@ -1463,7 +1463,7 @@ namespace vkapp
 					shaderStages,
 					vertexLayout,
 					ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
-					std::nullopt,
+					ashes::nullopt,
 					ashes::PipelineViewportStateCreateInfo
 					{
 						0u,
@@ -1474,9 +1474,9 @@ namespace vkapp
 					},
 					ashes::PipelineRasterizationStateCreateInfo{},
 					ashes::PipelineMultisampleStateCreateInfo{},
-					std::nullopt,
+					ashes::nullopt,
 					ashes::PipelineColorBlendStateCreateInfo{},
-					std::nullopt,
+					ashes::nullopt,
 					*m_passes.combine.pipelineLayout,
 					*m_passes.combine.renderPass,
 				} );
@@ -1551,7 +1551,7 @@ namespace vkapp
 					, VK_SHADER_STAGE_VERTEX_BIT
 					, shadersFolder / "main.vert" ) ),
 				"main",
-				std::nullopt,
+				ashes::nullopt,
 			} );
 		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
 			{
@@ -1561,7 +1561,7 @@ namespace vkapp
 					, VK_SHADER_STAGE_FRAGMENT_BIT
 					, shadersFolder / "main.frag" ) ),
 				"main",
-				std::nullopt,
+				ashes::nullopt,
 			} );
 
 		m_mainPipeline = m_device->getDevice().createPipeline( ashes::GraphicsPipelineCreateInfo
@@ -1570,11 +1570,11 @@ namespace vkapp
 				std::move( shaderStages ),
 				std::move( vertexLayout ),
 				ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
-				std::nullopt,
+				ashes::nullopt,
 				ashes::PipelineViewportStateCreateInfo{},
 				ashes::PipelineRasterizationStateCreateInfo{},
 				ashes::PipelineMultisampleStateCreateInfo{},
-				std::nullopt,
+				ashes::nullopt,
 				ashes::PipelineColorBlendStateCreateInfo{},
 				ashes::PipelineDynamicStateCreateInfo{ 0u, { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR } },
 				*m_mainPipelineLayout,

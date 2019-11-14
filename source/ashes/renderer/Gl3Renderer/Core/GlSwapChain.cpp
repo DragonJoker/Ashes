@@ -6,7 +6,6 @@
 #include "Miscellaneous/GlCallLogger.hpp"
 #include "RenderPass/GlFrameBuffer.hpp"
 
-#include <vulkan/vulkan.h>
 #include "ashesgl3_api.hpp"
 
 namespace ashes::gl3

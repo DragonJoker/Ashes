@@ -4,9 +4,9 @@
 *\author
 *	Sylvain Doremus
 */
-#pragma once
-
 #include "renderer/RendererCommon/InlineUniformBlocks.hpp"
+
+#include <cstring>
 
 namespace ashes
 {

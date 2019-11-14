@@ -4,8 +4,6 @@
 *\author
 *	Sylvain Doremus
 */
-#pragma once
-
 #include "renderer/RendererCommon/ShaderBindings.hpp"
 
 namespace ashes

@@ -307,7 +307,7 @@ namespace common
 				{},
 				{ { 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } },
 				{},
-				std::nullopt,
+				ashes::nullopt,
 				{},
 			} );
 		ashes::VkSubpassDependencyArray dependencies
@@ -385,7 +385,7 @@ namespace common
 					, VK_SHADER_STAGE_VERTEX_BIT
 					, shadersFolder / "main.vert" ) ),
 				"main",
-				std::nullopt,
+				ashes::nullopt,
 			} );
 		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
 			{
@@ -395,7 +395,7 @@ namespace common
 					, VK_SHADER_STAGE_FRAGMENT_BIT
 					, shadersFolder / "main.frag" ) ),
 				"main",
-				std::nullopt,
+				ashes::nullopt,
 			} );
 
 		std::vector< VkDynamicState > dynamicStateEnables
@@ -411,11 +411,11 @@ namespace common
 				std::move( shaderStages ),
 				std::move( vertexLayout ),
 				ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
-				std::nullopt,
+				ashes::nullopt,
 				ashes::PipelineViewportStateCreateInfo{},
 				ashes::PipelineRasterizationStateCreateInfo{ 0u, VK_FALSE, VK_FALSE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE },
 				ashes::PipelineMultisampleStateCreateInfo{},
-				std::nullopt,
+				ashes::nullopt,
 				ashes::PipelineColorBlendStateCreateInfo{},
 				ashes::PipelineDynamicStateCreateInfo{ 0u, { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR } },
 				*m_pipelineLayout,

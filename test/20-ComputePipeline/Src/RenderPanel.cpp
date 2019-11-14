@@ -566,7 +566,7 @@ namespace vkapp
 					, VK_SHADER_STAGE_VERTEX_BIT
 					, shadersFolder / "offscreen.vert" ) ),
 				"main",
-				std::nullopt,
+				ashes::nullopt,
 			} );
 		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
 			{
@@ -576,7 +576,7 @@ namespace vkapp
 					, VK_SHADER_STAGE_FRAGMENT_BIT
 					, shadersFolder / "offscreen.frag" ) ),
 				"main",
-				std::nullopt,
+				ashes::nullopt,
 			} );
 
 		m_offscreenPipeline = m_device->getDevice().createPipeline( ashes::GraphicsPipelineCreateInfo
@@ -585,7 +585,7 @@ namespace vkapp
 				std::move( shaderStages ),
 				std::move( vertexLayout ),
 				ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST },
-				std::nullopt,
+				ashes::nullopt,
 				ashes::PipelineViewportStateCreateInfo{},
 				ashes::PipelineRasterizationStateCreateInfo{ 0u, VK_FALSE, VK_FALSE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE },
 				ashes::PipelineMultisampleStateCreateInfo{},
@@ -637,7 +637,7 @@ namespace vkapp
 				{},
 				{ { 0u, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } },
 				{},
-				std::nullopt,
+				ashes::nullopt,
 				{},
 			} );
 		ashes::VkSubpassDependencyArray dependencies
@@ -762,7 +762,7 @@ namespace vkapp
 				, VK_SHADER_STAGE_COMPUTE_BIT
 				, shadersFolder / "shader.comp" ) ),
 			"main",
-			std::nullopt,
+			ashes::nullopt,
 		};
 
 		m_computePipeline = m_device->getDevice().createPipeline( ashes::ComputePipelineCreateInfo
@@ -851,7 +851,7 @@ namespace vkapp
 					, VK_SHADER_STAGE_VERTEX_BIT
 					, shadersFolder / "main.vert" ) ),
 				"main",
-				std::nullopt,
+				ashes::nullopt,
 			} );
 		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
 			{
@@ -861,7 +861,7 @@ namespace vkapp
 					, VK_SHADER_STAGE_FRAGMENT_BIT
 					, shadersFolder / "main.frag" ) ),
 				"main",
-				std::nullopt,
+				ashes::nullopt,
 			} );
 
 		m_mainPipeline = m_device->getDevice().createPipeline( ashes::GraphicsPipelineCreateInfo
@@ -870,11 +870,11 @@ namespace vkapp
 				std::move( shaderStages ),
 				std::move( vertexLayout ),
 				ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
-				std::nullopt,
+				ashes::nullopt,
 				ashes::PipelineViewportStateCreateInfo{},
 				ashes::PipelineRasterizationStateCreateInfo{},
 				ashes::PipelineMultisampleStateCreateInfo{},
-				std::nullopt,
+				ashes::nullopt,
 				ashes::PipelineColorBlendStateCreateInfo{},
 				ashes::PipelineDynamicStateCreateInfo{ 0u, { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR } },
 				*m_mainPipelineLayout,

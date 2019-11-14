@@ -892,7 +892,7 @@ namespace ashes::gl3
 
 	void CommandBuffer::endDebugUtilsLabel()const
 	{
-		m_label = std::nullopt;
+		m_label = ashes::nullopt;
 	}
 
 	void CommandBuffer::insertDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const
@@ -918,7 +918,7 @@ namespace ashes::gl3
 
 	void CommandBuffer::debugMarkerEnd()const
 	{
-		m_label = std::nullopt;
+		m_label = ashes::nullopt;
 	}
 
 	void CommandBuffer::debugMarkerInsert( VkDebugMarkerMarkerInfoEXT const & labelInfo )const

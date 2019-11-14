@@ -45,7 +45,7 @@ namespace vkapp
 						, VK_SHADER_STAGE_VERTEX_BIT
 						, shadersFolder / "opaque_lp.vert" ) ),
 					"main",
-					std::nullopt,
+					ashes::nullopt,
 				} );
 			result.push_back( ashes::PipelineShaderStageCreateInfo
 				{
@@ -55,7 +55,7 @@ namespace vkapp
 						, VK_SHADER_STAGE_FRAGMENT_BIT
 						, shadersFolder / "opaque_lp.frag" ) ),
 					"main",
-					std::nullopt,
+					ashes::nullopt,
 				} );
 			return result;
 		}
@@ -272,7 +272,7 @@ namespace vkapp
 				doCreateProgram( m_device.getDevice() ),
 				doCreateVertexLayout(),
 				ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
-				std::nullopt,
+				ashes::nullopt,
 				ashes::PipelineViewportStateCreateInfo{},
 				ashes::PipelineRasterizationStateCreateInfo{},
 				ashes::PipelineMultisampleStateCreateInfo{},

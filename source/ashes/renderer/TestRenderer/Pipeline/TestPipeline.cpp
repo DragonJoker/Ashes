@@ -82,7 +82,7 @@ namespace ashes::test
 			: VkPipelineMultisampleStateCreateInfo{} ) }
 		, m_depthStencilState{ ( createInfo.pDepthStencilState
 			? Optional< VkPipelineDepthStencilStateCreateInfo >( deepCopy( *createInfo.pDepthStencilState ) )
-			: std::nullopt ) }
+			: ashes::nullopt ) }
 		, m_colorBlendState{ ( createInfo.pColorBlendState
 			? deepCopy( *createInfo.pColorBlendState, m_colorBlendStateAttachments )
 			: VkPipelineColorBlendStateCreateInfo{} ) }

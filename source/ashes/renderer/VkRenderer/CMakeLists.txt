@@ -35,7 +35,6 @@ target_link_libraries( ${PROJECT_NAME} PRIVATE
 	${BinLibraries}
 	common
 	ashes
-	${Vulkan_LIBRARY}
 )
 target_compile_definitions( ${PROJECT_NAME} PRIVATE
 	${PROJECT_NAME}_EXPORTS
