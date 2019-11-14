@@ -61,8 +61,14 @@ namespace ashes::d3d11
 
 	D3D11_FILTER convert( VkFilter min
 		, VkFilter mag
-		, VkSamplerMipmapMode mip )
+		, VkSamplerMipmapMode mip
+		, float maxAnisotropy )
 	{
+		if ( maxAnisotropy > 1.0 )
+		{
+			return D3D11_FILTER_ANISOTROPIC;
+		}
+
 		if ( min == VK_FILTER_NEAREST )
 		{
 			if ( mag == VK_FILTER_NEAREST )
@@ -144,7 +150,8 @@ namespace ashes::d3d11
 		desc.ComparisonFunc = getComparisonFunc( createInfo.compareOp );
 		desc.Filter = convert( createInfo.minFilter
 			, createInfo.magFilter
-			, createInfo.mipmapMode );
+			, createInfo.mipmapMode
+			, createInfo.maxAnisotropy );
 		desc.MaxAnisotropy = UINT( createInfo.maxAnisotropy );
 		desc.MinLOD = createInfo.minLod;
 		desc.MaxLOD = createInfo.maxLod;

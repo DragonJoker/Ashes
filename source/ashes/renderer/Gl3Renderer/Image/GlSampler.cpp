@@ -56,7 +56,7 @@ namespace ashes::gl3
 			, GL_SAMPLER_PARAMETER_MAX_LOD
 			, createInfo.maxLod );
 
-		if ( get( device )->getEnabledFeatures().samplerAnisotropy && createInfo.anisotropyEnable )
+		if ( get( get( device )->getPhysicalDevice() )->getFeatures().samplerAnisotropy && createInfo.anisotropyEnable )
 		{
 			glLogCall( context
 				, glSamplerParameterf

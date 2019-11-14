@@ -86,6 +86,11 @@ namespace ashes::gl4
 			return m_instance;
 		}
 
+		inline VkPhysicalDevice getPhysicalDevice()const
+		{
+			return m_physicalDevice;
+		}
+
 		inline VkSampler getSampler()const
 		{
 			return m_sampler;
