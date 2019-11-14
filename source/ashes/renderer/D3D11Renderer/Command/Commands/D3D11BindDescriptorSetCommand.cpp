@@ -988,6 +988,122 @@ namespace ashes::d3d11
 				}
 			}
 		}
+
+		template< bool Supports11_1 >
+		void bindAll( Context const & context
+			, VkPipelineLayout pipelineLayout
+			, VkDescriptorSet descriptorSet
+			, UInt32Array const & dynamicOffsets )
+		{
+			auto d3dDescriptorSet = get( descriptorSet );
+			auto & bindings = get( pipelineLayout )->getShaderBindings();
+			auto setIndex = get( pipelineLayout )->getDescriptorSetIndex( descriptorSet );
+
+			for ( auto & write : d3dDescriptorSet->getInputAttachments() )
+			{
+				bindInputAttachment< Supports11_1 >( context.context1, get( context.device )->getSampler(), *write, bindings.tex, setIndex );
+			}
+
+			for ( auto & write : d3dDescriptorSet->getCombinedTextureSamplers() )
+			{
+				bindCombinedSampler< Supports11_1 >( context.context1, *write, bindings.tex, setIndex );
+			}
+
+			for ( auto & write : d3dDescriptorSet->getSamplers() )
+			{
+				bindSampler< Supports11_1 >( context.context1, *write, bindings.tex, setIndex );
+			}
+
+			for ( auto & write : d3dDescriptorSet->getSampledTextures() )
+			{
+				bindSampledTexture< Supports11_1 >( context.context1, *write, bindings.tex, setIndex );
+			}
+
+			for ( auto & write : d3dDescriptorSet->getUniformBuffers() )
+			{
+				bindUniformBuffer< Supports11_1 >( context.context1, *write, bindings.ubo, setIndex );
+			}
+
+			for ( auto & write : d3dDescriptorSet->getInlineUniforms() )
+			{
+				bindUniformBuffer< Supports11_1 >( context.context1, *write, bindings.ubo, setIndex );
+			}
+
+			for ( auto & write : d3dDescriptorSet->getTexelBuffers() )
+			{
+				bindTexelBuffer< Supports11_1 >( context.context1, *write, bindings.tbo, setIndex );
+			}
+
+			for ( auto & write : d3dDescriptorSet->getStorageBuffers() )
+			{
+				bindStorageBuffer< Supports11_1 >( context.context1, *write, bindings.sbo, setIndex );
+			}
+
+			for ( auto & write : d3dDescriptorSet->getStorageTextures() )
+			{
+				bindStorageImage< Supports11_1 >( context.context1, *write, bindings.img, setIndex );
+			}
+
+			bindDynamicBuffers< Supports11_1 >( context.context1, d3dDescriptorSet->getDynamicBuffers(), bindings, setIndex, dynamicOffsets );
+		}
+
+		template< bool Supports11_1 >
+		void unbindAll( Context const & context
+			, VkPipelineLayout pipelineLayout
+			, VkDescriptorSet descriptorSet
+			, UInt32Array const & dynamicOffsets )
+		{
+			auto d3dDescriptorSet = get( descriptorSet );
+			auto & bindings = get( pipelineLayout )->getShaderBindings();
+			auto setIndex = get( pipelineLayout )->getDescriptorSetIndex( descriptorSet );
+
+			for ( auto & write : d3dDescriptorSet->getInputAttachments() )
+			{
+				unbindInputAttachment< Supports11_1 >( context.context1, *write, bindings.tex, setIndex );
+			}
+
+			for ( auto & write : d3dDescriptorSet->getCombinedTextureSamplers() )
+			{
+				unbindCombinedSampler< Supports11_1 >( context.context1, *write, bindings.tex, setIndex );
+			}
+
+			for ( auto & write : d3dDescriptorSet->getSamplers() )
+			{
+				unbindSampler< Supports11_1 >( context.context1, *write, bindings.tex, setIndex );
+			}
+
+			for ( auto & write : d3dDescriptorSet->getSampledTextures() )
+			{
+				unbindSampledTexture< Supports11_1 >( context.context1, *write, bindings.tex, setIndex );
+			}
+
+			for ( auto & write : d3dDescriptorSet->getUniformBuffers() )
+			{
+				unbindUniformBuffer< Supports11_1 >( context.context1, *write, bindings.ubo, setIndex );
+			}
+
+			for ( auto & write : d3dDescriptorSet->getInlineUniforms() )
+			{
+				unbindUniformBuffer< Supports11_1 >( context.context1, *write, bindings.ubo, setIndex );
+			}
+
+			for ( auto & write : d3dDescriptorSet->getTexelBuffers() )
+			{
+				unbindTexelBuffer< Supports11_1 >( context.context1, *write, bindings.tbo, setIndex );
+			}
+
+			for ( auto & write : d3dDescriptorSet->getStorageBuffers() )
+			{
+				unbindStorageBuffer< Supports11_1 >( context.context1, *write, bindings.sbo, setIndex );
+			}
+
+			for ( auto & write : d3dDescriptorSet->getStorageTextures() )
+			{
+				unbindStorageImage< Supports11_1 >( context.context1, *write, bindings.img, setIndex );
+			}
+
+			unbindDynamicBuffers< Supports11_1 >( context.context1, d3dDescriptorSet->getDynamicBuffers(), bindings, setIndex, dynamicOffsets );
+		}
 	}
 
 	BindDescriptorSetCommand::BindDescriptorSetCommand( VkDevice context
@@ -1009,11 +1125,11 @@ namespace ashes::d3d11
 	{
 		if ( context.featureLevel >= D3D_FEATURE_LEVEL_11_1 )
 		{
-			apply11_1( context );
+			bindAll< true >( context, m_layout, m_descriptorSet, m_dynamicOffsets );
 		}
 		else
 		{
-			apply11_0( context );
+			bindAll< false >( context, m_layout, m_descriptorSet, m_dynamicOffsets );
 		}
 	}
 
@@ -1021,204 +1137,12 @@ namespace ashes::d3d11
 	{
 		if ( context.featureLevel >= D3D_FEATURE_LEVEL_11_1 )
 		{
-			remove11_1( context );
+			unbindAll< true >( context, m_layout, m_descriptorSet, m_dynamicOffsets );
 		}
 		else
 		{
-			remove11_0( context );
+			unbindAll< false >( context, m_layout, m_descriptorSet, m_dynamicOffsets );
 		}
-	}
-
-	void BindDescriptorSetCommand::apply11_0( Context const & context )const
-	{
-		auto & bindings = get( m_layout )->getShaderBindings();
-		auto setIndex = get( m_layout )->getDescriptorSetIndex( m_descriptorSet );
-
-		for ( auto & write : get( m_descriptorSet )->getInputAttachments() )
-		{
-			bindInputAttachment< false >( context.context1, get( context.device )->getSampler(), *write, bindings.tex, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getCombinedTextureSamplers() )
-		{
-			bindCombinedSampler< false >( context.context1, *write, bindings.tex, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getSamplers() )
-		{
-			bindSampler< false >( context.context1, *write, bindings.tex, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getSampledTextures() )
-		{
-			bindSampledTexture< false >( context.context1, *write, bindings.tex, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getUniformBuffers() )
-		{
-			bindUniformBuffer< false >( context.context1, *write, bindings.ubo, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getTexelBuffers() )
-		{
-			bindTexelBuffer< false >( context.context1, *write, bindings.tbo, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getStorageBuffers() )
-		{
-			bindStorageBuffer< false >( context.context1, *write, bindings.sbo, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getStorageTextures() )
-		{
-			bindStorageImage< false >( context.context1, *write, bindings.img, setIndex );
-		}
-
-		bindDynamicBuffers< false >( context.context1, get( m_descriptorSet )->getDynamicBuffers(), bindings, setIndex, m_dynamicOffsets );
-	}
-
-	void BindDescriptorSetCommand::apply11_1( Context const & context )const
-	{
-		auto & bindings = get( m_layout )->getShaderBindings();
-		auto setIndex = get( m_layout )->getDescriptorSetIndex( m_descriptorSet );
-
-		for ( auto & write : get( m_descriptorSet )->getInputAttachments() )
-		{
-			bindInputAttachment< true >( context.context1, get( context.device )->getSampler(), *write, bindings.tex, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getCombinedTextureSamplers() )
-		{
-			bindCombinedSampler< true >( context.context1, *write, bindings.tex, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getSamplers() )
-		{
-			bindSampler< true >( context.context1, *write, bindings.tex, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getSampledTextures() )
-		{
-			bindSampledTexture< true >( context.context1, *write, bindings.tex, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getUniformBuffers() )
-		{
-			bindUniformBuffer< true >( context.context1, *write, bindings.ubo, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getTexelBuffers() )
-		{
-			bindTexelBuffer< true >( context.context1, *write, bindings.tbo, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getStorageBuffers() )
-		{
-			bindStorageBuffer< true >( context.context1, *write, bindings.sbo, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getStorageTextures() )
-		{
-			bindStorageImage< true >( context.context1, *write, bindings.img, setIndex );
-		}
-
-		bindDynamicBuffers< true >( context.context1, get( m_descriptorSet )->getDynamicBuffers(), bindings, setIndex, m_dynamicOffsets );
-	}
-
-	void BindDescriptorSetCommand::remove11_0( Context const & context )const
-	{
-		auto & bindings = get( m_layout )->getShaderBindings();
-		auto setIndex = get( m_layout )->getDescriptorSetIndex( m_descriptorSet );
-
-		for ( auto & write : get( m_descriptorSet )->getInputAttachments() )
-		{
-			unbindInputAttachment< false >( context.context1, *write, bindings.tex, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getCombinedTextureSamplers() )
-		{
-			unbindCombinedSampler< false >( context.context1, *write, bindings.tex, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getSamplers() )
-		{
-			unbindSampler< false >( context.context1, *write, bindings.tex, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getSampledTextures() )
-		{
-			unbindSampledTexture< false >( context.context1, *write, bindings.tex, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getUniformBuffers() )
-		{
-			unbindUniformBuffer< false >( context.context1, *write, bindings.ubo, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getTexelBuffers() )
-		{
-			unbindTexelBuffer< false >( context.context1, *write, bindings.tbo, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getStorageBuffers() )
-		{
-			unbindStorageBuffer< false >( context.context1, *write, bindings.sbo, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getStorageTextures() )
-		{
-			unbindStorageImage< false >( context.context1, *write, bindings.img, setIndex );
-		}
-
-		unbindDynamicBuffers< false >( context.context1, get( m_descriptorSet )->getDynamicBuffers(), bindings, setIndex, m_dynamicOffsets );
-	}
-
-	void BindDescriptorSetCommand::remove11_1( Context const & context )const
-	{
-		auto & bindings = get( m_layout )->getShaderBindings();
-		auto setIndex = get( m_layout )->getDescriptorSetIndex( m_descriptorSet );
-
-		for ( auto & write : get( m_descriptorSet )->getInputAttachments() )
-		{
-			unbindInputAttachment< true >( context.context1, *write, bindings.tex, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getCombinedTextureSamplers() )
-		{
-			unbindCombinedSampler< true >( context.context1, *write, bindings.tex, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getSamplers() )
-		{
-			unbindSampler< true >( context.context1, *write, bindings.tex, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getSampledTextures() )
-		{
-			unbindSampledTexture< true >( context.context1, *write, bindings.tex, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getUniformBuffers() )
-		{
-			unbindUniformBuffer< true >( context.context1, *write, bindings.ubo, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getTexelBuffers() )
-		{
-			unbindTexelBuffer< true >( context.context1, *write, bindings.tbo, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getStorageBuffers() )
-		{
-			unbindStorageBuffer< true >( context.context1, *write, bindings.sbo, setIndex );
-		}
-
-		for ( auto & write : get( m_descriptorSet )->getStorageTextures() )
-		{
-			unbindStorageImage< true >( context.context1, *write, bindings.img, setIndex );
-		}
-
-		unbindDynamicBuffers< true >( context.context1, get( m_descriptorSet )->getDynamicBuffers(), bindings, setIndex, m_dynamicOffsets );
 	}
 
 	void BindDescriptorSetCommand::fillContext( Context & context )const

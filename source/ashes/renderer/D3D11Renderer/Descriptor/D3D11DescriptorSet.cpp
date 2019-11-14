@@ -10,12 +10,15 @@
 
 #include "ashesd3d11_api.hpp"
 
+#include <ashes/common/VkTypeTraits.hpp>
+
 namespace ashes::d3d11
 {
 	DescriptorSet::DescriptorSet( VkDevice device
 		, VkDescriptorPool pool
 		, VkDescriptorSetLayout layout )
-		: m_layout{ layout }
+		: m_pool{ pool }
+		, m_layout{ layout }
 	{
 		get( pool )->registerSet( get( this ) );
 
@@ -68,6 +71,15 @@ namespace ashes::d3d11
 			case VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT:
 				m_inputAttachments.push_back( &write.second );
 				break;
+#if VK_EXT_inline_uniform_block
+			case VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT:
+				m_inlineUniforms.push_back( &write.second );
+				break;
+#endif
+#if VK_NV_ray_tracing
+			case VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV:
+				break;
+#endif
 			}
 		}
 
@@ -80,20 +92,54 @@ namespace ashes::d3d11
 			} );
 	}
 
+	DescriptorSet::~DescriptorSet()
+	{
+		for ( auto & inlineUbo : m_inlineUbos )
+		{
+			deallocate( inlineUbo->buffer, nullptr );
+			deallocate( inlineUbo->memory, nullptr );
+		}
+	}
+
 	void DescriptorSet::mergeWrites( LayoutBindingWrites & writes, VkWriteDescriptorSet const & write )
 	{
 		writes.writes.push_back( write );
+		auto & myWrite = writes.writes.back();
 
-		if ( write.pImageInfo )
+		if ( myWrite.pImageInfo )
 		{
-			m_imagesInfos.emplace_back( std::vector< VkDescriptorImageInfo >{ write.pImageInfo, write.pImageInfo + write.descriptorCount } );
-			writes.writes.back().pImageInfo = m_imagesInfos.back().data();
+			m_imagesInfos.emplace_back( std::vector< VkDescriptorImageInfo >{ myWrite.pImageInfo, myWrite.pImageInfo + myWrite.descriptorCount } );
+			myWrite.pImageInfo = m_imagesInfos.back().data();
 		}
 
-		if ( write.pBufferInfo )
+#if VK_EXT_inline_uniform_block
+
+		auto inlineUniform = tryGet< VkWriteDescriptorSetInlineUniformBlockEXT >( myWrite.pNext );
+
+		if ( inlineUniform )
 		{
-			m_buffersInfos.emplace_back( std::vector< VkDescriptorBufferInfo >{ write.pBufferInfo, write.pBufferInfo + write.descriptorCount } );
-			writes.writes.back().pBufferInfo = m_buffersInfos.back().data();
+			myWrite.descriptorCount /= inlineUniform->dataSize;
+			auto device = get( m_pool )->getDevice();
+			auto inlineUbo = createInlineUbo( device
+				, *inlineUniform
+				, Instance::getMemoryProperties()
+				, ashes::d3d11::vkCreateBuffer
+				, ashes::d3d11::vkGetBufferMemoryRequirements
+				, ashes::d3d11::vkAllocateMemory
+				, ashes::d3d11::vkBindBufferMemory
+				, ashes::d3d11::vkMapMemory
+				, ashes::d3d11::vkFlushMappedMemoryRanges
+				, ashes::d3d11::vkUnmapMemory );
+			myWrite.pBufferInfo = &inlineUbo->info;
+			m_inlineUbos.emplace_back( std::move( inlineUbo ) );
+		}
+
+#endif
+
+		if ( myWrite.pBufferInfo )
+		{
+			m_buffersInfos.emplace_back( std::vector< VkDescriptorBufferInfo >{ myWrite.pBufferInfo, myWrite.pBufferInfo + myWrite.descriptorCount } );
+			myWrite.pBufferInfo = m_buffersInfos.back().data();
 		}
 	}
 

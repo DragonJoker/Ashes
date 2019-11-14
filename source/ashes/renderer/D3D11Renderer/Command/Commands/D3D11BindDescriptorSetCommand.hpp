@@ -38,12 +38,6 @@ namespace ashes::d3d11
 		CommandPtr clone()const;
 
 	private:
-		void apply11_0( Context const & context )const;
-		void apply11_1( Context const & context )const;
-		void remove11_0( Context const & context )const;
-		void remove11_1( Context const & context )const;
-
-	private:
 		VkDescriptorSet m_descriptorSet;
 		VkPipelineLayout m_layout;
 		VkPipelineBindPoint m_bindingPoint;

@@ -66,14 +66,14 @@ namespace ashes::d3d11
 #endif
 		/**@}*/
 
+		static VkPhysicalDeviceMemoryProperties const & getMemoryProperties();
+#ifdef VK_KHR_get_physical_device_properties2
+		static VkPhysicalDeviceMemoryProperties2KHR const & getMemoryProperties2();
+#endif
+
 		inline IDXGIFactory * getDXGIFactory()const
 		{
 			return m_factory;
-		}
-
-		static inline VkPhysicalDeviceMemoryProperties const & getMemoryProperties()
-		{
-			return m_memoryProperties;
 		}
 
 	private:
@@ -90,6 +90,5 @@ namespace ashes::d3d11
 		std::vector< AdapterInfo > m_adapters;
 		D3D_FEATURE_LEVEL m_maxFeatureLevel;
 		mutable std::vector< Layer * > m_layers;
-		static VkPhysicalDeviceMemoryProperties const m_memoryProperties;
 	};
 }

@@ -10,6 +10,8 @@
 
 #include "renderer/D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
+#include <renderer/RendererCommon/InlineUniformBlocks.hpp>
+
 #include <vector>
 
 namespace ashes::d3d11
@@ -20,6 +22,7 @@ namespace ashes::d3d11
 		DescriptorSet( VkDevice device
 			, VkDescriptorPool pool
 			, VkDescriptorSetLayout layout );
+		~DescriptorSet();
 
 		void update( VkWriteDescriptorSet const & write );
 		void update( VkCopyDescriptorSet const & write );
@@ -59,6 +62,11 @@ namespace ashes::d3d11
 			return m_uniformBuffers;
 		}
 
+		inline LayoutBindingWritesArray const & getInlineUniforms()const
+		{
+			return m_inlineUniforms;
+		}
+
 		inline LayoutBindingWritesArray const & getStorageBuffers()const
 		{
 			return m_storageBuffers;
@@ -83,15 +91,18 @@ namespace ashes::d3d11
 		void mergeWrites( LayoutBindingWrites & writes, VkWriteDescriptorSet const & write );
 
 	private:
+		VkDescriptorPool m_pool;
 		VkDescriptorSetLayout m_layout;
 		std::vector< std::vector< VkDescriptorImageInfo > > m_imagesInfos;
 		std::vector< std::vector< VkDescriptorBufferInfo > > m_buffersInfos;
+		InlineUboArray m_inlineUbos;
 		LayoutBindingWritesMap m_writes;
 		LayoutBindingWritesArray m_combinedTextureSamplers;
 		LayoutBindingWritesArray m_samplers;
 		LayoutBindingWritesArray m_sampledTextures;
 		LayoutBindingWritesArray m_storageTextures;
 		LayoutBindingWritesArray m_uniformBuffers;
+		LayoutBindingWritesArray m_inlineUniforms;
 		LayoutBindingWritesArray m_storageBuffers;
 		LayoutBindingWritesArray m_texelBuffers;
 		LayoutBindingWritesArray m_dynamicUniformBuffers;

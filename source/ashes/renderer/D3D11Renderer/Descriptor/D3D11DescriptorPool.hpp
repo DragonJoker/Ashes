@@ -25,6 +25,11 @@ namespace ashes::d3d11
 		VkResult reset( VkDescriptorPoolResetFlags flags );
 		VkResult free( VkDescriptorSetArray sets );
 
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		VkDevice m_device;
 		VkDescriptorPoolSizeArray m_poolSizes;

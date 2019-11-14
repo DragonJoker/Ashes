@@ -187,7 +187,8 @@ namespace ashes::d3d11
 
 		void doReworkBindings( spirv_cross::CompilerGLSL & compiler
 			, spirv_cross::SmallVector< spirv_cross::Resource > & resources
-			, ShaderBindingMap const & bindings )
+			, ShaderBindingMap const & bindings
+			, ShaderBindingMap const * fallback = nullptr )
 		{
 			for ( auto & obj : resources )
 			{
@@ -195,8 +196,24 @@ namespace ashes::d3d11
 				auto set = compiler.get_decoration( obj.id, spv::DecorationDescriptorSet );
 				compiler.unset_decoration( obj.id, spv::DecorationDescriptorSet );
 				auto it = bindings.find( makeShaderBindingKey( set, binding ) );
-				assert( it != bindings.end() );
-				compiler.set_decoration( obj.id, spv::DecorationBinding, it->second );
+
+				if ( it == bindings.end() )
+				{
+					if ( fallback )
+					{
+						it = fallback->find( makeShaderBindingKey( set, binding ) );
+						assert( it != fallback->end() );
+						compiler.set_decoration( obj.id, spv::DecorationBinding, it->second );
+					}
+					else
+					{
+						assert( false );
+					}
+				}
+				else
+				{
+					compiler.set_decoration( obj.id, spv::DecorationBinding, it->second );
+				}
 			}
 		}
 
@@ -208,7 +225,7 @@ namespace ashes::d3d11
 			auto & bindings = get( pipelineLayout )->getShaderBindings();
 			doReworkBindings( compiler, resources.uniform_buffers, bindings.ubo );
 			doReworkBindings( compiler, resources.storage_buffers, bindings.sbo );
-			doReworkBindings( compiler, resources.sampled_images, bindings.tex );
+			doReworkBindings( compiler, resources.sampled_images, bindings.tex, &bindings.tbo );
 			doReworkBindings( compiler, resources.separate_images, bindings.tex );
 			doReworkBindings( compiler, resources.separate_samplers, bindings.tex );
 			doReworkBindings( compiler, resources.storage_images, bindings.img );
