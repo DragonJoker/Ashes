@@ -9,14 +9,6 @@
 
 namespace ashes::gl3
 {
-	bool isBuffer( VkDescriptorType type )
-	{
-		return type == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
-			|| type == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC
-			|| type == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
-			|| type == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
-	}
-
 	PipelineLayout::PipelineLayout( VkDevice device
 		, VkPipelineLayoutCreateInfo createInfo )
 		: m_device{ device }
@@ -33,17 +25,14 @@ namespace ashes::gl3
 		{
 			for ( auto & binding : *get( descriptorLayout ) )
 			{
-				if ( isBuffer( binding.descriptorType ) )
-				{
-					m_shaderBindings.emplace( makeShaderBindingKey( set, binding.binding ), index++ );
-				}
+				addBinding( set, binding, m_shaderBindings, index );
 			}
 
 			++set;
 		}
 	}
 
-	ShaderBindingMap const & PipelineLayout::getShaderBindings()const
+	ShaderBindings const & PipelineLayout::getShaderBindings()const
 	{
 		return m_shaderBindings;
 	}

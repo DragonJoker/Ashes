@@ -185,9 +185,40 @@ namespace ashes::d3d11
 			compiler.set_hlsl_options( hlslOptions );
 		}
 
+		void doReworkBindings( spirv_cross::CompilerGLSL & compiler
+			, spirv_cross::SmallVector< spirv_cross::Resource > & resources
+			, ShaderBindingMap const & bindings )
+		{
+			for ( auto & obj : resources )
+			{
+				auto binding = compiler.get_decoration( obj.id, spv::DecorationBinding );
+				auto set = compiler.get_decoration( obj.id, spv::DecorationDescriptorSet );
+				compiler.unset_decoration( obj.id, spv::DecorationDescriptorSet );
+				auto it = bindings.find( makeShaderBindingKey( set, binding ) );
+				assert( it != bindings.end() );
+				compiler.set_decoration( obj.id, spv::DecorationBinding, it->second );
+			}
+		}
+
+		void doReworkBindings( VkPipelineLayout pipelineLayout
+			, spirv_cross::CompilerGLSL & compiler )
+		{
+			uint32_t const ssboMask = ( 1u << 16u );
+			spirv_cross::ShaderResources resources = compiler.get_shader_resources();
+			auto & bindings = get( pipelineLayout )->getShaderBindings();
+			doReworkBindings( compiler, resources.uniform_buffers, bindings.ubo );
+			doReworkBindings( compiler, resources.storage_buffers, bindings.sbo );
+			doReworkBindings( compiler, resources.sampled_images, bindings.tex );
+			doReworkBindings( compiler, resources.separate_images, bindings.tex );
+			doReworkBindings( compiler, resources.separate_samplers, bindings.tex );
+			doReworkBindings( compiler, resources.storage_images, bindings.img );
+			doReworkBindings( compiler, resources.subpass_inputs, bindings.tex );
+		}
+
 #endif
 
 		std::string compileSpvToHlsl( VkDevice device
+			, VkPipelineLayout pipelineLayout
 			, UInt32Array const & shader
 			, VkShaderStageFlagBits stage
 			, VkPipelineShaderStageCreateInfo const & state )
@@ -199,12 +230,13 @@ namespace ashes::d3d11
 				try
 				{
 					BlockLocale guard;
-					auto compiler = std::make_unique< spirv_cross::CompilerHLSL >( shader );
-					doProcessSpecializationConstants( state, *compiler );
-					doSetEntryPoint( stage, *compiler );
-					doSetupOptions( device, *compiler );
-					doSetupHlslOptions( device, *compiler );
-					return compiler->compile();
+					spirv_cross::CompilerHLSL compiler{ shader };
+					doProcessSpecializationConstants( state, compiler );
+					doSetEntryPoint( stage, compiler );
+					doSetupOptions( device, compiler );
+					doSetupHlslOptions( device, compiler );
+					doReworkBindings( pipelineLayout, compiler );
+					return compiler.compile();
 				}
 				catch ( std::exception & exc )
 				{
@@ -283,6 +315,7 @@ namespace ashes::d3d11
 	}
 
 	CompiledShaderModule::CompiledShaderModule( VkDevice device
+		, VkPipelineLayout pipelineLayout
 		, VkShaderModule module
 		, UInt32Array const & spv
 		, VkPipelineShaderStageCreateInfo const & state )
@@ -352,6 +385,7 @@ namespace ashes::d3d11
 		};
 
 		m_source = compileSpvToHlsl( device
+			, pipelineLayout
 			, spv
 			, m_stage
 			, state );
@@ -640,9 +674,10 @@ namespace ashes::d3d11
 	{
 	}
 
-	CompiledShaderModule ShaderModule::compile( VkPipelineShaderStageCreateInfo const & state )const
+	CompiledShaderModule ShaderModule::compile( VkPipelineShaderStageCreateInfo const & state
+		, VkPipelineLayout pipelineLayout )const
 	{
-		return CompiledShaderModule{ m_device, get( this ), m_code, state };
+		return CompiledShaderModule{ m_device, pipelineLayout, get( this ), m_code, state };
 	}
 
 	//*************************************************************************

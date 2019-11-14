@@ -248,7 +248,7 @@ namespace ashes::d3d11
 		for ( auto & state : stages )
 		{
 			auto module = get( state.module );
-			m_programModules.push_back( module->compile( state ) );
+			m_programModules.push_back( module->compile( state, m_layout ) );
 			m_programLayout.emplace( state.stage, m_programModules.back().getLayout() );
 		}
 

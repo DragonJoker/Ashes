@@ -431,15 +431,20 @@ namespace ashes::d3d11
 
 		template< bool Supports11_1 >
 		void bindCombinedSampler( ID3D11DeviceContext1 * context
-			, LayoutBindingWrites const & writeBinding )
+			, LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex )
 		{
 			for ( auto & write : writeBinding.writes )
 			{
 				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 					auto view = getView( write, i );
 					auto sampler = getSampler( write, i );
 					tryBind< Supports11_1 >( context, bindingIndex, flags, view, sampler );
@@ -450,15 +455,20 @@ namespace ashes::d3d11
 		template< bool Supports11_1 >
 		void bindInputAttachment( ID3D11DeviceContext1 * context
 			, VkSampler sampler
-			, LayoutBindingWrites const & writeBinding )
+			, LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex )
 		{
 			for ( auto & write : writeBinding.writes )
 			{
 				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 					auto view = getView( write, i );
 					tryBind< Supports11_1 >( context, bindingIndex, flags, view, get( sampler )->getSampler() );
 				}
@@ -467,15 +477,20 @@ namespace ashes::d3d11
 
 		template< bool Supports11_1 >
 		void bindSampler( ID3D11DeviceContext1 * context
-			, LayoutBindingWrites const & writeBinding )
+			, LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex )
 		{
 			for ( auto & write : writeBinding.writes )
 			{
 				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 					auto sampler = getSampler( write, i );
 					tryBind< Supports11_1 >( context, bindingIndex, flags, sampler );
 				}
@@ -484,15 +499,20 @@ namespace ashes::d3d11
 
 		template< bool Supports11_1 >
 		void bindSampledTexture( ID3D11DeviceContext1 * context
-			, LayoutBindingWrites const & writeBinding )
+			, LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex )
 		{
 			for ( auto & write : writeBinding.writes )
 			{
 				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 					auto view = getView( write, i );
 					tryBind< Supports11_1 >( context, bindingIndex, flags, view );
 				}
@@ -501,15 +521,20 @@ namespace ashes::d3d11
 
 		template< bool Supports11_1 >
 		void bindStorageImage( ID3D11DeviceContext1 * context
-			, LayoutBindingWrites const & writeBinding )
+			, LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex )
 		{
 			for ( auto & write : writeBinding.writes )
 			{
 				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 					auto view = getImageUAV( write, i );
 					tryBindOne< VK_SHADER_STAGE_COMPUTE_BIT, Supports11_1 >( context
 						, bindingIndex
@@ -521,15 +546,20 @@ namespace ashes::d3d11
 
 		template< bool Supports11_1 >
 		void bindUniformBuffer( ID3D11DeviceContext1 * context
-			, LayoutBindingWrites const & writeBinding )
+			, LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex )
 		{
 			for ( auto & write : writeBinding.writes )
 			{
 				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 					auto buffer = getBuffer( write, i );
 					auto range = std::min( write.pBufferInfo[i].range
 						, get( write.pBufferInfo[i].buffer )->getSize() );
@@ -545,15 +575,20 @@ namespace ashes::d3d11
 
 		template< bool Supports11_1 >
 		void bindTexelBuffer( ID3D11DeviceContext1 * context
-			, LayoutBindingWrites const & writeBinding )
+			, LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex )
 		{
 			for ( auto & write : writeBinding.writes )
 			{
 				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 					auto view = getBufferView( write, i );
 					tryBind< Supports11_1 >( context
 						, bindingIndex
@@ -565,15 +600,20 @@ namespace ashes::d3d11
 
 		template< bool Supports11_1 >
 		void bindStorageBuffer( ID3D11DeviceContext1 * context
-			, LayoutBindingWrites const & writeBinding )
+			, LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex )
 		{
 			for ( auto & write : writeBinding.writes )
 			{
 				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 					auto view = getBufferUAV( write, i );
 					tryBindOne< VK_SHADER_STAGE_COMPUTE_BIT, Supports11_1 >( context
 						, bindingIndex
@@ -586,15 +626,20 @@ namespace ashes::d3d11
 		template< bool Supports11_1 >
 		void bindDynamicUniformBuffer( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
 			, uint32_t offset )
 		{
 			for ( auto & write : writeBinding.writes )
 			{
 				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 					auto buffer = getBuffer( write, i );
 					auto range = std::min( write.pBufferInfo[i].range
 						, get( write.pBufferInfo[i].buffer )->getSize() );
@@ -611,15 +656,20 @@ namespace ashes::d3d11
 		template< bool Supports11_1 >
 		void bindDynamicStorageBuffer( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
 			, uint32_t offset )
 		{
 			for ( auto & write : writeBinding.writes )
 			{
 				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 					auto view = getBufferUAV( write, i );
 					tryBindOne< VK_SHADER_STAGE_COMPUTE_BIT, Supports11_1 >( context
 						, bindingIndex
@@ -632,6 +682,8 @@ namespace ashes::d3d11
 		template< bool Supports11_1 >
 		void bindDynamicBuffers( ID3D11DeviceContext1 * context
 			, LayoutBindingWritesArray const & writes
+			, ShaderBindings const & bindings
+			, uint32_t setIndex
 			, UInt32Array const & offsets )
 		{
 			for ( auto i = 0u; i < offsets.size(); ++i )
@@ -641,11 +693,11 @@ namespace ashes::d3d11
 				switch ( writeBinding.binding.descriptorType )
 				{
 				case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:
-					bindDynamicUniformBuffer< Supports11_1 >( context, writeBinding, offsets[i] );
+					bindDynamicUniformBuffer< Supports11_1 >( context, writeBinding, bindings.ubo, setIndex, offsets[i] );
 					break;
 
 				case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
-					bindDynamicStorageBuffer< Supports11_1 >( context, writeBinding, offsets[i] );
+					bindDynamicStorageBuffer< Supports11_1 >( context, writeBinding, bindings.sbo, setIndex, offsets[i] );
 					break;
 
 				default:
@@ -658,15 +710,20 @@ namespace ashes::d3d11
 
 		template< bool Supports11_1 >
 		void unbindCombinedSampler( ID3D11DeviceContext1 * context
-			, LayoutBindingWrites const & writeBinding )
+			, LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex )
 		{
 			for ( auto & write : writeBinding.writes )
 			{
 				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 					tryBind< Supports11_1 >( context
 						, bindingIndex
 						, flags
@@ -678,15 +735,20 @@ namespace ashes::d3d11
 		
 		template< bool Supports11_1 >
 		void unbindInputAttachment( ID3D11DeviceContext1 * context
-			, LayoutBindingWrites const & writeBinding )
+			, LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex )
 		{
 			for ( auto & write : writeBinding.writes )
 			{
 				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 					tryBind< Supports11_1 >( context
 						, bindingIndex
 						, flags
@@ -698,15 +760,20 @@ namespace ashes::d3d11
 
 		template< bool Supports11_1 >
 		void unbindSampler( ID3D11DeviceContext1 * context
-			, LayoutBindingWrites const & writeBinding )
+			, LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex )
 		{
 			for ( auto & write : writeBinding.writes )
 			{
 				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 					tryBind< Supports11_1 >( context
 						, bindingIndex
 						, flags
@@ -717,15 +784,20 @@ namespace ashes::d3d11
 
 		template< bool Supports11_1 >
 		void unbindSampledTexture( ID3D11DeviceContext1 * context
-			, LayoutBindingWrites const & writeBinding )
+			, LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex )
 		{
 			for ( auto & write : writeBinding.writes )
 			{
 				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 					tryBind< Supports11_1 >( context
 						, bindingIndex
 						, flags
@@ -736,15 +808,20 @@ namespace ashes::d3d11
 
 		template< bool Supports11_1 >
 		void unbindStorageImage( ID3D11DeviceContext1 * context
-			, LayoutBindingWrites const & writeBinding )
+			, LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex )
 		{
 			for ( auto & write : writeBinding.writes )
 			{
 				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 					tryBindOne< VK_SHADER_STAGE_COMPUTE_BIT, Supports11_1 >( context
 						, bindingIndex
 						, flags
@@ -755,15 +832,20 @@ namespace ashes::d3d11
 
 		template< bool Supports11_1 >
 		void unbindUniformBuffer( ID3D11DeviceContext1 * context
-			, LayoutBindingWrites const & writeBinding )
+			, LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex )
 		{
 			for ( auto & write : writeBinding.writes )
 			{
 				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 					auto range = std::min( write.pBufferInfo[i].range
 						, get( write.pBufferInfo[i].buffer )->getSize() );
 					tryBind< Supports11_1 >( context
@@ -778,15 +860,20 @@ namespace ashes::d3d11
 
 		template< bool Supports11_1 >
 		void unbindTexelBuffer( ID3D11DeviceContext1 * context
-			, LayoutBindingWrites const & writeBinding )
+			, LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex )
 		{
 			for ( auto & write : writeBinding.writes )
 			{
 				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 					tryBind< Supports11_1 >( context
 						, bindingIndex
 						, flags
@@ -797,15 +884,20 @@ namespace ashes::d3d11
 
 		template< bool Supports11_1 >
 		void unbindStorageBuffer( ID3D11DeviceContext1 * context
-			, LayoutBindingWrites const & writeBinding )
+			, LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex )
 		{
 			for ( auto & write : writeBinding.writes )
 			{
 				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 					tryBindOne< VK_SHADER_STAGE_COMPUTE_BIT, Supports11_1 >( context
 						, bindingIndex
 						, flags
@@ -817,15 +909,20 @@ namespace ashes::d3d11
 		template< bool Supports11_1 >
 		void unbindDynamicUniformBuffer( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
 			, uint32_t offset )
 		{
 			for ( auto & write : writeBinding.writes )
 			{
 				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 					auto range = std::min( write.pBufferInfo[i].range
 						, get( write.pBufferInfo[i].buffer )->getSize() );
 					tryBind< Supports11_1 >( context
@@ -841,15 +938,20 @@ namespace ashes::d3d11
 		template< bool Supports11_1 >
 		void unbindDynamicStorageBuffer( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
 			, uint32_t offset )
 		{
 			for ( auto & write : writeBinding.writes )
 			{
 				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 					tryBindOne< VK_SHADER_STAGE_COMPUTE_BIT, Supports11_1 >( context
 						, bindingIndex
 						, flags
@@ -861,6 +963,8 @@ namespace ashes::d3d11
 		template< bool Supports11_1 >
 		void unbindDynamicBuffers( ID3D11DeviceContext1 * context
 			, LayoutBindingWritesArray const & writes
+			, ShaderBindings const & bindings
+			, uint32_t setIndex
 			, UInt32Array const & offsets )
 		{
 			for ( auto i = 0u; i < offsets.size(); ++i )
@@ -870,11 +974,11 @@ namespace ashes::d3d11
 				switch ( writeBinding.binding.descriptorType )
 				{
 				case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:
-					unbindDynamicUniformBuffer< Supports11_1 >( context, writeBinding, offsets[i] );
+					unbindDynamicUniformBuffer< Supports11_1 >( context, writeBinding, bindings.ubo, setIndex, offsets[i] );
 					break;
 
 				case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
-					unbindDynamicStorageBuffer< Supports11_1 >( context, writeBinding, offsets[i] );
+					unbindDynamicStorageBuffer< Supports11_1 >( context, writeBinding, bindings.tbo, setIndex, offsets[i] );
 					break;
 
 				default:
@@ -927,182 +1031,194 @@ namespace ashes::d3d11
 
 	void BindDescriptorSetCommand::apply11_0( Context const & context )const
 	{
+		auto & bindings = get( m_layout )->getShaderBindings();
+		auto setIndex = get( m_layout )->getDescriptorSetIndex( m_descriptorSet );
+
 		for ( auto & write : get( m_descriptorSet )->getInputAttachments() )
 		{
-			bindInputAttachment< false >( context.context1, get( context.device )->getSampler(), *write );
+			bindInputAttachment< false >( context.context1, get( context.device )->getSampler(), *write, bindings.tex, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getCombinedTextureSamplers() )
 		{
-			bindCombinedSampler< false >( context.context1, *write );
+			bindCombinedSampler< false >( context.context1, *write, bindings.tex, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getSamplers() )
 		{
-			bindSampler< false >( context.context1, *write );
+			bindSampler< false >( context.context1, *write, bindings.tex, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getSampledTextures() )
 		{
-			bindSampledTexture< false >( context.context1, *write );
+			bindSampledTexture< false >( context.context1, *write, bindings.tex, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getUniformBuffers() )
 		{
-			bindUniformBuffer< false >( context.context1, *write );
+			bindUniformBuffer< false >( context.context1, *write, bindings.ubo, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getTexelBuffers() )
 		{
-			bindTexelBuffer< false >( context.context1, *write );
+			bindTexelBuffer< false >( context.context1, *write, bindings.tbo, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getStorageBuffers() )
 		{
-			bindStorageBuffer< false >( context.context1, *write );
+			bindStorageBuffer< false >( context.context1, *write, bindings.sbo, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getStorageTextures() )
 		{
-			bindStorageImage< false >( context.context1, *write );
+			bindStorageImage< false >( context.context1, *write, bindings.img, setIndex );
 		}
 
-		bindDynamicBuffers< false >( context.context1, get( m_descriptorSet )->getDynamicBuffers(), m_dynamicOffsets );
+		bindDynamicBuffers< false >( context.context1, get( m_descriptorSet )->getDynamicBuffers(), bindings, setIndex, m_dynamicOffsets );
 	}
 
 	void BindDescriptorSetCommand::apply11_1( Context const & context )const
 	{
+		auto & bindings = get( m_layout )->getShaderBindings();
+		auto setIndex = get( m_layout )->getDescriptorSetIndex( m_descriptorSet );
+
 		for ( auto & write : get( m_descriptorSet )->getInputAttachments() )
 		{
-			bindInputAttachment< true >( context.context1, get( context.device )->getSampler(), *write );
+			bindInputAttachment< true >( context.context1, get( context.device )->getSampler(), *write, bindings.tex, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getCombinedTextureSamplers() )
 		{
-			bindCombinedSampler< true >( context.context1, *write );
+			bindCombinedSampler< true >( context.context1, *write, bindings.tex, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getSamplers() )
 		{
-			bindSampler< true >( context.context1, *write );
+			bindSampler< true >( context.context1, *write, bindings.tex, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getSampledTextures() )
 		{
-			bindSampledTexture< true >( context.context1, *write );
+			bindSampledTexture< true >( context.context1, *write, bindings.tex, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getUniformBuffers() )
 		{
-			bindUniformBuffer< true >( context.context1, *write );
+			bindUniformBuffer< true >( context.context1, *write, bindings.ubo, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getTexelBuffers() )
 		{
-			bindTexelBuffer< true >( context.context1, *write );
+			bindTexelBuffer< true >( context.context1, *write, bindings.tbo, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getStorageBuffers() )
 		{
-			bindStorageBuffer< true >( context.context1, *write );
+			bindStorageBuffer< true >( context.context1, *write, bindings.sbo, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getStorageTextures() )
 		{
-			bindStorageImage< true >( context.context1, *write );
+			bindStorageImage< true >( context.context1, *write, bindings.img, setIndex );
 		}
 
-		bindDynamicBuffers< true >( context.context1, get( m_descriptorSet )->getDynamicBuffers(), m_dynamicOffsets );
+		bindDynamicBuffers< true >( context.context1, get( m_descriptorSet )->getDynamicBuffers(), bindings, setIndex, m_dynamicOffsets );
 	}
 
 	void BindDescriptorSetCommand::remove11_0( Context const & context )const
 	{
+		auto & bindings = get( m_layout )->getShaderBindings();
+		auto setIndex = get( m_layout )->getDescriptorSetIndex( m_descriptorSet );
+
 		for ( auto & write : get( m_descriptorSet )->getInputAttachments() )
 		{
-			unbindInputAttachment< false >( context.context1, *write );
+			unbindInputAttachment< false >( context.context1, *write, bindings.tex, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getCombinedTextureSamplers() )
 		{
-			unbindCombinedSampler< false >( context.context1, *write );
+			unbindCombinedSampler< false >( context.context1, *write, bindings.tex, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getSamplers() )
 		{
-			unbindSampler< false >( context.context1, *write );
+			unbindSampler< false >( context.context1, *write, bindings.tex, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getSampledTextures() )
 		{
-			unbindSampledTexture< false >( context.context1, *write );
+			unbindSampledTexture< false >( context.context1, *write, bindings.tex, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getUniformBuffers() )
 		{
-			unbindUniformBuffer< false >( context.context1, *write );
+			unbindUniformBuffer< false >( context.context1, *write, bindings.ubo, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getTexelBuffers() )
 		{
-			unbindTexelBuffer< false >( context.context1, *write );
+			unbindTexelBuffer< false >( context.context1, *write, bindings.tbo, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getStorageBuffers() )
 		{
-			unbindStorageBuffer< false >( context.context1, *write );
+			unbindStorageBuffer< false >( context.context1, *write, bindings.sbo, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getStorageTextures() )
 		{
-			unbindStorageImage< false >( context.context1, *write );
+			unbindStorageImage< false >( context.context1, *write, bindings.img, setIndex );
 		}
 
-		unbindDynamicBuffers< false >( context.context1, get( m_descriptorSet )->getDynamicBuffers(), m_dynamicOffsets );
+		unbindDynamicBuffers< false >( context.context1, get( m_descriptorSet )->getDynamicBuffers(), bindings, setIndex, m_dynamicOffsets );
 	}
 
 	void BindDescriptorSetCommand::remove11_1( Context const & context )const
 	{
+		auto & bindings = get( m_layout )->getShaderBindings();
+		auto setIndex = get( m_layout )->getDescriptorSetIndex( m_descriptorSet );
+
 		for ( auto & write : get( m_descriptorSet )->getInputAttachments() )
 		{
-			unbindInputAttachment< true >( context.context1, *write );
+			unbindInputAttachment< true >( context.context1, *write, bindings.tex, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getCombinedTextureSamplers() )
 		{
-			unbindCombinedSampler< true >( context.context1, *write );
+			unbindCombinedSampler< true >( context.context1, *write, bindings.tex, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getSamplers() )
 		{
-			unbindSampler< true >( context.context1, *write );
+			unbindSampler< true >( context.context1, *write, bindings.tex, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getSampledTextures() )
 		{
-			unbindSampledTexture< true >( context.context1, *write );
+			unbindSampledTexture< true >( context.context1, *write, bindings.tex, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getUniformBuffers() )
 		{
-			unbindUniformBuffer< true >( context.context1, *write );
+			unbindUniformBuffer< true >( context.context1, *write, bindings.ubo, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getTexelBuffers() )
 		{
-			unbindTexelBuffer< true >( context.context1, *write );
+			unbindTexelBuffer< true >( context.context1, *write, bindings.tbo, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getStorageBuffers() )
 		{
-			unbindStorageBuffer< true >( context.context1, *write );
+			unbindStorageBuffer< true >( context.context1, *write, bindings.sbo, setIndex );
 		}
 
 		for ( auto & write : get( m_descriptorSet )->getStorageTextures() )
 		{
-			unbindStorageImage< true >( context.context1, *write );
+			unbindStorageImage< true >( context.context1, *write, bindings.img, setIndex );
 		}
 
-		unbindDynamicBuffers< true >( context.context1, get( m_descriptorSet )->getDynamicBuffers(), m_dynamicOffsets );
+		unbindDynamicBuffers< true >( context.context1, get( m_descriptorSet )->getDynamicBuffers(), bindings, setIndex, m_dynamicOffsets );
 	}
 
 	void BindDescriptorSetCommand::fillContext( Context & context )const

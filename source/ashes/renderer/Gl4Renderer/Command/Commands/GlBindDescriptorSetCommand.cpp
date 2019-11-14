@@ -89,72 +89,102 @@ namespace ashes::gl4
 		}
 
 		void bindCombinedSampler( VkWriteDescriptorSet const & write
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
 			, CmdList & list )
 		{
+			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+			assert( it != bindings.end() );
+			auto dstBinding = it->second;
+
 			for ( auto i = 0u; i < write.descriptorCount; ++i )
 			{
 				auto view = getView( write, i );
 				bindImage( get( view )->getInternal()
 					, convertViewType( get( view )->getType() )
-					, write.dstBinding + write.dstArrayElement + i
+					, dstBinding + write.dstArrayElement + i
 					, list );
 
 				auto sampler = getSampler( write, i );
 				bindSampler( get( sampler )->getInternal()
-					, write.dstBinding + write.dstArrayElement + i
+					, dstBinding + write.dstArrayElement + i
 					, list );
 			}
 		}
 
 		void bindSampler( VkWriteDescriptorSet const & write
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
 			, CmdList & list )
 		{
+			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+			assert( it != bindings.end() );
+			auto dstBinding = it->second;
+
 			for ( auto i = 0u; i < write.descriptorCount; ++i )
 			{
-				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 				auto sampler = getSampler( write, i );
 				bindSampler( get( sampler )->getInternal()
-					, write.dstBinding + write.dstArrayElement + i
+					, dstBinding + write.dstArrayElement + i
 					, list );
 			}
 		}
 
 		void bindSampledTexture( VkWriteDescriptorSet const & write
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
 			, CmdList & list )
 		{
+			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+			assert( it != bindings.end() );
+			auto dstBinding = it->second;
+
 			for ( auto i = 0u; i < write.descriptorCount; ++i )
 			{
 				auto view = getView( write, i );
 				bindImage( get( view )->getInternal()
 					, convertViewType( get( view )->getType() )
-					, write.dstBinding + write.dstArrayElement + i
+					, dstBinding + write.dstArrayElement + i
 					, list );
 			}
 		}
 
 		void bindInputAttachment( VkWriteDescriptorSet const & write
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
 			, VkSampler sampler
 			, CmdList & list )
 		{
+			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+			assert( it != bindings.end() );
+			auto dstBinding = it->second;
+
 			for ( auto i = 0u; i < write.descriptorCount; ++i )
 			{
 				auto view = getView( write, 0u );
 				bindImage( get( view )->getInternal()
 					, convertViewType( get( view )->getType() )
-					, write.dstBinding + write.dstArrayElement + i
+					, dstBinding + write.dstArrayElement + i
 					, list );
 				bindSampler( get( sampler )->getInternal()
-					, write.dstBinding + write.dstArrayElement + i
+					, dstBinding + write.dstArrayElement + i
 					, list );
 			}
 		}
 
 		void bindStorageTexture( VkWriteDescriptorSet const & write
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
 			, CmdList & list )
 		{
+			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+			assert( it != bindings.end() );
+			auto dstBinding = it->second;
+
 			for ( auto i = 0u; i < write.descriptorCount; ++i )
 			{
-				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 				list.push_back( makeCmd< OpType::eActiveTexture >( bindingIndex ) );
 
 				auto view = getView( write, i );
@@ -211,11 +241,17 @@ namespace ashes::gl4
 		}
 
 		void bindTexelBuffer( VkWriteDescriptorSet const & write
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
 			, CmdList & list )
 		{
+			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+			assert( it != bindings.end() );
+			auto dstBinding = it->second;
+
 			for ( auto i = 0u; i < write.descriptorCount; ++i )
 			{
-				uint32_t bindingIndex = write.dstBinding + write.dstArrayElement + i;
+				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 				list.push_back( makeCmd< OpType::eActiveTexture >( bindingIndex ) );
 
 				list.push_back( makeCmd< OpType::eBindTexture >( GL_BUFFER_TARGET_TEXTURE
@@ -268,48 +304,58 @@ namespace ashes::gl4
 		}
 
 		void bindCombinedSampler( LayoutBindingWrites const * writes
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
 			, CmdList & list )
 		{
 			for ( auto & write : writes->writes )
 			{
-				bindCombinedSampler( write, list );
+				bindCombinedSampler( write, bindings, setIndex, list );
 			}
 		}
 
 		void bindSampler( LayoutBindingWrites const * writes
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
 			, CmdList & list )
 		{
 			for ( auto & write : writes->writes )
 			{
-				bindSampler( write, list );
+				bindSampler( write, bindings, setIndex, list );
 			}
 		}
 
 		void bindSampledTexture( LayoutBindingWrites const * writes
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
 			, CmdList & list )
 		{
 			for ( auto & write : writes->writes )
 			{
-				bindSampledTexture( write, list );
+				bindSampledTexture( write, bindings, setIndex, list );
 			}
 		}
 
 		void bindInputAttachment( LayoutBindingWrites const * writes
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
 			, VkSampler sampler
 			, CmdList & list )
 		{
 			for ( auto & write : writes->writes )
 			{
-				bindInputAttachment( write, sampler, list );
+				bindInputAttachment( write, bindings, setIndex, sampler, list );
 			}
 		}
 
 		void bindStorageTexture( LayoutBindingWrites const * writes
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
 			, CmdList & list )
 		{
 			for ( auto & write : writes->writes )
 			{
-				bindStorageTexture( write, list );
+				bindStorageTexture( write, bindings, setIndex, list );
 			}
 		}
 
@@ -336,11 +382,13 @@ namespace ashes::gl4
 		}
 
 		void bindTexelBuffer( LayoutBindingWrites const * writes
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
 			, CmdList & list )
 		{
 			for ( auto & write : writes->writes )
 			{
-				bindTexelBuffer( write, list );
+				bindTexelBuffer( write, bindings, setIndex, list );
 			}
 		}
 
@@ -369,7 +417,7 @@ namespace ashes::gl4
 		}
 
 		void bindDynamicBuffers( LayoutBindingWritesArray const & writes
-			, ShaderBindingMap const & bindings
+			, ShaderBindings const & bindings
 			, uint32_t setIndex
 			, UInt32Array const & offsets
 			, CmdList & list )
@@ -381,11 +429,11 @@ namespace ashes::gl4
 				switch ( write->descriptorType )
 				{
 				case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:
-					bindDynamicUniformBuffer( write, bindings, setIndex, offsets[i], list );
+					bindDynamicUniformBuffer( write, bindings.ubo, setIndex, offsets[i], list );
 					break;
 
 				case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
-					bindDynamicStorageBuffer( write, bindings, setIndex, offsets[i], list );
+					bindDynamicStorageBuffer( write, bindings.sbo, setIndex, offsets[i], list );
 					break;
 
 				default:
@@ -412,42 +460,42 @@ namespace ashes::gl4
 
 		for ( auto & write : get( descriptorSet )->getInputAttachments() )
 		{
-			bindInputAttachment( write, get( device )->getSampler(), list );
+			bindInputAttachment( write, bindings.tex, setIndex, get( device )->getSampler(), list );
 		}
 
 		for ( auto & write : get( descriptorSet )->getCombinedTextureSamplers() )
 		{
-			bindCombinedSampler( write, list );
+			bindCombinedSampler( write, bindings.tex, setIndex, list );
 		}
 
 		for ( auto & write : get( descriptorSet )->getSamplers() )
 		{
-			bindSampler( write, list );
+			bindSampler( write, bindings.tex, setIndex, list );
 		}
 
 		for ( auto & write : get( descriptorSet )->getSampledTextures() )
 		{
-			bindSampledTexture( write, list );
+			bindSampledTexture( write, bindings.tex, setIndex, list );
 		}
 
 		for ( auto & write : get( descriptorSet )->getStorageTextures() )
 		{
-			bindStorageTexture( write, list );
+			bindStorageTexture( write, bindings.img, setIndex, list );
 		}
 
 		for ( auto & write : get( descriptorSet )->getUniformBuffers() )
 		{
-			bindUniformBuffer( write, bindings, setIndex, list );
+			bindUniformBuffer( write, bindings.ubo, setIndex, list );
 		}
 
 		for ( auto & write : get( descriptorSet )->getStorageBuffers() )
 		{
-			bindStorageBuffer( write, bindings, setIndex, list );
+			bindStorageBuffer( write, bindings.sbo, setIndex, list );
 		}
 
 		for ( auto & write : get( descriptorSet )->getTexelBuffers() )
 		{
-			bindTexelBuffer( write, list );
+			bindTexelBuffer( write, bindings.tbo, setIndex, list );
 		}
 
 		bindDynamicBuffers( get( descriptorSet )->getDynamicBuffers()
