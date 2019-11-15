@@ -44,30 +44,27 @@ namespace ashes::d3d11
 		context.context->RSSetScissorRects( 1u, &m_scissor );
 		auto & views = get( m_frameBuffer )->getAllViews();
 		uint32_t clearIndex = 0u;
-		auto it = get( m_renderPass )->begin();
 
-		for ( auto viewIndex = 0u; viewIndex < views.size(); ++viewIndex )
+		for ( auto & reference : *get( m_renderPass ) )
 		{
-			auto & attachDesc = get( m_renderPass )->getAttachment( *it );
+			auto & attachDesc = get( m_renderPass )->getAttachment( reference );
 
 			if ( attachDesc.loadOp == VK_ATTACHMENT_LOAD_OP_CLEAR )
 			{
 				if ( getAspectMask( attachDesc.format ) == VK_IMAGE_ASPECT_COLOR_BIT )
 				{
-					context.context->ClearRenderTargetView( reinterpret_cast< ID3D11RenderTargetView * >( views[it->attachment]->view )
+					context.context->ClearRenderTargetView( reinterpret_cast< ID3D11RenderTargetView * >( views[reference.attachment]->view )
 						, m_rtClearValues[clearIndex].color.float32 );
 					++clearIndex;
 				}
 				else
 				{
-					context.context->ClearDepthStencilView( reinterpret_cast< ID3D11DepthStencilView * >( views[it->attachment]->view )
+					context.context->ClearDepthStencilView( reinterpret_cast< ID3D11DepthStencilView * >( views[reference.attachment]->view )
 						, get( m_frameBuffer )->getDSViewFlags()
 						, m_dsClearValue.depthStencil.depth
 						, m_dsClearValue.depthStencil.stencil );
 				}
 			}
-
-			++it;
 		}
 	}
 
