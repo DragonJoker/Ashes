@@ -64,7 +64,12 @@ if ( WIN32 )
 elseif ( ANDROID )
 	set( ASHES_ANDROID 1 )
 else ()
-	set( ASHES_XLIB 1 )
+	option( ASHES_USE_XCB "Use XCB" OFF )
+	if ( ASHES_USE_XCB )
+		set( ASHES_XCB 1 )
+	else ()
+		set( ASHES_XLIB 1 )
+	endif ()
 endif ()
 
 set( ${PROJECT_NAME}_CONFIG_HEADER
