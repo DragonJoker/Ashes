@@ -87,9 +87,7 @@ namespace ashes::d3d11
 		, m_colorBlendState{ ( createInfo.pColorBlendState
 			? deepCopy( *createInfo.pColorBlendState, m_colorBlendStateAttachments )
 			: VkPipelineColorBlendStateCreateInfo{} ) }
-		, m_dynamicState{ ( createInfo.pDynamicState
-			? deepCopy( *createInfo.pDynamicState, m_dynamicStates )
-			: VkPipelineDynamicStateCreateInfo{} ) }
+		, m_dynamicStates{ device, createInfo.pDynamicState }
 		, m_scissors{ makeScissors( m_stateScissors.begin(), m_stateScissors.end() ) }
 		, m_viewports{ makeViewports( m_stateViewports.begin(), m_stateViewports.end() ) }
 		, m_vertexInputStateHash{ doHash( m_vertexInputState ) }
@@ -105,6 +103,7 @@ namespace ashes::d3d11
 		, VkComputePipelineCreateInfo createInfo )
 		: m_device{ device }
 		, m_layout{ createInfo.layout }
+		, m_dynamicStates{ device, nullptr }
 	{
 		doCompileProgram( device, { createInfo.stage }, createInfo.flags );
 	}

@@ -10,6 +10,7 @@
 
 #include "renderer/D3D11Renderer/Shader/D3D11ShaderDesc.hpp"
 #include "renderer/D3D11Renderer/Shader/D3D11ShaderModule.hpp"
+#include "renderer/D3D11Renderer/Pipeline/D3D11DynamicStates.hpp"
 
 namespace ashes::d3d11
 {
@@ -133,9 +134,7 @@ namespace ashes::d3d11
 
 		inline bool hasDynamicStateEnable( VkDynamicState state )const
 		{
-			return m_dynamicStates.end() != std::find( m_dynamicStates.begin()
-				, m_dynamicStates.end()
-				, state );
+			return m_dynamicStates.hasDynamicStateEnable( state );
 		}
 
 	private:
@@ -170,8 +169,7 @@ namespace ashes::d3d11
 		VkPipelineColorBlendAttachmentStateArray m_colorBlendStateAttachments;
 		VkPipelineColorBlendStateCreateInfo m_colorBlendState;
 		//
-		VkDynamicStateArray m_dynamicStates;
-		VkPipelineDynamicStateCreateInfo m_dynamicState;
+		DynamicStates m_dynamicStates;
 		//
 		ID3D11DepthStencilState * m_dsState{ nullptr };
 		ID3D11RasterizerState * m_rsState{ nullptr };

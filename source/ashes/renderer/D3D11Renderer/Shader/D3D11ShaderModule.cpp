@@ -97,16 +97,17 @@ namespace ashes::d3d11
 			, spirv_cross::SPIRConstant & constant )
 		{
 			auto offset = entry.offset;
-			auto size = type.width * type.vecsize;
+			auto size = type.width;
+			auto entrySize = uint32_t( entry.size / ( type.columns * type.vecsize ) );
 
-			for ( auto col = 0u; col < type.vecsize; ++col )
+			for ( auto col = 0u; col < type.columns; ++col )
 			{
 				for ( auto vec = 0u; vec < type.vecsize; ++vec )
 				{
 					std::memcpy( &constant.m.c[col].r[vec]
 						, reinterpret_cast< uint8_t const * >( specialisationInfo.pData ) + offset
-						, size );
-					offset += size;
+						, entrySize );
+					offset += entrySize;
 				}
 			}
 		}
