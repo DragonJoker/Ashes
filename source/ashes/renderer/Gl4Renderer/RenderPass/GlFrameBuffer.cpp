@@ -287,11 +287,21 @@ namespace ashes::gl4
 	{
 		auto bindAttach = [this]( FboAttachment const & attachment )
 		{
-			m_bindAttaches.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
-				, GlAttachmentPoint( attachment.point + attachment.index )
-				, attachment.target
-				, attachment.object
-				, attachment.mipLevel ) );
+			if ( attachment.layerCount > 1u )
+			{
+				m_bindAttaches.push_back( makeCmd< OpType::eFramebufferTexture >( GL_FRAMEBUFFER
+					, GlAttachmentPoint( attachment.point + attachment.index )
+					, attachment.object
+					, attachment.mipLevel ) );
+			}
+			else
+			{
+				m_bindAttaches.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
+					, GlAttachmentPoint( attachment.point + attachment.index )
+					, attachment.target
+					, attachment.object
+					, attachment.mipLevel ) );
+			}
 		};
 
 		if ( !m_multisampled )
@@ -353,9 +363,14 @@ namespace ashes::gl4
 		attachment.originalMipLevel = get( view )->getSubresourceRange().baseMipLevel;
 		attachment.object = get( view )->getInternal();
 		attachment.mipLevel = attachment.originalMipLevel;
-		attachment.target = ( multisampled
-			? GL_TEXTURE_2D_MULTISAMPLE
-			: GL_TEXTURE_2D );
+		attachment.layerCount = get( view )->getSubresourceRange().layerCount;
+		attachment.target = ( attachment.layerCount > 1u
+			? ( multisampled
+				? GL_TEXTURE_2D_MULTISAMPLE_ARRAY
+				: GL_TEXTURE_2D_ARRAY )
+			: ( multisampled
+				? GL_TEXTURE_2D_MULTISAMPLE
+				: GL_TEXTURE_2D ) );
 		attachment.index = index;
 
 		if ( get( view )->getSubresourceRange().baseMipLevel )

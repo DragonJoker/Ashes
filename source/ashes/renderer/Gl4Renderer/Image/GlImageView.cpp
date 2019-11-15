@@ -8,33 +8,6 @@
 
 namespace ashes::gl4
 {
-	namespace
-	{
-		GlTextureViewType convert( VkImageViewType viewType
-			, VkSampleCountFlagBits samples )
-		{
-			GlTextureViewType result = convertViewType( viewType );
-
-			if ( samples > VK_SAMPLE_COUNT_1_BIT )
-			{
-				switch ( result )
-				{
-				case GL_TEXTURE_VIEW_2D:
-					result = GL_TEXTURE_VIEW_2D_MULTISAMPLE;
-					break;
-				case GL_TEXTURE_VIEW_2D_ARRAY:
-					result = GL_TEXTURE_VIEW_2D_MULTISAMPLE_ARRAY;
-					break;
-				default:
-					assert( "Unsupported ImageViewType for a multisampled image" );
-					break;
-				}
-			}
-
-			return result;
-		}
-	}
-
 	ImageView::ImageView( VkDevice device
 		, VkImage image )
 		: m_device{ device }
@@ -44,7 +17,7 @@ namespace ashes::gl4
 		, m_format{ get( image )->getFormat() }
 		, m_components{}
 		, m_subresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0u, 1u, 0u, 1u }
-		, m_target{ convert( getType(), get( image )->getSamples() ) }
+		, m_target{ convertViewType( getType(), get( image )->getSamples() ) }
 	{
 	}
 
@@ -57,7 +30,7 @@ namespace ashes::gl4
 		, m_format{ createInfo.format }
 		, m_components{ createInfo.components }
 		, m_subresourceRange{ createInfo.subresourceRange }
-		, m_target{ convert( getType(), get( createInfo.image )->getSamples() ) }
+		, m_target{ convertViewType( getType(), get( createInfo.image )->getSamples() ) }
 	{
 		// Non initialised textures come from back buffers, ignore them
 		if ( get( createInfo.image )->hasInternal() )

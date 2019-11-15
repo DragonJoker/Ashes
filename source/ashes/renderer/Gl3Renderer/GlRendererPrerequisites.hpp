@@ -182,6 +182,7 @@ namespace ashes::gl3
 		uint32_t mipLevel;
 		uint32_t index;
 		uint32_t baseArrayLayer;
+		uint32_t layerCount;
 		GLuint originalObject;
 		GLuint originalMipLevel;
 	};

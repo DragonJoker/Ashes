@@ -247,6 +247,7 @@ namespace ashes::gl3
 	using PFN_glFinish = void ( GLAPIENTRY * )();
 	using PFN_glFlush = void ( GLAPIENTRY * )();
 	using PFN_glFlushMappedBufferRange = void ( GLAPIENTRY * )( GlBufferTarget target, GLintptr offset, GLsizeiptr length );
+	using PFN_glFramebufferTexture = void ( GLAPIENTRY * )( GLenum target, GLenum attachment, GLuint texture, GLint level );
 	using PFN_glFramebufferTexture1D = void ( GLAPIENTRY * )( GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level );
 	using PFN_glFramebufferTexture2D = void ( GLAPIENTRY * )( GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level );
 	using PFN_glFramebufferTexture3D = void ( GLAPIENTRY * )( GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level, GLint layer );

@@ -67,6 +67,7 @@ namespace ashes::gl4
 		eBindVextexArray,
 		eBindVextexArrayObject,
 		eBindContextState,
+		eFramebufferTexture,
 		eFramebufferTexture2D,
 		eBlitFramebuffer,
 		eClearTexColor,
@@ -1293,6 +1294,40 @@ namespace ashes::gl4
 
 	void apply( ContextLock const & context
 		, CmdStencilOp const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eFramebufferTexture >
+	{
+		static Op constexpr value = { OpType::eFramebufferTexture, 5u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eFramebufferTexture >
+	{
+		inline CmdT( uint32_t target
+			, uint32_t point
+			, uint32_t object
+			, uint32_t mipLevel )
+			: cmd{ { OpType::eFramebufferTexture, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, target{ target }
+			, point{ point }
+			, object{ object }
+			, mipLevel{ mipLevel }
+		{
+		}
+
+		Command cmd;
+		uint32_t target;
+		uint32_t point;
+		uint32_t object;
+		uint32_t mipLevel;
+	};
+	using CmdFramebufferTexture = CmdT< OpType::eFramebufferTexture >;
+
+	void apply( ContextLock const & context
+		, CmdFramebufferTexture const & cmd );
 
 	//*************************************************************************
 

@@ -295,6 +295,13 @@ namespace ashes::gl3
 					, attachment.mipLevel
 					, attachment.baseArrayLayer ) );
 			}
+			else if ( attachment.layerCount )
+			{
+				m_bindAttaches.push_back( makeCmd< OpType::eFramebufferTexture >( GL_FRAMEBUFFER
+					, GlAttachmentPoint( attachment.point + attachment.index )
+					, attachment.object
+					, attachment.mipLevel ) );
+			}
 			else
 			{
 				m_bindAttaches.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
@@ -367,6 +374,7 @@ namespace ashes::gl3
 		attachment.originalMipLevel = get( view )->getSubresourceRange().baseMipLevel;
 		attachment.object = get( view )->getInternal();
 		attachment.mipLevel = attachment.originalMipLevel;
+		attachment.layerCount = layersCount;
 		attachment.baseArrayLayer = ( ( ( !isCube && layersCount > 1u ) || ( isCube && layersCount > 6u ) )
 			? get( view )->getSubresourceRange().baseArrayLayer
 			: 0u );

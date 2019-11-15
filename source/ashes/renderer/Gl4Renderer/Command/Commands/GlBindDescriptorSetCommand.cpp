@@ -101,7 +101,8 @@ namespace ashes::gl4
 			{
 				auto view = getView( write, i );
 				bindImage( get( view )->getInternal()
-					, convertViewType( get( view )->getType() )
+					, convertViewType( get( view )->getType()
+						, get( get( view )->getImage() )->getSamples() )
 					, dstBinding + write.dstArrayElement + i
 					, list );
 
@@ -144,7 +145,8 @@ namespace ashes::gl4
 			{
 				auto view = getView( write, i );
 				bindImage( get( view )->getInternal()
-					, convertViewType( get( view )->getType() )
+					, convertViewType( get( view )->getType()
+						, get( get( view )->getImage() )->getSamples() )
 					, dstBinding + write.dstArrayElement + i
 					, list );
 			}
@@ -164,7 +166,8 @@ namespace ashes::gl4
 			{
 				auto view = getView( write, 0u );
 				bindImage( get( view )->getInternal()
-					, convertViewType( get( view )->getType() )
+					, convertViewType( get( view )->getType()
+						, get( get( view )->getImage() )->getSamples() )
 					, dstBinding + write.dstArrayElement + i
 					, list );
 				bindSampler( get( sampler )->getInternal()
