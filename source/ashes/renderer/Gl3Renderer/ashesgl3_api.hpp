@@ -172,6 +172,86 @@ namespace ashes::gl3
 	std::vector< VkExtensionProperties > const & getSupportedInstanceExtensions();
 	std::vector< VkExtensionProperties > const & getSupportedDeviceExtensions();
 
+
+	inline VkInstance getInstance( VkInstance object )
+	{
+		return object;
+	}
+
+	inline VkInstance getInstance( VkPhysicalDevice object )
+	{
+		return get( object )->getInstance();
+	}
+
+	inline VkInstance getInstance( VkSurfaceKHR object )
+	{
+		return get( object )->getInstance();
+	}
+
+	inline VkInstance getInstance( VkDevice object )
+	{
+		return get( object )->getInstance();
+	}
+
+	inline VkInstance getInstance( VkCommandBuffer object )
+	{
+		return getInstance( get( object )->getDevice() );
+	}
+
+	inline VkInstance getInstance( VkQueue object )
+	{
+		return getInstance( get( object )->getDevice() );
+	}
+
+	template< typename VkObject >
+	inline VkResult reportUnsupported( VkObject object
+		, std::string const & name )
+	{
+		VkInstance instance = getInstance( object );
+#if VK_EXT_debug_utils
+		{
+			VkDebugUtilsObjectNameInfoEXT object
+			{
+				VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+				nullptr,
+				VK_OBJECT_TYPE_INSTANCE,
+				uint64_t( instance ),
+				"Instance",
+			};
+			get( instance )->submitDebugUtilsMessenger( VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
+				, VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
+				, {
+					VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT,
+					nullptr,
+					0u,
+					"Unsupported feature",
+					VK_ERROR_FEATURE_NOT_PRESENT,
+					name.c_str(),
+					0u,
+					nullptr,
+					0u,
+					nullptr,
+					1u,
+					&object,
+				} );
+		}
+#endif
+#if VK_EXT_debug_report
+		{
+			std::string text = "Unsupported feature: " + name;
+			get( instance )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT
+				, uint64_t( instance )
+				, 0u
+				, VK_ERROR_FEATURE_NOT_PRESENT
+				, "OpenGL3"
+				, text.c_str() );
+		}
+#endif
+
+		return VK_ERROR_FEATURE_NOT_PRESENT;
+	}
+
 #pragma region Vulkan 1.0
 #ifdef VK_VERSION_1_0
 

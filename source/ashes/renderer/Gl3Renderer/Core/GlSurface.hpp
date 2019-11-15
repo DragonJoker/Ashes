@@ -34,6 +34,11 @@ namespace ashes::gl3
 			return { *m_context };
 		}
 
+		inline VkInstance getInstance()const
+		{
+			return m_context->getInstance();
+		}
+
 	private:
 		static void getSurfaceInfos( VkSurfaceFormatArrayKHR & formats
 			, VkSurfaceCapabilitiesKHR & capabilities );

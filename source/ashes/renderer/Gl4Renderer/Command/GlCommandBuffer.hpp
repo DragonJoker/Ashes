@@ -154,6 +154,7 @@ namespace ashes::gl4
 		void debugMarkerEnd()const;
 		void debugMarkerInsert( VkDebugMarkerMarkerInfoEXT const & labelInfo )const;
 #endif
+		void initialiseGeometryBuffers( ContextLock & context )const;
 
 		inline CmdBuffer const & getCmds()const
 		{
@@ -165,7 +166,10 @@ namespace ashes::gl4
 			return m_cmdsAfterSubmit;
 		}
 
-		void initialiseGeometryBuffers( ContextLock & context )const;
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
 
 	private:
 		struct BufferIndex

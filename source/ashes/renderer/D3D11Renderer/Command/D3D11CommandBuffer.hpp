@@ -155,6 +155,11 @@ namespace ashes::d3d11
 			return m_commandList;
 		}
 
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		struct ResourceIndex
 		{
