@@ -29,6 +29,15 @@ namespace ashes::gl3
 			, uint32_t firstScissor
 			, VkScissorArray const & scissors
 			, bool force );
+		void applyStencilCompareMask( CmdList & list
+			, uint32_t compareMask
+			, VkStencilFaceFlags faceFlags );
+		void applyStencilWriteMask( CmdList & list
+			, uint32_t compareMask
+			, VkStencilFaceFlags faceFlags );
+		void applyStencilReference( CmdList & list
+			, uint32_t reference
+			, VkStencilFaceFlags faceFlags );
 
 		inline bool isPrimitiveRestartEnabled()const
 		{

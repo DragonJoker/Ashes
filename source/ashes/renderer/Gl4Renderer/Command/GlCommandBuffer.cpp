@@ -706,6 +706,44 @@ namespace ashes::gl4
 			, m_cmdList );
 	}
 
+	void CommandBuffer::setBlendConstants( float const blendConstants[4] )const
+	{
+		m_cmdList.push_back( makeCmd< OpType::eBlendConstants >( blendConstants[0]
+			, blendConstants[1] 
+			, blendConstants[2] 
+			, blendConstants[3] ) );
+	}
+
+	void CommandBuffer::setDepthBounds( float minDepthBounds
+		, float maxDepthBounds )const
+	{
+		m_cmdList.push_back( makeCmd< OpType::eDepthRange >( minDepthBounds, maxDepthBounds ) );
+	}
+
+	void CommandBuffer::setStencilCompareMask( VkStencilFaceFlags faceMask
+		, uint32_t compareMask )const
+	{
+		m_state.stack->applyStencilCompareMask( m_cmdList
+			, compareMask
+			, faceMask );
+	}
+
+	void CommandBuffer::setStencilWriteMask( VkStencilFaceFlags faceMask
+		, uint32_t writeMask )const
+	{
+		m_state.stack->applyStencilWriteMask( m_cmdList
+			, writeMask
+			, faceMask );
+	}
+
+	void CommandBuffer::setStencilReference( VkStencilFaceFlags faceMask
+		, uint32_t reference )
+	{
+		m_state.stack->applyStencilReference( m_cmdList
+			, reference
+			, faceMask );
+	}
+
 	void CommandBuffer::setEvent( VkEvent event
 		, VkPipelineStageFlags stageMask )const
 	{

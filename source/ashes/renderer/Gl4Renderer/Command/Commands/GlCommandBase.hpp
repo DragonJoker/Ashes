@@ -657,6 +657,15 @@ namespace ashes::gl4
 			, blendConstant3{ std::move( c3 ) }
 		{
 		}
+		
+		inline CmdT( float const c[4] )
+			: cmd{ { OpType::eBlendConstants, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, blendConstant0{ c[0] }
+			, blendConstant1{ c[1] }
+			, blendConstant2{ c[2] }
+			, blendConstant3{ c[3] }
+		{
+		}
 
 		Command cmd;
 		float blendConstant0;

@@ -1164,9 +1164,7 @@ namespace ashes::gl4
 		VkCommandBuffer commandBuffer,
 		const float blendConstants[4] )
 	{
-		// TODO
-		std::cerr << "vkCmdSetBlendConstants Unsupported" << std::endl;
-		//get( commandBuffer )->setBlendConstants( blendConstants );
+		get( commandBuffer )->setBlendConstants( blendConstants );
 	}
 
 	void VKAPI_CALL vkCmdSetDepthBounds(
@@ -1174,9 +1172,7 @@ namespace ashes::gl4
 		float minDepthBounds,
 		float maxDepthBounds )
 	{
-		// TODO
-		std::cerr << "vkCmdSetDepthBounds Unsupported" << std::endl;
-		//get( commandBuffer )->setDepthBounds( minDepthBounds, maxDepthBounds );
+		get( commandBuffer )->setDepthBounds( minDepthBounds, maxDepthBounds );
 	}
 
 	void VKAPI_CALL vkCmdSetStencilCompareMask(
@@ -1184,9 +1180,7 @@ namespace ashes::gl4
 		VkStencilFaceFlags faceMask,
 		uint32_t compareMask )
 	{
-		// TODO
-		std::cerr << "vkCmdSetStencilCompareMask Unsupported" << std::endl;
-		//get( commandBuffer )->setStencilCompareMask( faceMask, compareMask );
+		get( commandBuffer )->setStencilCompareMask( faceMask, compareMask );
 	}
 
 	void VKAPI_CALL vkCmdSetStencilWriteMask(
@@ -1194,9 +1188,7 @@ namespace ashes::gl4
 		VkStencilFaceFlags faceMask,
 		uint32_t writeMask )
 	{
-		// TODO
-		std::cerr << "vkCmdSetStencilWriteMask Unsupported" << std::endl;
-		//get( commandBuffer )->setStencilWriteMask( faceMask, writeMask );
+		get( commandBuffer )->setStencilWriteMask( faceMask, writeMask );
 	}
 
 	void VKAPI_CALL vkCmdSetStencilReference(
@@ -1204,9 +1196,7 @@ namespace ashes::gl4
 		VkStencilFaceFlags faceMask,
 		uint32_t reference )
 	{
-		// TODO
-		std::cerr << "vkCmdSetStencilReference Unsupported" << std::endl;
-		//get( commandBuffer )->setStencilRefeerence( faceMask, reference );
+		get( commandBuffer )->setStencilReference( faceMask, reference );
 	}
 
 	void VKAPI_CALL vkCmdBindDescriptorSets(

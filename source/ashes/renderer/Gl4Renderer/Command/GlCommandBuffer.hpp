@@ -117,6 +117,15 @@ namespace ashes::gl4
 		void setDepthBias( float constantFactor
 			, float clamp
 			, float slopeFactor )const;
+		void setBlendConstants( float const blendConstants[4] )const;
+		void setDepthBounds( float minDepthBounds
+			, float maxDepthBounds )const;
+		void setStencilCompareMask( VkStencilFaceFlags faceMask
+			, uint32_t compareMask )const;
+		void setStencilWriteMask( VkStencilFaceFlags faceMask
+			, uint32_t writeMask )const;
+		void setStencilReference( VkStencilFaceFlags faceMask
+			, uint32_t reference );
 		void setEvent( VkEvent event
 			, VkPipelineStageFlags stageMask )const;
 		void resetEvent( VkEvent event

@@ -28,6 +28,15 @@ namespace ashes::gl4
 			, uint32_t firstScissor
 			, VkScissorArray const & scissors
 			, bool force );
+		void applyStencilCompareMask( CmdList & list
+			, uint32_t compareMask
+			, VkStencilFaceFlags faceFlags );
+		void applyStencilWriteMask( CmdList & list
+			, uint32_t compareMask
+			, VkStencilFaceFlags faceFlags );
+		void applyStencilReference( CmdList & list
+			, uint32_t reference
+			, VkStencilFaceFlags faceFlags );
 
 		inline bool isPrimitiveRestartEnabled()const
 		{
@@ -82,26 +91,26 @@ namespace ashes::gl4
 		}
 
 	private:
-		void apply( CmdList & list
+		void doApply( CmdList & list
 			, VkPipelineInputAssemblyStateCreateInfo const & state
 			, bool force );
-		void apply( CmdList & list
+		void doApply( CmdList & list
 			, VkPipelineColorBlendStateCreateInfo const & newState
 			, bool force );
-		void apply( CmdList & list
+		void doApply( CmdList & list
 			, VkPipelineRasterizationStateCreateInfo const & newState
 			, VkPipelineDynamicStateCreateInfo newDyState
 			, bool force );
-		void apply( CmdList & list
+		void doApply( CmdList & list
 			, VkPipelineMultisampleStateCreateInfo const & newState
 			, bool force );
-		void apply( CmdList & list
+		void doApply( CmdList & list
 			, VkPipelineDepthStencilStateCreateInfo const & newState
 			, bool force );
-		void apply( CmdList & list
+		void doApply( CmdList & list
 			, VkPipelineTessellationStateCreateInfo const & newState
 			, bool force );
-		void apply( CmdList & list
+		void doApply( CmdList & list
 			, VkPipelineViewportStateCreateInfo const & newState
 			, bool force );
 
