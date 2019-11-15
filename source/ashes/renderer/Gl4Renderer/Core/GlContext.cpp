@@ -261,6 +261,20 @@ ContextPtr Context::create( VkInstance instance
 		loadDebugFunctions();
 	}
 
+#if VK_EXT_debug_utils
+
+	void Context::submitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
+		, VkDebugUtilsMessageTypeFlagsEXT messageTypes
+		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const
+	{
+		get( m_instance )->submitDebugUtilsMessenger( messageSeverity
+			, messageTypes
+			, callbackData );
+	}
+
+#endif
+#if VK_EXT_debug_report
+
 	void Context::reportMessage( VkDebugReportFlagsEXT flags
 		, VkDebugReportObjectTypeEXT objectType
 		, uint64_t object
@@ -277,6 +291,8 @@ ContextPtr Context::create( VkInstance instance
 			, pLayerPrefix
 			, pMessage );
 	}
+
+#endif
 
 	void Context::lock()
 	{

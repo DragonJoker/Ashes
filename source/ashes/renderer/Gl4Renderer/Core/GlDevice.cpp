@@ -317,6 +317,15 @@ namespace ashes::gl4
 		return VK_SUCCESS;
 	}
 
+	void Device::submitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
+		, VkDebugUtilsMessageTypeFlagsEXT messageTypes
+		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const
+	{
+		get( m_instance )->submitDebugUtilsMessenger( messageSeverity
+			, messageTypes
+			, callbackData );
+	}
+
 #endif
 #if VK_EXT_debug_marker
 

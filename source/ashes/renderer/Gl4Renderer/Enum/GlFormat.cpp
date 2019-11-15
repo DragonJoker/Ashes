@@ -405,36 +405,66 @@ namespace ashes::gl4
 	{
 		switch ( value )
 		{
-		case GL_TYPE_UI8:
-			return "GL_UNSIGNED_BYTE";
+			switch ( value )
+			{
+			case GL_TYPE_I8:
+				return "GL_SIGNED_BYTE";
 
-		case GL_TYPE_UI16:
-			return "GL_UNSIGNED_SHORT";
+			case GL_TYPE_UI8:
+				return "GL_UNSIGNED_BYTE";
 
-		case GL_TYPE_F32:
-			return "GL_FLOAT";
+			case GL_TYPE_I16:
+				return "GL_SIGNED_SHORT";
 
-		case GL_TYPE_US4444:
-			return "GL_UNSIGNED_SHORT_4_4_4_4";
+			case GL_TYPE_UI16:
+				return "GL_UNSIGNED_SHORT";
 
-		case GL_TYPE_US5551:
-			return "GL_UNSIGNED_SHORT_5_5_5_1";
+			case GL_TYPE_I32:
+				return "GL_SIGNED_INT";
 
-		case GL_TYPE_UI8888:
-			return "GL_UNSIGNED_INT_8_8_8_8";
+			case GL_TYPE_UI32:
+				return "GL_UNSIGNED_INT";
 
-		case GL_TYPE_UI_10_10_10_2:
-			return "GL_UNSIGNED_INT_10_10_10_2";
+			case GL_TYPE_F32:
+				return "GL_FLOAT";
 
-		case GL_TYPE_UI565:
-			return "GL_UNSIGNED_SHORT_5_6_5";
+			case GL_TYPE_F16:
+				return "GL_HALF_FLOAT";
 
-		case GL_TYPE_UI24_8:
-			return "GL_UNSIGNED_INT_24_8";
+			case GL_TYPE_US4444:
+				return "GL_UNSIGNED_SHORT_4_4_4_4";
 
-		default:
-			assert( false && "Unupported GlType" );
-			return "GlType_UNKNOWN";
+			case GL_TYPE_US5551:
+				return "GL_UNSIGNED_SHORT_5_5_5_1";
+
+			case GL_TYPE_UI8888:
+				return "GL_UNSIGNED_INT_8_8_8_8";
+
+			case GL_TYPE_UI_10_10_10_2:
+				return "GL_UNSIGNED_INT_10_10_10_2";
+
+			case GL_TYPE_UI_2_10_10_10:
+				return "GL_UNSIGNED_INT_2_10_10_10";
+
+			case GL_TYPE_UI565:
+				return "GL_UNSIGNED_SHORT_5_6_5";
+
+			case GL_TYPE_UI24_8:
+				return "GL_UNSIGNED_INT_24_8";
+
+			case GL_TYPE_32F_UI24_8:
+				return "GL_FLOAT_UNSIGNED_INT_24_8";
+
+			case GL_UI_5_9_9_9:
+				return "GL_UNSIGNED_INT_5_9_9_9";
+
+			case GL_UI_10F_11F_11F:
+				return "GL_FLOAT_10F_11F_11F";
+
+			default:
+				assert( false && "Unupported GlType" );
+				return "GlType_UNKNOWN";
+			}
 		}
 	}
 

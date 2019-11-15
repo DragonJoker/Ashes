@@ -54,8 +54,18 @@ namespace ashes::d3d11
 		void onSubmitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
 			, VkDebugUtilsMessageTypeFlagsEXT messageTypes
 			, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const;
+		void submitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
+			, VkDebugUtilsMessageTypeFlagsEXT messageTypes
+			, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const;
 #endif
 #if VK_EXT_debug_report
+		void reportMessage( VkDebugReportFlagsEXT flags
+			, VkDebugReportObjectTypeEXT objectType
+			, uint64_t object
+			, size_t location
+			, int32_t messageCode
+			, const char * pLayerPrefix
+			, const char * pMessage );
 		void onReportMessage( VkDebugReportFlagsEXT flags
 			, VkDebugReportObjectTypeEXT objectType
 			, uint64_t object

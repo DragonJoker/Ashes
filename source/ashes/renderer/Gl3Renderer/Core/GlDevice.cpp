@@ -697,6 +697,15 @@ namespace ashes::gl3
 		return VK_SUCCESS;
 	}
 
+	void Device::submitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
+		, VkDebugUtilsMessageTypeFlagsEXT messageTypes
+		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const
+	{
+		get( m_instance )->submitDebugUtilsMessenger( messageSeverity
+			, messageTypes
+			, callbackData );
+	}
+
 #endif
 #if VK_EXT_debug_marker
 
@@ -757,6 +766,7 @@ namespace ashes::gl3
 	}
 
 #endif
+#if VK_EXT_debug_report
 
 	void Device::reportMessage( VkDebugReportFlagsEXT flags
 		, VkDebugReportObjectTypeEXT objectType
@@ -774,6 +784,8 @@ namespace ashes::gl3
 			, pLayerPrefix
 			, pMessage );
 	}
+
+#endif
 
 	VkQueue Device::getQueue( uint32_t familyIndex
 		, uint32_t index )const

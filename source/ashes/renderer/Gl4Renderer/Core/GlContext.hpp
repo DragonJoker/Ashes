@@ -67,6 +67,12 @@ namespace ashes::gl4
 		ContextState & getState();
 		void onBaseContextCreated();
 
+#if VK_EXT_debug_utils
+		void submitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
+			, VkDebugUtilsMessageTypeFlagsEXT messageTypes
+			, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const;
+#endif
+#if VK_EXT_debug_report
 		void reportMessage( VkDebugReportFlagsEXT flags
 			, VkDebugReportObjectTypeEXT objectType
 			, uint64_t object
@@ -74,6 +80,7 @@ namespace ashes::gl4
 			, int32_t messageCode
 			, const char * pLayerPrefix
 			, const char * pMessage );
+#endif
 
 		void lock();
 		void unlock();
@@ -99,6 +106,11 @@ namespace ashes::gl4
 		inline ContextImpl const & getImpl()const
 		{
 			return *m_impl;
+		}
+
+		inline VkInstance getInstance()const
+		{
+			return m_instance;
 		}
 
 #define GL_LIB_BASE_FUNCTION( fun )\
