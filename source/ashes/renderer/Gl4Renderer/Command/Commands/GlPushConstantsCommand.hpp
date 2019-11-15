@@ -501,7 +501,8 @@ namespace ashes::gl4
 
 	//*************************************************************************
 
-	void buildPushConstantsCommand( PushConstantsDesc const & pcb
+	void buildPushConstantsCommand( VkShaderStageFlags stageFlags
+		, PushConstantsDesc const & pcb
 		, CmdList & list );
 
 	//*************************************************************************

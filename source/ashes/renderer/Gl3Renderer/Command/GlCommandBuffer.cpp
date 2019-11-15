@@ -292,7 +292,8 @@ namespace ashes::gl3
 
 			for ( auto & pcb : m_state.pushConstantBuffers )
 			{
-				buildPushConstantsCommand( get( m_state.currentPipeline )->findPushConstantBuffer( pcb.second )
+				buildPushConstantsCommand( pcb.second.stageFlags
+					, get( m_state.currentPipeline )->findPushConstantBuffer( pcb.second )
 					, m_cmdList );
 			}
 
@@ -316,7 +317,8 @@ namespace ashes::gl3
 
 				for ( auto & pcb : m_state.pushConstantBuffers )
 				{
-					buildPushConstantsCommand( get( m_state.currentComputePipeline )->findPushConstantBuffer( pcb.second )
+					buildPushConstantsCommand( pcb.second.stageFlags
+						, get( m_state.currentComputePipeline )->findPushConstantBuffer( pcb.second )
 						, m_cmdList );
 				}
 
@@ -746,12 +748,14 @@ namespace ashes::gl3
 
 		if ( m_state.currentPipeline )
 		{
-			buildPushConstantsCommand( get( m_state.currentPipeline )->findPushConstantBuffer( desc )
+			buildPushConstantsCommand( stageFlags
+				, get( m_state.currentPipeline )->findPushConstantBuffer( desc )
 				, m_cmdList );
 		}
 		else if ( m_state.currentComputePipeline )
 		{
-			buildPushConstantsCommand( get( m_state.currentComputePipeline )->findPushConstantBuffer( desc )
+			buildPushConstantsCommand( stageFlags
+				, get( m_state.currentComputePipeline )->findPushConstantBuffer( desc )
 				, m_cmdList );
 		}
 		else

@@ -162,7 +162,7 @@ namespace ashes::gl3
 	}
 
 	template< OpType OpT, typename T >
-	void buildPushConstantMtxCommand( PushConstantDesc const & constant
+	void buildPushConstantMtxCommand( ConstantDesc const & constant
 		, uint8_t const *& buffer
 		, CmdList & list )
 	{
@@ -178,7 +178,7 @@ namespace ashes::gl3
 	}
 
 	template< OpType OpT, typename T >
-	void buildPushConstantCommand( PushConstantDesc const & constant
+	void buildPushConstantCommand( ConstantDesc const & constant
 		, uint8_t const *& buffer
 		, CmdList & list )
 	{
@@ -192,84 +192,88 @@ namespace ashes::gl3
 		}
 	}
 
-	void buildPushConstantsCommand( PushConstantsDesc const & pcb
+	void buildPushConstantsCommand( VkShaderStageFlags stageFlags
+		, PushConstantsDesc const & pcb
 		, CmdList & list )
 	{
 		glLogCommand( "PushConstantsCommand" );
 
 		for ( auto & constant : pcb.constants )
 		{
-			auto buffer = pcb.data.data() + constant.offset;
-
-			switch ( constant.format )
+			if ( ( constant.stageFlag & stageFlags ) != 0 )
 			{
-			case ConstantFormat::eFloat:
-				buildPushConstantCommand< OpType::eUniform1fv, GLfloat >( constant, buffer, list );
-				break;
+				auto buffer = pcb.data.data() + constant.offset;
 
-			case ConstantFormat::eVec2f:
-				buildPushConstantCommand< OpType::eUniform2fv, GLfloat >( constant, buffer, list );
-				break;
+				switch ( constant.format )
+				{
+				case ConstantFormat::eFloat:
+					buildPushConstantCommand< OpType::eUniform1fv, GLfloat >( constant, buffer, list );
+					break;
 
-			case ConstantFormat::eVec3f:
-				buildPushConstantCommand< OpType::eUniform3fv, GLfloat >( constant, buffer, list );
-				break;
+				case ConstantFormat::eVec2f:
+					buildPushConstantCommand< OpType::eUniform2fv, GLfloat >( constant, buffer, list );
+					break;
 
-			case ConstantFormat::eVec4f:
-				buildPushConstantCommand< OpType::eUniform4fv, GLfloat >( constant, buffer, list );
-				break;
+				case ConstantFormat::eVec3f:
+					buildPushConstantCommand< OpType::eUniform3fv, GLfloat >( constant, buffer, list );
+					break;
 
-			case ConstantFormat::eMat2f:
-				buildPushConstantMtxCommand< OpType::eUniformMatrix2fv, GLfloat >( constant, buffer, list );
-				break;
+				case ConstantFormat::eVec4f:
+					buildPushConstantCommand< OpType::eUniform4fv, GLfloat >( constant, buffer, list );
+					break;
 
-			case ConstantFormat::eMat3f:
-				buildPushConstantMtxCommand< OpType::eUniformMatrix3fv, GLfloat >( constant, buffer, list );
-				break;
+				case ConstantFormat::eMat2f:
+					buildPushConstantMtxCommand< OpType::eUniformMatrix2fv, GLfloat >( constant, buffer, list );
+					break;
 
-			case ConstantFormat::eMat4f:
-				buildPushConstantMtxCommand< OpType::eUniformMatrix4fv, GLfloat >( constant, buffer, list );
-				break;
+				case ConstantFormat::eMat3f:
+					buildPushConstantMtxCommand< OpType::eUniformMatrix3fv, GLfloat >( constant, buffer, list );
+					break;
 
-			case ConstantFormat::eInt:
-				buildPushConstantCommand< OpType::eUniform1iv, GLint >( constant, buffer, list );
-				break;
+				case ConstantFormat::eMat4f:
+					buildPushConstantMtxCommand< OpType::eUniformMatrix4fv, GLfloat >( constant, buffer, list );
+					break;
 
-			case ConstantFormat::eVec2i:
-				buildPushConstantCommand< OpType::eUniform2iv, GLint >( constant, buffer, list );
-				break;
+				case ConstantFormat::eInt:
+					buildPushConstantCommand< OpType::eUniform1iv, GLint >( constant, buffer, list );
+					break;
 
-			case ConstantFormat::eVec3i:
-				buildPushConstantCommand< OpType::eUniform3iv, GLint >( constant, buffer, list );
-				break;
+				case ConstantFormat::eVec2i:
+					buildPushConstantCommand< OpType::eUniform2iv, GLint >( constant, buffer, list );
+					break;
 
-			case ConstantFormat::eVec4i:
-				buildPushConstantCommand< OpType::eUniform4iv, GLint >( constant, buffer, list );
-				break;
+				case ConstantFormat::eVec3i:
+					buildPushConstantCommand< OpType::eUniform3iv, GLint >( constant, buffer, list );
+					break;
 
-			case ConstantFormat::eUInt:
-				buildPushConstantCommand< OpType::eUniform1uiv, GLuint >( constant, buffer, list );
-				break;
+				case ConstantFormat::eVec4i:
+					buildPushConstantCommand< OpType::eUniform4iv, GLint >( constant, buffer, list );
+					break;
 
-			case ConstantFormat::eVec2ui:
-				buildPushConstantCommand< OpType::eUniform2uiv, GLuint >( constant, buffer, list );
-				break;
+				case ConstantFormat::eUInt:
+					buildPushConstantCommand< OpType::eUniform1uiv, GLuint >( constant, buffer, list );
+					break;
 
-			case ConstantFormat::eVec3ui:
-				buildPushConstantCommand< OpType::eUniform3uiv, GLuint >( constant, buffer, list );
-				break;
+				case ConstantFormat::eVec2ui:
+					buildPushConstantCommand< OpType::eUniform2uiv, GLuint >( constant, buffer, list );
+					break;
 
-			case ConstantFormat::eVec4ui:
-				buildPushConstantCommand< OpType::eUniform4uiv, GLuint >( constant, buffer, list );
-				break;
+				case ConstantFormat::eVec3ui:
+					buildPushConstantCommand< OpType::eUniform3uiv, GLuint >( constant, buffer, list );
+					break;
 
-			case ConstantFormat::eColour:
-				buildPushConstantCommand< OpType::eUniform4fv, GLfloat >( constant, buffer, list );
-				break;
+				case ConstantFormat::eVec4ui:
+					buildPushConstantCommand< OpType::eUniform4uiv, GLuint >( constant, buffer, list );
+					break;
 
-			default:
-				assert( false && "Unsupported constant format" );
-				break;
+				case ConstantFormat::eColour:
+					buildPushConstantCommand< OpType::eUniform4fv, GLfloat >( constant, buffer, list );
+					break;
+
+				default:
+					assert( false && "Unsupported constant format" );
+					break;
+				}
 			}
 		}
 	}

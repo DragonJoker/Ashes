@@ -1187,7 +1187,7 @@ namespace ashes::gl4
 				, GlslAttributeType type
 				, GLint location )
 			{
-				result.back().constants.push_back( { program, name, uint32_t( location ), getFormat( type ), getSize( type ) } );
+				result.back().constants.push_back( { program, VK_SHADER_STAGE_FLAG_BITS_MAX_ENUM, name, uint32_t( location ), getFormat( type ), getSize( type ) } );
 			} );
 		return result;
 	}
@@ -1209,6 +1209,7 @@ namespace ashes::gl4
 					&& !isImage( type ) )
 				{
 					result.push_back( { program
+						, VK_SHADER_STAGE_FLAG_BITS_MAX_ENUM
 						, name
 						, uint32_t( location )
 						, getFormat( type )

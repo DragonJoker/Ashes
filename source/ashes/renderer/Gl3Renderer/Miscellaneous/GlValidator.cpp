@@ -1187,7 +1187,7 @@ namespace ashes::gl3
 				, GlslAttributeType type
 				, GLint location )
 			{
-				result.back().constants.push_back( { name, uint32_t( location ), getFormat( type ), getSize( type ) } );
+				result.back().constants.push_back( { VK_SHADER_STAGE_FLAG_BITS_MAX_ENUM, name, uint32_t( location ), getFormat( type ), getSize( type ) } );
 			} );
 		return result;
 	}
@@ -1208,7 +1208,8 @@ namespace ashes::gl3
 				if ( !isSampler( type )
 					&& !isImage( type ) )
 				{
-					result.push_back( { name
+					result.push_back( { VK_SHADER_STAGE_FLAG_BITS_MAX_ENUM
+						, name
 						, uint32_t( location )
 						, getFormat( type )
 						, getSize( type )

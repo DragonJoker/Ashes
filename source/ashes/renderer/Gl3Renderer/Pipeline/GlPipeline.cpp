@@ -270,11 +270,7 @@ namespace ashes::gl3
 
 		for ( auto & constant : m_shaderDesc.constantsLayout )
 		{
-			m_constantsPcb.constants.push_back( { constant.format
-				, constant.location
-				, constant.offset
-				, constant.size
-				, constant.arraySize } );
+			m_constantsPcb.constants.push_back( constant );
 			size += constant.size;
 		}
 

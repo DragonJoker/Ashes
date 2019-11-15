@@ -210,6 +210,7 @@ namespace ashes::gl3
 						} );
 					assert( it != constants.end() );
 					constant.offset = it->offset;
+					constant.stageFlag = it->stageFlag;
 				}
 			}
 			else
