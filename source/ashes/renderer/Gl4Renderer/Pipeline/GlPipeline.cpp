@@ -224,12 +224,7 @@ namespace ashes::gl4
 
 			for ( auto & constant : result.program.constantsLayout )
 			{
-				result.constantsPcb.constants.push_back( { constant.program
-					, constant.format
-					, constant.location
-					, constant.offset
-					, constant.size
-					, constant.arraySize } );
+				result.constantsPcb.constants.push_back( constant );
 				size += constant.size;
 			}
 
