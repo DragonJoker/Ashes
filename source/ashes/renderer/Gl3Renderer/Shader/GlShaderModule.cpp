@@ -348,7 +348,8 @@ namespace ashes::gl3
 				: 0u;
 		}
 
-		ConstantsLayout doRetrievePushConstants( spirv_cross::CompilerGLSL & compiler )
+		ConstantsLayout doRetrievePushConstants( spirv_cross::CompilerGLSL & compiler
+			, VkShaderStageFlagBits stageFlag )
 		{
 			ConstantsLayout result;
 			spirv_cross::ShaderResources resources = compiler.get_shader_resources();
@@ -368,6 +369,7 @@ namespace ashes::gl3
 
 					result.push_back( ConstantDesc
 						{
+							stageFlag,
 							compiler.get_name( pcb.id ) + "." + compiler.get_member_name( structType.self, index++ ),
 							0u,
 							getFormat( mbrType ),
@@ -455,7 +457,7 @@ namespace ashes::gl3
 				doProcessSpecializationConstants( state, compiler );
 				doSetEntryPoint( stage, compiler );
 				doSetupOptions( device, compiler, isRtot );
-				constants = doRetrievePushConstants( compiler );
+				constants = doRetrievePushConstants( compiler, stage );
 				doUpdateUboNames( compiler, std::to_string( stage ) );
 				doReworkBindings( pipelineLayout, compiler );
 

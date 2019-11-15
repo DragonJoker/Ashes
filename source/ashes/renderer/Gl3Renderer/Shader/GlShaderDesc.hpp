@@ -46,6 +46,7 @@ namespace ashes::gl3
 
 	struct ConstantDesc
 	{
+		VkShaderStageFlagBits stageFlag;
 		std::string name;
 		uint32_t location{ 0u };
 		ConstantFormat format{};
@@ -58,6 +59,7 @@ namespace ashes::gl3
 		, ConstantDesc const & rhs )
 	{
 		return lhs.name == rhs.name
+			&& lhs.stageFlag == rhs.stageFlag
 			&& lhs.location == rhs.location
 			&& lhs.format == rhs.format
 			&& lhs.size == rhs.size
@@ -203,35 +205,12 @@ namespace ashes::gl3
 		return !operator==( lhs, rhs );
 	}
 
-	struct PushConstantDesc
-	{
-		ConstantFormat format{};
-		uint32_t location{ 0u };
-		uint32_t offset{ 0u };
-		uint32_t size{ 0u };
-		uint32_t arraySize{ 1u };
-	};
-
-	inline bool operator==( PushConstantDesc const & lhs, PushConstantDesc const & rhs )
-	{
-		return lhs.format == rhs.format
-			&& lhs.location == rhs.location
-			&& lhs.offset == rhs.offset
-			&& lhs.size == rhs.size
-			&& lhs.arraySize == rhs.arraySize;
-	}
-
-	inline bool operator!=( PushConstantDesc const & lhs, PushConstantDesc const & rhs )
-	{
-		return !operator==( lhs, rhs );
-	}
-
 	struct PushConstantsDesc
 	{
 		VkShaderStageFlags stageFlags{};
 		uint32_t offset{ 0u };
 		uint32_t size{ 0u };
-		std::vector< PushConstantDesc > constants;
+		ConstantsLayout constants;
 		std::vector< uint8_t > data;
 	};
 

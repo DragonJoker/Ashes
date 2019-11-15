@@ -264,7 +264,8 @@ namespace ashes::gl4
 
 			for ( auto & pcb : m_state.pushConstantBuffers )
 			{
-				buildPushConstantsCommand( get( m_state.currentPipeline )->findPushConstantBuffer( pcb.second, doIsRtotFbo() )
+				buildPushConstantsCommand( pcb.second.stageFlags
+					, get( m_state.currentPipeline )->findPushConstantBuffer( pcb.second, doIsRtotFbo() )
 					, m_cmdList );
 			}
 
@@ -286,7 +287,8 @@ namespace ashes::gl4
 
 			for ( auto & pcb : m_state.pushConstantBuffers )
 			{
-				buildPushConstantsCommand( get( m_state.currentComputePipeline )->findPushConstantBuffer( pcb.second, false )
+				buildPushConstantsCommand( pcb.second.stageFlags
+					, get( m_state.currentComputePipeline )->findPushConstantBuffer( pcb.second, false )
 					, m_cmdList );
 			}
 
@@ -652,12 +654,14 @@ namespace ashes::gl4
 
 		if ( m_state.currentPipeline )
 		{
-			buildPushConstantsCommand( get( m_state.currentPipeline )->findPushConstantBuffer( desc, doIsRtotFbo() )
+			buildPushConstantsCommand( stageFlags
+				, get( m_state.currentPipeline )->findPushConstantBuffer( desc, doIsRtotFbo() )
 				, m_cmdList );
 		}
 		else if ( m_state.currentComputePipeline )
 		{
-			buildPushConstantsCommand( get( m_state.currentComputePipeline )->findPushConstantBuffer( desc, false )
+			buildPushConstantsCommand( stageFlags
+				, get( m_state.currentComputePipeline )->findPushConstantBuffer( desc, false )
 				, m_cmdList );
 		}
 		else
