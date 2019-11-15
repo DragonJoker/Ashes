@@ -318,18 +318,18 @@ namespace ashes::gl4
 				assert( pcbType.parent_type );
 				auto & structType = compiler.get_type( pcbType.parent_type );
 
-				uint32_t offset = 0u;
 				uint32_t index = 0u;
 
 				for ( auto & mbrTypeId : structType.member_types )
 				{
 					spirv_cross::SPIRType const & mbrType = compiler.get_type( mbrTypeId );
+					uint32_t offset = compiler.get_member_decoration( structType.self, index, spv::Decoration::DecorationOffset );
 
 					result.push_back( ConstantDesc
 						{
 							0u,
 							shaderStage,
-							compiler.get_name( pcb.id ) + "." + compiler.get_member_name( structType.self, index++ ),
+							compiler.get_name( pcb.id ) + "." + compiler.get_member_name( structType.self, index ),
 							0u,
 							getFormat( mbrType ),
 							getSize( getFormat( mbrType ) ),
@@ -342,7 +342,7 @@ namespace ashes::gl4
 						result.back().name += "[0]";
 					}
 
-					offset += result.back().size;
+					++index;
 				}
 			}
 

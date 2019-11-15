@@ -143,7 +143,8 @@ namespace ashes::d3d11
 		void doCreateRasterizerState( VkDevice device );
 		void doCreateDepthStencilState( VkDevice device );
 		void doCompileProgram( VkDevice device
-			, VkPipelineShaderStageCreateInfoArray const & stages );
+			, VkPipelineShaderStageCreateInfoArray const & stages
+			, VkPipelineCreateFlags createFlags );
 		void doCreateInputLayout( VkDevice device );
 
 	private:

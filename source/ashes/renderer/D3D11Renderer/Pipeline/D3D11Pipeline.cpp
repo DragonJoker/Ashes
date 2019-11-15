@@ -97,7 +97,7 @@ namespace ashes::d3d11
 		doCreateBlendState( device );
 		doCreateRasterizerState( device );
 		doCreateDepthStencilState( device );
-		doCompileProgram( device, { createInfo.pStages, createInfo.pStages + createInfo.stageCount } );
+		doCompileProgram( device, { createInfo.pStages, createInfo.pStages + createInfo.stageCount }, createInfo.flags );
 		doCreateInputLayout( device );
 	}
 
@@ -106,7 +106,7 @@ namespace ashes::d3d11
 		: m_device{ device }
 		, m_layout{ createInfo.layout }
 	{
-		doCompileProgram( device, { createInfo.stage } );
+		doCompileProgram( device, { createInfo.stage }, createInfo.flags );
 	}
 
 	PushConstantsBuffer Pipeline::findPushConstantBuffer( PushConstantsDesc const & pushConstants )const
@@ -243,12 +243,13 @@ namespace ashes::d3d11
 	}
 
 	void Pipeline::doCompileProgram( VkDevice device
-		, VkPipelineShaderStageCreateInfoArray const & stages )
+		, VkPipelineShaderStageCreateInfoArray const & stages
+		, VkPipelineCreateFlags createFlags )
 	{
 		for ( auto & state : stages )
 		{
 			auto module = get( state.module );
-			m_programModules.push_back( module->compile( state, m_layout ) );
+			m_programModules.push_back( module->compile( state, m_layout, createFlags ) );
 			m_programLayout.emplace( state.stage, m_programModules.back().getLayout() );
 		}
 

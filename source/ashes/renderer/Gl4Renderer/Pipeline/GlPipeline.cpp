@@ -173,6 +173,7 @@ namespace ashes::gl4
 			, VkPipeline pipeline
 			, VkPipelineShaderStageCreateInfoArray stages
 			, VkPipelineLayout layout
+			, VkPipelineCreateFlags createFlags
 			, VkRenderPass renderPass
 			, Optional< VkPipelineVertexInputStateCreateInfo > const & vertexInputState
 			, bool isRtot = false )
@@ -190,7 +191,7 @@ namespace ashes::gl4
 
 			for ( auto & stage : stages )
 			{
-				descs.push_back( get( stage.module )->compile( stage, layout, isRtot ) );
+				descs.push_back( get( stage.module )->compile( stage, layout, createFlags, isRtot ) );
 			}
 
 			Pipeline::ProgramPipeline result;
@@ -282,8 +283,8 @@ namespace ashes::gl4
 		, m_subpass{ createInfo.subpass }
 		, m_basePipelineHandle{ createInfo.basePipelineHandle }
 		, m_basePipelineIndex{ createInfo.basePipelineIndex }
-		, m_backPipeline{ createProgramPipeline( m_device, &m_backContextState, get( this ), m_stages, m_layout, m_renderPass, m_vertexInputState, false ) }
-		, m_rtotPipeline{ createProgramPipeline( m_device, &m_rtotContextState, get( this ), m_stages, m_layout, m_renderPass, m_vertexInputState, true ) }
+		, m_backPipeline{ createProgramPipeline( m_device, &m_backContextState, get( this ), m_stages, m_layout, createInfo.flags, m_renderPass, m_vertexInputState, false ) }
+		, m_rtotPipeline{ createProgramPipeline( m_device, &m_rtotContextState, get( this ), m_stages, m_layout, createInfo.flags, m_renderPass, m_vertexInputState, true ) }
 		, m_vertexInputStateHash{ ( m_vertexInputState
 			? doHash( m_vertexInputState.value() )
 			: 0u ) }
@@ -297,7 +298,7 @@ namespace ashes::gl4
 		, m_layout{ createInfo.layout }
 		, m_basePipelineHandle{ createInfo.basePipelineHandle }
 		, m_basePipelineIndex{ createInfo.basePipelineIndex }
-		, m_compPipeline{ createProgramPipeline( m_device, nullptr, get( this ), m_stages, m_layout, m_renderPass, m_vertexInputState ) }
+		, m_compPipeline{ createProgramPipeline( m_device, nullptr, get( this ), m_stages, m_layout, createInfo.flags, m_renderPass, m_vertexInputState ) }
 	{
 	}
 
