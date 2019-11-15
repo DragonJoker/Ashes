@@ -30,24 +30,11 @@ set( ${PROJECT_NAME}_USE_SPIRV_CROSS 0 )
 if ( EXISTS ${SPIRV_CROSS_DIR}/spirv_cross.cpp )
 	set( ${PROJECT_NAME}_USE_SPIRV_CROSS 1 )
 	set( ${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES
-		${SPIRV_CROSS_DIR}/spirv_cross.cpp
-		${SPIRV_CROSS_DIR}/spirv_cross_parsed_ir.cpp
-		${SPIRV_CROSS_DIR}/spirv_cfg.cpp
-		${SPIRV_CROSS_DIR}/spirv_glsl.cpp
 		${SPIRV_CROSS_DIR}/spirv_hlsl.cpp
-		${SPIRV_CROSS_DIR}/spirv_parser.cpp
 	)
 
 	set( ${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES
-		${SPIRV_CROSS_DIR}/GLSL.std.450.h
-		${SPIRV_CROSS_DIR}/spirv_common.hpp
-		${SPIRV_CROSS_DIR}/spirv.hpp
-		${SPIRV_CROSS_DIR}/spirv_cross.hpp
-		${SPIRV_CROSS_DIR}/spirv_cross_parsed_ir.hpp
-		${SPIRV_CROSS_DIR}/spirv_cfg.hpp
-		${SPIRV_CROSS_DIR}/spirv_glsl.hpp
 		${SPIRV_CROSS_DIR}/spirv_hlsl.hpp
-		${SPIRV_CROSS_DIR}/spirv_parser.hpp
 	)
 endif ()
 
@@ -115,8 +102,8 @@ parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Shader "Shader" )
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Sync "Sync" )
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer vulkan "vulkan" )
 
-source_group( "Header Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES} )
-source_group( "Source Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES} )
+source_group( "Header Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES} )
+source_group( "Source Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES} )
 source_group( "Natvis Files" FILES ${${PROJECT_NAME}_NVS_FILES} )
 
 set( ENABLED_RENDERERS
