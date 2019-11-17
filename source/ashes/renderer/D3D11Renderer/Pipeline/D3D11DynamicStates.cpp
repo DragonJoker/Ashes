@@ -8,28 +8,27 @@ namespace ashes::d3d11
 {
 	namespace
 	{
-		template<typename T>
-		void doHashCombine( size_t & seed, T const & v )
+		VkDynamicStateArray getStates( VkPipelineDynamicStateCreateInfo const * createInfo )
 		{
-			const uint64_t kMul = 0x9ddfea08eb382d69ULL;
+			return createInfo
+				? makeVector( createInfo->pDynamicStates, createInfo->dynamicStateCount )
+				: VkDynamicStateArray{};
+		}
 
-			std::hash< T > hasher;
-			uint64_t a = ( hasher( v ) ^ seed ) * kMul;
-			a ^= ( a >> 47 );
-
-			uint64_t b = ( seed ^ a ) * kMul;
-			b ^= ( b >> 47 );
-
-			seed = static_cast< std::size_t >( b * kMul );
+		VkPipelineDynamicStateCreateInfo getState( VkPipelineDynamicStateCreateInfo const * createInfo )
+		{
+			return ( createInfo
+				? *createInfo
+				: VkPipelineDynamicStateCreateInfo{} );
 		}
 	}
 
 	DynamicStates::DynamicStates( VkDevice device
 		, VkPipelineDynamicStateCreateInfo const * createInfo )
-		: m_dynamicState{ ( createInfo
-			? deepCopy( *createInfo, m_dynamicStates )
-			: VkPipelineDynamicStateCreateInfo{} ) }
+		: m_dynamicStates{ getStates( createInfo ) }
+		, m_dynamicState{ getState( createInfo ) }
 	{
+		m_dynamicState.pDynamicStates = m_dynamicStates.data();
 	}
 
 	DynamicStates::~DynamicStates()
