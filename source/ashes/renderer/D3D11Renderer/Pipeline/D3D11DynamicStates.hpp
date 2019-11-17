@@ -8,6 +8,8 @@
 #define ___D3D11Renderer_DynamicStates_HPP___
 #pragma once
 
+#include "D3D11RendererPrerequisites.hpp"
+
 namespace ashes::d3d11
 {
 	class DynamicStates
