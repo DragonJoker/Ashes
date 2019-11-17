@@ -1,5 +1,8 @@
 project( Gl3Renderer )
-cmake_policy( SET CMP0072 NEW )
+
+if ( ${CMAKE_VERSION} VERSION_GREATER "3.10.2" ) 
+	cmake_policy( SET CMP0072 NEW )
+endif()
 
 set( ${PROJECT_NAME}_VERSION_MAJOR 0 )
 set( ${PROJECT_NAME}_VERSION_MINOR 1 )
