@@ -1,7 +1,7 @@
 #include "ashespp/Utils/CallStack.hpp"
 
 #if !defined( NDEBUG )
-#	if ASHES_WIN32
+#	if defined( VK_USE_PLATFORM_WIN32_KHR )
 #		ifndef NOMINMAX
 #			define NOMINMAX
 #		endif
@@ -10,7 +10,7 @@
 #		pragma warning( disable:4091 ) //'typedef ': ignored on left of '' when no variable is declared
 #		include <Dbghelp.h>
 #		pragma warning( pop )
-#	elif ASHES_ANDROID
+#	elif defined( VK_USE_PLATFORM_ANDROID_KHR )
 #	else
 #		include <execinfo.h>
 #		include <cxxabi.h>
@@ -152,7 +152,7 @@ namespace ashes
 			}
 		}
 
-#	elif ASHES_ANDROID
+#	elif defined( VK_USE_PLATFORM_ANDROID_KHR )
 
 		inline void doShowBacktrace( std::ostream & stream
 			, int

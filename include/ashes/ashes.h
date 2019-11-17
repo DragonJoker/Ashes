@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 
 #include <vulkan/vulkan.h>
 
-#if ASHES_WIN32
+#if VK_USE_PLATFORM_WIN32_KHR
 #	ifdef AshesC_EXPORTS
 #		define Ashes_API __declspec( dllexport )
 #	else

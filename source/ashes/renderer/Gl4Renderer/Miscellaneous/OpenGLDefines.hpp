@@ -9,7 +9,7 @@ See LICENSE file in root folder.
 #include <cstdint>
 #include <string>
 
-#if ASHES_WIN32
+#if defined( VK_USE_PLATFORM_WIN32_KHR )
 #	define GLAPIENTRY __stdcall
 #	ifndef NOMINMAX
 #		define NOMINMAX
@@ -18,7 +18,7 @@ See LICENSE file in root folder.
 #	undef MemoryBarrier
 #else
 #	define GLAPIENTRY
-#   if ASHES_XLIB
+#   if defined( VK_USE_PLATFORM_XLIB_KHR )
         typedef struct _XDisplay Display;
         typedef unsigned long XID;
         typedef XID GLXDrawable;
@@ -153,7 +153,7 @@ namespace ashes::gl4
 
 namespace ashes::gl4
 {
-#if ASHES_WIN32
+#if defined( VK_USE_PLATFORM_WIN32_KHR )
 	using PFN_wglCreateContext = HGLRC ( GLAPIENTRY * )( HDC );
 	using PFN_wglDeleteContext = BOOL ( GLAPIENTRY * )( HGLRC );
 	using PFN_wglMakeCurrent = BOOL ( GLAPIENTRY * )( HDC, HGLRC );
@@ -166,7 +166,7 @@ namespace ashes::gl4
 		WGL_CONTEXT_FLAGS_ARB = 0x2094,
 		WGL_CONTEXT_PROFILE_MASK_ARB = 0x9126,
 	};
-#elif ASHES_XLIB
+#elif defined( VK_USE_PLATFORM_XLIB_KHR )
 	using PFN_glXSwapIntervalEXT = void( GLAPIENTRY * )( Display * dpy, GLXDrawable drawable, int interval );
 #else
 #endif
@@ -278,6 +278,7 @@ namespace ashes::gl4
 	using PFN_glGetQueryObjectuiv = void ( GLAPIENTRY * )( GLuint id, GLenum pname, GLuint * params );
 	using PFN_glGetShaderInfoLog = void ( GLAPIENTRY * )( GLuint shader, GLsizei bufSize, GLsizei* length, GLchar* infoLog );
 	using PFN_glGetShaderiv = void ( GLAPIENTRY * )( GLuint shader, GLenum pname, GLint* param );
+	using PFN_glGetStringi = const GLubyte *( GLAPIENTRY * )( GLenum name, GLuint index );
 	using PFN_glGetString = const GLubyte *( GLAPIENTRY * )( GLenum name ); 
 	using PFN_glGetTexImage = void ( GLAPIENTRY * )( GLenum target, GLint level, GLenum format, GLenum type, void *pixels );
 	using PFN_glGetTexLevelParameterfv = void ( GLAPIENTRY * )( GLenum target, GLint level, GLenum pname, GLfloat * params );

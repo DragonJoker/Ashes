@@ -1,6 +1,6 @@
 #include "Core/GlMswContext.hpp"
 
-#if ASHES_WIN32
+#if defined( VK_USE_PLATFORM_WIN32_KHR )
 
 #include "Core/GlInstance.hpp"
 #include "Core/GlPhysicalDevice.hpp"

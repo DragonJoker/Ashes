@@ -1,6 +1,6 @@
 #include "Core/GlX11Context.hpp"
 
-#if ASHES_XLIB
+#if defined( VK_USE_PLATFORM_XLIB_KHR )
 
 #include "Core/GlInstance.hpp"
 #include "Core/GlPhysicalDevice.hpp"

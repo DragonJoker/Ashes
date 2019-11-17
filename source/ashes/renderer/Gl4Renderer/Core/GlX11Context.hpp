@@ -5,7 +5,7 @@ See LICENSE file in root folder
 
 #include "renderer/Gl4Renderer/Core/GlContext.hpp"
 
-#if ASHES_XLIB
+#ifdef VK_USE_PLATFORM_XLIB_KHR
 #	include <X11/Xlib.h>
 #	include <GL/glx.h>
 

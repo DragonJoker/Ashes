@@ -18,9 +18,9 @@
 
 #include <GLFW/glfw3.h>
 
-#if ASHES_WIN32
+#if defined( VK_USE_PLATFORM_WIN32_KHR )
 #	define GLFW_EXPOSE_NATIVE_WIN32
-#elif ASHES_XLIB
+#elif defined( VK_USE_PLATFORM_XLIB_KHR )
 #	define GLFW_EXPOSE_NATIVE_X11
 #endif
 
@@ -219,10 +219,10 @@ int main( int argc, char * argv[] )
 	glfwSetWindowSizeCallback( window, onWindowResized );
 
 	// We retrieve this window's native handle, and create the surface from it.
-#if ASHES_WIN32
+#if defined( VK_USE_PLATFORM_WIN32_KHR )
 	auto hWnd = glfwGetWin32Window( window );
 	auto handle = ashes::WindowHandle{ std::make_unique< ashes::IMswWindowHandle >( nullptr, hWnd ) };
-#elif ASHES_XLIB
+#elif defined( VK_USE_PLATFORM_XLIB_KHR )
 	auto display = glfwGetX11Display();
 	auto drawable = glfwGetX11Window( window );
 	auto handle = ashes::WindowHandle{ std::make_unique< ashes::IXWindowHandle >( drawable, display ) };

@@ -3,7 +3,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#if _WIN32
+#if defined( VK_USE_PLATFORM_WIN32_KHR )
 #	include "renderer/Gl3Renderer/Core/GlContext.hpp"
 
 #	ifndef NOMINMAX

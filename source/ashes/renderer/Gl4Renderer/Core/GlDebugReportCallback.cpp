@@ -6,15 +6,13 @@ See LICENSE file in root folder.
 
 #include "renderer/Gl4Renderer/Core/GlInstance.hpp"
 
-#if ASHES_WIN32
+#if defined( VK_USE_PLATFORM_WIN32_KHR )
 #	ifndef NOMINMAX
 #		define NOMINMAX
 #	endif
 #	include <Windows.h>
-#	include <gl/GL.h>
-#elif ASHES_XLIB
+#elif defined( VK_USE_PLATFORM_XLIB_KHR )
 #	include <X11/Xlib.h>
-#	include <GL/glx.h>
 #endif
 
 #include "ashesgl4_api.hpp"

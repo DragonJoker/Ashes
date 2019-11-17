@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #include "Core/GlExtensionsHandler.hpp"
 
-#if ASHES_XLIB
+#if defined( VK_USE_PLATFORM_XLIB_KHR )
 #	include <X11/Xlib.h>
 #	include <GL/glx.h>
 #endif

@@ -2,7 +2,7 @@
 
 namespace ashes::gl3
 {
-#if ASHES_WIN32
+#if defined( VK_USE_PLATFORM_WIN32_KHR )
 
 	RenderWindow::RenderWindow() try
 	{
@@ -125,7 +125,7 @@ namespace ashes::gl3
 		return 0;
 	}
 
-#elif ASHES_XLIB
+#elif defined( VK_USE_PLATFORM_XLIB_KHR )
 
 	RenderWindow::RenderWindow()
 	{

@@ -48,40 +48,6 @@ set( ${PROJECT_NAME}_HDR_FILES
 	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/ashes.h
 )
 
-set( ASHES_WIN32 0 )
-set( ASHES_XCB 0 )
-set( ASHES_XLIB 0 )
-set( ASHES_ANDROID 0 )
-set( ASHES_MIR 0 )
-set( ASHES_WAYLAND 0 )
-set( ASHES_IOS 0 )
-set( ASHES_MACOS 0 )
-set( ASHES_VI 0 )
-set( ASHES_XLIB_XRANDR 0 )
-
-if ( WIN32 )
-	set( ASHES_WIN32 1 )
-elseif ( ANDROID )
-	set( ASHES_ANDROID 1 )
-else ()
-	option( ASHES_USE_XCB "Use XCB" OFF )
-	if ( ASHES_USE_XCB )
-		set( ASHES_XCB 1 )
-	else ()
-		set( ASHES_XLIB 1 )
-	endif ()
-endif ()
-
-set( ${PROJECT_NAME}_CONFIG_HEADER
-	${ASHES_CONFIG_DIR}/include/${PROJECT_NAME}/ash_platform.h
-)
-
-configure_file(
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/ash_platform.h.in
-	${${PROJECT_NAME}_CONFIG_HEADER}
-	NEWLINE_STYLE LF
-)
-
 # I hate to have to do that, but I found no other to force gcc to use --std=c++17
 if ( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" )
 	set( TARGET_CXX_OPTIONS --std=c++17 )
@@ -96,7 +62,6 @@ endif ()
 add_library( ${PROJECT_NAME} SHARED
 	${${PROJECT_NAME}_SRC_FILES}
 	${${PROJECT_NAME}_HDR_FILES}
-	${${PROJECT_NAME}_CONFIG_HEADER}
 )
 target_include_directories( ${PROJECT_NAME} PRIVATE
 	${TARGET_INCLUDE_DIRS}

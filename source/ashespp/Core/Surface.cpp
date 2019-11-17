@@ -97,7 +97,7 @@ namespace ashes
 		return result;
 	}
 
-#if ASHES_WIN32
+#if defined( VK_USE_PLATFORM_WIN32_KHR )
 
 	void Surface::doCreate()
 	{
@@ -118,7 +118,7 @@ namespace ashes
 		m_type = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
 	}
 
-#elif ASHES_ANDROID
+#elif defined( VK_USE_PLATFORM_ANDROID_KHR )
 
 	void Surface::doCreate()
 	{
@@ -138,7 +138,7 @@ namespace ashes
 		m_type = VK_KHR_ANDROID_SURFACE_EXTENSION_NAME;
 	}
 
-#elif ASHES_XCB
+#elif defined( VK_USE_PLATFORM_XCB_KHR )
 
 	void Surface::doCreate()
 	{
@@ -148,7 +148,7 @@ namespace ashes
 			nullptr,
 			0,
 			m_handle.getInternal< IXcbWindowHandle >().getConnection(),
-			m_handle.getInternal< IXcbWindowHandle >().getHandle(),
+			m_handle.getInternal< IXcbWindowHandle >().getWindow(),
 		};
 		auto res = m_instance.vkCreateXcbSurfaceKHR( m_instance
 			, &createInfo
@@ -158,7 +158,7 @@ namespace ashes
 		m_type = VK_KHR_XCB_SURFACE_EXTENSION_NAME;
 	}
 
-#elif ASHES_MIR
+#elif defined( VK_USE_PLATFORM_MIR_KHR )
 
 	void Surface::doCreate()
 	{
@@ -178,7 +178,7 @@ namespace ashes
 		m_type = VK_KHR_MIR_SURFACE_EXTENSION_NAME;
 	}
 
-#elif ASHES_WAYLAND
+#elif defined( VK_USE_PLATFORM_WAYLAND_KHR )
 
 	void Surface::doCreate()
 	{
@@ -198,7 +198,7 @@ namespace ashes
 		m_type = VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME;
 	}
 
-#elif ASHES_XLIB
+#elif defined( VK_USE_PLATFORM_XLIB_KHR )
 
 	void Surface::doCreate()
 	{

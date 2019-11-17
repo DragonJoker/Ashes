@@ -130,7 +130,7 @@ namespace utils
 
 			VkBool32 result = VK_FALSE;
 
-#if ASHES_ANDROID
+#if defined( VK_USE_PLATFORM_ANDROID_KHR )
 
 			if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_ERROR_BIT_EXT ) )
 			{
