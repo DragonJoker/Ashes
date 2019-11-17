@@ -384,6 +384,8 @@ namespace ashes::gl3
 		stream << ")";
 	}
 
+	void logStream( std::stringstream & stream );
+
 	template< typename FuncT, typename ... ParamsT >
 	struct GlFuncCaller
 	{
@@ -394,7 +396,7 @@ namespace ashes::gl3
 		{
 			stream << name;
 			logParams( stream, std::forward< ParamsT >( params )... );
-			std::cout << stream.str() << std::endl;
+			logStream( stream );
 			return function( std::forward< ParamsT >( params )... );
 		}
 	};
@@ -408,13 +410,14 @@ namespace ashes::gl3
 		{
 			stream << name;
 			logParams( stream );
-			std::cout << std::string{ name } << "()" << std::endl;
+			logStream( stream );
 			function();
 		}
 	};
 
 	template< typename FuncT, typename ... ParamsT >
-	inline bool executeFunction( FuncT function
+	inline bool executeFunction( ContextLock const & context
+		, FuncT function
 		, char const * const name
 		, ParamsT ... params )
 	{
@@ -423,26 +426,29 @@ namespace ashes::gl3
 			, function
 			, name
 			, std::forward< ParamsT >( params )... );
-		return glCheckError( name );
+		return glCheckError( context, name );
 	}
 
 	template< typename FuncT, typename ... ParamsT >
-	inline auto executeNonVoidFunction( FuncT function
+	inline auto executeNonVoidFunction( ContextLock const & context
+		, FuncT function
 		, char const * const name
 		, ParamsT ... params )
 	{
 		std::stringstream stream;
-		return GlFuncCaller< FuncT, ParamsT... >::call( stream
+		auto result = GlFuncCaller< FuncT, ParamsT... >::call( stream
 			, function
 			, name
 			, std::forward< ParamsT >( params )... );
+		glCheckError( context, name );
+		return result;
 	}
 
 #if GL_LOG_CALLS
 #	define glLogCall( lock, name, ... )\
-	executeFunction( ashes::gl3::getContext( lock ).m_##name, #name, __VA_ARGS__ )
+	executeFunction( lock, ashes::gl3::getContext( lock ).m_##name, #name, __VA_ARGS__ )
 #	define glLogNonVoidCall( lock, name, ... )\
-	executeNonVoidFunction( ashes::gl3::getContext( lock ).m_##name, #name, __VA_ARGS__ )
+	executeNonVoidFunction( lock, ashes::gl3::getContext( lock ).m_##name, #name, __VA_ARGS__ )
 #	define glLogCommand( name )\
 	std::cout << "Command: " << name << std::endl
 #elif defined( NDEBUG )
@@ -453,10 +459,10 @@ namespace ashes::gl3
 #	define glLogCommand( name )
 #	else
 #	define glLogCall( lock, name, ... )\
-	( ( lock->m_##name( __VA_ARGS__ ) ), glCheckError( #name ) )
+	( ( lock->m_##name( __VA_ARGS__ ) ), glCheckError( lock, #name ) )
 #	define glLogNonVoidCall( lock, name, ... )\
 	( lock->m_##name( __VA_ARGS__ ) );\
-	glCheckError( #name )
+	glCheckError( lock, #name )
 #	define glLogCommand( name )
 #endif
 }

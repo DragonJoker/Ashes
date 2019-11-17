@@ -31,6 +31,11 @@ namespace ashes::gl4
 		void insertDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const;
 #endif
 
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		void submit( ContextLock & context
 			, VkSubmitInfo const & value

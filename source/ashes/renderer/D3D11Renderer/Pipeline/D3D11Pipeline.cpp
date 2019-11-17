@@ -87,9 +87,7 @@ namespace ashes::d3d11
 		, m_colorBlendState{ ( createInfo.pColorBlendState
 			? deepCopy( *createInfo.pColorBlendState, m_colorBlendStateAttachments )
 			: VkPipelineColorBlendStateCreateInfo{} ) }
-		, m_dynamicState{ ( createInfo.pDynamicState
-			? deepCopy( *createInfo.pDynamicState, m_dynamicStates )
-			: VkPipelineDynamicStateCreateInfo{} ) }
+		, m_dynamicStates{ device, createInfo.pDynamicState }
 		, m_scissors{ makeScissors( m_stateScissors.begin(), m_stateScissors.end() ) }
 		, m_viewports{ makeViewports( m_stateViewports.begin(), m_stateViewports.end() ) }
 		, m_vertexInputStateHash{ doHash( m_vertexInputState ) }
@@ -97,7 +95,7 @@ namespace ashes::d3d11
 		doCreateBlendState( device );
 		doCreateRasterizerState( device );
 		doCreateDepthStencilState( device );
-		doCompileProgram( device, { createInfo.pStages, createInfo.pStages + createInfo.stageCount } );
+		doCompileProgram( device, { createInfo.pStages, createInfo.pStages + createInfo.stageCount }, createInfo.flags );
 		doCreateInputLayout( device );
 	}
 
@@ -105,8 +103,9 @@ namespace ashes::d3d11
 		, VkComputePipelineCreateInfo createInfo )
 		: m_device{ device }
 		, m_layout{ createInfo.layout }
+		, m_dynamicStates{ device, nullptr }
 	{
-		doCompileProgram( device, { createInfo.stage } );
+		doCompileProgram( device, { createInfo.stage }, createInfo.flags );
 	}
 
 	PushConstantsBuffer Pipeline::findPushConstantBuffer( PushConstantsDesc const & pushConstants )const
@@ -243,12 +242,13 @@ namespace ashes::d3d11
 	}
 
 	void Pipeline::doCompileProgram( VkDevice device
-		, VkPipelineShaderStageCreateInfoArray const & stages )
+		, VkPipelineShaderStageCreateInfoArray const & stages
+		, VkPipelineCreateFlags createFlags )
 	{
 		for ( auto & state : stages )
 		{
 			auto module = get( state.module );
-			m_programModules.push_back( module->compile( state, m_layout ) );
+			m_programModules.push_back( module->compile( state, m_layout, createFlags ) );
 			m_programLayout.emplace( state.stage, m_programModules.back().getLayout() );
 		}
 

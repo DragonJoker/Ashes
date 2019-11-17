@@ -86,7 +86,7 @@ namespace ashes::d3d11
 				, "bufferOffset must be a multiple of the format's texel block size" );
 			result = result && VK_SUCCESS == check( callback
 				, data
-				, ( copyInfo.bufferOffset == 0u || 4u == ( copyInfo.bufferOffset % 4u ) )
+				, ( copyInfo.bufferOffset == 0u || 0u == ( copyInfo.bufferOffset % 4u ) )
 				, "bufferOffset must be a multiple of 4" );
 			result = result && VK_SUCCESS == check( callback
 				, data
@@ -311,7 +311,7 @@ namespace ashes::d3d11
 		{
 			if ( !condition )
 			{
-				report.message += "Condition failed: " + message + " | ";
+				report.message += "Condition failed: " + message;
 				callback.report( report );
 				return VkResult( report.callbackData.messageIdNumber );
 			}
@@ -524,7 +524,7 @@ namespace ashes::d3d11
 		{
 			if ( !condition )
 			{
-				report.message += "Condition failed: " + message + " | ";
+				report.message += "Condition failed: " + message;
 				callback.report( report );
 				return VkResult( report.messageCode );
 			}

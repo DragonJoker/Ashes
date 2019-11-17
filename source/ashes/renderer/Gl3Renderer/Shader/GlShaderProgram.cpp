@@ -96,6 +96,7 @@ namespace ashes::gl3
 	ShaderProgram::ShaderProgram( VkDevice device
 		, VkPipeline pipeline
 		, VkPipelineShaderStageCreateInfoArray stages
+		, VkPipelineCreateFlags createFlags
 		, bool isRtot )
 		: m_device{ device }
 		, m_pipeline{ pipeline }
@@ -107,7 +108,7 @@ namespace ashes::gl3
 		for ( auto & stage : m_stages )
 		{
 			m_stageFlags |= stage.stage;
-			m_shaders.push_back( get( stage.module )->compile( stage, get( pipeline )->getLayout(), isRtot ) );
+			m_shaders.push_back( get( stage.module )->compile( stage, get( pipeline )->getLayout(), createFlags, isRtot ) );
 			glLogCall( context
 				, glAttachShader
 				, m_program
@@ -117,8 +118,9 @@ namespace ashes::gl3
 
 	ShaderProgram::ShaderProgram( VkDevice device
 		, VkPipeline pipeline
-		, VkPipelineShaderStageCreateInfo const & stage )
-		: ShaderProgram{ device, pipeline, { 1u, stage }, false }
+		, VkPipelineShaderStageCreateInfo const & stage
+		, VkPipelineCreateFlags createFlags )
+		: ShaderProgram{ device, pipeline, { 1u, stage }, createFlags, false }
 	{
 	}
 

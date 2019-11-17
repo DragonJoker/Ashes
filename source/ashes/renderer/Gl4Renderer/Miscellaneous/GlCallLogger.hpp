@@ -394,6 +394,8 @@ namespace ashes::gl4
 		stream << ")";
 	}
 
+	void logStream( std::stringstream & stream );
+
 	template< typename FuncT, typename ... ParamsT >
 	struct GlFuncCaller
 	{
@@ -404,7 +406,7 @@ namespace ashes::gl4
 		{
 			stream << name;
 			logParams( stream, std::forward< ParamsT >( params )... );
-			std::cout << stream.str() << std::endl;
+			logStream( stream );
 			return function( std::forward< ParamsT >( params )... );
 		}
 	};
@@ -418,7 +420,7 @@ namespace ashes::gl4
 		{
 			stream << name;
 			logParams( stream );
-			std::cout << std::string{ name } << "()" << std::endl;
+			logStream( stream );
 			function();
 		}
 	};
@@ -433,26 +435,43 @@ namespace ashes::gl4
 			, function
 			, name
 			, std::forward< ParamsT >( params )... );
-		return glCheckError( name );
+		return true;
 	}
 
 	template< typename FuncT, typename ... ParamsT >
-	inline auto executeNonVoidFunction( FuncT function
+	inline bool executeFunction( ContextLock const & context
+		, FuncT function
 		, char const * const name
 		, ParamsT ... params )
 	{
 		std::stringstream stream;
-		return GlFuncCaller< FuncT, ParamsT... >::call( stream
+		GlFuncCaller< FuncT, ParamsT... >::call( stream
 			, function
 			, name
 			, std::forward< ParamsT >( params )... );
+		return glCheckError( context, name );
+	}
+
+	template< typename FuncT, typename ... ParamsT >
+	inline auto executeNonVoidFunction( ContextLock const & context
+		, FuncT function
+		, char const * const name
+		, ParamsT ... params )
+	{
+		std::stringstream stream;
+		auto result = GlFuncCaller< FuncT, ParamsT... >::call( stream
+			, function
+			, name
+			, std::forward< ParamsT >( params )... );
+		glCheckError( context, name );
+		return result;
 	}
 
 #if GL_LOG_CALLS
 #	define glLogCall( lock, name, ... )\
-	executeFunction( ashes::gl4::getContext( lock ).m_##name, #name, __VA_ARGS__ )
+	executeFunction( lock, ashes::gl4::getContext( lock ).m_##name, #name, __VA_ARGS__ )
 #	define glLogNonVoidCall( lock, name, ... )\
-	executeNonVoidFunction( ashes::gl4::getContext( lock ).m_##name, #name, __VA_ARGS__ )
+	executeNonVoidFunction( lock, ashes::gl4::getContext( lock ).m_##name, #name, __VA_ARGS__ )
 #	define glLogCallNoContext( name, ... )\
 	executeFunction( name, #name, __VA_ARGS__ )
 #	define glLogCommand( name )\
@@ -467,12 +486,12 @@ namespace ashes::gl4
 #	define glLogCommand( name )
 #	else
 #	define glLogCall( lock, name, ... )\
-	( ( lock->m_##name( __VA_ARGS__ ) ), glCheckError( #name ) )
+	( ( lock->m_##name( __VA_ARGS__ ) ), glCheckError( lock, #name ) )
 #	define glLogNonVoidCall( lock, name, ... )\
 	( lock->m_##name( __VA_ARGS__ ) );\
-	glCheckError( #name )
+	glCheckError( lock, #name )
 #	define glLogCallNoContext( name, ... )\
-	( ( name( __VA_ARGS__ ) ), glCheckError( #name ) )
+	( ( name( __VA_ARGS__ ) ) ), glCheckError( #name )
 #	define glLogCommand( name )
 #endif
 }

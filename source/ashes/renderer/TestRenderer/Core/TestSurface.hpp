@@ -11,8 +11,15 @@ namespace ashes::test
 	class SurfaceKHR
 	{
 	public:
+#if _WIN32
 		SurfaceKHR( VkInstance instance
-			, VkSurfaceCreateInfoKHR createInfo );
+			, VkWin32SurfaceCreateInfoKHR createInfo );
+#elif __linux__
+		SurfaceKHR( VkInstance instance
+			, VkXlibSurfaceCreateInfoKHR createInfo );
+		SurfaceKHR( VkInstance instance
+			, VkXcbSurfaceCreateInfoKHR createInfo );
+#endif
 
 		bool getSupport( uint32_t queueFamilyIndex )const;
 
@@ -38,7 +45,6 @@ namespace ashes::test
 
 	private:
 		VkInstance m_instance;
-		VkSurfaceCreateInfoKHR m_createInfo;
 		VkSurfaceFormatArrayKHR m_surfaceFormats;
 		VkSurfaceCapabilitiesKHR m_surfaceCapabilities;
 		VkPresentModeArrayKHR m_presentModes;

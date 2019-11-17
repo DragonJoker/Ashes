@@ -27,6 +27,12 @@ namespace ashes::d3d11
 #if VK_EXT_debug_utils
 		VkResult setDebugUtilsObjectName( VkDebugUtilsObjectNameInfoEXT const & nameInfo )const;
 		VkResult setDebugUtilsObjectTag( VkDebugUtilsObjectTagInfoEXT const & tagInfo )const;
+		void submitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
+			, VkDebugUtilsMessageTypeFlagsEXT messageTypes
+			, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const;
+		void onSubmitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
+			, VkDebugUtilsMessageTypeFlagsEXT messageTypes
+			, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const;
 #endif
 #if VK_EXT_debug_marker
 		VkResult debugMarkerSetObjectTag( VkDebugMarkerObjectTagInfoEXT const & nameInfo )const;
@@ -34,6 +40,13 @@ namespace ashes::d3d11
 #endif
 #if VK_EXT_debug_report
 		void reportMessage( VkDebugReportFlagsEXT flags
+			, VkDebugReportObjectTypeEXT objectType
+			, uint64_t object
+			, size_t location
+			, int32_t messageCode
+			, const char * pLayerPrefix
+			, const char * pMessage );
+		void onReportMessage( VkDebugReportFlagsEXT flags
 			, VkDebugReportObjectTypeEXT objectType
 			, uint64_t object
 			, size_t location
@@ -55,13 +68,6 @@ namespace ashes::d3d11
 			, VkImage dst )const;
 		bool onCheckHResultCommand( HRESULT hresult
 			, std::string message )const;
-		void onReportMessage( VkDebugReportFlagsEXT flags
-			, VkDebugReportObjectTypeEXT objectType
-			, uint64_t object
-			, size_t location
-			, int32_t messageCode
-			, const char * pLayerPrefix
-			, const char * pMessage );
 		/**@}*/
 		/**
 		*name

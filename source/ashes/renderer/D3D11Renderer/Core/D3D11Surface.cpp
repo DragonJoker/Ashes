@@ -232,10 +232,10 @@ namespace ashes::d3d11
 	}
 
 	SurfaceKHR::SurfaceKHR( VkInstance instance
-		, VkSurfaceCreateInfoKHR createInfo )
+		, VkWin32SurfaceCreateInfoKHR createInfo )
 		: m_instance{ instance }
 		, m_createInfo{ std::move( createInfo ) }
-		, m_type{ "VK_KHR_win32_surface" }
+		, m_type{ VK_KHR_WIN32_SURFACE_EXTENSION_NAME }
 	{
 		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
 	}

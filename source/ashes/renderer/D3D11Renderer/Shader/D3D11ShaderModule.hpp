@@ -21,6 +21,7 @@ namespace ashes::d3d11
 
 		CompiledShaderModule( VkDevice device
 			, VkPipelineLayout pipelineLayout
+			, VkPipelineCreateFlags createFlags
 			, VkShaderModule module
 			, UInt32Array const & spv
 			, VkPipelineShaderStageCreateInfo const & state );
@@ -103,7 +104,8 @@ namespace ashes::d3d11
 		~ShaderModule();
 
 		CompiledShaderModule compile( VkPipelineShaderStageCreateInfo const & state
-			, VkPipelineLayout pipelineLayout )const;
+			, VkPipelineLayout pipelineLayout
+			, VkPipelineCreateFlags createFlags )const;
 
 	private:
 		VkDevice m_device;

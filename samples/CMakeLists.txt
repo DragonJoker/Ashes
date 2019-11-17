@@ -63,6 +63,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 				_LARGE_FILES
 				_UNICODE
 				${TARGET_CXX_DEFINITIONS}
+				${TARGET_DEFINITIONS}
 			)
 			target_compile_options( ${TARGET_NAME} PRIVATE
 				${TARGET_CXX_OPTIONS}
@@ -79,4 +80,3 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 		endif ()
 	endforeach ()
 endif ()
-

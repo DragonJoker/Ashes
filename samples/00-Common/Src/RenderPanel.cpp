@@ -493,7 +493,7 @@ namespace common
 			ImGui::Text( "Min: %.2f ms, Max %.2f ms", ( minGpuTime.count() / 1000.0f ), ( maxGpuTime.count() / 1000.0f ) );
 		}
 
-#if ASHES_ANDROID
+#if defined( VK_USE_PLATFORM_ANDROID_KHR )
 		ImGui::PushStyleVar( ImGuiStyleVar_ItemSpacing, ImVec2( 0.0f, 5.0f * UIOverlay->scale ) );
 #endif
 
@@ -501,7 +501,7 @@ namespace common
 		doUpdateOverlays( *m_gui );
 		ImGui::PopItemWidth();
 
-#if ASHES_ANDROID
+#if defined( VK_USE_PLATFORM_ANDROID_KHR )
 		ImGui::PopStyleVar();
 #endif
 
@@ -511,7 +511,7 @@ namespace common
 
 		m_gui->update();
 
-#if ASHES_ANDROID
+#if defined( VK_USE_PLATFORM_ANDROID_KHR )
 		m_mouse.left = false;
 #endif
 	}

@@ -17,7 +17,6 @@ namespace ashes::gl4
 	public:
 		Device( VkInstance instance
 			, VkPhysicalDevice gpu
-			, Context & context
 			, VkDeviceCreateInfo createInfos );
 		~Device();
 		VkPhysicalDeviceLimits const & getLimits()const;
@@ -28,6 +27,9 @@ namespace ashes::gl4
 #if VK_EXT_debug_utils
 		VkResult setDebugUtilsObjectName( VkDebugUtilsObjectNameInfoEXT const & nameInfo )const;
 		VkResult setDebugUtilsObjectTag( VkDebugUtilsObjectTagInfoEXT const & tagInfo )const;
+		void submitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
+			, VkDebugUtilsMessageTypeFlagsEXT messageTypes
+			, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const;
 #endif
 #if VK_EXT_debug_marker
 		VkResult debugMarkerSetObjectTag( VkDebugMarkerObjectTagInfoEXT const & nameInfo )const;
@@ -51,6 +53,7 @@ namespace ashes::gl4
 
 		inline ContextLock getContext()const
 		{
+			assert( m_currentContext );
 			return { *m_currentContext };
 		}
 

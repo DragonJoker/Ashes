@@ -15,12 +15,12 @@ See LICENSE file in root folder.
 
 #if VK_USE_PLATFORM_WIN32_KHR
 #	include "Platform/MswWindowHandle.hpp"
-#elif VK_USE_PLATFORM_XLIB_KHR
-#	include "Platform/XWindowHandle.hpp"
 #elif VK_USE_PLATFORM_ANDROID_KHR
 #	include "Platform/AndroidWindowHandle.hpp"
 #elif VK_USE_PLATFORM_XCB_KHR
 #	include "Platform/XcbWindowHandle.hpp"
+#elif VK_USE_PLATFORM_XLIB_KHR
+#	include "Platform/XWindowHandle.hpp"
 #elif VK_USE_PLATFORM_MIR_KHR
 #	include "Platform/MirWindowHandle.hpp"
 #elif VK_USE_PLATFORM_WAYLAND_KHR

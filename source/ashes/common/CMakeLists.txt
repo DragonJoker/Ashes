@@ -40,6 +40,9 @@ add_library( ${PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES}
 	${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
 )
+target_link_libraries( ${PROJECT_NAME} PUBLIC
+	${BinLibraries}
+)
 target_include_directories( ${PROJECT_NAME} PUBLIC
 	${TARGET_INCLUDE_DIRS}
 )

@@ -39,6 +39,11 @@ namespace ashes::d3d11
 		void debugMarkerInsert( VkDebugMarkerMarkerInfoEXT const & labelInfo )const;
 #endif
 
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		VkResult doSubmit( VkCommandBufferArray const & commandBuffers
 			, VkSemaphoreArray const & semaphoresToWait

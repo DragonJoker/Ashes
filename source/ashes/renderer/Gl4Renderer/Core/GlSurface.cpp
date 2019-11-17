@@ -11,15 +11,38 @@ See LICENSE file in root folder.
 
 namespace ashes::gl4
 {
+#if _WIN32
+
 	SurfaceKHR::SurfaceKHR( VkInstance instance
-		, VkSurfaceCreateInfoKHR createInfo )
-		: m_context{ Context::create( instance
-			, createInfo
-			, &get( instance )->getContext() ) }
+		, VkWin32SurfaceCreateInfoKHR createInfo )
+		: m_win32CreateInfo{ createInfo }
+		, m_context{ get( instance )->createContext( std::move( createInfo ) ) }
 	{
 		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
 		getSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
 	}
+
+#elif __linux__
+
+	SurfaceKHR::SurfaceKHR( VkInstance instance
+		, VkXlibSurfaceCreateInfoKHR createInfo )
+		: m_xlibCreateInfo{ createInfo }
+		, m_context{ get( instance )->createContext( std::move( createInfo ) ) }
+	{
+		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
+		getSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
+	}
+
+	SurfaceKHR::SurfaceKHR( VkInstance instance
+		, VkXcbSurfaceCreateInfoKHR createInfo )
+		: m_xcbCreateInfo{ createInfo }
+		, m_context{ get( instance )->createContext( std::move( createInfo ) ) }
+	{
+		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
+		getSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
+	}
+
+#endif
 
 	void SurfaceKHR::getSurfaceInfos( VkSurfaceFormatArrayKHR & formats
 		, VkSurfaceCapabilitiesKHR & capabilities )

@@ -38,3 +38,4 @@ if ( ASHES_BUILD_TESTS OR ASHES_BUILD_SAMPLES )
 endif ()
 
 set( BinLibraries ${BinLibraries} PARENT_SCOPE )
+

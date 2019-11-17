@@ -1,16 +1,13 @@
 #include "Core/GlContext.hpp"
 
 #include "Core/GlContextLock.hpp"
-
-#if VK_USE_PLATFORM_WIN32_KHR
-#	include "Core/GlMswContext.hpp"
-#elif VK_USE_PLATFORM_XLIB_KHR
-#	include "Core/GlX11Context.hpp"
-#else
-#	error "Unsupported surface type"
-#endif
+#include "Core/GlSurface.hpp"
 
 #include "ashesgl3_api.hpp"
+
+#if _WIN32
+#	include <gl/GL.h>
+#endif
 
 #include <iostream>
 #include <locale>
@@ -62,125 +59,35 @@ namespace ashes::gl3
 
 	//*************************************************************************
 
-	Context::Context( std::unique_ptr< ContextImpl > impl )
+	Context::Context( gl::ContextImplPtr impl )
 		: m_impl{ std::move( impl ) }
-		, createInfo{ m_impl->createInfo }
 		, m_instance{ m_impl->instance }
 	{
-		m_impl->initialise( *this );
+		m_impl->preInitialise( MinMajor, MinMinor );
+		m_impl->enable();
+		loadBaseFunctions();
+		loadDebugFunctions();
+		m_impl->disable();
+		m_impl->postInitialise();
 	}
 
 	Context::~Context()
 	{
 	}
 
-#if defined( VK_USE_PLATFORM_ANDROID_KHR )
+#if _WIN32
 
 	ContextPtr Context::create( VkInstance instance
-		, VkSurfaceCreateInfoKHR createInfo
-		, Context const * mainContext )
-	{
-		throw std::runtime_error{ "Not implemented" };
-	}
-
-	ContextPtr Context::create( VkInstance instance
-		, VkSurfaceKHR surface
-		, Context const * mainContext )
-	{
-		throw std::runtime_error{ "Not implemented" };
-	}
-
-#elif defined( VK_USE_PLATFORM_FUCHSIA )
-
-	ContextPtr Context::create( VkInstance instance
-		, VkSurfaceCreateInfoKHR createInfo
-		, Context const * mainContext )
-	{
-		throw std::runtime_error{ "Not implemented" };
-	}
-
-	ContextPtr Context::create( VkInstance instance
-		, VkSurfaceKHR surface
-		, Context const * mainContext )
-	{
-		throw std::runtime_error{ "Not implemented" };
-	}
-
-#elif defined( VK_USE_PLATFORM_IOS_MVK )
-
-	ContextPtr Context::create( VkInstance instance
-		, VkSurfaceCreateInfoKHR createInfo
-		, Context const * mainContext )
-	{
-		throw std::runtime_error{ "Not implemented" };
-	}
-
-	ContextPtr Context::create( VkInstance instance
-		, VkSurfaceKHR surface
-		, Context const * mainContext )
-	{
-		throw std::runtime_error{ "Not implemented" };
-	}
-
-#elif defined( VK_USE_PLATFORM_MACOS_MVK )
-
-	ContextPtr Context::create( VkInstance instance
-		, VkSurfaceCreateInfoKHR createInfo
-		, Context const * mainContext )
-	{
-		throw std::runtime_error{ "Not implemented" };
-	}
-
-	ContextPtr Context::create( VkInstance instance
-		, VkSurfaceKHR surface
-		, Context const * mainContext )
-	{
-		throw std::runtime_error{ "Not implemented" };
-	}
-
-#elif defined( VK_USE_PLATFORM_VI_NN )
-
-	ContextPtr Context::create( VkInstance instance
-		, VkSurfaceCreateInfoKHR createInfo
-		, Context const * mainContext )
-	{
-		throw std::runtime_error{ "Not implemented" };
-	}
-
-	ContextPtr Context::create( VkInstance instance
-		, VkSurfaceKHR surface
-		, Context const * mainContext )
-	{
-		throw std::runtime_error{ "Not implemented" };
-	}
-
-#elif defined( VK_USE_PLATFORM_XCB_KHR )
-
-	ContextPtr Context::create( VkInstance instance
-		, VkSurfaceCreateInfoKHR createInfo
-		, Context const * mainContext )
-	{
-		throw std::runtime_error{ "Not implemented" };
-	}
-
-	ContextPtr Context::create( VkInstance instance
-		, VkSurfaceKHR surface
-		, Context const * mainContext )
-	{
-		throw std::runtime_error{ "Not implemented" };
-	}
-
-#elif defined( VK_USE_PLATFORM_XLIB_KHR )
-
-	ContextPtr Context::create( VkInstance instance
-		, VkSurfaceCreateInfoKHR createInfo
+		, VkWin32SurfaceCreateInfoKHR createInfo
 		, Context const * mainContext )
 	{
 		return std::unique_ptr< Context >( new Context
 			{
-				std::make_unique< X11Context >( instance
+				gl::ContextImpl::create( instance
 					, std::move( createInfo )
-					, mainContext )
+					, ( mainContext
+						? &mainContext->getImpl()
+						: nullptr ) )
 			} );
 	}
 
@@ -188,41 +95,38 @@ namespace ashes::gl3
 		, VkSurfaceKHR surface
 		, Context const * mainContext )
 	{
-		return std::unique_ptr< Context >( new Context
-			{
-				std::make_unique< X11Context >( instance
-					, surface
-					, mainContext )
-			} );
+			return create( instance
+				, get( surface )->getWin32CreateInfo()
+				, mainContext );
 	}
 
-#elif defined( VK_USE_PLATFORM_WAYLAND_KHR )
-
-ContextPtr Context::create( VkInstance instance
-		, VkSurfaceCreateInfoKHR createInfo
-		, Context const * mainContext )
-	{
-		throw std::runtime_error{ "Not implemented" };
-	}
-
-ContextPtr Context::create( VkInstance instance
-		, VkSurfaceKHR surface
-		, Context const * mainContext )
-	{
-		throw std::runtime_error{ "Not implemented" };
-	}
-
-#elif defined( VK_USE_PLATFORM_WIN32_KHR )
+#elif __linux__
 
 	ContextPtr Context::create( VkInstance instance
-		, VkSurfaceCreateInfoKHR createInfo
+		, VkXlibSurfaceCreateInfoKHR createInfo
 		, Context const * mainContext )
 	{
 		return std::unique_ptr< Context >( new Context
 			{
-				std::make_unique< MswContext >( instance
+				gl::ContextImpl::create( instance
 					, std::move( createInfo )
-					, mainContext )
+					, ( mainContext
+						? &mainContext->getImpl()
+						: nullptr ) )
+			} );
+	}
+
+	ContextPtr Context::create( VkInstance instance
+		, VkXcbSurfaceCreateInfoKHR createInfo
+		, Context const * mainContext )
+	{
+		return std::unique_ptr< Context >( new Context
+			{
+				gl::ContextImpl::create( instance
+					, std::move( createInfo )
+					, ( mainContext
+						? &mainContext->getImpl()
+						: nullptr ) )
 			} );
 	}
 
@@ -230,12 +134,20 @@ ContextPtr Context::create( VkInstance instance
 		, VkSurfaceKHR surface
 		, Context const * mainContext )
 	{
-		return std::unique_ptr< Context >( new Context
-			{
-				std::make_unique< MswContext >( instance
-					, surface
-					, mainContext )
-			} );
+		if ( get( surface )->isXlib() )
+		{
+			return create( instance
+				, get( surface )->getXlibCreateInfo()
+				, mainContext );
+		}
+		else if ( get( surface )->isXcb() )
+		{
+			return create( instance
+				, get( surface )->getXcbCreateInfo()
+				, mainContext );
+		}
+
+		return nullptr;
 	}
 
 #endif
@@ -255,11 +167,19 @@ ContextPtr Context::create( VkInstance instance
 		return *it->second;
 	}
 
-	void Context::onBaseContextCreated()
+#if VK_EXT_debug_utils
+
+	void Context::submitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
+		, VkDebugUtilsMessageTypeFlagsEXT messageTypes
+		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const
 	{
-		loadBaseFunctions();
-		loadDebugFunctions();
+		get( m_instance )->submitDebugUtilsMessenger( messageSeverity
+			, messageTypes
+			, callbackData );
 	}
+
+#endif
+#if VK_EXT_debug_report
 
 	void Context::reportMessage( VkDebugReportFlagsEXT flags
 		, VkDebugReportObjectTypeEXT objectType
@@ -277,6 +197,8 @@ ContextPtr Context::create( VkInstance instance
 			, pLayerPrefix
 			, pMessage );
 	}
+
+#endif
 
 	void Context::lock()
 	{
@@ -297,8 +219,20 @@ ContextPtr Context::create( VkInstance instance
 
 	void Context::loadBaseFunctions()
 	{
-#define GL_LIB_BASE_FUNCTION( fun )\
-		m_gl##fun = PFN_gl##fun( &::gl##fun );
+#if _WIN32
+#	define GL_LIB_BASE_FUNCTION( fun )\
+		m_gl##fun = PFN_gl##fun( &::gl##fun );\
+		if ( !m_gl##fun )\
+		{\
+			throw std::runtime_error{ std::string{ "Couldn't load function " } + "gl"#fun };\
+		}
+#else
+#	define GL_LIB_BASE_FUNCTION( fun )\
+		if ( !( getFunction( "gl"#fun, m_gl##fun ) ) )\
+		{\
+			throw std::runtime_error{ std::string{ "Couldn't load function " } + "gl"#fun };\
+		}
+#endif
 #define GL_LIB_FUNCTION( fun )\
 		if ( !( getFunction( "gl"#fun, m_gl##fun ) ) )\
 		{\

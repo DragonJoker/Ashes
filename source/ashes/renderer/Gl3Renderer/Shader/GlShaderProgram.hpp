@@ -14,10 +14,12 @@ namespace ashes::gl3
 		ShaderProgram( VkDevice device
 			, VkPipeline pipeline
 			, VkPipelineShaderStageCreateInfoArray stages
+			, VkPipelineCreateFlags createFlags
 			, bool isRtot );
 		ShaderProgram( VkDevice device
 			, VkPipeline pipeline
-			, VkPipelineShaderStageCreateInfo const & stage );
+			, VkPipelineShaderStageCreateInfo const & stage
+			, VkPipelineCreateFlags createFlags );
 		~ShaderProgram();
 		ShaderDesc link( ContextLock const & context )const;
 

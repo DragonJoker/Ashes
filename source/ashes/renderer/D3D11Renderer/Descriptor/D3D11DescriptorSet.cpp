@@ -76,10 +76,9 @@ namespace ashes::d3d11
 				m_inlineUniforms.push_back( &write.second );
 				break;
 #endif
-#if VK_NV_ray_tracing
-			case VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV:
+			default:
+				reportUnsupported( device, "VkDescriptorType" );
 				break;
-#endif
 			}
 		}
 
@@ -155,7 +154,6 @@ namespace ashes::d3d11
 
 	void DescriptorSet::update( VkCopyDescriptorSet const & copy )
 	{
-		//m_writes[copy.dstBinding].dstBinding = copy.srcBinding;
-		//m_writes[copy.dstBinding].dstArrayElement = copy.srcArrayElement;
+		reportUnsupported( get( m_pool )->getDevice(), "VkCopyDescriptorSet" );
 	}
 }

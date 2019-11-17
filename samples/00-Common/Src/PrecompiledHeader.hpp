@@ -63,7 +63,7 @@
 #endif
 
 
-#if ASHES_WIN32
+#if defined( _WIN32 )
 
 #include <cstdio>
 #include <cstring>

@@ -76,7 +76,7 @@ namespace ashes::gl3
 			, glGetTexImage
 			, srcTarget
 			, copy.srcSubresource.mipLevel
-			, srcInternal
+			, getFormat( srcInternal )
 			, getType( srcInternal )
 			, srcData.data() );
 		glLogCall( context
@@ -109,7 +109,7 @@ namespace ashes::gl3
 			, cmd.copy.dstSubresource.mipLevel
 			, cmd.copy.dstOffset.x
 			, cmd.copy.extent.width
-			, srcInternal
+			, getFormat( srcInternal )
 			, getType( srcInternal )
 			, dstData.data() );
 		glLogCall( context
@@ -136,13 +136,13 @@ namespace ashes::gl3
 			, cmd.dstName );
 		glLogCall( context
 			, glTexSubImage2D
-			, cmd.dstTarget
+			, cmd.dstLayerTarget
 			, cmd.copy.dstSubresource.mipLevel
 			, cmd.copy.dstOffset.x
 			, cmd.dstOffsetY
 			, cmd.copy.extent.width
 			, cmd.dstExtentY
-			, srcInternal
+			, getFormat( srcInternal )
 			, getType( srcInternal )
 			, dstData.data() );
 		glLogCall( context
@@ -169,7 +169,7 @@ namespace ashes::gl3
 			, cmd.dstName );
 		glLogCall( context
 			, glTexSubImage3D
-			, cmd.dstTarget
+			, cmd.dstLayerTarget
 			, cmd.copy.dstSubresource.mipLevel
 			, cmd.copy.dstOffset.x
 			, cmd.copy.dstOffset.y
@@ -177,7 +177,7 @@ namespace ashes::gl3
 			, cmd.copy.extent.width
 			, cmd.copy.extent.height
 			, cmd.dstExtentZ
-			, srcInternal
+			, getFormat( srcInternal )
 			, getType( srcInternal )
 			, dstData.data() );
 		glLogCall( context
@@ -221,6 +221,7 @@ namespace ashes::gl3
 				, dst
 				, get( dst )->getInternal()
 				, dstTarget
+				, dstTarget
 				, int32_t( copyInfo.dstSubresource.baseArrayLayer )
 				, copyInfo.dstSubresource.layerCount
 				, std::move( copyInfo ) ) );
@@ -232,6 +233,7 @@ namespace ashes::gl3
 				, srcTarget
 				, dst
 				, get( dst )->getInternal()
+				, dstTarget
 				, dstTarget
 				, copyInfo.dstOffset.y
 				, copyInfo.extent.height
@@ -245,6 +247,7 @@ namespace ashes::gl3
 				, dst
 				, get( dst )->getInternal()
 				, dstTarget
+				, dstTarget
 				, int32_t( copyInfo.dstSubresource.baseArrayLayer )
 				, copyInfo.dstSubresource.layerCount
 				, std::move( copyInfo ) ) );
@@ -256,6 +259,7 @@ namespace ashes::gl3
 				, srcTarget
 				, dst
 				, get( dst )->getInternal()
+				, GL_TEXTURE_CUBE
 				, GL_TEXTURE_CUBE_POSITIVE_X + copyInfo.dstSubresource.baseArrayLayer
 				, copyInfo.dstOffset.y
 				, copyInfo.extent.height
@@ -268,6 +272,7 @@ namespace ashes::gl3
 				, srcTarget
 				, dst
 				, get( dst )->getInternal()
+				, GL_TEXTURE_CUBE_ARRAY
 				, GL_TEXTURE_CUBE_POSITIVE_X + ( copyInfo.dstSubresource.baseArrayLayer % 6u )
 				, int32_t( copyInfo.dstSubresource.baseArrayLayer / 6u )
 				, copyInfo.dstSubresource.layerCount / 6u
@@ -280,6 +285,7 @@ namespace ashes::gl3
 				, srcTarget
 				, dst
 				, get( dst )->getInternal()
+				, dstTarget
 				, dstTarget
 				, copyInfo.dstOffset.z
 				, copyInfo.extent.depth

@@ -318,6 +318,24 @@ namespace ashes::d3d11
 		return VK_SUCCESS;
 	}
 
+	void Device::submitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
+		, VkDebugUtilsMessageTypeFlagsEXT messageTypes
+		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const
+	{
+		get( m_instance )->submitDebugUtilsMessenger( messageSeverity
+			, messageTypes
+			, callbackData );
+	}
+
+	void Device::onSubmitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
+		, VkDebugUtilsMessageTypeFlagsEXT messageTypes
+		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const
+	{
+		get( m_instance )->onSubmitDebugUtilsMessenger( messageSeverity
+			, messageTypes
+			, callbackData );
+	}
+
 #endif
 #if VK_EXT_debug_marker
 
@@ -370,6 +388,43 @@ namespace ashes::d3d11
 		return checkError( get( this ), hr, "SetPrivateData" )
 			? VK_SUCCESS
 			: VK_ERROR_INVALID_DEVICE_ADDRESS_EXT;
+	}
+
+#endif
+#if VK_EXT_debug_report
+
+	void Device::reportMessage( VkDebugReportFlagsEXT flags
+		, VkDebugReportObjectTypeEXT objectType
+		, uint64_t object
+		, size_t location
+		, int32_t messageCode
+		, const char * pLayerPrefix
+		, const char * pMessage )
+	{
+		get( m_instance )->reportMessage( flags
+			, objectType
+			, object
+			, location
+			, messageCode
+			, pLayerPrefix
+			, pMessage );
+	}
+
+	void Device::onReportMessage( VkDebugReportFlagsEXT flags
+		, VkDebugReportObjectTypeEXT objectType
+		, uint64_t object
+		, size_t location
+		, int32_t messageCode
+		, const char * pLayerPrefix
+		, const char * pMessage )
+	{
+		get( m_instance )->onReportMessage( flags
+			, objectType
+			, object
+			, location
+			, messageCode
+			, pLayerPrefix
+			, pMessage );
 	}
 
 #endif
@@ -438,23 +493,6 @@ namespace ashes::d3d11
 		, std::string message )const
 	{
 		return get( m_instance )->onCheckHResultCommand( hresult, std::move( message ) );
-	}
-
-	void Device::onReportMessage( VkDebugReportFlagsEXT flags
-		, VkDebugReportObjectTypeEXT objectType
-		, uint64_t object
-		, size_t location
-		, int32_t messageCode
-		, const char * pLayerPrefix
-		, const char * pMessage )
-	{
-		get( m_instance )->onReportMessage( flags
-			, objectType
-			, object
-			, location
-			, messageCode
-			, pLayerPrefix
-			, pMessage );
 	}
 
 	void Device::doCreateD3D11Device()

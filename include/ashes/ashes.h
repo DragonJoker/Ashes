@@ -6,11 +6,27 @@ See LICENSE file in root folder.
 #define ___Ashes_C_H___
 #pragma once
 
-#include "ashes/ash_platform.h"
-
 #include <vulkan/vulkan.h>
 
-#if ASHES_WIN32
+#if __linux__
+	typedef unsigned long XID;
+	typedef XID Window;
+	typedef unsigned long VisualID;
+	typedef struct _XDisplay Display;
+#	include <vulkan/vulkan_xlib.h>
+	typedef struct xcb_connection_t xcb_connection_t;
+	typedef uint32_t xcb_window_t;
+	typedef uint32_t xcb_visualid_t;
+#	include <vulkan/vulkan_xcb.h>
+#elif _WIN32
+#	ifndef NOMINMAX
+#		define NOMINMAX
+#	endif
+#	include <Windows.h>
+#	include <vulkan/vulkan_win32.h>
+#endif
+
+#if _WIN32
 #	ifdef AshesC_EXPORTS
 #		define Ashes_API __declspec( dllexport )
 #	else

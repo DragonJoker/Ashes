@@ -1,10 +1,9 @@
-#define VK_NO_PROTOTYPES
-#include <ashes/ashes.h>
-
 #include "Core/GlContext.hpp"
-#include "Core/GlWindow.hpp"
 
 #include "ashesgl4_api.hpp"
+
+#include <renderer/GlRendererCommon/GlWindow.hpp>
+#include <renderer/GlRendererCommon/GlExtensionsHandler.hpp>
 
 #include <common/Exception.hpp>
 
@@ -54,15 +53,13 @@ namespace ashes::gl4
 			auto gpus = get( instance )->enumeratePhysicalDevices();
 			*pPhysicalDeviceCount = uint32_t( gpus.size() );
 
-			if ( !pPhysicalDevices )
+			if ( pPhysicalDevices )
 			{
-				return result;
-			}
-
-			for ( auto & gpu : gpus )
-			{
-				*pPhysicalDevices = gpu;
-				++pPhysicalDevices;
+				for ( auto & gpu : gpus )
+				{
+					*pPhysicalDevices = gpu;
+					++pPhysicalDevices;
+				}
 			}
 		}
 		catch ( Exception & exc )
@@ -101,9 +98,12 @@ namespace ashes::gl4
 		VkImageCreateFlags flags,
 		VkImageFormatProperties* pImageFormatProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceImageFormatProperties Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return get( physicalDevice )->getImageFormatProperties( format
+			, type
+			, tiling
+			, usage
+			, flags
+			, *pImageFormatProperties );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceProperties(
@@ -121,15 +121,13 @@ namespace ashes::gl4
 		auto props = get( physicalDevice )->getQueueFamilyProperties();
 		*pQueueFamilyPropertyCount = uint32_t( props.size() );
 
-		if ( !pQueueFamilyProperties )
+		if ( pQueueFamilyProperties )
 		{
-			return;
-		}
-
-		for ( auto & prop : props )
-		{
-			( *pQueueFamilyProperties ) = prop;
-			++pQueueFamilyProperties;
+			for ( auto & prop : props )
+			{
+				( *pQueueFamilyProperties ) = prop;
+				++pQueueFamilyProperties;
+			}
 		}
 	}
 
@@ -153,7 +151,6 @@ namespace ashes::gl4
 			, pAllocator
 			, instance
 			, physicalDevice
-			, get( instance )->getContext()
 			, *pCreateInfo );
 	}
 
@@ -335,8 +332,7 @@ namespace ashes::gl4
 		VkDeviceMemory memory,
 		VkDeviceSize* pCommittedMemoryInBytes )
 	{
-		// TODO
-		std::cerr << "vkGetDeviceMemoryCommitment Unsupported" << std::endl;
+		reportUnsupported( device, "vkGetDeviceMemoryCommitment" );
 	}
 
 	VkResult VKAPI_CALL vkBindBufferMemory(
@@ -379,9 +375,7 @@ namespace ashes::gl4
 		uint32_t* pSparseMemoryRequirementCount,
 		VkSparseImageMemoryRequirements* pSparseMemoryRequirements )
 	{
-		// TODO
-		std::cerr << "vkGetImageSparseMemoryRequirements Unsupported" << std::endl;
-		*pSparseMemoryRequirementCount = 0u;
+		reportUnsupported( device, "vkGetImageSparseMemoryRequirements" );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceSparseImageFormatProperties(
@@ -394,9 +388,23 @@ namespace ashes::gl4
 		uint32_t* pPropertyCount,
 		VkSparseImageFormatProperties* pProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceSparseImageFormatProperties Unsupported" << std::endl;
-		*pPropertyCount = 0u;
+		std::vector< VkSparseImageFormatProperties > props;
+		get( physicalDevice )->getSparseImageFormatProperties( format
+			, type
+			, samples
+			, usage
+			, tiling
+			, props );
+		*pPropertyCount = uint32_t( props.size() );
+
+		if ( pProperties )
+		{
+			for ( auto & prop : props )
+			{
+				*pProperties = prop;
+				++pProperties;
+			}
+		}
 	}
 
 	VkResult VKAPI_CALL vkQueueBindSparse(
@@ -405,9 +413,7 @@ namespace ashes::gl4
 		const VkBindSparseInfo* pBindInfo,
 		VkFence fence )
 	{
-		// TODO
-		std::cerr << "vkQueueBindSparse Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( queue, "vkQueueBindSparse" );
 	}
 
 	VkResult VKAPI_CALL vkCreateFence(
@@ -450,9 +456,7 @@ namespace ashes::gl4
 		VkDevice device,
 		VkFence fence )
 	{
-		// TODO
-		std::cerr << "vkGetFenceStatus Unsupported" << std::endl;
-		return VK_SUCCESS;
+		return reportUnsupported( device, "vkGetFenceStatus" );
 	}
 
 	VkResult VKAPI_CALL vkWaitForFences(
@@ -1164,9 +1168,7 @@ namespace ashes::gl4
 		VkCommandBuffer commandBuffer,
 		const float blendConstants[4] )
 	{
-		// TODO
-		std::cerr << "vkCmdSetBlendConstants Unsupported" << std::endl;
-		//get( commandBuffer )->setBlendConstants( blendConstants );
+		get( commandBuffer )->setBlendConstants( blendConstants );
 	}
 
 	void VKAPI_CALL vkCmdSetDepthBounds(
@@ -1174,9 +1176,7 @@ namespace ashes::gl4
 		float minDepthBounds,
 		float maxDepthBounds )
 	{
-		// TODO
-		std::cerr << "vkCmdSetDepthBounds Unsupported" << std::endl;
-		//get( commandBuffer )->setDepthBounds( minDepthBounds, maxDepthBounds );
+		get( commandBuffer )->setDepthBounds( minDepthBounds, maxDepthBounds );
 	}
 
 	void VKAPI_CALL vkCmdSetStencilCompareMask(
@@ -1184,9 +1184,7 @@ namespace ashes::gl4
 		VkStencilFaceFlags faceMask,
 		uint32_t compareMask )
 	{
-		// TODO
-		std::cerr << "vkCmdSetStencilCompareMask Unsupported" << std::endl;
-		//get( commandBuffer )->setStencilCompareMask( faceMask, compareMask );
+		get( commandBuffer )->setStencilCompareMask( faceMask, compareMask );
 	}
 
 	void VKAPI_CALL vkCmdSetStencilWriteMask(
@@ -1194,9 +1192,7 @@ namespace ashes::gl4
 		VkStencilFaceFlags faceMask,
 		uint32_t writeMask )
 	{
-		// TODO
-		std::cerr << "vkCmdSetStencilWriteMask Unsupported" << std::endl;
-		//get( commandBuffer )->setStencilWriteMask( faceMask, writeMask );
+		get( commandBuffer )->setStencilWriteMask( faceMask, writeMask );
 	}
 
 	void VKAPI_CALL vkCmdSetStencilReference(
@@ -1204,9 +1200,7 @@ namespace ashes::gl4
 		VkStencilFaceFlags faceMask,
 		uint32_t reference )
 	{
-		// TODO
-		std::cerr << "vkCmdSetStencilReference Unsupported" << std::endl;
-		//get( commandBuffer )->setStencilRefeerence( faceMask, reference );
+		get( commandBuffer )->setStencilReference( faceMask, reference );
 	}
 
 	void VKAPI_CALL vkCmdBindDescriptorSets(
@@ -1399,8 +1393,7 @@ namespace ashes::gl4
 		VkDeviceSize dataSize,
 		const void* pData )
 	{
-		// TODO
-		std::cerr << "vkCmdUpdateBuffer Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdUpdateBuffer" );
 		//get( commandBuffer )->updateBuffer( dstBuffer
 		//	, dstOffset
 		//	, dataSize
@@ -1414,8 +1407,7 @@ namespace ashes::gl4
 		VkDeviceSize size,
 		uint32_t data )
 	{
-		// TODO
-		std::cerr << "vkCmdFillBuffer Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdFillBuffer" );
 		//get( commandBuffer )->fillBuffer( dstBuffer
 		//	, dstOffset
 		//	, size
@@ -1470,8 +1462,7 @@ namespace ashes::gl4
 		uint32_t regionCount,
 		const VkImageResolve* pRegions )
 	{
-		// TODO
-		std::cerr << "vkCmdResolveImage Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdResolveImage" );
 		//get( commandBuffer )->resolveImage( srcImage
 		//	, srcImageLayout
 		//	, dstImage
@@ -1588,8 +1579,7 @@ namespace ashes::gl4
 		VkDeviceSize stride,
 		VkQueryResultFlags flags )
 	{
-		// TODO
-		std::cerr << "vkCmdCopyQueryPoolResults Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdCopyQueryPoolResults" );
 		//get( commandBuffer )->copyQueryPoolResults( queryPool
 		//	, firstQuery
 		//	, queryCount
@@ -1660,9 +1650,7 @@ namespace ashes::gl4
 		uint32_t bindInfoCount,
 		const VkBindBufferMemoryInfo* pBindInfos )
 	{
-		// TODO
-		std::cerr << "vkBindBufferMemory2 Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkBindBufferMemory2" );
 	}
 
 	VkResult VKAPI_CALL vkBindImageMemory2(
@@ -1670,9 +1658,7 @@ namespace ashes::gl4
 		uint32_t bindInfoCount,
 		const VkBindImageMemoryInfo* pBindInfos )
 	{
-		// TODO
-		std::cerr << "vkBindImageMemory2 Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkBindImageMemory2" );
 	}
 
 	void VKAPI_CALL vkGetDeviceGroupPeerMemoryFeatures(
@@ -1682,8 +1668,7 @@ namespace ashes::gl4
 		uint32_t remoteDeviceIndex,
 		VkPeerMemoryFeatureFlags* pPeerMemoryFeatures )
 	{
-		// TODO
-		std::cerr << "vkGetDeviceGroupPeerMemoryFeatures Unsupported" << std::endl;
+		reportUnsupported( device, "vkGetDeviceGroupPeerMemoryFeatures" );
 		*pPeerMemoryFeatures = VK_NULL_HANDLE;
 	}
 
@@ -1691,8 +1676,7 @@ namespace ashes::gl4
 		VkCommandBuffer commandBuffer,
 		uint32_t deviceMask )
 	{
-		// TODO
-		std::cerr << "vkCmdSetDeviceMask Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdSetDeviceMask" );
 	}
 
 	void VKAPI_CALL vkCmdDispatchBase(
@@ -1704,8 +1688,7 @@ namespace ashes::gl4
 		uint32_t groupCountY,
 		uint32_t groupCountZ )
 	{
-		// TODO
-		std::cerr << "vkCmdDispatchBase Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdDispatchBase" );
 	}
 
 	VkResult VKAPI_CALL vkEnumeratePhysicalDeviceGroups(
@@ -1713,9 +1696,7 @@ namespace ashes::gl4
 		uint32_t* pPhysicalDeviceGroupCount,
 		VkPhysicalDeviceGroupProperties* pPhysicalDeviceGroupProperties )
 	{
-		// TODO
-		std::cerr << "vkEnumeratePhysicalDeviceGroups Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( instance, "vkEnumeratePhysicalDeviceGroups" );
 	}
 
 	void VKAPI_CALL vkGetImageMemoryRequirements2(
@@ -1723,8 +1704,7 @@ namespace ashes::gl4
 		const VkImageMemoryRequirementsInfo2* pInfo,
 		VkMemoryRequirements2* pMemoryRequirements )
 	{
-		// TODO
-		std::cerr << "vkGetImageMemoryRequirements2 Unsupported" << std::endl;
+		reportUnsupported( device, "vkGetImageMemoryRequirements2" );
 	}
 
 	void VKAPI_CALL vkGetBufferMemoryRequirements2(
@@ -1732,8 +1712,7 @@ namespace ashes::gl4
 		const VkBufferMemoryRequirementsInfo2* pInfo,
 		VkMemoryRequirements2* pMemoryRequirements )
 	{
-		// TODO
-		std::cerr << "vkGetBufferMemoryRequirements2 Unsupported" << std::endl;
+		reportUnsupported( device, "vkGetBufferMemoryRequirements2" );
 	}
 
 	void VKAPI_CALL vkGetImageSparseMemoryRequirements2(
@@ -1742,70 +1721,82 @@ namespace ashes::gl4
 		uint32_t* pSparseMemoryRequirementCount,
 		VkSparseImageMemoryRequirements2* pSparseMemoryRequirements )
 	{
-		// TODO
-		std::cerr << "vkGetImageSparseMemoryRequirements2 Unsupported" << std::endl;
+		reportUnsupported( device, "vkGetImageSparseMemoryRequirements2" );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceFeatures2(
 		VkPhysicalDevice physicalDevice,
-		VkPhysicalDeviceFeatures2* pFeatures )
+		VkPhysicalDeviceFeatures2 * pFeatures )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceFeatures2 Unsupported" << std::endl;
+		*pFeatures = get( physicalDevice )->getFeatures2();
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceProperties2(
 		VkPhysicalDevice physicalDevice,
-		VkPhysicalDeviceProperties2* pProperties )
+		VkPhysicalDeviceProperties2 * pProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceProperties2 Unsupported" << std::endl;
+		*pProperties = get( physicalDevice )->getProperties2();
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceFormatProperties2(
 		VkPhysicalDevice physicalDevice,
 		VkFormat format,
-		VkFormatProperties2* pFormatProperties )
+		VkFormatProperties2 * pFormatProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceFormatProperties2 Unsupported" << std::endl;
+		*pFormatProperties = get( physicalDevice )->getFormatProperties2( format );
 	}
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceImageFormatProperties2(
 		VkPhysicalDevice physicalDevice,
-		const VkPhysicalDeviceImageFormatInfo2* pImageFormatInfo,
-		VkImageFormatProperties2* pImageFormatProperties )
+		const VkPhysicalDeviceImageFormatInfo2 * pImageFormatInfo,
+		VkImageFormatProperties2 * pImageFormatProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceImageFormatProperties2 Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return get( physicalDevice )->getImageFormatProperties2( *pImageFormatInfo, *pImageFormatProperties );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceQueueFamilyProperties2(
 		VkPhysicalDevice physicalDevice,
-		uint32_t* pQueueFamilyPropertyCount,
-		VkQueueFamilyProperties2* pQueueFamilyProperties )
+		uint32_t * pQueueFamilyPropertyCount,
+		VkQueueFamilyProperties2 * pQueueFamilyProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceQueueFamilyProperties2 Unsupported" << std::endl;
+		auto props = get( physicalDevice )->getQueueFamilyProperties2();
+		*pQueueFamilyPropertyCount = uint32_t( props.size() );
+
+		if ( pQueueFamilyProperties )
+		{
+			for ( auto & prop : props )
+			{
+				( *pQueueFamilyProperties ) = prop;
+				++pQueueFamilyProperties;
+			}
+		}
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceMemoryProperties2(
 		VkPhysicalDevice physicalDevice,
-		VkPhysicalDeviceMemoryProperties2* pMemoryProperties )
+		VkPhysicalDeviceMemoryProperties2 * pMemoryProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceMemoryProperties2 Unsupported" << std::endl;
+		*pMemoryProperties = get( physicalDevice )->getMemoryProperties2();
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceSparseImageFormatProperties2(
 		VkPhysicalDevice physicalDevice,
-		const VkPhysicalDeviceSparseImageFormatInfo2* pFormatInfo,
-		uint32_t* pPropertyCount,
-		VkSparseImageFormatProperties2* pProperties )
+		const VkPhysicalDeviceSparseImageFormatInfo2 * pFormatInfo,
+		uint32_t * pPropertyCount,
+		VkSparseImageFormatProperties2 * pProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceSparseImageFormatProperties2 Unsupported" << std::endl;
+		std::vector< VkSparseImageFormatProperties2 > props;
+		get( physicalDevice )->getSparseImageFormatProperties2( *pFormatInfo, props );
+		*pPropertyCount = uint32_t( props.size() );
+
+		if ( pProperties )
+		{
+			for ( auto & prop : props )
+			{
+				( *pProperties ) = prop;
+				++pProperties;
+			}
+		}
 	}
 
 	void VKAPI_CALL vkTrimCommandPool(
@@ -1813,8 +1804,6 @@ namespace ashes::gl4
 		VkCommandPool commandPool,
 		VkCommandPoolTrimFlags flags )
 	{
-		// TODO
-		std::cerr << "vkTrimCommandPool Unsupported" << std::endl;
 	}
 
 	void VKAPI_CALL vkGetDeviceQueue2(
@@ -1822,8 +1811,7 @@ namespace ashes::gl4
 		const VkDeviceQueueInfo2* pQueueInfo,
 		VkQueue* pQueue )
 	{
-		// TODO
-		std::cerr << "vkGetDeviceQueue2 Unsupported" << std::endl;
+		reportUnsupported( device, "vkGetDeviceQueue2" );
 	}
 
 	VkResult VKAPI_CALL vkCreateSamplerYcbcrConversion(
@@ -1832,9 +1820,7 @@ namespace ashes::gl4
 		const VkAllocationCallbacks* pAllocator,
 		VkSamplerYcbcrConversion* pYcbcrConversion )
 	{
-		// TODO
-		std::cerr << "vkCreateSamplerYcbcrConversion Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkCreateSamplerYcbcrConversion" );
 	}
 
 	void VKAPI_CALL vkDestroySamplerYcbcrConversion(
@@ -1842,8 +1828,7 @@ namespace ashes::gl4
 		VkSamplerYcbcrConversion ycbcrConversion,
 		const VkAllocationCallbacks* pAllocator )
 	{
-		// TODO
-		std::cerr << "vkDestroySamplerYcbcrConversion Unsupported" << std::endl;
+		reportUnsupported( device, "vkDestroySamplerYcbcrConversion" );
 	}
 
 	VkResult VKAPI_CALL vkCreateDescriptorUpdateTemplate(
@@ -1852,9 +1837,7 @@ namespace ashes::gl4
 		const VkAllocationCallbacks* pAllocator,
 		VkDescriptorUpdateTemplate* pDescriptorUpdateTemplate )
 	{
-		// TODO
-		std::cerr << "vkCreateDescriptorUpdateTemplate Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkCreateDescriptorUpdateTemplate" );
 	}
 
 	void VKAPI_CALL vkDestroyDescriptorUpdateTemplate(
@@ -1862,8 +1845,7 @@ namespace ashes::gl4
 		VkDescriptorUpdateTemplate descriptorUpdateTemplate,
 		const VkAllocationCallbacks* pAllocator )
 	{
-		// TODO
-		std::cerr << "vkDestroyDescriptorUpdateTemplate Unsupported" << std::endl;
+		reportUnsupported( device, "vkDestroyDescriptorUpdateTemplate" );
 	}
 
 	void VKAPI_CALL vkUpdateDescriptorSetWithTemplate(
@@ -1872,8 +1854,7 @@ namespace ashes::gl4
 		VkDescriptorUpdateTemplate descriptorUpdateTemplate,
 		const void* pData )
 	{
-		// TODO
-		std::cerr << "vkUpdateDescriptorSetWithTemplate Unsupported" << std::endl;
+		reportUnsupported( device, "vkUpdateDescriptorSetWithTemplate" );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceExternalBufferProperties(
@@ -1881,8 +1862,7 @@ namespace ashes::gl4
 		const VkPhysicalDeviceExternalBufferInfo* pExternalBufferInfo,
 		VkExternalBufferProperties* pExternalBufferProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceExternalBufferProperties Unsupported" << std::endl;
+		reportUnsupported( physicalDevice, "vkGetPhysicalDeviceExternalBufferProperties" );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceExternalFenceProperties(
@@ -1890,8 +1870,7 @@ namespace ashes::gl4
 		const VkPhysicalDeviceExternalFenceInfo* pExternalFenceInfo,
 		VkExternalFenceProperties* pExternalFenceProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceExternalFenceProperties Unsupported" << std::endl;
+		reportUnsupported( physicalDevice, "vkGetPhysicalDeviceExternalFenceProperties" );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceExternalSemaphoreProperties(
@@ -1899,8 +1878,7 @@ namespace ashes::gl4
 		const VkPhysicalDeviceExternalSemaphoreInfo* pExternalSemaphoreInfo,
 		VkExternalSemaphoreProperties* pExternalSemaphoreProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceExternalSemaphoreProperties Unsupported" << std::endl;
+		reportUnsupported( physicalDevice, "vkGetPhysicalDeviceExternalSemaphoreProperties" );
 	}
 
 	void VKAPI_CALL vkGetDescriptorSetLayoutSupport(
@@ -1908,8 +1886,7 @@ namespace ashes::gl4
 		const VkDescriptorSetLayoutCreateInfo* pCreateInfo,
 		VkDescriptorSetLayoutSupport* pSupport )
 	{
-		// TODO
-		std::cerr << "vkGetDescriptorSetLayoutSupport Unsupported" << std::endl;
+		reportUnsupported( device, "vkGetDescriptorSetLayoutSupport" );
 	}
 
 #endif
@@ -1950,18 +1927,16 @@ namespace ashes::gl4
 		uint32_t* pSurfaceFormatCount,
 		VkSurfaceFormatKHR* pSurfaceFormats )
 	{
-		if ( !pSurfaceFormats )
-		{
-			*pSurfaceFormatCount = uint32_t( get( surface )->getFormats().size() );
-			return VK_SUCCESS;
-		}
-
 		auto formats = get( surface )->getFormats();
+		*pSurfaceFormatCount = uint32_t( formats.size() );
 
-		for ( auto & format : formats )
+		if ( pSurfaceFormats )
 		{
-			*pSurfaceFormats = format;
-			++pSurfaceFormats;
+			for ( auto & format : formats )
+			{
+				*pSurfaceFormats = format;
+				++pSurfaceFormats;
+			}
 		}
 
 		return VK_SUCCESS;
@@ -1973,18 +1948,16 @@ namespace ashes::gl4
 		uint32_t* pPresentModeCount,
 		VkPresentModeKHR* pPresentModes )
 	{
-		if ( !pPresentModes )
-		{
-			*pPresentModeCount = uint32_t( get( surface )->getPresentModes().size() );
-			return VK_SUCCESS;
-		}
-
 		auto modes = get( surface )->getPresentModes();
+		*pPresentModeCount = uint32_t( modes.size() );
 
-		for ( auto & mode : modes )
+		if ( pPresentModes )
 		{
-			*pPresentModes = mode;
-			++pPresentModes;
+			for ( auto & mode : modes )
+			{
+				*pPresentModes = mode;
+				++pPresentModes;
+			}
 		}
 
 		return VK_SUCCESS;
@@ -2022,18 +1995,16 @@ namespace ashes::gl4
 		uint32_t* pSwapchainImageCount,
 		VkImage* pSwapchainImages )
 	{
-		if ( !pSwapchainImages )
-		{
-			*pSwapchainImageCount = get( swapchain )->getImageCount();
-			return VK_SUCCESS;
-		}
-
 		auto result = get( swapchain )->getImages();
+		*pSwapchainImageCount = uint32_t( result.size() );
 
-		for ( auto & image : result )
+		if ( pSwapchainImages )
 		{
-			*pSwapchainImages = image;
-			++pSwapchainImages;
+			for ( auto & image : result )
+			{
+				*pSwapchainImages = image;
+				++pSwapchainImages;
+			}
 		}
 
 		return VK_SUCCESS;
@@ -2066,9 +2037,7 @@ namespace ashes::gl4
 		VkDevice device,
 		VkDeviceGroupPresentCapabilitiesKHR* pDeviceGroupPresentCapabilities )
 	{
-		// TODO
-		std::cerr << "vkGetDeviceGroupPresentCapabilitiesKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetDeviceGroupPresentCapabilitiesKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetDeviceGroupSurfacePresentModesKHR(
@@ -2076,9 +2045,7 @@ namespace ashes::gl4
 		VkSurfaceKHR surface,
 		VkDeviceGroupPresentModeFlagsKHR* pModes )
 	{
-		// TODO
-		std::cerr << "vkGetDeviceGroupSurfacePresentModesKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetDeviceGroupSurfacePresentModesKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetPhysicalDevicePresentRectanglesKHR(
@@ -2087,9 +2054,7 @@ namespace ashes::gl4
 		uint32_t* pRectCount,
 		VkRect2D* pRects )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDevicePresentRectanglesKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetPhysicalDevicePresentRectanglesKHR" );
 	}
 
 	VkResult VKAPI_CALL vkAcquireNextImage2KHR(
@@ -2097,9 +2062,7 @@ namespace ashes::gl4
 		const VkAcquireNextImageInfoKHR* pAcquireInfo,
 		uint32_t* pImageIndex )
 	{
-		// TODO
-		std::cerr << "vkAcquireNextImage2KHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkAcquireNextImage2KHR" );
 	}
 
 #endif
@@ -2112,9 +2075,7 @@ namespace ashes::gl4
 		uint32_t* pPropertyCount,
 		VkDisplayPropertiesKHR* pProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceDisplayPropertiesKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceDisplayPropertiesKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceDisplayPlanePropertiesKHR(
@@ -2122,9 +2083,7 @@ namespace ashes::gl4
 		uint32_t* pPropertyCount,
 		VkDisplayPlanePropertiesKHR* pProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceDisplayPlanePropertiesKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceDisplayPlanePropertiesKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetDisplayPlaneSupportedDisplaysKHR(
@@ -2133,9 +2092,7 @@ namespace ashes::gl4
 		uint32_t* pDisplayCount,
 		VkDisplayKHR* pDisplays )
 	{
-		// TODO
-		std::cerr << "vkGetDisplayPlaneSupportedDisplaysKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetDisplayPlaneSupportedDisplaysKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetDisplayModePropertiesKHR(
@@ -2144,9 +2101,7 @@ namespace ashes::gl4
 		uint32_t* pPropertyCount,
 		VkDisplayModePropertiesKHR* pProperties )
 	{
-		// TODO
-		std::cerr << "vkGetDisplayModePropertiesKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetDisplayModePropertiesKHR" );
 	}
 
 	VkResult VKAPI_CALL vkCreateDisplayModeKHR(
@@ -2156,9 +2111,7 @@ namespace ashes::gl4
 		const VkAllocationCallbacks* pAllocator,
 		VkDisplayModeKHR* pMode )
 	{
-		// TODO
-		std::cerr << "vkCreateDisplayModeKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkCreateDisplayModeKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetDisplayPlaneCapabilitiesKHR(
@@ -2167,9 +2120,7 @@ namespace ashes::gl4
 		uint32_t planeIndex,
 		VkDisplayPlaneCapabilitiesKHR* pCapabilities )
 	{
-		// TODO
-		std::cerr << "vkGetDisplayPlaneCapabilitiesKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetDisplayPlaneCapabilitiesKHR" );
 	}
 
 	VkResult VKAPI_CALL vkCreateDisplayPlaneSurfaceKHR(
@@ -2178,9 +2129,7 @@ namespace ashes::gl4
 		const VkAllocationCallbacks* pAllocator,
 		VkSurfaceKHR* pSurface )
 	{
-		// TODO
-		std::cerr << "vkCreateDisplayPlaneSurfaceKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( instance, "vkCreateDisplayPlaneSurfaceKHR" );
 	}
 
 #endif
@@ -2226,15 +2175,13 @@ namespace ashes::gl4
 		auto props = get( physicalDevice )->getQueueFamilyProperties2();
 		*pQueueFamilyPropertyCount = uint32_t( props.size() );
 
-		if ( !pQueueFamilyProperties )
+		if ( pQueueFamilyProperties )
 		{
-			return;
-		}
-
-		for ( auto & prop : props )
-		{
-			( *pQueueFamilyProperties ) = prop;
-			++pQueueFamilyProperties;
+			for ( auto & prop : props )
+			{
+				( *pQueueFamilyProperties ) = prop;
+				++pQueueFamilyProperties;
+			}
 		}
 	}
 
@@ -2251,18 +2198,17 @@ namespace ashes::gl4
 		uint32_t* pPropertyCount,
 		VkSparseImageFormatProperties2KHR* pProperties )
 	{
-		auto props = get( physicalDevice )->getSparseImageFormatProperties2( *pFormatInfo );
+		std::vector< VkSparseImageFormatProperties2KHR > props;
+		get( physicalDevice )->getSparseImageFormatProperties2( *pFormatInfo, props );
 		*pPropertyCount = uint32_t( props.size() );
 
-		if ( !pProperties )
+		if ( pProperties )
 		{
-			return;
-		}
-
-		for ( auto & prop : props )
-		{
-			( *pProperties ) = prop;
-			++pProperties;
+			for ( auto & prop : props )
+			{
+				( *pProperties ) = prop;
+				++pProperties;
+			}
 		}
 	}
 
@@ -2278,16 +2224,14 @@ namespace ashes::gl4
 		uint32_t remoteDeviceIndex,
 		VkPeerMemoryFeatureFlags* pPeerMemoryFeatures )
 	{
-		// TODO
-		std::cerr << "vkGetDeviceGroupPeerMemoryFeaturesKHR Unsupported" << std::endl;
+		reportUnsupported( device, "vkGetDeviceGroupPeerMemoryFeaturesKHR" );
 	}
 
 	void VKAPI_CALL vkCmdSetDeviceMaskKHR(
 		VkCommandBuffer commandBuffer,
 		uint32_t deviceMask )
 	{
-		// TODO
-		std::cerr << "vkCmdSetDeviceMaskKHR Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdSetDeviceMaskKHR" );
 	}
 
 	void VKAPI_CALL vkCmdDispatchBaseKHR(
@@ -2299,8 +2243,7 @@ namespace ashes::gl4
 		uint32_t groupCountY,
 		uint32_t groupCountZ )
 	{
-		// TODO
-		std::cerr << "vkCmdDispatchBaseKHR Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdDispatchBaseKHR" );
 	}
 
 #endif
@@ -2325,9 +2268,7 @@ namespace ashes::gl4
 		uint32_t* pPhysicalDeviceGroupCount,
 		VkPhysicalDeviceGroupProperties* pPhysicalDeviceGroupProperties )
 	{
-		// TODO
-		std::cerr << "vkEnumeratePhysicalDeviceGroupsKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( instance, "vkEnumeratePhysicalDeviceGroupsKHR" );
 	}
 
 #endif
@@ -2340,8 +2281,7 @@ namespace ashes::gl4
 		const VkPhysicalDeviceExternalBufferInfo* pExternalBufferInfo,
 		VkExternalBufferProperties* pExternalBufferProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceExternalBufferPropertiesKHR Unsupported" << std::endl;
+		reportUnsupported( physicalDevice, "vkGetPhysicalDeviceExternalBufferPropertiesKHR" );
 	}
 
 #endif
@@ -2354,9 +2294,7 @@ namespace ashes::gl4
 		const VkMemoryGetFdInfoKHR* pGetFdInfo,
 		int* pFd )
 	{
-		// TODO
-		std::cerr << "vkGetMemoryFdKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetMemoryFdKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetMemoryFdPropertiesKHR(
@@ -2365,9 +2303,7 @@ namespace ashes::gl4
 		int fd,
 		VkMemoryFdPropertiesKHR* pMemoryFdProperties )
 	{
-		// TODO
-		std::cerr << "vkGetMemoryFdPropertiesKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetMemoryFdPropertiesKHR" );
 	}
 
 #endif
@@ -2380,8 +2316,7 @@ namespace ashes::gl4
 		const VkPhysicalDeviceExternalSemaphoreInfo* pExternalSemaphoreInfo,
 		VkExternalSemaphoreProperties* pExternalSemaphoreProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceExternalSemaphorePropertiesKHR Unsupported" << std::endl;
+		reportUnsupported( physicalDevice, "vkGetPhysicalDeviceExternalSemaphorePropertiesKHR" );
 	}
 
 #endif
@@ -2393,9 +2328,7 @@ namespace ashes::gl4
 		VkDevice device,
 		const VkImportSemaphoreFdInfoKHR* pImportSemaphoreFdInfo )
 	{
-		// TODO
-		std::cerr << "vkImportSemaphoreFdKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkImportSemaphoreFdKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetSemaphoreFdKHR(
@@ -2403,9 +2336,7 @@ namespace ashes::gl4
 		const VkSemaphoreGetFdInfoKHR* pGetFdInfo,
 		int* pFd )
 	{
-		// TODO
-		std::cerr << "vkGetSemaphoreFdKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetSemaphoreFdKHR" );
 	}
 
 #endif
@@ -2421,8 +2352,7 @@ namespace ashes::gl4
 		uint32_t descriptorWriteCount,
 		const VkWriteDescriptorSet* pDescriptorWrites )
 	{
-		// TODO
-		std::cerr << "vkCmdPushDescriptorSetKHR Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdPushDescriptorSetKHR" );
 	}
 
 	void VKAPI_CALL vkCmdPushDescriptorSetWithTemplateKHR(
@@ -2432,8 +2362,7 @@ namespace ashes::gl4
 		uint32_t set,
 		const void* pData )
 	{
-		// TODO
-		std::cerr << "vkCmdPushDescriptorSetWithTemplateKHR Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdPushDescriptorSetWithTemplateKHR" );
 	}
 
 #endif
@@ -2447,9 +2376,7 @@ namespace ashes::gl4
 		const VkAllocationCallbacks* pAllocator,
 		VkDescriptorUpdateTemplate* pDescriptorUpdateTemplate )
 	{
-		// TODO
-		std::cerr << "vkCreateDescriptorUpdateTemplateKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkCreateDescriptorUpdateTemplateKHR" );
 	}
 
 	void VKAPI_CALL vkDestroyDescriptorUpdateTemplateKHR(
@@ -2457,8 +2384,7 @@ namespace ashes::gl4
 		VkDescriptorUpdateTemplate descriptorUpdateTemplate,
 		const VkAllocationCallbacks* pAllocator )
 	{
-		// TODO
-		std::cerr << "vkDestroyDescriptorUpdateTemplateKHR Unsupported" << std::endl;
+		reportUnsupported( device, "vkDestroyDescriptorUpdateTemplateKHR" );
 	}
 
 	void VKAPI_CALL vkUpdateDescriptorSetWithTemplateKHR(
@@ -2467,8 +2393,7 @@ namespace ashes::gl4
 		VkDescriptorUpdateTemplate descriptorUpdateTemplate,
 		const void* pData )
 	{
-		// TODO
-		std::cerr << "vkUpdateDescriptorSetWithTemplateKHR Unsupported" << std::endl;
+		reportUnsupported( device, "vkUpdateDescriptorSetWithTemplateKHR" );
 	}
 
 #endif
@@ -2482,9 +2407,7 @@ namespace ashes::gl4
 		const VkAllocationCallbacks* pAllocator,
 		VkRenderPass* pRenderPass )
 	{
-		// TODO
-		std::cerr << "vkCreateRenderPass2KHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkCreateRenderPass2KHR" );
 	}
 
 	void VKAPI_CALL vkCmdBeginRenderPass2KHR(
@@ -2492,8 +2415,7 @@ namespace ashes::gl4
 		const VkRenderPassBeginInfo* pRenderPassBegin,
 		const VkSubpassBeginInfoKHR* pSubpassBeginInfo )
 	{
-		// TODO
-		std::cerr << "vkCmdBeginRenderPass2KHR Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdBeginRenderPass2KHR" );
 	}
 
 	void VKAPI_CALL vkCmdNextSubpass2KHR(
@@ -2501,16 +2423,14 @@ namespace ashes::gl4
 		const VkSubpassBeginInfoKHR* pSubpassBeginInfo,
 		const VkSubpassEndInfoKHR* pSubpassEndInfo )
 	{
-		// TODO
-		std::cerr << "vkCmdNextSubpass2KHR Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdNextSubpass2KHR" );
 	}
 
 	void VKAPI_CALL vkCmdEndRenderPass2KHR(
 		VkCommandBuffer commandBuffer,
 		const VkSubpassEndInfoKHR* pSubpassEndInfo )
 	{
-		// TODO
-		std::cerr << "vkCmdEndRenderPass2KHR Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdEndRenderPass2KHR" );
 	}
 
 #endif
@@ -2522,9 +2442,7 @@ namespace ashes::gl4
 		VkDevice device,
 		VkSwapchainKHR swapchain )
 	{
-		// TODO
-		std::cerr << "vkGetSwapchainStatusKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkImportFenceFdKHR" );
 	}
 
 #endif
@@ -2537,8 +2455,7 @@ namespace ashes::gl4
 		const VkPhysicalDeviceExternalFenceInfo* pExternalFenceInfo,
 		VkExternalFenceProperties* pExternalFenceProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceExternalFencePropertiesKHR Unsupported" << std::endl;
+		reportUnsupported( physicalDevice, "vkGetPhysicalDeviceExternalFencePropertiesKHR" );
 	}
 
 #endif
@@ -2550,9 +2467,7 @@ namespace ashes::gl4
 		VkDevice device,
 		const VkImportFenceFdInfoKHR* pImportFenceFdInfo )
 	{
-		// TODO
-		std::cerr << "vkImportFenceFdKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkImportFenceFdKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetFenceFdKHR(
@@ -2560,9 +2475,7 @@ namespace ashes::gl4
 		const VkFenceGetFdInfoKHR* pGetFdInfo,
 		int* pFd )
 	{
-		// TODO
-		std::cerr << "vkGetFenceFdKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetFenceFdKHR" );
 	}
 
 #endif
@@ -2575,9 +2488,7 @@ namespace ashes::gl4
 		const VkPhysicalDeviceSurfaceInfo2KHR* pSurfaceInfo,
 		VkSurfaceCapabilities2KHR* pSurfaceCapabilities )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceSurfaceCapabilities2KHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceSurfaceCapabilities2KHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceSurfaceFormats2KHR(
@@ -2586,9 +2497,7 @@ namespace ashes::gl4
 		uint32_t* pSurfaceFormatCount,
 		VkSurfaceFormat2KHR* pSurfaceFormats )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceSurfaceFormats2KHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceSurfaceFormats2KHR" );
 	}
 
 #endif
@@ -2601,9 +2510,7 @@ namespace ashes::gl4
 		uint32_t* pPropertyCount,
 		VkDisplayProperties2KHR* pProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceDisplayProperties2KHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceDisplayProperties2KHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceDisplayPlaneProperties2KHR(
@@ -2611,9 +2518,7 @@ namespace ashes::gl4
 		uint32_t* pPropertyCount,
 		VkDisplayPlaneProperties2KHR* pProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceDisplayPlaneProperties2KHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceDisplayPlaneProperties2KHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetDisplayModeProperties2KHR(
@@ -2622,9 +2527,7 @@ namespace ashes::gl4
 		uint32_t* pPropertyCount,
 		VkDisplayModeProperties2KHR* pProperties )
 	{
-		// TODO
-		std::cerr << "vkGetDisplayModeProperties2KHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetDisplayModeProperties2KHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetDisplayPlaneCapabilities2KHR(
@@ -2632,9 +2535,7 @@ namespace ashes::gl4
 		const VkDisplayPlaneInfo2KHR* pDisplayPlaneInfo,
 		VkDisplayPlaneCapabilities2KHR* pCapabilities )
 	{
-		// TODO
-		std::cerr << "vkGetDisplayPlaneCapabilities2KHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetDisplayPlaneCapabilities2KHR" );
 	}
 
 #endif
@@ -2647,8 +2548,7 @@ namespace ashes::gl4
 		const VkImageMemoryRequirementsInfo2* pInfo,
 		VkMemoryRequirements2* pMemoryRequirements )
 	{
-		// TODO
-		std::cerr << "vkGetImageMemoryRequirements2KHR Unsupported" << std::endl;
+		reportUnsupported( device, "vkGetImageMemoryRequirements2KHR" );
 	}
 
 	void VKAPI_CALL vkGetBufferMemoryRequirements2KHR(
@@ -2656,8 +2556,7 @@ namespace ashes::gl4
 		const VkBufferMemoryRequirementsInfo2* pInfo,
 		VkMemoryRequirements2* pMemoryRequirements )
 	{
-		// TODO
-		std::cerr << "vkGetBufferMemoryRequirements2KHR Unsupported" << std::endl;
+		reportUnsupported( device, "vkGetBufferMemoryRequirements2KHR" );
 	}
 
 	void VKAPI_CALL vkGetImageSparseMemoryRequirements2KHR(
@@ -2666,8 +2565,7 @@ namespace ashes::gl4
 		uint32_t* pSparseMemoryRequirementCount,
 		VkSparseImageMemoryRequirements2* pSparseMemoryRequirements )
 	{
-		// TODO
-		std::cerr << "vkGetImageSparseMemoryRequirements2KHR Unsupported" << std::endl;
+		reportUnsupported( device, "vkGetImageSparseMemoryRequirements2KHR" );
 	}
 
 #endif
@@ -2681,9 +2579,7 @@ namespace ashes::gl4
 		const VkAllocationCallbacks* pAllocator,
 		VkSamplerYcbcrConversion* pYcbcrConversion )
 	{
-		// TODO
-		std::cerr << "vkCreateSamplerYcbcrConversionKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkCreateSamplerYcbcrConversionKHR" );
 	}
 
 	void VKAPI_CALL vkDestroySamplerYcbcrConversionKHR(
@@ -2691,8 +2587,7 @@ namespace ashes::gl4
 		VkSamplerYcbcrConversion ycbcrConversion,
 		const VkAllocationCallbacks* pAllocator )
 	{
-		// TODO
-		std::cerr << "vkDestroySamplerYcbcrConversionKHR Unsupported" << std::endl;
+		reportUnsupported( device, "vkDestroySamplerYcbcrConversionKHR" );
 	}
 
 #endif
@@ -2705,9 +2600,7 @@ namespace ashes::gl4
 		uint32_t bindInfoCount,
 		const VkBindBufferMemoryInfo* pBindInfos )
 	{
-		// TODO
-		std::cerr << "vkBindBufferMemory2KHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkBindBufferMemory2KHR" );
 	}
 
 	VkResult VKAPI_CALL vkBindImageMemory2KHR(
@@ -2715,9 +2608,7 @@ namespace ashes::gl4
 		uint32_t bindInfoCount,
 		const VkBindImageMemoryInfo* pBindInfos )
 	{
-		// TODO
-		std::cerr << "vkBindImageMemory2KHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkBindImageMemory2KHR" );
 	}
 
 #endif
@@ -2730,8 +2621,7 @@ namespace ashes::gl4
 		const VkDescriptorSetLayoutCreateInfo* pCreateInfo,
 		VkDescriptorSetLayoutSupport* pSupport )
 	{
-		// TODO
-		std::cerr << "vkGetDescriptorSetLayoutSupportKHR Unsupported" << std::endl;
+		reportUnsupported( device, "vkGetDescriptorSetLayoutSupportKHR" );
 	}
 
 #endif
@@ -2748,8 +2638,7 @@ namespace ashes::gl4
 		uint32_t maxDrawCount,
 		uint32_t stride )
 	{
-		// TODO
-		std::cerr << "vkCmdDrawIndirectCountKHR Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdDrawIndirectCountKHR" );
 	}
 
 	void VKAPI_CALL vkCmdDrawIndexedIndirectCountKHR(
@@ -2761,8 +2650,7 @@ namespace ashes::gl4
 		uint32_t maxDrawCount,
 		uint32_t stride )
 	{
-		// TODO
-		std::cerr << "vkCmdDrawIndexedIndirectCountKHR Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdDrawIndexedIndirectCountKHR" );
 	}
 
 #endif
@@ -2862,8 +2750,7 @@ namespace ashes::gl4
 		const VkDeviceSize* pOffsets,
 		const VkDeviceSize* pSizes )
 	{
-		// TODO
-		std::cerr << "vkCmdBindTransformFeedbackBuffersEXT Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdBindTransformFeedbackBuffersEXT" );
 	}
 
 	void VKAPI_CALL vkCmdBeginTransformFeedbackEXT(
@@ -2873,8 +2760,7 @@ namespace ashes::gl4
 		const VkBuffer* pCounterBuffers,
 		const VkDeviceSize* pCounterBufferOffsets )
 	{
-		// TODO
-		std::cerr << "vkCmdBeginTransformFeedbackEXT Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdBeginTransformFeedbackEXT" );
 	}
 
 	void VKAPI_CALL vkCmdEndTransformFeedbackEXT(
@@ -2884,8 +2770,7 @@ namespace ashes::gl4
 		const VkBuffer* pCounterBuffers,
 		const VkDeviceSize* pCounterBufferOffsets )
 	{
-		// TODO
-		std::cerr << "vkCmdEndTransformFeedbackEXT Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdEndTransformFeedbackEXT" );
 	}
 
 	void VKAPI_CALL vkCmdBeginQueryIndexedEXT(
@@ -2895,8 +2780,7 @@ namespace ashes::gl4
 		VkQueryControlFlags flags,
 		uint32_t index )
 	{
-		// TODO
-		std::cerr << "vkCmdBeginQueryIndexedEXT Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdBeginQueryIndexedEXT" );
 	}
 
 	void VKAPI_CALL vkCmdEndQueryIndexedEXT(
@@ -2905,8 +2789,7 @@ namespace ashes::gl4
 		uint32_t query,
 		uint32_t index )
 	{
-		// TODO
-		std::cerr << "vkCmdEndQueryIndexedEXT Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdEndQueryIndexedEXT" );
 	}
 
 	void VKAPI_CALL vkCmdDrawIndirectByteCountEXT(
@@ -2918,8 +2801,7 @@ namespace ashes::gl4
 		uint32_t counterOffset,
 		uint32_t vertexStride )
 	{
-		// TODO
-		std::cerr << "vkCmdDrawIndirectByteCountEXT Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdDrawIndirectByteCountEXT" );
 	}
 
 #endif
@@ -2936,8 +2818,7 @@ namespace ashes::gl4
 		uint32_t maxDrawCount,
 		uint32_t stride )
 	{
-		// TODO
-		std::cerr << "vkCmdDrawIndirectCountAMD Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdDrawIndirectCountAMD" );
 	}
 
 	void VKAPI_CALL vkCmdDrawIndexedIndirectCountAMD(
@@ -2949,8 +2830,7 @@ namespace ashes::gl4
 		uint32_t maxDrawCount,
 		uint32_t stride )
 	{
-		// TODO
-		std::cerr << "vkCmdDrawIndexedIndirectCountAMD Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdDrawIndexedIndirectCountAMD" );
 	}
 
 #endif
@@ -2966,9 +2846,7 @@ namespace ashes::gl4
 		size_t* pInfoSize,
 		void* pInfo )
 	{
-		// TODO
-		std::cerr << "vkGetShaderInfoAMD Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetShaderInfoAMD" );
 	}
 
 #endif
@@ -2986,9 +2864,7 @@ namespace ashes::gl4
 		VkExternalMemoryHandleTypeFlagsNV externalHandleType,
 		VkExternalImageFormatPropertiesNV* pExternalImageFormatProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceExternalImageFormatPropertiesNV Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceExternalImageFormatPropertiesNV" );
 	}
 
 #endif
@@ -3000,15 +2876,13 @@ namespace ashes::gl4
 		VkCommandBuffer commandBuffer,
 		const VkConditionalRenderingBeginInfoEXT* pConditionalRenderingBegin )
 	{
-		// TODO
-		std::cerr << "vkCmdBeginConditionalRenderingEXT Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdBeginConditionalRenderingEXT" );
 	}
 
 	void VKAPI_CALL vkCmdEndConditionalRenderingEXT(
 		VkCommandBuffer commandBuffer )
 	{
-		// TODO
-		std::cerr << "vkCmdEndConditionalRenderingEXT Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdEndConditionalRenderingEXT" );
 	}
 
 #endif
@@ -3020,16 +2894,14 @@ namespace ashes::gl4
 		VkCommandBuffer commandBuffer,
 		const VkCmdProcessCommandsInfoNVX* pProcessCommandsInfo )
 	{
-		// TODO
-		std::cerr << "vkCmdProcessCommandsNVX Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdProcessCommandsNVX" );
 	}
 
 	void VKAPI_CALL vkCmdReserveSpaceForCommandsNVX(
 		VkCommandBuffer commandBuffer,
 		const VkCmdReserveSpaceForCommandsInfoNVX* pReserveSpaceInfo )
 	{
-		// TODO
-		std::cerr << "vkCmdReserveSpaceForCommandsNVX Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdReserveSpaceForCommandsNVX" );
 	}
 
 	VkResult VKAPI_CALL vkCreateIndirectCommandsLayoutNVX(
@@ -3038,9 +2910,7 @@ namespace ashes::gl4
 		const VkAllocationCallbacks* pAllocator,
 		VkIndirectCommandsLayoutNVX* pIndirectCommandsLayout )
 	{
-		// TODO
-		std::cerr << "vkCreateIndirectCommandsLayoutNVX Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkCreateIndirectCommandsLayoutNVX" );
 	}
 
 	void VKAPI_CALL vkDestroyIndirectCommandsLayoutNVX(
@@ -3048,8 +2918,7 @@ namespace ashes::gl4
 		VkIndirectCommandsLayoutNVX indirectCommandsLayout,
 		const VkAllocationCallbacks* pAllocator )
 	{
-		// TODO
-		std::cerr << "vkDestroyIndirectCommandsLayoutNVX Unsupported" << std::endl;
+		reportUnsupported( device, "vkDestroyIndirectCommandsLayoutNVX" );
 	}
 
 	VkResult VKAPI_CALL vkCreateObjectTableNVX(
@@ -3058,9 +2927,7 @@ namespace ashes::gl4
 		const VkAllocationCallbacks* pAllocator,
 		VkObjectTableNVX* pObjectTable )
 	{
-		// TODO
-		std::cerr << "vkCreateObjectTableNVX Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkCreateObjectTableNVX" );
 	}
 
 	void VKAPI_CALL vkDestroyObjectTableNVX(
@@ -3068,8 +2935,7 @@ namespace ashes::gl4
 		VkObjectTableNVX objectTable,
 		const VkAllocationCallbacks* pAllocator )
 	{
-		// TODO
-		std::cerr << "vkDestroyObjectTableNVX Unsupported" << std::endl;
+		reportUnsupported( device, "vkDestroyObjectTableNVX" );
 	}
 
 	VkResult VKAPI_CALL vkRegisterObjectsNVX(
@@ -3079,9 +2945,7 @@ namespace ashes::gl4
 		const VkObjectTableEntryNVX* const* ppObjectTableEntries,
 		const uint32_t* pObjectIndices )
 	{
-		// TODO
-		std::cerr << "vkRegisterObjectsNVX Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkRegisterObjectsNVX" );
 	}
 
 	VkResult VKAPI_CALL vkUnregisterObjectsNVX(
@@ -3091,9 +2955,7 @@ namespace ashes::gl4
 		const VkObjectEntryTypeNVX* pObjectEntryTypes,
 		const uint32_t* pObjectIndices )
 	{
-		// TODO
-		std::cerr << "vkUnregisterObjectsNVX Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkUnregisterObjectsNVX" );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX(
@@ -3101,8 +2963,7 @@ namespace ashes::gl4
 		VkDeviceGeneratedCommandsFeaturesNVX* pFeatures,
 		VkDeviceGeneratedCommandsLimitsNVX* pLimits )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX Unsupported" << std::endl;
+		reportUnsupported( physicalDevice, "vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX" );
 	}
 
 #endif
@@ -3116,8 +2977,7 @@ namespace ashes::gl4
 		uint32_t viewportCount,
 		const VkViewportWScalingNV* pViewportWScalings )
 	{
-		// TODO
-		std::cerr << "vkCmdSetViewportWScalingNV Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdSetViewportWScalingNV" );
 	}
 
 #endif
@@ -3129,9 +2989,7 @@ namespace ashes::gl4
 		VkPhysicalDevice physicalDevice,
 		VkDisplayKHR display )
 	{
-		// TODO
-		std::cerr << "vkReleaseDisplayEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkReleaseDisplayEXT" );
 	}
 
 #endif
@@ -3144,9 +3002,7 @@ namespace ashes::gl4
 		VkSurfaceKHR surface,
 		VkSurfaceCapabilities2EXT* pSurfaceCapabilities )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceSurfaceCapabilities2EXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceSurfaceCapabilities2EXT" );
 	}
 
 #endif
@@ -3159,9 +3015,7 @@ namespace ashes::gl4
 		VkDisplayKHR display,
 		const VkDisplayPowerInfoEXT* pDisplayPowerInfo )
 	{
-		// TODO
-		std::cerr << "vkDisplayPowerControlEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkDisplayPowerControlEXT" );
 	}
 
 	VkResult VKAPI_CALL vkRegisterDeviceEventEXT(
@@ -3170,9 +3024,7 @@ namespace ashes::gl4
 		const VkAllocationCallbacks* pAllocator,
 		VkFence* pFence )
 	{
-		// TODO
-		std::cerr << "vkRegisterDeviceEventEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkRegisterDeviceEventEXT" );
 	}
 
 	VkResult VKAPI_CALL vkRegisterDisplayEventEXT(
@@ -3182,9 +3034,7 @@ namespace ashes::gl4
 		const VkAllocationCallbacks* pAllocator,
 		VkFence* pFence )
 	{
-		// TODO
-		std::cerr << "vkRegisterDisplayEventEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkRegisterDisplayEventEXT" );
 	}
 
 	VkResult VKAPI_CALL vkGetSwapchainCounterEXT(
@@ -3193,9 +3043,7 @@ namespace ashes::gl4
 		VkSurfaceCounterFlagBitsEXT counter,
 		uint64_t* pCounterValue )
 	{
-		// TODO
-		std::cerr << "vkGetSwapchainCounterEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetSwapchainCounterEXT" );
 	}
 
 #endif
@@ -3208,9 +3056,7 @@ namespace ashes::gl4
 		VkSwapchainKHR swapchain,
 		VkRefreshCycleDurationGOOGLE* pDisplayTimingProperties )
 	{
-		// TODO
-		std::cerr << "vkGetRefreshCycleDurationGOOGLE Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetRefreshCycleDurationGOOGLE" );
 	}
 
 	VkResult VKAPI_CALL vkGetPastPresentationTimingGOOGLE(
@@ -3219,9 +3065,7 @@ namespace ashes::gl4
 		uint32_t* pPresentationTimingCount,
 		VkPastPresentationTimingGOOGLE* pPresentationTimings )
 	{
-		// TODO
-		std::cerr << "vkGetPastPresentationTimingGOOGLE Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetPastPresentationTimingGOOGLE" );
 	}
 
 #endif
@@ -3235,8 +3079,7 @@ namespace ashes::gl4
 		uint32_t discardRectangleCount,
 		const VkRect2D* pDiscardRectangles )
 	{
-		// TODO
-		std::cerr << "vkCmdSetDiscardRectangleEXT Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdSetDiscardRectangleEXT" );
 	}
 
 #endif
@@ -3250,8 +3093,7 @@ namespace ashes::gl4
 		const VkSwapchainKHR* pSwapchains,
 		const VkHdrMetadataEXT* pMetadata )
 	{
-		// TODO
-		std::cerr << "vkSetHdrMetadataEXT Unsupported" << std::endl;
+		reportUnsupported( device, "vkSetHdrMetadataEXT" );
 	}
 
 #endif
@@ -3355,8 +3197,7 @@ namespace ashes::gl4
 		VkCommandBuffer commandBuffer,
 		const VkSampleLocationsInfoEXT* pSampleLocationsInfo )
 	{
-		// TODO
-		std::cerr << "vkCmdSetSampleLocationsEXT Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdSetSampleLocationsEXT" );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceMultisamplePropertiesEXT(
@@ -3364,8 +3205,7 @@ namespace ashes::gl4
 		VkSampleCountFlagBits samples,
 		VkMultisamplePropertiesEXT* pMultisampleProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceMultisamplePropertiesEXT Unsupported" << std::endl;
+		reportUnsupported( physicalDevice, "vkGetPhysicalDeviceMultisamplePropertiesEXT" );
 	}
 
 #endif
@@ -3378,9 +3218,7 @@ namespace ashes::gl4
 		VkImage image,
 		VkImageDrmFormatModifierPropertiesEXT* pProperties )
 	{
-		// TODO
-		std::cerr << "vkGetImageDrmFormatModifierPropertiesEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetImageDrmFormatModifierPropertiesEXT" );
 	}
 
 #endif
@@ -3394,9 +3232,7 @@ namespace ashes::gl4
 		const VkAllocationCallbacks* pAllocator,
 		VkValidationCacheEXT* pValidationCache )
 	{
-		// TODO
-		std::cerr << "vkCreateValidationCacheEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkCreateValidationCacheEXT" );
 	}
 
 	void VKAPI_CALL vkDestroyValidationCacheEXT(
@@ -3404,8 +3240,7 @@ namespace ashes::gl4
 		VkValidationCacheEXT validationCache,
 		const VkAllocationCallbacks* pAllocator )
 	{
-		// TODO
-		std::cerr << "vkDestroyValidationCacheEXT Unsupported" << std::endl;
+		reportUnsupported( device, "vkDestroyValidationCacheEXT" );
 	}
 
 	VkResult VKAPI_CALL vkMergeValidationCachesEXT(
@@ -3414,9 +3249,7 @@ namespace ashes::gl4
 		uint32_t srcCacheCount,
 		const VkValidationCacheEXT* pSrcCaches )
 	{
-		// TODO
-		std::cerr << "vkMergeValidationCachesEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkMergeValidationCachesEXT" );
 	}
 
 	VkResult VKAPI_CALL vkGetValidationCacheDataEXT(
@@ -3425,9 +3258,7 @@ namespace ashes::gl4
 		size_t* pDataSize,
 		void* pData )
 	{
-		// TODO
-		std::cerr << "vkGetValidationCacheDataEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetValidationCacheDataEXT" );
 	}
 
 #endif
@@ -3440,8 +3271,7 @@ namespace ashes::gl4
 		VkImageView imageView,
 		VkImageLayout imageLayout )
 	{
-		// TODO
-		std::cerr << "vkCmdBindShadingRateImageNV Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdBindShadingRateImageNV" );
 	}
 
 	void VKAPI_CALL vkCmdSetViewportShadingRatePaletteNV(
@@ -3450,8 +3280,7 @@ namespace ashes::gl4
 		uint32_t viewportCount,
 		const VkShadingRatePaletteNV* pShadingRatePalettes )
 	{
-		// TODO
-		std::cerr << "vkCmdSetViewportShadingRatePaletteNV Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdSetViewportShadingRatePaletteNV" );
 	}
 
 	void VKAPI_CALL vkCmdSetCoarseSampleOrderNV(
@@ -3460,8 +3289,7 @@ namespace ashes::gl4
 		uint32_t customSampleOrderCount,
 		const VkCoarseSampleOrderCustomNV* pCustomSampleOrders )
 	{
-		// TODO
-		std::cerr << "vkCmdSetCoarseSampleOrderNV Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdSetCoarseSampleOrderNV" );
 	}
 
 #endif
@@ -3475,9 +3303,7 @@ namespace ashes::gl4
 		const VkAllocationCallbacks* pAllocator,
 		VkAccelerationStructureNV* pAccelerationStructure )
 	{
-		// TODO
-		std::cerr << "vkCreateAccelerationStructureNV Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkCreateAccelerationStructureNV" );
 	}
 
 	void VKAPI_CALL vkDestroyAccelerationStructureNV(
@@ -3485,8 +3311,7 @@ namespace ashes::gl4
 		VkAccelerationStructureNV accelerationStructure,
 		const VkAllocationCallbacks* pAllocator )
 	{
-		// TODO
-		std::cerr << "vkDestroyAccelerationStructureNV Unsupported" << std::endl;
+		reportUnsupported( device, "vkDestroyAccelerationStructureNV" );
 	}
 
 	void VKAPI_CALL vkGetAccelerationStructureMemoryRequirementsNV(
@@ -3494,8 +3319,7 @@ namespace ashes::gl4
 		const VkAccelerationStructureMemoryRequirementsInfoNV* pInfo,
 		VkMemoryRequirements2KHR* pMemoryRequirements )
 	{
-		// TODO
-		std::cerr << "vkGetAccelerationStructureMemoryRequirementsNV Unsupported" << std::endl;
+		reportUnsupported( device, "vkGetAccelerationStructureMemoryRequirementsNV" );
 	}
 
 	VkResult VKAPI_CALL vkBindAccelerationStructureMemoryNV(
@@ -3503,9 +3327,7 @@ namespace ashes::gl4
 		uint32_t bindInfoCount,
 		const VkBindAccelerationStructureMemoryInfoNV* pBindInfos )
 	{
-		// TODO
-		std::cerr << "vkBindAccelerationStructureMemoryNV Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkBindAccelerationStructureMemoryNV" );
 	}
 
 	void VKAPI_CALL vkCmdBuildAccelerationStructureNV(
@@ -3519,8 +3341,7 @@ namespace ashes::gl4
 		VkBuffer scratch,
 		VkDeviceSize scratchOffset )
 	{
-		// TODO
-		std::cerr << "vkCmdBuildAccelerationStructureNV Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdBuildAccelerationStructureNV" );
 	}
 
 	void VKAPI_CALL vkCmdCopyAccelerationStructureNV(
@@ -3529,8 +3350,7 @@ namespace ashes::gl4
 		VkAccelerationStructureNV src,
 		VkCopyAccelerationStructureModeNV mode )
 	{
-		// TODO
-		std::cerr << "vkCmdCopyAccelerationStructureNV Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdCopyAccelerationStructureNV" );
 	}
 
 	void VKAPI_CALL vkCmdTraceRaysNV(
@@ -3550,8 +3370,7 @@ namespace ashes::gl4
 		uint32_t height,
 		uint32_t depth )
 	{
-		// TODO
-		std::cerr << "vkCmdTraceRaysNV Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdTraceRaysNV" );
 	}
 
 	VkResult VKAPI_CALL vkCreateRayTracingPipelinesNV(
@@ -3562,9 +3381,7 @@ namespace ashes::gl4
 		const VkAllocationCallbacks* pAllocator,
 		VkPipeline* pPipelines )
 	{
-		// TODO
-		std::cerr << "vkCreateRayTracingPipelinesNV Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkCreateRayTracingPipelinesNV" );
 	}
 
 	VkResult VKAPI_CALL vkGetRayTracingShaderGroupHandlesNV(
@@ -3575,9 +3392,7 @@ namespace ashes::gl4
 		size_t dataSize,
 		void* pData )
 	{
-		// TODO
-		std::cerr << "vkGetRayTracingShaderGroupHandlesNV Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetRayTracingShaderGroupHandlesNV" );
 	}
 
 	VkResult VKAPI_CALL vkGetAccelerationStructureHandleNV(
@@ -3586,9 +3401,7 @@ namespace ashes::gl4
 		size_t dataSize,
 		void* pData )
 	{
-		// TODO
-		std::cerr << "vkGetAccelerationStructureHandleNV Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetAccelerationStructureHandleNV" );
 	}
 
 	void VKAPI_CALL vkCmdWriteAccelerationStructuresPropertiesNV(
@@ -3599,8 +3412,7 @@ namespace ashes::gl4
 		VkQueryPool queryPool,
 		uint32_t firstQuery )
 	{
-		// TODO
-		std::cerr << "vkCmdWriteAccelerationStructuresPropertiesNV Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdWriteAccelerationStructuresPropertiesNV" );
 	}
 
 	VkResult VKAPI_CALL vkCompileDeferredNV(
@@ -3608,9 +3420,7 @@ namespace ashes::gl4
 		VkPipeline pipeline,
 		uint32_t shader )
 	{
-		// TODO
-		std::cerr << "vkCompileDeferredNV Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkCompileDeferredNV" );
 	}
 
 #endif
@@ -3624,9 +3434,7 @@ namespace ashes::gl4
 		const void* pHostPointer,
 		VkMemoryHostPointerPropertiesEXT* pMemoryHostPointerProperties )
 	{
-		// TODO
-		std::cerr << "vkGetMemoryHostPointerPropertiesEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetMemoryHostPointerPropertiesEXT" );
 	}
 
 #endif
@@ -3641,8 +3449,7 @@ namespace ashes::gl4
 		VkDeviceSize dstOffset,
 		uint32_t marker )
 	{
-		// TODO
-		std::cerr << "vkCmdWriteBufferMarkerAMD Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdWriteBufferMarkerAMD" );
 	}
 
 #endif
@@ -3655,9 +3462,7 @@ namespace ashes::gl4
 		uint32_t* pTimeDomainCount,
 		VkTimeDomainEXT* pTimeDomains )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceCalibrateableTimeDomainsEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceCalibrateableTimeDomainsEXT" );
 	}
 
 	VkResult VKAPI_CALL vkGetCalibratedTimestampsEXT(
@@ -3667,9 +3472,7 @@ namespace ashes::gl4
 		uint64_t* pTimestamps,
 		uint64_t* pMaxDeviation )
 	{
-		// TODO
-		std::cerr << "vkGetCalibratedTimestampsEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetCalibratedTimestampsEXT" );
 	}
 
 #endif
@@ -3682,8 +3485,7 @@ namespace ashes::gl4
 		uint32_t taskCount,
 		uint32_t firstTask )
 	{
-		// TODO
-		std::cerr << "vkCmdDrawMeshTasksNV Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdDrawMeshTasksNV" );
 	}
 
 	void VKAPI_CALL vkCmdDrawMeshTasksIndirectNV(
@@ -3693,8 +3495,7 @@ namespace ashes::gl4
 		uint32_t drawCount,
 		uint32_t stride )
 	{
-		// TODO
-		std::cerr << "vkCmdDrawMeshTasksIndirectNV Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdDrawMeshTasksIndirectNV" );
 	}
 
 	void VKAPI_CALL vkCmdDrawMeshTasksIndirectCountNV(
@@ -3706,8 +3507,7 @@ namespace ashes::gl4
 		uint32_t maxDrawCount,
 		uint32_t stride )
 	{
-		// TODO
-		std::cerr << "vkCmdDrawMeshTasksIndirectCountNV Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdDrawMeshTasksIndirectCountNV" );
 	}
 
 #endif
@@ -3721,8 +3521,7 @@ namespace ashes::gl4
 		uint32_t exclusiveScissorCount,
 		const VkRect2D* pExclusiveScissors )
 	{
-		// TODO
-		std::cerr << "vkCmdSetExclusiveScissorNV Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdSetExclusiveScissorNV" );
 	}
 
 #endif
@@ -3734,8 +3533,7 @@ namespace ashes::gl4
 		VkCommandBuffer commandBuffer,
 		const void* pCheckpointMarker )
 	{
-		// TODO
-		std::cerr << "vkCmdSetCheckpointNV Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdSetCheckpointNV" );
 	}
 
 	void VKAPI_CALL vkGetQueueCheckpointDataNV(
@@ -3743,8 +3541,7 @@ namespace ashes::gl4
 		uint32_t* pCheckpointDataCount,
 		VkCheckpointDataNV* pCheckpointData )
 	{
-		// TODO
-		std::cerr << "vkGetQueueCheckpointDataNV Unsupported" << std::endl;
+		reportUnsupported( queue, "vkGetQueueCheckpointDataNV" );
 	}
 
 #endif
@@ -3756,9 +3553,7 @@ namespace ashes::gl4
 		VkDevice device,
 		const VkBufferDeviceAddressInfoEXT* pInfo )
 	{
-		// TODO
-		std::cerr << "vkGetBufferDeviceAddressEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetBufferDeviceAddressEXT" );
 	}
 
 #endif
@@ -3771,9 +3566,7 @@ namespace ashes::gl4
 		uint32_t* pPropertyCount,
 		VkCooperativeMatrixPropertiesNV* pProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceCooperativeMatrixPropertiesNV Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceCooperativeMatrixPropertiesNV" );
 	}
 
 #endif
@@ -3880,7 +3673,7 @@ namespace ashes::gl4
 #pragma endregion
 #pragma region VK_KHR_xcb_surface
 #ifdef VK_KHR_xcb_surface
-#	ifdef VK_USE_PLATFORM_XCB_KHR
+#	ifdef __linux__
 
 	VkResult VKAPI_CALL vkCreateXcbSurfaceKHR(
 		VkInstance instance,
@@ -3909,8 +3702,7 @@ namespace ashes::gl4
 #pragma endregion
 #pragma region VK_KHR_xlib_surface
 #ifdef VK_KHR_xlib_surface
-#	ifdef VK_USE_PLATFORM_XLIB_KHR
-
+#	if __linux__
 	VkResult VKAPI_CALL vkCreateXlibSurfaceKHR(
 		VkInstance instance,
 		const VkXlibSurfaceCreateInfoKHR* pCreateInfo,
@@ -3966,7 +3758,7 @@ namespace ashes::gl4
 #pragma endregion
 #pragma region VK_KHR_win32_surface
 #ifdef VK_KHR_win32_surface
-#	ifdef VK_USE_PLATFORM_WIN32_KHR
+#	ifdef _WIN32
 
 	VkResult VKAPI_CALL vkCreateWin32SurfaceKHR(
 		VkInstance instance,
@@ -4000,9 +3792,7 @@ namespace ashes::gl4
 		Display* dpy,
 		VkDisplayKHR display )
 	{
-		// TODO
-		std::cerr << "vkAcquireXlibDisplayEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkAcquireXlibDisplayEXT" );
 	}
 
 	VkResult VKAPI_CALL vkGetRandROutputDisplayEXT(
@@ -4011,9 +3801,7 @@ namespace ashes::gl4
 		RROutput rrOutput,
 		VkDisplayKHR* pDisplay )
 	{
-		// TODO
-		std::cerr << "vkGetRandROutputDisplayEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetRandROutputDisplayEXT" );
 	}
 
 #	endif
@@ -4029,13 +3817,12 @@ namespace ashes::gl4
 		{
 #if VK_KHR_surface
 			VkExtensionProperties{ VK_KHR_SURFACE_EXTENSION_NAME, makeVersion( 1, 0, 0 ) },
-			[]()
-			{
-				VkExtensionProperties result;
-				result.specVersion = makeVersion( 1, 0, 0 );
-				strncpy( result.extensionName, VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME, VK_MAX_EXTENSION_NAME_SIZE );
-				return result;
-			}(),
+#	if _WIN32
+			VkExtensionProperties{ VK_KHR_WIN32_SURFACE_EXTENSION_NAME, VK_KHR_WIN32_SURFACE_SPEC_VERSION },
+#	elif __linux__
+			VkExtensionProperties{ VK_KHR_XLIB_SURFACE_EXTENSION_NAME, VK_KHR_XLIB_SURFACE_SPEC_VERSION },
+			VkExtensionProperties{ VK_KHR_XCB_SURFACE_EXTENSION_NAME, VK_KHR_XCB_SURFACE_SPEC_VERSION },
+#	endif
 #endif
 #if VK_EXT_debug_report
 			VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_REPORT_SPEC_VERSION, 0, 0 ) },
@@ -4095,18 +3882,19 @@ namespace ashes::gl4
 
 			if ( result != VK_SUCCESS )
 			{
-				RenderWindow window;
-				ExtensionsHandler extensions;
 				bool supported = false;
+				gl::ExtensionsHandler extensions;
 
 				try
 				{
-					extensions.initialise();
-					supported = extensions.getMajor() > 4
-						|| ( extensions.getMajor() == 4 && extensions.getMinor() >= 2 );
+					gl::RenderWindow::create( MinMajor, MinMinor );
+					extensions.initialise( MinMajor, MinMinor, MaxMajor, MaxMinor );
+					supported = extensions.getMajor() > MinMajor
+						|| ( extensions.getMajor() == MinMajor && extensions.getMinor() >= MinMinor );
 				}
 				catch ( std::exception & exc )
 				{
+					supported = VK_FALSE;
 					std::cerr << exc.what() << std::endl;
 				}
 

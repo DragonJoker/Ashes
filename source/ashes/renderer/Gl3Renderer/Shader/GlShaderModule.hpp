@@ -17,6 +17,7 @@ namespace ashes::gl3
 
 		GLuint compile( VkPipelineShaderStageCreateInfo const & state
 			, VkPipelineLayout pipelineLayout
+			, VkPipelineCreateFlags createFlags
 			, bool isRtot )const;
 
 		inline ConstantsLayout const & getConstants()const

@@ -47,6 +47,11 @@ endif ()
 if ( WIN32 )
 	add_definitions( -DDESKTOP )
 	set( DESKTOP TRUE )
+elseif ( ANDROID )
+	set( DESKTOP FALSE )
+else ()
+	add_definitions( -DDESKTOP )
+	set( DESKTOP TRUE )
 endif ()
 
 macro( add_forced_include _FILE )
@@ -114,6 +119,14 @@ else ()
 	set( BinLibraries
 		dl
 	)
+endif ()
+
+if ( WIN32 )
+	set( TARGET_DEFINITIONS VK_USE_PLATFORM_WIN32_KHR=1 )
+elseif ( ANDROID )
+	set( TARGET_DEFINITIONS VK_USE_PLATFORM_ANDROID_KHR=1 )
+else ()
+	set( TARGET_DEFINITIONS VK_USE_PLATFORM_XLIB_KHR=1 )
 endif ()
 
 add_subdirectory( source )

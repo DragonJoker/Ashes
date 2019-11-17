@@ -56,7 +56,7 @@ namespace ashes::gl4
 	{
 		glLogCommand( "ClearDepthStencilCommand" );
 
-		if ( get( get( device )->getInstance() )->getContext().hasClearTexImage() )
+		if ( get( get( device )->getInstance() )->hasClearTexImage() )
 		{
 			auto internal = getInternalFormat( get( image )->getFormat() );
 			auto format = getFormat( internal );

@@ -9,20 +9,15 @@ See LICENSE file in root folder.
 #include <cstdint>
 #include <string>
 
-#if ASHES_WIN32
+#if defined( _WIN32 )
 #	define GLAPIENTRY __stdcall
 #	ifndef NOMINMAX
 #		define NOMINMAX
 #	endif
 #	include <Windows.h>
 #	undef MemoryBarrier
-#else
+#elif defined( __linux__ )
 #	define GLAPIENTRY
-#   if ASHES_XLIB
-        typedef struct _XDisplay Display;
-        typedef unsigned long XID;
-        typedef XID GLXDrawable;
-#   endif
 #endif
 
 #include <cstddef>
@@ -153,24 +148,6 @@ namespace ashes::gl3
 
 namespace ashes::gl3
 {
-#if ASHES_WIN32
-	using PFN_wglCreateContext = HGLRC ( GLAPIENTRY * )( HDC );
-	using PFN_wglDeleteContext = BOOL ( GLAPIENTRY * )( HGLRC );
-	using PFN_wglMakeCurrent = BOOL ( GLAPIENTRY * )( HDC, HGLRC );
-	using PFN_wglSwapIntervalEXT = BOOL( GLAPIENTRY * )( int interval );
-
-	enum ContextParameter
-	{
-		WGL_CONTEXT_MAJOR_VERSION_ARB = 0x2091,
-		WGL_CONTEXT_MINOR_VERSION_ARB = 0x2092,
-		WGL_CONTEXT_FLAGS_ARB = 0x2094,
-		WGL_CONTEXT_PROFILE_MASK_ARB = 0x9126,
-	};
-#elif ASHES_XLIB
-	using PFN_glXSwapIntervalEXT = void( GLAPIENTRY * )( Display * dpy, GLXDrawable drawable, int interval );
-#else
-#endif
-
 	using PFNGLDEBUGPROC = void ( GLAPIENTRY * )( uint32_t, uint32_t, uint32_t, uint32_t, int, const char *, void * );
 	using PFNGLDEBUGAMDPROC = void ( GLAPIENTRY * )( uint32_t, uint32_t, uint32_t, int, const char *, void * );
 
@@ -247,6 +224,7 @@ namespace ashes::gl3
 	using PFN_glFinish = void ( GLAPIENTRY * )();
 	using PFN_glFlush = void ( GLAPIENTRY * )();
 	using PFN_glFlushMappedBufferRange = void ( GLAPIENTRY * )( GlBufferTarget target, GLintptr offset, GLsizeiptr length );
+	using PFN_glFramebufferTexture = void ( GLAPIENTRY * )( GLenum target, GLenum attachment, GLuint texture, GLint level );
 	using PFN_glFramebufferTexture1D = void ( GLAPIENTRY * )( GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level );
 	using PFN_glFramebufferTexture2D = void ( GLAPIENTRY * )( GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level );
 	using PFN_glFramebufferTexture3D = void ( GLAPIENTRY * )( GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level, GLint layer );
@@ -276,6 +254,7 @@ namespace ashes::gl3
 	using PFN_glGetShaderInfoLog = void ( GLAPIENTRY * )( GLuint shader, GLsizei bufSize, GLsizei* length, GLchar* infoLog );
 	using PFN_glGetShaderiv = void ( GLAPIENTRY * )( GLuint shader, GLenum pname, GLint* param );
 	using PFN_glGetString = const GLubyte *( GLAPIENTRY * )( GLenum name ); 
+	using PFN_glGetStringi = const GLubyte *( GLAPIENTRY * )( GLenum name, GLuint index );
 	using PFN_glGetTexImage = void ( GLAPIENTRY * )( GLenum target, GLint level, GLenum format, GLenum type, void *pixels );
 	using PFN_glGetTexLevelParameterfv = void ( GLAPIENTRY * )( GLenum target, GLint level, GLenum pname, GLfloat * params );
 	using PFN_glGetTexLevelParameteriv = void ( GLAPIENTRY * )( GLenum target, GLint level, GLenum pname, GLint * params );

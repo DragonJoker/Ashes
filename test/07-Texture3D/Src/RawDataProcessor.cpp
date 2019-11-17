@@ -17,7 +17,8 @@ namespace vkapp
 
 		// Holds the luminance buffer
 		data.resize( size.width * size.height * size.depth );
-		fread( data.data(), 1u, data.size(), file );
+		size_t read = fread( data.data(), 1u, data.size(), file );
+		assert( read == data.size() );
 		fclose( file );
 	}
 }

@@ -16,7 +16,7 @@
 //			, VkBuffer src
 //			, VkImage dst )const = 0;
 //
-//#ifdef VK_USE_PLATFORM_WIN32_KHR
+//#ifdef _WIN32
 //		virtual bool onCheckHResultCommand( HRESULT hresult
 //			, std::string message )const = 0;
 //#endif

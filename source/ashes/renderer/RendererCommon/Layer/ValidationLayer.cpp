@@ -241,7 +241,7 @@
 //		return false;
 //	}
 //
-//#ifdef VK_USE_PLATFORM_WIN32_KHR
+//#ifdef _WIN32
 //	bool DebugLayer::onCheckHResultCommand( HRESULT hresult
 //		, std::string message )const
 //	{

@@ -104,6 +104,7 @@ namespace ashes::gl3
 			, CmdList & list )
 		{
 			auto target = convert( get( view )->getType()
+				, get( get( view )->getImage() )->getSamples()
 				, get( get( view )->getImage() )->getArrayLayers() );
 			list.push_back( makeCmd< OpType::eBindTexture >( target
 				, get( get( view )->getImage() )->getInternal() ) );
