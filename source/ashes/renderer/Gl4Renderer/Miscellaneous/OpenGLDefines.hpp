@@ -9,20 +9,15 @@ See LICENSE file in root folder.
 #include <cstdint>
 #include <string>
 
-#if defined( VK_USE_PLATFORM_WIN32_KHR )
+#if defined( _WIN32 )
 #	define GLAPIENTRY __stdcall
 #	ifndef NOMINMAX
 #		define NOMINMAX
 #	endif
 #	include <Windows.h>
 #	undef MemoryBarrier
-#else
+#elif defined( __linux__ )
 #	define GLAPIENTRY
-#   if defined( VK_USE_PLATFORM_XLIB_KHR )
-        typedef struct _XDisplay Display;
-        typedef unsigned long XID;
-        typedef XID GLXDrawable;
-#   endif
 #endif
 
 #include <cstddef>
@@ -153,24 +148,6 @@ namespace ashes::gl4
 
 namespace ashes::gl4
 {
-#if defined( VK_USE_PLATFORM_WIN32_KHR )
-	using PFN_wglCreateContext = HGLRC ( GLAPIENTRY * )( HDC );
-	using PFN_wglDeleteContext = BOOL ( GLAPIENTRY * )( HGLRC );
-	using PFN_wglMakeCurrent = BOOL ( GLAPIENTRY * )( HDC, HGLRC );
-	using PFN_wglSwapIntervalEXT = BOOL( GLAPIENTRY * )( int interval );
-
-	enum ContextParameter
-	{
-		WGL_CONTEXT_MAJOR_VERSION_ARB = 0x2091,
-		WGL_CONTEXT_MINOR_VERSION_ARB = 0x2092,
-		WGL_CONTEXT_FLAGS_ARB = 0x2094,
-		WGL_CONTEXT_PROFILE_MASK_ARB = 0x9126,
-	};
-#elif defined( VK_USE_PLATFORM_XLIB_KHR )
-	using PFN_glXSwapIntervalEXT = void( GLAPIENTRY * )( Display * dpy, GLXDrawable drawable, int interval );
-#else
-#endif
-
 	using PFNGLDEBUGPROC = void ( GLAPIENTRY * )( uint32_t, uint32_t, uint32_t, uint32_t, int, const char *, void * );
 	using PFNGLDEBUGAMDPROC = void ( GLAPIENTRY * )( uint32_t, uint32_t, uint32_t, int, const char *, void * );
 

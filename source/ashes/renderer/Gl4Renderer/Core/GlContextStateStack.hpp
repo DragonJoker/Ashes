@@ -3,7 +3,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "GlContextState.hpp"
+#include "renderer/Gl4Renderer/GlRendererPrerequisites.hpp"
 
 #include <cassert>
 

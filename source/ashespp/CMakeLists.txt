@@ -48,6 +48,7 @@ target_compile_features( ${PROJECT_NAME} PUBLIC
 )
 target_compile_definitions( ${PROJECT_NAME} PUBLIC
 	${TARGET_CXX_DEFINITIONS}
+	${TARGET_DEFINITIONS}
 )
 target_link_libraries( ${PROJECT_NAME} PUBLIC
 	common

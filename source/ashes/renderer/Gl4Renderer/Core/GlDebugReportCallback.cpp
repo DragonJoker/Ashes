@@ -6,15 +6,6 @@ See LICENSE file in root folder.
 
 #include "renderer/Gl4Renderer/Core/GlInstance.hpp"
 
-#if defined( VK_USE_PLATFORM_WIN32_KHR )
-#	ifndef NOMINMAX
-#		define NOMINMAX
-#	endif
-#	include <Windows.h>
-#elif defined( VK_USE_PLATFORM_XLIB_KHR )
-#	include <X11/Xlib.h>
-#endif
-
 #include "ashesgl4_api.hpp"
 
 namespace ashes::gl4

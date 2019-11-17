@@ -6,17 +6,6 @@ See LICENSE file in root folder.
 
 #include "renderer/Gl3Renderer/Core/GlInstance.hpp"
 
-#if VK_USE_PLATFORM_WIN32_KHR
-#	ifndef NOMINMAX
-#		define NOMINMAX
-#	endif
-#	include <Windows.h>
-#	include <gl/GL.h>
-#elif VK_USE_PLATFORM_XLIB_KHR
-#	include <X11/Xlib.h>
-#	include <GL/glx.h>
-#endif
-
 #include "ashesgl3_api.hpp"
 
 namespace ashes::gl3

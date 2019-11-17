@@ -6,7 +6,9 @@
 */
 #pragma once
 
-#include "renderer/Gl4Renderer/Core/GlExtensionsHandler.hpp"
+#include "renderer/Gl4Renderer/GlRendererPrerequisites.hpp"
+
+#include <renderer/GlRendererCommon/GlExtensionsHandler.hpp>
 
 namespace ashes::gl4
 {
@@ -18,6 +20,12 @@ namespace ashes::gl4
 		Instance( VkInstanceCreateInfo createInfo );
 		~Instance();
 
+#if _WIN32
+		ContextPtr createContext( VkWin32SurfaceCreateInfoKHR createInfo );
+#elif __linux__
+		ContextPtr createContext( VkXlibSurfaceCreateInfoKHR createInfo );
+		ContextPtr createContext( VkXcbSurfaceCreateInfoKHR createInfo );
+#endif
 		VkPhysicalDeviceArray enumeratePhysicalDevices()const;
 		std::array< float, 16 > frustum( float left
 			, float right
@@ -116,7 +124,13 @@ namespace ashes::gl4
 
 		inline Context & getContext()const
 		{
+			assert( m_context );
 			return *m_context;
+		}
+
+		inline bool hasClearTexImage()const
+		{
+			return m_features.hasClearTexImage;
 		}
 
 	private:
@@ -135,7 +149,6 @@ namespace ashes::gl4
 #endif
 		ExtensionsHandler m_extensions;
 		bool m_validationEnabled;
-		RenderWindow * m_dummyWindow;
 		ContextPtr m_context;
 	};
 }

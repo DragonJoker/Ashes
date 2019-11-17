@@ -171,13 +171,12 @@ namespace ashes::test
 		static std::vector< VkExtensionProperties > const extensions
 		{
 			VkExtensionProperties{ VK_KHR_SURFACE_EXTENSION_NAME, makeVersion( 1, 0, 0 ) },
-			[]()
-			{
-				VkExtensionProperties result;
-				result.specVersion = makeVersion( 1, 0, 0 );
-				strncpy( result.extensionName, ashes::KHR_PLATFORM_SURFACE_EXTENSION_NAME.c_str(), VK_MAX_EXTENSION_NAME_SIZE );
-				return result;
-			}(),
+#if _WIN32
+			VkExtensionProperties{ VK_KHR_WIN32_SURFACE_EXTENSION_NAME, VK_KHR_WIN32_SURFACE_SPEC_VERSION },
+#elif __linux__
+			VkExtensionProperties{ VK_KHR_XCB_SURFACE_EXTENSION_NAME, VK_KHR_XCB_SURFACE_SPEC_VERSION },
+			VkExtensionProperties{ VK_KHR_XLIB_SURFACE_EXTENSION_NAME, VK_KHR_XLIB_SURFACE_SPEC_VERSION },
+#endif
 			VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_REPORT_SPEC_VERSION, 0, 0 ) },
 			VkExtensionProperties{ VK_EXT_DEBUG_MARKER_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_MARKER_SPEC_VERSION, 0, 0 ) },
 			VkExtensionProperties{ VK_EXT_DEBUG_UTILS_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_UTILS_SPEC_VERSION, 0, 0 ) },
@@ -3863,7 +3862,7 @@ namespace ashes::test
 #pragma endregion
 #pragma region VK_KHR_xcb_surface
 #ifdef VK_KHR_xcb_surface
-#	ifdef VK_USE_PLATFORM_XCB_KHR
+#	ifdef __linux__
 
 	VkResult VKAPI_CALL vkCreateXcbSurfaceKHR(
 		VkInstance instance,
@@ -3892,7 +3891,7 @@ namespace ashes::test
 #pragma endregion
 #pragma region VK_KHR_xlib_surface
 #ifdef VK_KHR_xlib_surface
-#	ifdef VK_USE_PLATFORM_XLIB_KHR
+#	ifdef __linux__
 
 	VkResult VKAPI_CALL vkCreateXlibSurfaceKHR(
 		VkInstance instance,
@@ -3949,7 +3948,7 @@ namespace ashes::test
 #pragma endregion
 #pragma region VK_KHR_win32_surface
 #ifdef VK_KHR_win32_surface
-#	ifdef VK_USE_PLATFORM_WIN32_KHR
+#	ifdef _WIN32
 
 	VkResult VKAPI_CALL vkCreateWin32SurfaceKHR(
 		VkInstance instance,

@@ -17,7 +17,6 @@ namespace ashes::gl4
 	public:
 		Device( VkInstance instance
 			, VkPhysicalDevice gpu
-			, Context & context
 			, VkDeviceCreateInfo createInfos );
 		~Device();
 		VkPhysicalDeviceLimits const & getLimits()const;
@@ -54,6 +53,7 @@ namespace ashes::gl4
 
 		inline ContextLock getContext()const
 		{
+			assert( m_currentContext );
 			return { *m_currentContext };
 		}
 

@@ -228,6 +228,7 @@ namespace vkapp
 			doCreateFrameBuffer();
 			doPrepareOffscreenFrame();
 			doCreateMainDescriptorSet();
+			doCreateMainPipeline();
 			doPrepareMainFrames();
 		} );
 	}

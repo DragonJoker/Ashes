@@ -1,6 +1,10 @@
-#include "renderer/Gl4Renderer/Core/GlContextState.hpp"
+/*
+This file belongs to Ashes.
+See LICENSE file in root folder
+*/
+#include "GlContextState.hpp"
 
-namespace ashes::gl4
+namespace ashes::gl
 {
 	ContextState::ContextState( ContextState const & rhs )
 		: cbStateAttachments{ rhs.cbStateAttachments }

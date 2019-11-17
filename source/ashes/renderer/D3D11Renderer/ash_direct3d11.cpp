@@ -3668,7 +3668,7 @@ namespace ashes::d3d11
 #pragma endregion
 #pragma region VK_KHR_xcb_surface
 #ifdef VK_KHR_xcb_surface
-#	ifdef VK_USE_PLATFORM_XCB_KHR
+#	ifdef __linux__
 
 	VkResult VKAPI_CALL vkCreateXcbSurfaceKHR(
 		VkInstance instance,
@@ -3697,7 +3697,7 @@ namespace ashes::d3d11
 #pragma endregion
 #pragma region VK_KHR_xlib_surface
 #ifdef VK_KHR_xlib_surface
-#	ifdef VK_USE_PLATFORM_XLIB_KHR
+#	ifdef __linux__
 
 	VkResult VKAPI_CALL vkCreateXlibSurfaceKHR(
 		VkInstance instance,
@@ -3754,7 +3754,7 @@ namespace ashes::d3d11
 #pragma endregion
 #pragma region VK_KHR_win32_surface
 #ifdef VK_KHR_win32_surface
-#	ifdef VK_USE_PLATFORM_WIN32_KHR
+#	ifdef _WIN32
 
 	VkResult VKAPI_CALL vkCreateWin32SurfaceKHR(
 		VkInstance instance,

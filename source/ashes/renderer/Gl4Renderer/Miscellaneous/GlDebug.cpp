@@ -12,8 +12,6 @@
 #include <sstream>
 #include <map>
 
-#include <GL/gl.h>
-
 namespace ashes::gl4
 {
 	std::string getErrorName( uint32_t code, uint32_t category )
@@ -59,7 +57,7 @@ namespace ashes::gl4
 		, std::string const & text )
 	{
 		bool result = true;
-		uint32_t errorCode = glGetError();
+		uint32_t errorCode = context->m_glGetError();
 
 		if ( errorCode )
 		{
@@ -115,7 +113,7 @@ namespace ashes::gl4
 			stream << "OpenGL Error, on function: " << text;
 			stream << ", ID: 0x" << std::hex << errorCode << " (" << getErrorName( errorCode, GL_DEBUG_TYPE_ERROR ) << ")";
 			logStream( stream );
-			errorCode = glGetError();
+			errorCode = context->m_glGetError();
 			result = false;
 		}
 
@@ -125,7 +123,7 @@ namespace ashes::gl4
 	bool glCheckError( std::string const & text )
 	{
 		bool result = true;
-		uint32_t errorCode = glGetError();
+		uint32_t errorCode = getError();
 
 		if ( errorCode )
 		{
@@ -134,7 +132,7 @@ namespace ashes::gl4
 			stream << "OpenGL Error, on function: " << text;
 			stream << ", ID: 0x" << std::hex << errorCode << " (" << getErrorName( errorCode, GL_DEBUG_TYPE_ERROR ) << ")";
 			logStream( stream );
-			errorCode = glGetError();
+			errorCode = getError();
 			result = false;
 		}
 

@@ -37,7 +37,7 @@
 //			, VkBuffer src
 //			, VkImage dst )const override;
 //
-//#ifdef VK_USE_PLATFORM_WIN32_KHR
+//#ifdef _WIN32
 //		bool onCheckHResultCommand( HRESULT hresult
 //			, std::string message )const override;
 //#endif

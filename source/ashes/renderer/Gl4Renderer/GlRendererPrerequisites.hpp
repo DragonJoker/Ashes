@@ -15,6 +15,8 @@
 #include <renderer/RendererCommon/AshesRendererPrerequisites.hpp>
 #include <renderer/RendererCommon/Helper/ConstantFormat.hpp>
 
+#include <renderer/GlRendererCommon/GlContextState.hpp>
+
 #include <common/Format.hpp>
 
 #include <cassert>
@@ -36,26 +38,10 @@
 
 namespace ashes::gl4
 {
-	PFN_vkVoidFunction getFunction( char const * const name );
-
-	template< typename FuncT >
-	inline bool getFunction( char const * const name, FuncT & function )
-	{
-		function = FuncT( getFunction( name ) );
-		return function != nullptr;
-	}
-
-	template< typename FuncT >
-	inline bool getFunction( std::string const & name, FuncT & function )
-	{
-		function = FuncT( getFunction( name.c_str() ) );
-		return function != nullptr;
-	}
-
-	inline void * getBufferOffset( intptr_t value )
-	{
-		return reinterpret_cast< void * >( reinterpret_cast< uint8_t * >( 0u ) + value );
-	}
+	using gl::ContextState;
+	using gl::ExtensionsHandler;
+	using gl::getFunction;
+	using gl::getBufferOffset;
 
 #if VK_EXT_debug_utils
 
@@ -142,9 +128,7 @@ namespace ashes::gl4
 
 	class Context;
 	class ContextLock;
-	struct ContextState;
 	using ContextPtr = std::unique_ptr< Context >;
-	using ContextStateArray = std::vector< ContextState >;
 
 	using CommandPtr = std::unique_ptr< CommandBase >;
 	using CommandArray = std::vector< CommandPtr >;

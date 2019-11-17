@@ -9,12 +9,11 @@ See LICENSE file in root folder.
 
 #include "ashesgl4_api.hpp"
 
-#if defined( VK_USE_PLATFORM_XLIB_KHR )
+#if defined( __linux__ )
 #	include <X11/Xlib.h>
-#	include <GL/glx.h>
+#elif defined( _WIN32 )
+#	include <gl/GL.h>
 #endif
-
-#include <GL/gl.h>
 
 #include <algorithm>
 #include <cstring>
@@ -29,262 +28,272 @@ namespace ashes::gl4
 {
 	namespace
 	{
-#define GL_MAX_3D_TEXTURE_SIZE 0x8073
-#define GL_MAX_ARRAY_TEXTURE_LAYERS 0x88FF
-#define GL_MAX_CLIP_DISTANCES 0x0D32
-#define GL_MAX_COLOR_ATTACHMENTS 0x8CDF
-#define GL_MAX_COLOR_TEXTURE_SAMPLES 0x910E
-#define GL_MAX_COMBINED_ATOMIC_COUNTERS 0x92D7
-#define GL_MAX_COMBINED_CLIP_AND_CULL_DISTANCES 0x82FA
-#define GL_MAX_COMBINED_COMPUTE_UNIFORM_COMPONENTS 0x8266
-#define GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS 0x8A33
-#define GL_MAX_COMBINED_IMAGE_UNIFORMS 0x90CF
-#define GL_MAX_COMBINED_SHADER_OUTPUT_RESOURCES 0x8F39
-#define GL_MAX_COMBINED_SHADER_STORAGE_BLOCKS 0x90DC
-#define GL_MAX_COMBINED_TESS_CONTROL_UNIFORM_COMPONENTS 0x8E1E
-#define GL_MAX_COMBINED_TESS_EVALUATION_UNIFORM_COMPONENTS 0x8E1F
-#define GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS 0x8B4D
-#define GL_MAX_COMBINED_UNIFORM_BLOCKS 0x8A2E
-#define GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS 0x8A31
-#define GL_MAX_COMPUTE_ATOMIC_COUNTER_BUFFERS 0x8264
-#define GL_MAX_COMPUTE_ATOMIC_COUNTERS 0x8265
-#define GL_MAX_COMPUTE_FIXED_GROUP_INVOCATIONS 0x90EB
-#define GL_MAX_COMPUTE_FIXED_GROUP_SIZE 0x91BF
-#define GL_MAX_COMPUTE_IMAGE_UNIFORMS 0x91BD
-#define GL_MAX_COMPUTE_SHADER_STORAGE_BLOCKS 0x90DB
-#define GL_MAX_COMPUTE_SHARED_MEMORY_SIZE 0x8262
-#define GL_MAX_COMPUTE_TEXTURE_IMAGE_UNITS 0x91BC
-#define GL_MAX_COMPUTE_UNIFORM_BLOCKS 0x91BB
-#define GL_MAX_COMPUTE_UNIFORM_COMPONENTS 0x8263
-#define GL_MAX_COMPUTE_VARIABLE_GROUP_INVOCATIONS 0x9344
-#define GL_MAX_COMPUTE_VARIABLE_GROUP_SIZE 0x9345
-#define GL_MAX_COMPUTE_WORK_GROUP_COUNT 0x91BE
-#define GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS 0x90EB
-#define GL_MAX_COMPUTE_WORK_GROUP_SIZE 0x91BF
-#define GL_MAX_CONVOLUTION_HEIGHT 0x801B
-#define GL_MAX_CONVOLUTION_WIDTH 0x801A
-#define GL_MAX_CUBE_MAP_TEXTURE_SIZE 0x851C
-#define GL_MAX_CULL_DISTANCES 0x82F9
-#define GL_MAX_DEPTH_TEXTURE_SAMPLES 0x910F
-#define GL_MAX_DRAW_BUFFERS 0x8824
-#define GL_MAX_DUAL_SOURCE_DRAW_BUFFERS 0x88FC
-#define GL_MAX_ELEMENTS_INDICES 0x80E9
-#define GL_MAX_ELEMENTS_VERTICES 0x80E8
-#define GL_MAX_FRAGMENT_ATOMIC_COUNTERS 0x92D6
-#define GL_MAX_FRAGMENT_IMAGE_UNIFORMS 0x90CE
-#define GL_MAX_FRAGMENT_INPUT_COMPONENTS 0x9125
-#define GL_MAX_FRAGMENT_INTERPOLATION_OFFSET 0x8E5C
-#define GL_MAX_FRAGMENT_SHADER_STORAGE_BLOCKS 0x90DA
-#define GL_MAX_FRAGMENT_UNIFORM_BLOCKS 0x8A2D
-#define GL_MAX_FRAGMENT_UNIFORM_COMPONENTS 0x8B49
-#define GL_MAX_FRAMEBUFFER_HEIGHT 0x9316
-#define GL_MAX_FRAMEBUFFER_LAYERS 0x9317
-#define GL_MAX_FRAMEBUFFER_SAMPLES 0x9318
-#define GL_MAX_FRAMEBUFFER_WIDTH 0x9315
-#define GL_MAX_GEOMETRY_ATOMIC_COUNTERS 0x92D5
-#define GL_MAX_GEOMETRY_IMAGE_UNIFORMS 0x90CD
-#define GL_MAX_GEOMETRY_INPUT_COMPONENTS 0x9123
-#define GL_MAX_GEOMETRY_OUTPUT_COMPONENTS 0x9124
-#define GL_MAX_GEOMETRY_OUTPUT_VERTICES 0x8DE0
-#define GL_MAX_GEOMETRY_SHADER_INVOCATIONS 0x8E5A
-#define GL_MAX_GEOMETRY_SHADER_STORAGE_BLOCKS 0x90D7
-#define GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS 0x8C29
-#define GL_MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS 0x8DE1
-#define GL_MAX_GEOMETRY_UNIFORM_BLOCKS 0x8A2C
-#define GL_MAX_GEOMETRY_UNIFORM_COMPONENTS 0x8DDF
-#define GL_MAX_GEOMETRY_VARYING_COMPONENTS 0x8DDD
-#define GL_MAX_IMAGE_SAMPLES 0x906D
-#define GL_MAX_IMAGE_UNITS 0x8F38
-#define GL_MAX_INTEGER_SAMPLES 0x9110
-#define GL_MAX_PATCH_VERTICES 0x8E7D
-#define GL_MAX_PROGRAM_ALU_INSTRUCTIONS 0x880B
-#define GL_MAX_PROGRAM_NATIVE_ALU_INSTRUCTIONS 0x880E
-#define GL_MAX_PROGRAM_NATIVE_TEX_INDIRECTIONS 0x8810
-#define GL_MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS 0x880F
-#define GL_MAX_PROGRAM_TEX_INDIRECTIONS 0x880D
-#define GL_MAX_PROGRAM_TEX_INSTRUCTIONS 0x880C
-#define GL_MAX_PROGRAM_TEXEL_OFFSET 0x8905
-#define GL_MAX_PROGRAM_TEXTURE_GATHER_COMPONENTS 0x8F9F
-#define GL_MAX_PROGRAM_TEXTURE_GATHER_OFFSET 0x8E5F
-#define GL_MAX_RECTANGLE_TEXTURE_SIZE 0x84F8
-#define GL_MAX_SAMPLE_MASK_WORDS 0x8E59
-#define GL_MAX_SAMPLES 0x8D57
-#define GL_MAX_SERVER_WAIT_TIMEOUT 0x9111
-#define GL_MAX_SHADER_STORAGE_BLOCK_SIZE 0x90DE
-#define GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS 0x90DD
-#define GL_MAX_SPARSE_3D_TEXTURE_SIZE 0x9199
-#define GL_MAX_SPARSE_ARRAY_TEXTURE_LAYERS 0x919A
-#define GL_MAX_SPARSE_TEXTURE_SIZE 0x9198
-#define GL_MAX_SUBROUTINE_UNIFORM_LOCATIONS 0x8DE8
-#define GL_MAX_SUBROUTINES 0x8DE7
-#define GL_MAX_TESS_CONTROL_ATOMIC_COUNTERS 0x92D3
-#define GL_MAX_TESS_CONTROL_IMAGE_UNIFORMS 0x90CB
-#define GL_MAX_TESS_CONTROL_INPUT_COMPONENTS 0x886C
-#define GL_MAX_TESS_CONTROL_OUTPUT_COMPONENTS 0x8E83
-#define GL_MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS 0x90D8
-#define GL_MAX_TESS_CONTROL_TEXTURE_IMAGE_UNITS 0x8E81
-#define GL_MAX_TESS_CONTROL_TOTAL_OUTPUT_COMPONENTS 0x8E85
-#define GL_MAX_TESS_CONTROL_UNIFORM_BLOCKS 0x8E89
-#define GL_MAX_TESS_CONTROL_UNIFORM_COMPONENTS 0x8E7F
-#define GL_MAX_TESS_EVALUATION_ATOMIC_COUNTERS 0x92D4
-#define GL_MAX_TESS_EVALUATION_IMAGE_UNIFORMS 0x90CC
-#define GL_MAX_TESS_EVALUATION_INPUT_COMPONENTS 0x886D
-#define GL_MAX_TESS_EVALUATION_OUTPUT_COMPONENTS 0x8E86
-#define GL_MAX_TESS_EVALUATION_SHADER_STORAGE_BLOCKS 0x90D9
-#define GL_MAX_TESS_EVALUATION_TEXTURE_IMAGE_UNITS 0x8E82
-#define GL_MAX_TESS_EVALUATION_UNIFORM_BLOCKS 0x8E8A
-#define GL_MAX_TESS_EVALUATION_UNIFORM_COMPONENTS 0x8E80
-#define GL_MAX_TESS_GEN_LEVEL 0x8E7E
-#define GL_MAX_TESS_PATCH_COMPONENTS 0x8E84
-#define GL_MAX_TEXTURE_BUFFER_SIZE 0x8C2B
-#define GL_MAX_TEXTURE_COORDS 0x8871
-#define GL_MAX_TEXTURE_IMAGE_UNITS 0x8872
-#define GL_MAX_TEXTURE_LOD_BIAS 0x84FD
-#define GL_MAX_TEXTURE_MAX_ANISOTROPY 0x84FF
-#define GL_MAX_UNIFORM_BLOCK_SIZE 0x8A30
-#define GL_MAX_UNIFORM_BUFFER_BINDINGS 0x8A2F
-#define GL_UNIFORM_BUFFER_SIZE 0x8A2A
-#define GL_MAX_UNIFORM_LOCATIONS 0x826E
-#define GL_MAX_VARYING_FLOATS 0x8B4B
-#define GL_MAX_VERTEX_ATOMIC_COUNTERS 0x92D2
-#define GL_MAX_VERTEX_ATTRIB_BINDINGS 0x82DA
-#define GL_MAX_VERTEX_ATTRIB_RELATIVE_OFFSET 0x82D9
-#define GL_MAX_VERTEX_ATTRIB_STRIDE 0x82E5
-#define GL_MAX_VERTEX_ATTRIBS 0x8869
-#define GL_MAX_VERTEX_IMAGE_UNIFORMS 0x90CA
-#define GL_MAX_VERTEX_OUTPUT_COMPONENTS 0x9122
-#define GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS 0x90D6
-#define GL_MAX_VERTEX_STREAMS 0x8E71
-#define GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS 0x8B4C
-#define GL_MAX_VERTEX_UNIFORM_BLOCKS 0x8A2B
-#define GL_MAX_VERTEX_UNIFORM_COMPONENTS 0x8B4A
-#define GL_MAX_VERTEX_UNITS 0x86A4
-#define GL_MAX_VERTEX_VARYING_COMPONENTS 0x8DDE
-#define GL_MAX_VIEWPORTS 0x825B
-#define GL_MIN_FRAGMENT_INTERPOLATION_OFFSET 0x8E5B
-#define GL_MIN_LOD_WARNING 0x919C// AMD
-#define GL_MIN_PROGRAM_TEXEL_OFFSET 0x8904
-#define GL_MIN_PROGRAM_TEXTURE_GATHER_OFFSET 0x8E5E
-#define GL_MIN_SAMPLE_SHADING_VALUE 0x8C37
-#define GL_MIN_SPARSE_LEVEL 0x919B// AMD
-#define GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT 0x8A34
+		static GLenum constexpr GL_MAX_3D_TEXTURE_SIZE = 0x8073;
+		static GLenum constexpr GL_MAX_ARRAY_TEXTURE_LAYERS = 0x88FF;
+		static GLenum constexpr GL_MAX_CLIP_DISTANCES = 0x0D32;
+		static GLenum constexpr GL_MAX_COLOR_ATTACHMENTS = 0x8CDF;
+		static GLenum constexpr GL_MAX_COLOR_TEXTURE_SAMPLES = 0x910E;
+		static GLenum constexpr GL_MAX_COMBINED_ATOMIC_COUNTERS = 0x92D7;
+		static GLenum constexpr GL_MAX_COMBINED_CLIP_AND_CULL_DISTANCES = 0x82FA;
+		static GLenum constexpr GL_MAX_COMBINED_COMPUTE_UNIFORM_COMPONENTS = 0x8266;
+		static GLenum constexpr GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS = 0x8A33;
+		static GLenum constexpr GL_MAX_COMBINED_IMAGE_UNIFORMS = 0x90CF;
+		static GLenum constexpr GL_MAX_COMBINED_SHADER_OUTPUT_RESOURCES = 0x8F39;
+		static GLenum constexpr GL_MAX_COMBINED_SHADER_STORAGE_BLOCKS = 0x90DC;
+		static GLenum constexpr GL_MAX_COMBINED_TESS_CONTROL_UNIFORM_COMPONENTS = 0x8E1E;
+		static GLenum constexpr GL_MAX_COMBINED_TESS_EVALUATION_UNIFORM_COMPONENTS = 0x8E1F;
+		static GLenum constexpr GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS = 0x8B4D;
+		static GLenum constexpr GL_MAX_COMBINED_UNIFORM_BLOCKS = 0x8A2E;
+		static GLenum constexpr GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS = 0x8A31;
+		static GLenum constexpr GL_MAX_COMPUTE_ATOMIC_COUNTER_BUFFERS = 0x8264;
+		static GLenum constexpr GL_MAX_COMPUTE_ATOMIC_COUNTERS = 0x8265;
+		static GLenum constexpr GL_MAX_COMPUTE_FIXED_GROUP_INVOCATIONS = 0x90EB;
+		static GLenum constexpr GL_MAX_COMPUTE_FIXED_GROUP_SIZE = 0x91BF;
+		static GLenum constexpr GL_MAX_COMPUTE_IMAGE_UNIFORMS = 0x91BD;
+		static GLenum constexpr GL_MAX_COMPUTE_SHADER_STORAGE_BLOCKS = 0x90DB;
+		static GLenum constexpr GL_MAX_COMPUTE_SHARED_MEMORY_SIZE = 0x8262;
+		static GLenum constexpr GL_MAX_COMPUTE_TEXTURE_IMAGE_UNITS = 0x91BC;
+		static GLenum constexpr GL_MAX_COMPUTE_UNIFORM_BLOCKS = 0x91BB;
+		static GLenum constexpr GL_MAX_COMPUTE_UNIFORM_COMPONENTS = 0x8263;
+		static GLenum constexpr GL_MAX_COMPUTE_VARIABLE_GROUP_INVOCATIONS = 0x9344;
+		static GLenum constexpr GL_MAX_COMPUTE_VARIABLE_GROUP_SIZE = 0x9345;
+		static GLenum constexpr GL_MAX_COMPUTE_WORK_GROUP_COUNT = 0x91BE;
+		static GLenum constexpr GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS = 0x90EB;
+		static GLenum constexpr GL_MAX_COMPUTE_WORK_GROUP_SIZE = 0x91BF;
+		static GLenum constexpr GL_MAX_CONVOLUTION_HEIGHT = 0x801B;
+		static GLenum constexpr GL_MAX_CONVOLUTION_WIDTH = 0x801A;
+		static GLenum constexpr GL_MAX_CUBE_MAP_TEXTURE_SIZE = 0x851C;
+		static GLenum constexpr GL_MAX_CULL_DISTANCES = 0x82F9;
+		static GLenum constexpr GL_MAX_DEPTH_TEXTURE_SAMPLES = 0x910F;
+		static GLenum constexpr GL_MAX_DRAW_BUFFERS = 0x8824;
+		static GLenum constexpr GL_MAX_DUAL_SOURCE_DRAW_BUFFERS = 0x88FC;
+		static GLenum constexpr GL_MAX_ELEMENTS_INDICES = 0x80E9;
+		static GLenum constexpr GL_MAX_ELEMENTS_VERTICES = 0x80E8;
+		static GLenum constexpr GL_MAX_FRAGMENT_ATOMIC_COUNTERS = 0x92D6;
+		static GLenum constexpr GL_MAX_FRAGMENT_IMAGE_UNIFORMS = 0x90CE;
+		static GLenum constexpr GL_MAX_FRAGMENT_INPUT_COMPONENTS = 0x9125;
+		static GLenum constexpr GL_MAX_FRAGMENT_INTERPOLATION_OFFSET = 0x8E5C;
+		static GLenum constexpr GL_MAX_FRAGMENT_SHADER_STORAGE_BLOCKS = 0x90DA;
+		static GLenum constexpr GL_MAX_FRAGMENT_UNIFORM_BLOCKS = 0x8A2D;
+		static GLenum constexpr GL_MAX_FRAGMENT_UNIFORM_COMPONENTS = 0x8B49;
+		static GLenum constexpr GL_MAX_FRAMEBUFFER_HEIGHT = 0x9316;
+		static GLenum constexpr GL_MAX_FRAMEBUFFER_LAYERS = 0x9317;
+		static GLenum constexpr GL_MAX_FRAMEBUFFER_SAMPLES = 0x9318;
+		static GLenum constexpr GL_MAX_FRAMEBUFFER_WIDTH = 0x9315;
+		static GLenum constexpr GL_MAX_GEOMETRY_ATOMIC_COUNTERS = 0x92D5;
+		static GLenum constexpr GL_MAX_GEOMETRY_IMAGE_UNIFORMS = 0x90CD;
+		static GLenum constexpr GL_MAX_GEOMETRY_INPUT_COMPONENTS = 0x9123;
+		static GLenum constexpr GL_MAX_GEOMETRY_OUTPUT_COMPONENTS = 0x9124;
+		static GLenum constexpr GL_MAX_GEOMETRY_OUTPUT_VERTICES = 0x8DE0;
+		static GLenum constexpr GL_MAX_GEOMETRY_SHADER_INVOCATIONS = 0x8E5A;
+		static GLenum constexpr GL_MAX_GEOMETRY_SHADER_STORAGE_BLOCKS = 0x90D7;
+		static GLenum constexpr GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS = 0x8C29;
+		static GLenum constexpr GL_MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS = 0x8DE1;
+		static GLenum constexpr GL_MAX_GEOMETRY_UNIFORM_BLOCKS = 0x8A2C;
+		static GLenum constexpr GL_MAX_GEOMETRY_UNIFORM_COMPONENTS = 0x8DDF;
+		static GLenum constexpr GL_MAX_GEOMETRY_VARYING_COMPONENTS = 0x8DDD;
+		static GLenum constexpr GL_MAX_IMAGE_SAMPLES = 0x906D;
+		static GLenum constexpr GL_MAX_IMAGE_UNITS = 0x8F38;
+		static GLenum constexpr GL_MAX_INTEGER_SAMPLES = 0x9110;
+		static GLenum constexpr GL_MAX_PATCH_VERTICES = 0x8E7D;
+		static GLenum constexpr GL_MAX_PROGRAM_ALU_INSTRUCTIONS = 0x880B;
+		static GLenum constexpr GL_MAX_PROGRAM_NATIVE_ALU_INSTRUCTIONS = 0x880E;
+		static GLenum constexpr GL_MAX_PROGRAM_NATIVE_TEX_INDIRECTIONS = 0x8810;
+		static GLenum constexpr GL_MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS = 0x880F;
+		static GLenum constexpr GL_MAX_PROGRAM_TEX_INDIRECTIONS = 0x880D;
+		static GLenum constexpr GL_MAX_PROGRAM_TEX_INSTRUCTIONS = 0x880C;
+		static GLenum constexpr GL_MAX_PROGRAM_TEXEL_OFFSET = 0x8905;
+		static GLenum constexpr GL_MAX_PROGRAM_TEXTURE_GATHER_COMPONENTS = 0x8F9F;
+		static GLenum constexpr GL_MAX_PROGRAM_TEXTURE_GATHER_OFFSET = 0x8E5F;
+		static GLenum constexpr GL_MAX_RECTANGLE_TEXTURE_SIZE = 0x84F8;
+		static GLenum constexpr GL_MAX_SAMPLE_MASK_WORDS = 0x8E59;
+		static GLenum constexpr GL_MAX_SAMPLES = 0x8D57;
+		static GLenum constexpr GL_MAX_SERVER_WAIT_TIMEOUT = 0x9111;
+		static GLenum constexpr GL_MAX_SHADER_STORAGE_BLOCK_SIZE = 0x90DE;
+		static GLenum constexpr GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS = 0x90DD;
+		static GLenum constexpr GL_MAX_SPARSE_3D_TEXTURE_SIZE = 0x9199;
+		static GLenum constexpr GL_MAX_SPARSE_ARRAY_TEXTURE_LAYERS = 0x919A;
+		static GLenum constexpr GL_MAX_SPARSE_TEXTURE_SIZE = 0x9198;
+		static GLenum constexpr GL_MAX_SUBROUTINE_UNIFORM_LOCATIONS = 0x8DE8;
+		static GLenum constexpr GL_MAX_SUBROUTINES = 0x8DE7;
+		static GLenum constexpr GL_MAX_TESS_CONTROL_ATOMIC_COUNTERS = 0x92D3;
+		static GLenum constexpr GL_MAX_TESS_CONTROL_IMAGE_UNIFORMS = 0x90CB;
+		static GLenum constexpr GL_MAX_TESS_CONTROL_INPUT_COMPONENTS = 0x886C;
+		static GLenum constexpr GL_MAX_TESS_CONTROL_OUTPUT_COMPONENTS = 0x8E83;
+		static GLenum constexpr GL_MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS = 0x90D8;
+		static GLenum constexpr GL_MAX_TESS_CONTROL_TEXTURE_IMAGE_UNITS = 0x8E81;
+		static GLenum constexpr GL_MAX_TESS_CONTROL_TOTAL_OUTPUT_COMPONENTS = 0x8E85;
+		static GLenum constexpr GL_MAX_TESS_CONTROL_UNIFORM_BLOCKS = 0x8E89;
+		static GLenum constexpr GL_MAX_TESS_CONTROL_UNIFORM_COMPONENTS = 0x8E7F;
+		static GLenum constexpr GL_MAX_TESS_EVALUATION_ATOMIC_COUNTERS = 0x92D4;
+		static GLenum constexpr GL_MAX_TESS_EVALUATION_IMAGE_UNIFORMS = 0x90CC;
+		static GLenum constexpr GL_MAX_TESS_EVALUATION_INPUT_COMPONENTS = 0x886D;
+		static GLenum constexpr GL_MAX_TESS_EVALUATION_OUTPUT_COMPONENTS = 0x8E86;
+		static GLenum constexpr GL_MAX_TESS_EVALUATION_SHADER_STORAGE_BLOCKS = 0x90D9;
+		static GLenum constexpr GL_MAX_TESS_EVALUATION_TEXTURE_IMAGE_UNITS = 0x8E82;
+		static GLenum constexpr GL_MAX_TESS_EVALUATION_UNIFORM_BLOCKS = 0x8E8A;
+		static GLenum constexpr GL_MAX_TESS_EVALUATION_UNIFORM_COMPONENTS = 0x8E80;
+		static GLenum constexpr GL_MAX_TESS_GEN_LEVEL = 0x8E7E;
+		static GLenum constexpr GL_MAX_TESS_PATCH_COMPONENTS = 0x8E84;
+		static GLenum constexpr GL_MAX_TEXTURE_BUFFER_SIZE = 0x8C2B;
+		static GLenum constexpr GL_MAX_TEXTURE_COORDS = 0x8871;
+		static GLenum constexpr GL_MAX_TEXTURE_IMAGE_UNITS = 0x8872;
+		static GLenum constexpr GL_MAX_TEXTURE_LOD_BIAS = 0x84FD;
+		static GLenum constexpr GL_MAX_TEXTURE_MAX_ANISOTROPY = 0x84FF;
+		static GLenum constexpr GL_MAX_UNIFORM_BLOCK_SIZE = 0x8A30;
+		static GLenum constexpr GL_MAX_UNIFORM_BUFFER_BINDINGS = 0x8A2F;
+		static GLenum constexpr GL_UNIFORM_BUFFER_SIZE = 0x8A2A;
+		static GLenum constexpr GL_MAX_UNIFORM_LOCATIONS = 0x826E;
+		static GLenum constexpr GL_MAX_VARYING_FLOATS = 0x8B4B;
+		static GLenum constexpr GL_MAX_VERTEX_ATOMIC_COUNTERS = 0x92D2;
+		static GLenum constexpr GL_MAX_VERTEX_ATTRIB_BINDINGS = 0x82DA;
+		static GLenum constexpr GL_MAX_VERTEX_ATTRIB_RELATIVE_OFFSET = 0x82D9;
+		static GLenum constexpr GL_MAX_VERTEX_ATTRIB_STRIDE = 0x82E5;
+		static GLenum constexpr GL_MAX_VERTEX_ATTRIBS = 0x8869;
+		static GLenum constexpr GL_MAX_VERTEX_IMAGE_UNIFORMS = 0x90CA;
+		static GLenum constexpr GL_MAX_VERTEX_OUTPUT_COMPONENTS = 0x9122;
+		static GLenum constexpr GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS = 0x90D6;
+		static GLenum constexpr GL_MAX_VERTEX_STREAMS = 0x8E71;
+		static GLenum constexpr GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS = 0x8B4C;
+		static GLenum constexpr GL_MAX_VERTEX_UNIFORM_BLOCKS = 0x8A2B;
+		static GLenum constexpr GL_MAX_VERTEX_UNIFORM_COMPONENTS = 0x8B4A;
+		static GLenum constexpr GL_MAX_VERTEX_UNITS = 0x86A4;
+		static GLenum constexpr GL_MAX_VERTEX_VARYING_COMPONENTS = 0x8DDE;
+		static GLenum constexpr GL_MAX_VIEWPORTS = 0x825B;
+		static GLenum constexpr GL_MIN_FRAGMENT_INTERPOLATION_OFFSET = 0x8E5B;
+		static GLenum constexpr GL_MIN_LOD_WARNING = 0x919C;// AMD
+		static GLenum constexpr GL_MIN_PROGRAM_TEXEL_OFFSET = 0x8904;
+		static GLenum constexpr GL_MIN_PROGRAM_TEXTURE_GATHER_OFFSET = 0x8E5E;
+		static GLenum constexpr GL_MIN_SAMPLE_SHADING_VALUE = 0x8C37;
+		static GLenum constexpr GL_MIN_SPARSE_LEVEL = 0x919B;// AMD
 
-#define GL_SAMPLES                                         0x80A9
-#define GL_NUM_SAMPLE_COUNTS                               0x9380
-#define GL_INTERNALFORMAT_SUPPORTED                        0x826F
-#define GL_INTERNALFORMAT_PREFERRED                        0x8270
-#define GL_INTERNALFORMAT_RED_SIZE                         0x8271
-#define GL_INTERNALFORMAT_GREEN_SIZE                       0x8272
-#define GL_INTERNALFORMAT_BLUE_SIZE                        0x8273
-#define GL_INTERNALFORMAT_ALPHA_SIZE                       0x8274
-#define GL_INTERNALFORMAT_DEPTH_SIZE                       0x8275
-#define GL_INTERNALFORMAT_STENCIL_SIZE                     0x8276
-#define GL_INTERNALFORMAT_SHARED_SIZE                      0x8277
-#define GL_INTERNALFORMAT_RED_TYPE                         0x8278
-#define GL_INTERNALFORMAT_GREEN_TYPE                       0x8279
-#define GL_INTERNALFORMAT_BLUE_TYPE                        0x827A
-#define GL_INTERNALFORMAT_ALPHA_TYPE                       0x827B
-#define GL_INTERNALFORMAT_DEPTH_TYPE                       0x827C
-#define GL_INTERNALFORMAT_STENCIL_TYPE                     0x827D
-#define GL_MAX_WIDTH                                       0x827E
-#define GL_MAX_HEIGHT                                      0x827F
-#define GL_MAX_DEPTH                                       0x8280
-#define GL_MAX_LAYERS                                      0x8281
-#define GL_MAX_COMBINED_DIMENSIONS                         0x8282
-#define GL_COLOR_COMPONENTS                                0x8283
-#define GL_DEPTH_COMPONENTS                                0x8284
-#define GL_STENCIL_COMPONENTS                              0x8285
-#define GL_COLOR_RENDERABLE                                0x8286
-#define GL_DEPTH_RENDERABLE                                0x8287
-#define GL_STENCIL_RENDERABLE                              0x8288
-#define GL_FRAMEBUFFER_RENDERABLE                          0x8289
-#define GL_FRAMEBUFFER_RENDERABLE_LAYERED                  0x828A
-#define GL_FRAMEBUFFER_BLEND                               0x828B
-#define GL_READ_PIXELS                                     0x828C
-#define GL_READ_PIXELS_FORMAT                              0x828D
-#define GL_READ_PIXELS_TYPE                                0x828E
-#define GL_TEXTURE_IMAGE_FORMAT                            0x828F
-#define GL_TEXTURE_IMAGE_TYPE                              0x8290
-#define GL_GET_TEXTURE_IMAGE_FORMAT                        0x8291
-#define GL_GET_TEXTURE_IMAGE_TYPE                          0x8292
-#define GL_MIPMAP                                          0x8293
-#define GL_MANUAL_GENERATE_MIPMAP                          0x8294
-#define GL_AUTO_GENERATE_MIPMAP                            0x8295
-#define GL_COLOR_ENCODING                                  0x8296
-#define GL_SRGB_READ                                       0x8297
-#define GL_SRGB_WRITE                                      0x8298
-#define GL_SRGB_DECODE_ARB                                 0x8299
-#define GL_FILTER                                          0x829A
-#define GL_VERTEX_TEXTURE                                  0x829B
-#define GL_TESS_CONTROL_TEXTURE                            0x829C
-#define GL_TESS_EVALUATION_TEXTURE                         0x829D
-#define GL_GEOMETRY_TEXTURE                                0x829E
-#define GL_FRAGMENT_TEXTURE                                0x829F
-#define GL_COMPUTE_TEXTURE                                 0x82A0
-#define GL_TEXTURE_SHADOW                                  0x82A1
-#define GL_TEXTURE_GATHER                                  0x82A2
-#define GL_TEXTURE_GATHER_SHADOW                           0x82A3
-#define GL_SHADER_IMAGE_LOAD                               0x82A4
-#define GL_SHADER_IMAGE_STORE                              0x82A5
-#define GL_SHADER_IMAGE_ATOMIC                             0x82A6
-#define GL_IMAGE_TEXEL_SIZE                                0x82A7
-#define GL_IMAGE_COMPATIBILITY_CLASS                       0x82A8
-#define GL_IMAGE_PIXEL_FORMAT                              0x82A9
-#define GL_IMAGE_PIXEL_TYPE                                0x82AA
-#define GL_IMAGE_FORMAT_COMPATIBILITY_TYPE                 0x90C7
-#define GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_TEST             0x82AC
-#define GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_TEST           0x82AD
-#define GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_WRITE            0x82AE
-#define GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_WRITE          0x82AF
-#define GL_TEXTURE_COMPRESSED                              0x86A1
-#define GL_TEXTURE_COMPRESSED_BLOCK_WIDTH                  0x82B1
-#define GL_TEXTURE_COMPRESSED_BLOCK_HEIGHT                 0x82B2
-#define GL_TEXTURE_COMPRESSED_BLOCK_SIZE                   0x82B3
-#define GL_CLEAR_BUFFER                                    0x82B4
-#define GL_TEXTURE_VIEW                                    0x82B5
-#define GL_VIEW_COMPATIBILITY_CLASS                        0x82B6
+		static GLenum constexpr GL_SAMPLES = 0x80A9;
+		static GLenum constexpr GL_NUM_SAMPLE_COUNTS = 0x9380;
+		static GLenum constexpr GL_INTERNALFORMAT_SUPPORTED = 0x826F;
+		static GLenum constexpr GL_INTERNALFORMAT_PREFERRED = 0x8270;
+		static GLenum constexpr GL_INTERNALFORMAT_RED_SIZE = 0x8271;
+		static GLenum constexpr GL_INTERNALFORMAT_GREEN_SIZE = 0x8272;
+		static GLenum constexpr GL_INTERNALFORMAT_BLUE_SIZE = 0x8273;
+		static GLenum constexpr GL_INTERNALFORMAT_ALPHA_SIZE = 0x8274;
+		static GLenum constexpr GL_INTERNALFORMAT_DEPTH_SIZE = 0x8275;
+		static GLenum constexpr GL_INTERNALFORMAT_STENCIL_SIZE = 0x8276;
+		static GLenum constexpr GL_INTERNALFORMAT_SHARED_SIZE = 0x8277;
+		static GLenum constexpr GL_INTERNALFORMAT_RED_TYPE = 0x8278;
+		static GLenum constexpr GL_INTERNALFORMAT_GREEN_TYPE = 0x8279;
+		static GLenum constexpr GL_INTERNALFORMAT_BLUE_TYPE = 0x827A;
+		static GLenum constexpr GL_INTERNALFORMAT_ALPHA_TYPE = 0x827B;
+		static GLenum constexpr GL_INTERNALFORMAT_DEPTH_TYPE = 0x827C;
+		static GLenum constexpr GL_INTERNALFORMAT_STENCIL_TYPE = 0x827D;
+		static GLenum constexpr GL_MAX_WIDTH = 0x827E;
+		static GLenum constexpr GL_MAX_HEIGHT = 0x827F;
+		static GLenum constexpr GL_MAX_DEPTH = 0x8280;
+		static GLenum constexpr GL_MAX_LAYERS = 0x8281;
+		static GLenum constexpr GL_MAX_COMBINED_DIMENSIONS = 0x8282;
+		static GLenum constexpr GL_COLOR_COMPONENTS = 0x8283;
+		static GLenum constexpr GL_DEPTH_COMPONENTS = 0x8284;
+		static GLenum constexpr GL_STENCIL_COMPONENTS = 0x8285;
+		static GLenum constexpr GL_COLOR_RENDERABLE = 0x8286;
+		static GLenum constexpr GL_DEPTH_RENDERABLE = 0x8287;
+		static GLenum constexpr GL_STENCIL_RENDERABLE = 0x8288;
+		static GLenum constexpr GL_FRAMEBUFFER_RENDERABLE = 0x8289;
+		static GLenum constexpr GL_FRAMEBUFFER_RENDERABLE_LAYERED = 0x828A;
+		static GLenum constexpr GL_FRAMEBUFFER_BLEND = 0x828B;
+		static GLenum constexpr GL_READ_PIXELS = 0x828C;
+		static GLenum constexpr GL_READ_PIXELS_FORMAT = 0x828D;
+		static GLenum constexpr GL_READ_PIXELS_TYPE = 0x828E;
+		static GLenum constexpr GL_TEXTURE_IMAGE_FORMAT = 0x828F;
+		static GLenum constexpr GL_TEXTURE_IMAGE_TYPE = 0x8290;
+		static GLenum constexpr GL_GET_TEXTURE_IMAGE_FORMAT = 0x8291;
+		static GLenum constexpr GL_GET_TEXTURE_IMAGE_TYPE = 0x8292;
+		static GLenum constexpr GL_MIPMAP = 0x8293;
+		static GLenum constexpr GL_MANUAL_GENERATE_MIPMAP = 0x8294;
+		static GLenum constexpr GL_AUTO_GENERATE_MIPMAP = 0x8295;
+		static GLenum constexpr GL_COLOR_ENCODING = 0x8296;
+		static GLenum constexpr GL_SRGB_READ = 0x8297;
+		static GLenum constexpr GL_SRGB_WRITE = 0x8298;
+		static GLenum constexpr GL_SRGB_DECODE_ARB = 0x8299;
+		static GLenum constexpr GL_FILTER = 0x829A;
+		static GLenum constexpr GL_VERTEX_TEXTURE = 0x829B;
+		static GLenum constexpr GL_TESS_CONTROL_TEXTURE = 0x829C;
+		static GLenum constexpr GL_TESS_EVALUATION_TEXTURE = 0x829D;
+		static GLenum constexpr GL_GEOMETRY_TEXTURE = 0x829E;
+		static GLenum constexpr GL_FRAGMENT_TEXTURE = 0x829F;
+		static GLenum constexpr GL_COMPUTE_TEXTURE = 0x82A0;
+		static GLenum constexpr GL_TEXTURE_SHADOW = 0x82A1;
+		static GLenum constexpr GL_TEXTURE_GATHER = 0x82A2;
+		static GLenum constexpr GL_TEXTURE_GATHER_SHADOW = 0x82A3;
+		static GLenum constexpr GL_SHADER_IMAGE_LOAD = 0x82A4;
+		static GLenum constexpr GL_SHADER_IMAGE_STORE = 0x82A5;
+		static GLenum constexpr GL_SHADER_IMAGE_ATOMIC = 0x82A6;
+		static GLenum constexpr GL_IMAGE_TEXEL_SIZE = 0x82A7;
+		static GLenum constexpr GL_IMAGE_COMPATIBILITY_CLASS = 0x82A8;
+		static GLenum constexpr GL_IMAGE_PIXEL_FORMAT = 0x82A9;
+		static GLenum constexpr GL_IMAGE_PIXEL_TYPE = 0x82AA;
+		static GLenum constexpr GL_IMAGE_FORMAT_COMPATIBILITY_TYPE = 0x90C7;
+		static GLenum constexpr GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_TEST = 0x82AC;
+		static GLenum constexpr GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_TEST = 0x82AD;
+		static GLenum constexpr GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_WRITE = 0x82AE;
+		static GLenum constexpr GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_WRITE = 0x82AF;
+		static GLenum constexpr GL_TEXTURE_COMPRESSED = 0x86A1;
+		static GLenum constexpr GL_TEXTURE_COMPRESSED_BLOCK_WIDTH = 0x82B1;
+		static GLenum constexpr GL_TEXTURE_COMPRESSED_BLOCK_HEIGHT = 0x82B2;
+		static GLenum constexpr GL_TEXTURE_COMPRESSED_BLOCK_SIZE = 0x82B3;
+		static GLenum constexpr GL_CLEAR_BUFFER = 0x82B4;
+		static GLenum constexpr GL_TEXTURE_VIEW = 0x82B5;
+		static GLenum constexpr GL_VIEW_COMPATIBILITY_CLASS = 0x82B6;
 
-#define GL_FULL_SUPPORT                                    0x82B7
-#define GL_CAVEAT_SUPPORT                                  0x82B8
-#define GL_IMAGE_CLASS_4_X_32                              0x82B9
-#define GL_IMAGE_CLASS_2_X_32                              0x82BA
-#define GL_IMAGE_CLASS_1_X_32                              0x82BB
-#define GL_IMAGE_CLASS_4_X_16                              0x82BC
-#define GL_IMAGE_CLASS_2_X_16                              0x82BD
-#define GL_IMAGE_CLASS_1_X_16                              0x82BE
-#define GL_IMAGE_CLASS_4_X_8                               0x82BF
-#define GL_IMAGE_CLASS_2_X_8                               0x82C0
-#define GL_IMAGE_CLASS_1_X_8                               0x82C1
-#define GL_IMAGE_CLASS_11_11_10                            0x82C2
-#define GL_IMAGE_CLASS_10_10_10_2                          0x82C3
-#define GL_VIEW_CLASS_128_BITS                             0x82C4
-#define GL_VIEW_CLASS_96_BITS                              0x82C5
-#define GL_VIEW_CLASS_64_BITS                              0x82C6
-#define GL_VIEW_CLASS_48_BITS                              0x82C7
-#define GL_VIEW_CLASS_32_BITS                              0x82C8
-#define GL_VIEW_CLASS_24_BITS                              0x82C9
-#define GL_VIEW_CLASS_16_BITS                              0x82CA
-#define GL_VIEW_CLASS_8_BITS                               0x82CB
-#define GL_VIEW_CLASS_S3TC_DXT1_RGB                        0x82CC
-#define GL_VIEW_CLASS_S3TC_DXT1_RGBA                       0x82CD
-#define GL_VIEW_CLASS_S3TC_DXT3_RGBA                       0x82CE
-#define GL_VIEW_CLASS_S3TC_DXT5_RGBA                       0x82CF
-#define GL_VIEW_CLASS_RGTC1_RED                            0x82D0
-#define GL_VIEW_CLASS_RGTC2_RG                             0x82D1
-#define GL_VIEW_CLASS_BPTC_UNORM                           0x82D2
-#define GL_VIEW_CLASS_BPTC_FLOAT                           0x82D3
+		static GLenum constexpr GL_FULL_SUPPORT = 0x82B7;
+		static GLenum constexpr GL_CAVEAT_SUPPORT = 0x82B8;
+		static GLenum constexpr GL_IMAGE_CLASS_4_X_32 = 0x82B9;
+		static GLenum constexpr GL_IMAGE_CLASS_2_X_32 = 0x82BA;
+		static GLenum constexpr GL_IMAGE_CLASS_1_X_32 = 0x82BB;
+		static GLenum constexpr GL_IMAGE_CLASS_4_X_16 = 0x82BC;
+		static GLenum constexpr GL_IMAGE_CLASS_2_X_16 = 0x82BD;
+		static GLenum constexpr GL_IMAGE_CLASS_1_X_16 = 0x82BE;
+		static GLenum constexpr GL_IMAGE_CLASS_4_X_8 = 0x82BF;
+		static GLenum constexpr GL_IMAGE_CLASS_2_X_8 = 0x82C0;
+		static GLenum constexpr GL_IMAGE_CLASS_1_X_8 = 0x82C1;
+		static GLenum constexpr GL_IMAGE_CLASS_11_11_10 = 0x82C2;
+		static GLenum constexpr GL_IMAGE_CLASS_10_10_10_2 = 0x82C3;
+		static GLenum constexpr GL_VIEW_CLASS_128_BITS = 0x82C4;
+		static GLenum constexpr GL_VIEW_CLASS_96_BITS = 0x82C5;
+		static GLenum constexpr GL_VIEW_CLASS_64_BITS = 0x82C6;
+		static GLenum constexpr GL_VIEW_CLASS_48_BITS = 0x82C7;
+		static GLenum constexpr GL_VIEW_CLASS_32_BITS = 0x82C8;
+		static GLenum constexpr GL_VIEW_CLASS_24_BITS = 0x82C9;
+		static GLenum constexpr GL_VIEW_CLASS_16_BITS = 0x82CA;
+		static GLenum constexpr GL_VIEW_CLASS_8_BITS = 0x82CB;
+		static GLenum constexpr GL_VIEW_CLASS_S3TC_DXT1_RGB = 0x82CC;
+		static GLenum constexpr GL_VIEW_CLASS_S3TC_DXT1_RGBA = 0x82CD;
+		static GLenum constexpr GL_VIEW_CLASS_S3TC_DXT3_RGBA = 0x82CE;
+		static GLenum constexpr GL_VIEW_CLASS_S3TC_DXT5_RGBA = 0x82CF;
+		static GLenum constexpr GL_VIEW_CLASS_RGTC1_RED = 0x82D0;
+		static GLenum constexpr GL_VIEW_CLASS_RGTC2_RG = 0x82D1;
+		static GLenum constexpr GL_VIEW_CLASS_BPTC_UNORM = 0x82D2;
+		static GLenum constexpr GL_VIEW_CLASS_BPTC_FLOAT = 0x82D3;
+
+#if !defined( _WIN32 )
+		static GLenum constexpr GL_MAX_TEXTURE_SIZE = 0x0D33;
+		static GLenum constexpr GL_MAX_VIEWPORT_DIMS = 0x0D3A;
+		static GLenum constexpr GL_POINT_SIZE_RANGE = 0x0B12;
+		static GLenum constexpr GL_POINT_SIZE_GRANULARITY = 0x0B13;
+		static GLenum constexpr GL_LINE_WIDTH_GRANULARITY = 0x0B23;
+#endif
 
 		using PFN_glGetInteger64v = void( GLAPIENTRY * )( GLenum pname, GLint64 * data );
-		PFN_glGetInteger64v glGetInteger64v;
 		using PFN_glGetFloati_v = void( GLAPIENTRY * )( GLenum target, GLuint index, GLfloat * data );
-		PFN_glGetFloati_v glGetFloati_v;
 		using PFN_glGetIntegeri_v = void( GLAPIENTRY * )( GLenum target, GLuint index, GLint * data );
-		PFN_glGetIntegeri_v glGetIntegeri_v;
 		using PFN_glGetInteger64i_v = void( GLAPIENTRY * )( GLenum target, GLuint index, GLint64 * data );
-		PFN_glGetInteger64i_v glGetInteger64i_v;
-		using PFN_glGetStringi = const GLubyte *( GLAPIENTRY * )( GLenum name, GLuint index );
-		PFN_glGetStringi glGetStringi;
-		PFN_glGetInternalformativ glGetInternalformativ;
+		PFN_glGetInteger64v gglGetInteger64v;
+		PFN_glGetFloati_v gglGetFloati_v;
+		PFN_glGetIntegeri_v gglGetIntegeri_v;
+		PFN_glGetInteger64i_v gglGetInteger64i_v;
+
+		PFN_glGetIntegerv gglGetIntegerv;
+		PFN_glGetFloatv gglGetFloatv;
+		PFN_glGetString gglGetString;
+		PFN_glGetStringi gglGetStringi;
+		PFN_glGetInternalformativ gglGetInternalformativ;
 
 		uint32_t doGetVendorID( std::string vendorName )
 		{
@@ -366,14 +375,14 @@ namespace ashes::gl4
 		auto internal = getInternalFormat( format );
 		auto gltype = convert( type, 1u );
 		GLint value;
-		glLogCallNoContext( glGetInternalformativ, gltype, internal, GL_INTERNALFORMAT_SUPPORTED, 1, &value );
+		glLogCallNoContext( gglGetInternalformativ, gltype, internal, GL_INTERNALFORMAT_SUPPORTED, 1, &value );
 
 		if ( value == GL_FALSE )
 		{
 			return VK_ERROR_FORMAT_NOT_SUPPORTED;
 		}
 
-		glLogCallNoContext( glGetInternalformativ, gltype, internal, GL_MAX_WIDTH, 1, &value );
+		glLogCallNoContext( gglGetInternalformativ, gltype, internal, GL_MAX_WIDTH, 1, &value );
 		imageProperties.maxExtent.width = uint32_t( value );
 		imageProperties.maxExtent.height = 1u;
 		imageProperties.maxExtent.depth = 1u;
@@ -381,24 +390,24 @@ namespace ashes::gl4
 		if ( type == VK_IMAGE_TYPE_2D
 			|| type == VK_IMAGE_TYPE_3D )
 		{
-			glLogCallNoContext( glGetInternalformativ, GL_TEXTURE_2D, internal, GL_MAX_HEIGHT, 1, &value );
+			glLogCallNoContext( gglGetInternalformativ, GL_TEXTURE_2D, internal, GL_MAX_HEIGHT, 1, &value );
 			imageProperties.maxExtent.height = uint32_t( value );
 
 			if ( type == VK_IMAGE_TYPE_3D )
 			{
-				glLogCallNoContext( glGetInternalformativ, GL_TEXTURE_3D, internal, GL_MAX_DEPTH, 1, &value );
+				glLogCallNoContext( gglGetInternalformativ, GL_TEXTURE_3D, internal, GL_MAX_DEPTH, 1, &value );
 				imageProperties.maxExtent.depth = uint32_t( value );
 			}
 		}
 
-		glLogCallNoContext( glGetInternalformativ, gltype, internal, GL_SAMPLES, 1, &value );
+		glLogCallNoContext( gglGetInternalformativ, gltype, internal, GL_SAMPLES, 1, &value );
 		imageProperties.sampleCounts = VkSampleCountFlagBits( value );
 
-		glLogCallNoContext( glGetInternalformativ, gltype, internal, GL_IMAGE_TEXEL_SIZE, 1, &value );
+		glLogCallNoContext( gglGetInternalformativ, gltype, internal, GL_IMAGE_TEXEL_SIZE, 1, &value );
 		VkDeviceSize texelSize = VkDeviceSize( value );
 
 		gltype = convert( type, 2u );
-		glLogCallNoContext( glGetInternalformativ, gltype, internal, GL_MAX_LAYERS, 1, &value );
+		glLogCallNoContext( gglGetInternalformativ, gltype, internal, GL_MAX_LAYERS, 1, &value );
 		imageProperties.maxArrayLayers = uint32_t( value );
 		return VK_SUCCESS;
 	}
@@ -577,19 +586,28 @@ namespace ashes::gl4
 	void PhysicalDevice::doInitialise()
 	{
 		// On récupère les extensions supportées par le GPU.
-		getFunction( "glGetInteger64v", glGetInteger64v );
-		getFunction( "glGetFloati_v", glGetFloati_v );
-		getFunction( "glGetIntegeri_v", glGetIntegeri_v );
-		getFunction( "glGetInteger64i_v", glGetInteger64i_v );
-		getFunction( "glGetStringi", glGetStringi );
-		getFunction( "glGetInternalformativ", glGetInternalformativ );
+		getFunction( "glGetInteger64v", gglGetInteger64v );
+		getFunction( "glGetFloati_v", gglGetFloati_v );
+		getFunction( "glGetIntegeri_v", gglGetIntegeri_v );
+		getFunction( "glGetInteger64i_v", gglGetInteger64i_v );
+		getFunction( "glGetStringi", gglGetStringi );
+		getFunction( "glGetInternalformativ", gglGetInternalformativ );
+#if _WIN32
+		gglGetIntegerv = glGetIntegerv;
+		gglGetString = glGetString;
+		gglGetFloatv = glGetFloatv;
+#else
+		getFunction( "glGetIntegerv", gglGetIntegerv );
+		getFunction( "glGetString", gglGetString );
+		getFunction( "glGetFloatv", gglGetFloatv );
+#endif
 		auto & extensions = get( m_instance )->getExtensions();
 
 		m_properties.apiVersion = ( extensions.getMajor() << 22 ) | ( extensions.getMinor() << 12 );
 		m_properties.deviceID = 0u;
-		strncpy( m_properties.deviceName, ( char const * )glGetString( GL_RENDERER ), VK_MAX_PHYSICAL_DEVICE_NAME_SIZE );
+		strncpy( m_properties.deviceName, ( char const * ) gglGetString( GL_RENDERER ), VK_MAX_PHYSICAL_DEVICE_NAME_SIZE );
 		std::memset( m_properties.pipelineCacheUUID, 0u, sizeof( m_properties.pipelineCacheUUID ) );
-		m_properties.vendorID = doGetVendorID( ( char const * )glGetString( GL_VENDOR ) );
+		m_properties.vendorID = doGetVendorID( ( char const * ) gglGetString( GL_VENDOR ) );
 		m_properties.deviceType = VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
 		m_properties.driverVersion = 0;
 
@@ -722,11 +740,11 @@ namespace ashes::gl4
 		m_features.fillModeNonSolid = true;
 		m_features.depthBounds = true;
 		GLint range[2];
-		glLogCallNoContext( glGetIntegerv
+		glLogCallNoContext( gglGetIntegerv
 			, GL_ALIASED_LINE_WIDTH_RANGE
 			, range );
 		m_features.wideLines = ( range[1] > 1 );
-		glLogCallNoContext( glGetIntegerv
+		glLogCallNoContext( gglGetIntegerv
 			, GL_SMOOTH_LINE_WIDTH_RANGE
 			, range );
 		m_features.wideLines &= ( range[1] > 1 );
@@ -783,7 +801,7 @@ namespace ashes::gl4
 			}
 		} );
 
-		if ( glGetInternalformativ )
+		if ( gglGetInternalformativ )
 		{
 			for ( VkFormat fmt = VK_FORMAT_BEGIN_RANGE; fmt < VK_FORMAT_END_RANGE; fmt = VkFormat( fmt + 1 ) )
 			{
@@ -791,7 +809,7 @@ namespace ashes::gl4
 				{
 					auto internal = getInternalFormat( fmt );
 					GLint value;
-					glGetInternalformativ( GL_TEXTURE_2D, internal, GL_INTERNALFORMAT_SUPPORTED, 1, &value );
+					gglGetInternalformativ( GL_TEXTURE_2D, internal, GL_INTERNALFORMAT_SUPPORTED, 1, &value );
 
 					if ( value == GL_TRUE )
 					{
@@ -799,7 +817,7 @@ namespace ashes::gl4
 						m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
 						m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
 #endif
-						glLogCallNoContext( glGetInternalformativ
+						glLogCallNoContext( gglGetInternalformativ
 							, GL_TEXTURE_2D
 							, internal
 							, GL_FRAMEBUFFER_RENDERABLE
@@ -818,7 +836,7 @@ namespace ashes::gl4
 							}
 						}
 
-						glLogCallNoContext( glGetInternalformativ
+						glLogCallNoContext( gglGetInternalformativ
 							, GL_TEXTURE_2D
 							, internal
 							, GL_FRAMEBUFFER_BLEND
@@ -831,7 +849,7 @@ namespace ashes::gl4
 							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT;
 						}
 
-						glLogCallNoContext( glGetInternalformativ
+						glLogCallNoContext( gglGetInternalformativ
 							, GL_TEXTURE_2D
 							, internal
 							, GL_FRAGMENT_TEXTURE
@@ -843,7 +861,7 @@ namespace ashes::gl4
 							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
 						}
 
-						glLogCallNoContext( glGetInternalformativ
+						glLogCallNoContext( gglGetInternalformativ
 							, GL_TEXTURE_2D
 							, internal
 							, GL_FILTER
@@ -855,7 +873,7 @@ namespace ashes::gl4
 							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT;
 						}
 
-						glLogCallNoContext( glGetInternalformativ
+						glLogCallNoContext( gglGetInternalformativ
 							, GL_TEXTURE_2D
 							, internal
 							, GL_SHADER_IMAGE_LOAD
@@ -867,7 +885,7 @@ namespace ashes::gl4
 							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT;
 						}
 
-						glLogCallNoContext( glGetInternalformativ
+						glLogCallNoContext( gglGetInternalformativ
 							, GL_TEXTURE_2D
 							, internal
 							, GL_SHADER_IMAGE_ATOMIC
@@ -880,7 +898,7 @@ namespace ashes::gl4
 						}
 
 #if defined( VK_KHR_maintenance ) || defined( VK_API_VERSION_1_1 )
-						glLogCallNoContext( glGetInternalformativ
+						glLogCallNoContext( gglGetInternalformativ
 							, GL_TEXTURE_2D
 							, internal
 							, GL_READ_PIXELS
@@ -967,7 +985,7 @@ namespace ashes::gl4
 
 	void PhysicalDevice::doGetValue( GLenum name, int32_t & value )const
 	{
-		glLogCallNoContext( glGetIntegerv
+		glLogCallNoContext( gglGetIntegerv
 			, name
 			, &value );
 	}
@@ -975,7 +993,7 @@ namespace ashes::gl4
 	void PhysicalDevice::doGetValue( GLenum name, uint32_t & value )const
 	{
 		int v;
-		glLogCallNoContext( glGetIntegerv
+		glLogCallNoContext( gglGetIntegerv
 			, name
 			, &v );
 		value = uint32_t( v );
@@ -983,7 +1001,7 @@ namespace ashes::gl4
 
 	void PhysicalDevice::doGetValues( GLenum name, int32_t( &value )[2] )const
 	{
-		glLogCallNoContext( glGetIntegerv
+		glLogCallNoContext( gglGetIntegerv
 			, name
 			, value );
 	}
@@ -991,7 +1009,7 @@ namespace ashes::gl4
 	void PhysicalDevice::doGetValues( GLenum name, uint32_t( &value )[2] )const
 	{
 		int v[2];
-		glLogCallNoContext( glGetIntegerv
+		glLogCallNoContext( gglGetIntegerv
 			, name
 			, v );
 		value[0] = v[0];
@@ -1000,7 +1018,7 @@ namespace ashes::gl4
 
 	void PhysicalDevice::doGetValues( GLenum name, int32_t( &value )[3] )const
 	{
-		glLogCallNoContext( glGetIntegerv
+		glLogCallNoContext( gglGetIntegerv
 			, name
 			, value );
 	}
@@ -1008,7 +1026,7 @@ namespace ashes::gl4
 	void PhysicalDevice::doGetValues( GLenum name, uint32_t( &value )[3] )const
 	{
 		int v[3];
-		glLogCallNoContext( glGetIntegerv
+		glLogCallNoContext( gglGetIntegerv
 			, name
 			, v );
 		value[0] = v[0];
@@ -1018,11 +1036,11 @@ namespace ashes::gl4
 
 	void PhysicalDevice::doGetValuesI( GLenum name, int32_t( &value )[2] )const
 	{
-		glLogCallNoContext( glGetIntegeri_v
+		glLogCallNoContext( gglGetIntegeri_v
 			, name
 			, 0
 			, &value[0] );
-		glLogCallNoContext( glGetIntegeri_v
+		glLogCallNoContext( gglGetIntegeri_v
 			, name
 			, 1
 			, &value[1] );
@@ -1031,11 +1049,11 @@ namespace ashes::gl4
 	void PhysicalDevice::doGetValuesI( GLenum name, uint32_t( &value )[2] )const
 	{
 		int v[2];
-		glLogCallNoContext( glGetIntegeri_v
+		glLogCallNoContext( gglGetIntegeri_v
 			, name
 			, 0
 			, &v[0] );
-		glLogCallNoContext( glGetIntegeri_v
+		glLogCallNoContext( gglGetIntegeri_v
 			, name
 			, 1
 			, &v[1] );
@@ -1045,15 +1063,15 @@ namespace ashes::gl4
 
 	void PhysicalDevice::doGetValuesI( GLenum name, int32_t( &value )[3] )const
 	{
-		glLogCallNoContext( glGetIntegeri_v
+		glLogCallNoContext( gglGetIntegeri_v
 			, name
 			, 0
 			, &value[0] );
-		glLogCallNoContext( glGetIntegeri_v
+		glLogCallNoContext( gglGetIntegeri_v
 			, name
 			, 1
 			, &value[1] );
-		glLogCallNoContext( glGetIntegeri_v
+		glLogCallNoContext( gglGetIntegeri_v
 			, name
 			, 2
 			, &value[2] );
@@ -1062,15 +1080,15 @@ namespace ashes::gl4
 	void PhysicalDevice::doGetValuesI( GLenum name, uint32_t( &value )[3] )const
 	{
 		int v[3];
-		glLogCallNoContext( glGetIntegeri_v
+		glLogCallNoContext( gglGetIntegeri_v
 			, name
 			, 0
 			, &v[0] );
-		glLogCallNoContext( glGetIntegeri_v
+		glLogCallNoContext( gglGetIntegeri_v
 			, name
 			, 1
 			, &v[1] );
-		glLogCallNoContext( glGetIntegeri_v
+		glLogCallNoContext( gglGetIntegeri_v
 			, name
 			, 2
 			, &v[2] );
@@ -1081,7 +1099,7 @@ namespace ashes::gl4
 
 	void PhysicalDevice::doGetValue( GLenum name, int64_t & value )const
 	{
-		glLogCallNoContext( glGetInteger64v
+		glLogCallNoContext( gglGetInteger64v
 			, name
 			, &value );
 	}
@@ -1089,7 +1107,7 @@ namespace ashes::gl4
 	void PhysicalDevice::doGetValue( GLenum name, uint64_t & value )const
 	{
 		int64_t v;
-		glLogCallNoContext( glGetInteger64v
+		glLogCallNoContext( gglGetInteger64v
 			, name
 			, &v );
 		value = uint64_t( v );
@@ -1097,7 +1115,7 @@ namespace ashes::gl4
 
 	void PhysicalDevice::doGetValues( GLenum name, int64_t( &value )[2] )const
 	{
-		glLogCallNoContext( glGetInteger64v
+		glLogCallNoContext( gglGetInteger64v
 			, name
 			, value );
 	}
@@ -1105,7 +1123,7 @@ namespace ashes::gl4
 	void PhysicalDevice::doGetValues( GLenum name, uint64_t( &value )[2] )const
 	{
 		int64_t v[2];
-		glLogCallNoContext( glGetInteger64v
+		glLogCallNoContext( gglGetInteger64v
 			, name
 			, v );
 		value[0] = v[0];
@@ -1114,7 +1132,7 @@ namespace ashes::gl4
 
 	void PhysicalDevice::doGetValues( GLenum name, int64_t( &value )[3] )const
 	{
-		glLogCallNoContext( glGetInteger64v
+		glLogCallNoContext( gglGetInteger64v
 			, name
 			, value );
 	}
@@ -1122,7 +1140,7 @@ namespace ashes::gl4
 	void PhysicalDevice::doGetValues( GLenum name, uint64_t( &value )[3] )const
 	{
 		int64_t v[3];
-		glLogCallNoContext( glGetInteger64v
+		glLogCallNoContext( gglGetInteger64v
 			, name
 			, v );
 		value[0] = v[0];
@@ -1132,11 +1150,11 @@ namespace ashes::gl4
 
 	void PhysicalDevice::doGetValuesI( GLenum name, int64_t( &value )[2] )const
 	{
-		glLogCallNoContext( glGetInteger64i_v
+		glLogCallNoContext( gglGetInteger64i_v
 			, name
 			, 0
 			, &value[0] );
-		glLogCallNoContext( glGetInteger64i_v
+		glLogCallNoContext( gglGetInteger64i_v
 			, name
 			, 1
 			, &value[1] );
@@ -1145,11 +1163,11 @@ namespace ashes::gl4
 	void PhysicalDevice::doGetValuesI( GLenum name, uint64_t( &value )[2] )const
 	{
 		int64_t v[2];
-		glLogCallNoContext( glGetInteger64i_v
+		glLogCallNoContext( gglGetInteger64i_v
 			, name
 			, 0
 			, &v[0] );
-		glLogCallNoContext( glGetInteger64i_v
+		glLogCallNoContext( gglGetInteger64i_v
 			, name
 			, 1
 			, &v[1] );
@@ -1159,15 +1177,15 @@ namespace ashes::gl4
 
 	void PhysicalDevice::doGetValuesI( GLenum name, int64_t( &value )[3] )const
 	{
-		glLogCallNoContext( glGetInteger64i_v
+		glLogCallNoContext( gglGetInteger64i_v
 			, name
 			, 0
 			, &value[0] );
-		glLogCallNoContext( glGetInteger64i_v
+		glLogCallNoContext( gglGetInteger64i_v
 			, name
 			, 1
 			, &value[1] );
-		glLogCallNoContext( glGetInteger64i_v
+		glLogCallNoContext( gglGetInteger64i_v
 			, name
 			, 2
 			, &value[2] );
@@ -1176,15 +1194,15 @@ namespace ashes::gl4
 	void PhysicalDevice::doGetValuesI( GLenum name, uint64_t( &value )[3] )const
 	{
 		int64_t v[3];
-		glLogCallNoContext( glGetInteger64i_v
+		glLogCallNoContext( gglGetInteger64i_v
 			, name
 			, 0
 			, &v[0] );
-		glLogCallNoContext( glGetInteger64i_v
+		glLogCallNoContext( gglGetInteger64i_v
 			, name
 			, 1
 			, &v[1] );
-		glLogCallNoContext( glGetInteger64i_v
+		glLogCallNoContext( gglGetInteger64i_v
 			, name
 			, 2
 			, &v[2] );
@@ -1195,32 +1213,32 @@ namespace ashes::gl4
 
 	void PhysicalDevice::doGetValue( GLenum name, float & value )const
 	{
-		glLogCallNoContext( glGetFloatv
+		glLogCallNoContext( gglGetFloatv
 			, name
 			, &value );
 	}
 
 	void PhysicalDevice::doGetValues( GLenum name, float( &value )[2] )const
 	{
-		glLogCallNoContext( glGetFloatv
+		glLogCallNoContext( gglGetFloatv
 			, name
 			, value );
 	}
 
 	void PhysicalDevice::doGetValues( GLenum name, float( &value )[3] )const
 	{
-		glLogCallNoContext( glGetFloatv
+		glLogCallNoContext( gglGetFloatv
 			, name
 			, value );
 	}
 
 	void PhysicalDevice::doGetValuesI( GLenum name, float( &value )[2] )const
 	{
-		glLogCallNoContext( glGetFloati_v
+		glLogCallNoContext( gglGetFloati_v
 			, name
 			, 0
 			, &value[0] );
-		glLogCallNoContext( glGetFloati_v
+		glLogCallNoContext( gglGetFloati_v
 			, name
 			, 1
 			, &value[1] );
@@ -1228,15 +1246,15 @@ namespace ashes::gl4
 
 	void PhysicalDevice::doGetValuesI( GLenum name, float( &value )[3] )const
 	{
-		glLogCallNoContext( glGetFloati_v
+		glLogCallNoContext( gglGetFloati_v
 			, name
 			, 0
 			, &value[0] );
-		glLogCallNoContext( glGetFloati_v
+		glLogCallNoContext( gglGetFloati_v
 			, name
 			, 1
 			, &value[1] );
-		glLogCallNoContext( glGetFloati_v
+		glLogCallNoContext( gglGetFloati_v
 			, name
 			, 2
 			, &value[2] );

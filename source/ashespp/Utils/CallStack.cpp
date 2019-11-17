@@ -35,7 +35,7 @@ namespace ashes
 
 #else
 
-#	if ASHES_WIN32
+#	if VK_USE_PLATFORM_WIN32_KHR
 
 		namespace
 		{

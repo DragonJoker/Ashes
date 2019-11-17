@@ -33,8 +33,32 @@ See LICENSE file in root folder.
 
 #include <common/Exception.hpp>
 
+#define VK_NO_PROTOTYPES
+#include <ashes/ashes.h>
+
+#if ASHES_ANDROID
+#include <vulkan/vulkan_android.h>
+#elif __linux__
+typedef struct _XDisplay Display;
+typedef unsigned long VisualID;
+typedef unsigned long XID;
+typedef XID Window;
+#include <vulkan/vulkan_xlib.h>
+typedef struct xcb_connection_t xcb_connection_t;
+typedef uint32_t xcb_visualid_t;
+typedef uint32_t xcb_window_t;
+#include <vulkan/vulkan_xcb.h>
+#elif _WIN32
+#include <vulkan/vulkan_win32.h>
+#endif
+
 namespace ashes::gl3
 {
+	static int constexpr MinMajor = 3;
+	static int constexpr MinMinor = 3;
+	static int constexpr MaxMajor = 4;
+	static int constexpr MaxMinor = 2;
+
 	template< typename T >
 	static constexpr T NonAvailable = std::numeric_limits< T >::max();
 
@@ -172,6 +196,10 @@ namespace ashes::gl3
 	std::vector< VkExtensionProperties > const & getSupportedInstanceExtensions();
 	std::vector< VkExtensionProperties > const & getSupportedDeviceExtensions();
 
+	extern PFN_glGetError getError;
+	extern PFN_glGetStringi getStringi;
+	extern PFN_glGetString getString;
+	extern PFN_glGetIntegerv getIntegerv;
 
 	inline VkInstance getInstance( VkInstance object )
 	{
@@ -2150,7 +2178,7 @@ namespace ashes::gl3
 #pragma endregion
 #pragma region VK_KHR_xcb_surface
 #ifdef VK_KHR_xcb_surface
-#	ifdef VK_USE_PLATFORM_XCB_KHR
+#	ifdef __linux__
 
 	VkResult VKAPI_CALL vkCreateXcbSurfaceKHR(
 		VkInstance instance,
@@ -2168,7 +2196,7 @@ namespace ashes::gl3
 #pragma endregion
 #pragma region VK_KHR_xlib_surface
 #ifdef VK_KHR_xlib_surface
-#	ifdef VK_USE_PLATFORM_XLIB_KHR
+#	ifdef __linux__
 
 	VkResult VKAPI_CALL vkCreateXlibSurfaceKHR(
 		VkInstance instance,
@@ -2203,7 +2231,7 @@ namespace ashes::gl3
 #pragma endregion
 #pragma region VK_KHR_win32_surface
 #ifdef VK_KHR_win32_surface
-#	ifdef VK_USE_PLATFORM_WIN32_KHR
+#	ifdef _WIN32
 
 	VkResult VKAPI_CALL vkCreateWin32SurfaceKHR(
 		VkInstance instance,

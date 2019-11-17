@@ -3,7 +3,10 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "GlContextState.hpp"
+#include "renderer/Gl4Renderer/GlRendererPrerequisites.hpp"
+
+#include <renderer/GlRendererCommon/GlContextState.hpp>
+#include <renderer/GlRendererCommon/GlContext.hpp>
 
 #include <atomic>
 #include <mutex>
@@ -17,55 +20,17 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
-	extern char const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME[VK_MAX_EXTENSION_NAME_SIZE];
 	class ContextLock;
 
 	class Context
 	{
-	public:
-		class ContextImpl
-		{
-		protected:
-			ContextImpl( VkInstance instance
-				, VkSurfaceCreateInfoKHR createInfo )
-				: createInfo{ std::move( createInfo ) }
-				, instance{ instance }
-			{
-			}
-
-		public:
-			virtual ~ContextImpl() = default;
-
-			virtual void initialise( Context & parent ) = 0;
-			virtual void loadSystemFunctions() = 0;
-			/**
-			*\brief
-			*	Active le contexte.
-			*/
-			virtual void enable()const = 0;
-			/**
-			*\brief
-			*	Désactive le contexte.
-			*/
-			virtual void disable()const = 0;
-			/**
-			*\brief
-			*	Echange les tampons.
-			*/
-			virtual void swapBuffers()const = 0;
-
-			VkSurfaceCreateInfoKHR createInfo;
-			VkInstance instance;
-		};
-
 	private:
-		Context( std::unique_ptr< ContextImpl > impl );
+		Context( gl::ContextImplPtr impl );
 
 	public:
 		~Context();
 
-		ContextState & getState();
-		void onBaseContextCreated();
+		gl::ContextState & getState();
 
 #if VK_EXT_debug_utils
 		void submitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
@@ -85,9 +50,23 @@ namespace ashes::gl4
 		void lock();
 		void unlock();
 
+#if _WIN32
+
 		static ContextPtr create( VkInstance instance
-			, VkSurfaceCreateInfoKHR createInfo
+			, VkWin32SurfaceCreateInfoKHR createInfo
 			, Context const * mainContext );
+
+#elif __linux__
+
+		static ContextPtr create( VkInstance instance
+			, VkXlibSurfaceCreateInfoKHR createInfo
+			, Context const * mainContext );
+		static ContextPtr create( VkInstance instance
+			, VkXcbSurfaceCreateInfoKHR createInfo
+			, Context const * mainContext );
+
+#endif
+
 		static ContextPtr create( VkInstance instance
 			, VkSurfaceKHR surface
 			, Context const * mainContext );
@@ -103,7 +82,7 @@ namespace ashes::gl4
 				&& m_activeThread == std::this_thread::get_id();
 		}
 
-		inline ContextImpl const & getImpl()const
+		inline gl::ContextImpl const & getImpl()const
 		{
 			return *m_impl;
 		}
@@ -149,19 +128,16 @@ namespace ashes::gl4
 		void loadBaseFunctions();
 		void loadDebugFunctions();
 
-		void initialiseThreadState( ContextState const & state );
+		void initialiseThreadState( gl::ContextState const & state );
 
 	private:
-		std::unique_ptr< ContextImpl > m_impl;
-
-	public:
-		VkSurfaceCreateInfoKHR const & createInfo;
+		gl::ContextImplPtr m_impl;
 
 	protected:
 		VkInstance m_instance;
 		std::mutex m_mutex;
 		std::atomic< bool > m_enabled{ false };
 		std::atomic< std::thread::id > m_activeThread;
-		std::map< std::thread::id, std::unique_ptr< ContextState > > m_state;
+		std::map< std::thread::id, std::unique_ptr< gl::ContextState > > m_state;
 	};
 }

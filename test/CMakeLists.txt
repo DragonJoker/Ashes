@@ -62,6 +62,7 @@ if ( ASHES_BUILD_TESTS )
 					_LARGE_FILES
 					_UNICODE
 					${TARGET_CXX_DEFINITIONS}
+					${TARGET_DEFINITIONS}
 				)
 				target_compile_options( ${TARGET_NAME} PRIVATE
 					${TARGET_CXX_OPTIONS}
@@ -168,3 +169,4 @@ if ( ASHES_BUILD_SW_SAMPLES )
 	endforeach ( EXAMPLE )
 	set_property( TARGET base PROPERTY FOLDER "Samples/SaschaWillems" )
 endif ()
+

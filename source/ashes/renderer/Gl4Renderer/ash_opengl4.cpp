@@ -1,10 +1,9 @@
-#define VK_NO_PROTOTYPES
-#include <ashes/ashes.h>
-
 #include "Core/GlContext.hpp"
-#include "Core/GlWindow.hpp"
 
 #include "ashesgl4_api.hpp"
+
+#include <renderer/GlRendererCommon/GlWindow.hpp>
+#include <renderer/GlRendererCommon/GlExtensionsHandler.hpp>
 
 #include <common/Exception.hpp>
 
@@ -152,7 +151,6 @@ namespace ashes::gl4
 			, pAllocator
 			, instance
 			, physicalDevice
-			, get( instance )->getContext()
 			, *pCreateInfo );
 	}
 
@@ -3675,7 +3673,7 @@ namespace ashes::gl4
 #pragma endregion
 #pragma region VK_KHR_xcb_surface
 #ifdef VK_KHR_xcb_surface
-#	ifdef VK_USE_PLATFORM_XCB_KHR
+#	ifdef __linux__
 
 	VkResult VKAPI_CALL vkCreateXcbSurfaceKHR(
 		VkInstance instance,
@@ -3704,8 +3702,7 @@ namespace ashes::gl4
 #pragma endregion
 #pragma region VK_KHR_xlib_surface
 #ifdef VK_KHR_xlib_surface
-#	ifdef VK_USE_PLATFORM_XLIB_KHR
-
+#	if __linux__
 	VkResult VKAPI_CALL vkCreateXlibSurfaceKHR(
 		VkInstance instance,
 		const VkXlibSurfaceCreateInfoKHR* pCreateInfo,
@@ -3761,7 +3758,7 @@ namespace ashes::gl4
 #pragma endregion
 #pragma region VK_KHR_win32_surface
 #ifdef VK_KHR_win32_surface
-#	ifdef VK_USE_PLATFORM_WIN32_KHR
+#	ifdef _WIN32
 
 	VkResult VKAPI_CALL vkCreateWin32SurfaceKHR(
 		VkInstance instance,
@@ -3820,13 +3817,12 @@ namespace ashes::gl4
 		{
 #if VK_KHR_surface
 			VkExtensionProperties{ VK_KHR_SURFACE_EXTENSION_NAME, makeVersion( 1, 0, 0 ) },
-			[]()
-			{
-				VkExtensionProperties result;
-				result.specVersion = makeVersion( 1, 0, 0 );
-				strncpy( result.extensionName, VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME, VK_MAX_EXTENSION_NAME_SIZE );
-				return result;
-			}(),
+#	if _WIN32
+			VkExtensionProperties{ VK_KHR_WIN32_SURFACE_EXTENSION_NAME, VK_KHR_WIN32_SURFACE_SPEC_VERSION },
+#	elif __linux__
+			VkExtensionProperties{ VK_KHR_XLIB_SURFACE_EXTENSION_NAME, VK_KHR_XLIB_SURFACE_SPEC_VERSION },
+			VkExtensionProperties{ VK_KHR_XCB_SURFACE_EXTENSION_NAME, VK_KHR_XCB_SURFACE_SPEC_VERSION },
+#	endif
 #endif
 #if VK_EXT_debug_report
 			VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_REPORT_SPEC_VERSION, 0, 0 ) },
@@ -3886,18 +3882,19 @@ namespace ashes::gl4
 
 			if ( result != VK_SUCCESS )
 			{
-				RenderWindow window;
-				ExtensionsHandler extensions;
 				bool supported = false;
+				gl::ExtensionsHandler extensions;
 
 				try
 				{
-					extensions.initialise();
-					supported = extensions.getMajor() > 4
-						|| ( extensions.getMajor() == 4 && extensions.getMinor() >= 2 );
+					gl::RenderWindow::create( MinMajor, MinMinor );
+					extensions.initialise( MinMajor, MinMinor, MaxMajor, MaxMinor );
+					supported = extensions.getMajor() > MinMajor
+						|| ( extensions.getMajor() == MinMajor && extensions.getMinor() >= MinMinor );
 				}
 				catch ( std::exception & exc )
 				{
+					supported = VK_FALSE;
 					std::cerr << exc.what() << std::endl;
 				}
 

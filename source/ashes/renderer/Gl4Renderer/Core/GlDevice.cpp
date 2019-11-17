@@ -11,7 +11,6 @@ See LICENSE file in root folder.
 #include "Command/GlQueue.hpp"
 #include "Core/GlContextLock.hpp"
 #include "Core/GlSurface.hpp"
-#include "Core/GlDummyIndexBuffer.hpp"
 #include "Core/GlInstance.hpp"
 #include "Core/GlSwapChain.hpp"
 #include "Descriptor/GlDescriptorPool.hpp"
@@ -31,6 +30,8 @@ See LICENSE file in root folder.
 #include "Sync/GlSemaphore.hpp"
 
 #include "ashesgl4_api.hpp"
+
+#include <renderer/GlRendererCommon/GlDummyIndexBuffer.hpp>
 
 #include <iostream>
 #include <cstring>
@@ -150,50 +151,16 @@ namespace ashes::gl4
 
 	Device::Device( VkInstance instance
 		, VkPhysicalDevice gpu
-		, Context & context
 		, VkDeviceCreateInfo createInfos )
 		: m_instance{ instance }
 		, m_physicalDevice{ gpu }
 		, m_createInfos{ std::move( createInfos ) }
 		, m_enabledFeatures{ m_createInfos.pEnabledFeatures ? *m_createInfos.pEnabledFeatures : get( m_physicalDevice )->getFeatures() }
-		, m_currentContext{ &context }
+		, m_currentContext{ nullptr }
 		, m_dyState{ VK_DYNAMIC_STATE_SCISSOR, VK_DYNAMIC_STATE_VIEWPORT }
 	{
 		doCheckEnabledExtensions( ashes::makeArrayView( m_createInfos.ppEnabledExtensionNames, m_createInfos.enabledExtensionCount ) );
 		doInitialiseQueues();
-		auto lock = getContext();
-		allocate( m_blitFbos[0]
-			, nullptr
-			, get( this )
-			, GL_INVALID_INDEX );
-		allocate( m_blitFbos[1]
-			, nullptr
-			, get( this )
-			, GL_INVALID_INDEX );
-		allocate( m_sampler
-			, nullptr
-			, get( this )
-			, VkSamplerCreateInfo
-			{
-				VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
-				nullptr,
-				0u,
-				VK_FILTER_NEAREST,
-				VK_FILTER_NEAREST,
-				VK_SAMPLER_MIPMAP_MODE_NEAREST,
-				VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-				VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-				VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-				0.0f,
-				VK_FALSE,
-				1.0f,
-				VK_FALSE,
-				VK_COMPARE_OP_ALWAYS,
-				0.0f,
-				1.0f,
-				VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK,
-				VK_FALSE,
-			} );
 	}
 
 	Device::~Device()
@@ -253,9 +220,13 @@ namespace ashes::gl4
 
 	VkResult Device::waitIdle()const
 	{
-		auto context = getContext();
-		glLogCall( context
-			, glFinish );
+		if ( m_currentContext )
+		{
+			auto context = getContext();
+			glLogCall( context
+				, glFinish );
+		}
+
 		return VK_SUCCESS;
 	}
 
@@ -453,6 +424,39 @@ namespace ashes::gl4
 				m_ownContext = std::move( context );
 				m_currentContext = m_ownContext.get();
 				get( m_instance )->registerContext( *m_ownContext );
+				auto lock = getContext();
+				allocate( m_blitFbos[0]
+					, nullptr
+					, get( this )
+					, GL_INVALID_INDEX );
+				allocate( m_blitFbos[1]
+					, nullptr
+					, get( this )
+					, GL_INVALID_INDEX );
+				allocate( m_sampler
+					, nullptr
+					, get( this )
+					, VkSamplerCreateInfo
+					{
+						VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+						nullptr,
+						0u,
+						VK_FILTER_NEAREST,
+						VK_FILTER_NEAREST,
+						VK_SAMPLER_MIPMAP_MODE_NEAREST,
+						VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+						VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+						VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+						0.0f,
+						VK_FALSE,
+						1.0f,
+						VK_FALSE,
+						VK_COMPARE_OP_ALWAYS,
+						0.0f,
+						1.0f,
+						VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK,
+						VK_FALSE,
+					} );
 			}
 		}
 		catch ( std::exception & exc )
@@ -497,7 +501,7 @@ namespace ashes::gl4
 		if ( !m_dummyIndexed.indexBuffer )
 		{
 			auto context = getContext();
-			auto count = uint32_t( sizeof( dummyIndex ) / sizeof( dummyIndex[0] ) );
+			auto count = uint32_t( sizeof( gl::dummyIndex ) / sizeof( gl::dummyIndex[0] ) );
 			allocate( m_dummyIndexed.indexBuffer
 				, nullptr
 				, get( this )
@@ -527,7 +531,7 @@ namespace ashes::gl4
 
 			if ( memory->lock( context, 0u, size, 0u, reinterpret_cast< void ** >( &buffer ) ) == VK_SUCCESS )
 			{
-				std::memcpy( buffer, dummyIndex, size );
+				std::memcpy( buffer, gl::dummyIndex, size );
 				memory->flush( context, 0, size );
 				memory->unlock( context );
 			}

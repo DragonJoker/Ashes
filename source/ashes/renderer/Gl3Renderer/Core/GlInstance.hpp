@@ -6,7 +6,9 @@
 */
 #pragma once
 
-#include "renderer/Gl3Renderer/Core/GlExtensionsHandler.hpp"
+#include "renderer/Gl3Renderer/GlRendererPrerequisites.hpp"
+
+#include <renderer/GlRendererCommon/GlExtensionsHandler.hpp>
 
 namespace ashes::gl3
 {
@@ -18,6 +20,12 @@ namespace ashes::gl3
 		Instance( VkInstanceCreateInfo createInfo );
 		~Instance();
 
+#if _WIN32
+		ContextPtr createContext( VkWin32SurfaceCreateInfoKHR createInfo );
+#elif __linux__
+		ContextPtr createContext( VkXlibSurfaceCreateInfoKHR createInfo );
+		ContextPtr createContext( VkXcbSurfaceCreateInfoKHR createInfo );
+#endif
 		VkPhysicalDeviceArray enumeratePhysicalDevices()const;
 		std::array< float, 16 > frustum( float left
 			, float right
@@ -119,11 +127,6 @@ namespace ashes::gl3
 			return m_extensions;
 		}
 
-		inline Context & getContext()const
-		{
-			return *m_context;
-		}
-
 		inline AshPluginFeatures const & getFeatures()const
 		{
 			return m_features;
@@ -146,7 +149,6 @@ namespace ashes::gl3
 #endif
 		ExtensionsHandler m_extensions;
 		bool m_validationEnabled;
-		RenderWindow * m_dummyWindow;
 		ContextPtr m_context;
 	};
 }

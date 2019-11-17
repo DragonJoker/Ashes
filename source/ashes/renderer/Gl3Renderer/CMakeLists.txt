@@ -1,4 +1,5 @@
 project( Gl3Renderer )
+cmake_policy( SET CMP0072 NEW )
 
 set( ${PROJECT_NAME}_VERSION_MAJOR 0 )
 set( ${PROJECT_NAME}_VERSION_MINOR 1 )
@@ -10,6 +11,30 @@ set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_BUILD}" )
 find_package( OpenGL )
 
 if ( OpenGL_FOUND )
+	set( BinLibraries
+		${BinLibraries}
+		GlRendererCommon
+	)
+
+	if ( WIN32 )
+		set( BinLibraries
+			${BinLibraries}
+			OpenGL::GL
+		)
+	else ()
+		find_package( XCB REQUIRED COMPONENTS xcb )
+		set( BinLibraries
+			${BinLibraries}
+			${XCB_LIBRARIES}
+			X11-xcb
+			OpenGL::OpenGL
+			OpenGL::EGL
+			OpenGL::GLX
+			X11
+
+		)
+	endif ()
+
 	file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
 		${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.c
 		${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.cc
@@ -48,7 +73,6 @@ if ( OpenGL_FOUND )
 		${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
 	)
 	target_link_libraries( ${PROJECT_NAME} PRIVATE
-		${OPENGL_gl_LIBRARY}
 		${BinLibraries}
 		${RendererDependencies}
 	)
