@@ -75,11 +75,8 @@ namespace ashes::gl3
 				m_inlineUniforms.push_back( &write.second );
 				break;
 #endif
-#if VK_NV_ray_tracing
-			case VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV:
-				break;
-#endif
 			default:
+				reportUnsupported( get( pool )->getDevice(), "VkDescriptorType" );
 				break;
 			}
 		}
@@ -157,7 +154,6 @@ namespace ashes::gl3
 
 	void DescriptorSet::update( VkCopyDescriptorSet const & copy )
 	{
-		//m_writes[copy.dstBinding].dstBinding = copy.srcBinding;
-		//m_writes[copy.dstBinding].dstArrayElement = copy.srcArrayElement;
+		reportUnsupported( get( m_pool )->getDevice(), "VkCopyDescriptorSet" );
 	}
 }

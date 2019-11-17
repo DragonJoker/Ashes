@@ -2,48 +2,66 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "Core/GlExtensionsHandler.hpp"
-
-#if ASHES_XLIB
-#	include <X11/Xlib.h>
-#	include <GL/glx.h>
-#endif
-
-#include <GL/gl.h>
+#include "GlExtensionsHandler.hpp"
 
 #include <algorithm>
 #include <iterator>
-#include <stdexcept>
 #include <sstream>
 
-#ifdef max
-#	undef max
-#endif
-#ifdef min
-#	undef min
+#if _WIN32
+#	define GLAPIENTRY __stdcall
+#	include <gl/GL.h>
+#else
+#	define GLAPIENTRY
 #endif
 
-namespace ashes::gl4
+namespace ashes::gl
 {
 	namespace
 	{
-		enum GlSpirvExtensions
+		enum GlThings
 		{
+#ifndef _WIN32
+			GL_VERSION = 0x1F02,
+			GL_EXTENSIONS = 0x1F03,
+#endif
 			GL_SPIRV_SHADER_BINARY_FORMATS = 0x8DF8,
 			GL_SPIRV_NUM_SHADER_BINARY_FORMATS = 0x8DF9,
+			GL_SHADER_BINARY_FORMAT_SPIR_V = 0x9551,
 			GL_SPIRV_SPIR_V_BINARY = 0x9552,
 			GL_SPIRV_SPIR_V_EXTENSIONS = 0x9553,
 			GL_SPIRV_NUM_SPIR_V_EXTENSIONS = 0x9554,
 		};
 
+		using GLenum = unsigned int;
+		using GLint = int;
+		using GLubyte = unsigned char;
+		using GLuint = unsigned int;
+
+		using PFN_glGetError = GLenum( GLAPIENTRY * )( void );
 		using PFN_glGetStringi = const GLubyte *( GLAPIENTRY * )( GLenum name, GLuint index );
-		PFN_glGetStringi glGetStringi;
+		using PFN_glGetString = const GLubyte *( GLAPIENTRY * )( GLenum name );
+		using PFN_glGetIntegerv = void ( GLAPIENTRY * )( GLenum pname, GLint * data );
+
+		PFN_glGetStringi getStringi;
+		PFN_glGetString getString;
+		PFN_glGetIntegerv getIntegerv;
 	}
 
-	void ExtensionsHandler::initialise()
+	void ExtensionsHandler::initialise( int reqMajor, int reqMinor
+		, int maxMajor, int maxMinor )
 	{
-		getFunction( "glGetStringi", glGetStringi );
-		char const * const cversion = ( char const * )glGetString( GL_VERSION );
+		getFunction( "glGetStringi", getStringi );
+
+#ifndef _WIN32
+		getFunction( "glGetString", getString );
+		getFunction( "glGetIntegerv", getIntegerv );
+#else
+		getString = glGetString;
+		getIntegerv = glGetIntegerv;
+#endif
+
+		char const * const cversion = ( char const * )getString( GL_VERSION );
 
 		if ( cversion )
 		{
@@ -51,19 +69,40 @@ namespace ashes::gl4
 			std::stringstream stream( sversion );
 			float fversion;
 			stream >> fversion;
-			auto version = std::min( int( fversion * 10 ), 46 );
+			int maxVersion = ( maxMajor * 10 ) + maxMinor;
+			auto version = std::min( maxVersion, int( fversion * 10 ) );
+			int reqVersion = ( reqMajor * 10 ) + reqMinor;
 
-			if ( version < 42 )
+			if ( version < reqVersion )
 			{
-				throw std::runtime_error{ "OpenGL >= 4.2 is needed for this renderer." };
+				std::stringstream stream;
+				stream << "OpenGL >= " << reqMajor << "." << reqMinor << " is needed for this renderer.";
+				throw std::runtime_error{ stream.str() };
 			}
 
-			m_major = version / 10;
-			m_minor = version % 10;
-			m_shaderVersion = version * 10;
+			version = reqVersion;
+			m_major = reqMajor;
+			m_minor = reqMinor;
+
+			if ( version >= 33 )
+			{
+				m_shaderVersion = version * 10;
+			}
+			else if ( version >= 32 )
+			{
+				m_shaderVersion = 150;
+			}
+			else if ( version >= 31 )
+			{
+				m_shaderVersion = 140;
+			}
+			else
+			{
+				m_shaderVersion = 130;
+			}
 		}
 
-		auto const * cextensions = ( char const * )glGetString( GL_EXTENSIONS );
+		auto const * cextensions = ( char const * )getString( GL_EXTENSIONS );
 
 		if ( cextensions )
 		{
@@ -75,11 +114,11 @@ namespace ashes::gl4
 		}
 
 		int numSpirvExtensions = 0;
-		glGetIntegerv( GL_SPIRV_NUM_SPIR_V_EXTENSIONS, &numSpirvExtensions );
+		getIntegerv( GL_SPIRV_NUM_SPIR_V_EXTENSIONS, &numSpirvExtensions );
 
 		for ( auto index = 0; index < numSpirvExtensions; ++index )
 		{
-			auto const * cspirvext = ( char const * )glGetStringi( GL_SPIRV_SPIR_V_EXTENSIONS, index );
+			auto const * cspirvext = ( char const * )getStringi( GL_SPIRV_SPIR_V_EXTENSIONS, index );
 
 			if ( cspirvext )
 			{
@@ -88,12 +127,12 @@ namespace ashes::gl4
 		}
 
 		int numBinaryFormats = 0;
-		glGetIntegerv( GL_SPIRV_NUM_SHADER_BINARY_FORMATS, &numSpirvExtensions );
+		getIntegerv( GL_SPIRV_NUM_SHADER_BINARY_FORMATS, &numBinaryFormats );
 
 		if ( numBinaryFormats > 0 )
 		{
 			m_shaderBinaryFormats.resize( numBinaryFormats );
-			glGetIntegerv( GL_SPIRV_SHADER_BINARY_FORMATS, reinterpret_cast< int * >( m_shaderBinaryFormats.data() ) );
+			getIntegerv( GL_SPIRV_SHADER_BINARY_FORMATS, reinterpret_cast< int * >( m_shaderBinaryFormats.data() ) );
 		}
 
 		// Currently disabled, because I need to parse SPIR-V to retrieve push constant blocks...

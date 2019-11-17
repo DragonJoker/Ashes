@@ -15,23 +15,7 @@ namespace ashes::gl3
 			, VkSampleCountFlagBits samples
 			, uint32_t baseArrayLayer )
 		{
-			GlTextureType result = gl3::convert( viewType );
-
-			if ( samples > VK_SAMPLE_COUNT_1_BIT )
-			{
-				switch ( result )
-				{
-				case GL_TEXTURE_2D:
-					result = GL_TEXTURE_2D_MULTISAMPLE;
-					break;
-				case GL_TEXTURE_2D_ARRAY:
-					result = GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
-					break;
-				default:
-					assert( "Unsupported ImageViewType for a multisampled image" );
-					break;
-				}
-			}
+			GlTextureType result = gl3::convert( viewType, samples );
 
 			if ( checkFlag( flags, VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT ) )
 			{

@@ -85,10 +85,10 @@ namespace details
 					{
 						result.emplace_back( std::make_unique< ashes::DynamicLibrary >( file ) );
 					}
-					catch ( std::exception & /*exc*/ )
+					catch ( std::exception & exc )
 					{
 						// Prevent useless noisy message
-						//std::clog << exc.what() << std::endl;
+						std::clog << exc.what() << std::endl;
 					}
 				}
 			}
@@ -1153,8 +1153,8 @@ extern "C"
 #endif
 #pragma endregion
 #pragma region VK_KHR_xcb_surface
-#ifdef VK_KHR_xcb_surface
-#	ifdef VK_USE_PLATFORM_XCB_KHR
+// #ifdef VK_KHR_xcb_surface
+#	ifdef __linux__
 
 	Ashes_API VkResult VKAPI_CALL vkCreateXcbSurfaceKHR( VkInstance instance, const  VkXcbSurfaceCreateInfoKHR* pCreateInfo, const  VkAllocationCallbacks* pAllocator, VkSurfaceKHR* pSurface )
 	{
@@ -1167,11 +1167,11 @@ extern "C"
 	}
 
 #	endif
-#endif
+// #endif
 #pragma endregion
 #pragma region VK_KHR_xlib_surface
-#ifdef VK_KHR_xlib_surface
-#	ifdef VK_USE_PLATFORM_XLIB_KHR
+// #ifdef VK_KHR_xlib_surface
+#	ifdef __linux__
 
 	Ashes_API VkResult VKAPI_CALL vkCreateXlibSurfaceKHR( VkInstance instance, const  VkXlibSurfaceCreateInfoKHR* pCreateInfo, const  VkAllocationCallbacks* pAllocator, VkSurfaceKHR* pSurface )
 	{
@@ -1184,7 +1184,7 @@ extern "C"
 	}
 
 #	endif
-#endif
+// #endif
 #pragma endregion
 #pragma region VK_KHR_wayland_surface
 #ifdef VK_KHR_wayland_surface
@@ -1205,7 +1205,7 @@ extern "C"
 #pragma endregion
 #pragma region VK_KHR_win32_surface
 #ifdef VK_KHR_win32_surface
-#	ifdef VK_USE_PLATFORM_WIN32_KHR
+#	ifdef _WIN32
 
 	Ashes_API VkResult VKAPI_CALL vkCreateWin32SurfaceKHR( VkInstance instance, const  VkWin32SurfaceCreateInfoKHR* pCreateInfo, const  VkAllocationCallbacks* pAllocator, VkSurfaceKHR* pSurface )
 	{

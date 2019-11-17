@@ -1,9 +1,10 @@
 /*
+This file belongs to Ashes.
 See LICENSE file in root folder
 */
 #pragma once
 
-#include "renderer/Gl3Renderer/GlRendererPrerequisites.hpp"
+#include "GlCommonPrerequisites.hpp"
 
 #include <renderer/RendererCommon/Helper/ColourBlendState.hpp>
 #include <renderer/RendererCommon/Helper/DepthStencilState.hpp>
@@ -14,7 +15,7 @@ See LICENSE file in root folder
 #include <renderer/RendererCommon/Helper/TessellationState.hpp>
 #include <renderer/RendererCommon/Helper/ViewportState.hpp>
 
-namespace ashes::gl3
+namespace ashes::gl
 {
 	struct ContextState
 	{

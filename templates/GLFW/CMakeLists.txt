@@ -26,6 +26,7 @@ if( GLFW_FOUND )
 	)
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE
 		${TARGET_CXX_DEFINITIONS}
+		${TARGET_DEFINITIONS}
 	)
 	target_compile_options( ${PROJECT_NAME} PRIVATE
 		${TARGET_CXX_OPTIONS}

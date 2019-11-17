@@ -6,17 +6,6 @@ See LICENSE file in root folder.
 
 #include "renderer/Gl4Renderer/Core/GlInstance.hpp"
 
-#if ASHES_WIN32
-#	ifndef NOMINMAX
-#		define NOMINMAX
-#	endif
-#	include <Windows.h>
-#	include <gl/GL.h>
-#elif ASHES_XLIB
-#	include <X11/Xlib.h>
-#	include <GL/glx.h>
-#endif
-
 #include "ashesgl4_api.hpp"
 
 namespace ashes::gl4

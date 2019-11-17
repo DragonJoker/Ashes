@@ -197,6 +197,9 @@ namespace ashes::gl4
 			case OpType::eBindContextState:
 				apply( lock, map< OpType::eBindContextState >( cmd ) );
 				break;
+			case OpType::eFramebufferTexture:
+				apply( lock, map< OpType::eFramebufferTexture >( cmd ) );
+				break;
 			case OpType::eFramebufferTexture2D:
 				apply( lock, map< OpType::eFramebufferTexture2D >( cmd ) );
 				break;

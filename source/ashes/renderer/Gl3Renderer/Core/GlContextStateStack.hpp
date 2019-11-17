@@ -3,7 +3,9 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "GlContextState.hpp"
+#include "renderer/Gl3Renderer/GlRendererPrerequisites.hpp"
+
+#include <renderer/GlRendererCommon/GlContextState.hpp>
 
 #include <cassert>
 
@@ -29,6 +31,15 @@ namespace ashes::gl3
 			, uint32_t firstScissor
 			, VkScissorArray const & scissors
 			, bool force );
+		void applyStencilCompareMask( CmdList & list
+			, uint32_t compareMask
+			, VkStencilFaceFlags faceFlags );
+		void applyStencilWriteMask( CmdList & list
+			, uint32_t compareMask
+			, VkStencilFaceFlags faceFlags );
+		void applyStencilReference( CmdList & list
+			, uint32_t reference
+			, VkStencilFaceFlags faceFlags );
 
 		inline bool isPrimitiveRestartEnabled()const
 		{
@@ -107,7 +118,7 @@ namespace ashes::gl3
 			, bool force );
 
 	private:
-		ContextState * m_save{ nullptr };
+		gl::ContextState * m_save{ nullptr };
 		VkScissorArray m_scissors;
 		VkViewportArray m_viewports;
 		GLuint m_currentProgram{ 0u };

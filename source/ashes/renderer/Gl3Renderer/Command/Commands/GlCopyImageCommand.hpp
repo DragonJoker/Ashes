@@ -68,6 +68,7 @@ namespace ashes::gl3
 			, VkImage dst
 			, uint32_t dstName
 			, uint32_t dstTarget
+			, uint32_t dstLayerTarget
 			, int32_t dstOffsetY
 			, uint32_t dstExtentY
 			, VkImageCopy copy )
@@ -78,6 +79,7 @@ namespace ashes::gl3
 			, dst{ std::move( dst ) }
 			, dstName{ std::move( dstName ) }
 			, dstTarget{ std::move( dstTarget ) }
+			, dstLayerTarget{ std::move( dstLayerTarget ) }
 			, dstOffsetY{ std::move( dstOffsetY ) }
 			, dstExtentY{ std::move( dstExtentY ) }
 			, copy{ std::move( copy ) }
@@ -91,6 +93,7 @@ namespace ashes::gl3
 		VkImage dst;
 		uint32_t dstName;
 		uint32_t dstTarget;
+		uint32_t dstLayerTarget;
 		int32_t dstOffsetY;
 		uint32_t dstExtentY;
 		VkImageCopy copy;
@@ -117,6 +120,7 @@ namespace ashes::gl3
 			, VkImage dst
 			, uint32_t dstName
 			, uint32_t dstTarget
+			, uint32_t dstLayerTarget
 			, int32_t dstOffsetZ
 			, uint32_t dstExtentZ
 			, VkImageCopy copy )
@@ -127,6 +131,7 @@ namespace ashes::gl3
 			, dst{ std::move( dst ) }
 			, dstName{ std::move( dstName ) }
 			, dstTarget{ std::move( dstTarget ) }
+			, dstLayerTarget{ std::move( dstLayerTarget ) }
 			, dstOffsetZ{ std::move( dstOffsetZ ) }
 			, dstExtentZ{ std::move( dstExtentZ ) }
 			, copy{ std::move( copy ) }
@@ -140,6 +145,7 @@ namespace ashes::gl3
 		VkImage dst;
 		uint32_t dstName;
 		uint32_t dstTarget;
+		uint32_t dstLayerTarget;
 		int32_t dstOffsetZ;
 		uint32_t dstExtentZ;
 		VkImageCopy copy;

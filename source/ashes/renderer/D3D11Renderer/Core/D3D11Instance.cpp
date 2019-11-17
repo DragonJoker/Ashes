@@ -313,6 +313,15 @@ namespace ashes::d3d11
 
 #if VK_EXT_debug_utils
 
+	void Instance::submitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
+		, VkDebugUtilsMessageTypeFlagsEXT messageTypes
+		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const
+	{
+		onSubmitDebugUtilsMessenger( messageSeverity
+			, messageTypes
+			, callbackData );
+	}
+
 	void Instance::onSubmitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
 		, VkDebugUtilsMessageTypeFlagsEXT messageTypes
 		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const
@@ -334,6 +343,23 @@ namespace ashes::d3d11
 
 #endif
 #if VK_EXT_debug_report
+
+	void Instance::reportMessage( VkDebugReportFlagsEXT flags
+		, VkDebugReportObjectTypeEXT objectType
+		, uint64_t object
+		, size_t location
+		, int32_t messageCode
+		, const char * pLayerPrefix
+		, const char * pMessage )
+	{
+		onReportMessage( flags
+			, objectType
+			, object
+			, location
+			, messageCode
+			, pLayerPrefix
+			, pMessage );
+	}
 
 	void Instance::onReportMessage( VkDebugReportFlagsEXT flags
 		, VkDebugReportObjectTypeEXT objectType

@@ -14,7 +14,9 @@ namespace ashes::gl3
 	*\return
 	*	Le GlTextureType.
 	*/
-	GlTextureType convert( VkImageViewType const & mode );
 	GlTextureType convert( VkImageViewType const & mode
+		, VkSampleCountFlagBits samples );
+	GlTextureType convert( VkImageViewType const & mode
+		, VkSampleCountFlagBits samples
 		, uint32_t layers );
 }

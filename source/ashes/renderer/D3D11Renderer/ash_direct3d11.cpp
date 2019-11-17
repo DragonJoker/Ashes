@@ -18,16 +18,16 @@ namespace ashes::d3d11
 
 	PFN_vkVoidFunction VKAPI_CALL vkGetInstanceProcAddr(
 		VkInstance instance,
-		const char* pName );
+		const char * pName );
 
 	PFN_vkVoidFunction VKAPI_CALL vkGetDeviceProcAddr(
 		VkDevice device,
-		const char* pName );
+		const char * pName );
 
 	VkResult VKAPI_CALL vkCreateInstance(
-		const VkInstanceCreateInfo* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkInstance* pInstance )
+		const VkInstanceCreateInfo * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkInstance * pInstance )
 	{
 		assert( pInstance );
 		return allocate( *pInstance
@@ -37,15 +37,15 @@ namespace ashes::d3d11
 
 	void VKAPI_CALL vkDestroyInstance(
 		VkInstance instance,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
 		deallocate( instance, pAllocator );
 	}
 
 	VkResult VKAPI_CALL vkEnumeratePhysicalDevices(
 		VkInstance instance,
-		uint32_t* pPhysicalDeviceCount,
-		VkPhysicalDevice* pPhysicalDevices )
+		uint32_t * pPhysicalDeviceCount,
+		VkPhysicalDevice * pPhysicalDevices )
 	{
 		VkResult result = VK_SUCCESS;
 
@@ -54,15 +54,13 @@ namespace ashes::d3d11
 			auto gpus = get( instance )->enumeratePhysicalDevices();
 			*pPhysicalDeviceCount = uint32_t( gpus.size() );
 
-			if ( !pPhysicalDevices )
+			if ( pPhysicalDevices )
 			{
-				return result;
-			}
-
-			for ( auto & gpu : gpus )
-			{
-				*pPhysicalDevices = gpu;
-				++pPhysicalDevices;
+				for ( auto & gpu : gpus )
+				{
+					*pPhysicalDevices = gpu;
+					++pPhysicalDevices;
+				}
 			}
 		}
 		catch ( Exception & exc )
@@ -79,7 +77,7 @@ namespace ashes::d3d11
 
 	void VKAPI_CALL vkGetPhysicalDeviceFeatures(
 		VkPhysicalDevice physicalDevice,
-		VkPhysicalDeviceFeatures* pFeatures )
+		VkPhysicalDeviceFeatures * pFeatures )
 	{
 		*pFeatures = get( physicalDevice )->getFeatures();
 	}
@@ -87,7 +85,7 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkGetPhysicalDeviceFormatProperties(
 		VkPhysicalDevice physicalDevice,
 		VkFormat format,
-		VkFormatProperties* pFormatProperties )
+		VkFormatProperties * pFormatProperties )
 	{
 		*pFormatProperties = get( physicalDevice )->getFormatProperties( format );
 	}
@@ -99,52 +97,53 @@ namespace ashes::d3d11
 		VkImageTiling tiling,
 		VkImageUsageFlags usage,
 		VkImageCreateFlags flags,
-		VkImageFormatProperties* pImageFormatProperties )
+		VkImageFormatProperties * pImageFormatProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceImageFormatProperties Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return get( physicalDevice )->getImageFormatProperties( format
+			, type
+			, tiling
+			, usage
+			, flags
+			, *pImageFormatProperties );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceProperties(
 		VkPhysicalDevice physicalDevice,
-		VkPhysicalDeviceProperties* pProperties )
+		VkPhysicalDeviceProperties * pProperties )
 	{
 		*pProperties = get( physicalDevice )->getProperties();
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceQueueFamilyProperties(
 		VkPhysicalDevice physicalDevice,
-		uint32_t* pQueueFamilyPropertyCount,
-		VkQueueFamilyProperties* pQueueFamilyProperties )
+		uint32_t * pQueueFamilyPropertyCount,
+		VkQueueFamilyProperties * pQueueFamilyProperties )
 	{
 		auto props = get( physicalDevice )->getQueueFamilyProperties();
 		*pQueueFamilyPropertyCount = uint32_t( props.size() );
 
-		if ( !pQueueFamilyProperties )
+		if ( pQueueFamilyProperties )
 		{
-			return;
-		}
-
-		for ( auto & prop : props )
-		{
-			( *pQueueFamilyProperties ) = prop;
-			++pQueueFamilyProperties;
+			for ( auto & prop : props )
+			{
+				( *pQueueFamilyProperties ) = prop;
+				++pQueueFamilyProperties;
+			}
 		}
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceMemoryProperties(
 		VkPhysicalDevice physicalDevice,
-		VkPhysicalDeviceMemoryProperties* pMemoryProperties )
+		VkPhysicalDeviceMemoryProperties * pMemoryProperties )
 	{
 		*pMemoryProperties = get( physicalDevice )->getMemoryProperties();
 	}
 
 	VkResult VKAPI_CALL vkCreateDevice(
 		VkPhysicalDevice physicalDevice,
-		const VkDeviceCreateInfo* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkDevice* pDevice )
+		const VkDeviceCreateInfo * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkDevice * pDevice )
 	{
 		auto & gpu = *get( physicalDevice );
 		auto instance = gpu.getInstance();
@@ -158,15 +157,15 @@ namespace ashes::d3d11
 
 	void VKAPI_CALL vkDestroyDevice(
 		VkDevice device,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
 		deallocate( device, pAllocator );
 	}
 
 	VkResult VKAPI_CALL vkEnumerateInstanceExtensionProperties(
-		const char* pLayerName,
-		uint32_t* pPropertyCount,
-		VkExtensionProperties* pProperties )
+		const char * pLayerName,
+		uint32_t * pPropertyCount,
+		VkExtensionProperties * pProperties )
 	{
 		auto & extensions = getSupportedInstanceExtensions();
 		*pPropertyCount = uint32_t( extensions.size() );
@@ -185,11 +184,11 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkEnumerateDeviceExtensionProperties(
 		VkPhysicalDevice physicalDevice,
-		const char* pLayerName,
-		uint32_t* pPropertyCount,
-		VkExtensionProperties* pProperties )
+		const char * pLayerName,
+		uint32_t * pPropertyCount,
+		VkExtensionProperties * pProperties )
 	{
-		auto & extensions = getSupportedInstanceExtensions();
+		auto & extensions = getSupportedDeviceExtensions();
 		*pPropertyCount = uint32_t( extensions.size() );
 
 		if ( pProperties )
@@ -205,8 +204,8 @@ namespace ashes::d3d11
 	}
 
 	VkResult VKAPI_CALL vkEnumerateInstanceLayerProperties(
-		uint32_t* pPropertyCount,
-		VkLayerProperties* pProperties )
+		uint32_t * pPropertyCount,
+		VkLayerProperties * pProperties )
 	{
 		// TODO
 		*pPropertyCount = 0u;
@@ -215,8 +214,8 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkEnumerateDeviceLayerProperties(
 		VkPhysicalDevice physicalDevice,
-		uint32_t* pPropertyCount,
-		VkLayerProperties* pProperties )
+		uint32_t * pPropertyCount,
+		VkLayerProperties * pProperties )
 	{
 		// TODO
 		*pPropertyCount = 0u;
@@ -227,7 +226,7 @@ namespace ashes::d3d11
 		VkDevice device,
 		uint32_t queueFamilyIndex,
 		uint32_t queueIndex,
-		VkQueue* pQueue )
+		VkQueue * pQueue )
 	{
 		assert( pQueue );
 		*pQueue = get( device )->getQueue( queueFamilyIndex, queueIndex );
@@ -236,7 +235,7 @@ namespace ashes::d3d11
 	VkResult VKAPI_CALL vkQueueSubmit(
 		VkQueue queue,
 		uint32_t submitCount,
-		const VkSubmitInfo* pSubmits,
+		const VkSubmitInfo * pSubmits,
 		VkFence fence )
 	{
 		return get( queue )->submit( { pSubmits, pSubmits + submitCount }, fence );
@@ -256,9 +255,9 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkAllocateMemory(
 		VkDevice device,
-		const VkMemoryAllocateInfo* pAllocateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkDeviceMemory* pMemory )
+		const VkMemoryAllocateInfo * pAllocateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkDeviceMemory * pMemory )
 	{
 		assert( pMemory );
 		return allocate( *pMemory
@@ -270,7 +269,7 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkFreeMemory(
 		VkDevice device,
 		VkDeviceMemory memory,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
 		deallocate( memory, pAllocator );
 	}
@@ -281,7 +280,7 @@ namespace ashes::d3d11
 		VkDeviceSize offset,
 		VkDeviceSize size,
 		VkMemoryMapFlags flags,
-		void** ppData )
+		void ** ppData )
 	{
 		return get( memory )->lock( offset, size, flags, ppData );
 	}
@@ -296,7 +295,7 @@ namespace ashes::d3d11
 	VkResult VKAPI_CALL vkFlushMappedMemoryRanges(
 		VkDevice device,
 		uint32_t memoryRangeCount,
-		const VkMappedMemoryRange* pMemoryRanges )
+		const VkMappedMemoryRange * pMemoryRanges )
 	{
 		VkResult result = VK_SUCCESS;
 
@@ -312,7 +311,7 @@ namespace ashes::d3d11
 	VkResult VKAPI_CALL vkInvalidateMappedMemoryRanges(
 		VkDevice device,
 		uint32_t memoryRangeCount,
-		const VkMappedMemoryRange* pMemoryRanges )
+		const VkMappedMemoryRange * pMemoryRanges )
 	{
 		VkResult result = VK_SUCCESS;
 
@@ -328,10 +327,9 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkGetDeviceMemoryCommitment(
 		VkDevice device,
 		VkDeviceMemory memory,
-		VkDeviceSize* pCommittedMemoryInBytes )
+		VkDeviceSize * pCommittedMemoryInBytes )
 	{
-		// TODO
-		std::cerr << "vkGetDeviceMemoryCommitment Unsupported" << std::endl;
+		reportUnsupported( device, "vkGetDeviceMemoryCommitment" );
 	}
 
 	VkResult VKAPI_CALL vkBindBufferMemory(
@@ -355,7 +353,7 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkGetBufferMemoryRequirements(
 		VkDevice device,
 		VkBuffer buffer,
-		VkMemoryRequirements* pMemoryRequirements )
+		VkMemoryRequirements * pMemoryRequirements )
 	{
 		*pMemoryRequirements = get( buffer )->getMemoryRequirements();
 	}
@@ -363,7 +361,7 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkGetImageMemoryRequirements(
 		VkDevice device,
 		VkImage image,
-		VkMemoryRequirements* pMemoryRequirements )
+		VkMemoryRequirements * pMemoryRequirements )
 	{
 		*pMemoryRequirements = get( image )->getMemoryRequirements();
 	}
@@ -371,12 +369,10 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkGetImageSparseMemoryRequirements(
 		VkDevice device,
 		VkImage image,
-		uint32_t* pSparseMemoryRequirementCount,
-		VkSparseImageMemoryRequirements* pSparseMemoryRequirements )
+		uint32_t * pSparseMemoryRequirementCount,
+		VkSparseImageMemoryRequirements * pSparseMemoryRequirements )
 	{
-		// TODO
-		std::cerr << "vkGetImageSparseMemoryRequirements Unsupported" << std::endl;
-		*pSparseMemoryRequirementCount = 0u;
+		reportUnsupported( device, "vkGetImageSparseMemoryRequirements" );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceSparseImageFormatProperties(
@@ -386,30 +382,42 @@ namespace ashes::d3d11
 		VkSampleCountFlagBits samples,
 		VkImageUsageFlags usage,
 		VkImageTiling tiling,
-		uint32_t* pPropertyCount,
-		VkSparseImageFormatProperties* pProperties )
+		uint32_t * pPropertyCount,
+		VkSparseImageFormatProperties * pProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceSparseImageFormatProperties Unsupported" << std::endl;
-		*pPropertyCount = 0u;
+		std::vector< VkSparseImageFormatProperties > props;
+		auto result = get( physicalDevice )->getSparseImageFormatProperties( format
+			, type
+			, samples
+			, usage
+			, tiling
+			, props );
+		*pPropertyCount = uint32_t( props.size() );
+
+		if ( pProperties )
+		{
+			for ( auto & prop : props )
+			{
+				*pProperties = prop;
+				++pProperties;
+			}
+		}
 	}
 
 	VkResult VKAPI_CALL vkQueueBindSparse(
 		VkQueue queue,
 		uint32_t bindInfoCount,
-		const VkBindSparseInfo* pBindInfo,
+		const VkBindSparseInfo * pBindInfo,
 		VkFence fence )
 	{
-		// TODO
-		std::cerr << "vkQueueBindSparse Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( queue, "vkQueueBindSparse" );
 	}
 
 	VkResult VKAPI_CALL vkCreateFence(
 		VkDevice device,
-		const VkFenceCreateInfo* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkFence* pFence )
+		const VkFenceCreateInfo * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkFence * pFence )
 	{
 		assert( pFence );
 		return allocate( *pFence
@@ -421,7 +429,7 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkDestroyFence(
 		VkDevice device,
 		VkFence fence,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
 		deallocate( fence, pAllocator );
 	}
@@ -429,7 +437,7 @@ namespace ashes::d3d11
 	VkResult VKAPI_CALL vkResetFences(
 		VkDevice device,
 		uint32_t fenceCount,
-		const VkFence* pFences )
+		const VkFence * pFences )
 	{
 		for ( uint32_t i = 0u; i < fenceCount; ++i )
 		{
@@ -443,15 +451,13 @@ namespace ashes::d3d11
 		VkDevice device,
 		VkFence fence )
 	{
-		// TODO
-		std::cerr << "vkGetFenceStatus Unsupported" << std::endl;
-		return VK_SUCCESS;
+		return reportUnsupported( device, "vkGetFenceStatus" );
 	}
 
 	VkResult VKAPI_CALL vkWaitForFences(
 		VkDevice device,
 		uint32_t fenceCount,
-		const VkFence* pFences,
+		const VkFence * pFences,
 		VkBool32 waitAll,
 		uint64_t timeout )
 	{
@@ -465,9 +471,9 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkCreateSemaphore(
 		VkDevice device,
-		const VkSemaphoreCreateInfo* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkSemaphore* pSemaphore )
+		const VkSemaphoreCreateInfo * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkSemaphore * pSemaphore )
 	{
 		assert( pSemaphore );
 		return allocate( *pSemaphore
@@ -478,16 +484,16 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkDestroySemaphore(
 		VkDevice device,
 		VkSemaphore semaphore,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
 		deallocate( semaphore, pAllocator );
 	}
 
 	VkResult VKAPI_CALL vkCreateEvent(
 		VkDevice device,
-		const VkEventCreateInfo* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkEvent* pEvent )
+		const VkEventCreateInfo * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkEvent * pEvent )
 	{
 		assert( pEvent );
 		return allocate( *pEvent
@@ -498,7 +504,7 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkDestroyEvent(
 		VkDevice device,
 		VkEvent event,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
 		deallocate( event, pAllocator );
 	}
@@ -526,9 +532,9 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkCreateQueryPool(
 		VkDevice device,
-		const VkQueryPoolCreateInfo* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkQueryPool* pQueryPool )
+		const VkQueryPoolCreateInfo * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkQueryPool * pQueryPool )
 	{
 		assert( pQueryPool );
 		return allocate( *pQueryPool
@@ -540,7 +546,7 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkDestroyQueryPool(
 		VkDevice device,
 		VkQueryPool queryPool,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
 		deallocate( queryPool, pAllocator );
 	}
@@ -551,7 +557,7 @@ namespace ashes::d3d11
 		uint32_t firstQuery,
 		uint32_t queryCount,
 		size_t dataSize,
-		void* pData,
+		void * pData,
 		VkDeviceSize stride,
 		VkQueryResultFlags flags )
 	{
@@ -603,9 +609,9 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkCreateBuffer(
 		VkDevice device,
-		const VkBufferCreateInfo* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkBuffer* pBuffer )
+		const VkBufferCreateInfo * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkBuffer * pBuffer )
 	{
 		assert( pBuffer );
 		return allocate( *pBuffer
@@ -617,16 +623,16 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkDestroyBuffer(
 		VkDevice device,
 		VkBuffer buffer,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
 		deallocate( buffer, pAllocator );
 	}
 
 	VkResult VKAPI_CALL vkCreateBufferView(
 		VkDevice device,
-		const VkBufferViewCreateInfo* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkBufferView* pView )
+		const VkBufferViewCreateInfo * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkBufferView * pView )
 	{
 		assert( pView );
 		return allocate( *pView
@@ -638,16 +644,16 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkDestroyBufferView(
 		VkDevice device,
 		VkBufferView bufferView,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
 		deallocate( bufferView, pAllocator );
 	}
 
 	VkResult VKAPI_CALL vkCreateImage(
 		VkDevice device,
-		const VkImageCreateInfo* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkImage* pImage )
+		const VkImageCreateInfo * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkImage * pImage )
 	{
 		assert( pImage );
 		return allocate( *pImage
@@ -659,7 +665,7 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkDestroyImage(
 		VkDevice device,
 		VkImage image,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
 		deallocate( image, pAllocator );
 	}
@@ -667,8 +673,8 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkGetImageSubresourceLayout(
 		VkDevice device,
 		VkImage image,
-		const VkImageSubresource* pSubresource,
-		VkSubresourceLayout* pLayout )
+		const VkImageSubresource * pSubresource,
+		VkSubresourceLayout * pLayout )
 	{
 		get( device )->getImageSubresourceLayout( image
 			, *pSubresource
@@ -677,9 +683,9 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkCreateImageView(
 		VkDevice device,
-		const VkImageViewCreateInfo* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkImageView* pView )
+		const VkImageViewCreateInfo * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkImageView * pView )
 	{
 		assert( pView );
 		return allocate( *pView
@@ -691,16 +697,16 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkDestroyImageView(
 		VkDevice device,
 		VkImageView imageView,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
 		deallocate( imageView, pAllocator );
 	}
 
 	VkResult VKAPI_CALL vkCreateShaderModule(
 		VkDevice device,
-		const VkShaderModuleCreateInfo* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkShaderModule* pShaderModule )
+		const VkShaderModuleCreateInfo * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkShaderModule * pShaderModule )
 	{
 		assert( pShaderModule );
 		return allocate( *pShaderModule
@@ -712,16 +718,16 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkDestroyShaderModule(
 		VkDevice device,
 		VkShaderModule shaderModule,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
 		deallocate( shaderModule, pAllocator );
 	}
 
 	VkResult VKAPI_CALL vkCreatePipelineCache(
 		VkDevice device,
-		const VkPipelineCacheCreateInfo* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkPipelineCache* pPipelineCache )
+		const VkPipelineCacheCreateInfo * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkPipelineCache * pPipelineCache )
 	{
 		assert( pPipelineCache );
 		return allocate( *pPipelineCache
@@ -733,7 +739,7 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkDestroyPipelineCache(
 		VkDevice device,
 		VkPipelineCache pipelineCache,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
 		deallocate( pipelineCache, pAllocator );
 	}
@@ -741,8 +747,8 @@ namespace ashes::d3d11
 	VkResult VKAPI_CALL vkGetPipelineCacheData(
 		VkDevice device,
 		VkPipelineCache pipelineCache,
-		size_t* pDataSize,
-		void* pData )
+		size_t * pDataSize,
+		void * pData )
 	{
 		auto & data = get( pipelineCache )->getData();
 
@@ -763,7 +769,7 @@ namespace ashes::d3d11
 		VkDevice device,
 		VkPipelineCache dstCache,
 		uint32_t srcCacheCount,
-		const VkPipelineCache* pSrcCaches )
+		const VkPipelineCache * pSrcCaches )
 	{
 		return get( dstCache )->merge( makeVector( pSrcCaches, srcCacheCount ) );
 	}
@@ -772,9 +778,9 @@ namespace ashes::d3d11
 		VkDevice device,
 		VkPipelineCache pipelineCache,
 		uint32_t createInfoCount,
-		const VkGraphicsPipelineCreateInfo* pCreateInfos,
-		const VkAllocationCallbacks* pAllocator,
-		VkPipeline* pPipelines )
+		const VkGraphicsPipelineCreateInfo * pCreateInfos,
+		const VkAllocationCallbacks * pAllocator,
+		VkPipeline * pPipelines )
 	{
 		assert( pPipelines );
 		VkResult result = VK_SUCCESS;
@@ -800,9 +806,9 @@ namespace ashes::d3d11
 		VkDevice device,
 		VkPipelineCache pipelineCache,
 		uint32_t createInfoCount,
-		const VkComputePipelineCreateInfo* pCreateInfos,
-		const VkAllocationCallbacks* pAllocator,
-		VkPipeline* pPipelines )
+		const VkComputePipelineCreateInfo * pCreateInfos,
+		const VkAllocationCallbacks * pAllocator,
+		VkPipeline * pPipelines )
 	{
 		assert( pPipelines );
 		VkResult result = VK_SUCCESS;
@@ -827,16 +833,16 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkDestroyPipeline(
 		VkDevice device,
 		VkPipeline pipeline,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
 		deallocate( pipeline, pAllocator );
 	}
 
 	VkResult VKAPI_CALL vkCreatePipelineLayout(
 		VkDevice device,
-		const VkPipelineLayoutCreateInfo* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkPipelineLayout* pPipelineLayout )
+		const VkPipelineLayoutCreateInfo * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkPipelineLayout * pPipelineLayout )
 	{
 		assert( pPipelineLayout );
 		return allocate( *pPipelineLayout
@@ -848,16 +854,16 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkDestroyPipelineLayout(
 		VkDevice device,
 		VkPipelineLayout pipelineLayout,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
 		deallocate( pipelineLayout, pAllocator );
 	}
 
 	VkResult VKAPI_CALL vkCreateSampler(
 		VkDevice device,
-		const VkSamplerCreateInfo* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkSampler* pSampler )
+		const VkSamplerCreateInfo * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkSampler * pSampler )
 	{
 		assert( pSampler );
 		return allocate( *pSampler
@@ -869,16 +875,16 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkDestroySampler(
 		VkDevice device,
 		VkSampler sampler,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
 		deallocate( sampler, pAllocator );
 	}
 
 	VkResult VKAPI_CALL vkCreateDescriptorSetLayout(
 		VkDevice device,
-		const VkDescriptorSetLayoutCreateInfo* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkDescriptorSetLayout* pSetLayout )
+		const VkDescriptorSetLayoutCreateInfo * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkDescriptorSetLayout * pSetLayout )
 	{
 		assert( pSetLayout );
 		return allocate( *pSetLayout
@@ -890,16 +896,16 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkDestroyDescriptorSetLayout(
 		VkDevice device,
 		VkDescriptorSetLayout descriptorSetLayout,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
 		deallocate( descriptorSetLayout, pAllocator );
 	}
 
 	VkResult VKAPI_CALL vkCreateDescriptorPool(
 		VkDevice device,
-		const VkDescriptorPoolCreateInfo* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkDescriptorPool* pDescriptorPool )
+		const VkDescriptorPoolCreateInfo * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkDescriptorPool * pDescriptorPool )
 	{
 		assert( pDescriptorPool );
 		return allocate( *pDescriptorPool
@@ -911,7 +917,7 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkDestroyDescriptorPool(
 		VkDevice device,
 		VkDescriptorPool descriptorPool,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
 		deallocate( descriptorPool, pAllocator );
 	}
@@ -926,8 +932,8 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkAllocateDescriptorSets(
 		VkDevice device,
-		const VkDescriptorSetAllocateInfo* pAllocateInfo,
-		VkDescriptorSet* pDescriptorSets )
+		const VkDescriptorSetAllocateInfo * pAllocateInfo,
+		VkDescriptorSet * pDescriptorSets )
 	{
 		VkResult result = VK_SUCCESS;
 		auto itLayout = pAllocateInfo->pSetLayouts;
@@ -953,7 +959,7 @@ namespace ashes::d3d11
 		VkDevice device,
 		VkDescriptorPool descriptorPool,
 		uint32_t descriptorSetCount,
-		const VkDescriptorSet* pDescriptorSets )
+		const VkDescriptorSet * pDescriptorSets )
 	{
 		return get( descriptorPool )->free( { pDescriptorSets, pDescriptorSets + descriptorSetCount } );
 	}
@@ -961,9 +967,9 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkUpdateDescriptorSets(
 		VkDevice device,
 		uint32_t descriptorWriteCount,
-		const VkWriteDescriptorSet* pDescriptorWrites,
+		const VkWriteDescriptorSet * pDescriptorWrites,
 		uint32_t descriptorCopyCount,
-		const VkCopyDescriptorSet* pDescriptorCopies )
+		const VkCopyDescriptorSet * pDescriptorCopies )
 	{
 		for ( auto & write : makeArrayView( pDescriptorWrites, descriptorWriteCount ) )
 		{
@@ -978,9 +984,9 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkCreateFramebuffer(
 		VkDevice device,
-		const VkFramebufferCreateInfo* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkFramebuffer* pFramebuffer )
+		const VkFramebufferCreateInfo * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkFramebuffer * pFramebuffer )
 	{
 		assert( pFramebuffer );
 		return allocate( *pFramebuffer
@@ -992,16 +998,16 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkDestroyFramebuffer(
 		VkDevice device,
 		VkFramebuffer framebuffer,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
 		deallocate( framebuffer, pAllocator );
 	}
 
 	VkResult VKAPI_CALL vkCreateRenderPass(
 		VkDevice device,
-		const VkRenderPassCreateInfo* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkRenderPass* pRenderPass )
+		const VkRenderPassCreateInfo * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkRenderPass * pRenderPass )
 	{
 		assert( pRenderPass );
 		return allocate( *pRenderPass
@@ -1013,7 +1019,7 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkDestroyRenderPass(
 		VkDevice device,
 		VkRenderPass renderPass,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
 		deallocate( renderPass, pAllocator );
 	}
@@ -1021,16 +1027,16 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkGetRenderAreaGranularity(
 		VkDevice device,
 		VkRenderPass renderPass,
-		VkExtent2D* pGranularity )
+		VkExtent2D * pGranularity )
 	{
 		*pGranularity = get( renderPass )->getRenderAreaGranularity();
 	}
 
 	VkResult VKAPI_CALL vkCreateCommandPool(
 		VkDevice device,
-		const VkCommandPoolCreateInfo* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkCommandPool* pCommandPool )
+		const VkCommandPoolCreateInfo * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkCommandPool * pCommandPool )
 	{
 		assert( pCommandPool );
 		return allocate( *pCommandPool
@@ -1042,7 +1048,7 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkDestroyCommandPool(
 		VkDevice device,
 		VkCommandPool commandPool,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
 		deallocate( commandPool, pAllocator );
 	}
@@ -1057,8 +1063,8 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkAllocateCommandBuffers(
 		VkDevice device,
-		const VkCommandBufferAllocateInfo* pAllocateInfo,
-		VkCommandBuffer* pCommandBuffers )
+		const VkCommandBufferAllocateInfo * pAllocateInfo,
+		VkCommandBuffer * pCommandBuffers )
 	{
 		VkResult result = VK_SUCCESS;
 		auto itLayout = pAllocateInfo->commandBufferCount;
@@ -1084,14 +1090,14 @@ namespace ashes::d3d11
 		VkDevice device,
 		VkCommandPool commandPool,
 		uint32_t commandBufferCount,
-		const VkCommandBuffer* pCommandBuffers )
+		const VkCommandBuffer * pCommandBuffers )
 	{
 		get( commandPool )->free( { pCommandBuffers, pCommandBuffers + commandBufferCount } );
 	}
 
 	VkResult VKAPI_CALL vkBeginCommandBuffer(
 		VkCommandBuffer commandBuffer,
-		const VkCommandBufferBeginInfo* pBeginInfo )
+		const VkCommandBufferBeginInfo * pBeginInfo )
 	{
 		return get( commandBuffer )->begin( *pBeginInfo );
 	}
@@ -1121,7 +1127,7 @@ namespace ashes::d3d11
 		VkCommandBuffer commandBuffer,
 		uint32_t firstViewport,
 		uint32_t viewportCount,
-		const VkViewport* pViewports )
+		const VkViewport * pViewports )
 	{
 		get( commandBuffer )->setViewport( firstViewport
 			, { pViewports, pViewports + viewportCount } );
@@ -1131,7 +1137,7 @@ namespace ashes::d3d11
 		VkCommandBuffer commandBuffer,
 		uint32_t firstScissor,
 		uint32_t scissorCount,
-		const VkRect2D* pScissors )
+		const VkRect2D * pScissors )
 	{
 		get( commandBuffer )->setScissor( firstScissor
 			, { pScissors, pScissors + scissorCount } );
@@ -1157,9 +1163,7 @@ namespace ashes::d3d11
 		VkCommandBuffer commandBuffer,
 		const float blendConstants[4] )
 	{
-		// TODO
-		std::cerr << "vkCmdSetBlendConstants Unsupported" << std::endl;
-		//get( commandBuffer )->setBlendConstants( blendConstants );
+		reportUnsupported( commandBuffer, "vkCmdSetBlendConstants" );
 	}
 
 	void VKAPI_CALL vkCmdSetDepthBounds(
@@ -1167,9 +1171,7 @@ namespace ashes::d3d11
 		float minDepthBounds,
 		float maxDepthBounds )
 	{
-		// TODO
-		std::cerr << "vkCmdSetDepthBounds Unsupported" << std::endl;
-		//get( commandBuffer )->setDepthBounds( minDepthBounds, maxDepthBounds );
+		reportUnsupported( commandBuffer, "vkCmdSetDepthBounds" );
 	}
 
 	void VKAPI_CALL vkCmdSetStencilCompareMask(
@@ -1177,9 +1179,7 @@ namespace ashes::d3d11
 		VkStencilFaceFlags faceMask,
 		uint32_t compareMask )
 	{
-		// TODO
-		std::cerr << "vkCmdSetStencilCompareMask Unsupported" << std::endl;
-		//get( commandBuffer )->setStencilCompareMask( faceMask, compareMask );
+		reportUnsupported( commandBuffer, "vkCmdSetStencilCompareMask" );
 	}
 
 	void VKAPI_CALL vkCmdSetStencilWriteMask(
@@ -1187,9 +1187,7 @@ namespace ashes::d3d11
 		VkStencilFaceFlags faceMask,
 		uint32_t writeMask )
 	{
-		// TODO
-		std::cerr << "vkCmdSetStencilWriteMask Unsupported" << std::endl;
-		//get( commandBuffer )->setStencilWriteMask( faceMask, writeMask );
+		reportUnsupported( commandBuffer, "vkCmdSetStencilWriteMask" );
 	}
 
 	void VKAPI_CALL vkCmdSetStencilReference(
@@ -1197,9 +1195,7 @@ namespace ashes::d3d11
 		VkStencilFaceFlags faceMask,
 		uint32_t reference )
 	{
-		// TODO
-		std::cerr << "vkCmdSetStencilReference Unsupported" << std::endl;
-		//get( commandBuffer )->setStencilRefeerence( faceMask, reference );
+		reportUnsupported( commandBuffer, "vkCmdSetStencilReference" );
 	}
 
 	void VKAPI_CALL vkCmdBindDescriptorSets(
@@ -1208,15 +1204,15 @@ namespace ashes::d3d11
 		VkPipelineLayout layout,
 		uint32_t firstSet,
 		uint32_t descriptorSetCount,
-		const VkDescriptorSet* pDescriptorSets,
+		const VkDescriptorSet * pDescriptorSets,
 		uint32_t dynamicOffsetCount,
-		const uint32_t* pDynamicOffsets )
+		const uint32_t * pDynamicOffsets )
 	{
 		get( commandBuffer )->bindDescriptorSets( pipelineBindPoint
 			, layout
 			, firstSet
 			, { pDescriptorSets, pDescriptorSets + descriptorSetCount }
-			, { pDynamicOffsets, pDynamicOffsets + dynamicOffsetCount } );
+		, { pDynamicOffsets, pDynamicOffsets + dynamicOffsetCount } );
 	}
 
 	void VKAPI_CALL vkCmdBindIndexBuffer(
@@ -1232,12 +1228,12 @@ namespace ashes::d3d11
 		VkCommandBuffer commandBuffer,
 		uint32_t firstBinding,
 		uint32_t bindingCount,
-		const VkBuffer* pBuffers,
-		const VkDeviceSize* pOffsets )
+		const VkBuffer * pBuffers,
+		const VkDeviceSize * pOffsets )
 	{
 		get( commandBuffer )->bindVertexBuffers( firstBinding
 			, { pBuffers, pBuffers + bindingCount }
-			, { pOffsets, pOffsets + bindingCount } );
+		, { pOffsets, pOffsets + bindingCount } );
 	}
 
 	void VKAPI_CALL vkCmdDraw(
@@ -1316,7 +1312,7 @@ namespace ashes::d3d11
 		VkBuffer srcBuffer,
 		VkBuffer dstBuffer,
 		uint32_t regionCount,
-		const VkBufferCopy* pRegions )
+		const VkBufferCopy * pRegions )
 	{
 		get( commandBuffer )->copyBuffer( srcBuffer
 			, dstBuffer
@@ -1330,7 +1326,7 @@ namespace ashes::d3d11
 		VkImage dstImage,
 		VkImageLayout dstImageLayout,
 		uint32_t regionCount,
-		const VkImageCopy* pRegions )
+		const VkImageCopy * pRegions )
 	{
 		get( commandBuffer )->copyImage( srcImage
 			, srcImageLayout
@@ -1346,7 +1342,7 @@ namespace ashes::d3d11
 		VkImage dstImage,
 		VkImageLayout dstImageLayout,
 		uint32_t regionCount,
-		const VkImageBlit* pRegions,
+		const VkImageBlit * pRegions,
 		VkFilter filter )
 	{
 		get( commandBuffer )->blitImage( srcImage
@@ -1354,7 +1350,7 @@ namespace ashes::d3d11
 			, dstImage
 			, dstImageLayout
 			, { pRegions, pRegions + regionCount }
-			, filter );
+		, filter );
 	}
 
 	void VKAPI_CALL vkCmdCopyBufferToImage(
@@ -1363,7 +1359,7 @@ namespace ashes::d3d11
 		VkImage dstImage,
 		VkImageLayout dstImageLayout,
 		uint32_t regionCount,
-		const VkBufferImageCopy* pRegions )
+		const VkBufferImageCopy * pRegions )
 	{
 		get( commandBuffer )->copyToImage( srcBuffer
 			, dstImage
@@ -1377,7 +1373,7 @@ namespace ashes::d3d11
 		VkImageLayout srcImageLayout,
 		VkBuffer dstBuffer,
 		uint32_t regionCount,
-		const VkBufferImageCopy* pRegions )
+		const VkBufferImageCopy * pRegions )
 	{
 		get( commandBuffer )->copyToBuffer( srcImage
 			, srcImageLayout
@@ -1390,10 +1386,9 @@ namespace ashes::d3d11
 		VkBuffer dstBuffer,
 		VkDeviceSize dstOffset,
 		VkDeviceSize dataSize,
-		const void* pData )
+		const void * pData )
 	{
-		// TODO
-		std::cerr << "vkCmdUpdateBuffer Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdUpdateBuffer" );
 		//get( commandBuffer )->updateBuffer( dstBuffer
 		//	, dstOffset
 		//	, dataSize
@@ -1407,8 +1402,7 @@ namespace ashes::d3d11
 		VkDeviceSize size,
 		uint32_t data )
 	{
-		// TODO
-		std::cerr << "vkCmdFillBuffer Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdFillBuffer" );
 		//get( commandBuffer )->fillBuffer( dstBuffer
 		//	, dstOffset
 		//	, size
@@ -1419,9 +1413,9 @@ namespace ashes::d3d11
 		VkCommandBuffer commandBuffer,
 		VkImage image,
 		VkImageLayout imageLayout,
-		const VkClearColorValue* pColor,
+		const VkClearColorValue * pColor,
 		uint32_t rangeCount,
-		const VkImageSubresourceRange* pRanges )
+		const VkImageSubresourceRange * pRanges )
 	{
 		get( commandBuffer )->clearColorImage( image
 			, imageLayout
@@ -1433,9 +1427,9 @@ namespace ashes::d3d11
 		VkCommandBuffer commandBuffer,
 		VkImage image,
 		VkImageLayout imageLayout,
-		const VkClearDepthStencilValue* pDepthStencil,
+		const VkClearDepthStencilValue * pDepthStencil,
 		uint32_t rangeCount,
-		const VkImageSubresourceRange* pRanges )
+		const VkImageSubresourceRange * pRanges )
 	{
 		get( commandBuffer )->clearDepthStencilImage( image
 			, imageLayout
@@ -1446,12 +1440,12 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkCmdClearAttachments(
 		VkCommandBuffer commandBuffer,
 		uint32_t attachmentCount,
-		const VkClearAttachment* pAttachments,
+		const VkClearAttachment * pAttachments,
 		uint32_t rectCount,
-		const VkClearRect* pRects )
+		const VkClearRect * pRects )
 	{
 		get( commandBuffer )->clearAttachments( { pAttachments, pAttachments + attachmentCount }
-			, { pRects, pRects + rectCount } );
+		, { pRects, pRects + rectCount } );
 	}
 
 	void VKAPI_CALL vkCmdResolveImage(
@@ -1461,10 +1455,9 @@ namespace ashes::d3d11
 		VkImage dstImage,
 		VkImageLayout dstImageLayout,
 		uint32_t regionCount,
-		const VkImageResolve* pRegions )
+		const VkImageResolve * pRegions )
 	{
-		// TODO
-		std::cerr << "vkCmdResolveImage Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdResolveImage" );
 		//get( commandBuffer )->resolveImage( srcImage
 		//	, srcImageLayout
 		//	, dstImage
@@ -1491,22 +1484,22 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkCmdWaitEvents(
 		VkCommandBuffer commandBuffer,
 		uint32_t eventCount,
-		const VkEvent* pEvents,
+		const VkEvent * pEvents,
 		VkPipelineStageFlags srcStageMask,
 		VkPipelineStageFlags dstStageMask,
 		uint32_t memoryBarrierCount,
-		const VkMemoryBarrier* pMemoryBarriers,
+		const VkMemoryBarrier * pMemoryBarriers,
 		uint32_t bufferMemoryBarrierCount,
-		const VkBufferMemoryBarrier* pBufferMemoryBarriers,
+		const VkBufferMemoryBarrier * pBufferMemoryBarriers,
 		uint32_t imageMemoryBarrierCount,
-		const VkImageMemoryBarrier* pImageMemoryBarriers )
+		const VkImageMemoryBarrier * pImageMemoryBarriers )
 	{
 		get( commandBuffer )->waitEvents( { pEvents, pEvents + eventCount }
 			, srcStageMask
 			, dstStageMask
 			, { pMemoryBarriers, pMemoryBarriers + memoryBarrierCount }
 			, { pBufferMemoryBarriers, pBufferMemoryBarriers + bufferMemoryBarrierCount }
-			, { pImageMemoryBarriers, pImageMemoryBarriers + imageMemoryBarrierCount } );
+		, { pImageMemoryBarriers, pImageMemoryBarriers + imageMemoryBarrierCount } );
 	}
 
 	void VKAPI_CALL vkCmdPipelineBarrier(
@@ -1515,18 +1508,18 @@ namespace ashes::d3d11
 		VkPipelineStageFlags dstStageMask,
 		VkDependencyFlags dependencyFlags,
 		uint32_t memoryBarrierCount,
-		const VkMemoryBarrier* pMemoryBarriers,
+		const VkMemoryBarrier * pMemoryBarriers,
 		uint32_t bufferMemoryBarrierCount,
-		const VkBufferMemoryBarrier* pBufferMemoryBarriers,
+		const VkBufferMemoryBarrier * pBufferMemoryBarriers,
 		uint32_t imageMemoryBarrierCount,
-		const VkImageMemoryBarrier* pImageMemoryBarriers )
+		const VkImageMemoryBarrier * pImageMemoryBarriers )
 	{
 		get( commandBuffer )->pipelineBarrier( srcStageMask
 			, dstStageMask
 			, dependencyFlags
 			, { pMemoryBarriers, pMemoryBarriers + memoryBarrierCount }
 			, { pBufferMemoryBarriers, pBufferMemoryBarriers + bufferMemoryBarrierCount }
-			, { pImageMemoryBarriers, pImageMemoryBarriers + imageMemoryBarrierCount } );
+		, { pImageMemoryBarriers, pImageMemoryBarriers + imageMemoryBarrierCount } );
 	}
 
 	void VKAPI_CALL vkCmdBeginQuery(
@@ -1581,8 +1574,7 @@ namespace ashes::d3d11
 		VkDeviceSize stride,
 		VkQueryResultFlags flags )
 	{
-		// TODO
-		std::cerr << "vkCmdCopyQueryPoolResults Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdCopyQueryPoolResults" );
 		//get( commandBuffer )->copyQueryPoolResults( queryPool
 		//	, firstQuery
 		//	, queryCount
@@ -1598,7 +1590,7 @@ namespace ashes::d3d11
 		VkShaderStageFlags stageFlags,
 		uint32_t offset,
 		uint32_t size,
-		const void* pValues )
+		const void * pValues )
 	{
 		get( commandBuffer )->pushConstants( layout
 			, stageFlags
@@ -1609,7 +1601,7 @@ namespace ashes::d3d11
 
 	void VKAPI_CALL vkCmdBeginRenderPass(
 		VkCommandBuffer commandBuffer,
-		const VkRenderPassBeginInfo* pRenderPassBegin,
+		const VkRenderPassBeginInfo * pRenderPassBegin,
 		VkSubpassContents contents )
 	{
 		get( commandBuffer )->beginRenderPass( *pRenderPassBegin, contents );
@@ -1631,7 +1623,7 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkCmdExecuteCommands(
 		VkCommandBuffer commandBuffer,
 		uint32_t commandBufferCount,
-		const VkCommandBuffer* pCommandBuffers )
+		const VkCommandBuffer * pCommandBuffers )
 	{
 		get( commandBuffer )->executeCommands( { pCommandBuffers, pCommandBuffers + commandBufferCount } );
 	}
@@ -1651,21 +1643,17 @@ namespace ashes::d3d11
 	VkResult VKAPI_CALL vkBindBufferMemory2(
 		VkDevice device,
 		uint32_t bindInfoCount,
-		const VkBindBufferMemoryInfo* pBindInfos )
+		const VkBindBufferMemoryInfo * pBindInfos )
 	{
-		// TODO
-		std::cerr << "vkBindBufferMemory2 Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkBindBufferMemory2" );
 	}
 
 	VkResult VKAPI_CALL vkBindImageMemory2(
 		VkDevice device,
 		uint32_t bindInfoCount,
-		const VkBindImageMemoryInfo* pBindInfos )
+		const VkBindImageMemoryInfo * pBindInfos )
 	{
-		// TODO
-		std::cerr << "vkBindImageMemory2 Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkBindImageMemory2" );
 	}
 
 	void VKAPI_CALL vkGetDeviceGroupPeerMemoryFeatures(
@@ -1673,10 +1661,9 @@ namespace ashes::d3d11
 		uint32_t heapIndex,
 		uint32_t localDeviceIndex,
 		uint32_t remoteDeviceIndex,
-		VkPeerMemoryFeatureFlags* pPeerMemoryFeatures )
+		VkPeerMemoryFeatureFlags * pPeerMemoryFeatures )
 	{
-		// TODO
-		std::cerr << "vkGetDeviceGroupPeerMemoryFeatures Unsupported" << std::endl;
+		reportUnsupported( device, "vkGetDeviceGroupPeerMemoryFeatures" );
 		*pPeerMemoryFeatures = VK_NULL_HANDLE;
 	}
 
@@ -1684,8 +1671,7 @@ namespace ashes::d3d11
 		VkCommandBuffer commandBuffer,
 		uint32_t deviceMask )
 	{
-		// TODO
-		std::cerr << "vkCmdSetDeviceMask Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdSetDeviceMask" );
 	}
 
 	void VKAPI_CALL vkCmdDispatchBase(
@@ -1697,108 +1683,115 @@ namespace ashes::d3d11
 		uint32_t groupCountY,
 		uint32_t groupCountZ )
 	{
-		// TODO
-		std::cerr << "vkCmdDispatchBase Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdDispatchBase" );
 	}
 
 	VkResult VKAPI_CALL vkEnumeratePhysicalDeviceGroups(
 		VkInstance instance,
-		uint32_t* pPhysicalDeviceGroupCount,
-		VkPhysicalDeviceGroupProperties* pPhysicalDeviceGroupProperties )
+		uint32_t * pPhysicalDeviceGroupCount,
+		VkPhysicalDeviceGroupProperties * pPhysicalDeviceGroupProperties )
 	{
-		// TODO
-		std::cerr << "vkEnumeratePhysicalDeviceGroups Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( instance, "vkEnumeratePhysicalDeviceGroups" );
 	}
 
 	void VKAPI_CALL vkGetImageMemoryRequirements2(
 		VkDevice device,
-		const VkImageMemoryRequirementsInfo2* pInfo,
-		VkMemoryRequirements2* pMemoryRequirements )
+		const VkImageMemoryRequirementsInfo2 * pInfo,
+		VkMemoryRequirements2 * pMemoryRequirements )
 	{
-		// TODO
-		std::cerr << "vkGetImageMemoryRequirements2 Unsupported" << std::endl;
+		reportUnsupported( device, "vkGetImageMemoryRequirements2" );
 	}
 
 	void VKAPI_CALL vkGetBufferMemoryRequirements2(
 		VkDevice device,
-		const VkBufferMemoryRequirementsInfo2* pInfo,
-		VkMemoryRequirements2* pMemoryRequirements )
+		const VkBufferMemoryRequirementsInfo2 * pInfo,
+		VkMemoryRequirements2 * pMemoryRequirements )
 	{
-		// TODO
-		std::cerr << "vkGetBufferMemoryRequirements2 Unsupported" << std::endl;
+		reportUnsupported( device, "vkGetBufferMemoryRequirements2" );
 	}
 
 	void VKAPI_CALL vkGetImageSparseMemoryRequirements2(
 		VkDevice device,
-		const VkImageSparseMemoryRequirementsInfo2* pInfo,
-		uint32_t* pSparseMemoryRequirementCount,
-		VkSparseImageMemoryRequirements2* pSparseMemoryRequirements )
+		const VkImageSparseMemoryRequirementsInfo2 * pInfo,
+		uint32_t * pSparseMemoryRequirementCount,
+		VkSparseImageMemoryRequirements2 * pSparseMemoryRequirements )
 	{
-		// TODO
-		std::cerr << "vkGetImageSparseMemoryRequirements2 Unsupported" << std::endl;
+		reportUnsupported( device, "vkGetImageSparseMemoryRequirements2" );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceFeatures2(
 		VkPhysicalDevice physicalDevice,
-		VkPhysicalDeviceFeatures2* pFeatures )
+		VkPhysicalDeviceFeatures2 * pFeatures )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceFeatures2 Unsupported" << std::endl;
+		*pFeatures = get( physicalDevice )->getFeatures2();
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceProperties2(
 		VkPhysicalDevice physicalDevice,
-		VkPhysicalDeviceProperties2* pProperties )
+		VkPhysicalDeviceProperties2 * pProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceProperties2 Unsupported" << std::endl;
+		*pProperties = get( physicalDevice )->getProperties2();
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceFormatProperties2(
 		VkPhysicalDevice physicalDevice,
 		VkFormat format,
-		VkFormatProperties2* pFormatProperties )
+		VkFormatProperties2 * pFormatProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceFormatProperties2 Unsupported" << std::endl;
+		*pFormatProperties = get( physicalDevice )->getFormatProperties2( format );
 	}
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceImageFormatProperties2(
 		VkPhysicalDevice physicalDevice,
-		const VkPhysicalDeviceImageFormatInfo2* pImageFormatInfo,
-		VkImageFormatProperties2* pImageFormatProperties )
+		const VkPhysicalDeviceImageFormatInfo2 * pImageFormatInfo,
+		VkImageFormatProperties2 * pImageFormatProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceImageFormatProperties2 Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return get( physicalDevice )->getImageFormatProperties2( *pImageFormatInfo, *pImageFormatProperties );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceQueueFamilyProperties2(
 		VkPhysicalDevice physicalDevice,
-		uint32_t* pQueueFamilyPropertyCount,
-		VkQueueFamilyProperties2* pQueueFamilyProperties )
+		uint32_t * pQueueFamilyPropertyCount,
+		VkQueueFamilyProperties2 * pQueueFamilyProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceQueueFamilyProperties2 Unsupported" << std::endl;
+		auto props = get( physicalDevice )->getQueueFamilyProperties2();
+		*pQueueFamilyPropertyCount = uint32_t( props.size() );
+
+		if ( pQueueFamilyProperties )
+		{
+			for ( auto & prop : props )
+			{
+				( *pQueueFamilyProperties ) = prop;
+				++pQueueFamilyProperties;
+			}
+		}
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceMemoryProperties2(
 		VkPhysicalDevice physicalDevice,
-		VkPhysicalDeviceMemoryProperties2* pMemoryProperties )
+		VkPhysicalDeviceMemoryProperties2 * pMemoryProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceMemoryProperties2 Unsupported" << std::endl;
+		*pMemoryProperties = get( physicalDevice )->getMemoryProperties2();
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceSparseImageFormatProperties2(
 		VkPhysicalDevice physicalDevice,
-		const VkPhysicalDeviceSparseImageFormatInfo2* pFormatInfo,
-		uint32_t* pPropertyCount,
-		VkSparseImageFormatProperties2* pProperties )
+		const VkPhysicalDeviceSparseImageFormatInfo2 * pFormatInfo,
+		uint32_t * pPropertyCount,
+		VkSparseImageFormatProperties2 * pProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceSparseImageFormatProperties2 Unsupported" << std::endl;
+		std::vector< VkSparseImageFormatProperties2 > props;
+		auto result = get( physicalDevice )->getSparseImageFormatProperties2( *pFormatInfo, props );
+		*pPropertyCount = uint32_t( props.size() );
+
+		if ( pProperties )
+		{
+			for ( auto & prop : props )
+			{
+				( *pProperties ) = prop;
+				++pProperties;
+			}
+		}
 	}
 
 	void VKAPI_CALL vkTrimCommandPool(
@@ -1806,103 +1799,89 @@ namespace ashes::d3d11
 		VkCommandPool commandPool,
 		VkCommandPoolTrimFlags flags )
 	{
-		// TODO
-		std::cerr << "vkTrimCommandPool Unsupported" << std::endl;
 	}
 
 	void VKAPI_CALL vkGetDeviceQueue2(
 		VkDevice device,
-		const VkDeviceQueueInfo2* pQueueInfo,
-		VkQueue* pQueue )
+		const VkDeviceQueueInfo2 * pQueueInfo,
+		VkQueue * pQueue )
 	{
-		// TODO
-		std::cerr << "vkGetDeviceQueue2 Unsupported" << std::endl;
+		reportUnsupported( device, "vkGetDeviceQueue2" );
 	}
 
 	VkResult VKAPI_CALL vkCreateSamplerYcbcrConversion(
 		VkDevice device,
-		const VkSamplerYcbcrConversionCreateInfo* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkSamplerYcbcrConversion* pYcbcrConversion )
+		const VkSamplerYcbcrConversionCreateInfo * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkSamplerYcbcrConversion * pYcbcrConversion )
 	{
-		// TODO
-		std::cerr << "vkCreateSamplerYcbcrConversion Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkCreateSamplerYcbcrConversion" );
 	}
 
 	void VKAPI_CALL vkDestroySamplerYcbcrConversion(
 		VkDevice device,
 		VkSamplerYcbcrConversion ycbcrConversion,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
-		// TODO
-		std::cerr << "vkDestroySamplerYcbcrConversion Unsupported" << std::endl;
+		reportUnsupported( device, "vkDestroySamplerYcbcrConversion" );
 	}
 
 	VkResult VKAPI_CALL vkCreateDescriptorUpdateTemplate(
 		VkDevice device,
-		const VkDescriptorUpdateTemplateCreateInfo* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkDescriptorUpdateTemplate* pDescriptorUpdateTemplate )
+		const VkDescriptorUpdateTemplateCreateInfo * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkDescriptorUpdateTemplate * pDescriptorUpdateTemplate )
 	{
-		// TODO
-		std::cerr << "vkCreateDescriptorUpdateTemplate Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkCreateDescriptorUpdateTemplate" );
 	}
 
 	void VKAPI_CALL vkDestroyDescriptorUpdateTemplate(
 		VkDevice device,
 		VkDescriptorUpdateTemplate descriptorUpdateTemplate,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
-		// TODO
-		std::cerr << "vkDestroyDescriptorUpdateTemplate Unsupported" << std::endl;
+		reportUnsupported( device, "vkDestroyDescriptorUpdateTemplate" );
 	}
 
 	void VKAPI_CALL vkUpdateDescriptorSetWithTemplate(
 		VkDevice device,
 		VkDescriptorSet descriptorSet,
 		VkDescriptorUpdateTemplate descriptorUpdateTemplate,
-		const void* pData )
+		const void * pData )
 	{
-		// TODO
-		std::cerr << "vkUpdateDescriptorSetWithTemplate Unsupported" << std::endl;
+		reportUnsupported( device, "vkUpdateDescriptorSetWithTemplate" );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceExternalBufferProperties(
 		VkPhysicalDevice physicalDevice,
-		const VkPhysicalDeviceExternalBufferInfo* pExternalBufferInfo,
-		VkExternalBufferProperties* pExternalBufferProperties )
+		const VkPhysicalDeviceExternalBufferInfo * pExternalBufferInfo,
+		VkExternalBufferProperties * pExternalBufferProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceExternalBufferProperties Unsupported" << std::endl;
+		reportUnsupported( physicalDevice, "vkGetPhysicalDeviceExternalBufferProperties" );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceExternalFenceProperties(
 		VkPhysicalDevice physicalDevice,
-		const VkPhysicalDeviceExternalFenceInfo* pExternalFenceInfo,
-		VkExternalFenceProperties* pExternalFenceProperties )
+		const VkPhysicalDeviceExternalFenceInfo * pExternalFenceInfo,
+		VkExternalFenceProperties * pExternalFenceProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceExternalFenceProperties Unsupported" << std::endl;
+		reportUnsupported( physicalDevice, "vkGetPhysicalDeviceExternalFenceProperties" );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceExternalSemaphoreProperties(
 		VkPhysicalDevice physicalDevice,
-		const VkPhysicalDeviceExternalSemaphoreInfo* pExternalSemaphoreInfo,
-		VkExternalSemaphoreProperties* pExternalSemaphoreProperties )
+		const VkPhysicalDeviceExternalSemaphoreInfo * pExternalSemaphoreInfo,
+		VkExternalSemaphoreProperties * pExternalSemaphoreProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceExternalSemaphoreProperties Unsupported" << std::endl;
+		reportUnsupported( physicalDevice, "vkGetPhysicalDeviceExternalSemaphoreProperties" );
 	}
 
 	void VKAPI_CALL vkGetDescriptorSetLayoutSupport(
 		VkDevice device,
-		const VkDescriptorSetLayoutCreateInfo* pCreateInfo,
-		VkDescriptorSetLayoutSupport* pSupport )
+		const VkDescriptorSetLayoutCreateInfo * pCreateInfo,
+		VkDescriptorSetLayoutSupport * pSupport )
 	{
-		// TODO
-		std::cerr << "vkGetDescriptorSetLayoutSupport Unsupported" << std::endl;
+		reportUnsupported( device, "vkGetDescriptorSetLayoutSupport" );
 	}
 
 #endif
@@ -1913,7 +1892,7 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkDestroySurfaceKHR(
 		VkInstance instance,
 		VkSurfaceKHR surface,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
 		deallocate( surface, pAllocator );
 	}
@@ -1922,7 +1901,7 @@ namespace ashes::d3d11
 		VkPhysicalDevice physicalDevice,
 		uint32_t queueFamilyIndex,
 		VkSurfaceKHR surface,
-		VkBool32* pSupported )
+		VkBool32 * pSupported )
 	{
 		*pSupported = get( physicalDevice )->getPresentationSupport( queueFamilyIndex );
 		return VK_SUCCESS;
@@ -1931,7 +1910,7 @@ namespace ashes::d3d11
 	VkResult VKAPI_CALL vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
 		VkPhysicalDevice physicalDevice,
 		VkSurfaceKHR surface,
-		VkSurfaceCapabilitiesKHR* pSurfaceCapabilities )
+		VkSurfaceCapabilitiesKHR * pSurfaceCapabilities )
 	{
 		*pSurfaceCapabilities = get( surface )->getCapabilities( physicalDevice );
 		return VK_SUCCESS;
@@ -1940,21 +1919,19 @@ namespace ashes::d3d11
 	VkResult VKAPI_CALL vkGetPhysicalDeviceSurfaceFormatsKHR(
 		VkPhysicalDevice physicalDevice,
 		VkSurfaceKHR surface,
-		uint32_t* pSurfaceFormatCount,
-		VkSurfaceFormatKHR* pSurfaceFormats )
+		uint32_t * pSurfaceFormatCount,
+		VkSurfaceFormatKHR * pSurfaceFormats )
 	{
-		if ( !pSurfaceFormats )
-		{
-			*pSurfaceFormatCount = uint32_t( get( surface )->getFormats( physicalDevice ).size() );
-			return VK_SUCCESS;
-		}
-
 		auto formats = get( surface )->getFormats( physicalDevice );
+		*pSurfaceFormatCount = uint32_t( formats.size() );
 
-		for ( auto & format : formats )
+		if ( pSurfaceFormats )
 		{
-			*pSurfaceFormats = format;
-			++pSurfaceFormats;
+			for ( auto & format : formats )
+			{
+				*pSurfaceFormats = format;
+				++pSurfaceFormats;
+			}
 		}
 
 		return VK_SUCCESS;
@@ -1963,21 +1940,19 @@ namespace ashes::d3d11
 	VkResult VKAPI_CALL vkGetPhysicalDeviceSurfacePresentModesKHR(
 		VkPhysicalDevice physicalDevice,
 		VkSurfaceKHR surface,
-		uint32_t* pPresentModeCount,
-		VkPresentModeKHR* pPresentModes )
+		uint32_t * pPresentModeCount,
+		VkPresentModeKHR * pPresentModes )
 	{
-		if ( !pPresentModes )
-		{
-			*pPresentModeCount = uint32_t( get( surface )->getPresentModes( physicalDevice ).size() );
-			return VK_SUCCESS;
-		}
-
 		auto modes = get( surface )->getPresentModes( physicalDevice );
+		*pPresentModeCount = uint32_t( modes.size() );
 
-		for ( auto & mode : modes )
+		if ( pPresentModes )
 		{
-			*pPresentModes = mode;
-			++pPresentModes;
+			for ( auto & mode : modes )
+			{
+				*pPresentModes = mode;
+				++pPresentModes;
+			}
 		}
 
 		return VK_SUCCESS;
@@ -1990,9 +1965,9 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkCreateSwapchainKHR(
 		VkDevice device,
-		const VkSwapchainCreateInfoKHR* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkSwapchainKHR* pSwapchain )
+		const VkSwapchainCreateInfoKHR * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkSwapchainKHR * pSwapchain )
 	{
 		assert( pSwapchain );
 		return allocate( *pSwapchain
@@ -2004,7 +1979,7 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkDestroySwapchainKHR(
 		VkDevice device,
 		VkSwapchainKHR swapchain,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
 		deallocate( swapchain, pAllocator );
 	}
@@ -2012,21 +1987,19 @@ namespace ashes::d3d11
 	VkResult VKAPI_CALL vkGetSwapchainImagesKHR(
 		VkDevice device,
 		VkSwapchainKHR swapchain,
-		uint32_t* pSwapchainImageCount,
-		VkImage* pSwapchainImages )
+		uint32_t * pSwapchainImageCount,
+		VkImage * pSwapchainImages )
 	{
-		if ( !pSwapchainImages )
-		{
-			*pSwapchainImageCount = get( swapchain )->getImageCount();
-			return VK_SUCCESS;
-		}
-
 		auto result = get( swapchain )->getImages();
+		*pSwapchainImageCount = uint32_t( result.size() );
 
-		for ( auto & image : result )
+		if ( pSwapchainImages )
 		{
-			*pSwapchainImages = image;
-			++pSwapchainImages;
+			for ( auto & image : result )
+			{
+				*pSwapchainImages = image;
+				++pSwapchainImages;
+			}
 		}
 
 		return VK_SUCCESS;
@@ -2038,56 +2011,53 @@ namespace ashes::d3d11
 		uint64_t timeout,
 		VkSemaphore semaphore,
 		VkFence fence,
-		uint32_t* pImageIndex )
+		uint32_t * pImageIndex )
 	{
 		return get( swapchain )->acquireNextImage( timeout, semaphore, fence, *pImageIndex );
 	}
 
 	VkResult VKAPI_CALL vkQueuePresentKHR(
 		VkQueue queue,
-		const VkPresentInfoKHR* pPresentInfo )
+		const VkPresentInfoKHR * pPresentInfo )
 	{
 		return get( queue )->present( *pPresentInfo );
 	}
 
+#endif
+#pragma endregion
+#pragma region VK_KHR_device_group
+#ifdef VK_KHR_device_group
+
 	VkResult VKAPI_CALL vkGetDeviceGroupPresentCapabilitiesKHR(
 		VkDevice device,
-		VkDeviceGroupPresentCapabilitiesKHR* pDeviceGroupPresentCapabilities )
+		VkDeviceGroupPresentCapabilitiesKHR * pDeviceGroupPresentCapabilities )
 	{
-		// TODO
-		std::cerr << "vkGetDeviceGroupPresentCapabilitiesKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetDeviceGroupPresentCapabilitiesKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetDeviceGroupSurfacePresentModesKHR(
 		VkDevice device,
 		VkSurfaceKHR surface,
-		VkDeviceGroupPresentModeFlagsKHR* pModes )
+		VkDeviceGroupPresentModeFlagsKHR * pModes )
 	{
-		// TODO
-		std::cerr << "vkGetDeviceGroupSurfacePresentModesKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetDeviceGroupSurfacePresentModesKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetPhysicalDevicePresentRectanglesKHR(
 		VkPhysicalDevice physicalDevice,
 		VkSurfaceKHR surface,
-		uint32_t* pRectCount,
-		VkRect2D* pRects )
+		uint32_t * pRectCount,
+		VkRect2D * pRects )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDevicePresentRectanglesKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetPhysicalDevicePresentRectanglesKHR" );
 	}
 
 	VkResult VKAPI_CALL vkAcquireNextImage2KHR(
 		VkDevice device,
-		const VkAcquireNextImageInfoKHR* pAcquireInfo,
-		uint32_t* pImageIndex )
+		const VkAcquireNextImageInfoKHR * pAcquireInfo,
+		uint32_t * pImageIndex )
 	{
-		// TODO
-		std::cerr << "vkAcquireNextImage2KHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkAcquireNextImage2KHR" );
 	}
 
 #endif
@@ -2097,78 +2067,64 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceDisplayPropertiesKHR(
 		VkPhysicalDevice physicalDevice,
-		uint32_t* pPropertyCount,
-		VkDisplayPropertiesKHR* pProperties )
+		uint32_t * pPropertyCount,
+		VkDisplayPropertiesKHR * pProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceDisplayPropertiesKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceDisplayPropertiesKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceDisplayPlanePropertiesKHR(
 		VkPhysicalDevice physicalDevice,
-		uint32_t* pPropertyCount,
-		VkDisplayPlanePropertiesKHR* pProperties )
+		uint32_t * pPropertyCount,
+		VkDisplayPlanePropertiesKHR * pProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceDisplayPlanePropertiesKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceDisplayPlanePropertiesKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetDisplayPlaneSupportedDisplaysKHR(
 		VkPhysicalDevice physicalDevice,
 		uint32_t planeIndex,
-		uint32_t* pDisplayCount,
-		VkDisplayKHR* pDisplays )
+		uint32_t * pDisplayCount,
+		VkDisplayKHR * pDisplays )
 	{
-		// TODO
-		std::cerr << "vkGetDisplayPlaneSupportedDisplaysKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetDisplayPlaneSupportedDisplaysKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetDisplayModePropertiesKHR(
 		VkPhysicalDevice physicalDevice,
 		VkDisplayKHR display,
-		uint32_t* pPropertyCount,
-		VkDisplayModePropertiesKHR* pProperties )
+		uint32_t * pPropertyCount,
+		VkDisplayModePropertiesKHR * pProperties )
 	{
-		// TODO
-		std::cerr << "vkGetDisplayModePropertiesKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetDisplayModePropertiesKHR" );
 	}
 
 	VkResult VKAPI_CALL vkCreateDisplayModeKHR(
 		VkPhysicalDevice physicalDevice,
 		VkDisplayKHR display,
-		const VkDisplayModeCreateInfoKHR* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkDisplayModeKHR* pMode )
+		const VkDisplayModeCreateInfoKHR * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkDisplayModeKHR * pMode )
 	{
-		// TODO
-		std::cerr << "vkCreateDisplayModeKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkCreateDisplayModeKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetDisplayPlaneCapabilitiesKHR(
 		VkPhysicalDevice physicalDevice,
 		VkDisplayModeKHR mode,
 		uint32_t planeIndex,
-		VkDisplayPlaneCapabilitiesKHR* pCapabilities )
+		VkDisplayPlaneCapabilitiesKHR * pCapabilities )
 	{
-		// TODO
-		std::cerr << "vkGetDisplayPlaneCapabilitiesKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetDisplayPlaneCapabilitiesKHR" );
 	}
 
 	VkResult VKAPI_CALL vkCreateDisplayPlaneSurfaceKHR(
 		VkInstance instance,
-		const VkDisplaySurfaceCreateInfoKHR* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkSurfaceKHR* pSurface )
+		const VkDisplaySurfaceCreateInfoKHR * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkSurfaceKHR * pSurface )
 	{
-		// TODO
-		std::cerr << "vkCreateDisplayPlaneSurfaceKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( instance, "vkCreateDisplayPlaneSurfaceKHR" );
 	}
 
 #endif
@@ -2214,15 +2170,13 @@ namespace ashes::d3d11
 		auto props = get( physicalDevice )->getQueueFamilyProperties2();
 		*pQueueFamilyPropertyCount = uint32_t( props.size() );
 
-		if ( !pQueueFamilyProperties )
+		if ( pQueueFamilyProperties )
 		{
-			return;
-		}
-
-		for ( auto & prop : props )
-		{
-			( *pQueueFamilyProperties ) = prop;
-			++pQueueFamilyProperties;
+			for ( auto & prop : props )
+			{
+				( *pQueueFamilyProperties ) = prop;
+				++pQueueFamilyProperties;
+			}
 		}
 	}
 
@@ -2239,18 +2193,17 @@ namespace ashes::d3d11
 		uint32_t * pPropertyCount,
 		VkSparseImageFormatProperties2KHR * pProperties )
 	{
-		auto props = get( physicalDevice )->getSparseImageFormatProperties2( *pFormatInfo );
+		std::vector< VkSparseImageFormatProperties2KHR > props;
+		auto result = get( physicalDevice )->getSparseImageFormatProperties2( *pFormatInfo, props );
 		*pPropertyCount = uint32_t( props.size() );
 
-		if ( !pProperties )
+		if ( pProperties )
 		{
-			return;
-		}
-
-		for ( auto & prop : props )
-		{
-			( *pProperties ) = prop;
-			++pProperties;
+			for ( auto & prop : props )
+			{
+				( *pProperties ) = prop;
+				++pProperties;
+			}
 		}
 	}
 
@@ -2264,18 +2217,16 @@ namespace ashes::d3d11
 		uint32_t heapIndex,
 		uint32_t localDeviceIndex,
 		uint32_t remoteDeviceIndex,
-		VkPeerMemoryFeatureFlags* pPeerMemoryFeatures )
+		VkPeerMemoryFeatureFlags * pPeerMemoryFeatures )
 	{
-		// TODO
-		std::cerr << "vkGetDeviceGroupPeerMemoryFeaturesKHR Unsupported" << std::endl;
+		reportUnsupported( device, "vkGetDeviceGroupPeerMemoryFeaturesKHR" );
 	}
 
 	void VKAPI_CALL vkCmdSetDeviceMaskKHR(
 		VkCommandBuffer commandBuffer,
 		uint32_t deviceMask )
 	{
-		// TODO
-		std::cerr << "vkCmdSetDeviceMaskKHR Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdSetDeviceMaskKHR" );
 	}
 
 	void VKAPI_CALL vkCmdDispatchBaseKHR(
@@ -2287,8 +2238,7 @@ namespace ashes::d3d11
 		uint32_t groupCountY,
 		uint32_t groupCountZ )
 	{
-		// TODO
-		std::cerr << "vkCmdDispatchBaseKHR Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdDispatchBaseKHR" );
 	}
 
 #endif
@@ -2299,7 +2249,7 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkTrimCommandPoolKHR(
 		VkDevice device,
 		VkCommandPool commandPool,
-		VkCommandPoolTrimFlags flags )
+		VkCommandPoolTrimFlagsKHR flags )
 	{
 	}
 
@@ -2310,12 +2260,10 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkEnumeratePhysicalDeviceGroupsKHR(
 		VkInstance instance,
-		uint32_t* pPhysicalDeviceGroupCount,
-		VkPhysicalDeviceGroupProperties* pPhysicalDeviceGroupProperties )
+		uint32_t * pPhysicalDeviceGroupCount,
+		VkPhysicalDeviceGroupProperties * pPhysicalDeviceGroupProperties )
 	{
-		// TODO
-		std::cerr << "vkEnumeratePhysicalDeviceGroupsKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( instance, "vkEnumeratePhysicalDeviceGroupsKHR" );
 	}
 
 #endif
@@ -2325,11 +2273,10 @@ namespace ashes::d3d11
 
 	void VKAPI_CALL vkGetPhysicalDeviceExternalBufferPropertiesKHR(
 		VkPhysicalDevice physicalDevice,
-		const VkPhysicalDeviceExternalBufferInfo* pExternalBufferInfo,
-		VkExternalBufferProperties* pExternalBufferProperties )
+		const VkPhysicalDeviceExternalBufferInfo * pExternalBufferInfo,
+		VkExternalBufferProperties * pExternalBufferProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceExternalBufferPropertiesKHR Unsupported" << std::endl;
+		reportUnsupported( physicalDevice, "vkGetPhysicalDeviceExternalBufferPropertiesKHR" );
 	}
 
 #endif
@@ -2339,23 +2286,19 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkGetMemoryFdKHR(
 		VkDevice device,
-		const VkMemoryGetFdInfoKHR* pGetFdInfo,
-		int* pFd )
+		const VkMemoryGetFdInfoKHR * pGetFdInfo,
+		int * pFd )
 	{
-		// TODO
-		std::cerr << "vkGetMemoryFdKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetMemoryFdKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetMemoryFdPropertiesKHR(
 		VkDevice device,
 		VkExternalMemoryHandleTypeFlagBits handleType,
 		int fd,
-		VkMemoryFdPropertiesKHR* pMemoryFdProperties )
+		VkMemoryFdPropertiesKHR * pMemoryFdProperties )
 	{
-		// TODO
-		std::cerr << "vkGetMemoryFdPropertiesKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetMemoryFdPropertiesKHR" );
 	}
 
 #endif
@@ -2365,11 +2308,10 @@ namespace ashes::d3d11
 
 	void VKAPI_CALL vkGetPhysicalDeviceExternalSemaphorePropertiesKHR(
 		VkPhysicalDevice physicalDevice,
-		const VkPhysicalDeviceExternalSemaphoreInfo* pExternalSemaphoreInfo,
-		VkExternalSemaphoreProperties* pExternalSemaphoreProperties )
+		const VkPhysicalDeviceExternalSemaphoreInfo * pExternalSemaphoreInfo,
+		VkExternalSemaphoreProperties * pExternalSemaphoreProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceExternalSemaphorePropertiesKHR Unsupported" << std::endl;
+		reportUnsupported( physicalDevice, "vkGetPhysicalDeviceExternalSemaphorePropertiesKHR" );
 	}
 
 #endif
@@ -2379,21 +2321,17 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkImportSemaphoreFdKHR(
 		VkDevice device,
-		const VkImportSemaphoreFdInfoKHR* pImportSemaphoreFdInfo )
+		const VkImportSemaphoreFdInfoKHR * pImportSemaphoreFdInfo )
 	{
-		// TODO
-		std::cerr << "vkImportSemaphoreFdKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkImportSemaphoreFdKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetSemaphoreFdKHR(
 		VkDevice device,
-		const VkSemaphoreGetFdInfoKHR* pGetFdInfo,
-		int* pFd )
+		const VkSemaphoreGetFdInfoKHR * pGetFdInfo,
+		int * pFd )
 	{
-		// TODO
-		std::cerr << "vkGetSemaphoreFdKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetSemaphoreFdKHR" );
 	}
 
 #endif
@@ -2407,10 +2345,9 @@ namespace ashes::d3d11
 		VkPipelineLayout layout,
 		uint32_t set,
 		uint32_t descriptorWriteCount,
-		const VkWriteDescriptorSet* pDescriptorWrites )
+		const VkWriteDescriptorSet * pDescriptorWrites )
 	{
-		// TODO
-		std::cerr << "vkCmdPushDescriptorSetKHR Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdPushDescriptorSetKHR" );
 	}
 
 	void VKAPI_CALL vkCmdPushDescriptorSetWithTemplateKHR(
@@ -2418,10 +2355,9 @@ namespace ashes::d3d11
 		VkDescriptorUpdateTemplate descriptorUpdateTemplate,
 		VkPipelineLayout layout,
 		uint32_t set,
-		const void* pData )
+		const void * pData )
 	{
-		// TODO
-		std::cerr << "vkCmdPushDescriptorSetWithTemplateKHR Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdPushDescriptorSetWithTemplateKHR" );
 	}
 
 #endif
@@ -2431,32 +2367,28 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkCreateDescriptorUpdateTemplateKHR(
 		VkDevice device,
-		const VkDescriptorUpdateTemplateCreateInfo* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkDescriptorUpdateTemplate* pDescriptorUpdateTemplate )
+		const VkDescriptorUpdateTemplateCreateInfo * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkDescriptorUpdateTemplate * pDescriptorUpdateTemplate )
 	{
-		// TODO
-		std::cerr << "vkCreateDescriptorUpdateTemplateKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkCreateDescriptorUpdateTemplateKHR" );
 	}
 
 	void VKAPI_CALL vkDestroyDescriptorUpdateTemplateKHR(
 		VkDevice device,
 		VkDescriptorUpdateTemplate descriptorUpdateTemplate,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
-		// TODO
-		std::cerr << "vkDestroyDescriptorUpdateTemplateKHR Unsupported" << std::endl;
+		reportUnsupported( device, "vkDestroyDescriptorUpdateTemplateKHR" );
 	}
 
 	void VKAPI_CALL vkUpdateDescriptorSetWithTemplateKHR(
 		VkDevice device,
 		VkDescriptorSet descriptorSet,
 		VkDescriptorUpdateTemplate descriptorUpdateTemplate,
-		const void* pData )
+		const void * pData )
 	{
-		// TODO
-		std::cerr << "vkUpdateDescriptorSetWithTemplateKHR Unsupported" << std::endl;
+		reportUnsupported( device, "vkUpdateDescriptorSetWithTemplateKHR" );
 	}
 
 #endif
@@ -2466,39 +2398,34 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkCreateRenderPass2KHR(
 		VkDevice device,
-		const VkRenderPassCreateInfo2KHR* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkRenderPass* pRenderPass )
+		const VkRenderPassCreateInfo2KHR * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkRenderPass * pRenderPass )
 	{
-		// TODO
-		std::cerr << "vkCreateRenderPass2KHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkCreateRenderPass2KHR" );
 	}
 
 	void VKAPI_CALL vkCmdBeginRenderPass2KHR(
 		VkCommandBuffer commandBuffer,
-		const VkRenderPassBeginInfo* pRenderPassBegin,
-		const VkSubpassBeginInfoKHR* pSubpassBeginInfo )
+		const VkRenderPassBeginInfo * pRenderPassBegin,
+		const VkSubpassBeginInfoKHR * pSubpassBeginInfo )
 	{
-		// TODO
-		std::cerr << "vkCmdBeginRenderPass2KHR Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdBeginRenderPass2KHR" );
 	}
 
 	void VKAPI_CALL vkCmdNextSubpass2KHR(
 		VkCommandBuffer commandBuffer,
-		const VkSubpassBeginInfoKHR* pSubpassBeginInfo,
-		const VkSubpassEndInfoKHR* pSubpassEndInfo )
+		const VkSubpassBeginInfoKHR * pSubpassBeginInfo,
+		const VkSubpassEndInfoKHR * pSubpassEndInfo )
 	{
-		// TODO
-		std::cerr << "vkCmdNextSubpass2KHR Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdNextSubpass2KHR" );
 	}
 
 	void VKAPI_CALL vkCmdEndRenderPass2KHR(
 		VkCommandBuffer commandBuffer,
-		const VkSubpassEndInfoKHR* pSubpassEndInfo )
+		const VkSubpassEndInfoKHR * pSubpassEndInfo )
 	{
-		// TODO
-		std::cerr << "vkCmdEndRenderPass2KHR Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdEndRenderPass2KHR" );
 	}
 
 #endif
@@ -2510,9 +2437,7 @@ namespace ashes::d3d11
 		VkDevice device,
 		VkSwapchainKHR swapchain )
 	{
-		// TODO
-		std::cerr << "vkGetSwapchainStatusKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkImportFenceFdKHR" );
 	}
 
 #endif
@@ -2522,11 +2447,10 @@ namespace ashes::d3d11
 
 	void VKAPI_CALL vkGetPhysicalDeviceExternalFencePropertiesKHR(
 		VkPhysicalDevice physicalDevice,
-		const VkPhysicalDeviceExternalFenceInfo* pExternalFenceInfo,
-		VkExternalFenceProperties* pExternalFenceProperties )
+		const VkPhysicalDeviceExternalFenceInfo * pExternalFenceInfo,
+		VkExternalFenceProperties * pExternalFenceProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceExternalFencePropertiesKHR Unsupported" << std::endl;
+		reportUnsupported( physicalDevice, "vkGetPhysicalDeviceExternalFencePropertiesKHR" );
 	}
 
 #endif
@@ -2536,21 +2460,17 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkImportFenceFdKHR(
 		VkDevice device,
-		const VkImportFenceFdInfoKHR* pImportFenceFdInfo )
+		const VkImportFenceFdInfoKHR * pImportFenceFdInfo )
 	{
-		// TODO
-		std::cerr << "vkImportFenceFdKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkImportFenceFdKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetFenceFdKHR(
 		VkDevice device,
-		const VkFenceGetFdInfoKHR* pGetFdInfo,
-		int* pFd )
+		const VkFenceGetFdInfoKHR * pGetFdInfo,
+		int * pFd )
 	{
-		// TODO
-		std::cerr << "vkGetFenceFdKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetFenceFdKHR" );
 	}
 
 #endif
@@ -2560,23 +2480,19 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceSurfaceCapabilities2KHR(
 		VkPhysicalDevice physicalDevice,
-		const VkPhysicalDeviceSurfaceInfo2KHR* pSurfaceInfo,
-		VkSurfaceCapabilities2KHR* pSurfaceCapabilities )
+		const VkPhysicalDeviceSurfaceInfo2KHR * pSurfaceInfo,
+		VkSurfaceCapabilities2KHR * pSurfaceCapabilities )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceSurfaceCapabilities2KHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceSurfaceCapabilities2KHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceSurfaceFormats2KHR(
 		VkPhysicalDevice physicalDevice,
-		const VkPhysicalDeviceSurfaceInfo2KHR* pSurfaceInfo,
-		uint32_t* pSurfaceFormatCount,
-		VkSurfaceFormat2KHR* pSurfaceFormats )
+		const VkPhysicalDeviceSurfaceInfo2KHR * pSurfaceInfo,
+		uint32_t * pSurfaceFormatCount,
+		VkSurfaceFormat2KHR * pSurfaceFormats )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceSurfaceFormats2KHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceSurfaceFormats2KHR" );
 	}
 
 #endif
@@ -2586,43 +2502,35 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceDisplayProperties2KHR(
 		VkPhysicalDevice physicalDevice,
-		uint32_t* pPropertyCount,
-		VkDisplayProperties2KHR* pProperties )
+		uint32_t * pPropertyCount,
+		VkDisplayProperties2KHR * pProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceDisplayProperties2KHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceDisplayProperties2KHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceDisplayPlaneProperties2KHR(
 		VkPhysicalDevice physicalDevice,
-		uint32_t* pPropertyCount,
-		VkDisplayPlaneProperties2KHR* pProperties )
+		uint32_t * pPropertyCount,
+		VkDisplayPlaneProperties2KHR * pProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceDisplayPlaneProperties2KHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceDisplayPlaneProperties2KHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetDisplayModeProperties2KHR(
 		VkPhysicalDevice physicalDevice,
 		VkDisplayKHR display,
-		uint32_t* pPropertyCount,
-		VkDisplayModeProperties2KHR* pProperties )
+		uint32_t * pPropertyCount,
+		VkDisplayModeProperties2KHR * pProperties )
 	{
-		// TODO
-		std::cerr << "vkGetDisplayModeProperties2KHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetDisplayModeProperties2KHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetDisplayPlaneCapabilities2KHR(
 		VkPhysicalDevice physicalDevice,
-		const VkDisplayPlaneInfo2KHR* pDisplayPlaneInfo,
-		VkDisplayPlaneCapabilities2KHR* pCapabilities )
+		const VkDisplayPlaneInfo2KHR * pDisplayPlaneInfo,
+		VkDisplayPlaneCapabilities2KHR * pCapabilities )
 	{
-		// TODO
-		std::cerr << "vkGetDisplayPlaneCapabilities2KHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetDisplayPlaneCapabilities2KHR" );
 	}
 
 #endif
@@ -2632,30 +2540,27 @@ namespace ashes::d3d11
 
 	void VKAPI_CALL vkGetImageMemoryRequirements2KHR(
 		VkDevice device,
-		const VkImageMemoryRequirementsInfo2* pInfo,
-		VkMemoryRequirements2* pMemoryRequirements )
+		const VkImageMemoryRequirementsInfo2 * pInfo,
+		VkMemoryRequirements2 * pMemoryRequirements )
 	{
-		// TODO
-		std::cerr << "vkGetImageMemoryRequirements2KHR Unsupported" << std::endl;
+		reportUnsupported( device, "vkGetImageMemoryRequirements2KHR" );
 	}
 
 	void VKAPI_CALL vkGetBufferMemoryRequirements2KHR(
 		VkDevice device,
-		const VkBufferMemoryRequirementsInfo2* pInfo,
-		VkMemoryRequirements2* pMemoryRequirements )
+		const VkBufferMemoryRequirementsInfo2 * pInfo,
+		VkMemoryRequirements2 * pMemoryRequirements )
 	{
-		// TODO
-		std::cerr << "vkGetBufferMemoryRequirements2KHR Unsupported" << std::endl;
+		reportUnsupported( device, "vkGetBufferMemoryRequirements2KHR" );
 	}
 
 	void VKAPI_CALL vkGetImageSparseMemoryRequirements2KHR(
 		VkDevice device,
-		const VkImageSparseMemoryRequirementsInfo2* pInfo,
-		uint32_t* pSparseMemoryRequirementCount,
-		VkSparseImageMemoryRequirements2* pSparseMemoryRequirements )
+		const VkImageSparseMemoryRequirementsInfo2 * pInfo,
+		uint32_t * pSparseMemoryRequirementCount,
+		VkSparseImageMemoryRequirements2 * pSparseMemoryRequirements )
 	{
-		// TODO
-		std::cerr << "vkGetImageSparseMemoryRequirements2KHR Unsupported" << std::endl;
+		reportUnsupported( device, "vkGetImageSparseMemoryRequirements2KHR" );
 	}
 
 #endif
@@ -2665,22 +2570,19 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkCreateSamplerYcbcrConversionKHR(
 		VkDevice device,
-		const VkSamplerYcbcrConversionCreateInfo* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkSamplerYcbcrConversion* pYcbcrConversion )
+		const VkSamplerYcbcrConversionCreateInfo * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkSamplerYcbcrConversion * pYcbcrConversion )
 	{
-		// TODO
-		std::cerr << "vkCreateSamplerYcbcrConversionKHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkCreateSamplerYcbcrConversionKHR" );
 	}
 
 	void VKAPI_CALL vkDestroySamplerYcbcrConversionKHR(
 		VkDevice device,
 		VkSamplerYcbcrConversion ycbcrConversion,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
-		// TODO
-		std::cerr << "vkDestroySamplerYcbcrConversionKHR Unsupported" << std::endl;
+		reportUnsupported( device, "vkDestroySamplerYcbcrConversionKHR" );
 	}
 
 #endif
@@ -2691,21 +2593,17 @@ namespace ashes::d3d11
 	VkResult VKAPI_CALL vkBindBufferMemory2KHR(
 		VkDevice device,
 		uint32_t bindInfoCount,
-		const VkBindBufferMemoryInfo* pBindInfos )
+		const VkBindBufferMemoryInfo * pBindInfos )
 	{
-		// TODO
-		std::cerr << "vkBindBufferMemory2KHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkBindBufferMemory2KHR" );
 	}
 
 	VkResult VKAPI_CALL vkBindImageMemory2KHR(
 		VkDevice device,
 		uint32_t bindInfoCount,
-		const VkBindImageMemoryInfo* pBindInfos )
+		const VkBindImageMemoryInfo * pBindInfos )
 	{
-		// TODO
-		std::cerr << "vkBindImageMemory2KHR Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkBindImageMemory2KHR" );
 	}
 
 #endif
@@ -2715,11 +2613,10 @@ namespace ashes::d3d11
 
 	void VKAPI_CALL vkGetDescriptorSetLayoutSupportKHR(
 		VkDevice device,
-		const VkDescriptorSetLayoutCreateInfo* pCreateInfo,
-		VkDescriptorSetLayoutSupport* pSupport )
+		const VkDescriptorSetLayoutCreateInfo * pCreateInfo,
+		VkDescriptorSetLayoutSupport * pSupport )
 	{
-		// TODO
-		std::cerr << "vkGetDescriptorSetLayoutSupportKHR Unsupported" << std::endl;
+		reportUnsupported( device, "vkGetDescriptorSetLayoutSupportKHR" );
 	}
 
 #endif
@@ -2736,8 +2633,7 @@ namespace ashes::d3d11
 		uint32_t maxDrawCount,
 		uint32_t stride )
 	{
-		// TODO
-		std::cerr << "vkCmdDrawIndirectCountKHR Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdDrawIndirectCountKHR" );
 	}
 
 	void VKAPI_CALL vkCmdDrawIndexedIndirectCountKHR(
@@ -2749,8 +2645,7 @@ namespace ashes::d3d11
 		uint32_t maxDrawCount,
 		uint32_t stride )
 	{
-		// TODO
-		std::cerr << "vkCmdDrawIndexedIndirectCountKHR Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdDrawIndexedIndirectCountKHR" );
 	}
 
 #endif
@@ -2760,9 +2655,9 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkCreateDebugReportCallbackEXT(
 		VkInstance instance,
-		const VkDebugReportCallbackCreateInfoEXT* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkDebugReportCallbackEXT* pCallback )
+		const VkDebugReportCallbackCreateInfoEXT * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkDebugReportCallbackEXT * pCallback )
 	{
 		assert( pCallback );
 		return allocate( *pCallback
@@ -2774,7 +2669,7 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkDestroyDebugReportCallbackEXT(
 		VkInstance instance,
 		VkDebugReportCallbackEXT callback,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
 		deallocate( callback, pAllocator );
 	}
@@ -2786,10 +2681,10 @@ namespace ashes::d3d11
 		uint64_t object,
 		size_t location,
 		int32_t messageCode,
-		const char* pLayerPrefix,
-		const char* pMessage )
+		const char * pLayerPrefix,
+		const char * pMessage )
 	{
-		get( instance )->onReportMessage( flags
+		get( instance )->reportMessage( flags
 			, objectType
 			, object
 			, location
@@ -2805,41 +2700,36 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkDebugMarkerSetObjectTagEXT(
 		VkDevice device,
-		const VkDebugMarkerObjectTagInfoEXT* pTagInfo )
+		const VkDebugMarkerObjectTagInfoEXT * pTagInfo )
 	{
-		// TODO
-		std::cerr << "vkDebugMarkerSetObjectTagEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return get( device )->debugMarkerSetObjectTag( *pTagInfo );
 	}
 
 	VkResult VKAPI_CALL vkDebugMarkerSetObjectNameEXT(
 		VkDevice device,
-		const VkDebugMarkerObjectNameInfoEXT* pNameInfo )
+		const VkDebugMarkerObjectNameInfoEXT * pNameInfo )
 	{
 		return get( device )->debugMarkerSetObjectName( *pNameInfo );
 	}
 
 	void VKAPI_CALL vkCmdDebugMarkerBeginEXT(
 		VkCommandBuffer commandBuffer,
-		const VkDebugMarkerMarkerInfoEXT* pMarkerInfo )
+		const VkDebugMarkerMarkerInfoEXT * pMarkerInfo )
 	{
-		// TODO
-		std::cerr << "vkCmdDebugMarkerBeginEXT Unsupported" << std::endl;
+		return get( commandBuffer )->debugMarkerBegin( *pMarkerInfo );
 	}
 
 	void VKAPI_CALL vkCmdDebugMarkerEndEXT(
 		VkCommandBuffer commandBuffer )
 	{
-		// TODO
-		std::cerr << "vkCmdDebugMarkerEndEXT Unsupported" << std::endl;
+		return get( commandBuffer )->debugMarkerEnd();
 	}
 
 	void VKAPI_CALL vkCmdDebugMarkerInsertEXT(
 		VkCommandBuffer commandBuffer,
-		const VkDebugMarkerMarkerInfoEXT* pMarkerInfo )
+		const VkDebugMarkerMarkerInfoEXT * pMarkerInfo )
 	{
-		// TODO
-		std::cerr << "vkCmdDebugMarkerInsertEXT Unsupported" << std::endl;
+		return get( commandBuffer )->debugMarkerInsert( *pMarkerInfo );
 	}
 
 #endif
@@ -2851,34 +2741,31 @@ namespace ashes::d3d11
 		VkCommandBuffer commandBuffer,
 		uint32_t firstBinding,
 		uint32_t bindingCount,
-		const VkBuffer* pBuffers,
-		const VkDeviceSize* pOffsets,
-		const VkDeviceSize* pSizes )
+		const VkBuffer * pBuffers,
+		const VkDeviceSize * pOffsets,
+		const VkDeviceSize * pSizes )
 	{
-		// TODO
-		std::cerr << "vkCmdBindTransformFeedbackBuffersEXT Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdBindTransformFeedbackBuffersEXT" );
 	}
 
 	void VKAPI_CALL vkCmdBeginTransformFeedbackEXT(
 		VkCommandBuffer commandBuffer,
 		uint32_t firstCounterBuffer,
 		uint32_t counterBufferCount,
-		const VkBuffer* pCounterBuffers,
-		const VkDeviceSize* pCounterBufferOffsets )
+		const VkBuffer * pCounterBuffers,
+		const VkDeviceSize * pCounterBufferOffsets )
 	{
-		// TODO
-		std::cerr << "vkCmdBeginTransformFeedbackEXT Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdBeginTransformFeedbackEXT" );
 	}
 
 	void VKAPI_CALL vkCmdEndTransformFeedbackEXT(
 		VkCommandBuffer commandBuffer,
 		uint32_t firstCounterBuffer,
 		uint32_t counterBufferCount,
-		const VkBuffer* pCounterBuffers,
-		const VkDeviceSize* pCounterBufferOffsets )
+		const VkBuffer * pCounterBuffers,
+		const VkDeviceSize * pCounterBufferOffsets )
 	{
-		// TODO
-		std::cerr << "vkCmdEndTransformFeedbackEXT Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdEndTransformFeedbackEXT" );
 	}
 
 	void VKAPI_CALL vkCmdBeginQueryIndexedEXT(
@@ -2888,8 +2775,7 @@ namespace ashes::d3d11
 		VkQueryControlFlags flags,
 		uint32_t index )
 	{
-		// TODO
-		std::cerr << "vkCmdBeginQueryIndexedEXT Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdBeginQueryIndexedEXT" );
 	}
 
 	void VKAPI_CALL vkCmdEndQueryIndexedEXT(
@@ -2898,8 +2784,7 @@ namespace ashes::d3d11
 		uint32_t query,
 		uint32_t index )
 	{
-		// TODO
-		std::cerr << "vkCmdEndQueryIndexedEXT Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdEndQueryIndexedEXT" );
 	}
 
 	void VKAPI_CALL vkCmdDrawIndirectByteCountEXT(
@@ -2911,8 +2796,7 @@ namespace ashes::d3d11
 		uint32_t counterOffset,
 		uint32_t vertexStride )
 	{
-		// TODO
-		std::cerr << "vkCmdDrawIndirectByteCountEXT Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdDrawIndirectByteCountEXT" );
 	}
 
 #endif
@@ -2929,8 +2813,7 @@ namespace ashes::d3d11
 		uint32_t maxDrawCount,
 		uint32_t stride )
 	{
-		// TODO
-		std::cerr << "vkCmdDrawIndirectCountAMD Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdDrawIndirectCountAMD" );
 	}
 
 	void VKAPI_CALL vkCmdDrawIndexedIndirectCountAMD(
@@ -2942,8 +2825,7 @@ namespace ashes::d3d11
 		uint32_t maxDrawCount,
 		uint32_t stride )
 	{
-		// TODO
-		std::cerr << "vkCmdDrawIndexedIndirectCountAMD Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdDrawIndexedIndirectCountAMD" );
 	}
 
 #endif
@@ -2956,12 +2838,10 @@ namespace ashes::d3d11
 		VkPipeline pipeline,
 		VkShaderStageFlagBits shaderStage,
 		VkShaderInfoTypeAMD infoType,
-		size_t* pInfoSize,
-		void* pInfo )
+		size_t * pInfoSize,
+		void * pInfo )
 	{
-		// TODO
-		std::cerr << "vkGetShaderInfoAMD Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetShaderInfoAMD" );
 	}
 
 #endif
@@ -2977,11 +2857,9 @@ namespace ashes::d3d11
 		VkImageUsageFlags usage,
 		VkImageCreateFlags flags,
 		VkExternalMemoryHandleTypeFlagsNV externalHandleType,
-		VkExternalImageFormatPropertiesNV* pExternalImageFormatProperties )
+		VkExternalImageFormatPropertiesNV * pExternalImageFormatProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceExternalImageFormatPropertiesNV Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceExternalImageFormatPropertiesNV" );
 	}
 
 #endif
@@ -2991,17 +2869,15 @@ namespace ashes::d3d11
 
 	void VKAPI_CALL vkCmdBeginConditionalRenderingEXT(
 		VkCommandBuffer commandBuffer,
-		const VkConditionalRenderingBeginInfoEXT* pConditionalRenderingBegin )
+		const VkConditionalRenderingBeginInfoEXT * pConditionalRenderingBegin )
 	{
-		// TODO
-		std::cerr << "vkCmdBeginConditionalRenderingEXT Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdBeginConditionalRenderingEXT" );
 	}
 
 	void VKAPI_CALL vkCmdEndConditionalRenderingEXT(
 		VkCommandBuffer commandBuffer )
 	{
-		// TODO
-		std::cerr << "vkCmdEndConditionalRenderingEXT Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdEndConditionalRenderingEXT" );
 	}
 
 #endif
@@ -3011,91 +2887,78 @@ namespace ashes::d3d11
 
 	void VKAPI_CALL vkCmdProcessCommandsNVX(
 		VkCommandBuffer commandBuffer,
-		const VkCmdProcessCommandsInfoNVX* pProcessCommandsInfo )
+		const VkCmdProcessCommandsInfoNVX * pProcessCommandsInfo )
 	{
-		// TODO
-		std::cerr << "vkCmdProcessCommandsNVX Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdProcessCommandsNVX" );
 	}
 
 	void VKAPI_CALL vkCmdReserveSpaceForCommandsNVX(
 		VkCommandBuffer commandBuffer,
-		const VkCmdReserveSpaceForCommandsInfoNVX* pReserveSpaceInfo )
+		const VkCmdReserveSpaceForCommandsInfoNVX * pReserveSpaceInfo )
 	{
-		// TODO
-		std::cerr << "vkCmdReserveSpaceForCommandsNVX Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdReserveSpaceForCommandsNVX" );
 	}
 
 	VkResult VKAPI_CALL vkCreateIndirectCommandsLayoutNVX(
 		VkDevice device,
-		const VkIndirectCommandsLayoutCreateInfoNVX* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkIndirectCommandsLayoutNVX* pIndirectCommandsLayout )
+		const VkIndirectCommandsLayoutCreateInfoNVX * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkIndirectCommandsLayoutNVX * pIndirectCommandsLayout )
 	{
-		// TODO
-		std::cerr << "vkCreateIndirectCommandsLayoutNVX Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkCreateIndirectCommandsLayoutNVX" );
 	}
 
 	void VKAPI_CALL vkDestroyIndirectCommandsLayoutNVX(
 		VkDevice device,
 		VkIndirectCommandsLayoutNVX indirectCommandsLayout,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
-		// TODO
-		std::cerr << "vkDestroyIndirectCommandsLayoutNVX Unsupported" << std::endl;
+		reportUnsupported( device, "vkDestroyIndirectCommandsLayoutNVX" );
 	}
 
 	VkResult VKAPI_CALL vkCreateObjectTableNVX(
 		VkDevice device,
-		const VkObjectTableCreateInfoNVX* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkObjectTableNVX* pObjectTable )
+		const VkObjectTableCreateInfoNVX * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkObjectTableNVX * pObjectTable )
 	{
-		// TODO
-		std::cerr << "vkCreateObjectTableNVX Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkCreateObjectTableNVX" );
 	}
 
 	void VKAPI_CALL vkDestroyObjectTableNVX(
 		VkDevice device,
 		VkObjectTableNVX objectTable,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
-		// TODO
-		std::cerr << "vkDestroyObjectTableNVX Unsupported" << std::endl;
+		reportUnsupported( device, "vkDestroyObjectTableNVX" );
 	}
 
 	VkResult VKAPI_CALL vkRegisterObjectsNVX(
 		VkDevice device,
 		VkObjectTableNVX objectTable,
 		uint32_t objectCount,
-		const VkObjectTableEntryNVX* const* ppObjectTableEntries,
-		const uint32_t* pObjectIndices )
+		const VkObjectTableEntryNVX * const * ppObjectTableEntries,
+		const uint32_t * pObjectIndices )
 	{
-		// TODO
-		std::cerr << "vkRegisterObjectsNVX Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkRegisterObjectsNVX" );
 	}
 
 	VkResult VKAPI_CALL vkUnregisterObjectsNVX(
 		VkDevice device,
 		VkObjectTableNVX objectTable,
 		uint32_t objectCount,
-		const VkObjectEntryTypeNVX* pObjectEntryTypes,
-		const uint32_t* pObjectIndices )
+		const VkObjectEntryTypeNVX * pObjectEntryTypes,
+		const uint32_t * pObjectIndices )
 	{
-		// TODO
-		std::cerr << "vkUnregisterObjectsNVX Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkUnregisterObjectsNVX" );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX(
 		VkPhysicalDevice physicalDevice,
-		VkDeviceGeneratedCommandsFeaturesNVX* pFeatures,
-		VkDeviceGeneratedCommandsLimitsNVX* pLimits )
+		VkDeviceGeneratedCommandsFeaturesNVX * pFeatures,
+		VkDeviceGeneratedCommandsLimitsNVX * pLimits )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX Unsupported" << std::endl;
+		reportUnsupported( physicalDevice, "vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX" );
 	}
 
 #endif
@@ -3107,10 +2970,9 @@ namespace ashes::d3d11
 		VkCommandBuffer commandBuffer,
 		uint32_t firstViewport,
 		uint32_t viewportCount,
-		const VkViewportWScalingNV* pViewportWScalings )
+		const VkViewportWScalingNV * pViewportWScalings )
 	{
-		// TODO
-		std::cerr << "vkCmdSetViewportWScalingNV Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdSetViewportWScalingNV" );
 	}
 
 #endif
@@ -3122,9 +2984,7 @@ namespace ashes::d3d11
 		VkPhysicalDevice physicalDevice,
 		VkDisplayKHR display )
 	{
-		// TODO
-		std::cerr << "vkReleaseDisplayEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkReleaseDisplayEXT" );
 	}
 
 #endif
@@ -3135,11 +2995,9 @@ namespace ashes::d3d11
 	VkResult VKAPI_CALL vkGetPhysicalDeviceSurfaceCapabilities2EXT(
 		VkPhysicalDevice physicalDevice,
 		VkSurfaceKHR surface,
-		VkSurfaceCapabilities2EXT* pSurfaceCapabilities )
+		VkSurfaceCapabilities2EXT * pSurfaceCapabilities )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceSurfaceCapabilities2EXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceSurfaceCapabilities2EXT" );
 	}
 
 #endif
@@ -3150,45 +3008,37 @@ namespace ashes::d3d11
 	VkResult VKAPI_CALL vkDisplayPowerControlEXT(
 		VkDevice device,
 		VkDisplayKHR display,
-		const VkDisplayPowerInfoEXT* pDisplayPowerInfo )
+		const VkDisplayPowerInfoEXT * pDisplayPowerInfo )
 	{
-		// TODO
-		std::cerr << "vkDisplayPowerControlEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkDisplayPowerControlEXT" );
 	}
 
 	VkResult VKAPI_CALL vkRegisterDeviceEventEXT(
 		VkDevice device,
-		const VkDeviceEventInfoEXT* pDeviceEventInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkFence* pFence )
+		const VkDeviceEventInfoEXT * pDeviceEventInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkFence * pFence )
 	{
-		// TODO
-		std::cerr << "vkRegisterDeviceEventEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkRegisterDeviceEventEXT" );
 	}
 
 	VkResult VKAPI_CALL vkRegisterDisplayEventEXT(
 		VkDevice device,
 		VkDisplayKHR display,
-		const VkDisplayEventInfoEXT* pDisplayEventInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkFence* pFence )
+		const VkDisplayEventInfoEXT * pDisplayEventInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkFence * pFence )
 	{
-		// TODO
-		std::cerr << "vkRegisterDisplayEventEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkRegisterDisplayEventEXT" );
 	}
 
 	VkResult VKAPI_CALL vkGetSwapchainCounterEXT(
 		VkDevice device,
 		VkSwapchainKHR swapchain,
 		VkSurfaceCounterFlagBitsEXT counter,
-		uint64_t* pCounterValue )
+		uint64_t * pCounterValue )
 	{
-		// TODO
-		std::cerr << "vkGetSwapchainCounterEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetSwapchainCounterEXT" );
 	}
 
 #endif
@@ -3199,22 +3049,18 @@ namespace ashes::d3d11
 	VkResult VKAPI_CALL vkGetRefreshCycleDurationGOOGLE(
 		VkDevice device,
 		VkSwapchainKHR swapchain,
-		VkRefreshCycleDurationGOOGLE* pDisplayTimingProperties )
+		VkRefreshCycleDurationGOOGLE * pDisplayTimingProperties )
 	{
-		// TODO
-		std::cerr << "vkGetRefreshCycleDurationGOOGLE Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetRefreshCycleDurationGOOGLE" );
 	}
 
 	VkResult VKAPI_CALL vkGetPastPresentationTimingGOOGLE(
 		VkDevice device,
 		VkSwapchainKHR swapchain,
-		uint32_t* pPresentationTimingCount,
-		VkPastPresentationTimingGOOGLE* pPresentationTimings )
+		uint32_t * pPresentationTimingCount,
+		VkPastPresentationTimingGOOGLE * pPresentationTimings )
 	{
-		// TODO
-		std::cerr << "vkGetPastPresentationTimingGOOGLE Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetPastPresentationTimingGOOGLE" );
 	}
 
 #endif
@@ -3226,10 +3072,9 @@ namespace ashes::d3d11
 		VkCommandBuffer commandBuffer,
 		uint32_t firstDiscardRectangle,
 		uint32_t discardRectangleCount,
-		const VkRect2D* pDiscardRectangles )
+		const VkRect2D * pDiscardRectangles )
 	{
-		// TODO
-		std::cerr << "vkCmdSetDiscardRectangleEXT Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdSetDiscardRectangleEXT" );
 	}
 
 #endif
@@ -3240,11 +3085,10 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkSetHdrMetadataEXT(
 		VkDevice device,
 		uint32_t swapchainCount,
-		const VkSwapchainKHR* pSwapchains,
-		const VkHdrMetadataEXT* pMetadata )
+		const VkSwapchainKHR * pSwapchains,
+		const VkHdrMetadataEXT * pMetadata )
 	{
-		// TODO
-		std::cerr << "vkSetHdrMetadataEXT Unsupported" << std::endl;
+		reportUnsupported( device, "vkSetHdrMetadataEXT" );
 	}
 
 #endif
@@ -3254,21 +3098,21 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkSetDebugUtilsObjectNameEXT(
 		VkDevice device,
-		const VkDebugUtilsObjectNameInfoEXT* pNameInfo )
+		const VkDebugUtilsObjectNameInfoEXT * pNameInfo )
 	{
 		return get( device )->setDebugUtilsObjectName( *pNameInfo );
 	}
 
 	VkResult VKAPI_CALL vkSetDebugUtilsObjectTagEXT(
 		VkDevice device,
-		const VkDebugUtilsObjectTagInfoEXT* pTagInfo )
+		const VkDebugUtilsObjectTagInfoEXT * pTagInfo )
 	{
 		return get( device )->setDebugUtilsObjectTag( *pTagInfo );
 	}
 
 	void VKAPI_CALL vkQueueBeginDebugUtilsLabelEXT(
 		VkQueue queue,
-		const VkDebugUtilsLabelEXT* pLabelInfo )
+		const VkDebugUtilsLabelEXT * pLabelInfo )
 	{
 		return get( queue )->beginDebugUtilsLabel( *pLabelInfo );
 	}
@@ -3281,14 +3125,14 @@ namespace ashes::d3d11
 
 	void VKAPI_CALL vkQueueInsertDebugUtilsLabelEXT(
 		VkQueue queue,
-		const VkDebugUtilsLabelEXT* pLabelInfo )
+		const VkDebugUtilsLabelEXT * pLabelInfo )
 	{
 		return get( queue )->insertDebugUtilsLabel( *pLabelInfo );
 	}
 
 	void VKAPI_CALL vkCmdBeginDebugUtilsLabelEXT(
 		VkCommandBuffer commandBuffer,
-		const VkDebugUtilsLabelEXT* pLabelInfo )
+		const VkDebugUtilsLabelEXT * pLabelInfo )
 	{
 		return get( commandBuffer )->beginDebugUtilsLabel( *pLabelInfo );
 	}
@@ -3301,16 +3145,16 @@ namespace ashes::d3d11
 
 	void VKAPI_CALL vkCmdInsertDebugUtilsLabelEXT(
 		VkCommandBuffer commandBuffer,
-		const VkDebugUtilsLabelEXT* pLabelInfo )
+		const VkDebugUtilsLabelEXT * pLabelInfo )
 	{
 		return get( commandBuffer )->insertDebugUtilsLabel( *pLabelInfo );
 	}
 
 	VkResult VKAPI_CALL vkCreateDebugUtilsMessengerEXT(
 		VkInstance instance,
-		const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkDebugUtilsMessengerEXT* pMessenger )
+		const VkDebugUtilsMessengerCreateInfoEXT * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkDebugUtilsMessengerEXT * pMessenger )
 	{
 		assert( pMessenger );
 		return allocate( *pMessenger
@@ -3323,7 +3167,7 @@ namespace ashes::d3d11
 	void VKAPI_CALL vkDestroyDebugUtilsMessengerEXT(
 		VkInstance instance,
 		VkDebugUtilsMessengerEXT messenger,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
 		deallocate( messenger, pAllocator );
 	}
@@ -3332,9 +3176,9 @@ namespace ashes::d3d11
 		VkInstance instance,
 		VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 		VkDebugUtilsMessageTypeFlagsEXT messageTypes,
-		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData )
+		const VkDebugUtilsMessengerCallbackDataEXT * pCallbackData )
 	{
-		return get( instance )->onSubmitDebugUtilsMessenger( messageSeverity
+		return get( instance )->submitDebugUtilsMessenger( messageSeverity
 			, messageTypes
 			, *pCallbackData );
 	}
@@ -3346,19 +3190,17 @@ namespace ashes::d3d11
 
 	void VKAPI_CALL vkCmdSetSampleLocationsEXT(
 		VkCommandBuffer commandBuffer,
-		const VkSampleLocationsInfoEXT* pSampleLocationsInfo )
+		const VkSampleLocationsInfoEXT * pSampleLocationsInfo )
 	{
-		// TODO
-		std::cerr << "vkCmdSetSampleLocationsEXT Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdSetSampleLocationsEXT" );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceMultisamplePropertiesEXT(
 		VkPhysicalDevice physicalDevice,
 		VkSampleCountFlagBits samples,
-		VkMultisamplePropertiesEXT* pMultisampleProperties )
+		VkMultisamplePropertiesEXT * pMultisampleProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceMultisamplePropertiesEXT Unsupported" << std::endl;
+		reportUnsupported( physicalDevice, "vkGetPhysicalDeviceMultisamplePropertiesEXT" );
 	}
 
 #endif
@@ -3369,11 +3211,9 @@ namespace ashes::d3d11
 	VkResult VKAPI_CALL vkGetImageDrmFormatModifierPropertiesEXT(
 		VkDevice device,
 		VkImage image,
-		VkImageDrmFormatModifierPropertiesEXT* pProperties )
+		VkImageDrmFormatModifierPropertiesEXT * pProperties )
 	{
-		// TODO
-		std::cerr << "vkGetImageDrmFormatModifierPropertiesEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetImageDrmFormatModifierPropertiesEXT" );
 	}
 
 #endif
@@ -3383,44 +3223,37 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkCreateValidationCacheEXT(
 		VkDevice device,
-		const VkValidationCacheCreateInfoEXT* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkValidationCacheEXT* pValidationCache )
+		const VkValidationCacheCreateInfoEXT * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkValidationCacheEXT * pValidationCache )
 	{
-		// TODO
-		std::cerr << "vkCreateValidationCacheEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkCreateValidationCacheEXT" );
 	}
 
 	void VKAPI_CALL vkDestroyValidationCacheEXT(
 		VkDevice device,
 		VkValidationCacheEXT validationCache,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
-		// TODO
-		std::cerr << "vkDestroyValidationCacheEXT Unsupported" << std::endl;
+		reportUnsupported( device, "vkDestroyValidationCacheEXT" );
 	}
 
 	VkResult VKAPI_CALL vkMergeValidationCachesEXT(
 		VkDevice device,
 		VkValidationCacheEXT dstCache,
 		uint32_t srcCacheCount,
-		const VkValidationCacheEXT* pSrcCaches )
+		const VkValidationCacheEXT * pSrcCaches )
 	{
-		// TODO
-		std::cerr << "vkMergeValidationCachesEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkMergeValidationCachesEXT" );
 	}
 
 	VkResult VKAPI_CALL vkGetValidationCacheDataEXT(
 		VkDevice device,
 		VkValidationCacheEXT validationCache,
-		size_t* pDataSize,
-		void* pData )
+		size_t * pDataSize,
+		void * pData )
 	{
-		// TODO
-		std::cerr << "vkGetValidationCacheDataEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetValidationCacheDataEXT" );
 	}
 
 #endif
@@ -3433,28 +3266,25 @@ namespace ashes::d3d11
 		VkImageView imageView,
 		VkImageLayout imageLayout )
 	{
-		// TODO
-		std::cerr << "vkCmdBindShadingRateImageNV Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdBindShadingRateImageNV" );
 	}
 
 	void VKAPI_CALL vkCmdSetViewportShadingRatePaletteNV(
 		VkCommandBuffer commandBuffer,
 		uint32_t firstViewport,
 		uint32_t viewportCount,
-		const VkShadingRatePaletteNV* pShadingRatePalettes )
+		const VkShadingRatePaletteNV * pShadingRatePalettes )
 	{
-		// TODO
-		std::cerr << "vkCmdSetViewportShadingRatePaletteNV Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdSetViewportShadingRatePaletteNV" );
 	}
 
 	void VKAPI_CALL vkCmdSetCoarseSampleOrderNV(
 		VkCommandBuffer commandBuffer,
 		VkCoarseSampleOrderTypeNV sampleOrderType,
 		uint32_t customSampleOrderCount,
-		const VkCoarseSampleOrderCustomNV* pCustomSampleOrders )
+		const VkCoarseSampleOrderCustomNV * pCustomSampleOrders )
 	{
-		// TODO
-		std::cerr << "vkCmdSetCoarseSampleOrderNV Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdSetCoarseSampleOrderNV" );
 	}
 
 #endif
@@ -3464,46 +3294,40 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkCreateAccelerationStructureNV(
 		VkDevice device,
-		const VkAccelerationStructureCreateInfoNV* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkAccelerationStructureNV* pAccelerationStructure )
+		const VkAccelerationStructureCreateInfoNV * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkAccelerationStructureNV * pAccelerationStructure )
 	{
-		// TODO
-		std::cerr << "vkCreateAccelerationStructureNV Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkCreateAccelerationStructureNV" );
 	}
 
 	void VKAPI_CALL vkDestroyAccelerationStructureNV(
 		VkDevice device,
 		VkAccelerationStructureNV accelerationStructure,
-		const VkAllocationCallbacks* pAllocator )
+		const VkAllocationCallbacks * pAllocator )
 	{
-		// TODO
-		std::cerr << "vkDestroyAccelerationStructureNV Unsupported" << std::endl;
+		reportUnsupported( device, "vkDestroyAccelerationStructureNV" );
 	}
 
 	void VKAPI_CALL vkGetAccelerationStructureMemoryRequirementsNV(
 		VkDevice device,
-		const VkAccelerationStructureMemoryRequirementsInfoNV* pInfo,
-		VkMemoryRequirements2KHR* pMemoryRequirements )
+		const VkAccelerationStructureMemoryRequirementsInfoNV * pInfo,
+		VkMemoryRequirements2KHR * pMemoryRequirements )
 	{
-		// TODO
-		std::cerr << "vkGetAccelerationStructureMemoryRequirementsNV Unsupported" << std::endl;
+		reportUnsupported( device, "vkGetAccelerationStructureMemoryRequirementsNV" );
 	}
 
 	VkResult VKAPI_CALL vkBindAccelerationStructureMemoryNV(
 		VkDevice device,
 		uint32_t bindInfoCount,
-		const VkBindAccelerationStructureMemoryInfoNV* pBindInfos )
+		const VkBindAccelerationStructureMemoryInfoNV * pBindInfos )
 	{
-		// TODO
-		std::cerr << "vkBindAccelerationStructureMemoryNV Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkBindAccelerationStructureMemoryNV" );
 	}
 
 	void VKAPI_CALL vkCmdBuildAccelerationStructureNV(
 		VkCommandBuffer commandBuffer,
-		const VkAccelerationStructureInfoNV* pInfo,
+		const VkAccelerationStructureInfoNV * pInfo,
 		VkBuffer instanceData,
 		VkDeviceSize instanceOffset,
 		VkBool32 update,
@@ -3512,8 +3336,7 @@ namespace ashes::d3d11
 		VkBuffer scratch,
 		VkDeviceSize scratchOffset )
 	{
-		// TODO
-		std::cerr << "vkCmdBuildAccelerationStructureNV Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdBuildAccelerationStructureNV" );
 	}
 
 	void VKAPI_CALL vkCmdCopyAccelerationStructureNV(
@@ -3522,8 +3345,7 @@ namespace ashes::d3d11
 		VkAccelerationStructureNV src,
 		VkCopyAccelerationStructureModeNV mode )
 	{
-		// TODO
-		std::cerr << "vkCmdCopyAccelerationStructureNV Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdCopyAccelerationStructureNV" );
 	}
 
 	void VKAPI_CALL vkCmdTraceRaysNV(
@@ -3543,21 +3365,18 @@ namespace ashes::d3d11
 		uint32_t height,
 		uint32_t depth )
 	{
-		// TODO
-		std::cerr << "vkCmdTraceRaysNV Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdTraceRaysNV" );
 	}
 
 	VkResult VKAPI_CALL vkCreateRayTracingPipelinesNV(
 		VkDevice device,
 		VkPipelineCache pipelineCache,
 		uint32_t createInfoCount,
-		const VkRayTracingPipelineCreateInfoNV* pCreateInfos,
-		const VkAllocationCallbacks* pAllocator,
-		VkPipeline* pPipelines )
+		const VkRayTracingPipelineCreateInfoNV * pCreateInfos,
+		const VkAllocationCallbacks * pAllocator,
+		VkPipeline * pPipelines )
 	{
-		// TODO
-		std::cerr << "vkCreateRayTracingPipelinesNV Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkCreateRayTracingPipelinesNV" );
 	}
 
 	VkResult VKAPI_CALL vkGetRayTracingShaderGroupHandlesNV(
@@ -3566,34 +3385,29 @@ namespace ashes::d3d11
 		uint32_t firstGroup,
 		uint32_t groupCount,
 		size_t dataSize,
-		void* pData )
+		void * pData )
 	{
-		// TODO
-		std::cerr << "vkGetRayTracingShaderGroupHandlesNV Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetRayTracingShaderGroupHandlesNV" );
 	}
 
 	VkResult VKAPI_CALL vkGetAccelerationStructureHandleNV(
 		VkDevice device,
 		VkAccelerationStructureNV accelerationStructure,
 		size_t dataSize,
-		void* pData )
+		void * pData )
 	{
-		// TODO
-		std::cerr << "vkGetAccelerationStructureHandleNV Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetAccelerationStructureHandleNV" );
 	}
 
 	void VKAPI_CALL vkCmdWriteAccelerationStructuresPropertiesNV(
 		VkCommandBuffer commandBuffer,
 		uint32_t accelerationStructureCount,
-		const VkAccelerationStructureNV* pAccelerationStructures,
+		const VkAccelerationStructureNV * pAccelerationStructures,
 		VkQueryType queryType,
 		VkQueryPool queryPool,
 		uint32_t firstQuery )
 	{
-		// TODO
-		std::cerr << "vkCmdWriteAccelerationStructuresPropertiesNV Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdWriteAccelerationStructuresPropertiesNV" );
 	}
 
 	VkResult VKAPI_CALL vkCompileDeferredNV(
@@ -3601,9 +3415,7 @@ namespace ashes::d3d11
 		VkPipeline pipeline,
 		uint32_t shader )
 	{
-		// TODO
-		std::cerr << "vkCompileDeferredNV Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkCompileDeferredNV" );
 	}
 
 #endif
@@ -3614,12 +3426,10 @@ namespace ashes::d3d11
 	VkResult VKAPI_CALL vkGetMemoryHostPointerPropertiesEXT(
 		VkDevice device,
 		VkExternalMemoryHandleTypeFlagBits handleType,
-		const void* pHostPointer,
-		VkMemoryHostPointerPropertiesEXT* pMemoryHostPointerProperties )
+		const void * pHostPointer,
+		VkMemoryHostPointerPropertiesEXT * pMemoryHostPointerProperties )
 	{
-		// TODO
-		std::cerr << "vkGetMemoryHostPointerPropertiesEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetMemoryHostPointerPropertiesEXT" );
 	}
 
 #endif
@@ -3634,8 +3444,7 @@ namespace ashes::d3d11
 		VkDeviceSize dstOffset,
 		uint32_t marker )
 	{
-		// TODO
-		std::cerr << "vkCmdWriteBufferMarkerAMD Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdWriteBufferMarkerAMD" );
 	}
 
 #endif
@@ -3645,24 +3454,20 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceCalibrateableTimeDomainsEXT(
 		VkPhysicalDevice physicalDevice,
-		uint32_t* pTimeDomainCount,
-		VkTimeDomainEXT* pTimeDomains )
+		uint32_t * pTimeDomainCount,
+		VkTimeDomainEXT * pTimeDomains )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceCalibrateableTimeDomainsEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceCalibrateableTimeDomainsEXT" );
 	}
 
 	VkResult VKAPI_CALL vkGetCalibratedTimestampsEXT(
 		VkDevice device,
 		uint32_t timestampCount,
-		const VkCalibratedTimestampInfoEXT* pTimestampInfos,
-		uint64_t* pTimestamps,
-		uint64_t* pMaxDeviation )
+		const VkCalibratedTimestampInfoEXT * pTimestampInfos,
+		uint64_t * pTimestamps,
+		uint64_t * pMaxDeviation )
 	{
-		// TODO
-		std::cerr << "vkGetCalibratedTimestampsEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetCalibratedTimestampsEXT" );
 	}
 
 #endif
@@ -3675,8 +3480,7 @@ namespace ashes::d3d11
 		uint32_t taskCount,
 		uint32_t firstTask )
 	{
-		// TODO
-		std::cerr << "vkCmdDrawMeshTasksNV Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdDrawMeshTasksNV" );
 	}
 
 	void VKAPI_CALL vkCmdDrawMeshTasksIndirectNV(
@@ -3686,8 +3490,7 @@ namespace ashes::d3d11
 		uint32_t drawCount,
 		uint32_t stride )
 	{
-		// TODO
-		std::cerr << "vkCmdDrawMeshTasksIndirectNV Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdDrawMeshTasksIndirectNV" );
 	}
 
 	void VKAPI_CALL vkCmdDrawMeshTasksIndirectCountNV(
@@ -3699,8 +3502,7 @@ namespace ashes::d3d11
 		uint32_t maxDrawCount,
 		uint32_t stride )
 	{
-		// TODO
-		std::cerr << "vkCmdDrawMeshTasksIndirectCountNV Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdDrawMeshTasksIndirectCountNV" );
 	}
 
 #endif
@@ -3712,10 +3514,9 @@ namespace ashes::d3d11
 		VkCommandBuffer commandBuffer,
 		uint32_t firstExclusiveScissor,
 		uint32_t exclusiveScissorCount,
-		const VkRect2D* pExclusiveScissors )
+		const VkRect2D * pExclusiveScissors )
 	{
-		// TODO
-		std::cerr << "vkCmdSetExclusiveScissorNV Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdSetExclusiveScissorNV" );
 	}
 
 #endif
@@ -3725,19 +3526,17 @@ namespace ashes::d3d11
 
 	void VKAPI_CALL vkCmdSetCheckpointNV(
 		VkCommandBuffer commandBuffer,
-		const void* pCheckpointMarker )
+		const void * pCheckpointMarker )
 	{
-		// TODO
-		std::cerr << "vkCmdSetCheckpointNV Unsupported" << std::endl;
+		reportUnsupported( commandBuffer, "vkCmdSetCheckpointNV" );
 	}
 
 	void VKAPI_CALL vkGetQueueCheckpointDataNV(
 		VkQueue queue,
-		uint32_t* pCheckpointDataCount,
-		VkCheckpointDataNV* pCheckpointData )
+		uint32_t * pCheckpointDataCount,
+		VkCheckpointDataNV * pCheckpointData )
 	{
-		// TODO
-		std::cerr << "vkGetQueueCheckpointDataNV Unsupported" << std::endl;
+		reportUnsupported( queue, "vkGetQueueCheckpointDataNV" );
 	}
 
 #endif
@@ -3747,11 +3546,9 @@ namespace ashes::d3d11
 
 	VkDeviceAddress VKAPI_CALL vkGetBufferDeviceAddressEXT(
 		VkDevice device,
-		const VkBufferDeviceAddressInfoEXT* pInfo )
+		const VkBufferDeviceAddressInfoEXT * pInfo )
 	{
-		// TODO
-		std::cerr << "vkGetBufferDeviceAddressEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( device, "vkGetBufferDeviceAddressEXT" );
 	}
 
 #endif
@@ -3761,12 +3558,10 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceCooperativeMatrixPropertiesNV(
 		VkPhysicalDevice physicalDevice,
-		uint32_t* pPropertyCount,
-		VkCooperativeMatrixPropertiesNV* pProperties )
+		uint32_t * pPropertyCount,
+		VkCooperativeMatrixPropertiesNV * pProperties )
 	{
-		// TODO
-		std::cerr << "vkGetPhysicalDeviceCooperativeMatrixPropertiesNV Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceCooperativeMatrixPropertiesNV" );
 	}
 
 #endif
@@ -3777,9 +3572,9 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkCreateAndroidSurfaceKHR(
 		VkInstance instance,
-		const VkAndroidSurfaceCreateInfoKHR* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkSurfaceKHR* pSurface )
+		const VkAndroidSurfaceCreateInfoKHR * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkSurfaceKHR * pSurface )
 	{
 		assert( pSurface );
 		return allocate( *pSurface
@@ -3797,9 +3592,9 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkCreateImagePipeSurfaceFUCHSIA(
 		VkInstance instance,
-		const VkImagePipeSurfaceCreateInfoFUCHSIA* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkSurfaceKHR* pSurface )
+		const VkImagePipeSurfaceCreateInfoFUCHSIA * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkSurfaceKHR * pSurface )
 	{
 		assert( pSurface );
 		return allocate( *pSurface
@@ -3817,9 +3612,9 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkCreateIOSSurfaceMVK(
 		VkInstance instance,
-		const VkIOSSurfaceCreateInfoMVK* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkSurfaceKHR* pSurface )
+		const VkIOSSurfaceCreateInfoMVK * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkSurfaceKHR * pSurface )
 	{
 		assert( pSurface );
 		return allocate( *pSurface
@@ -3837,9 +3632,9 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkCreateMacOSSurfaceMVK(
 		VkInstance instance,
-		const VkMacOSSurfaceCreateInfoMVK* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkSurfaceKHR* pSurface )
+		const VkMacOSSurfaceCreateInfoMVK * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkSurfaceKHR * pSurface )
 	{
 		assert( pSurface );
 		return allocate( *pSurface
@@ -3857,9 +3652,9 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkCreateViSurfaceNN(
 		VkInstance instance,
-		const VkViSurfaceCreateInfoNN* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkSurfaceKHR* pSurface )
+		const VkViSurfaceCreateInfoNN * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkSurfaceKHR * pSurface )
 	{
 		assert( pSurface );
 		return allocate( *pSurface
@@ -3873,13 +3668,13 @@ namespace ashes::d3d11
 #pragma endregion
 #pragma region VK_KHR_xcb_surface
 #ifdef VK_KHR_xcb_surface
-#	ifdef VK_USE_PLATFORM_XCB_KHR
+#	ifdef __linux__
 
 	VkResult VKAPI_CALL vkCreateXcbSurfaceKHR(
 		VkInstance instance,
-		const VkXcbSurfaceCreateInfoKHR* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkSurfaceKHR* pSurface )
+		const VkXcbSurfaceCreateInfoKHR * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkSurfaceKHR * pSurface )
 	{
 		assert( pSurface );
 		return allocate( *pSurface
@@ -3891,8 +3686,8 @@ namespace ashes::d3d11
 	VkBool32 VKAPI_CALL vkGetPhysicalDeviceXcbPresentationSupportKHR(
 		VkPhysicalDevice physicalDevice,
 		uint32_t queueFamilyIndex,
-		xcb_connection_t* connection,
-		xcb_visualid_t visual_id)
+		xcb_connection_t * connection,
+		xcb_visualid_t visual_id )
 	{
 		return get( physicalDevice )->getPresentationSupport( queueFamilyIndex );
 	}
@@ -3902,13 +3697,13 @@ namespace ashes::d3d11
 #pragma endregion
 #pragma region VK_KHR_xlib_surface
 #ifdef VK_KHR_xlib_surface
-#	ifdef VK_USE_PLATFORM_XLIB_KHR
+#	ifdef __linux__
 
 	VkResult VKAPI_CALL vkCreateXlibSurfaceKHR(
 		VkInstance instance,
-		const VkXlibSurfaceCreateInfoKHR* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkSurfaceKHR* pSurface )
+		const VkXlibSurfaceCreateInfoKHR * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkSurfaceKHR * pSurface )
 	{
 		assert( pSurface );
 		return allocate( *pSurface
@@ -3920,7 +3715,7 @@ namespace ashes::d3d11
 	VkBool32 VKAPI_CALL vkGetPhysicalDeviceXlibPresentationSupportKHR(
 		VkPhysicalDevice physicalDevice,
 		uint32_t queueFamilyIndex,
-		Display* dpy,
+		Display * dpy,
 		VisualID visualID )
 	{
 		return get( physicalDevice )->getPresentationSupport( queueFamilyIndex );
@@ -3935,9 +3730,9 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkCreateWaylandSurfaceKHR(
 		VkInstance instance,
-		const VkWaylandSurfaceCreateInfoKHR* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkSurfaceKHR* pSurface)
+		const VkWaylandSurfaceCreateInfoKHR * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkSurfaceKHR * pSurface )
 	{
 		assert( pSurface );
 		return allocate( *pSurface
@@ -3949,7 +3744,7 @@ namespace ashes::d3d11
 	VkBool32 VKAPI_CALL vkGetPhysicalDeviceWaylandPresentationSupportKHR(
 		VkPhysicalDevice physicalDevice,
 		uint32_t queueFamilyIndex,
-		struct wl_display* display )
+		struct wl_display * display )
 	{
 		return get( physicalDevice )->getPresentationSupport( queueFamilyIndex );
 	}
@@ -3959,13 +3754,13 @@ namespace ashes::d3d11
 #pragma endregion
 #pragma region VK_KHR_win32_surface
 #ifdef VK_KHR_win32_surface
-#	ifdef VK_USE_PLATFORM_WIN32_KHR
+#	ifdef _WIN32
 
 	VkResult VKAPI_CALL vkCreateWin32SurfaceKHR(
 		VkInstance instance,
-		const VkWin32SurfaceCreateInfoKHR* pCreateInfo,
-		const VkAllocationCallbacks* pAllocator,
-		VkSurfaceKHR* pSurface )
+		const VkWin32SurfaceCreateInfoKHR * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkSurfaceKHR * pSurface )
 	{
 		assert( pSurface );
 		return allocate( *pSurface
@@ -3990,23 +3785,19 @@ namespace ashes::d3d11
 
 	VkResult VKAPI_CALL vkAcquireXlibDisplayEXT(
 		VkPhysicalDevice physicalDevice,
-		Display* dpy,
+		Display * dpy,
 		VkDisplayKHR display )
 	{
-		// TODO
-		std::cerr << "vkAcquireXlibDisplayEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkAcquireXlibDisplayEXT" );
 	}
 
 	VkResult VKAPI_CALL vkGetRandROutputDisplayEXT(
 		VkPhysicalDevice physicalDevice,
-		Display* dpy,
+		Display * dpy,
 		RROutput rrOutput,
-		VkDisplayKHR* pDisplay )
+		VkDisplayKHR * pDisplay )
 	{
-		// TODO
-		std::cerr << "vkGetRandROutputDisplayEXT Unsupported" << std::endl;
-		return VK_ERROR_FEATURE_NOT_PRESENT;
+		return reportUnsupported( physicalDevice, "vkGetRandROutputDisplayEXT" );
 	}
 
 #	endif

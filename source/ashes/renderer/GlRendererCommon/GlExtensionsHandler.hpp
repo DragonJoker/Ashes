@@ -4,15 +4,34 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "renderer/Gl4Renderer/GlRendererPrerequisites.hpp"
-#include "renderer/Gl4Renderer/Enum/GlShaderBinaryFormat.hpp"
+#include "GlCommonPrerequisites.hpp"
 
-namespace ashes::gl4
+#include <string>
+
+namespace ashes::gl
 {
+#define makeGlExtension( x )\
+	static const std::string x = "GL_"#x
+
+	makeGlExtension( KHR_debug );
+	makeGlExtension( ARB_debug_output );
+	makeGlExtension( AMDX_debug_output );
+	makeGlExtension( ARB_texture_buffer_range );
+	makeGlExtension( ARB_texture_storage );
+	makeGlExtension( ARB_shader_image_load_store );
+	makeGlExtension( ARB_shader_storage_buffer_object );
+	makeGlExtension( ARB_base_instance );
+	makeGlExtension( ARB_clear_texture );
+	makeGlExtension( ARB_compute_shader );
+	makeGlExtension( ARB_buffer_storage );
+	makeGlExtension( ARB_gl_spirv );
+#undef makeGlExtension
+
 	class ExtensionsHandler
 	{
 	public:
-		void initialise();
+		void initialise( int reqMajor, int reqMinor
+			, int maxMajor, int maxMinor );
 
 		bool find( std::string const & name )const;
 		bool findAny( StringArray const & names )const;
@@ -47,7 +66,7 @@ namespace ashes::gl4
 	private:
 		StringArray m_deviceExtensionNames;
 		StringArray m_deviceSPIRVExtensionNames;
-		std::vector< GlShaderBinaryFormat > m_shaderBinaryFormats;
+		std::vector< uint32_t > m_shaderBinaryFormats;
 		AshPluginFeatures m_features;
 		int m_major{ 0 };
 		int m_minor{ 0 };

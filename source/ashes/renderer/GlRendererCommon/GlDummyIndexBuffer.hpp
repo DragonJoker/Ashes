@@ -1,6 +1,10 @@
+/*
+This file belongs to Ashes.
+See LICENSE file in root folder
+*/
 #include <cstdint>
 
-namespace ashes::gl4
+namespace ashes::gl
 {
 	uint32_t const dummyIndex[]
 	{

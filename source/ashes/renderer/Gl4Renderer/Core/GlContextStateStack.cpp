@@ -255,31 +255,89 @@ namespace ashes::gl4
 			}
 		}
 
-		void doApplyStencilOpState( CmdList & list
-			, VkStencilOpState const & state
+		void doApplyStencilWrite( CmdList & list
+			, uint32_t const & state
+			, uint32_t & save
 			, GlCullMode face )
 		{
 			list.emplace_back( makeCmd< OpType::eStencilMask >( face
-				, state.writeMask ) );
+				, state ) );
+			save = state;
+		}
+
+		void doApplyStencilFunc( CmdList & list
+			, VkCompareOp const & newCompareOp
+			, VkCompareOp & saveCompareOp
+			, uint32_t const & newReference
+			, uint32_t & saveReference
+			, uint32_t const & newCompareMask
+			, uint32_t & saveCompareMask
+			, GlCullMode face )
+		{
 			list.emplace_back( makeCmd< OpType::eStencilFunc >( face
-				, convert( state.compareOp )
-				, state.reference
-				, state.compareMask ) );
+				, convert( newCompareOp )
+				, newReference
+				, newCompareMask ) );
+			saveCompareOp = newCompareOp;
+			saveReference = newReference;
+			saveCompareMask = newCompareMask;
+		}
+
+		void doApplyStencilOp( CmdList & list
+			, VkStencilOp const & newFailOp
+			, VkStencilOp & saveFailOp
+			, VkStencilOp const & newDepthFailOp
+			, VkStencilOp & saveDepthFailOp
+			, VkStencilOp const & newPassOp
+			, VkStencilOp & savePassOp
+			, GlCullMode face )
+		{
 			list.emplace_back( makeCmd< OpType::eStencilOp >( face
-				, convert( state.failOp )
-				, convert( state.depthFailOp )
-				, convert( state.passOp ) ) );
+				, convert( newFailOp )
+				, convert( newDepthFailOp )
+				, convert( newPassOp ) ) );
+			saveFailOp = newFailOp;
+			saveDepthFailOp = newDepthFailOp;
+			savePassOp = newPassOp;
+		}
+
+		void doApplyStencilOpState( CmdList & list
+			, VkStencilOpState const & state
+			, VkStencilOpState & save
+			, GlCullMode face )
+		{
+			doApplyStencilWrite( list
+				, state.writeMask
+				, save.writeMask
+				, face );
+			doApplyStencilFunc( list
+				, state.compareOp
+				, save.compareOp
+				, state.reference
+				, save.reference
+				, state.compareMask
+				, save.compareMask
+				, face );
+			doApplyStencilOp( list
+				, state.failOp
+				, save.failOp
+				, state.depthFailOp
+				, save.depthFailOp
+				, state.passOp
+				, save.passOp
+				, face );
 		}
 
 		void doApplyStencilTest( CmdList & list
-			, VkPipelineDepthStencilStateCreateInfo const & state )
+			, VkPipelineDepthStencilStateCreateInfo const & state
+			, VkPipelineDepthStencilStateCreateInfo & save )
 		{
 			if ( doApplyEnable( list
 				, GL_STENCIL_TEST
 				, state.stencilTestEnable ) )
 			{
-				doApplyStencilOpState( list, state.back, GL_CULL_MODE_BACK );
-				doApplyStencilOpState( list, state.front, GL_CULL_MODE_FRONT );
+				doApplyStencilOpState( list, state.back, save.back, GL_CULL_MODE_BACK );
+				doApplyStencilOpState( list, state.front, save.front, GL_CULL_MODE_FRONT );
 			}
 		}
 
@@ -340,21 +398,137 @@ namespace ashes::gl4
 			force = true;
 		}
 
-		apply( list, newState.cbState, force );
-		apply( list, newState.dsState, force );
-		apply( list, newState.msState, force );
-		apply( list, newState.rsState, newState.dyState, force );
-		apply( list, newState.iaState, force );
+		doApply( list, newState.cbState, force );
+		doApply( list, newState.dsState, force );
+		doApply( list, newState.msState, force );
+		doApply( list, newState.rsState, newState.dyState, force );
+		doApply( list, newState.iaState, force );
 
 		if ( m_tessellation )
 		{
-			apply( list, newState.tsState, force );
+			doApply( list, newState.tsState, force );
 		}
 
 		*m_save = newState;
 	}
 
 	void ContextStateStack::apply( CmdList & list
+		, uint32_t firstScissor
+		, VkScissorArray const & scissors
+		, bool force )
+	{
+		if ( force || getCurrentScissors() != scissors )
+		{
+			list.push_back( makeCmd< OpType::eApplyScissors >( firstScissor
+				, uint32_t( scissors.size() )
+				, scissors ) );
+			setCurrentScissors( scissors );
+		}
+	}
+
+	void ContextStateStack::apply( CmdList & list
+		, uint32_t firstViewport
+		, VkViewportArray const & viewports
+		, bool force )
+	{
+		if ( force || getCurrentViewports() != viewports )
+		{
+			list.push_back( makeCmd< OpType::eApplyViewports >( firstViewport
+				, uint32_t( viewports.size() )
+				, viewports ) );
+			list.push_back( makeCmd< OpType::eApplyDepthRanges >( firstViewport
+				, uint32_t( viewports.size() )
+				, viewports ) );
+			setCurrentViewports( viewports );
+		}
+	}
+
+	void ContextStateStack::applyStencilCompareMask( CmdList & list
+		, uint32_t compareMask
+		, VkStencilFaceFlags faceFlags )
+	{
+		auto & save = m_save->dsState;
+
+		if ( faceFlags & VK_STENCIL_FACE_FRONT_BIT )
+		{
+			doApplyStencilFunc( list
+				, save.front.compareOp
+				, save.front.compareOp
+				, save.front.reference
+				, save.front.reference
+				, compareMask
+				, save.front.compareMask
+				, GL_CULL_MODE_FRONT );
+		}
+
+		if ( faceFlags & VK_STENCIL_FACE_BACK_BIT )
+		{
+			doApplyStencilFunc( list
+				, save.back.compareOp
+				, save.back.compareOp
+				, save.back.reference
+				, save.back.reference
+				, compareMask
+				, save.back.compareMask
+				, GL_CULL_MODE_BACK );
+		}
+	}
+
+	void ContextStateStack::applyStencilWriteMask( CmdList & list
+		, uint32_t writeMask
+		, VkStencilFaceFlags faceFlags )
+	{
+		auto & save = m_save->dsState;
+
+		if ( faceFlags & VK_STENCIL_FACE_FRONT_BIT )
+		{
+			doApplyStencilWrite( list
+				, writeMask
+				, save.front.writeMask
+				, GL_CULL_MODE_FRONT );
+		}
+
+		if ( faceFlags & VK_STENCIL_FACE_BACK_BIT )
+		{
+			doApplyStencilWrite( list
+				, writeMask
+				, save.back.writeMask
+				, GL_CULL_MODE_BACK );
+		}
+	}
+
+	void ContextStateStack::applyStencilReference( CmdList & list
+		, uint32_t reference
+		, VkStencilFaceFlags faceFlags )
+	{
+		auto & save = m_save->dsState;
+
+		if ( faceFlags & VK_STENCIL_FACE_FRONT_BIT )
+		{
+			doApplyStencilFunc( list
+				, save.front.compareOp
+				, save.front.compareOp
+				, reference
+				, save.front.reference
+				, save.front.compareMask
+				, save.front.compareMask
+				, GL_CULL_MODE_FRONT );
+		}
+
+		if ( faceFlags & VK_STENCIL_FACE_BACK_BIT )
+		{
+			doApplyStencilFunc( list
+				, save.back.compareOp
+				, save.back.compareOp
+				, reference
+				, save.back.reference
+				, save.back.compareMask
+				, save.back.compareMask
+				, GL_CULL_MODE_BACK );
+		}
+	}
+
+	void ContextStateStack::doApply( CmdList & list
 		, VkPipelineInputAssemblyStateCreateInfo const & newState
 		, bool force )
 	{
@@ -371,7 +545,7 @@ namespace ashes::gl4
 		}
 	}
 
-	void ContextStateStack::apply( CmdList & list
+	void ContextStateStack::doApply( CmdList & list
 		, VkPipelineColorBlendStateCreateInfo const & newState
 		, bool force )
 	{
@@ -398,7 +572,7 @@ namespace ashes::gl4
 		}
 	}
 
-	void ContextStateStack::apply( CmdList & list
+	void ContextStateStack::doApply( CmdList & list
 		, VkPipelineRasterizationStateCreateInfo const & newState
 		, VkPipelineDynamicStateCreateInfo newDyState
 		, bool force )
@@ -452,7 +626,7 @@ namespace ashes::gl4
 		doApplyLineWidth( list, newState, newDyState );
 	}
 
-	void ContextStateStack::apply( CmdList & list
+	void ContextStateStack::doApply( CmdList & list
 		, VkPipelineMultisampleStateCreateInfo const & newState
 		, bool force )
 	{
@@ -479,7 +653,7 @@ namespace ashes::gl4
 		}
 	}
 
-	void ContextStateStack::apply( CmdList & list
+	void ContextStateStack::doApply( CmdList & list
 		, VkPipelineDepthStencilStateCreateInfo const & newState
 		, bool force )
 	{
@@ -501,7 +675,7 @@ namespace ashes::gl4
 				&& ( newState.back != save.back
 					|| newState.front != save.front ) ) )
 		{
-			doApplyStencilTest( list, newState );
+			doApplyStencilTest( list, newState, save );
 		}
 
 		if ( force
@@ -514,7 +688,7 @@ namespace ashes::gl4
 		}
 	}
 
-	void ContextStateStack::apply( CmdList & list
+	void ContextStateStack::doApply( CmdList & list
 		, VkPipelineTessellationStateCreateInfo const & newState
 		, bool force )
 	{
@@ -526,38 +700,7 @@ namespace ashes::gl4
 		}
 	}
 
-	void ContextStateStack::apply( CmdList & list
-		, uint32_t firstScissor
-		, VkScissorArray const & scissors
-		, bool force )
-	{
-		if ( force || getCurrentScissors() != scissors )
-		{
-			list.push_back( makeCmd< OpType::eApplyScissors >( firstScissor
-				, uint32_t( scissors.size() )
-				, scissors ) );
-			setCurrentScissors( scissors );
-		}
-	}
-
-	void ContextStateStack::apply( CmdList & list
-		, uint32_t firstViewport
-		, VkViewportArray const & viewports
-		, bool force )
-	{
-		if ( force || getCurrentViewports() != viewports )
-		{
-			list.push_back( makeCmd< OpType::eApplyViewports >( firstViewport
-				, uint32_t( viewports.size() )
-				, viewports ) );
-			list.push_back( makeCmd< OpType::eApplyDepthRanges >( firstViewport
-				, uint32_t( viewports.size() )
-				, viewports ) );
-			setCurrentViewports( viewports );
-		}
-	}
-
-	void ContextStateStack::apply( CmdList & list
+	void ContextStateStack::doApply( CmdList & list
 		, VkPipelineViewportStateCreateInfo const & newState
 		, bool force )
 	{

@@ -117,7 +117,7 @@ namespace ashes::vk
 	}
 }
 
-#if ASHES_WIN32
+#if defined( _WIN32 )
 #	ifdef VkRenderer_EXPORTS
 #		define VkRenderer_API __declspec( dllexport )
 #	else

@@ -189,18 +189,11 @@ See LICENSE file in root folder.
 #	endif
 #endif
 
-#ifdef VK_USE_PLATFORM_XCB_KHR
-#	ifdef VK_KHR_xcb_surface
+#ifdef __linux__
 	VK_LIB_INSTANCE_FUNCTION( CreateXcbSurfaceKHR )
 	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceXcbPresentationSupportKHR )
-#	endif
-#endif
-
-#ifdef VK_USE_PLATFORM_XLIB_KHR
-#	ifdef VK_KHR_xlib_surface
 	VK_LIB_INSTANCE_FUNCTION( CreateXlibSurfaceKHR )
 	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceXlibPresentationSupportKHR )
-#	endif
 #endif
 
 #ifdef VK_USE_PLATFORM_WAYLAND_KHR
@@ -210,11 +203,9 @@ See LICENSE file in root folder.
 #	endif
 #endif
 
-#ifdef VK_USE_PLATFORM_WIN32_KHR
-#	ifdef VK_KHR_win32_surface
+#ifdef _WIN32
 	VK_LIB_INSTANCE_FUNCTION( CreateWin32SurfaceKHR )
 	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceWin32PresentationSupportKHR )
-#	endif
 #endif
 
 #undef VK_LIB_INSTANCE_FUNCTION

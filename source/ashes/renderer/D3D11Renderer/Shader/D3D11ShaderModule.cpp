@@ -97,16 +97,17 @@ namespace ashes::d3d11
 			, spirv_cross::SPIRConstant & constant )
 		{
 			auto offset = entry.offset;
-			auto size = type.width * type.vecsize;
+			auto size = type.width;
+			auto entrySize = uint32_t( entry.size / ( type.columns * type.vecsize ) );
 
-			for ( auto col = 0u; col < type.vecsize; ++col )
+			for ( auto col = 0u; col < type.columns; ++col )
 			{
 				for ( auto vec = 0u; vec < type.vecsize; ++vec )
 				{
 					std::memcpy( &constant.m.c[col].r[vec]
 						, reinterpret_cast< uint8_t const * >( specialisationInfo.pData ) + offset
-						, size );
-					offset += size;
+						, entrySize );
+					offset += entrySize;
 				}
 			}
 		}
@@ -185,9 +186,60 @@ namespace ashes::d3d11
 			compiler.set_hlsl_options( hlslOptions );
 		}
 
-		void doReworkBindings( spirv_cross::CompilerGLSL & compiler
+		void reportMissingBinding( VkDevice device
+			, VkShaderModule module
+			, std::string const & typeName
+			, uint32_t binding
+			, uint32_t set )
+		{
+			assert( false );
+			std::stringstream stream;
+			stream.imbue( std::locale{ "C" } );
+			stream << "Missing " << typeName << ", binding=" << binding << ", set=" << set;
+#if VK_EXT_debug_utils
+			VkDebugUtilsObjectNameInfoEXT object
+			{
+				VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+				nullptr,
+				VK_OBJECT_TYPE_SHADER_MODULE,
+				uint64_t( module ),
+				"ShaderModule",
+			};
+			get( device )->submitDebugUtilsMessenger( VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
+				, VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
+				, {
+					VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT,
+					nullptr,
+					0u,
+					nullptr,
+					0,
+					stream.str().c_str(),
+					0u,
+					nullptr,
+					0u,
+					nullptr,
+					1u,
+					&object,
+				} );
+#endif
+#if VK_EXT_debug_report
+			get( device )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT
+				, uint64_t( module )
+				, 0u
+				, 0
+				, "Direct3D"
+				, stream.str().c_str() );
+#endif
+		}
+
+		void doReworkBindings( VkDevice device
+			, VkShaderModule module
+			, std::string const & typeName
+			, spirv_cross::CompilerGLSL & compiler
 			, spirv_cross::SmallVector< spirv_cross::Resource > & resources
 			, ShaderBindingMap const & bindings
+			, bool failOnError
 			, ShaderBindingMap const * fallback = nullptr )
 		{
 			for ( auto & obj : resources )
@@ -202,12 +254,19 @@ namespace ashes::d3d11
 					if ( fallback )
 					{
 						it = fallback->find( makeShaderBindingKey( set, binding ) );
-						assert( it != fallback->end() );
-						compiler.set_decoration( obj.id, spv::DecorationBinding, it->second );
+
+						if ( it != fallback->end() )
+						{
+							compiler.set_decoration( obj.id, spv::DecorationBinding, it->second );
+						}
+						else if ( failOnError )
+						{
+							reportMissingBinding( device, module, typeName, binding, set );
+						}
 					}
-					else
+					else if ( failOnError )
 					{
-						assert( false );
+						reportMissingBinding( device, module, typeName, binding, set );
 					}
 				}
 				else
@@ -218,24 +277,31 @@ namespace ashes::d3d11
 		}
 
 		void doReworkBindings( VkPipelineLayout pipelineLayout
+			, VkPipelineCreateFlags createFlags
+			, VkShaderModule module
 			, spirv_cross::CompilerGLSL & compiler )
 		{
 			uint32_t const ssboMask = ( 1u << 16u );
 			spirv_cross::ShaderResources resources = compiler.get_shader_resources();
 			auto & bindings = get( pipelineLayout )->getShaderBindings();
-			doReworkBindings( compiler, resources.uniform_buffers, bindings.ubo );
-			doReworkBindings( compiler, resources.storage_buffers, bindings.sbo );
-			doReworkBindings( compiler, resources.sampled_images, bindings.tex, &bindings.tbo );
-			doReworkBindings( compiler, resources.separate_images, bindings.tex );
-			doReworkBindings( compiler, resources.separate_samplers, bindings.tex );
-			doReworkBindings( compiler, resources.storage_images, bindings.img );
-			doReworkBindings( compiler, resources.subpass_inputs, bindings.tex );
+			auto device = get( pipelineLayout )->getDevice();
+			auto failOnError = !( checkFlag( createFlags, VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT )
+				|| checkFlag( createFlags, VK_PIPELINE_CREATE_DERIVATIVE_BIT ) );
+			doReworkBindings( device, module, "UniformBuffer", compiler, resources.uniform_buffers, bindings.ubo, failOnError );
+			doReworkBindings( device, module, "StorageBuffer", compiler, resources.storage_buffers, bindings.sbo, failOnError );
+			doReworkBindings( device, module, "CombinedSamplerImage", compiler, resources.sampled_images, bindings.tex, failOnError, &bindings.tbo );
+			doReworkBindings( device, module, "SampledImage", compiler, resources.separate_images, bindings.tex, failOnError );
+			doReworkBindings( device, module, "Sampler", compiler, resources.separate_samplers, bindings.tex, failOnError );
+			doReworkBindings( device, module, "StorageImage", compiler, resources.storage_images, bindings.img, failOnError );
+			doReworkBindings( device, module, "SubpassInput", compiler, resources.subpass_inputs, bindings.tex, failOnError );
 		}
 
 #endif
 
 		std::string compileSpvToHlsl( VkDevice device
 			, VkPipelineLayout pipelineLayout
+			, VkPipelineCreateFlags createFlags
+			, VkShaderModule module
 			, UInt32Array const & shader
 			, VkShaderStageFlagBits stage
 			, VkPipelineShaderStageCreateInfo const & state )
@@ -252,7 +318,7 @@ namespace ashes::d3d11
 					doSetEntryPoint( stage, compiler );
 					doSetupOptions( device, compiler );
 					doSetupHlslOptions( device, compiler );
-					doReworkBindings( pipelineLayout, compiler );
+					doReworkBindings( pipelineLayout, createFlags, module, compiler );
 					return compiler.compile();
 				}
 				catch ( std::exception & exc )
@@ -333,6 +399,7 @@ namespace ashes::d3d11
 
 	CompiledShaderModule::CompiledShaderModule( VkDevice device
 		, VkPipelineLayout pipelineLayout
+		, VkPipelineCreateFlags createFlags
 		, VkShaderModule module
 		, UInt32Array const & spv
 		, VkPipelineShaderStageCreateInfo const & state )
@@ -403,6 +470,8 @@ namespace ashes::d3d11
 
 		m_source = compileSpvToHlsl( device
 			, pipelineLayout
+			, createFlags
+			, module
 			, spv
 			, m_stage
 			, state );
@@ -692,9 +761,10 @@ namespace ashes::d3d11
 	}
 
 	CompiledShaderModule ShaderModule::compile( VkPipelineShaderStageCreateInfo const & state
-		, VkPipelineLayout pipelineLayout )const
+		, VkPipelineLayout pipelineLayout
+		, VkPipelineCreateFlags createFlags )const
 	{
-		return CompiledShaderModule{ m_device, pipelineLayout, get( this ), m_code, state };
+		return CompiledShaderModule{ m_device, pipelineLayout, createFlags, get( this ), m_code, state };
 	}
 
 	//*************************************************************************

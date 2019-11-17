@@ -17,11 +17,15 @@ See LICENSE file in root folder
 
 namespace ashes::gl4
 {
+	class ContextLock;
+
 	struct DebugLabel
 	{
 		std::array< float, 4u > color;
 		std::string labelName;
 	};
 	std::string getErrorName( uint32_t code, uint32_t category );
+	bool glCheckError( ContextLock const & context
+		, std::string const & text );
 	bool glCheckError( std::string const & text );
 }

@@ -146,8 +146,8 @@ namespace ashes::gl3
 		, m_subpass{ createInfo.subpass }
 		, m_basePipelineHandle{ createInfo.basePipelineHandle }
 		, m_basePipelineIndex{ createInfo.basePipelineIndex }
-		, m_backProgram{ std::make_unique< ShaderProgram >( m_device, get( this ), m_stages, false ) }
-		, m_rtotProgram{ std::make_unique< ShaderProgram >( m_device, get( this ), m_stages, true ) }
+		, m_backProgram{ std::make_unique< ShaderProgram >( m_device, get( this ), m_stages, createInfo.flags, false ) }
+		, m_rtotProgram{ std::make_unique< ShaderProgram >( m_device, get( this ), m_stages, createInfo.flags, true ) }
 		, m_vertexInputStateHash{ ( m_vertexInputState
 			? doHash( m_vertexInputState.value() )
 			: 0u ) }
@@ -174,7 +174,7 @@ namespace ashes::gl3
 		, m_layout{ createInfo.layout }
 		, m_basePipelineHandle{ createInfo.basePipelineHandle }
 		, m_basePipelineIndex{ createInfo.basePipelineIndex }
-		, m_compProgram{ std::make_unique< ShaderProgram >( m_device, get( this ), m_stages.back() ) }
+		, m_compProgram{ std::make_unique< ShaderProgram >( m_device, get( this ), m_stages.back(), createInfo.flags ) }
 	{
 		auto context = get( device )->getContext();
 		doInitialise( context, *m_compProgram );

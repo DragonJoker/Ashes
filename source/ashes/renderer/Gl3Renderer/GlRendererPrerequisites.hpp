@@ -15,6 +15,8 @@
 #include <renderer/RendererCommon/AshesRendererPrerequisites.hpp>
 #include <renderer/RendererCommon/Helper/ConstantFormat.hpp>
 
+#include <renderer/GlRendererCommon/GlContextState.hpp>
+
 #include <common/Format.hpp>
 
 #include <cassert>
@@ -38,26 +40,10 @@
 
 namespace ashes::gl3
 {
-	PFN_vkVoidFunction getFunction( char const * const name );
-
-	template< typename FuncT >
-	inline bool getFunction( char const * const name, FuncT & function )
-	{
-		function = FuncT( getFunction( name ) );
-		return function != nullptr;
-	}
-
-	template< typename FuncT >
-	inline bool getFunction( std::string const & name, FuncT & function )
-	{
-		function = FuncT( getFunction( name.c_str() ) );
-		return function != nullptr;
-	}
-
-	inline void * getBufferOffset( intptr_t value )
-	{
-		return reinterpret_cast< void * >( reinterpret_cast< uint8_t * >( 0u ) + value );
-	}
+	using gl::ContextState;
+	using gl::ExtensionsHandler;
+	using gl::getFunction;
+	using gl::getBufferOffset;
 
 #if VK_EXT_debug_utils
 
@@ -93,8 +79,6 @@ namespace ashes::gl3
 	};
 
 #endif
-
-	struct ContextState;
 
 	class Buffer;
 	class BufferView;
@@ -144,7 +128,6 @@ namespace ashes::gl3
 
 	class Context;
 	class ContextLock;
-	struct ContextState;
 	using ContextPtr = std::unique_ptr< Context >;
 	using ContextStateArray = std::vector< ContextState >;
 
@@ -182,6 +165,7 @@ namespace ashes::gl3
 		uint32_t mipLevel;
 		uint32_t index;
 		uint32_t baseArrayLayer;
+		uint32_t layerCount;
 		GLuint originalObject;
 		GLuint originalMipLevel;
 	};

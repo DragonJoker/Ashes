@@ -9,9 +9,10 @@
 #pragma once
 
 #include "renderer/Gl3Renderer/Buffer/GlGeometryBuffers.hpp"
-#include "renderer/Gl3Renderer/Core/GlContextState.hpp"
 #include "renderer/Gl3Renderer/Shader/GlShaderDesc.hpp"
 #include "renderer/Gl3Renderer/Shader/GlShaderProgram.hpp"
+
+#include <renderer/GlRendererCommon/GlContextState.hpp>
 
 #include <algorithm>
 #include <unordered_map>

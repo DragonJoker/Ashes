@@ -226,6 +226,9 @@ namespace ashes::gl3
 			case OpType::eEndQuery:
 				apply( lock, map< OpType::eEndQuery >( cmd ) );
 				break;
+			case OpType::eFramebufferTexture:
+				apply( lock, map< OpType::eFramebufferTexture >( cmd ) );
+				break;
 			case OpType::eFramebufferTexture2D:
 				apply( lock, map< OpType::eFramebufferTexture2D >( cmd ) );
 				break;

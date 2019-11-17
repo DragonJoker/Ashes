@@ -12,7 +12,7 @@ namespace ashes::d3d11
 	{
 	public:
 		SurfaceKHR( VkInstance instance
-			, VkSurfaceCreateInfoKHR createInfo );
+			, VkWin32SurfaceCreateInfoKHR createInfo );
 		~SurfaceKHR();
 
 		bool getSupport( uint32_t queueFamilyIndex )const;
@@ -56,7 +56,7 @@ namespace ashes::d3d11
 
 	private:
 		VkInstance m_instance;
-		VkSurfaceCreateInfoKHR m_createInfo;
+		VkWin32SurfaceCreateInfoKHR m_createInfo;
 		std::string m_type;
 		mutable VkSurfaceFormatArrayKHR m_surfaceFormats;
 		mutable VkSurfaceCapabilitiesKHR m_surfaceCapabilities;

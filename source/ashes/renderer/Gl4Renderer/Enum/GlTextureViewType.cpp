@@ -57,7 +57,8 @@ namespace ashes::gl4
 		}
 	}
 
-	GlTextureViewType convertViewType( VkImageViewType const & value )
+	GlTextureViewType convertViewType( VkImageViewType const & value
+		, VkSampleCountFlagBits samples )
 	{
 		switch ( value )
 		{
@@ -65,7 +66,9 @@ namespace ashes::gl4
 			return GL_TEXTURE_VIEW_1D;
 
 		case VK_IMAGE_VIEW_TYPE_2D:
-			return GL_TEXTURE_VIEW_2D;
+			return samples > 1
+				? GL_TEXTURE_VIEW_2D_MULTISAMPLE
+				: GL_TEXTURE_VIEW_2D;
 
 		case VK_IMAGE_VIEW_TYPE_3D:
 			return GL_TEXTURE_VIEW_3D;
@@ -77,7 +80,9 @@ namespace ashes::gl4
 			return GL_TEXTURE_VIEW_1D_ARRAY;
 
 		case VK_IMAGE_VIEW_TYPE_2D_ARRAY:
-			return GL_TEXTURE_VIEW_2D_ARRAY;
+			return samples > 1
+				? GL_TEXTURE_VIEW_2D_MULTISAMPLE_ARRAY
+				: GL_TEXTURE_VIEW_2D_ARRAY;
 
 		case VK_IMAGE_VIEW_TYPE_CUBE_ARRAY:
 			return GL_TEXTURE_VIEW_CUBE_MAP_ARRAY;

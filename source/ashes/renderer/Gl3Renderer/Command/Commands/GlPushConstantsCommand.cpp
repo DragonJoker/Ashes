@@ -197,12 +197,15 @@ namespace ashes::gl3
 		, CmdList & list )
 	{
 		glLogCommand( "PushConstantsCommand" );
+		uint32_t offset = pcb.offset;
 
 		for ( auto & constant : pcb.constants )
 		{
 			if ( ( constant.stageFlag & stageFlags ) != 0 )
 			{
-				auto buffer = pcb.data.data() + constant.offset;
+				int32_t offset = int32_t( constant.offset ) - int32_t( pcb.offset );
+				assert( offset >= 0 );
+				auto buffer = pcb.data.data() + offset;
 
 				switch ( constant.format )
 				{
