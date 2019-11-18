@@ -120,6 +120,12 @@ namespace ashes::gl3
 		{
 			// Fake a bound framebuffer here : the one in the inheritance info.
 			m_state.stack->setCurrentFramebuffer( info.pInheritanceInfo->framebuffer );
+
+			if ( info.pInheritanceInfo->framebuffer )
+			{
+				m_state.stack->setRenderArea( get( info.pInheritanceInfo->framebuffer )->getDimensions() );
+			}
+
 			m_state.currentFrameBuffer = info.pInheritanceInfo->framebuffer;
 			m_state.currentRenderPass = info.pInheritanceInfo->renderPass;
 			m_state.currentSubpassIndex = info.pInheritanceInfo->subpass;
@@ -164,6 +170,7 @@ namespace ashes::gl3
 	void CommandBuffer::nextSubpass( VkSubpassContents contents )const
 	{
 		buildEndSubpassCommand( m_device
+			, *m_state.stack
 			, m_state.currentFrameBuffer
 			, *m_state.currentSubpass
 			, m_cmdList );
@@ -178,6 +185,7 @@ namespace ashes::gl3
 	void CommandBuffer::endRenderPass()const
 	{
 		buildEndSubpassCommand( m_device
+			, *m_state.stack
 			, m_state.currentFrameBuffer
 			, *m_state.currentSubpass
 			, m_cmdList );

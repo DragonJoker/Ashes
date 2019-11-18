@@ -167,20 +167,9 @@ namespace ashes::gl4
 		}
 
 		glLogCommand( "BeginRenderPassCommand" );
-		VkScissorArray scissors
-		{
-			VkRect2D
-			{
-				{ 0, 0 },
-				{ get( frameBuffer )->getWidth(), get( frameBuffer )->getHeight() }
-			}
-		};
-
-		if ( stack.getCurrentScissors() != scissors )
-		{
-			list.push_back( makeCmd< OpType::eApplyScissors >( scissors ) );
-			stack.setCurrentScissors( scissors );
-		}
+		stack.setRenderArea( get( frameBuffer )->getDimensions() );
+		stack.apply( list, 0u, VkScissorArray{}, true );
+		stack.apply( list, 0u, VkViewportArray{}, true );
 
 		if ( get( frameBuffer )->isSRGB() )
 		{
@@ -209,19 +198,26 @@ namespace ashes::gl4
 				, get( frameBuffer )->getBindAttaches().end() );
 			auto & attachments = get( frameBuffer )->getAttachments();
 
-			for ( auto & attach : get( renderPass )->getColourAttaches() )
+			for ( auto & reference : *get( renderPass ) )
 			{
-				auto fboAttach = attachments[attach.index];
+				auto fboAttach = attachments[reference.attachment];
 				auto fboView = get( fboAttach );
-				auto fboImage = get( fboView->getImage() );
 
-				if ( fboImage->hasInternal() )
+				if ( !isDepthStencilFormat( fboView->getFormat() )
+					&& !isDepthFormat( fboView->getFormat() )
+					&& !isStencilFormat( fboView->getFormat() ) )
 				{
-					drawBuffers.push_back( getAttachmentPoint( attach.attach.get().format ) + attach.index );
-				}
-				else if ( attaches.size() == 1 )
-				{
-					drawBuffers.push_back( GL_ATTACHMENT_POINT_BACK );
+					auto & attach = attaches[reference.attachment];
+					auto fboImage = get( fboView->getImage() );
+
+					if ( fboImage->hasInternal() )
+					{
+						drawBuffers.push_back( attach.point );
+					}
+					else if ( attaches.size() == 1 )
+					{
+						drawBuffers.push_back( GL_ATTACHMENT_POINT_BACK );
+					}
 				}
 			}
 

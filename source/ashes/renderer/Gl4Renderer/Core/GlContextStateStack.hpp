@@ -44,6 +44,16 @@ namespace ashes::gl4
 			return m_save->iaState.primitiveRestartEnable;
 		}
 
+		inline VkExtent2D const & getRenderArea()const
+		{
+			return m_renderArea;
+		}
+
+		inline void setRenderArea( VkExtent2D const & value )
+		{
+			m_renderArea = value;
+		}
+
 		inline VkScissorArray const & getCurrentScissors()const
 		{
 			return m_scissors;
@@ -116,6 +126,7 @@ namespace ashes::gl4
 
 	private:
 		ContextState * m_save{ nullptr };
+		VkExtent2D m_renderArea;
 		VkScissorArray m_scissors;
 		VkViewportArray m_viewports;
 		GLuint m_currentProgram{ 0u };

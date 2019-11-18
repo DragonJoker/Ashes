@@ -29,12 +29,7 @@ namespace ashes::gl4
 				{
 					rect.rect
 				};
-
-				if ( stack.getCurrentScissors() != scissors )
-				{
-					list.push_back( makeCmd< OpType::eApplyScissors >( scissors ) );
-					stack.setCurrentScissors( scissors );
-				}
+				stack.apply( list, 0u, scissors, false );
 
 				if ( ashes::checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT ) )
 				{

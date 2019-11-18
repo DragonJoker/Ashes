@@ -363,6 +363,59 @@ namespace ashes::gl4
 					, int( state.patchControlPoints ) ) );
 			}
 		}
+
+		VkRect2D adjust( VkRect2D const & scissor
+			, VkExtent2D const & renderArea )
+		{
+			auto vkbottom = scissor.offset.y + scissor.extent.height;
+			auto vktop = scissor.offset.y;
+			return
+			{
+				{ scissor.offset.x, int32_t( renderArea.height - vkbottom ) },
+				scissor.extent,
+			};
+		}
+
+		VkScissorArray adjust( VkScissorArray const & scissors
+			, VkExtent2D const & renderArea )
+		{
+			VkScissorArray result;
+			result.reserve( scissors.size() );
+
+			for ( auto & scissor : scissors )
+			{
+				result.push_back( adjust( scissor, renderArea ) );
+			}
+
+			return result;
+		}
+
+		VkViewport adjust( VkViewport const & viewport
+			, VkExtent2D const & renderArea )
+		{
+			auto vkbottom = viewport.y + viewport.height;
+			auto vktop = viewport.y;
+			return
+			{
+				viewport.x, renderArea.height - vkbottom,
+				viewport.width, viewport.height,
+				viewport.minDepth, viewport.maxDepth,
+			};
+		}
+
+		VkViewportArray adjust( VkViewportArray const & viewports
+			, VkExtent2D const & renderArea )
+		{
+			VkViewportArray result;
+			result.reserve( viewports.size() );
+
+			for ( auto & viewport : viewports )
+			{
+				result.push_back( adjust( viewport, renderArea ) );
+			}
+
+			return result;
+		}
 	}
 
 	ContextStateStack::ContextStateStack( bool tessellation )
@@ -419,9 +472,23 @@ namespace ashes::gl4
 	{
 		if ( force || getCurrentScissors() != scissors )
 		{
-			list.push_back( makeCmd< OpType::eApplyScissors >( firstScissor
-				, uint32_t( scissors.size() )
-				, scissors ) );
+			doApplyEnable( list
+				, GL_SCISSOR_TEST
+				, !scissors.empty() );
+
+			if ( !scissors.empty() )
+			{
+				list.push_back( makeCmd< OpType::eApplyScissors >( firstScissor
+					, uint32_t( scissors.size() )
+					, adjust( scissors, m_renderArea ) ) );
+			}
+			else
+			{
+				list.push_back( makeCmd< OpType::eApplyScissors >( 0u
+					, 1u
+					, VkScissorArray{ VkRect2D{ {}, m_renderArea } } ) );
+			}
+
 			setCurrentScissors( scissors );
 		}
 	}
@@ -433,12 +500,22 @@ namespace ashes::gl4
 	{
 		if ( force || getCurrentViewports() != viewports )
 		{
-			list.push_back( makeCmd< OpType::eApplyViewports >( firstViewport
-				, uint32_t( viewports.size() )
-				, viewports ) );
-			list.push_back( makeCmd< OpType::eApplyDepthRanges >( firstViewport
-				, uint32_t( viewports.size() )
-				, viewports ) );
+			if ( !viewports.empty() )
+			{
+				list.push_back( makeCmd< OpType::eApplyViewports >( firstViewport
+					, uint32_t( viewports.size() )
+					, adjust( viewports, m_renderArea ) ) );
+				list.push_back( makeCmd< OpType::eApplyDepthRanges >( firstViewport
+					, uint32_t( viewports.size() )
+					, viewports ) );
+			}
+			else
+			{
+				list.push_back( makeCmd< OpType::eApplyViewports >( 0u
+					, 1u
+					, VkViewportArray{ { 0.0f, 0.0f, float( m_renderArea.width ), float( m_renderArea.height ), 0.0f, 1.0f } } ) );
+			}
+
 			setCurrentViewports( viewports );
 		}
 	}

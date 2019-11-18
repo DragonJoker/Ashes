@@ -54,6 +54,7 @@ namespace common
 		void doCreateDevice( utils::Instance const & instance
 			, ashes::Surface const & surface );
 		void doCreateSwapChain( ashes::SurfacePtr surface );
+		void doCreatePipelineLayout();
 		void doCreateDescriptorSet();
 		void doCreateRenderPass();
 		void doCreateVertexBuffer();

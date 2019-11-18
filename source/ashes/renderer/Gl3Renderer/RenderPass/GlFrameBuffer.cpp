@@ -155,8 +155,7 @@ namespace ashes::gl3
 		, m_flags{ createInfo.flags }
 		, m_renderPass{ createInfo.renderPass }
 		, m_attachments{ makeVector( createInfo.pAttachments, createInfo.attachmentCount ) }
-		, m_width{ createInfo.width }
-		, m_height{ createInfo.height }
+		, m_dimensions{ createInfo.width, createInfo.height }
 		, m_layers{ createInfo.layers }
 	{
 		doInitialiseAttaches();
@@ -295,7 +294,8 @@ namespace ashes::gl3
 					, attachment.mipLevel
 					, attachment.baseArrayLayer ) );
 			}
-			else if ( attachment.layerCount )
+			else if ( attachment.layerCount
+				&& ( attachment.target < GL_TEXTURE_CUBE_POSITIVE_X || attachment.target > GL_TEXTURE_CUBE_NEGATIVE_Z ) )
 			{
 				m_bindAttaches.push_back( makeCmd< OpType::eFramebufferTexture >( GL_FRAMEBUFFER
 					, GlAttachmentPoint( attachment.point + attachment.index )
