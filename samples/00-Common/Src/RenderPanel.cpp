@@ -97,6 +97,8 @@ namespace common
 				, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
 				, VK_FILTER_LINEAR
 				, VK_FILTER_LINEAR );
+			doCreatePipelineLayout();
+			std::cout << "Main pipeline layout created." << std::endl;
 			doCreateDescriptorSet();
 			std::cout << "Main descriptor set created." << std::endl;
 			doCreateRenderPass();
@@ -263,7 +265,7 @@ namespace common
 		} );
 	}
 
-	void RenderPanel::doCreateDescriptorSet()
+	void RenderPanel::doCreatePipelineLayout()
 	{
 		ashes::VkDescriptorSetLayoutBindingArray bindings
 		{
@@ -271,6 +273,11 @@ namespace common
 			{ 1u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
 		};
 		m_descriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
+		m_pipelineLayout = m_device->getDevice().createPipelineLayout( *m_descriptorLayout );
+	}
+
+	void RenderPanel::doCreateDescriptorSet()
+	{
 		m_descriptorSet.reset();
 		m_descriptorPool = m_descriptorLayout->createPool( 1u );
 		m_descriptorSet = m_descriptorPool->createDescriptorSet();
@@ -404,7 +411,6 @@ namespace common
 			VK_DYNAMIC_STATE_SCISSOR
 		};
 
-		m_pipelineLayout = m_device->getDevice().createPipelineLayout( *m_descriptorLayout );
 		m_pipeline = m_device->getDevice().createPipeline( ashes::GraphicsPipelineCreateInfo
 			{
 				0u,
