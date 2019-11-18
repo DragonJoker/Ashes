@@ -10,6 +10,8 @@
 
 #include <renderer/GlRendererCommon/GlExtensionsHandler.hpp>
 
+#include <set>
+
 namespace ashes::gl3
 {
 	class RenderWindow;
@@ -20,12 +22,10 @@ namespace ashes::gl3
 		Instance( VkInstanceCreateInfo createInfo );
 		~Instance();
 
-#if _WIN32
-		ContextPtr createContext( VkWin32SurfaceCreateInfoKHR createInfo );
-#elif __linux__
-		ContextPtr createContext( VkXlibSurfaceCreateInfoKHR createInfo );
-		ContextPtr createContext( VkXcbSurfaceCreateInfoKHR createInfo );
-#endif
+		void unregisterDevice( VkDevice device );
+		Context * registerDevice( VkDevice device );
+		void unregisterSurface( VkSurfaceKHR surface );
+		ContextPtr registerSurface( VkSurfaceKHR surface );
 		VkPhysicalDeviceArray enumeratePhysicalDevices()const;
 		std::array< float, 16 > frustum( float left
 			, float right
@@ -132,6 +132,14 @@ namespace ashes::gl3
 			return m_features;
 		}
 
+		inline Context & getCurrentContext()const
+		{
+			assert( m_context || m_firstSurfaceContext );
+			return m_context
+				? *m_context.get()
+				: *m_firstSurfaceContext;
+		}
+
 	private:
 		AshPluginFeatures m_features;
 		VkInstanceCreateFlags m_flags;
@@ -150,5 +158,8 @@ namespace ashes::gl3
 		ExtensionsHandler m_extensions;
 		bool m_validationEnabled;
 		ContextPtr m_context;
+		Context * m_firstSurfaceContext{ nullptr };
+		std::set< VkSurfaceKHR > m_surfaces;
+		std::set< VkDevice > m_devices;
 	};
 }

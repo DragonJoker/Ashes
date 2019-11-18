@@ -134,6 +134,9 @@ namespace vkapp
 			doCreateOffscreenPipeline();
 			std::cout << "Offscreen pipeline created." << std::endl;
 			doPrepareOffscreenFrame();
+			std::cout << "Offscreen frame prepared." << std::endl;
+			doCreateMainPipelineLayout();
+			std::cout << "Main pipeline layout created." << std::endl;
 			doCreateMainDescriptorSet();
 			std::cout << "Main descriptor set created." << std::endl;
 			doCreateMainRenderPass();
@@ -557,11 +560,6 @@ namespace vkapp
 
 	void RenderPanel::doCreateMainDescriptorSet()
 	{
-		ashes::VkDescriptorSetLayoutBindingArray bindings
-		{
-			VkDescriptorSetLayoutBinding{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
-		};
-		m_mainDescriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
 		m_mainDescriptorSet.reset();
 		m_mainDescriptorPool = m_mainDescriptorLayout->createPool( 1u );
 		m_mainDescriptorSet = m_mainDescriptorPool->createDescriptorSet();
@@ -686,9 +684,18 @@ namespace vkapp
 			, *m_mainVertexBuffer );
 	}
 
+	void RenderPanel::doCreateMainPipelineLayout()
+	{
+		ashes::VkDescriptorSetLayoutBindingArray bindings
+		{
+			VkDescriptorSetLayoutBinding{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr },
+		};
+		m_mainDescriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
+		m_mainPipelineLayout = m_device->getDevice().createPipelineLayout( *m_mainDescriptorLayout );
+	}
+
 	void RenderPanel::doCreateMainPipeline()
 	{
-		m_mainPipelineLayout = m_device->getDevice().createPipelineLayout( *m_mainDescriptorLayout );
 		wxSize size{ GetClientSize() };
 		std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 

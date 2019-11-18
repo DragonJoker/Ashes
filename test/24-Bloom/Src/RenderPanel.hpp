@@ -54,6 +54,7 @@ namespace vkapp
 		void doPrepareBlurXPass();
 		void doPrepareBlurYPass();
 		void doPrepareCombinePass();
+		void doCreateMainPipelineLayout();
 		void doCreateMainDescriptorSet();
 		void doCreateMainRenderPass();
 		void doCreateMainVertexBuffer();

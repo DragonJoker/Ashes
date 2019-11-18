@@ -48,8 +48,8 @@ namespace ashes::gl3
 			, uint32_t index )const;
 		void swapBuffers()const;
 
-		void registerContext( VkSurfaceKHR surface )const;
-		void unregisterContext( VkSurfaceKHR surface )const;
+		void link( VkSurfaceKHR surface )const;
+		void unlink( VkSurfaceKHR surface )const;
 
 		inline ContextLock getContext()const
 		{
