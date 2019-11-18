@@ -35,5 +35,6 @@ namespace ashes::gl4
 	*	Le GlTextureType.
 	*/
 	GlTextureViewType convertViewType( VkImageViewType const & mode
+		, uint32_t arraySize
 		, VkSampleCountFlagBits samples );
 }
