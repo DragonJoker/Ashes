@@ -347,6 +347,12 @@ namespace ashes::gl4
 			case OpType::eUploadMemory:
 				apply( lock, map< OpType::eUploadMemory >( cmd ) );
 				break;
+			case OpType::eUpdateBuffer:
+				apply( lock, map< OpType::eUpdateBuffer >( cmd ) );
+				break;
+			case OpType::eFillBuffer:
+				apply( lock, map< OpType::eFillBuffer >( cmd ) );
+				break;
 			default:
 				assert( false && "Unsupported command type." );
 				break;

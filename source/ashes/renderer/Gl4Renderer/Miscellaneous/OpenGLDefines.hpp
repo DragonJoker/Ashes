@@ -257,6 +257,7 @@ namespace ashes::gl4
 	using PFN_glGetShaderiv = void ( GLAPIENTRY * )( GLuint shader, GLenum pname, GLint* param );
 	using PFN_glGetStringi = const GLubyte *( GLAPIENTRY * )( GLenum name, GLuint index );
 	using PFN_glGetString = const GLubyte *( GLAPIENTRY * )( GLenum name ); 
+	using PFN_glGetSynciv = void ( GLAPIENTRY * )( GLsync sync, GLenum pname, GLsizei bufSize, GLsizei * length, GLint * values );
 	using PFN_glGetTexImage = void ( GLAPIENTRY * )( GLenum target, GLint level, GLenum format, GLenum type, void *pixels );
 	using PFN_glGetTexLevelParameterfv = void ( GLAPIENTRY * )( GLenum target, GLint level, GLenum pname, GLfloat * params );
 	using PFN_glGetTexLevelParameteriv = void ( GLAPIENTRY * )( GLenum target, GLint level, GLenum pname, GLint * params );

@@ -226,6 +226,9 @@ namespace ashes::gl3
 			case OpType::eEndQuery:
 				apply( lock, map< OpType::eEndQuery >( cmd ) );
 				break;
+			case OpType::eFillBuffer:
+				apply( lock, map< OpType::eFillBuffer >( cmd ) );
+				break;
 			case OpType::eFramebufferTexture:
 				apply( lock, map< OpType::eFramebufferTexture >( cmd ) );
 				break;
@@ -357,6 +360,9 @@ namespace ashes::gl3
 				break;
 			case OpType::eUniformMatrix4fv:
 				apply( lock, map< OpType::eUniformMatrix4fv >( cmd ) );
+				break;
+			case OpType::eUpdateBuffer:
+				apply( lock, map< OpType::eUpdateBuffer >( cmd ) );
 				break;
 			case OpType::eUploadMemory:
 				apply( lock, map< OpType::eUploadMemory >( cmd ) );

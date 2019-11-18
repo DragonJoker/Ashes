@@ -23,4 +23,9 @@ namespace ashes::d3d11
 	void Fence::reset()const
 	{
 	}
+
+	VkResult Fence::getStatus()const
+	{
+		return VK_SUCCESS;
+	}
 }

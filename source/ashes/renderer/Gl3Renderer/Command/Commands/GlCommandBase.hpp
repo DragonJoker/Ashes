@@ -74,6 +74,7 @@ namespace ashes::gl3
 		eDrawIndirect,
 		eEnable,
 		eEndQuery,
+		eFillBuffer,
 		eFramebufferTexture,
 		eFramebufferTexture2D,
 		eFramebufferTextureLayer,
@@ -118,6 +119,7 @@ namespace ashes::gl3
 		eUniformMatrix2fv,
 		eUniformMatrix3fv,
 		eUniformMatrix4fv,
+		eUpdateBuffer,
 		eUploadMemory,
 		eUseProgram,
 		eWaitEvents,
@@ -1481,6 +1483,74 @@ namespace ashes::gl3
 
 	void apply( ContextLock const & context
 		, CmdReadBuffer const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eUpdateBuffer >
+	{
+		static Op constexpr value = { OpType::eUpdateBuffer, 5 };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eUpdateBuffer >
+	{
+		inline CmdT( VkDeviceMemory memory
+			, VkDeviceSize memoryOffset
+			, VkDeviceSize dataSize
+			, void * pData )
+			: cmd{ { OpType::eUpdateBuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, memory{ std::move( memory ) }
+			, memoryOffset{ std::move( memoryOffset ) }
+			, dataSize{ std::move( dataSize ) }
+			, pData{ std::move( pData ) }
+		{
+		}
+
+		Command cmd;
+		VkDeviceMemory memory;
+		VkDeviceSize memoryOffset;
+		VkDeviceSize dataSize;
+		void * pData;
+	};
+	using CmdUpdateBuffer = CmdT< OpType::eUpdateBuffer >;
+
+	void apply( ContextLock const & context
+		, CmdUpdateBuffer const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eFillBuffer >
+	{
+		static Op constexpr value = { OpType::eFillBuffer, 5 };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eFillBuffer >
+	{
+		inline CmdT( VkDeviceMemory memory
+			, VkDeviceSize memoryOffset
+			, VkDeviceSize dataSize
+			, uint32_t data )
+			: cmd{ { OpType::eFillBuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, memory{ std::move( memory ) }
+			, memoryOffset{ std::move( memoryOffset ) }
+			, dataSize{ std::move( dataSize ) }
+			, data{ std::move( data ) }
+		{
+		}
+
+		Command cmd;
+		VkDeviceMemory memory;
+		VkDeviceSize memoryOffset;
+		VkDeviceSize dataSize;
+		uint32_t data;
+	};
+	using CmdFillBuffer = CmdT< OpType::eFillBuffer >;
+
+	void apply( ContextLock const & context
+		, CmdFillBuffer const & cmd );
 
 	//*************************************************************************
 
