@@ -48,6 +48,7 @@ namespace vkapp
 		void doCreateOffscreenVertexBuffer();
 		void doCreateOffscreenPipeline();
 		void doPrepareOffscreenFrame();
+		void doCreateMainPipelineLayout();
 		void doCreateMainDescriptorSet();
 		void doCreateMainRenderPass();
 		void doCreateMainVertexBuffer();

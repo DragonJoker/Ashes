@@ -20,6 +20,7 @@ namespace ashes::gl4
 		SurfaceKHR( VkInstance instance
 			, VkXcbSurfaceCreateInfoKHR createInfo );
 #endif
+		~SurfaceKHR();
 
 		VkSurfaceCapabilitiesKHR getCapabilities()const
 		{
@@ -82,6 +83,7 @@ namespace ashes::gl4
 			, VkSurfaceCapabilitiesKHR & capabilities );
 
 	private:
+		VkInstance m_instance;
 #if _WIN32
 		VkWin32SurfaceCreateInfoKHR m_win32CreateInfo{};
 #elif __linux__

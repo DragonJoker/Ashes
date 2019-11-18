@@ -54,6 +54,7 @@ namespace vkapp
 		void doCreateMainDescriptorSet();
 		void doCreateMainRenderPass();
 		void doCreateMainVertexBuffer();
+		void doCreateMainPipelineLayout();
 		void doCreateMainPipeline();
 		void doPrepareMainFrames();
 		/**@}*/

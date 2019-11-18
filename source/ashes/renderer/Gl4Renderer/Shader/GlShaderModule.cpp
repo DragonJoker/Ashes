@@ -403,7 +403,8 @@ namespace ashes::gl4
 			, spirv_cross::CompilerGLSL & compiler
 			, spirv_cross::SmallVector< spirv_cross::Resource > & resources
 			, ShaderBindingMap const & bindings
-			, bool failOnError )
+			, bool failOnError
+			, ShaderBindingMap const * fallback = nullptr )
 		{
 			for ( auto & obj : resources )
 			{
@@ -415,6 +416,19 @@ namespace ashes::gl4
 				if ( it != bindings.end() )
 				{
 					compiler.set_decoration( obj.id, spv::DecorationBinding, it->second );
+				}
+				else if ( fallback )
+				{
+					it = fallback->find( makeShaderBindingKey( set, binding ) );
+
+					if ( it != fallback->end() )
+					{
+						compiler.set_decoration( obj.id, spv::DecorationBinding, it->second );
+					}
+					else if ( failOnError )
+					{
+						reportMissingBinding( device, module, typeName, binding, set );
+					}
 				}
 				else if ( failOnError )
 				{
@@ -436,7 +450,7 @@ namespace ashes::gl4
 				|| checkFlag( createFlags, VK_PIPELINE_CREATE_DERIVATIVE_BIT ) );
 			doReworkBindings( device, module, "UniformBuffer", compiler, resources.uniform_buffers, bindings.ubo, failOnError );
 			doReworkBindings( device, module, "StorageBuffer", compiler, resources.storage_buffers, bindings.sbo, failOnError );
-			doReworkBindings( device, module, "CombinedSamplerImage", compiler, resources.sampled_images, bindings.tex, failOnError );
+			doReworkBindings( device, module, "CombinedSamplerImage", compiler, resources.sampled_images, bindings.tex, failOnError, &bindings.tbo );
 			doReworkBindings( device, module, "SampledImage", compiler, resources.separate_images, bindings.tex, failOnError );
 			doReworkBindings( device, module, "Sampler", compiler, resources.separate_samplers, bindings.tex, failOnError );
 			doReworkBindings( device, module, "StorageImage", compiler, resources.storage_images, bindings.img, failOnError );

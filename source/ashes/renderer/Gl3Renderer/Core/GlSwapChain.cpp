@@ -41,7 +41,7 @@ namespace ashes::gl3
 		: m_device{ device }
 		, m_createInfo{ createInfo }
 	{
-		get( m_device )->registerContext( m_createInfo.surface );
+		get( m_device )->link( m_createInfo.surface );
 		m_createInfo.imageExtent.height = std::max( 1u, m_createInfo.imageExtent.height );
 		m_createInfo.imageExtent.width = std::max( 1u, m_createInfo.imageExtent.width );
 
@@ -81,7 +81,7 @@ namespace ashes::gl3
 			, &m_fbo );
 		deallocate( m_deviceMemory, nullptr );
 		deallocate( m_image, nullptr );
-		get( m_device )->unregisterContext( m_createInfo.surface );
+		get( m_device )->unlink( m_createInfo.surface );
 	}
 
 	uint32_t SwapchainKHR::getImageCount()const
