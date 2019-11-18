@@ -249,29 +249,26 @@ namespace ashes::d3d11
 				compiler.unset_decoration( obj.id, spv::DecorationDescriptorSet );
 				auto it = bindings.find( makeShaderBindingKey( set, binding ) );
 
-				if ( it == bindings.end() )
+				if ( it != bindings.end() )
 				{
-					if ( fallback )
-					{
-						it = fallback->find( makeShaderBindingKey( set, binding ) );
+					compiler.set_decoration( obj.id, spv::DecorationBinding, it->second );
+				}
+				else if ( fallback )
+				{
+					it = fallback->find( makeShaderBindingKey( set, binding ) );
 
-						if ( it != fallback->end() )
-						{
-							compiler.set_decoration( obj.id, spv::DecorationBinding, it->second );
-						}
-						else if ( failOnError )
-						{
-							reportMissingBinding( device, module, typeName, binding, set );
-						}
+					if ( it != fallback->end() )
+					{
+						compiler.set_decoration( obj.id, spv::DecorationBinding, it->second );
 					}
 					else if ( failOnError )
 					{
 						reportMissingBinding( device, module, typeName, binding, set );
 					}
 				}
-				else
+				else if ( failOnError )
 				{
-					compiler.set_decoration( obj.id, spv::DecorationBinding, it->second );
+					reportMissingBinding( device, module, typeName, binding, set );
 				}
 			}
 		}

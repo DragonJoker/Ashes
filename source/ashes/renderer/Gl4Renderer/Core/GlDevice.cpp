@@ -156,9 +156,9 @@ namespace ashes::gl4
 		, m_physicalDevice{ gpu }
 		, m_createInfos{ std::move( createInfos ) }
 		, m_enabledFeatures{ m_createInfos.pEnabledFeatures ? *m_createInfos.pEnabledFeatures : get( m_physicalDevice )->getFeatures() }
-		, m_currentContext{ nullptr }
 		, m_dyState{ VK_DYNAMIC_STATE_SCISSOR, VK_DYNAMIC_STATE_VIEWPORT }
 	{
+		m_currentContext = get( m_instance )->registerDevice( get( this ) );
 		doCheckEnabledExtensions( ashes::makeArrayView( m_createInfos.ppEnabledExtensionNames, m_createInfos.enabledExtensionCount ) );
 		doInitialiseQueues();
 	}
@@ -183,6 +183,8 @@ namespace ashes::gl4
 			deallocate( m_dummyIndexed.indexMemory, nullptr );
 			deallocate( m_dummyIndexed.indexBuffer, nullptr );
 		}
+
+		get( m_instance )->unregisterDevice( get( this ) );
 	}
 
 	VkPhysicalDeviceLimits const & Device::getLimits()const
@@ -412,16 +414,13 @@ namespace ashes::gl4
 		getContext()->swapBuffers();
 	}
 
-	void Device::registerContext( VkSurfaceKHR surface )const
+	void Device::link( VkSurfaceKHR surface )const
 	{
 		try
 		{
-			auto context = Context::create( m_instance, surface, nullptr );
-			ContextLock lock{ *context };
-
 			if ( !m_ownContext )
 			{
-				m_ownContext = std::move( context );
+				m_ownContext = Context::create( m_instance, surface, nullptr );
 				m_currentContext = m_ownContext.get();
 				get( m_instance )->registerContext( *m_ownContext );
 				auto lock = getContext();
@@ -472,7 +471,7 @@ namespace ashes::gl4
 		}
 	}
 
-	void Device::unregisterContext( VkSurfaceKHR surface )const
+	void Device::unlink( VkSurfaceKHR surface )const
 	{
 	}
 

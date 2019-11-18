@@ -106,47 +106,79 @@ namespace ashes::gl4
 		gl::RenderWindow::destroy();
 	}
 
-#if _WIN32
+	void Instance::unregisterDevice( VkDevice device )
+	{
+		m_devices.erase( device );
+	}
 
-	ContextPtr Instance::createContext( VkWin32SurfaceCreateInfoKHR createInfo )
+	Context * Instance::registerDevice( VkDevice device )
+	{
+		m_devices.insert( device );
+
+		if ( m_firstSurfaceContext )
+		{
+			return m_firstSurfaceContext;
+		}
+
+		return m_context.get();
+	}
+
+	void Instance::unregisterSurface( VkSurfaceKHR surface )
+	{
+		m_surfaces.erase( m_surfaces.find( surface ) );
+
+		if ( m_surfaces.empty() )
+		{
+			m_firstSurfaceContext = nullptr;
+			m_context = Context::create( get( this )
+				, gl::RenderWindow::get().getCreateInfo()
+				, nullptr );
+
+			for ( auto & device : m_devices )
+			{
+				get( device )->unlink( surface );
+			}
+		}
+	}
+
+	ContextPtr Instance::registerSurface( VkSurfaceKHR surface )
 	{
 		if ( m_context )
 		{
 			m_context.reset();
 		}
 
-		return Context::create( get( this )
-			, std::move( createInfo )
+		m_surfaces.insert( surface );
+
+#if _WIN32
+
+		auto result = Context::create( get( this )
+			, get( surface )->getWin32CreateInfo()
 			, nullptr );
-	}
 
 #elif __linux__
 
-	ContextPtr Instance::createContext( VkXlibSurfaceCreateInfoKHR createInfo )
-	{
-		if ( m_context )
-		{
-			m_context.reset();
-		}
-
-		return Context::create( get( this )
-			, std::move( createInfo )
-			, nullptr );
-	}
-
-	ContextPtr Instance::createContext( VkXcbSurfaceCreateInfoKHR createInfo )
-	{
-		if ( m_context )
-		{
-			m_context.reset();
-		}
-
-		return Context::create( get( this )
-			, std::move( createInfo )
-			, nullptr );
-	}
+		auto result = get( surface )->isXcb()
+			? Context::create( get( this )
+				, get( surface )->getXcbCreateInfo()
+				, nullptr )
+			: Context::create( get( this )
+				, get( surface )->getXlibCreateInfo()
+				, nullptr );
 
 #endif
+		if ( !m_firstSurfaceContext )
+		{
+			m_firstSurfaceContext = result.get();
+
+			for ( auto & device : m_devices )
+			{
+				get( device )->link( surface );
+			}
+		}
+
+		return result;
+	}
 
 	VkPhysicalDeviceArray Instance::enumeratePhysicalDevices()const
 	{

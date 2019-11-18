@@ -15,9 +15,10 @@ namespace ashes::gl3
 
 	SurfaceKHR::SurfaceKHR( VkInstance instance
 		, VkWin32SurfaceCreateInfoKHR createInfo )
-		: m_win32CreateInfo{ createInfo }
-		, m_context{ get( instance )->createContext( std::move( createInfo ) ) }
+		: m_instance{ instance }
+		, m_win32CreateInfo{ createInfo }
 	{
+		m_context = get( m_instance )->registerSurface( get( this ) );
 		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
 		getSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
 	}
@@ -26,23 +27,30 @@ namespace ashes::gl3
 
 	SurfaceKHR::SurfaceKHR( VkInstance instance
 		, VkXlibSurfaceCreateInfoKHR createInfo )
-		: m_xlibCreateInfo{ createInfo }
-		, m_context{ get( instance )->createContext( std::move( createInfo ) ) }
+		: m_instance{ instance }
+		, m_xlibCreateInfo{ createInfo }
 	{
+		m_context = get( m_instance )->registerSurface( get( this ) );
 		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
 		getSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
 	}
 
 	SurfaceKHR::SurfaceKHR( VkInstance instance
 		, VkXcbSurfaceCreateInfoKHR createInfo )
-		: m_xcbCreateInfo{ createInfo }
-		, m_context{ get( instance )->createContext( std::move( createInfo ) ) }
+		: m_instance{ instance }
+		, m_xcbCreateInfo{ createInfo }
 	{
+		m_context = get( m_instance )->registerSurface( get( this ) );
 		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
 		getSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
 	}
 
 #endif
+
+	SurfaceKHR::~SurfaceKHR()
+	{
+		get( m_instance )->unregisterSurface( get( this ) );
+	}
 
 	void SurfaceKHR::getSurfaceInfos( VkSurfaceFormatArrayKHR & formats
 		, VkSurfaceCapabilitiesKHR & capabilities )

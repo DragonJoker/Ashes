@@ -52,6 +52,7 @@ namespace vkapp
 		void doCreateComputeDescriptorSet();
 		void doCreateComputePipeline();
 		void doPrepareCompute();
+		void doCreateMainPipelineLayout();
 		void doCreateMainDescriptorSet();
 		void doCreateMainRenderPass();
 		void doCreateMainVertexBuffer();
