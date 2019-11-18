@@ -14,11 +14,14 @@ See LICENSE file in root folder.
 namespace ashes::gl4
 {
 	void buildEndSubpassCommand( VkDevice device
+		, ContextStateStack & stack
 		, VkFramebuffer frameBuffer
 		, VkSubpassDescription const & subpass
 		, CmdList & list )
 	{
 		glLogCommand( "EndSubpassCommand" );
+		stack.apply( list, 0u, VkScissorArray{}, true );
+		stack.apply( list, 0u, VkViewportArray{}, true );
 
 		if ( subpass.pResolveAttachments 
 			&& get( frameBuffer )->getInternal() )

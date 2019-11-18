@@ -87,14 +87,19 @@ namespace ashes::gl4
 			return m_srgb;
 		}
 
+		inline VkExtent2D getDimensions()const
+		{
+			return m_dimensions;
+		}
+
 		inline uint32_t getWidth()const
 		{
-			return m_width;
+			return m_dimensions.width;
 		}
 
 		inline uint32_t getHeight()const
 		{
-			return m_height;
+			return m_dimensions.height;
 		}
 
 		inline bool isMultisampled()const
@@ -124,8 +129,7 @@ namespace ashes::gl4
 		VkFramebufferCreateFlags m_flags;
 		VkRenderPass m_renderPass;
 		VkImageViewArray m_attachments;
-		uint32_t m_width;
-		uint32_t m_height;
+		VkExtent2D m_dimensions;
 		uint32_t m_layers;
 		GLuint m_internal{ GL_INVALID_INDEX };
 		FboAttachmentArray m_allAttaches;

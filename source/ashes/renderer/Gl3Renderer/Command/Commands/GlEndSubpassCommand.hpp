@@ -9,6 +9,7 @@ See LICENSE file in root folder
 namespace ashes::gl3
 {
 	void buildEndSubpassCommand( VkDevice device
+		, ContextStateStack & stack
 		, VkFramebuffer frameBuffer
 		, VkSubpassDescription const & subpass
 		, CmdList & list );

@@ -167,20 +167,9 @@ namespace ashes::gl4
 		}
 
 		glLogCommand( "BeginRenderPassCommand" );
-		VkScissorArray scissors
-		{
-			VkRect2D
-			{
-				{ 0, 0 },
-				{ get( frameBuffer )->getWidth(), get( frameBuffer )->getHeight() }
-			}
-		};
-
-		if ( stack.getCurrentScissors() != scissors )
-		{
-			list.push_back( makeCmd< OpType::eApplyScissors >( scissors ) );
-			stack.setCurrentScissors( scissors );
-		}
+		stack.setRenderArea( get( frameBuffer )->getDimensions() );
+		stack.apply( list, 0u, VkScissorArray{}, true );
+		stack.apply( list, 0u, VkViewportArray{}, true );
 
 		if ( get( frameBuffer )->isSRGB() )
 		{

@@ -41,10 +41,20 @@ namespace ashes::gl3
 			, uint32_t reference
 			, VkStencilFaceFlags faceFlags );
 
+		inline void setRenderArea( VkExtent2D const & value )
+		{
+			m_renderArea = value;
+		}
+
 		inline bool isPrimitiveRestartEnabled()const
 		{
 			assert( m_save != nullptr );
 			return m_save->iaState.primitiveRestartEnable;
+		}
+
+		inline VkExtent2D const & getRenderArea()const
+		{
+			return m_renderArea;
 		}
 
 		inline VkScissorArray const & getCurrentScissors()const
@@ -125,5 +135,6 @@ namespace ashes::gl3
 		VkFramebuffer m_currentFbo{ VK_NULL_HANDLE };
 		bool m_tessellation{ false };
 		bool m_viewportArrays{ false };
+		VkExtent2D m_renderArea;
 	};
 }
