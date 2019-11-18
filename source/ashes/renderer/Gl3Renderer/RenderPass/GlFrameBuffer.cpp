@@ -294,7 +294,8 @@ namespace ashes::gl3
 					, attachment.mipLevel
 					, attachment.baseArrayLayer ) );
 			}
-			else if ( attachment.layerCount )
+			else if ( attachment.layerCount
+				&& ( attachment.target < GL_TEXTURE_CUBE_POSITIVE_X || attachment.target > GL_TEXTURE_CUBE_NEGATIVE_Z ) )
 			{
 				m_bindAttaches.push_back( makeCmd< OpType::eFramebufferTexture >( GL_FRAMEBUFFER
 					, GlAttachmentPoint( attachment.point + attachment.index )
