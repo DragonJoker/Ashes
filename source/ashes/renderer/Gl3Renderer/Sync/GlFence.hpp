@@ -19,6 +19,7 @@ namespace ashes::gl3
 			, uint64_t timeout )const;
 		VkResult wait( uint64_t timeout )const;
 		void reset( ContextLock & context )const;
+		VkResult getStatus( ContextLock & context )const;
 		void reset()const;
 
 		inline GLsync getInternal()const

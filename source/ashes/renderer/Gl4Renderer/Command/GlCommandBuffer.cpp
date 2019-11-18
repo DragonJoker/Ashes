@@ -560,6 +560,28 @@ namespace ashes::gl4
 		}
 	}
 
+	void CommandBuffer::updateBuffer( VkBuffer dstBuffer
+		, VkDeviceSize dstOffset
+		, ArrayView< uint8_t const > data )
+	{
+		m_updatesData.push_back( std::make_unique< ByteArray >( data.begin(), data.end() ) );
+		m_cmdList.push_back( makeCmd< OpType::eUpdateBuffer >( get( dstBuffer )->getMemory()
+			, dstOffset + get( dstBuffer )->getInternalOffset()
+			, VkDeviceSize( data.size() )
+			, m_updatesData.back()->data() ) );
+	}
+
+	void CommandBuffer::fillBuffer( VkBuffer dstBuffer
+		, VkDeviceSize dstOffset
+		, VkDeviceSize size
+		, uint32_t data )
+	{
+		m_cmdList.push_back( makeCmd< OpType::eFillBuffer >( get( dstBuffer )->getMemory()
+			, dstOffset + get( dstBuffer )->getInternalOffset()
+			, size
+			, data ) );
+	}
+
 	void CommandBuffer::copyBuffer( VkBuffer src
 		, VkBuffer dst
 		, VkBufferCopyArray copyInfos )const

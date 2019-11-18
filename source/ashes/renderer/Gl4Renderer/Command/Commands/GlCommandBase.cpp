@@ -9,6 +9,9 @@ See LICENSE file in root folder.
 
 #include "ashesgl4_api.hpp"
 
+#include <cstring>
+#include <algorithm>
+
 using ashes::operator==;
 using ashes::operator!=;
 
@@ -431,5 +434,31 @@ namespace ashes::gl4
 		glLogCall( context
 			, glReadBuffer
 			, cmd.point );
+	}
+
+	void apply( ContextLock const & context
+		, CmdUpdateBuffer const & cmd )
+	{
+		void * data;
+
+		if ( VK_SUCCESS == get( cmd.memory )->lock( context, cmd.memoryOffset, cmd.dataSize, 0u, &data ) )
+		{
+			std::memcpy( data, cmd.pData, cmd.dataSize );
+			get( cmd.memory )->flush( context, cmd.memoryOffset, cmd.dataSize );
+			get( cmd.memory )->unlock( context );
+		}
+	}
+
+	void apply( ContextLock const & context
+		, CmdFillBuffer const & cmd )
+	{
+		uint32_t * data;
+
+		if ( VK_SUCCESS == get( cmd.memory )->lock( context, cmd.memoryOffset, cmd.dataSize, 0u, reinterpret_cast< void ** >( &data ) ) )
+		{
+			std::fill_n( data, cmd.dataSize / sizeof( uint32_t ), cmd.data );
+			get( cmd.memory )->flush( context, cmd.memoryOffset, cmd.dataSize );
+			get( cmd.memory )->unlock( context );
+		}
 	}
 }

@@ -43,6 +43,7 @@ See LICENSE file in root folder.
 #include "Command/Commands/D3D11EndSubpassCommand.hpp"
 #include "Command/Commands/D3D11ExecuteActionsCommand.hpp"
 #include "Command/Commands/D3D11ExecuteCommandsCommand.hpp"
+#include "Command/Commands/D3D11FillBufferCommand.hpp"
 #include "Command/Commands/D3D11GenerateMipsCommand.hpp"
 #include "Command/Commands/D3D11MemoryBarrierCommand.hpp"
 #include "Command/Commands/D3D11PushConstantsCommand.hpp"
@@ -52,6 +53,7 @@ See LICENSE file in root folder.
 #include "Command/Commands/D3D11SetDepthBiasCommand.hpp"
 #include "Command/Commands/D3D11SetEventCommand.hpp"
 #include "Command/Commands/D3D11SetLineWidthCommand.hpp"
+#include "Command/Commands/D3D11UpdateBufferCommand.hpp"
 #include "Command/Commands/D3D11UploadMemoryCommand.hpp"
 #include "Command/Commands/D3D11ViewportCommand.hpp"
 #include "Command/Commands/D3D11WaitEventsCommand.hpp"
@@ -519,6 +521,28 @@ namespace ashes::d3d11
 			, std::move( copyInfos )
 			, src
 			, dst ) );
+	}
+
+	void CommandBuffer::updateBuffer( VkBuffer dstBuffer
+		, VkDeviceSize dstOffset
+		, ArrayView< uint8_t const > data )
+	{
+		m_commands.emplace_back( std::make_unique< UpdateBufferCommand >( m_device
+			, dstBuffer
+			, dstOffset
+			, data ) );
+	}
+
+	void CommandBuffer::fillBuffer( VkBuffer dstBuffer
+		, VkDeviceSize dstOffset
+		, VkDeviceSize size
+		, uint32_t data )
+	{
+		m_commands.emplace_back( std::make_unique< FillBufferCommand >( m_device
+			, dstBuffer
+			, dstOffset
+			, size
+			, data ) );
 	}
 
 	void CommandBuffer::copyBuffer( VkBuffer src

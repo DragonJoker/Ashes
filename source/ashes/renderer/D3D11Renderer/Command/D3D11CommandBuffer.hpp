@@ -78,6 +78,13 @@ namespace ashes::d3d11
 			, VkImageLayout srcLayout
 			, VkBuffer dst
 			, VkBufferImageCopyArray copyInfos )const;
+		void updateBuffer( VkBuffer dstBuffer
+			, VkDeviceSize dstOffset
+			, ArrayView< uint8_t const > data );
+		void fillBuffer( VkBuffer dstBuffer
+			, VkDeviceSize dstOffset
+			, VkDeviceSize size
+			, uint32_t data );
 		void copyBuffer( VkBuffer src
 			, VkBuffer dst
 			, VkBufferCopyArray copyInfos )const;

@@ -331,7 +331,7 @@ namespace ashes::gl3
 		VkDeviceMemory memory,
 		VkDeviceSize * pCommittedMemoryInBytes )
 	{
-		reportUnsupported( device, "vkGetDeviceMemoryCommitment" );
+		*pCommittedMemoryInBytes = 0;
 	}
 
 	VkResult VKAPI_CALL vkBindBufferMemory(
@@ -455,7 +455,8 @@ namespace ashes::gl3
 		VkDevice device,
 		VkFence fence )
 	{
-		return reportUnsupported( device, "vkGetFenceStatus" );
+		auto context = get( device )->getContext();
+		return get( fence )->getStatus( context );
 	}
 
 	VkResult VKAPI_CALL vkWaitForFences(
@@ -1392,11 +1393,9 @@ namespace ashes::gl3
 		VkDeviceSize dataSize,
 		const void * pData )
 	{
-		reportUnsupported( commandBuffer, "vkCmdUpdateBuffer" );
-		//get( commandBuffer )->updateBuffer( dstBuffer
-		//	, dstOffset
-		//	, dataSize
-		//	, pData );
+		get( commandBuffer )->updateBuffer( dstBuffer
+			, dstOffset
+			, makeArrayView( reinterpret_cast< uint8_t const * >( pData ), dataSize ) );
 	}
 
 	void VKAPI_CALL vkCmdFillBuffer(
@@ -1406,11 +1405,10 @@ namespace ashes::gl3
 		VkDeviceSize size,
 		uint32_t data )
 	{
-		reportUnsupported( commandBuffer, "vkCmdFillBuffer" );
-		//get( commandBuffer )->fillBuffer( dstBuffer
-		//	, dstOffset
-		//	, size
-		//	, data );
+		get( commandBuffer )->fillBuffer( dstBuffer
+			, dstOffset
+			, size
+			, data );
 	}
 
 	void VKAPI_CALL vkCmdClearColorImage(

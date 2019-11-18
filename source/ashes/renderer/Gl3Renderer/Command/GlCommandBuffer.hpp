@@ -78,6 +78,13 @@ namespace ashes::gl3
 			, VkImageLayout srcLayout
 			, VkBuffer dst
 			, VkBufferImageCopyArray copyInfos )const;
+		void updateBuffer( VkBuffer dstBuffer
+			, VkDeviceSize dstOffset
+			, ArrayView< uint8_t const > data );
+		void fillBuffer( VkBuffer dstBuffer
+			, VkDeviceSize dstOffset
+			, VkDeviceSize size
+			, uint32_t data );
 		void copyBuffer( VkBuffer src
 			, VkBuffer dst
 			, VkBufferCopyArray copyInfos )const;
@@ -229,5 +236,6 @@ namespace ashes::gl3
 		mutable State m_state;
 		mutable VkImageViewArray m_blitViews;
 		mutable Optional< DebugLabel > m_label;
+		std::vector< std::unique_ptr< ByteArray > > m_updatesData;
 	};
 }
