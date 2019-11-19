@@ -57,27 +57,12 @@ namespace ashes::gl3
 		}
 	}
 
-	PFN_glGetError getError;
-	PFN_glGetStringi getStringi;
-	PFN_glGetString getString;
-	PFN_glGetIntegerv getIntegerv;
-
 	Instance::Instance( VkInstanceCreateInfo createInfo )
 		: m_flags{ createInfo.flags }
 		, m_enabledLayerNames{ convert( createInfo.ppEnabledLayerNames, createInfo.enabledLayerCount ) }
 		, m_enabledExtensions{ convert( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) }
 		, m_window{ new gl::RenderWindow( MinMajor, MinMinor ) }
 	{
-#if _WIN32
-		getError = glGetError;
-		getString = glGetString;
-		getIntegerv = glGetIntegerv;
-#else
-		getFunction( "glGetError", getError );
-		getFunction( "glGetString", getString );
-		getFunction( "glGetIntegerv", getIntegerv );
-#endif
-		getFunction( "glGetStringi", getStringi );
 		m_extensions.initialise( MinMajor, MinMinor, MaxMajor, MaxMinor );
 		m_features = m_extensions.getFeatures();
 		m_hasViewportArray = m_extensions.find( "GL_ARB_viewport_array" );

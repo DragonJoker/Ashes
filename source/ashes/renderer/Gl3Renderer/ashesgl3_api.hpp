@@ -180,11 +180,6 @@ namespace ashes::gl3
 	std::vector< VkExtensionProperties > const & getSupportedInstanceExtensions();
 	std::vector< VkExtensionProperties > const & getSupportedDeviceExtensions();
 
-	extern PFN_glGetError getError;
-	extern PFN_glGetStringi getStringi;
-	extern PFN_glGetString getString;
-	extern PFN_glGetIntegerv getIntegerv;
-
 	inline VkInstance getInstance( VkInstance object )
 	{
 		return object;

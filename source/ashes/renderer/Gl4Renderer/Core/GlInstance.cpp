@@ -8,10 +8,6 @@
 
 #include <renderer/GlRendererCommon/GlWindow.hpp>
 
-#if _WIN32
-#	include <gl/GL.h>
-#endif
-
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -57,27 +53,12 @@ namespace ashes::gl4
 		}
 	}
 
-	PFN_glGetError getError;
-	PFN_glGetStringi getStringi;
-	PFN_glGetString getString;
-	PFN_glGetIntegerv getIntegerv;
-
 	Instance::Instance( VkInstanceCreateInfo createInfo )
 		: m_flags{ createInfo.flags }
 		, m_enabledLayerNames{ convert( createInfo.ppEnabledLayerNames, createInfo.enabledLayerCount ) }
 		, m_enabledExtensions{ convert( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) }
 		, m_window{ new gl::RenderWindow( MinMajor, MinMinor ) }
 	{
-#if _WIN32
-		getError = glGetError;
-		getString = glGetString;
-		getIntegerv = glGetIntegerv;
-#else
-		getFunction( "glGetError", getError );
-		getFunction( "glGetString", getString );
-		getFunction( "glGetIntegerv", getIntegerv );
-#endif
-		getFunction( "glGetStringi", getStringi );
 		m_extensions.initialise( MinMajor, MinMinor, MaxMajor, MaxMinor );
 		m_features = m_extensions.getFeatures();
 		auto it = std::find_if( m_enabledLayerNames.begin()
