@@ -3,6 +3,7 @@
 #if _WIN32
 #	include "Platform/GlMswContext.hpp"
 #elif __linux__
+#	include "Platform/GlWaylandContext.hpp"
 #	include "Platform/GlXcbContext.hpp"
 #	if ASHES_USE_XLIB_EGL
 #		include "Platform/GlX11EglContext.hpp"
@@ -37,6 +38,15 @@ namespace ashes::gl
 			, std::move( createInfo )
 			, mainContext );
 #	endif
+	}
+
+	ContextImplPtr ContextImpl::create( VkInstance instance
+		, VkWaylandSurfaceCreateInfoKHR createInfo
+		, ContextImpl const * mainContext )
+	{
+		return std::make_unique< WaylandContext >( instance
+			, std::move( createInfo )
+			, mainContext );
 	}
 
 #elif _WIN32

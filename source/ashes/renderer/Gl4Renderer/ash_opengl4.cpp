@@ -3728,7 +3728,7 @@ namespace ashes::gl4
 #pragma endregion
 #pragma region VK_KHR_wayland_surface
 #ifdef VK_KHR_wayland_surface
-#	ifdef VK_USE_PLATFORM_WAYLAND_KHR
+#	ifdef __linux__
 
 	VkResult VKAPI_CALL vkCreateWaylandSurfaceKHR(
 		VkInstance instance,
@@ -3885,7 +3885,7 @@ namespace ashes::gl4
 
 				try
 				{
-					gl::RenderWindow::create( MinMajor, MinMinor );
+					gl::RenderWindow window{ MinMajor, MinMinor };
 					extensions.initialise( MinMajor, MinMinor, MaxMajor, MaxMinor );
 					supported = extensions.getMajor() > MinMajor
 						|| ( extensions.getMajor() == MinMajor && extensions.getMinor() >= MinMinor );

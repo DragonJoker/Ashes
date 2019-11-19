@@ -50,22 +50,20 @@ namespace ashes::gl3
 		void lock();
 		void unlock();
 
-#if _WIN32
-
+		template< typename SurfaceCreateInfo >
 		static ContextPtr create( VkInstance instance
-			, VkWin32SurfaceCreateInfoKHR createInfo
-			, Context const * mainContext );
-
-#elif __linux__
-
-		static ContextPtr create( VkInstance instance
-			, VkXlibSurfaceCreateInfoKHR createInfo
-			, Context const * mainContext );
-		static ContextPtr create( VkInstance instance
-			, VkXcbSurfaceCreateInfoKHR createInfo
-			, Context const * mainContext );
-
-#endif
+			, SurfaceCreateInfo createInfo
+			, Context const * mainContext )
+		{
+			return std::unique_ptr< Context >( new Context
+				{
+					gl::ContextImpl::create( instance
+						, std::move( createInfo )
+						, ( mainContext
+							? &mainContext->getImpl()
+							: nullptr ) )
+				} );
+		}
 
 		static ContextPtr create( VkInstance instance
 			, VkSurfaceKHR surface

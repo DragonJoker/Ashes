@@ -8,10 +8,6 @@
 
 #include <renderer/GlRendererCommon/GlWindow.hpp>
 
-#if _WIN32
-#	include <gl/GL.h>
-#endif
-
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -57,26 +53,12 @@ namespace ashes::gl4
 		}
 	}
 
-	PFN_glGetError getError;
-	PFN_glGetStringi getStringi;
-	PFN_glGetString getString;
-	PFN_glGetIntegerv getIntegerv;
-
 	Instance::Instance( VkInstanceCreateInfo createInfo )
 		: m_flags{ createInfo.flags }
 		, m_enabledLayerNames{ convert( createInfo.ppEnabledLayerNames, createInfo.enabledLayerCount ) }
 		, m_enabledExtensions{ convert( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) }
+		, m_window{ new gl::RenderWindow( MinMajor, MinMinor ) }
 	{
-#if _WIN32
-		getError = glGetError;
-		getString = glGetString;
-		getIntegerv = glGetIntegerv;
-#else
-		getFunction( "glGetError", getError );
-		getFunction( "glGetString", getString );
-		getFunction( "glGetIntegerv", getIntegerv );
-#endif
-		getFunction( "glGetStringi", getStringi );
 		m_extensions.initialise( MinMajor, MinMinor, MaxMajor, MaxMinor );
 		m_features = m_extensions.getFeatures();
 		auto it = std::find_if( m_enabledLayerNames.begin()
@@ -87,7 +69,7 @@ namespace ashes::gl4
 			} );
 		m_validationEnabled = it != m_enabledLayerNames.end();
 		m_context = Context::create( get( this )
-			, gl::RenderWindow::get().getCreateInfo()
+			, m_window->getCreateInfo()
 			, nullptr );
 		ContextLock context{ *m_context };
 		glCheckError( "ContextInitialisation" );
@@ -103,7 +85,7 @@ namespace ashes::gl4
 		}
 
 		m_context.reset();
-		gl::RenderWindow::destroy();
+		delete m_window;
 	}
 
 	void Instance::unregisterDevice( VkDevice device )
@@ -131,7 +113,7 @@ namespace ashes::gl4
 		{
 			m_firstSurfaceContext = nullptr;
 			m_context = Context::create( get( this )
-				, gl::RenderWindow::get().getCreateInfo()
+				, m_window->getCreateInfo()
 				, nullptr );
 
 			for ( auto & device : m_devices )

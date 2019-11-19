@@ -36,6 +36,9 @@ namespace ashes::gl
 		static ContextImplPtr create( VkInstance instance
 			, VkXcbSurfaceCreateInfoKHR createInfo
 			, ContextImpl const * mainContext );
+		static ContextImplPtr create( VkInstance instance
+			, VkWaylandSurfaceCreateInfoKHR createInfo
+			, ContextImpl const * mainContext );
 #endif
 
 		VkInstance instance;

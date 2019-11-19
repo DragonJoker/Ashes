@@ -12,6 +12,10 @@
 #include <sstream>
 #include <map>
 
+#ifdef _WIN32
+#	include <gl/GL.h>
+#endif
+
 namespace ashes::gl4
 {
 	std::string getErrorName( uint32_t code, uint32_t category )
@@ -122,6 +126,17 @@ namespace ashes::gl4
 
 	bool glCheckError( std::string const & text )
 	{
+		static PFN_glGetError getError = []()
+		{
+#ifdef _WIN32
+			return glGetError;
+#else
+			PFN_glGetError result;
+			getFunction( "glGetError", result );
+			return result;
+			
+#endif
+		}();
 		bool result = true;
 		uint32_t errorCode = getError();
 

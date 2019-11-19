@@ -16,14 +16,10 @@ namespace ashes::gl
 {
 	class RenderWindow
 	{
-	private:
+	public:
 		RenderWindow( int major, int minor );
 		~RenderWindow();
-	public:
 		VkWin32SurfaceCreateInfoKHR getCreateInfo()const;
-		static void create( int major, int minor );
-		static void destroy();
-		static RenderWindow const & get();
 
 	private:
 		void doCleanup();

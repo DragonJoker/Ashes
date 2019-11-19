@@ -36,22 +36,6 @@ See LICENSE file in root folder.
 #define VK_NO_PROTOTYPES
 #include <ashes/ashes.h>
 
-#if ASHES_ANDROID
-#include <vulkan/vulkan_android.h>
-#elif __linux__
-typedef struct _XDisplay Display;
-typedef unsigned long VisualID;
-typedef unsigned long XID;
-typedef XID Window;
-#include <vulkan/vulkan_xlib.h>
-typedef struct xcb_connection_t xcb_connection_t;
-typedef uint32_t xcb_visualid_t;
-typedef uint32_t xcb_window_t;
-#include <vulkan/vulkan_xcb.h>
-#elif _WIN32
-#include <vulkan/vulkan_win32.h>
-#endif
-
 #include <limits>
 
 namespace ashes::gl4
@@ -197,11 +181,6 @@ namespace ashes::gl4
 
 	std::vector< VkExtensionProperties > const & getSupportedInstanceExtensions();
 	std::vector< VkExtensionProperties > const & getSupportedDeviceExtensions();
-
-	extern PFN_glGetError getError;
-	extern PFN_glGetStringi getStringi;
-	extern PFN_glGetString getString;
-	extern PFN_glGetIntegerv getIntegerv;
 
 	inline VkInstance getInstance( VkInstance object )
 	{
@@ -2216,7 +2195,7 @@ namespace ashes::gl4
 #pragma endregion
 #pragma region VK_KHR_wayland_surface
 #ifdef VK_KHR_wayland_surface
-#	ifdef VK_USE_PLATFORM_WAYLAND_KHR
+#	ifdef __linux__
 
 	VkResult VKAPI_CALL vkCreateWaylandSurfaceKHR(
 		VkInstance instance,

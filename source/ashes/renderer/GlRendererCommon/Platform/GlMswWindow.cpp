@@ -8,12 +8,6 @@ See LICENSE file in root folder
 
 namespace ashes::gl
 {
-	RenderWindow *& doGet()
-	{
-		static RenderWindow * result{ nullptr };
-		return result;
-	}
-
 	RenderWindow::RenderWindow( int major, int minor ) try
 	{
 		m_hInstance = ::GetModuleHandleA( nullptr );
@@ -69,24 +63,6 @@ namespace ashes::gl
 	RenderWindow::~RenderWindow()
 	{
 		doCleanup();
-	}
-
-	void RenderWindow::create( int major, int minor )
-	{
-		assert( doGet() == nullptr );
-		doGet() = new RenderWindow{ major, minor };
-	}
-
-	void RenderWindow::destroy()
-	{
-		delete doGet();
-		doGet() = nullptr;
-	}
-
-	RenderWindow const & RenderWindow::get()
-	{
-		assert( doGet() != nullptr );
-		return *doGet();
 	}
 
 	void RenderWindow::doCleanup()

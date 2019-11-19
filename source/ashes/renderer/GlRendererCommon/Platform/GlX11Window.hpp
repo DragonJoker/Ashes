@@ -14,20 +14,16 @@ See LICENSE file in root folder
 typedef struct __GLXFBConfigRec * GLXFBConfig;
 typedef struct __GLXcontextRec * GLXContext;
 #endif
+typedef XID Colormap;
 
 namespace ashes::gl
 {
 	class RenderWindow
 	{
-	private:
+	public:
 		RenderWindow( int major, int minor );
 		~RenderWindow();
-
-	public:
 		VkXlibSurfaceCreateInfoKHR getCreateInfo()const;
-		static void create( int major, int minor );
-		static void destroy();
-		static RenderWindow const & get();
 
 	private:
 		void doCleanup();

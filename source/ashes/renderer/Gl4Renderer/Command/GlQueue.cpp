@@ -53,17 +53,44 @@ namespace ashes::gl4
 		{
 			switch ( cmd.op.type )
 			{
-			case OpType::eEnable:
-				apply( lock, map< OpType::eEnable >( cmd ) );
+			case OpType::eActiveTexture:
+				apply( lock, map< OpType::eActiveTexture >( cmd ) );
 				break;
-			case OpType::eDisable:
-				apply( lock, map< OpType::eDisable >( cmd ) );
+			case OpType::eApplyDepthRanges:
+				apply( lock, map< OpType::eApplyDepthRanges >( cmd ) );
+				break;
+			case OpType::eApplyScissors:
+				apply( lock, map< OpType::eApplyScissors >( cmd ) );
+				break;
+			case OpType::eApplyViewports:
+				apply( lock, map< OpType::eApplyViewports >( cmd ) );
 				break;
 			case OpType::eBeginQuery:
 				apply( lock, map< OpType::eBeginQuery >( cmd ) );
 				break;
-			case OpType::eEndQuery:
-				apply( lock, map< OpType::eEndQuery >( cmd ) );
+			case OpType::eBindBuffer:
+				apply( lock, map< OpType::eBindBuffer >( cmd ) );
+				break;
+			case OpType::eBindBufferRange:
+				apply( lock, map< OpType::eBindBufferRange >( cmd ) );
+				break;
+			case OpType::eBindContextState:
+				apply( lock, map< OpType::eBindContextState >( cmd ) );
+				break;
+			case OpType::eBindFramebuffer:
+				apply( lock, map< OpType::eBindFramebuffer >( cmd ) );
+				break;
+			case OpType::eBindImage:
+				apply( lock, map< OpType::eBindImage >( cmd ) );
+				break;
+			case OpType::eBindSampler:
+				apply( lock, map< OpType::eBindSampler >( cmd ) );
+				break;
+			case OpType::eBindTexture:
+				apply( lock, map< OpType::eBindTexture >( cmd ) );
+				break;
+			case OpType::eBindVextexArray:
+				apply( lock, map< OpType::eBindVextexArray >( cmd ) );
 				break;
 			case OpType::eBlendConstants:
 				apply( lock, map< OpType::eBlendConstants >( cmd ) );
@@ -74,17 +101,17 @@ namespace ashes::gl4
 			case OpType::eBlendFunc:
 				apply( lock, map< OpType::eBlendFunc >( cmd ) );
 				break;
-			case OpType::eClearColour:
-				apply( lock, map< OpType::eClearColour >( cmd ) );
+			case OpType::eBlitFramebuffer:
+				apply( lock, map< OpType::eBlitFramebuffer >( cmd ) );
 				break;
-			case OpType::eClearDepth:
-				apply( lock, map< OpType::eClearDepth >( cmd ) );
+			case OpType::eDisable:
+				apply( lock, map< OpType::eDisable >( cmd ) );
 				break;
-			case OpType::eClearStencil:
-				apply( lock, map< OpType::eClearStencil >( cmd ) );
+			case OpType::eEnable:
+				apply( lock, map< OpType::eEnable >( cmd ) );
 				break;
-			case OpType::eClearDepthStencil:
-				apply( lock, map< OpType::eClearDepthStencil >( cmd ) );
+			case OpType::eEndQuery:
+				apply( lock, map< OpType::eEndQuery >( cmd ) );
 				break;
 			case OpType::eClearBack:
 				apply( lock, map< OpType::eClearBack >( cmd ) );
@@ -95,14 +122,53 @@ namespace ashes::gl4
 			case OpType::eClearBackDepth:
 				apply( lock, map< OpType::eClearBackDepth >( cmd ) );
 				break;
-			case OpType::eClearBackStencil:
-				apply( lock, map< OpType::eClearBackStencil >( cmd ) );
-				break;
 			case OpType::eClearBackDepthStencil:
 				apply( lock, map< OpType::eClearBackDepthStencil >( cmd ) );
 				break;
+			case OpType::eClearBackStencil:
+				apply( lock, map< OpType::eClearBackStencil >( cmd ) );
+				break;
+			case OpType::eClearColour:
+				apply( lock, map< OpType::eClearColour >( cmd ) );
+				break;
+			case OpType::eClearDepth:
+				apply( lock, map< OpType::eClearDepth >( cmd ) );
+				break;
+			case OpType::eClearDepthStencil:
+				apply( lock, map< OpType::eClearDepthStencil >( cmd ) );
+				break;
+			case OpType::eClearStencil:
+				apply( lock, map< OpType::eClearStencil >( cmd ) );
+				break;
+			case OpType::eClearTexColor:
+				apply( lock, map< OpType::eClearTexColor >( cmd ) );
+				break;
+			case OpType::eClearTexDepth:
+				apply( lock, map< OpType::eClearTexDepth >( cmd ) );
+				break;
+			case OpType::eClearTexDepthStencil:
+				apply( lock, map< OpType::eClearTexDepthStencil >( cmd ) );
+				break;
+			case OpType::eClearTexStencil:
+				apply( lock, map< OpType::eClearTexStencil >( cmd ) );
+				break;
 			case OpType::eColorMask:
 				apply( lock, map< OpType::eColorMask >( cmd ) );
+				break;
+			case OpType::eCompressedTexSubImage1D:
+				apply( lock, map< OpType::eCompressedTexSubImage1D >( cmd ) );
+				break;
+			case OpType::eCompressedTexSubImage2D:
+				apply( lock, map< OpType::eCompressedTexSubImage2D >( cmd ) );
+				break;
+			case OpType::eCompressedTexSubImage3D:
+				apply( lock, map< OpType::eCompressedTexSubImage3D >( cmd ) );
+				break;
+			case OpType::eCopyBufferSubData:
+				apply( lock, map< OpType::eCopyBufferSubData >( cmd ) );
+				break;
+			case OpType::eCopyImageSubData:
+				apply( lock, map< OpType::eCopyImageSubData >( cmd ) );
 				break;
 			case OpType::eCullFace:
 				apply( lock, map< OpType::eCullFace >( cmd ) );
@@ -116,152 +182,23 @@ namespace ashes::gl4
 			case OpType::eDepthRange:
 				apply( lock, map< OpType::eDepthRange >( cmd ) );
 				break;
-			case OpType::eFrontFace:
-				apply( lock, map< OpType::eFrontFace >( cmd ) );
-				break;
-			case OpType::eLineWidth:
-				apply( lock, map< OpType::eLineWidth >( cmd ) );
-				break;
-			case OpType::eLogicOp:
-				apply( lock, map< OpType::eLogicOp >( cmd ) );
-				break;
-			case OpType::eMinSampleShading:
-				apply( lock, map< OpType::eMinSampleShading >( cmd ) );
-				break;
-			case OpType::ePatchParameter:
-				apply( lock, map< OpType::ePatchParameter >( cmd ) );
-				break;
-			case OpType::ePolygonMode:
-				apply( lock, map< OpType::ePolygonMode >( cmd ) );
-				break;
-			case OpType::ePolygonOffset:
-				apply( lock, map< OpType::ePolygonOffset >( cmd ) );
-				break;
-			case OpType::ePrimitiveRestartIndex:
-				apply( lock, map< OpType::ePrimitiveRestartIndex >( cmd ) );
-				break;
-			case OpType::eStencilFunc:
-				apply( lock, map< OpType::eStencilFunc >( cmd ) );
-				break;
-			case OpType::eStencilMask:
-				apply( lock, map< OpType::eStencilMask >( cmd ) );
-				break;
-			case OpType::eStencilOp:
-				apply( lock, map< OpType::eStencilOp >( cmd ) );
-				break;
-			case OpType::eApplyScissors:
-				apply( lock, map< OpType::eApplyScissors >( cmd ) );
-				break;
-			case OpType::eApplyViewports:
-				apply( lock, map< OpType::eApplyViewports >( cmd ) );
-				break;
-			case OpType::eApplyDepthRanges:
-				apply( lock, map< OpType::eApplyDepthRanges >( cmd ) );
-				break;
-			case OpType::eInitFramebuffer:
-				apply( lock, map< OpType::eInitFramebuffer >( cmd ) );
-				break;
-			case OpType::eBindFramebuffer:
-				apply( lock, map< OpType::eBindFramebuffer >( cmd ) );
-				break;
-			case OpType::eDrawBuffer:
-				apply( lock, map< OpType::eDrawBuffer >( cmd ) );
-				break;
-			case OpType::eDrawBuffers:
-				apply( lock, map< OpType::eDrawBuffers >( cmd ) );
-				break;
-			case OpType::eUseProgram:
-				apply( lock, map< OpType::eUseProgram >( cmd ) );
-				break;
-			case OpType::eUseProgramPipeline:
-				apply( lock, map< OpType::eUseProgramPipeline >( cmd ) );
-				break;
-			case OpType::eActiveTexture:
-				apply( lock, map< OpType::eActiveTexture >( cmd ) );
-				break;
-			case OpType::eBindTexture:
-				apply( lock, map< OpType::eBindTexture >( cmd ) );
-				break;
-			case OpType::eBindSampler:
-				apply( lock, map< OpType::eBindSampler >( cmd ) );
-				break;
-			case OpType::eBindImage:
-				apply( lock, map< OpType::eBindImage >( cmd ) );
-				break;
-			case OpType::eBindBufferRange:
-				apply( lock, map< OpType::eBindBufferRange >( cmd ) );
-				break;
-			case OpType::eBindVextexArray:
-				apply( lock, map< OpType::eBindVextexArray >( cmd ) );
-				break;
-			case OpType::eBindContextState:
-				apply( lock, map< OpType::eBindContextState >( cmd ) );
-				break;
-			case OpType::eFramebufferTexture:
-				apply( lock, map< OpType::eFramebufferTexture >( cmd ) );
-				break;
-			case OpType::eFramebufferTexture2D:
-				apply( lock, map< OpType::eFramebufferTexture2D >( cmd ) );
-				break;
-			case OpType::eBlitFramebuffer:
-				apply( lock, map< OpType::eBlitFramebuffer >( cmd ) );
-				break;
-			case OpType::eClearTexColor:
-				apply( lock, map< OpType::eClearTexColor >( cmd ) );
-				break;
-			case OpType::eClearTexDepth:
-				apply( lock, map< OpType::eClearTexDepth >( cmd ) );
-				break;
-			case OpType::eClearTexStencil:
-				apply( lock, map< OpType::eClearTexStencil >( cmd ) );
-				break;
-			case OpType::eClearTexDepthStencil:
-				apply( lock, map< OpType::eClearTexDepthStencil >( cmd ) );
-				break;
-			case OpType::eBindBuffer:
-				apply( lock, map< OpType::eBindBuffer >( cmd ) );
-				break;
-			case OpType::eCopyBufferSubData:
-				apply( lock, map< OpType::eCopyBufferSubData >( cmd ) );
-				break;
-			case OpType::ePixelStore:
-				apply( lock, map< OpType::ePixelStore >( cmd ) );
-				break;
-			case OpType::eCompressedTexSubImage1D:
-				apply( lock, map< OpType::eCompressedTexSubImage1D >( cmd ) );
-				break;
-			case OpType::eCompressedTexSubImage2D:
-				apply( lock, map< OpType::eCompressedTexSubImage2D >( cmd ) );
-				break;
-			case OpType::eCompressedTexSubImage3D:
-				apply( lock, map< OpType::eCompressedTexSubImage3D >( cmd ) );
-				break;
-			case OpType::eTexSubImage1D:
-				apply( lock, map< OpType::eTexSubImage1D >( cmd ) );
-				break;
-			case OpType::eTexSubImage2D:
-				apply( lock, map< OpType::eTexSubImage2D >( cmd ) );
-				break;
-			case OpType::eTexSubImage3D:
-				apply( lock, map< OpType::eTexSubImage3D >( cmd ) );
-				break;
-			case OpType::eCopyImageSubData:
-				apply( lock, map< OpType::eCopyImageSubData >( cmd ) );
-				break;
-			case OpType::eReadBuffer:
-				apply( lock, map< OpType::eReadBuffer >( cmd ) );
-				break;
-			case OpType::eReadPixels:
-				apply( lock, map< OpType::eReadPixels >( cmd ) );
-				break;
 			case OpType::eDispatch:
 				apply( lock, map< OpType::eDispatch >( cmd ) );
 				break;
 			case OpType::eDispatchIndirect:
 				apply( lock, map< OpType::eDispatchIndirect >( cmd ) );
 				break;
+			case OpType::eDownloadMemory:
+				apply( lock, map< OpType::eDownloadMemory >( cmd ) );
+				break;
 			case OpType::eDraw:
 				apply( lock, map< OpType::eDraw >( cmd ) );
+				break;
+			case OpType::eDrawBuffer:
+				apply( lock, map< OpType::eDrawBuffer >( cmd ) );
+				break;
+			case OpType::eDrawBuffers:
+				apply( lock, map< OpType::eDrawBuffers >( cmd ) );
 				break;
 			case OpType::eDrawIndexed:
 				apply( lock, map< OpType::eDrawIndexed >( cmd ) );
@@ -272,11 +209,89 @@ namespace ashes::gl4
 			case OpType::eDrawIndirect:
 				apply( lock, map< OpType::eDrawIndirect >( cmd ) );
 				break;
+			case OpType::eFillBuffer:
+				apply( lock, map< OpType::eFillBuffer >( cmd ) );
+				break;
+			case OpType::eFramebufferTexture:
+				apply( lock, map< OpType::eFramebufferTexture >( cmd ) );
+				break;
+			case OpType::eFramebufferTexture2D:
+				apply( lock, map< OpType::eFramebufferTexture2D >( cmd ) );
+				break;
+			case OpType::eFrontFace:
+				apply( lock, map< OpType::eFrontFace >( cmd ) );
+				break;
 			case OpType::eGenerateMipmaps:
 				apply( lock, map< OpType::eGenerateMipmaps >( cmd ) );
 				break;
+			case OpType::eGetTexImage:
+				apply( lock, map< OpType::eGetTexImage >( cmd ) );
+				break;
+			case OpType::eInitFramebuffer:
+				apply( lock, map< OpType::eInitFramebuffer >( cmd ) );
+				break;
+			case OpType::eLineWidth:
+				apply( lock, map< OpType::eLineWidth >( cmd ) );
+				break;
+			case OpType::eLogicOp:
+				apply( lock, map< OpType::eLogicOp >( cmd ) );
+				break;
 			case OpType::eMemoryBarrier:
 				apply( lock, map< OpType::eMemoryBarrier >( cmd ) );
+				break;
+			case OpType::eMinSampleShading:
+				apply( lock, map< OpType::eMinSampleShading >( cmd ) );
+				break;
+			case OpType::ePatchParameter:
+				apply( lock, map< OpType::ePatchParameter >( cmd ) );
+				break;
+			case OpType::ePixelStore:
+				apply( lock, map< OpType::ePixelStore >( cmd ) );
+				break;
+			case OpType::ePolygonMode:
+				apply( lock, map< OpType::ePolygonMode >( cmd ) );
+				break;
+			case OpType::ePolygonOffset:
+				apply( lock, map< OpType::ePolygonOffset >( cmd ) );
+				break;
+			case OpType::ePrimitiveRestartIndex:
+				apply( lock, map< OpType::ePrimitiveRestartIndex >( cmd ) );
+				break;
+			case OpType::eReadBuffer:
+				apply( lock, map< OpType::eReadBuffer >( cmd ) );
+				break;
+			case OpType::eReadPixels:
+				apply( lock, map< OpType::eReadPixels >( cmd ) );
+				break;
+			case OpType::eResetEvent:
+				apply( lock, map< OpType::eResetEvent >( cmd ) );
+				break;
+			case OpType::eSetDepthBias:
+				apply( lock, map< OpType::eSetDepthBias >( cmd ) );
+				break;
+			case OpType::eSetEvent:
+				apply( lock, map< OpType::eSetEvent >( cmd ) );
+				break;
+			case OpType::eSetLineWidth:
+				apply( lock, map< OpType::eSetLineWidth >( cmd ) );
+				break;
+			case OpType::eStencilFunc:
+				apply( lock, map< OpType::eStencilFunc >( cmd ) );
+				break;
+			case OpType::eStencilMask:
+				apply( lock, map< OpType::eStencilMask >( cmd ) );
+				break;
+			case OpType::eStencilOp:
+				apply( lock, map< OpType::eStencilOp >( cmd ) );
+				break;
+			case OpType::eTexSubImage1D:
+				apply( lock, map< OpType::eTexSubImage1D >( cmd ) );
+				break;
+			case OpType::eTexSubImage2D:
+				apply( lock, map< OpType::eTexSubImage2D >( cmd ) );
+				break;
+			case OpType::eTexSubImage3D:
+				apply( lock, map< OpType::eTexSubImage3D >( cmd ) );
 				break;
 			case OpType::eUniform1fv:
 				apply( lock, map< OpType::eUniform1fv >( cmd ) );
@@ -323,35 +338,23 @@ namespace ashes::gl4
 			case OpType::eUniformMatrix4fv:
 				apply( lock, map< OpType::eUniformMatrix4fv >( cmd ) );
 				break;
-			case OpType::eResetEvent:
-				apply( lock, map< OpType::eResetEvent >( cmd ) );
-				break;
-			case OpType::eSetEvent:
-				apply( lock, map< OpType::eSetEvent >( cmd ) );
-				break;
-			case OpType::eWaitEvents:
-				apply( lock, map< OpType::eWaitEvents >( cmd ) );
-				break;
-			case OpType::eSetDepthBias:
-				apply( lock, map< OpType::eSetDepthBias >( cmd ) );
-				break;
-			case OpType::eSetLineWidth:
-				apply( lock, map< OpType::eSetLineWidth >( cmd ) );
-				break;
-			case OpType::eWriteTimestamp:
-				apply( lock, map< OpType::eWriteTimestamp >( cmd ) );
-				break;
-			case OpType::eDownloadMemory:
-				apply( lock, map< OpType::eDownloadMemory >( cmd ) );
+			case OpType::eUpdateBuffer:
+				apply( lock, map< OpType::eUpdateBuffer >( cmd ) );
 				break;
 			case OpType::eUploadMemory:
 				apply( lock, map< OpType::eUploadMemory >( cmd ) );
 				break;
-			case OpType::eUpdateBuffer:
-				apply( lock, map< OpType::eUpdateBuffer >( cmd ) );
+			case OpType::eUseProgram:
+				apply( lock, map< OpType::eUseProgram >( cmd ) );
 				break;
-			case OpType::eFillBuffer:
-				apply( lock, map< OpType::eFillBuffer >( cmd ) );
+			case OpType::eUseProgramPipeline:
+				apply( lock, map< OpType::eUseProgramPipeline >( cmd ) );
+				break;
+			case OpType::eWaitEvents:
+				apply( lock, map< OpType::eWaitEvents >( cmd ) );
+				break;
+			case OpType::eWriteTimestamp:
+				apply( lock, map< OpType::eWriteTimestamp >( cmd ) );
 				break;
 			default:
 				assert( false && "Unsupported command type." );

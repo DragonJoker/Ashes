@@ -45,6 +45,16 @@ namespace ashes::gl3
 		getSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
 	}
 
+	SurfaceKHR::SurfaceKHR( VkInstance instance
+		, VkWaylandSurfaceCreateInfoKHR createInfo )
+		: m_instance{ instance }
+		, m_waylandCreateInfo{ createInfo }
+	{
+		m_context = get( m_instance )->registerSurface( get( this ) );
+		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
+		getSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
+	}
+
 #endif
 
 	SurfaceKHR::~SurfaceKHR()

@@ -6,7 +6,6 @@ See LICENSE file in root folder.
 #define ___AshesPP_AndroidWindowHandle_HPP___
 
 #include "ashespp/Core/WindowHandle.hpp"
-#include <vulkan/vulkan_android.h>
 
 namespace ashes
 {

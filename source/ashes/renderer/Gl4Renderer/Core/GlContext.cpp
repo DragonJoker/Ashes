@@ -78,20 +78,6 @@ namespace ashes::gl4
 #if _WIN32
 
 	ContextPtr Context::create( VkInstance instance
-		, VkWin32SurfaceCreateInfoKHR createInfo
-		, Context const * mainContext )
-	{
-		return std::unique_ptr< Context >( new Context
-			{
-				gl::ContextImpl::create( instance
-					, std::move( createInfo )
-					, ( mainContext
-						? &mainContext->getImpl()
-						: nullptr ) )
-			} );
-	}
-
-	ContextPtr Context::create( VkInstance instance
 		, VkSurfaceKHR surface
 		, Context const * mainContext )
 	{
@@ -101,34 +87,6 @@ namespace ashes::gl4
 	}
 
 #elif __linux__
-
-	ContextPtr Context::create( VkInstance instance
-		, VkXlibSurfaceCreateInfoKHR createInfo
-		, Context const * mainContext )
-	{
-		return std::unique_ptr< Context >( new Context
-			{
-				gl::ContextImpl::create( instance
-					, std::move( createInfo )
-					, ( mainContext
-						? &mainContext->getImpl()
-						: nullptr ) )
-			} );
-	}
-
-	ContextPtr Context::create( VkInstance instance
-		, VkXcbSurfaceCreateInfoKHR createInfo
-		, Context const * mainContext )
-	{
-		return std::unique_ptr< Context >( new Context
-			{
-				gl::ContextImpl::create( instance
-					, std::move( createInfo )
-					, ( mainContext
-						? &mainContext->getImpl()
-						: nullptr ) )
-			} );
-	}
 
 	ContextPtr Context::create( VkInstance instance
 		, VkSurfaceKHR surface
@@ -144,6 +102,12 @@ namespace ashes::gl4
 		{
 			return create( instance
 				, get( surface )->getXcbCreateInfo()
+				, mainContext );
+		}
+		else if ( get( surface )->isWayland() )
+		{
+			return create( instance
+				, get( surface )->getWaylandCreateInfo()
 				, mainContext );
 		}
 

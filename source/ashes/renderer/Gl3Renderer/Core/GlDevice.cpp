@@ -504,7 +504,7 @@ namespace ashes::gl3
 			}
 			else
 			{
-				texelBlockExtent.width = 1u;
+				texelBlockExtent.width = getSize( format );
 			}
 
 			return texelBlockExtent;
@@ -593,7 +593,7 @@ namespace ashes::gl3
 			, target
 			, 0 );
 		auto extent = getTexelBlockExtent( get( image )->getFormat() );
-		layout.rowPitch = getAligned( std::max( w, 1 ), extent.width );
+		layout.rowPitch = extent.width * getAligned( std::max( w, 1 ), extent.width );
 		layout.arrayPitch = layout.rowPitch * getAligned( std::max( h, 1 ), extent.width );
 		layout.depthPitch = layout.arrayPitch;
 		layout.offset = subresource.arrayLayer * layout.arrayPitch;
