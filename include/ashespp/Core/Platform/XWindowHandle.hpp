@@ -13,7 +13,7 @@ namespace ashes
 		: public IWindowHandle
 	{
 	public:
-		IXWindowHandle( GLXDrawable drawable
+		IXWindowHandle( Window drawable
 			, Display * display )
 			: IWindowHandle{ VK_KHR_XLIB_SURFACE_EXTENSION_NAME }
 			, m_drawable{ drawable }
@@ -30,7 +30,7 @@ namespace ashes
 			return m_drawable != 0 && m_display != nullptr;
 		}
 
-		inline GLXDrawable getDrawable()const
+		inline Window getDrawable()const
 		{
 			return m_drawable;
 		}
@@ -41,7 +41,7 @@ namespace ashes
 		}
 
 	private:
-		GLXDrawable m_drawable;
+		Window m_drawable;
 		Display * m_display;
 	};
 }

@@ -14,6 +14,7 @@ See LICENSE file in root folder
 typedef struct __GLXFBConfigRec * GLXFBConfig;
 typedef struct __GLXcontextRec * GLXContext;
 #endif
+typedef XID Colormap;
 
 namespace ashes::gl
 {
