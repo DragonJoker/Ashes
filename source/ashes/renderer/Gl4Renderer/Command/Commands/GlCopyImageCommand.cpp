@@ -64,12 +64,16 @@ namespace ashes::gl4
 			, get( dst )->getInternal()
 			, dstTarget
 			, std::move( copyInfo ) ) );
-		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, get( get( dst )->getMemory() )->getBuffer() ) );
-		list.push_back( makeCmd< OpType::eBindTexture >( dstTarget, get( dst )->getInternal() ) );
-		auto internal = getInternalFormat( get( dst )->getFormat() );
-		list.push_back( makeCmd< OpType::eGetTexImage >( dstTarget, getFormat( internal ), getType( internal ) ) );
-		list.push_back( makeCmd< OpType::eBindTexture >( dstTarget, 0u ) );
-		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, 0u ) );
-		list.push_back( makeCmd< OpType::eDownloadMemory >( get( dst )->getMemory() ) );
+
+		if ( get( get( dst )->getMemory() )->getBuffer() != GL_INVALID_INDEX )
+		{
+			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, get( get( dst )->getMemory() )->getBuffer() ) );
+			list.push_back( makeCmd< OpType::eBindTexture >( dstTarget, get( dst )->getInternal() ) );
+			auto internal = getInternalFormat( get( dst )->getFormat() );
+			list.push_back( makeCmd< OpType::eGetTexImage >( dstTarget, getFormat( internal ), getType( internal ) ) );
+			list.push_back( makeCmd< OpType::eBindTexture >( dstTarget, 0u ) );
+			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, 0u ) );
+			list.push_back( makeCmd< OpType::eDownloadMemory >( get( dst )->getMemory() ) );
+		}
 	}
 }
