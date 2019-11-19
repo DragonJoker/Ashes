@@ -70,13 +70,8 @@ namespace ashes::d3d11
 				, &m_srcBox );
 		}
 
-		auto srcMemory = get( m_src )->getMemory();
 		auto dstMemory = get( m_dst )->getMemory();
-		get( dstMemory )->updateData( srcMemory
-			, get( m_src )->getMemoryOffset()
-			, get( m_dst )->getMemoryOffset()
-			, std::min( get( m_src )->getMemoryRequirements().size
-				, get( m_dst )->getMemoryRequirements().size ) );
+		get( dstMemory )->updateDownload( 0u, get( m_dst )->getMemoryRequirements().size, 0u );
 	}
 
 	CommandPtr CopyImageCommand::clone()const

@@ -80,6 +80,7 @@ namespace ashes::gl3
 		eFramebufferTextureLayer,
 		eFrontFace,
 		eGenerateMipmaps,
+		eGetTexImage,
 		eInitFramebuffer,
 		eLineWidth,
 		eLogicOp,

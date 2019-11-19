@@ -189,6 +189,18 @@ namespace ashes::gl3
 			, 0u );
 	}
 
+	void apply( ContextLock const & context
+		, CmdGetTexImage const & cmd )
+	{
+		glLogCall( context
+			, glGetTexImage
+			, cmd.target
+			, 0
+			, cmd.format
+			, cmd.type
+			, getBufferOffset( 0 ) );
+	}
+
 	void buildCopyImageCommand( VkImageCopy copyInfo
 		, VkImage src
 		, VkImage dst
@@ -296,5 +308,13 @@ namespace ashes::gl3
 			std::cerr << "CopyImageCommand - Unsupported texture type." << std::endl;
 			break;
 		}
+
+		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, get( get( dst )->getMemory() )->getBuffer() ) );
+		list.push_back( makeCmd< OpType::eBindTexture >( dstTarget, get( dst )->getInternal() ) );
+		auto internal = getInternalFormat( get( dst )->getFormat() );
+		list.push_back( makeCmd< OpType::eGetTexImage >( dstTarget, getFormat( internal ), getType( internal ) ) );
+		list.push_back( makeCmd< OpType::eBindTexture >( dstTarget, 0u ) );
+		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, 0u ) );
+		list.push_back( makeCmd< OpType::eDownloadMemory >( get( dst )->getMemory() ) );
 	}
 }

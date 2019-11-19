@@ -898,6 +898,7 @@ namespace ashes::gl3
 				, m_allocateInfo
 				, image
 				, memoryOffset );
+			get( image )->setMemory( get( this ) );
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )

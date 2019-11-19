@@ -83,6 +83,16 @@ namespace ashes::gl4
 			return m_swapchainImage;
 		}
 
+		inline void setMemory( VkDeviceMemory memory )
+		{
+			m_memory = memory;
+		}
+
+		inline VkDeviceMemory getMemory()const
+		{
+			return m_memory;
+		}
+
 	private:
 		VkDevice m_device;
 		VkImageCreateFlags m_flags;
@@ -99,6 +109,7 @@ namespace ashes::gl4
 		GlTextureType m_target;
 		GLuint m_internal{ GL_INVALID_INDEX };
 		bool m_swapchainImage{ false };
+		VkDeviceMemory m_memory{ nullptr };
 	};
 }
 

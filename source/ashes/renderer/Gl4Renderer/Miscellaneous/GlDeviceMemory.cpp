@@ -852,6 +852,8 @@ namespace ashes::gl4
 				, m_allocateInfo
 				, image
 				, memoryOffset );
+			get( image )->setMemory( get( this ) );
+			m_buffer = m_impl->getBuffer();
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )

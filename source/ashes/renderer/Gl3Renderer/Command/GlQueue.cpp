@@ -244,6 +244,9 @@ namespace ashes::gl3
 			case OpType::eGenerateMipmaps:
 				apply( lock, map< OpType::eGenerateMipmaps >( cmd ) );
 				break;
+			case OpType::eGetTexImage:
+				apply( lock, map< OpType::eGetTexImage >( cmd ) );
+				break;
 			case OpType::eInitFramebuffer:
 				apply( lock, map< OpType::eInitFramebuffer >( cmd ) );
 				break;

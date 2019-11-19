@@ -88,8 +88,19 @@ namespace ashes::gl3
 			return m_swapchainImage;
 		}
 
+		inline void setMemory( VkDeviceMemory memory )
+		{
+			m_memory = memory;
+		}
+
+		inline VkDeviceMemory getMemory()const
+		{
+			return m_memory;
+		}
+
 	private:
 		VkDevice m_device;
+		VkDeviceMemory m_memory;
 		VkImageCreateFlags m_flags;
 		VkImageType m_imageType;
 		VkFormat m_format;
