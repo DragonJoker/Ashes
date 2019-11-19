@@ -124,7 +124,7 @@ namespace ashes::gl4
 			}
 			else
 			{
-				texelBlockExtent.width = 1u;
+				texelBlockExtent.width = getSize( format );
 			}
 
 			return texelBlockExtent;
@@ -177,11 +177,18 @@ namespace ashes::gl4
 				}
 			}
 
-			deallocate( m_sampler, nullptr );
-			deallocate( m_blitFbos[0], nullptr );
-			deallocate( m_blitFbos[1], nullptr );
-			deallocate( m_dummyIndexed.indexMemory, nullptr );
-			deallocate( m_dummyIndexed.indexBuffer, nullptr );
+			if ( m_sampler )
+			{
+				deallocate( m_sampler, nullptr );
+				deallocate( m_blitFbos[0], nullptr );
+				deallocate( m_blitFbos[1], nullptr );
+			}
+
+			if ( m_dummyIndexed.indexMemory )
+			{
+				deallocate( m_dummyIndexed.indexMemory, nullptr );
+				deallocate( m_dummyIndexed.indexBuffer, nullptr );
+			}
 		}
 
 		get( m_instance )->unregisterDevice( get( this ) );
@@ -213,8 +220,8 @@ namespace ashes::gl4
 			, target
 			, 0 );
 		auto extent = getTexelBlockExtent( get( image )->getFormat() );
-		layout.rowPitch = getAligned( std::max( w, 1 ), extent.width );
-		layout.arrayPitch = layout.rowPitch * getAligned( std::max( h, 1 ), extent.width );
+		layout.rowPitch = extent.width * getAligned( std::max( w, 1 ), extent.width );
+		layout.arrayPitch = layout.rowPitch * getAligned( std::max( h, 1 ), extent.height );
 		layout.depthPitch = layout.arrayPitch;
 		layout.offset = subresource.arrayLayer * layout.arrayPitch;
 		layout.size = layout.arrayPitch * std::max( d, 1 );

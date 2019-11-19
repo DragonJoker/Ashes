@@ -136,11 +136,18 @@ namespace ashes::gl4
 		}
 
 	private:
-		AshPluginFeatures m_features;
 		VkInstanceCreateFlags m_flags;
 		StringArray m_enabledLayerNames;
 		StringArray m_enabledExtensions;
+		gl::RenderWindow * m_window{ nullptr };
 		VkPhysicalDeviceArray m_physicalDevices;
+		ExtensionsHandler m_extensions;
+		AshPluginFeatures m_features;
+		bool m_validationEnabled;
+		ContextPtr m_context;
+		Context * m_firstSurfaceContext{ nullptr };
+		std::set< VkSurfaceKHR > m_surfaces;
+		std::set< VkDevice > m_devices;
 #if VK_EXT_debug_utils
 		mutable std::vector< DebugUtilsMessengerData > m_debugMessengers;
 		mutable std::vector< DebugUtilsAMDMessengerData > m_debugAMDMessengers;
@@ -149,11 +156,5 @@ namespace ashes::gl4
 		mutable std::vector< DebugReportCallbackData > m_debugCallbacks;
 		mutable std::vector< DebugReportAMDCallbackData > m_debugAMDCallbacks;
 #endif
-		ExtensionsHandler m_extensions;
-		bool m_validationEnabled;
-		ContextPtr m_context;
-		Context * m_firstSurfaceContext{ nullptr };
-		std::set< VkSurfaceKHR > m_surfaces;
-		std::set< VkDevice > m_devices;
 	};
 }

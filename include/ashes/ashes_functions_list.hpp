@@ -194,13 +194,8 @@ See LICENSE file in root folder.
 	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceXcbPresentationSupportKHR )
 	VK_LIB_INSTANCE_FUNCTION( CreateXlibSurfaceKHR )
 	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceXlibPresentationSupportKHR )
-#endif
-
-#ifdef VK_USE_PLATFORM_WAYLAND_KHR
-#	ifdef VK_KHR_wayland_surface
 	VK_LIB_INSTANCE_FUNCTION( CreateWaylandSurfaceKHR )
 	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceWaylandPresentationSupportKHR )
-#	endif
 #endif
 
 #ifdef _WIN32

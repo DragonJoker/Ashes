@@ -19,6 +19,8 @@ namespace ashes::gl3
 			, VkXlibSurfaceCreateInfoKHR createInfo );
 		SurfaceKHR( VkInstance instance
 			, VkXcbSurfaceCreateInfoKHR createInfo );
+		SurfaceKHR( VkInstance instance
+			, VkWaylandSurfaceCreateInfoKHR createInfo );
 #endif
 		~SurfaceKHR();
 
@@ -61,6 +63,11 @@ namespace ashes::gl3
 			return m_xcbCreateInfo;
 		}
 
+		inline VkWaylandSurfaceCreateInfoKHR getWaylandCreateInfo()const
+		{
+			return m_waylandCreateInfo;
+		}
+
 		inline bool isXcb()const
 		{
 			return m_xcbCreateInfo.sType != 0;
@@ -69,6 +76,11 @@ namespace ashes::gl3
 		inline bool isXlib()const
 		{
 			return m_xlibCreateInfo.sType != 0;
+		}
+
+		inline bool isWayland()const
+		{
+			return m_waylandCreateInfo.sType != 0;
 		}
 
 #endif
@@ -89,6 +101,7 @@ namespace ashes::gl3
 #elif __linux__
 		VkXlibSurfaceCreateInfoKHR m_xlibCreateInfo{};
 		VkXcbSurfaceCreateInfoKHR m_xcbCreateInfo{};
+		VkWaylandSurfaceCreateInfoKHR m_waylandCreateInfo{};
 #endif
 		VkSurfaceFormatArrayKHR m_surfaceFormats;
 		VkSurfaceCapabilitiesKHR m_surfaceCapabilities;

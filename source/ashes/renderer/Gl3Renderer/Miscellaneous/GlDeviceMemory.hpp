@@ -44,6 +44,11 @@ namespace ashes::gl3
 				return m_boundResource;
 			}
 
+			inline GLuint getBuffer()const
+			{
+				return m_buffer;
+			}
+
 		protected:
 			VkDeviceMemory m_parent;
 			VkDevice m_device;
@@ -94,6 +99,18 @@ namespace ashes::gl3
 		VkDeviceSize getSize()const
 		{
 			return m_allocateInfo.allocationSize;
+		}
+
+		GLuint getInternal()const
+		{
+			assert( m_impl );
+			return m_impl->getInternal();
+		}
+
+		GLuint getBuffer()const
+		{
+			assert( m_impl );
+			return m_impl->getBuffer();
 		}
 
 	public:

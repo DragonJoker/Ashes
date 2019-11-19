@@ -134,8 +134,8 @@ namespace ashes::gl4
 			VkDeviceMemory vertexMemory{};
 			GeometryBuffersPtr geometryBuffers;
 		} m_dummyIndexed;
-		mutable VkFramebuffer m_blitFbos[2];
-		mutable VkSampler m_sampler;
+		mutable VkFramebuffer m_blitFbos[2]{};
+		mutable VkSampler m_sampler{};
 		VkPipelineColorBlendAttachmentStateArray m_cbStateAttachments;
 		VkDynamicStateArray m_dyState;
 	};

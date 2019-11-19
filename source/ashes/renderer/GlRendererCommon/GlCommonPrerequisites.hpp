@@ -16,26 +16,6 @@ See LICENSE file in root folder
 #include <string>
 #include <vector>
 
-#if __linux__
-typedef struct _XDisplay Display;
-typedef struct xcb_connection_t xcb_connection_t;
-typedef struct xcb_screen_t xcb_screen_t;
-typedef uint32_t xcb_window_t;
-typedef uint32_t xcb_visualid_t;
-typedef unsigned long XID;
-typedef XID Window;
-typedef XID Colormap;
-typedef unsigned long VisualID;
-typedef struct _XDisplay Display;
-typedef void * EGLDisplay;
-typedef void * EGLContext;
-typedef void * EGLSurface;
-#include <vulkan/vulkan_xlib.h>
-#include <vulkan/vulkan_xcb.h>
-#elif _WIN32
-#include <vulkan/vulkan_win32.h>
-#endif
-
 namespace ashes::gl
 {
 	PFN_vkVoidFunction getFunction( char const * const name );
