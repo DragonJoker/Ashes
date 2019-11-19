@@ -4,6 +4,7 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlBlitImageCommand.hpp"
 
+#include "Command/Commands/GlCopyImageCommand.hpp"
 #include "Core/GlDevice.hpp"
 #include "Image/GlImage.hpp"
 #include "Image/GlImageView.hpp"
@@ -175,6 +176,20 @@ namespace ashes::gl3
 			{
 				stack.setCurrentFramebuffer( VK_NULL_HANDLE );
 			}
+		}
+
+		if ( get( get( dstImage )->getMemory() )->getBuffer() != GL_INVALID_INDEX )
+		{
+			auto dstTarget = convert( get( dstImage )->getType()
+				, get( dstImage )->getArrayLayers()
+				, get( dstImage )->getCreateFlags() );
+			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, get( get( dstImage )->getMemory() )->getBuffer() ) );
+			list.push_back( makeCmd< OpType::eBindTexture >( dstTarget, get( dstImage )->getInternal() ) );
+			auto internal = getInternalFormat( get( dstImage )->getFormat() );
+			list.push_back( makeCmd< OpType::eGetTexImage >( dstTarget, getFormat( internal ), getType( internal ) ) );
+			list.push_back( makeCmd< OpType::eBindTexture >( dstTarget, 0u ) );
+			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, 0u ) );
+			list.push_back( makeCmd< OpType::eDownloadMemory >( get( dstImage )->getMemory() ) );
 		}
 	}
 }
