@@ -5,10 +5,7 @@ See LICENSE file in root folder.
 #ifndef ___AshesPP_XcbWindowHandle_HPP___
 #define ___AshesPP_XcbWindowHandle_HPP___
 
-#include <xcb/xcb.h>
-
 #include "ashespp/Core/WindowHandle.hpp"
-#include <vulkan/vulkan_xcb.h>
 
 namespace ashes
 {

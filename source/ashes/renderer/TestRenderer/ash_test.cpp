@@ -3920,7 +3920,7 @@ namespace ashes::test
 #pragma endregion
 #pragma region VK_KHR_wayland_surface
 #ifdef VK_KHR_wayland_surface
-#	ifdef VK_USE_PLATFORM_WAYLAND_KHR
+#	ifdef __linux__
 
 	VkResult VKAPI_CALL vkCreateWaylandSurfaceKHR(
 		VkInstance instance,

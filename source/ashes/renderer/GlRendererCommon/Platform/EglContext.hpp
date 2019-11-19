@@ -9,13 +9,22 @@ See LICENSE file in root folder
 #include <EGL/egl.h>
 #include <memory>
 
+typedef uint32_t xcb_window_t;
+struct wl_display;
+struct wl_egl_window;
+
 namespace ashes::gl
 {
 	class EglContext
 	{
 	public:
-		EglContext( EGLNativeDisplayType display
-			, EGLNativeWindowType window
+		EglContext( Display * display
+			, uint64_t window
+			, int reqMajor
+			, int reqMinor
+			, EGLContext shared );
+		EglContext( wl_display * display
+			, wl_egl_window * window
 			, int reqMajor
 			, int reqMinor
 			, EGLContext shared );

@@ -5,11 +5,7 @@ See LICENSE file in root folder.
 #ifndef ___AshesPP_MirWindowHandle_HPP___
 #define ___AshesPP_MirWindowHandle_HPP___
 
-#include <mir_toolkit/mir_connection.h>
-#include <mir_toolkit/mir_surface.h>
-
 #include "ashespp/Core/WindowHandle.hpp"
-#include <vulkan/vulkan_mir.h>
 
 namespace ashes
 {

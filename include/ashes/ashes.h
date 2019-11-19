@@ -18,6 +18,9 @@ See LICENSE file in root folder.
 	typedef uint32_t xcb_window_t;
 	typedef uint32_t xcb_visualid_t;
 #	include <vulkan/vulkan_xcb.h>
+    struct wl_display;
+    struct wl_surface;
+#	include <vulkan/vulkan_wayland.h>
 #elif _WIN32
 #	ifndef NOMINMAX
 #		define NOMINMAX

@@ -66,6 +66,7 @@ namespace ashes::gl4
 		: m_flags{ createInfo.flags }
 		, m_enabledLayerNames{ convert( createInfo.ppEnabledLayerNames, createInfo.enabledLayerCount ) }
 		, m_enabledExtensions{ convert( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) }
+		, m_window{ new gl::RenderWindow( MinMajor, MinMinor ) }
 	{
 #if _WIN32
 		getError = glGetError;
@@ -87,7 +88,7 @@ namespace ashes::gl4
 			} );
 		m_validationEnabled = it != m_enabledLayerNames.end();
 		m_context = Context::create( get( this )
-			, gl::RenderWindow::get().getCreateInfo()
+			, m_window->getCreateInfo()
 			, nullptr );
 		ContextLock context{ *m_context };
 		glCheckError( "ContextInitialisation" );
@@ -103,7 +104,7 @@ namespace ashes::gl4
 		}
 
 		m_context.reset();
-		gl::RenderWindow::destroy();
+		delete m_window;
 	}
 
 	void Instance::unregisterDevice( VkDevice device )
@@ -131,7 +132,7 @@ namespace ashes::gl4
 		{
 			m_firstSurfaceContext = nullptr;
 			m_context = Context::create( get( this )
-				, gl::RenderWindow::get().getCreateInfo()
+				, m_window->getCreateInfo()
 				, nullptr );
 
 			for ( auto & device : m_devices )

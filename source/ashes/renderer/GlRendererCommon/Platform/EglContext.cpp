@@ -12,8 +12,8 @@ See LICENSE file in root folder
 
 namespace ashes::gl
 {
-	EglContext::EglContext( EGLNativeDisplayType display
-		, EGLNativeWindowType window
+	EglContext::EglContext( Display * display
+		, uint64_t window
 		, int reqMajor
 		, int reqMinor
 		, EGLContext shared )
@@ -135,6 +135,15 @@ namespace ashes::gl
 			doCleanup();
 			throw;
 		}
+	}
+	
+	EglContext::EglContext( wl_display * display
+		, wl_egl_window * window
+		, int reqMajor
+		, int reqMinor
+		, EGLContext shared )
+		: EglContext{ reinterpret_cast< Display * >( display ), uint64_t( window ), reqMajor, reqMinor, shared }
+	{
 	}
 
 	EglContext::~EglContext()

@@ -5,10 +5,7 @@ See LICENSE file in root folder.
 #ifndef ___AshesPP_WaylandWindowHandle_HPP___
 #define ___AshesPP_WaylandWindowHandle_HPP___
 
-#include <wayland-client-core.h>
-
 #include "ashespp/Core/WindowHandle.hpp"
-#include <vulkan/vulkan_wayland.h>
 
 namespace ashes
 {
