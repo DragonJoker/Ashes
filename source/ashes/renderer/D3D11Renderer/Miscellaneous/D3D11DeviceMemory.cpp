@@ -79,6 +79,7 @@ namespace ashes::d3d11
 		, offset{ rhs.offset }
 		, allocateInfo{ std::move( rhs.allocateInfo ) }
 		, mapFlags{ rhs.mapFlags }
+		, subresources{ std::move( rhs.subresources ) }
 	{
 		rhs.device = VK_NULL_HANDLE;
 		rhs.deviceMemory = VK_NULL_HANDLE;
@@ -95,6 +96,7 @@ namespace ashes::d3d11
 		offset = rhs.offset;
 		allocateInfo = std::move( rhs.allocateInfo );
 		mapFlags = rhs.mapFlags;
+		subresources = std::move( rhs.subresources );
 
 		rhs.device = VK_NULL_HANDLE;
 		rhs.deviceMemory = VK_NULL_HANDLE;
@@ -139,6 +141,8 @@ namespace ashes::d3d11
 		, VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
+		assert( subresource < subresources.size() );
+		auto & subresourceLayout = subresources[subresource];
 		auto maxOffset = std::max( this->offset, offset );
 		auto objectOffset = maxOffset - this->offset;
 		auto copySize = VkDeviceSize( size - std::abs( int64_t( offset ) - int64_t( this->offset ) ) );
@@ -159,10 +163,30 @@ namespace ashes::d3d11
 
 		if ( lock( context, subresource, mapped ) == VK_SUCCESS )
 		{
-			copySize = std::min( copySize, VkDeviceSize( mapped.DepthPitch ) );
-			std::memcpy( static_cast< uint8_t * >( mapped.pData ) + objectOffset
-				, data + maxOffset
-				, copySize );
+			if ( mapped.RowPitch != subresourceLayout.SysMemPitch )
+			{
+				auto mappedSteps = mapped.DepthPitch / mapped.RowPitch;
+				auto systemSteps = subresourceLayout.SysMemSlicePitch / subresourceLayout.SysMemPitch;
+				auto rowSize = std::min( mapped.RowPitch, subresourceLayout.SysMemPitch );
+				assert( mappedSteps == systemSteps );
+				auto src = data + maxOffset;
+				auto dst = static_cast< uint8_t * >( mapped.pData ) + objectOffset;
+
+				for ( UINT step = 0u; step < mappedSteps; ++step )
+				{
+					std::memcpy( dst, src, rowSize );
+					src += subresourceLayout.SysMemPitch;
+					dst += mapped.RowPitch;
+				}
+			}
+			else
+			{
+				copySize = std::min( copySize, VkDeviceSize( mapped.DepthPitch ) );
+				std::memcpy( static_cast< uint8_t * >( mapped.pData ) + objectOffset
+					, data + maxOffset
+					, copySize );
+			}
+
 			unlock( context, subresource );
 		}
 
@@ -174,6 +198,8 @@ namespace ashes::d3d11
 		, VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
+		assert( subresource < subresources.size() );
+		auto & subresourceLayout = subresources[subresource];
 		auto maxOffset = std::max( this->offset, offset );
 		auto objectOffset = maxOffset - this->offset;
 		auto copySize = VkDeviceSize( size - std::abs( int64_t( offset ) - int64_t( this->offset ) ) );
@@ -195,10 +221,30 @@ namespace ashes::d3d11
 
 		if ( lock( context, subresource, mapped ) == VK_SUCCESS )
 		{
-			copySize = std::min( copySize, VkDeviceSize( mapped.DepthPitch ) );
-			std::memcpy( data + maxOffset
-				, static_cast< uint8_t * >( mapped.pData ) + objectOffset
-				, copySize );
+			if ( mapped.RowPitch != subresourceLayout.SysMemPitch )
+			{
+				auto mappedSteps = mapped.DepthPitch / mapped.RowPitch;
+				auto systemSteps = subresourceLayout.SysMemSlicePitch / subresourceLayout.SysMemPitch;
+				auto rowSize = std::min( mapped.RowPitch, subresourceLayout.SysMemPitch );
+				assert( mappedSteps == systemSteps );
+				auto src = static_cast< uint8_t const * >( mapped.pData ) + objectOffset;
+				auto dst = data + maxOffset;
+
+				for ( UINT step = 0u; step < mappedSteps; ++step )
+				{
+					std::memcpy( dst, src, rowSize );
+					src += mapped.RowPitch;
+					dst += subresourceLayout.SysMemPitch;
+				}
+			}
+			else
+			{
+				copySize = std::min( copySize, VkDeviceSize( mapped.DepthPitch ) );
+				std::memcpy( data + maxOffset
+					, static_cast< uint8_t * >( mapped.pData ) + objectOffset
+					, copySize );
+			}
+
 			unlock( context, subresource );
 		}
 
@@ -220,6 +266,7 @@ namespace ashes::d3d11
 			, m_buffer{ doCreateBuffer( device, allocateInfo ) }
 			, memory{ device, parent, m_buffer, offset, std::move( allocateInfo ), getBufferMapFlags( m_propertyFlags, m_bufferTargets ) }
 		{
+			memory.subresources.push_back( { nullptr, UINT( memory.allocateInfo.allocationSize ), UINT( memory.allocateInfo.allocationSize ) } );
 		}
 
 		~BufferDeviceMemory()noexcept
@@ -287,6 +334,21 @@ namespace ashes::d3d11
 			, m_texture{ doCreateTexture( device, createInfo ) }
 			, memory{ device, parent, m_texture, offset, std::move( allocateInfo ), getImageMapFlags( m_propertyFlags, m_usage ) }
 		{
+			auto extent = getTexelBlockExtent( createInfo.format );
+			auto byteSize = getTexelBlockByteSize( extent, createInfo.format );
+			memory.subresources.resize( createInfo.arrayLayers * createInfo.mipLevels );
+
+			for ( uint32_t layer = 0u; layer < createInfo.arrayLayers; ++layer )
+			{
+				for ( uint32_t level = 0u; level < createInfo.mipLevels; ++level )
+				{
+					auto mipWidth = getSubresourceValue( createInfo.extent.width, level );
+					auto mipHeight = getSubresourceValue( createInfo.extent.height, level );
+					auto rowPitch = byteSize * mipWidth / ( extent.width * extent.height * extent.depth );
+					auto depthPitch = rowPitch * mipHeight * extent.height / ( extent.width * extent.depth );
+					memory.subresources[D3D11CalcSubresource( level, layer, createInfo.mipLevels )] = { nullptr, rowPitch, depthPitch };
+				}
+			}
 		}
 
 		~Texture1DDeviceMemory()noexcept
@@ -362,6 +424,21 @@ namespace ashes::d3d11
 			, m_texture{ doCreateTexture( device, createInfo ) }
 			, memory{ device, parent, m_texture, offset, std::move( allocateInfo ), getImageMapFlags( m_propertyFlags, m_usage ) }
 		{
+			auto extent = getTexelBlockExtent( createInfo.format );
+			auto byteSize = getTexelBlockByteSize( extent, createInfo.format );
+			memory.subresources.resize( createInfo.arrayLayers * createInfo.mipLevels );
+
+			for ( uint32_t layer = 0u; layer < createInfo.arrayLayers; ++layer )
+			{
+				for ( uint32_t level = 0u; level < createInfo.mipLevels; ++level )
+				{
+					auto mipWidth = getSubresourceValue( createInfo.extent.width, level );
+					auto mipHeight = getSubresourceValue( createInfo.extent.height, level );
+					auto rowPitch = byteSize * mipWidth / ( extent.width * extent.height * extent.depth );
+					auto depthPitch = rowPitch * mipHeight * extent.height / ( extent.width * extent.depth );
+					memory.subresources[D3D11CalcSubresource( level, layer, createInfo.mipLevels )] = { nullptr, rowPitch, depthPitch };
+				}
+			}
 		}
 
 		~Texture2DDeviceMemory()noexcept
@@ -452,6 +529,21 @@ namespace ashes::d3d11
 			, m_texture{ doCreateTexture( device, createInfo ) }
 			, memory{ device, parent, m_texture, offset, std::move( allocateInfo ), getImageMapFlags( m_propertyFlags, m_usage ) }
 		{
+			auto extent = getTexelBlockExtent( createInfo.format );
+			auto byteSize = getTexelBlockByteSize( extent, createInfo.format );
+			memory.subresources.resize( createInfo.arrayLayers * createInfo.mipLevels );
+
+			for ( uint32_t layer = 0u; layer < createInfo.arrayLayers; ++layer )
+			{
+				for ( uint32_t level = 0u; level < createInfo.mipLevels; ++level )
+				{
+					auto mipWidth = getSubresourceValue( createInfo.extent.width, level );
+					auto mipHeight = getSubresourceValue( createInfo.extent.height, level );
+					auto rowPitch = byteSize * mipWidth / ( extent.width * extent.height * extent.depth );
+					auto depthPitch = rowPitch * mipHeight * extent.height / ( extent.width * extent.depth );
+					memory.subresources[D3D11CalcSubresource( level, layer, createInfo.mipLevels )] = { nullptr, rowPitch, depthPitch };
+				}
+			}
 		}
 
 		~Texture3DDeviceMemory()noexcept
