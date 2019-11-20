@@ -37,6 +37,41 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
+	VkExtent3D getTexelBlockExtent( VkFormat format )
+	{
+		VkExtent3D texelBlockExtent{ 1u, 1u, 1u };
+
+		if ( ashes::isCompressedFormat( format ) )
+		{
+			auto extent = ashes::getMinimalExtent2D( format );
+			texelBlockExtent.width = extent.width;
+			texelBlockExtent.height = extent.height;
+		}
+		else
+		{
+			texelBlockExtent.width = 1u;
+		}
+
+		return texelBlockExtent;
+	}
+
+	uint32_t getTexelBlockByteSize( VkExtent3D const & texelBlockExtent
+		, VkFormat format )
+	{
+		VkDeviceSize texelBlockSize;
+
+		if ( !isDepthStencilFormat( format ) )
+		{
+			texelBlockSize = getSize( texelBlockExtent, format );
+		}
+		else
+		{
+			texelBlockSize = texelBlockExtent.width;
+		}
+
+		return uint32_t( texelBlockSize );
+	}
+
 	namespace
 	{
 		template< typename T, typename U >
@@ -44,47 +79,6 @@ namespace ashes::d3d11
 		{
 			return T( ( value + align - 1 ) & ~( align - 1 ) );
 		};
-
-		template< typename T >
-		T getSubresourceValue( T value, uint32_t mipLevel )
-		{
-			return T( value >> mipLevel );
-		};
-
-		VkExtent3D getTexelBlockExtent( VkFormat format )
-		{
-			VkExtent3D texelBlockExtent{ 1u, 1u, 1u };
-
-			if ( ashes::isCompressedFormat( format ) )
-			{
-				auto extent = ashes::getMinimalExtent2D( format );
-				texelBlockExtent.width = extent.width;
-				texelBlockExtent.height = extent.height;
-			}
-			else
-			{
-				texelBlockExtent.width = 1u;
-			}
-
-			return texelBlockExtent;
-		}
-
-		uint32_t getTexelBlockByteSize( VkExtent3D const & texelBlockExtent
-			, VkFormat format )
-		{
-			VkDeviceSize texelBlockSize;
-
-			if ( !isDepthStencilFormat( format ) )
-			{
-				texelBlockSize = getSize( texelBlockExtent, format );
-			}
-			else
-			{
-				texelBlockSize = texelBlockExtent.width;
-			}
-
-			return uint32_t( texelBlockSize );
-		}
 
 		size_t makeKey( VkImageType type
 			, VkFormat format

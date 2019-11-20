@@ -57,6 +57,11 @@ namespace ashes::d3d11
 		VkResult getSparseImageFormatProperties2( VkPhysicalDeviceSparseImageFormatInfo2KHR const & formatInfo
 			, std::vector< VkSparseImageFormatProperties2KHR > & sparseImageFormatProperties )const;
 #endif
+#ifdef VK_KHR_display
+		std::vector< VkDisplayPropertiesKHR > const & getDisplayProperties()const;
+		std::vector< VkDisplayPlanePropertiesKHR > getDisplayPlaneProperties()const;
+		std::vector< VkDisplayKHR > getDisplayPlaneSupportedDisplays( uint32_t planeIndex )const;
+#endif
 
 		inline IDXGIAdapter * getAdapter()const
 		{
@@ -90,6 +95,14 @@ namespace ashes::d3d11
 
 	private:
 		void doInitialise();
+		void doInitialiseProperties();
+		void doInitialiseFeatures();
+		void doInitialiseQueueProperties();
+		void doInitialiseFormatProperties();
+#ifdef VK_KHR_display
+		void doInitialiseDisplayProperties();
+		void doInitialiseDisplayPlaneProperties();
+#endif
 
 	private:
 		VkInstance m_instance;
@@ -108,6 +121,10 @@ namespace ashes::d3d11
 		VkPhysicalDeviceProperties2KHR m_properties2{};
 		std::vector< VkQueueFamilyProperties2KHR > m_queueProperties2{};
 		mutable std::map< VkFormat, VkFormatProperties2KHR > m_formatProperties2;
+#endif
+#ifdef VK_KHR_display
+		std::vector< VkDisplayPropertiesKHR > m_displays;
+		std::vector< VkDisplayPlanePropertiesKHR > m_displayPlanes;
 #endif
 	};
 }

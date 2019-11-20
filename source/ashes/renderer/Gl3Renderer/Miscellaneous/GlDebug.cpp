@@ -124,7 +124,7 @@ namespace ashes::gl3
 	void logStream( std::stringstream & stream )
 	{
 #if GL_LOG_CALLS
-		std::ofstream file{ "CallLogGL4.log", std::ios::app };
+		std::ofstream file{ "CallLogGL3.log", std::ios::app };
 
 		if ( file )
 		{

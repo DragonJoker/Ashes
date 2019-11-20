@@ -8,14 +8,21 @@ See LICENSE file in root folder
 
 namespace ashes::d3d11
 {
+	std::vector< DXGI_MODE_DESC > getDisplayModesList( VkInstance instance
+		, IDXGIOutput * adapterOutput );
+
 	class SurfaceKHR
 	{
 	public:
 		SurfaceKHR( VkInstance instance
 			, VkWin32SurfaceCreateInfoKHR createInfo );
+		SurfaceKHR( VkInstance instance
+			, VkDisplaySurfaceCreateInfoKHR createInfo );
 		~SurfaceKHR();
 
 		bool getSupport( uint32_t queueFamilyIndex )const;
+		HWND getHwnd()const;
+		DXGI_MODE_DESC const & getDisplayMode()const;
 
 		VkSurfaceCapabilitiesKHR getCapabilities( VkPhysicalDevice physicalDevice )const
 		{
@@ -36,11 +43,6 @@ namespace ashes::d3d11
 			return m_surfaceFormats;
 		}
 
-		HWND getHwnd()const
-		{
-			return m_createInfo.hwnd;
-		}
-		
 		VkInstance getInstance()const
 		{
 			return m_instance;
@@ -51,12 +53,23 @@ namespace ashes::d3d11
 			return m_descs[format];
 		}
 
+		inline bool isWin32()const
+		{
+			return m_win32CreateInfo.sType != 0;
+		}
+
+		inline bool isDisplay()const
+		{
+			return m_displayCreateInfo.sType != 0;
+		}
+
 	private:
 		void doUpdate( VkPhysicalDevice physicalDevice )const;
 
 	private:
 		VkInstance m_instance;
-		VkWin32SurfaceCreateInfoKHR m_createInfo;
+		VkWin32SurfaceCreateInfoKHR m_win32CreateInfo{};
+		VkDisplaySurfaceCreateInfoKHR m_displayCreateInfo{};
 		std::string m_type;
 		mutable VkSurfaceFormatArrayKHR m_surfaceFormats;
 		mutable VkSurfaceCapabilitiesKHR m_surfaceCapabilities;
