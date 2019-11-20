@@ -37,6 +37,7 @@ namespace ashes::d3d11
 		VkDevice m_device;
 		VkSwapchainCreateInfoKHR m_createInfo;
 		DXGI_SWAP_CHAIN_DESC m_presentDesc;
+		DXGI_MODE_DESC m_displayMode;
 		uint32_t m_currentBuffer{};
 		IDXGISwapChain * m_swapChain{ nullptr };
 		VkImage m_swapChainImage{ VK_NULL_HANDLE };

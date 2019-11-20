@@ -4,6 +4,7 @@ See LICENSE file in root folder.
 */
 #include "Core/D3D11Surface.hpp"
 
+#include "Core/D3D11DisplayMode.hpp"
 #include "Core/D3D11PhysicalDevice.hpp"
 #include "Core/D3D11Instance.hpp"
 
@@ -27,67 +28,8 @@ namespace ashes::d3d11
 				}
 
 				return result;
-			}();
+			}( );
 			return list;
-		}
-
-		std::vector< DXGI_MODE_DESC > getDisplayModesList( VkInstance instance
-			, IDXGIOutput * adapterOutput )
-		{
-			std::vector< DXGI_MODE_DESC > result;
-
-			for ( auto & format : getFormatsList() )
-			{
-				auto dxgiFormat = getDxgiFormat( format );
-
-				if ( dxgiFormat != DXGI_FORMAT_UNKNOWN )
-				{
-					UINT numModes;
-					// Get the number of modes that fit the display format for the adapter output.
-					auto hr = adapterOutput->GetDisplayModeList( dxgiFormat
-						, DXGI_ENUM_MODES_INTERLACED
-						, &numModes
-						, nullptr );
-
-					if ( FAILED( hr ) )
-					{
-						get( instance )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
-							, VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT
-							, uint64_t( instance )
-							, 0u
-							, VK_ERROR_INCOMPATIBLE_DRIVER
-							, "Direct3D11"
-							, "GetDisplayModeList(numModes) failed" );
-					}
-
-					if ( numModes )
-					{
-						// Create a list to hold all the possible display modes for this monitor/video card combination, and fill it.
-						std::vector< DXGI_MODE_DESC > displayModeList( numModes );
-						hr = adapterOutput->GetDisplayModeList( dxgiFormat
-							, DXGI_ENUM_MODES_INTERLACED
-							, &numModes
-							, displayModeList.data() );
-
-						if ( FAILED( hr ) )
-						{
-							get( instance )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
-								, VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT
-								, uint64_t( instance )
-								, 0u
-								, VK_ERROR_INCOMPATIBLE_DRIVER
-								, "Direct3D11"
-								, "GetDisplayModeList(displayModeList) failed" );
-						}
-
-						result.insert( result.end()
-							, displayModeList.begin()
-							, displayModeList.end() );
-					}
-				}
-			}
-
-			return result;
 		}
 
 		std::map< VkFormat, std::vector< DXGI_MODE_DESC > > updateSurfaceCapabilities( std::vector< DXGI_MODE_DESC > const & displayModeList
@@ -231,10 +173,78 @@ namespace ashes::d3d11
 		}
 	}
 
+	std::vector< DXGI_MODE_DESC > getDisplayModesList( VkInstance instance
+		, IDXGIOutput * adapterOutput )
+	{
+		std::vector< DXGI_MODE_DESC > result;
+
+		for ( auto & format : getFormatsList() )
+		{
+			auto dxgiFormat = getDxgiFormat( format );
+
+			if ( dxgiFormat != DXGI_FORMAT_UNKNOWN )
+			{
+				UINT numModes;
+				// Get the number of modes that fit the display format for the adapter output.
+				auto hr = adapterOutput->GetDisplayModeList( dxgiFormat
+					, DXGI_ENUM_MODES_INTERLACED
+					, &numModes
+					, nullptr );
+
+				if ( FAILED( hr ) )
+				{
+					get( instance )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+						, VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT
+						, uint64_t( instance )
+						, 0u
+						, VK_ERROR_INCOMPATIBLE_DRIVER
+						, "Direct3D11"
+						, "GetDisplayModeList(numModes) failed" );
+				}
+
+				if ( numModes )
+				{
+					// Create a list to hold all the possible display modes for this monitor/video card combination, and fill it.
+					std::vector< DXGI_MODE_DESC > displayModeList( numModes );
+					hr = adapterOutput->GetDisplayModeList( dxgiFormat
+						, DXGI_ENUM_MODES_INTERLACED
+						, &numModes
+						, displayModeList.data() );
+
+					if ( FAILED( hr ) )
+					{
+						get( instance )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+							, VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT
+							, uint64_t( instance )
+							, 0u
+							, VK_ERROR_INCOMPATIBLE_DRIVER
+							, "Direct3D11"
+							, "GetDisplayModeList(displayModeList) failed" );
+					}
+
+					result.insert( result.end()
+						, displayModeList.begin()
+						, displayModeList.end() );
+				}
+			}
+		}
+
+		return result;
+	}
+
 	SurfaceKHR::SurfaceKHR( VkInstance instance
 		, VkWin32SurfaceCreateInfoKHR createInfo )
 		: m_instance{ instance }
-		, m_createInfo{ std::move( createInfo ) }
+		, m_win32CreateInfo{ std::move( createInfo ) }
+		, m_type{ VK_KHR_WIN32_SURFACE_EXTENSION_NAME }
+	{
+		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
+	}
+
+	SurfaceKHR::SurfaceKHR( VkInstance instance
+		, VkDisplaySurfaceCreateInfoKHR createInfo )
+		: m_instance{ instance }
+		, m_displayCreateInfo{ std::move( createInfo ) }
 		, m_type{ VK_KHR_WIN32_SURFACE_EXTENSION_NAME }
 	{
 		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
@@ -249,22 +259,53 @@ namespace ashes::d3d11
 		if ( m_currentPhysicalDevice != physicalDevice )
 		{
 			m_currentPhysicalDevice = physicalDevice;
-
 			m_displayModes = getDisplayModesList( m_instance, get( physicalDevice )->getOutput() );
-
 			m_surfaceFormats = getSurfaceFormats( m_displayModes );
 
-			auto hWnd = m_createInfo.hwnd;
-			RECT rect{};
-			::GetWindowRect( hWnd, &rect );
-			m_descs = updateSurfaceCapabilities( m_displayModes
-				, rect
-				, m_surfaceCapabilities );
+			if ( isWin32() )
+			{
+				auto hWnd = m_win32CreateInfo.hwnd;
+				RECT rect{};
+				::GetWindowRect( hWnd, &rect );
+				m_descs = updateSurfaceCapabilities( m_displayModes
+					, rect
+					, m_surfaceCapabilities );
+			}
+			else if ( isDisplay() )
+			{
+				RECT rect{};
+				rect.right = m_displayCreateInfo.imageExtent.width;
+				rect.bottom = m_displayCreateInfo.imageExtent.height;
+				m_descs = updateSurfaceCapabilities( m_displayModes
+					, rect
+					, m_surfaceCapabilities );
+			}
 		}
 	}
 
 	bool SurfaceKHR::getSupport( uint32_t queueFamilyIndex )const
 	{
 		return true;
+	}
+
+	HWND SurfaceKHR::getHwnd()const
+	{
+		if ( isWin32() )
+		{
+			return m_win32CreateInfo.hwnd;
+		}
+
+		if ( isDisplay() )
+		{
+			return GetActiveWindow();
+		}
+
+		return nullptr;
+	}
+
+	DXGI_MODE_DESC const & SurfaceKHR::getDisplayMode()const
+	{
+		assert( isDisplay() );
+		return get( m_displayCreateInfo.displayMode )->getDesc();
 	}
 }

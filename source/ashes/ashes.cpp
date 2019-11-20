@@ -1092,6 +1092,73 @@ extern "C"
 #	endif
 #endif
 #pragma endregion
+#pragma region VK_KHR_display
+#ifdef VK_KHR_display
+
+	Ashes_API VkResult VKAPI_CALL vkGetPhysicalDeviceDisplayPropertiesKHR(
+		VkPhysicalDevice physicalDevice,
+		uint32_t * pPropertyCount,
+		VkDisplayPropertiesKHR * pProperties )
+	{
+		return g_library.getSelectedDesc().functions.GetPhysicalDeviceDisplayPropertiesKHR( physicalDevice, pPropertyCount, pProperties );
+	}
+
+	Ashes_API VkResult VKAPI_CALL vkGetPhysicalDeviceDisplayPlanePropertiesKHR(
+		VkPhysicalDevice physicalDevice,
+		uint32_t * pPropertyCount,
+		VkDisplayPlanePropertiesKHR * pProperties )
+	{
+		return g_library.getSelectedDesc().functions.GetPhysicalDeviceDisplayPlanePropertiesKHR( physicalDevice, pPropertyCount, pProperties );
+	}
+
+	Ashes_API VkResult VKAPI_CALL vkGetDisplayPlaneSupportedDisplaysKHR(
+		VkPhysicalDevice physicalDevice,
+		uint32_t planeIndex,
+		uint32_t * pDisplayCount,
+		VkDisplayKHR * pDisplays )
+	{
+		return g_library.getSelectedDesc().functions.GetDisplayPlaneSupportedDisplaysKHR( physicalDevice, planeIndex, pDisplayCount, pDisplays );
+	}
+
+	Ashes_API VkResult VKAPI_CALL vkGetDisplayModePropertiesKHR(
+		VkPhysicalDevice physicalDevice,
+		VkDisplayKHR display,
+		uint32_t * pPropertyCount,
+		VkDisplayModePropertiesKHR * pProperties )
+	{
+		return g_library.getSelectedDesc().functions.GetDisplayModePropertiesKHR( physicalDevice, display, pPropertyCount, pProperties );
+	}
+
+	Ashes_API VkResult VKAPI_CALL vkCreateDisplayModeKHR(
+		VkPhysicalDevice physicalDevice,
+		VkDisplayKHR display,
+		const VkDisplayModeCreateInfoKHR * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkDisplayModeKHR * pMode )
+	{
+		return g_library.getSelectedDesc().functions.CreateDisplayModeKHR( physicalDevice, display, pCreateInfo, pAllocator, pMode );
+	}
+
+	Ashes_API VkResult VKAPI_CALL vkGetDisplayPlaneCapabilitiesKHR(
+		VkPhysicalDevice physicalDevice,
+		VkDisplayModeKHR mode,
+		uint32_t planeIndex,
+		VkDisplayPlaneCapabilitiesKHR * pCapabilities )
+	{
+		return g_library.getSelectedDesc().functions.GetDisplayPlaneCapabilitiesKHR( physicalDevice, mode, planeIndex, pCapabilities );
+	}
+
+	Ashes_API VkResult VKAPI_CALL vkCreateDisplayPlaneSurfaceKHR(
+		VkInstance instance,
+		const VkDisplaySurfaceCreateInfoKHR * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkSurfaceKHR * pSurface )
+	{
+		return g_library.getSelectedDesc().functions.CreateDisplayPlaneSurfaceKHR( instance, pCreateInfo, pAllocator, pSurface );
+	}
+
+#endif
+#pragma endregion
 #pragma region VK_KHR_android_surface
 #ifdef VK_KHR_android_surface
 #	ifdef VK_USE_PLATFORM_ANDROID_KHR

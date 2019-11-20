@@ -11,6 +11,16 @@ See LICENSE file in root folder
 
 namespace ashes::d3d11
 {
+	VkExtent3D getTexelBlockExtent( VkFormat format );
+	uint32_t getTexelBlockByteSize( VkExtent3D const & texelBlockExtent
+		, VkFormat format );
+
+	template< typename T >
+	T getSubresourceValue( T value, uint32_t mipLevel )
+	{
+		return T( value >> mipLevel );
+	};
+
 	class Device
 	{
 	public:

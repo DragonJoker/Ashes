@@ -9,6 +9,8 @@ See LICENSE file in root folder.
 #include "Command/D3D11Queue.hpp"
 #include "Core/D3D11DebugReportCallback.hpp"
 #include "Core/D3D11Device.hpp"
+#include "Core/D3D11Display.hpp"
+#include "Core/D3D11DisplayMode.hpp"
 #include "Core/D3D11Instance.hpp"
 #include "Core/D3D11PhysicalDevice.hpp"
 #include "Core/D3D11Surface.hpp"

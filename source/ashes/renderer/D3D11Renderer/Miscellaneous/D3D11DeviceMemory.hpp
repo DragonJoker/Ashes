@@ -51,6 +51,7 @@ namespace ashes::d3d11
 		VkDeviceSize size;
 		VkMemoryAllocateInfo allocateInfo;
 		D3D11_MAP mapFlags;
+		std::vector< D3D11_SUBRESOURCE_DATA > subresources;
 	};
 	using ObjectMemoryPtr = std::unique_ptr< ObjectMemory >;
 	/**

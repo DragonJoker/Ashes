@@ -436,6 +436,38 @@ namespace ashes
 		}
 	};
 
+	template<>
+	struct VkTypeTraits< VkDisplayKHR >
+	{
+#if VK_EXT_debug_utils
+		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_DISPLAY_KHR;
+#endif
+#if VK_EXT_debug_report || VK_EXT_debug_marker
+		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_KHR_EXT;
+#endif
+		static std::string const & getName()
+		{
+			static std::string result{ "VkDisplayKHR" };
+			return result;
+		}
+	};
+
+	template<>
+	struct VkTypeTraits< VkDisplayModeKHR >
+	{
+#if VK_EXT_debug_utils
+		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_DISPLAY_MODE_KHR;
+#endif
+#if VK_EXT_debug_report || VK_EXT_debug_marker
+		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_MODE_KHR_EXT;
+#endif
+		static std::string const & getName()
+		{
+			static std::string result{ "VkDisplayModeKHR" };
+			return result;
+		}
+	};
+
 	template< typename VkStructure >
 	struct VkStructureTypeTraits;
 
