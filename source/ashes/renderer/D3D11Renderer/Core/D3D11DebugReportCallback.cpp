@@ -44,8 +44,10 @@ namespace ashes::d3d11
 
 		template< typename CheckFuncT
 			, typename DataT
+			, typename LayerT
 			, typename CallbackT >
 			bool checkValid( CallbackT & callback
+				, LayerT const & layer
 				, VkBufferImageCopy const & copyInfo
 				, VkImage image
 				, DataT & data
@@ -81,23 +83,28 @@ namespace ashes::d3d11
 			auto texelBlockDepth = texelBlockSize / ( texelBlockExtent.width * texelBlockExtent.height );
 
 			auto result = VK_SUCCESS == check( callback
+				, layer
 				, data
 				, 0u == ( copyInfo.bufferOffset % texelBlockSize )
 				, "bufferOffset must be a multiple of the format's texel block size" );
 			result = result && VK_SUCCESS == check( callback
+				, layer
 				, data
 				, ( copyInfo.bufferOffset == 0u || 0u == ( copyInfo.bufferOffset % 4u ) )
 				, "bufferOffset must be a multiple of 4" );
 			result = result && VK_SUCCESS == check( callback
+				, layer
 				, data
 				, ( copyInfo.bufferRowLength == 0 ) || ( copyInfo.bufferRowLength >= copyInfo.imageExtent.width )
 				, "bufferRowLength must be 0, or greater than or equal to the width member of imageExtent" );
 			result = result && VK_SUCCESS == check( callback
+				, layer
 				, data
 				, ( copyInfo.bufferImageHeight == 0 ) || ( copyInfo.bufferImageHeight >= copyInfo.imageExtent.height )
 				, "bufferImageHeight must be 0, or greater than or equal to the height member of imageExtent" );
 			auto subresourceWidth = texelBlockWidth * get( image )->getDimensions().width >> copyInfo.imageSubresource.mipLevel;
 			result = result && VK_SUCCESS == check( callback
+				, layer
 				, data
 				, ( copyInfo.imageOffset.x >= 0 && copyInfo.imageOffset.x <= int32_t( subresourceWidth ) )
 				&& ( copyInfo.imageExtent.width + copyInfo.imageOffset.x >= 0
@@ -105,6 +112,7 @@ namespace ashes::d3d11
 				, "imageOffset.x and (imageExtent.width + imageOffset.x) must both be greater than or equal to 0 and less than or equal to the image subresource width" );
 			auto subresourceHeight = texelBlockHeight * get( image )->getDimensions().height >> copyInfo.imageSubresource.mipLevel;
 			result = result && VK_SUCCESS == check( callback
+				, layer
 				, data
 				, ( copyInfo.imageOffset.y >= 0 && copyInfo.imageOffset.y <= int32_t( subresourceHeight ) )
 				&& ( copyInfo.imageExtent.height + copyInfo.imageOffset.y >= 0
@@ -112,6 +120,7 @@ namespace ashes::d3d11
 				, "imageOffset.y and (imageExtent.height + imageOffset.y) must both be greater than or equal to 0 and less than or equal to the image subresource height" );
 			auto subresourceDepth = texelBlockDepth * get( image )->getDimensions().depth;
 			result = result && VK_SUCCESS == check( callback
+				, layer
 				, data
 				, ( copyInfo.imageOffset.z >= 0 && copyInfo.imageOffset.z <= int32_t( subresourceDepth ) )
 				&& ( copyInfo.imageExtent.depth + copyInfo.imageOffset.z >= 0
@@ -119,34 +128,40 @@ namespace ashes::d3d11
 				, "imageOffset.z and (imageExtent.depth + imageOffset.z) must both be greater than or equal to 0 and less than or equal to the image subresource depth" );
 			auto imageType = get( image )->getType();
 			result = result && VK_SUCCESS == check( callback
+				, layer
 				, data
 				, ( imageType != VK_IMAGE_TYPE_1D
 					|| ( copyInfo.imageOffset.y == 0
 						&& copyInfo.imageExtent.height == 1u ) )
 				, "if the calling command's VkImage parameter is of type VK_IMAGE_TYPE_1D, then imageOffset.y must be 0 and imageExtent.height must be 1." );
 			result = result && VK_SUCCESS == check( callback
+				, layer
 				, data
 				, ( ( imageType != VK_IMAGE_TYPE_1D && imageType != VK_IMAGE_TYPE_2D )
 					|| ( copyInfo.imageOffset.z == 0
 						&& copyInfo.imageExtent.depth == 1u ) )
 				, "if the calling command's VkImage parameter is of type VK_IMAGE_TYPE_1D or VK_IMAGE_TYPE_2D, then imageOffset.z must be 0 and imageExtent.depth must be 1." );
 			result = result && VK_SUCCESS == check( callback
+				, layer
 				, data
 				, ( imageType != VK_IMAGE_TYPE_3D
 					|| ( copyInfo.imageSubresource.baseArrayLayer == 0
 						&& copyInfo.imageSubresource.layerCount == 1u ) )
 				, "if the calling command's VkImage parameter is of type VK_IMAGE_TYPE_1D or VK_IMAGE_TYPE_2D, then imageOffset.z must be 0 and imageExtent.depth must be 1." );
 			result = result && VK_SUCCESS == check( callback
+				, layer
 				, data
 				, ( ( !ashes::isCompressedFormat( format ) )
 					|| ( ( copyInfo.bufferRowLength % texelBlockExtent.width ) == 0 ) )
 				, "If the calling command's VkImage parameter is a compressed image, or a single-plane, _422 image format, bufferRowLength must be a multiple of the compressed texel block width." );
 			result = result && VK_SUCCESS == check( callback
+				, layer
 				, data
 				, ( ( !ashes::isCompressedFormat( format ) )
 					|| ( ( copyInfo.bufferImageHeight % texelBlockExtent.height ) == 0 ) )
 				, "If the calling command's VkImage parameter is a compressed image, or a single-plane, _422 image format, bufferImageHeight must be a multiple of the compressed texel block height." );
 			result = result && VK_SUCCESS == check( callback
+				, layer
 				, data
 				, ( ( !ashes::isCompressedFormat( format ) )
 					|| ( ( copyInfo.imageOffset.x % texelBlockExtent.width ) == 0
@@ -154,33 +169,39 @@ namespace ashes::d3d11
 						&& ( copyInfo.imageOffset.z % 1u ) == 0 ) )
 				, "If the calling command's VkImage parameter is a compressed image, or a single-plane, _422 image format, all members of imageOffset must be a multiple of the corresponding dimensions of the compressed texel block." );
 			result = result && VK_SUCCESS == check( callback
+				, layer
 				, data
 				, ( ( !ashes::isCompressedFormat( format ) )
 					|| ( ( copyInfo.bufferOffset % texelBlockSize ) == 0 ) )
 				, "If the calling command's VkImage parameter is a compressed image, or a single-plane, _422 image format, bufferOffset must be a multiple of the compressed texel block size in bytes." );
 			result = result && VK_SUCCESS == check( callback
+				, layer
 				, data
 				, ( ( !ashes::isCompressedFormat( format ) )
 					|| ( copyInfo.imageExtent.width % texelBlockExtent.width ) == 0
 					|| ( copyInfo.imageExtent.width + copyInfo.imageOffset.x ) == subresourceWidth )
 				, "If the calling command's VkImage parameter is a compressed image, or a single-plane, _422 image format, imageExtent.width must be a multiple of the compressed texel block width or (imageExtent.width + imageOffset.x) must equal the image subresource width." );
 			result = result && VK_SUCCESS == check( callback
+				, layer
 				, data
 				, ( ( !ashes::isCompressedFormat( format ) )
 					|| ( copyInfo.imageExtent.height % texelBlockExtent.height ) == 0
 					|| ( copyInfo.imageExtent.height + copyInfo.imageOffset.y ) == subresourceHeight )
 				, "If the calling command's VkImage parameter is a compressed image, or a single-plane, _422 image format, imageExtent.height must be a multiple of the compressed texel block height or (imageExtent.height + imageOffset.y) must equal the image subresource height." );
 			result = result && VK_SUCCESS == check( callback
+				, layer
 				, data
 				, ( ( !ashes::isCompressedFormat( format ) )
 					|| ( copyInfo.imageExtent.depth % texelBlockExtent.depth ) == 0
 					|| ( copyInfo.imageExtent.depth + copyInfo.imageOffset.z ) == subresourceDepth )
 				, "If the calling command's VkImage parameter is a compressed image, or a single-plane, _422 image format, imageExtent.depth must be a multiple of the compressed texel block depth or (imageExtent.depth + imageOffset.z) must equal the image subresource depth." );
 			result = result && VK_SUCCESS == check( callback
+				, layer
 				, data
 				, ( checkFlag( copyInfo.imageSubresource.aspectMask, ashes::getAspectMask( format ) ) != 0u )
 				, "The aspectMask member of imageSubresource must specify aspects present in the calling command's VkImage parameter." );
 			result = result && VK_SUCCESS == check( callback
+				, layer
 				, data
 				, ( isOneBitSet( copyInfo.imageSubresource.aspectMask ) )
 				, "The aspectMask member of imageSubresource must specify aspects present in the calling command's VkImage parameter." );
@@ -305,6 +326,7 @@ namespace ashes::d3d11
 	namespace du
 	{
 		VkResult check( DebugUtilsMessengerEXT & callback
+			, DebugUtilsLayer const & layer
 			, MessageData report
 			, bool condition
 			, std::string message )
@@ -364,7 +386,7 @@ namespace ashes::d3d11
 				uint64_t( cmd ),
 				nullptr,
 			} );
-		return !checkValid( m_callback, copyInfo, image, message, du::check );
+		return !checkValid( m_callback, *this, copyInfo, image, message, du::check );
 	}
 
 	bool DebugUtilsLayer::onCopyToImageCommand( VkCommandBuffer cmd
@@ -416,12 +438,13 @@ namespace ashes::d3d11
 			stream << "\n    Windows: " << getLastErrorText();
 			messageData.callbackData.messageIdNumber = hresult;
 			du::check( m_callback
+				, *this
 				, std::move( messageData )
 				, false
 				, stream.str() );
 		}
 
-		return false;
+		return !result;
 	}
 
 #	if VK_EXT_debug_report
@@ -518,6 +541,7 @@ namespace ashes::d3d11
 	namespace dr
 	{
 		VkResult check( DebugReportCallbackEXT & callback
+			, DebugReportLayer const & layer
 			, ReportData report
 			, bool condition
 			, std::string message )
@@ -568,7 +592,7 @@ namespace ashes::d3d11
 		};
 		ReportData report{ baseReport };
 		report.object = uint64_t( &cmd );
-		return !checkValid( m_callback, copyInfo, image, report, dr::check );
+		return !checkValid( m_callback, *this, copyInfo, image, report, dr::check );
 	}
 
 	bool DebugReportLayer::onCopyToImageCommand( VkCommandBuffer cmd
@@ -616,12 +640,13 @@ namespace ashes::d3d11
 			stream << "\n    Windows: " << getLastErrorText();
 			report.messageCode = hresult;
 			dr::check( m_callback
+				, *this
 				, std::move( report )
 				, false
 				, stream.str() );
 		}
 
-		return false;
+		return !result;
 	}
 
 #	if VK_EXT_debug_utils

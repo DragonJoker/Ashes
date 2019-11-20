@@ -75,9 +75,28 @@ namespace ashes::d3d11
 			, &m_presentDesc
 			, &m_swapChain );
 
-		if ( !checkError( m_device, hr, "CreateSwapChain" ) )
+		if ( !checkError( m_device, hr, "CreateSwapChain" )
+			|| !m_swapChain )
 		{
 			throw std::runtime_error{ "Could not create the swapchain" };
+		}
+
+		if ( get( m_createInfo.surface )->isDisplay() )
+		{
+			hr = m_swapChain->SetFullscreenState( TRUE, get( get( device )->getGpu() )->getOutput() );
+
+			if ( !checkError( m_device, hr, "SetFullscreenState" ) )
+			{
+				throw std::runtime_error{ "Could not set the swapchain to fullscreen mode" };
+			}
+
+			hr = m_swapChain->ResizeTarget( &m_displayMode );
+
+			if ( !checkError( m_device, hr, "ResizeTarget" ) )
+			{
+				hr = m_swapChain->SetFullscreenState( FALSE, get( get( device )->getGpu() )->getOutput() );
+				throw std::runtime_error{ "Could not resize the swapchain" };
+			}
 		}
 
 		dxDebugName( m_swapChain, SwapChain );
@@ -184,7 +203,7 @@ namespace ashes::d3d11
 		assert( !descs.empty() );
 		auto hWnd = get( m_createInfo.surface )->getHwnd();
 
-		auto & displayMode = descs.back();
+		m_displayMode = descs.back();
 
 		// Initialize the swap chain description.
 		auto result = DXGI_SWAP_CHAIN_DESC{};
@@ -197,11 +216,11 @@ namespace ashes::d3d11
 		result.BufferDesc.Height = caps.currentExtent.height;
 
 		// Set regular 32-bit surface for the back buffer.
-		result.BufferDesc.Format = displayMode.Format;
+		result.BufferDesc.Format = m_displayMode.Format;
 
 		// Set the refresh rate of the back buffer.
-		result.BufferDesc.RefreshRate.Numerator = displayMode.RefreshRate.Numerator;
-		result.BufferDesc.RefreshRate.Denominator = displayMode.RefreshRate.Denominator;
+		result.BufferDesc.RefreshRate.Numerator = m_displayMode.RefreshRate.Numerator;
+		result.BufferDesc.RefreshRate.Denominator = m_displayMode.RefreshRate.Denominator;
 
 		// Set the usage of the back buffer.
 		result.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -217,14 +236,16 @@ namespace ashes::d3d11
 		result.Windowed = TRUE;
 
 		// Set the scan line ordering and scaling to unspecified.
-		result.BufferDesc.ScanlineOrdering = displayMode.ScanlineOrdering;
-		result.BufferDesc.Scaling = displayMode.Scaling;
+		result.BufferDesc.ScanlineOrdering = m_displayMode.ScanlineOrdering;
+		result.BufferDesc.Scaling = m_displayMode.Scaling;
 
 		// Discard the back buffer contents after presenting.
 		result.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
-		// Don't set the advanced flags.
-		result.Flags = 0;
+		// Set the advanced flags, if surface is a display surface.
+		result.Flags = get( m_createInfo.surface )->isDisplay()
+			? DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH
+			: 0;
 
 		m_presentDesc = result;
 	}

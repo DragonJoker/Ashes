@@ -66,10 +66,9 @@ namespace ashes::d3d11
 		return onCheckHResultCommand( hresult
 			, message );
 	}
-	catch ( LayerException & exc )
+	catch ( LayerException & /*exc*/ )
 	{
-		std::cerr << "Layer Exception " << exc.what() << std::endl;
-		return false;
+		throw;
 	}
 	catch ( std::exception & exc )
 	{

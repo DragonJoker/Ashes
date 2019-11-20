@@ -7,6 +7,8 @@ See LICENSE file in root folder.
 #include "Core/D3D11Instance.hpp"
 #include "Core/D3D11Device.hpp"
 
+#include <common/Hash.hpp>
+
 #include "ashesd3d11_api.hpp"
 
 namespace ashes::d3d11
@@ -21,6 +23,10 @@ namespace ashes::d3d11
 
 	PhysicalDevice::~PhysicalDevice()
 	{
+		for ( auto & display : m_displays )
+		{
+			deallocate( display.display, nullptr );
+		}
 	}
 
 	VkBool32 PhysicalDevice::getPresentationSupport( uint32_t queueFamilyIndex )const
@@ -220,8 +226,107 @@ namespace ashes::d3d11
 	}
 
 #endif
+#ifdef VK_KHR_display
+
+	std::vector< VkDisplayPropertiesKHR > const & PhysicalDevice::getDisplayProperties()const
+	{
+		return m_displays;
+	}
+
+	std::vector< VkDisplayPlanePropertiesKHR > PhysicalDevice::getDisplayPlaneProperties()const
+	{
+		return m_displayPlanes;
+	}
+
+	std::vector< VkDisplayKHR > PhysicalDevice::getDisplayPlaneSupportedDisplays( uint32_t planeIndex )const
+	{
+		std::vector< VkDisplayKHR > result
+		{
+			m_displayPlanes[planeIndex].currentDisplay
+		};
+		return result;
+	}
+
+#endif
 
 	void PhysicalDevice::doInitialise()
+	{
+		doInitialiseProperties();
+		doInitialiseFeatures();
+		doInitialiseQueueProperties();
+		doInitialiseFormatProperties();
+#ifdef VK_KHR_display
+
+		doInitialiseDisplayProperties();
+		doInitialiseDisplayPlaneProperties();
+
+#endif
+#if VK_VERSION_1_1
+
+		m_features2.pNext = nullptr;
+		m_features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+		m_features2.features = m_features;
+
+		m_properties2.pNext = nullptr;
+		m_properties2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+		m_properties2.properties = m_properties;
+
+		for ( auto & queueProperty : m_queueProperties )
+		{
+			m_queueProperties2.push_back(
+				{
+					VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2,
+					nullptr,
+					queueProperty,
+				} );
+		}
+
+		for ( auto & formatProperty : m_formatProperties )
+		{
+			m_formatProperties2.emplace( formatProperty.first
+				, VkFormatProperties2
+				{
+					VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2,
+					nullptr,
+					formatProperty.second,
+				} );
+		}
+
+#elif VK_KHR_get_physical_device_properties2
+
+		m_features2.pNext = nullptr;
+		m_features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+		m_features2.features = m_features;
+
+		m_properties2.pNext = nullptr;
+		m_properties2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
+		m_properties2.properties = m_properties;
+
+		for ( auto & queueProperty : m_queueProperties )
+		{
+			m_queueProperties2.push_back(
+				{
+					VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2_KHR,
+					nullptr,
+					queueProperty,
+				} );
+		}
+
+		for ( auto & formatProperty : m_formatProperties )
+		{
+			m_formatProperties2.emplace( formatProperty.first
+				, VkFormatProperties2
+				{
+					VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2_KHR,
+					nullptr,
+					formatProperty.second,
+				} );
+		}
+
+#endif
+	}
+
+	void PhysicalDevice::doInitialiseProperties()
 	{
 		DXGI_ADAPTER_DESC2 adapterDesc;
 
@@ -242,62 +347,6 @@ namespace ashes::d3d11
 		uint32_t minor = ( m_adapterInfo.featureLevel >> 8 ) & 0x01;
 		m_properties.apiVersion = ( major << 22 ) | ( minor << 12 );
 		m_properties.deviceType = VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
-
-		m_features.robustBufferAccess = true;
-		m_features.fullDrawIndexUint32 = true;
-		m_features.imageCubeArray = true;
-		m_features.independentBlend = true;
-		m_features.geometryShader = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_10_0;
-		m_features.tessellationShader = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
-		m_features.sampleRateShading = true;
-		m_features.dualSrcBlend = true;
-		m_features.logicOp = true;
-		m_features.multiDrawIndirect = false;
-		m_features.drawIndirectFirstInstance = true;
-		m_features.depthClamp = true;
-		m_features.depthBiasClamp = true;
-		m_features.fillModeNonSolid = true;
-		m_features.depthBounds = true;
-		m_features.wideLines = false;
-		m_features.largePoints = false;
-		m_features.alphaToOne = true;
-		m_features.multiViewport = true;
-		m_features.samplerAnisotropy = true;
-		m_features.textureCompressionETC2 = false;
-		m_features.textureCompressionASTC_LDR = false;
-		m_features.textureCompressionBC = true;
-		m_features.occlusionQueryPrecise = true;
-		m_features.pipelineStatisticsQuery = true;
-		m_features.vertexPipelineStoresAndAtomics = true;
-		m_features.fragmentStoresAndAtomics = true;
-		m_features.shaderTessellationAndGeometryPointSize = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
-		m_features.shaderImageGatherExtended = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
-		m_features.shaderStorageImageExtendedFormats = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
-		m_features.shaderStorageImageMultisample = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
-		m_features.shaderStorageImageReadWithoutFormat = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
-		m_features.shaderStorageImageWriteWithoutFormat = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
-		m_features.shaderUniformBufferArrayDynamicIndexing = true;
-		m_features.shaderSampledImageArrayDynamicIndexing = true;
-		m_features.shaderStorageBufferArrayDynamicIndexing = true;
-		m_features.shaderStorageImageArrayDynamicIndexing = true;
-		m_features.shaderClipDistance = true;
-		m_features.shaderCullDistance = true;
-		m_features.shaderFloat64 = false;
-		m_features.shaderInt64 = false;
-		m_features.shaderInt16 = false;
-		m_features.shaderResourceResidency = false;
-		m_features.shaderResourceMinLod = true;
-		m_features.sparseBinding = false;
-		m_features.sparseResidencyBuffer = false;
-		m_features.sparseResidencyImage2D = false;
-		m_features.sparseResidencyImage3D = false;
-		m_features.sparseResidency2Samples = false;
-		m_features.sparseResidency4Samples = false;
-		m_features.sparseResidency8Samples = false;
-		m_features.sparseResidency16Samples = false;
-		m_features.sparseResidencyAliased = false;
-		m_features.variableMultisampleRate = false;
-		m_features.inheritedQueries = true;
 
 		m_properties.limits.maxImageDimension1D = D3D11_REQ_TEXTURE1D_U_DIMENSION;
 		m_properties.limits.maxImageDimension2D = D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION;
@@ -419,7 +468,69 @@ namespace ashes::d3d11
 		m_properties.sparseProperties.residencyStandard2DBlockShape = false;
 		m_properties.sparseProperties.residencyStandard2DMultisampleBlockShape = false;
 		m_properties.sparseProperties.residencyStandard3DBlockShape = false;
+	}
 
+	void PhysicalDevice::doInitialiseFeatures()
+	{
+		m_features.robustBufferAccess = true;
+		m_features.fullDrawIndexUint32 = true;
+		m_features.imageCubeArray = true;
+		m_features.independentBlend = true;
+		m_features.geometryShader = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_10_0;
+		m_features.tessellationShader = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.sampleRateShading = true;
+		m_features.dualSrcBlend = true;
+		m_features.logicOp = true;
+		m_features.multiDrawIndirect = false;
+		m_features.drawIndirectFirstInstance = true;
+		m_features.depthClamp = true;
+		m_features.depthBiasClamp = true;
+		m_features.fillModeNonSolid = true;
+		m_features.depthBounds = true;
+		m_features.wideLines = false;
+		m_features.largePoints = false;
+		m_features.alphaToOne = true;
+		m_features.multiViewport = true;
+		m_features.samplerAnisotropy = true;
+		m_features.textureCompressionETC2 = false;
+		m_features.textureCompressionASTC_LDR = false;
+		m_features.textureCompressionBC = true;
+		m_features.occlusionQueryPrecise = true;
+		m_features.pipelineStatisticsQuery = true;
+		m_features.vertexPipelineStoresAndAtomics = true;
+		m_features.fragmentStoresAndAtomics = true;
+		m_features.shaderTessellationAndGeometryPointSize = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.shaderImageGatherExtended = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.shaderStorageImageExtendedFormats = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.shaderStorageImageMultisample = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.shaderStorageImageReadWithoutFormat = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.shaderStorageImageWriteWithoutFormat = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.shaderUniformBufferArrayDynamicIndexing = true;
+		m_features.shaderSampledImageArrayDynamicIndexing = true;
+		m_features.shaderStorageBufferArrayDynamicIndexing = true;
+		m_features.shaderStorageImageArrayDynamicIndexing = true;
+		m_features.shaderClipDistance = true;
+		m_features.shaderCullDistance = true;
+		m_features.shaderFloat64 = false;
+		m_features.shaderInt64 = false;
+		m_features.shaderInt16 = false;
+		m_features.shaderResourceResidency = false;
+		m_features.shaderResourceMinLod = true;
+		m_features.sparseBinding = false;
+		m_features.sparseResidencyBuffer = false;
+		m_features.sparseResidencyImage2D = false;
+		m_features.sparseResidencyImage3D = false;
+		m_features.sparseResidency2Samples = false;
+		m_features.sparseResidency4Samples = false;
+		m_features.sparseResidency8Samples = false;
+		m_features.sparseResidency16Samples = false;
+		m_features.sparseResidencyAliased = false;
+		m_features.variableMultisampleRate = false;
+		m_features.inheritedQueries = true;
+	}
+
+	void PhysicalDevice::doInitialiseQueueProperties()
+	{
 		// Et enfin les propriétés des familles de files du GPU.
 		m_queueProperties.reserve( 1u );
 		m_queueProperties.push_back(
@@ -433,7 +544,10 @@ namespace ashes::d3d11
 					1u,
 				}
 			} );
+	}
 
+	void PhysicalDevice::doInitialiseFormatProperties()
+	{
 		std::vector< D3D_FEATURE_LEVEL > requestedFeatureLevels
 		{
 			D3D_FEATURE_LEVEL_11_1,
@@ -469,7 +583,7 @@ namespace ashes::d3d11
 		{
 			auto fillProps = [&d3dDevice]( VkFormat fmt
 				, VkFormatProperties & props
-				, DXGI_FORMAT ( *convertFmt )( VkFormat const & ) )
+				, DXGI_FORMAT( *convertFmt )( VkFormat const & ) )
 			{
 				auto dxgi = convertFmt( fmt );
 
@@ -541,70 +655,80 @@ namespace ashes::d3d11
 			}
 
 			safeRelease( d3dDevice );
-
-#if VK_VERSION_1_1
-
-			m_features2.pNext = nullptr;
-			m_features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-			m_features2.features = m_features;
-
-			m_properties2.pNext = nullptr;
-			m_properties2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
-			m_properties2.properties = m_properties;
-
-			for ( auto & queueProperty : m_queueProperties )
-			{
-				m_queueProperties2.push_back(
-					{
-						VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2,
-						nullptr,
-						queueProperty,
-					} );
-			}
-
-			for ( auto & formatProperty : m_formatProperties )
-			{
-				m_formatProperties2.emplace( formatProperty.first
-					, VkFormatProperties2
-					{
-						VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2,
-						nullptr,
-						formatProperty.second,
-					} );
-			}
-
-#elif VK_KHR_get_physical_device_properties2
-
-			m_features2.pNext = nullptr;
-			m_features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
-			m_features2.features = m_features;
-
-			m_properties2.pNext = nullptr;
-			m_properties2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
-			m_properties2.properties = m_properties;
-
-			for ( auto & queueProperty : m_queueProperties )
-			{
-				m_queueProperties2.push_back(
-					{
-						VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2_KHR,
-						nullptr,
-						queueProperty,
-					} );
-			}
-
-			for ( auto & formatProperty : m_formatProperties )
-			{
-				m_formatProperties2.emplace( formatProperty.first
-					, VkFormatProperties2
-					{
-						VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2_KHR,
-						nullptr,
-						formatProperty.second,
-					} );
-			}
-
-#endif
 		}
 	}
+
+#ifdef VK_KHR_display
+
+	struct ExtentFormat
+	{
+		VkExtent2D extent;
+		VkFormat format;
+	};
+
+	size_t makeKey( VkFormat format
+		, VkExtent2D const & extent )
+	{
+		auto result = std::hash< VkFormat >{}( format );
+		ashes::hashCombine( result, extent.width );
+		ashes::hashCombine( result, extent.height );
+		return result;
+	}
+
+	struct ExtentFormatComp
+	{
+		bool operator()( ExtentFormat const & lhs, ExtentFormat const & rhs )const
+		{
+			return makeKey( lhs.format, lhs.extent ) < makeKey( rhs.format, rhs.extent );
+		}
+	};
+
+	void PhysicalDevice::doInitialiseDisplayProperties()
+	{
+		DXGI_OUTPUT_DESC desc{};
+		getOutput()->GetDesc( &desc );
+		std::vector< DXGI_MODE_DESC > displayModes = getDisplayModesList( m_instance, getOutput() );
+		std::map< ExtentFormat, std::vector< DXGI_MODE_DESC >, ExtentFormatComp > grouped;
+
+		for ( auto & displayMode : displayModes )
+		{
+			ExtentFormat key
+			{
+				VkExtent2D{ displayMode.Width, displayMode.Height },
+				getVkFormat( displayMode.Format ),
+			};
+			auto it = grouped.insert( { key, {} } ).first;
+			it->second.push_back( displayMode );
+		}
+
+		for ( auto & pair : grouped )
+		{
+			VkDisplayKHR display{};
+			allocate( display
+				, nullptr
+				, pair.first.extent
+				, pair.first.format
+				, pair.second );
+			m_displays.push_back(
+				{
+					display,
+					"coin",
+					pair.first.extent,
+					pair.first.extent,
+					VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR,
+					VK_FALSE,
+					VK_TRUE,
+				} );
+		}
+	}
+
+	void PhysicalDevice::doInitialiseDisplayPlaneProperties()
+	{
+		for ( auto & display : m_displays )
+		{
+			m_displayPlanes.push_back( { display.display, 0u } );
+		}
+	}
+
+#endif
 }
