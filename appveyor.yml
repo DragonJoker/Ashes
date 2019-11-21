@@ -16,7 +16,7 @@ configuration:
   - Release
 
 install:
-  - ps: if ($isLinux) {sudo apt-get install libx11-dev libxrandr-dev libgl1-mesa-dev libegl1-mesa-dev -y}
+  - ps: if ($isLinux) {sudo apt-get install libx11-6 libx11-dev libxrandr-dev libgl1-mesa-dev libegl1-mesa-dev -y}
   - git submodule init
   - git submodule update --init -- "external/SPIRV-Cross"
   - git submodule update --init -- "external/Vulkan-Headers"
