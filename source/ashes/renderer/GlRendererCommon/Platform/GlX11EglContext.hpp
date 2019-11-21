@@ -29,7 +29,7 @@ namespace ashes::gl
 
 	private:
 		VkXlibSurfaceCreateInfoKHR createInfo;
-		EglContextPtr m_context;
+		ContextEglPtr m_context;
 		X11EglContext const * m_mainContext{ nullptr };
 	};
 }

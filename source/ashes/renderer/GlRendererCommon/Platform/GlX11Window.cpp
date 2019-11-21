@@ -117,14 +117,17 @@ namespace ashes::gl
 			XSync( m_display, False );
 
 #if ASHES_USE_XLIB_EGL
-			m_context = std::make_unique< EglContext >( m_display
+
+			m_context = std::make_unique< ContextEgl >( m_display
 				, m_window
 				, reqMajor
 				, reqMinor
 				, EGL_NO_CONTEXT );
 			XFree( vi );
 			XFree( fbConfig );
+
 #else
+
 			m_fbConfig = fbConfig;
 			int screen = DefaultScreen( m_display );
 			int major{ 0 };
@@ -140,6 +143,7 @@ namespace ashes::gl
 
 			glXMakeCurrent( m_display, m_window, m_glxContext );
 			XFree( vi );
+
 #endif
 		}
 		catch ( std::exception & p_exc )
@@ -157,13 +161,17 @@ namespace ashes::gl
 	void RenderWindow::doCleanup()
 	{
 #if ASHES_USE_XLIB_EGL
+
 		m_context.reset();
+
 #else
+
 		if ( m_glxContext )
 		{
 			glXMakeCurrent( m_display, 0, nullptr );
 			glXDestroyContext( m_display, m_glxContext );
 		}
+
 #endif
 
 		if ( m_window )

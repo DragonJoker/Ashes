@@ -29,7 +29,7 @@ namespace ashes::gl
 	private:
 		VkXcbSurfaceCreateInfoKHR createInfo;
 		Display * m_xdisplay{ nullptr };
-		EglContextPtr m_context;
+		ContextEglPtr m_context;
 		XcbContext const * m_mainContext{ nullptr };
 	};
 }

@@ -69,6 +69,7 @@ namespace ashes::gl3
 		loadDebugFunctions();
 		m_impl->disable();
 		m_impl->postInitialise();
+		m_extent = m_impl->extent;
 	}
 
 	Context::~Context()
@@ -81,9 +82,20 @@ namespace ashes::gl3
 		, VkSurfaceKHR surface
 		, Context const * mainContext )
 	{
+		if ( get( surface )->isWin32() )
+		{
 			return create( instance
 				, get( surface )->getWin32CreateInfo()
 				, mainContext );
+		}
+		else if ( get( surface )->isDisplay() )
+		{
+			return create( instance
+				, get( surface )->getDisplayCreateInfo()
+				, mainContext );
+		}
+
+		return nullptr;
 	}
 
 #elif __linux__
@@ -110,6 +122,12 @@ namespace ashes::gl3
 				, get( surface )->getWaylandCreateInfo()
 				, mainContext );
 		}
+		else if ( get( surface )->isDisplay() )
+		{
+			return create( instance
+				, get( surface )->getDisplayCreateInfo()
+				, mainContext );
+}
 
 		return nullptr;
 	}

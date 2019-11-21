@@ -17,6 +17,7 @@ if ( OpenGL_FOUND )
 			OpenGL::GL
 		)
 	else ()
+		find_package( X11 )
 		if ( ASHES_USE_XLIB_EGL )
 			add_definitions( -DASHES_USE_XLIB_EGL )
 		endif ()
@@ -24,11 +25,12 @@ if ( OpenGL_FOUND )
 		set( BinLibraries
 			${BinLibraries}
 			${XCB_LIBRARIES}
+			${X11_X11_LIB}
+			${X11_Xrandr_LIB}
 			X11-xcb
 			OpenGL::EGL
 			OpenGL::GLX
 			OpenGL::OpenGL
-			X11
 
 		)
 	endif ()

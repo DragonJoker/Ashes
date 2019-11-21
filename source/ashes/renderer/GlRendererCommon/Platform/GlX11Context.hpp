@@ -19,6 +19,9 @@ namespace ashes::gl
 		X11Context( VkInstance instance
 			, VkXlibSurfaceCreateInfoKHR createInfo
 			, ContextImpl const * mainContext );
+		X11Context( VkInstance instance
+			, VkDisplaySurfaceCreateInfoKHR createInfo
+			, ContextImpl const * mainContext );
 		~X11Context();
 
 		void preInitialise( int major, int minor )override;
@@ -28,10 +31,17 @@ namespace ashes::gl
 		void swapBuffers()const override;
 
 	private:
+		void doLoadSytemFunctions();
+		void doInitialiseDisplay();
 		void doCreateModernContext();
 
 	private:
-		VkXlibSurfaceCreateInfoKHR createInfo;
+		VkXlibSurfaceCreateInfoKHR xlibCreateInfo{};
+		VkDisplaySurfaceCreateInfoKHR displayCreateInfo{};
+		Display * m_display;
+		int m_screenIndex;
+		Colormap m_map{ 0 };
+		Window m_window{ 0 };
 		GLXContext m_glxContext{ nullptr };
 		int m_glxVersion{ 0 };
 		int m_minor{ 0 };
@@ -39,6 +49,11 @@ namespace ashes::gl
 		XVisualInfo * m_visualInfo{ nullptr };
 		GLXFBConfig m_fbConfig{ nullptr };
 		X11Context const * m_mainContext{ nullptr };
+		
+		using PFN_glCreateContextAttribs = GLXContext ( * )( Display *, GLXFBConfig, GLXContext, Bool, const int * );
+		using PFN_glXSwapIntervalEXT = void (*)( Display *, GLXDrawable, int );
+		PFN_glCreateContextAttribs glCreateContextAttribs;
+		PFN_glXSwapIntervalEXT glXSwapInterval;
 	};
 }
 

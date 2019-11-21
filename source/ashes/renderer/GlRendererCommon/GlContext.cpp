@@ -3,6 +3,7 @@
 #if _WIN32
 #	include "Platform/GlMswContext.hpp"
 #elif __linux__
+#	include "Platform/GlEglContext.hpp"
 #	include "Platform/GlWaylandContext.hpp"
 #	include "Platform/GlXcbContext.hpp"
 #	if ASHES_USE_XLIB_EGL
@@ -49,6 +50,18 @@ namespace ashes::gl
 			, mainContext );
 	}
 
+#	ifdef VK_KHR_display
+
+	ContextImplPtr ContextImpl::create( VkInstance instance
+		, VkDisplaySurfaceCreateInfoKHR createInfo
+		, ContextImpl const * mainContext )
+	{
+		return std::make_unique< X11Context >( instance
+			, std::move( createInfo )
+			, mainContext );
+	}
+
+#	endif
 #elif _WIN32
 
 	ContextImplPtr ContextImpl::create( VkInstance instance
@@ -60,5 +73,17 @@ namespace ashes::gl
 			, mainContext );
 	}
 
+#	ifdef VK_KHR_display
+
+	ContextImplPtr ContextImpl::create( VkInstance instance
+		, VkDisplaySurfaceCreateInfoKHR createInfo
+		, ContextImpl const * mainContext )
+	{
+		return std::make_unique< MswContext >( instance
+			, std::move( createInfo )
+			, mainContext );
+	}
+
+#	endif
 #endif
 }

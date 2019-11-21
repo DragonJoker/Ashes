@@ -9,6 +9,8 @@ See LICENSE file in root folder.
 #include "Command/GlQueue.hpp"
 #include "Core/GlDebugReportCallback.hpp"
 #include "Core/GlDevice.hpp"
+#include "Core/GlDisplay.hpp"
+#include "Core/GlDisplayMode.hpp"
 #include "Core/GlInstance.hpp"
 #include "Core/GlPhysicalDevice.hpp"
 #include "Core/GlSurface.hpp"
@@ -30,6 +32,7 @@ See LICENSE file in root folder.
 #include "Sync/GlEvent.hpp"
 #include "Sync/GlFence.hpp"
 #include "Sync/GlSemaphore.hpp"
+
 
 #include <common/Exception.hpp>
 

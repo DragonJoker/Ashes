@@ -34,7 +34,7 @@ namespace ashes::gl
 	void WaylandContext::preInitialise( int major, int minor )
 	{
 		m_window = wl_egl_window_create (createInfo.surface, 0, 0);
-		m_context = std::make_unique< EglContext >( createInfo.display
+		m_context = std::make_unique< ContextEgl >( createInfo.display
 			, m_window
 			, major
 			, minor

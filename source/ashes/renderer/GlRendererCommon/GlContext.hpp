@@ -11,8 +11,10 @@ namespace ashes::gl
 	class ContextImpl
 	{
 	protected:
-		ContextImpl( VkInstance instance )
+		ContextImpl( VkInstance instance
+			, VkExtent2D const & extent = {} )
 			: instance{ instance }
+			, extent{ extent }
 		{
 		}
 
@@ -40,7 +42,13 @@ namespace ashes::gl
 			, VkWaylandSurfaceCreateInfoKHR createInfo
 			, ContextImpl const * mainContext );
 #endif
+#ifdef VK_KHR_display
+		static ContextImplPtr create( VkInstance instance
+			, VkDisplaySurfaceCreateInfoKHR createInfo
+			, ContextImpl const * mainContext );
+#endif
 
 		VkInstance instance;
+		VkExtent2D extent;
 	};
 }
