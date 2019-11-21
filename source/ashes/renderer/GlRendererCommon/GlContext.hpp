@@ -40,6 +40,11 @@ namespace ashes::gl
 			, VkWaylandSurfaceCreateInfoKHR createInfo
 			, ContextImpl const * mainContext );
 #endif
+#ifdef VK_KHR_display
+		static ContextImplPtr create( VkInstance instance
+			, VkDisplaySurfaceCreateInfoKHR createInfo
+			, ContextImpl const * mainContext );
+#endif
 
 		VkInstance instance;
 	};

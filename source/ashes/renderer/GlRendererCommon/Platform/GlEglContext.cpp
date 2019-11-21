@@ -2,21 +2,28 @@
 This file belongs to Ashes.
 See LICENSE file in root folder
 */
-#include "Platform/EglContext.hpp"
+#include "Platform/GlEglContext.hpp"
 
 #ifndef _WIN32
-
-#include <EGL/egl.h>
 
 #include <stdexcept>
 
 namespace ashes::gl
 {
-	ContextEgl::ContextEgl( Display * display
-		, uint64_t window
-		, int reqMajor
-		, int reqMinor
-		, EGLContext shared )
+	EglContext::EglContext( VkInstance instance
+		, VkDisplaySurfaceCreateInfoKHR createInfo
+		, ContextImpl const * mainContext )
+		: ContextImpl{ instance }
+		, createInfo{ createInfo }
+	{
+	}
+
+	EglContext::~EglContext()
+	{
+		doCleanup();
+	}
+
+	void EglContext::preInitialise( int major, int minor )
 	{
 		try
 		{
@@ -27,7 +34,7 @@ namespace ashes::gl
 				throw std::runtime_error{ "Couldn't bind EGL API" };
 			}
 
-			m_display = eglGetDisplay( display );
+			m_display = eglGetDisplay( EGL_DEFAULT_DISPLAY );
 
 			if ( m_display == EGL_NO_DISPLAY )
 			{
@@ -44,21 +51,21 @@ namespace ashes::gl
 
 			const EGLint eglConfigAttribs[]
 			{
-				EGL_COLOR_BUFFER_TYPE,     EGL_RGB_BUFFER,
-				EGL_BUFFER_SIZE,           32,
-				EGL_RED_SIZE,              8,
-				EGL_GREEN_SIZE,            8,
-				EGL_BLUE_SIZE,             8,
-				EGL_ALPHA_SIZE,            8,
+				EGL_COLOR_BUFFER_TYPE, EGL_RGB_BUFFER,
+				EGL_BUFFER_SIZE, 32,
+				EGL_RED_SIZE, 8,
+				EGL_GREEN_SIZE, 8,
+				EGL_BLUE_SIZE, 8,
+				EGL_ALPHA_SIZE, 8,
 
-				EGL_DEPTH_SIZE,            24,
-				EGL_STENCIL_SIZE,          8,
+				EGL_DEPTH_SIZE, 24,
+				EGL_STENCIL_SIZE, 8,
 
-				EGL_SAMPLE_BUFFERS,        0,
-				EGL_SAMPLES,               0,
+				EGL_SAMPLE_BUFFERS, 0,
+				EGL_SAMPLES, 0,
 
-				EGL_SURFACE_TYPE,          EGL_WINDOW_BIT,
-				EGL_RENDERABLE_TYPE,       EGL_OPENGL_BIT,
+				EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
+				EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
 
 				EGL_NONE,
 			};
@@ -84,18 +91,19 @@ namespace ashes::gl
 
 			EGLConfig config{ nullptr };
 			EGLint i = 0;
-			const EGLint eglSurfaceAttribs[]
+			const EGLint pbufferAttribs[]
 			{
+				EGL_WIDTH, EGLint( imageExtent.width ),
+				EGL_HEIGHT, EGLint( imageExtent.height ),
 				EGL_NONE,
 			};
 
 			while ( i < numConfigs && !m_surface )
 			{
 				config = configs[i];
-				m_surface = eglCreateWindowSurface( m_display
+				m_surface = eglCreatePbufferSurface( m_display
 					, config
-					, window
-					, eglSurfaceAttribs );
+					, pbufferAttribs );
 				++i;
 			}
 
@@ -120,7 +128,7 @@ namespace ashes::gl
 				throw std::runtime_error{ "EGL Context creation failed" };
 			}
 
-			ok = enable();
+			ok = eglMakeCurrent( m_display, m_surface, m_surface, m_context );
 
 			if ( !ok )
 			{
@@ -128,7 +136,7 @@ namespace ashes::gl
 			}
 
 			eglSwapInterval( m_display, 0 );
-			disable();
+			eglMakeCurrent( m_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT );
 		}
 		catch ( std::exception & p_exc )
 		{
@@ -136,37 +144,27 @@ namespace ashes::gl
 			throw;
 		}
 	}
-	
-	ContextEgl::ContextEgl( wl_display * display
-		, wl_egl_window * window
-		, int reqMajor
-		, int reqMinor
-		, EGLContext shared )
-		: EglContext{ reinterpret_cast< Display * >( display ), uint64_t( window ), reqMajor, reqMinor, shared }
+
+	void EglContext::postInitialise()
 	{
 	}
 
-	ContextEgl::~ContextEgl()
+	void EglContext::enable()const
 	{
-		doCleanup();
-	}
-	
-	EGLBoolean ContextEgl::enable()const
-	{
-		return eglMakeCurrent( m_display, m_surface, m_surface, m_context );
+		eglMakeCurrent( m_display, m_surface, m_surface, m_context );
 	}
 
-	EGLBoolean ContextEgl::disable()const
+	void EglContext::disable()const
 	{
-		return eglMakeCurrent( m_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT );
+		eglMakeCurrent( m_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT );
 	}
 
-	EGLBoolean ContextEgl::swap()const
+	void EglContext::swapBuffers()const
 	{
-		return eglSwapBuffers( m_display, m_surface );
+		eglSwapBuffers( m_display, m_surface );
 	}
 
-	void ContextEgl::doCleanup()
+	void EglContext::doCleanup()
 	{
 		if ( m_context )
 		{

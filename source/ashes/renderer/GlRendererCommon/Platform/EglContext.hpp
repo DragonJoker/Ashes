@@ -15,20 +15,20 @@ struct wl_egl_window;
 
 namespace ashes::gl
 {
-	class EglContext
+	class ContextEgl
 	{
 	public:
-		EglContext( Display * display
+		ContextEgl( Display * display
 			, uint64_t window
 			, int reqMajor
 			, int reqMinor
 			, EGLContext shared );
-		EglContext( wl_display * display
+		ContextEgl( wl_display * display
 			, wl_egl_window * window
 			, int reqMajor
 			, int reqMinor
 			, EGLContext shared );
-		~EglContext();
+		~ContextEgl();
 
 		EGLBoolean enable()const;
 		EGLBoolean disable()const;
@@ -48,7 +48,7 @@ namespace ashes::gl
 		EGLSurface m_surface{ nullptr };
 	};
 
-	using EglContextPtr = std::unique_ptr< EglContext >;
+	using ContextEglPtr = std::unique_ptr< ContextEgl >;
 }
 
 #endif

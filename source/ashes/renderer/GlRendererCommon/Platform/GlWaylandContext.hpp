@@ -31,7 +31,7 @@ namespace ashes::gl
 	private:
 		VkWaylandSurfaceCreateInfoKHR createInfo;
 		wl_egl_window * m_window{ nullptr };
-		EglContextPtr m_context;
+		ContextEglPtr m_context;
 		WaylandContext const * m_mainContext{ nullptr };
 	};
 }

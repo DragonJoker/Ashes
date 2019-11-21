@@ -31,7 +31,7 @@ namespace ashes::gl
 
 	void X11EglContext::preInitialise( int reqMajor, int reqMinor )
 	{
-		m_context = std::make_unique< EglContext >( createInfo.dpy
+		m_context = std::make_unique< ContextEgl >( createInfo.dpy
 			, createInfo.window
 			, reqMajor
 			, reqMinor

@@ -1,6 +1,6 @@
 ﻿#include "GlRendererPrerequisites.hpp"
 
-#include "Core/GlInstance.hpp"
+#include "ashesgl4_api.hpp"
 
 namespace ashes::gl4
 {
@@ -10,5 +10,18 @@ namespace ashes::gl4
 		return ashes::deduceMemoryType( typeBits
 			, requirements
 			, Instance::getMemoryProperties() );
+	}
+}
+
+namespace ashes::gl
+{
+	char const * const getDisplayName( VkDisplayModeKHR displayMode )
+	{
+		return gl4::get( gl4::get( displayMode )->getDisplay() )->getName();
+	}
+
+	uint32_t getRefreshRate( VkDisplayModeKHR displayMode )
+	{
+		return gl4::get( displayMode )->getRefreshRate();
 	}
 }

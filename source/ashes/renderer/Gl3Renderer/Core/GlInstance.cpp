@@ -135,25 +135,47 @@ namespace ashes::gl3
 	}
 
 		m_surfaces.insert( surface );
+		ContextPtr result;
+		auto glSurface = get( surface );
 
+#ifdef VK_KHR_display
+
+		if ( glSurface->isDisplay() )
+		{
+			result = Context::create( get( this )
+				, glSurface->getDisplayCreateInfo()
+				, nullptr );
+		}
+
+#endif
 #if _WIN32
 
-		auto result = Context::create( get( this )
-			, get( surface )->getWin32CreateInfo()
-			, nullptr );
+		else if ( glSurface->isWin32() )
+		{
+			result = Context::create( get( this )
+				, glSurface->getWin32CreateInfo()
+				, nullptr );
+		}
 
 #elif __linux__
 
-		auto result = get( surface )->isXcb()
-			? Context::create( get( this )
-				, get( surface )->getXcbCreateInfo()
-				, nullptr )
-			: Context::create( get( this )
-				, get( surface )->getXlibCreateInfo()
+		else if ( glSurface->isXcb() )
+		{
+			result = Context::create( get( this )
+				, glSurface->getXcbCreateInfo()
 				, nullptr );
+		}
+
+		else if ( glSurface->isXlib() )
+		{
+			result = Context::create( get( this )
+				, glSurface->getXlibCreateInfo()
+				, nullptr );
+		}
 
 #endif
-		if ( !m_firstSurfaceContext )
+
+		if ( result && !m_firstSurfaceContext )
 		{
 			m_firstSurfaceContext = result.get();
 

@@ -60,7 +60,7 @@ namespace ashes::gl
 			throw std::runtime_error{ "Couldn't open display" };
 		}
 
-		m_context = std::make_unique< EglContext >( m_xdisplay
+		m_context = std::make_unique< ContextEgl >( m_xdisplay
 			, createInfo.window
 			, major
 			, minor

@@ -71,7 +71,7 @@ namespace ashes::gl
 				throw std::runtime_error{ stream.str() };
 			}
 
-			m_context = std::make_unique< EglContext >( m_display
+			m_context = std::make_unique< ContextEgl >( m_display
 				, m_window
 				, major
 				, minor

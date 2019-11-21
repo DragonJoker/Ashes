@@ -81,9 +81,20 @@ namespace ashes::gl4
 		, VkSurfaceKHR surface
 		, Context const * mainContext )
 	{
+		if ( get( surface )->isWin32() )
+		{
 			return create( instance
 				, get( surface )->getWin32CreateInfo()
 				, mainContext );
+		}
+		else if ( get( surface )->isDisplay() )
+		{
+			return create( instance
+				, get( surface )->getDisplayCreateInfo()
+				, mainContext );
+		}
+
+		return nullptr;
 	}
 
 #elif __linux__
@@ -108,6 +119,12 @@ namespace ashes::gl4
 		{
 			return create( instance
 				, get( surface )->getWaylandCreateInfo()
+				, mainContext );
+		}
+		else if ( get( surface )->isDisplay() )
+		{
+			return create( instance
+				, get( surface )->getDisplayCreateInfo()
 				, mainContext );
 		}
 

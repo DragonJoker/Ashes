@@ -4,22 +4,22 @@ See LICENSE file in root folder
 */
 #pragma once
 
+#ifndef _WIN32
 #include "renderer/GlRendererCommon/GlContext.hpp"
 
-#if __linux__
-#	if ASHES_USE_XLIB_EGL
-#	include "EglContext.hpp"
+#include <EGL/egl.h>
+#include <memory>
 
 namespace ashes::gl
 {
-	class X11EglContext
+	class EglContext
 		: public ContextImpl
 	{
 	public:
-		X11EglContext( VkInstance instance
-			, VkXlibSurfaceCreateInfoKHR createInfo
+		EglContext( VkInstance instance
+			, VkDisplaySurfaceCreateInfoKHR createInfo
 			, ContextImpl const * mainContext );
-		~X11EglContext();
+		~EglContext();
 
 		void preInitialise( int major, int minor )override;
 		void postInitialise()override;
@@ -27,12 +27,20 @@ namespace ashes::gl
 		void disable()const override;
 		void swapBuffers()const override;
 
+		inline EGLContext getContext()const
+		{
+			return m_context;
+		}
+
 	private:
-		VkXlibSurfaceCreateInfoKHR createInfo;
-		ContextEglPtr m_context;
-		X11EglContext const * m_mainContext{ nullptr };
+		void doCleanup();
+
+	private:
+		VkDisplaySurfaceCreateInfoKHR createInfo;
+		EGLDisplay m_display{ nullptr };
+		EGLContext m_context{ nullptr };
+		EGLSurface m_surface{ nullptr };
 	};
 }
 
-#	endif
 #endif

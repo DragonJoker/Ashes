@@ -9,6 +9,8 @@ See LICENSE file in root folder.
 
 #include "ashesgl4_api.hpp"
 
+#include <renderer/GlRendererCommon/GlScreenHelpers.hpp>
+
 #if defined( __linux__ )
 #	include <X11/Xlib.h>
 #elif defined( _WIN32 )
@@ -557,6 +559,28 @@ namespace ashes::gl4
 	}
 
 #endif
+#ifdef VK_KHR_display
+
+	std::vector< VkDisplayPropertiesKHR > const & PhysicalDevice::getDisplayProperties()const
+	{
+		return m_displays;
+	}
+
+	std::vector< VkDisplayPlanePropertiesKHR > PhysicalDevice::getDisplayPlaneProperties()const
+	{
+		return m_displayPlanes;
+	}
+
+	std::vector< VkDisplayKHR > PhysicalDevice::getDisplayPlaneSupportedDisplays( uint32_t planeIndex )const
+	{
+		std::vector< VkDisplayKHR > result
+		{
+			m_displayPlanes[planeIndex].currentDisplay
+		};
+		return result;
+	}
+
+#endif
 
 	bool PhysicalDevice::find( std::string const & name )const
 	{
@@ -601,13 +625,89 @@ namespace ashes::gl4
 		getFunction( "glGetString", gglGetString );
 		getFunction( "glGetFloatv", gglGetFloatv );
 #endif
-		auto & extensions = get( m_instance )->getExtensions();
+		doInitialiseProperties();
+		doInitialiseFeatures();
+		doInitialiseQueueProperties();
+		doInitialiseFormatProperties();
+		doInitialiseDisplayProperties();
+		doInitialiseProperties2();
+	}
 
+	void PhysicalDevice::doInitialiseFeatures()
+	{
+		m_features.robustBufferAccess = find( "GL_KHR_robustness" );
+		m_features.fullDrawIndexUint32 = false;
+		m_features.imageCubeArray = find( "GL_ARB_texture_cube_map_array" );
+		m_features.independentBlend = findAny( { "GL_ARB_draw_buffers_blend", "GL_EXT_draw_buffers2" } );
+		m_features.geometryShader = find( "GL_ARB_geometry_shader4" );
+		m_features.tessellationShader = find( "GL_ARB_tessellation_shader" );
+		m_features.sampleRateShading = find( "GL_ARB_sample_shading" );
+		m_features.dualSrcBlend = find( "GL_ARB_blend_func_extended" );
+		m_features.logicOp = true;
+		m_features.multiDrawIndirect = findAll( { "GL_ARB_multi_draw_indirect", "GL_ARB_draw_indirect" } );
+		m_features.drawIndirectFirstInstance = find( "GL_ARB_base_instance" );
+		m_features.depthClamp = find( "GL_ARB_depth_clamp" );
+		m_features.depthBiasClamp = find( "GL_ARB_polygon_offset_clamp" );
+		m_features.fillModeNonSolid = true;
+		m_features.depthBounds = true;
+		GLint range[2];
+		glLogCallNoContext( gglGetIntegerv
+			, GL_ALIASED_LINE_WIDTH_RANGE
+			, range );
+		m_features.wideLines = ( range[1] > 1 );
+		glLogCallNoContext( gglGetIntegerv
+			, GL_SMOOTH_LINE_WIDTH_RANGE
+			, range );
+		m_features.wideLines &= ( range[1] > 1 );
+		m_features.largePoints = true;
+		m_features.alphaToOne = findAny( { "GL_ARB_multisample", "GLX_ARB_multisample", "WGL_ARB_multisample" } );
+		m_features.multiViewport = find( "GL_ARB_viewport_array" );
+		m_features.samplerAnisotropy = findAny( { "GL_ARB_texture_filter_anisotropic", "GL_ARB_texture_filter_anisotropic" } );
+		m_features.textureCompressionETC2 = findAll( { "GL_ARB_ES3_compatibility", "GL_ARB_ES2_compatibility", "GL_ARB_invalidate_subdata", "GL_ARB_texture_storage" } );
+		m_features.textureCompressionASTC_LDR = find( "GL_KHR_texture_compression_astc_ldr" );
+		m_features.textureCompressionBC = findAll( { "GL_EXT_texture_compression_s3tc", "GL_EXT_texture_sRGB" } );
+		m_features.occlusionQueryPrecise = true;
+		m_features.pipelineStatisticsQuery = false;
+		m_features.vertexPipelineStoresAndAtomics = find( "GL_ARB_shader_atomic_counters" );
+		m_features.fragmentStoresAndAtomics = m_features.vertexPipelineStoresAndAtomics;
+		m_features.shaderTessellationAndGeometryPointSize = m_features.tessellationShader && m_features.geometryShader;
+		m_features.shaderImageGatherExtended = findAll( { "GL_ARB_texture_gather", "GL_ARB_gpu_shader5" } );
+		m_features.shaderStorageImageExtendedFormats = find( "GL_ARB_shader_image_load_store" );
+		m_features.shaderStorageImageMultisample = find( "GL_ARB_shader_image_load_store" );
+		m_features.shaderStorageImageReadWithoutFormat = find( "GL_EXT_shader_image_load_formatted" );
+		m_features.shaderStorageImageWriteWithoutFormat = find( "GL_ARB_shader_image_load_store" );
+		m_features.shaderUniformBufferArrayDynamicIndexing = find( "GL_ARB_gpu_shader5" );
+		m_features.shaderSampledImageArrayDynamicIndexing = find( "GL_ARB_gpu_shader5" );
+		m_features.shaderStorageBufferArrayDynamicIndexing = find( "GL_ARB_shader_storage_buffer_object" );
+		m_features.shaderStorageImageArrayDynamicIndexing = find( "GL_ARB_shader_image_load_store" );
+		m_features.shaderClipDistance = true;
+		m_features.shaderCullDistance = find( "GL_ARB_cull_distance" );
+		m_features.shaderFloat64 = find( "GL_ARB_gpu_shader_fp64" );
+		m_features.shaderInt64 = find( "GL_ARB_gpu_shader_int64" );
+		m_features.shaderInt16 = false;
+		m_features.shaderResourceResidency = find( "GL_ARB_sparse_texture2" );
+		m_features.shaderResourceMinLod = find( "GL_ARB_sparse_texture_clamp" );
+		m_features.sparseBinding = findAll( { "GL_ARB_sparse_buffer", "GL_ARB_sparse_texture2" } );
+		m_features.sparseResidencyBuffer = find( "GL_ARB_sparse_buffer" );
+		m_features.sparseResidencyImage2D = find( "GL_ARB_sparse_texture2" );
+		m_features.sparseResidencyImage3D = find( "GL_ARB_sparse_texture2" );
+		m_features.sparseResidency2Samples = find( "GL_ARB_sparse_texture2" );
+		m_features.sparseResidency4Samples = find( "GL_ARB_sparse_texture2" );
+		m_features.sparseResidency8Samples = find( "GL_ARB_sparse_texture2" );
+		m_features.sparseResidency16Samples = find( "GL_ARB_sparse_texture2" );
+		m_features.sparseResidencyAliased = false;
+		m_features.variableMultisampleRate = true;
+		m_features.inheritedQueries = true;
+	}
+
+	void PhysicalDevice::doInitialiseProperties()
+	{
+		auto & extensions = get( m_instance )->getExtensions();
 		m_properties.apiVersion = ( extensions.getMajor() << 22 ) | ( extensions.getMinor() << 12 );
 		m_properties.deviceID = 0u;
-		strncpy( m_properties.deviceName, ( char const * ) gglGetString( GL_RENDERER ), VK_MAX_PHYSICAL_DEVICE_NAME_SIZE );
+		strncpy( m_properties.deviceName, ( char const * )gglGetString( GL_RENDERER ), VK_MAX_PHYSICAL_DEVICE_NAME_SIZE );
 		std::memset( m_properties.pipelineCacheUUID, 0u, sizeof( m_properties.pipelineCacheUUID ) );
-		m_properties.vendorID = doGetVendorID( ( char const * ) gglGetString( GL_VENDOR ) );
+		m_properties.vendorID = doGetVendorID( ( char const * )gglGetString( GL_VENDOR ) );
 		m_properties.deviceType = VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
 		m_properties.driverVersion = 0;
 
@@ -723,84 +823,25 @@ namespace ashes::gl4
 		m_properties.sparseProperties.residencyStandard2DBlockShape = false;
 		m_properties.sparseProperties.residencyStandard2DMultisampleBlockShape = false;
 		m_properties.sparseProperties.residencyStandard3DBlockShape = false;
+	}
 
-		m_features.robustBufferAccess = find( "GL_KHR_robustness" );
-		m_features.fullDrawIndexUint32 = false;
-		m_features.imageCubeArray = find( "GL_ARB_texture_cube_map_array" );
-		m_features.independentBlend = findAny( { "GL_ARB_draw_buffers_blend", "GL_EXT_draw_buffers2" } );
-		m_features.geometryShader = find( "GL_ARB_geometry_shader4" );
-		m_features.tessellationShader = find( "GL_ARB_tessellation_shader" );
-		m_features.sampleRateShading = find( "GL_ARB_sample_shading" );
-		m_features.dualSrcBlend = find( "GL_ARB_blend_func_extended" );
-		m_features.logicOp = true;
-		m_features.multiDrawIndirect = findAll( { "GL_ARB_multi_draw_indirect", "GL_ARB_draw_indirect" } );
-		m_features.drawIndirectFirstInstance = find( "GL_ARB_base_instance" );
-		m_features.depthClamp = find( "GL_ARB_depth_clamp" );
-		m_features.depthBiasClamp = find( "GL_ARB_polygon_offset_clamp" );
-		m_features.fillModeNonSolid = true;
-		m_features.depthBounds = true;
-		GLint range[2];
-		glLogCallNoContext( gglGetIntegerv
-			, GL_ALIASED_LINE_WIDTH_RANGE
-			, range );
-		m_features.wideLines = ( range[1] > 1 );
-		glLogCallNoContext( gglGetIntegerv
-			, GL_SMOOTH_LINE_WIDTH_RANGE
-			, range );
-		m_features.wideLines &= ( range[1] > 1 );
-		m_features.largePoints = true;
-		m_features.alphaToOne = findAny( { "GL_ARB_multisample", "GLX_ARB_multisample", "WGL_ARB_multisample" } );
-		m_features.multiViewport = find( "GL_ARB_viewport_array" );
-		m_features.samplerAnisotropy = findAny( { "GL_ARB_texture_filter_anisotropic", "GL_ARB_texture_filter_anisotropic" } );
-		m_features.textureCompressionETC2 = findAll( { "GL_ARB_ES3_compatibility", "GL_ARB_ES2_compatibility", "GL_ARB_invalidate_subdata", "GL_ARB_texture_storage" } );
-		m_features.textureCompressionASTC_LDR = find( "GL_KHR_texture_compression_astc_ldr" );
-		m_features.textureCompressionBC = findAll( { "GL_EXT_texture_compression_s3tc", "GL_EXT_texture_sRGB" } );
-		m_features.occlusionQueryPrecise = true;
-		m_features.pipelineStatisticsQuery = false;
-		m_features.vertexPipelineStoresAndAtomics = find( "GL_ARB_shader_atomic_counters" );
-		m_features.fragmentStoresAndAtomics = m_features.vertexPipelineStoresAndAtomics;
-		m_features.shaderTessellationAndGeometryPointSize = m_features.tessellationShader && m_features.geometryShader;
-		m_features.shaderImageGatherExtended = findAll( { "GL_ARB_texture_gather", "GL_ARB_gpu_shader5" } );
-		m_features.shaderStorageImageExtendedFormats = find( "GL_ARB_shader_image_load_store" );
-		m_features.shaderStorageImageMultisample = find( "GL_ARB_shader_image_load_store" );
-		m_features.shaderStorageImageReadWithoutFormat = find( "GL_EXT_shader_image_load_formatted" );
-		m_features.shaderStorageImageWriteWithoutFormat = find( "GL_ARB_shader_image_load_store" );
-		m_features.shaderUniformBufferArrayDynamicIndexing = find( "GL_ARB_gpu_shader5" );
-		m_features.shaderSampledImageArrayDynamicIndexing = find( "GL_ARB_gpu_shader5" );
-		m_features.shaderStorageBufferArrayDynamicIndexing = find( "GL_ARB_shader_storage_buffer_object" );
-		m_features.shaderStorageImageArrayDynamicIndexing = find( "GL_ARB_shader_image_load_store" );
-		m_features.shaderClipDistance = true;
-		m_features.shaderCullDistance = find( "GL_ARB_cull_distance" );
-		m_features.shaderFloat64 = find( "GL_ARB_gpu_shader_fp64" );
-		m_features.shaderInt64 = find( "GL_ARB_gpu_shader_int64" );
-		m_features.shaderInt16 = false;
-		m_features.shaderResourceResidency = find( "GL_ARB_sparse_texture2" );
-		m_features.shaderResourceMinLod = find( "GL_ARB_sparse_texture_clamp" );
-		m_features.sparseBinding = findAll( { "GL_ARB_sparse_buffer", "GL_ARB_sparse_texture2" } );
-		m_features.sparseResidencyBuffer = find( "GL_ARB_sparse_buffer" );
-		m_features.sparseResidencyImage2D = find( "GL_ARB_sparse_texture2" );
-		m_features.sparseResidencyImage3D = find( "GL_ARB_sparse_texture2" );
-		m_features.sparseResidency2Samples = find( "GL_ARB_sparse_texture2" );
-		m_features.sparseResidency4Samples = find( "GL_ARB_sparse_texture2" );
-		m_features.sparseResidency8Samples = find( "GL_ARB_sparse_texture2" );
-		m_features.sparseResidency16Samples = find( "GL_ARB_sparse_texture2" );
-		m_features.sparseResidencyAliased = false;
-		m_features.variableMultisampleRate = true;
-		m_features.inheritedQueries = true;
-
-		// Et enfin les propriétés des familles de files du GPU.
+	void PhysicalDevice::doInitialiseQueueProperties()
+	{
 		m_queueProperties.push_back(
-		{
-			0xFF,
-			1u,
-			64u,
 			{
+				0xFF,
 				1u,
-				1u,
-				1u,
-			}
-		} );
+				64u,
+				{
+					1u,
+					1u,
+					1u,
+				}
+			} );
+	}
 
+	void PhysicalDevice::doInitialiseFormatProperties()
+	{
 		if ( gglGetInternalformativ )
 		{
 			for ( VkFormat fmt = VK_FORMAT_BEGIN_RANGE; fmt < VK_FORMAT_END_RANGE; fmt = VkFormat( fmt + 1 ) )
@@ -916,71 +957,104 @@ namespace ashes::gl4
 
 				m_formatProperties[fmt].linearTilingFeatures = m_formatProperties[fmt].optimalTilingFeatures;
 			}
+		}
+	}
 
+	void PhysicalDevice::doInitialiseDisplayProperties()
+	{
+#ifdef VK_KHR_display
+
+		auto count = gl::getScreenCount();
+
+		for ( uint32_t i = 0u; i < count; ++i )
+		{
+			std::string name;
+			VkDisplayPropertiesKHR displayProps{};
+			std::vector< VkDisplayModeParametersKHR > displayModesParams;
+			gl::getScreenDesc( i, name, displayProps, displayModesParams );
+			m_displayNames.emplace_back( std::move( name ) );
+			displayProps.displayName = m_displayNames.back().c_str();
+			allocate( displayProps.display
+				, nullptr
+				, displayProps
+				, VK_FORMAT_R8G8B8A8_UNORM
+				, displayModesParams );
+			m_displays.push_back( displayProps );
+		}
+
+		for ( auto & display : m_displays )
+		{
+			m_displayPlanes.push_back( { display.display, 0u } );
+		}
+
+#endif
+	}
+
+	void PhysicalDevice::doInitialiseProperties2()
+	{
 #if VK_VERSION_1_1
 
-			m_features2.pNext = nullptr;
-			m_features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-			m_features2.features = m_features;
+		m_features2.pNext = nullptr;
+		m_features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+		m_features2.features = m_features;
 
-			m_properties2.pNext = nullptr;
-			m_properties2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
-			m_properties2.properties = m_properties;
+		m_properties2.pNext = nullptr;
+		m_properties2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+		m_properties2.properties = m_properties;
 
-			for ( auto & queueProperty : m_queueProperties )
-			{
-				m_queueProperties2.push_back(
-					{
-						VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2,
-						nullptr,
-						queueProperty,
-					} );
-			}
+		for ( auto & queueProperty : m_queueProperties )
+		{
+			m_queueProperties2.push_back(
+				{
+					VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2,
+					nullptr,
+					queueProperty,
+				} );
+		}
 
-			for ( auto & formatProperty : m_formatProperties )
-			{
-				m_formatProperties2.emplace( formatProperty.first
-					, VkFormatProperties2
-					{
-						VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2,
-						nullptr,
-						formatProperty.second,
-					} );
-			}
+		for ( auto & formatProperty : m_formatProperties )
+		{
+			m_formatProperties2.emplace( formatProperty.first
+				, VkFormatProperties2
+				{
+					VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2,
+					nullptr,
+					formatProperty.second,
+				} );
+		}
 
 #elif VK_KHR_get_physical_device_properties2
 
-			m_features2.pNext = nullptr;
-			m_features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
-			m_features2.features = m_features;
+		m_features2.pNext = nullptr;
+		m_features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+		m_features2.features = m_features;
 
-			m_properties2.pNext = nullptr;
-			m_properties2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
-			m_properties2.properties = m_properties;
+		m_properties2.pNext = nullptr;
+		m_properties2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
+		m_properties2.properties = m_properties;
 
-			for ( auto & queueProperty : m_queueProperties )
-			{
-				m_queueProperties2.push_back(
-					{
-						VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2_KHR,
-						nullptr,
-						queueProperty,
-					} );
-			}
+		for ( auto & queueProperty : m_queueProperties )
+		{
+			m_queueProperties2.push_back(
+				{
+					VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2_KHR,
+					nullptr,
+					queueProperty,
+				} );
+		}
 
-			for ( auto & formatProperty : m_formatProperties )
-			{
-				m_formatProperties2.emplace( formatProperty.first
-					, VkFormatProperties2
-					{
-						VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2_KHR,
-						nullptr,
-						formatProperty.second,
-					} );
-			}
+		for ( auto & formatProperty : m_formatProperties )
+		{
+			m_formatProperties2.emplace( formatProperty.first
+				, VkFormatProperties2
+				{
+					VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2_KHR,
+					nullptr,
+					formatProperty.second,
+				} );
+		}
 
 #endif
-		}
 	}
 
 	void PhysicalDevice::doGetValue( GLenum name, int32_t & value )const

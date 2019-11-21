@@ -56,6 +56,19 @@ namespace ashes::gl3
 	}
 
 #endif
+#ifdef VK_KHR_display
+
+	SurfaceKHR::SurfaceKHR( VkInstance instance
+		, VkDisplaySurfaceCreateInfoKHR createInfo )
+		: m_instance{ instance }
+		, m_displayCreateInfo{ std::move( createInfo ) }
+	{
+		m_context = get( m_instance )->registerSurface( get( this ) );
+		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
+		getSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
+	}
+
+#endif
 
 	SurfaceKHR::~SurfaceKHR()
 	{

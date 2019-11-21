@@ -2072,7 +2072,19 @@ namespace ashes::gl3
 		uint32_t * pPropertyCount,
 		VkDisplayPropertiesKHR * pProperties )
 	{
-		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceDisplayPropertiesKHR" );
+		auto props = get( physicalDevice )->getDisplayProperties();
+		*pPropertyCount = uint32_t( props.size() );
+
+		if ( pProperties )
+		{
+			for ( auto & prop : props )
+			{
+				*pProperties = prop;
+				++pProperties;
+			}
+		}
+
+		return VK_SUCCESS;
 	}
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceDisplayPlanePropertiesKHR(
@@ -2080,7 +2092,19 @@ namespace ashes::gl3
 		uint32_t * pPropertyCount,
 		VkDisplayPlanePropertiesKHR * pProperties )
 	{
-		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceDisplayPlanePropertiesKHR" );
+		auto props = get( physicalDevice )->getDisplayPlaneProperties();
+		*pPropertyCount = uint32_t( props.size() );
+
+		if ( pProperties )
+		{
+			for ( auto & prop : props )
+			{
+				*pProperties = prop;
+				++pProperties;
+			}
+		}
+
+		return VK_SUCCESS;
 	}
 
 	VkResult VKAPI_CALL vkGetDisplayPlaneSupportedDisplaysKHR(
@@ -2089,7 +2113,19 @@ namespace ashes::gl3
 		uint32_t * pDisplayCount,
 		VkDisplayKHR * pDisplays )
 	{
-		return reportUnsupported( physicalDevice, "vkGetDisplayPlaneSupportedDisplaysKHR" );
+		auto props = get( physicalDevice )->getDisplayPlaneSupportedDisplays( planeIndex );
+		*pDisplayCount = uint32_t( props.size() );
+
+		if ( pDisplays )
+		{
+			for ( auto & prop : props )
+			{
+				*pDisplays = prop;
+				++pDisplays;
+			}
+		}
+
+		return VK_SUCCESS;
 	}
 
 	VkResult VKAPI_CALL vkGetDisplayModePropertiesKHR(
@@ -2098,7 +2134,19 @@ namespace ashes::gl3
 		uint32_t * pPropertyCount,
 		VkDisplayModePropertiesKHR * pProperties )
 	{
-		return reportUnsupported( physicalDevice, "vkGetDisplayModePropertiesKHR" );
+		auto props = get( display )->getDisplayModeProperties();
+		*pPropertyCount = uint32_t( props.size() );
+
+		if ( pProperties )
+		{
+			for ( auto & prop : props )
+			{
+				*pProperties = prop;
+				++pProperties;
+			}
+		}
+
+		return VK_SUCCESS;
 	}
 
 	VkResult VKAPI_CALL vkCreateDisplayModeKHR(
@@ -2108,7 +2156,10 @@ namespace ashes::gl3
 		const VkAllocationCallbacks * pAllocator,
 		VkDisplayModeKHR * pMode )
 	{
-		return reportUnsupported( physicalDevice, "vkCreateDisplayModeKHR" );
+		return allocate( *pMode
+			, pAllocator
+			, display
+			, *pCreateInfo );
 	}
 
 	VkResult VKAPI_CALL vkGetDisplayPlaneCapabilitiesKHR(
@@ -2117,7 +2168,8 @@ namespace ashes::gl3
 		uint32_t planeIndex,
 		VkDisplayPlaneCapabilitiesKHR * pCapabilities )
 	{
-		return reportUnsupported( physicalDevice, "vkGetDisplayPlaneCapabilitiesKHR" );
+		*pCapabilities = get( mode )->getDisplayPlaneCapabilities( planeIndex );
+		return VK_SUCCESS;
 	}
 
 	VkResult VKAPI_CALL vkCreateDisplayPlaneSurfaceKHR(
@@ -2126,7 +2178,10 @@ namespace ashes::gl3
 		const VkAllocationCallbacks * pAllocator,
 		VkSurfaceKHR * pSurface )
 	{
-		return reportUnsupported( instance, "vkCreateDisplayPlaneSurfaceKHR" );
+		return allocate( *pSurface
+			, pAllocator
+			, instance
+			, *pCreateInfo );
 	}
 
 #endif
@@ -3832,6 +3887,9 @@ namespace ashes::gl3
 #endif
 #if VK_KHR_get_physical_device_properties2
 			VkExtensionProperties{ VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, makeVersion( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_SPEC_VERSION, 0, 0 ) },
+#endif
+#if VK_KHR_display
+			VkExtensionProperties{ VK_KHR_DISPLAY_EXTENSION_NAME, makeVersion( VK_KHR_DISPLAY_SPEC_VERSION, 0, 0 ) },
 #endif
 		};
 		return extensions;
