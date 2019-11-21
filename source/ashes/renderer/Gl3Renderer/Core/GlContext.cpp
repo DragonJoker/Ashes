@@ -69,6 +69,7 @@ namespace ashes::gl3
 		loadDebugFunctions();
 		m_impl->disable();
 		m_impl->postInitialise();
+		m_extent = m_impl->extent;
 	}
 
 	Context::~Context()

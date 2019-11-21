@@ -15,13 +15,20 @@ namespace ashes::gl4
 
 namespace ashes::gl
 {
-	char const * const getDisplayName( VkDisplayModeKHR displayMode )
+	using gl4::get;
+
+	uint32_t getScreenIndex( VkDisplayModeKHR displayMode )
 	{
-		return gl4::get( gl4::get( displayMode )->getDisplay() )->getName();
+		return get( get( displayMode )->getDisplay() )->getScreenIndex();
 	}
 
-	uint32_t getRefreshRate( VkDisplayModeKHR displayMode )
+	VkDisplayModeParametersKHR getDisplayModeParameters( VkDisplayModeKHR displayMode )
 	{
-		return gl4::get( displayMode )->getRefreshRate();
+		return get( displayMode )->getParameters();
+	}
+
+	VkExtent2D getDisplayResolution( VkDisplayModeKHR displayMode )
+	{
+		return get( get( displayMode )->getDisplay() )->getResolution();
 	}
 }

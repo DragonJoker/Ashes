@@ -40,6 +40,7 @@ namespace ashes::gl
 		EGLDisplay m_display{ nullptr };
 		EGLContext m_context{ nullptr };
 		EGLSurface m_surface{ nullptr };
+		EglContext const * m_mainContext{ nullptr };
 	};
 }
 

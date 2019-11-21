@@ -22,9 +22,9 @@ namespace ashes::gl4
 			return m_display;
 		}
 
-		uint32_t getRefreshRate()const
+		VkDisplayModeParametersKHR const & getParameters()
 		{
-			return m_createInfo.parameters.refreshRate;
+			return m_createInfo.parameters;
 		}
 
 	private:

@@ -90,6 +90,11 @@ namespace ashes::gl3
 			return m_instance;
 		}
 
+		VkExtent2D const & getExtent()const
+		{
+			return m_extent;
+		}
+
 #define GL_LIB_BASE_FUNCTION( fun )\
 		PFN_gl##fun m_gl##fun = nullptr;\
 		template< typename ... Params >\
@@ -144,6 +149,7 @@ namespace ashes::gl3
 
 	protected:
 		VkInstance m_instance;
+		VkExtent2D m_extent;
 		std::mutex m_mutex;
 		std::atomic< bool > m_enabled{ false };
 		std::atomic< std::thread::id > m_activeThread;

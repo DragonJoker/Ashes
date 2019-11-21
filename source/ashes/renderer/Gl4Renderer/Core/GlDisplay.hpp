@@ -13,6 +13,7 @@ namespace ashes::gl4
 	public:
 		DisplayKHR( VkDisplayPropertiesKHR const & properties
 			, VkFormat format
+			, uint32_t screenIndex
 			, std::vector< VkDisplayModeParametersKHR > const & displayModesParams );
 		~DisplayKHR();
 
@@ -28,9 +29,20 @@ namespace ashes::gl4
 			return m_properties.displayName;
 		}
 
+		uint32_t getScreenIndex()const
+		{
+			return m_screenIndex;
+		}
+
+		VkExtent2D getResolution()const
+		{
+			return m_properties.physicalResolution;
+		}
+
 	private:
 		VkDisplayPropertiesKHR m_properties;
 		VkFormat m_format;
+		uint32_t m_screenIndex;
 		std::vector< VkDisplayModePropertiesKHR > m_displayModes;
 	};
 }

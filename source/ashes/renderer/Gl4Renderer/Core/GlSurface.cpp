@@ -64,6 +64,7 @@ namespace ashes::gl4
 		, m_displayCreateInfo{ std::move( createInfo ) }
 	{
 		m_context = get( m_instance )->registerSurface( get( this ) );
+		m_displayCreateInfo.imageExtent = m_context->getExtent();
 		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
 		getSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
 	}

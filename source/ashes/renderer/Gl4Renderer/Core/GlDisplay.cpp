@@ -11,9 +11,11 @@ namespace ashes::gl4
 {
 	DisplayKHR::DisplayKHR( VkDisplayPropertiesKHR const & properties
 		, VkFormat format
+		, uint32_t screenIndex
 		, std::vector< VkDisplayModeParametersKHR > const & displayModesParams )
 		: m_properties{ properties }
 		, m_format{ format }
+		, m_screenIndex{ screenIndex }
 	{
 		for ( auto & parameters : displayModesParams )
 		{

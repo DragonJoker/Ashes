@@ -135,6 +135,14 @@ namespace ashes::gl4
 
 	VkResult SwapchainKHR::present( uint32_t imageIndex )const
 	{
+		auto srcExtent = m_createInfo.imageExtent;
+		auto dstExtent = m_createInfo.imageExtent;
+
+		if ( get( m_createInfo.surface )->isDisplay() )
+		{
+			dstExtent = get( m_createInfo.surface )->getDisplayCreateInfo().imageExtent;
+		}
+
 		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glBindFramebuffer
@@ -156,9 +164,9 @@ namespace ashes::gl4
 			, 0 );
 		glLogCall( context
 			, glBlitFramebuffer
-			, 0, 0, m_createInfo.imageExtent.width, m_createInfo.imageExtent.height
-			, 0, 0, m_createInfo.imageExtent.width, m_createInfo.imageExtent.height
-			, GL_COLOR_BUFFER_BIT, GL_FILTER_NEAREST );
+			, 0, 0, srcExtent.width, srcExtent.height
+			, 0, 0, dstExtent.width, dstExtent.height
+			, GL_COLOR_BUFFER_BIT, GL_FILTER_LINEAR );
 		glLogCall( context
 			, glBindFramebuffer
 			, GL_READ_FRAMEBUFFER

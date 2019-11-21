@@ -7,6 +7,8 @@ See LICENSE file in root folder
 #if __linux__
 #include <EGL/egl.h>
 #include <GL/glx.h>
+#include <X11/Xatom.h>
+#include <X11/extensions/Xrandr.h>
 
 #include <unistd.h>
 #include <iostream>
@@ -30,6 +32,23 @@ namespace ashes::gl
 		static const int GL_CONTEXT_CREATION_DEFAULT_MASK = GL_CONTEXT_CORE_PROFILE_BIT;
 
 #endif
+
+		Rotation convert( VkSurfaceTransformFlagBitsKHR transform )
+		{
+			switch ( transform )
+			{
+			case VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR:
+				return Rotation( RR_Rotate_0 );
+			case VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR:
+				return Rotation( RR_Rotate_90 );
+			case VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR:
+				return Rotation( RR_Rotate_180 );
+			case VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR:
+				return Rotation( RR_Rotate_270 );
+			default:
+				return Rotation( RR_Rotate_0 );
+			}
+		}
 
 		XVisualInfo * createVisualInfoWithoutFBConfig( Display * dpy
 			, std::vector< int > arrayAttribs
@@ -94,22 +113,58 @@ namespace ashes::gl
 		, VkXlibSurfaceCreateInfoKHR createInfo
 		, ContextImpl const * mainContext )
 		: ContextImpl{ instance }
-		, createInfo{ std::move( createInfo ) }
+		, xlibCreateInfo{ std::move( createInfo ) }
 		, m_mainContext{ static_cast< X11Context const * >( mainContext ) }
+		, m_display{ xlibCreateInfo.dpy }
+		, m_window{ xlibCreateInfo.window }
+	{
+	}
+
+	X11Context::X11Context( VkInstance instance
+		, VkDisplaySurfaceCreateInfoKHR createInfo
+		, ContextImpl const * mainContext )
+		: ContextImpl{ instance, createInfo.imageExtent }
+		, displayCreateInfo{ std::move( createInfo ) }
+		, m_mainContext{ static_cast< X11Context const * >( mainContext ) }
+		, m_display{ XOpenDisplay( nullptr ) }
 	{
 	}
 
 	X11Context::~X11Context()
 	{
-		glXDestroyContext( createInfo.dpy, m_glxContext );
+		glXDestroyContext( m_display, m_glxContext );
+
+		if ( displayCreateInfo.sType )
+		{
+			XDestroyWindow( m_display, m_window );
+			XFreeColormap( m_display, m_map );
+			XCloseDisplay( m_display );
+		}
 	}
 
-	void X11Context::preInitialise( int reqMajor, int reqMinor )
+	void X11Context::preInitialise( int reqMajor, int reqMinor ) try
 	{
-		int screen = DefaultScreen( createInfo.dpy );
+		if ( xlibCreateInfo.sType )
+		{
+			XWindowAttributes attribs;
+
+			if ( XGetWindowAttributes( m_display, m_window, &attribs ) )
+			{
+				 m_screenIndex = XScreenNumberOfScreen( attribs.screen );
+			}
+			else
+			{
+				m_screenIndex = XDefaultScreen( m_display );
+			}
+		}
+		else
+		{
+			m_screenIndex = getScreenIndex( displayCreateInfo.displayMode );
+		}
+
 		int major{ 0 };
 		int minor{ 0 };
-		bool ok = glXQueryVersion( createInfo.dpy, &major, &minor );
+		bool ok = glXQueryVersion( m_display, &major, &minor );
 
 		if ( ok )
 		{
@@ -131,35 +186,187 @@ namespace ashes::gl
 
 		if ( glXChooseFBConfig )
 		{
-			m_visualInfo = createVisualInfoWithFBConfig( createInfo.dpy, attribList, screen, m_fbConfig );
+			m_visualInfo = createVisualInfoWithFBConfig( m_display, attribList, m_screenIndex, m_fbConfig );
 		}
 		else
 		{
-			m_visualInfo = createVisualInfoWithoutFBConfig( createInfo.dpy, attribList, screen );
+			m_visualInfo = createVisualInfoWithoutFBConfig( m_display, attribList, m_screenIndex );
 		}
 
-		if ( m_visualInfo )
+		if ( !m_visualInfo )
 		{
-			m_glxContext = glXCreateContext( createInfo.dpy, m_visualInfo, nullptr, GL_TRUE );
-
-			if ( !m_glxContext )
-			{
-				throw std::runtime_error{ "Could not create a rendering context." };
-			}
-
-			enable();
-			disable();
-			m_major = reqMajor;
-			m_minor = reqMinor;
+			throw std::runtime_error{ "Could not retrieve visual info." };
 		}
+
+		m_glxContext = glXCreateContext( m_display, m_visualInfo, nullptr, GL_TRUE );
+
+		if ( !m_glxContext )
+		{
+			throw std::runtime_error{ "Could not create a rendering context." };
+		}
+
+		doLoadSytemFunctions();
+		m_major = reqMajor;
+		m_minor = reqMinor;
+	}
+	catch ( std::exception & exc )
+	{
+		disable();
+
+		if ( m_glxContext )
+		{
+			glXDestroyContext( m_display, m_glxContext );
+		}
+
+		throw;
 	}
 
 	void X11Context::postInitialise()
 	{
-		using PFN_glCreateContextAttribs = GLXContext ( * )( Display *, GLXFBConfig, GLXContext, Bool, const int * );
-		using PFN_glXSwapIntervalEXT = void (*)( Display *, GLXDrawable, int );
-		PFN_glCreateContextAttribs glCreateContextAttribs;
-		PFN_glXSwapIntervalEXT glXSwapInterval;
+		if ( displayCreateInfo.sType )
+		{
+			doInitialiseDisplay();
+		}
+
+		doCreateModernContext();
+	}
+
+	void X11Context::enable()const
+	{
+		glXMakeCurrent( m_display, m_window, m_glxContext );
+	}
+
+	void X11Context::disable()const
+	{
+		glXMakeCurrent( m_display, 0, nullptr );
+	}
+
+	void X11Context::swapBuffers()const
+	{
+		glXSwapBuffers( m_display, m_window );
+	}
+
+	void X11Context::doLoadSytemFunctions() try
+	{
+		enable();
+
+		if ( !getFunction( "glXCreateContextAttribsARB", glCreateContextAttribs ) )
+		{
+			throw std::runtime_error{ "Couldn't retrieve glXCreateContextAttribsARB" };
+		}
+
+		getFunction( "glXSwapIntervalEXT", glXSwapInterval );
+	}
+	catch ( std::exception & exc )
+	{
+		disable();
+		glXDestroyContext( m_display, m_glxContext );
+	}
+
+	void X11Context::doInitialiseDisplay() try
+	{
+		auto root = XRootWindow ( m_display, m_screenIndex );
+		m_map = XCreateColormap( m_display, root, m_visualInfo->visual, AllocNone );
+
+		if ( !m_map )
+		{
+			throw std::runtime_error{ "Couldn't create X Colormap" };
+		}
+
+		extent = getDisplayResolution( displayCreateInfo.displayMode );
+		XSetWindowAttributes swa;
+		swa.colormap = m_map;
+		swa.background_pixmap = 0;
+		swa.border_pixel = 0;
+		swa.event_mask = StructureNotifyMask;
+		m_window = XCreateWindow( m_display
+			, root
+			, 0, 0
+			, extent.width, extent.height
+			, 0
+			, m_visualInfo->depth
+			, InputOutput
+			, m_visualInfo->visual
+			, CWBorderPixel | CWColormap | CWEventMask, &swa );
+
+		if ( !m_window )
+		{
+			throw std::runtime_error{ "Couldn't create X Window" };
+		}
+
+		if ( !XStoreName( m_display, m_window, "DummyWindow" ) )
+		{
+			throw std::runtime_error{ "Couldn't set X Window name" };
+		}
+
+		auto wmState = XInternAtom( m_display, "_NET_WM_STATE", true );
+		auto wmFullscreen = XInternAtom( m_display, "_NET_WM_STATE_FULLSCREEN", true );
+		if ( !XChangeProperty( m_display
+			, m_window
+			, wmState
+			, XA_ATOM
+			, 32
+			, PropModeReplace
+			, (unsigned char *)&wmFullscreen
+			, 1 ) )
+		{
+			throw std::runtime_error{ "Couldn't set X Window fulsscreen" };
+		}
+
+		if ( !XMapWindow( m_display, m_window ) )
+		{
+			throw std::runtime_error{ "Couldn't map X Window" };
+		}
+
+		XSync( m_display, False );
+		// auto sc = XRRGetScreenInfo( m_display, m_window );
+
+		// if ( !sc )
+		// {
+		// 	throw std::runtime_error{ "Couldn't retrieve screen config info" };
+		// }
+
+		// auto params = getDisplayModeParameters( displayCreateInfo.displayMode );
+		// int nsize{ 0 };
+		// auto sizes = XRRConfigSizes( sc, &nsize );
+		// int sizeIndex = 0;
+
+		// for ( int sz = 0; sz < nsize; sz++ )
+		// {
+		// 	auto size = sizes[sz];
+		// 	if ( size.width == params.visibleRegion.width
+		// 		&& size.height == params.visibleRegion.height )
+		// 	{
+		// 		sizeIndex = sz;
+		// 		break;
+		// 	}
+		// }
+
+		// Time currentTimeStamp;
+		// XRRSelectInput( m_display, m_window, RRScreenChangeNotifyMask );
+		// auto timestamp = XRRConfigTimes( sc, &currentTimeStamp );
+
+		// if ( !XRRSetScreenConfig( m_display
+		// 	, sc
+		// 	, XDefaultRootWindow( m_display )
+		// 	, sizeIndex
+		// 	, convert( displayCreateInfo.transform )
+		// 	, currentTimeStamp ) )
+		// {
+		// 	throw std::runtime_error{ "Couldn't change display mode" };
+		// }
+
+		// XRRFreeScreenConfigInfo( sc );
+		// XFlush( m_display );
+	}
+	catch ( std::exception & exc )
+	{
+		disable();
+		glXDestroyContext( m_display, m_glxContext );
+	}
+
+	void X11Context::doCreateModernContext() try
+	{
 		std::vector< int > attribList
 		{
 			GLX_CONTEXT_MAJOR_VERSION_ARB, m_major,
@@ -170,23 +377,15 @@ namespace ashes::gl
 		};
 
 		enable();
-		::glGetError();
-
-		if ( !getFunction( "glXCreateContextAttribsARB", glCreateContextAttribs ) )
-		{
-			disable();
-			glXDestroyContext( createInfo.dpy, m_glxContext );
-			throw std::runtime_error{ "Couldn't retrieve glXCreateContextAttribsARB" };
-		}
-
-		auto glxContext = glCreateContextAttribs( createInfo.dpy
+		auto glxContext = glCreateContextAttribs( m_display
 			, m_fbConfig
 			, ( m_mainContext
 				? m_mainContext->m_glxContext
 				: nullptr )
 			, true
 			, attribList.data() );
-		glXDestroyContext( createInfo.dpy, m_glxContext );
+		disable();
+		glXDestroyContext( m_display, m_glxContext );
 		m_glxContext = glxContext;
 		auto result = m_glxContext != nullptr;
 
@@ -197,29 +396,19 @@ namespace ashes::gl
 			throw std::runtime_error{ error.str() };
 		}
 
-		enable();
-		if ( getFunction( "glXSwapIntervalEXT", glXSwapInterval ) )
+		if ( glXSwapInterval )
 		{
-			glXSwapInterval( createInfo.dpy, createInfo.window, 0 );
+			enable();
+			glXSwapInterval( m_display, m_window, 0 );
+			disable();
 		}
-		disable();
 
 		XFree( m_visualInfo );
 	}
-
-	void X11Context::enable()const
+	catch ( std::exception & exc )
 	{
-		glXMakeCurrent( createInfo.dpy, createInfo.window, m_glxContext );
-	}
-
-	void X11Context::disable()const
-	{
-		glXMakeCurrent( createInfo.dpy, 0, nullptr );
-	}
-
-	void X11Context::swapBuffers()const
-	{
-		glXSwapBuffers( createInfo.dpy, createInfo.window );
+		disable();
+		glXDestroyContext( m_display, m_glxContext );
 	}
 }
 

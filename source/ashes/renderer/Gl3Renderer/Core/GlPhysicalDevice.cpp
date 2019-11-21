@@ -946,6 +946,7 @@ namespace ashes::gl3
 				, nullptr
 				, displayProps
 				, VK_FORMAT_R8G8B8A8_UNORM
+				, i
 				, displayModesParams );
 			m_displays.push_back( displayProps );
 		}

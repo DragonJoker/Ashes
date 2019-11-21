@@ -142,7 +142,7 @@ namespace ashes::gl
 		, int reqMajor
 		, int reqMinor
 		, EGLContext shared )
-		: EglContext{ reinterpret_cast< Display * >( display ), uint64_t( window ), reqMajor, reqMinor, shared }
+		: ContextEgl{ reinterpret_cast< Display * >( display ), uint64_t( window ), reqMajor, reqMinor, shared }
 	{
 	}
 

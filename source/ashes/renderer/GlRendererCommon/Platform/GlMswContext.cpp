@@ -101,7 +101,7 @@ namespace ashes::gl
 	MswContext::MswContext( VkInstance instance
 		, VkDisplaySurfaceCreateInfoKHR createInfo
 		, ContextImpl const * mainContext )
-		: ContextImpl{ instance }
+		: ContextImpl{ instance, createInfo.imageExtent }
 		, displayCreateInfo{ std::move( createInfo ) }
 		, m_hWnd{ ::GetActiveWindow() }
 		, m_hDC{ ::GetDC( m_hWnd ) }
@@ -167,7 +167,7 @@ namespace ashes::gl
 		dm.dmBitsPerPel = 32u;
 		dm.dmPelsWidth = displayCreateInfo.imageExtent.width;
 		dm.dmPelsHeight = displayCreateInfo.imageExtent.height;
-		dm.dmDisplayFrequency = getRefreshRate( displayCreateInfo.displayMode ) / 1000;
+		dm.dmDisplayFrequency = getDisplayModeParameters( displayCreateInfo.displayMode ).refreshRate / 1000;
 
 		if ( displayCreateInfo.transform == VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR )
 		{

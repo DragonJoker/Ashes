@@ -47,6 +47,7 @@ namespace ashes::gl
 	using ContextImplPtr = std::unique_ptr< ContextImpl >;
 	using ContextStateArray = std::vector< ContextState >;
 
-	char const * const getDisplayName( VkDisplayModeKHR displayMode );
-	uint32_t getRefreshRate( VkDisplayModeKHR displayMode );
+	uint32_t getScreenIndex( VkDisplayModeKHR displayMode );
+	VkDisplayModeParametersKHR getDisplayModeParameters( VkDisplayModeKHR displayMode );
+	VkExtent2D getDisplayResolution( VkDisplayModeKHR displayMode );
 }

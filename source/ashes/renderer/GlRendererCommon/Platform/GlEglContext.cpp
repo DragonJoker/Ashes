@@ -13,8 +13,9 @@ namespace ashes::gl
 	EglContext::EglContext( VkInstance instance
 		, VkDisplaySurfaceCreateInfoKHR createInfo
 		, ContextImpl const * mainContext )
-		: ContextImpl{ instance }
+		: ContextImpl{ instance, createInfo.imageExtent }
 		, createInfo{ createInfo }
+		, m_mainContext{ static_cast< EglContext const * >( mainContext ) }
 	{
 	}
 
@@ -23,7 +24,7 @@ namespace ashes::gl
 		doCleanup();
 	}
 
-	void EglContext::preInitialise( int major, int minor )
+	void EglContext::preInitialise( int reqMajor, int reqMinor )
 	{
 		try
 		{
@@ -93,8 +94,8 @@ namespace ashes::gl
 			EGLint i = 0;
 			const EGLint pbufferAttribs[]
 			{
-				EGL_WIDTH, EGLint( imageExtent.width ),
-				EGL_HEIGHT, EGLint( imageExtent.height ),
+				EGL_WIDTH, EGLint( createInfo.imageExtent.width ),
+				EGL_HEIGHT, EGLint( createInfo.imageExtent.height ),
 				EGL_NONE,
 			};
 
@@ -120,7 +121,9 @@ namespace ashes::gl
 			};
 			m_context = eglCreateContext( m_display
 				, config
-				, shared
+				, ( m_mainContext
+					? m_mainContext->m_context
+					: EGL_NO_CONTEXT )
 				, eglContextAttribs );
 
 			if ( !m_context )

@@ -11,8 +11,10 @@ namespace ashes::gl
 	class ContextImpl
 	{
 	protected:
-		ContextImpl( VkInstance instance )
+		ContextImpl( VkInstance instance
+			, VkExtent2D const & extent = {} )
 			: instance{ instance }
+			, extent{ extent }
 		{
 		}
 
@@ -47,5 +49,6 @@ namespace ashes::gl
 #endif
 
 		VkInstance instance;
+		VkExtent2D extent;
 	};
 }

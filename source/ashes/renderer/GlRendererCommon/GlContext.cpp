@@ -45,7 +45,7 @@ namespace ashes::gl
 		, VkWaylandSurfaceCreateInfoKHR createInfo
 		, ContextImpl const * mainContext )
 	{
-		return std::make_unique< EglContext >( instance
+		return std::make_unique< WaylandContext >( instance
 			, std::move( createInfo )
 			, mainContext );
 	}
@@ -56,7 +56,7 @@ namespace ashes::gl
 		, VkDisplaySurfaceCreateInfoKHR createInfo
 		, ContextImpl const * mainContext )
 	{
-		return std::make_unique< EglContext >( instance
+		return std::make_unique< X11Context >( instance
 			, std::move( createInfo )
 			, mainContext );
 	}
