@@ -22,6 +22,9 @@ namespace ashes::gl
 		MswContext( VkInstance instance
 			, VkWin32SurfaceCreateInfoKHR createInfo
 			, ContextImpl const * mainContext );
+		MswContext( VkInstance instance
+			, VkDisplaySurfaceCreateInfoKHR createInfo
+			, ContextImpl const * mainContext );
 		~MswContext();
 
 		void preInitialise( int major, int minor )override;
@@ -31,16 +34,25 @@ namespace ashes::gl
 		void swapBuffers()const override;
 
 	private:
-		bool doSelectFormat();
-		bool doCreateModernContext();
+		void doSelectFormat();
+		void doLoadSystemFunctions();
+		void doSetFullscreen();
+		void doCreateModernContext();
 
 	private:
-		VkWin32SurfaceCreateInfoKHR createInfo;
+		VkWin32SurfaceCreateInfoKHR win32CreateInfo{};
+		VkDisplaySurfaceCreateInfoKHR displayCreateInfo{};
 		int m_minor{ 0 };
 		int m_major{ 0 };
+		HWND m_hWnd{ nullptr };
 		HDC m_hDC{ nullptr };
 		HGLRC m_hContext{ nullptr };
 		MswContext const * m_mainContext;
+
+		using PFN_wglCreateContextAttribsARB = HGLRC( * )( HDC hDC, HGLRC hShareContext, int const * attribList );
+		using PFN_wglSwapIntervalEXT = BOOL( * )( int );
+		PFN_wglCreateContextAttribsARB wglCreateContextAttribsARB;
+		PFN_wglSwapIntervalEXT wglSwapIntervalEXT;
 	};
 }
 

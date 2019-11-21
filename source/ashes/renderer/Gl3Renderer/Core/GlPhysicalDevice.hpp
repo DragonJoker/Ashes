@@ -59,6 +59,11 @@ namespace ashes::gl3
 		VkResult getSparseImageFormatProperties2( VkPhysicalDeviceSparseImageFormatInfo2KHR const & formatInfo
 			, std::vector< VkSparseImageFormatProperties2KHR > & sparseImageFormatProperties )const;
 #endif
+#ifdef VK_KHR_display
+		std::vector< VkDisplayPropertiesKHR > const & getDisplayProperties()const;
+		std::vector< VkDisplayPlanePropertiesKHR > getDisplayPlaneProperties()const;
+		std::vector< VkDisplayKHR > getDisplayPlaneSupportedDisplays( uint32_t planeIndex )const;
+#endif
 
 		bool find( std::string const & name )const;
 		bool findAny( StringArray const & names )const;
@@ -73,6 +78,12 @@ namespace ashes::gl3
 
 	private:
 		void doInitialise();
+		void doInitialiseProperties();
+		void doInitialiseFeatures();
+		void doInitialiseQueueProperties();
+		void doInitialiseFormatProperties();
+		void doInitialiseDisplayProperties();
+		void doInitialiseProperties2();
 		void doGetValue( GLenum name, int32_t & value )const;
 		void doGetValue( GLenum name, uint32_t & value )const;
 		void doGetValues( GLenum name, int32_t( &value )[2] )const;
@@ -115,6 +126,11 @@ namespace ashes::gl3
 		VkPhysicalDeviceProperties2KHR m_properties2{};
 		std::vector< VkQueueFamilyProperties2KHR > m_queueProperties2{};
 		mutable std::map< VkFormat, VkFormatProperties2KHR > m_formatProperties2;
+#endif
+#ifdef VK_KHR_display
+		std::vector< std::string > m_displayNames;
+		std::vector< VkDisplayPropertiesKHR >m_displays;
+		std::vector< VkDisplayPlanePropertiesKHR > m_displayPlanes;
 #endif
 	};
 }

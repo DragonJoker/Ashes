@@ -22,6 +22,10 @@ namespace ashes::gl4
 		SurfaceKHR( VkInstance instance
 			, VkWaylandSurfaceCreateInfoKHR createInfo );
 #endif
+#ifdef VK_KHR_display
+		SurfaceKHR( VkInstance instance
+			, VkDisplaySurfaceCreateInfoKHR createInfo );
+#endif
 		~SurfaceKHR();
 
 		VkSurfaceCapabilitiesKHR getCapabilities()const
@@ -49,6 +53,11 @@ namespace ashes::gl4
 		inline VkWin32SurfaceCreateInfoKHR getWin32CreateInfo()const
 		{
 			return m_win32CreateInfo;
+		}
+
+		inline bool isWin32()const
+		{
+			return m_win32CreateInfo.sType != 0;
 		}
 
 #elif __linux__
@@ -84,6 +93,19 @@ namespace ashes::gl4
 		}
 
 #endif
+#ifdef VK_KHR_display
+
+		inline VkDisplaySurfaceCreateInfoKHR getDisplayCreateInfo()const
+		{
+			return m_displayCreateInfo;
+		}
+
+		inline bool isDisplay()const
+		{
+			return m_displayCreateInfo.sType != 0;
+		}
+
+#endif
 
 		inline VkInstance getInstance()const
 		{
@@ -102,6 +124,9 @@ namespace ashes::gl4
 		VkXlibSurfaceCreateInfoKHR m_xlibCreateInfo{};
 		VkXcbSurfaceCreateInfoKHR m_xcbCreateInfo{};
 		VkWaylandSurfaceCreateInfoKHR m_waylandCreateInfo{};
+#endif
+#ifdef VK_KHR_display
+		VkDisplaySurfaceCreateInfoKHR m_displayCreateInfo{};
 #endif
 		VkSurfaceFormatArrayKHR m_surfaceFormats;
 		VkSurfaceCapabilitiesKHR m_surfaceCapabilities;

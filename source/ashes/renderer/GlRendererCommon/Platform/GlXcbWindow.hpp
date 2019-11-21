@@ -31,7 +31,7 @@ namespace ashes::gl
 		Display * m_display;
 		xcb_connection_t * m_connection;
 		xcb_window_t m_window;
-		EglContextPtr m_context;
+		ContextEglPtr m_context;
 	};
 }
 

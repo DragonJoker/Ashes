@@ -33,7 +33,7 @@ namespace ashes::gl
 		Display * m_display{ nullptr };
 		Window m_window{ 0 };
 #if ASHES_USE_XLIB_EGL
-		EglContextPtr m_context;
+		ContextEglPtr m_context;
 #else
 		GLXFBConfig m_fbConfig{ nullptr };
 		GLXContext m_glxContext{ nullptr };

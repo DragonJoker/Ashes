@@ -43,6 +43,37 @@ namespace ashes::gl
 			WGL_CONTEXT_PROFILE_MASK_ARB = 0x9126,
 		};
 
+		enum PixelFormatParameter
+		{
+			WGL_NUMBER_PIXEL_FORMATS_ARB = 0x2000,
+			WGL_DRAW_TO_WINDOW_ARB = 0x2001,
+			WGL_ACCELERATION_ARB = 0x2003,
+			WGL_NEED_PALETTE_ARB = 0x2004,
+			WGL_NEED_SYSTEM_PALETTE_ARB = 0x2005,
+			WGL_TRANSPARENT_ARB = 0x200A,
+			WGL_SUPPORT_OPENGL_ARB = 0x2010,
+			WGL_PIXEL_TYPE_ARB = 0x2013,
+			WGL_COLOR_BITS_ARB = 2014,
+			WGL_RED_BITS_ARB = 0x2015,
+			WGL_GREEN_BITS_ARB = 0x2017,
+			WGL_BLUE_BITS_ARB = 0x2019,
+			WGL_NO_ACCELERATION_ARB = 0x2025,
+			WGL_GENERIC_ACCELERATION_ARB = 0x2026,
+			WGL_FULL_ACCELERATION_ARB = 0x2027,
+			WGL_ALPHA_BITS_ARB = 0x201B,
+			WGL_DEPTH_BITS_ARB = 0x2022,
+			WGL_STENCIL_BITS_ARB = 0x2023,
+			WGL_TYPE_RGBA_ARB = 0x202B,
+			WGL_DRAW_TO_PBUFFER_ARB = 0x202D,
+			WGL_MAX_PBUFFER_PIXELS_ARB = 0x202E,
+			WGL_MAX_PBUFFER_WIDTH_ARB = 0x202F,
+			WGL_MAX_PBUFFER_HEIGHT_ARB = 0x2030,
+			WGL_PBUFFER_LARGEST_ARB = 0x2033,
+			WGL_PBUFFER_WIDTH_ARB = 0x2034,
+			WGL_PBUFFER_HEIGHT_ARB = 0x2035,
+			WGL_PBUFFER_LOST_ARB = 0x2036,
+		};
+
 #if !defined( NDEBUG )
 
 		static const int GL_CONTEXT_CREATION_DEFAULT_FLAGS =  GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT | GL_CONTEXT_FLAG_DEBUG_BIT;
@@ -60,8 +91,20 @@ namespace ashes::gl
 		, VkWin32SurfaceCreateInfoKHR createInfo
 		, ContextImpl const * mainContext )
 		: ContextImpl{ instance }
-		, createInfo{ std::move( createInfo ) }
-		, m_hDC{ ::GetDC( createInfo.hwnd ) }
+		, win32CreateInfo{ std::move( createInfo ) }
+		, m_hWnd{ createInfo.hwnd }
+		, m_hDC{ ::GetDC( m_hWnd ) }
+		, m_mainContext{ static_cast< MswContext const * >( mainContext ) }
+	{
+	}
+
+	MswContext::MswContext( VkInstance instance
+		, VkDisplaySurfaceCreateInfoKHR createInfo
+		, ContextImpl const * mainContext )
+		: ContextImpl{ instance, createInfo.imageExtent }
+		, displayCreateInfo{ std::move( createInfo ) }
+		, m_hWnd{ ::GetActiveWindow() }
+		, m_hDC{ ::GetDC( m_hWnd ) }
 		, m_mainContext{ static_cast< MswContext const * >( mainContext ) }
 	{
 	}
@@ -70,12 +113,17 @@ namespace ashes::gl
 	{
 		try
 		{
+			if ( displayCreateInfo.sType )
+			{
+				ChangeDisplaySettings( nullptr, 0 );
+			}
+
 			if ( m_hContext )
 			{
 				wglDeleteContext( m_hContext );
 			}
 
-			::ReleaseDC( createInfo.hwnd, m_hDC );
+			::ReleaseDC( m_hWnd, m_hDC );
 		}
 		catch ( ... )
 		{
@@ -84,11 +132,7 @@ namespace ashes::gl
 
 	void MswContext::preInitialise( int major, int minor )
 	{
-		if ( !doSelectFormat() )
-		{
-			throw std::runtime_error{ "Couldn't find an appropriate pixel format." };
-		}
-
+		doSelectFormat();
 		m_major = major;
 		m_minor = minor;
 		m_hContext = wglCreateContext( m_hDC );
@@ -97,14 +141,54 @@ namespace ashes::gl
 		{
 			throw std::runtime_error{ "Couldn't create preliminary context." };
 		}
+
+		doLoadSystemFunctions();
 	}
 
 	void MswContext::postInitialise()
 	{
-		if ( !doCreateModernContext() )
+		if ( displayCreateInfo.sType )
 		{
-			throw std::runtime_error{ "Couldn't create modern context." };
+			doSetFullscreen();
 		}
+
+		doCreateModernContext();
+	}
+
+	void MswContext::doSetFullscreen()
+	{
+		SetWindowLongPtr( m_hWnd, GWL_STYLE,
+			WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE );
+		MoveWindow( m_hWnd, 0, 0, displayCreateInfo.imageExtent.width, displayCreateInfo.imageExtent.height, TRUE );
+
+		DEVMODE dm{};
+		dm.dmSize = sizeof( DEVMODE );
+		dm.dmFields = DM_DISPLAYORIENTATION | DM_DISPLAYFREQUENCY;
+		dm.dmBitsPerPel = 32u;
+		dm.dmPelsWidth = displayCreateInfo.imageExtent.width;
+		dm.dmPelsHeight = displayCreateInfo.imageExtent.height;
+		dm.dmDisplayFrequency = getDisplayModeParameters( displayCreateInfo.displayMode ).refreshRate / 1000;
+
+		if ( displayCreateInfo.transform == VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR )
+		{
+			dm.dmDisplayOrientation = DMDO_DEFAULT;
+		}
+		else if ( displayCreateInfo.transform == VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR )
+		{
+			dm.dmDisplayOrientation = DMDO_90;
+		}
+		else if ( displayCreateInfo.transform == VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR )
+		{
+			dm.dmDisplayOrientation = DMDO_180;
+		}
+		else if ( displayCreateInfo.transform == VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR )
+		{
+			dm.dmDisplayOrientation = DMDO_270;
+		}
+
+		dm.dmFields |= DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL;
+		auto res = ChangeDisplaySettings( &dm, 0 );
+		assert( res == DISP_CHANGE_SUCCESSFUL );
 	}
 
 	void MswContext::enable()const
@@ -122,9 +206,8 @@ namespace ashes::gl
 		::SwapBuffers( m_hDC );
 	}
 
-	bool MswContext::doSelectFormat()
+	void MswContext::doSelectFormat()
 	{
-		bool result = false;
 		PIXELFORMATDESCRIPTOR pfd = { 0 };
 		pfd.nSize = sizeof( PIXELFORMATDESCRIPTOR );
 		pfd.nVersion = 1;
@@ -140,78 +223,89 @@ namespace ashes::gl
 
 		int pixelFormats = ::ChoosePixelFormat( m_hDC, &pfd );
 
-		if ( pixelFormats )
+		if ( !pixelFormats )
 		{
-			result = ::SetPixelFormat( m_hDC, pixelFormats, &pfd ) != FALSE;
+			throw std::runtime_error{ "Couldn't choose a pixel format" };
 		}
 
-		return result;
+		if ( !::SetPixelFormat( m_hDC, pixelFormats, &pfd ) )
+		{
+			throw std::runtime_error{ "Couldn't set pixel format" };
+		}
 	}
 
-	bool MswContext::doCreateModernContext()
+	void MswContext::doLoadSystemFunctions() try
 	{
-		bool result = false;
+		enable();
 
-		try
+		if ( !getFunction( "wglCreateContextAttribsARB", wglCreateContextAttribsARB ) )
 		{
-			using PFN_wglCreateContextAttribsARB = HGLRC(*)( HDC hDC, HGLRC hShareContext, int const * attribList );
-			using PFN_wglSwapIntervalEXT = BOOL( GLAPIENTRY * )( int );
-			PFN_wglCreateContextAttribsARB glCreateContextAttribs;
-			PFN_wglSwapIntervalEXT glSwapInterval;
+			throw std::runtime_error{ "Couldn't retrieve wglCreateContextAttribsARB" };
+		}
 
-			std::vector< int > attribList
-			{
-				WGL_CONTEXT_MAJOR_VERSION_ARB, m_major,
-				WGL_CONTEXT_MINOR_VERSION_ARB, m_minor,
-				WGL_CONTEXT_FLAGS_ARB, GL_CONTEXT_CREATION_DEFAULT_FLAGS,
-				WGL_CONTEXT_PROFILE_MASK_ARB, GL_CONTEXT_CREATION_DEFAULT_MASK,
-				0
-			};
+		getFunction( "wglSwapIntervalEXT", wglSwapIntervalEXT );
+		disable();
+	}
+	catch ( std::exception & )
+	{
+		disable();
 
-			enable();
-
-			if ( !getFunction( "wglCreateContextAttribsARB", glCreateContextAttribs ) )
-			{
-				disable();
-				wglDeleteContext( m_hContext );
-				throw std::runtime_error{ "Couldn't retrieve wglCreateContextAttribsARB" };
-			}
-
-			auto hContext = glCreateContextAttribs( m_hDC
-				, ( m_mainContext
-					? m_mainContext->m_hContext
-					: nullptr )
-				, attribList.data() );
-			disable();
+		if ( m_hContext )
+		{
 			wglDeleteContext( m_hContext );
-			m_hContext = hContext;
-			result = m_hContext != nullptr;
-
-			if ( !result )
-			{
-				std::stringstream error;
-				error << "Failed to create an OpenGL " << m_major << "." << m_minor << " context (0x" << std::hex << ::glGetError() << ").";
-				throw std::runtime_error{ error.str() };
-			}
-
-			enable();
-			if ( getFunction( "wglSwapIntervalEXT", glSwapInterval ) )
-			{
-				glSwapInterval( 0 );
-			}
-			disable();
 		}
-		catch ( std::exception & exc )
+
+		throw;
+	}
+
+	void MswContext::doCreateModernContext() try
+	{
+		std::vector< int > attribList
 		{
-			std::cerr << exc.what() << std::endl;
-			result = false;
-		}
-		catch ( ... )
+			WGL_CONTEXT_MAJOR_VERSION_ARB, m_major,
+			WGL_CONTEXT_MINOR_VERSION_ARB, m_minor,
+			WGL_CONTEXT_FLAGS_ARB, GL_CONTEXT_CREATION_DEFAULT_FLAGS,
+			WGL_CONTEXT_PROFILE_MASK_ARB, GL_CONTEXT_CREATION_DEFAULT_MASK,
+			0
+		};
+
+		enable();
+
+		auto hContext = wglCreateContextAttribsARB( m_hDC
+			, ( m_mainContext
+				? m_mainContext->m_hContext
+				: nullptr )
+			, attribList.data() );
+		disable();
+		wglDeleteContext( m_hContext );
+		m_hContext = hContext;
+
+		if ( !m_hContext )
 		{
-			result = false;
+			std::stringstream error;
+			error << "Failed to create an OpenGL " << m_major << "." << m_minor << " context (0x" << std::hex << ::glGetError() << ").";
+			throw std::runtime_error{ error.str() };
 		}
 
-		return result;
+		enable();
+
+		if ( wglSwapIntervalEXT )
+		{
+			wglSwapIntervalEXT( 0 );
+		}
+
+		disable();
+	}
+	catch ( std::exception & )
+	{
+		disable();
+
+		if ( m_hContext )
+		{
+			wglDeleteContext( m_hContext );
+		}
+
+		throw;
 	}
 }
 
