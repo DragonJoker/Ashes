@@ -17,7 +17,7 @@ if ( OpenGL_FOUND )
 			OpenGL::GL
 		)
 	else ()
-		find_package( X11 COMPONENTS REQUIRED X11 Xrandr )
+		find_package( X11 )
 		if ( ASHES_USE_XLIB_EGL )
 			add_definitions( -DASHES_USE_XLIB_EGL )
 		endif ()
