@@ -32,9 +32,11 @@ namespace ashes::d3d11
 			return list;
 		}
 
-		std::map< VkFormat, std::vector< DXGI_MODE_DESC > > updateSurfaceCapabilities( std::vector< DXGI_MODE_DESC > const & displayModeList
+		void updateSurfaceCapabilities( std::vector< DXGI_MODE_DESC > const & displayModeList
 			, RECT const & rect
-			, VkSurfaceCapabilitiesKHR & capabilities )
+			, VkSurfaceCapabilitiesKHR & capabilities
+			, std::map< VkFormat, std::vector< DXGI_MODE_DESC > > & descs
+			, std::map< VkFormat, DXGI_MODE_DESC > & matchingDescs )
 		{
 			capabilities.minImageCount = 1u;
 			capabilities.maxImageCount = 1u;
@@ -45,10 +47,8 @@ namespace ashes::d3d11
 			capabilities.maxImageArrayLayers = 1u;
 			capabilities.supportedTransforms = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
 			capabilities.currentTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
-			capabilities.supportedCompositeAlpha = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR;
+			capabilities.supportedCompositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 			capabilities.supportedUsageFlags = 0u;
-
-			std::map < VkFormat, std::vector< DXGI_MODE_DESC > > result;
 
 			// Now go through all the display modes and find the one that matches the screen width and height.
 			std::vector< DXGI_MODE_DESC > matchingDisplayModes;
@@ -73,12 +73,11 @@ namespace ashes::d3d11
 
 			for ( auto & displayMode : displayModeList )
 			{
-
 				if ( displayMode.Width == width
 					&& displayMode.Height == height )
 				{
 					matchingDisplayModes.push_back( displayMode );
-					auto it = result.emplace( getVkFormat( displayMode.Format ), std::vector< DXGI_MODE_DESC >{} ).first;
+					auto it = descs.emplace( getVkFormat( displayMode.Format ), std::vector< DXGI_MODE_DESC >{} ).first;
 					it->second.emplace_back( displayMode );
 				}
 			}
@@ -86,21 +85,37 @@ namespace ashes::d3d11
 			if ( matchingDisplayModes.empty() )
 			{
 				// No display mode match exactly the requested size.
+				// We then retrieve the first display mode size greater than requested
+				VkExtent2D size{};
 				for ( auto & displayMode : displayModeList )
 				{
 					if ( displayMode.Width >= width
 						&& displayMode.Height >= height )
 					{
-						matchingDisplayModes.push_back( displayMode );
-						auto it = result.emplace( getVkFormat( displayMode.Format ), std::vector< DXGI_MODE_DESC >{} ).first;
-						it->second.emplace_back( displayMode );
+						size.width = displayMode.Width;
+						size.height = displayMode.Height;
+						break;
+					}
+				}
+
+				if ( size.width && size.height )
+				{
+					for ( auto & displayMode : displayModeList )
+					{
+						if ( displayMode.Width == size.width
+							&& displayMode.Height == size.height )
+						{
+							matchingDisplayModes.push_back( displayMode );
+							auto it = descs.emplace( getVkFormat( displayMode.Format ), std::vector< DXGI_MODE_DESC >{} ).first;
+							it->second.emplace_back( displayMode );
+						}
 					}
 				}
 			}
 
 			if ( matchingDisplayModes.empty() )
 			{
-				// Size is really too large.
+				// Requested size is really too large.
 				DXGI_MODE_DESC maxWidth{};
 				DXGI_MODE_DESC maxHeight{};
 
@@ -121,14 +136,14 @@ namespace ashes::d3d11
 				{
 					// Choose the display mode with highest width.
 					matchingDisplayModes.push_back( maxWidth );
-					auto it = result.emplace( getVkFormat( maxWidth.Format ), std::vector< DXGI_MODE_DESC >{} ).first;
+					auto it = descs.emplace( getVkFormat( maxWidth.Format ), std::vector< DXGI_MODE_DESC >{} ).first;
 					it->second.emplace_back( maxWidth );
 				}
 				else
 				{
 					// Choose the display mode with highest height.
 					matchingDisplayModes.push_back( maxHeight );
-					auto it = result.emplace( getVkFormat( maxHeight.Format ), std::vector< DXGI_MODE_DESC >{} ).first;
+					auto it = descs.emplace( getVkFormat( maxHeight.Format ), std::vector< DXGI_MODE_DESC >{} ).first;
 					it->second.emplace_back( maxHeight );
 				}
 			}
@@ -150,7 +165,10 @@ namespace ashes::d3d11
 				capabilities.currentExtent.height = height;
 			}
 
-			return result;
+			for ( auto & desc : descs )
+			{
+				matchingDescs.emplace( desc.first, desc.second.front() );
+			}
 		}
 
 		std::vector< VkSurfaceFormatKHR > getSurfaceFormats( std::vector< DXGI_MODE_DESC > const & displayModeList )
@@ -254,6 +272,13 @@ namespace ashes::d3d11
 	{
 	}
 
+	inline VkFlags & mergeFlags( VkFlags & value
+		, VkFlags const & flag )noexcept
+	{
+		value &= flag;
+		return value;
+	}
+
 	void SurfaceKHR::doUpdate( VkPhysicalDevice physicalDevice )const
 	{
 		if ( m_currentPhysicalDevice != physicalDevice )
@@ -267,18 +292,31 @@ namespace ashes::d3d11
 				auto hWnd = m_win32CreateInfo.hwnd;
 				RECT rect{};
 				::GetWindowRect( hWnd, &rect );
-				m_descs = updateSurfaceCapabilities( m_displayModes
+				updateSurfaceCapabilities( m_displayModes
 					, rect
-					, m_surfaceCapabilities );
+					, m_surfaceCapabilities
+					, m_descs
+					, m_matchingDescs );
 			}
 			else if ( isDisplay() )
 			{
 				RECT rect{};
 				rect.right = m_displayCreateInfo.imageExtent.width;
 				rect.bottom = m_displayCreateInfo.imageExtent.height;
-				m_descs = updateSurfaceCapabilities( m_displayModes
+				updateSurfaceCapabilities( m_displayModes
 					, rect
-					, m_surfaceCapabilities );
+					, m_surfaceCapabilities
+					, m_descs
+					, m_matchingDescs );
+			}
+
+			m_surfaceCapabilities.supportedUsageFlags = VK_IMAGE_TYPE_MAX_ENUM;
+
+			for ( auto surfaceFormat : m_surfaceFormats )
+			{
+				auto props = get( m_currentPhysicalDevice )->getFormatProperties( surfaceFormat.format );
+				mergeFlags( m_surfaceCapabilities.supportedUsageFlags
+					, getUsageFlags( props.linearTilingFeatures ) );
 			}
 		}
 	}

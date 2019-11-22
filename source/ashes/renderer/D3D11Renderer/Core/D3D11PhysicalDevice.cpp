@@ -13,6 +13,103 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
+	namespace
+	{
+		int getBitSize( uint64_t value )
+		{
+			static constexpr int bitPatternToLog2[128]
+			{
+				0, // change to 0 if you want bitSize(0) = 0
+				48, -1, -1, 31, -1, 15, 51, -1, 63, 5, -1, -1, -1, 19, -1,
+				23, 28, -1, -1, -1, 40, 36, 46, -1, 13, -1, -1, -1, 34, -1, 58,
+				-1, 60, 2, 43, 55, -1, -1, -1, 50, 62, 4, -1, 18, 27, -1, 39,
+				45, -1, -1, 33, 57, -1, 1, 54, -1, 49, -1, 17, -1, -1, 32, -1,
+				53, -1, 16, -1, -1, 52, -1, -1, -1, 64, 6, 7, 8, -1, 9, -1,
+				-1, -1, 20, 10, -1, -1, 24, -1, 29, -1, -1, 21, -1, 11, -1, -1,
+				41, -1, 25, 37, -1, 47, -1, 30, 14, -1, -1, -1, -1, 22, -1, -1,
+				35, 12, -1, -1, -1, 59, 42, -1, -1, 61, 3, 26, 38, 44, -1, 56
+			};
+			static uint64_t constexpr multiplicator = 0x6c04f118e9966f6bull;
+			value |= value >> 1;
+			value |= value >> 2;
+			value |= value >> 4;
+			value |= value >> 8;
+			value |= value >> 16;
+			value |= value >> 32;
+			return bitPatternToLog2[( value * multiplicator ) >> 57];
+		}
+
+		int getBitSize( uint32_t value )
+		{
+			return getBitSize( uint64_t( value ) );
+		}
+
+		uint32_t getMaxMipLevels( uint32_t minDim )
+		{
+			return uint32_t( getBitSize( minDim ) );
+		}
+
+		template< typename FlagType >
+		inline VkFlags & addFlag( VkFlags & value
+			, FlagType const & flag )noexcept
+		{
+			value |= flag;
+			return value;
+		}
+	}
+
+	VkImageUsageFlags getUsageFlags( VkFormatFeatureFlags flags )
+	{
+		VkImageUsageFlags result{};
+
+		if ( checkFlag( flags, VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT
+			| VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT
+			| VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT
+			| VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER_BIT
+			| VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT
+			| VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE_BIT
+			| VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG
+			| VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT_EXT ) )
+		{
+			result |= VK_IMAGE_USAGE_SAMPLED_BIT;
+			result |= VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
+		}
+
+		if ( checkFlag( flags, VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT
+			| VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT ) )
+		{
+			result |= VK_IMAGE_USAGE_STORAGE_BIT;
+		}
+
+		if ( checkFlag( flags, VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT
+			| VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT ) )
+		{
+			result |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+		}
+
+		if ( checkFlag( flags, VK_FORMAT_FEATURE_TRANSFER_DST_BIT ) )
+		{
+			result |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+		}
+
+		if ( checkFlag( flags, VK_FORMAT_FEATURE_TRANSFER_SRC_BIT ) )
+		{
+			result |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+		}
+
+		if ( checkFlag( flags, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT ) )
+		{
+			result |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+		}
+
+		if ( checkFlag( flags, VK_FORMAT_FEATURE_FRAGMENT_DENSITY_MAP_BIT_EXT ) )
+		{
+			result |= VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT;
+		}
+
+		return result;
+	}
+
 	PhysicalDevice::PhysicalDevice( VkInstance instance
 		, AdapterInfo adapterInfo )
 		: m_instance{ instance }
@@ -98,7 +195,108 @@ namespace ashes::d3d11
 		, VkImageCreateFlags flags
 		, VkImageFormatProperties & imageProperties )const
 	{
-		return VK_ERROR_FORMAT_NOT_SUPPORTED;
+		auto & formatProperties = m_formatProperties[format];
+
+		if ( formatProperties.linearTilingFeatures == 0u )
+		{
+			return VK_ERROR_FORMAT_NOT_SUPPORTED;
+		}
+
+		if ( !checkFlag( getUsageFlags( formatProperties.linearTilingFeatures ), usage ) )
+		{
+			return VK_ERROR_FORMAT_NOT_SUPPORTED;
+		}
+
+		imageProperties.maxExtent.width = 1u;
+		imageProperties.maxExtent.height = 1u;
+		imageProperties.maxExtent.depth = 1u;
+		imageProperties.maxArrayLayers = 1u;
+		imageProperties.sampleCounts = VK_SAMPLE_COUNT_1_BIT;
+
+		switch ( type )
+		{
+		case VK_IMAGE_TYPE_1D:
+			imageProperties.maxExtent.width = m_properties.limits.maxImageDimension1D;
+			imageProperties.maxArrayLayers = D3D11_REQ_TEXTURE1D_ARRAY_AXIS_DIMENSION;
+			break;
+		case VK_IMAGE_TYPE_2D:
+			imageProperties.maxExtent.width = m_properties.limits.maxImageDimension2D;
+			imageProperties.maxExtent.height = m_properties.limits.maxImageDimension2D;
+			imageProperties.maxArrayLayers = D3D11_REQ_TEXTURE2D_ARRAY_AXIS_DIMENSION;
+			break;
+		case VK_IMAGE_TYPE_3D:
+			imageProperties.maxExtent.width = m_properties.limits.maxImageDimension3D;
+			imageProperties.maxExtent.height = m_properties.limits.maxImageDimension3D;
+			imageProperties.maxExtent.depth = m_properties.limits.maxImageDimension3D;
+			break;
+		}
+
+		if ( tiling != VK_IMAGE_TILING_LINEAR
+			&& type == VK_IMAGE_TYPE_2D
+			&& !checkFlag( flags, VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT )
+			//&& !checkFlag( formatProperties.optimalTilingFeatures, VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT )
+			//&& !checkFlag( formatProperties.optimalTilingFeatures, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT )
+			&& !checkFlag( usage, VK_IMAGE_USAGE_SHADING_RATE_IMAGE_BIT_NV )
+			&& !checkFlag( usage, VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT )
+			&& !isYCBCRFormat( format ) )
+		{
+			if ( checkFlag( usage, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT ) )
+			{
+				addFlag( imageProperties.sampleCounts, m_properties.limits.framebufferColorSampleCounts );
+			}
+
+			if ( checkFlag( usage, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT ) )
+			{
+				if ( isDepthStencilFormat( format ) )
+				{
+					addFlag( imageProperties.sampleCounts
+						, std::min( m_properties.limits.framebufferDepthSampleCounts
+							, m_properties.limits.framebufferStencilSampleCounts ) );
+				}
+				else if ( isDepthFormat( format ) )
+				{
+					addFlag( imageProperties.sampleCounts, m_properties.limits.framebufferDepthSampleCounts );
+				}
+				else if ( isStencilFormat( format ) )
+				{
+					addFlag( imageProperties.sampleCounts, m_properties.limits.framebufferStencilSampleCounts );
+				}
+			}
+
+			if ( checkFlag( usage, VK_IMAGE_USAGE_SAMPLED_BIT ) )
+			{
+				if ( isDepthStencilFormat( format ) )
+				{
+					addFlag( imageProperties.sampleCounts
+						, std::min( m_properties.limits.sampledImageDepthSampleCounts
+							, m_properties.limits.sampledImageStencilSampleCounts ) );
+				}
+				else if ( isDepthFormat( format ) )
+				{
+					addFlag( imageProperties.sampleCounts, m_properties.limits.sampledImageDepthSampleCounts );
+				}
+				else if ( isStencilFormat( format ) )
+				{
+					addFlag( imageProperties.sampleCounts, m_properties.limits.sampledImageStencilSampleCounts );
+				}
+				else
+				{
+					addFlag( imageProperties.sampleCounts, m_properties.limits.sampledImageColorSampleCounts );
+				}
+			}
+
+			if ( checkFlag( usage, VK_IMAGE_USAGE_STORAGE_BIT ) )
+			{
+				addFlag( imageProperties.sampleCounts, m_properties.limits.storageImageSampleCounts );
+			}
+		}
+
+		imageProperties.maxMipLevels = getMaxMipLevels( imageProperties.maxExtent.width );
+		imageProperties.maxResourceSize = imageProperties.maxArrayLayers * ashes::getLevelsSize( imageProperties.maxExtent
+			, format
+			, 0u
+			, imageProperties.maxMipLevels );
+		return VK_SUCCESS;
 	}
 
 	VkResult PhysicalDevice::getSparseImageFormatProperties( VkFormat format

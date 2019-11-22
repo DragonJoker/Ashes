@@ -8,6 +8,8 @@ See LICENSE file in root folder
 
 namespace ashes::d3d11
 {
+	VkImageUsageFlags getUsageFlags( VkFormatFeatureFlags flags );
+
 	class PhysicalDevice
 	{
 	public:
