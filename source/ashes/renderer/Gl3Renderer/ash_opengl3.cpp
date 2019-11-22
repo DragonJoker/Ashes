@@ -788,11 +788,7 @@ namespace ashes::gl3
 		void * pData )
 	{
 		auto & data = get( pipelineCache )->getData();
-
-		if ( pDataSize )
-		{
-			*pDataSize = data.size();
-		}
+		*pDataSize = data.size();
 
 		if ( pData )
 		{
@@ -1268,7 +1264,7 @@ namespace ashes::gl3
 	{
 		get( commandBuffer )->bindVertexBuffers( firstBinding
 			, { pBuffers, pBuffers + bindingCount }
-		, { pOffsets, pOffsets + bindingCount } );
+			, { pOffsets, pOffsets + bindingCount } );
 	}
 
 	void VKAPI_CALL vkCmdDraw(
@@ -1489,12 +1485,11 @@ namespace ashes::gl3
 		uint32_t regionCount,
 		const VkImageResolve * pRegions )
 	{
-		reportUnsupported( commandBuffer, "vkCmdResolveImage" );
-		//get( commandBuffer )->resolveImage( srcImage
-		//	, srcImageLayout
-		//	, dstImage
-		//	, dstImageLayout
-		//	, { pRegions, pRegions + regionCount } );
+		get( commandBuffer )->resolveImage( srcImage
+			, srcImageLayout
+			, dstImage
+			, dstImageLayout
+			, { pRegions, pRegions + regionCount } );
 	}
 
 	void VKAPI_CALL vkCmdSetEvent(
