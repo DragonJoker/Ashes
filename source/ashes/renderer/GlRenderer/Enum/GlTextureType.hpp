@@ -25,6 +25,7 @@ namespace ashes::gl
 		GL_TEXTURE_CUBE_ARRAY = 0x9009,
 		GL_TEXTURE_2D_MULTISAMPLE = 0x9100,
 		GL_TEXTURE_2D_MULTISAMPLE_ARRAY = 0x9102,
+		GL_TEXTURE_SPARSE = 0x91A6,
 	};
 	std::string getName( GlTextureType value );
 

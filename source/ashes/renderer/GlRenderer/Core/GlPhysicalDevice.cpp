@@ -11,6 +11,7 @@ See LICENSE file in root folder.
 #include "ashesgl_api.hpp"
 
 #include <ashes/common/Hash.hpp>
+#include <ashes/common/Hash.hpp>
 
 #if defined( __linux__ )
 #	include <X11/Xlib.h>
@@ -280,6 +281,18 @@ namespace ashes::gl
 		static GLenum constexpr GL_LINE_WIDTH_GRANULARITY = 0x0B23;
 #endif
 
+		enum SparseParams : GLenum
+		{
+			GL_VIRTUAL_PAGE_SIZE_X = 0x9195,
+			GL_VIRTUAL_PAGE_SIZE_Y = 0x9196,
+			GL_VIRTUAL_PAGE_SIZE_Z = 0x9197,
+			GL_MAX_SPARSE_TEXTURE_SIZE = 0x9198,
+			GL_MAX_SPARSE_3D_TEXTURE_SIZE = 0x9199,
+			GL_MAX_SPARSE_ARRAY_TEXTURE_LAYERS = 0x919A,
+			GL_NUM_VIRTUAL_PAGE_SIZES = 0x91A8,
+			GL_SPARSE_TEXTURE_FULL_ARRAY_CUBE_MIPMAPS_ARB = 0x91A9,
+		};
+
 		size_t makeKey( VkFormat format
 			, VkImageType type
 			, VkImageTiling tiling
@@ -291,6 +304,20 @@ namespace ashes::gl
 			hashCombine( hash, tiling );
 			hashCombine( hash, usage );
 			hashCombine( hash, flags );
+			return hash;
+		}
+
+		size_t makeKey( VkFormat format
+			, VkImageType type
+			, VkSampleCountFlagBits samples
+			, VkImageUsageFlags usage
+			, VkImageTiling tiling)
+		{
+			auto hash = std::hash< VkFormat >{}( format );
+			hashCombine( hash, type );
+			hashCombine( hash, samples );
+			hashCombine( hash, usage );
+			hashCombine( hash, tiling );
 			return hash;
 		}
 
@@ -482,7 +509,69 @@ namespace ashes::gl
 		, VkImageTiling tiling
 		, std::vector< VkSparseImageFormatProperties > & sparseImageFormatProperties )const
 	{
-		return VK_ERROR_FORMAT_NOT_SUPPORTED;
+		auto pair = m_sparseImageFormatProperties.insert( { makeKey( format
+				, type
+				, VkSampleCountFlagBits{}
+				, VkImageUsageFlags{}
+				, VkImageTiling{} )
+			, {} } );
+
+		if ( pair.second )
+		{
+			ContextLock context{ get( m_instance )->getCurrentContext() };
+			auto internal = getInternalFormat( format );
+			auto gltype = convert( get( this ), type, 1u, 0u );
+			GLint value;
+			glLogCall( context, glGetInternalformativ, gltype, internal, GL_INTERNALFORMAT_SUPPORTED, 1, &value );
+
+			if ( value == GL_FALSE )
+			{
+				return VK_ERROR_FORMAT_NOT_SUPPORTED;
+			}
+
+			int count = 0;
+			glLogCall( context, glGetInternalformativ, gltype, internal, GL_NUM_VIRTUAL_PAGE_SIZES, 1, &count );
+
+			if ( !count )
+			{
+				return VK_ERROR_FORMAT_NOT_SUPPORTED;
+			}
+
+			std::vector< int > sizesX;
+			std::vector< int > sizesY;
+			std::vector< int > sizesZ;
+			sizesX.resize( size_t( count ), 1 );
+			sizesY.resize( size_t( count ), 1 );
+			sizesZ.resize( size_t( count ), 1 );
+			glLogCall( context, glGetInternalformativ, gltype, internal, GL_VIRTUAL_PAGE_SIZE_X, count, sizesX.data() );
+
+			if ( type == VK_IMAGE_TYPE_2D
+				|| type == VK_IMAGE_TYPE_3D )
+			{
+				glLogCall( context, glGetInternalformativ, gltype, internal, GL_VIRTUAL_PAGE_SIZE_Y, count, sizesY.data() );
+
+				if ( type == VK_IMAGE_TYPE_3D )
+				{
+					glLogCall( context, glGetInternalformativ, gltype, internal, GL_VIRTUAL_PAGE_SIZE_Z, count, sizesZ.data() );
+				}
+			}
+
+			for ( int i = 0; i < count; ++i )
+			{
+				VkSparseImageFormatProperties sparseImageProperties;
+				sparseImageProperties.imageGranularity.width = sizesX[i];
+				sparseImageProperties.imageGranularity.height = sizesY[i];
+				sparseImageProperties.imageGranularity.depth = sizesZ[i];
+				sparseImageProperties.aspectMask = getAspectMask( format );
+				sparseImageProperties.flags = 0u;
+				pair.first->second.push_back( sparseImageProperties );
+			}
+		}
+
+		sparseImageFormatProperties = pair.first->second;
+		return sparseImageFormatProperties.empty()
+			? VK_ERROR_FORMAT_NOT_SUPPORTED
+			: VK_SUCCESS;
 	}
 
 #if VK_VERSION_1_1

@@ -142,6 +142,7 @@ namespace ashes::gl
 		std::vector< std::string > m_displayNames;
 		std::vector< VkDisplayPropertiesKHR >m_displays;
 		std::vector< VkDisplayPlanePropertiesKHR > m_displayPlanes;
+		mutable std::map< size_t, std::vector< VkSparseImageFormatProperties > > m_sparseImageFormatProperties;
 #endif
 	};
 

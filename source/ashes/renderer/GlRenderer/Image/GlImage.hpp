@@ -95,6 +95,7 @@ namespace ashes::gl
 		}
 
 	private:
+		void doInitialiseSparseMemoryRequirements( ContextLock & context );
 		void doInitialiseMemoryRequirements();
 
 	private:
@@ -114,6 +115,7 @@ namespace ashes::gl
 		bool m_swapchainImage{ false };
 		VkDeviceMemory m_memory{ nullptr };
 		VkMemoryRequirements m_memoryRequirements;
+		std::vector< VkSparseImageMemoryRequirements > m_sparseMemoryRequirements;
 	};
 }
 

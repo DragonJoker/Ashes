@@ -15,6 +15,12 @@
 
 namespace ashes::gl
 {
+	enum SparseParams
+	{
+		GL_NUM_SPARSE_LEVELS_ARB = 0x91AA,
+		GL_TEXTURE_SPARSE_ARB = 0x91A6,
+	};
+
 	namespace gl3
 	{
 		GlTextureType convert( VkImageType type
@@ -222,6 +228,11 @@ namespace ashes::gl
 			, m_target
 			, 0 );
 		doInitialiseMemoryRequirements();
+
+		if ( checkFlag( m_flags, VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT ) )
+		{
+			doInitialiseSparseMemoryRequirements( context );
+		}
 	}
 
 	Image::~Image()
@@ -240,7 +251,50 @@ namespace ashes::gl
 
 	std::vector< VkSparseImageMemoryRequirements > Image::getSparseImageMemoryRequirements()const
 	{
-		return {};
+		return m_sparseMemoryRequirements;
+	}
+
+	void Image::doInitialiseSparseMemoryRequirements( ContextLock & context )
+	{
+		glLogCall( context
+			, glBindTexture
+			, m_target
+			, m_internal );
+		glLogCall( context
+			, glTexParameteri
+			, m_target
+			, GL_TEXTURE_SPARSE_ARB
+			, GL_TRUE );
+		int imageMipTailFirstLod{};
+		glLogCall( context
+			, glGetTexParameteriv
+			, m_target
+			, GL_NUM_SPARSE_LEVELS_ARB
+			, &imageMipTailFirstLod );
+		glLogCall( context
+			, glBindTexture
+			, m_target
+			, 0 );
+
+		std::vector< VkSparseImageFormatProperties > props;
+		get( get( m_device )->getPhysicalDevice() )->getSparseImageFormatProperties( m_format
+			, m_imageType
+			, m_samples
+			, m_usage
+			, m_tiling
+			, props );
+
+		for ( auto & prop : props )
+		{
+			m_sparseMemoryRequirements.push_back(
+				{
+					std::move( prop ),
+					uint32_t( imageMipTailFirstLod ),
+					m_memoryRequirements.size,
+					0u,
+					0u,
+				} );
+		}
 	}
 
 	void Image::doInitialiseMemoryRequirements()
@@ -249,8 +303,28 @@ namespace ashes::gl
 		m_memoryRequirements.size = getTotalSize( getDimensions(), getFormat(), getArrayLayers(), getMipLevels() );
 		auto extent = ashes::getMinimalExtent3D( getFormat() );
 		m_memoryRequirements.alignment = getSize( extent, getFormat() );
-		m_memoryRequirements.memoryTypeBits = physicalDevice->getMemoryTypeBits( VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
-			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT );
+
+		if ( checkFlag( m_flags, VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT ) )
+		{
+			std::vector< VkSparseImageFormatProperties > props;
+			get( get( m_device )->getPhysicalDevice() )->getSparseImageFormatProperties( m_format
+				, m_imageType
+				, m_samples
+				, m_usage
+				, m_tiling
+				, props );
+			auto formatProperties = props.front();
+			m_memoryRequirements.alignment *= formatProperties.imageGranularity.width
+				* formatProperties.imageGranularity.height
+				* formatProperties.imageGranularity.depth;
+			m_memoryRequirements.memoryTypeBits = VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD;
+		}
+		else
+		{
+			m_memoryRequirements.memoryTypeBits = physicalDevice->getMemoryTypeBits( VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+				, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT );
+		}
+
 		m_memoryRequirements.size = ashes::getAlignedSize( m_memoryRequirements.size, m_memoryRequirements.alignment );
 	}
 }
