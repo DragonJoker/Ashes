@@ -515,7 +515,7 @@ namespace ashes::d3d11
 		m_features.shaderInt64 = false;
 		m_features.shaderInt16 = false;
 		m_features.shaderResourceResidency = false;
-		m_features.shaderResourceMinLod = true;
+		m_features.shaderResourceMinLod = false;
 		m_features.sparseBinding = false;
 		m_features.sparseResidencyBuffer = false;
 		m_features.sparseResidencyImage2D = false;

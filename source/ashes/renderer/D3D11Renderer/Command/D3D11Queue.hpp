@@ -15,18 +15,11 @@ namespace ashes::d3d11
 			, VkDeviceQueueCreateInfo createInfo
 			, uint32_t index );
 		~Queue();
-		/**
-		*\copydoc		ashes::Queue::submit
-		*/ 
 		VkResult submit( VkSubmitInfoArray const & infos
 			, VkFence fence )const;
-		/**
-		*\copydoc		Queue::present
-		*/
+		VkResult bindSparse( ArrayView< VkBindSparseInfo const > values
+			, VkFence fence )const;
 		VkResult present( VkPresentInfoKHR const & presentInfo )const;
-		/**
-		*\copydoc		ashes::Queue::waitIdle
-		*/
 		VkResult waitIdle()const;
 #if VK_EXT_debug_utils
 		void beginDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const;

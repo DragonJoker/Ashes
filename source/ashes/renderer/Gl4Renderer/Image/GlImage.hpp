@@ -26,6 +26,7 @@ namespace ashes::gl4
 		~Image();
 
 		VkMemoryRequirements getMemoryRequirements()const;
+		std::vector< VkSparseImageMemoryRequirements > getSparseImageMemoryRequirements()const;
 
 		inline bool hasInternal()const noexcept
 		{
@@ -94,6 +95,9 @@ namespace ashes::gl4
 		}
 
 	private:
+		void doInitialiseMemoryRequirements();
+
+	private:
 		VkDevice m_device;
 		VkImageCreateFlags m_flags;
 		VkImageType m_imageType;
@@ -110,6 +114,7 @@ namespace ashes::gl4
 		GLuint m_internal{ GL_INVALID_INDEX };
 		bool m_swapchainImage{ false };
 		VkDeviceMemory m_memory{ nullptr };
+		VkMemoryRequirements m_memoryRequirements;
 	};
 }
 
