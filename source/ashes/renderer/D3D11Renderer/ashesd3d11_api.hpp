@@ -247,8 +247,8 @@ namespace ashes::d3d11
 		return !( lhs == rhs );
 	}
 
-	std::vector< VkExtensionProperties > const & getSupportedInstanceExtensions();
-	std::vector< VkExtensionProperties > const & getSupportedDeviceExtensions();
+	std::vector< VkExtensionProperties > const & getSupportedInstanceExtensions( const char * pLayerName );
+	std::vector< VkLayerProperties > const & getInstanceLayerProperties();
 
 
 	inline VkInstance getInstance( VkInstance object )

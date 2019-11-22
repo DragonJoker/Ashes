@@ -17,7 +17,7 @@ namespace ashes::d3d11
 
 		VkBool32 getPresentationSupport( uint32_t queueFamilyIndex )const;
 		VkLayerPropertiesArray enumerateLayerProperties()const;
-		VkExtensionPropertiesArray enumerateExtensionProperties( std::string const & layerName )const;
+		VkExtensionPropertiesArray enumerateExtensionProperties( const char * layerName )const;
 		VkPhysicalDeviceProperties const & getProperties()const;
 		VkPhysicalDeviceMemoryProperties getMemoryProperties()const;
 		VkPhysicalDeviceFeatures getFeatures()const;

@@ -94,9 +94,10 @@ namespace ashes::d3d11
 			return result;
 		}
 
-		void doCheckEnabledExtensions( ashes::ArrayView< char const * const > const & extensions )
+		void doCheckEnabledExtensions( VkPhysicalDevice physicalDevice
+			, ashes::ArrayView< char const * const > const & extensions )
 		{
-			auto & available = getSupportedDeviceExtensions();
+			auto & available = get( physicalDevice )->enumerateExtensionProperties( {} );
 
 			for ( auto & extension : extensions )
 			{
@@ -120,7 +121,8 @@ namespace ashes::d3d11
 		, m_physicalDevice{ physicalDevice }
 		, m_createInfos{ std::move( createInfos ) }
 	{
-		doCheckEnabledExtensions( ashes::makeArrayView( m_createInfos.ppEnabledExtensionNames, m_createInfos.enabledExtensionCount ) );
+		doCheckEnabledExtensions( physicalDevice
+			, ashes::makeArrayView( m_createInfos.ppEnabledExtensionNames, m_createInfos.enabledExtensionCount ) );
 		doCreateD3D11Device();
 		doCreateDummyIndexBuffer();
 		doCreateQueues();

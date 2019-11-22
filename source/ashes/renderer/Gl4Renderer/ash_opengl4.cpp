@@ -187,14 +187,14 @@ namespace ashes::gl4
 		uint32_t* pPropertyCount,
 		VkExtensionProperties* pProperties )
 	{
-		auto & extensions = getSupportedDeviceExtensions();
-		*pPropertyCount = uint32_t( extensions.size() );
+		auto & props = get( physicalDevice )->enumerateExtensionProperties( pLayerName );
+		*pPropertyCount = uint32_t( props.size() );
 
 		if ( pProperties )
 		{
-			for ( auto & extension : extensions )
+			for ( auto & prop : props )
 			{
-				*pProperties = extension;
+				*pProperties = prop;
 				++pProperties;
 			}
 		}
@@ -206,8 +206,18 @@ namespace ashes::gl4
 		uint32_t* pPropertyCount,
 		VkLayerProperties* pProperties )
 	{
-		// TODO
-		*pPropertyCount = 0u;
+		auto & props = getInstanceLayerProperties();
+		*pPropertyCount = uint32_t( props.size() );
+
+		if ( pProperties )
+		{
+			for ( auto & prop : props )
+			{
+				*pProperties = prop;
+				++pProperties;
+			}
+		}
+
 		return VK_SUCCESS;
 	}
 
@@ -216,8 +226,18 @@ namespace ashes::gl4
 		uint32_t* pPropertyCount,
 		VkLayerProperties* pProperties )
 	{
-		// TODO
-		*pPropertyCount = 0u;
+		auto & props = get( physicalDevice )->enumerateLayerProperties();
+		*pPropertyCount = uint32_t( props.size() );
+
+		if ( pProperties )
+		{
+			for ( auto & prop : props )
+			{
+				*pProperties = prop;
+				++pProperties;
+			}
+		}
+
 		return VK_SUCCESS;
 	}
 
@@ -3879,57 +3899,37 @@ namespace ashes::gl4
 		static std::vector< VkExtensionProperties > const extensions
 		{
 #if VK_KHR_surface
-			VkExtensionProperties{ VK_KHR_SURFACE_EXTENSION_NAME, makeVersion( 1, 0, 0 ) },
+			VkExtensionProperties{ VK_KHR_SURFACE_EXTENSION_NAME, VK_KHR_SURFACE_SPEC_VERSION },
+#endif
 #	if _WIN32
 			VkExtensionProperties{ VK_KHR_WIN32_SURFACE_EXTENSION_NAME, VK_KHR_WIN32_SURFACE_SPEC_VERSION },
 #	elif __linux__
 			VkExtensionProperties{ VK_KHR_XLIB_SURFACE_EXTENSION_NAME, VK_KHR_XLIB_SURFACE_SPEC_VERSION },
 			VkExtensionProperties{ VK_KHR_XCB_SURFACE_EXTENSION_NAME, VK_KHR_XCB_SURFACE_SPEC_VERSION },
 #	endif
-#endif
 #if VK_EXT_debug_report
-			VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_REPORT_SPEC_VERSION, 0, 0 ) },
+			VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, VK_EXT_DEBUG_REPORT_SPEC_VERSION },
 #endif
 #if VK_EXT_debug_marker
-			VkExtensionProperties{ VK_EXT_DEBUG_MARKER_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_MARKER_SPEC_VERSION, 0, 0 ) },
+			VkExtensionProperties{ VK_EXT_DEBUG_MARKER_EXTENSION_NAME, VK_EXT_DEBUG_MARKER_SPEC_VERSION },
 #endif
 #if VK_EXT_debug_utils
-			VkExtensionProperties{ VK_EXT_DEBUG_UTILS_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_UTILS_SPEC_VERSION, 0, 0 ) },
+			VkExtensionProperties{ VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_EXT_DEBUG_UTILS_SPEC_VERSION },
 #endif
 #if VK_KHR_get_physical_device_properties2
-			VkExtensionProperties{ VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, makeVersion( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_SPEC_VERSION, 0, 0 ) },
+			VkExtensionProperties{ VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_SPEC_VERSION },
 #endif
 #if VK_KHR_display
-			VkExtensionProperties{ VK_KHR_DISPLAY_EXTENSION_NAME, makeVersion( VK_KHR_DISPLAY_SPEC_VERSION, 0, 0 ) },
+			VkExtensionProperties{ VK_KHR_DISPLAY_EXTENSION_NAME, VK_KHR_DISPLAY_SPEC_VERSION },
 #endif
 		};
 		return extensions;
 	}
-	
-	std::vector< VkExtensionProperties > const & getSupportedDeviceExtensions()
+
+	std::vector< VkLayerProperties > const & getInstanceLayerProperties()
 	{
-		static std::vector< VkExtensionProperties > const extensions
-		{
-#if VK_KHR_swapchain
-			VkExtensionProperties{ VK_KHR_SWAPCHAIN_EXTENSION_NAME, makeVersion( VK_KHR_SWAPCHAIN_SPEC_VERSION, 0, 0 ) },
-#endif
-#if VK_EXT_debug_report
-			VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_REPORT_SPEC_VERSION, 0, 0 ) },
-#endif
-#if VK_EXT_debug_marker
-			VkExtensionProperties{ VK_EXT_DEBUG_MARKER_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_MARKER_SPEC_VERSION, 0, 0 ) },
-#endif
-#if VK_EXT_debug_utils
-			VkExtensionProperties{ VK_EXT_DEBUG_UTILS_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_UTILS_SPEC_VERSION, 0, 0 ) },
-#endif
-#if VK_EXT_inline_uniform_block
-			VkExtensionProperties{ VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME, makeVersion( VK_EXT_INLINE_UNIFORM_BLOCK_SPEC_VERSION, 0, 0 ) },
-#endif
-#if VK_KHR_maintenance1
-			VkExtensionProperties{ VK_KHR_MAINTENANCE1_EXTENSION_NAME, makeVersion( VK_KHR_MAINTENANCE1_SPEC_VERSION, 0, 0 ) },
-#endif
-		};
-		return extensions;
+		static std::vector< VkLayerProperties > result;
+		return result;
 	}
 
 	struct GlLibrary
