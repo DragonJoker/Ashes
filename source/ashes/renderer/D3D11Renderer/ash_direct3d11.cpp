@@ -781,11 +781,7 @@ namespace ashes::d3d11
 		void * pData )
 	{
 		auto & data = get( pipelineCache )->getData();
-
-		if ( pDataSize )
-		{
-			*pDataSize = data.size();
-		}
+		*pDataSize = data.size();
 
 		if ( pData )
 		{
@@ -1484,12 +1480,11 @@ namespace ashes::d3d11
 		uint32_t regionCount,
 		const VkImageResolve * pRegions )
 	{
-		reportUnsupported( commandBuffer, "vkCmdResolveImage" );
-		//get( commandBuffer )->resolveImage( srcImage
-		//	, srcImageLayout
-		//	, dstImage
-		//	, dstImageLayout
-		//	, { pRegions, pRegions + regionCount } );
+		get( commandBuffer )->resolveImage( srcImage
+			, srcImageLayout
+			, dstImage
+			, dstImageLayout
+			, { pRegions, pRegions + regionCount } );
 	}
 
 	void VKAPI_CALL vkCmdSetEvent(
