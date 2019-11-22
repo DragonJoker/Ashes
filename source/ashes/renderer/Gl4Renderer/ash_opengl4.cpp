@@ -1607,14 +1607,13 @@ namespace ashes::gl4
 		VkDeviceSize stride,
 		VkQueryResultFlags flags )
 	{
-		reportUnsupported( commandBuffer, "vkCmdCopyQueryPoolResults" );
-		//get( commandBuffer )->copyQueryPoolResults( queryPool
-		//	, firstQuery
-		//	, queryCount
-		//	, dstBuffer
-		//	, dstOffset
-		//	, stride
-		//	, flags );
+		get( commandBuffer )->copyQueryPoolResults( queryPool
+			, firstQuery
+			, queryCount
+			, dstBuffer
+			, dstOffset
+			, stride
+			, flags );
 	}
 
 	void VKAPI_CALL vkCmdPushConstants(
