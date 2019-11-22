@@ -445,6 +445,12 @@ namespace ashes::gl4
 		return VK_SUCCESS;
 	}
 
+	VkResult Queue::bindSparse( ArrayView< VkBindSparseInfo const > values
+		, VkFence fence )const
+	{
+		return VK_ERROR_FEATURE_NOT_PRESENT;
+	}
+
 	VkResult Queue::waitIdle()const
 	{
 		auto context = ( ( Device * )m_device )->getContext();

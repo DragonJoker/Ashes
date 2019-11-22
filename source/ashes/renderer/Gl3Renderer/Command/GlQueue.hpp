@@ -23,6 +23,8 @@ namespace ashes::gl3
 
 		VkResult submit( VkSubmitInfoArray const & values
 			, VkFence fence )const;
+		VkResult bindSparse( ArrayView< VkBindSparseInfo const > values
+			, VkFence fence )const;
 		VkResult present( VkPresentInfoKHR const & presentInfo )const;
 		VkResult waitIdle()const;
 #if VK_EXT_debug_utils

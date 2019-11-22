@@ -372,7 +372,17 @@ namespace ashes::d3d11
 		uint32_t * pSparseMemoryRequirementCount,
 		VkSparseImageMemoryRequirements * pSparseMemoryRequirements )
 	{
-		reportUnsupported( device, "vkGetImageSparseMemoryRequirements" );
+		auto props = get( image )->getSparseImageMemoryRequirements();
+		*pSparseMemoryRequirementCount = uint32_t( props.size() );
+
+		if ( pSparseMemoryRequirements )
+		{
+			for ( auto & prop : props )
+			{
+				*pSparseMemoryRequirements = prop;
+				++pSparseMemoryRequirements;
+			}
+		}
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceSparseImageFormatProperties(
@@ -410,7 +420,7 @@ namespace ashes::d3d11
 		const VkBindSparseInfo * pBindInfo,
 		VkFence fence )
 	{
-		return reportUnsupported( queue, "vkQueueBindSparse" );
+		return get( queue )->bindSparse( makeArrayView( pBindInfo, bindInfoCount ), fence );
 	}
 
 	VkResult VKAPI_CALL vkCreateFence(

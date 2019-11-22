@@ -135,6 +135,7 @@ namespace ashes::gl3
 			, glGenTextures
 			, 1
 			, &m_internal );
+		doInitialiseMemoryRequirements();
 	}
 
 	Image::~Image()
@@ -148,14 +149,23 @@ namespace ashes::gl3
 
 	VkMemoryRequirements Image::getMemoryRequirements()const
 	{
-		VkMemoryRequirements result{};
-		result.size = getTotalSize( getDimensions(), getFormat(), getArrayLayers(), getMipLevels() );
+		return m_memoryRequirements;
+	}
+
+	std::vector< VkSparseImageMemoryRequirements > Image::getSparseImageMemoryRequirements()const
+	{
+		return {};
+	}
+
+	void Image::doInitialiseMemoryRequirements()
+	{
+		m_memoryRequirements.size = getTotalSize( getDimensions(), getFormat(), getArrayLayers(), getMipLevels() );
 		auto extent = ashes::getMinimalExtent3D( getFormat() );
-		result.alignment = getSize( extent, getFormat() );
-		result.memoryTypeBits = ( checkFlag( getUsage(), VK_IMAGE_USAGE_TRANSFER_DST_BIT )
+		m_memoryRequirements.alignment = getSize( extent, getFormat() );
+		m_memoryRequirements.memoryTypeBits = ( checkFlag( getUsage(), VK_IMAGE_USAGE_TRANSFER_DST_BIT )
 			|| checkFlag( getUsage(), VK_IMAGE_USAGE_TRANSFER_SRC_BIT ) )
 			? VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
 			: VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-		return result;
+		m_memoryRequirements.size = ashes::getAlignedSize( m_memoryRequirements.size, m_memoryRequirements.alignment );
 	}
 }

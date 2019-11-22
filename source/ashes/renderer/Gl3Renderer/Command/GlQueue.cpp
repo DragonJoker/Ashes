@@ -490,6 +490,12 @@ namespace ashes::gl3
 		}
 	}
 
+	VkResult Queue::bindSparse( ArrayView< VkBindSparseInfo const > values
+		, VkFence fence )const
+	{
+		return VK_ERROR_FEATURE_NOT_PRESENT;
+	}
+
 #if VK_EXT_debug_utils
 
 	void Queue::beginDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const

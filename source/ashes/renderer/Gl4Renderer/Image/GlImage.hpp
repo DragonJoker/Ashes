@@ -26,6 +26,7 @@ namespace ashes::gl4
 		~Image();
 
 		VkMemoryRequirements getMemoryRequirements()const;
+		std::vector< VkSparseImageMemoryRequirements > getSparseImageMemoryRequirements()const;
 
 		inline bool hasInternal()const noexcept
 		{

@@ -17,6 +17,7 @@ namespace ashes::d3d11
 		: m_device{ rhs.m_device }
 		, m_createInfo{ std::move( rhs.m_createInfo ) }
 		, m_image{ rhs.m_image }
+		, m_memoryRequirements{ rhs.m_memoryRequirements }
 	{
 		rhs.m_image.tex1D = nullptr;
 	}
@@ -24,6 +25,7 @@ namespace ashes::d3d11
 	Image & Image::operator=( Image && rhs )
 	{
 		m_image = rhs.m_image;
+		m_memoryRequirements = rhs.m_memoryRequirements;
 		m_createInfo = std::move( rhs.m_createInfo );
 		rhs.m_image.tex1D = nullptr;
 		return *this;
@@ -35,6 +37,7 @@ namespace ashes::d3d11
 		, m_createInfo{ std::move( createInfo ) }
 		, m_image{ nullptr }
 	{
+		doInitialiseMemoryRequirements();
 	}
 
 	Image::Image( VkDevice device
@@ -90,6 +93,7 @@ namespace ashes::d3d11
 				VK_IMAGE_LAYOUT_UNDEFINED
 			} }
 	{
+		doInitialiseMemoryRequirements();
 	}
 
 	Image::~Image()
@@ -98,15 +102,24 @@ namespace ashes::d3d11
 
 	VkMemoryRequirements Image::getMemoryRequirements()const
 	{
-		VkMemoryRequirements result{};
-		result.size = getTotalSize( getDimensions(), getFormat(), getLayerCount(), getMipmapLevels() );
+		return m_memoryRequirements;
+	}
+
+	std::vector< VkSparseImageMemoryRequirements > Image::getSparseImageMemoryRequirements()const
+	{
+		return {};
+	}
+
+	void Image::doInitialiseMemoryRequirements()
+	{
+		m_memoryRequirements.size = getTotalSize( getDimensions(), getFormat(), getLayerCount(), getMipmapLevels() );
 		auto extent = ashes::getMinimalExtent3D( getFormat() );
-		result.alignment = ashes::getSize( extent, getFormat() );
-		result.memoryTypeBits = ( checkFlag( getUsage(), VK_IMAGE_USAGE_TRANSFER_DST_BIT )
+		m_memoryRequirements.alignment = ashes::getSize( extent, getFormat() );
+		m_memoryRequirements.memoryTypeBits = ( checkFlag( getUsage(), VK_IMAGE_USAGE_TRANSFER_DST_BIT )
 				|| checkFlag( getUsage(), VK_IMAGE_USAGE_TRANSFER_SRC_BIT ) )
 			? VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
 			: VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-		return result;
+		m_memoryRequirements.size = ashes::getAlignedSize( m_memoryRequirements.size, m_memoryRequirements.alignment );
 	}
 
 	void Image::generateMipmaps( VkCommandBuffer commandBuffer )const

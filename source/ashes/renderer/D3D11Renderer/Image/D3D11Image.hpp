@@ -35,6 +35,7 @@ namespace ashes::d3d11
 		~Image();
 
 		VkMemoryRequirements getMemoryRequirements()const;
+		std::vector< VkSparseImageMemoryRequirements > getSparseImageMemoryRequirements()const;
 		void generateMipmaps( VkCommandBuffer commandBuffer )const;
 		VkResult bindMemory( VkDeviceMemory memory
 			, VkDeviceSize memoryOffset );
@@ -143,6 +144,9 @@ namespace ashes::d3d11
 		}
 
 	private:
+		void doInitialiseMemoryRequirements();
+
+	private:
 		VkDevice m_device;
 		VkImageCreateInfo m_createInfo;
 		union
@@ -156,6 +160,7 @@ namespace ashes::d3d11
 		VkDeviceSize m_memoryOffset{ 0u };
 		ObjectMemory * m_objectMemory{ nullptr };
 		std::string m_debugName;
+		VkMemoryRequirements m_memoryRequirements;
 	};
 }
 

@@ -433,69 +433,7 @@ namespace ashes::gl4
 		, VkImageTiling tiling
 		, std::vector< VkSparseImageFormatProperties > & sparseImageFormatProperties )const
 	{
-		auto pair = m_sparseImageFormatProperties.insert( { makeKey( format
-				, type
-				, VkSampleCountFlagBits{}
-				, VkImageUsageFlags{}
-				, VkImageTiling{} )
-			, {} } );
-
-		if ( pair.second )
-		{
-			ContextLock context{ get( m_instance )->getCurrentContext() };
-			auto internal = getInternalFormat( format );
-			auto gltype = convert( type, 1u );
-			GLint value;
-			glLogCall( context, glGetInternalformativ, gltype, internal, GL_INTERNALFORMAT_SUPPORTED, 1, &value );
-
-			if ( value == GL_FALSE )
-			{
-				return VK_ERROR_FORMAT_NOT_SUPPORTED;
-			}
-
-			int count = 0;
-			glLogCall( context, glGetInternalformativ, gltype, internal, GL_NUM_VIRTUAL_PAGE_SIZES, 1, &count );
-
-			if ( !count )
-			{
-				return VK_ERROR_FORMAT_NOT_SUPPORTED;
-			}
-
-			std::vector< int > sizesX;
-			std::vector< int > sizesY;
-			std::vector< int > sizesZ;
-			sizesX.resize( size_t( count ), 1 );
-			sizesY.resize( size_t( count ), 1 );
-			sizesZ.resize( size_t( count ), 1 );
-			glLogCall( context, glGetInternalformativ, gltype, internal, GL_VIRTUAL_PAGE_SIZE_X, count, sizesX.data() );
-
-			if ( type == VK_IMAGE_TYPE_2D
-				|| type == VK_IMAGE_TYPE_3D )
-			{
-				glLogCall( context, glGetInternalformativ, gltype, internal, GL_VIRTUAL_PAGE_SIZE_Y, count, sizesY.data() );
-
-				if ( type == VK_IMAGE_TYPE_3D )
-				{
-					glLogCall( context, glGetInternalformativ, gltype, internal, GL_VIRTUAL_PAGE_SIZE_Z, count, sizesZ.data() );
-				}
-			}
-
-			for ( int i = 0; i < count; ++i )
-			{
-				VkSparseImageFormatProperties sparseImageProperties;
-				sparseImageProperties.imageGranularity.width = sizesX[i];
-				sparseImageProperties.imageGranularity.height = sizesY[i];
-				sparseImageProperties.imageGranularity.depth = sizesZ[i];
-				sparseImageProperties.aspectMask = getAspectMask( format );
-				sparseImageProperties.flags = 0u;
-				pair.first->second.push_back( sparseImageProperties );
-			}
-		}
-
-		sparseImageFormatProperties = pair.first->second;
-		return sparseImageFormatProperties.empty()
-			? VK_ERROR_FORMAT_NOT_SUPPORTED
-			: VK_SUCCESS;
+		return VK_ERROR_FORMAT_NOT_SUPPORTED;
 	}
 
 #if VK_VERSION_1_1
@@ -744,16 +682,16 @@ namespace ashes::gl4
 		m_features.shaderFloat64 = find( "GL_ARB_gpu_shader_fp64" );
 		m_features.shaderInt64 = find( "GL_ARB_gpu_shader_int64" );
 		m_features.shaderInt16 = false;
-		m_features.shaderResourceResidency = find( "GL_ARB_sparse_texture2" );
-		m_features.shaderResourceMinLod = find( "GL_ARB_sparse_texture_clamp" );
-		m_features.sparseBinding = findAll( { "GL_ARB_sparse_buffer", "GL_ARB_sparse_texture2" } );
-		m_features.sparseResidencyBuffer = find( "GL_ARB_sparse_buffer" );
-		m_features.sparseResidencyImage2D = find( "GL_ARB_sparse_texture2" );
-		m_features.sparseResidencyImage3D = find( "GL_ARB_sparse_texture2" );
-		m_features.sparseResidency2Samples = find( "GL_ARB_sparse_texture2" );
-		m_features.sparseResidency4Samples = find( "GL_ARB_sparse_texture2" );
-		m_features.sparseResidency8Samples = find( "GL_ARB_sparse_texture2" );
-		m_features.sparseResidency16Samples = find( "GL_ARB_sparse_texture2" );
+		m_features.shaderResourceResidency = false;// find( "GL_ARB_sparse_texture2" );
+		m_features.shaderResourceMinLod = false;// find( "GL_ARB_sparse_texture_clamp" );
+		m_features.sparseBinding = false;// findAll( { "GL_ARB_sparse_buffer", "GL_ARB_sparse_texture2" } );
+		m_features.sparseResidencyBuffer = false;// find( "GL_ARB_sparse_buffer" );
+		m_features.sparseResidencyImage2D = false;// find( "GL_ARB_sparse_texture2" );
+		m_features.sparseResidencyImage3D = false;// find( "GL_ARB_sparse_texture2" );
+		m_features.sparseResidency2Samples = false;// find( "GL_ARB_sparse_texture2" );
+		m_features.sparseResidency4Samples = false;// find( "GL_ARB_sparse_texture2" );
+		m_features.sparseResidency8Samples = false;// find( "GL_ARB_sparse_texture2" );
+		m_features.sparseResidency16Samples = false;// find( "GL_ARB_sparse_texture2" );
 		m_features.sparseResidencyAliased = false;
 		m_features.variableMultisampleRate = true;
 		m_features.inheritedQueries = true;
