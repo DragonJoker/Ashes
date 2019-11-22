@@ -47,6 +47,12 @@ namespace ashes::d3d11
 		return VK_SUCCESS;
 	}
 
+	VkResult Queue::bindSparse( ArrayView< VkBindSparseInfo const > values
+		, VkFence fence )const
+	{
+		return VK_ERROR_FEATURE_NOT_PRESENT;
+	}
+
 	VkResult Queue::present( VkPresentInfoKHR const & presentInfo )const
 	{
 		auto itIndices = presentInfo.pImageIndices;

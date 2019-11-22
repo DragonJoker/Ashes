@@ -26,6 +26,7 @@ namespace ashes::gl3
 		~Image();
 
 		VkMemoryRequirements getMemoryRequirements()const;
+		std::vector< VkSparseImageMemoryRequirements > getSparseImageMemoryRequirements()const;
 
 		inline bool hasInternal()const noexcept
 		{
@@ -99,6 +100,9 @@ namespace ashes::gl3
 		}
 
 	private:
+		void doInitialiseMemoryRequirements();
+
+	private:
 		VkDevice m_device;
 		VkDeviceMemory m_memory;
 		VkImageCreateFlags m_flags;
@@ -115,6 +119,7 @@ namespace ashes::gl3
 		GlTextureType m_target;
 		GLuint m_internal{ GL_INVALID_INDEX };
 		bool m_swapchainImage{ false };
+		VkMemoryRequirements m_memoryRequirements;
 	};
 }
 

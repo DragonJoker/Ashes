@@ -78,37 +78,37 @@ namespace ashes::gl4
 
 	private:
 		void doInitialise();
-		void doInitialiseProperties();
-		void doInitialiseFeatures();
-		void doInitialiseQueueProperties();
-		void doInitialiseFormatProperties();
-		void doInitialiseDisplayProperties();
-		void doInitialiseProperties2();
-		void doGetValue( GLenum name, int32_t & value )const;
-		void doGetValue( GLenum name, uint32_t & value )const;
-		void doGetValues( GLenum name, int32_t( &value )[2] )const;
-		void doGetValues( GLenum name, uint32_t( &value )[2] )const;
-		void doGetValues( GLenum name, int32_t( &value )[3] )const;
-		void doGetValues( GLenum name, uint32_t( &value )[3] )const;
-		void doGetValuesI( GLenum name, int32_t( &value )[2] )const;
-		void doGetValuesI( GLenum name, uint32_t( &value )[2] )const;
-		void doGetValuesI( GLenum name, int32_t( &value )[3] )const;
-		void doGetValuesI( GLenum name, uint32_t( &value )[3] )const;
-		void doGetValue( GLenum name, int64_t & value )const;
-		void doGetValue( GLenum name, uint64_t & value )const;
-		void doGetValues( GLenum name, int64_t( &value )[2] )const;
-		void doGetValues( GLenum name, uint64_t( &value )[2] )const;
-		void doGetValues( GLenum name, int64_t( &value )[3] )const;
-		void doGetValues( GLenum name, uint64_t( &value )[3] )const;
-		void doGetValuesI( GLenum name, int64_t( &value )[2] )const;
-		void doGetValuesI( GLenum name, uint64_t( &value )[2] )const;
-		void doGetValuesI( GLenum name, int64_t( &value )[3] )const;
-		void doGetValuesI( GLenum name, uint64_t( &value )[3] )const;
-		void doGetValue( GLenum name, float & value )const;
-		void doGetValues( GLenum name, float( &value )[2] )const;
-		void doGetValues( GLenum name, float( &value )[3] )const;
-		void doGetValuesI( GLenum name, float( &value )[2] )const;
-		void doGetValuesI( GLenum name, float( &value )[3] )const;
+		void doInitialiseProperties( ContextLock & context );
+		void doInitialiseFeatures( ContextLock & context );
+		void doInitialiseQueueProperties( ContextLock & context );
+		void doInitialiseFormatProperties( ContextLock & context );
+		void doInitialiseDisplayProperties( ContextLock & context );
+		void doInitialiseProperties2( ContextLock & context );
+		void doGetValue( ContextLock & context, GLenum name, int32_t & value )const;
+		void doGetValue( ContextLock & context, GLenum name, uint32_t & value )const;
+		void doGetValues( ContextLock & context, GLenum name, int32_t( &value )[2] )const;
+		void doGetValues( ContextLock & context, GLenum name, uint32_t( &value )[2] )const;
+		void doGetValues( ContextLock & context, GLenum name, int32_t( &value )[3] )const;
+		void doGetValues( ContextLock & context, GLenum name, uint32_t( &value )[3] )const;
+		void doGetValuesI( ContextLock & context, GLenum name, int32_t( &value )[2] )const;
+		void doGetValuesI( ContextLock & context, GLenum name, uint32_t( &value )[2] )const;
+		void doGetValuesI( ContextLock & context, GLenum name, int32_t( &value )[3] )const;
+		void doGetValuesI( ContextLock & context, GLenum name, uint32_t( &value )[3] )const;
+		void doGetValue( ContextLock & context, GLenum name, int64_t & value )const;
+		void doGetValue( ContextLock & context, GLenum name, uint64_t & value )const;
+		void doGetValues( ContextLock & context, GLenum name, int64_t( &value )[2] )const;
+		void doGetValues( ContextLock & context, GLenum name, uint64_t( &value )[2] )const;
+		void doGetValues( ContextLock & context, GLenum name, int64_t( &value )[3] )const;
+		void doGetValues( ContextLock & context, GLenum name, uint64_t( &value )[3] )const;
+		void doGetValuesI( ContextLock & context, GLenum name, int64_t( &value )[2] )const;
+		void doGetValuesI( ContextLock & context, GLenum name, uint64_t( &value )[2] )const;
+		void doGetValuesI( ContextLock & context, GLenum name, int64_t( &value )[3] )const;
+		void doGetValuesI( ContextLock & context, GLenum name, uint64_t( &value )[3] )const;
+		void doGetValue( ContextLock & context, GLenum name, float & value )const;
+		void doGetValues( ContextLock & context, GLenum name, float( &value )[2] )const;
+		void doGetValues( ContextLock & context, GLenum name, float( &value )[3] )const;
+		void doGetValuesI( ContextLock & context, GLenum name, float( &value )[2] )const;
+		void doGetValuesI( ContextLock & context, GLenum name, float( &value )[3] )const;
 
 	private:
 		VkInstance m_instance;
@@ -116,6 +116,7 @@ namespace ashes::gl4
 		VkPhysicalDeviceProperties m_properties{};
 		std::vector< VkQueueFamilyProperties > m_queueProperties{};
 		mutable std::map< VkFormat, VkFormatProperties > m_formatProperties;
+		mutable std::map< size_t, VkImageFormatProperties > m_imageFormatProperties;
 #if VK_VERSION_1_1
 		VkPhysicalDeviceFeatures2 m_features2{};
 		VkPhysicalDeviceProperties2 m_properties2{};
