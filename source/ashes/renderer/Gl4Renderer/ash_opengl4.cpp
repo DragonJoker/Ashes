@@ -599,50 +599,14 @@ namespace ashes::gl4
 		VkDeviceSize stride,
 		VkQueryResultFlags flags )
 	{
-		VkResult result;
-
-		if ( flags & VK_QUERY_RESULT_64_BIT )
-		{
-			std::vector< uint64_t > results;
-			results.resize( queryCount );
-			result = get( queryPool )->getResults( firstQuery
-				, queryCount
-				, stride
-				, flags
-				, results );
-			stride = ( stride < sizeof( uint64_t )
-				? sizeof( uint64_t )
-				: stride );
-			auto data = reinterpret_cast< uint8_t * >( pData );
-
-			for ( auto & result : results )
-			{
-				*reinterpret_cast< uint64_t * >( data ) = result;
-				data += stride;
-			}
-		}
-		else
-		{
-			std::vector< uint32_t > results;
-			results.resize( queryCount );
-			result = get( queryPool )->getResults( firstQuery
-				, queryCount
-				, stride
-				, flags
-				, results );
-			stride = ( stride < sizeof( uint32_t )
-				? sizeof( uint32_t )
-				: stride );
-			auto data = reinterpret_cast< uint8_t * >( pData );
-
-			for ( auto & result : results )
-			{
-				*reinterpret_cast< uint64_t * >( data ) = result;
-				data += stride;
-			}
-		}
-
-		return result;
+		auto context = get( device )->getContext();
+		return get( queryPool )->getResults( context
+			, firstQuery
+			, queryCount
+			, stride
+			, flags
+			, dataSize
+			, pData );
 	}
 
 	VkResult VKAPI_CALL vkCreateBuffer(
@@ -789,11 +753,7 @@ namespace ashes::gl4
 		void* pData )
 	{
 		auto & data = get( pipelineCache )->getData();
-
-		if ( pDataSize )
-		{
-			*pDataSize = data.size();
-		}
+		*pDataSize = data.size();
 
 		if ( pData )
 		{
@@ -1490,12 +1450,11 @@ namespace ashes::gl4
 		uint32_t regionCount,
 		const VkImageResolve* pRegions )
 	{
-		reportUnsupported( commandBuffer, "vkCmdResolveImage" );
-		//get( commandBuffer )->resolveImage( srcImage
-		//	, srcImageLayout
-		//	, dstImage
-		//	, dstImageLayout
-		//	, { pRegions, pRegions + regionCount } );
+		get( commandBuffer )->resolveImage( srcImage
+			, srcImageLayout
+			, dstImage
+			, dstImageLayout
+			, { pRegions, pRegions + regionCount } );
 	}
 
 	void VKAPI_CALL vkCmdSetEvent(

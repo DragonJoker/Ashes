@@ -76,6 +76,7 @@ namespace ashes::gl4
 		eFramebufferTexture2D,
 		eFrontFace,
 		eGenerateMipmaps,
+		eGetQueryResults,
 		eGetTexImage,
 		eInitFramebuffer,
 		eLineWidth,
@@ -504,6 +505,46 @@ namespace ashes::gl4
 
 	void apply( ContextLock const & context
 		, CmdUseProgramPipeline const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eGetQueryResults >
+	{
+		static Op constexpr value = { OpType::eGetQueryResults, 13u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eGetQueryResults >
+	{
+		inline CmdT( VkQueryPool queryPool
+			, uint32_t firstQuery
+			, uint32_t queryCount
+			, VkDeviceSize stride
+			, VkQueryResultFlags flags
+			, VkDeviceSize bufferOffset )
+			: cmd{ { OpType::eGetQueryResults, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, queryPool{ queryPool }
+			, firstQuery{ firstQuery }
+			, queryCount{ queryCount }
+			, stride{ stride }
+			, flags{ flags }
+			, bufferOffset{ bufferOffset }
+		{
+		}
+
+		Command cmd;
+		VkQueryPool queryPool;
+		uint32_t firstQuery;
+		uint32_t queryCount;
+		VkDeviceSize stride;
+		VkQueryResultFlags flags;
+		VkDeviceSize bufferOffset;
+	};
+	using CmdGetQueryResults = CmdT< OpType::eGetQueryResults >;
+
+	void apply( ContextLock const & context
+		, CmdGetQueryResults const & cmd );
 
 	//*************************************************************************
 
