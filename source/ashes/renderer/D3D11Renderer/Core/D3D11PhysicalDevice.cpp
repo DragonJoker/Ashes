@@ -694,8 +694,8 @@ namespace ashes::d3d11
 		m_features.fullDrawIndexUint32 = true;
 		m_features.imageCubeArray = true;
 		m_features.independentBlend = true;
-		m_features.geometryShader = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_10_0;
-		m_features.tessellationShader = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.geometryShader = false;// m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_10_0;
+		m_features.tessellationShader = false;// m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.sampleRateShading = true;
 		m_features.dualSrcBlend = true;
 		m_features.logicOp = true;
@@ -717,7 +717,7 @@ namespace ashes::d3d11
 		m_features.pipelineStatisticsQuery = true;
 		m_features.vertexPipelineStoresAndAtomics = true;
 		m_features.fragmentStoresAndAtomics = true;
-		m_features.shaderTessellationAndGeometryPointSize = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.shaderTessellationAndGeometryPointSize = false;// m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.shaderImageGatherExtended = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.shaderStorageImageExtendedFormats = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.shaderStorageImageMultisample = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;

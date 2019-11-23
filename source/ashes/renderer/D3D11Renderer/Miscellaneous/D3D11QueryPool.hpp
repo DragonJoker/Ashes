@@ -19,12 +19,8 @@ namespace ashes::d3d11
 			, uint32_t queryCount
 			, VkDeviceSize stride
 			, VkQueryResultFlags flags
-			, UInt32Array & data )const;
-		VkResult getResults( uint32_t firstQuery
-			, uint32_t queryCount
-			, VkDeviceSize stride
-			, VkQueryResultFlags flags
-			, UInt64Array & data )const;
+			, VkDeviceSize dataSize
+			, void * data )const;
 
 		inline auto begin()const
 		{
