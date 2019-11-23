@@ -598,50 +598,13 @@ namespace ashes::gl3
 		VkDeviceSize stride,
 		VkQueryResultFlags flags )
 	{
-		VkResult result;
-
-		if ( flags & VK_QUERY_RESULT_64_BIT )
-		{
-			std::vector< uint64_t > results;
-			results.resize( queryCount );
-			result = get( queryPool )->getResults( firstQuery
-				, queryCount
-				, stride
-				, flags
-				, results );
-			stride = ( stride < sizeof( uint64_t )
-				? sizeof( uint64_t )
-				: stride );
-			auto data = reinterpret_cast< uint8_t * >( pData );
-
-			for ( auto & result : results )
-			{
-				*reinterpret_cast< uint64_t * >( data ) = result;
-				data += stride;
-			}
-		}
-		else
-		{
-			std::vector< uint32_t > results;
-			results.resize( queryCount );
-			result = get( queryPool )->getResults( firstQuery
-				, queryCount
-				, stride
-				, flags
-				, results );
-			stride = ( stride < sizeof( uint32_t )
-				? sizeof( uint32_t )
-				: stride );
-			auto data = reinterpret_cast< uint8_t * >( pData );
-
-			for ( auto & result : results )
-			{
-				*reinterpret_cast< uint64_t * >( data ) = result;
-				data += stride;
-			}
-		}
-
-		return result;
+		auto context = get( device )->getContext();
+		return get( queryPool )->getResults( context
+			, firstQuery
+			, queryCount
+			, stride
+			, flags
+			, pData );
 	}
 
 	VkResult VKAPI_CALL vkCreateBuffer(
