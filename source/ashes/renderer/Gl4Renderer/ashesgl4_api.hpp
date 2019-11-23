@@ -183,7 +183,7 @@ namespace ashes::gl4
 	}
 
 	std::vector< VkExtensionProperties > const & getSupportedInstanceExtensions();
-	std::vector< VkExtensionProperties > const & getSupportedDeviceExtensions();
+	std::vector< VkLayerProperties > const & getInstanceLayerProperties();
 
 	inline VkInstance getInstance( VkInstance object )
 	{

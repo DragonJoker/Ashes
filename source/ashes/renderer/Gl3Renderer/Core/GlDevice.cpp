@@ -510,9 +510,10 @@ namespace ashes::gl3
 			return texelBlockExtent;
 		}
 
-		void doCheckEnabledExtensions( ashes::ArrayView< char const * const > const & extensions )
+		void doCheckEnabledExtensions( VkPhysicalDevice physicalDevice
+			, ashes::ArrayView< char const * const > const & extensions )
 		{
-			auto & available = getSupportedDeviceExtensions();
+			auto available = get( physicalDevice )->enumerateExtensionProperties( nullptr );
 
 			for ( auto & extension : extensions )
 			{
@@ -539,7 +540,8 @@ namespace ashes::gl3
 		, m_dyState{ VK_DYNAMIC_STATE_SCISSOR, VK_DYNAMIC_STATE_VIEWPORT }
 	{
 		m_currentContext = get( m_instance )->registerDevice( get( this ) );
-		doCheckEnabledExtensions( ashes::makeArrayView( m_createInfos.ppEnabledExtensionNames, m_createInfos.enabledExtensionCount ) );
+		doCheckEnabledExtensions( m_physicalDevice
+			, ashes::makeArrayView( m_createInfos.ppEnabledExtensionNames, m_createInfos.enabledExtensionCount ) );
 		doInitialiseQueues();
 	}
 

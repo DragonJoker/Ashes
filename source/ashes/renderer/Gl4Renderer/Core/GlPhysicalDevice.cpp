@@ -334,9 +334,30 @@ namespace ashes::gl4
 		return {};
 	}
 
-	std::vector < VkExtensionProperties > PhysicalDevice::enumerateExtensionProperties( std::string const & layerName )const
+	std::vector < VkExtensionProperties > PhysicalDevice::enumerateExtensionProperties( const char * layerName )const
 	{
-		return {};
+		static std::vector< VkExtensionProperties > const extensions
+		{
+#if VK_KHR_swapchain
+			VkExtensionProperties{ VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_SWAPCHAIN_SPEC_VERSION },
+#endif
+#if VK_EXT_debug_report
+			VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, VK_EXT_DEBUG_REPORT_SPEC_VERSION },
+#endif
+#if VK_EXT_debug_marker
+			VkExtensionProperties{ VK_EXT_DEBUG_MARKER_EXTENSION_NAME, VK_EXT_DEBUG_MARKER_SPEC_VERSION },
+#endif
+#if VK_EXT_debug_utils
+			VkExtensionProperties{ VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_EXT_DEBUG_UTILS_SPEC_VERSION },
+#endif
+#if VK_EXT_inline_uniform_block
+			VkExtensionProperties{ VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME, VK_EXT_INLINE_UNIFORM_BLOCK_SPEC_VERSION },
+#endif
+#if VK_KHR_maintenance1
+			VkExtensionProperties{ VK_KHR_MAINTENANCE1_EXTENSION_NAME, VK_KHR_MAINTENANCE1_SPEC_VERSION },
+#endif
+		};
+		return extensions;
 	}
 
 	VkPhysicalDeviceProperties const & PhysicalDevice::getProperties()const
@@ -664,7 +685,7 @@ namespace ashes::gl4
 		m_features.textureCompressionASTC_LDR = find( "GL_KHR_texture_compression_astc_ldr" );
 		m_features.textureCompressionBC = findAll( { "GL_EXT_texture_compression_s3tc", "GL_EXT_texture_sRGB" } );
 		m_features.occlusionQueryPrecise = true;
-		m_features.pipelineStatisticsQuery = false;
+		m_features.pipelineStatisticsQuery = find( "GL_ARB_pipeline_statistics_query" );
 		m_features.vertexPipelineStoresAndAtomics = find( "GL_ARB_shader_atomic_counters" );
 		m_features.fragmentStoresAndAtomics = m_features.vertexPipelineStoresAndAtomics;
 		m_features.shaderTessellationAndGeometryPointSize = m_features.tessellationShader && m_features.geometryShader;

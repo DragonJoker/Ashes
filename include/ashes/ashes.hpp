@@ -324,6 +324,7 @@ namespace ashes
 	using VkExtensionPropertiesArray = std::vector< VkExtensionProperties >;
 	using VkImageArray = std::vector< VkImage >;
 	using VkImageBlitArray = std::vector< VkImageBlit >;
+	using VkImageResolveArray = std::vector< VkImageResolve >;
 	using VkImageCopyArray = std::vector< VkImageCopy >;
 	using VkImageMemoryBarrierArray = std::vector< VkImageMemoryBarrier >;
 	using VkImageSubresourceRangeArray = std::vector< VkImageSubresourceRange >;

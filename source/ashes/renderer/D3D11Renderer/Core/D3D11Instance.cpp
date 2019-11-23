@@ -138,7 +138,7 @@ namespace ashes::d3d11
 
 	void doCheckEnabledExtensions( ashes::ArrayView< char const * const > const & extensions )
 	{
-		auto & available = getSupportedInstanceExtensions();
+		auto & available = getSupportedInstanceExtensions( nullptr );
 
 		for ( auto & extension : extensions )
 		{

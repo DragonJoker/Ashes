@@ -19,7 +19,7 @@ namespace ashes::gl3
 		}
 
 		std::vector< VkLayerProperties > enumerateLayerProperties()const;
-		std::vector< VkExtensionProperties > enumerateExtensionProperties( std::string const & layerName )const;
+		std::vector< VkExtensionProperties > enumerateExtensionProperties( const char * layerName )const;
 		VkPhysicalDeviceProperties const & getProperties()const;
 		VkPhysicalDeviceMemoryProperties const & getMemoryProperties()const;
 		VkPhysicalDeviceFeatures const & getFeatures()const;

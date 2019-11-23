@@ -28,7 +28,7 @@ namespace ashes::d3d11
 		}
 
 		UINT64 getPipelineStatistic( uint32_t index
-			, D3D10_QUERY_DATA_PIPELINE_STATISTICS const & stats )
+			, D3D11_QUERY_DATA_PIPELINE_STATISTICS const & stats )
 		{
 			switch ( index )
 			{
@@ -48,9 +48,27 @@ namespace ashes::d3d11
 				return stats.GSPrimitives;
 			case 7:
 				return stats.GSInvocations;
+			case 8:
+				return stats.HSInvocations;
+			case 9:
+				return stats.DSInvocations;
+			case 10:
+				return stats.CSInvocations;
 			}
 
 			return 0ull;
+		}
+
+		uint32_t adjustQueryCount( uint32_t count
+			, VkQueryType type
+			, VkQueryPipelineStatisticFlags pipelineStatistics )
+		{
+			if ( type != VK_QUERY_TYPE_PIPELINE_STATISTICS )
+			{
+				return count;
+			}
+
+			return 1u;
 		}
 	}
 
@@ -62,7 +80,7 @@ namespace ashes::d3d11
 		D3D11_QUERY_DESC desc;
 		desc.MiscFlags = 0u;
 		desc.Query = convert( m_createInfo.queryType );
-		m_queries.resize( m_createInfo.queryCount );
+		m_queries.resize( adjustQueryCount( m_createInfo.queryCount, m_createInfo.queryType, m_createInfo.pipelineStatistics ) );
 
 		for ( auto & query : m_queries )
 		{
@@ -89,15 +107,15 @@ namespace ashes::d3d11
 			break;
 
 		case VK_QUERY_TYPE_PIPELINE_STATISTICS:
-			m_data.resize( sizeof( D3D10_QUERY_DATA_PIPELINE_STATISTICS ) );
+			m_data.resize( sizeof( D3D11_QUERY_DATA_PIPELINE_STATISTICS ) );
 			getUint32 = [this]( uint32_t index )
 			{
-				D3D10_QUERY_DATA_PIPELINE_STATISTICS data = *reinterpret_cast< D3D10_QUERY_DATA_PIPELINE_STATISTICS * >( m_data.data() );
+				D3D11_QUERY_DATA_PIPELINE_STATISTICS data = *reinterpret_cast< D3D11_QUERY_DATA_PIPELINE_STATISTICS * >( m_data.data() );
 				return uint32_t( getPipelineStatistic( index, data ) );
 			};
 			getUint64 = [this]( uint32_t index )
 			{
-				D3D10_QUERY_DATA_PIPELINE_STATISTICS data = *reinterpret_cast< D3D10_QUERY_DATA_PIPELINE_STATISTICS * >( m_data.data() );
+				D3D11_QUERY_DATA_PIPELINE_STATISTICS data = *reinterpret_cast< D3D11_QUERY_DATA_PIPELINE_STATISTICS * >( m_data.data() );
 				return getPipelineStatistic( index, data );
 			};
 			break;
@@ -128,7 +146,8 @@ namespace ashes::d3d11
 		, uint32_t queryCount
 		, VkDeviceSize stride
 		, VkQueryResultFlags flags
-		, UInt32Array & datas )const
+		, VkDeviceSize dataSize
+		, void * data )const
 	{
 		auto max = firstQuery + queryCount;
 		assert( max <= m_queries.size() );
@@ -147,54 +166,43 @@ namespace ashes::d3d11
 					, UINT( m_data.size() )
 					, 0u );
 			}
-			while ( hr == S_FALSE || !checkFlag( flags, VK_QUERY_RESULT_WAIT_BIT ) );
+			while ( hr == S_FALSE );
 
-			if ( checkError( m_device, hr, "GetData" ) )
-			{
-				datas[i - firstQuery] = getUint32( i );
-			}
-			else
+			if ( hr == S_FALSE )
 			{
 				result = VK_INCOMPLETE;
 			}
-		}
-
-		safeRelease( context );
-		return result;
-	}
-
-	VkResult QueryPool::getResults( uint32_t firstQuery
-		, uint32_t queryCount
-		, VkDeviceSize stride
-		, VkQueryResultFlags flags
-		, UInt64Array & datas )const
-	{
-		auto max = firstQuery + queryCount;
-		assert( max <= m_queries.size() );
-		ID3D11DeviceContext * context;
-		get( m_device )->getDevice()->GetImmediateContext( &context );
-		VkResult result = VK_SUCCESS;
-
-		for ( auto i = firstQuery; i < max; ++i )
-		{
-			HRESULT hr;
-
-			do
+			else if ( checkError( m_device, hr, "GetData" ) )
 			{
-				hr = context->GetData( m_queries[i]
-					, m_data.data()
-					, UINT( m_data.size() )
-					, 0u );
-			}
-			while ( hr == S_FALSE || !checkFlag( flags, VK_QUERY_RESULT_WAIT_BIT ) );
+				auto buffer = reinterpret_cast< uint8_t * >( data );
+				size_t size = 0u;
 
-			if ( checkError( m_device, hr, "GetData" ) )
-			{
-				datas[i - firstQuery] = getUint64( i );
-			}
-			else
-			{
-				result = VK_INCOMPLETE;
+				if ( checkFlag( flags, VK_QUERY_RESULT_64_BIT ) )
+				{
+					auto resmax = ( m_createInfo.queryType == VK_QUERY_TYPE_PIPELINE_STATISTICS
+						? uint32_t( m_data.size() / sizeof( uint64_t ) )
+						: queryCount );
+
+					for ( uint32_t resi = 0; resi < resmax && size < dataSize; ++resi )
+					{
+						*reinterpret_cast< uint64_t *>( buffer ) = getUint64( resi );
+						buffer += stride;
+						size += stride;
+					}
+				}
+				else
+				{
+					auto resmax = ( m_createInfo.queryType == VK_QUERY_TYPE_PIPELINE_STATISTICS
+						? uint32_t( m_data.size() / sizeof( uint32_t ) )
+						: queryCount );
+
+					for ( uint32_t resi = 0; resi < resmax && size < dataSize; ++resi )
+					{
+						*reinterpret_cast< uint32_t * >( buffer ) = getUint32( resi );
+						buffer += stride;
+						size += stride;
+					}
+				}
 			}
 		}
 

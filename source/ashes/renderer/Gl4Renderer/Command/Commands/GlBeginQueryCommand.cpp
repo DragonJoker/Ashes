@@ -24,7 +24,21 @@ namespace ashes::gl4
 		, uint32_t query
 		, CmdList & list )
 	{
-		list.push_back( makeCmd< OpType::eBeginQuery >( convert( get( pool )->getType() )
-			, *( get( pool )->begin() + query ) ) );
+		if ( get( pool )->getType() == VK_QUERY_TYPE_PIPELINE_STATISTICS )
+		{
+			assert( query == 0u );
+
+			for ( auto type : get( pool )->getTypes() )
+			{
+				list.push_back( makeCmd< OpType::eBeginQuery >( type
+					, *( get( pool )->begin() + query ) ) );
+				++query;
+			}
+		}
+		else
+		{
+			list.push_back( makeCmd< OpType::eBeginQuery >( convert( get( pool )->getType() )
+				, *( get( pool )->begin() + query ) ) );
+		}
 	}
 }

@@ -99,6 +99,11 @@ namespace ashes::d3d11
 			, VkImageLayout dstLayout
 			, VkImageBlitArray regions
 			, VkFilter filter )const;
+		void resolveImage( VkImage srcImage
+			, VkImageLayout srcLayout
+			, VkImage dstImage
+			, VkImageLayout dstLayout
+			, VkImageResolveArray regions )const;
 		void resetQueryPool( VkQueryPool pool
 			, uint32_t firstQuery
 			, uint32_t queryCount )const;

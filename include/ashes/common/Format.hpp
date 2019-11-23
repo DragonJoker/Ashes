@@ -300,13 +300,13 @@ namespace ashes
 	*/
 	inline VkImageAspectFlags getAspectMask( VkFormat format )noexcept
 	{
-		return isDepthStencilFormat( format )
+		return ( isDepthStencilFormat( format )
 			? VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT
 			: ( isDepthFormat( format )
 				? VK_IMAGE_ASPECT_DEPTH_BIT
 				: ( isStencilFormat( format )
 					? VK_IMAGE_ASPECT_STENCIL_BIT
-					: VK_IMAGE_ASPECT_COLOR_BIT ) );
+					: VK_IMAGE_ASPECT_COLOR_BIT ) ) );
 	}
 	/**
 	*\brief
