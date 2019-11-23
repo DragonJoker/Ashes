@@ -44,5 +44,7 @@ namespace ashes::d3d11
 		VkImage m_image{ VK_NULL_HANDLE };
 		VkDeviceMemory m_deviceMemory{ VK_NULL_HANDLE };
 		VkImageView m_view{ VK_NULL_HANDLE };
+		VkExtent2D m_swapchainExtent;
+		VkExtent2D m_windowExtent;
 	};
 }

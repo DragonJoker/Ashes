@@ -110,17 +110,19 @@ namespace ashes::d3d11
 			throw std::runtime_error( "GetBuffer() failed" );
 		}
 
+		m_swapchainExtent = VkExtent2D{ m_displayMode.Width, m_displayMode.Height };
 		allocate( m_swapChainImage
 			, nullptr
 			, m_device
 			, m_createInfo.imageFormat
-			, VkExtent2D{ m_presentDesc.BufferDesc.Width, m_presentDesc.BufferDesc.Height }
+			, m_windowExtent
 			, rtTex );
 		dxDebugName( get( m_swapChainImage )->getResource(), SwapChainImage );
 
+		m_windowExtent = m_createInfo.imageExtent;
 		m_image = createImage( device
 			, m_createInfo.imageFormat
-			, m_createInfo.imageExtent
+			, m_windowExtent
 			, m_deviceMemory );
 		dxDebugName( get( m_image )->getResource(), SwapChainFakeImage );
 		m_view = createImageView( device
@@ -171,8 +173,8 @@ namespace ashes::d3d11
 		ID3D11DeviceContext * context;
 		get( m_device )->getDevice()->GetImmediateContext( &context );
 		D3D11_BOX srcBox{};
-		srcBox.right = m_createInfo.imageExtent.width;
-		srcBox.bottom = m_createInfo.imageExtent.height;
+		srcBox.right = m_windowExtent.width;
+		srcBox.bottom = m_windowExtent.height;
 		srcBox.back = 1u;
 		context->CopySubresourceRegion( get( m_swapChainImage )->getResource()
 			, 0u
@@ -199,11 +201,8 @@ namespace ashes::d3d11
 	void SwapchainKHR::doInitPresentParameters()
 	{
 		auto caps = get( m_createInfo.surface )->getCapabilities( get( m_device )->getGpu() );
-		auto & descs = get( m_createInfo.surface )->getDescs( m_createInfo.imageFormat );
-		assert( !descs.empty() );
+		m_displayMode = get( m_createInfo.surface )->getMatchingDesc( m_createInfo.imageFormat );
 		auto hWnd = get( m_createInfo.surface )->getHwnd();
-
-		m_displayMode = descs.back();
 
 		// Initialize the swap chain description.
 		auto result = DXGI_SWAP_CHAIN_DESC{};
@@ -211,16 +210,11 @@ namespace ashes::d3d11
 		// Set to a single back buffer.
 		result.BufferCount = 1;
 
-		// Set the width and height of the back buffer.
-		result.BufferDesc.Width = caps.currentExtent.width;
-		result.BufferDesc.Height = caps.currentExtent.height;
-
-		// Set regular 32-bit surface for the back buffer.
-		result.BufferDesc.Format = m_displayMode.Format;
-
-		// Set the refresh rate of the back buffer.
-		result.BufferDesc.RefreshRate.Numerator = m_displayMode.RefreshRate.Numerator;
-		result.BufferDesc.RefreshRate.Denominator = m_displayMode.RefreshRate.Denominator;
+		// Set the back buffer desc to the surface matching one.
+		result.BufferDesc = m_displayMode;
+		// Except for the dimensions.
+		result.BufferDesc.Width = m_createInfo.imageExtent.width;
+		result.BufferDesc.Height = m_createInfo.imageExtent.height;
 
 		// Set the usage of the back buffer.
 		result.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -234,10 +228,6 @@ namespace ashes::d3d11
 
 		// Set to windowed mode.
 		result.Windowed = TRUE;
-
-		// Set the scan line ordering and scaling to unspecified.
-		result.BufferDesc.ScanlineOrdering = m_displayMode.ScanlineOrdering;
-		result.BufferDesc.Scaling = m_displayMode.Scaling;
 
 		// Discard the back buffer contents after presenting.
 		result.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;

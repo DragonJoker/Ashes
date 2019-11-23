@@ -15,16 +15,13 @@ namespace ashes::gl4
 			, VkQueryPoolCreateInfo createInfo );
 		~QueryPool();
 
-		VkResult getResults( uint32_t firstQuery
+		VkResult getResults( ContextLock const & context
+			, uint32_t firstQuery
 			, uint32_t queryCount
 			, VkDeviceSize stride
 			, VkQueryResultFlags flags
-			, UInt32Array & data )const;
-		VkResult getResults( uint32_t firstQuery
-			, uint32_t queryCount
-			, VkDeviceSize stride
-			, VkQueryResultFlags flags
-			, UInt64Array & data )const;
+			, size_t dataSize
+			, void * buffer )const;
 
 		inline auto begin()const
 		{
@@ -41,12 +38,17 @@ namespace ashes::gl4
 			return m_queryType;
 		}
 
+		inline auto getTypes()const
+		{
+			return m_pipelineStatistics;
+		}
+
 	protected:
 		VkDevice m_device;
 		VkQueryPoolCreateFlags m_flags;
 		VkQueryType m_queryType;
 		uint32_t m_queryCount;
-		VkQueryPipelineStatisticFlags m_pipelineStatistics;
+		std::vector< GlQueryType > m_pipelineStatistics;
 		std::vector< GLuint > m_names;
 	};
 }

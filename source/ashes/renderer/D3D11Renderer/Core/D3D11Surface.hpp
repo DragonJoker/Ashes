@@ -53,6 +53,11 @@ namespace ashes::d3d11
 			return m_descs[format];
 		}
 
+		inline DXGI_MODE_DESC const & getMatchingDesc( VkFormat format )const
+		{
+			return m_matchingDescs[format];
+		}
+
 		inline bool isWin32()const
 		{
 			return m_win32CreateInfo.sType != 0;
@@ -77,5 +82,6 @@ namespace ashes::d3d11
 		mutable VkPhysicalDevice m_currentPhysicalDevice{ VK_NULL_HANDLE };
 		mutable std::vector< DXGI_MODE_DESC > m_displayModes;
 		mutable std::map< VkFormat, std::vector< DXGI_MODE_DESC > > m_descs;
+		mutable std::map< VkFormat, DXGI_MODE_DESC > m_matchingDescs;
 	};
 }

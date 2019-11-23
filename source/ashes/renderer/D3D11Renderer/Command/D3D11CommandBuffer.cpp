@@ -49,6 +49,7 @@ See LICENSE file in root folder.
 #include "Command/Commands/D3D11PushConstantsCommand.hpp"
 #include "Command/Commands/D3D11ResetEventCommand.hpp"
 #include "Command/Commands/D3D11ResetQueryPoolCommand.hpp"
+#include "Command/Commands/D3D11ResolveImageCommand.hpp"
 #include "Command/Commands/D3D11ScissorCommand.hpp"
 #include "Command/Commands/D3D11SetDepthBiasCommand.hpp"
 #include "Command/Commands/D3D11SetEventCommand.hpp"
@@ -590,6 +591,18 @@ namespace ashes::d3d11
 			, dstImage
 			, regions
 			, filter ) );
+	}
+
+	void CommandBuffer::resolveImage( VkImage srcImage
+		, VkImageLayout srcLayout
+		, VkImage dstImage
+		, VkImageLayout dstLayout
+		, VkImageResolveArray regions )const
+	{
+		m_commands.emplace_back( std::make_unique< ResolveImageCommand >( m_device
+			, srcImage
+			, dstImage
+			, regions ) );
 	}
 
 	void CommandBuffer::resetQueryPool( VkQueryPool pool

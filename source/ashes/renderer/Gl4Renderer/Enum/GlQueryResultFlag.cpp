@@ -48,18 +48,11 @@ namespace ashes::gl4
 
 	GlQueryResultFlags convertQueryResultFlags( VkQueryResultFlags const & flags )
 	{
-		GlQueryResultFlags result{ 0 };
-
-		if ( ashes::checkFlag( flags, VK_QUERY_RESULT_WAIT_BIT ) )
-		{
-			return GL_QUERY_RESULT;
-		}
-
 		if ( ashes::checkFlag( flags, VK_QUERY_RESULT_WITH_AVAILABILITY_BIT ) )
 		{
 			return GL_QUERY_RESULT_NO_WAIT;
 		}
 
-		return result;
+		return GL_QUERY_RESULT;
 	}
 }

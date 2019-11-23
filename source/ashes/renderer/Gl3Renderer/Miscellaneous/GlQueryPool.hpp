@@ -15,16 +15,12 @@ namespace ashes::gl3
 			, VkQueryPoolCreateInfo createInfo );
 		~QueryPool();
 
-		VkResult getResults( uint32_t firstQuery
+		VkResult getResults( ContextLock const & context
+			, uint32_t firstQuery
 			, uint32_t queryCount
 			, VkDeviceSize stride
 			, VkQueryResultFlags flags
-			, UInt32Array & data )const;
-		VkResult getResults( uint32_t firstQuery
-			, uint32_t queryCount
-			, VkDeviceSize stride
-			, VkQueryResultFlags flags
-			, UInt64Array & data )const;
+			, void * buffer )const;
 
 		inline auto begin()const
 		{

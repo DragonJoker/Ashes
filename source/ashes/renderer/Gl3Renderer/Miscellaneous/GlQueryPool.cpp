@@ -32,60 +32,41 @@ namespace ashes::gl3
 			, m_names.data() );
 	}
 
-	VkResult QueryPool::getResults( uint32_t firstQuery
+	VkResult QueryPool::getResults( ContextLock const & context
+		, uint32_t firstQuery
 		, uint32_t queryCount
 		, VkDeviceSize stride
 		, VkQueryResultFlags flags
-		, UInt32Array & data )const
+		, void * buffer )const
 	{
 		assert( firstQuery + queryCount <= m_names.size() );
-		assert( queryCount == data.size() );
-		UInt64Array data64;
-		data64.resize( data.size() );
 		auto begin = m_names.begin() + firstQuery;
 		auto end = begin + queryCount;
-		auto * buffer = data64.data();
-		auto context = get( m_device )->getContext();
+		auto buf = reinterpret_cast< uint8_t * >( buffer );
 
-		for ( auto it = begin; it != end; ++it )
+		if ( checkFlag( flags, VK_QUERY_RESULT_64_BIT ) )
 		{
-			glLogCall( context
-				, glGetQueryObjectui64v
-				, *it
-				, convertQueryResultFlags( flags )
-				, buffer );
-			++buffer;
+			for ( auto it = begin; it != end; ++it )
+			{
+				glLogCall( context
+					, glGetQueryObjectui64v
+					, *it
+					, convertQueryResultFlags( flags )
+					, reinterpret_cast< GLuint64 * >( buf ) );
+				buf += stride;
+			}
 		}
-
-		for ( uint32_t i = 0; i < data64.size(); ++i )
+		else
 		{
-			data[i] = uint32_t( data64[i] );
-		}
-
-		return VK_SUCCESS;
-	}
-
-	VkResult QueryPool::getResults( uint32_t firstQuery
-		, uint32_t queryCount
-		, VkDeviceSize stride
-		, VkQueryResultFlags flags
-		, UInt64Array & data )const
-	{
-		assert( firstQuery + queryCount <= m_names.size() );
-		assert( queryCount == data.size() );
-		auto begin = m_names.begin() + firstQuery;
-		auto end = begin + queryCount;
-		auto * buffer = data.data();
-		auto context = get( m_device )->getContext();
-
-		for ( auto it = begin; it != end; ++it )
-		{
-			glLogCall( context
-				, glGetQueryObjectui64v
-				, *it
-				, convertQueryResultFlags( flags )
-				, buffer );
-			++buffer;
+			for ( auto it = begin; it != end; ++it )
+			{
+				glLogCall( context
+					, glGetQueryObjectuiv
+					, *it
+					, convertQueryResultFlags( flags )
+					, reinterpret_cast< GLuint * >( buf ) );
+				buf += stride;
+			}
 		}
 
 		return VK_SUCCESS;

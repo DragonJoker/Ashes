@@ -99,6 +99,11 @@ namespace ashes::gl4
 			, VkImageLayout dstLayout
 			, VkImageBlitArray regions
 			, VkFilter filter )const;
+		void resolveImage( VkImage srcImage
+			, VkImageLayout srcLayout
+			, VkImage dstImage
+			, VkImageLayout dstLayout
+			, VkImageResolveArray regions )const;
 		void resetQueryPool( VkQueryPool pool
 			, uint32_t firstQuery
 			, uint32_t queryCount )const;
@@ -110,6 +115,13 @@ namespace ashes::gl4
 		void writeTimestamp( VkPipelineStageFlagBits pipelineStage
 			, VkQueryPool pool
 			, uint32_t query )const;
+		void copyQueryPoolResults( VkQueryPool queryPool
+			, uint32_t firstQuery
+			, uint32_t queryCount
+			, VkBuffer dstBuffer
+			, VkDeviceSize dstOffset
+			, VkDeviceSize stride
+			, VkQueryResultFlags flags )const;
 		void pushConstants( VkPipelineLayout layout
 			, VkShaderStageFlags stageFlags
 			, uint32_t offset

@@ -630,6 +630,30 @@ namespace ashes::gl4
 		}
 	}
 
+	void CommandBuffer::resolveImage( VkImage srcImage
+		, VkImageLayout srcLayout
+		, VkImage dstImage
+		, VkImageLayout dstLayout
+		, VkImageResolveArray regions )const
+	{
+		for ( auto & region : regions )
+		{
+			buildBlitImageCommand( *m_state.stack
+				, m_device
+				, srcImage
+				, dstImage
+				, {
+					region.srcSubresource,
+					{ region.srcOffset, { int32_t( region.extent.width ), int32_t( region.extent.height ), int32_t( region.extent.depth ) } },
+					region.dstSubresource,
+					{ region.dstOffset, { int32_t( region.extent.width ), int32_t( region.extent.height ), int32_t( region.extent.depth ) } },
+				}
+				, VK_FILTER_NEAREST
+				, m_cmdList
+				, m_blitViews );
+		}
+	}
+
 	void CommandBuffer::resetQueryPool( VkQueryPool pool
 		, uint32_t firstQuery
 		, uint32_t queryCount )const
@@ -665,6 +689,26 @@ namespace ashes::gl4
 			, pool
 			, query
 			, m_cmdList );
+	}
+
+	void CommandBuffer::copyQueryPoolResults( VkQueryPool queryPool
+		, uint32_t firstQuery
+		, uint32_t queryCount
+		, VkBuffer dstBuffer
+		, VkDeviceSize dstOffset
+		, VkDeviceSize stride
+		, VkQueryResultFlags flags )const
+	{
+		m_cmdList.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_QUERY
+			, get( dstBuffer )->getInternal() ) );
+		m_cmdList.push_back( makeCmd< OpType::eGetQueryResults >( queryPool
+			, firstQuery
+			, queryCount
+			, stride
+			, flags
+			, dstOffset + get( dstBuffer )->getInternalOffset() ) );
+		m_cmdList.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_QUERY
+			, 0u ) );
 	}
 
 	void CommandBuffer::pushConstants( VkPipelineLayout layout

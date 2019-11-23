@@ -130,9 +130,10 @@ namespace ashes::gl4
 			return texelBlockExtent;
 		}
 
-		void doCheckEnabledExtensions( ashes::ArrayView< char const * const > const & extensions )
+		void doCheckEnabledExtensions( VkPhysicalDevice physicalDevice
+			, ashes::ArrayView< char const * const > const & extensions )
 		{
-			auto & available = getSupportedDeviceExtensions();
+			auto available = get( physicalDevice )->enumerateExtensionProperties( nullptr );
 
 			for ( auto & extension : extensions )
 			{
@@ -150,16 +151,17 @@ namespace ashes::gl4
 	}
 
 	Device::Device( VkInstance instance
-		, VkPhysicalDevice gpu
+		, VkPhysicalDevice physicalDevice
 		, VkDeviceCreateInfo createInfos )
 		: m_instance{ instance }
-		, m_physicalDevice{ gpu }
+		, m_physicalDevice{ physicalDevice }
 		, m_createInfos{ std::move( createInfos ) }
 		, m_enabledFeatures{ m_createInfos.pEnabledFeatures ? *m_createInfos.pEnabledFeatures : get( m_physicalDevice )->getFeatures() }
 		, m_dyState{ VK_DYNAMIC_STATE_SCISSOR, VK_DYNAMIC_STATE_VIEWPORT }
 	{
 		m_currentContext = get( m_instance )->registerDevice( get( this ) );
-		doCheckEnabledExtensions( ashes::makeArrayView( m_createInfos.ppEnabledExtensionNames, m_createInfos.enabledExtensionCount ) );
+		doCheckEnabledExtensions( m_physicalDevice
+			, ashes::makeArrayView( m_createInfos.ppEnabledExtensionNames, m_createInfos.enabledExtensionCount ) );
 		doInitialiseQueues();
 	}
 

@@ -167,14 +167,14 @@ namespace ashes::d3d11
 		uint32_t * pPropertyCount,
 		VkExtensionProperties * pProperties )
 	{
-		auto & extensions = getSupportedInstanceExtensions();
-		*pPropertyCount = uint32_t( extensions.size() );
+		auto & props = getSupportedInstanceExtensions( pLayerName );
+		*pPropertyCount = uint32_t( props.size() );
 
 		if ( pProperties )
 		{
-			for ( auto & extension : extensions )
+			for ( auto & prop : props )
 			{
-				*pProperties = extension;
+				*pProperties = prop;
 				++pProperties;
 			}
 		}
@@ -188,14 +188,14 @@ namespace ashes::d3d11
 		uint32_t * pPropertyCount,
 		VkExtensionProperties * pProperties )
 	{
-		auto & extensions = getSupportedDeviceExtensions();
-		*pPropertyCount = uint32_t( extensions.size() );
+		auto props = get( physicalDevice )->enumerateExtensionProperties( pLayerName );
+		*pPropertyCount = uint32_t( props.size() );
 
 		if ( pProperties )
 		{
-			for ( auto & extension : extensions )
+			for ( auto & prop : props )
 			{
-				*pProperties = extension;
+				*pProperties = prop;
 				++pProperties;
 			}
 		}
@@ -207,8 +207,18 @@ namespace ashes::d3d11
 		uint32_t * pPropertyCount,
 		VkLayerProperties * pProperties )
 	{
-		// TODO
-		*pPropertyCount = 0u;
+		auto & props = getInstanceLayerProperties();
+		*pPropertyCount = uint32_t( props.size() );
+
+		if ( pProperties )
+		{
+			for ( auto & prop : props )
+			{
+				*pProperties = prop;
+				++pProperties;
+			}
+		}
+
 		return VK_SUCCESS;
 	}
 
@@ -217,8 +227,18 @@ namespace ashes::d3d11
 		uint32_t * pPropertyCount,
 		VkLayerProperties * pProperties )
 	{
-		// TODO
-		*pPropertyCount = 0u;
+		auto props = get( physicalDevice )->enumerateLayerProperties();
+		*pPropertyCount = uint32_t( props.size() );
+
+		if ( pProperties )
+		{
+			for ( auto & prop : props )
+			{
+				*pProperties = prop;
+				++pProperties;
+			}
+		}
+
 		return VK_SUCCESS;
 	}
 
@@ -571,50 +591,12 @@ namespace ashes::d3d11
 		VkDeviceSize stride,
 		VkQueryResultFlags flags )
 	{
-		VkResult result;
-
-		if ( flags & VK_QUERY_RESULT_64_BIT )
-		{
-			std::vector< uint64_t > results;
-			results.resize( queryCount );
-			result = get( queryPool )->getResults( firstQuery
-				, queryCount
-				, stride
-				, flags
-				, results );
-			stride = ( stride < sizeof( uint64_t )
-				? sizeof( uint64_t )
-				: stride );
-			auto data = reinterpret_cast< uint8_t * >( pData );
-
-			for ( auto & result : results )
-			{
-				*reinterpret_cast< uint64_t * >( data ) = result;
-				data += stride;
-			}
-		}
-		else
-		{
-			std::vector< uint32_t > results;
-			results.resize( queryCount );
-			result = get( queryPool )->getResults( firstQuery
-				, queryCount
-				, stride
-				, flags
-				, results );
-			stride = ( stride < sizeof( uint32_t )
-				? sizeof( uint32_t )
-				: stride );
-			auto data = reinterpret_cast< uint8_t * >( pData );
-
-			for ( auto & result : results )
-			{
-				*reinterpret_cast< uint64_t * >( data ) = result;
-				data += stride;
-			}
-		}
-
-		return result;
+		return get( queryPool )->getResults( firstQuery
+			, queryCount
+			, stride
+			, flags
+			, dataSize
+			, pData );
 	}
 
 	VkResult VKAPI_CALL vkCreateBuffer(
@@ -761,11 +743,7 @@ namespace ashes::d3d11
 		void * pData )
 	{
 		auto & data = get( pipelineCache )->getData();
-
-		if ( pDataSize )
-		{
-			*pDataSize = data.size();
-		}
+		*pDataSize = data.size();
 
 		if ( pData )
 		{
@@ -1464,12 +1442,11 @@ namespace ashes::d3d11
 		uint32_t regionCount,
 		const VkImageResolve * pRegions )
 	{
-		reportUnsupported( commandBuffer, "vkCmdResolveImage" );
-		//get( commandBuffer )->resolveImage( srcImage
-		//	, srcImageLayout
-		//	, dstImage
-		//	, dstImageLayout
-		//	, { pRegions, pRegions + regionCount } );
+		get( commandBuffer )->resolveImage( srcImage
+			, srcImageLayout
+			, dstImage
+			, dstImageLayout
+			, { pRegions, pRegions + regionCount } );
 	}
 
 	void VKAPI_CALL vkCmdSetEvent(
@@ -3869,65 +3846,39 @@ namespace ashes::d3d11
 
 namespace ashes::d3d11
 {
-	char const VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME[VK_MAX_EXTENSION_NAME_SIZE] = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
-
-	std::vector< VkExtensionProperties > const & getSupportedInstanceExtensions()
+	std::vector< VkExtensionProperties > const & getSupportedInstanceExtensions( const char * pLayerName )
 	{
 		static std::vector< VkExtensionProperties > const extensions
 		{
 #if VK_KHR_surface
-			VkExtensionProperties{ VK_KHR_SURFACE_EXTENSION_NAME, makeVersion( 1, 0, 0 ) },
-			[]()
-			{
-				VkExtensionProperties result;
-				result.specVersion = makeVersion( 1, 0, 0 );
-				strncpy( result.extensionName, VK_KHR_PLATFORM_SURFACE_EXTENSION_NAME, VK_MAX_EXTENSION_NAME_SIZE );
-				return result;
-			}(),
+			VkExtensionProperties{ VK_KHR_SURFACE_EXTENSION_NAME, VK_KHR_SURFACE_SPEC_VERSION },
+#endif
+#if VK_KHR_win32_surface
+			VkExtensionProperties{ VK_KHR_WIN32_SURFACE_EXTENSION_NAME, VK_KHR_WIN32_SURFACE_SPEC_VERSION },
 #endif
 #if VK_EXT_debug_report
-			VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_REPORT_SPEC_VERSION, 0, 0 ) },
+			VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, VK_EXT_DEBUG_REPORT_SPEC_VERSION },
 #endif
 #if VK_EXT_debug_marker
-			VkExtensionProperties{ VK_EXT_DEBUG_MARKER_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_MARKER_SPEC_VERSION, 0, 0 ) },
+			VkExtensionProperties{ VK_EXT_DEBUG_MARKER_EXTENSION_NAME, VK_EXT_DEBUG_MARKER_SPEC_VERSION },
 #endif
 #if VK_EXT_debug_utils
-			VkExtensionProperties{ VK_EXT_DEBUG_UTILS_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_UTILS_SPEC_VERSION, 0, 0 ) },
+			VkExtensionProperties{ VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_EXT_DEBUG_UTILS_SPEC_VERSION },
 #endif
 #if VK_KHR_get_physical_device_properties2
-			VkExtensionProperties{ VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, makeVersion( VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_SPEC_VERSION, 0, 0 ) },
+			VkExtensionProperties{ VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_SPEC_VERSION },
 #endif
 #if VK_KHR_display
-			VkExtensionProperties{ VK_KHR_DISPLAY_EXTENSION_NAME, makeVersion( VK_KHR_DISPLAY_SPEC_VERSION, 0, 0 ) },
+			VkExtensionProperties{ VK_KHR_DISPLAY_EXTENSION_NAME, VK_KHR_DISPLAY_SPEC_VERSION },
 #endif
 		};
 		return extensions;
 	}
-	
-	std::vector< VkExtensionProperties > const & getSupportedDeviceExtensions()
+
+	std::vector< VkLayerProperties > const & getInstanceLayerProperties()
 	{
-		static std::vector< VkExtensionProperties > const extensions
-		{
-#if VK_KHR_swapchain
-			VkExtensionProperties{ VK_KHR_SWAPCHAIN_EXTENSION_NAME, makeVersion( VK_KHR_SWAPCHAIN_SPEC_VERSION, 0, 0 ) },
-#endif
-#if VK_EXT_debug_report
-			VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_REPORT_SPEC_VERSION, 0, 0 ) },
-#endif
-#if VK_EXT_debug_marker
-			VkExtensionProperties{ VK_EXT_DEBUG_MARKER_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_MARKER_SPEC_VERSION, 0, 0 ) },
-#endif
-#if VK_EXT_debug_utils
-			VkExtensionProperties{ VK_EXT_DEBUG_UTILS_EXTENSION_NAME, makeVersion( VK_EXT_DEBUG_UTILS_SPEC_VERSION, 0, 0 ) },
-#endif
-#if VK_EXT_inline_uniform_block
-			VkExtensionProperties{ VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME, makeVersion( VK_EXT_INLINE_UNIFORM_BLOCK_SPEC_VERSION, 0, 0 ) },
-#endif
-#if VK_KHR_maintenance1
-			VkExtensionProperties{ VK_KHR_MAINTENANCE1_EXTENSION_NAME, makeVersion( VK_KHR_MAINTENANCE1_SPEC_VERSION, 0, 0 ) },
-#endif
-		};
-		return extensions;
+		static std::vector< VkLayerProperties > result;
+		return result;
 	}
 
 	struct GlLibrary

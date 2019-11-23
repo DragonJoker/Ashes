@@ -23,6 +23,19 @@ namespace ashes::gl4
 		, CmdList & list )
 	{
 		glLogCommand( "EndQueryCommand" );
-		list.push_back( makeCmd< OpType::eEndQuery >( convert( get( pool )->getType() ) ) );
+		if ( get( pool )->getType() == VK_QUERY_TYPE_PIPELINE_STATISTICS )
+		{
+			assert( query == 0u );
+
+			for ( auto type : get( pool )->getTypes() )
+			{
+				list.push_back( makeCmd< OpType::eEndQuery >( type ) );
+				++query;
+			}
+		}
+		else
+		{
+			list.push_back( makeCmd< OpType::eEndQuery >( convert( get( pool )->getType() ) ) );
+		}
 	}
 }
