@@ -691,6 +691,26 @@ namespace ashes::gl4
 			, m_cmdList );
 	}
 
+	void CommandBuffer::copyQueryPoolResults( VkQueryPool queryPool
+		, uint32_t firstQuery
+		, uint32_t queryCount
+		, VkBuffer dstBuffer
+		, VkDeviceSize dstOffset
+		, VkDeviceSize stride
+		, VkQueryResultFlags flags )const
+	{
+		m_cmdList.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_QUERY
+			, get( dstBuffer )->getInternal() ) );
+		m_cmdList.push_back( makeCmd< OpType::eGetQueryResults >( queryPool
+			, firstQuery
+			, queryCount
+			, stride
+			, flags
+			, dstOffset + get( dstBuffer )->getInternalOffset() ) );
+		m_cmdList.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_QUERY
+			, 0u ) );
+	}
+
 	void CommandBuffer::pushConstants( VkPipelineLayout layout
 		, VkShaderStageFlags stageFlags
 		, uint32_t offset
