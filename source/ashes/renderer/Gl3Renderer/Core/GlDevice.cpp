@@ -513,7 +513,7 @@ namespace ashes::gl3
 		void doCheckEnabledExtensions( VkPhysicalDevice physicalDevice
 			, ashes::ArrayView< char const * const > const & extensions )
 		{
-			auto & available = get( physicalDevice )->enumerateExtensionProperties( {} );
+			auto available = get( physicalDevice )->enumerateExtensionProperties( nullptr );
 
 			for ( auto & extension : extensions )
 			{

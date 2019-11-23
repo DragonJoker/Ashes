@@ -186,7 +186,7 @@ namespace ashes::gl3
 		uint32_t * pPropertyCount,
 		VkExtensionProperties * pProperties )
 	{
-		auto & props = get( physicalDevice )->enumerateExtensionProperties( pLayerName );
+		auto props = get( physicalDevice )->enumerateExtensionProperties( pLayerName );
 		*pPropertyCount = uint32_t( props.size() );
 
 		if ( pProperties )
@@ -225,7 +225,7 @@ namespace ashes::gl3
 		uint32_t * pPropertyCount,
 		VkLayerProperties * pProperties )
 	{
-		auto & props = get( physicalDevice )->enumerateLayerProperties();
+		auto props = get( physicalDevice )->enumerateLayerProperties();
 		*pPropertyCount = uint32_t( props.size() );
 
 		if ( pProperties )
