@@ -192,7 +192,7 @@ namespace ashes::gl4
 
 		void doSetupOptions( VkDevice device
 			, spirv_cross::CompilerGLSL & compiler
-			, bool isRtot )
+			, bool invertY )
 		{
 			auto options = compiler.get_common_options();
 			options.version = get( get( device )->getInstance() )->getExtensions().getShaderVersion();
@@ -200,7 +200,7 @@ namespace ashes::gl4
 			options.separate_shader_objects = true;
 			options.enable_420pack_extension = true;
 			options.vertex.fixup_clipspace = true;
-			options.vertex.flip_vert_y = !isRtot;
+			options.vertex.flip_vert_y = invertY;
 			options.vertex.support_nonzero_base_instance = true;
 			compiler.set_common_options( options );
 		}
@@ -466,7 +466,7 @@ namespace ashes::gl4
 			, UInt32Array const & shader
 			, VkShaderStageFlagBits stage
 			, VkPipelineShaderStageCreateInfo const & state
-			, bool isRtot
+			, bool invertY
 			, ConstantsLayout & constants )
 		{
 			if ( shader[0] == OpCodeSPIRV )
@@ -477,7 +477,7 @@ namespace ashes::gl4
 				spirv_cross::CompilerGLSL compiler{ shader };
 				doProcessSpecializationConstants( state, compiler );
 				doSetEntryPoint( stage, compiler );
-				doSetupOptions( device, compiler, isRtot );
+				doSetupOptions( device, compiler, invertY );
 				constants = doRetrievePushConstants( compiler, stage );
 				doReworkBindings( pipelineLayout, createFlags, module, compiler );
 
@@ -507,7 +507,7 @@ namespace ashes::gl4
 	ShaderDesc ShaderModule::compile( VkPipelineShaderStageCreateInfo const & state
 		, VkPipelineLayout pipelineLayout
 		, VkPipelineCreateFlags createFlags
-		, bool isRtot )
+		, bool invertY )
 	{
 		auto context = get( m_device )->getContext();
 		ShaderDesc result{};
@@ -518,7 +518,7 @@ namespace ashes::gl4
 			, m_code
 			, state.stage
 			, state
-			, isRtot
+			, invertY
 			, m_constants );
 
 		char const * data = m_source.data();

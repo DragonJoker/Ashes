@@ -176,7 +176,7 @@ namespace ashes::gl4
 			, VkPipelineCreateFlags createFlags
 			, VkRenderPass renderPass
 			, Optional< VkPipelineVertexInputStateCreateInfo > const & vertexInputState
-			, bool isRtot = false )
+			, bool invertY = false )
 		{
 			auto context = get( device )->getContext();
 
@@ -191,7 +191,7 @@ namespace ashes::gl4
 
 			for ( auto & stage : stages )
 			{
-				descs.push_back( get( stage.module )->compile( stage, layout, createFlags, isRtot ) );
+				descs.push_back( get( stage.module )->compile( stage, layout, createFlags, invertY ) );
 			}
 
 			Pipeline::ProgramPipeline result;
@@ -283,8 +283,8 @@ namespace ashes::gl4
 		, m_subpass{ createInfo.subpass }
 		, m_basePipelineHandle{ createInfo.basePipelineHandle }
 		, m_basePipelineIndex{ createInfo.basePipelineIndex }
-		, m_backPipeline{ createProgramPipeline( m_device, &m_backContextState, get( this ), m_stages, m_layout, createInfo.flags, m_renderPass, m_vertexInputState, false ) }
-		, m_rtotPipeline{ createProgramPipeline( m_device, &m_rtotContextState, get( this ), m_stages, m_layout, createInfo.flags, m_renderPass, m_vertexInputState, true ) }
+		, m_backPipeline{ createProgramPipeline( m_device, &m_backContextState, get( this ), m_stages, m_layout, createInfo.flags, m_renderPass, m_vertexInputState, true ) }
+		, m_rtotPipeline{ createProgramPipeline( m_device, &m_rtotContextState, get( this ), m_stages, m_layout, createInfo.flags, m_renderPass, m_vertexInputState, false ) }
 		, m_vertexInputStateHash{ ( m_vertexInputState
 			? doHash( m_vertexInputState.value() )
 			: 0u ) }

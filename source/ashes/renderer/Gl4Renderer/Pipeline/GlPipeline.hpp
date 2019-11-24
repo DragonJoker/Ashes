@@ -92,10 +92,12 @@ namespace ashes::gl4
 			return m_backContextState.cbState;
 		}
 
-		inline auto const & getRasterisationState()const
+		inline auto const & getRasterisationState( bool isRtot )const
 		{
 			assert( !isCompute() );
-			return m_backContextState.rsState;
+			return isRtot
+				? m_rtotContextState.rsState
+				: m_backContextState.rsState;
 		}
 
 		inline auto const & getDepthStencilState()const
