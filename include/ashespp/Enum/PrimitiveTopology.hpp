@@ -41,7 +41,7 @@ namespace ashes
 		case VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY:
 			return "triangle_strip_adj";
 		case VK_PRIMITIVE_TOPOLOGY_PATCH_LIST:
-			return "path_list";
+			return "patch_list";
 		default:
 			assert( false && "Unsupported VkPrimitiveTopology." );
 			throw std::runtime_error{ "Unsupported VkPrimitiveTopology" };
