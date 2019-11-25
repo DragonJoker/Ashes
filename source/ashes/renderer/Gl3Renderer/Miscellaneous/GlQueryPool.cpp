@@ -37,6 +37,7 @@ namespace ashes::gl3
 		, uint32_t queryCount
 		, VkDeviceSize stride
 		, VkQueryResultFlags flags
+		, size_t dataSize
 		, void * buffer )const
 	{
 		assert( firstQuery + queryCount <= m_names.size() );

@@ -684,7 +684,7 @@ namespace ashes::gl3
 		m_features.textureCompressionASTC_LDR = find( "GL_KHR_texture_compression_astc_ldr" );
 		m_features.textureCompressionBC = findAll( { "GL_EXT_texture_compression_s3tc", "GL_EXT_texture_sRGB" } );
 		m_features.occlusionQueryPrecise = true;
-		m_features.pipelineStatisticsQuery = false;
+		m_features.pipelineStatisticsQuery = find( "GL_ARB_query_buffer_object" );
 		m_features.vertexPipelineStoresAndAtomics = find( "GL_ARB_shader_atomic_counters" );
 		m_features.fragmentStoresAndAtomics = m_features.vertexPipelineStoresAndAtomics;
 		m_features.shaderTessellationAndGeometryPointSize = m_features.tessellationShader && m_features.geometryShader;

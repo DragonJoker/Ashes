@@ -769,6 +769,36 @@ namespace ashes::gl3
 			, m_cmdList );
 	}
 
+	void CommandBuffer::copyQueryPoolResults( VkQueryPool queryPool
+		, uint32_t firstQuery
+		, uint32_t queryCount
+		, VkBuffer dstBuffer
+		, VkDeviceSize dstOffset
+		, VkDeviceSize stride
+		, VkQueryResultFlags flags )const
+	{
+		if ( !get( get( m_device )->getPhysicalDevice() )->find( ARB_query_buffer_object ) )
+		{
+			reportError( queryPool
+				, VK_ERROR_FEATURE_NOT_PRESENT
+				, "Unsupported Feature"
+				, "Query Buffer Objects" );
+		}
+		else
+		{
+			m_cmdList.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_QUERY
+				, get( dstBuffer )->getInternal() ) );
+			m_cmdList.push_back( makeCmd< OpType::eGetQueryResults >( queryPool
+				, firstQuery
+				, queryCount
+				, stride
+				, flags
+				, dstOffset + get( dstBuffer )->getInternalOffset() ) );
+			m_cmdList.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_QUERY
+				, 0u ) );
+		}
+	}
+
 	void CommandBuffer::pushConstants( VkPipelineLayout layout
 		, VkShaderStageFlags stageFlags
 		, uint32_t offset
