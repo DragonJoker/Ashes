@@ -359,42 +359,11 @@ namespace ashes::gl4
 			assert( false );
 			std::stringstream stream;
 			stream.imbue( std::locale{ "C" } );
-			stream << "Missing " << typeName << ", binding=" << binding << ", set=" << set;
-#if VK_EXT_debug_utils
-			VkDebugUtilsObjectNameInfoEXT object
-			{
-				VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
-				nullptr,
-				VK_OBJECT_TYPE_SHADER_MODULE,
-				uint64_t( module ),
-				"ShaderModule",
-			};
-			get( device )->submitDebugUtilsMessenger( VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
-				, VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
-				, {
-					VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT,
-					nullptr,
-					0u,
-					nullptr,
-					0,
-					stream.str().c_str(),
-					0u,
-					nullptr,
-					0u,
-					nullptr,
-					1u,
-					&object,
-				} );
-#endif
-#if VK_EXT_debug_report
-			get( device )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
-				, VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT
-				, uint64_t( module )
-				, 0u
-				, 0
-				, "OpenGL"
-				, stream.str().c_str() );
-#endif
+			stream << typeName << ", binding=" << binding << ", set=" << set;
+			reportError( module
+				, VK_ERROR_VALIDATION_FAILED_EXT
+				, "Missing binding"
+				, stream.str() );
 		}
 
 		void doReworkBindings( VkDevice device

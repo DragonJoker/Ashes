@@ -107,6 +107,11 @@ namespace ashes::d3d11
 			, VkPipelineLayout pipelineLayout
 			, VkPipelineCreateFlags createFlags )const;
 
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		VkDevice m_device;
 		VkShaderModuleCreateInfo m_createInfo;

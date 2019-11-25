@@ -39,6 +39,7 @@ namespace ashes::gl3
 	makeGlExtension( ARB_compute_shader );
 	makeGlExtension( ARB_buffer_storage );
 	makeGlExtension( ARB_gl_spirv );
+	makeGlExtension( ARB_query_buffer_object );
 #undef makeGlExtension
 
 	using GLbitfield = unsigned int;

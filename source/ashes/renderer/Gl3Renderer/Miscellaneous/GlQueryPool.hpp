@@ -37,6 +37,11 @@ namespace ashes::gl3
 			return m_queryType;
 		}
 
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	protected:
 		VkDevice m_device;
 		VkQueryPoolCreateFlags m_flags;
