@@ -49,6 +49,10 @@ namespace ashes::gl4
 
 		if ( checkFlag( flags, VK_QUERY_RESULT_64_BIT ) )
 		{
+			stride = stride
+				? stride
+				: sizeof( GLuint64 );
+
 			for ( auto it = begin; it != end; ++it )
 			{
 				glLogCall( context
@@ -61,6 +65,10 @@ namespace ashes::gl4
 		}
 		else
 		{
+			stride = stride
+				? stride
+				: sizeof( GLuint );
+
 			for ( auto it = begin; it != end; ++it )
 			{
 				glLogCall( context
