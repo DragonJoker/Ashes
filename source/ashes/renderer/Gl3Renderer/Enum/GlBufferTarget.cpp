@@ -39,6 +39,9 @@ namespace ashes::gl3
 		case GL_BUFFER_TARGET_DISPATCH_INDIRECT:
 			return "GL_DISPATCH_INDIRECT_BUFFER";
 
+		case GL_BUFFER_TARGET_QUERY:
+			return "GL_QUERY_BUFFER";
+
 		default:
 			assert( false && "Unsupported GlBufferTarget" );
 			return "GlBufferTarget_UNKNOWN";

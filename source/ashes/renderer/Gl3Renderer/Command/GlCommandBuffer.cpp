@@ -338,13 +338,10 @@ namespace ashes::gl3
 			}
 			else
 			{
-				get( m_device )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
-					, VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT
-					, 0ull
-					, 0u
-					, VK_ERROR_VALIDATION_FAILED_EXT
-					, "OpenGL"
-					, "Compute shaders are not supported" );
+				reportError( m_device
+					, VK_ERROR_FEATURE_NOT_PRESENT
+					, "Unsupported Feature"
+					, "Compute Shaders" );
 			}
 		}
 
@@ -429,13 +426,10 @@ namespace ashes::gl3
 		if ( firstInstance > 0
 			&& !get( get( m_device )->getInstance() )->getFeatures().hasBaseInstance )
 		{
-			get( m_device )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
-				, VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT
-				, 0ull
-				, 0u
-				, VK_ERROR_VALIDATION_FAILED_EXT
-				, "OpenGL"
-				, "Base instance rendering is not supported" );
+			reportError( get( this )
+				, VK_ERROR_FEATURE_NOT_PRESENT
+				, "Unsupported feature"
+				, "Base instance rendering" );
 		}
 		else
 		{
@@ -493,13 +487,10 @@ namespace ashes::gl3
 		if ( firstInstance > 0
 			&& !get( get( m_device )->getInstance() )->getFeatures().hasBaseInstance )
 		{
-			get( m_device )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
-				, VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT
-				, 0ull
-				, 0u
-				, VK_ERROR_VALIDATION_FAILED_EXT
-				, "OpenGL"
-				, "Base instance rendering is not supported" );
+			reportError( get( this )
+				, VK_ERROR_FEATURE_NOT_PRESENT
+				, "Unsupported feature"
+				, "Base instance rendering" );
 		}
 		else
 		{
@@ -545,13 +536,10 @@ namespace ashes::gl3
 	{
 		if ( !get( get( m_device )->getPhysicalDevice() )->getFeatures().multiDrawIndirect )
 		{
-			get( m_device )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
-				, VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT
-				, 0ull
-				, 0u
-				, VK_ERROR_VALIDATION_FAILED_EXT
-				, "OpenGL"
-				, "Multi draw indirect is not supported" );
+			reportError( get( this )
+				, VK_ERROR_FEATURE_NOT_PRESENT
+				, "Unsupported feature"
+				, "Multi draw indirect" );
 		}
 		else
 		{
@@ -581,13 +569,10 @@ namespace ashes::gl3
 	{
 		if ( !get( get( m_device )->getPhysicalDevice() )->getFeatures().multiDrawIndirect )
 		{
-			get( m_device )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
-				, VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT
-				, 0ull
-				, 0u
-				, VK_ERROR_VALIDATION_FAILED_EXT
-				, "OpenGL"
-				, "Multi draw indirect is not supported" );
+			reportError( get( this )
+				, VK_ERROR_FEATURE_NOT_PRESENT
+				, "Unsupported feature"
+				, "Multi draw indirect" );
 		}
 		else
 		{
@@ -784,6 +769,36 @@ namespace ashes::gl3
 			, m_cmdList );
 	}
 
+	void CommandBuffer::copyQueryPoolResults( VkQueryPool queryPool
+		, uint32_t firstQuery
+		, uint32_t queryCount
+		, VkBuffer dstBuffer
+		, VkDeviceSize dstOffset
+		, VkDeviceSize stride
+		, VkQueryResultFlags flags )const
+	{
+		if ( !get( get( m_device )->getPhysicalDevice() )->find( ARB_query_buffer_object ) )
+		{
+			reportError( queryPool
+				, VK_ERROR_FEATURE_NOT_PRESENT
+				, "Unsupported Feature"
+				, "Query Buffer Objects" );
+		}
+		else
+		{
+			m_cmdList.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_QUERY
+				, get( dstBuffer )->getInternal() ) );
+			m_cmdList.push_back( makeCmd< OpType::eGetQueryResults >( queryPool
+				, firstQuery
+				, queryCount
+				, stride
+				, flags
+				, dstOffset + get( dstBuffer )->getInternalOffset() ) );
+			m_cmdList.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_QUERY
+				, 0u ) );
+		}
+	}
+
 	void CommandBuffer::pushConstants( VkPipelineLayout layout
 		, VkShaderStageFlags stageFlags
 		, uint32_t offset
@@ -831,13 +846,10 @@ namespace ashes::gl3
 		}
 		else
 		{
-			get( m_device )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
-				, VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT
-				, 0ull
-				, 0u
-				, VK_ERROR_VALIDATION_FAILED_EXT
-				, "OpenGL"
-				, "Compute shaders are not supported" );
+			reportError( get( this )
+				, VK_ERROR_FEATURE_NOT_PRESENT
+				, "Unsupported feature"
+				, "Compute Shaders" );
 		}
 	}
 
@@ -853,13 +865,10 @@ namespace ashes::gl3
 		}
 		else
 		{
-			get( m_device )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
-				, VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT
-				, 0ull
-				, 0u
-				, VK_ERROR_VALIDATION_FAILED_EXT
-				, "OpenGL"
-				, "Compute shaders are not supported" );
+			reportError( get( this )
+				, VK_ERROR_FEATURE_NOT_PRESENT
+				, "Unsupported feature"
+				, "Compute Shaders" );
 		}
 	}
 

@@ -65,53 +65,15 @@ namespace ashes::gl4
 
 		if ( errorCode )
 		{
-			auto instance = context->getInstance();
-#if VK_EXT_debug_utils
 			{
 				std::stringstream stream;
 				stream.imbue( std::locale{ "C" } );
 				stream << "OpenGL Error, on function: " << text;
-				VkDebugUtilsObjectNameInfoEXT object
-				{
-					VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
-					nullptr,
-					VK_OBJECT_TYPE_INSTANCE,
-					uint64_t( instance ),
-					"OpenGL Instance",
-				};
-				get( instance )->submitDebugUtilsMessenger( VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
-					, VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
-					, {
-						VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT,
-						nullptr,
-						0u,
-						getErrorName( errorCode, GL_DEBUG_TYPE_ERROR ).c_str(),
-						int32_t( errorCode ),
-						stream.str().c_str(),
-						0u,
-						nullptr,
-						0u,
-						nullptr,
-						1u,
-						&object,
-					} );
+				reportError( context->getInstance()
+					, VkResult( errorCode )
+					, stream.str()
+					, getErrorName( errorCode, GL_DEBUG_TYPE_ERROR ) );
 			}
-#endif
-#if VK_EXT_debug_report
-			{
-				std::stringstream stream;
-				stream.imbue( std::locale{ "C" } );
-				stream << "OpenGL Error, on function: " << text;
-				stream << ", " << getErrorName( errorCode, GL_DEBUG_TYPE_ERROR );
-				context->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
-					, VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT
-					, uint64_t( instance )
-					, 0u
-					, errorCode
-					, "OpenGL"
-					, stream.str().c_str() );
-			}
-#endif
 			std::stringstream stream;
 			stream.imbue( std::locale{ "C" } );
 			stream << "OpenGL Error, on function: " << text;

@@ -20,6 +20,7 @@ namespace ashes::gl3
 		GL_BUFFER_TARGET_DRAW_INDIRECT = 0x8F3F,
 		GL_BUFFER_TARGET_SHADER_STORAGE = 0x90D2,
 		GL_BUFFER_TARGET_DISPATCH_INDIRECT = 0x90EE,
+		GL_BUFFER_TARGET_QUERY = 0x9192,
 	};
 	std::string getName( GlBufferTarget value );
 

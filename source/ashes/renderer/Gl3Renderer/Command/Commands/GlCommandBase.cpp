@@ -107,6 +107,18 @@ namespace ashes::gl3
 	}
 
 	void apply( ContextLock const & context
+		, CmdGetQueryResults const & cmd )
+	{
+		get( cmd.queryPool )->getResults( context
+			, cmd.firstQuery
+			, cmd.queryCount
+			, cmd.stride
+			, 0u
+			, cmd.flags
+			, getBufferOffset( cmd.bufferOffset ) );
+	}
+
+	void apply( ContextLock const & context
 		, CmdInitFramebuffer const & cmd )
 	{
 		if ( ( *cmd.fbo ) == GL_INVALID_INDEX )
