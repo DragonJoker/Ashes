@@ -20,6 +20,7 @@ namespace ashes::gl3
 			, uint32_t queryCount
 			, VkDeviceSize stride
 			, VkQueryResultFlags flags
+			, size_t dataSize
 			, void * buffer )const;
 
 		inline auto begin()const
@@ -35,6 +36,11 @@ namespace ashes::gl3
 		inline auto getType()const
 		{
 			return m_queryType;
+		}
+
+		inline VkDevice getDevice()const
+		{
+			return m_device;
 		}
 
 	protected:

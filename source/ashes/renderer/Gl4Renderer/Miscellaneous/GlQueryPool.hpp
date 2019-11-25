@@ -43,6 +43,11 @@ namespace ashes::gl4
 			return m_pipelineStatistics;
 		}
 
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	protected:
 		VkDevice m_device;
 		VkQueryPoolCreateFlags m_flags;

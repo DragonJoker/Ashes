@@ -56,10 +56,10 @@ namespace ashes
 	struct VkTypeTraits< VkDevice >
 	{
 #if VK_EXT_debug_utils
-		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_PHYSICAL_DEVICE;
+		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_DEVICE;
 #endif
 #if VK_EXT_debug_report || VK_EXT_debug_marker
-		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT;
+		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT;
 #endif
 		static std::string const & getName()
 		{

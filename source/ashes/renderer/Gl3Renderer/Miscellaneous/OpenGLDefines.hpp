@@ -39,6 +39,7 @@ namespace ashes::gl3
 	makeGlExtension( ARB_compute_shader );
 	makeGlExtension( ARB_buffer_storage );
 	makeGlExtension( ARB_gl_spirv );
+	makeGlExtension( ARB_query_buffer_object );
 #undef makeGlExtension
 
 	using GLbitfield = unsigned int;
@@ -241,6 +242,7 @@ namespace ashes::gl3
 	using PFN_glGetError = GLenum( GLAPIENTRY * )( void );
 	using PFN_glGetFloatv = void ( GLAPIENTRY * )( GLenum pname, GLfloat * data );
 	using PFN_glGetIntegerv = void ( GLAPIENTRY * )( GLenum pname, GLint * data );
+	using PFN_glGetInteger64v = void( GLAPIENTRY * )( GLenum pname, GLint64 * data );
 	using PFN_glGetInternalformativ = void ( GLAPIENTRY * )( GLenum target, GLenum internalformat, GLenum pname, GLsizei bufSize, GLint * params );
 	using PFN_glGetInternalformati64v = void ( GLAPIENTRY * )( GLenum target, GLenum internalformat, GLenum pname, GLsizei bufSize, GLint64 * params );
 	using PFN_glGetProgramInfoLog = void ( GLAPIENTRY * )( GLuint program, GLsizei bufSize, GLsizei* length, GLchar* infoLog );

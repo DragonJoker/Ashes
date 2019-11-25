@@ -25,6 +25,11 @@ namespace ashes::gl4
 			return m_constants;
 		}
 
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		VkDevice m_device;
 		VkShaderModuleCreateFlags m_flags;

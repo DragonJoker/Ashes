@@ -33,8 +33,8 @@ See LICENSE file in root folder.
 #include "Sync/GlFence.hpp"
 #include "Sync/GlSemaphore.hpp"
 
-
-#include <common/Exception.hpp>
+#include <ashes/common/Exception.hpp>
+#include <ashes/common/VkTypeTraits.hpp>
 
 #define VK_NO_PROTOTYPES
 #include <ashes/ashes.h>
@@ -52,19 +52,19 @@ namespace ashes::gl4
 	static constexpr T NonAvailable = std::numeric_limits< T >::max();
 
 	template< typename VkType  >
-	struct VkTypeTraits;
-	
+	struct VkGlTypeTraits;
+
 	template< typename Type  >
-	struct TypeTraits;
+	struct GlVkTypeTraits;
 
 #define VK_IMPLEMENT_HANDLE(object)\
 	template<>\
-	struct VkTypeTraits< Vk##object >\
+	struct VkGlTypeTraits< Vk##object >\
 	{\
 		using Type = object;\
 	};\
 	template<>\
-	struct TypeTraits< object >\
+	struct GlVkTypeTraits< object >\
 	{\
 		using VkType = Vk##object;\
 	}
@@ -125,23 +125,23 @@ namespace ashes::gl4
 #endif
 
 	template< typename VkType >
-	typename VkTypeTraits< VkType >::Type * get( VkType vkValue )
+	typename VkGlTypeTraits< VkType >::Type * get( VkType vkValue )
 	{
-		using Type = typename VkTypeTraits< VkType >::Type;
+		using Type = typename VkGlTypeTraits< VkType >::Type;
 		return ( ( Type * )vkValue );
 	}
 
 	template< typename Type >
-	typename TypeTraits< Type >::VkType get( Type * vkValue )
+	typename GlVkTypeTraits< Type >::VkType get( Type * vkValue )
 	{
-		using VkType = typename TypeTraits< Type >::VkType;
+		using VkType = typename GlVkTypeTraits< Type >::VkType;
 		return VkType( vkValue );
 	}
 
 	template< typename Type >
-	typename TypeTraits< Type >::VkType get( Type const * vkValue )
+	typename GlVkTypeTraits< Type >::VkType get( Type const * vkValue )
 	{
-		using VkType = typename TypeTraits< Type >::VkType;
+		using VkType = typename GlVkTypeTraits< Type >::VkType;
 		return VkType( vkValue );
 	}
 
@@ -154,7 +154,7 @@ namespace ashes::gl4
 
 		try
 		{
-			using Type = typename VkTypeTraits< VkType >::Type;
+			using Type = typename VkGlTypeTraits< VkType >::Type;
 			vkValue = VkType( new Type{ std::forward< Params && >( params )... } );
 			result = VK_SUCCESS;
 		}
@@ -215,8 +215,69 @@ namespace ashes::gl4
 		return getInstance( get( object )->getDevice() );
 	}
 
+	inline VkInstance getInstance( VkQueryPool object )
+	{
+		return getInstance( get( object )->getDevice() );
+	}
+
+	inline VkInstance getInstance( VkShaderModule object )
+	{
+		return getInstance( get( object )->getDevice() );
+	}
+
 	template< typename VkObject >
-	inline VkResult reportUnsupported( VkObject object
+	inline void reportError( VkObject object
+		, VkResult result
+		, std::string const & errorName
+		, std::string const & name )
+	{
+		VkInstance instance = getInstance( object );
+#if VK_EXT_debug_utils
+		{
+			VkDebugUtilsObjectNameInfoEXT objectName
+			{
+				VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+				nullptr,
+				ashes::VkTypeTraits< VkObject >::UtilsValue,
+				uint64_t( object ),
+				ashes::VkTypeTraits< VkObject >::getName().c_str(),
+			};
+			get( instance )->submitDebugUtilsMessenger( VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
+				, VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
+				, {
+					VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT,
+					nullptr,
+					0u,
+					errorName.c_str(),
+					result,
+					name.c_str(),
+					0u,
+					nullptr,
+					0u,
+					nullptr,
+					1u,
+					&objectName,
+				} );
+		}
+#endif
+#if VK_EXT_debug_report
+		{
+			std::string text = errorName + ": " + name;
+			get( instance )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, ashes::VkTypeTraits< VkObject >::ReportValue
+				, uint64_t( object )
+				, 0u
+				, result
+				, "OpenGL3"
+				, text.c_str() );
+		}
+#endif
+	}
+
+	template< typename VkObject >
+	inline void reportWarning( VkObject object
+		, VkResult result
+		, std::string const & errorName
 		, std::string const & name )
 	{
 		VkInstance instance = getInstance( object );
@@ -226,18 +287,18 @@ namespace ashes::gl4
 			{
 				VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
 				nullptr,
-				VK_OBJECT_TYPE_INSTANCE,
-				uint64_t( instance ),
-				"Instance",
+				ashes::VkTypeTraits< VkObject >::UtilsValue,
+				uint64_t( object ),
+				ashes::VkTypeTraits< VkObject >::getName().c_str(),
 			};
-			get( instance )->submitDebugUtilsMessenger( VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
+			get( instance )->submitDebugUtilsMessenger( VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
 				, VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
 				, {
 					VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT,
 					nullptr,
 					0u,
-					"Unsupported feature",
-					VK_ERROR_FEATURE_NOT_PRESENT,
+					errorName.c_str(),
+					result,
 					name.c_str(),
 					0u,
 					nullptr,
@@ -250,17 +311,26 @@ namespace ashes::gl4
 #endif
 #if VK_EXT_debug_report
 		{
-			std::string text = "Unsupported feature: " + name;
-			get( instance )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
-				, VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT
-				, uint64_t( instance )
+			std::string text = errorName + ": " + name;
+			get( instance )->reportMessage( VK_DEBUG_REPORT_WARNING_BIT_EXT
+				, ashes::VkTypeTraits< VkObject >::ReportValue
+				, uint64_t( object )
 				, 0u
-				, VK_ERROR_FEATURE_NOT_PRESENT
-				, "OpenGL4"
+				, result
+				, "OpenGL3"
 				, text.c_str() );
 		}
 #endif
+	}
 
+	template< typename VkObject >
+	inline VkResult reportUnsupported( VkObject object
+		, std::string const & name )
+	{
+		reportError( object
+			, VK_ERROR_FEATURE_NOT_PRESENT
+			, "Unsupported feature"
+			, name );
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 

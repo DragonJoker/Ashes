@@ -34,6 +34,7 @@ See LICENSE file in root folder.
 #include "Sync/D3D11Semaphore.hpp"
 
 #include <ashes/common/Exception.hpp>
+#include <ashes/common/VkTypeTraits.hpp>
 
 #include <iostream>
 
@@ -43,19 +44,19 @@ namespace ashes::d3d11
 	static constexpr T NonAvailable = std::numeric_limits< T >::max();
 
 	template< typename VkType  >
-	struct VkTypeTraits;
+	struct VkDxTypeTraits;
 	
 	template< typename Type  >
-	struct TypeTraits;
+	struct DxVkTypeTraits;
 
 #define VK_IMPLEMENT_HANDLE(object)\
 	template<>\
-	struct VkTypeTraits< Vk##object >\
+	struct VkDxTypeTraits< Vk##object >\
 	{\
 		using Type = object;\
 	};\
 	template<>\
-	struct TypeTraits< object >\
+	struct DxVkTypeTraits< object >\
 	{\
 		using VkType = Vk##object;\
 	}
@@ -99,23 +100,23 @@ namespace ashes::d3d11
 	VK_IMPLEMENT_HANDLE( ValidationCacheEXT );
 
 	template< typename VkType >
-	typename VkTypeTraits< VkType >::Type * get( VkType vkValue )
+	typename VkDxTypeTraits< VkType >::Type * get( VkType vkValue )
 	{
-		using Type = typename VkTypeTraits< VkType >::Type;
+		using Type = typename VkDxTypeTraits< VkType >::Type;
 		return ( ( Type * )vkValue );
 	}
 
 	template< typename Type >
-	typename TypeTraits< Type >::VkType get( Type * vkValue )
+	typename DxVkTypeTraits< Type >::VkType get( Type * vkValue )
 	{
-		using VkType = typename TypeTraits< Type >::VkType;
+		using VkType = typename DxVkTypeTraits< Type >::VkType;
 		return VkType( vkValue );
 	}
 
 	template< typename Type >
-	typename TypeTraits< Type >::VkType get( Type const * vkValue )
+	typename DxVkTypeTraits< Type >::VkType get( Type const * vkValue )
 	{
-		using VkType = typename TypeTraits< Type >::VkType;
+		using VkType = typename DxVkTypeTraits< Type >::VkType;
 		return VkType( vkValue );
 	}
 
@@ -128,7 +129,7 @@ namespace ashes::d3d11
 
 		try
 		{
-			using Type = typename VkTypeTraits< VkType >::Type;
+			using Type = typename VkDxTypeTraits< VkType >::Type;
 			vkValue = VkType( new Type{ std::forward< Params && >( params )... } );
 			result = VK_SUCCESS;
 		}
@@ -281,8 +282,69 @@ namespace ashes::d3d11
 		return getInstance( get( object )->getDevice() );
 	}
 
+	inline VkInstance getInstance( VkQueryPool object )
+	{
+		return getInstance( get( object )->getDevice() );
+	}
+
+	inline VkInstance getInstance( VkShaderModule object )
+	{
+		return getInstance( get( object )->getDevice() );
+	}
+
 	template< typename VkObject >
-	inline VkResult reportUnsupported( VkObject object
+	inline void reportError( VkObject object
+		, VkResult result
+		, std::string const & errorName
+		, std::string const & name )
+	{
+		VkInstance instance = getInstance( object );
+#if VK_EXT_debug_utils
+		{
+			VkDebugUtilsObjectNameInfoEXT objectName
+			{
+				VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+				nullptr,
+				ashes::VkTypeTraits< VkObject >::UtilsValue,
+				uint64_t( object ),
+				ashes::VkTypeTraits< VkObject >::getName().c_str(),
+			};
+			get( instance )->submitDebugUtilsMessenger( VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
+				, VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
+				, {
+					VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT,
+					nullptr,
+					0u,
+					errorName.c_str(),
+					result,
+					name.c_str(),
+					0u,
+					nullptr,
+					0u,
+					nullptr,
+					1u,
+					&objectName,
+				} );
+		}
+#endif
+#if VK_EXT_debug_report
+		{
+			std::string text = errorName + ": " + name;
+			get( instance )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, ashes::VkTypeTraits< VkObject >::ReportValue
+				, uint64_t( object )
+				, 0u
+				, result
+				, "Direct3D 11"
+				, text.c_str() );
+		}
+#endif
+	}
+
+	template< typename VkObject >
+	inline void reportWarning( VkObject object
+		, VkResult result
+		, std::string const & errorName
 		, std::string const & name )
 	{
 		VkInstance instance = getInstance( object );
@@ -292,18 +354,18 @@ namespace ashes::d3d11
 			{
 				VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
 				nullptr,
-				VK_OBJECT_TYPE_INSTANCE,
-				uint64_t( instance ),
-				"Instance",
+				ashes::VkTypeTraits< VkObject >::UtilsValue,
+				uint64_t( object ),
+				ashes::VkTypeTraits< VkObject >::getName().c_str(),
 			};
-			get( instance )->submitDebugUtilsMessenger( VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
+			get( instance )->submitDebugUtilsMessenger( VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
 				, VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
 				, {
 					VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT,
 					nullptr,
 					0u,
-					"Unsupported feature",
-					VK_ERROR_FEATURE_NOT_PRESENT,
+					errorName.c_str(),
+					result,
 					name.c_str(),
 					0u,
 					nullptr,
@@ -316,17 +378,26 @@ namespace ashes::d3d11
 #endif
 #if VK_EXT_debug_report
 		{
-			std::string text = "Unsupported feature: " + name;
-			get( instance )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
-				, VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT
-				, uint64_t( instance )
+			std::string text = errorName + ": " + name;
+			get( instance )->reportMessage( VK_DEBUG_REPORT_WARNING_BIT_EXT
+				, ashes::VkTypeTraits< VkObject >::ReportValue
+				, uint64_t( object )
 				, 0u
-				, VK_ERROR_FEATURE_NOT_PRESENT
-				, "Direct3D11"
+				, result
+				, "Direct3D 11"
 				, text.c_str() );
 		}
 #endif
+	}
 
+	template< typename VkObject >
+	inline VkResult reportUnsupported( VkObject object
+		, std::string const & name )
+	{
+		reportError( object
+			, VK_ERROR_FEATURE_NOT_PRESENT
+			, "Unsupported feature"
+			, name );
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 
