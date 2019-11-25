@@ -1629,7 +1629,17 @@ namespace ashes::d3d11
 		uint32_t bindInfoCount,
 		const VkBindBufferMemoryInfo * pBindInfos )
 	{
-		return reportUnsupported( device, "vkBindBufferMemory2" );
+		VkResult result = VK_SUCCESS;
+
+		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
+		{
+			if ( result = VK_SUCCESS )
+			{
+				result = get( bindInfo.buffer )->bindMemory( bindInfo.memory, bindInfo.memoryOffset );
+			}
+		}
+
+		return result;
 	}
 
 	VkResult VKAPI_CALL vkBindImageMemory2(
@@ -1637,7 +1647,17 @@ namespace ashes::d3d11
 		uint32_t bindInfoCount,
 		const VkBindImageMemoryInfo * pBindInfos )
 	{
-		return reportUnsupported( device, "vkBindImageMemory2" );
+		VkResult result = VK_SUCCESS;
+
+		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
+		{
+			if ( result = VK_SUCCESS )
+			{
+				result = get( bindInfo.image )->bindMemory( bindInfo.memory, bindInfo.memoryOffset );
+			}
+		}
+
+		return result;
 	}
 
 	void VKAPI_CALL vkGetDeviceGroupPeerMemoryFeatures(
@@ -2634,7 +2654,17 @@ namespace ashes::d3d11
 		uint32_t bindInfoCount,
 		const VkBindBufferMemoryInfo * pBindInfos )
 	{
-		return reportUnsupported( device, "vkBindBufferMemory2KHR" );
+		VkResult result = VK_SUCCESS;
+
+		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
+		{
+			if ( result = VK_SUCCESS )
+			{
+				result = get( bindInfo.buffer )->bindMemory( bindInfo.memory, bindInfo.memoryOffset );
+			}
+		}
+
+		return result;
 	}
 
 	VkResult VKAPI_CALL vkBindImageMemory2KHR(
@@ -2642,7 +2672,17 @@ namespace ashes::d3d11
 		uint32_t bindInfoCount,
 		const VkBindImageMemoryInfo * pBindInfos )
 	{
-		return reportUnsupported( device, "vkBindImageMemory2KHR" );
+		VkResult result = VK_SUCCESS;
+
+		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
+		{
+			if ( result = VK_SUCCESS )
+			{
+				result = get( bindInfo.image )->bindMemory( bindInfo.memory, bindInfo.memoryOffset );
+			}
+		}
+
+		return result;
 	}
 
 #endif
