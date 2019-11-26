@@ -74,6 +74,7 @@ namespace ashes::gl4
 		eFillBuffer,
 		eFramebufferTexture,
 		eFramebufferTexture2D,
+		eFramebufferTextureLayer,
 		eFrontFace,
 		eGenerateMipmaps,
 		eGetQueryResults,
@@ -1409,6 +1410,43 @@ namespace ashes::gl4
 
 	void apply( ContextLock const & context
 		, CmdFramebufferTexture2D const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eFramebufferTextureLayer >
+	{
+		static Op constexpr value = { OpType::eFramebufferTextureLayer, 6u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eFramebufferTextureLayer >
+	{
+		inline CmdT( uint32_t target
+			, uint32_t point
+			, uint32_t object
+			, uint32_t mipLevel
+			, uint32_t arrayLayer )
+			: cmd{ { OpType::eFramebufferTextureLayer, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, target{ target }
+			, point{ point }
+			, object{ object }
+			, mipLevel{ mipLevel }
+			, arrayLayer{ arrayLayer }
+		{
+		}
+
+		Command cmd;
+		uint32_t target;
+		uint32_t point;
+		uint32_t object;
+		uint32_t mipLevel;
+		uint32_t arrayLayer;
+	};
+	using CmdFramebufferTextureLayer = CmdT< OpType::eFramebufferTextureLayer >;
+
+	void apply( ContextLock const & context
+		, CmdFramebufferTextureLayer const & cmd );
 
 	//*************************************************************************
 

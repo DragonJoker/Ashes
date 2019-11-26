@@ -11,6 +11,10 @@ See LICENSE file in root folder.
 
 #include <amd_ags.h>
 
+#if defined( ASHES_D3D11_USE_NVAPI )
+#	include <nvapi.h>
+#endif
+
 #include "ashesd3d11_api.hpp"
 
 namespace ashes::d3d11
@@ -123,6 +127,12 @@ namespace ashes::d3d11
 		{
 			agsInit( &m_AGSContext, nullptr, nullptr );
 		}
+#if defined( ASHES_D3D11_USE_NVAPI )
+		else if ( isNVIDIA() )
+		{
+			NvAPI_Initialize();
+		}
+#endif
 	}
 
 	PhysicalDevice::~PhysicalDevice()
@@ -131,6 +141,12 @@ namespace ashes::d3d11
 		{
 			agsDeInit( m_AGSContext );
 		}
+#if defined( ASHES_D3D11_USE_NVAPI )
+		else if ( isNVIDIA() )
+		{
+			NvAPI_Unload();
+		}
+#endif
 
 		for ( auto & display : m_displays )
 		{

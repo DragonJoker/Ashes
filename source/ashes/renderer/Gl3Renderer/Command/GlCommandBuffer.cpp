@@ -683,7 +683,9 @@ namespace ashes::gl3
 	{
 		for ( auto & copyInfo : copyInfos )
 		{
-			buildCopyImageCommand( std::move( copyInfo )
+			buildCopyImageCommand( *m_state.stack
+				, m_device
+				, std::move( copyInfo )
 				, src
 				, dst
 				, m_cmdList );
