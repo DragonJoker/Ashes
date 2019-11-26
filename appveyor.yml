@@ -18,9 +18,9 @@ configuration:
 install:
   - ps: if ($isLinux) {sudo apt-get install libx11-6 libx11-dev libxrandr-dev libgl1-mesa-dev libegl1-mesa-dev -y}
   - git submodule init
-  - ps: if (!$isLinux) {git submodule update --init -- "external/AGS_SDK"}
   - git submodule update --init -- "external/SPIRV-Cross"
   - git submodule update --init -- "external/Vulkan-Headers"
+  - git submodule update --init -- "external/AGS_SDK"
   - ps: $PLATFORM_NAME="x64"
   - ps: $OS_NAME="linux"
   - ps: $PROJECT_DIR="/home/appveyor/projects/rendererlib"
