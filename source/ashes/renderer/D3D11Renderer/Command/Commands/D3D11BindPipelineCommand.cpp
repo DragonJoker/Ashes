@@ -331,6 +331,7 @@ namespace ashes::d3d11
 
 	void SetDepthBoundsCommand::apply( Context const & context )const
 	{
+#if ASHES_D3D11_USE_NVAPI
 		if ( get( m_physicalDevice )->isNVIDIA() )
 		{
 			NvAPI_D3D11_SetDepthBoundsTest( context.context
@@ -338,7 +339,9 @@ namespace ashes::d3d11
 				, m_depthBounds.minBound
 				, m_depthBounds.maxBound );
 		}
-		else if ( get( m_physicalDevice )->isAMD() )
+		else
+#endif
+		if ( get( m_physicalDevice )->isAMD() )
 		{
 			agsDriverExtensionsDX11_SetDepthBounds( nullptr
 				, context.context
@@ -350,6 +353,7 @@ namespace ashes::d3d11
 
 	void SetDepthBoundsCommand::remove( Context const & context )const
 	{
+#if ASHES_D3D11_USE_NVAPI
 		if ( get( m_physicalDevice )->isNVIDIA() )
 		{
 			NvAPI_D3D11_SetDepthBoundsTest( context.context
@@ -357,7 +361,9 @@ namespace ashes::d3d11
 				, m_depthBounds.minBound
 				, m_depthBounds.maxBound );
 		}
-		else if ( get( m_physicalDevice )->isAMD() )
+		else
+#endif
+		if ( get( m_physicalDevice )->isAMD() )
 		{
 			agsDriverExtensionsDX11_SetDepthBounds( get( m_physicalDevice )->getAGSContext()
 				, context.context
