@@ -853,7 +853,7 @@ namespace ashes::d3d11
 						, flags
 						, ( ID3D11Buffer * )nullptr
 						, UINT( write.pBufferInfo[i].offset / 16 )
-						, UINT( ashes::getAlignedSize( range / 16ull, 16u ) ) );
+						, UINT( ashes::getAlignedSize( range, 256ull ) / 16ull ) );
 				}
 			}
 		}
@@ -930,7 +930,7 @@ namespace ashes::d3d11
 						, flags
 						, ( ID3D11Buffer * )nullptr
 						, UINT( ( offset + write.pBufferInfo[i].offset ) / 16 )
-						, UINT( ashes::getAlignedSize( range / 16ull, 16u ) ) );
+						, UINT( ashes::getAlignedSize( range, 256ull ) / 16ull ) );
 				}
 			}
 		}
