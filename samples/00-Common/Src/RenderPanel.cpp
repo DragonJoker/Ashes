@@ -476,7 +476,7 @@ namespace common
 
 		ImGui::PushStyleVar( ImGuiStyleVar_WindowRounding, 10 );
 		ImGui::SetNextWindowPos( ImVec2( 10, 10 ) );
-		ImGui::SetNextWindowSize( ImVec2( 0, 0 ), ImGuiSetCond_FirstUseEver );
+		ImGui::SetNextWindowSize( ImVec2( 0, 0 ), ImGuiCond_FirstUseEver );
 		ImGui::Begin( "Ashes Sample", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove );
 		ImGui::TextUnformatted( getName( m_appDesc, m_device->getDevice().getInstance().getName() ).c_str() );
 		ImGui::TextUnformatted( m_device->getDevice().getProperties().deviceName );

@@ -19,3 +19,6 @@
 [submodule "external/AGS_SDK"]
 	path = external/AGS_SDK
 	url = https://github.com/GPUOpen-LibrariesAndSDKs/AGS_SDK.git
+[submodule "external/imgui"]
+	path = external/imgui
+	url = https://github.com/ocornut/imgui.git

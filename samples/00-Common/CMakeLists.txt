@@ -8,6 +8,7 @@ file( GLOB SOURCE_FILES
 	Src/*.cpp
 	../../external/imgui/imgui.cpp
 	../../external/imgui/imgui_draw.cpp
+	../../external/imgui/imgui_widgets.cpp
 )
 file( GLOB HEADER_FILES
 	Src/*.hpp
