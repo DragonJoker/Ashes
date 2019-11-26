@@ -1635,7 +1635,17 @@ namespace ashes::gl3
 		uint32_t bindInfoCount,
 		const VkBindBufferMemoryInfo * pBindInfos )
 	{
-		return reportUnsupported( device, "vkBindBufferMemory2" );
+		VkResult result = VK_SUCCESS;
+
+		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
+		{
+			if ( result = VK_SUCCESS )
+			{
+				result = get( bindInfo.memory )->bindToBuffer( bindInfo.buffer, bindInfo.memoryOffset );
+			}
+		}
+
+		return result;
 	}
 
 	VkResult VKAPI_CALL vkBindImageMemory2(
@@ -1643,7 +1653,17 @@ namespace ashes::gl3
 		uint32_t bindInfoCount,
 		const VkBindImageMemoryInfo * pBindInfos )
 	{
-		return reportUnsupported( device, "vkBindImageMemory2" );
+		VkResult result = VK_SUCCESS;
+
+		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
+		{
+			if ( result = VK_SUCCESS )
+			{
+				result = get( bindInfo.memory )->bindToImage( bindInfo.image, bindInfo.memoryOffset );
+			}
+		}
+
+		return result;
 	}
 
 	void VKAPI_CALL vkGetDeviceGroupPeerMemoryFeatures(
@@ -2640,7 +2660,17 @@ namespace ashes::gl3
 		uint32_t bindInfoCount,
 		const VkBindBufferMemoryInfo * pBindInfos )
 	{
-		return reportUnsupported( device, "vkBindBufferMemory2KHR" );
+		VkResult result = VK_SUCCESS;
+
+		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
+		{
+			if ( result = VK_SUCCESS )
+			{
+				result = get( bindInfo.memory )->bindToBuffer( bindInfo.buffer, bindInfo.memoryOffset );
+			}
+		}
+
+		return result;
 	}
 
 	VkResult VKAPI_CALL vkBindImageMemory2KHR(
@@ -2648,7 +2678,17 @@ namespace ashes::gl3
 		uint32_t bindInfoCount,
 		const VkBindImageMemoryInfo * pBindInfos )
 	{
-		return reportUnsupported( device, "vkBindImageMemory2KHR" );
+		VkResult result = VK_SUCCESS;
+
+		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
+		{
+			if ( result = VK_SUCCESS )
+			{
+				result = get( bindInfo.memory )->bindToImage( bindInfo.image, bindInfo.memoryOffset );
+			}
+		}
+
+		return result;
 	}
 
 #endif

@@ -9,6 +9,8 @@ See LICENSE file in root folder.
 #include "Command/TestQueue.hpp"
 #include "Core/TestDebugReportCallback.hpp"
 #include "Core/TestDevice.hpp"
+#include "Core/TestDisplay.hpp"
+#include "Core/TestDisplayMode.hpp"
 #include "Core/TestInstance.hpp"
 #include "Core/TestPhysicalDevice.hpp"
 #include "Core/TestSurface.hpp"
@@ -32,6 +34,7 @@ See LICENSE file in root folder.
 #include "Sync/TestSemaphore.hpp"
 
 #include <ashes/common/Exception.hpp>
+#include <ashes/common/VkTypeTraits.hpp>
 
 #include <iostream>
 
@@ -41,19 +44,19 @@ namespace ashes::test
 	static constexpr T NonAvailable = std::numeric_limits< T >::max();
 
 	template< typename VkType  >
-	struct VkTypeTraits;
+	struct VkTestTypeTraits;
 	
 	template< typename Type  >
-	struct TypeTraits;
+	struct TestVkTypeTraits;
 
 #define VK_IMPLEMENT_HANDLE(object)\
 	template<>\
-	struct VkTypeTraits< Vk##object >\
+	struct VkTestTypeTraits< Vk##object >\
 	{\
 		using Type = object;\
 	};\
 	template<>\
-	struct TypeTraits< object >\
+	struct TestVkTypeTraits< object >\
 	{\
 		using VkType = Vk##object;\
 	}
@@ -97,23 +100,23 @@ namespace ashes::test
 	VK_IMPLEMENT_HANDLE( ValidationCacheEXT );
 
 	template< typename VkType >
-	typename VkTypeTraits< VkType >::Type * get( VkType vkValue )
+	typename VkTestTypeTraits< VkType >::Type * get( VkType vkValue )
 	{
-		using Type = typename VkTypeTraits< VkType >::Type;
+		using Type = typename VkTestTypeTraits< VkType >::Type;
 		return ( ( Type * )vkValue );
 	}
 
 	template< typename Type >
-	typename TypeTraits< Type >::VkType get( Type * vkValue )
+	typename TestVkTypeTraits< Type >::VkType get( Type * vkValue )
 	{
-		using VkType = typename TypeTraits< Type >::VkType;
+		using VkType = typename TestVkTypeTraits< Type >::VkType;
 		return VkType( vkValue );
 	}
 
 	template< typename Type >
-	typename TypeTraits< Type >::VkType get( Type const * vkValue )
+	typename TestVkTypeTraits< Type >::VkType get( Type const * vkValue )
 	{
-		using VkType = typename TypeTraits< Type >::VkType;
+		using VkType = typename TestVkTypeTraits< Type >::VkType;
 		return VkType( vkValue );
 	}
 
@@ -126,7 +129,7 @@ namespace ashes::test
 
 		try
 		{
-			using Type = typename VkTypeTraits< VkType >::Type;
+			using Type = typename VkTestTypeTraits< VkType >::Type;
 			vkValue = VkType( new Type{ std::forward< Params && >( params )... } );
 			result = VK_SUCCESS;
 		}
@@ -243,5 +246,154 @@ namespace ashes::test
 	inline bool operator!=( VkAttachmentDescription const & lhs, VkAttachmentDescription const & rhs )
 	{
 		return !( lhs == rhs );
+	}
+
+	inline VkInstance getInstance( VkInstance object )
+	{
+		return object;
+	}
+
+	inline VkInstance getInstance( VkPhysicalDevice object )
+	{
+		return get( object )->getInstance();
+	}
+
+	inline VkInstance getInstance( VkSurfaceKHR object )
+	{
+		return get( object )->getInstance();
+	}
+
+	inline VkInstance getInstance( VkDevice object )
+	{
+		return get( object )->getInstance();
+	}
+
+	inline VkInstance getInstance( VkCommandBuffer object )
+	{
+		return getInstance( get( object )->getDevice() );
+	}
+
+	inline VkInstance getInstance( VkQueue object )
+	{
+		return getInstance( get( object )->getDevice() );
+	}
+
+	inline VkInstance getInstance( VkQueryPool object )
+	{
+		return getInstance( get( object )->getDevice() );
+	}
+
+	inline VkInstance getInstance( VkShaderModule object )
+	{
+		return getInstance( get( object )->getDevice() );
+	}
+
+	template< typename VkObject >
+	inline void reportError( VkObject object
+		, VkResult result
+		, std::string const & errorName
+		, std::string const & name )
+	{
+		VkInstance instance = getInstance( object );
+#if VK_EXT_debug_utils
+		{
+			VkDebugUtilsObjectNameInfoEXT objectName
+			{
+				VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+				nullptr,
+				ashes::VkTypeTraits< VkObject >::UtilsValue,
+				uint64_t( object ),
+				ashes::VkTypeTraits< VkObject >::getName().c_str(),
+			};
+			get( instance )->onSubmitDebugUtilsMessenger( VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
+				, VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
+				, {
+					VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT,
+					nullptr,
+					0u,
+					errorName.c_str(),
+					result,
+					name.c_str(),
+					0u,
+					nullptr,
+					0u,
+					nullptr,
+					1u,
+					&objectName,
+				} );
+		}
+#endif
+#if VK_EXT_debug_report
+		{
+			std::string text = errorName + ": " + name;
+			get( instance )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, ashes::VkTypeTraits< VkObject >::ReportValue
+				, uint64_t( object )
+				, 0u
+				, result
+				, "OpenGL3"
+				, text.c_str() );
+		}
+#endif
+	}
+
+	template< typename VkObject >
+	inline void reportWarning( VkObject object
+		, VkResult result
+		, std::string const & errorName
+		, std::string const & name )
+	{
+		VkInstance instance = getInstance( object );
+#if VK_EXT_debug_utils
+		{
+			VkDebugUtilsObjectNameInfoEXT object
+			{
+				VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+				nullptr,
+				ashes::VkTypeTraits< VkObject >::UtilsValue,
+				uint64_t( object ),
+				ashes::VkTypeTraits< VkObject >::getName().c_str(),
+			};
+			get( instance )->onSubmitDebugUtilsMessenger( VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
+				, VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
+				, {
+					VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT,
+					nullptr,
+					0u,
+					errorName.c_str(),
+					result,
+					name.c_str(),
+					0u,
+					nullptr,
+					0u,
+					nullptr,
+					1u,
+					&object,
+				} );
+		}
+#endif
+#if VK_EXT_debug_report
+		{
+			std::string text = errorName + ": " + name;
+			get( instance )->onReportMessage( VK_DEBUG_REPORT_WARNING_BIT_EXT
+				, ashes::VkTypeTraits< VkObject >::ReportValue
+				, uint64_t( object )
+				, 0u
+				, result
+				, "OpenGL3"
+				, text.c_str() );
+		}
+#endif
+	}
+
+	template< typename VkObject >
+	inline VkResult reportUnsupported( VkObject object
+		, std::string const & name )
+	{
+		reportError( object
+			, VK_ERROR_FEATURE_NOT_PRESENT
+			, "Unsupported feature"
+			, name );
+		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 }

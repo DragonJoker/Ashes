@@ -58,7 +58,7 @@ namespace ashes::gl3
 		, std::string const & text )
 	{
 		bool result = true;
-		uint32_t errorCode = glGetError();
+		uint32_t errorCode = context->glGetError();
 
 		if ( errorCode )
 		{
@@ -76,7 +76,7 @@ namespace ashes::gl3
 			stream << "OpenGL Error, on function: " << text;
 			stream << ", ID: 0x" << std::hex << errorCode << " (" << getErrorName( errorCode, GL_DEBUG_TYPE_ERROR ) << ")";
 			logStream( stream );
-			errorCode = glGetError();
+			errorCode = context->glGetError();
 			result = false;
 		}
 

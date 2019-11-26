@@ -16,5 +16,6 @@ namespace ashes::test
 
 		VkResult wait( uint64_t timeout )const;
 		void reset()const;
+		VkResult getStatus()const;
 	};
 }

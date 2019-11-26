@@ -21,8 +21,11 @@ namespace ashes::d3d11
 		CommandPtr clone()const;
 
 	private:
+		VkBuffer m_buffer;
 		VkDeviceMemory m_memory;
 		VkDeviceSize m_memoryOffset;
 		ByteArray m_data;
+		bool m_mappable;
+		D3D11_BOX m_dstBox{};
 	};
 }

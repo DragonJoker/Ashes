@@ -1,5 +1,5 @@
 /*
-This file belongs to GlInstance.
+This file belongs to Ashes.
 See LICENSE file in root folder.
 */
 #include "Command/Commands/D3D11BindDescriptorSetCommand.hpp"
@@ -568,7 +568,7 @@ namespace ashes::d3d11
 						, flags
 						, buffer
 						, UINT( write.pBufferInfo[i].offset ) / 16
-						, UINT( ashes::getAlignedSize( range / 16ull, 16ull ) ) );
+						, UINT( ashes::getAlignedSize( range, 256ull ) / 16ull ) );
 				}
 			}
 		}
@@ -648,7 +648,7 @@ namespace ashes::d3d11
 						, flags
 						, buffer
 						, UINT( ( offset + write.pBufferInfo[i].offset ) / 16 )
-						, UINT( ashes::getAlignedSize( range / 16ull, 16ull ) ) );
+						, UINT( ashes::getAlignedSize( range, 256ull ) / 16ull ) );
 				}
 			}
 		}
@@ -853,7 +853,7 @@ namespace ashes::d3d11
 						, flags
 						, ( ID3D11Buffer * )nullptr
 						, UINT( write.pBufferInfo[i].offset / 16 )
-						, UINT( ashes::getAlignedSize( range / 16ull, 16u ) ) );
+						, UINT( ashes::getAlignedSize( range, 256ull ) / 16ull ) );
 				}
 			}
 		}
@@ -930,7 +930,7 @@ namespace ashes::d3d11
 						, flags
 						, ( ID3D11Buffer * )nullptr
 						, UINT( ( offset + write.pBufferInfo[i].offset ) / 16 )
-						, UINT( ashes::getAlignedSize( range / 16ull, 16u ) ) );
+						, UINT( ashes::getAlignedSize( range, 256ull ) / 16ull ) );
 				}
 			}
 		}

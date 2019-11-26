@@ -287,6 +287,11 @@ namespace ashes::d3d11
 		return getInstance( get( object )->getDevice() );
 	}
 
+	inline VkInstance getInstance( VkPipeline object )
+	{
+		return getInstance( get( object )->getDevice() );
+	}
+
 	inline VkInstance getInstance( VkShaderModule object )
 	{
 		return getInstance( get( object )->getDevice() );

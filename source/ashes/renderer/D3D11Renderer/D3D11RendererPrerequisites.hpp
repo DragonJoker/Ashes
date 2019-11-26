@@ -228,6 +228,38 @@ namespace ashes::d3d11
 		std::string labelName;
 	};
 
+	struct DepthBias
+	{
+		float constantFactor;
+		float clamp;
+		float slopeFactor;
+	};
+	inline bool operator==( DepthBias const & lhs, DepthBias const & rhs )
+	{
+		return lhs.constantFactor == rhs.constantFactor
+			&& lhs.clamp == rhs.clamp
+			&& lhs.slopeFactor == rhs.slopeFactor;
+	}
+	inline bool operator!=( DepthBias const & lhs, DepthBias const & rhs )
+	{
+		return !( lhs == rhs );
+	}
+
+	struct DepthBounds
+	{
+		float minBound;
+		float maxBound;
+	};
+	inline bool operator==( DepthBounds const & lhs, DepthBounds const & rhs )
+	{
+		return lhs.minBound == rhs.minBound
+			&& lhs.maxBound == rhs.maxBound;
+	}
+	inline bool operator!=( DepthBounds const & lhs, DepthBounds const & rhs )
+	{
+		return !( lhs == rhs );
+	}
+
 	struct Context;
 
 	class Attribute;

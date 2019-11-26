@@ -1,5 +1,5 @@
 /*
-This file belongs to GlInstance.
+This file belongs to Ashes.
 See LICENSE file in root folder.
 */
 #include "Command/Commands/D3D11DispatchCommand.hpp"

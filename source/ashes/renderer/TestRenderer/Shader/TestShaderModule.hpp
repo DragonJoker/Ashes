@@ -22,6 +22,11 @@ namespace ashes::test
 		ShaderModule( VkDevice device
 			, VkShaderModuleCreateInfo createInfo );
 
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		VkDevice m_device;
 		VkShaderModuleCreateInfo m_createInfo;

@@ -51,7 +51,7 @@ namespace ashes
 			, queryCount
 			, data.size() * sizeof( uint32_t )
 			, data.data()
-			, stride
+			, stride ? stride : sizeof( uint32_t )
 			, flags );
 		checkError( res, "QueryPool results retrieval" );
 	}
@@ -68,7 +68,7 @@ namespace ashes
 			, queryCount
 			, data.size() * sizeof( uint64_t )
 			, data.data()
-			, stride
+			, stride ? stride : sizeof( uint64_t )
 			, flags | VK_QUERY_RESULT_64_BIT );
 		checkError( res, "QueryPool results retrieval" );
 	}

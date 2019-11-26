@@ -115,6 +115,13 @@ namespace ashes::d3d11
 		void writeTimestamp( VkPipelineStageFlagBits pipelineStage
 			, VkQueryPool pool
 			, uint32_t query )const;
+		void copyQueryPoolResults( VkQueryPool queryPool
+			, uint32_t firstQuery
+			, uint32_t queryCount
+			, VkBuffer dstBuffer
+			, VkDeviceSize dstOffset
+			, VkDeviceSize stride
+			, VkQueryResultFlags flags )const;
 		void pushConstants( VkPipelineLayout layout
 			, VkShaderStageFlags stageFlags
 			, uint32_t offset
@@ -129,6 +136,15 @@ namespace ashes::d3d11
 		void setDepthBias( float constantFactor
 			, float clamp
 			, float slopeFactor )const;
+		void setBlendConstants( const float blendConstants[4] );
+		void setDepthBounds( float minDepthBounds
+			, float maxDepthBounds );
+		void setStencilCompareMask( VkStencilFaceFlags faceMask
+			, uint32_t compareMask );
+		void setStencilWriteMask( VkStencilFaceFlags faceMask
+			, uint32_t writeMask );
+		void setStencilReference( VkStencilFaceFlags faceMask
+			, uint32_t reference );
 		void setEvent( VkEvent event
 			, VkPipelineStageFlags stageMask )const;
 		void resetEvent( VkEvent event
@@ -212,6 +228,8 @@ namespace ashes::d3d11
 		ResourceIndex & doAddMappedResource( ObjectMemory const * memory )const;
 		void doRemoveMappedResource( ObjectMemory const * memory )const;
 		BlitPipeline const & doGetBlitPipeline( VkFormat src, VkFormat dst )const;
+		void doApplyDynamicStates()const;
+		void doBindDynamicStates()const;
 
 	private:
 		VkDevice m_device;
@@ -232,6 +250,13 @@ namespace ashes::d3d11
 			VkIndexType indexType;
 			VkDescriptorSetArray boundDescriptors;
 			VkBuffer newlyBoundIbo{ VK_NULL_HANDLE };
+			Optional< float > lineWidth;
+			Optional< DepthBias > depthBias;
+			Optional< std::array< float, 4u > > blendConstants;
+			Optional< DepthBounds > depthBounds;
+			std::array< Optional< uint32_t >, 2u > stencilCompareMask;
+			std::array< Optional< uint32_t >, 2u > stencilWriteMask;
+			std::array< Optional< uint32_t >, 2u > stencilReference;
 		};
 		mutable State m_state;
 		mutable std::vector< std::function< void( Context const & ) > > m_afterSubmitActions;

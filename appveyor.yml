@@ -20,6 +20,7 @@ install:
   - git submodule init
   - git submodule update --init -- "external/SPIRV-Cross"
   - git submodule update --init -- "external/Vulkan-Headers"
+  - git submodule update --init -- "external/AGS_SDK"
   - ps: $PLATFORM_NAME="x64"
   - ps: $OS_NAME="linux"
   - ps: $PROJECT_DIR="/home/appveyor/projects/rendererlib"

@@ -1151,7 +1151,7 @@ namespace ashes::d3d11
 		VkCommandBuffer commandBuffer,
 		const float blendConstants[4] )
 	{
-		reportUnsupported( commandBuffer, "vkCmdSetBlendConstants" );
+		get( commandBuffer )->setBlendConstants( blendConstants );
 	}
 
 	void VKAPI_CALL vkCmdSetDepthBounds(
@@ -1159,7 +1159,7 @@ namespace ashes::d3d11
 		float minDepthBounds,
 		float maxDepthBounds )
 	{
-		reportUnsupported( commandBuffer, "vkCmdSetDepthBounds" );
+		get( commandBuffer )->setDepthBounds( minDepthBounds, maxDepthBounds );
 	}
 
 	void VKAPI_CALL vkCmdSetStencilCompareMask(
@@ -1167,7 +1167,7 @@ namespace ashes::d3d11
 		VkStencilFaceFlags faceMask,
 		uint32_t compareMask )
 	{
-		reportUnsupported( commandBuffer, "vkCmdSetStencilCompareMask" );
+		get( commandBuffer )->setStencilCompareMask( faceMask, compareMask );
 	}
 
 	void VKAPI_CALL vkCmdSetStencilWriteMask(
@@ -1175,7 +1175,7 @@ namespace ashes::d3d11
 		VkStencilFaceFlags faceMask,
 		uint32_t writeMask )
 	{
-		reportUnsupported( commandBuffer, "vkCmdSetStencilWriteMask" );
+		get( commandBuffer )->setStencilWriteMask( faceMask, writeMask );
 	}
 
 	void VKAPI_CALL vkCmdSetStencilReference(
@@ -1183,7 +1183,7 @@ namespace ashes::d3d11
 		VkStencilFaceFlags faceMask,
 		uint32_t reference )
 	{
-		reportUnsupported( commandBuffer, "vkCmdSetStencilReference" );
+		get( commandBuffer )->setStencilReference( faceMask, reference );
 	}
 
 	void VKAPI_CALL vkCmdBindDescriptorSets(
@@ -1558,14 +1558,13 @@ namespace ashes::d3d11
 		VkDeviceSize stride,
 		VkQueryResultFlags flags )
 	{
-		reportUnsupported( commandBuffer, "vkCmdCopyQueryPoolResults" );
-		//get( commandBuffer )->copyQueryPoolResults( queryPool
-		//	, firstQuery
-		//	, queryCount
-		//	, dstBuffer
-		//	, dstOffset
-		//	, stride
-		//	, flags );
+		get( commandBuffer )->copyQueryPoolResults( queryPool
+			, firstQuery
+			, queryCount
+			, dstBuffer
+			, dstOffset
+			, stride
+			, flags );
 	}
 
 	void VKAPI_CALL vkCmdPushConstants(
@@ -1629,7 +1628,17 @@ namespace ashes::d3d11
 		uint32_t bindInfoCount,
 		const VkBindBufferMemoryInfo * pBindInfos )
 	{
-		return reportUnsupported( device, "vkBindBufferMemory2" );
+		VkResult result = VK_SUCCESS;
+
+		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
+		{
+			if ( result = VK_SUCCESS )
+			{
+				result = get( bindInfo.buffer )->bindMemory( bindInfo.memory, bindInfo.memoryOffset );
+			}
+		}
+
+		return result;
 	}
 
 	VkResult VKAPI_CALL vkBindImageMemory2(
@@ -1637,7 +1646,17 @@ namespace ashes::d3d11
 		uint32_t bindInfoCount,
 		const VkBindImageMemoryInfo * pBindInfos )
 	{
-		return reportUnsupported( device, "vkBindImageMemory2" );
+		VkResult result = VK_SUCCESS;
+
+		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
+		{
+			if ( result = VK_SUCCESS )
+			{
+				result = get( bindInfo.image )->bindMemory( bindInfo.memory, bindInfo.memoryOffset );
+			}
+		}
+
+		return result;
 	}
 
 	void VKAPI_CALL vkGetDeviceGroupPeerMemoryFeatures(
@@ -2634,7 +2653,17 @@ namespace ashes::d3d11
 		uint32_t bindInfoCount,
 		const VkBindBufferMemoryInfo * pBindInfos )
 	{
-		return reportUnsupported( device, "vkBindBufferMemory2KHR" );
+		VkResult result = VK_SUCCESS;
+
+		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
+		{
+			if ( result = VK_SUCCESS )
+			{
+				result = get( bindInfo.buffer )->bindMemory( bindInfo.memory, bindInfo.memoryOffset );
+			}
+		}
+
+		return result;
 	}
 
 	VkResult VKAPI_CALL vkBindImageMemory2KHR(
@@ -2642,7 +2671,17 @@ namespace ashes::d3d11
 		uint32_t bindInfoCount,
 		const VkBindImageMemoryInfo * pBindInfos )
 	{
-		return reportUnsupported( device, "vkBindImageMemory2KHR" );
+		VkResult result = VK_SUCCESS;
+
+		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
+		{
+			if ( result = VK_SUCCESS )
+			{
+				result = get( bindInfo.image )->bindMemory( bindInfo.memory, bindInfo.memoryOffset );
+			}
+		}
+
+		return result;
 	}
 
 #endif

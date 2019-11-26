@@ -472,6 +472,18 @@ namespace ashes::test
 			, src
 			, dst ) );
 	}
+	void CommandBuffer::updateBuffer( VkBuffer dstBuffer
+		, VkDeviceSize dstOffset
+		, ArrayView< uint8_t const > data )
+	{
+	}
+
+	void CommandBuffer::fillBuffer( VkBuffer dstBuffer
+		, VkDeviceSize dstOffset
+		, VkDeviceSize size
+		, uint32_t data )
+	{
+	}
 
 	void CommandBuffer::copyBuffer( VkBuffer src
 		, VkBuffer dst
@@ -517,6 +529,14 @@ namespace ashes::test
 			, filter ) );
 	}
 
+	void CommandBuffer::resolveImage( VkImage srcImage
+		, VkImageLayout srcLayout
+		, VkImage dstImage
+		, VkImageLayout dstLayout
+		, VkImageResolveArray regions )const
+	{
+	}
+
 	void CommandBuffer::resetQueryPool( VkQueryPool pool
 		, uint32_t firstQuery
 		, uint32_t queryCount )const
@@ -553,6 +573,16 @@ namespace ashes::test
 			, pipelineStage
 			, pool
 			, query ) );
+	}
+
+	void CommandBuffer::copyQueryPoolResults( VkQueryPool queryPool
+		, uint32_t firstQuery
+		, uint32_t queryCount
+		, VkBuffer dstBuffer
+		, VkDeviceSize dstOffset
+		, VkDeviceSize stride
+		, VkQueryResultFlags flags )const
+	{
 	}
 
 	void CommandBuffer::pushConstants( VkPipelineLayout layout
@@ -621,6 +651,30 @@ namespace ashes::test
 			, constantFactor
 			, clamp
 			, slopeFactor ) );
+	}
+
+	void CommandBuffer::setBlendConstants( float const blendConstants[4] )const
+	{
+	}
+
+	void CommandBuffer::setDepthBounds( float minDepthBounds
+		, float maxDepthBounds )const
+	{
+	}
+
+	void CommandBuffer::setStencilCompareMask( VkStencilFaceFlags faceMask
+		, uint32_t compareMask )const
+	{
+	}
+
+	void CommandBuffer::setStencilWriteMask( VkStencilFaceFlags faceMask
+		, uint32_t writeMask )const
+	{
+	}
+
+	void CommandBuffer::setStencilReference( VkStencilFaceFlags faceMask
+		, uint32_t reference )
+	{
 	}
 
 	void CommandBuffer::setEvent( VkEvent event

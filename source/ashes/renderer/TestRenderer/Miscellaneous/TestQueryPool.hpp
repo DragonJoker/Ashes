@@ -25,6 +25,11 @@ namespace ashes::test
 			, VkQueryResultFlags flags
 			, UInt64Array & data )const;
 
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		VkDevice m_device;
 		VkQueryPoolCreateInfo m_createInfo;
