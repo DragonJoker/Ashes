@@ -218,6 +218,9 @@ namespace ashes::gl4
 			case OpType::eFramebufferTexture2D:
 				apply( lock, map< OpType::eFramebufferTexture2D >( cmd ) );
 				break;
+			case OpType::eFramebufferTextureLayer:
+				apply( lock, map< OpType::eFramebufferTextureLayer >( cmd ) );
+				break;
 			case OpType::eFrontFace:
 				apply( lock, map< OpType::eFrontFace >( cmd ) );
 				break;

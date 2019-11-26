@@ -421,6 +421,18 @@ namespace ashes::gl4
 	}
 
 	void apply( ContextLock const & context
+		, CmdFramebufferTextureLayer const & cmd )
+	{
+		glLogCall( context
+			, glFramebufferTextureLayer
+			, cmd.target
+			, cmd.point
+			, cmd.object
+			, cmd.mipLevel
+			, cmd.arrayLayer );
+	}
+
+	void apply( ContextLock const & context
 		, CmdActiveTexture const & cmd )
 	{
 		glLogCall( context

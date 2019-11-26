@@ -273,7 +273,7 @@ namespace ashes::gl3
 		ContextLock lock{ *this };
 		glLogCall( lock
 			, glEnable
-			, GlTweak( GL_TEXTURE_CUBE_MAP_SEAMLESS ) );
+			, GL_TEXTURE_CUBE_MAP_SEAMLESS );
 	}
 
 	//*************************************************************************
