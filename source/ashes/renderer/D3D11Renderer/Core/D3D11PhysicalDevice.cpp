@@ -117,12 +117,12 @@ namespace ashes::d3d11
 		: m_instance{ instance }
 		, m_adapterInfo{ std::move( adapterInfo ) }
 	{
+		doInitialise();
+
 		if ( isAMD() )
 		{
 			agsInit( &m_AGSContext, nullptr, nullptr );
 		}
-
-		doInitialise();
 	}
 
 	PhysicalDevice::~PhysicalDevice()
