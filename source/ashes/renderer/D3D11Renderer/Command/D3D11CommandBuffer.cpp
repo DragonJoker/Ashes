@@ -31,6 +31,7 @@ See LICENSE file in root folder.
 #include "Command/Commands/D3D11CopyBufferToImageCommand.hpp"
 #include "Command/Commands/D3D11CopyImageCommand.hpp"
 #include "Command/Commands/D3D11CopyImageToBufferCommand.hpp"
+#include "Command/Commands/D3D11CopyQueryPoolResultsCommand.hpp"
 #include "Command/Commands/D3D11DispatchCommand.hpp"
 #include "Command/Commands/D3D11DispatchIndirectCommand.hpp"
 #include "Command/Commands/D3D11DownloadMemoryCommand.hpp"
@@ -646,6 +647,24 @@ namespace ashes::d3d11
 			, pipelineStage
 			, pool
 			, query ) );
+	}
+
+	void CommandBuffer::copyQueryPoolResults( VkQueryPool queryPool
+		, uint32_t firstQuery
+		, uint32_t queryCount
+		, VkBuffer dstBuffer
+		, VkDeviceSize dstOffset
+		, VkDeviceSize stride
+		, VkQueryResultFlags flags )const
+	{
+		m_commands.emplace_back( std::make_unique< CopyQueryPoolResultsCommand >( m_device
+			, queryPool
+			, firstQuery
+			, queryCount
+			, dstBuffer
+			, dstOffset
+			, stride
+			, flags ) );
 	}
 
 	void CommandBuffer::pushConstants( VkPipelineLayout layout
