@@ -31,6 +31,7 @@ See LICENSE file in root folder.
 #include "Command/Commands/D3D11CopyBufferToImageCommand.hpp"
 #include "Command/Commands/D3D11CopyImageCommand.hpp"
 #include "Command/Commands/D3D11CopyImageToBufferCommand.hpp"
+#include "Command/Commands/D3D11CopyQueryPoolResultsCommand.hpp"
 #include "Command/Commands/D3D11DispatchCommand.hpp"
 #include "Command/Commands/D3D11DispatchIndirectCommand.hpp"
 #include "Command/Commands/D3D11DownloadMemoryCommand.hpp"
@@ -281,6 +282,7 @@ namespace ashes::d3d11
 			}
 
 			m_state.currentPipeline = pipeline;
+			doApplyDynamicStates();
 			m_commands.emplace_back( std::make_unique< BindPipelineCommand >( m_device
 				, pipeline
 				, bindingPoint ) );
@@ -399,6 +401,7 @@ namespace ashes::d3d11
 		, uint32_t firstVertex
 		, uint32_t firstInstance )const
 	{
+		doBindDynamicStates();
 		doFillVboStrides();
 
 		if ( !get( m_state.currentPipeline )->hasVertexLayout() )
@@ -442,6 +445,7 @@ namespace ashes::d3d11
 			bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
 		}
 
+		doBindDynamicStates();
 		doFillVboStrides();
 		doProcessMappedBoundVaoBuffersIn();
 		m_commands.emplace_back( std::make_unique< DrawIndexedCommand >( m_device
@@ -464,6 +468,7 @@ namespace ashes::d3d11
 	{
 		doFillVboStrides();
 		doProcessMappedBoundVaoBuffersIn();
+		doBindDynamicStates();
 		m_commands.emplace_back( std::make_unique< DrawIndirectCommand >( m_device
 			, buffer
 			, offset
@@ -487,6 +492,7 @@ namespace ashes::d3d11
 
 		doFillVboStrides();
 		doProcessMappedBoundVaoBuffersIn();
+		doBindDynamicStates();
 		m_commands.emplace_back( std::make_unique< DrawIndexedIndirectCommand >( m_device
 			, buffer
 			, offset
@@ -643,6 +649,24 @@ namespace ashes::d3d11
 			, query ) );
 	}
 
+	void CommandBuffer::copyQueryPoolResults( VkQueryPool queryPool
+		, uint32_t firstQuery
+		, uint32_t queryCount
+		, VkBuffer dstBuffer
+		, VkDeviceSize dstOffset
+		, VkDeviceSize stride
+		, VkQueryResultFlags flags )const
+	{
+		m_commands.emplace_back( std::make_unique< CopyQueryPoolResultsCommand >( m_device
+			, queryPool
+			, firstQuery
+			, queryCount
+			, dstBuffer
+			, dstOffset
+			, stride
+			, flags ) );
+	}
+
 	void CommandBuffer::pushConstants( VkPipelineLayout layout
 		, VkShaderStageFlags stageFlags
 		, uint32_t offset
@@ -697,18 +721,81 @@ namespace ashes::d3d11
 
 	void CommandBuffer::setLineWidth( float width )const
 	{
-		m_commands.emplace_back( std::make_unique< SetLineWidthCommand >( m_device
-			, width ) );
+		m_state.lineWidth = width;
+		doApplyDynamicStates();
 	}
 
 	void CommandBuffer::setDepthBias( float constantFactor
 		, float clamp
 		, float slopeFactor )const
 	{
-		m_commands.emplace_back( std::make_unique< SetDepthBiasCommand >( m_device
-			, constantFactor
-			, clamp
-			, slopeFactor ) );
+		m_state.depthBias = DepthBias{ constantFactor, clamp, slopeFactor };
+		doApplyDynamicStates();
+	}
+
+	void CommandBuffer::setBlendConstants( const float blendConstants[4] )
+	{
+		m_state.blendConstants = std::array< float, 4u >{};
+		m_state.blendConstants.value()[0] = blendConstants[0];
+		m_state.blendConstants.value()[1] = blendConstants[1];
+		m_state.blendConstants.value()[2] = blendConstants[2];
+		m_state.blendConstants.value()[3] = blendConstants[3];
+		doApplyDynamicStates();
+	}
+
+	void CommandBuffer::setDepthBounds( float minDepthBounds
+		, float maxDepthBounds )
+	{
+		m_state.depthBounds = DepthBounds{ minDepthBounds, maxDepthBounds };
+		doApplyDynamicStates();
+	}
+
+	void CommandBuffer::setStencilCompareMask( VkStencilFaceFlags faceMask
+		, uint32_t compareMask )
+	{
+		if ( checkFlag( faceMask, VK_STENCIL_FACE_BACK_BIT ) )
+		{
+			m_state.stencilCompareMask[0] = compareMask;
+		}
+
+		if ( checkFlag( faceMask, VK_STENCIL_FACE_FRONT_BIT ) )
+		{
+			m_state.stencilCompareMask[1] = compareMask;
+		}
+
+		doApplyDynamicStates();
+	}
+
+	void CommandBuffer::setStencilWriteMask( VkStencilFaceFlags faceMask
+		, uint32_t writeMask )
+	{
+		if ( checkFlag( faceMask, VK_STENCIL_FACE_BACK_BIT ) )
+		{
+			m_state.stencilWriteMask[0] = writeMask;
+		}
+
+		if ( checkFlag( faceMask, VK_STENCIL_FACE_FRONT_BIT ) )
+		{
+			m_state.stencilWriteMask[1] = writeMask;
+		}
+
+		doApplyDynamicStates();
+	}
+
+	void CommandBuffer::setStencilReference( VkStencilFaceFlags faceMask
+		, uint32_t reference )
+	{
+		if ( checkFlag( faceMask, VK_STENCIL_FACE_BACK_BIT ) )
+		{
+			m_state.stencilReference[0] = reference;
+		}
+
+		if ( checkFlag( faceMask, VK_STENCIL_FACE_FRONT_BIT ) )
+		{
+			m_state.stencilReference[1] = reference;
+		}
+
+		doApplyDynamicStates();
 	}
 
 	void CommandBuffer::setEvent( VkEvent event
@@ -1141,6 +1228,56 @@ namespace ashes::d3d11
 		}
 
 		return *it->second;
+	}
+
+	void CommandBuffer::doApplyDynamicStates()const
+	{
+		if ( m_state.currentPipeline )
+		{
+			get( m_state.currentPipeline )->getDynamicStates().setLineWidth( m_state.lineWidth );
+			get( m_state.currentPipeline )->getDynamicStates().setDepthBias( m_state.depthBias );
+			get( m_state.currentPipeline )->getDynamicStates().setBlendConstants( m_state.blendConstants );
+			get( m_state.currentPipeline )->getDynamicStates().setDepthBounds( m_state.depthBounds );
+			get( m_state.currentPipeline )->getDynamicStates().setStencilCompareMask( m_state.stencilCompareMask );
+			get( m_state.currentPipeline )->getDynamicStates().setStencilWriteMask( m_state.stencilWriteMask );
+			get( m_state.currentPipeline )->getDynamicStates().setStencilReference( m_state.stencilReference );
+			get( m_state.currentPipeline )->update();
+		}
+	}
+
+	void CommandBuffer::doBindDynamicStates()const
+	{
+		assert( m_state.currentPipeline );
+
+		if ( get( m_state.currentPipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_STENCIL_COMPARE_MASK )
+			|| get( m_state.currentPipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_STENCIL_WRITE_MASK )
+			|| get( m_state.currentPipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_STENCIL_REFERENCE ) )
+		{
+			m_commands.emplace_back( std::make_unique< BindDepthStencilStateCommand >( m_device
+				, m_state.currentPipeline ) );
+		}
+
+		if ( get( m_state.currentPipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_DEPTH_BIAS ) )
+		{
+			assert( m_state.depthBias );
+			m_commands.emplace_back( std::make_unique< BindRasterizerStateCommand >( m_device
+				, m_state.currentPipeline ) );
+		}
+
+		if ( get( m_state.currentPipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_BLEND_CONSTANTS ) )
+		{
+			assert( m_state.blendConstants );
+			m_commands.emplace_back( std::make_unique< BindBlendStateCommand >( m_device
+				, m_state.currentPipeline
+				, m_state.blendConstants.value() ) );
+		}
+
+		if ( get( m_state.currentPipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_DEPTH_BOUNDS ) )
+		{
+			assert( m_state.depthBounds );
+			m_commands.emplace_back( std::make_unique< SetDepthBoundsCommand >( m_device
+				, m_state.depthBounds.value() ) );
+		}
 	}
 
 	//*********************************************************************************************

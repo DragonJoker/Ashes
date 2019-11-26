@@ -149,6 +149,31 @@ namespace ashes::d3d11
 		, VkDeviceSize dataSize
 		, void * data )const
 	{
+		if ( m_createInfo.queryType == VK_QUERY_TYPE_PIPELINE_STATISTICS )
+		{
+			return getPipelineStatisticsResults( firstQuery
+				, queryCount
+				, stride
+				, flags
+				, dataSize
+				, data );
+		}
+
+		return getOtherResults( firstQuery
+			, queryCount
+			, stride
+			, flags
+			, dataSize
+			, data );
+	}
+
+	VkResult QueryPool::getPipelineStatisticsResults( uint32_t firstQuery
+		, uint32_t queryCount
+		, VkDeviceSize stride
+		, VkQueryResultFlags flags
+		, VkDeviceSize dataSize
+		, void * data )const
+	{
 		auto max = firstQuery + queryCount;
 		assert( max <= m_queries.size() );
 		ID3D11DeviceContext * context;
@@ -182,10 +207,13 @@ namespace ashes::d3d11
 					auto resmax = ( m_createInfo.queryType == VK_QUERY_TYPE_PIPELINE_STATISTICS
 						? uint32_t( m_data.size() / sizeof( uint64_t ) )
 						: queryCount );
+					stride = stride
+						? stride
+						: sizeof( uint64_t );
 
 					for ( uint32_t resi = 0; resi < resmax && size < dataSize; ++resi )
 					{
-						*reinterpret_cast< uint64_t *>( buffer ) = getUint64( resi );
+						*reinterpret_cast< uint64_t * >( buffer ) = getUint64( resi );
 						buffer += stride;
 						size += stride;
 					}
@@ -195,6 +223,9 @@ namespace ashes::d3d11
 					auto resmax = ( m_createInfo.queryType == VK_QUERY_TYPE_PIPELINE_STATISTICS
 						? uint32_t( m_data.size() / sizeof( uint32_t ) )
 						: queryCount );
+					stride = stride
+						? stride
+						: sizeof( uint32_t );
 
 					for ( uint32_t resi = 0; resi < resmax && size < dataSize; ++resi )
 					{
@@ -202,6 +233,61 @@ namespace ashes::d3d11
 						buffer += stride;
 						size += stride;
 					}
+				}
+			}
+		}
+
+		safeRelease( context );
+		return result;
+	}
+
+	VkResult QueryPool::getOtherResults( uint32_t firstQuery
+		, uint32_t queryCount
+		, VkDeviceSize stride
+		, VkQueryResultFlags flags
+		, VkDeviceSize dataSize
+		, void * data )const
+	{
+		auto max = firstQuery + queryCount;
+		assert( max <= m_queries.size() );
+		ID3D11DeviceContext * context;
+		get( m_device )->getDevice()->GetImmediateContext( &context );
+		VkResult result = VK_SUCCESS;
+		stride = stride
+			? stride
+			: ( checkFlag( flags, VK_QUERY_RESULT_64_BIT )
+				? sizeof( uint64_t )
+				: sizeof( uint32_t ) );
+		auto buffer = reinterpret_cast< uint8_t * >( data );
+
+		for ( auto i = firstQuery; i < max; ++i )
+		{
+			HRESULT hr;
+
+			do
+			{
+				hr = context->GetData( m_queries[i]
+					, m_data.data()
+					, UINT( m_data.size() )
+					, 0u );
+			}
+			while ( hr == S_FALSE );
+
+			if ( hr == S_FALSE )
+			{
+				result = VK_INCOMPLETE;
+			}
+			else if ( checkError( m_device, hr, "GetData" ) )
+			{
+				if ( checkFlag( flags, VK_QUERY_RESULT_64_BIT ) )
+				{
+					*reinterpret_cast< uint64_t * >( buffer ) = getUint64( 0 );
+					buffer += stride;
+				}
+				else
+				{
+					*reinterpret_cast< uint32_t * >( buffer ) = getUint32( 0 );
+					buffer += stride;
 				}
 			}
 		}

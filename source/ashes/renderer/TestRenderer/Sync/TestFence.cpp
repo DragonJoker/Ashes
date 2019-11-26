@@ -19,4 +19,9 @@ namespace ashes::test
 	void Fence::reset()const
 	{
 	}
+
+	VkResult Fence::getStatus()const
+	{
+		return VK_SUCCESS;
+	}
 }

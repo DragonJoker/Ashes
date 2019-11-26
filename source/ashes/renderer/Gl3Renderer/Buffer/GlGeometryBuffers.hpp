@@ -1,5 +1,5 @@
 /*
-This file belongs to GlInstance.
+This file belongs to Ashes.
 See LICENSE file in root folder.
 */
 #ifndef ___GlRenderer_GeometryBuffers_HPP___

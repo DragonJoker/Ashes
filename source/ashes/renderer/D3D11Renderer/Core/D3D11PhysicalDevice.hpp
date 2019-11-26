@@ -6,6 +6,8 @@ See LICENSE file in root folder
 
 #include "renderer/D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
+struct AGSContext;
+
 namespace ashes::d3d11
 {
 	VkImageUsageFlags getUsageFlags( VkFormatFeatureFlags flags );
@@ -95,6 +97,22 @@ namespace ashes::d3d11
 			return m_instance;
 		}
 
+		inline bool isNVIDIA()const
+		{
+			return m_properties.vendorID == 0x10DE;
+		}
+
+		inline bool isAMD()const
+		{
+			return m_properties.vendorID == 0x1002;
+		}
+
+		inline AGSContext * getAGSContext()const
+		{
+			assert( isAMD() );
+			return m_AGSContext;
+		}
+
 	private:
 		void doInitialise();
 		void doInitialiseProperties();
@@ -128,5 +146,6 @@ namespace ashes::d3d11
 		std::vector< VkDisplayPropertiesKHR > m_displays;
 		std::vector< VkDisplayPlanePropertiesKHR > m_displayPlanes;
 #endif
+		AGSContext * m_AGSContext{ nullptr };
 	};
 }

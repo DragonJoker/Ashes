@@ -24,6 +24,7 @@ namespace ashes::d3d11
 		~Pipeline();
 		PushConstantsBuffer findPushConstantBuffer( PushConstantsDesc const & pushConstants )const;
 		VkDescriptorSetLayoutArray const & getDescriptorsLayouts()const;
+		void update();
 
 		inline VkPipelineInputAssemblyStateCreateInfo const & getInputAssemblyState()const
 		{
@@ -127,9 +128,19 @@ namespace ashes::d3d11
 			return m_layout;
 		}
 
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 		inline size_t getVertexInputStateHash()const
 		{
 			return m_vertexInputStateHash;
+		}
+
+		inline DynamicStates & getDynamicStates()
+		{
+			return m_dynamicStates;
 		}
 
 		inline bool hasDynamicStateEnable( VkDynamicState state )const

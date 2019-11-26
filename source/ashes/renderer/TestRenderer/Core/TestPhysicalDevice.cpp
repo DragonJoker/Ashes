@@ -36,8 +36,28 @@ namespace ashes::test
 
 	VkExtensionPropertiesArray PhysicalDevice::enumerateExtensionProperties( std::string const & layerName )const
 	{
-		VkExtensionPropertiesArray result;
-		return result;
+		static std::vector< VkExtensionProperties > const extensions
+		{
+#if VK_KHR_swapchain
+			VkExtensionProperties{ VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_SWAPCHAIN_SPEC_VERSION },
+#endif
+#if VK_EXT_debug_report
+			VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, VK_EXT_DEBUG_REPORT_SPEC_VERSION },
+#endif
+#if VK_EXT_debug_marker
+			VkExtensionProperties{ VK_EXT_DEBUG_MARKER_EXTENSION_NAME, VK_EXT_DEBUG_MARKER_SPEC_VERSION },
+#endif
+#if VK_EXT_debug_utils
+			VkExtensionProperties{ VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_EXT_DEBUG_UTILS_SPEC_VERSION },
+#endif
+#if VK_EXT_inline_uniform_block
+			VkExtensionProperties{ VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME, VK_EXT_INLINE_UNIFORM_BLOCK_SPEC_VERSION },
+#endif
+#if VK_KHR_maintenance1
+			VkExtensionProperties{ VK_KHR_MAINTENANCE1_EXTENSION_NAME, VK_KHR_MAINTENANCE1_SPEC_VERSION },
+#endif
+		};
+		return extensions;
 	}
 
 	VkPhysicalDeviceProperties const & PhysicalDevice::getProperties()const
@@ -64,6 +84,184 @@ namespace ashes::test
 	{
 		return m_formatProperties[fmt];
 	}
+
+	VkResult PhysicalDevice::getImageFormatProperties( VkFormat format
+		, VkImageType type
+		, VkImageTiling tiling
+		, VkImageUsageFlags usage
+		, VkImageCreateFlags flags
+		, VkImageFormatProperties & imageProperties )const
+	{
+		return VK_ERROR_FORMAT_NOT_SUPPORTED;
+	}
+
+	VkResult PhysicalDevice::getSparseImageFormatProperties( VkFormat format
+		, VkImageType type
+		, VkSampleCountFlagBits samples
+		, VkImageUsageFlags usage
+		, VkImageTiling tiling
+		, std::vector< VkSparseImageFormatProperties > & sparseImageFormatProperties )const
+	{
+		return VK_ERROR_FORMAT_NOT_SUPPORTED;
+	}
+
+#if VK_VERSION_1_1
+
+	VkPhysicalDeviceFeatures2 const & PhysicalDevice::getFeatures2()const
+	{
+		return m_features2;
+	}
+
+	VkPhysicalDeviceProperties2 const & PhysicalDevice::getProperties2()const
+	{
+		return m_properties2;
+	}
+
+	VkFormatProperties2 const & PhysicalDevice::getFormatProperties2( VkFormat format )const
+	{
+		return m_formatProperties2[format];
+	}
+
+	VkResult PhysicalDevice::getImageFormatProperties2( VkPhysicalDeviceImageFormatInfo2 const & imageFormatInfo
+		, VkImageFormatProperties2 & imageFormatProperties )const
+	{
+		imageFormatProperties.sType = VK_STRUCTURE_TYPE_IMAGE_FORMAT_PROPERTIES_2;
+		imageFormatProperties.pNext = nullptr;
+		return getImageFormatProperties( imageFormatInfo.format
+			, imageFormatInfo.type
+			, imageFormatInfo.tiling
+			, imageFormatInfo.usage
+			, imageFormatInfo.flags
+			, imageFormatProperties.imageFormatProperties );
+	}
+
+	std::vector< VkQueueFamilyProperties2 > PhysicalDevice::getQueueFamilyProperties2()const
+	{
+		return m_queueProperties2;
+	}
+
+	VkPhysicalDeviceMemoryProperties2 const & PhysicalDevice::getMemoryProperties2()const
+	{
+		return Instance::getMemoryProperties2();
+	}
+
+	VkResult PhysicalDevice::getSparseImageFormatProperties2( VkPhysicalDeviceSparseImageFormatInfo2 const & formatInfo
+		, std::vector< VkSparseImageFormatProperties2 > & sparseImageFormatProperties )const
+	{
+		std::vector< VkSparseImageFormatProperties > props;
+		auto result = getSparseImageFormatProperties( formatInfo.format
+			, formatInfo.type
+			, formatInfo.samples
+			, formatInfo.usage
+			, formatInfo.tiling
+			, props );
+
+		if ( result != VK_ERROR_FORMAT_NOT_SUPPORTED )
+		{
+			for ( auto & prop : props )
+			{
+				sparseImageFormatProperties.push_back(
+					{
+						VK_STRUCTURE_TYPE_SPARSE_IMAGE_FORMAT_PROPERTIES_2,
+						nullptr,
+						prop,
+					} );
+			}
+		}
+
+		return result;
+	}
+
+#elif VK_KHR_get_physical_device_properties2
+
+	VkPhysicalDeviceFeatures2KHR const & PhysicalDevice::getFeatures2()const
+	{
+		return m_features2;
+	}
+
+	VkPhysicalDeviceProperties2KHR const & PhysicalDevice::getProperties2()const
+	{
+		return m_properties2;
+	}
+
+	VkFormatProperties2KHR const & PhysicalDevice::getFormatProperties2( VkFormat format )const
+	{
+		return m_formatProperties2[format];
+	}
+
+	VkResult PhysicalDevice::getImageFormatProperties2( VkPhysicalDeviceImageFormatInfo2KHR const & imageFormatInfo
+		, VkImageFormatProperties2KHR & imageProperties )const
+	{
+		imageFormatProperties.sType = VK_STRUCTURE_TYPE_IMAGE_FORMAT_PROPERTIES_2_KHR;
+		imageFormatProperties.pNext = nullptr;
+		return getImageFormatProperties( imageFormatInfo.format
+			, imageFormatInfo.type
+			, imageFormatInfo.tiling
+			, imageFormatInfo.usage
+			, imageFormatInfo.flags
+			, imageFormatProperties.imageFormatProperties );
+	}
+
+	std::vector< VkQueueFamilyProperties2KHR > PhysicalDevice::getQueueFamilyProperties2()const
+	{
+		return m_queueProperties2;
+	}
+
+	VkPhysicalDeviceMemoryProperties2KHR const & PhysicalDevice::getMemoryProperties2()const
+	{
+		return Instance::getMemoryProperties2();
+	}
+
+	VkResult PhysicalDevice::getSparseImageFormatProperties2( VkPhysicalDeviceSparseImageFormatInfo2KHR const & formatInfo
+		, std::vector< VkSparseImageFormatProperties2KHR > & sparseImageFormatProperties )const
+	{
+		std::vector< VkSparseImageFormatProperties > props;
+		auto result = getSparseImageFormatProperties( formatInfo.format
+			, formatInfo.type
+			, formatInfo.samples
+			, formatInfo.usage
+			, formatInfo.tiling
+			, props );
+
+		if ( result != VK_ERROR_FORMAT_NOT_SUPPORTED )
+		{
+			for ( auto & prop : props )
+			{
+				sparseImageFormatProperties.push_back(
+					{
+						VK_STRUCTURE_TYPE_SPARSE_IMAGE_FORMAT_PROPERTIES_2,
+						nullptr,
+						prop,
+					} );
+			}
+		}
+
+		return result;
+	}
+
+#endif
+#ifdef VK_KHR_display
+
+	std::vector< VkDisplayPropertiesKHR > const & PhysicalDevice::getDisplayProperties()const
+	{
+		return m_displays;
+	}
+
+	std::vector< VkDisplayPlanePropertiesKHR > PhysicalDevice::getDisplayPlaneProperties()const
+	{
+		return m_displayPlanes;
+	}
+
+	std::vector< VkDisplayKHR > PhysicalDevice::getDisplayPlaneSupportedDisplays( uint32_t planeIndex )const
+	{
+		std::vector< VkDisplayKHR > result
+		{
+			m_displayPlanes[planeIndex].currentDisplay
+		};
+		return result;
+	}
+
+#endif
 
 	void PhysicalDevice::doInitialise()
 	{
@@ -296,5 +494,69 @@ namespace ashes::test
 			props.linearTilingFeatures = props.optimalTilingFeatures;
 			m_formatProperties[fmt] = props;
 		}
+
+#if VK_VERSION_1_1
+
+		m_features2.pNext = nullptr;
+		m_features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+		m_features2.features = m_features;
+
+		m_properties2.pNext = nullptr;
+		m_properties2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+		m_properties2.properties = m_properties;
+
+		for ( auto & queueProperty : m_queueProperties )
+		{
+			m_queueProperties2.push_back(
+				{
+					VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2,
+					nullptr,
+					queueProperty,
+				} );
+		}
+
+		for ( auto & formatProperty : m_formatProperties )
+		{
+			m_formatProperties2.emplace( formatProperty.first
+				, VkFormatProperties2
+				{
+					VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2,
+					nullptr,
+					formatProperty.second,
+				} );
+		}
+
+#elif VK_KHR_get_physical_device_properties2
+
+		m_features2.pNext = nullptr;
+		m_features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+		m_features2.features = m_features;
+
+		m_properties2.pNext = nullptr;
+		m_properties2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
+		m_properties2.properties = m_properties;
+
+		for ( auto & queueProperty : m_queueProperties )
+		{
+			m_queueProperties2.push_back(
+				{
+					VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2_KHR,
+					nullptr,
+					queueProperty,
+				} );
+		}
+
+		for ( auto & formatProperty : m_formatProperties )
+		{
+			m_formatProperties2.emplace( formatProperty.first
+				, VkFormatProperties2
+				{
+					VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2_KHR,
+					nullptr,
+					formatProperty.second,
+				} );
+		}
+
+#endif
 	}
 }

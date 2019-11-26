@@ -20,6 +20,10 @@ namespace ashes::test
 		SurfaceKHR( VkInstance instance
 			, VkXcbSurfaceCreateInfoKHR createInfo );
 #endif
+#if VK_KHR_display
+		SurfaceKHR( VkInstance instance
+			, VkDisplaySurfaceCreateInfoKHR createInfo );
+#endif
 
 		bool getSupport( uint32_t queueFamilyIndex )const;
 

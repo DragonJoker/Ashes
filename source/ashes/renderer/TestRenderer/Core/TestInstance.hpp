@@ -83,10 +83,8 @@ namespace ashes::test
 #endif
 		/**@}*/
 
-		static inline VkPhysicalDeviceMemoryProperties const & getMemoryProperties()
-		{
-			return m_memoryProperties;
-		}
+		static VkPhysicalDeviceMemoryProperties const & getMemoryProperties();
+		static VkPhysicalDeviceMemoryProperties2KHR const & getMemoryProperties2();
 
 	private:
 		void doInitialisePhysicalDevices();

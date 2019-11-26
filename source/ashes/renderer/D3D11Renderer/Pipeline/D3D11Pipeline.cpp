@@ -93,8 +93,19 @@ namespace ashes::d3d11
 		, m_vertexInputStateHash{ doHash( m_vertexInputState ) }
 	{
 		doCreateBlendState( device );
-		doCreateRasterizerState( device );
-		doCreateDepthStencilState( device );
+
+		if ( !hasDynamicStateEnable( VK_DYNAMIC_STATE_DEPTH_BIAS ) )
+		{
+			doCreateRasterizerState( device );
+		}
+
+		if ( !hasDynamicStateEnable( VK_DYNAMIC_STATE_STENCIL_COMPARE_MASK )
+			&& !hasDynamicStateEnable( VK_DYNAMIC_STATE_STENCIL_WRITE_MASK )
+			&& !hasDynamicStateEnable( VK_DYNAMIC_STATE_STENCIL_REFERENCE ) )
+		{
+			doCreateDepthStencilState( device );
+		}
+
 		doCompileProgram( device, { createInfo.pStages, createInfo.pStages + createInfo.stageCount }, createInfo.flags );
 		doCreateInputLayout( device );
 	}
@@ -172,6 +183,59 @@ namespace ashes::d3d11
 	VkDescriptorSetLayoutArray const & Pipeline::getDescriptorsLayouts()const
 	{
 		return get( m_layout )->getDescriptorsLayouts();
+	}
+
+	void Pipeline::update()
+	{
+		if ( hasDynamicStateEnable( VK_DYNAMIC_STATE_DEPTH_BIAS )
+			&& ( !m_rsState || m_dynamicStates.isDirty( VK_DYNAMIC_STATE_DEPTH_BIAS ) ) )
+		{
+			auto & depthBias = m_dynamicStates.getDepthBias();
+			m_rasterizationState.depthBiasConstantFactor = depthBias.constantFactor;
+			m_rasterizationState.depthBiasClamp = depthBias.clamp;
+			m_rasterizationState.depthBiasSlopeFactor = depthBias.slopeFactor;
+			m_rasterizationState.depthBiasEnable = VK_TRUE;
+			doCreateRasterizerState( m_device );
+		}
+
+		if ( ( hasDynamicStateEnable( VK_DYNAMIC_STATE_STENCIL_COMPARE_MASK )
+				|| hasDynamicStateEnable( VK_DYNAMIC_STATE_STENCIL_WRITE_MASK )
+				|| hasDynamicStateEnable( VK_DYNAMIC_STATE_STENCIL_REFERENCE ) )
+			&& ( !m_dsState
+				|| m_dynamicStates.isDirty( VK_DYNAMIC_STATE_STENCIL_COMPARE_MASK )
+				|| m_dynamicStates.isDirty( VK_DYNAMIC_STATE_STENCIL_WRITE_MASK )
+				|| m_dynamicStates.isDirty( VK_DYNAMIC_STATE_STENCIL_REFERENCE ) ) )
+		{
+			if ( m_depthStencilState.has_value() )
+			{
+				if ( hasDynamicStateEnable( VK_DYNAMIC_STATE_STENCIL_COMPARE_MASK ) )
+				{
+					m_depthStencilState.value().front.compareMask = m_dynamicStates.getFrontStencilCompareMask();
+					m_depthStencilState.value().back.compareMask = m_dynamicStates.getBackStencilCompareMask();
+				}
+
+				if ( hasDynamicStateEnable( VK_DYNAMIC_STATE_STENCIL_WRITE_MASK ) )
+				{
+					m_depthStencilState.value().front.writeMask = m_dynamicStates.getFrontStencilWriteMask();
+					m_depthStencilState.value().back.writeMask = m_dynamicStates.getBackStencilWriteMask();
+				}
+
+				if ( hasDynamicStateEnable( VK_DYNAMIC_STATE_STENCIL_WRITE_MASK ) )
+				{
+					m_depthStencilState.value().front.reference = m_dynamicStates.getFrontStencilReference();
+					m_depthStencilState.value().back.reference = m_dynamicStates.getBackStencilReference();
+				}
+
+				doCreateDepthStencilState( m_device );
+			}
+			else
+			{
+				reportError( get( this )
+					, VK_ERROR_INITIALIZATION_FAILED
+					, "Initialisation failed"
+					, "VkPipeline doesn't have a depth stencil state" );
+			}
+		}
 	}
 
 	void Pipeline::doCreateBlendState( VkDevice device )

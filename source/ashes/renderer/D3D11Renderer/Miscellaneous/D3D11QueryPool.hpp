@@ -38,6 +38,20 @@ namespace ashes::d3d11
 		}
 
 	private:
+		VkResult getPipelineStatisticsResults( uint32_t firstQuery
+			, uint32_t queryCount
+			, VkDeviceSize stride
+			, VkQueryResultFlags flags
+			, VkDeviceSize dataSize
+			, void * data )const;
+		VkResult getOtherResults( uint32_t firstQuery
+			, uint32_t queryCount
+			, VkDeviceSize stride
+			, VkQueryResultFlags flags
+			, VkDeviceSize dataSize
+			, void * data )const;
+
+	private:
 		VkDevice m_device;
 		VkQueryPoolCreateInfo m_createInfo;
 		std::vector< ID3D11Query * > m_queries;

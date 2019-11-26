@@ -61,7 +61,7 @@ namespace ashes::gl4
 		, std::string const & text )
 	{
 		bool result = true;
-		uint32_t errorCode = context->m_glGetError();
+		uint32_t errorCode = context->glGetError();
 
 		if ( errorCode )
 		{
@@ -74,42 +74,14 @@ namespace ashes::gl4
 					, stream.str()
 					, getErrorName( errorCode, GL_DEBUG_TYPE_ERROR ) );
 			}
+#if GL_LOG_CALLS
 			std::stringstream stream;
 			stream.imbue( std::locale{ "C" } );
 			stream << "OpenGL Error, on function: " << text;
 			stream << ", ID: 0x" << std::hex << errorCode << " (" << getErrorName( errorCode, GL_DEBUG_TYPE_ERROR ) << ")";
 			logStream( stream );
-			errorCode = context->m_glGetError();
-			result = false;
-		}
-
-		return result;
-	}
-
-	bool glCheckError( std::string const & text )
-	{
-		static PFN_glGetError getError = []()
-		{
-#ifdef _WIN32
-			return glGetError;
-#else
-			PFN_glGetError result;
-			getFunction( "glGetError", result );
-			return result;
-			
 #endif
-		}();
-		bool result = true;
-		uint32_t errorCode = getError();
-
-		if ( errorCode )
-		{
-			std::stringstream stream;
-			stream.imbue( std::locale{ "C" } );
-			stream << "OpenGL Error, on function: " << text;
-			stream << ", ID: 0x" << std::hex << errorCode << " (" << getErrorName( errorCode, GL_DEBUG_TYPE_ERROR ) << ")";
-			logStream( stream );
-			errorCode = getError();
+			errorCode = context->glGetError();
 			result = false;
 		}
 

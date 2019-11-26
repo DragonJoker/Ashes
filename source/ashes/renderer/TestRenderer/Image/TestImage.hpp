@@ -33,6 +33,7 @@ namespace ashes::test
 			, VkMemoryPropertyFlags memoryFlags );
 
 		VkMemoryRequirements getMemoryRequirements()const;
+		std::vector< VkSparseImageMemoryRequirements > getSparseImageMemoryRequirements()const;
 		void generateMipmaps( VkCommandBuffer commandBuffer )const;
 		VkResult bindMemory( VkDeviceMemory memory
 			, VkDeviceSize memoryOffset );

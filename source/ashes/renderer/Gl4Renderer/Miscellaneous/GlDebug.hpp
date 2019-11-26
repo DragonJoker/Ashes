@@ -27,5 +27,4 @@ namespace ashes::gl4
 	std::string getErrorName( uint32_t code, uint32_t category );
 	bool glCheckError( ContextLock const & context
 		, std::string const & text );
-	bool glCheckError( std::string const & text );
 }

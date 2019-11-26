@@ -98,6 +98,11 @@ namespace ashes::test
 		return result;
 	}
 
+	std::vector< VkSparseImageMemoryRequirements > Image::getSparseImageMemoryRequirements()const
+	{
+		return {};
+	}
+
 	void Image::generateMipmaps( VkCommandBuffer commandBuffer )const
 	{
 		get( commandBuffer )->generateMipmaps( get( this ) );
