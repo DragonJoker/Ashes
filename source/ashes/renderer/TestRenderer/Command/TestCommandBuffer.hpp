@@ -78,6 +78,13 @@ namespace ashes::test
 			, VkImageLayout srcLayout
 			, VkBuffer dst
 			, VkBufferImageCopyArray copyInfos )const;
+		void updateBuffer( VkBuffer dstBuffer
+			, VkDeviceSize dstOffset
+			, ArrayView< uint8_t const > data );
+		void fillBuffer( VkBuffer dstBuffer
+			, VkDeviceSize dstOffset
+			, VkDeviceSize size
+			, uint32_t data );
 		void copyBuffer( VkBuffer src
 			, VkBuffer dst
 			, VkBufferCopyArray copyInfos )const;
@@ -92,6 +99,11 @@ namespace ashes::test
 			, VkImageLayout dstLayout
 			, VkImageBlitArray regions
 			, VkFilter filter )const;
+		void resolveImage( VkImage srcImage
+			, VkImageLayout srcLayout
+			, VkImage dstImage
+			, VkImageLayout dstLayout
+			, VkImageResolveArray regions )const;
 		void resetQueryPool( VkQueryPool pool
 			, uint32_t firstQuery
 			, uint32_t queryCount )const;
@@ -103,6 +115,13 @@ namespace ashes::test
 		void writeTimestamp( VkPipelineStageFlagBits pipelineStage
 			, VkQueryPool pool
 			, uint32_t query )const;
+		void copyQueryPoolResults( VkQueryPool queryPool
+			, uint32_t firstQuery
+			, uint32_t queryCount
+			, VkBuffer dstBuffer
+			, VkDeviceSize dstOffset
+			, VkDeviceSize stride
+			, VkQueryResultFlags flags )const;
 		void pushConstants( VkPipelineLayout layout
 			, VkShaderStageFlags stageFlags
 			, uint32_t offset
@@ -117,6 +136,15 @@ namespace ashes::test
 		void setDepthBias( float constantFactor
 			, float clamp
 			, float slopeFactor )const;
+		void setBlendConstants( float const blendConstants[4] )const;
+		void setDepthBounds( float minDepthBounds
+			, float maxDepthBounds )const;
+		void setStencilCompareMask( VkStencilFaceFlags faceMask
+			, uint32_t compareMask )const;
+		void setStencilWriteMask( VkStencilFaceFlags faceMask
+			, uint32_t writeMask )const;
+		void setStencilReference( VkStencilFaceFlags faceMask
+			, uint32_t reference );
 		void setEvent( VkEvent event
 			, VkPipelineStageFlags stageMask )const;
 		void resetEvent( VkEvent event
@@ -148,6 +176,11 @@ namespace ashes::test
 		inline CommandArray const & getCommands()const
 		{
 			return m_commands;
+		}
+
+		inline VkDevice getDevice()const
+		{
+			return m_device;
 		}
 
 	private:

@@ -64,6 +64,12 @@ namespace ashes::test
 		return VK_SUCCESS;
 	}
 
+	VkResult Queue::bindSparse( ArrayView< VkBindSparseInfo const > values
+		, VkFence fence )const
+	{
+		return VK_ERROR_FEATURE_NOT_PRESENT;
+	}
+
 	VkResult Queue::waitIdle()const
 	{
 		return VK_SUCCESS;

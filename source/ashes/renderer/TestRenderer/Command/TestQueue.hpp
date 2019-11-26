@@ -16,6 +16,8 @@ namespace ashes::test
 
 		VkResult submit( VkSubmitInfoArray const & infos
 			, VkFence fence )const;
+		VkResult bindSparse( ArrayView< VkBindSparseInfo const > values
+			, VkFence fence )const;
 		VkResult present( VkPresentInfoKHR const & presentInfo )const;
 		VkResult waitIdle()const;
 
@@ -29,6 +31,11 @@ namespace ashes::test
 		void debugMarkerEnd()const;
 		void debugMarkerInsert( VkDebugMarkerMarkerInfoEXT const & labelInfo )const;
 #endif
+
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
 
 	private:
 		VkResult doSubmit( VkCommandBufferArray const & commandBuffers
