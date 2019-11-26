@@ -9,6 +9,8 @@ See LICENSE file in root folder.
 
 #include <common/Hash.hpp>
 
+#include <amd_ags.h>
+
 #include "ashesd3d11_api.hpp"
 
 namespace ashes::d3d11
@@ -115,11 +117,21 @@ namespace ashes::d3d11
 		: m_instance{ instance }
 		, m_adapterInfo{ std::move( adapterInfo ) }
 	{
+		if ( isAMD() )
+		{
+			agsInit( &m_AGSContext, nullptr, nullptr );
+		}
+
 		doInitialise();
 	}
 
 	PhysicalDevice::~PhysicalDevice()
 	{
+		if ( isAMD() )
+		{
+			agsDeInit( m_AGSContext );
+		}
+
 		for ( auto & display : m_displays )
 		{
 			deallocate( display.display, nullptr );

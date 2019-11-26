@@ -16,3 +16,6 @@
 [submodule "external/Vulkan-Headers"]
 	path = external/Vulkan-Headers
 	url = https://github.com/KhronosGroup/Vulkan-Headers.git
+[submodule "external/AGS_SDK"]
+	path = external/AGS_SDK
+	url = https://github.com/GPUOpen-LibrariesAndSDKs/AGS_SDK.git

@@ -38,6 +38,41 @@ if ( EXISTS ${SPIRV_CROSS_DIR}/spirv_cross.cpp )
 	)
 endif ()
 
+set( AGS_INCLUDE_DIR ${ASHES_SOURCE_DIR}/external/AGS_SDK/ags_lib/inc )
+
+if ( MSVC )
+	if ( MSVC15 )
+		set( AGS_LIBRARY
+			debug ${ASHES_SOURCE_DIR}/external/AGS_SDK/ags_lib/lib/amd_ags_x64_2015_MDd.lib
+			optimized ${ASHES_SOURCE_DIR}/external/AGS_SDK/ags_lib/lib/amd_ags_x64_2015_MD.lib
+		)
+	else ()
+		set( AGS_LIBRARY
+			debug ${ASHES_SOURCE_DIR}/external/AGS_SDK/ags_lib/lib/amd_ags_x64_2017_MDd.lib
+			optimized ${ASHES_SOURCE_DIR}/external/AGS_SDK/ags_lib/lib/amd_ags_x64_2017_MD.lib
+		)
+	endif ()
+else ()
+	set( AGS_LIBRARY ${ASHES_SOURCE_DIR}/external/AGS_SDK/ags_lib/lib/amd_ags_x64.lib )
+endif ()
+
+find_package( NVAPI )
+
+if ( NVAPI_FOUND )
+	set( TARGET_CXX_DEFINITIONS
+		${TARGET_CXX_DEFINITIONS}
+		ASHES_D3D11_USE_NVAPI
+	)
+	set( TARGET_INCLUDE_DIRS
+		${TARGET_INCLUDE_DIRS}
+		${NVAPI_INCLUDE_DIR}
+	)
+	set( BinLibraries
+		${BinLibraries}
+		${NVAPI_LIBRARY}
+	)
+endif ()
+
 add_library( ${PROJECT_NAME} SHARED
 	${${PROJECT_NAME}_SRC_FILES}
 	${${PROJECT_NAME}_HDR_FILES}
@@ -69,6 +104,7 @@ target_include_directories( ${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_BINARY_DIR}
 	${SPIRV_CROSS_DIR}
 	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
+	${AGS_INCLUDE_DIR}
 )
 add_target_precompiled_header_ex( ${PROJECT_NAME}
 	ashes/renderer
@@ -83,6 +119,7 @@ target_link_libraries( ${PROJECT_NAME} PRIVATE
 	d3d11
 	dxgi
 	d3dcompiler
+	${AGS_LIBRARY}
 )
 add_dependencies( ${PROJECT_NAME}
 	${RendererDependencies}
