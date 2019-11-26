@@ -201,7 +201,7 @@ namespace ashes::gl3
 
 			if ( !constants.empty() )
 			{
-				assert( constants.size() == result.constantsLayout.size() );
+				assert( constants.size() >= result.constantsLayout.size() );
 				for ( auto & constant : result.constantsLayout )
 				{
 					auto it = std::find_if( constants.begin()

@@ -20,9 +20,9 @@ namespace ashes::gl4
 	struct alignas( uint64_t ) CmdT< OpType::eCopyImageSubData >
 	{
 		inline CmdT( uint32_t srcName
-			, uint32_t srcTarget
+			, GlTextureType srcTarget
 			, uint32_t dstName
-			, uint32_t dstTarget
+			, GlTextureType dstTarget
 			, VkImageCopy copy )
 			: cmd{ { OpType::eCopyImageSubData, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, srcName{ std::move( srcName ) }
@@ -35,9 +35,9 @@ namespace ashes::gl4
 
 		Command cmd;
 		uint32_t srcName;
-		uint32_t srcTarget;
+		GlTextureType srcTarget;
 		uint32_t dstName;
-		uint32_t dstTarget;
+		GlTextureType dstTarget;
 		VkImageCopy copy;
 	};
 	using CmdCopyImageSubData = CmdT< OpType::eCopyImageSubData >;
@@ -78,9 +78,11 @@ namespace ashes::gl4
 
 	//*************************************************************************
 
-	void buildCopyImageCommand( VkImageCopy copyInfo
-		, VkImage src
-		, VkImage dst
+	void buildCopyImageCommand( ContextStateStack & stack
+		, VkDevice device
+		, VkImageCopy copyInfo
+		, VkImage srcImage
+		, VkImage dstImage
 		, CmdList & list );
 
 	//*************************************************************************

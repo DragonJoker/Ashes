@@ -188,9 +188,11 @@ namespace ashes::gl3
 
 	//*************************************************************************
 
-	void buildCopyImageCommand( VkImageCopy copyInfo
-		, VkImage src
-		, VkImage dst
+	void buildCopyImageCommand( ContextStateStack & stack
+		, VkDevice device
+		, VkImageCopy copyInfo
+		, VkImage srcImage
+		, VkImage dstImage
 		, CmdList & list );
 
 	//*************************************************************************
