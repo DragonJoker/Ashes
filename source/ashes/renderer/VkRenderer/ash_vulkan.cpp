@@ -73,6 +73,8 @@ namespace ashes::vk
 				static char const * const libraryName = "vulkan-1.dll";
 #elif defined( __linux__ )
 				static char const * const libraryName = "libvulkan.so.1";
+#elif defined( __APPLE__ )
+				static char const * const libraryName = "libvulkan.1.dylib";
 #else
 #	error Unsupported platform
 #endif

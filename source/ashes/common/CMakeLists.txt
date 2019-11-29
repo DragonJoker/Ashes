@@ -63,6 +63,7 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes Platform "Platform" )
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes Win32 "Win32" )
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes Linux "Linux" )
+parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes MacOS "MacOS" )
 
 #We install each lib in <install_dir>/lib folder
 install(

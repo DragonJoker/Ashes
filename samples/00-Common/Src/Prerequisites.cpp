@@ -29,6 +29,10 @@ namespace common
 		return ashes::WindowHandle{ std::make_unique< ashes::IMswWindowHandle >( wxGetInstance()
 			, window.GetHandle() ) };
 
+#elif defined( __WXOSX_COCOA__ )
+
+		return ashes::WindowHandle{ std::make_unique< ashes::IMacOsWindowHandle >( window.GetHandle() ) };
+
 #else
 
 		GtkWidget * widget{ static_cast< GtkWidget * >( window.GetHandle() ) };

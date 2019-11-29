@@ -95,6 +95,8 @@ namespace ashes
 			result |= VK_ACCESS_FRAGMENT_DENSITY_MAP_READ_BIT_EXT;
 			break;
 #endif
+		default:
+			break;
 		}
 
 		return result;
@@ -135,6 +137,8 @@ namespace ashes
 			result |= VK_PIPELINE_STAGE_SHADING_RATE_IMAGE_BIT_NV;
 			break;
 #endif
+		default:
+			break;
 		}
 
 		return result;

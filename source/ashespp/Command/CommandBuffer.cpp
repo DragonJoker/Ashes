@@ -55,34 +55,34 @@ namespace ashes
 					|| ( pipelineFlags & VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT );
 			}
 
-			if ( ( accessFlags, VK_ACCESS_INPUT_ATTACHMENT_READ_BIT ) )
+			if ( ( accessFlags & VK_ACCESS_INPUT_ATTACHMENT_READ_BIT ) )
 			{
-				return ( pipelineFlags, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT );
+				return ( pipelineFlags & VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT );
 			}
 
-			if ( ( accessFlags, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT )
+			if ( ( accessFlags & VK_ACCESS_COLOR_ATTACHMENT_READ_BIT )
 				|| ( accessFlags & VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT ) )
 			{
-				return ( pipelineFlags, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT );
+				return ( pipelineFlags & VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT );
 			}
 
-			if ( ( accessFlags, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT )
-				|| ( accessFlags, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT ) )
+			if ( ( accessFlags & VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT )
+				|| ( accessFlags & VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT ) )
 			{
-				return ( pipelineFlags, VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT )
-					|| ( pipelineFlags, VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT );
+				return ( pipelineFlags & VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT )
+					|| ( pipelineFlags & VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT );
 			}
 
-			if ( ( accessFlags, VK_ACCESS_TRANSFER_READ_BIT )
-				|| ( accessFlags, VK_ACCESS_TRANSFER_WRITE_BIT ) )
+			if ( ( accessFlags & VK_ACCESS_TRANSFER_READ_BIT )
+				|| ( accessFlags & VK_ACCESS_TRANSFER_WRITE_BIT ) )
 			{
-				return ( pipelineFlags, VK_PIPELINE_STAGE_TRANSFER_BIT );
+				return ( pipelineFlags & VK_PIPELINE_STAGE_TRANSFER_BIT );
 			}
 
-			if ( ( accessFlags, VK_ACCESS_HOST_READ_BIT )
-				|| ( accessFlags, VK_ACCESS_HOST_WRITE_BIT ) )
+			if ( ( accessFlags & VK_ACCESS_HOST_READ_BIT )
+				|| ( accessFlags & VK_ACCESS_HOST_WRITE_BIT ) )
 			{
-				return ( pipelineFlags, VK_PIPELINE_STAGE_HOST_BIT );
+				return ( pipelineFlags & VK_PIPELINE_STAGE_HOST_BIT );
 			}
 
 			return true;

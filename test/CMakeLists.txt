@@ -1,14 +1,12 @@
 if ( ASHES_BUILD_TESTS )
 	find_package( wxWidgets COMPONENTS core base )
-	if( NOT WIN32 )
-		find_package( GTK2 )
-	else()
+	if( APPLE OR WIN32 )
 		set( GTK2_FOUND TRUE )
+	else ()
+		find_package( GTK2 )
 	endif()
 
 	if( wxWidgets_FOUND AND GTK2_FOUND )
-		string( COMPARE EQUAL "${wxWidgets_USE_DEBUG}" "ON" IsWxDebug )
-
 		file( GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*-* )
 		set( TEST_ID 0 )
 
@@ -19,20 +17,10 @@ if ( ASHES_BUILD_TESTS )
 			ashespp
 			util
 		)
-
-		if( NOT WIN32 )
-			set( TARGET_CXX_DEFINITIONS
-				${TARGET_CXX_DEFINITIONS}
-				__WXGTK__
-			)
-		endif()
-
-		if( IsWxDebug )
-			set( TARGET_CXX_DEFINITIONS
-				${TARGET_CXX_DEFINITIONS}
-				__WXDEBUG__
-			)
-		endif()
+		set( TARGET_CXX_DEFINITIONS
+			${TARGET_CXX_DEFINITIONS}
+			${wxWidgets_DEFINITIONS}
+		)
 
 		foreach ( child ${children} )
 			if ( IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${child} )
@@ -58,9 +46,6 @@ if ( ASHES_BUILD_TESTS )
 				)
 				target_compile_definitions( ${TARGET_NAME} PRIVATE
 					TEST_ID=${TEST_ID}
-					_FILE_OFFSET_BITS=64
-					_LARGE_FILES
-					_UNICODE
 					${TARGET_CXX_DEFINITIONS}
 					${TARGET_DEFINITIONS}
 				)
@@ -79,7 +64,9 @@ if ( ASHES_BUILD_TESTS )
 			endif ()
 		endforeach ()
 	endif ()
+endif ()
 
+if ( ASHES_BUILD_INFO )
 	add_subdirectory( AshesInfo )
 endif ()
 

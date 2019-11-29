@@ -38,7 +38,7 @@ namespace ashes
 				this->ptrEnabledLayerNames.data(),
 				uint32_t( this->ptrEnabledExtensionNames.size() ),
 				this->ptrEnabledExtensionNames.data(),
-				&enabledFeatures,
+				&this->enabledFeatures,
 			}
 		{
 		}
@@ -62,7 +62,7 @@ namespace ashes
 				this->ptrEnabledLayerNames.data(),
 				uint32_t( this->ptrEnabledExtensionNames.size() ),
 				this->ptrEnabledExtensionNames.data(),
-				&enabledFeatures,
+				&this->enabledFeatures,
 			}
 		{
 		}
@@ -87,7 +87,7 @@ namespace ashes
 				this->ptrEnabledLayerNames.data(),
 				uint32_t( this->ptrEnabledExtensionNames.size() ),
 				this->ptrEnabledExtensionNames.data(),
-				&enabledFeatures,
+				&this->enabledFeatures,
 			};
 
 			return *this;

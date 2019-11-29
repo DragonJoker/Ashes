@@ -6,7 +6,15 @@ See LICENSE file in root folder
 #define ___Ashes_common_Optional_HPP___
 #pragma once
 
-#if defined( __GNUG__ )
+#if defined( __clang__ )
+#	include <optional>
+namespace ashes
+{
+	template< typename T >
+	using Optional = std::optional< T >;
+	using std::nullopt;
+}
+#elif defined( __GNUG__ )
 #	define ASHES_COMPILER_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 #	if ASHES_COMPILER_VERSION < 40900
 #		error "Unsupported version of GCC"
