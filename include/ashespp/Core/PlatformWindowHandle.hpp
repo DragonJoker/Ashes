@@ -25,6 +25,8 @@ See LICENSE file in root folder.
 #	include "Platform/MirWindowHandle.hpp"
 #elif VK_USE_PLATFORM_WAYLAND_KHR
 #	include "Platform/WaylandWindowHandle.hpp"
+#elif VK_USE_PLATFORM_MACOS_MVK
+#	include "Platform/MacOsWindowHandle.hpp"
 #else
 #	error "Yet unsupported OS"
 #endif

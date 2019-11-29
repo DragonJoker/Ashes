@@ -22,6 +22,8 @@
 #	define GLFW_EXPOSE_NATIVE_WIN32
 #elif defined( VK_USE_PLATFORM_XLIB_KHR )
 #	define GLFW_EXPOSE_NATIVE_X11
+#elif defined( VK_USE_PLATFORM_MACOS_MVK )
+#	define GLFW_EXPOSE_NATIVE_COCOA
 #endif
 
 #ifdef min
@@ -222,6 +224,9 @@ int main( int argc, char * argv[] )
 #if defined( VK_USE_PLATFORM_WIN32_KHR )
 	auto hWnd = glfwGetWin32Window( window );
 	auto handle = ashes::WindowHandle{ std::make_unique< ashes::IMswWindowHandle >( nullptr, hWnd ) };
+#elif defined( VK_USE_PLATFORM_MACOS_MVK )
+	auto view = glfwGetCocoaWindow( window );
+	auto handle = ashes::WindowHandle{ std::make_unique< ashes::IMacOsWindowHandle >( view ) };
 #elif defined( VK_USE_PLATFORM_XLIB_KHR )
 	auto display = glfwGetX11Display();
 	auto drawable = glfwGetX11Window( window );
@@ -276,9 +281,9 @@ int main( int argc, char * argv[] )
 			try
 			{
 				// And we present the frame to the swap chain surface.
-				auto res = app.presentQueue->present( { *app.swapChain }
-					, { resources->imageIndex }
-				, { *resources->finishedRenderingSemaphore } );
+				auto res = app.presentQueue->present( *app.swapChain
+					, resources->imageIndex
+					, *resources->finishedRenderingSemaphore );
 			}
 			catch ( ashes::Exception & exc )
 			{

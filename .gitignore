@@ -255,3 +255,4 @@ include/AshesOld
 source/AshesOld
 data
 source/premake5.exe
+.DS_Store

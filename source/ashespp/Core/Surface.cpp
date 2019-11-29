@@ -218,6 +218,25 @@ namespace ashes
 		m_type = VK_KHR_XLIB_SURFACE_EXTENSION_NAME;
 	}
 
+#elif defined( VK_USE_PLATFORM_MACOS_MVK )
+
+	void Surface::doCreate()
+	{
+		VkMacOSSurfaceCreateInfoMVK createInfo
+		{
+			VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK,
+			nullptr,
+			0,
+			m_handle.getInternal< IMacOsWindowHandle >().getView(),
+		};
+		auto res = m_instance.vkCreateMacOSSurfaceMVK( m_instance
+			, &createInfo
+			, nullptr
+			, &m_internal );
+		checkError( res, "Presentation surface creation" );
+		m_type = VK_MVK_MACOS_SURFACE_EXTENSION_NAME;
+	}
+
 #else
 
 #	error "Unsupported window system."

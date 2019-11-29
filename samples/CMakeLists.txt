@@ -1,8 +1,8 @@
 find_package( wxWidgets COMPONENTS core base )
-if( NOT WIN32 )
-	find_package( GTK2 )
-else()
+if( APPLE OR WIN32 )
 	set( GTK2_FOUND TRUE )
+else ()
+	find_package( GTK2 )
 endif()
 
 find_package( ASSIMP )
@@ -21,20 +21,10 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 		ashespp
 		util
 	)
-
-	if( NOT WIN32 )
-		set( TARGET_CXX_DEFINITIONS
-			${TARGET_CXX_DEFINITIONS}
-			__WXGTK__
-		)
-	endif()
-
-	if( IsWxDebug )
-		set( TARGET_CXX_DEFINITIONS
-			${TARGET_CXX_DEFINITIONS}
-			__WXDEBUG__
-		)
-	endif()
+	set( TARGET_CXX_DEFINITIONS
+		${TARGET_CXX_DEFINITIONS}
+		${wxWidgets_DEFINITIONS}
+	)
 
 	foreach ( child ${children} )
 		if ( IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${child} )
@@ -59,9 +49,6 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 				SAMPLE_ID=${SAMPLE_ID}
 				SAMPLE_NAME="${TARGET_NAME}"
 				SAMPLE_FOLDER="${FOLDER_NAME}"
-				_FILE_OFFSET_BITS=64
-				_LARGE_FILES
-				_UNICODE
 				${TARGET_CXX_DEFINITIONS}
 				${TARGET_DEFINITIONS}
 			)

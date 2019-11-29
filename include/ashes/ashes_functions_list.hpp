@@ -203,6 +203,10 @@ See LICENSE file in root folder.
 	VK_LIB_INSTANCE_FUNCTION( GetPhysicalDeviceWin32PresentationSupportKHR )
 #endif
 
+#ifdef __APPLE__
+	VK_LIB_INSTANCE_FUNCTION( CreateMacOSSurfaceMVK )
+#endif
+
 #undef VK_LIB_INSTANCE_FUNCTION
 #undef VK_LIB_INSTANCE_FUNCTION_EXT
 #undef VK_LIB_INSTANCE_FUNCTION_MANDATORY_EXT

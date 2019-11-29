@@ -1,17 +1,15 @@
 set( FOLDER_NAME AshesInfo )
 project( "${FOLDER_NAME}" )
 
-set( ${PROJECT_NAME}_VERSION_MAJOR 0 )
-set( ${PROJECT_NAME}_VERSION_MINOR 1 )
-set( ${PROJECT_NAME}_VERSION_BUILD 0 )
-
 set( BinLibraries
 	${BinLibraries}
 	common
 	ashes
 )
 
-if ( NOT WIN32 )
+if ( WIN32 )
+elseif ( APPLE )
+else ()
 	set( BinLibraries
 		${BinLibraries}
 		X11
@@ -42,10 +40,6 @@ target_include_directories( ${PROJECT_NAME} PRIVATE
 	${XCB_INCLUDE_DIRS}
 )
 target_compile_definitions( ${PROJECT_NAME} PRIVATE
-	TEST_ID=${TEST_ID}
-	_FILE_OFFSET_BITS=64
-	_LARGE_FILES
-	_UNICODE
 	${TARGET_DEFINITIONS}
 )
 target_link_libraries( ${PROJECT_NAME} PRIVATE
