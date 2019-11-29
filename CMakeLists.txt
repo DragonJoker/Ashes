@@ -23,7 +23,10 @@ include( Doxygen )
 option( ASHES_BUILD_TEMPLATES "Build Ashes template applications" ON )
 option( ASHES_BUILD_TESTS "Build Ashes test applications" ON )
 option( ASHES_BUILD_SAMPLES "Build Ashes sample applications" ON )
-option( ASHES_BUILD_INFO "Build AshesInfo application" ON )
+
+if ( NOT APPLE )
+	option( ASHES_BUILD_INFO "Build AshesInfo application" ON )
+endif ()
 
 if ( EXISTS ${CMAKE_SOURCE_DIR}/test/Vulkan/CMakeLists.txt )
 	option( ASHES_BUILD_SW_SAMPLES "Build Sascha Willems examples." FALSE )
