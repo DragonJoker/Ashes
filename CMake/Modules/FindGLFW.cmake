@@ -27,8 +27,6 @@ find_path(GLFW_INCLUDE_DIR GLFW/glfw3.h
 		include
 	PATHS
 		${GLFW_ROOT_DIR}
-		/usr/local/include
-		/usr/include
 )
 
 if( WIN32 )
@@ -59,6 +57,23 @@ if( WIN32 )
 	find_library(GLFW_LIBRARY
 		NAMES
 			glfw3.lib
+		HINTS
+		PATHS
+			${GLFW_LIBRARY_DIR}
+	)
+elseif( APPLE )
+	find_path( GLFW_LIBRARY_DIR libglfw.3.dylib
+		HINTS
+		PATH_SUFFIXES
+			lib
+			lib-macos
+		PATHS
+			${GLFW_ROOT_DIR}
+	)
+
+	find_library( GLFW_LIBRARY
+		NAMES
+			libglfw.3.dylib
 		HINTS
 		PATHS
 			${GLFW_LIBRARY_DIR}

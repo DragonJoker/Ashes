@@ -79,6 +79,7 @@ namespace vkapp
 		/**
 		*\name
 		*	Global.
+		*/
 		/**@{*/
 		utils::DevicePtr m_device;
 		ashes::QueuePtr m_graphicsQueue;

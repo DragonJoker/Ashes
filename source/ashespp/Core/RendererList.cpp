@@ -22,6 +22,12 @@ namespace ashes
 #else
 	static std::string const libraryName = "libashesd.so";
 #endif
+#elif defined( __APPLE__ )
+#if defined( NDEBUG )
+	static std::string const libraryName = "libashes.dylib";
+#else
+	static std::string const libraryName = "libashesd.dylib";
+#endif
 #else
 #	error Unsupported platform
 #endif
@@ -48,14 +54,21 @@ namespace ashes
 
 		uint32_t count = 0u;
 		enumeratePluginDescriptions( &count, nullptr );
+		std::clog << "RendererList: " << libraryName << ", " << count << " renderer plugins detected" << std::endl;
 
 		if ( count > 0 )
 		{
 			m_plugins.resize( count );
 			enumeratePluginDescriptions( &count, m_plugins.data() );
-		}
 
-		getCurrentPluginDescription( &m_current );
+			for ( auto & plugin : m_plugins )
+			{
+				std::clog << "    " << plugin.name << " - " << plugin.description << std::endl;
+			}
+
+			getCurrentPluginDescription( &m_current );
+			std::clog << "  Currently using " << m_current.name << std::endl;
+		}
 	}
 
 	RendererList::~RendererList()

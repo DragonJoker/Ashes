@@ -401,17 +401,17 @@ namespace ashes
 
 #endif
 
-        template< typename Type, typename ... Params >
-        inline std::vector< Type > makeVector( Type const * ptr
-                , size_t count
-                , Params && ... params );
-        template< typename Type, typename ... Params >
-        inline std::vector< Type > makeVector( Type const * ptr
-                , uint32_t count
-                , Params && ... params );
-        template< typename Type, typename ... Params >
-        inline Optional< Type > makeOptional( Type const * ptr
-                , Params && ... params );
+	template< typename Type, typename ... Params >
+	inline std::vector< Type > makeVector( Type const * ptr
+		, size_t count
+		, Params && ... params );
+	template< typename Type, typename ... Params >
+	inline std::vector< Type > makeVector( Type const * ptr
+		, uint32_t count
+		, Params && ... params );
+	template< typename Type, typename ... Params >
+	inline Optional< Type > makeOptional( Type const * ptr
+		, Params && ... params );
 
 	inline int8_t deepCopy( int8_t const & rhs )
 	{
@@ -584,7 +584,8 @@ namespace ashes
 	{
 		VkSpecializationInfo result{ rhs };
 		entries = makeVector( result.pMapEntries, result.mapEntryCount );
-		data = makeVector( reinterpret_cast< uint8_t const * >( result.pData ), result.dataSize );
+		data = ByteArray( reinterpret_cast< uint8_t const * >( result.pData )
+			, reinterpret_cast< uint8_t const * >( result.pData ) + result.dataSize );
 		result.pData = data.data();
 		result.pMapEntries = entries.data();
 		return result;
@@ -659,50 +660,50 @@ namespace ashes
 		return result;
 	}
 
-        template< typename Type, typename ... Params >
-        inline std::vector< Type > makeVector( Type const * ptr
-                , size_t count
-                , Params && ... params )
-        {
-                std::vector< Type > result;
+	template< typename Type, typename ... Params >
+	inline std::vector< Type > makeVector( Type const * ptr
+		, size_t count
+		, Params && ... params )
+	{
+		std::vector< Type > result;
 
-                if ( ptr )
-                {
-                        for ( auto & elem : makeArrayView( ptr, count ) )
-                        {
-                                result.push_back( deepCopy( elem, std::forward< Params && >( params )... ) );
-                        }
-                }
+		if ( ptr )
+		{
+				for ( auto & elem : makeArrayView( ptr, count ) )
+				{
+						result.push_back( deepCopy( elem, std::forward< Params && >( params )... ) );
+				}
+		}
 
-                return result;
-        }
+		return result;
+	}
 
-        template< typename Type, typename ... Params >
-        inline std::vector< Type > makeVector( Type const * ptr
-                , uint32_t count
-                , Params && ... params )
-        {
-                std::vector< Type > result;
+	template< typename Type, typename ... Params >
+	inline std::vector< Type > makeVector( Type const * ptr
+		, uint32_t count
+		, Params && ... params )
+	{
+		std::vector< Type > result;
 
-                if ( ptr )
-                {
-                        for ( auto & elem : makeArrayView( ptr, count ) )
-                        {
-                                result.push_back( deepCopy( elem, std::forward< Params && >( params )... ) );
-                        }
-                }
+		if ( ptr )
+		{
+			for ( auto & elem : makeArrayView( ptr, count ) )
+			{
+				result.push_back( deepCopy( elem, std::forward< Params && >( params )... ) );
+			}
+		}
 
-                return result;
-        }
+		return result;
+	}
 
-        template< typename Type, typename ... Params >
-        inline Optional< Type > makeOptional( Type const * ptr
-                , Params && ... params )
-        {
-                return ptr
-                        ? Optional< Type >{ deepCopy( *ptr, std::forward< Params && >( params )... ) }
-                : Optional< Type >{};
-        }
+	template< typename Type, typename ... Params >
+	inline Optional< Type > makeOptional( Type const * ptr
+		, Params && ... params )
+	{
+		return ptr
+			? Optional< Type >{ deepCopy( *ptr, std::forward< Params && >( params )... ) }
+			: Optional< Type >{};
+	}
 
 	inline bool operator==( VkOffset2D const & lhs, VkOffset2D const & rhs )
 	{

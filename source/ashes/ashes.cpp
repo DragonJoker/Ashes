@@ -27,12 +27,16 @@ namespace details
 #if defined( NDEBUG )
 #	if defined( _WIN32 )
 			static std::string result{ R"(.dll)" };
+#	elif defined( __APPLE__ )
+			static std::string result{ R"(.dylib)" };
 #	else
 			static std::string result{ R"(.so)" };
 #	endif
 #else
 #	if defined( _WIN32 )
 			static std::string result{ R"(d.dll)" };
+#	elif defined( __APPLE__ )
+			static std::string result{ R"(d.dylib)" };
 #	else
 			static std::string result{ R"(d.so)" };
 #	endif
@@ -74,8 +78,12 @@ namespace details
 	{
 		PluginArray result;
 		ashes::StringArray files;
+		auto binDir = ashes::getExecutableDirectory();
+		auto libDir = ashes::getPath( binDir ) / "lib";
+		auto binRes = ashes::listDirectoryFiles( binDir, files, false );
+		auto libRes = ashes::listDirectoryFiles( libDir, files, false );
 
-		if ( ashes::listDirectoryFiles( ashes::getExecutableDirectory(), files, false ) )
+		if ( binRes || libRes )
 		{
 			for ( auto & file : files )
 			{
@@ -1196,8 +1204,7 @@ extern "C"
 #endif
 #pragma endregion
 #pragma region VK_MVK_macos_surface
-#ifdef VK_MVK_macos_surface
-#	ifdef VK_USE_PLATFORM_MACOS_MVK
+#	ifdef __APPLE__
 
 	Ashes_API VkResult VKAPI_CALL vkCreateMacOSSurfaceMVK( VkInstance instance, const  VkMacOSSurfaceCreateInfoMVK* pCreateInfo, const  VkAllocationCallbacks* pAllocator, VkSurfaceKHR* pSurface )
 	{
@@ -1205,7 +1212,6 @@ extern "C"
 	}
 
 #	endif
-#endif
 #pragma endregion
 #pragma region VK_NN_vi_surface
 #ifdef VK_NN_vi_surface

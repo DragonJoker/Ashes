@@ -282,7 +282,7 @@ namespace vkapp
 				, image.format
 				, { 0, 0, int32_t( slice ) }
 				, extent
-				, ashes::makeArrayView( buffer, bufferSliceSize )
+				, ashes::makeArrayView( buffer, uint64_t( bufferSliceSize ) )
 				, m_view );
 			buffer += bufferSliceSize;
 		}

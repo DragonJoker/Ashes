@@ -29,6 +29,7 @@ namespace ashes
 		}
 
 	public:
+	virtual ~IWindowHandle() = default;
 		/**
 		*\brief
 		*	Boolean convertion operator.

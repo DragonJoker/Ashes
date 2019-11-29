@@ -27,6 +27,8 @@ See LICENSE file in root folder.
 #	endif
 #	include <Windows.h>
 #	include <vulkan/vulkan_win32.h>
+#elif( __APPLE__ )
+#	include <vulkan/vulkan_macos.h>
 #endif
 
 #if _WIN32

@@ -19,7 +19,6 @@ namespace ashes
 	private:
 		CommandBuffer( CommandBuffer const & ) = delete;
 		CommandBuffer & operator=( CommandBuffer const & ) = delete;
-		CommandBuffer() = default;
 
 	public:
 		/**
@@ -64,7 +63,7 @@ namespace ashes
 		*	The inheritance informations.
 		*/
 		inline void begin( VkCommandBufferUsageFlags flags
-			, VkCommandBufferInheritanceInfo & inheritanceInfo )const
+			, VkCommandBufferInheritanceInfo const & inheritanceInfo )const
 		{
 			begin( VkCommandBufferBeginInfo{ VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO, nullptr, flags, &inheritanceInfo } );
 		}

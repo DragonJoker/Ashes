@@ -22,7 +22,7 @@ namespace ashes
 		Surface( Surface const & ) = delete;
 		Surface & operator=( Surface const & ) = delete;
 		Surface( Surface && rhs ) = default;
-		Surface & operator=( Surface && rhs ) = default;
+		Surface & operator=( Surface && rhs ) = delete;
 
 	public:
 		/**
