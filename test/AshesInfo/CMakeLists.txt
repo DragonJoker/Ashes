@@ -37,7 +37,6 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 )
 target_include_directories( ${PROJECT_NAME} PRIVATE
 	${TARGET_INCLUDE_DIRS}
-	${CMAKE_SOURCE_DIR}/include
 	${XCB_INCLUDE_DIRS}
 )
 target_compile_definitions( ${PROJECT_NAME} PRIVATE

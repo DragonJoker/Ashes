@@ -1,3 +1,9 @@
+set( TARGET_INCLUDE_DIRS
+	${ASHES_SOURCE_DIR}/include
+	${ASHES_BINARY_DIR}/include
+	${Vulkan_INCLUDE_DIRS}
+)
+
 if ( ASHES_BUILD_TESTS )
 	find_package( wxWidgets COMPONENTS core base )
 	if( APPLE OR WIN32 )
@@ -32,8 +38,6 @@ if ( ASHES_BUILD_TESTS )
 					${TARGET_INCLUDE_DIRS}
 					${CMAKE_SOURCE_DIR}/util/Src
 					${CMAKE_BINARY_DIR}/util/Src
-					${CMAKE_SOURCE_DIR}/include
-					${CMAKE_BINARY_DIR}/include
 					${CMAKE_SOURCE_DIR}/external/gli
 					${CMAKE_SOURCE_DIR}/external/glm
 					${CMAKE_SOURCE_DIR}/external/imgui
@@ -41,7 +45,6 @@ if ( ASHES_BUILD_TESTS )
 					${CMAKE_SOURCE_DIR}/test/00-Common/Src
 					${wxWidgets_INCLUDE_DIRS}
 					${GTK2_INCLUDE_DIRS}
-					${Vulkan_INCLUDE_DIRS}
 				)
 				target_compile_features( ${TARGET_NAME} PRIVATE
 					cxx_std_17
