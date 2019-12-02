@@ -8,18 +8,19 @@ endif()
 find_package( ASSIMP )
 
 if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
-	string( COMPARE EQUAL "${wxWidgets_USE_DEBUG}" "ON" IsWxDebug )
-
 	file( GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*-* )
 	set( SAMPLE_ID 0 )
 	set( BinLibraries
 		${BinLibraries}
 		${glslang_LIBRARIES}
 		${SPIRV_LIBRARIES}
-		common
-		ashes
-		ashespp
-		util
+		${wxWidgets_LIBRARIES}
+		${GTK2_LIBRARIES}
+		${ASSIMP_LIBRARIES}
+		ashes::common
+		ashes::ashes
+		ashes::ashespp
+		ashes::util
 	)
 	set( TARGET_CXX_DEFINITIONS
 		${TARGET_CXX_DEFINITIONS}

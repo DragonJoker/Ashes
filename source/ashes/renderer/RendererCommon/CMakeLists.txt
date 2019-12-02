@@ -48,6 +48,10 @@ add_library( ${PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES}
 	${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
 )
+add_library( ashes::${PROJECT_NAME}
+	ALIAS
+	${PROJECT_NAME}
+)
 target_include_directories( ${PROJECT_NAME} PRIVATE
 	${TARGET_INCLUDE_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR}
@@ -66,10 +70,6 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 17
 	CXX_EXTENSIONS OFF
 	FOLDER "Ashes/Renderer"
-)
-add_dependencies( ${PROJECT_NAME}
-	ashes
-	common
 )
 
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Helper "Helper" )

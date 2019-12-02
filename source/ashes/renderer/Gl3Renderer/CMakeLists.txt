@@ -69,6 +69,10 @@ if ( OpenGL_FOUND )
 		${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES}
 		${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
 	)
+	add_library( ashes::${PROJECT_NAME}
+		ALIAS
+		${PROJECT_NAME}
+	)
 	target_include_directories( ${PROJECT_NAME} PRIVATE
 		${TARGET_INCLUDE_DIRS}
 		${CMAKE_CURRENT_BINARY_DIR}
@@ -104,9 +108,6 @@ if ( OpenGL_FOUND )
 		"${CMAKE_CXX_FLAGS}"
 		${${PROJECT_NAME}_SRC_FILES}
 	)
-	add_dependencies( ${PROJECT_NAME}
-		${RendererDependencies}
-	)
 
 	parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Buffer "Buffer" )
 	parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Command "Command" )
@@ -128,53 +129,6 @@ if ( OpenGL_FOUND )
 		${PROJECT_NAME}
 		PARENT_SCOPE
 	)
-
-	if ( WIN32 )
-		#We install each .dll in <install_dir>/bin folder
-		install(
-			TARGETS ${PROJECT_NAME}
-			COMPONENT ${PROJECT_NAME}
-			CONFIGURATIONS Release
-			EXPORT ${PROJECT_NAME}
-			RUNTIME DESTINATION bin
-		)
-		install(
-			TARGETS ${PROJECT_NAME}
-			COMPONENT ${PROJECT_NAME}_dev
-			CONFIGURATIONS RelWithDebInfo
-			EXPORT ${PROJECT_NAME}
-			RUNTIME DESTINATION bin/RelWithDebInfo
-		)
-		install(
-			TARGETS ${PROJECT_NAME}
-			COMPONENT ${PROJECT_NAME}_dev
-			CONFIGURATIONS Debug
-			EXPORT ${PROJECT_NAME}
-			RUNTIME DESTINATION bin/Debug
-		)
-	else ()
-		#We install each .so in <install_dir>/lib folder
-		install(
-			TARGETS ${PROJECT_NAME}
-			COMPONENT ${PROJECT_NAME}
-			CONFIGURATIONS Release
-			EXPORT ${PROJECT_NAME}
-			LIBRARY DESTINATION lib
-		)
-		install(
-			TARGETS ${PROJECT_NAME}
-			COMPONENT ${PROJECT_NAME}_dev
-			CONFIGURATIONS RelWithDebInfo
-			EXPORT ${PROJECT_NAME}
-			LIBRARY DESTINATION lib/RelWithDebInfo
-		)
-		install(
-			TARGETS ${PROJECT_NAME}
-			COMPONENT ${PROJECT_NAME}_dev
-			CONFIGURATIONS Debug
-			LIBRARY DESTINATION lib/Debug
-		)
-	endif()
 else ()
 	if ( NOT OpenGL_FOUND )
 		message( SEND_ERROR "OpenGL library not found." )

@@ -3,8 +3,8 @@ project( "${FOLDER_NAME}" )
 
 set( BinLibraries
 	${BinLibraries}
-	common
-	ashes
+	ashes::common
+	ashes::ashes
 )
 
 if ( WIN32 )

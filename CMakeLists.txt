@@ -112,6 +112,8 @@ endif ()
 set( Vulkan_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/external/Vulkan-Headers/include )
 set( SPIRV_CROSS_DIR ${CMAKE_SOURCE_DIR}/external/SPIRV-Cross )
 
+set(CMAKE_DEBUG_POSTFIX "d")
+
 if ( WIN32 )
 	set( BinLibraries
 		Dbghelp
@@ -132,6 +134,9 @@ else ()
 	set( TARGET_DEFINITIONS VK_USE_PLATFORM_XLIB_KHR=1 )
 endif ()
 
+set( ASHES_SOURCE_DIR ${CMAKE_SOURCE_DIR} )
+set( ASHES_BINARY_DIR ${CMAKE_BINARY_DIR} )
+
 add_subdirectory( source )
 
 if ( ASHES_BUILD_TESTS OR ASHES_BUILD_SAMPLES OR ASHES_BUILD_TEMPLATES )
@@ -142,89 +147,6 @@ if ( ASHES_BUILD_TESTS OR ASHES_BUILD_SAMPLES OR ASHES_BUILD_TEMPLATES )
 	set( BUILD_TESTING OFF )
 	set( SKIP_GLSLANG_INSTALL ON )
 	add_subdirectory( external/glslang )
-
-	target_install_subdir_headers( glslang external/glslang/glslang/ Public "" )
-	target_install_subdir_headers( glslang external/glslang/glslang/ Include "" )
-	target_install_subdir_headers( glslang external/glslang/glslang/ MachineIndependent "" )
-	target_install_subdir_headers( SPIRV external/glslang/SPIRV/ "" "" )
-
-	set_property( TARGET glslang PROPERTY FOLDER "Common/glslang" )
-	set_property( TARGET OGLCompiler PROPERTY FOLDER "Common/glslang" )
-	set_property( TARGET OSDependent PROPERTY FOLDER "Common/glslang" )
-	set_property( TARGET SPIRV PROPERTY FOLDER "Common/glslang" )
-	set_property( TARGET SPVRemapper PROPERTY FOLDER "Common/glslang" )
-
-	if ( MSVC )
-		install(
-			FILES
-				${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/glslang.lib
-				${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/OGLCompiler.lib
-				${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/OSDependent.lib
-				${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/SPIRV.lib
-				${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/SPVRemapper.lib
-			COMPONENT glslang
-			CONFIGURATIONS Release
-			EXPORT glslang
-			ARCHIVE DESTINATION lib
-		)
-		install(
-			FILES
-				${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/glslang.lib
-				${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/OGLCompiler.lib
-				${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/OSDependent.lib
-				${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/SPIRV.lib
-				${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/SPVRemapper.lib
-			COMPONENT glslang_dev
-			CONFIGURATIONS RelWithDebInfo
-			ARCHIVE DESTINATION lib/RelWithDebInfo
-		)
-		install(
-			FILES
-				${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/glslangd.lib
-				${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/OGLCompilerd.lib
-				${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/OSDependentd.lib
-				${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/SPIRVd.lib
-				${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/SPVRemapperd.lib
-			COMPONENT glslang_dev
-			CONFIGURATIONS Debug
-			ARCHIVE DESTINATION lib/Debug
-		)
-	else ()
-		install(
-			FILES
-				${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/libglslang.a
-				${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/libOGLCompiler.a
-				${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/libOSDependent.a
-				${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/libSPIRV.a
-				${PROJECTS_BINARIES_OUTPUT_DIR_RELEASE}/lib/libSPVRemapper.a
-			COMPONENT glslang
-			CONFIGURATIONS Release
-			EXPORT glslang
-			ARCHIVE DESTINATION lib
-		)
-		install(
-			FILES
-				${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/libglslang.a
-				${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/libOGLCompiler.a
-				${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/libOSDependent.a
-				${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/libSPIRV.a
-				${PROJECTS_BINARIES_OUTPUT_DIR_RELWITHDEBINFO}/lib/libSPVRemapper.a
-			COMPONENT glslang_dev
-			CONFIGURATIONS RelWithDebInfo
-			ARCHIVE DESTINATION lib/RelWithDebInfo
-		)
-		install(
-			FILES
-				${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/libglslangd.a
-				${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/libOGLCompilerd.a
-				${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/libOSDependentd.a
-				${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/libSPIRVd.a
-				${PROJECTS_BINARIES_OUTPUT_DIR_DEBUG}/lib/libSPVRemapperd.a
-			COMPONENT glslang_dev
-			CONFIGURATIONS Debug
-			ARCHIVE DESTINATION lib/Debug
-		)
-	endif ()
 endif ()
 
 if ( ASHES_BUILD_TEMPLATES )

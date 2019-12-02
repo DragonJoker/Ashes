@@ -64,9 +64,9 @@ endif ()
 
 if ( ASHES_BUILD_PLUGINS )
 	set( RendererDependencies
-		common
-		ashes
-		RendererCommon
+		ashes::common
+		ashes::ashes
+		ashes::RendererCommon
 	)
 	add_subdirectory( RendererCommon )
 

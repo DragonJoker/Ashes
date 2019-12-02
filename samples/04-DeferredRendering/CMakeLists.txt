@@ -28,13 +28,7 @@ add_executable( ${PROJECT_NAME} WIN32
 )
 target_link_libraries( ${PROJECT_NAME} PRIVATE
 	Sample-00-Common
-	${wxWidgets_LIBRARIES}
-	${GTK2_LIBRARIES}
-	${ASSIMP_LIBRARIES}
 	${BinLibraries}
-)
-add_dependencies( ${PROJECT_NAME}
-	Sample-00-Common
 )
 add_target_precompiled_header( ${PROJECT_NAME}
 	${CMAKE_CURRENT_SOURCE_DIR}/Src/PrecompiledHeader.hpp
