@@ -30,10 +30,7 @@ add_library( ${PROJECT_NAME} STATIC
 	${GLSL_SHADER_FILES}
 )
 target_link_libraries( ${PROJECT_NAME} PRIVATE
-	common
-	ashes
-	ashespp
-	util
+	${BinLibraries}
 )
 add_dependencies( ${PROJECT_NAME}
 	${ENABLED_RENDERERS}

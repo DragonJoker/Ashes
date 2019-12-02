@@ -39,3 +39,21 @@ endif ()
 
 set( BinLibraries ${BinLibraries} PARENT_SCOPE )
 
+install(
+	TARGETS ashes ashes_common ashespp ${ENABLED_RENDERERS}
+	EXPORT Ashes
+	RUNTIME DESTINATION bin
+	LIBRARY DESTINATION lib
+	ARCHIVE DESTINATION lib
+	INCLUDES DESTINATION include
+)
+install( EXPORT Ashes
+	FILE AshesConfig.cmake
+	NAMESPACE ashes::
+	DESTINATION lib/cmake/Ashes
+)
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file( AshesConfigVersion.cmake
+	VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_BUILD}
+	COMPATIBILITY AnyNewerVersion
+)

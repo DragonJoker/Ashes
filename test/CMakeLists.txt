@@ -12,10 +12,12 @@ if ( ASHES_BUILD_TESTS )
 
 		set( BinLibraries
 			${BinLibraries}
-			common
-			ashes
-			ashespp
-			util
+			${wxWidgets_LIBRARIES}
+			${GTK2_LIBRARIES}
+			ashes::common
+			ashes::ashes
+			ashes::ashespp
+			ashes::util
 		)
 		set( TARGET_CXX_DEFINITIONS
 			${TARGET_CXX_DEFINITIONS}
@@ -75,7 +77,7 @@ if ( ASHES_BUILD_SW_SAMPLES )
 	include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../external/gli )
 	set( Vulkan_FOUND ON )
 	set( Vulkan_INCLUDE_DIR ${Vulkan_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/include )
-	set( Vulkan_LIBRARY ashes )
+	set( Vulkan_LIBRARY ashes::ashes ashes::common )
 	add_subdirectory( Vulkan )
 	set(EXAMPLES
 		bloom

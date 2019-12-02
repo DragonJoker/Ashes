@@ -25,6 +25,10 @@ add_library( ${PROJECT_NAME} SHARED
 	${${PROJECT_NAME}_SRC_FILES}
 	${${PROJECT_NAME}_HDR_FILES}
 )
+add_library( ashes::${PROJECT_NAME}
+	ALIAS
+	${PROJECT_NAME}
+)
 target_include_directories( ${PROJECT_NAME} PRIVATE
 	${TARGET_INCLUDE_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR}
@@ -33,8 +37,8 @@ target_include_directories( ${PROJECT_NAME} PRIVATE
 )
 target_link_libraries( ${PROJECT_NAME} PRIVATE
 	${BinLibraries}
-	common
-	ashes
+	ashes::common
+	ashes::ashes
 )
 target_compile_definitions( ${PROJECT_NAME} PRIVATE
 	${PROJECT_NAME}_EXPORTS
@@ -53,60 +57,9 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 	VERSION ${PROJECT_VERSION}
 	SOVERSION ${PROJECT_SOVERSION}
 )
-add_dependencies( ${PROJECT_NAME}
-	common
-	ashes
-)
 
 set( ENABLED_RENDERERS
 	${ENABLED_RENDERERS}
 	${PROJECT_NAME}
 	PARENT_SCOPE
 )
-
-if ( WIN32 )
-	#We install each .dll in <install_dir>/bin folder
-	install(
-		TARGETS ${PROJECT_NAME}
-		COMPONENT ${PROJECT_NAME}
-		CONFIGURATIONS Release
-		EXPORT ${PROJECT_NAME}
-		RUNTIME DESTINATION bin
-	)
-	install(
-		TARGETS ${PROJECT_NAME}
-		COMPONENT ${PROJECT_NAME}_dev
-		CONFIGURATIONS RelWithDebInfo
-		EXPORT ${PROJECT_NAME}
-		RUNTIME DESTINATION bin/RelWithDebInfo
-	)
-	install(
-		TARGETS ${PROJECT_NAME}
-		COMPONENT ${PROJECT_NAME}_dev
-		CONFIGURATIONS Debug
-		EXPORT ${PROJECT_NAME}
-		RUNTIME DESTINATION bin/Debug
-	)
-else ()
-	#We install each .so in <install_dir>/lib folder
-	install(
-		TARGETS ${PROJECT_NAME}
-		COMPONENT ${PROJECT_NAME}
-		CONFIGURATIONS Release
-		EXPORT ${PROJECT_NAME}
-		LIBRARY DESTINATION lib
-	)
-	install(
-		TARGETS ${PROJECT_NAME}
-		COMPONENT ${PROJECT_NAME}_dev
-		CONFIGURATIONS RelWithDebInfo
-		EXPORT ${PROJECT_NAME}
-		LIBRARY DESTINATION lib/RelWithDebInfo
-	)
-	install(
-		TARGETS ${PROJECT_NAME}
-		COMPONENT ${PROJECT_NAME}_dev
-		CONFIGURATIONS Debug
-		LIBRARY DESTINATION lib/Debug
-	)
-endif ()

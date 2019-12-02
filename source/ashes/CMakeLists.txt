@@ -63,11 +63,15 @@ add_library( ${PROJECT_NAME} SHARED
 	${${PROJECT_NAME}_SRC_FILES}
 	${${PROJECT_NAME}_HDR_FILES}
 )
+add_library( ashes::${PROJECT_NAME}
+	ALIAS
+	${PROJECT_NAME}
+)
 target_include_directories( ${PROJECT_NAME} PRIVATE
 	${TARGET_INCLUDE_DIRS}
 )
 target_link_libraries( ${PROJECT_NAME} PRIVATE
-	common
+	ashes::common
 )
 target_compile_definitions( ${PROJECT_NAME} PRIVATE
 	AshesC_EXPORTS
@@ -89,44 +93,10 @@ if ( BUILD_ASHES )
 	target_add_doc( ${PROJECT_NAME} "" "*.h *.hpp" )
 endif ()
 
-install(
-	TARGETS ${PROJECT_NAME}
-	COMPONENT ${PROJECT_NAME}
-	CONFIGURATIONS Release
-	EXPORT ${PROJECT_NAME}
-	RUNTIME DESTINATION bin
-	ARCHIVE DESTINATION lib
-	LIBRARY DESTINATION lib
-)
-install(
-	TARGETS ${PROJECT_NAME}
-	COMPONENT ${PROJECT_NAME}_dev
-	CONFIGURATIONS RelWithDebInfo
-	EXPORT ${PROJECT_NAME}
-	RUNTIME DESTINATION bin/RelWithDebInfo
-	ARCHIVE DESTINATION lib/RelWithDebInfo
-	LIBRARY DESTINATION lib/RelWithDebInfo
-)
-install(
-	TARGETS ${PROJECT_NAME}
-	COMPONENT ${PROJECT_NAME}_dev
-	CONFIGURATIONS Debug
-	EXPORT ${PROJECT_NAME}
-	RUNTIME DESTINATION bin/Debug
-	ARCHIVE DESTINATION lib/Debug
-	LIBRARY DESTINATION lib/Debug
-)
 target_install_dir_headers( ${PROJECT_NAME}
 	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}
 	${PROJECT_NAME}
 )
-
-install(
-	FILES ${${PROJECT_NAME}_CONFIG_HEADER}
-	DESTINATION include/${PROJECT_NAME}
-	COMPONENT ${PROJECT_NAME}_dev
-)
-
 
 add_subdirectory( renderer )
 set( ENABLED_RENDERERS ${ENABLED_RENDERERS} PARENT_SCOPE )
