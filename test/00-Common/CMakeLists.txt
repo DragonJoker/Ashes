@@ -20,7 +20,6 @@ file( GLOB HEADER_FILES
 	Src/MainFrame.hpp
 	Src/ObjLoader.hpp
 	Src/Prerequisites.hpp
-	Src/MetalLayer.h
 )
 
 if ( APPLE )
@@ -28,10 +27,9 @@ if ( APPLE )
 		${SOURCE_FILES}
 		Src/MetalLayer.mm
 	)
-else ()
-	set( SOURCE_FILES
-		${SOURCE_FILES}
-		Src/MetalLayer.c
+	set( HEADER_FILES
+		${HEADER_FILES}
+		Src/MetalLayer.h
 	)
 endif ()
 

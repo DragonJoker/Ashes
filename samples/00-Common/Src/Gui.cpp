@@ -41,6 +41,7 @@ namespace common
 		: m_device{ device }
 		, m_size{ size }
 		, m_pushConstants{ VK_SHADER_STAGE_VERTEX_BIT, doCreateConstants() }
+		, m_context{ ImGui::CreateContext( nullptr ) }
 	{
 		// Init ImGui
 		// Color scheme
@@ -59,6 +60,11 @@ namespace common
 		io.FontGlobalScale = 1.0f;
 
 		doPrepareResources( queue, commandPool );
+	}
+
+	Gui::~Gui()
+	{
+		ImGui::DestroyContext( m_context );
 	}
 
 	void Gui::updateView( ashes::ImageView colourView )
@@ -88,61 +94,68 @@ namespace common
 		bool updateCmdBuffers = false;
 		auto vertexBufferSize = uint32_t( imDrawData->TotalVtxCount );
 
-		if ( !m_vertexBuffer || m_vertexCount != vertexBufferSize )
+		if ( vertexBufferSize )
 		{
-			m_vertexBuffer.reset();
-			m_vertexCount = vertexBufferSize;
-			m_vertexBuffer = utils::makeVertexBuffer< ImDrawVert >( m_device
+			if ( !m_vertexBuffer || m_vertexCount != vertexBufferSize )
+			{
+				m_vertexBuffer.reset();
+				m_vertexCount = vertexBufferSize;
+				m_vertexBuffer = utils::makeVertexBuffer< ImDrawVert >( m_device
+					, m_vertexCount
+					, 0u
+					, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
+				updateCmdBuffers = true;
+			}
+
+			auto indexBufferSize = uint32_t( imDrawData->TotalIdxCount );
+
+			if ( !m_indexBuffer || m_indexCount < indexBufferSize )
+			{
+				m_indexBuffer.reset();
+				m_indexCount = indexBufferSize;
+				m_indexBuffer = utils::makeBuffer< ImDrawIdx >( m_device
+					, m_indexCount
+					, VK_BUFFER_USAGE_INDEX_BUFFER_BIT
+					, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
+				updateCmdBuffers = true;
+			}
+
+			if ( auto vtx = m_vertexBuffer->lock( 0u
 				, m_vertexCount
-				, 0u
-				, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
-			updateCmdBuffers = true;
-		}
+				, 0u ) )
+			{
+				for ( int n = 0; n < imDrawData->CmdListsCount; n++ )
+				{
+					const ImDrawList * cmdList = imDrawData->CmdLists[n];
+					memcpy( vtx, cmdList->VtxBuffer.Data, cmdList->VtxBuffer.Size * sizeof( ImDrawVert ) );
+					vtx += cmdList->VtxBuffer.Size;
+				}
 
-		auto indexBufferSize = uint32_t( imDrawData->TotalIdxCount );
+				m_vertexBuffer->flush( 0u, m_vertexCount );
+				m_vertexBuffer->unlock();
+			}
 
-		if ( !m_indexBuffer || m_indexCount < indexBufferSize )
-		{
-			m_indexBuffer.reset();
-			m_indexCount = indexBufferSize;
-			m_indexBuffer = utils::makeBuffer< ImDrawIdx >( m_device
+			if ( auto idx = m_indexBuffer->lock( 0u
 				, m_indexCount
-				, VK_BUFFER_USAGE_INDEX_BUFFER_BIT
-				, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
-			updateCmdBuffers = true;
-		}
-
-		if ( auto vtx = m_vertexBuffer->lock( 0u
-			, m_vertexCount
-			, 0u ) )
-		{
-			for ( int n = 0; n < imDrawData->CmdListsCount; n++ )
+				, 0u ) )
 			{
-				const ImDrawList * cmdList = imDrawData->CmdLists[n];
-				memcpy( vtx, cmdList->VtxBuffer.Data, cmdList->VtxBuffer.Size * sizeof( ImDrawVert ) );
-				vtx += cmdList->VtxBuffer.Size;
+				for ( int n = 0; n < imDrawData->CmdListsCount; n++ )
+				{
+					const ImDrawList * cmdList = imDrawData->CmdLists[n];
+					memcpy( idx, cmdList->IdxBuffer.Data, cmdList->IdxBuffer.Size * sizeof( ImDrawIdx ) );
+					idx += cmdList->IdxBuffer.Size;
+				}
+
+				m_indexBuffer->flush( 0u, m_indexCount );
+				m_indexBuffer->unlock();
 			}
 
-			m_vertexBuffer->flush( 0u, m_vertexCount );
-			m_vertexBuffer->unlock();
-		}
-
-		if ( auto idx = m_indexBuffer->lock( 0u
-			, m_indexCount
-			, 0u ) )
-		{
-			for ( int n = 0; n < imDrawData->CmdListsCount; n++ )
+			if ( updateCmdBuffers )
 			{
-				const ImDrawList * cmdList = imDrawData->CmdLists[n];
-				memcpy( idx, cmdList->IdxBuffer.Data, cmdList->IdxBuffer.Size * sizeof( ImDrawIdx ) );
-				idx += cmdList->IdxBuffer.Size;
+				doUpdateCommandBuffers();
 			}
-
-			m_indexBuffer->flush( 0u, m_indexCount );
-			m_indexBuffer->unlock();
 		}
-
-		if ( updateCmdBuffers )
+		else
 		{
 			doUpdateCommandBuffers();
 		}
@@ -455,6 +468,9 @@ namespace common
 		m_pushConstants.getData()->translate = utils::Vec2{ -1.0f };
 
 		m_commandBuffer->begin();
+
+		if ( m_vertexBuffer )
+		{
 		m_commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 			, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
 			, m_fontView.makeShaderInputResource( VK_IMAGE_LAYOUT_UNDEFINED ) );
@@ -464,49 +480,60 @@ namespace common
 		m_commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 			, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
 			, m_indexBuffer->getBuffer().makeVertexShaderInputResource() );
+		}
+
 		m_commandBuffer->beginRenderPass( *m_renderPass
 			, *m_frameBuffer
 			, { VkClearValue{ 1.0, 1.0, 1.0, 0.0 } }
 			, VK_SUBPASS_CONTENTS_INLINE );
-		m_commandBuffer->bindPipeline( *m_pipeline );
-		m_commandBuffer->bindDescriptorSet( *m_descriptorSet
-			, *m_pipelineLayout );
-		m_commandBuffer->bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
-		m_commandBuffer->bindIndexBuffer( m_indexBuffer->getBuffer(), 0u, VK_INDEX_TYPE_UINT16 );
-		m_commandBuffer->setViewport( { 0.0f, 0.0f, float( ImGui::GetIO().DisplaySize.x ), float( ImGui::GetIO().DisplaySize.y ), 0.0f, 1.0f } );
-		m_commandBuffer->setScissor( { { 0, 0 }, { uint32_t( ImGui::GetIO().DisplaySize.x ), uint32_t( ImGui::GetIO().DisplaySize.y ) } } );
-		m_commandBuffer->pushConstants( *m_pipelineLayout, m_pushConstants );
-		ImDrawData * imDrawData = ImGui::GetDrawData();
-		int32_t vertexOffset = 0;
-		int32_t indexOffset = 0;
 
-		for ( int32_t j = 0; j < imDrawData->CmdListsCount; j++ )
+		if ( m_vertexBuffer )
 		{
-			ImDrawList const * cmdList = imDrawData->CmdLists[j];
+			m_commandBuffer->bindPipeline( *m_pipeline );
+			m_commandBuffer->bindDescriptorSet( *m_descriptorSet
+				, *m_pipelineLayout );
+			m_commandBuffer->bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
+			m_commandBuffer->bindIndexBuffer( m_indexBuffer->getBuffer(), 0u, VK_INDEX_TYPE_UINT16 );
+			m_commandBuffer->setViewport( { 0.0f, 0.0f, float( ImGui::GetIO().DisplaySize.x ), float( ImGui::GetIO().DisplaySize.y ), 0.0f, 1.0f } );
+			m_commandBuffer->setScissor( { { 0, 0 }, { uint32_t( ImGui::GetIO().DisplaySize.x ), uint32_t( ImGui::GetIO().DisplaySize.y ) } } );
+			m_commandBuffer->pushConstants( *m_pipelineLayout, m_pushConstants );
+			ImDrawData * imDrawData = ImGui::GetDrawData();
+			int32_t vertexOffset = 0;
+			int32_t indexOffset = 0;
 
-			for ( int32_t k = 0; k < cmdList->CmdBuffer.Size; k++ )
+			for ( int32_t j = 0; j < imDrawData->CmdListsCount; j++ )
 			{
-				ImDrawCmd const * cmd = &cmdList->CmdBuffer[k];
-				m_commandBuffer->setScissor( {
-					std::max( int32_t( cmd->ClipRect.x ), 0 ),
-					std::max( int32_t( cmd->ClipRect.y ), 0 ),
-					uint32_t( cmd->ClipRect.z - cmd->ClipRect.x ),
-					uint32_t( cmd->ClipRect.w - cmd->ClipRect.y ),
-				} );
-				m_commandBuffer->drawIndexed( cmd->ElemCount, 1u, indexOffset, vertexOffset );
-				indexOffset += cmd->ElemCount;
-			}
+				ImDrawList const * cmdList = imDrawData->CmdLists[j];
 
-			vertexOffset += cmdList->VtxBuffer.Size;
+				for ( int32_t k = 0; k < cmdList->CmdBuffer.Size; k++ )
+				{
+					ImDrawCmd const * cmd = &cmdList->CmdBuffer[k];
+					m_commandBuffer->setScissor( {
+						std::max( int32_t( cmd->ClipRect.x ), 0 ),
+						std::max( int32_t( cmd->ClipRect.y ), 0 ),
+						uint32_t( cmd->ClipRect.z - cmd->ClipRect.x ),
+						uint32_t( cmd->ClipRect.w - cmd->ClipRect.y ),
+					} );
+					m_commandBuffer->drawIndexed( cmd->ElemCount, 1u, indexOffset, vertexOffset );
+					indexOffset += cmd->ElemCount;
+				}
+
+				vertexOffset += cmdList->VtxBuffer.Size;
+			}
 		}
 
 		m_commandBuffer->endRenderPass();
-		m_commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
-			, VK_PIPELINE_STAGE_TRANSFER_BIT
-			, m_vertexBuffer->getBuffer().makeTransferDestination() );
-		m_commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
-			, VK_PIPELINE_STAGE_TRANSFER_BIT
-			, m_indexBuffer->getBuffer().makeTransferDestination() );
+
+		if ( m_vertexBuffer )
+		{
+			m_commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
+				, VK_PIPELINE_STAGE_TRANSFER_BIT
+				, m_vertexBuffer->getBuffer().makeTransferDestination() );
+			m_commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
+				, VK_PIPELINE_STAGE_TRANSFER_BIT
+				, m_indexBuffer->getBuffer().makeTransferDestination() );
+		}
+
 		m_commandBuffer->end();
 	}
 }

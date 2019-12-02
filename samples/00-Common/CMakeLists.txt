@@ -4,15 +4,40 @@ set( ${PROJECT_NAME}_VERSION_MAJOR 0 )
 set( ${PROJECT_NAME}_VERSION_MINOR 1 )
 set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 
-file( GLOB SOURCE_FILES
-	Src/*.cpp
+set( SOURCE_FILES
+	Src/Application.cpp
+	Src/AssimpLoader.cpp
+	Src/Camera.cpp
+	Src/FileUtils.cpp
+	Src/Gui.cpp
+	Src/MainFrame.cpp
+	Src/NodesRenderer.cpp
+	Src/OpaqueRendering.cpp
+	Src/PrecompiledHeader.cpp
+	Src/Prerequisites.cpp
+	Src/RenderPanel.cpp
+	Src/RenderTarget.cpp
+	Src/Scene.cpp
+	Src/TransparentRendering.cpp
 	../../external/imgui/imgui.cpp
 	../../external/imgui/imgui_draw.cpp
 	../../external/imgui/imgui_widgets.cpp
 )
 file( GLOB HEADER_FILES
-	Src/*.hpp
-	Src/*.inl
+	Src/Application.hpp
+	Src/AssimpLoader.hpp
+	Src/Camera.hpp
+	Src/FileUtils.hpp
+	Src/Gui.hpp
+	Src/MainFrame.hpp
+	Src/NodesRenderer.hpp
+	Src/OpaqueRendering.hpp
+	Src/PrecompiledHeader.hpp
+	Src/Prerequisites.hpp
+	Src/RenderPanel.hpp
+	Src/RenderTarget.hpp
+	Src/Scene.hpp
+	Src/TransparentRendering.hpp
 )
 file( GLOB GLSL_SHADER_FILES
 	${CMAKE_CURRENT_SOURCE_DIR}/Shaders/*.vert
@@ -21,6 +46,17 @@ file( GLOB GLSL_SHADER_FILES
 file( GLOB SHADER_FILES
 	${CMAKE_CURRENT_SOURCE_DIR}/Shaders/*.*
 )
+
+if ( APPLE )
+	set( SOURCE_FILES
+		${SOURCE_FILES}
+		Src/MetalLayer.mm
+	)
+	set( HEADER_FILES
+		${HEADER_FILES}
+		Src/MetalLayer.h
+	)
+endif ()
 
 source_group( "Shader Files" FILES ${GLSL_SHADER_FILES} )
 
