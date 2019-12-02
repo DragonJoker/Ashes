@@ -28,8 +28,8 @@ install:
   - ps: if (!$isLinux) {$PROJECT_DIR="C:\projects\rendererlib"}
   - ps: md build
   - ps: cd build
-  - ps: if ($isLinux) {cmake -Wno-dev -G "Unix Makefiles" -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DPROJECTS_OUTPUT_DIR=/home/appveyor/projects/rendererlib -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/home/appveyor/projects/rendererlib/package/ashes -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_SAMPLES=OFF ../}
-  - ps: if (!$isLinux) {cmake -Wno-dev -G "Visual Studio 16 2019" -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DPROJECTS_OUTPUT_DIR=C:\projects\rendererlib -DCMAKE_INSTALL_PREFIX=C:\projects\rendererlib\package\ashes -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_SAMPLES=OFF ../}
+  - ps: if ($isLinux) {cmake -Wno-dev -G "Unix Makefiles" -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DPROJECTS_OUTPUT_DIR=/home/appveyor/projects/rendererlib -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/home/appveyor/projects/rendererlib/package/ashes -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_INFO=OFF ../ -DASHES_BUILD_SAMPLES=OFF ../}
+  - ps: if (!$isLinux) {cmake -Wno-dev -G "Visual Studio 16 2019" -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DPROJECTS_OUTPUT_DIR=C:\projects\rendererlib -DCMAKE_INSTALL_PREFIX=C:\projects\rendererlib\package\ashes -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_INFO=OFF ../ -DASHES_BUILD_SAMPLES=OFF ../}
 
 build_script:
   - ps: cd $PROJECT_DIR/build

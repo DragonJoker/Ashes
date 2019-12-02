@@ -43,6 +43,10 @@ add_library( ${PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_SRC_FILES}
 	${${PROJECT_NAME}_HDR_FILES}
 )
+add_library( ashes::${PROJECT_NAME}
+	ALIAS
+	${PROJECT_NAME}
+)
 target_compile_features( ${PROJECT_NAME} PUBLIC
 	cxx_std_17
 )
@@ -51,17 +55,13 @@ target_compile_definitions( ${PROJECT_NAME} PUBLIC
 	${TARGET_DEFINITIONS}
 )
 target_link_libraries( ${PROJECT_NAME} PUBLIC
-	common
-	ashes
+	ashes::common
+	ashes::ashes
 )
 set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 17
 	CXX_EXTENSIONS OFF
 	FOLDER "Ashes/Core"
-)
-add_dependencies( ${PROJECT_NAME}
-	common
-	ashes
 )
 
 add_target_precompiled_header( ${PROJECT_NAME}
@@ -89,27 +89,6 @@ if ( BUILD_ASHES )
 	target_add_doc( ${PROJECT_NAME} "" "*.h *.hpp" )
 endif ()
 
-#We copy each lib in <install_dir>/lib folder
-install(
-	TARGETS ${PROJECT_NAME}
-	COMPONENT ${PROJECT_NAME}
-	CONFIGURATIONS Release
-	EXPORT ${PROJECT_NAME}
-	ARCHIVE DESTINATION lib
-)
-install(
-	TARGETS ${PROJECT_NAME}
-	COMPONENT ${PROJECT_NAME}_dev
-	CONFIGURATIONS RelWithDebInfo
-	EXPORT ${PROJECT_NAME}
-	ARCHIVE DESTINATION lib/RelWithDebInfo
-)
-install(
-	TARGETS ${PROJECT_NAME}
-	COMPONENT ${PROJECT_NAME}_dev
-	CONFIGURATIONS Debug
-	ARCHIVE DESTINATION lib/Debug
-)
 #For libs, we install headers to <install_dir>/include/${PROJECT_NAME}
 target_install_headers( ${PROJECT_NAME}
 	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME} )

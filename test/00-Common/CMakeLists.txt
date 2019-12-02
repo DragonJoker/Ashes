@@ -13,13 +13,13 @@ file( GLOB HEADER_FILES
 	Src/*.inl
 )
 
-
 add_library( ${PROJECT_NAME} STATIC
 	${SOURCE_FILES}
 	${HEADER_FILES}
 )
-
-
+target_link_libraries( ${PROJECT_NAME} PRIVATE
+	${BinLibraries}
+)
 set( ASSETS_FOLDER ${CMAKE_SOURCE_DIR}/test/Assets )
 
 file( GLOB_RECURSE ASSETS_FILES

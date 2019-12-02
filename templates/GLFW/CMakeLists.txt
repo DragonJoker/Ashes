@@ -18,9 +18,9 @@ if( GLFW_FOUND )
 		${Vulkan_INCLUDE_DIRS}
 	)
 	target_link_libraries( ${PROJECT_NAME} PRIVATE
-		common
-		ashes
-		ashespp
+		ashes::common
+		ashes::ashes
+		ashes::ashespp
 		${GLFW_LIBRARIES}
 		${BinLibraries}
 	)

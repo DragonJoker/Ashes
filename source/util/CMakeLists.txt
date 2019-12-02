@@ -1,24 +1,24 @@
-project( util )
+project( ashes_util )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.c
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cc
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cpp
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.c
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.cc
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.cpp
+	${ASHES_SOURCE_DIR}/source/util/*.c
+	${ASHES_SOURCE_DIR}/source/util/*.cc
+	${ASHES_SOURCE_DIR}/source/util/*.cpp
+	${ASHES_SOURCE_DIR}/include/util/*.c
+	${ASHES_SOURCE_DIR}/include/util/*.cc
+	${ASHES_SOURCE_DIR}/include/util/*.cpp
 )
 file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.h
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hh
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hpp
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inl
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inc
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.h
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hh
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hpp
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inl
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inc
+	${ASHES_SOURCE_DIR}/source/util/*.h
+	${ASHES_SOURCE_DIR}/source/util/*.hh
+	${ASHES_SOURCE_DIR}/source/util/*.hpp
+	${ASHES_SOURCE_DIR}/source/util/*.inl
+	${ASHES_SOURCE_DIR}/source/util/*.inc
+	${ASHES_SOURCE_DIR}/include/util/*.h
+	${ASHES_SOURCE_DIR}/include/util/*.hh
+	${ASHES_SOURCE_DIR}/include/util/*.hpp
+	${ASHES_SOURCE_DIR}/include/util/*.inl
+	${ASHES_SOURCE_DIR}/include/util/*.inc
 )
 
 if ( MSVC )
@@ -37,6 +37,17 @@ add_library( ${PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_SRC_FILES}
 	${${PROJECT_NAME}_HDR_FILES}
 )
+add_library( ashes::util
+	ALIAS
+	${PROJECT_NAME}
+)
+target_include_directories( ${PROJECT_NAME} PRIVATE
+	${TARGET_INCLUDE_DIRS}
+	${CMAKE_CURRENT_BINARY_DIR}
+	${ASHES_BINARY_DIR}
+	${ASHES_SOURCE_DIR}/include
+	${CMAKE_SOURCE_DIR}/external/glslang
+)
 target_include_directories( ${PROJECT_NAME} INTERFACE
 	${TARGET_INCLUDE_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR}
@@ -45,9 +56,9 @@ target_include_directories( ${PROJECT_NAME} INTERFACE
 	${CMAKE_SOURCE_DIR}/external/glslang
 )
 target_link_libraries( ${PROJECT_NAME} PRIVATE
-	common
-	ashes
-	ashespp
+	ashes::common
+	ashes::ashes
+	ashes::ashespp
 	glslang
 	OGLCompiler
 	OSDependent
@@ -68,36 +79,3 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_EXTENSIONS OFF
 	FOLDER "Common"
 )
-
-#We copy each lib in <install_dir>/lib folder
-install(
-	TARGETS ${PROJECT_NAME}
-	COMPONENT ${PROJECT_NAME}
-	CONFIGURATIONS Release
-	EXPORT ${PROJECT_NAME}
-	RUNTIME DESTINATION bin
-	ARCHIVE DESTINATION lib
-	LIBRARY DESTINATION lib
-)
-install(
-	TARGETS ${PROJECT_NAME}
-	COMPONENT ${PROJECT_NAME}_dev
-	CONFIGURATIONS RelWithDebInfo
-	EXPORT ${PROJECT_NAME}
-	RUNTIME DESTINATION bin/RelWithDebInfo
-	ARCHIVE DESTINATION lib/RelWithDebInfo
-	LIBRARY DESTINATION lib/RelWithDebInfo
-)
-install(
-	TARGETS ${PROJECT_NAME}
-	COMPONENT ${PROJECT_NAME}_dev
-	CONFIGURATIONS Debug
-	EXPORT ${PROJECT_NAME}
-	RUNTIME DESTINATION bin/Debug
-	ARCHIVE DESTINATION lib/Debug
-	LIBRARY DESTINATION lib/Debug
-)
-
-#For libs, we install headers to <install_dir>/include/${PROJECT_NAME}
-target_install_headers( ${PROJECT_NAME} ../../include/${PROJECT_NAME} )
-

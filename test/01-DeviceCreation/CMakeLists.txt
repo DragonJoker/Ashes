@@ -18,15 +18,7 @@ add_executable( ${PROJECT_NAME} WIN32
 	${SOURCE_FILES}
 	${HEADER_FILES}
 )
-
 target_link_libraries( ${PROJECT_NAME}
 	Test-00-Common
-	${wxWidgets_LIBRARIES}
-	${GTK2_LIBRARIES}
 	${BinLibraries}
 )
-
-add_dependencies( ${PROJECT_NAME}
-	Test-00-Common
-)
-

@@ -1,4 +1,4 @@
-project( common )
+project( ashes_common )
 
 set( ${PROJECT_NAME}_VERSION_MAJOR 0 )
 set( ${PROJECT_NAME}_VERSION_MINOR 1 )
@@ -12,26 +12,26 @@ set( TARGET_INCLUDE_DIRS
 	${CMAKE_CURRENT_BINARY_DIR}
 	${ASHES_SOURCE_DIR}/include
 	${ASHES_SOURCE_DIR}/include/ashes
-	${ASHES_SOURCE_DIR}/include/ashes/${PROJECT_NAME}
+	${ASHES_SOURCE_DIR}/include/ashes/common
 )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
-	${ASHES_SOURCE_DIR}/source/ashes/${PROJECT_NAME}/*.c
-	${ASHES_SOURCE_DIR}/source/ashes/${PROJECT_NAME}/*.cc
-	${ASHES_SOURCE_DIR}/source/ashes/${PROJECT_NAME}/*.cpp
+	${ASHES_SOURCE_DIR}/source/ashes/common/*.c
+	${ASHES_SOURCE_DIR}/source/ashes/common/*.cc
+	${ASHES_SOURCE_DIR}/source/ashes/common/*.cpp
 )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
-	${ASHES_SOURCE_DIR}/include/ashes/${PROJECT_NAME}/*.h
-	${ASHES_SOURCE_DIR}/include/ashes/${PROJECT_NAME}/*.hh
-	${ASHES_SOURCE_DIR}/include/ashes/${PROJECT_NAME}/*.hpp
-	${ASHES_SOURCE_DIR}/include/ashes/${PROJECT_NAME}/*.inl
-	${ASHES_SOURCE_DIR}/include/ashes/${PROJECT_NAME}/*.inc
-	${ASHES_SOURCE_DIR}/source/ashes/${PROJECT_NAME}/*.h
-	${ASHES_SOURCE_DIR}/source/ashes/${PROJECT_NAME}/*.hh
-	${ASHES_SOURCE_DIR}/source/ashes/${PROJECT_NAME}/*.hpp
-	${ASHES_SOURCE_DIR}/source/ashes/${PROJECT_NAME}/*.inl
-	${ASHES_SOURCE_DIR}/source/ashes/${PROJECT_NAME}/*.inc
+	${ASHES_SOURCE_DIR}/include/ashes/common/*.h
+	${ASHES_SOURCE_DIR}/include/ashes/common/*.hh
+	${ASHES_SOURCE_DIR}/include/ashes/common/*.hpp
+	${ASHES_SOURCE_DIR}/include/ashes/common/*.inl
+	${ASHES_SOURCE_DIR}/include/ashes/common/*.inc
+	${ASHES_SOURCE_DIR}/source/ashes/common/*.h
+	${ASHES_SOURCE_DIR}/source/ashes/common/*.hh
+	${ASHES_SOURCE_DIR}/source/ashes/common/*.hpp
+	${ASHES_SOURCE_DIR}/source/ashes/common/*.inl
+	${ASHES_SOURCE_DIR}/source/ashes/common/*.inc
 )
 
 add_library( ${PROJECT_NAME} STATIC
@@ -40,10 +40,14 @@ add_library( ${PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES}
 	${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
 )
+add_library( ashes::common
+	ALIAS
+	${PROJECT_NAME}
+)
 target_link_libraries( ${PROJECT_NAME} PUBLIC
 	${BinLibraries}
 )
-target_include_directories( ${PROJECT_NAME} PUBLIC
+target_include_directories( ${PROJECT_NAME} PRIVATE
 	${TARGET_INCLUDE_DIRS}
 )
 target_compile_features( ${PROJECT_NAME} PUBLIC
@@ -65,35 +69,7 @@ parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes Win32 "Win32" )
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes Linux "Linux" )
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes MacOS "MacOS" )
 
-#We install each lib in <install_dir>/lib folder
-install(
-	TARGETS ${PROJECT_NAME}
-	COMPONENT ${PROJECT_NAME}
-	CONFIGURATIONS Release
-	EXPORT ${PROJECT_NAME}
-	RUNTIME DESTINATION bin
-	ARCHIVE DESTINATION lib
-	LIBRARY DESTINATION lib
-)
-install(
-	TARGETS ${PROJECT_NAME}
-	COMPONENT ${PROJECT_NAME}_dev
-	CONFIGURATIONS RelWithDebInfo
-	EXPORT ${PROJECT_NAME}
-	RUNTIME DESTINATION bin/RelWithDebInfo
-	ARCHIVE DESTINATION lib/RelWithDebInfo
-	LIBRARY DESTINATION lib/RelWithDebInfo
-)
-install(
-	TARGETS ${PROJECT_NAME}
-	COMPONENT ${PROJECT_NAME}_dev
-	CONFIGURATIONS Debug
-	EXPORT ${PROJECT_NAME}
-	RUNTIME DESTINATION bin/Debug
-	ARCHIVE DESTINATION lib/Debug
-	LIBRARY DESTINATION lib/Debug
-)
 target_install_dir_headers( ${PROJECT_NAME}
-	${ASHES_SOURCE_DIR}/include/ashes/${PROJECT_NAME}
-	ashes/${PROJECT_NAME}
+	${ASHES_SOURCE_DIR}/include/ashes/common
+	ashes/common
 )
