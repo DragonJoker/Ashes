@@ -307,9 +307,9 @@ namespace utils
 	{
 		try
 		{
-			auto res = queue.present( { *m_swapChain }
-				, ashes::UInt32Array{ size_t( 1u ), resources.getImageIndex() }
-				, { resources.getRenderingFinishedSemaphore() } );
+			auto res = queue.present( *m_swapChain
+				, resources.getImageIndex()
+				, resources.getRenderingFinishedSemaphore() );
 		}
 		catch ( ashes::Exception & exc )
 		{

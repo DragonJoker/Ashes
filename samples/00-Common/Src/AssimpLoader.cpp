@@ -31,7 +31,6 @@ namespace common
 
 			if ( name.length > 0 )
 			{
-				folder;
 				std::string path = name.C_Str();
 				auto index = 0u;
 				utils::replace( path, R"(\)", "/" );

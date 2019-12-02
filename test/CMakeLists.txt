@@ -6,7 +6,14 @@ set( TARGET_INCLUDE_DIRS
 
 if ( ASHES_BUILD_TESTS )
 	find_package( wxWidgets COMPONENTS core base )
-	if( APPLE OR WIN32 )
+	if( APPLE )
+		set( GTK2_FOUND TRUE )
+		set( BinLibraries
+			${BinLibraries}
+			"-framework AppKit"
+			"-framework QuartzCore"
+		)
+	elseif( WIN32 )
 		set( GTK2_FOUND TRUE )
 	else ()
 		find_package( GTK2 )
