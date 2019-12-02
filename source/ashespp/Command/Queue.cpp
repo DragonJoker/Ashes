@@ -35,8 +35,10 @@ namespace ashes
 		, uint32_t imageIndex
 		, Semaphore const & semaphoreToWait )const
 	{
+		UInt32Array indices;
+		indices.push_back( imageIndex );
 		return present( SwapChainCRefArray{ { std::ref( swapChain ) } }
-			, UInt32Array{ size_t( 1u ), imageIndex }
+			, indices
 			, SemaphoreCRefArray{ { std::ref( semaphoreToWait ) } } ).front();
 	}
 

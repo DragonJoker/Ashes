@@ -421,9 +421,9 @@ namespace vkapp
 
 			try
 			{
-				auto res = m_presentQueue->present( { *m_swapChain }
-					, { resources->imageIndex }
-					, { *resources->finishedRenderingSemaphore } );
+				auto res = m_presentQueue->present( *m_swapChain
+					, resources->imageIndex
+					, *resources->finishedRenderingSemaphore );
 			}
 			catch ( ashes::Exception & exc )
 			{
@@ -477,9 +477,9 @@ namespace vkapp
 	{
 		try
 		{
-			auto res = m_presentQueue->present( ashes::SwapChainCRefArray{ { std::ref( *m_swapChain ) } }
-				, ashes::UInt32Array{ { resources.imageIndex } }
-				, ashes::SemaphoreCRefArray{ { std::ref( *resources.finishedRenderingSemaphore ) } } );
+			auto res = m_presentQueue->present( *m_swapChain
+				, resources.imageIndex
+				, *resources.finishedRenderingSemaphore );
 		}
 		catch ( ashes::Exception & exc )
 		{

@@ -4,14 +4,34 @@ set( ${PROJECT_NAME}_VERSION_MAJOR 0 )
 set( ${PROJECT_NAME}_VERSION_MINOR 1 )
 set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 
-file( GLOB SOURCE_FILES
-	Src/*.cpp
+set( SOURCE_FILES
+	Src/Application.cpp
+	Src/Camera.cpp
+	Src/FileUtils.cpp
+	Src/MainFrame.cpp
+	Src/ObjLoader.cpp
+	Src/Prerequisites.cpp
 )
 
 file( GLOB HEADER_FILES
-	Src/*.hpp
-	Src/*.inl
+	Src/Application.hpp
+	Src/Camera.hpp
+	Src/FileUtils.hpp
+	Src/MainFrame.hpp
+	Src/ObjLoader.hpp
+	Src/Prerequisites.hpp
 )
+
+if ( APPLE )
+	set( SOURCE_FILES
+		${SOURCE_FILES}
+		Src/MetalLayer.mm
+	)
+	set( HEADER_FILES
+		${HEADER_FILES}
+		Src/MetalLayer.h
+	)
+endif ()
 
 add_library( ${PROJECT_NAME} STATIC
 	${SOURCE_FILES}

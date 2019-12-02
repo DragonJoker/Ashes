@@ -15,6 +15,7 @@ namespace common
 			, ashes::Queue const & queue
 			, ashes::CommandPool const & commandPool
 			, VkExtent2D const & size );
+		~Gui();
 		void updateView( ashes::ImageView colourView );
 		void update();
 		void resize( VkExtent2D const & size );
@@ -73,5 +74,7 @@ namespace common
 		ashes::ImagePtr m_fontImage;
 		ashes::ImageView m_fontView;
 		ashes::SamplerPtr m_sampler;
+
+		ImGuiContext * m_context;
 	};
 }

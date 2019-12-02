@@ -10,6 +10,8 @@
 #	include <gtk/gtk.h>
 #elif defined( __WXMSW__ )
 #	include <wx/msw/private.h>
+#elif defined( __WXOSX_COCOA__ )
+#	include "MetalLayer.h"
 #endif
 
 #if defined( near )
@@ -31,7 +33,9 @@ namespace common
 
 #elif defined( __WXOSX_COCOA__ )
 
-		return ashes::WindowHandle{ std::make_unique< ashes::IMacOsWindowHandle >( window.GetHandle() ) };
+		auto handle = window.GetHandle();
+		makeViewMetalCompatible( handle );
+		return ashes::WindowHandle{ std::make_unique< ashes::IMacOsWindowHandle >( handle ) };
 
 #else
 
