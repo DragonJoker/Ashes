@@ -84,8 +84,8 @@ namespace ashes::gl
 			, std::string & name
 			, std::vector< VkDisplayModeParametersKHR > & displayModesParams )
 		{
-			DISPLAY_DEVICE displayDevice{};
-			displayDevice.cb = sizeof( DISPLAY_DEVICE );
+			DISPLAY_DEVICEA displayDevice{};
+			displayDevice.cb = sizeof( DISPLAY_DEVICEA );
 
 			if ( ::EnumDisplayDevicesA( nullptr, index, &displayDevice, EDD_GET_DEVICE_INTERFACE_NAME ) )
 			{
