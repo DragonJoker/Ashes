@@ -57,7 +57,7 @@ namespace ashes::gl4
 		: m_flags{ createInfo.flags }
 		, m_enabledLayerNames{ convert( createInfo.ppEnabledLayerNames, createInfo.enabledLayerCount ) }
 		, m_enabledExtensions{ convert( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) }
-		, m_window{ new gl::RenderWindow( MinMajor, MinMinor ) }
+		, m_window{ new gl::RenderWindow( MinMajor, MinMinor, "Gl4Instance" ) }
 	{
 		m_extensions.initialise( MinMajor, MinMinor, MaxMajor, MaxMinor );
 		m_features = m_extensions.getFeatures();

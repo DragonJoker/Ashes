@@ -17,7 +17,7 @@ namespace ashes::gl4
 		, m_format{ get( image )->getFormat() }
 		, m_components{}
 		, m_subresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0u, 1u, 0u, 1u }
-		, m_target{ convertViewType( getType(), 1u, get( image )->getSamples() ) }
+		, m_target{ convertViewType( getType(), 1u, get( m_image )->getSamples() ) }
 	{
 	}
 
@@ -30,7 +30,7 @@ namespace ashes::gl4
 		, m_format{ createInfo.format }
 		, m_components{ createInfo.components }
 		, m_subresourceRange{ createInfo.subresourceRange }
-		, m_target{ convertViewType( getType(), m_subresourceRange.layerCount, get( createInfo.image )->getSamples() ) }
+		, m_target{ convertViewType( getType(), m_subresourceRange.layerCount, get( m_image )->getSamples() ) }
 	{
 		// Non initialised textures come from back buffers, ignore them
 		if ( get( createInfo.image )->hasInternal() )
