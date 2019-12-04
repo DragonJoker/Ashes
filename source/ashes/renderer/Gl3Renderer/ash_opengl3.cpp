@@ -3950,7 +3950,7 @@ namespace ashes::gl3
 
 				try
 				{
-					gl::RenderWindow window{ MinMajor, MinMinor };
+					gl::RenderWindow window{ MinMajor, MinMinor, "Gl3Init" };
 					extensions.initialise( MinMajor, MinMinor, MaxMajor, MaxMinor );
 					supported = extensions.getMajor() > MinMajor
 						|| ( extensions.getMajor() == MinMajor && extensions.getMinor() >= MinMinor );

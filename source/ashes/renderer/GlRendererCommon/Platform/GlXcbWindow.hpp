@@ -15,7 +15,9 @@ namespace ashes::gl
 	class RenderWindow
 	{
 	private:
-		RenderWindow( int major, int minor );
+		RenderWindow( int major
+			, int minor
+			, std::string const & name );
 		~RenderWindow();
 
 	public:
