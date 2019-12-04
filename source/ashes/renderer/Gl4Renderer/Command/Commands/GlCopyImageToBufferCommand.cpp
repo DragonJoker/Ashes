@@ -37,6 +37,7 @@ namespace ashes::gl4
 			}
 
 			VkImageViewCreateInfo createInfo{ VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, nullptr, 0u };
+			createInfo.image = texture;
 			createInfo.viewType = viewType;
 			createInfo.format = get( texture )->getFormat();
 			createInfo.subresourceRange.aspectMask = getAspectMask( createInfo.format );
