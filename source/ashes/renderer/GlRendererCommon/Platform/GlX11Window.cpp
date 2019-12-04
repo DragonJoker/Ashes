@@ -14,8 +14,11 @@ See LICENSE file in root folder
 
 namespace ashes::gl
 {
-	RenderWindow::RenderWindow( int reqMajor, int reqMinor )
+	RenderWindow::RenderWindow( int reqMajor
+		, int reqMinor
+		, std::string const & name )
 	{
+		std::string fullName = "DummyWindow" + name;
 		try
 		{
 			m_display = XOpenDisplay( NULL );
@@ -113,7 +116,7 @@ namespace ashes::gl
 				throw std::runtime_error{ "Couldn't create X Window" };
 			}
 
-			XStoreName( m_display, m_window, "DummyWindow" );
+			XStoreName( m_display, m_window, fullName.c_str() );
 			XSync( m_display, False );
 
 #if ASHES_USE_XLIB_EGL

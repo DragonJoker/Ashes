@@ -17,7 +17,9 @@ namespace ashes::gl
 	class RenderWindow
 	{
 	public:
-		RenderWindow( int major, int minor );
+		RenderWindow( int major
+			, int minor
+			, std::string const & name );
 		~RenderWindow();
 		VkWin32SurfaceCreateInfoKHR getCreateInfo()const;
 

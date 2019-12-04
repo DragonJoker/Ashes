@@ -8,19 +8,22 @@ See LICENSE file in root folder
 
 namespace ashes::gl
 {
-	RenderWindow::RenderWindow( int major, int minor ) try
+	RenderWindow::RenderWindow( int major
+		, int minor
+		, std::string const & name ) try
 	{
+		std::string fullName = "DummyWindow" + name;
 		m_hInstance = ::GetModuleHandleA( nullptr );
 		WNDCLASSA wc{};
 		wc.lpfnWndProc = RenderWindow::WndProc;
 		wc.hInstance = m_hInstance;
 		wc.hbrBackground = ( HBRUSH )( COLOR_BACKGROUND );
-		wc.lpszClassName = "DummyWindow";
+		wc.lpszClassName = fullName.c_str();
 		wc.style = CS_OWNDC;
 		RegisterClassA( &wc );
 		m_hWnd = ::CreateWindowExA( 0L
 			, wc.lpszClassName
-			, "DummyWindow"
+			, fullName.c_str()
 			, WS_OVERLAPPEDWINDOW
 			, 0
 			, 0

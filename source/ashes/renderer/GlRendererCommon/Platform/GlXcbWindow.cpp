@@ -19,10 +19,13 @@ namespace ashes::gl
 		return result;
 	}
 
-	RenderWindow::RenderWindow( int major, int minor )
+	RenderWindow::RenderWindow( int major
+		, int minor
+		, std::string const & name )
 	{
 		try
 		{
+			std::string fullName = "DummyWindow" + name;
 			m_display = XOpenDisplay( nullptr );
 
 			if ( !m_display )
