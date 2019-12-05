@@ -36,6 +36,12 @@ namespace ashes::gl4
 			// Can happen in case of secondary command buffers
 			stack.apply( list, glpipeline->getRtotContextState() );
 			program = glpipeline->getRtotProgram();
+
+			if ( !glpipeline->getViewports().empty() )
+			{
+				stack.setRenderArea( { uint32_t( glpipeline->getViewports().begin()->width )
+					, uint32_t( glpipeline->getViewports().begin()->height ) } );
+			}
 		}
 		else if ( !get( stack.getCurrentFramebuffer() )->hasSwapchainImage() )
 		{
