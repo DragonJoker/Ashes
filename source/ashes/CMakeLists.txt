@@ -66,7 +66,7 @@ target_include_directories( ${PROJECT_NAME}
 		${ASHES_CONFIG_DIR}/source
 		${ASHES_CONFIG_DIR}/source/${PROJECT_NAME}
 )
-target_link_libraries( ${PROJECT_NAME} PRIVATE
+target_link_libraries( ${PROJECT_NAME} PUBLIC
 	ashes::common
 )
 target_compile_definitions( ${PROJECT_NAME} PRIVATE
