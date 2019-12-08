@@ -7,6 +7,7 @@ See LICENSE file in root folder.
 #endif
 
 #if defined( CreateEvent )
+#	define OldCreateEvent 1
 #	undef CreateEvent
 #endif
 
@@ -602,3 +603,11 @@ See LICENSE file in root folder.
 
 #undef VK_LIB_DEVICE_FUNCTION_EXT
 #undef VK_LIB_DEVICE_FUNCTION
+
+#if defined( OldCreateEvent )
+#	if defined( _UNICODE )
+#		define CreateEvent CreateEventW
+#	else
+#		define CreateEvent CreateEventA
+#	endif
+#endif

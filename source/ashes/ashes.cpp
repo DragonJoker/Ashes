@@ -2,6 +2,10 @@
 
 #include <algorithm>
 
+#if defined( CreateEvent )
+#	undef CreateEvent
+#endif
+
 PluginLibrary g_library;
 
 namespace details
