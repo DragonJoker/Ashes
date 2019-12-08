@@ -91,19 +91,18 @@ namespace ashes
 
 	CommandBuffer::CommandBuffer( Device const & device
 		, CommandPool const & pool
-		, bool primary )
+		, VkCommandBufferLevel level )
 		: m_device{ device }
 		, m_pool{ pool }
 	{
+		uint32_t const commandBufferCount = 1u;
 		VkCommandBufferAllocateInfo cmdAllocInfo
 		{
 			VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
 			nullptr,
-			m_pool,                                   // commandPool
-			primary                                   // level
-			? VK_COMMAND_BUFFER_LEVEL_PRIMARY
-			: VK_COMMAND_BUFFER_LEVEL_SECONDARY,
-			1                                         // commandBufferCount
+			m_pool,
+			level,
+			commandBufferCount,
 		};
 		DEBUG_DUMP( cmdAllocInfo );
 		auto res = m_device.vkAllocateCommandBuffers( m_device
