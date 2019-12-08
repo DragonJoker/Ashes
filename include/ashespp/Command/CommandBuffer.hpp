@@ -28,12 +28,12 @@ namespace ashes
 		*	The logical device.
 		*\param[in] pool
 		*	The parent command buffer pool.
-		*\param[in] primary
-		*	Tells if the command buffer is primary (\p true) or not (\p false).
+		*\param[in] level
+		*	The Vulkan command buffer level.
 		*/
 		CommandBuffer( Device const & device
 			, CommandPool const & pool
-			, bool primary = true );
+			, VkCommandBufferLevel level = VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		/**
 		*\brief
 		*	Destructor.
