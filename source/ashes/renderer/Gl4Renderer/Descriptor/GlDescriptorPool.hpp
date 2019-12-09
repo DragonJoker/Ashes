@@ -13,6 +13,7 @@
 namespace ashes::gl4
 {
 	class DescriptorPool
+		: public AutoIdIcdObject< DescriptorPool >
 	{
 	public:
 		DescriptorPool( VkDevice device

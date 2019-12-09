@@ -24,6 +24,7 @@ namespace ashes::gl4
 	*	Un pipeline de rendu.
 	*/
 	class Pipeline
+		: public AutoIdIcdObject< Pipeline >
 	{
 	public:
 		/**

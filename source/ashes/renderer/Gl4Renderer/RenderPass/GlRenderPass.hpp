@@ -9,6 +9,7 @@ See LICENSE file in root folder.
 namespace ashes::gl4
 {
 	class RenderPass
+		: public AutoIdIcdObject< RenderPass >
 	{
 	public:
 		RenderPass( VkDevice device

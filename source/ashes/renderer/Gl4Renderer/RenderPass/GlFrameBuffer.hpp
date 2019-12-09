@@ -19,6 +19,7 @@ namespace ashes::gl4
 	void checkCompleteness( GLenum status );
 
 	class Framebuffer
+		: public IcdObject
 	{
 	public:
 		Framebuffer( VkDevice device
@@ -35,11 +36,7 @@ namespace ashes::gl4
 		bool hasOnlySwapchainImage()const;
 		bool hasSwapchainImage()const;
 
-		inline GLuint getInternal()const
-		{
-			assert( m_internal != GL_INVALID_INDEX );
-			return m_internal;
-		}
+		using IcdObject::getInternal;
 		
 		inline GLuint & getInternal()
 		{
@@ -131,7 +128,6 @@ namespace ashes::gl4
 		VkImageViewArray m_attachments;
 		VkExtent2D m_dimensions;
 		uint32_t m_layers;
-		GLuint m_internal{ GL_INVALID_INDEX };
 		FboAttachmentArray m_allAttaches;
 		FboAttachmentArray m_allColourAttaches;
 		FboAttachmentArray m_colourAttaches;

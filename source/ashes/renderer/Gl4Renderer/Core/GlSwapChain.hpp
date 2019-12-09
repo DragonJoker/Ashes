@@ -11,6 +11,7 @@
 namespace ashes::gl4
 {
 	class SwapchainKHR
+		: public IcdObject
 	{
 	public:
 		SwapchainKHR( VkDevice device
@@ -32,6 +33,5 @@ namespace ashes::gl4
 		VkImage m_image;
 		VkDeviceMemory m_deviceMemory;
 		VkImageView m_view;
-		GLuint m_fbo;
 	};
 }

@@ -9,6 +9,7 @@ See LICENSE file in root folder
 namespace ashes::gl4
 {
 	class PhysicalDevice
+		: public AutoIdIcdObject< PhysicalDevice >
 	{
 	public:
 		PhysicalDevice( VkInstance instance );

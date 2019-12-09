@@ -827,6 +827,7 @@ namespace ashes::gl4
 					, m_data.size() );
 			}
 
+			m_internal = m_impl->getBuffer();
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )
@@ -853,7 +854,7 @@ namespace ashes::gl4
 				, image
 				, memoryOffset );
 			get( image )->setMemory( get( this ) );
-			m_buffer = m_impl->getBuffer();
+			m_internal = m_impl->getBuffer();
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )

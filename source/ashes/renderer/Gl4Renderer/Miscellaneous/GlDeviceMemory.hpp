@@ -11,6 +11,7 @@ See LICENSE file in root folder
 namespace ashes::gl4
 {
 	class DeviceMemory
+		: public IcdObject
 	{
 	public:
 		class DeviceMemoryImpl
@@ -117,7 +118,6 @@ namespace ashes::gl4
 		VkMemoryPropertyFlags m_flags;
 		GlMemoryMapFlags m_mapFlags;
 		std::unique_ptr< DeviceMemoryImpl > m_impl;
-		GLuint m_buffer{ GL_INVALID_INDEX };
 		mutable bool m_dirty = true;
 		mutable bool m_mapped = false;
 		mutable VkDeviceSize m_mappedOffset;
