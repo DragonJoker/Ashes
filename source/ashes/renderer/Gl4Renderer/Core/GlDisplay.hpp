@@ -9,6 +9,7 @@ See LICENSE file in root folder
 namespace ashes::gl4
 {
 	class DisplayKHR
+		: public AutoIdIcdObject< DisplayKHR >
 	{
 	public:
 		DisplayKHR( VkDisplayPropertiesKHR const & properties

@@ -198,8 +198,8 @@ namespace ashes::gl4
 	Framebuffer::Framebuffer( VkDevice device
 		, GLuint name )
 		: m_device{ device }
-		, m_internal{ name }
 	{
+		m_internal = name;
 	}
 
 	Framebuffer::~Framebuffer()

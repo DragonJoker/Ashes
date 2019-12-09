@@ -9,6 +9,7 @@ See LICENSE file in root folder
 namespace ashes::gl4
 {
 	class QueryPool
+		: public AutoIdIcdObject< QueryPool >
 	{
 	public:
 		QueryPool( VkDevice device

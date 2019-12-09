@@ -13,6 +13,7 @@
 namespace ashes::gl4
 {
 	class BufferView
+		: public IcdObject
 	{
 	public:
 		BufferView( VkDevice device
@@ -21,7 +22,7 @@ namespace ashes::gl4
 
 		inline GLuint getImage()const
 		{
-			return m_name;
+			return getInternal();
 		}
 
 	private:
@@ -29,7 +30,6 @@ namespace ashes::gl4
 		VkFormat m_format;
 		VkDeviceSize m_offset;
 		VkDeviceSize m_range;
-		GLuint m_name{ GL_INVALID_INDEX };
 	};
 }
 

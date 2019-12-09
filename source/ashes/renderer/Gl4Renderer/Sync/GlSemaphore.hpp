@@ -9,16 +9,9 @@ See LICENSE file in root folder.
 namespace ashes::gl4
 {
 	class Semaphore
+		: public AutoIdIcdObject< Semaphore >
 	{
 	public:
 		explicit Semaphore( VkDevice device );
-
-		inline GLuint getSemaphore()const
-		{
-			return m_semaphore;
-		}
-
-	private:
-		GLuint m_semaphore;
 	};
 }

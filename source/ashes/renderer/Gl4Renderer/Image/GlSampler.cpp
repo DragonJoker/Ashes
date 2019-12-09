@@ -14,44 +14,44 @@ namespace ashes::gl4
 		glLogCall( context
 			, glGenSamplers
 			, 1
-			, &m_sampler );
+			, &m_internal );
 		glLogCall( context
 			, glBindSampler
 			, 0u
-			, m_sampler );
+			, m_internal );
 		glLogCall( context
 			, glSamplerParameteri
-			, m_sampler
+			, m_internal
 			, GL_SAMPLER_PARAMETER_MIN_FILTER
 			, convert( createInfo.minFilter, createInfo.mipmapMode, createInfo.minLod, createInfo.maxLod ) );
 		glLogCall( context
 			, glSamplerParameteri
-			, m_sampler
+			, m_internal
 			, GL_SAMPLER_PARAMETER_MAG_FILTER
 			, convert( createInfo.magFilter ) );
 		glLogCall( context
 			, glSamplerParameteri
-			, m_sampler
+			, m_internal
 			, GL_SAMPLER_PARAMETER_WRAP_S
 			, convert( createInfo.addressModeU ) );
 		glLogCall( context
 			, glSamplerParameteri
-			, m_sampler
+			, m_internal
 			, GL_SAMPLER_PARAMETER_WRAP_T
 			, convert( createInfo.addressModeV ) );
 		glLogCall( context
 			, glSamplerParameteri
-			, m_sampler
+			, m_internal
 			, GL_SAMPLER_PARAMETER_WRAP_R
 			, convert( createInfo.addressModeW ) );
 		glLogCall( context
 			, glSamplerParameterf
-			, m_sampler
+			, m_internal
 			, GL_SAMPLER_PARAMETER_MIN_LOD
 			, createInfo.minLod );
 		glLogCall( context
 			, glSamplerParameterf
-			, m_sampler
+			, m_internal
 			, GL_SAMPLER_PARAMETER_MAX_LOD
 			, createInfo.maxLod );
 
@@ -59,7 +59,7 @@ namespace ashes::gl4
 		{
 			glLogCall( context
 				, glSamplerParameterf
-				, m_sampler
+				, m_internal
 				, GL_SAMPLER_PARAMETER_MAX_ANISOTROPY
 				, createInfo.maxAnisotropy );
 		}
@@ -68,12 +68,12 @@ namespace ashes::gl4
 		{
 			glLogCall( context
 				, glSamplerParameteri
-				, m_sampler
+				, m_internal
 				, GL_SAMPLER_PARAMETER_COMPARE_MODE
 				, GL_SAMPLER_PARAMETER_COMPARE_REF_TO_TEXTURE );
 			glLogCall( context
 				, glSamplerParameteri
-				, m_sampler
+				, m_internal
 				, GL_SAMPLER_PARAMETER_COMPARE_FUNC
 				, convert( createInfo.compareOp ) );
 		}
@@ -86,7 +86,7 @@ namespace ashes::gl4
 		case VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK:
 			glLogCall( context
 				, glSamplerParameterfv
-				, m_sampler
+				, m_internal
 				, GL_SAMPLER_PARAMETER_BORDER_COLOR
 				, fvalues );
 			break;
@@ -94,7 +94,7 @@ namespace ashes::gl4
 		case VK_BORDER_COLOR_INT_TRANSPARENT_BLACK:
 			glLogCall( context
 				, glSamplerParameteriv
-				, m_sampler
+				, m_internal
 				, GL_SAMPLER_PARAMETER_BORDER_COLOR
 				, ivalues );
 			break;
@@ -103,7 +103,7 @@ namespace ashes::gl4
 			fvalues[3] = 1.0f;
 			glLogCall( context
 				, glSamplerParameterfv
-				, m_sampler
+				, m_internal
 				, GL_SAMPLER_PARAMETER_BORDER_COLOR
 				, fvalues );
 			break;
@@ -112,7 +112,7 @@ namespace ashes::gl4
 			ivalues[3] = 255;
 			glLogCall( context
 				, glSamplerParameteriv
-				, m_sampler
+				, m_internal
 				, GL_SAMPLER_PARAMETER_BORDER_COLOR
 				, ivalues );
 			break;
@@ -124,7 +124,7 @@ namespace ashes::gl4
 			fvalues[3] = 1.0f;
 			glLogCall( context
 				, glSamplerParameterfv
-				, m_sampler
+				, m_internal
 				, GL_SAMPLER_PARAMETER_BORDER_COLOR
 				, fvalues );
 			break;
@@ -136,7 +136,7 @@ namespace ashes::gl4
 			ivalues[3] = 255;
 			glLogCall( context
 				, glSamplerParameteriv
-				, m_sampler
+				, m_internal
 				, GL_SAMPLER_PARAMETER_BORDER_COLOR
 				, ivalues );
 			break;
@@ -149,6 +149,6 @@ namespace ashes::gl4
 		glLogCall( context
 			, glDeleteSamplers
 			, 1
-			, &m_sampler );
+			, &m_internal );
 	}
 }

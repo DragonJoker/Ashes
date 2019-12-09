@@ -39,10 +39,10 @@ namespace ashes::gl4
 			glLogCall( context
 				, glGenTextures
 				, 1
-				, &m_texture );
+				, &m_internal );
 			glLogCall( context
 				, glTextureView
-				, m_texture
+				, m_internal
 				, m_target
 				, get( createInfo.image )->getInternal()
 				, getInternalFormat( getFormat() )
@@ -53,7 +53,7 @@ namespace ashes::gl4
 			glLogCall( context
 				, glBindTexture
 				, m_target
-				, m_texture );
+				, m_internal );
 
 			if ( getComponents().r != VK_COMPONENT_SWIZZLE_IDENTITY )
 			{
@@ -116,12 +116,6 @@ namespace ashes::gl4
 		glLogCall( context
 			, glDeleteTextures
 			, 1
-			, &m_texture );
-	}
-
-	GLuint ImageView::getInternal()const noexcept
-	{
-		assert( m_texture != GL_INVALID_INDEX );
-		return m_texture;
+			, &m_internal );
 	}
 }

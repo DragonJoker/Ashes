@@ -18,14 +18,14 @@ namespace ashes::gl4
 		glLogCall( context
 			, glGenTextures
 			, 1
-			, &m_name );
+			, &m_internal );
 		glLogCall( context
 			, glActiveTexture
 			, GL_TEXTURE0 );
 		glLogCall( context
 			, glBindTexture
 			, GL_BUFFER_TARGET_TEXTURE
-			, m_name );
+			, m_internal );
 		glLogCall( context
 			, glTexBufferRange
 			, GL_BUFFER_TARGET_TEXTURE
@@ -45,6 +45,6 @@ namespace ashes::gl4
 		glLogCall( context
 			, glDeleteTextures
 			, 1
-			, &m_name );
+			, &m_internal );
 	}
 }

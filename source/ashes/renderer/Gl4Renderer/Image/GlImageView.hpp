@@ -14,6 +14,7 @@
 namespace ashes::gl4
 {
 	class ImageView
+		: public IcdObject
 	{
 	public:
 		ImageView( VkDevice device
@@ -21,8 +22,6 @@ namespace ashes::gl4
 		ImageView( VkDevice device
 			, VkImageViewCreateInfo createInfo );
 		~ImageView();
-
-		GLuint getInternal()const noexcept;
 
 		inline VkImageViewType getType()const noexcept
 		{
@@ -58,7 +57,6 @@ namespace ashes::gl4
 		VkComponentMapping m_components;
 		VkImageSubresourceRange m_subresourceRange;
 		GlTextureViewType m_target;
-		GLuint m_texture{ GL_INVALID_INDEX };
 	};
 }
 
