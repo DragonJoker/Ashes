@@ -1026,7 +1026,7 @@ namespace vkapp
 					*m_passes.hi.renderPass,
 				} );
 
-			hi.commandBuffer = m_commandPool->createCommandBuffer( true );
+			hi.commandBuffer = m_commandPool->createCommandBuffer();
 			auto & cmd = *hi.commandBuffer;
 
 			cmd.begin();
@@ -1196,7 +1196,7 @@ namespace vkapp
 					*m_passes.blurX.renderPass,
 				} );
 
-			blur.commandBuffer = m_commandPool->createCommandBuffer( true );
+			blur.commandBuffer = m_commandPool->createCommandBuffer();
 			auto & cmd = *blur.commandBuffer;
 
 			cmd.begin();
@@ -1325,7 +1325,7 @@ namespace vkapp
 					*m_passes.blurY.renderPass,
 				} );
 
-			blur.commandBuffer = m_commandPool->createCommandBuffer( true );
+			blur.commandBuffer = m_commandPool->createCommandBuffer();
 			auto & cmd = *blur.commandBuffer;
 
 			cmd.begin();
@@ -1493,7 +1493,7 @@ namespace vkapp
 					*m_passes.combine.renderPass,
 				} );
 
-			combine.commandBuffer = m_commandPool->createCommandBuffer( true );
+			combine.commandBuffer = m_commandPool->createCommandBuffer();
 			auto & cmd = *combine.commandBuffer;
 
 			cmd.begin();
