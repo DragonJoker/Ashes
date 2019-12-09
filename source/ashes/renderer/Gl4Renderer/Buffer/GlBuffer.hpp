@@ -14,6 +14,7 @@
 namespace ashes::gl4
 {
 	class Buffer
+		: public IcdObject
 	{
 		friend class DeviceMemory;
 
@@ -24,12 +25,6 @@ namespace ashes::gl4
 
 		VkMemoryRequirements getMemoryRequirements()const;
 		bool isMapped()const;
-
-		inline GLuint getInternal()const
-		{
-			assert( m_internal != GL_INVALID_INDEX );
-			return m_internal;
-		}
 
 		inline VkDeviceSize getInternalOffset()const
 		{
@@ -64,7 +59,6 @@ namespace ashes::gl4
 		VkDevice m_device;
 		UInt32Array m_queueFamilyIndices;
 		VkBufferCreateInfo m_createInfo;
-		GLuint m_internal{ GL_INVALID_INDEX };
 		VkDeviceSize m_internalOffset{ 0u };
 		GlBufferTarget m_target;
 		VkDeviceMemory m_memory{ VK_NULL_HANDLE };

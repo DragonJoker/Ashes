@@ -14,6 +14,7 @@
 namespace ashes::gl4
 {
 	class Image
+		: public IcdObject
 	{
 	public:
 		Image( VkDevice device
@@ -27,17 +28,6 @@ namespace ashes::gl4
 
 		VkMemoryRequirements getMemoryRequirements()const;
 		std::vector< VkSparseImageMemoryRequirements > getSparseImageMemoryRequirements()const;
-
-		inline bool hasInternal()const noexcept
-		{
-			return m_internal != GL_INVALID_INDEX;
-		}
-
-		inline GLuint getInternal()const noexcept
-		{
-			assert( hasInternal() );
-			return m_internal;
-		}
 
 		inline GlTextureType getTarget()const noexcept
 		{
@@ -111,7 +101,6 @@ namespace ashes::gl4
 		VkSharingMode m_sharingMode;
 		UInt32Array m_queueFamilyIndices;
 		GlTextureType m_target;
-		GLuint m_internal{ GL_INVALID_INDEX };
 		bool m_swapchainImage{ false };
 		VkDeviceMemory m_memory{ nullptr };
 		VkMemoryRequirements m_memoryRequirements;

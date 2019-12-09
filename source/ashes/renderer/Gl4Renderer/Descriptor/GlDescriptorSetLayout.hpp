@@ -13,6 +13,7 @@
 namespace ashes::gl4
 {
 	class DescriptorSetLayout
+		: public AutoIdIcdObject< SurfaceKHR >
 	{
 	public:
 		DescriptorSetLayout( VkDevice device

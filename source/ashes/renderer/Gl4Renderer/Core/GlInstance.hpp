@@ -17,6 +17,7 @@ namespace ashes::gl4
 	class RenderWindow;
 
 	class Instance
+		: public AutoIdIcdObject< Instance >
 	{
 	public:
 		Instance( VkInstanceCreateInfo createInfo );

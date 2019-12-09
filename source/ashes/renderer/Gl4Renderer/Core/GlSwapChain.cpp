@@ -78,11 +78,11 @@ namespace ashes::gl4
 		glLogCall( context
 			, glGenFramebuffers
 			, 1
-			, &m_fbo );
+			, &m_internal );
 		glLogCall( context
 			, glBindFramebuffer
 			, GL_FRAMEBUFFER
-			, m_fbo );
+			, m_internal );
 		glLogCall( context
 			, glFramebufferTexture2D
 			, GL_FRAMEBUFFER
@@ -104,7 +104,7 @@ namespace ashes::gl4
 			glLogCall( context
 				, glDeleteFramebuffers
 				, 1
-				, &m_fbo );
+				, &m_internal );
 			deallocate( m_view, nullptr );
 			deallocate( m_deviceMemory, nullptr );
 			deallocate( m_image, nullptr );
@@ -147,7 +147,7 @@ namespace ashes::gl4
 		glLogCall( context
 			, glBindFramebuffer
 			, GL_READ_FRAMEBUFFER
-			, m_fbo );
+			, m_internal );
 		glLogCall( context
 			, glFramebufferTexture2D
 			, GL_READ_FRAMEBUFFER

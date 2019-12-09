@@ -13,20 +13,15 @@
 namespace ashes::gl4
 {
 	class Sampler
+		: public IcdObject
 	{
 	public:
 		Sampler( VkDevice device
 			, VkSamplerCreateInfo const & createInfo );
 		~Sampler();
 
-		inline GLuint getInternal()const noexcept
-		{
-			return m_sampler;
-		}
-
 	private:
 		VkDevice m_device;
-		GLuint m_sampler;
 	};
 }
 
