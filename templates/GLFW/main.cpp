@@ -819,7 +819,7 @@ void doCreateCommandBuffers( Application & application )
 
 	for ( auto & commandBuffer : application.commandBuffers )
 	{
-		commandBuffer = application.commandPool->createCommandBuffer( true );
+		commandBuffer = application.commandPool->createCommandBuffer();
 	}
 }
 
