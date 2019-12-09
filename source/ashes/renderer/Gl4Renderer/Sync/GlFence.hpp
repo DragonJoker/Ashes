@@ -9,6 +9,7 @@ See LICENSE file in root folder
 namespace ashes::gl4
 {
 	class Fence
+		: public IcdObject
 	{
 	public:
 		Fence( VkDevice device
@@ -28,7 +29,7 @@ namespace ashes::gl4
 		}
 
 	private:
-		VkDevice m_device;
 		mutable GLsync m_fence{ nullptr };
+		VkDevice m_device;
 	};
 }

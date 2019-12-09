@@ -13,6 +13,7 @@ namespace ashes::gl4
 	*	Emulation d'un pool de commandes, à la manière de Vulkan.
 	*/
 	class CommandPool
+		: public AutoIdIcdObject< CommandPool >
 	{
 	public:
 		/**

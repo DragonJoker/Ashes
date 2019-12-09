@@ -9,11 +9,15 @@
 #define VK_NO_PROTOTYPES
 #include <ashes/ashes.h>
 
+#include <vulkan/vk_icd.h>
+
 #include "renderer/Gl4Renderer/Miscellaneous/GlDebug.hpp"
 #include "renderer/Gl4Renderer/Miscellaneous/OpenGLDefines.hpp"
 
 #include <renderer/RendererCommon/AshesRendererPrerequisites.hpp>
 #include <renderer/RendererCommon/Helper/ConstantFormat.hpp>
+
+#include <renderer/GlRendererCommon/GlAutoIdIcdObject.hpp>
 
 #include <renderer/GlRendererCommon/GlContextState.hpp>
 
@@ -42,6 +46,8 @@ namespace ashes::gl4
 	using gl::ExtensionsHandler;
 	using gl::getFunction;
 	using gl::getBufferOffset;
+	using gl::IcdObject;
+	using gl::AutoIdIcdObject;
 
 #if VK_EXT_debug_utils
 

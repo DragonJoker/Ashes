@@ -9,6 +9,7 @@ See LICENSE file in root folder
 namespace ashes::gl4
 {
 	class SurfaceKHR
+		: public AutoIdIcdObject< SurfaceKHR >
 	{
 	public:
 #if _WIN32

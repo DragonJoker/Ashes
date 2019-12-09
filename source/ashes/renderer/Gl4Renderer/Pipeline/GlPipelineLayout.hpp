@@ -11,6 +11,7 @@ See LICENSE file in root folder
 namespace ashes::gl4
 {
 	class PipelineLayout
+		: public AutoIdIcdObject< PipelineLayout >
 	{
 	public:
 		PipelineLayout( VkDevice device

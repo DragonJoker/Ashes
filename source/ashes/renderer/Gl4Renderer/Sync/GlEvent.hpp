@@ -9,6 +9,7 @@ See LICENSE file in root folder
 namespace ashes::gl4
 {
 	class Event
+		: public AutoIdIcdObject< Event >
 	{
 	public:
 		Event( VkDevice device );

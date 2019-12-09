@@ -10,6 +10,7 @@ See LICENSE file in root folder.
 namespace ashes::gl4
 {
 	class ShaderModule
+		: public AutoIdIcdObject< ShaderModule >
 	{
 	public:
 		ShaderModule( VkDevice device

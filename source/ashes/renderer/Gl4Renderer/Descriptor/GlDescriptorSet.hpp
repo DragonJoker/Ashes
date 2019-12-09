@@ -28,8 +28,8 @@ namespace ashes::gl4
 	using LayoutBindingWritesMap = std::map< uint32_t, LayoutBindingWrites >;
 
 	class DescriptorSet
+		: public AutoIdIcdObject< DescriptorSet >
 	{
-	private:
 	public:
 		DescriptorSet( VkDescriptorPool pool
 			, VkDescriptorSetLayout layout );
