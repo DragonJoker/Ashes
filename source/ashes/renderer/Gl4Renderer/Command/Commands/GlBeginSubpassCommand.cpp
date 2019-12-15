@@ -20,17 +20,9 @@ namespace ashes::gl4
 
 		if ( get( frameBuffer )->getInternal() != GL_INVALID_INDEX )
 		{
-			UInt32Array drawBuffers;
 			auto references = ashes::makeArrayView( subpass.pColorAttachments
 				, subpass.colorAttachmentCount );
-
-			for ( auto & reference : references )
-			{
-				auto & attach = get( renderPass )->getAttachment( reference );
-				drawBuffers.push_back( getAttachmentPoint( attach.format ) + reference.attachment );
-			}
-
-			list.push_back( makeCmd< OpType::eDrawBuffers >( drawBuffers ) );
+			list.push_back( makeCmd< OpType::eDrawBuffers >( get( frameBuffer )->getDrawBuffers( references, list ) ) );
 		}
 	}
 }
