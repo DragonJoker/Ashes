@@ -143,7 +143,6 @@ GL_LIB_FUNCTION( MapBuffer )
 GL_LIB_FUNCTION( MapBufferRange )
 GL_LIB_FUNCTION( MemoryBarrier )
 GL_LIB_FUNCTION( PatchParameteri )
-GL_LIB_FUNCTION( PolygonOffsetClampEXT )
 GL_LIB_FUNCTION( PrimitiveRestartIndex )
 GL_LIB_FUNCTION( ProgramParameteri )
 GL_LIB_FUNCTION( ProgramUniform1fv )
@@ -207,6 +206,19 @@ GL_LIB_FUNCTION_OPT( GetInternalformativ )
 GL_LIB_FUNCTION_OPT( GetInternalformati64v )
 
 #undef GL_LIB_FUNCTION_OPT
+
+#ifndef GL_LIB_FUNCTION_EXT
+#	define GL_LIB_FUNCTION_EXT( func, ... )
+#endif
+
+GL_LIB_FUNCTION_EXT( PolygonOffsetClamp, "EXT" )
+GL_LIB_FUNCTION_EXT( PopDebugGroup, "KHR" )
+GL_LIB_FUNCTION_EXT( PushDebugGroup, "KHR" )
+GL_LIB_FUNCTION_EXT( ObjectLabel, "KHR" )
+GL_LIB_FUNCTION_EXT( ObjectPtrLabel, "KHR" )
+GL_LIB_FUNCTION_EXT( DebugMessageCallback, "KHR", "ARB" )
+
+#undef GL_LIB_FUNCTION_EXT
 
 // Extended WGL functions
 #ifndef WGL_LIB_FUNCTION

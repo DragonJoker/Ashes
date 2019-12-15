@@ -58,13 +58,6 @@ namespace ashes::gl4
 		void * userParam;
 	};
 
-	struct DebugUtilsAMDMessengerData
-	{
-		VkDebugUtilsMessengerEXT debugMessenger;
-		PFNGLDEBUGAMDPROC callback;
-		void * userParam;
-	};
-
 #endif
 #if VK_EXT_debug_report
 
@@ -72,13 +65,6 @@ namespace ashes::gl4
 	{
 		VkDebugReportCallbackEXT debugReport;
 		PFNGLDEBUGPROC callback;
-		void * userParam;
-	};
-	
-	struct DebugReportAMDCallbackData
-	{
-		VkDebugReportCallbackEXT debugReport;
-		PFNGLDEBUGAMDPROC callback;
 		void * userParam;
 	};
 

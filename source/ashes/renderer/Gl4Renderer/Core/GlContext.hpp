@@ -103,14 +103,25 @@ namespace ashes::gl4
 			return m_gl##fun( params... );\
 		}
 #define GL_LIB_FUNCTION( fun )\
-		PFN_gl##fun m_gl##fun = nullptr; \
+		PFN_gl##fun m_gl##fun = nullptr;\
 		template< typename ... Params >\
 		inline auto gl##fun( Params... params )const\
 		{\
 			return m_gl##fun( params... );\
 		}
 #define GL_LIB_FUNCTION_OPT( fun )\
-		PFN_gl##fun m_gl##fun = nullptr; \
+		PFN_gl##fun m_gl##fun = nullptr;\
+		template< typename ... Params >\
+		inline auto gl##fun( Params... params )const\
+		{\
+			return m_gl##fun( params... );\
+		}\
+		inline bool has##fun()const\
+		{\
+			return bool( m_gl##fun );\
+		}
+#define GL_LIB_FUNCTION_EXT( fun, ... )\
+		PFN_gl##fun m_gl##fun = nullptr;\
 		template< typename ... Params >\
 		inline auto gl##fun( Params... params )const\
 		{\
@@ -122,14 +133,8 @@ namespace ashes::gl4
 		}
 #include "renderer/Gl4Renderer/Miscellaneous/OpenGLFunctionsList.inl"
 
-		PFN_glObjectLabel m_glObjectLabel = nullptr;
-		PFN_glObjectPtrLabel m_glObjectPtrLabel = nullptr;
-		PFN_glDebugMessageCallback m_glDebugMessageCallback = nullptr;
-		PFN_glDebugMessageCallbackAMD m_glDebugMessageCallbackAMD = nullptr;
-
 	private:
 		void loadBaseFunctions();
-		void loadDebugFunctions();
 
 		void initialiseThreadState( gl::ContextState const & state );
 
