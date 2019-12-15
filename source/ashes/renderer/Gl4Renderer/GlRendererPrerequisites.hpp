@@ -168,7 +168,12 @@ namespace ashes::gl4
 
 	using CmdBuffer = UInt32Array;
 	using CmdList = std::vector< CmdBuffer >;
+	using PreExecuteAction = std::function< void( CmdList &, ContextStateStack const & ) >;
+	using PreExecuteActions = std::vector< PreExecuteAction >;
 
 	uint32_t deduceMemoryType( uint32_t typeBits
 		, VkMemoryPropertyFlags requirements );
+	bool areCompatible( VkCommandBuffer cmd
+		, VkPipelineStageFlags pipelineFlags
+		, VkAccessFlags accessFlags );
 }
