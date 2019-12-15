@@ -13,9 +13,10 @@ namespace ashes::gl4
 	void buildScissorCommand( ContextStateStack & stack
 		, uint32_t firstScissor
 		, VkScissorArray scissors
-		, CmdList & list )
+		, CmdList & list
+		, PreExecuteActions & preExecuteActions )
 	{
 		glLogCommand( "ScissorCommand" );
-		stack.apply( list, firstScissor, scissors, false );
+		stack.apply( list, preExecuteActions, firstScissor, scissors, false );
 	}
 }

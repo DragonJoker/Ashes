@@ -25,7 +25,8 @@ namespace ashes::gl4
 		, VkDevice device
 		, VkPipeline pipeline
 		, VkPipelineBindPoint bindingPoint
-		, CmdList & list )
+		, CmdList & list
+		, PreExecuteActions & preExecuteActions )
 	{
 		glLogCommand( "BindPipelineCommand" );
 		GLuint program;
@@ -62,12 +63,12 @@ namespace ashes::gl4
 
 		if ( !glpipeline->getViewports().empty() )
 		{
-			stack.apply( list, 0u, glpipeline->getViewports(), false );
+			stack.apply( list, preExecuteActions, 0u, glpipeline->getViewports(), false );
 		}
 
 		if ( !glpipeline->getScissors().empty() )
 		{
-			stack.apply( list, 0u, glpipeline->getScissors(), false );
+			stack.apply( list, preExecuteActions, 0u, glpipeline->getScissors(), false );
 		}
 	}
 

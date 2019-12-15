@@ -201,13 +201,19 @@ namespace ashes::gl4
 	VkResult CommandBuffer::end()const
 	{
 		m_state.pushConstantBuffers.clear();
-		mergeList( m_cmdList, m_cmds );
-		mergeList( m_cmdAfterSubmit, m_cmdsAfterSubmit );
+
+		if ( m_level == VK_COMMAND_BUFFER_LEVEL_PRIMARY )
+		{
+			mergeList( m_cmdList, m_cmds );
+			mergeList( m_cmdAfterSubmit, m_cmdsAfterSubmit );
+		}
+
 		return VK_SUCCESS;
 	}
 
 	VkResult CommandBuffer::reset( VkCommandBufferResetFlags flags )const
 	{
+		m_preExecuteActions.clear();
 		doReset();
 		return VK_SUCCESS;
 	}
@@ -223,12 +229,15 @@ namespace ashes::gl4
 			, m_state.currentFrameBuffer
 			, makeVector( beginInfo.pClearValues, beginInfo.clearValueCount )
 			, contents
-			, m_cmdList );
+			, m_cmdList
+			, m_preExecuteActions );
 		m_state.currentSubpass = &get( m_state.currentRenderPass )->getSubpasses()[m_state.currentSubpassIndex++];
 		buildBeginSubpassCommand( m_state.currentRenderPass
 			, m_state.currentFrameBuffer
 			, *m_state.currentSubpass
 			, m_cmdList );
+		doApplyPreExecuteCommands( *m_state.stack );
+		m_preExecuteActions.clear();
 	}
 
 	void CommandBuffer::nextSubpass( VkSubpassContents contents )const
@@ -237,7 +246,8 @@ namespace ashes::gl4
 			, *m_state.stack
 			, m_state.currentFrameBuffer
 			, *m_state.currentSubpass
-			, m_cmdList );
+			, m_cmdList
+			, m_preExecuteActions );
 		m_state.currentSubpass = &get( m_state.currentRenderPass )->getSubpasses()[m_state.currentSubpassIndex++];
 		buildBeginSubpassCommand( m_state.currentRenderPass
 			, m_state.currentFrameBuffer
@@ -252,7 +262,8 @@ namespace ashes::gl4
 			, *m_state.stack
 			, m_state.currentFrameBuffer
 			, *m_state.currentSubpass
-			, m_cmdList );
+			, m_cmdList
+			, m_preExecuteActions );
 		buildEndRenderPassCommand( *m_state.stack
 			, m_cmdList );
 		m_state.boundVbos.clear();
@@ -277,6 +288,9 @@ namespace ashes::gl4
 				, glCommandBuffer->m_state.vaos.begin()
 				, glCommandBuffer->m_state.vaos.end() );
 			glCommandBuffer->m_state.vaos.clear();
+			glCommandBuffer->doApplyPreExecuteCommands( *m_state.stack );
+			mergeList( glCommandBuffer->m_cmdList, glCommandBuffer->m_cmds );
+			mergeList( glCommandBuffer->m_cmdAfterSubmit, glCommandBuffer->m_cmdsAfterSubmit );
 			m_cmdList.insert( m_cmdList.end()
 				, glCommandBuffer->m_cmdList.begin()
 				, glCommandBuffer->m_cmdList.end() );
@@ -318,7 +332,8 @@ namespace ashes::gl4
 		buildClearAttachmentsCommand( *m_state.stack
 			, std::move( clearAttachments )
 			, std::move( clearRects )
-			, m_cmdList );
+			, m_cmdList
+			, m_preExecuteActions );
 	}
 
 	void CommandBuffer::bindPipeline( VkPipeline pipeline
@@ -346,7 +361,8 @@ namespace ashes::gl4
 				, m_device
 				, pipeline
 				, bindingPoint
-				, m_cmdList );
+				, m_cmdList
+				, m_preExecuteActions );
 			buildUnbindPipelineCommand( *m_state.stack
 				, m_cmdAfterSubmit );
 		}
@@ -456,13 +472,21 @@ namespace ashes::gl4
 	void CommandBuffer::setViewport( uint32_t firstViewport
 		, VkViewportArray viewports )const
 	{
-		buildViewportCommand( *m_state.stack, firstViewport, viewports, m_cmdList );
+		buildViewportCommand( *m_state.stack
+			, firstViewport
+			, viewports
+			, m_cmdList
+			, m_preExecuteActions );
 	}
 
 	void CommandBuffer::setScissor( uint32_t firstScissor
 		, VkScissorArray scissors )const
 	{
-		buildScissorCommand( *m_state.stack, firstScissor, scissors, m_cmdList );
+		buildScissorCommand( *m_state.stack
+			, firstScissor
+			, scissors
+			, m_cmdList
+			, m_preExecuteActions );
 	}
 
 	void CommandBuffer::draw( uint32_t vtxCount
@@ -951,6 +975,28 @@ namespace ashes::gl4
 		, VkBufferMemoryBarrierArray bufferMemoryBarriers
 		, VkImageMemoryBarrierArray imageMemoryBarriers )const
 	{
+#ifndef NDEBUG
+
+		for ( auto & barrier : memoryBarriers )
+		{
+			areCompatible( get( this ), after, barrier.srcAccessMask );
+			areCompatible( get( this ), before, barrier.dstAccessMask );
+		}
+
+		for ( auto & barrier : bufferMemoryBarriers )
+		{
+			areCompatible( get( this ), after, barrier.srcAccessMask );
+			areCompatible( get( this ), before, barrier.dstAccessMask );
+		}
+
+		for ( auto & barrier : imageMemoryBarriers )
+		{
+			areCompatible( get( this ), after, barrier.srcAccessMask );
+			areCompatible( get( this ), before, barrier.dstAccessMask );
+		}
+
+#endif
+
 		buildMemoryBarrierCommand( after
 			, before
 			, dependencyFlags
@@ -1021,6 +1067,14 @@ namespace ashes::gl4
 		}
 
 		m_state.vaos.clear();
+	}
+
+	void CommandBuffer::doApplyPreExecuteCommands( ContextStateStack const & stack )const
+	{
+		for ( auto & action : m_preExecuteActions )
+		{
+			action( m_cmdList, stack );
+		}
 	}
 
 	void CommandBuffer::doReset()const

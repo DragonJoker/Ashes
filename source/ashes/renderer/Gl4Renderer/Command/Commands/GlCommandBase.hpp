@@ -94,7 +94,6 @@ namespace ashes::gl4
 		eReadBuffer,
 		eReadPixels,
 		eResetEvent,
-		eSetDepthBias,
 		eSetLineWidth,
 		eSetEvent,
 		eStencilFunc,

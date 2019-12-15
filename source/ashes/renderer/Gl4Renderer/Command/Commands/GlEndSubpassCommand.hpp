@@ -12,5 +12,6 @@ namespace ashes::gl4
 		, ContextStateStack & stack
 		, VkFramebuffer frameBuffer
 		, VkSubpassDescription const & subpass
-		, CmdList & list );
+		, CmdList & list
+		, PreExecuteActions & preExecuteActions );
 }

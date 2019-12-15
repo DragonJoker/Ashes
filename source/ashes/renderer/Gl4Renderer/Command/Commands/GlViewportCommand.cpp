@@ -14,9 +14,10 @@ namespace ashes::gl4
 	void buildViewportCommand( ContextStateStack & stack
 		, uint32_t firstViewport
 		, VkViewportArray viewports
-		, CmdList & list )
+		, CmdList & list
+		, PreExecuteActions & preExecuteActions )
 	{
 		glLogCommand( "ViewportCommand" );
-		stack.apply( list, firstViewport, viewports, false );
+		stack.apply( list, preExecuteActions, firstViewport, viewports, false );
 	}
 }

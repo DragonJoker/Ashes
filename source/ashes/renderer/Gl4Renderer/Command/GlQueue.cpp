@@ -275,9 +275,6 @@ namespace ashes::gl4
 			case OpType::eResetEvent:
 				apply( lock, map< OpType::eResetEvent >( cmd ) );
 				break;
-			case OpType::eSetDepthBias:
-				apply( lock, map< OpType::eSetDepthBias >( cmd ) );
-				break;
 			case OpType::eSetEvent:
 				apply( lock, map< OpType::eSetEvent >( cmd ) );
 				break;
