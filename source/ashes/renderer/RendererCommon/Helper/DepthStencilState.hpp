@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 #define ___Ashes_DepthStencilState_HPP___
 #pragma once
 
-#include "ashes/renderer/RendererCommon/Helper/StencilOpState.hpp"
+#include "renderer/RendererCommon/Helper/StencilOpState.hpp"
 
 namespace ashes
 {

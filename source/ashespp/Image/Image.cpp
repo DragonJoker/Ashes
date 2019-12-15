@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 #include "ashespp/Image/ImageView.hpp"
 #include "ashespp/Sync/Fence.hpp"
 
-#include <common/Format.hpp>
+#include <ashes/common/Format.hpp>
 
 namespace ashes
 {

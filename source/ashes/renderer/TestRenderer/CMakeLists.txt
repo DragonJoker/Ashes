@@ -25,12 +25,21 @@ add_library( ${PROJECT_NAME} SHARED
 	${${PROJECT_NAME}_SRC_FILES}
 	${${PROJECT_NAME}_HDR_FILES}
 )
-set_target_properties( ${PROJECT_NAME} PROPERTIES
-	CXX_STANDARD 17
-	CXX_EXTENSIONS OFF
-	FOLDER "Ashes/Renderer"
-	VERSION ${PROJECT_VERSION}
-	SOVERSION ${PROJECT_SOVERSION}
+add_library( ashes::${PROJECT_NAME}
+	ALIAS
+	${PROJECT_NAME}
+)
+target_include_directories( ${PROJECT_NAME} PRIVATE
+	${Vulkan_INCLUDE_DIRS}
+	${TARGET_INCLUDE_DIRS}
+	${CMAKE_CURRENT_BINARY_DIR}
+	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
+)
+target_link_libraries( ${PROJECT_NAME} PRIVATE
+	ashes::RendererCommon
+)
+target_compile_features( ${PROJECT_NAME} PRIVATE
+	cxx_std_17
 )
 target_compile_definitions( ${PROJECT_NAME} PRIVATE
 	${PROJECT_NAME}_EXPORTS
@@ -39,13 +48,12 @@ target_compile_definitions( ${PROJECT_NAME} PRIVATE
 target_compile_options( ${PROJECT_NAME} PRIVATE
 	${TARGET_CXX_OPTIONS}
 )
-target_compile_features( ${PROJECT_NAME} PRIVATE
-	cxx_std_17
-)
-target_include_directories( ${PROJECT_NAME} PRIVATE
-	${TARGET_INCLUDE_DIRS}
-	${CMAKE_CURRENT_BINARY_DIR}
-	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
+set_target_properties( ${PROJECT_NAME} PROPERTIES
+	CXX_STANDARD 17
+	CXX_EXTENSIONS OFF
+	FOLDER "${ASHES_BASE_DIR}/Renderer"
+	VERSION ${PROJECT_VERSION}
+	SOVERSION ${PROJECT_SOVERSION}
 )
 add_target_precompiled_header_ex( ${PROJECT_NAME}
 	ashes/renderer
@@ -53,13 +61,6 @@ add_target_precompiled_header_ex( ${PROJECT_NAME}
 	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/${PROJECT_NAME}Pch.cpp
 	"${CMAKE_CXX_FLAGS}"
 	${${PROJECT_NAME}_SRC_FILES}
-)
-target_link_libraries( ${PROJECT_NAME} PRIVATE
-	${BinLibraries}
-	${RendererDependencies}
-)
-add_dependencies( ${PROJECT_NAME}
-	${RendererDependencies}
 )
 
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Buffer "Buffer" )

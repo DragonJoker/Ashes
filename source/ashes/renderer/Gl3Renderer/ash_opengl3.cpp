@@ -4,7 +4,7 @@
 
 #include <renderer/GlRendererCommon/GlWindow.hpp>
 
-#include <common/Exception.hpp>
+#include <ashes/common/Exception.hpp>
 
 #include <cstring>
 #include <iostream>

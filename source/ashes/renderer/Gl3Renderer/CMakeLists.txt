@@ -74,14 +74,14 @@ if ( OpenGL_FOUND )
 		${PROJECT_NAME}
 	)
 	target_include_directories( ${PROJECT_NAME} PRIVATE
+		${Vulkan_INCLUDE_DIRS}
 		${TARGET_INCLUDE_DIRS}
 		${CMAKE_CURRENT_BINARY_DIR}
 		${SPIRV_CROSS_DIR}
 		${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
 	)
 	target_link_libraries( ${PROJECT_NAME} PRIVATE
-		${BinLibraries}
-		${RendererDependencies}
+		ashes::GlRendererCommon
 	)
 	target_compile_features( ${PROJECT_NAME} PRIVATE
 		cxx_std_17
@@ -97,7 +97,7 @@ if ( OpenGL_FOUND )
 	set_target_properties( ${PROJECT_NAME} PROPERTIES
 		CXX_STANDARD 17
 		CXX_EXTENSIONS OFF
-		FOLDER "Ashes/Renderer"
+		FOLDER "${ASHES_BASE_DIR}/Renderer"
 		VERSION ${PROJECT_VERSION}
 		SOVERSION ${PROJECT_SOVERSION}
 	)

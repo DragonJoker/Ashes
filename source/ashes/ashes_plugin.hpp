@@ -1,8 +1,8 @@
 #define VK_NO_PROTOTYPES
 #include "ashes/ashes.h"
 
-#include <common/DynamicLibrary.hpp>
-#include <common/FileUtils.hpp>
+#include <ashes/common/DynamicLibrary.hpp>
+#include <ashes/common/FileUtils.hpp>
 
 #include <algorithm>
 #include <cassert>

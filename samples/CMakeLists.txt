@@ -1,3 +1,6 @@
+get_filename_component( ASHES_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY )
+get_filename_component( ASHES_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} DIRECTORY )
+
 find_package( wxWidgets COMPONENTS core base )
 if( APPLE )
 	set( GTK2_FOUND TRUE )
@@ -24,7 +27,6 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 		${wxWidgets_LIBRARIES}
 		${GTK2_LIBRARIES}
 		${ASSIMP_LIBRARIES}
-		ashes::common
 		ashes::ashes
 		ashes::ashespp
 		ashes::util
@@ -66,7 +68,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 			set_target_properties( ${TARGET_NAME} PROPERTIES
 				CXX_STANDARD 17
 				CXX_EXTENSIONS OFF
-				FOLDER "Samples"
+				FOLDER "${ASHES_BASE_DIR}/Samples"
 			)
 			add_dependencies( ${TARGET_NAME}
 				${ENABLED_RENDERERS}

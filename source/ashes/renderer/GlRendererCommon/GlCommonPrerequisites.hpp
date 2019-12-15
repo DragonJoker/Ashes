@@ -7,7 +7,7 @@ See LICENSE file in root folder
 #include <renderer/RendererCommon/AshesRendererPrerequisites.hpp>
 #include <renderer/RendererCommon/Helper/ConstantFormat.hpp>
 
-#include <common/Format.hpp>
+#include <ashes/common/Format.hpp>
 
 #include <cassert>
 #include <functional>

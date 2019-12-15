@@ -41,31 +41,32 @@ add_library( ashes::util
 	ALIAS
 	${PROJECT_NAME}
 )
-target_include_directories( ${PROJECT_NAME} PRIVATE
-	${TARGET_INCLUDE_DIRS}
-	${CMAKE_CURRENT_BINARY_DIR}
-	${ASHES_BINARY_DIR}
-	${ASHES_SOURCE_DIR}/include
-	${CMAKE_SOURCE_DIR}/external/glslang
+target_include_directories( ${PROJECT_NAME}
+	PRIVATE
+		${Vulkan_INCLUDE_DIRS}
+		${ASHES_CONFIG_DIR}/include
+		${ASHES_SOURCE_DIR}/include
+		${ASHES_SOURCE_DIR}/source
+		${ASHES_CONFIG_DIR}/source
+		${ASHES_CONFIG_DIR}/include/util
+		${ASHES_SOURCE_DIR}/include/util
+		${ASHES_CONFIG_DIR}/source/util
+		${ASHES_SOURCE_DIR}/source/util
+		${CMAKE_SOURCE_DIR}/external/glslang
 )
-target_include_directories( ${PROJECT_NAME} INTERFACE
-	${TARGET_INCLUDE_DIRS}
-	${CMAKE_CURRENT_BINARY_DIR}
-	${ASHES_BINARY_DIR}
-	${ASHES_SOURCE_DIR}/include
-	${CMAKE_SOURCE_DIR}/external/glslang
+target_link_libraries( ${PROJECT_NAME}
+	PRIVATE
+		glslang
+		OGLCompiler
+		OSDependent
+		SPVRemapper
+		SPIRV
+		ashes::common
+	PUBLIC
+		ashes::ashes
+		ashes::ashespp
 )
-target_link_libraries( ${PROJECT_NAME} PRIVATE
-	ashes::common
-	ashes::ashes
-	ashes::ashespp
-	glslang
-	OGLCompiler
-	OSDependent
-	SPVRemapper
-	SPIRV
-)
-target_compile_features( ${PROJECT_NAME} INTERFACE
+target_compile_features( ${PROJECT_NAME} PUBLIC
 	cxx_std_17
 )
 target_compile_definitions( ${PROJECT_NAME} PRIVATE
@@ -77,5 +78,5 @@ target_compile_options( ${PROJECT_NAME} PRIVATE
 set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 17
 	CXX_EXTENSIONS OFF
-	FOLDER "Common"
+	FOLDER "${ASHES_BASE_DIR}/Core"
 )

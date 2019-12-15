@@ -1,8 +1,10 @@
-set( TARGET_INCLUDE_DIRS
-	${ASHES_SOURCE_DIR}/include
-	${ASHES_BINARY_DIR}/include
-	${Vulkan_INCLUDE_DIRS}
-)
+if ( ASHES_BUILD_TESTS OR ASHES_BUILD_INFO OR ASHES_BUILD_SW_SAMPLES )
+	set( TARGET_INCLUDE_DIRS
+		${ASHES_SOURCE_DIR}/include
+		${ASHES_BINARY_DIR}/include
+		${Vulkan_INCLUDE_DIRS}
+	)
+endif ()
 
 if ( ASHES_BUILD_TESTS )
 	find_package( wxWidgets COMPONENTS core base )
@@ -23,54 +25,20 @@ if ( ASHES_BUILD_TESTS )
 		file( GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*-* )
 		set( TEST_ID 0 )
 
-		set( BinLibraries
-			${BinLibraries}
-			${wxWidgets_LIBRARIES}
-			${GTK2_LIBRARIES}
-			ashes::common
-			ashes::ashes
-			ashes::ashespp
-			ashes::util
-		)
-		set( TARGET_CXX_DEFINITIONS
-			${TARGET_CXX_DEFINITIONS}
-			${wxWidgets_DEFINITIONS}
-		)
-
 		foreach ( child ${children} )
 			if ( IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${child} )
 				set( TARGET_NAME Test-${child} )
 				add_subdirectory( ${child} )
-				target_include_directories( ${TARGET_NAME} PRIVATE
-					${TARGET_INCLUDE_DIRS}
-					${CMAKE_SOURCE_DIR}/util/Src
-					${CMAKE_BINARY_DIR}/util/Src
-					${CMAKE_SOURCE_DIR}/external/gli
-					${CMAKE_SOURCE_DIR}/external/glm
-					${CMAKE_SOURCE_DIR}/external/imgui
-					${CMAKE_SOURCE_DIR}/external/imgui
-					${CMAKE_SOURCE_DIR}/test/00-Common/Src
-					${wxWidgets_INCLUDE_DIRS}
-					${GTK2_INCLUDE_DIRS}
-				)
 				target_compile_features( ${TARGET_NAME} PRIVATE
 					cxx_std_17
 				)
 				target_compile_definitions( ${TARGET_NAME} PRIVATE
 					TEST_ID=${TEST_ID}
-					${TARGET_CXX_DEFINITIONS}
-					${TARGET_DEFINITIONS}
-				)
-				target_compile_options( ${TARGET_NAME} PRIVATE
-					${TARGET_CXX_OPTIONS}
 				)
 				set_target_properties( ${TARGET_NAME} PROPERTIES
 					CXX_STANDARD 17
 					CXX_EXTENSIONS OFF
-					FOLDER "Tests"
-				)
-				add_dependencies( ${TARGET_NAME}
-					${ENABLED_RENDERERS}
+					FOLDER "${ASHES_BASE_DIR}/Tests"
 				)
 				math( EXPR TEST_ID "${TEST_ID} + 1" )
 			endif ()
@@ -86,8 +54,7 @@ if ( ASHES_BUILD_SW_SAMPLES )
 	include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../external/glm )
 	include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../external/gli )
 	set( Vulkan_FOUND ON )
-	set( Vulkan_INCLUDE_DIR ${Vulkan_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/include )
-	set( Vulkan_LIBRARY ashes::ashes ashes::common )
+	set( Vulkan_LIBRARY ashes::ashes )
 	add_subdirectory( Vulkan )
 	set(EXAMPLES
 		bloom
@@ -163,9 +130,9 @@ if ( ASHES_BUILD_SW_SAMPLES )
 	)
 	foreach ( EXAMPLE ${EXAMPLES} )
 		if ( TARGET ${EXAMPLE} )
-			set_property( TARGET ${EXAMPLE} PROPERTY FOLDER "SWExamples" )
+			set_property( TARGET ${EXAMPLE} PROPERTY FOLDER "${ASHES_BASE_DIR}/SWExamples" )
 		endif ()
 	endforeach ( EXAMPLE )
-	set_property( TARGET base PROPERTY FOLDER "SWExamples" )
+	set_property( TARGET base PROPERTY FOLDER "${ASHES_BASE_DIR}/SWExamples" )
 endif ()
 

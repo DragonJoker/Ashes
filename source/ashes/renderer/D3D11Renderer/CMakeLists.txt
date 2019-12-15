@@ -88,7 +88,7 @@ add_library( ashes::${PROJECT_NAME}
 set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 17
 	CXX_EXTENSIONS OFF
-	FOLDER "Ashes/Renderer"
+	FOLDER "${ASHES_BASE_DIR}/Renderer"
 	VERSION ${PROJECT_VERSION}
 	SOVERSION ${PROJECT_SOVERSION}
 )
@@ -104,6 +104,7 @@ target_compile_features( ${PROJECT_NAME} PRIVATE
 	cxx_std_17
 )
 target_include_directories( ${PROJECT_NAME} PRIVATE
+	${Vulkan_INCLUDE_DIRS}
 	${TARGET_INCLUDE_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR}
 	${SPIRV_CROSS_DIR}
@@ -118,8 +119,7 @@ add_target_precompiled_header_ex( ${PROJECT_NAME}
 	${${PROJECT_NAME}_SRC_FILES}
 )
 target_link_libraries( ${PROJECT_NAME} PRIVATE
-	${BinLibraries}
-	${RendererDependencies}
+	ashes::RendererCommon
 	d3d11
 	dxgi
 	d3dcompiler
@@ -138,7 +138,6 @@ parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Pipeline "Pipeline" )
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer RenderPass "RenderPass" )
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Shader "Shader" )
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Sync "Sync" )
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer vulkan "vulkan" )
 
 source_group( "Header Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES} )
 source_group( "Source Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES} )

@@ -19,7 +19,10 @@ if ( OpenGL_FOUND )
 	else ()
 		find_package( X11 )
 		if ( ASHES_USE_XLIB_EGL )
-			add_definitions( -DASHES_USE_XLIB_EGL )
+			set( TARGET_CXX_DEFINITIONS
+				${TARGET_CXX_DEFINITIONS}
+				ASHES_USE_XLIB_EGL
+			)
 		endif ()
 		find_package( XCB REQUIRED COMPONENTS xcb )
 		set( BinLibraries
@@ -61,28 +64,29 @@ if ( OpenGL_FOUND )
 		ALIAS
 		${PROJECT_NAME}
 	)
-	target_include_directories( ${PROJECT_NAME} PRIVATE
+	target_include_directories( ${PROJECT_NAME} PUBLIC
+		${Vulkan_INCLUDE_DIRS}
 		${TARGET_INCLUDE_DIRS}
 		${CMAKE_CURRENT_BINARY_DIR}
 		${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
 	)
-	target_link_libraries( ${PROJECT_NAME} PRIVATE
+	target_link_libraries( ${PROJECT_NAME} PUBLIC
 		${BinLibraries}
-		${RendererDependencies}
+		ashes::RendererCommon
 	)
-	target_compile_features( ${PROJECT_NAME} PRIVATE
+	target_compile_features( ${PROJECT_NAME} PUBLIC
 		cxx_std_17
 	)
-	target_compile_definitions( ${PROJECT_NAME} PRIVATE
+	target_compile_definitions( ${PROJECT_NAME} PUBLIC
 		${TARGET_CXX_DEFINITIONS}
 	)
-	target_compile_options( ${PROJECT_NAME} PRIVATE
+	target_compile_options( ${PROJECT_NAME} PUBLIC
 		${TARGET_CXX_OPTIONS}
 	)
 	set_target_properties( ${PROJECT_NAME} PROPERTIES
 		CXX_STANDARD 17
 		CXX_EXTENSIONS OFF
-		FOLDER "Ashes/Renderer"
+		FOLDER "${ASHES_BASE_DIR}/Renderer"
 	)
 
 	parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Platform "Platform" )

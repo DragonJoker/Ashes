@@ -7,31 +7,25 @@ set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 set( PROJECT_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}" )
 set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_BUILD}" )
 
-set( TARGET_INCLUDE_DIRS
-	${TARGET_INCLUDE_DIRS}
-	${CMAKE_CURRENT_BINARY_DIR}
-	${ASHES_SOURCE_DIR}/include
-	${ASHES_SOURCE_DIR}/include/ashes
-	${ASHES_SOURCE_DIR}/include/ashes/common
-)
-
 file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
-	${ASHES_SOURCE_DIR}/source/ashes/common/*.c
-	${ASHES_SOURCE_DIR}/source/ashes/common/*.cc
-	${ASHES_SOURCE_DIR}/source/ashes/common/*.cpp
+	CONFIGURE_DEPENDS
+		${ASHES_SOURCE_DIR}/source/ashes/common/*.c
+		${ASHES_SOURCE_DIR}/source/ashes/common/*.cc
+		${ASHES_SOURCE_DIR}/source/ashes/common/*.cpp
 )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
-	${ASHES_SOURCE_DIR}/include/ashes/common/*.h
-	${ASHES_SOURCE_DIR}/include/ashes/common/*.hh
-	${ASHES_SOURCE_DIR}/include/ashes/common/*.hpp
-	${ASHES_SOURCE_DIR}/include/ashes/common/*.inl
-	${ASHES_SOURCE_DIR}/include/ashes/common/*.inc
-	${ASHES_SOURCE_DIR}/source/ashes/common/*.h
-	${ASHES_SOURCE_DIR}/source/ashes/common/*.hh
-	${ASHES_SOURCE_DIR}/source/ashes/common/*.hpp
-	${ASHES_SOURCE_DIR}/source/ashes/common/*.inl
-	${ASHES_SOURCE_DIR}/source/ashes/common/*.inc
+	CONFIGURE_DEPENDS
+		${ASHES_SOURCE_DIR}/include/ashes/common/*.h
+		${ASHES_SOURCE_DIR}/include/ashes/common/*.hh
+		${ASHES_SOURCE_DIR}/include/ashes/common/*.hpp
+		${ASHES_SOURCE_DIR}/include/ashes/common/*.inl
+		${ASHES_SOURCE_DIR}/include/ashes/common/*.inc
+		${ASHES_SOURCE_DIR}/source/ashes/common/*.h
+		${ASHES_SOURCE_DIR}/source/ashes/common/*.hh
+		${ASHES_SOURCE_DIR}/source/ashes/common/*.hpp
+		${ASHES_SOURCE_DIR}/source/ashes/common/*.inl
+		${ASHES_SOURCE_DIR}/source/ashes/common/*.inc
 )
 
 add_library( ${PROJECT_NAME} STATIC
@@ -47,8 +41,13 @@ add_library( ashes::common
 target_link_libraries( ${PROJECT_NAME} PUBLIC
 	${BinLibraries}
 )
-target_include_directories( ${PROJECT_NAME} PRIVATE
-	${TARGET_INCLUDE_DIRS}
+target_include_directories( ${PROJECT_NAME}
+	PRIVATE
+		${ASHES_SOURCE_DIR}/include
+		${ASHES_CONFIG_DIR}/include
+		${Vulkan_INCLUDE_DIRS}
+		${ASHES_SOURCE_DIR}/include/ashes
+		${ASHES_SOURCE_DIR}/include/ashes/common
 )
 target_compile_features( ${PROJECT_NAME} PUBLIC
 	cxx_std_17
@@ -62,7 +61,7 @@ target_compile_options( ${PROJECT_NAME} PRIVATE
 set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 17
 	CXX_EXTENSIONS OFF
-	FOLDER "Ashes/Core" )
+	FOLDER "${ASHES_BASE_DIR}/Core" )
 
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes Platform "Platform" )
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes Win32 "Win32" )

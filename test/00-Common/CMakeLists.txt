@@ -37,8 +37,42 @@ add_library( ${PROJECT_NAME} STATIC
 	${SOURCE_FILES}
 	${HEADER_FILES}
 )
-target_link_libraries( ${PROJECT_NAME} PRIVATE
+add_library( ashes::test::Common
+	ALIAS
+	${PROJECT_NAME}
+)
+add_dependencies( ${PROJECT_NAME}
+	${ENABLED_RENDERERS}
+)
+target_link_libraries( ${PROJECT_NAME} PUBLIC
 	${BinLibraries}
+	${wxWidgets_LIBRARIES}
+	${GTK2_LIBRARIES}
+	ashes::common
+	ashes::ashes
+	ashes::ashespp
+	ashes::util
+)
+target_include_directories( ${PROJECT_NAME} PUBLIC
+	${CMAKE_CURRENT_SOURCE_DIR}/Src
+	${ASHES_SOURCE_DIR}/util/Src
+	${ASHES_BINARY_DIR}/util/Src
+	${ASHES_SOURCE_DIR}/external/gli
+	${ASHES_SOURCE_DIR}/external/glm
+	${ASHES_SOURCE_DIR}/external/imgui
+	${ASHES_SOURCE_DIR}/external/imgui
+	${ASHES_SOURCE_DIR}/test/00-Common/Src
+	${wxWidgets_INCLUDE_DIRS}
+	${GTK2_INCLUDE_DIRS}
+	${TARGET_INCLUDE_DIRS}
+)
+target_compile_definitions( ${PROJECT_NAME} PUBLIC
+	${TARGET_CXX_DEFINITIONS}
+	${TARGET_DEFINITIONS}
+	${wxWidgets_DEFINITIONS}
+)
+target_compile_options( ${PROJECT_NAME} PUBLIC
+	${TARGET_CXX_OPTIONS}
 )
 set( ASSETS_FOLDER ${CMAKE_SOURCE_DIR}/test/Assets )
 

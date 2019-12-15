@@ -52,10 +52,22 @@ add_library( ashes::${PROJECT_NAME}
 	ALIAS
 	${PROJECT_NAME}
 )
-target_include_directories( ${PROJECT_NAME} PRIVATE
-	${TARGET_INCLUDE_DIRS}
-	${CMAKE_CURRENT_BINARY_DIR}
-	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
+target_link_libraries( ${PROJECT_NAME} PUBLIC
+	ashes::ashes
+	${BinLibraries}
+	${RendererDependencies}
+)
+target_include_directories( ${PROJECT_NAME}
+	PUBLIC
+		${Vulkan_INCLUDE_DIRS}
+		${TARGET_INCLUDE_DIRS}
+		${ASHES_BINARY_DIR}/source/ashes
+		${ASHES_SOURCE_DIR}/source/ashes
+		${ASHES_BINARY_DIR}/source/ashes/renderer
+		${ASHES_SOURCE_DIR}/source/ashes/renderer
+	PRIVATE
+		${ASHES_BINARY_DIR}/source/ashes/renderer/${PROJECT_NAME}
+		${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
 )
 target_compile_features( ${PROJECT_NAME} PUBLIC
 	cxx_std_17
@@ -63,13 +75,13 @@ target_compile_features( ${PROJECT_NAME} PUBLIC
 target_compile_definitions( ${PROJECT_NAME} PUBLIC
 	${TARGET_CXX_DEFINITIONS}
 )
-target_compile_options( ${PROJECT_NAME} PRIVATE
+target_compile_options( ${PROJECT_NAME} PUBLIC
 	${TARGET_CXX_OPTIONS}
 )
 set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 17
 	CXX_EXTENSIONS OFF
-	FOLDER "Ashes/Renderer"
+	FOLDER "${ASHES_BASE_DIR}/Renderer"
 )
 
 parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Helper "Helper" )

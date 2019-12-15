@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "ashespp/Core/Device.hpp"
 
-#include <common/Exception.hpp>
+#include <ashes/common/Exception.hpp>
 
 namespace ashes
 {

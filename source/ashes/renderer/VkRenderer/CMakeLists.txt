@@ -30,10 +30,10 @@ add_library( ashes::${PROJECT_NAME}
 	${PROJECT_NAME}
 )
 target_include_directories( ${PROJECT_NAME} PRIVATE
+	${Vulkan_INCLUDE_DIRS}
 	${TARGET_INCLUDE_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR}
 	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
-	${Vulkan_INCLUDE_DIRS}
 )
 target_link_libraries( ${PROJECT_NAME} PRIVATE
 	${BinLibraries}
@@ -53,7 +53,7 @@ target_compile_options( ${PROJECT_NAME} PRIVATE
 set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 17
 	CXX_EXTENSIONS OFF
-	FOLDER "Ashes/Renderer"
+	FOLDER "${ASHES_BASE_DIR}/Renderer"
 	VERSION ${PROJECT_VERSION}
 	SOVERSION ${PROJECT_SOVERSION}
 )

@@ -110,6 +110,7 @@ if ( MSVC )
 endif ()
 
 set( Vulkan_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/external/Vulkan-Headers/include )
+set( Vulkan_INCLUDE_DIR ${Vulkan_INCLUDE_DIRS} )
 set( SPIRV_CROSS_DIR ${CMAKE_SOURCE_DIR}/external/SPIRV-Cross )
 
 set(CMAKE_DEBUG_POSTFIX "d")
@@ -136,6 +137,7 @@ endif ()
 
 set( ASHES_SOURCE_DIR ${CMAKE_SOURCE_DIR} )
 set( ASHES_BINARY_DIR ${CMAKE_BINARY_DIR} )
+set( ASHES_BASE_DIR "Ashes" )
 
 add_subdirectory( source )
 
