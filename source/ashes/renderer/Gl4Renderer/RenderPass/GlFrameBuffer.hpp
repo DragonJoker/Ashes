@@ -27,10 +27,10 @@ namespace ashes::gl4
 			, GLuint name );
 		~Framebuffer();
 
-		void setDrawBuffers( ContextLock const & context
-			, AttachmentDescriptionArray const & attaches )const;
-		void setDrawBuffers( ContextLock const & context
-			, VkAttachmentReferenceArray const & attaches )const;
+		UInt32Array getDrawBuffers( ArrayView < VkAttachmentReference const > const & attaches
+			, CmdList & list )const;
+		UInt32Array getDrawBuffers( ArrayView < VkAttachmentReference > const & attaches
+			, CmdList & list )const;
 
 		bool hasOnlySwapchainImage()const;
 		bool hasSwapchainImage()const;

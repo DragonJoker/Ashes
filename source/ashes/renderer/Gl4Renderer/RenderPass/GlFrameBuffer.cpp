@@ -214,62 +214,90 @@ namespace ashes::gl4
 		}
 	}
 
-	void Framebuffer::setDrawBuffers( ContextLock const & context
-		, AttachmentDescriptionArray const & attaches )const
+	UInt32Array Framebuffer::getDrawBuffers( ArrayView < VkAttachmentReference const > const & references
+		, CmdList & list )const
+	{
+		assert( getInternal() != GL_INVALID_INDEX );
+		UInt32Array drawBuffers;
+		auto & attaches = getAllAttaches();
+
+		for ( auto & reference : references )
+		{
+			auto & attach = attaches[reference.attachment];
+			m_drawBuffers.push_back( attach.point + attach.index );
+		}
+
+		//if ( m_colourAttaches.empty() && attaches.size() == 1 )
+		//{
+		//	colours.push_back( GL_ATTACHMENT_POINT_BACK );
+		//}
+		//else
+		//{
+		//	for ( auto & attach : attaches )
+		//	{
+		//		auto & fboAttach = m_colourAttaches[attach.attachment];
+		//		colours.push_back( fboAttach.point + attach.attachment );
+		//	}
+		//}
+
+		if ( m_drawBuffers != drawBuffers )
+		{
+			m_drawBuffers = drawBuffers;
+		}
+
+		return m_drawBuffers;
+	}
+
+	UInt32Array Framebuffer::getDrawBuffers( ArrayView < VkAttachmentReference > const & references
+		, CmdList & list )const
 	{
 		m_drawBuffers.clear();
 
-		for ( auto & attach : attaches )
+		assert( getInternal() != GL_INVALID_INDEX );
+		list.insert( list.end()
+			, getBindAttaches().begin()
+			, getBindAttaches().end() );
+		auto & attachments = getAttachments();
+		auto & attaches = getAllAttaches();
+
+		for ( auto & reference : references )
 		{
-			auto fboAttach = m_attachments[attach.index];
+			auto fboAttach = attachments[reference.attachment];
 			auto fboView = get( fboAttach );
-			auto fboImage = get( fboView->getImage() );
 
-			if ( fboImage->hasInternal() )
+			if ( !isDepthOrStencilFormat( fboView->getFormat() ) )
 			{
-				m_drawBuffers.push_back( getAttachmentPoint( attach.attach.get().format ) + attach.index );
-			}
-			else if ( attaches.size() == 1 )
-			{
-				m_drawBuffers.push_back( GL_ATTACHMENT_POINT_BACK );
-			}
-		}
+				auto & attach = attaches[reference.attachment];
+				auto fboImage = get( fboView->getImage() );
 
-		glLogCall( context
-			, glDrawBuffers
-			, GLsizei( m_drawBuffers.size() )
-			, m_drawBuffers.data() );
-	}
-
-	void Framebuffer::setDrawBuffers( ContextLock const & context
-		, VkAttachmentReferenceArray const & attaches )const
-	{
-		if ( getInternal() != GL_INVALID_INDEX )
-		{
-			UInt32Array colours;
-
-			if ( m_colourAttaches.empty() && attaches.size() == 1 )
-			{
-				colours.push_back( GL_ATTACHMENT_POINT_BACK );
-			}
-			else
-			{
-				for ( auto & attach : attaches )
+				if ( fboImage->hasInternal() )
 				{
-					auto & fboAttach = m_colourAttaches[attach.attachment];
-					colours.push_back( fboAttach.point + attach.attachment );
+					m_drawBuffers.push_back( attach.point + attach.index );
+				}
+				else if ( attaches.size() == 1 )
+				{
+					m_drawBuffers.push_back( GL_ATTACHMENT_POINT_BACK );
 				}
 			}
-
-			if ( m_drawBuffers != colours )
-			{
-				m_drawBuffers = colours;
-				glLogCall( context
-					, glDrawBuffers
-					, GLsizei( m_drawBuffers.size() )
-					, m_drawBuffers.data() );
-			}
 		}
+
+		//for ( auto & attach : attaches )
+		//{
+		//	auto fboAttach = m_attachments[attach.index];
+		//	auto fboView = get( fboAttach );
+		//	auto fboImage = get( fboView->getImage() );
+
+		//	if ( fboImage->hasInternal() )
+		//	{
+		//		m_drawBuffers.push_back( getAttachmentPoint( attach.attach.get().format ) + attach.index );
+		//	}
+		//	else if ( attaches.size() == 1 )
+		//	{
+		//		m_drawBuffers.push_back( GL_ATTACHMENT_POINT_BACK );
+		//	}
+		//}
+
+		return m_drawBuffers;
 	}
 
 	bool Framebuffer::hasOnlySwapchainImage()const
