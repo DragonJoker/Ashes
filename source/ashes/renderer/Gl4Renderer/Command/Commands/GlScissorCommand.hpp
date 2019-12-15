@@ -11,5 +11,6 @@ namespace ashes::gl4
 	void buildScissorCommand( ContextStateStack & stack
 		, uint32_t firstScissor
 		, VkScissorArray scissors
-		, CmdList & list );
+		, CmdList & list
+		, PreExecuteActions & preExecuteActions );
 }

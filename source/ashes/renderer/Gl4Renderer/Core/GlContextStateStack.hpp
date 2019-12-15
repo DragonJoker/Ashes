@@ -21,10 +21,12 @@ namespace ashes::gl4
 			, ContextState & state
 			, bool force = false );
 		void apply( CmdList & list
+			, PreExecuteActions & preExecuteActions
 			, uint32_t firstViewport
 			, VkViewportArray const & viewports
 			, bool force );
 		void apply( CmdList & list
+			, PreExecuteActions & preExecuteActions
 			, uint32_t firstScissor
 			, VkScissorArray const & scissors
 			, bool force );
@@ -124,6 +126,7 @@ namespace ashes::gl4
 			, VkPipelineTessellationStateCreateInfo const & newState
 			, bool force );
 		void doApply( CmdList & list
+			, PreExecuteActions & preExecuteActions
 			, VkPipelineViewportStateCreateInfo const & newState
 			, bool force );
 		bool doCheckSave( ContextState * state = nullptr );
@@ -131,7 +134,7 @@ namespace ashes::gl4
 	private:
 		std::unique_ptr< ContextState > m_ownInitial;
 		ContextState * m_save{ nullptr };
-		VkExtent2D m_renderArea;
+		VkExtent2D m_renderArea{ ~( 0u ), ~( 0u ) };
 		VkScissorArray m_scissors;
 		VkViewportArray m_viewports;
 		GLuint m_currentProgram{ 0u };

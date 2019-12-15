@@ -17,11 +17,12 @@ namespace ashes::gl4
 		, ContextStateStack & stack
 		, VkFramebuffer frameBuffer
 		, VkSubpassDescription const & subpass
-		, CmdList & list )
+		, CmdList & list
+		, PreExecuteActions & preExecuteActions )
 	{
 		glLogCommand( "EndSubpassCommand" );
-		stack.apply( list, 0u, VkScissorArray{}, true );
-		stack.apply( list, 0u, VkViewportArray{}, true );
+		stack.apply( list, preExecuteActions, 0u, VkScissorArray{}, true );
+		stack.apply( list, preExecuteActions, 0u, VkViewportArray{}, true );
 
 		if ( subpass.pResolveAttachments 
 			&& get( frameBuffer )->getInternal() )

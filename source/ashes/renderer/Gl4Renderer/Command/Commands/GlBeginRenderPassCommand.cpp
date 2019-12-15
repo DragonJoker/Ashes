@@ -145,7 +145,8 @@ namespace ashes::gl4
 		, VkFramebuffer frameBuffer
 		, VkClearValueArray clearValues
 		, VkSubpassContents contents
-		, CmdList & list )
+		, CmdList & list
+		, PreExecuteActions & preExecuteActions )
 	{
 		VkClearValueArray rtClearValues{};
 		VkClearValue dsClearValue{};
@@ -168,8 +169,8 @@ namespace ashes::gl4
 
 		glLogCommand( "BeginRenderPassCommand" );
 		stack.setRenderArea( get( frameBuffer )->getDimensions() );
-		stack.apply( list, 0u, VkScissorArray{}, true );
-		stack.apply( list, 0u, VkViewportArray{}, true );
+		stack.apply( list, preExecuteActions, 0u, VkScissorArray{}, true );
+		stack.apply( list, preExecuteActions, 0u, VkViewportArray{}, true );
 		stack.applySRGBStatus( list, get( frameBuffer )->isSRGB(), true );
 
 		if ( !stack.hasCurrentFramebuffer()
@@ -186,7 +187,7 @@ namespace ashes::gl4
 			, get( frameBuffer )->getBindAttaches().end() );
 		auto references = makeArrayView( get( renderPass )->begin()
 			, get( renderPass )->end() );
-		list.push_back( makeCmd< OpType::eDrawBuffers >( get( frameBuffer )->getDrawBuffers( references, list ) ) );
+		list.push_back( makeCmd< OpType::eDrawBuffers >( get( frameBuffer )->getDrawBuffers( references ) ) );
 		clearAttaches( frameBuffer, renderPass, rtClearValues, dsClearValue, list, false );
 	}
 }

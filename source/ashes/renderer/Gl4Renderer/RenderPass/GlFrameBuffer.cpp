@@ -214,8 +214,7 @@ namespace ashes::gl4
 		}
 	}
 
-	UInt32Array Framebuffer::getDrawBuffers( ArrayView < VkAttachmentReference const > const & references
-		, CmdList & list )const
+	UInt32Array Framebuffer::getDrawBuffers( ArrayView < VkAttachmentReference const > const & references )const
 	{
 		assert( getInternal() != GL_INVALID_INDEX );
 		UInt32Array drawBuffers;
@@ -235,8 +234,7 @@ namespace ashes::gl4
 		return m_drawBuffers;
 	}
 
-	UInt32Array Framebuffer::getDrawBuffers( ArrayView < VkAttachmentReference > const & references
-		, CmdList & list )const
+	UInt32Array Framebuffer::getDrawBuffers( ArrayView < VkAttachmentReference > const & references )const
 	{
 		m_drawBuffers.clear();
 
