@@ -250,7 +250,7 @@ namespace ashes
 #define VK_LIB_INSTANCE_FUNCTION( fun )\
 			vk##fun = reinterpret_cast< PFN_vk##fun >( getInstanceProcAddr( "vk"#fun ) );
 #define VK_LIB_INSTANCE_FUNCTION_EXT( ext, fun )\
-		if ( doCheckExtension( ext ) )\
+		if ( checkExtension( ext ) )\
 			vk##fun = reinterpret_cast< PFN_vk##fun >( getInstanceProcAddr( "vk"#fun ) );
 #include <ashes/ashes_functions_list.hpp>
 	}
@@ -267,7 +267,7 @@ namespace ashes
 		return result;
 	}
 
-	bool Instance::doCheckExtension( std::string const & name )const
+	bool Instance::checkExtension( std::string const & name )const
 	{
 		return m_createInfo.enabledExtensionNames.end() != std::find( m_createInfo.enabledExtensionNames.begin()
 			, m_createInfo.enabledExtensionNames.end()
