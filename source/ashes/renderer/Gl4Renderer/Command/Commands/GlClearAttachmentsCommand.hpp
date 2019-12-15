@@ -11,5 +11,6 @@ namespace ashes::gl4
 	void buildClearAttachmentsCommand( ContextStateStack & stack
 		, VkClearAttachmentArray clearAttaches
 		, VkClearRectArray clearRects
-		, CmdList & list );
+		, CmdList & list
+		, PreExecuteActions & preExecuteActions );
 }

@@ -42,7 +42,8 @@ namespace ashes::gl4
 		, VkDevice device
 		, VkPipeline pipeline
 		, VkPipelineBindPoint bindingPoint
-		, CmdList & list );
+		, CmdList & list
+		, PreExecuteActions & preExecuteActions );
 
 	void buildUnbindPipelineCommand( ContextStateStack & stack
 		, CmdList & list );

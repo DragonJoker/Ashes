@@ -22,7 +22,7 @@ namespace ashes::gl4
 		{
 			auto references = ashes::makeArrayView( subpass.pColorAttachments
 				, subpass.colorAttachmentCount );
-			list.push_back( makeCmd< OpType::eDrawBuffers >( get( frameBuffer )->getDrawBuffers( references, list ) ) );
+			list.push_back( makeCmd< OpType::eDrawBuffers >( get( frameBuffer )->getDrawBuffers( references ) ) );
 		}
 	}
 }

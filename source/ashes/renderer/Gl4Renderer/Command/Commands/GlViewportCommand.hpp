@@ -11,5 +11,6 @@ namespace ashes::gl4
 	void buildViewportCommand( ContextStateStack & stack
 		, uint32_t firstViewport
 		, VkViewportArray viewports
-		, CmdList & list );
+		, CmdList & list
+		, PreExecuteActions & preExecuteActions );
 }

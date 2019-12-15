@@ -17,7 +17,8 @@ namespace ashes::gl4
 	void buildClearAttachmentsCommand( ContextStateStack & stack
 		, VkClearAttachmentArray clearAttaches
 		, VkClearRectArray clearRects
-		, CmdList & list )
+		, CmdList & list
+		, PreExecuteActions & preExecuteActions )
 	{
 		glLogCommand( "ClearAttachmentsCommand" );
 
@@ -29,7 +30,7 @@ namespace ashes::gl4
 				{
 					rect.rect
 				};
-				stack.apply( list, 0u, scissors, false );
+				stack.apply( list, preExecuteActions, 0u, scissors, false );
 
 				if ( ashes::checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT ) )
 				{
