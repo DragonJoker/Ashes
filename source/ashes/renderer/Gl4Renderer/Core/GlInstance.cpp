@@ -286,38 +286,11 @@ namespace ashes::gl4
 		}
 	}
 
-	void Instance::registerDebugMessengerAMD( VkDebugUtilsMessengerEXT messenger
-		, PFNGLDEBUGAMDPROC callback
-		, void * userParam )const
-	{
-		auto context = ContextLock{ *m_context };
-
-		if ( context->m_glDebugMessageCallbackAMD )
-		{
-			m_debugAMDMessengers.push_back( { messenger, callback, userParam } );
-			glLogCall( context
-				, glDebugMessageCallbackAMD
-				, callback
-				, userParam );
-			glLogCall( context
-				, glEnable
-				, GL_DEBUG_OUTPUT_SYNC );
-		}
-	}
-
 	void Instance::submitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
 		, VkDebugUtilsMessageTypeFlagsEXT messageTypes
 		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const
 	{
 		for ( auto & callback : m_debugMessengers )
-		{
-			get( callback.debugMessenger )->submit( messageSeverity
-				, messageTypes
-				, callbackData
-				, callback.userParam );
-		}
-
-		for ( auto & callback : m_debugAMDMessengers )
 		{
 			get( callback.debugMessenger )->submit( messageSeverity
 				, messageTypes
@@ -348,25 +321,6 @@ namespace ashes::gl4
 		}
 	}
 
-	void Instance::registerDebugMessageCallbackAMD( VkDebugReportCallbackEXT report
-		, PFNGLDEBUGAMDPROC callback
-		, void * userParam )const
-	{
-		auto context = ContextLock{ *m_context };
-
-		if ( context->m_glDebugMessageCallbackAMD )
-		{
-			m_debugAMDCallbacks.push_back( { report, callback, userParam } );
-			glLogCall( context
-				, glDebugMessageCallbackAMD
-				, callback
-				, userParam );
-			glLogCall( context
-				, glEnable
-				, GL_DEBUG_OUTPUT_SYNC );
-		}
-	}
-
 	void Instance::reportMessage( VkDebugReportFlagsEXT flags
 		, VkDebugReportObjectTypeEXT objectType
 		, uint64_t object
@@ -376,17 +330,6 @@ namespace ashes::gl4
 		, const char * pMessage )
 	{
 		for ( auto & callback : m_debugCallbacks )
-		{
-			get( callback.debugReport )->report( flags
-				, objectType
-				, object
-				, location
-				, messageCode
-				, pLayerPrefix
-				, pMessage );
-		}
-
-		for ( auto & callback : m_debugAMDCallbacks )
 		{
 			get( callback.debugReport )->report( flags
 				, objectType
@@ -414,14 +357,6 @@ namespace ashes::gl4
 				, callback.userParam );
 		}
 
-		for ( auto & callback : m_debugAMDMessengers )
-		{
-			glLogCall( lock
-				, glDebugMessageCallbackAMD
-				, callback.callback
-				, callback.userParam );
-		}
-
 #endif
 #if VK_EXT_debug_report
 
@@ -433,24 +368,14 @@ namespace ashes::gl4
 				, callback.userParam );
 		}
 
-		for ( auto & callback : m_debugAMDCallbacks )
-		{
-			glLogCall( lock
-				, glDebugMessageCallbackAMD
-				, callback.callback
-				, callback.userParam );
-		}
-
 #endif
 
 		if ( false
 #if VK_EXT_debug_utils
 			|| !m_debugMessengers.empty()
-			|| !m_debugAMDMessengers.empty()
 #endif
 #if VK_EXT_debug_report
 			|| !m_debugCallbacks.empty()
-			|| !m_debugAMDCallbacks.empty()
 #endif
 			)
 		{

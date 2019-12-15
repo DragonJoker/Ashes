@@ -351,10 +351,17 @@ namespace ashes::gl4
 		, CmdPolygonOffset const & cmd )
 	{
 		glLogCall( context
-			, glPolygonOffsetClampEXT
+			, glPolygonOffsetClamp
 			, cmd.constantFactor
 			, cmd.slopeFactor
 			, cmd.clamp );
+	}
+
+	void apply( ContextLock const & context
+		, CmdPopDebugGroup const & cmd )
+	{
+		glLogCall( context
+			, glPopDebugGroup );
 	}
 
 	void apply( ContextLock const & context
@@ -363,6 +370,18 @@ namespace ashes::gl4
 		glLogCall( context
 			, glPrimitiveRestartIndex
 			, cmd.index );
+		
+	}
+
+	void apply( ContextLock const & context
+		, CmdPushDebugGroup const & cmd )
+	{
+		glLogCall( context
+			, glPushDebugGroup
+			, cmd.source
+			, cmd.id
+			, cmd.length
+			, cmd.message );
 		
 	}
 

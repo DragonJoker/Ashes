@@ -969,20 +969,20 @@ namespace ashes::gl4
 			{ labelInfo.color[0], labelInfo.color[1], labelInfo.color[2], labelInfo.color[3] },
 			labelInfo.pLabelName,
 		};
+		m_cmdList.push_back( makeCmd< OpType::ePushDebugGroup >( GL_DEBUG_SOURCE_APPLICATION
+			, 1u
+			, GLsizei( m_label.value().labelName.size() )
+			, m_label.value().labelName.c_str() ) );
 	}
 
 	void CommandBuffer::endDebugUtilsLabel()const
 	{
+		m_cmdList.push_back( makeCmd< OpType::ePopDebugGroup >() );
 		m_label = ashes::nullopt;
 	}
 
 	void CommandBuffer::insertDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const
 	{
-		m_label = DebugLabel
-		{
-			{ labelInfo.color[0], labelInfo.color[1], labelInfo.color[2], labelInfo.color[3] },
-			labelInfo.pLabelName,
-		};
 	}
 
 #endif
@@ -995,20 +995,20 @@ namespace ashes::gl4
 			{ labelInfo.color[0], labelInfo.color[1], labelInfo.color[2], labelInfo.color[3] },
 			labelInfo.pMarkerName,
 		};
+		m_cmdList.push_back( makeCmd< OpType::ePushDebugGroup >( GL_DEBUG_SOURCE_APPLICATION
+			, 1u
+			, GLsizei( m_label.value().labelName.size() )
+			, m_label.value().labelName.c_str() ) );
 	}
 
 	void CommandBuffer::debugMarkerEnd()const
 	{
+		m_cmdList.push_back( makeCmd< OpType::ePopDebugGroup >() );
 		m_label = ashes::nullopt;
 	}
 
 	void CommandBuffer::debugMarkerInsert( VkDebugMarkerMarkerInfoEXT const & labelInfo )const
 	{
-		m_label = DebugLabel
-		{
-			{ labelInfo.color[0], labelInfo.color[1], labelInfo.color[2], labelInfo.color[3] },
-			labelInfo.pMarkerName,
-		};
 	}
 
 #endif

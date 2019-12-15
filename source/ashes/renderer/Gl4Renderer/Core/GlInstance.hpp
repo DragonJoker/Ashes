@@ -52,9 +52,6 @@ namespace ashes::gl4
 		void registerDebugMessenger( VkDebugUtilsMessengerEXT messenger
 			, PFNGLDEBUGPROC callback
 			, void * userParam )const;
-		void registerDebugMessengerAMD( VkDebugUtilsMessengerEXT messenger
-			, PFNGLDEBUGAMDPROC callback
-			, void * userParam )const;
 		void submitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
 			, VkDebugUtilsMessageTypeFlagsEXT messageTypes
 			, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const;
@@ -62,9 +59,6 @@ namespace ashes::gl4
 #if VK_EXT_debug_report
 		void registerDebugMessageCallback( VkDebugReportCallbackEXT report
 			, PFNGLDEBUGPROC callback
-			, void * userParam )const;
-		void registerDebugMessageCallbackAMD( VkDebugReportCallbackEXT report
-			, PFNGLDEBUGAMDPROC callback
 			, void * userParam )const;
 		void reportMessage( VkDebugReportFlagsEXT flags
 			, VkDebugReportObjectTypeEXT objectType
@@ -98,22 +92,12 @@ namespace ashes::gl4
 			return m_debugMessengers;
 		}
 
-		inline std::vector< DebugUtilsAMDMessengerData > const & getDebugAMDMessengers()const
-		{
-			return m_debugAMDMessengers;
-		}
-
 #endif
 #if VK_EXT_debug_report
 
 		inline std::vector< DebugReportCallbackData > const & getDebugCallbacks()const
 		{
 			return m_debugCallbacks;
-		}
-
-		inline std::vector< DebugReportAMDCallbackData > const & getDebugAMDCallbacks()const
-		{
-			return m_debugAMDCallbacks;
 		}
 
 #endif
@@ -151,11 +135,9 @@ namespace ashes::gl4
 		std::set< VkDevice > m_devices;
 #if VK_EXT_debug_utils
 		mutable std::vector< DebugUtilsMessengerData > m_debugMessengers;
-		mutable std::vector< DebugUtilsAMDMessengerData > m_debugAMDMessengers;
 #endif
 #if VK_EXT_debug_report
 		mutable std::vector< DebugReportCallbackData > m_debugCallbacks;
-		mutable std::vector< DebugReportAMDCallbackData > m_debugAMDCallbacks;
 #endif
 	};
 }
