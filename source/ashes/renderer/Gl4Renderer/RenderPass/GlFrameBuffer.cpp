@@ -16,19 +16,51 @@ See LICENSE file in root folder.
 
 namespace ashes::gl4
 {
-	enum GlFramebufferStatus
-		: GLenum
+	namespace
 	{
-		GL_FRAMEBUFFER_STATUS_UNDEFINED = 0x8219,
-		GL_FRAMEBUFFER_STATUS_COMPLETE = 0x8CD5,
-		GL_FRAMEBUFFER_STATUS_INCOMPLETE_ATTACHMENT = 0x8CD6,
-		GL_FRAMEBUFFER_STATUS_INCOMPLETE_MISSING_ATTACHMENT = 0x8CD7,
-		GL_FRAMEBUFFER_STATUS_INCOMPLETE_DRAW_BUFFER = 0x8CDB,
-		GL_FRAMEBUFFER_STATUS_INCOMPLETE_READ_BUFFER = 0x8CDC,
-		GL_FRAMEBUFFER_STATUS_UNSUPPORTED = 0x8CDD,
-		GL_FRAMEBUFFER_STATUS_INCOMPLETE_MULTISAMPLE = 0x8D56,
-		GL_FRAMEBUFFER_STATUS_INCOMPLETE_LAYER_TARGETS = 0x8DA8,
-	};
+		enum GlFramebufferStatus
+			: GLenum
+		{
+			GL_FRAMEBUFFER_STATUS_UNDEFINED = 0x8219,
+			GL_FRAMEBUFFER_STATUS_COMPLETE = 0x8CD5,
+			GL_FRAMEBUFFER_STATUS_INCOMPLETE_ATTACHMENT = 0x8CD6,
+			GL_FRAMEBUFFER_STATUS_INCOMPLETE_MISSING_ATTACHMENT = 0x8CD7,
+			GL_FRAMEBUFFER_STATUS_INCOMPLETE_DRAW_BUFFER = 0x8CDB,
+			GL_FRAMEBUFFER_STATUS_INCOMPLETE_READ_BUFFER = 0x8CDC,
+			GL_FRAMEBUFFER_STATUS_UNSUPPORTED = 0x8CDD,
+			GL_FRAMEBUFFER_STATUS_INCOMPLETE_MULTISAMPLE = 0x8D56,
+			GL_FRAMEBUFFER_STATUS_INCOMPLETE_LAYER_TARGETS = 0x8DA8,
+		};
+
+		void bindAttach( FboAttachment const & attachment
+			, uint32_t index
+			, CmdList & list )
+		{
+			if ( attachment.layerCount > 1u )
+			{
+				list.push_back( makeCmd< OpType::eFramebufferTexture >( GL_FRAMEBUFFER
+					, GlAttachmentPoint( attachment.point + index )
+					, attachment.object
+					, attachment.mipLevel ) );
+			}
+			else
+			{
+				list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
+					, GlAttachmentPoint( attachment.point + index )
+					, attachment.target
+					, attachment.object
+					, attachment.mipLevel ) );
+			}
+		}
+
+		void bindAttach( FboAttachment const & attachment
+			, CmdList & list )
+		{
+			bindAttach( attachment
+				, attachment.index
+				, list );
+		}
+	}
 
 	bool isSRGBFormat( VkFormat format )
 	{
@@ -284,47 +316,28 @@ namespace ashes::gl4
 
 	void Framebuffer::doBindAttaches()
 	{
-		auto bindAttach = [this]( FboAttachment const & attachment )
-		{
-			if ( attachment.layerCount > 1u )
-			{
-				m_bindAttaches.push_back( makeCmd< OpType::eFramebufferTexture >( GL_FRAMEBUFFER
-					, GlAttachmentPoint( attachment.point + attachment.index )
-					, attachment.object
-					, attachment.mipLevel ) );
-			}
-			else
-			{
-				m_bindAttaches.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
-					, GlAttachmentPoint( attachment.point + attachment.index )
-					, attachment.target
-					, attachment.object
-					, attachment.mipLevel ) );
-			}
-		};
-
 		if ( !m_multisampled )
 		{
 			if ( m_depthStencilAttach )
 			{
-				bindAttach( *m_depthStencilAttach );
+				bindAttach( *m_depthStencilAttach, m_bindAttaches );
 			}
 
 			for ( auto & attachment : m_colourAttaches )
 			{
-				bindAttach( attachment );
+				bindAttach( attachment, m_bindAttaches );
 			}
 		}
 		else
 		{
 			if ( m_depthStencilMsAttach )
 			{
-				bindAttach( *m_depthStencilMsAttach );
+				bindAttach( *m_depthStencilMsAttach, m_bindAttaches );
 			}
 
 			for ( auto & attachment : m_colourMsAttaches )
 			{
-				bindAttach( attachment );
+				bindAttach( attachment, m_bindAttaches );
 			}
 		}
 
