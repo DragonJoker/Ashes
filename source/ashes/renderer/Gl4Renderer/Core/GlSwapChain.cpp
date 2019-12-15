@@ -144,6 +144,17 @@ namespace ashes::gl4
 		}
 
 		auto context = get( m_device )->getContext();
+
+		if ( context->hasPushDebugGroup() )
+		{
+			glLogCall( context
+				, glPushDebugGroup
+				, GL_DEBUG_SOURCE_APPLICATION
+				, 1u
+				, -1
+				, "Swapchain final swap" );
+		}
+
 		glLogCall( context
 			, glBindFramebuffer
 			, GL_READ_FRAMEBUFFER
@@ -172,6 +183,12 @@ namespace ashes::gl4
 			, GL_READ_FRAMEBUFFER
 			, 0 );
 		context->swapBuffers();
+
+		if ( context->hasPushDebugGroup() )
+		{
+			glLogCall( context
+				, glPopDebugGroup );
+		}
 		return VK_SUCCESS;
 	}
 }

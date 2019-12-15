@@ -257,8 +257,14 @@ namespace ashes::gl4
 			case OpType::ePolygonOffset:
 				apply( lock, map< OpType::ePolygonOffset >( cmd ) );
 				break;
+			case OpType::ePopDebugGroup:
+				apply( lock, map< OpType::ePopDebugGroup >( cmd ) );
+				break;
 			case OpType::ePrimitiveRestartIndex:
 				apply( lock, map< OpType::ePrimitiveRestartIndex >( cmd ) );
+				break;
+			case OpType::ePushDebugGroup:
+				apply( lock, map< OpType::ePushDebugGroup >( cmd ) );
 				break;
 			case OpType::eReadBuffer:
 				apply( lock, map< OpType::eReadBuffer >( cmd ) );

@@ -66,7 +66,6 @@ namespace ashes::gl4
 		m_impl->preInitialise( MinMajor, MinMinor );
 		m_impl->enable();
 		loadBaseFunctions();
-		loadDebugFunctions();
 		m_impl->disable();
 		m_impl->postInitialise();
 		m_extent = m_impl->extent;
@@ -225,40 +224,12 @@ namespace ashes::gl4
 		{\
 			std::cerr << "Couldn't load function " << "gl"#fun << std::endl;\
 		}
+#define GL_LIB_FUNCTION_EXT( fun, ... )\
+		if ( !( getFunction( "gl"#fun, m_gl##fun, __VA_ARGS__ ) ) )\
+		{\
+			std::cerr << "Unable to retrieve function gl"#fun << std::endl;\
+		}
 #include "Miscellaneous/OpenGLFunctionsList.inl"
-	}
-
-	void Context::loadDebugFunctions()
-	{
-		auto & extensions = get( m_impl->instance )->getExtensions();
-
-		if ( extensions.find( KHR_debug ) )
-		{
-			if ( !getFunction( "glDebugMessageCallback", m_glDebugMessageCallback ) )
-			{
-				if ( !getFunction( "glDebugMessageCallbackKHR", m_glDebugMessageCallback ) )
-				{
-					std::cerr << "Unable to retrieve function glDebugMessageCallback" << std::endl;
-				}
-			}
-		}
-		else if ( extensions.find( ARB_debug_output ) )
-		{
-			if ( !getFunction( "glDebugMessageCallback", m_glDebugMessageCallback ) )
-			{
-				if ( !getFunction( "glDebugMessageCallbackARB", m_glDebugMessageCallback ) )
-				{
-					std::cerr << "Unable to retrieve function glDebugMessageCallback" << std::endl;
-				}
-			}
-		}
-		else if ( extensions.find( AMDX_debug_output ) )
-		{
-			if ( !getFunction( "glDebugMessageCallbackAMD", m_glDebugMessageCallbackAMD ) )
-			{
-				std::cerr << "Unable to retrieve function glDebugMessageCallbackAMD" << std::endl;
-			}
-		}
 	}
 
 	void Context::initialiseThreadState( ContextState const & state )

@@ -121,6 +121,14 @@ namespace ashes::gl4
 			, glGenTextures
 			, 1
 			, &m_internal );
+		glLogCall( context
+			, glBindTexture
+			, m_target
+			, m_internal );
+		glLogCall( context
+			, glBindTexture
+			, m_target
+			, 0 );
 		doInitialiseMemoryRequirements();
 	}
 
