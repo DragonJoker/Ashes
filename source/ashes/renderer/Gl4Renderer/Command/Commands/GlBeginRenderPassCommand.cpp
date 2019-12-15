@@ -170,15 +170,7 @@ namespace ashes::gl4
 		stack.setRenderArea( get( frameBuffer )->getDimensions() );
 		stack.apply( list, 0u, VkScissorArray{}, true );
 		stack.apply( list, 0u, VkViewportArray{}, true );
-
-		if ( get( frameBuffer )->isSRGB() )
-		{
-			list.push_back( makeCmd< OpType::eEnable >( GL_FRAMEBUFFER_SRGB ) );
-		}
-		else
-		{
-			list.push_back( makeCmd< OpType::eDisable >( GL_FRAMEBUFFER_SRGB ) );
-		}
+		stack.applySRGBStatus( list, get( frameBuffer )->isSRGB(), true );
 
 		if ( !stack.hasCurrentFramebuffer()
 			|| stack.getCurrentFramebuffer() != frameBuffer )
