@@ -180,46 +180,13 @@ namespace ashes::gl4
 			stack.setCurrentFramebuffer( frameBuffer );
 		}
 
-		auto & attaches = get( frameBuffer )->getAllAttaches();
-		UInt32Array drawBuffers;
-
-		if ( get( frameBuffer )->getInternal() )
-		{
-			list.insert( list.end()
-				, get( frameBuffer )->getBindAttaches().begin()
-				, get( frameBuffer )->getBindAttaches().end() );
-			auto & attachments = get( frameBuffer )->getAttachments();
-
-			for ( auto & reference : *get( renderPass ) )
-			{
-				auto fboAttach = attachments[reference.attachment];
-				auto fboView = get( fboAttach );
-
-				if ( !isDepthStencilFormat( fboView->getFormat() )
-					&& !isDepthFormat( fboView->getFormat() )
-					&& !isStencilFormat( fboView->getFormat() ) )
-				{
-					auto & attach = attaches[reference.attachment];
-					auto fboImage = get( fboView->getImage() );
-
-					if ( fboImage->hasInternal() )
-					{
-						drawBuffers.push_back( attach.point );
-					}
-					else if ( attaches.size() == 1 )
-					{
-						drawBuffers.push_back( GL_ATTACHMENT_POINT_BACK );
-					}
-				}
-			}
-
-			list.push_back( makeCmd< OpType::eDrawBuffers >( std::move( drawBuffers ) ) );
-			clearAttaches( frameBuffer, renderPass, rtClearValues, dsClearValue, list, false );
-		}
-		else
-		{
-			auto mask = clearAttaches( frameBuffer, renderPass, rtClearValues, dsClearValue, list, true );
-			list.push_back( makeCmd< OpType::eClearBack >( mask ) );
-		}
+		assert( get( frameBuffer )->getInternal() );
+		list.insert( list.end()
+			, get( frameBuffer )->getBindAttaches().begin()
+			, get( frameBuffer )->getBindAttaches().end() );
+		auto references = makeArrayView( get( renderPass )->begin()
+			, get( renderPass )->end() );
+		list.push_back( makeCmd< OpType::eDrawBuffers >( get( frameBuffer )->getDrawBuffers( references, list ) ) );
+		clearAttaches( frameBuffer, renderPass, rtClearValues, dsClearValue, list, false );
 	}
 }
