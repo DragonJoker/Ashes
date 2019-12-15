@@ -149,7 +149,6 @@ namespace ashes::gl4
 namespace ashes::gl4
 {
 	using PFNGLDEBUGPROC = void ( GLAPIENTRY * )( uint32_t, uint32_t, uint32_t, uint32_t, int, const char *, void * );
-	using PFNGLDEBUGAMDPROC = void ( GLAPIENTRY * )( uint32_t, uint32_t, uint32_t, int, const char *, void * );
 
 	using PFN_glActiveTexture = void ( GLAPIENTRY * )( GLenum texture );
 	using PFN_glAttachShader = void ( GLAPIENTRY * )( GLuint program, GLuint shader );
@@ -193,7 +192,6 @@ namespace ashes::gl4
 	using PFN_glCreateShaderProgramv = GLuint( GLAPIENTRY * )( GLenum type, GLsizei count, const char ** strings );
 	using PFN_glCullFace = void ( GLAPIENTRY * )( GLenum mode );
 	using PFN_glDebugMessageCallback = void ( GLAPIENTRY * )( PFNGLDEBUGPROC callback, void * userParam );
-	using PFN_glDebugMessageCallbackAMD = void ( GLAPIENTRY * )( PFNGLDEBUGAMDPROC callback, void * userParam );
 	using PFN_glDeleteBuffers = void ( GLAPIENTRY * )( GLsizei n, const GLuint * buffers );
 	using PFN_glDeleteFramebuffers = void ( GLAPIENTRY * )( GLsizei n, const GLuint* framebuffers );
 	using PFN_glDeleteProgram = void ( GLAPIENTRY * )( GLuint program );
@@ -282,7 +280,8 @@ namespace ashes::gl4
 	using PFN_glPatchParameteri = void ( GLAPIENTRY * )( GLenum pname, GLint value );
 	using PFN_glPixelStorei = void ( GLAPIENTRY * )( GLenum pname, GLint param );
 	using PFN_glPolygonMode = void ( GLAPIENTRY * )( GLenum face, GLenum mode );
-	using PFN_glPolygonOffsetClampEXT = void ( GLAPIENTRY * )( GLfloat factor, GLfloat units, GLfloat clamp );
+	using PFN_glPolygonOffsetClamp = void ( GLAPIENTRY * )( GLfloat factor, GLfloat units, GLfloat clamp );
+	using PFN_glPopDebugGroup = void ( GLAPIENTRY * )();
 	using PFN_glPrimitiveRestartIndex = void ( GLAPIENTRY * )( GLuint index );
 	using PFN_glProgramParameteri = void ( GLAPIENTRY * )( GLuint program, GLenum pname, GLint value );
 	using PFN_glProgramUniform1fv = void ( GLAPIENTRY * )( GLuint program, GLint location, GLsizei count, const GLfloat * value );
@@ -300,6 +299,7 @@ namespace ashes::gl4
 	using PFN_glProgramUniformMatrix2fv = void ( GLAPIENTRY * )( GLuint program, GLint location, GLsizei count, GLboolean transpose, const GLfloat * value );
 	using PFN_glProgramUniformMatrix3fv = void ( GLAPIENTRY * )( GLuint program, GLint location, GLsizei count, GLboolean transpose, const GLfloat * value );
 	using PFN_glProgramUniformMatrix4fv = void ( GLAPIENTRY * )( GLuint program, GLint location, GLsizei count, GLboolean transpose, const GLfloat * value );
+	using PFN_glPushDebugGroup = void( GLAPIENTRY * )( GLenum source, GLuint id, GLsizei length, const GLchar * message );
 	using PFN_glQueryCounter = void ( GLAPIENTRY * )( GLuint id, GLenum target );
 	using PFN_glReadBuffer = void ( GLAPIENTRY * )( GLenum mode );
 	using PFN_glReadPixels = void( GLAPIENTRY * )( GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, void *pixels );

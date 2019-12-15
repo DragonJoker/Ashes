@@ -25,14 +25,13 @@ namespace ashes::gl
 
 	private:
 		void doCleanup();
-		bool doSelectFormat();
-		static LRESULT CALLBACK WndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 
 	private:
+		HINSTANCE m_hInstance{ nullptr };
+		ATOM m_class{ 0u };
 		HWND m_hWnd{ nullptr };
 		HDC m_hDC{ nullptr };
 		HGLRC m_hContext{ nullptr };
-		HINSTANCE m_hInstance{ nullptr };
 	};
 }
 

@@ -235,52 +235,84 @@ namespace ashes::gl4
 		return getInstance( get( object )->getLayout() );
 	}
 
+#if VK_EXT_debug_utils
+
+	template< typename VkObject >
+	inline void debugUtilsSubmit( VkDebugUtilsMessageSeverityFlagBitsEXT severity
+		, VkObject object
+		, VkResult result
+		, std::string const & errorName
+		, std::string const & name )
+	{
+		VkInstance instance = getInstance( object );
+		VkDebugUtilsObjectNameInfoEXT objectName
+		{
+			VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+			nullptr,
+			ashes::VkTypeTraits< VkObject >::UtilsValue,
+			uint64_t( object ),
+			ashes::VkTypeTraits< VkObject >::getName().c_str(),
+		};
+		get( instance )->submitDebugUtilsMessenger( severity
+			, VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
+			, {
+				VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT,
+				nullptr,
+				0u,
+				errorName.c_str(),
+				result,
+				name.c_str(),
+				0u,
+				nullptr,
+				0u,
+				nullptr,
+				1u,
+				&objectName,
+			} );
+	}
+
+#endif
+#if VK_EXT_debug_report
+
+	template< typename VkObject >
+	inline void debugReportMessage( VkDebugReportFlagBitsEXT report
+		, VkObject object
+		, VkResult result
+		, std::string const & errorName
+		, std::string const & name )
+	{
+		VkInstance instance = getInstance( object );
+		std::string text = errorName + ": " + name;
+		get( instance )->reportMessage( report
+			, ashes::VkTypeTraits< VkObject >::ReportValue
+			, uint64_t( object )
+			, 0u
+			, result
+			, "OpenGL3"
+			, text.c_str() );
+	}
+
+#endif
+
 	template< typename VkObject >
 	inline void reportError( VkObject object
 		, VkResult result
 		, std::string const & errorName
 		, std::string const & name )
 	{
-		VkInstance instance = getInstance( object );
 #if VK_EXT_debug_utils
-		{
-			VkDebugUtilsObjectNameInfoEXT objectName
-			{
-				VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
-				nullptr,
-				ashes::VkTypeTraits< VkObject >::UtilsValue,
-				uint64_t( object ),
-				ashes::VkTypeTraits< VkObject >::getName().c_str(),
-			};
-			get( instance )->submitDebugUtilsMessenger( VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
-				, VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
-				, {
-					VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT,
-					nullptr,
-					0u,
-					errorName.c_str(),
-					result,
-					name.c_str(),
-					0u,
-					nullptr,
-					0u,
-					nullptr,
-					1u,
-					&objectName,
-				} );
-		}
+		debugUtilsSubmit( VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
+			, object
+			, result
+			, errorName
+			, name );
 #endif
 #if VK_EXT_debug_report
-		{
-			std::string text = errorName + ": " + name;
-			get( instance )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
-				, ashes::VkTypeTraits< VkObject >::ReportValue
-				, uint64_t( object )
-				, 0u
-				, result
-				, "OpenGL3"
-				, text.c_str() );
-		}
+		debugReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+			, object
+			, result
+			, errorName
+			, name );
 #endif
 	}
 
@@ -290,46 +322,19 @@ namespace ashes::gl4
 		, std::string const & errorName
 		, std::string const & name )
 	{
-		VkInstance instance = getInstance( object );
 #if VK_EXT_debug_utils
-		{
-			VkDebugUtilsObjectNameInfoEXT object
-			{
-				VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
-				nullptr,
-				ashes::VkTypeTraits< VkObject >::UtilsValue,
-				uint64_t( object ),
-				ashes::VkTypeTraits< VkObject >::getName().c_str(),
-			};
-			get( instance )->submitDebugUtilsMessenger( VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
-				, VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
-				, {
-					VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT,
-					nullptr,
-					0u,
-					errorName.c_str(),
-					result,
-					name.c_str(),
-					0u,
-					nullptr,
-					0u,
-					nullptr,
-					1u,
-					&object,
-				} );
-		}
+		debugUtilsSubmit( VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
+			, object
+			, result
+			, errorName
+			, name );
 #endif
 #if VK_EXT_debug_report
-		{
-			std::string text = errorName + ": " + name;
-			get( instance )->reportMessage( VK_DEBUG_REPORT_WARNING_BIT_EXT
-				, ashes::VkTypeTraits< VkObject >::ReportValue
-				, uint64_t( object )
-				, 0u
-				, result
-				, "OpenGL3"
-				, text.c_str() );
-		}
+		debugReportMessage( VK_DEBUG_REPORT_WARNING_BIT_EXT
+			, object
+			, result
+			, errorName
+			, name );
 #endif
 	}
 

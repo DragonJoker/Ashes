@@ -88,7 +88,9 @@ namespace ashes::gl4
 		ePixelStore,
 		ePolygonMode,
 		ePolygonOffset,
+		ePopDebugGroup,
 		ePrimitiveRestartIndex,
+		ePushDebugGroup,
 		eReadBuffer,
 		eReadPixels,
 		eResetEvent,
@@ -1222,6 +1224,29 @@ namespace ashes::gl4
 	//*************************************************************************
 
 	template<>
+	struct CmdConfig< OpType::ePopDebugGroup >
+	{
+		static Op constexpr value = { OpType::ePopDebugGroup, 2u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::ePopDebugGroup >
+	{
+		inline CmdT()
+			: cmd{ { OpType::ePopDebugGroup, sizeof( CmdT ) / sizeof( uint32_t ) } }
+		{
+		}
+
+		Command cmd;
+	};
+	using CmdPopDebugGroup = CmdT< OpType::ePopDebugGroup >;
+
+	void apply( ContextLock const & context
+		, CmdPopDebugGroup const & cmd );
+
+	//*************************************************************************
+
+	template<>
 	struct CmdConfig< OpType::ePrimitiveRestartIndex >
 	{
 		static Op constexpr value = { OpType::ePrimitiveRestartIndex, 3u };
@@ -1243,6 +1268,44 @@ namespace ashes::gl4
 
 	void apply( ContextLock const & context
 		, CmdPrimitiveRestartIndex const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::ePushDebugGroup >
+	{
+		static Op constexpr value = { OpType::ePushDebugGroup, 6u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::ePushDebugGroup >
+	{
+		inline CmdT( GlDebugSource source
+			, GLuint id 
+			, GLsizei length 
+			, const char * message )
+			: cmd{ { OpType::ePushDebugGroup, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, source{ source }
+			, id{ id }
+			, length{ length }
+		{
+			this->length = GLsizei( std::min( strnlen( message, length ), size_t( 255u ) ) );
+			strncpy( this->message
+				, message
+				, this->length );
+			this->message[this->length] = 0;
+		}
+
+		Command cmd;
+		GlDebugSource source;
+		GLuint id;
+		GLsizei length;
+		char message[256];
+	};
+	using CmdPushDebugGroup = CmdT< OpType::ePushDebugGroup >;
+
+	void apply( ContextLock const & context
+		, CmdPushDebugGroup const & cmd );
 
 	//*************************************************************************
 
@@ -1664,7 +1727,7 @@ namespace ashes::gl4
 	template< OpType OpT >
 	CmdT< OpT > & map( Command & cmd )
 	{
-		return *reinterpret_cast< CmdT< OpT > const * >( &cmd );
+		return *reinterpret_cast< CmdT< OpT > * >( &cmd );
 	}
 
 	template< typename IterT, OpType OpT >

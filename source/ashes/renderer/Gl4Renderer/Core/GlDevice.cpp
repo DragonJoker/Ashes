@@ -48,19 +48,18 @@ namespace ashes::gl4
 			switch ( value )
 			{
 			case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT:
-				result = reinterpret_cast< Buffer const * >( object )->getInternal();
-				break;
 			case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT:
-				result = reinterpret_cast< Image const * >( object )->getInternal();
-				break;
 			case VK_DEBUG_REPORT_OBJECT_TYPE_QUERY_POOL_EXT:
-				result = *reinterpret_cast< QueryPool const * >( object )->begin();
-				break;
 			case VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT:
-				result = reinterpret_cast< Sampler const * >( object )->getInternal();
-				break;
 			case VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT:
-				result = reinterpret_cast< Framebuffer const * >( object )->getInternal();
+				if ( reinterpret_cast< gl::IcdObject const * >( object )->hasInternal() )
+				{
+					result = reinterpret_cast< gl::IcdObject const * >( object )->getInternal();
+				}
+				else
+				{
+					result = GL_INVALID_INDEX;
+				}
 				break;
 			default:
 				result = GL_INVALID_INDEX;
@@ -78,19 +77,18 @@ namespace ashes::gl4
 			switch ( value )
 			{
 			case VK_OBJECT_TYPE_BUFFER:
-				result = reinterpret_cast< Buffer const * >( object )->getInternal();
-				break;
 			case VK_OBJECT_TYPE_IMAGE:
-				result = reinterpret_cast< Image const * >( object )->getInternal();
-				break;
 			case VK_OBJECT_TYPE_QUERY_POOL:
-				result = *reinterpret_cast< QueryPool const * >( object )->begin();
-				break;
 			case VK_OBJECT_TYPE_SAMPLER:
-				result = reinterpret_cast< Sampler const * >( object )->getInternal();
-				break;
 			case VK_OBJECT_TYPE_FRAMEBUFFER:
-				result = reinterpret_cast< Framebuffer const * >( object )->getInternal();
+				if ( reinterpret_cast< gl::IcdObject const * >( object )->hasInternal() )
+				{
+					result = reinterpret_cast< gl::IcdObject const * >( object )->getInternal();
+				}
+				else
+				{
+					result = GL_INVALID_INDEX;
+				}
 				break;
 			default:
 				result = GL_INVALID_INDEX;
