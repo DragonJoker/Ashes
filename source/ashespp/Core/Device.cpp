@@ -391,8 +391,15 @@ namespace ashes
 
 	bool Device::doCheckExtension( std::string const & name )const
 	{
-		return m_createInfos.enabledExtensionNames.end() != std::find( m_createInfos.enabledExtensionNames.begin()
+		auto result = m_createInfos.enabledExtensionNames.end() != std::find( m_createInfos.enabledExtensionNames.begin()
 			, m_createInfos.enabledExtensionNames.end()
 			, name );
+
+		if ( !result )
+		{
+			result = m_instance.checkExtension( name );
+		}
+
+		return result;
 	}
 }
