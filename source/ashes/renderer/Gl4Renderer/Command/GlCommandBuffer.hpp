@@ -175,6 +175,7 @@ namespace ashes::gl4
 		void debugMarkerInsert( VkDebugMarkerMarkerInfoEXT const & labelInfo )const;
 #endif
 		void initialiseGeometryBuffers( ContextLock & context )const;
+		void addPreExecuteAction( PreExecuteAction action );
 
 		inline CmdBuffer const & getCmds()const
 		{
@@ -209,6 +210,7 @@ namespace ashes::gl4
 		};
 
 	private:
+		void doApplyPreExecuteCommands( ContextStateStack const & stack )const;
 		void doReset()const;
 		void doSelectVao()const;
 		void doProcessMappedBoundDescriptorBuffersIn( VkDescriptorSet descriptor )const;
@@ -254,5 +256,6 @@ namespace ashes::gl4
 		mutable VkImageViewArray m_blitViews;
 		mutable Optional< DebugLabel > m_label;
 		std::vector< std::unique_ptr< ByteArray > > m_updatesData;
+		mutable PreExecuteActions m_preExecuteActions;
 	};
 }

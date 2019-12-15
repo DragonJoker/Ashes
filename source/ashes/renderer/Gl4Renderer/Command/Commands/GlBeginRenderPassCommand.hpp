@@ -146,7 +146,8 @@ namespace ashes::gl4
 		, VkFramebuffer frameBuffer
 		, VkClearValueArray clearValues
 		, VkSubpassContents contents
-		, CmdList & list );
+		, CmdList & list
+		, PreExecuteActions & preExecuteActions );
 
 	//*************************************************************************
 }

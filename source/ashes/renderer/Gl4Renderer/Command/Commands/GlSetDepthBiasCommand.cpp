@@ -8,23 +8,13 @@ See LICENSE file in root folder.
 
 namespace ashes::gl4
 {
-	void apply( ContextLock const & context
-		, CmdSetDepthBias const & cmd )
-	{
-		glLogCall( context
-			, glPolygonOffsetClampEXT
-			, cmd.slopeFactor
-			, cmd.constantFactor
-			, cmd.clamp );
-	}
-
 	void buildSetDepthBiasCommand( float constantFactor
 		, float clamp
 		, float slopeFactor
 		, CmdList & list )
 	{
 		glLogCommand( "SetDepthBiasCommand" );
-		list.push_back( makeCmd< OpType::eSetDepthBias >( constantFactor
+		list.push_back( makeCmd< OpType::ePolygonOffset >( constantFactor
 			, clamp
 			, slopeFactor ) );
 	}
