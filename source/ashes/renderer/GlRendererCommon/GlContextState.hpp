@@ -69,6 +69,7 @@ namespace ashes::gl
 		VkPipelineRasterizationStateCreateInfo rsState;
 		VkDynamicStateArray dynamicStates;
 		VkPipelineDynamicStateCreateInfo dyState;
+		bool sRGB{ false };
 
 	private:
 		void doInit();
