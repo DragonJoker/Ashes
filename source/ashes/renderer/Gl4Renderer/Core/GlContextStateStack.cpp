@@ -16,7 +16,12 @@ namespace ashes::gl4
 {
 	namespace
 	{
-		thread_local ContextState initialState;
+		thread_local ContextState initialState = []()
+		{
+			VkPipelineColorBlendAttachmentStateArray cbStateAttachments{ 1u, getColourBlendStateAttachment() };
+			VkPipelineColorBlendStateCreateInfo cbState{ getDefaultColorBlendState( cbStateAttachments ) };
+			return ContextState{ std::move( cbState ) };
+		}();
 
 		bool doApplyEnable( CmdList & list
 			, uint32_t value
@@ -431,11 +436,7 @@ namespace ashes::gl4
 	void ContextStateStack::apply( ContextLock const & context
 		, ContextState & state )
 	{
-		if ( !m_save )
-		{
-			m_save = &context->getState();
-		}
-
+		doCheckSave( &context->getState() );
 		CmdList list;
 		apply( list, state, true );
 		applyList( context, list );
@@ -445,12 +446,7 @@ namespace ashes::gl4
 		, ContextState & newState
 		, bool force )
 	{
-		if ( !m_save )
-		{
-			m_save = &initialState;
-			force = true;
-		}
-
+		force = doCheckSave() || force;
 		doApply( list, newState.cbState, force );
 		doApply( list, newState.dsState, force );
 		doApply( list, newState.msState, force );
@@ -470,6 +466,8 @@ namespace ashes::gl4
 		, VkScissorArray const & scissors
 		, bool force )
 	{
+		force = doCheckSave() || force;
+
 		if ( force || getCurrentScissors() != scissors )
 		{
 			doApplyEnable( list
@@ -498,6 +496,8 @@ namespace ashes::gl4
 		, VkViewportArray const & viewports
 		, bool force )
 	{
+		force = doCheckSave() || force;
+
 		if ( force || getCurrentViewports() != viewports )
 		{
 			if ( !viewports.empty() )
@@ -520,10 +520,32 @@ namespace ashes::gl4
 		}
 	}
 
+	void ContextStateStack::applySRGBStatus( CmdList & list
+		, bool enable
+		, bool force )
+	{
+		force = doCheckSave() || force;
+
+		if ( enable != m_save->sRGB )
+		{
+			if ( enable )
+			{
+				list.push_back( makeCmd< OpType::eEnable >( GL_FRAMEBUFFER_SRGB ) );
+			}
+			else
+			{
+				list.push_back( makeCmd< OpType::eDisable >( GL_FRAMEBUFFER_SRGB ) );
+			}
+
+			m_save->sRGB = enable;
+		}
+	}
+
 	void ContextStateStack::applyStencilCompareMask( CmdList & list
 		, uint32_t compareMask
 		, VkStencilFaceFlags faceFlags )
 	{
+		doCheckSave();
 		auto & save = m_save->dsState;
 
 		if ( faceFlags & VK_STENCIL_FACE_FRONT_BIT )
@@ -555,6 +577,7 @@ namespace ashes::gl4
 		, uint32_t writeMask
 		, VkStencilFaceFlags faceFlags )
 	{
+		doCheckSave();
 		auto & save = m_save->dsState;
 
 		if ( faceFlags & VK_STENCIL_FACE_FRONT_BIT )
@@ -578,6 +601,7 @@ namespace ashes::gl4
 		, uint32_t reference
 		, VkStencilFaceFlags faceFlags )
 	{
+		doCheckSave();
 		auto & save = m_save->dsState;
 
 		if ( faceFlags & VK_STENCIL_FACE_FRONT_BIT )
@@ -789,5 +813,27 @@ namespace ashes::gl4
 			, 0u
 			, VkScissorArray{ newState.pScissors, newState.pScissors + newState.scissorCount }
 			, force );
+	}
+
+	bool ContextStateStack::doCheckSave( ContextState * state )
+	{
+		bool result = m_save;
+
+		if ( !result )
+		{
+			if ( state )
+			{
+				m_save = state;
+			}
+			else
+			{
+				m_ownInitial = std::make_unique< ContextState >( initialState );
+				m_save = m_ownInitial.get();
+			}
+
+			result = true;
+		}
+
+		return result;
 	}
 }

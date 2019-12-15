@@ -28,6 +28,9 @@ namespace ashes::gl4
 			, uint32_t firstScissor
 			, VkScissorArray const & scissors
 			, bool force );
+		void applySRGBStatus( CmdList & list
+			, bool enable
+			, bool force );
 		void applyStencilCompareMask( CmdList & list
 			, uint32_t compareMask
 			, VkStencilFaceFlags faceFlags );
@@ -123,8 +126,10 @@ namespace ashes::gl4
 		void doApply( CmdList & list
 			, VkPipelineViewportStateCreateInfo const & newState
 			, bool force );
+		bool doCheckSave( ContextState * state = nullptr );
 
 	private:
+		std::unique_ptr< ContextState > m_ownInitial;
 		ContextState * m_save{ nullptr };
 		VkExtent2D m_renderArea;
 		VkScissorArray m_scissors;
