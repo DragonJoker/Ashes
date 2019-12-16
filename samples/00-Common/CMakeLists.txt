@@ -19,9 +19,9 @@ set( SOURCE_FILES
 	Src/RenderTarget.cpp
 	Src/Scene.cpp
 	Src/TransparentRendering.cpp
-	../../external/imgui/imgui.cpp
-	../../external/imgui/imgui_draw.cpp
-	../../external/imgui/imgui_widgets.cpp
+	${Ashes_SOURCE_DIR}/external/imgui/imgui.cpp
+	${Ashes_SOURCE_DIR}/external/imgui/imgui_draw.cpp
+	${Ashes_SOURCE_DIR}/external/imgui/imgui_widgets.cpp
 )
 file( GLOB HEADER_FILES
 	Src/Application.hpp
@@ -65,8 +65,18 @@ add_library( ${PROJECT_NAME} STATIC
 	${HEADER_FILES}
 	${GLSL_SHADER_FILES}
 )
-target_link_libraries( ${PROJECT_NAME} PRIVATE
-	${BinLibraries}
+target_link_libraries( ${PROJECT_NAME}
+	PRIVATE
+		${Ashes_BINARY_LIBRARIES}
+	PUBLIC
+		ashes::ashespp
+)
+target_include_directories( ${PROJECT_NAME}
+	PUBLIC
+		${Vulkan_INCLUDE_DIR}
+		${Ashes_SOURCE_DIR}/include
+		${CMAKE_CURRENT_SOURCE_DIR}/Src
+		${Ashes_SOURCE_DIR}/external/imgui
 )
 add_dependencies( ${PROJECT_NAME}
 	${ENABLED_RENDERERS}

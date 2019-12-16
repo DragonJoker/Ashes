@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "renderer/Gl4Renderer/GlRendererPrerequisites.hpp"
 
-#include <common/ArrayView.hpp>
+#include <ashes/common/ArrayView.hpp>
 
 #include <array>
 

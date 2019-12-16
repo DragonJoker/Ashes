@@ -11,11 +11,12 @@
 #include <ashes/ashes.hpp>
 
 #include <renderer/RendererCommon/AshesRendererPrerequisites.hpp>
-#include <common/ArrayView.hpp>
 #include <renderer/RendererCommon/Helper/ConstantFormat.hpp>
-#include <common/Format.hpp>
-#include <common/FlagCombination.hpp>
-#include <common/Signal.hpp>
+
+#include <ashes/common/ArrayView.hpp>
+#include <ashes/common/Format.hpp>
+#include <ashes/common/FlagCombination.hpp>
+#include <ashes/common/Signal.hpp>
 
 #include <array>
 #include <cassert>

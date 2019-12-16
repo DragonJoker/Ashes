@@ -1,7 +1,7 @@
 #define ASHES_VK_PROTOTYPES
 #include <ashes/ashes.h>
 
-#include <common/DynamicLibrary.hpp>
+#include <ashes/common/DynamicLibrary.hpp>
 
 #include <memory>
 #include <vector>

@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <common/FlagCombination.hpp>
+#include <ashes/common/FlagCombination.hpp>
 
 namespace ashes::gl4
 {

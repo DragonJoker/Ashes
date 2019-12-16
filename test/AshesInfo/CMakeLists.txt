@@ -1,8 +1,8 @@
 set( FOLDER_NAME AshesInfo )
 project( "${FOLDER_NAME}" )
 
-set( BinLibraries
-	${BinLibraries}
+set( Ashes_BINARY_LIBRARIES
+	${Ashes_BINARY_LIBRARIES}
 	ashes::common
 	ashes::ashes
 )
@@ -10,8 +10,8 @@ set( BinLibraries
 if ( WIN32 )
 elseif ( APPLE )
 else ()
-	set( BinLibraries
-		${BinLibraries}
+	set( Ashes_BINARY_LIBRARIES
+		${Ashes_BINARY_LIBRARIES}
 		X11
 	)
 endif ()
@@ -40,10 +40,10 @@ target_include_directories( ${PROJECT_NAME} PRIVATE
 	${XCB_INCLUDE_DIRS}
 )
 target_compile_definitions( ${PROJECT_NAME} PRIVATE
-	${TARGET_DEFINITIONS}
+	${Ashes_BINARY_DEFINITIONS}
 )
 target_link_libraries( ${PROJECT_NAME} PRIVATE
-	${BinLibraries}
+	${Ashes_BINARY_LIBRARIES}
 )
 add_dependencies( ${PROJECT_NAME}
 	${ENABLED_RENDERERS}
