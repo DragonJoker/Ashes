@@ -224,21 +224,8 @@ namespace ashes::gl4
 		for ( auto & reference : references )
 		{
 			auto & attach = attaches[reference.attachment];
-			m_drawBuffers.push_back( attach.point + attach.index );
+			drawBuffers.push_back( attach.point + attach.index );
 		}
-
-		//if ( m_colourAttaches.empty() && attaches.size() == 1 )
-		//{
-		//	colours.push_back( GL_ATTACHMENT_POINT_BACK );
-		//}
-		//else
-		//{
-		//	for ( auto & attach : attaches )
-		//	{
-		//		auto & fboAttach = m_colourAttaches[attach.attachment];
-		//		colours.push_back( fboAttach.point + attach.attachment );
-		//	}
-		//}
 
 		if ( m_drawBuffers != drawBuffers )
 		{
@@ -254,9 +241,6 @@ namespace ashes::gl4
 		m_drawBuffers.clear();
 
 		assert( getInternal() != GL_INVALID_INDEX );
-		list.insert( list.end()
-			, getBindAttaches().begin()
-			, getBindAttaches().end() );
 		auto & attachments = getAttachments();
 		auto & attaches = getAllAttaches();
 
@@ -280,22 +264,6 @@ namespace ashes::gl4
 				}
 			}
 		}
-
-		//for ( auto & attach : attaches )
-		//{
-		//	auto fboAttach = m_attachments[attach.index];
-		//	auto fboView = get( fboAttach );
-		//	auto fboImage = get( fboView->getImage() );
-
-		//	if ( fboImage->hasInternal() )
-		//	{
-		//		m_drawBuffers.push_back( getAttachmentPoint( attach.attach.get().format ) + attach.index );
-		//	}
-		//	else if ( attaches.size() == 1 )
-		//	{
-		//		m_drawBuffers.push_back( GL_ATTACHMENT_POINT_BACK );
-		//	}
-		//}
 
 		return m_drawBuffers;
 	}
