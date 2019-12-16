@@ -17,16 +17,14 @@ file( GLOB SHADER_FILES
 )
 
 source_group( "Shader Files" FILES ${SHADER_FILES} )
-include_directories( ${CMAKE_SOURCE_DIR}/Test/00-Common/Src )
 
 add_executable( ${PROJECT_NAME} WIN32
 	${SOURCE_FILES}
 	${HEADER_FILES}
 	${SHADER_FILES}
 )
-target_link_libraries( ${PROJECT_NAME}
-	Test-00-Common
-	${BinLibraries}
+target_link_libraries( ${TARGET_NAME} PRIVATE
+	ashes::test::Common
 )
 foreach( SHADER ${SHADER_FILES} )
 	add_custom_command(

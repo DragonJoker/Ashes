@@ -18,7 +18,6 @@ add_executable( ${PROJECT_NAME} WIN32
 	${SOURCE_FILES}
 	${HEADER_FILES}
 )
-target_link_libraries( ${PROJECT_NAME}
-	Test-00-Common
-	${BinLibraries}
+target_link_libraries( ${TARGET_NAME} PRIVATE
+	ashes::test::Common
 )

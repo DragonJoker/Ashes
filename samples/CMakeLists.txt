@@ -1,8 +1,9 @@
 find_package( wxWidgets COMPONENTS core base )
+
 if( APPLE )
 	set( GTK2_FOUND TRUE )
-	set( BinLibraries
-		${BinLibraries}
+	set( Ashes_BINARY_LIBRARIES
+		${Ashes_BINARY_LIBRARIES}
 		"-framework AppKit"
 		"-framework QuartzCore"
 	)
@@ -17,14 +18,13 @@ find_package( ASSIMP )
 if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 	file( GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*-* )
 	set( SAMPLE_ID 0 )
-	set( BinLibraries
-		${BinLibraries}
+	set( Ashes_BINARY_LIBRARIES
+		${Ashes_BINARY_LIBRARIES}
 		${glslang_LIBRARIES}
 		${SPIRV_LIBRARIES}
 		${wxWidgets_LIBRARIES}
 		${GTK2_LIBRARIES}
 		${ASSIMP_LIBRARIES}
-		ashes::common
 		ashes::ashes
 		ashes::ashespp
 		ashes::util
@@ -48,7 +48,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 				${ASSIMP_INCLUDE_DIR}
 				${CMAKE_SOURCE_DIR}/external/imgui
 				${CMAKE_SOURCE_DIR}/samples/00-Common/Src
-				${Vulkan_INCLUDE_DIRS}
+				${Vulkan_INCLUDE_DIR}
 			)
 			target_compile_features( ${TARGET_NAME} PRIVATE
 				cxx_std_17
@@ -58,7 +58,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 				SAMPLE_NAME="${TARGET_NAME}"
 				SAMPLE_FOLDER="${FOLDER_NAME}"
 				${TARGET_CXX_DEFINITIONS}
-				${TARGET_DEFINITIONS}
+				${Ashes_BINARY_DEFINITIONS}
 			)
 			target_compile_options( ${TARGET_NAME} PRIVATE
 				${TARGET_CXX_OPTIONS}
@@ -66,7 +66,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 			set_target_properties( ${TARGET_NAME} PROPERTIES
 				CXX_STANDARD 17
 				CXX_EXTENSIONS OFF
-				FOLDER "Samples"
+				FOLDER "${Ashes_BASE_DIR}/Samples"
 			)
 			add_dependencies( ${TARGET_NAME}
 				${ENABLED_RENDERERS}

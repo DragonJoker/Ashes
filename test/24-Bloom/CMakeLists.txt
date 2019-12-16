@@ -29,9 +29,8 @@ add_executable( ${PROJECT_NAME} WIN32
 	${HEADER_FILES}
 	${GLSL_SHADER_FILES}
 )
-target_link_libraries( ${PROJECT_NAME}
-	Test-00-Common
-	${BinLibraries}
+target_link_libraries( ${TARGET_NAME} PRIVATE
+	ashes::test::Common
 )
 
 foreach( SHADER ${SHADER_FILES} )

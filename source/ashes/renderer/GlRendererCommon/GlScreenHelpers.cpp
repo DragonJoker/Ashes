@@ -1,6 +1,6 @@
 #include "GlScreenHelpers.hpp"
 
-#include <common/Hash.hpp>
+#include <ashes/common/Hash.hpp>
 
 #if _WIN32
 #	include <Windows.h>

@@ -22,7 +22,7 @@ See LICENSE file in root folder.
 #include "ashespp/Sync/Semaphore.hpp"
 #include "ashespp/Utils/CallStack.hpp"
 
-#include <common/Exception.hpp>
+#include <ashes/common/Exception.hpp>
 
 namespace ashes
 {

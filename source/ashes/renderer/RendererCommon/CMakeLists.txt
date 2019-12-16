@@ -29,17 +29,17 @@ if ( EXISTS ${SPIRV_CROSS_DIR}/spirv_cross.cpp )
 endif ()
 
 file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
-	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.c
-	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.cc
-	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.cpp
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.c
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.cc
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.cpp
 )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
-	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.h
-	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.hh
-	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.hpp
-	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.inl
-	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.inc
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.h
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.hh
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.hpp
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.inl
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.inc
 )
 
 add_library( ${PROJECT_NAME} STATIC
@@ -52,10 +52,22 @@ add_library( ashes::${PROJECT_NAME}
 	ALIAS
 	${PROJECT_NAME}
 )
-target_include_directories( ${PROJECT_NAME} PRIVATE
-	${TARGET_INCLUDE_DIRS}
-	${CMAKE_CURRENT_BINARY_DIR}
-	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
+target_link_libraries( ${PROJECT_NAME} PUBLIC
+	ashes::ashes
+	${Ashes_BINARY_LIBRARIES}
+	${RendererDependencies}
+)
+target_include_directories( ${PROJECT_NAME}
+	PUBLIC
+		${Vulkan_INCLUDE_DIR}
+		${TARGET_INCLUDE_DIRS}
+		${Ashes_BINARY_DIR}/source/ashes
+		${Ashes_SOURCE_DIR}/source/ashes
+		${Ashes_BINARY_DIR}/source/ashes/renderer
+		${Ashes_SOURCE_DIR}/source/ashes/renderer
+	PRIVATE
+		${Ashes_BINARY_DIR}/source/ashes/renderer/${PROJECT_NAME}
+		${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
 )
 target_compile_features( ${PROJECT_NAME} PUBLIC
 	cxx_std_17
@@ -63,21 +75,21 @@ target_compile_features( ${PROJECT_NAME} PUBLIC
 target_compile_definitions( ${PROJECT_NAME} PUBLIC
 	${TARGET_CXX_DEFINITIONS}
 )
-target_compile_options( ${PROJECT_NAME} PRIVATE
+target_compile_options( ${PROJECT_NAME} PUBLIC
 	${TARGET_CXX_OPTIONS}
 )
 set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 17
 	CXX_EXTENSIONS OFF
-	FOLDER "Ashes/Renderer"
+	FOLDER "${Ashes_BASE_DIR}/Renderer"
 )
 
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Helper "Helper" )
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Layer "Layer" )
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Linux "Linux" )
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Platform "Platform" )
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Util "Util" )
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Win32 "Win32" )
+parse_subdir_files_ex( "${Ashes_SOURCE_DIR}" ashes/renderer Helper "Helper" )
+parse_subdir_files_ex( "${Ashes_SOURCE_DIR}" ashes/renderer Layer "Layer" )
+parse_subdir_files_ex( "${Ashes_SOURCE_DIR}" ashes/renderer Linux "Linux" )
+parse_subdir_files_ex( "${Ashes_SOURCE_DIR}" ashes/renderer Platform "Platform" )
+parse_subdir_files_ex( "${Ashes_SOURCE_DIR}" ashes/renderer Util "Util" )
+parse_subdir_files_ex( "${Ashes_SOURCE_DIR}" ashes/renderer Win32 "Win32" )
 
 source_group( "Header Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES} )
 source_group( "Source Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES} )

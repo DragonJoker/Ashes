@@ -31,7 +31,7 @@ See LICENSE file in root folder.
 
 #include "ashesd3d11_api.hpp"
 
-#include <common/Hash.hpp>
+#include <ashes/common/Hash.hpp>
 
 #include <iomanip>
 

@@ -7,7 +7,7 @@ See LICENSE file in root folder.
 #include "Core/D3D11Instance.hpp"
 #include "Core/D3D11Device.hpp"
 
-#include <common/Hash.hpp>
+#include <ashes/common/Hash.hpp>
 
 #include <amd_ags.h>
 

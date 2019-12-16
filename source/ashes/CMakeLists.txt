@@ -5,47 +5,33 @@ set( ${PROJECT_NAME}_VERSION_MAJOR 1 )
 set( ${PROJECT_NAME}_VERSION_MINOR 0 )
 set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 
-set( ASHES_CONFIG_DIR ${CMAKE_BINARY_DIR} )
-
-set( TARGET_INCLUDE_DIRS
- 	${TARGET_INCLUDE_DIRS}
-	${CMAKE_CURRENT_BINARY_DIR}
-	${ASHES_CONFIG_DIR}/include
-	${ASHES_CONFIG_DIR}/include/${PROJECT_NAME}
-	${ASHES_SOURCE_DIR}/include
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}
-	${ASHES_SOURCE_DIR}/source
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}
-	${ASHES_CONFIG_DIR}/source
-	${ASHES_CONFIG_DIR}/source/${PROJECT_NAME}
-	${Vulkan_INCLUDE_DIRS}
-)
-
 file( GLOB ${PROJECT_NAME}_SRC_FILES
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.c
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.cc
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.cpp
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.c
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cc
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cpp
+	CONFIGURE_DEPENDS
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.c
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.cc
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.cpp
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.c
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.cc
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.cpp
 )
 
 file( GLOB ${PROJECT_NAME}_HDR_FILES
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.h
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hh
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hpp
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inl
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inc
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.h
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hh
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hpp
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inl
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inc
+	CONFIGURE_DEPENDS
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.h
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.hh
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.hpp
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.inl
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.inc
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.h
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.hh
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.hpp
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.inl
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.inc
 )
 
 set( ${PROJECT_NAME}_HDR_FILES
 	${${PROJECT_NAME}_HDR_FILES}
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/ashes.h
+	${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/ashes.h
 )
 
 # I hate to have to do that, but I found no other to force gcc to use --std=c++17
@@ -67,15 +53,26 @@ add_library( ashes::${PROJECT_NAME}
 	ALIAS
 	${PROJECT_NAME}
 )
-target_include_directories( ${PROJECT_NAME} PRIVATE
-	${TARGET_INCLUDE_DIRS}
+message( STATUS "Ashes_SOURCE_DIR: ${Ashes_SOURCE_DIR}" )
+message( STATUS "Ashes_BINARY_DIR: ${Ashes_BINARY_DIR}" )
+target_include_directories( ${PROJECT_NAME}
+	PUBLIC
+		$<BUILD_INTERFACE:${Ashes_SOURCE_DIR}/include>
+		$<INSTALL_INTERFACE:include>
+	PRIVATE
+		${Vulkan_INCLUDE_DIR}
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}
+		${Ashes_SOURCE_DIR}/source
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}
+		${ASHES_CONFIG_DIR}/include/${PROJECT_NAME}
+		${ASHES_CONFIG_DIR}/source
+		${ASHES_CONFIG_DIR}/source/${PROJECT_NAME}
 )
 target_link_libraries( ${PROJECT_NAME} PRIVATE
 	ashes::common
 )
 target_compile_definitions( ${PROJECT_NAME} PRIVATE
 	AshesC_EXPORTS
-	${TARGET_CXX_DEFINITIONS}
 )
 target_compile_features( ${PROJECT_NAME} PRIVATE
 	cxx_std_17
@@ -86,7 +83,7 @@ target_compile_options( ${PROJECT_NAME} PRIVATE
 set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 17
 	CXX_EXTENSIONS OFF
-	FOLDER "Ashes/Core" )
+	FOLDER "${Ashes_BASE_DIR}/Core" )
 
 
 if ( BUILD_ASHES )
@@ -94,7 +91,7 @@ if ( BUILD_ASHES )
 endif ()
 
 target_install_dir_headers( ${PROJECT_NAME}
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}
+	${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}
 	${PROJECT_NAME}
 )
 

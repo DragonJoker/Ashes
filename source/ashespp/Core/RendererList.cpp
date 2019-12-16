@@ -4,9 +4,9 @@ See LICENSE file in root folder.
 */
 #include "ashespp/Core/RendererList.hpp"
 
-#include <common/FileUtils.hpp>
+#include <ashes/common/FileUtils.hpp>
 
-#include <common/Exception.hpp>
+#include <ashes/common/Exception.hpp>
 
 namespace ashes
 {

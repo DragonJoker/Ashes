@@ -17,7 +17,7 @@
 
 #include <renderer/GlRendererCommon/GlContextState.hpp>
 
-#include <common/Format.hpp>
+#include <ashes/common/Format.hpp>
 
 #include <cassert>
 #include <functional>

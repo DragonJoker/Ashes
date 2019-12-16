@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #include "ashespp/AshesPPPrerequisites.hpp"
 
-#include <common/Exception.hpp>
+#include <ashes/common/Exception.hpp>
 
 #include <map>
 #include <atomic>

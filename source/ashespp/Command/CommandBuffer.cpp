@@ -17,7 +17,7 @@ See LICENSE file in root folder.
 #include "ashespp/RenderPass/RenderPass.hpp"
 #include "ashespp/Sync/Event.hpp"
 
-#include <common/Format.hpp>
+#include <ashes/common/Format.hpp>
 
 namespace ashes
 {
