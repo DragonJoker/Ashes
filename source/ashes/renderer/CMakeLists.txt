@@ -5,8 +5,7 @@ endif ()
 if ( ASHES_BUILD_RENDERER_PLUGINS )
 	set( TARGET_INCLUDE_DIRS
 		${TARGET_INCLUDE_DIRS}
-		${ASHES_SOURCE_DIR}/include
-		${ASHES_CONFIG_DIR}/include
+		${Ashes_SOURCE_DIR}/include
 	)
 	set( ASHES_BUILD_PLUGINS TRUE )
 

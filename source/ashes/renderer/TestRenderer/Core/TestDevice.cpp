@@ -29,7 +29,7 @@ See LICENSE file in root folder.
 
 #include "ashestest_api.hpp"
 
-#include <common/Hash.hpp>
+#include <ashes/common/Hash.hpp>
 
 #include <iomanip>
 

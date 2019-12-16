@@ -8,17 +8,17 @@ set( PROJECT_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION
 set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_BUILD}" )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
-	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.c
-	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.cc
-	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.cpp
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.c
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.cc
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.cpp
 )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
-	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.h
-	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.hh
-	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.hpp
-	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.inl
-	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.inc
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.h
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.hh
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.hpp
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.inl
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.inc
 )
 
 add_library( ${PROJECT_NAME} SHARED
@@ -30,13 +30,13 @@ add_library( ashes::${PROJECT_NAME}
 	${PROJECT_NAME}
 )
 target_include_directories( ${PROJECT_NAME} PRIVATE
-	${Vulkan_INCLUDE_DIRS}
+	${Vulkan_INCLUDE_DIR}
 	${TARGET_INCLUDE_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR}
-	${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
 )
 target_link_libraries( ${PROJECT_NAME} PRIVATE
-	${BinLibraries}
+	${Ashes_BINARY_LIBRARIES}
 	ashes::common
 	ashes::ashes
 )
@@ -53,7 +53,7 @@ target_compile_options( ${PROJECT_NAME} PRIVATE
 set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 17
 	CXX_EXTENSIONS OFF
-	FOLDER "${ASHES_BASE_DIR}/Renderer"
+	FOLDER "${Ashes_BASE_DIR}/Renderer"
 	VERSION ${PROJECT_VERSION}
 	SOVERSION ${PROJECT_SOVERSION}
 )

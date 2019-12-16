@@ -7,31 +7,31 @@ set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 
 file( GLOB ${PROJECT_NAME}_SRC_FILES
 	CONFIGURE_DEPENDS
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.c
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.cc
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.cpp
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.c
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cc
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cpp
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.c
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.cc
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.cpp
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.c
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.cc
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.cpp
 )
 
 file( GLOB ${PROJECT_NAME}_HDR_FILES
 	CONFIGURE_DEPENDS
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.h
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hh
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hpp
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inl
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inc
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.h
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hh
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hpp
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inl
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inc
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.h
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.hh
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.hpp
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.inl
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.inc
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.h
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.hh
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.hpp
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.inl
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.inc
 )
 
 set( ${PROJECT_NAME}_HDR_FILES
 	${${PROJECT_NAME}_HDR_FILES}
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/ashes.h
+	${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/ashes.h
 )
 
 # I hate to have to do that, but I found no other to force gcc to use --std=c++17
@@ -53,18 +53,19 @@ add_library( ashes::${PROJECT_NAME}
 	ALIAS
 	${PROJECT_NAME}
 )
-message( STATUS "ASHES_SOURCE_DIR: ${ASHES_SOURCE_DIR}" )
+message( STATUS "Ashes_SOURCE_DIR: ${Ashes_SOURCE_DIR}" )
+message( STATUS "Ashes_BINARY_DIR: ${Ashes_BINARY_DIR}" )
 target_include_directories( ${PROJECT_NAME}
 	PUBLIC
-		${ASHES_SOURCE_DIR}/include
-		${ASHES_CONFIG_DIR}/include
+		$<BUILD_INTERFACE:${Ashes_SOURCE_DIR}/include>
+		$<INSTALL_INTERFACE:include>
 	PRIVATE
-		${Vulkan_INCLUDE_DIRS}
-		${ASHES_SOURCE_DIR}/source
-		${ASHES_CONFIG_DIR}/source
+		${Vulkan_INCLUDE_DIR}
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}
+		${Ashes_SOURCE_DIR}/source
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}
 		${ASHES_CONFIG_DIR}/include/${PROJECT_NAME}
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}
+		${ASHES_CONFIG_DIR}/source
 		${ASHES_CONFIG_DIR}/source/${PROJECT_NAME}
 )
 target_link_libraries( ${PROJECT_NAME} PRIVATE
@@ -82,7 +83,7 @@ target_compile_options( ${PROJECT_NAME} PRIVATE
 set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 17
 	CXX_EXTENSIONS OFF
-	FOLDER "${ASHES_BASE_DIR}/Core" )
+	FOLDER "${Ashes_BASE_DIR}/Core" )
 
 
 if ( BUILD_ASHES )
@@ -90,7 +91,7 @@ if ( BUILD_ASHES )
 endif ()
 
 target_install_dir_headers( ${PROJECT_NAME}
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}
+	${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}
 	${PROJECT_NAME}
 )
 

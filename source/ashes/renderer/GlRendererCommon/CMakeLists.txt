@@ -12,8 +12,8 @@ find_package( OpenGL )
 
 if ( OpenGL_FOUND )
 	if ( WIN32 )
-		set( BinLibraries
-			${BinLibraries}
+		set( Ashes_BINARY_LIBRARIES
+			${Ashes_BINARY_LIBRARIES}
 			OpenGL::GL
 		)
 	else ()
@@ -25,8 +25,8 @@ if ( OpenGL_FOUND )
 			)
 		endif ()
 		find_package( XCB REQUIRED COMPONENTS xcb )
-		set( BinLibraries
-			${BinLibraries}
+		set( Ashes_BINARY_LIBRARIES
+			${Ashes_BINARY_LIBRARIES}
 			${XCB_LIBRARIES}
 			${X11_X11_LIB}
 			${X11_Xrandr_LIB}
@@ -39,23 +39,20 @@ if ( OpenGL_FOUND )
 	endif ()
 
 	file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
-		${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.c
-		${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.cc
-		${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.cpp
+		*.c
+		*.cc
+		*.cpp
 	)
-
 	file( GLOB_RECURSE ${PROJECT_NAME}_NVS_FILES
-		${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.natvis
+		*.natvis
 	)
-
 	file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
-		${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.h
-		${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.hh
-		${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.hpp
-		${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.inl
-		${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.inc
+		*.h
+		*.hh
+		*.hpp
+		*.inl
+		*.inc
 	)
-
 	add_library( ${PROJECT_NAME} STATIC
 		${${PROJECT_NAME}_SRC_FILES}
 		${${PROJECT_NAME}_HDR_FILES}
@@ -65,13 +62,13 @@ if ( OpenGL_FOUND )
 		${PROJECT_NAME}
 	)
 	target_include_directories( ${PROJECT_NAME} PUBLIC
-		${Vulkan_INCLUDE_DIRS}
+		${Vulkan_INCLUDE_DIR}
 		${TARGET_INCLUDE_DIRS}
 		${CMAKE_CURRENT_BINARY_DIR}
-		${ASHES_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
+		${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
 	)
 	target_link_libraries( ${PROJECT_NAME} PUBLIC
-		${BinLibraries}
+		${Ashes_BINARY_LIBRARIES}
 		ashes::RendererCommon
 	)
 	target_compile_features( ${PROJECT_NAME} PUBLIC
@@ -86,10 +83,10 @@ if ( OpenGL_FOUND )
 	set_target_properties( ${PROJECT_NAME} PROPERTIES
 		CXX_STANDARD 17
 		CXX_EXTENSIONS OFF
-		FOLDER "${ASHES_BASE_DIR}/Renderer"
+		FOLDER "${Ashes_BASE_DIR}/Renderer"
 	)
 
-	parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes/renderer Platform "Platform" )
+	parse_subdir_files_ex( "${Ashes_SOURCE_DIR}" ashes/renderer Platform "Platform" )
 else ()
 	if ( NOT OpenGL_FOUND )
 		message( SEND_ERROR "OpenGL library not found." )

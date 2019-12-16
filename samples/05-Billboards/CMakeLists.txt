@@ -28,7 +28,7 @@ add_executable( ${PROJECT_NAME} WIN32
 )
 target_link_libraries( ${PROJECT_NAME} PRIVATE
 	Sample-00-Common
-	${BinLibraries}
+	${Ashes_BINARY_LIBRARIES}
 )
 add_target_precompiled_header( ${PROJECT_NAME}
 	${CMAKE_CURRENT_SOURCE_DIR}/Src/PrecompiledHeader.hpp

@@ -1,29 +1,29 @@
 project( ashes_util )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
-	${ASHES_SOURCE_DIR}/source/util/*.c
-	${ASHES_SOURCE_DIR}/source/util/*.cc
-	${ASHES_SOURCE_DIR}/source/util/*.cpp
-	${ASHES_SOURCE_DIR}/include/util/*.c
-	${ASHES_SOURCE_DIR}/include/util/*.cc
-	${ASHES_SOURCE_DIR}/include/util/*.cpp
+	${Ashes_SOURCE_DIR}/source/util/*.c
+	${Ashes_SOURCE_DIR}/source/util/*.cc
+	${Ashes_SOURCE_DIR}/source/util/*.cpp
+	${Ashes_SOURCE_DIR}/include/util/*.c
+	${Ashes_SOURCE_DIR}/include/util/*.cc
+	${Ashes_SOURCE_DIR}/include/util/*.cpp
 )
 file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
-	${ASHES_SOURCE_DIR}/source/util/*.h
-	${ASHES_SOURCE_DIR}/source/util/*.hh
-	${ASHES_SOURCE_DIR}/source/util/*.hpp
-	${ASHES_SOURCE_DIR}/source/util/*.inl
-	${ASHES_SOURCE_DIR}/source/util/*.inc
-	${ASHES_SOURCE_DIR}/include/util/*.h
-	${ASHES_SOURCE_DIR}/include/util/*.hh
-	${ASHES_SOURCE_DIR}/include/util/*.hpp
-	${ASHES_SOURCE_DIR}/include/util/*.inl
-	${ASHES_SOURCE_DIR}/include/util/*.inc
+	${Ashes_SOURCE_DIR}/source/util/*.h
+	${Ashes_SOURCE_DIR}/source/util/*.hh
+	${Ashes_SOURCE_DIR}/source/util/*.hpp
+	${Ashes_SOURCE_DIR}/source/util/*.inl
+	${Ashes_SOURCE_DIR}/source/util/*.inc
+	${Ashes_SOURCE_DIR}/include/util/*.h
+	${Ashes_SOURCE_DIR}/include/util/*.hh
+	${Ashes_SOURCE_DIR}/include/util/*.hpp
+	${Ashes_SOURCE_DIR}/include/util/*.inl
+	${Ashes_SOURCE_DIR}/include/util/*.inc
 )
 
 if ( MSVC )
 	set( BinLibraries
-		${BinLibraries}
+		${Ashes_BINARY_LIBRARIES}
 		glslang
 		OGLCompiler
 		OSDependent
@@ -43,15 +43,15 @@ add_library( ashes::util
 )
 target_include_directories( ${PROJECT_NAME}
 	PRIVATE
-		${Vulkan_INCLUDE_DIRS}
+		${Vulkan_INCLUDE_DIR}
 		${ASHES_CONFIG_DIR}/include
-		${ASHES_SOURCE_DIR}/include
-		${ASHES_SOURCE_DIR}/source
+		${Ashes_SOURCE_DIR}/include
+		${Ashes_SOURCE_DIR}/source
 		${ASHES_CONFIG_DIR}/source
 		${ASHES_CONFIG_DIR}/include/util
-		${ASHES_SOURCE_DIR}/include/util
+		${Ashes_SOURCE_DIR}/include/util
 		${ASHES_CONFIG_DIR}/source/util
-		${ASHES_SOURCE_DIR}/source/util
+		${Ashes_SOURCE_DIR}/source/util
 		${CMAKE_SOURCE_DIR}/external/glslang
 )
 target_link_libraries( ${PROJECT_NAME}
@@ -78,5 +78,5 @@ target_compile_options( ${PROJECT_NAME} PRIVATE
 set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 17
 	CXX_EXTENSIONS OFF
-	FOLDER "${ASHES_BASE_DIR}/Core"
+	FOLDER "${Ashes_BASE_DIR}/Core"
 )

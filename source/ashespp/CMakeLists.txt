@@ -7,26 +7,26 @@ set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
 	CONFIGURE_DEPENDS
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.c
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cc
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.cpp
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.c
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.cc
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.cpp
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.c
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.cc
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.cpp
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.c
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.cc
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.cpp
 )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
 	CONFIGURE_DEPENDS
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.h
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hh
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.hpp
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inl
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/*.inc
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.h
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hh
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.hpp
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inl
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/*.inc
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.h
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.hh
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.hpp
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.inl
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.inc
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.h
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.hh
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.hpp
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.inl
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.inc
 )
 
 add_library( ${PROJECT_NAME} STATIC
@@ -42,17 +42,17 @@ target_compile_features( ${PROJECT_NAME} PUBLIC
 )
 target_compile_definitions( ${PROJECT_NAME} PUBLIC
 	${TARGET_CXX_DEFINITIONS}
-	${TARGET_DEFINITIONS}
+	${Ashes_BINARY_DEFINITIONS}
 )
 target_include_directories( ${PROJECT_NAME}
 	PRIVATE
-		${Vulkan_INCLUDE_DIRS}
-		${ASHES_SOURCE_DIR}/source
+		${Vulkan_INCLUDE_DIR}
+		${Ashes_SOURCE_DIR}/source
 		${ASHES_CONFIG_DIR}/source
 		${ASHES_CONFIG_DIR}/include/${PROJECT_NAME}
-		${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}
+		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}
 		${ASHES_CONFIG_DIR}/source/${PROJECT_NAME}
-		${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}
+		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}
 )
 target_link_libraries( ${PROJECT_NAME}
 	PRIVATE
@@ -63,29 +63,29 @@ target_link_libraries( ${PROJECT_NAME}
 set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 17
 	CXX_EXTENSIONS OFF
-	FOLDER "${ASHES_BASE_DIR}/Core"
+	FOLDER "${Ashes_BASE_DIR}/Core"
 )
 
 add_target_precompiled_header( ${PROJECT_NAME}
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME}/${PROJECT_NAME}Pch.hpp
-	${ASHES_SOURCE_DIR}/source/${PROJECT_NAME}/${PROJECT_NAME}Pch.cpp
+	${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/${PROJECT_NAME}Pch.hpp
+	${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/${PROJECT_NAME}Pch.cpp
 	"${CMAKE_CXX_FLAGS}"
 	${${PROJECT_NAME}_SRC_FILES}
 )
 
-parse_subdir_files( ${ASHES_SOURCE_DIR} Buffer "Buffer" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} Command "Command" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} Core "Core" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} Descriptor "Descriptor" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} Enum "Enum" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} Image "Image" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} Miscellaneous "Miscellaneous" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} Pipeline "Pipeline" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} Core/Platform "Core\\\\\\\\Platform" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} RenderPass "RenderPass" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} Shader "Shader" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} Sync "Sync" )
-parse_subdir_files( ${ASHES_SOURCE_DIR} Utils "Utils" )
+parse_subdir_files( ${Ashes_SOURCE_DIR} Buffer "Buffer" )
+parse_subdir_files( ${Ashes_SOURCE_DIR} Command "Command" )
+parse_subdir_files( ${Ashes_SOURCE_DIR} Core "Core" )
+parse_subdir_files( ${Ashes_SOURCE_DIR} Descriptor "Descriptor" )
+parse_subdir_files( ${Ashes_SOURCE_DIR} Enum "Enum" )
+parse_subdir_files( ${Ashes_SOURCE_DIR} Image "Image" )
+parse_subdir_files( ${Ashes_SOURCE_DIR} Miscellaneous "Miscellaneous" )
+parse_subdir_files( ${Ashes_SOURCE_DIR} Pipeline "Pipeline" )
+parse_subdir_files( ${Ashes_SOURCE_DIR} Core/Platform "Core\\\\\\\\Platform" )
+parse_subdir_files( ${Ashes_SOURCE_DIR} RenderPass "RenderPass" )
+parse_subdir_files( ${Ashes_SOURCE_DIR} Shader "Shader" )
+parse_subdir_files( ${Ashes_SOURCE_DIR} Sync "Sync" )
+parse_subdir_files( ${Ashes_SOURCE_DIR} Utils "Utils" )
 
 if ( BUILD_ASHES )
 	target_add_doc( ${PROJECT_NAME} "" "*.h *.hpp" )
@@ -93,5 +93,5 @@ endif ()
 
 #For libs, we install headers to <install_dir>/include/${PROJECT_NAME}
 target_install_headers( ${PROJECT_NAME}
-	${ASHES_SOURCE_DIR}/include/${PROJECT_NAME} )
+	${Ashes_SOURCE_DIR}/include/${PROJECT_NAME} )
 

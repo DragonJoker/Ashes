@@ -9,23 +9,23 @@ set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_BUILD}" )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
 	CONFIGURE_DEPENDS
-		${ASHES_SOURCE_DIR}/source/ashes/common/*.c
-		${ASHES_SOURCE_DIR}/source/ashes/common/*.cc
-		${ASHES_SOURCE_DIR}/source/ashes/common/*.cpp
+		${Ashes_SOURCE_DIR}/source/ashes/common/*.c
+		${Ashes_SOURCE_DIR}/source/ashes/common/*.cc
+		${Ashes_SOURCE_DIR}/source/ashes/common/*.cpp
 )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
 	CONFIGURE_DEPENDS
-		${ASHES_SOURCE_DIR}/include/ashes/common/*.h
-		${ASHES_SOURCE_DIR}/include/ashes/common/*.hh
-		${ASHES_SOURCE_DIR}/include/ashes/common/*.hpp
-		${ASHES_SOURCE_DIR}/include/ashes/common/*.inl
-		${ASHES_SOURCE_DIR}/include/ashes/common/*.inc
-		${ASHES_SOURCE_DIR}/source/ashes/common/*.h
-		${ASHES_SOURCE_DIR}/source/ashes/common/*.hh
-		${ASHES_SOURCE_DIR}/source/ashes/common/*.hpp
-		${ASHES_SOURCE_DIR}/source/ashes/common/*.inl
-		${ASHES_SOURCE_DIR}/source/ashes/common/*.inc
+		${Ashes_SOURCE_DIR}/include/ashes/common/*.h
+		${Ashes_SOURCE_DIR}/include/ashes/common/*.hh
+		${Ashes_SOURCE_DIR}/include/ashes/common/*.hpp
+		${Ashes_SOURCE_DIR}/include/ashes/common/*.inl
+		${Ashes_SOURCE_DIR}/include/ashes/common/*.inc
+		${Ashes_SOURCE_DIR}/source/ashes/common/*.h
+		${Ashes_SOURCE_DIR}/source/ashes/common/*.hh
+		${Ashes_SOURCE_DIR}/source/ashes/common/*.hpp
+		${Ashes_SOURCE_DIR}/source/ashes/common/*.inl
+		${Ashes_SOURCE_DIR}/source/ashes/common/*.inc
 )
 
 add_library( ${PROJECT_NAME} STATIC
@@ -39,15 +39,16 @@ add_library( ashes::common
 	${PROJECT_NAME}
 )
 target_link_libraries( ${PROJECT_NAME} PUBLIC
-	${BinLibraries}
+	$<$<PLATFORM_ID:Windows>:Dbghelp>
+	$<$<NOT:$<PLATFORM_ID:Windows>>:dl>
 )
 target_include_directories( ${PROJECT_NAME}
 	PRIVATE
-		${ASHES_SOURCE_DIR}/include
+		${Ashes_SOURCE_DIR}/include
 		${ASHES_CONFIG_DIR}/include
-		${Vulkan_INCLUDE_DIRS}
-		${ASHES_SOURCE_DIR}/include/ashes
-		${ASHES_SOURCE_DIR}/include/ashes/common
+		${Vulkan_INCLUDE_DIR}
+		${Ashes_SOURCE_DIR}/include/ashes
+		${Ashes_SOURCE_DIR}/include/ashes/common
 )
 target_compile_features( ${PROJECT_NAME} PUBLIC
 	cxx_std_17
@@ -61,14 +62,14 @@ target_compile_options( ${PROJECT_NAME} PRIVATE
 set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 17
 	CXX_EXTENSIONS OFF
-	FOLDER "${ASHES_BASE_DIR}/Core" )
+	FOLDER "${Ashes_BASE_DIR}/Core" )
 
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes Platform "Platform" )
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes Win32 "Win32" )
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes Linux "Linux" )
-parse_subdir_files_ex( ${ASHES_SOURCE_DIR} ashes MacOS "MacOS" )
+parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes Platform "Platform" )
+parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes Win32 "Win32" )
+parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes Linux "Linux" )
+parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes MacOS "MacOS" )
 
 target_install_dir_headers( ${PROJECT_NAME}
-	${ASHES_SOURCE_DIR}/include/ashes/common
+	${Ashes_SOURCE_DIR}/include/ashes/common
 	ashes/common
 )

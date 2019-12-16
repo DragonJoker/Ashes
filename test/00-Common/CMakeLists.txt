@@ -45,7 +45,7 @@ add_dependencies( ${PROJECT_NAME}
 	${ENABLED_RENDERERS}
 )
 target_link_libraries( ${PROJECT_NAME} PUBLIC
-	${BinLibraries}
+	${Ashes_BINARY_LIBRARIES}
 	${wxWidgets_LIBRARIES}
 	${GTK2_LIBRARIES}
 	ashes::common
@@ -55,20 +55,17 @@ target_link_libraries( ${PROJECT_NAME} PUBLIC
 )
 target_include_directories( ${PROJECT_NAME} PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/Src
-	${ASHES_SOURCE_DIR}/util/Src
-	${ASHES_BINARY_DIR}/util/Src
-	${ASHES_SOURCE_DIR}/external/gli
-	${ASHES_SOURCE_DIR}/external/glm
-	${ASHES_SOURCE_DIR}/external/imgui
-	${ASHES_SOURCE_DIR}/external/imgui
-	${ASHES_SOURCE_DIR}/test/00-Common/Src
+	${Ashes_SOURCE_DIR}/external/gli
+	${Ashes_SOURCE_DIR}/external/glm
+	${Ashes_SOURCE_DIR}/external/imgui
+	${Ashes_SOURCE_DIR}/external/imgui
 	${wxWidgets_INCLUDE_DIRS}
 	${GTK2_INCLUDE_DIRS}
 	${TARGET_INCLUDE_DIRS}
 )
 target_compile_definitions( ${PROJECT_NAME} PUBLIC
 	${TARGET_CXX_DEFINITIONS}
-	${TARGET_DEFINITIONS}
+	${Ashes_BINARY_DEFINITIONS}
 	${wxWidgets_DEFINITIONS}
 )
 target_compile_options( ${PROJECT_NAME} PUBLIC

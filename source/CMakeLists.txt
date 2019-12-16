@@ -1,10 +1,7 @@
-get_filename_component( ASHES_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY )
-get_filename_component( ASHES_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} DIRECTORY )
-
 set( ASHES_CONFIG_DIR ${CMAKE_CURRENT_BINARY_DIR} )
 
 if ( WIN32 )
-	set( BinLibraries
+	set( Ashes_BINARY_LIBRARIES
 		Dbghelp
 	)
 	if ( MSVC )
@@ -15,7 +12,7 @@ if ( WIN32 )
 		)
 	endif ()
 else ()
-	set( BinLibraries
+	set( Ashes_BINARY_LIBRARIES
 		dl
 	)
 endif ()
@@ -31,7 +28,7 @@ if ( ASHES_BUILD_TESTS OR ASHES_BUILD_SAMPLES )
 	add_subdirectory( util )
 endif ()
 
-set( BinLibraries ${BinLibraries} PARENT_SCOPE )
+set( Ashes_BINARY_LIBRARIES ${Ashes_BINARY_LIBRARIES} PARENT_SCOPE )
 
 install(
 	TARGETS ashes ashes_common ashespp ${ENABLED_RENDERERS}
@@ -39,7 +36,6 @@ install(
 	RUNTIME DESTINATION bin
 	LIBRARY DESTINATION lib
 	ARCHIVE DESTINATION lib
-	INCLUDES DESTINATION include
 )
 install( EXPORT Ashes
 	FILE AshesConfig.cmake

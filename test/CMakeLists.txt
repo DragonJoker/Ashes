@@ -1,8 +1,8 @@
 if ( ASHES_BUILD_TESTS OR ASHES_BUILD_INFO OR ASHES_BUILD_SW_SAMPLES )
 	set( TARGET_INCLUDE_DIRS
-		${ASHES_SOURCE_DIR}/include
-		${ASHES_BINARY_DIR}/include
-		${Vulkan_INCLUDE_DIRS}
+		${Ashes_SOURCE_DIR}/include
+		${Ashes_BINARY_DIR}/include
+		${Vulkan_INCLUDE_DIR}
 	)
 endif ()
 
@@ -10,8 +10,8 @@ if ( ASHES_BUILD_TESTS )
 	find_package( wxWidgets COMPONENTS core base )
 	if( APPLE )
 		set( GTK2_FOUND TRUE )
-		set( BinLibraries
-			${BinLibraries}
+		set( Ashes_BINARY_LIBRARIES
+			${Ashes_BINARY_LIBRARIES}
 			"-framework AppKit"
 			"-framework QuartzCore"
 		)
@@ -38,7 +38,7 @@ if ( ASHES_BUILD_TESTS )
 				set_target_properties( ${TARGET_NAME} PROPERTIES
 					CXX_STANDARD 17
 					CXX_EXTENSIONS OFF
-					FOLDER "${ASHES_BASE_DIR}/Tests"
+					FOLDER "${Ashes_BASE_DIR}/Tests"
 				)
 				math( EXPR TEST_ID "${TEST_ID} + 1" )
 			endif ()
@@ -130,9 +130,9 @@ if ( ASHES_BUILD_SW_SAMPLES )
 	)
 	foreach ( EXAMPLE ${EXAMPLES} )
 		if ( TARGET ${EXAMPLE} )
-			set_property( TARGET ${EXAMPLE} PROPERTY FOLDER "${ASHES_BASE_DIR}/SWExamples" )
+			set_property( TARGET ${EXAMPLE} PROPERTY FOLDER "${Ashes_BASE_DIR}/SWExamples" )
 		endif ()
 	endforeach ( EXAMPLE )
-	set_property( TARGET base PROPERTY FOLDER "${ASHES_BASE_DIR}/SWExamples" )
+	set_property( TARGET base PROPERTY FOLDER "${Ashes_BASE_DIR}/SWExamples" )
 endif ()
 
