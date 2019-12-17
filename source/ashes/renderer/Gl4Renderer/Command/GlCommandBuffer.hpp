@@ -244,7 +244,7 @@ namespace ashes::gl4
 			VkIndexType indexType;
 			GeometryBuffers * selectedVao{ nullptr };
 			GeometryBuffersRefArray vaos;
-			VkDescriptorSetArray boundDescriptors;
+			std::map< uint32_t, VkDescriptorSet > boundDescriptors;
 		};
 		mutable State m_state;
 		mutable VkImageViewArray m_blitViews;

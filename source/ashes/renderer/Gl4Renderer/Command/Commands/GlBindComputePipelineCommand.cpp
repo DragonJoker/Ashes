@@ -23,4 +23,11 @@ namespace ashes::gl4
 			stack.setCurrentProgram( get( pipeline )->getCompProgram() );
 		}
 	}
+
+	void buildUnbindComputePipelineCommand( ContextStateStack & stack
+		, CmdList & list )
+	{
+		stack.setCurrentProgram( 0u );
+		list.push_back( makeCmd< OpType::eUseProgram >( 0u ) );
+	}
 }
