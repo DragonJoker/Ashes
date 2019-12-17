@@ -44,7 +44,12 @@ namespace ashes::gl4
 		auto it = std::find( layouts.begin()
 			, layouts.end()
 			, layout );
-		assert( it != layouts.end() );
+
+		if ( it == layouts.end() )
+		{
+			return GL_INVALID_INDEX;
+		}
+
 		return uint32_t( std::distance( layouts.begin(), it ) );
 	}
 }
