@@ -45,9 +45,6 @@ namespace ashes::gl4
 		, CmdList & list );
 
 	void buildUnbindPipelineCommand( ContextStateStack & stack
-		, VkDevice device
-		, VkPipeline pipeline
-		, VkImageView view
 		, CmdList & list );
 
 	//*************************************************************************

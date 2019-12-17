@@ -464,55 +464,58 @@ namespace ashes::gl4
 		auto & bindings = get( pipelineLayout )->getShaderBindings();
 		auto setIndex = get( pipelineLayout )->getDescriptorSetIndex( descriptorSet );
 
-		for ( auto & write : get( descriptorSet )->getInputAttachments() )
+		if ( setIndex != GL_INVALID_INDEX )
 		{
-			bindInputAttachment( write, bindings.tex, setIndex, get( device )->getSampler(), list );
-		}
+			for ( auto & write : get( descriptorSet )->getInputAttachments() )
+			{
+				bindInputAttachment( write, bindings.tex, setIndex, get( device )->getSampler(), list );
+			}
 
-		for ( auto & write : get( descriptorSet )->getCombinedTextureSamplers() )
-		{
-			bindCombinedSampler( write, bindings.tex, setIndex, list );
-		}
+			for ( auto & write : get( descriptorSet )->getCombinedTextureSamplers() )
+			{
+				bindCombinedSampler( write, bindings.tex, setIndex, list );
+			}
 
-		for ( auto & write : get( descriptorSet )->getSamplers() )
-		{
-			bindSampler( write, bindings.tex, setIndex, list );
-		}
+			for ( auto & write : get( descriptorSet )->getSamplers() )
+			{
+				bindSampler( write, bindings.tex, setIndex, list );
+			}
 
-		for ( auto & write : get( descriptorSet )->getSampledTextures() )
-		{
-			bindSampledTexture( write, bindings.tex, setIndex, list );
-		}
+			for ( auto & write : get( descriptorSet )->getSampledTextures() )
+			{
+				bindSampledTexture( write, bindings.tex, setIndex, list );
+			}
 
-		for ( auto & write : get( descriptorSet )->getStorageTextures() )
-		{
-			bindStorageTexture( write, bindings.img, setIndex, list );
-		}
+			for ( auto & write : get( descriptorSet )->getStorageTextures() )
+			{
+				bindStorageTexture( write, bindings.img, setIndex, list );
+			}
 
-		for ( auto & write : get( descriptorSet )->getUniformBuffers() )
-		{
-			bindUniformBuffer( write, bindings.ubo, setIndex, list );
-		}
+			for ( auto & write : get( descriptorSet )->getUniformBuffers() )
+			{
+				bindUniformBuffer( write, bindings.ubo, setIndex, list );
+			}
 
-		for ( auto & write : get( descriptorSet )->getInlineUniforms() )
-		{
-			bindUniformBuffer( write, bindings.ubo, setIndex, list );
-		}
+			for ( auto & write : get( descriptorSet )->getInlineUniforms() )
+			{
+				bindUniformBuffer( write, bindings.ubo, setIndex, list );
+			}
 
-		for ( auto & write : get( descriptorSet )->getStorageBuffers() )
-		{
-			bindStorageBuffer( write, bindings.sbo, setIndex, list );
-		}
+			for ( auto & write : get( descriptorSet )->getStorageBuffers() )
+			{
+				bindStorageBuffer( write, bindings.sbo, setIndex, list );
+			}
 
-		for ( auto & write : get( descriptorSet )->getTexelBuffers() )
-		{
-			bindTexelBuffer( write, bindings.tbo, setIndex, list );
-		}
+			for ( auto & write : get( descriptorSet )->getTexelBuffers() )
+			{
+				bindTexelBuffer( write, bindings.tbo, setIndex, list );
+			}
 
-		bindDynamicBuffers( get( descriptorSet )->getDynamicBuffers()
-			, bindings
-			, setIndex
-			, dynamicOffsets
-			, list );
+			bindDynamicBuffers( get( descriptorSet )->getDynamicBuffers()
+				, bindings
+				, setIndex
+				, dynamicOffsets
+				, list );
+		}
 	}
 }

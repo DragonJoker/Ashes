@@ -12,4 +12,6 @@ namespace ashes::gl4
 		, VkPipeline pipeline
 		, VkPipelineBindPoint bindingPoint
 		, CmdList & list );
+	void buildUnbindComputePipelineCommand( ContextStateStack & stack
+		, CmdList & list );
 }
