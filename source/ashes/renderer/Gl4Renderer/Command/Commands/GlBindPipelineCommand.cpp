@@ -72,9 +72,6 @@ namespace ashes::gl4
 	}
 
 	void buildUnbindPipelineCommand( ContextStateStack & stack
-		, VkDevice device
-		, VkPipeline pipeline
-		, VkImageView view
 		, CmdList & list )
 	{
 		stack.setCurrentProgram( 0u );

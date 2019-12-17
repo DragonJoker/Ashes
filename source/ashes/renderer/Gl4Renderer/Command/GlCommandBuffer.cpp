@@ -269,20 +269,7 @@ namespace ashes::gl4
 				, pipeline
 				, bindingPoint
 				, m_cmdList );
-
-			for ( auto & pcb : m_state.pushConstantBuffers )
-			{
-				buildPushConstantsCommand( pcb.second.stageFlags
-					, get( m_state.currentPipeline )->findPushConstantBuffer( pcb.second, doIsRtotFbo() )
-					, m_cmdList );
-			}
-
-			m_state.pushConstantBuffers.clear();
-
 			buildUnbindPipelineCommand( *m_state.stack
-				, m_device
-				, pipeline
-				, VK_NULL_HANDLE
 				, m_cmdAfterSubmit );
 		}
 		else if ( bindingPoint == VK_PIPELINE_BIND_POINT_COMPUTE )
@@ -292,35 +279,19 @@ namespace ashes::gl4
 				, pipeline
 				, bindingPoint
 				, m_cmdList );
-
-			for ( auto & pcb : m_state.pushConstantBuffers )
-			{
-				buildPushConstantsCommand( pcb.second.stageFlags
-					, get( m_state.currentComputePipeline )->findPushConstantBuffer( pcb.second, false )
-					, m_cmdList );
-			}
-
-			m_state.pushConstantBuffers.clear();
-
-			m_cmdAfterSubmit.insert( m_cmdAfterSubmit.begin()
-				, makeCmd< OpType::eUseProgram >( 0u ) );
-			m_state.stack->setCurrentProgram( 0u );
+			buildUnbindComputePipelineCommand( *m_state.stack
+				, m_cmdAfterSubmit );
 		}
 
-		for ( auto & layout : get( pipeline )->getDescriptorsLayouts() )
+		for ( auto & pcb : m_state.pushConstantBuffers )
 		{
-			auto it = std::remove_if( m_state.boundDescriptors.begin()
-				, m_state.boundDescriptors.end()
-				, [&layout]( VkDescriptorSet lookup )
-				{
-					return get( lookup )->getLayout() == layout;
-				} );
-
-			if ( it != m_state.boundDescriptors.begin() )
-			{
-				m_state.boundDescriptors.erase( m_state.boundDescriptors.begin(), it );
-			}
+			buildPushConstantsCommand( pcb.second.stageFlags
+				, get( pipeline )->findPushConstantBuffer( pcb.second, doIsRtotFbo() )
+				, m_cmdList );
 		}
+
+		m_state.pushConstantBuffers.clear();
+
 	}
 
 	void CommandBuffer::bindVertexBuffers( uint32_t firstBinding
@@ -355,9 +326,11 @@ namespace ashes::gl4
 		, VkDescriptorSetArray descriptorSets
 		, UInt32Array dynamicOffsets )const
 	{
+		auto currentSet = firstSet;
+
 		for ( auto & descriptorSet : descriptorSets )
 		{
-			m_state.boundDescriptors.push_back( descriptorSet );
+			m_state.boundDescriptors.emplace( currentSet, descriptorSet );
 			doProcessMappedBoundDescriptorBuffersIn( descriptorSet );
 			buildBindDescriptorSetCommand( m_device
 				, descriptorSet
@@ -365,6 +338,7 @@ namespace ashes::gl4
 				, dynamicOffsets
 				, bindingPoint
 				, m_cmdList );
+			++currentSet;
 		}
 	}
 
@@ -1009,7 +983,7 @@ namespace ashes::gl4
 	{
 		for ( auto descriptor : m_state.boundDescriptors )
 		{
-			for ( auto & writes : get( descriptor )->getDynamicBuffers() )
+			for ( auto & writes : get( descriptor.second )->getDynamicBuffers() )
 			{
 				if ( writes->descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC )
 				{
@@ -1021,7 +995,7 @@ namespace ashes::gl4
 				}
 			}
 
-			for ( auto & writes : get( descriptor )->getStorageBuffers() )
+			for ( auto & writes : get( descriptor.second )->getStorageBuffers() )
 			{
 				for ( auto & write : writes->writes )
 				{
