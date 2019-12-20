@@ -9,6 +9,7 @@ See LICENSE file in root folder
 #include <ashes/common/ArrayView.hpp>
 
 #include <array>
+#include <cstring>
 
 namespace ashes::gl4
 {
