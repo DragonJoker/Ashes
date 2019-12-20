@@ -225,6 +225,16 @@ namespace ashes::gl4
 		return getInstance( get( object )->getDevice() );
 	}
 
+	inline VkInstance getInstance( VkPipelineLayout object )
+	{
+		return getInstance( get( object )->getDevice() );
+	}
+
+	inline VkInstance getInstance( VkPipeline object )
+	{
+		return getInstance( get( object )->getLayout() );
+	}
+
 	template< typename VkObject >
 	inline void reportError( VkObject object
 		, VkResult result

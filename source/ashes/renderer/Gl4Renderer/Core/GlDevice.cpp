@@ -558,7 +558,7 @@ namespace ashes::gl4
 				, VboBindings{}
 				, BufferObjectBinding{ indexBuffer->getInternal(), 0u, m_dummyIndexed.indexBuffer }
 				, VkPipelineVertexInputStateCreateInfo{}
-				, InputLayout{}
+				, InputsLayout{}
 				, VK_INDEX_TYPE_UINT32 );
 			m_dummyIndexed.geometryBuffers->initialise( context );
 		}

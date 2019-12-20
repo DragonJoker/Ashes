@@ -25,39 +25,97 @@ inline bool operator==( VkVertexInputAttributeDescription const & lhs
 
 namespace ashes::gl4
 {
-	struct InputLayout
+	struct InputsLayout
 	{
 		VkVertexInputBindingDescriptionArray vertexBindingDescriptions;
 		VkVertexInputAttributeDescriptionArray vertexAttributeDescriptions;
 	};
 
-	inline bool operator==( InputLayout const & lhs
-		, InputLayout const & rhs )
+	inline bool operator==( InputsLayout const & lhs
+		, InputsLayout const & rhs )
 	{
 		return lhs.vertexBindingDescriptions == rhs.vertexBindingDescriptions
 			&& lhs.vertexAttributeDescriptions == rhs.vertexAttributeDescriptions;
 	}
 
-	inline bool operator!=( InputLayout const & lhs
-		, InputLayout const & rhs )
+	inline bool operator!=( InputsLayout const & lhs
+		, InputsLayout const & rhs )
 	{
 		return !operator==( lhs, rhs );
 	}
 
-	struct ConstantDesc
+	enum class ImageFormat
+	{
+		e1D,
+		e2D,
+		e3D,
+		eCube,
+		eBuffer,
+		e2DRect,
+		e1DArray,
+		e2DArray,
+		eCubeArray,
+		e2DMultisample,
+		e2DMultisampleArray,
+	};
+	
+	enum class SamplerFormat
+	{
+		e1D,
+		e2D,
+		e3D,
+		eCube,
+		e1DShadow,
+		e2DShadow,
+		e2DRect,
+		e2DRectShadow,
+		e1DArray,
+		e2DArray,
+		eCubeArray,
+		eBuffer,
+		e1DArrayShadow,
+		e2DArrayShadow,
+		eCubeShadow,
+		eInt1D,
+		eInt2D,
+		eInt3D,
+		eIntCube,
+		eInt2DRect,
+		eInt1DArray,
+		eInt2DArray,
+		eIntBuffer,
+		eUInt1D,
+		eUInt2D,
+		eUInt3D,
+		eUIntCube,
+		eUInt2DRect,
+		eUInt1DArray,
+		eUInt2DArray,
+		eUIntBuffer,
+		e2DMultisample,
+		eInt2DMultisample,
+		eUInt2DMultisample,
+		e2DMultisampleArray,
+		eInt2DMultisampleArray,
+		eUInt2DMultisampleArray,
+	};
+
+	template< typename FormatT >
+	struct FormatDescT
 	{
 		uint32_t program;
 		VkShaderStageFlagBits stageFlag;
 		std::string name;
 		uint32_t location{ 0u };
-		ConstantFormat format{};
+		FormatT format{};
 		uint32_t size{ 0u };
 		uint32_t arraySize{ 1u };
 		uint32_t offset{ 0u };
 	};
 
-	inline bool operator==( ConstantDesc const & lhs
-		, ConstantDesc const & rhs )
+	template< typename FormatT >
+	inline bool operator==( FormatDescT< FormatT > const & lhs
+		, FormatDescT< FormatT > const & rhs )
 	{
 		return lhs.name == rhs.name
 			&& lhs.stageFlag == rhs.stageFlag
@@ -68,41 +126,23 @@ namespace ashes::gl4
 			&& lhs.offset == rhs.offset;
 	}
 
-	inline bool operator!=( ConstantDesc const & lhs
-		, ConstantDesc const & rhs )
+	template< typename FormatT >
+	inline bool operator!=( FormatDescT< FormatT > const & lhs
+		, FormatDescT< FormatT > const & rhs )
 	{
 		return !operator==( lhs, rhs );
 	}
 
-	using ConstantsLayout = std::vector< ConstantDesc >;
+	template< typename FormatT >
+	using DescLayoutT = std::vector< FormatDescT< FormatT > >;
 
-	inline bool operator==( ConstantsLayout const & lhs
-		, ConstantsLayout const & rhs )
-	{
-		auto result = lhs.size() == rhs.size();
+	using ConstantDesc = FormatDescT< ConstantFormat >;
+	using ImageDesc = FormatDescT< ImageFormat >;
+	using SamplerDesc = FormatDescT< SamplerFormat >;
 
-		if ( result )
-		{
-			auto lhsIt = lhs.begin();
-			auto rhsIt = rhs.begin();
-			auto lhsEnd = lhs.end();
-
-			while ( result && lhsIt != lhsEnd )
-			{
-				result = ( *lhsIt == *rhsIt );
-				++lhsIt;
-				++rhsIt;
-			}
-		}
-
-		return result;
-	}
-
-	inline bool operator!=( ConstantsLayout const & lhs
-		, ConstantsLayout const & rhs )
-	{
-		return !operator==( lhs, rhs );
-	}
+	using ConstantsLayout = DescLayoutT< ConstantFormat >;
+	using ImagesLayout = DescLayoutT< ImageFormat >;
+	using SamplersLayout = DescLayoutT< SamplerFormat >;
 
 	struct ConstantBufferDesc
 	{
@@ -127,51 +167,28 @@ namespace ashes::gl4
 		return !operator==( lhs, rhs );
 	}
 
-	using InterfaceBlockLayout = std::vector< ConstantBufferDesc >;
-
-	inline bool operator==( InterfaceBlockLayout const & lhs
-		, InterfaceBlockLayout const & rhs )
-	{
-		auto result = lhs.size() == rhs.size();
-
-		if ( result )
-		{
-			auto lhsIt = lhs.begin();
-			auto rhsIt = rhs.begin();
-			auto lhsEnd = lhs.end();
-
-			while ( result && lhsIt != lhsEnd )
-			{
-				result = ( *lhsIt == *rhsIt );
-				++lhsIt;
-				++rhsIt;
-			}
-		}
-
-		return result;
-	}
-
-	inline bool operator!=( InterfaceBlockLayout const & lhs
-		, InterfaceBlockLayout const & rhs )
-	{
-		return !operator==( lhs, rhs );
-	}
+	using InterfaceBlocksLayout = std::vector< ConstantBufferDesc >;
 
 	struct ShaderDesc
 	{
 		GLuint program;
 		VkShaderStageFlags stageFlags;
-		InputLayout inputLayout;
-		ConstantsLayout constantsLayout;
-		InterfaceBlockLayout interfaceBlockLayout;
+		InputsLayout inputs;
+		ConstantsLayout pcb;
+		InterfaceBlocksLayout ubo;
+		InterfaceBlocksLayout sbo;
+		SamplersLayout tex;
+		ImagesLayout img;
 	};
 
 	inline bool operator==( ShaderDesc const & lhs, ShaderDesc const & rhs )
 	{
 		return lhs.stageFlags == rhs.stageFlags
-			&& lhs.inputLayout == rhs.inputLayout
-			&& lhs.constantsLayout == rhs.constantsLayout
-			&& lhs.interfaceBlockLayout == rhs.interfaceBlockLayout;
+			&& lhs.inputs == rhs.inputs
+			&& lhs.pcb == rhs.pcb
+			&& lhs.ubo == rhs.ubo
+			&& lhs.tex == rhs.tex
+			&& lhs.img == rhs.img;
 	}
 
 	inline bool operator!=( ShaderDesc const & lhs, ShaderDesc const & rhs )
@@ -180,32 +197,6 @@ namespace ashes::gl4
 	}
 
 	using ProgramLayout = std::vector< ShaderDesc >;
-
-	inline bool operator==( ProgramLayout const & lhs, ProgramLayout const & rhs )
-	{
-		auto result = lhs.size() == rhs.size();
-
-		if ( result )
-		{
-			auto lhsIt = lhs.begin();
-			auto rhsIt = rhs.begin();
-			auto lhsEnd = lhs.end();
-
-			while ( result && lhsIt != lhsEnd )
-			{
-				result = ( *lhsIt == *rhsIt );
-				++lhsIt;
-				++rhsIt;
-			}
-		}
-
-		return result;
-	}
-
-	inline bool operator!=( ProgramLayout const & lhs, ProgramLayout const & rhs )
-	{
-		return !operator==( lhs, rhs );
-	}
 
 	struct PushConstantsDesc
 	{
