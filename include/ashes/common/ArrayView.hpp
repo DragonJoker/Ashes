@@ -13,6 +13,7 @@ namespace ashes
 	template< class IterT >
 	struct IteratorTraits : std::iterator_traits< IterT >
 	{
+		using iterator_category = typename std::iterator_traits< IterT >::iterator_category;
 		static_assert( std::is_convertible< iterator_category, std::random_access_iterator_tag >::value );
 	};
 
