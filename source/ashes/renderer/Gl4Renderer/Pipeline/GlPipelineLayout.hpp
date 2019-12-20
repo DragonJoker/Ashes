@@ -17,7 +17,14 @@ namespace ashes::gl4
 			, VkPipelineLayoutCreateInfo createInfo );
 
 		ShaderBindings const & getShaderBindings()const;
-		uint32_t getDescriptorSetIndex( VkDescriptorSet set )const;
+		uint32_t getDescriptorSetIndex( VkDescriptorSet descriptorSet )const;
+		ShaderBindings const & getDecriptorSetBindings( VkDescriptorSet descriptorSet
+			, uint32_t descriptorSetIndex )const;
+
+		inline VkPushConstantRangeArray const & getPushConstants()const
+		{
+			return m_pushConstantRanges;
+		}
 
 		inline VkDescriptorSetLayoutArray const & getDescriptorsLayouts()const
 		{
@@ -35,5 +42,6 @@ namespace ashes::gl4
 		VkPushConstantRangeArray m_pushConstantRanges;
 		VkPipelineLayoutCreateInfo m_createInfo;
 		ShaderBindings m_shaderBindings;
+		mutable std::unordered_map< uint64_t, ShaderBindings > m_dsBindings;
 	};
 }

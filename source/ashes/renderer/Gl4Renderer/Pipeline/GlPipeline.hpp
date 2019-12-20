@@ -12,6 +12,8 @@
 #include "renderer/Gl4Renderer/Core/GlContextStateStack.hpp"
 #include "renderer/Gl4Renderer/Shader/GlShaderDesc.hpp"
 
+#include <renderer/RendererCommon/ShaderBindings.hpp>
+
 #include <algorithm>
 #include <unordered_map>
 
@@ -42,6 +44,8 @@ namespace ashes::gl4
 		PushConstantsDesc findPushConstantBuffer( PushConstantsDesc const & pushConstants
 			, bool isRtot )const;
 		VkDescriptorSetLayoutArray const & getDescriptorsLayouts()const;
+		ShaderBindings const & getDescriptorSetBindings( VkDescriptorSet descriptorSet
+			, uint32_t descriptorSetIndex )const;
 
 		inline bool isCompute()const
 		{
@@ -181,6 +185,7 @@ namespace ashes::gl4
 			PushConstantsDesc constantsPcb{};
 			std::vector< GLuint > modules;
 			ShaderDesc program{};
+			ShaderBindings bindings{};
 		};
 
 	private:
@@ -203,6 +208,7 @@ namespace ashes::gl4
 		ProgramPipeline m_compPipeline{};
 		mutable std::vector< std::pair< size_t, GeometryBuffersPtr > > m_geometryBuffers;
 		mutable std::unordered_map< GLuint, DeviceMemoryDestroyConnection > m_connections;
+		mutable std::unordered_map< uint64_t, ShaderBindings > m_dsBindings;
 		size_t m_vertexInputStateHash;
 	};
 }

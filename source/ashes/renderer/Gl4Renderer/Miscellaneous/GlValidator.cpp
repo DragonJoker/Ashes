@@ -359,8 +359,65 @@ namespace ashes::gl4
 			}
 		}
 
-		ConstantFormat getFormat( GlslAttributeType type )noexcept
+		bool isImage( GlslAttributeType type )
 		{
+			return type == GLSL_ATTRIBUTE_IMAGE_1D
+				|| type == GLSL_ATTRIBUTE_IMAGE_2D
+				|| type == GLSL_ATTRIBUTE_IMAGE_3D
+				|| type == GLSL_ATTRIBUTE_IMAGE_CUBE
+				|| type == GLSL_ATTRIBUTE_IMAGE_BUFFER
+				|| type == GLSL_ATTRIBUTE_IMAGE_2D_RECT
+				|| type == GLSL_ATTRIBUTE_IMAGE_1D_ARRAY
+				|| type == GLSL_ATTRIBUTE_IMAGE_2D_ARRAY
+				|| type == GLSL_ATTRIBUTE_IMAGE_CUBE_MAP_ARRAY
+				|| type == GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE
+				|| type == GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE_ARRAY;
+		}
+
+		bool isSampler( GlslAttributeType type )
+		{
+			return type == GLSL_ATTRIBUTE_SAMPLER_1D
+				|| type == GLSL_ATTRIBUTE_SAMPLER_2D
+				|| type == GLSL_ATTRIBUTE_SAMPLER_3D
+				|| type == GLSL_ATTRIBUTE_SAMPLER_CUBE
+				|| type == GLSL_ATTRIBUTE_SAMPLER_1D_SHADOW
+				|| type == GLSL_ATTRIBUTE_SAMPLER_2D_SHADOW
+				|| type == GLSL_ATTRIBUTE_SAMPLER_2D_RECT
+				|| type == GLSL_ATTRIBUTE_SAMPLER_2D_RECT_SHADOW
+				|| type == GLSL_ATTRIBUTE_SAMPLER_1D_ARRAY
+				|| type == GLSL_ATTRIBUTE_SAMPLER_2D_ARRAY
+				|| type == GLSL_ATTRIBUTE_SAMPLER_CUBE_ARRAY
+				|| type == GLSL_ATTRIBUTE_SAMPLER_BUFFER
+				|| type == GLSL_ATTRIBUTE_SAMPLER_1D_ARRAY_SHADOW
+				|| type == GLSL_ATTRIBUTE_SAMPLER_2D_ARRAY_SHADOW
+				|| type == GLSL_ATTRIBUTE_SAMPLER_CUBE_SHADOW
+				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_1D
+				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_2D
+				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_3D
+				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_CUBE
+				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_2D_RECT
+				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_1D_ARRAY
+				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_2D_ARRAY
+				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_BUFFER
+				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_1D
+				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D
+				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_3D
+				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_CUBE
+				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_RECT
+				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_1D_ARRAY
+				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_ARRAY
+				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_BUFFER
+				|| type == GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE
+				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE
+				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE
+				|| type == GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE_ARRAY
+				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE_ARRAY
+				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY;
+		}
+
+		ConstantFormat getConstantFormat( GlslAttributeType type )noexcept
+		{
+			assert( !isImage( type ) && !isSampler( type ) );
 			switch ( type )
 			{
 			case GLSL_ATTRIBUTE_INT:										return ConstantFormat::eInt;
@@ -381,6 +438,76 @@ namespace ashes::gl4
 			default:
 				assert( false && "Unsupported GLSL attribute type" );
 				return ConstantFormat::eVec4f;
+			}
+		}
+		
+		ImageFormat getImageFormat( GlslAttributeType type )noexcept
+		{
+			assert( isImage( type ) );
+			switch ( type )
+			{
+			case GLSL_ATTRIBUTE_IMAGE_1D:						return ImageFormat::e1D;
+			case GLSL_ATTRIBUTE_IMAGE_2D:						return ImageFormat::e2D;
+			case GLSL_ATTRIBUTE_IMAGE_3D:						return ImageFormat::e3D;
+			case GLSL_ATTRIBUTE_IMAGE_CUBE:						return ImageFormat::eCube;
+			case GLSL_ATTRIBUTE_IMAGE_BUFFER:					return ImageFormat::eBuffer;
+			case GLSL_ATTRIBUTE_IMAGE_2D_RECT:					return ImageFormat::e2DRect;
+			case GLSL_ATTRIBUTE_IMAGE_1D_ARRAY:					return ImageFormat::e1DArray;
+			case GLSL_ATTRIBUTE_IMAGE_2D_ARRAY:					return ImageFormat::e2DArray;
+			case GLSL_ATTRIBUTE_IMAGE_CUBE_MAP_ARRAY:			return ImageFormat::eCubeArray;
+			case GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE:			return ImageFormat::e2DMultisample;
+			case GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE_ARRAY:		return ImageFormat::e2DMultisampleArray;
+			default:
+				assert( false && "Unsupported GLSL attribute type" );
+				return ImageFormat::e2D;
+			}
+		}
+		
+		SamplerFormat getSamplerFormat( GlslAttributeType type )noexcept
+		{
+			assert( isSampler( type ) );
+			switch ( type )
+			{
+			case GLSL_ATTRIBUTE_SAMPLER_1D:									return SamplerFormat::e1D;
+			case GLSL_ATTRIBUTE_SAMPLER_2D:									return SamplerFormat::e2D;
+			case GLSL_ATTRIBUTE_SAMPLER_3D:									return SamplerFormat::e3D;
+			case GLSL_ATTRIBUTE_SAMPLER_CUBE:								return SamplerFormat::eCube;
+			case GLSL_ATTRIBUTE_SAMPLER_1D_SHADOW:							return SamplerFormat::e1DShadow;
+			case GLSL_ATTRIBUTE_SAMPLER_2D_SHADOW:							return SamplerFormat::e2DShadow;
+			case GLSL_ATTRIBUTE_SAMPLER_2D_RECT:							return SamplerFormat::e2DRect;
+			case GLSL_ATTRIBUTE_SAMPLER_2D_RECT_SHADOW:						return SamplerFormat::e2DRectShadow;
+			case GLSL_ATTRIBUTE_SAMPLER_1D_ARRAY:							return SamplerFormat::e1DArray;
+			case GLSL_ATTRIBUTE_SAMPLER_2D_ARRAY:							return SamplerFormat::e2DArray;
+			case GLSL_ATTRIBUTE_SAMPLER_CUBE_ARRAY:							return SamplerFormat::eCubeArray;
+			case GLSL_ATTRIBUTE_SAMPLER_BUFFER:								return SamplerFormat::eBuffer;
+			case GLSL_ATTRIBUTE_SAMPLER_1D_ARRAY_SHADOW:					return SamplerFormat::e1DArrayShadow;
+			case GLSL_ATTRIBUTE_SAMPLER_2D_ARRAY_SHADOW:					return SamplerFormat::e2DArrayShadow;
+			case GLSL_ATTRIBUTE_SAMPLER_CUBE_SHADOW:						return SamplerFormat::eCubeShadow;
+			case GLSL_ATTRIBUTE_INT_SAMPLER_1D:								return SamplerFormat::eInt1D;
+			case GLSL_ATTRIBUTE_INT_SAMPLER_2D:								return SamplerFormat::eInt2D;
+			case GLSL_ATTRIBUTE_INT_SAMPLER_3D:								return SamplerFormat::eInt3D;
+			case GLSL_ATTRIBUTE_INT_SAMPLER_CUBE:							return SamplerFormat::eIntCube;
+			case GLSL_ATTRIBUTE_INT_SAMPLER_2D_RECT:						return SamplerFormat::eInt2DRect;
+			case GLSL_ATTRIBUTE_INT_SAMPLER_1D_ARRAY:						return SamplerFormat::eInt1DArray;
+			case GLSL_ATTRIBUTE_INT_SAMPLER_2D_ARRAY:						return SamplerFormat::eInt2DArray;
+			case GLSL_ATTRIBUTE_INT_SAMPLER_BUFFER:							return SamplerFormat::eIntBuffer;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_1D:					return SamplerFormat::eUInt1D;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D:					return SamplerFormat::eUInt2D;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_3D:					return SamplerFormat::eUInt3D;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_CUBE:					return SamplerFormat::eUIntCube;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_RECT:				return SamplerFormat::eUInt2DRect;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_1D_ARRAY:				return SamplerFormat::eUInt1DArray;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_ARRAY:				return SamplerFormat::eUInt2DArray;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_BUFFER:				return SamplerFormat::eUIntBuffer;
+			case GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE:						return SamplerFormat::e2DMultisample;
+			case GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE:					return SamplerFormat::eInt2DMultisample;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE:		return SamplerFormat::eUInt2DMultisample;
+			case GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE_ARRAY:				return SamplerFormat::e2DMultisampleArray;
+			case GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:			return SamplerFormat::eInt2DMultisampleArray;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:	return SamplerFormat::eUInt2DMultisampleArray;
+			default:
+				assert( false && "Unsupported GLSL attribute type" );
+				return SamplerFormat::e2D;
 			}
 		}
 
@@ -482,62 +609,6 @@ namespace ashes::gl4
 				assert( false && "Unsupported attribute type" );
 				return 4u;
 			}
-		}
-
-		bool isImage( GlslAttributeType type )
-		{
-			return type == GLSL_ATTRIBUTE_IMAGE_1D
-				|| type == GLSL_ATTRIBUTE_IMAGE_2D
-				|| type == GLSL_ATTRIBUTE_IMAGE_3D
-				|| type == GLSL_ATTRIBUTE_IMAGE_CUBE
-				|| type == GLSL_ATTRIBUTE_IMAGE_BUFFER
-				|| type == GLSL_ATTRIBUTE_IMAGE_2D_RECT
-				|| type == GLSL_ATTRIBUTE_IMAGE_1D_ARRAY
-				|| type == GLSL_ATTRIBUTE_IMAGE_2D_ARRAY
-				|| type == GLSL_ATTRIBUTE_IMAGE_CUBE_MAP_ARRAY
-				|| type == GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE
-				|| type == GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE_ARRAY;
-		}
-
-		bool isSampler( GlslAttributeType type )
-		{
-			return type == GLSL_ATTRIBUTE_SAMPLER_1D
-				|| type == GLSL_ATTRIBUTE_SAMPLER_2D
-				|| type == GLSL_ATTRIBUTE_SAMPLER_3D
-				|| type == GLSL_ATTRIBUTE_SAMPLER_CUBE
-				|| type == GLSL_ATTRIBUTE_SAMPLER_1D_SHADOW
-				|| type == GLSL_ATTRIBUTE_SAMPLER_2D_SHADOW
-				|| type == GLSL_ATTRIBUTE_SAMPLER_2D_RECT
-				|| type == GLSL_ATTRIBUTE_SAMPLER_2D_RECT_SHADOW
-				|| type == GLSL_ATTRIBUTE_SAMPLER_1D_ARRAY
-				|| type == GLSL_ATTRIBUTE_SAMPLER_2D_ARRAY
-				|| type == GLSL_ATTRIBUTE_SAMPLER_CUBE_ARRAY
-				|| type == GLSL_ATTRIBUTE_SAMPLER_BUFFER
-				|| type == GLSL_ATTRIBUTE_SAMPLER_1D_ARRAY_SHADOW
-				|| type == GLSL_ATTRIBUTE_SAMPLER_2D_ARRAY_SHADOW
-				|| type == GLSL_ATTRIBUTE_SAMPLER_CUBE_SHADOW
-				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_1D
-				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_2D
-				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_3D
-				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_CUBE
-				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_2D_RECT
-				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_1D_ARRAY
-				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_2D_ARRAY
-				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_BUFFER
-				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_1D
-				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D
-				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_3D
-				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_CUBE
-				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_RECT
-				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_1D_ARRAY
-				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_ARRAY
-				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_BUFFER
-				|| type == GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE
-				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE
-				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE
-				|| type == GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE_ARRAY
-				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE_ARRAY
-				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY;
 		}
 
 		VkFormat convertFormat( GlslAttributeType type )
@@ -731,10 +802,10 @@ namespace ashes::gl4
 				, bufferInterface
 				, GLSL_DATANAME_ACTIVE_RESOURCES
 				, &numBlocks );
-			GLenum const blockBinding[1] = { GLSL_PROPERTY_BUFFER_BINDING };
+			GLenum const blockProperties[2] = { GLSL_PROPERTY_BUFFER_BINDING, GLSL_PROPERTY_BUFFER_DATA_SIZE };
 			GLenum const activeUniformsCount[1] = { GLSL_PROPERTY_NUM_ACTIVE_VARIABLES };
 			GLenum const activeUniforms[1] = { GLSL_PROPERTY_ACTIVE_VARIABLES };
-			GLenum const uniformProperties[3] = { GLSL_PROPERTY_NAME_LENGTH, GLSL_PROPERTY_TYPE, GLSL_PROPERTY_LOCATION };
+			GLenum const uniformProperties[5] = { GLSL_PROPERTY_NAME_LENGTH, GLSL_PROPERTY_TYPE, GLSL_PROPERTY_LOCATION, GLSL_PROPERTY_OFFSET, GLSL_PROPERTY_ARRAY_SIZE };
 
 			for ( int blockIx = 0; blockIx < numBlocks; ++blockIx )
 			{
@@ -746,15 +817,15 @@ namespace ashes::gl4
 					, &nameLength
 					, buffer.data() );
 				std::string bufferName( buffer.data(), nameLength );
-				GLint binding = 0;
+				GLint blockProps[2];
 				context->glGetProgramResourceiv( program
 					, bufferInterface
 					, blockIx
-					, 1
-					, blockBinding
-					, 1
+					, 2
+					, blockProperties
+					, 2
 					, nullptr
-					, &binding );
+					, blockProps );
 				GLuint index = context->glGetProgramResourceIndex( program
 					, bufferInterface
 					, bufferName.c_str() );
@@ -768,7 +839,8 @@ namespace ashes::gl4
 					, nullptr
 					, &numActiveUnifs );
 				bufferFunction( bufferName
-					, binding
+					, blockProps[0]
+					, blockProps[1]
 					, index
 					, numActiveUnifs );
 
@@ -786,13 +858,13 @@ namespace ashes::gl4
 
 					for ( GLint unifIx = 0; unifIx < numActiveUnifs; ++unifIx )
 					{
-						GLint values[3];
+						GLint values[5];
 						context->glGetProgramResourceiv( program
 							, variableInterface
 							, blockUnifs[unifIx]
-							, 3
+							, 5
 							, uniformProperties
-							, 3
+							, 5
 							, nullptr
 							, values );
 						std::vector< char > nameData( values[0] );
@@ -803,7 +875,7 @@ namespace ashes::gl4
 							, nullptr
 							, &nameData[0] );
 						std::string variableName( nameData.begin(), nameData.end() - 1 );
-						variableFunction( variableName, GlslAttributeType( values[1] ), values[2] );
+						variableFunction( variableName, GlslAttributeType( values[1] ), values[2], values[3], values[4] );
 					}
 				}
 			}
@@ -1102,21 +1174,27 @@ namespace ashes::gl4
 				, GLSL_INTERFACE_UNIFORM
 				, []( std::string name
 					, GLint point
+					, GLint dataSize
 					, GLuint index
 					, GLint variables )
 				{
 					std::clog << "   Uniform block: " << name
-						<< ", at point " << point
-						<< ", and index " << index
+						<< ", binding " << point
+						<< ", size " << dataSize
+						<< ", index " << index
 						<< ", active variables " << variables;
 				}
 				, []( std::string name
 					, GlslAttributeType type
-					, GLint location )
+					, GLint location
+					, GLint offset
+					, GLint arraySize )
 				{
 					std::clog << "      variable: " << name
 						<< ", type " << getName( type )
-						<< ", at location " << location;
+						<< ", arraySize: " << arraySize
+						<< ", location " << location
+						<< ", offset " << offset;
 				} );
 		}
 
@@ -1129,21 +1207,27 @@ namespace ashes::gl4
 				, GLSL_INTERFACE_BUFFER_VARIABLE
 				, []( std::string name
 					, GLint point
+					, GLint dataSize
 					, GLuint index
 					, GLint variables )
 				{
 					std::clog << "   ShaderStorage block: " << name
-						<< ", at point " << point
-						<< ", and index " << index
+						<< ", binding " << point
+						<< ", size " << dataSize
+						<< ", index " << index
 						<< ", active variables " << variables;
 				}
 				, []( std::string name
 					, GlslAttributeType type
-					, GLint location )
+					, GLint location
+					, GLint offset
+					, GLint arraySize )
 				{
 					std::clog << "      variable: " << name
 						<< ", type " << getName( type )
-						<< ", at location " << location;
+						<< ", arraySize: " << arraySize
+						<< ", location " << location
+						<< ", offset " << offset;
 				} );
 		}
 
@@ -1168,65 +1252,11 @@ namespace ashes::gl4
 		}
 	}
 
-	InterfaceBlockLayout getInterfaceBlockLayout( ContextLock const & context
+	InputsLayout getInputs( ContextLock const & context
+		, VkShaderStageFlagBits stage
 		, GLuint program )
 	{
-		InterfaceBlockLayout result;
-		getProgramBufferInfos( context
-			, program
-			, GLSL_INTERFACE_UNIFORM_BLOCK
-			, GLSL_INTERFACE_UNIFORM
-			, [&result]( std::string name
-				, GLint point
-				, GLuint index
-				, GLint variables )
-			{
-				result.push_back( { name, uint32_t( point ), 0u } );
-			}
-			, [&result, &program]( std::string name
-				, GlslAttributeType type
-				, GLint location )
-			{
-				result.back().constants.push_back( { program, VK_SHADER_STAGE_FLAG_BITS_MAX_ENUM, name, uint32_t( location ), getFormat( type ), getSize( type ) } );
-			} );
-		return result;
-	}
-
-	ConstantsLayout getConstantsLayout( ContextLock const & context
-		, GLuint program )
-	{
-		ConstantsLayout result;
-		getVariableInfos( context
-			, program
-			, GLSL_INTERFACE_UNIFORM
-			, [&result, &program]( std::string name
-				, GlslAttributeType type
-				, GLint location
-				, GLint arraySize
-				, GLint offset )
-			{
-				if ( !isSampler( type )
-					&& !isImage( type ) )
-				{
-					result.push_back( { program
-						, VK_SHADER_STAGE_FLAG_BITS_MAX_ENUM
-						, name
-						, uint32_t( location )
-						, getFormat( type )
-						, getSize( type )
-						, uint32_t( arraySize )
-						, ( offset == -1
-							? 0u
-							: uint32_t( offset ) ) } );
-				}
-			} );
-		return result;
-	}
-
-	InputLayout getInputLayout( ContextLock const & context
-		, GLuint program )
-	{
-		InputLayout result;
+		InputsLayout result;
 		getProgramInterfaceInfos( context
 			, program
 			, GLSL_INTERFACE_PROGRAM_INPUT
@@ -1249,7 +1279,7 @@ namespace ashes::gl4
 					offset += 3 * sizeof( float );
 					result.vertexAttributeDescriptions.push_back( { location + 1u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offset } );
 					offset += 3 * sizeof( float );
-					result.vertexAttributeDescriptions.push_back( { location + 2u, 0u, VK_FORMAT_R32G32B32_SFLOAT , offset } );
+					result.vertexAttributeDescriptions.push_back( { location + 2u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offset } );
 					break;
 				case GLSL_ATTRIBUTE_FLOAT_MAT4:
 					result.vertexAttributeDescriptions.push_back( { location + 0u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offset } );
@@ -1263,6 +1293,182 @@ namespace ashes::gl4
 				default:
 					result.vertexAttributeDescriptions.push_back( { location + 0u, 0u, convertAttribute( glslType ), offset } );
 					break;
+				}
+			} );
+		return result;
+	}
+
+	ConstantsLayout getPushConstants( ContextLock const & context
+		, VkShaderStageFlagBits stage
+		, GLuint program )
+	{
+		ConstantsLayout result;
+		getVariableInfos( context
+			, program
+			, GLSL_INTERFACE_UNIFORM
+			, [&result, &stage, &program]( std::string name
+				, GlslAttributeType type
+				, GLint location
+				, GLint arraySize
+				, GLint offset )
+			{
+				if ( !isSampler( type )
+					&& !isImage( type ) )
+				{
+					result.push_back( { program
+						, stage
+						, name
+						, uint32_t( location )
+						, getConstantFormat( type )
+						, getSize( type )
+						, uint32_t( arraySize )
+						, ( offset == -1
+							? 0u
+							: uint32_t( offset ) ) } );
+				}
+			} );
+		return result;
+	}
+
+	InterfaceBlocksLayout getUniformBuffers( ContextLock const & context
+		, VkShaderStageFlagBits stage
+		, GLuint program )
+	{
+		InterfaceBlocksLayout result;
+		getProgramBufferInfos( context
+			, program
+			, GLSL_INTERFACE_UNIFORM_BLOCK
+			, GLSL_INTERFACE_UNIFORM
+			, [&result]( std::string name
+				, GLint point
+				, GLint dataSize
+				, GLuint index
+				, GLint variables )
+			{
+				result.push_back(
+					{
+						name,
+						uint32_t( point ),
+						uint32_t( dataSize )
+					} );
+			}
+			, [&result, &stage, &program]( std::string name
+				, GlslAttributeType type
+				, GLint location
+				, GLint offset
+				, GLint arraySize )
+			{
+				result.back().constants.push_back(
+					{
+						program,
+						stage,
+						name,
+						uint32_t( location ),
+						getConstantFormat( type ),
+						getSize( type ),
+						uint32_t( arraySize ? arraySize : 1 ),
+						uint32_t( offset ),
+					} );
+			} );
+		return result;
+	}
+
+	InterfaceBlocksLayout getStorageBuffers( ContextLock const & context
+		, VkShaderStageFlagBits stage
+		, GLuint program )
+	{
+		InterfaceBlocksLayout result;
+		getProgramBufferInfos( context
+			, program
+			, GLSL_INTERFACE_SHADER_STORAGE_BLOCK
+			, GLSL_INTERFACE_BUFFER_VARIABLE
+			, [&result]( std::string name
+				, GLint point
+				, GLint dataSize
+				, GLuint index
+				, GLint variables )
+			{
+				result.push_back(
+					{
+						name,
+						uint32_t( point ),
+						uint32_t( dataSize ),
+					} );
+			}
+			, [&result, &stage, &program]( std::string name
+				, GlslAttributeType type
+				, GLint location
+				, GLint offset
+				, GLint arraySize )
+			{
+				result.back().constants.push_back(
+					{
+						program,
+						stage,
+						name,
+						uint32_t( location ),
+						getConstantFormat( type ),
+						getSize( type ),
+						uint32_t( arraySize ? arraySize : 1 ),
+						uint32_t( offset ),
+					} );
+			} );
+		return result;
+	}
+
+	SamplersLayout getSamplers( ContextLock const & context
+		, VkShaderStageFlagBits stage
+		, GLuint program )
+	{
+		SamplersLayout result;
+		getVariableInfos( context
+			, program
+			, GLSL_INTERFACE_UNIFORM
+			, [&result, &stage, &program]( std::string name
+				, GlslAttributeType type
+				, GLint location
+				, GLint arraySize
+				, GLint offset )
+			{
+				if ( isSampler( type ) )
+				{
+					result.push_back( { program
+						, stage
+						, name
+						, uint32_t( location )
+						, getSamplerFormat( type )
+						, 1u
+						, uint32_t( arraySize )
+						, 0u } );
+				}
+			} );
+		return result;
+	}
+
+	ImagesLayout getImages( ContextLock const & context
+		, VkShaderStageFlagBits stage
+		, GLuint program )
+	{
+		ImagesLayout result;
+		getVariableInfos( context
+			, program
+			, GLSL_INTERFACE_UNIFORM
+			, [&result, &stage, &program]( std::string name
+				, GlslAttributeType type
+				, GLint location
+				, GLint arraySize
+				, GLint offset )
+			{
+				if ( isImage( type ) )
+				{
+					result.push_back( { program
+						, stage
+						, name
+						, uint32_t( location )
+						, getImageFormat( type )
+						, 1u
+						, uint32_t( arraySize )
+						, 0u } );
 				}
 			} );
 		return result;
