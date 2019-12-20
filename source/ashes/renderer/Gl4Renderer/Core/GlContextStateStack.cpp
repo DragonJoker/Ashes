@@ -384,7 +384,7 @@ namespace ashes::gl4
 			scissor.y = int32_t( renderArea.height - vkbottom );
 		}
 
-		void adjust( ashes::ArrayView< MocVkScissor > & scissors
+		void adjust( ashes::ArrayView< MocVkScissor > const & scissors
 			, VkExtent2D const & renderArea )
 		{
 			for ( auto & scissor : scissors )
@@ -434,7 +434,7 @@ namespace ashes::gl4
 			viewport.y = renderArea.height - vkbottom;
 		}
 
-		void adjust( ashes::ArrayView< MocVkViewport > & scissors
+		void adjust( ashes::ArrayView< MocVkViewport > const & scissors
 			, VkExtent2D const & renderArea )
 		{
 			for ( auto & scissor : scissors )
@@ -536,8 +536,9 @@ namespace ashes::gl4
 						, ContextStateStack const & stack )
 						{
 							Command * pCmd = nullptr;
+							auto it = list[index].begin();
 
-							if ( map( list[index].begin(), list[index].end(), pCmd ) )
+							if ( map( it, list[index].end(), pCmd ) )
 							{
 								assert( pCmd->op.type == OpType::eApplyScissors );
 								CmdApplyScissors oldCmd = map< OpType::eApplyScissors >( *pCmd );
@@ -567,8 +568,9 @@ namespace ashes::gl4
 						, ContextStateStack const & stack )
 						{
 							Command * pCmd = nullptr;
+							auto it = list[index].begin();
 
-							if ( map( list[index].begin(), list[index].end(), pCmd ) )
+							if ( map( it, list[index].end(), pCmd ) )
 							{
 								assert( pCmd->op.type == OpType::eApplyScissors );
 								list[index] = makeCmd< OpType::eApplyScissors >( 0u
@@ -611,8 +613,9 @@ namespace ashes::gl4
 						, ContextStateStack const & stack )
 						{
 							Command * pCmd = nullptr;
+							auto it = list[index].begin();
 
-							if ( map( list[index].begin(), list[index].end(), pCmd ) )
+							if ( map( it, list[index].end(), pCmd ) )
 							{
 								assert( pCmd->op.type == OpType::eApplyViewports );
 								CmdApplyViewports & oldCmd = map< OpType::eApplyViewports >( *pCmd );
@@ -645,8 +648,9 @@ namespace ashes::gl4
 						, ContextStateStack const & stack )
 						{
 							Command * pCmd = nullptr;
+							auto it = list[index].begin();
 
-							if ( map( list[index].begin(), list[index].end(), pCmd ) )
+							if ( map( it, list[index].end(), pCmd ) )
 							{
 								assert( pCmd->op.type == OpType::eApplyViewports );
 								list[index] = makeCmd< OpType::eApplyViewports >( 0u
