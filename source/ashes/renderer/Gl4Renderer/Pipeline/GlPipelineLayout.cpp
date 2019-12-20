@@ -52,4 +52,21 @@ namespace ashes::gl4
 
 		return uint32_t( std::distance( layouts.begin(), it ) );
 	}
+
+	ShaderBindings const & PipelineLayout::getDecriptorSetBindings( VkDescriptorSet descriptorSet
+		, uint32_t descriptorSetIndex )const
+	{
+		auto key = makeDescriptorKey( descriptorSet, descriptorSetIndex );
+		auto pair = m_dsBindings.insert( { key, {} } );
+
+		if ( pair.second )
+		{
+			for ( auto & binding : *get( get( descriptorSet )->getLayout() ) )
+			{
+				copyBinding( descriptorSetIndex, binding, m_shaderBindings, pair.first->second );
+			}
+		}
+
+		return pair.first->second;
+	}
 }

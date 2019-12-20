@@ -64,6 +64,14 @@ See LICENSE file in root folder.
 using ashes::operator==;
 using ashes::operator!=;
 
+bool operator==( VkPushConstantRange const & lhs
+	, VkPushConstantRange const & rhs )
+{
+	return lhs.offset == rhs.offset
+		&& lhs.size == rhs.size
+		&& lhs.stageFlags == rhs.stageFlags;
+}
+
 namespace ashes::gl4
 {
 	namespace
@@ -92,6 +100,64 @@ namespace ashes::gl4
 					it += cmd.size();
 				}
 			}
+		}
+
+		bool areCompatible( VkPushConstantRangeArray const & lhs
+			, VkPushConstantRangeArray const & rhs )
+		{
+			return lhs == rhs;
+		}
+
+		bool areCompatible( VkDescriptorSetLayoutBinding const & lhs
+			, VkDescriptorSetLayoutBinding const & rhs )
+		{
+			return lhs.binding == rhs.binding
+				&& lhs.descriptorCount == rhs.descriptorCount
+				&& lhs.descriptorType == rhs.descriptorType
+				&& lhs.stageFlags == rhs.stageFlags;
+		}
+
+		bool areCompatible( VkDescriptorSetLayout lhs
+			, VkDescriptorSetLayout rhs )
+		{
+			auto lhsIt = get( lhs )->begin();
+			auto lhsEnd = get( lhs )->end();
+			auto rhsIt = get( rhs )->begin();
+			auto rhsEnd = get( rhs )->end();
+			bool result = true;
+
+			while ( lhsIt != lhsEnd && rhsIt != rhsEnd && result )
+			{
+				result = areCompatible( *lhsIt, *rhsIt );
+				++lhsIt;
+				++rhsIt;
+			}
+
+			return result;
+		}
+
+		uint32_t areCompatible( VkDescriptorSetLayoutArray const & lhs
+			, VkDescriptorSetLayoutArray const & rhs )
+		{
+			auto size = std::min( lhs.size(), rhs.size() );
+			uint32_t result = 0u;
+
+			for ( size_t i = 0u; i < size; ++i )
+			{
+				auto lhsLayout = lhs[i];
+				auto rhsLayout = rhs[i];
+
+				if ( !areCompatible( lhs[i], rhs[i] ) )
+				{
+					i = size;
+				}
+				else
+				{
+					++result;
+				}
+			}
+
+			return result;
 		}
 	}
 
@@ -190,6 +256,16 @@ namespace ashes::gl4
 		buildEndRenderPassCommand( *m_state.stack
 			, m_cmdList );
 		m_state.boundVbos.clear();
+		m_state.boundDescriptors.clear();
+		m_state.pushConstantBuffers.clear();
+		m_state.boundIbo = ashes::nullopt;
+		m_state.currentComputePipeline = nullptr;
+		m_state.currentPipeline = nullptr;
+		m_state.currentFrameBuffer = nullptr;
+		m_state.currentRenderPass = nullptr;
+		m_state.currentSubpass = nullptr;
+		m_state.currentSubpassIndex = 0u;
+		m_state.waitingDescriptors.clear();
 	}
 
 	void CommandBuffer::executeCommands( VkCommandBufferArray commands )const
@@ -248,6 +324,8 @@ namespace ashes::gl4
 	void CommandBuffer::bindPipeline( VkPipeline pipeline
 		, VkPipelineBindPoint bindingPoint )const
 	{
+		doCheckPipelineLayoutCompatibility( get( pipeline )->getLayout() );
+
 		if ( bindingPoint == VK_PIPELINE_BIND_POINT_GRAPHICS )
 		{
 			if ( m_state.currentPipeline )
@@ -282,6 +360,13 @@ namespace ashes::gl4
 			buildUnbindComputePipelineCommand( *m_state.stack
 				, m_cmdAfterSubmit );
 		}
+
+		for ( auto & waiting : m_state.waitingDescriptors )
+		{
+			waiting.second();
+		}
+
+		m_state.waitingDescriptors.clear();
 
 		for ( auto & pcb : m_state.pushConstantBuffers )
 		{
@@ -327,17 +412,43 @@ namespace ashes::gl4
 		, UInt32Array dynamicOffsets )const
 	{
 		auto currentSet = firstSet;
+		doCheckPipelineLayoutCompatibility( layout );
 
 		for ( auto & descriptorSet : descriptorSets )
 		{
 			m_state.boundDescriptors.emplace( currentSet, descriptorSet );
 			doProcessMappedBoundDescriptorBuffersIn( descriptorSet );
-			buildBindDescriptorSetCommand( m_device
-				, descriptorSet
-				, layout
-				, dynamicOffsets
-				, bindingPoint
-				, m_cmdList );
+
+			if ( m_state.currentPipeline
+				|| m_state.currentComputePipeline )
+			{
+				buildBindDescriptorSetCommand( m_device
+					, descriptorSet
+					, currentSet
+					, ( m_state.currentComputePipeline
+						? m_state.currentComputePipeline 
+						: m_state.currentPipeline )
+					, dynamicOffsets
+					, bindingPoint
+					, m_cmdList );
+			}
+			else
+			{
+				m_state.waitingDescriptors.emplace( currentSet
+					, [this, descriptorSet, dynamicOffsets, bindingPoint, currentSet]()
+					{
+						buildBindDescriptorSetCommand( m_device
+							, descriptorSet
+							, currentSet
+							, ( m_state.currentComputePipeline
+								? m_state.currentComputePipeline
+								: m_state.currentPipeline )
+							, dynamicOffsets
+							, bindingPoint
+							, m_cmdList );
+					} );
+			}
+
 			++currentSet;
 		}
 	}
@@ -693,6 +804,7 @@ namespace ashes::gl4
 		, uint32_t size
 		, void const * data )const
 	{
+		doCheckPipelineLayoutCompatibility( layout );
 		PushConstantsDesc desc
 		{
 			stageFlags,
@@ -1103,5 +1215,38 @@ namespace ashes::gl4
 	bool CommandBuffer::doIsRtotFbo()const
 	{
 		return !get( m_state.stack->getCurrentFramebuffer() )->hasSwapchainImage();
+	}
+
+	void CommandBuffer::doCheckPipelineLayoutCompatibility( VkPipelineLayout layout )const
+	{
+		if ( m_state.currentPipelineLayout
+			&& m_state.currentPipelineLayout != layout )
+		{
+			// Check push constants compatibility.
+			if ( !areCompatible( get( m_state.currentPipelineLayout )->getPushConstants()
+				, get( layout )->getPushConstants() ) )
+			{
+				m_state.boundDescriptors.clear();
+				m_state.pushConstantBuffers.clear();
+			}
+			else if ( uint32_t count = areCompatible( get( m_state.currentPipelineLayout )->getDescriptorsLayouts()
+				, get( layout )->getDescriptorsLayouts() ) )
+			{
+				auto it = m_state.boundDescriptors.begin();
+
+				while ( it != m_state.boundDescriptors.end() && it->first < count )
+				{
+					++it;
+				}
+
+				m_state.boundDescriptors.erase( it, m_state.boundDescriptors.end() );
+			}
+			else
+			{
+				m_state.boundDescriptors.clear();
+			}
+		}
+
+		m_state.currentPipelineLayout = layout;
 	}
 }

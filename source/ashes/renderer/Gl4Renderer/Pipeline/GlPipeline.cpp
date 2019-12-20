@@ -107,10 +107,51 @@ namespace ashes::gl4
 			return Optional< VkPipelineRasterizationStateCreateInfo >{};
 		}
 
-		ConstantsLayout mergeConstants( ConstantsLayout const & lhs
-			, ConstantsLayout const & rhs )
+		InterfaceBlocksLayout merge( InterfaceBlocksLayout const & lhs
+			, InterfaceBlocksLayout const & rhs )
 		{
-			ConstantsLayout result{ lhs };
+			InterfaceBlocksLayout result{ lhs };
+
+			if ( !rhs.empty() )
+			{
+				if ( result.empty() )
+				{
+					result = rhs;
+				}
+				else
+				{
+					for ( auto & constantBuffer : rhs )
+					{
+						auto it = std::find_if( result.begin()
+							, result.end()
+							, [&constantBuffer]( ConstantBufferDesc const & lookup )
+							{
+								return lookup.binding == constantBuffer.binding;
+							} );
+
+						if ( it == result.end() )
+						{
+							result.push_back( constantBuffer );
+						}
+					}
+				}
+			}
+
+			std::sort( result.begin()
+				, result.end()
+				, []( ConstantBufferDesc const & lhs, ConstantBufferDesc const & rhs )
+				{
+					return lhs.binding < rhs.binding;
+				} );
+
+			return result;
+		}
+
+		template< typename FormatT >
+		DescLayoutT< FormatT > merge( DescLayoutT< FormatT > const & lhs
+			, DescLayoutT< FormatT > const & rhs )
+		{
+			DescLayoutT< FormatT > result{ lhs };
 
 			if ( !rhs.empty() )
 			{
@@ -124,7 +165,7 @@ namespace ashes::gl4
 					{
 						auto it = std::find_if( result.begin()
 							, result.end()
-							, [&constant]( ConstantDesc const & lookup )
+							, [&constant]( FormatDescT< FormatT > const & lookup )
 							{
 								return lookup.name == constant.name
 									&& lookup.program == constant.program;
@@ -140,7 +181,7 @@ namespace ashes::gl4
 
 			std::sort( result.begin()
 				, result.end()
-				, []( ConstantDesc const & lhs, ConstantDesc const & rhs )
+				, []( FormatDescT< FormatT > const & lhs, FormatDescT< FormatT > const & rhs )
 				{
 					return lhs.offset < rhs.offset;
 				} );
@@ -148,23 +189,198 @@ namespace ashes::gl4
 			return result;
 		}
 
-		ShaderDesc mergeDescs( std::vector< ShaderDesc > const & descs )
+		ShaderDesc merge( std::vector< ShaderDesc > const & descs )
 		{
 			ShaderDesc result{};
 
 			for ( auto & desc : descs )
 			{
-				result.inputLayout.vertexAttributeDescriptions.insert( result.inputLayout.vertexAttributeDescriptions.end()
-					, desc.inputLayout.vertexAttributeDescriptions.begin()
-					, desc.inputLayout.vertexAttributeDescriptions.end() );
-				result.inputLayout.vertexBindingDescriptions.insert( result.inputLayout.vertexBindingDescriptions.end()
-					, desc.inputLayout.vertexBindingDescriptions.begin()
-					, desc.inputLayout.vertexBindingDescriptions.end() );
+				result.inputs.vertexAttributeDescriptions.insert( result.inputs.vertexAttributeDescriptions.end()
+					, desc.inputs.vertexAttributeDescriptions.begin()
+					, desc.inputs.vertexAttributeDescriptions.end() );
+				result.inputs.vertexBindingDescriptions.insert( result.inputs.vertexBindingDescriptions.end()
+					, desc.inputs.vertexBindingDescriptions.begin()
+					, desc.inputs.vertexBindingDescriptions.end() );
 				result.stageFlags |= desc.stageFlags;
-				result.constantsLayout = mergeConstants( result.constantsLayout 
-					, desc.constantsLayout );
+				result.pcb = merge( result.pcb
+					, desc.pcb );
+				result.ubo = merge( result.ubo
+					, desc.ubo );
+				result.sbo = merge( result.sbo
+					, desc.sbo );
+				result.img = merge( result.img
+					, desc.img );
+				result.tex = merge( result.tex
+					, desc.tex );
 			}
 
+			return result;
+		}
+
+		uint32_t getBinding( ConstantBufferDesc const & value )
+		{
+			return value.binding;
+		}
+
+		template< typename FormatT >
+		uint32_t getBinding( FormatDescT< FormatT > const & value )
+		{
+			return value.location;
+		}
+
+		bool checkDesc( VkWriteDescriptorSet const & write
+			, ConstantBufferDesc const & lookup )
+		{
+			auto align = get( write.pBufferInfo->buffer )->getMemoryRequirements().alignment;
+			auto size = get( write.pBufferInfo->buffer )->getMemoryRequirements().size;
+			return lookup.size == size
+				|| ( lookup.size <= write.pBufferInfo->range
+					&& lookup.size > write.pBufferInfo->range - align );
+		}
+
+		template< typename FormatT >
+		bool checkDesc( VkWriteDescriptorSet const & write
+			, FormatDescT< FormatT > const & lookup )
+		{
+			return false;
+		}
+
+		template< typename DescT >
+		DescT const * findDesc( VkWriteDescriptorSet const & write
+			, uint32_t descriptorSetIndex
+			, std::vector< DescT > const & descLayout
+			, ShaderBindingMap const & bindings
+			, ShaderBindingMap::const_iterator & bindingIt )
+		{
+			bindingIt = bindings.end();
+			auto it = std::find_if( descLayout.begin()
+				, descLayout.end()
+				, [&write, &descriptorSetIndex, &bindings, &bindingIt]( DescT const & lookup )
+				{
+					bool result = false;
+					auto it = bindings.find( makeShaderBindingKey( descriptorSetIndex, write.dstBinding ) );
+
+					if ( it != bindings.end() )
+					{
+						bindingIt = it;
+						result = it->second == getBinding( lookup );
+					}
+					else
+					{
+						it = bindings.find( makeShaderBindingKey( 0u, write.dstBinding ) );
+
+						if ( it != bindings.end() )
+						{
+							result = it->second == getBinding( lookup );
+						}
+						else
+						{
+							result = checkDesc( write, lookup );
+						}
+					}
+
+					return result;
+				} );
+
+			if ( it == descLayout.end() )
+			{
+				return nullptr;
+			}
+
+			return &( *it );
+		}
+
+		VkDescriptorSetLayoutBinding convert( VkDescriptorType descriptorType
+			, uint32_t descriptorCount
+			, uint32_t binding )
+		{
+			return
+			{
+				binding,
+				descriptorType, // descriptorType
+				descriptorCount, // descriptorCount
+				0u, // stageFlags
+				nullptr, // pImmutableSamplers
+			};
+		}
+
+		template< typename DescContT >
+		void doReworkWrites( uint32_t descriptorSetIndex
+			, LayoutBindingWritesArray const & writesArray
+			, DescContT const & descs
+			, ShaderBindingMap & resultMap
+			, ShaderBindings & result )
+		{
+			for ( auto & array : writesArray )
+			{
+				for ( auto & write : array->writes )
+				{
+					ShaderBindingMap::const_iterator bindingIt;
+					auto desc = findDesc( write
+						, descriptorSetIndex
+						, descs
+						, resultMap
+						, bindingIt );
+					addReplaceBinding( descriptorSetIndex
+						, write.dstBinding
+						, convert( write.descriptorType
+							, write.descriptorCount
+							, ( desc
+								? getBinding( *desc )
+								: ( bindingIt != resultMap.end()
+									? bindingIt->second
+									: write.dstBinding ) ) )
+						, result );
+				}
+			}
+		}
+
+		ShaderBindings doReworkBindings( ShaderBindings const & srcBindings
+			, VkDescriptorSet descriptorSet
+			, uint32_t descriptorSetIndex
+			, ShaderDesc const & programLayout )
+		{
+			ShaderBindings result = srcBindings;
+			doReworkWrites( descriptorSetIndex
+				, get( descriptorSet )->getStorageTextures()
+				, programLayout.img
+				, result.img
+				, result );
+			doReworkWrites( descriptorSetIndex
+				, get( descriptorSet )->getCombinedTextureSamplers()
+				, programLayout.tex
+				, result.tex
+				, result );
+			doReworkWrites( descriptorSetIndex
+				, get( descriptorSet )->getSamplers()
+				, programLayout.tex
+				, result.tex
+				, result );
+			doReworkWrites( descriptorSetIndex
+				, get( descriptorSet )->getSampledTextures()
+				, programLayout.tex
+				, result.tex
+				, result );
+			doReworkWrites( descriptorSetIndex
+				, get( descriptorSet )->getInputAttachments()
+				, programLayout.tex
+				, result.tex
+				, result );
+			doReworkWrites( descriptorSetIndex
+				, get( descriptorSet )->getStorageBuffers()
+				, programLayout.sbo
+				, result.sbo
+				, result );
+			doReworkWrites( descriptorSetIndex
+				, get( descriptorSet )->getUniformBuffers()
+				, programLayout.ubo
+				, result.ubo
+				, result );
+			doReworkWrites( descriptorSetIndex
+				, get( descriptorSet )->getInlineUniforms()
+				, programLayout.ubo
+				, result.ubo
+				, result );
 			return result;
 		}
 
@@ -195,7 +411,8 @@ namespace ashes::gl4
 			}
 
 			Pipeline::ProgramPipeline result;
-			result.program = mergeDescs( descs );
+			result.program = merge( descs );
+			result.bindings = get( layout )->getShaderBindings();
 			glLogCall( context
 				, glGenProgramPipelines
 				, 1
@@ -223,7 +440,7 @@ namespace ashes::gl4
 			result.constantsPcb.stageFlags = result.program.stageFlags;
 			uint32_t size = 0u;
 
-			for ( auto & constant : result.program.constantsLayout )
+			for ( auto & constant : result.program.pcb )
 			{
 				result.constantsPcb.constants.push_back( constant );
 				size += constant.size;
@@ -373,7 +590,7 @@ namespace ashes::gl4
 				, vbos
 				, ibo
 				, m_vertexInputState.value()
-				, m_backPipeline.program.inputLayout
+				, m_backPipeline.program.inputs
 				, type ) );
 
 		for ( auto & binding : vbos )
@@ -438,5 +655,33 @@ namespace ashes::gl4
 	VkDescriptorSetLayoutArray const & Pipeline::getDescriptorsLayouts()const
 	{
 		return get( m_layout )->getDescriptorsLayouts();
+	}
+
+	ShaderBindings const & Pipeline::getDescriptorSetBindings( VkDescriptorSet descriptorSet
+		, uint32_t descriptorSetIndex )const
+	{
+		auto key = makeDescriptorKey( descriptorSet, descriptorSetIndex );
+		auto pair = m_dsBindings.emplace( key
+			, get( m_layout )->getDecriptorSetBindings( descriptorSet, descriptorSetIndex ) );
+
+		if ( pair.second )
+		{
+			if ( isCompute() )
+			{
+				pair.first->second = doReworkBindings( pair.first->second
+					, descriptorSet
+					, descriptorSetIndex
+					, m_compPipeline.program );
+			}
+			else
+			{
+				pair.first->second = doReworkBindings( pair.first->second
+					, descriptorSet
+					, descriptorSetIndex
+					, m_backPipeline.program );
+			}
+		}
+
+		return pair.first->second;
 	}
 }
