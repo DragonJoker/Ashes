@@ -58,7 +58,7 @@ namespace ashes::gl4
 			, VboBindings const & vbos
 			, IboBinding const & ibo
 			, VkPipelineVertexInputStateCreateInfo const & vertexInputState
-			, InputLayout const & inputLayout
+			, InputsLayout const & inputLayout
 			, VkIndexType type );
 		~GeometryBuffers()noexcept;
 
@@ -66,7 +66,7 @@ namespace ashes::gl4
 
 		static std::vector< VBO > createVBOs( VboBindings const & vbos
 			, VkPipelineVertexInputStateCreateInfo const & vertexInputState
-			, InputLayout const & inputLayout );
+			, InputsLayout const & inputLayout );
 
 		inline GLuint getVao()const
 		{

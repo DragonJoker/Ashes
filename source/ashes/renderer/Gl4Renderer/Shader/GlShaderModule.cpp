@@ -537,12 +537,12 @@ namespace ashes::gl4
 				constant.program = program;
 			}
 
-			result = getShaderDesc( context, program );
+			result = getShaderDesc( context, state.stage, program );
 
 			if ( !m_constants.empty() )
 			{
-				assert( m_constants.size() >= result.constantsLayout.size() );
-				for ( auto & constant : result.constantsLayout )
+				assert( m_constants.size() >= result.pcb.size() );
+				for ( auto & constant : result.pcb )
 				{
 					auto it = std::find_if( m_constants.begin()
 						, m_constants.end()
@@ -560,7 +560,7 @@ namespace ashes::gl4
 			{
 				uint32_t offset = 0u;
 
-				for ( auto & constant : result.constantsLayout )
+				for ( auto & constant : result.pcb )
 				{
 					constant.offset = offset;
 					constant.stageFlag = state.stage;

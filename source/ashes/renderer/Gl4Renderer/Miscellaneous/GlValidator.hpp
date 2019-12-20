@@ -12,22 +12,39 @@
 
 namespace ashes::gl4
 {
-	InterfaceBlockLayout getInterfaceBlockLayout( ContextLock const & context
+	InputsLayout getInputs( ContextLock const & context
+		, VkShaderStageFlagBits stage
 		, GLuint program );
-	InputLayout getInputLayout( ContextLock const & context
+	ConstantsLayout getPushConstants( ContextLock const & context
+		, VkShaderStageFlagBits stage
 		, GLuint program );
-	ConstantsLayout getConstantsLayout( ContextLock const & context
+	InterfaceBlocksLayout getUniformBuffers( ContextLock const & context
+		, VkShaderStageFlagBits stage
 		, GLuint program );
+	InterfaceBlocksLayout getStorageBuffers( ContextLock const & context
+		, VkShaderStageFlagBits stage
+		, GLuint program );
+	SamplersLayout getSamplers( ContextLock const & context
+		, VkShaderStageFlagBits stage
+		, GLuint program );
+	ImagesLayout getImages( ContextLock const & context
+		, VkShaderStageFlagBits stage
+		, GLuint program );
+
 	inline ShaderDesc getShaderDesc( ContextLock const & context
+		, VkShaderStageFlagBits stage
 		, GLuint program )
 	{
 		return
 		{
 			0u,
 			0u,
-			getInputLayout( context, program ),
-			getConstantsLayout( context, program ),
-			getInterfaceBlockLayout( context, program )
+			getInputs( context, stage, program ),
+			getPushConstants( context, stage, program ),
+			getUniformBuffers( context, stage, program ),
+			getStorageBuffers( context, stage, program ),
+			getSamplers( context, stage, program ),
+			getImages( context, stage, program ),
 		};
 	}
 

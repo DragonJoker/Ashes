@@ -218,6 +218,7 @@ namespace ashes::gl4
 		BufferIndex & doAddMappedBuffer( VkBuffer buffer, bool isInput )const;
 		void doRemoveMappedBuffer( GLuint internal )const;
 		bool doIsRtotFbo()const;
+		void doCheckPipelineLayoutCompatibility( VkPipelineLayout layout )const;
 
 	private:
 		VkDevice m_device;
@@ -231,13 +232,14 @@ namespace ashes::gl4
 		{
 			std::unique_ptr< ContextStateStack > stack;
 			VkCommandBufferUsageFlags beginFlags{ 0u };
+			VkPipelineLayout currentPipelineLayout{ nullptr };
 			VkPipeline currentPipeline{ nullptr };
-			std::vector< std::pair < VkPipelineLayout, PushConstantsDesc > > pushConstantBuffers;
 			VkPipeline currentComputePipeline{ nullptr };
-			uint32_t currentSubpassIndex{ 0u };
-			VkSubpassDescription const * currentSubpass{ nullptr };
+			std::vector< std::pair < VkPipelineLayout, PushConstantsDesc > > pushConstantBuffers;
 			VkRenderPass currentRenderPass{ nullptr };
 			VkFramebuffer currentFrameBuffer{ nullptr };
+			uint32_t currentSubpassIndex{ 0u };
+			VkSubpassDescription const * currentSubpass{ nullptr };
 			VboBindings boundVbos;
 			IboBinding boundIbo;
 			IboBinding newlyBoundIbo;
@@ -245,6 +247,7 @@ namespace ashes::gl4
 			GeometryBuffers * selectedVao{ nullptr };
 			GeometryBuffersRefArray vaos;
 			std::map< uint32_t, VkDescriptorSet > boundDescriptors;
+			std::map< uint32_t, std::function< void() > > waitingDescriptors;
 		};
 		mutable State m_state;
 		mutable VkImageViewArray m_blitViews;

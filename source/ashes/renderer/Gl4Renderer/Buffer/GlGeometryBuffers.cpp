@@ -173,7 +173,7 @@ namespace ashes::gl4
 		, VboBindings const & vbos
 		, IboBinding const & ibo
 		, VkPipelineVertexInputStateCreateInfo const & vertexInputState
-		, InputLayout const & inputLayout
+		, InputsLayout const & inputLayout
 		, VkIndexType type )
 		: m_device{ device }
 		, m_vbos{ createVBOs( vbos, vertexInputState, inputLayout ) }
@@ -331,7 +331,7 @@ namespace ashes::gl4
 
 	std::vector< GeometryBuffers::VBO > GeometryBuffers::createVBOs( VboBindings const & vbos
 		, VkPipelineVertexInputStateCreateInfo const & vertexInputState
-		, InputLayout const & inputLayout )
+		, InputsLayout const & inputLayout )
 	{
 		std::vector< GeometryBuffers::VBO > result;
 		result.reserve( vbos.size() );
