@@ -6,33 +6,15 @@ set( ${PROJECT_NAME}_VERSION_MAJOR 1 )
 set( ${PROJECT_NAME}_VERSION_MINOR 0 )
 set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 
-file( GLOB ${PROJECT_NAME}_SRC_FILES
-	CONFIGURE_DEPENDS
-		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.c
-		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.cc
-		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.cpp
-		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.c
-		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.cc
-		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.cpp
-)
-
-file( GLOB ${PROJECT_NAME}_HDR_FILES
-	CONFIGURE_DEPENDS
-		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.h
-		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.hh
-		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.hpp
-		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.inl
-		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.inc
-		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.h
-		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.hh
-		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.hpp
-		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.inl
-		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.inc
+set( ${PROJECT_NAME}_SRC_FILES
+	ashes.cpp
 )
 
 set( ${PROJECT_NAME}_HDR_FILES
-	${${PROJECT_NAME}_HDR_FILES}
-	${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/ashes.h
+	../../include/${PROJECT_NAME}/ashes.h
+	../../include/${PROJECT_NAME}/ashes.hpp
+	../../include/${PROJECT_NAME}/ashes_functions_list.hpp
+	ashes_plugin.hpp
 )
 
 # I hate to have to do that, but I found no other to force gcc to use --std=c++17

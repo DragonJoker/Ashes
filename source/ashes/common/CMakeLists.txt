@@ -8,30 +8,45 @@ set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 set( PROJECT_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}" )
 set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_BUILD}" )
 
-file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
-	CONFIGURE_DEPENDS
-		${Ashes_SOURCE_DIR}/source/ashes/${_PROJECT_NAME}/*.c
-		${Ashes_SOURCE_DIR}/source/ashes/${_PROJECT_NAME}/*.cc
-		${Ashes_SOURCE_DIR}/source/ashes/${_PROJECT_NAME}/*.cpp
+set( ${PROJECT_NAME}_SRC_FILES
+	Format.cpp
 )
 
-file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
-	CONFIGURE_DEPENDS
-		${Ashes_SOURCE_DIR}/include/ashes/${_PROJECT_NAME}/*.h
-		${Ashes_SOURCE_DIR}/include/ashes/${_PROJECT_NAME}/*.hh
-		${Ashes_SOURCE_DIR}/include/ashes/${_PROJECT_NAME}/*.hpp
-		${Ashes_SOURCE_DIR}/include/ashes/${_PROJECT_NAME}/*.inl
-		${Ashes_SOURCE_DIR}/include/ashes/${_PROJECT_NAME}/*.inc
-		${Ashes_SOURCE_DIR}/source/ashes/${_PROJECT_NAME}/*.h
-		${Ashes_SOURCE_DIR}/source/ashes/${_PROJECT_NAME}/*.hh
-		${Ashes_SOURCE_DIR}/source/ashes/${_PROJECT_NAME}/*.hpp
-		${Ashes_SOURCE_DIR}/source/ashes/${_PROJECT_NAME}/*.inl
-		${Ashes_SOURCE_DIR}/source/ashes/${_PROJECT_NAME}/*.inc
+if ( WIN32 )
+	set( ${PROJECT_NAME}_PLATFORM_SRC_FILES
+		Win32/DynamicLibrary.cpp
+		Win32/FileUtils.cpp
+	)
+elseif ( APPLE )
+	set( ${PROJECT_NAME}_PLATFORM_SRC_FILES
+		MacOS/DynamicLibrary.cpp
+		MacOS/FileUtils.cpp
+	)
+else ()
+	set( ${PROJECT_NAME}_PLATFORM_SRC_FILES
+		Linux/DynamicLibrary.cpp
+		Linux/FileUtils.cpp
+	)
+endif ()
+
+set( ${PROJECT_NAME}_HDR_FILES
+	../../../include/ashes/common/ArrayView.hpp
+	../../../include/ashes/common/ConstantFormat.hpp
+	../../../include/ashes/common/DynamicLibrary.hpp
+	../../../include/ashes/common/Exception.hpp
+	../../../include/ashes/common/FileUtils.hpp
+	../../../include/ashes/common/FlagCombination.hpp
+	../../../include/ashes/common/Format.hpp
+	../../../include/ashes/common/Hash.hpp
+	../../../include/ashes/common/Optional.hpp
+	../../../include/ashes/common/Signal.hpp
+	../../../include/ashes/common/VkTypeTraits.hpp
 )
 
 add_library( ${PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_SRC_FILES}
 	${${PROJECT_NAME}_HDR_FILES}
+	${${PROJECT_NAME}_PLATFORM_SRC_FILES}
 	${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES}
 	${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
 )
@@ -64,10 +79,7 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_EXTENSIONS OFF
 	FOLDER "${Ashes_BASE_DIR}/Core" )
 
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes Platform "Platform" )
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes Win32 "Win32" )
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes Linux "Linux" )
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes MacOS "MacOS" )
+source_group( "Source Files\\Platform" FILES ${${PROJECT_NAME}_PLATFORM_SRC_FILES} )
 
 target_install_dir_headers( ${PROJECT_NAME}
 	${Ashes_SOURCE_DIR}/include/ashes/${_PROJECT_NAME}
