@@ -791,13 +791,14 @@ namespace ashes::gl4
 			}
 		}
 
-		template< typename BufFuncType, typename VarFuncType >
+		using BufferFunction = std::function< void( std::string, uint32_t, uint32_t, uint32_t, uint32_t ) >;
+		using BufferVariableFunction = std::function< void( std::string, GlslAttributeType, VkDeviceSize, uint32_t ) >;
 		void getProgramBufferInfos( ContextLock const & context
 			, uint32_t program
 			, GlslInterface bufferInterface
 			, GlslInterface variableInterface
-			, BufFuncType bufferFunction
-			, VarFuncType variableFunction )
+			, BufferFunction bufferFunction
+			, BufferVariableFunction variableFunction = nullptr )
 		{
 			GLint maxNameLength = 0;
 			glLogCall( context
@@ -817,7 +818,8 @@ namespace ashes::gl4
 			GLenum const blockProperties[2] = { GLSL_PROPERTY_BUFFER_BINDING, GLSL_PROPERTY_BUFFER_DATA_SIZE };
 			GLenum const activeUniformsCount[1] = { GLSL_PROPERTY_NUM_ACTIVE_VARIABLES };
 			GLenum const activeUniforms[1] = { GLSL_PROPERTY_ACTIVE_VARIABLES };
-			GLenum const uniformProperties[5] = { GLSL_PROPERTY_NAME_LENGTH, GLSL_PROPERTY_TYPE, GLSL_PROPERTY_LOCATION, GLSL_PROPERTY_OFFSET, GLSL_PROPERTY_ARRAY_SIZE };
+			uint32_t const uniformPropertyCount = 4u;
+			GLenum const uniformProperties[uniformPropertyCount] = { GLSL_PROPERTY_NAME_LENGTH, GLSL_PROPERTY_TYPE, GLSL_PROPERTY_OFFSET, GLSL_PROPERTY_ARRAY_SIZE };
 
 			for ( int blockIx = 0; blockIx < numBlocks; ++blockIx )
 			{
@@ -864,7 +866,7 @@ namespace ashes::gl4
 					, index
 					, numActiveUnifs );
 
-				if ( numActiveUnifs )
+				if ( numActiveUnifs && variableFunction )
 				{
 					std::vector< GLint > blockUnifs( numActiveUnifs );
 					glLogCall( context
@@ -880,15 +882,15 @@ namespace ashes::gl4
 
 					for ( GLint unifIx = 0; unifIx < numActiveUnifs; ++unifIx )
 					{
-						GLint values[5]{};
+						GLint values[uniformPropertyCount]{};
 						glLogCall( context
 							, glGetProgramResourceiv
 							, program
 							, variableInterface
 							, blockUnifs[unifIx]
-							, 5
+							, uniformPropertyCount
 							, uniformProperties
-							, 5
+							, uniformPropertyCount
 							, nullptr
 							, values );
 
@@ -904,7 +906,10 @@ namespace ashes::gl4
 								, nullptr
 								, &nameData[0] );
 							std::string variableName( nameData.begin(), nameData.end() - 1 );
-							variableFunction( variableName, GlslAttributeType( values[1] ), values[2], values[3], values[4] );
+							variableFunction( variableName
+								, GlslAttributeType( values[1] )
+								, values[2]
+								, values[3] );
 						}
 					}
 				}
@@ -1213,10 +1218,10 @@ namespace ashes::gl4
 				, GLSL_INTERFACE_UNIFORM_BLOCK
 				, GLSL_INTERFACE_UNIFORM
 				, []( std::string name
-					, GLint point
-					, GLint dataSize
-					, GLuint index
-					, GLint variables )
+					, uint32_t point
+					, uint32_t dataSize
+					, uint32_t index
+					, uint32_t variables )
 				{
 					std::clog << "   Uniform block: " << name
 						<< ", binding " << point
@@ -1226,14 +1231,12 @@ namespace ashes::gl4
 				}
 				, []( std::string name
 					, GlslAttributeType type
-					, GLint location
-					, GLint offset
-					, GLint arraySize )
+					, VkDeviceSize offset
+					, uint32_t arraySize )
 				{
 					std::clog << "      variable: " << name
 						<< ", type " << getName( type )
 						<< ", arraySize: " << arraySize
-						<< ", location " << location
 						<< ", offset " << offset;
 				} );
 		}
@@ -1246,10 +1249,10 @@ namespace ashes::gl4
 				, GLSL_INTERFACE_SHADER_STORAGE_BLOCK
 				, GLSL_INTERFACE_BUFFER_VARIABLE
 				, []( std::string name
-					, GLint point
-					, GLint dataSize
-					, GLuint index
-					, GLint variables )
+					, uint32_t point
+					, uint32_t dataSize
+					, uint32_t index
+					, uint32_t variables )
 				{
 					std::clog << "   ShaderStorage block: " << name
 						<< ", binding " << point
@@ -1259,14 +1262,12 @@ namespace ashes::gl4
 				}
 				, []( std::string name
 					, GlslAttributeType type
-					, GLint location
-					, GLint offset
-					, GLint arraySize )
+					, VkDeviceSize offset
+					, uint32_t arraySize )
 				{
 					std::clog << "      variable: " << name
 						<< ", type " << getName( type )
 						<< ", arraySize: " << arraySize
-						<< ", location " << location
 						<< ", offset " << offset;
 				} );
 		}
@@ -1380,30 +1381,29 @@ namespace ashes::gl4
 			, GLSL_INTERFACE_UNIFORM_BLOCK
 			, GLSL_INTERFACE_UNIFORM
 			, [&result]( std::string name
-				, GLint point
-				, GLint dataSize
-				, GLuint index
-				, GLint variables )
+				, uint32_t point
+				, uint32_t dataSize
+				, uint32_t index
+				, uint32_t variables )
 			{
 				result.push_back(
 					{
 						name,
-						uint32_t( point ),
-						uint32_t( dataSize )
+						point,
+						dataSize,
 					} );
 			}
 			, [&result, &stage, &program]( std::string name
 				, GlslAttributeType type
-				, GLint location
-				, GLint offset
-				, GLint arraySize )
+				, VkDeviceSize offset
+				, uint32_t arraySize )
 			{
 				result.back().constants.push_back(
 					{
 						program,
 						stage,
 						name,
-						uint32_t( location ),
+						0u,
 						getConstantFormat( type ),
 						getSize( type ),
 						uint32_t( arraySize ? arraySize : 1 ),
@@ -1423,36 +1423,35 @@ namespace ashes::gl4
 			, GLSL_INTERFACE_SHADER_STORAGE_BLOCK
 			, GLSL_INTERFACE_BUFFER_VARIABLE
 			, [&result]( std::string name
-				, GLint point
-				, GLint dataSize
-				, GLuint index
-				, GLint variables )
+				, uint32_t point
+				, uint32_t dataSize
+				, uint32_t index
+				, uint32_t variables )
 			{
 				result.push_back(
 					{
 						name,
-						uint32_t( point ),
-						uint32_t( dataSize ),
+						point,
+						dataSize,
 					} );
-			}
+			}/*
 			, [&result, &stage, &program]( std::string name
 				, GlslAttributeType type
-				, GLint location
-				, GLint offset
-				, GLint arraySize )
+				, VkDeviceSize offset
+				, uint32_t arraySize )
 			{
 				result.back().constants.push_back(
 					{
 						program,
 						stage,
 						name,
-						uint32_t( location ),
+						0u,
 						getConstantFormat( type ),
 						getSize( type ),
-						uint32_t( arraySize ? arraySize : 1 ),
-						uint32_t( offset ),
+						arraySize ? arraySize : 1u,
+						offset,
 					} );
-			} );
+			}*/ );
 		return result;
 	}
 

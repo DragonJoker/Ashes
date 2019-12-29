@@ -171,6 +171,7 @@ namespace ashes::gl4
 
 	struct ShaderDesc
 	{
+		bool isGlsl;
 		GLuint program;
 		VkShaderStageFlags stageFlags;
 		InputsLayout inputs;
