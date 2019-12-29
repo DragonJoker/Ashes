@@ -195,6 +195,7 @@ namespace ashes::gl4
 
 			for ( auto & desc : descs )
 			{
+				result.isGlsl = result.isGlsl || desc.isGlsl;
 				result.inputs.vertexAttributeDescriptions.insert( result.inputs.vertexAttributeDescriptions.end()
 					, desc.inputs.vertexAttributeDescriptions.begin()
 					, desc.inputs.vertexAttributeDescriptions.end() );
@@ -231,11 +232,7 @@ namespace ashes::gl4
 		bool checkDesc( VkWriteDescriptorSet const & write
 			, ConstantBufferDesc const & lookup )
 		{
-			auto align = get( write.pBufferInfo->buffer )->getMemoryRequirements().alignment;
-			auto size = get( write.pBufferInfo->buffer )->getMemoryRequirements().size;
-			return lookup.size == size
-				|| ( lookup.size <= write.pBufferInfo->range
-					&& lookup.size > write.pBufferInfo->range - align );
+			return false;
 		}
 
 		template< typename FormatT >
@@ -257,26 +254,12 @@ namespace ashes::gl4
 				, descLayout.end()
 				, [&write, &descriptorSetIndex, &bindings, &bindingIt]( DescT const & lookup )
 				{
-					bool result = false;
-					auto it = bindings.find( makeShaderBindingKey( descriptorSetIndex, write.dstBinding ) );
+					bool result = write.dstBinding == getBinding( lookup )
+						|| checkDesc( write, lookup );
 
-					if ( it != bindings.end() )
+					if ( result )
 					{
-						bindingIt = it;
-						result = it->second == getBinding( lookup );
-					}
-					else
-					{
-						it = bindings.find( makeShaderBindingKey( 0u, write.dstBinding ) );
-
-						if ( it != bindings.end() )
-						{
-							result = it->second == getBinding( lookup );
-						}
-						else
-						{
-							result = checkDesc( write, lookup );
-						}
+						bindingIt = bindings.find( makeShaderBindingKey( descriptorSetIndex, write.dstBinding ) );
 					}
 
 					return result;
@@ -341,46 +324,51 @@ namespace ashes::gl4
 			, ShaderDesc const & programLayout )
 		{
 			ShaderBindings result = srcBindings;
-			doReworkWrites( descriptorSetIndex
-				, get( descriptorSet )->getStorageTextures()
-				, programLayout.img
-				, result.img
-				, result );
-			doReworkWrites( descriptorSetIndex
-				, get( descriptorSet )->getCombinedTextureSamplers()
-				, programLayout.tex
-				, result.tex
-				, result );
-			doReworkWrites( descriptorSetIndex
-				, get( descriptorSet )->getSamplers()
-				, programLayout.tex
-				, result.tex
-				, result );
-			doReworkWrites( descriptorSetIndex
-				, get( descriptorSet )->getSampledTextures()
-				, programLayout.tex
-				, result.tex
-				, result );
-			doReworkWrites( descriptorSetIndex
-				, get( descriptorSet )->getInputAttachments()
-				, programLayout.tex
-				, result.tex
-				, result );
-			doReworkWrites( descriptorSetIndex
-				, get( descriptorSet )->getStorageBuffers()
-				, programLayout.sbo
-				, result.sbo
-				, result );
-			doReworkWrites( descriptorSetIndex
-				, get( descriptorSet )->getUniformBuffers()
-				, programLayout.ubo
-				, result.ubo
-				, result );
-			doReworkWrites( descriptorSetIndex
-				, get( descriptorSet )->getInlineUniforms()
-				, programLayout.ubo
-				, result.ubo
-				, result );
+
+			if ( programLayout.isGlsl )
+			{
+				doReworkWrites( descriptorSetIndex
+					, get( descriptorSet )->getStorageTextures()
+					, programLayout.img
+					, result.img
+					, result );
+				doReworkWrites( descriptorSetIndex
+					, get( descriptorSet )->getCombinedTextureSamplers()
+					, programLayout.tex
+					, result.tex
+					, result );
+				doReworkWrites( descriptorSetIndex
+					, get( descriptorSet )->getSamplers()
+					, programLayout.tex
+					, result.tex
+					, result );
+				doReworkWrites( descriptorSetIndex
+					, get( descriptorSet )->getSampledTextures()
+					, programLayout.tex
+					, result.tex
+					, result );
+				doReworkWrites( descriptorSetIndex
+					, get( descriptorSet )->getInputAttachments()
+					, programLayout.tex
+					, result.tex
+					, result );
+				doReworkWrites( descriptorSetIndex
+					, get( descriptorSet )->getStorageBuffers()
+					, programLayout.sbo
+					, result.sbo
+					, result );
+				doReworkWrites( descriptorSetIndex
+					, get( descriptorSet )->getUniformBuffers()
+					, programLayout.ubo
+					, result.ubo
+					, result );
+				doReworkWrites( descriptorSetIndex
+					, get( descriptorSet )->getInlineUniforms()
+					, programLayout.ubo
+					, result.ubo
+					, result );
+			}
+
 			return result;
 		}
 

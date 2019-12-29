@@ -37,6 +37,7 @@ namespace ashes::gl4
 	{
 		return
 		{
+			true,
 			0u,
 			0u,
 			getInputs( context, stage, program ),

@@ -436,12 +436,13 @@ namespace ashes::gl4
 			, VkShaderStageFlagBits stage
 			, VkPipelineShaderStageCreateInfo const & state
 			, bool invertY
-			, ConstantsLayout & constants )
+			, ConstantsLayout & constants
+			, bool & isGlsl )
 		{
 			if ( shader[0] == OpCodeSPIRV )
 			{
+				isGlsl = false;
 #if Gl4Renderer_USE_SPIRV_CROSS
-
 				BlockLocale guard;
 				spirv_cross::CompilerGLSL compiler{ shader };
 				doProcessSpecializationConstants( state, compiler );
@@ -449,16 +450,13 @@ namespace ashes::gl4
 				doSetupOptions( device, compiler, invertY );
 				constants = doRetrievePushConstants( compiler, stage );
 				doReworkBindings( pipelineLayout, createFlags, module, compiler );
-
 				return compiler.compile();
-
 #else
-
 				throw std::runtime_error{ "Can't parse SPIR-V shaders, pull submodule SpirvCross" };
-
 #endif
 			}
 
+			isGlsl = true;
 			std::vector< char > glslCode( shader.size() * sizeof( uint32_t ) );
 			std::memcpy( glslCode.data(), shader.data(), glslCode.size() );
 			return std::string( glslCode.data(), glslCode.data() + strlen( glslCode.data() ) );
@@ -480,6 +478,7 @@ namespace ashes::gl4
 	{
 		auto context = get( m_device )->getContext();
 		ShaderDesc result{};
+		bool isGlsl;
 		m_source = compileSpvToGlsl( m_device
 			, pipelineLayout
 			, createFlags
@@ -488,7 +487,8 @@ namespace ashes::gl4
 			, state.stage
 			, state
 			, invertY
-			, m_constants );
+			, m_constants
+			, isGlsl );
 
 		char const * data = m_source.data();
 		auto program = glLogNonVoidCall( context
@@ -538,6 +538,7 @@ namespace ashes::gl4
 			}
 
 			result = getShaderDesc( context, state.stage, program );
+			result.isGlsl = isGlsl;
 
 			if ( !m_constants.empty() )
 			{
