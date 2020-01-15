@@ -36,10 +36,6 @@ else()
 	endif()
 endif()
 
-if ( NOT SPIRV_FIND_COMPONENTS )
-	set( SPIRV_FIND_COMPONENTS SPIRV-Tools SPIRV-Tools-opt )
-endif ()
-
 find_path( SPIRV_ROOT_DIR include/SPIRV/spirv.hpp include/vulkan/spirv.hpp
 	HINTS
 	PATHS

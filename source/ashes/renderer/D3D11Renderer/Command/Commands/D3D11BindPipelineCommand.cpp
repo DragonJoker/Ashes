@@ -9,7 +9,9 @@ See LICENSE file in root folder.
 #include "Pipeline/D3D11PipelineLayout.hpp"
 #include "Shader/D3D11ShaderModule.hpp"
 
-#include <amd_ags.h>
+#if defined( ASHES_D3D11_USE_AMD_AGS )
+#	include <amd_ags.h>
+#endif
 
 #if defined( ASHES_D3D11_USE_NVAPI )
 #	include <nvapi.h>
@@ -341,6 +343,7 @@ namespace ashes::d3d11
 		}
 		else
 #endif
+#if ASHES_D3D11_USE_AMD_AGS
 		if ( get( m_physicalDevice )->isAMD() )
 		{
 			agsDriverExtensionsDX11_SetDepthBounds( nullptr
@@ -349,6 +352,7 @@ namespace ashes::d3d11
 				, m_depthBounds.minBound
 				, m_depthBounds.maxBound );
 		}
+#endif
 	}
 
 	void SetDepthBoundsCommand::remove( Context const & context )const
@@ -363,6 +367,7 @@ namespace ashes::d3d11
 		}
 		else
 #endif
+#if ASHES_D3D11_USE_AMD_AGS
 		if ( get( m_physicalDevice )->isAMD() )
 		{
 			agsDriverExtensionsDX11_SetDepthBounds( get( m_physicalDevice )->getAGSContext()
@@ -371,6 +376,7 @@ namespace ashes::d3d11
 				, m_depthBounds.minBound
 				, m_depthBounds.maxBound );
 		}
+#endif
 	}
 
 	CommandPtr SetDepthBoundsCommand::clone()const

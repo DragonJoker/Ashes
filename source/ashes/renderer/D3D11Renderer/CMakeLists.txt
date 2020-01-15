@@ -27,7 +27,7 @@ file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
 
 set( ${PROJECT_NAME}_USE_SPIRV_CROSS 0 )
 
-if ( EXISTS ${SPIRV_CROSS_DIR}/spirv_cross.cpp )
+if ( ASHES_BUILD_SPIRV_CROSS )
 	set( ${PROJECT_NAME}_USE_SPIRV_CROSS 1 )
 	set( ${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES
 		${SPIRV_CROSS_DIR}/spirv_hlsl.cpp
@@ -38,22 +38,28 @@ if ( EXISTS ${SPIRV_CROSS_DIR}/spirv_cross.cpp )
 	)
 endif ()
 
-set( AGS_INCLUDE_DIR ${Ashes_SOURCE_DIR}/external/AGS_SDK/ags_lib/inc )
+if ( EXISTS ${Ashes_SOURCE_DIR}/external/AGS_SDK/ags_lib/inc/ )
+	set( AGS_INCLUDE_DIR ${Ashes_SOURCE_DIR}/external/AGS_SDK/ags_lib/inc )
+	set( TARGET_CXX_DEFINITIONS
+		${TARGET_CXX_DEFINITIONS}
+		ASHES_D3D11_USE_AMD_AGS
+	)
 
-if ( MSVC )
-	if ( MSVC15 )
-		set( AGS_LIBRARY
-			debug ${Ashes_SOURCE_DIR}/external/AGS_SDK/ags_lib/lib/amd_ags_x64_2015_MDd.lib
-			optimized ${Ashes_SOURCE_DIR}/external/AGS_SDK/ags_lib/lib/amd_ags_x64_2015_MD.lib
-		)
+	if ( MSVC )
+		if ( MSVC15 )
+			set( AGS_LIBRARY
+				debug ${Ashes_SOURCE_DIR}/external/AGS_SDK/ags_lib/lib/amd_ags_x64_2015_MDd.lib
+				optimized ${Ashes_SOURCE_DIR}/external/AGS_SDK/ags_lib/lib/amd_ags_x64_2015_MD.lib
+			)
+		else ()
+			set( AGS_LIBRARY
+				debug ${Ashes_SOURCE_DIR}/external/AGS_SDK/ags_lib/lib/amd_ags_x64_2017_MDd.lib
+				optimized ${Ashes_SOURCE_DIR}/external/AGS_SDK/ags_lib/lib/amd_ags_x64_2017_MD.lib
+			)
+		endif ()
 	else ()
-		set( AGS_LIBRARY
-			debug ${Ashes_SOURCE_DIR}/external/AGS_SDK/ags_lib/lib/amd_ags_x64_2017_MDd.lib
-			optimized ${Ashes_SOURCE_DIR}/external/AGS_SDK/ags_lib/lib/amd_ags_x64_2017_MD.lib
-		)
+		set( AGS_LIBRARY ${Ashes_SOURCE_DIR}/external/AGS_SDK/ags_lib/lib/amd_ags_x64.lib )
 	endif ()
-else ()
-	set( AGS_LIBRARY ${Ashes_SOURCE_DIR}/external/AGS_SDK/ags_lib/lib/amd_ags_x64.lib )
 endif ()
 
 find_package( NVAPI )

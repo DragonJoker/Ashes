@@ -53,8 +53,6 @@ add_library( ashes::${PROJECT_NAME}
 	ALIAS
 	${PROJECT_NAME}
 )
-message( STATUS "Ashes_SOURCE_DIR: ${Ashes_SOURCE_DIR}" )
-message( STATUS "Ashes_BINARY_DIR: ${Ashes_BINARY_DIR}" )
 target_include_directories( ${PROJECT_NAME}
 	PUBLIC
 		$<BUILD_INTERFACE:${Ashes_SOURCE_DIR}/include>
