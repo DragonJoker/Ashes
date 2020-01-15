@@ -7,9 +7,9 @@ See LICENSE file in root folder.
 #include "Core/D3D11Device.hpp"
 
 #if D3D11Renderer_USE_SPIRV_CROSS
-#	include "spirv_cpp.hpp"
-#	include "spirv_cross_util.hpp"
-#	include "spirv_hlsl.hpp"
+#	include "spirv_cross/spirv_cpp.hpp"
+#	include "spirv_cross/spirv_cross_util.hpp"
+#	include "spirv_cross/spirv_hlsl.hpp"
 #endif
 
 #include <iostream>
