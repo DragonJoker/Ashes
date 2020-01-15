@@ -40,7 +40,7 @@ install(
 install( EXPORT Ashes
 	FILE AshesConfig.cmake
 	NAMESPACE ashes::
-	DESTINATION lib/cmake/Ashes
+	DESTINATION share/ashes/cmake
 )
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file( AshesConfigVersion.cmake
