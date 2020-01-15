@@ -108,7 +108,7 @@ else ()
 	find_package( Vulkan )
 endif ()
 
-if ( EXISTS ${CMAKE_SOURCE_DIR}/external/SPIRV-Cross/ )
+if ( EXISTS ${CMAKE_SOURCE_DIR}/external/SPIRV-Cross/spirv_cross.cpp )
 	set( ASHES_BUILD_SPIRV_CROSS ON )
 	set( SPIRV_CROSS_DIR ${CMAKE_SOURCE_DIR}/external/SPIRV-Cross )
 else ()
