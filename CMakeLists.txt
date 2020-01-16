@@ -35,19 +35,6 @@ endif ()
 # Organize projects into folders
 set_property( GLOBAL PROPERTY USE_FOLDERS ON )
 
-if ( ANDROID OR CMAKE_COMPILER_IS_GNUCXX )
-	add_definitions(
-		-fdiagnostics-color=auto
-		-fPIC
-	)
-elseif ( MSVC )
-	add_definitions(
-		-D_CRT_SECURE_NO_WARNINGS
-		-D_SCL_SECURE_NO_WARNINGS
-		-D_ENFORCE_MATCHING_ALLOCATORS=0
-	)
-endif ()
-
 macro( add_forced_include _FILE )
 	if ( MSVC )
 		add_definitions( /FI"""${_FILE}""" )
@@ -77,18 +64,18 @@ macro( parse_subdir_files_ex _BASE_DIR _PROJGROUP _FOLDER _GROUP )
 		set( __PROJGROUP "${__PROJGROUP}/" )
 	endif ()
 	file( GLOB _FOLDER_HEADER_FILES
-		${_BASE_DIR}/include/${__PROJGROUP}${PROJECT_NAME}/${_FOLDER}/*.h
-		${_BASE_DIR}/include/${__PROJGROUP}${PROJECT_NAME}/${_FOLDER}/*.hpp
-		${_BASE_DIR}/include/${__PROJGROUP}${PROJECT_NAME}/${_FOLDER}/*.inl
-		${_BASE_DIR}/source/${__PROJGROUP}${PROJECT_NAME}/${_FOLDER}/*.h
-		${_BASE_DIR}/source/${__PROJGROUP}${PROJECT_NAME}/${_FOLDER}/*.hpp
-		${_BASE_DIR}/source/${__PROJGROUP}${PROJECT_NAME}/${_FOLDER}/*.inl
+		${_BASE_DIR}/include/${__PROJGROUP}${_PROJECT_NAME}/${_FOLDER}/*.h
+		${_BASE_DIR}/include/${__PROJGROUP}${_PROJECT_NAME}/${_FOLDER}/*.hpp
+		${_BASE_DIR}/include/${__PROJGROUP}${_PROJECT_NAME}/${_FOLDER}/*.inl
+		${_BASE_DIR}/source/${__PROJGROUP}${_PROJECT_NAME}/${_FOLDER}/*.h
+		${_BASE_DIR}/source/${__PROJGROUP}${_PROJECT_NAME}/${_FOLDER}/*.hpp
+		${_BASE_DIR}/source/${__PROJGROUP}${_PROJECT_NAME}/${_FOLDER}/*.inl
 	)
 	file( GLOB _FOLDER_SOURCE_FILES
-		${_BASE_DIR}/include/${__PROJGROUP}${PROJECT_NAME}/${_FOLDER}/*.c
-		${_BASE_DIR}/include/${__PROJGROUP}${PROJECT_NAME}/${_FOLDER}/*.cpp
-		${_BASE_DIR}/source/${__PROJGROUP}${PROJECT_NAME}/${_FOLDER}/*.c
-		${_BASE_DIR}/source/${__PROJGROUP}${PROJECT_NAME}/${_FOLDER}/*.cpp
+		${_BASE_DIR}/include/${__PROJGROUP}${_PROJECT_NAME}/${_FOLDER}/*.c
+		${_BASE_DIR}/include/${__PROJGROUP}${_PROJECT_NAME}/${_FOLDER}/*.cpp
+		${_BASE_DIR}/source/${__PROJGROUP}${_PROJECT_NAME}/${_FOLDER}/*.c
+		${_BASE_DIR}/source/${__PROJGROUP}${_PROJECT_NAME}/${_FOLDER}/*.cpp
 	)
 	source_group( "Header Files\\${_GROUP}" FILES ${_FOLDER_HEADER_FILES} )
 	source_group( "Source Files\\${_GROUP}" FILES ${_FOLDER_SOURCE_FILES} )
@@ -108,12 +95,19 @@ else ()
 	find_package( Vulkan )
 endif ()
 
-if ( EXISTS ${CMAKE_SOURCE_DIR}/external/SPIRV-Cross/spirv_cross.cpp )
+if ( EXISTS ${CMAKE_SOURCE_DIR}/external/spirv_cross/spirv_cross.cpp )
 	set( ASHES_BUILD_SPIRV_CROSS ON )
-	set( SPIRV_CROSS_DIR ${CMAKE_SOURCE_DIR}/external/SPIRV-Cross )
+	set( SPIRV_CROSS_DIR ${CMAKE_SOURCE_DIR}/external/spirv_cross )
+	set( ASHES_HAS_SPIRV_CROSS ON )
+	set( SPIRV_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external )
 else ()
 	set( ASHES_BUILD_SPIRV_CROSS OFF )
 	find_package( SPIRV )
+	if ( SPIRV_FOUND )
+		set( ASHES_HAS_SPIRV_CROSS ON )
+	else ()
+		set( ASHES_HAS_SPIRV_CROSS OFF )
+	endif ()
 endif ()
 
 set(CMAKE_DEBUG_POSTFIX "d")
@@ -136,7 +130,8 @@ add_subdirectory( source )
 
 if ( ASHES_BUILD_TESTS OR ASHES_BUILD_SAMPLES OR ASHES_BUILD_TEMPLATES )
 	if ( NOT TARGET glslang )
-		if ( ASHES_BUILD_GLSLANG )
+		if ( EXISTS ${CMAKE_SOURCE_DIR}/external/spirv_cross/spirv_cross.cpp )
+			set( ASHES_BUILD_GLSLANG ON )
 			set( ENABLE_GLSLANG_BINARIES FALSE CACHE BOOL "Builds glslangValidator and spirv-remap" FORCE )
 			set( ENABLE_AMD_EXTENSIONS FALSE CACHE BOOL "Enables support of AMD-specific extensions" FORCE )
 			set( ENABLE_NV_EXTENSIONS FALSE CACHE BOOL "Enables support of Nvidia-specific extensions" FORCE )
@@ -144,6 +139,13 @@ if ( ASHES_BUILD_TESTS OR ASHES_BUILD_SAMPLES OR ASHES_BUILD_TEMPLATES )
 			set( BUILD_TESTING OFF )
 			set( SKIP_GLSLANG_INSTALL ON )
 			add_subdirectory( external/glslang )
+		else ()
+			find_package( glslang )
+			if ( GLSLANG_FOUND )
+				set( ASHES_BUILD_GLSLANG ON )
+			else ()
+				set( ASHES_BUILD_GLSLANG OFF )
+			endif ()
 		endif ()
 	endif ()
 endif ()

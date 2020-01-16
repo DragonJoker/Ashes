@@ -34,7 +34,7 @@ if( GLFW_FOUND )
 	set_target_properties( ${PROJECT_NAME} PROPERTIES
 		CXX_STANDARD 17
 		CXX_EXTENSIONS OFF
-		FOLDER "Templates"
+		FOLDER "${Ashes_BASE_DIR}/Templates"
 	)
 	add_dependencies( ${PROJECT_NAME}
 		${ENABLED_RENDERERS}

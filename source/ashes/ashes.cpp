@@ -8,6 +8,12 @@ namespace details
 {
 	namespace
 	{
+		bool startsWith( std::string const & value
+			, std::string const & lookup )
+		{
+			return value.find( lookup ) == 0u;
+		}
+
 		bool endsWith( std::string const & value
 			, std::string const & lookup )
 		{
@@ -22,31 +28,49 @@ namespace details
 			return result;
 		}
 
-		std::string const & getSharedLibExt()
+		std::string const & getDebugPostfix()
 		{
 #if defined( NDEBUG )
-#	if defined( _WIN32 )
-			static std::string result{ R"(.dll)" };
-#	elif defined( __APPLE__ )
-			static std::string result{ R"(.dylib)" };
-#	else
-			static std::string result{ R"(.so)" };
-#	endif
+			static std::string result;
 #else
-#	if defined( _WIN32 )
-			static std::string result{ R"(d.dll)" };
-#	elif defined( __APPLE__ )
-			static std::string result{ R"(d.dylib)" };
-#	else
-			static std::string result{ R"(d.so)" };
-#	endif
+			static std::string result{ R"(d)" };
 #endif
+			return result;
+		}
+
+		std::string const & getSharedLibExt()
+		{
+#if defined( _WIN32 )
+			static std::string result{ R"(.dll)" };
+#elif defined( __APPLE__ )
+			static std::string result{ R"(.dylib)" };
+#else
+			static std::string result{ R"(.so)" };
+#endif
+			return result;
+		}
+
+		std::string const & getPrefix()
+		{
+			static std::string result{ "ashes" };
+			return result;
+		}
+
+		std::string const & getPostfix()
+		{
+			static std::string result{ "Renderer" + getDebugPostfix() + getSharedLibExt() };
 			return result;
 		}
 
 		bool isAshesPlugin( std::string const & filePath )
 		{
-			return endsWith( filePath, "Renderer" + getSharedLibExt() );
+			return startsWith( filePath, getPrefix() )
+				&& endsWith( filePath, getPostfix() );
+		}
+
+		bool isSupported( Plugin const & plugin )
+		{
+			return plugin.description.support.supported == VK_TRUE;
 		}
 
 		uint32_t getPriority( Plugin const & plugin )
@@ -61,7 +85,7 @@ namespace details
 
 		for ( auto & lookup : plugins )
 		{
-			if ( lookup.description.support.supported )
+			if ( isSupported( lookup ) )
 			{
 				if ( !result
 					|| getPriority( lookup ) > getPriority( *result ) )
@@ -77,28 +101,30 @@ namespace details
 	PluginArray listPlugins()
 	{
 		PluginArray result;
-		ashes::StringArray files;
-		auto binDir = ashes::getExecutableDirectory();
-		auto libDir = ashes::getPath( binDir ) / "lib";
-		auto binRes = ashes::listDirectoryFiles( binDir, files, false );
-		auto libRes = ashes::listDirectoryFiles( libDir, files, false );
-
-		if ( binRes || libRes )
+		auto filter = []( std::string const & folder
+			, std::string const & name )
 		{
-			for ( auto & file : files )
+			return isAshesPlugin( name );
+		};
+		auto binDir = ashes::getExecutableDirectory();
+		auto files = ashes::filterDirectoryFiles( binDir, filter, false );
+
+		if ( files.empty() )
+		{
+			auto libDir = ashes::getPath( binDir ) / "lib";
+			files = ashes::filterDirectoryFiles( libDir, filter, false );
+		}
+
+		for ( auto & file : files )
+		{
+			try
 			{
-				if ( isAshesPlugin( file ) )
-				{
-					try
-					{
-						result.emplace_back( std::make_unique< ashes::DynamicLibrary >( file ) );
-					}
-					catch ( std::exception & exc )
-					{
-						// Prevent useless noisy message
-						std::clog << exc.what() << std::endl;
-					}
-				}
+				result.emplace_back( std::make_unique< ashes::DynamicLibrary >( file ) );
+			}
+			catch ( std::exception & exc )
+			{
+				// Prevent useless noisy message
+				std::clog << exc.what() << std::endl;
 			}
 		}
 

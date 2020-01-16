@@ -1,24 +1,25 @@
-project( ashes_util )
+set( _PROJECT_NAME util )
+project( ashes_${_PROJECT_NAME} )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
-	${Ashes_SOURCE_DIR}/source/util/*.c
-	${Ashes_SOURCE_DIR}/source/util/*.cc
-	${Ashes_SOURCE_DIR}/source/util/*.cpp
-	${Ashes_SOURCE_DIR}/include/util/*.c
-	${Ashes_SOURCE_DIR}/include/util/*.cc
-	${Ashes_SOURCE_DIR}/include/util/*.cpp
+	${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.c
+	${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.cc
+	${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.cpp
+	${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.c
+	${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.cc
+	${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.cpp
 )
 file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
-	${Ashes_SOURCE_DIR}/source/util/*.h
-	${Ashes_SOURCE_DIR}/source/util/*.hh
-	${Ashes_SOURCE_DIR}/source/util/*.hpp
-	${Ashes_SOURCE_DIR}/source/util/*.inl
-	${Ashes_SOURCE_DIR}/source/util/*.inc
-	${Ashes_SOURCE_DIR}/include/util/*.h
-	${Ashes_SOURCE_DIR}/include/util/*.hh
-	${Ashes_SOURCE_DIR}/include/util/*.hpp
-	${Ashes_SOURCE_DIR}/include/util/*.inl
-	${Ashes_SOURCE_DIR}/include/util/*.inc
+	${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.h
+	${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.hh
+	${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.hpp
+	${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.inl
+	${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.inc
+	${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.h
+	${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.hh
+	${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.hpp
+	${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.inl
+	${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.inc
 )
 
 if ( MSVC )
@@ -37,7 +38,7 @@ add_library( ${PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_SRC_FILES}
 	${${PROJECT_NAME}_HDR_FILES}
 )
-add_library( ashes::util
+add_library( ashes::${_PROJECT_NAME}
 	ALIAS
 	${PROJECT_NAME}
 )
@@ -48,10 +49,10 @@ target_include_directories( ${PROJECT_NAME}
 		${Ashes_SOURCE_DIR}/include
 		${Ashes_SOURCE_DIR}/source
 		${ASHES_CONFIG_DIR}/source
-		${ASHES_CONFIG_DIR}/include/util
-		${Ashes_SOURCE_DIR}/include/util
-		${ASHES_CONFIG_DIR}/source/util
-		${Ashes_SOURCE_DIR}/source/util
+		${ASHES_CONFIG_DIR}/include/${_PROJECT_NAME}
+		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}
+		${ASHES_CONFIG_DIR}/source/${_PROJECT_NAME}
+		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}
 		${CMAKE_SOURCE_DIR}/external/glslang
 )
 target_link_libraries( ${PROJECT_NAME}

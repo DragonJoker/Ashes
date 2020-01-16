@@ -1,4 +1,5 @@
-project( GlRendererCommon )
+set( _PROJECT_NAME GlRendererCommon )
+project( ashes${_PROJECT_NAME} )
 
 if ( ${CMAKE_VERSION} VERSION_GREATER "3.10.2" ) 
 	cmake_policy( SET CMP0072 NEW )
@@ -57,7 +58,7 @@ if ( OpenGL_FOUND )
 		${${PROJECT_NAME}_SRC_FILES}
 		${${PROJECT_NAME}_HDR_FILES}
 	)
-	add_library( ashes::${PROJECT_NAME}
+	add_library( ashes::${_PROJECT_NAME}
 		ALIAS
 		${PROJECT_NAME}
 	)
@@ -65,7 +66,7 @@ if ( OpenGL_FOUND )
 		${Vulkan_INCLUDE_DIR}
 		${TARGET_INCLUDE_DIRS}
 		${CMAKE_CURRENT_BINARY_DIR}
-		${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
+		${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}
 	)
 	target_link_libraries( ${PROJECT_NAME} PUBLIC
 		${Ashes_BINARY_LIBRARIES}

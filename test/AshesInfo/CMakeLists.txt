@@ -33,7 +33,7 @@ add_executable( ${PROJECT_NAME}
 set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 17
 	CXX_EXTENSIONS OFF
-	FOLDER "Utils"
+	FOLDER "${Ashes_BASE_DIR}/Utils"
 )
 target_include_directories( ${PROJECT_NAME} PRIVATE
 	${TARGET_INCLUDE_DIRS}

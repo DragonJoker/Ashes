@@ -27,7 +27,7 @@ add_executable( ${PROJECT_NAME} WIN32
 	${GLSL_SHADER_FILES}
 )
 target_link_libraries( ${PROJECT_NAME} PRIVATE
-	Sample-00-Common
+	ashes::sample::Common
 	${Ashes_BINARY_LIBRARIES}
 )
 add_target_precompiled_header( ${PROJECT_NAME}
