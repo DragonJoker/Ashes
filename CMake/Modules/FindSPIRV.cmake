@@ -80,6 +80,7 @@ if ( SPIRV_ROOT_DIR )
 			/usr/lib
 		PATHS
 			${SPIRV_ROOT_DIR}
+			${SPIRV_ROOT_DIR}/debug
 	)
 
 	if ( NOT SPIRV_LIBRARY_DEBUG_DIR )
