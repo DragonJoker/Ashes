@@ -56,10 +56,8 @@ if ( spirv-cross_DIR )
 	find_path( spirv-cross_INCLUDE_DIR
 			spirv_cross/spirv.hpp
 		HINTS
-		PATH_SUFFIXES
-			include
 		PATHS
-			${spirv-cross_DIR}
+			${spirv-cross_DIR}/include
 			/usr/local/include
 			/usr/include
 	)
