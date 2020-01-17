@@ -56,6 +56,9 @@ target_compile_features( ${PROJECT_NAME} PUBLIC
 target_compile_definitions( ${PROJECT_NAME} PUBLIC
 	${TARGET_COMPILE_DEFINITIONS}
 )
+target_compile_options( ${PROJECT_NAME} PUBLIC
+	${TARGET_COMPILE_OPTIONS}
+)
 set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 17
 	CXX_EXTENSIONS OFF

@@ -58,7 +58,6 @@ target_include_directories( ${PROJECT_NAME}
 	PUBLIC
 		$<BUILD_INTERFACE:${Ashes_SOURCE_DIR}/include>
 		$<INSTALL_INTERFACE:include>
-		${CMAKE_DL_LIBS}
 	PRIVATE
 		${Vulkan_INCLUDE_DIR}
 		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}
@@ -71,6 +70,8 @@ target_include_directories( ${PROJECT_NAME}
 target_link_libraries( ${PROJECT_NAME}
 	PRIVATE
 		ashes::common
+	PUBLIC
+		${CMAKE_DL_LIBS}
 )
 target_compile_definitions( ${PROJECT_NAME}
 	PUBLIC
@@ -83,6 +84,7 @@ target_compile_features( ${PROJECT_NAME} PRIVATE
 )
 target_compile_options( ${PROJECT_NAME} PRIVATE
 	${TARGET_CXX_OPTIONS}
+	${TARGET_COMPILE_OPTIONS}
 )
 set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 17
