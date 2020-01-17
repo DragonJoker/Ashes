@@ -36,7 +36,10 @@ else()
 	endif()
 endif()
 
-find_path( SPIRV_ROOT_DIR include/SPIRV/spirv.hpp include/vulkan/spirv.hpp
+find_path( SPIRV_ROOT_DIR
+		include/spirv-cross/spirv.hpp
+		include/SPIRV/spirv.hpp
+		include/vulkan/spirv.hpp
 	HINTS
 	PATHS
 		/usr/local
@@ -44,7 +47,10 @@ find_path( SPIRV_ROOT_DIR include/SPIRV/spirv.hpp include/vulkan/spirv.hpp
 )
 
 if ( SPIRV_ROOT_DIR )
-	find_path( SPIRV_INCLUDE_DIR SPIRV/spirv.hpp vulkan/spirv.hpp
+	find_path( SPIRV_INCLUDE_DIR
+			spirv-cross/spirv.hpp
+			SPIRV/spirv.hpp
+			vulkan/spirv.hpp
 		HINTS
 		PATH_SUFFIXES
 			include
