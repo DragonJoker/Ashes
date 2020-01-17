@@ -1,7 +1,7 @@
 # FindGLFW
 # ------------
 #
-# Locate GLFW library
+# Locate glfw3 library
 #
 # This module defines
 #
@@ -46,17 +46,20 @@ if( WIN32 )
 		message( SEND_ERROR "Unsupported compiler" )
 	endif ()
 
-	find_path( GLFW_LIBRARY_DIR glfw3.lib
+	find_path( GLFW_LIBRARY_DIR
+		NAMES
+			glfw3.lib glfw3dll.lib
 		HINTS
 		PATH_SUFFIXES
 			${SUBFOLDER}
+			lib
 		PATHS
 			${GLFW_ROOT_DIR}
 	)
 
 	find_library(GLFW_LIBRARY
 		NAMES
-			glfw3.lib
+			glfw3.lib glfw3dll.lib
 		HINTS
 		PATHS
 			${GLFW_LIBRARY_DIR}

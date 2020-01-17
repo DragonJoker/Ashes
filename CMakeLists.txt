@@ -1,15 +1,28 @@
 cmake_minimum_required( VERSION 3.10 )
 cmake_policy( VERSION 3.10 )
 
+if ( VCPKG_TARGET_TRIPLET )
+	set( VCPKG_TOOLCHAIN ON )
+endif ()
+
 set( MAIN_PROJECT_NAME "Ashes" )
 set( BUILD_ASHES 1 )
 
 # Used to look for external modules
-set( CMAKE_MODULE_PATH
-	${CMAKE_SOURCE_DIR}/CMake
-	${CMAKE_SOURCE_DIR}/CMake/Modules
-	${CMAKE_SOURCE_DIR}/CMake/Toolchains
-)
+if ( VCPKG_TOOLCHAIN )
+	set( CMAKE_MODULE_PATH
+		${CMAKE_SOURCE_DIR}/CMake
+		${CMAKE_SOURCE_DIR}/CMake/Modules
+		${CMAKE_SOURCE_DIR}/CMake/Toolchains
+	)
+else ()
+	set( CMAKE_MODULE_PATH
+		${CMAKE_SOURCE_DIR}/CMake
+		${CMAKE_SOURCE_DIR}/CMake/Modules
+		${CMAKE_SOURCE_DIR}/CMake/Modules/Traditional
+		${CMAKE_SOURCE_DIR}/CMake/Toolchains
+	)
+endif ()
 set( CMAKE_TEMPLATES_DIR ${CMAKE_SOURCE_DIR}/CMake/Templates )
 
 project( ${MAIN_PROJECT_NAME} )
@@ -89,25 +102,26 @@ if ( MSVC )
 	string( REGEX REPLACE "/Zi" "/ZI" CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG} )
 endif ()
 
-if ( EXISTS ${CMAKE_SOURCE_DIR}/external/Vulkan-Headers/include/ )
-	set( Vulkan_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/Vulkan-Headers/include )
+if ( VCPKG_TOOLCHAIN OR NOT EXISTS ${CMAKE_SOURCE_DIR}/external/Vulkan-Headers/include/ )
+	find_package( Vulkan REQUIRED )
 else ()
-	find_package( Vulkan )
+	set( Vulkan_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/Vulkan-Headers/include )
 endif ()
 
-if ( EXISTS ${CMAKE_SOURCE_DIR}/external/spirv_cross/spirv_cross.cpp )
-	set( ASHES_BUILD_SPIRV_CROSS ON )
-	set( SPIRV_CROSS_DIR ${CMAKE_SOURCE_DIR}/external/spirv_cross )
-	set( ASHES_HAS_SPIRV_CROSS ON )
-	set( SPIRV_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external )
-else ()
+if ( VCPKG_TOOLCHAIN OR NOT EXISTS ${CMAKE_SOURCE_DIR}/external/spirv_cross/spirv_cross.cpp )
 	set( ASHES_BUILD_SPIRV_CROSS OFF )
-	find_package( SPIRV )
+	find_package( SPIRV REQUIRED )
 	if ( SPIRV_FOUND )
 		set( ASHES_HAS_SPIRV_CROSS ON )
 	else ()
 		set( ASHES_HAS_SPIRV_CROSS OFF )
+		message( WARNING "SPIRV-Cross was not found, native API shaders (GLSL and HLSL) won't be available." )
 	endif ()
+else ()
+	set( ASHES_BUILD_SPIRV_CROSS ON )
+	set( SPIRV_CROSS_DIR ${CMAKE_SOURCE_DIR}/external/spirv_cross )
+	set( ASHES_HAS_SPIRV_CROSS ON )
+	set( SPIRV_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external )
 endif ()
 
 set(CMAKE_DEBUG_POSTFIX "d")
@@ -130,7 +144,19 @@ add_subdirectory( source )
 
 if ( ASHES_BUILD_TESTS OR ASHES_BUILD_SAMPLES OR ASHES_BUILD_TEMPLATES )
 	if ( NOT TARGET glslang )
-		if ( EXISTS ${CMAKE_SOURCE_DIR}/external/spirv_cross/spirv_cross.cpp )
+		if ( VCPKG_TOOLCHAIN OR NOT EXISTS ${CMAKE_SOURCE_DIR}/external/spirv_cross/spirv_cross.cpp )
+			if ( VCPKG_TOOLCHAIN )
+				find_package( glslang CONFIG )
+			else ()
+				find_package( glslang )
+			endif ()
+			if ( GLSLANG_FOUND )
+				set( ASHES_HAS_GLSLANG ON )
+			else ()
+				set( ASHES_HAS_GLSLANG OFF )
+			endif ()
+		else ()
+			set( ASHES_HAS_GLSLANG ON )
 			set( ASHES_BUILD_GLSLANG ON )
 			set( ENABLE_GLSLANG_BINARIES FALSE CACHE BOOL "Builds glslangValidator and spirv-remap" FORCE )
 			set( ENABLE_AMD_EXTENSIONS FALSE CACHE BOOL "Enables support of AMD-specific extensions" FORCE )
@@ -139,13 +165,6 @@ if ( ASHES_BUILD_TESTS OR ASHES_BUILD_SAMPLES OR ASHES_BUILD_TEMPLATES )
 			set( BUILD_TESTING OFF )
 			set( SKIP_GLSLANG_INSTALL ON )
 			add_subdirectory( external/glslang )
-		else ()
-			find_package( glslang )
-			if ( GLSLANG_FOUND )
-				set( ASHES_BUILD_GLSLANG ON )
-			else ()
-				set( ASHES_BUILD_GLSLANG OFF )
-			endif ()
 		endif ()
 	endif ()
 endif ()
