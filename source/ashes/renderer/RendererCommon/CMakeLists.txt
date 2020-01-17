@@ -56,7 +56,7 @@ add_library( ashes::${_PROJECT_NAME}
 target_link_libraries( ${PROJECT_NAME} PUBLIC
 	ashes::ashes
 	${Ashes_BINARY_LIBRARIES}
-	${SPIRV_LIBRARIES}
+	${SPIRV_CROSS_LIBRARIES}
 	${RendererDependencies}
 )
 target_include_directories( ${PROJECT_NAME}
@@ -67,7 +67,7 @@ target_include_directories( ${PROJECT_NAME}
 		${Ashes_SOURCE_DIR}/source/ashes
 		${Ashes_BINARY_DIR}/source/ashes/renderer
 		${Ashes_SOURCE_DIR}/source/ashes/renderer
-		${SPIRV_INCLUDE_DIR}
+		${SPIRV_CROSS_INCLUDE_DIR}
 	PRIVATE
 		${Ashes_BINARY_DIR}/source/ashes/renderer/${_PROJECT_NAME}
 		${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}

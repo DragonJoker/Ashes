@@ -104,7 +104,6 @@ target_include_directories( ${PROJECT_NAME} PRIVATE
 	${Vulkan_INCLUDE_DIR}
 	${TARGET_INCLUDE_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR}
-	${SPIRV_CROSS_DIR}
 	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}
 )
 target_link_libraries( ${PROJECT_NAME} PRIVATE
@@ -112,6 +111,7 @@ target_link_libraries( ${PROJECT_NAME} PRIVATE
 	d3d11
 	dxgi
 	d3dcompiler
+	${SPIRV_CROSS_HLSL_LIBRARIES}
 	${Ashes_BINARY_LIBRARIES}
 )
 target_compile_features( ${PROJECT_NAME} PRIVATE

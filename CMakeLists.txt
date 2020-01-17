@@ -111,19 +111,30 @@ endif ()
 if ( VCPKG_TOOLCHAIN OR NOT EXISTS ${CMAKE_SOURCE_DIR}/external/spirv_cross/spirv_cross.cpp )
 	set( ASHES_BUILD_SPIRV_CROSS OFF )
 	if ( VCPKG_TOOLCHAIN )
-		set( SPIRV_ROOT_DIR ${ASHES_PACKAGE_DIR}/${VCPKG_TARGET_TRIPLET} )
+		set( spirv-cross_DIR ${ASHES_PACKAGE_DIR}/${VCPKG_TARGET_TRIPLET} )
 	endif ()
-	find_package( SPIRV REQUIRED )
-	if ( SPIRV_FOUND )
+	find_package( spirv-cross REQUIRED COMPONENTS core cpp glsl hlsl reflect util )
+	if ( spirv-cross_FOUND )
 		set( ASHES_HAS_SPIRV_CROSS ON )
+		set( SPIRV_CROSS_LIBRARIES
+			spirv-cross-core
+			spirv-cross-cpp
+			spirv-cross-glsl
+			spirv-cross-reflect
+			spirv-cross-util
+		)
+		set( SPIRV_CROSS_HLSL_LIBRARIES
+			spirv-cross-hlsl
+		)
 	else ()
 		set( ASHES_HAS_SPIRV_CROSS OFF )
+		message( FATAL_ERROR "Couldn't find spirv-cross" )
 	endif ()
 else ()
 	set( ASHES_BUILD_SPIRV_CROSS ON )
-	set( SPIRV_CROSS_DIR ${CMAKE_SOURCE_DIR}/external/spirv_cross )
 	set( ASHES_HAS_SPIRV_CROSS ON )
-	set( SPIRV_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external )
+	set( SPIRV_CROSS_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external )
+	set( SPIRV_CROSS_DIR ${SPIRV_CROSS_INCLUDE_DIR}/spirv_cross )
 endif ()
 
 set(CMAKE_DEBUG_POSTFIX "d")

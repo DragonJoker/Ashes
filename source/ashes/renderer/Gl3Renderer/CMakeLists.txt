@@ -45,7 +45,6 @@ target_include_directories( ${PROJECT_NAME} PRIVATE
 	${Vulkan_INCLUDE_DIR}
 	${TARGET_INCLUDE_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR}
-	${SPIRV_CROSS_DIR}
 	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}
 )
 target_link_libraries( ${PROJECT_NAME} PRIVATE
