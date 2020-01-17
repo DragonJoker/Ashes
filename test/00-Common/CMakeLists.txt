@@ -71,6 +71,10 @@ target_compile_definitions( ${PROJECT_NAME} PUBLIC
 target_compile_options( ${PROJECT_NAME} PUBLIC
 	${TARGET_CXX_OPTIONS}
 )
+set_property( TARGET ${PROJECT_NAME}
+	PROPERTY
+		FOLDER "${Ashes_BASE_DIR}/Utils"
+)
 set( ASSETS_FOLDER ${CMAKE_SOURCE_DIR}/test/Assets )
 
 file( GLOB_RECURSE ASSETS_FILES

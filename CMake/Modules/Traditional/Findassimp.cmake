@@ -33,7 +33,11 @@ FIND_PATH(ASSIMP_INCLUDE_DIR assimp/ai_assert.h
 
 if (CMAKE_CL_64 OR CMAKE_GENERATOR MATCHES Win64)
 	if( MSVC )
-		if ( MSVC14 )
+		if ( CMAKE_GENERATOR STREQUAL "Visual Studio 16 2019" )
+			set( VC_NUM 142 )
+		elseif ( CMAKE_GENERATOR STREQUAL "Visual Studio 15 2017" )
+			set( VC_NUM 141 )
+		elseif ( MSVC14 )
 			set( VC_NUM 140 )
 		elseif ( MSVC12 )
 			set( VC_NUM 120 )
@@ -66,6 +70,7 @@ if (CMAKE_CL_64 OR CMAKE_GENERATOR MATCHES Win64)
 				lib
 			PATHS
 				${ASSIMP_ROOT_DIR}
+				${ASSIMP_ROOT_DIR}/debug
 				${ASSIMP_LIBRARY_RELEASE_DIR}
 		)
 
@@ -111,6 +116,7 @@ if (CMAKE_CL_64 OR CMAKE_GENERATOR MATCHES Win64)
 				lib
 			PATHS
 				${ASSIMP_ROOT_DIR}
+				${ASSIMP_ROOT_DIR}/debug
 		)
 
 		FIND_LIBRARY(ASSIMP_LIBRARY_RELEASE
@@ -135,7 +141,11 @@ if (CMAKE_CL_64 OR CMAKE_GENERATOR MATCHES Win64)
 	endif()
 else()
 	if( MSVC )
-		if ( MSVC14 )
+		if ( CMAKE_GENERATOR STREQUAL "Visual Studio 16 2019" )
+			set( VC_NUM 142 )
+		elseif ( CMAKE_GENERATOR STREQUAL "Visual Studio 15 2017" )
+			set( VC_NUM 141 )
+		elseif( MSVC14 )
 			set( VC_NUM 140 )
 		elseif ( MSVC12 )
 			set( VC_NUM 120 )
@@ -168,6 +178,7 @@ else()
 			lib
 		PATHS
 			${ASSIMP_ROOT_DIR}
+			${ASSIMP_ROOT_DIR}/debug
 		)
 
 		FIND_LIBRARY(ASSIMP_LIBRARY_RELEASE
@@ -211,6 +222,7 @@ else()
 				lib
 			PATHS
 				${ASSIMP_ROOT_DIR}
+				${ASSIMP_ROOT_DIR}/debug
 		)
 
 		FIND_LIBRARY(ASSIMP_LIBRARY_RELEASE
@@ -249,6 +261,7 @@ else()
 				lib
 			PATHS
 				${ASSIMP_ROOT_DIR}
+				${ASSIMP_ROOT_DIR}/debug
 		)
 
 		FIND_LIBRARY(ASSIMP_LIBRARY_RELEASE

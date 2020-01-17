@@ -65,6 +65,10 @@ add_library( ${PROJECT_NAME} STATIC
 	${HEADER_FILES}
 	${GLSL_SHADER_FILES}
 )
+add_library( ashes::sample::Common
+	ALIAS
+	${PROJECT_NAME}
+)
 target_link_libraries( ${PROJECT_NAME}
 	PRIVATE
 		${Ashes_BINARY_LIBRARIES}

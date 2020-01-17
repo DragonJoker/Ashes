@@ -1,19 +1,15 @@
 set( ASHES_CONFIG_DIR ${CMAKE_CURRENT_BINARY_DIR} )
 
-if ( WIN32 )
-	set( Ashes_BINARY_LIBRARIES
-		Dbghelp
+if ( ANDROID OR CMAKE_COMPILER_IS_GNUCXX )
+	set( TARGET_COMPILE_OPTIONS
+		-fdiagnostics-color=auto
+		-fPIC
 	)
-	if ( MSVC )
-		set( TARGET_CXX_DEFINITIONS
-			-D_ENFORCE_MATCHING_ALLOCATORS=0
-			-DNOMINMAX
-			# -DWIN32_LEAN_AND_MEAN
-		)
-	endif ()
-else ()
-	set( Ashes_BINARY_LIBRARIES
-		dl
+elseif ( MSVC )
+	set( TARGET_COMPILE_DEFINITIONS
+		_CRT_SECURE_NO_WARNINGS
+		_SCL_SECURE_NO_WARNINGS
+		_ENFORCE_MATCHING_ALLOCATORS=0
 	)
 endif ()
 
@@ -40,7 +36,7 @@ install(
 install( EXPORT Ashes
 	FILE AshesConfig.cmake
 	NAMESPACE ashes::
-	DESTINATION lib/cmake/Ashes
+	DESTINATION share/ashes/cmake
 )
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file( AshesConfigVersion.cmake

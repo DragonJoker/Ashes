@@ -76,6 +76,7 @@ if ( glslang_ROOT_DIR )
 			/usr/lib
 		PATHS
 			${glslang_ROOT_DIR}
+			${glslang_ROOT_DIR}/debug
 	)
 
 	if ( NOT glslang_LIBRARY_DEBUG_DIR )
@@ -88,6 +89,7 @@ if ( glslang_ROOT_DIR )
 				/usr/lib
 			PATHS
 				${glslang_ROOT_DIR}
+				${glslang_ROOT_DIR}/debug
 		)
 	endif ()
 

@@ -1,4 +1,5 @@
-project( RendererCommon )
+set( _PROJECT_NAME RendererCommon )
+project( ashes${_PROJECT_NAME} )
 
 set( ${PROJECT_NAME}_VERSION_MAJOR 0 )
 set( ${PROJECT_NAME}_VERSION_MINOR 1 )
@@ -7,7 +8,7 @@ set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 set( PROJECT_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}" )
 set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_BUILD}" )
 
-if ( EXISTS ${SPIRV_CROSS_DIR}/spirv_cross.cpp )
+if ( ASHES_BUILD_SPIRV_CROSS )
 	set( ${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES
 		${SPIRV_CROSS_DIR}/spirv_cross.cpp
 		${SPIRV_CROSS_DIR}/spirv_cross_parsed_ir.cpp
@@ -29,17 +30,17 @@ if ( EXISTS ${SPIRV_CROSS_DIR}/spirv_cross.cpp )
 endif ()
 
 file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.c
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.cc
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.cpp
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/*.c
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/*.cc
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/*.cpp
 )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.h
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.hh
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.hpp
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.inl
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.inc
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/*.h
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/*.hh
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/*.hpp
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/*.inl
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/*.inc
 )
 
 add_library( ${PROJECT_NAME} STATIC
@@ -48,13 +49,14 @@ add_library( ${PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES}
 	${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
 )
-add_library( ashes::${PROJECT_NAME}
+add_library( ashes::${_PROJECT_NAME}
 	ALIAS
 	${PROJECT_NAME}
 )
 target_link_libraries( ${PROJECT_NAME} PUBLIC
 	ashes::ashes
 	${Ashes_BINARY_LIBRARIES}
+	${SPIRV_CROSS_LIBRARIES}
 	${RendererDependencies}
 )
 target_include_directories( ${PROJECT_NAME}
@@ -65,9 +67,10 @@ target_include_directories( ${PROJECT_NAME}
 		${Ashes_SOURCE_DIR}/source/ashes
 		${Ashes_BINARY_DIR}/source/ashes/renderer
 		${Ashes_SOURCE_DIR}/source/ashes/renderer
+		${SPIRV_CROSS_INCLUDE_DIR}
 	PRIVATE
-		${Ashes_BINARY_DIR}/source/ashes/renderer/${PROJECT_NAME}
-		${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
+		${Ashes_BINARY_DIR}/source/ashes/renderer/${_PROJECT_NAME}
+		${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}
 )
 target_compile_features( ${PROJECT_NAME} PUBLIC
 	cxx_std_17

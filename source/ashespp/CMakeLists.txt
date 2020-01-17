@@ -1,39 +1,45 @@
-project( ashespp )
+set( _PROJECT_NAME ashespp )
+project( ${_PROJECT_NAME} )
 
 set( ${PROJECT_NAME}_DESCRIPTION "${PROJECT_NAME} library" )
 set( ${PROJECT_NAME}_VERSION_MAJOR 1 )
 set( ${PROJECT_NAME}_VERSION_MINOR 0 )
 set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 
+if ( MSVC )
+	set( LIBS
+		DbgHelp )
+endif ()
+
 file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
 	CONFIGURE_DEPENDS
-		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.c
-		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.cc
-		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.cpp
-		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.c
-		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.cc
-		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.cpp
+		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.c
+		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.cc
+		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.cpp
+		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.c
+		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.cc
+		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.cpp
 )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
 	CONFIGURE_DEPENDS
-		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.h
-		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.hh
-		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.hpp
-		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.inl
-		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/*.inc
-		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.h
-		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.hh
-		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.hpp
-		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.inl
-		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/*.inc
+		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.h
+		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.hh
+		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.hpp
+		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.inl
+		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.inc
+		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.h
+		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.hh
+		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.hpp
+		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.inl
+		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.inc
 )
 
-add_library( ${PROJECT_NAME} STATIC
+add_library( ${_PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_SRC_FILES}
 	${${PROJECT_NAME}_HDR_FILES}
 )
-add_library( ashes::${PROJECT_NAME}
+add_library( ashes::${_PROJECT_NAME}
 	ALIAS
 	${PROJECT_NAME}
 )
@@ -41,7 +47,6 @@ target_compile_features( ${PROJECT_NAME} PUBLIC
 	cxx_std_17
 )
 target_compile_definitions( ${PROJECT_NAME} PUBLIC
-	${TARGET_CXX_DEFINITIONS}
 	${Ashes_BINARY_DEFINITIONS}
 )
 target_include_directories( ${PROJECT_NAME}
@@ -49,16 +54,17 @@ target_include_directories( ${PROJECT_NAME}
 		${Vulkan_INCLUDE_DIR}
 		${Ashes_SOURCE_DIR}/source
 		${ASHES_CONFIG_DIR}/source
-		${ASHES_CONFIG_DIR}/include/${PROJECT_NAME}
-		${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}
-		${ASHES_CONFIG_DIR}/source/${PROJECT_NAME}
-		${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}
+		${ASHES_CONFIG_DIR}/include/${_PROJECT_NAME}
+		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}
+		${ASHES_CONFIG_DIR}/source/${_PROJECT_NAME}
+		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}
 )
 target_link_libraries( ${PROJECT_NAME}
 	PRIVATE
 		ashes::common
 	PUBLIC
 		ashes::ashes
+		${LIBS}
 )
 set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 17
@@ -67,8 +73,8 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 )
 
 add_target_precompiled_header( ${PROJECT_NAME}
-	${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/${PROJECT_NAME}Pch.hpp
-	${Ashes_SOURCE_DIR}/source/${PROJECT_NAME}/${PROJECT_NAME}Pch.cpp
+	${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/AshesPPPch.hpp
+	${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/AshesPPPch.cpp
 	"${CMAKE_CXX_FLAGS}"
 	${${PROJECT_NAME}_SRC_FILES}
 )
@@ -88,10 +94,10 @@ parse_subdir_files( ${Ashes_SOURCE_DIR} Sync "Sync" )
 parse_subdir_files( ${Ashes_SOURCE_DIR} Utils "Utils" )
 
 if ( BUILD_ASHES )
-	target_add_doc( ${PROJECT_NAME} "" "*.h *.hpp" )
+	target_add_doc( ${_PROJECT_NAME} "" "*.h *.hpp" )
 endif ()
 
 #For libs, we install headers to <install_dir>/include/${PROJECT_NAME}
 target_install_headers( ${PROJECT_NAME}
-	${Ashes_SOURCE_DIR}/include/${PROJECT_NAME} )
+	${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME} )
 

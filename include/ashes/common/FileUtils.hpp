@@ -6,26 +6,57 @@ See LICENSE file in root folder
 #pragma once
 
 #include <fstream>
+#include <functional>
 #include <string>
 #include <vector>
 
 namespace ashes
 {
 	using StringArray = std::vector< std::string >;
+	using TraverseDirFunction = std::function< bool( std::string const & path ) >;
+	using HitFileFunction = std::function< void( std::string const & folder, std::string const & name ) >;
+	using FilterFunction = std::function< bool( std::string const & folder, std::string const & name ) >;
+	/**
+	*\brief
+	*	Traverses the files and directories of a directory.
+	*\param[in] folderPath
+	*	The directory path.
+	*\param[in] directoryFunction
+	*	returns \p true to traverse it, \p false to ignore.
+	*\param[in] fileFunction
+	*	Placeholder to handle a file name.
+	*\return
+	*	\p false if any error occured.
+	*/
+	bool traverseDirectory( std::string const & folderPath
+		, TraverseDirFunction directoryFunction
+		, HitFileFunction fileFunction );
+	/**
+	*\brief
+	*	Filters the files in a directory, recursively or not.
+	*\param[in] folderPath
+	*	The directory path.
+	*\param[in] onFile
+	*	The filter function, returns \p true to add to the list, \p false to ignore.
+	*\param[in] recursive
+	*	Tells if search must be recursive.
+	*\return
+	*	The files list.
+	*/
+	StringArray filterDirectoryFiles( std::string const & folderPath
+		, FilterFunction onFile
+		, bool recursive = false );
 	/**
 	*\brief
 	*	Lists all files in a directory, recursively or not.
 	*\param[in] folderPath
 	*	The directory path.
-	*\param[out] files
-	*	Receives the files list.
 	*\param[in] recursive
 	*	Tells if search must be recursive.
 	*\return
-	*	\p true if the directory is listed.
+	*	The files list.
 	*/
-	bool listDirectoryFiles( std::string const & folderPath
-		, StringArray & files
+	ashes::StringArray listDirectoryFiles( std::string const & folderPath
 		, bool recursive = false );
 	/**
 	*\return
