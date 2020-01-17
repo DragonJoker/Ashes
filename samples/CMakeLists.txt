@@ -1,4 +1,4 @@
-find_package( wxWidgets COMPONENTS core base )
+find_package( wxWidgets REQUIRED COMPONENTS core base )
 
 if( APPLE )
 	set( GTK2_FOUND TRUE )
@@ -13,7 +13,12 @@ else ()
 	find_package( GTK2 )
 endif()
 
-find_package( ASSIMP )
+if ( VCPKG_TOOLCHAIN )
+	find_package( assimp CONFIG REQUIRED assimp )
+	set( ASSIMP_LIBRARIES assimp::assimp )
+else ()
+	find_package( assimp )
+endif ()
 
 if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 	file( GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*-* )

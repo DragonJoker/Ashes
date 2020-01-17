@@ -13,9 +13,9 @@ See LICENSE file in root folder.
 #include <regex>
 
 #if Gl4Renderer_USE_SPIRV_CROSS
-#	include "spirv_cpp.hpp"
-#	include "spirv_cross_util.hpp"
-#	include "spirv_glsl.hpp"
+#	include "spirv_cross/spirv_cpp.hpp"
+#	include "spirv_cross/spirv_cross_util.hpp"
+#	include "spirv_cross/spirv_glsl.hpp"
 #endif
 
 #include "ashesgl4_api.hpp"

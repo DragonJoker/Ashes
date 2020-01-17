@@ -1,4 +1,5 @@
-project( TestRenderer )
+set( _PROJECT_NAME TestRenderer )
+project( ashes${_PROJECT_NAME} )
 
 set( ${PROJECT_NAME}_VERSION_MAJOR 0 )
 set( ${PROJECT_NAME}_VERSION_MINOR 1 )
@@ -8,24 +9,24 @@ set( PROJECT_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION
 set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_BUILD}" )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.c
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.cc
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.cpp
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/*.c
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/*.cc
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/*.cpp
 )
 
 file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.h
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.hh
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.hpp
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.inl
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/*.inc
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/*.h
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/*.hh
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/*.hpp
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/*.inl
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/*.inc
 )
 
 add_library( ${PROJECT_NAME} SHARED
 	${${PROJECT_NAME}_SRC_FILES}
 	${${PROJECT_NAME}_HDR_FILES}
 )
-add_library( ashes::${PROJECT_NAME}
+add_library( ashes::${_PROJECT_NAME}
 	ALIAS
 	${PROJECT_NAME}
 )
@@ -33,7 +34,7 @@ target_include_directories( ${PROJECT_NAME} PRIVATE
 	${Vulkan_INCLUDE_DIR}
 	${TARGET_INCLUDE_DIRS}
 	${CMAKE_CURRENT_BINARY_DIR}
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}
 )
 target_link_libraries( ${PROJECT_NAME} PRIVATE
 	ashes::RendererCommon
@@ -42,7 +43,7 @@ target_compile_features( ${PROJECT_NAME} PRIVATE
 	cxx_std_17
 )
 target_compile_definitions( ${PROJECT_NAME} PRIVATE
-	${PROJECT_NAME}_EXPORTS
+	${_PROJECT_NAME}_EXPORTS
 	${TARGET_CXX_DEFINITIONS}
 )
 target_compile_options( ${PROJECT_NAME} PRIVATE
@@ -57,8 +58,8 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 )
 add_target_precompiled_header_ex( ${PROJECT_NAME}
 	ashes/renderer
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/${PROJECT_NAME}Pch.hpp
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/${PROJECT_NAME}Pch.cpp
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/${_PROJECT_NAME}Pch.hpp
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/${_PROJECT_NAME}Pch.cpp
 	"${CMAKE_CXX_FLAGS}"
 	${${PROJECT_NAME}_SRC_FILES}
 )
@@ -75,6 +76,8 @@ parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer Pipeline "Pipeline" )
 parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer RenderPass "RenderPass" )
 parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer Shader "Shader" )
 parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer Sync "Sync" )
+
+source_group( "Natvis Files" FILES ${${PROJECT_NAME}_NVS_FILES} )
 
 set( ENABLED_RENDERERS
 	${ENABLED_RENDERERS}

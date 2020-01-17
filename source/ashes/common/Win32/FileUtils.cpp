@@ -3,7 +3,9 @@
 #ifdef _WIN32
 
 #include <cassert>
+#include <iomanip>
 #include <iostream>
+#include <sstream>
 
 #include <cstdio>
 #include <cstring>
@@ -18,22 +20,83 @@ namespace ashes
 {
 	static char constexpr PathSeparator = '\\';
 
-	namespace
+	std::string getLastErrorText()
 	{
-		template< typename DirectoryFuncType, typename FileFuncType >
-		bool TraverseDirectory( std::string const & folderPath
-			, DirectoryFuncType directoryFunction
-			, FileFuncType fileFunction )
-		{
-			assert( !folderPath.empty() );
-			bool result = false;
-			WIN32_FIND_DATAA findData{};
-			HANDLE handle = ::FindFirstFileA( ( folderPath / "*.*" ).c_str(), &findData );
+		uint32_t errorCode = ::GetLastError();
+		std::stringstream stream;
+		stream.imbue( std::locale{ "C" } );
+		stream << "Error Code: 0x" << std::setw( 8u ) << std::hex << errorCode << ":" << std::endl;
 
-			if ( handle != INVALID_HANDLE_VALUE )
+		if ( errorCode == ERROR_SUCCESS )
+		{
+			stream << " (no error)";
+		}
+		else
+		{
+			LPWSTR errorText = nullptr;
+
+			if ( ::FormatMessageW( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM
+				, nullptr
+				, errorCode
+				, 0
+				, LPWSTR( &errorText )
+				, 0
+				, nullptr ) == 0 )
 			{
-				result = true;
-				std::string name = findData.cFileName;
+				int length = WideCharToMultiByte( CP_UTF8, 0u, errorText, -1, nullptr, 0u, 0u, 0u );
+
+				if ( length > 0 )
+				{
+					std::string converted( size_t( length ), 0 );
+					WideCharToMultiByte( CP_UTF8, 0u, errorText, -1, converted.data(), length, 0u, 0u );
+					stream << converted.c_str() << std::endl;
+				}
+			}
+			else
+			{
+				stream << " (Unable to retrieve error text)";
+			}
+		}
+
+		return stream.str();
+	}
+
+	bool traverseDirectory( std::string const & folderPath
+		, TraverseDirFunction directoryFunction
+		, HitFileFunction fileFunction )
+	{
+		assert( !folderPath.empty() );
+		bool result = false;
+		WIN32_FIND_DATAA findData{};
+		HANDLE handle = ::FindFirstFileA( ( folderPath / "*.*" ).c_str(), &findData );
+
+		if ( handle == INVALID_HANDLE_VALUE )
+		{
+			std::cerr << "Couldn't list files of folder [" << folderPath << "], ";
+			std::cerr << getLastErrorText() << std::endl;
+			return false;
+		}
+
+		result = true;
+		std::string name = findData.cFileName;
+
+		if ( name != "." && name != ".." )
+		{
+			if ( ( findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) == FILE_ATTRIBUTE_DIRECTORY )
+			{
+				result = directoryFunction( folderPath / name );
+			}
+			else
+			{
+				fileFunction( folderPath, name );
+			}
+		}
+
+		while ( result && ::FindNextFileA( handle, &findData ) == TRUE )
+		{
+			if ( findData.cFileName != name )
+			{
+				name = findData.cFileName;
 
 				if ( name != "." && name != ".." )
 				{
@@ -43,35 +106,14 @@ namespace ashes
 					}
 					else
 					{
-						fileFunction( folderPath / name );
+						fileFunction( folderPath, name );
 					}
 				}
-
-				while ( result && ::FindNextFileA( handle, &findData ) == TRUE )
-				{
-					if ( findData.cFileName != name )
-					{
-						name = findData.cFileName;
-
-						if ( name != "." && name != ".." )
-						{
-							if ( ( findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) == FILE_ATTRIBUTE_DIRECTORY )
-							{
-								result = directoryFunction( folderPath / name );
-							}
-							else
-							{
-								fileFunction( folderPath / name );
-							}
-						}
-					}
-				}
-
-				::FindClose( handle );
 			}
-
-			return result;
 		}
+
+		::FindClose( handle );
+		return result;
 	}
 
 	std::string getPath( std::string const & path )
@@ -99,63 +141,6 @@ namespace ashes
 
 		pathReturn = getPath( pathReturn );
 		return pathReturn;
-	}
-
-	bool listDirectoryFiles( std::string const & folderPath
-		, StringArray & files
-		, bool recursive )
-	{
-		struct FileFunction
-		{
-			explicit FileFunction( StringArray & files )
-				: m_files( files )
-			{
-			}
-			void operator()( std::string const & path )
-			{
-				m_files.push_back( path );
-			}
-			StringArray & m_files;
-		};
-
-		if ( recursive )
-		{
-			struct DirectoryFunction
-			{
-				explicit DirectoryFunction( StringArray & files )
-					: m_files( files )
-				{
-				}
-				bool operator()( std::string const & path )
-				{
-					return TraverseDirectory( path
-						, DirectoryFunction( m_files )
-						, FileFunction( m_files ) );
-				}
-				StringArray & m_files;
-			};
-
-			return TraverseDirectory( folderPath
-				, DirectoryFunction( files )
-				, FileFunction( files ) );
-		}
-		else
-		{
-			struct DirectoryFunction
-			{
-				DirectoryFunction()
-				{
-				}
-				bool operator()( std::string const & path )
-				{
-					return true;
-				}
-			};
-
-			return TraverseDirectory( folderPath
-				, DirectoryFunction()
-				, FileFunction( files ) );
-		}
 	}
 }
 

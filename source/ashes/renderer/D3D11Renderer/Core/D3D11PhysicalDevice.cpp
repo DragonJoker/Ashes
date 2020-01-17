@@ -9,7 +9,9 @@ See LICENSE file in root folder.
 
 #include <ashes/common/Hash.hpp>
 
-#include <amd_ags.h>
+#if defined( ASHES_D3D11_USE_AMD_AGS )
+#	include <amd_ags.h>
+#endif
 
 #if defined( ASHES_D3D11_USE_NVAPI )
 #	include <nvapi.h>
@@ -122,13 +124,14 @@ namespace ashes::d3d11
 		, m_adapterInfo{ std::move( adapterInfo ) }
 	{
 		doInitialise();
-
+#if defined( ASHES_D3D11_USE_AMD_AGS )
 		if ( isAMD() )
 		{
 			agsInit( &m_AGSContext, nullptr, nullptr );
 		}
+#endif
 #if defined( ASHES_D3D11_USE_NVAPI )
-		else if ( isNVIDIA() )
+		if ( isNVIDIA() )
 		{
 			NvAPI_Initialize();
 		}
@@ -137,12 +140,14 @@ namespace ashes::d3d11
 
 	PhysicalDevice::~PhysicalDevice()
 	{
+#if defined( ASHES_D3D11_USE_AMD_AGS )
 		if ( isAMD() )
 		{
 			agsDeInit( m_AGSContext );
 		}
+#endif
 #if defined( ASHES_D3D11_USE_NVAPI )
-		else if ( isNVIDIA() )
+		if ( isNVIDIA() )
 		{
 			NvAPI_Unload();
 		}
