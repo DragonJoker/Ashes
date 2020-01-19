@@ -22,6 +22,8 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
+	//*************************************************************************
+
 	namespace
 	{
 		static uint32_t constexpr OpCodeSPIRV = 0x07230203;
@@ -51,12 +53,13 @@ namespace ashes::gl
 		};
 	}
 
+	//*************************************************************************
+
 	namespace gl3
 	{
-		std::string retrieveCompilerLog( VkDevice device
+		std::string retrieveCompilerLog( ContextLock const & context
 			, GLuint shaderName )
 		{
-			auto context = get( device )->getContext();
 			std::string log;
 			int infologLength = 0;
 			int charsWritten = 0;
@@ -86,46 +89,40 @@ namespace ashes::gl
 			return log;
 		}
 
-		bool checkCompileErrors( VkDevice device
+		bool checkCompileErrors( ContextLock const & context
 			, VkShaderModule module
-			, bool compiled
 			, GLuint shaderName
 			, std::string const & source )
 		{
-			auto compilerLog = retrieveCompilerLog( device
+			int compiled = 0;
+			glLogCall( context
+				, glGetShaderiv
+				, shaderName
+				, GL_INFO_COMPILE_STATUS
+				, &compiled );
+			auto compilerLog = retrieveCompilerLog( context
 				, shaderName );
-			auto reportType = compiled
-				? VK_DEBUG_REPORT_WARNING_BIT_EXT
-				: VK_DEBUG_REPORT_ERROR_BIT_EXT;
 
-			if ( !compilerLog.empty() )
+			if ( !compiled || !compilerLog.empty() )
 			{
 				std::stringstream stream;
-				stream << compilerLog << std::endl;
+
+				if ( !compilerLog.empty() )
+				{
+					stream << compilerLog << std::endl;
+				}
+
 				stream << source << std::endl;
-				get( get( device )->getInstance() )->reportMessage( reportType
-					, VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT
-					, uint64_t( module )
-					, 0u
-					, 0u
-					, "CORE"
-					, stream.str().c_str() );
-			}
-			else if ( !compiled )
-			{
-				std::stringstream stream;
-				stream << "Shader compilation failed" << std::endl;
-				stream << source << std::endl;
-				get( get( device )->getInstance() )->reportMessage( reportType
-					, VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT
-					, uint64_t( module )
-					, 0u
-					, 0u
-					, "CORE"
-					, stream.str().c_str() );
+				report( ( compiled
+						? reportWarning< VkShaderModule >
+						: reportError< VkShaderModule > )
+					, module
+					, VK_ERROR_VALIDATION_FAILED_EXT
+					, "Shader compilation"
+					, stream.str() );
 			}
 
-			return compiled;
+			return compiled != 0;
 		}
 
 		void updateUboNames( spirv_cross::CompilerGLSL & compiler
@@ -147,40 +144,7 @@ namespace ashes::gl
 		}
 	}
 
-	namespace gl4
-	{
-		std::string retrieveLinkerLog( ContextLock const & context
-			, GLuint programName )
-		{
-			std::string log;
-			int infologLength = 0;
-			int charsWritten = 0;
-			glLogCall( context
-				, glGetProgramiv
-				, programName
-				, GL_INFO_LOG_LENGTH
-				, &infologLength );
-
-			if ( infologLength > 0 )
-			{
-				std::vector< char > infoLog( infologLength + 1 );
-				glLogCall( context
-					, glGetProgramInfoLog
-					, programName
-					, infologLength
-					, &charsWritten
-					, infoLog.data() );
-				log = infoLog.data();
-			}
-
-			if ( !log.empty() )
-			{
-				log = log.substr( 0, log.size() - 1 );
-			}
-
-			return log;
-		}
-	}
+	//*************************************************************************
 
 	namespace common
 	{
@@ -286,7 +250,8 @@ namespace ashes::gl
 
 			if ( entryPoint.empty() )
 			{
-				throw std::runtime_error{ "Could not find an entry point with stage: " + getShaderStageFlagsName( convertShaderStageFlag( stage ) ) };
+				throw std::runtime_error{ "Could not find an entry point with stage: "
+					+ getShaderStageFlagsName( convert( stage ) ) };
 			}
 
 			compiler.set_entry_point( entryPoint, model );
@@ -297,13 +262,13 @@ namespace ashes::gl
 			, bool invertY )
 		{
 			auto options = compiler.get_common_options();
-			options.version = get( get( device )->getInstance() )->getExtensions().getShaderVersion();
+			options.version = get( getInstance( device ) )->getExtensions().getShaderVersion();
 			options.es = false;
-			options.separate_shader_objects = true;
-			options.enable_420pack_extension = true;
+			options.separate_shader_objects = isGl4( device );
+			options.enable_420pack_extension = isGl4( device );
 			options.vertex.fixup_clipspace = true;
 			options.vertex.flip_vert_y = invertY;
-			options.vertex.support_nonzero_base_instance = get( get( device )->getInstance() )->getFeatures ().hasBaseInstance;
+			options.vertex.support_nonzero_base_instance = get( getInstance( device ) )->getFeatures ().hasBaseInstance;
 			compiler.set_common_options( options );
 		}
 
@@ -569,7 +534,110 @@ namespace ashes::gl
 			std::memcpy( glslCode.data(), shader.data(), glslCode.size() );
 			return std::string( glslCode.data(), glslCode.data() + strlen( glslCode.data() ) );
 		}
+
+		std::string retrieveLinkerLog( ContextLock const & context
+			, GLuint programName )
+		{
+			std::string log;
+			int infologLength = 0;
+			int charsWritten = 0;
+			glLogCall( context
+				, glGetProgramiv
+				, programName
+				, GL_INFO_LOG_LENGTH
+				, &infologLength );
+
+			if ( infologLength > 0 )
+			{
+				std::vector< char > infoLog( infologLength + 1 );
+				glLogCall( context
+					, glGetProgramInfoLog
+					, programName
+					, infologLength
+					, &charsWritten
+					, infoLog.data() );
+				log = infoLog.data();
+			}
+
+			if ( !log.empty() )
+			{
+				log = log.substr( 0, log.size() - 1 );
+			}
+
+			return log;
+		}
 	}
+
+	//*************************************************************************
+
+	bool checkLinkErrors( ContextLock const & context
+		, VkPipeline pipeline
+		, GLuint programName
+		, int modulesCount
+		, std::string const & from
+		, std::string const & source )
+	{
+		int attached = 0;
+		glLogCall( context
+			, glGetProgramiv
+			, programName
+			, GL_INFO_ATTACHED_SHADERS
+			, &attached );
+		attached = modulesCount > 1
+			? attached
+			: modulesCount;
+		int linked = 0;
+		glLogCall( context
+			, glGetProgramiv
+			, programName
+			, GL_INFO_LINK_STATUS
+			, &linked );
+		auto linkerLog = common::retrieveLinkerLog( context
+			, programName );
+		bool usable = linked
+			&& modulesCount == attached
+			&& linkerLog.find( "ERROR" ) == std::string::npos;
+		int validated = 0;
+
+		if ( usable )
+		{
+			glLogCall( context
+				, glGetProgramiv
+				, programName
+				, GL_INFO_VALIDATE_STATUS
+				, &validated );
+		}
+
+		if ( !usable
+			|| !linkerLog.empty()
+			|| !validated )
+		{
+			std::stringstream stream;
+
+			if ( attached != modulesCount )
+			{
+				stream << "The linked shaders count doesn't match the active shaders count." << std::endl;
+			}
+
+			if ( !linkerLog.empty() )
+			{
+				stream << linkerLog << std::endl;
+			}
+
+			stream << source << std::endl;
+			report( ( usable
+					? reportWarning< VkPipeline >
+					: reportError< VkPipeline > )
+				, pipeline
+				, VK_ERROR_VALIDATION_FAILED_EXT
+				, from
+				, stream.str() );
+		}
+
+		return usable;
+	}
+
+	//*************************************************************************
 
 	ShaderModule::ShaderModule( VkDevice device
 		, VkShaderModuleCreateInfo createInfo )
@@ -579,7 +647,8 @@ namespace ashes::gl
 	{
 	}
 
-	ShaderDesc ShaderModule::compile( VkPipelineShaderStageCreateInfo const & state
+	ShaderDesc ShaderModule::compile( VkPipeline pipeline
+		, VkPipelineShaderStageCreateInfo const & state
 		, VkPipelineLayout pipelineLayout
 		, VkPipelineCreateFlags createFlags
 		, bool invertY )
@@ -600,168 +669,114 @@ namespace ashes::gl
 
 		if ( !isGl4( m_device ) )
 		{
-			auto shader = context->glCreateShader( convertShaderStageFlag( state.stage ) );
-
-			if ( m_source.find( "samplerCubeArray" ) != std::string::npos )
-			{
-				std::regex regex{ R"(#version[ ]*\d*)" };
-				m_source = std::regex_replace( m_source.data()
-					, regex
-					, R"($&
-#extension GL_ARB_texture_cube_map_array: enable
-)" );
-			}
-
-			if ( m_source.find( "gl_ViewportIndex" ) != std::string::npos )
-			{
-				std::regex regex{ R"(#version[ ]*\d*)" };
-				m_source = std::regex_replace( m_source.data()
-					, regex
-					, R"($&
-#extension GL_ARB_viewport_array: enable
-)" );
-			}
-
-			auto length = int( m_source.size() );
-			char const * data = m_source.data();
-			glLogCall( context
-				, glShaderSource
-				, shader
-				, 1
-				, &data
-				, &length );
-			glLogCall( context
-				, glCompileShader
-				, shader );
-			int compiled = 0;
-			glLogCall( context
-				, glGetShaderiv
-				, shader
-				, GL_INFO_COMPILE_STATUS
-				, &compiled );
-
-			if ( !gl3::checkCompileErrors( m_device, get( this ), compiled != 0, shader, m_source ) )
-			{
-				context->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
-					, VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT
-					, uint64_t( get( this ) )
-					, 0u
-					, VK_ERROR_VALIDATION_FAILED_EXT
-					, "OpenGL"
-					, "Shader compilation failed." );
-			}
-
-			result.program = shader;
+			result = compileCombined( context
+				, state );
 		}
 		else
 		{
-			char const * data = m_source.data();
-			auto program = glLogNonVoidCall( context
-				, glCreateShaderProgramv
-				, getShaderStage( state.stage )
-				, 1u
-				, &data );
-			auto linkerLog = gl4::retrieveLinkerLog( context, program );
-
-			if ( linkerLog.find( "ERROR" ) == std::string::npos )
-			{
-				int validated = 0;
-				glLogCall( context
-					, glGetProgramiv
-					, program
-					, GL_INFO_VALIDATE_STATUS
-					, &validated );
-
-				if ( !linkerLog.empty()
-					|| !validated )
-				{
-					std::stringstream stream;
-					stream << "Shader program link: " << std::endl;
-
-					if ( !validated )
-					{
-						stream << "Not validated - " << std::endl;
-					}
-
-					if ( !linkerLog.empty() )
-					{
-						stream << linkerLog << std::endl;
-					}
-
-					get( get( m_device )->getInstance() )->reportMessage( VK_DEBUG_REPORT_WARNING_BIT_EXT
-						, VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT
-						, uint64_t( get( this ) )
-						, 0u
-						, 0u
-						, "CORE"
-						, stream.str().c_str() );
-				}
-
-				for ( auto & constant : m_constants )
-				{
-					constant.program = program;
-				}
-
-				result = getShaderDesc( context, state.stage, program );
-				result.isGlsl = isGlsl;
-
-				if ( !m_constants.empty() )
-				{
-					assert( m_constants.size() >= result.pcb.size() );
-					for ( auto & constant : result.pcb )
-					{
-						auto it = std::find_if( m_constants.begin()
-							, m_constants.end()
-							, [&constant]( ConstantDesc const & lookup )
-							{
-								return lookup.name == constant.name;
-							} );
-						assert( it != m_constants.end() );
-						constant.stageFlag = state.stage;
-						constant.program = program;
-						constant.offset = it->offset;
-					}
-				}
-				else
-				{
-					uint32_t offset = 0u;
-
-					for ( auto & constant : result.pcb )
-					{
-						constant.offset = offset;
-						constant.stageFlag = state.stage;
-						offset += constant.size;
-					}
-				}
-
-				result.stageFlags = state.stage;
-			}
-			else
-			{
-				std::stringstream stream;
-				stream << "Shader program link: " << std::endl;
-
-				if ( !linkerLog.empty() )
-				{
-					stream << linkerLog << std::endl;
-				}
-
-				get( get( m_device )->getInstance() )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
-					, VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT
-					, uint64_t( get( this ) )
-					, 0u
-					, 0u
-					, "CORE"
-					, stream.str().c_str() );
-				glLogCall( context
-					, glDeleteProgram
-					, program );
-				program = 0;
-			}
-
-			result.program = program;
+			result = compileSeparate( context
+				, pipeline
+				, state
+				, isGlsl );
 		}
 
 		return result;
 	}
+
+	ShaderDesc ShaderModule::compileCombined( ContextLock const & context
+		, VkPipelineShaderStageCreateInfo const & state )
+	{
+		auto shader = glLogNonVoidCall( context
+			, glCreateShader
+			, getShaderStage( state.stage ) );
+
+		if ( m_source.find( "samplerCubeArray" ) != std::string::npos )
+		{
+			std::regex regex{ R"(#version[ ]*\d*)" };
+			m_source = std::regex_replace( m_source.data()
+				, regex
+				, R"($&
+#extension GL_ARB_texture_cube_map_array: enable
+)" );
+		}
+
+		if ( m_source.find( "gl_ViewportIndex" ) != std::string::npos )
+		{
+			std::regex regex{ R"(#version[ ]*\d*)" };
+			m_source = std::regex_replace( m_source.data()
+				, regex
+				, R"($&
+#extension GL_ARB_viewport_array: enable
+)" );
+		}
+
+		auto length = int( m_source.size() );
+		char const * data = m_source.data();
+		glLogCall( context
+			, glShaderSource
+			, shader
+			, 1
+			, &data
+			, &length );
+		glLogCall( context
+			, glCompileShader
+			, shader );
+		ShaderDesc result;
+
+		if ( gl3::checkCompileErrors( context
+			, get( this )
+			, shader
+			, m_source ) )
+		{
+			result.program = shader;
+		}
+
+		return result;
+	}
+
+	ShaderDesc ShaderModule::compileSeparate( ContextLock const & context
+		, VkPipeline pipeline
+		, VkPipelineShaderStageCreateInfo const & state
+		, bool isGlsl )
+	{
+		char const * data = m_source.data();
+		auto programObject = glLogNonVoidCall( context
+			, glCreateShaderProgramv
+			, getShaderStage( state.stage )
+			, 1u
+			, &data );
+		bool usable = checkLinkErrors( context
+			, pipeline
+			, programObject
+			, 1u
+			, "Separate shader link"
+			, m_source );
+		ShaderDesc result{};
+
+		if ( usable )
+		{
+			for ( auto & constant : m_constants )
+			{
+				constant.program = programObject;
+			}
+
+			auto result = getShaderDesc( context
+				, m_constants
+				, state.stage
+				, programObject
+				, true );
+			result.program = programObject;
+			result.isGlsl = isGlsl;
+			result.stageFlags = state.stage;
+			return result;
+		}
+
+		glLogCall( context
+			, glDeleteProgram
+			, programObject );
+
+		return ShaderDesc{ isGlsl };
+	}
+
+	//*************************************************************************
 }

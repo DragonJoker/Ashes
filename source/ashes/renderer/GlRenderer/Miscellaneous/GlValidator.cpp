@@ -1531,6 +1531,61 @@ namespace ashes::gl
 		return result;
 	}
 
+	ShaderDesc getShaderDesc( ContextLock const & context
+		, ConstantsLayout const & constants
+		, VkShaderStageFlagBits stage
+		, GLuint programObject
+		, bool separable )
+	{
+		ShaderDesc result
+		{
+			true,
+			0u,
+			0u,
+			getInputs( context, stage, programObject ),
+			getPushConstants( context, stage, programObject ),
+			getUniformBuffers( context, stage, programObject ),
+			getStorageBuffers( context, stage, programObject ),
+			getTextureBuffers( context, stage, programObject ),
+			getSamplers( context, stage, programObject ),
+			getImages( context, stage, programObject ),
+		};
+
+		if ( !constants.empty() )
+		{
+			assert( constants.size() >= result.pcb.size() );
+			for ( auto & constant : result.pcb )
+			{
+				auto it = std::find_if( constants.begin()
+					, constants.end()
+					, [&constant]( ConstantDesc const & lookup )
+					{
+						return lookup.name == constant.name;
+					} );
+				assert( it != constants.end() );
+				constant.stageFlag = separable
+					? stage
+					: it->stageFlag;
+				constant.offset = it->offset;
+			}
+		}
+		else
+		{
+			uint32_t offset = 0u;
+
+			for ( auto & constant : result.pcb )
+			{
+				constant.offset = offset;
+				constant.stageFlag = separable
+					? stage
+					: constant.stageFlag;
+				offset += constant.size;
+			}
+		}
+
+		return result;
+	}
+
 	void validatePipeline( ContextLock const & context
 		, VkPipelineLayout layout
 		, GLuint program

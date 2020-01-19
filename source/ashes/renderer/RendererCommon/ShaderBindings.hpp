@@ -42,10 +42,19 @@ namespace ashes
 		ShaderBindingMap tbo;
 	};
 
+	struct ShaderBindingIndices
+	{
+		uint32_t ubo{ 0u };
+		uint32_t sbo{ 0u };
+		uint32_t img{ 0u };
+		uint32_t tex{ 0u };
+		uint32_t tbo{ 0u };
+	};
+
 	void addBinding( uint32_t set
 		, VkDescriptorSetLayoutBinding const & binding
 		, ShaderBindings & bindings
-		, uint32_t & index );
+		, ShaderBindingIndices & indices );
 
 	void addReplaceBinding( uint32_t set
 		, uint32_t srcBinding
