@@ -33,25 +33,11 @@ namespace ashes::gl
 	ImagesLayout getImages( ContextLock const & context
 		, VkShaderStageFlagBits stage
 		, GLuint program );
-
-	inline ShaderDesc getShaderDesc( ContextLock const & context
+	ShaderDesc getShaderDesc( ContextLock const & context
+		, ConstantsLayout const & constants
 		, VkShaderStageFlagBits stage
-		, GLuint program )
-	{
-		return
-		{
-			true,
-			0u,
-			0u,
-			getInputs( context, stage, program ),
-			getPushConstants( context, stage, program ),
-			getUniformBuffers( context, stage, program ),
-			getStorageBuffers( context, stage, program ),
-			getTextureBuffers( context, stage, program ),
-			getSamplers( context, stage, program ),
-			getImages( context, stage, program ),
-		};
-	}
+		, GLuint program
+		, bool separable );
 
 	void validatePipeline( ContextLock const & context
 		, VkPipelineLayout layout

@@ -44,7 +44,7 @@ namespace ashes::gl
 	*\return
 	*	Le GlShaderStageFlags.
 	*/
-	GlShaderStageFlag convertShaderStageFlag( VkShaderStageFlagBits const & flag );
+	GlShaderStageFlag convert( VkShaderStageFlagBits flag );
 	/**
 	*\brief
 	*	Convertit un VkShaderStageFlags en VkShaderStageFlags.
@@ -53,5 +53,5 @@ namespace ashes::gl
 	*\return
 	*	Le GlShaderStageFlags.
 	*/
-	GlShaderStageFlags convertShaderStageFlags( VkShaderStageFlags const & flags );
+	GlShaderStageFlags convert( VkShaderStageFlags flags );
 }

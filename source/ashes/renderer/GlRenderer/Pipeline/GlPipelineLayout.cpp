@@ -19,13 +19,13 @@ namespace ashes::gl
 		m_createInfo.pSetLayouts = m_setLayouts.data();
 		m_createInfo.pPushConstantRanges = m_pushConstantRanges.data();
 		uint32_t set = 0u;
-		uint32_t index = 0u;
+		ShaderBindingIndices indices;
 
 		for ( auto & descriptorLayout : m_setLayouts )
 		{
 			for ( auto & binding : *get( descriptorLayout ) )
 			{
-				addBinding( set, binding, m_shaderBindings, index );
+				addBinding( set, binding, m_shaderBindings, indices );
 			}
 
 			++set;

@@ -9,6 +9,18 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
+	bool checkLinkErrors( ContextLock const & context
+		, VkPipeline pipeline
+		, GLuint programName
+		, int modulesCount
+		, std::string const & from
+		, std::string const & source = std::string{} );
+	ShaderDesc fillProgramDesc( ContextLock const & context
+		, ConstantsLayout & constants
+		, GLuint programObject
+		, VkShaderStageFlags stageFlags
+		, bool separable );
+
 	class ShaderModule
 		: public AutoIdIcdObject< ShaderModule >
 	{
@@ -16,7 +28,8 @@ namespace ashes::gl
 		ShaderModule( VkDevice device
 			, VkShaderModuleCreateInfo createInfo );
 
-		ShaderDesc compile( VkPipelineShaderStageCreateInfo const & state
+		ShaderDesc compile( VkPipeline pipeline
+			, VkPipelineShaderStageCreateInfo const & state
 			, VkPipelineLayout pipelineLayout
 			, VkPipelineCreateFlags createFlags
 			, bool invertY );
@@ -30,6 +43,14 @@ namespace ashes::gl
 		{
 			return m_device;
 		}
+
+	private:
+		ShaderDesc compileCombined( ContextLock const & context
+			, VkPipelineShaderStageCreateInfo const & state );
+		ShaderDesc compileSeparate( ContextLock const & context
+			, VkPipeline pipeline
+			, VkPipelineShaderStageCreateInfo const & state
+			, bool isGlsl );
 
 	private:
 		VkDevice m_device;
