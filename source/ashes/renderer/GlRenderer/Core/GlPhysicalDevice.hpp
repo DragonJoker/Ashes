@@ -66,9 +66,9 @@ namespace ashes::gl
 		std::vector< VkDisplayKHR > getDisplayPlaneSupportedDisplays( uint32_t planeIndex )const;
 #endif
 
-		bool find( std::string const & name )const;
-		bool findAny( StringArray const & names )const;
-		bool findAll( StringArray const & names )const;
+		bool find( VkExtensionProperties const & name )const;
+		bool findAny( VkExtensionPropertiesArray const & names )const;
+		bool findAll( VkExtensionPropertiesArray const & names )const;
 		int getMajor()const;
 		int getMinor()const;
 
