@@ -27,7 +27,7 @@ namespace ashes::gl
 		, VkBuffer dst
 		, CmdList & list )
 	{
-		glLogCommand( "CopyBufferCommand" );
+		glLogCommand( list, "CopyBufferCommand" );
 
 		if ( get( src )->getTarget() == get( dst )->getTarget() )
 		{

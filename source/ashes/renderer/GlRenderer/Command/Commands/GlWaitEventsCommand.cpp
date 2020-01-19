@@ -41,7 +41,7 @@ namespace ashes::gl
 		, VkImageMemoryBarrierArray imageMemoryBarriers
 		, CmdList & list )
 	{
-		glLogCommand( "WaitEventsCommand" );
+		glLogCommand( list, "WaitEventsCommand" );
 		list.push_back( makeCmd< OpType::eWaitEvents >( std::move( events ) ) );
 	}
 }

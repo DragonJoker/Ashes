@@ -17,7 +17,7 @@ namespace ashes::gl
 		, CmdList & list
 		, PreExecuteActions & preExecuteActions )
 	{
-		glLogCommand( "ViewportCommand" );
+		glLogCommand( list, "ViewportCommand" );
 		stack.apply( list, preExecuteActions, firstViewport, viewports, false );
 	}
 }

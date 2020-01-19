@@ -76,7 +76,7 @@ namespace ashes::gl
 		, VkBuffer dst
 		, CmdList & list )
 	{
-		glLogCommand( "CopyImageToBufferCommand" );
+		glLogCommand( list, "CopyImageToBufferCommand" );
 		auto internal = getInternalFormat( get( src )->getFormat() );
 		auto format = getFormat( internal );
 		auto type = getType( internal );

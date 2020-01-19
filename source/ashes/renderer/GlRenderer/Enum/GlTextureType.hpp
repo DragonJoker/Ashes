@@ -21,6 +21,7 @@ namespace ashes::gl
 		GL_TEXTURE_CUBE_NEGATIVE_Z = 0x851A,
 		GL_TEXTURE_1D_ARRAY = 0x8C18,
 		GL_TEXTURE_2D_ARRAY = 0x8C1A,
+		GL_TEXTURE_BUFFER = 0x8C2A,
 		GL_TEXTURE_CUBE_ARRAY = 0x9009,
 		GL_TEXTURE_2D_MULTISAMPLE = 0x9100,
 		GL_TEXTURE_2D_MULTISAMPLE_ARRAY = 0x9102,
@@ -36,6 +37,9 @@ namespace ashes::gl
 
 	namespace gl4
 	{
+		GlTextureType getTextureType( VkImageViewType const & mode
+			, uint32_t arraySize
+			, VkSampleCountFlagBits samples );
 		GlTextureType convert( VkImageType const & mode
 			, uint32_t layerCount
 			, VkImageCreateFlags flags );

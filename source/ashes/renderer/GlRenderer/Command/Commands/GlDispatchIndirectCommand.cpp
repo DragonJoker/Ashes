@@ -22,7 +22,7 @@ namespace ashes::gl
 		, VkDeviceSize offset
 		, CmdList & list )
 	{
-		glLogCommand( "DispatchIndirectCommand" );
+		glLogCommand( list, "DispatchIndirectCommand" );
 		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_DISPATCH_INDIRECT
 			, get( buffer )->getInternal() ) );
 		list.push_back( makeCmd< OpType::eDispatchIndirect >( get( buffer )->getInternalOffset() + offset ) );

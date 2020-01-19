@@ -23,7 +23,7 @@ namespace ashes::gl
 		, uint32_t groupCountZ
 		, CmdList & list )
 	{
-		glLogCommand( "DispatchCommand" );
+		glLogCommand( list, "DispatchCommand" );
 		list.push_back( makeCmd< OpType::eDispatch >( groupCountX
 			, groupCountY
 			, groupCountZ ) );

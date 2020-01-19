@@ -131,7 +131,7 @@ namespace ashes::gl
 		, VkImage dst
 		, CmdList & list )
 	{
-		glLogCommand( "CopyBufferToImageCommand" );
+		glLogCommand( list, "CopyBufferToImageCommand" );
 		auto copyTarget = convert( device
 			, get( dst )->getType()
 			, get( dst )->getArrayLayers()

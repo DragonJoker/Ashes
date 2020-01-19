@@ -22,7 +22,7 @@ namespace ashes::gl
 		, uint32_t query
 		, CmdList & list )
 	{
-		glLogCommand( "EndQueryCommand" );
+		glLogCommand( list, "EndQueryCommand" );
 		if ( get( pool )->getType() == VK_QUERY_TYPE_PIPELINE_STATISTICS )
 		{
 			assert( query == 0u );

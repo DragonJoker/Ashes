@@ -167,7 +167,7 @@ namespace ashes::gl
 			}
 		}
 
-		glLogCommand( "BeginRenderPassCommand" );
+		glLogCommand( list, "BeginRenderPassCommand" );
 		stack.setRenderArea( get( frameBuffer )->getDimensions() );
 		stack.apply( list, preExecuteActions, 0u, VkScissorArray{}, true );
 		stack.apply( list, preExecuteActions, 0u, VkViewportArray{}, true );

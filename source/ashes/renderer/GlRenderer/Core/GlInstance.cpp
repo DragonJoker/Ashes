@@ -58,9 +58,9 @@ namespace ashes::gl
 		, m_enabledExtensions{ convert( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) }
 		, m_window{ new gl::RenderWindow( MinMajor, MinMinor, "GlInstance" ) }
 	{
-		m_extensions.initialise( MinMajor, MinMinor, MaxMajor, MaxMinor );
+		m_extensions.initialise();
 		m_features = m_extensions.getFeatures();
-		m_hasViewportArray = m_extensions.find( "GL_ARB_viewport_array" );
+		m_hasViewportArray = m_extensions.find( ARB_viewport_array );
 		auto it = std::find_if( m_enabledLayerNames.begin()
 			, m_enabledLayerNames.end()
 			, []( std::string const & lookup )

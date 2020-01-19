@@ -249,7 +249,7 @@ namespace ashes::gl
 		, VkImage dstImage
 		, CmdList & list )
 	{
-		glLogCommand( "CopyImageCommand" );
+		glLogCommand( list, "CopyImageCommand" );
 
 		if ( copyInfo.srcSubresource.mipLevel == copyInfo.dstSubresource.mipLevel )
 		{

@@ -28,7 +28,7 @@ namespace ashes::gl
 		, VkPrimitiveTopology mode
 		, CmdList & list )
 	{
-		glLogCommand( "DrawIndirectCommand" );
+		glLogCommand( list, "DrawIndirectCommand" );
 		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_DRAW_INDIRECT
 			, get( buffer )->getInternal() ) );
 		list.push_back( makeCmd< OpType::eDrawIndirect >( uint32_t( get( buffer )->getInternalOffset() + offset )

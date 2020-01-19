@@ -74,7 +74,7 @@ namespace ashes::gl
 					, stream.str()
 					, getErrorName( errorCode, GL_DEBUG_TYPE_ERROR ) );
 			}
-#if GL_LOG_CALLS
+#if AshesGL_LogCalls
 			std::stringstream stream;
 			stream.imbue( std::locale{ "C" } );
 			stream << "OpenGL Error, on function: " << text;
@@ -88,16 +88,21 @@ namespace ashes::gl
 		return result;
 	}
 
-	void logStream( std::stringstream & stream )
+	void logDebug( char const * const log )
 	{
-#if GL_LOG_CALLS
+#if AshesGL_LogCalls
 		std::ofstream file{ "CallLogGL.log", std::ios::app };
 
 		if ( file )
 		{
-			file << stream.str() << std::endl;
+			file << log << std::endl;
 		}
 #endif
+	}
+
+	void logStream( std::stringstream & stream )
+	{
+		logDebug( stream.str().c_str() );
 	}
 
 	//*************************************************************************************************

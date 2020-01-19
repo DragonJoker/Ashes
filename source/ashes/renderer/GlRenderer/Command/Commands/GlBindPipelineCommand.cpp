@@ -28,7 +28,7 @@ namespace ashes::gl
 		, CmdList & list
 		, PreExecuteActions & preExecuteActions )
 	{
-		glLogCommand( "BindPipelineCommand" );
+		glLogCommand( list, "BindPipelineCommand" );
 		GLuint program;
 		auto glpipeline = get( pipeline );
 

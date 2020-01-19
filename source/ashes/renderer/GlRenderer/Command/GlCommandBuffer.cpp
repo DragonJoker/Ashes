@@ -307,7 +307,7 @@ namespace ashes::gl
 		, VkClearColorValue value
 		, VkImageSubresourceRangeArray ranges )const
 	{
-		if ( !get( get( m_device )->getInstance() )->getFeatures().hasClearTexImage )
+		if ( !get( getInstance( m_device ) )->getFeatures().hasClearTexImage )
 		{
 			buildClearColourFboCommand( m_device
 				, *m_state.stack
@@ -333,7 +333,7 @@ namespace ashes::gl
 		, VkClearDepthStencilValue value
 		, VkImageSubresourceRangeArray ranges )const
 	{
-		if ( !get( get( m_device )->getInstance() )->getFeatures().hasClearTexImage )
+		if ( !get( getInstance( m_device ) )->getFeatures().hasClearTexImage )
 		{
 			buildClearDepthStencilFboCommand( m_device
 				, *m_state.stack
@@ -399,7 +399,7 @@ namespace ashes::gl
 		}
 		else if ( bindingPoint == VK_PIPELINE_BIND_POINT_COMPUTE )
 		{
-			if ( get( get( m_device )->getInstance() )->getFeatures().hasComputeShaders )
+			if ( get( getInstance( m_device ) )->getFeatures().hasComputeShaders )
 			{
 				m_state.currentComputePipeline = pipeline;
 				buildBindComputePipelineCommand( *m_state.stack
@@ -540,7 +540,7 @@ namespace ashes::gl
 		, uint32_t firstInstance )const
 	{
 		if ( firstInstance > 0
-			&& !get( get( m_device )->getInstance() )->getFeatures().hasBaseInstance )
+			&& !get( getInstance( m_device ) )->getFeatures().hasBaseInstance )
 		{
 			reportError( get( this )
 				, VK_ERROR_FEATURE_NOT_PRESENT
@@ -601,7 +601,7 @@ namespace ashes::gl
 		, uint32_t firstInstance )const
 	{
 		if ( firstInstance > 0
-			&& !get( get( m_device )->getInstance() )->getFeatures().hasBaseInstance )
+			&& !get( getInstance( m_device ) )->getFeatures().hasBaseInstance )
 		{
 			reportError( get( this )
 				, VK_ERROR_FEATURE_NOT_PRESENT
@@ -960,7 +960,7 @@ namespace ashes::gl
 		, uint32_t groupCountY
 		, uint32_t groupCountZ )const
 	{
-		if ( get( get( m_device )->getInstance() )->getFeatures().hasComputeShaders )
+		if ( get( getInstance( m_device ) )->getFeatures().hasComputeShaders )
 		{
 			buildDispatchCommand( groupCountX
 				, groupCountY
@@ -980,7 +980,7 @@ namespace ashes::gl
 	void CommandBuffer::dispatchIndirect( VkBuffer buffer
 		, VkDeviceSize offset )const
 	{
-		if ( get( get( m_device )->getInstance() )->getFeatures().hasComputeShaders )
+		if ( get( getInstance( m_device ) )->getFeatures().hasComputeShaders )
 		{
 			buildDispatchIndirectCommand( buffer
 				, offset

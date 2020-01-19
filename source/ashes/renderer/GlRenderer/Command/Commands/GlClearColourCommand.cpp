@@ -30,9 +30,9 @@ namespace ashes::gl
 		, VkImageSubresourceRangeArray ranges
 		, CmdList & list )
 	{
-		glLogCommand( "ClearColourCommand" );
+		glLogCommand( list, "ClearColourCommand" );
 
-		if ( get( get( device )->getInstance() )->hasClearTexImage() )
+		if ( get( getInstance( device ) )->hasClearTexImage() )
 		{
 			auto internal = getInternalFormat( get( image )->getFormat() );
 			auto format = getFormat( internal );
