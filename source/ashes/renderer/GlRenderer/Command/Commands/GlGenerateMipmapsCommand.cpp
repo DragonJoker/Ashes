@@ -23,7 +23,7 @@ namespace ashes::gl
 	void buildGenerateMipmapsCommand( VkImage texture
 		, CmdList & list )
 	{
-		glLogCommand( "GenerateMipmapsCommand" );
+		glLogCommand( list, "GenerateMipmapsCommand" );
 		auto target = convert( get( texture )->getDevice()
 			, get( texture )->getType()
 			, get( texture )->getArrayLayers()

@@ -11,6 +11,6 @@ namespace ashes::gl
 		, uint32_t queryCount
 		, CmdList & list )
 	{
-		glLogCommand( "ResetQueryPoolCommand" );
+		glLogCommand( list, "ResetQueryPoolCommand" );
 	}
 }

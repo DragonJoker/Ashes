@@ -259,6 +259,9 @@ namespace ashes::gl
 			case OpType::eLineWidth:
 				apply( lock, map< OpType::eLineWidth >( cmd ) );
 				break;
+			case OpType::eLogCommand:
+				apply( lock, map< OpType::eLogCommand >( cmd ) );
+				break;
 			case OpType::eLogicOp:
 				apply( lock, map< OpType::eLogicOp >( cmd ) );
 				break;
@@ -285,6 +288,51 @@ namespace ashes::gl
 				break;
 			case OpType::ePrimitiveRestartIndex:
 				apply( lock, map< OpType::ePrimitiveRestartIndex >( cmd ) );
+				break;
+			case OpType::eProgramUniform1fv:
+				apply( lock, map< OpType::eProgramUniform1fv >( cmd ) );
+				break;
+			case OpType::eProgramUniform2fv:
+				apply( lock, map< OpType::eProgramUniform2fv >( cmd ) );
+				break;
+			case OpType::eProgramUniform3fv:
+				apply( lock, map< OpType::eProgramUniform3fv >( cmd ) );
+				break;
+			case OpType::eProgramUniform4fv:
+				apply( lock, map< OpType::eProgramUniform4fv >( cmd ) );
+				break;
+			case OpType::eProgramUniform1iv:
+				apply( lock, map< OpType::eProgramUniform1iv >( cmd ) );
+				break;
+			case OpType::eProgramUniform2iv:
+				apply( lock, map< OpType::eProgramUniform2iv >( cmd ) );
+				break;
+			case OpType::eProgramUniform3iv:
+				apply( lock, map< OpType::eProgramUniform3iv >( cmd ) );
+				break;
+			case OpType::eProgramUniform4iv:
+				apply( lock, map< OpType::eProgramUniform4iv >( cmd ) );
+				break;
+			case OpType::eProgramUniform1uiv:
+				apply( lock, map< OpType::eProgramUniform1uiv >( cmd ) );
+				break;
+			case OpType::eProgramUniform2uiv:
+				apply( lock, map< OpType::eProgramUniform2uiv >( cmd ) );
+				break;
+			case OpType::eProgramUniform3uiv:
+				apply( lock, map< OpType::eProgramUniform3uiv >( cmd ) );
+				break;
+			case OpType::eProgramUniform4uiv:
+				apply( lock, map< OpType::eProgramUniform4uiv >( cmd ) );
+				break;
+			case OpType::eProgramUniformMatrix2fv:
+				apply( lock, map< OpType::eProgramUniformMatrix2fv >( cmd ) );
+				break;
+			case OpType::eProgramUniformMatrix3fv:
+				apply( lock, map< OpType::eProgramUniformMatrix3fv >( cmd ) );
+				break;
+			case OpType::eProgramUniformMatrix4fv:
+				apply( lock, map< OpType::eProgramUniformMatrix4fv >( cmd ) );
 				break;
 			case OpType::ePushDebugGroup:
 				apply( lock, map< OpType::ePushDebugGroup >( cmd ) );

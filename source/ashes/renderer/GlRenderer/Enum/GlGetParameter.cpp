@@ -6,6 +6,12 @@ namespace ashes::gl
 	{
 		switch ( value )
 		{
+		case GL_SMOOTH_LINE_WIDTH_RANGE:
+			return "GL_SMOOTH_LINE_WIDTH_RANGE";
+			
+		case GL_ALIASED_LINE_WIDTH_RANGE:
+			return "GL_ALIASED_LINE_WIDTH_RANGE";
+			
 		case GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT:
 			return "GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT";
 

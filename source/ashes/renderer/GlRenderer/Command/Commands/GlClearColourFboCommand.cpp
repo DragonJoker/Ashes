@@ -21,31 +21,61 @@ namespace ashes::gl
 		, VkImageSubresourceRangeArray ranges
 		, CmdList & list )
 	{
-		glLogCommand( "ClearColourFboCommand" );
+		glLogCommand( list, "ClearColourFboCommand" );
 		auto & glimage = *get( image );
-		auto target = GL_TEXTURE_2D;
-
-		if ( glimage.getSamples() > VK_SAMPLE_COUNT_1_BIT )
-		{
-			target = GL_TEXTURE_2D_MULTISAMPLE;
-		}
-
+		list.push_back( makeCmd< OpType::eInitFramebuffer >( &get( get( device )->getBlitDstFbo() )->getInternal() ) );
 		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
 			, get( device )->getBlitDstFbo() ) );
-		GLenum point = getAttachmentPoint( glimage.getFormat() );
+		auto point = getAttachmentPoint( glimage.getFormat() );
 
-		for ( uint32_t level = 0u; level < glimage.getMipLevels(); ++level )
+		if ( glimage.getArrayLayers() > 1u )
 		{
-			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
-				, point
-				, target
-				, get( image )->getInternal()
-				, level ) );
-			list.push_back( makeCmd< OpType::eDrawBuffers >( point ) );
-			list.push_back( makeCmd< OpType::eClearColour >( value
-				, 0u ) );
+			for ( uint32_t layer = 0u; layer < glimage.getArrayLayers(); ++layer )
+			{
+				for ( uint32_t level = 0u; level < glimage.getMipLevels(); ++level )
+				{
+					list.push_back( makeCmd< OpType::eFramebufferTextureLayer >( GL_FRAMEBUFFER
+						, point
+						, get( image )->getInternal()
+						, level
+						, layer ) );
+					list.push_back( makeCmd< OpType::eDrawBuffers >( point ) );
+					list.push_back( makeCmd< OpType::eClearColour >( value
+						, 0u ) );
+				}
+			}
 		}
-		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
-			, stack.getCurrentFramebuffer() ) );
+		else
+		{
+			auto target = GL_TEXTURE_2D;
+
+			if ( glimage.getSamples() > VK_SAMPLE_COUNT_1_BIT )
+			{
+				target = GL_TEXTURE_2D_MULTISAMPLE;
+			}
+
+			for ( uint32_t level = 0u; level < glimage.getMipLevels(); ++level )
+			{
+				list.push_back( makeCmd< OpType::eFramebufferTextureLayer >( GL_FRAMEBUFFER
+					, point
+					, target
+					, get( image )->getInternal()
+					, level ) );
+				list.push_back( makeCmd< OpType::eDrawBuffers >( point ) );
+				list.push_back( makeCmd< OpType::eClearColour >( value
+					, 0u ) );
+			}
+		}
+
+		if ( stack.hasCurrentFramebuffer() )
+		{
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+				, stack.getCurrentFramebuffer() ) );
+		}
+		else
+		{
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+				, VkFramebuffer{ VK_NULL_HANDLE } ) );
+		}
 	}
 }

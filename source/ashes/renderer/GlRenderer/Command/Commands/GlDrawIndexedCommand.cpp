@@ -61,7 +61,7 @@ namespace ashes::gl
 		, VkIndexType type
 		, CmdList & list )
 	{
-		glLogCommand( "DrawIndexedCommand" );
+		glLogCommand( list, "DrawIndexedCommand" );
 
 		if ( firstInstance > 0 )
 		{

@@ -19,7 +19,7 @@ namespace ashes::gl
 	void buildSetLineWidthCommand( float width
 		, CmdList & list )
 	{
-		glLogCommand( "SetLineWidthCommand" );
+		glLogCommand( list, "SetLineWidthCommand" );
 		list.push_back( makeCmd< OpType::eSetLineWidth >( width ) );
 	}
 }

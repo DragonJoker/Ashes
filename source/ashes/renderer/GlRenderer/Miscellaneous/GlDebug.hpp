@@ -27,4 +27,5 @@ namespace ashes::gl
 	std::string getErrorName( uint32_t code, uint32_t category );
 	bool glCheckError( ContextLock const & context
 		, std::string const & text );
+	void logDebug( char const * const log );
 }

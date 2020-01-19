@@ -3952,7 +3952,7 @@ namespace ashes::gl
 				try
 				{
 					gl::RenderWindow window{ MinMajor, MinMinor, "Gl4Init" };
-					extensions.initialise( MinMajor, MinMinor, MaxMajor, MaxMinor );
+					extensions.initialise();
 					supported = extensions.getMajor() > MinMajor
 						|| ( extensions.getMajor() == MinMajor && extensions.getMinor() >= MinMinor );
 				}

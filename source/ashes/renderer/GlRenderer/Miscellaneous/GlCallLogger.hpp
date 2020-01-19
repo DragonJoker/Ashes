@@ -58,9 +58,9 @@ See LICENSE file in root folder
 #include <sstream>
 
 #if !defined( NDEBUG )
-#	define GL_LOG_CALLS 0
+#	define AshesGL_LogCalls 1
 #else
-#	define GL_LOG_CALLS 0
+#	define AshesGL_LogCalls 0
 #endif
 
 namespace ashes::gl
@@ -472,25 +472,25 @@ namespace ashes::gl
 		return result;
 	}
 
-#if GL_LOG_CALLS
+#if AshesGL_LogCalls
 #	define glLogCall( lock, name, ... )\
 	executeFunction( lock, ashes::gl::getContext( lock ).m_##name, #name, __VA_ARGS__ )
 #	define glLogNonVoidCall( lock, name, ... )\
 	executeNonVoidFunction( lock, ashes::gl::getContext( lock ).m_##name, #name, __VA_ARGS__ )
-#	define glLogCommand( name )\
-	std::cout << "Command: " << name << std::endl
+#	define glLogCommand( list, name )\
+	list.push_back( makeCmd< OpType::eLogCommand >( name ) );
 #elif defined( NDEBUG )
 #	define glLogCall( lock, name, ... )\
 	( ( lock->m_##name( __VA_ARGS__ ) ), true )
 #	define glLogNonVoidCall( lock, name, ... )\
 	( lock->m_##name( __VA_ARGS__ ) )
-#	define glLogCommand( name )
-#	else
+#	define glLogCommand( list, name )
+#else
 #	define glLogCall( lock, name, ... )\
 	( ( lock->m_##name( __VA_ARGS__ ) ), glCheckError( lock, #name ) )
 #	define glLogNonVoidCall( lock, name, ... )\
 	( lock->m_##name( __VA_ARGS__ ) );\
 	glCheckError( lock, #name )
-#	define glLogCommand( name )
+#	define glLogCommand( list, name )
 #endif
 }

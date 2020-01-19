@@ -30,7 +30,7 @@ namespace ashes::gl
 		, VkIndexType type
 		, CmdList & list )
 	{
-		glLogCommand( "DrawIndexedIndirectCommand" );
+		glLogCommand( list, "DrawIndexedIndirectCommand" );
 		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_DRAW_INDIRECT
 			, get( buffer )->getInternal() ) );
 		list.push_back( makeCmd< OpType::eDrawIndexedIndirect >( uint32_t( get( buffer )->getInternalOffset() + offset )

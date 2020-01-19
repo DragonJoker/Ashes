@@ -21,7 +21,7 @@ namespace ashes::gl
 		, VkImageSubresourceRangeArray ranges
 		, CmdList & list )
 	{
-		glLogCommand( "ClearDepthStencilFboCommand" );
+		glLogCommand( list, "ClearDepthStencilFboCommand" );
 		auto & glimage = *get( image );
 		auto target = GL_TEXTURE_2D;
 
@@ -32,7 +32,7 @@ namespace ashes::gl
 
 		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
 			, get( device )->getBlitDstFbo() ) );
-		GLenum point = getAttachmentPoint( glimage.getFormat() );
+		auto point = getAttachmentPoint( glimage.getFormat() );
 
 		for ( uint32_t level = 0u; level < glimage.getMipLevels(); ++level )
 		{
