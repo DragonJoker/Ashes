@@ -480,7 +480,7 @@ namespace ashes::gl
 
 	ContextStateStack::ContextStateStack( VkDevice device )
 		: ContextStateStack{ get( device )->getEnabledFeatures().tessellationShader != VK_FALSE
-			, get( get( device )->getInstance() )->hasViewportArray() }
+			, get( getInstance( device ) )->hasViewportArray() }
 	{
 	}
 

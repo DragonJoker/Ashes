@@ -200,7 +200,7 @@ namespace ashes::gl
 		inline bool getFunctionRec( std::string const & name
 			, FuncT & function
 			, char const * const lastShort
-			, std::string const & lastLong )
+			, VkExtensionProperties const & lastExtension )
 		{
 			function = FuncT( getFunction( ( name + lastShort ).c_str() ) );
 			return function != nullptr;
@@ -210,7 +210,7 @@ namespace ashes::gl
 		inline bool getFunctionRec( std::string const & name
 			, FuncT & function
 			, char const * const currentShort
-			, std::string const & currentLong
+			, VkExtensionProperties const & currentExtension
 			, ParamsT ... params )
 		{
 			function = FuncT( getFunction( ( name + currentShort ).c_str() ) );

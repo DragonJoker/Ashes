@@ -619,17 +619,17 @@ namespace ashes::gl
 
 #endif
 
-	bool PhysicalDevice::find( std::string const & name )const
+	bool PhysicalDevice::find( VkExtensionProperties const & name )const
 	{
 		return get( m_instance )->getExtensions().find( name );
 	}
 
-	bool PhysicalDevice::findAny( StringArray const & names )const
+	bool PhysicalDevice::findAny( VkExtensionPropertiesArray const & names )const
 	{
 		return get( m_instance )->getExtensions().findAny( names );
 	}
 
-	bool PhysicalDevice::findAll( StringArray const & names )const
+	bool PhysicalDevice::findAll( VkExtensionPropertiesArray const & names )const
 	{
 		return get( m_instance )->getExtensions().findAll( names );
 	}
@@ -657,19 +657,19 @@ namespace ashes::gl
 
 	void PhysicalDevice::doInitialiseFeatures( ContextLock & context )
 	{
-		m_features.robustBufferAccess = find( "GL_KHR_robustness" );
+		m_features.robustBufferAccess = find( KHR_robustness );
 		m_features.fullDrawIndexUint32 = false;
-		m_features.imageCubeArray = find( "GL_ARB_texture_cube_map_array" );
-		m_features.independentBlend = findAny( { "GL_ARB_draw_buffers_blend", "GL_EXT_draw_buffers2" } );
-		m_features.geometryShader = find( "GL_ARB_geometry_shader4" );
-		m_features.tessellationShader = find( "GL_ARB_tessellation_shader" );
-		m_features.sampleRateShading = find( "GL_ARB_sample_shading" );
-		m_features.dualSrcBlend = find( "GL_ARB_blend_func_extended" );
+		m_features.imageCubeArray = find( ARB_texture_cube_map_array );
+		m_features.independentBlend = findAny( { ARB_draw_buffers_blend, EXT_draw_buffers2 } );
+		m_features.geometryShader = find( ARB_geometry_shader4 );
+		m_features.tessellationShader = find( ARB_tessellation_shader );
+		m_features.sampleRateShading = find( ARB_sample_shading );
+		m_features.dualSrcBlend = find( ARB_blend_func_extended );
 		m_features.logicOp = true;
-		m_features.multiDrawIndirect = findAll( { "GL_ARB_multi_draw_indirect", "GL_ARB_draw_indirect" } );
-		m_features.drawIndirectFirstInstance = findAll( { "GL_ARB_base_instance", "GL_ARB_draw_instanced" } );
-		m_features.depthClamp = find( "GL_ARB_depth_clamp" );
-		m_features.depthBiasClamp = find( "GL_ARB_polygon_offset_clamp" );
+		m_features.multiDrawIndirect = findAll( { ARB_multi_draw_indirect, ARB_draw_indirect } );
+		m_features.drawIndirectFirstInstance = findAll( { ARB_base_instance, ARB_draw_instanced } );
+		m_features.depthClamp = find( ARB_depth_clamp );
+		m_features.depthBiasClamp = find( ARB_polygon_offset_clamp );
 		m_features.fillModeNonSolid = true;
 		m_features.depthBounds = true;
 		GLint range[2];
@@ -682,41 +682,41 @@ namespace ashes::gl
 			, range );
 		m_features.wideLines &= ( range[1] > 1 );
 		m_features.largePoints = true;
-		m_features.alphaToOne = findAny( { "GL_ARB_multisample", "GLX_ARB_multisample", "WGL_ARB_multisample" } );
-		m_features.multiViewport = find( "GL_ARB_viewport_array" );
-		m_features.samplerAnisotropy = findAny( { "GL_ARB_texture_filter_anisotropic", "GL_ARB_texture_filter_anisotropic" } );
-		m_features.textureCompressionETC2 = findAll( { "GL_ARB_ES3_compatibility", "GL_ARB_ES2_compatibility", "GL_ARB_invalidate_subdata", "GL_ARB_texture_storage" } );
-		m_features.textureCompressionASTC_LDR = find( "GL_KHR_texture_compression_astc_ldr" );
-		m_features.textureCompressionBC = findAll( { "GL_EXT_texture_compression_s3tc", "GL_EXT_texture_sRGB" } );
+		m_features.alphaToOne = true;
+		m_features.multiViewport = find( ARB_viewport_array );
+		m_features.samplerAnisotropy = find( ARB_texture_filter_anisotropic );
+		m_features.textureCompressionETC2 = findAll( { ARB_ES3_compatibility, ARB_ES2_compatibility, ARB_invalidate_subdata, ARB_texture_storage } );
+		m_features.textureCompressionASTC_LDR = find( KHR_texture_compression_astc_ldr );
+		m_features.textureCompressionBC = findAll( { ARB_texture_compression, EXT_texture_compression_s3tc, EXT_texture_sRGB } );
 		m_features.occlusionQueryPrecise = true;
-		m_features.pipelineStatisticsQuery = find( "GL_ARB_pipeline_statistics_query" );
-		m_features.vertexPipelineStoresAndAtomics = find( "GL_ARB_shader_atomic_counters" );
+		m_features.pipelineStatisticsQuery = find( ARB_pipeline_statistics_query );
+		m_features.vertexPipelineStoresAndAtomics = find( ARB_shader_atomic_counters );
 		m_features.fragmentStoresAndAtomics = m_features.vertexPipelineStoresAndAtomics;
 		m_features.shaderTessellationAndGeometryPointSize = m_features.tessellationShader && m_features.geometryShader;
-		m_features.shaderImageGatherExtended = findAll( { "GL_ARB_texture_gather", "GL_ARB_gpu_shader5" } );
-		m_features.shaderStorageImageExtendedFormats = find( "GL_ARB_shader_image_load_store" );
-		m_features.shaderStorageImageMultisample = find( "GL_ARB_shader_image_load_store" );
-		m_features.shaderStorageImageReadWithoutFormat = find( "GL_EXT_shader_image_load_formatted" );
-		m_features.shaderStorageImageWriteWithoutFormat = find( "GL_ARB_shader_image_load_store" );
-		m_features.shaderUniformBufferArrayDynamicIndexing = find( "GL_ARB_gpu_shader5" );
-		m_features.shaderSampledImageArrayDynamicIndexing = find( "GL_ARB_gpu_shader5" );
-		m_features.shaderStorageBufferArrayDynamicIndexing = find( "GL_ARB_shader_storage_buffer_object" );
-		m_features.shaderStorageImageArrayDynamicIndexing = find( "GL_ARB_shader_image_load_store" );
+		m_features.shaderImageGatherExtended = findAll( { ARB_texture_gather, ARB_gpu_shader5 } );
+		m_features.shaderStorageImageExtendedFormats = find( ARB_shader_image_load_store );
+		m_features.shaderStorageImageMultisample = find( ARB_shader_image_load_store );
+		m_features.shaderStorageImageReadWithoutFormat = find( EXT_shader_image_load_formatted );
+		m_features.shaderStorageImageWriteWithoutFormat = find( ARB_shader_image_load_store );
+		m_features.shaderUniformBufferArrayDynamicIndexing = find( ARB_gpu_shader5 );
+		m_features.shaderSampledImageArrayDynamicIndexing = find( ARB_gpu_shader5 );
+		m_features.shaderStorageBufferArrayDynamicIndexing = find( ARB_shader_storage_buffer_object );
+		m_features.shaderStorageImageArrayDynamicIndexing = find( ARB_shader_image_load_store );
 		m_features.shaderClipDistance = true;
-		m_features.shaderCullDistance = find( "GL_ARB_cull_distance" );
-		m_features.shaderFloat64 = find( "GL_ARB_gpu_shader_fp64" );
-		m_features.shaderInt64 = find( "GL_ARB_gpu_shader_int64" );
+		m_features.shaderCullDistance = find( ARB_cull_distance );
+		m_features.shaderFloat64 = find( ARB_gpu_shader_fp64 );
+		m_features.shaderInt64 = find( ARB_gpu_shader_int64 );
 		m_features.shaderInt16 = false;
-		m_features.shaderResourceResidency = false;// find( "GL_ARB_sparse_texture2" );
-		m_features.shaderResourceMinLod = false;// find( "GL_ARB_sparse_texture_clamp" );
-		m_features.sparseBinding = false;// findAll( { "GL_ARB_sparse_buffer", "GL_ARB_sparse_texture2" } );
-		m_features.sparseResidencyBuffer = false;// find( "GL_ARB_sparse_buffer" );
-		m_features.sparseResidencyImage2D = false;// find( "GL_ARB_sparse_texture2" );
-		m_features.sparseResidencyImage3D = false;// find( "GL_ARB_sparse_texture2" );
-		m_features.sparseResidency2Samples = false;// find( "GL_ARB_sparse_texture2" );
-		m_features.sparseResidency4Samples = false;// find( "GL_ARB_sparse_texture2" );
-		m_features.sparseResidency8Samples = false;// find( "GL_ARB_sparse_texture2" );
-		m_features.sparseResidency16Samples = false;// find( "GL_ARB_sparse_texture2" );
+		m_features.shaderResourceResidency = false;// find( ARB_sparse_texture2 );
+		m_features.shaderResourceMinLod = false;// find( ARB_sparse_texture_clamp );
+		m_features.sparseBinding = false;// findAll( { ARB_sparse_buffer, ARB_sparse_texture2 } );
+		m_features.sparseResidencyBuffer = false;// find( ARB_sparse_buffer );
+		m_features.sparseResidencyImage2D = false;// find( ARB_sparse_texture2 );
+		m_features.sparseResidencyImage3D = false;// find( ARB_sparse_texture2 );
+		m_features.sparseResidency2Samples = false;// find( ARB_sparse_texture2 );
+		m_features.sparseResidency4Samples = false;// find( ARB_sparse_texture2 );
+		m_features.sparseResidency8Samples = false;// find( ARB_sparse_texture2 );
+		m_features.sparseResidency16Samples = false;// find( ARB_sparse_texture2 );
 		m_features.sparseResidencyAliased = false;
 		m_features.variableMultisampleRate = true;
 		m_features.inheritedQueries = true;
