@@ -168,7 +168,8 @@ namespace ashes::gl
 		uint32_t mipLevel;
 		uint32_t index;
 		uint32_t baseArrayLayer;
-		uint32_t layerCount;
+		uint32_t imgLayerCount;
+		uint32_t viewLayerCount;
 		GLuint originalObject;
 		GLuint originalMipLevel;
 	};

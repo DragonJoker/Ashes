@@ -25,6 +25,11 @@ namespace ashes::gl
 			return getInternal();
 		}
 
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		VkDevice m_device;
 		VkFormat m_format;

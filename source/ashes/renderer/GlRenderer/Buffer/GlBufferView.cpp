@@ -24,15 +24,15 @@ namespace ashes::gl
 			, GL_TEXTURE0 );
 		glLogCall( context
 			, glBindTexture
-			, GL_BUFFER_TARGET_TEXTURE
+			, GL_TEXTURE_BUFFER
 			, m_internal );
 		auto offset = get( createInfo.buffer )->getInternalOffset() + m_offset;
 
-		if ( get( get( device )->getInstance() )->getFeatures().hasTexBufferRange )
+		if ( get( getInstance( device ) )->getFeatures().hasTexBufferRange )
 		{
 			glLogCall( context
 				, glTexBufferRange
-				, GL_BUFFER_TARGET_TEXTURE
+				, GL_TEXTURE_BUFFER
 				, getInternalFormat( m_format )
 				, get( createInfo.buffer )->getInternal()
 				, offset
@@ -42,10 +42,7 @@ namespace ashes::gl
 		{
 			if ( ( offset > 0 || m_range != get( get( createInfo.buffer )->getMemory() )->getSize() ) )
 			{
-				get( m_device )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
-					, VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT
-					, 0ull
-					, 0u
+				reportError( get( this )
 					, VK_ERROR_VALIDATION_FAILED_EXT
 					, "OpenGL"
 					, "Texture buffer range is not supported" );
@@ -53,14 +50,14 @@ namespace ashes::gl
 
 			glLogCall( context
 				, glTexBuffer
-				, GL_BUFFER_TARGET_TEXTURE
+				, GL_TEXTURE_BUFFER
 				, getInternalFormat( createInfo.format )
 				, get( createInfo.buffer )->getInternal() );
 		}
 
 		glLogCall( context
 			, glBindTexture
-			, GL_BUFFER_TARGET_TEXTURE
+			, GL_TEXTURE_BUFFER
 			, 0u );
 	}
 
