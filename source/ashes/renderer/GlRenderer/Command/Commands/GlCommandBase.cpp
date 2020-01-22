@@ -340,6 +340,12 @@ namespace ashes::gl
 	}
 
 	void apply( ContextLock const & context
+		, CmdLogCommand const & cmd )
+	{
+		logDebug( cmd.value );
+	}
+
+	void apply( ContextLock const & context
 		, CmdLogicOp const & cmd )
 	{
 		glLogCall( context

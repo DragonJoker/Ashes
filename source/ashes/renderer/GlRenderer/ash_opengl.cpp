@@ -1228,8 +1228,8 @@ namespace ashes::gl
 		const VkDeviceSize* pOffsets )
 	{
 		get( commandBuffer )->bindVertexBuffers( firstBinding
-			, { pBuffers, pBuffers + bindingCount }
-			, { pOffsets, pOffsets + bindingCount } );
+			, makeArrayView( pBuffers, bindingCount )
+			, makeArrayView( pOffsets, bindingCount ) );
 	}
 
 	void VKAPI_CALL vkCmdDraw(
@@ -3920,6 +3920,9 @@ namespace ashes::gl
 #if VK_KHR_display
 			VkExtensionProperties{ VK_KHR_DISPLAY_EXTENSION_NAME, VK_KHR_DISPLAY_SPEC_VERSION },
 #endif
+#if VK_NV_glsl_shader
+			VkExtensionProperties{ VK_NV_GLSL_SHADER_EXTENSION_NAME, VK_NV_GLSL_SHADER_SPEC_VERSION },
+#endif
 		};
 		return extensions;
 	}
@@ -3946,13 +3949,14 @@ namespace ashes::gl
 
 			if ( result != VK_SUCCESS )
 			{
+				clearDebugFile();
 				bool supported = false;
 				gl::ExtensionsHandler extensions;
 
 				try
 				{
 					gl::RenderWindow window{ MinMajor, MinMinor, "Gl4Init" };
-					extensions.initialise( MinMajor, MinMinor, MaxMajor, MaxMinor );
+					extensions.initialise();
 					supported = extensions.getMajor() > MinMajor
 						|| ( extensions.getMajor() == MinMajor && extensions.getMinor() >= MinMinor );
 				}

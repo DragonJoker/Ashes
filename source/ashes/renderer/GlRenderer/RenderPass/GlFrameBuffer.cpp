@@ -36,7 +36,8 @@ namespace ashes::gl
 			, uint32_t index
 			, CmdList & list )
 		{
-			if ( attachment.baseArrayLayer )
+			if ( attachment.baseArrayLayer
+				|| ( attachment.imgLayerCount > 1 && attachment.viewLayerCount <= 1 ) )
 			{
 				list.push_back( makeCmd< OpType::eFramebufferTextureLayer >( GL_FRAMEBUFFER
 					, GlAttachmentPoint( attachment.point + index )
@@ -44,7 +45,7 @@ namespace ashes::gl
 					, attachment.mipLevel
 					, attachment.baseArrayLayer ) );
 			}
-			else if ( attachment.layerCount
+			else if ( attachment.viewLayerCount
 				&& ( attachment.target < GL_TEXTURE_CUBE_POSITIVE_X || attachment.target > GL_TEXTURE_CUBE_NEGATIVE_Z ) )
 			{
 				list.push_back( makeCmd< OpType::eFramebufferTexture >( GL_FRAMEBUFFER
@@ -80,17 +81,18 @@ namespace ashes::gl
 			attachment.originalMipLevel = get( view )->getSubresourceRange().baseMipLevel;
 			attachment.object = get( view )->getInternal();
 			attachment.mipLevel = attachment.originalMipLevel;
-			attachment.layerCount = layersCount;
-			attachment.baseArrayLayer = ( ( ( !isCube && layersCount > 1u ) || ( isCube && layersCount > 6u ) )
+			attachment.imgLayerCount = get( image )->getArrayLayers();
+			attachment.viewLayerCount = get( view )->getSubresourceRange().layerCount;
+			attachment.baseArrayLayer = ( ( ( !isCube && attachment.imgLayerCount > 1u ) || ( isCube && attachment.imgLayerCount > 6u ) )
 				? get( view )->getSubresourceRange().baseArrayLayer
 				: 0u );
 			attachment.target = ( multisampled
-				? ( layersCount > 1u
+				? ( attachment.viewLayerCount > 1u
 					? GL_TEXTURE_2D_MULTISAMPLE_ARRAY
 					: GL_TEXTURE_2D_MULTISAMPLE )
 				: ( isCube
 					? get( view )->getTextureType()
-					: ( layersCount > 1u
+					: ( attachment.viewLayerCount > 1u
 						? GL_TEXTURE_2D_ARRAY
 						: GL_TEXTURE_2D ) ) );
 			attachment.index = index;
@@ -104,7 +106,7 @@ namespace ashes::gl
 			, uint32_t index
 			, CmdList & list )
 		{
-			if ( attachment.layerCount > 1u )
+			if ( attachment.viewLayerCount > 1u )
 			{
 				list.push_back( makeCmd< OpType::eFramebufferTexture >( GL_FRAMEBUFFER
 					, GlAttachmentPoint( attachment.point + index )
@@ -135,8 +137,9 @@ namespace ashes::gl
 			attachment.originalMipLevel = get( view )->getSubresourceRange().baseMipLevel;
 			attachment.object = get( view )->getInternal();
 			attachment.mipLevel = attachment.originalMipLevel;
-			attachment.layerCount = get( view )->getSubresourceRange().layerCount;
-			attachment.target = ( attachment.layerCount > 1u
+			attachment.imgLayerCount = get( image )->getArrayLayers();
+			attachment.viewLayerCount = get( view )->getSubresourceRange().layerCount;
+			attachment.target = ( attachment.viewLayerCount > 1u
 				? ( multisampled
 					? GL_TEXTURE_2D_MULTISAMPLE_ARRAY
 					: GL_TEXTURE_2D_ARRAY )
@@ -165,7 +168,7 @@ namespace ashes::gl
 		, FboAttachment const & attachment
 		, CmdList & list )
 	{
-		if ( isGl4( device ) )
+		if ( hasTextureViews( device ) )
 		{
 			gl4::bindAttach( attachment
 				, attachment.index
@@ -184,7 +187,7 @@ namespace ashes::gl
 		, uint32_t index
 		, bool & multisampled )
 	{
-		if ( isGl4( device ) )
+		if ( hasTextureViews( device ) )
 		{
 			return gl4::initialiseAttachment( view
 				, index

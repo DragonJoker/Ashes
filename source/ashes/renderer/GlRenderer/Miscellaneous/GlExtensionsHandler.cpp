@@ -15,6 +15,10 @@ See LICENSE file in root folder.
 #	define GLAPIENTRY
 #endif
 
+#include "ashesgl_api.hpp"
+
+#define AshesGL_ForceMinVersion 1
+
 namespace ashes::gl
 {
 	namespace
@@ -47,9 +51,16 @@ namespace ashes::gl
 		PFN_glGetIntegerv getIntegerv;
 	}
 
-	void ExtensionsHandler::initialise( int reqMajor, int reqMinor
-		, int maxMajor, int maxMinor )
+	void ExtensionsHandler::initialise()
 	{
+#if AshesGL_ForceMinVersion
+		static int constexpr maxMajor = MinMajor;
+		static int constexpr maxMinor = MinMinor;
+#else
+		static int constexpr maxMajor = MaxMajor;
+		static int constexpr maxMinor = MaxMinor;
+#endif
+
 		getFunction( "glGetStringi", getStringi );
 
 #ifndef _WIN32
@@ -69,18 +80,10 @@ namespace ashes::gl
 			float fversion;
 			stream >> fversion;
 			int maxVersion = ( maxMajor * 10 ) + maxMinor;
-			auto version = std::min( maxVersion, int( fversion * 10 ) );
-			int reqVersion = ( reqMajor * 10 ) + reqMinor;
-
-			if ( version < reqVersion )
-			{
-				std::stringstream stream;
-				stream << "OpenGL >= " << reqMajor << "." << reqMinor << " is needed for this renderer.";
-				throw std::runtime_error{ stream.str() };
-			}
-
+			auto version = uint32_t( std::min( maxVersion, int( fversion * 10 ) ) );
 			m_major = version / 10;
 			m_minor = version % 10;
+			m_version = makeVersion( m_major, m_minor, 0u );
 
 			if ( version >= 33 )
 			{
@@ -120,7 +123,7 @@ namespace ashes::gl
 
 			if ( cspirvext )
 			{
-				m_deviceSPIRVExtensionNames.emplace_back( cspirvext );
+				m_deviceExtensionNames.emplace_back( cspirvext );
 			}
 		}
 
@@ -145,32 +148,34 @@ namespace ashes::gl
 		m_features.hasComputeShaders = find( ARB_compute_shader );
 		m_features.hasStorageBuffers = findAll( { ARB_compute_shader, ARB_buffer_storage, ARB_shader_image_load_store, ARB_shader_storage_buffer_object } );
 		m_features.supportsPersistentMapping = true;
+		m_features.maxShaderLanguageVersion = m_shaderVersion;
 	}
 
-	bool ExtensionsHandler::find( std::string const & name )const
+	bool ExtensionsHandler::find( VkExtensionProperties const & extension )const
 	{
-		return m_deviceExtensionNames.end() != std::find( m_deviceExtensionNames.begin()
-			, m_deviceExtensionNames.end()
-			, name );
+		return m_version >= extension.specVersion
+			&& m_deviceExtensionNames.end() != std::find( m_deviceExtensionNames.begin()
+				, m_deviceExtensionNames.end()
+				, extension.extensionName );
 	}
 
-	bool ExtensionsHandler::findAny( StringArray const & names )const
+	bool ExtensionsHandler::findAny( VkExtensionPropertiesArray const & extensions )const
 	{
-		return names.end() != std::find_if( names.begin()
-			, names.end()
-			, [this]( std::string const & name )
+		return extensions.end() != std::find_if( extensions.begin()
+			, extensions.end()
+			, [this]( VkExtensionProperties const & lookup )
 			{
-				return find( name );
+				return find( lookup );
 			} );
 	}
 
-	bool ExtensionsHandler::findAll( StringArray const & names )const
+	bool ExtensionsHandler::findAll( VkExtensionPropertiesArray const & extensions )const
 	{
-		return names.end() == std::find_if( names.begin()
-			, names.end()
-			, [this]( std::string const & name )
+		return extensions.end() == std::find_if( extensions.begin()
+			, extensions.end()
+			, [this]( VkExtensionProperties const & lookup )
 			{
-				return !find( name );
+				return !find( lookup );
 			} );
 	}
 

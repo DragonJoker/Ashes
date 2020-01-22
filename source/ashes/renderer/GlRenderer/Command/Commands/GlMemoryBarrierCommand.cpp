@@ -26,7 +26,7 @@ namespace ashes::gl
 		, VkImageMemoryBarrierArray imageMemoryBarriers
 		, CmdList & list )
 	{
-		glLogCommand( "MemoryBarrierCommand" );
+		glLogCommand( list, "MemoryBarrierCommand" );
 
 		for ( auto & barrier : bufferMemoryBarriers )
 		{

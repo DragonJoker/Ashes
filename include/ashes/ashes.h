@@ -82,6 +82,11 @@ extern "C"
 		*	Whether or not the plugin supports persistent mapping.
 		*/
 		VkBool32 supportsPersistentMapping;
+		/**
+		*\brief
+		*	The plugin's maximum supported shader language version.
+		*/
+		uint32_t maxShaderLanguageVersion;
 	} AshPluginFeatures;
 
 	typedef struct AshPluginSupport

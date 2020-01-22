@@ -63,9 +63,4 @@ namespace ashes::gl
 		Context * m_context;
 		bool m_disable;
 	};
-
-	inline bool isGl4( ContextLock const & lock )
-	{
-		return isGl4( lock.getContext() );
-	}
 }

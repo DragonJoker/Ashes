@@ -141,6 +141,17 @@ namespace ashes::gl
 	using GeometryBuffersPtr = std::unique_ptr< GeometryBuffers >;
 	using GeometryBuffersRefArray = std::vector< GeometryBuffersRef >;
 
+	struct GlPhysicalDeviceFeatures
+	{
+		VkBool32 has420PackExtensions;
+		VkBool32 hasCopyImage;
+		VkBool32 hasImmutableStorage;
+		VkBool32 hasProgramPipelines;
+		VkBool32 hasTextureStorage;
+		VkBool32 hasTextureViews;
+		VkBool32 hasViewportArrays;
+	};
+
 	struct AttachmentDescription
 	{
 		uint32_t index;
@@ -168,7 +179,8 @@ namespace ashes::gl
 		uint32_t mipLevel;
 		uint32_t index;
 		uint32_t baseArrayLayer;
-		uint32_t layerCount;
+		uint32_t imgLayerCount;
+		uint32_t viewLayerCount;
 		GLuint originalObject;
 		GLuint originalMipLevel;
 	};
@@ -200,7 +212,7 @@ namespace ashes::gl
 		inline bool getFunctionRec( std::string const & name
 			, FuncT & function
 			, char const * const lastShort
-			, std::string const & lastLong )
+			, VkExtensionProperties const & lastExtension )
 		{
 			function = FuncT( getFunction( ( name + lastShort ).c_str() ) );
 			return function != nullptr;
@@ -210,7 +222,7 @@ namespace ashes::gl
 		inline bool getFunctionRec( std::string const & name
 			, FuncT & function
 			, char const * const currentShort
-			, std::string const & currentLong
+			, VkExtensionProperties const & currentExtension
 			, ParamsT ... params )
 		{
 			function = FuncT( getFunction( ( name + currentShort ).c_str() ) );

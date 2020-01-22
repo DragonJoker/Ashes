@@ -38,7 +38,7 @@ namespace ashes::gl
 	void buildBindGeometryBuffersCommand( GeometryBuffers const & vao
 		, CmdList & list )
 	{
-		glLogCommand( "BindGeometryBuffersCommand" );
+		glLogCommand( list, "BindGeometryBuffersCommand" );
 		list.push_back( makeCmd< OpType::eBindVextexArray >( &vao ) );
 	}
 }

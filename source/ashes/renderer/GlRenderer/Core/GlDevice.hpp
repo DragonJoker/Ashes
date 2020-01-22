@@ -146,5 +146,11 @@ namespace ashes::gl
 		VkDynamicStateArray m_dyState;
 	};
 
-	bool isGl4( VkDevice device );
+	bool has420PackExtensions( VkDevice device );
+	bool hasCopyImage( VkDevice device );
+	bool hasProgramPipelines( VkDevice device );
+	bool hasSamplerAnisotropy( VkDevice device );
+	bool hasTextureStorage( VkDevice device );
+	bool hasTextureViews( VkDevice device );
+	bool hasViewportArrays( VkDevice device );
 }

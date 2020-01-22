@@ -137,6 +137,4 @@ namespace ashes::gl
 		std::atomic< std::thread::id > m_activeThread;
 		std::map< std::thread::id, std::unique_ptr< gl::ContextState > > m_state;
 	};
-
-	bool isGl4( Context const & context );
 }

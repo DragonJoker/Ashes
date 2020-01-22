@@ -20,7 +20,7 @@ namespace ashes::gl
 		, CmdList & list
 		, PreExecuteActions & preExecuteActions )
 	{
-		glLogCommand( "EndSubpassCommand" );
+		glLogCommand( list, "EndSubpassCommand" );
 		stack.apply( list, preExecuteActions, 0u, VkScissorArray{}, true );
 		stack.apply( list, preExecuteActions, 0u, VkViewportArray{}, true );
 

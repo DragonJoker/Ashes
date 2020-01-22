@@ -44,6 +44,7 @@ namespace ashes::gl
 			, Optional< VkPipelineVertexInputStateCreateInfo > const & vertexInputState
 			, bool invertY );
 		void doInitShaderProgram( ContextLock const & context
+			, VkPipeline pipeline
 			, std::vector< ShaderDesc > descs
 			, VkPipelineLayout layout
 			, VkPipelineCreateFlags createFlags

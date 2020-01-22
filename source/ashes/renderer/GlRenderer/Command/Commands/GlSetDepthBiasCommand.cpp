@@ -13,7 +13,7 @@ namespace ashes::gl
 		, float slopeFactor
 		, CmdList & list )
 	{
-		glLogCommand( "SetDepthBiasCommand" );
+		glLogCommand( list, "SetDepthBiasCommand" );
 		list.push_back( makeCmd< OpType::ePolygonOffset >( constantFactor
 			, clamp
 			, slopeFactor ) );

@@ -249,7 +249,7 @@ namespace ashes::gl
 		, VkImage dstImage
 		, CmdList & list )
 	{
-		glLogCommand( "CopyImageCommand" );
+		glLogCommand( list, "CopyImageCommand" );
 
 		if ( copyInfo.srcSubresource.mipLevel == copyInfo.dstSubresource.mipLevel )
 		{
@@ -262,7 +262,7 @@ namespace ashes::gl
 				, get( dstImage )->getArrayLayers()
 				, get( srcImage )->getCreateFlags() );
 
-			if ( isGl4( device ) )
+			if ( hasCopyImage( device ) )
 			{
 				list.push_back( makeCmd< OpType::eCopyImageSubData >( get( srcImage )->getInternal()
 					, srcTarget

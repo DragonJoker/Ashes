@@ -398,9 +398,9 @@ namespace ashes::gl
 		, PushConstantsDesc const & pcb
 		, CmdList & list )
 	{
-		glLogCommand( "PushConstantsCommand" );
+		glLogCommand( list, "PushConstantsCommand" );
 
-		if ( isGl4( device ) )
+		if ( hasProgramPipelines( device ) )
 		{
 			for ( auto & constant : pcb.constants )
 			{

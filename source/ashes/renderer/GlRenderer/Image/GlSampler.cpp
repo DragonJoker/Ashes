@@ -55,17 +55,13 @@ namespace ashes::gl
 			, m_internal
 			, GL_SAMPLER_PARAMETER_MAX_LOD
 			, createInfo.maxLod );
+		glLogCall( context
+			, glSamplerParameterf
+			, m_internal
+			, GL_SAMPLER_PARAMETER_LOD_BIAS
+			, createInfo.mipLodBias );
 
-		if ( isGl4( device ) )
-		{
-			glLogCall( context
-				, glSamplerParameterf
-				, m_internal
-				, GL_SAMPLER_PARAMETER_LOD_BIAS
-				, createInfo.mipLodBias );
-		}
-
-		if ( get( get( device )->getPhysicalDevice() )->getFeatures().samplerAnisotropy && createInfo.anisotropyEnable )
+		if ( hasSamplerAnisotropy( device ) && createInfo.anisotropyEnable )
 		{
 			glLogCall( context
 				, glSamplerParameterf

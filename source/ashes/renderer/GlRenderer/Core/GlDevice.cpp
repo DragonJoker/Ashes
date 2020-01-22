@@ -567,8 +567,38 @@ namespace ashes::gl
 		}
 	}
 
-	bool isGl4( VkDevice device )
+	bool has420PackExtensions( VkDevice device )
 	{
-		return isGl4( getInstance( device ) );
+		return has420PackExtensions( get( device )->getPhysicalDevice() );
+	}
+
+	bool hasCopyImage( VkDevice device )
+	{
+		return hasCopyImage( get( device )->getPhysicalDevice() );
+	}
+
+	bool hasProgramPipelines( VkDevice device )
+	{
+		return hasProgramPipelines( get( device )->getPhysicalDevice() );
+	}
+
+	bool hasSamplerAnisotropy( VkDevice device )
+	{
+		return hasSamplerAnisotropy( get( device )->getPhysicalDevice() );
+	}
+
+	bool hasTextureStorage( VkDevice device )
+	{
+		return hasTextureStorage( get( device )->getPhysicalDevice() );
+	}
+
+	bool hasTextureViews( VkDevice device )
+	{
+		return hasTextureViews( get( device )->getPhysicalDevice() );
+	}
+
+	bool hasViewportArrays( VkDevice device )
+	{
+		return hasViewportArrays( get( device )->getPhysicalDevice() );
 	}
 }

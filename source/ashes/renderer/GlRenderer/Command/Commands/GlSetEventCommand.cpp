@@ -20,7 +20,7 @@ namespace ashes::gl
 		, VkPipelineStageFlags stageFlags
 		, CmdList & list )
 	{
-		glLogCommand( "SetEventCommand" );
+		glLogCommand( list, "SetEventCommand" );
 		list.push_back( makeCmd< OpType::eSetEvent >( event ) );
 	}
 }

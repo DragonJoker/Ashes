@@ -76,7 +76,7 @@ namespace ashes::gl
 		, VkBuffer dst
 		, CmdList & list )
 	{
-		glLogCommand( "CopyImageToBufferCommand" );
+		glLogCommand( list, "CopyImageToBufferCommand" );
 		auto internal = getInternalFormat( get( src )->getFormat() );
 		auto format = getFormat( internal );
 		auto type = getType( internal );
@@ -90,7 +90,7 @@ namespace ashes::gl
 		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
 			, get( device )->getBlitSrcFbo() ) );
 
-		if ( isGl4( device ) )
+		if ( hasTextureViews( device ) )
 		{
 			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
 				, GL_ATTACHMENT_POINT_COLOR0

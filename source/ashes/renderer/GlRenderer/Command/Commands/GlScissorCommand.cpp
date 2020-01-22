@@ -16,7 +16,7 @@ namespace ashes::gl
 		, CmdList & list
 		, PreExecuteActions & preExecuteActions )
 	{
-		glLogCommand( "ScissorCommand" );
+		glLogCommand( list, "ScissorCommand" );
 		stack.apply( list, preExecuteActions, firstScissor, scissors, false );
 	}
 }

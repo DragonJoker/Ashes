@@ -39,7 +39,7 @@ namespace ashes::gl
 		, CmdList & list )
 	{
 		assert( instCount >= 1 );
-		glLogCommand( "DrawCommand" );
+		glLogCommand( list, "DrawCommand" );
 
 		if ( firstInstance > 0 )
 		{

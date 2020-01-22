@@ -16,7 +16,7 @@ namespace ashes::gl
 		, VkSubpassDescription subpass
 		, CmdList & list )
 	{
-		glLogCommand( "BeginSubpassCommand" );
+		glLogCommand( list, "BeginSubpassCommand" );
 
 		if ( get( frameBuffer )->getInternal() != GL_INVALID_INDEX )
 		{

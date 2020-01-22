@@ -150,7 +150,7 @@ namespace ashes::gl
 		, VkImageCreateFlags flags
 		, VkSampleCountFlagBits samples )
 	{
-		if ( isGl4( device ) )
+		if ( hasTextureViews( device ) )
 		{
 			return gl4::convert( type
 				, layerCount

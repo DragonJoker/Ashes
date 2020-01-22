@@ -44,7 +44,7 @@ See LICENSE file in root folder.
 namespace ashes::gl
 {
 	static int constexpr MinMajor = 3;
-	static int constexpr MinMinor = 2;
+	static int constexpr MinMinor = 3;
 	static int constexpr MaxMajor = 10;
 	static int constexpr MaxMinor = 10;
 
@@ -204,6 +204,11 @@ namespace ashes::gl
 	{
 		return get( object )->getInstance();
 	}
+	
+	inline VkInstance getInstance( VkBufferView object )
+	{
+		return getInstance( get( object )->getDevice() );
+	}
 
 	inline VkInstance getInstance( VkCommandBuffer object )
 	{
@@ -288,11 +293,27 @@ namespace ashes::gl
 			, uint64_t( object )
 			, 0u
 			, result
-			, "OpenGL3"
+			, "OpenGL"
 			, text.c_str() );
 	}
 
 #endif
+
+	template< typename VkObject >
+	using Reporter = void ( * )( VkObject object
+		, VkResult result
+		, std::string const & errorName
+		, std::string const & name );
+
+	template< typename VkObject >
+	inline void report( Reporter< VkObject > reporter
+		, VkObject object
+		, VkResult result
+		, std::string const & errorName
+		, std::string const & name )
+	{
+		reporter( object, result, errorName, name );
+	}
 
 	template< typename VkObject >
 	inline void reportError( VkObject object

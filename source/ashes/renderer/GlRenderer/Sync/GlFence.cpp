@@ -81,7 +81,7 @@ namespace ashes::gl
 			, glGetSynciv
 			, m_fence
 			, GL_SYNC_STATUS
-			, sizeof( value )
+			, GLsizei( sizeof( value ) )
 			, &size
 			, &value );
 		return value == GL_UNSIGNALED
