@@ -72,7 +72,7 @@ namespace ashes::gl
 			, m_createInfo.imageExtent
 			, m_deviceMemory );
 
-		if ( isGl4( device ) )
+		if ( hasTextureViews( device ) )
 		{
 			m_view = createImageView( device
 				, m_image
@@ -93,7 +93,7 @@ namespace ashes::gl
 			, GL_FRAMEBUFFER
 			, GL_ATTACHMENT_POINT_COLOR0
 			, GL_TEXTURE_2D
-			, ( isGl4( device )
+			, ( hasTextureViews( device )
 				? get( m_view )->getInternal()
 				: get( m_image )->getInternal() )
 			, 0u );
@@ -113,7 +113,7 @@ namespace ashes::gl
 				, 1
 				, &m_internal );
 
-			if ( isGl4( m_device ) )
+			if ( hasTextureViews( m_device ) )
 			{
 				deallocate( m_view, nullptr );
 			}
@@ -176,7 +176,7 @@ namespace ashes::gl
 			, GL_READ_FRAMEBUFFER
 			, GL_ATTACHMENT_POINT_COLOR0
 			, GL_TEXTURE_2D
-			, ( isGl4( m_device )
+			, ( hasTextureViews( m_device )
 				? get( m_view )->getInternal()
 				: get( m_image )->getInternal() )
 			, 0u );

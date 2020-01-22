@@ -1,4 +1,5 @@
-project( GlRenderer )
+set( _PROJECT_NAME GlRenderer )
+project( ashes${_PROJECT_NAME} )
 
 if ( ${CMAKE_VERSION} VERSION_GREATER "3.10.2" ) 
 	cmake_policy( SET CMP0072 NEW )
@@ -534,7 +535,7 @@ if ( OpenGL_FOUND )
 
 	set( ${PROJECT_NAME}_USE_SPIRV_CROSS 0 )
 
-	if ( EXISTS ${SPIRV_CROSS_DIR}/spirv_cross.cpp )
+	if ( ASHES_HAS_SPIRV_CROSS )
 		set( ${PROJECT_NAME}_USE_SPIRV_CROSS 1 )
 	endif ()
 
@@ -545,7 +546,7 @@ if ( OpenGL_FOUND )
 		${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES}
 		${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
 	)
-	add_library( ashes::${PROJECT_NAME}
+	add_library( ashes::${_PROJECT_NAME}
 		ALIAS
 		${PROJECT_NAME}
 	)
@@ -554,7 +555,7 @@ if ( OpenGL_FOUND )
 		${TARGET_INCLUDE_DIRS}
 		${CMAKE_CURRENT_BINARY_DIR}
 		${SPIRV_CROSS_DIR}
-		${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}
+		${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}
 	)
 	target_link_libraries( ${PROJECT_NAME} PRIVATE
 		${Ashes_BINARY_LIBRARIES}
@@ -564,8 +565,8 @@ if ( OpenGL_FOUND )
 		cxx_std_17
 	)
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE
-		${PROJECT_NAME}_USE_SPIRV_CROSS=${${PROJECT_NAME}_USE_SPIRV_CROSS}
-		${PROJECT_NAME}_EXPORTS
+		${_PROJECT_NAME}_USE_SPIRV_CROSS=${${PROJECT_NAME}_USE_SPIRV_CROSS}
+		${_PROJECT_NAME}_EXPORTS
 		${TARGET_CXX_DEFINITIONS}
 		_CRT_SECURE_NO_WARNINGS
 	)
@@ -581,8 +582,8 @@ if ( OpenGL_FOUND )
 	)
 	add_target_precompiled_header_ex( ${PROJECT_NAME}
 		ashes/renderer
-		${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/GlRendererPch.hpp
-		${Ashes_SOURCE_DIR}/source/ashes/renderer/${PROJECT_NAME}/GlRendererPch.cpp
+		${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/GlRendererPch.hpp
+		${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/GlRendererPch.cpp
 		"${CMAKE_CXX_FLAGS}"
 		${${PROJECT_NAME}_SRC_FILES}
 	)

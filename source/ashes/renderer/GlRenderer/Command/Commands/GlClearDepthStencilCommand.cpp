@@ -54,9 +54,9 @@ namespace ashes::gl
 		, VkImageSubresourceRangeArray ranges
 		, CmdList & list )
 	{
-		glLogCommand( "ClearDepthStencilCommand" );
+		glLogCommand( list, "ClearDepthStencilCommand" );
 
-		if ( get( get( device )->getInstance() )->hasClearTexImage() )
+		if ( get( getInstance( device ) )->hasClearTexImage() )
 		{
 			auto internal = getInternalFormat( get( image )->getFormat() );
 			auto format = getFormat( internal );

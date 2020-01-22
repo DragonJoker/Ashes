@@ -257,7 +257,7 @@ namespace ashes::gl
 					break;
 				}
 
-				if ( isGl4( context ) )
+				if ( hasTextureStorage( device ) )
 				{
 					int levels = 0;
 					glLogCall( context
@@ -399,7 +399,7 @@ namespace ashes::gl
 		private:
 			void doSetImage1D( ContextLock const & context )
 			{
-				if ( isGl4( context ) )
+				if ( hasTextureStorage( m_device ) )
 				{
 					glLogCall( context
 						, glTexStorage1D
@@ -425,7 +425,7 @@ namespace ashes::gl
 
 			void doSetImage2D( ContextLock const & context )
 			{
-				if ( isGl4( context ) )
+				if ( hasTextureStorage( m_device ) )
 				{
 					glLogCall( context
 						, glTexStorage2D
@@ -454,7 +454,7 @@ namespace ashes::gl
 			void doSetImageCubeFace( ContextLock const & context
 				, int face )
 			{
-				assert( !isGl4( context ) );
+				assert( !hasTextureStorage( m_device ) );
 				glLogCall( context
 					, glTexImage2D
 					, GL_TEXTURE_CUBE_POSITIVE_X + face
@@ -471,7 +471,7 @@ namespace ashes::gl
 			void doSetImage3D( ContextLock const & context
 				, uint32_t depth )
 			{
-				if ( isGl4( context ) )
+				if ( hasTextureStorage( m_device ) )
 				{
 					glLogCall( context
 						, glTexStorage3D
@@ -501,7 +501,7 @@ namespace ashes::gl
 
 			void doSetImage2DMS( ContextLock const & context )
 			{
-				if ( isGl4( context ) )
+				if ( hasTextureStorage( m_device ) )
 				{
 					glLogCall( context
 						, glTexStorage2DMultisample
@@ -527,7 +527,7 @@ namespace ashes::gl
 
 			void doSetImage3DMS( ContextLock const & context )
 			{
-				if ( isGl4( context ) )
+				if ( hasTextureStorage( m_device ) )
 				{
 					glLogCall( context
 						, glTexStorage3DMultisample

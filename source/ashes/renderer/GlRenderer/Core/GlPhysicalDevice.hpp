@@ -66,15 +66,20 @@ namespace ashes::gl
 		std::vector< VkDisplayKHR > getDisplayPlaneSupportedDisplays( uint32_t planeIndex )const;
 #endif
 
-		bool find( std::string const & name )const;
-		bool findAny( StringArray const & names )const;
-		bool findAll( StringArray const & names )const;
+		bool find( VkExtensionProperties const & name )const;
+		bool findAny( VkExtensionPropertiesArray const & names )const;
+		bool findAll( VkExtensionPropertiesArray const & names )const;
 		int getMajor()const;
 		int getMinor()const;
 
 		inline VkInstance getInstance()const
 		{
 			return m_instance;
+		}
+		
+		inline GlPhysicalDeviceFeatures const & getGlFeatures()const
+		{
+			return m_glFeatures;
 		}
 
 	private:
@@ -115,6 +120,7 @@ namespace ashes::gl
 		VkInstance m_instance;
 		VkPhysicalDeviceFeatures m_features{};
 		VkPhysicalDeviceProperties m_properties{};
+		GlPhysicalDeviceFeatures m_glFeatures{};
 		std::vector< VkQueueFamilyProperties > m_queueProperties{};
 		mutable std::map< VkFormat, VkFormatProperties > m_formatProperties;
 		mutable std::map< size_t, VkImageFormatProperties > m_imageFormatProperties;
@@ -136,5 +142,11 @@ namespace ashes::gl
 #endif
 	};
 
-	bool isGl4( VkPhysicalDevice physicalDevice );
+	bool has420PackExtensions( VkPhysicalDevice physicalDevice );
+	bool hasCopyImage( VkPhysicalDevice physicalDevice );
+	bool hasProgramPipelines( VkPhysicalDevice physicalDevice );
+	bool hasSamplerAnisotropy( VkPhysicalDevice physicalDevice );
+	bool hasTextureStorage( VkPhysicalDevice physicalDevice );
+	bool hasTextureViews( VkPhysicalDevice physicalDevice );
+	bool hasViewportArrays( VkPhysicalDevice physicalDevice );
 }

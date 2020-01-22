@@ -16,38 +16,6 @@ namespace ashes::gl
 {
 	namespace
 	{
-		std::string doRetrieveLinkerLog( ContextLock const & context
-			, GLuint programName )
-		{
-			std::string log;
-			int infologLength = 0;
-			int charsWritten = 0;
-			glLogCall( context
-				, glGetProgramiv
-				, programName
-				, GL_INFO_LOG_LENGTH
-				, &infologLength );
-
-			if ( infologLength > 0 )
-			{
-				std::vector< char > infoLog( infologLength + 1 );
-				glLogCall( context
-					, glGetProgramInfoLog
-					, programName
-					, infologLength
-					, &charsWritten
-					, infoLog.data() );
-				log = infoLog.data();
-			}
-
-			if ( !log.empty() )
-			{
-				log = log.substr( 0, log.size() - 1 );
-			}
-
-			return log;
-		}
-
 		ConstantsLayout mergeConstants( VkPipelineShaderStageCreateInfoArray const & stages )
 		{
 			ConstantsLayout result;
@@ -233,13 +201,14 @@ namespace ashes::gl
 		for ( auto & stage : this->stages )
 		{
 			stageFlags |= stage.stage;
-			descs.push_back( get( stage.module )->compile( stage
+			descs.push_back( get( stage.module )->compile( pipeline
+				, stage
 				, layout
 				, createFlags
 				, invertY ) );
 		}
 
-		if ( isGl4( m_device ) )
+		if ( hasProgramPipelines( m_device ) )
 		{
 			doInitProgramPipeline( context
 				, std::move( descs )
@@ -252,6 +221,7 @@ namespace ashes::gl
 		else
 		{
 			doInitShaderProgram( context
+				, pipeline
 				, std::move( descs )
 				, layout
 				, createFlags
@@ -263,7 +233,7 @@ namespace ashes::gl
 	{
 		auto context = get( m_device )->getContext();
 
-		if ( isGl4( m_device ) )
+		if ( hasProgramPipelines( m_device ) )
 		{
 			doCleanupProgramPipeline( context );
 		}
@@ -296,7 +266,7 @@ namespace ashes::gl
 			glLogCall( context
 				, glUseProgramStages
 				, program.program
-				, convertShaderStageFlag( stages[index].stage )
+				, convert( stages[index].stage )
 				, desc.program );
 			modules.push_back( desc.program );
 			++index;
@@ -329,159 +299,87 @@ namespace ashes::gl
 	}
 
 	void ShaderProgram::doInitShaderProgram( ContextLock const & context
+		, VkPipeline pipeline
 		, std::vector< ShaderDesc > descs
 		, VkPipelineLayout layout
 		, VkPipelineCreateFlags createFlags
 		, bool invertY )
 	{
-		auto programObject = context->glCreateProgram();
+		auto programObject = glLogNonVoidCall( context
+			, glCreateProgram );
 
 		for ( auto & desc : descs )
 		{
 			glLogCall( context
 				, glAttachShader
 				, programObject
-				, descs.back().program );
+				, desc.program );
 			modules.push_back( desc.program );
 		}
 
-		int attached = 0;
-		glLogCall( context
-			, glGetProgramiv
-			, programObject
-			, GL_INFO_ATTACHED_SHADERS
-			, &attached );
 		glLogCall( context
 			, glLinkProgram
 			, programObject );
-		int linked = 0;
-		glLogCall( context
-			, glGetProgramiv
+		bool usable = checkLinkErrors( context
+			, pipeline
 			, programObject
-			, GL_INFO_LINK_STATUS
-			, &linked );
-		auto linkerLog = doRetrieveLinkerLog( context, programObject );
-		ShaderDesc result;
+			, int( modules.size() )
+			, "Shader program link" );
 
-		if ( linked
-			&& attached == int( modules.size() )
-			&& linkerLog.find( "ERROR" ) == std::string::npos )
+		if ( usable )
 		{
-			int validated = 0;
-			glLogCall( context
-				, glGetProgramiv
-				, programObject
-				, GL_INFO_VALIDATE_STATUS
-				, &validated );
-
-			if ( !linkerLog.empty()
-				|| !validated )
-			{
-				std::stringstream stream;
-				stream << "Shader program link: " << std::endl;
-
-				if ( !validated )
-				{
-					stream << "Not validated - " << std::endl;
-				}
-
-				if ( !linkerLog.empty() )
-				{
-					stream << linkerLog << std::endl;
-				}
-
-				reportWarning( m_device
-					, VK_ERROR_VALIDATION_FAILED_EXT
-					, "Shader link"
-					, stream.str() );
-			}
-
 			program = getShaderDesc( context
+				, mergeConstants( stages )
 				, VkShaderStageFlagBits( stageFlags )
-				, programObject );
+				, programObject
+				, true );
 			program.program = programObject;
-			auto constants = mergeConstants( stages );
-
-			if ( !constants.empty() )
-			{
-				assert( constants.size() >= program.pcb.size() );
-				for ( auto & constant : program.pcb )
-				{
-					auto it = std::find_if( constants.begin()
-						, constants.end()
-						, [&constant]( ConstantDesc const & lookup )
-						{
-							return lookup.name == constant.name;
-						} );
-					assert( it != constants.end() );
-					constant.offset = it->offset;
-					constant.stageFlag = it->stageFlag;
-				}
-			}
-			else
-			{
-				uint32_t offset = 0u;
-
-				for ( auto & constant : program.pcb )
-				{
-					constant.offset = offset;
-					offset += constant.size;
-				}
-			}
+			program.stageFlags = stageFlags;
 		}
-		else
+
+		for ( auto & shaderName : modules )
 		{
-			std::stringstream stream;
-			stream << "Shader program link: " << std::endl;
-
-			if ( !linked )
+			if ( shaderName )
 			{
-				stream << "Not linked - " << std::endl;
+				glLogCall( context
+					, glDeleteShader
+					, shaderName );
+				shaderName = 0;
 			}
-
-			if ( attached != int( modules.size() ) )
-			{
-				stream << "The linked shaders count doesn't match the active shaders count. - " << std::endl;
-			}
-
-			if ( !linkerLog.empty() )
-			{
-				stream << linkerLog << std::endl;
-			}
-
-			reportError( m_device
-				, VK_ERROR_VALIDATION_FAILED_EXT
-				, "Shader link"
-				, stream.str() );
 		}
 	}
 
 	void ShaderProgram::doCleanupProgramPipeline( ContextLock const & context )
 	{
-		glLogCall( context
-			, glDeleteProgramPipelines
-			, 1u
-			, &program.program );
+		if ( program.program )
+		{
+			glLogCall( context
+				, glDeleteProgramPipelines
+				, 1u
+				, &program.program );
+			program.program = 0;
+		}
 
 		for ( auto & module : modules )
 		{
-			glLogCall( context
-				, glDeleteProgram
-				, module );
+			if ( module )
+			{
+				glLogCall( context
+					, glDeleteProgram
+					, module );
+				module = 0;
+			}
 		}
 	}
 
 	void ShaderProgram::doCleanupShaderProgram( ContextLock const & context )
 	{
-		for ( auto shaderName : modules )
+		if ( program.program )
 		{
 			glLogCall( context
-				, glDeleteShader
-				, shaderName );
+				, glDeleteProgram
+				, program.program );
+			program.program = 0;
 		}
-
-		glLogCall( context
-			, glDeleteProgram
-			, program.program );
 	}
 }

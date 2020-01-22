@@ -64,7 +64,8 @@ namespace ashes::gl
 			, get( m_image )->getSamples() ) }
 	{
 		// Non initialised textures come from back buffers, ignore them
-		if ( get( createInfo.image )->hasInternal() )
+		if ( get( createInfo.image )->hasInternal()
+			&& hasTextureViews( device ) )
 		{
 			auto context = get( m_device )->getContext();
 			glLogCall( context

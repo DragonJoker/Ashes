@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 #include <sstream>
 #include <map>
 
@@ -18,6 +19,11 @@
 
 namespace ashes::gl
 {
+	namespace
+	{
+		static std::string const debugLogFile = "CallLogGL.log";
+	}
+
 	std::string getErrorName( uint32_t code, uint32_t category )
 	{
 		static uint32_t constexpr InvalidEnum = 0x0500;
@@ -74,7 +80,7 @@ namespace ashes::gl
 					, stream.str()
 					, getErrorName( errorCode, GL_DEBUG_TYPE_ERROR ) );
 			}
-#if GL_LOG_CALLS
+#if AshesGL_LogCalls
 			std::stringstream stream;
 			stream.imbue( std::locale{ "C" } );
 			stream << "OpenGL Error, on function: " << text;
@@ -88,16 +94,31 @@ namespace ashes::gl
 		return result;
 	}
 
-	void logStream( std::stringstream & stream )
+	void clearDebugFile()
 	{
-#if GL_LOG_CALLS
-		std::ofstream file{ "CallLogGL.log", std::ios::app };
+#if AshesGL_LogCalls
+		if ( std::filesystem::exists( debugLogFile ) )
+		{
+			std::filesystem::remove( debugLogFile );
+		}
+#endif
+	}
+
+	void logDebug( char const * const log )
+	{
+#if AshesGL_LogCalls
+		std::ofstream file{ debugLogFile, std::ios::app };
 
 		if ( file )
 		{
-			file << stream.str() << std::endl;
+			file << log << std::endl;
 		}
 #endif
+	}
+
+	void logStream( std::stringstream & stream )
+	{
+		logDebug( stream.str().c_str() );
 	}
 
 	//*************************************************************************************************

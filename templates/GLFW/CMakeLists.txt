@@ -2,7 +2,6 @@ project( GLFW-Template )
 
 if ( VCPKG_TOOLCHAIN )
 	find_package( glfw3 CONFIG REQUIRED glfw )
-	set( GLFW_LIBRARY glfw )
 else ()
 	find_package( glfw3 )
 endif ()
@@ -24,7 +23,7 @@ target_link_libraries( ${PROJECT_NAME} PRIVATE
 	ashes::common
 	ashes::ashes
 	ashes::ashespp
-	${GLFW_LIBRARY}
+	glfw
 	${Ashes_BINARY_LIBRARIES}
 )
 target_compile_definitions( ${PROJECT_NAME} PRIVATE

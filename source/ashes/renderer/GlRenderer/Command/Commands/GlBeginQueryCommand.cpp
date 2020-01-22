@@ -13,7 +13,6 @@ namespace ashes::gl
 	void apply( ContextLock const & context
 		, CmdBeginQuery const & cmd )
 	{
-		glLogCommand( "BeginQueryCommand" );
 		glLogCall( context
 			, glBeginQuery
 			, GlQueryType( cmd.target )
@@ -24,6 +23,8 @@ namespace ashes::gl
 		, uint32_t query
 		, CmdList & list )
 	{
+		glLogCommand( list, "BeginQueryCommand" );
+
 		if ( get( pool )->getType() == VK_QUERY_TYPE_PIPELINE_STATISTICS )
 		{
 			assert( query == 0u );

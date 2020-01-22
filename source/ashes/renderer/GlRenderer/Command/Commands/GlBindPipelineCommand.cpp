@@ -28,7 +28,7 @@ namespace ashes::gl
 		, CmdList & list
 		, PreExecuteActions & preExecuteActions )
 	{
-		glLogCommand( "BindPipelineCommand" );
+		glLogCommand( list, "BindPipelineCommand" );
 		GLuint program;
 		auto glpipeline = get( pipeline );
 
@@ -57,7 +57,7 @@ namespace ashes::gl
 
 		if ( stack.getCurrentProgram() != program )
 		{
-			if ( isGl4( device ) )
+			if ( hasProgramPipelines( device ) )
 			{
 				list.push_back( makeCmd< OpType::eUseProgramPipeline >( program ) );
 			}
@@ -86,7 +86,7 @@ namespace ashes::gl
 	{
 		stack.setCurrentProgram( 0u );
 
-		if ( isGl4( device ) )
+		if ( hasProgramPipelines( device ) )
 		{
 			list.push_back( makeCmd< OpType::eUseProgramPipeline >( 0u ) );
 		}

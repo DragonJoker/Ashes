@@ -47,6 +47,9 @@ namespace ashes::gl
 
 		case GL_BLEND:
 			return "GL_BLEND";
+			
+		case GL_SCISSOR_TEST:
+			return "GL_SCISSOR_TEST";
 
 		case GL_POLYGON_OFFSET_POINT:
 			return "GL_POLYGON_OFFSET_POINT";
@@ -83,6 +86,9 @@ namespace ashes::gl
 
 		case GL_STENCIL_BACK_PASS_DEPTH_PASS:
 			return "GL_STENCIL_BACK_PASS_DEPTH_PASS";
+			
+		case GL_TEXTURE_CUBE_MAP_SEAMLESS:
+			return "GL_TEXTURE_CUBE_MAP_SEAMLESS";
 
 		case GL_RASTERIZER_DISCARD:
 			return "GL_RASTERIZER_DISCARD";
@@ -101,9 +107,6 @@ namespace ashes::gl
 
 		case GL_SAMPLE_SHADING:
 			return "GL_SAMPLE_SHADING";
-
-		case GL_TEXTURE_CUBE_MAP_SEAMLESS:
-			return "GL_TEXTURE_CUBE_MAP_SEAMLESS";
 
 		case GL_FRAMEBUFFER_SRGB:
 			return "GL_FRAMEBUFFER_SRGB";

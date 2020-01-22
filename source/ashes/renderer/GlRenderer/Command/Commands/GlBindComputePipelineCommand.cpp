@@ -15,7 +15,7 @@ namespace ashes::gl
 		, VkPipelineBindPoint bindingPoint
 		, CmdList & list )
 	{
-		glLogCommand( "BindComputePipelineCommand" );
+		glLogCommand( list, "BindComputePipelineCommand" );
 
 		if ( stack.getCurrentProgram() != get( pipeline )->getCompProgram() )
 		{

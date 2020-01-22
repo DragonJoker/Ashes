@@ -40,8 +40,8 @@ namespace ashes::gl
 		void bindPipeline( VkPipeline pipeline
 			, VkPipelineBindPoint bindingPoint )const;
 		void bindVertexBuffers( uint32_t firstBinding
-			, VkBufferArray buffers
-			, VkDeviceSizeArray offsets )const;
+			, ArrayView< VkBuffer const > buffers
+			, ArrayView < VkDeviceSize const > offsets )const;
 		void bindIndexBuffer( VkBuffer buffer
 			, VkDeviceSize offset
 			, VkIndexType indexType )const;

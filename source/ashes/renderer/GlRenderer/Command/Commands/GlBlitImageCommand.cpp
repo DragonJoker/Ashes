@@ -131,10 +131,10 @@ namespace ashes::gl
 			, VkImage dstImage
 			, uint32_t layer )
 			: region{ region }
-			, src{ isGl4( device )
+			, src{ hasTextureViews( device )
 				? gl4::makeFboAttachment( device, region.srcSubresource, srcImage, layer, srcView )
 				: gl3::makeFboAttachment( device, region.srcSubresource, srcImage, layer, srcView ) }
-			, dst{ isGl4( device )
+			, dst{ hasTextureViews( device )
 				? gl4::makeFboAttachment( device, region.dstSubresource, dstImage, layer, dstView )
 				: gl3::makeFboAttachment( device, region.dstSubresource, dstImage, layer, dstView ) }
 		{

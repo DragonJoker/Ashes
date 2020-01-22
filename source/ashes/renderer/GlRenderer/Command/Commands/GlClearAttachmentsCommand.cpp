@@ -20,7 +20,7 @@ namespace ashes::gl
 		, CmdList & list
 		, PreExecuteActions & preExecuteActions )
 	{
-		glLogCommand( "ClearAttachmentsCommand" );
+		glLogCommand( list, "ClearAttachmentsCommand" );
 
 		for ( auto & clearAttach : clearAttaches )
 		{

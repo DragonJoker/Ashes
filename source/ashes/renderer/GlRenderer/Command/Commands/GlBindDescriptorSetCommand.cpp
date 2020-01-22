@@ -155,7 +155,7 @@ namespace ashes::gl
 				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
 				list.push_back( makeCmd< OpType::eActiveTexture >( bindingIndex ) );
 
-				list.push_back( makeCmd< OpType::eBindTexture >( GL_BUFFER_TARGET_TEXTURE
+				list.push_back( makeCmd< OpType::eBindTexture >( GL_TEXTURE_BUFFER
 					, get( write.pTexelBufferView[i] )->getImage() ) );
 			}
 		}
@@ -531,7 +531,7 @@ namespace ashes::gl
 			, CmdList & list )
 		{
 			auto name = get( view )->getInternal();
-			auto type = convertViewType( get( view )->getType()
+			auto type = getTextureType( get( view )->getType()
 				, get( view )->getSubresourceRange().layerCount
 				, get( get( view )->getImage() )->getSamples() );
 			list.push_back( makeCmd< OpType::eActiveTexture >( bindingIndex ) );
@@ -727,13 +727,13 @@ namespace ashes::gl
 	{
 		assert( get( descriptorSet )->getDynamicBuffers().size() == dynamicOffsets.size()
 			&& "Dynamic descriptors and dynamic offsets sizes must match." );
-		glLogCommand( "BindDescriptorSetCommand" );
+		glLogCommand( list, "BindDescriptorSetCommand" );
 
 		auto & bindings = get( pipeline )->getDescriptorSetBindings( descriptorSet, setIndex );
 
 		if ( setIndex != GL_INVALID_INDEX )
 		{
-			if ( isGl4( device ) )
+			if ( hasTextureViews( device ) )
 			{
 				for ( auto & write : get( descriptorSet )->getInputAttachments() )
 				{

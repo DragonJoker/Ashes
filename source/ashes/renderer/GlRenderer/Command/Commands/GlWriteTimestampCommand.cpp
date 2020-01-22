@@ -24,7 +24,7 @@ namespace ashes::gl
 		, uint32_t query
 		, CmdList & list )
 	{
-		glLogCommand( "WriteTimestampCommand" );
+		glLogCommand( list, "WriteTimestampCommand" );
 		list.push_back( makeCmd< OpType::eWriteTimestamp >( *( get( pool )->begin() + query ) ) );
 	}
 }

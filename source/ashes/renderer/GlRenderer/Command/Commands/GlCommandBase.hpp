@@ -89,6 +89,7 @@ namespace ashes::gl
 		eGetTexImage,
 		eInitFramebuffer,
 		eLineWidth,
+		eLogCommand,
 		eLogicOp,
 		eMemoryBarrier,
 		eMinSampleShading,
@@ -748,7 +749,7 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBindTexture >
 	{
-		inline CmdT( uint32_t type
+		inline CmdT( GlTextureType type
 			, uint32_t name )
 			: cmd{ { OpType::eBindTexture, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, type{ std::move( type ) }
@@ -757,7 +758,7 @@ namespace ashes::gl
 		}
 
 		Command cmd;
-		uint32_t type;
+		GlTextureType type;
 		uint32_t name;
 	};
 	using CmdBindTexture = CmdT< OpType::eBindTexture >;
@@ -1172,6 +1173,31 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
+	struct CmdConfig< OpType::eLogCommand >
+	{
+		static Op constexpr value = { OpType::eLogCommand, 66u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eLogCommand >
+	{
+		inline CmdT( char const * const value )
+			: cmd{ { OpType::eLogCommand, sizeof( CmdT ) / sizeof( uint32_t ) } }
+		{
+			strncpy( this->value, value, 63 );
+		}
+
+		Command cmd;
+		char value[64];
+	};
+	using CmdLogCommand = CmdT< OpType::eLogCommand >;
+
+	void apply( ContextLock const & context
+		, CmdLogCommand const & cmd );
+
+	//*************************************************************************
+
+	template<>
 	struct CmdConfig< OpType::eLogicOp >
 	{
 		static Op constexpr value = { OpType::eLogicOp, 3u };
@@ -1496,8 +1522,8 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eFramebufferTexture >
 	{
-		inline CmdT( uint32_t target
-			, uint32_t point
+		inline CmdT( GlFrameBufferTarget target
+			, GlAttachmentPoint point
 			, uint32_t object
 			, uint32_t mipLevel )
 			: cmd{ { OpType::eFramebufferTexture, sizeof( CmdT ) / sizeof( uint32_t ) } }
@@ -1509,8 +1535,8 @@ namespace ashes::gl
 		}
 
 		Command cmd;
-		uint32_t target;
-		uint32_t point;
+		GlFrameBufferTarget target;
+		GlAttachmentPoint point;
 		uint32_t object;
 		uint32_t mipLevel;
 	};
@@ -1530,9 +1556,9 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eFramebufferTexture2D >
 	{
-		inline CmdT( uint32_t target
-			, uint32_t point
-			, uint32_t texTarget
+		inline CmdT( GlFrameBufferTarget target
+			, GlAttachmentPoint point
+			, GlTextureType texTarget
 			, uint32_t object
 			, uint32_t mipLevel )
 			: cmd{ { OpType::eFramebufferTexture2D, sizeof( CmdT ) / sizeof( uint32_t ) } }
@@ -1545,9 +1571,9 @@ namespace ashes::gl
 		}
 
 		Command cmd;
-		uint32_t target;
-		uint32_t point;
-		uint32_t texTarget;
+		GlFrameBufferTarget target;
+		GlAttachmentPoint point;
+		GlTextureType texTarget;
 		uint32_t object;
 		uint32_t mipLevel;
 	};
@@ -1567,8 +1593,8 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eFramebufferTextureLayer >
 	{
-		inline CmdT( uint32_t target
-			, uint32_t point
+		inline CmdT( GlFrameBufferTarget target
+			, GlAttachmentPoint point
 			, uint32_t object
 			, uint32_t mipLevel
 			, uint32_t arrayLayer )
@@ -1582,8 +1608,8 @@ namespace ashes::gl
 		}
 
 		Command cmd;
-		uint32_t target;
-		uint32_t point;
+		GlFrameBufferTarget target;
+		GlAttachmentPoint point;
 		uint32_t object;
 		uint32_t mipLevel;
 		uint32_t arrayLayer;

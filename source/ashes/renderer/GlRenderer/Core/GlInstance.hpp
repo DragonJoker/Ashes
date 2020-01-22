@@ -169,6 +169,4 @@ namespace ashes::gl
 		mutable std::vector< DebugReportAMDCallbackData > m_debugAMDCallbacks;
 #endif
 	};
-
-	bool isGl4( VkInstance instance );
 }

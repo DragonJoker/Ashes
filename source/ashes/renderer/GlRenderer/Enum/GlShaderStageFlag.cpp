@@ -87,7 +87,7 @@ namespace ashes::gl
 		return result;
 	}
 
-	GlShaderStageFlag convertShaderStageFlag( VkShaderStageFlagBits const & flag )
+	GlShaderStageFlag convert( VkShaderStageFlagBits flag )
 	{
 		switch ( flag )
 		{
@@ -115,7 +115,7 @@ namespace ashes::gl
 		}
 	}
 
-	GlShaderStageFlags convertShaderStageFlags( VkShaderStageFlags const & flags )
+	GlShaderStageFlags convert( VkShaderStageFlags flags )
 	{
 		GlShaderStageFlags result{};
 

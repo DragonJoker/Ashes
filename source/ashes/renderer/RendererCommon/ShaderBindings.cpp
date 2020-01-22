@@ -49,32 +49,32 @@ namespace ashes
 	void addBinding( uint32_t set
 		, VkDescriptorSetLayoutBinding const & binding
 		, ShaderBindings & bindings
-		, uint32_t & index )
+		, ShaderBindingIndices & indices )
 	{
 		if ( isUniformBuffer( binding.descriptorType ) )
 		{
-			bindings.ubo.emplace( makeShaderBindingKey( set, binding.binding ), index );
-			++index;
+			bindings.ubo.emplace( makeShaderBindingKey( set, binding.binding ), indices.ubo );
+			++indices.ubo;
 		}
 		else if ( isStorageBuffer( binding.descriptorType ) )
 		{
-			bindings.sbo.emplace( makeShaderBindingKey( set, binding.binding ), index );
-			++index;
+			bindings.sbo.emplace( makeShaderBindingKey( set, binding.binding ), indices.sbo );
+			++indices.sbo;
 		}
 		else if ( isStorageImage( binding.descriptorType ) )
 		{
-			bindings.img.emplace( makeShaderBindingKey( set, binding.binding ), index );
-			index += binding.descriptorCount;
+			bindings.img.emplace( makeShaderBindingKey( set, binding.binding ), indices.img );
+			indices.img += binding.descriptorCount;
 		}
 		else if ( isSampledImage( binding.descriptorType ) )
 		{
-			bindings.tex.emplace( makeShaderBindingKey( set, binding.binding ), index );
-			index += binding.descriptorCount;
+			bindings.tex.emplace( makeShaderBindingKey( set, binding.binding ), indices.tex );
+			indices.tex += binding.descriptorCount;
 		}
 		else if ( isTextureBuffer( binding.descriptorType ) )
 		{
-			bindings.tbo.emplace( makeShaderBindingKey( set, binding.binding ), index );
-			index += binding.descriptorCount;
+			bindings.tbo.emplace( makeShaderBindingKey( set, binding.binding ), indices.tbo );
+			indices.tbo += binding.descriptorCount;
 		}
 	}
 

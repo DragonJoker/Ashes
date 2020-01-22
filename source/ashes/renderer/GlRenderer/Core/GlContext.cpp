@@ -236,10 +236,5 @@ namespace ashes::gl
 			, GL_TEXTURE_CUBE_MAP_SEAMLESS );
 	}
 
-	bool isGl4( Context const & context )
-	{
-		return isGl4( context.getInstance() );
-	}
-
 	//*************************************************************************
 }
