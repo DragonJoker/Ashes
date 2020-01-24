@@ -197,15 +197,18 @@ namespace ashes::gl
 		}
 
 		std::vector< ShaderDesc > descs;
+		VkPipelineShaderStageCreateInfo const * previousStage{ nullptr };
 
 		for ( auto & stage : this->stages )
 		{
 			stageFlags |= stage.stage;
 			descs.push_back( get( stage.module )->compile( pipeline
+				, previousStage
 				, stage
 				, layout
 				, createFlags
 				, invertY ) );
+			previousStage = &stage;
 		}
 
 		if ( hasProgramPipelines( m_device ) )
@@ -333,6 +336,7 @@ namespace ashes::gl
 				, VkShaderStageFlagBits( stageFlags )
 				, programObject
 				, true );
+			program.isGlsl = false;
 			program.program = programObject;
 			program.stageFlags = stageFlags;
 		}

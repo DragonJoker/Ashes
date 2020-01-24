@@ -29,7 +29,8 @@ namespace ashes::gl
 			, VkShaderModuleCreateInfo createInfo );
 
 		ShaderDesc compile( VkPipeline pipeline
-			, VkPipelineShaderStageCreateInfo const & state
+			, VkPipelineShaderStageCreateInfo const * previousState
+			, VkPipelineShaderStageCreateInfo const & currentState
 			, VkPipelineLayout pipelineLayout
 			, VkPipelineCreateFlags createFlags
 			, bool invertY );

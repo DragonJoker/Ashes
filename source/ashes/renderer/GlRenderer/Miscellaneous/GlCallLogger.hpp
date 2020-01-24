@@ -58,7 +58,7 @@ See LICENSE file in root folder
 #include <sstream>
 
 #if !defined( NDEBUG )
-#	define AshesGL_LogCalls 1
+#	define AshesGL_LogCalls 0
 #else
 #	define AshesGL_LogCalls 0
 #endif
