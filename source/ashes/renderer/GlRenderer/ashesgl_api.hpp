@@ -44,7 +44,7 @@ See LICENSE file in root folder.
 namespace ashes::gl
 {
 	static int constexpr MinMajor = 3;
-	static int constexpr MinMinor = 3;
+	static int constexpr MinMinor = 2;
 	static int constexpr MaxMajor = 10;
 	static int constexpr MaxMinor = 10;
 

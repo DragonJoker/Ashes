@@ -265,7 +265,7 @@ namespace ashes::gl
 			options.version = get( getInstance( device ) )->getExtensions().getShaderVersion();
 			options.es = false;
 			options.separate_shader_objects = hasProgramPipelines( device );
-			options.enable_420pack_extension = has420PackExtensions( device );
+			options.enable_420pack_extension = true;// has420PackExtensions( device );
 			options.vertex.fixup_clipspace = true;
 			options.vertex.flip_vert_y = invertY;
 			options.vertex.support_nonzero_base_instance = get( getInstance( device ) )->getFeatures ().hasBaseInstance;
@@ -476,10 +476,10 @@ namespace ashes::gl
 		void doReworkBindings( VkPipelineLayout pipelineLayout
 			, VkPipelineCreateFlags createFlags
 			, VkShaderModule module
-			, spirv_cross::CompilerGLSL & compiler )
+			, spirv_cross::CompilerGLSL & compiler
+			, spirv_cross::ShaderResources & resources )
 		{
 			uint32_t const ssboMask = ( 1u << 16u );
-			spirv_cross::ShaderResources resources = compiler.get_shader_resources();
 			auto & bindings = get( pipelineLayout )->getShaderBindings();
 			auto device = get( pipelineLayout )->getDevice();
 			auto failOnError = !( checkFlag( createFlags, VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT )
@@ -493,6 +493,115 @@ namespace ashes::gl
 			doReworkBindings( device, module, "SubpassInput", compiler, resources.subpass_inputs, bindings.tex, failOnError );
 		}
 
+		std::string getStagePrefix( VkShaderStageFlagBits stage )
+		{
+			switch ( stage )
+			{
+			case VK_SHADER_STAGE_VERTEX_BIT:
+				return "vtx";
+			case VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT:
+				return "tessctl";
+			case VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT:
+				return "tesseval";
+			case VK_SHADER_STAGE_GEOMETRY_BIT:
+				return "geom";
+			case VK_SHADER_STAGE_FRAGMENT_BIT:
+				return "frag";
+			case VK_SHADER_STAGE_COMPUTE_BIT:
+				return "comp";
+			case VK_SHADER_STAGE_RAYGEN_BIT_NV:
+				return "raygen";
+			case VK_SHADER_STAGE_ANY_HIT_BIT_NV:
+				return "hit";
+			case VK_SHADER_STAGE_CLOSEST_HIT_BIT_NV:
+				return "closest";
+			case VK_SHADER_STAGE_MISS_BIT_NV:
+				return "miss";
+			case VK_SHADER_STAGE_INTERSECTION_BIT_NV:
+				return "inter";
+			case VK_SHADER_STAGE_CALLABLE_BIT_NV:
+				return "call";
+			case VK_SHADER_STAGE_TASK_BIT_NV:
+				return "task";
+			case VK_SHADER_STAGE_MESH_BIT_NV:
+				return "mesh";
+			default:
+				assert( false && "Unsupported VkShaderStageFlagBits" );
+				return "unk";
+			}
+		}
+
+		void doReworkAbsoluteInOut( VkShaderStageFlagBits stage
+			, spirv_cross::CompilerGLSL & compiler
+			, spirv_cross::ShaderResources & resources )
+		{
+			auto & options = compiler.get_common_options();
+
+			if ( options.version < 400 )
+			{
+				if ( stage == VK_SHADER_STAGE_VERTEX_BIT )
+				{
+					auto inputPrefix = getStagePrefix( stage );
+
+					for ( auto & input : resources.stage_inputs )
+					{
+						auto location = compiler.get_decoration( input.id, spv::DecorationLocation );
+						auto name = inputPrefix + "Input" + std::to_string( location );
+						compiler.set_name( input.id, name );
+					}
+				}
+				else if ( stage == VK_SHADER_STAGE_FRAGMENT_BIT )
+				{
+					auto outputPrefix = getStagePrefix( stage );
+
+					for ( auto & output : resources.stage_outputs )
+					{
+						auto location = compiler.get_decoration( output.id, spv::DecorationLocation );
+						auto name = outputPrefix + "Output" + std::to_string( location );
+						compiler.set_name( output.id, name );
+					}
+				}
+			}
+		}
+
+		void doReworkIntermediateInOut( VkShaderStageFlagBits previousStage
+			, VkShaderStageFlagBits currentStage
+			, spirv_cross::CompilerGLSL & compiler
+			, spirv_cross::ShaderResources & resources )
+		{
+			auto & options = compiler.get_common_options();
+
+			if ( options.version < 400 )
+			{
+				if ( previousStage != currentStage )
+				{
+					auto inputPrefix = getStagePrefix( previousStage );
+
+					for ( auto & input : resources.stage_inputs )
+					{
+						auto location = compiler.get_decoration( input.id, spv::DecorationLocation );
+						auto name = inputPrefix + "Output" + std::to_string( location );
+						compiler.set_name( input.id, name );
+					}
+				}
+
+				if ( currentStage == VK_SHADER_STAGE_VERTEX_BIT
+					|| currentStage == VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT
+					|| currentStage == VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT
+					|| currentStage == VK_SHADER_STAGE_GEOMETRY_BIT )
+				{
+					auto outputPrefix = getStagePrefix( currentStage );
+
+					for ( auto & output : resources.stage_outputs )
+					{
+						auto location = compiler.get_decoration( output.id, spv::DecorationLocation );
+						auto name = outputPrefix + "Output" + std::to_string( location );
+						compiler.set_name( output.id, name );
+					}
+				}
+			}
+		}
+
 #endif
 
 		std::string compileSpvToGlsl( VkDevice device
@@ -500,7 +609,8 @@ namespace ashes::gl
 			, VkPipelineCreateFlags createFlags
 			, VkShaderModule module
 			, UInt32Array const & shader
-			, VkShaderStageFlagBits stage
+			, VkShaderStageFlagBits previousStage
+			, VkShaderStageFlagBits currentStage
 			, VkPipelineShaderStageCreateInfo const & state
 			, bool invertY
 			, ConstantsLayout & constants
@@ -512,17 +622,20 @@ namespace ashes::gl
 #if GlRenderer_USE_SPIRV_CROSS
 				BlockLocale guard;
 				spirv_cross::CompilerGLSL compiler{ shader };
+				spirv_cross::ShaderResources resources = compiler.get_shader_resources();
 				doProcessSpecializationConstants( state, compiler );
-				doSetEntryPoint( stage, compiler );
+				doSetEntryPoint( currentStage, compiler );
 				doSetupOptions( device, compiler, invertY );
-				constants = doRetrievePushConstants( compiler, stage );
+				constants = doRetrievePushConstants( compiler, currentStage );
 
 				if ( !hasProgramPipelines( device ) )
 				{
-					gl3::updateUboNames( compiler, std::to_string( stage ) );
+					gl3::updateUboNames( compiler, std::to_string( currentStage ) );
 				}
 
-				doReworkBindings( pipelineLayout, createFlags, module, compiler );
+				doReworkBindings( pipelineLayout, createFlags, module, compiler, resources );
+				doReworkIntermediateInOut( previousStage, currentStage, compiler, resources );
+				doReworkAbsoluteInOut( currentStage, compiler, resources );
 				return compiler.compile();
 #else
 				throw std::runtime_error{ "Can't parse SPIR-V shaders, pull submodule SpirvCross" };
@@ -648,7 +761,8 @@ namespace ashes::gl
 	}
 
 	ShaderDesc ShaderModule::compile( VkPipeline pipeline
-		, VkPipelineShaderStageCreateInfo const & state
+		, VkPipelineShaderStageCreateInfo const * previousState
+		, VkPipelineShaderStageCreateInfo const & currentState
 		, VkPipelineLayout pipelineLayout
 		, VkPipelineCreateFlags createFlags
 		, bool invertY )
@@ -661,8 +775,11 @@ namespace ashes::gl
 			, createFlags
 			, get( this )
 			, m_code
-			, state.stage
-			, state
+			, ( previousState
+				? previousState->stage
+				: currentState.stage )
+			, currentState.stage
+			, currentState
 			, invertY
 			, m_constants
 			, isGlsl );
@@ -670,13 +787,13 @@ namespace ashes::gl
 		if ( !hasProgramPipelines( m_device ) )
 		{
 			result = compileCombined( context
-				, state );
+				, currentState );
 		}
 		else
 		{
 			result = compileSeparate( context
 				, pipeline
-				, state
+				, currentState
 				, isGlsl );
 		}
 
@@ -721,7 +838,7 @@ namespace ashes::gl
 		glLogCall( context
 			, glCompileShader
 			, shader );
-		ShaderDesc result;
+		ShaderDesc result{};
 
 		if ( gl3::checkCompileErrors( context
 			, get( this )

@@ -146,7 +146,7 @@ namespace ashes::gl
 					bool result = write.dstBinding == getBinding( lookup )
 						|| checkDesc( write, lookup );
 
-					if ( result )
+					//if ( result )
 					{
 						bindingIt = bindings.find( makeShaderBindingKey( descriptorSetIndex, write.dstBinding ) );
 					}
