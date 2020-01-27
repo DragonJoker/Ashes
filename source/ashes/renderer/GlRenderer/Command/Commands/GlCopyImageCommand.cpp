@@ -83,7 +83,7 @@ namespace ashes::gl
 		ByteArray retrieveData( ContextLock const & context
 			, VkImage src
 			, VkImageCopy copy
-			, uint32_t srcTarget
+			, GlTextureType srcTarget
 			, GLuint srcName )
 		{
 			auto srcData = allocateData( src );

@@ -50,7 +50,7 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eCompressedTexSubImage1D >
 	{
-		inline CmdT( uint32_t copyTarget
+		inline CmdT( GlTextureType copyTarget
 			, uint32_t mipLevel
 			, int32_t x
 			, uint32_t width
@@ -69,7 +69,7 @@ namespace ashes::gl
 		}
 
 		Command cmd;
-		uint32_t copyTarget;
+		GlTextureType copyTarget;
 		uint32_t mipLevel;
 		int32_t x;
 		uint32_t width;
@@ -93,7 +93,7 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eCompressedTexSubImage2D >
 	{
-		inline CmdT( uint32_t copyTarget
+		inline CmdT( GlTextureType copyTarget
 			, uint32_t mipLevel
 			, int32_t x
 			, int32_t y
@@ -116,7 +116,7 @@ namespace ashes::gl
 		}
 
 		Command cmd;
-		uint32_t copyTarget;
+		GlTextureType copyTarget;
 		uint32_t mipLevel;
 		int32_t x;
 		int32_t y;
@@ -142,7 +142,7 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eCompressedTexSubImage3D >
 	{
-		inline CmdT( uint32_t copyTarget
+		inline CmdT( GlTextureType copyTarget
 			, uint32_t mipLevel
 			, int32_t x
 			, int32_t y
@@ -169,7 +169,7 @@ namespace ashes::gl
 		}
 
 		Command cmd;
-		uint32_t copyTarget;
+		GlTextureType copyTarget;
 		uint32_t mipLevel;
 		int32_t x;
 		int32_t y;
@@ -197,7 +197,7 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eTexSubImage1D >
 	{
-		inline CmdT( uint32_t copyTarget
+		inline CmdT( GlTextureType copyTarget
 			, uint32_t mipLevel
 			, int32_t x
 			, uint32_t width
@@ -216,7 +216,7 @@ namespace ashes::gl
 		}
 
 		Command cmd;
-		uint32_t copyTarget;
+		GlTextureType copyTarget;
 		uint32_t mipLevel;
 		int32_t x;
 		uint32_t width;
@@ -240,7 +240,7 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eTexSubImage2D >
 	{
-		inline CmdT( uint32_t copyTarget
+		inline CmdT( GlTextureType copyTarget
 			, uint32_t mipLevel
 			, int32_t x
 			, int32_t y
@@ -263,7 +263,7 @@ namespace ashes::gl
 		}
 
 		Command cmd;
-		uint32_t copyTarget;
+		GlTextureType copyTarget;
 		uint32_t mipLevel;
 		int32_t x;
 		int32_t y;
@@ -289,7 +289,7 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eTexSubImage3D >
 	{
-		inline CmdT( uint32_t copyTarget
+		inline CmdT( GlTextureType copyTarget
 			, uint32_t mipLevel
 			, int32_t x
 			, int32_t y
@@ -316,7 +316,7 @@ namespace ashes::gl
 		}
 
 		Command cmd;
-		uint32_t copyTarget;
+		GlTextureType copyTarget;
 		uint32_t mipLevel;
 		int32_t x;
 		int32_t y;

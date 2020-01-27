@@ -267,6 +267,7 @@ if ( OpenGL_FOUND )
 		Enum/GlBlendFactor.cpp
 		Enum/GlBlendOp.cpp
 		Enum/GlBufferDataUsageFlag.cpp
+		Enum/GlBufferParameter.cpp
 		Enum/GlBufferTarget.cpp
 		Enum/GlClearTarget.cpp
 		Enum/GlClipInfo.cpp
@@ -313,6 +314,7 @@ if ( OpenGL_FOUND )
 		Enum/GlBlendFactor.hpp
 		Enum/GlBlendOp.hpp
 		Enum/GlBufferDataUsageFlag.hpp
+		Enum/GlBufferParameter.hpp
 		Enum/GlBufferTarget.hpp
 		Enum/GlClearTarget.hpp
 		Enum/GlClipInfo.hpp

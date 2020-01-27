@@ -47,7 +47,7 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eTexParameteri >
 	{
-		inline CmdT( uint32_t target
+		inline CmdT( GlTextureType target
 			, uint32_t name
 			, int32_t param )
 			: cmd{ { OpType::eTexParameteri, sizeof( CmdT ) / sizeof( uint32_t ) } }
@@ -58,7 +58,7 @@ namespace ashes::gl
 		}
 
 		Command cmd;
-		uint32_t target;
+		GlTextureType target;
 		uint32_t name;
 		int32_t param;
 	};
@@ -78,7 +78,7 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eTexParameterf >
 	{
-		inline CmdT( uint32_t target
+		inline CmdT( GlTextureType target
 			, uint32_t name
 			, float param )
 			: cmd{ { OpType::eTexParameterf, sizeof( CmdT ) / sizeof( uint32_t ) } }
@@ -89,7 +89,7 @@ namespace ashes::gl
 		}
 
 		Command cmd;
-		uint32_t target;
+		GlTextureType target;
 		uint32_t name;
 		float param;
 	};
