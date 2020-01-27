@@ -117,7 +117,6 @@ namespace ashes
 		case VK_FORMAT_X8_D24_UNORM_PACK32:
 		case VK_FORMAT_D32_SFLOAT:
 		case VK_FORMAT_D24_UNORM_S8_UINT:
-		case VK_FORMAT_D32_SFLOAT_S8_UINT:
 			return 4u;
 
 		case VK_FORMAT_R16G16B16_UNORM:
@@ -142,6 +141,7 @@ namespace ashes
 		case VK_FORMAT_R64_UINT:
 		case VK_FORMAT_R64_SINT:
 		case VK_FORMAT_R64_SFLOAT:
+		case VK_FORMAT_D32_SFLOAT_S8_UINT:
 			return 8u;
 
 		case VK_FORMAT_R32G32B32_UINT:
