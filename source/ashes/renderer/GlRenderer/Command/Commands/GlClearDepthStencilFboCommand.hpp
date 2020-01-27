@@ -15,6 +15,6 @@ namespace ashes::gl
 		, VkImage image
 		, VkImageLayout imageLayout
 		, VkClearDepthStencilValue value
-		, VkImageSubresourceRangeArray ranges
+		, ArrayView< VkImageSubresourceRange const > ranges
 		, CmdList & list );
 }

@@ -305,7 +305,7 @@ namespace ashes::gl
 	void CommandBuffer::clearColorImage( VkImage image
 		, VkImageLayout imageLayout
 		, VkClearColorValue value
-		, VkImageSubresourceRangeArray ranges )const
+		, ArrayView< VkImageSubresourceRange const > ranges )const
 	{
 		if ( !get( getInstance( m_device ) )->getFeatures().hasClearTexImage )
 		{
@@ -331,7 +331,7 @@ namespace ashes::gl
 	void CommandBuffer::clearDepthStencilImage( VkImage image
 		, VkImageLayout imageLayout
 		, VkClearDepthStencilValue value
-		, VkImageSubresourceRangeArray ranges )const
+		, ArrayView< VkImageSubresourceRange const > ranges )const
 	{
 		if ( !get( getInstance( m_device ) )->getFeatures().hasClearTexImage )
 		{
@@ -354,8 +354,8 @@ namespace ashes::gl
 		}
 	}
 
-	void CommandBuffer::clearAttachments( VkClearAttachmentArray clearAttachments
-		, VkClearRectArray clearRects )
+	void CommandBuffer::clearAttachments( ArrayView< VkClearAttachment const > clearAttachments
+		, ArrayView< VkClearRect const > clearRects )
 	{
 		buildClearAttachmentsCommand( *m_state.stack
 			, std::move( clearAttachments )
@@ -469,8 +469,8 @@ namespace ashes::gl
 	void CommandBuffer::bindDescriptorSets( VkPipelineBindPoint bindingPoint
 		, VkPipelineLayout layout
 		, uint32_t firstSet
-		, VkDescriptorSetArray descriptorSets
-		, UInt32Array dynamicOffsets )const
+		, ArrayView< VkDescriptorSet const > descriptorSets
+		, ArrayView < uint32_t const > dynamicOffsets )const
 	{
 		auto currentSet = firstSet;
 		doCheckPipelineLayoutCompatibility( layout );
@@ -515,7 +515,7 @@ namespace ashes::gl
 	}
 
 	void CommandBuffer::setViewport( uint32_t firstViewport
-		, VkViewportArray viewports )const
+		, ArrayView< VkViewport const > viewports )const
 	{
 		buildViewportCommand( *m_state.stack
 			, firstViewport
@@ -525,7 +525,7 @@ namespace ashes::gl
 	}
 
 	void CommandBuffer::setScissor( uint32_t firstScissor
-		, VkScissorArray scissors )const
+		, ArrayView< VkRect2D const > scissors )const
 	{
 		buildScissorCommand( *m_state.stack
 			, firstScissor
@@ -729,7 +729,7 @@ namespace ashes::gl
 	void CommandBuffer::copyToImage( VkBuffer src
 		, VkImage dst
 		, VkImageLayout dstLayout
-		, VkBufferImageCopyArray copyInfos )const
+		, ArrayView< VkBufferImageCopy const > copyInfos )const
 	{
 		for ( auto & copyInfo : copyInfos )
 		{
@@ -744,7 +744,7 @@ namespace ashes::gl
 	void CommandBuffer::copyToBuffer( VkImage src
 		, VkImageLayout srcLayout
 		, VkBuffer dst
-		, VkBufferImageCopyArray copyInfos )const
+		, ArrayView< VkBufferImageCopy const > copyInfos )const
 	{
 		for ( auto & copyInfo : copyInfos )
 		{
@@ -781,7 +781,7 @@ namespace ashes::gl
 
 	void CommandBuffer::copyBuffer( VkBuffer src
 		, VkBuffer dst
-		, VkBufferCopyArray copyInfos )const
+		, ArrayView< VkBufferCopy const > copyInfos )const
 	{
 		for ( auto & copyInfo : copyInfos )
 		{
@@ -796,7 +796,7 @@ namespace ashes::gl
 		, VkImageLayout srcLayout
 		, VkImage dst
 		, VkImageLayout dstLayout
-		, VkImageCopyArray copyInfos )const
+		, ArrayView< VkImageCopy const > copyInfos )const
 	{
 		for ( auto & copyInfo : copyInfos )
 		{
@@ -813,7 +813,7 @@ namespace ashes::gl
 		, VkImageLayout srcLayout
 		, VkImage dstImage
 		, VkImageLayout dstLayout
-		, VkImageBlitArray regions
+		, ArrayView< VkImageBlit const > regions
 		, VkFilter filter )const
 	{
 		for ( auto & region : regions )
@@ -833,7 +833,7 @@ namespace ashes::gl
 		, VkImageLayout srcLayout
 		, VkImage dstImage
 		, VkImageLayout dstLayout
-		, VkImageResolveArray regions )const
+		, ArrayView< VkImageResolve const > regions )const
 	{
 		for ( auto & region : regions )
 		{
@@ -1069,9 +1069,9 @@ namespace ashes::gl
 	void CommandBuffer::waitEvents( VkEventArray events
 		, VkPipelineStageFlags srcStageMask
 		, VkPipelineStageFlags dstStageMask
-		, VkMemoryBarrierArray memoryBarriers
-		, VkBufferMemoryBarrierArray bufferMemoryBarriers
-		, VkImageMemoryBarrierArray imageMemoryBarriers )const
+		, ArrayView< VkMemoryBarrier const > memoryBarriers
+		, ArrayView< VkBufferMemoryBarrier const > bufferMemoryBarriers
+		, ArrayView< VkImageMemoryBarrier const > imageMemoryBarriers )const
 	{
 		buildWaitEventsCommand( std::move( events )
 			, srcStageMask
@@ -1091,9 +1091,9 @@ namespace ashes::gl
 	void CommandBuffer::pipelineBarrier( VkPipelineStageFlags after
 		, VkPipelineStageFlags before
 		, VkDependencyFlags dependencyFlags
-		, VkMemoryBarrierArray memoryBarriers
-		, VkBufferMemoryBarrierArray bufferMemoryBarriers
-		, VkImageMemoryBarrierArray imageMemoryBarriers )const
+		, ArrayView< VkMemoryBarrier const > memoryBarriers
+		, ArrayView< VkBufferMemoryBarrier const > bufferMemoryBarriers
+		, ArrayView< VkImageMemoryBarrier const > imageMemoryBarriers )const
 	{
 #ifndef NDEBUG
 

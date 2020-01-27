@@ -38,9 +38,9 @@ namespace ashes::gl
 	void buildWaitEventsCommand( VkEventArray events
 		, VkPipelineStageFlags srcStageMask
 		, VkPipelineStageFlags dstStageMask
-		, VkMemoryBarrierArray memoryBarriers
-		, VkBufferMemoryBarrierArray bufferMemoryBarriers
-		, VkImageMemoryBarrierArray imageMemoryBarriers
+		, ArrayView< VkMemoryBarrier const > memoryBarriers
+		, ArrayView< VkBufferMemoryBarrier const > bufferMemoryBarriers
+		, ArrayView< VkImageMemoryBarrier const > imageMemoryBarriers
 		, CmdList & list );
 
 	//*************************************************************************

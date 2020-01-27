@@ -251,7 +251,8 @@ namespace ashes::gl
 	{
 		glLogCommand( list, "CopyImageCommand" );
 
-		if ( copyInfo.srcSubresource.mipLevel == copyInfo.dstSubresource.mipLevel )
+		if ( copyInfo.srcSubresource.mipLevel == copyInfo.dstSubresource.mipLevel
+			&& hasCopyImage( device ) )
 		{
 			auto srcTarget = convert( device
 				, get( srcImage )->getType()
@@ -261,112 +262,11 @@ namespace ashes::gl
 				, get( dstImage )->getType()
 				, get( dstImage )->getArrayLayers()
 				, get( srcImage )->getCreateFlags() );
-
-			if ( hasCopyImage( device ) )
-			{
-				list.push_back( makeCmd< OpType::eCopyImageSubData >( get( srcImage )->getInternal()
-					, srcTarget
-					, get( dstImage )->getInternal()
-					, dstTarget
-					, std::move( copyInfo ) ) );
-			}
-			else
-			{
-				switch ( dstTarget )
-				{
-				case GL_TEXTURE_1D:
-					list.push_back( makeCmd< OpType::eCopyImageSubData1D >( srcImage
-						, get( srcImage )->getInternal()
-						, srcTarget
-						, dstImage
-						, get( dstImage )->getInternal()
-						, dstTarget
-						, std::move( copyInfo ) ) );
-					break;
-
-				case GL_TEXTURE_1D_ARRAY:
-					list.push_back( makeCmd< OpType::eCopyImageSubData2D >( srcImage
-						, get( srcImage )->getInternal()
-						, srcTarget
-						, dstImage
-						, get( dstImage )->getInternal()
-						, dstTarget
-						, dstTarget
-						, int32_t( copyInfo.dstSubresource.baseArrayLayer )
-						, copyInfo.dstSubresource.layerCount
-						, std::move( copyInfo ) ) );
-					break;
-
-				case GL_TEXTURE_2D:
-					list.push_back( makeCmd< OpType::eCopyImageSubData2D >( srcImage
-						, get( srcImage )->getInternal()
-						, srcTarget
-						, dstImage
-						, get( dstImage )->getInternal()
-						, dstTarget
-						, dstTarget
-						, copyInfo.dstOffset.y
-						, copyInfo.extent.height
-						, std::move( copyInfo ) ) );
-					break;
-
-				case GL_TEXTURE_2D_ARRAY:
-					list.push_back( makeCmd< OpType::eCopyImageSubData3D >( srcImage
-						, get( srcImage )->getInternal()
-						, srcTarget
-						, dstImage
-						, get( dstImage )->getInternal()
-						, dstTarget
-						, dstTarget
-						, int32_t( copyInfo.dstSubresource.baseArrayLayer )
-						, copyInfo.dstSubresource.layerCount
-						, std::move( copyInfo ) ) );
-					break;
-
-				case GL_TEXTURE_CUBE:
-					list.push_back( makeCmd< OpType::eCopyImageSubData2D >( srcImage
-						, get( srcImage )->getInternal()
-						, srcTarget
-						, dstImage
-						, get( dstImage )->getInternal()
-						, GL_TEXTURE_CUBE
-						, GL_TEXTURE_CUBE_POSITIVE_X + copyInfo.dstSubresource.baseArrayLayer
-						, copyInfo.dstOffset.y
-						, copyInfo.extent.height
-						, std::move( copyInfo ) ) );
-					break;
-
-				case GL_TEXTURE_CUBE_ARRAY:
-					list.push_back( makeCmd< OpType::eCopyImageSubData3D >( srcImage
-						, get( srcImage )->getInternal()
-						, srcTarget
-						, dstImage
-						, get( dstImage )->getInternal()
-						, GL_TEXTURE_CUBE_ARRAY
-						, GL_TEXTURE_CUBE_POSITIVE_X + ( copyInfo.dstSubresource.baseArrayLayer % 6u )
-						, int32_t( copyInfo.dstSubresource.baseArrayLayer / 6u )
-						, copyInfo.dstSubresource.layerCount / 6u
-						, std::move( copyInfo ) ) );
-					break;
-
-				case GL_TEXTURE_3D:
-					list.push_back( makeCmd< OpType::eCopyImageSubData3D >( srcImage
-						, get( srcImage )->getInternal()
-						, srcTarget
-						, dstImage
-						, get( dstImage )->getInternal()
-						, dstTarget
-						, dstTarget
-						, copyInfo.dstOffset.z
-						, copyInfo.extent.depth
-						, std::move( copyInfo ) ) );
-					break;
-
-				default:
-					std::cerr << "CopyImageCommand - Unsupported texture type." << std::endl;
-					break;
-				}
-			}
+			list.push_back( makeCmd< OpType::eCopyImageSubData >( get( srcImage )->getInternal()
+				, srcTarget
+				, get( dstImage )->getInternal()
+				, dstTarget
+				, std::move( copyInfo ) ) );
 		}
 		else
 		{

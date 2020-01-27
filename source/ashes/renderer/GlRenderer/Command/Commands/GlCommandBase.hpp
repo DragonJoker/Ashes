@@ -257,15 +257,16 @@ namespace ashes::gl
 
 		inline CmdT( uint32_t first
 			, uint32_t count
-			, std::vector< VkRect2D > const & scissors )
+			, VkRect2D const * scissors
+			, size_t scissorsSize )
 			: cmd{ { OpType::eApplyScissors, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, first{ first }
 			, count{ std::min( MaxElems, count ) }
 		{
 			auto it = this->scissors.begin();
-			auto end = scissors.begin() + std::min( MaxElems, uint32_t( scissors.size() ) );
+			auto end = scissors + std::min( MaxElems, uint32_t( scissorsSize ) );
 
-			for ( auto scit = scissors.begin(); scit != end; ++scit )
+			for ( auto scit = scissors; scit != end; ++scit )
 			{
 				auto & scissor = *scit;
 				*it = scissor.offset.x;
@@ -279,7 +280,27 @@ namespace ashes::gl
 			}
 		}
 
+		inline CmdT( uint32_t first
+			, uint32_t count
+			, std::vector< VkRect2D > const & scissors )
+			: CmdT{ first, count, scissors.data(), scissors.size() }
+		{
+		}
+
+		inline CmdT( uint32_t first
+			, uint32_t count
+			, ArrayView< VkRect2D const > const & scissors )
+			: CmdT{ first, count, scissors.data(), scissors.size() }
+		{
+		}
+
 		inline CmdT( std::vector< VkRect2D > const & scissors )
+			: CmdT{ 0u, uint32_t( scissors.size() ), scissors }
+		{
+		}
+
+		inline CmdT( uint32_t first
+			, ArrayView< VkRect2D const > const & scissors )
 			: CmdT{ 0u, uint32_t( scissors.size() ), scissors }
 		{
 		}
@@ -310,15 +331,16 @@ namespace ashes::gl
 
 		inline CmdT( uint32_t first
 			, uint32_t count
-			, std::vector< VkViewport > const & viewports )
+			, VkViewport const * viewports
+			, size_t viewportsSize )
 			: cmd{ { OpType::eApplyViewports, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, first{ first }
 			, count{ std::min( MaxElems, count ) }
 		{
 			auto it = this->viewports.begin();
-			auto end = viewports.begin() + std::min( MaxElems, uint32_t( viewports.size() ) );
+			auto end = viewports + std::min( MaxElems, uint32_t( viewportsSize ) );
 
-			for ( auto vit = viewports.begin(); vit != end; ++vit )
+			for ( auto vit = viewports; vit != end; ++vit )
 			{
 				auto & viewport = *vit;
 				*it = viewport.x;
@@ -332,8 +354,28 @@ namespace ashes::gl
 			}
 		}
 
+		inline CmdT( uint32_t first
+			, uint32_t count
+			, std::vector< VkViewport > const & viewports )
+			: CmdT{ first, count, viewports.data(), viewports.size() }
+		{
+		}
+
+		inline CmdT( uint32_t first
+			, uint32_t count
+			, ArrayView< VkViewport const > const & viewports )
+			: CmdT{ first, count, viewports.data(), viewports.size() }
+		{
+		}
+
 		inline CmdT( std::vector< VkViewport > const & viewports )
 			: CmdT{ 0u, uint32_t( viewports.size() ), viewports }
+		{
+		}
+
+		inline CmdT( uint32_t first
+			, ArrayView< VkViewport const > const & viewports )
+			: CmdT{ first, uint32_t( viewports.size() ), viewports }
 		{
 		}
 
@@ -363,15 +405,16 @@ namespace ashes::gl
 
 		inline CmdT( uint32_t first
 			, uint32_t count
-			, std::vector< VkViewport > const & viewports )
+			, VkViewport const * viewports
+			, size_t viewportsSize )
 			: cmd{ { OpType::eApplyDepthRanges, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, first{ first }
 			, count{ std::min( MaxElems, count ) }
 		{
 			auto it = this->depthRanges.begin();
-			auto end = viewports.begin() + std::min( MaxElems, uint32_t( viewports.size() ) );
+			auto end = viewports + std::min( MaxElems, uint32_t( viewportsSize ) );
 
-			for ( auto vit = viewports.begin(); vit != end; ++vit )
+			for ( auto vit = viewports; vit != end; ++vit )
 			{
 				auto & viewport = *vit;
 				*it = viewport.minDepth;
@@ -379,6 +422,20 @@ namespace ashes::gl
 				*it = viewport.maxDepth;
 				++it;
 			}
+		}
+
+		inline CmdT( uint32_t first
+			, uint32_t count
+			, std::vector< VkViewport > const & viewports )
+			: CmdT{ first, count, viewports.data(), viewports.size() }
+		{
+		}
+
+		inline CmdT( uint32_t first
+			, uint32_t count
+			, ArrayView< VkViewport const > const & viewports )
+			: CmdT{ first, count, viewports.data(), viewports.size() }
+		{
 		}
 
 		inline CmdT( std::vector< VkViewport > const & viewports )
@@ -693,7 +750,7 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBindFramebuffer >
 	{
-		inline CmdT( uint32_t target
+		inline CmdT( GlFrameBufferTarget target
 			, VkFramebuffer fbo )
 			: cmd{ { OpType::eBindFramebuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, target{ std::move( target ) }
@@ -702,7 +759,7 @@ namespace ashes::gl
 		}
 
 		Command cmd;
-		uint32_t target;
+		GlFrameBufferTarget target;
 		VkFramebuffer fbo;
 	};
 	using CmdBindFramebuffer = CmdT< OpType::eBindFramebuffer >;

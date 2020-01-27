@@ -21,9 +21,9 @@ namespace ashes::gl
 	void buildMemoryBarrierCommand( VkPipelineStageFlags after
 		, VkPipelineStageFlags before
 		, VkDependencyFlags dependencyFlags
-		, VkMemoryBarrierArray memoryBarriers
-		, VkBufferMemoryBarrierArray bufferMemoryBarriers
-		, VkImageMemoryBarrierArray imageMemoryBarriers
+		, ArrayView< VkMemoryBarrier const > memoryBarriers
+		, ArrayView< VkBufferMemoryBarrier const > bufferMemoryBarriers
+		, ArrayView< VkImageMemoryBarrier const > imageMemoryBarriers
 		, CmdList & list )
 	{
 		glLogCommand( list, "MemoryBarrierCommand" );

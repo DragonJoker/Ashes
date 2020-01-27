@@ -30,30 +30,30 @@ namespace ashes::gl
 		void clearColorImage( VkImage image
 			, VkImageLayout imageLayout
 			, VkClearColorValue colour
-			, VkImageSubresourceRangeArray ranges )const;
+			, ArrayView< VkImageSubresourceRange const > ranges )const;
 		void clearDepthStencilImage( VkImage image
 			, VkImageLayout imageLayout
 			, VkClearDepthStencilValue value
-			, VkImageSubresourceRangeArray ranges )const;
-		void clearAttachments( VkClearAttachmentArray clearAttachments
-			, VkClearRectArray clearRects );
+			, ArrayView< VkImageSubresourceRange const > ranges )const;
+		void clearAttachments( ArrayView< VkClearAttachment const > clearAttachments
+			, ArrayView< VkClearRect const > clearRects );
 		void bindPipeline( VkPipeline pipeline
 			, VkPipelineBindPoint bindingPoint )const;
 		void bindVertexBuffers( uint32_t firstBinding
 			, ArrayView< VkBuffer const > buffers
-			, ArrayView < VkDeviceSize const > offsets )const;
+			, ArrayView< VkDeviceSize const > offsets )const;
 		void bindIndexBuffer( VkBuffer buffer
 			, VkDeviceSize offset
 			, VkIndexType indexType )const;
 		void bindDescriptorSets( VkPipelineBindPoint bindingPoint
 			, VkPipelineLayout layout
 			, uint32_t firstSet
-			, VkDescriptorSetArray descriptorSets
-			, UInt32Array dynamicOffsets )const;
+			, ArrayView< VkDescriptorSet const > descriptorSets
+			, ArrayView< uint32_t const > dynamicOffsets )const;
 		void setViewport( uint32_t firstViewport
-			, VkViewportArray viewports )const;
+			, ArrayView< VkViewport const > viewports )const;
 		void setScissor( uint32_t firstScissor
-			, VkScissorArray scissors )const;
+			, ArrayView< VkRect2D const > scissors )const;
 		void draw( uint32_t vtxCount
 			, uint32_t instCount
 			, uint32_t firstVertex
@@ -74,11 +74,11 @@ namespace ashes::gl
 		void copyToImage( VkBuffer src
 			, VkImage dst
 			, VkImageLayout dstLayout
-			, VkBufferImageCopyArray copyInfos )const;
+			, ArrayView< VkBufferImageCopy const > copyInfos )const;
 		void copyToBuffer( VkImage src
 			, VkImageLayout srcLayout
 			, VkBuffer dst
-			, VkBufferImageCopyArray copyInfos )const;
+			, ArrayView< VkBufferImageCopy const > copyInfos )const;
 		void updateBuffer( VkBuffer dstBuffer
 			, VkDeviceSize dstOffset
 			, ArrayView< uint8_t const > data );
@@ -88,23 +88,23 @@ namespace ashes::gl
 			, uint32_t data );
 		void copyBuffer( VkBuffer src
 			, VkBuffer dst
-			, VkBufferCopyArray copyInfos )const;
+			, ArrayView< VkBufferCopy const > copyInfos )const;
 		void copyImage( VkImage src
 			, VkImageLayout srcLayout
 			, VkImage dst
 			, VkImageLayout dstLayout
-			, VkImageCopyArray copyInfos )const;
+			, ArrayView< VkImageCopy const > copyInfos )const;
 		void blitImage( VkImage srcImage
 			, VkImageLayout srcLayout
 			, VkImage dstImage
 			, VkImageLayout dstLayout
-			, VkImageBlitArray regions
+			, ArrayView< VkImageBlit const > regions
 			, VkFilter filter )const;
 		void resolveImage( VkImage srcImage
 			, VkImageLayout srcLayout
 			, VkImage dstImage
 			, VkImageLayout dstLayout
-			, VkImageResolveArray regions )const;
+			, ArrayView< VkImageResolve const > regions )const;
 		void resetQueryPool( VkQueryPool pool
 			, uint32_t firstQuery
 			, uint32_t queryCount )const;
@@ -153,15 +153,15 @@ namespace ashes::gl
 		void waitEvents( VkEventArray events
 			, VkPipelineStageFlags srcStageMask
 			, VkPipelineStageFlags dstStageMask
-			, VkMemoryBarrierArray memoryBarriers
-			, VkBufferMemoryBarrierArray bufferMemoryBarriers
-			, VkImageMemoryBarrierArray imageMemoryBarriers )const;
+			, ArrayView< VkMemoryBarrier const > memoryBarriers
+			, ArrayView< VkBufferMemoryBarrier const > bufferMemoryBarriers
+			, ArrayView< VkImageMemoryBarrier const > imageMemoryBarriers )const;
 		void pipelineBarrier( VkPipelineStageFlags after
 			, VkPipelineStageFlags before
 			, VkDependencyFlags dependencyFlags
-			, VkMemoryBarrierArray memoryBarriers
-			, VkBufferMemoryBarrierArray bufferMemoryBarriers
-			, VkImageMemoryBarrierArray imageMemoryBarriers )const;
+			, ArrayView< VkMemoryBarrier const > memoryBarriers
+			, ArrayView< VkBufferMemoryBarrier const > bufferMemoryBarriers
+			, ArrayView< VkImageMemoryBarrier const > imageMemoryBarriers )const;
 
 		void generateMipmaps( VkImage texture );
 #if VK_EXT_debug_utils

@@ -405,7 +405,7 @@ namespace ashes::gl
 			};
 		}
 
-		VkScissorArray adjust( VkScissorArray const & scissors
+		VkScissorArray adjust( ArrayView< VkRect2D const > const & scissors
 			, VkExtent2D const & renderArea )
 		{
 			VkScissorArray result;
@@ -456,7 +456,7 @@ namespace ashes::gl
 			};
 		}
 
-		VkViewportArray adjust( VkViewportArray const & viewports
+		VkViewportArray adjust( ArrayView< VkViewport const > const & viewports
 			, VkExtent2D const & renderArea )
 		{
 			VkViewportArray result;
@@ -515,7 +515,7 @@ namespace ashes::gl
 	void ContextStateStack::apply( CmdList & list
 		, PreExecuteActions & preExecuteActions
 		, uint32_t firstViewport
-		, VkViewportArray const & viewports
+		, ArrayView< VkViewport const > const & viewports
 		, bool force )
 	{
 		force = doCheckSave() || force;
@@ -617,7 +617,7 @@ namespace ashes::gl
 	void ContextStateStack::apply( CmdList & list
 		, PreExecuteActions & preExecuteActions
 		, uint32_t firstScissor
-		, VkScissorArray const & scissors
+		, ArrayView< VkRect2D const > const & scissors
 		, bool force )
 	{
 		force = doCheckSave() || force;
@@ -1000,12 +1000,12 @@ namespace ashes::gl
 		apply( list
 			, preExecuteActions
 			, 0u
-			, VkViewportArray{ newState.pViewports, newState.pViewports + newState.scissorCount }
+			, makeArrayView( newState.pViewports, newState.pViewports + newState.scissorCount )
 			, force );
 		apply( list
 			, preExecuteActions
 			, 0u
-			, VkScissorArray{ newState.pScissors, newState.pScissors + newState.scissorCount }
+			, makeArrayView( newState.pScissors, newState.pScissors + newState.scissorCount )
 			, force );
 	}
 
