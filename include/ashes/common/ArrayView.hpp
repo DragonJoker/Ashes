@@ -41,6 +41,12 @@ namespace ashes
 		using const_reverse_iterator = std::reverse_iterator< const_iterator >;
 
 	public:
+		ArrayView()noexcept
+			: m_begin{ nullptr }
+			, m_end{ nullptr }
+		{
+		}
+		
 		ArrayView( iterator begin, iterator end )noexcept
 			: m_begin{ begin }
 			, m_end{ end }
@@ -75,6 +81,16 @@ namespace ashes
 		pointer const data()const noexcept
 		{
 			return &( *m_begin );
+		}
+
+		reference front()noexcept
+		{
+			return *m_begin;
+		}
+
+		const reference front()const noexcept
+		{
+			return *m_begin;
 		}
 
 		iterator begin()noexcept
@@ -153,6 +169,24 @@ namespace ashes
 		while ( result && itLhs != lhs.end() )
 		{
 			result = ( *itLhs == *itRhs );
+			++itLhs;
+			++itRhs;
+		}
+
+		return result;
+	}
+
+	template< typename IterT >
+	bool operator!=( ArrayView< IterT > const & lhs
+		, ArrayView< IterT > const & rhs )
+	{
+		auto result = lhs.size() != rhs.size();
+		auto itLhs = lhs.begin();
+		auto itRhs = rhs.begin();
+
+		while ( !result && itLhs != lhs.end() )
+		{
+			result = ( *itLhs != *itRhs );
 			++itLhs;
 			++itRhs;
 		}
