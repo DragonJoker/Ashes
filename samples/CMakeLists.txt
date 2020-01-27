@@ -55,9 +55,6 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 				${CMAKE_SOURCE_DIR}/samples/00-Common/Src
 				${Vulkan_INCLUDE_DIR}
 			)
-			target_compile_features( ${TARGET_NAME} PRIVATE
-				cxx_std_17
-			)
 			target_compile_definitions( ${TARGET_NAME} PRIVATE
 				SAMPLE_ID=${SAMPLE_ID}
 				SAMPLE_NAME="${TARGET_NAME}"

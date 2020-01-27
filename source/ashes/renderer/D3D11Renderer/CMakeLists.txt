@@ -114,9 +114,6 @@ target_link_libraries( ${PROJECT_NAME} PRIVATE
 	${SPIRV_CROSS_HLSL_LIBRARIES}
 	${Ashes_BINARY_LIBRARIES}
 )
-target_compile_features( ${PROJECT_NAME} PRIVATE
-	cxx_std_17
-)
 target_compile_definitions( ${PROJECT_NAME} PRIVATE
 	${_PROJECT_NAME}_USE_SPIRV_CROSS=${${PROJECT_NAME}_USE_SPIRV_CROSS}
 	${_PROJECT_NAME}_EXPORTS

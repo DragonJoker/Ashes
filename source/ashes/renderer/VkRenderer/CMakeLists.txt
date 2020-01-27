@@ -45,9 +45,6 @@ target_compile_definitions( ${PROJECT_NAME} PRIVATE
 	${_PROJECT_NAME}_EXPORTS
 	${TARGET_CXX_DEFINITIONS}
 )
-target_compile_features( ${PROJECT_NAME} PRIVATE
-	cxx_std_17
-)
 target_compile_options( ${PROJECT_NAME} PRIVATE
 	${TARGET_CXX_OPTIONS}
 )
