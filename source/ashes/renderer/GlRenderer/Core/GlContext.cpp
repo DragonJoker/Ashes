@@ -78,20 +78,19 @@ namespace ashes::gl
 #if _WIN32
 
 	ContextPtr Context::create( VkInstance instance
-		, VkSurfaceKHR surface
-		, Context const * mainContext )
+		, VkSurfaceKHR surface )
 	{
 		if ( get( surface )->isWin32() )
 		{
 			return create( instance
 				, get( surface )->getWin32CreateInfo()
-				, mainContext );
+				, &get( instance )->getCurrentContext() );
 		}
 		else if ( get( surface )->isDisplay() )
 		{
 			return create( instance
 				, get( surface )->getDisplayCreateInfo()
-				, mainContext );
+				, &get( instance )->getCurrentContext() );
 		}
 
 		return nullptr;
@@ -100,32 +99,31 @@ namespace ashes::gl
 #elif __linux__
 
 	ContextPtr Context::create( VkInstance instance
-		, VkSurfaceKHR surface
-		, Context const * mainContext )
+		, VkSurfaceKHR surface )
 	{
 		if ( get( surface )->isXlib() )
 		{
 			return create( instance
 				, get( surface )->getXlibCreateInfo()
-				, mainContext );
+				, &get( instance )->getCurrentContext() );
 		}
 		else if ( get( surface )->isXcb() )
 		{
 			return create( instance
 				, get( surface )->getXcbCreateInfo()
-				, mainContext );
+				, &get( instance )->getCurrentContext() );
 		}
 		else if ( get( surface )->isWayland() )
 		{
 			return create( instance
 				, get( surface )->getWaylandCreateInfo()
-				, mainContext );
+				, &get( instance )->getCurrentContext() );
 		}
 		else if ( get( surface )->isDisplay() )
 		{
 			return create( instance
 				, get( surface )->getDisplayCreateInfo()
-				, mainContext );
+				, &get( instance )->getCurrentContext() );
 		}
 
 		return nullptr;

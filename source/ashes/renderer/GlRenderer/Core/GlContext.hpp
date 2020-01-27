@@ -65,8 +65,7 @@ namespace ashes::gl
 		}
 
 		static ContextPtr create( VkInstance instance
-			, VkSurfaceKHR surface
-			, Context const * mainContext );
+			, VkSurfaceKHR surface );
 
 		inline void swapBuffers()const
 		{
