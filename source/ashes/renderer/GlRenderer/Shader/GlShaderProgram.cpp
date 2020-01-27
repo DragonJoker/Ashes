@@ -310,6 +310,7 @@ namespace ashes::gl
 	{
 		auto programObject = glLogNonVoidCall( context
 			, glCreateProgram );
+		bool isGlsl = true;
 
 		for ( auto & desc : descs )
 		{
@@ -318,6 +319,7 @@ namespace ashes::gl
 				, programObject
 				, desc.program );
 			modules.push_back( desc.program );
+			isGlsl = isGlsl && desc.isGlsl;
 		}
 
 		glLogCall( context
@@ -336,7 +338,6 @@ namespace ashes::gl
 				, VkShaderStageFlagBits( stageFlags )
 				, programObject
 				, true );
-			program.isGlsl = false;
 			program.program = programObject;
 			program.stageFlags = stageFlags;
 		}
