@@ -1152,7 +1152,9 @@ namespace ashes::gl
 		float depthBiasClamp,
 		float depthBiasSlopeFactor )
 	{
-		get( commandBuffer )->setDepthBias( depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor );
+		get( commandBuffer )->setDepthBias( depthBiasConstantFactor
+			, depthBiasClamp
+			, depthBiasSlopeFactor );
 	}
 
 	void VKAPI_CALL vkCmdSetBlendConstants(
@@ -1207,8 +1209,8 @@ namespace ashes::gl
 		get( commandBuffer )->bindDescriptorSets( pipelineBindPoint
 			, layout
 			, firstSet
-			, { pDescriptorSets, pDescriptorSets + descriptorSetCount }
-			, { pDynamicOffsets, pDynamicOffsets + dynamicOffsetCount } );
+			, makeArrayView( pDescriptorSets, pDescriptorSets + descriptorSetCount )
+			, makeArrayView( pDynamicOffsets, pDynamicOffsets + dynamicOffsetCount ) );
 	}
 
 	void VKAPI_CALL vkCmdBindIndexBuffer(
@@ -1413,7 +1415,7 @@ namespace ashes::gl
 		get( commandBuffer )->clearColorImage( image
 			, imageLayout
 			, *pColor
-			, { pRanges, pRanges + rangeCount } );
+			, makeArrayView( pRanges, pRanges + rangeCount ) );
 	}
 
 	void VKAPI_CALL vkCmdClearDepthStencilImage(
@@ -1427,7 +1429,7 @@ namespace ashes::gl
 		get( commandBuffer )->clearDepthStencilImage( image
 			, imageLayout
 			, *pDepthStencil
-			, { pRanges, pRanges + rangeCount } );
+			, makeArrayView( pRanges, pRanges + rangeCount ) );
 	}
 
 	void VKAPI_CALL vkCmdClearAttachments(

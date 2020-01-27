@@ -264,7 +264,7 @@ namespace ashes::gl
 		void bindDynamicBuffers( LayoutBindingWritesArray const & writes
 			, ShaderBindings const & bindings
 			, uint32_t setIndex
-			, UInt32Array const & offsets
+			, ArrayView< uint32_t const > const & offsets
 			, CmdList & list )
 		{
 			for ( auto i = 0u; i < offsets.size(); ++i )
@@ -721,7 +721,7 @@ namespace ashes::gl
 		, VkDescriptorSet descriptorSet
 		, uint32_t setIndex
 		, VkPipeline pipeline
-		, UInt32Array const & dynamicOffsets
+		, ArrayView< uint32_t const > const & dynamicOffsets
 		, VkPipelineBindPoint bindingPoint
 		, CmdList & list )
 	{

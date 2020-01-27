@@ -21,8 +21,8 @@ namespace ashes::gl
 		, PreExecuteActions & preExecuteActions )
 	{
 		glLogCommand( list, "EndSubpassCommand" );
-		stack.apply( list, preExecuteActions, 0u, VkScissorArray{}, true );
-		stack.apply( list, preExecuteActions, 0u, VkViewportArray{}, true );
+		stack.apply( list, preExecuteActions, 0u, ArrayView< VkRect2D const >(), true );
+		stack.apply( list, preExecuteActions, 0u, ArrayView< VkViewport const >(), true );
 
 		if ( subpass.pResolveAttachments 
 			&& get( frameBuffer )->getInternal() )

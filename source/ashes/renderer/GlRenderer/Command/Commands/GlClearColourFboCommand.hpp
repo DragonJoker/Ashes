@@ -15,6 +15,6 @@ namespace ashes::gl
 		, VkImage image
 		, VkImageLayout imageLayout
 		, VkClearColorValue value
-		, VkImageSubresourceRangeArray ranges
+		, ArrayView< VkImageSubresourceRange const > ranges
 		, CmdList & list );
 }

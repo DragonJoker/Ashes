@@ -13,7 +13,7 @@ namespace ashes::gl
 {
 	void buildViewportCommand( ContextStateStack & stack
 		, uint32_t firstViewport
-		, VkViewportArray viewports
+		, ArrayView< VkViewport const > viewports
 		, CmdList & list
 		, PreExecuteActions & preExecuteActions )
 	{

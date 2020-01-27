@@ -147,16 +147,16 @@ namespace ashes::gl
 			return m_backContextState.vpState.scissorCount > 0;
 		}
 
-		inline VkViewportArray const & getViewports()const
+		inline ArrayView< VkViewport const > const & getViewports()const
 		{
 			assert( !isCompute() );
-			return m_backContextState.viewports;
+			return m_backContextState.viewportsView;
 		}
 
-		inline VkScissorArray const & getScissors()const
+		inline ArrayView< VkRect2D const > const & getScissors()const
 		{
 			assert( !isCompute() );
-			return m_backContextState.scissors;
+			return m_backContextState.scissorsView;
 		}
 
 		inline bool hasDynamicStateEnable( VkDynamicState state )const

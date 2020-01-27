@@ -12,7 +12,7 @@ namespace ashes::gl
 {
 	void buildScissorCommand( ContextStateStack & stack
 		, uint32_t firstScissor
-		, VkScissorArray scissors
+		, ArrayView< VkRect2D const > scissors
 		, CmdList & list
 		, PreExecuteActions & preExecuteActions )
 	{

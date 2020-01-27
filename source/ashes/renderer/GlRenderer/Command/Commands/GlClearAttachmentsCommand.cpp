@@ -15,8 +15,8 @@ using ashes::operator!=;
 namespace ashes::gl
 {
 	void buildClearAttachmentsCommand( ContextStateStack & stack
-		, VkClearAttachmentArray clearAttaches
-		, VkClearRectArray clearRects
+		, ArrayView< VkClearAttachment const > clearAttaches
+		, ArrayView< VkClearRect const > clearRects
 		, CmdList & list
 		, PreExecuteActions & preExecuteActions )
 	{
@@ -26,11 +26,11 @@ namespace ashes::gl
 		{
 			for ( auto & rect : clearRects )
 			{
-				VkScissorArray scissors
-				{
-					rect.rect
-				};
-				stack.apply( list, preExecuteActions, 0u, scissors, false );
+				stack.apply( list
+					, preExecuteActions
+					, 0u
+					, makeArrayView( &rect.rect, 1u )
+					, false );
 
 				if ( ashes::checkFlag( clearAttach.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT ) )
 				{

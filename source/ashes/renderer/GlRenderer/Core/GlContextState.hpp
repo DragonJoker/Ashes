@@ -56,6 +56,18 @@ namespace ashes::gl
 			return *this;
 		}
 
+		void setViewports( VkViewportArray value )
+		{
+			viewports = value;
+			viewportsView = makeArrayView( const_cast< VkViewportArray const & >( viewports ).data(), viewports.size() );
+		}
+
+		void setScissors( VkScissorArray value )
+		{
+			scissors = value;
+			scissorsView = makeArrayView( const_cast< VkScissorArray const & >( scissors ).data(), scissors.size() );
+		}
+
 		VkPipelineColorBlendAttachmentStateArray cbStateAttachments;
 		VkPipelineColorBlendStateCreateInfo cbState;
 		VkPipelineDepthStencilStateCreateInfo dsState;
@@ -63,8 +75,8 @@ namespace ashes::gl
 		VkPipelineMultisampleStateCreateInfo msState;
 		VkPipelineTessellationStateCreateInfo tsState;
 		VkPipelineInputAssemblyStateCreateInfo iaState;
-		VkViewportArray viewports;
-		VkScissorArray scissors;
+		ArrayView< VkViewport const > viewportsView;
+		ArrayView< VkRect2D const > scissorsView;
 		VkPipelineViewportStateCreateInfo vpState;
 		VkPipelineRasterizationStateCreateInfo rsState;
 		VkDynamicStateArray dynamicStates;
@@ -73,5 +85,9 @@ namespace ashes::gl
 
 	private:
 		void doInit();
+
+	private:
+		VkViewportArray viewports;
+		VkScissorArray scissors;
 	};
 }

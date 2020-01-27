@@ -9,8 +9,8 @@ See LICENSE file in root folder
 namespace ashes::gl
 {
 	void buildClearAttachmentsCommand( ContextStateStack & stack
-		, VkClearAttachmentArray clearAttaches
-		, VkClearRectArray clearRects
+		, ArrayView< VkClearAttachment const > clearAttaches
+		, ArrayView< VkClearRect const > clearRects
 		, CmdList & list
 		, PreExecuteActions & preExecuteActions );
 }

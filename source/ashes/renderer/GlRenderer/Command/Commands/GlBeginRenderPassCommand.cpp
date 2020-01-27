@@ -169,8 +169,8 @@ namespace ashes::gl
 
 		glLogCommand( list, "BeginRenderPassCommand" );
 		stack.setRenderArea( get( frameBuffer )->getDimensions() );
-		stack.apply( list, preExecuteActions, 0u, VkScissorArray{}, true );
-		stack.apply( list, preExecuteActions, 0u, VkViewportArray{}, true );
+		stack.apply( list, preExecuteActions, 0u, ArrayView< VkRect2D const >(), true );
+		stack.apply( list, preExecuteActions, 0u, ArrayView< VkViewport const >(), true );
 		stack.applySRGBStatus( list, get( frameBuffer )->isSRGB(), true );
 
 		if ( !stack.hasCurrentFramebuffer()

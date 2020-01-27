@@ -24,12 +24,12 @@ namespace ashes::gl
 		void apply( CmdList & list
 			, PreExecuteActions & preExecuteActions
 			, uint32_t firstViewport
-			, VkViewportArray const & viewports
+			, ArrayView< VkViewport const > const & viewports
 			, bool force );
 		void apply( CmdList & list
 			, PreExecuteActions & preExecuteActions
 			, uint32_t firstScissor
-			, VkScissorArray const & scissors
+			, ArrayView< VkRect2D const > const & scissors
 			, bool force );
 		void applySRGBStatus( CmdList & list
 			, bool enable
@@ -60,24 +60,30 @@ namespace ashes::gl
 			m_renderArea = value;
 		}
 
-		inline VkScissorArray const & getCurrentScissors()const
+		inline ArrayView< VkRect2D const > getCurrentScissors()const
 		{
-			return m_scissors;
+			return makeArrayView( m_scissors.data(), m_scissors.size() );
 		}
 
-		inline void setCurrentScissors( VkScissorArray const & value )
+		inline void setCurrentScissors( ArrayView< VkRect2D const > const & value )
 		{
-			m_scissors = value;
+			m_scissors.clear();
+			m_scissors.insert( m_scissors.end()
+				, value.begin()
+				, value.end() );
 		}
 
-		inline VkViewportArray const & getCurrentViewports()const
+		inline ArrayView< VkViewport const > getCurrentViewports()const
 		{
-			return m_viewports;
+			return makeArrayView( m_viewports.data(), m_viewports.size() );
 		}
 
-		inline void setCurrentViewports( VkViewportArray const & value )
+		inline void setCurrentViewports( ArrayView< VkViewport const > const & value )
 		{
-			m_viewports = value;
+			m_viewports.clear();
+			m_viewports.insert( m_viewports.end()
+				, value.begin()
+				, value.end() );
 		}
 
 		inline GLuint getCurrentProgram()const
