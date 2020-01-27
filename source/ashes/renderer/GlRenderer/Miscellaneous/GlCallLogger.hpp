@@ -11,6 +11,7 @@ See LICENSE file in root folder
 #include "renderer/GlRenderer/Enum/GlBlendFactor.hpp"
 #include "renderer/GlRenderer/Enum/GlBlendOp.hpp"
 #include "renderer/GlRenderer/Enum/GlBufferDataUsageFlag.hpp"
+#include "renderer/GlRenderer/Enum/GlBufferParameter.hpp"
 #include "renderer/GlRenderer/Enum/GlBufferTarget.hpp"
 #include "renderer/GlRenderer/Enum/GlClearTarget.hpp"
 #include "renderer/GlRenderer/Enum/GlClipInfo.hpp"
@@ -165,6 +166,11 @@ namespace ashes::gl
 	}
 
 	inline std::string toString( GlBlendOp value )
+	{
+		return getName( value );
+	}
+
+	inline std::string toString( GlBufferParameter value )
 	{
 		return getName( value );
 	}
@@ -484,6 +490,17 @@ namespace ashes::gl
 		return result;
 	}
 
+	template< typename ... ParamsT >
+	inline auto glCallCheckError( ContextLock const & context
+		, char const * const name
+		, ParamsT ... params )
+	{
+		std::stringstream stream;
+		stream << name;
+		logParams( stream, std::forward< ParamsT >( params )... );
+		return glCheckError( context, stream.str() );
+	}
+
 #if AshesGL_LogCalls
 #	define glLogCall( lock, name, ... )\
 	executeFunction( lock, ashes::gl::getContext( lock ).m_##name, #name, __VA_ARGS__ )
@@ -499,10 +516,10 @@ namespace ashes::gl
 #	define glLogCommand( list, name )
 #else
 #	define glLogCall( lock, name, ... )\
-	( ( lock->m_##name( __VA_ARGS__ ) ), glCheckError( lock, #name ) )
+	( ( lock->m_##name( __VA_ARGS__ ) ), glCallCheckError( lock, #name, __VA_ARGS__ ) )
 #	define glLogNonVoidCall( lock, name, ... )\
 	( lock->m_##name( __VA_ARGS__ ) );\
-	glCheckError( lock, #name )
+	glCallCheckError( lock, #name, __VA_ARGS__ )
 #	define glLogCommand( list, name )
 #endif
 }

@@ -209,7 +209,7 @@ namespace ashes::gl
 				break;
 
 			case GL_TEXTURE_CUBE:
-				list.push_back( makeCmd< OpType::eCompressedTexSubImage2D >( GL_TEXTURE_CUBE_POSITIVE_X + copyInfo.imageSubresource.baseArrayLayer
+				list.push_back( makeCmd< OpType::eCompressedTexSubImage2D >( GlTextureType( GL_TEXTURE_CUBE_POSITIVE_X + copyInfo.imageSubresource.baseArrayLayer )
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
 					, copyInfo.imageOffset.y
@@ -221,7 +221,7 @@ namespace ashes::gl
 				break;
 
 			case GL_TEXTURE_CUBE_ARRAY:
-				list.push_back( makeCmd< OpType::eCompressedTexSubImage3D >( GL_TEXTURE_CUBE_POSITIVE_X + ( copyInfo.imageSubresource.baseArrayLayer % 6u )
+				list.push_back( makeCmd< OpType::eCompressedTexSubImage3D >( GlTextureType( GL_TEXTURE_CUBE_POSITIVE_X + ( copyInfo.imageSubresource.baseArrayLayer % 6u ) )
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
 					, copyInfo.imageOffset.y
@@ -310,7 +310,7 @@ namespace ashes::gl
 				break;
 
 			case GL_TEXTURE_CUBE:
-				list.push_back( makeCmd< OpType::eTexSubImage2D >( GL_TEXTURE_CUBE_POSITIVE_X + copyInfo.imageSubresource.baseArrayLayer
+				list.push_back( makeCmd< OpType::eTexSubImage2D >( GlTextureType( GL_TEXTURE_CUBE_POSITIVE_X + copyInfo.imageSubresource.baseArrayLayer )
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
 					, copyInfo.imageOffset.y
@@ -322,7 +322,7 @@ namespace ashes::gl
 				break;
 
 			case GL_TEXTURE_CUBE_ARRAY:
-				list.push_back( makeCmd< OpType::eTexSubImage3D >( GL_TEXTURE_CUBE_POSITIVE_X + ( copyInfo.imageSubresource.baseArrayLayer % 6u )
+				list.push_back( makeCmd< OpType::eTexSubImage3D >( GlTextureType( GL_TEXTURE_CUBE_POSITIVE_X + ( copyInfo.imageSubresource.baseArrayLayer % 6u ) )
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
 					, copyInfo.imageOffset.y

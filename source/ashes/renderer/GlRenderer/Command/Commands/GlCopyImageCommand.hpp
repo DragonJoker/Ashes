@@ -58,10 +58,10 @@ namespace ashes::gl
 	{
 		inline CmdT( VkImage src
 			, uint32_t srcName
-			, uint32_t srcTarget
+			, GlTextureType srcTarget
 			, VkImage dst
 			, uint32_t dstName
-			, uint32_t dstTarget
+			, GlTextureType dstTarget
 			, VkImageCopy copy )
 			: cmd{ { OpType::eCopyImageSubData1D, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, src{ std::move( src ) }
@@ -77,10 +77,10 @@ namespace ashes::gl
 		Command cmd;
 		VkImage src;
 		uint32_t srcName;
-		uint32_t srcTarget;
+		GlTextureType srcTarget;
 		VkImage dst;
 		uint32_t dstName;
-		uint32_t dstTarget;
+		GlTextureType dstTarget;
 		VkImageCopy copy;
 	};
 	using CmdCopyImageSubData1D = CmdT< OpType::eCopyImageSubData1D >;
@@ -101,11 +101,11 @@ namespace ashes::gl
 	{
 		inline CmdT( VkImage src
 			, uint32_t srcName
-			, uint32_t srcTarget
+			, GlTextureType srcTarget
 			, VkImage dst
 			, uint32_t dstName
-			, uint32_t dstTarget
-			, uint32_t dstLayerTarget
+			, GlTextureType dstTarget
+			, GlTextureType dstLayerTarget
 			, int32_t dstOffsetY
 			, uint32_t dstExtentY
 			, VkImageCopy copy )
@@ -126,11 +126,11 @@ namespace ashes::gl
 		Command cmd;
 		VkImage src;
 		uint32_t srcName;
-		uint32_t srcTarget;
+		GlTextureType srcTarget;
 		VkImage dst;
 		uint32_t dstName;
-		uint32_t dstTarget;
-		uint32_t dstLayerTarget;
+		GlTextureType dstTarget;
+		GlTextureType dstLayerTarget;
 		int32_t dstOffsetY;
 		uint32_t dstExtentY;
 		VkImageCopy copy;
@@ -153,11 +153,11 @@ namespace ashes::gl
 	{
 		inline CmdT( VkImage src
 			, uint32_t srcName
-			, uint32_t srcTarget
+			, GlTextureType srcTarget
 			, VkImage dst
 			, uint32_t dstName
-			, uint32_t dstTarget
-			, uint32_t dstLayerTarget
+			, GlTextureType dstTarget
+			, GlTextureType dstLayerTarget
 			, int32_t dstOffsetZ
 			, uint32_t dstExtentZ
 			, VkImageCopy copy )
@@ -178,11 +178,11 @@ namespace ashes::gl
 		Command cmd;
 		VkImage src;
 		uint32_t srcName;
-		uint32_t srcTarget;
+		GlTextureType srcTarget;
 		VkImage dst;
 		uint32_t dstName;
-		uint32_t dstTarget;
-		uint32_t dstLayerTarget;
+		GlTextureType dstTarget;
+		GlTextureType dstLayerTarget;
 		int32_t dstOffsetZ;
 		uint32_t dstExtentZ;
 		VkImageCopy copy;
@@ -203,7 +203,7 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eGetTexImage >
 	{
-		inline CmdT( uint32_t target
+		inline CmdT( GlTextureType target
 			, GlFormat format
 			, GlType type )
 			: cmd{ { OpType::eGetTexImage, sizeof( CmdT ) / sizeof( uint32_t ) } }
@@ -214,7 +214,7 @@ namespace ashes::gl
 		}
 
 		Command cmd;
-		uint32_t target;
+		GlTextureType target;
 		GlFormat format;
 		GlType type;
 	};

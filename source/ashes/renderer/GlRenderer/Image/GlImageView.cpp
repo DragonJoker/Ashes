@@ -65,7 +65,7 @@ namespace ashes::gl
 	{
 		// Non initialised textures come from back buffers, ignore them
 		if ( get( createInfo.image )->hasInternal()
-			&& hasTextureViews( device ) )
+			&& hasTextureViews( m_device ) )
 		{
 			auto context = get( m_device )->getContext();
 			glLogCall( context
@@ -84,14 +84,14 @@ namespace ashes::gl
 				, getSubresourceRange().layerCount );
 			glLogCall( context
 				, glBindTexture
-				, m_glviewType
+				, GlTextureType( m_glviewType )
 				, m_internal );
 
 			if ( getComponents().r != VK_COMPONENT_SWIZZLE_IDENTITY )
 			{
 				glLogCall( context
 					, glTexParameteri
-					, m_glviewType
+					, GlTextureType( m_glviewType )
 					, GL_SWIZZLE_R
 					, convertComponentSwizzle( getComponents().r ) );
 			}
@@ -100,7 +100,7 @@ namespace ashes::gl
 			{
 				glLogCall( context
 					, glTexParameteri
-					, m_glviewType
+					, GlTextureType( m_glviewType )
 					, GL_SWIZZLE_G
 					, convertComponentSwizzle( getComponents().g ) );
 			}
@@ -109,7 +109,7 @@ namespace ashes::gl
 			{
 				glLogCall( context
 					, glTexParameteri
-					, m_glviewType
+					, GlTextureType( m_glviewType )
 					, GL_SWIZZLE_B
 					, convertComponentSwizzle( getComponents().b ) );
 			}
@@ -118,7 +118,7 @@ namespace ashes::gl
 			{
 				glLogCall( context
 					, glTexParameteri
-					, m_glviewType
+					, GlTextureType( m_glviewType )
 					, GL_SWIZZLE_A
 					, convertComponentSwizzle( getComponents().a ) );
 			}
@@ -126,45 +126,48 @@ namespace ashes::gl
 			int minLevel = 0;
 			glLogCall( context
 				, glGetTexParameteriv
-				, m_glviewType
+				, GlTextureType( m_glviewType )
 				, GL_TEX_PARAMETER_VIEW_MIN_LEVEL
 				, &minLevel );
 			assert( minLevel == getSubresourceRange().baseMipLevel );
 			int numLevels = 0;
 			glLogCall( context
 				, glGetTexParameteriv
-				, m_glviewType
+				, GlTextureType( m_glviewType )
 				, GL_TEX_PARAMETER_VIEW_NUM_LEVELS
 				, &numLevels );
 			assert( numLevels == getSubresourceRange().levelCount );
 			int minLayer = 0;
 			glLogCall( context
 				, glGetTexParameteriv
-				, m_glviewType
+				, GlTextureType( m_glviewType )
 				, GL_TEX_PARAMETER_VIEW_MIN_LAYER
 				, &minLayer );
 			assert( minLayer == getSubresourceRange().baseArrayLayer );
 			int numLayers = 0;
 			glLogCall( context
 				, glGetTexParameteriv
-				, m_glviewType
+				, GlTextureType( m_glviewType )
 				, GL_TEX_PARAMETER_VIEW_NUM_LAYERS
 				, &numLayers );
 			assert( numLayers == getSubresourceRange().layerCount );
 			glLogCall( context
 				, glBindTexture
-				, m_glviewType
+				, GlTextureType( m_glviewType )
 				, 0u );
 		}
 	}
 
 	ImageView::~ImageView()
 	{
-		auto context = get( m_device )->getContext();
-		glLogCall( context
-			, glDeleteTextures
-			, 1
-			, &m_internal );
+		if ( hasTextureViews( m_device ) )
+		{
+			auto context = get( m_device )->getContext();
+			glLogCall( context
+				, glDeleteTextures
+				, 1
+				, &m_internal );
+		}
 	}
 
 	GLuint ImageView::getInternal()const noexcept
