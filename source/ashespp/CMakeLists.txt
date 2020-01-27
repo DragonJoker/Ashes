@@ -43,9 +43,6 @@ add_library( ashes::${_PROJECT_NAME}
 	ALIAS
 	${PROJECT_NAME}
 )
-target_compile_features( ${PROJECT_NAME} PUBLIC
-	cxx_std_17
-)
 target_compile_definitions( ${PROJECT_NAME} PUBLIC
 	${Ashes_BINARY_DEFINITIONS}
 )

@@ -72,9 +72,6 @@ target_include_directories( ${PROJECT_NAME}
 		${Ashes_BINARY_DIR}/source/ashes/renderer/${_PROJECT_NAME}
 		${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}
 )
-target_compile_features( ${PROJECT_NAME} PUBLIC
-	cxx_std_17
-)
 target_compile_definitions( ${PROJECT_NAME} PUBLIC
 	${TARGET_CXX_DEFINITIONS}
 )

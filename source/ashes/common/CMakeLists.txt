@@ -9,6 +9,7 @@ set( PROJECT_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION
 set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_BUILD}" )
 
 set( ${PROJECT_NAME}_SRC_FILES
+	Common.cpp
 	Format.cpp
 )
 
@@ -65,9 +66,11 @@ target_include_directories( ${PROJECT_NAME}
 		${Ashes_SOURCE_DIR}/include/ashes
 		${Ashes_SOURCE_DIR}/include/ashes/${_PROJECT_NAME}
 )
-target_compile_features( ${PROJECT_NAME} PUBLIC
-	cxx_std_17
-)
+if ( NOT MSVC )
+	target_compile_features( ${PROJECT_NAME} PUBLIC
+		cxx_std_17
+	)
+endif ()
 target_compile_definitions( ${PROJECT_NAME} PUBLIC
 	${TARGET_COMPILE_DEFINITIONS}
 )
