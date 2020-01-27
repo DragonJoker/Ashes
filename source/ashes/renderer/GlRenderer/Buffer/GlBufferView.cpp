@@ -20,9 +20,6 @@ namespace ashes::gl
 			, 1
 			, &m_internal );
 		glLogCall( context
-			, glActiveTexture
-			, GL_TEXTURE0 );
-		glLogCall( context
 			, glBindTexture
 			, GL_TEXTURE_BUFFER
 			, m_internal );

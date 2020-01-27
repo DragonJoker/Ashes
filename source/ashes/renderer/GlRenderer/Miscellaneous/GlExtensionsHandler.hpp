@@ -20,7 +20,7 @@ namespace ashes::gl
 	makeGlExtension( ARB_clear_texture, 4, 3 );
 	makeGlExtension( ARB_clip_control, 4, 4 );
 	makeGlExtension( ARB_compute_shader, 4, 2 );
-	makeGlExtension( ARB_copy_image, 4, 2 );
+	makeGlExtension( ARB_copy_image, 1, 1 );
 	makeGlExtension( ARB_cull_distance, 4, 4 );
 	makeGlExtension( ARB_debug_output, 4, 0 );
 	makeGlExtension( ARB_depth_clamp, 3, 1 );

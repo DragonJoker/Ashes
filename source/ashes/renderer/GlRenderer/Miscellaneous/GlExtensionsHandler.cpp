@@ -17,7 +17,7 @@ See LICENSE file in root folder.
 
 #include "ashesgl_api.hpp"
 
-#define AshesGL_ForceMinVersion 1
+#define AshesGL_ForceMinVersion 0
 
 namespace ashes::gl
 {

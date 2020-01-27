@@ -30,6 +30,8 @@ namespace ashes::gl
 			target = GL_TEXTURE_2D_MULTISAMPLE;
 		}
 
+		bool hadFbo = stack.hasCurrentFramebuffer();
+		list.push_back( makeCmd< OpType::eInitFramebuffer >( &get( get( device )->getBlitDstFbo() )->getInternal() ) );
 		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
 			, get( device )->getBlitDstFbo() ) );
 		auto point = getAttachmentPoint( glimage.getFormat() );
@@ -57,7 +59,15 @@ namespace ashes::gl
 			}
 		}
 
-		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
-			, stack.getCurrentFramebuffer() ) );
+		if ( hadFbo )
+		{
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+				, stack.getCurrentFramebuffer() ) );
+		}
+		else
+		{
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+				, nullptr ) );
+		}
 	}
 }

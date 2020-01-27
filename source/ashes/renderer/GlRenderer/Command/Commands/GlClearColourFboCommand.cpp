@@ -30,22 +30,53 @@ namespace ashes::gl
 			target = GL_TEXTURE_2D_MULTISAMPLE;
 		}
 
+		bool hadFbo = stack.hasCurrentFramebuffer();
+		list.push_back( makeCmd< OpType::eInitFramebuffer >( &get( get( device )->getBlitDstFbo() )->getInternal() ) );
 		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
 			, get( device )->getBlitDstFbo() ) );
 		auto point = getAttachmentPoint( glimage.getFormat() );
 
-		for ( uint32_t level = 0u; level < glimage.getMipLevels(); ++level )
+		for ( auto & range : ranges )
 		{
-			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
-				, point
-				, target
-				, get( image )->getInternal()
-				, level ) );
-			list.push_back( makeCmd< OpType::eDrawBuffers >( point ) );
-			list.push_back( makeCmd< OpType::eClearColour >( value
-				, 0u ) );
+			for ( auto level = range.baseMipLevel; level < range.baseMipLevel + range.levelCount; ++level )
+			{
+				if ( get( image )->getArrayLayers() > 1u )
+				{
+					for ( auto layer = range.baseArrayLayer; layer < range.baseArrayLayer + range.layerCount; ++layer )
+					{
+						list.push_back( makeCmd< OpType::eFramebufferTextureLayer >( GL_FRAMEBUFFER
+							, point
+							, get( image )->getInternal()
+							, level
+							, layer ) );
+						list.push_back( makeCmd< OpType::eDrawBuffers >( point ) );
+						list.push_back( makeCmd< OpType::eClearColour >( value
+							, 0u ) );
+					}
+				}
+				else
+				{
+					list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
+						, point
+						, target
+						, get( image )->getInternal()
+						, level ) );
+					list.push_back( makeCmd< OpType::eDrawBuffers >( point ) );
+					list.push_back( makeCmd< OpType::eClearColour >( value
+						, 0u ) );
+				}
+			}
 		}
-		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
-			, stack.getCurrentFramebuffer() ) );
+
+		if ( hadFbo )
+		{
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+				, stack.getCurrentFramebuffer() ) );
+		}
+		else
+		{
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+				, nullptr ) );
+		}
 	}
 }
