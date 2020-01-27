@@ -432,7 +432,8 @@ namespace ashes::gl
 		{
 			if ( !m_ownContext )
 			{
-				m_ownContext = Context::create( m_instance, surface, nullptr );
+				m_ownContext = Context::create( m_instance
+					, surface );
 				m_currentContext = m_ownContext.get();
 				get( m_instance )->registerContext( *m_ownContext );
 			}
