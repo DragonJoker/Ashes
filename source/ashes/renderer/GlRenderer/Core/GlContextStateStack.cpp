@@ -377,48 +377,6 @@ namespace ashes::gl
 			int h;
 		};
 
-		void adjust( MocVkScissor & scissor
-			, VkExtent2D const & renderArea )
-		{
-			auto vkbottom = scissor.y + scissor.h;
-			scissor.y = int32_t( renderArea.height - vkbottom );
-		}
-
-		void adjust( ashes::ArrayView< MocVkScissor > const & scissors
-			, VkExtent2D const & renderArea )
-		{
-			for ( auto & scissor : scissors )
-			{
-				adjust( scissor, renderArea );
-			}
-		}
-
-		VkRect2D adjust( VkRect2D const & scissor
-			, VkExtent2D const & renderArea )
-		{
-			auto vkbottom = scissor.offset.y + scissor.extent.height;
-			auto vktop = scissor.offset.y;
-			return
-			{
-				{ scissor.offset.x, int32_t( renderArea.height - vkbottom ) },
-				scissor.extent,
-			};
-		}
-
-		VkScissorArray adjust( ArrayView< VkRect2D const > const & scissors
-			, VkExtent2D const & renderArea )
-		{
-			VkScissorArray result;
-			result.reserve( scissors.size() );
-
-			for ( auto & scissor : scissors )
-			{
-				result.push_back( adjust( scissor, renderArea ) );
-			}
-
-			return result;
-		}
-
 		struct MocVkViewport
 		{
 			float x;
@@ -632,56 +590,13 @@ namespace ashes::gl
 			{
 				if ( m_viewportArrays )
 				{
-					if ( m_renderArea == VkExtent2D{ ~( 0u ), ~( 0u ) } )
-					{
-						auto index = list.size();
-						list.push_back( makeCmd< OpType::eApplyScissors >( firstScissor
-							, uint32_t( scissors.size() )
-							, scissors ) );
-						preExecuteActions.push_back( [index]( CmdList & list
-							, ContextStateStack const & stack )
-							{
-								Command * pCmd = nullptr;
-								auto it = list[index].begin();
-
-								if ( map( it, list[index].end(), pCmd ) )
-								{
-									assert( pCmd->op.type == OpType::eApplyScissors );
-									CmdApplyScissors oldCmd = map< OpType::eApplyScissors >( *pCmd );
-									adjust( ashes::makeArrayView( reinterpret_cast< MocVkScissor * >( oldCmd.scissors.data() )
-										, reinterpret_cast< MocVkScissor * >( oldCmd.scissors.data() ) + oldCmd.count )
-										, stack.m_renderArea );
-								}
-							} );
-					}
-					else
-					{
-						list.push_back( makeCmd< OpType::eApplyScissors >( firstScissor
-							, uint32_t( scissors.size() )
-							, adjust( scissors, m_renderArea ) ) );
-					}
-				}
-				else if ( m_renderArea == VkExtent2D{ ~( 0u ), ~( 0u ) } )
-				{
-					auto index = list.size();
-					list.push_back( makeCmd< OpType::eApplyScissor >( scissors.front() ) );
-					preExecuteActions.push_back( [index]( CmdList & list
-						, ContextStateStack const & stack )
-						{
-							Command * pCmd = nullptr;
-							auto it = list[index].begin();
-
-							if ( map( it, list[index].end(), pCmd ) )
-							{
-								assert( pCmd->op.type == OpType::eApplyScissor );
-								CmdApplyScissor oldCmd = map< OpType::eApplyScissor >( *pCmd );
-								adjust( oldCmd.scissor, stack.m_renderArea );
-							}
-						} );
+					list.push_back( makeCmd< OpType::eApplyScissors >( firstScissor
+						, uint32_t( scissors.size() )
+						, scissors ) );
 				}
 				else
 				{
-					list.push_back( makeCmd< OpType::eApplyScissor >( adjust( scissors.front(), m_renderArea ) ) );
+					list.push_back( makeCmd< OpType::eApplyScissor >( scissors.front() ) );
 				}
 			}
 			else if ( m_renderArea == VkExtent2D{ ~( 0u ), ~( 0u ) } )
