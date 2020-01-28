@@ -48,7 +48,7 @@ namespace ashes
 		uint32_t sbo{ 0u };
 		uint32_t img{ 0u };
 		uint32_t tex{ 0u };
-		uint32_t tbo{ 0u };
+		//uint32_t tbo{ 0u };
 	};
 
 	void addBinding( uint32_t set

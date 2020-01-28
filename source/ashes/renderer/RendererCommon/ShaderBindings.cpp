@@ -73,8 +73,8 @@ namespace ashes
 		}
 		else if ( isTextureBuffer( binding.descriptorType ) )
 		{
-			bindings.tbo.emplace( makeShaderBindingKey( set, binding.binding ), indices.tbo );
-			indices.tbo += binding.descriptorCount;
+			bindings.tbo.emplace( makeShaderBindingKey( set, binding.binding ), indices.tex );
+			indices.tex += binding.descriptorCount;
 		}
 	}
 
