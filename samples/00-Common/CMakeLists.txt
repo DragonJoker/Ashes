@@ -82,9 +82,6 @@ target_include_directories( ${PROJECT_NAME}
 		${CMAKE_CURRENT_SOURCE_DIR}/Src
 		${Ashes_SOURCE_DIR}/external/imgui
 )
-add_dependencies( ${PROJECT_NAME}
-	${ENABLED_RENDERERS}
-)
 add_target_precompiled_header( ${PROJECT_NAME}
 	${CMAKE_CURRENT_SOURCE_DIR}/Src/PrecompiledHeader.hpp
 	${CMAKE_CURRENT_SOURCE_DIR}/Src/PrecompiledHeader.cpp
