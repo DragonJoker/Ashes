@@ -48,7 +48,9 @@ namespace ashes
 
 	void DynamicLibrary::doOpen()
 	{
-		m_library = ::LoadLibraryA( m_path.c_str() );
+		m_library = ::LoadLibraryExA( m_path.c_str()
+			, NULL
+			, 0u );
 
 		if ( !m_library )
 		{

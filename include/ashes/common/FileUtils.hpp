@@ -7,6 +7,7 @@ See LICENSE file in root folder
 
 #include <fstream>
 #include <functional>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -58,6 +59,13 @@ namespace ashes
 	*/
 	ashes::StringArray listDirectoryFiles( std::string const & folderPath
 		, bool recursive = false );
+	/**
+	*\brief
+	*	Looks for a library in current bin dir, or current lib dir, or system dir.
+	*\param[in] onFile
+	*	Filter function to tell if a file is an appropriate library.
+	*/
+	ashes::StringArray lookForSharedLibrary( FilterFunction onFile );
 	/**
 	*\return
 	*	The executable folder.

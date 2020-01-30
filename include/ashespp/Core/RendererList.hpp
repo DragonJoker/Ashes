@@ -16,7 +16,6 @@ namespace ashes
 	{
 	public:
 		RendererList();
-		~RendererList();
 
 		AshPluginDescription selectPlugin( std::string const & name )const;
 		AshPluginDescription getSelectedPlugin()const;
@@ -39,7 +38,7 @@ namespace ashes
 		}
 
 	private:
-		ashes::DynamicLibrary m_library;
+		std::unique_ptr< ashes::DynamicLibrary > m_library;
 		std::vector< AshPluginDescription > m_plugins;
 		PFN_ashSelectPlugin m_selectPlugin;
 		mutable AshPluginDescription m_current;

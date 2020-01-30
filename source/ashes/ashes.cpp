@@ -1,5 +1,7 @@
 #include "ashes_plugin.hpp"
 
+#include "common/FileUtils.hpp"
+
 #include <algorithm>
 
 #if defined( CreateEvent )
@@ -56,7 +58,13 @@ namespace details
 
 		std::string const & getPrefix()
 		{
-			static std::string result{ "ashes" };
+#if defined( _WIN32 )
+			static std::string result{ R"(ashes)" };
+#elif defined( __APPLE__ )
+			static std::string result{ R"(libashes)" };
+#else
+			static std::string result{ R"(libashes)" };
+#endif
 			return result;
 		}
 
@@ -105,19 +113,11 @@ namespace details
 	PluginArray listPlugins()
 	{
 		PluginArray result;
-		auto filter = []( std::string const & folder
+		auto files = ashes::lookForSharedLibrary( []( std::string const & folder
 			, std::string const & name )
-		{
-			return isAshesPlugin( name );
-		};
-		auto binDir = ashes::getExecutableDirectory();
-		auto files = ashes::filterDirectoryFiles( binDir, filter, false );
-
-		if ( files.empty() )
-		{
-			auto libDir = ashes::getPath( binDir ) / "lib";
-			files = ashes::filterDirectoryFiles( libDir, filter, false );
-		}
+			{
+				return isAshesPlugin( name );
+			} );
 
 		for ( auto & file : files )
 		{
