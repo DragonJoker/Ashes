@@ -1,7 +1,32 @@
 #include "ashes/common/FileUtils.hpp"
 
+#if defined( _WIN32 )
+#	include <Windows.h>
+#endif
+
 namespace ashes
 {
+	namespace
+	{
+#if defined( _WIN32 )
+		static std::string const systemFolder = []()
+		{
+			char result[MAX_PATH]{};
+			GetSystemDirectoryA( result, MAX_PATH );
+			return std::string{ result };
+		}();
+		static bool recursive{ false };
+#elif defined( __linux__ )
+		static std::string const systemFolder{ "/usr/lib" };
+		static bool recursive{ true };
+#elif defined( __APPLE__ )
+		static std::string const systemFolder{ "/usr/lib" };
+		static bool recursive{ true };
+#else
+#	error Unsupported platform
+#endif
+	}
+
 	StringArray filterDirectoryFiles( std::string const & folderPath
 		, FilterFunction onFile
 		, bool recursive )
@@ -42,7 +67,7 @@ namespace ashes
 		return files;
 	}
 
-	ashes::StringArray listDirectoryFiles( std::string const & folderPath
+	StringArray listDirectoryFiles( std::string const & folderPath
 		, bool recursive )
 	{
 		return filterDirectoryFiles( folderPath
@@ -52,5 +77,29 @@ namespace ashes
 				return true;
 			}
 			, recursive );
+	}
+
+	StringArray lookForSharedLibrary( FilterFunction onFile )
+	{
+		auto binDir = ashes::getExecutableDirectory();
+		auto files = ashes::filterDirectoryFiles( binDir
+			, onFile
+			, false );
+
+		if ( files.empty() )
+		{
+			files = ashes::filterDirectoryFiles( ashes::getPath( binDir ) / "lib"
+				, onFile
+				, false );
+		}
+
+		if ( files.empty() )
+		{
+			files = ashes::filterDirectoryFiles( systemFolder
+				, onFile
+				, recursive );
+		}
+
+		return files;
 	}
 }

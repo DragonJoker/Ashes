@@ -2,7 +2,9 @@
 #include <ashes/ashes.h>
 
 #include <ashes/common/DynamicLibrary.hpp>
+#include <ashes/common/FileUtils.hpp>
 
+#include <cassert>
 #include <memory>
 #include <vector>
 
@@ -70,42 +72,63 @@ namespace ashes::vk
 			if ( result != VK_SUCCESS )
 			{
 #if defined( _WIN32 )
-				static char const * const libraryName = "vulkan-1.dll";
+				static std::string_view const libraryName = "vulkan-1.dll";
 #elif defined( __linux__ )
-				static char const * const libraryName = "libvulkan.so.1";
+				static std::string_view const libraryName = "libvulkan.so.1";
 #elif defined( __APPLE__ )
-				static char const * const libraryName = "libvulkan.1.dylib";
+				static std::string_view const libraryName = "libvulkan.1.dylib";
 #else
 #	error Unsupported platform
 #endif
 
-				auto vklibrary = std::make_unique< ashes::DynamicLibrary >( libraryName );
-				vklibrary->getFunction( "vkGetInstanceProcAddr", description.getInstanceProcAddr );
-				description.features =
+				std::unique_ptr< ashes::DynamicLibrary > vklibrary;
+				ashes::lookForSharedLibrary( [&vklibrary]( std::string const & folder
+					, std::string const & name )
+					{
+						if ( libraryName == name
+							&& !vklibrary )
+						{
+							vklibrary = std::make_unique< ashes::DynamicLibrary >( folder / name );
+							PFN_ashSelectPlugin selectPlugin;
+
+							if ( vklibrary->getFunction( "ashSelectPlugin", selectPlugin ) )
+							{
+								vklibrary.reset();
+							}
+						}
+
+						return vklibrary != nullptr;
+					} );
+
+				if ( vklibrary )
 				{
-					true, // hasTexBufferRange
-					true, // hasImageTexture
-					true, // hasBaseInstance
-					true, // hasClearTexImage
-					true, // hasComputeShaders
-					true, // hasStorageBuffers
-					true, // supportsPersistentMapping
-				};
+					vklibrary->getFunction( "vkGetInstanceProcAddr", description.getInstanceProcAddr );
+					description.features =
+					{
+						true, // hasTexBufferRange
+						true, // hasImageTexture
+						true, // hasBaseInstance
+						true, // hasClearTexImage
+						true, // hasComputeShaders
+						true, // hasStorageBuffers
+						true, // supportsPersistentMapping
+					};
 #define VK_LIB_GLOBAL_FUNCTION( x )\
-				vklibrary->getFunction( "vk"#x, description.functions.x );
+					vklibrary->getFunction( "vk"#x, description.functions.x );
 #define VK_LIB_INSTANCE_FUNCTION( x )\
-				vklibrary->getFunction( "vk"#x, description.functions.x );
+					vklibrary->getFunction( "vk"#x, description.functions.x );
 #define VK_LIB_DEVICE_FUNCTION( x )\
-				vklibrary->getFunction( "vk"#x, description.functions.x );
+					vklibrary->getFunction( "vk"#x, description.functions.x );
 #define VK_LIB_GLOBAL_FUNCTION_EXT( n, x )
 #define VK_LIB_INSTANCE_FUNCTION_EXT( n, x )
 #define VK_LIB_DEVICE_FUNCTION_EXT( n, x )
 #	include <ashes/ashes_functions_list.hpp>
-				result = VK_SUCCESS;
+					result = VK_SUCCESS;
 
-				description.support.priority = 10u;
-				description.support.supported = checkSupport( description );
-				library = std::move( vklibrary );
+					description.support.priority = 10u;
+					description.support.supported = checkSupport( description );
+					library = std::move( vklibrary );
+				}
 			}
 
 			return result;
