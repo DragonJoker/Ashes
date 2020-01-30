@@ -200,7 +200,7 @@ namespace ashes::gl
 
 		if ( context->hasPushDebugGroup() )
 		{
-			glLogCall( context
+			glLogEmptyCall( context
 				, glPopDebugGroup );
 		}
 

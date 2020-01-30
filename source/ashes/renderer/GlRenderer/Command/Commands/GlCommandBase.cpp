@@ -392,7 +392,7 @@ namespace ashes::gl
 	void apply( ContextLock const & context
 		, CmdPopDebugGroup const & cmd )
 	{
-		glLogCall( context
+		glLogEmptyCall( context
 			, glPopDebugGroup );
 	}
 

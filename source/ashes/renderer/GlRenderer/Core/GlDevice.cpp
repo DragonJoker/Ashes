@@ -234,7 +234,7 @@ namespace ashes::gl
 		if ( m_currentContext )
 		{
 			auto context = getContext();
-			glLogCall( context
+			glLogEmptyCall( context
 				, glFinish );
 		}
 

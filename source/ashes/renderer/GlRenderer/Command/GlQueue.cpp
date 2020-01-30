@@ -537,7 +537,7 @@ namespace ashes::gl
 	VkResult Queue::waitIdle()const
 	{
 		auto context = ( ( Device * )m_device )->getContext();
-		glLogCall( context
+		glLogEmptyCall( context
 			, glFinish );
 		return VK_SUCCESS;
 	}

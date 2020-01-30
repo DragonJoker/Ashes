@@ -308,7 +308,7 @@ namespace ashes::gl
 		, VkPipelineCreateFlags createFlags
 		, bool invertY )
 	{
-		auto programObject = glLogNonVoidCall( context
+		auto programObject = glLogNonVoidEmptyCall( context
 			, glCreateProgram );
 		bool isGlsl = true;
 
