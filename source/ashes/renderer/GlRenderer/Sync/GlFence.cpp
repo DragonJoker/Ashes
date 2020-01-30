@@ -42,7 +42,7 @@ namespace ashes::gl
 	VkResult Fence::wait( ContextLock & context
 		, uint64_t timeout )const
 	{
-		glLogCall( context
+		glLogEmptyCall( context
 			, glFlush );
 		auto res = glLogNonVoidCall( context
 			, glClientWaitSync

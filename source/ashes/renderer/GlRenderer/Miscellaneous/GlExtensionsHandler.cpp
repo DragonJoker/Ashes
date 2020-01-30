@@ -25,10 +25,6 @@ namespace ashes::gl
 	{
 		enum GlThings
 		{
-#ifndef _WIN32
-			GL_VERSION = 0x1F02,
-			GL_EXTENSIONS = 0x1F03,
-#endif
 			GL_SPIRV_SHADER_BINARY_FORMATS = 0x8DF8,
 			GL_SPIRV_NUM_SHADER_BINARY_FORMATS = 0x8DF9,
 			GL_SPIRV_SPIR_V_BINARY = 0x9552,

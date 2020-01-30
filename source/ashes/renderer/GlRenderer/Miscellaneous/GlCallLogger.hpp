@@ -501,25 +501,46 @@ namespace ashes::gl
 		return glCheckError( context, stream.str() );
 	}
 
+	inline auto glCallCheckError( ContextLock const & context
+		, char const * const name )
+	{
+		std::stringstream stream;
+		stream << name << "()";
+		return glCheckError( context, stream.str() );
+	}
+
 #if AshesGL_LogCalls
+#	define glLogEmptyCall( lock, name )\
+	executeFunction( lock, ashes::gl::getContext( lock ).m_##name, #name )
 #	define glLogCall( lock, name, ... )\
 	executeFunction( lock, ashes::gl::getContext( lock ).m_##name, #name, __VA_ARGS__ )
 #	define glLogNonVoidCall( lock, name, ... )\
 	executeNonVoidFunction( lock, ashes::gl::getContext( lock ).m_##name, #name, __VA_ARGS__ )
+#	define glLogNonVoidEmptyCall( lock, name, ... )\
+	executeNonVoidFunction( lock, ashes::gl::getContext( lock ).m_##name, #name )
 #	define glLogCommand( list, name )\
 	list.push_back( makeCmd< OpType::eLogCommand >( name ) );
 #elif defined( NDEBUG )
+#	define glLogEmptyCall( lock, name )\
+	( ( lock->m_##name() ), true )
 #	define glLogCall( lock, name, ... )\
 	( ( lock->m_##name( __VA_ARGS__ ) ), true )
 #	define glLogNonVoidCall( lock, name, ... )\
 	( lock->m_##name( __VA_ARGS__ ) )
+#	define glLogNonVoidEmptyCall( lock, name )\
+	( lock->m_##name() );
 #	define glLogCommand( list, name )
 #else
+#	define glLogEmptyCall( lock, name )\
+	( ( lock->m_##name() ), glCallCheckError( lock, #name ) )
 #	define glLogCall( lock, name, ... )\
 	( ( lock->m_##name( __VA_ARGS__ ) ), glCallCheckError( lock, #name, __VA_ARGS__ ) )
 #	define glLogNonVoidCall( lock, name, ... )\
 	( lock->m_##name( __VA_ARGS__ ) );\
 	glCallCheckError( lock, #name, __VA_ARGS__ )
+#	define glLogNonVoidEmptyCall( lock, name )\
+	( lock->m_##name() );\
+	glCallCheckError( lock, #name )
 #	define glLogCommand( list, name )
 #endif
 }
