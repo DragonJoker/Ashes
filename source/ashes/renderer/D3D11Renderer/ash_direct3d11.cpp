@@ -3945,7 +3945,7 @@ namespace ashes::d3d11
 					true, // hasBaseInstance
 					true, // hasClearTexImage
 					true, // hasComputeShaders
-					true, // hasStorageBuffers
+					false, // hasStorageBuffers
 					true, // supportsPersistentMapping
 				};
 #define VK_LIB_GLOBAL_FUNCTION( x )\
