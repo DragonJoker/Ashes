@@ -63,6 +63,7 @@ target_include_directories( ${PROJECT_NAME}
 	PUBLIC
 		${Vulkan_INCLUDE_DIR}
 		${TARGET_INCLUDE_DIRS}
+		${Ashes_SOURCE_DIR}/include/ashes
 		${Ashes_BINARY_DIR}/source/ashes
 		${Ashes_SOURCE_DIR}/source/ashes
 		${Ashes_BINARY_DIR}/source/ashes/renderer
