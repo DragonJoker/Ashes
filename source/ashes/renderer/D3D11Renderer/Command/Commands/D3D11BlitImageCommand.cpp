@@ -169,10 +169,10 @@ namespace ashes::d3d11
 			auto dstName = getImgFmtName( dst );
 			std::string const hlsl =
 				R"(Texture2D<)" + srcName + R"(> srcTexture : register(t0);
-RWTexture2D<)" + dstName + R"(> dstTexture : register(u1);
-SamplerState bilinearClamp : register(s2);
+RWTexture2D<)" + dstName + R"(> dstTexture : register(u0);
+SamplerState bilinearClamp : register(s0);
 
-cbuffer CB : register( b3 )
+cbuffer CB : register(b0)
 {
 	float4 srcBox;   // 1.0 / source float4( offset, dimension )
 	float4 dstBox;   // destination float4( offset, dimension )
