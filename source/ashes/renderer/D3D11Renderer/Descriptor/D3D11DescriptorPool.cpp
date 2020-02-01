@@ -47,7 +47,7 @@ namespace ashes::d3d11
 		return VK_SUCCESS;
 	}
 
-	VkResult DescriptorPool::free( VkDescriptorSetArray sets )
+	VkResult DescriptorPool::free( ArrayView< VkDescriptorSet const > sets )
 	{
 		if ( checkFlag( m_createInfos.flags, VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT ) )
 		{

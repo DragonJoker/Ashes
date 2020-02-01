@@ -749,7 +749,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		, BlitPipeline const & pipeline
 		, VkImage srcImage
 		, VkImage dstImage
-		, VkImageBlitArray const & regions
+		, ArrayView< VkImageBlit const > const & regions
 		, VkFilter filter )
 		: CommandBase{ device }
 		, m_srcTexture{ srcImage }
@@ -794,7 +794,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 			, srcMaxLevel
 			, dstMinLevel
 			, dstMaxLevel );
-		get( cb )->executeCommands( { m_commandBuffer } );
+		get( cb )->executeCommands( makeArrayView( const_cast< VkCommandBuffer const * >( &m_commandBuffer ), 1u ) );
 	}
 
 	void BlitImageCommand::doInitialiseStretchUbo( VkDescriptorSetLayout descriptorLayout
@@ -887,7 +887,8 @@ void main( uint3 threadID : SV_DispatchThreadID )
 				, VK_IMAGE_LAYOUT_UNDEFINED // don't care
 				, m_tmpSrcTexture
 				, VK_IMAGE_LAYOUT_UNDEFINED // don't care
-				, m_layerBlitsToTmp );
+				, makeArrayView( const_cast< VkImageCopy const * >( m_layerBlitsToTmp.data() )
+					, m_layerBlitsToTmp.size() ) );
 			srcTexture = m_tmpSrcTexture;
 		}
 
@@ -905,7 +906,8 @@ void main( uint3 threadID : SV_DispatchThreadID )
 				, VK_IMAGE_LAYOUT_UNDEFINED // don't care
 				, m_dstTexture
 				, VK_IMAGE_LAYOUT_UNDEFINED // don't care
-				, m_layerBlitsFromTmp );
+				, makeArrayView( const_cast< VkImageCopy const * >( m_layerBlitsFromTmp.data() )
+					, m_layerBlitsFromTmp.size() ) );
 		}
 	}
 
@@ -917,7 +919,8 @@ void main( uint3 threadID : SV_DispatchThreadID )
 				, VK_IMAGE_LAYOUT_UNDEFINED
 				, m_dstTexture
 				, VK_IMAGE_LAYOUT_UNDEFINED
-				, m_layerBlits );
+				, makeArrayView( const_cast< VkImageCopy const * >( m_layerBlits.data() )
+					, m_layerBlits.size() ) );
 		}
 	}
 
@@ -939,7 +942,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 				get( m_commandBuffer )->bindDescriptorSets( VK_PIPELINE_BIND_POINT_COMPUTE
 					, pipelineLayout
 					, 0u
-					, { copy->set }
+					, makeArrayView( const_cast< VkDescriptorSet const * >( &copy->set ), 1u )
 					, {} );
 				get( m_commandBuffer )->dispatch( std::max( srcWidth / 8u, 1u ), std::max( srcHeight / 8u, 1u ), 1u );
 			}

@@ -249,7 +249,8 @@ namespace ashes::d3d11
 		VkQueue * pQueue )
 	{
 		assert( pQueue );
-		*pQueue = get( device )->getQueue( queueFamilyIndex, queueIndex );
+		*pQueue = get( device )->getQueue( queueFamilyIndex
+			, queueIndex );
 	}
 
 	VkResult VKAPI_CALL vkQueueSubmit(
@@ -258,7 +259,8 @@ namespace ashes::d3d11
 		const VkSubmitInfo * pSubmits,
 		VkFence fence )
 	{
-		return get( queue )->submit( { pSubmits, pSubmits + submitCount }, fence );
+		return get( queue )->submit( makeArrayView( pSubmits, submitCount )
+			, fence );
 	}
 
 	VkResult VKAPI_CALL vkQueueWaitIdle(
@@ -302,7 +304,10 @@ namespace ashes::d3d11
 		VkMemoryMapFlags flags,
 		void ** ppData )
 	{
-		return get( memory )->lock( offset, size, flags, ppData );
+		return get( memory )->lock( offset
+			, size
+			, flags
+			, ppData );
 	}
 
 	void VKAPI_CALL vkUnmapMemory(
@@ -321,7 +326,8 @@ namespace ashes::d3d11
 
 		for ( uint32_t i = 0u; i < memoryRangeCount; ++i )
 		{
-			result = get( pMemoryRanges->memory )->flush( pMemoryRanges->offset, pMemoryRanges->size );
+			result = get( pMemoryRanges->memory )->flush( pMemoryRanges->offset
+				, pMemoryRanges->size );
 			++pMemoryRanges;
 		}
 
@@ -337,7 +343,8 @@ namespace ashes::d3d11
 
 		for ( uint32_t i = 0u; i < memoryRangeCount; ++i )
 		{
-			result = get( pMemoryRanges->memory )->invalidate( pMemoryRanges->offset, pMemoryRanges->size );
+			result = get( pMemoryRanges->memory )->invalidate( pMemoryRanges->offset
+				, pMemoryRanges->size );
 			++pMemoryRanges;
 		}
 
@@ -440,7 +447,8 @@ namespace ashes::d3d11
 		const VkBindSparseInfo * pBindInfo,
 		VkFence fence )
 	{
-		return get( queue )->bindSparse( makeArrayView( pBindInfo, bindInfoCount ), fence );
+		return get( queue )->bindSparse( makeArrayView( pBindInfo, bindInfoCount )
+			, fence );
 	}
 
 	VkResult VKAPI_CALL vkCreateFence(
@@ -759,7 +767,7 @@ namespace ashes::d3d11
 		uint32_t srcCacheCount,
 		const VkPipelineCache * pSrcCaches )
 	{
-		return get( dstCache )->merge( makeVector( pSrcCaches, srcCacheCount ) );
+		return get( dstCache )->merge( makeArrayView( pSrcCaches, srcCacheCount ) );
 	}
 
 	VkResult VKAPI_CALL vkCreateGraphicsPipelines(
@@ -949,7 +957,7 @@ namespace ashes::d3d11
 		uint32_t descriptorSetCount,
 		const VkDescriptorSet * pDescriptorSets )
 	{
-		return get( descriptorPool )->free( { pDescriptorSets, pDescriptorSets + descriptorSetCount } );
+		return get( descriptorPool )->free( makeArrayView( pDescriptorSets, descriptorSetCount ) );
 	}
 
 	void VKAPI_CALL vkUpdateDescriptorSets(
@@ -1061,9 +1069,11 @@ namespace ashes::d3d11
 			it != pCommandBuffers + pAllocateInfo->commandBufferCount;
 			++it )
 		{
+			auto & cb = *it;
+
 			if ( result == VK_SUCCESS )
 			{
-				result = allocate( *it
+				result = allocate( cb
 					, nullptr
 					, device
 					, pAllocateInfo->commandPool
@@ -1080,7 +1090,7 @@ namespace ashes::d3d11
 		uint32_t commandBufferCount,
 		const VkCommandBuffer * pCommandBuffers )
 	{
-		get( commandPool )->free( { pCommandBuffers, pCommandBuffers + commandBufferCount } );
+		get( commandPool )->free( makeArrayView( pCommandBuffers, commandBufferCount ) );
 	}
 
 	VkResult VKAPI_CALL vkBeginCommandBuffer(
@@ -1118,7 +1128,7 @@ namespace ashes::d3d11
 		const VkViewport * pViewports )
 	{
 		get( commandBuffer )->setViewport( firstViewport
-			, { pViewports, pViewports + viewportCount } );
+			, makeArrayView( pViewports, viewportCount ) );
 	}
 
 	void VKAPI_CALL vkCmdSetScissor(
@@ -1128,7 +1138,7 @@ namespace ashes::d3d11
 		const VkRect2D * pScissors )
 	{
 		get( commandBuffer )->setScissor( firstScissor
-			, { pScissors, pScissors + scissorCount } );
+			, makeArrayView( pScissors, scissorCount ) );
 	}
 
 	void VKAPI_CALL vkCmdSetLineWidth(
@@ -1144,7 +1154,9 @@ namespace ashes::d3d11
 		float depthBiasClamp,
 		float depthBiasSlopeFactor )
 	{
-		get( commandBuffer )->setDepthBias( depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor );
+		get( commandBuffer )->setDepthBias( depthBiasConstantFactor
+			, depthBiasClamp
+			, depthBiasSlopeFactor );
 	}
 
 	void VKAPI_CALL vkCmdSetBlendConstants(
@@ -1159,7 +1171,8 @@ namespace ashes::d3d11
 		float minDepthBounds,
 		float maxDepthBounds )
 	{
-		get( commandBuffer )->setDepthBounds( minDepthBounds, maxDepthBounds );
+		get( commandBuffer )->setDepthBounds( minDepthBounds
+			, maxDepthBounds );
 	}
 
 	void VKAPI_CALL vkCmdSetStencilCompareMask(
@@ -1167,7 +1180,8 @@ namespace ashes::d3d11
 		VkStencilFaceFlags faceMask,
 		uint32_t compareMask )
 	{
-		get( commandBuffer )->setStencilCompareMask( faceMask, compareMask );
+		get( commandBuffer )->setStencilCompareMask( faceMask
+			, compareMask );
 	}
 
 	void VKAPI_CALL vkCmdSetStencilWriteMask(
@@ -1175,7 +1189,8 @@ namespace ashes::d3d11
 		VkStencilFaceFlags faceMask,
 		uint32_t writeMask )
 	{
-		get( commandBuffer )->setStencilWriteMask( faceMask, writeMask );
+		get( commandBuffer )->setStencilWriteMask( faceMask
+			, writeMask );
 	}
 
 	void VKAPI_CALL vkCmdSetStencilReference(
@@ -1183,7 +1198,8 @@ namespace ashes::d3d11
 		VkStencilFaceFlags faceMask,
 		uint32_t reference )
 	{
-		get( commandBuffer )->setStencilReference( faceMask, reference );
+		get( commandBuffer )->setStencilReference( faceMask
+			, reference );
 	}
 
 	void VKAPI_CALL vkCmdBindDescriptorSets(
@@ -1199,8 +1215,8 @@ namespace ashes::d3d11
 		get( commandBuffer )->bindDescriptorSets( pipelineBindPoint
 			, layout
 			, firstSet
-			, { pDescriptorSets, pDescriptorSets + descriptorSetCount }
-		, { pDynamicOffsets, pDynamicOffsets + dynamicOffsetCount } );
+			, makeArrayView( pDescriptorSets, descriptorSetCount )
+			, makeArrayView( pDynamicOffsets, dynamicOffsetCount ) );
 	}
 
 	void VKAPI_CALL vkCmdBindIndexBuffer(
@@ -1220,8 +1236,8 @@ namespace ashes::d3d11
 		const VkDeviceSize * pOffsets )
 	{
 		get( commandBuffer )->bindVertexBuffers( firstBinding
-			, { pBuffers, pBuffers + bindingCount }
-		, { pOffsets, pOffsets + bindingCount } );
+			, makeArrayView( pBuffers, bindingCount )
+			, makeArrayView( pOffsets, bindingCount ) );
 	}
 
 	void VKAPI_CALL vkCmdDraw(
@@ -1284,7 +1300,9 @@ namespace ashes::d3d11
 		uint32_t groupCountY,
 		uint32_t groupCountZ )
 	{
-		get( commandBuffer )->dispatch( groupCountX, groupCountY, groupCountZ );
+		get( commandBuffer )->dispatch( groupCountX
+			, groupCountY
+			, groupCountZ );
 	}
 
 	void VKAPI_CALL vkCmdDispatchIndirect(
@@ -1304,7 +1322,7 @@ namespace ashes::d3d11
 	{
 		get( commandBuffer )->copyBuffer( srcBuffer
 			, dstBuffer
-			, { pRegions, pRegions + regionCount } );
+			, makeArrayView( pRegions, regionCount ) );
 	}
 
 	void VKAPI_CALL vkCmdCopyImage(
@@ -1320,7 +1338,7 @@ namespace ashes::d3d11
 			, srcImageLayout
 			, dstImage
 			, dstImageLayout
-			, { pRegions, pRegions + regionCount } );
+			, makeArrayView( pRegions, regionCount ) );
 	}
 
 	void VKAPI_CALL vkCmdBlitImage(
@@ -1337,8 +1355,8 @@ namespace ashes::d3d11
 			, srcImageLayout
 			, dstImage
 			, dstImageLayout
-			, { pRegions, pRegions + regionCount }
-		, filter );
+			, makeArrayView( pRegions, regionCount )
+			, filter );
 	}
 
 	void VKAPI_CALL vkCmdCopyBufferToImage(
@@ -1352,7 +1370,7 @@ namespace ashes::d3d11
 		get( commandBuffer )->copyToImage( srcBuffer
 			, dstImage
 			, dstImageLayout
-			, { pRegions, pRegions + regionCount } );
+			, makeArrayView( pRegions, regionCount ) );
 	}
 
 	void VKAPI_CALL vkCmdCopyImageToBuffer(
@@ -1366,7 +1384,7 @@ namespace ashes::d3d11
 		get( commandBuffer )->copyToBuffer( srcImage
 			, srcImageLayout
 			, dstBuffer
-			, { pRegions, pRegions + regionCount } );
+			, makeArrayView( pRegions, regionCount ) );
 	}
 
 	void VKAPI_CALL vkCmdUpdateBuffer(
@@ -1405,7 +1423,7 @@ namespace ashes::d3d11
 		get( commandBuffer )->clearColorImage( image
 			, imageLayout
 			, *pColor
-			, { pRanges, pRanges + rangeCount } );
+			, makeArrayView( pRanges, rangeCount ) );
 	}
 
 	void VKAPI_CALL vkCmdClearDepthStencilImage(
@@ -1419,7 +1437,7 @@ namespace ashes::d3d11
 		get( commandBuffer )->clearDepthStencilImage( image
 			, imageLayout
 			, *pDepthStencil
-			, { pRanges, pRanges + rangeCount } );
+			, makeArrayView( pRanges, rangeCount ) );
 	}
 
 	void VKAPI_CALL vkCmdClearAttachments(
@@ -1429,8 +1447,8 @@ namespace ashes::d3d11
 		uint32_t rectCount,
 		const VkClearRect * pRects )
 	{
-		get( commandBuffer )->clearAttachments( { pAttachments, pAttachments + attachmentCount }
-		, { pRects, pRects + rectCount } );
+		get( commandBuffer )->clearAttachments( makeArrayView( pAttachments, attachmentCount )
+		, makeArrayView( pRects, rectCount ) );
 	}
 
 	void VKAPI_CALL vkCmdResolveImage(
@@ -1446,7 +1464,7 @@ namespace ashes::d3d11
 			, srcImageLayout
 			, dstImage
 			, dstImageLayout
-			, { pRegions, pRegions + regionCount } );
+			, makeArrayView( pRegions, regionCount ) );
 	}
 
 	void VKAPI_CALL vkCmdSetEvent(
@@ -1481,9 +1499,9 @@ namespace ashes::d3d11
 		get( commandBuffer )->waitEvents( { pEvents, pEvents + eventCount }
 			, srcStageMask
 			, dstStageMask
-			, { pMemoryBarriers, pMemoryBarriers + memoryBarrierCount }
-			, { pBufferMemoryBarriers, pBufferMemoryBarriers + bufferMemoryBarrierCount }
-		, { pImageMemoryBarriers, pImageMemoryBarriers + imageMemoryBarrierCount } );
+			, makeArrayView( pMemoryBarriers, memoryBarrierCount )
+			, makeArrayView( pBufferMemoryBarriers, bufferMemoryBarrierCount )
+			, makeArrayView( pImageMemoryBarriers, imageMemoryBarrierCount ) );
 	}
 
 	void VKAPI_CALL vkCmdPipelineBarrier(
@@ -1501,9 +1519,9 @@ namespace ashes::d3d11
 		get( commandBuffer )->pipelineBarrier( srcStageMask
 			, dstStageMask
 			, dependencyFlags
-			, { pMemoryBarriers, pMemoryBarriers + memoryBarrierCount }
-			, { pBufferMemoryBarriers, pBufferMemoryBarriers + bufferMemoryBarrierCount }
-		, { pImageMemoryBarriers, pImageMemoryBarriers + imageMemoryBarrierCount } );
+			, makeArrayView( pMemoryBarriers, memoryBarrierCount )
+			, makeArrayView( pBufferMemoryBarriers, bufferMemoryBarrierCount )
+			, makeArrayView( pImageMemoryBarriers, imageMemoryBarrierCount ) );
 	}
 
 	void VKAPI_CALL vkCmdBeginQuery(
@@ -1608,7 +1626,7 @@ namespace ashes::d3d11
 		uint32_t commandBufferCount,
 		const VkCommandBuffer * pCommandBuffers )
 	{
-		get( commandBuffer )->executeCommands( { pCommandBuffers, pCommandBuffers + commandBufferCount } );
+		get( commandBuffer )->executeCommands( makeArrayView( pCommandBuffers, commandBufferCount ) );
 	}
 
 #endif
@@ -1634,7 +1652,8 @@ namespace ashes::d3d11
 		{
 			if ( result = VK_SUCCESS )
 			{
-				result = get( bindInfo.buffer )->bindMemory( bindInfo.memory, bindInfo.memoryOffset );
+				result = get( bindInfo.buffer )->bindMemory( bindInfo.memory
+					, bindInfo.memoryOffset );
 			}
 		}
 
@@ -1652,7 +1671,8 @@ namespace ashes::d3d11
 		{
 			if ( result = VK_SUCCESS )
 			{
-				result = get( bindInfo.image )->bindMemory( bindInfo.memory, bindInfo.memoryOffset );
+				result = get( bindInfo.image )->bindMemory( bindInfo.memory
+					, bindInfo.memoryOffset );
 			}
 		}
 
@@ -2016,7 +2036,10 @@ namespace ashes::d3d11
 		VkFence fence,
 		uint32_t * pImageIndex )
 	{
-		return get( swapchain )->acquireNextImage( timeout, semaphore, fence, *pImageIndex );
+		return get( swapchain )->acquireNextImage( timeout
+			, semaphore
+			, fence
+			, *pImageIndex );
 	}
 
 	VkResult VKAPI_CALL vkQueuePresentKHR(
@@ -2217,7 +2240,8 @@ namespace ashes::d3d11
 		const VkPhysicalDeviceImageFormatInfo2KHR * pImageFormatInfo,
 		VkImageFormatProperties2KHR * pImageFormatProperties )
 	{
-		return get( physicalDevice )->getImageFormatProperties2( *pImageFormatInfo, *pImageFormatProperties );
+		return get( physicalDevice )->getImageFormatProperties2( *pImageFormatInfo
+			, *pImageFormatProperties );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceQueueFamilyProperties2KHR(
@@ -2659,7 +2683,8 @@ namespace ashes::d3d11
 		{
 			if ( result = VK_SUCCESS )
 			{
-				result = get( bindInfo.buffer )->bindMemory( bindInfo.memory, bindInfo.memoryOffset );
+				result = get( bindInfo.buffer )->bindMemory( bindInfo.memory
+					, bindInfo.memoryOffset );
 			}
 		}
 
@@ -2677,7 +2702,8 @@ namespace ashes::d3d11
 		{
 			if ( result = VK_SUCCESS )
 			{
-				result = get( bindInfo.image )->bindMemory( bindInfo.memory, bindInfo.memoryOffset );
+				result = get( bindInfo.image )->bindMemory( bindInfo.memory
+					, bindInfo.memoryOffset );
 			}
 		}
 

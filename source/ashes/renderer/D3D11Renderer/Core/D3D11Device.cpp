@@ -478,7 +478,7 @@ namespace ashes::d3d11
 	}
 
 	bool Device::onCopyToImageCommand( VkCommandBuffer cmd
-		, VkBufferImageCopyArray const & copyInfo
+		, ArrayView< VkBufferImageCopy const > const & copyInfo
 		, VkBuffer src
 		, VkImage dst )const
 	{

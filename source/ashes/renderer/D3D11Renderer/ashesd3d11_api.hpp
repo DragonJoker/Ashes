@@ -157,6 +157,13 @@ namespace ashes::d3d11
 		vkValue = nullptr;
 		return VK_SUCCESS;
 	}
+	
+	template< typename VkType >
+	VkResult deallocate( VkType const & vkValue, const VkAllocationCallbacks * allocInfo )
+	{
+		delete get( vkValue );
+		return VK_SUCCESS;
+	}
 
 	inline bool operator==( VkOffset2D const & lhs, VkOffset2D const & rhs )
 	{

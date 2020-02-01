@@ -45,7 +45,7 @@ namespace ashes::d3d11
 		void registerLayer( Layer * layer )const;
 		void unregisterLayer( Layer * layer )const;
 		bool onCopyToImageCommand( VkCommandBuffer cmd
-			, VkBufferImageCopyArray const & copyInfo
+			, ArrayView< VkBufferImageCopy const > const & copyInfo
 			, VkBuffer src
 			, VkImage dst )const;
 		bool onCheckHResultCommand( HRESULT hresult

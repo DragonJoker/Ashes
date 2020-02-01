@@ -112,7 +112,7 @@ namespace ashes::d3d11
 			, VkBuffer buffer
 			, VkImage image )const override;
 		bool onCopyToImageCommand( VkCommandBuffer cmd
-			, VkBufferImageCopyArray const & copyInfos
+			, ArrayView< VkBufferImageCopy const > const & copyInfos
 			, VkBuffer src
 			, VkImage dst )const override;
 		bool onCheckHResultCommand( HRESULT hresult
@@ -180,7 +180,7 @@ namespace ashes::d3d11
 			, VkBuffer buffer
 			, VkImage image )const override;
 		bool onCopyToImageCommand( VkCommandBuffer cmd
-			, VkBufferImageCopyArray const & copyInfos
+			, ArrayView< VkBufferImageCopy const > const & copyInfos
 			, VkBuffer src
 			, VkImage dst )const override;
 		bool onCheckHResultCommand( HRESULT hresult

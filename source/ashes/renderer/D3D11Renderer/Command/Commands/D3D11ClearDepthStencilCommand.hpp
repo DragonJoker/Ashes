@@ -26,7 +26,7 @@ namespace ashes::d3d11
 		*/
 		ClearDepthStencilCommand( VkDevice device
 			, VkImage image
-			, VkImageSubresourceRangeArray ranges
+			, ArrayView< VkImageSubresourceRange const > ranges
 			, VkClearDepthStencilValue value );
 		ClearDepthStencilCommand( ClearDepthStencilCommand const & rhs );
 		~ClearDepthStencilCommand();

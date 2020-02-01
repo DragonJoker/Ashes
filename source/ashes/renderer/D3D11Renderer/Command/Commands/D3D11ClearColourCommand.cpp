@@ -45,11 +45,11 @@ namespace ashes::d3d11
 
 	ClearColourCommand::ClearColourCommand( VkDevice device
 		, VkImage image
-		, VkImageSubresourceRangeArray ranges
+		, ArrayView< VkImageSubresourceRange const > ranges
 		, VkClearColorValue const & colour )
 		: CommandBase{ device }
 		, m_image{ image }
-		, m_ranges{ std::move( ranges ) }
+		, m_ranges{ ranges.begin(), ranges.end() }
 		, m_colour{ colour }
 		, m_views{ createViews( m_device, m_image, m_ranges ) }
 	{
