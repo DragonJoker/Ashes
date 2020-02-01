@@ -9,7 +9,7 @@ namespace ashes::d3d11
 	{
 	}
 
-	VkResult PipelineCache::merge( VkPipelineCacheArray pipelines )
+	VkResult PipelineCache::merge( ArrayView< VkPipelineCache const > pipelines )
 	{
 		return VK_SUCCESS;
 	}

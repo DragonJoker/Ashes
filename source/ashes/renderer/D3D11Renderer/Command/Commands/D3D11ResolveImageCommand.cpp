@@ -13,7 +13,7 @@ namespace ashes::d3d11
 	ResolveImageCommand::ResolveImageCommand( VkDevice device
 		, VkImage srcImage
 		, VkImage dstImage
-		, VkImageResolveArray regions )
+		, ArrayView< VkImageResolve const > regions )
 		: CommandBase{ device }
 		, m_srcResource{ get( srcImage )->getResource() }
 		, m_dstResource{ get( dstImage )->getResource() }

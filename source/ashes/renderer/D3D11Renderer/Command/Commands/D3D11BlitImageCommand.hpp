@@ -77,7 +77,7 @@ namespace ashes::d3d11
 			, BlitPipeline const & pipeline
 			, VkImage srcImage
 			, VkImage dstImage
-			, VkImageBlitArray const & regions
+			, ArrayView< VkImageBlit const > const & regions
 			, VkFilter filter );
 		~BlitImageCommand();
 

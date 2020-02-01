@@ -33,7 +33,7 @@
 //			, VkBuffer buffer
 //			, VkImage image )const;
 //		bool onCopyToImageCommand( VkCommandBuffer cmd
-//			, VkBufferImageCopyArray const & copyInfos
+//			, ArrayView< VkBufferImageCopy const > const & copyInfos
 //			, VkBuffer src
 //			, VkImage dst )const override;
 //

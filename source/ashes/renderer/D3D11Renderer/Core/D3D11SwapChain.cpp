@@ -115,7 +115,7 @@ namespace ashes::d3d11
 			, nullptr
 			, m_device
 			, m_createInfo.imageFormat
-			, m_windowExtent
+			, m_swapchainExtent
 			, rtTex );
 		dxDebugName( get( m_swapChainImage )->getResource(), SwapChainImage );
 
@@ -201,6 +201,7 @@ namespace ashes::d3d11
 	void SwapchainKHR::doInitPresentParameters()
 	{
 		auto caps = get( m_createInfo.surface )->getCapabilities( get( m_device )->getGpu() );
+		m_windowExtent = caps.maxImageExtent;
 		m_displayMode = get( m_createInfo.surface )->getMatchingDesc( m_createInfo.imageFormat );
 		auto hWnd = get( m_createInfo.surface )->getHwnd();
 

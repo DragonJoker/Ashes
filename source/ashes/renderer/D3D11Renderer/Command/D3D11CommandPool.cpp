@@ -42,7 +42,7 @@ namespace ashes::d3d11
 		return VK_SUCCESS;
 	}
 
-	VkResult CommandPool::free( VkCommandBufferArray commands )
+	VkResult CommandPool::free( ArrayView< VkCommandBuffer const > commands )
 	{
 		for ( auto & command : commands )
 		{

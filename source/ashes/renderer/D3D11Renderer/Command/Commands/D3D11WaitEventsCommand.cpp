@@ -15,13 +15,13 @@ See LICENSE file in root folder.
 namespace ashes::d3d11
 {
 	WaitEventsCommand::WaitEventsCommand( VkDevice device
-		, VkEventArray const & events
+		, ArrayView< VkEvent const > const & events
 		, VkPipelineStageFlags srcStageMask
 		, VkPipelineStageFlags dstStageMask
-		, VkBufferMemoryBarrierArray const & bufferMemoryBarriers
-		, VkImageMemoryBarrierArray const & imageMemoryBarriers )
+		, ArrayView< VkBufferMemoryBarrier const > const & bufferMemoryBarriers
+		, ArrayView< VkImageMemoryBarrier const > const & imageMemoryBarriers )
 		: CommandBase{ device }
-		, m_events{ events }
+		, m_events{ events.begin(), events.end() }
 	{
 	}
 

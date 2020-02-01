@@ -12,7 +12,7 @@
 //	{
 //	public:
 //		virtual bool onCopyToImageCommand( VkCommandBuffer cmd
-//			, VkBufferImageCopyArray const & copyInfo
+//			, ArrayView< VkBufferImageCopy const > const & copyInfo
 //			, VkBuffer src
 //			, VkImage dst )const = 0;
 //

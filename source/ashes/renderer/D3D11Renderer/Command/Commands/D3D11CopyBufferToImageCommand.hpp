@@ -66,7 +66,7 @@ namespace ashes::d3d11
 		*	L'image destination.
 		*/
 		CopyBufferToImageCommand( VkDevice device
-			, VkBufferImageCopyArray const & copyInfo
+			, ArrayView< VkBufferImageCopy const > const & copyInfo
 			, VkBuffer src
 			, VkImage dst );
 		~CopyBufferToImageCommand();
@@ -84,7 +84,7 @@ namespace ashes::d3d11
 		void doMapCopy( Context const & context
 			, MapCopyImage const & mapCopy
 			, VkFormat format
-			, ObjectMemory const & src
+			, D3D11_MAPPED_SUBRESOURCE srcMapped
 			, ObjectMemory const & dst )const;
 		void doCopyToStaging( Context const & context
 			, VkDeviceSize srcOffset

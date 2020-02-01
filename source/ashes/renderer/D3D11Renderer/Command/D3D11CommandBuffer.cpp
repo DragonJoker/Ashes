@@ -204,7 +204,7 @@ namespace ashes::d3d11
 		m_state.vbos.clear();
 	}
 
-	void CommandBuffer::executeCommands( VkCommandBufferArray commands )const
+	void CommandBuffer::executeCommands( ArrayView< VkCommandBuffer const > commands )const
 	{
 #if AshesD3D_UseCommandsList
 
@@ -235,7 +235,7 @@ namespace ashes::d3d11
 	void CommandBuffer::clearColorImage( VkImage image
 		, VkImageLayout imageLayout
 		, VkClearColorValue colour
-		, VkImageSubresourceRangeArray ranges )const
+		, ArrayView< VkImageSubresourceRange const > ranges )const
 	{
 		m_commands.emplace_back( std::make_unique< ClearColourCommand >( m_device
 			, image
@@ -246,7 +246,7 @@ namespace ashes::d3d11
 	void CommandBuffer::clearDepthStencilImage( VkImage image
 		, VkImageLayout imageLayout
 		, VkClearDepthStencilValue value
-		, VkImageSubresourceRangeArray ranges )const
+		, ArrayView< VkImageSubresourceRange const > ranges )const
 	{
 		m_commands.emplace_back( std::make_unique< ClearDepthStencilCommand >( m_device
 			, image
@@ -254,8 +254,8 @@ namespace ashes::d3d11
 			, value ) );
 	}
 
-	void CommandBuffer::clearAttachments( VkClearAttachmentArray clearAttachments
-		, VkClearRectArray clearRects )
+	void CommandBuffer::clearAttachments( ArrayView< VkClearAttachment const > clearAttachments
+		, ArrayView< VkClearRect const > clearRects )
 	{
 		m_commands.emplace_back( std::make_unique< ClearAttachmentsCommand >( m_device
 			, m_state.currentRenderPass
@@ -334,8 +334,8 @@ namespace ashes::d3d11
 	}
 
 	void CommandBuffer::bindVertexBuffers( uint32_t firstBinding
-		, VkBufferArray buffers
-		, UInt64Array offsets )const
+		, ArrayView< VkBuffer const > buffers
+		, ArrayView< uint64_t const > offsets )const
 	{
 		assert( buffers.size() == offsets.size() );
 		VbosBinding binding;
@@ -368,8 +368,8 @@ namespace ashes::d3d11
 	void CommandBuffer::bindDescriptorSets( VkPipelineBindPoint bindingPoint
 		, VkPipelineLayout layout
 		, uint32_t firstSet
-		, VkDescriptorSetArray descriptorSets
-		, UInt32Array dynamicOffsets )const
+		, ArrayView< VkDescriptorSet const > descriptorSets
+		, ArrayView< uint32_t const > dynamicOffsets )const
 	{
 		for ( auto & descriptorSet : descriptorSets )
 		{
@@ -385,13 +385,13 @@ namespace ashes::d3d11
 	}
 
 	void CommandBuffer::setViewport( uint32_t firstViewport
-		, VkViewportArray viewports )const
+		, ArrayView< VkViewport const > viewports )const
 	{
 		m_commands.emplace_back( std::make_unique< ViewportCommand >( m_device, firstViewport, viewports ) );
 	}
 
 	void CommandBuffer::setScissor( uint32_t firstScissor
-		, VkScissorArray scissors )const
+		, ArrayView< VkRect2D const > scissors )const
 	{
 		m_commands.emplace_back( std::make_unique< ScissorCommand >( m_device, firstScissor, scissors ) );
 	}
@@ -508,7 +508,7 @@ namespace ashes::d3d11
 	void CommandBuffer::copyToImage( VkBuffer src
 		, VkImage dst
 		, VkImageLayout dstLayout
-		, VkBufferImageCopyArray copyInfos )const
+		, ArrayView< VkBufferImageCopy const > copyInfos )const
 	{
 		if ( !get( m_device )->onCopyToImageCommand( get( this ), copyInfos, src, dst ) )
 		{
@@ -522,7 +522,7 @@ namespace ashes::d3d11
 	void CommandBuffer::copyToBuffer( VkImage src
 		, VkImageLayout srcLayout
 		, VkBuffer dst
-		, VkBufferImageCopyArray copyInfos )const
+		, ArrayView< VkBufferImageCopy const > copyInfos )const
 	{
 		m_commands.emplace_back( std::make_unique< CopyImageToBufferCommand >( m_device
 			, std::move( copyInfos )
@@ -554,7 +554,7 @@ namespace ashes::d3d11
 
 	void CommandBuffer::copyBuffer( VkBuffer src
 		, VkBuffer dst
-		, VkBufferCopyArray copyInfos )const
+		, ArrayView< VkBufferCopy const > copyInfos )const
 	{
 		for ( auto & copyInfo : copyInfos )
 		{
@@ -569,7 +569,7 @@ namespace ashes::d3d11
 		, VkImageLayout srcLayout
 		, VkImage dst
 		, VkImageLayout dstLayout
-		, VkImageCopyArray copyInfos )const
+		, ArrayView< VkImageCopy const > copyInfos )const
 	{
 		for ( auto & copyInfo : copyInfos )
 		{
@@ -584,7 +584,7 @@ namespace ashes::d3d11
 		, VkImageLayout srcLayout
 		, VkImage dstImage
 		, VkImageLayout dstLayout
-		, VkImageBlitArray regions
+		, ArrayView< VkImageBlit const > regions
 		, VkFilter filter )const
 	{
 		auto & pipeline = doGetBlitPipeline( get( srcImage )->getFormat()
@@ -603,7 +603,7 @@ namespace ashes::d3d11
 		, VkImageLayout srcLayout
 		, VkImage dstImage
 		, VkImageLayout dstLayout
-		, VkImageResolveArray regions )const
+		, ArrayView< VkImageResolve const > regions )const
 	{
 		m_commands.emplace_back( std::make_unique< ResolveImageCommand >( m_device
 			, srcImage
@@ -814,12 +814,12 @@ namespace ashes::d3d11
 			, stageMask ) );
 	}
 
-	void CommandBuffer::waitEvents( VkEventArray events
+	void CommandBuffer::waitEvents( ArrayView< VkEvent const > events
 		, VkPipelineStageFlags srcStageMask
 		, VkPipelineStageFlags dstStageMask
-		, VkMemoryBarrierArray memoryBarriers
-		, VkBufferMemoryBarrierArray bufferMemoryBarriers
-		, VkImageMemoryBarrierArray imageMemoryBarriers )const
+		, ArrayView< VkMemoryBarrier const > memoryBarriers
+		, ArrayView< VkBufferMemoryBarrier const > bufferMemoryBarriers
+		, ArrayView< VkImageMemoryBarrier const > imageMemoryBarriers )const
 	{
 		m_commands.emplace_back( std::make_unique< WaitEventsCommand >( m_device
 			, events
@@ -832,9 +832,9 @@ namespace ashes::d3d11
 	void CommandBuffer::pipelineBarrier( VkPipelineStageFlags after
 		, VkPipelineStageFlags before
 		, VkDependencyFlags dependencyFlags
-		, VkMemoryBarrierArray memoryBarriers
-		, VkBufferMemoryBarrierArray bufferMemoryBarriers
-		, VkImageMemoryBarrierArray imageMemoryBarriers )const
+		, ArrayView< VkMemoryBarrier const > memoryBarriers
+		, ArrayView< VkBufferMemoryBarrier const > bufferMemoryBarriers
+		, ArrayView< VkImageMemoryBarrier const > imageMemoryBarriers )const
 	{
 		m_commands.emplace_back( std::make_unique< MemoryBarrierCommand >( m_device
 			, after

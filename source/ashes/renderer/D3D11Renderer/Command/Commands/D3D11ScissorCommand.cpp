@@ -10,7 +10,7 @@ namespace ashes::d3d11
 {
 	ScissorCommand::ScissorCommand( VkDevice device
 		, uint32_t first
-		, VkScissorArray const & scissors )
+		, ArrayView< VkRect2D const > const & scissors )
 		: CommandBase{ device }
 		, m_scissors{ makeScissors( scissors.begin() + first, scissors.end() ) }
 	{

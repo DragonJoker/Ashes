@@ -26,7 +26,7 @@ namespace ashes::d3d11
 		*/
 		ClearColourCommand( VkDevice device
 			, VkImage image
-			, VkImageSubresourceRangeArray ranges
+			, ArrayView< VkImageSubresourceRange const > ranges
 			, VkClearColorValue const & colour );
 		ClearColourCommand( ClearColourCommand  const & rhs );
 		~ClearColourCommand();

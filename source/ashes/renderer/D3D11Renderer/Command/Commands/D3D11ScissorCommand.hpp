@@ -24,7 +24,7 @@ namespace ashes::d3d11
 		*/
 		ScissorCommand( VkDevice device
 			, uint32_t first
-			, VkScissorArray const & scissors );
+			, ArrayView< VkRect2D const > const & scissors );
 
 		void apply( Context const & context )const;
 		CommandPtr clone()const;
