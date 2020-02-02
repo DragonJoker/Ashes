@@ -108,8 +108,22 @@ namespace ashes::d3d11
 						return lookup.extensionName == std::string{ extension };
 					} ) )
 				{
-					throw ashes::Exception{ VK_ERROR_EXTENSION_NOT_PRESENT, extension };
+					throw ExtensionNotPresentException{ extension };
 				}
+			}
+		}
+
+		bool doHasEnabledExtensions( VkPhysicalDevice physicalDevice
+			, ashes::ArrayView< char const * const > const & extensions )
+		{
+			try
+			{
+				doCheckEnabledExtensions( physicalDevice, extensions );
+				return true;
+			}
+			catch ( ExtensionNotPresentException & )
+			{
+				return false;
 			}
 		}
 	}
@@ -184,6 +198,13 @@ namespace ashes::d3d11
 		safeRelease( m_debug );
 
 #endif
+	}
+
+	bool Device::hasExtension( std::string_view extension )const
+	{
+		char const * const version = extension.data();
+		return doHasEnabledExtensions( m_physicalDevice
+			, ashes::makeArrayView( &version, 1u ) );
 	}
 
 	VkPhysicalDeviceLimits const & Device::getLimits()const

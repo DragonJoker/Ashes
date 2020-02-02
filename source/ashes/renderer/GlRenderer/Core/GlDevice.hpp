@@ -20,6 +20,8 @@ namespace ashes::gl
 			, VkPhysicalDevice gpu
 			, VkDeviceCreateInfo createInfos );
 		~Device();
+
+		bool hasExtension( std::string_view extension )const;
 		VkPhysicalDeviceLimits const & getLimits()const;
 		void getImageSubresourceLayout( VkImage image
 			, VkImageSubresource const & subresource

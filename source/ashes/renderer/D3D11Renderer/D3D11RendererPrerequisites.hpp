@@ -229,6 +229,16 @@ namespace ashes::d3d11
 		std::string labelName;
 	};
 
+	class ExtensionNotPresentException
+		: public ashes::Exception
+	{
+	public:
+		ExtensionNotPresentException( std::string const & name )
+			: Exception{ VK_ERROR_EXTENSION_NOT_PRESENT, name }
+		{
+		}
+	};
+
 	struct DepthBias
 	{
 		float constantFactor;

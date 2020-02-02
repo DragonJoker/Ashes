@@ -19,12 +19,11 @@ namespace ashes
 		, m_features{ plugin.features }
 	{
 #ifndef NDEBUG
-
 		callstack::initialise();
-
 #endif
-
-#define VK_LIB_GLOBAL_FUNCTION( fun )\
+#define VK_LIB_GLOBAL_FUNCTION( ver, fun )\
+		vk##fun = reinterpret_cast< PFN_vk##fun >( m_plugin.getInstanceProcAddr( nullptr, "vk"#fun ) );
+#define VK_LIB_GLOBAL_FUNCTION_EXT( ver, ext, fun )\
 		vk##fun = reinterpret_cast< PFN_vk##fun >( m_plugin.getInstanceProcAddr( nullptr, "vk"#fun ) );
 #	include <ashes/ashes_functions_list.hpp>
 
@@ -41,9 +40,7 @@ namespace ashes
 		DEBUG_WRITE( "VkInstance.log" );
 
 #ifndef NDEBUG
-
 		callstack::cleanup();
-
 #endif
 	}
 
@@ -247,11 +244,10 @@ namespace ashes
 			, &m_instance );
 		checkError( res, "Instance creation" );
 
-#define VK_LIB_INSTANCE_FUNCTION( fun )\
-			vk##fun = reinterpret_cast< PFN_vk##fun >( getInstanceProcAddr( "vk"#fun ) );
-#define VK_LIB_INSTANCE_FUNCTION_EXT( ext, fun )\
-		if ( checkExtension( ext ) )\
-			vk##fun = reinterpret_cast< PFN_vk##fun >( getInstanceProcAddr( "vk"#fun ) );
+#define VK_LIB_INSTANCE_FUNCTION( ver, fun )\
+		vk##fun = reinterpret_cast< PFN_vk##fun >( getInstanceProcAddr( "vk"#fun ) );
+#define VK_LIB_INSTANCE_FUNCTION_EXT( ver, ext, fun )\
+		vk##fun = reinterpret_cast< PFN_vk##fun >( getInstanceProcAddr( "vk"#fun ) );
 #include <ashes/ashes_functions_list.hpp>
 	}
 
