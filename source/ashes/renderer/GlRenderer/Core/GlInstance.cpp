@@ -47,13 +47,41 @@ namespace ashes::gl
 					return lookup.extensionName == std::string{ extension };
 				} ) )
 			{
-				throw ashes::Exception{ VK_ERROR_EXTENSION_NOT_PRESENT, extension };
+				throw ExtensionNotPresentException{ extension };
 			}
 		}
 	}
 
+	bool doHasEnabledExtensions( ashes::ArrayView< char const * const > const & extensions )
+	{
+		try
+		{
+			doCheckEnabledExtensions( extensions );
+			return true;
+		}
+		catch ( ExtensionNotPresentException & )
+		{
+			return false;
+		}
+	}
+
+	VkApplicationInfo doGetDefaultApplicationInfo()
+	{
+		return
+		{
+			VK_STRUCTURE_TYPE_APPLICATION_INFO,
+			nullptr,
+			nullptr,
+			ashes::makeVersion( 1, 0, 0 ),
+			nullptr,
+			ashes::makeVersion( 1, 0, 0 ),
+			ashes::makeVersion( 1, 0, 0 ),
+		};
+	}
+
 	Instance::Instance( VkInstanceCreateInfo createInfo )
 		: m_flags{ createInfo.flags }
+		, m_applicationInfo{ createInfo.pApplicationInfo ? *createInfo.pApplicationInfo : doGetDefaultApplicationInfo() }
 		, m_enabledLayerNames{ convert( createInfo.ppEnabledLayerNames, createInfo.enabledLayerCount ) }
 		, m_enabledExtensions{ convert( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) }
 		, m_window{ new gl::RenderWindow( MinMajor, MinMinor, "GlInstance" ) }
@@ -86,6 +114,17 @@ namespace ashes::gl
 
 		m_context.reset();
 		delete m_window;
+	}
+
+	uint32_t Instance::getApiVersion()const
+	{
+		return m_applicationInfo.apiVersion;
+	}
+
+	bool Instance::hasExtension( std::string_view extension )const
+	{
+		char const * const version = extension.data();
+		return doHasEnabledExtensions( ashes::makeArrayView( &version, 1u ) );
 	}
 
 	void Instance::unregisterDevice( VkDevice device )

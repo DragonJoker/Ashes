@@ -23,6 +23,8 @@ namespace ashes::gl
 		Instance( VkInstanceCreateInfo createInfo );
 		~Instance();
 
+		uint32_t getApiVersion()const;
+		bool hasExtension( std::string_view extension )const;
 		void unregisterDevice( VkDevice device );
 		Context * registerDevice( VkDevice device );
 		void unregisterSurface( VkSurfaceKHR surface );
@@ -148,6 +150,7 @@ namespace ashes::gl
 
 	private:
 		VkInstanceCreateFlags m_flags;
+		VkApplicationInfo m_applicationInfo;
 		StringArray m_enabledLayerNames;
 		StringArray m_enabledExtensions;
 		gl::RenderWindow * m_window{ nullptr };

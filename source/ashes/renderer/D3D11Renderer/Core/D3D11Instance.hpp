@@ -20,6 +20,8 @@ namespace ashes::d3d11
 		Instance( VkInstanceCreateInfo createInfo );
 		~Instance();
 
+		uint32_t getApiVersion()const;
+		bool hasExtension( std::string_view extension )const;
 		VkPhysicalDeviceArray enumeratePhysicalDevices()const;
 		std::array< float, 16 > frustum( float left
 			, float right
@@ -93,6 +95,7 @@ namespace ashes::d3d11
 	private:
 		AshPluginFeatures m_features;
 		VkInstanceCreateFlags m_flags;
+		VkApplicationInfo m_applicationInfo;
 		StringArray m_enabledLayerNames;
 		StringArray m_enabledExtensions;
 		VkPhysicalDeviceArray m_physicalDevices;

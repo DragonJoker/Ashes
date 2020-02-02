@@ -582,7 +582,7 @@ namespace ashes
 		}
 
 		PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr;
-#define VK_LIB_DEVICE_FUNCTION( fun ) PFN_vk##fun vk##fun{ nullptr };
+#define VK_LIB_DEVICE_FUNCTION( ver, fun ) PFN_vk##fun vk##fun{ nullptr };
 #	include <ashes/ashes_functions_list.hpp>
 
 	protected:

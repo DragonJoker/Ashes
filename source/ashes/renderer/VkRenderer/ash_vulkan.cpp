@@ -113,15 +113,15 @@ namespace ashes::vk
 						true, // hasStorageBuffers
 						true, // supportsPersistentMapping
 					};
-#define VK_LIB_GLOBAL_FUNCTION( x )\
+#define VK_LIB_GLOBAL_FUNCTION( v, x )\
 					vklibrary->getFunction( "vk"#x, description.functions.x );
-#define VK_LIB_INSTANCE_FUNCTION( x )\
+#define VK_LIB_INSTANCE_FUNCTION( v, x )\
 					vklibrary->getFunction( "vk"#x, description.functions.x );
-#define VK_LIB_DEVICE_FUNCTION( x )\
+#define VK_LIB_DEVICE_FUNCTION( v, x )\
 					vklibrary->getFunction( "vk"#x, description.functions.x );
-#define VK_LIB_GLOBAL_FUNCTION_EXT( n, x )
-#define VK_LIB_INSTANCE_FUNCTION_EXT( n, x )
-#define VK_LIB_DEVICE_FUNCTION_EXT( n, x )
+#define VK_LIB_GLOBAL_FUNCTION_EXT( v, n, x )
+#define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )
+#define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )
 #	include <ashes/ashes_functions_list.hpp>
 					result = VK_SUCCESS;
 

@@ -28,6 +28,8 @@ namespace ashes::d3d11
 			, VkPhysicalDevice physicalDevice
 			, VkDeviceCreateInfo createInfos );
 		~Device();
+
+		bool hasExtension( std::string_view extension )const;
 		VkPhysicalDeviceLimits const & getLimits()const;
 		VkImage getStagingImage( VkImage image
 			, VkDeviceMemory & memory );
