@@ -882,6 +882,27 @@ namespace ashes
 		*/
 		void debugMarkerInsert( VkDebugMarkerMarkerInfoEXT const & labelInfo )const;
 #endif
+#if VK_EXT_debug_utils || VK_EXT_debug_marker
+		/**
+		*\brief
+		*	Begins a command buffer label.
+		*\param[in] labelInfo
+		*	The parameters of the label to begin.
+		*/
+		void beginDebugBlock( DebugBlockInfo const & labelInfo )const;
+		/**
+		*\brief
+		*	Ends the command label.
+		*/
+		void endDebugBlock()const;
+		/**
+		*\brief
+		*	Inserts a command label.
+		*\param[in] labelInfo
+		*	The parameters of the label to begin.
+		*/
+		void insertDebugBlock( DebugBlockInfo const & labelInfo )const;
+#endif
 		/**
 		*\brief
 		*	VkCommandBuffer implicit cast operator.

@@ -397,6 +397,72 @@ namespace ashes
 		}
 
 #endif
+#if VK_EXT_debug_utils || VK_EXT_debug_marker
+
+		/**
+		*\brief
+		*	Gives an object a tag.
+		*\param[in] nameInfo
+		*	The parameters of the tag to set on the object.
+		*/
+		inline void debugSetObjectTag( DebugObjectTagInfo const & tagInfo )const
+		{
+#	if VK_EXT_debug_utils
+			setDebugUtilsObjectTag(
+				{
+					VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_TAG_INFO_EXT,
+					nullptr,
+					tagInfo.objectType,
+					tagInfo.objectHandle,
+					tagInfo.tagName,
+					tagInfo.tagSize,
+					tagInfo.pTag,
+				} );
+#	endif
+#	if VK_EXT_debug_marker
+			debugMarkerSetObjectTag(
+				{
+					VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_TAG_INFO_EXT,
+					nullptr,
+					VkDebugReportObjectTypeEXT( tagInfo.objectType ),
+					tagInfo.objectHandle,
+					tagInfo.tagName,
+					tagInfo.tagSize,
+					tagInfo.pTag,
+				} );
+#	endif
+		}
+		/**
+		*\brief
+		*	Gives an object a user-friendly name.
+		*\param[in] nameInfo
+		*	The parameters of the name to set on the object.
+		*/
+		inline void setDebugObjectName( DebugObjectNameInfo const & nameInfo )const
+		{
+#	if VK_EXT_debug_utils
+			setDebugUtilsObjectName(
+				{
+					VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+					nullptr,
+					nameInfo.objectType,
+					nameInfo.object,
+					nameInfo.objectName.c_str(),
+				} );
+#	endif
+#	if VK_EXT_debug_marker
+			debugMarkerSetObjectName(
+				{
+					VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT,
+					nullptr,
+					VkDebugReportObjectTypeEXT( nameInfo.objectType ),
+					nameInfo.object,
+					nameInfo.objectName.c_str(),
+				} );
+#	endif
+		}
+
+#endif
 
 		/**
 		*\brief

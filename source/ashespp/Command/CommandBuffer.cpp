@@ -738,4 +738,81 @@ namespace ashes
 	}
 
 #endif
+#if VK_EXT_debug_utils || VK_EXT_debug_marker
+
+	void CommandBuffer::beginDebugBlock( DebugBlockInfo const & labelInfo )const
+	{
+#if VK_EXT_debug_utils
+		beginDebugUtilsLabel(
+			{
+				VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT,
+				nullptr,
+				labelInfo.markerName.c_str(),
+				{
+					labelInfo.color[0],
+					labelInfo.color[1],
+					labelInfo.color[2],
+					labelInfo.color[3],
+				}
+			} );
+#endif
+#if VK_EXT_debug_marker
+		debugMarkerBegin(
+			{
+				VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT,
+				nullptr,
+				labelInfo.markerName.c_str(),
+				{
+					labelInfo.color[0],
+					labelInfo.color[1],
+					labelInfo.color[2],
+					labelInfo.color[3],
+				}
+			} );
+#endif
+	}
+
+	void CommandBuffer::endDebugBlock()const
+	{
+#if VK_EXT_debug_utils
+		endDebugUtilsLabel();
+#endif
+#if VK_EXT_debug_marker
+		debugMarkerEnd();
+#endif
+	}
+
+	void CommandBuffer::insertDebugBlock( DebugBlockInfo const & labelInfo )const
+	{
+#if VK_EXT_debug_utils
+		insertDebugUtilsLabel(
+			{
+				VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT,
+				nullptr,
+				labelInfo.markerName.c_str(),
+				{
+					labelInfo.color[0],
+					labelInfo.color[1],
+					labelInfo.color[2],
+					labelInfo.color[3],
+				}
+			} );
+#endif
+#if VK_EXT_debug_marker
+		debugMarkerInsert(
+			{
+				VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT,
+				nullptr,
+				labelInfo.markerName.c_str(),
+				{
+					labelInfo.color[0],
+					labelInfo.color[1],
+					labelInfo.color[2],
+					labelInfo.color[3],
+				}
+			} );
+#endif
+	}
+
+#endif
 }
