@@ -8,15 +8,12 @@ Ashes
 Ashes is a drop-in replacement to Vulkan.  
 It allows to write Vulkan code, and to select the rendering API that will be used.  
   
-It is still a WIP, the library is far from complete!!  
-  
 To build it, you can use CMake.
 
 ## Renderers available
 
 - Vulkan: Ashes is a passthrough, when using Vulkan rendering API, and it has no additional cost if dynamic loader is used.
-- OpenGL 3.X
-- OpenGL 4.X
+- OpenGL.
 - Direct3D 11.
 
 ## How to use it
@@ -164,6 +161,11 @@ int main( int argc, char ** argv )
 ## Contact
 
 You can reach me on the Discord server dedicated to my projects: [DragonJoker's Lair](https://discord.gg/yVmaAvQ)
+
+## Validation
+
+Ashes is validated using Sascha Willems' Vulkan examples repository.
+I've forked it, to be able to test the drivers.
 
 ## Test applications
 
