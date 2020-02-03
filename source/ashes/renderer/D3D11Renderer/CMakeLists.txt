@@ -413,47 +413,6 @@ set( ${PROJECT_NAME}_HDR_FILES
 source_group( "Header Files\\Sync" FILES ${${PROJECT_NAME}_FOLDER_HDR_FILES} )
 source_group( "Source Files\\Sync" FILES ${${PROJECT_NAME}_FOLDER_SRC_FILES} )
 
-set( ${PROJECT_NAME}_FOLDER_HDR_FILES
-	${Ashes_SOURCE_DIR}/external/DirectXTex/DirectXTex/BC.h
-	${Ashes_SOURCE_DIR}/external/DirectXTex/DirectXTex/BCDirectCompute.h
-	${Ashes_SOURCE_DIR}/external/DirectXTex/DirectXTex/DDS.h
-	${Ashes_SOURCE_DIR}/external/DirectXTex/DirectXTex/DirectXTex.h
-	${Ashes_SOURCE_DIR}/external/DirectXTex/DirectXTex/DirectXTexP.h
-	${Ashes_SOURCE_DIR}/external/DirectXTex/DirectXTex/filters.h
-	${Ashes_SOURCE_DIR}/external/DirectXTex/DirectXTex/scoped.h
-)
-set( ${PROJECT_NAME}_FOLDER_SRC_FILES
-	${Ashes_SOURCE_DIR}/external/DirectXTex/DirectXTex/BC.cpp
-	${Ashes_SOURCE_DIR}/external/DirectXTex/DirectXTex/BC4BC5.cpp
-	${Ashes_SOURCE_DIR}/external/DirectXTex/DirectXTex/BC6HBC7.cpp
-	${Ashes_SOURCE_DIR}/external/DirectXTex/DirectXTex/BCDirectCompute.cpp
-	${Ashes_SOURCE_DIR}/external/DirectXTex/DirectXTex/DirectXTexCompress.cpp
-	${Ashes_SOURCE_DIR}/external/DirectXTex/DirectXTex/DirectXTexCompressGPU.cpp
-	${Ashes_SOURCE_DIR}/external/DirectXTex/DirectXTex/DirectXTexConvert.cpp
-	${Ashes_SOURCE_DIR}/external/DirectXTex/DirectXTex/DirectXTexDDS.cpp
-	${Ashes_SOURCE_DIR}/external/DirectXTex/DirectXTex/DirectXTexFlipRotate.cpp
-	${Ashes_SOURCE_DIR}/external/DirectXTex/DirectXTex/DirectXTexHDR.cpp
-	${Ashes_SOURCE_DIR}/external/DirectXTex/DirectXTex/DirectXTexImage.cpp
-	${Ashes_SOURCE_DIR}/external/DirectXTex/DirectXTex/DirectXTexMipmaps.cpp
-	${Ashes_SOURCE_DIR}/external/DirectXTex/DirectXTex/DirectXTexMisc.cpp
-	${Ashes_SOURCE_DIR}/external/DirectXTex/DirectXTex/DirectXTexNormalMaps.cpp
-	${Ashes_SOURCE_DIR}/external/DirectXTex/DirectXTex/DirectXTexPMAlpha.cpp
-	${Ashes_SOURCE_DIR}/external/DirectXTex/DirectXTex/DirectXTexResize.cpp
-	${Ashes_SOURCE_DIR}/external/DirectXTex/DirectXTex/DirectXTexTGA.cpp
-	${Ashes_SOURCE_DIR}/external/DirectXTex/DirectXTex/DirectXTexUtil.cpp
-	${Ashes_SOURCE_DIR}/external/DirectXTex/DirectXTex/DirectXTexWIC.cpp
-)
-set( ${PROJECT_NAME}_SRC_FILES
-	${${PROJECT_NAME}_SRC_FILES}
-	${${PROJECT_NAME}_FOLDER_SRC_FILES}
-)
-set( ${PROJECT_NAME}_HDR_FILES
-	${${PROJECT_NAME}_HDR_FILES}
-	${${PROJECT_NAME}_FOLDER_HDR_FILES}
-)
-source_group( "Header Files\\DirectXTex" FILES ${${PROJECT_NAME}_FOLDER_HDR_FILES} )
-source_group( "Source Files\\DirectXTex" FILES ${${PROJECT_NAME}_FOLDER_SRC_FILES} )
-
 set( ${PROJECT_NAME}_USE_SPIRV_CROSS 0 )
 
 if ( ASHES_HAS_SPIRV_CROSS )
