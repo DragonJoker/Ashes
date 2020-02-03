@@ -4029,6 +4029,48 @@ namespace ashes::d3d11
 			&& get( device )->hasExtension( extension.data() );
 	}
 
+	using InstanceFunctions = std::map< std::string, PFN_vkVoidFunction >;
+
+	InstanceFunctions const & getFunctions( VkInstance instance )
+	{
+		static std::map< VkInstance, InstanceFunctions > functions;
+		auto it = functions.insert( { instance, {} } );
+
+		if ( it.second )
+		{
+			if ( instance != VK_NULL_HANDLE )
+			{
+				it.first->second =
+				{
+#define VK_LIB_GLOBAL_FUNCTION( v, x )\
+					{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#define VK_LIB_GLOBAL_FUNCTION_EXT( v, n, x )\
+					{ "vk"#x, checkVersionExt( instance, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#define VK_LIB_INSTANCE_FUNCTION( v, x )\
+					{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )\
+					{ "vk"#x, checkVersionExt( instance, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#include <ashes/ashes_functions_list.hpp>
+				};
+			}
+			else
+			{
+				it.first->second =
+				{
+#define VK_LIB_GLOBAL_FUNCTION( v, x )\
+					{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
+#define VK_LIB_INSTANCE_FUNCTION( v, x )\
+					{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
+#define VK_LIB_GLOBAL_FUNCTION_EXT( v, n, x )
+#define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )
+#include <ashes/ashes_functions_list.hpp>
+				};
+			}
+		}
+
+		return it.first->second;
+	}
+
 	PFN_vkVoidFunction VKAPI_CALL vkGetInstanceProcAddr(
 		VkInstance instance,
 		const char* pName )
@@ -4038,19 +4080,7 @@ namespace ashes::d3d11
 
 		if ( init == VK_SUCCESS )
 		{
-			static std::map< std::string, PFN_vkVoidFunction > functions
-			{
-#define VK_LIB_GLOBAL_FUNCTION( v, x )\
-				{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
-#define VK_LIB_GLOBAL_FUNCTION_EXT( v, n, x )\
-				{ "vk"#x, checkVersionExt( instance, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
-#define VK_LIB_INSTANCE_FUNCTION( v, x )\
-				{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
-#define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )\
-				{ "vk"#x, checkVersionExt( instance, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
-#include <ashes/ashes_functions_list.hpp>
-			};
-
+			auto & functions = getFunctions( instance );
 			auto it = functions.find( pName );
 
 			if ( it != functions.end() )
