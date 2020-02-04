@@ -377,6 +377,48 @@ namespace ashes::gl
 			int h;
 		};
 
+		void adjust( MocVkScissor & value
+			, VkExtent2D const & renderArea )
+		{
+			auto vkbottom = value.y + value.h;
+			value.y = renderArea.height - vkbottom;
+		}
+
+		void adjust( ashes::ArrayView< MocVkScissor > const & values
+			, VkExtent2D const & renderArea )
+		{
+			for ( auto & value : values )
+			{
+				adjust( value, renderArea );
+			}
+		}
+
+		VkRect2D adjust( VkRect2D const & value
+			, VkExtent2D const & renderArea )
+		{
+			auto vkbottom = value.offset.y + value.extent.height;
+			auto vktop = value.offset.y;
+			return
+			{
+				{ value.offset.x, int32_t( renderArea.height - vkbottom ) },
+				{ value.extent.width, value.extent.height },
+			};
+		}
+
+		VkScissorArray adjust( ArrayView< VkRect2D const > const & values
+			, VkExtent2D const & renderArea )
+		{
+			VkScissorArray result;
+			result.reserve( values.size() );
+
+			for ( auto & value : values )
+			{
+				result.push_back( adjust( value, renderArea ) );
+			}
+
+			return result;
+		}
+
 		struct MocVkViewport
 		{
 			float x;
@@ -385,44 +427,44 @@ namespace ashes::gl
 			float h;
 		};
 
-		void adjust( MocVkViewport & viewport
+		void adjust( MocVkViewport & value
 			, VkExtent2D const & renderArea )
 		{
-			auto vkbottom = viewport.y + viewport.h;
-			viewport.y = renderArea.height - vkbottom;
+			auto vkbottom = value.y + value.h;
+			value.y = renderArea.height - vkbottom;
 		}
 
-		void adjust( ashes::ArrayView< MocVkViewport > const & scissors
+		void adjust( ashes::ArrayView< MocVkViewport > const & values
 			, VkExtent2D const & renderArea )
 		{
-			for ( auto & scissor : scissors )
+			for ( auto & value : values )
 			{
-				adjust( scissor, renderArea );
+				adjust( value, renderArea );
 			}
 		}
 
-		VkViewport adjust( VkViewport const & viewport
+		VkViewport adjust( VkViewport const & value
 			, VkExtent2D const & renderArea )
 		{
-			auto vkbottom = viewport.y + viewport.height;
-			auto vktop = viewport.y;
+			auto vkbottom = value.y + value.height;
+			auto vktop = value.y;
 			return
 			{
-				viewport.x, renderArea.height - vkbottom,
-				viewport.width, viewport.height,
-				viewport.minDepth, viewport.maxDepth,
+				value.x, renderArea.height - vkbottom,
+				value.width, value.height,
+				value.minDepth, value.maxDepth,
 			};
 		}
 
-		VkViewportArray adjust( ArrayView< VkViewport const > const & viewports
+		VkViewportArray adjust( ArrayView< VkViewport const > const & values
 			, VkExtent2D const & renderArea )
 		{
 			VkViewportArray result;
-			result.reserve( viewports.size() );
+			result.reserve( values.size() );
 
-			for ( auto & viewport : viewports )
+			for ( auto & value : values )
 			{
-				result.push_back( adjust( viewport, renderArea ) );
+				result.push_back( adjust( value, renderArea ) );
 			}
 
 			return result;
@@ -552,7 +594,7 @@ namespace ashes::gl
 
 						if ( map( it, list[index].end(), pCmd ) )
 						{
-							assert( pCmd->op.type == OpType::eApplyViewports );
+							assert( pCmd->op.type == OpType::eApplyViewport );
 							CmdApplyViewport & oldCmd = map< OpType::eApplyViewport >( *pCmd );
 							oldCmd.viewport = VkViewport
 							{
@@ -582,21 +624,69 @@ namespace ashes::gl
 
 		if ( force || getCurrentScissors() != scissors )
 		{
-			doApplyEnable( list
-				, GL_SCISSOR_TEST
-				, !scissors.empty() );
+			// TODO: Find a way to enable scissor test.
+			//doApplyEnable( list
+			//	, GL_SCISSOR_TEST
+			//	, !scissors.empty() );
 
 			if ( !scissors.empty() )
 			{
 				if ( m_viewportArrays )
 				{
-					list.push_back( makeCmd< OpType::eApplyScissors >( firstScissor
-						, uint32_t( scissors.size() )
-						, scissors ) );
+					if ( m_renderArea == VkExtent2D{ ~( 0u ), ~( 0u ) } )
+					{
+						auto index = list.size();
+						list.push_back( makeCmd< OpType::eApplyScissors >( firstScissor
+							, uint32_t( scissors.size() )
+							, scissors ) );
+						preExecuteActions.push_back( [index]( CmdList & list
+							, ContextStateStack const & stack )
+							{
+								Command * pCmd = nullptr;
+								auto it = list[index].begin();
+
+								if ( map( it, list[index].end(), pCmd ) )
+								{
+									assert( pCmd->op.type == OpType::eApplyScissors );
+									CmdApplyScissors & oldCmd = map< OpType::eApplyScissors >( *pCmd );
+									adjust( ashes::makeArrayView( reinterpret_cast< MocVkScissor * >( oldCmd.scissors.data() )
+										, reinterpret_cast< MocVkScissor * >( oldCmd.scissors.data() ) + oldCmd.count )
+										, stack.m_renderArea );
+								}
+							} );
+					}
+					else
+					{
+						list.push_back( makeCmd< OpType::eApplyScissors >( firstScissor
+							, uint32_t( scissors.size() )
+							, adjust( scissors, m_renderArea ) ) );
+					}
+				}
+				else if ( m_renderArea == VkExtent2D{ ~( 0u ), ~( 0u ) } )
+				{
+					auto index = list.size();
+					list.push_back( makeCmd< OpType::eApplyScissor >( VkRect2D{} ) );
+					preExecuteActions.push_back( [index]( CmdList & list
+						, ContextStateStack const & stack )
+						{
+							Command * pCmd = nullptr;
+							auto it = list[index].begin();
+
+							if ( map( it, list[index].end(), pCmd ) )
+							{
+								assert( pCmd->op.type == OpType::eApplyScissor );
+								CmdApplyScissor & oldCmd = map< OpType::eApplyScissor >( *pCmd );
+								oldCmd.scissor = VkRect2D
+								{
+									{ 0, 0 },
+									{ stack.m_renderArea.width, stack.m_renderArea.height },
+								};
+							}
+						} );
 				}
 				else
 				{
-					list.push_back( makeCmd< OpType::eApplyScissor >( scissors.front() ) );
+					list.push_back( makeCmd< OpType::eApplyScissor >( adjust( scissors.front(), m_renderArea ) ) );
 				}
 			}
 			else if ( m_renderArea == VkExtent2D{ ~( 0u ), ~( 0u ) } )
