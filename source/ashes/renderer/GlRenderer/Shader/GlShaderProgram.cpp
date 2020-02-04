@@ -218,8 +218,7 @@ namespace ashes::gl
 				, layout
 				, createFlags
 				, renderPass
-				, vertexInputState
-				, invertY );
+				, vertexInputState );
 		}
 		else
 		{
@@ -227,8 +226,7 @@ namespace ashes::gl
 				, pipeline
 				, std::move( descs )
 				, layout
-				, createFlags
-				, invertY );
+				, createFlags );
 		}
 	}
 
@@ -251,8 +249,7 @@ namespace ashes::gl
 		, VkPipelineLayout layout
 		, VkPipelineCreateFlags createFlags
 		, VkRenderPass renderPass
-		, Optional< VkPipelineVertexInputStateCreateInfo > const & vertexInputState
-		, bool invertY )
+		, Optional< VkPipelineVertexInputStateCreateInfo > const & vertexInputState )
 	{
 		program = merge( descs );
 		glLogCall( context
@@ -305,8 +302,7 @@ namespace ashes::gl
 		, VkPipeline pipeline
 		, std::vector< ShaderDesc > descs
 		, VkPipelineLayout layout
-		, VkPipelineCreateFlags createFlags
-		, bool invertY )
+		, VkPipelineCreateFlags createFlags )
 	{
 		auto programObject = glLogNonVoidEmptyCall( context
 			, glCreateProgram );
