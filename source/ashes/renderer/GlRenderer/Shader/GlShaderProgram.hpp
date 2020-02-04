@@ -41,14 +41,12 @@ namespace ashes::gl
 			, VkPipelineLayout layout
 			, VkPipelineCreateFlags createFlags
 			, VkRenderPass renderPass
-			, Optional< VkPipelineVertexInputStateCreateInfo > const & vertexInputState
-			, bool invertY );
+			, Optional< VkPipelineVertexInputStateCreateInfo > const & vertexInputState );
 		void doInitShaderProgram( ContextLock const & context
 			, VkPipeline pipeline
 			, std::vector< ShaderDesc > descs
 			, VkPipelineLayout layout
-			, VkPipelineCreateFlags createFlags
-			, bool invertY );
+			, VkPipelineCreateFlags createFlags );
 		void doCleanupProgramPipeline( ContextLock const & context );
 		void doCleanupShaderProgram( ContextLock const & context );
 	};
