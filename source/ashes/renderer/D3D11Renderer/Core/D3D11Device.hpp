@@ -106,7 +106,7 @@ namespace ashes::d3d11
 			return m_dummyIndexed.buffer;
 		}
 
-		inline VkPhysicalDevice getGpu()const
+		inline VkPhysicalDevice getPhysicalDevice()const
 		{
 			return m_physicalDevice;
 		}

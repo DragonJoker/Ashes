@@ -19,6 +19,9 @@ namespace ashes::gl
 			return true;
 		}
 
+		uint32_t getMemoryTypeBits( VkMemoryPropertyFlags properties )const;
+		uint32_t getMemoryTypeBits( VkMemoryPropertyFlags properties1
+			, VkMemoryPropertyFlags properties2 )const;
 		std::vector< VkLayerProperties > enumerateLayerProperties()const;
 		std::vector< VkExtensionProperties > enumerateExtensionProperties( const char * layerName )const;
 		VkPhysicalDeviceProperties const & getProperties()const;

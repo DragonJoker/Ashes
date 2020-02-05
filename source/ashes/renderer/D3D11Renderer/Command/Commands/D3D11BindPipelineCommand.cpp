@@ -326,7 +326,7 @@ namespace ashes::d3d11
 	SetDepthBoundsCommand::SetDepthBoundsCommand( VkDevice device
 		, DepthBounds const & depthBounds )
 		: CommandBase{ device }
-		, m_physicalDevice{ get( m_device )->getGpu() }
+		, m_physicalDevice{ get( m_device )->getPhysicalDevice() }
 		, m_depthBounds{ depthBounds }
 	{
 	}
