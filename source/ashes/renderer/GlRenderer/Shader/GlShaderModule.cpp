@@ -602,6 +602,22 @@ namespace ashes::gl
 			}
 		}
 
+		void doReworkFrontFace( bool invertY
+			, std::string & shader )
+		{
+			if ( !invertY )
+			{
+				static std::string const glFrontFacing = "gl_FrontFacing";
+				auto it = shader.find( glFrontFacing );
+
+				while ( it != std::string::npos )
+				{
+					shader.insert( shader.begin() + it, '!' );
+					it = shader.find( glFrontFacing, it + 2u );
+				}
+			}
+		}
+
 #endif
 
 		std::string compileSpvToGlsl( VkDevice device
@@ -636,7 +652,9 @@ namespace ashes::gl
 				doReworkBindings( pipelineLayout, createFlags, module, compiler, resources );
 				doReworkIntermediateInOut( previousStage, currentStage, compiler, resources );
 				doReworkAbsoluteInOut( currentStage, compiler, resources );
-				return compiler.compile();
+				auto result = compiler.compile();
+				doReworkFrontFace( invertY, result );
+				return result;
 #else
 				throw std::runtime_error{ "Can't parse SPIR-V shaders, pull submodule SpirvCross" };
 #endif
