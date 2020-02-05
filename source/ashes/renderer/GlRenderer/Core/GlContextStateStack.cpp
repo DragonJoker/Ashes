@@ -641,24 +641,33 @@ namespace ashes::gl
 						preExecuteActions.push_back( [index]( CmdList & list
 							, ContextStateStack const & stack )
 							{
-								Command * pCmd = nullptr;
-								auto it = list[index].begin();
-
-								if ( map( it, list[index].end(), pCmd ) )
+								if ( stack.isRtot() )
 								{
-									assert( pCmd->op.type == OpType::eApplyScissors );
-									CmdApplyScissors & oldCmd = map< OpType::eApplyScissors >( *pCmd );
-									adjust( ashes::makeArrayView( reinterpret_cast< MocVkScissor * >( oldCmd.scissors.data() )
-										, reinterpret_cast< MocVkScissor * >( oldCmd.scissors.data() ) + oldCmd.count )
-										, stack.m_renderArea );
+									Command * pCmd = nullptr;
+									auto it = list[index].begin();
+
+									if ( map( it, list[index].end(), pCmd ) )
+									{
+										assert( pCmd->op.type == OpType::eApplyScissors );
+										CmdApplyScissors & oldCmd = map< OpType::eApplyScissors >( *pCmd );
+										adjust( ashes::makeArrayView( reinterpret_cast< MocVkScissor * >( oldCmd.scissors.data() )
+											, reinterpret_cast< MocVkScissor * >( oldCmd.scissors.data() ) + oldCmd.count )
+											, stack.m_renderArea );
+									}
 								}
 							} );
+					}
+					else if ( isRtot() )
+					{
+						list.push_back( makeCmd< OpType::eApplyScissors >( firstScissor
+							, uint32_t( scissors.size() )
+							, adjust( scissors, m_renderArea ) ) );
 					}
 					else
 					{
 						list.push_back( makeCmd< OpType::eApplyScissors >( firstScissor
 							, uint32_t( scissors.size() )
-							, adjust( scissors, m_renderArea ) ) );
+							, scissors ) );
 					}
 				}
 				else if ( m_renderArea == VkExtent2D{ ~( 0u ), ~( 0u ) } )
@@ -668,24 +677,31 @@ namespace ashes::gl
 					preExecuteActions.push_back( [index]( CmdList & list
 						, ContextStateStack const & stack )
 						{
-							Command * pCmd = nullptr;
-							auto it = list[index].begin();
-
-							if ( map( it, list[index].end(), pCmd ) )
+							if ( stack.isRtot() )
 							{
-								assert( pCmd->op.type == OpType::eApplyScissor );
-								CmdApplyScissor & oldCmd = map< OpType::eApplyScissor >( *pCmd );
-								oldCmd.scissor = VkRect2D
+								Command * pCmd = nullptr;
+								auto it = list[index].begin();
+
+								if ( map( it, list[index].end(), pCmd ) )
 								{
-									{ 0, 0 },
+									assert( pCmd->op.type == OpType::eApplyScissor );
+									CmdApplyScissor & oldCmd = map< OpType::eApplyScissor >( *pCmd );
+									oldCmd.scissor = VkRect2D
+									{
+										{ 0, 0 },
 									{ stack.m_renderArea.width, stack.m_renderArea.height },
-								};
+									};
+								}
 							}
 						} );
 				}
-				else
+				else if ( isRtot() )
 				{
 					list.push_back( makeCmd< OpType::eApplyScissor >( adjust( scissors.front(), m_renderArea ) ) );
+				}
+				else
+				{
+					list.push_back( makeCmd< OpType::eApplyScissor >( scissors.front() ) );
 				}
 			}
 			else if ( m_renderArea == VkExtent2D{ ~( 0u ), ~( 0u ) } )
@@ -695,14 +711,17 @@ namespace ashes::gl
 				preExecuteActions.push_back( [index]( CmdList & list
 					, ContextStateStack const & stack )
 					{
-						Command * pCmd = nullptr;
-						auto it = list[index].begin();
-
-						if ( map( it, list[index].end(), pCmd ) )
+						if ( stack.isRtot() )
 						{
-							assert( pCmd->op.type == OpType::eApplyScissor );
-							CmdApplyScissor oldCmd = map< OpType::eApplyScissor >( *pCmd );
-							oldCmd.scissor = VkRect2D{ { 0, 0 }, stack.m_renderArea };
+							Command * pCmd = nullptr;
+							auto it = list[index].begin();
+
+							if ( map( it, list[index].end(), pCmd ) )
+							{
+								assert( pCmd->op.type == OpType::eApplyScissor );
+								CmdApplyScissor oldCmd = map< OpType::eApplyScissor >( *pCmd );
+								oldCmd.scissor = VkRect2D{ { 0, 0 }, stack.m_renderArea };
+							}
 						}
 					} );
 			}
@@ -821,6 +840,16 @@ namespace ashes::gl
 				, save.back.compareMask
 				, save.back.compareMask
 				, GL_CULL_MODE_BACK );
+		}
+	}
+
+	void ContextStateStack::setCurrentFramebuffer( VkFramebuffer value )
+	{
+		m_currentFbo = value;
+
+		if ( m_currentFbo )
+		{
+			m_isRtot = get( m_currentFbo )->hasSwapchainImage();
 		}
 	}
 

@@ -43,6 +43,7 @@ namespace ashes::gl
 		void applyStencilReference( CmdList & list
 			, uint32_t reference
 			, VkStencilFaceFlags faceFlags );
+		void setCurrentFramebuffer( VkFramebuffer value );
 
 		inline bool isPrimitiveRestartEnabled()const
 		{
@@ -107,9 +108,9 @@ namespace ashes::gl
 			return m_currentFbo;
 		}
 
-		inline void setCurrentFramebuffer( VkFramebuffer value )
+		inline bool isRtot()const
 		{
-			m_currentFbo = value;
+			return m_isRtot;
 		}
 
 	private:
@@ -148,5 +149,6 @@ namespace ashes::gl
 		VkFramebuffer m_currentFbo{ VK_NULL_HANDLE };
 		bool m_tessellation{ false };
 		bool m_viewportArrays{ false };
+		bool m_isRtot{ false };
 	};
 }
