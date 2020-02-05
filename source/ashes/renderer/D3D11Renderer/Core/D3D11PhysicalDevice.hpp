@@ -19,6 +19,9 @@ namespace ashes::d3d11
 			, AdapterInfo adapterInfo );
 		~PhysicalDevice();
 
+		uint32_t getMemoryTypeBits( VkMemoryPropertyFlags properties )const;
+		uint32_t getMemoryTypeBits( VkMemoryPropertyFlags properties1
+			, VkMemoryPropertyFlags properties2 )const;
 		VkBool32 getPresentationSupport( uint32_t queueFamilyIndex )const;
 		VkLayerPropertiesArray enumerateLayerProperties()const;
 		VkExtensionPropertiesArray enumerateExtensionProperties( const char * layerName )const;

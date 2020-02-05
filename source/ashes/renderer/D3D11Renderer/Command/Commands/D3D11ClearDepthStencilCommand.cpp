@@ -45,11 +45,11 @@ namespace ashes::d3d11
 
 	ClearDepthStencilCommand::ClearDepthStencilCommand( VkDevice device
 		, VkImage image
-		, VkImageSubresourceRangeArray ranges
+		, ArrayView< VkImageSubresourceRange const > ranges
 		, VkClearDepthStencilValue value )
 		: CommandBase{ device }
 		, m_image{ image }
-		, m_ranges{ std::move( ranges ) }
+		, m_ranges{ ranges.begin(), ranges.end() }
 		, m_value{ value }
 		, m_flags{ ( isDepthFormat( get( image )->getFormat() )
 				? D3D11_CLEAR_DEPTH

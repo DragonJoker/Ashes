@@ -28,6 +28,8 @@ namespace ashes::d3d11
 			, VkPhysicalDevice physicalDevice
 			, VkDeviceCreateInfo createInfos );
 		~Device();
+
+		bool hasExtension( std::string_view extension )const;
 		VkPhysicalDeviceLimits const & getLimits()const;
 		VkImage getStagingImage( VkImage image
 			, VkDeviceMemory & memory );
@@ -73,7 +75,7 @@ namespace ashes::d3d11
 		*/
 		/**@{*/
 		bool onCopyToImageCommand( VkCommandBuffer cmd
-			, VkBufferImageCopyArray const & copyInfo
+			, ArrayView< VkBufferImageCopy const > const & copyInfo
 			, VkBuffer src
 			, VkImage dst )const;
 		bool onCheckHResultCommand( HRESULT hresult
@@ -104,7 +106,7 @@ namespace ashes::d3d11
 			return m_dummyIndexed.buffer;
 		}
 
-		inline VkPhysicalDevice getGpu()const
+		inline VkPhysicalDevice getPhysicalDevice()const
 		{
 			return m_physicalDevice;
 		}

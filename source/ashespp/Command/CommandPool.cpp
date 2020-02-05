@@ -10,17 +10,9 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	CommandPool::CommandPool( Device const & device
-		, uint32_t queueFamilyIndex
-		, VkCommandPoolCreateFlags flags )
+		, VkCommandPoolCreateInfo createInfo )
 		: m_device{ device }
 	{
-		VkCommandPoolCreateInfo createInfo
-		{
-			VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
-			nullptr,
-			flags,                                    // flags
-			queueFamilyIndex                          // queueFamilyIndex
-		};
 		DEBUG_DUMP( createInfo );
 		auto res = m_device.vkCreateCommandPool( m_device
 			, &createInfo
@@ -36,10 +28,10 @@ namespace ashes
 		m_device.vkDestroyCommandPool( m_device, m_internal, nullptr );
 	}
 
-	CommandBufferPtr CommandPool::createCommandBuffer( bool primary )const
+	CommandBufferPtr CommandPool::createCommandBuffer( VkCommandBufferLevel level )const
 	{
 		return std::make_unique< CommandBuffer >( m_device
 			, *this
-			, primary );
+			, level );
 	}
 }

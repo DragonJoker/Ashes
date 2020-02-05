@@ -15,7 +15,7 @@ namespace ashes::d3d11
 			, VkDeviceQueueCreateInfo createInfo
 			, uint32_t index );
 		~Queue();
-		VkResult submit( VkSubmitInfoArray const & infos
+		VkResult submit( ArrayView< VkSubmitInfo const > const & infos
 			, VkFence fence )const;
 		VkResult bindSparse( ArrayView< VkBindSparseInfo const > values
 			, VkFence fence )const;
@@ -38,10 +38,10 @@ namespace ashes::d3d11
 		}
 
 	private:
-		VkResult doSubmit( VkCommandBufferArray const & commandBuffers
-			, VkSemaphoreArray const & semaphoresToWait
-			, VkPipelineStageFlagsArray const & semaphoresStage
-			, VkSemaphoreArray const & semaphoresToSignal
+		VkResult doSubmit( ArrayView< VkCommandBuffer const > const & commandBuffers
+			, ArrayView< VkSemaphore const > const & semaphoresToWait
+			, ArrayView< VkPipelineStageFlags const > const & semaphoresStage
+			, ArrayView< VkSemaphore const > const & semaphoresToSignal
 			, VkFence fence )const;
 
 	private:

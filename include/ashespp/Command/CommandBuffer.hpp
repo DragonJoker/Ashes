@@ -28,12 +28,12 @@ namespace ashes
 		*	The logical device.
 		*\param[in] pool
 		*	The parent command buffer pool.
-		*\param[in] primary
-		*	Tells if the command buffer is primary (\p true) or not (\p false).
+		*\param[in] level
+		*	The Vulkan command buffer level.
 		*/
 		CommandBuffer( Device const & device
 			, CommandPool const & pool
-			, bool primary = true );
+			, VkCommandBufferLevel level = VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		/**
 		*\brief
 		*	Destructor.
@@ -881,6 +881,27 @@ namespace ashes
 		*	The parameters of the label to begin.
 		*/
 		void debugMarkerInsert( VkDebugMarkerMarkerInfoEXT const & labelInfo )const;
+#endif
+#if VK_EXT_debug_utils || VK_EXT_debug_marker
+		/**
+		*\brief
+		*	Begins a command buffer label.
+		*\param[in] labelInfo
+		*	The parameters of the label to begin.
+		*/
+		void beginDebugBlock( DebugBlockInfo const & labelInfo )const;
+		/**
+		*\brief
+		*	Ends the command label.
+		*/
+		void endDebugBlock()const;
+		/**
+		*\brief
+		*	Inserts a command label.
+		*\param[in] labelInfo
+		*	The parameters of the label to begin.
+		*/
+		void insertDebugBlock( DebugBlockInfo const & labelInfo )const;
 #endif
 		/**
 		*\brief

@@ -15,7 +15,7 @@ endif()
 
 if ( VCPKG_TOOLCHAIN )
 	find_package( assimp CONFIG REQUIRED assimp )
-	set( ASSIMP_LIBRARIES assimp::assimp )
+	set( assimp_LIBRARIES assimp::assimp )
 else ()
 	find_package( assimp )
 endif ()
@@ -29,7 +29,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 		${SPIRV_LIBRARIES}
 		${wxWidgets_LIBRARIES}
 		${GTK2_LIBRARIES}
-		${ASSIMP_LIBRARIES}
+		${assimp_LIBRARIES}
 		ashes::ashes
 		ashes::ashespp
 		ashes::util
@@ -50,13 +50,10 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 				${CMAKE_SOURCE_DIR}/include
 				${wxWidgets_INCLUDE_DIRS}
 				${GTK2_INCLUDE_DIRS}
-				${ASSIMP_INCLUDE_DIR}
+				${assimp_INCLUDE_DIR}
 				${CMAKE_SOURCE_DIR}/external/imgui
 				${CMAKE_SOURCE_DIR}/samples/00-Common/Src
 				${Vulkan_INCLUDE_DIR}
-			)
-			target_compile_features( ${TARGET_NAME} PRIVATE
-				cxx_std_17
 			)
 			target_compile_definitions( ${TARGET_NAME} PRIVATE
 				SAMPLE_ID=${SAMPLE_ID}
@@ -72,9 +69,6 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 				CXX_STANDARD 17
 				CXX_EXTENSIONS OFF
 				FOLDER "${Ashes_BASE_DIR}/Samples"
-			)
-			add_dependencies( ${TARGET_NAME}
-				${ENABLED_RENDERERS}
 			)
 			math( EXPR SAMPLE_ID "${SAMPLE_ID} + 1" )
 		endif ()

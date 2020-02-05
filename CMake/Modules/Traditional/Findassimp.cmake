@@ -1,139 +1,137 @@
 # FindASSIMP
 # ------------
 #
-# Locate assimp library
+# Locate ASSIMP library
 #
 # This module defines
 #
 # ::
 #
 #   ASSIMP_LIBRARIES, the libraries to link against
-#   ASSIMP_FOUND, if false, do not try to link to assimp
+#   ASSIMP_FOUND, if false, do not try to link to ASSIMP
 #   ASSIMP_INCLUDE_DIR, where to find headers.
 #
 
-FIND_PATH(ASSIMP_ROOT_DIR include/assimp/ai_assert.h 
+find_path( ASSIMP_DIR include/assimp/ai_assert.h 
 	HINTS
 	PATH_SUFFIXES
-		assimp
+		ASSIMP
 	PATHS
 		/usr/local
 		/usr
 )
 
-FIND_PATH(ASSIMP_INCLUDE_DIR assimp/ai_assert.h 
+find_path( ASSIMP_INCLUDE_DIR assimp/ai_assert.h 
 	HINTS
 	PATH_SUFFIXES
 		include
 	PATHS
-		${ASSIMP_ROOT_DIR}
+		${ASSIMP_DIR}
 		/usr/local/include
 		/usr/include
 )
 
+if( MSVC )
+	set_property( CACHE ASSIMP_VC_NUM PROPERTY STRINGS 142 141 140 120 110 100 )
+	if ( CMAKE_GENERATOR STREQUAL "Visual Studio 16 2019" )
+		set( ASSIMP_VC_NUM 142 CACHE STRING "Assimp MSVC library version" )
+	elseif ( CMAKE_GENERATOR STREQUAL "Visual Studio 15 2017" )
+		set( ASSIMP_VC_NUM 141 CACHE STRING "Assimp MSVC library version" )
+	elseif ( MSVC14 )
+		set( ASSIMP_VC_NUM 140 CACHE STRING "Assimp MSVC library version" )
+	elseif ( MSVC12 )
+		set( ASSIMP_VC_NUM 120 CACHE STRING "Assimp MSVC library version" )
+	elseif ( MSVC11 )
+		set( ASSIMP_VC_NUM 110 CACHE STRING "Assimp MSVC library version" )
+	elseif ( MSVC10 )
+		set( ASSIMP_VC_NUM 100 CACHE STRING "Assimp MSVC library version" )
+	else ()
+		message( SEND_ERROR "Unsupported MSVC version" )
+	endif ()
+endif ()
+
 if (CMAKE_CL_64 OR CMAKE_GENERATOR MATCHES Win64)
 	if( MSVC )
-		if ( CMAKE_GENERATOR STREQUAL "Visual Studio 16 2019" )
-			set( VC_NUM 142 )
-		elseif ( CMAKE_GENERATOR STREQUAL "Visual Studio 15 2017" )
-			set( VC_NUM 141 )
-		elseif ( MSVC14 )
-			set( VC_NUM 140 )
-		elseif ( MSVC12 )
-			set( VC_NUM 120 )
-		elseif ( MSVC11 )
-			set( VC_NUM 110 )
-		elseif ( MSVC10 )
-			set( VC_NUM 100 )
-		else ()
-			message( SEND_ERROR "Unsupported MSVC version" )
-		endif ()
-		FIND_PATH( ASSIMP_LIBRARY_RELEASE_DIR assimp.lib assimp-vc${VC_NUM}-mt.lib
+		find_path( ASSIMP_LIBRARY_RELEASE_DIR assimp.lib assimp-vc${ASSIMP_VC_NUM}-mt.lib
 			HINTS
 			PATH_SUFFIXES
 				lib/x64
-				lib/assimp_release-dll_x64
+				lib/ASSIMP_release-dll_x64
 				lib/x64/Release
 				lib/Release/x64
 				lib
 			PATHS
-				${ASSIMP_ROOT_DIR}
+				${ASSIMP_DIR}
 		)
-
-		FIND_PATH(ASSIMP_LIBRARY_DEBUG_DIR assimpD.lib assimpd.lib assimp-vc${VC_NUM}-mtd.lib
+		find_path( ASSIMP_LIBRARY_DEBUG_DIR ASSIMPD.lib ASSIMPd.lib assimp-vc${ASSIMP_VC_NUM}-mtd.lib
 			HINTS
 			PATH_SUFFIXES
 				lib/x64
-				lib/assimp_debug-dll_x64
+				lib/ASSIMP_debug-dll_x64
 				lib/x64/Debug
 				lib/Debug/x64
 				lib
 			PATHS
-				${ASSIMP_ROOT_DIR}
-				${ASSIMP_ROOT_DIR}/debug
+				${ASSIMP_DIR}
+				${ASSIMP_DIR}/debug
 				${ASSIMP_LIBRARY_RELEASE_DIR}
 		)
-
-		FIND_LIBRARY(ASSIMP_LIBRARY_RELEASE
+		find_library( ASSIMP_LIBRARY_RELEASE
 			NAMES
-				assimp-vc${VC_NUM}-mt.lib
+				assimp-vc${ASSIMP_VC_NUM}-mt.lib
 				assimp.lib
 			HINTS
 			PATHS
 				${ASSIMP_LIBRARY_RELEASE_DIR}
 		)
-
-		FIND_LIBRARY(ASSIMP_LIBRARY_DEBUG
+		find_library( ASSIMP_LIBRARY_DEBUG
 			NAMES
-				assimp-vc${VC_NUM}-mtd.lib
-				assimpD.lib
-				assimpd.lib
+				assimp-vc${ASSIMP_VC_NUM}-mtd.lib
+				ASSIMPD.lib
+				ASSIMPd.lib
 			HINTS
 			PATHS
 				${ASSIMP_LIBRARY_DEBUG_DIR}
 				${ASSIMP_LIBRARY_RELEASE_DIR}
 		)
 	else()
-		FIND_PATH(ASSIMP_LIBRARY_RELEASE_DIR libassimp.so libassimp.lib libassimp.dylib
+		find_path( ASSIMP_LIBRARY_RELEASE_DIR libASSIMP.so libASSIMP.lib libASSIMP.dylib
 			HINTS
 			PATH_SUFFIXES
 				lib64
-				lib/assimp_release-dll_win64
+				lib/ASSIMP_release-dll_win64
 				lib/x64/Release
 				lib/Release/x64
 				lib
 			PATHS
-				${ASSIMP_ROOT_DIR}
+				${ASSIMP_DIR}
 		)
-
-		FIND_PATH(ASSIMP_LIBRARY_DEBUG_DIR libassimp.so libassimp.lib libassimp.dylib
+		find_path( ASSIMP_LIBRARY_DEBUG_DIR libASSIMP.so libASSIMP.lib libASSIMP.dylib
 			HINTS
 			PATH_SUFFIXES
 				lib64
-				lib/assimp_debug-dll_win64
+				lib/ASSIMP_debug-dll_win64
 				lib/x64/Debug
 				lib/Debug/x64
 				lib
 			PATHS
-				${ASSIMP_ROOT_DIR}
-				${ASSIMP_ROOT_DIR}/debug
+				${ASSIMP_DIR}
+				${ASSIMP_DIR}/debug
 		)
-
-		FIND_LIBRARY(ASSIMP_LIBRARY_RELEASE
+		find_library( ASSIMP_LIBRARY_RELEASE
 			NAMES
-				libassimp.so
-				libassimp.dll.a
-				libassimp.dylib
+				libASSIMP.so
+				libASSIMP.dll.a
+				libASSIMP.dylib
 			HINTS
 			PATHS
 				${ASSIMP_LIBRARY_RELEASE_DIR}
 		)
-
-		FIND_LIBRARY(ASSIMP_LIBRARY_DEBUG
+		find_library( ASSIMP_LIBRARY_DEBUG
 			NAMES
-				libassimp.so
-				libassimp.dll.a
-				libassimp.dylib
+				libASSIMP.so
+				libASSIMP.dll.a
+				libASSIMP.dylib
 			HINTS
 			PATHS
 				${ASSIMP_LIBRARY_DEBUG_DIR}
@@ -141,66 +139,48 @@ if (CMAKE_CL_64 OR CMAKE_GENERATOR MATCHES Win64)
 	endif()
 else()
 	if( MSVC )
-		if ( CMAKE_GENERATOR STREQUAL "Visual Studio 16 2019" )
-			set( VC_NUM 142 )
-		elseif ( CMAKE_GENERATOR STREQUAL "Visual Studio 15 2017" )
-			set( VC_NUM 141 )
-		elseif( MSVC14 )
-			set( VC_NUM 140 )
-		elseif ( MSVC12 )
-			set( VC_NUM 120 )
-		elseif ( MSVC11 )
-			set( VC_NUM 110 )
-		elseif ( MSVC10 )
-			set( VC_NUM 100 )
-		else ()
-			message( SEND_ERROR "Unsupported MSVC version" )
-		endif ()
-		FIND_PATH(ASSIMP_LIBRARY_RELEASE_DIR assimp.lib assimp-vc${VC_NUM}-mt.lib
+		find_path( ASSIMP_LIBRARY_RELEASE_DIR assimp.lib assimp-vc${ASSIMP_VC_NUM}-mt.lib
 		HINTS
 		PATH_SUFFIXES
 			lib/x86
-			lib/assimp_release-dll_win32
+			lib/ASSIMP_release-dll_win32
 			lib/x86/Release
 			lib/Release/x86
 			lib
 		PATHS
-			${ASSIMP_ROOT_DIR}
+			${ASSIMP_DIR}
 		)
-
-		FIND_PATH(ASSIMP_LIBRARY_DEBUG_DIR assimpD.lib assimpd.lib assimp-vc${VC_NUM}-mtd.lib
+		find_path( ASSIMP_LIBRARY_DEBUG_DIR ASSIMPD.lib ASSIMPd.lib assimp-vc${ASSIMP_VC_NUM}-mtd.lib
 		HINTS
 		PATH_SUFFIXES
 			lib/x86
-			lib/assimp_debug-dll_win32
+			lib/ASSIMP_debug-dll_win32
 			lib/x86/Debug
 			lib/Debug/x86
 			lib
 		PATHS
-			${ASSIMP_ROOT_DIR}
-			${ASSIMP_ROOT_DIR}/debug
+			${ASSIMP_DIR}
+			${ASSIMP_DIR}/debug
 		)
-
-		FIND_LIBRARY(ASSIMP_LIBRARY_RELEASE
+		find_library( ASSIMP_LIBRARY_RELEASE
 			NAMES
 				assimp.lib
-				assimp-vc${VC_NUM}-mt.lib
+				assimp-vc${ASSIMP_VC_NUM}-mt.lib
 			HINTS
 			PATHS
 				${ASSIMP_LIBRARY_RELEASE_DIR}
 		)
-
-		FIND_LIBRARY(ASSIMP_LIBRARY_DEBUG
+		find_library( ASSIMP_LIBRARY_DEBUG
 			NAMES
-				assimpD.lib
-				assimpd.lib
-				assimp-vc${VC_NUM}-mtd.lib
+				ASSIMPD.lib
+				ASSIMPd.lib
+				assimp-vc${ASSIMP_VC_NUM}-mtd.lib
 			HINTS
 			PATHS
 				${ASSIMP_LIBRARY_DEBUG_DIR}
 		)
 	elseif( MINGW )
-		FIND_PATH(ASSIMP_LIBRARY_RELEASE_DIR libassimp.dll.a
+		find_path( ASSIMP_LIBRARY_RELEASE_DIR libASSIMP.dll.a
 			HINTS
 			PATH_SUFFIXES
 				lib/mingw
@@ -209,10 +189,9 @@ else()
 				lib/x86
 				lib
 			PATHS
-				${ASSIMP_ROOT_DIR}
+				${ASSIMP_DIR}
 		)
-
-		FIND_PATH(ASSIMP_LIBRARY_DEBUG_DIR libassimp.dll.a
+		find_path( ASSIMP_LIBRARY_DEBUG_DIR libASSIMP.dll.a
 			HINTS
 			PATH_SUFFIXES
 				lib/mingw
@@ -221,62 +200,57 @@ else()
 				lib/x86
 				lib
 			PATHS
-				${ASSIMP_ROOT_DIR}
-				${ASSIMP_ROOT_DIR}/debug
+				${ASSIMP_DIR}
+				${ASSIMP_DIR}/debug
 		)
-
-		FIND_LIBRARY(ASSIMP_LIBRARY_RELEASE
+		find_library( ASSIMP_LIBRARY_RELEASE
 			NAMES
-				libassimp.dll.a
+				libASSIMP.dll.a
 			HINTS
 			PATHS
 				${ASSIMP_LIBRARY_RELEASE_DIR}
 		)
-
-		FIND_LIBRARY(ASSIMP_LIBRARY_DEBUG
+		find_library( ASSIMP_LIBRARY_DEBUG
 			NAMES
-				libassimpd.dll.a
+				libASSIMPd.dll.a
 			HINTS
 			PATHS
 				${ASSIMP_LIBRARY_DEBUG_DIR}
 		)
 	else()
-		FIND_PATH(ASSIMP_LIBRARY_RELEASE_DIR libassimp.so libassimp.dylib
+		find_path( ASSIMP_LIBRARY_RELEASE_DIR libASSIMP.so libASSIMP.dylib
 			HINTS
 			PATH_SUFFIXES
-				lib/assimp_release-dll_win32
+				lib/ASSIMP_release-dll_win32
 				lib/x86/Release
 				lib/Release/x86
 				lib
 			PATHS
-				${ASSIMP_ROOT_DIR}
+				${ASSIMP_DIR}
 		)
-
-		FIND_PATH(ASSIMP_LIBRARY_DEBUG_DIR libassimp.so libassimp.dylib
+		find_path( ASSIMP_LIBRARY_DEBUG_DIR libASSIMP.so libASSIMP.dylib
 			HINTS
 			PATH_SUFFIXES
-				lib/assimp_debug-dll_win32
+				lib/ASSIMP_debug-dll_win32
 				lib/x86/Debug
 				lib/Debug/x86
 				lib
 			PATHS
-				${ASSIMP_ROOT_DIR}
-				${ASSIMP_ROOT_DIR}/debug
+				${ASSIMP_DIR}
+				${ASSIMP_DIR}/debug
 		)
-
-		FIND_LIBRARY(ASSIMP_LIBRARY_RELEASE
+		find_library( ASSIMP_LIBRARY_RELEASE
 			NAMES
-				libassimp.so
-				libassimp.dylib
+				libASSIMP.so
+				libASSIMP.dylib
 			HINTS
 			PATHS
 				${ASSIMP_LIBRARY_RELEASE_DIR}
 		)
-
-		FIND_LIBRARY(ASSIMP_LIBRARY_DEBUG
+		find_library( ASSIMP_LIBRARY_DEBUG
 			NAMES
-				libassimp.so
-				libassimp.dylib
+				libASSIMP.so
+				libASSIMP.dylib
 			HINTS
 			PATHS
 				${ASSIMP_LIBRARY_DEBUG_DIR}
@@ -284,28 +258,29 @@ else()
 	endif()
 endif()
 
-MARK_AS_ADVANCED( ASSIMP_LIBRARY_RELEASE_DIR )
-MARK_AS_ADVANCED( ASSIMP_LIBRARY_DEBUG_DIR )
-MARK_AS_ADVANCED( ASSIMP_LIBRARY_RELEASE )
-MARK_AS_ADVANCED( ASSIMP_LIBRARY_DEBUG_DIR )
+mark_as_advanced( ASSIMP_LIBRARY_RELEASE_DIR )
+mark_as_advanced( ASSIMP_LIBRARY_DEBUG_DIR )
+mark_as_advanced( ASSIMP_LIBRARY_RELEASE )
+mark_as_advanced( ASSIMP_LIBRARY_DEBUG_DIR )
 find_package_handle_standard_args( ASSIMP DEFAULT_MSG ASSIMP_LIBRARY_RELEASE ASSIMP_INCLUDE_DIR )
 
-IF ( ASSIMP_FOUND )
-	IF (MSVC)
-		if ( ASSIMP_LIBRARY_DEBUG )
-			SET(ASSIMP_LIBRARIES optimized ${ASSIMP_LIBRARY_RELEASE} debug ${ASSIMP_LIBRARY_DEBUG} CACHE STRING "Assimp libraries")
-			SET(ASSIMP_LIBRARY_DIRS ${ASSIMP_LIBRARY_RELEASE_DIR} ${ASSIMP_LIBRARY_DEBUG_DIR})
-		else()
-			SET(ASSIMP_LIBRARIES ${ASSIMP_LIBRARY_RELEASE} CACHE STRING "Assimp libraries")
-			SET(ASSIMP_LIBRARY_DIRS ${ASSIMP_LIBRARY_RELEASE_DIR})
-		endif()
-	ELSE ()
-		if ( ASSIMP_LIBRARY_DEBUG )
-			SET(ASSIMP_LIBRARIES optimized ${ASSIMP_LIBRARY_RELEASE} debug ${ASSIMP_LIBRARY_DEBUG} CACHE STRING "Assimp libraries")
-			SET(ASSIMP_LIBRARY_DIRS ${ASSIMP_LIBRARY_RELEASE_DIR} ${ASSIMP_LIBRARY_DEBUG_DIR})
-		else()
-			SET(ASSIMP_LIBRARIES ${ASSIMP_LIBRARY_RELEASE} CACHE STRING "Assimp libraries")
-			SET(ASSIMP_LIBRARY_DIRS ${ASSIMP_LIBRARY_RELEASE_DIR})
-		endif()
-	ENDIF ()
+if ( ASSIMP_FOUND )
+	if ( ASSIMP_LIBRARY_DEBUG )
+		add_library( assimp::assimp STATIC IMPORTED )
+		set_target_properties( assimp::assimp PROPERTIES
+			INTERFACE_INCLUDE_DIRECTORIES ${ASSIMP_INCLUDE_DIR}
+			IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
+			IMPORTED_LOCATION_DEBUG ${ASSIMP_LIBRARY_DEBUG}
+			IMPORTED_LOCATION_RELEASE ${ASSIMP_LIBRARY_RELEASE}
+		)
+		set( ASSIMP_LIBRARIES optimized ${ASSIMP_LIBRARY_RELEASE} debug ${ASSIMP_LIBRARY_DEBUG} CACHE STRING "Assimp libraries" FORCE )
+	else ()
+		add_library( assimp::assimp STATIC IMPORTED )
+		set_target_properties( assimp::assimp PROPERTIES
+			INTERFACE_INCLUDE_DIRECTORIES ${ASSIMP_INCLUDE_DIR}
+			IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
+			IMPORTED_LOCATION ${ASSIMP_LIBRARY_RELEASE}
+		)
+		set( ASSIMP_LIBRARIES ${ASSIMP_LIBRARY_RELEASE} CACHE STRING "Assimp libraries" FORCE )
+	endif ()
 ENDIF ()

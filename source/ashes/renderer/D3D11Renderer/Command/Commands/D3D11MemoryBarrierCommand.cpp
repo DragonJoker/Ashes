@@ -11,9 +11,9 @@ namespace ashes::d3d11
 	MemoryBarrierCommand::MemoryBarrierCommand( VkDevice device
 		, VkPipelineStageFlags after
 		, VkPipelineStageFlags before
-		, VkMemoryBarrierArray const & memoryBarriers
-		, VkBufferMemoryBarrierArray const & bufferBarriers
-		, VkImageMemoryBarrierArray const & imageBarriers )
+		, ArrayView< VkMemoryBarrier const > const & memoryBarriers
+		, ArrayView< VkBufferMemoryBarrier const > const & bufferBarriers
+		, ArrayView< VkImageMemoryBarrier const > const & imageBarriers )
 		: CommandBase{ device }
 	{
 		for ( auto & barrier : bufferBarriers )

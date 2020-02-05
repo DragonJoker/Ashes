@@ -269,7 +269,7 @@ namespace utils
 
 		for ( auto & commandBuffer : result )
 		{
-			commandBuffer = m_commandPool.createCommandBuffer( true );
+			commandBuffer = m_commandPool.createCommandBuffer();
 		}
 
 		return result;

@@ -1109,13 +1109,13 @@ namespace ashes::d3d11
 	BindDescriptorSetCommand::BindDescriptorSetCommand( VkDevice context
 		, VkDescriptorSet descriptorSet
 		, VkPipelineLayout layout
-		, UInt32Array const & dynamicOffsets
+		, ArrayView< uint32_t const > const & dynamicOffsets
 		, VkPipelineBindPoint bindingPoint )
 		: CommandBase{ context }
 		, m_descriptorSet{ descriptorSet }
 		, m_layout{ layout }
 		, m_bindingPoint{ bindingPoint }
-		, m_dynamicOffsets{ dynamicOffsets }
+		, m_dynamicOffsets{ dynamicOffsets.begin(), dynamicOffsets.end() }
 	{
 		assert( get( m_descriptorSet )->getDynamicBuffers().size() == m_dynamicOffsets.size()
 			&& "Dynamic descriptors and dynamic offsets sizes must match." );

@@ -189,7 +189,7 @@ namespace vkapp
 			, 0u
 			, uint32_t( tex2D.levels() ) );
 
-		auto commandBuffer = m_commandPool->createCommandBuffer( true );
+		auto commandBuffer = m_commandPool->createCommandBuffer();
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		ashes::ImageViewArray views;
 		std::vector< ashes::StagingBufferPtr > stagingBuffers;

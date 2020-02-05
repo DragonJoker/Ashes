@@ -390,7 +390,7 @@ namespace ashes::d3d11
 	}
 
 	bool DebugUtilsLayer::onCopyToImageCommand( VkCommandBuffer cmd
-		, VkBufferImageCopyArray const & copyInfos
+		, ArrayView< VkBufferImageCopy const > const & copyInfos
 		, VkBuffer src
 		, VkImage dst )const
 	{
@@ -596,7 +596,7 @@ namespace ashes::d3d11
 	}
 
 	bool DebugReportLayer::onCopyToImageCommand( VkCommandBuffer cmd
-		, VkBufferImageCopyArray const & copyInfos
+		, ArrayView< VkBufferImageCopy const > const & copyInfos
 		, VkBuffer src
 		, VkImage dst )const
 	{

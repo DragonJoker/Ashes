@@ -162,6 +162,11 @@ namespace ashes
 			, float zNear )const;
 		/**
 		*\brief
+		*	Checks existence of extension name in enabled instance extensions.
+		*/
+		bool checkExtension( std::string const & name )const;
+		/**
+		*\brief
 		*	VkInstance implicit cast operator.
 		*/
 		inline operator VkInstance const & ()const
@@ -169,8 +174,8 @@ namespace ashes
 			return this->m_instance;
 		}
 
-#define VK_LIB_GLOBAL_FUNCTION( fun ) PFN_vk##fun vk##fun{ nullptr };
-#define VK_LIB_INSTANCE_FUNCTION( fun ) PFN_vk##fun vk##fun{ nullptr };
+#define VK_LIB_GLOBAL_FUNCTION( ver, fun ) PFN_vk##fun vk##fun{ nullptr };
+#define VK_LIB_INSTANCE_FUNCTION( ver, fun ) PFN_vk##fun vk##fun{ nullptr };
 #	include <ashes/ashes_functions_list.hpp>
 		/**
 		*\name
@@ -206,7 +211,6 @@ namespace ashes
 	private:
 		void doInitInstance();
 		PFN_vkVoidFunction getInstanceProcAddr( char const * const name );
-		bool doCheckExtension( std::string const & name )const;
 
 	private:
 		AshPluginDescription m_plugin;

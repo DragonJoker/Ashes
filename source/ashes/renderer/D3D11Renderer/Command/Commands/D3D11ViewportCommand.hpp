@@ -24,7 +24,7 @@ namespace ashes::d3d11
 		*/
 		ViewportCommand( VkDevice device
 			, uint32_t first
-			, VkViewportArray const & viewports );
+			, ArrayView< VkViewport const > const & viewports );
 
 		void apply( Context const & context )const;
 		CommandPtr clone()const;

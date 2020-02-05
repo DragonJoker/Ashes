@@ -15,7 +15,7 @@ namespace ashes::d3d11
 		ResolveImageCommand( VkDevice device
 			, VkImage srcImage
 			, VkImage dstImage
-			, VkImageResolveArray regions );
+			, ArrayView< VkImageResolve const > regions );
 
 		void apply( Context const & context )const;
 		CommandPtr clone()const;

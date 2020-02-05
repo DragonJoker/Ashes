@@ -44,10 +44,10 @@ namespace ashes::d3d11
 		, VkRenderPass renderPass
 		, VkSubpassDescription const & subpass
 		, VkFramebuffer framebuffer
-		, VkClearAttachmentArray const & clearAttaches
-		, VkClearRectArray const & clearRects )
+		, ArrayView< VkClearAttachment const > const & clearAttaches
+		, ArrayView< VkClearRect const > const & clearRects )
 		: CommandBase{ device }
-		, m_clearRects{ clearRects }
+		, m_clearRects{ clearRects.begin(), clearRects.end() }
 	{
 		for ( auto & attach : clearAttaches )
 		{

@@ -220,7 +220,7 @@ namespace vkapp
 			, 0u
 			, uint32_t( tex2DArray.layers() ) );
 
-		auto commandBuffer = m_commandPool->createCommandBuffer( true );
+		auto commandBuffer = m_commandPool->createCommandBuffer();
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		// Prepare copy regions
 		std::vector< VkBufferImageCopy > bufferCopyRegions;

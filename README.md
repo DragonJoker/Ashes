@@ -8,16 +8,13 @@ Ashes
 Ashes is a drop-in replacement to Vulkan.  
 It allows to write Vulkan code, and to select the rendering API that will be used.  
   
-It is still a WIP, the library is far from complete!!  
-  
 To build it, you can use CMake.
 
 ## Renderers available
 
 - Vulkan: Ashes is a passthrough, when using Vulkan rendering API, and it has no additional cost if dynamic loader is used.
-- OpenGL 3.X
-- OpenGL 4.X
-- Direct3D 11.
+- OpenGL: From OpenGL 3.3 to OpenGL 4.6.
+- Direct3D 11: From feature level 11.0.
 
 ## How to use it
 
@@ -27,8 +24,6 @@ Two workflows are possible:
 
 You load Ashes' shared library instead of Vulkan's, and you're done.  
 The API selection will be done on first call of `vkGetInstanceProcAddr` (for dynamic loader), or on first Vulkan API call (for static loader).  
-  
-With this mode, the only change you have to make is the dynamic library's name (ashes.so.1/ashes-1.dll instead of libvulkan.so.1/vulkan-1.dll).
 
 ### Manual mode
 
@@ -54,6 +49,10 @@ typedef struct AshPluginFeatures
 	VkBool32 hasComputeShaders;
 	// Whether or not the plugin supports shader storage buffers.
 	VkBool32 hasStorageBuffers;
+	// Whether or not the plugin supports persistent mapping.
+	VkBool32 supportsPersistentMapping;
+	// The plugin's maximum supported shader language version.
+	uint32_t maxShaderLanguageVersion;
 } AshPluginFeatures;
 
 typedef struct AshPluginSupport
@@ -164,6 +163,11 @@ int main( int argc, char ** argv )
 ## Contact
 
 You can reach me on the Discord server dedicated to my projects: [DragonJoker's Lair](https://discord.gg/yVmaAvQ)
+
+## Validation
+
+Ashes is validated using Sascha Willems' Vulkan examples repository.  
+I've forked it, to be able to test the drivers.
 
 ## Test applications
 

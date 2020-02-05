@@ -27,7 +27,7 @@ namespace ashes::d3d11
 		*	Le tampon destination.
 		*/
 		CopyImageToBufferCommand( VkDevice device
-			, VkBufferImageCopyArray const & copyInfo
+			, ArrayView< VkBufferImageCopy const > const & copyInfo
 			, VkImage src
 			, VkBuffer dst );
 

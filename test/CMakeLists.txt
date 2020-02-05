@@ -29,9 +29,6 @@ if ( ASHES_BUILD_TESTS )
 			if ( IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${child} )
 				set( TARGET_NAME Test-${child} )
 				add_subdirectory( ${child} )
-				target_compile_features( ${TARGET_NAME} PRIVATE
-					cxx_std_17
-				)
 				target_compile_definitions( ${TARGET_NAME} PRIVATE
 					TEST_ID=${TEST_ID}
 				)

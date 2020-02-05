@@ -21,8 +21,10 @@ namespace ashes::d3d11
 
 	VkMemoryRequirements Buffer::getMemoryRequirements()const
 	{
+		auto physicalDevice = get( get( m_device )->getPhysicalDevice() );
 		VkMemoryRequirements result{};
-		result.memoryTypeBits = ~( 0u );
+		result.memoryTypeBits = physicalDevice->getMemoryTypeBits( VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT );
 		result.alignment = get( m_device )->getLimits().nonCoherentAtomSize;
 
 		if ( checkFlag( m_createInfo.usage, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT ) )

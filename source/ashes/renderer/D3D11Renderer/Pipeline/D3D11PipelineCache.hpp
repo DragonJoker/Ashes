@@ -28,7 +28,7 @@ namespace ashes::d3d11
 			, VkPipelineCacheCreateInfo createInfo );
 		/**@}*/
 
-		VkResult merge( VkPipelineCacheArray pipelines );
+		VkResult merge( ArrayView< VkPipelineCache const > pipelines );
 
 		inline ByteArray const & getData()const
 		{

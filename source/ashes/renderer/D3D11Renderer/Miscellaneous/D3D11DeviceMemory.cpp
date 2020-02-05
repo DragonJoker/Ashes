@@ -163,7 +163,15 @@ namespace ashes::d3d11
 
 		if ( lock( context, subresource, mapped ) == VK_SUCCESS )
 		{
-			if ( mapped.RowPitch != subresourceLayout.SysMemPitch )
+			if ( mapped.DepthPitch == subresourceLayout.SysMemSlicePitch
+				|| mapped.RowPitch == subresourceLayout.SysMemPitch )
+			{
+				copySize = std::min( copySize, VkDeviceSize( mapped.DepthPitch ) );
+				std::memcpy( static_cast< uint8_t * >( mapped.pData ) + objectOffset
+					, data + maxOffset
+					, copySize );
+			}
+			else
 			{
 				auto mappedSteps = mapped.DepthPitch / mapped.RowPitch;
 				auto systemSteps = subresourceLayout.SysMemSlicePitch / subresourceLayout.SysMemPitch;
@@ -178,13 +186,6 @@ namespace ashes::d3d11
 					src += subresourceLayout.SysMemPitch;
 					dst += mapped.RowPitch;
 				}
-			}
-			else
-			{
-				copySize = std::min( copySize, VkDeviceSize( mapped.DepthPitch ) );
-				std::memcpy( static_cast< uint8_t * >( mapped.pData ) + objectOffset
-					, data + maxOffset
-					, copySize );
 			}
 
 			unlock( context, subresource );
