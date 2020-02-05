@@ -9,9 +9,11 @@
 #include <cstdint>
 #include <iostream>
 #include <fstream>
-#include <filesystem>
 #include <sstream>
 #include <map>
+#if AshesGL_LogCalls
+#	include <filesystem>
+#endif
 
 #ifdef _WIN32
 #	include <gl/GL.h>
