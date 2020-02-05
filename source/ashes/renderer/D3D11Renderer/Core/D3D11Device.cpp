@@ -27,11 +27,11 @@ See LICENSE file in root folder.
 #include "Sync/D3D11Fence.hpp"
 #include "Sync/D3D11Semaphore.hpp"
 
-#include <D3DCommon.h>
-
 #include "ashesd3d11_api.hpp"
 
 #include <ashes/common/Hash.hpp>
+
+#include <D3DCommon.h>
 
 #include <iomanip>
 

@@ -486,7 +486,8 @@ void main( uint3 threadID : SV_DispatchThreadID )
 					, device
 					, std::move( createInfo ) );
 				auto requirements = get( result )->getMemoryRequirements();
-				auto index = deduceMemoryType( requirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
+				auto index = deduceMemoryType( requirements.memoryTypeBits
+					, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 				allocate( memory
 					, nullptr
 					, device

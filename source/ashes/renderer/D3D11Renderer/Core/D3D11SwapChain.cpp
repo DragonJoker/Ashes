@@ -31,7 +31,7 @@ namespace ashes::d3d11
 				, nullptr );
 			auto requirements = get( result )->getMemoryRequirements();
 			uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
-				, VK_MEMORY_HEAP_DEVICE_LOCAL_BIT );
+				, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 			allocate( deviceMemory
 				, nullptr
 				, device
@@ -83,7 +83,7 @@ namespace ashes::d3d11
 
 		if ( get( m_createInfo.surface )->isDisplay() )
 		{
-			hr = m_swapChain->SetFullscreenState( TRUE, get( get( device )->getGpu() )->getOutput() );
+			hr = m_swapChain->SetFullscreenState( TRUE, get( get( device )->getPhysicalDevice() )->getOutput() );
 
 			if ( !checkError( m_device, hr, "SetFullscreenState" ) )
 			{
@@ -94,7 +94,7 @@ namespace ashes::d3d11
 
 			if ( !checkError( m_device, hr, "ResizeTarget" ) )
 			{
-				hr = m_swapChain->SetFullscreenState( FALSE, get( get( device )->getGpu() )->getOutput() );
+				hr = m_swapChain->SetFullscreenState( FALSE, get( get( device )->getPhysicalDevice() )->getOutput() );
 				throw std::runtime_error{ "Could not resize the swapchain" };
 			}
 		}
@@ -200,7 +200,7 @@ namespace ashes::d3d11
 
 	void SwapchainKHR::doInitPresentParameters()
 	{
-		auto caps = get( m_createInfo.surface )->getCapabilities( get( m_device )->getGpu() );
+		auto caps = get( m_createInfo.surface )->getCapabilities( get( m_device )->getPhysicalDevice() );
 		m_windowExtent = caps.maxImageExtent;
 		m_displayMode = get( m_createInfo.surface )->getMatchingDesc( m_createInfo.imageFormat );
 		auto hWnd = get( m_createInfo.surface )->getHwnd();

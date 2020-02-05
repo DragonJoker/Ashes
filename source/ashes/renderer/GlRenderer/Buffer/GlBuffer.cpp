@@ -29,8 +29,11 @@ namespace ashes::gl
 
 	VkMemoryRequirements Buffer::getMemoryRequirements()const
 	{
+		auto physicalDevice = get( get( m_device )->getPhysicalDevice() );
 		VkMemoryRequirements result{};
 		result.size = m_createInfo.size;
+		result.memoryTypeBits = physicalDevice->getMemoryTypeBits( VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT );
 		result.memoryTypeBits = ~( 0u );
 		result.alignment = get( m_device )->getLimits().nonCoherentAtomSize;
 

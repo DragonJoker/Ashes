@@ -324,11 +324,11 @@ namespace ashes::d3d11
 				{
 					VK_NULL_HANDLE,
 					blockLayout.binding,
-				{
-					VkShaderStageFlags( shaderLayoutIt.first ),
-					0u,
-					blockLayout.size
-				},
+					{
+						VkShaderStageFlags( shaderLayoutIt.first ),
+						0u,
+						blockLayout.size
+					},
 					VK_NULL_HANDLE,
 				};
 				allocate( pcb.ubo
@@ -340,7 +340,9 @@ namespace ashes::d3d11
 						nullptr,
 						0u,
 						blockLayout.size,
-						VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+						( VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT
+							| VK_BUFFER_USAGE_TRANSFER_DST_BIT
+							| VK_BUFFER_USAGE_TRANSFER_SRC_BIT ),
 						VK_SHARING_MODE_EXCLUSIVE,
 						0u,
 						nullptr,
