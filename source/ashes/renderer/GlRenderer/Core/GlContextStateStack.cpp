@@ -624,10 +624,9 @@ namespace ashes::gl
 
 		if ( force || getCurrentScissors() != scissors )
 		{
-			// TODO: Find a way to enable scissor test.
-			//doApplyEnable( list
-			//	, GL_SCISSOR_TEST
-			//	, !scissors.empty() );
+			doApplyEnable( list
+				, GL_SCISSOR_TEST
+				, !scissors.empty() );
 
 			if ( !scissors.empty() )
 			{
