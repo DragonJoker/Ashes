@@ -82,6 +82,11 @@ extern "C"
 		*	Whether or not the plugin supports persistent mapping.
 		*/
 		VkBool32 supportsPersistentMapping;
+		/**
+		*\brief
+		*	The plugin's maximum supported shader language version.
+		*/
+		uint32_t maxShaderLanguageVersion;
 	} AshPluginFeatures;
 
 	typedef struct AshPluginSupport
@@ -100,15 +105,15 @@ extern "C"
 
 	typedef struct AshPluginStaticFunction
 	{
-#define VK_LIB_GLOBAL_FUNCTION( x )\
+#define VK_LIB_GLOBAL_FUNCTION( v, x )\
 		PFN_vk##x x;
-#define VK_LIB_INSTANCE_FUNCTION( x )\
+#define VK_LIB_INSTANCE_FUNCTION( v, x )\
 		PFN_vk##x x;
-#define VK_LIB_DEVICE_FUNCTION( x )\
+#define VK_LIB_DEVICE_FUNCTION( v, x )\
 		PFN_vk##x x;
-#define VK_LIB_GLOBAL_FUNCTION_EXT( n, x )
-#define VK_LIB_INSTANCE_FUNCTION_EXT( n, x )
-#define VK_LIB_DEVICE_FUNCTION_EXT( n, x )
+#define VK_LIB_GLOBAL_FUNCTION_EXT( v, n, x )
+#define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )
+#define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )
 #include "ashes_functions_list.hpp"
 	} AshPluginStaticFunction;
 

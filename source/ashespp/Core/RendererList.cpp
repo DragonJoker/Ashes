@@ -10,46 +10,65 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
+	namespace
+	{
 #if defined( _WIN32 )
-#if defined( NDEBUG )
-	static std::string const libraryName = "ashes.dll";
-#else
-	static std::string const libraryName = "ashesd.dll";
-#endif
+#	if defined( NDEBUG )
+		static std::string const libraryName = "vulkan-1.dll";
+#	else
+		static std::string const libraryName = "vulkand-1.dll";
+#	endif
 #elif defined( __linux__ )
-#if defined( NDEBUG )
-	static std::string const libraryName = "libashes.so";
-#else
-	static std::string const libraryName = "libashesd.so";
-#endif
+#	if defined( NDEBUG )
+		static std::string const libraryName = "libvulkan.so.1";
+#	else
+		static std::string const libraryName = "libvulkand.so.1";
+#	endif
 #elif defined( __APPLE__ )
-#if defined( NDEBUG )
-	static std::string const libraryName = "libashes.dylib";
-#else
-	static std::string const libraryName = "libashesd.dylib";
-#endif
+#	if defined( NDEBUG )
+		static std::string const libraryName = "libvulkan.1.dylib";
+#	else
+		static std::string const libraryName = "libvulkand.1.dylib";
+#	endif
 #else
 #	error Unsupported platform
 #endif
+	}
 
 	RendererList::RendererList()
-		: m_library{ libraryName }
 	{
-		if ( !m_library.getFunction( "ashSelectPlugin", m_selectPlugin ) )
+		lookForSharedLibrary( [this]( std::string const & folder
+			, std::string const & name )
+			{
+				if ( libraryName == name
+					&& !m_library )
+				{
+					m_library = std::make_unique< ashes::DynamicLibrary >( folder / name );
+
+					if ( !m_library->getFunction( "ashSelectPlugin", m_selectPlugin ) )
+					{
+						m_library.reset();
+					}
+				}
+
+				return m_library != nullptr;
+			} );
+
+		if ( !m_library )
 		{
-			throw std::runtime_error{ "[" + ashes::getFileName( m_library.getPath() ) + "] is not Ashes" };
+			throw std::runtime_error{ "Could not find Ashes shared library" };
 		}
 
 		PFN_ashEnumeratePluginsDescriptions enumeratePluginDescriptions;
-		if ( !m_library.getFunction( "ashEnumeratePluginsDescriptions", enumeratePluginDescriptions ) )
+		if ( !m_library->getFunction( "ashEnumeratePluginsDescriptions", enumeratePluginDescriptions ) )
 		{
-			throw std::runtime_error{ "[" + ashes::getFileName( m_library.getPath() ) + "] is not Ashes" };
+			throw std::runtime_error{ "[" + ashes::getFileName( m_library->getPath() ) + "] is not Ashes" };
 		}
 
 		PFN_ashGetPluginDescription getCurrentPluginDescription;
-		if ( !m_library.getFunction( "ashGetCurrentPluginDescription", getCurrentPluginDescription ) )
+		if ( !m_library->getFunction( "ashGetCurrentPluginDescription", getCurrentPluginDescription ) )
 		{
-			throw std::runtime_error{ "[" + ashes::getFileName( m_library.getPath() ) + "] is not Ashes" };
+			throw std::runtime_error{ "[" + ashes::getFileName( m_library->getPath() ) + "] is not Ashes" };
 		}
 
 		uint32_t count = 0u;
@@ -69,10 +88,6 @@ namespace ashes
 			getCurrentPluginDescription( &m_current );
 			std::clog << "  Currently using " << m_current.name << std::endl;
 		}
-	}
-
-	RendererList::~RendererList()
-	{
 	}
 
 	AshPluginDescription RendererList::selectPlugin( std::string const & name )const

@@ -32,15 +32,15 @@ namespace ashes::d3d11
 		safeRelease( m_waitIdleQuery );
 	}
 
-	VkResult Queue::submit( VkSubmitInfoArray const & infos
+	VkResult Queue::submit( ArrayView< VkSubmitInfo const > const & infos
 		, VkFence fence )const
 	{
 		for ( auto & info : infos )
 		{
-			doSubmit( { info.pCommandBuffers, info.pCommandBuffers + info.commandBufferCount }
-				, { info.pWaitSemaphores, info.pWaitSemaphores + info.waitSemaphoreCount }
-				, { info.pWaitDstStageMask, info.pWaitDstStageMask + info.waitSemaphoreCount }
-				, { info.pSignalSemaphores, info.pSignalSemaphores + info.signalSemaphoreCount }
+			doSubmit( makeArrayView( info.pCommandBuffers, info.commandBufferCount )
+				, makeArrayView( info.pWaitSemaphores, info.waitSemaphoreCount )
+				, makeArrayView( info.pWaitDstStageMask, info.waitSemaphoreCount )
+				, makeArrayView( info.pSignalSemaphores, info.signalSemaphoreCount )
 				, fence );
 		}
 
@@ -156,10 +156,10 @@ namespace ashes::d3d11
 
 #endif
 
-	VkResult Queue::doSubmit( VkCommandBufferArray const & commandBuffers
-		, VkSemaphoreArray const & semaphoresToWait
-		, VkPipelineStageFlagsArray const & semaphoresStage
-		, VkSemaphoreArray const & semaphoresToSignal
+	VkResult Queue::doSubmit( ArrayView< VkCommandBuffer const > const & commandBuffers
+		, ArrayView< VkSemaphore const > const & semaphoresToWait
+		, ArrayView< VkPipelineStageFlags const > const & semaphoresStage
+		, ArrayView< VkSemaphore const > const & semaphoresToSignal
 		, VkFence fence )const
 	{
 		Context context{ get( m_device )->getFeatureLevel(), m_device };

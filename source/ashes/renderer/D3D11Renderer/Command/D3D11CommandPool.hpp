@@ -17,7 +17,7 @@ namespace ashes::d3d11
 
 		void registerCommands( VkCommandBuffer commands );
 		VkResult reset( VkCommandPoolResetFlags flags );
-		VkResult free( VkCommandBufferArray sets );
+		VkResult free( ArrayView< VkCommandBuffer const > sets );
 
 	private:
 		VkDevice m_device;

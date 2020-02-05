@@ -16,7 +16,7 @@ namespace ashes::d3d11
 			, VkBuffer buffer
 			, VkImage image )const;
 		bool copyToImageCommand( VkCommandBuffer cmd
-			, VkBufferImageCopyArray const & copyInfo
+			, ArrayView< VkBufferImageCopy const > const & copyInfo
 			, VkBuffer src
 			, VkImage dst )const;
 		bool checkHResultCommand( HRESULT hresult
@@ -46,7 +46,7 @@ namespace ashes::d3d11
 		}
 
 		virtual bool onCopyToImageCommand( VkCommandBuffer cmd
-			, VkBufferImageCopyArray const & copyInfo
+			, ArrayView< VkBufferImageCopy const > const & copyInfo
 			, VkBuffer src
 			, VkImage dst )const
 		{

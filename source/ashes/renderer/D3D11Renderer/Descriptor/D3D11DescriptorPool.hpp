@@ -23,7 +23,7 @@ namespace ashes::d3d11
 
 		void registerSet( VkDescriptorSet set );
 		VkResult reset( VkDescriptorPoolResetFlags flags );
-		VkResult free( VkDescriptorSetArray sets );
+		VkResult free( ArrayView< VkDescriptorSet const > sets );
 
 		inline VkDevice getDevice()const
 		{

@@ -21,89 +21,20 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	namespace
-	{
-		bool areCompatible( VkPipelineStageFlags pipelineFlags
-			, VkAccessFlags accessFlags )
-		{
-			if ( ( pipelineFlags & VK_PIPELINE_STAGE_ALL_COMMANDS_BIT )
-				|| ( pipelineFlags & VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT ) )
-			{
-				return true;
-			}
-
-			if ( ( accessFlags & VK_ACCESS_INDIRECT_COMMAND_READ_BIT ) )
-			{
-				return ( pipelineFlags & VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT );
-			}
-
-			if ( ( accessFlags & VK_ACCESS_INDEX_READ_BIT )
-				|| ( accessFlags & VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT ) )
-			{
-				return ( pipelineFlags & VK_PIPELINE_STAGE_VERTEX_INPUT_BIT );
-			}
-
-			if ( ( accessFlags & VK_ACCESS_UNIFORM_READ_BIT )
-				|| ( accessFlags & VK_ACCESS_SHADER_READ_BIT )
-				|| ( accessFlags & VK_ACCESS_SHADER_WRITE_BIT ) )
-			{
-				return ( pipelineFlags & VK_PIPELINE_STAGE_VERTEX_SHADER_BIT)
-					|| ( pipelineFlags & VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT )
-					|| ( pipelineFlags & VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT )
-					|| ( pipelineFlags & VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT )
-					|| ( pipelineFlags & VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT )
-					|| ( pipelineFlags & VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT );
-			}
-
-			if ( ( accessFlags & VK_ACCESS_INPUT_ATTACHMENT_READ_BIT ) )
-			{
-				return ( pipelineFlags & VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT );
-			}
-
-			if ( ( accessFlags & VK_ACCESS_COLOR_ATTACHMENT_READ_BIT )
-				|| ( accessFlags & VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT ) )
-			{
-				return ( pipelineFlags & VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT );
-			}
-
-			if ( ( accessFlags & VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT )
-				|| ( accessFlags & VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT ) )
-			{
-				return ( pipelineFlags & VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT )
-					|| ( pipelineFlags & VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT );
-			}
-
-			if ( ( accessFlags & VK_ACCESS_TRANSFER_READ_BIT )
-				|| ( accessFlags & VK_ACCESS_TRANSFER_WRITE_BIT ) )
-			{
-				return ( pipelineFlags & VK_PIPELINE_STAGE_TRANSFER_BIT );
-			}
-
-			if ( ( accessFlags & VK_ACCESS_HOST_READ_BIT )
-				|| ( accessFlags & VK_ACCESS_HOST_WRITE_BIT ) )
-			{
-				return ( pipelineFlags & VK_PIPELINE_STAGE_HOST_BIT );
-			}
-
-			return true;
-		}
-	}
-
 	CommandBuffer::CommandBuffer( Device const & device
 		, CommandPool const & pool
-		, bool primary )
+		, VkCommandBufferLevel level )
 		: m_device{ device }
 		, m_pool{ pool }
 	{
+		uint32_t const commandBufferCount = 1u;
 		VkCommandBufferAllocateInfo cmdAllocInfo
 		{
 			VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
 			nullptr,
-			m_pool,                                   // commandPool
-			primary                                   // level
-			? VK_COMMAND_BUFFER_LEVEL_PRIMARY
-			: VK_COMMAND_BUFFER_LEVEL_SECONDARY,
-			1                                         // commandBufferCount
+			m_pool,
+			level,
+			commandBufferCount,
 		};
 		DEBUG_DUMP( cmdAllocInfo );
 		auto res = m_device.vkAllocateCommandBuffers( m_device
@@ -723,8 +654,6 @@ namespace ashes
 		, VkPipelineStageFlags before
 		, VkBufferMemoryBarrier const & transitionBarrier )const
 	{
-		assert( areCompatible( after, transitionBarrier.srcAccessMask ) );
-		assert( areCompatible( before, transitionBarrier.dstAccessMask ) );
 		pipelineBarrier( after
 			, before
 			, 0u
@@ -737,8 +666,6 @@ namespace ashes
 		, VkPipelineStageFlags before
 		, VkImageMemoryBarrier const & transitionBarrier )const
 	{
-		assert( areCompatible( after, transitionBarrier.srcAccessMask ) );
-		assert( areCompatible( before, transitionBarrier.dstAccessMask ) );
 		pipelineBarrier( after
 			, before
 			, 0u
@@ -808,6 +735,83 @@ namespace ashes
 		{
 			m_device.vkCmdDebugMarkerInsertEXT( m_internal, &labelInfo );
 		}
+	}
+
+#endif
+#if VK_EXT_debug_utils || VK_EXT_debug_marker
+
+	void CommandBuffer::beginDebugBlock( DebugBlockInfo const & labelInfo )const
+	{
+#if VK_EXT_debug_utils
+		beginDebugUtilsLabel(
+			{
+				VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT,
+				nullptr,
+				labelInfo.markerName.c_str(),
+				{
+					labelInfo.color[0],
+					labelInfo.color[1],
+					labelInfo.color[2],
+					labelInfo.color[3],
+				}
+			} );
+#endif
+#if VK_EXT_debug_marker
+		debugMarkerBegin(
+			{
+				VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT,
+				nullptr,
+				labelInfo.markerName.c_str(),
+				{
+					labelInfo.color[0],
+					labelInfo.color[1],
+					labelInfo.color[2],
+					labelInfo.color[3],
+				}
+			} );
+#endif
+	}
+
+	void CommandBuffer::endDebugBlock()const
+	{
+#if VK_EXT_debug_utils
+		endDebugUtilsLabel();
+#endif
+#if VK_EXT_debug_marker
+		debugMarkerEnd();
+#endif
+	}
+
+	void CommandBuffer::insertDebugBlock( DebugBlockInfo const & labelInfo )const
+	{
+#if VK_EXT_debug_utils
+		insertDebugUtilsLabel(
+			{
+				VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT,
+				nullptr,
+				labelInfo.markerName.c_str(),
+				{
+					labelInfo.color[0],
+					labelInfo.color[1],
+					labelInfo.color[2],
+					labelInfo.color[3],
+				}
+			} );
+#endif
+#if VK_EXT_debug_marker
+		debugMarkerInsert(
+			{
+				VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT,
+				nullptr,
+				labelInfo.markerName.c_str(),
+				{
+					labelInfo.color[0],
+					labelInfo.color[1],
+					labelInfo.color[2],
+					labelInfo.color[3],
+				}
+			} );
+#endif
 	}
 
 #endif

@@ -229,7 +229,7 @@
 //	}
 //
 //	bool DebugLayer::onCopyToImageCommand( VkCommandBuffer cmd
-//		, VkBufferImageCopyArray const & copyInfos
+//		, ArrayView< VkBufferImageCopy const > const & copyInfos
 //		, VkBuffer src
 //		, VkImage dst )const
 //	{

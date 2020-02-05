@@ -169,10 +169,10 @@ namespace ashes::d3d11
 			auto dstName = getImgFmtName( dst );
 			std::string const hlsl =
 				R"(Texture2D<)" + srcName + R"(> srcTexture : register(t0);
-RWTexture2D<)" + dstName + R"(> dstTexture : register(u1);
-SamplerState bilinearClamp : register(s2);
+RWTexture2D<)" + dstName + R"(> dstTexture : register(u0);
+SamplerState bilinearClamp : register(s0);
 
-cbuffer CB : register( b3 )
+cbuffer CB : register(b0)
 {
 	float4 srcBox;   // 1.0 / source float4( offset, dimension )
 	float4 dstBox;   // destination float4( offset, dimension )
@@ -486,7 +486,8 @@ void main( uint3 threadID : SV_DispatchThreadID )
 					, device
 					, std::move( createInfo ) );
 				auto requirements = get( result )->getMemoryRequirements();
-				auto index = deduceMemoryType( requirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
+				auto index = deduceMemoryType( requirements.memoryTypeBits
+					, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 				allocate( memory
 					, nullptr
 					, device
@@ -749,7 +750,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		, BlitPipeline const & pipeline
 		, VkImage srcImage
 		, VkImage dstImage
-		, VkImageBlitArray const & regions
+		, ArrayView< VkImageBlit const > const & regions
 		, VkFilter filter )
 		: CommandBase{ device }
 		, m_srcTexture{ srcImage }
@@ -794,7 +795,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 			, srcMaxLevel
 			, dstMinLevel
 			, dstMaxLevel );
-		get( cb )->executeCommands( { m_commandBuffer } );
+		get( cb )->executeCommands( makeArrayView( const_cast< VkCommandBuffer const * >( &m_commandBuffer ), 1u ) );
 	}
 
 	void BlitImageCommand::doInitialiseStretchUbo( VkDescriptorSetLayout descriptorLayout
@@ -887,7 +888,8 @@ void main( uint3 threadID : SV_DispatchThreadID )
 				, VK_IMAGE_LAYOUT_UNDEFINED // don't care
 				, m_tmpSrcTexture
 				, VK_IMAGE_LAYOUT_UNDEFINED // don't care
-				, m_layerBlitsToTmp );
+				, makeArrayView( const_cast< VkImageCopy const * >( m_layerBlitsToTmp.data() )
+					, m_layerBlitsToTmp.size() ) );
 			srcTexture = m_tmpSrcTexture;
 		}
 
@@ -905,7 +907,8 @@ void main( uint3 threadID : SV_DispatchThreadID )
 				, VK_IMAGE_LAYOUT_UNDEFINED // don't care
 				, m_dstTexture
 				, VK_IMAGE_LAYOUT_UNDEFINED // don't care
-				, m_layerBlitsFromTmp );
+				, makeArrayView( const_cast< VkImageCopy const * >( m_layerBlitsFromTmp.data() )
+					, m_layerBlitsFromTmp.size() ) );
 		}
 	}
 
@@ -917,7 +920,8 @@ void main( uint3 threadID : SV_DispatchThreadID )
 				, VK_IMAGE_LAYOUT_UNDEFINED
 				, m_dstTexture
 				, VK_IMAGE_LAYOUT_UNDEFINED
-				, m_layerBlits );
+				, makeArrayView( const_cast< VkImageCopy const * >( m_layerBlits.data() )
+					, m_layerBlits.size() ) );
 		}
 	}
 
@@ -939,7 +943,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 				get( m_commandBuffer )->bindDescriptorSets( VK_PIPELINE_BIND_POINT_COMPUTE
 					, pipelineLayout
 					, 0u
-					, { copy->set }
+					, makeArrayView( const_cast< VkDescriptorSet const * >( &copy->set ), 1u )
 					, {} );
 				get( m_commandBuffer )->dispatch( std::max( srcWidth / 8u, 1u ), std::max( srcHeight / 8u, 1u ), 1u );
 			}

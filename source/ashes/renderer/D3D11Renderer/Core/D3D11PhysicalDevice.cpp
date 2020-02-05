@@ -159,6 +159,30 @@ namespace ashes::d3d11
 		}
 	}
 
+	uint32_t PhysicalDevice::getMemoryTypeBits( VkMemoryPropertyFlags properties )const
+	{
+		uint32_t result{};
+		auto & memoryProperties = getMemoryProperties();
+
+		for ( auto i = 0u; i < memoryProperties.memoryTypeCount; ++i )
+		{
+			if ( ( memoryProperties.memoryTypes[i].propertyFlags & properties ) == properties )
+			{
+				result |= ( 0x1 << i );
+			}
+		}
+
+		return result;
+	}
+
+	uint32_t PhysicalDevice::getMemoryTypeBits( VkMemoryPropertyFlags properties1
+		, VkMemoryPropertyFlags properties2 )const
+	{
+		uint32_t result = getMemoryTypeBits( properties1 );
+		result |= getMemoryTypeBits( properties2 );
+		return result;
+	}
+
 	VkBool32 PhysicalDevice::getPresentationSupport( uint32_t queueFamilyIndex )const
 	{
 		return VK_TRUE;

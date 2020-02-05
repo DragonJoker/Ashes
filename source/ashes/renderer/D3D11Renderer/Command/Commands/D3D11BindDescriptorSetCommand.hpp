@@ -29,7 +29,7 @@ namespace ashes::d3d11
 		BindDescriptorSetCommand( VkDevice device
 			, VkDescriptorSet descriptorSet
 			, VkPipelineLayout layout
-			, UInt32Array const & dynamicOffsets
+			, ArrayView< uint32_t const > const & dynamicOffsets
 			, VkPipelineBindPoint bindingPoint );
 
 		void apply( Context const & context )const;

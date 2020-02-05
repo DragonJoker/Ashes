@@ -19,7 +19,7 @@ namespace ashes::d3d11
 	{
 		VkImageViewArray createViews( VkDevice device
 			, VkImage texture
-			, VkBufferImageCopyArray const & copies )
+			, ArrayView< VkBufferImageCopy const > const & copies )
 		{
 			VkImageViewArray result;
 			VkImageType type = get( texture )->getType();
@@ -86,7 +86,7 @@ namespace ashes::d3d11
 		}
 
 		std::vector< D3D11_BOX > doGetDstBoxes( VkImage image
-			, VkBufferImageCopyArray const & copyInfos )
+			, ArrayView< VkBufferImageCopy const > const & copyInfos )
 		{
 			std::vector< D3D11_BOX > result;
 
@@ -116,7 +116,7 @@ namespace ashes::d3d11
 
 		std::vector< VkSubresourceLayout > doGetSrcLayouts( VkDevice device
 			, VkImage image
-			, VkBufferImageCopyArray const & copyInfos )
+			, ArrayView< VkBufferImageCopy const > const & copyInfos )
 		{
 			std::vector< VkSubresourceLayout > result;
 			result.reserve( copyInfos.size() );
@@ -136,6 +136,7 @@ namespace ashes::d3d11
 
 			return result;
 		}
+
 		VkExtent3D getTexelBlockExtent( VkFormat format )
 		{
 			VkExtent3D texelBlockExtent{ 1u, 1u, 1u };
@@ -313,13 +314,13 @@ namespace ashes::d3d11
 	}
 
 	CopyImageToBufferCommand::CopyImageToBufferCommand( VkDevice device
-		, VkBufferImageCopyArray const & copyInfo
+		, ArrayView< VkBufferImageCopy const > const & copyInfo
 		, VkImage src
 		, VkBuffer dst )
 		: CommandBase{ device }
 		, m_src{ static_cast< VkImage >( src ) }
 		, m_dst{ static_cast< VkBuffer >( dst ) }
-		, m_copyInfo{ copyInfo }
+		, m_copyInfo{ copyInfo.begin(), copyInfo.end() }
 		, m_format{ getSRVFormat( get( m_src )->getFormat() ) }
 		, m_srcLayouts{ doGetSrcLayouts( device, m_src, copyInfo ) }
 		, m_dstBoxes{ doGetDstBoxes( m_src, copyInfo ) }

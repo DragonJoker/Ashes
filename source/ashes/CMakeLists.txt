@@ -1,38 +1,19 @@
-set( _PROJECT_NAME ashes )
-project( ${_PROJECT_NAME} )
+project( vulkan )
 
 set( ${PROJECT_NAME}_DESCRIPTION "${PROJECT_NAME} library" )
 set( ${PROJECT_NAME}_VERSION_MAJOR 1 )
 set( ${PROJECT_NAME}_VERSION_MINOR 0 )
 set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 
-file( GLOB ${PROJECT_NAME}_SRC_FILES
-	CONFIGURE_DEPENDS
-		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.c
-		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.cc
-		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.cpp
-		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.c
-		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.cc
-		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.cpp
-)
-
-file( GLOB ${PROJECT_NAME}_HDR_FILES
-	CONFIGURE_DEPENDS
-		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.h
-		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.hh
-		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.hpp
-		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.inl
-		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}/*.inc
-		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.h
-		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.hh
-		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.hpp
-		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.inl
-		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}/*.inc
+set( ${PROJECT_NAME}_SRC_FILES
+	ashes.cpp
 )
 
 set( ${PROJECT_NAME}_HDR_FILES
-	${${PROJECT_NAME}_HDR_FILES}
-	${Ashes_SOURCE_DIR}/include/${PROJECT_NAME}/ashes.h
+	../../include/ashes/ashes.h
+	../../include/ashes/ashes.hpp
+	../../include/ashes/ashes_functions_list.hpp
+	ashes_plugin.hpp
 )
 
 # I hate to have to do that, but I found no other to force gcc to use --std=c++17
@@ -50,7 +31,7 @@ add_library( ${PROJECT_NAME} SHARED
 	${${PROJECT_NAME}_SRC_FILES}
 	${${PROJECT_NAME}_HDR_FILES}
 )
-add_library( ashes::${_PROJECT_NAME}
+add_library( ashes::ashes
 	ALIAS
 	${PROJECT_NAME}
 )
@@ -60,12 +41,12 @@ target_include_directories( ${PROJECT_NAME}
 		$<INSTALL_INTERFACE:include>
 	PRIVATE
 		${Vulkan_INCLUDE_DIR}
-		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}
+		${Ashes_SOURCE_DIR}/include/ashes
 		${Ashes_SOURCE_DIR}/source
-		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}
-		${ASHES_CONFIG_DIR}/include/${_PROJECT_NAME}
+		${Ashes_SOURCE_DIR}/source/ashes
+		${ASHES_CONFIG_DIR}/include/ashes
 		${ASHES_CONFIG_DIR}/source
-		${ASHES_CONFIG_DIR}/source/${_PROJECT_NAME}
+		${ASHES_CONFIG_DIR}/source/ashes
 )
 target_link_libraries( ${PROJECT_NAME}
 	PRIVATE
@@ -79,29 +60,41 @@ target_compile_definitions( ${PROJECT_NAME}
 	PRIVATE
 		AshesC_EXPORTS
 )
-target_compile_features( ${PROJECT_NAME} PRIVATE
-	cxx_std_17
-)
 target_compile_options( ${PROJECT_NAME} PRIVATE
 	${TARGET_CXX_OPTIONS}
 	${TARGET_COMPILE_OPTIONS}
 )
-set_target_properties( ${PROJECT_NAME} PROPERTIES
-	CXX_STANDARD 17
-	CXX_EXTENSIONS OFF
-	FOLDER "${Ashes_BASE_DIR}/Core" )
 
+if ( WIN32 )
+	set_target_properties( ${PROJECT_NAME} PROPERTIES
+		CXX_STANDARD 17
+		CXX_EXTENSIONS OFF
+		FOLDER "${Ashes_BASE_DIR}/Core"
+		DEBUG_POSTFIX "d-${${PROJECT_NAME}_VERSION_MAJOR}"
+		RELEASE_POSTFIX "-${${PROJECT_NAME}_VERSION_MAJOR}"
+		RELWITHDEBINFO_POSTFIX "-${${PROJECT_NAME}_VERSION_MAJOR}"
+	)
+else ()
+	set_target_properties( ${PROJECT_NAME} PROPERTIES
+		CXX_STANDARD 17
+		CXX_EXTENSIONS OFF
+		FOLDER "${Ashes_BASE_DIR}/Core"
+		VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}"
+		SOVERSION "${${PROJECT_NAME}_VERSION_MAJOR}"
+	)
+endif ()
 
 if ( BUILD_ASHES )
 	target_add_doc( ${PROJECT_NAME} "" "*.h *.hpp" )
 endif ()
 
 target_install_dir_headers( ${PROJECT_NAME}
-	${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}
-	${_PROJECT_NAME}
+	${Ashes_SOURCE_DIR}/include/ashes
+	ashes
 )
 
 add_subdirectory( renderer )
+
 set( ENABLED_RENDERERS ${ENABLED_RENDERERS} PARENT_SCOPE )
 set( ASHES_CONFIG_DIR ${ASHES_CONFIG_DIR} PARENT_SCOPE )
 

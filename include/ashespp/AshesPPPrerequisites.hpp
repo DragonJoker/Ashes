@@ -242,6 +242,28 @@ namespace ashes
 	using ImageViewCRefArray = std::vector< ImageViewCRef >;
 	using VertexBufferCRefArray = std::vector< VertexBufferCRef >;
 	using PipelineVertexInputStateCreateInfoCRefArray = std::vector< PipelineVertexInputStateCreateInfoCRef >;
+
+	struct DebugBlockInfo
+	{
+		std::string markerName;
+		std::array< float, 4 > color;
+	};
+
+	struct DebugObjectNameInfo
+	{
+		VkObjectType objectType;
+		uint64_t object;
+		std::string objectName;
+	};
+
+	struct DebugObjectTagInfo
+	{
+		VkObjectType objectType;
+		uint64_t objectHandle;
+		uint64_t tagName;
+		size_t tagSize;
+		const void * pTag;
+	};
 }
 
 #endif

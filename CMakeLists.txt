@@ -108,35 +108,6 @@ else ()
 	set( Vulkan_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/Vulkan-Headers/include )
 endif ()
 
-if ( VCPKG_TOOLCHAIN OR NOT EXISTS ${CMAKE_SOURCE_DIR}/external/spirv_cross/spirv_cross.cpp )
-	set( ASHES_BUILD_SPIRV_CROSS OFF )
-	if ( VCPKG_TOOLCHAIN )
-		set( spirv-cross_DIR ${ASHES_INSTALLED_DIR} )
-	endif ()
-	find_package( spirv-cross REQUIRED COMPONENTS core cpp glsl hlsl reflect util )
-	if ( spirv-cross_FOUND )
-		set( ASHES_HAS_SPIRV_CROSS ON )
-		set( SPIRV_CROSS_LIBRARIES
-			spirv-cross-core
-			spirv-cross-cpp
-			spirv-cross-glsl
-			spirv-cross-reflect
-			spirv-cross-util
-		)
-		set( SPIRV_CROSS_HLSL_LIBRARIES
-			spirv-cross-hlsl
-		)
-	else ()
-		set( ASHES_HAS_SPIRV_CROSS OFF )
-		message( FATAL_ERROR "Couldn't find spirv-cross" )
-	endif ()
-else ()
-	set( ASHES_BUILD_SPIRV_CROSS ON )
-	set( ASHES_HAS_SPIRV_CROSS ON )
-	set( SPIRV_CROSS_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external )
-	set( SPIRV_CROSS_DIR ${SPIRV_CROSS_INCLUDE_DIR}/spirv_cross )
-endif ()
-
 set(CMAKE_DEBUG_POSTFIX "d")
 
 set( Ashes_BASE_DIR "Ashes" )

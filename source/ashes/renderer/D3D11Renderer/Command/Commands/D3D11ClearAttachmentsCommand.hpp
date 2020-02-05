@@ -24,8 +24,8 @@ namespace ashes::d3d11
 			, VkRenderPass renderPass
 			, VkSubpassDescription const & subpass
 			, VkFramebuffer framebuffer
-			, VkClearAttachmentArray const & clearAttaches
-			, VkClearRectArray const & clearRects );
+			, ArrayView< VkClearAttachment const > const & clearAttaches
+			, ArrayView< VkClearRect const > const & clearRects );
 
 		void apply( Context const & context )const;
 		CommandPtr clone()const;

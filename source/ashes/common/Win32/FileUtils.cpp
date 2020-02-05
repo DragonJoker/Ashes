@@ -3,6 +3,7 @@
 #ifdef _WIN32
 
 #include <cassert>
+#include <filesystem>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -66,7 +67,8 @@ namespace ashes
 		, HitFileFunction fileFunction )
 	{
 		assert( !folderPath.empty() );
-		bool result = false;
+
+		std::filesystem::directory_iterator it{ folderPath };
 		WIN32_FIND_DATAA findData{};
 		HANDLE handle = ::FindFirstFileA( ( folderPath / "*.*" ).c_str(), &findData );
 
@@ -77,7 +79,7 @@ namespace ashes
 			return false;
 		}
 
-		result = true;
+		bool result = true;
 		std::string name = findData.cFileName;
 
 		if ( name != "." && name != ".." )

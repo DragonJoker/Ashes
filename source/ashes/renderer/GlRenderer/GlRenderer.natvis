@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+  <Type Name="VkDevice_T">
+    <DisplayString>{{value={(ashes::gl::Device*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::Device*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkBuffer_T">
+    <DisplayString>{{value={(ashes::gl::Buffer*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::Buffer*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkPipeline_T">
+    <DisplayString>{{value={(ashes::gl::Pipeline*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::Pipeline*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkInstance_T">
+    <DisplayString>{{value={(ashes::gl::Instance*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::Instance*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkPhysicalDevice_T">
+    <DisplayString>{{value={(ashes::gl::PhysicalDevice*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::PhysicalDevice*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkDeviceMemory_T">
+    <DisplayString>{{value={(ashes::gl::DeviceMemory*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::DeviceMemory*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkQueue_T">
+    <DisplayString>{{value={(ashes::gl::Queue*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::Queue*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkSemaphore_T">
+    <DisplayString>{{value={(ashes::gl::Semaphore*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::Semaphore*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkCommandBuffer_T">
+    <DisplayString>{{value={(ashes::gl::CommandBuffer*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::CommandBuffer*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkFence_T">
+    <DisplayString>{{value={(ashes::gl::Fence*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::Fence*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkImage_T">
+    <DisplayString>{{value={(ashes::gl::Image*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::Image*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkEvent_T">
+    <DisplayString>{{value={(ashes::gl::Event*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::Event*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkQueryPool_T">
+    <DisplayString>{{value={(ashes::gl::QueryPool*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::QueryPool*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkBufferView_T">
+    <DisplayString>{{value={(ashes::gl::BufferView*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::BufferView*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkImageView_T">
+    <DisplayString>{{value={(ashes::gl::ImageView*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::ImageView*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkShaderModule_T">
+    <DisplayString>{{value={(ashes::gl::ShaderModule*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::ShaderModule*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkPipelineCache_T">
+    <DisplayString>{{value={(ashes::gl::PipelineCache*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::PipelineCache*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkPipelineLayout_T">
+    <DisplayString>{{value={(ashes::gl::PipelineLayout*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::PipelineLayout*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkRenderPass_T">
+    <DisplayString>{{value={(ashes::gl::RenderPass*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::RenderPass*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkDescriptorSetLayout_T">
+    <DisplayString>{{value={(ashes::gl::DescriptorSetLayout*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::DescriptorSetLayout*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkSampler_T">
+    <DisplayString>{{value={(ashes::gl::Sampler*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::Sampler*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkDescriptorPool_T">
+    <DisplayString>{{value={(ashes::gl::DescriptorPool*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::DescriptorPool*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkDescriptorSet_T">
+    <DisplayString>{{value={(ashes::gl::DescriptorSet*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::DescriptorSet*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkCommandPool_T">
+    <DisplayString>{{value={(ashes::gl::CommandPool*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::CommandPool*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkFramebuffer_T">
+    <DisplayString>{{value={(ashes::gl::Framebuffer*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::Framebuffer*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkSurfaceKHR_T">
+    <DisplayString>{{value={(ashes::gl::SurfaceKHR*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::SurfaceKHR*)this</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="VkSwapchainKHR_T">
+    <DisplayString>{{value={(ashes::gl::SwapchainKHR*)this}}}</DisplayString>
+    <Expand>
+      <Item Name="ptr">(ashes::gl::SwapchainKHR*)this</Item>
+    </Expand>
+  </Type>
+
+</AutoVisualizer>
