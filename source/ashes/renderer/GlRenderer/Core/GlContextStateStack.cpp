@@ -884,17 +884,14 @@ namespace ashes::gl
 				, enableCulling );
 		}
 
-		if ( enableCulling )
+		if ( force || newState.cullMode != save.cullMode )
 		{
-			if ( force || newState.cullMode != save.cullMode )
-			{
-				list.emplace_back( makeCmd< OpType::eCullFace >( mode ) );
-			}
+			list.emplace_back( makeCmd< OpType::eCullFace >( mode ) );
+		}
 
-			if ( force || newState.frontFace != save.frontFace )
-			{
-				list.emplace_back( makeCmd< OpType::eFrontFace >( convert( newState.frontFace ) ) );
-			}
+		if ( force || newState.frontFace != save.frontFace )
+		{
+			list.emplace_back( makeCmd< OpType::eFrontFace >( convert( newState.frontFace ) ) );
 		}
 
 		if ( force || newState.polygonMode != save.polygonMode )
