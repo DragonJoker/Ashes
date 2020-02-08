@@ -60,9 +60,14 @@ if ( ASHES_BUILD_PLUGINS )
 	set( RendererDependencies
 		ashes::common
 		ashes::ashes
-		ashes::RendererCommon
 	)
-	add_subdirectory( RendererCommon )
+	if ( ASHES_BUILD_OGL OR ASHES_BUILD_D3D11 OR ASHES_BUILD_TEST )
+		add_subdirectory( RendererCommon )
+		set( RendererDependencies
+			${RendererDependencies}
+			ashes::RendererCommon
+		)
+	endif ()
 
 	if ( ASHES_BUILD_OGL )
 		if ( ANDROID )
