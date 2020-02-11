@@ -3949,6 +3949,41 @@ namespace ashes::test
 
 namespace ashes::test
 {
+	std::vector< VkExtensionProperties > const & getSupportedInstanceExtensions()
+	{
+		static std::vector< VkExtensionProperties > const extensions
+		{
+#if VK_KHR_surface
+			VkExtensionProperties{ VK_KHR_SURFACE_EXTENSION_NAME, VK_KHR_SURFACE_SPEC_VERSION },
+#endif
+#	if _WIN32
+			VkExtensionProperties{ VK_KHR_WIN32_SURFACE_EXTENSION_NAME, VK_KHR_WIN32_SURFACE_SPEC_VERSION },
+#	elif __linux__
+			VkExtensionProperties{ VK_KHR_XLIB_SURFACE_EXTENSION_NAME, VK_KHR_XLIB_SURFACE_SPEC_VERSION },
+			VkExtensionProperties{ VK_KHR_XCB_SURFACE_EXTENSION_NAME, VK_KHR_XCB_SURFACE_SPEC_VERSION },
+#	endif
+#if VK_EXT_debug_report
+			VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, VK_EXT_DEBUG_REPORT_SPEC_VERSION },
+#endif
+#if VK_EXT_debug_marker
+			VkExtensionProperties{ VK_EXT_DEBUG_MARKER_EXTENSION_NAME, VK_EXT_DEBUG_MARKER_SPEC_VERSION },
+#endif
+#if VK_EXT_debug_utils
+			VkExtensionProperties{ VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_EXT_DEBUG_UTILS_SPEC_VERSION },
+#endif
+#if VK_KHR_get_physical_device_properties2
+			VkExtensionProperties{ VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_SPEC_VERSION },
+#endif
+#if VK_KHR_display
+			VkExtensionProperties{ VK_KHR_DISPLAY_EXTENSION_NAME, VK_KHR_DISPLAY_SPEC_VERSION },
+#endif
+#if VK_NV_glsl_shader
+			VkExtensionProperties{ VK_NV_GLSL_SHADER_EXTENSION_NAME, VK_NV_GLSL_SHADER_SPEC_VERSION },
+#endif
+		};
+		return extensions;
+	}
+
 	struct GlLibrary
 	{
 		AshPluginDescription description
@@ -3976,15 +4011,13 @@ namespace ashes::test
 					true, // hasStorageBuffers
 					true, // supportsPersistentMapping
 				};
-#define VK_LIB_GLOBAL_FUNCTION( x )\
+#define VK_LIB_GLOBAL_FUNCTION( v, x )\
 				description.functions.x = vk##x;
-#define VK_LIB_INSTANCE_FUNCTION( x )\
+#define VK_LIB_INSTANCE_FUNCTION( v, x )\
 				description.functions.x = vk##x;
-#define VK_LIB_DEVICE_FUNCTION( x )\
-				description.functions.x = vk##x;
-#define VK_LIB_GLOBAL_FUNCTION_EXT( n, x )
-#define VK_LIB_INSTANCE_FUNCTION_EXT( n, x )
-#define VK_LIB_DEVICE_FUNCTION_EXT( n, x )
+#define VK_LIB_GLOBAL_FUNCTION_EXT( v, n, x )
+#define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )
+#define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )
 #include <ashes/ashes_functions_list.hpp>
 				result = VK_SUCCESS;
 
@@ -4002,6 +4035,34 @@ namespace ashes::test
 		return library;
 	}
 
+	bool checkVersion( VkInstance instance
+		, uint32_t version )
+	{
+		return get( instance )->getApiVersion() >= version;
+	}
+
+	bool checkVersionExt( VkInstance instance
+		, uint32_t version
+		, std::string_view extension )
+	{
+		return checkVersion( instance, version )
+			&& get( instance )->hasExtension( extension.data() );
+	}
+
+	bool checkVersion( VkDevice device
+		, uint32_t version )
+	{
+		return checkVersion( getInstance( device ), version );
+	}
+
+	bool checkVersionExt( VkDevice device
+		, uint32_t version
+		, std::string_view extension )
+	{
+		return checkVersion( getInstance( device ), version )
+			&& get( device )->hasExtension( extension.data() );
+	}
+
 	PFN_vkVoidFunction VKAPI_CALL vkGetInstanceProcAddr(
 		VkInstance instance,
 		const char* pName )
@@ -4013,9 +4074,9 @@ namespace ashes::test
 		{
 			static std::map< std::string, PFN_vkVoidFunction > functions
 			{
-#define VK_LIB_GLOBAL_FUNCTION( x )\
+#define VK_LIB_GLOBAL_FUNCTION( v, x )\
 				{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
-#define VK_LIB_INSTANCE_FUNCTION( x )\
+#define VK_LIB_INSTANCE_FUNCTION( v, x )\
 				{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
 #include <ashes/ashes_functions_list.hpp>
 			};
@@ -4043,7 +4104,7 @@ namespace ashes::test
 			static std::map< std::string, PFN_vkVoidFunction > functions
 			{
 				{ "vkGetDeviceProcAddr", PFN_vkVoidFunction( vkGetDeviceProcAddr ) },
-#define VK_LIB_DEVICE_FUNCTION( x )\
+#define VK_LIB_DEVICE_FUNCTION( v, x )\
 				{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
 #include <ashes/ashes_functions_list.hpp>
 			};

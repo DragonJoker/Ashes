@@ -45,6 +45,16 @@ namespace ashes::test
 		std::string labelName;
 	};
 
+	class ExtensionNotPresentException
+		: public ashes::Exception
+	{
+	public:
+		ExtensionNotPresentException( std::string const & name )
+			: Exception{ VK_ERROR_EXTENSION_NOT_PRESENT, name }
+		{
+		}
+	};
+
 	class Attribute;
 	class Buffer;
 	class BufferView;

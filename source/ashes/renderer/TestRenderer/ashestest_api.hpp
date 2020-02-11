@@ -248,6 +248,8 @@ namespace ashes::test
 		return !( lhs == rhs );
 	}
 
+	std::vector< VkExtensionProperties > const & getSupportedInstanceExtensions();
+
 	inline VkInstance getInstance( VkInstance object )
 	{
 		return object;

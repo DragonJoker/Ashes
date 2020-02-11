@@ -26,6 +26,8 @@ namespace ashes::test
 		*/
 		~Instance();
 
+		uint32_t getApiVersion()const;
+		bool hasExtension( std::string_view extension )const;
 		VkPhysicalDeviceArray enumeratePhysicalDevices()const;
 		/**
 		*\copydoc	ashes::Instance::frustum
@@ -90,6 +92,7 @@ namespace ashes::test
 		void doInitialisePhysicalDevices();
 
 	private:
+		VkApplicationInfo m_applicationInfo;
 		AshPluginFeatures m_features;
 		VkInstanceCreateFlags m_flags;
 		StringArray m_enabledLayerNames;
