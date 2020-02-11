@@ -84,6 +84,39 @@ namespace ashes::test
 			return uint32_t( texelBlockSize );
 		}
 
+		void doCheckEnabledExtensions( VkPhysicalDevice physicalDevice
+			, ashes::ArrayView< char const * const > const & extensions )
+		{
+			auto available = get( physicalDevice )->enumerateExtensionProperties( nullptr );
+
+			for ( auto & extension : extensions )
+			{
+				if ( available.end() == std::find_if( available.begin()
+					, available.end()
+					, [&extension]( VkExtensionProperties const & lookup )
+					{
+						return lookup.extensionName == std::string{ extension };
+					} ) )
+				{
+					throw ExtensionNotPresentException{ extension };
+				}
+			}
+		}
+
+		bool doHasEnabledExtensions( VkPhysicalDevice physicalDevice
+			, ashes::ArrayView< char const * const > const & extensions )
+		{
+			try
+			{
+				doCheckEnabledExtensions( physicalDevice, extensions );
+				return true;
+			}
+			catch ( ExtensionNotPresentException & )
+			{
+				return false;
+			}
+		}
+
 		size_t makeKey( VkImageType type
 			, VkFormat format
 			, VkExtent3D const & extent
@@ -133,6 +166,13 @@ namespace ashes::test
 	VkPhysicalDeviceLimits const & Device::getLimits()const
 	{
 		return get( m_physicalDevice )->getProperties().limits;
+	}
+
+	bool Device::hasExtension( std::string_view extension )const
+	{
+		char const * const version = extension.data();
+		return doHasEnabledExtensions( m_physicalDevice
+			, ashes::makeArrayView( &version, 1u ) );
 	}
 
 	VkImage Device::getStagingImage( VkImage image
