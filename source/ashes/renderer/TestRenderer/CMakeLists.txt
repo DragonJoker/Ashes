@@ -8,19 +8,334 @@ set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 set( PROJECT_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}" )
 set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_BUILD}" )
 
-file( GLOB_RECURSE ${PROJECT_NAME}_SRC_FILES
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/*.c
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/*.cc
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/*.cpp
-)
+	set( ${PROJECT_NAME}_SRC_FILES
+		ash_test.cpp
+		TestRendererPch.cpp
+		TestRendererPrerequisites.cpp
+	)
+	set( ${PROJECT_NAME}_HDR_FILES
+		ashestest_api.hpp
+		TestRendererPch.hpp
+		TestRendererPrerequisites.hpp
+	)
+	source_group( "Header Files" FILES ${${PROJECT_NAME}_HDR_FILES} )
+	source_group( "Source Files" FILES ${${PROJECT_NAME}_SRC_FILES} )
 
-file( GLOB_RECURSE ${PROJECT_NAME}_HDR_FILES
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/*.h
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/*.hh
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/*.hpp
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/*.inl
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/*.inc
-)
+	set( ${PROJECT_NAME}_FOLDER_SRC_FILES
+		Buffer/TestBuffer.cpp
+		Buffer/TestBufferView.cpp
+	)
+	set( ${PROJECT_NAME}_FOLDER_HDR_FILES
+		Buffer/TestBuffer.hpp
+		Buffer/TestBufferView.hpp
+	)
+	set( ${PROJECT_NAME}_SRC_FILES
+		${${PROJECT_NAME}_SRC_FILES}
+		${${PROJECT_NAME}_FOLDER_SRC_FILES}
+	)
+	set( ${PROJECT_NAME}_HDR_FILES
+		${${PROJECT_NAME}_HDR_FILES}
+		${${PROJECT_NAME}_FOLDER_HDR_FILES}
+	)
+	source_group( "Header Files\\Buffer" FILES ${${PROJECT_NAME}_FOLDER_HDR_FILES} )
+	source_group( "Source Files\\Buffer" FILES ${${PROJECT_NAME}_FOLDER_SRC_FILES} )
+
+	set( ${PROJECT_NAME}_FOLDER_SRC_FILES
+		Command/TestCommandBuffer.cpp
+		Command/TestCommandPool.cpp
+		Command/TestQueue.cpp
+	)
+	set( ${PROJECT_NAME}_FOLDER_HDR_FILES
+		Command/TestCommandBuffer.hpp
+		Command/TestCommandPool.hpp
+		Command/TestQueue.hpp
+	)
+	set( ${PROJECT_NAME}_SRC_FILES
+		${${PROJECT_NAME}_SRC_FILES}
+		${${PROJECT_NAME}_FOLDER_SRC_FILES}
+	)
+	set( ${PROJECT_NAME}_HDR_FILES
+		${${PROJECT_NAME}_HDR_FILES}
+		${${PROJECT_NAME}_FOLDER_HDR_FILES}
+	)
+	source_group( "Header Files\\Command" FILES ${${PROJECT_NAME}_FOLDER_HDR_FILES} )
+	source_group( "Source Files\\Command" FILES ${${PROJECT_NAME}_FOLDER_SRC_FILES} )
+
+	set( ${PROJECT_NAME}_FOLDER_SRC_FILES
+		Command/Commands/TestCommandBase.cpp
+		Command/Commands/TestBeginQueryCommand.cpp
+		Command/Commands/TestBeginRenderPassCommand.cpp
+		Command/Commands/TestBeginSubpassCommand.cpp
+		Command/Commands/TestBindComputePipelineCommand.cpp
+		Command/Commands/TestBindDescriptorSetCommand.cpp
+		Command/Commands/TestBindIndexBufferCommand.cpp
+		Command/Commands/TestBindPipelineCommand.cpp
+		Command/Commands/TestBindVertexBuffersCommand.cpp
+		Command/Commands/TestBlitImageCommand.cpp
+		Command/Commands/TestClearAttachmentsCommand.cpp
+		Command/Commands/TestClearColourCommand.cpp
+		Command/Commands/TestClearDepthStencilCommand.cpp
+		Command/Commands/TestCopyBufferCommand.cpp
+		Command/Commands/TestCopyBufferToImageCommand.cpp
+		Command/Commands/TestCopyImageCommand.cpp
+		Command/Commands/TestCopyImageToBufferCommand.cpp
+		Command/Commands/TestDispatchCommand.cpp
+		Command/Commands/TestDispatchIndirectCommand.cpp
+		Command/Commands/TestDownloadMemoryCommand.cpp
+		Command/Commands/TestDrawCommand.cpp
+		Command/Commands/TestDrawIndexedCommand.cpp
+		Command/Commands/TestDrawIndexedIndirectCommand.cpp
+		Command/Commands/TestDrawIndirectCommand.cpp
+		Command/Commands/TestEndQueryCommand.cpp
+		Command/Commands/TestEndRenderPassCommand.cpp
+		Command/Commands/TestEndSubpassCommand.cpp
+		Command/Commands/TestExecuteActionsCommand.cpp
+		Command/Commands/TestExecuteCommandsCommand.cpp
+		Command/Commands/TestGenerateMipsCommand.cpp
+		Command/Commands/TestMemoryBarrierCommand.cpp
+		Command/Commands/TestPushConstantsCommand.cpp
+		Command/Commands/TestResetEventCommand.cpp
+		Command/Commands/TestResetQueryPoolCommand.cpp
+		Command/Commands/TestScissorCommand.cpp
+		Command/Commands/TestSetDepthBiasCommand.cpp
+		Command/Commands/TestSetEventCommand.cpp
+		Command/Commands/TestSetLineWidthCommand.cpp
+		Command/Commands/TestUploadMemoryCommand.cpp
+		Command/Commands/TestViewportCommand.cpp
+		Command/Commands/TestWaitEventsCommand.cpp
+		Command/Commands/TestWriteTimestampCommand.cpp
+	)
+	set( ${PROJECT_NAME}_FOLDER_HDR_FILES
+		Command/Commands/TestCommandBase.hpp
+		Command/Commands/TestBeginQueryCommand.hpp
+		Command/Commands/TestBeginRenderPassCommand.hpp
+		Command/Commands/TestBeginSubpassCommand.hpp
+		Command/Commands/TestBindComputePipelineCommand.hpp
+		Command/Commands/TestBindDescriptorSetCommand.hpp
+		Command/Commands/TestBindIndexBufferCommand.hpp
+		Command/Commands/TestBindPipelineCommand.hpp
+		Command/Commands/TestBindVertexBuffersCommand.hpp
+		Command/Commands/TestBlitImageCommand.hpp
+		Command/Commands/TestClearAttachmentsCommand.hpp
+		Command/Commands/TestClearColourCommand.hpp
+		Command/Commands/TestClearDepthStencilCommand.hpp
+		Command/Commands/TestCopyBufferCommand.hpp
+		Command/Commands/TestCopyBufferToImageCommand.hpp
+		Command/Commands/TestCopyImageCommand.hpp
+		Command/Commands/TestCopyImageToBufferCommand.hpp
+		Command/Commands/TestDispatchCommand.hpp
+		Command/Commands/TestDispatchIndirectCommand.hpp
+		Command/Commands/TestDownloadMemoryCommand.hpp
+		Command/Commands/TestDrawCommand.hpp
+		Command/Commands/TestDrawIndexedCommand.hpp
+		Command/Commands/TestDrawIndexedIndirectCommand.hpp
+		Command/Commands/TestDrawIndirectCommand.hpp
+		Command/Commands/TestEndQueryCommand.hpp
+		Command/Commands/TestEndRenderPassCommand.hpp
+		Command/Commands/TestEndSubpassCommand.hpp
+		Command/Commands/TestExecuteActionsCommand.hpp
+		Command/Commands/TestExecuteCommandsCommand.hpp
+		Command/Commands/TestGenerateMipsCommand.hpp
+		Command/Commands/TestMemoryBarrierCommand.hpp
+		Command/Commands/TestPushConstantsCommand.hpp
+		Command/Commands/TestResetEventCommand.hpp
+		Command/Commands/TestResetQueryPoolCommand.hpp
+		Command/Commands/TestScissorCommand.hpp
+		Command/Commands/TestSetDepthBiasCommand.hpp
+		Command/Commands/TestSetEventCommand.hpp
+		Command/Commands/TestSetLineWidthCommand.hpp
+		Command/Commands/TestUploadMemoryCommand.hpp
+		Command/Commands/TestViewportCommand.hpp
+		Command/Commands/TestWaitEventsCommand.hpp
+		Command/Commands/TestWriteTimestampCommand.hpp
+	)
+	set( ${PROJECT_NAME}_SRC_FILES
+		${${PROJECT_NAME}_SRC_FILES}
+		${${PROJECT_NAME}_FOLDER_SRC_FILES}
+	)
+	set( ${PROJECT_NAME}_HDR_FILES
+		${${PROJECT_NAME}_HDR_FILES}
+		${${PROJECT_NAME}_FOLDER_HDR_FILES}
+	)
+	source_group( "Header Files\\Command\\Commands" FILES ${${PROJECT_NAME}_FOLDER_HDR_FILES} )
+	source_group( "Source Files\\Command\\Commands" FILES ${${PROJECT_NAME}_FOLDER_SRC_FILES} )
+
+	set( ${PROJECT_NAME}_FOLDER_SRC_FILES
+		Core/TestDebugReportCallback.cpp
+		Core/TestDevice.cpp
+		Core/TestDisplay.cpp
+		Core/TestDisplayMode.cpp
+		Core/TestInstance.cpp
+		Core/TestLayer.cpp
+		Core/TestPhysicalDevice.cpp
+		Core/TestSurface.cpp
+		Core/TestSwapChain.cpp
+	)
+	set( ${PROJECT_NAME}_FOLDER_HDR_FILES
+		Core/TestDebugReportCallback.hpp
+		Core/TestDevice.hpp
+		Core/TestDisplay.hpp
+		Core/TestDisplayMode.hpp
+		Core/TestDummyIndexBuffer.hpp
+		Core/TestInstance.hpp
+		Core/TestLayer.hpp
+		Core/TestPhysicalDevice.hpp
+		Core/TestSurface.hpp
+		Core/TestSwapChain.hpp
+	)
+	set( ${PROJECT_NAME}_SRC_FILES
+		${${PROJECT_NAME}_SRC_FILES}
+		${${PROJECT_NAME}_FOLDER_SRC_FILES}
+	)
+	set( ${PROJECT_NAME}_HDR_FILES
+		${${PROJECT_NAME}_HDR_FILES}
+		${${PROJECT_NAME}_FOLDER_HDR_FILES}
+	)
+	source_group( "Header Files\\Core" FILES ${${PROJECT_NAME}_FOLDER_HDR_FILES} )
+	source_group( "Source Files\\Core" FILES ${${PROJECT_NAME}_FOLDER_SRC_FILES} )
+
+	set( ${PROJECT_NAME}_FOLDER_SRC_FILES
+		Descriptor/TestDescriptorPool.cpp
+		Descriptor/TestDescriptorSet.cpp
+		Descriptor/TestDescriptorSetLayout.cpp
+		Descriptor/TestWriteDescriptorSet.cpp
+	)
+	set( ${PROJECT_NAME}_FOLDER_HDR_FILES
+		Descriptor/TestDescriptorPool.hpp
+		Descriptor/TestDescriptorSet.hpp
+		Descriptor/TestDescriptorSetLayout.hpp
+		Descriptor/TestWriteDescriptorSet.hpp
+	)
+	set( ${PROJECT_NAME}_SRC_FILES
+		${${PROJECT_NAME}_SRC_FILES}
+		${${PROJECT_NAME}_FOLDER_SRC_FILES}
+	)
+	set( ${PROJECT_NAME}_HDR_FILES
+		${${PROJECT_NAME}_HDR_FILES}
+		${${PROJECT_NAME}_FOLDER_HDR_FILES}
+	)
+	source_group( "Header Files\\Descriptor" FILES ${${PROJECT_NAME}_FOLDER_HDR_FILES} )
+	source_group( "Source Files\\Descriptor" FILES ${${PROJECT_NAME}_FOLDER_SRC_FILES} )
+
+	set( ${PROJECT_NAME}_FOLDER_SRC_FILES
+		Image/TestImage.cpp
+		Image/TestImageView.cpp
+		Image/TestSampler.cpp
+	)
+	set( ${PROJECT_NAME}_FOLDER_HDR_FILES
+		Image/TestImage.hpp
+		Image/TestImageView.hpp
+		Image/TestSampler.hpp
+	)
+	set( ${PROJECT_NAME}_SRC_FILES
+		${${PROJECT_NAME}_SRC_FILES}
+		${${PROJECT_NAME}_FOLDER_SRC_FILES}
+	)
+	set( ${PROJECT_NAME}_HDR_FILES
+		${${PROJECT_NAME}_HDR_FILES}
+		${${PROJECT_NAME}_FOLDER_HDR_FILES}
+	)
+	source_group( "Header Files\\Image" FILES ${${PROJECT_NAME}_FOLDER_HDR_FILES} )
+	source_group( "Source Files\\Image" FILES ${${PROJECT_NAME}_FOLDER_SRC_FILES} )
+
+	set( ${PROJECT_NAME}_FOLDER_SRC_FILES
+		Miscellaneous/TestDeviceMemory.cpp
+		Miscellaneous/TestQueryPool.cpp
+	)
+	set( ${PROJECT_NAME}_FOLDER_HDR_FILES
+		Miscellaneous/TestDeviceMemory.hpp
+		Miscellaneous/TestQueryPool.hpp
+	)
+	set( ${PROJECT_NAME}_SRC_FILES
+		${${PROJECT_NAME}_SRC_FILES}
+		${${PROJECT_NAME}_FOLDER_SRC_FILES}
+	)
+	set( ${PROJECT_NAME}_HDR_FILES
+		${${PROJECT_NAME}_HDR_FILES}
+		${${PROJECT_NAME}_FOLDER_HDR_FILES}
+	)
+	source_group( "Header Files\\Miscellaneous" FILES ${${PROJECT_NAME}_FOLDER_HDR_FILES} )
+	source_group( "Source Files\\Miscellaneous" FILES ${${PROJECT_NAME}_FOLDER_SRC_FILES} )
+
+	set( ${PROJECT_NAME}_FOLDER_SRC_FILES
+		Pipeline/TestComputePipeline.cpp
+		Pipeline/TestPipeline.cpp
+		Pipeline/TestPipelineCache.cpp
+		Pipeline/TestPipelineLayout.cpp
+	)
+	set( ${PROJECT_NAME}_FOLDER_HDR_FILES
+		Pipeline/TestComputePipeline.hpp
+		Pipeline/TestPipeline.hpp
+		Pipeline/TestPipelineCache.hpp
+		Pipeline/TestPipelineLayout.hpp
+	)
+	set( ${PROJECT_NAME}_SRC_FILES
+		${${PROJECT_NAME}_SRC_FILES}
+		${${PROJECT_NAME}_FOLDER_SRC_FILES}
+	)
+	set( ${PROJECT_NAME}_HDR_FILES
+		${${PROJECT_NAME}_HDR_FILES}
+		${${PROJECT_NAME}_FOLDER_HDR_FILES}
+	)
+	source_group( "Header Files\\Pipeline" FILES ${${PROJECT_NAME}_FOLDER_HDR_FILES} )
+	source_group( "Source Files\\Pipeline" FILES ${${PROJECT_NAME}_FOLDER_SRC_FILES} )
+
+	set( ${PROJECT_NAME}_FOLDER_SRC_FILES
+		RenderPass/TestFrameBuffer.cpp
+		RenderPass/TestRenderPass.cpp
+	)
+	set( ${PROJECT_NAME}_FOLDER_HDR_FILES
+		RenderPass/TestFrameBuffer.hpp
+		RenderPass/TestRenderPass.hpp
+	)
+	set( ${PROJECT_NAME}_SRC_FILES
+		${${PROJECT_NAME}_SRC_FILES}
+		${${PROJECT_NAME}_FOLDER_SRC_FILES}
+	)
+	set( ${PROJECT_NAME}_HDR_FILES
+		${${PROJECT_NAME}_HDR_FILES}
+		${${PROJECT_NAME}_FOLDER_HDR_FILES}
+	)
+	source_group( "Header Files\\RenderPass" FILES ${${PROJECT_NAME}_FOLDER_HDR_FILES} )
+	source_group( "Source Files\\RenderPass" FILES ${${PROJECT_NAME}_FOLDER_SRC_FILES} )
+
+	set( ${PROJECT_NAME}_FOLDER_SRC_FILES
+		Shader/TestShaderModule.cpp
+	)
+	set( ${PROJECT_NAME}_FOLDER_HDR_FILES
+		Shader/TestShaderModule.hpp
+	)
+	set( ${PROJECT_NAME}_SRC_FILES
+		${${PROJECT_NAME}_SRC_FILES}
+		${${PROJECT_NAME}_FOLDER_SRC_FILES}
+	)
+	set( ${PROJECT_NAME}_HDR_FILES
+		${${PROJECT_NAME}_HDR_FILES}
+		${${PROJECT_NAME}_FOLDER_HDR_FILES}
+	)
+	source_group( "Header Files\\Shader" FILES ${${PROJECT_NAME}_FOLDER_HDR_FILES} )
+	source_group( "Source Files\\Shader" FILES ${${PROJECT_NAME}_FOLDER_SRC_FILES} )
+
+	set( ${PROJECT_NAME}_FOLDER_SRC_FILES
+		Sync/TestEvent.cpp
+		Sync/TestFence.cpp
+		Sync/TestSemaphore.cpp
+	)
+	set( ${PROJECT_NAME}_FOLDER_HDR_FILES
+		Sync/TestEvent.hpp
+		Sync/TestFence.hpp
+		Sync/TestSemaphore.hpp
+	)
+	set( ${PROJECT_NAME}_SRC_FILES
+		${${PROJECT_NAME}_SRC_FILES}
+		${${PROJECT_NAME}_FOLDER_SRC_FILES}
+	)
+	set( ${PROJECT_NAME}_HDR_FILES
+		${${PROJECT_NAME}_HDR_FILES}
+		${${PROJECT_NAME}_FOLDER_HDR_FILES}
+	)
+	source_group( "Header Files\\Sync" FILES ${${PROJECT_NAME}_FOLDER_HDR_FILES} )
+	source_group( "Source Files\\Sync" FILES ${${PROJECT_NAME}_FOLDER_SRC_FILES} )
 
 add_library( ${PROJECT_NAME} SHARED
 	${${PROJECT_NAME}_SRC_FILES}
@@ -60,22 +375,6 @@ add_target_precompiled_header_ex( ${PROJECT_NAME}
 	"${CMAKE_CXX_FLAGS}"
 	${${PROJECT_NAME}_SRC_FILES}
 )
-
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer Buffer "Buffer" )
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer Command "Command" )
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer Command/Commands "Command\\\\Commands" )
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer Core "Core" )
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer Descriptor "Descriptor" )
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer Enum "Enum" )
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer Image "Image" )
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer Miscellaneous "Miscellaneous" )
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer Pipeline "Pipeline" )
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer RenderPass "RenderPass" )
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer Shader "Shader" )
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer Sync "Sync" )
-
-source_group( "Natvis Files" FILES ${${PROJECT_NAME}_NVS_FILES} )
-
 set( ENABLED_RENDERERS
 	${ENABLED_RENDERERS}
 	${PROJECT_NAME}
