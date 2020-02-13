@@ -915,7 +915,10 @@ namespace ashes::gl
 
 		if ( force || newState.cullMode != save.cullMode )
 		{
-			list.emplace_back( makeCmd< OpType::eCullFace >( mode ) );
+			if ( enableCulling )
+			{
+				list.emplace_back( makeCmd< OpType::eCullFace >( mode ) );
+			}
 		}
 
 		if ( force || newState.frontFace != save.frontFace )
