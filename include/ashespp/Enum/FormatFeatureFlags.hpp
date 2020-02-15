@@ -46,6 +46,13 @@ namespace ashes
 			return "blit_dst";
 		case VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT:
 			return "sampled_image_filter_linear";
+#if defined( VK_API_VERSION_1_2 )
+		case VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT:
+			return "sampled_image_filter_minmax";
+#elif defined( VK_EXT_sampler_filter_minmax )
+		case VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT_EXT:
+			return "sampled_image_filter_minmax";
+#endif
 #ifdef VK_API_VERSION_1_1
 		case VK_FORMAT_FEATURE_TRANSFER_SRC_BIT:
 			return "transfer_src";
@@ -92,10 +99,6 @@ namespace ashes
 #ifdef VK_EXT_filter_cubic
 		case VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG:
 			return "sampled_image_filter_cubic";
-#endif
-#ifdef VK_EXT_sampler_filter_minmax
-		case VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT_EXT:
-			return "sampled_image_filter_minmax";
 #endif
 #ifdef VK_EXT_fragment_density_map
 		case VK_FORMAT_FEATURE_FRAGMENT_DENSITY_MAP_BIT_EXT:

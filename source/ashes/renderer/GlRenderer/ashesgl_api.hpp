@@ -36,7 +36,9 @@ See LICENSE file in root folder.
 #include <ashes/common/Exception.hpp>
 #include <ashes/common/VkTypeTraits.hpp>
 
-#define VK_NO_PROTOTYPES
+#ifndef VK_NO_PROTOTYPES
+#	define VK_NO_PROTOTYPES
+#endif
 #include <ashes/ashes.h>
 
 #include <limits>

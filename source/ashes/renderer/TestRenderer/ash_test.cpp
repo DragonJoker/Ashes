@@ -1,4 +1,7 @@
-#define VK_NO_PROTOTYPES
+#ifndef VK_NO_PROTOTYPES
+#	define VK_NO_PROTOTYPES
+#endif
+
 #include <ashes/ashes.h>
 
 #include "Core/TestDevice.hpp"
@@ -1950,6 +1953,179 @@ namespace ashes::test
 		VkDescriptorSetLayoutSupport* pSupport )
 	{
 		reportUnsupported( device, "vkGetDescriptorSetLayoutSupport" );
+	}
+
+#endif
+#pragma endregion
+#pragma region VK_API_VERSION_1_2
+#ifdef VK_API_VERSION_1_2
+
+	VKAPI_ATTR void VKAPI_CALL vkCmdDrawIndirectCount(
+		VkCommandBuffer commandBuffer,
+		VkBuffer buffer,
+		VkDeviceSize offset,
+		VkBuffer countBuffer,
+		VkDeviceSize countBufferOffset,
+		uint32_t maxDrawCount,
+		uint32_t stride )
+	{
+		reportUnsupported( commandBuffer, "vkCmdDrawIndirectCount" );
+	}
+
+	VKAPI_ATTR void VKAPI_CALL vkCmdDrawIndexedIndirectCount(
+		VkCommandBuffer commandBuffer,
+		VkBuffer buffer,
+		VkDeviceSize offset,
+		VkBuffer countBuffer,
+		VkDeviceSize countBufferOffset,
+		uint32_t maxDrawCount,
+		uint32_t stride )
+	{
+		reportUnsupported( commandBuffer, "vkCmdDrawIndexedIndirectCount" );
+	}
+
+	VKAPI_ATTR VkResult VKAPI_CALL vkCreateRenderPass2(
+		VkDevice device,
+		const VkRenderPassCreateInfo2 * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkRenderPass * pRenderPass )
+	{
+		return reportUnsupported( device, "vkCreateRenderPass2" );
+	}
+
+	VKAPI_ATTR void VKAPI_CALL vkCmdBeginRenderPass2(
+		VkCommandBuffer commandBuffer,
+		const VkRenderPassBeginInfo * pRenderPassBegin,
+		const VkSubpassBeginInfo * pSubpassBeginInfo )
+	{
+		reportUnsupported( commandBuffer, "vkCmdBeginRenderPass2" );
+	}
+
+	VKAPI_ATTR void VKAPI_CALL vkCmdNextSubpass2(
+		VkCommandBuffer commandBuffer,
+		const VkSubpassBeginInfo * pSubpassBeginInfo,
+		const VkSubpassEndInfo * pSubpassEndInfo )
+	{
+		reportUnsupported( commandBuffer, "vkCmdNextSubpass2" );
+	}
+
+	VKAPI_ATTR void VKAPI_CALL vkCmdEndRenderPass2(
+		VkCommandBuffer commandBuffer,
+		const VkSubpassEndInfo * pSubpassEndInfo )
+	{
+		reportUnsupported( commandBuffer, "vkCmdEndRenderPass2" );
+	}
+
+	VKAPI_ATTR void VKAPI_CALL vkResetQueryPool(
+		VkDevice device,
+		VkQueryPool queryPool,
+		uint32_t firstQuery,
+		uint32_t queryCount )
+	{
+		reportUnsupported( device, "vkResetQueryPool" );
+	}
+
+	VKAPI_ATTR VkResult VKAPI_CALL vkGetSemaphoreCounterValue(
+		VkDevice device,
+		VkSemaphore semaphore,
+		uint64_t * pValue )
+	{
+		return reportUnsupported( device, "vkGetSemaphoreCounterValue" );
+	}
+
+	VKAPI_ATTR VkResult VKAPI_CALL vkWaitSemaphores(
+		VkDevice device,
+		const VkSemaphoreWaitInfo * pWaitInfo,
+		uint64_t timeout )
+	{
+		return reportUnsupported( device, "vkWaitSemaphores" );
+	}
+
+	VKAPI_ATTR VkResult VKAPI_CALL vkSignalSemaphore(
+		VkDevice device,
+		const VkSemaphoreSignalInfo * pSignalInfo )
+	{
+		return reportUnsupported( device, "vkSignalSemaphore" );
+	}
+
+	VKAPI_ATTR VkDeviceAddress VKAPI_CALL vkGetBufferDeviceAddress(
+		VkDevice device,
+		const VkBufferDeviceAddressInfo * pInfo )
+	{
+		reportUnsupported( device, "vkGetBufferDeviceAddress" );
+		return 0u;
+	}
+
+	VKAPI_ATTR uint64_t VKAPI_CALL vkGetBufferOpaqueCaptureAddress(
+		VkDevice device,
+		const VkBufferDeviceAddressInfo * pInfo )
+	{
+		reportUnsupported( device, "vkGetBufferOpaqueCaptureAddress" );
+		return 0u;
+	}
+
+	VKAPI_ATTR uint64_t VKAPI_CALL vkGetDeviceMemoryOpaqueCaptureAddress(
+		VkDevice device,
+		const VkDeviceMemoryOpaqueCaptureAddressInfo * pInfo )
+	{
+		reportUnsupported( device, "vkGetDeviceMemoryOpaqueCaptureAddress" );
+		return 0u;
+	}
+
+#endif
+#pragma endregion
+#pragma region VK_KHR_timeline_semaphore
+#ifdef VK_KHR_timeline_semaphore
+
+	VKAPI_ATTR VkResult VKAPI_CALL vkGetSemaphoreCounterValueKHR(
+		VkDevice device,
+		VkSemaphore semaphore,
+		uint64_t * pValue )
+	{
+		return reportUnsupported( device, "vkGetSemaphoreCounterValueKHR" );
+	}
+
+	VKAPI_ATTR VkResult VKAPI_CALL vkWaitSemaphoresKHR(
+		VkDevice device,
+		const VkSemaphoreWaitInfoKHR * pWaitInfo,
+		uint64_t timeout )
+	{
+		return reportUnsupported( device, "vkWaitSemaphoresKHR" );
+	}
+
+	VKAPI_ATTR VkResult VKAPI_CALL vkSignalSemaphoreKHR(
+		VkDevice device,
+		const VkSemaphoreSignalInfoKHR * pSignalInfo )
+	{
+		return reportUnsupported( device, "vkSignalSemaphoreKHR" );
+	}
+#endif
+#pragma endregion
+#pragma region VK_KHR_buffer_device_address
+#ifdef VK_KHR_buffer_device_address
+
+	VKAPI_ATTR VkDeviceAddress VKAPI_CALL vkGetBufferDeviceAddressKHR(
+		VkDevice device,
+		const VkBufferDeviceAddressInfoKHR * pInfo )
+	{
+		reportUnsupported( device, "vkGetBufferDeviceAddressKHR" );
+		return 0u;
+	}
+
+	VKAPI_ATTR uint64_t VKAPI_CALL vkGetBufferOpaqueCaptureAddressKHR(
+		VkDevice device,
+		const VkBufferDeviceAddressInfoKHR * pInfo )
+	{
+		reportUnsupported( device, "vkGetBufferOpaqueCaptureAddressKHR" );
+		return 0u;
+	}
+
+	VKAPI_ATTR uint64_t VKAPI_CALL vkGetDeviceMemoryOpaqueCaptureAddressKHR(
+		VkDevice device,
+		const VkDeviceMemoryOpaqueCaptureAddressInfoKHR * pInfo )
+	{
+		reportUnsupported( device, "vkGetDeviceMemoryOpaqueCaptureAddressKHR" );
+		return 0u;
 	}
 
 #endif

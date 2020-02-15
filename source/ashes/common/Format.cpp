@@ -524,11 +524,44 @@ namespace ashes
 		return format == VK_FORMAT_S8_UINT;
 	}
 
+	VkFormat getStencil( VkFormat format )noexcept
+	{
+		switch ( format )
+		{
+		case VK_FORMAT_S8_UINT:
+		case VK_FORMAT_D16_UNORM_S8_UINT:
+		case VK_FORMAT_D24_UNORM_S8_UINT:
+		case VK_FORMAT_D32_SFLOAT_S8_UINT:
+			return VK_FORMAT_S8_UINT;
+		default:
+			return VK_FORMAT_UNDEFINED;
+		}
+	}
+
 	bool isDepthFormat( VkFormat format )noexcept
 	{
 		return format == VK_FORMAT_D16_UNORM
 			|| format == VK_FORMAT_X8_D24_UNORM_PACK32
 			|| format == VK_FORMAT_D32_SFLOAT;
+	}
+
+	VkFormat getDepth( VkFormat format )noexcept
+	{
+		switch ( format )
+		{
+		case VK_FORMAT_D16_UNORM_S8_UINT:
+			return VK_FORMAT_D16_UNORM;
+		case VK_FORMAT_D24_UNORM_S8_UINT:
+			return VK_FORMAT_X8_D24_UNORM_PACK32;
+		case VK_FORMAT_D32_SFLOAT_S8_UINT:
+			return VK_FORMAT_D32_SFLOAT;
+		case VK_FORMAT_D16_UNORM:
+		case VK_FORMAT_X8_D24_UNORM_PACK32:
+		case VK_FORMAT_D32_SFLOAT:
+			return format;
+		default:
+			return VK_FORMAT_UNDEFINED;
+		}
 	}
 
 	bool isBCFormat( VkFormat format )noexcept

@@ -38,6 +38,16 @@ namespace ashes
 			return "vertex_buffer";
 		case VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT:
 			return "indirect_buffer";
+#if defined( VK_API_VERSION_1_2 )
+		case VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT:
+			return "shader_device_address";
+#elif defined( VK_KHR_buffer_device_address )
+		case VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT_KHR:
+			return "shader_device_address";
+#elif defined( VK_EXT_buffer_device_address )
+		case VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT_EXT:
+			return "shader_device_address";
+#endif
 #ifdef VK_EXT_tranform_feedback
 		case VK_BUFFER_USAGE_TRANSFORM_FEEDBACK_BUFFER_BIT_EXT:
 			return "transform_feedback_buffer";

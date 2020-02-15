@@ -6,7 +6,9 @@ See LICENSE file in root folder
 #ifndef ___Ashes_common_Format_HPP___
 #define ___Ashes_common_Format_HPP___
 
-#define VK_NO_PROTOTYPES
+#ifndef VK_NO_PROTOTYPES
+#	define VK_NO_PROTOTYPES
+#endif
 #include <vulkan/vulkan.h>
 
 #include <cstdint>
@@ -123,6 +125,13 @@ namespace ashes
 	*/
 	bool isStencilFormat( VkFormat format )noexcept;
 	/**
+	*\param[in] format
+	*	The source.
+	*\return
+	*	The stencil format matching the given depth and stencil one.
+	*/
+	VkFormat getStencil( VkFormat format )noexcept;
+	/**
 	*\brief
 	*	Tells if the given VkFormat is usable in depth buffers.
 	*\param[in] format
@@ -131,6 +140,13 @@ namespace ashes
 	*	\p true if it is usable in depth buffers.
 	*/
 	bool isDepthFormat( VkFormat format )noexcept;
+	/**
+	*\param[in] format
+	*	The source.
+	*\return
+	*	The depth format matching the given depth and stencil one.
+	*/
+	VkFormat getDepth( VkFormat format )noexcept;
 	/**
 	*\return
 	*	\p true if given pixel format is a BC pixel format.
