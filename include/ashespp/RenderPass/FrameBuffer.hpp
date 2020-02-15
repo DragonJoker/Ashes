@@ -29,7 +29,8 @@ namespace ashes
 		*/
 		FrameBuffer( RenderPass const & renderPass
 			, VkExtent2D const & dimensions
-			, ImageViewCRefArray views );
+			, ImageViewCRefArray views
+			, uint32_t layers = 1u );
 		/**
 		*\brief
 		*	Destructor.

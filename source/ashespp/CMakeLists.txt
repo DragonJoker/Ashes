@@ -167,6 +167,7 @@ set( ${PROJECT_NAME}_FOLDER_HDR_FILES
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/BlendFactor.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/BlendOp.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/BorderColor.hpp
+	${Ashes_SOURCE_DIR}/include/ashespp/Enum/BufferCreateFlags.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/BufferUsageFlags.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/ClipDirection.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/ColorComponentFlags.hpp
@@ -183,6 +184,7 @@ set( ${PROJECT_NAME}_FOLDER_HDR_FILES
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/DebugReportObjectType.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/DependencyFlags.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/DescriptorPoolCreateFlags.hpp
+	${Ashes_SOURCE_DIR}/include/ashespp/Enum/DescriptorSetLayoutCreateFlags.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/DeviceCreateFlags.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/DeviceQueueCreateFlags.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/DynamicStateEnable.hpp
@@ -190,6 +192,7 @@ set( ${PROJECT_NAME}_FOLDER_HDR_FILES
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/Filter.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/Flags.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/FormatFeatureFlags.hpp
+	${Ashes_SOURCE_DIR}/include/ashespp/Enum/FramebufferCreateFlags.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/FrontFace.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/ImageAspectFlags.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/ImageCreateFlags.hpp
@@ -201,6 +204,7 @@ set( ${PROJECT_NAME}_FOLDER_HDR_FILES
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/IndexType.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/InstanceCreateFlags.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/LogicOp.hpp
+	${Ashes_SOURCE_DIR}/include/ashespp/Enum/MemoryAllocateFlags.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/MemoryHeapFlags.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/MemoryMapFlags.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/MemoryPropertyFlags.hpp

@@ -6,7 +6,9 @@ See LICENSE file in root folder
 #define ___Ashes_common_VkTypeTraits_HPP___
 #pragma once
 
-#define VK_NO_PROTOTYPES
+#ifndef VK_NO_PROTOTYPES
+#	define VK_NO_PROTOTYPES
+#endif
 #include <vulkan/vulkan.h>
 
 #include <cassert>
