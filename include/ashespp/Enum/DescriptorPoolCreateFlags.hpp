@@ -22,7 +22,10 @@ namespace ashes
 		{
 		case VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT:
 			return "free_descriptor_set";
-#ifdef VK_EXT_descriptor_indexing
+#if defined( VK_API_VERSION_1_2 )
+		case VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT:
+			return "update_after_bind";
+#elif defined( VK_EXT_descriptor_indexing )
 		case VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT_EXT:
 			return "update_after_bind";
 #endif

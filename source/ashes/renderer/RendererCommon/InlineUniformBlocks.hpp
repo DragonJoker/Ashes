@@ -6,7 +6,10 @@
 */
 #pragma once
 
-#define VK_NO_PROTOTYPES
+#ifndef VK_NO_PROTOTYPES
+#	define VK_NO_PROTOTYPES
+#endif
+
 #include <ashes/ashes.hpp>
 
 #include <memory>

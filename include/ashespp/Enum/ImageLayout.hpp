@@ -38,12 +38,31 @@ namespace ashes
 			return "transfer_dst_optimal";
 		case VK_IMAGE_LAYOUT_PREINITIALIZED:
 			return "preinitialized";
+#if defined( VK_API_VERSION_1_2 )
+		case VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL:
+			return "depth_attachment_optimal";
+		case VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL:
+			return "depth_read_only_optimal";
+		case VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL:
+			return "stencil_attachment_optimal";
+		case VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL:
+			return "stencil_read_only_optimal";
+#elif defined( VK_KHR_separate_depth_stencil_layouts )
+		case VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL_KHR:
+			return "depth_attachment_optimal";
+		case VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL_KHR:
+			return "depth_read_only_optimal";
+		case VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL_KHR:
+			return "stencil_attachment_optimal";
+		case VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL_KHR:
+			return "stencil_read_only_optimal";
+#endif
 #ifdef VK_API_VERSION_1_1
 		case VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL:
 			return "depth_read_only_stencil_attachment_optimal";
 		case VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL:
 			return "depth_attachment_stencil_read_only_optimal";
-#elif defined( VK_KHR_maintenance2
+#elif defined( VK_KHR_maintenance2 )
 		case VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL_KHR:
 			return "depth_read_only_stencil_attachment_optimal";
 		case VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL_KHR:
