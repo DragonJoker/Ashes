@@ -182,7 +182,7 @@ namespace ashes
 		*	Getters.
 		*/
 		/**@{*/
-		inline RendererFeatures const & getFeatures()const
+		inline PluginFeatures const & getFeatures()const
 		{
 			return m_features;
 		}
@@ -216,7 +216,7 @@ namespace ashes
 		AshPluginDescription m_plugin;
 		ashes::InstanceCreateInfo m_createInfo;
 		VkInstance m_instance{ VK_NULL_HANDLE };
-		RendererFeatures m_features;
+		ashes::PluginFeatures m_features;
 	};
 }
 
