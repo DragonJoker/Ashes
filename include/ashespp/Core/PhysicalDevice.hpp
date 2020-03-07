@@ -77,7 +77,7 @@ namespace ashes
 		*	Getters.
 		*/
 		/**@{*/
-		inline uint32_t getShaderVersion()const
+		inline std::string const & getShaderVersion()const
 		{
 			return m_shaderVersion;
 		}
@@ -93,7 +93,7 @@ namespace ashes
 
 	private:
 		Instance const & m_instance;
-		uint32_t m_shaderVersion;
+		std::string m_shaderVersion;
 		VkPhysicalDevice m_gpu{ VK_NULL_HANDLE };
 	};
 }
