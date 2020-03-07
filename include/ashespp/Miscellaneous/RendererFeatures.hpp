@@ -14,7 +14,7 @@ namespace ashes
 	*\brief
 	*	The renderer features.
 	*/
-	using RendererFeatures = AshPluginFeatures;
+	using PluginFeatures = AshPluginFeatures;
 }
 
 #endif

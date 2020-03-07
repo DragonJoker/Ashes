@@ -598,7 +598,7 @@ namespace ashes
 		*	Getters.
 		*/
 		/**@{*/
-		inline uint32_t getShaderVersion()const
+		inline std::string const & getShaderVersion()const
 		{
 			return m_physicalDevice.getShaderVersion();
 		}

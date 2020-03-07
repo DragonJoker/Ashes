@@ -10,10 +10,36 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
+	namespace
+	{
+		std::string makeShaderVersion( std::string desc
+			, uint32_t maxShaderLanguageVersion )
+		{
+			if ( desc.find( "vk" ) )
+			{
+				return "spirv" + std::to_string( maxShaderLanguageVersion );
+			}
+
+			if ( desc.find( "gl" ) )
+			{
+				return "glsl" + std::to_string( maxShaderLanguageVersion );
+			}
+
+			if ( desc.find( "d3d" ) )
+			{
+				return "sm" + std::to_string( maxShaderLanguageVersion );
+			}
+
+			return "unk" + std::to_string( maxShaderLanguageVersion );
+		}
+	}
+
 	PhysicalDevice::PhysicalDevice( Instance const & instance
 		, VkPhysicalDevice gpu )
 		: m_instance{ instance }
 		, m_gpu{ gpu }
+		, m_shaderVersion{ makeShaderVersion( instance.getName()
+			, instance.getFeatures().maxShaderLanguageVersion ) }
 	{
 	}
 
