@@ -140,7 +140,7 @@ namespace ashes
 
 			if ( !doGetInitialisationStatus() )
 			{
-				std::cerr << "Could not initialise DbgHelp: 0x" << std::hex << ::GetLastError() << std::endl;
+				log::error << "Could not initialise DbgHelp: 0x" << std::hex << ::GetLastError() << std::endl;
 			}
 		}
 

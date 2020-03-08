@@ -195,11 +195,11 @@ namespace ashes
 		}
 		catch ( std::exception & exc )
 		{
-			Logger::logError( std::string{ "Could not create the swap chain:\n" } +exc.what() );
+			log::error << "Could not create the swap chain:\n" << exc.what() << "\n";
 		}
 		catch ( ... )
 		{
-			Logger::logError( "Could not create the swap chain:\nUnknown error" );
+			log::error << "Could not create the swap chain:\nUnknown error\n";
 		}
 
 		return result;
@@ -382,7 +382,7 @@ namespace ashes
 			std::stringstream stream;
 			stream << "Leaked [" << alloc.second.type << "], allocation stack:\n";
 			stream << alloc.second.callstack;
-			Logger::logError( stream );
+			log::error << stream.str() << "\n";
 		}
 	}
 

@@ -73,7 +73,7 @@ namespace ashes
 
 		uint32_t count = 0u;
 		enumeratePluginDescriptions( &count, nullptr );
-		std::clog << "RendererList: " << libraryName << ", " << count << " renderer plugins detected" << std::endl;
+		log::info << "RendererList: " << libraryName << ", " << count << " renderer plugins detected" << std::endl;
 
 		if ( count > 0 )
 		{
@@ -82,11 +82,11 @@ namespace ashes
 
 			for ( auto & plugin : m_plugins )
 			{
-				std::clog << "    " << plugin.name << " - " << plugin.description << std::endl;
+				log::info << "    " << plugin.name << " - " << plugin.description << std::endl;
 			}
 
 			getCurrentPluginDescription( &m_current );
-			std::clog << "  Currently using " << m_current.name << std::endl;
+			log::info << "  Currently using " << m_current.name << std::endl;
 		}
 	}
 
