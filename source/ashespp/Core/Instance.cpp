@@ -160,7 +160,7 @@ namespace ashes
 		}
 		catch ( std::exception & exc )
 		{
-			Logger::logError( std::string{ "Could not initialise logical device:\n" } +exc.what() );
+			log::error << "Could not initialise logical device:\n" << exc.what() << std::endl;
 		}
 
 		return result;
@@ -257,7 +257,7 @@ namespace ashes
 
 		if ( !result )
 		{
-			Logger::logDebug( std::string{ "Instance: Couldn't load function [" } + name + "]" );
+			log::debug << "Instance: Couldn't load function [" << name << "]" << std::endl;
 		}
 
 		return result;
