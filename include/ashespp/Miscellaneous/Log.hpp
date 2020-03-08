@@ -5,6 +5,8 @@ See LICENSE file in root folder
 #define ___AshesPP_Log_H___
 
 #include <functional>
+#include <memory>
+#include <sstream>
 #include <string>
 
 namespace ashes
