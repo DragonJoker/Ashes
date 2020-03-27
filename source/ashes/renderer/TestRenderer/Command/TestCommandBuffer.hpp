@@ -6,6 +6,8 @@ See LICENSE file in root folder
 
 #include "renderer/TestRenderer/Command/Commands/TestBlitImageCommand.hpp"
 
+#define AshesTest_DummyCommandBuffer 1
+
 namespace ashes::test
 {
 	class CommandBuffer

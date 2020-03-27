@@ -43,6 +43,7 @@ set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_BUILD}" )
 	set( ${PROJECT_NAME}_FOLDER_SRC_FILES
 		Command/TestCommandBuffer.cpp
 		Command/TestCommandPool.cpp
+		Command/TestDummyCommandBuffer.cpp
 		Command/TestQueue.cpp
 	)
 	set( ${PROJECT_NAME}_FOLDER_HDR_FILES

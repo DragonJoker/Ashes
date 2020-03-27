@@ -4,6 +4,8 @@ See LICENSE file in root folder.
 */
 #include "Command/TestCommandBuffer.hpp"
 
+#if !AshesTest_DummyCommandBuffer
+
 #include "Buffer/TestBuffer.hpp"
 #include "Command/TestCommandPool.hpp"
 #include "Core/TestDevice.hpp"
@@ -1088,3 +1090,4 @@ namespace ashes::test
 
 	//*********************************************************************************************
 }
+#endif
