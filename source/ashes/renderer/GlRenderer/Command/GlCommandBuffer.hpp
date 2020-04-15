@@ -177,6 +177,16 @@ namespace ashes::gl
 		void initialiseGeometryBuffers( ContextLock & context )const;
 		void addPreExecuteAction( PreExecuteAction action );
 
+		inline ContextStateStack const & getStack()const
+		{
+			return *m_state.stack;
+		}
+
+		inline ContextStateStack & getStack()
+		{
+			return *m_state.stack;
+		}
+
 		inline CmdBuffer const & getCmds()const
 		{
 			return m_cmds;
