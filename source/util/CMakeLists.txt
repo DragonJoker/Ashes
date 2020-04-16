@@ -59,11 +59,7 @@ source_group( "Source Files" FILES ${${PROJECT_NAME}_SRC_FILES} )
 if ( MSVC )
 	set( BinLibraries
 		${Ashes_BINARY_LIBRARIES}
-		glslang
-		OGLCompiler
-		OSDependent
-		SPVRemapper
-		SPIRV
+		${glslang_LIBRARIES}
 		PARENT_SCOPE
 	)
 endif ()
@@ -87,19 +83,15 @@ target_include_directories( ${PROJECT_NAME}
 		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}
 		${ASHES_CONFIG_DIR}/source/${_PROJECT_NAME}
 		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}
-		${CMAKE_SOURCE_DIR}/external/glslang
+		${glslang_INCLUDE_DIR}
 )
 target_link_libraries( ${PROJECT_NAME}
 	PRIVATE
-		glslang
-		OGLCompiler
-		OSDependent
-		SPVRemapper
-		SPIRV
 		ashes::common
 	PUBLIC
 		ashes::ashes
 		ashes::ashespp
+		${glslang_LIBRARIES}
 )
 target_compile_definitions( ${PROJECT_NAME} PRIVATE
 	${TARGET_CXX_DEFINITIONS}
