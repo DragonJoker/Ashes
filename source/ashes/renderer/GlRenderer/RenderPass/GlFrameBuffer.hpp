@@ -12,9 +12,9 @@ See LICENSE file in root folder
 namespace ashes::gl
 {
 	bool isSRGBFormat( VkFormat format );
-	GlAttachmentPoint getAttachmentPoint( VkFormat format );
+	GlAttachmentPoint getAttachmentPoint( VkImageAspectFlags aspectMask );
 	GlAttachmentPoint getAttachmentPoint( VkImageView texture );
-	GlAttachmentType getAttachmentType( VkFormat format );
+	GlAttachmentType getAttachmentType( VkImageAspectFlags aspectMask );
 	GlAttachmentType getAttachmentType( VkImageView texture );
 	void checkCompleteness( GLenum status );
 

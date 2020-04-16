@@ -5,6 +5,7 @@ See LICENSE file in root folder
 #pragma once
 
 #include "renderer/GlRenderer/Core/GlContextImpl.hpp"
+#include "renderer/GlRenderer/Platform/GlMswWindow.hpp"
 
 #if _WIN32
 
@@ -43,6 +44,7 @@ namespace ashes::gl
 	private:
 		VkWin32SurfaceCreateInfoKHR win32CreateInfo{};
 		VkDisplaySurfaceCreateInfoKHR displayCreateInfo{};
+		VkWin32PixelFormatDescriptorASH const * m_pfd;
 		int m_minor{ 0 };
 		int m_major{ 0 };
 		HWND m_hWnd{ nullptr };

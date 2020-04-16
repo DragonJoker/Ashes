@@ -209,19 +209,20 @@ namespace ashes::gl
 			|| format == VK_FORMAT_A8B8G8R8_SRGB_PACK32;
 	}
 
-	GlAttachmentPoint getAttachmentPoint( VkFormat format )
+	GlAttachmentPoint getAttachmentPoint( VkImageAspectFlags aspectMask )
 	{
-		if ( isDepthStencilFormat( format ) )
+		if ( checkFlag( aspectMask, VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT )
+			&& checkFlag( aspectMask, VkImageAspectFlagBits::VK_IMAGE_ASPECT_STENCIL_BIT ) )
 		{
 			return GL_ATTACHMENT_POINT_DEPTH_STENCIL;
 		}
 
-		if ( isStencilFormat( format ) )
+		if ( checkFlag( aspectMask, VkImageAspectFlagBits::VK_IMAGE_ASPECT_STENCIL_BIT ) )
 		{
 			return GL_ATTACHMENT_POINT_STENCIL;
 		}
 
-		if ( isDepthFormat( format ) )
+		if ( checkFlag( aspectMask, VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT ) )
 		{
 			return GL_ATTACHMENT_POINT_DEPTH;
 		}
@@ -231,22 +232,23 @@ namespace ashes::gl
 
 	GlAttachmentPoint getAttachmentPoint( VkImageView texture )
 	{
-		return getAttachmentPoint( get( texture )->getFormat() );
+		return getAttachmentPoint( get( texture )->getSubresourceRange().aspectMask );
 	}
 
-	GlAttachmentType getAttachmentType( VkFormat format )
+	GlAttachmentType getAttachmentType( VkImageAspectFlags aspectMask )
 	{
-		if ( isDepthStencilFormat( format ) )
+		if ( checkFlag( aspectMask, VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT )
+			&& checkFlag( aspectMask, VkImageAspectFlagBits::VK_IMAGE_ASPECT_STENCIL_BIT ) )
 		{
 			return GL_ATTACHMENT_TYPE_DEPTH_STENCIL;
 		}
 
-		if ( isStencilFormat( format ) )
+		if ( checkFlag( aspectMask, VkImageAspectFlagBits::VK_IMAGE_ASPECT_STENCIL_BIT ) )
 		{
 			return GL_ATTACHMENT_TYPE_STENCIL;
 		}
 
-		if ( isDepthFormat( format ) )
+		if ( checkFlag( aspectMask, VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT ) )
 		{
 			return GL_ATTACHMENT_TYPE_DEPTH;
 		}

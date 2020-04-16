@@ -71,9 +71,11 @@ namespace ashes::gl
 			return hWnd;
 		}
 
-		HGLRC createContext( HDC hDC, int reqMajor, int reqMinor )
+		HGLRC createContext( HDC hDC
+			, int reqMajor
+			, int reqMinor
+			, PIXELFORMATDESCRIPTOR & pfd )
 		{
-			PIXELFORMATDESCRIPTOR pfd = { 0 };
 			pfd.nSize = sizeof( PIXELFORMATDESCRIPTOR );
 			pfd.nVersion = 1;
 			pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
@@ -83,8 +85,9 @@ namespace ashes::gl
 			pfd.cRedBits = 8;
 			pfd.cGreenBits = 8;
 			pfd.cBlueBits = 8;
-			pfd.cDepthBits = 24;
-			pfd.cStencilBits = 8;
+			pfd.cAlphaBits = 8;
+			pfd.cDepthBits = 0;
+			pfd.cStencilBits = 0;
 
 			int pixelFormat = ::ChoosePixelFormat( hDC, &pfd );
 
@@ -116,7 +119,7 @@ namespace ashes::gl
 		, m_class{ registerClass( m_hInstance, name ) }
 		, m_hWnd{ createWindow( m_hInstance, m_class, name ) }
 		, m_hDC{ ::GetDC( m_hWnd ) }
-		, m_hContext{ createContext( m_hDC, major, minor ) }
+		, m_hContext{ createContext( m_hDC, major, minor, m_pfd.pfd ) }
 	{
 		wglMakeCurrent( m_hDC, m_hContext );
 	}
@@ -138,7 +141,7 @@ namespace ashes::gl
 		{
 			wglDeleteContext( m_hContext );
 		}
-		
+
 		if ( m_hDC )
 		{
 			::ReleaseDC( m_hWnd, m_hDC );
@@ -161,7 +164,7 @@ namespace ashes::gl
 		return
 		{
 			VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
-			nullptr,
+			&m_pfd,
 			0u,
 			m_hInstance,
 			m_hWnd,

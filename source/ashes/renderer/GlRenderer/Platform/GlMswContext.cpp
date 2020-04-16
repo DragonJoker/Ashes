@@ -87,11 +87,37 @@ namespace ashes::gl
 #endif
 	}
 
+	struct VkStructure
+	{
+		VkStructureType sType;
+		VkStructure const * pNext;
+	};
+
+	VkWin32PixelFormatDescriptorASH const * getPfd( VkStructure const * rhs )
+	{
+		VkWin32PixelFormatDescriptorASH const * result{ nullptr };
+
+		if ( rhs )
+		{
+			if ( rhs->sType == VK_STRUCTURE_TYPE_WIN32_PIXEL_FORMAT_DESCRIPTOR_ASH )
+			{
+				result = reinterpret_cast< VkWin32PixelFormatDescriptorASH const * >( rhs );
+			}
+			else
+			{
+				result = getPfd( rhs->pNext );
+			}
+		}
+
+		return result;
+	}
+
 	MswContext::MswContext( VkInstance instance
 		, VkWin32SurfaceCreateInfoKHR createInfo
 		, ContextImpl const * mainContext )
 		: ContextImpl{ instance }
 		, win32CreateInfo{ std::move( createInfo ) }
+		, m_pfd{ getPfd( reinterpret_cast< VkStructure const * >( &win32CreateInfo ) ) }
 		, m_hWnd{ createInfo.hwnd }
 		, m_hDC{ ::GetDC( m_hWnd ) }
 		, m_mainContext{ static_cast< MswContext const * >( mainContext ) }
@@ -103,6 +129,7 @@ namespace ashes::gl
 		, ContextImpl const * mainContext )
 		: ContextImpl{ instance, createInfo.imageExtent }
 		, displayCreateInfo{ std::move( createInfo ) }
+		, m_pfd{ getPfd( reinterpret_cast< VkStructure const * >( &displayCreateInfo ) ) }
 		, m_hWnd{ ::GetActiveWindow() }
 		, m_hDC{ ::GetDC( m_hWnd ) }
 		, m_mainContext{ static_cast< MswContext const * >( mainContext ) }
@@ -208,18 +235,25 @@ namespace ashes::gl
 
 	void MswContext::doSelectFormat()
 	{
-		PIXELFORMATDESCRIPTOR pfd = { 0 };
-		pfd.nSize = sizeof( PIXELFORMATDESCRIPTOR );
-		pfd.nVersion = 1;
-		pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-		pfd.iPixelType = PFD_TYPE_RGBA;
-		pfd.iLayerType = PFD_MAIN_PLANE;
-		pfd.cColorBits = 24;
-		pfd.cRedBits = 8;
-		pfd.cGreenBits = 8;
-		pfd.cBlueBits = 8;
-		pfd.cDepthBits = 24;
-		pfd.cStencilBits = 8;
+		PIXELFORMATDESCRIPTOR pfd = ( m_pfd
+			? m_pfd->pfd
+			: []()
+			{
+				PIXELFORMATDESCRIPTOR pfd{};
+				pfd.nSize = sizeof( PIXELFORMATDESCRIPTOR );
+				pfd.nVersion = 1;
+				pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+				pfd.iPixelType = PFD_TYPE_RGBA;
+				pfd.iLayerType = PFD_MAIN_PLANE;
+				pfd.cColorBits = 24;
+				pfd.cRedBits = 8;
+				pfd.cGreenBits = 8;
+				pfd.cBlueBits = 8;
+				pfd.cAlphaBits = 8;
+				pfd.cDepthBits = 0;
+				pfd.cStencilBits = 0;
+				return pfd;
+			}( ) );
 
 		int pixelFormats = ::ChoosePixelFormat( m_hDC, &pfd );
 

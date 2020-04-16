@@ -206,7 +206,7 @@ namespace ashes::gl
 	{
 		return get( object )->getInstance();
 	}
-	
+
 	inline VkInstance getInstance( VkBufferView object )
 	{
 		return getInstance( get( object )->getDevice() );

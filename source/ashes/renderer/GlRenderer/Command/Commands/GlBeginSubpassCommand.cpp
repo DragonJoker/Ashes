@@ -11,7 +11,8 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	void buildBeginSubpassCommand( VkRenderPass renderPass
+	void buildBeginSubpassCommand( ContextStateStack & stack
+		, VkRenderPass renderPass
 		, VkFramebuffer frameBuffer
 		, VkSubpassDescription subpass
 		, CmdList & list )
@@ -24,5 +25,7 @@ namespace ashes::gl
 				, subpass.colorAttachmentCount );
 			list.push_back( makeCmd< OpType::eDrawBuffers >( get( frameBuffer )->getDrawBuffers( references ) ) );
 		}
+
+		stack.applySRGBStatus( list, get( frameBuffer )->isSRGB(), true );
 	}
 }
