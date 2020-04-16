@@ -8,7 +8,8 @@ See LICENSE file in root folder
 
 namespace ashes::gl
 {
-	void buildBeginSubpassCommand( VkRenderPass renderPass
+	void buildBeginSubpassCommand( ContextStateStack & stack
+		, VkRenderPass renderPass
 		, VkFramebuffer frameBuffer
 		, VkSubpassDescription subpass
 		, CmdList & list );

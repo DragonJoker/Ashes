@@ -124,13 +124,23 @@ else ()
 	set( Ashes_BINARY_DEFINITIONS VK_USE_PLATFORM_XLIB_KHR=1 )
 endif ()
 
-add_subdirectory( source )
-
 if ( ASHES_BUILD_TESTS OR ASHES_BUILD_SAMPLES OR ASHES_BUILD_TEMPLATES )
 	if ( NOT TARGET glslang )
-		if ( VCPKG_TOOLCHAIN OR NOT EXISTS ${CMAKE_SOURCE_DIR}/external/spirv_cross/spirv_cross.cpp )
+		if ( VCPKG_TOOLCHAIN OR NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/external/glslang/ )
 			if ( VCPKG_TOOLCHAIN )
 				find_package( glslang CONFIG )
+				if ( ${glslang_FOUND} )
+					set( GLSLANG_FOUND ON )
+					set( glslang_LIBRARIES
+						glslang::OSDependent
+						glslang::glslang
+						glslang::OGLCompiler
+						glslang::SPIRV
+						glslang::HLSL )
+					set( glslang_INCLUDE_DIR
+						${CMAKE_CURRENT_SOURCE_DIR}/../../external/glslang
+					)
+				endif ()
 			else ()
 				find_package( glslang )
 			endif ()
@@ -147,11 +157,24 @@ if ( ASHES_BUILD_TESTS OR ASHES_BUILD_SAMPLES OR ASHES_BUILD_TEMPLATES )
 			set( ENABLE_NV_EXTENSIONS FALSE CACHE BOOL "Enables support of Nvidia-specific extensions" FORCE )
 			set( ENABLE_HLSL FALSE CACHE BOOL "Enables HLSL input support" FORCE )
 			set( BUILD_TESTING OFF )
+			set( BUILD_EXTERNAL OFF )
 			set( SKIP_GLSLANG_INSTALL ON )
 			add_subdirectory( external/glslang )
+			set( glslang_LIBRARIES
+				glslang
+				OGLCompiler
+				OSDependent
+				SPVRemapper
+				SPIRV
+			)
+			set( glslang_INCLUDE_DIR
+				${CMAKE_CURRENT_SOURCE_DIR}/external/glslang
+			)
 		endif ()
 	endif ()
 endif ()
+
+add_subdirectory( source )
 
 if ( ASHES_BUILD_TEMPLATES )
 	add_subdirectory( templates )

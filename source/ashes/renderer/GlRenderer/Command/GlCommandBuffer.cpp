@@ -234,7 +234,8 @@ namespace ashes::gl
 			, m_cmdList
 			, m_preExecuteActions );
 		m_state.currentSubpass = &get( m_state.currentRenderPass )->getSubpasses()[m_state.currentSubpassIndex++];
-		buildBeginSubpassCommand( m_state.currentRenderPass
+		buildBeginSubpassCommand( *m_state.stack
+			, m_state.currentRenderPass
 			, m_state.currentFrameBuffer
 			, *m_state.currentSubpass
 			, m_cmdList );
@@ -251,7 +252,8 @@ namespace ashes::gl
 			, m_cmdList
 			, m_preExecuteActions );
 		m_state.currentSubpass = &get( m_state.currentRenderPass )->getSubpasses()[m_state.currentSubpassIndex++];
-		buildBeginSubpassCommand( m_state.currentRenderPass
+		buildBeginSubpassCommand( *m_state.stack
+			, m_state.currentRenderPass
 			, m_state.currentFrameBuffer
 			, *m_state.currentSubpass
 			, m_cmdList );
