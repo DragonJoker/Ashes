@@ -313,7 +313,7 @@ namespace ashes::d3d11
 		VkInstance instance = getInstance( object );
 #if VK_EXT_debug_utils
 		{
-			VkDebugUtilsObjectNameInfoEXT objectName
+			VkDebugUtilsObjectNameInfoEXT info
 			{
 				VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
 				nullptr,
@@ -335,7 +335,7 @@ namespace ashes::d3d11
 					0u,
 					nullptr,
 					1u,
-					&objectName,
+					&info,
 				} );
 		}
 #endif
@@ -362,7 +362,7 @@ namespace ashes::d3d11
 		VkInstance instance = getInstance( object );
 #if VK_EXT_debug_utils
 		{
-			VkDebugUtilsObjectNameInfoEXT object
+			VkDebugUtilsObjectNameInfoEXT info
 			{
 				VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
 				nullptr,
@@ -384,7 +384,7 @@ namespace ashes::d3d11
 					0u,
 					nullptr,
 					1u,
-					&object,
+					& info,
 				} );
 		}
 #endif

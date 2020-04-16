@@ -472,13 +472,10 @@ namespace ashes::d3d11
 				std::stringstream stream;
 				stream << reinterpret_cast< char * >( errors->GetBufferPointer() ) << std::endl;
 				stream << m_source << std::endl;
-				get( device )->onReportMessage( VK_DEBUG_REPORT_WARNING_BIT_EXT
-					, VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT
-					, uint64_t( module )
-					, 0u
-					, 0u
-					, "CORE"
-					, stream.str().c_str() );
+				reportWarning( module
+					, VK_ERROR_VALIDATION_FAILED_EXT
+					, "Shader compilation succeeded with messages"
+					, stream.str() );
 			}
 		}
 		else if ( errors )
@@ -486,13 +483,10 @@ namespace ashes::d3d11
 			std::stringstream stream;
 			stream << reinterpret_cast< char * >( errors->GetBufferPointer() ) << std::endl;
 			stream << m_source << std::endl;
-			get( device )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
-				, VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT
-				, uint64_t( module )
-				, 0u
-				, 0u
-				, "CORE"
-				, stream.str().c_str() );
+			reportError( module
+				, VK_ERROR_VALIDATION_FAILED_EXT
+				, "Shader compilation failed"
+				, stream.str() );
 		}
 	}
 
