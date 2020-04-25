@@ -9,14 +9,14 @@
 
 namespace ashes
 {
-	DynamicLibrary::DynamicLibrary( DynamicLibrary && rhs )
+	DynamicLibrary::DynamicLibrary( DynamicLibrary && rhs )noexcept
 		: m_path{ std::move( rhs.m_path ) }
 		, m_library{ rhs.m_library }
 	{
 		rhs.m_library = nullptr;
 	}
 
-	DynamicLibrary & DynamicLibrary::operator=( DynamicLibrary && rhs )
+	DynamicLibrary & DynamicLibrary::operator=( DynamicLibrary && rhs )noexcept
 	{
 		if ( this != &rhs )
 		{
