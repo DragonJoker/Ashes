@@ -38,7 +38,7 @@ namespace ashes
 		{
 		}
 		
-		PipelineMultisampleStateCreateInfo( PipelineMultisampleStateCreateInfo && rhs )
+		PipelineMultisampleStateCreateInfo( PipelineMultisampleStateCreateInfo && rhs )noexcept
 			: sampleMask{ std::move( rhs.sampleMask ) }
 			, vk
 			{
@@ -55,7 +55,7 @@ namespace ashes
 		{
 		}
 		
-		PipelineMultisampleStateCreateInfo & operator=( PipelineMultisampleStateCreateInfo && rhs )
+		PipelineMultisampleStateCreateInfo & operator=( PipelineMultisampleStateCreateInfo && rhs )noexcept
 		{
 			sampleMask = std::move( rhs.sampleMask );
 			vk =

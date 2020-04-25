@@ -98,7 +98,7 @@ namespace ashes::d3d11
 		{
 			auto offset = entry.offset;
 			auto size = type.width;
-			auto entrySize = uint32_t( entry.size / ( type.columns * type.vecsize ) );
+			auto entrySize = uint32_t( entry.size / ( size_t( type.columns ) * type.vecsize ) );
 
 			for ( auto col = 0u; col < type.columns; ++col )
 			{
@@ -332,7 +332,7 @@ namespace ashes::d3d11
 
 	//*************************************************************************
 
-	CompiledShaderModule::CompiledShaderModule( CompiledShaderModule && rhs )
+	CompiledShaderModule::CompiledShaderModule( CompiledShaderModule && rhs )noexcept
 		: m_shader{ std::move( rhs.m_shader ) }
 		, m_stage{ std::move( rhs.m_stage ) }
 		, m_source{ std::move( rhs.m_source ) }
@@ -345,7 +345,7 @@ namespace ashes::d3d11
 		rhs.m_layout.module = nullptr;
 	}
 
-	CompiledShaderModule & CompiledShaderModule::operator=( CompiledShaderModule && rhs )
+	CompiledShaderModule & CompiledShaderModule::operator=( CompiledShaderModule && rhs )noexcept
 	{
 		if ( this != &rhs )
 		{
@@ -668,7 +668,7 @@ namespace ashes::d3d11
 		for ( UINT i = 0; i < constantBuffers; i++ )
 		{
 			auto constantBuffer = reflection->GetConstantBufferByIndex( i );
-			D3D11_SHADER_BUFFER_DESC sbDesc{};
+			D3D11_SHADER_BUFFER_DESC sbDesc{ "" };
 			constantBuffer->GetDesc( &sbDesc );
 
 			if ( sbDesc.Type == D3D_CT_CBUFFER )

@@ -29,7 +29,7 @@ namespace ashes
 		{
 		}
 
-		PipelineDynamicStateCreateInfo( PipelineDynamicStateCreateInfo && rhs )
+		PipelineDynamicStateCreateInfo( PipelineDynamicStateCreateInfo && rhs )noexcept
 			: dynamicStates{ std::move( rhs.dynamicStates ) }
 			, vk
 			{
@@ -42,7 +42,7 @@ namespace ashes
 		{
 		}
 
-		PipelineDynamicStateCreateInfo & operator=( PipelineDynamicStateCreateInfo && rhs )
+		PipelineDynamicStateCreateInfo & operator=( PipelineDynamicStateCreateInfo && rhs )noexcept
 		{
 			dynamicStates = std::move( rhs.dynamicStates );
 			vk =

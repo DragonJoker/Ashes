@@ -29,7 +29,7 @@ namespace ashes
 		{
 		}
 		
-		PipelineInputAssemblyStateCreateInfo( PipelineInputAssemblyStateCreateInfo && rhs )
+		PipelineInputAssemblyStateCreateInfo( PipelineInputAssemblyStateCreateInfo && rhs )noexcept
 			: vk
 			{
 				VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
@@ -41,7 +41,7 @@ namespace ashes
 		{
 		}
 		
-		PipelineInputAssemblyStateCreateInfo & operator=( PipelineInputAssemblyStateCreateInfo && rhs )
+		PipelineInputAssemblyStateCreateInfo & operator=( PipelineInputAssemblyStateCreateInfo && rhs )noexcept
 		{
 			vk =
 			{

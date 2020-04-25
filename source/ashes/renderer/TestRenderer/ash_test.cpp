@@ -1700,7 +1700,7 @@ namespace ashes::test
 
 		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
 		{
-			if ( result = VK_SUCCESS )
+			if ( result == VK_SUCCESS )
 			{
 				result = get( bindInfo.buffer )->bindMemory( bindInfo.memory, bindInfo.memoryOffset );
 			}
@@ -1718,7 +1718,7 @@ namespace ashes::test
 
 		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
 		{
-			if ( result = VK_SUCCESS )
+			if ( result == VK_SUCCESS )
 			{
 				result = get( bindInfo.image )->bindMemory( bindInfo.memory, bindInfo.memoryOffset );
 			}
@@ -2898,7 +2898,7 @@ namespace ashes::test
 
 		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
 		{
-			if ( result = VK_SUCCESS )
+			if ( result == VK_SUCCESS )
 			{
 				result = get( bindInfo.buffer )->bindMemory( bindInfo.memory, bindInfo.memoryOffset );
 			}
@@ -2916,7 +2916,7 @@ namespace ashes::test
 
 		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
 		{
-			if ( result = VK_SUCCESS )
+			if ( result == VK_SUCCESS )
 			{
 				result = get( bindInfo.image )->bindMemory( bindInfo.memory, bindInfo.memoryOffset );
 			}

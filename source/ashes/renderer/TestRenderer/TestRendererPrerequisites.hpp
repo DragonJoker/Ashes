@@ -140,23 +140,23 @@ namespace ashes::test
 
 	struct PushConstantsDesc
 	{
-		VkShaderStageFlags stageFlags;
-		uint32_t offset;
-		uint32_t size;
+		VkShaderStageFlags stageFlags{};
+		uint32_t offset{};
+		uint32_t size{};
 		std::vector< uint8_t > data;
 	};
 
 	struct PushConstantsBuffer
 	{
-		VkBuffer ubo;
-		uint32_t location;
+		VkBuffer ubo{};
+		uint32_t location{};
 		PushConstantsDesc data;
-		VkDeviceMemory memory;
+		VkDeviceMemory memory{};
 	};
 
 	struct VbosBinding
 	{
-		uint32_t startIndex;
+		uint32_t startIndex{};
 		std::vector< VkBuffer > buffers;
 		std::vector< uint32_t > offsets;
 		std::vector< uint32_t > strides;

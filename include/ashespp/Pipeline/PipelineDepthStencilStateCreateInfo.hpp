@@ -61,12 +61,12 @@ namespace ashes
 		{
 		}
 		
-		PipelineDepthStencilStateCreateInfo( PipelineDepthStencilStateCreateInfo && rhs )
+		PipelineDepthStencilStateCreateInfo( PipelineDepthStencilStateCreateInfo && rhs )noexcept
 			: vk{ rhs.vk }
 		{
 		}
 		
-		PipelineDepthStencilStateCreateInfo & operator=( PipelineDepthStencilStateCreateInfo && rhs )
+		PipelineDepthStencilStateCreateInfo & operator=( PipelineDepthStencilStateCreateInfo && rhs )noexcept
 		{
 			vk = rhs.vk;
 			return *this;

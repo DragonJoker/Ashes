@@ -41,14 +41,14 @@ namespace ashes::test
 		{
 			return m_surfaceFormats;
 		}
-		
+
 		VkInstance getInstance()const
 		{
 			return m_instance;
 		}
 
 	private:
-		VkInstance m_instance;
+		VkInstance m_instance{};
 		VkSurfaceFormatArrayKHR m_surfaceFormats;
 		VkSurfaceCapabilitiesKHR m_surfaceCapabilities;
 		VkPresentModeArrayKHR m_presentModes;

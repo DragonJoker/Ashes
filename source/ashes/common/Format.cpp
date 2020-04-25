@@ -977,8 +977,8 @@ namespace ashes
 		, uint32_t mipLevel )noexcept
 	{
 		auto levelExtent = getSubresourceDimensions( extent, mipLevel );
-		auto result = texel.size * ( levelExtent.width * levelExtent.height * levelExtent.depth );
-		result /= ( texel.extent.width * texel.extent.height * texel.extent.depth );
+		auto result = texel.size * ( VkDeviceSize( levelExtent.width ) * levelExtent.height * levelExtent.depth );
+		result /= ( VkDeviceSize( texel.extent.width ) * texel.extent.height * texel.extent.depth );
 		return result;
 	}
 

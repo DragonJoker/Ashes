@@ -24,7 +24,7 @@ namespace ashes
 			doInit();
 		}
 		
-		QueueShare( QueueShare && rhs )
+		QueueShare( QueueShare && rhs )noexcept
 			: queueFamilyIndices{ std::move( rhs.queueFamilyIndices ) }
 		{
 			rhs.queueFamilyIndexCount = 0u;
@@ -39,7 +39,7 @@ namespace ashes
 			return *this;
 		}
 
-		QueueShare & operator=( QueueShare && rhs )
+		QueueShare & operator=( QueueShare && rhs )noexcept
 		{
 			queueFamilyIndices = std::move( rhs.queueFamilyIndices );
 			rhs.queueFamilyIndexCount = 0u;

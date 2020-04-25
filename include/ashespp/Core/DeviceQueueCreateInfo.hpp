@@ -31,7 +31,7 @@ namespace ashes
 		{
 		}
 		
-		DeviceQueueCreateInfo( DeviceQueueCreateInfo && rhs )
+		DeviceQueueCreateInfo( DeviceQueueCreateInfo && rhs )noexcept
 			: queuePriorities{ std::move( rhs.queuePriorities ) }
 			, vk
 			{
@@ -45,7 +45,7 @@ namespace ashes
 		{
 		}
 		
-		DeviceQueueCreateInfo & operator=( DeviceQueueCreateInfo && rhs )
+		DeviceQueueCreateInfo & operator=( DeviceQueueCreateInfo && rhs )noexcept
 		{
 			queuePriorities = std::move( rhs.queuePriorities );
 			vk =

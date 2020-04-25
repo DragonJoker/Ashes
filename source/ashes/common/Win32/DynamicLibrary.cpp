@@ -13,14 +13,14 @@
 
 namespace ashes
 {
-	DynamicLibrary::DynamicLibrary( DynamicLibrary && rhs )
+	DynamicLibrary::DynamicLibrary( DynamicLibrary && rhs )noexcept
 		: m_path{ std::move( rhs.m_path ) }
 		, m_library{ rhs.m_library }
 	{
 		rhs.m_library = nullptr;
 	}
 
-	DynamicLibrary & DynamicLibrary::operator=( DynamicLibrary && rhs )
+	DynamicLibrary & DynamicLibrary::operator=( DynamicLibrary && rhs )noexcept
 	{
 		if ( this != &rhs )
 		{
@@ -72,7 +72,7 @@ namespace ashes
 	void * DynamicLibrary::doGetFunction( std::string const & name )noexcept
 	{
 		UINT oldMode = ::SetErrorMode( SEM_FAILCRITICALERRORS );
-		::GetLastError();
+		auto err = ::GetLastError();
 		void * result = ( void * )::GetProcAddress( static_cast< HMODULE >( m_library ), name.c_str() );
 		auto error = ::GetLastError();
 		::SetErrorMode( oldMode );

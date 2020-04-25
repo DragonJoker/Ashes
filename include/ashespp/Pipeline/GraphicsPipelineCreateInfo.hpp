@@ -88,7 +88,7 @@ namespace ashes
 		{
 		}
 
-		GraphicsPipelineCreateInfo( GraphicsPipelineCreateInfo && rhs )
+		GraphicsPipelineCreateInfo( GraphicsPipelineCreateInfo && rhs )noexcept
 			: stages{ std::move( rhs.stages ) }
 			, vertexInputState{ std::move( rhs.vertexInputState ) }
 			, inputAssemblyState{ std::move( rhs.inputAssemblyState ) }
@@ -131,7 +131,7 @@ namespace ashes
 		{
 		}
 
-		GraphicsPipelineCreateInfo & operator=( GraphicsPipelineCreateInfo && rhs )
+		GraphicsPipelineCreateInfo & operator=( GraphicsPipelineCreateInfo && rhs )noexcept
 		{
 			stages = std::move( rhs.stages );
 			vertexInputState = std::move( rhs.vertexInputState );

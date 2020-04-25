@@ -21,8 +21,8 @@ namespace ashes
 	public:
 		DynamicLibrary( DynamicLibrary const & ) = delete;
 		DynamicLibrary & operator=( DynamicLibrary const & ) = delete;
-		DynamicLibrary( DynamicLibrary && rhs );
-		DynamicLibrary & operator=( DynamicLibrary && rhs );
+		DynamicLibrary( DynamicLibrary && rhs )noexcept;
+		DynamicLibrary & operator=( DynamicLibrary && rhs )noexcept;
 		/**
 		*\brief
 		*	Constructor, ppens a library from a path.

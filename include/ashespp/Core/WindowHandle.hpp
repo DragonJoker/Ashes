@@ -112,7 +112,7 @@ namespace ashes
 
 	private:
 		IWindowHandlePtr m_handle;
-		Surface const * m_surface;
+		Surface const * m_surface{};
 	};
 }
 

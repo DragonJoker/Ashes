@@ -74,32 +74,32 @@ namespace ashes::test
 		}
 
 	private:
-		VkDevice m_device;
-		VkPipelineLayout m_layout;
+		VkDevice m_device{};
+		VkPipelineLayout m_layout{};
 		//
 		VkVertexInputBindingDescriptionArray m_vertexBindingDescriptions;
 		VkVertexInputAttributeDescriptionArray m_vertexAttributeDescriptions;
-		VkPipelineVertexInputStateCreateInfo m_vertexInputState;
+		VkPipelineVertexInputStateCreateInfo m_vertexInputState{};
 		//
-		VkPipelineInputAssemblyStateCreateInfo m_inputAssemblyState;
+		VkPipelineInputAssemblyStateCreateInfo m_inputAssemblyState{};
 		//
 		VkViewportArray m_stateViewports;
 		VkScissorArray m_stateScissors;
-		VkPipelineViewportStateCreateInfo m_viewportState;
+		VkPipelineViewportStateCreateInfo m_viewportState{};
 		//
-		VkPipelineRasterizationStateCreateInfo m_rasterizationState;
+		VkPipelineRasterizationStateCreateInfo m_rasterizationState{};
 		//
-		VkPipelineMultisampleStateCreateInfo m_multisampleState;
+		VkPipelineMultisampleStateCreateInfo m_multisampleState{};
 		//
-		Optional< VkPipelineDepthStencilStateCreateInfo > m_depthStencilState;
+		Optional< VkPipelineDepthStencilStateCreateInfo > m_depthStencilState{ ashes::nullopt };
 		//
 		VkPipelineColorBlendAttachmentStateArray m_colorBlendStateAttachments;
-		VkPipelineColorBlendStateCreateInfo m_colorBlendState;
+		VkPipelineColorBlendStateCreateInfo m_colorBlendState{};
 		//
 		VkDynamicStateArray m_dynamicStates;
-		VkPipelineDynamicStateCreateInfo m_dynamicState;
+		VkPipelineDynamicStateCreateInfo m_dynamicState{};
 		//
-		size_t m_vertexInputStateHash;
+		size_t m_vertexInputStateHash{};
 	};
 }
 

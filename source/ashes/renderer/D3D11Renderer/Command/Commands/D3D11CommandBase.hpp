@@ -34,11 +34,11 @@ namespace ashes::d3d11
 			safeRelease( context );
 		}
 
-		VkDevice device;
-		ID3D11DeviceContext * context;
-		ID3D11DeviceContext1 * context1;
+		VkDevice device{};
+		ID3D11DeviceContext * context{};
+		ID3D11DeviceContext1 * context1{};
 		LayoutBindingWritesArray uavs;
-		D3D_FEATURE_LEVEL featureLevel;
+		D3D_FEATURE_LEVEL featureLevel{};
 
 	private:
 		static ID3D11DeviceContext * getImmediateContext( VkDevice device );
