@@ -101,7 +101,7 @@ namespace ashes
 			return *this;
 		}
 
-		PipelineShaderStageCreateInfo( PipelineShaderStageCreateInfo && rhs )
+		PipelineShaderStageCreateInfo( PipelineShaderStageCreateInfo && rhs )noexcept
 			: module{ std::move( rhs.module ) }
 			, name{ std::move( rhs.name ) }
 			, specializationInfo{ std::move( rhs.specializationInfo ) }
@@ -129,7 +129,7 @@ namespace ashes
 			doInit();
 		}
 
-		PipelineShaderStageCreateInfo & operator=( PipelineShaderStageCreateInfo && rhs )
+		PipelineShaderStageCreateInfo & operator=( PipelineShaderStageCreateInfo && rhs )noexcept
 		{
 			module = std::move( rhs.module );
 			name = std::move( rhs.name );

@@ -41,7 +41,7 @@ namespace ashes::d3d11
 			return *this;
 		}
 
-		MessageData( MessageData && rhs )
+		MessageData( MessageData && rhs )noexcept
 			: messageSeverity{ rhs.messageSeverity }
 			, messageTypes{ rhs.messageTypes }
 			, callbackData{ std::move( rhs.callbackData ) }
@@ -60,7 +60,7 @@ namespace ashes::d3d11
 			rhs.callbackData.pCmdBufLabels = nullptr;
 		}
 
-		MessageData & operator=( MessageData && rhs )
+		MessageData & operator=( MessageData && rhs )noexcept
 		{
 			messageSeverity = rhs.messageSeverity;
 			messageTypes = rhs.messageTypes;

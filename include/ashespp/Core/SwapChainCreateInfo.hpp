@@ -55,7 +55,7 @@ namespace ashes
 		{
 		}
 		
-		SwapChainCreateInfo( SwapChainCreateInfo && rhs )
+		SwapChainCreateInfo( SwapChainCreateInfo && rhs )noexcept
 			: queueFamilyIndices{ std::move( rhs.queueFamilyIndices ) }
 			, vk
 			{
@@ -81,7 +81,7 @@ namespace ashes
 		{
 		}
 		
-		SwapChainCreateInfo & operator=( SwapChainCreateInfo && rhs )
+		SwapChainCreateInfo & operator=( SwapChainCreateInfo && rhs )noexcept
 		{
 			queueFamilyIndices = std::move( rhs.queueFamilyIndices );
 			vk =

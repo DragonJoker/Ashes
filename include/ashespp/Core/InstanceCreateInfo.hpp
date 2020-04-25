@@ -38,7 +38,7 @@ namespace ashes
 		{
 		}
 		
-		InstanceCreateInfo( InstanceCreateInfo && rhs )
+		InstanceCreateInfo( InstanceCreateInfo && rhs )noexcept
 			: applicationInfo{ std::move( rhs.applicationInfo ) }
 			, enabledLayerNames{ std::move( rhs.enabledLayerNames ) }
 			, enabledExtensionNames{ std::move( rhs.enabledExtensionNames ) }
@@ -58,11 +58,12 @@ namespace ashes
 		{
 		}
 		
-		InstanceCreateInfo & operator=( InstanceCreateInfo && rhs )
+		InstanceCreateInfo & operator=( InstanceCreateInfo && rhs )noexcept
 		{
 			applicationInfo = std::move( rhs.applicationInfo );
 			enabledLayerNames = std::move( rhs.enabledLayerNames );
 			enabledExtensionNames = std::move( rhs.enabledExtensionNames );
+			enabledFeatures = std::move( rhs.enabledFeatures );
 			ptrEnabledLayerNames = convert( this->enabledLayerNames );
 			ptrEnabledExtensionNames = convert( this->enabledExtensionNames );
 			vk =
@@ -90,7 +91,7 @@ namespace ashes
 		StringArray enabledExtensionNames;
 		CharPtrArray ptrEnabledLayerNames;
 		CharPtrArray ptrEnabledExtensionNames;
-		VkPhysicalDeviceFeatures enabledFeatures;
+		VkPhysicalDeviceFeatures enabledFeatures{};
 
 	private:
 		VkInstanceCreateInfo vk;

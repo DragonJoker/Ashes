@@ -49,7 +49,7 @@ namespace ashes
 		{
 		}
 
-		PipelineVertexInputStateCreateInfo( PipelineVertexInputStateCreateInfo && rhs )
+		PipelineVertexInputStateCreateInfo( PipelineVertexInputStateCreateInfo && rhs )noexcept
 			: vertexBindingDescriptions{ std::move( rhs.vertexBindingDescriptions ) }
 			, vertexAttributeDescriptions{ std::move( rhs.vertexAttributeDescriptions ) }
 			, vk
@@ -83,7 +83,7 @@ namespace ashes
 			return *this;
 		}
 
-		PipelineVertexInputStateCreateInfo & operator=( PipelineVertexInputStateCreateInfo && rhs )
+		PipelineVertexInputStateCreateInfo & operator=( PipelineVertexInputStateCreateInfo && rhs )noexcept
 		{
 			vertexBindingDescriptions = std::move( rhs.vertexBindingDescriptions );
 			vertexAttributeDescriptions = std::move( rhs.vertexAttributeDescriptions );

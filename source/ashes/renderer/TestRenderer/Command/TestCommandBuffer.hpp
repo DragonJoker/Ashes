@@ -231,7 +231,7 @@ namespace ashes::test
 		mutable std::vector< ResourceIndex > m_mappedResources;
 		struct State
 		{
-			VkCommandBufferBeginInfo beginInfo;
+			VkCommandBufferBeginInfo beginInfo{};
 			VkPipeline currentPipeline{ VK_NULL_HANDLE };
 			std::vector< std::pair < VkPipelineLayout, PushConstantsDesc > > pushConstantBuffers;
 			VkPipeline currentComputePipeline{ VK_NULL_HANDLE };
@@ -240,7 +240,7 @@ namespace ashes::test
 			VkFramebuffer currentFrameBuffer{ VK_NULL_HANDLE };
 			uint32_t currentSubpassIndex{ 0u };
 			mutable VbosBindingArray vbos;
-			VkIndexType indexType;
+			VkIndexType indexType{};
 			VkDescriptorSetArray boundDescriptors;
 			VkBuffer newlyBoundIbo{ VK_NULL_HANDLE };
 		};

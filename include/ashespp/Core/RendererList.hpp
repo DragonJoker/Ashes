@@ -40,7 +40,7 @@ namespace ashes
 	private:
 		std::unique_ptr< ashes::DynamicLibrary > m_library;
 		std::vector< AshPluginDescription > m_plugins;
-		PFN_ashSelectPlugin m_selectPlugin;
+		PFN_ashSelectPlugin m_selectPlugin{};
 		mutable AshPluginDescription m_current;
 	};
 }

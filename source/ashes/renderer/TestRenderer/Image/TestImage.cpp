@@ -13,13 +13,13 @@
 
 namespace ashes::test
 {
-	Image::Image( Image && rhs )
+	Image::Image( Image && rhs )noexcept
 		: m_device{ rhs.m_device }
 		, m_createInfo{ std::move( rhs.m_createInfo ) }
 	{
 	}
 
-	Image & Image::operator=( Image && rhs )
+	Image & Image::operator=( Image && rhs )noexcept
 	{
 		m_createInfo = std::move( rhs.m_createInfo );
 		return *this;

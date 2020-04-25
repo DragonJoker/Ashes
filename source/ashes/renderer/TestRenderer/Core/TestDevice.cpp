@@ -87,7 +87,7 @@ namespace ashes::test
 		void doCheckEnabledExtensions( VkPhysicalDevice physicalDevice
 			, ashes::ArrayView< char const * const > const & extensions )
 		{
-			auto available = get( physicalDevice )->enumerateExtensionProperties( nullptr );
+			auto available = get( physicalDevice )->enumerateExtensionProperties( std::string{} );
 
 			for ( auto & extension : extensions )
 			{

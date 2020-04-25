@@ -14,6 +14,7 @@ namespace ashes::test
 		, VkCommandPool commandPool
 		, bool primary )
 		: m_device{ device }
+		, m_commandPool{}
 	{
 		get( commandPool )->registerCommands( get( this ) );
 	}

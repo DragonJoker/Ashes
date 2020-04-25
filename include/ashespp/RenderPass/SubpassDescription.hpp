@@ -43,7 +43,7 @@ namespace ashes
 		{
 		}
 
-		SubpassDescription( SubpassDescription && rhs )
+		SubpassDescription( SubpassDescription && rhs )noexcept
 			: inputAttachments{ std::move( rhs.inputAttachments ) }
 			, colorAttachments{ std::move( rhs.colorAttachments ) }
 			, resolveAttachments{ std::move( rhs.resolveAttachments ) }
@@ -65,7 +65,7 @@ namespace ashes
 		{
 		}
 
-		SubpassDescription & operator=( SubpassDescription && rhs )
+		SubpassDescription & operator=( SubpassDescription && rhs )noexcept
 		{
 			inputAttachments = std::move( rhs.inputAttachments );
 			colorAttachments = std::move( rhs.colorAttachments );

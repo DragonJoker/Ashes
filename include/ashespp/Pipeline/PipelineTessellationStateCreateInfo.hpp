@@ -27,7 +27,7 @@ namespace ashes
 		{
 		}
 		
-		PipelineTessellationStateCreateInfo( PipelineTessellationStateCreateInfo && rhs )
+		PipelineTessellationStateCreateInfo( PipelineTessellationStateCreateInfo && rhs )noexcept
 			: vk
 			{
 				VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO,
@@ -38,7 +38,7 @@ namespace ashes
 		{
 		}
 		
-		PipelineTessellationStateCreateInfo & operator=( PipelineTessellationStateCreateInfo && rhs )
+		PipelineTessellationStateCreateInfo & operator=( PipelineTessellationStateCreateInfo && rhs )noexcept
 		{
 			vk =
 			{

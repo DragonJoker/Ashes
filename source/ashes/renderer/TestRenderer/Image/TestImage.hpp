@@ -17,8 +17,8 @@ namespace ashes::test
 	public:
 		Image( VkImage ) = delete;
 		Image & operator=( VkImage ) = delete;
-		Image( Image && rhs );
-		Image & operator=( Image && rhs );
+		Image( Image && rhs )noexcept;
+		Image & operator=( Image && rhs )noexcept;
 
 		Image( VkDevice device
 			, VkImageCreateInfo createInfo );
