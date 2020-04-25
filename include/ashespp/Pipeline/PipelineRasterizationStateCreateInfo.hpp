@@ -45,7 +45,7 @@ namespace ashes
 		{
 		}
 		
-		PipelineRasterizationStateCreateInfo( PipelineRasterizationStateCreateInfo && rhs )
+		PipelineRasterizationStateCreateInfo( PipelineRasterizationStateCreateInfo && rhs )noexcept
 			: vk
 			{
 				VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
@@ -65,7 +65,7 @@ namespace ashes
 		{
 		}
 		
-		PipelineRasterizationStateCreateInfo & operator=( PipelineRasterizationStateCreateInfo && rhs )
+		PipelineRasterizationStateCreateInfo & operator=( PipelineRasterizationStateCreateInfo && rhs )noexcept
 		{
 			vk =
 			{

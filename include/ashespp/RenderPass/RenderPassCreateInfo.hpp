@@ -38,7 +38,7 @@ namespace ashes
 		{
 		}
 
-		RenderPassCreateInfo( RenderPassCreateInfo && rhs )
+		RenderPassCreateInfo( RenderPassCreateInfo && rhs )noexcept
 			: attachments{ std::move( rhs.attachments ) }
 			, subpasses{ std::move( rhs.subpasses ) }
 			, dependencies{ std::move( rhs.dependencies ) }
@@ -58,7 +58,7 @@ namespace ashes
 		{
 		}
 
-		RenderPassCreateInfo & operator=( RenderPassCreateInfo && rhs )
+		RenderPassCreateInfo & operator=( RenderPassCreateInfo && rhs )noexcept
 		{
 			attachments = std::move( rhs.attachments );
 			subpasses = std::move( rhs.subpasses );

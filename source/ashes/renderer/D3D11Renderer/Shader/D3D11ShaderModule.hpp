@@ -16,8 +16,8 @@ namespace ashes::d3d11
 	public:
 		CompiledShaderModule( CompiledShaderModule const & ) = delete;
 		CompiledShaderModule & operator=( CompiledShaderModule const & ) = delete;
-		CompiledShaderModule( CompiledShaderModule && rhs );
-		CompiledShaderModule & operator=( CompiledShaderModule && rhs );
+		CompiledShaderModule( CompiledShaderModule && rhs )noexcept;
+		CompiledShaderModule & operator=( CompiledShaderModule && rhs )noexcept;
 
 		CompiledShaderModule( VkDevice device
 			, VkPipelineLayout pipelineLayout

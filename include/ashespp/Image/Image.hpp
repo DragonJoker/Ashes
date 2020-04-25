@@ -38,8 +38,8 @@ namespace ashes
 		Image & operator=( Image const & ) = delete;
 
 	public:
-		Image( Image && rhs );
-		Image & operator=( Image && rhs );
+		Image( Image && rhs )noexcept;
+		Image & operator=( Image && rhs )noexcept;
 		Image();
 		/**
 		*\brief

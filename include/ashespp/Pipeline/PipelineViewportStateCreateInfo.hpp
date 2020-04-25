@@ -49,7 +49,7 @@ namespace ashes
 		{
 		}
 
-		PipelineViewportStateCreateInfo( PipelineViewportStateCreateInfo && rhs )
+		PipelineViewportStateCreateInfo( PipelineViewportStateCreateInfo && rhs )noexcept
 			: viewports{ std::move( rhs.viewports ) }
 			, scissors{ std::move( rhs.scissors ) }
 			, vk
@@ -65,7 +65,7 @@ namespace ashes
 		{
 		}
 
-		PipelineViewportStateCreateInfo & operator=( PipelineViewportStateCreateInfo && rhs )
+		PipelineViewportStateCreateInfo & operator=( PipelineViewportStateCreateInfo && rhs )noexcept
 		{
 			viewports = std::move( rhs.viewports );
 			scissors = std::move( rhs.scissors );

@@ -17,6 +17,7 @@ namespace ashes
 		, VkFormat format
 		, VkExtent2D const & extent )
 		: m_device{ device }
+		, m_extent{ extent }
 		, m_buffer
 		{
 			device,

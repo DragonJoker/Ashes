@@ -175,7 +175,7 @@ namespace ashes::test
 
 	private:
 		VkImageUsageFlags m_usage;
-		VkMemoryPropertyFlags m_propertyFlags;
+		VkMemoryPropertyFlags m_propertyFlags{};
 
 	public:
 		ObjectMemory memory;

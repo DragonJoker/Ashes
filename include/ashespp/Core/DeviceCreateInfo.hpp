@@ -43,7 +43,7 @@ namespace ashes
 		{
 		}
 
-		DeviceCreateInfo( DeviceCreateInfo && rhs )
+		DeviceCreateInfo( DeviceCreateInfo && rhs )noexcept
 			: queueCreateInfos{ std::move( rhs.queueCreateInfos ) }
 			, enabledLayerNames{ std::move( rhs.enabledLayerNames ) }
 			, enabledExtensionNames{ std::move( rhs.enabledExtensionNames ) }
@@ -67,7 +67,7 @@ namespace ashes
 		{
 		}
 
-		DeviceCreateInfo & operator=( DeviceCreateInfo && rhs )
+		DeviceCreateInfo & operator=( DeviceCreateInfo && rhs )noexcept
 		{
 			queueCreateInfos = std::move( rhs.queueCreateInfos );
 			enabledLayerNames = std::move( rhs.enabledLayerNames );

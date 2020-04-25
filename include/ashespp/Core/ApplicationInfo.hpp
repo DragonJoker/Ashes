@@ -38,7 +38,7 @@ namespace ashes
 		{
 		}
 
-		ApplicationInfo( ApplicationInfo && application )
+		ApplicationInfo( ApplicationInfo && application )noexcept
 			: applicationName{ std::move( application.applicationName ) }
 			, engineName{ std::move( application.engineName ) }
 			, vk
@@ -54,7 +54,7 @@ namespace ashes
 		{
 		}
 
-		ApplicationInfo & operator=( ApplicationInfo && application )
+		ApplicationInfo & operator=( ApplicationInfo && application )noexcept
 		{
 			applicationName = std::move( application.applicationName );
 			engineName = std::move( application.engineName );

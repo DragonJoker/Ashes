@@ -21,9 +21,9 @@ namespace ashes::test
 		CommandPtr clone()const;
 
 	private:
-		VkRenderPass m_renderPass;
-		VkFramebuffer m_frameBuffer;
+		VkRenderPass m_renderPass{};
+		VkFramebuffer m_frameBuffer{};
 		VkClearValueArray m_rtClearValues;
-		VkClearValue m_dsClearValue;
+		VkClearValue m_dsClearValue{};
 	};
 }

@@ -84,7 +84,7 @@ namespace ashes
 			std::unique_lock< std::mutex > lock{ mutex };
 			const int MaxFnNameLen( 255 );
 
-			std::vector< void * > backTrace( toCapture - toSkip );
+			std::vector< void * > backTrace( std::abs( toCapture - toSkip ) );
 			unsigned int num( ::RtlCaptureStackBackTrace( toSkip
 				, toCapture - toSkip
 				, backTrace.data()

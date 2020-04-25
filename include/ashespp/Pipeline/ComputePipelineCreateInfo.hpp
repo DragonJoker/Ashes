@@ -38,7 +38,7 @@ namespace ashes
 		{
 		}
 
-		ComputePipelineCreateInfo( ComputePipelineCreateInfo && rhs )
+		ComputePipelineCreateInfo( ComputePipelineCreateInfo && rhs )noexcept
 			: stage{ std::move( rhs.stage ) }
 			, vk
 			{
@@ -53,7 +53,7 @@ namespace ashes
 		{
 		}
 
-		ComputePipelineCreateInfo & operator=( ComputePipelineCreateInfo && rhs )
+		ComputePipelineCreateInfo & operator=( ComputePipelineCreateInfo && rhs )noexcept
 		{
 			stage = std::move( rhs.stage );
 			vk =

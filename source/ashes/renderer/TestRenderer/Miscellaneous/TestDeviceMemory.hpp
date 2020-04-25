@@ -36,11 +36,11 @@ namespace ashes::test
 			, VkDeviceSize size )const;
 
 	public:
-		VkDevice device;
-		VkDeviceMemory deviceMemory;
-		VkDeviceSize offset;
-		VkDeviceSize size;
-		VkMemoryAllocateInfo allocateInfo;
+		VkDevice device{};
+		VkDeviceMemory deviceMemory{};
+		VkDeviceSize offset{};
+		VkDeviceSize size{};
+		VkMemoryAllocateInfo allocateInfo{};
 	};
 	using ObjectMemoryPtr = std::unique_ptr< ObjectMemory >;
 	/**
@@ -123,10 +123,10 @@ namespace ashes::test
 			, VkDeviceSize size )const;
 
 	private:
-		VkDevice m_device;
-		VkMemoryAllocateInfo m_allocateInfo;
-		VkMemoryPropertyFlags m_propertyFlags;
-		VkMemoryRequirements m_requirements;
+		VkDevice m_device{};
+		VkMemoryAllocateInfo m_allocateInfo{};
+		VkMemoryPropertyFlags m_propertyFlags{};
+		VkMemoryRequirements m_requirements{};
 		std::vector< ObjectMemoryPtr > m_objects;
 		mutable bool m_dirty{ true };
 		mutable bool m_mapped{ false };

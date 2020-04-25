@@ -50,7 +50,7 @@ namespace ashes
 		{
 		}
 		
-		PipelineColorBlendStateCreateInfo( PipelineColorBlendStateCreateInfo && rhs )
+		PipelineColorBlendStateCreateInfo( PipelineColorBlendStateCreateInfo && rhs )noexcept
 			: attachments{ std::move( rhs.attachments ) }
 			, vk
 			{
@@ -71,7 +71,7 @@ namespace ashes
 		{
 		}
 		
-		PipelineColorBlendStateCreateInfo & operator=( PipelineColorBlendStateCreateInfo && rhs )
+		PipelineColorBlendStateCreateInfo & operator=( PipelineColorBlendStateCreateInfo && rhs )noexcept
 		{
 			attachments = std::move( rhs.attachments );
 			vk =
