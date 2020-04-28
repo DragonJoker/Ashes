@@ -82,7 +82,10 @@ namespace ashes
 
 			for ( auto & plugin : m_plugins )
 			{
-				log::info << "    " << plugin.name << " - " << plugin.description << std::endl;
+				log::info << "    " << plugin.name
+					<< " - " << plugin.description
+					<< " - " << ( plugin.support.supported ? std::string{ "Supported" } : std::string{ "Unsupported" } )
+					<< std::endl;
 			}
 
 			getCurrentPluginDescription( &m_current );
