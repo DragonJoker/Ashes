@@ -5876,22 +5876,24 @@ int main( int argc, char **argv )
 				continue;
 			}
 			else if ( strcmp( argv[i], "--help" ) == 0 || strcmp( argv[i], "-h" ) == 0 )
-			{
-				print_usage( argv[0], plugins, selectedPlugin );
+            {
+				print_usage( argv[0], plugins, pluginsCount );
 				return 1;
 			}
 			else
 			{
 				selectedPlugin = SelectPlugin( plugins, pluginsCount, argv[i] );
-
-				if ( selectedPlugin == -1 )
-				{
-					print_usage( argv[0], plugins, pluginsCount );
-					return 1;
-				}
 			}
 		}
 	}
+
+    if ( selectedPlugin == -1 )
+    {
+        print_usage( argv[0], plugins, pluginsCount );
+        return 1;
+    }
+
+    fprintf(out, "Currently used plugin : '%s'\n", plugins[selectedPlugin].name);
 
 	AppCreateInstance( &inst, plugins, selectedPlugin );
 
