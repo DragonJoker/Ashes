@@ -88,13 +88,25 @@ struct PluginLibrary
 			else
 			{
 				selectedPlugin = details::findFirstSupportedPlugin( plugins );
-				result = VK_SUCCESS;
+
+				if ( selectedPlugin )
+				{
+					result = VK_SUCCESS;
+				}
+				else
+				{
+					std::cerr << "Couldn't find a suitable plugin" << std::endl;
+					result = VK_ERROR_INITIALIZATION_FAILED;
+				}
 			}
 
-			getSelectedDesc = [this]() -> AshPluginDescription &
+			if ( result == VK_SUCCESS )
 			{
-				return selectedPlugin->description;
-			};
+				getSelectedDesc = [this]() -> AshPluginDescription &
+				{
+					return selectedPlugin->description;
+				};
+			}
 		}
 
 		return result;
