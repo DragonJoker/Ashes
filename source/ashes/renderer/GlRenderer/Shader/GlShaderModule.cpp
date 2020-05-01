@@ -750,6 +750,11 @@ namespace ashes::gl
 				stream << "The linked shaders count doesn't match the active shaders count." << std::endl;
 			}
 
+			if ( validated )
+			{
+				stream << "The shader is not validated." << std::endl;
+			}
+
 			if ( !linkerLog.empty() )
 			{
 				stream << linkerLog << std::endl;
