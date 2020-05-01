@@ -13,7 +13,7 @@ To build it, you can use CMake.
 ## Renderers available
 
 - Vulkan: Ashes is a passthrough, when using Vulkan rendering API, and it has no additional cost if dynamic loader is used.
-- OpenGL: From OpenGL 3.3 to OpenGL 4.6.
+- OpenGL: From OpenGL 3.3 to OpenGL 4.6 (Core profile).
 - Direct3D 11: From feature level 11.0.
 
 ## How to use it
