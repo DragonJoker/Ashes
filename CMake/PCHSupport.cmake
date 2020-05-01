@@ -1,4 +1,8 @@
-option( PROJECTS_USE_PRECOMPILED_HEADERS "Use precompiled headers" TRUE )
+if ( UNIX AND NOT APPLE )
+    option( PROJECTS_USE_PRECOMPILED_HEADERS "Use precompiled headers" FALSE )
+else()
+    option( PROJECTS_USE_PRECOMPILED_HEADERS "Use precompiled headers" TRUE )
+endif()
 
 #--------------------------------------------------------------------------------------------------
 # - Try to find precompiled headers support for GCC 3.4 and 4.x
@@ -11,10 +15,6 @@ option( PROJECTS_USE_PRECOMPILED_HEADERS "Use precompiled headers" TRUE )
 #   add_target_precompiled_header  targetName pchHeader pchSource targetCxxFlags cppFiles
 #--------------------------------------------------------------------------------------------------
 set( CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS true )
-
-if ( UNIX AND NOT APPLE )
-    SET(PROJECTS_USE_PRECOMPILED_HEADERS OFF CACHE BOOL "Use precompiled headers" FORCE)
-endif ()
 
 if ( CMAKE_COMPILER_IS_GNUCXX )
 	# Verifies if GCC supports precompiled header
