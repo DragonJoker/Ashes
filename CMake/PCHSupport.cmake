@@ -12,6 +12,10 @@ option( PROJECTS_USE_PRECOMPILED_HEADERS "Use precompiled headers" TRUE )
 #--------------------------------------------------------------------------------------------------
 set( CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS true )
 
+if ( UNIX AND NOT APPLE )
+    SET(PROJECTS_USE_PRECOMPILED_HEADERS OFF CACHE BOOL "Use precompiled headers" FORCE)
+endif ()
+
 if ( CMAKE_COMPILER_IS_GNUCXX )
 	# Verifies if GCC supports precompiled header
 	# Its version should be >= 3.4.0
