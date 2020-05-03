@@ -56,13 +56,11 @@ source_group( "Source Files\\Buffer" FILES ${${PROJECT_NAME}_FOLDER_SRC_FILES} )
 set( ${PROJECT_NAME}_FOLDER_SRC_FILES
 	${Ashes_SOURCE_DIR}/source/ashespp/Command/CommandBuffer.cpp
 	${Ashes_SOURCE_DIR}/source/ashespp/Command/CommandPool.cpp
-	${Ashes_SOURCE_DIR}/source/ashespp/Command/Queue.cpp
 )
 set( ${PROJECT_NAME}_FOLDER_HDR_FILES
 	${Ashes_SOURCE_DIR}/include/ashespp/Command/CommandBuffer.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Command/CommandBufferInheritanceInfo.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Command/CommandPool.hpp
-	${Ashes_SOURCE_DIR}/include/ashespp/Command/Queue.hpp
 )
 set( ${PROJECT_NAME}_SRC_FILES
 	${${PROJECT_NAME}_SRC_FILES}
@@ -373,12 +371,15 @@ source_group( "Source Files\\Shader" FILES ${${PROJECT_NAME}_FOLDER_SRC_FILES} )
 set( ${PROJECT_NAME}_FOLDER_SRC_FILES
 	${Ashes_SOURCE_DIR}/source/ashespp/Sync/Event.cpp
 	${Ashes_SOURCE_DIR}/source/ashespp/Sync/Fence.cpp
+	${Ashes_SOURCE_DIR}/source/ashespp/Sync/Queue.cpp
 	${Ashes_SOURCE_DIR}/source/ashespp/Sync/Semaphore.cpp
 )
 set( ${PROJECT_NAME}_FOLDER_HDR_FILES
 	${Ashes_SOURCE_DIR}/include/ashespp/Sync/Event.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Sync/Fence.hpp
+	${Ashes_SOURCE_DIR}/include/ashespp/Sync/Queue.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Sync/Semaphore.hpp
+	${Ashes_SOURCE_DIR}/include/ashespp/Sync/SyncException.hpp
 )
 set( ${PROJECT_NAME}_SRC_FILES
 	${${PROJECT_NAME}_SRC_FILES}

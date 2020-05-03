@@ -2,7 +2,7 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "ashespp/Command/Queue.hpp"
+#include "ashespp/Sync/Queue.hpp"
 
 #include "ashespp/Command/CommandBuffer.hpp"
 #include "ashespp/Core/Device.hpp"
@@ -42,12 +42,23 @@ namespace ashes
 			, SemaphoreCRefArray{ { std::ref( semaphoreToWait ) } } ).front();
 	}
 
+	VkResult Queue::present( SwapChain const & swapChain
+		, uint32_t imageIndex )const
+	{
+		UInt32Array indices;
+		indices.push_back( imageIndex );
+		return present( SwapChainCRefArray{ { std::ref( swapChain ) } }
+			, indices
+			, SemaphoreCRefArray{} ).front();
+	}
+
 	void Queue::submit( CommandBufferCRefArray const & commandBuffers
 		, SemaphoreCRefArray const & semaphoresToWait
 		, VkPipelineStageFlagsArray const & semaphoresStage
 		, SemaphoreCRefArray const & semaphoresToSignal
 		, Fence const * fence )const
 	{
+		waitSemaphores( semaphoresToWait );
 		auto vkCommandBuffers = makeVkArray< VkCommandBuffer >( commandBuffers );
 		auto vkSemaphoresToWait = makeVkArray< VkSemaphore >( semaphoresToWait );
 		auto vkSemaphoresToSignal = makeVkArray< VkSemaphore >( semaphoresToSignal );
@@ -80,12 +91,14 @@ namespace ashes
 			, submitInfo.data()
 			, fence ? static_cast< VkFence >( *fence ) : VK_NULL_HANDLE );
 		checkError( res, "Queue submit" );
+		signalSemaphores( semaphoresToSignal, fence );
 	}
 
 	VkResultArray Queue::present( SwapChainCRefArray const & swapChains
 		, UInt32Array const & imagesIndex
 		, SemaphoreCRefArray const & semaphoresToWait )const
 	{
+		waitSemaphores( semaphoresToWait );
 		assert( swapChains.size() == imagesIndex.size() );
 		auto vkSwapchains = makeVkArray< VkSwapchainKHR >( swapChains );
 		auto vkSemaphoresToWait = makeVkArray< VkSemaphore >( semaphoresToWait );
@@ -110,6 +123,7 @@ namespace ashes
 
 	void Queue::waitIdle()const
 	{
+		clearSemaphores();
 		auto res = m_device.vkQueueWaitIdle( m_internal );
 		checkError( res, "Queue wait idle" );
 	}
@@ -141,4 +155,47 @@ namespace ashes
 	}
 
 #endif
+
+	void Queue::clearSemaphores()const
+	{
+#if Ashes_DebugSync
+		for ( auto & semaphore : m_waitingSemaphores )
+		{
+			semaphore->signal( nullptr );
+		}
+
+		m_waitingSemaphores.clear();
+#endif
+	}
+
+	void Queue::waitSemaphores( SemaphoreCRefArray const & semaphores )const
+	{
+#if Ashes_DebugSync
+		for ( auto & semaphore : semaphores )
+		{
+			semaphore.get().wait();
+			auto pair = m_waitingSemaphores.insert( &semaphore.get() );
+			ashesSyncCheck( pair.second
+				, "The same semaphore is being submitted twice"
+				, semaphore.get() );
+		}
+#endif
+	}
+
+	void Queue::signalSemaphores( SemaphoreCRefArray const & semaphores
+		, Fence const * fence )const
+	{
+#if Ashes_DebugSync
+		for ( auto & semaphore : semaphores )
+		{
+			semaphore.get().signal( fence );
+			auto it = m_waitingSemaphores.find( &semaphore.get() );
+
+			if ( it != m_waitingSemaphores.end() )
+			{
+				m_waitingSemaphores.erase( it );
+			}
+		}
+#endif
+	}
 }

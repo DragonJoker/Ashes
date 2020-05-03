@@ -42,11 +42,13 @@ namespace ashes
 			, &m_internal
 			, VK_TRUE
 			, timeout );
-		return res == VK_SUCCESS
+		auto result = res == VK_SUCCESS
 			? WaitResult::eSuccess
 			: ( res == VK_TIMEOUT
 				? WaitResult::eTimeOut
 				: WaitResult::eError );
+		onWaitEnd( *this, result );
+		return result;
 	}
 
 	void Fence::reset()const
