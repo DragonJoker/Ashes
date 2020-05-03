@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #include "ashespp/RenderPass/FrameBuffer.hpp"
 
-#include "ashespp/Command/Queue.hpp"
+#include "ashespp/Sync/Queue.hpp"
 #include "ashespp/Core/Device.hpp"
 #include "ashespp/Image/ImageView.hpp"
 #include "ashespp/RenderPass/RenderPass.hpp"
