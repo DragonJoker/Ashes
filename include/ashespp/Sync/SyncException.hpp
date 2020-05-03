@@ -45,7 +45,7 @@ namespace ashes
 		{
 		}
 
-		char const * what() const override
+		char const * what() const noexcept override
 		{
 			return m_text.c_str();
 		}
