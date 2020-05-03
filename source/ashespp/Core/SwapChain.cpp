@@ -37,6 +37,7 @@ namespace ashes
 		, Fence const * fence
 		, uint32_t & imageIndex )const
 	{
+		semaphore->signal( fence );
 		return m_device.vkAcquireNextImageKHR( m_device
 			, m_internal
 			, timeout

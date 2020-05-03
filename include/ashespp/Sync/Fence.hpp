@@ -6,20 +6,12 @@ See LICENSE file in root folder.
 #define ___AshesPP_Fence_HPP___
 #pragma once
 
-#include "ashespp/AshesPPPrerequisites.hpp"
+#include "ashespp/Sync/SyncException.hpp"
+
+#include <ashes/common/Signal.hpp>
 
 namespace ashes
 {
-	/**
-	*\brief
-	*	Possible returns while waiting for a fence.
-	*/
-	enum class WaitResult
-	{
-		eSuccess,
-		eTimeOut,
-		eError
-	};
 	/**
 	*\brief
 	*	Allows synchronisations of operations on a queue.
@@ -65,9 +57,13 @@ namespace ashes
 			return m_internal;
 		}
 
+	public:
+		mutable OnWaitEndSignal onWaitEnd;
+
 	private:
 		Device const & m_device;
 		VkFence m_internal{ VK_NULL_HANDLE };
+
 	};
 }
 

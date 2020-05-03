@@ -105,6 +105,17 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
+	/**
+	*\brief
+	*	Possible returns while waiting for a fence.
+	*/
+	enum class WaitResult
+	{
+		eSuccess,
+		eTimeOut,
+		eError
+	};
+
 	template< typename T >
 	class Buffer;
 	template< typename T >

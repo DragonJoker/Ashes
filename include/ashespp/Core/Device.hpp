@@ -7,7 +7,7 @@ See LICENSE file in root folder.
 #pragma once
 
 #include "ashespp/Command/CommandPool.hpp"
-#include "ashespp/Command/Queue.hpp"
+#include "ashespp/Sync/Queue.hpp"
 #include "ashespp/Core/DeviceCreateInfo.hpp"
 #include "ashespp/Core/Surface.hpp"
 #include "ashespp/Core/PhysicalDevice.hpp"

@@ -84,6 +84,11 @@ namespace ashes
 			}
 		}
 
+		operator bool()const
+		{
+			return m_signal && m_connection;
+		}
+
 	private:
 		void swap( SignalConnection & lhs, SignalConnection & rhs )
 		{
@@ -168,9 +173,14 @@ namespace ashes
 		*/
 		void operator()()const
 		{
-			for ( auto it : m_slots )
+			auto it = m_slots.begin();
+			size_t size = m_slots.size();
+			size_t index = 0u;
+
+			while ( it != m_slots.end() )
 			{
-				it.second();
+				it->second();
+				adjustSlots( size, index, it );
 			}
 		}
 		/**
@@ -183,25 +193,13 @@ namespace ashes
 		void operator()( Params && ... params )const
 		{
 			auto it = m_slots.begin();
-			auto size = m_slots.size();
-			auto index = 0u;
+			size_t size = m_slots.size();
+			size_t index = 0u;
 
 			while ( it != m_slots.end() )
 			{
 				it->second( std::forward< Params >( params )... );
-
-				if ( size != m_slots.size() )
-				{
-					// Slots changed by the slot itself.
-					size = m_slots.size();
-					it = m_slots.begin();
-					std::advance( it, index );
-				}
-				else
-				{
-					++index;
-					++it;
-				}
+				adjustSlots( size, index, it );
 			}
 		}
 
@@ -243,6 +241,32 @@ namespace ashes
 			std::unique_lock< std::recursive_mutex > lock( m_mutex );
 			assert( m_connections.find( &connection ) != m_connections.end() );
 			m_connections.erase( &connection );
+		}
+		/**
+		*\brief
+		*	Adjusts returned slot iterator.
+		*\param[in,out] size
+		*	The expected size, receives the real size.
+		*\param[in,out] index
+		*	The current iteration index.
+		*/
+		template< typename IterT >
+		void adjustSlots( size_t & size
+			, size_t & index
+			, IterT & it )const
+		{
+			if ( size != m_slots.size() )
+			{
+				// Slots changed by the slot itself.
+				size = m_slots.size();
+				it = m_slots.begin();
+				std::advance( it, index );
+			}
+			else
+			{
+				++index;
+				++it;
+			}
 		}
 
 	private:

@@ -74,6 +74,20 @@ namespace ashes
 			, Semaphore const & semaphoreToWait )const;
 		/**
 		*\brief
+		*	Presents a swapchain.
+		*\param[in] swapChain
+		*	The swapchain.
+		*\param[in] imageIndex
+		*	The image to present.
+		*\param[in] semaphoreToWait
+		*	The semaphore to wait.
+		*\return
+		*	The presentation result.
+		*/
+		VkResult present( SwapChain const & swapChain
+			, uint32_t imageIndex )const;
+		/**
+		*\brief
 		*	Waits for the queue to be idle.
 		*\return
 		*	\p true on ok.
@@ -173,10 +187,17 @@ namespace ashes
 		}
 
 	private:
+		void clearSemaphores()const;
+		void waitSemaphores( SemaphoreCRefArray const & semaphores )const;
+		void signalSemaphores( SemaphoreCRefArray const & semaphores
+			, Fence const * fence )const;
+
+	private:
 		Device const & m_device;
 		uint32_t m_familyIndex;
 		uint32_t m_index;
 		VkQueue m_internal{ VK_NULL_HANDLE };
+		mutable std::set< Semaphore const * > m_waitingSemaphores;
 	};
 }
 

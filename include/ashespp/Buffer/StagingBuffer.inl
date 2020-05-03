@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #include "ashespp/Command/CommandBuffer.hpp"
 #include "ashespp/Command/CommandPool.hpp"
-#include "ashespp/Command/Queue.hpp"
+#include "ashespp/Sync/Queue.hpp"
 #include "ashespp/Sync/Fence.hpp"
 
 namespace ashes
