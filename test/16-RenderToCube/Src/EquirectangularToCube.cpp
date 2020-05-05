@@ -3,7 +3,7 @@
 #include <ashespp/Buffer/StagingBuffer.hpp>
 #include <ashespp/Buffer/UniformBuffer.hpp>
 #include <ashespp/Buffer/VertexBuffer.hpp>
-#include <ashespp/Command/Queue.hpp>
+#include <ashespp/Sync/Queue.hpp>
 #include <ashespp/Core/Device.hpp>
 #include <ashespp/Descriptor/DescriptorSet.hpp>
 #include <ashespp/Descriptor/DescriptorSetLayout.hpp>

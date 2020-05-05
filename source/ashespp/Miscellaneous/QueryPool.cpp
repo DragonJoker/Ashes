@@ -8,6 +8,15 @@ namespace ashes
 		, VkQueryType type
 		, uint32_t count
 		, VkQueryPipelineStatisticFlags pipelineStatistics )
+		: QueryPool{ device, "QueryPool", type, count, pipelineStatistics }
+	{
+	}
+
+	QueryPool::QueryPool( Device const & device
+		, std::string const & debugName
+		, VkQueryType type
+		, uint32_t count
+		, VkQueryPipelineStatisticFlags pipelineStatistics )
 		: m_device{ device }
 		, m_type{ type }
 		, m_count{ count }
@@ -28,12 +37,12 @@ namespace ashes
 			, nullptr
 			, &m_internal );
 		checkError( res, "QueryPool creation" );
-		registerObject( m_device, "QueryPool", this );
+		registerObject( m_device, debugName, *this );
 	}
 	
 	QueryPool::~QueryPool()
 	{
-		unregisterObject( m_device, this );
+		unregisterObject( m_device, *this );
 		m_device.vkDestroyQueryPool( m_device
 			, m_internal
 			, nullptr );

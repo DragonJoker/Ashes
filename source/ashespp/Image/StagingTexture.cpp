@@ -16,11 +16,20 @@ namespace ashes
 	StagingTexture::StagingTexture( Device const & device
 		, VkFormat format
 		, VkExtent2D const & extent )
+		: StagingTexture{ device, "StagingTexture", format, extent }
+	{
+	}
+
+	StagingTexture::StagingTexture( Device const & device
+		, std::string const & debugName
+		, VkFormat format
+		, VkExtent2D const & extent )
 		: m_device{ device }
 		, m_extent{ extent }
 		, m_buffer
 		{
 			device,
+			debugName,
 			uint32_t( getAlignedSize( getSize( extent, format )
 				, uint32_t( m_device.getProperties().limits.nonCoherentAtomSize ) ) ),
 			VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT
@@ -29,8 +38,8 @@ namespace ashes
 		auto requirements = m_buffer.getMemoryRequirements();
 		auto deduced = m_device.deduceMemoryType( requirements.memoryTypeBits
 			, VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
-		m_buffer.bindMemory( device.allocateMemory(
-			{
+		m_buffer.bindMemory( device.allocateMemory( debugName
+			, {
 				VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
 				nullptr,
 				requirements.size,

@@ -33,6 +33,19 @@ namespace ashes
 			, VkDescriptorPoolSizeArray poolSizes );
 		/**
 		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] flags
+		*	The creation flags.
+		*/
+		DescriptorPool( Device const & device
+			, std::string const & debugName
+			, VkDescriptorPoolCreateFlags flags
+			, uint32_t maxSets
+			, VkDescriptorPoolSizeArray poolSizes );
+		/**
+		*\brief
 		*	Destructor.
 		*/
 		~DescriptorPool();
@@ -47,6 +60,19 @@ namespace ashes
 		*	The created descriptor set.
 		*/
 		DescriptorSetPtr createDescriptorSet( DescriptorSetLayout const & layout
+			, uint32_t bindingPoint = 0u )const;
+		/**
+		*\brief
+		*	Creates a descriptor set matching the given layout.
+		*\param[in] layout
+		*	The layout describing the set.
+		*\param[in] bindingPoint
+		*	The binding point for the set.
+		*\return
+		*	The created descriptor set.
+		*/
+		DescriptorSetPtr createDescriptorSet( std::string const & debugName
+			, DescriptorSetLayout const & layout
 			, uint32_t bindingPoint = 0u )const;
 		void freeDescriptorSet( DescriptorSetPtr set )const;
 		/**

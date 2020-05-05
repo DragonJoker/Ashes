@@ -34,6 +34,21 @@ namespace ashes
 			, VkDeviceSize size = 10000000u
 			, QueueShare sharingMode = {} );
 		/**
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] usage
+		*	The buffer targets.
+		*\param[in] size
+		*	The buffer size.
+		*/
+		StagingBuffer( Device const & device
+			, std::string const & debugName
+			, VkBufferUsageFlags usage
+			, VkDeviceSize size = 10000000u
+			, QueueShare sharingMode = {} );
+		/**
 		*\name
 		*	Upload.
 		**/

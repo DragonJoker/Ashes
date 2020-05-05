@@ -14,6 +14,13 @@ namespace ashes
 {
 	SwapChain::SwapChain( Device const & device
 		, VkSwapchainCreateInfoKHR createInfo )
+		: SwapChain{ device, "SwapChain", std::move( createInfo ) }
+	{
+	}
+	
+	SwapChain::SwapChain( Device const & device
+		, std::string const & debugName
+		, VkSwapchainCreateInfoKHR createInfo )
 		: m_device{ device }
 		, m_createInfo{ std::move( createInfo ) }
 	{
@@ -23,12 +30,12 @@ namespace ashes
 			, nullptr
 			, &m_internal );
 		checkError( res, "Swap chain creation" );
-		registerObject( m_device, "SwapChain", this );
+		registerObject( m_device, debugName, *this );
 	}
 
 	SwapChain::~SwapChain()
 	{
-		unregisterObject( m_device, this );
+		unregisterObject( m_device, *this );
 		m_device.vkDestroySwapchainKHR( m_device, m_internal, nullptr );
 	}
 

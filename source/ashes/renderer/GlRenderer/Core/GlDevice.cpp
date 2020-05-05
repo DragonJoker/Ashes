@@ -292,6 +292,9 @@ namespace ashes::gl
 					, nameInfo.pObjectName );
 			}
 		}
+		else if ( nameInfo.objectType == VK_OBJECT_TYPE_QUERY_POOL )
+		{
+		}
 		else
 		{
 			if ( context->m_glObjectLabel )

@@ -103,6 +103,19 @@ namespace ashes
 			, uint32_t bindingPoint );
 		/**
 		*\brief
+		*	Constructor.
+		*\param[in] pool
+		*	The parent pool.
+		*\param[in] bindingPoint
+		*	The binding point for the set.
+		*/
+		DescriptorSet( Device const & device
+			, std::string const & debugName
+			, DescriptorPool const & pool
+			, DescriptorSetLayout const & layout
+			, uint32_t bindingPoint );
+		/**
+		*\brief
 		*	Destructor.
 		*/
 		~DescriptorSet();

@@ -34,8 +34,12 @@ namespace utils
 		void addOptionalDebugReportLayer( ashes::StringArray & names )
 		{
 #if LOAD_VALIDATION_LAYERS
+#	if VK_EXT_debug_utils
+			names.push_back( VK_EXT_DEBUG_UTILS_EXTENSION_NAME );
+#	elif VK_EXT_debug_utils
 			names.push_back( VK_EXT_DEBUG_REPORT_EXTENSION_NAME );
 			//names.push_back( VK_EXT_DEBUG_MARKER_EXTENSION_NAME );
+#	endif
 #endif
 		}
 
@@ -181,7 +185,11 @@ namespace utils
 	Instance::~Instance()
 	{
 #if LOAD_VALIDATION_LAYERS
+#	if VK_EXT_debug_utils
+		m_instance->vkDestroyDebugUtilsMessengerEXT( *m_instance, m_debugCallback, nullptr );
+#	elif VK_EXT_debug_report
 		m_instance->vkDestroyDebugReportCallbackEXT( *m_instance, m_debugCallback, nullptr );
+#	endif
 #endif
 	}
 

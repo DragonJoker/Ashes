@@ -14,6 +14,14 @@ namespace ashes
 	PipelineLayout::PipelineLayout( Device const & device
 		, DescriptorSetLayoutCRefArray const & layouts
 		, VkPushConstantRangeArray const & pushConstantRanges )
+		: PipelineLayout{ device, "PipelineLayout", layouts, pushConstantRanges }
+	{
+	}
+
+	PipelineLayout::PipelineLayout( Device const & device
+		, std::string const & debugName
+		, DescriptorSetLayoutCRefArray const & layouts
+		, VkPushConstantRangeArray const & pushConstantRanges )
 		: m_device{ device }
 		, m_setLayouts{ layouts }
 		, m_pushConstantRanges{ pushConstantRanges }
@@ -39,12 +47,12 @@ namespace ashes
 			, nullptr
 			, &m_internal );
 		checkError( res, "PipelineLayout creation" );
-		registerObject( m_device, "PipelineLayout", this );
+		registerObject( m_device, debugName, *this );
 	}
 
 	PipelineLayout::~PipelineLayout()
 	{
-		unregisterObject( m_device, this );
+		unregisterObject( m_device, *this );
 		m_device.vkDestroyPipelineLayout( m_device
 			, m_internal
 			, nullptr );

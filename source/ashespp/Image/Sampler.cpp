@@ -10,6 +10,13 @@ namespace ashes
 {
 	Sampler::Sampler( Device const & device
 		, SamplerCreateInfo createInfo )
+		: Sampler{ device, "Sampler", createInfo }
+	{
+	}
+
+	Sampler::Sampler( Device const & device
+		, std::string const & debugName
+		, SamplerCreateInfo createInfo )
 		: m_device{ device }
 		, m_createInfo{ createInfo }
 	{
@@ -19,12 +26,12 @@ namespace ashes
 			, nullptr
 			, &m_internal );
 		checkError( res, "Sampler creation" );
-		registerObject( m_device, "Sampler", this );
+		registerObject( m_device, debugName, *this );
 	}
 	
 	Sampler::~Sampler()
 	{
-		unregisterObject( m_device, this );
+		unregisterObject( m_device, *this );
 		m_device.vkDestroySampler( m_device
 			, m_internal
 			, nullptr );

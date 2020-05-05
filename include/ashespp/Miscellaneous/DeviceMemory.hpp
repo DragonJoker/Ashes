@@ -21,6 +21,9 @@ namespace ashes
 	public:
 		DeviceMemory( Device const & device
 			, VkMemoryAllocateInfo allocateInfo );
+		DeviceMemory( Device const & device
+			, std::string const & debugName
+			, VkMemoryAllocateInfo allocateInfo );
 		~DeviceMemory();
 		/**
 		*\brief

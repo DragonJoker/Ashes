@@ -24,6 +24,14 @@ namespace ashes
 	CommandBuffer::CommandBuffer( Device const & device
 		, CommandPool const & pool
 		, VkCommandBufferLevel level )
+		: CommandBuffer{ device, "CommandBuffer", pool, level }
+	{
+	}
+
+	CommandBuffer::CommandBuffer( Device const & device
+		, std::string const & debugName
+		, CommandPool const & pool
+		, VkCommandBufferLevel level )
 		: m_device{ device }
 		, m_pool{ pool }
 	{
@@ -41,12 +49,12 @@ namespace ashes
 			, &cmdAllocInfo
 			, &m_internal );
 		checkError( res, "CommandBuffer creation" );
-		registerObject( m_device, "CommandBuffer", this );
+		registerObject( m_device, debugName, *this );
 	}
 
 	CommandBuffer::~CommandBuffer()
 	{
-		unregisterObject( m_device, this );
+		unregisterObject( m_device, *this );
 		m_device.vkFreeCommandBuffers( m_device, m_pool, 1, &m_internal );
 	}
 

@@ -9,6 +9,12 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	Event::Event( Device const & device )
+		: Event{ device, "Event" }
+	{
+	}
+
+	Event::Event( Device const & device
+		, std::string const & debugName )
 		: m_device{ device }
 	{
 		VkEventCreateInfo createInfo
@@ -23,12 +29,12 @@ namespace ashes
 			, nullptr
 			, &m_internal );
 		checkError( res, "Event creation" );
-		registerObject( m_device, "Event", this );
+		registerObject( m_device, debugName, *this );
 	}
 
 	Event::~Event()
 	{
-		unregisterObject( m_device, this );
+		unregisterObject( m_device, *this );
 		m_device.vkDestroyEvent( m_device
 			, m_internal
 			, nullptr );

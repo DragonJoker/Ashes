@@ -32,6 +32,14 @@ namespace ashes
 		Event( Device const & device );
 		/**
 		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The parent device.
+		*/ 
+		Event( Device const & device 
+			, std::string const & debugName );
+		/**
+		*\brief
 		*	Destructor.
 		*/
 		~Event();

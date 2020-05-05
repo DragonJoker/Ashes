@@ -15,17 +15,13 @@ See LICENSE file in root folder.
 #include <iomanip>
 
 #if !defined( NDEBUG )
-#	define Ashes_DebugSync 1
+#	define Ashes_DebugSync 0
 #else
 #	define Ashes_DebugSync 0
 #endif
 
-#if Ashes_DebugSync
-#	define ashesSyncCheck( condition, text, semaphore )\
-		ashes::syncCheck( condition, #condition, text, semaphore )
-#else
-#	define ashesSyncCheck( condition, text, semaphore )
-#endif
+#define ashesSyncCheck( condition, text, semaphore )\
+	ashes::syncCheck( condition, #condition, text, semaphore )
 
 namespace ashes
 {

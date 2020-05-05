@@ -10,8 +10,13 @@ See LICENSE file in root folder
 
 namespace utils
 {
+#if VK_EXT_debug_utils
+	VkDebugUtilsMessengerEXT setupDebugging( ashes::Instance const & instance
+		, void * userData );
+#elif VK_EXT_debug_report
 	VkDebugReportCallbackEXT setupDebugging( ashes::Instance const & instance
 		, void * userData );
+#endif
 }
 
 #endif

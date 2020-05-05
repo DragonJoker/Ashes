@@ -13,10 +13,21 @@ namespace ashes
 		, VkDeviceSize size
 		, VkBufferUsageFlags usage
 		, QueueShare sharingMode )
+		: UniformBuffer{ device, "UniformBuffer", count, size, usage, std::move( sharingMode ) }
+	{
+	}
+	
+	UniformBuffer::UniformBuffer( Device const & device
+		, std::string const & debugName
+		, VkDeviceSize count
+		, VkDeviceSize size
+		, VkBufferUsageFlags usage
+		, QueueShare sharingMode )
 		: m_device{ device }
 		, m_count{ count }
 		, m_size{ size }
 		, m_buffer{ std::make_unique< BufferBase >( device
+			, debugName
 			, count * getAlignedSize( getElementSize() )
 			, usage | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT
 			, std::move( sharingMode ) ) }

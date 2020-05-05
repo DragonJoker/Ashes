@@ -13,6 +13,16 @@ namespace ashes
 		, VkFormat format
 		, VkDeviceSize offset
 		, VkDeviceSize range )
+		: BufferView{ device, "BufferView", buffer, format, offset, range }
+	{
+	}
+	
+	BufferView::BufferView( Device const & device
+		, std::string const & debugName
+		, BufferBase const & buffer
+		, VkFormat format
+		, VkDeviceSize offset
+		, VkDeviceSize range )
 		: m_device{ device }
 		, m_buffer{ buffer }
 		, m_format{ format }
@@ -35,12 +45,12 @@ namespace ashes
 			, nullptr
 			, &m_internal );
 		checkError( res, "BufferView creation" );
-		registerObject( m_device, "BufferView", this );
+		registerObject( m_device, debugName, *this );
 	}
 
 	BufferView::~BufferView()
 	{
-		unregisterObject( m_device, this );
+		unregisterObject( m_device, *this );
 
 		if ( m_internal )
 		{

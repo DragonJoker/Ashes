@@ -10,6 +10,13 @@ namespace ashes
 {
 	Fence::Fence( Device const & device
 		, VkFenceCreateFlags flags )
+		: Fence{ device, "Fence", flags }
+	{
+	}
+
+	Fence::Fence( Device const & device
+		, std::string const & debugName
+		, VkFenceCreateFlags flags )
 		: m_device{ device }
 	{
 		VkFenceCreateInfo createInfo
@@ -24,12 +31,12 @@ namespace ashes
 			, nullptr
 			, &m_internal );
 		checkError( res, "Fence creation" );
-		registerObject( m_device, "Fence", this );
+		registerObject( m_device, debugName, *this );
 	}
 
 	Fence::~Fence()
 	{
-		unregisterObject( m_device, this );
+		unregisterObject( m_device, *this );
 		m_device.vkDestroyFence( m_device
 			, m_internal
 			, nullptr );

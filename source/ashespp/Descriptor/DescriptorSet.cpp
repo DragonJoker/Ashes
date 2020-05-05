@@ -19,6 +19,15 @@ namespace ashes
 		, DescriptorPool const & pool
 		, DescriptorSetLayout const & layout
 		, uint32_t bindingPoint )
+		: DescriptorSet{ device, "DescriptorSet", pool, layout, bindingPoint }
+	{
+	}
+	
+	DescriptorSet::DescriptorSet( Device const & device
+		, std::string const & debugName
+		, DescriptorPool const & pool
+		, DescriptorSetLayout const & layout
+		, uint32_t bindingPoint )
 		: m_device{ pool.getDevice() }
 		, m_bindingPoint{ bindingPoint }
 		, m_pool{ pool }
@@ -37,12 +46,12 @@ namespace ashes
 			, &allocateInfo
 			, &m_internal );
 		checkError( res, "DescriptorSet allocation" );
-		registerObject( m_device, "DescriptorSet", this );
+		registerObject( m_device, debugName, *this );
 	}
 
 	DescriptorSet::~DescriptorSet()
 	{
-		unregisterObject( m_device, this );
+		unregisterObject( m_device, *this );
 
 		if ( !m_pool.hasAutomaticFree() )
 		{

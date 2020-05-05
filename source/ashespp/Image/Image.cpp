@@ -161,7 +161,7 @@ namespace ashes
 
 		if ( m_ownInternal )
 		{
-			registerObject( *m_device, "Image", this );
+			registerObject( *m_device, "Image", *this );
 		}
 	}
 
@@ -179,7 +179,7 @@ namespace ashes
 
 			if ( m_ownInternal )
 			{
-				registerObject( *m_device, "Image", this );
+				registerObject( *m_device, "Image", *this );
 			}
 		}
 
@@ -187,6 +187,13 @@ namespace ashes
 	}
 
 	Image::Image( Device const & device
+		, ImageCreateInfo createInfo )
+		: Image{ device, "Image", createInfo }
+	{
+	}
+	
+	Image::Image( Device const & device
+		, std::string const & debugName
 		, ImageCreateInfo createInfo )
 		: m_device{ &device }
 		, m_createInfo{ std::move( createInfo ) }
@@ -197,7 +204,7 @@ namespace ashes
 			, nullptr
 			, &m_internal );
 		checkError( res, "Image creation" );
-		registerObject( *m_device, "Image", this );
+		registerObject( *m_device, debugName, *this );
 	}
 
 	Image::Image( Device const & device
@@ -234,7 +241,7 @@ namespace ashes
 
 			if ( m_ownInternal )
 			{
-				unregisterObject( *m_device, this );
+				unregisterObject( *m_device, *this );
 				m_device->vkDestroyImage( *m_device
 					, m_internal
 					, nullptr );
@@ -425,6 +432,13 @@ namespace ashes
 
 	ImageView Image::createView( VkImageViewCreateInfo createInfo )const
 	{
+		return createView( "ImageView"
+			, std::move( createInfo ) );
+	}
+
+	ImageView Image::createView( std::string const & debugName
+		, VkImageViewCreateInfo createInfo )const
+	{
 		DEBUG_DUMP( createInfo );
 		auto pCreateInfo = std::make_unique< VkImageViewCreateInfo >( std::move( createInfo ) );
 		VkImageView vk;
@@ -435,13 +449,14 @@ namespace ashes
 		checkError( res, "ImageView creation" );
 		auto create = *pCreateInfo;
 		m_views.emplace( vk, std::move( pCreateInfo ) );
-		registerObject( *m_device, "ImageView", vk );
-		return ImageView
+		auto result = ImageView
 		{
 			create,
 			vk,
 			this,
 		};
+		registerObject( *m_device, debugName, result );
+		return result;
 	}
 
 	ImageView Image::createView( VkImageViewType type
@@ -452,23 +467,42 @@ namespace ashes
 		, uint32_t layerCount
 		, VkComponentMapping const & mapping )const
 	{
-		return createView(
-		{
-			VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-			nullptr,
-			0u,
-			*this,
-			type,
-			format,
-			mapping,
-			{
-				getAspectMask( format ),
-				baseMipLevel,
-				levelCount,
-				baseArrayLayer,
-				layerCount
-			}
-		} );
+		return createView( "ImageView"
+			, type
+			, format
+			, baseMipLevel
+			, levelCount
+			, baseArrayLayer
+			, layerCount
+			, mapping );
+	}
+
+	ImageView Image::createView( std::string const & debugName
+		, VkImageViewType type
+		, VkFormat format
+		, uint32_t baseMipLevel
+		, uint32_t levelCount
+		, uint32_t baseArrayLayer
+		, uint32_t layerCount
+		, VkComponentMapping const & mapping )const
+	{
+		return createView( debugName
+			, {
+				VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+				nullptr,
+				0u,
+				*this,
+				type,
+				format,
+				mapping,
+				{
+					getAspectMask( format ),
+					baseMipLevel,
+					levelCount,
+					baseArrayLayer,
+					layerCount
+				}
+			} );
 	}
 
 	VkImageMemoryBarrier Image::makeTransition( VkImageLayout srcLayout
