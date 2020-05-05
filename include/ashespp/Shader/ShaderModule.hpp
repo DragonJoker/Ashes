@@ -29,6 +29,17 @@ namespace ashes
 			, UInt32Array const & shader );
 		/**
 		*\brief
+		*	Constructeur.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] shader
+		*	The module's SPIR-V code.
+		*/
+		ShaderModule( Device const & device
+			, std::string const & debugName
+			, UInt32Array const & shader );
+		/**
+		*\brief
 		*	Destructor.
 		*/
 		~ShaderModule();

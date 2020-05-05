@@ -11,6 +11,7 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	BufferBase::BufferBase( Device const & device
+		, std::string const & debugName
 		, VkBufferCreateInfo createInfo )
 		: m_device{ device }
 		, m_createInfo{ std::move( createInfo ) }
@@ -21,29 +22,35 @@ namespace ashes
 			, nullptr
 			, &m_internal );
 		checkError( res, "Buffer creation" );
-		registerObject( m_device, "Buffer", this );
+		registerObject( m_device, debugName, *this );
+	}
+
+	BufferBase::BufferBase( Device const & device
+		, VkBufferCreateInfo createInfo )
+		: BufferBase{ device, "Buffer", createInfo }
+	{
 	}
 
 	BufferBase::BufferBase( Device const & device
 		, VkDeviceSize size
 		, VkBufferUsageFlags usage
 		, QueueShare sharingMode )
-		: m_device{ device }
-		, m_sharingMode{ std::move( sharingMode ) }
-		, m_createInfo{ makeCreateInfo ( size, usage, m_sharingMode ) }
+		: BufferBase{ device, "Buffer", size, usage, std::move( sharingMode ) }
 	{
-		DEBUG_DUMP( bufferCreate );
-		auto res = m_device.vkCreateBuffer( m_device
-			, &m_createInfo
-			, nullptr
-			, &m_internal );
-		checkError( res, "Buffer creation" );
-		registerObject( m_device, "Buffer", this );
+	}
+
+	BufferBase::BufferBase( Device const & device
+		, std::string const & debugName
+		, VkDeviceSize size
+		, VkBufferUsageFlags usage
+		, QueueShare sharingMode )
+		: BufferBase{ device, "Buffer", makeCreateInfo( size, usage, sharingMode ) }
+	{
 	}
 
 	BufferBase::~BufferBase()
 	{
-		unregisterObject( m_device, this );
+		unregisterObject( m_device, *this );
 		m_device.vkDestroyBuffer( m_device, m_internal, nullptr );
 	}
 

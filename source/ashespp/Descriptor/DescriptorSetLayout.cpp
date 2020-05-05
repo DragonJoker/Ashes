@@ -13,6 +13,13 @@ namespace ashes
 {
 	DescriptorSetLayout::DescriptorSetLayout( Device const & device
 		, VkDescriptorSetLayoutBindingArray bindings )
+		: DescriptorSetLayout{ device, "DescriptorSetLayout", bindings }
+	{
+	}
+	
+	DescriptorSetLayout::DescriptorSetLayout( Device const & device
+		, std::string const & debugName
+		, VkDescriptorSetLayoutBindingArray bindings )
 		: m_device{ device }
 		, m_bindings{ std::move( bindings ) }
 	{
@@ -30,12 +37,12 @@ namespace ashes
 			, nullptr
 			, &m_internal );
 		checkError( res, "DescriptorSetLayout creation" );
-		registerObject( m_device, "DescriptorSetLayout", this );
+		registerObject( m_device, debugName, *this );
 	}
 
 	DescriptorSetLayout::~DescriptorSetLayout()
 	{
-		unregisterObject( m_device, this );
+		unregisterObject( m_device, *this );
 		m_device.vkDestroyDescriptorSetLayout( m_device
 			, m_internal
 			, nullptr );
@@ -64,6 +71,17 @@ namespace ashes
 		, bool automaticFree )const
 	{
 		return std::make_unique< DescriptorSetPool >( m_device
+			, *this
+			, maxSets
+			, automaticFree );
+	}
+
+	DescriptorSetPoolPtr DescriptorSetLayout::createPool( std::string const & debugName
+		, uint32_t maxSets
+		, bool automaticFree )const
+	{
+		return std::make_unique< DescriptorSetPool >( m_device
+			, debugName
 			, *this
 			, maxSets
 			, automaticFree );

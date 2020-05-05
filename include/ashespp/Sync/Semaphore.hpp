@@ -26,6 +26,14 @@ namespace ashes
 		explicit Semaphore( Device const & device );
 		/**
 		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*/
+		Semaphore( Device const & device
+			, std::string const & debugName );
+		/**
+		*\brief
 		*	Destructor.
 		*/
 		~Semaphore();

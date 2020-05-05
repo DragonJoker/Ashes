@@ -10,6 +10,13 @@ namespace ashes
 {
 	ShaderModule::ShaderModule( Device const & device
 		, UInt32Array const & shader )
+		: ShaderModule{ device, "ShaderModule", shader }
+	{
+	}
+
+	ShaderModule::ShaderModule( Device const & device
+		, std::string const & debugName
+		, UInt32Array const & shader )
 		: m_device{ device }
 	{
 		VkShaderModuleCreateInfo createInfo
@@ -26,12 +33,12 @@ namespace ashes
 			, nullptr
 			, &m_internal );
 		checkError( res, "ShaderModule creation" );
-		registerObject( m_device, "ShaderModule", this );
+		registerObject( m_device, debugName, *this );
 	}
 
 	ShaderModule::~ShaderModule()
 	{
-		unregisterObject( m_device, this );
+		unregisterObject( m_device, *this );
 
 		if ( m_internal != VK_NULL_HANDLE )
 		{

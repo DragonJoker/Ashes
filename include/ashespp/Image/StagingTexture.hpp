@@ -30,6 +30,18 @@ namespace ashes
 		StagingTexture( Device const & device
 			, VkFormat format
 			, VkExtent2D const & extent );
+		/**
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] extent
+		*	The texture dimensions.
+		*/
+		StagingTexture( Device const & device
+			, std::string const & debugName
+			, VkFormat format
+			, VkExtent2D const & extent );
 		~StagingTexture()
 		{
 		}

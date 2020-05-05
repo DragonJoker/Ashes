@@ -31,6 +31,19 @@ namespace ashes
 			, GraphicsPipelineCreateInfo createInfo );
 		/**
 		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The parent device.
+		*\param[in] layout
+		*	The pipeline layout.
+		*\param[in] createInfo
+		*	The creation informations.
+		*/
+		GraphicsPipeline( Device const & device
+			, std::string const & debugName
+			, GraphicsPipelineCreateInfo createInfo );
+		/**
+		*\brief
 		*	Destructor.
 		*/
 		~GraphicsPipeline();

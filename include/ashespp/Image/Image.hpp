@@ -56,6 +56,17 @@ namespace ashes
 		*	Constructor.
 		*\param[in] device
 		*	The logical device.
+		*\param[in] createInfo
+		*	The image creation informations.
+		*/
+		Image( Device const & device
+			, std::string const & debugName
+			, ImageCreateInfo createInfo );
+		/**
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
 		*\param[in] image
 		*	The image.
 		*/
@@ -143,6 +154,14 @@ namespace ashes
 		/**
 		*\brief
 		*	Creates a view to the texture.
+		*\param[in] createInfo
+		*	The view creation informations.
+		*/
+		ImageView createView( std::string const & debugName
+			, VkImageViewCreateInfo createInfo )const;
+		/**
+		*\brief
+		*	Creates a view to the texture.
 		*\param[in] type
 		*	The view's texture type.
 		*\param[in] format
@@ -159,6 +178,32 @@ namespace ashes
 		*	The colours component mapping.
 		*/
 		ImageView createView( VkImageViewType type
+			, VkFormat format
+			, uint32_t baseMipLevel = 0u
+			, uint32_t levelCount = 1u
+			, uint32_t baseArrayLayer = 0u
+			, uint32_t layerCount = 1u
+			, VkComponentMapping const & mapping = VkComponentMapping{} )const;
+		/**
+		*\brief
+		*	Creates a view to the texture.
+		*\param[in] type
+		*	The view's texture type.
+		*\param[in] format
+		*	The view's pixels format.
+		*\param[in] baseMipLevel
+		*	The first mipmap level accessible to the view.
+		*\param[in] levelCount
+		*	The number of mipmap levels (starting from \p baseMipLevel) accessible to the view.
+		*\param[in] baseArrayLayer
+		*	The first array layer accessible to the view.
+		*\param[in] layerCount
+		*	The number of array layers (starting from \p baseArrayLayer) accessible to the view.
+		*\param[in] mapping
+		*	The colours component mapping.
+		*/
+		ImageView createView( std::string const & debugName
+			, VkImageViewType type
 			, VkFormat format
 			, uint32_t baseMipLevel = 0u
 			, uint32_t levelCount = 1u

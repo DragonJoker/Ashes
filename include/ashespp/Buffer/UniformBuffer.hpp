@@ -34,6 +34,23 @@ namespace ashes
 			, VkBufferUsageFlags usage
 			, QueueShare sharingMode = {} );
 		/**
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] count
+		*	The number of instances of the data.
+		*\param[in] size
+		*	The size of an instance, in bytes.
+		*\param[in] usage
+		*	The buffer usage flags.
+		*/
+		UniformBuffer( Device const & device
+			, std::string const & debugName
+			, VkDeviceSize count
+			, VkDeviceSize size
+			, VkBufferUsageFlags usage
+			, QueueShare sharingMode = {} );
+		/**
 		*\brief
 		*	Binds this buffer to given device memory object.
 		*\param[in] memory
@@ -122,6 +139,34 @@ namespace ashes
 		, QueueShare sharingMode = {} )
 	{
 		return std::make_unique< UniformBuffer >( device
+			, count
+			, size
+			, usage
+			, std::move( sharingMode ) );
+	}
+	/**
+	*\brief
+	*	UniformBuffer creation helper function.
+	*\param[in] device
+	*	The logical device.
+	*\param[in] count
+	*	The number of instances of the data.
+	*\param[in] size
+	*	The size of an instance, in bytes.
+	*\param[in] usage
+	*	The buffer usage flags.
+	*\return
+	*	The created buffer.
+	*/
+	inline UniformBufferPtr makeUniformBuffer( Device const & device
+		, std::string const & debugName
+		, VkDeviceSize count
+		, VkDeviceSize size
+		, VkBufferUsageFlags usage
+		, QueueShare sharingMode = {} )
+	{
+		return std::make_unique< UniformBuffer >( device
+			, debugName
 			, count
 			, size
 			, usage

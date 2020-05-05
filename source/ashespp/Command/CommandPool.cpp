@@ -11,6 +11,13 @@ namespace ashes
 {
 	CommandPool::CommandPool( Device const & device
 		, VkCommandPoolCreateInfo createInfo )
+		: CommandPool{ device, "CommandPool", createInfo }
+	{
+	}
+	
+	CommandPool::CommandPool( Device const & device
+		, std::string const & debugName
+		, VkCommandPoolCreateInfo createInfo )
 		: m_device{ device }
 	{
 		DEBUG_DUMP( createInfo );
@@ -19,12 +26,12 @@ namespace ashes
 			, nullptr
 			, &m_internal );
 		checkError( res, "CommandPool creation" );
-		registerObject( m_device, "CommandPool", this );
+		registerObject( m_device, debugName, *this );
 	}
 
 	CommandPool::~CommandPool()
 	{
-		unregisterObject( m_device, this );
+		unregisterObject( m_device, *this );
 		m_device.vkDestroyCommandPool( m_device, m_internal, nullptr );
 	}
 

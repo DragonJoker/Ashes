@@ -10,6 +10,12 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	Semaphore::Semaphore( Device const & device )
+		: Semaphore{ device, "Semaphore" }
+	{
+	}
+
+	Semaphore::Semaphore( Device const & device
+		, std::string const & debugName )
 		: m_device{ device }
 	{
 		VkSemaphoreCreateInfo createInfo
@@ -24,12 +30,12 @@ namespace ashes
 			, nullptr
 			, &m_internal );
 		checkError( res, "Semaphore creation" );
-		registerObject( m_device, "Semaphore", this );
+		registerObject( m_device, debugName, *this );
 	}
 
 	Semaphore::~Semaphore()
 	{
-		unregisterObject( m_device, this );
+		unregisterObject( m_device, *this );
 		m_device.vkDestroySemaphore( m_device
 			, m_internal
 			, nullptr );

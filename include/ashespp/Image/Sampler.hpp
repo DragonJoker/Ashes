@@ -29,6 +29,17 @@ namespace ashes
 			, SamplerCreateInfo createInfo );
 		/**
 		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] createInfo
+		*	The creation informations.
+		*/
+		Sampler( Device const & device
+			, std::string const & debugName
+			, SamplerCreateInfo createInfo );
+		/**
+		*\brief
 		*	Destructor.
 		*/
 		~Sampler();

@@ -36,6 +36,20 @@ namespace ashes
 			, VkCommandBufferLevel level = VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		/**
 		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] pool
+		*	The parent command buffer pool.
+		*\param[in] level
+		*	The Vulkan command buffer level.
+		*/
+		CommandBuffer( Device const & device
+			, std::string const & debugName
+			, CommandPool const & pool
+			, VkCommandBufferLevel level = VK_COMMAND_BUFFER_LEVEL_PRIMARY );
+		/**
+		*\brief
 		*	Destructor.
 		*/
 		~CommandBuffer();
