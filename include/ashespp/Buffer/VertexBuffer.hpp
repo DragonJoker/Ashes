@@ -37,6 +37,23 @@ namespace ashes
 			, QueueShare sharingMode = {} );
 		/**
 		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] size
+		*	The buffer size.
+		*\param[in] usage
+		*	The buffer usage flags.
+		*\param[in] sharingMode
+		*	The buffer sharing mode.
+		*/
+		VertexBufferBase( Device const & device
+			, std::string const & debugName
+			, VkDeviceSize size
+			, VkBufferUsageFlags usage
+			, QueueShare sharingMode = {} );
+		/**
+		*\brief
 		*	Destructor.
 		*/
 		~VertexBufferBase() = default;
@@ -114,6 +131,32 @@ namespace ashes
 	}
 	/**
 	*\brief
+	*	Vertex buffer creation helper.
+	*\param[in] device
+	*	The logical device.
+	*\param[in] size
+	*	The buffer size.
+	*\param[in] usage
+	*	The buffer usage flags.
+	*\param[in] sharingMode
+	*	The buffer sharing mode.
+	*\return
+	*	The created buffer.
+	*/
+	inline VertexBufferBasePtr makeVertexBufferBase( Device const & device
+		, std::string const & debugName
+		, VkDeviceSize size
+		, VkBufferUsageFlags usage
+		, QueueShare sharingMode = {} )
+	{
+		return std::make_unique< VertexBufferBase >( device
+			, debugName
+			, size
+			, usage
+			, std::move( sharingMode ) );
+	}
+	/**
+	*\brief
 	*	Typed vertex buffer.
 	*/
 	template< typename T >
@@ -134,6 +177,23 @@ namespace ashes
 		*	The buffer sharing mode.
 		*/
 		inline VertexBuffer( Device const & device
+			, VkDeviceSize count
+			, VkBufferUsageFlags usage
+			, QueueShare sharingMode = {} );
+		/**
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] count
+		*	The buffer elements count.
+		*\param[in] usage
+		*	The buffer usage flags.
+		*\param[in] sharingMode
+		*	The buffer sharing mode.
+		*/
+		inline VertexBuffer( Device const & device
+			, std::string const & debugName
 			, VkDeviceSize count
 			, VkBufferUsageFlags usage
 			, QueueShare sharingMode = {} );
@@ -266,6 +326,33 @@ namespace ashes
 		, QueueShare sharingMode = {} )
 	{
 		return std::make_unique< VertexBuffer< T > >( device
+			, count
+			, usage
+			, std::move( sharingMode ) );
+	}
+	/**
+	*\brief
+	*	Typed vertex buffer creation helper.
+	*\param[in] device
+	*	The logical device.
+	*\param[in] count
+	*	The buffer elements count.
+	*\param[in] usage
+	*	The buffer usage flags.
+	*\param[in] sharingMode
+	*	The buffer sharing mode.
+	*\return
+	*	The created buffer.
+	*/
+	template< typename T >
+	inline VertexBufferPtr< T > makeVertexBuffer( Device const & device
+		, std::string const & debugName
+		, VkDeviceSize count
+		, VkBufferUsageFlags usage
+		, QueueShare sharingMode = {} )
+	{
+		return std::make_unique< VertexBuffer< T > >( device
+			, debugName
 			, count
 			, usage
 			, std::move( sharingMode ) );

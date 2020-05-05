@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #include "util/UtilsSwapChain.hpp"
 
-#include <ashespp/Command/Queue.hpp>
+#include <ashespp/Sync/Queue.hpp>
 #include <ashespp/Core/Device.hpp>
 #include <ashespp/Core/SwapChain.hpp>
 #include <ashespp/Image/Image.hpp>

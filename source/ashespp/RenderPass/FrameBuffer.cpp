@@ -15,6 +15,15 @@ namespace ashes
 		, VkExtent2D const & dimensions
 		, ImageViewCRefArray views
 		, uint32_t layers )
+		: FrameBuffer{ "FrameBuffer", renderPass, dimensions, views, layers }
+	{
+	}
+
+	FrameBuffer::FrameBuffer( std::string const & debugName
+		, RenderPass const & renderPass
+		, VkExtent2D const & dimensions
+		, ImageViewCRefArray views
+		, uint32_t layers )
 		: m_device{ renderPass.getDevice() }
 		, m_dimensions{ dimensions }
 		, m_views{ std::move( views ) }
@@ -39,12 +48,12 @@ namespace ashes
 			, nullptr
 			, &m_internal );
 		checkError( res, "FrameBuffer creation" );
-		registerObject( m_device, "FrameBuffer", this );
+		registerObject( m_device, debugName, *this );
 	}
 
 	FrameBuffer::~FrameBuffer()
 	{
-		unregisterObject( m_device, this );
+		unregisterObject( m_device, *this );
 		m_device.vkDestroyFramebuffer( m_device, m_internal, nullptr );
 	}
 }

@@ -12,6 +12,13 @@ namespace ashes
 {
 	GraphicsPipeline::GraphicsPipeline( Device const & device
 		, GraphicsPipelineCreateInfo createInfo )
+		: GraphicsPipeline{ device, "GraphicsPipeline", std::move( createInfo ) }
+	{
+	}
+
+	GraphicsPipeline::GraphicsPipeline( Device const & device
+		, std::string const & debugName
+		, GraphicsPipelineCreateInfo createInfo )
 		: m_device{ device }
 		, m_createInfo{ std::move( createInfo ) }
 	{
@@ -24,12 +31,12 @@ namespace ashes
 			, nullptr
 			, &m_internal );
 		checkError( res, "GraphicsPipeline creation" );
-		registerObject( m_device, "GraphicsPipeline", this );
+		registerObject( m_device, debugName, *this );
 	}
 
 	GraphicsPipeline::~GraphicsPipeline()
 	{
-		unregisterObject( m_device, this );
+		unregisterObject( m_device, *this );
 		m_device.vkDestroyPipeline( m_device
 			, m_internal
 			, nullptr );

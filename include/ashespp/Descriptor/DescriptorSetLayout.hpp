@@ -29,6 +29,17 @@ namespace ashes
 			, VkDescriptorSetLayoutBindingArray bindings );
 		/**
 		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] bindings
+		*	The layout bindings.
+		*/
+		DescriptorSetLayout( Device const & device
+			, std::string const & debugName
+			, VkDescriptorSetLayoutBindingArray bindings );
+		/**
+		*\brief
 		*	Destructor.
 		*/
 		~DescriptorSetLayout();
@@ -61,6 +72,19 @@ namespace ashes
 		*	The created pool.
 		*/
 		DescriptorSetPoolPtr createPool( uint32_t maxSets
+			, bool automaticFree = true )const;
+		/**
+		*\brief
+		*	Creates a pool for the descriptor sets using this layout.
+		*\param[in] maxSets
+		*	The maximum descriptor sets taht can be created from the pool.
+		*\param[in] automaticFree
+		*	Tells if the pool will destroy all allocated sets at its destruction (\p true) or not (\p false).
+		*\return
+		*	The created pool.
+		*/
+		DescriptorSetPoolPtr createPool( std::string const & debugName
+			, uint32_t maxSets
 			, bool automaticFree = true )const;
 		/**
 		*\brief

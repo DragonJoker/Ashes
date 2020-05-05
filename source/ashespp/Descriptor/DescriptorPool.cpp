@@ -13,6 +13,15 @@ namespace ashes
 		, VkDescriptorPoolCreateFlags flags
 		, uint32_t maxSets
 		, VkDescriptorPoolSizeArray poolSizes )
+		: DescriptorPool{ device, "DescriptorPool", flags, maxSets, poolSizes }
+	{
+	}
+	
+	DescriptorPool::DescriptorPool( Device const & device
+		, std::string const & debugName
+		, VkDescriptorPoolCreateFlags flags
+		, uint32_t maxSets
+		, VkDescriptorPoolSizeArray poolSizes )
 		: m_device{ device }
 		, m_automaticFree{ !checkFlag( flags, VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT ) }
 	{
@@ -31,12 +40,12 @@ namespace ashes
 			, nullptr
 			, &m_internal );
 		checkError( res, "DescriptorPool creation" );
-		registerObject( m_device, "DescriptorPool", this );
+		registerObject( m_device, debugName, *this );
 	}
 
 	DescriptorPool::~DescriptorPool()
 	{
-		unregisterObject( m_device, this );
+		unregisterObject( m_device, *this );
 		m_device.vkDestroyDescriptorPool( m_device, m_internal, nullptr );
 	}
 
@@ -44,6 +53,17 @@ namespace ashes
 		, uint32_t bindingPoint )const
 	{
 		return std::make_unique< DescriptorSet >( m_device
+			, *this
+			, layout
+			, bindingPoint );
+	}
+	
+	DescriptorSetPtr DescriptorPool::createDescriptorSet( std::string const & debugName
+		, DescriptorSetLayout const & layout
+		, uint32_t bindingPoint )const
+	{
+		return std::make_unique< DescriptorSet >( m_device
+			, debugName
 			, *this
 			, layout
 			, bindingPoint );

@@ -10,6 +10,12 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	Semaphore::Semaphore( Device const & device )
+		: Semaphore{ device, "Semaphore" }
+	{
+	}
+
+	Semaphore::Semaphore( Device const & device
+		, std::string const & debugName )
 		: m_device{ device }
 	{
 		VkSemaphoreCreateInfo createInfo
@@ -24,49 +30,49 @@ namespace ashes
 			, nullptr
 			, &m_internal );
 		checkError( res, "Semaphore creation" );
-		registerObject( m_device, "Semaphore", this );
+		registerObject( m_device, debugName, *this );
 	}
 
 	Semaphore::~Semaphore()
 	{
-		unregisterObject( m_device, this );
+		unregisterObject( m_device, *this );
 		m_device.vkDestroySemaphore( m_device
 			, m_internal
 			, nullptr );
 	}
 
-	void Semaphore::wait()const
+	void Semaphore::wait( std::set< Semaphore const * > & list )const
 	{
+#if Ashes_DebugSync
 		ashesSyncCheck( m_state == State::eWaitable
 			, "You probably expect too much from this semaphore ;)"
 			, *this );
+		m_list = &list;
 		m_state = State::eSignalable;
+#endif
 	}
 
 	void Semaphore::signal( Fence const * fence )const
 	{
-		if ( fence )
-		{
-			ashesSyncCheck( !m_connection
-				, "You probably expect too much from this semaphore ;)" 
-				, *this );
-			m_connection = fence->onWaitEnd.connect( [this]( Fence const & fence, WaitResult result )
-				{
-					signal();
-					m_connection.disconnect();
-				} );
-		}
-		else
-		{
-			signal();
-		}
+		signal();
 	}
 
 	void Semaphore::signal()const
 	{
+#if Ashes_DebugSync
 		ashesSyncCheck( m_state == State::eSignalable
 			, "You probably expect too much from this semaphore ;)"
 			, *this );
 		m_state = State::eWaitable;
+
+		if ( m_list )
+		{
+			auto it = m_list->find( this );
+			ashesSyncCheck( it != m_list->end()
+				, "The list isn't waiting for the semaphore anymore"
+				, *this );
+			m_list->erase( it );
+		}
+#endif
 	}
 }

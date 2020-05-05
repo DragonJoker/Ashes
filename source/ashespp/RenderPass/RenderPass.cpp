@@ -12,6 +12,13 @@ namespace ashes
 {
 	RenderPass::RenderPass( Device const & device
 		, RenderPassCreateInfo createInfo )
+		: RenderPass{ device, "RenderPass", std::move( createInfo ) }
+	{
+	}
+
+	RenderPass::RenderPass( Device const & device
+		, std::string const & debugName
+		, RenderPassCreateInfo createInfo )
 		: m_device{ device }
 		, m_createInfo{ std::move( createInfo ) }
 	{
@@ -21,12 +28,12 @@ namespace ashes
 			, nullptr
 			, &m_internal );
 		checkError( res, "RenderPass creation" );
-		registerObject( m_device, "RenderPass", this );
+		registerObject( m_device, debugName, *this );
 	}
 
 	RenderPass::~RenderPass()
 	{
-		unregisterObject( m_device, this );
+		unregisterObject( m_device, *this );
 		m_device.vkDestroyRenderPass( m_device
 			, m_internal
 			, nullptr );
@@ -36,7 +43,19 @@ namespace ashes
 		, ImageViewCRefArray views
 		, uint32_t layers )const
 	{
-		return std::make_unique< FrameBuffer >( *this
+		return createFrameBuffer( "FrameBuffer"
+			, dimensions
+			, views
+			, layers );
+	}
+
+	FrameBufferPtr RenderPass::createFrameBuffer( std::string const & debugName
+		, VkExtent2D const & dimensions
+		, ImageViewCRefArray views
+		, uint32_t layers )const
+	{
+		return std::make_unique< FrameBuffer >( debugName
+			, *this
 			, dimensions
 			, std::move( views )
 			, layers );

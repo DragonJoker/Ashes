@@ -11,6 +11,13 @@ namespace ashes
 {
 	DeviceMemory::DeviceMemory( Device const & device
 		, VkMemoryAllocateInfo allocateInfo )
+		: DeviceMemory{ device, "DeviceMemory", allocateInfo }
+	{
+	}
+
+	DeviceMemory::DeviceMemory( Device const & device
+		, std::string const & debugName
+		, VkMemoryAllocateInfo allocateInfo )
 		: m_device{ device }
 		, m_allocateInfo{ std::move( allocateInfo ) }
 	{
@@ -20,12 +27,12 @@ namespace ashes
 			, nullptr
 			, &m_internal );
 		checkError( res, "DeviceMemory allocation" );
-		registerObject( m_device, "DeviceMemory", this );
+		registerObject( m_device, debugName, *this );
 	}
 
 	DeviceMemory::~DeviceMemory()
 	{
-		unregisterObject( m_device, this );
+		unregisterObject( m_device, *this );
 		m_device.vkFreeMemory( m_device, m_internal, nullptr );
 	}
 

@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include <ashespp/Core/Device.hpp>
 #include <ashespp/Core/SwapChain.hpp>
-#include <ashespp/Command/Queue.hpp>
+#include <ashespp/Sync/Queue.hpp>
 
 namespace utils
 {

@@ -32,6 +32,17 @@ namespace ashes
 		*	Constructor.
 		*\param[in] device
 		*	The logical device.
+		*\param[in] createInfo
+		*	The command pool creation info.
+		*/
+		CommandPool( Device const & device
+			, std::string const & debugName
+			, VkCommandPoolCreateInfo createInfo );
+		/**
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
 		*\param[in] queueFamilyIndex
 		*	The index of que queue family to which the pool belongs.
 		*\param[in] flags
@@ -43,6 +54,33 @@ namespace ashes
 			: CommandPool
 			{
 				device,
+				{
+					VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+					nullptr,
+					flags,
+					queueFamilyIndex,
+				},
+			}
+		{
+		}
+		/**
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] queueFamilyIndex
+		*	The index of que queue family to which the pool belongs.
+		*\param[in] flags
+		*	VkCommandPoolCreateFlagBits combination.
+		*/
+		inline CommandPool( Device const & device
+			, std::string const & debugName
+			, uint32_t queueFamilyIndex
+			, VkCommandPoolCreateFlags flags = 0 )
+			: CommandPool
+			{
+				device,
+				debugName,
 				{
 					VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
 					nullptr,

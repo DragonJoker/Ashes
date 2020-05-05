@@ -23,12 +23,10 @@ namespace ashes
 			, m_familyIndex
 			, m_index
 			, &m_internal );
-		registerObject( m_device, "Queue", this );
 	}
 
 	Queue::~Queue()
 	{
-		unregisterObject( m_device, this );
 	}
 
 	VkResult Queue::present( SwapChain const & swapChain
@@ -159,9 +157,25 @@ namespace ashes
 	void Queue::clearSemaphores()const
 	{
 #if Ashes_DebugSync
-		for ( auto & semaphore : m_waitingSemaphores )
+		auto it = m_waitingSemaphores.begin();
+		auto end = m_waitingSemaphores.end();
+		auto size = m_waitingSemaphores.size();
+		auto index = 0u;
+
+		while ( it != end )
 		{
-			semaphore->signal( nullptr );
+			( *it )->signal( nullptr );
+
+			if ( size != m_waitingSemaphores.size() )
+			{
+				size = m_waitingSemaphores.size();
+				it = std::next( m_waitingSemaphores.begin(), index );
+			}
+			else
+			{
+				++it;
+				++index;
+			}
 		}
 
 		m_waitingSemaphores.clear();
@@ -173,7 +187,7 @@ namespace ashes
 #if Ashes_DebugSync
 		for ( auto & semaphore : semaphores )
 		{
-			semaphore.get().wait();
+			semaphore.get().wait( m_waitingSemaphores );
 			auto pair = m_waitingSemaphores.insert( &semaphore.get() );
 			ashesSyncCheck( pair.second
 				, "The same semaphore is being submitted twice"
@@ -189,12 +203,6 @@ namespace ashes
 		for ( auto & semaphore : semaphores )
 		{
 			semaphore.get().signal( fence );
-			auto it = m_waitingSemaphores.find( &semaphore.get() );
-
-			if ( it != m_waitingSemaphores.end() )
-			{
-				m_waitingSemaphores.erase( it );
-			}
 		}
 #endif
 	}

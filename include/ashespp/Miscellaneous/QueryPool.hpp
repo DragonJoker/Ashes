@@ -33,6 +33,23 @@ namespace ashes
 			, VkQueryPipelineStatisticFlags pipelineStatistics );
 		/**
 		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] type
+		*	The query type.
+		*\param[in] count
+		*	The number of queries managed by the pool.
+		*\param[in] pipelineStatistics
+		*	Specifies the counters to be returned in queries.
+		*/
+		QueryPool( Device const & device
+			, std::string const & debugName
+			, VkQueryType type
+			, uint32_t count
+			, VkQueryPipelineStatisticFlags pipelineStatistics );
+		/**
+		*\brief
 		*	Destructor.
 		*/
 		~QueryPool();

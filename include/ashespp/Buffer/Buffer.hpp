@@ -63,6 +63,32 @@ namespace ashes
 			, QueueShare sharingMode = {} );
 		/**
 		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] createInfo
+		*	The creation informations.
+		*/
+		BufferBase( Device const & device
+			, std::string const & debugName
+			, VkBufferCreateInfo createInfo );
+		/**
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] size
+		*	The buffer size.
+		*\param[in] usage
+		*	The buffer usage flags.
+		*/
+		BufferBase( Device const & device
+			, std::string const & debugName
+			, VkDeviceSize size
+			, VkBufferUsageFlags usage
+			, QueueShare sharingMode = {} );
+		/**
+		*\brief
 		*	Destructor.
 		*/
 		~BufferBase();
@@ -254,6 +280,32 @@ namespace ashes
 	}
 	/**
 	*\brief
+	*	Helper function tor create a Buffer< T >.
+	*\param[in] device
+	*	The logical device.
+	*\param[in] size
+	*	The buffer size.
+	*\param[in] usage
+	*	The buffer usage flags.
+	*\param[in] flags
+	*	The buffer memory flags.
+	*\return
+	*	The created buffer.
+	*/
+	inline BufferBasePtr makeBufferBase( Device const & device
+		, std::string const & debugName
+		, VkDeviceSize size
+		, VkBufferUsageFlags usage
+		, QueueShare sharingMode )
+	{
+		return std::make_unique< BufferBase >( device
+			, debugName
+			, size
+			, usage
+			, std::move( sharingMode ) );
+	}
+	/**
+	*\brief
 	*	Template class wrapping a GPU buffer, to store structured Data.
 	*/
 	template< typename T >
@@ -271,6 +323,21 @@ namespace ashes
 		*	The buffer usage flags.
 		*/
 		Buffer( Device const & device
+			, VkDeviceSize count
+			, VkBufferUsageFlags usage
+			, QueueShare sharingMode = {} );
+		/**
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] count
+		*	The buffer elements count.
+		*\param[in] usage
+		*	The buffer usage flags.
+		*/
+		Buffer( Device const & device
+			, std::string const & debugName
 			, VkDeviceSize count
 			, VkBufferUsageFlags usage
 			, QueueShare sharingMode = {} );
@@ -423,6 +490,33 @@ namespace ashes
 		, QueueShare sharingMode = {} )
 	{
 		return std::make_unique< Buffer< T > >( device
+			, count
+			, usage
+			, std::move( sharingMode ) );
+	}
+	/**
+	*\brief
+	*	Helper function tor create a Buffer< T >.
+	*\param[in] device
+	*	The logical device.
+	*\param[in] count
+	*	The buffer elements count.
+	*\param[in] usage
+	*	The buffer usage flags.
+	*\param[in] flags
+	*	The buffer memory flags.
+	*\return
+	*	The created buffer.
+	*/
+	template< typename T >
+	BufferPtr< T > makeBuffer( Device const & device
+		, std::string const & debugName
+		, VkDeviceSize count
+		, VkBufferUsageFlags usage
+		, QueueShare sharingMode = {} )
+	{
+		return std::make_unique< Buffer< T > >( device
+			, debugName
 			, count
 			, usage
 			, std::move( sharingMode ) );

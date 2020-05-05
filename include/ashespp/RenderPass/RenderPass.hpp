@@ -29,6 +29,17 @@ namespace ashes
 			, RenderPassCreateInfo createInfo );
 		/**
 		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] createInfo
+		*	The creation informations.
+		*/
+		RenderPass( Device const & device
+			, std::string const & debugName
+			, RenderPassCreateInfo createInfo );
+		/**
+		*\brief
 		*	Destructor.
 		*/
 		~RenderPass();
@@ -48,6 +59,25 @@ namespace ashes
 		*	The created frame buffer.
 		*/
 		FrameBufferPtr createFrameBuffer( VkExtent2D const & dimensions
+			, ImageViewCRefArray views
+			, uint32_t layers = 1u )const;
+		/**
+		*\brief
+		*	Creates a frame buffer compatible with this render pass.
+		*\remarks
+		*	If the compatibility between wanted views and the render pass' formats
+		*	is not possible, a std::runtime_error will be thrown.
+		*\param[in] dimensions
+		*	The frame buffer's dimensions.
+		*\param[in] views
+		*	The views for the frame buffer to create.
+		*\param[in] layers
+		*	The layers count for the frame buffer to create.
+		*\return
+		*	The created frame buffer.
+		*/
+		FrameBufferPtr createFrameBuffer( std::string const & debugName
+			, VkExtent2D const & dimensions
 			, ImageViewCRefArray views
 			, uint32_t layers = 1u )const;
 		/**

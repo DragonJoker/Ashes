@@ -38,6 +38,26 @@ namespace ashes
 			, VkDeviceSize range );
 		/**
 		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] buffer
+		*	The buffer from which the view is created.
+		*\param[in] format
+		*	The view's pixels format.
+		*\param[in] offset
+		*	The offset in the buffer.
+		*\param[in] range
+		*	The number of elements from the buffer.
+		*/
+		BufferView( Device const & device
+			, std::string const & debugName
+			, BufferBase const & buffer
+			, VkFormat format
+			, VkDeviceSize offset
+			, VkDeviceSize range );
+		/**
+		*\brief
 		*	Destructor.
 		*/
 		~BufferView();

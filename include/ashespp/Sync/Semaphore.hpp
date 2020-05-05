@@ -26,6 +26,14 @@ namespace ashes
 		explicit Semaphore( Device const & device );
 		/**
 		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*/
+		Semaphore( Device const & device
+			, std::string const & debugName );
+		/**
+		*\brief
 		*	Destructor.
 		*/
 		~Semaphore();
@@ -38,7 +46,7 @@ namespace ashes
 			return m_internal;
 		}
 
-		void wait()const;
+		void wait( std::set< Semaphore const * > & list )const;
 		void signal( Fence const * fence )const;
 
 	private:
@@ -52,6 +60,7 @@ namespace ashes
 			eSignalable,
 			eWaitable,
 		} m_state{ State::eSignalable };
+		mutable std::set< Semaphore const * > * m_list{ nullptr };
 		mutable OnWaitEndConnection m_connection;
 	};
 }

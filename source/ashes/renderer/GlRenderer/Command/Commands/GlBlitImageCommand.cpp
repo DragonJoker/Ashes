@@ -82,9 +82,9 @@ namespace ashes::gl
 		{
 			FboAttachment result
 			{
-				getAttachmentPoint( get( image )->getFormat() ),
+				getAttachmentPoint( subresource.aspectMask ),
 				get( image )->getInternal(),
-				getAttachmentType( get( image )->getFormat() ),
+				getAttachmentType( subresource.aspectMask ),
 				get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT
 					? GL_TEXTURE_2D_MULTISAMPLE
 					: GL_TEXTURE_2D,

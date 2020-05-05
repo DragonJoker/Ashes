@@ -25,6 +25,13 @@ namespace ashes
 			, VkSwapchainCreateInfoKHR createInfo );
 		/**
 		*\brief
+		*	Constructor.
+		*/
+		SwapChain( Device const & device
+			, std::string const & debugName
+			, VkSwapchainCreateInfoKHR createInfo );
+		/**
+		*\brief
 		*	Destructor.
 		*/
 		~SwapChain();

@@ -33,6 +33,20 @@ namespace ashes
 			, VkPushConstantRangeArray const & pushConstantRanges );
 		/**
 		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The parent LogicalDevice.
+		*\param[in] setLayouts
+		*	The descriptor sets layouts.
+		*\param[in] pushConstantRanges
+		*	The push constants ranges.
+		*/
+		PipelineLayout( Device const & device
+			, std::string const & debugName
+			, DescriptorSetLayoutCRefArray const & setLayouts
+			, VkPushConstantRangeArray const & pushConstantRanges );
+		/**
+		*\brief
 		*	Destructor.
 		*/
 		~PipelineLayout();
