@@ -7,7 +7,7 @@
 #include <ashespp/Buffer/StagingBuffer.hpp>
 #include <ashespp/Buffer/UniformBuffer.hpp>
 #include <ashespp/Buffer/VertexBuffer.hpp>
-#include <ashespp/Command/Queue.hpp>
+#include <ashespp/Sync/Queue.hpp>
 #include <ashespp/Core/Surface.hpp>
 #include <ashespp/Core/Device.hpp>
 #include <ashespp/Core/Instance.hpp>
