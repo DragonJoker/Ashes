@@ -41,4 +41,13 @@ namespace ashes
 			, *this
 			, level );
 	}
+
+	CommandBufferPtr CommandPool::createCommandBuffer( std::string const & debugName
+		, VkCommandBufferLevel level )const
+	{
+		return std::make_unique< CommandBuffer >( m_device
+			, debugName
+			, *this
+			, level );
+	}
 }

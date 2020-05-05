@@ -103,6 +103,16 @@ namespace ashes
 		*\return
 		*	The created command buffer.
 		*/
+		CommandBufferPtr createCommandBuffer( std::string const & debugName
+			, VkCommandBufferLevel level = VK_COMMAND_BUFFER_LEVEL_PRIMARY )const;
+		/**
+		*\brief
+		*	Creates a command buffer.
+		*\param[in] level
+		*	The Vulkan command buffer level.
+		*\return
+		*	The created command buffer.
+		*/
 		CommandBufferPtr createCommandBuffer( VkCommandBufferLevel level = VK_COMMAND_BUFFER_LEVEL_PRIMARY )const;
 		/**
 		*\brief
