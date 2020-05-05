@@ -23,12 +23,10 @@ namespace ashes
 			, m_familyIndex
 			, m_index
 			, &m_internal );
-		registerObject( m_device, "Queue", this );
 	}
 
 	Queue::~Queue()
 	{
-		unregisterObject( m_device, this );
 	}
 
 	VkResult Queue::present( SwapChain const & swapChain

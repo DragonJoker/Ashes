@@ -55,7 +55,11 @@ namespace utils
 
 	private:
 		ashes::InstancePtr m_instance;
+#if VK_EXT_debug_utils
+		VkDebugUtilsMessengerEXT m_debugCallback{};
+#elif VK_EXT_debug_report
 		VkDebugReportCallbackEXT m_debugCallback{};
+#endif
 		ashes::PhysicalDevicePtrArray m_gpus;
 		VkLayerProperties m_globalLayer{};
 		ashes::VkLayerPropertiesArray m_layers;
