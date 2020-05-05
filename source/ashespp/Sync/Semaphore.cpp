@@ -35,38 +35,38 @@ namespace ashes
 			, nullptr );
 	}
 
-	void Semaphore::wait()const
+	void Semaphore::wait( std::set< Semaphore const * > & list )const
 	{
+#if Ashes_DebugSync
 		ashesSyncCheck( m_state == State::eWaitable
 			, "You probably expect too much from this semaphore ;)"
 			, *this );
+		m_list = &list;
 		m_state = State::eSignalable;
+#endif
 	}
 
 	void Semaphore::signal( Fence const * fence )const
 	{
-		if ( fence )
-		{
-			ashesSyncCheck( !m_connection
-				, "You probably expect too much from this semaphore ;)" 
-				, *this );
-			m_connection = fence->onWaitEnd.connect( [this]( Fence const & fence, WaitResult result )
-				{
-					signal();
-					m_connection.disconnect();
-				} );
-		}
-		else
-		{
-			signal();
-		}
+		signal();
 	}
 
 	void Semaphore::signal()const
 	{
+#if Ashes_DebugSync
 		ashesSyncCheck( m_state == State::eSignalable
 			, "You probably expect too much from this semaphore ;)"
 			, *this );
 		m_state = State::eWaitable;
+
+		if ( m_list )
+		{
+			auto it = m_list->find( this );
+			ashesSyncCheck( it != m_list->end()
+				, "The list isn't waiting for the semaphore anymore"
+				, *this );
+			m_list->erase( it );
+		}
+#endif
 	}
 }
