@@ -234,9 +234,9 @@ namespace ashes
 
 		if ( m_internal != VK_NULL_HANDLE )
 		{
-			for ( auto & view : m_views )
+			while ( !m_views.empty() )
 			{
-				destroyView( view.first );
+				doDestroyView( m_views.begin()->first );
 			}
 
 			if ( m_ownInternal )
@@ -440,23 +440,25 @@ namespace ashes
 		, VkImageViewCreateInfo createInfo )const
 	{
 		DEBUG_DUMP( createInfo );
-		auto pCreateInfo = std::make_unique< VkImageViewCreateInfo >( std::move( createInfo ) );
-		VkImageView vk;
-		auto res = m_device->vkCreateImageView( *m_device
-			, pCreateInfo.get()
-			, nullptr
-			, &vk );
-		checkError( res, "ImageView creation" );
-		auto create = *pCreateInfo;
-		m_views.emplace( vk, std::move( pCreateInfo ) );
-		auto result = ImageView
+		VkImageView vk{};
+		auto pair = m_views.emplace( createInfo, vk );
+		
+		if ( pair.second )
 		{
-			create,
-			vk,
+			auto res = m_device->vkCreateImageView( *m_device
+				, &createInfo
+				, nullptr
+				, &pair.first->second );
+			checkError( res, "ImageView creation" );
+			registerObject( *m_device, debugName, pair.first->second );
+		}
+
+		return ImageView
+		{
+			std::move( createInfo ),
+			pair.first->second,
 			this,
 		};
-		registerObject( *m_device, debugName, result );
-		return result;
 	}
 
 	ImageView Image::createView( VkImageViewType type
@@ -527,19 +529,19 @@ namespace ashes
 			, mipSubRange );
 	}
 
-	void Image::destroyView( VkImageView view )const
+	void Image::doDestroyView( VkImageViewCreateInfo const & createInfo )const
 	{
-		unregisterObject( *m_device, view );
+		auto it = m_views.find( createInfo );
+		assert( it != m_views.end() );
+		unregisterObject( *m_device, it->second );
 		m_device->vkDestroyImageView( *m_device
-			, view
+			, it->second
 			, nullptr );
+		m_views.erase( it );
 	}
 
-	void Image::destroyView( ImageView view )const
+	void Image::doDestroyView( ImageView view )const
 	{
-		auto it = m_views.find( view );
-		assert( it != m_views.end() );
-		destroyView( it->first );
-		m_views.erase( it );
+		doDestroyView( view.createInfo );
 	}
 }

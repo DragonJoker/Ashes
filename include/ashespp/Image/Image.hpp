@@ -126,7 +126,7 @@ namespace ashes
 		void unlock()const;
 		/**
 		*\brief
-		*	Generates the texture mipmaps.
+		*	Generates the image mipmaps.
 		*\param[in] commandBuffer
 		*	A command buffer, in record state.
 		*/
@@ -134,7 +134,7 @@ namespace ashes
 			, VkImageLayout dstImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
 		/**
 		*\brief
-		*	Generates the texture mipmaps.
+		*	Generates the image mipmaps.
 		*/
 		void generateMipmaps( CommandPool const & commandPool
 			, Queue const & queue
@@ -146,14 +146,14 @@ namespace ashes
 		VkMemoryRequirements getMemoryRequirements()const;
 		/**
 		*\brief
-		*	Creates a view to the texture.
+		*	Creates a view to the image.
 		*\param[in] createInfo
 		*	The view creation informations.
 		*/
 		ImageView createView( VkImageViewCreateInfo createInfo )const;
 		/**
 		*\brief
-		*	Creates a view to the texture.
+		*	Creates a view to the image.
 		*\param[in] createInfo
 		*	The view creation informations.
 		*/
@@ -161,9 +161,9 @@ namespace ashes
 			, VkImageViewCreateInfo createInfo )const;
 		/**
 		*\brief
-		*	Creates a view to the texture.
+		*	Creates a view to the image.
 		*\param[in] type
-		*	The view's texture type.
+		*	The view type.
 		*\param[in] format
 		*	The view's pixels format.
 		*\param[in] baseMipLevel
@@ -186,9 +186,9 @@ namespace ashes
 			, VkComponentMapping const & mapping = VkComponentMapping{} )const;
 		/**
 		*\brief
-		*	Creates a view to the texture.
+		*	Creates a view to the image.
 		*\param[in] type
-		*	The view's texture type.
+		*	The view type.
 		*\param[in] format
 		*	The view's pixels format.
 		*\param[in] baseMipLevel
@@ -267,8 +267,8 @@ namespace ashes
 		}
 
 	private:
-		void destroyView( VkImageView view )const;
-		void destroyView( ImageView view )const;
+		void doDestroyView( VkImageViewCreateInfo const & view )const;
+		void doDestroyView( ImageView view )const;
 
 	private:
 		Device const * m_device{ nullptr };
@@ -276,7 +276,63 @@ namespace ashes
 		VkImage m_internal{ VK_NULL_HANDLE };
 		DeviceMemoryPtr m_storage;
 		bool m_ownInternal{ true };
-		mutable std::map< VkImageView, std::unique_ptr< VkImageViewCreateInfo > > m_views;
+		struct CompareImageViewCreate
+		{
+			inline bool operator()( VkImageViewCreateInfo const & lhs
+				, VkImageViewCreateInfo const & rhs )const
+			{
+				// LOL
+				return lhs.flags < rhs.flags
+					|| ( lhs.flags == rhs.flags
+						&& ( lhs.format < rhs.format
+							|| ( lhs.format == rhs.format
+								&& ( lhs.image < rhs.image
+									|| ( lhs.image == rhs.image
+										&& ( lhs.viewType < rhs.viewType
+											|| ( lhs.viewType == rhs.viewType
+												&& ( lhs.components.r < rhs.components.r
+													|| ( lhs.components.r == rhs.components.r
+														&& ( lhs.components.g < rhs.components.g
+															|| ( lhs.components.g == rhs.components.g
+																&& ( lhs.components.b < rhs.components.b
+																	|| ( lhs.components.b == rhs.components.b
+																		&& ( lhs.components.a < rhs.components.a
+																			|| ( lhs.components.a == rhs.components.a
+																				&& ( lhs.subresourceRange.aspectMask < rhs.subresourceRange.aspectMask
+																					|| ( lhs.subresourceRange.aspectMask == rhs.subresourceRange.aspectMask
+																						&& ( lhs.subresourceRange.baseArrayLayer < rhs.subresourceRange.baseArrayLayer
+																							|| ( lhs.subresourceRange.baseArrayLayer == rhs.subresourceRange.baseArrayLayer
+																								&& ( lhs.subresourceRange.layerCount < rhs.subresourceRange.layerCount
+																									|| ( lhs.subresourceRange.layerCount == rhs.subresourceRange.layerCount
+																										&& ( lhs.subresourceRange.baseMipLevel < rhs.subresourceRange.baseMipLevel
+																											|| ( lhs.subresourceRange.baseMipLevel == rhs.subresourceRange.baseMipLevel
+																												&& ( lhs.subresourceRange.levelCount < rhs.subresourceRange.levelCount )
+																												)
+																											)
+																										)
+																									)
+																								)
+																							)
+																						)
+																					)
+																				)
+																			)
+																		)
+																	)
+																)
+															)
+														)
+													)
+												)
+											)
+										)
+									)
+								)
+							)
+						);
+			}
+		};
+		mutable std::map< VkImageViewCreateInfo, VkImageView, CompareImageViewCreate > m_views;
 	};
 }
 

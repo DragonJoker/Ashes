@@ -2,8 +2,9 @@
 
 #if defined( __linux__ )
 
-#include <sstream>
 #include <iostream>
+#include <sstream>
+#include <stdexcept>
 
 #include <dlfcn.h>
 

@@ -14,6 +14,7 @@
 #include <memory>
 #include <regex>
 #include <set>
+#include <stdexcept>
 #include <vector>
 
 struct Plugin
