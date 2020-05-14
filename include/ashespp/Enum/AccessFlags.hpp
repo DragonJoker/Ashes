@@ -6,6 +6,8 @@ See LICENSE file in root folder.
 #define ___AshesPP_AccessFlag_HPP___
 #pragma once
 
+#include <stdexcept>
+
 namespace ashes
 {
 	/**
