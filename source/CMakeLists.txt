@@ -67,17 +67,27 @@ if ( ASHES_BUILD_TESTS OR ASHES_BUILD_SAMPLES )
 endif ()
 
 set( Ashes_BINARY_LIBRARIES ${Ashes_BINARY_LIBRARIES} PARENT_SCOPE )
-install(
-	TARGETS vulkan ashes_common ashespp ${ENABLED_RENDERERS}
-	EXPORT Ashes
-	RUNTIME DESTINATION bin/Ashes
-	LIBRARY DESTINATION lib/Ashes
-	ARCHIVE DESTINATION lib/Ashes
-)
+if ( WIN32 )
+	install(
+		TARGETS vulkan ashes_common ashespp ${ENABLED_RENDERERS}
+		EXPORT Ashes
+		RUNTIME DESTINATION bin
+		LIBRARY DESTINATION lib
+		ARCHIVE DESTINATION lib
+	)
+else ()
+	install(
+		TARGETS vulkan ashes_common ashespp ${ENABLED_RENDERERS}
+		EXPORT Ashes
+		RUNTIME DESTINATION bin/Ashes
+		LIBRARY DESTINATION lib/Ashes
+		ARCHIVE DESTINATION lib/Ashes
+	)
+endif ()
 install( EXPORT Ashes
 	FILE AshesConfig.cmake
 	NAMESPACE ashes::
-	DESTINATION share/ashes/cmake
+	DESTINATION lib/cmake/ashes
 )
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file( AshesConfigVersion.cmake
