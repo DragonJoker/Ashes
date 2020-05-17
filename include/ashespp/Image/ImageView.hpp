@@ -164,6 +164,69 @@ namespace ashes
 		VkImageMemoryBarrier makePresentSource( VkImageLayout srcLayout
 			, uint32_t srcQueueFamily = VK_QUEUE_FAMILY_IGNORED
 			, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED )const;
+		/**
+		*\brief
+		*	Prepares a transition memory barrier, to a specified layout.
+		*\param[in] srcLayout
+		*	The old layout.
+		*\param[in] dstLayout
+		*	The new layout.
+		*\param[in] srcQueueFamily
+		*	The source queue family, for a queue family transfer.
+		*\param[in] dstQueueFamily
+		*	The destination queue family, for a queue family transfer.
+		*\return
+		*	The memory barrier.
+		*/
+		VkImageMemoryBarrier makeLayoutTransition( VkImageLayout srcLayout
+			, VkImageLayout dstLayout
+			, uint32_t srcQueueFamily
+			, uint32_t dstQueueFamily )const;
+		/**
+		*\brief
+		*	Prepares a transition memory barrier, to a specified layout.
+		*\param[in] srcLayout
+		*	The old layout.
+		*\param[in] dstLayout
+		*	The new layout.
+		*\param[in] srcAccessFlags
+		*	The source access mask.
+		*\param[in] srcQueueFamily
+		*	The source queue family, for a queue family transfer.
+		*\param[in] dstQueueFamily
+		*	The destination queue family, for a queue family transfer.
+		*\return
+		*	The memory barrier.
+		*/
+		VkImageMemoryBarrier makeLayoutTransition( VkImageLayout srcLayout
+			, VkImageLayout dstLayout
+			, VkAccessFlags srcAccessFlags
+			, uint32_t srcQueueFamily
+			, uint32_t dstQueueFamily )const;
+		/**
+		*\brief
+		*	Prepares a transition memory barrier, to a specified layout.
+		*\param[in] srcLayout
+		*	The old layout.
+		*\param[in] dstLayout
+		*	The new layout.
+		*\param[in] srcAccessFlags
+		*	The source access mask.
+		*\param[in] dstAccessFlags
+		*	The destination access mask.
+		*\param[in] srcQueueFamily
+		*	The source queue family, for a queue family transfer.
+		*\param[in] dstQueueFamily
+		*	The destination queue family, for a queue family transfer.
+		*\return
+		*	The memory barrier.
+		*/
+		VkImageMemoryBarrier makeLayoutTransition( VkImageLayout srcLayout
+			, VkImageLayout dstLayout
+			, VkAccessFlags srcAccessFlags
+			, VkAccessFlags dstAccessMask
+			, uint32_t srcQueueFamily
+			, uint32_t dstQueueFamily )const;
 
 		inline VkFormat getFormat()const
 		{
@@ -193,23 +256,6 @@ namespace ashes
 		{
 			return internal;
 		}
-
-	private:
-		VkImageMemoryBarrier doMakeLayoutTransition( VkImageLayout srcLayout
-			, VkImageLayout dstLayout
-			, uint32_t srcQueueFamily
-			, uint32_t dstQueueFamily )const;
-		VkImageMemoryBarrier doMakeLayoutTransition( VkImageLayout srcLayout
-			, VkImageLayout dstLayout
-			, VkAccessFlags srcAccessFlags
-			, uint32_t srcQueueFamily
-			, uint32_t dstQueueFamily )const;
-		VkImageMemoryBarrier doMakeLayoutTransition( VkImageLayout srcLayout
-			, VkImageLayout dstLayout
-			, VkAccessFlags srcAccessFlags
-			, VkAccessFlags dstAccessMask
-			, uint32_t srcQueueFamily
-			, uint32_t dstQueueFamily )const;
 	};
 }
 

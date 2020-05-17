@@ -669,21 +669,25 @@ namespace ashes
 				} );
 		}
 #	endif
-		auto hash = std::hash< uint64_t >{}( object );
 		std::stringstream stream;
-		stream << callstack::Backtrace{ 20, 4 };
-		m_allocated.emplace( hash
+		stream.imbue( std::locale{ "C" } );
+		stream << "Created " << typeName
+			<< " [0x" << std::hex << std::setw( 8u ) << std::setfill( '0' ) << object << "]"
+			<< " - " << objectName;
+		Logger::logTrace( stream );
+		std::stringstream callStack;
+		callStack << callstack::Backtrace{ 20, 4 };
+		m_allocated.emplace( object
 			, ObjectAllocation{
 				typeName,
 				objectName,
-				stream.str()
+				callStack.str()
 			} );
 	}
 
 	void Device::doUnregisterObject( uint64_t object )const
 	{
-		auto hash = std::hash< uint64_t >{}( object );
-		auto it = m_allocated.find( hash );
+		auto it = m_allocated.find( object );
 		assert( it != m_allocated.end() );
 		m_allocated.erase( it );
 	}

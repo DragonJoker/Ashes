@@ -13,9 +13,6 @@ namespace ashes
 	/**
 	*\brief
 	*	Template iterator class on a binary combination of flags.
-	*\remarks
-	*	Allows definition of flags, through binary operations (&, |),
-	*	for which operands will be of same binary size.
 	*\param FlagType
 	*	The scoped enum type.
 	*/
@@ -108,64 +105,54 @@ namespace ashes
 	public:
 		//!@~english	The basic integer integer.
 		using BaseType = typename std::underlying_type< FlagType >::type;
-
-	public:
 		/**
-		*\brief
-		*	Constructor from flag type.
-		*\param[in]	value
-		*	The value.
+		*\name
+		*	Construction.
 		*/
-		inline FlagCombination( FlagType value )noexcept
+		/**@{*/
+		inline constexpr FlagCombination( FlagType value )noexcept
 			: m_value{ BaseType( value ) }
 		{
 			static_assert( sizeof( FlagType ) == sizeof( BaseType )
 				, "Can't combine different size parameters" );
 		}
-		/**
-		*\brief
-		*	Constructor from combined flags.
-		*\param[in] value
-		*	The value.
-		*/
-		inline FlagCombination( BaseType value = BaseType{} )noexcept
+
+		inline constexpr FlagCombination( BaseType value = BaseType{} )noexcept
 			: m_value{ value }
 		{
 			static_assert( sizeof( FlagType ) == sizeof( BaseType )
 				, "Can't combine different size parameters" );
 		}
+		/**\}*/
 		/**
-		*\brief
-		*	Implicit cast to the basic integer type.
+		*\name
+		*	Casting.
 		*/
+		/**\{*/
 		inline operator BaseType const &()const noexcept
 		{
 			return m_value;
 		}
-		/**
-		*\brief
-		*	Implicit cast to the basic integer type.
-		*/
+
 		inline BaseType value()const noexcept
 		{
 			return m_value;
 		}
 		/**
-		*\brief
-		*	The beginning iterator.
+		*\name
+		*	Iteration.
 		*/
+		/**\{*/
 		inline FlagIterator< FlagType > begin()const noexcept
 		{
 			return FlagIterator< FlagType >( m_value );
 		}
-		/**
-		*\brief
-		*	The end iterator (0).
-		*/
+
 		inline FlagIterator< FlagType > end()const noexcept
 		{
 			return FlagIterator< FlagType >();
 		}
+		/**\}*/
 		/**
 		*\name
 		*	Member binary operators.
@@ -195,15 +182,13 @@ namespace ashes
 			return *this;
 		}
 
-		inline FlagCombination & operator&=
-			( FlagCombination< FlagType > const & rhs )noexcept
+		inline FlagCombination & operator&=( FlagCombination< FlagType > const & rhs )noexcept
 		{
 			m_value &= BaseType( rhs );
 			return *this;
 		}
 
-		inline FlagCombination & operator|=
-			( FlagCombination< FlagType > const & rhs )noexcept
+		inline FlagCombination & operator|=( FlagCombination< FlagType > const & rhs )noexcept
 		{
 			m_value |= BaseType( rhs );
 			return *this;
@@ -260,8 +245,8 @@ namespace ashes
 		( FlagCombination< FlagType > const & lhs
 		, FlagType const & rhs )noexcept
 	{
-		FlagCombination< FlagType > ret{ lhs };
-		return ret &= rhs;
+		FlagCombination< FlagType > result{ lhs };
+		return result &= rhs;
 	}
 
 	template< typename FlagType >
@@ -269,8 +254,8 @@ namespace ashes
 		( FlagCombination< FlagType > const & lhs
 		, FlagType const & rhs )noexcept
 	{
-		FlagCombination< FlagType > ret{ lhs };
-		return ret |= rhs;
+		FlagCombination< FlagType > result{ lhs };
+		return result |= rhs;
 	}
 
 	template< typename FlagType >
@@ -359,6 +344,24 @@ namespace ashes
 		, FlagType const & flag )noexcept
 	{
 		value |= flag;
+		return value;
+	}
+	/**
+	*\brief
+	*	Adds a flag combination to the given value.
+	*\param[in,out] value
+	*	The value.
+	*\param[in] flag
+	*	The flag combination to add.
+	*\return
+	*	The value.
+	*/
+	template< typename FlagType >
+	inline FlagCombination< FlagType > & addFlags
+		( FlagCombination< FlagType > & value
+		, FlagCombination< FlagType > const & flags )noexcept
+	{
+		value |= flags;
 		return value;
 	}
 	/**
