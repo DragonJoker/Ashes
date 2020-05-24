@@ -129,7 +129,8 @@ namespace ashes
 		, uint32_t offset
 		, Buffer< T > const & buffer )const
 	{
-		auto commandBuffer = commandPool.createCommandBuffer( VK_COMMAND_BUFFER_LEVEL_PRIMARY );
+		auto commandBuffer = commandPool.createCommandBuffer( "StaginBufferUpload"
+			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		uploadBufferData( *commandBuffer
 			, data
@@ -361,7 +362,8 @@ namespace ashes
 		, uint32_t offset
 		, VertexBuffer< T > const & buffer )const
 	{
-		auto commandBuffer = commandPool.createCommandBuffer( VK_COMMAND_BUFFER_LEVEL_PRIMARY );
+		auto commandBuffer = commandPool.createCommandBuffer( "StaginBufferUploadVtx"
+			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		uploadVertexData( *commandBuffer
 			, data
@@ -575,7 +577,8 @@ namespace ashes
 		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
-		auto commandBuffer = commandPool.createCommandBuffer( VK_COMMAND_BUFFER_LEVEL_PRIMARY );
+		auto commandBuffer = commandPool.createCommandBuffer( "StaginBufferUploadUbo"
+			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		uploadUniformData( *commandBuffer
 			, data
@@ -697,7 +700,8 @@ namespace ashes
 		, ImageView const & texture
 		, VkPipelineStageFlags dstStageFlags )const
 	{
-		auto commandBuffer = commandPool.createCommandBuffer( VK_COMMAND_BUFFER_LEVEL_PRIMARY );
+		auto commandBuffer = commandPool.createCommandBuffer( "StaginBufferUploadTex"
+			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		uploadTextureData( *commandBuffer
 			, subresourceLayers
@@ -724,7 +728,8 @@ namespace ashes
 		, ImageView const & texture
 		, VkPipelineStageFlags dstStageFlags )const
 	{
-		auto commandBuffer = commandPool.createCommandBuffer( VK_COMMAND_BUFFER_LEVEL_PRIMARY );
+		auto commandBuffer = commandPool.createCommandBuffer( "StaginBufferUploadTex"
+			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		uploadTextureData( *commandBuffer
 			, subresourceLayers
@@ -748,7 +753,8 @@ namespace ashes
 		, ImageView const & texture
 		, VkPipelineStageFlags dstStageFlags )const
 	{
-		auto commandBuffer = commandPool.createCommandBuffer( VK_COMMAND_BUFFER_LEVEL_PRIMARY );
+		auto commandBuffer = commandPool.createCommandBuffer( "StaginBufferUploadTex"
+			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		uploadTextureData( *commandBuffer
 			, format
@@ -886,7 +892,8 @@ namespace ashes
 		, uint32_t offset
 		, Buffer< T > const & buffer )const
 	{
-		auto commandBuffer = commandPool.createCommandBuffer( VK_COMMAND_BUFFER_LEVEL_PRIMARY );
+		auto commandBuffer = commandPool.createCommandBuffer( "StaginBufferDownload"
+			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		doCopyToStagingBuffer( *commandBuffer
 			, size
@@ -989,7 +996,8 @@ namespace ashes
 		, uint32_t offset
 		, VertexBuffer< T > const & buffer )const
 	{
-		auto commandBuffer = commandPool.createCommandBuffer( VK_COMMAND_BUFFER_LEVEL_PRIMARY );
+		auto commandBuffer = commandPool.createCommandBuffer( "StaginBufferDownloadVtx"
+			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		doCopyToStagingBuffer( *commandBuffer
 			, size
@@ -1070,7 +1078,8 @@ namespace ashes
 		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
-		auto commandBuffer = commandPool.createCommandBuffer( VK_COMMAND_BUFFER_LEVEL_PRIMARY );
+		auto commandBuffer = commandPool.createCommandBuffer( "StaginBufferDownloadUbo"
+			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 
 		auto elemAlignedSize = buffer.getAlignedSize();

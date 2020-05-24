@@ -316,7 +316,7 @@ namespace ashes
 			return;
 		}
 
-		auto commandBuffer = commandPool.createCommandBuffer();
+		auto commandBuffer = commandPool.createCommandBuffer( "ImageGenMipmaps" );
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		generateMipmaps( *commandBuffer, dstImageLayout );
 		commandBuffer->end();
