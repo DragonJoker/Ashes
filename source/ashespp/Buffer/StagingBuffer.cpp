@@ -177,7 +177,8 @@ namespace ashes
 		, ImageView const & view
 		, VkPipelineStageFlags dstStageFlags )const
 	{
-		auto commandBuffer = commandPool.createCommandBuffer( VK_COMMAND_BUFFER_LEVEL_PRIMARY );
+		auto commandBuffer = commandPool.createCommandBuffer( "StagingBufferUploadTex"
+			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		uploadTextureData( *commandBuffer
 			, subresourceLayers
@@ -200,7 +201,8 @@ namespace ashes
 		, ImageView const & view
 		, VkPipelineStageFlags dstStageFlags )const
 	{
-		auto commandBuffer = commandPool.createCommandBuffer( VK_COMMAND_BUFFER_LEVEL_PRIMARY );
+		auto commandBuffer = commandPool.createCommandBuffer( "StagingBufferUploadTex"
+			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		uploadTextureData( *commandBuffer
 			, format
@@ -271,7 +273,8 @@ namespace ashes
 		, ImageView const & view
 		, VkPipelineStageFlags dstStageFlags )const
 	{
-		auto commandBuffer = commandPool.createCommandBuffer( VK_COMMAND_BUFFER_LEVEL_PRIMARY );
+		auto commandBuffer = commandPool.createCommandBuffer( "StagingBufferDownloadTex"
+			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		auto mipLevel = view->subresourceRange.baseMipLevel;
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT

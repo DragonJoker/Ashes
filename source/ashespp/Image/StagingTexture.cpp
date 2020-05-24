@@ -56,7 +56,8 @@ namespace ashes
 		, uint8_t const * const data
 		, ImageView const & view )const
 	{
-		auto commandBuffer = commandPool.createCommandBuffer( VK_COMMAND_BUFFER_LEVEL_PRIMARY );
+		auto commandBuffer = commandPool.createCommandBuffer( "StagingTextureUpload"
+			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		uploadTextureData( *commandBuffer
 			, subresourceLayers
@@ -78,7 +79,8 @@ namespace ashes
 		, uint8_t const * const data
 		, ImageView const & view )const
 	{
-		auto commandBuffer = commandPool.createCommandBuffer( VK_COMMAND_BUFFER_LEVEL_PRIMARY );
+		auto commandBuffer = commandPool.createCommandBuffer( "StagingTextureUpload"
+			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		uploadTextureData( *commandBuffer
 			, format
@@ -96,7 +98,8 @@ namespace ashes
 		, VkFormat format
 		, ImageView const & view )const
 	{
-		auto commandBuffer = commandPool.createCommandBuffer( VK_COMMAND_BUFFER_LEVEL_PRIMARY );
+		auto commandBuffer = commandPool.createCommandBuffer( "StagingTextureCopy"
+			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		copyTextureData( *commandBuffer
 			, format
@@ -116,7 +119,8 @@ namespace ashes
 		, VkExtent2D const & extent
 		, ImageView const & view )const
 	{
-		auto commandBuffer = commandPool.createCommandBuffer( VK_COMMAND_BUFFER_LEVEL_PRIMARY );
+		auto commandBuffer = commandPool.createCommandBuffer( "StagingTextureCopy"
+			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		copyTextureData( *commandBuffer
 			, subresourceLayers
@@ -230,7 +234,8 @@ namespace ashes
 		, uint8_t * data
 		, ImageView const & view )const
 	{
-		auto commandBuffer = commandPool.createCommandBuffer( VK_COMMAND_BUFFER_LEVEL_PRIMARY );
+		auto commandBuffer = commandPool.createCommandBuffer( "StagingTextureDownload"
+			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
 			, VK_PIPELINE_STAGE_TRANSFER_BIT

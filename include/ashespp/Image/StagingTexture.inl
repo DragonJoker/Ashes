@@ -21,7 +21,8 @@ namespace ashes
 		, ByteArray const & data
 		, ImageView const & texture )const
 	{
-		auto commandBuffer = commandPool.createCommandBuffer( VK_COMMAND_BUFFER_LEVEL_PRIMARY );
+		auto commandBuffer = commandPool.createCommandBuffer( "StagingTextureUpload"
+			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		uploadTextureData( *commandBuffer
 			, subresourceLayers
@@ -43,7 +44,8 @@ namespace ashes
 		, ByteArray const & data
 		, ImageView const & texture )const
 	{
-		auto commandBuffer = commandPool.createCommandBuffer( VK_COMMAND_BUFFER_LEVEL_PRIMARY );
+		auto commandBuffer = commandPool.createCommandBuffer( "StagingTextureUpload"
+			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
 		uploadTextureData( *commandBuffer
 			, format
