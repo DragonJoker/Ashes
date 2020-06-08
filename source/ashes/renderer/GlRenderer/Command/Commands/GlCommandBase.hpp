@@ -29,6 +29,8 @@ namespace ashes::gl
 		eBindBufferRange,
 		eBindContextState,
 		eBindFramebuffer,
+		eBindSrcFramebuffer,
+		eBindDstFramebuffer,
 		eBindImage,
 		eBindSampler,
 		eBindTexture,
@@ -87,7 +89,6 @@ namespace ashes::gl
 		eGenerateMipmaps,
 		eGetQueryResults,
 		eGetTexImage,
-		eInitFramebuffer,
 		eLineWidth,
 		eLogCommand,
 		eLogicOp,
@@ -692,31 +693,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eInitFramebuffer >
-	{
-		static Op constexpr value = { OpType::eInitFramebuffer, 4u };
-	};
-
-	template<>
-	struct alignas( uint64_t ) CmdT< OpType::eInitFramebuffer >
-	{
-		inline CmdT( GLuint * fbo )
-			: cmd{ { OpType::eInitFramebuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, fbo{ fbo }
-		{
-		}
-
-		Command cmd;
-		GLuint * fbo;
-	};
-	using CmdInitFramebuffer = CmdT< OpType::eInitFramebuffer >;
-
-	void apply( ContextLock const & context
-		, CmdInitFramebuffer const & cmd );
-
-	//*************************************************************************
-
-	template<>
 	struct CmdConfig< OpType::eCleanupFramebuffer >
 	{
 		static Op constexpr value = { OpType::eCleanupFramebuffer, 4u };
@@ -766,6 +742,56 @@ namespace ashes::gl
 
 	void apply( ContextLock const & context
 		, CmdBindFramebuffer const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eBindSrcFramebuffer >
+	{
+		static Op constexpr value = { OpType::eBindSrcFramebuffer, 2u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eBindSrcFramebuffer >
+	{
+		inline CmdT( GlFrameBufferTarget target )
+			: cmd{ { OpType::eBindSrcFramebuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, target{ std::move( target ) }
+		{
+		}
+
+		Command cmd;
+		GlFrameBufferTarget target;
+	};
+	using CmdBindSrcFramebuffer = CmdT< OpType::eBindSrcFramebuffer >;
+
+	void apply( ContextLock const & context
+		, CmdBindSrcFramebuffer const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eBindDstFramebuffer >
+	{
+		static Op constexpr value = { OpType::eBindDstFramebuffer, 2u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eBindDstFramebuffer >
+	{
+		inline CmdT( GlFrameBufferTarget target )
+			: cmd{ { OpType::eBindDstFramebuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, target{ std::move( target ) }
+		{
+		}
+
+		Command cmd;
+		GlFrameBufferTarget target;
+	};
+	using CmdBindDstFramebuffer = CmdT< OpType::eBindDstFramebuffer >;
+
+	void apply( ContextLock const & context
+		, CmdBindDstFramebuffer const & cmd );
 
 	//*************************************************************************
 

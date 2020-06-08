@@ -271,9 +271,7 @@ namespace ashes::gl
 		else
 		{
 			// Setup source FBO
-			list.push_back( makeCmd< OpType::eInitFramebuffer >( &get( get( device )->getBlitSrcFbo() )->getInternal() ) );
-			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
-				, get( device )->getBlitSrcFbo() ) );
+			list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_FRAMEBUFFER ) );
 
 			if ( get( srcImage )->getArrayLayers() > 1u )
 			{
@@ -296,9 +294,7 @@ namespace ashes::gl
 				, nullptr ) );
 
 			// Setup dst FBO
-			list.push_back( makeCmd< OpType::eInitFramebuffer >( &get( get( device )->getBlitDstFbo() )->getInternal() ) );
-			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
-				, get( device )->getBlitDstFbo() ) );
+			list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_FRAMEBUFFER ) );
 
 			if ( get( dstImage )->getArrayLayers() > 1u )
 			{
@@ -321,11 +317,9 @@ namespace ashes::gl
 				, nullptr ) );
 
 			// Perform the blit
-			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
-				, get( device )->getBlitSrcFbo() ) );
+			list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_READ_FRAMEBUFFER ) );
 			list.push_back( makeCmd< OpType::eReadBuffer >( uint32_t( getAttachmentPoint( get( srcImage )->getFormat() ) ) ) );
-			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_DRAW_FRAMEBUFFER
-				, get( device )->getBlitDstFbo() ) );
+			list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_DRAW_FRAMEBUFFER ) );
 			list.push_back( makeCmd< OpType::eDrawBuffers >( uint32_t( getAttachmentPoint( get( dstImage )->getFormat() ) ) ) );
 
 			if ( copyInfo.dstSubresource.mipLevel > copyInfo.srcSubresource.mipLevel )

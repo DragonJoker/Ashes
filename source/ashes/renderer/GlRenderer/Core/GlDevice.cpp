@@ -48,7 +48,6 @@ namespace ashes::gl
 			{
 			case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT:
 			case VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT:
-			case VK_DEBUG_REPORT_OBJECT_TYPE_QUERY_POOL_EXT:
 			case VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT:
 			case VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT:
 				if ( reinterpret_cast< gl::IcdObject const * >( object )->hasInternal() )
@@ -77,7 +76,6 @@ namespace ashes::gl
 			{
 			case VK_OBJECT_TYPE_BUFFER:
 			case VK_OBJECT_TYPE_IMAGE:
-			case VK_OBJECT_TYPE_QUERY_POOL:
 			case VK_OBJECT_TYPE_SAMPLER:
 			case VK_OBJECT_TYPE_FRAMEBUFFER:
 				if ( reinterpret_cast< gl::IcdObject const * >( object )->hasInternal() )
@@ -174,6 +172,14 @@ namespace ashes::gl
 		doCheckEnabledExtensions( m_physicalDevice
 			, ashes::makeArrayView( m_createInfos.ppEnabledExtensionNames, m_createInfos.enabledExtensionCount ) );
 		doInitialiseQueues();
+		allocate( m_blitFbos[0]
+			, nullptr
+			, get( this )
+			, GL_INVALID_INDEX );
+		allocate( m_blitFbos[1]
+			, nullptr
+			, get( this )
+			, GL_INVALID_INDEX );
 	}
 
 	Device::~Device()
@@ -291,9 +297,6 @@ namespace ashes::gl
 					, GLsizei( strlen( nameInfo.pObjectName ) )
 					, nameInfo.pObjectName );
 			}
-		}
-		else if ( nameInfo.objectType == VK_OBJECT_TYPE_QUERY_POOL )
-		{
 		}
 		else
 		{
@@ -463,14 +466,6 @@ namespace ashes::gl
 			}
 
 			auto lock = getContext();
-			allocate( m_blitFbos[0]
-				, nullptr
-				, get( this )
-				, GL_INVALID_INDEX );
-			allocate( m_blitFbos[1]
-				, nullptr
-				, get( this )
-				, GL_INVALID_INDEX );
 			allocate( m_sampler
 				, nullptr
 				, get( this )
@@ -514,12 +509,14 @@ namespace ashes::gl
 		if ( m_sampler )
 		{
 			deallocate( m_sampler, nullptr );
-			deallocate( m_blitFbos[0], nullptr );
-			deallocate( m_blitFbos[1], nullptr );
 			m_sampler = nullptr;
-			m_blitFbos[0] = nullptr;
-			m_blitFbos[1] = nullptr;
 		}
+	}
+
+	ContextLock Device::getContext()const
+	{
+		assert( m_currentContext );
+		return { *m_currentContext, get( this ) };
 	}
 
 	void Device::doInitialiseQueues()

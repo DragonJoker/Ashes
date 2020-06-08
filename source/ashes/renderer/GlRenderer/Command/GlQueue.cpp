@@ -88,6 +88,12 @@ namespace ashes::gl
 			case OpType::eBindFramebuffer:
 				apply( lock, map< OpType::eBindFramebuffer >( cmd ) );
 				break;
+			case OpType::eBindSrcFramebuffer:
+				apply( lock, map< OpType::eBindSrcFramebuffer >( cmd ) );
+				break;
+			case OpType::eBindDstFramebuffer:
+				apply( lock, map< OpType::eBindDstFramebuffer >( cmd ) );
+				break;
 			case OpType::eBindImage:
 				apply( lock, map< OpType::eBindImage >( cmd ) );
 				break;
@@ -252,9 +258,6 @@ namespace ashes::gl
 				break;
 			case OpType::eGetTexImage:
 				apply( lock, map< OpType::eGetTexImage >( cmd ) );
-				break;
-			case OpType::eInitFramebuffer:
-				apply( lock, map< OpType::eInitFramebuffer >( cmd ) );
 				break;
 			case OpType::eLineWidth:
 				apply( lock, map< OpType::eLineWidth >( cmd ) );

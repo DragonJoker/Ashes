@@ -31,9 +31,7 @@ namespace ashes::gl
 		}
 
 		bool hadFbo = stack.hasCurrentFramebuffer();
-		list.push_back( makeCmd< OpType::eInitFramebuffer >( &get( get( device )->getBlitDstFbo() )->getInternal() ) );
-		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
-			, get( device )->getBlitDstFbo() ) );
+		list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_FRAMEBUFFER ) );
 		auto point = getAttachmentPoint( glimage.getFormat() );
 
 		for ( auto & range : ranges )
