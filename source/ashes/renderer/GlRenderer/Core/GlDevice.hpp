@@ -53,12 +53,7 @@ namespace ashes::gl
 
 		void link( VkSurfaceKHR surface )const;
 		void unlink( VkSurfaceKHR surface )const;
-
-		inline ContextLock getContext()const
-		{
-			assert( m_currentContext );
-			return { *m_currentContext };
-		}
+		ContextLock getContext()const;
 
 		inline VkPhysicalDeviceFeatures const & getEnabledFeatures()const
 		{

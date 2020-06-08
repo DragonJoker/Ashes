@@ -197,9 +197,7 @@ namespace ashes::gl
 			}
 
 			// Setup source FBO
-			list.push_back( makeCmd< OpType::eInitFramebuffer >( &get( get( device )->getBlitSrcFbo() )->getInternal() ) );
-			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
-				, get( device )->getBlitSrcFbo() ) );
+			list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_FRAMEBUFFER ) );
 			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
 				, layerCopy.src.point
 				, layerCopy.src.target
@@ -209,9 +207,7 @@ namespace ashes::gl
 				, nullptr ) );
 
 			// Setup dst FBO
-			list.push_back( makeCmd< OpType::eInitFramebuffer >( &get( get( device )->getBlitDstFbo() )->getInternal() ) );
-			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
-				, get( device )->getBlitDstFbo() ) );
+			list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_FRAMEBUFFER ) );
 			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
 				, layerCopy.dst.point
 				, layerCopy.dst.target
@@ -221,11 +217,9 @@ namespace ashes::gl
 				, nullptr ) );
 
 			// Perform the blit
-			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
-				, get( device )->getBlitSrcFbo() ) );
+			list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_READ_FRAMEBUFFER ) );
 			list.push_back( makeCmd< OpType::eReadBuffer >( uint32_t( layerCopy.src.point ) ) );
-			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_DRAW_FRAMEBUFFER
-				, get( device )->getBlitDstFbo() ) );
+			list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_DRAW_FRAMEBUFFER ) );
 			list.push_back( makeCmd< OpType::eDrawBuffers >( uint32_t( layerCopy.dst.point ) ) );
 			list.push_back( makeCmd< OpType::eBlitFramebuffer >( layerCopy.region.srcOffsets[0].x
 				, layerCopy.region.srcOffsets[0].y
