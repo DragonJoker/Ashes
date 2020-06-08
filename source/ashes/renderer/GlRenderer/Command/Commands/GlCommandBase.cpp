@@ -135,18 +135,6 @@ namespace ashes::gl
 	}
 
 	void apply( ContextLock const & context
-		, CmdInitFramebuffer const & cmd )
-	{
-		if ( ( *cmd.fbo ) == GL_INVALID_INDEX )
-		{
-			glLogCall( context
-				, glGenFramebuffers
-				, 1
-				, cmd.fbo );
-		}
-	}
-
-	void apply( ContextLock const & context
 		, CmdCleanupFramebuffer const & cmd )
 	{
 		if ( ( *cmd.fbo ) != GL_INVALID_INDEX )
@@ -175,6 +163,40 @@ namespace ashes::gl
 				, cmd.target
 				, 0u );
 		}
+	}
+
+	void apply( ContextLock const & context
+		, CmdBindSrcFramebuffer const & cmd )
+	{
+		if ( get( get( context.getDevice() )->getBlitSrcFbo() )->getInternal() == GL_INVALID_INDEX )
+		{
+			glLogCall( context
+				, glGenFramebuffers
+				, 1
+				, &get( get( context.getDevice() )->getBlitSrcFbo() )->getInternal() );
+		}
+
+		glLogCall( context
+			, glBindFramebuffer
+			, cmd.target
+			, get( get( context.getDevice() )->getBlitSrcFbo() )->getInternal() );
+	}
+
+	void apply( ContextLock const & context
+		, CmdBindDstFramebuffer const & cmd )
+	{
+		if ( get( get( context.getDevice() )->getBlitDstFbo() )->getInternal() == GL_INVALID_INDEX )
+		{
+			glLogCall( context
+				, glGenFramebuffers
+				, 1
+				, &get( get( context.getDevice() )->getBlitDstFbo() )->getInternal() );
+		}
+
+		glLogCall( context
+			, glBindFramebuffer
+			, cmd.target
+			, get( get( context.getDevice() )->getBlitDstFbo() )->getInternal() );
 	}
 
 	void apply( ContextLock const & context

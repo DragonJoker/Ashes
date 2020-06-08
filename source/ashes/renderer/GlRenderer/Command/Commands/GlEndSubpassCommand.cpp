@@ -38,10 +38,7 @@ namespace ashes::gl
 					|| srcAttach.originalMipLevel != dstAttach.originalMipLevel )
 				{
 					// Setup source FBO
-					auto srcFbo = get( device )->getBlitSrcFbo();
-					list.push_back( makeCmd< OpType::eInitFramebuffer >( &get( srcFbo )->getInternal() ) );
-					list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
-						, srcFbo ) );
+					list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_FRAMEBUFFER ) );
 					list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
 						, srcAttach.point
 						, srcAttach.target
@@ -51,10 +48,7 @@ namespace ashes::gl
 						, nullptr ) );
 
 					// Setup dst FBO
-					auto dstFbo = get( device )->getBlitDstFbo();
-					list.push_back( makeCmd< OpType::eInitFramebuffer >( &get( dstFbo )->getInternal() ) );
-					list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
-						, dstFbo ) );
+					list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_FRAMEBUFFER ) );
 					list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
 						, dstAttach.point
 						, dstAttach.target
@@ -64,11 +58,9 @@ namespace ashes::gl
 						, nullptr ) );
 
 					// Perform blit
-					list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
-						, get( device )->getBlitSrcFbo() ) );
+					list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_READ_FRAMEBUFFER ) );
 					list.push_back( makeCmd< OpType::eReadBuffer >( uint32_t( srcAttach.point ) ) );
-					list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_DRAW_FRAMEBUFFER
-						, get( device )->getBlitDstFbo() ) );
+					list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_DRAW_FRAMEBUFFER ) );
 					list.push_back( makeCmd< OpType::eDrawBuffers >( uint32_t( dstAttach.point ) ) );
 					list.push_back( makeCmd< OpType::eBlitFramebuffer >(
 						0, 0, int32_t( get( frameBuffer )->getWidth() ), int32_t( get( frameBuffer )->getHeight() ),

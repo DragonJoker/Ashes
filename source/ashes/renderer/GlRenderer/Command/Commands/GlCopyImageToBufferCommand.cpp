@@ -86,9 +86,7 @@ namespace ashes::gl
 			, get( dst )->getInternal() ) );
 
 		// Setup source FBO
-		list.push_back( makeCmd< OpType::eInitFramebuffer >( &get( get( device )->getBlitSrcFbo() )->getInternal() ) );
-		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
-			, get( device )->getBlitSrcFbo() ) );
+		list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_FRAMEBUFFER ) );
 
 		if ( hasTextureViews( device ) )
 		{
@@ -112,8 +110,7 @@ namespace ashes::gl
 			, nullptr ) );
 
 		// Read pixels
-		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
-			, get( device )->getBlitSrcFbo() ) );
+		list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_READ_FRAMEBUFFER ) );
 		list.push_back( makeCmd< OpType::eReadPixels >( copyInfo.imageOffset.x
 			, copyInfo.imageOffset.y
 			, copyInfo.imageExtent.width

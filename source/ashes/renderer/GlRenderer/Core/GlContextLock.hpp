@@ -15,8 +15,10 @@ namespace ashes::gl
 		ContextLock( ContextLock const & ) = delete;
 		ContextLock & operator=( ContextLock const & ) = delete;
 
-		inline ContextLock( Context & context )
+		inline ContextLock( Context & context
+			, VkDevice device = VK_NULL_HANDLE )
 			: m_context{ &context }
+			, m_device{ device }
 			, m_disable{ !context.isEnabled() }
 		{
 			if ( m_disable )
@@ -59,8 +61,15 @@ namespace ashes::gl
 			return *m_context;
 		}
 
+		inline VkDevice getDevice()const
+		{
+			assert( m_device != nullptr );
+			return m_device;
+		}
+
 	private:
 		Context * m_context;
+		VkDevice m_device;
 		bool m_disable;
 	};
 }
