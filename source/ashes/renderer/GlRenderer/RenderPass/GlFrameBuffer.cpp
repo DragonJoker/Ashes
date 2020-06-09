@@ -137,8 +137,10 @@ namespace ashes::gl
 			attachment.originalMipLevel = get( view )->getSubresourceRange().baseMipLevel;
 			attachment.object = get( view )->getInternal();
 			attachment.mipLevel = attachment.originalMipLevel;
-			attachment.imgLayerCount = get( image )->getArrayLayers();
-			attachment.viewLayerCount = get( view )->getSubresourceRange().layerCount;
+			attachment.imgLayerCount = std::max( get( image )->getArrayLayers(), get( image )->getDimensions().width );
+			attachment.viewLayerCount = ( ( get( view )->getType() == VK_IMAGE_VIEW_TYPE_3D )
+				? attachment.imgLayerCount
+				: get( view )->getSubresourceRange().layerCount );
 			attachment.target = ( attachment.viewLayerCount > 1u
 				? ( multisampled
 					? GL_TEXTURE_2D_MULTISAMPLE_ARRAY

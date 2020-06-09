@@ -40,7 +40,7 @@ namespace ashes
 			vkattachments.data(),                               // pAttachments
 			dimensions.width,                                   // width
 			dimensions.height,                                  // height
-			1u                                                  // layers
+			layers,                                             // layers
 		};
 		DEBUG_DUMP( createInfo );
 		auto res = m_device.vkCreateFramebuffer( m_device
