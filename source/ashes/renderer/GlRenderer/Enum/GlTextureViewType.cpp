@@ -4,10 +4,11 @@ namespace ashes::gl
 {
 	namespace gl3
 	{
-		GlTextureType convertViewType( VkImageViewType const & value
+		GlTextureType convertViewType( VkImageViewType const & viewType
+			, VkImageType const & imageType
 			, VkSampleCountFlagBits samples )
 		{
-			switch ( value )
+			switch ( viewType )
 			{
 			case VK_IMAGE_VIEW_TYPE_1D:
 				return GL_TEXTURE_1D;
@@ -27,9 +28,11 @@ namespace ashes::gl
 				return GL_TEXTURE_1D_ARRAY;
 
 			case VK_IMAGE_VIEW_TYPE_2D_ARRAY:
-				return samples > 1
-					? GL_TEXTURE_2D_MULTISAMPLE_ARRAY
-					: GL_TEXTURE_2D_ARRAY;
+				return imageType == VK_IMAGE_TYPE_3D
+					? GL_TEXTURE_3D
+					: ( samples > 1
+						? GL_TEXTURE_2D_MULTISAMPLE_ARRAY
+						: GL_TEXTURE_2D_ARRAY );
 
 			case VK_IMAGE_VIEW_TYPE_CUBE_ARRAY:
 				return GL_TEXTURE_CUBE_ARRAY;
@@ -40,11 +43,12 @@ namespace ashes::gl
 			}
 		}
 
-		GlTextureType convertViewType( VkImageViewType const & mode
+		GlTextureType convertViewType( VkImageViewType const & viewType
+			, VkImageType const & imageType
 			, uint32_t arraySize
 			, VkSampleCountFlagBits samples )
 		{
-			switch ( mode )
+			switch ( viewType )
 			{
 			case VK_IMAGE_VIEW_TYPE_1D:
 				return arraySize > 1u
@@ -72,9 +76,11 @@ namespace ashes::gl
 				return GL_TEXTURE_1D_ARRAY;
 
 			case VK_IMAGE_VIEW_TYPE_2D_ARRAY:
-				return samples > 1
-					? GL_TEXTURE_2D_MULTISAMPLE_ARRAY
-					: GL_TEXTURE_2D_ARRAY;
+				return imageType == VK_IMAGE_TYPE_3D
+					? GL_TEXTURE_3D
+					: ( samples > 1
+						? GL_TEXTURE_2D_MULTISAMPLE_ARRAY
+						: GL_TEXTURE_2D_ARRAY );
 
 			case VK_IMAGE_VIEW_TYPE_CUBE_ARRAY:
 				return GL_TEXTURE_CUBE_ARRAY;
@@ -143,11 +149,12 @@ namespace ashes::gl
 			}
 		}
 
-		GlTextureViewType convertViewType( VkImageViewType const & value
+		GlTextureViewType convertViewType( VkImageViewType const & viewType
+			, VkImageType const & imageType
 			, uint32_t arraySize
 			, VkSampleCountFlagBits samples )
 		{
-			switch ( value )
+			switch ( viewType )
 			{
 			case VK_IMAGE_VIEW_TYPE_1D:
 				return GL_TEXTURE_VIEW_1D;
@@ -169,13 +176,15 @@ namespace ashes::gl
 					: GL_TEXTURE_VIEW_1D;
 
 			case VK_IMAGE_VIEW_TYPE_2D_ARRAY:
-				return samples > 1
-					? ( arraySize > 1u
-						? GL_TEXTURE_VIEW_2D_MULTISAMPLE_ARRAY
-						: GL_TEXTURE_VIEW_2D_MULTISAMPLE )
-					: ( arraySize > 1u
-						? GL_TEXTURE_VIEW_2D_ARRAY
-						: GL_TEXTURE_VIEW_2D );
+				return imageType == VK_IMAGE_TYPE_3D
+					? GL_TEXTURE_VIEW_3D
+					: ( samples > 1
+						? ( arraySize > 1u
+							? GL_TEXTURE_VIEW_2D_MULTISAMPLE_ARRAY
+							: GL_TEXTURE_VIEW_2D_MULTISAMPLE )
+						: ( arraySize > 1u
+							? GL_TEXTURE_VIEW_2D_ARRAY
+							: GL_TEXTURE_VIEW_2D ) );
 
 			case VK_IMAGE_VIEW_TYPE_CUBE_ARRAY:
 				return GL_TEXTURE_VIEW_CUBE_MAP_ARRAY;

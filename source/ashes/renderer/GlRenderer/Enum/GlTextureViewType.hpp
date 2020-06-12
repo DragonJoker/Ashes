@@ -8,9 +8,11 @@ namespace ashes::gl
 {
 	namespace gl3
 	{
-		GlTextureType convertViewType( VkImageViewType const & mode
+		GlTextureType convertViewType( VkImageViewType const & viewType
+			, VkImageType const & imageType
 			, VkSampleCountFlagBits samples );
-		GlTextureType convertViewType( VkImageViewType const & mode
+		GlTextureType convertViewType( VkImageViewType const & viewType
+			, VkImageType const & imageType
 			, uint32_t arraySize
 			, VkSampleCountFlagBits samples );
 	}
@@ -37,7 +39,8 @@ namespace ashes::gl
 			GL_TEXTURE_VIEW_2D_MULTISAMPLE_ARRAY = 0x9102,
 		};
 		std::string getName( GlTextureViewType value );
-		GlTextureViewType convertViewType( VkImageViewType const & mode
+		GlTextureViewType convertViewType( VkImageViewType const & viewType
+			, VkImageType const & imageType
 			, uint32_t arraySize
 			, VkSampleCountFlagBits samples );
 	}
