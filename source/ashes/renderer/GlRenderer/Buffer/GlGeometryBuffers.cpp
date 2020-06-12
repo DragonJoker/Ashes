@@ -204,7 +204,7 @@ namespace ashes::gl
 			, glEnableVertexAttribArray
 			, attribute.location );
 
-		if ( isInteger( pAttribute->format ) )
+		if ( isInteger( attribute.format ) )
 		{
 			glLogCall( context
 				, glVertexAttribIPointer
