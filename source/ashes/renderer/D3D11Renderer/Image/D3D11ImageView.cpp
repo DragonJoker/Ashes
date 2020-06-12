@@ -337,17 +337,34 @@ namespace ashes::d3d11
 
 		if ( image->isRenderTarget() )
 		{
-			D3D11_RENDER_TARGET_VIEW_DESC desc{};
-			desc.Format = getRTVFormat( getFormat() );
-			desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE3D;
-			desc.Texture3D.MipSlice = getSubResourceRange().baseMipLevel;
-			desc.Texture3D.FirstWSlice = getSubResourceRange().baseArrayLayer;
-			desc.Texture3D.WSize = getSubResourceRange().layerCount;
-			auto hr = device->CreateRenderTargetView( image->getTexture3D()
-				, &desc
-				, &m_renderTargetView );
-			checkError( m_device, hr, "CreateRenderTargetView3D" );
-			dxDebugName( m_unorderedAccessView, RenderTargetView3D );
+			if ( isDepthOrStencilFormat( image->getFormat() ) )
+			{
+				D3D11_DEPTH_STENCIL_VIEW_DESC desc{};
+				desc.Format = getRTVFormat( getFormat() );
+				desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+				desc.Texture2DArray.ArraySize = image->getDimensions().depth;
+				desc.Texture2DArray.FirstArraySlice = getSubResourceRange().baseArrayLayer;
+				desc.Texture2DArray.MipSlice = getSubResourceRange().baseMipLevel;
+				auto hr = device->CreateDepthStencilView( image->getTexture3D()
+					, &desc
+					, &m_depthStencilView );
+				checkError( m_device, hr, "CreateDepthStencilView3D" );
+				dxDebugName( m_depthStencilView, DepthStencilView3D );
+			}
+			else
+			{
+				D3D11_RENDER_TARGET_VIEW_DESC desc{};
+				desc.Format = getRTVFormat( getFormat() );
+				desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE3D;
+				desc.Texture3D.MipSlice = getSubResourceRange().baseMipLevel;
+				desc.Texture3D.FirstWSlice = getSubResourceRange().baseArrayLayer;
+				desc.Texture3D.WSize = getSubResourceRange().layerCount;
+				auto hr = device->CreateRenderTargetView( image->getTexture3D()
+					, &desc
+					, &m_renderTargetView );
+				checkError( m_device, hr, "CreateRenderTargetView3D" );
+				dxDebugName( m_renderTargetView, RenderTargetView3D );
+			}
 		}
 
 		if ( image->isSamplable() )
@@ -361,7 +378,7 @@ namespace ashes::d3d11
 				, &desc
 				, &m_shaderView );
 			checkError( m_device, hr, "CreateShaderResourceView3D" );
-			dxDebugName( m_unorderedAccessView, UnorderedAccessView3D );
+			dxDebugName( m_shaderView, UnorderedAccessView3D );
 		}
 
 		if ( image->isStorage()
@@ -388,17 +405,34 @@ namespace ashes::d3d11
 
 		if ( image->isRenderTarget() )
 		{
-			D3D11_RENDER_TARGET_VIEW_DESC desc{};
-			desc.Format = getRTVFormat( getFormat() );
-			desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
-			desc.Texture2DArray.ArraySize = getSubResourceRange().layerCount;
-			desc.Texture2DArray.FirstArraySlice = getSubResourceRange().baseArrayLayer;
-			desc.Texture2DArray.MipSlice = getSubResourceRange().baseMipLevel;
-			auto hr = device->CreateRenderTargetView( image->getTexture2D()
-				, &desc
-				, &m_renderTargetView );
-			checkError( m_device, hr, "CreateRenderTargetViewCube" );
-			dxDebugName( m_unorderedAccessView, RenderTargetViewCube );
+			if ( isDepthOrStencilFormat( image->getFormat() ) )
+			{
+				D3D11_DEPTH_STENCIL_VIEW_DESC desc{};
+				desc.Format = getRTVFormat( getFormat() );
+				desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+				desc.Texture2DArray.ArraySize = getSubResourceRange().layerCount;
+				desc.Texture2DArray.FirstArraySlice = getSubResourceRange().baseArrayLayer;
+				desc.Texture2DArray.MipSlice = getSubResourceRange().baseMipLevel;
+				auto hr = device->CreateDepthStencilView( image->getTexture2D()
+					, &desc
+					, &m_depthStencilView );
+				checkError( m_device, hr, "DepthStencilViewCube" );
+				dxDebugName( m_depthStencilView, DepthStencilViewCube );
+			}
+			else
+			{
+				D3D11_RENDER_TARGET_VIEW_DESC desc{};
+				desc.Format = getRTVFormat( getFormat() );
+				desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
+				desc.Texture2DArray.ArraySize = getSubResourceRange().layerCount;
+				desc.Texture2DArray.FirstArraySlice = getSubResourceRange().baseArrayLayer;
+				desc.Texture2DArray.MipSlice = getSubResourceRange().baseMipLevel;
+				auto hr = device->CreateRenderTargetView( image->getTexture2D()
+					, &desc
+					, &m_renderTargetView );
+				checkError( m_device, hr, "CreateRenderTargetViewCube" );
+				dxDebugName( m_renderTargetView, RenderTargetViewCube );
+			}
 		}
 
 		if ( image->isSamplable() )
@@ -412,7 +446,7 @@ namespace ashes::d3d11
 				, &desc
 				, &m_shaderView );
 			checkError( m_device, hr, "CreateShaderResourceViewCube" );
-			dxDebugName( m_unorderedAccessView, ShaderResourceViewCube );
+			dxDebugName( m_shaderView, ShaderResourceViewCube );
 		}
 
 		if ( image->isStorage()
@@ -439,21 +473,38 @@ namespace ashes::d3d11
 
 		if ( image->isRenderTarget() )
 		{
-			D3D11_RENDER_TARGET_VIEW_DESC desc{};
-			desc.Format = getRTVFormat( getFormat() );
-			desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
-			desc.Texture2DArray.ArraySize = getSubResourceRange().layerCount;
-			desc.Texture2DArray.FirstArraySlice = getSubResourceRange().baseArrayLayer;
-			desc.Texture2DArray.MipSlice = getSubResourceRange().baseMipLevel;
-			auto hr = device->CreateRenderTargetView( image->getTexture2D()
-				, &desc
-				, &m_renderTargetView );
-			checkError( m_device, hr, "CreateRenderTargetViewCubeArray" );
-			dxDebugName( m_unorderedAccessView, RenderTargetViewCubeArray );
-
-			if ( checkError( m_device, hr, "CreateRenderTargetViewCubeArray" ) )
+			if ( isDepthOrStencilFormat( image->getFormat() ) )
 			{
-				dxDebugName( m_renderTargetView, RenderTargetViewCubeArray );
+				D3D11_DEPTH_STENCIL_VIEW_DESC desc{};
+				desc.Format = getRTVFormat( getFormat() );
+				desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+				desc.Texture2DArray.ArraySize = getSubResourceRange().layerCount;
+				desc.Texture2DArray.FirstArraySlice = getSubResourceRange().baseArrayLayer;
+				desc.Texture2DArray.MipSlice = getSubResourceRange().baseMipLevel;
+				auto hr = device->CreateDepthStencilView( image->getTexture2D()
+					, &desc
+					, &m_depthStencilView );
+				checkError( m_device, hr, "DepthStencilViewCube" );
+				dxDebugName( m_depthStencilView, DepthStencilViewCube );
+			}
+			else
+			{
+				D3D11_RENDER_TARGET_VIEW_DESC desc{};
+				desc.Format = getRTVFormat( getFormat() );
+				desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
+				desc.Texture2DArray.ArraySize = getSubResourceRange().layerCount;
+				desc.Texture2DArray.FirstArraySlice = getSubResourceRange().baseArrayLayer;
+				desc.Texture2DArray.MipSlice = getSubResourceRange().baseMipLevel;
+				auto hr = device->CreateRenderTargetView( image->getTexture2D()
+					, &desc
+					, &m_renderTargetView );
+				checkError( m_device, hr, "CreateRenderTargetViewCubeArray" );
+				dxDebugName( m_unorderedAccessView, RenderTargetViewCubeArray );
+
+				if ( checkError( m_device, hr, "CreateRenderTargetViewCubeArray" ) )
+				{
+					dxDebugName( m_renderTargetView, RenderTargetViewCubeArray );
+				}
 			}
 		}
 

@@ -16,6 +16,7 @@ namespace ashes::gl
 	namespace gl3
 	{
 		GlTextureType convert( VkImageViewType viewType
+			, VkImageType imageType
 			, VkImageCreateFlags flags
 			, VkSampleCountFlagBits samples
 			, uint32_t baseArrayLayer );

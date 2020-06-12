@@ -306,6 +306,7 @@ namespace ashes::gl
 			, CmdList & list )
 		{
 			auto target = convertViewType( get( view )->getType()
+				, get( get( view )->getImage() )->getType()
 				, get( get( view )->getImage() )->getArrayLayers()
 				, get( get( view )->getImage() )->getSamples() );
 			list.push_back( makeCmd< OpType::eActiveTexture >( bindingIndex ) );

@@ -11,11 +11,12 @@ namespace ashes::gl
 	namespace gl3
 	{
 		GlTextureType convert( VkImageViewType viewType
+			, VkImageType imageType
 			, VkImageCreateFlags flags
 			, VkSampleCountFlagBits samples
 			, uint32_t baseArrayLayer )
 		{
-			GlTextureType result = gl3::convertViewType( viewType, samples );
+			GlTextureType result = gl3::convertViewType( viewType, imageType, samples );
 
 			if ( checkFlag( flags, VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT ) )
 			{
@@ -37,10 +38,12 @@ namespace ashes::gl
 		, m_components{}
 		, m_subresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0u, 1u, 0u, 1u }
 		, m_gltextureType{ gl3::convert( getType()
+			, get( image )->getType()
 			, get( image )->getCreateFlags()
 			, get( image )->getSamples()
 			, 0u ) }
 		, m_glviewType{ gl4::convertViewType( getType()
+			, get( image )->getType()
 			, 1u
 			, get( m_image )->getSamples() ) }
 	{
@@ -56,13 +59,22 @@ namespace ashes::gl
 		, m_components{ createInfo.components }
 		, m_subresourceRange{ createInfo.subresourceRange }
 		, m_gltextureType{ gl3::convert( getType()
+			, get( createInfo.image )->getType()
 			, get( createInfo.image )->getCreateFlags()
 			, get( createInfo.image )->getSamples()
 			, m_subresourceRange.baseArrayLayer ) }
 		, m_glviewType{ gl4::convertViewType( getType()
+			, get( m_image )->getType()
 			, m_subresourceRange.layerCount
 			, get( m_image )->getSamples() ) }
 	{
+		if ( get( m_image )->getType() == VK_IMAGE_TYPE_3D )
+		{
+			m_viewType = VK_IMAGE_VIEW_TYPE_3D;
+			m_subresourceRange.baseArrayLayer = 0u;
+			m_subresourceRange.layerCount = 1u;
+		}
+
 		// Non initialised textures come from back buffers, ignore them
 		if ( get( createInfo.image )->hasInternal()
 			&& hasTextureViews( m_device ) )

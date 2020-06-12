@@ -81,20 +81,24 @@ namespace ashes::gl
 			attachment.originalMipLevel = get( view )->getSubresourceRange().baseMipLevel;
 			attachment.object = get( view )->getInternal();
 			attachment.mipLevel = attachment.originalMipLevel;
-			attachment.imgLayerCount = get( image )->getArrayLayers();
-			attachment.viewLayerCount = get( view )->getSubresourceRange().layerCount;
+			attachment.imgLayerCount = std::max( get( image )->getArrayLayers(), get( image )->getDimensions().depth );
+			attachment.viewLayerCount = ( ( get( view )->getType() == VK_IMAGE_VIEW_TYPE_3D )
+				? attachment.imgLayerCount
+				: get( view )->getSubresourceRange().layerCount );
 			attachment.baseArrayLayer = ( ( ( !isCube && attachment.imgLayerCount > 1u ) || ( isCube && attachment.imgLayerCount > 6u ) )
 				? get( view )->getSubresourceRange().baseArrayLayer
 				: 0u );
-			attachment.target = ( multisampled
-				? ( attachment.viewLayerCount > 1u
-					? GL_TEXTURE_2D_MULTISAMPLE_ARRAY
-					: GL_TEXTURE_2D_MULTISAMPLE )
-				: ( isCube
-					? get( view )->getTextureType()
-					: ( attachment.viewLayerCount > 1u
-						? GL_TEXTURE_2D_ARRAY
-						: GL_TEXTURE_2D ) ) );
+			attachment.target = ( get( image )->getType() == VK_IMAGE_TYPE_3D
+				? GL_TEXTURE_3D
+				: ( multisampled
+					? ( attachment.viewLayerCount > 1u
+						? GL_TEXTURE_2D_MULTISAMPLE_ARRAY
+						: GL_TEXTURE_2D_MULTISAMPLE )
+					: ( isCube
+						? get( view )->getTextureType()
+						: ( attachment.viewLayerCount > 1u
+							? GL_TEXTURE_2D_ARRAY
+							: GL_TEXTURE_2D ) ) ) );
 			attachment.index = index;
 			return attachment;
 		}
@@ -137,17 +141,19 @@ namespace ashes::gl
 			attachment.originalMipLevel = get( view )->getSubresourceRange().baseMipLevel;
 			attachment.object = get( view )->getInternal();
 			attachment.mipLevel = attachment.originalMipLevel;
-			attachment.imgLayerCount = std::max( get( image )->getArrayLayers(), get( image )->getDimensions().width );
+			attachment.imgLayerCount = std::max( get( image )->getArrayLayers(), get( image )->getDimensions().depth );
 			attachment.viewLayerCount = ( ( get( view )->getType() == VK_IMAGE_VIEW_TYPE_3D )
 				? attachment.imgLayerCount
 				: get( view )->getSubresourceRange().layerCount );
-			attachment.target = ( attachment.viewLayerCount > 1u
-				? ( multisampled
-					? GL_TEXTURE_2D_MULTISAMPLE_ARRAY
-					: GL_TEXTURE_2D_ARRAY )
-				: ( multisampled
-					? GL_TEXTURE_2D_MULTISAMPLE
-					: GL_TEXTURE_2D ) );
+			attachment.target = ( get( image )->getType() == VK_IMAGE_TYPE_3D
+				? GL_TEXTURE_3D
+				: ( attachment.viewLayerCount > 1u
+					? ( multisampled
+						? GL_TEXTURE_2D_MULTISAMPLE_ARRAY
+						: GL_TEXTURE_2D_ARRAY )
+					: ( multisampled
+						? GL_TEXTURE_2D_MULTISAMPLE
+						: GL_TEXTURE_2D ) ) );
 			attachment.index = index;
 
 			if ( get( view )->getSubresourceRange().baseMipLevel )
