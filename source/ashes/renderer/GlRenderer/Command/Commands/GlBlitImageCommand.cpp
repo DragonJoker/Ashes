@@ -189,11 +189,13 @@ namespace ashes::gl
 			if ( layerCopy.srcView != VK_NULL_HANDLE )
 			{
 				views.push_back( layerCopy.srcView );
+				layerCopy.region.srcSubresource.mipLevel = 0u;
 			}
 
 			if ( layerCopy.dstView != VK_NULL_HANDLE )
 			{
 				views.push_back( layerCopy.dstView );
+				layerCopy.region.dstSubresource.mipLevel = 0u;
 			}
 
 			// Setup source FBO
