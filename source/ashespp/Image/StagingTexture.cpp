@@ -59,6 +59,8 @@ namespace ashes
 		auto commandBuffer = commandPool.createCommandBuffer( "StagingTextureUpload"
 			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
+		commandBuffer->beginDebugBlock( { "Staging Texture Upload"
+			, { 0.5f, 0.5f, 0.5f, 1.0f } } );
 		uploadTextureData( *commandBuffer
 			, subresourceLayers
 			, format
@@ -66,6 +68,7 @@ namespace ashes
 			, extent
 			, data
 			, view );
+		commandBuffer->endDebugBlock();
 		commandBuffer->end();
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
@@ -82,10 +85,13 @@ namespace ashes
 		auto commandBuffer = commandPool.createCommandBuffer( "StagingTextureUpload"
 			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
+		commandBuffer->beginDebugBlock( { "Staging Texture Upload"
+			, { 0.5f, 0.5f, 0.5f, 1.0f } } );
 		uploadTextureData( *commandBuffer
 			, format
 			, data
 			, view );
+		commandBuffer->endDebugBlock();
 		commandBuffer->end();
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
@@ -101,9 +107,12 @@ namespace ashes
 		auto commandBuffer = commandPool.createCommandBuffer( "StagingTextureCopy"
 			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
+		commandBuffer->beginDebugBlock( { "Staging Texture Copy"
+			, { 0.5f, 0.5f, 0.5f, 1.0f } } );
 		copyTextureData( *commandBuffer
 			, format
 			, view );
+		commandBuffer->endDebugBlock();
 		commandBuffer->end();
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
@@ -122,12 +131,15 @@ namespace ashes
 		auto commandBuffer = commandPool.createCommandBuffer( "StagingTextureCopy"
 			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
+		commandBuffer->beginDebugBlock( { "Staging Texture Copy"
+			, { 0.5f, 0.5f, 0.5f, 1.0f } } );
 		copyTextureData( *commandBuffer
 			, subresourceLayers
 			, format
 			, offset
 			, extent
 			, view );
+		commandBuffer->endDebugBlock();
 		commandBuffer->end();
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
@@ -237,6 +249,8 @@ namespace ashes
 		auto commandBuffer = commandPool.createCommandBuffer( "StagingTextureDownload"
 			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
 		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
+		commandBuffer->beginDebugBlock( { "Staging Texture Download"
+			, { 0.5f, 0.5f, 0.5f, 1.0f } } );
 		commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
 			, VK_PIPELINE_STAGE_TRANSFER_BIT
 			, view.makeTransferSource( VK_IMAGE_LAYOUT_UNDEFINED ) );
@@ -249,6 +263,7 @@ namespace ashes
 		commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 			, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
 			, view.makeShaderInputResource( VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL ) );
+		commandBuffer->endDebugBlock();
 		commandBuffer->end();
 
 		auto fence = m_device.createFence();
