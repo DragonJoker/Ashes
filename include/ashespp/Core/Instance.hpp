@@ -11,8 +11,9 @@ See LICENSE file in root folder.
 #include "ashespp/Core/RendererList.hpp"
 #include "ashespp/Core/PhysicalDevice.hpp"
 #include "ashespp/Miscellaneous/RendererFeatures.hpp"
-
 #include "ashespp/Core/WindowHandle.hpp"
+
+#include <ashes/common/DeviceAllocator.hpp>
 
 namespace ashes
 {
@@ -28,6 +29,7 @@ namespace ashes
 		*	Constructor, initialises the rendering instance.
 		*/
 		Instance( AshPluginDescription plugin
+			, DeviceAllocatorPtr allocator
 			, ashes::InstanceCreateInfo createInfo );
 		/**
 		*\brief
@@ -182,6 +184,8 @@ namespace ashes
 		*	Getters.
 		*/
 		/**@{*/
+		VkAllocationCallbacks const * getAllocationCallbacks()const;
+
 		inline PluginFeatures const & getFeatures()const
 		{
 			return m_features;
@@ -214,6 +218,7 @@ namespace ashes
 
 	private:
 		AshPluginDescription m_plugin;
+		DeviceAllocatorPtr m_allocator;
 		ashes::InstanceCreateInfo m_createInfo;
 		VkInstance m_instance{ VK_NULL_HANDLE };
 		ashes::PluginFeatures m_features;

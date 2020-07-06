@@ -9,6 +9,8 @@ See LICENSE file in root folder.
 #include "ashespp/Image/ImageCreateInfo.hpp"
 #include "ashespp/Miscellaneous/DeviceMemory.hpp"
 
+#include <ashes/common/VkTypeTraits.hpp>
+
 namespace ashes
 {
 	VkAccessFlags getAccessMask( VkImageLayout layout );
@@ -138,6 +140,25 @@ namespace ashes
 		*/
 		void generateMipmaps( CommandPool const & commandPool
 			, Queue const & queue
+			, VkImageLayout dstImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
+		/**
+		*\brief
+		*	Generates the image mipmaps.
+		*\param[in] commandBuffer
+		*	A command buffer, in record state.
+		*/
+		void generateMipmaps( CommandBuffer & commandBuffer
+			, uint32_t baseArrayLayer
+			, uint32_t layerCount
+			, VkImageLayout dstImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
+		/**
+		*\brief
+		*	Generates the image mipmaps.
+		*/
+		void generateMipmaps( CommandPool const & commandPool
+			, Queue const & queue
+			, uint32_t baseArrayLayer
+			, uint32_t layerCount
 			, VkImageLayout dstImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
 		/**
 		*\return
@@ -276,63 +297,7 @@ namespace ashes
 		VkImage m_internal{ VK_NULL_HANDLE };
 		DeviceMemoryPtr m_storage;
 		bool m_ownInternal{ true };
-		struct CompareImageViewCreate
-		{
-			inline bool operator()( VkImageViewCreateInfo const & lhs
-				, VkImageViewCreateInfo const & rhs )const
-			{
-				// LOL
-				return lhs.flags < rhs.flags
-					|| ( lhs.flags == rhs.flags
-						&& ( lhs.format < rhs.format
-							|| ( lhs.format == rhs.format
-								&& ( lhs.image < rhs.image
-									|| ( lhs.image == rhs.image
-										&& ( lhs.viewType < rhs.viewType
-											|| ( lhs.viewType == rhs.viewType
-												&& ( lhs.components.r < rhs.components.r
-													|| ( lhs.components.r == rhs.components.r
-														&& ( lhs.components.g < rhs.components.g
-															|| ( lhs.components.g == rhs.components.g
-																&& ( lhs.components.b < rhs.components.b
-																	|| ( lhs.components.b == rhs.components.b
-																		&& ( lhs.components.a < rhs.components.a
-																			|| ( lhs.components.a == rhs.components.a
-																				&& ( lhs.subresourceRange.aspectMask < rhs.subresourceRange.aspectMask
-																					|| ( lhs.subresourceRange.aspectMask == rhs.subresourceRange.aspectMask
-																						&& ( lhs.subresourceRange.baseArrayLayer < rhs.subresourceRange.baseArrayLayer
-																							|| ( lhs.subresourceRange.baseArrayLayer == rhs.subresourceRange.baseArrayLayer
-																								&& ( lhs.subresourceRange.layerCount < rhs.subresourceRange.layerCount
-																									|| ( lhs.subresourceRange.layerCount == rhs.subresourceRange.layerCount
-																										&& ( lhs.subresourceRange.baseMipLevel < rhs.subresourceRange.baseMipLevel
-																											|| ( lhs.subresourceRange.baseMipLevel == rhs.subresourceRange.baseMipLevel
-																												&& ( lhs.subresourceRange.levelCount < rhs.subresourceRange.levelCount )
-																												)
-																											)
-																										)
-																									)
-																								)
-																							)
-																						)
-																					)
-																				)
-																			)
-																		)
-																	)
-																)
-															)
-														)
-													)
-												)
-											)
-										)
-									)
-								)
-							)
-						);
-			}
-		};
-		mutable std::map< VkImageViewCreateInfo, VkImageView, CompareImageViewCreate > m_views;
+		mutable ImageViewCache m_views;
 	};
 }
 

@@ -210,7 +210,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 			};
 			VkDescriptorSetLayout result;
 			allocate( result
-				, nullptr
+				, device.getAllocationCallbacks()
 				, get( &device )
 				, VkDescriptorSetLayoutCreateInfo
 				{
@@ -228,7 +228,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		{
 			VkPipelineLayout result;
 			allocate( result
-				, nullptr
+				, device.getAllocationCallbacks()
 				, get( &device )
 				, VkPipelineLayoutCreateInfo
 				{
@@ -251,7 +251,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 			spirv = getBlitShaderCode( src, dst );
 			VkShaderModule result;
 			allocate( result
-				, nullptr
+				, device.getAllocationCallbacks()
 				, get( &device )
 				, VkShaderModuleCreateInfo
 				{
@@ -270,7 +270,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		{
 			VkPipeline result;
 			allocate( result
-				, nullptr
+				, device.getAllocationCallbacks()
 				, get( &device )
 				, VkComputePipelineCreateInfo
 				{
@@ -300,7 +300,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		{
 			VkSampler result{ VK_NULL_HANDLE };
 			allocate( result
-				, nullptr
+				, get( device )->getAllocationCallbacks()
 				, device
 				, VkSamplerCreateInfo
 				{
@@ -333,7 +333,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		{
 			VkBuffer result{ VK_NULL_HANDLE };
 			allocate( result
-				, nullptr
+				, get( device )->getAllocationCallbacks()
 				, device
 				, VkBufferCreateInfo
 				{
@@ -355,7 +355,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 					, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
 
 				allocate( memory
-					, nullptr
+					, get( device )->getAllocationCallbacks()
 					, device
 					, VkMemoryAllocateInfo
 					{
@@ -381,8 +381,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 			, VkImageView dstView )
 		{
 			VkDescriptorSet result{ VK_NULL_HANDLE };
-			allocate( result
-				, nullptr
+			allocateNA( result
 				, device
 				, pool
 				, descriptorLayout );
@@ -482,14 +481,14 @@ void main( uint3 threadID : SV_DispatchThreadID )
 			{
 				createInfo.usage = requiredUsage;
 				allocate( result
-					, nullptr
+					, get( device )->getAllocationCallbacks()
 					, device
 					, std::move( createInfo ) );
 				auto requirements = get( result )->getMemoryRequirements();
 				auto index = deduceMemoryType( requirements.memoryTypeBits
 					, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 				allocate( memory
-					, nullptr
+					, get( device )->getAllocationCallbacks()
 					, device
 					, VkMemoryAllocateInfo
 					{
@@ -633,7 +632,8 @@ void main( uint3 threadID : SV_DispatchThreadID )
 	BlitPipeline::BlitPipeline( Device const & device
 		, VkFormat src
 		, VkFormat dst )
-		: descriptorLayout{ doCreateBlitDescriptorLayout( device ) }
+		: device{ get( &device ) }
+		, descriptorLayout{ doCreateBlitDescriptorLayout( device ) }
 		, pipelineLayout{ doCreateBlitPipelineLayout( device, descriptorLayout ) }
 		, shader{ doCreateShaderModule( device, src, dst, spirv ) }
 		, pipeline{ doCreateBlitPipeline( device, pipelineLayout, shader ) }
@@ -642,10 +642,10 @@ void main( uint3 threadID : SV_DispatchThreadID )
 
 	BlitPipeline::~BlitPipeline()
 	{
-		deallocate( pipeline, nullptr );
-		deallocate( shader, nullptr );
-		deallocate( pipelineLayout, nullptr );
-		deallocate( descriptorLayout, nullptr );
+		deallocate( pipeline, get( device )->getAllocationCallbacks() );
+		deallocate( shader, get( device )->getAllocationCallbacks() );
+		deallocate( pipelineLayout, get( device )->getAllocationCallbacks() );
+		deallocate( descriptorLayout, get( device )->getAllocationCallbacks() );
 	}
 
 	//*********************************************************************************************
@@ -655,13 +655,14 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		, VkImage image
 		, uint32_t layer
 		, bool dest )
-		: image{ get( image )->getResource() }
+		: device{ device }
+		, image{ get( image )->getResource() }
 		, subResourceIndex{ D3D11CalcSubresource( subresource.mipLevel
 			, layer
 			, 1u ) }
 	{
 		allocate( view
-			, nullptr
+			, get( device )->getAllocationCallbacks()
 			, device
 			, VkImageViewCreateInfo
 			{
@@ -678,7 +679,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 
 	BlitImageCommand::Attachment::~Attachment()
 	{
-		deallocate( view, nullptr );
+		deallocate( view, get( device )->getAllocationCallbacks() );
 	}
 
 	//*********************************************************************************************
@@ -813,7 +814,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		};
 
 		allocate( m_pool
-			, nullptr
+			, get( get( m_pool )->getDevice() )->getAllocationCallbacks()
 			, m_device
 			, VkDescriptorPoolCreateInfo
 			{
@@ -958,8 +959,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		, uint32_t dstMinLevel
 		, uint32_t dstMaxLevel )
 	{
-		allocate( m_commandBuffer
-			, nullptr
+		allocateNA( m_commandBuffer
 			, m_device
 			, pool
 			, true );
@@ -984,21 +984,21 @@ void main( uint3 threadID : SV_DispatchThreadID )
 
 	BlitImageCommand::~BlitImageCommand()
 	{
-		deallocate( m_pool, nullptr );
-		deallocate( m_uboMemory, nullptr );
-		deallocate( m_ubo, nullptr );
-		deallocate( m_sampler, nullptr );
+		deallocate( m_pool, get( m_device )->getAllocationCallbacks() );
+		deallocate( m_uboMemory, get( m_device )->getAllocationCallbacks() );
+		deallocate( m_ubo, get( m_device )->getAllocationCallbacks() );
+		deallocate( m_sampler, get( m_device )->getAllocationCallbacks() );
 
 		if ( m_tmpSrcTexture != m_srcTexture )
 		{
-			deallocate( m_dstMemory, nullptr );
-			deallocate( m_tmpDstTexture, nullptr );
+			deallocate( m_dstMemory, get( m_device )->getAllocationCallbacks() );
+			deallocate( m_tmpDstTexture, get( m_device )->getAllocationCallbacks() );
 		}
 
 		if ( m_tmpDstTexture != m_dstTexture )
 		{
-			deallocate( m_srcMemory, nullptr );
-			deallocate( m_tmpDstTexture, nullptr );
+			deallocate( m_srcMemory, get( m_device )->getAllocationCallbacks() );
+			deallocate( m_tmpDstTexture, get( m_device )->getAllocationCallbacks() );
 		}
 	}
 

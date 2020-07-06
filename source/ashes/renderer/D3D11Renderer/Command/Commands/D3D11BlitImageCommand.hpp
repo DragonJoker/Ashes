@@ -12,6 +12,7 @@ namespace ashes::d3d11
 {
 	struct BlitPipeline
 	{
+		VkDevice device;
 		VkDescriptorSetLayout descriptorLayout;
 		VkPipelineLayout pipelineLayout;
 		UInt32Array spirv;
@@ -37,6 +38,7 @@ namespace ashes::d3d11
 				, bool dest );
 			~Attachment();
 
+			VkDevice device;
 			VkImageView view;
 			ID3D11Resource * image;
 			UINT subResourceIndex;

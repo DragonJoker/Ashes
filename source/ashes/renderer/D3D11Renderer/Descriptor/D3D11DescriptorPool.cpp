@@ -21,7 +21,7 @@ namespace ashes::d3d11
 	{
 		for ( auto & set : m_sets )
 		{
-			deallocate( set, nullptr );
+			deallocateNA( set );
 		}
 	}
 
@@ -39,7 +39,7 @@ namespace ashes::d3d11
 	{
 		for ( auto & set : m_allSets )
 		{
-			deallocate( set, nullptr );
+			deallocateNA( set );
 		}
 
 		m_allSets.clear();
@@ -59,7 +59,7 @@ namespace ashes::d3d11
 
 				if ( it != m_sets.end() )
 				{
-					deallocate( *it, nullptr );
+					deallocateNA( *it );
 					m_sets.erase( it );
 				}
 			}

@@ -23,7 +23,7 @@ namespace ashes
 		DEBUG_DUMP( m_info );
 		auto res = m_device.vkCreateSampler( m_device
 			, &static_cast< VkSamplerCreateInfo const & >( m_createInfo )
-			, nullptr
+			, m_device.getAllocationCallbacks()
 			, &m_internal );
 		checkError( res, "Sampler creation" );
 		registerObject( m_device, debugName, *this );
@@ -34,6 +34,6 @@ namespace ashes
 		unregisterObject( m_device, *this );
 		m_device.vkDestroySampler( m_device
 			, m_internal
-			, nullptr );
+			, m_device.getAllocationCallbacks() );
 	}
 }

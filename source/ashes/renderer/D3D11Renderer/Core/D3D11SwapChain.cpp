@@ -24,7 +24,7 @@ namespace ashes::d3d11
 		{
 			VkImage result;
 			allocate( result
-				, nullptr
+				, get( device )->getAllocationCallbacks()
 				, device
 				, format
 				, std::move( dimensions )
@@ -33,7 +33,7 @@ namespace ashes::d3d11
 			uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
 				, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 			allocate( deviceMemory
-				, nullptr
+				, get( device )->getAllocationCallbacks()
 				, device
 				, VkMemoryAllocateInfo{ VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, requirements.size, deduced } );
 			get( result )->bindMemory( deviceMemory, 0u );
@@ -46,7 +46,7 @@ namespace ashes::d3d11
 		{
 			VkImageView result;
 			allocate( result
-				, nullptr
+				, get( device )->getAllocationCallbacks()
 				, device
 				, VkImageViewCreateInfo
 				{
@@ -112,7 +112,7 @@ namespace ashes::d3d11
 
 		m_swapchainExtent = VkExtent2D{ m_displayMode.Width, m_displayMode.Height };
 		allocate( m_swapChainImage
-			, nullptr
+			, get( device )->getAllocationCallbacks()
 			, m_device
 			, m_createInfo.imageFormat
 			, m_swapchainExtent
@@ -132,9 +132,9 @@ namespace ashes::d3d11
 	}
 	catch ( std::exception & exc )
 	{
-		deallocate( m_view, nullptr );
-		deallocate( m_image, nullptr );
-		deallocate( m_swapChainImage, nullptr );
+		deallocate( m_view, get( m_device )->getAllocationCallbacks() );
+		deallocate( m_image, get( m_device )->getAllocationCallbacks() );
+		deallocate( m_swapChainImage, get( m_device )->getAllocationCallbacks() );
 		safeRelease( m_swapChain );
 
 		std::stringstream stream;
@@ -150,9 +150,9 @@ namespace ashes::d3d11
 
 	SwapchainKHR::~SwapchainKHR()
 	{
-		deallocate( m_view, nullptr );
-		deallocate( m_image, nullptr );
-		deallocate( m_swapChainImage, nullptr );
+		deallocate( m_view, get( m_device )->getAllocationCallbacks() );
+		deallocate( m_image, get( m_device )->getAllocationCallbacks() );
+		deallocate( m_swapChainImage, get( m_device )->getAllocationCallbacks() );
 		safeRelease( m_swapChain );
 	}
 

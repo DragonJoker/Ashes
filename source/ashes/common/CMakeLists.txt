@@ -32,7 +32,10 @@ endif ()
 
 set( ${PROJECT_NAME}_HDR_FILES
 	../../../include/ashes/common/ArrayView.hpp
+	../../../include/ashes/common/BuddyAllocator.hpp
+	../../../include/ashes/common/BuddyAllocator.inl
 	../../../include/ashes/common/ConstantFormat.hpp
+	../../../include/ashes/common/DeviceAllocator.hpp
 	../../../include/ashes/common/DynamicLibrary.hpp
 	../../../include/ashes/common/Exception.hpp
 	../../../include/ashes/common/FileUtils.hpp

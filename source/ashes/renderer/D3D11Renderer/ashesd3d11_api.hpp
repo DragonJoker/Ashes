@@ -121,8 +121,7 @@ namespace ashes::d3d11
 	}
 
 	template< typename VkType, typename ... Params >
-	VkResult allocate( VkType & vkValue
-		, const VkAllocationCallbacks * allocInfo
+	VkResult allocateNA( VkType & vkValue
 		, Params && ... params )
 	{
 		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
@@ -130,6 +129,7 @@ namespace ashes::d3d11
 		try
 		{
 			using Type = typename VkDxTypeTraits< VkType >::Type;
+
 			vkValue = VkType( new Type{ std::forward< Params && >( params )... } );
 			result = VK_SUCCESS;
 		}
@@ -150,10 +150,84 @@ namespace ashes::d3d11
 		return result;
 	}
 
+	template< typename VkType, typename ... Params >
+	VkResult allocate( VkType & vkValue
+		, const VkAllocationCallbacks * allocInfo
+		, Params && ... params )
+	{
+		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
+
+		try
+		{
+			using Type = typename VkDxTypeTraits< VkType >::Type;
+
+			if ( allocInfo )
+			{
+				auto mem = allocInfo->pfnAllocation( allocInfo->pUserData
+					, sizeof( Type )
+					, alignof( Type )
+					, allocationScopeT< VkType > );
+				vkValue = VkType( new( mem )Type{ std::forward< Params && >( params )... } );
+			}
+			else
+			{
+				vkValue = VkType( new Type{ std::forward< Params && >( params )... } );
+			}
+
+			result = VK_SUCCESS;
+		}
+		catch ( Exception & exc )
+		{
+			std::cerr << exc.what() << std::endl;
+			result = exc.getResult();
+		}
+		catch ( std::exception & exc )
+		{
+			std::cerr << exc.what() << std::endl;
+		}
+		catch ( ... )
+		{
+			std::cerr << "Unknown error" << std::endl;
+		}
+
+		return result;
+	}
+
+	template< typename VkType >
+	VkResult deallocateNA( VkType & vkValue )
+	{
+		auto value = get( vkValue );
+		delete value;
+		vkValue = nullptr;
+		return VK_SUCCESS;
+	}
+
+	template< typename VkType >
+	VkResult deallocateNA( VkType const & vkValue )
+	{
+		auto value = get( vkValue );
+		delete value;
+		return VK_SUCCESS;
+	}
+
 	template< typename VkType >
 	VkResult deallocate( VkType & vkValue, const VkAllocationCallbacks * allocInfo )
 	{
-		delete get( vkValue );
+		auto value = get( vkValue );
+
+		if ( allocInfo )
+		{
+			using Type = typename VkDxTypeTraits< VkType >::Type;
+
+			value->~Type();
+			auto scope = allocationScopeT< VkType >;
+			allocInfo->pfnFree( allocInfo->pUserData, value );
+		}
+		else
+		{
+			delete value;
+		}
+
 		vkValue = nullptr;
 		return VK_SUCCESS;
 	}
@@ -161,7 +235,21 @@ namespace ashes::d3d11
 	template< typename VkType >
 	VkResult deallocate( VkType const & vkValue, const VkAllocationCallbacks * allocInfo )
 	{
-		delete get( vkValue );
+		auto value = get( vkValue );
+
+		if ( allocInfo )
+		{
+			using Type = typename VkDxTypeTraits< VkType >::Type;
+
+			value->~Type();
+			auto scope = allocationScopeT< VkType >;
+			allocInfo->pfnFree( allocInfo->pUserData, value );
+		}
+		else
+		{
+			delete value;
+		}
+
 		return VK_SUCCESS;
 	}
 

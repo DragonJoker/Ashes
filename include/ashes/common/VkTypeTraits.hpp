@@ -22,9 +22,25 @@ namespace ashes
 	template< typename AshesType >
 	struct VkTypeTraits;
 
+#if VK_EXT_debug_utils
+	template<>
+	struct VkTypeTraits< VkDebugUtilsMessengerEXT >
+	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE;
+	};
+#endif
+#if VK_EXT_debug_report
+	template<>
+	struct VkTypeTraits< VkDebugReportCallbackEXT >
+	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE;
+	};
+#endif
+
 	template<>
 	struct VkTypeTraits< VkInstance >
 	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE;
 #if VK_EXT_debug_utils
 		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_INSTANCE;
 #endif
@@ -57,6 +73,7 @@ namespace ashes
 	template<>
 	struct VkTypeTraits< VkDevice >
 	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE;
 #if VK_EXT_debug_utils
 		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_DEVICE;
 #endif
@@ -89,6 +106,7 @@ namespace ashes
 	template<>
 	struct VkTypeTraits< VkSemaphore >
 	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_DEVICE;
 #if VK_EXT_debug_utils
 		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_SEMAPHORE;
 #endif
@@ -121,6 +139,7 @@ namespace ashes
 	template<>
 	struct VkTypeTraits< VkFence >
 	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_DEVICE;
 #if VK_EXT_debug_utils
 		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_FENCE;
 #endif
@@ -137,6 +156,7 @@ namespace ashes
 	template<>
 	struct VkTypeTraits< VkDeviceMemory >
 	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_DEVICE;
 #if VK_EXT_debug_utils
 		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_DEVICE_MEMORY;
 #endif
@@ -153,6 +173,7 @@ namespace ashes
 	template<>
 	struct VkTypeTraits< VkBuffer >
 	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_DEVICE;
 #if VK_EXT_debug_utils
 		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_BUFFER;
 #endif
@@ -169,6 +190,7 @@ namespace ashes
 	template<>
 	struct VkTypeTraits< VkImage >
 	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_DEVICE;
 #if VK_EXT_debug_utils
 		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_IMAGE;
 #endif
@@ -185,6 +207,7 @@ namespace ashes
 	template<>
 	struct VkTypeTraits< VkEvent >
 	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_DEVICE;
 #if VK_EXT_debug_utils
 		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_EVENT;
 #endif
@@ -201,6 +224,7 @@ namespace ashes
 	template<>
 	struct VkTypeTraits< VkQueryPool >
 	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_DEVICE;
 #if VK_EXT_debug_utils
 		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_QUERY_POOL;
 #endif
@@ -217,6 +241,7 @@ namespace ashes
 	template<>
 	struct VkTypeTraits< VkBufferView >
 	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_DEVICE;
 #if VK_EXT_debug_utils
 		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_BUFFER_VIEW;
 #endif
@@ -233,6 +258,7 @@ namespace ashes
 	template<>
 	struct VkTypeTraits< VkImageView >
 	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_DEVICE;
 #if VK_EXT_debug_utils
 		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_IMAGE_VIEW;
 #endif
@@ -249,6 +275,7 @@ namespace ashes
 	template<>
 	struct VkTypeTraits< VkShaderModule >
 	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_DEVICE;
 #if VK_EXT_debug_utils
 		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_SHADER_MODULE;
 #endif
@@ -265,6 +292,7 @@ namespace ashes
 	template<>
 	struct VkTypeTraits< VkPipelineLayout >
 	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_DEVICE;
 #if VK_EXT_debug_utils
 		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_PIPELINE_LAYOUT;
 #endif
@@ -281,6 +309,7 @@ namespace ashes
 	template<>
 	struct VkTypeTraits< VkRenderPass >
 	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_DEVICE;
 #if VK_EXT_debug_utils
 		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_RENDER_PASS;
 #endif
@@ -297,6 +326,7 @@ namespace ashes
 	template<>
 	struct VkTypeTraits< VkPipeline >
 	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_DEVICE;
 #if VK_EXT_debug_utils
 		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_PIPELINE;
 #endif
@@ -311,8 +341,26 @@ namespace ashes
 	};
 
 	template<>
+	struct VkTypeTraits< VkPipelineCache >
+	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_DEVICE;
+#if VK_EXT_debug_utils
+		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_PIPELINE_CACHE;
+#endif
+#if VK_EXT_debug_report || VK_EXT_debug_marker
+		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_CACHE_EXT;
+#endif
+		static std::string const & getName()
+		{
+			static std::string result{ "VkPipelineCache" };
+			return result;
+		}
+	};
+
+	template<>
 	struct VkTypeTraits< VkDescriptorSetLayout >
 	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_DEVICE;
 #if VK_EXT_debug_utils
 		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT;
 #endif
@@ -329,6 +377,7 @@ namespace ashes
 	template<>
 	struct VkTypeTraits< VkSampler >
 	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_DEVICE;
 #if VK_EXT_debug_utils
 		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_SAMPLER;
 #endif
@@ -345,6 +394,7 @@ namespace ashes
 	template<>
 	struct VkTypeTraits< VkDescriptorPool >
 	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_DEVICE;
 #if VK_EXT_debug_utils
 		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_DESCRIPTOR_POOL;
 #endif
@@ -377,6 +427,7 @@ namespace ashes
 	template<>
 	struct VkTypeTraits< VkFramebuffer >
 	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_DEVICE;
 #if VK_EXT_debug_utils
 		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_FRAMEBUFFER;
 #endif
@@ -393,6 +444,7 @@ namespace ashes
 	template<>
 	struct VkTypeTraits< VkCommandPool >
 	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_DEVICE;
 #if VK_EXT_debug_utils
 		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_COMMAND_POOL;
 #endif
@@ -409,6 +461,7 @@ namespace ashes
 	template<>
 	struct VkTypeTraits< VkSurfaceKHR >
 	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE;
 #if VK_EXT_debug_utils
 		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_SURFACE_KHR;
 #endif
@@ -425,6 +478,7 @@ namespace ashes
 	template<>
 	struct VkTypeTraits< VkSwapchainKHR >
 	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_DEVICE;
 #if VK_EXT_debug_utils
 		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_SWAPCHAIN_KHR;
 #endif
@@ -441,6 +495,7 @@ namespace ashes
 	template<>
 	struct VkTypeTraits< VkDisplayKHR >
 	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_DEVICE;
 #if VK_EXT_debug_utils
 		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_DISPLAY_KHR;
 #endif
@@ -457,6 +512,7 @@ namespace ashes
 	template<>
 	struct VkTypeTraits< VkDisplayModeKHR >
 	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_DEVICE;
 #if VK_EXT_debug_utils
 		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_DISPLAY_MODE_KHR;
 #endif
@@ -489,6 +545,9 @@ namespace ashes
 
 #endif
 
+	template< typename VkType >
+	static constexpr VkSystemAllocationScope allocationScopeT = VkTypeTraits< VkType >::Scope;
+
 	template< typename T >
 	T const * tryGet( void const * next )
 	{
@@ -506,6 +565,84 @@ namespace ashes
 
 		return result;
 	}
+
+	struct CompareImageViewCreate
+	{
+		inline bool lower( VkComponentMapping const & lhs
+			, VkComponentMapping const & rhs )const
+		{
+			return lhs.r < rhs.r
+				|| ( lhs.r == rhs.r
+					&& ( lhs.g < rhs.g
+						|| ( lhs.g == rhs.g
+							&& ( lhs.b < rhs.b
+								|| ( lhs.b == rhs.b
+									&& lhs.a < rhs.a
+									)
+								)
+							)
+						)
+					);
+		}
+
+		inline bool equal( VkComponentMapping const & lhs
+			, VkComponentMapping const & rhs )const
+		{
+			return lhs.r == rhs.r
+				&& lhs.g == rhs.g
+				&& lhs.b == rhs.b
+				&& lhs.a == rhs.a;
+		}
+
+		inline bool lower( VkImageSubresourceRange const & lhs
+			, VkImageSubresourceRange const & rhs )const
+		{
+			return lhs.aspectMask < rhs.aspectMask
+				|| ( lhs.aspectMask == rhs.aspectMask
+					&& ( lhs.baseArrayLayer < rhs.baseArrayLayer
+						|| ( lhs.baseArrayLayer == rhs.baseArrayLayer
+							&& ( lhs.layerCount < rhs.layerCount
+								|| ( lhs.layerCount == rhs.layerCount
+									&& ( lhs.baseMipLevel < rhs.baseMipLevel
+										|| ( lhs.baseMipLevel == rhs.baseMipLevel
+											&& lhs.levelCount < rhs.levelCount
+											)
+										)
+									)
+								)
+							)
+						)
+					);
+		}
+
+		inline bool operator()( VkImageViewCreateInfo const & lhs
+			, VkImageViewCreateInfo const & rhs )const
+		{
+			// LOL
+			return lhs.flags < rhs.flags
+				|| ( lhs.flags == rhs.flags
+					&& ( lhs.format < rhs.format
+						|| ( lhs.format == rhs.format
+							&& ( lhs.image < rhs.image
+								|| ( lhs.image == rhs.image
+									&& ( lhs.viewType < rhs.viewType
+										|| ( lhs.viewType == rhs.viewType
+											&& ( lower( lhs.components, rhs.components )
+												|| ( equal( lhs.components, rhs.components )
+													&& lower( lhs.subresourceRange, rhs.subresourceRange )
+													)
+												)
+											)
+										)
+									)
+								)
+							)
+						)
+					);
+		}
+	};
+
+	using ImageViewCache = std::map< VkImageViewCreateInfo, VkImageView, CompareImageViewCreate >;
 }
 
 #endif

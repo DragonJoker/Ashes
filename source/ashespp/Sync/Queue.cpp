@@ -25,10 +25,6 @@ namespace ashes
 			, &m_internal );
 	}
 
-	Queue::~Queue()
-	{
-	}
-
 	VkResult Queue::present( SwapChain const & swapChain
 		, uint32_t imageIndex
 		, Semaphore const & semaphoreToWait )const

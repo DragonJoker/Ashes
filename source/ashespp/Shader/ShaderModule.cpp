@@ -30,7 +30,7 @@ namespace ashes
 		DEBUG_DUMP( createInfo );
 		auto res = m_device.vkCreateShaderModule( m_device
 			, &createInfo
-			, nullptr
+			, m_device.getAllocationCallbacks()
 			, &m_internal );
 		checkError( res, "ShaderModule creation" );
 		registerObject( m_device, debugName, *this );
@@ -42,7 +42,9 @@ namespace ashes
 
 		if ( m_internal != VK_NULL_HANDLE )
 		{
-			m_device.vkDestroyShaderModule( m_device, m_internal, nullptr );
+			m_device.vkDestroyShaderModule( m_device
+				, m_internal
+				, m_device.getAllocationCallbacks() );
 		}
 	}
 }

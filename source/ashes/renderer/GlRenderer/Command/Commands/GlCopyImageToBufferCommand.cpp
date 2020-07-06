@@ -47,7 +47,7 @@ namespace ashes::gl
 			createInfo.subresourceRange.levelCount = 1u;
 			VkImageView result;
 			allocate( result
-				, nullptr
+				, get( device )->getAllocationCallbacks()
 				, device
 				, createInfo );
 

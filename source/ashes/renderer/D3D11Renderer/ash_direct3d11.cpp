@@ -154,6 +154,7 @@ namespace ashes::d3d11
 			, pAllocator
 			, instance
 			, physicalDevice
+			, pAllocator
 			, *pCreateInfo );
 	}
 
@@ -942,8 +943,7 @@ namespace ashes::d3d11
 		{
 			if ( result == VK_SUCCESS )
 			{
-				result = allocate( *itSet
-					, nullptr
+				result = allocateNA( *itSet
 					, device
 					, pAllocateInfo->descriptorPool
 					, *itLayout );
@@ -1075,8 +1075,7 @@ namespace ashes::d3d11
 
 			if ( result == VK_SUCCESS )
 			{
-				result = allocate( cb
-					, nullptr
+				result = allocateNA( cb
 					, device
 					, pAllocateInfo->commandPool
 					, pAllocateInfo->level == VK_COMMAND_BUFFER_LEVEL_PRIMARY );

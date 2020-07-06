@@ -31,5 +31,8 @@ namespace ashes::gl
 
 		VkResult reset( VkCommandPoolResetFlags flags );
 		VkResult free( VkCommandBufferArray sets );
+
+	private:
+		VkDevice m_device;
 	};
 }
