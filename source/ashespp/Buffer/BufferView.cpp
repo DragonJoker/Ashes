@@ -42,7 +42,7 @@ namespace ashes
 		DEBUG_DUMP( createInfo );
 		auto res = m_device.vkCreateBufferView( m_device
 			, &createInfo
-			, nullptr
+			, m_device.getAllocationCallbacks()
 			, &m_internal );
 		checkError( res, "BufferView creation" );
 		registerObject( m_device, debugName, *this );
@@ -56,7 +56,7 @@ namespace ashes
 		{
 			m_device.vkDestroyBufferView( m_device
 				, m_internal
-				, nullptr );
+				, m_device.getAllocationCallbacks() );
 		}
 	}
 }

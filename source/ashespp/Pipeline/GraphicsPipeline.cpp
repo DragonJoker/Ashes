@@ -28,7 +28,7 @@ namespace ashes
 			, VK_NULL_HANDLE
 			, 1
 			, &static_cast< VkGraphicsPipelineCreateInfo const & >( m_createInfo )
-			, nullptr
+			, m_device.getAllocationCallbacks()
 			, &m_internal );
 		checkError( res, "GraphicsPipeline creation" );
 		registerObject( m_device, debugName, *this );
@@ -39,6 +39,6 @@ namespace ashes
 		unregisterObject( m_device, *this );
 		m_device.vkDestroyPipeline( m_device
 			, m_internal
-			, nullptr );
+			, m_device.getAllocationCallbacks() );
 	}
 }

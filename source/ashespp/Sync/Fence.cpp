@@ -28,7 +28,7 @@ namespace ashes
 		DEBUG_DUMP( createInfo );
 		auto res = m_device.vkCreateFence( device
 			, &createInfo
-			, nullptr
+			, m_device.getAllocationCallbacks()
 			, &m_internal );
 		checkError( res, "Fence creation" );
 		registerObject( m_device, debugName, *this );
@@ -39,7 +39,7 @@ namespace ashes
 		unregisterObject( m_device, *this );
 		m_device.vkDestroyFence( m_device
 			, m_internal
-			, nullptr );
+			, m_device.getAllocationCallbacks() );
 	}
 
 	WaitResult Fence::wait( uint64_t timeout )const

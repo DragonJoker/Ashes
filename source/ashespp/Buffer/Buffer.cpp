@@ -19,7 +19,7 @@ namespace ashes
 		DEBUG_DUMP( bufferCreate );
 		auto res = m_device.vkCreateBuffer( m_device
 			, &m_createInfo
-			, nullptr
+			, m_device.getAllocationCallbacks()
 			, &m_internal );
 		checkError( res, "Buffer creation" );
 		registerObject( m_device, debugName, *this );
@@ -51,7 +51,9 @@ namespace ashes
 	BufferBase::~BufferBase()
 	{
 		unregisterObject( m_device, *this );
-		m_device.vkDestroyBuffer( m_device, m_internal, nullptr );
+		m_device.vkDestroyBuffer( m_device
+			, m_internal
+			, m_device.getAllocationCallbacks() );
 	}
 
 	VkMemoryRequirements BufferBase::getMemoryRequirements()const

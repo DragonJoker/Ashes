@@ -201,7 +201,7 @@ namespace ashes
 		DEBUG_DUMP( m_createInfo );
 		auto res = m_device->vkCreateImage( *m_device
 			, &static_cast< VkImageCreateInfo const & >( m_createInfo )
-			, nullptr
+			, m_device->getAllocationCallbacks()
 			, &m_internal );
 		checkError( res, "Image creation" );
 		registerObject( *m_device, debugName, *this );
@@ -244,7 +244,7 @@ namespace ashes
 				unregisterObject( *m_device, *this );
 				m_device->vkDestroyImage( *m_device
 					, m_internal
-					, nullptr );
+					, m_device->getAllocationCallbacks() );
 			}
 		}
 	}
@@ -307,25 +307,29 @@ namespace ashes
 		return m_storage->unlock();
 	}
 
+	void Image::generateMipmaps( CommandBuffer & commandBuffer
+		, VkImageLayout dstImageLayout )const
+	{
+		generateMipmaps( commandBuffer
+			, 0u
+			, m_createInfo->arrayLayers
+			, dstImageLayout );
+	}
+
 	void Image::generateMipmaps( CommandPool const & commandPool
 		, Queue const & queue
 		, VkImageLayout dstImageLayout )const
 	{
-		if ( getMipmapLevels() <= 1u )
-		{
-			return;
-		}
-
-		auto commandBuffer = commandPool.createCommandBuffer( "ImageGenMipmaps" );
-		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
-		generateMipmaps( *commandBuffer, dstImageLayout );
-		commandBuffer->end();
-		auto fence = m_device->createFence();
-		queue.submit( *commandBuffer, fence.get() );
-		fence->wait( MaxTimeout );
+		generateMipmaps( commandPool
+			, queue
+			, 0u
+			, m_createInfo->arrayLayers
+			, dstImageLayout );
 	}
 
 	void Image::generateMipmaps( CommandBuffer & commandBuffer
+		, uint32_t baseArrayLayer
+		, uint32_t layerCount
 		, VkImageLayout dstImageLayout )const
 	{
 		if ( getMipmapLevels() <= 1u )
@@ -341,8 +345,9 @@ namespace ashes
 		auto const dstStageMask = getStageMask( dstImageLayout );
 		auto const imageViewType = VkImageViewType( getType() );
 
-		for ( uint32_t layer = 0u; layer < getLayerCount(); ++layer )
+		for ( uint32_t i = 0u; i < layerCount; ++i )
 		{
+			auto layer = baseArrayLayer + i;
 			VkImageSubresourceRange mipSubRange
 			{
 				aspectMask,
@@ -425,6 +430,29 @@ namespace ashes
 		}
 	}
 
+	void Image::generateMipmaps( CommandPool const & commandPool
+		, Queue const & queue
+		, uint32_t baseArrayLayer
+		, uint32_t layerCount
+		, VkImageLayout dstImageLayout )const
+	{
+		if ( getMipmapLevels() <= 1u )
+		{
+			return;
+		}
+
+		auto commandBuffer = commandPool.createCommandBuffer( "ImageGenMipmaps" );
+		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
+		generateMipmaps( *commandBuffer
+			, baseArrayLayer
+			, layerCount
+			, dstImageLayout );
+		commandBuffer->end();
+		auto fence = m_device->createFence();
+		queue.submit( *commandBuffer, fence.get() );
+		fence->wait( MaxTimeout );
+	}
+
 	VkMemoryRequirements Image::getMemoryRequirements()const
 	{
 		return m_device->getImageMemoryRequirements( m_internal );
@@ -447,7 +475,7 @@ namespace ashes
 		{
 			auto res = m_device->vkCreateImageView( *m_device
 				, &createInfo
-				, nullptr
+				, m_device->getAllocationCallbacks()
 				, &pair.first->second );
 			checkError( res, "ImageView creation" );
 			registerObject( *m_device, debugName, pair.first->second );
@@ -536,7 +564,7 @@ namespace ashes
 		unregisterObject( *m_device, it->second );
 		m_device->vkDestroyImageView( *m_device
 			, it->second
-			, nullptr );
+			, m_device->getAllocationCallbacks() );
 		m_views.erase( it );
 	}
 

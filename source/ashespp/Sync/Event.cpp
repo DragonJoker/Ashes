@@ -26,7 +26,7 @@ namespace ashes
 		DEBUG_DUMP( createInfo );
 		auto res = m_device.vkCreateEvent( device
 			, &createInfo
-			, nullptr
+			, m_device.getAllocationCallbacks()
 			, &m_internal );
 		checkError( res, "Event creation" );
 		registerObject( m_device, debugName, *this );
@@ -37,7 +37,7 @@ namespace ashes
 		unregisterObject( m_device, *this );
 		m_device.vkDestroyEvent( m_device
 			, m_internal
-			, nullptr );
+			, m_device.getAllocationCallbacks() );
 	}
 
 	EventStatus Event::getStatus()const

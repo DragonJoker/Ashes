@@ -27,7 +27,7 @@ namespace ashes
 		DEBUG_DUMP( createInfo );
 		auto res = m_device.vkCreateSwapchainKHR( m_device
 			, &m_createInfo
-			, nullptr
+			, m_device.getAllocationCallbacks()
 			, &m_internal );
 		checkError( res, "Swap chain creation" );
 		registerObject( m_device, debugName, *this );
@@ -36,7 +36,9 @@ namespace ashes
 	SwapChain::~SwapChain()
 	{
 		unregisterObject( m_device, *this );
-		m_device.vkDestroySwapchainKHR( m_device, m_internal, nullptr );
+		m_device.vkDestroySwapchainKHR( m_device
+			, m_internal
+			, m_device.getAllocationCallbacks() );
 	}
 
 	VkResult SwapChain::acquireNextImage( uint64_t timeout

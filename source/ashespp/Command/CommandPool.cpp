@@ -23,7 +23,7 @@ namespace ashes
 		DEBUG_DUMP( createInfo );
 		auto res = m_device.vkCreateCommandPool( m_device
 			, &createInfo
-			, nullptr
+			, m_device.getAllocationCallbacks()
 			, &m_internal );
 		checkError( res, "CommandPool creation" );
 		registerObject( m_device, debugName, *this );
@@ -32,7 +32,9 @@ namespace ashes
 	CommandPool::~CommandPool()
 	{
 		unregisterObject( m_device, *this );
-		m_device.vkDestroyCommandPool( m_device, m_internal, nullptr );
+		m_device.vkDestroyCommandPool( m_device
+			, m_internal
+			, m_device.getAllocationCallbacks() );
 	}
 
 	CommandBufferPtr CommandPool::createCommandBuffer( VkCommandBufferLevel level )const

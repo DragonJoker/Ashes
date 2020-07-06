@@ -27,9 +27,11 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	Device::Device( Instance const & instance
+		, VkAllocationCallbacks const * callbacks
 		, PhysicalDevice const & physicalDevice
 		, ashes::DeviceCreateInfo createInfos )
 		: m_instance{ instance }
+		, m_callbacks{ callbacks }
 		, m_physicalDevice{ physicalDevice }
 		, m_createInfos{ std::move( createInfos ) }
 		, m_memoryProperties{ m_physicalDevice.getMemoryProperties() }
