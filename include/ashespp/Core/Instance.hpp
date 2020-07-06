@@ -13,7 +13,7 @@ See LICENSE file in root folder.
 #include "ashespp/Miscellaneous/RendererFeatures.hpp"
 #include "ashespp/Core/WindowHandle.hpp"
 
-#include <ashes/Common/DeviceAllocator.hpp>
+#include <ashes/common/DeviceAllocator.hpp>
 
 namespace ashes
 {
