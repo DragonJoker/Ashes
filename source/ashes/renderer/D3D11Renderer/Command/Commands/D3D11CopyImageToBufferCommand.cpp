@@ -51,7 +51,7 @@ namespace ashes::d3d11
 				createInfo.subresourceRange.levelCount = 1u;
 				VkImageView view;
 				allocate( view
-					, nullptr
+					, get( device )->getAllocationCallbacks()
 					, device
 					, createInfo );
 				result.emplace_back( view );
@@ -233,7 +233,7 @@ namespace ashes::d3d11
 		{
 			VkBuffer result;
 			allocate( result
-				, nullptr
+				, get( device )->getAllocationCallbacks()
 				, device
 				, VkBufferCreateInfo
 				{
@@ -250,7 +250,7 @@ namespace ashes::d3d11
 			uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
 				, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
 			allocate( memory
-				, nullptr
+				, get( device )->getAllocationCallbacks()
 				, device
 				, VkMemoryAllocateInfo
 				{
@@ -270,7 +270,7 @@ namespace ashes::d3d11
 		{
 			VkImage result;
 			allocate( result
-				, nullptr
+				, get( device )->getAllocationCallbacks()
 				, device
 				, VkImageCreateInfo
 				{
@@ -299,7 +299,7 @@ namespace ashes::d3d11
 			uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
 				, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
 			allocate( memory
-				, nullptr
+				, get( device )->getAllocationCallbacks()
 				, device
 				, VkMemoryAllocateInfo
 				{
@@ -392,14 +392,14 @@ namespace ashes::d3d11
 
 		if ( stagingDst )
 		{
-			deallocate( stagingDstMemory, nullptr );
-			deallocate( stagingDst, nullptr );
+			deallocate( stagingDstMemory, get( m_device )->getAllocationCallbacks() );
+			deallocate( stagingDst, get( m_device )->getAllocationCallbacks() );
 		}
 
 		if ( stagingSrc )
 		{
-			deallocate( stagingSrcMemory, nullptr );
-			deallocate( stagingSrc, nullptr );
+			deallocate( stagingSrcMemory, get( m_device )->getAllocationCallbacks() );
+			deallocate( stagingSrc, get( m_device )->getAllocationCallbacks() );
 		}
 	}
 

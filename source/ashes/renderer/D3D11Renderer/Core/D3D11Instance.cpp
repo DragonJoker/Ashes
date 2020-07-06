@@ -206,7 +206,7 @@ namespace ashes::d3d11
 	{
 		for ( auto & physicalDevice : m_physicalDevices )
 		{
-			deallocate( physicalDevice, nullptr );
+			deallocateNA( physicalDevice );
 		}
 		
 		for ( auto & info : m_adapters )
@@ -442,8 +442,7 @@ namespace ashes::d3d11
 
 		for ( auto adapter : m_adapters )
 		{
-			allocate( m_physicalDevices[index]
-				, nullptr
+			allocateNA( m_physicalDevices[index]
 				, get( this )
 				, std::move( adapter ) );
 			++index;

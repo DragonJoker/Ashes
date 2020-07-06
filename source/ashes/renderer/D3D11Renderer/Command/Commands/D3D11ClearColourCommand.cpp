@@ -23,7 +23,7 @@ namespace ashes::d3d11
 			for ( auto & result : results )
 			{
 				allocate( result
-					, nullptr
+					, get( device )->getAllocationCallbacks()
 					, device
 					, VkImageViewCreateInfo
 					{
@@ -68,7 +68,7 @@ namespace ashes::d3d11
 	{
 		for ( auto view : m_views )
 		{
-			deallocate( view, nullptr );
+			deallocate( view, get( m_device )->getAllocationCallbacks() );
 		}
 	}
 

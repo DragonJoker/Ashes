@@ -22,7 +22,7 @@ namespace ashes::d3d11
 	{
 		for ( auto & command : m_commands )
 		{
-			deallocate( command, nullptr );
+			deallocateNA( command );
 		}
 	}
 
@@ -35,7 +35,7 @@ namespace ashes::d3d11
 	{
 		for ( auto & command : m_commands )
 		{
-			deallocate( command, nullptr );
+			deallocateNA( command );
 		}
 
 		m_commands.clear();
@@ -52,7 +52,7 @@ namespace ashes::d3d11
 
 			if ( it != m_commands.end() )
 			{
-				deallocate( command, nullptr );
+				deallocateNA( command );
 				m_commands.erase( it );
 			}
 		}
