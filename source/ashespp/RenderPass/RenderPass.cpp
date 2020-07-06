@@ -25,7 +25,7 @@ namespace ashes
 		DEBUG_DUMP( m_createInfo );
 		auto res = m_device.vkCreateRenderPass( m_device
 			, &static_cast< VkRenderPassCreateInfo const & >( m_createInfo )
-			, nullptr
+			, m_device.getAllocationCallbacks()
 			, &m_internal );
 		checkError( res, "RenderPass creation" );
 		registerObject( m_device, debugName, *this );
@@ -36,7 +36,7 @@ namespace ashes
 		unregisterObject( m_device, *this );
 		m_device.vkDestroyRenderPass( m_device
 			, m_internal
-			, nullptr );
+			, m_device.getAllocationCallbacks() );
 	}
 
 	FrameBufferPtr RenderPass::createFrameBuffer( VkExtent2D const & dimensions

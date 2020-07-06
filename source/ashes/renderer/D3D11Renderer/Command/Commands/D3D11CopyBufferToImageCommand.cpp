@@ -346,7 +346,7 @@ namespace ashes::d3d11
 		{
 			VkBuffer result;
 			allocate( result
-				, nullptr
+				, get( device )->getAllocationCallbacks()
 				, device
 				, VkBufferCreateInfo
 				{
@@ -363,7 +363,7 @@ namespace ashes::d3d11
 			uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
 				, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
 			allocate( memory
-				, nullptr
+				, get( device )->getAllocationCallbacks()
 				, device
 				, VkMemoryAllocateInfo
 				{
@@ -578,8 +578,8 @@ namespace ashes::d3d11
 	{
 		if ( m_process.copyToStaging )
 		{
-			deallocate( m_process.copyToStaging->stagingSrcMemory, nullptr );
-			deallocate( m_process.copyToStaging->stagingSrc, nullptr );
+			deallocate( m_process.copyToStaging->stagingSrcMemory, get( m_device )->getAllocationCallbacks() );
+			deallocate( m_process.copyToStaging->stagingSrc, get( m_device )->getAllocationCallbacks() );
 		}
 	}
 

@@ -24,7 +24,7 @@ namespace ashes
 		DEBUG_DUMP( m_allocateInfo );
 		auto res = m_device.vkAllocateMemory( m_device
 			, &m_allocateInfo
-			, nullptr
+			, m_device.getAllocationCallbacks()
 			, &m_internal );
 		checkError( res, "DeviceMemory allocation" );
 		registerObject( m_device, debugName, *this );
@@ -33,7 +33,9 @@ namespace ashes
 	DeviceMemory::~DeviceMemory()
 	{
 		unregisterObject( m_device, *this );
-		m_device.vkFreeMemory( m_device, m_internal, nullptr );
+		m_device.vkFreeMemory( m_device
+			, m_internal
+			, m_device.getAllocationCallbacks() );
 	}
 
 	uint8_t * DeviceMemory::lock( VkDeviceSize offset

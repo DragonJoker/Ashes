@@ -732,6 +732,7 @@ namespace ashes
 		*	The creation informations.
 		*/
 		Device( Instance const & instance
+			, VkAllocationCallbacks const * callbacks
 			, PhysicalDevice const & physicalDevice
 			, ashes::DeviceCreateInfo createInfos );
 		/**
@@ -1616,6 +1617,11 @@ namespace ashes
 		{
 			return m_queueFamilyProperties;
 		}
+
+		inline VkAllocationCallbacks const * getAllocationCallbacks()const
+		{
+			return m_callbacks;
+		}
 		/**@}*/
 		/**
 		*\brief
@@ -1632,6 +1638,7 @@ namespace ashes
 
 	protected:
 		Instance const & m_instance;
+		VkAllocationCallbacks const * m_callbacks;
 		PhysicalDevice const & m_physicalDevice;
 		ashes::DeviceCreateInfo m_createInfos;
 		VkDevice m_internal{ VK_NULL_HANDLE };

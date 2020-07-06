@@ -44,7 +44,7 @@ namespace ashes
 		DEBUG_DUMP( createInfo );
 		auto res = m_device.vkCreatePipelineLayout( m_device
 			, &createInfo
-			, nullptr
+			, m_device.getAllocationCallbacks()
 			, &m_internal );
 		checkError( res, "PipelineLayout creation" );
 		registerObject( m_device, debugName, *this );
@@ -55,6 +55,6 @@ namespace ashes
 		unregisterObject( m_device, *this );
 		m_device.vkDestroyPipelineLayout( m_device
 			, m_internal
-			, nullptr );
+			, m_device.getAllocationCallbacks() );
 	}
 }

@@ -332,7 +332,7 @@ namespace ashes::d3d11
 					VK_NULL_HANDLE,
 				};
 				allocate( pcb.ubo
-					, nullptr
+					, get( device )->getAllocationCallbacks()
 					, device
 					, VkBufferCreateInfo
 					{
@@ -351,7 +351,7 @@ namespace ashes::d3d11
 				auto deduced = deduceMemoryType( requirements.memoryTypeBits
 					, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
 				allocate( pcb.memory
-					, nullptr
+					, get( device )->getAllocationCallbacks()
 					, m_device
 					, VkMemoryAllocateInfo
 					{
@@ -406,8 +406,8 @@ namespace ashes::d3d11
 	{
 		for ( auto & pcb : m_constantsPcbs )
 		{
-			deallocate( pcb.memory, nullptr );
-			deallocate( pcb.ubo, nullptr );
+			deallocate( pcb.memory, get( m_device )->getAllocationCallbacks() );
+			deallocate( pcb.ubo, get( m_device )->getAllocationCallbacks() );
 		}
 
 		safeRelease( m_bdState );

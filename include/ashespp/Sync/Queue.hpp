@@ -20,7 +20,6 @@ namespace ashes
 		Queue( Device const & device
 			, uint32_t familyIndex
 			, uint32_t index );
-		~Queue();
 		/**
 		*\brief
 		*	Submits given command buffers.

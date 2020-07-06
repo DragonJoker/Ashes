@@ -13,8 +13,10 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	Instance::Instance( AshPluginDescription plugin
+		, DeviceAllocatorPtr allocator
 		, ashes::InstanceCreateInfo createInfo )
 		: m_plugin{ std::move( plugin ) }
+		, m_allocator{ std::move( allocator ) }
 		, m_createInfo{ std::move( createInfo ) }
 		, m_features{ plugin.features }
 	{
@@ -155,6 +157,9 @@ namespace ashes
 		try
 		{
 			result = std::make_shared< Device >( *this
+				, ( m_allocator
+					? m_allocator->getAllocationCallbacks()
+					: nullptr )
 				, physicalDevice
 				, std::move( createInfos ) );
 		}
@@ -184,7 +189,7 @@ namespace ashes
 		{
 			auto res = vkCreateDebugUtilsMessengerEXT( m_instance
 				, &createInfo
-				, nullptr
+				, getAllocationCallbacks()
 				, &result );
 			checkError( res, "Debug utils messenger creation" );
 		}
@@ -198,7 +203,7 @@ namespace ashes
 		{
 			vkDestroyDebugUtilsMessengerEXT( m_instance
 				, messenger
-				, nullptr );
+				, getAllocationCallbacks() );
 		}
 	}
 
@@ -226,7 +231,7 @@ namespace ashes
 		{
 			auto res = vkCreateDebugReportCallbackEXT( m_instance
 				, &createInfo
-				, nullptr
+				, getAllocationCallbacks()
 				, &result );
 			checkError( res, "Debug report callback creation" );
 		}
@@ -268,5 +273,10 @@ namespace ashes
 		return m_createInfo.enabledExtensionNames.end() != std::find( m_createInfo.enabledExtensionNames.begin()
 			, m_createInfo.enabledExtensionNames.end()
 			, name );
+	}
+
+	VkAllocationCallbacks const * Instance::getAllocationCallbacks()const
+	{
+		return m_allocator->getAllocationCallbacks();
 	}
 }

@@ -94,8 +94,10 @@ namespace ashes::gl
 	{
 		for ( auto & inlineUbo : m_inlineUbos )
 		{
-			deallocate( inlineUbo->buffer, nullptr );
-			deallocate( inlineUbo->memory, nullptr );
+			deallocate( inlineUbo->buffer
+				, get( get( m_pool )->getDevice() )->getAllocationCallbacks() );
+			deallocate( inlineUbo->memory
+				, get( get( m_pool )->getDevice() )->getAllocationCallbacks() );
 		}
 	}
 

@@ -34,7 +34,7 @@ namespace ashes
 		DEBUG_DUMP( createInfo );
 		auto res = m_device.vkCreateDescriptorSetLayout( m_device
 			, &createInfo
-			, nullptr
+			, m_device.getAllocationCallbacks()
 			, &m_internal );
 		checkError( res, "DescriptorSetLayout creation" );
 		registerObject( m_device, debugName, *this );
@@ -45,7 +45,7 @@ namespace ashes
 		unregisterObject( m_device, *this );
 		m_device.vkDestroyDescriptorSetLayout( m_device
 			, m_internal
-			, nullptr );
+			, m_device.getAllocationCallbacks() );
 	}
 
 	VkDescriptorSetLayoutBinding const & DescriptorSetLayout::getBinding( uint32_t bindingPoint

@@ -19,7 +19,7 @@ namespace ashes::gl
 		{
 			VkImage result;
 			allocate( result
-				, nullptr
+				, get( device )->getAllocationCallbacks()
 				, device
 				, format
 				, std::move( dimensions )
@@ -28,7 +28,7 @@ namespace ashes::gl
 			uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
 				, VK_MEMORY_HEAP_DEVICE_LOCAL_BIT );
 			allocate( deviceMemory
-				, nullptr
+				, get( device )->getAllocationCallbacks()
 				, device
 				, VkMemoryAllocateInfo{ VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, requirements.size, deduced } );
 			get( deviceMemory )->bindToImage( result, 0u );
@@ -41,7 +41,7 @@ namespace ashes::gl
 		{
 			VkImageView result;
 			allocate( result
-				, nullptr
+				, get( device )->getAllocationCallbacks()
 				, device
 				, VkImageViewCreateInfo
 				{
@@ -115,11 +115,14 @@ namespace ashes::gl
 
 			if ( hasTextureViews( m_device ) )
 			{
-				deallocate( m_view, nullptr );
+				deallocate( m_view
+					, get( m_device )->getAllocationCallbacks() );
 			}
 
-			deallocate( m_deviceMemory, nullptr );
-			deallocate( m_image, nullptr );
+			deallocate( m_deviceMemory
+				, get( m_device )->getAllocationCallbacks() );
+			deallocate( m_image
+				, get( m_device )->getAllocationCallbacks() );
 		}
 		get( m_device )->unlink( m_createInfo.surface );
 	}

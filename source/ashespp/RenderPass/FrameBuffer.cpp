@@ -45,7 +45,7 @@ namespace ashes
 		DEBUG_DUMP( createInfo );
 		auto res = m_device.vkCreateFramebuffer( m_device
 			, &createInfo
-			, nullptr
+			, m_device.getAllocationCallbacks()
 			, &m_internal );
 		checkError( res, "FrameBuffer creation" );
 		registerObject( m_device, debugName, *this );
@@ -54,6 +54,8 @@ namespace ashes
 	FrameBuffer::~FrameBuffer()
 	{
 		unregisterObject( m_device, *this );
-		m_device.vkDestroyFramebuffer( m_device, m_internal, nullptr );
+		m_device.vkDestroyFramebuffer( m_device
+			, m_internal
+			, m_device.getAllocationCallbacks() );
 	}
 }

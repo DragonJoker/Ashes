@@ -13,6 +13,7 @@ namespace ashes::gl
 {
 	CommandPool::CommandPool( VkDevice device
 		, VkCommandPoolCreateInfo createInfo )
+		: m_device{ device }
 	{
 	}
 
@@ -25,7 +26,7 @@ namespace ashes::gl
 	{
 		for ( auto & buffer : sets )
 		{
-			deallocate( buffer, nullptr );
+			deallocateNA( buffer );
 		}
 
 		return VK_SUCCESS;

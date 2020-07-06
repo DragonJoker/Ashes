@@ -34,7 +34,7 @@ namespace ashes
 		DEBUG_DUMP( createInfo );
 		auto res = m_device.vkCreateQueryPool( device
 			, &createInfo
-			, nullptr
+			, m_device.getAllocationCallbacks()
 			, &m_internal );
 		checkError( res, "QueryPool creation" );
 		registerObject( m_device, debugName, *this );
@@ -45,7 +45,7 @@ namespace ashes
 		unregisterObject( m_device, *this );
 		m_device.vkDestroyQueryPool( m_device
 			, m_internal
-			, nullptr );
+			, m_device.getAllocationCallbacks() );
 	}
 
 	void QueryPool::getResults( uint32_t firstQuery

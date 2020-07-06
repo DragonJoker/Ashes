@@ -130,9 +130,11 @@ namespace ashes::d3d11
 
 	Device::Device( VkInstance instance
 		, VkPhysicalDevice physicalDevice
+		, VkAllocationCallbacks const * callbacks
 		, VkDeviceCreateInfo createInfos )
 		: m_instance{ instance }
 		, m_physicalDevice{ physicalDevice }
+		, m_callbacks{ callbacks }
 		, m_createInfos{ std::move( createInfos ) }
 	{
 		doCheckEnabledExtensions( physicalDevice
@@ -141,7 +143,7 @@ namespace ashes::d3d11
 		doCreateDummyIndexBuffer();
 		doCreateQueues();
 		allocate( m_sampler
-			, nullptr
+			, getAllocationCallbacks()
 			, get( this )
 			, VkSamplerCreateInfo
 			{
@@ -172,19 +174,19 @@ namespace ashes::d3d11
 		{
 			for ( auto queue : creates.second.queues )
 			{
-				deallocate( queue, nullptr );
+				deallocateNA( queue );
 			}
 		}
 
 		for ( auto & it : m_stagingTextures )
 		{
-			deallocate( it.second.first, nullptr );
-			deallocate( it.second.second, nullptr );
+			deallocate( it.second.first, getAllocationCallbacks() );
+			deallocate( it.second.second, getAllocationCallbacks() );
 		}
 
-		deallocate( m_sampler, nullptr );
-		deallocate( m_dummyIndexed.memory, nullptr );
-		deallocate( m_dummyIndexed.buffer, nullptr );
+		deallocate( m_sampler, getAllocationCallbacks() );
+		deallocate( m_dummyIndexed.memory, getAllocationCallbacks() );
+		deallocate( m_dummyIndexed.buffer, getAllocationCallbacks() );
 
 		m_deviceContext->ClearState();
 		m_deviceContext->Flush();
@@ -225,7 +227,7 @@ namespace ashes::d3d11
 		{
 			VkImage result;
 			allocate( result
-				, nullptr
+				, getAllocationCallbacks()
 				, get( this )
 				, VkImageCreateInfo
 				{
@@ -250,7 +252,7 @@ namespace ashes::d3d11
 				, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
 			VkDeviceMemory resMem;
 			allocate( resMem
-				, nullptr
+				, getAllocationCallbacks()
 				, get( this )
 				, VkMemoryAllocateInfo
 				{
@@ -564,7 +566,7 @@ namespace ashes::d3d11
 		auto size = uint32_t( sizeof( dummyIndex ) );
 		auto count = uint32_t( size / sizeof( dummyIndex[0] ) );
 		allocate( m_dummyIndexed.buffer
-			, nullptr
+			, getAllocationCallbacks()
 			, get( this )
 			, VkBufferCreateInfo
 			{
@@ -581,7 +583,7 @@ namespace ashes::d3d11
 		auto deduced = deduceMemoryType( requirements.memoryTypeBits
 			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
 		allocate( m_dummyIndexed.memory
-			, nullptr
+			, getAllocationCallbacks()
 			, get( this )
 			, VkMemoryAllocateInfo
 			{
@@ -612,8 +614,7 @@ namespace ashes::d3d11
 				, QueueCreates{ queueCreateInfo, {} } ).first;
 
 			VkQueue queue;
-			allocate( queue
-				, nullptr
+			allocateNA( queue
 				, get( this )
 				, it->second.createInfo
 				, uint32_t( it->second.queues.size() ) );

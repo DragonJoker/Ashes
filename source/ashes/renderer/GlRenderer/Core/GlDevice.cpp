@@ -161,9 +161,11 @@ namespace ashes::gl
 
 	Device::Device( VkInstance instance
 		, VkPhysicalDevice physicalDevice
+		, VkAllocationCallbacks const * callbacks
 		, VkDeviceCreateInfo createInfos )
 		: m_instance{ instance }
 		, m_physicalDevice{ physicalDevice }
+		, m_callbacks{ callbacks }
 		, m_createInfos{ std::move( createInfos ) }
 		, m_enabledFeatures{ m_createInfos.pEnabledFeatures ? *m_createInfos.pEnabledFeatures : get( m_physicalDevice )->getFeatures() }
 		, m_dyState{ VK_DYNAMIC_STATE_SCISSOR, VK_DYNAMIC_STATE_VIEWPORT }
@@ -173,11 +175,11 @@ namespace ashes::gl
 			, ashes::makeArrayView( m_createInfos.ppEnabledExtensionNames, m_createInfos.enabledExtensionCount ) );
 		doInitialiseQueues();
 		allocate( m_blitFbos[0]
-			, nullptr
+			, getAllocationCallbacks()
 			, get( this )
 			, GL_INVALID_INDEX );
 		allocate( m_blitFbos[1]
-			, nullptr
+			, getAllocationCallbacks()
 			, get( this )
 			, GL_INVALID_INDEX );
 	}
@@ -192,21 +194,26 @@ namespace ashes::gl
 			{
 				for ( auto queue : creates.second.queues )
 				{
-					deallocate( queue, nullptr );
+					deallocateNA( queue );
 				}
 			}
 
 			if ( m_sampler )
 			{
-				deallocate( m_sampler, nullptr );
-				deallocate( m_blitFbos[0], nullptr );
-				deallocate( m_blitFbos[1], nullptr );
+				deallocate( m_sampler
+					, getAllocationCallbacks() );
+				deallocate( m_blitFbos[0]
+					, getAllocationCallbacks() );
+				deallocate( m_blitFbos[1]
+					, getAllocationCallbacks() );
 			}
 
 			if ( m_dummyIndexed.indexMemory )
 			{
-				deallocate( m_dummyIndexed.indexMemory, nullptr );
-				deallocate( m_dummyIndexed.indexBuffer, nullptr );
+				deallocate( m_dummyIndexed.indexMemory
+					, getAllocationCallbacks() );
+				deallocate( m_dummyIndexed.indexBuffer
+					, getAllocationCallbacks() );
 			}
 		}
 
@@ -467,7 +474,7 @@ namespace ashes::gl
 
 			auto lock = getContext();
 			allocate( m_sampler
-				, nullptr
+				, getAllocationCallbacks()
 				, get( this )
 				, VkSamplerCreateInfo
 				{
@@ -508,7 +515,8 @@ namespace ashes::gl
 	{
 		if ( m_sampler )
 		{
-			deallocate( m_sampler, nullptr );
+			deallocate( m_sampler
+				, getAllocationCallbacks() );
 			m_sampler = nullptr;
 		}
 	}
@@ -530,8 +538,7 @@ namespace ashes::gl
 				, QueueCreates{ queueCreateInfo, {} } ).first;
 
 			VkQueue queue;
-			allocate( queue
-				, nullptr
+			allocateNA( queue
 				, get( this )
 				, it->second.createInfo
 				, uint32_t( it->second.queues.size() ) );
@@ -546,7 +553,7 @@ namespace ashes::gl
 			auto context = getContext();
 			auto count = uint32_t( sizeof( gl::dummyIndex ) / sizeof( gl::dummyIndex[0] ) );
 			allocate( m_dummyIndexed.indexBuffer
-				, nullptr
+				, getAllocationCallbacks()
 				, get( this )
 				, VkBufferCreateInfo
 				{
@@ -564,7 +571,7 @@ namespace ashes::gl
 			auto deduced = deduceMemoryType( requirements.memoryTypeBits
 				, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
 			allocate( m_dummyIndexed.indexMemory
-				, nullptr
+				, getAllocationCallbacks()
 				, get( this )
 				, VkMemoryAllocateInfo{ VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, requirements.size, deduced } );
 			get( m_dummyIndexed.indexMemory )->bindToBuffer( m_dummyIndexed.indexBuffer, 0u );

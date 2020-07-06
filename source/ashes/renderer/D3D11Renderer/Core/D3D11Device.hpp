@@ -26,6 +26,7 @@ namespace ashes::d3d11
 	public:
 		Device( VkInstance instance
 			, VkPhysicalDevice physicalDevice
+			, VkAllocationCallbacks const * callbacks
 			, VkDeviceCreateInfo createInfos );
 		~Device();
 
@@ -116,6 +117,11 @@ namespace ashes::d3d11
 			return m_sampler;
 		}
 
+		inline VkAllocationCallbacks const * getAllocationCallbacks()const
+		{
+			return m_callbacks;
+		}
+
 #if !defined( NDEBUG )
 
 		inline ID3D11Debug * getDebug()
@@ -142,6 +148,7 @@ namespace ashes::d3d11
 	private:
 		VkInstance m_instance;
 		VkPhysicalDevice m_physicalDevice;
+		VkAllocationCallbacks const * m_callbacks;
 		VkDeviceCreateInfo m_createInfos;
 		ID3D11Device * m_d3dDevice;
 		ID3D11DeviceContext * m_deviceContext;

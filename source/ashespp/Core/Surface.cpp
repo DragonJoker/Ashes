@@ -26,7 +26,7 @@ namespace ashes
 		{
 			m_instance.vkDestroySurfaceKHR( m_instance
 				, m_internal
-				, nullptr );
+				, m_instance.getAllocationCallbacks() );
 		}
 	}
 
@@ -112,7 +112,7 @@ namespace ashes
 		DEBUG_DUMP( createInfo );
 		auto res = m_instance.vkCreateWin32SurfaceKHR( m_instance
 			, &createInfo
-			, nullptr
+			, m_instance.getAllocationCallbacks()
 			, &m_internal );
 		checkError( res, "Presentation surface creation" );
 		m_type = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
@@ -132,7 +132,7 @@ namespace ashes
 		DEBUG_DUMP( createInfo );
 		auto res = m_instance.vkCreateAndroidSurfaceKHR( m_instance
 			, &createInfo
-			, nullptr
+			, m_instance.getAllocationCallbacks()
 			, &m_internal );
 		checkError( res, "Presentation surface creation" );
 		m_type = VK_KHR_ANDROID_SURFACE_EXTENSION_NAME;
@@ -152,7 +152,7 @@ namespace ashes
 		};
 		auto res = m_instance.vkCreateXcbSurfaceKHR( m_instance
 			, &createInfo
-			, nullptr
+			, m_instance.getAllocationCallbacks()
 			, &m_internal );
 		checkError( res, "Presentation surface creation" );
 		m_type = VK_KHR_XCB_SURFACE_EXTENSION_NAME;
@@ -172,7 +172,7 @@ namespace ashes
 		};
 		auto res = m_instance.vkCreateMirSurfaceKHR( m_instance
 			, &createInfo
-			, nullptr
+			, m_instance.getAllocationCallbacks()
 			, &m_internal );
 		checkError( res, "Presentation surface creation" );
 		m_type = VK_KHR_MIR_SURFACE_EXTENSION_NAME;
@@ -192,7 +192,7 @@ namespace ashes
 		};
 		auto res = m_instance.vkCreateWaylandSurfaceKHR( m_instance
 			, &createInfo
-			, nullptr
+			, m_instance.getAllocationCallbacks()
 			, &m_internal );
 		checkError( res, "Presentation surface creation" );
 		m_type = VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME;
@@ -212,7 +212,7 @@ namespace ashes
 		};
 		auto res = m_instance.vkCreateXlibSurfaceKHR( m_instance
 			, &createInfo
-			, nullptr
+			, m_instance.getAllocationCallbacks()
 			, &m_internal );
 		checkError( res, "Presentation surface creation" );
 		m_type = VK_KHR_XLIB_SURFACE_EXTENSION_NAME;
@@ -231,7 +231,7 @@ namespace ashes
 		};
 		auto res = m_instance.vkCreateMacOSSurfaceMVK( m_instance
 			, &createInfo
-			, nullptr
+			, m_instance.getAllocationCallbacks()
 			, &m_internal );
 		checkError( res, "Presentation surface creation" );
 		m_type = VK_MVK_MACOS_SURFACE_EXTENSION_NAME;
