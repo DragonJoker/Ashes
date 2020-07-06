@@ -151,6 +151,7 @@ namespace ashes::gl
 			, pAllocator
 			, instance
 			, physicalDevice
+			, pAllocator
 			, *pCreateInfo );
 	}
 
@@ -942,8 +943,7 @@ namespace ashes::gl
 		{
 			if ( result == VK_SUCCESS )
 			{
-				result = allocate( *itSet
-					, nullptr
+				result = allocateNA( *itSet
 					, pAllocateInfo->descriptorPool
 					, *itLayout );
 			}
@@ -1072,8 +1072,7 @@ namespace ashes::gl
 		{
 			if ( result == VK_SUCCESS )
 			{
-				result = allocate( *it
-					, nullptr
+				result = allocateNA( *it
 					, device
 					, pAllocateInfo->level );
 			}

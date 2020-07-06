@@ -1212,7 +1212,8 @@ namespace ashes::gl
 
 		for ( auto & view : m_blitViews )
 		{
-			deallocate( view, nullptr );
+			deallocate( view
+				, get( m_device )->getAllocationCallbacks() );
 		}
 
 		m_blitViews.clear();

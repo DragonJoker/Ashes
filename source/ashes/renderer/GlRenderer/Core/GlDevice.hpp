@@ -18,6 +18,7 @@ namespace ashes::gl
 	public:
 		Device( VkInstance instance
 			, VkPhysicalDevice gpu
+			, VkAllocationCallbacks const * callbacks
 			, VkDeviceCreateInfo createInfos );
 		~Device();
 
@@ -102,6 +103,11 @@ namespace ashes::gl
 			return m_sampler;
 		}
 
+		inline VkAllocationCallbacks const * getAllocationCallbacks()const
+		{
+			return m_callbacks;
+		}
+
 	private:
 		void doInitialiseQueues();
 		void doInitialiseDummy()const;
@@ -117,6 +123,7 @@ namespace ashes::gl
 	private:
 		VkInstance m_instance;
 		VkPhysicalDevice m_physicalDevice;
+		VkAllocationCallbacks const * m_callbacks;
 		VkDeviceCreateInfo m_createInfos;
 		VkPhysicalDeviceFeatures m_enabledFeatures{};
 		QueueCreateCountMap m_queues;

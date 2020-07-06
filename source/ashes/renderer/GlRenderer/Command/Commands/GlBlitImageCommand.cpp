@@ -95,7 +95,7 @@ namespace ashes::gl
 			if ( get( image )->getArrayLayers() > 1u )
 			{
 				allocate( view
-					, nullptr
+					, get( device )->getAllocationCallbacks()
 					, device
 					, VkImageViewCreateInfo
 					{
