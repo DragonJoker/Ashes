@@ -192,6 +192,7 @@ int main( int argc, char * argv[] )
 
 	// With that informations, we can now create the instance.
 	ashes::InstancePtr instance = std::make_unique< ashes::Instance >( std::move( plugin )
+		, nullptr
 		, std::move( instInfo ) );
 
 	VkDebugReportCallbackCreateInfoEXT dbg_info

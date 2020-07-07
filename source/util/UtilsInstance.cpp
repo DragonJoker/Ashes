@@ -172,6 +172,7 @@ namespace utils
 			m_extensionNames,
 		};
 		m_instance = std::make_unique< ashes::Instance >( std::move( plugin )
+			, nullptr
 			, std::move( createInfo ) );
 
 #if LOAD_VALIDATION_LAYERS
