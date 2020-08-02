@@ -277,6 +277,8 @@ namespace ashes
 
 	VkAllocationCallbacks const * Instance::getAllocationCallbacks()const
 	{
-		return m_allocator->getAllocationCallbacks();
+		return m_allocator
+			? m_allocator->getAllocationCallbacks()
+			: nullptr;
 	}
 }
