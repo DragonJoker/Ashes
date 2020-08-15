@@ -246,9 +246,9 @@ namespace ashes::gl
 	void Image::doInitialiseMemoryRequirements()
 	{
 		auto physicalDevice = get( get( m_device )->getPhysicalDevice() );
-		m_memoryRequirements.size = getTotalSize( getDimensions(), getFormat(), getArrayLayers(), getMipLevels() );
 		auto extent = ashes::getMinimalExtent3D( getFormat() );
 		m_memoryRequirements.alignment = getSize( extent, getFormat() );
+		m_memoryRequirements.size = getTotalSize( getDimensions(), getFormat(), getArrayLayers(), getMipLevels(), uint32_t( m_memoryRequirements.alignment ) );
 		m_memoryRequirements.memoryTypeBits = physicalDevice->getMemoryTypeBits( VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
 			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT );
 		m_memoryRequirements.size = ashes::getAlignedSize( m_memoryRequirements.size, m_memoryRequirements.alignment );

@@ -352,7 +352,8 @@ namespace ashes::d3d11
 		imageProperties.maxResourceSize = imageProperties.maxArrayLayers * ashes::getLevelsSize( imageProperties.maxExtent
 			, format
 			, 0u
-			, imageProperties.maxMipLevels );
+			, imageProperties.maxMipLevels
+			, uint32_t( ashes::getMinimalSize( format ) ) );
 		return VK_SUCCESS;
 	}
 

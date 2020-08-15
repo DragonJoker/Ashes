@@ -818,7 +818,8 @@ namespace ashes
 		*	The created staging texture.
 		*/
 		StagingTexturePtr createStagingTexture( VkFormat format
-			, VkExtent2D const & extent )const;
+			, VkExtent2D const & extent
+			, uint32_t mipLevels = 1u )const;
 		/**
 		*\brief
 		*	Creates a staging texture.
@@ -829,7 +830,8 @@ namespace ashes
 		*/
 		StagingTexturePtr createStagingTexture( std::string const & debugName
 			, VkFormat format
-			, VkExtent2D const & extent )const;
+			, VkExtent2D const & extent
+			, uint32_t mipLevels = 1u )const;
 		/*
 		*\brief
 		*	Creates a render pass.

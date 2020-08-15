@@ -15,22 +15,24 @@ namespace ashes
 {
 	StagingTexture::StagingTexture( Device const & device
 		, VkFormat format
-		, VkExtent2D const & extent )
-		: StagingTexture{ device, "StagingTexture", format, extent }
+		, VkExtent2D const & extent
+		, uint32_t mipLevels )
+		: StagingTexture{ device, "StagingTexture", format, extent, mipLevels }
 	{
 	}
 
 	StagingTexture::StagingTexture( Device const & device
 		, std::string const & debugName
 		, VkFormat format
-		, VkExtent2D const & extent )
+		, VkExtent2D const & extent
+		, uint32_t mipLevels )
 		: m_device{ device }
 		, m_extent{ extent }
 		, m_buffer
 		{
 			device,
 			debugName,
-			uint32_t( getAlignedSize( getSize( extent, format )
+			uint32_t( getAlignedSize( getLevelsSize( extent, format, 0u, mipLevels, 1u )
 				, uint32_t( m_device.getProperties().limits.nonCoherentAtomSize ) ) ),
 			VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT
 		}
@@ -53,7 +55,7 @@ namespace ashes
 		, VkFormat format
 		, VkOffset3D const & offset
 		, VkExtent2D const & extent
-		, uint8_t const * const data
+		, uint8_t const * data
 		, ImageView const & view )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( "StagingTextureUpload"
@@ -79,7 +81,7 @@ namespace ashes
 	void StagingTexture::uploadTextureData( Queue const & queue
 		, CommandPool const & commandPool
 		, VkFormat format
-		, uint8_t const * const data
+		, uint8_t const * data
 		, ImageView const & view )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( "StagingTextureUpload"
@@ -152,12 +154,13 @@ namespace ashes
 		, VkFormat format
 		, VkOffset3D const & offset
 		, VkExtent2D const & extent
-		, uint8_t const * const data
+		, uint8_t const * data
 		, ImageView const & view )const
 	{
 		doCopyToStagingTexture( data
 			, format
-			, extent );
+			, extent
+			, 1u );
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
 			, VK_PIPELINE_STAGE_TRANSFER_BIT
 			, view.makeTransferDestination( VK_IMAGE_LAYOUT_UNDEFINED ) );
@@ -174,25 +177,86 @@ namespace ashes
 
 	void StagingTexture::uploadTextureData( CommandBuffer const & commandBuffer
 		, VkFormat format
-		, uint8_t const * const data
+		, uint8_t const * data
 		, ImageView const & view )const
 	{
-		auto extent = VkExtent3D{ view.image->getDimensions() };
 		auto mipLevel = view->subresourceRange.baseMipLevel;
-		extent.width = std::max( 1u, extent.width >> mipLevel );
-		extent.height = std::max( 1u, extent.height >> mipLevel );
-		uploadTextureData( commandBuffer
-			, {
-				view->subresourceRange.aspectMask,
-				mipLevel,
-				view->subresourceRange.baseArrayLayer,
-				view->subresourceRange.layerCount
-			}
+		VkExtent2D extent
+		{
+			std::max( 1u, view.image->getDimensions().width >> mipLevel ),
+			std::max( 1u, view.image->getDimensions().height >> mipLevel )
+		};
+		doCopyToStagingTexture( data
 			, format
-			, VkOffset3D{}
-			, { extent.width, extent.height }
-			, data
-			, view );
+			, extent
+			, view->subresourceRange.levelCount );
+		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
+			, VK_PIPELINE_STAGE_TRANSFER_BIT
+			, view.makeTransferDestination( VK_IMAGE_LAYOUT_UNDEFINED ) );
+		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+			, VK_PIPELINE_STAGE_TRANSFER_BIT
+			, m_buffer.makeTransferSource() );
+		VkDeviceSize offset = 0u;
+		VkImageSubresourceLayers subresourceLayers
+		{
+			view->subresourceRange.aspectMask,
+			0u,
+			view->subresourceRange.baseArrayLayer,
+			view->subresourceRange.layerCount
+		};
+
+		for ( uint32_t level = 0u; level < view->subresourceRange.levelCount; ++level )
+		{
+			subresourceLayers.mipLevel = level;
+			VkDeviceSize size = getSize( extent, format );
+			assert( offset + size <= m_buffer.getSize() );
+			commandBuffer.copyToImage( VkBufferImageCopy
+				{
+					offset,
+					0u,
+					0u,
+					subresourceLayers,
+					VkOffset3D{},
+					VkExtent3D
+					{
+						std::max( 1u, extent.width ),
+						std::max( 1u, extent.height ),
+						1u
+					}
+				}
+				, m_buffer
+				, * view.image );
+			offset += size;
+			extent.width = std::max( 1u, extent.width >> 1u );
+			extent.height = std::max( 1u, extent.height >> 1u );
+		}
+
+		//commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+		//	, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+		//	, view.makeShaderInputResource( VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL ) );
+		//ImageView levelView{ view };
+		//levelView->subresourceRange.baseMipLevel = mipLevel;
+		//levelView->subresourceRange.levelCount = 1u;
+
+		//for ( uint32_t level = 0u; level < view->subresourceRange.levelCount; ++level )
+		//{
+		//	uploadTextureData( commandBuffer
+		//		, {
+		//			levelView->subresourceRange.aspectMask,
+		//			level,
+		//			levelView->subresourceRange.baseArrayLayer,
+		//			levelView->subresourceRange.layerCount
+		//		}
+		//		, format
+		//		, VkOffset3D{}
+		//		, { extent.width, extent.height }
+		//		, data
+		//		, levelView );
+		//	data += ashes::getSize( extent, format );
+		//	extent.width = std::max( 1u, extent.width >> 1u );
+		//	extent.height = std::max( 1u, extent.height >> 1u );
+		//	++levelView->subresourceRange.baseMipLevel;
+		//}
 	}
 
 	void StagingTexture::copyTextureData( CommandBuffer const & commandBuffer
@@ -303,9 +367,10 @@ namespace ashes
 
 	void StagingTexture::doCopyToStagingTexture( uint8_t const * data
 		, VkFormat format
-		, VkExtent2D const & extent )const
+		, VkExtent2D const & extent
+		, uint32_t mipLevels )const
 	{
-		VkDeviceSize size = getSize( extent, format );
+		VkDeviceSize size = getLevelsSize( extent, format, 0u, mipLevels, 1u );
 		assert( size <= m_buffer.getSize() );
 		auto mappedSize = getAlignedSize( size
 			, m_device.getProperties().limits.nonCoherentAtomSize );
