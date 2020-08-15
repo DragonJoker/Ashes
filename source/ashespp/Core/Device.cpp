@@ -97,21 +97,25 @@ namespace ashes
 	}
 
 	StagingTexturePtr Device::createStagingTexture( VkFormat format
-		, VkExtent2D const & extent )const
+		, VkExtent2D const & extent
+		, uint32_t mipLevels )const
 	{
 		return std::make_unique< StagingTexture >( *this
 			, format
-			, extent );
+			, extent
+			, mipLevels );
 	}
 
 	StagingTexturePtr Device::createStagingTexture( std::string const & debugName
 		, VkFormat format
-		, VkExtent2D const & extent )const
+		, VkExtent2D const & extent
+		, uint32_t mipLevels )const
 	{
 		return std::make_unique< StagingTexture >( *this
 			, debugName
 			, format
-			, extent );
+			, extent
+			, mipLevels );
 	}
 
 	RenderPassPtr Device::createRenderPass( RenderPassCreateInfo createInfo )const

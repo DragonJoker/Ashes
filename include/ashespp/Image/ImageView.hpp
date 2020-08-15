@@ -242,6 +242,14 @@ namespace ashes
 		}
 		/**
 		*\brief
+		*	Forward to VkImageView.
+		*/
+		inline VkImageViewCreateInfo * operator->()
+		{
+			return &createInfo;
+		}
+		/**
+		*\brief
 		*	VkImageViewCreateInfo cast operator.
 		*/
 		inline explicit operator VkImageViewCreateInfo const & ()const
