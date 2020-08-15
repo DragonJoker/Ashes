@@ -229,7 +229,8 @@ namespace ashes
 		auto layerSize = getLevelsSize( extent
 			, format
 			, range.baseMipLevel
-			, range.levelCount );
+			, range.levelCount
+			, uint32_t( view.image->getMemoryRequirements().alignment ) );
 		doCopyToStagingBuffer( data
 			, uint32_t( layerSize ) );
 		doCopyFromStagingBuffer( commandBuffer
@@ -306,7 +307,8 @@ namespace ashes
 			, uint32_t( getLevelsSize( extent
 				, format
 				, range.baseMipLevel
-				, range.levelCount ) ) );
+				, range.levelCount
+				, uint32_t( view.image->getMemoryRequirements().alignment ) ) ) );
 	}
 
 	void StagingBuffer::downloadTextureData( Queue const & queue
@@ -432,7 +434,8 @@ namespace ashes
 		auto realSize = getLevelsSize( size
 			, view->format
 			, view->subresourceRange.baseMipLevel
-			, view->subresourceRange.levelCount );
+			, view->subresourceRange.levelCount
+			, uint32_t( view.image->getMemoryRequirements().alignment ) );
 		assert( realSize <= getBuffer().getSize() );
 
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT

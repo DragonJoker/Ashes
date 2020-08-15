@@ -262,7 +262,8 @@ namespace ashes
 	VkDeviceSize getSize( VkFormat format
 		, VkExtent3D const & extent
 		, BlockSize const & texel
-		, uint32_t mipLevel )noexcept;
+		, uint32_t mipLevel
+		, uint32_t alignment )noexcept;
 	/**
 	*\brief
 	*	Checks if the given extent fits the given format.
@@ -338,7 +339,7 @@ namespace ashes
 	inline T getSubresourceDimension( T const & extent
 		, uint32_t mipLevel )noexcept
 	{
-		return extent >> mipLevel;
+		return std::max( T( 1 ), T( extent >> mipLevel ) );
 	}
 	/**
 	*\brief
@@ -392,12 +393,14 @@ namespace ashes
 	*/
 	inline VkDeviceSize getSize( VkExtent3D const & extent
 		, VkFormat format
-		, uint32_t mipLevel = 0u )noexcept
+		, uint32_t mipLevel = 0u
+		, uint32_t alignment = 1u )noexcept
 	{
 		return getSize( format
 			, extent
 			, getBlockSize( format )
-			, mipLevel );
+			, mipLevel
+			, alignment );
 	}
 	/**
 	*\brief
@@ -413,12 +416,14 @@ namespace ashes
 	*/
 	inline VkDeviceSize getSize( VkExtent2D const & extent
 		, VkFormat format
-		, uint32_t mipLevel = 0u )noexcept
+		, uint32_t mipLevel = 0u
+		, uint32_t alignment = 1u )noexcept
 	{
 		return getSize( format
 			, VkExtent3D{ extent.width, extent.height, 1u }
 			, getBlockSize( format )
-			, mipLevel );
+			, mipLevel
+			, alignment );
 	}
 	/**
 	*\brief
@@ -435,7 +440,8 @@ namespace ashes
 	inline VkDeviceSize getLevelsSize( VkExtent2D const & extent
 		, VkFormat format
 		, uint32_t baseMipLevel
-		, uint32_t levelCount )noexcept
+		, uint32_t levelCount
+		, uint32_t alignment )noexcept
 	{
 		VkDeviceSize result = 0u;
 		auto blockSize = getBlockSize( format );
@@ -446,7 +452,8 @@ namespace ashes
 			result += getSize( format
 				, imageExtent
 				, blockSize
-				, mipLevel );
+				, mipLevel
+				, alignment );
 		}
 
 		return result;
@@ -466,7 +473,8 @@ namespace ashes
 	inline VkDeviceSize getLevelsSize( VkExtent3D const & extent
 		, VkFormat format
 		, uint32_t baseMipLevel
-		, uint32_t levelCount )noexcept
+		, uint32_t levelCount
+		, uint32_t alignment )noexcept
 	{
 		VkDeviceSize result = 0u;
 		auto blockSize = getBlockSize( format );
@@ -476,7 +484,8 @@ namespace ashes
 			result += getSize( format
 				, extent
 				, blockSize
-				, mipLevel );
+				, mipLevel
+				, alignment );
 		}
 
 		return result;
@@ -485,17 +494,19 @@ namespace ashes
 	inline VkDeviceSize getTotalSize( VkExtent2D const & extent
 		, VkFormat format
 		, uint32_t layerCount
-		, uint32_t levelCount )noexcept
+		, uint32_t levelCount
+		, uint32_t alignment )noexcept
 	{
-		return layerCount * getLevelsSize( extent, format, 0u, levelCount );
+		return layerCount * getLevelsSize( extent, format, 0u, levelCount, alignment );
 	}
 
 	inline VkDeviceSize getTotalSize( VkExtent3D const & extent
 		, VkFormat format
 		, uint32_t layerCount
-		, uint32_t levelCount )noexcept
+		, uint32_t levelCount
+		, uint32_t alignment )noexcept
 	{
-		return layerCount * getLevelsSize( extent, format, 0u, levelCount );
+		return layerCount * getLevelsSize( extent, format, 0u, levelCount, alignment );
 	}
 }
 
