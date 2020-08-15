@@ -97,6 +97,11 @@ namespace ashes::d3d11
 			return m_memory;
 		}
 
+		inline VkDeviceSize getMemoryAlignment()const
+		{
+			return m_memoryRequirements.alignment;
+		}
+
 		inline VkDeviceSize getMemoryOffset()const
 		{
 			return m_memoryOffset;

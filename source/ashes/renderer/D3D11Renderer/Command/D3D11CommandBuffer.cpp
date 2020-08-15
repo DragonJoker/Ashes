@@ -1073,11 +1073,13 @@ namespace ashes::d3d11
 			auto layerSize = getLevelsSize( img->getDimensions()
 				, img->getFormat()
 				, 0u
-				, img->getMipmapLevels() );
+				, img->getMipmapLevels()
+				, uint32_t( img->getMemoryAlignment() ) );
 			auto size = getLevelsSize( img->getDimensions()
 				, img->getFormat()
 				, range.baseMipLevel
-				, range.levelCount );
+				, range.levelCount
+				, uint32_t( img->getMemoryAlignment() ) );
 			auto offset = img->getMemoryOffset();
 
 			for ( auto layer = range.baseArrayLayer; layer < range.baseArrayLayer + range.layerCount; ++layer )
@@ -1118,11 +1120,13 @@ namespace ashes::d3d11
 			auto layerSize = getLevelsSize( img->getDimensions()
 				, img->getFormat()
 				, 0u
-				, img->getMipmapLevels() );
+				, img->getMipmapLevels()
+				, uint32_t( img->getMemoryAlignment() ) );
 			auto size = getLevelsSize( img->getDimensions()
 				, img->getFormat()
 				, range.baseMipLevel
-				, range.levelCount );
+				, range.levelCount
+				, uint32_t( img->getMemoryAlignment() ) );
 			auto offset = img->getMemoryOffset();
 
 			for ( auto layer = range.baseArrayLayer; layer < range.baseArrayLayer + range.layerCount; ++layer )

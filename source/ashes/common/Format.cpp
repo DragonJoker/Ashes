@@ -974,12 +974,17 @@ namespace ashes
 	VkDeviceSize getSize( VkFormat format
 		, VkExtent3D const & extent
 		, BlockSize const & texel
-		, uint32_t mipLevel )noexcept
+		, uint32_t mipLevel
+		, uint32_t alignment )noexcept
 	{
+		alignment = ( alignment <= 1u
+			? uint32_t( getMinimalSize( format ) )
+			: alignment );
 		auto levelExtent = getSubresourceDimensions( extent, mipLevel );
 		auto result = texel.size * ( VkDeviceSize( levelExtent.width ) * levelExtent.height * levelExtent.depth );
-		result /= ( VkDeviceSize( texel.extent.width ) * texel.extent.height * texel.extent.depth );
-		return result;
+		return std::max( VkDeviceSize( alignment )
+			, getAlignedSize( result / ( VkDeviceSize( texel.extent.width ) * texel.extent.height * texel.extent.depth )
+				, alignment ) );
 	}
 
 	VkPipelineColorBlendStateCreateInfo const & getDeactivatedColorBlendState()

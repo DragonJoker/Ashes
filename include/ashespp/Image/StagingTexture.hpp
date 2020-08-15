@@ -29,7 +29,8 @@ namespace ashes
 		*/
 		StagingTexture( Device const & device
 			, VkFormat format
-			, VkExtent2D const & extent );
+			, VkExtent2D const & extent
+			, uint32_t mipLevels = 1u );
 		/**
 		*\brief
 		*	Constructor.
@@ -41,7 +42,8 @@ namespace ashes
 		StagingTexture( Device const & device
 			, std::string const & debugName
 			, VkFormat format
-			, VkExtent2D const & extent );
+			, VkExtent2D const & extent
+			, uint32_t mipLevels = 1u );
 		~StagingTexture()
 		{
 		}
@@ -56,7 +58,7 @@ namespace ashes
 			, VkFormat format
 			, VkOffset3D const & offset
 			, VkExtent2D const & extent
-			, uint8_t const * const data
+			, uint8_t const * data
 			, ImageView const & texture )const;
 		inline void uploadTextureData( Queue const & queue
 			, CommandPool const & commandPool
@@ -69,7 +71,7 @@ namespace ashes
 		void uploadTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, VkFormat format
-			, uint8_t const * const data
+			, uint8_t const * data
 			, ImageView const & texture )const;
 		inline void uploadTextureData( Queue const & queue
 			, CommandPool const & commandPool
@@ -92,7 +94,7 @@ namespace ashes
 			, VkFormat format
 			, VkOffset3D const & offset
 			, VkExtent2D const & extent
-			, uint8_t const * const data
+			, uint8_t const * data
 			, ImageView const & texture )const;
 		inline void uploadTextureData( CommandBuffer const & commandBuffer
 			, VkImageSubresourceLayers const & subresourceLayers
@@ -192,9 +194,10 @@ namespace ashes
 		*	Upload.
 		**/
 		/**@{*/
-		void doCopyToStagingTexture( uint8_t const * const data
+		void doCopyToStagingTexture( uint8_t const * data
 			, VkFormat format
-			, VkExtent2D const & extent )const;
+			, VkExtent2D const & extent
+			, uint32_t mipLevels )const;
 		void doCopyStagingToDestination( CommandBuffer const & commandBuffer
 			, VkImageSubresourceLayers const & subresourceLayers
 			, VkFormat format
