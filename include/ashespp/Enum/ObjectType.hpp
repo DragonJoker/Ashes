@@ -99,6 +99,10 @@ namespace ashes
 			return "DebugReportCallback";
 #endif
 #ifdef VK_NV_device_generated_commands
+		case VK_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NV:
+			return "IndirectCommandsLayout";
+#endif
+#ifdef VK_NVX_device_generated_commands
 		case VK_OBJECT_TYPE_OBJECT_TABLE_NVX:
 			return "ObjectTable";
 		case VK_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX:

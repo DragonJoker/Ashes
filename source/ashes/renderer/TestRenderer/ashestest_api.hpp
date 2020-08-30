@@ -348,7 +348,7 @@ namespace ashes::test
 		VkInstance instance = getInstance( object );
 #if VK_EXT_debug_utils
 		{
-			VkDebugUtilsObjectNameInfoEXT object
+			VkDebugUtilsObjectNameInfoEXT objectNameInfo
 			{
 				VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
 				nullptr,
@@ -370,7 +370,7 @@ namespace ashes::test
 					0u,
 					nullptr,
 					1u,
-					&object,
+					&objectNameInfo,
 				} );
 		}
 #endif

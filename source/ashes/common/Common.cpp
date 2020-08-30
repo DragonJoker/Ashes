@@ -8,23 +8,68 @@ namespace ashes
 {
 	namespace
 	{
-#if defined( _WIN32 )
-		static std::string const systemFolder = []()
+		struct Folder
 		{
-			char result[MAX_PATH]{};
-			GetSystemDirectoryA( result, MAX_PATH );
-			return std::string{ result };
-		}();
-		static bool recursive{ false };
+			std::string path;
+			bool recursive;
+		};
+
+#if defined( _WIN32 )
+		std::vector< Folder > const & getSystemFolders()
+		{
+			static std::vector< Folder > result
+			{
+				{
+					[]()
+					{
+						char result[MAX_PATH]{};
+						GetSystemDirectoryA( result, MAX_PATH );
+						return std::string{ result };
+					}(),
+					false,
+				},
+			};
+			return result;
+		}
 #elif defined( __linux__ )
-		static std::string const systemFolder{ "/usr/lib" };
-		static bool recursive{ true };
+		std::vector< Folder > const & getSystemFolders()
+		{
+			static std::vector< Folder > result
+			{
+				{ "/usr/local/lib", true },
+				{ "/usr/lib", true },
+			};
+			return result;
+		}
 #elif defined( __APPLE__ )
-		static std::string const systemFolder{ "/usr/lib" };
-		static bool recursive{ true };
+		std::vector< Folder > const & getSystemFolders()
+		{
+			static std::vector< Folder > result
+			{
+				{ "/usr/local/lib", true },
+				{ "/usr/lib", true },
+			};
+			return result;
+		}
 #else
 #	error Unsupported platform
 #endif
+
+		std::vector< Folder > const & getSearchFolders()
+		{
+			static std::vector< Folder > result = []()
+			{
+				std::vector< Folder > result
+				{
+					{ ashes::getExecutableDirectory(), false },
+					{ ashes::getPath( ashes::getExecutableDirectory() ) / "lib", false },
+				};
+				auto & system = getSystemFolders();
+				result.insert( result.end(), system.begin(), system.end() );
+				return result;
+			}();
+			return result;
+		}
 	}
 
 	StringArray filterDirectoryFiles( std::string const & folderPath
@@ -81,23 +126,16 @@ namespace ashes
 
 	StringArray lookForSharedLibrary( FilterFunction onFile )
 	{
-		auto binDir = ashes::getExecutableDirectory();
-		auto files = ashes::filterDirectoryFiles( binDir
-			, onFile
-			, false );
+		StringArray files;
 
-		if ( files.empty() )
+		for ( auto & folder : getSearchFolders() )
 		{
-			files = ashes::filterDirectoryFiles( ashes::getPath( binDir ) / "lib"
-				, onFile
-				, false );
-		}
-
-		if ( files.empty() )
-		{
-			files = ashes::filterDirectoryFiles( systemFolder
-				, onFile
-				, recursive );
+			if ( files.empty() )
+			{
+				files = ashes::filterDirectoryFiles( folder.path
+					, onFile
+					, folder.recursive );
+			}
 		}
 
 		return files;
