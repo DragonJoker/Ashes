@@ -5,6 +5,7 @@
 #include <ashes/common/FileUtils.hpp>
 
 #include <cassert>
+#include <iostream>
 #include <memory>
 #include <vector>
 

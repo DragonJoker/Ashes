@@ -95,7 +95,7 @@ namespace ashes
 		case VK_DEBUG_REPORT_OBJECT_TYPE_DISPLAY_MODE_KHR_EXT:
 			return "DisplayMode";
 #	endif
-#	ifdef VK_NV_device_generated_commands
+#	ifdef VK_NVX_device_generated_commands
 		case VK_DEBUG_REPORT_OBJECT_TYPE_OBJECT_TABLE_NVX_EXT:
 			return "ObjectTable";
 		case VK_DEBUG_REPORT_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NVX_EXT:

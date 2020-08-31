@@ -1,3 +1,4 @@
+set( wxWidgets_IGNORE_VCPKG ON )
 find_package( wxWidgets REQUIRED COMPONENTS core base )
 
 if( APPLE )
@@ -25,8 +26,6 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 	set( SAMPLE_ID 0 )
 	set( Ashes_BINARY_LIBRARIES
 		${Ashes_BINARY_LIBRARIES}
-		${glslang_LIBRARIES}
-		${SPIRV_LIBRARIES}
 		${wxWidgets_LIBRARIES}
 		${GTK2_LIBRARIES}
 		${assimp_LIBRARIES}
