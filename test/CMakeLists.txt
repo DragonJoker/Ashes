@@ -7,6 +7,7 @@ if ( ASHES_BUILD_TESTS OR ASHES_BUILD_INFO OR ASHES_BUILD_SW_SAMPLES )
 endif ()
 
 if ( ASHES_BUILD_TESTS )
+	set( wxWidgets_IGNORE_VCPKG ON )
 	find_package( wxWidgets COMPONENTS core base )
 	if( APPLE )
 		set( GTK2_FOUND TRUE )
