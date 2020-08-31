@@ -1,5 +1,5 @@
-cmake_minimum_required( VERSION 3.10 )
-cmake_policy( VERSION 3.10 )
+cmake_minimum_required( VERSION 3.15 )
+cmake_policy( VERSION 3.15 )
 
 if ( VCPKG_TARGET_TRIPLET )
 	set( VCPKG_TOOLCHAIN ON )
@@ -122,56 +122,6 @@ elseif ( APPLE )
 	set( Ashes_BINARY_DEFINITIONS VK_USE_PLATFORM_MACOS_MVK=1 )
 else ()
 	set( Ashes_BINARY_DEFINITIONS VK_USE_PLATFORM_XLIB_KHR=1 )
-endif ()
-
-if ( ASHES_BUILD_TESTS OR ASHES_BUILD_SAMPLES OR ASHES_BUILD_TEMPLATES )
-	if ( NOT TARGET glslang )
-		if ( VCPKG_TOOLCHAIN OR NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/external/glslang/ )
-			if ( VCPKG_TOOLCHAIN )
-				find_package( glslang CONFIG )
-				if ( ${glslang_FOUND} )
-					set( GLSLANG_FOUND ON )
-					set( glslang_LIBRARIES
-						glslang::OSDependent
-						glslang::glslang
-						glslang::OGLCompiler
-						glslang::SPIRV
-						glslang::HLSL )
-					set( glslang_INCLUDE_DIR
-						${CMAKE_CURRENT_SOURCE_DIR}/../../external/glslang
-					)
-				endif ()
-			else ()
-				find_package( glslang )
-			endif ()
-			if ( GLSLANG_FOUND )
-				set( ASHES_HAS_GLSLANG ON )
-			else ()
-				set( ASHES_HAS_GLSLANG OFF )
-			endif ()
-		else ()
-			set( ASHES_HAS_GLSLANG ON )
-			set( ASHES_BUILD_GLSLANG ON )
-			set( ENABLE_GLSLANG_BINARIES FALSE CACHE BOOL "Builds glslangValidator and spirv-remap" FORCE )
-			set( ENABLE_AMD_EXTENSIONS FALSE CACHE BOOL "Enables support of AMD-specific extensions" FORCE )
-			set( ENABLE_NV_EXTENSIONS FALSE CACHE BOOL "Enables support of Nvidia-specific extensions" FORCE )
-			set( ENABLE_HLSL FALSE CACHE BOOL "Enables HLSL input support" FORCE )
-			set( BUILD_TESTING OFF )
-			set( BUILD_EXTERNAL OFF )
-			set( SKIP_GLSLANG_INSTALL ON )
-			add_subdirectory( external/glslang )
-			set( glslang_LIBRARIES
-				glslang
-				OGLCompiler
-				OSDependent
-				SPVRemapper
-				SPIRV
-			)
-			set( glslang_INCLUDE_DIR
-				${CMAKE_CURRENT_SOURCE_DIR}/external/glslang
-			)
-		endif ()
-	endif ()
 endif ()
 
 add_subdirectory( source )

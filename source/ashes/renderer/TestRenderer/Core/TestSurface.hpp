@@ -10,6 +10,9 @@ namespace ashes::test
 {
 	class SurfaceKHR
 	{
+	private:
+		SurfaceKHR();
+
 	public:
 #if _WIN32
 		SurfaceKHR( VkInstance instance
@@ -19,6 +22,8 @@ namespace ashes::test
 			, VkXlibSurfaceCreateInfoKHR createInfo );
 		SurfaceKHR( VkInstance instance
 			, VkXcbSurfaceCreateInfoKHR createInfo );
+		SurfaceKHR( VkInstance instance
+			, VkWaylandSurfaceCreateInfoKHR createInfo );
 #endif
 #if VK_KHR_display
 		SurfaceKHR( VkInstance instance

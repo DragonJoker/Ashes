@@ -225,38 +225,15 @@ namespace ashes
 					}
 				}
 				, m_buffer
-				, * view.image );
+				, *view.image );
 			offset += size;
 			extent.width = std::max( 1u, extent.width >> 1u );
 			extent.height = std::max( 1u, extent.height >> 1u );
 		}
 
-		//commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
-		//	, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
-		//	, view.makeShaderInputResource( VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL ) );
-		//ImageView levelView{ view };
-		//levelView->subresourceRange.baseMipLevel = mipLevel;
-		//levelView->subresourceRange.levelCount = 1u;
-
-		//for ( uint32_t level = 0u; level < view->subresourceRange.levelCount; ++level )
-		//{
-		//	uploadTextureData( commandBuffer
-		//		, {
-		//			levelView->subresourceRange.aspectMask,
-		//			level,
-		//			levelView->subresourceRange.baseArrayLayer,
-		//			levelView->subresourceRange.layerCount
-		//		}
-		//		, format
-		//		, VkOffset3D{}
-		//		, { extent.width, extent.height }
-		//		, data
-		//		, levelView );
-		//	data += ashes::getSize( extent, format );
-		//	extent.width = std::max( 1u, extent.width >> 1u );
-		//	extent.height = std::max( 1u, extent.height >> 1u );
-		//	++levelView->subresourceRange.baseMipLevel;
-		//}
+		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+			, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+			, view.makeShaderInputResource( VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL ) );
 	}
 
 	void StagingTexture::copyTextureData( CommandBuffer const & commandBuffer

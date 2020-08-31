@@ -29,6 +29,11 @@ namespace ashes
 
 		virtual ~DeviceAllocatorBase()noexcept = default;
 
+		inline operator VkAllocationCallbacks const & ()const
+		{
+			return m_callbacks;
+		}
+
 		inline VkAllocationCallbacks const * getAllocationCallbacks()const
 		{
 			return &m_callbacks;
@@ -123,11 +128,6 @@ namespace ashes
 		}
 
 		~DeviceAllocatorT()noexcept = default;
-
-		inline operator VkAllocationCallbacks & ()const
-		{
-			return m_callbacks;
-		}
 
 	private:
 		inline void * allocate( size_t size

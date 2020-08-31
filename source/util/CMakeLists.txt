@@ -1,6 +1,55 @@
 set( _PROJECT_NAME util )
 project( ashes_${_PROJECT_NAME} )
 
+if ( NOT TARGET glslang )
+	if ( VCPKG_TOOLCHAIN AND NOT EXISTS ${Ashes_SOURCE_DIR}/external/glslang/CMakeLists.txt )
+		if ( VCPKG_TOOLCHAIN )
+			message( STATUS "Coin" )
+			find_package( glslang CONFIG REQUIRED glslang OSDependent OGLCompiler SPIRV HLSL )
+			if ( ${glslang_FOUND} )
+				set( GLSLANG_FOUND ON )
+				set( glslang_LIBRARIES
+					glslang::OSDependent
+					glslang::glslang
+					glslang::OGLCompiler
+					glslang::SPIRV
+					glslang::HLSL )
+				set( glslang_INCLUDE_DIR
+					${Ashes_SOURCE_DIR}/external/glslang
+				)
+			endif ()
+		else ()
+			find_package( glslang )
+		endif ()
+		if ( GLSLANG_FOUND )
+			set( ASHES_HAS_GLSLANG ON )
+		else ()
+			set( ASHES_HAS_GLSLANG OFF )
+		endif ()
+	else ()
+		set( ASHES_HAS_GLSLANG ON )
+		set( ASHES_BUILD_GLSLANG ON )
+		set( ENABLE_GLSLANG_BINARIES FALSE CACHE BOOL "Builds glslangValidator and spirv-remap" FORCE )
+		set( ENABLE_AMD_EXTENSIONS FALSE CACHE BOOL "Enables support of AMD-specific extensions" FORCE )
+		set( ENABLE_NV_EXTENSIONS FALSE CACHE BOOL "Enables support of Nvidia-specific extensions" FORCE )
+		set( ENABLE_HLSL FALSE CACHE BOOL "Enables HLSL input support" FORCE )
+		set( BUILD_TESTING OFF )
+		set( BUILD_EXTERNAL OFF )
+		set( SKIP_GLSLANG_INSTALL ON )
+		add_subdirectory( ${Ashes_SOURCE_DIR}/external/glslang external/glslang )
+		set( glslang_LIBRARIES
+			glslang
+			OGLCompiler
+			OSDependent
+			SPVRemapper
+			SPIRV
+		)
+		set( glslang_INCLUDE_DIR
+			${CMAKE_CURRENT_SOURCE_DIR}/external/glslang
+		)
+	endif ()
+endif ()
+
 set( ${PROJECT_NAME}_SRC_FILES
 	${Ashes_SOURCE_DIR}/source/util/GlslToSpv.cpp
 	${Ashes_SOURCE_DIR}/source/util/PlaneEquation.cpp

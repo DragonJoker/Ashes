@@ -86,18 +86,35 @@ namespace ashes::d3d11
 	VK_IMPLEMENT_HANDLE( DescriptorSet );
 	VK_IMPLEMENT_HANDLE( CommandPool );
 	VK_IMPLEMENT_HANDLE( Framebuffer );
+#ifdef VK_KHR_surface
 	VK_IMPLEMENT_HANDLE( SurfaceKHR );
+#endif
+#ifdef VK_KHR_swapchain
 	VK_IMPLEMENT_HANDLE( SwapchainKHR );
-
+#endif
+#ifdef VK_KHR_sampler_ycbcr_conversion
 	VK_IMPLEMENT_HANDLE( SamplerYcbcrConversion );
+#endif
+#ifdef VK_KHR_push_descriptor
 	VK_IMPLEMENT_HANDLE( DescriptorUpdateTemplate );
+#endif
+#ifdef VK_KHR_display
 	VK_IMPLEMENT_HANDLE( DisplayKHR );
 	VK_IMPLEMENT_HANDLE( DisplayModeKHR );
+#endif
+#ifdef VK_EXT_debug_report
 	VK_IMPLEMENT_HANDLE( DebugReportCallbackEXT );
+#endif
+#ifdef VK_NVX_device_generated_commands
 	VK_IMPLEMENT_HANDLE( ObjectTableNVX );
 	VK_IMPLEMENT_HANDLE( IndirectCommandsLayoutNVX );
+#endif
+#ifdef VK_EXT_debug_utils
 	VK_IMPLEMENT_HANDLE( DebugUtilsMessengerEXT );
+#endif
+#ifdef VK_EXT_validation_cache
 	VK_IMPLEMENT_HANDLE( ValidationCacheEXT );
+#endif
 
 	template< typename VkType >
 	typename VkDxTypeTraits< VkType >::Type * get( VkType vkValue )
