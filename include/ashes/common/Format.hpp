@@ -44,7 +44,7 @@ namespace ashes
 		}
 
 		return size == 0
-			? size
+			? result
 			: result + align;
 	}
 	/**
