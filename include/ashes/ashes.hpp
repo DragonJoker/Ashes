@@ -12,6 +12,124 @@ See LICENSE file in root folder.
 
 #include "ashes.h"
 
+namespace ashes
+{
+	inline bool operator==( VkOffset2D const & lhs, VkOffset2D const & rhs )
+	{
+		return lhs.x == rhs.x
+			&& lhs.y == rhs.y;
+	}
+
+	inline bool operator!=( VkOffset2D const & lhs, VkOffset2D const & rhs )
+	{
+		return !( lhs == rhs );
+	}
+
+	inline bool operator==( VkOffset3D const & lhs, VkOffset3D const & rhs )
+	{
+		return lhs.x == rhs.x
+			&& lhs.y == rhs.y
+			&& lhs.z == rhs.z;
+	}
+
+	inline bool operator!=( VkOffset3D const & lhs, VkOffset3D const & rhs )
+	{
+		return !( lhs == rhs );
+	}
+
+	inline bool operator==( VkExtent2D const & lhs, VkExtent2D const & rhs )
+	{
+		return lhs.width == rhs.width
+			&& lhs.height == rhs.height;
+	}
+
+	inline bool operator!=( VkExtent2D const & lhs, VkExtent2D const & rhs )
+	{
+		return !( lhs == rhs );
+	}
+
+	inline bool operator==( VkExtent3D const & lhs, VkExtent3D const & rhs )
+	{
+		return lhs.width == rhs.width
+			&& lhs.height == rhs.height
+			&& lhs.depth == rhs.depth;
+	}
+
+	inline bool operator!=( VkExtent3D const & lhs, VkExtent3D const & rhs )
+	{
+		return !( lhs == rhs );
+	}
+
+	inline bool operator==( VkRect2D const & lhs, VkRect2D const & rhs )
+	{
+		return lhs.offset == rhs.offset
+			&& lhs.extent == rhs.extent;
+	}
+
+	inline bool operator!=( VkRect2D const & lhs, VkRect2D const & rhs )
+	{
+		return !( lhs == rhs );
+	}
+
+	inline bool operator==( VkViewport const & lhs, VkViewport const & rhs )
+	{
+		return lhs.x == rhs.x
+			&& lhs.y == rhs.y
+			&& lhs.width == rhs.width
+			&& lhs.height == rhs.height
+			&& lhs.minDepth == rhs.minDepth
+			&& lhs.maxDepth == rhs.maxDepth;
+	}
+
+	inline bool operator!=( VkViewport const & lhs, VkViewport const & rhs )
+	{
+		return !( lhs == rhs );
+	}
+
+	inline bool operator==( VkAttachmentDescription const & lhs, VkAttachmentDescription const & rhs )
+	{
+		return lhs.flags == rhs.flags
+			&& lhs.format == rhs.format
+			&& lhs.samples == rhs.samples
+			&& lhs.loadOp == rhs.loadOp
+			&& lhs.storeOp == rhs.storeOp
+			&& lhs.stencilLoadOp == rhs.stencilLoadOp
+			&& lhs.stencilStoreOp == rhs.stencilStoreOp
+			&& lhs.initialLayout == rhs.initialLayout
+			&& lhs.finalLayout == rhs.finalLayout;
+	}
+
+	inline bool operator!=( VkAttachmentDescription const & lhs, VkAttachmentDescription const & rhs )
+	{
+		return !( lhs == rhs );
+	}
+
+	inline bool operator==( VkVertexInputAttributeDescription const & lhs, VkVertexInputAttributeDescription const & rhs )
+	{
+		return lhs.binding == rhs.binding
+			&& lhs.format == rhs.format
+			&& lhs.location == rhs.location
+			&& lhs.offset == rhs.offset;
+	}
+
+	inline bool operator!=( VkVertexInputAttributeDescription const & lhs, VkVertexInputAttributeDescription const & rhs )
+	{
+		return !( lhs == rhs );
+	}
+
+	inline bool operator==( VkVertexInputBindingDescription const & lhs, VkVertexInputBindingDescription const & rhs )
+	{
+		return lhs.binding == rhs.binding
+			&& lhs.stride == rhs.stride
+			&& lhs.inputRate == rhs.inputRate;
+	}
+
+	inline bool operator!=( VkVertexInputBindingDescription const & lhs, VkVertexInputBindingDescription const & rhs )
+	{
+		return !( lhs == rhs );
+	}
+}
+
 #include "common/ArrayView.hpp"
 #include "common/Exception.hpp"
 #include "common/FlagCombination.hpp"
@@ -707,96 +825,6 @@ namespace ashes
 		return ptr
 			? Optional< Type >{ deepCopy( *ptr, std::forward< Params && >( params )... ) }
 			: Optional< Type >{};
-	}
-
-	inline bool operator==( VkOffset2D const & lhs, VkOffset2D const & rhs )
-	{
-		return lhs.x == rhs.x
-			&& lhs.y == rhs.y;
-	}
-
-	inline bool operator!=( VkOffset2D const & lhs, VkOffset2D const & rhs )
-	{
-		return !( lhs == rhs );
-	}
-
-	inline bool operator==( VkOffset3D const & lhs, VkOffset3D const & rhs )
-	{
-		return lhs.x == rhs.x
-			&& lhs.y == rhs.y
-			&& lhs.z == rhs.z;
-	}
-
-	inline bool operator!=( VkOffset3D const & lhs, VkOffset3D const & rhs )
-	{
-		return !( lhs == rhs );
-	}
-
-	inline bool operator==( VkExtent2D const & lhs, VkExtent2D const & rhs )
-	{
-		return lhs.width == rhs.width
-			&& lhs.height == rhs.height;
-	}
-
-	inline bool operator!=( VkExtent2D const & lhs, VkExtent2D const & rhs )
-	{
-		return !( lhs == rhs );
-	}
-
-	inline bool operator==( VkExtent3D const & lhs, VkExtent3D const & rhs )
-	{
-		return lhs.width == rhs.width
-			&& lhs.height == rhs.height
-			&& lhs.depth == rhs.depth;
-	}
-
-	inline bool operator!=( VkExtent3D const & lhs, VkExtent3D const & rhs )
-	{
-		return !( lhs == rhs );
-	}
-
-	inline bool operator==( VkRect2D const & lhs, VkRect2D const & rhs )
-	{
-		return lhs.offset == rhs.offset
-			&& lhs.extent == rhs.extent;
-	}
-
-	inline bool operator!=( VkRect2D const & lhs, VkRect2D const & rhs )
-	{
-		return !( lhs == rhs );
-	}
-
-	inline bool operator==( VkViewport const & lhs, VkViewport const & rhs )
-	{
-		return lhs.x == rhs.x
-			&& lhs.y == rhs.y
-			&& lhs.width == rhs.width
-			&& lhs.height == rhs.height
-			&& lhs.minDepth == rhs.minDepth
-			&& lhs.maxDepth == rhs.maxDepth;
-	}
-
-	inline bool operator!=( VkViewport const & lhs, VkViewport const & rhs )
-	{
-		return !( lhs == rhs );
-	}
-
-	inline bool operator==( VkAttachmentDescription const & lhs, VkAttachmentDescription const & rhs )
-	{
-		return lhs.flags == rhs.flags
-			&& lhs.format == rhs.format
-			&& lhs.samples == rhs.samples
-			&& lhs.loadOp == rhs.loadOp
-			&& lhs.storeOp == rhs.storeOp
-			&& lhs.stencilLoadOp == rhs.stencilLoadOp
-			&& lhs.stencilStoreOp == rhs.stencilStoreOp
-			&& lhs.initialLayout == rhs.initialLayout
-			&& lhs.finalLayout == rhs.finalLayout;
-	}
-
-	inline bool operator!=( VkAttachmentDescription const & lhs, VkAttachmentDescription const & rhs )
-	{
-		return !( lhs == rhs );
 	}
 
 	inline uint32_t deduceMemoryType( uint32_t typeBits

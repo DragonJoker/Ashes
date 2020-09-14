@@ -28,7 +28,16 @@ See LICENSE file in root folder.
 #	include <Windows.h>
 #	include <vulkan/vulkan_win32.h>
 #elif( __APPLE__ )
-#	include <vulkan/vulkan_macos.h>
+#	include <TargetConditionals.h>
+#	if TARGET_IPHONE_SIMULATOR
+#		include <vulkan/vulkan_ios.h>
+#	elif TARGET_OS_IPHONE
+#		include <vulkan/vulkan_ios.h>
+#	elif TARGET_OS_MAC
+#		include <vulkan/vulkan_macos.h>
+#	else
+#		error "Unknown Apple platform"
+#	endif
 #endif
 
 #if _WIN32

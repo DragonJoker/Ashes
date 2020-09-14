@@ -351,6 +351,50 @@ namespace ashes::gl
 	}
 
 	template< typename VkObject >
+	inline void reportInfo( VkObject object
+		, VkResult result
+		, std::string const & errorName
+		, std::string const & name )
+	{
+#if VK_EXT_debug_utils
+		debugUtilsSubmit( VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT
+			, object
+			, result
+			, errorName
+			, name );
+#endif
+#if VK_EXT_debug_report
+		debugReportMessage( VK_DEBUG_REPORT_INFORMATION_BIT_EXT
+			, object
+			, result
+			, errorName
+			, name );
+#endif
+	}
+
+	template< typename VkObject >
+	inline void reportDebug( VkObject object
+		, VkResult result
+		, std::string const & errorName
+		, std::string const & name )
+	{
+#if VK_EXT_debug_utils
+		debugUtilsSubmit( VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
+			, object
+			, result
+			, errorName
+			, name );
+#endif
+#if VK_EXT_debug_report
+		debugReportMessage( VK_DEBUG_REPORT_DEBUG_BIT_EXT
+			, object
+			, result
+			, errorName
+			, name );
+#endif
+	}
+
+	template< typename VkObject >
 	inline void reportVerbose( VkObject object
 		, std::string const & errorName
 		, std::string const & name )
@@ -2363,7 +2407,7 @@ namespace ashes::gl
 #pragma endregion
 #pragma region VK_MVK_ios_surface
 #ifdef VK_MVK_ios_surface
-#	ifdef VK_USE_PLATFORM_IOS_MVK
+#	ifdef __APPLE__
 
 	VkResult VKAPI_CALL vkCreateIOSSurfaceMVK(
 		VkInstance instance,
@@ -2376,7 +2420,7 @@ namespace ashes::gl
 #pragma endregion
 #pragma region VK_MVK_macos_surface
 #ifdef VK_MVK_macos_surface
-#	ifdef VK_USE_PLATFORM_MACOS_MVK
+#	ifdef __APPLE__
 
 	VkResult VKAPI_CALL vkCreateMacOSSurfaceMVK(
 		VkInstance instance,

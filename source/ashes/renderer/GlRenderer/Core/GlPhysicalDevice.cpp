@@ -491,9 +491,10 @@ namespace ashes::gl
 		m_glFeatures.has420PackExtensions = find( ARB_shading_language_420pack );
 		m_glFeatures.hasCopyImage = find( ARB_copy_image );
 		m_glFeatures.hasProgramPipelines = find( ARB_separate_shader_objects );
-		m_glFeatures.hasTextureStorage = find( ARB_texture_storage );
+		m_glFeatures.hasTextureStorage = findAll( { ARB_texture_storage, ARB_texture_storage_multisample } );
 		m_glFeatures.hasTextureViews = find( ARB_texture_view );
 		m_glFeatures.hasViewportArrays = find( ARB_viewport_array );
+		m_glFeatures.hasProgramInterfaceQuery = find( ARB_program_interface_query );
 	}
 
 	void PhysicalDevice::doInitialiseFeatures( ContextLock & context )
@@ -1444,5 +1445,10 @@ namespace ashes::gl
 	bool hasViewportArrays( VkPhysicalDevice physicalDevice )
 	{
 		return get( physicalDevice )->getGlFeatures().hasViewportArrays;
+	}
+
+	bool hasProgramInterfaceQuery( VkPhysicalDevice physicalDevice )
+	{
+		return get( physicalDevice )->getGlFeatures().hasProgramInterfaceQuery;
 	}
 }

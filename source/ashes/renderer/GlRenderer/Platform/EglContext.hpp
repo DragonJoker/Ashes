@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#ifndef _WIN32
+#if defined( __linux__ )
 
 #include <EGL/egl.h>
 #include <memory>

@@ -6,22 +6,8 @@ See LICENSE file in root folder.
 
 #include "renderer/GlRenderer/GlRendererPrerequisites.hpp"
 
-inline bool operator==( VkVertexInputBindingDescription const & lhs
-	, VkVertexInputBindingDescription const & rhs )
-{
-	return lhs.binding == rhs.binding
-		&& lhs.stride == rhs.stride
-		&& lhs.inputRate == rhs.inputRate;
-}
-
-inline bool operator==( VkVertexInputAttributeDescription const & lhs
-	, VkVertexInputAttributeDescription const & rhs )
-{
-	return lhs.location == rhs.location
-		&&lhs.binding == rhs.binding
-		&& lhs.format == rhs.format
-		&& lhs.offset == rhs.offset;
-}
+using ashes::operator==;
+using ashes::operator!=;
 
 namespace ashes::gl
 {

@@ -11,6 +11,7 @@
 #include <array>
 #include <cmath>
 #include <iostream>
+#include <sstream>
 
 #include "ashesgl_api.hpp"
 
@@ -34,9 +35,12 @@ namespace ashes::gl
 		return result;
 	}
 
-	void doCheckEnabledExtensions( ashes::ArrayView< char const * const > const & extensions )
+	bool doCheckEnabledExtensions( VkInstance instance
+		, bool report
+		, ashes::ArrayView< char const * const > const & extensions )
 	{
 		auto & available = getSupportedInstanceExtensions();
+		ashes::StringArray unsupported;
 
 		for ( auto & extension : extensions )
 		{
@@ -47,22 +51,36 @@ namespace ashes::gl
 					return lookup.extensionName == std::string{ extension };
 				} ) )
 			{
-				throw ExtensionNotPresentException{ extension };
+				unsupported.push_back( extension );
 			}
 		}
-	}
 
-	bool doHasEnabledExtensions( ashes::ArrayView< char const * const > const & extensions )
-	{
-		try
+		if ( unsupported.empty() )
 		{
-			doCheckEnabledExtensions( extensions );
 			return true;
 		}
-		catch ( ExtensionNotPresentException & )
+
+		if ( report )
 		{
-			return false;
+			std::stringstream stream;
+
+			for ( auto & ext : unsupported )
+			{
+				stream << "\n    " << ext;
+			}
+
+			reportError( instance
+				, VK_ERROR_EXTENSION_NOT_PRESENT
+				, "Unspported extensions"
+				, stream.str() );
 		}
+		return false;
+	}
+
+	bool doHasEnabledExtensions( VkInstance instance
+		, ashes::ArrayView< char const * const > const & extensions )
+	{
+		return doCheckEnabledExtensions( instance, false, extensions );
 	}
 
 	VkApplicationInfo doGetDefaultApplicationInfo()
@@ -102,7 +120,10 @@ namespace ashes::gl
 		ContextLock context{ *m_context };
 		glCheckError( context, "ContextInitialisation" );
 		m_physicalDevices.emplace_back( VkPhysicalDevice( new PhysicalDevice{ VkInstance( this ) } ) );
-		doCheckEnabledExtensions( ashes::makeArrayView( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) );
+
+		doCheckEnabledExtensions( get( this )
+			, true
+			, ashes::makeArrayView( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) );
 	}
 
 	Instance::~Instance()
@@ -124,7 +145,8 @@ namespace ashes::gl
 	bool Instance::hasExtension( std::string_view extension )const
 	{
 		char const * const version = extension.data();
-		return doHasEnabledExtensions( ashes::makeArrayView( &version, 1u ) );
+		return doHasEnabledExtensions( get( this )
+			, ashes::makeArrayView( &version, 1u ) );
 	}
 
 	bool Instance::hasEnabledExtension( std::string_view name )const
@@ -215,6 +237,15 @@ namespace ashes::gl
 		{
 			result = Context::create( get( this )
 				, glSurface->getXlibCreateInfo()
+				, nullptr );
+		}
+
+#elif __APPLE__
+
+		else if ( glSurface->isMacOS() )
+		{
+			result = Context::create( get( this )
+				, glSurface->getMacOSCreateInfo()
 				, nullptr );
 		}
 

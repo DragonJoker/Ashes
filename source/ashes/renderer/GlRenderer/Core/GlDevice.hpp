@@ -159,4 +159,5 @@ namespace ashes::gl
 	bool hasTextureStorage( VkDevice device );
 	bool hasTextureViews( VkDevice device );
 	bool hasViewportArrays( VkDevice device );
+	bool hasProgramInterfaceQuery( VkDevice device );
 }

@@ -38,18 +38,6 @@ namespace ashes
 		return !( lhs == rhs );
 	}
 
-	inline bool operator!=( VkVertexInputAttributeDescription const & lhs
-		, VkVertexInputAttributeDescription const & rhs )
-	{
-		return !( lhs == rhs );
-	}
-
-	inline bool operator!=( VkVertexInputBindingDescription const & lhs
-		, VkVertexInputBindingDescription const & rhs )
-	{
-		return !( lhs == rhs );
-	}
-
 	inline bool isEmpty( VkPipelineVertexInputStateCreateInfo const & value )
 	{
 		return value.vertexAttributeDescriptionCount == 0u

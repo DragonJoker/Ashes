@@ -39,6 +39,7 @@ namespace ashes::gl
 	makeGlExtension( ARB_multi_draw_indirect, 4, 1 );
 	makeGlExtension( ARB_pipeline_statistics_query, 4, 4 );
 	makeGlExtension( ARB_polygon_offset_clamp, 4, 5 );
+	makeGlExtension( ARB_program_interface_query, 4, 2 );
 	makeGlExtension( ARB_query_buffer_object, 4, 3 );
 	makeGlExtension( ARB_sample_shading, 2, 0 );
 	makeGlExtension( ARB_separate_shader_objects, 4, 0 );

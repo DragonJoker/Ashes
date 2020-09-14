@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #include "Platform/GlEglContext.hpp"
 
-#ifndef _WIN32
+#if defined( __linux__ )
 
 #include "ashesgl_api.hpp"
 

@@ -11,6 +11,8 @@
 #	else
 #		include "Platform/GlX11Context.hpp"
 #	endif
+#elif __APPLE__
+#	include "Platform/CGlContext.hpp"
 #endif
 
 namespace ashes::gl
@@ -80,6 +82,29 @@ namespace ashes::gl
 		, ContextImpl const * mainContext )
 	{
 		return std::make_unique< MswContext >( instance
+			, std::move( createInfo )
+			, mainContext );
+	}
+
+#	endif
+#elif __APPLE__
+
+	ContextImplPtr ContextImpl::create( VkInstance instance
+		, VkMacOSSurfaceCreateInfoMVK createInfo
+		, ContextImpl const * mainContext )
+	{
+		return std::make_unique< CoreContext >( instance
+			, std::move( createInfo )
+			, mainContext );
+	}
+
+#	ifdef VK_KHR_display
+
+	ContextImplPtr ContextImpl::create( VkInstance instance
+		, VkDisplaySurfaceCreateInfoKHR createInfo
+		, ContextImpl const * mainContext )
+	{
+		return std::make_unique< CoreContext >( instance
 			, std::move( createInfo )
 			, mainContext );
 	}

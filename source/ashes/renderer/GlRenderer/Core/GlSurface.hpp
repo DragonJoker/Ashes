@@ -22,6 +22,9 @@ namespace ashes::gl
 			, VkXcbSurfaceCreateInfoKHR createInfo );
 		SurfaceKHR( VkInstance instance
 			, VkWaylandSurfaceCreateInfoKHR createInfo );
+#elif __APPLE__
+		SurfaceKHR( VkInstance instance
+			, VkMacOSSurfaceCreateInfoMVK createInfo );
 #endif
 #ifdef VK_KHR_display
 		SurfaceKHR( VkInstance instance
@@ -93,6 +96,18 @@ namespace ashes::gl
 			return m_waylandCreateInfo.sType != 0;
 		}
 
+#elif __APPLE__
+
+		inline VkMacOSSurfaceCreateInfoMVK getMacOSCreateInfo()const
+		{
+			return m_macOSCreateInfo;
+		}
+
+		inline bool isMacOS()const
+		{
+			return m_macOSCreateInfo.sType != 0;
+		}
+
 #endif
 #ifdef VK_KHR_display
 
@@ -125,6 +140,8 @@ namespace ashes::gl
 		VkXlibSurfaceCreateInfoKHR m_xlibCreateInfo{};
 		VkXcbSurfaceCreateInfoKHR m_xcbCreateInfo{};
 		VkWaylandSurfaceCreateInfoKHR m_waylandCreateInfo{};
+#elif __APPLE__
+		VkMacOSSurfaceCreateInfoMVK m_macOSCreateInfo{};
 #endif
 #ifdef VK_KHR_display
 		VkDisplaySurfaceCreateInfoKHR m_displayCreateInfo{};

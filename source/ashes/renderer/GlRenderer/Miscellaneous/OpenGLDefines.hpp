@@ -18,6 +18,8 @@ See LICENSE file in root folder.
 #	undef MemoryBarrier
 #elif defined( __linux__ )
 #	define GLAPIENTRY
+#elif defined( __APPLE__ )
+#	define GLAPIENTRY
 #endif
 
 #include <cstddef>
@@ -124,6 +126,7 @@ namespace ashes::gl
 		GL_RENDERER = 0x1F01,
 		GL_VERSION = 0x1F02,
 		GL_EXTENSIONS = 0x1F03,
+		GL_NUM_EXTENSIONS = 0x821D,
 	};
 }
 
@@ -226,10 +229,19 @@ namespace ashes::gl
 	using PFN_glGenTextures = void ( GLAPIENTRY * )( GLsizei n, GLuint * textures );
 	using PFN_glGenerateMipmap = void ( GLAPIENTRY * )( GLenum target );
 	using PFN_glGenVertexArrays = void ( GLAPIENTRY * )( GLsizei n, GLuint * arrays );
-	using PFN_glGetBufferParameteriv = GLenum( GLAPIENTRY * )( GlBufferTarget target, GlBufferParameter value, GLint * data );
-	using PFN_glGetError = GLenum( GLAPIENTRY * )( void );
+	using PFN_glGetActiveAttrib = void ( GLAPIENTRY * )( GLuint program, GLuint index, GLsizei bufSize, GLsizei * length, GLint * size, GLenum * type, GLchar * name );
+	using PFN_glGetActiveUniformBlockName = void ( GLAPIENTRY * )( GLuint program, GLuint uniformBlockIndex, GLsizei bufSize, GLsizei * length, GLchar * uniformBlockName );
+	using PFN_glGetActiveUniformBlockiv = void ( GLAPIENTRY * )( GLuint program, GLuint uniformBlockIndex, GLenum pname, GLint * params );
+	using PFN_glGetActiveUniformName = void ( GLAPIENTRY * )( GLuint program,  GLuint uniformIndex, GLsizei bufSize, GLsizei * length, char * uniformName );
+	using PFN_glGetActiveUniform = void ( GLAPIENTRY * ) ( GLuint program, GLuint index, GLsizei bufSize, GLsizei * length, GLint * size, GLenum * type, GLchar * name );
+	using PFN_glGetActiveUniformsiv = void ( GLAPIENTRY * )( GLuint program, GLsizei uniformCount, const GLuint * uniformIndices, GLenum pname, GLint * params );
+	using PFN_glGetAttribLocation = GLint ( GLAPIENTRY * )( GLuint program, const char * name );
+	using PFN_glGetBufferParameteriv = GLenum ( GLAPIENTRY * )( GlBufferTarget target, GlBufferParameter value, GLint * data );
+	using PFN_glGetError = GLenum ( GLAPIENTRY * )( void );
 	using PFN_glGetFloatv = void ( GLAPIENTRY * )( GlGetParameter pname, GLfloat * data );
 	using PFN_glGetFloati_v = void( GLAPIENTRY * )( GlGetParameter target, GLuint index, GLfloat * data );
+ 	using PFN_glGetFragDataIndex = GLint ( GLAPIENTRY * )( GLuint program, const char * name );
+	using PFN_glGetFragDataLocation = GLint ( GLAPIENTRY * )( GLuint program, const char * name );
 	using PFN_glGetIntegerv = void ( GLAPIENTRY * )( GlGetParameter pname, GLint * data );
 	using PFN_glGetInteger64v = void( GLAPIENTRY * )( GlGetParameter pname, GLint64 * data );
 	using PFN_glGetIntegeri_v = void( GLAPIENTRY * )( GlGetParameter target, GLuint index, GLint * data );
@@ -254,6 +266,8 @@ namespace ashes::gl
 	using PFN_glGetTexLevelParameteriv = void ( GLAPIENTRY * )( GlTextureType target, GLint level, GLenum pname, GLint * params );
 	using PFN_glGetTexParameterfv = void ( GLAPIENTRY * )( GlTextureType target, GLenum pname, GLfloat * params );
 	using PFN_glGetTexParameteriv = void ( GLAPIENTRY * )( GlTextureType target, GLenum pname, GLint * params );
+	using PFN_glGetUniformBlockIndex = GLuint ( GLAPIENTRY * )( GLuint program, const GLchar * name );
+	using PFN_glGetUniformIndices = void ( GLAPIENTRY * )( GLuint program, GLsizei uniformCount, const char ** uniformNames, GLuint *uniformIndices );
 	using PFN_glInvalidateBufferSubData = void ( GLAPIENTRY * )( GLuint buffer, GLintptr offset, GLsizeiptr length );
 	using PFN_glIsBuffer = GLboolean ( GLAPIENTRY * )( GLuint buffer );
 	using PFN_glLineWidth = void ( GLAPIENTRY * )( GLfloat width );

@@ -65,14 +65,16 @@ namespace ashes::gl
 
 		void setViewports( VkViewportArray value )
 		{
-			viewports = value;
-			viewportsView = makeArrayView( const_cast< VkViewportArray const & >( viewports ).data(), viewports.size() );
+			viewports = std::move( value );
+			viewportsView = makeArrayView( const_cast< VkViewportArray const & >( viewports ).data()
+				, const_cast< VkViewportArray const & >( viewports ).data() + viewports.size() );
 		}
 
 		void setScissors( VkScissorArray value )
 		{
-			scissors = value;
-			scissorsView = makeArrayView( const_cast< VkScissorArray const & >( scissors ).data(), scissors.size() );
+			scissors = std::move( value );
+			scissorsView = makeArrayView( const_cast< VkScissorArray const & >( scissors ).data()
+				, const_cast< VkScissorArray const & >( scissors ).data() + scissors.size() );
 		}
 
 		VkPipelineColorBlendAttachmentStateArray cbStateAttachments;

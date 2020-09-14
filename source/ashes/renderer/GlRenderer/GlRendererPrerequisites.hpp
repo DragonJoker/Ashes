@@ -163,6 +163,7 @@ namespace ashes::gl
 		VkBool32 hasTextureStorage;
 		VkBool32 hasTextureViews;
 		VkBool32 hasViewportArrays;
+		VkBool32 hasProgramInterfaceQuery;
 	};
 
 	struct AttachmentDescription

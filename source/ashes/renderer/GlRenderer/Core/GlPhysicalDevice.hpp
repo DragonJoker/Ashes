@@ -168,4 +168,5 @@ namespace ashes::gl
 	bool hasTextureStorage( VkPhysicalDevice physicalDevice );
 	bool hasTextureViews( VkPhysicalDevice physicalDevice );
 	bool hasViewportArrays( VkPhysicalDevice physicalDevice );
+	bool hasProgramInterfaceQuery( VkPhysicalDevice physicalDevice );
 }
