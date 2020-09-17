@@ -216,37 +216,37 @@ namespace ashes::gl
 				{
 					auto gltype = convert( get( this ), type, 1u, 0u );
 					GLint value;
-					glLogCall( context, glGetInternalformativ, gltype, internal, GL_INTERNALFORMAT_SUPPORTED, 1, &value );
+					glLogCall( context, glGetInternalformativ, gltype, internal, GL_FORMAT_PROPERTY_SUPPORTED, 1, &value );
 
 					if ( value != GL_FALSE )
 					{
-						glLogCall( context, glGetInternalformativ, gltype, internal, GL_MAX_WIDTH, 1, &value );
+						glLogCall( context, glGetInternalformativ, gltype, internal, GL_FORMAT_PROPERTY_MAX_WIDTH, 1, &value );
 						imageFormatProperties.maxExtent.width = uint32_t( value );
 						imageFormatProperties.maxExtent.height = 1u;
 						imageFormatProperties.maxExtent.depth = 1u;
 
 						if ( type == VK_IMAGE_TYPE_2D )
 						{
-							glLogCall( context, glGetInternalformativ, gltype, internal, GL_MAX_HEIGHT, 1, &value );
+							glLogCall( context, glGetInternalformativ, gltype, internal, GL_FORMAT_PROPERTY_MAX_HEIGHT, 1, &value );
 							imageFormatProperties.maxExtent.height = uint32_t( value );
 						}
 						else if ( type == VK_IMAGE_TYPE_3D )
 						{
-							glLogCall( context, glGetInternalformativ, GL_TEXTURE_3D, internal, GL_MAX_HEIGHT, 1, &value );
+							glLogCall( context, glGetInternalformativ, GL_TEXTURE_3D, internal, GL_FORMAT_PROPERTY_MAX_HEIGHT, 1, &value );
 							imageFormatProperties.maxExtent.height = uint32_t( value );
 
-							glLogCall( context, glGetInternalformativ, GL_TEXTURE_3D, internal, GL_MAX_DEPTH, 1, &value );
+							glLogCall( context, glGetInternalformativ, GL_TEXTURE_3D, internal, GL_FORMAT_PROPERTY_MAX_DEPTH, 1, &value );
 							imageFormatProperties.maxExtent.depth = uint32_t( value );
 						}
 
-						glLogCall( context, glGetInternalformativ, gltype, internal, GL_SAMPLES, 1, &value );
+						glLogCall( context, glGetInternalformativ, gltype, internal, GL_FORMAT_PROPERTY_MAX_SAMPLES, 1, &value );
 						imageFormatProperties.sampleCounts = std::min( VK_SAMPLE_COUNT_1_BIT, VkSampleCountFlagBits( value ) );
 
-						glLogCall( context, glGetInternalformativ, gltype, internal, GL_IMAGE_TEXEL_SIZE, 1, &value );
+						glLogCall( context, glGetInternalformativ, gltype, internal, GL_FORMAT_PROPERTY_TEXEL_SIZE, 1, &value );
 						VkDeviceSize texelSize = VkDeviceSize( value );
 
 						gltype = convert( get( this ), type, 2u, 0u );
-						glLogCall( context, glGetInternalformativ, gltype, internal, GL_MAX_LAYERS, 1, &value );
+						glLogCall( context, glGetInternalformativ, gltype, internal, GL_FORMAT_PROPERTY_MAX_LAYERS, 1, &value );
 						imageFormatProperties.maxArrayLayers = uint32_t( value );
 
 						if ( imageFormatProperties.maxExtent.width > 0u )
@@ -476,6 +476,14 @@ namespace ashes::gl
 
 	void PhysicalDevice::doInitialise()
 	{
+		m_glFeatures.has420PackExtensions = find( ARB_shading_language_420pack );
+		m_glFeatures.hasCopyImage = find( ARB_copy_image );
+		m_glFeatures.hasProgramPipelines = find( ARB_separate_shader_objects );
+		m_glFeatures.hasTextureStorage = findAll( { ARB_texture_storage, ARB_texture_storage_multisample } );
+		m_glFeatures.hasTextureViews = find( ARB_texture_view );
+		m_glFeatures.hasViewportArrays = find( ARB_viewport_array );
+		m_glFeatures.hasProgramInterfaceQuery = find( ARB_program_interface_query );
+
 		ContextLock context{ get( m_instance )->getCurrentContext() };
 		doInitialiseMemoryProperties( context );
 		doInitialiseProperties( context );
@@ -487,14 +495,6 @@ namespace ashes::gl
 		doInitialiseDriverProperties( context );
 		doInitialiseMemoryProperties2( context );
 		doInitialiseProperties2( context );
-
-		m_glFeatures.has420PackExtensions = find( ARB_shading_language_420pack );
-		m_glFeatures.hasCopyImage = find( ARB_copy_image );
-		m_glFeatures.hasProgramPipelines = find( ARB_separate_shader_objects );
-		m_glFeatures.hasTextureStorage = findAll( { ARB_texture_storage, ARB_texture_storage_multisample } );
-		m_glFeatures.hasTextureViews = find( ARB_texture_view );
-		m_glFeatures.hasViewportArrays = find( ARB_viewport_array );
-		m_glFeatures.hasProgramInterfaceQuery = find( ARB_program_interface_query );
 	}
 
 	void PhysicalDevice::doInitialiseFeatures( ContextLock & context )
@@ -516,11 +516,11 @@ namespace ashes::gl
 		m_features.depthBounds = true;
 		GLint range[2];
 		glLogCall( context, glGetIntegerv
-			, GL_ALIASED_LINE_WIDTH_RANGE
+			, GL_VALUE_NAME_ALIASED_LINE_WIDTH_RANGE
 			, range );
 		m_features.wideLines = ( range[1] > 1 );
 		glLogCall( context, glGetIntegerv
-			, GL_SMOOTH_LINE_WIDTH_RANGE
+			, GL_VALUE_NAME_SMOOTH_LINE_WIDTH_RANGE
 			, range );
 		m_features.wideLines &= ( range[1] > 1 );
 		m_features.largePoints = true;
@@ -580,108 +580,108 @@ namespace ashes::gl
 		m_properties.deviceType = VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
 		m_properties.driverVersion = 0;
 
-		doGetValue( context, GL_MAX_TEXTURE_SIZE, m_properties.limits.maxImageDimension1D );
-		doGetValue( context, GL_MAX_TEXTURE_SIZE, m_properties.limits.maxImageDimension2D );
-		doGetValue( context, GL_MAX_3D_TEXTURE_SIZE, m_properties.limits.maxImageDimension3D );
-		doGetValue( context, GL_MAX_CUBE_MAP_TEXTURE_SIZE, m_properties.limits.maxImageDimensionCube );
-		doGetValue( context, GL_MAX_ARRAY_TEXTURE_LAYERS, m_properties.limits.maxImageArrayLayers );
-		doGetValue( context, GL_MAX_TEXTURE_BUFFER_SIZE, m_properties.limits.maxTexelBufferElements );
-		doGetValue( context, GL_MAX_UNIFORM_BLOCK_SIZE, m_properties.limits.maxUniformBufferRange );
+		context.getValue( GL_VALUE_NAME_MAX_TEXTURE_SIZE, m_properties.limits.maxImageDimension1D );
+		context.getValue( GL_VALUE_NAME_MAX_TEXTURE_SIZE, m_properties.limits.maxImageDimension2D );
+		context.getValue( GL_VALUE_NAME_MAX_3D_TEXTURE_SIZE, m_properties.limits.maxImageDimension3D );
+		context.getValue( GL_VALUE_NAME_MAX_CUBE_MAP_TEXTURE_SIZE, m_properties.limits.maxImageDimensionCube );
+		context.getValue( GL_VALUE_NAME_MAX_ARRAY_TEXTURE_LAYERS, m_properties.limits.maxImageArrayLayers );
+		context.getValue( GL_VALUE_NAME_MAX_TEXTURE_BUFFER_SIZE, m_properties.limits.maxTexelBufferElements );
+		context.getValue( GL_VALUE_NAME_MAX_UNIFORM_BLOCK_SIZE, m_properties.limits.maxUniformBufferRange );
 		m_properties.limits.maxStorageBufferRange = uint32_t( m_memoryProperties.memoryHeaps[0].size );
-		doGetValue( context, GL_MAX_UNIFORM_BLOCK_SIZE, m_properties.limits.maxPushConstantsSize );
+		context.getValue( GL_VALUE_NAME_MAX_UNIFORM_BLOCK_SIZE, m_properties.limits.maxPushConstantsSize );
 		m_properties.limits.maxMemoryAllocationCount = NonAvailable< uint32_t >;
 		m_properties.limits.maxSamplerAllocationCount = NonAvailable< uint32_t >;
 		m_properties.limits.bufferImageGranularity = DefaultAlign< VkDeviceSize >;
 		m_properties.limits.sparseAddressSpaceSize = NonAvailable< uint64_t >;
 		m_properties.limits.maxBoundDescriptorSets = NonAvailable< uint32_t >;
-		doGetValue( context, GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, m_properties.limits.maxPerStageDescriptorSamplers );
-		doGetValue( context, GL_MAX_COMBINED_UNIFORM_BLOCKS, m_properties.limits.maxPerStageDescriptorUniformBuffers );
-		doGetValue( context, GL_MAX_COMBINED_SHADER_STORAGE_BLOCKS, m_properties.limits.maxPerStageDescriptorStorageBuffers );
-		doGetValue( context, GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, m_properties.limits.maxPerStageDescriptorSampledImages );
-		doGetValue( context, GL_MAX_COMBINED_IMAGE_UNIFORMS, m_properties.limits.maxPerStageDescriptorStorageImages );
+		context.getValue( GL_VALUE_NAME_MAX_COMBINED_TEXTURE_IMAGE_UNITS, m_properties.limits.maxPerStageDescriptorSamplers );
+		context.getValue( GL_VALUE_NAME_MAX_COMBINED_UNIFORM_BLOCKS, m_properties.limits.maxPerStageDescriptorUniformBuffers );
+		context.getValue( GL_VALUE_NAME_MAX_COMBINED_SHADER_STORAGE_BLOCKS, m_properties.limits.maxPerStageDescriptorStorageBuffers );
+		context.getValue( GL_VALUE_NAME_MAX_COMBINED_TEXTURE_IMAGE_UNITS, m_properties.limits.maxPerStageDescriptorSampledImages );
+		context.getValue( GL_VALUE_NAME_MAX_COMBINED_IMAGE_UNIFORMS, m_properties.limits.maxPerStageDescriptorStorageImages );
 		m_properties.limits.maxPerStageDescriptorInputAttachments = NonAvailable< uint32_t >;
 		m_properties.limits.maxPerStageResources = NonAvailable< uint32_t >;
-		doGetValue( context, GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, m_properties.limits.maxDescriptorSetSamplers );
-		doGetValue( context, GL_MAX_COMBINED_UNIFORM_BLOCKS, m_properties.limits.maxDescriptorSetUniformBuffers );
-		doGetValue( context, GL_MAX_COMBINED_UNIFORM_BLOCKS, m_properties.limits.maxDescriptorSetUniformBuffersDynamic );
-		doGetValue( context, GL_MAX_COMBINED_SHADER_STORAGE_BLOCKS, m_properties.limits.maxDescriptorSetStorageBuffers );
-		doGetValue( context, GL_MAX_COMBINED_SHADER_STORAGE_BLOCKS, m_properties.limits.maxDescriptorSetStorageBuffersDynamic );
-		doGetValue( context, GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, m_properties.limits.maxDescriptorSetSampledImages );
-		doGetValue( context, GL_MAX_COMBINED_IMAGE_UNIFORMS, m_properties.limits.maxDescriptorSetStorageImages );
+		context.getValue( GL_VALUE_NAME_MAX_COMBINED_TEXTURE_IMAGE_UNITS, m_properties.limits.maxDescriptorSetSamplers );
+		context.getValue( GL_VALUE_NAME_MAX_COMBINED_UNIFORM_BLOCKS, m_properties.limits.maxDescriptorSetUniformBuffers );
+		context.getValue( GL_VALUE_NAME_MAX_COMBINED_UNIFORM_BLOCKS, m_properties.limits.maxDescriptorSetUniformBuffersDynamic );
+		context.getValue( GL_VALUE_NAME_MAX_COMBINED_SHADER_STORAGE_BLOCKS, m_properties.limits.maxDescriptorSetStorageBuffers );
+		context.getValue( GL_VALUE_NAME_MAX_COMBINED_SHADER_STORAGE_BLOCKS, m_properties.limits.maxDescriptorSetStorageBuffersDynamic );
+		context.getValue( GL_VALUE_NAME_MAX_COMBINED_TEXTURE_IMAGE_UNITS, m_properties.limits.maxDescriptorSetSampledImages );
+		context.getValue( GL_VALUE_NAME_MAX_COMBINED_IMAGE_UNIFORMS, m_properties.limits.maxDescriptorSetStorageImages );
 		m_properties.limits.maxDescriptorSetInputAttachments = NonAvailable< uint32_t >;
-		doGetValue( context, GL_MAX_VERTEX_ATTRIBS, m_properties.limits.maxVertexInputAttributes );
-		doGetValue( context, GL_MAX_VERTEX_ATTRIB_BINDINGS, m_properties.limits.maxVertexInputBindings );
-		doGetValue( context, GL_MAX_VERTEX_ATTRIB_RELATIVE_OFFSET, m_properties.limits.maxVertexInputAttributeOffset );
-		doGetValue( context, GL_MAX_VERTEX_ATTRIB_STRIDE, m_properties.limits.maxVertexInputBindingStride );
-		doGetValue( context, GL_MAX_VERTEX_OUTPUT_COMPONENTS, m_properties.limits.maxVertexOutputComponents );
-		doGetValue( context, GL_MAX_TESS_GEN_LEVEL, m_properties.limits.maxTessellationGenerationLevel );
-		doGetValue( context, GL_MAX_PATCH_VERTICES, m_properties.limits.maxTessellationPatchSize );
-		doGetValue( context, GL_MAX_TESS_EVALUATION_INPUT_COMPONENTS, m_properties.limits.maxTessellationControlPerVertexInputComponents );
-		doGetValue( context, GL_MAX_TESS_EVALUATION_OUTPUT_COMPONENTS, m_properties.limits.maxTessellationControlPerVertexOutputComponents );
-		doGetValue( context, GL_MAX_TESS_PATCH_COMPONENTS, m_properties.limits.maxTessellationControlPerPatchOutputComponents );
-		doGetValue( context, GL_MAX_TESS_EVALUATION_OUTPUT_COMPONENTS, m_properties.limits.maxTessellationControlTotalOutputComponents );
-		doGetValue( context, GL_MAX_TESS_EVALUATION_INPUT_COMPONENTS, m_properties.limits.maxTessellationEvaluationInputComponents );
-		doGetValue( context, GL_MAX_TESS_EVALUATION_OUTPUT_COMPONENTS, m_properties.limits.maxTessellationEvaluationOutputComponents );
-		doGetValue( context, GL_MAX_GEOMETRY_SHADER_INVOCATIONS, m_properties.limits.maxGeometryShaderInvocations );
-		doGetValue( context, GL_MAX_GEOMETRY_INPUT_COMPONENTS, m_properties.limits.maxGeometryInputComponents );
-		doGetValue( context, GL_MAX_GEOMETRY_OUTPUT_COMPONENTS, m_properties.limits.maxGeometryOutputComponents );
-		doGetValue( context, GL_MAX_GEOMETRY_OUTPUT_VERTICES, m_properties.limits.maxGeometryOutputVertices );
-		doGetValue( context, GL_MAX_GEOMETRY_OUTPUT_COMPONENTS, m_properties.limits.maxGeometryTotalOutputComponents );
-		doGetValue( context, GL_MAX_FRAGMENT_INPUT_COMPONENTS, m_properties.limits.maxFragmentInputComponents );
-		doGetValue( context, GL_MAX_DRAW_BUFFERS, m_properties.limits.maxFragmentOutputAttachments );
-		doGetValue( context, GL_MAX_DUAL_SOURCE_DRAW_BUFFERS, m_properties.limits.maxFragmentDualSrcAttachments );
-		doGetValue( context, GL_MAX_COLOR_ATTACHMENTS, m_properties.limits.maxFragmentCombinedOutputResources );
-		doGetValue( context, GL_MAX_COMPUTE_SHARED_MEMORY_SIZE, m_properties.limits.maxComputeSharedMemorySize );
-		doGetValuesI( context, GL_MAX_COMPUTE_WORK_GROUP_COUNT, m_properties.limits.maxComputeWorkGroupCount );
-		doGetValue( context, GL_MAX_COMPUTE_FIXED_GROUP_INVOCATIONS, m_properties.limits.maxComputeWorkGroupInvocations );
-		doGetValuesI( context, GL_MAX_COMPUTE_FIXED_GROUP_SIZE, m_properties.limits.maxComputeWorkGroupSize );
-		doGetValue( context, GL_SUBPIXEL_BITS, m_properties.limits.subPixelPrecisionBits );
+		context.getValue( GL_VALUE_NAME_MAX_VERTEX_ATTRIBS, m_properties.limits.maxVertexInputAttributes );
+		context.getValue( GL_VALUE_NAME_MAX_VERTEX_ATTRIB_BINDINGS, m_properties.limits.maxVertexInputBindings );
+		context.getValue( GL_VALUE_NAME_MAX_VERTEX_ATTRIB_RELATIVE_OFFSET, m_properties.limits.maxVertexInputAttributeOffset );
+		context.getValue( GL_VALUE_NAME_MAX_VERTEX_ATTRIB_STRIDE, m_properties.limits.maxVertexInputBindingStride );
+		context.getValue( GL_VALUE_NAME_MAX_VERTEX_OUTPUT_COMPONENTS, m_properties.limits.maxVertexOutputComponents );
+		context.getValue( GL_VALUE_NAME_MAX_TESS_GEN_LEVEL, m_properties.limits.maxTessellationGenerationLevel );
+		context.getValue( GL_VALUE_NAME_MAX_PATCH_VERTICES, m_properties.limits.maxTessellationPatchSize );
+		context.getValue( GL_VALUE_NAME_MAX_TESS_EVALUATION_INPUT_COMPONENTS, m_properties.limits.maxTessellationControlPerVertexInputComponents );
+		context.getValue( GL_VALUE_NAME_MAX_TESS_EVALUATION_OUTPUT_COMPONENTS, m_properties.limits.maxTessellationControlPerVertexOutputComponents );
+		context.getValue( GL_VALUE_NAME_MAX_TESS_PATCH_COMPONENTS, m_properties.limits.maxTessellationControlPerPatchOutputComponents );
+		context.getValue( GL_VALUE_NAME_MAX_TESS_EVALUATION_OUTPUT_COMPONENTS, m_properties.limits.maxTessellationControlTotalOutputComponents );
+		context.getValue( GL_VALUE_NAME_MAX_TESS_EVALUATION_INPUT_COMPONENTS, m_properties.limits.maxTessellationEvaluationInputComponents );
+		context.getValue( GL_VALUE_NAME_MAX_TESS_EVALUATION_OUTPUT_COMPONENTS, m_properties.limits.maxTessellationEvaluationOutputComponents );
+		context.getValue( GL_VALUE_NAME_MAX_GEOMETRY_SHADER_INVOCATIONS, m_properties.limits.maxGeometryShaderInvocations );
+		context.getValue( GL_VALUE_NAME_MAX_GEOMETRY_INPUT_COMPONENTS, m_properties.limits.maxGeometryInputComponents );
+		context.getValue( GL_VALUE_NAME_MAX_GEOMETRY_OUTPUT_COMPONENTS, m_properties.limits.maxGeometryOutputComponents );
+		context.getValue( GL_VALUE_NAME_MAX_GEOMETRY_OUTPUT_VERTICES, m_properties.limits.maxGeometryOutputVertices );
+		context.getValue( GL_VALUE_NAME_MAX_GEOMETRY_OUTPUT_COMPONENTS, m_properties.limits.maxGeometryTotalOutputComponents );
+		context.getValue( GL_VALUE_NAME_MAX_FRAGMENT_INPUT_COMPONENTS, m_properties.limits.maxFragmentInputComponents );
+		context.getValue( GL_VALUE_NAME_MAX_DRAW_BUFFERS, m_properties.limits.maxFragmentOutputAttachments );
+		context.getValue( GL_VALUE_NAME_MAX_DUAL_SOURCE_DRAW_BUFFERS, m_properties.limits.maxFragmentDualSrcAttachments );
+		context.getValue( GL_VALUE_NAME_MAX_COLOR_ATTACHMENTS, m_properties.limits.maxFragmentCombinedOutputResources );
+		context.getValue( GL_VALUE_NAME_MAX_COMPUTE_SHARED_MEMORY_SIZE, m_properties.limits.maxComputeSharedMemorySize );
+		context.getValuesI( GL_VALUE_NAME_MAX_COMPUTE_WORK_GROUP_COUNT, m_properties.limits.maxComputeWorkGroupCount );
+		context.getValue( GL_VALUE_NAME_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, m_properties.limits.maxComputeWorkGroupInvocations );
+		context.getValuesI( GL_VALUE_NAME_MAX_COMPUTE_WORK_GROUP_SIZE, m_properties.limits.maxComputeWorkGroupSize );
+		context.getValue( GL_VALUE_NAME_SUBPIXEL_BITS, m_properties.limits.subPixelPrecisionBits );
 		m_properties.limits.subTexelPrecisionBits = m_properties.limits.subPixelPrecisionBits;
 		m_properties.limits.mipmapPrecisionBits = NonAvailable< uint32_t >;
-		doGetValue( context, GL_MAX_ELEMENTS_INDICES, m_properties.limits.maxDrawIndexedIndexValue );
+		context.getValue( GL_VALUE_NAME_MAX_ELEMENTS_INDICES, m_properties.limits.maxDrawIndexedIndexValue );
 		m_properties.limits.maxDrawIndirectCount = NonAvailable< uint32_t >;
-		doGetValue( context, GL_MAX_TEXTURE_LOD_BIAS, m_properties.limits.maxSamplerLodBias );
-		doGetValue( context, GL_MAX_TEXTURE_MAX_ANISOTROPY, m_properties.limits.maxSamplerAnisotropy );
-		doGetValue( context, GL_MAX_VIEWPORTS, m_properties.limits.maxViewports );
-		doGetValues( context, GL_MAX_VIEWPORT_DIMS, m_properties.limits.maxViewportDimensions );
+		context.getValue( GL_VALUE_NAME_MAX_TEXTURE_LOD_BIAS, m_properties.limits.maxSamplerLodBias );
+		context.getValue( GL_VALUE_NAME_MAX_TEXTURE_MAX_ANISOTROPY, m_properties.limits.maxSamplerAnisotropy );
+		context.getValue( GL_VALUE_NAME_MAX_VIEWPORTS, m_properties.limits.maxViewports );
+		context.getValues( GL_VALUE_NAME_MAX_VIEWPORT_DIMS, m_properties.limits.maxViewportDimensions );
 		m_properties.limits.viewportBoundsRange[0] = -2.0f * std::max( m_properties.limits.maxViewportDimensions[0], m_properties.limits.maxViewportDimensions[1] );
 		m_properties.limits.viewportBoundsRange[1] = 2.0f * std::max( m_properties.limits.maxViewportDimensions[0], m_properties.limits.maxViewportDimensions[1] );
 		m_properties.limits.viewportSubPixelBits = m_properties.limits.subPixelPrecisionBits;
 		m_properties.limits.minMemoryMapAlignment = DefaultAlign< size_t >;
 		m_properties.limits.minTexelBufferOffsetAlignment = DefaultAlign< VkDeviceSize >;
-		doGetValue( context, GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, m_properties.limits.minUniformBufferOffsetAlignment );
+		context.getValue( GL_VALUE_NAME_UNIFORM_BUFFER_OFFSET_ALIGNMENT, m_properties.limits.minUniformBufferOffsetAlignment );
 		m_properties.limits.minStorageBufferOffsetAlignment = 1u;
-		doGetValue( context, GL_MIN_PROGRAM_TEXEL_OFFSET, m_properties.limits.minTexelOffset );
-		doGetValue( context, GL_MAX_PROGRAM_TEXEL_OFFSET, m_properties.limits.maxTexelOffset );
-		doGetValue( context, GL_MIN_PROGRAM_TEXTURE_GATHER_OFFSET, m_properties.limits.minTexelGatherOffset );
-		doGetValue( context, GL_MAX_PROGRAM_TEXTURE_GATHER_OFFSET, m_properties.limits.maxTexelGatherOffset );
+		context.getValue( GL_VALUE_NAME_MIN_PROGRAM_TEXEL_OFFSET, m_properties.limits.minTexelOffset );
+		context.getValue( GL_VALUE_NAME_MAX_PROGRAM_TEXEL_OFFSET, m_properties.limits.maxTexelOffset );
+		context.getValue( GL_VALUE_NAME_MIN_PROGRAM_TEXTURE_GATHER_OFFSET, m_properties.limits.minTexelGatherOffset );
+		context.getValue( GL_VALUE_NAME_MAX_PROGRAM_TEXTURE_GATHER_OFFSET, m_properties.limits.maxTexelGatherOffset );
 		m_properties.limits.minInterpolationOffset = 0u;
 		m_properties.limits.maxInterpolationOffset = 0u;
 		m_properties.limits.subPixelInterpolationOffsetBits = 0u;
-		doGetValue( context, GL_MAX_FRAMEBUFFER_WIDTH, m_properties.limits.maxFramebufferWidth );
-		doGetValue( context, GL_MAX_FRAMEBUFFER_HEIGHT, m_properties.limits.maxFramebufferHeight );
-		doGetValue( context, GL_MAX_FRAMEBUFFER_LAYERS, m_properties.limits.maxFramebufferLayers );
-		doGetValue( context, GL_MAX_FRAMEBUFFER_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.framebufferColorSampleCounts ) );
-		doGetValue( context, GL_MAX_FRAMEBUFFER_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.framebufferDepthSampleCounts ) );
-		doGetValue( context, GL_MAX_FRAMEBUFFER_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.framebufferStencilSampleCounts ) );
-		doGetValue( context, GL_MAX_FRAMEBUFFER_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.framebufferNoAttachmentsSampleCounts ) );
-		doGetValue( context, GL_MAX_COLOR_ATTACHMENTS, m_properties.limits.maxColorAttachments );
-		doGetValue( context, GL_MAX_COLOR_TEXTURE_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.sampledImageColorSampleCounts ) );
-		doGetValue( context, GL_MAX_COLOR_TEXTURE_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.sampledImageIntegerSampleCounts ) );
-		doGetValue( context, GL_MAX_COLOR_TEXTURE_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.sampledImageDepthSampleCounts ) );
-		doGetValue( context, GL_MAX_COLOR_TEXTURE_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.sampledImageStencilSampleCounts ) );
-		doGetValue( context, GL_MAX_COLOR_TEXTURE_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.storageImageSampleCounts ) );
-		doGetValue( context, GL_MAX_SAMPLE_MASK_WORDS, m_properties.limits.maxSampleMaskWords );
+		context.getValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_WIDTH, m_properties.limits.maxFramebufferWidth );
+		context.getValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_HEIGHT, m_properties.limits.maxFramebufferHeight );
+		context.getValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_LAYERS, m_properties.limits.maxFramebufferLayers );
+		context.getValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.framebufferColorSampleCounts ) );
+		context.getValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.framebufferDepthSampleCounts ) );
+		context.getValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.framebufferStencilSampleCounts ) );
+		context.getValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.framebufferNoAttachmentsSampleCounts ) );
+		context.getValue( GL_VALUE_NAME_MAX_COLOR_ATTACHMENTS, m_properties.limits.maxColorAttachments );
+		context.getValue( GL_VALUE_NAME_MAX_COLOR_TEXTURE_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.sampledImageColorSampleCounts ) );
+		context.getValue( GL_VALUE_NAME_MAX_COLOR_TEXTURE_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.sampledImageIntegerSampleCounts ) );
+		context.getValue( GL_VALUE_NAME_MAX_COLOR_TEXTURE_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.sampledImageDepthSampleCounts ) );
+		context.getValue( GL_VALUE_NAME_MAX_COLOR_TEXTURE_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.sampledImageStencilSampleCounts ) );
+		context.getValue( GL_VALUE_NAME_MAX_COLOR_TEXTURE_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.storageImageSampleCounts ) );
+		context.getValue( GL_VALUE_NAME_MAX_SAMPLE_MASK_WORDS, m_properties.limits.maxSampleMaskWords );
 		m_properties.limits.timestampComputeAndGraphics = true;
 		m_properties.limits.timestampPeriod = 1;
-		doGetValue( context, GL_MAX_CLIP_DISTANCES, m_properties.limits.maxClipDistances );
-		doGetValue( context, GL_MAX_CULL_DISTANCES, m_properties.limits.maxCullDistances );
-		doGetValue( context, GL_MAX_COMBINED_CLIP_AND_CULL_DISTANCES, m_properties.limits.maxCombinedClipAndCullDistances );
+		context.getValue( GL_VALUE_NAME_MAX_CLIP_DISTANCES, m_properties.limits.maxClipDistances );
+		context.getValue( GL_VALUE_NAME_MAX_CULL_DISTANCES, m_properties.limits.maxCullDistances );
+		context.getValue( GL_VALUE_NAME_MAX_COMBINED_CLIP_AND_CULL_DISTANCES, m_properties.limits.maxCombinedClipAndCullDistances );
 		m_properties.limits.discreteQueuePriorities = 2u;
-		doGetValues( context, GL_POINT_SIZE_RANGE, m_properties.limits.pointSizeRange );
-		doGetValues( context, GL_ALIASED_LINE_WIDTH_RANGE, m_properties.limits.lineWidthRange );
-		doGetValue( context, GL_POINT_SIZE_GRANULARITY, m_properties.limits.pointSizeGranularity );
-		doGetValue( context, GL_LINE_WIDTH_GRANULARITY, m_properties.limits.lineWidthGranularity );
+		context.getValues( GL_VALUE_NAME_POINT_SIZE_RANGE, m_properties.limits.pointSizeRange );
+		context.getValues( GL_VALUE_NAME_ALIASED_LINE_WIDTH_RANGE, m_properties.limits.lineWidthRange );
+		context.getValue( GL_VALUE_NAME_POINT_SIZE_GRANULARITY, m_properties.limits.pointSizeGranularity );
+		context.getValue( GL_VALUE_NAME_LINE_WIDTH_GRANULARITY, m_properties.limits.lineWidthGranularity );
 		m_properties.limits.strictLines = true;
 		m_properties.limits.standardSampleLocations = false;
 		m_properties.limits.optimalBufferCopyOffsetAlignment = DefaultAlign< VkDeviceSize >;
@@ -748,8 +748,10 @@ namespace ashes::gl
 
 	void PhysicalDevice::doInitialiseFormatProperties( ContextLock & context )
 	{
-		if ( context->m_glGetInternalformativ )
+		if ( find( ARB_internalformat_query2 ) )
 		{
+			assert( context->m_glGetInternalformativ );
+
 			for ( VkFormat fmt = beginFmt(); fmt != endFmt(); fmt = VkFormat( fmt + 1 ) )
 			{
 				if ( isSupportedInternal( fmt ) )
@@ -759,7 +761,7 @@ namespace ashes::gl
 					glLogCall( context, glGetInternalformativ
 						, GL_TEXTURE_2D
 						, internal
-						, GL_INTERNALFORMAT_SUPPORTED
+						, GL_FORMAT_PROPERTY_SUPPORTED
 						, 1
 						, &value );
 
@@ -772,7 +774,7 @@ namespace ashes::gl
 						glLogCall( context, glGetInternalformativ
 							, GL_TEXTURE_2D
 							, internal
-							, GL_FRAMEBUFFER_RENDERABLE
+							, GL_FORMAT_PROPERTY_RENDERABLE
 							, 1
 							, &value );
 
@@ -792,7 +794,7 @@ namespace ashes::gl
 						glLogCall( context, glGetInternalformativ
 							, GL_TEXTURE_2D
 							, internal
-							, GL_FRAMEBUFFER_BLEND
+							, GL_FORMAT_PROPERTY_BLEND
 							, 1
 							, &value );
 
@@ -805,7 +807,7 @@ namespace ashes::gl
 						glLogCall( context, glGetInternalformativ
 							, GL_TEXTURE_2D
 							, internal
-							, GL_FRAGMENT_TEXTURE
+							, GL_FORMAT_PROPERTY_FRAGMENT_TEXTURE
 							, 1
 							, &value );
 
@@ -818,7 +820,7 @@ namespace ashes::gl
 						glLogCall( context, glGetInternalformativ
 							, GL_TEXTURE_2D
 							, internal
-							, GL_FILTER
+							, GL_FORMAT_PROPERTY_FILTER
 							, 1
 							, &value );
 
@@ -830,7 +832,7 @@ namespace ashes::gl
 						glLogCall( context, glGetInternalformativ
 							, GL_TEXTURE_2D
 							, internal
-							, GL_SHADER_IMAGE_LOAD
+							, GL_FORMAT_PROPERTY_SHADER_IMAGE_LOAD
 							, 1
 							, &value );
 
@@ -843,7 +845,7 @@ namespace ashes::gl
 						glLogCall( context, glGetInternalformativ
 							, GL_TEXTURE_2D
 							, internal
-							, GL_SHADER_IMAGE_ATOMIC
+							, GL_FORMAT_PROPERTY_SHADER_IMAGE_ATOMIC
 							, 1
 							, &value );
 
@@ -857,7 +859,7 @@ namespace ashes::gl
 						glLogCall( context, glGetInternalformativ
 							, GL_TEXTURE_2D
 							, internal
-							, GL_READ_PIXELS
+							, GL_FORMAT_PROPERTY_READ_PIXELS
 							, 1
 							, &value );
 
@@ -1114,302 +1116,6 @@ namespace ashes::gl
 			, VK_FALSE /* vertexAttributeAccessBeyondStride; */ };
 
 #	endif
-	}
-
-	void PhysicalDevice::doGetValue( ContextLock & context, GlGetParameter name, int32_t & value )const
-	{
-		glLogCall( context, glGetIntegerv
-			, name
-			, &value );
-	}
-
-	void PhysicalDevice::doGetValue( ContextLock & context, GlGetParameter name, uint32_t & value )const
-	{
-		int v;
-		glLogCall( context, glGetIntegerv
-			, name
-			, &v );
-		value = uint32_t( v );
-	}
-
-	void PhysicalDevice::doGetValues( ContextLock & context, GlGetParameter name, int32_t( &value )[2] )const
-	{
-		glLogCall( context, glGetIntegerv
-			, name
-			, value );
-	}
-
-	void PhysicalDevice::doGetValues( ContextLock & context, GlGetParameter name, uint32_t( &value )[2] )const
-	{
-		int v[2];
-		glLogCall( context, glGetIntegerv
-			, name
-			, v );
-		value[0] = v[0];
-		value[1] = v[1];
-	}
-
-	void PhysicalDevice::doGetValues( ContextLock & context, GlGetParameter name, int32_t( &value )[3] )const
-	{
-		glLogCall( context, glGetIntegerv
-			, name
-			, value );
-	}
-
-	void PhysicalDevice::doGetValues( ContextLock & context, GlGetParameter name, uint32_t( &value )[3] )const
-	{
-		int v[3];
-		glLogCall( context, glGetIntegerv
-			, name
-			, v );
-		value[0] = v[0];
-		value[1] = v[1];
-		value[2] = v[2];
-	}
-
-	void PhysicalDevice::doGetValues( ContextLock & context, GlGetParameter name, int32_t( &value )[4] )const
-	{
-		glLogCall( context, glGetIntegerv
-			, name
-			, value );
-	}
-
-	void PhysicalDevice::doGetValues( ContextLock & context, GlGetParameter name, uint32_t( &value )[4] )const
-	{
-		int v[4];
-		glLogCall( context, glGetIntegerv
-			, name
-			, v );
-		value[0] = v[0];
-		value[1] = v[1];
-		value[2] = v[2];
-		value[3] = v[3];
-	}
-
-	void PhysicalDevice::doGetValuesI( ContextLock & context, GlGetParameter name, int32_t( &value )[2] )const
-	{
-		glLogCall( context, glGetIntegeri_v
-			, name
-			, 0
-			, &value[0] );
-		glLogCall( context, glGetIntegeri_v
-			, name
-			, 1
-			, &value[1] );
-	}
-
-	void PhysicalDevice::doGetValuesI( ContextLock & context, GlGetParameter name, uint32_t( &value )[2] )const
-	{
-		int v[2];
-		glLogCall( context, glGetIntegeri_v
-			, name
-			, 0
-			, &v[0] );
-		glLogCall( context, glGetIntegeri_v
-			, name
-			, 1
-			, &v[1] );
-		value[0] = v[0];
-		value[1] = v[1];
-	}
-
-	void PhysicalDevice::doGetValuesI( ContextLock & context, GlGetParameter name, int32_t( &value )[3] )const
-	{
-		glLogCall( context, glGetIntegeri_v
-			, name
-			, 0
-			, &value[0] );
-		glLogCall( context, glGetIntegeri_v
-			, name
-			, 1
-			, &value[1] );
-		glLogCall( context, glGetIntegeri_v
-			, name
-			, 2
-			, &value[2] );
-	}
-
-	void PhysicalDevice::doGetValuesI( ContextLock & context, GlGetParameter name, uint32_t( &value )[3] )const
-	{
-		int v[3];
-		glLogCall( context, glGetIntegeri_v
-			, name
-			, 0
-			, &v[0] );
-		glLogCall( context, glGetIntegeri_v
-			, name
-			, 1
-			, &v[1] );
-		glLogCall( context, glGetIntegeri_v
-			, name
-			, 2
-			, &v[2] );
-		value[0] = v[0];
-		value[1] = v[1];
-		value[2] = v[2];
-	}
-
-	void PhysicalDevice::doGetValue( ContextLock & context, GlGetParameter name, int64_t & value )const
-	{
-		glLogCall( context, glGetInteger64v
-			, name
-			, &value );
-	}
-
-	void PhysicalDevice::doGetValue( ContextLock & context, GlGetParameter name, uint64_t & value )const
-	{
-		int64_t v;
-		glLogCall( context, glGetInteger64v
-			, name
-			, &v );
-		value = uint64_t( v );
-	}
-
-	void PhysicalDevice::doGetValues( ContextLock & context, GlGetParameter name, int64_t( &value )[2] )const
-	{
-		glLogCall( context, glGetInteger64v
-			, name
-			, value );
-	}
-
-	void PhysicalDevice::doGetValues( ContextLock & context, GlGetParameter name, uint64_t( &value )[2] )const
-	{
-		int64_t v[2];
-		glLogCall( context, glGetInteger64v
-			, name
-			, v );
-		value[0] = v[0];
-		value[1] = v[1];
-	}
-
-	void PhysicalDevice::doGetValues( ContextLock & context, GlGetParameter name, int64_t( &value )[3] )const
-	{
-		glLogCall( context, glGetInteger64v
-			, name
-			, value );
-	}
-
-	void PhysicalDevice::doGetValues( ContextLock & context, GlGetParameter name, uint64_t( &value )[3] )const
-	{
-		int64_t v[3];
-		glLogCall( context, glGetInteger64v
-			, name
-			, v );
-		value[0] = v[0];
-		value[1] = v[1];
-		value[2] = v[2];
-	}
-
-	void PhysicalDevice::doGetValuesI( ContextLock & context, GlGetParameter name, int64_t( &value )[2] )const
-	{
-		glLogCall( context, glGetInteger64i_v
-			, name
-			, 0
-			, &value[0] );
-		glLogCall( context, glGetInteger64i_v
-			, name
-			, 1
-			, &value[1] );
-	}
-
-	void PhysicalDevice::doGetValuesI( ContextLock & context, GlGetParameter name, uint64_t( &value )[2] )const
-	{
-		int64_t v[2];
-		glLogCall( context, glGetInteger64i_v
-			, name
-			, 0
-			, &v[0] );
-		glLogCall( context, glGetInteger64i_v
-			, name
-			, 1
-			, &v[1] );
-		value[0] = v[0];
-		value[1] = v[1];
-	}
-
-	void PhysicalDevice::doGetValuesI( ContextLock & context, GlGetParameter name, int64_t( &value )[3] )const
-	{
-		glLogCall( context, glGetInteger64i_v
-			, name
-			, 0
-			, &value[0] );
-		glLogCall( context, glGetInteger64i_v
-			, name
-			, 1
-			, &value[1] );
-		glLogCall( context, glGetInteger64i_v
-			, name
-			, 2
-			, &value[2] );
-	}
-
-	void PhysicalDevice::doGetValuesI( ContextLock & context, GlGetParameter name, uint64_t( &value )[3] )const
-	{
-		int64_t v[3];
-		glLogCall( context, glGetInteger64i_v
-			, name
-			, 0
-			, &v[0] );
-		glLogCall( context, glGetInteger64i_v
-			, name
-			, 1
-			, &v[1] );
-		glLogCall( context, glGetInteger64i_v
-			, name
-			, 2
-			, &v[2] );
-		value[0] = v[0];
-		value[1] = v[1];
-		value[2] = v[2];
-	}
-
-	void PhysicalDevice::doGetValue( ContextLock & context, GlGetParameter name, float & value )const
-	{
-		glLogCall( context, glGetFloatv
-			, name
-			, &value );
-	}
-
-	void PhysicalDevice::doGetValues( ContextLock & context, GlGetParameter name, float( &value )[2] )const
-	{
-		glLogCall( context, glGetFloatv
-			, name
-			, value );
-	}
-
-	void PhysicalDevice::doGetValues( ContextLock & context, GlGetParameter name, float( &value )[3] )const
-	{
-		glLogCall( context, glGetFloatv
-			, name
-			, value );
-	}
-
-	void PhysicalDevice::doGetValuesI( ContextLock & context, GlGetParameter name, float( &value )[2] )const
-	{
-		glLogCall( context, glGetFloati_v
-			, name
-			, 0
-			, &value[0] );
-		glLogCall( context, glGetFloati_v
-			, name
-			, 1
-			, &value[1] );
-	}
-
-	void PhysicalDevice::doGetValuesI( ContextLock & context, GlGetParameter name, float( &value )[3] )const
-	{
-		glLogCall( context, glGetFloati_v
-			, name
-			, 0
-			, &value[0] );
-		glLogCall( context, glGetFloati_v
-			, name
-			, 1
-			, &value[1] );
-		glLogCall( context, glGetFloati_v
-			, name
-			, 2
-			, &value[2] );
 	}
 
 	bool has420PackExtensions( VkPhysicalDevice physicalDevice )

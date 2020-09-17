@@ -416,6 +416,7 @@ namespace ashes::gl
 	{
 		glLogEmptyCall( context
 			, glPopDebugGroup );
+		popDebugBlock();
 	}
 
 	void apply( ContextLock const & context
@@ -430,6 +431,7 @@ namespace ashes::gl
 	void apply( ContextLock const & context
 		, CmdPushDebugGroup const & cmd )
 	{
+		pushDebugBlock( cmd.message );
 		glLogCall( context
 			, glPushDebugGroup
 			, cmd.source

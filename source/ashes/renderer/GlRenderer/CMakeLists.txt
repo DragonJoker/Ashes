@@ -9,6 +9,8 @@ set( ${PROJECT_NAME}_VERSION_MAJOR 1 )
 set( ${PROJECT_NAME}_VERSION_MINOR 0 )
 set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 
+option( ASHES_GL_LOG_CALLS "Log OpenGL calls in CallLogGL.log file." OFF )
+
 set( PROJECT_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}" )
 set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_MAJOR}" )
 
@@ -45,6 +47,17 @@ if ( OpenGL_FOUND )
 			OpenGL::EGL
 			OpenGL::GLX
 			OpenGL::OpenGL
+		)
+	endif ()
+	if ( ASHES_GL_LOG_CALLS )
+		set( TARGET_CXX_DEFINITIONS
+			${TARGET_CXX_DEFINITIONS}
+			AshesGL_LogCalls=1
+		)
+	else ()
+		set( TARGET_CXX_DEFINITIONS
+			${TARGET_CXX_DEFINITIONS}
+			AshesGL_LogCalls=0
 		)
 	endif ()
 
@@ -204,6 +217,7 @@ if ( OpenGL_FOUND )
 		Core/GlAutoIdIcdObject.cpp
 		Core/GlContext.cpp
 		Core/GlContextImpl.cpp
+		Core/GlContextLock.cpp
 		Core/GlContextState.cpp
 		Core/GlContextStateStack.cpp
 		Core/GlDebugReportCallback.cpp
@@ -311,6 +325,7 @@ if ( OpenGL_FOUND )
 		Enum/GlTextureUnit.cpp
 		Enum/GlTextureViewType.cpp
 		Enum/GlTweak.cpp
+		Enum/GlValueName.cpp
 		Enum/GlWrapMode.cpp
 	)
 	set( ${PROJECT_NAME}_FOLDER_HDR_FILES
@@ -362,6 +377,7 @@ if ( OpenGL_FOUND )
 		Enum/GlTextureUnit.hpp
 		Enum/GlTextureViewType.hpp
 		Enum/GlTweak.hpp
+		Enum/GlValueName.hpp
 		Enum/GlWrapMode.hpp
 	)
 	set( ${PROJECT_NAME}_SRC_FILES

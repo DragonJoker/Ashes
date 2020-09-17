@@ -115,6 +115,17 @@ namespace ashes::gl
 		{\
 			return m_gl##fun( params... );\
 		}
+#define GL_LIB_FUNCTION_OPT( fun )\
+		PFN_gl##fun m_gl##fun = nullptr;\
+		template< typename ... Params >\
+		inline auto gl##fun( Params... params )const\
+		{\
+			return m_gl##fun( params... );\
+		}\
+		inline bool has##fun()const\
+		{\
+			return bool( m_gl##fun );\
+		}
 #define GL_LIB_FUNCTION_EXT( fun, ... )\
 		PFN_gl##fun m_gl##fun = nullptr;\
 		template< typename ... Params >\

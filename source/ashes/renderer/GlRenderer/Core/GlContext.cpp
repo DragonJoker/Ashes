@@ -319,28 +319,38 @@ namespace ashes::gl
 	{
 #if _WIN32
 #	define GL_LIB_BASE_FUNCTION( fun )\
-		m_gl##fun = PFN_gl##fun( &::gl##fun );\
+		m_gl##fun = PFN_gl##fun( &::gl##fun, err##fun );\
 		if ( !m_gl##fun )\
 		{\
-			throw std::runtime_error{ std::string{ "Couldn't load function " } + "gl"#fun };\
+			throw std::runtime_error{ std::string{ "Couldn't load base function " } + "gl"#fun  + err##fun.str()};\
 		}
 #else
 #	define GL_LIB_BASE_FUNCTION( fun )\
-		if ( !( getFunction( "gl"#fun, m_gl##fun ) ) )\
+		std::stringstream err##fun;\
+		if ( !( getFunction( "gl"#fun, m_gl##fun, err##fun ) ) )\
 		{\
-			throw std::runtime_error{ std::string{ "Couldn't load function " } + "gl"#fun };\
+			throw std::runtime_error{ std::string{ "Couldn't load base function " } + "gl"#fun + err##fun.str() };\
 		}
 #endif
 #define GL_LIB_FUNCTION( fun )\
-		if ( !( getFunction( "gl"#fun, m_gl##fun ) ) )\
+		std::stringstream err##fun;\
+		if ( !( getFunction( "gl"#fun, m_gl##fun, err##fun ) ) )\
 		{\
-			throw std::runtime_error{ std::string{ "Couldn't load function " } + "gl"#fun };\
+			throw std::runtime_error{ std::string{ "Couldn't load function " } + "gl"#fun + err##fun.str() };\
+		}
+
+#define GL_LIB_FUNCTION_OPT( fun, ... )\
+		std::stringstream err##fun;\
+		if ( !( getFunction( "gl"#fun, m_gl##fun, err##fun ) ) )\
+		{\
+			reportWarning( m_instance, VK_SUCCESS, "Context", "Couldn't load optional function gl"#fun#": " + err##fun.str() );\
 		}
 
 #define GL_LIB_FUNCTION_EXT( fun, ... )\
-		if ( !( getFunction( "gl"#fun, m_gl##fun, __VA_ARGS__ ) ) )\
+		std::stringstream err##fun;\
+		if ( !( getFunction( "gl"#fun, m_gl##fun, err##fun, __VA_ARGS__ ) ) )\
 		{\
-			reportWarning( m_instance, VK_SUCCESS, "Context", "Couldn't load function gl"#fun );\
+			reportWarning( m_instance, VK_SUCCESS, "Context", "Couldn't load function gl"#fun#": " + err##fun.str() );\
 		}
 #include "Miscellaneous/OpenGLFunctionsList.inl"
 	}

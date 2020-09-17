@@ -9,6 +9,70 @@ See LICENSE file in root folder
 
 namespace ashes::gl
 {
+	template< typename ValueT >
+	struct ValueGetter;
+
+	template<>
+	struct ValueGetter< int32_t >
+	{
+		using ValueT = int32_t;
+
+		static void get( ContextLock & context, GlValueName name, ValueT * value );
+		static void get( ContextLock & context, GlValueName name, GLint index, ValueT * value );
+	};
+
+	template<>
+	struct ValueGetter< int64_t >
+	{
+		using ValueT = int64_t;
+
+		static void get( ContextLock & context, GlValueName name, ValueT * value );
+		static void get( ContextLock & context, GlValueName name, GLint index, ValueT * value );
+	};
+
+	template<>
+	struct ValueGetter< float >
+	{
+		using ValueT = float;
+
+		static void get( ContextLock & context, GlValueName name, ValueT * value );
+		static void get( ContextLock & context, GlValueName name, GLint index, ValueT * value );
+	};
+
+	template<>
+	struct ValueGetter< uint32_t >
+	{
+		using ValueT = uint32_t;
+		using SignedT = int32_t;
+
+		static void get( ContextLock & context, GlValueName name, ValueT * value )
+		{
+			ValueGetter< SignedT >::get( context, name, reinterpret_cast< SignedT * >( value ) );
+		}
+
+		static void get( ContextLock & context, GlValueName name, GLint index, ValueT * value )
+		{
+			ValueGetter< SignedT >::get( context, name, index, reinterpret_cast< SignedT * >( value ) );
+		}
+	};
+
+	template<>
+	struct ValueGetter< uint64_t >
+	{
+		using ValueT = uint64_t;
+		using SignedT = int64_t;
+
+		static void get( ContextLock & context, GlValueName name, ValueT * value )
+		{
+			ValueGetter< SignedT >::get( context, name, reinterpret_cast< SignedT * >( value ) );
+		}
+
+		static void get( ContextLock & context, GlValueName name, GLint index, ValueT * value )
+		{
+			ValueGetter< SignedT >::get( context, name, index, reinterpret_cast< SignedT * >( value ) );
+		}
+	};
+
 	class ContextLock
 	{
 	public:
@@ -65,6 +129,27 @@ namespace ashes::gl
 		{
 			assert( m_device != nullptr );
 			return m_device;
+		}
+
+		template< typename ValueT >
+		void getValue( GlValueName name, ValueT & value )
+		{
+			ValueGetter< ValueT >::get( *this, name, &value );
+		}
+
+		template< typename ValueT, size_t CountT >
+		void getValues( GlValueName name, ValueT ( & value )[CountT] )
+		{
+			ValueGetter< ValueT >::get( *this, name, value );
+		}
+
+		template< typename ValueT, size_t CountT >
+		void getValuesI( GlValueName name, ValueT ( & value )[CountT] )
+		{
+			for ( size_t i = 0u; i < CountT; ++i )
+			{
+				ValueGetter< ValueT >::get( *this, name, i, value );
+			}
 		}
 
 	private:

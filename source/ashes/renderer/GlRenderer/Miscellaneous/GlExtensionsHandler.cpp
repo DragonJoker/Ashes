@@ -45,6 +45,12 @@ namespace ashes::gl
 		PFN_glGetStringi getStringi;
 		PFN_glGetString getString;
 		PFN_glGetIntegerv getIntegerv;
+
+		bool isInCore( uint32_t value )
+		{
+			static uint32_t constexpr notInCore = makeVersion( NotInCore, NotInCore, 0 );
+			return value == notInCore;
+		}
 	}
 
 	void ExtensionsHandler::initialise()
@@ -57,11 +63,12 @@ namespace ashes::gl
 		static int constexpr maxMinor = MaxMinor;
 #endif
 
-		getFunction( "glGetStringi", getStringi );
+		std::stringstream errStream;
+		getFunction( "glGetStringi", getStringi, errStream );
 
 #ifndef _WIN32
-		getFunction( "glGetString", getString );
-		getFunction( "glGetIntegerv", getIntegerv );
+		getFunction( "glGetString", getString, errStream );
+		getFunction( "glGetIntegerv", getIntegerv, errStream );
 #else
 		getString = glGetString;
 		getIntegerv = glGetIntegerv;
@@ -160,10 +167,10 @@ namespace ashes::gl
 
 	bool ExtensionsHandler::find( VkExtensionProperties const & extension )const
 	{
-		return m_version >= extension.specVersion
-			&& m_deviceExtensionNames.end() != std::find( m_deviceExtensionNames.begin()
+		return ( isInCore( extension.specVersion ) && ( m_version >= extension.specVersion ) )
+			|| ( m_deviceExtensionNames.end() != std::find( m_deviceExtensionNames.begin()
 				, m_deviceExtensionNames.end()
-				, extension.extensionName );
+				, extension.extensionName ) );
 	}
 
 	bool ExtensionsHandler::findAny( VkExtensionPropertiesArray const & extensions )const

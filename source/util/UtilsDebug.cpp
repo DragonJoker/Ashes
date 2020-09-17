@@ -10,6 +10,15 @@ namespace utils
 {
 	namespace
 	{
+		void print( std::ostream & stream
+			, std::string const & name
+			, char const * value
+			, std::string const & lineEnd
+			, std::string const & lineBegin )
+		{
+			stream << lineBegin << name << ": " << ( value ? std::string( value ) : std::string() ) << lineEnd;
+		}
+
 		char const * const getName( VkDebugReportObjectTypeEXT value )
 		{
 			switch ( value )
@@ -176,9 +185,9 @@ namespace utils
 			}
 
 			stream << lineEnd;
-			stream << lineBegin << "Message ID: " << pCallbackData->pMessageIdName << lineEnd;
+			print( stream, "Message ID", pCallbackData->pMessageIdName, lineEnd, lineBegin );
 			stream << lineBegin << "Code: 0x" << std::hex << pCallbackData->messageIdNumber << lineEnd;
-			stream << lineBegin << "Message: " << pCallbackData->pMessage << lineEnd;
+			print( stream, "Message", pCallbackData->pMessage, lineEnd, lineBegin );
 			print( stream, "Objects", pCallbackData->objectCount, pCallbackData->pObjects, lineEnd, lineBegin );
 			print( stream, "Queue Labels", pCallbackData->queueLabelCount, pCallbackData->pQueueLabels, lineEnd, lineBegin );
 			print( stream, "CommmandBuffer Labels", pCallbackData->cmdBufLabelCount, pCallbackData->pCmdBufLabels, lineEnd, lineBegin );
@@ -255,10 +264,10 @@ namespace utils
 			}
 
 			// Display message to default output (console/logcat)
-			stream << "    Layer: " << pLayerPrefix << "\n";
+			print( stream, "Layer", pLayerPrefix, "\n", "    " );
 			stream << "    Code: 0x" << std::hex << messageCode << "\n";
 			stream << "    Object: (" << std::hex << object << ") " << getName( objectType ) << "\n";
-			stream << "    Message: " << pMessage;
+			print( stream, "Message", pMessage, "\n", "    " );
 
 			VkBool32 result = VK_FALSE;
 
@@ -380,10 +389,10 @@ namespace utils
 			}
 
 			// Display message to default output (console/logcat)
-			stream << "    Layer: " << pLayerPrefix << "\n";
+			print( stream, "Layer", pLayerPrefix, "\n", "    " );
 			stream << "    Code: 0x" << std::hex << messageCode << "\n";
 			stream << "    Object: (" << std::hex << object << ") " << getName( objectType ) << "\n";
-			stream << "    Message: " << pMessage;
+			print( stream, "Message", pMessage, "\n", "    " );
 
 			VkBool32 result = VK_FALSE;
 

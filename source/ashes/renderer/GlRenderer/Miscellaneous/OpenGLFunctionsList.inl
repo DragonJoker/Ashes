@@ -175,6 +175,14 @@ GL_LIB_FUNCTION( VertexAttribIPointer )
 
 #undef GL_LIB_FUNCTION
 
+#ifndef GL_LIB_FUNCTION_OPT
+#	define GL_LIB_FUNCTION_OPT( x )
+#endif
+
+GL_LIB_FUNCTION_OPT( DebugMessageCallbackAMD )
+
+#undef GL_LIB_FUNCTION_OPT
+
 #ifndef GL_LIB_FUNCTION_EXT
 #	define GL_LIB_FUNCTION_EXT( x, ... )
 #endif
@@ -189,7 +197,6 @@ GL_LIB_FUNCTION_EXT( ClipControl, "ARB", ARB_clip_control )
 GL_LIB_FUNCTION_EXT( CopyImageSubData, "ARB", ARB_copy_image )
 GL_LIB_FUNCTION_EXT( CreateShaderProgramv, "ARB", ARB_separate_shader_objects )
 GL_LIB_FUNCTION_EXT( DebugMessageCallback, "KHR", KHR_debug, "ARB", ARB_debug_output )
-GL_LIB_FUNCTION_EXT( DebugMessageCallbackAMD, "AMDX", AMDX_debug_output )
 GL_LIB_FUNCTION_EXT( DeleteProgramPipelines, "ARB", ARB_separate_shader_objects )
 GL_LIB_FUNCTION_EXT( DepthRangeArrayv, "ARB", ARB_viewport_array )
 GL_LIB_FUNCTION_EXT( DispatchCompute, "ARB", ARB_compute_shader )

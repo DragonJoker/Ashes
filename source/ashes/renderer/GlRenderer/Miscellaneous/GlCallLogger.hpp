@@ -52,18 +52,13 @@ See LICENSE file in root folder
 #include "renderer/GlRenderer/Enum/GlTextureUnit.hpp"
 #include "renderer/GlRenderer/Enum/GlTextureViewType.hpp"
 #include "renderer/GlRenderer/Enum/GlTweak.hpp"
+#include "renderer/GlRenderer/Enum/GlValueName.hpp"
 #include "renderer/GlRenderer/Enum/GlWrapMode.hpp"
 
 #include <iostream>
 #include <iomanip>
 #include <locale>
 #include <sstream>
-
-#if !defined( NDEBUG )
-#	define AshesGL_LogCalls 0
-#else
-#	define AshesGL_LogCalls 0
-#endif
 
 namespace ashes::gl
 {
@@ -377,6 +372,11 @@ namespace ashes::gl
 	}
 
 	inline std::string toString( GlWrapMode value )
+	{
+		return getName( value );
+	}
+
+	inline std::string toString( GlValueName value )
 	{
 		return getName( value );
 	}

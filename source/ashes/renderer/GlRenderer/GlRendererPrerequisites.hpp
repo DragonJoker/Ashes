@@ -28,6 +28,7 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -215,56 +216,115 @@ namespace ashes::gl
 
 	namespace details
 	{
-		template< typename FuncT >
-		inline bool getFunctionRec( std::string const & name
-			, FuncT & function )
+		inline std::ostream & operator<<( std::ostream & stream, VkExtensionProperties const & value )
 		{
+			stream << value.extensionName << " [core since " << ashes::getMajor( value.specVersion ) << "." << ashes::getMinor( value.specVersion ) << "]";
+			return stream;
+		}
+
+		template< typename FuncT >
+		inline bool getFunctionRec( bool tryCore
+			, std::string const & name
+			, FuncT & function
+			, std::stringstream & errStream )
+		{
+			if ( !tryCore )
+			{
+				return false;
+			}
+
 			function = FuncT( getFunction( name.c_str() ) );
-			return function != nullptr;
+
+			if ( function )
+			{
+				return true;
+			}
+
+			errStream << "\n  Tried: " << name;
+			return false;
 		}
 
 		template< typename FuncT, typename ParamT >
-		inline bool getFunctionRec( std::string const & name
+		inline bool getFunctionRec( bool tryCore
+			, std::string const & name
 			, FuncT & function
+			, std::stringstream & errStream
 			, char const * const lastShort
 			, VkExtensionProperties const & lastExtension )
 		{
 			function = FuncT( getFunction( ( name + lastShort ).c_str() ) );
-			return function != nullptr;
+
+			if ( function )
+			{
+				return true;
+			}
+
+			errStream << "\n  Tried: " << name << lastShort << " (" << lastExtension << ")";
+			return false;
 		}
 
 		template< typename FuncT, typename ... ParamsT >
-		inline bool getFunctionRec( std::string const & name
+		inline bool getFunctionRec( bool tryCore
+			, std::string const & name
 			, FuncT & function
+			, std::stringstream & errStream
 			, char const * const currentShort
 			, VkExtensionProperties const & currentExtension
 			, ParamsT ... params )
 		{
 			function = FuncT( getFunction( ( name + currentShort ).c_str() ) );
 
-			if ( !function )
+			if ( function )
 			{
-				return getFunctionRec( name, function, params... );
+				return true;
 			}
 
-			return function != nullptr;
+			errStream << "\n  Tried: " << name << currentShort << " (" << currentExtension << ")";
+			return getFunctionRec( tryCore
+				, name
+				, function
+				, errStream
+				, params... );
 		}
 	}
 
 	template< typename FuncT, typename ... ParamsT >
 	inline bool getFunction( char const * const name
 		, FuncT & function
+		, std::stringstream & errStream
 		, ParamsT ... params )
 	{
-		return details::getFunctionRec( std::string{ name ? name : "" }, function, params... );
+		return details::getFunctionRec( true
+			, std::string{ name ? name : "" }
+			, function
+			, errStream
+			, params... );
 	}
 
 	template< typename FuncT, typename ... ParamsT >
 	inline bool getFunction( std::string const & name
 		, FuncT & function
+		, std::stringstream & errStream
 		, ParamsT ... params )
 	{
-		return details::getFunctionRec( name, function, params... );
+		return details::getFunctionRec( true
+			, name
+			, function
+			, errStream
+			, params... );
+	}
+
+	template< typename FuncT, typename ... ParamsT >
+	inline bool getExtFunction( std::string const & name
+		, FuncT & function
+		, std::stringstream & errStream
+		, ParamsT ... params )
+	{
+		return details::getFunctionRec( false
+			, name
+			, function
+			, errStream
+			, params... );
 	}
 
 	inline void * getBufferOffset( intptr_t value )
