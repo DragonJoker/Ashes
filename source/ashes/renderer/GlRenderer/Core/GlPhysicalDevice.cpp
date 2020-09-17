@@ -748,7 +748,27 @@ namespace ashes::gl
 
 	void PhysicalDevice::doInitialiseFormatProperties( ContextLock & context )
 	{
-		if ( find( ARB_internalformat_query2 ) )
+		if ( !find( ARB_internalformat_query2 ) )
+		{
+			for ( VkFormat fmt = VK_FORMAT_BEGIN_RANGE; fmt < VK_FORMAT_END_RANGE; fmt = VkFormat( fmt + 1 ) )
+			{
+				m_formatProperties[fmt].optimalTilingFeatures = VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT
+					| VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT
+					| VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT
+					| VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT
+					| VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT
+					| VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT
+					| VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT
+					| ( ashes::isDepthOrStencilFormat( fmt ) ? VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT : 0 )
+					| VK_FORMAT_FEATURE_BLIT_SRC_BIT
+					| VK_FORMAT_FEATURE_BLIT_DST_BIT
+					| VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT
+					| VK_FORMAT_FEATURE_TRANSFER_SRC_BIT
+					| VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
+				m_formatProperties[fmt].linearTilingFeatures = m_formatProperties[fmt].optimalTilingFeatures;
+			}
+		}
+		else
 		{
 			assert( context->m_glGetInternalformativ );
 
