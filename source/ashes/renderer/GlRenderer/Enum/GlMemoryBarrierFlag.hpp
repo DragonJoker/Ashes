@@ -28,6 +28,7 @@ namespace ashes::gl
 	};
 	Ashes_ImplementFlag( GlMemoryBarrierFlag )
 	std::string getName( GlMemoryBarrierFlags value );
+	inline std::string toString( GlMemoryBarrierFlags value ) { return getName( value ); }
 	/**
 	*\brief
 	*	Convertit un VkPipelineStageFlags en GlMemoryBarrierFlags.

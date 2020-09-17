@@ -30,6 +30,7 @@ namespace ashes::gl
 		GL_BLEND_FACTOR_ONE_MINUS_SRC1_ALPHA = 0x88FB,
 	};
 	std::string getName( GlBlendFactor value );
+	inline std::string toString( GlBlendFactor value ) { return getName( value ); }
 	/**
 	*\brief
 	*	Convertit un VkBlendFactor en GlBlendFactor.

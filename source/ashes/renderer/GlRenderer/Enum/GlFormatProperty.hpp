@@ -85,4 +85,5 @@ namespace ashes::gl
 		GL_FORMAT_PROPERTY_VIEW_COMPATIBILITY_CLASS = 0x82B6,
 	};
 	std::string getName( GlFormatProperty value );
+	inline std::string toString( GlFormatProperty value ) { return getName( value ); }
 }

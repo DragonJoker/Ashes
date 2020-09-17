@@ -15,6 +15,7 @@ namespace ashes::gl
 		GL_SWIZZLE_A = 0x8E45,
 	};
 	std::string getName( GlSwizzle value );
+	inline std::string toString( GlSwizzle value ) { return getName( value ); }
 
 	enum GlComponentSwizzle
 		: GLenum
@@ -28,5 +29,6 @@ namespace ashes::gl
 		GL_COMPONENT_SWIZZLE_ALPHA = 0x1906,
 	};
 	std::string getName( GlComponentSwizzle value );
+	inline std::string toString( GlComponentSwizzle value ) { return getName( value ); }
 	GlComponentSwizzle convertComponentSwizzle( VkComponentSwizzle const & value );
 }

@@ -20,6 +20,7 @@ namespace ashes::gl
 		GL_BUFFER_DATA_USAGE_DYNAMIC_COPY = 0x88EA,
 	};
 	std::string getName( GlBufferDataUsageFlags value );
+	inline std::string toString( GlBufferDataUsageFlags value ) { return getName( value ); }
 	/**
 	*\brief
 	*	Convertit un VkMemoryPropertyFlags en GlMemoryPropertyFlags.

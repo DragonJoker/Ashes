@@ -23,4 +23,5 @@ namespace ashes::gl
 		GL_SAMPLER_PARAMETER_COMPARE_REF_TO_TEXTURE = 0x884E
 	};
 	std::string getName( GlSamplerParameter value );
+	inline std::string toString( GlSamplerParameter value ) { return getName( value ); }
 }

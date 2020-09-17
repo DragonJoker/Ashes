@@ -23,4 +23,5 @@ namespace ashes::gl
 			return "GL_SHADER_BINARY_FORMAT_UNKNOWN";
 		}
 	}
+	inline std::string toString( GlShaderBinaryFormat value ) { return getName( value ); }
 }

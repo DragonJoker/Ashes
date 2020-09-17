@@ -173,4 +173,5 @@ namespace ashes::gl
 		GL_TEXTURE_FREE_MEMORY_ATI = 0x87FC,
 	};
 	std::string getName( GlGetParameter value );
+	inline std::string toString( GlGetParameter value ) { return getName( value ); }
 }

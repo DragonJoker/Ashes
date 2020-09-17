@@ -210,8 +210,11 @@ namespace ashes::gl
 		GL_UI_10F_11F_11F = 0x8C3B,
 	};
 	std::string getName( GlInternal value );
+	inline std::string toString( GlInternal value ) { return getName( value ); }
 	std::string getName( GlFormat value );
+	inline std::string toString( GlFormat value ) { return getName( value ); }
 	std::string getName( GlType value );
+	inline std::string toString( GlType value ) { return getName( value ); }
 	bool isSupportedInternal( VkFormat const & format )noexcept;
 	GlInternal getInternalFormat( VkFormat const & format )noexcept;
 	GlFormat getFormat( GlInternal format )noexcept;

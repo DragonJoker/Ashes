@@ -152,4 +152,5 @@ namespace ashes::gl
 		GL_VALUE_NAME_SMOOTH_LINE_WIDTH_RANGE = 0x0B22,
 	};
 	std::string getName( GlValueName value );
+	inline std::string toString( GlValueName value ) { return getName( value ); }
 }

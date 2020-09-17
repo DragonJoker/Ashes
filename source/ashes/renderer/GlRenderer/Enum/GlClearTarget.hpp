@@ -15,4 +15,5 @@ namespace ashes::gl
 		GL_CLEAR_TARGET_DEPTH_STENCIL = 0x84F9,
 	};
 	std::string getName( GlClearTarget value );
+	inline std::string toString( GlClearTarget value ) { return getName( value ); }
 }
