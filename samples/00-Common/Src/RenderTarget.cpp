@@ -5,7 +5,6 @@
 
 #include <ashespp/Buffer/StagingBuffer.hpp>
 #include <ashespp/Buffer/UniformBuffer.hpp>
-#include <ashespp/Command/Queue.hpp>
 #include <ashespp/Descriptor/DescriptorSet.hpp>
 #include <ashespp/Descriptor/DescriptorSetLayout.hpp>
 #include <ashespp/Descriptor/DescriptorSetPool.hpp>
@@ -15,6 +14,7 @@
 #include <ashespp/Pipeline/GraphicsPipeline.hpp>
 #include <ashespp/RenderPass/FrameBuffer.hpp>
 #include <ashespp/RenderPass/RenderPass.hpp>
+#include <ashespp/Sync/Queue.hpp>
 
 #include <util/GlslToSpv.hpp>
 #include <util/Transform.hpp>

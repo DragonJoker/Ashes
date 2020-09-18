@@ -994,35 +994,6 @@ namespace ashes::gl::gl4
 		return result;
 	}
 
-	SamplersLayout getImageBuffers( ContextLock const & context
-		, VkShaderStageFlagBits stage
-		, GLuint program )
-	{
-		SamplersLayout result;
-		getVariableInfos( context
-			, program
-			, GLSL_INTERFACE_UNIFORM
-			, [&result, &stage, &program]( std::string name
-				, GlslAttributeType type
-				, GLint location
-				, GLint arraySize
-				, GLint offset )
-			{
-				if ( isImageBuffer( type ) )
-				{
-					result.push_back( { program
-						, stage
-						, name
-						, uint32_t( location )
-						, getSamplerFormat( type )
-						, 1u
-						, uint32_t( arraySize )
-						, 0u } );
-				}
-			} );
-		return result;
-	}
-
 	SamplersLayout getSamplers( ContextLock const & context
 		, VkShaderStageFlagBits stage
 		, GLuint program )
@@ -1044,6 +1015,35 @@ namespace ashes::gl::gl4
 						, name
 						, uint32_t( location )
 						, getSamplerFormat( type )
+						, 1u
+						, uint32_t( arraySize )
+						, 0u } );
+				}
+			} );
+		return result;
+	}
+
+	ImagesLayout getImageBuffers( ContextLock const & context
+		, VkShaderStageFlagBits stage
+		, GLuint program )
+	{
+		ImagesLayout result;
+		getVariableInfos( context
+			, program
+			, GLSL_INTERFACE_UNIFORM
+			, [&result, &stage, &program]( std::string name
+				, GlslAttributeType type
+				, GLint location
+				, GLint arraySize
+				, GLint offset )
+			{
+				if ( isImageBuffer( type ) )
+				{
+					result.push_back( { program
+						, stage
+						, name
+						, uint32_t( location )
+						, getImageFormat( type )
 						, 1u
 						, uint32_t( arraySize )
 						, 0u } );

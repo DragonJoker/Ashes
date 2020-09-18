@@ -274,13 +274,14 @@ namespace ashes::gl
 	void MswContext::doLoadSystemFunctions() try
 	{
 		enable();
+		std::stringstream errStream;
 
-		if ( !getFunction( "wglCreateContextAttribsARB", wglCreateContextAttribsARB ) )
+		if ( !getFunction( "wglCreateContextAttribsARB", wglCreateContextAttribsARB, errStream ) )
 		{
-			throw std::runtime_error{ "Couldn't retrieve wglCreateContextAttribsARB" };
+			throw std::runtime_error{ "Couldn't retrieve wglCreateContextAttribsARB: " + errStream.str() };
 		}
 
-		getFunction( "wglSwapIntervalEXT", wglSwapIntervalEXT );
+		getFunction( "wglSwapIntervalEXT", wglSwapIntervalEXT, errStream );
 		disable();
 	}
 	catch ( std::exception & )

@@ -133,7 +133,7 @@ namespace ashes::gl
 		}
 	}
 
-	bool isImageBuffer( GlslAttributeType type )
+	bool isImageBuffer( GlslAttributeType type )noexcept
 	{
 		return type == GLSL_ATTRIBUTE_IMAGE_BUFFER
 			|| type == GLSL_ATTRIBUTE_INT_IMAGE_BUFFER
@@ -549,15 +549,6 @@ namespace ashes::gl
 			: gl3::getSamplerBuffers( context, stage, program ) );
 	}
 
-	SamplersLayout getImageBuffers( ContextLock const & context
-		, VkShaderStageFlagBits stage
-		, GLuint program )
-	{
-		return ( hasProgramInterfaceQuery( context.getDevice() )
-			? gl4::getImageBuffers( context, stage, program )
-			: gl3::getImageBuffers( context, stage, program ) );
-	}
-
 	SamplersLayout getSamplers( ContextLock const & context
 		, VkShaderStageFlagBits stage
 		, GLuint program )
@@ -565,6 +556,15 @@ namespace ashes::gl
 		return ( hasProgramInterfaceQuery( context.getDevice() )
 			? gl4::getSamplers( context, stage, program )
 			: gl3::getSamplers( context, stage, program ) );
+	}
+
+	ImagesLayout getImageBuffers( ContextLock const & context
+		, VkShaderStageFlagBits stage
+		, GLuint program )
+	{
+		return ( hasProgramInterfaceQuery( context.getDevice() )
+			? gl4::getImageBuffers( context, stage, program )
+			: gl3::getImageBuffers( context, stage, program ) );
 	}
 
 	ImagesLayout getImages( ContextLock const & context

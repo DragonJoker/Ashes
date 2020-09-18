@@ -699,11 +699,11 @@ namespace ashes::gl
 	{
 		VkDeviceSize memSizeNV{};
 		uint32_t memSizeAMD[4]{};
-		doGetValue( context, GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, memSizeNV );
+		context.getValue( GL_VALUE_NAME_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, memSizeNV );
 
 		if ( !memSizeNV )
 		{
-			doGetValues( context, GL_TEXTURE_FREE_MEMORY_ATI, memSizeAMD );
+			context.getValues( GL_VALUE_NAME_TEXTURE_FREE_MEMORY_ATI, memSizeAMD );
 
 			if ( memSizeAMD[0] )
 			{
@@ -750,7 +750,7 @@ namespace ashes::gl
 	{
 		if ( !find( ARB_internalformat_query2 ) )
 		{
-			for ( VkFormat fmt = VK_FORMAT_BEGIN_RANGE; fmt < VK_FORMAT_END_RANGE; fmt = VkFormat( fmt + 1 ) )
+			for ( VkFormat fmt = beginFmt(); fmt < endFmt(); fmt = VkFormat( fmt + 1 ) )
 			{
 				m_formatProperties[fmt].optimalTilingFeatures = VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT
 					| VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT

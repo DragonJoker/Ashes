@@ -166,7 +166,7 @@ namespace ashes::gl::gl3
 				, glGetActiveUniformName
 				, program
 				, index
-				, uniformNamesData[index].size()
+				, GLsizei( uniformNamesData[index].size() )
 				, &actualLength
 				, uniformNamesData[index].data() );
 			uniformNames.push_back( uniformNamesData[index].data() );
@@ -368,36 +368,6 @@ namespace ashes::gl::gl3
 		return result;
 	}
 
-	SamplersLayout getImageBuffers( ContextLock const & context
-		, VkShaderStageFlagBits stage
-		, GLuint program )
-	{
-		SamplersLayout result;
-		getUniformInfos( context
-			, stage
-			, program
-			, []( GLuint blockIndex ){ return blockIndex == -1; }
-			, [&result, &stage, &program]( const char * name
-				, GlslAttributeType type
-				, GLuint location
-				, GLuint offset
-				, GLuint arraySize )
-			{
-				if ( isImageBuffer( type ) )
-				{
-					result.push_back( { program
-						, stage
-						, name
-						, uint32_t( location )
-						, getSamplerFormat( type )
-						, 1u
-						, uint32_t( arraySize )
-						, 0u } );
-				}
-			} );
-		return result;
-	}
-
 	SamplersLayout getSamplers( ContextLock const & context
 		, VkShaderStageFlagBits stage
 		, GLuint program )
@@ -420,6 +390,39 @@ namespace ashes::gl::gl3
 						, name
 						, uint32_t( location )
 						, getSamplerFormat( type )
+						, 1u
+						, uint32_t( arraySize )
+						, 0u } );
+				}
+			} );
+		return result;
+	}
+
+	ImagesLayout getImageBuffers( ContextLock const & context
+		, VkShaderStageFlagBits stage
+		, GLuint program )
+	{
+		ImagesLayout result;
+		getUniformInfos( context
+			, stage
+			, program
+			, []( GLuint blockIndex )
+			{
+				return blockIndex == -1;
+			}
+			, [&result, &stage, &program]( const char * name
+				, GlslAttributeType type
+				, GLuint location
+				, GLuint offset
+				, GLuint arraySize )
+			{
+				if ( isImageBuffer( type ) )
+				{
+					result.push_back( { program
+						, stage
+						, name
+						, uint32_t( location )
+						, getImageFormat( type )
 						, 1u
 						, uint32_t( arraySize )
 						, 0u } );

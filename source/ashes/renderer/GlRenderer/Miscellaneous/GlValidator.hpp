@@ -149,10 +149,13 @@ namespace ashes::gl
 	InterfaceBlocksLayout getStorageBuffers( ContextLock const & context
 		, VkShaderStageFlagBits stage
 		, GLuint program );
-	SamplersLayout getTextureBuffers( ContextLock const & context
+	SamplersLayout getSamplerBuffers( ContextLock const & context
 		, VkShaderStageFlagBits stage
 		, GLuint program );
 	SamplersLayout getSamplers( ContextLock const & context
+		, VkShaderStageFlagBits stage
+		, GLuint program );
+	ImagesLayout getImageBuffers( ContextLock const & context
 		, VkShaderStageFlagBits stage
 		, GLuint program );
 	ImagesLayout getImages( ContextLock const & context

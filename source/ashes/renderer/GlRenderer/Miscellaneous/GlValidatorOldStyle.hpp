@@ -38,10 +38,10 @@ namespace ashes::gl::gl3
 	SamplersLayout getSamplerBuffers( ContextLock const & context
 		, VkShaderStageFlagBits stage
 		, GLuint program );
-	SamplersLayout getImageBuffers( ContextLock const & context
+	SamplersLayout getSamplers( ContextLock const & context
 		, VkShaderStageFlagBits stage
 		, GLuint program );
-	SamplersLayout getSamplers( ContextLock const & context
+	ImagesLayout getImageBuffers( ContextLock const & context
 		, VkShaderStageFlagBits stage
 		, GLuint program );
 	ImagesLayout getImages( ContextLock const & context

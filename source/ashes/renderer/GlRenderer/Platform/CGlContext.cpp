@@ -4,9 +4,9 @@ See LICENSE file in root folder
 */
 #include "CGlContext.hpp"
 
+#if defined( __APPLE__ )
 #include "CGlView.hh"
 
-#if defined( __APPLE__ )
 #include <unistd.h>
 #include <iostream>
 #include <sstream>

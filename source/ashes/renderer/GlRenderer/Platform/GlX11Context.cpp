@@ -258,13 +258,14 @@ namespace ashes::gl
 	void X11Context::doLoadSytemFunctions() try
 	{
 		enable();
+		std::stringstream errStream;
 
-		if ( !getFunction( "glXCreateContextAttribsARB", glCreateContextAttribs ) )
+		if ( !getFunction( "glXCreateContextAttribsARB", glCreateContextAttribs, errStream ) )
 		{
-			throw std::runtime_error{ "Couldn't retrieve glXCreateContextAttribsARB" };
+			throw std::runtime_error{ "Couldn't retrieve glXCreateContextAttribsARB: " + errStream.str() };
 		}
 
-		getFunction( "glXSwapIntervalEXT", glXSwapInterval );
+		getFunction( "glXSwapIntervalEXT", glXSwapInterval, errStream );
 	}
 	catch ( std::exception & exc )
 	{
@@ -328,45 +329,6 @@ namespace ashes::gl
 		}
 
 		XSync( m_display, False );
-		// auto sc = XRRGetScreenInfo( m_display, m_window );
-
-		// if ( !sc )
-		// {
-		// 	throw std::runtime_error{ "Couldn't retrieve screen config info" };
-		// }
-
-		// auto params = getDisplayModeParameters( displayCreateInfo.displayMode );
-		// int nsize{ 0 };
-		// auto sizes = XRRConfigSizes( sc, &nsize );
-		// int sizeIndex = 0;
-
-		// for ( int sz = 0; sz < nsize; sz++ )
-		// {
-		// 	auto size = sizes[sz];
-		// 	if ( size.width == params.visibleRegion.width
-		// 		&& size.height == params.visibleRegion.height )
-		// 	{
-		// 		sizeIndex = sz;
-		// 		break;
-		// 	}
-		// }
-
-		// Time currentTimeStamp;
-		// XRRSelectInput( m_display, m_window, RRScreenChangeNotifyMask );
-		// auto timestamp = XRRConfigTimes( sc, &currentTimeStamp );
-
-		// if ( !XRRSetScreenConfig( m_display
-		// 	, sc
-		// 	, XDefaultRootWindow( m_display )
-		// 	, sizeIndex
-		// 	, convert( displayCreateInfo.transform )
-		// 	, currentTimeStamp ) )
-		// {
-		// 	throw std::runtime_error{ "Couldn't change display mode" };
-		// }
-
-		// XRRFreeScreenConfigInfo( sc );
-		// XFlush( m_display );
 	}
 	catch ( std::exception & exc )
 	{

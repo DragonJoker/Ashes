@@ -146,7 +146,7 @@ namespace ashes::gl
 		template< typename ValueT, size_t CountT >
 		void getValuesI( GlValueName name, ValueT ( & value )[CountT] )
 		{
-			for ( size_t i = 0u; i < CountT; ++i )
+			for ( GLint i = 0u; i < GLint( CountT ); ++i )
 			{
 				ValueGetter< ValueT >::get( *this, name, i, value );
 			}
