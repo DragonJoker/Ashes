@@ -468,7 +468,7 @@ namespace ashes
 		*\param[in] dstLayout
 		*	The image layout wanted for the destination image.
 		*/
-		void CommandBuffer::copyImage( VkImageCopyArray copyInfo
+		void copyImage( VkImageCopyArray copyInfo
 			, Image const & src
 			, VkImageLayout srcLayout
 			, Image const & dst
