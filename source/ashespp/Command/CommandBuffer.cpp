@@ -295,6 +295,18 @@ namespace ashes
 			, &copyInfo );
 	}
 
+	void CommandBuffer::copyBuffer( VkBufferCopyArray const & copyInfo
+		, BufferBase const & src
+		, BufferBase const & dst )const
+	{
+		DEBUG_DUMP( copyInfo );
+		m_device.vkCmdCopyBuffer( m_internal
+			, src
+			, dst
+			, uint32_t( copyInfo.size() )
+			, copyInfo.data() );
+	}
+	
 	void CommandBuffer::copyImage( VkImageCopy const & copyInfo
 		, Image const & src
 		, VkImageLayout srcLayout
@@ -309,6 +321,22 @@ namespace ashes
 			, dstLayout
 			, 1
 			, &copyInfo );
+	}
+
+	void CommandBuffer::copyImage( VkImageCopyArray copyInfos
+		, Image const & src
+		, VkImageLayout srcLayout
+		, Image const & dst
+		, VkImageLayout dstLayout )const
+	{
+		DEBUG_DUMP( copyInfos );
+		m_device.vkCmdCopyImage( m_internal
+			, src
+			, srcLayout
+			, dst
+			, dstLayout
+			, uint32_t( copyInfos.size() )
+			, copyInfos.data() );
 	}
 
 	void CommandBuffer::blitImage( Image const & srcImage
@@ -433,6 +461,7 @@ namespace ashes
 	void CommandBuffer::waitEvents( EventCRefArray const & events
 		, VkPipelineStageFlags srcStageMask
 		, VkPipelineStageFlags dstStageMask
+		, VkMemoryBarrierArray const & memoryBarriers
 		, VkBufferMemoryBarrierArray const & bufferMemoryBarriers
 		, VkImageMemoryBarrierArray const & imageMemoryBarriers )const
 	{
@@ -442,8 +471,8 @@ namespace ashes
 			, vkevents.data()
 			, srcStageMask
 			, dstStageMask
-			, 0u
-			, nullptr
+			, uint32_t( memoryBarriers.size() )
+			, memoryBarriers.data()
 			, uint32_t( bufferMemoryBarriers.size() )
 			, bufferMemoryBarriers.data()
 			, uint32_t( imageMemoryBarriers.size() )
@@ -463,7 +492,7 @@ namespace ashes
 		m_device.vkCmdPipelineBarrier( m_internal
 			, after
 			, before
-			, 0
+			, dependencyFlags
 			, uint32_t( memoryBarriers.size() )
 			, memoryBarriers.empty() ? nullptr : memoryBarriers.data()
 			, uint32_t( bufferMemoryBarriers.size() )
@@ -484,10 +513,7 @@ namespace ashes
 				renderPass,
 				frameBuffer,
 				{
-					{
-						0,
-						0
-					},
+					{ 0, 0 },
 					frameBuffer.getDimensions()
 				},
 				uint32_t( clearValues.size() ),
@@ -628,29 +654,29 @@ namespace ashes
 		auto const & dstRange = dst->subresourceRange;
 		copyImage( VkImageCopy
 			{
-				{                                                   // srcSubresource
+				{                                   // srcSubresource
 					getAspectMask( src->format ),
 					srcRange.baseMipLevel,
 					srcRange.baseArrayLayer,
 					srcRange.layerCount
 				},
-				VkOffset3D{                                              // srcOffset
-					0,                                                  // x
-					0,                                                  // y
-					0                                                   // z
+				VkOffset3D{                         // srcOffset
+					0,                              // x
+					0,                              // y
+					0                               // z
 				},
-				{                                                   // dstSubresource
+				{                                   // dstSubresource
 					getAspectMask( dst->format ),
 					dstRange.baseMipLevel,
 					dstRange.baseArrayLayer,
 					dstRange.layerCount
 				},
-				VkOffset3D{                                              // dstOffset
-					0,                                                  // x
-					0,                                                  // y
-					0                                                   // z
+				VkOffset3D{                         // dstOffset
+					0,                              // x
+					0,                              // y
+					0                               // z
 				},
-				dst.image->getDimensions()                    // extent
+				dst.image->getDimensions()          // extent
 			}
 			, *src.image
 			, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL

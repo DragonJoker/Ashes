@@ -424,6 +424,19 @@ namespace ashes
 			, BufferBase const & dst )const;
 		/**
 		*\brief
+		*	Copies data from a buffer to another one.
+		*\param[in] copyInfo
+		*	The copy informations.
+		*\param[in] src
+		*	The source buffer.
+		*\param[in] dst
+		*	The destination buffer.
+		*/
+		void copyBuffer( VkBufferCopyArray const & copyInfo
+			, BufferBase const & src
+			, BufferBase const & dst )const;
+		/**
+		*\brief
 		*	Copies data from an image to another one.
 		*\param[in] copyInfo
 		*	The copy informations.
@@ -437,6 +450,25 @@ namespace ashes
 		*	The image layout wanted for the destination image.
 		*/
 		void copyImage( VkImageCopy const & copyInfo
+			, Image const & src
+			, VkImageLayout srcLayout
+			, Image const & dst
+			, VkImageLayout dstLayout )const;
+		/**
+		*\brief
+		*	Copies data from an image to another one.
+		*\param[in] copyInfo
+		*	The copy informations.
+		*\param[in] src
+		*	The source image.
+		*\param[in] srcLayout
+		*	The image layout wanted for the source image.
+		*\param[in] dst
+		*	The destination image.
+		*\param[in] dstLayout
+		*	The image layout wanted for the destination image.
+		*/
+		void CommandBuffer::copyImage( VkImageCopyArray copyInfo
 			, Image const & src
 			, VkImageLayout srcLayout
 			, Image const & dst
@@ -607,6 +639,7 @@ namespace ashes
 		void waitEvents( EventCRefArray const & events
 			, VkPipelineStageFlags srcStageMask
 			, VkPipelineStageFlags dstStageMask
+			, VkMemoryBarrierArray const & memoryBarriers
 			, VkBufferMemoryBarrierArray const & bufferMemoryBarriers
 			, VkImageMemoryBarrierArray const & imageMemoryBarriers )const;
 		/**
