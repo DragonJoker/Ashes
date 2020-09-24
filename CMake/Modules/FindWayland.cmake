@@ -26,7 +26,7 @@ IF (NOT WIN32)
 
   # Use pkg-config to get the directories and then use these values
   # in the FIND_PATH() and FIND_LIBRARY() calls
-  FIND_PACKAGE(PkgConfig)
+  FIND_PACKAGE(PkgConfig QUIET)
   PKG_CHECK_MODULES(PKG_WAYLAND QUIET wayland-client wayland-server wayland-egl wayland-cursor)
 
   SET(WAYLAND_DEFINITIONS ${PKG_WAYLAND_CFLAGS})
