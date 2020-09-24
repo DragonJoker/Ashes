@@ -1,4 +1,4 @@
-find_package( Doxygen )
+find_package( Doxygen QUIET )
 option( PROJECTS_GENERATE_DOC "Generate Doxygen documentation" OFF )
 
 #--------------------------------------------------------------------------------------------------

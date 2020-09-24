@@ -2,7 +2,7 @@
 #
 # Copyright 2015 Valve Coporation
 
-find_package(PkgConfig)
+find_package(PkgConfig QUIET)
 
 if(NOT XCB_FIND_COMPONENTS)
     set(XCB_FIND_COMPONENTS xcb)
