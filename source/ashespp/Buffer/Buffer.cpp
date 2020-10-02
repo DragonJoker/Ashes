@@ -44,7 +44,7 @@ namespace ashes
 		, VkDeviceSize size
 		, VkBufferUsageFlags usage
 		, QueueShare sharingMode )
-		: BufferBase{ device, "Buffer", makeCreateInfo( size, usage, sharingMode ) }
+		: BufferBase{ device, debugName, makeCreateInfo( size, usage, sharingMode ) }
 	{
 	}
 
