@@ -93,12 +93,12 @@ else ()
 	)
 endif ()
 install( EXPORT Ashes
-	FILE ashesConfig.cmake
+	FILE AshesConfig.cmake
 	NAMESPACE ashes::
 	DESTINATION lib/cmake/ashes
 )
 include(CMakePackageConfigHelpers)
-write_basic_package_version_file( ashesConfigVersion.cmake
+write_basic_package_version_file( AshesConfigVersion.cmake
 	VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_BUILD}
 	COMPATIBILITY AnyNewerVersion
 )
