@@ -52,12 +52,17 @@ jobs:
     - name: Build
       working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
       shell: bash
-      run: cmake --install . --config ${{ matrix.buildType }}
+      run: cmake --build . --config ${{ matrix.buildType }}
 
     - name: Test
       working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
       shell: bash
       run: ctest -C ${{ matrix.buildType }}
+
+    - name: Prepare package
+      working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
+      shell: bash
+      run: cmake --install . --config ${{ matrix.buildType }}
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
