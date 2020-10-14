@@ -1,6 +1,6 @@
-|         Server     | Result |
-|:------------------:|--------|
-| AppVeyor           | [![Build status](https://ci.appveyor.com/api/projects/status/418lak7ca1u0d97c?svg=true)](https://ci.appveyor.com/project/DragonJoker/rendererlib) |
+<p align="center">
+  <a href="https://github.com/DragonJoker/Ashes/actions?query=workflow%3ABuild"><img alt="Build status" src="https://github.com/DragonJoker/Ashes/workflows/Build/badge.svg"></a>
+</p>
 
 
 Ashes
