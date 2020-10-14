@@ -6,53 +6,26 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [[ubuntu-latest,x64-linux], [windows-latest,x64-windows], [macos-latest,x64-macos]]
         buildType: [Debug, Release]
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os[0] }}
 
     steps:
     - uses: actions/checkout@v2
     - uses: openrndr/setup-opengl@v1
 
-    - name: Checkout external/spirv_cross submodule
-      run: git submodule update --init -- "external/spirv_cross"
-
-    - name: Caching spirv_cross submodule
-      uses: actions/cache@v2
-      env:
-        cache-name: cache-spirv_cross-submodule
+    # Restore from cache the previously built ports. If cache-miss, download, build vcpkg.
+    - name: Restore from cache and install vcpkg
+      # Download and build vcpkg, without installing any port. If content is cached already, it is a no-op.
+      uses: lukka/run-vcpkg@v4
       with:
-          path: $GITHUB_WORKSPACE/external/spirv_cross
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/*.*') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
+        setupOnly: true
 
-    - name: Checkout external/Vulkan-Headers submodule
-      run: git submodule update --init -- "external/Vulkan-Headers"
-
-    - name: Caching Vulkan-Headers submodule
-      uses: actions/cache@v2
-      env:
-        cache-name: cache-vulkan_headers-submodule
-      with:
-          path: $GITHUB_WORKSPACE/external/Vulkan-Headers
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/*.*') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-
-    - name: Checkout external/AGS_SDK submodule
-      run: git submodule update --init -- "external/AGS_SDK"
-
-    - name: Caching AGS_SDK submodule
-      uses: actions/cache@v2
-      env:
-        cache-name: cache-ags_sdk-submodule
-      with:
-          path: $GITHUB_WORKSPACE/external/AGS_SDK
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/*.*') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
+    - run: |
+        $VCPKG_ROOT/vcpkg @$vcpkgResponseFile
+        $VCPKG_ROOT/vcpkg install spirv-cross:${{ matrix.os[1] }} vulkan:${{ matrix.os[1] }}
+      shell: bash
 
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/build-${{ matrix.buildType }}
@@ -60,7 +33,7 @@ jobs:
     - name: Configure CMake
       shell: bash
       working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/package/ashes -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_INFO=OFF -DASHES_BUILD_SAMPLES=OFF
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/package/ashes -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_INFO=OFF -DASHES_BUILD_SAMPLES=OFF
 
     - name: Build
       working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
