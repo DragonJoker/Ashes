@@ -74,5 +74,5 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: generated-binaries
+        name: generated-binaries-${{ matrix.os[1] }}
         path: ${{ github.workspace }}/package/ashes/
