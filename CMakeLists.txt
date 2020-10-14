@@ -102,7 +102,7 @@ if ( MSVC )
 	string( REGEX REPLACE "/Zi" "/ZI" CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG} )
 endif ()
 
-if ( VCPKG_TOOLCHAIN OR NOT EXISTS ${CMAKE_SOURCE_DIR}/external/Vulkan-Headers/include/ )
+if ( NOT EXISTS ${CMAKE_SOURCE_DIR}/external/Vulkan-Headers/include/ )
 	find_package( Vulkan REQUIRED )
 else ()
 	set( Vulkan_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external/Vulkan-Headers/include )
