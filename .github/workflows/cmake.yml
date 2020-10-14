@@ -1,13 +1,22 @@
 name: CMake
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  release:
+    types:
+      - created
 
 jobs:
   build:
     strategy:
       matrix:
         os: [[ubuntu-latest,x64-linux], [windows-latest,x64-windows], [macos-latest,x64-osx]]
-        buildType: [Debug, Release]
+        buildType: [Release]
 
     runs-on: ${{ matrix.os[0] }}
 
