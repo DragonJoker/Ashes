@@ -45,7 +45,7 @@ jobs:
     - name: Configure CMake
       shell: bash
       working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/package/ashes -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_INFO=OFF -DASHES_BUILD_SAMPLES=OFF
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/package/ashes -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_INFO=OFF -DASHES_BUILD_SAMPLES=OFF -DASHES_BUILD_RENDERER_OGL=OFF
 
     - name: Build
       working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
