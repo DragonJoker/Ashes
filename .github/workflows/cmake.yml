@@ -15,15 +15,29 @@ jobs:
     - uses: actions/checkout@v2
 
     # Restore from cache the previously built ports. If cache-miss, download, build vcpkg.
-    - name: Restore from cache and install vcpkg
+    - name: Setup vcpkg
       # Download and build vcpkg, without installing any port. If content is cached already, it is a no-op.
       uses: lukka/run-vcpkg@v4
       with:
         vcpkgGitCommitId: '7e3d3beac5ca6fe8aab4599d4e1d8ce270ccdea8'
         setupOnly: true
 
-    - run: $VCPKG_ROOT/vcpkg install spirv-cross:${{ matrix.os[1] }} vulkan:${{ matrix.os[1] }}
+    - name: Install spirv-cross
+      run: $VCPKG_ROOT/vcpkg install spirv-cross:${{ matrix.os[1] }}
       shell: bash
+
+    - name: Checkout external/Vulkan-Headers submodule
+      run: git submodule update --init -- "external/Vulkan-Headers"
+
+    - name: Cache Vulkan-Headers submodule
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-vulkan_headers-submodule
+      with:
+          path: $GITHUB_WORKSPACE/external/Vulkan-Headers
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/*.*') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
 
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/build-${{ matrix.buildType }}
