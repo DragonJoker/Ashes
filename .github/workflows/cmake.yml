@@ -22,9 +22,7 @@ jobs:
         vcpkgGitCommitId: '7e3d3beac5ca6fe8aab4599d4e1d8ce270ccdea8'
         setupOnly: true
 
-    - run: |
-        $VCPKG_ROOT/vcpkg @$vcpkgResponseFile
-        $VCPKG_ROOT/vcpkg install spirv-cross:${{ matrix.os[1] }} vulkan:${{ matrix.os[1] }}
+    - run: $VCPKG_ROOT/vcpkg install spirv-cross:${{ matrix.os[1] }} vulkan:${{ matrix.os[1] }}
       shell: bash
 
     - name: Create Build Environment
