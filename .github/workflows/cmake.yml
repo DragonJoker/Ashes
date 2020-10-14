@@ -1,0 +1,78 @@
+name: CMake
+
+on: [push]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        buildType: [Debug, Release]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Checkout external/spirv_cross submodule
+      run: git submodule update --init -- "external/spirv_cross"
+
+    - name: Caching spirv_cross submodule
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-spirv_cross-submodule
+      with:
+          path: $GITHUB_WORKSPACE/external/spirv_cross
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/*.*') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
+    - name: Checkout external/Vulkan-Headers submodule
+      run: git submodule update --init -- "external/Vulkan-Headers"
+
+    - name: Caching Vulkan-Headers submodule
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-vulkan_headers-submodule
+      with:
+          path: $GITHUB_WORKSPACE/external/Vulkan-Headers
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/*.*') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
+    - name: Checkout external/AGS_SDK submodule
+      run: git submodule update --init -- "external/AGS_SDK"
+
+    - name: Caching AGS_SDK submodule
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-ags_sdk-submodule
+      with:
+          path: $GITHUB_WORKSPACE/external/AGS_SDK
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/*.*') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{runner.workspace}}/build-${{ matrix.buildType }}
+
+    - name: Configure CMake
+      shell: bash
+      working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/package/ashes -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_INFO=OFF -DASHES_BUILD_SAMPLES=OFF
+
+    - name: Build
+      working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
+      shell: bash
+      run: cmake --install . --config ${{ matrix.buildType }}
+
+    - name: Test
+      working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
+      shell: bash
+      run: ctest -C ${{ matrix.buildType }}
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: generated-binaries
+        path: $GITHUB_WORKSPACE/package/ashes/
