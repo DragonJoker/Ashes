@@ -78,8 +78,13 @@ jobs:
       shell: bash
       run: cmake --install . --config ${{ matrix.buildType }}
 
-    - name: Upload artifacts
+    - name: Zip package
+      working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
+      shell: bash
+      run: 7z a $GITHUB_WORKSPACE/Ashes-${{ matrix.os[1] }}.zip $GITHUB_WORKSPACE/package/ashes/
+
+    - name: Upload package
       uses: actions/upload-artifact@v2
       with:
-        name: generated-binaries-${{ matrix.os[1] }}
-        path: ${{ github.workspace }}/package/ashes/
+        name: Ashes-${{ matrix.os[1] }}.zip
+        path: ${{ github.workspace }}/Ashes-${{ matrix.os[1] }}.zip
