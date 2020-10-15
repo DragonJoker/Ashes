@@ -35,18 +35,20 @@ jobs:
       run: $VCPKG_ROOT/vcpkg install spirv-cross:${{ matrix.os[1] }}
       shell: bash
 
-    - name: Checkout external/Vulkan-Headers submodule
-      run: git submodule update --init -- "external/Vulkan-Headers"
-
-    - name: Cache Vulkan-Headers submodule
+    - name: Cache external submodules
+      id: cache-external
       uses: actions/cache@v2
       env:
-        cache-name: cache-vulkan_headers-submodule
+        cache-name: cache-external-submodules
       with:
-          path: $GITHUB_WORKSPACE/external/Vulkan-Headers
+          path: $GITHUB_WORKSPACE/external
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/*.*') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
+
+    - name: Checkout external/Vulkan-Headers submodule
+      if: steps.cache-external.outputs.cache-hit != 'true'
+      run: git submodule update --init -- "external/Vulkan-Headers"
 
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/build-${{ matrix.buildType }}
@@ -74,16 +76,19 @@ jobs:
       run: ctest -C ${{ matrix.buildType }}
 
     - name: Prepare package
+      if: github.event_name == 'push'
       working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
       shell: bash
       run: cmake --install . --config ${{ matrix.buildType }}
 
     - name: Zip package
+      if: github.event_name == 'push'
       working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
       shell: bash
       run: 7z a $GITHUB_WORKSPACE/Ashes-${{ matrix.os[1] }}.zip $GITHUB_WORKSPACE/package/ashes/
 
     - name: Upload package
+      if: github.event_name == 'push'
       uses: actions/upload-artifact@v2
       with:
         name: Ashes-${{ matrix.os[1] }}.zip
