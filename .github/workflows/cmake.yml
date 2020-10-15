@@ -31,23 +31,11 @@ jobs:
         vcpkgGitCommitId: '7e3d3beac5ca6fe8aab4599d4e1d8ce270ccdea8'
         setupOnly: true
 
-    - name: Install spirv-cross
+    - name: Install dependencies from vcpkg
       run: $VCPKG_ROOT/vcpkg install spirv-cross:${{ matrix.os[1] }}
       shell: bash
 
-    - name: Cache external submodules
-      id: cache-external
-      uses: actions/cache@v2
-      env:
-        cache-name: cache-external-submodules
-      with:
-          path: $GITHUB_WORKSPACE/external
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/*.*') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-
-    - name: Checkout external/Vulkan-Headers submodule
-      if: steps.cache-external.outputs.cache-hit != 'true'
+    - name: Checkout submodules
       run: git submodule update --init -- "external/Vulkan-Headers"
 
     - name: Create Build Environment
