@@ -917,7 +917,7 @@ namespace ashes::d3d11
 				}
 			};
 
-			for ( VkFormat fmt = VkFormat( VK_FORMAT_BEGIN_RANGE + 1 ); fmt != VK_FORMAT_END_RANGE; fmt = VkFormat( fmt + 1 ) )
+			for ( VkFormat fmt = VkFormat( VK_FORMAT_UNDEFINED + 1 ); fmt != VK_FORMAT_ASTC_12x12_SRGB_BLOCK; fmt = VkFormat( fmt + 1 ) )
 			{
 				VkFormatProperties props{};
 				fillProps( fmt, props, getDxgiFormat );
