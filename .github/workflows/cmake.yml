@@ -36,7 +36,7 @@ jobs:
     - name: Install necessary packages (Linux)
       if: runner.os == 'Linux'
       shell: bash
-      run: sudo apt-get install libxi-dev libgl1-mesa-dev libglu1-mesa-dev mesa-common-dev libxrandr-dev libxxf86vm-dev libxaw7-dev
+      run: sudo apt-get install libxi-dev libgl1-mesa-dev libglu1-mesa-dev mesa-common-dev libxrandr-dev libxxf86vm-dev libxaw7-dev libwayland-dev
 
     - name: Install dependencies from vcpkg (Linux)
       if: runner.os == 'Linux'
