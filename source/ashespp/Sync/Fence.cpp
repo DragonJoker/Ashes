@@ -5,6 +5,7 @@ See LICENSE file in root folder.
 #include "ashespp/Sync/Fence.hpp"
 
 #include "ashespp/Core/Device.hpp"
+#include "ashespp/Sync/SyncException.hpp"
 
 namespace ashes
 {
