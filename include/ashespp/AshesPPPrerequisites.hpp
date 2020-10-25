@@ -97,6 +97,7 @@ See LICENSE file in root folder.
 #include <cstdint>
 #include <cstring>
 #include <ctime>
+#include <functional>
 #include <iomanip>
 #include <map>
 #include <memory>
@@ -257,6 +258,15 @@ namespace ashes
 	using ImageViewCRefArray = std::vector< ImageViewCRef >;
 	using VertexBufferCRefArray = std::vector< VertexBufferCRef >;
 	using PipelineVertexInputStateCreateInfoCRefArray = std::vector< PipelineVertexInputStateCreateInfoCRef >;
+
+	template< typename SignalT >
+	class SignalConnection;
+	template< typename FunctionT >
+	class Signal;
+
+	using WaitEndFunction = std::function< void( Fence const &, WaitResult ) >;
+	using OnWaitEndSignal = Signal< WaitEndFunction >;
+	using OnWaitEndConnection = SignalConnection< OnWaitEndSignal >;
 
 	struct DebugBlockInfo
 	{

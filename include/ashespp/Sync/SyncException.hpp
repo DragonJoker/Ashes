@@ -25,10 +25,6 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	using WaitEndFunction = std::function< void( Fence const &, WaitResult ) >;
-	using OnWaitEndSignal = Signal< WaitEndFunction >;
-	using OnWaitEndConnection = SignalConnection< OnWaitEndSignal >;
-
 	class SyncException
 		: public std::exception
 	{

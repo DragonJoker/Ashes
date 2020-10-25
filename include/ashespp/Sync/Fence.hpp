@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 #define ___AshesPP_Fence_HPP___
 #pragma once
 
-#include "ashespp/Sync/SyncException.hpp"
+#include "ashespp/AshesPPPrerequisites.hpp"
 
 #include <ashes/common/Signal.hpp>
 
