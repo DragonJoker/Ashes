@@ -100,7 +100,7 @@ namespace ashes::gl
 			if ( state )
 			{
 				VkPipelineRasterizationStateCreateInfo result{ *state };
-				result.frontFace = VkFrontFace( VK_FRONT_FACE_END_RANGE - result.frontFace );
+				result.frontFace = VkFrontFace( VK_FRONT_FACE_CLOCKWISE - result.frontFace );
 				return result;
 			}
 
