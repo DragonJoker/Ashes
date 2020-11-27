@@ -180,7 +180,7 @@ namespace ashes::d3d11
 				auto src = data + maxOffset;
 				auto dst = static_cast< uint8_t * >( mapped.pData ) + objectOffset;
 
-				for ( UINT step = 0u; step < mappedSteps; ++step )
+				for ( UINT step = 0u; step < std::min( mappedSteps, systemSteps ); ++step )
 				{
 					std::memcpy( dst, src, rowSize );
 					src += subresourceLayout.SysMemPitch;
@@ -231,7 +231,7 @@ namespace ashes::d3d11
 				auto src = static_cast< uint8_t const * >( mapped.pData ) + objectOffset;
 				auto dst = data + maxOffset;
 
-				for ( UINT step = 0u; step < mappedSteps; ++step )
+				for ( UINT step = 0u; step < std::min( mappedSteps, systemSteps ); ++step )
 				{
 					std::memcpy( dst, src, rowSize );
 					src += mapped.RowPitch;
