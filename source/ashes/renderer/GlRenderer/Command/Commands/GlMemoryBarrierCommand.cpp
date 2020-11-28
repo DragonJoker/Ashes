@@ -32,11 +32,15 @@ namespace ashes::gl
 		{
 			if ( get( barrier.buffer )->isMapped() )
 			{
-				if ( checkFlag( barrier.srcAccessMask, VK_ACCESS_MEMORY_WRITE_BIT )
-					|| checkFlag( barrier.srcAccessMask, VK_ACCESS_HOST_WRITE_BIT )
-					|| checkFlag( barrier.srcAccessMask, VK_ACCESS_TRANSFER_WRITE_BIT ) )
+				if ( !checkFlag( barrier.dstAccessMask, VK_ACCESS_TRANSFER_READ_BIT )
+					&& ( checkFlag( barrier.srcAccessMask, VK_ACCESS_MEMORY_WRITE_BIT )
+						|| checkFlag( barrier.srcAccessMask, VK_ACCESS_HOST_WRITE_BIT ) ) )
 				{
 					list.push_back( makeCmd< OpType::eUploadMemory >( get( barrier.buffer )->getMemory() ) );
+				}
+				else if ( checkFlag( barrier.srcAccessMask, VK_ACCESS_TRANSFER_WRITE_BIT ) )
+				{
+					list.push_back( makeCmd< OpType::eDownloadMemory >( get( barrier.buffer )->getMemory() ) );
 				}
 			}
 		}
@@ -47,11 +51,15 @@ namespace ashes::gl
 		{
 			if ( get( barrier.buffer )->isMapped() )
 			{
-				if ( checkFlag( barrier.dstAccessMask, VK_ACCESS_TRANSFER_READ_BIT )
-					|| checkFlag( barrier.dstAccessMask, VK_ACCESS_HOST_READ_BIT )
-					|| checkFlag( barrier.dstAccessMask, VK_ACCESS_MEMORY_READ_BIT ) )
+				if ( !checkFlag( barrier.srcAccessMask, VK_ACCESS_TRANSFER_WRITE_BIT )
+					&& ( checkFlag( barrier.dstAccessMask, VK_ACCESS_HOST_READ_BIT )
+						|| checkFlag( barrier.dstAccessMask, VK_ACCESS_MEMORY_READ_BIT ) ) )
 				{
 					list.push_back( makeCmd< OpType::eDownloadMemory >( get( barrier.buffer )->getMemory() ) );
+				}
+				else if ( checkFlag( barrier.dstAccessMask, VK_ACCESS_TRANSFER_READ_BIT ) )
+				{
+					list.push_back( makeCmd< OpType::eUploadMemory >( get( barrier.buffer )->getMemory() ) );
 				}
 			}
 		}
