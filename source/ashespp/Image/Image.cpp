@@ -308,28 +308,38 @@ namespace ashes
 	}
 
 	void Image::generateMipmaps( CommandBuffer & commandBuffer
+		, VkImageLayout srcImageLayout
+		, VkImageLayout srcMipsImageLayout
 		, VkImageLayout dstImageLayout )const
 	{
 		generateMipmaps( commandBuffer
 			, 0u
 			, m_createInfo->arrayLayers
+			, srcImageLayout
+			, srcMipsImageLayout
 			, dstImageLayout );
 	}
 
 	void Image::generateMipmaps( CommandPool const & commandPool
 		, Queue const & queue
+		, VkImageLayout srcImageLayout
+		, VkImageLayout srcMipsImageLayout
 		, VkImageLayout dstImageLayout )const
 	{
 		generateMipmaps( commandPool
 			, queue
 			, 0u
 			, m_createInfo->arrayLayers
+			, srcImageLayout
+			, srcMipsImageLayout
 			, dstImageLayout );
 	}
 
 	void Image::generateMipmaps( CommandBuffer & commandBuffer
 		, uint32_t baseArrayLayer
 		, uint32_t layerCount
+		, VkImageLayout srcImageLayout
+		, VkImageLayout srcMipsImageLayout
 		, VkImageLayout dstImageLayout )const
 	{
 		if ( getMipmapLevels() <= 1u )
@@ -341,7 +351,8 @@ namespace ashes
 		auto const height = int32_t( getDimensions().height );
 		auto const depth = int32_t( getDimensions().depth );
 		auto const aspectMask = getAspectMask( getFormat() );
-		auto const dstAccessMask = getAccessMask( dstImageLayout );
+		auto const srcStageMask = getStageMask( srcImageLayout );
+		auto const srcMipsStageMask = getStageMask( srcMipsImageLayout );
 		auto const dstStageMask = getStageMask( dstImageLayout );
 		auto const imageViewType = VkImageViewType( getType() );
 
@@ -369,9 +380,9 @@ namespace ashes
 			imageBlit.dstOffsets[1].z = depth;
 
 			// Transition first mip level to transfer source layout
-			commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+			commandBuffer.memoryBarrier( srcStageMask
 				, VK_PIPELINE_STAGE_TRANSFER_BIT
-				, makeTransition( VK_IMAGE_LAYOUT_UNDEFINED
+				, makeTransition( srcImageLayout
 					, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
 					, mipSubRange ) );
 
@@ -390,9 +401,9 @@ namespace ashes
 				imageBlit.dstOffsets[1].y = getSubresourceDimension( height, mipSubRange.baseMipLevel );
 
 				// Transition current mip level to transfer dest
-				commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+				commandBuffer.memoryBarrier( srcMipsStageMask
 					, VK_PIPELINE_STAGE_TRANSFER_BIT
-					, makeTransition( VK_IMAGE_LAYOUT_UNDEFINED
+					, makeTransition( srcMipsImageLayout
 						, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
 						, mipSubRange ) );
 
@@ -434,6 +445,8 @@ namespace ashes
 		, Queue const & queue
 		, uint32_t baseArrayLayer
 		, uint32_t layerCount
+		, VkImageLayout srcImageLayout
+		, VkImageLayout srcMipsImageLayout
 		, VkImageLayout dstImageLayout )const
 	{
 		if ( getMipmapLevels() <= 1u )
@@ -446,6 +459,8 @@ namespace ashes
 		generateMipmaps( *commandBuffer
 			, baseArrayLayer
 			, layerCount
+			, srcImageLayout
+			, srcMipsImageLayout
 			, dstImageLayout );
 		commandBuffer->end();
 		auto fence = m_device->createFence();

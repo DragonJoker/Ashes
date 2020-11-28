@@ -133,14 +133,18 @@ namespace ashes
 		*	A command buffer, in record state.
 		*/
 		void generateMipmaps( CommandBuffer & commandBuffer
-			, VkImageLayout dstImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
+			, VkImageLayout srcImageLayout
+			, VkImageLayout srcMipsImageLayout
+			, VkImageLayout dstImageLayout )const;
 		/**
 		*\brief
 		*	Generates the image mipmaps.
 		*/
 		void generateMipmaps( CommandPool const & commandPool
 			, Queue const & queue
-			, VkImageLayout dstImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
+			, VkImageLayout srcImageLayout
+			, VkImageLayout srcMipsImageLayout
+			, VkImageLayout dstImageLayout )const;
 		/**
 		*\brief
 		*	Generates the image mipmaps.
@@ -150,7 +154,9 @@ namespace ashes
 		void generateMipmaps( CommandBuffer & commandBuffer
 			, uint32_t baseArrayLayer
 			, uint32_t layerCount
-			, VkImageLayout dstImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
+			, VkImageLayout srcImageLayout
+			, VkImageLayout srcMipsImageLayout
+			, VkImageLayout dstImageLayout )const;
 		/**
 		*\brief
 		*	Generates the image mipmaps.
@@ -159,7 +165,73 @@ namespace ashes
 			, Queue const & queue
 			, uint32_t baseArrayLayer
 			, uint32_t layerCount
-			, VkImageLayout dstImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
+			, VkImageLayout srcImageLayout
+			, VkImageLayout srcMipsImageLayout
+			, VkImageLayout dstImageLayout )const;
+		/**
+		*\brief
+		*	Generates the image mipmaps.
+		*\param[in] commandBuffer
+		*	A command buffer, in record state.
+		*/
+		void generateMipmaps( CommandBuffer & commandBuffer
+			, VkImageLayout dstImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const
+		{
+			generateMipmaps( commandBuffer
+				, VK_IMAGE_LAYOUT_UNDEFINED
+				, VK_IMAGE_LAYOUT_UNDEFINED
+				, dstImageLayout );
+		}
+		/**
+		*\brief
+		*	Generates the image mipmaps.
+		*/
+		void generateMipmaps( CommandPool const & commandPool
+			, Queue const & queue
+			, VkImageLayout dstImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const
+		{
+			generateMipmaps( commandPool
+				, queue
+				, VK_IMAGE_LAYOUT_UNDEFINED
+				, VK_IMAGE_LAYOUT_UNDEFINED
+				, dstImageLayout );
+		}
+		/**
+		*\brief
+		*	Generates the image mipmaps.
+		*\param[in] commandBuffer
+		*	A command buffer, in record state.
+		*/
+		void generateMipmaps( CommandBuffer & commandBuffer
+			, uint32_t baseArrayLayer
+			, uint32_t layerCount
+			, VkImageLayout dstImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const
+		{
+			generateMipmaps( commandBuffer
+				, baseArrayLayer
+				, layerCount
+				, VK_IMAGE_LAYOUT_UNDEFINED
+				, VK_IMAGE_LAYOUT_UNDEFINED
+				, dstImageLayout );
+		}
+		/**
+		*\brief
+		*	Generates the image mipmaps.
+		*/
+		void generateMipmaps( CommandPool const & commandPool
+			, Queue const & queue
+			, uint32_t baseArrayLayer
+			, uint32_t layerCount
+			, VkImageLayout dstImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const
+		{
+			generateMipmaps( commandPool
+				, queue
+				, baseArrayLayer
+				, layerCount
+				, VK_IMAGE_LAYOUT_UNDEFINED
+				, VK_IMAGE_LAYOUT_UNDEFINED
+				, dstImageLayout );
+		}
 		/**
 		*\return
 		*	The memory requirements for this buffer.
