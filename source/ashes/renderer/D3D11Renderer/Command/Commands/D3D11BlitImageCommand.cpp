@@ -814,7 +814,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		};
 
 		allocate( m_pool
-			, get( get( m_pool )->getDevice() )->getAllocationCallbacks()
+			, get( m_device )->getAllocationCallbacks()
 			, m_device
 			, VkDescriptorPoolCreateInfo
 			{
