@@ -14,6 +14,17 @@ else ()
 	find_package( GTK2 )
 endif()
 
+if ( NOT ASHES_ICD )
+	set( Vulkan_FOUND ON )
+	set( Vulkan_LIBRARY ashes::ashes )
+else ()
+	find_package( Vulkan QUIET REQUIRED )
+	set( Vulkan_LIBRARY
+		${Vulkan_LIBRARY}
+		ashes::ashes
+	)
+endif ()
+
 if ( VCPKG_TOOLCHAIN )
 	find_package( assimp CONFIG REQUIRED assimp )
 	set( assimp_LIBRARIES assimp::assimp )
@@ -29,7 +40,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
 		${wxWidgets_LIBRARIES}
 		${GTK2_LIBRARIES}
 		${assimp_LIBRARIES}
-		ashes::ashes
+		${Vulkan_LIBRARY}
 		ashes::ashespp
 		ashes::util
 	)

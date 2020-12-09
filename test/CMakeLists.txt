@@ -4,6 +4,16 @@ if ( ASHES_BUILD_TESTS OR ASHES_BUILD_INFO OR ASHES_BUILD_SW_SAMPLES )
 		${Ashes_BINARY_DIR}/include
 		${Vulkan_INCLUDE_DIR}
 	)
+	if ( NOT ASHES_ICD )
+		set( Vulkan_FOUND ON )
+		set( Vulkan_LIBRARY ashes::ashes )
+	else ()
+		find_package( Vulkan QUIET REQUIRED )
+		set( Vulkan_LIBRARY
+			${Vulkan_LIBRARY}
+			ashes::ashes
+		)
+	endif ()
 endif ()
 
 if ( ASHES_BUILD_TESTS )
@@ -59,8 +69,6 @@ if ( ASHES_BUILD_SW_SAMPLES )
 	endif ()
 	include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../external/glm )
 	include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../external/gli )
-	set( Vulkan_FOUND ON )
-	set( Vulkan_LIBRARY ashes::ashes )
 	add_subdirectory( Vulkan )
 	set(EXAMPLES
 		bloom

@@ -12,7 +12,7 @@ See LICENSE file in root folder
 namespace ashes::gl
 {
 	class CommandBuffer
-		: public AutoIdIcdObject< CommandBuffer >
+		: public ashes::IcdObject
 	{
 	public:
 		CommandBuffer( VkDevice device

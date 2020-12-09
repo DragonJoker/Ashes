@@ -4,7 +4,7 @@ project( "${FOLDER_NAME}" )
 set( Ashes_BINARY_LIBRARIES
 	${Ashes_BINARY_LIBRARIES}
 	ashes::common
-	ashes::ashes
+	${Vulkan_LIBRARY}
 )
 
 if ( WIN32 )

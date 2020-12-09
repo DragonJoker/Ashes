@@ -4191,6 +4191,10 @@ namespace ashes::test
 				description.functions.x = vk##x;
 #define VK_LIB_INSTANCE_FUNCTION( v, x )\
 				description.functions.x = vk##x;
+#if ASHES_ICD
+#	define VK_LIB_DEVICE_FUNCTION( v, x )\
+				description.functions.x = vk##x;
+#endif
 #define VK_LIB_GLOBAL_FUNCTION_EXT( v, n, x )
 #define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )
 #define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )
@@ -4254,6 +4258,10 @@ namespace ashes::test
 				{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
 #define VK_LIB_INSTANCE_FUNCTION( v, x )\
 				{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
+#if ASHES_ICD
+#	define VK_LIB_DEVICE_FUNCTION( v, x )\
+				{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
+#endif
 #include <ashes/ashes_functions_list.hpp>
 			};
 

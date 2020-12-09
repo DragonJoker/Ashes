@@ -6,9 +6,12 @@ See LICENSE file in root folder.
 
 #include "renderer/D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
+#include <renderer/RendererCommon/IcdObject.hpp>
+
 namespace ashes::d3d11
 {
 	class Queue
+		: public ashes::IcdObject
 	{
 	public:
 		Queue( VkDevice device

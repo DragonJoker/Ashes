@@ -8,11 +8,14 @@
 
 #include "renderer/TestRenderer/Core/TestLayer.hpp"
 
+#include <renderer/RendererCommon/IcdObject.hpp>
+
 #include <array>
 
 namespace ashes::test
 {
 	class Instance
+		: public ashes::IcdObject
 	{
 	public:
 		/**

@@ -6,9 +6,12 @@ See LICENSE file in root folder
 
 #include "renderer/D3D11Renderer/Command/Commands/D3D11BlitImageCommand.hpp"
 
+#include <renderer/RendererCommon/IcdObject.hpp>
+
 namespace ashes::d3d11
 {
 	class CommandBuffer
+		: public ashes::IcdObject
 	{
 	public:
 		CommandBuffer( VkDevice device

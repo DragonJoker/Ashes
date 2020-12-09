@@ -4224,6 +4224,12 @@ namespace ashes::d3d11
 					{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
 #define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )\
 					{ "vk"#x, checkVersionExt( instance, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#if ASHES_ICD
+#	define VK_LIB_DEVICE_FUNCTION( v, x )\
+					{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#	define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )\
+					{ "vk"#x, checkVersionExt( instance, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#endif
 #include <ashes/ashes_functions_list.hpp>
 				};
 			}
@@ -4237,6 +4243,11 @@ namespace ashes::d3d11
 					{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
 #define VK_LIB_GLOBAL_FUNCTION_EXT( v, n, x )
 #define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )
+#if ASHES_ICD
+#	define VK_LIB_DEVICE_FUNCTION( v, x )\
+					{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
+#	define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )
+#endif
 #include <ashes/ashes_functions_list.hpp>
 				};
 			}

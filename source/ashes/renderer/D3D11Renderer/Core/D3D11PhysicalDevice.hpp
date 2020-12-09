@@ -6,6 +6,8 @@ See LICENSE file in root folder
 
 #include "renderer/D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
+#include <renderer/RendererCommon/IcdObject.hpp>
+
 struct AGSContext;
 
 namespace ashes::d3d11
@@ -13,6 +15,7 @@ namespace ashes::d3d11
 	VkImageUsageFlags getUsageFlags( VkFormatFeatureFlags flags );
 
 	class PhysicalDevice
+		: public ashes::IcdObject
 	{
 	public:
 		PhysicalDevice( VkInstance instance

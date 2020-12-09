@@ -11,7 +11,7 @@ See LICENSE file in root folder
 namespace ashes::gl
 {
 	class Device
-		: public AutoIdIcdObject< Device >
+		: public ashes::IcdObject
 	{
 		friend class Instance;
 

@@ -165,6 +165,7 @@ extern "C"
 		, AshPluginDescription * pDescriptions );
 	Ashes_API VkResult VKAPI_PTR ashSelectPlugin( AshPluginDescription description );
 	Ashes_API VkResult VKAPI_PTR ashGetCurrentPluginDescription( AshPluginDescription * description );
+	Ashes_API VkBool32 VKAPI_PTR ashIsUsingICD();
 
 #ifdef __cplusplus
 }

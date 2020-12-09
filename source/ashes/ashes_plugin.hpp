@@ -135,6 +135,7 @@ struct PluginLibrary
 
 	using SelectedDescGetter = std::function< AshPluginDescription & () >;
 	PluginArray plugins;
+	bool isUsingICD{ false };
 	Plugin * selectedPlugin{ nullptr };
 	SelectedDescGetter getSelectedDesc;
 };

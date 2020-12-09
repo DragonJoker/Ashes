@@ -44,7 +44,6 @@
 #include <io.h>
 #endif  // _WIN32
 
-#define ASHES_VK_PROTOTYPES
 #include <ashes/ashes.h>
 
 #if defined(VK_USE_PLATFORM_XLIB_KHR) || defined(VK_USE_PLATFORM_XCB_KHR)
@@ -911,7 +910,7 @@ static void AppLoadInstanceCommands( struct AppInstance *inst )
 
 static void AppGetPlugin( struct AppInstance *inst, AshPluginDescription * plugins, int selectedPlugin )
 {
-	if ( selectedPlugin != -1 )
+	if ( selectedPlugin != -1 && ashIsUsingICD() )
 	{
 		ashSelectPlugin( plugins[selectedPlugin] );
 	}
@@ -5804,9 +5803,12 @@ void print_usage( char *argv0, AshPluginDescription * plugins, uint32_t pluginsC
 	printf( "                      interest. This number can be determined by running\n" );
 	printf( "                      vulkaninfo without any options specified.\n" );
 
-	for ( uint32_t i = 0; i < pluginsCount; ++i )
+	if ( ashIsUsingICD() )
 	{
-		printf( "-%s                   Select plugin \"%s\"\n", plugins[i].name, plugins[i].description );
+		for ( uint32_t i = 0; i < pluginsCount; ++i )
+		{
+			printf( "-%s                   Select plugin \"%s\"\n", plugins[i].name, plugins[i].description );
+		}
 	}
 
 	printf( "\n" );
@@ -5815,12 +5817,16 @@ void print_usage( char *argv0, AshPluginDescription * plugins, uint32_t pluginsC
 AshPluginDescription * EnumeratePlugins( uint32_t * count )
 {
 	AshPluginDescription * result = NULL;
-	ashEnumeratePluginsDescriptions( count, NULL );
 
-	if ( *count )
+	if ( ashIsUsingICD() )
 	{
-		result = ( AshPluginDescription * )malloc( ( *count ) * sizeof( AshPluginDescription ) );
-		ashEnumeratePluginsDescriptions( count, result );
+		ashEnumeratePluginsDescriptions( count, NULL );
+
+		if ( *count )
+		{
+			result = ( AshPluginDescription * )malloc( ( *count ) * sizeof( AshPluginDescription ) );
+			ashEnumeratePluginsDescriptions( count, result );
+		}
 	}
 
 	return result;
@@ -5849,20 +5855,20 @@ int SelectPlugin( AshPluginDescription * plugins, uint32_t pluginsCount, char * 
 	return selectedPlugin;
 }
 
-int main( int argc, char **argv )
+int main( int argc, char ** argv )
 {
 	uint32_t gpu_count;
 	VkResult err;
 	struct AppInstance inst;
-	FILE *out = stdout;
+	FILE * out = stdout;
 
 #ifdef _WIN32
 	if ( ConsoleIsExclusive() ) ConsoleEnlarge();
 #endif
 
 	uint32_t pluginsCount = 0;
-	AshPluginDescription * plugins = EnumeratePlugins( &pluginsCount );
 	int selectedPlugin = -1;
+	AshPluginDescription * plugins = EnumeratePlugins( &pluginsCount );
 
 	// Combinations of output: html only, html AND json, json only, human readable only
 	for ( int i = 1; i < argc; ++i )
@@ -5876,7 +5882,7 @@ int main( int argc, char **argv )
 				continue;
 			}
 			else if ( strcmp( argv[i], "--help" ) == 0 || strcmp( argv[i], "-h" ) == 0 )
-            {
+			{
 				print_usage( argv[0], plugins, pluginsCount );
 				return 1;
 			}
@@ -5887,13 +5893,16 @@ int main( int argc, char **argv )
 		}
 	}
 
-    if ( selectedPlugin == -1 )
-    {
-        print_usage( argv[0], plugins, pluginsCount );
-        return 1;
-    }
+	if ( ashIsUsingICD() && selectedPlugin == -1 )
+	{
+		print_usage( argv[0], plugins, pluginsCount );
+		return 1;
+	}
 
-    fprintf(out, "Currently used plugin : '%s'\n", plugins[selectedPlugin].name);
+	if ( ashIsUsingICD() )
+	{
+		fprintf( out, "Currently used plugin : '%s'\n", plugins[selectedPlugin].name );
+	}
 
 	AppCreateInstance( &inst, plugins, selectedPlugin );
 

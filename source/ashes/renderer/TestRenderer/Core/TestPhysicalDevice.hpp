@@ -6,9 +6,12 @@ See LICENSE file in root folder
 
 #include "renderer/TestRenderer/TestRendererPrerequisites.hpp"
 
+#include <renderer/RendererCommon/IcdObject.hpp>
+
 namespace ashes::test
 {
 	class PhysicalDevice
+		: public ashes::IcdObject
 	{
 	public:
 		PhysicalDevice( VkInstance instance );

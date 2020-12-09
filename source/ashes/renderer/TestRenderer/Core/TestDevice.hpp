@@ -9,11 +9,14 @@ See LICENSE file in root folder
 #include "renderer/TestRenderer/Buffer/TestBuffer.hpp"
 #include "renderer/TestRenderer/Core/TestSurface.hpp"
 
+#include <renderer/RendererCommon/IcdObject.hpp>
+
 #include <unordered_map>
 
 namespace ashes::test
 {
 	class Device
+		: public ashes::IcdObject
 	{
 	public:
 		Device( VkInstance instance
