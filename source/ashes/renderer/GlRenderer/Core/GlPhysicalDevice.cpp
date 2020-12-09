@@ -380,6 +380,12 @@ namespace ashes::gl
 #if VK_KHR_maintenance1
 			VkExtensionProperties{ VK_KHR_MAINTENANCE1_EXTENSION_NAME, VK_KHR_MAINTENANCE1_SPEC_VERSION },
 #endif
+#if VK_KHR_get_physical_device_properties2
+			VkExtensionProperties{ VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_SPEC_VERSION },
+#endif
+#if VK_KHR_portability_subset
+			VkExtensionProperties{ VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME, VK_KHR_PORTABILITY_SUBSET_SPEC_VERSION },
+#endif
 		};
 		return extensions;
 	}
@@ -676,6 +682,7 @@ namespace ashes::gl
 		doInitialiseQueueProperties( context );
 		doInitialiseFormatProperties( context );
 		doInitialiseDisplayProperties( context );
+		doInitialisePortability( context );
 		doInitialiseProperties2( context );
 
 		m_glFeatures.has420PackExtensions = find( ARB_shading_language_420pack );
@@ -897,7 +904,7 @@ namespace ashes::gl
 	{
 		if ( context->m_glGetInternalformativ )
 		{
-			for ( VkFormat fmt = VkFormat( VK_FORMAT_UNDEFINED + 1 ); fmt != VK_FORMAT_ASTC_12x12_SRGB_BLOCK; fmt = VkFormat( fmt + 1 ) )
+			for ( VkFormat fmt = beginFmt(); fmt != endFmt(); fmt = VkFormat( fmt + 1 ) )
 			{
 				if ( isSupportedInternal( fmt ) )
 				{
@@ -1052,8 +1059,11 @@ namespace ashes::gl
 	void PhysicalDevice::doInitialiseProperties2( ContextLock & context )
 	{
 #if VK_VERSION_1_1
-
+#	if VK_KHR_portability_subset
+		m_features2.pNext = &m_portabilityFeatures;
+#	else
 		m_features2.pNext = nullptr;
+#	endif
 		m_features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
 		m_features2.features = m_features;
 
@@ -1083,8 +1093,11 @@ namespace ashes::gl
 		}
 
 #elif VK_KHR_get_physical_device_properties2
-
+#	if VK_KHR_portability_subset
+		m_features2.pNext = &m_portabilityFeatures;
+#	else
 		m_features2.pNext = nullptr;
+#	endif
 		m_features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
 		m_features2.features = m_features;
 
@@ -1114,6 +1127,36 @@ namespace ashes::gl
 		}
 
 #endif
+	}
+
+	void PhysicalDevice::doInitialisePortability( ContextLock & context )
+	{
+#	if VK_KHR_portability_subset
+
+		auto & extensions = get( m_instance )->getExtensions();
+		m_portabilityFeatures = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_FEATURES_KHR
+			, nullptr
+			, VK_TRUE /* constantAlphaColorBlendFactors; */
+			, VK_FALSE /* events; */
+			, VK_TRUE /* imageViewFormatReinterpretation; */
+			, VK_TRUE /* imageViewFormatSwizzle; */
+			, VK_FALSE /* imageView2DOn3DImage; */
+			, VkBool32( extensions.find( ARB_texture_multisample ) /* multisampleArrayImage; */
+				? VK_TRUE
+				: VK_FALSE )
+			, VK_TRUE /* mutableComparisonSamplers; */
+			, VK_TRUE /* pointPolygons; */
+			, VK_TRUE /* samplerMipLodBias; */
+			, VK_TRUE /* separateStencilMaskRef; */
+			, VkBool32( ( extensions.getShaderVersion() >= 400 )  /* shaderSampleRateInterpolationFunctions; */
+				? m_features.sampleRateShading
+				: VK_FALSE )
+			, m_features.tessellationShader /* tessellationIsolines; */
+			, m_features.tessellationShader /* tessellationPointMode; */
+			, VK_TRUE /* triangleFans; */
+			, VK_FALSE /* vertexAttributeAccessBeyondStride; */ };
+
+#	endif
 	}
 
 	void PhysicalDevice::doGetValue( ContextLock & context, GLenum name, int32_t & value )const

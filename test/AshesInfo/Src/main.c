@@ -2524,8 +2524,8 @@ static struct FormatRange
 		// Standard formats in Vulkan 1.0
 		VK_MAKE_VERSION( 1, 0, 0 ),
 		NULL,
-		VK_FORMAT_BEGIN_RANGE,
-		VK_FORMAT_END_RANGE,
+		VK_FORMAT_UNDEFINED,
+		VK_FORMAT_ASTC_12x12_SRGB_BLOCK,
 	},
 	{
 		// YCBCR extension, standard in Vulkan 1.1

@@ -55,6 +55,7 @@ namespace ashes::gl
 	makeGlExtension( ARB_texture_cube_map_array, 3, 0 );
 	makeGlExtension( ARB_texture_filter_anisotropic, 4, 5 );
 	makeGlExtension( ARB_texture_gather, 3, 0 );
+	makeGlExtension( ARB_texture_multisample, 3, 1 );
 	makeGlExtension( ARB_texture_storage, 3, 2 );
 	makeGlExtension( ARB_texture_storage_multisample, 4, 2 );
 	makeGlExtension( ARB_texture_view, 4, 2 );

@@ -508,6 +508,16 @@ namespace ashes
 	{
 		return layerCount * getLevelsSize( extent, format, 0u, levelCount, alignment );
 	}
+
+	inline constexpr VkFormat beginFmt()
+	{
+		return VK_FORMAT_UNDEFINED;
+	}
+
+	inline constexpr VkFormat endFmt()
+	{
+		return VK_FORMAT_ASTC_12x12_SRGB_BLOCK;
+	}
 }
 
 #endif

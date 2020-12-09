@@ -93,6 +93,7 @@ namespace ashes::gl
 		void doInitialiseFormatProperties( ContextLock & context );
 		void doInitialiseDisplayProperties( ContextLock & context );
 		void doInitialiseProperties2( ContextLock & context );
+		void doInitialisePortability( ContextLock & context );
 		void doGetValue( ContextLock & context, GLenum name, int32_t & value )const;
 		void doGetValue( ContextLock & context, GLenum name, uint32_t & value )const;
 		void doGetValues( ContextLock & context, GLenum name, int32_t( &value )[2] )const;
@@ -127,6 +128,9 @@ namespace ashes::gl
 		std::vector< VkQueueFamilyProperties > m_queueProperties{};
 		mutable std::map< VkFormat, VkFormatProperties > m_formatProperties;
 		mutable std::map< size_t, VkImageFormatProperties > m_imageFormatProperties;
+#if VK_KHR_portability_subset
+		VkPhysicalDevicePortabilitySubsetFeaturesKHR m_portabilityFeatures{};
+#endif
 #if VK_VERSION_1_1
 		VkPhysicalDeviceFeatures2 m_features2{};
 		VkPhysicalDeviceProperties2 m_properties2{};
