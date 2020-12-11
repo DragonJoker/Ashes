@@ -765,7 +765,12 @@ namespace ashes::gl
 		auto & extensions = get( m_instance )->getExtensions();
 		m_properties.apiVersion = ( extensions.getMajor() << 22 ) | ( extensions.getMinor() << 12 );
 		m_properties.deviceID = 0u;
-		strncpy( m_properties.deviceName, ( char const * )context->glGetString( GL_RENDERER ), VK_MAX_PHYSICAL_DEVICE_NAME_SIZE );
+		strncpy( m_properties.deviceName
+			, ( char const * )context->glGetString( GL_RENDERER )
+			, VK_MAX_PHYSICAL_DEVICE_NAME_SIZE );
+		strncat( m_properties.deviceName
+			, " (gl)"
+			, VK_MAX_PHYSICAL_DEVICE_NAME_SIZE );
 		std::memset( m_properties.pipelineCacheUUID, 0u, sizeof( m_properties.pipelineCacheUUID ) );
 		m_properties.vendorID = doGetVendorID( ( char const * )context->glGetString( GL_VENDOR ) );
 		m_properties.deviceType = VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;

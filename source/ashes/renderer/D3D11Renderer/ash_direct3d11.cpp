@@ -4092,6 +4092,9 @@ namespace ashes::d3d11
 #if VK_KHR_surface
 			VkExtensionProperties{ VK_KHR_SURFACE_EXTENSION_NAME, VK_KHR_SURFACE_SPEC_VERSION },
 #endif
+#if VK_KHR_swapchain
+			VkExtensionProperties{ VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_SWAPCHAIN_SPEC_VERSION },
+#endif
 #if VK_KHR_win32_surface
 			VkExtensionProperties{ VK_KHR_WIN32_SURFACE_EXTENSION_NAME, VK_KHR_WIN32_SURFACE_SPEC_VERSION },
 #endif
@@ -4232,12 +4235,10 @@ namespace ashes::d3d11
 					{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
 #define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )\
 					{ "vk"#x, checkVersionExt( instance, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
-#if ASHES_ICD
-#	define VK_LIB_DEVICE_FUNCTION( v, x )\
+#define VK_LIB_DEVICE_FUNCTION( v, x )\
 					{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
-#	define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )\
+#define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )\
 					{ "vk"#x, checkVersionExt( instance, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
-#endif
 #include <ashes/ashes_functions_list.hpp>
 				};
 			}
@@ -4249,13 +4250,11 @@ namespace ashes::d3d11
 					{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
 #define VK_LIB_INSTANCE_FUNCTION( v, x )\
 					{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
+#define VK_LIB_DEVICE_FUNCTION( v, x )\
+					{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
 #define VK_LIB_GLOBAL_FUNCTION_EXT( v, n, x )
 #define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )
-#if ASHES_ICD
-#	define VK_LIB_DEVICE_FUNCTION( v, x )\
-					{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
-#	define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )
-#endif
+#define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )
 #include <ashes/ashes_functions_list.hpp>
 				};
 			}
@@ -4313,7 +4312,7 @@ extern "C"
 
 #pragma region ICD mode
 
-	D3D11Renderer_API PFN_vkVoidFunction VKAPI_PTR vk_icdGetInstanceProcAddr( VkInstance instance
+	D3D11Renderer_API VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL vk_icdGetInstanceProcAddr( VkInstance instance
 		, const char * name )
 	{
 		if ( ashes::d3d11::getLibrary().init( ASHPLUGIN_ICD ) == VK_SUCCESS )
@@ -4324,8 +4323,8 @@ extern "C"
 		return nullptr;
 	}
 
-	D3D11Renderer_API PFN_vkVoidFunction VKAPI_PTR vk_icdGetPhysicalDeviceProcAddr( VkInstance instance
-		, const char * name )
+	D3D11Renderer_API PFN_vkVoidFunction VKAPI_CALL vk_icdGetPhysicalDeviceProcAddr( VkInstance instance,
+		const char * name )
 	{
 		if ( ashes::d3d11::getLibrary().init( ASHPLUGIN_ICD ) == VK_SUCCESS )
 		{
@@ -4335,7 +4334,7 @@ extern "C"
 		return nullptr;
 	}
 
-	D3D11Renderer_API VkResult VKAPI_PTR vk_icdNegotiateLoaderICDInterfaceVersion( uint32_t * pVersion )
+	D3D11Renderer_API VKAPI_ATTR VkResult VKAPI_CALL vk_icdNegotiateLoaderICDInterfaceVersion( uint32_t * pVersion )
 	{
 		auto result = ashes::d3d11::getLibrary().init( ASHPLUGIN_ICD );
 

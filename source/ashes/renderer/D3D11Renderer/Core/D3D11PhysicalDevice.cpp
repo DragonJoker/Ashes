@@ -626,6 +626,9 @@ namespace ashes::d3d11
 			strncpy( m_properties.deviceName
 				, toString( adapterDesc.Description ).c_str()
 				, sizeof( m_properties.deviceName ) - 1u );
+			strncat( m_properties.deviceName
+				, " (d3d11)"
+				, sizeof( m_properties.deviceName ) - 1u );
 			m_properties.deviceID = adapterDesc.DeviceId;
 			m_properties.vendorID = adapterDesc.VendorId;
 			m_properties.driverVersion = adapterDesc.Revision;
