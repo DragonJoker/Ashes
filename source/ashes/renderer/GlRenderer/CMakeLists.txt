@@ -587,7 +587,7 @@ if ( OpenGL_FOUND )
 		"${CMAKE_CXX_FLAGS}"
 		${${PROJECT_NAME}_SRC_FILES}
 	)
-
+	ash_update_icd_target( ${PROJECT_NAME} )
 	set( ENABLED_RENDERERS
 		${ENABLED_RENDERERS}
 		${PROJECT_NAME}

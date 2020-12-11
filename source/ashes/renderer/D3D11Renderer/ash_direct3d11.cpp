@@ -4120,23 +4120,26 @@ namespace ashes::d3d11
 		return result;
 	}
 
-	struct GlLibrary
+	struct Library
 	{
-		AshPluginDescription description
-		{
-			"d3d11",
-			"Direct3D 11 renderer for Ashes",
-		};
+		AshPluginDescription description{ "d3d11"
+			, "Direct3D 11 renderer for Ashes"
+			, nullptr
+			, {}
+			, {}
+			, ASHPLUGIN_UNDEFINED };
 
-		VkResult init()
+		VkResult init( AshPluginMode mode )
 		{
+			auto validMode = ( description.mode == ASHPLUGIN_UNDEFINED || description.mode == mode );
+			assert( validMode
+				&& "ashesTestRenderer: Plugin mode has already been selected." );
 			VkResult result = description.getInstanceProcAddr
-				? VK_SUCCESS
+				? ( validMode ? VK_SUCCESS : VK_ERROR_INCOMPATIBLE_DRIVER )
 				: VK_ERROR_INITIALIZATION_FAILED;
 
-			if ( result != VK_SUCCESS )
+			if ( result == VK_ERROR_INITIALIZATION_FAILED )
 			{
-				auto maxSupport = getSupportedFeatureLevel();
 				description.getInstanceProcAddr = &vkGetInstanceProcAddr;
 				description.features =
 				{
@@ -4160,8 +4163,9 @@ namespace ashes::d3d11
 #include <ashes/ashes_functions_list.hpp>
 				result = VK_SUCCESS;
 
+				description.mode = mode;
 				description.support.priority = 6u;
-				description.support.supported = maxSupport >= D3D_FEATURE_LEVEL_11_1
+				description.support.supported = getSupportedFeatureLevel() >= D3D_FEATURE_LEVEL_11_1
 					? VK_TRUE
 					: VK_FALSE;
 			}
@@ -4171,10 +4175,14 @@ namespace ashes::d3d11
 	};
 }
 
-thread_local ashes::d3d11::GlLibrary g_library;
-
 namespace ashes::d3d11
 {
+	Library & getLibrary()
+	{
+		thread_local Library library;
+		return library;
+	}
+
 	bool checkVersion( VkInstance instance
 		, uint32_t version )
 	{
@@ -4261,17 +4269,12 @@ namespace ashes::d3d11
 		const char* pName )
 	{
 		PFN_vkVoidFunction result{ nullptr };
-		auto init = g_library.init();
+		auto & functions = getFunctions( instance );
+		auto it = functions.find( pName );
 
-		if ( init == VK_SUCCESS )
+		if ( it != functions.end() )
 		{
-			auto & functions = getFunctions( instance );
-			auto it = functions.find( pName );
-
-			if ( it != functions.end() )
-			{
-				result = it->second;
-			}
+			result = it->second;
 		}
 
 		return result;
@@ -4282,26 +4285,21 @@ namespace ashes::d3d11
 		const char* pName )
 	{
 		PFN_vkVoidFunction result{ nullptr };
-		auto init = g_library.init();
-
-		if ( init == VK_SUCCESS )
+		static std::map< std::string, PFN_vkVoidFunction > functions
 		{
-			static std::map< std::string, PFN_vkVoidFunction > functions
-			{
-				{ "vkGetDeviceProcAddr", PFN_vkVoidFunction( vkGetDeviceProcAddr ) },
+			{ "vkGetDeviceProcAddr", PFN_vkVoidFunction( vkGetDeviceProcAddr ) },
 #define VK_LIB_DEVICE_FUNCTION( v, x )\
-				{ "vk"#x, checkVersion( device, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+			{ "vk"#x, checkVersion( device, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
 #define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )\
-				{ "vk"#x, checkVersionExt( device, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+			{ "vk"#x, checkVersionExt( device, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
 #include <ashes/ashes_functions_list.hpp>
-			};
+		};
 
-			auto it = functions.find( pName );
+		auto it = functions.find( pName );
 
-			if ( it != functions.end() )
-			{
-				result = it->second;
-			}
+		if ( it != functions.end() )
+		{
+			result = it->second;
 		}
 
 		return result;
@@ -4313,17 +4311,225 @@ extern "C"
 {
 #endif
 
-	D3D11Renderer_API VkResult VKAPI_PTR ashGetPluginDescription( AshPluginDescription * pDescription )
+#pragma region ICD mode
+
+	D3D11Renderer_API PFN_vkVoidFunction VKAPI_PTR vk_icdGetInstanceProcAddr( VkInstance instance
+		, const char * name )
 	{
-		auto result = g_library.init();
+		if ( ashes::d3d11::getLibrary().init( ASHPLUGIN_ICD ) == VK_SUCCESS )
+		{
+			return ashes::d3d11::vkGetInstanceProcAddr( instance, name );
+		}
+
+		return nullptr;
+	}
+
+	D3D11Renderer_API PFN_vkVoidFunction VKAPI_PTR vk_icdGetPhysicalDeviceProcAddr( VkInstance instance
+		, const char * name )
+	{
+		if ( ashes::d3d11::getLibrary().init( ASHPLUGIN_ICD ) == VK_SUCCESS )
+		{
+			return ashes::d3d11::vkGetInstanceProcAddr( instance, name );
+		}
+
+		return nullptr;
+	}
+
+	D3D11Renderer_API VkResult VKAPI_PTR vk_icdNegotiateLoaderICDInterfaceVersion( uint32_t * pVersion )
+	{
+		auto result = ashes::d3d11::getLibrary().init( ASHPLUGIN_ICD );
 
 		if ( result == VK_SUCCESS )
 		{
-			*pDescription = g_library.description;
+			if ( !pVersion )
+			{
+				result = VK_ERROR_VALIDATION_FAILED_EXT;
+			}
+			else if ( *pVersion < 3 )
+			{
+				result = VK_ERROR_INCOMPATIBLE_DRIVER;
+			}
+			else
+			{
+				*pVersion = 3;
+			}
 		}
 
 		return result;
 	}
+
+#pragma region VK_KHR_surface
+#ifdef VK_KHR_surface
+
+	D3D11Renderer_API void VKAPI_CALL vkDestroySurfaceKHR( VkInstance instance, VkSurfaceKHR surface, const  VkAllocationCallbacks * pAllocator )
+	{
+		return ashes::d3d11::vkDestroySurfaceKHR( instance, surface, pAllocator );
+	}
+
+	D3D11Renderer_API VkResult VKAPI_CALL vkGetPhysicalDeviceSurfaceSupportKHR( VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex, VkSurfaceKHR surface, VkBool32 * pSupported )
+	{
+		return ashes::d3d11::vkGetPhysicalDeviceSurfaceSupportKHR( physicalDevice, queueFamilyIndex, surface, pSupported );
+	}
+
+	D3D11Renderer_API VkResult VKAPI_CALL vkGetPhysicalDeviceSurfaceCapabilitiesKHR( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkSurfaceCapabilitiesKHR * pSurfaceCapabilities )
+	{
+		return ashes::d3d11::vkGetPhysicalDeviceSurfaceCapabilitiesKHR( physicalDevice, surface, pSurfaceCapabilities );
+	}
+
+	D3D11Renderer_API VkResult VKAPI_CALL vkGetPhysicalDeviceSurfaceFormatsKHR( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32_t * pSurfaceFormatCount, VkSurfaceFormatKHR * pSurfaceFormats )
+	{
+		return ashes::d3d11::vkGetPhysicalDeviceSurfaceFormatsKHR( physicalDevice, surface, pSurfaceFormatCount, pSurfaceFormats );
+	}
+
+	D3D11Renderer_API VkResult VKAPI_CALL vkGetPhysicalDeviceSurfacePresentModesKHR( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32_t * pPresentModeCount, VkPresentModeKHR * pPresentModes )
+	{
+		return ashes::d3d11::vkGetPhysicalDeviceSurfacePresentModesKHR( physicalDevice, surface, pPresentModeCount, pPresentModes );
+	}
+
+#endif
+#pragma endregion
+#pragma region VK_KHR_swapchain
+#ifdef VK_KHR_swapchain
+
+	D3D11Renderer_API VkResult VKAPI_CALL vkCreateSwapchainKHR( VkDevice device, const  VkSwapchainCreateInfoKHR * pCreateInfo, const  VkAllocationCallbacks * pAllocator, VkSwapchainKHR * pSwapchain )
+	{
+		return ashes::d3d11::vkCreateSwapchainKHR( device, pCreateInfo, pAllocator, pSwapchain );
+	}
+
+#endif
+#pragma endregion
+#pragma region VK_KHR_display
+#ifdef VK_KHR_display
+
+	D3D11Renderer_API VkResult VKAPI_CALL vkCreateDisplayPlaneSurfaceKHR(
+		VkInstance instance,
+		const VkDisplaySurfaceCreateInfoKHR * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkSurfaceKHR * pSurface )
+	{
+		return ashes::d3d11::vkCreateDisplayPlaneSurfaceKHR( instance, pCreateInfo, pAllocator, pSurface );
+	}
+
+#endif
+#pragma endregion
+#pragma region VK_KHR_android_surface
+#ifdef VK_KHR_android_surface
+#	ifdef VK_USE_PLATFORM_ANDROID_KHR
+
+	D3D11Renderer_API VkResult VKAPI_CALL vkCreateAndroidSurfaceKHR( VkInstance instance, const  VkAndroidSurfaceCreateInfoKHR * pCreateInfo, const  VkAllocationCallbacks * pAllocator, VkSurfaceKHR * pSurface )
+	{
+		return ashes::d3d11::vkCreateAndroidSurfaceKHR( instance, pCreateInfo, pAllocator, pSurface );
+	}
+
+#	endif
+#endif
+#pragma endregion
+#pragma region VK_FUCHSIA_imagepipe_surface
+#ifdef VK_FUCHSIA_imagepipe_surface
+#	ifdef VK_USE_PLATFORM_FUCHSIA
+
+	D3D11Renderer_API VkResult VKAPI_CALL vkCreateImagePipeSurfaceFUCHSIA( VkInstance instance, const  VkImagePipeSurfaceCreateInfoFUCHSIA * pCreateInfo, const  VkAllocationCallbacks * pAllocator, VkSurfaceKHR * pSurface )
+	{
+		return ashes::d3d11::vkCreateImagePipeSurfaceFUCHSIA( instance, pCreateInfo, pAllocator, pSurface );
+	}
+
+#	endif
+#endif
+#pragma endregion
+#pragma region VK_MVK_ios_surface
+#ifdef VK_MVK_ios_surface
+#	ifdef VK_USE_PLATFORM_IOS_MVK
+
+	D3D11Renderer_API VkResult VKAPI_CALL vkCreateIOSSurfaceMVK( VkInstance instance, const  VkIOSSurfaceCreateInfoMVK * pCreateInfo, const  VkAllocationCallbacks * pAllocator, VkSurfaceKHR * pSurface )
+	{
+		return ashes::d3d11::vkCreateIOSSurfaceMVK( instance, pCreateInfo, pAllocator, pSurface );
+	}
+
+#	endif
+#endif
+#pragma endregion
+#pragma region VK_MVK_macos_surface
+#	ifdef __APPLE__
+
+	D3D11Renderer_API VkResult VKAPI_CALL vkCreateMacOSSurfaceMVK( VkInstance instance, const  VkMacOSSurfaceCreateInfoMVK * pCreateInfo, const  VkAllocationCallbacks * pAllocator, VkSurfaceKHR * pSurface )
+	{
+		return ashes::d3d11::vkCreateMacOSSurfaceMVK( instance, pCreateInfo, pAllocator, pSurface );
+	}
+
+#	endif
+#pragma endregion
+#pragma region VK_NN_vi_surface
+#ifdef VK_NN_vi_surface
+#	ifdef VK_USE_PLATFORM_VI_NN
+
+	D3D11Renderer_API VkResult VKAPI_CALL vkCreateViSurfaceNN( VkInstance instance, const  VkViSurfaceCreateInfoNN * pCreateInfo, const  VkAllocationCallbacks * pAllocator, VkSurfaceKHR * pSurface )
+	{
+		return ashes::d3d11::vkCreateViSurfaceNN( instance, pCreateInfo, pAllocator, pSurface );
+	}
+
+#	endif
+#endif
+#pragma endregion
+#pragma region VK_KHR_xcb_surface
+#	ifdef __linux__
+
+	D3D11Renderer_API VkResult VKAPI_CALL vkCreateXcbSurfaceKHR( VkInstance instance, const  VkXcbSurfaceCreateInfoKHR * pCreateInfo, const  VkAllocationCallbacks * pAllocator, VkSurfaceKHR * pSurface )
+	{
+		return ashes::d3d11::vkCreateXcbSurfaceKHR( instance, pCreateInfo, pAllocator, pSurface );
+	}
+
+#	endif
+#pragma endregion
+#pragma region VK_KHR_xlib_surface
+#	ifdef __linux__
+
+	D3D11Renderer_API VkResult VKAPI_CALL vkCreateXlibSurfaceKHR( VkInstance instance, const  VkXlibSurfaceCreateInfoKHR * pCreateInfo, const  VkAllocationCallbacks * pAllocator, VkSurfaceKHR * pSurface )
+	{
+		return ashes::d3d11::vkCreateXlibSurfaceKHR( instance, pCreateInfo, pAllocator, pSurface );
+	}
+
+#	endif
+// #endif
+#pragma endregion
+#pragma region VK_KHR_wayland_surface
+#	ifdef __linux__
+
+	D3D11Renderer_API VkResult VKAPI_CALL vkCreateWaylandSurfaceKHR( VkInstance instance, const  VkWaylandSurfaceCreateInfoKHR * pCreateInfo, const  VkAllocationCallbacks * pAllocator, VkSurfaceKHR * pSurface )
+	{
+		return ashes::d3d11::vkCreateWaylandSurfaceKHR( instance, pCreateInfo, pAllocator, pSurface );
+	}
+
+#	endif
+#pragma endregion
+#pragma region VK_KHR_win32_surface
+#ifdef VK_KHR_win32_surface
+#	ifdef _WIN32
+
+	D3D11Renderer_API VkResult VKAPI_CALL vkCreateWin32SurfaceKHR( VkInstance instance, const  VkWin32SurfaceCreateInfoKHR * pCreateInfo, const  VkAllocationCallbacks * pAllocator, VkSurfaceKHR * pSurface )
+	{
+		return ashes::d3d11::vkCreateWin32SurfaceKHR( instance, pCreateInfo, pAllocator, pSurface );
+	}
+
+#	endif
+#endif
+#pragma endregion
+
+#pragma endregion
+#pragma region Drop-in replacement mode
+
+	D3D11Renderer_API VkResult VKAPI_PTR ashGetPluginDescription( AshPluginDescription * pDescription )
+	{
+		auto result = ashes::d3d11::getLibrary().init( ASHPLUGIN_DROPIN );
+
+		if ( result == VK_SUCCESS )
+		{
+			*pDescription = ashes::d3d11::getLibrary().description;
+		}
+
+		return result;
+	}
+
+#pragma endregion
 
 #ifdef __cplusplus
 }

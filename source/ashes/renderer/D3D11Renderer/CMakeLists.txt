@@ -426,6 +426,8 @@ if ( ASHES_BUILD_SPIRV_CROSS )
 	set( ${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES
 		${SPIRV_CROSS_DIR}/spirv_hlsl.hpp
 	)
+	source_group( "Header Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES} )
+	source_group( "Source Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES} )
 endif ()
 
 if ( EXISTS ${Ashes_SOURCE_DIR}/external/AGS_SDK/ags_lib/inc/ )
@@ -526,24 +528,7 @@ add_target_precompiled_header_ex( ${PROJECT_NAME}
 	"${CMAKE_CXX_FLAGS}"
 	${${PROJECT_NAME}_SRC_FILES}
 )
-
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer Buffer "Buffer" )
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer Command "Command" )
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer Command/Commands "Command\\\\Commands" )
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer Core "Core" )
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer Descriptor "Descriptor" )
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer Enum "Enum" )
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer Image "Image" )
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer Miscellaneous "Miscellaneous" )
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer Pipeline "Pipeline" )
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer RenderPass "RenderPass" )
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer Shader "Shader" )
-parse_subdir_files_ex( ${Ashes_SOURCE_DIR} ashes/renderer Sync "Sync" )
-
-source_group( "Header Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES} )
-source_group( "Source Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES} )
-source_group( "Natvis Files" FILES ${${PROJECT_NAME}_NVS_FILES} )
-
+ash_update_icd_target( ${PROJECT_NAME} )
 set( ENABLED_RENDERERS
 	${ENABLED_RENDERERS}
 	${PROJECT_NAME}

@@ -83,15 +83,9 @@ endif ()
 
 set( Ashes_BINARY_LIBRARIES ${Ashes_BINARY_LIBRARIES} PARENT_SCOPE )
 
-if ( ASHES_ICD )
-	set( AshesName ashes )
-else ()
-	set( AshesName vulkan )
-endif ()
-
 if ( WIN32 )
 	install(
-		TARGETS ${AshesName} ashes_common ashespp ${ENABLED_RENDERERS}
+		TARGETS ashes ashes_common ashespp ${ENABLED_RENDERERS}
 		EXPORT Ashes
 		RUNTIME DESTINATION bin
 		LIBRARY DESTINATION lib
@@ -99,7 +93,7 @@ if ( WIN32 )
 	)
 else ()
 	install(
-		TARGETS ${AshesName} ashes_common ashespp ${ENABLED_RENDERERS}
+		TARGETS ashes ashes_common ashespp ${ENABLED_RENDERERS}
 		EXPORT Ashes
 		RUNTIME DESTINATION bin/Ashes
 		LIBRARY DESTINATION lib/Ashes

@@ -45,6 +45,26 @@ See LICENSE file in root folder.
 extern "C"
 {
 #endif
+
+	typedef enum AshPluginMode
+	{
+		/**
+		*\brief
+		*	Nothing selected yet.
+		*/
+		ASHPLUGIN_UNDEFINED,
+		/**
+		*\brief
+		*	Drop-in replacement mode.
+		*/
+		ASHPLUGIN_DROPIN,
+		/**
+		*\brief
+		*	ICD mode.
+		*/
+		ASHPLUGIN_ICD,
+	} AshPluginMode;
+
 	typedef struct AshPluginFeatures
 	{
 		/**
@@ -155,17 +175,22 @@ extern "C"
 		*	The plugin's support informations.
 		*/
 		AshPluginSupport support;
+		/**
+		*\brief
+		*	The plugin's current mode.
+		*/
+		AshPluginMode mode;
 	} AshPluginDescription;
 
-	typedef void( VKAPI_PTR * PFN_ashEnumeratePluginsDescriptions )( uint32_t *, AshPluginDescription * );
 	typedef VkResult( VKAPI_PTR * PFN_ashGetPluginDescription )( AshPluginDescription * );
+
+	typedef void( VKAPI_PTR * PFN_ashEnumeratePluginsDescriptions )( uint32_t *, AshPluginDescription * );
 	typedef VkResult( VKAPI_PTR * PFN_ashSelectPlugin )( AshPluginDescription );
 
 	Ashes_API void VKAPI_PTR ashEnumeratePluginsDescriptions( uint32_t * count
 		, AshPluginDescription * pDescriptions );
 	Ashes_API VkResult VKAPI_PTR ashSelectPlugin( AshPluginDescription description );
 	Ashes_API VkResult VKAPI_PTR ashGetCurrentPluginDescription( AshPluginDescription * description );
-	Ashes_API VkBool32 VKAPI_PTR ashIsUsingICD();
 
 #ifdef __cplusplus
 }

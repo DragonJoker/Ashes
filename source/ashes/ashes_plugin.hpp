@@ -19,20 +19,22 @@
 
 struct Plugin
 {
+	using PFN_ashUpdatePluginSupport = VkResult( VKAPI_PTR * )();
+
 	std::unique_ptr< ashes::DynamicLibrary > library;
+	PFN_ashGetPluginDescription fnGetPluginDescription;
 	AshPluginDescription description;
 
 	inline Plugin( std::unique_ptr< ashes::DynamicLibrary > lib )
 		: library{ std::move( lib ) }
 	{
-		PFN_ashGetPluginDescription getPluginDescription;
 
-		if ( !library->getFunction( "ashGetPluginDescription", getPluginDescription ) )
+		if ( !library->getFunction( "ashGetPluginDescription", fnGetPluginDescription ) )
 		{
 			throw std::runtime_error{ "[" + ashes::getFileName( library->getPath() ) + "] is not a renderer plugin" };
 		}
 
-		getPluginDescription( &description );
+		fnGetPluginDescription( &description );
 	}
 };
 
