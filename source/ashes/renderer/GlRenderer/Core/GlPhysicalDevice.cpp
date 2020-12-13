@@ -935,7 +935,7 @@ namespace ashes::gl
 							, 1
 							, &value );
 
-						if ( value == GL_FULL_SUPPORT )
+						if ( value != 0 )
 						{
 							if ( isDepthOrStencilFormat( fmt ) )
 							{
@@ -954,7 +954,7 @@ namespace ashes::gl
 							, 1
 							, &value );
 
-						if ( value == GL_FULL_SUPPORT )
+						if ( value == GL_TRUE )
 						{
 							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT;
 							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT;
@@ -967,7 +967,7 @@ namespace ashes::gl
 							, 1
 							, &value );
 
-						if ( value == GL_FULL_SUPPORT )
+						if ( value != 0 )
 						{
 							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
 						}
@@ -979,7 +979,7 @@ namespace ashes::gl
 							, 1
 							, &value );
 
-						if ( value == GL_FULL_SUPPORT )
+						if ( value != 0 )
 						{
 							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT;
 						}
@@ -991,7 +991,7 @@ namespace ashes::gl
 							, 1
 							, &value );
 
-						if ( value == GL_FULL_SUPPORT )
+						if ( value != 0 )
 						{
 							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT;
 						}
@@ -1003,7 +1003,7 @@ namespace ashes::gl
 							, 1
 							, &value );
 
-						if ( value == GL_FULL_SUPPORT )
+						if ( value != 0 )
 						{
 							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT;
 						}
@@ -1016,7 +1016,7 @@ namespace ashes::gl
 							, 1
 							, &value );
 
-						if ( value == GL_FULL_SUPPORT )
+						if ( value != 0 )
 						{
 							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;
 							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_DST_BIT;

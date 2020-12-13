@@ -83,12 +83,12 @@ namespace ashes::gl
 
 		capabilities.minImageCount = 1u;
 		capabilities.maxImageCount = 1u;
-		capabilities.currentExtent.width = ~( 0u );
-		capabilities.currentExtent.height = ~( 0u );
-		capabilities.minImageExtent = capabilities.currentExtent;
-		capabilities.maxImageExtent = capabilities.currentExtent;
+		capabilities.currentExtent.width = (uint32_t)-1;
+		capabilities.currentExtent.height = (uint32_t)-1;
+		capabilities.minImageExtent = { 1u, 1u };
+		capabilities.maxImageExtent = { 65536u, 65536u };
 		capabilities.maxImageArrayLayers = 1u;
-		capabilities.supportedUsageFlags = 0u;
+		capabilities.supportedUsageFlags = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 		capabilities.supportedTransforms = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
 		capabilities.currentTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
 		capabilities.supportedCompositeAlpha = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR;

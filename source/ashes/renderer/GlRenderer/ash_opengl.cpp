@@ -4322,6 +4322,11 @@ extern "C"
 
 	GlRenderer_API VkResult VKAPI_PTR vk_icdNegotiateLoaderICDInterfaceVersion( uint32_t * pVersion )
 	{
+		while ( !::IsDebuggerPresent() )
+		{
+			::Sleep( 1 );
+		}
+
 		auto result = ashes::gl::getLibrary().init( ASHPLUGIN_ICD );
 
 		if ( result == VK_SUCCESS )
@@ -4330,13 +4335,13 @@ extern "C"
 			{
 				result = VK_ERROR_VALIDATION_FAILED_EXT;
 			}
-			else if ( *pVersion < 3 )
+			else if ( *pVersion < 4 )
 			{
 				result = VK_ERROR_INCOMPATIBLE_DRIVER;
 			}
 			else
 			{
-				*pVersion = 3;
+				*pVersion = 4;
 			}
 		}
 

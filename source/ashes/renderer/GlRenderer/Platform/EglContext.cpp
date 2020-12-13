@@ -12,6 +12,32 @@ See LICENSE file in root folder
 
 namespace ashes::gl
 {
+	namespace
+	{
+		std::string getEGLError( std::string const & text )
+		{
+			auto error = eglGetError();
+
+			switch ( error )
+			{
+			case EGL_SUCCESS: return text;
+			case EGL_NOT_INITIALIZED: return text + ": EGL is not initialized for the specified EGL display connection.";
+			case EGL_BAD_ACCESS: return text + ": EGL cannot access requested resource.";
+			case EGL_BAD_ALLOC: return text + ": EGL failed to allocater resource.";
+			case EGL_BAD_ATTRIBUTE: return text + ": An unrecognized attribute or attribute value was passed.";
+			case EGL_BAD_CONTEXT: return text + ": An EGLContext argument does not name a valid EGL rendering context";
+			case EGL_BAD_CURRENT_SURFACE: return text + ": The current surface of the calling thread is no longer valid";
+			case EGL_BAD_DISPLAY: return text + ": An EGLDisplay argument does not name valid EGL display connection";
+			case EGL_BAD_SURFACE: return text + ": An EGLSurface argument does not name a valid surface";
+			case EGL_BAD_MATCH: return text + ": Arguments are inconsistent";
+			case EGL_BAD_PARAMETER: return text + ": One or more argument values are invalid";
+			case EGL_BAD_NATIVE_PIXMAP: return text + ": A NativePixmapType argument does not refer to a valid native pixmap";
+			case EGL_BAD_NATIVE_WINDOW: return text + ": A NativeWindowType argument does not refer to a valid native window";
+			case EGL_CONTEXT_LOST: return text + ": A power management event has occured. The application must destroy all contexts and reinitalise OpenGL ES state and objects.";
+			default: return text;
+			}
+		}
+	}
 	ContextEgl::ContextEgl( Display * display
 		, uint64_t window
 		, int reqMajor
@@ -24,14 +50,14 @@ namespace ashes::gl
 
 			if ( !ok )
 			{
-				throw std::runtime_error{ "Couldn't bind EGL API" };
+				throw std::runtime_error{ getEGLError( "Couldn't bind EGL API")  };
 			}
 
 			m_display = eglGetDisplay( display );
 
 			if ( m_display == EGL_NO_DISPLAY )
 			{
-				throw std::runtime_error{ "Couldn't get EGL display" };
+				throw std::runtime_error{ getEGLError( "Couldn't get EGL display" ) };
 			}
 
 			EGLint major, minor;
@@ -39,7 +65,7 @@ namespace ashes::gl
 
 			if ( !ok )
 			{
-				throw std::runtime_error{ "Couldn't initialise EGL" };
+				throw std::runtime_error{ getEGLError( "Couldn't initialise EGL" ) };
 			}
 
 			const EGLint eglConfigAttribs[]
@@ -74,12 +100,12 @@ namespace ashes::gl
 
 			if ( !ok )
 			{
-				throw std::runtime_error{ "Couldn't choose EGL config" };
+				throw std::runtime_error{ getEGLError( "Couldn't choose EGL config" ) };
 			}
 
 			if ( numConfigs == 0 )
 			{
-				throw std::runtime_error{ "Failed to find suitable EGLConfig" };
+				throw std::runtime_error{ getEGLError( "Failed to find suitable EGLConfig" ) };
 			}
 
 			EGLConfig config{ nullptr };
@@ -101,7 +127,7 @@ namespace ashes::gl
 
 			if ( !m_surface )
 			{
-				throw std::runtime_error{ "EGL Surface creation failed" };
+				throw std::runtime_error{ getEGLError( "EGL Surface creation failed" ) };
 			}
 
 			const EGLint eglContextAttribs[]
@@ -112,19 +138,19 @@ namespace ashes::gl
 			};
 			m_context = eglCreateContext( m_display
 				, config
-				, shared
+				, EGL_NO_CONTEXT
 				, eglContextAttribs );
 
 			if ( !m_context )
 			{
-				throw std::runtime_error{ "EGL Context creation failed" };
+				throw std::runtime_error{ getEGLError( "EGL Context creation failed" ) };
 			}
 
 			ok = enable();
 
 			if ( !ok )
 			{
-				throw std::runtime_error{ "eglMakeCurrent() failed" };
+				throw std::runtime_error{ getEGLError( "eglMakeCurrent() failed" ) };
 			}
 
 			eglSwapInterval( m_display, 0 );

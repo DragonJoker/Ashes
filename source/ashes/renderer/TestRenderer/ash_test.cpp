@@ -4336,13 +4336,13 @@ extern "C"
 			{
 				result = VK_ERROR_VALIDATION_FAILED_EXT;
 			}
-			else if ( *pVersion < 3 )
+			else if ( *pVersion < 4 )
 			{
 				result = VK_ERROR_INCOMPATIBLE_DRIVER;
 			}
 			else
 			{
-				*pVersion = 3;
+				*pVersion = 4;
 			}
 		}
 
