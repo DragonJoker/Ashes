@@ -35,17 +35,10 @@ namespace ashes
 	*/
 	inline VkDeviceSize getAlignedSize( VkDeviceSize size, VkDeviceSize align )
 	{
-		VkDeviceSize result = 0u;
-
-		while ( size > align )
-		{
-			size -= align;
-			result += align;
-		}
-
-		return size == 0
-			? result
-			: result + align;
+		auto rem = size % align;
+		return ( rem
+			? size + ( align - rem )
+			: size );
 	}
 	/**
 	*\brief

@@ -256,3 +256,4 @@ source/AshesOld
 data
 source/premake5.exe
 .DS_Store
+imgui.ini
