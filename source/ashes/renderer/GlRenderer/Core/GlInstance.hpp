@@ -78,34 +78,29 @@ namespace ashes::gl
 #endif
 		void registerContext( Context & context );
 
-		static VkPhysicalDeviceMemoryProperties const & getMemoryProperties();
-#ifdef VK_KHR_get_physical_device_properties2
-		static VkPhysicalDeviceMemoryProperties2KHR const & getMemoryProperties2();
-#endif
-
-		inline bool isSPIRVSupported()const
+		bool isSPIRVSupported()const
 		{
 			return m_extensions.isSPIRVSupported();
 		}
 
-		inline bool isValidationEnabled()const
+		bool isValidationEnabled()const
 		{
 			return m_validationEnabled;
 		}
 
-		inline bool hasViewportArray()const
+		bool hasViewportArray()const
 		{
 			return m_hasViewportArray;
 		}
 
 #if VK_EXT_debug_utils
 
-		inline std::vector< DebugUtilsMessengerData > const & getDebugMessengers()const
+		std::vector< DebugUtilsMessengerData > const & getDebugMessengers()const
 		{
 			return m_debugMessengers;
 		}
 
-		inline std::vector< DebugUtilsAMDMessengerData > const & getDebugAMDMessengers()const
+		std::vector< DebugUtilsAMDMessengerData > const & getDebugAMDMessengers()const
 		{
 			return m_debugAMDMessengers;
 		}
@@ -113,29 +108,29 @@ namespace ashes::gl
 #endif
 #if VK_EXT_debug_report
 
-		inline std::vector< DebugReportCallbackData > const & getDebugCallbacks()const
+		std::vector< DebugReportCallbackData > const & getDebugCallbacks()const
 		{
 			return m_debugCallbacks;
 		}
 
-		inline std::vector< DebugReportAMDCallbackData > const & getDebugAMDCallbacks()const
+		std::vector< DebugReportAMDCallbackData > const & getDebugAMDCallbacks()const
 		{
 			return m_debugAMDCallbacks;
 		}
 
 #endif
 
-		inline ExtensionsHandler const & getExtensions()const
+		ExtensionsHandler const & getExtensions()const
 		{
 			return m_extensions;
 		}
 
-		inline AshPluginFeatures const & getFeatures()const
+		AshPluginFeatures const & getFeatures()const
 		{
 			return m_features;
 		}
 
-		inline Context & getCurrentContext()const
+		Context & getCurrentContext()const
 		{
 			assert( m_context || m_firstSurfaceContext );
 			return m_context
@@ -143,9 +138,24 @@ namespace ashes::gl
 				: *m_firstSurfaceContext;
 		}
 
-		inline bool hasClearTexImage()const
+		bool hasClearTexImage()const
 		{
 			return m_features.hasClearTexImage;
+		}
+
+		static constexpr uint32_t getDefaultMajor()
+		{
+			return 1u;
+		}
+
+		static constexpr uint32_t getDefaultMinor()
+		{
+			return 0u;
+		}
+
+		static constexpr uint32_t getDefaultApiVersion()
+		{
+			return ashes::makeVersion( getDefaultMajor(), getDefaultMinor(), 0 );
 		}
 
 	private:

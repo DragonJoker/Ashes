@@ -114,6 +114,11 @@ namespace ashes::gl
 			return m_impl->getBuffer();
 		}
 
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	public:
 		mutable DeviceMemoryDestroySignal onDestroy;
 

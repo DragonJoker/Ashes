@@ -25,6 +25,11 @@ namespace ashes::gl
 			return m_lodBias;
 		}
 
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		VkDevice m_device;
 		float m_lodBias;

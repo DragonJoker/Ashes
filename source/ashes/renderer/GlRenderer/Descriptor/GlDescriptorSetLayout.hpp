@@ -29,7 +29,13 @@ namespace ashes::gl
 			return m_bindings.end();
 		}
 
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
+		VkDevice m_device;
 		VkDescriptorSetLayoutCreateInfo m_createInfo;
 		VkDescriptorSetLayoutBindingArray m_bindings;
 	};

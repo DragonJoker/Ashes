@@ -112,6 +112,11 @@ namespace ashes::gl
 			return m_renderPass;
 		}
 
+		VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		void doInitialiseAttaches();
 		void doBindAttaches();

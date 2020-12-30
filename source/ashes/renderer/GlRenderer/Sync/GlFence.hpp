@@ -28,6 +28,11 @@ namespace ashes::gl
 			return m_fence;
 		}
 
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		mutable GLsync m_fence{ nullptr };
 		VkDevice m_device;
