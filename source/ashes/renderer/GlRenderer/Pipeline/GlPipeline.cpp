@@ -311,6 +311,7 @@ namespace ashes::gl
 			? doHash( m_vertexInputState.value() )
 			: 0u ) }
 	{
+		get( m_layout )->addPipeline( get( this ) );
 	}
 
 	Pipeline::Pipeline( VkDevice device
@@ -322,6 +323,15 @@ namespace ashes::gl
 		, m_basePipelineIndex{ createInfo.basePipelineIndex }
 		, m_compPipeline{ std::make_unique< ShaderProgram >( m_device, nullptr, get( this ), m_stages, m_layout, createInfo.flags, m_renderPass, m_vertexInputState ) }
 	{
+		get( m_layout )->addPipeline( get( this ) );
+	}
+
+	Pipeline::~Pipeline()
+	{
+		if ( m_layout )
+		{
+			get( m_layout )->removePipeline( get( this ) );
+		}
 	}
 
 	GeometryBuffers * Pipeline::findGeometryBuffers( VboBindings const & vbos
@@ -413,34 +423,46 @@ namespace ashes::gl
 
 	VkDescriptorSetLayoutArray const & Pipeline::getDescriptorsLayouts()const
 	{
-		return get( m_layout )->getDescriptorsLayouts();
+		if ( m_layout )
+		{
+			return get( m_layout )->getDescriptorsLayouts();
+		}
+
+		static VkDescriptorSetLayoutArray const dummy;
+		return dummy;
 	}
 
 	ShaderBindings const & Pipeline::getDescriptorSetBindings( VkDescriptorSet descriptorSet
 		, uint32_t descriptorSetIndex )const
 	{
-		auto key = makeDescriptorKey( descriptorSet, descriptorSetIndex );
-		auto pair = m_dsBindings.emplace( key
-			, get( m_layout )->getDecriptorSetBindings( descriptorSet, descriptorSetIndex ) );
-
-		if ( pair.second )
+		if ( m_layout )
 		{
-			if ( isCompute() )
+			auto key = makeDescriptorKey( descriptorSet, descriptorSetIndex );
+			auto pair = m_dsBindings.emplace( key
+				, get( m_layout )->getDescriptorSetBindings( descriptorSet, descriptorSetIndex ) );
+
+			if ( pair.second )
 			{
-				pair.first->second = doReworkBindings( pair.first->second
-					, descriptorSet
-					, descriptorSetIndex
-					, m_compPipeline->program );
+				if ( isCompute() )
+				{
+					pair.first->second = doReworkBindings( pair.first->second
+						, descriptorSet
+						, descriptorSetIndex
+						, m_compPipeline->program );
+				}
+				else
+				{
+					pair.first->second = doReworkBindings( pair.first->second
+						, descriptorSet
+						, descriptorSetIndex
+						, m_backPipeline->program );
+				}
 			}
-			else
-			{
-				pair.first->second = doReworkBindings( pair.first->second
-					, descriptorSet
-					, descriptorSetIndex
-					, m_backPipeline->program );
-			}
+
+			return pair.first->second;
 		}
 
-		return pair.first->second;
+		static ShaderBindings const dummy;
+		return dummy;
 	}
 }

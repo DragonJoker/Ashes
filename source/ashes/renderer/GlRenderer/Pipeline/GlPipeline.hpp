@@ -27,6 +27,8 @@ namespace ashes::gl
 	class Pipeline
 		: public AutoIdIcdObject< Pipeline >
 	{
+		friend class PipelineLayout;
+
 	public:
 		/**
 		*name
@@ -37,6 +39,7 @@ namespace ashes::gl
 			, VkGraphicsPipelineCreateInfo createInfo );
 		Pipeline( VkDevice device
 			, VkComputePipelineCreateInfo createInfo );
+		~Pipeline();
 		GeometryBuffers * findGeometryBuffers( VboBindings const & vbos
 			, IboBinding const & ibo )const;
 		GeometryBuffersRef createGeometryBuffers( VboBindings vbos

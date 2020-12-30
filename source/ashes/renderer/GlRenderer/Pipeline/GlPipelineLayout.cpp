@@ -32,6 +32,14 @@ namespace ashes::gl
 		}
 	}
 
+	PipelineLayout::~PipelineLayout()
+	{
+		for ( auto & pipeline : m_pipelines )
+		{
+			get( pipeline )->m_layout = nullptr;
+		}
+	}
+
 	ShaderBindings const & PipelineLayout::getShaderBindings()const
 	{
 		return m_shaderBindings;
@@ -68,5 +76,15 @@ namespace ashes::gl
 		}
 
 		return pair.first->second;
+	}
+
+	void PipelineLayout::addPipeline( VkPipeline pipeline )
+	{
+		m_pipelines.insert( pipeline );
+	}
+
+	void PipelineLayout::removePipeline( VkPipeline pipeline )
+	{
+		m_pipelines.erase( pipeline );
 	}
 }
