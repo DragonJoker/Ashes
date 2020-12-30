@@ -53,7 +53,7 @@ macro( ash_update_icd_target TARGET_NAME )
 			$<$<CONFIG:RelWithDebugInfo>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO}${TARGET_NAME}_icd.json>
 			$<$<CONFIG:Debug>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}${TARGET_NAME}_icd.json>
 		COMPONENT ${TARGET_NAME}
-		DESTINATION share/ashes
+		DESTINATION bin
 	)
 endmacro( ash_update_icd_target )
 

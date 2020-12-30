@@ -35,6 +35,11 @@ namespace ashes::d3d11
 			return m_data;
 		}
 
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		VkDevice m_device;
 		VkPipelineCacheCreateInfo m_createInfo;

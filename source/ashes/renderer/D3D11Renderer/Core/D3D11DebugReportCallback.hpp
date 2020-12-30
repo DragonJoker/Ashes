@@ -148,6 +148,11 @@ namespace ashes::d3d11
 			return m_layer;
 		}
 
+		VkInstance getInstance()const
+		{
+			return m_instance;
+		}
+
 	private:
 		VkInstance m_instance;
 		VkDebugUtilsMessengerCreateInfoEXT m_createInfo;
@@ -214,6 +219,11 @@ namespace ashes::d3d11
 		inline DebugReportLayer const & getLayer()const
 		{
 			return m_layer;
+		}
+
+		VkInstance getInstance()const
+		{
+			return m_instance;
 		}
 
 	private:

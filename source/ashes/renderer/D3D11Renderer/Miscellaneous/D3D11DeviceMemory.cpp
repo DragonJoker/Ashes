@@ -898,7 +898,7 @@ namespace ashes::d3d11
 	{
 		assert( !m_mapped && "VkDeviceMemory should not be mapped" );
 		assert( !m_data.empty() && "VkDeviceMemory should be mappable" );
-		size = (size == ~( 0ull )
+		size = (size == WholeSize
 			? m_allocateInfo.allocationSize
 			: size);
 
@@ -922,7 +922,7 @@ namespace ashes::d3d11
 	{
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
 		assert( !m_data.empty() && "VkDeviceMemory should be mappable" );
-		size = ( size == ~( 0ull )
+		size = ( size == WholeSize
 			? m_allocateInfo.allocationSize
 			: size );
 
@@ -941,7 +941,7 @@ namespace ashes::d3d11
 	{
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
 		assert( !m_data.empty() && "VkDeviceMemory should be mappable" );
-		size = ( size == ~( 0ull )
+		size = ( size == WholeSize
 			? m_allocateInfo.allocationSize
 			: size );
 

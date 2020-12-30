@@ -1024,6 +1024,7 @@ namespace ashes::d3d11
 			VkDisplayKHR display{};
 			allocate( display
 				, nullptr
+				, get( this )
 				, pair.first.extent
 				, pair.first.format
 				, pair.second );

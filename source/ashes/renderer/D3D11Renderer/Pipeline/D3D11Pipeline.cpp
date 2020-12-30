@@ -119,6 +119,20 @@ namespace ashes::d3d11
 		doCompileProgram( device, { createInfo.stage }, createInfo.flags );
 	}
 
+	Pipeline::~Pipeline()
+	{
+		for ( auto & pcb : m_constantsPcbs )
+		{
+			deallocate( pcb.memory, get( m_device )->getAllocationCallbacks() );
+			deallocate( pcb.ubo, get( m_device )->getAllocationCallbacks() );
+		}
+
+		safeRelease( m_bdState );
+		safeRelease( m_rsState );
+		safeRelease( m_iaState );
+		safeRelease( m_dsState );
+	}
+
 	PushConstantsBuffer Pipeline::findPushConstantBuffer( PushConstantsDesc const & pushConstants )const
 	{
 		// Try to find a PCB that has the same flags, and the same size as the push constants.
@@ -400,19 +414,5 @@ namespace ashes::d3d11
 				dxDebugName( m_iaState, PipelineInputLayout );
 			}
 		}
-	}
-
-	Pipeline::~Pipeline()
-	{
-		for ( auto & pcb : m_constantsPcbs )
-		{
-			deallocate( pcb.memory, get( m_device )->getAllocationCallbacks() );
-			deallocate( pcb.ubo, get( m_device )->getAllocationCallbacks() );
-		}
-
-		safeRelease( m_bdState );
-		safeRelease( m_rsState );
-		safeRelease( m_iaState );
-		safeRelease( m_dsState );
 	}
 }

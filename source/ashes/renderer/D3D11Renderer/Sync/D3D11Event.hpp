@@ -26,7 +26,14 @@ namespace ashes::d3d11
 		*/
 		VkResult reset()const;
 
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		mutable VkResult m_status{ VK_EVENT_RESET };
+
+		VkDevice m_device;
 	};
 }

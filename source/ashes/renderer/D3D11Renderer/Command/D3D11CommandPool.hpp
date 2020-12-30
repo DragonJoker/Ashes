@@ -19,6 +19,11 @@ namespace ashes::d3d11
 		VkResult reset( VkCommandPoolResetFlags flags );
 		VkResult free( ArrayView< VkCommandBuffer const > sets );
 
+		VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		VkDevice m_device;
 		VkCommandPoolCreateInfo m_createInfo;

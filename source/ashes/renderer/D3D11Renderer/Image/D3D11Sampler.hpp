@@ -24,6 +24,11 @@ namespace ashes::d3d11
 			return m_sampler;
 		}
 
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		VkDevice m_device;
 		VkSamplerCreateInfo m_createInfo;

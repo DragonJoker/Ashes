@@ -18,5 +18,13 @@ namespace ashes::d3d11
 		VkResult wait( uint64_t timeout )const;
 		void reset()const;
 		VkResult getStatus()const;
+
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
+	private:
+		VkDevice m_device;
 	};
 }
