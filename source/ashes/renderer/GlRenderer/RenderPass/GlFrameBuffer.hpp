@@ -16,7 +16,10 @@ namespace ashes::gl
 	GlAttachmentPoint getAttachmentPoint( VkImageView texture );
 	GlAttachmentType getAttachmentType( VkImageAspectFlags aspectMask );
 	GlAttachmentType getAttachmentType( VkImageView texture );
-	void checkCompleteness( GLenum status );
+	void checkCompleteness( VkSwapchainKHR swapchain
+		, GLenum status );
+	void checkCompleteness( VkFramebuffer framebuffer
+		, GLenum status );
 
 	class Framebuffer
 		: public IcdObject
@@ -36,68 +39,79 @@ namespace ashes::gl
 
 		using IcdObject::getInternal;
 		
-		inline GLuint & getInternal()
+		bool isEmpty()const
+		{
+			return m_renderableAttaches.empty()
+				|| m_attachments.empty();
+		}
+		
+		GLuint & getInternal()
 		{
 			return m_internal;
 		}
 
-		inline auto const & getAttachments()const
+		auto const & getAttachments()const
 		{
 			return m_attachments;
 		}
 
-		inline auto const & getAllAttaches()const
+		auto const & getRenderableAttaches()const
 		{
-			return m_allAttaches;
+			return m_renderableAttaches;
 		}
 
-		inline auto const & getMsColourAttaches()const
+		auto const & getResolveAttaches()const
+		{
+			return m_resolveAttaches;
+		}
+
+		auto const & getMsColourAttaches()const
 		{
 			return m_colourMsAttaches;
 		}
 
-		inline auto const & getColourAttaches()const
+		auto const & getColourAttaches()const
 		{
 			return m_colourAttaches;
 		}
 
-		inline auto const & getAllColourAttaches()const
+		auto const & getAllColourAttaches()const
 		{
 			return m_allColourAttaches;
 		}
 
-		inline bool hasDepthStencilAttach()const
+		bool hasDepthStencilAttach()const
 		{
 			return bool( m_depthStencilAttach );
 		}
 
-		inline auto const & getDepthStencilAttach()const
+		auto const & getDepthStencilAttach()const
 		{
 			assert( hasDepthStencilAttach() );
 			return m_depthStencilAttach.value();
 		}
 
-		inline bool isSRGB()const
+		bool isSRGB()const
 		{
 			return m_srgb;
 		}
 
-		inline VkExtent2D getDimensions()const
+		VkExtent2D getDimensions()const
 		{
 			return m_dimensions;
 		}
 
-		inline uint32_t getWidth()const
+		uint32_t getWidth()const
 		{
 			return m_dimensions.width;
 		}
 
-		inline uint32_t getHeight()const
+		uint32_t getHeight()const
 		{
 			return m_dimensions.height;
 		}
 
-		inline bool isMultisampled()const
+		bool isMultisampled()const
 		{
 			return m_multisampled;
 		}
@@ -121,8 +135,9 @@ namespace ashes::gl
 		void doInitialiseAttaches();
 		void doBindAttaches();
 		void doCreateFramebuffer();
-		void doInitialiseAttach( VkImageView view
-			, uint32_t index );
+		void doInitialiseAttach( FboAttachment attach
+			, bool multisampled
+			, bool isSRGB );
 
 	private:
 		VkDevice m_device;
@@ -131,7 +146,8 @@ namespace ashes::gl
 		VkImageViewArray m_attachments;
 		VkExtent2D m_dimensions;
 		uint32_t m_layers;
-		FboAttachmentArray m_allAttaches;
+		FboAttachmentArray m_renderableAttaches;
+		std::map< uint32_t, FboAttachment > m_resolveAttaches;
 		FboAttachmentArray m_allColourAttaches;
 		FboAttachmentArray m_colourAttaches;
 		FboAttachmentArray m_colourMsAttaches;

@@ -52,8 +52,8 @@ namespace ashes::gl
 			, uint32_t index )const;
 		void swapBuffers()const;
 
-		void link( VkSurfaceKHR surface )const;
-		void unlink( VkSurfaceKHR surface )const;
+		void link( VkSurfaceKHR surface );
+		void unlink( VkSurfaceKHR surface );
 		ContextLock getContext()const;
 
 		inline VkPhysicalDeviceFeatures const & getEnabledFeatures()const
@@ -111,6 +111,8 @@ namespace ashes::gl
 	private:
 		void doInitialiseQueues();
 		void doInitialiseDummy()const;
+		void doInitialiseContextDependent();
+		void doCleanupContextDependent();
 
 	private:
 		struct QueueCreates

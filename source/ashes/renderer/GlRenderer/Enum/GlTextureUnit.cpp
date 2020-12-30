@@ -103,8 +103,7 @@ namespace ashes::gl
 			return "GL_TEXTURE31";
 
 		default:
-			assert( false && "Unsupported GlTextureUnit" );
-			return "GlTextureUnit_UNKNOWN";
+			return "GL_TEXTUREUNK";
 		}
 	}
 }

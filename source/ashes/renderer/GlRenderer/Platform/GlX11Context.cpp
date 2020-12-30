@@ -5,6 +5,9 @@ See LICENSE file in root folder
 #include "GlX11Context.hpp"
 
 #if __linux__
+
+#include "ashesgl_api.hpp"
+
 #include <EGL/egl.h>
 #include <GL/glx.h>
 #include <X11/Xatom.h>
@@ -198,7 +201,12 @@ namespace ashes::gl
 			throw std::runtime_error{ "Could not retrieve visual info." };
 		}
 
-		m_glxContext = glXCreateContext( m_display, m_visualInfo, nullptr, GL_TRUE );
+		m_glxContext = glXCreateContext( m_display
+			, m_visualInfo
+			, ( m_mainContext
+				? m_mainContext->m_glxContext
+				: nullptr )
+			, GL_TRUE );
 
 		if ( !m_glxContext )
 		{
@@ -206,8 +214,9 @@ namespace ashes::gl
 		}
 
 		doLoadSytemFunctions();
-		m_major = reqMajor;
-		m_minor = reqMinor;
+		auto & extensions = get( instance )->getExtensions();
+		m_major = std::max( reqMajor, extensions.getMajor() );
+		m_minor = std::max( reqMinor, extensions.getMinor() );
 	}
 	catch ( std::exception & exc )
 	{

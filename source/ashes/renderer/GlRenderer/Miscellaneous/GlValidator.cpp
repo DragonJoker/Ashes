@@ -169,6 +169,28 @@ namespace ashes::gl
 			GLSL_ATTRIBUTE_IMAGE_CUBE_MAP_ARRAY = 0x9054,
 			GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE = 0x9055,
 			GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE_ARRAY = 0x9056,
+			GLSL_ATTRIBUTE_INT_IMAGE_1D = 0x9057,
+			GLSL_ATTRIBUTE_INT_IMAGE_2D = 0x9058,
+			GLSL_ATTRIBUTE_INT_IMAGE_3D = 0x9059,
+			GLSL_ATTRIBUTE_INT_IMAGE_2D_RECT = 0x905A,
+			GLSL_ATTRIBUTE_INT_IMAGE_CUBE = 0x905B,
+			GLSL_ATTRIBUTE_INT_IMAGE_BUFFER = 0x905C,
+			GLSL_ATTRIBUTE_INT_IMAGE_1D_ARRAY = 0x905D,
+			GLSL_ATTRIBUTE_INT_IMAGE_2D_ARRAY = 0x905E,
+			GLSL_ATTRIBUTE_INT_IMAGE_CUBE_MAP_ARRAY = 0x905F,
+			GLSL_ATTRIBUTE_INT_IMAGE_2D_MULTISAMPLE = 0x9060,
+			GLSL_ATTRIBUTE_INT_IMAGE_2D_MULTISAMPLE_ARRAY = 0x9061,
+			GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_1D = 0x9062,
+			GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D = 0x9063,
+			GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_3D = 0x9064,
+			GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_RECT = 0x9065,
+			GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_CUBE = 0x9066,
+			GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_BUFFER = 0x9067,
+			GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_1D_ARRAY = 0x9068,
+			GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_ARRAY = 0x9069,
+			GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY = 0x906A,
+			GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE = 0x906B,
+			GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY = 0x906C,
 			GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE = 0x9108,
 			GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE = 0x9109,
 			GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE = 0x910A,
@@ -269,6 +291,28 @@ namespace ashes::gl
 			case GLSL_ATTRIBUTE_IMAGE_CUBE_MAP_ARRAY:						return "GL_IMAGE_CUBE_MAP_ARRAY";
 			case GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE:						return "GL_IMAGE_2D_MULTISAMPLE";
 			case GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE_ARRAY:					return "GL_IMAGE_2D_MULTISAMPLE_ARRAY";
+			case GLSL_ATTRIBUTE_INT_IMAGE_1D:								return "GL_INT_IMAGE_1D";
+			case GLSL_ATTRIBUTE_INT_IMAGE_2D:								return "GL_INT_IMAGE_2D";
+			case GLSL_ATTRIBUTE_INT_IMAGE_3D:								return "GL_INT_IMAGE_3D";
+			case GLSL_ATTRIBUTE_INT_IMAGE_2D_RECT:							return "GL_INT_IMAGE_2D_RECT";
+			case GLSL_ATTRIBUTE_INT_IMAGE_CUBE:								return "GL_INT_IMAGE_CUBE";
+			case GLSL_ATTRIBUTE_INT_IMAGE_BUFFER:							return "GL_INT_IMAGE_BUFFER";
+			case GLSL_ATTRIBUTE_INT_IMAGE_1D_ARRAY:							return "GL_INT_IMAGE_1D_ARRAY";
+			case GLSL_ATTRIBUTE_INT_IMAGE_2D_ARRAY:							return "GL_INT_IMAGE_2D_ARRAY";
+			case GLSL_ATTRIBUTE_INT_IMAGE_CUBE_MAP_ARRAY:					return "GL_INT_IMAGE_CUBE_MAP_ARRAY";
+			case GLSL_ATTRIBUTE_INT_IMAGE_2D_MULTISAMPLE:					return "GL_INT_IMAGE_2D_MULTISAMPLE";
+			case GLSL_ATTRIBUTE_INT_IMAGE_2D_MULTISAMPLE_ARRAY:				return "GL_INT_IMAGE_2D_MULTISAMPLE_ARRAY";
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_1D:						return "GL_UNSIGNED_INT_IMAGE_1D";
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D:						return "GL_UNSIGNED_INT_IMAGE_2D";
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_3D:						return "GL_UNSIGNED_INT_IMAGE_3D";
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_RECT:					return "GL_UNSIGNED_INT_IMAGE_2D_RECT";
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_CUBE:					return "GL_UNSIGNED_INT_IMAGE_CUBE";
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_BUFFER:					return "GL_UNSIGNED_INT_IMAGE_BUFFER";
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_1D_ARRAY:				return "GL_UNSIGNED_INT_IMAGE_1D_ARRAY";
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_ARRAY:				return "GL_UNSIGNED_INT_IMAGE_2D_ARRAY";
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY:			return "GL_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY";
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE:			return "GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE";
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY:	return "GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY";
 			case GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE:						return "GL_SAMPLER_2D_MULTISAMPLE";
 			case GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE:					return "GL_INT_SAMPLER_2D_MULTISAMPLE";
 			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE:		return "GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE";
@@ -359,19 +403,45 @@ namespace ashes::gl
 			}
 		}
 
+		bool isImageBuffer( GlslAttributeType type )
+		{
+			return type == GLSL_ATTRIBUTE_IMAGE_BUFFER
+				|| type == GLSL_ATTRIBUTE_INT_IMAGE_BUFFER
+				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_BUFFER;
+		}
+
 		bool isImage( GlslAttributeType type )
 		{
 			return type == GLSL_ATTRIBUTE_IMAGE_1D
 				|| type == GLSL_ATTRIBUTE_IMAGE_2D
 				|| type == GLSL_ATTRIBUTE_IMAGE_3D
-				|| type == GLSL_ATTRIBUTE_IMAGE_CUBE
-				|| type == GLSL_ATTRIBUTE_IMAGE_BUFFER
 				|| type == GLSL_ATTRIBUTE_IMAGE_2D_RECT
+				|| type == GLSL_ATTRIBUTE_IMAGE_CUBE
 				|| type == GLSL_ATTRIBUTE_IMAGE_1D_ARRAY
 				|| type == GLSL_ATTRIBUTE_IMAGE_2D_ARRAY
 				|| type == GLSL_ATTRIBUTE_IMAGE_CUBE_MAP_ARRAY
 				|| type == GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE
-				|| type == GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE_ARRAY;
+				|| type == GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE_ARRAY
+				|| type == GLSL_ATTRIBUTE_INT_IMAGE_1D
+				|| type == GLSL_ATTRIBUTE_INT_IMAGE_2D
+				|| type == GLSL_ATTRIBUTE_INT_IMAGE_3D
+				|| type == GLSL_ATTRIBUTE_INT_IMAGE_2D_RECT
+				|| type == GLSL_ATTRIBUTE_INT_IMAGE_CUBE
+				|| type == GLSL_ATTRIBUTE_INT_IMAGE_1D_ARRAY
+				|| type == GLSL_ATTRIBUTE_INT_IMAGE_2D_ARRAY
+				|| type == GLSL_ATTRIBUTE_INT_IMAGE_CUBE_MAP_ARRAY
+				|| type == GLSL_ATTRIBUTE_INT_IMAGE_2D_MULTISAMPLE
+				|| type == GLSL_ATTRIBUTE_INT_IMAGE_2D_MULTISAMPLE_ARRAY
+				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_1D
+				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D
+				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_3D
+				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_RECT
+				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_CUBE
+				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_1D_ARRAY
+				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_ARRAY
+				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY
+				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE
+				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY;
 		}
 
 		bool isSamplerBuffer( GlslAttributeType type )
@@ -397,6 +467,8 @@ namespace ashes::gl
 				|| type == GLSL_ATTRIBUTE_SAMPLER_1D_ARRAY_SHADOW
 				|| type == GLSL_ATTRIBUTE_SAMPLER_2D_ARRAY_SHADOW
 				|| type == GLSL_ATTRIBUTE_SAMPLER_CUBE_SHADOW
+				|| type == GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE
+				|| type == GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE_ARRAY
 				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_1D
 				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_2D
 				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_3D
@@ -404,6 +476,8 @@ namespace ashes::gl
 				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_2D_RECT
 				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_1D_ARRAY
 				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_2D_ARRAY
+				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE
+				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE_ARRAY
 				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_1D
 				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D
 				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_3D
@@ -411,11 +485,7 @@ namespace ashes::gl
 				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_RECT
 				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_1D_ARRAY
 				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_ARRAY
-				|| type == GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE
-				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE
 				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE
-				|| type == GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE_ARRAY
-				|| type == GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE_ARRAY
 				|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY;
 		}
 
@@ -447,20 +517,42 @@ namespace ashes::gl
 
 		ImageFormat getImageFormat( GlslAttributeType type )noexcept
 		{
-			assert( isImage( type ) );
+			assert( isImage( type ) || isImageBuffer( type ) );
 			switch ( type )
 			{
-			case GLSL_ATTRIBUTE_IMAGE_1D:						return ImageFormat::e1D;
-			case GLSL_ATTRIBUTE_IMAGE_2D:						return ImageFormat::e2D;
-			case GLSL_ATTRIBUTE_IMAGE_3D:						return ImageFormat::e3D;
-			case GLSL_ATTRIBUTE_IMAGE_CUBE:						return ImageFormat::eCube;
-			case GLSL_ATTRIBUTE_IMAGE_BUFFER:					return ImageFormat::eBuffer;
-			case GLSL_ATTRIBUTE_IMAGE_2D_RECT:					return ImageFormat::e2DRect;
-			case GLSL_ATTRIBUTE_IMAGE_1D_ARRAY:					return ImageFormat::e1DArray;
-			case GLSL_ATTRIBUTE_IMAGE_2D_ARRAY:					return ImageFormat::e2DArray;
-			case GLSL_ATTRIBUTE_IMAGE_CUBE_MAP_ARRAY:			return ImageFormat::eCubeArray;
-			case GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE:			return ImageFormat::e2DMultisample;
-			case GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE_ARRAY:		return ImageFormat::e2DMultisampleArray;
+			case GLSL_ATTRIBUTE_IMAGE_1D:									return ImageFormat::e1D;
+			case GLSL_ATTRIBUTE_IMAGE_2D:									return ImageFormat::e2D;
+			case GLSL_ATTRIBUTE_IMAGE_3D:									return ImageFormat::e3D;
+			case GLSL_ATTRIBUTE_IMAGE_CUBE:									return ImageFormat::eCube;
+			case GLSL_ATTRIBUTE_IMAGE_BUFFER:								return ImageFormat::eBuffer;
+			case GLSL_ATTRIBUTE_IMAGE_2D_RECT:								return ImageFormat::e2DRect;
+			case GLSL_ATTRIBUTE_IMAGE_1D_ARRAY:								return ImageFormat::e1DArray;
+			case GLSL_ATTRIBUTE_IMAGE_2D_ARRAY:								return ImageFormat::e2DArray;
+			case GLSL_ATTRIBUTE_IMAGE_CUBE_MAP_ARRAY:						return ImageFormat::eCubeArray;
+			case GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE:						return ImageFormat::e2DMultisample;
+			case GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE_ARRAY:					return ImageFormat::e2DMultisampleArray;
+			case GLSL_ATTRIBUTE_INT_IMAGE_1D:								return ImageFormat::eInt1D;
+			case GLSL_ATTRIBUTE_INT_IMAGE_2D:								return ImageFormat::eInt2D;
+			case GLSL_ATTRIBUTE_INT_IMAGE_3D:								return ImageFormat::eInt3D;
+			case GLSL_ATTRIBUTE_INT_IMAGE_CUBE:								return ImageFormat::eIntCube;
+			case GLSL_ATTRIBUTE_INT_IMAGE_BUFFER:							return ImageFormat::eIntBuffer;
+			case GLSL_ATTRIBUTE_INT_IMAGE_2D_RECT:							return ImageFormat::eInt2DRect;
+			case GLSL_ATTRIBUTE_INT_IMAGE_1D_ARRAY:							return ImageFormat::eInt1DArray;
+			case GLSL_ATTRIBUTE_INT_IMAGE_2D_ARRAY:							return ImageFormat::eInt2DArray;
+			case GLSL_ATTRIBUTE_INT_IMAGE_CUBE_MAP_ARRAY:					return ImageFormat::eIntCubeArray;
+			case GLSL_ATTRIBUTE_INT_IMAGE_2D_MULTISAMPLE:					return ImageFormat::eInt2DMultisample;
+			case GLSL_ATTRIBUTE_INT_IMAGE_2D_MULTISAMPLE_ARRAY:				return ImageFormat::eInt2DMultisampleArray;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_1D:						return ImageFormat::eUInt1D;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D:						return ImageFormat::eUInt2D;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_3D:						return ImageFormat::eUInt3D;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_CUBE:					return ImageFormat::eUIntCube;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_BUFFER:					return ImageFormat::eUIntBuffer;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_RECT:					return ImageFormat::eUInt2DRect;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_1D_ARRAY:				return ImageFormat::eUInt1DArray;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_ARRAY:				return ImageFormat::eUInt2DArray;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY:			return ImageFormat::eUIntCubeArray;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE:			return ImageFormat::eUInt2DMultisample;
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY:	return ImageFormat::eUInt2DMultisampleArray;
 			default:
 				assert( false && "Unsupported GLSL attribute type" );
 				return ImageFormat::e2D;
@@ -487,6 +579,8 @@ namespace ashes::gl
 			case GLSL_ATTRIBUTE_SAMPLER_1D_ARRAY_SHADOW:					return SamplerFormat::e1DArrayShadow;
 			case GLSL_ATTRIBUTE_SAMPLER_2D_ARRAY_SHADOW:					return SamplerFormat::e2DArrayShadow;
 			case GLSL_ATTRIBUTE_SAMPLER_CUBE_SHADOW:						return SamplerFormat::eCubeShadow;
+			case GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE:						return SamplerFormat::e2DMultisample;
+			case GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE_ARRAY:				return SamplerFormat::e2DMultisampleArray;
 			case GLSL_ATTRIBUTE_INT_SAMPLER_1D:								return SamplerFormat::eInt1D;
 			case GLSL_ATTRIBUTE_INT_SAMPLER_2D:								return SamplerFormat::eInt2D;
 			case GLSL_ATTRIBUTE_INT_SAMPLER_3D:								return SamplerFormat::eInt3D;
@@ -495,6 +589,8 @@ namespace ashes::gl
 			case GLSL_ATTRIBUTE_INT_SAMPLER_1D_ARRAY:						return SamplerFormat::eInt1DArray;
 			case GLSL_ATTRIBUTE_INT_SAMPLER_2D_ARRAY:						return SamplerFormat::eInt2DArray;
 			case GLSL_ATTRIBUTE_INT_SAMPLER_BUFFER:							return SamplerFormat::eIntBuffer;
+			case GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE:					return SamplerFormat::eInt2DMultisample;
+			case GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:			return SamplerFormat::eInt2DMultisampleArray;
 			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_1D:					return SamplerFormat::eUInt1D;
 			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D:					return SamplerFormat::eUInt2D;
 			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_3D:					return SamplerFormat::eUInt3D;
@@ -503,11 +599,7 @@ namespace ashes::gl
 			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_1D_ARRAY:				return SamplerFormat::eUInt1DArray;
 			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_ARRAY:				return SamplerFormat::eUInt2DArray;
 			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_BUFFER:				return SamplerFormat::eUIntBuffer;
-			case GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE:						return SamplerFormat::e2DMultisample;
-			case GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE:					return SamplerFormat::eInt2DMultisample;
 			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE:		return SamplerFormat::eUInt2DMultisample;
-			case GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE_ARRAY:				return SamplerFormat::e2DMultisampleArray;
-			case GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:			return SamplerFormat::eInt2DMultisampleArray;
 			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:	return SamplerFormat::eUInt2DMultisampleArray;
 			default:
 				assert( false && "Unsupported GLSL attribute type" );
@@ -571,6 +663,39 @@ namespace ashes::gl
 				return 96u;
 			case GLSL_ATTRIBUTE_DOUBLE_MAT4:
 				return 128u;
+			case GLSL_ATTRIBUTE_IMAGE_1D:
+			case GLSL_ATTRIBUTE_IMAGE_2D:
+			case GLSL_ATTRIBUTE_IMAGE_3D:
+			case GLSL_ATTRIBUTE_IMAGE_2D_RECT:
+			case GLSL_ATTRIBUTE_IMAGE_CUBE:
+			case GLSL_ATTRIBUTE_IMAGE_BUFFER:
+			case GLSL_ATTRIBUTE_IMAGE_1D_ARRAY:
+			case GLSL_ATTRIBUTE_IMAGE_2D_ARRAY:
+			case GLSL_ATTRIBUTE_IMAGE_CUBE_MAP_ARRAY:
+			case GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE:
+			case GLSL_ATTRIBUTE_IMAGE_2D_MULTISAMPLE_ARRAY:
+			case GLSL_ATTRIBUTE_INT_IMAGE_1D:
+			case GLSL_ATTRIBUTE_INT_IMAGE_2D:
+			case GLSL_ATTRIBUTE_INT_IMAGE_3D:
+			case GLSL_ATTRIBUTE_INT_IMAGE_2D_RECT:
+			case GLSL_ATTRIBUTE_INT_IMAGE_CUBE:
+			case GLSL_ATTRIBUTE_INT_IMAGE_BUFFER:
+			case GLSL_ATTRIBUTE_INT_IMAGE_1D_ARRAY:
+			case GLSL_ATTRIBUTE_INT_IMAGE_2D_ARRAY:
+			case GLSL_ATTRIBUTE_INT_IMAGE_CUBE_MAP_ARRAY:
+			case GLSL_ATTRIBUTE_INT_IMAGE_2D_MULTISAMPLE:
+			case GLSL_ATTRIBUTE_INT_IMAGE_2D_MULTISAMPLE_ARRAY:
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_1D:
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D:
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_3D:
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_RECT:
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_CUBE:
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_BUFFER:
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_1D_ARRAY:
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_ARRAY:
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY:
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE:
+			case GLSL_ATTRIBUTE_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY:
 			case GLSL_ATTRIBUTE_SAMPLER_1D:
 			case GLSL_ATTRIBUTE_SAMPLER_2D:
 			case GLSL_ATTRIBUTE_SAMPLER_3D:
@@ -585,6 +710,8 @@ namespace ashes::gl
 			case GLSL_ATTRIBUTE_SAMPLER_1D_ARRAY_SHADOW:
 			case GLSL_ATTRIBUTE_SAMPLER_2D_ARRAY_SHADOW:
 			case GLSL_ATTRIBUTE_SAMPLER_CUBE_SHADOW:
+			case GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE:
+			case GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE_ARRAY:
 			case GLSL_ATTRIBUTE_INT_SAMPLER_1D:
 			case GLSL_ATTRIBUTE_INT_SAMPLER_2D:
 			case GLSL_ATTRIBUTE_INT_SAMPLER_3D:
@@ -593,6 +720,8 @@ namespace ashes::gl
 			case GLSL_ATTRIBUTE_INT_SAMPLER_1D_ARRAY:
 			case GLSL_ATTRIBUTE_INT_SAMPLER_2D_ARRAY:
 			case GLSL_ATTRIBUTE_INT_SAMPLER_BUFFER:
+			case GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE:
+			case GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:
 			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_1D:
 			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D:
 			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_3D:
@@ -601,11 +730,7 @@ namespace ashes::gl
 			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_1D_ARRAY:
 			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_ARRAY:
 			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_BUFFER:
-			case GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE:
-			case GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE:
 			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE:
-			case GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE_ARRAY:
-			case GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:
 			case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:
 				return 0u;
 				break;
@@ -1126,7 +1251,7 @@ namespace ashes::gl
 		{
 			std::set< VkAttachmentDescription const * > attaches;
 
-			for ( auto & reference : *get( renderPass ) )
+			for ( auto & reference : get( renderPass )->getFboAttachable() )
 			{
 				attaches.insert( &get( renderPass )->getAttachment( reference ) );
 			}
@@ -1360,7 +1485,8 @@ namespace ashes::gl
 			{
 				if ( !isSampler( type )
 					&& !isImage( type )
-					&& !isSamplerBuffer( type ) )
+					&& !isSamplerBuffer( type )
+					&& !isImageBuffer( type ) )
 				{
 					result.push_back( { program
 						, stage
@@ -1444,7 +1570,7 @@ namespace ashes::gl
 		return result;
 	}
 
-	SamplersLayout getTextureBuffers( ContextLock const & context
+	SamplersLayout getSamplerBuffers( ContextLock const & context
 		, VkShaderStageFlagBits stage
 		, GLuint program )
 	{
@@ -1465,6 +1591,35 @@ namespace ashes::gl
 						, name
 						, uint32_t( location )
 						, getSamplerFormat( type )
+						, 1u
+						, uint32_t( arraySize )
+						, 0u } );
+				}
+			} );
+		return result;
+	}
+
+	ImagesLayout getImageBuffers( ContextLock const & context
+		, VkShaderStageFlagBits stage
+		, GLuint program )
+	{
+		ImagesLayout result;
+		getVariableInfos( context
+			, program
+			, GLSL_INTERFACE_UNIFORM
+			, [&result, &stage, &program]( std::string name
+				, GlslAttributeType type
+				, GLint location
+				, GLint arraySize
+				, GLint offset )
+			{
+				if ( isImageBuffer( type ) )
+				{
+					result.push_back( { program
+						, stage
+						, name
+						, uint32_t( location )
+						, getImageFormat( type )
 						, 1u
 						, uint32_t( arraySize )
 						, 0u } );
@@ -1546,14 +1701,14 @@ namespace ashes::gl
 			getPushConstants( context, stage, programObject ),
 			getUniformBuffers( context, stage, programObject ),
 			getStorageBuffers( context, stage, programObject ),
-			getTextureBuffers( context, stage, programObject ),
+			getSamplerBuffers( context, stage, programObject ),
 			getSamplers( context, stage, programObject ),
+			getImageBuffers( context, stage, programObject ),
 			getImages( context, stage, programObject ),
 		};
 
 		if ( !constants.empty() )
 		{
-			assert( constants.size() >= result.pcb.size() );
 			for ( auto & constant : result.pcb )
 			{
 				auto it = std::find_if( constants.begin()
@@ -1562,11 +1717,14 @@ namespace ashes::gl
 					{
 						return lookup.name == constant.name;
 					} );
-				assert( it != constants.end() );
-				constant.stageFlag = separable
-					? stage
-					: it->stageFlag;
-				constant.offset = it->offset;
+
+				if ( it != constants.end() )
+				{
+					constant.stageFlag = separable
+						? stage
+						: it->stageFlag;
+					constant.offset = it->offset;
+				}
 			}
 		}
 		else

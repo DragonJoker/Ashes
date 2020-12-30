@@ -638,6 +638,12 @@ namespace ashes::gl
 		VkBufferView* pView )
 	{
 		assert( pView );
+
+		if ( getInternalFormat( pCreateInfo->format ) == GL_INTERNAL_UNSUPPORTED )
+		{
+			return VK_ERROR_FORMAT_NOT_SUPPORTED;
+		}
+
 		return allocate( *pView
 			, pAllocator
 			, device
@@ -659,6 +665,12 @@ namespace ashes::gl
 		VkImage* pImage )
 	{
 		assert( pImage );
+
+		if ( getInternalFormat( pCreateInfo->format ) == GL_INTERNAL_UNSUPPORTED )
+		{
+			return VK_ERROR_FORMAT_NOT_SUPPORTED;
+		}
+
 		return allocate( *pImage
 			, pAllocator
 			, device
@@ -691,6 +703,12 @@ namespace ashes::gl
 		VkImageView* pView )
 	{
 		assert( pView );
+
+		if ( getInternalFormat( pCreateInfo->format ) == GL_INTERNAL_UNSUPPORTED )
+		{
+			return VK_ERROR_FORMAT_NOT_SUPPORTED;
+		}
+
 		return allocate( *pView
 			, pAllocator
 			, device
@@ -786,14 +804,11 @@ namespace ashes::gl
 
 		for ( uint32_t i = 0u; i < createInfoCount; ++i )
 		{
-			if ( result == VK_SUCCESS )
-			{
-				result = allocate( *pPipelines
-					, pAllocator
-					, device
-					, *pCreateInfos );
-			}
-
+			auto tmp = allocate( *pPipelines
+				, pAllocator
+				, device
+				, *pCreateInfos );
+			result = VkResult( std::max< uint32_t >( tmp, result ) );
 			++pPipelines;
 			++pCreateInfos;
 		}
@@ -814,14 +829,11 @@ namespace ashes::gl
 
 		for ( uint32_t i = 0u; i < createInfoCount; ++i )
 		{
-			if ( result == VK_SUCCESS )
-			{
-				result = allocate( *pPipelines
-					, pAllocator
-					, device
-					, *pCreateInfos );
-			}
-
+			auto tmp = allocate( *pPipelines
+				, pAllocator
+				, device
+				, *pCreateInfos );
+			result = VkResult( std::max< uint32_t >( tmp, result ) );
 			++pPipelines;
 			++pCreateInfos;
 		}
@@ -941,12 +953,10 @@ namespace ashes::gl
 			itSet != pDescriptorSets + pAllocateInfo->descriptorSetCount;
 			++itLayout, ++itSet )
 		{
-			if ( result == VK_SUCCESS )
-			{
-				result = allocateNA( *itSet
-					, pAllocateInfo->descriptorPool
-					, *itLayout );
-			}
+			auto tmp = allocateNA( *itSet
+				, pAllocateInfo->descriptorPool
+				, *itLayout );
+			result = VkResult( std::max< uint32_t >( tmp, result ) );
 		}
 
 		return result;
@@ -1070,12 +1080,10 @@ namespace ashes::gl
 			it != pCommandBuffers + pAllocateInfo->commandBufferCount;
 			++it )
 		{
-			if ( result == VK_SUCCESS )
-			{
-				result = allocateNA( *it
-					, device
-					, pAllocateInfo->level );
-			}
+			auto tmp = allocateNA( *it
+				, device
+				, pAllocateInfo->level );
+			result = VkResult( std::max< uint32_t >( tmp, result ) );
 		}
 
 		return result;
@@ -1641,10 +1649,8 @@ namespace ashes::gl
 
 		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
 		{
-			if ( result = VK_SUCCESS )
-			{
-				result = get( bindInfo.memory )->bindToBuffer( bindInfo.buffer, bindInfo.memoryOffset );
-			}
+			auto tmp = get( bindInfo.memory )->bindToBuffer( bindInfo.buffer, bindInfo.memoryOffset );
+			result = VkResult( std::max< uint32_t >( tmp, result ) );
 		}
 
 		return result;
@@ -1659,10 +1665,8 @@ namespace ashes::gl
 
 		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
 		{
-			if ( result = VK_SUCCESS )
-			{
-				result = get( bindInfo.memory )->bindToImage( bindInfo.image, bindInfo.memoryOffset );
-			}
+			auto tmp = get( bindInfo.memory )->bindToImage( bindInfo.image, bindInfo.memoryOffset );
+			result = VkResult( std::max< uint32_t >( tmp, result ) );
 		}
 
 		return result;
@@ -1742,7 +1746,21 @@ namespace ashes::gl
 		VkPhysicalDevice physicalDevice,
 		VkPhysicalDeviceProperties2 * pProperties )
 	{
-		*pProperties = get( physicalDevice )->getProperties2();
+		auto props = get( physicalDevice )->getProperties2();
+		pProperties->properties = props.properties;
+		VkBaseOutStructure * pNext = reinterpret_cast< VkBaseOutStructure * >( pProperties->pNext );
+
+		while ( pNext )
+		{
+			switch ( pNext->sType )
+			{
+			case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES:
+				*reinterpret_cast< VkPhysicalDeviceDriverProperties * >( pNext ) = get( physicalDevice )->getDriverProperties();
+				break;
+			}
+
+			pNext = reinterpret_cast< VkBaseOutStructure * >( pNext->pNext );
+		}
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceFormatProperties2(
@@ -2839,10 +2857,8 @@ namespace ashes::gl
 
 		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
 		{
-			if ( result = VK_SUCCESS )
-			{
-				result = get( bindInfo.memory )->bindToBuffer( bindInfo.buffer, bindInfo.memoryOffset );
-			}
+			auto tmp = get( bindInfo.memory )->bindToBuffer( bindInfo.buffer, bindInfo.memoryOffset );
+			result = VkResult( std::max< uint32_t >( tmp, result ) );
 		}
 
 		return result;
@@ -2855,12 +2871,10 @@ namespace ashes::gl
 	{
 		VkResult result = VK_SUCCESS;
 
-		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
+		for ( auto & bindInfo : makeArrayView ( pBindInfos, bindInfoCount ) )
 		{
-			if ( result = VK_SUCCESS )
-			{
-				result = get( bindInfo.memory )->bindToImage( bindInfo.image, bindInfo.memoryOffset );
-			}
+			auto tmp = get( bindInfo.memory )->bindToImage( bindInfo.image, bindInfo.memoryOffset );
+			result = VkResult( std::max< uint32_t >( tmp, result ) );
 		}
 
 		return result;
@@ -4175,7 +4189,7 @@ namespace ashes::gl
 	bool checkVersion( VkInstance instance
 		, uint32_t version )
 	{
-		return get( instance )->getApiVersion() >= version;
+		return Instance::getDefaultApiVersion() >= version;
 	}
 
 	bool checkVersionExt( VkInstance instance
@@ -4322,11 +4336,6 @@ extern "C"
 
 	GlRenderer_API VkResult VKAPI_PTR vk_icdNegotiateLoaderICDInterfaceVersion( uint32_t * pVersion )
 	{
-		while ( !::IsDebuggerPresent() )
-		{
-			::Sleep( 1 );
-		}
-
 		auto result = ashes::gl::getLibrary().init( ASHPLUGIN_ICD );
 
 		if ( result == VK_SUCCESS )

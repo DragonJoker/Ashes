@@ -33,51 +33,54 @@ namespace ashes::gl
 
 		for ( auto & write : m_writes )
 		{
-			switch ( write.second.descriptorType )
+			if ( write.second.descriptorCount )
 			{
-			case VK_DESCRIPTOR_TYPE_SAMPLER:
-				m_samplers.push_back( &write.second );
-				break;
-			case VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:
-				m_combinedTextureSamplers.push_back( &write.second );
-				break;
-			case VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE:
-				m_sampledTextures.push_back( &write.second );
-				break;
-			case VK_DESCRIPTOR_TYPE_STORAGE_IMAGE:
-				m_storageTextures.push_back( &write.second );
-				break;
-			case VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER:
-				m_texelBuffers.push_back( &write.second );
-				break;
-			case VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER:
-				m_texelBuffers.push_back( &write.second );
-				break;
-			case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER:
-				m_uniformBuffers.push_back( &write.second );
-				break;
-			case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER:
-				m_storageBuffers.push_back( &write.second );
-				break;
-			case VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT:
-				m_inputAttachments.push_back( &write.second );
-				break;
-			case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:
-				m_dynamicUniformBuffers.push_back( &write.second );
-				m_dynamicBuffers.push_back( &write.second );
-				break;
-			case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
-				m_dynamicStorageBuffers.push_back( &write.second );
-				m_dynamicBuffers.push_back( &write.second );
-				break;
+				switch ( write.second.descriptorType )
+				{
+				case VK_DESCRIPTOR_TYPE_SAMPLER:
+					m_samplers.push_back( &write.second );
+					break;
+				case VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:
+					m_combinedTextureSamplers.push_back( &write.second );
+					break;
+				case VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE:
+					m_sampledTextures.push_back( &write.second );
+					break;
+				case VK_DESCRIPTOR_TYPE_STORAGE_IMAGE:
+					m_storageTextures.push_back( &write.second );
+					break;
+				case VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER:
+					m_texelSamplerBuffers.push_back( &write.second );
+					break;
+				case VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER:
+					m_texelImageBuffers.push_back( &write.second );
+					break;
+				case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER:
+					m_uniformBuffers.push_back( &write.second );
+					break;
+				case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER:
+					m_storageBuffers.push_back( &write.second );
+					break;
+				case VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT:
+					m_inputAttachments.push_back( &write.second );
+					break;
+				case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:
+					m_dynamicUniformBuffers.push_back( &write.second );
+					m_dynamicBuffers.push_back( &write.second );
+					break;
+				case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
+					m_dynamicStorageBuffers.push_back( &write.second );
+					m_dynamicBuffers.push_back( &write.second );
+					break;
 #if VK_EXT_inline_uniform_block
-			case VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT:
-				m_inlineUniforms.push_back( &write.second );
-				break;
+				case VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT:
+					m_inlineUniforms.push_back( &write.second );
+					break;
 #endif
-			default:
-				reportUnsupported( get( pool )->getDevice(), "VkDescriptorType" );
-				break;
+				default:
+					reportUnsupported( get( pool )->getDevice(), "VkDescriptorType" );
+					break;
+				}
 			}
 		}
 
@@ -106,12 +109,6 @@ namespace ashes::gl
 		writes.writes.push_back( write );
 		auto & myWrite = writes.writes.back();
 
-		if ( myWrite.pImageInfo )
-		{
-			m_imagesInfos.emplace_back( std::vector< VkDescriptorImageInfo >{ myWrite.pImageInfo, myWrite.pImageInfo + myWrite.descriptorCount } );
-			myWrite.pImageInfo = m_imagesInfos.back().data();
-		}
-
 #if VK_EXT_inline_uniform_block
 
 		auto inlineUniform = tryGet< VkWriteDescriptorSetInlineUniformBlockEXT >( myWrite.pNext );
@@ -123,7 +120,7 @@ namespace ashes::gl
 			auto device = get( m_pool )->getDevice();
 			auto inlineUbo = createInlineUbo( device
 				, *inlineUniform
-				, Instance::getMemoryProperties()
+				, get( get( get( m_pool )->getDevice() )->getPhysicalDevice() )->getMemoryProperties()
 				, ashes::gl::vkCreateBuffer
 				, ashes::gl::vkGetBufferMemoryRequirements
 				, ashes::gl::vkAllocateMemory
@@ -141,6 +138,18 @@ namespace ashes::gl
 		{
 			m_buffersInfos.emplace_back( std::vector< VkDescriptorBufferInfo >{ myWrite.pBufferInfo, myWrite.pBufferInfo + myWrite.descriptorCount } );
 			myWrite.pBufferInfo = m_buffersInfos.back().data();
+		}
+
+		if ( myWrite.pImageInfo )
+		{
+			m_imagesInfos.emplace_back( std::vector< VkDescriptorImageInfo >{ myWrite.pImageInfo, myWrite.pImageInfo + myWrite.descriptorCount } );
+			myWrite.pImageInfo = m_imagesInfos.back().data();
+		}
+
+		if ( myWrite.pTexelBufferView )
+		{
+			m_texelBufferViews.emplace_back( std::vector< VkBufferView >{ myWrite.pTexelBufferView, myWrite.pTexelBufferView + myWrite.descriptorCount } );
+			myWrite.pTexelBufferView = m_texelBufferViews.back().data();
 		}
 	}
 

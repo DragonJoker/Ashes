@@ -24,20 +24,20 @@ namespace ashes::gl
 
 		ShaderBindings const & getShaderBindings()const;
 		uint32_t getDescriptorSetIndex( VkDescriptorSet descriptorSet )const;
-		ShaderBindings const & getDecriptorSetBindings( VkDescriptorSet descriptorSet
+		ShaderBindings const & getDescriptorSetBindings( VkDescriptorSet descriptorSet
 			, uint32_t descriptorSetIndex )const;
 
-		inline VkPushConstantRangeArray const & getPushConstants()const
+		VkPushConstantRangeArray const & getPushConstants()const
 		{
 			return m_pushConstantRanges;
 		}
 
-		inline VkDescriptorSetLayoutArray const & getDescriptorsLayouts()const
+		VkDescriptorSetLayoutArray const & getDescriptorsLayouts()const
 		{
 			return m_setLayouts;
 		}
 
-		inline VkDevice getDevice()const
+		VkDevice getDevice()const
 		{
 			return m_device;
 		}

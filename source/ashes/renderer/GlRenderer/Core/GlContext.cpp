@@ -221,7 +221,7 @@ namespace ashes::gl
 #	define GL_LIB_FUNCTION_EXT( fun, ... )\
 		if ( !( getFunction( "gl"#fun, m_gl##fun, __VA_ARGS__ ) ) )\
 		{\
-			std::cerr << "Couldn't load function " << "gl"#fun << std::endl;\
+			reportWarning( m_instance, VK_SUCCESS, "Context", "Couldn't load function gl"#fun );\
 		}
 #include "Miscellaneous/OpenGLFunctionsList.inl"
 	}

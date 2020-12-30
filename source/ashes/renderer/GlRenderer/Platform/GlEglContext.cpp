@@ -6,6 +6,8 @@ See LICENSE file in root folder
 
 #ifndef _WIN32
 
+#include "ashesgl_api.hpp"
+
 #include <stdexcept>
 
 namespace ashes::gl
@@ -113,10 +115,11 @@ namespace ashes::gl
 				throw std::runtime_error{ "EGL Surface creation failed" };
 			}
 
+			auto & extensions = get( instance )->getExtensions();
 			const EGLint eglContextAttribs[]
 			{
-				EGL_CONTEXT_MAJOR_VERSION, reqMajor,
-				EGL_CONTEXT_MINOR_VERSION, reqMinor,
+				EGL_CONTEXT_MAJOR_VERSION, std::max< EGLint >( reqMajor, extensions.getMajor() ),
+				EGL_CONTEXT_MINOR_VERSION, std::max< EGLint >( reqMinor, extensions.getMinor() ),
 				EGL_NONE,
 			};
 			m_context = eglCreateContext( m_display

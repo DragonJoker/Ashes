@@ -19,55 +19,51 @@ namespace ashes::gl
 
 		VkAttachmentDescription const * findAttachment( uint32_t referenceIndex )const;
 		VkAttachmentDescription const & getAttachment( VkAttachmentReference const & reference )const;
+		bool isFboAttachable( VkAttachmentReference const & reference )const;
 
-		inline VkSubpassDescriptionArray const & getSubpasses()const
+		VkSubpassDescriptionArray const & getSubpasses()const
 		{
 			return m_subpasses;
 		}
 
-		inline AttachmentDescriptionArray const & getColourAttaches()const
+		AttachmentDescriptionArray const & getColourAttaches()const
 		{
 			return m_colourAttaches;
 		}
 
-		inline bool hasDepthAttach()const
+		bool hasDepthAttach()const
 		{
 			return m_hasDepthAttach;
 		}
 
-		inline VkExtent2D getRenderAreaGranularity()const
+		VkExtent2D getRenderAreaGranularity()const
 		{
 			return VkExtent2D{ 1u, 1u };
 		}
 
-		inline auto empty()const
+		VkAttachmentReferenceArray const & getFboAttachable()const
 		{
-			return m_referencedAttachments.empty();
+			return m_referencedAttachments;
 		}
 
-		inline auto size()const
+		VkAttachmentReferenceArray & getFboAttachable()
 		{
-			return m_referencedAttachments.size();
+			return m_referencedAttachments;
 		}
 
-		inline auto begin()
+		uint32_t getMaxLoadClearIndex()
 		{
-			return m_referencedAttachments.begin();
+			return m_maxLoadClearIndex;
 		}
 
-		inline auto end()
+		VkAttachmentReferenceArray const & getResolveAttachments()const
 		{
-			return m_referencedAttachments.end();
+			return m_resolveAttachments;
 		}
 
-		inline auto begin()const
+		VkDevice getDevice()const
 		{
-			return m_referencedAttachments.begin();
-		}
-
-		inline auto end()const
-		{
-			return m_referencedAttachments.end();
+			return m_device;
 		}
 
 	public:
@@ -83,9 +79,12 @@ namespace ashes::gl
 		using SubpassDescriptionDataPtrMap = std::map< VkSubpassDescription const *, SubpassDescriptionDataPtr >;
 
 	private:
-		void referenceAttaches( VkAttachmentReference const & value );
-		void referenceAttaches( Optional< VkAttachmentReference > const & value );
-		void referenceAttaches( VkAttachmentReferenceArray const & value );
+		void referenceAttach( VkAttachmentReference const & value
+			, VkAttachmentReferenceArray & attachments );
+		void referenceAttach( Optional< VkAttachmentReference > const & value
+			, VkAttachmentReferenceArray & attachments );
+		void referenceAttaches( VkAttachmentReferenceArray const & value
+			, VkAttachmentReferenceArray & attachments );
 
 	private:
 		VkDevice m_device;
@@ -93,11 +92,13 @@ namespace ashes::gl
 		uint32_t m_attachmentCount;
 		VkAttachmentDescriptionArray m_attachments;
 		VkAttachmentReferenceArray m_referencedAttachments;
+		VkAttachmentReferenceArray m_resolveAttachments;
 		VkSubpassDescriptionArray m_subpasses;
 		SubpassDescriptionDataPtrMap m_subpassesDatas;
 		VkSubpassDependencyArray m_dependencies;
 		bool m_hasDepthAttach{ false };
 		VkAttachmentDescriptionArray m_depthAttaches;
 		AttachmentDescriptionArray m_colourAttaches;
+		uint32_t m_maxLoadClearIndex;
 	};
 }

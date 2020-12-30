@@ -20,11 +20,13 @@ namespace ashes::gl
 {
 	//************************************************************************************************
 
-	VkMemoryPropertyFlags getFlags( uint32_t memoryTypeIndex )
+	VkMemoryPropertyFlags getFlags( VkDevice device
+		, uint32_t memoryTypeIndex )
 	{
-		assert( memoryTypeIndex < Instance::getMemoryProperties().memoryTypeCount
+		auto & memProps = get( get( device )->getPhysicalDevice() )->getMemoryProperties();
+		assert( memoryTypeIndex < memProps.memoryTypeCount
 			&& "Wrong deduced memory type" );
-		return Instance::getMemoryProperties().memoryTypes[memoryTypeIndex].propertyFlags;
+		return memProps.memoryTypes[memoryTypeIndex].propertyFlags;
 	}
 
 	//************************************************************************************************
@@ -141,7 +143,9 @@ namespace ashes::gl
 
 			while ( it != cache.end() )
 			{
-				std::cerr << "Buffer " << result << " is being reused" << std::endl;
+				std::stringstream err;
+				err << "Buffer " << result << " is being reused";
+				reportWarning( context.getDevice(), VK_SUCCESS, "Buffer memory", err.str() );
 				allocateBuffer( it->name, it->target, it->size, it->flags );
 				glLogCall( context
 					, glGenBuffers
@@ -193,12 +197,16 @@ namespace ashes::gl
 					}
 					else
 					{
-						std::cerr << "Couldn't find buffer " << buffer << " it has probably been reused" << std::endl;
+						std::stringstream err;
+						err << "Couldn't find buffer " << buffer << " it has probably been reused";
+						reportWarning( context.getDevice(), VK_SUCCESS, "Buffer memory", err.str() );
 					}
 				}
 				else
 				{
-					std::cerr << "Couldn't find buffer " << buffer << " it has probably been reused" << std::endl;
+					std::stringstream err;
+					err << "Couldn't find buffer " << buffer << " it has probably been reused";
+					reportWarning( context.getDevice(), VK_SUCCESS, "Buffer memory", err.str() );
 				}
 			}
 		}
@@ -286,14 +294,27 @@ namespace ashes::gl
 						, GlTextureType( m_boundTarget )
 						, GL_TEX_PARAMETER_IMMUTABLE_LEVELS
 						, &levels );
-					assert( levels == m_texture->getMipLevels() );
+					if ( levels != m_texture->getMipLevels() )
+					{
+						reportWarning( parent
+							, VK_SUCCESS
+							, "Image memory"
+							, "Image mip level doesn't match requested one." );
+					}
+
 					int format = 0;
 					glLogCall( context
 						, glGetTexParameteriv
 						, GlTextureType( m_boundTarget )
 						, GL_TEX_PARAMETER_IMMUTABLE_FORMAT
 						, &format );
-					assert( format != 0 );
+					if ( format == 0 )
+					{
+						reportWarning( parent
+							, VK_SUCCESS
+							, "Image memory"
+							, "Image format isn't immutable." );
+					}
 				}
 				else
 				{
@@ -315,7 +336,7 @@ namespace ashes::gl
 				if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
 				{
 					// Create the PBO
-					m_buffer = createBuffer( context
+					m_glBuffer = createBuffer( context
 						, GL_BUFFER_TARGET_COPY_WRITE
 						, GLsizeiptr( m_allocateInfo.allocationSize )
 						, getBufferDataUsageFlags( m_flags ) );
@@ -341,6 +362,7 @@ namespace ashes::gl
 
 			~ImageMemory()
 			{
+				m_texture->setMemory( nullptr );
 			}
 
 			VkResult lock( ContextLock const & context
@@ -357,7 +379,7 @@ namespace ashes::gl
 				glLogCall( context
 					, glBindBuffer
 					, GL_BUFFER_TARGET_PIXEL_UNPACK
-					, m_buffer );
+					, m_glBuffer );
 				doSetupUpdateRegions( offset, size );
 				auto result = mapBuffer( context
 					, GL_BUFFER_TARGET_PIXEL_UNPACK
@@ -769,7 +791,7 @@ namespace ashes::gl
 			}
 
 		private:
-			Image const * m_texture;
+			Image * m_texture;
 			GlInternal m_internal;
 			GlFormat m_format;
 			GlType m_type;
@@ -787,28 +809,30 @@ namespace ashes::gl
 			BufferMemory( VkDeviceMemory parent
 				, VkDevice device
 				, VkMemoryAllocateInfo allocateInfo
-				, GlBufferTarget target
+				, VkBuffer buffer
 				, VkDeviceSize memoryOffset )
 				: DeviceMemory::DeviceMemoryImpl
 				{
 					parent,
 					device,
 					std::move( allocateInfo ),
-					target,
+					get( buffer )->getTarget(),
 					memoryOffset,
 					get( device )->getLimits().nonCoherentAtomSize,
 				}
+				, m_buffer{ get( buffer ) }
 			{
 				auto context = get( m_device )->getContext();
-				m_buffer = createBuffer( context
+				m_glBuffer = createBuffer( context
 					, GlBufferTarget( m_boundTarget )
 					, m_allocateInfo.allocationSize
 					, getBufferDataUsageFlags( m_flags ) );
-				m_boundResource = m_buffer;
+				m_boundResource = m_glBuffer;
 			}
 
 			~BufferMemory()
 			{
+				m_buffer->setMemory( nullptr );
 			}
 
 			VkResult lock( ContextLock const & context
@@ -819,7 +843,7 @@ namespace ashes::gl
 				glLogCall( context
 					, glBindBuffer
 					, GlBufferTarget( m_boundTarget )
-					, m_buffer );
+					, m_glBuffer );
 				GLint bufferSize = 0;
 				glLogCall( context
 					, glGetBufferParameteriv
@@ -855,6 +879,7 @@ namespace ashes::gl
 			}
 
 		private:
+			Buffer * m_buffer;
 			mutable GLenum m_copyTarget;
 		};
 	}
@@ -870,9 +895,9 @@ namespace ashes::gl
 		: m_parent{ parent }
 		, m_device{ device }
 		, m_allocateInfo{ allocateInfo }
-		, m_flags{ getFlags( m_allocateInfo.memoryTypeIndex ) }
+		, m_flags{ getFlags( m_device, m_allocateInfo.memoryTypeIndex ) }
 		, m_mapFlags{ convertMemoryMapFlags( m_flags ) }
-		, m_buffer{ GL_INVALID_INDEX }
+		, m_glBuffer{ GL_INVALID_INDEX }
 		, m_boundTarget{ boundTarget }
 		, m_memoryOffset{ memoryOffset }
 		, m_align{ align }
@@ -881,10 +906,10 @@ namespace ashes::gl
 
 	DeviceMemory::DeviceMemoryImpl::~DeviceMemoryImpl()
 	{
-		if ( m_buffer != GL_INVALID_INDEX )
+		if ( m_glBuffer != GL_INVALID_INDEX )
 		{
 			auto context = get( m_device )->getContext();
-			deleteBuffer( context, m_buffer );
+			deleteBuffer( context, m_glBuffer );
 		}
 	}
 
@@ -942,7 +967,7 @@ namespace ashes::gl
 		, VkMemoryAllocateInfo allocateInfo )
 		: m_device{ device }
 		, m_allocateInfo{ std::move( allocateInfo ) }
-		, m_flags{ getFlags( m_allocateInfo.memoryTypeIndex ) }
+		, m_flags{ getFlags( m_device, m_allocateInfo.memoryTypeIndex ) }
 		, m_mapFlags{ convertMemoryMapFlags( m_flags ) }
 	{
 		if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
@@ -965,7 +990,7 @@ namespace ashes::gl
 			m_impl = std::make_unique< BufferMemory >( get( this )
 				, m_device
 				, m_allocateInfo
-				, get( buffer )->getTarget()
+				, buffer
 				, memoryOffset );
 			get( buffer )->setInternal( m_impl->getInternal(), memoryOffset );
 			get( buffer )->setMemory( get( this ) );
@@ -1020,20 +1045,29 @@ namespace ashes::gl
 		return result;
 	}
 
+	void DeviceMemory::unbind()
+	{
+		m_impl.reset();
+	}
+
 	void DeviceMemory::upload( ContextLock const & context
 		, VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
-		assert( m_impl && "VkDeviceMemory should be bound to a buffer or an image, at this point" );
-		m_impl->upload( context, m_data, offset, size );
+		if ( m_impl )
+		{
+			m_impl->upload( context, m_data, offset, size );
+		}
 	}
 
 	void DeviceMemory::download( ContextLock const & context
 		, VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
-		assert( m_impl && "VkDeviceMemory should be bound to a buffer or an image, at this point" );
-		m_impl->download( context, m_data, offset, size );
+		if ( m_impl )
+		{
+			m_impl->download( context, m_data, offset, size );
+		}
 	}
 
 	VkResult DeviceMemory::lock( ContextLock const & context
@@ -1042,10 +1076,11 @@ namespace ashes::gl
 		, VkMemoryMapFlags flags
 		, void ** data )const
 	{
-		assert( !m_mapped && "VkDeviceMemory should not be mapped" );
+		assert( ( !m_mapped || ( size == ~( 0ull ) ? ( m_mappedSize == m_allocateInfo.allocationSize ) : ( m_mappedSize == size ) ) ) 
+			&& "VkDeviceMemory should not be mapped" );
 		*data = m_data.data() + offset;
 		m_mappedOffset = offset;
-		m_mappedSize = size == ~( 0ull )
+		m_mappedSize = size == WholeSize
 			? m_allocateInfo.allocationSize
 			: size;
 		m_mapped = *data != nullptr;
@@ -1058,12 +1093,7 @@ namespace ashes::gl
 		, VkDeviceSize size )const
 	{
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
-
-		if ( m_impl )
-		{
-			upload( context, offset, size );
-		}
-
+		upload( context, offset, size );
 		return VK_SUCCESS;
 	}
 
@@ -1071,24 +1101,16 @@ namespace ashes::gl
 		, VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
-		assert( m_mapped && "VkDeviceMemory should be mapped" );
 		m_dirty = true;
-
-		if ( m_impl )
-		{
-			download( context, m_mappedOffset, m_mappedSize );
-		}
-
+		download( context, m_mappedOffset, m_mappedSize );
 		return VK_SUCCESS;
 	}
 
 	void DeviceMemory::unlock( ContextLock const & context )const
 	{
-		assert( m_mapped && "VkDeviceMemory should be mapped" );
-		m_mapped = false;
-
-		if ( m_impl )
+		if ( m_mapped )
 		{
+			m_mapped = false;
 			upload( context, m_mappedOffset, m_mappedSize );
 		}
 	}

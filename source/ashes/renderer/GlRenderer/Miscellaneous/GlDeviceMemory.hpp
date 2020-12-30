@@ -47,7 +47,7 @@ namespace ashes::gl
 
 			inline GLuint getBuffer()const
 			{
-				return m_buffer;
+				return m_glBuffer;
 			}
 
 		protected:
@@ -56,7 +56,7 @@ namespace ashes::gl
 			VkMemoryAllocateInfo m_allocateInfo;
 			VkMemoryPropertyFlags m_flags;
 			GlMemoryMapFlags m_mapFlags;
-			GLuint m_buffer;
+			GLuint m_glBuffer;
 			GLuint m_boundResource;
 			GLenum m_boundTarget;
 			VkDeviceSize m_memoryOffset;
@@ -71,6 +71,7 @@ namespace ashes::gl
 			, VkDeviceSize memoryOffset );
 		VkResult bindToImage( VkImage texture
 			, VkDeviceSize memoryOffset );
+		void unbind();
 
 		void upload( ContextLock const & context
 			, VkDeviceSize offset

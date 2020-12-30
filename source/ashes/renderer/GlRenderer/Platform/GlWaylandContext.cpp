@@ -6,6 +6,8 @@ See LICENSE file in root folder
 
 #if __linux__
 
+#include "ashesgl_api.hpp"
+
 #include <EGL/egl.h>
 #include <wayland-egl.h>
 
@@ -31,13 +33,14 @@ namespace ashes::gl
 		wl_egl_window_destroy( m_window );
 	}
 
-	void WaylandContext::preInitialise( int major, int minor )
+	void WaylandContext::preInitialise( int reqMajor, int reqMinor )
 	{
+		auto & extensions = get( instance )->getExtensions();
 		m_window = wl_egl_window_create (createInfo.surface, 0, 0);
 		m_context = std::make_unique< ContextEgl >( createInfo.display
 			, m_window
-			, major
-			, minor
+			, std::max( reqMajor, extensions.getMajor() )
+			, std::max( reqMinor, extensions.getMinor() )
 			, ( m_mainContext
 				? m_mainContext->m_context->getContext()
 				: EGL_NO_CONTEXT ) );

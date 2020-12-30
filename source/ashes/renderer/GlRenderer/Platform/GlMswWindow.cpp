@@ -6,6 +6,8 @@ See LICENSE file in root folder
 
 #if _WIN32
 
+#include <atomic>
+
 namespace ashes::gl
 {
 	namespace
@@ -27,7 +29,8 @@ namespace ashes::gl
 		ATOM registerClass( HINSTANCE hInstance
 			, std::string const & name )
 		{
-			std::string className = "Window" + name + "Class";
+			static std::atomic_uint32_t id{};
+			std::string className = "Window" + name + "Class" + std::to_string( id++ );
 			WNDCLASSEXA wc{};
 			wc.cbSize = sizeof( WNDCLASSEXA );
 			wc.lpfnWndProc = DummyWndProc;
@@ -36,7 +39,7 @@ namespace ashes::gl
 			wc.lpszClassName = className.c_str();
 			wc.style = CS_OWNDC;
 			wc.hIcon = nullptr;
-			ATOM registered = RegisterClassExA( &wc );
+			auto registered = RegisterClassExA( &wc );
 
 			if ( !registered )
 			{
@@ -47,9 +50,11 @@ namespace ashes::gl
 		}
 
 		HWND createWindow( HINSTANCE hInstance
-			, ATOM classId, std::string const & name )
-		{
-			auto windowName = "Window" + name;
+			, ATOM classId
+			, std::string const & name )
+	{
+			static std::atomic_uint32_t id{};
+			auto windowName = "Window" + name + std::to_string( id++ );
 			auto hWnd = ::CreateWindowExA( 0L
 				, LPCSTR( WPARAM( classId ) )
 				, windowName.c_str()

@@ -78,9 +78,14 @@ namespace ashes::gl
 			return m_storageBuffers;
 		}
 
-		inline LayoutBindingWritesArray const & getTexelBuffers()const
+		inline LayoutBindingWritesArray const & getTexelSamplerBuffers()const
 		{
-			return m_texelBuffers;
+			return m_texelSamplerBuffers;
+		}
+
+		inline LayoutBindingWritesArray const & getTexelImageBuffers()const
+		{
+			return m_texelImageBuffers;
 		}
 
 		inline LayoutBindingWritesArray const & getDynamicBuffers()const
@@ -101,6 +106,7 @@ namespace ashes::gl
 		VkDescriptorSetLayout m_layout;
 		std::vector< std::vector< VkDescriptorImageInfo > > m_imagesInfos;
 		std::vector< std::vector< VkDescriptorBufferInfo > > m_buffersInfos;
+		std::vector< std::vector< VkBufferView > > m_texelBufferViews;
 		InlineUboArray m_inlineUbos;
 		LayoutBindingWritesMap m_writes;
 		LayoutBindingWritesArray m_combinedTextureSamplers;
@@ -110,7 +116,8 @@ namespace ashes::gl
 		LayoutBindingWritesArray m_uniformBuffers;
 		LayoutBindingWritesArray m_inlineUniforms;
 		LayoutBindingWritesArray m_storageBuffers;
-		LayoutBindingWritesArray m_texelBuffers;
+		LayoutBindingWritesArray m_texelSamplerBuffers;
+		LayoutBindingWritesArray m_texelImageBuffers;
 		LayoutBindingWritesArray m_dynamicUniformBuffers;
 		LayoutBindingWritesArray m_dynamicStorageBuffers;
 		LayoutBindingWritesArray m_dynamicBuffers;

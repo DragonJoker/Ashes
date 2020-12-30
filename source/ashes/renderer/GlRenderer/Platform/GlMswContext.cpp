@@ -6,6 +6,8 @@ See LICENSE file in root folder
 
 #if _WIN32
 
+#include "ashesgl_api.hpp"
+
 #include <iostream>
 #include <sstream>
 
@@ -157,11 +159,12 @@ namespace ashes::gl
 		}
 	}
 
-	void MswContext::preInitialise( int major, int minor )
+	void MswContext::preInitialise( int reqMajor, int reqMinor )
 	{
 		doSelectFormat();
-		m_major = major;
-		m_minor = minor;
+		auto & extensions = get( instance )->getExtensions();
+		m_major = std::max( reqMajor, extensions.getMajor() );
+		m_minor = std::max( reqMinor, extensions.getMinor() );
 		m_hContext = wglCreateContext( m_hDC );
 
 		if ( !m_hContext )

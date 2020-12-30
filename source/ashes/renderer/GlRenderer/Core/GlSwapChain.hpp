@@ -27,6 +27,11 @@ namespace ashes::gl
 
 		VkResult present( uint32_t imageIndex )const;
 
+		VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		VkDevice m_device;
 		VkSwapchainCreateInfoKHR m_createInfo;

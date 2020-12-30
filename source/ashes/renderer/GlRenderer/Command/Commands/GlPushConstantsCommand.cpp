@@ -406,8 +406,8 @@ namespace ashes::gl
 			{
 				if ( ( constant.stageFlag & stageFlags ) != 0 )
 				{
-					int32_t offset = int32_t( constant.offset ) - int32_t( pcb.offset );
-					assert( offset >= 0 );
+					int32_t offset = int32_t( constant.offset );
+					assert( offset >= 0 && offset + constant.size <= pcb.data.size() );
 					auto buffer = pcb.data.data() + offset;
 
 					switch ( constant.format )

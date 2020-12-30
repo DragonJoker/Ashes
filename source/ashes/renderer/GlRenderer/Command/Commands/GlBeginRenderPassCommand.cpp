@@ -69,7 +69,7 @@ namespace ashes::gl
 		, bool back )
 	{
 		uint32_t clearIndex = 0u;
-		auto & attaches = get( framebuffer )->getAllAttaches();
+		auto & attaches = get( framebuffer )->getRenderableAttaches();
 		GLbitfield mask{ 0u };
 
 		for ( auto viewIndex = 0u; viewIndex < attaches.size(); ++viewIndex )
@@ -150,20 +150,24 @@ namespace ashes::gl
 	{
 		VkClearValueArray rtClearValues{};
 		VkClearValue dsClearValue{};
-		assert( clearValues.size() == get( renderPass )->size() );
 
-		for ( auto & reference : *get( renderPass ) )
+		if ( get( renderPass )->getMaxLoadClearIndex() != InvalidIndex )
 		{
-			auto & attach = get( renderPass )->getAttachment( reference );
-			auto & clearValue = clearValues[reference.attachment];
+			assert( clearValues.size() >= get( renderPass )->getMaxLoadClearIndex() );
 
-			if ( ashes::isDepthOrStencilFormat( attach.format ) )
+			for ( auto & reference : get( renderPass )->getFboAttachable() )
 			{
-				dsClearValue = clearValue;
-			}
-			else
-			{
-				rtClearValues.push_back( clearValue );
+				auto & attach = get( renderPass )->getAttachment( reference );
+				auto & clearValue = clearValues[reference.attachment];
+
+				if ( ashes::isDepthOrStencilFormat( attach.format ) )
+				{
+					dsClearValue = clearValue;
+				}
+				else
+				{
+					rtClearValues.push_back( clearValue );
+				}
 			}
 		}
 
@@ -181,13 +185,16 @@ namespace ashes::gl
 			stack.setCurrentFramebuffer( frameBuffer );
 		}
 
-		assert( get( frameBuffer )->getInternal() );
-		list.insert( list.end()
-			, get( frameBuffer )->getBindAttaches().begin()
-			, get( frameBuffer )->getBindAttaches().end() );
-		auto references = makeArrayView( get( renderPass )->begin()
-			, get( renderPass )->end() );
-		list.push_back( makeCmd< OpType::eDrawBuffers >( get( frameBuffer )->getDrawBuffers( references ) ) );
-		clearAttaches( frameBuffer, renderPass, rtClearValues, dsClearValue, list, false );
+		if ( get( frameBuffer )->getInternal() != GL_INVALID_INDEX )
+		{
+			assert( get( frameBuffer )->getInternal() );
+			list.insert( list.end()
+				, get( frameBuffer )->getBindAttaches().begin()
+				, get( frameBuffer )->getBindAttaches().end() );
+			auto references = makeArrayView( get( renderPass )->getFboAttachable().begin()
+				, get( renderPass )->getFboAttachable().end() );
+			list.push_back( makeCmd< OpType::eDrawBuffers >( get( frameBuffer )->getDrawBuffers( references ) ) );
+			clearAttaches( frameBuffer, renderPass, rtClearValues, dsClearValue, list, false );
+		}
 	}
 }

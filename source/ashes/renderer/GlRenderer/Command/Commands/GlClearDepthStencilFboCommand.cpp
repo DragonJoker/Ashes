@@ -34,26 +34,67 @@ namespace ashes::gl
 		list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_FRAMEBUFFER ) );
 		auto point = getAttachmentPoint( glimage.getFormat() );
 
-		for ( uint32_t level = 0u; level < glimage.getMipLevels(); ++level )
+		for ( auto range : ranges )
 		{
-			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
-				, point
-				, target
-				, get( image )->getInternal()
-				, level ) );
-			auto format = get( image )->getFormat();
+			if ( range.levelCount == RemainingArrayLayers )
+			{
+				range.levelCount = ashes::getMaxMipCount( get( image )->getDimensions() );
+			}
 
-			if ( isDepthStencilFormat( format ) )
+			if ( range.layerCount == RemainingArrayLayers )
 			{
-				list.push_back( makeCmd< OpType::eClearDepthStencil >( value ) );
+				range.layerCount = get( device )->getLimits().maxImageArrayLayers;
 			}
-			else if ( isDepthFormat( format ) )
+
+			for ( auto level = range.baseMipLevel; level < range.baseMipLevel + range.levelCount; ++level )
 			{
-				list.push_back( makeCmd< OpType::eClearDepth >( value.depth ) );
-			}
-			else if ( isStencilFormat( format ) )
-			{
-				list.push_back( makeCmd< OpType::eClearStencil >( int32_t( value.stencil ) ) );
+				if ( get( image )->getArrayLayers() > 1u )
+				{
+					for ( auto layer = range.baseArrayLayer; layer < range.baseArrayLayer + range.layerCount; ++layer )
+					{
+						list.push_back( makeCmd< OpType::eFramebufferTextureLayer >( GL_FRAMEBUFFER
+							, point
+							, get( image )->getInternal()
+							, level
+							, layer ) );
+						auto format = get( image )->getFormat();
+
+						if ( isDepthStencilFormat( format ) )
+						{
+							list.push_back( makeCmd< OpType::eClearDepthStencil >( value ) );
+						}
+						else if ( isDepthFormat( format ) )
+						{
+							list.push_back( makeCmd< OpType::eClearDepth >( value.depth ) );
+						}
+						else if ( isStencilFormat( format ) )
+						{
+							list.push_back( makeCmd< OpType::eClearStencil >( int32_t( value.stencil ) ) );
+						}
+					}
+				}
+				else
+				{
+					list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
+						, point
+						, target
+						, get( image )->getInternal()
+						, level ) );
+					auto format = get( image )->getFormat();
+
+					if ( isDepthStencilFormat( format ) )
+					{
+						list.push_back( makeCmd< OpType::eClearDepthStencil >( value ) );
+					}
+					else if ( isDepthFormat( format ) )
+					{
+						list.push_back( makeCmd< OpType::eClearDepth >( value.depth ) );
+					}
+					else if ( isStencilFormat( format ) )
+					{
+						list.push_back( makeCmd< OpType::eClearStencil >( int32_t( value.stencil ) ) );
+					}
+				}
 			}
 		}
 

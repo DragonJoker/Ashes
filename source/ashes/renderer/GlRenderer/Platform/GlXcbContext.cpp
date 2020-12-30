@@ -6,6 +6,8 @@ See LICENSE file in root folder
 
 #if __linux__
 
+#include "ashesgl_api.hpp"
+
 #include <EGL/egl.h>
 #include <GL/glx.h>
 
@@ -51,7 +53,7 @@ namespace ashes::gl
 		XCloseDisplay( m_xdisplay );
 	}
 
-	void XcbContext::preInitialise( int major, int minor )
+	void XcbContext::preInitialise( int reqMajor, int reqMinor )
 	{
 		m_xdisplay = XOpenDisplay( nullptr );
 
@@ -60,10 +62,11 @@ namespace ashes::gl
 			throw std::runtime_error{ "Couldn't open display" };
 		}
 
+		auto & extensions = get( instance )->getExtensions();
 		m_context = std::make_unique< ContextEgl >( m_xdisplay
 			, createInfo.window
-			, major
-			, minor
+			, std::max( reqMajor, extensions.getMajor() )
+			, std::max( reqMinor, extensions.getMinor() )
 			, ( m_mainContext
 				? m_mainContext->m_context->getContext()
 				: EGL_NO_CONTEXT ) );

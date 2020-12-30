@@ -175,6 +175,28 @@ namespace ashes::gl
 		doReset();
 	}
 
+	template< typename StructTypeAccessT >
+	bool checkPointerAccess( VkStructureType type
+		, StructTypeAccessT access )
+	{
+#if defined( WIN32 )
+
+		__try
+		{
+			return type == access();
+		}
+		__except ( GetExceptionCode() == EXCEPTION_ACCESS_VIOLATION )
+		{
+			return false;
+		}
+
+#else
+
+		return true;
+
+#endif
+	}
+
 	VkResult CommandBuffer::begin( VkCommandBufferBeginInfo info )const
 	{
 		doReset();
@@ -182,19 +204,27 @@ namespace ashes::gl
 		m_state.stack = std::make_unique< ContextStateStack >( m_device );
 		m_state.beginFlags = info.flags;
 
-		if ( info.pInheritanceInfo )
+		if ( checkFlag( m_state.beginFlags, VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT ) )
 		{
-			// Fake a bound framebuffer here : the one in the inheritance info.
-			m_state.stack->setCurrentFramebuffer( info.pInheritanceInfo->framebuffer );
-
-			if ( info.pInheritanceInfo->framebuffer )
+			if ( info.pInheritanceInfo
+				&& checkPointerAccess( VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO
+					, [&info]()
+					{
+						return info.pInheritanceInfo->sType;
+					} ) )
 			{
-				m_state.stack->setRenderArea( get( info.pInheritanceInfo->framebuffer )->getDimensions() );
-			}
+				// Fake a bound framebuffer here : the one in the inheritance info.
+				m_state.stack->setCurrentFramebuffer( info.pInheritanceInfo->framebuffer );
 
-			m_state.currentFrameBuffer = info.pInheritanceInfo->framebuffer;
-			m_state.currentRenderPass = info.pInheritanceInfo->renderPass;
-			m_state.currentSubpassIndex = info.pInheritanceInfo->subpass;
+				if ( info.pInheritanceInfo->framebuffer )
+				{
+					m_state.stack->setRenderArea( get( info.pInheritanceInfo->framebuffer )->getDimensions() );
+				}
+
+				m_state.currentFrameBuffer = info.pInheritanceInfo->framebuffer;
+				m_state.currentRenderPass = info.pInheritanceInfo->renderPass;
+				m_state.currentSubpassIndex = info.pInheritanceInfo->subpass;
+			}
 		}
 
 		return VK_SUCCESS;
@@ -274,8 +304,6 @@ namespace ashes::gl
 		m_state.boundDescriptors.clear();
 		m_state.pushConstantBuffers.clear();
 		m_state.boundIbo = ashes::nullopt;
-		m_state.currentComputePipeline = nullptr;
-		m_state.currentPipeline = nullptr;
 		m_state.currentFrameBuffer = nullptr;
 		m_state.currentRenderPass = nullptr;
 		m_state.currentSubpass = nullptr;
@@ -369,15 +397,15 @@ namespace ashes::gl
 	void CommandBuffer::bindPipeline( VkPipeline pipeline
 		, VkPipelineBindPoint bindingPoint )const
 	{
-		doCheckPipelineLayoutCompatibility( get( pipeline )->getLayout() );
-		m_state.currentPipeline = nullptr;
-		m_state.currentComputePipeline = nullptr;
-
 		if ( bindingPoint == VK_PIPELINE_BIND_POINT_GRAPHICS )
 		{
-			if ( m_state.currentPipeline )
+			doCheckPipelineLayoutCompatibility( get( pipeline )->getLayout()
+				, m_state.currentGraphicsPipelineLayout );
+			m_state.currentGraphicsPipeline = nullptr;
+
+			if ( m_state.currentGraphicsPipeline )
 			{
-				auto src = get( m_state.currentPipeline )->getVertexInputStateHash();
+				auto src = get( m_state.currentGraphicsPipeline )->getVertexInputStateHash();
 				auto dst = get( pipeline )->getVertexInputStateHash();
 
 				if ( src != dst )
@@ -388,7 +416,7 @@ namespace ashes::gl
 				}
 			}
 
-			m_state.currentPipeline = pipeline;
+			m_state.currentGraphicsPipeline = pipeline;
 			buildBindPipelineCommand( *m_state.stack
 				, m_device
 				, pipeline
@@ -401,6 +429,10 @@ namespace ashes::gl
 		}
 		else if ( bindingPoint == VK_PIPELINE_BIND_POINT_COMPUTE )
 		{
+			doCheckPipelineLayoutCompatibility( get( pipeline )->getLayout()
+				, m_state.currentComputePipelineLayout );
+			m_state.currentComputePipeline = nullptr;
+
 			if ( get( getInstance( m_device ) )->getFeatures().hasComputeShaders )
 			{
 				m_state.currentComputePipeline = pipeline;
@@ -420,11 +452,14 @@ namespace ashes::gl
 			}
 		}
 
-		if ( m_state.currentPipeline || m_state.currentComputePipeline )
+		if ( m_state.currentGraphicsPipeline || m_state.currentComputePipeline )
 		{
+			uint32_t dynamicOffsetIndex = 0u;
+			VkDescriptorSet ds = VK_NULL_HANDLE;
+
 			for ( auto & waiting : m_state.waitingDescriptors )
 			{
-				waiting.second();
+				ds = waiting.second( ds, dynamicOffsetIndex );
 			}
 
 			m_state.waitingDescriptors.clear();
@@ -475,40 +510,56 @@ namespace ashes::gl
 		, ArrayView < uint32_t const > dynamicOffsets )const
 	{
 		auto currentSet = firstSet;
-		doCheckPipelineLayoutCompatibility( layout );
+		auto pipeline = bindingPoint == VK_PIPELINE_BIND_POINT_GRAPHICS
+			? m_state.currentGraphicsPipeline
+			: m_state.currentComputePipeline;
+		doCheckPipelineLayoutCompatibility( layout
+			, ( bindingPoint == VK_PIPELINE_BIND_POINT_GRAPHICS
+				? m_state.currentGraphicsPipelineLayout
+				: m_state.currentComputePipelineLayout ) );
+		uint32_t dynamicOffsetIndex = 0u;
 
 		for ( auto & descriptorSet : descriptorSets )
 		{
 			m_state.boundDescriptors.emplace( currentSet, descriptorSet );
 			doProcessMappedBoundDescriptorBuffersIn( descriptorSet );
 
-			if ( m_state.currentPipeline
-				|| m_state.currentComputePipeline )
+			if ( pipeline )
 			{
 				buildBindDescriptorSetCommand( m_device
 					, descriptorSet
 					, currentSet
-					, ( m_state.currentComputePipeline
-						? m_state.currentComputePipeline 
-						: m_state.currentPipeline )
+					, pipeline
 					, dynamicOffsets
+					, dynamicOffsetIndex
 					, bindingPoint
 					, m_cmdList );
 			}
 			else
 			{
+				std::vector< uint32_t > persistDynamicOffsets{ dynamicOffsets.begin(), dynamicOffsets.end() };
 				m_state.waitingDescriptors.emplace( currentSet
-					, [this, descriptorSet, dynamicOffsets, bindingPoint, currentSet]()
+					, [this, descriptorSet, persistDynamicOffsets, bindingPoint, currentSet]( VkDescriptorSet ds
+						, uint32_t & dynamicOffsetIndex )
 					{
+						if ( descriptorSet != ds )
+						{
+							dynamicOffsetIndex = 0u;
+						}
+
+						auto view = makeArrayView( persistDynamicOffsets.data()
+							, persistDynamicOffsets.data() + persistDynamicOffsets.size() );
 						buildBindDescriptorSetCommand( m_device
 							, descriptorSet
 							, currentSet
-							, ( m_state.currentComputePipeline
-								? m_state.currentComputePipeline
-								: m_state.currentPipeline )
-							, dynamicOffsets
+							, ( bindingPoint == VK_PIPELINE_BIND_POINT_GRAPHICS
+								? m_state.currentGraphicsPipeline
+								: m_state.currentComputePipeline )
+							, view
+							, dynamicOffsetIndex
 							, bindingPoint
 							, m_cmdList );
+						return descriptorSet;
 					} );
 			}
 
@@ -551,7 +602,7 @@ namespace ashes::gl
 		}
 		else
 		{
-			if ( isEmpty( get( m_state.currentPipeline )->getVertexInputState() ) )
+			if ( isEmpty( get( m_state.currentGraphicsPipeline )->getVertexInputState() ) )
 			{
 				bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
 				m_state.selectedVao = &get( m_device )->getEmptyIndexedVao();
@@ -569,7 +620,7 @@ namespace ashes::gl
 					, 0u
 					, firstVertex
 					, firstInstance
-					, get( m_state.currentPipeline )->getInputAssemblyState().topology
+					, get( m_state.currentGraphicsPipeline )->getInputAssemblyState().topology
 					, m_state.indexType
 					, m_cmdList );
 			}
@@ -587,7 +638,7 @@ namespace ashes::gl
 					, instCount
 					, firstVertex
 					, firstInstance
-					, get( m_state.currentPipeline )->getInputAssemblyState().topology
+					, get( m_state.currentGraphicsPipeline )->getInputAssemblyState().topology
 					, m_cmdList );
 			}
 
@@ -612,7 +663,7 @@ namespace ashes::gl
 		}
 		else
 		{
-			if ( isEmpty( get( m_state.currentPipeline )->getVertexInputState() )
+			if ( isEmpty( get( m_state.currentGraphicsPipeline )->getVertexInputState() )
 				&& !m_state.newlyBoundIbo )
 			{
 				bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
@@ -638,7 +689,7 @@ namespace ashes::gl
 				, firstIndex
 				, vertexOffset
 				, firstInstance
-				, get( m_state.currentPipeline )->getInputAssemblyState().topology
+				, get( m_state.currentGraphicsPipeline )->getInputAssemblyState().topology
 				, m_state.indexType
 				, m_cmdList );
 			m_cmdList.push_back( makeCmd< OpType::eBindVextexArray >( nullptr ) );
@@ -673,7 +724,7 @@ namespace ashes::gl
 				, offset
 				, drawCount
 				, stride
-				, get( m_state.currentPipeline )->getInputAssemblyState().topology
+				, get( m_state.currentGraphicsPipeline )->getInputAssemblyState().topology
 				, m_cmdList );
 			m_cmdList.push_back( makeCmd< OpType::eBindVextexArray >( nullptr ) );
 			doProcessMappedBoundDescriptorsBuffersOut();
@@ -694,7 +745,7 @@ namespace ashes::gl
 		}
 		else
 		{
-			if ( isEmpty( get( m_state.currentPipeline )->getVertexInputState() )
+			if ( isEmpty( get( m_state.currentGraphicsPipeline )->getVertexInputState() )
 				&& !m_state.newlyBoundIbo )
 			{
 				bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
@@ -719,7 +770,7 @@ namespace ashes::gl
 				, offset
 				, drawCount
 				, stride
-				, get( m_state.currentPipeline )->getInputAssemblyState().topology
+				, get( m_state.currentGraphicsPipeline )->getInputAssemblyState().topology
 				, m_state.indexType
 				, m_cmdList );
 			m_cmdList.push_back( makeCmd< OpType::eBindVextexArray >( nullptr ) );
@@ -777,7 +828,7 @@ namespace ashes::gl
 	{
 		m_cmdList.push_back( makeCmd< OpType::eFillBuffer >( get( dstBuffer )->getMemory()
 			, dstOffset + get( dstBuffer )->getInternalOffset()
-			, size
+			, size == VK_WHOLE_SIZE ? get( dstBuffer )->getMemoryRequirements().size : size
 			, data ) );
 	}
 
@@ -928,7 +979,6 @@ namespace ashes::gl
 		, uint32_t size
 		, void const * data )const
 	{
-		doCheckPipelineLayoutCompatibility( layout );
 		PushConstantsDesc desc
 		{
 			stageFlags,
@@ -938,21 +988,30 @@ namespace ashes::gl
 			{ reinterpret_cast< uint8_t const * >( data ), reinterpret_cast< uint8_t const * >( data ) + size }
 		};
 
-		if ( m_state.currentPipeline )
+		if ( m_state.currentGraphicsPipeline
+			&& 0 != ( stageFlags & VK_SHADER_STAGE_ALL_GRAPHICS ) )
 		{
+			doCheckPipelineLayoutCompatibility( layout, m_state.currentGraphicsPipelineLayout );
 			buildPushConstantsCommand( get( layout )->getDevice()
 				, stageFlags
-				, get( m_state.currentPipeline )->findPushConstantBuffer( desc, doIsRtotFbo() )
+				, get( m_state.currentGraphicsPipeline )->findPushConstantBuffer( desc, doIsRtotFbo() )
 				, m_cmdList );
 		}
-		else if ( m_state.currentComputePipeline )
+
+		if ( m_state.currentComputePipeline
+			&& checkFlag( stageFlags, VK_SHADER_STAGE_COMPUTE_BIT ) )
 		{
+			doCheckPipelineLayoutCompatibility( layout, m_state.currentComputePipelineLayout );
 			buildPushConstantsCommand( get( layout )->getDevice()
 				, stageFlags
 				, get( m_state.currentComputePipeline )->findPushConstantBuffer( desc, false )
 				, m_cmdList );
 		}
-		else
+
+		if ( ( !m_state.currentGraphicsPipeline
+				|| 0 == ( stageFlags, VK_SHADER_STAGE_ALL_GRAPHICS ) )
+			&& ( !m_state.currentComputePipeline
+				|| !checkFlag( stageFlags, VK_SHADER_STAGE_COMPUTE_BIT ) ) )
 		{
 			m_state.pushConstantBuffers.emplace_back( layout, desc );
 		}
@@ -1221,11 +1280,11 @@ namespace ashes::gl
 
 	void CommandBuffer::doSelectVao()const
 	{
-		m_state.selectedVao = get( m_state.currentPipeline )->findGeometryBuffers( m_state.boundVbos, m_state.boundIbo );
+		m_state.selectedVao = get( m_state.currentGraphicsPipeline )->findGeometryBuffers( m_state.boundVbos, m_state.boundIbo );
 
 		if ( !m_state.selectedVao )
 		{
-			m_state.selectedVao = &get( m_state.currentPipeline )->createGeometryBuffers( m_state.boundVbos, m_state.boundIbo, m_state.indexType ).get();
+			m_state.selectedVao = &get( m_state.currentGraphicsPipeline )->createGeometryBuffers( m_state.boundVbos, m_state.boundIbo, m_state.indexType ).get();
 			m_state.vaos.emplace_back( *m_state.selectedVao );
 		}
 		else if ( m_state.selectedVao->getVao() == GL_INVALID_INDEX )
@@ -1394,22 +1453,24 @@ namespace ashes::gl
 
 	bool CommandBuffer::doIsRtotFbo()const
 	{
-		return !get( m_state.stack->getCurrentFramebuffer() )->hasSwapchainImage();
+		return !m_state.stack->hasCurrentFramebuffer()
+			|| !get( m_state.stack->getCurrentFramebuffer() )->hasSwapchainImage();
 	}
 
-	void CommandBuffer::doCheckPipelineLayoutCompatibility( VkPipelineLayout layout )const
+	void CommandBuffer::doCheckPipelineLayoutCompatibility( VkPipelineLayout layout
+		, VkPipelineLayout & currentLayout )const
 	{
-		if ( m_state.currentPipelineLayout
-			&& m_state.currentPipelineLayout != layout )
+		if ( currentLayout
+			&& currentLayout != layout )
 		{
 			// Check push constants compatibility.
-			if ( !areCompatible( get( m_state.currentPipelineLayout )->getPushConstants()
+			if ( !areCompatible( get( currentLayout )->getPushConstants()
 				, get( layout )->getPushConstants() ) )
 			{
 				m_state.boundDescriptors.clear();
 				m_state.pushConstantBuffers.clear();
 			}
-			else if ( uint32_t count = areCompatible( get( m_state.currentPipelineLayout )->getDescriptorsLayouts()
+			else if ( uint32_t count = areCompatible( get( currentLayout )->getDescriptorsLayouts()
 				, get( layout )->getDescriptorsLayouts() ) )
 			{
 				auto it = m_state.boundDescriptors.begin();
@@ -1427,6 +1488,6 @@ namespace ashes::gl
 			}
 		}
 
-		m_state.currentPipelineLayout = layout;
+		currentLayout = layout;
 	}
 }

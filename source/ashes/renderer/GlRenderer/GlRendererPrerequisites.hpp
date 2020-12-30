@@ -270,7 +270,8 @@ namespace ashes::gl
 		return reinterpret_cast< void * >( reinterpret_cast< uint8_t * >( 0u ) + value );
 	}
 
-	uint32_t deduceMemoryType( uint32_t typeBits
+	uint32_t deduceMemoryType( VkDevice device
+		, uint32_t typeBits
 		, VkMemoryPropertyFlags requirements );
 	bool areCompatible( VkCommandBuffer cmd
 		, VkPipelineStageFlags pipelineFlags

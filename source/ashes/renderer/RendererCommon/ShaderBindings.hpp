@@ -43,6 +43,8 @@ namespace ashes
 		ShaderBindingMap tex;
 		// Texture buffer bindings
 		ShaderBindingMap tbo;
+		// Image buffer bindings
+		ShaderBindingMap ibo;
 	};
 
 	struct ShaderBindingIndices

@@ -242,9 +242,14 @@ namespace ashes::gl
 					, result.tex
 					, result );
 				doReworkWrites( descriptorSetIndex
-					, get( descriptorSet )->getTexelBuffers()
+					, get( descriptorSet )->getTexelSamplerBuffers()
 					, programLayout.tbo
 					, result.tbo
+					, result );
+				doReworkWrites( descriptorSetIndex
+					, get( descriptorSet )->getTexelImageBuffers()
+					, programLayout.ibo
+					, result.ibo
 					, result );
 				doReworkWrites( descriptorSetIndex
 					, get( descriptorSet )->getUniformBuffers()
@@ -277,7 +282,7 @@ namespace ashes::gl
 			, m_vertexAttributeDescriptions ) }
 		, m_backContextState
 		{
-			*createInfo.pColorBlendState,
+			createInfo.pColorBlendState,
 			createInfo.pDepthStencilState,
 			createInfo.pMultisampleState,
 			createInfo.pTessellationState,
@@ -289,7 +294,7 @@ namespace ashes::gl
 		, m_rtotRasterizationState{ invertFrontFace( createInfo.pRasterizationState ) }
 		, m_rtotContextState
 		{
-			*createInfo.pColorBlendState,
+			createInfo.pColorBlendState,
 			createInfo.pDepthStencilState,
 			createInfo.pMultisampleState,
 			createInfo.pTessellationState,

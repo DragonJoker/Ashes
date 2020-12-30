@@ -8,6 +8,7 @@ See LICENSE file in root folder
 
 #include <EGL/egl.h>
 
+#include <map>
 #include <stdexcept>
 
 namespace ashes::gl
@@ -60,7 +61,8 @@ namespace ashes::gl
 				throw std::runtime_error{ getEGLError( "Couldn't get EGL display" ) };
 			}
 
-			EGLint major, minor;
+			EGLint major = 0;
+			EGLint minor = 0;
 			ok = eglInitialize( m_display, &major, &minor );
 
 			if ( !ok )
@@ -134,11 +136,17 @@ namespace ashes::gl
 			{
 				EGL_CONTEXT_MAJOR_VERSION, reqMajor,
 				EGL_CONTEXT_MINOR_VERSION, reqMinor,
+				EGL_CONTEXT_OPENGL_PROFILE_MASK, EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT,
+				EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE, EGL_TRUE,
+#if !defined( NDEBUG )
+				EGL_CONTEXT_OPENGL_DEBUG, EGL_TRUE,
+#endif
+
 				EGL_NONE,
 			};
 			m_context = eglCreateContext( m_display
 				, config
-				, EGL_NO_CONTEXT
+				, shared
 				, eglContextAttribs );
 
 			if ( !m_context )

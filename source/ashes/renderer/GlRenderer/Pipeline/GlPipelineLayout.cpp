@@ -61,7 +61,7 @@ namespace ashes::gl
 		return uint32_t( std::distance( layouts.begin(), it ) );
 	}
 
-	ShaderBindings const & PipelineLayout::getDecriptorSetBindings( VkDescriptorSet descriptorSet
+	ShaderBindings const & PipelineLayout::getDescriptorSetBindings( VkDescriptorSet descriptorSet
 		, uint32_t descriptorSetIndex )const
 	{
 		auto key = makeDescriptorKey( descriptorSet, descriptorSetIndex );

@@ -33,6 +33,11 @@ namespace ashes::gl
 			, int length
 			, const char * const message );
 
+		VkInstance getInstance()const
+		{
+			return m_instance;
+		}
+
 	private:
 		VkInstance m_instance;
 		VkDebugUtilsMessengerCreateInfoEXT m_createInfo;
@@ -66,6 +71,11 @@ namespace ashes::gl
 			, GlDebugSeverity severity
 			, int length
 			, const char * const message );
+
+		VkInstance getInstance()const
+		{
+			return m_instance;
+		}
 
 	private:
 		VkInstance m_instance;

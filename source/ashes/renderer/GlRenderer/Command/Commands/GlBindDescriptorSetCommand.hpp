@@ -182,6 +182,7 @@ namespace ashes::gl
 		, uint32_t descriptorSetIndex
 		, VkPipeline pipeline
 		, ArrayView< uint32_t const > const & dynamicOffsets
+		, uint32_t & dynamicOffsetIndex
 		, VkPipelineBindPoint bindingPoint
 		, CmdList & list );
 

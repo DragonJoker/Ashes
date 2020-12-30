@@ -385,6 +385,12 @@ namespace ashes::gl
 				auto & pcbType = compiler.get_type( pcb.type_id );
 				assert( pcbType.parent_type );
 				auto & structType = compiler.get_type( pcbType.parent_type );
+				auto baseName = compiler.get_name( pcb.id );
+
+				if ( baseName.empty() )
+				{
+					baseName = "_" + std::to_string( pcb.id );
+				}
 
 				uint32_t index = 0u;
 
@@ -392,12 +398,20 @@ namespace ashes::gl
 				{
 					spirv_cross::SPIRType const & mbrType = compiler.get_type( mbrTypeId );
 					uint32_t offset = compiler.get_member_decoration( structType.self, index, spv::Decoration::DecorationOffset );
+					auto memberName = compiler.get_member_name( structType.self, index );
+
+					if ( memberName.empty() )
+					{
+						memberName = "_m" + std::to_string( index );
+					}
+
+					auto name = baseName + "." + memberName;
 
 					result.push_back( ConstantDesc
 						{
 							0u,
 							shaderStage,
-							compiler.get_name( pcb.id ) + "." + compiler.get_member_name( structType.self, index ),
+							name,
 							0u,
 							getFormat( mbrType ),
 							getSize( getFormat( mbrType ) ),
@@ -423,7 +437,6 @@ namespace ashes::gl
 			, uint32_t binding
 			, uint32_t set )
 		{
-			assert( false );
 			std::stringstream stream;
 			stream.imbue( std::locale{ "C" } );
 			stream << typeName << ", binding=" << binding << ", set=" << set;

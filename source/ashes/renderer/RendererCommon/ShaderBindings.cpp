@@ -39,10 +39,14 @@ namespace ashes
 				|| type == VK_DESCRIPTOR_TYPE_SAMPLER;
 		}
 
-		bool isTextureBuffer( VkDescriptorType type )
+		bool isSamplerBuffer( VkDescriptorType type )
 		{
-			return type == VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER
-				|| type == VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
+			return type == VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
+		}
+
+		bool isImageBuffer( VkDescriptorType type )
+		{
+			return type == VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER;
 		}
 	}
 
@@ -51,6 +55,11 @@ namespace ashes
 		, ShaderBindings & bindings
 		, ShaderBindingIndices & indices )
 	{
+		if ( !binding.descriptorCount )
+		{
+			return;
+		}
+
 		if ( isUniformBuffer( binding.descriptorType ) )
 		{
 			bindings.ubo.emplace( makeShaderBindingKey( set, binding.binding ), indices.ubo );
@@ -71,10 +80,15 @@ namespace ashes
 			bindings.tex.emplace( makeShaderBindingKey( set, binding.binding ), indices.tex );
 			indices.tex += binding.descriptorCount;
 		}
-		else if ( isTextureBuffer( binding.descriptorType ) )
+		else if ( isSamplerBuffer( binding.descriptorType ) )
 		{
 			bindings.tbo.emplace( makeShaderBindingKey( set, binding.binding ), indices.tex );
 			indices.tex += binding.descriptorCount;
+		}
+		else if ( isImageBuffer( binding.descriptorType ) )
+		{
+			bindings.ibo.emplace( makeShaderBindingKey( set, binding.binding ), indices.img );
+			indices.img += binding.descriptorCount;
 		}
 	}
 
@@ -83,6 +97,11 @@ namespace ashes
 		, VkDescriptorSetLayoutBinding const & dstBinding
 		, ShaderBindings & bindings )
 	{
+		if ( !dstBinding.descriptorCount )
+		{
+			return;
+		}
+
 		uint32_t index = dstBinding.binding;
 
 		if ( isUniformBuffer( dstBinding.descriptorType ) )
@@ -105,9 +124,14 @@ namespace ashes
 			auto it = bindings.tex.emplace( makeShaderBindingKey( set, srcBinding ), index ).first;
 			it->second = index;
 		}
-		else if ( isTextureBuffer( dstBinding.descriptorType ) )
+		else if ( isSamplerBuffer( dstBinding.descriptorType ) )
 		{
 			auto it = bindings.tbo.emplace( makeShaderBindingKey( set, srcBinding ), index ).first;
+			it->second = index;
+		}
+		else if ( isImageBuffer( dstBinding.descriptorType ) )
+		{
+			auto it = bindings.ibo.emplace( makeShaderBindingKey( set, srcBinding ), index ).first;
 			it->second = index;
 		}
 	}
@@ -117,6 +141,11 @@ namespace ashes
 		, ShaderBindings const & srcBindings
 		, ShaderBindings & dstBindings )
 	{
+		if ( !binding.descriptorCount )
+		{
+			return;
+		}
+
 		auto key = makeShaderBindingKey( set, binding.binding );
 
 		if ( isUniformBuffer( binding.descriptorType ) )
@@ -135,9 +164,13 @@ namespace ashes
 		{
 			dstBindings.tex.insert( *srcBindings.tex.find( key ) );
 		}
-		else if ( isTextureBuffer( binding.descriptorType ) )
+		else if ( isSamplerBuffer( binding.descriptorType ) )
 		{
 			dstBindings.tbo.insert( *srcBindings.tbo.find( key ) );
+		}
+		else if ( isImageBuffer( binding.descriptorType ) )
+		{
+			dstBindings.ibo.insert( *srcBindings.ibo.find( key ) );
 		}
 	}
 }
