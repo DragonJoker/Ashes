@@ -39,6 +39,7 @@ namespace ashes
 	using CharPtrArray = std::vector< char const * >;
 
 	static VkDeviceSize constexpr WholeSize = ~( 0ull );
+	static uint32_t constexpr RemainingArrayLayers = ~( 0u );
 
 	inline constexpr uint32_t getMajor( uint32_t version )
 	{

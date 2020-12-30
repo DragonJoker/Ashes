@@ -319,6 +319,31 @@ namespace ashes
 					: VK_IMAGE_ASPECT_COLOR_BIT ) ) );
 	}
 	/**
+	*\param[in] extent
+	*	The level 0 extent.
+	*\return
+	*	The mipmap levels count.
+	*/
+	inline uint32_t getMaxMipCount( VkExtent3D extent )
+	{
+		auto minExtent = extent.width;
+		minExtent = extent.height > 1u
+			? std::min( minExtent, extent.height )
+			: minExtent;
+		minExtent = extent.depth > 1u
+			? std::min( minExtent, extent.depth )
+			: minExtent;
+		uint32_t result = 1u;
+
+		while ( minExtent > 1 )
+		{
+			minExtent /= 2;
+			++result;
+		}
+
+		return result;
+	}
+	/**
 	*\brief
 	*	Retrieves the real extent for the given mipmap level.
 	*\param[in] extent
