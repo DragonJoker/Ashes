@@ -74,6 +74,7 @@ add_subdirectory( ashes/common )
 
 add_subdirectory( ashes )
 set( ENABLED_RENDERERS ${ENABLED_RENDERERS} PARENT_SCOPE )
+set( ENABLED_PDBS ${ENABLED_PDBS} PARENT_SCOPE )
 
 add_subdirectory( ashespp )
 
@@ -100,6 +101,11 @@ else ()
 		ARCHIVE DESTINATION lib/Ashes
 	)
 endif ()
+install(
+	FILES ${ENABLED_PDBS}
+	DESTINATION bin
+	OPTIONAL
+)
 install( EXPORT Ashes
 	FILE AshesConfig.cmake
 	NAMESPACE ashes::

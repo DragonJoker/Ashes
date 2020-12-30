@@ -450,20 +450,6 @@ add_target_precompiled_header( ${PROJECT_NAME}
 	${${PROJECT_NAME}_SRC_FILES}
 )
 
-parse_subdir_files( ${Ashes_SOURCE_DIR} Buffer "Buffer" )
-parse_subdir_files( ${Ashes_SOURCE_DIR} Command "Command" )
-parse_subdir_files( ${Ashes_SOURCE_DIR} Core "Core" )
-parse_subdir_files( ${Ashes_SOURCE_DIR} Descriptor "Descriptor" )
-parse_subdir_files( ${Ashes_SOURCE_DIR} Enum "Enum" )
-parse_subdir_files( ${Ashes_SOURCE_DIR} Image "Image" )
-parse_subdir_files( ${Ashes_SOURCE_DIR} Miscellaneous "Miscellaneous" )
-parse_subdir_files( ${Ashes_SOURCE_DIR} Pipeline "Pipeline" )
-parse_subdir_files( ${Ashes_SOURCE_DIR} Core/Platform "Core\\\\\\\\Platform" )
-parse_subdir_files( ${Ashes_SOURCE_DIR} RenderPass "RenderPass" )
-parse_subdir_files( ${Ashes_SOURCE_DIR} Shader "Shader" )
-parse_subdir_files( ${Ashes_SOURCE_DIR} Sync "Sync" )
-parse_subdir_files( ${Ashes_SOURCE_DIR} Utils "Utils" )
-
 if ( BUILD_ASHES )
 	target_add_doc( ${_PROJECT_NAME} "" "*.h *.hpp" )
 endif ()
@@ -471,4 +457,3 @@ endif ()
 #For libs, we install headers to <install_dir>/include/${PROJECT_NAME}
 target_install_headers( ${PROJECT_NAME}
 	${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME} )
-
