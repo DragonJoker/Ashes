@@ -30,6 +30,14 @@ namespace ashes::d3d11
 		}
 	}
 
+	PipelineLayout::~PipelineLayout()
+	{
+		for ( auto & pipeline : m_pipelines )
+		{
+			get( pipeline )->m_layout = nullptr;
+		}
+	}
+
 	ShaderBindings const & PipelineLayout::getShaderBindings()const
 	{
 		return m_shaderBindings;
@@ -44,5 +52,15 @@ namespace ashes::d3d11
 			, layout );
 		assert( it != layouts.end() );
 		return uint32_t( std::distance( layouts.begin(), it ) );
+	}
+
+	void PipelineLayout::addPipeline( VkPipeline pipeline )
+	{
+		m_pipelines.insert( pipeline );
+	}
+
+	void PipelineLayout::removePipeline( VkPipeline pipeline )
+	{
+		m_pipelines.erase( pipeline );
 	}
 }

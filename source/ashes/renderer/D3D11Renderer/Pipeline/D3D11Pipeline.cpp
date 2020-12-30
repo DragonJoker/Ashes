@@ -108,6 +108,8 @@ namespace ashes::d3d11
 
 		doCompileProgram( device, { createInfo.pStages, createInfo.pStages + createInfo.stageCount }, createInfo.flags );
 		doCreateInputLayout( device );
+
+		get( m_layout )->addPipeline( get( this ) );
 	}
 
 	Pipeline::Pipeline( VkDevice device
@@ -117,10 +119,17 @@ namespace ashes::d3d11
 		, m_dynamicStates{ device, nullptr }
 	{
 		doCompileProgram( device, { createInfo.stage }, createInfo.flags );
+
+		get( m_layout )->addPipeline( get( this ) );
 	}
 
 	Pipeline::~Pipeline()
 	{
+		if ( m_layout )
+		{
+			get( m_layout )->removePipeline( get( this ) );
+		}
+
 		for ( auto & pcb : m_constantsPcbs )
 		{
 			deallocate( pcb.memory, get( m_device )->getAllocationCallbacks() );
