@@ -111,6 +111,9 @@ namespace ashes
 		case VK_IMAGE_LAYOUT_UNDEFINED:
 			result |= VK_PIPELINE_STAGE_HOST_BIT;
 			break;
+		case VK_IMAGE_LAYOUT_GENERAL:
+			result |= VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+			break;
 		case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
 		case VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR:
 			result |= VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
@@ -377,7 +380,7 @@ namespace ashes
 			imageBlit.dstOffsets[0].z = 0;
 			imageBlit.dstOffsets[1].x = getSubresourceDimension( width, mipSubRange.baseMipLevel );
 			imageBlit.dstOffsets[1].y = getSubresourceDimension( height, mipSubRange.baseMipLevel );
-			imageBlit.dstOffsets[1].z = depth;
+			imageBlit.dstOffsets[1].z = getSubresourceDimension( depth, mipSubRange.baseMipLevel );
 
 			// Transition first mip level to transfer source layout
 			commandBuffer.memoryBarrier( srcStageMask
@@ -399,6 +402,7 @@ namespace ashes
 				imageBlit.dstSubresource.mipLevel = mipSubRange.baseMipLevel;
 				imageBlit.dstOffsets[1].x = getSubresourceDimension( width, mipSubRange.baseMipLevel );
 				imageBlit.dstOffsets[1].y = getSubresourceDimension( height, mipSubRange.baseMipLevel );
+				imageBlit.dstOffsets[1].z = getSubresourceDimension( depth, mipSubRange.baseMipLevel );
 
 				// Transition current mip level to transfer dest
 				commandBuffer.memoryBarrier( srcMipsStageMask
