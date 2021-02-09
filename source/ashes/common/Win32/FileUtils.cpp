@@ -68,7 +68,6 @@ namespace ashes
 	{
 		assert( !folderPath.empty() );
 
-		std::filesystem::directory_iterator it{ folderPath };
 		WIN32_FIND_DATAA findData{};
 		HANDLE handle = ::FindFirstFileA( ( folderPath / "*.*" ).c_str(), &findData );
 
