@@ -26,9 +26,16 @@ namespace ashes
 	public:
 		/**
 		*\brief
-		*	Constructor, initialises the rendering instance.
+		*	Constructor, initialises the rendering instance, Ashes plugin mode.
 		*/
-		Instance( AshPluginDescription plugin
+		Instance( AshPluginDescription const & plugin
+			, DeviceAllocatorPtr allocator
+			, ashes::InstanceCreateInfo createInfo );
+		/**
+		*\brief
+		*	Constructor, initialises the rendering instance, Vulkan mode.
+		*/
+		Instance( PFN_vkGetInstanceProcAddr getInstanceProcAddr
 			, DeviceAllocatorPtr allocator
 			, ashes::InstanceCreateInfo createInfo );
 		/**
@@ -191,16 +198,6 @@ namespace ashes
 			return m_features;
 		}
 
-		inline std::string getName()const
-		{
-			return m_plugin.name;
-		}
-
-		inline std::string getDescription()const
-		{
-			return m_plugin.description;
-		}
-
 		inline StringArray const & getEnabledLayerNames()const
 		{
 			return m_createInfo.enabledLayerNames;
@@ -217,7 +214,7 @@ namespace ashes
 		PFN_vkVoidFunction getInstanceProcAddr( char const * const name );
 
 	private:
-		AshPluginDescription m_plugin;
+		PFN_vkGetInstanceProcAddr m_getInstanceProcAddr;
 		DeviceAllocatorPtr m_allocator;
 		ashes::InstanceCreateInfo m_createInfo;
 		VkInstance m_instance{ VK_NULL_HANDLE };

@@ -73,16 +73,6 @@ namespace ashes
 		*/ 
 		std::string dumpProperties()const;
 		/**
-		*\name
-		*	Getters.
-		*/
-		/**@{*/
-		inline std::string const & getShaderVersion()const
-		{
-			return m_shaderVersion;
-		}
-		/**@}*/
-		/**
 		*\brief
 		*	VkPhysicalDevice implicit cast operator.
 		*/
@@ -93,7 +83,6 @@ namespace ashes
 
 	private:
 		Instance const & m_instance;
-		std::string m_shaderVersion;
 		VkPhysicalDevice m_gpu{ VK_NULL_HANDLE };
 	};
 }
