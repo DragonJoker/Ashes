@@ -31,6 +31,10 @@ namespace ashes::gl
 {
 	namespace
 	{
+#ifndef GL_SUBPIXEL_BITS
+		static GLenum constexpr GL_SUBPIXEL_BITS = 0x0D50;
+#endif
+
 		static GLenum constexpr GL_MAX_3D_TEXTURE_SIZE = 0x8073;
 		static GLenum constexpr GL_MAX_ARRAY_TEXTURE_LAYERS = 0x88FF;
 		static GLenum constexpr GL_MAX_CLIP_DISTANCES = 0x0D32;
