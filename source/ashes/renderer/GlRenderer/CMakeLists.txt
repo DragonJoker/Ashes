@@ -593,11 +593,14 @@ if ( OpenGL_FOUND )
 		${PROJECT_NAME}
 		PARENT_SCOPE
 	)
-	set( ENABLED_PDBS
-		${ENABLED_PDBS}
-		$<TARGET_PDB_FILE:${PROJECT_NAME}>
-		PARENT_SCOPE
-	)
+
+	if ( MSVC )
+		set( ENABLED_PDBS
+			${ENABLED_PDBS}
+			$<TARGET_PDB_FILE:${PROJECT_NAME}>
+			PARENT_SCOPE
+		)
+	endif ()
 else ()
 	if ( NOT OpenGL_FOUND )
 		message( SEND_ERROR "OpenGL library not found." )
