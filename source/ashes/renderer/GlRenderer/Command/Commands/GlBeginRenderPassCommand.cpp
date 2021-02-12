@@ -177,8 +177,9 @@ namespace ashes::gl
 		stack.apply( list, preExecuteActions, 0u, ArrayView< VkViewport const >(), true );
 		stack.applySRGBStatus( list, get( frameBuffer )->isSRGB(), true );
 
-		if ( !stack.hasCurrentFramebuffer()
+		if ( ( !stack.hasCurrentFramebuffer()
 			|| stack.getCurrentFramebuffer() != frameBuffer )
+			&& get( frameBuffer )->getInternal() != GL_INVALID_INDEX )
 		{
 			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
 				, frameBuffer ) );
