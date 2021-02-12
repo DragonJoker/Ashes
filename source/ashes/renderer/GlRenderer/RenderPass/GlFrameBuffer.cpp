@@ -422,7 +422,7 @@ namespace ashes::gl
 		{
 			assert( getInternal() != GL_INVALID_INDEX );
 			auto & attachments = getAttachments();
-			auto & attaches = getColourAttaches();
+			auto & attaches = getRenderableAttaches();
 
 			for ( auto & reference : references )
 			{
