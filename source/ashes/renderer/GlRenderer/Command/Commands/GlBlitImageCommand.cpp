@@ -54,11 +54,13 @@ namespace ashes::gl
 				getAttachmentPoint( get( image )->getFormat() ),
 				get( image )->getInternal(),
 				getAttachmentType( get( image )->getFormat() ),
-				( get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT
-					? GL_TEXTURE_2D_MULTISAMPLE
-					: ( checkFlag( get( image )->getCreateFlags(), VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT )
-						? GL_TEXTURE_CUBE_POSITIVE_X
-						: GL_TEXTURE_2D ) ),
+				( ( get( image )->getType() == VK_IMAGE_TYPE_3D )
+					? GL_TEXTURE_3D
+					: ( get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT
+						? GL_TEXTURE_2D_MULTISAMPLE
+						: ( checkFlag( get( image )->getCreateFlags(), VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT )
+							? GL_TEXTURE_CUBE_POSITIVE_X
+							: GL_TEXTURE_2D ) ) ),
 				subresource.mipLevel,
 				0u,
 			};
@@ -85,9 +87,11 @@ namespace ashes::gl
 				getAttachmentPoint( subresource.aspectMask ),
 				get( image )->getInternal(),
 				getAttachmentType( subresource.aspectMask ),
-				get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT
-					? GL_TEXTURE_2D_MULTISAMPLE
-					: GL_TEXTURE_2D,
+				( ( get( image )->getType() == VK_IMAGE_TYPE_3D )
+					? GL_TEXTURE_3D
+					: ( get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT
+						? GL_TEXTURE_2D_MULTISAMPLE
+						: GL_TEXTURE_2D ) ),
 				subresource.mipLevel,
 				0u,
 			};
@@ -200,21 +204,45 @@ namespace ashes::gl
 
 			// Setup source FBO
 			list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_FRAMEBUFFER ) );
-			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
-				, layerCopy.src.point
-				, layerCopy.src.target
-				, layerCopy.src.object
-				, layerCopy.region.srcSubresource.mipLevel ) );
+
+			if ( layerCopy.src.target != GL_TEXTURE_3D )
+			{
+				list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
+					, layerCopy.src.point
+					, layerCopy.src.target
+					, layerCopy.src.object
+					, layerCopy.region.srcSubresource.mipLevel ) );
+			}
+			else
+			{
+				list.push_back( makeCmd< OpType::eFramebufferTexture >( GL_FRAMEBUFFER
+					, layerCopy.src.point
+					, layerCopy.src.object
+					, layerCopy.region.srcSubresource.mipLevel ) );
+			}
+
 			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
 				, nullptr ) );
 
 			// Setup dst FBO
 			list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_FRAMEBUFFER ) );
-			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
-				, layerCopy.dst.point
-				, layerCopy.dst.target
-				, layerCopy.dst.object
-				, layerCopy.region.dstSubresource.mipLevel ) );
+
+			if ( layerCopy.dst.target != GL_TEXTURE_3D )
+			{
+				list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
+					, layerCopy.dst.point
+					, layerCopy.dst.target
+					, layerCopy.dst.object
+					, layerCopy.region.dstSubresource.mipLevel ) );
+			}
+			else
+			{
+				list.push_back( makeCmd< OpType::eFramebufferTexture >( GL_FRAMEBUFFER
+					, layerCopy.dst.point
+					, layerCopy.dst.object
+					, layerCopy.region.dstSubresource.mipLevel ) );
+			}
+
 			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
 				, nullptr ) );
 
