@@ -32,20 +32,12 @@ namespace ashes::gl
 		{
 			BlockLocale()
 			{
-				m_prvLoc = std::locale( "" );
-
-				if ( m_prvLoc.name() != "C" )
-				{
-					std::locale::global( std::locale{ "C" } );
-				}
+				m_prvLoc = std::locale::global( std::locale{ "C" } );
 			}
 
 			~BlockLocale()
 			{
-				if ( m_prvLoc.name() != "C" )
-				{
-					std::locale::global( m_prvLoc );
-				}
+				std::locale::global( m_prvLoc );
 			}
 
 		private:
