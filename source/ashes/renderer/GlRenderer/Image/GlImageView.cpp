@@ -149,7 +149,7 @@ namespace ashes::gl
 					, GlTextureType( m_glviewType )
 					, GL_TEX_PARAMETER_VIEW_NUM_LEVELS
 					, &numLevels );
-				if ( minLevel != getSubresourceRange().levelCount )
+				if ( numLevels != getSubresourceRange().levelCount )
 				{
 					reportWarning( get( this )
 						, VK_SUCCESS
