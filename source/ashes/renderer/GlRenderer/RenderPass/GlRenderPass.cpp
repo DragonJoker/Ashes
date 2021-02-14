@@ -55,12 +55,25 @@ namespace ashes::gl
 
 		for ( auto & attach : m_attachments )
 		{
-			if ( isDepthOrStencilFormat( attach.format ) )
+			if ( isStencilFormat( attach.format ) )
 			{
 				m_hasDepthAttach = true;
 				m_depthAttaches.push_back( attach );
 
 				if ( attach.stencilLoadOp == VK_ATTACHMENT_LOAD_OP_CLEAR )
+				{
+					m_maxLoadClearIndex = ( m_maxLoadClearIndex == InvalidIndex
+						? index
+						: std::max( m_maxLoadClearIndex, index ) );
+				}
+			}
+			else if ( isDepthOrStencilFormat( attach.format ) )
+			{
+				m_hasDepthAttach = true;
+				m_depthAttaches.push_back( attach );
+
+				if ( attach.loadOp == VK_ATTACHMENT_LOAD_OP_CLEAR
+					|| attach.stencilLoadOp == VK_ATTACHMENT_LOAD_OP_CLEAR )
 				{
 					m_maxLoadClearIndex = ( m_maxLoadClearIndex == InvalidIndex
 						? index
