@@ -794,7 +794,7 @@ namespace ashes::gl
 	void buildBindDescriptorSetCommand( VkDevice device
 		, VkDescriptorSet descriptorSet
 		, uint32_t setIndex
-		, VkPipeline pipeline
+		, VkPipelineLayout pipelineLayout
 		, ArrayView< uint32_t const > const & dynamicOffsets
 		, uint32_t & dynamicOffsetIndex
 		, VkPipelineBindPoint bindingPoint
@@ -804,7 +804,7 @@ namespace ashes::gl
 			&& "Dynamic descriptors and dynamic offsets sizes must match." );
 		glLogCommand( list, "BindDescriptorSetCommand" );
 
-		auto & bindings = get( pipeline )->getDescriptorSetBindings( descriptorSet, setIndex );
+		auto & bindings = get( pipelineLayout )->getDescriptorSetBindings( descriptorSet, setIndex );
 
 		if ( setIndex != GL_INVALID_INDEX )
 		{

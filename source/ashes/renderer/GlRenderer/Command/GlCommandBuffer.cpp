@@ -510,9 +510,6 @@ namespace ashes::gl
 		, ArrayView < uint32_t const > dynamicOffsets )const
 	{
 		auto currentSet = firstSet;
-		auto pipeline = bindingPoint == VK_PIPELINE_BIND_POINT_GRAPHICS
-			? m_state.currentGraphicsPipeline
-			: m_state.currentComputePipeline;
 		doCheckPipelineLayoutCompatibility( layout
 			, ( bindingPoint == VK_PIPELINE_BIND_POINT_GRAPHICS
 				? m_state.currentGraphicsPipelineLayout
@@ -523,46 +520,14 @@ namespace ashes::gl
 		{
 			m_state.boundDescriptors.emplace( currentSet, descriptorSet );
 			doProcessMappedBoundDescriptorBuffersIn( descriptorSet );
-
-			if ( pipeline )
-			{
-				buildBindDescriptorSetCommand( m_device
-					, descriptorSet
-					, currentSet
-					, pipeline
-					, dynamicOffsets
-					, dynamicOffsetIndex
-					, bindingPoint
-					, m_cmdList );
-			}
-			else
-			{
-				std::vector< uint32_t > persistDynamicOffsets{ dynamicOffsets.begin(), dynamicOffsets.end() };
-				m_state.waitingDescriptors.emplace( currentSet
-					, [this, descriptorSet, persistDynamicOffsets, bindingPoint, currentSet]( VkDescriptorSet ds
-						, uint32_t & dynamicOffsetIndex )
-					{
-						if ( descriptorSet != ds )
-						{
-							dynamicOffsetIndex = 0u;
-						}
-
-						auto view = makeArrayView( persistDynamicOffsets.data()
-							, persistDynamicOffsets.data() + persistDynamicOffsets.size() );
-						buildBindDescriptorSetCommand( m_device
-							, descriptorSet
-							, currentSet
-							, ( bindingPoint == VK_PIPELINE_BIND_POINT_GRAPHICS
-								? m_state.currentGraphicsPipeline
-								: m_state.currentComputePipeline )
-							, view
-							, dynamicOffsetIndex
-							, bindingPoint
-							, m_cmdList );
-						return descriptorSet;
-					} );
-			}
-
+			buildBindDescriptorSetCommand( m_device
+				, descriptorSet
+				, currentSet
+				, layout
+				, dynamicOffsets
+				, dynamicOffsetIndex
+				, bindingPoint
+				, m_cmdList );
 			++currentSet;
 		}
 	}
