@@ -477,14 +477,14 @@ namespace ashes::gl
 		auto renderPass = get( m_renderPass );
 		uint32_t index = 0u;
 		uint32_t msIndex = 0u;
-		auto fboAttachIt = m_attachments.begin();
 
 		for ( auto & passAttach : renderPass->getFboAttachable() )
 		{
 			if ( passAttach.attachment != VK_ATTACHMENT_UNUSED )
 			{
 				bool multisampled{ false };
-				auto view = *fboAttachIt;
+				assert( passAttach.attachment < m_attachments.size() );
+				auto view = m_attachments[passAttach.attachment];
 				auto attachment = initialiseAttachment( m_device
 					, view
 					, ( ashes::isDepthOrStencilFormat( get( view )->getFormat() )
@@ -493,12 +493,10 @@ namespace ashes::gl
 							? msIndex++
 							: index++ ) )
 					, multisampled );
-				assert( fboAttachIt != m_attachments.end() );
 				auto attach = renderPass->getAttachment( passAttach );
 				doInitialiseAttach( attachment
 					, multisampled
 					, isSRGBFormat( get( view )->getFormat() ) );
-				++fboAttachIt;
 				m_renderableAttaches.push_back( attachment );
 			}
 		}
@@ -508,7 +506,8 @@ namespace ashes::gl
 			if ( passAttach.attachment != VK_ATTACHMENT_UNUSED )
 			{
 				bool multisampled{ false };
-				auto view = *fboAttachIt;
+				assert( passAttach.attachment < m_attachments.size() );
+				auto view = m_attachments[passAttach.attachment];
 				auto attachment = initialiseAttachment( m_device
 					, view
 					, ( ashes::isDepthOrStencilFormat( get( view )->getFormat() )
