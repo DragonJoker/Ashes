@@ -423,6 +423,24 @@ namespace ashes::gl
 		result.offset = pushConstants.offset;
 		result.size = pushConstants.size;
 		result.data = pushConstants.data;
+		auto range = pushConstants.data.size();
+		auto it = result.constants.begin();
+
+		while ( it != result.constants.end() )
+		{
+			if ( it->offset >= result.offset
+				&& ( it->offset - result.offset ) < range )
+			{
+				assert( ( it->offset - result.offset ) + it->size <= range );
+				it->offset -= result.offset;
+				++it;
+			}
+			else
+			{
+				it = result.constants.erase( it );
+			}
+		}
+
 		return result;
 	}
 
