@@ -36,7 +36,12 @@ namespace ashes::gl
 				{
 					auto & srcAttach = get( frameBuffer )->getMsColourAttaches()[index++];
 					auto & resolveAttaches = get( frameBuffer )->getResolveAttaches();
-					auto resolveIt = resolveAttaches.find( resolveAttach.attachment );
+					auto resolveIt = std::find_if( resolveAttaches.begin()
+						, resolveAttaches.end()
+						, [&resolveAttach]( FboAttachment const & lookup )
+						{
+							return lookup.referenceIndex == resolveAttach.attachment;
+						} );
 
 					if ( resolveIt == resolveAttaches.end() )
 					{
@@ -47,7 +52,7 @@ namespace ashes::gl
 						continue;
 					}
 
-					auto & dstAttach = resolveIt->second;
+					auto & dstAttach = *resolveIt;
 
 					if ( srcAttach.originalObject != dstAttach.originalObject
 						|| srcAttach.originalMipLevel != dstAttach.originalMipLevel )

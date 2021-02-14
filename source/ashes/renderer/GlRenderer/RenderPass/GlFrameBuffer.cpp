@@ -63,7 +63,8 @@ namespace ashes::gl
 			}
 		}
 
-		FboAttachment initialiseAttachment( VkImageView view
+		FboAttachment initialiseAttachment( uint32_t referenceIndex
+			, VkImageView view
 			, uint32_t index
 			, bool & multisampled )
 		{
@@ -75,6 +76,7 @@ namespace ashes::gl
 				, VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT );
 
 			FboAttachment attachment{};
+			attachment.referenceIndex = referenceIndex;
 			attachment.point = getAttachmentPoint( view );
 			attachment.type = getAttachmentType( view );
 			attachment.originalObject = get( image )->getInternal();
@@ -127,7 +129,8 @@ namespace ashes::gl
 			}
 		}
 
-		FboAttachment initialiseAttachment( VkImageView view
+		FboAttachment initialiseAttachment( uint32_t referenceIndex
+			, VkImageView view
 			, uint32_t index
 			, bool & multisampled )
 		{
@@ -135,6 +138,7 @@ namespace ashes::gl
 			multisampled = get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT;
 
 			FboAttachment attachment{};
+			attachment.referenceIndex = referenceIndex;
 			attachment.point = getAttachmentPoint( view );
 			attachment.type = getAttachmentType( view );
 			attachment.originalObject = get( image )->getInternal();
@@ -195,18 +199,21 @@ namespace ashes::gl
 	}
 
 	FboAttachment initialiseAttachment( VkDevice device
+		, uint32_t referenceIndex
 		, VkImageView view
 		, uint32_t index
 		, bool & multisampled )
 	{
 		if ( hasTextureViews( device ) )
 		{
-			return gl4::initialiseAttachment( view
+			return gl4::initialiseAttachment( referenceIndex
+				, view
 				, index
 				, multisampled );
 		}
 
-		return gl3::initialiseAttachment( view
+		return gl3::initialiseAttachment( referenceIndex
+			, view
 			, index
 			, multisampled );
 	}
@@ -400,7 +407,14 @@ namespace ashes::gl
 			{
 				if ( reference.attachment != VK_ATTACHMENT_UNUSED )
 				{
-					auto & attach = attaches[reference.attachment];
+					auto attachIt = std::find_if( attaches.begin()
+						, attaches.end()
+						, [&reference]( FboAttachment const & lookup )
+						{
+							return lookup.referenceIndex == reference.attachment;
+						} );
+					assert( attachIt != attaches.end() );
+					auto & attach = *attachIt;
 					drawBuffers.push_back( attach.point + attach.index );
 				}
 			}
@@ -433,7 +447,14 @@ namespace ashes::gl
 
 					if ( !isDepthOrStencilFormat( fboView->getFormat() ) )
 					{
-						auto & attach = attaches[reference.attachment];
+						auto attachIt = std::find_if( attaches.begin()
+							, attaches.end()
+							, [&reference]( FboAttachment const & lookup )
+							{
+								return lookup.referenceIndex == reference.attachment;
+							} );
+						assert( attachIt != attaches.end() );
+						auto & attach = *attachIt;
 						auto fboImage = get( fboView->getImage() );
 
 						if ( fboImage->hasInternal() )
@@ -486,6 +507,7 @@ namespace ashes::gl
 				assert( passAttach.attachment < m_attachments.size() );
 				auto view = m_attachments[passAttach.attachment];
 				auto attachment = initialiseAttachment( m_device
+					, passAttach.attachment
 					, view
 					, ( ashes::isDepthOrStencilFormat( get( view )->getFormat() )
 						? 0u
@@ -509,6 +531,7 @@ namespace ashes::gl
 				assert( passAttach.attachment < m_attachments.size() );
 				auto view = m_attachments[passAttach.attachment];
 				auto attachment = initialiseAttachment( m_device
+					, passAttach.attachment
 					, view
 					, ( ashes::isDepthOrStencilFormat( get( view )->getFormat() )
 						? 0u
@@ -516,7 +539,7 @@ namespace ashes::gl
 							? msIndex++
 							: index++ ) )
 					, multisampled );
-				m_resolveAttaches.emplace( passAttach.attachment, attachment );
+				m_resolveAttaches.push_back( attachment );
 			}
 		}
 	}

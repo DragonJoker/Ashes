@@ -147,7 +147,7 @@ namespace ashes::gl
 		VkExtent2D m_dimensions;
 		uint32_t m_layers;
 		FboAttachmentArray m_renderableAttaches;
-		std::map< uint32_t, FboAttachment > m_resolveAttaches;
+		FboAttachmentArray m_resolveAttaches;
 		FboAttachmentArray m_allColourAttaches;
 		FboAttachmentArray m_colourAttaches;
 		FboAttachmentArray m_colourMsAttaches;

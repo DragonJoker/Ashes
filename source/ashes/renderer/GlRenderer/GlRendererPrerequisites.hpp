@@ -185,6 +185,7 @@ namespace ashes::gl
 
 	struct FboAttachment
 	{
+		uint32_t referenceIndex;
 		GlAttachmentPoint point;
 		GLuint object;
 		GlAttachmentType type;
