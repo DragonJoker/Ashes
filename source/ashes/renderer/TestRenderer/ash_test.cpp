@@ -4156,6 +4156,9 @@ namespace ashes::test
 #if VK_NV_glsl_shader
 			VkExtensionProperties{ VK_NV_GLSL_SHADER_EXTENSION_NAME, VK_NV_GLSL_SHADER_SPEC_VERSION },
 #endif
+#if VK_KHR_portability_subset
+			VkExtensionProperties{ VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME, VK_KHR_PORTABILITY_SUBSET_SPEC_VERSION },
+#endif
 		};
 		return extensions;
 	}

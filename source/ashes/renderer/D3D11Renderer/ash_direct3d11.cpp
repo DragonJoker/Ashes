@@ -4113,6 +4113,9 @@ namespace ashes::d3d11
 #if VK_KHR_display
 			VkExtensionProperties{ VK_KHR_DISPLAY_EXTENSION_NAME, VK_KHR_DISPLAY_SPEC_VERSION },
 #endif
+#if VK_KHR_portability_subset
+			VkExtensionProperties{ VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME, VK_KHR_PORTABILITY_SUBSET_SPEC_VERSION },
+#endif
 		};
 		return extensions;
 	}
