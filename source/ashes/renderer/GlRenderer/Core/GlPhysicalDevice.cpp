@@ -26,267 +26,32 @@ See LICENSE file in root folder.
 #ifdef max
 #	undef max
 #endif
+#ifdef GL_TEXTURE_2D
+#undef GL_TEXTURE_2D
+#endif
+#ifdef GL_SUBPIXEL_BITS
+#undef GL_SUBPIXEL_BITS
+#endif
+#ifdef GL_MAX_TEXTURE_SIZE
+#undef GL_MAX_TEXTURE_SIZE
+#endif
+#ifdef GL_MAX_VIEWPORT_DIMS
+#undef GL_MAX_VIEWPORT_DIMS
+#endif
+#ifdef GL_POINT_SIZE_RANGE
+#undef GL_POINT_SIZE_RANGE
+#endif
+#ifdef GL_POINT_SIZE_GRANULARITY
+#undef GL_POINT_SIZE_GRANULARITY
+#endif
+#ifdef GL_LINE_WIDTH_GRANULARITY
+#undef GL_LINE_WIDTH_GRANULARITY
+#endif
 
 namespace ashes::gl
 {
 	namespace
 	{
-#ifndef GL_SUBPIXEL_BITS
-		static GLenum constexpr GL_SUBPIXEL_BITS = 0x0D50;
-#endif
-
-		static GLenum constexpr GL_MAX_3D_TEXTURE_SIZE = 0x8073;
-		static GLenum constexpr GL_MAX_ARRAY_TEXTURE_LAYERS = 0x88FF;
-		static GLenum constexpr GL_MAX_CLIP_DISTANCES = 0x0D32;
-		static GLenum constexpr GL_MAX_COLOR_ATTACHMENTS = 0x8CDF;
-		static GLenum constexpr GL_MAX_COLOR_TEXTURE_SAMPLES = 0x910E;
-		static GLenum constexpr GL_MAX_COMBINED_ATOMIC_COUNTERS = 0x92D7;
-		static GLenum constexpr GL_MAX_COMBINED_CLIP_AND_CULL_DISTANCES = 0x82FA;
-		static GLenum constexpr GL_MAX_COMBINED_COMPUTE_UNIFORM_COMPONENTS = 0x8266;
-		static GLenum constexpr GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS = 0x8A33;
-		static GLenum constexpr GL_MAX_COMBINED_IMAGE_UNIFORMS = 0x90CF;
-		static GLenum constexpr GL_MAX_COMBINED_SHADER_OUTPUT_RESOURCES = 0x8F39;
-		static GLenum constexpr GL_MAX_COMBINED_SHADER_STORAGE_BLOCKS = 0x90DC;
-		static GLenum constexpr GL_MAX_COMBINED_TESS_CONTROL_UNIFORM_COMPONENTS = 0x8E1E;
-		static GLenum constexpr GL_MAX_COMBINED_TESS_EVALUATION_UNIFORM_COMPONENTS = 0x8E1F;
-		static GLenum constexpr GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS = 0x8B4D;
-		static GLenum constexpr GL_MAX_COMBINED_UNIFORM_BLOCKS = 0x8A2E;
-		static GLenum constexpr GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS = 0x8A31;
-		static GLenum constexpr GL_MAX_COMPUTE_ATOMIC_COUNTER_BUFFERS = 0x8264;
-		static GLenum constexpr GL_MAX_COMPUTE_ATOMIC_COUNTERS = 0x8265;
-		static GLenum constexpr GL_MAX_COMPUTE_FIXED_GROUP_INVOCATIONS = 0x90EB;
-		static GLenum constexpr GL_MAX_COMPUTE_FIXED_GROUP_SIZE = 0x91BF;
-		static GLenum constexpr GL_MAX_COMPUTE_IMAGE_UNIFORMS = 0x91BD;
-		static GLenum constexpr GL_MAX_COMPUTE_SHADER_STORAGE_BLOCKS = 0x90DB;
-		static GLenum constexpr GL_MAX_COMPUTE_SHARED_MEMORY_SIZE = 0x8262;
-		static GLenum constexpr GL_MAX_COMPUTE_TEXTURE_IMAGE_UNITS = 0x91BC;
-		static GLenum constexpr GL_MAX_COMPUTE_UNIFORM_BLOCKS = 0x91BB;
-		static GLenum constexpr GL_MAX_COMPUTE_UNIFORM_COMPONENTS = 0x8263;
-		static GLenum constexpr GL_MAX_COMPUTE_VARIABLE_GROUP_INVOCATIONS = 0x9344;
-		static GLenum constexpr GL_MAX_COMPUTE_VARIABLE_GROUP_SIZE = 0x9345;
-		static GLenum constexpr GL_MAX_COMPUTE_WORK_GROUP_COUNT = 0x91BE;
-		static GLenum constexpr GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS = 0x90EB;
-		static GLenum constexpr GL_MAX_COMPUTE_WORK_GROUP_SIZE = 0x91BF;
-		static GLenum constexpr GL_MAX_CONVOLUTION_HEIGHT = 0x801B;
-		static GLenum constexpr GL_MAX_CONVOLUTION_WIDTH = 0x801A;
-		static GLenum constexpr GL_MAX_CUBE_MAP_TEXTURE_SIZE = 0x851C;
-		static GLenum constexpr GL_MAX_CULL_DISTANCES = 0x82F9;
-		static GLenum constexpr GL_MAX_DEPTH_TEXTURE_SAMPLES = 0x910F;
-		static GLenum constexpr GL_MAX_DRAW_BUFFERS = 0x8824;
-		static GLenum constexpr GL_MAX_DUAL_SOURCE_DRAW_BUFFERS = 0x88FC;
-		static GLenum constexpr GL_MAX_ELEMENTS_INDICES = 0x80E9;
-		static GLenum constexpr GL_MAX_ELEMENTS_VERTICES = 0x80E8;
-		static GLenum constexpr GL_MAX_FRAGMENT_ATOMIC_COUNTERS = 0x92D6;
-		static GLenum constexpr GL_MAX_FRAGMENT_IMAGE_UNIFORMS = 0x90CE;
-		static GLenum constexpr GL_MAX_FRAGMENT_INPUT_COMPONENTS = 0x9125;
-		static GLenum constexpr GL_MAX_FRAGMENT_INTERPOLATION_OFFSET = 0x8E5C;
-		static GLenum constexpr GL_MAX_FRAGMENT_SHADER_STORAGE_BLOCKS = 0x90DA;
-		static GLenum constexpr GL_MAX_FRAGMENT_UNIFORM_BLOCKS = 0x8A2D;
-		static GLenum constexpr GL_MAX_FRAGMENT_UNIFORM_COMPONENTS = 0x8B49;
-		static GLenum constexpr GL_MAX_FRAMEBUFFER_HEIGHT = 0x9316;
-		static GLenum constexpr GL_MAX_FRAMEBUFFER_LAYERS = 0x9317;
-		static GLenum constexpr GL_MAX_FRAMEBUFFER_SAMPLES = 0x9318;
-		static GLenum constexpr GL_MAX_FRAMEBUFFER_WIDTH = 0x9315;
-		static GLenum constexpr GL_MAX_GEOMETRY_ATOMIC_COUNTERS = 0x92D5;
-		static GLenum constexpr GL_MAX_GEOMETRY_IMAGE_UNIFORMS = 0x90CD;
-		static GLenum constexpr GL_MAX_GEOMETRY_INPUT_COMPONENTS = 0x9123;
-		static GLenum constexpr GL_MAX_GEOMETRY_OUTPUT_COMPONENTS = 0x9124;
-		static GLenum constexpr GL_MAX_GEOMETRY_OUTPUT_VERTICES = 0x8DE0;
-		static GLenum constexpr GL_MAX_GEOMETRY_SHADER_INVOCATIONS = 0x8E5A;
-		static GLenum constexpr GL_MAX_GEOMETRY_SHADER_STORAGE_BLOCKS = 0x90D7;
-		static GLenum constexpr GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS = 0x8C29;
-		static GLenum constexpr GL_MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS = 0x8DE1;
-		static GLenum constexpr GL_MAX_GEOMETRY_UNIFORM_BLOCKS = 0x8A2C;
-		static GLenum constexpr GL_MAX_GEOMETRY_UNIFORM_COMPONENTS = 0x8DDF;
-		static GLenum constexpr GL_MAX_GEOMETRY_VARYING_COMPONENTS = 0x8DDD;
-		static GLenum constexpr GL_MAX_IMAGE_SAMPLES = 0x906D;
-		static GLenum constexpr GL_MAX_IMAGE_UNITS = 0x8F38;
-		static GLenum constexpr GL_MAX_INTEGER_SAMPLES = 0x9110;
-		static GLenum constexpr GL_MAX_PATCH_VERTICES = 0x8E7D;
-		static GLenum constexpr GL_MAX_PROGRAM_ALU_INSTRUCTIONS = 0x880B;
-		static GLenum constexpr GL_MAX_PROGRAM_NATIVE_ALU_INSTRUCTIONS = 0x880E;
-		static GLenum constexpr GL_MAX_PROGRAM_NATIVE_TEX_INDIRECTIONS = 0x8810;
-		static GLenum constexpr GL_MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS = 0x880F;
-		static GLenum constexpr GL_MAX_PROGRAM_TEX_INDIRECTIONS = 0x880D;
-		static GLenum constexpr GL_MAX_PROGRAM_TEX_INSTRUCTIONS = 0x880C;
-		static GLenum constexpr GL_MAX_PROGRAM_TEXEL_OFFSET = 0x8905;
-		static GLenum constexpr GL_MAX_PROGRAM_TEXTURE_GATHER_COMPONENTS = 0x8F9F;
-		static GLenum constexpr GL_MAX_PROGRAM_TEXTURE_GATHER_OFFSET = 0x8E5F;
-		static GLenum constexpr GL_MAX_RECTANGLE_TEXTURE_SIZE = 0x84F8;
-		static GLenum constexpr GL_MAX_SAMPLE_MASK_WORDS = 0x8E59;
-		static GLenum constexpr GL_MAX_SAMPLES = 0x8D57;
-		static GLenum constexpr GL_MAX_SERVER_WAIT_TIMEOUT = 0x9111;
-		static GLenum constexpr GL_MAX_SHADER_STORAGE_BLOCK_SIZE = 0x90DE;
-		static GLenum constexpr GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS = 0x90DD;
-		static GLenum constexpr GL_MAX_SUBROUTINE_UNIFORM_LOCATIONS = 0x8DE8;
-		static GLenum constexpr GL_MAX_SUBROUTINES = 0x8DE7;
-		static GLenum constexpr GL_MAX_TESS_CONTROL_ATOMIC_COUNTERS = 0x92D3;
-		static GLenum constexpr GL_MAX_TESS_CONTROL_IMAGE_UNIFORMS = 0x90CB;
-		static GLenum constexpr GL_MAX_TESS_CONTROL_INPUT_COMPONENTS = 0x886C;
-		static GLenum constexpr GL_MAX_TESS_CONTROL_OUTPUT_COMPONENTS = 0x8E83;
-		static GLenum constexpr GL_MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS = 0x90D8;
-		static GLenum constexpr GL_MAX_TESS_CONTROL_TEXTURE_IMAGE_UNITS = 0x8E81;
-		static GLenum constexpr GL_MAX_TESS_CONTROL_TOTAL_OUTPUT_COMPONENTS = 0x8E85;
-		static GLenum constexpr GL_MAX_TESS_CONTROL_UNIFORM_BLOCKS = 0x8E89;
-		static GLenum constexpr GL_MAX_TESS_CONTROL_UNIFORM_COMPONENTS = 0x8E7F;
-		static GLenum constexpr GL_MAX_TESS_EVALUATION_ATOMIC_COUNTERS = 0x92D4;
-		static GLenum constexpr GL_MAX_TESS_EVALUATION_IMAGE_UNIFORMS = 0x90CC;
-		static GLenum constexpr GL_MAX_TESS_EVALUATION_INPUT_COMPONENTS = 0x886D;
-		static GLenum constexpr GL_MAX_TESS_EVALUATION_OUTPUT_COMPONENTS = 0x8E86;
-		static GLenum constexpr GL_MAX_TESS_EVALUATION_SHADER_STORAGE_BLOCKS = 0x90D9;
-		static GLenum constexpr GL_MAX_TESS_EVALUATION_TEXTURE_IMAGE_UNITS = 0x8E82;
-		static GLenum constexpr GL_MAX_TESS_EVALUATION_UNIFORM_BLOCKS = 0x8E8A;
-		static GLenum constexpr GL_MAX_TESS_EVALUATION_UNIFORM_COMPONENTS = 0x8E80;
-		static GLenum constexpr GL_MAX_TESS_GEN_LEVEL = 0x8E7E;
-		static GLenum constexpr GL_MAX_TESS_PATCH_COMPONENTS = 0x8E84;
-		static GLenum constexpr GL_MAX_TEXTURE_BUFFER_SIZE = 0x8C2B;
-		static GLenum constexpr GL_MAX_TEXTURE_COORDS = 0x8871;
-		static GLenum constexpr GL_MAX_TEXTURE_IMAGE_UNITS = 0x8872;
-		static GLenum constexpr GL_MAX_TEXTURE_LOD_BIAS = 0x84FD;
-		static GLenum constexpr GL_MAX_TEXTURE_MAX_ANISOTROPY = 0x84FF;
-		static GLenum constexpr GL_MAX_UNIFORM_BLOCK_SIZE = 0x8A30;
-		static GLenum constexpr GL_MAX_UNIFORM_BUFFER_BINDINGS = 0x8A2F;
-		static GLenum constexpr GL_UNIFORM_BUFFER_SIZE = 0x8A2A;
-		static GLenum constexpr GL_MAX_UNIFORM_LOCATIONS = 0x826E;
-		static GLenum constexpr GL_MAX_VARYING_FLOATS = 0x8B4B;
-		static GLenum constexpr GL_MAX_VERTEX_ATOMIC_COUNTERS = 0x92D2;
-		static GLenum constexpr GL_MAX_VERTEX_ATTRIB_BINDINGS = 0x82DA;
-		static GLenum constexpr GL_MAX_VERTEX_ATTRIB_RELATIVE_OFFSET = 0x82D9;
-		static GLenum constexpr GL_MAX_VERTEX_ATTRIB_STRIDE = 0x82E5;
-		static GLenum constexpr GL_MAX_VERTEX_ATTRIBS = 0x8869;
-		static GLenum constexpr GL_MAX_VERTEX_IMAGE_UNIFORMS = 0x90CA;
-		static GLenum constexpr GL_MAX_VERTEX_OUTPUT_COMPONENTS = 0x9122;
-		static GLenum constexpr GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS = 0x90D6;
-		static GLenum constexpr GL_MAX_VERTEX_STREAMS = 0x8E71;
-		static GLenum constexpr GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS = 0x8B4C;
-		static GLenum constexpr GL_MAX_VERTEX_UNIFORM_BLOCKS = 0x8A2B;
-		static GLenum constexpr GL_MAX_VERTEX_UNIFORM_COMPONENTS = 0x8B4A;
-		static GLenum constexpr GL_MAX_VERTEX_UNITS = 0x86A4;
-		static GLenum constexpr GL_MAX_VERTEX_VARYING_COMPONENTS = 0x8DDE;
-		static GLenum constexpr GL_MAX_VIEWPORTS = 0x825B;
-		static GLenum constexpr GL_MIN_FRAGMENT_INTERPOLATION_OFFSET = 0x8E5B;
-		static GLenum constexpr GL_MIN_LOD_WARNING = 0x919C;// AMD
-		static GLenum constexpr GL_MIN_PROGRAM_TEXEL_OFFSET = 0x8904;
-		static GLenum constexpr GL_MIN_PROGRAM_TEXTURE_GATHER_OFFSET = 0x8E5E;
-		static GLenum constexpr GL_MIN_SAMPLE_SHADING_VALUE = 0x8C37;
-		static GLenum constexpr GL_MIN_SPARSE_LEVEL = 0x919B;// AMD
-
-		static GLenum constexpr GL_SAMPLES = 0x80A9;
-		static GLenum constexpr GL_NUM_SAMPLE_COUNTS = 0x9380;
-		static GLenum constexpr GL_INTERNALFORMAT_SUPPORTED = 0x826F;
-		static GLenum constexpr GL_INTERNALFORMAT_PREFERRED = 0x8270;
-		static GLenum constexpr GL_INTERNALFORMAT_RED_SIZE = 0x8271;
-		static GLenum constexpr GL_INTERNALFORMAT_GREEN_SIZE = 0x8272;
-		static GLenum constexpr GL_INTERNALFORMAT_BLUE_SIZE = 0x8273;
-		static GLenum constexpr GL_INTERNALFORMAT_ALPHA_SIZE = 0x8274;
-		static GLenum constexpr GL_INTERNALFORMAT_DEPTH_SIZE = 0x8275;
-		static GLenum constexpr GL_INTERNALFORMAT_STENCIL_SIZE = 0x8276;
-		static GLenum constexpr GL_INTERNALFORMAT_SHARED_SIZE = 0x8277;
-		static GLenum constexpr GL_INTERNALFORMAT_RED_TYPE = 0x8278;
-		static GLenum constexpr GL_INTERNALFORMAT_GREEN_TYPE = 0x8279;
-		static GLenum constexpr GL_INTERNALFORMAT_BLUE_TYPE = 0x827A;
-		static GLenum constexpr GL_INTERNALFORMAT_ALPHA_TYPE = 0x827B;
-		static GLenum constexpr GL_INTERNALFORMAT_DEPTH_TYPE = 0x827C;
-		static GLenum constexpr GL_INTERNALFORMAT_STENCIL_TYPE = 0x827D;
-		static GLenum constexpr GL_MAX_WIDTH = 0x827E;
-		static GLenum constexpr GL_MAX_HEIGHT = 0x827F;
-		static GLenum constexpr GL_MAX_DEPTH = 0x8280;
-		static GLenum constexpr GL_MAX_LAYERS = 0x8281;
-		static GLenum constexpr GL_MAX_COMBINED_DIMENSIONS = 0x8282;
-		static GLenum constexpr GL_COLOR_COMPONENTS = 0x8283;
-		static GLenum constexpr GL_DEPTH_COMPONENTS = 0x8284;
-		static GLenum constexpr GL_STENCIL_COMPONENTS = 0x8285;
-		static GLenum constexpr GL_COLOR_RENDERABLE = 0x8286;
-		static GLenum constexpr GL_DEPTH_RENDERABLE = 0x8287;
-		static GLenum constexpr GL_STENCIL_RENDERABLE = 0x8288;
-		static GLenum constexpr GL_FRAMEBUFFER_RENDERABLE = 0x8289;
-		static GLenum constexpr GL_FRAMEBUFFER_RENDERABLE_LAYERED = 0x828A;
-		static GLenum constexpr GL_FRAMEBUFFER_BLEND = 0x828B;
-		static GLenum constexpr GL_READ_PIXELS = 0x828C;
-		static GLenum constexpr GL_READ_PIXELS_FORMAT = 0x828D;
-		static GLenum constexpr GL_READ_PIXELS_TYPE = 0x828E;
-		static GLenum constexpr GL_TEXTURE_IMAGE_FORMAT = 0x828F;
-		static GLenum constexpr GL_TEXTURE_IMAGE_TYPE = 0x8290;
-		static GLenum constexpr GL_GET_TEXTURE_IMAGE_FORMAT = 0x8291;
-		static GLenum constexpr GL_GET_TEXTURE_IMAGE_TYPE = 0x8292;
-		static GLenum constexpr GL_MIPMAP = 0x8293;
-		static GLenum constexpr GL_MANUAL_GENERATE_MIPMAP = 0x8294;
-		static GLenum constexpr GL_AUTO_GENERATE_MIPMAP = 0x8295;
-		static GLenum constexpr GL_COLOR_ENCODING = 0x8296;
-		static GLenum constexpr GL_SRGB_READ = 0x8297;
-		static GLenum constexpr GL_SRGB_WRITE = 0x8298;
-		static GLenum constexpr GL_SRGB_DECODE_ARB = 0x8299;
-		static GLenum constexpr GL_FILTER = 0x829A;
-		static GLenum constexpr GL_VERTEX_TEXTURE = 0x829B;
-		static GLenum constexpr GL_TESS_CONTROL_TEXTURE = 0x829C;
-		static GLenum constexpr GL_TESS_EVALUATION_TEXTURE = 0x829D;
-		static GLenum constexpr GL_GEOMETRY_TEXTURE = 0x829E;
-		static GLenum constexpr GL_FRAGMENT_TEXTURE = 0x829F;
-		static GLenum constexpr GL_COMPUTE_TEXTURE = 0x82A0;
-		static GLenum constexpr GL_TEXTURE_SHADOW = 0x82A1;
-		static GLenum constexpr GL_TEXTURE_GATHER = 0x82A2;
-		static GLenum constexpr GL_TEXTURE_GATHER_SHADOW = 0x82A3;
-		static GLenum constexpr GL_SHADER_IMAGE_LOAD = 0x82A4;
-		static GLenum constexpr GL_SHADER_IMAGE_STORE = 0x82A5;
-		static GLenum constexpr GL_SHADER_IMAGE_ATOMIC = 0x82A6;
-		static GLenum constexpr GL_IMAGE_TEXEL_SIZE = 0x82A7;
-		static GLenum constexpr GL_IMAGE_COMPATIBILITY_CLASS = 0x82A8;
-		static GLenum constexpr GL_IMAGE_PIXEL_FORMAT = 0x82A9;
-		static GLenum constexpr GL_IMAGE_PIXEL_TYPE = 0x82AA;
-		static GLenum constexpr GL_IMAGE_FORMAT_COMPATIBILITY_TYPE = 0x90C7;
-		static GLenum constexpr GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_TEST = 0x82AC;
-		static GLenum constexpr GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_TEST = 0x82AD;
-		static GLenum constexpr GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_WRITE = 0x82AE;
-		static GLenum constexpr GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_WRITE = 0x82AF;
-		static GLenum constexpr GL_TEXTURE_COMPRESSED = 0x86A1;
-		static GLenum constexpr GL_TEXTURE_COMPRESSED_BLOCK_WIDTH = 0x82B1;
-		static GLenum constexpr GL_TEXTURE_COMPRESSED_BLOCK_HEIGHT = 0x82B2;
-		static GLenum constexpr GL_TEXTURE_COMPRESSED_BLOCK_SIZE = 0x82B3;
-		static GLenum constexpr GL_CLEAR_BUFFER = 0x82B4;
-		static GLenum constexpr GL_TEXTURE_VIEW = 0x82B5;
-		static GLenum constexpr GL_VIEW_COMPATIBILITY_CLASS = 0x82B6;
-
-		static GLenum constexpr GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX = 0x9048;
-		static GLenum constexpr GL_TEXTURE_FREE_MEMORY_ATI = 0x87FC;
-
-		static GLenum constexpr GL_FULL_SUPPORT = 0x82B7;
-		static GLenum constexpr GL_CAVEAT_SUPPORT = 0x82B8;
-		static GLenum constexpr GL_IMAGE_CLASS_4_X_32 = 0x82B9;
-		static GLenum constexpr GL_IMAGE_CLASS_2_X_32 = 0x82BA;
-		static GLenum constexpr GL_IMAGE_CLASS_1_X_32 = 0x82BB;
-		static GLenum constexpr GL_IMAGE_CLASS_4_X_16 = 0x82BC;
-		static GLenum constexpr GL_IMAGE_CLASS_2_X_16 = 0x82BD;
-		static GLenum constexpr GL_IMAGE_CLASS_1_X_16 = 0x82BE;
-		static GLenum constexpr GL_IMAGE_CLASS_4_X_8 = 0x82BF;
-		static GLenum constexpr GL_IMAGE_CLASS_2_X_8 = 0x82C0;
-		static GLenum constexpr GL_IMAGE_CLASS_1_X_8 = 0x82C1;
-		static GLenum constexpr GL_IMAGE_CLASS_11_11_10 = 0x82C2;
-		static GLenum constexpr GL_IMAGE_CLASS_10_10_10_2 = 0x82C3;
-		static GLenum constexpr GL_VIEW_CLASS_128_BITS = 0x82C4;
-		static GLenum constexpr GL_VIEW_CLASS_96_BITS = 0x82C5;
-		static GLenum constexpr GL_VIEW_CLASS_64_BITS = 0x82C6;
-		static GLenum constexpr GL_VIEW_CLASS_48_BITS = 0x82C7;
-		static GLenum constexpr GL_VIEW_CLASS_32_BITS = 0x82C8;
-		static GLenum constexpr GL_VIEW_CLASS_24_BITS = 0x82C9;
-		static GLenum constexpr GL_VIEW_CLASS_16_BITS = 0x82CA;
-		static GLenum constexpr GL_VIEW_CLASS_8_BITS = 0x82CB;
-		static GLenum constexpr GL_VIEW_CLASS_S3TC_DXT1_RGB = 0x82CC;
-		static GLenum constexpr GL_VIEW_CLASS_S3TC_DXT1_RGBA = 0x82CD;
-		static GLenum constexpr GL_VIEW_CLASS_S3TC_DXT3_RGBA = 0x82CE;
-		static GLenum constexpr GL_VIEW_CLASS_S3TC_DXT5_RGBA = 0x82CF;
-		static GLenum constexpr GL_VIEW_CLASS_RGTC1_RED = 0x82D0;
-		static GLenum constexpr GL_VIEW_CLASS_RGTC2_RG = 0x82D1;
-		static GLenum constexpr GL_VIEW_CLASS_BPTC_UNORM = 0x82D2;
-		static GLenum constexpr GL_VIEW_CLASS_BPTC_FLOAT = 0x82D3;
-
-#if !defined( _WIN32 )
-		static GLenum constexpr GL_MAX_TEXTURE_SIZE = 0x0D33;
-		static GLenum constexpr GL_MAX_VIEWPORT_DIMS = 0x0D3A;
-		static GLenum constexpr GL_POINT_SIZE_RANGE = 0x0B12;
-		static GLenum constexpr GL_POINT_SIZE_GRANULARITY = 0x0B13;
-		static GLenum constexpr GL_LINE_WIDTH_GRANULARITY = 0x0B23;
-#endif
-
 		size_t makeKey( VkFormat format
 			, VkImageType type
 			, VkImageTiling tiling
@@ -460,21 +225,22 @@ namespace ashes::gl
 						imageFormatProperties.maxExtent.height = 1u;
 						imageFormatProperties.maxExtent.depth = 1u;
 
-						if ( type == VK_IMAGE_TYPE_2D
-							|| type == VK_IMAGE_TYPE_3D )
+						if ( type == VK_IMAGE_TYPE_2D )
 						{
-							glLogCall( context, glGetInternalformativ, GL_TEXTURE_2D, internal, GL_MAX_HEIGHT, 1, &value );
+							glLogCall( context, glGetInternalformativ, gltype, internal, GL_MAX_HEIGHT, 1, &value );
+							imageFormatProperties.maxExtent.height = uint32_t( value );
+						}
+						else if ( type == VK_IMAGE_TYPE_3D )
+						{
+							glLogCall( context, glGetInternalformativ, GL_TEXTURE_3D, internal, GL_MAX_HEIGHT, 1, &value );
 							imageFormatProperties.maxExtent.height = uint32_t( value );
 
-							if ( type == VK_IMAGE_TYPE_3D )
-							{
-								glLogCall( context, glGetInternalformativ, GL_TEXTURE_3D, internal, GL_MAX_DEPTH, 1, &value );
-								imageFormatProperties.maxExtent.depth = uint32_t( value );
-							}
+							glLogCall( context, glGetInternalformativ, GL_TEXTURE_3D, internal, GL_MAX_DEPTH, 1, &value );
+							imageFormatProperties.maxExtent.depth = uint32_t( value );
 						}
 
 						glLogCall( context, glGetInternalformativ, gltype, internal, GL_SAMPLES, 1, &value );
-						imageFormatProperties.sampleCounts = VkSampleCountFlagBits( value );
+						imageFormatProperties.sampleCounts = std::min( VK_SAMPLE_COUNT_1_BIT, VkSampleCountFlagBits( value ) );
 
 						glLogCall( context, glGetInternalformativ, gltype, internal, GL_IMAGE_TEXEL_SIZE, 1, &value );
 						VkDeviceSize texelSize = VkDeviceSize( value );
@@ -483,9 +249,21 @@ namespace ashes::gl
 						glLogCall( context, glGetInternalformativ, gltype, internal, GL_MAX_LAYERS, 1, &value );
 						imageFormatProperties.maxArrayLayers = uint32_t( value );
 
-						pair.first->second.second = imageFormatProperties.maxExtent.width == 0u
-							? VK_ERROR_FORMAT_NOT_SUPPORTED
-							: VK_SUCCESS;
+						if ( imageFormatProperties.maxExtent.width > 0u )
+						{
+							imageFormatProperties.maxMipLevels = getMaxMipCount( imageFormatProperties.maxExtent );
+							imageFormatProperties.maxResourceSize = getLevelsSize( imageFormatProperties.maxExtent
+								, format
+								, 0u
+								, imageFormatProperties.maxMipLevels
+								, uint32_t( getBlockSize( format ).size ) );
+							pair.first->second.second = VK_SUCCESS;
+						}
+						else
+						{
+							imageFormatProperties.maxMipLevels = 0u;
+							pair.first->second.second = VK_ERROR_FORMAT_NOT_SUPPORTED;
+						}
 					}
 				}
 			}
@@ -856,8 +634,8 @@ namespace ashes::gl
 		doGetValue( context, GL_MAX_COLOR_ATTACHMENTS, m_properties.limits.maxFragmentCombinedOutputResources );
 		doGetValue( context, GL_MAX_COMPUTE_SHARED_MEMORY_SIZE, m_properties.limits.maxComputeSharedMemorySize );
 		doGetValuesI( context, GL_MAX_COMPUTE_WORK_GROUP_COUNT, m_properties.limits.maxComputeWorkGroupCount );
-		doGetValue( context, GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, m_properties.limits.maxComputeWorkGroupInvocations );
-		doGetValuesI( context, GL_MAX_COMPUTE_WORK_GROUP_SIZE, m_properties.limits.maxComputeWorkGroupSize );
+		doGetValue( context, GL_MAX_COMPUTE_FIXED_GROUP_INVOCATIONS, m_properties.limits.maxComputeWorkGroupInvocations );
+		doGetValuesI( context, GL_MAX_COMPUTE_FIXED_GROUP_SIZE, m_properties.limits.maxComputeWorkGroupSize );
 		doGetValue( context, GL_SUBPIXEL_BITS, m_properties.limits.subPixelPrecisionBits );
 		m_properties.limits.subTexelPrecisionBits = m_properties.limits.subPixelPrecisionBits;
 		m_properties.limits.mipmapPrecisionBits = NonAvailable< uint32_t >;
@@ -867,7 +645,8 @@ namespace ashes::gl
 		doGetValue( context, GL_MAX_TEXTURE_MAX_ANISOTROPY, m_properties.limits.maxSamplerAnisotropy );
 		doGetValue( context, GL_MAX_VIEWPORTS, m_properties.limits.maxViewports );
 		doGetValues( context, GL_MAX_VIEWPORT_DIMS, m_properties.limits.maxViewportDimensions );
-		doGetValues( context, GL_MAX_VIEWPORT_DIMS, m_properties.limits.viewportBoundsRange );
+		m_properties.limits.viewportBoundsRange[0] = -2.0f * std::max( m_properties.limits.maxViewportDimensions[0], m_properties.limits.maxViewportDimensions[1] );
+		m_properties.limits.viewportBoundsRange[1] = 2.0f * std::max( m_properties.limits.maxViewportDimensions[0], m_properties.limits.maxViewportDimensions[1] );
 		m_properties.limits.viewportSubPixelBits = m_properties.limits.subPixelPrecisionBits;
 		m_properties.limits.minMemoryMapAlignment = DefaultAlign< size_t >;
 		m_properties.limits.minTexelBufferOffsetAlignment = DefaultAlign< VkDeviceSize >;
@@ -919,8 +698,6 @@ namespace ashes::gl
 
 	void PhysicalDevice::doInitialiseMemoryProperties( ContextLock & context )
 	{
-		static GLenum constexpr GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX = 0x9048;
-		static GLenum constexpr GL_TEXTURE_FREE_MEMORY_ATI = 0x87FC;
 		VkDeviceSize memSizeNV{};
 		uint32_t memSizeAMD[4]{};
 		doGetValue( context, GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, memSizeNV );
@@ -937,6 +714,11 @@ namespace ashes::gl
 			{
 				memSizeNV = ~( 0ull );
 			}
+		}
+		else
+		{
+			// GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX returns size in kilobytes.
+			memSizeNV *= 1024;
 		}
 
 		// Emulate one device local heap
@@ -1087,6 +869,66 @@ namespace ashes::gl
 						}
 #endif
 					}
+
+					if ( !isCompressedFormat( fmt ) )
+					{
+						GlType dataType = getType( internal );
+						m_formatProperties[fmt].bufferFeatures = 0u;
+
+						switch ( dataType )
+						{
+						case ashes::gl::GL_TYPE_I8:
+							break;
+						case ashes::gl::GL_TYPE_UI8:
+							m_formatProperties[fmt].bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
+							break;
+						case ashes::gl::GL_TYPE_I16:
+							m_formatProperties[fmt].bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
+							break;
+						case ashes::gl::GL_TYPE_UI16:
+							m_formatProperties[fmt].bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
+							break;
+						case ashes::gl::GL_TYPE_I32:
+							m_formatProperties[fmt].bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
+							break;
+						case ashes::gl::GL_TYPE_UI32:
+							m_formatProperties[fmt].bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
+							break;
+						case ashes::gl::GL_TYPE_F32:
+							m_formatProperties[fmt].bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
+							break;
+						case ashes::gl::GL_TYPE_F16:
+							m_formatProperties[fmt].bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
+							break;
+						case ashes::gl::GL_TYPE_US4444:
+							break;
+						case ashes::gl::GL_TYPE_US5551:
+							break;
+						case ashes::gl::GL_TYPE_UI8888:
+							break;
+						case ashes::gl::GL_TYPE_UI_10_10_10_2:
+							m_formatProperties[fmt].bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
+							break;
+						case ashes::gl::GL_TYPE_UI565:
+							break;
+						case ashes::gl::GL_TYPE_UI8888_REV:
+							break;
+						case ashes::gl::GL_TYPE_UI_2_10_10_10:
+							m_formatProperties[fmt].bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
+							break;
+						case ashes::gl::GL_TYPE_UI24_8:
+							break;
+						case ashes::gl::GL_TYPE_32F_UI24_8:
+							break;
+						case ashes::gl::GL_UI_5_9_9_9:
+							break;
+						case ashes::gl::GL_UI_10F_11F_11F:
+							m_formatProperties[fmt].bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
+							break;
+						default:
+							break;
+						}
+					}
 				}
 
 				m_formatProperties[fmt].linearTilingFeatures = m_formatProperties[fmt].optimalTilingFeatures;
@@ -1167,7 +1009,14 @@ namespace ashes::gl
 	{
 #if VK_VERSION_1_1
 #	if VK_KHR_portability_subset
-		m_features2.pNext = &m_portabilityFeatures;
+		if ( get( m_instance )->hasEnabledExtension( VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME ) )
+		{
+			m_features2.pNext = &m_portabilityFeatures;
+		}
+		else
+		{
+			m_features2.pNext = nullptr;
+		}
 #	else
 		m_features2.pNext = nullptr;
 #	endif
@@ -1268,14 +1117,14 @@ namespace ashes::gl
 #	endif
 	}
 
-	void PhysicalDevice::doGetValue( ContextLock & context, GLenum name, int32_t & value )const
+	void PhysicalDevice::doGetValue( ContextLock & context, GlGetParameter name, int32_t & value )const
 	{
 		glLogCall( context, glGetIntegerv
 			, name
 			, &value );
 	}
 
-	void PhysicalDevice::doGetValue( ContextLock & context, GLenum name, uint32_t & value )const
+	void PhysicalDevice::doGetValue( ContextLock & context, GlGetParameter name, uint32_t & value )const
 	{
 		int v;
 		glLogCall( context, glGetIntegerv
@@ -1284,14 +1133,14 @@ namespace ashes::gl
 		value = uint32_t( v );
 	}
 
-	void PhysicalDevice::doGetValues( ContextLock & context, GLenum name, int32_t( &value )[2] )const
+	void PhysicalDevice::doGetValues( ContextLock & context, GlGetParameter name, int32_t( &value )[2] )const
 	{
 		glLogCall( context, glGetIntegerv
 			, name
 			, value );
 	}
 
-	void PhysicalDevice::doGetValues( ContextLock & context, GLenum name, uint32_t( &value )[2] )const
+	void PhysicalDevice::doGetValues( ContextLock & context, GlGetParameter name, uint32_t( &value )[2] )const
 	{
 		int v[2];
 		glLogCall( context, glGetIntegerv
@@ -1301,14 +1150,14 @@ namespace ashes::gl
 		value[1] = v[1];
 	}
 
-	void PhysicalDevice::doGetValues( ContextLock & context, GLenum name, int32_t( &value )[3] )const
+	void PhysicalDevice::doGetValues( ContextLock & context, GlGetParameter name, int32_t( &value )[3] )const
 	{
 		glLogCall( context, glGetIntegerv
 			, name
 			, value );
 	}
 
-	void PhysicalDevice::doGetValues( ContextLock & context, GLenum name, uint32_t( &value )[3] )const
+	void PhysicalDevice::doGetValues( ContextLock & context, GlGetParameter name, uint32_t( &value )[3] )const
 	{
 		int v[3];
 		glLogCall( context, glGetIntegerv
@@ -1319,14 +1168,14 @@ namespace ashes::gl
 		value[2] = v[2];
 	}
 
-	void PhysicalDevice::doGetValues( ContextLock & context, GLenum name, int32_t( &value )[4] )const
+	void PhysicalDevice::doGetValues( ContextLock & context, GlGetParameter name, int32_t( &value )[4] )const
 	{
 		glLogCall( context, glGetIntegerv
 			, name
 			, value );
 	}
 
-	void PhysicalDevice::doGetValues( ContextLock & context, GLenum name, uint32_t( &value )[4] )const
+	void PhysicalDevice::doGetValues( ContextLock & context, GlGetParameter name, uint32_t( &value )[4] )const
 	{
 		int v[4];
 		glLogCall( context, glGetIntegerv
@@ -1338,7 +1187,7 @@ namespace ashes::gl
 		value[3] = v[3];
 	}
 
-	void PhysicalDevice::doGetValuesI( ContextLock & context, GLenum name, int32_t( &value )[2] )const
+	void PhysicalDevice::doGetValuesI( ContextLock & context, GlGetParameter name, int32_t( &value )[2] )const
 	{
 		glLogCall( context, glGetIntegeri_v
 			, name
@@ -1350,7 +1199,7 @@ namespace ashes::gl
 			, &value[1] );
 	}
 
-	void PhysicalDevice::doGetValuesI( ContextLock & context, GLenum name, uint32_t( &value )[2] )const
+	void PhysicalDevice::doGetValuesI( ContextLock & context, GlGetParameter name, uint32_t( &value )[2] )const
 	{
 		int v[2];
 		glLogCall( context, glGetIntegeri_v
@@ -1365,7 +1214,7 @@ namespace ashes::gl
 		value[1] = v[1];
 	}
 
-	void PhysicalDevice::doGetValuesI( ContextLock & context, GLenum name, int32_t( &value )[3] )const
+	void PhysicalDevice::doGetValuesI( ContextLock & context, GlGetParameter name, int32_t( &value )[3] )const
 	{
 		glLogCall( context, glGetIntegeri_v
 			, name
@@ -1381,7 +1230,7 @@ namespace ashes::gl
 			, &value[2] );
 	}
 
-	void PhysicalDevice::doGetValuesI( ContextLock & context, GLenum name, uint32_t( &value )[3] )const
+	void PhysicalDevice::doGetValuesI( ContextLock & context, GlGetParameter name, uint32_t( &value )[3] )const
 	{
 		int v[3];
 		glLogCall( context, glGetIntegeri_v
@@ -1401,14 +1250,14 @@ namespace ashes::gl
 		value[2] = v[2];
 	}
 
-	void PhysicalDevice::doGetValue( ContextLock & context, GLenum name, int64_t & value )const
+	void PhysicalDevice::doGetValue( ContextLock & context, GlGetParameter name, int64_t & value )const
 	{
 		glLogCall( context, glGetInteger64v
 			, name
 			, &value );
 	}
 
-	void PhysicalDevice::doGetValue( ContextLock & context, GLenum name, uint64_t & value )const
+	void PhysicalDevice::doGetValue( ContextLock & context, GlGetParameter name, uint64_t & value )const
 	{
 		int64_t v;
 		glLogCall( context, glGetInteger64v
@@ -1417,14 +1266,14 @@ namespace ashes::gl
 		value = uint64_t( v );
 	}
 
-	void PhysicalDevice::doGetValues( ContextLock & context, GLenum name, int64_t( &value )[2] )const
+	void PhysicalDevice::doGetValues( ContextLock & context, GlGetParameter name, int64_t( &value )[2] )const
 	{
 		glLogCall( context, glGetInteger64v
 			, name
 			, value );
 	}
 
-	void PhysicalDevice::doGetValues( ContextLock & context, GLenum name, uint64_t( &value )[2] )const
+	void PhysicalDevice::doGetValues( ContextLock & context, GlGetParameter name, uint64_t( &value )[2] )const
 	{
 		int64_t v[2];
 		glLogCall( context, glGetInteger64v
@@ -1434,14 +1283,14 @@ namespace ashes::gl
 		value[1] = v[1];
 	}
 
-	void PhysicalDevice::doGetValues( ContextLock & context, GLenum name, int64_t( &value )[3] )const
+	void PhysicalDevice::doGetValues( ContextLock & context, GlGetParameter name, int64_t( &value )[3] )const
 	{
 		glLogCall( context, glGetInteger64v
 			, name
 			, value );
 	}
 
-	void PhysicalDevice::doGetValues( ContextLock & context, GLenum name, uint64_t( &value )[3] )const
+	void PhysicalDevice::doGetValues( ContextLock & context, GlGetParameter name, uint64_t( &value )[3] )const
 	{
 		int64_t v[3];
 		glLogCall( context, glGetInteger64v
@@ -1452,7 +1301,7 @@ namespace ashes::gl
 		value[2] = v[2];
 	}
 
-	void PhysicalDevice::doGetValuesI( ContextLock & context, GLenum name, int64_t( &value )[2] )const
+	void PhysicalDevice::doGetValuesI( ContextLock & context, GlGetParameter name, int64_t( &value )[2] )const
 	{
 		glLogCall( context, glGetInteger64i_v
 			, name
@@ -1464,7 +1313,7 @@ namespace ashes::gl
 			, &value[1] );
 	}
 
-	void PhysicalDevice::doGetValuesI( ContextLock & context, GLenum name, uint64_t( &value )[2] )const
+	void PhysicalDevice::doGetValuesI( ContextLock & context, GlGetParameter name, uint64_t( &value )[2] )const
 	{
 		int64_t v[2];
 		glLogCall( context, glGetInteger64i_v
@@ -1479,7 +1328,7 @@ namespace ashes::gl
 		value[1] = v[1];
 	}
 
-	void PhysicalDevice::doGetValuesI( ContextLock & context, GLenum name, int64_t( &value )[3] )const
+	void PhysicalDevice::doGetValuesI( ContextLock & context, GlGetParameter name, int64_t( &value )[3] )const
 	{
 		glLogCall( context, glGetInteger64i_v
 			, name
@@ -1495,7 +1344,7 @@ namespace ashes::gl
 			, &value[2] );
 	}
 
-	void PhysicalDevice::doGetValuesI( ContextLock & context, GLenum name, uint64_t( &value )[3] )const
+	void PhysicalDevice::doGetValuesI( ContextLock & context, GlGetParameter name, uint64_t( &value )[3] )const
 	{
 		int64_t v[3];
 		glLogCall( context, glGetInteger64i_v
@@ -1515,28 +1364,28 @@ namespace ashes::gl
 		value[2] = v[2];
 	}
 
-	void PhysicalDevice::doGetValue( ContextLock & context, GLenum name, float & value )const
+	void PhysicalDevice::doGetValue( ContextLock & context, GlGetParameter name, float & value )const
 	{
 		glLogCall( context, glGetFloatv
 			, name
 			, &value );
 	}
 
-	void PhysicalDevice::doGetValues( ContextLock & context, GLenum name, float( &value )[2] )const
+	void PhysicalDevice::doGetValues( ContextLock & context, GlGetParameter name, float( &value )[2] )const
 	{
 		glLogCall( context, glGetFloatv
 			, name
 			, value );
 	}
 
-	void PhysicalDevice::doGetValues( ContextLock & context, GLenum name, float( &value )[3] )const
+	void PhysicalDevice::doGetValues( ContextLock & context, GlGetParameter name, float( &value )[3] )const
 	{
 		glLogCall( context, glGetFloatv
 			, name
 			, value );
 	}
 
-	void PhysicalDevice::doGetValuesI( ContextLock & context, GLenum name, float( &value )[2] )const
+	void PhysicalDevice::doGetValuesI( ContextLock & context, GlGetParameter name, float( &value )[2] )const
 	{
 		glLogCall( context, glGetFloati_v
 			, name
@@ -1548,7 +1397,7 @@ namespace ashes::gl
 			, &value[1] );
 	}
 
-	void PhysicalDevice::doGetValuesI( ContextLock & context, GLenum name, float( &value )[3] )const
+	void PhysicalDevice::doGetValuesI( ContextLock & context, GlGetParameter name, float( &value )[3] )const
 	{
 		glLogCall( context, glGetFloati_v
 			, name

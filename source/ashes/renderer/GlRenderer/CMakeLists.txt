@@ -279,6 +279,7 @@ if ( OpenGL_FOUND )
 		Enum/GlFenceWaitFlag.cpp
 		Enum/GlFilter.cpp
 		Enum/GlFormat.cpp
+		Enum/GlFormatProperty.cpp
 		Enum/GlFrameBufferTarget.cpp
 		Enum/GlFrontFace.cpp
 		Enum/GlGetParameter.cpp
@@ -326,6 +327,7 @@ if ( OpenGL_FOUND )
 		Enum/GlFenceWaitFlag.hpp
 		Enum/GlFilter.hpp
 		Enum/GlFormat.hpp
+		Enum/GlFormatProperty.hpp
 		Enum/GlFrameBufferTarget.hpp
 		Enum/GlFrontFace.hpp
 		Enum/GlGetParameter.hpp

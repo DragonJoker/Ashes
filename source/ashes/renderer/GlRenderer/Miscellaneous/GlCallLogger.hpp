@@ -23,6 +23,7 @@ See LICENSE file in root folder
 #include "renderer/GlRenderer/Enum/GlFenceWaitFlag.hpp"
 #include "renderer/GlRenderer/Enum/GlFilter.hpp"
 #include "renderer/GlRenderer/Enum/GlFormat.hpp"
+#include "renderer/GlRenderer/Enum/GlFormatProperty.hpp"
 #include "renderer/GlRenderer/Enum/GlFrameBufferTarget.hpp"
 #include "renderer/GlRenderer/Enum/GlFrontFace.hpp"
 #include "renderer/GlRenderer/Enum/GlGetParameter.hpp"
@@ -226,6 +227,11 @@ namespace ashes::gl
 	}
 
 	inline std::string toString( GlFormat value )
+	{
+		return getName( value );
+	}
+
+	inline std::string toString( GlFormatProperty value )
 	{
 		return getName( value );
 	}
