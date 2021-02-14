@@ -406,8 +406,8 @@ namespace ashes::gl
 	{
 		glLogCall( context
 			, glPolygonOffsetClamp
-			, cmd.constantFactor
 			, cmd.slopeFactor
+			, cmd.constantFactor
 			, cmd.clamp );
 	}
 

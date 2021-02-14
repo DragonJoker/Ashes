@@ -25,6 +25,7 @@ namespace ashes::gl
 
 		uint32_t getApiVersion()const;
 		bool hasExtension( std::string_view extension )const;
+		bool hasEnabledExtension( std::string_view name )const;
 		void unregisterDevice( VkDevice device );
 		Context * registerDevice( VkDevice device );
 		void unregisterSurface( VkSurfaceKHR surface );

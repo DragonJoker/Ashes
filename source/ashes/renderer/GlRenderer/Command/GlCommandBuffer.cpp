@@ -1067,10 +1067,10 @@ namespace ashes::gl
 		, float clamp
 		, float slopeFactor )const
 	{
-		buildSetDepthBiasCommand( constantFactor
+		m_state.stack->applyDepthBias( m_cmdList
+			, constantFactor
 			, clamp
-			, slopeFactor
-			, m_cmdList );
+			, slopeFactor );
 	}
 
 	void CommandBuffer::setBlendConstants( float const blendConstants[4] )const

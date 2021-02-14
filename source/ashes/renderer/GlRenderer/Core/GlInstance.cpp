@@ -127,6 +127,16 @@ namespace ashes::gl
 		return doHasEnabledExtensions( ashes::makeArrayView( &version, 1u ) );
 	}
 
+	bool Instance::hasEnabledExtension( std::string_view name )const
+	{
+		return m_enabledExtensions.end() != std::find_if( m_enabledExtensions.begin()
+			, m_enabledExtensions.end()
+			, [&name]( std::string const & lookup )
+			{
+				return lookup == name;
+			} );
+	}
+
 	void Instance::unregisterDevice( VkDevice device )
 	{
 		m_devices.erase( device );
