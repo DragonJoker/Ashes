@@ -22,7 +22,7 @@ namespace ashes::gl
 	{
 		if ( m_memory )
 		{
-			get( m_memory )->unbind();
+			get( m_memory )->unbindBuffer( get( this ) );
 		}
 
 		m_copyTarget = GlBufferTarget( 0u );

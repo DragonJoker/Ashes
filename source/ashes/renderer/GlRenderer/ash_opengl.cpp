@@ -362,7 +362,7 @@ namespace ashes::gl
 		VkDeviceMemory memory,
 		VkDeviceSize memoryOffset )
 	{
-		return get( memory )->bindToBuffer( buffer, memoryOffset );
+		return get( memory )->bindBuffer( buffer, memoryOffset );
 	}
 
 	VkResult VKAPI_CALL vkBindImageMemory(
@@ -371,7 +371,7 @@ namespace ashes::gl
 		VkDeviceMemory memory,
 		VkDeviceSize memoryOffset )
 	{
-		return get( memory )->bindToImage( image, memoryOffset );
+		return get( memory )->bindImage( image, memoryOffset );
 	}
 
 	void VKAPI_CALL vkGetBufferMemoryRequirements(
@@ -1649,7 +1649,7 @@ namespace ashes::gl
 
 		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
 		{
-			auto tmp = get( bindInfo.memory )->bindToBuffer( bindInfo.buffer, bindInfo.memoryOffset );
+			auto tmp = get( bindInfo.memory )->bindBuffer( bindInfo.buffer, bindInfo.memoryOffset );
 			result = VkResult( std::max< uint32_t >( tmp, result ) );
 		}
 
@@ -1665,7 +1665,7 @@ namespace ashes::gl
 
 		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
 		{
-			auto tmp = get( bindInfo.memory )->bindToImage( bindInfo.image, bindInfo.memoryOffset );
+			auto tmp = get( bindInfo.memory )->bindImage( bindInfo.image, bindInfo.memoryOffset );
 			result = VkResult( std::max< uint32_t >( tmp, result ) );
 		}
 
@@ -2877,7 +2877,7 @@ namespace ashes::gl
 
 		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
 		{
-			auto tmp = get( bindInfo.memory )->bindToBuffer( bindInfo.buffer, bindInfo.memoryOffset );
+			auto tmp = get( bindInfo.memory )->bindBuffer( bindInfo.buffer, bindInfo.memoryOffset );
 			result = VkResult( std::max< uint32_t >( tmp, result ) );
 		}
 
@@ -2893,7 +2893,7 @@ namespace ashes::gl
 
 		for ( auto & bindInfo : makeArrayView ( pBindInfos, bindInfoCount ) )
 		{
-			auto tmp = get( bindInfo.memory )->bindToImage( bindInfo.image, bindInfo.memoryOffset );
+			auto tmp = get( bindInfo.memory )->bindImage( bindInfo.image, bindInfo.memoryOffset );
 			result = VkResult( std::max< uint32_t >( tmp, result ) );
 		}
 

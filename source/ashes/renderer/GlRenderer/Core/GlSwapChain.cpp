@@ -42,7 +42,7 @@ namespace ashes::gl
 				, get( device )->getAllocationCallbacks()
 				, device
 				, VkMemoryAllocateInfo{ VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, requirements.size, deduced } );
-			get( deviceMemory )->bindToImage( result, 0u );
+			get( deviceMemory )->bindImage( result, 0u );
 			return result;
 		}
 

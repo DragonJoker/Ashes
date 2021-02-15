@@ -230,7 +230,7 @@ namespace ashes::gl
 	{
 		if ( m_memory )
 		{
-			get( m_memory )->unbind();
+			get( m_memory )->unbindImage( get( this ) );
 		}
 
 		auto context = get( m_device )->getContext();

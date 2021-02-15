@@ -531,7 +531,7 @@ namespace ashes::gl
 				, getAllocationCallbacks()
 				, get( this )
 				, VkMemoryAllocateInfo{ VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, requirements.size, deduced } );
-			get( m_dummyIndexed.indexMemory )->bindToBuffer( m_dummyIndexed.indexBuffer, 0u );
+			get( m_dummyIndexed.indexMemory )->bindBuffer( m_dummyIndexed.indexBuffer, 0u );
 			auto memory = get( m_dummyIndexed.indexMemory );
 			uint8_t * buffer{ nullptr };
 			auto size = count * sizeof( uint32_t );

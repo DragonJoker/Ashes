@@ -270,13 +270,13 @@ namespace ashes::gl
 			}
 		}
 
-		if ( get( get( dstImage )->getMemory() )->getBuffer() != GL_INVALID_INDEX )
+		if ( get( get( dstImage )->getMemory() )->getInternal() != GL_INVALID_INDEX )
 		{
 			auto dstTarget = convert( device
 				, get( dstImage )->getType()
 				, get( dstImage )->getArrayLayers()
 				, get( dstImage )->getCreateFlags() );
-			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, get( get( dstImage )->getMemory() )->getBuffer() ) );
+			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, get( get( dstImage )->getMemory() )->getInternal() ) );
 			list.push_back( makeCmd< OpType::eBindTexture >( dstTarget, get( dstImage )->getInternal() ) );
 			auto internal = getInternalFormat( get( dstImage )->getFormat() );
 			list.push_back( makeCmd< OpType::eGetTexImage >( dstTarget, getFormat( internal ), getType( internal ) ) );

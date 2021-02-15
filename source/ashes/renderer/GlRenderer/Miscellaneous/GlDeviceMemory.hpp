@@ -14,64 +14,64 @@ namespace ashes::gl
 		: public IcdObject
 	{
 	public:
-		class DeviceMemoryImpl
+		class DeviceMemoryBinding
 		{
 		public:
-			DeviceMemoryImpl( VkDeviceMemory parent
+			DeviceMemoryBinding( VkDeviceMemory parent
 				, VkDevice device
-				, VkMemoryAllocateInfo allocateInfo
 				, GLenum boundTarget
 				, VkDeviceSize memoryOffset
-				, VkDeviceSize align );
-			virtual ~DeviceMemoryImpl();
+				, VkMemoryRequirements requirements
+				, void * bound
+				, GLuint boundName );
+			virtual ~DeviceMemoryBinding();
 
-			void upload( ContextLock const & context
+			virtual void upload( ContextLock const & context
 				, ByteArray const & data
 				, VkDeviceSize offset
 				, VkDeviceSize size )const;
-			void download( ContextLock const & context
-				, ByteArray & data
-				, VkDeviceSize offset
-				, VkDeviceSize size )const;
-
-			virtual VkResult lock( ContextLock const & context
-				, VkDeviceSize offset
-				, VkDeviceSize size
-				, void ** data )const = 0;
-			virtual void unlock( ContextLock const & context )const = 0;
 
 			inline GLuint getInternal()const
 			{
-				return m_boundResource;
+				return m_boundName;
 			}
 
-			inline GLuint getBuffer()const
+			inline void * getBound()const
 			{
-				return m_glBuffer;
+				return m_bound;
+			}
+
+			inline VkDeviceSize getSize()const
+			{
+				return m_requirements.size;
+			}
+
+			inline VkDeviceSize getAlignment()const
+			{
+				return m_requirements.alignment;
 			}
 
 		protected:
 			VkDeviceMemory m_parent;
 			VkDevice m_device;
-			VkMemoryAllocateInfo m_allocateInfo;
-			VkMemoryPropertyFlags m_flags;
-			GlMemoryMapFlags m_mapFlags;
-			GLuint m_glBuffer;
-			GLuint m_boundResource;
 			GLenum m_boundTarget;
 			VkDeviceSize m_memoryOffset;
-			VkDeviceSize m_align;
+			VkMemoryRequirements m_requirements;
+			void * m_bound;
+			GLuint m_boundName;
 		};
+		using BindingPtr = std::unique_ptr< DeviceMemoryBinding >;
 
 	public:
 		DeviceMemory( VkDevice device
 			, VkMemoryAllocateInfo allocateInfo );
 		~DeviceMemory();
-		VkResult bindToBuffer( VkBuffer buffer
+		VkResult bindBuffer( VkBuffer buffer
 			, VkDeviceSize memoryOffset );
-		VkResult bindToImage( VkImage texture
+		VkResult bindImage( VkImage texture
 			, VkDeviceSize memoryOffset );
-		void unbind();
+		void unbindBuffer( VkBuffer buffer );
+		void unbindImage( VkImage image );
 
 		void upload( ContextLock const & context
 			, VkDeviceSize offset
@@ -105,14 +105,7 @@ namespace ashes::gl
 
 		GLuint getInternal()const
 		{
-			assert( m_impl );
-			return m_impl->getInternal();
-		}
-
-		GLuint getBuffer()const
-		{
-			assert( m_impl );
-			return m_impl->getBuffer();
+			return m_glBuffer;
 		}
 
 		inline VkDevice getDevice()const
@@ -128,7 +121,9 @@ namespace ashes::gl
 		VkMemoryAllocateInfo m_allocateInfo;
 		VkMemoryPropertyFlags m_flags;
 		GlMemoryMapFlags m_mapFlags;
-		std::unique_ptr< DeviceMemoryImpl > m_impl;
+		// Bindings, by offset
+		std::vector< std::pair< VkDeviceSize, BindingPtr > > m_bindings;
+		GLuint m_glBuffer;
 		mutable bool m_dirty = true;
 		mutable bool m_mapped = false;
 		mutable VkDeviceSize m_mappedOffset;
