@@ -1739,7 +1739,8 @@ namespace ashes::gl
 		VkPhysicalDevice physicalDevice,
 		VkPhysicalDeviceFeatures2 * pFeatures )
 	{
-		*pFeatures = get( physicalDevice )->getFeatures2();
+		auto features = get( physicalDevice )->getFeatures2();
+		pFeatures->features = features.features;
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceProperties2(
@@ -1768,7 +1769,8 @@ namespace ashes::gl
 		VkFormat format,
 		VkFormatProperties2 * pFormatProperties )
 	{
-		*pFormatProperties = get( physicalDevice )->getFormatProperties2( format );
+		auto props = get( physicalDevice )->getFormatProperties2( format );
+		pFormatProperties->formatProperties = props.formatProperties;
 	}
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceImageFormatProperties2(
@@ -1801,7 +1803,8 @@ namespace ashes::gl
 		VkPhysicalDevice physicalDevice,
 		VkPhysicalDeviceMemoryProperties2 * pMemoryProperties )
 	{
-		*pMemoryProperties = get( physicalDevice )->getMemoryProperties2();
+		auto props = get( physicalDevice )->getMemoryProperties2();
+		pMemoryProperties->memoryProperties = props.memoryProperties;
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceSparseImageFormatProperties2(
@@ -2394,14 +2397,29 @@ namespace ashes::gl
 		VkPhysicalDevice physicalDevice,
 		VkPhysicalDeviceFeatures2KHR * pFeatures )
 	{
-		*pFeatures = get( physicalDevice )->getFeatures2();
+		auto features = get( physicalDevice )->getFeatures2();
+		pFeatures->features = features.features;
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceProperties2KHR(
 		VkPhysicalDevice physicalDevice,
 		VkPhysicalDeviceProperties2KHR * pProperties )
 	{
-		*pProperties = get( physicalDevice )->getProperties2();
+		auto props = get( physicalDevice )->getProperties2();
+		pProperties->properties = props.properties;
+		VkBaseOutStructure * pNext = reinterpret_cast< VkBaseOutStructure * >( pProperties->pNext );
+
+		while ( pNext )
+		{
+			switch ( pNext->sType )
+			{
+			case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES:
+				*reinterpret_cast< VkPhysicalDeviceDriverProperties * >( pNext ) = get( physicalDevice )->getDriverProperties();
+				break;
+			}
+
+			pNext = reinterpret_cast< VkBaseOutStructure * >( pNext->pNext );
+		}
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceFormatProperties2KHR(
@@ -2409,7 +2427,8 @@ namespace ashes::gl
 		VkFormat format,
 		VkFormatProperties2KHR * pFormatProperties )
 	{
-		*pFormatProperties = get( physicalDevice )->getFormatProperties2( format );
+		auto props = get( physicalDevice )->getFormatProperties2( format );
+		pFormatProperties->formatProperties = props.formatProperties;
 	}
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceImageFormatProperties2KHR(
@@ -2442,7 +2461,8 @@ namespace ashes::gl
 		VkPhysicalDevice physicalDevice,
 		VkPhysicalDeviceMemoryProperties2KHR * pMemoryProperties )
 	{
-		*pMemoryProperties = get( physicalDevice )->getMemoryProperties2();
+		auto props = get( physicalDevice )->getMemoryProperties2();
+		pMemoryProperties->memoryProperties = props.memoryProperties;
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceSparseImageFormatProperties2KHR(

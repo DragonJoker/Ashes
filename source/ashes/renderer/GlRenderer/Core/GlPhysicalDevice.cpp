@@ -308,8 +308,6 @@ namespace ashes::gl
 	VkResult PhysicalDevice::getImageFormatProperties2( VkPhysicalDeviceImageFormatInfo2 const & imageFormatInfo
 		, VkImageFormatProperties2 & imageFormatProperties )const
 	{
-		imageFormatProperties.sType = VK_STRUCTURE_TYPE_IMAGE_FORMAT_PROPERTIES_2;
-		imageFormatProperties.pNext = nullptr;
 		return getImageFormatProperties( imageFormatInfo.format
 			, imageFormatInfo.type
 			, imageFormatInfo.tiling
