@@ -351,6 +351,27 @@ namespace ashes::gl
 	}
 
 	template< typename VkObject >
+	inline void reportVerbose( VkObject object
+		, std::string const & errorName
+		, std::string const & name )
+	{
+#if VK_EXT_debug_utils
+		debugUtilsSubmit( VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
+			, object
+			, VK_SUCCESS
+			, errorName
+			, name );
+#endif
+#if VK_EXT_debug_report
+		debugReportMessage( VK_DEBUG_REPORT_DEBUG_BIT_EXT
+			, object
+			, VK_SUCCESS
+			, errorName
+			, name );
+#endif
+	}
+
+	template< typename VkObject >
 	inline VkResult reportUnsupported( VkObject object
 		, std::string const & name )
 	{
