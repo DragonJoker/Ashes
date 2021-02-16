@@ -34,6 +34,9 @@ namespace ashes::gl
 		}
 
 	private:
+		void doCheckCreate( ContextLock & context )const;
+
+	private:
 		mutable GLsync m_fence{ nullptr };
 		VkDevice m_device;
 	};
