@@ -15,9 +15,9 @@
 #include <vulkan/vk_icd.h>
 
 #include "renderer/GlRenderer/Core/GlAutoIdIcdObject.hpp"
-#include "renderer/GlRenderer/Core/GlContextState.hpp"
 #include "renderer/GlRenderer/Miscellaneous/GlDebug.hpp"
 #include "renderer/GlRenderer/Miscellaneous/OpenGLDefines.hpp"
+#include "renderer/GlRenderer/Core/GlContextState.hpp"
 
 #include <renderer/RendererCommon/AshesRendererPrerequisites.hpp>
 #include <renderer/RendererCommon/Helper/ConstantFormat.hpp>
