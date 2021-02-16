@@ -103,11 +103,6 @@ namespace ashes::gl
 			return m_allocateInfo.allocationSize;
 		}
 
-		GLuint getInternal()const
-		{
-			return m_glBuffer;
-		}
-
 		inline VkDevice getDevice()const
 		{
 			return m_device;
@@ -123,7 +118,6 @@ namespace ashes::gl
 		GlMemoryMapFlags m_mapFlags;
 		// Bindings, by offset
 		std::vector< std::pair< VkDeviceSize, BindingPtr > > m_bindings;
-		GLuint m_glBuffer;
 		mutable bool m_dirty = true;
 		mutable bool m_mapped = false;
 		mutable VkDeviceSize m_mappedOffset;

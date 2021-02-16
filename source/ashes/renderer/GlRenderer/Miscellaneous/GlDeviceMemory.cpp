@@ -33,186 +33,6 @@ namespace ashes::gl
 	{
 		//************************************************************************************************
 
-		struct BufferAlloc
-		{
-			GLuint name;
-			GlBufferTarget target;
-			GLsizeiptr size;
-			GlBufferDataUsageFlags flags;
-		};
-		using BufferAllocCont = std::vector< BufferAlloc >;
-
-		BufferAllocCont & getAllocatedBuffers()
-		{
-			static BufferAllocCont result;
-			return result;
-		}
-
-		BufferAllocCont::iterator findBuffer( GLuint buffer )
-		{
-			return std::find_if( getAllocatedBuffers().begin()
-				, getAllocatedBuffers().end()
-				, [buffer]( BufferAlloc const & lookup )
-				{
-					return lookup.name == buffer;
-				} );
-		}
-
-		GLint getBufferSize( ContextLock const & context
-			, GlBufferTarget target
-			, GLuint buffer )
-		{
-			GLint result = 0;
-			auto it = findBuffer( buffer );
-
-			if ( it != getAllocatedBuffers().end() )
-			{
-				target = it->target;
-			}
-
-			glLogCall( context
-				, glBindBuffer
-				, target
-				, buffer );
-			glLogCall( context
-				, glGetBufferParameteriv
-				, target
-				, GL_BUFFER_PARAMETER_SIZE
-				, &result );
-			glLogCall( context
-				, glBindBuffer
-				, target
-				, 0u );
-			return result;
-		}
-
-		GLint getBufferSize( ContextLock const & context
-			, GLuint buffer )
-		{
-			return getBufferSize( context
-				, GL_BUFFER_TARGET_COPY_WRITE
-				, buffer );
-		}
-
-		BufferAllocCont::iterator findBuffer( GLuint buffer
-			, GLsizeiptr size )
-		{
-			return std::find_if( getAllocatedBuffers().begin()
-				, getAllocatedBuffers().end()
-				, [buffer, size]( BufferAlloc const & lookup )
-				{
-					return lookup.name == buffer
-						&& lookup.size == size;
-				} );
-		}
-
-		GLuint createBuffer( ContextLock const & context
-			, GlBufferTarget target
-			, GLsizeiptr size
-			, GlBufferDataUsageFlags flags )
-		{
-			auto allocateBuffer = [&context]( GLuint result
-				, GlBufferTarget target
-				, GLsizeiptr size
-				, GlBufferDataUsageFlags flags )
-			{
-				glLogCall( context
-					, glBindBuffer
-					, target
-					, result );
-				glLogCall( context
-					, glBufferData
-					, target
-					, size
-					, nullptr
-					, flags );
-				glLogCall( context
-					, glBindBuffer
-					, target
-					, 0u );
-				return result;
-			};
-
-			auto & cache = getAllocatedBuffers();
-			GLuint result;
-			glLogCall( context
-				, glGenBuffers
-				, 1u
-				, &result );
-			auto it = findBuffer( result );
-
-			while ( it != cache.end() )
-			{
-				std::stringstream err;
-				err << "Buffer " << result << " is being reused";
-				reportWarning( context.getDevice(), VK_SUCCESS, "Buffer memory", err.str() );
-				allocateBuffer( it->name, it->target, it->size, it->flags );
-				glLogCall( context
-					, glGenBuffers
-					, 1u
-					, &result );
-				it = findBuffer( result );
-			}
-
-			allocateBuffer( result, target, size, flags );
-			GLint realSize = getBufferSize( context, target, result );
-			assert( realSize >= size );
-			getAllocatedBuffers().push_back( { result, target, GLsizeiptr( realSize ), flags } );
-			return result;
-		}
-
-		void * mapBuffer( ContextLock const & context
-			, GlBufferTarget target
-			, VkDeviceSize offset
-			, VkDeviceSize size
-			, GlMemoryMapFlags mapFlags )
-		{
-			return glLogNonVoidCall( context
-				, glMapBufferRange
-				, target
-				, GLintptr( offset )
-				, GLsizei( size )
-				, mapFlags );
-		}
-
-		void deleteBuffer( ContextLock const & context
-			, GLuint buffer )
-		{
-			if ( buffer != GL_INVALID_INDEX )
-			{
-				GLint size = getBufferSize( context, buffer );
-
-				if ( size != 0 )
-				{
-					auto it = findBuffer( buffer, size );
-
-					if ( it != getAllocatedBuffers().end() )
-					{
-						getAllocatedBuffers().erase( it );
-
-						glLogCall( context
-							, glDeleteBuffers
-							, 1u
-							, &buffer );
-					}
-					else
-					{
-						std::stringstream err;
-						err << "Couldn't find buffer " << buffer << " it has probably been reused";
-						reportWarning( context.getDevice(), VK_SUCCESS, "Buffer memory", err.str() );
-					}
-				}
-				else
-				{
-					std::stringstream err;
-					err << "Couldn't find buffer " << buffer << " it has probably been reused";
-					reportWarning( context.getDevice(), VK_SUCCESS, "Buffer memory", err.str() );
-				}
-			}
-		}
-
-		//************************************************************************************************
-
 		class ImageMemoryBinding
 			: public DeviceMemory::DeviceMemoryBinding
 		{
@@ -829,8 +649,7 @@ namespace ashes::gl
 		m_data.resize( allocateInfo.allocationSize );
 		// Create the buffer effectively owning the data
 		auto context = get( m_device )->getContext();
-		m_glBuffer = createBuffer( context
-			, GL_BUFFER_TARGET_COPY_WRITE
+		m_internal = context->createBuffer( GL_BUFFER_TARGET_COPY_WRITE
 			, GLsizeiptr( m_allocateInfo.allocationSize )
 			, getBufferDataUsageFlags( m_flags ) );
 	}
@@ -838,7 +657,7 @@ namespace ashes::gl
 	DeviceMemory::~DeviceMemory()
 	{
 		auto context = get( m_device )->getContext();
-		deleteBuffer( context, m_glBuffer );
+		context->deleteBuffer( m_internal );
 	}
 
 	VkResult DeviceMemory::bindBuffer( VkBuffer buffer
@@ -950,11 +769,12 @@ namespace ashes::gl
 			, glBindBuffer
 			, GL_BUFFER_TARGET_COPY_WRITE
 			, getInternal() );
-		auto result = mapBuffer( context
+		auto result = glLogNonVoidCall( context
+			, glMapBufferRange
 			, GL_BUFFER_TARGET_COPY_WRITE
-			, offset
-			, copySize
-			, GL_MEMORY_MAP_READ_BIT | GL_MEMORY_MAP_WRITE_BIT );
+			, GLintptr( offset )
+			, GLsizei( copySize )
+			, GL_MEMORY_MAP_WRITE_BIT );
 		assert( result != nullptr );
 
 		if ( result )
@@ -985,13 +805,14 @@ namespace ashes::gl
 			: size;
 		glLogCall( context
 			, glBindBuffer
-			, GL_BUFFER_TARGET_COPY_WRITE
+			, GL_BUFFER_TARGET_COPY_READ
 			, getInternal() );
-		auto result = mapBuffer( context
-			, GL_BUFFER_TARGET_COPY_WRITE
-			, offset
-			, copySize
-			, GL_MEMORY_MAP_READ_BIT | GL_MEMORY_MAP_WRITE_BIT );
+		auto result = glLogNonVoidCall( context
+			, glMapBufferRange
+			, GL_BUFFER_TARGET_COPY_READ
+			, GLintptr( offset )
+			, GLsizei( copySize )
+			, GL_MEMORY_MAP_READ_BIT );
 		assert( result != nullptr );
 
 		if ( result )
@@ -999,16 +820,16 @@ namespace ashes::gl
 			std::memcpy( m_data.data() + offset, result, copySize );
 			glLogCall( context
 				, glUnmapBuffer
-				, GL_BUFFER_TARGET_COPY_WRITE );
+				, GL_BUFFER_TARGET_COPY_READ );
 			glLogCall( context
 				, glBindBuffer
-				, GL_BUFFER_TARGET_COPY_WRITE
+				, GL_BUFFER_TARGET_COPY_READ
 				, 0u );
 		}
 
 		glLogCall( context
 			, glBindBuffer
-			, GL_BUFFER_TARGET_COPY_WRITE
+			, GL_BUFFER_TARGET_COPY_READ
 			, 0u );
 	}
 
