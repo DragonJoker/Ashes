@@ -20,6 +20,10 @@ To build it, you can use CMake.
 
 Two workflows are possible:
 
+### ICD mode
+
+Just set the environment variable VK_ICD_FILENAMES to one of the jsons in Ashes' install dir, and you're done. 
+
 ### Automatic mode
 
 You load Ashes' shared library instead of Vulkan's, and you're done.  
