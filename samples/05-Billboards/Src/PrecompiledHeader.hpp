@@ -10,7 +10,6 @@
 #include <ashespp/Buffer/UniformBuffer.hpp>
 #include <ashespp/Buffer/VertexBuffer.hpp>
 #include <ashespp/Command/CommandBuffer.hpp>
-#include <ashespp/Command/Queue.hpp>
 #include <ashespp/Core/Surface.hpp>
 #include <ashespp/Core/Device.hpp>
 #include <ashespp/Core/Instance.hpp>
@@ -25,6 +24,7 @@
 #include <ashespp/Pipeline/PipelineLayout.hpp>
 #include <ashespp/RenderPass/FrameBuffer.hpp>
 #include <ashespp/RenderPass/RenderPass.hpp>
+#include <ashespp/Sync/Queue.hpp>
 
 #include <util/GlslToSpv.hpp>
 #include <util/Transform.hpp>

@@ -47,4 +47,5 @@ namespace ashes::gl
 		GL_DEBUG_OUTPUT_SYNC = 0x8242,
 	};
 	std::string getName( GlTweak value );
+	inline std::string toString( GlTweak value ) { return getName( value ); }
 }

@@ -16,6 +16,8 @@ namespace ashes::d3d11
 {
 	class Pipeline
 	{
+		friend class PipelineLayout;
+
 	public:
 		Pipeline( VkDevice device
 			, VkGraphicsPipelineCreateInfo createInfo );

@@ -21,17 +21,28 @@ namespace ashes::gl
 			allocate( result
 				, get( device )->getAllocationCallbacks()
 				, device
-				, format
-				, std::move( dimensions )
+				, VkImageCreateInfo{ VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO
+					, nullptr
+					, 0u
+					, VK_IMAGE_TYPE_2D
+					, format
+					, VkExtent3D{ dimensions.width, dimensions.height, 1u }
+					, 1u
+					, 1u
+					, VK_SAMPLE_COUNT_1_BIT
+					, VK_IMAGE_TILING_OPTIMAL
+					, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT
+				}
 				, true );
 			auto requirements = get( result )->getMemoryRequirements();
-			uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
+			uint32_t deduced = deduceMemoryType( device
+				, requirements.memoryTypeBits
 				, VK_MEMORY_HEAP_DEVICE_LOCAL_BIT );
 			allocate( deviceMemory
 				, get( device )->getAllocationCallbacks()
 				, device
 				, VkMemoryAllocateInfo{ VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, requirements.size, deduced } );
-			get( deviceMemory )->bindToImage( result, 0u );
+			get( deviceMemory )->bindImage( result, 0u );
 			return result;
 		}
 
@@ -97,7 +108,8 @@ namespace ashes::gl
 				? get( m_view )->getInternal()
 				: get( m_image )->getInternal() )
 			, 0u );
-		checkCompleteness( context->glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
+		checkCompleteness( get( this )
+			, context->glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
 		glLogCall( context
 			, glBindFramebuffer
 			, GL_FRAMEBUFFER

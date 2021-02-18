@@ -1,4 +1,4 @@
-project( vulkan )
+project( ashes )
 
 set( ${PROJECT_NAME}_DESCRIPTION "${PROJECT_NAME} library" )
 set( ${PROJECT_NAME}_VERSION_MAJOR 1 )
@@ -8,7 +8,6 @@ set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 set( ${PROJECT_NAME}_SRC_FILES
 	ashes.cpp
 )
-
 set( ${PROJECT_NAME}_HDR_FILES
 	../../include/ashes/ashes.h
 	../../include/ashes/ashes.hpp
@@ -57,6 +56,7 @@ target_link_libraries( ${PROJECT_NAME}
 target_compile_definitions( ${PROJECT_NAME}
 	PUBLIC
 		${TARGET_COMPILE_DEFINITIONS}
+		VK_ENABLE_BETA_EXTENSIONS
 	PRIVATE
 		AshesC_EXPORTS
 )
@@ -97,4 +97,12 @@ add_subdirectory( renderer )
 
 set( ENABLED_RENDERERS ${ENABLED_RENDERERS} PARENT_SCOPE )
 set( ASHES_CONFIG_DIR ${ASHES_CONFIG_DIR} PARENT_SCOPE )
+
+if ( MSVC )
+	set( ENABLED_PDBS
+		${ENABLED_PDBS}
+		$<TARGET_PDB_FILE:${PROJECT_NAME}>
+		PARENT_SCOPE
+	)
+endif ()
 

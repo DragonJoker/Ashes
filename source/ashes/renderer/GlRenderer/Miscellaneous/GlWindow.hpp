@@ -8,4 +8,6 @@ See LICENSE file in root folder
 #	include "Platform/GlMswWindow.hpp"
 #elif __linux__
 #	include "Platform/GlX11Window.hpp"
+#elif __APPLE__
+#	include "Platform/CGlWindow.hpp"
 #endif

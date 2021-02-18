@@ -38,8 +38,6 @@ namespace ashes
 		, VkPhysicalDevice gpu )
 		: m_instance{ instance }
 		, m_gpu{ gpu }
-		, m_shaderVersion{ makeShaderVersion( instance.getName()
-			, instance.getFeatures().maxShaderLanguageVersion ) }
 	{
 	}
 

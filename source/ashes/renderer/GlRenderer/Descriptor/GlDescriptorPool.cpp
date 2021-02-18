@@ -29,17 +29,29 @@ namespace ashes::gl
 		if ( checkFlag( m_flags, VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT ) )
 		{
 			assert( m_maxSets > m_sets.size() );
-			m_sets.push_back( set );
+			auto ires = m_sets.insert( set );
+			assert( ires.second );
 		}
 	}
 
 	VkResult DescriptorPool::reset( VkDescriptorPoolResetFlags flags )
 	{
+		m_sets.clear();
 		return VK_SUCCESS;
 	}
 
 	VkResult DescriptorPool::free( VkDescriptorSetArray sets )
 	{
+		for ( auto & set : sets )
+		{
+			auto it = m_sets.find( set );
+
+			if ( it != m_sets.end() )
+			{
+				m_sets.erase( it );
+			}
+		}
+
 		return VK_SUCCESS;
 	}
 }

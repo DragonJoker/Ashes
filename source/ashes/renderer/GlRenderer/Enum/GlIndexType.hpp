@@ -13,6 +13,7 @@ namespace ashes::gl
 		GL_INDEX_TYPE_UINT32 = 0x1405,
 	};
 	std::string getName( GlIndexType value );
+	inline std::string toString( GlIndexType value ) { return getName( value ); }
 	/**
 	*\brief
 	*	Convertit un VkIndexType en GlIndexType.

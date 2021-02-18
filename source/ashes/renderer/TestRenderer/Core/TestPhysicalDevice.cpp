@@ -56,6 +56,12 @@ namespace ashes::test
 #if VK_KHR_maintenance1
 			VkExtensionProperties{ VK_KHR_MAINTENANCE1_EXTENSION_NAME, VK_KHR_MAINTENANCE1_SPEC_VERSION },
 #endif
+#if VK_KHR_get_physical_device_properties2
+			VkExtensionProperties{ VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_SPEC_VERSION },
+#endif
+#if VK_KHR_portability_subset
+			VkExtensionProperties{ VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME, VK_KHR_PORTABILITY_SUBSET_SPEC_VERSION },
+#endif
 		};
 		return extensions;
 	}
@@ -274,6 +280,26 @@ namespace ashes::test
 		m_properties.apiVersion = VK_MAKE_VERSION( 1, 0, 0 );
 		m_properties.deviceType = VK_PHYSICAL_DEVICE_TYPE_CPU;
 
+#	if VK_KHR_portability_subset
+		m_portabilityFeatures = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_FEATURES_KHR
+			, nullptr
+			, VK_TRUE /* constantAlphaColorBlendFactors; */
+			, VK_TRUE /* events; */
+			, VK_TRUE /* imageViewFormatReinterpretation; */
+			, VK_TRUE /* imageViewFormatSwizzle; */
+			, VK_TRUE /* imageView2DOn3DImage; */
+			, VK_TRUE /* multisampleArrayImage; */
+			, VK_TRUE /* mutableComparisonSamplers; */
+			, VK_TRUE /* pointPolygons; */
+			, VK_TRUE /* samplerMipLodBias; */
+			, VK_TRUE /* separateStencilMaskRef; */
+			, m_features.sampleRateShading /* shaderSampleRateInterpolationFunctions; */
+			, m_features.tessellationShader /* tessellationIsolines; */
+			, m_features.tessellationShader /* tessellationPointMode; */
+			, VK_TRUE /* triangleFans; */
+			, VK_TRUE /* vertexAttributeAccessBeyondStride; */ };
+#	endif
+
 		m_features.robustBufferAccess = true;
 		m_features.fullDrawIndexUint32 = true;
 		m_features.imageCubeArray = true;
@@ -465,7 +491,7 @@ namespace ashes::test
 				}
 			} );
 
-		for ( VkFormat fmt = VkFormat( VK_FORMAT_BEGIN_RANGE + 1 ); fmt != VK_FORMAT_END_RANGE; fmt = VkFormat( fmt + 1 ) )
+		for ( VkFormat fmt = beginFmt(); fmt != endFmt(); fmt = VkFormat( fmt + 1 ) )
 		{
 			VkFormatProperties props{};
 			props.bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
@@ -497,7 +523,11 @@ namespace ashes::test
 
 #if VK_VERSION_1_1
 
+#	if VK_KHR_portability_subset
+		m_features2.pNext = &m_portabilityFeatures;
+#	else
 		m_features2.pNext = nullptr;
+#	endif
 		m_features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
 		m_features2.features = m_features;
 
@@ -528,7 +558,11 @@ namespace ashes::test
 
 #elif VK_KHR_get_physical_device_properties2
 
+#	if VK_KHR_portability_subset
+		m_features2.pNext = &m_portabilityFeatures;
+#	else
 		m_features2.pNext = nullptr;
+#	endif
 		m_features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
 		m_features2.features = m_features;
 

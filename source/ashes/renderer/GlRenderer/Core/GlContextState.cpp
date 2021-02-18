@@ -42,7 +42,7 @@ namespace ashes::gl
 		doInit();
 	}
 
-	ContextState::ContextState( VkPipelineColorBlendStateCreateInfo cbState
+	ContextState::ContextState( Optional< VkPipelineColorBlendStateCreateInfo > cbState
 		, Optional< VkPipelineDepthStencilStateCreateInfo > dsState
 		, Optional< VkPipelineMultisampleStateCreateInfo > msState
 		, Optional< VkPipelineTessellationStateCreateInfo > tsState
@@ -52,7 +52,7 @@ namespace ashes::gl
 		, VkPipelineDynamicStateCreateInfo dyState )
 		: ContextState
 		{
-			cbState,
+			cbState ? &cbState.value() : nullptr,
 			dsState ? &dsState.value() : nullptr,
 			msState ? &msState.value() : nullptr,
 			tsState ? &tsState.value() : nullptr,
@@ -72,9 +72,35 @@ namespace ashes::gl
 		, VkPipelineViewportStateCreateInfo const * vpState
 		, VkPipelineRasterizationStateCreateInfo const * rsState
 		, VkPipelineDynamicStateCreateInfo const * dyState )
-		: cbStateAttachments{ makeVector( cbState.pAttachments
-			, cbState.attachmentCount ) }
-		, cbState{ cbState }
+		: ContextState
+		{
+			&cbState,
+			dsState,
+			msState,
+			tsState,
+			iaState,
+			vpState,
+			rsState,
+			dyState,
+		}
+	{
+	}
+
+	ContextState::ContextState( VkPipelineColorBlendStateCreateInfo const * cbState
+		, VkPipelineDepthStencilStateCreateInfo const * dsState
+		, VkPipelineMultisampleStateCreateInfo const * msState
+		, VkPipelineTessellationStateCreateInfo const * tsState
+		, VkPipelineInputAssemblyStateCreateInfo const * iaState
+		, VkPipelineViewportStateCreateInfo const * vpState
+		, VkPipelineRasterizationStateCreateInfo const * rsState
+		, VkPipelineDynamicStateCreateInfo const * dyState )
+		: cbStateAttachments{ ( cbState
+			? makeVector( cbState->pAttachments
+				, cbState->attachmentCount )
+			: VkPipelineColorBlendAttachmentStateArray{} ) }
+		, cbState{ ( cbState
+			? *cbState
+			: getDeactivatedColorBlendState() ) }
 		, dsState{ ( dsState
 			? *dsState
 			: getDeactivatedDepthStencilState() ) }
@@ -105,23 +131,6 @@ namespace ashes::gl
 		, dyState{ ( dyState
 			? *dyState
 			: getDeactivatedDynamicState() ) }
-	{
-		doInit();
-	}
-
-	ContextState::ContextState()
-		: cbStateAttachments{ 1u, getColourBlendStateAttachment() }
-		, cbState{ getDefaultColorBlendState( cbStateAttachments ) }
-		, dsState{ getDefaultDepthStencilState() }
-		, msState{ getDefaultMultisampleState() }
-		, tsState{ getDefaultTessellationState() }
-		, iaState{ getDefaultInputAssemblyState() }
-		, viewports{}
-		, scissors{}
-		, vpState{ getDefaultViewportState() }
-		, rsState{ getDefaultRasterisationState() }
-		, dynamicStates{}
-		, dyState{ getDefaultDynamicState() }
 	{
 		doInit();
 	}

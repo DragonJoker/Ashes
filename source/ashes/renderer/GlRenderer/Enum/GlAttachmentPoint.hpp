@@ -36,4 +36,5 @@ namespace ashes::gl
 		GL_ATTACHMENT_POINT_STENCIL = 0x8D20,
 	};
 	std::string getName( GlAttachmentPoint value );
+	inline std::string toString( GlAttachmentPoint value ) { return getName( value ); }
 }

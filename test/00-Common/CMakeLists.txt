@@ -49,7 +49,7 @@ target_link_libraries( ${PROJECT_NAME} PUBLIC
 	${wxWidgets_LIBRARIES}
 	${GTK2_LIBRARIES}
 	ashes::common
-	ashes::ashes
+	${Vulkan_LIBRARY}
 	ashes::ashespp
 	ashes::util
 )

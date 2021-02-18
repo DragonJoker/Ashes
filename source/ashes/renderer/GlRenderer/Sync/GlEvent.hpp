@@ -19,7 +19,14 @@ namespace ashes::gl
 		VkResult set()const;
 		VkResult reset()const;
 
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		mutable VkResult m_status{ VK_EVENT_RESET };
+
+		VkDevice m_device;
 	};
 }

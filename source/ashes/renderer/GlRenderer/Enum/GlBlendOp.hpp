@@ -16,6 +16,7 @@ namespace ashes::gl
 		GL_BLEND_OP_REVERSE_SUBTRACT = 0x800B,
 	};
 	std::string getName( GlBlendOp value );
+	inline std::string toString( GlBlendOp value ) { return getName( value ); }
 	/**
 	*\brief
 	*	Convertit un VkBlendOp en GlBlendOp.

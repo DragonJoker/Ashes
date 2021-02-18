@@ -184,8 +184,8 @@ namespace ashes::gl
 					, VK_DYNAMIC_STATE_DEPTH_BIAS ) )
 				{
 					list.emplace_back( makeCmd< OpType::ePolygonOffset >( rasterState.depthBiasConstantFactor
-						, rasterState.depthBiasSlopeFactor
-						, rasterState.depthBiasClamp ) );
+						, rasterState.depthBiasClamp
+						, rasterState.depthBiasSlopeFactor ) );
 				}
 			}
 		}
@@ -268,6 +268,51 @@ namespace ashes::gl
 			list.emplace_back( makeCmd< OpType::eStencilMask >( face
 				, state ) );
 			save = state;
+		}
+
+		void doApplyDepthBias( CmdList & list
+			, VkPolygonMode polygonMode
+			, VkBool32 const & newEnable
+			, VkBool32 & saveEnable
+			, float const & newConstantFactor
+			, float & saveConstantFactor
+			, float const & newClamp
+			, float & saveClamp
+			, float const & newSlopeFactor
+			, float & saveSlopeFactor )
+		{
+			switch ( polygonMode )
+			{
+			case VK_POLYGON_MODE_FILL:
+			case VK_POLYGON_MODE_FILL_RECTANGLE_NV:
+				doApplyEnable( list
+					, GL_POLYGON_OFFSET_FILL
+					, newEnable );
+				break;
+
+			case VK_POLYGON_MODE_LINE:
+				doApplyEnable( list
+					, GL_POLYGON_OFFSET_LINE
+					, newEnable );
+				break;
+
+			case VK_POLYGON_MODE_POINT:
+				doApplyEnable( list
+					, GL_POLYGON_OFFSET_POINT
+					, newEnable );
+				break;
+
+			default:
+				assert( false && "Unsupported polygon mode." );
+				break;
+			}
+			list.emplace_back( makeCmd< OpType::ePolygonOffset >( newConstantFactor
+				, newClamp
+				, newSlopeFactor ) );
+			saveEnable = newEnable;
+			saveConstantFactor = newConstantFactor;
+			saveClamp = newClamp;
+			saveSlopeFactor = newSlopeFactor;
 		}
 
 		void doApplyStencilFunc( CmdList & list
@@ -753,6 +798,25 @@ namespace ashes::gl
 
 			m_save->sRGB = enable;
 		}
+	}
+
+	void ContextStateStack::applyDepthBias( CmdList & list
+		, float constantFactor
+		, float clamp
+		, float slopeFactor )
+	{
+		doCheckSave();
+		auto & save = m_save->rsState;
+		doApplyDepthBias( list
+			, save.polygonMode
+			, VK_TRUE
+			, save.depthBiasEnable
+			, constantFactor
+			, save.depthBiasConstantFactor
+			, clamp
+			, save.depthBiasClamp
+			, slopeFactor
+			, save.depthBiasSlopeFactor );
 	}
 
 	void ContextStateStack::applyStencilCompareMask( CmdList & list

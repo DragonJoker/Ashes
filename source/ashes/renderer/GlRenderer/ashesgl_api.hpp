@@ -2,6 +2,8 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
+#pragma once
+
 #include "Buffer/GlBuffer.hpp"
 #include "Buffer/GlBufferView.hpp"
 #include "Command/GlCommandBuffer.hpp"
@@ -49,9 +51,13 @@ namespace ashes::gl
 	static int constexpr MinMinor = 2;
 	static int constexpr MaxMajor = 10;
 	static int constexpr MaxMinor = 10;
+	static uint32_t constexpr InvalidIndex = ~( 0u );
 
 	template< typename T >
 	static constexpr T NonAvailable = std::numeric_limits< T >::max();
+	
+	template< typename T >
+	static constexpr T DefaultAlign = T{ 1 };
 
 	template< typename VkType  >
 	struct VkGlTypeTraits;
@@ -147,108 +153,6 @@ namespace ashes::gl
 		return VkType( vkValue );
 	}
 
-	template< typename VkType, typename ... Params >
-	VkResult allocateNA( VkType & vkValue
-		, Params && ... params )
-	{
-		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
-
-		try
-		{
-			using Type = typename VkGlTypeTraits< VkType >::Type;
-
-			vkValue = VkType( new Type{ std::forward< Params && >( params )... } );
-			result = VK_SUCCESS;
-		}
-		catch ( Exception & exc )
-		{
-			result = exc.getResult();
-		}
-		catch ( std::exception & exc )
-		{
-			std::cerr << exc.what() << std::endl;
-		}
-		catch ( ... )
-		{
-			std::cerr << "Unknown error" << std::endl;
-		}
-
-		return result;
-	}
-
-	template< typename VkType, typename ... Params >
-	VkResult allocate( VkType & vkValue
-		, const VkAllocationCallbacks * allocInfo
-		, Params && ... params )
-	{
-		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
-
-		try
-		{
-			using Type = typename VkGlTypeTraits< VkType >::Type;
-
-			if ( allocInfo )
-			{
-				auto mem = allocInfo->pfnAllocation( allocInfo->pUserData
-					, sizeof( Type )
-					, alignof( Type )
-					, allocationScopeT< VkType > );
-				vkValue = VkType( new( mem )Type{ std::forward< Params && >( params )... } );
-			}
-			else
-			{
-				vkValue = VkType( new Type{ std::forward< Params && >( params )... } );
-			}
-
-			result = VK_SUCCESS;
-		}
-		catch ( Exception & exc )
-		{
-			result = exc.getResult();
-		}
-		catch ( std::exception & exc )
-		{
-			std::cerr << exc.what() << std::endl;
-		}
-		catch ( ... )
-		{
-			std::cerr << "Unknown error" << std::endl;
-		}
-
-		return result;
-	}
-
-	template< typename VkType >
-	VkResult deallocateNA( VkType & vkValue )
-	{
-		auto value = get( vkValue );
-		delete value;
-		vkValue = nullptr;
-		return VK_SUCCESS;
-	}
-
-	template< typename VkType >
-	VkResult deallocate( VkType & vkValue, const VkAllocationCallbacks * allocInfo )
-	{
-		auto value = get( vkValue );
-
-		if ( allocInfo )
-		{
-			using Type = typename VkGlTypeTraits< VkType >::Type;
-
-			value->~Type();
-			auto scope = allocationScopeT< VkType >;
-			allocInfo->pfnFree( allocInfo->pUserData, value );
-		}
-		else
-		{
-			delete value;
-		}
-
-		vkValue = nullptr;
-		return VK_SUCCESS;
-	}
-
 	std::vector< VkExtensionProperties > const & getSupportedInstanceExtensions();
 	std::vector< VkLayerProperties > const & getInstanceLayerProperties();
 
@@ -272,39 +176,47 @@ namespace ashes::gl
 		return get( object )->getInstance();
 	}
 
-	inline VkInstance getInstance( VkBufferView object )
+#if VK_EXT_debug_utils
+
+	inline VkInstance getInstance( VkDebugUtilsMessengerEXT object )
+	{
+		return get( object )->getInstance();
+	}
+
+#endif
+#if VK_EXT_debug_report
+
+	inline VkInstance getInstance( VkDebugReportCallbackEXT object )
+	{
+		return get( object )->getInstance();
+	}
+
+#endif
+
+	template< typename VkDeviceObjectT >
+	inline VkInstance getInstance( VkDeviceObjectT object )
 	{
 		return getInstance( get( object )->getDevice() );
 	}
 
-	inline VkInstance getInstance( VkCommandBuffer object )
-	{
-		return getInstance( get( object )->getDevice() );
-	}
-
-	inline VkInstance getInstance( VkQueue object )
-	{
-		return getInstance( get( object )->getDevice() );
-	}
-
-	inline VkInstance getInstance( VkQueryPool object )
-	{
-		return getInstance( get( object )->getDevice() );
-	}
-
-	inline VkInstance getInstance( VkShaderModule object )
-	{
-		return getInstance( get( object )->getDevice() );
-	}
-
-	inline VkInstance getInstance( VkPipelineLayout object )
-	{
-		return getInstance( get( object )->getDevice() );
-	}
-
-	inline VkInstance getInstance( VkPipeline object )
+	inline VkInstance getInstance( VkDescriptorSet object )
 	{
 		return getInstance( get( object )->getLayout() );
+	}
+
+	inline VkInstance getInstance( VkDisplayKHR object )
+	{
+		return getInstance( get( object )->getPhysicalDevice() );
+	}
+
+	inline VkInstance getInstance( VkDisplayModeKHR object )
+	{
+		return getInstance( get( object )->getDisplay() );
+	}
+
+	inline VkInstance getInstance( VkImageView object )
+	{
+		return getInstance( get( object )->getImage() );
 	}
 
 #if VK_EXT_debug_utils
@@ -316,31 +228,37 @@ namespace ashes::gl
 		, std::string const & errorName
 		, std::string const & name )
 	{
-		VkInstance instance = getInstance( object );
-		VkDebugUtilsObjectNameInfoEXT objectName
+		VkInstance instance = object
+			? getInstance( object )
+			: VK_NULL_HANDLE;
+
+		if ( instance )
 		{
-			VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
-			nullptr,
-			ashes::VkTypeTraits< VkObject >::UtilsValue,
-			uint64_t( object ),
-			ashes::VkTypeTraits< VkObject >::getName().c_str(),
-		};
-		get( instance )->submitDebugUtilsMessenger( severity
-			, VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
-			, {
-				VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT,
+			VkDebugUtilsObjectNameInfoEXT objectName
+			{
+				VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
 				nullptr,
-				0u,
-				errorName.c_str(),
-				result,
-				name.c_str(),
-				0u,
-				nullptr,
-				0u,
-				nullptr,
-				1u,
-				&objectName,
-			} );
+				ashes::VkTypeTraits< VkObject >::UtilsValue,
+				uint64_t( object ),
+				ashes::VkTypeTraits< VkObject >::getName().c_str(),
+			};
+			get( instance )->submitDebugUtilsMessenger( severity
+				, VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
+				, {
+					VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT,
+					nullptr,
+					0u,
+					errorName.c_str(),
+					result,
+					name.c_str(),
+					0u,
+					nullptr,
+					0u,
+					nullptr,
+					1u,
+					&objectName,
+				} );
+		}
 	}
 
 #endif
@@ -353,15 +271,21 @@ namespace ashes::gl
 		, std::string const & errorName
 		, std::string const & name )
 	{
-		VkInstance instance = getInstance( object );
-		std::string text = errorName + ": " + name;
-		get( instance )->reportMessage( report
-			, ashes::VkTypeTraits< VkObject >::ReportValue
-			, uint64_t( object )
-			, 0u
-			, result
-			, "OpenGL"
-			, text.c_str() );
+		VkInstance instance = object
+			? getInstance( object )
+			: VK_NULL_HANDLE;
+
+		if ( instance )
+		{
+			std::string text = errorName + ": " + name;
+			get( instance )->reportMessage( report
+				, ashes::VkTypeTraits< VkObject >::ReportValue
+				, uint64_t( object )
+				, 0u
+				, result
+				, "OpenGL"
+				, text.c_str() );
+		}
 	}
 
 #endif
@@ -427,6 +351,71 @@ namespace ashes::gl
 	}
 
 	template< typename VkObject >
+	inline void reportInfo( VkObject object
+		, VkResult result
+		, std::string const & errorName
+		, std::string const & name )
+	{
+#if VK_EXT_debug_utils
+		debugUtilsSubmit( VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT
+			, object
+			, result
+			, errorName
+			, name );
+#endif
+#if VK_EXT_debug_report
+		debugReportMessage( VK_DEBUG_REPORT_INFORMATION_BIT_EXT
+			, object
+			, result
+			, errorName
+			, name );
+#endif
+	}
+
+	template< typename VkObject >
+	inline void reportDebug( VkObject object
+		, VkResult result
+		, std::string const & errorName
+		, std::string const & name )
+	{
+#if VK_EXT_debug_utils
+		debugUtilsSubmit( VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
+			, object
+			, result
+			, errorName
+			, name );
+#endif
+#if VK_EXT_debug_report
+		debugReportMessage( VK_DEBUG_REPORT_DEBUG_BIT_EXT
+			, object
+			, result
+			, errorName
+			, name );
+#endif
+	}
+
+	template< typename VkObject >
+	inline void reportVerbose( VkObject object
+		, std::string const & errorName
+		, std::string const & name )
+	{
+#if VK_EXT_debug_utils
+		debugUtilsSubmit( VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
+			, object
+			, VK_SUCCESS
+			, errorName
+			, name );
+#endif
+#if VK_EXT_debug_report
+		debugReportMessage( VK_DEBUG_REPORT_DEBUG_BIT_EXT
+			, object
+			, VK_SUCCESS
+			, errorName
+			, name );
+#endif
+	}
+
+	template< typename VkObject >
 	inline VkResult reportUnsupported( VkObject object
 		, std::string const & name )
 	{
@@ -435,6 +424,128 @@ namespace ashes::gl
 			, "Unsupported feature"
 			, name );
 		return VK_ERROR_FEATURE_NOT_PRESENT;
+	}
+
+	template< typename VkType, typename ... Params >
+	VkResult allocateNA( VkType & vkValue
+		, Params && ... params )
+	{
+		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
+		vkValue = VK_NULL_HANDLE;
+
+		try
+		{
+			using Type = typename VkGlTypeTraits< VkType >::Type;
+
+			vkValue = VkType( new Type{ std::forward< Params && >( params )... } );
+			result = VK_SUCCESS;
+		}
+		catch ( Exception & exc )
+		{
+			result = exc.getResult();
+			reportError( vkValue, result, "Allocation", exc.what() );
+		}
+		catch ( std::exception & exc )
+		{
+			reportError( vkValue, result, "Allocation", exc.what() );
+		}
+		catch ( ... )
+		{
+			reportError( vkValue, result, "Allocation", "Unknown error" );
+		}
+
+		return result;
+	}
+
+	template< typename VkType, typename ... Params >
+	VkResult allocate( VkType & vkValue
+		, const VkAllocationCallbacks * allocInfo
+		, Params && ... params )
+	{
+		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
+		vkValue = VK_NULL_HANDLE;
+
+		try
+		{
+			using Type = typename VkGlTypeTraits< VkType >::Type;
+
+			if ( allocInfo )
+			{
+				auto mem = allocInfo->pfnAllocation( allocInfo->pUserData
+					, sizeof( Type )
+					, alignof( Type )
+					, allocationScopeT< VkType > );
+
+				if ( mem )
+				{
+					vkValue = VkType( new( mem )Type{ std::forward< Params && >( params )... } );
+					result = VK_SUCCESS;
+				}
+				else
+				{
+					result = VK_ERROR_OUT_OF_HOST_MEMORY;
+				}
+			}
+			else
+			{
+				vkValue = VkType( new Type{ std::forward< Params && >( params )... } );
+				result = VK_SUCCESS;
+			}
+		}
+		catch ( Exception & exc )
+		{
+			result = exc.getResult();
+			reportError( vkValue, result, "Allocation", exc.what() );
+		}
+		catch ( std::exception & exc )
+		{
+			reportError( vkValue, result, "Allocation", exc.what() );
+		}
+		catch ( ... )
+		{
+			reportError( vkValue, result, "Allocation", "Unknown error" );
+		}
+
+		return result;
+	}
+
+	template< typename VkType >
+	VkResult deallocateNA( VkType & vkValue )
+	{
+		if ( vkValue )
+		{
+			auto value = get( vkValue );
+			delete value;
+			vkValue = nullptr;
+		}
+
+		return VK_SUCCESS;
+	}
+
+	template< typename VkType >
+	VkResult deallocate( VkType & vkValue, const VkAllocationCallbacks * allocInfo )
+	{
+		if ( vkValue )
+		{
+			auto value = get( vkValue );
+
+			if ( allocInfo )
+			{
+				using Type = typename VkGlTypeTraits< VkType >::Type;
+
+				value->~Type();
+				auto scope = allocationScopeT< VkType >;
+				allocInfo->pfnFree( allocInfo->pUserData, value );
+			}
+			else
+			{
+				delete value;
+			}
+
+			vkValue = nullptr;
+		}
+
+		return VK_SUCCESS;
 	}
 
 #pragma region Vulkan 1.0
@@ -2296,7 +2407,7 @@ namespace ashes::gl
 #pragma endregion
 #pragma region VK_MVK_ios_surface
 #ifdef VK_MVK_ios_surface
-#	ifdef VK_USE_PLATFORM_IOS_MVK
+#	ifdef __APPLE__
 
 	VkResult VKAPI_CALL vkCreateIOSSurfaceMVK(
 		VkInstance instance,
@@ -2309,7 +2420,7 @@ namespace ashes::gl
 #pragma endregion
 #pragma region VK_MVK_macos_surface
 #ifdef VK_MVK_macos_surface
-#	ifdef VK_USE_PLATFORM_MACOS_MVK
+#	ifdef __APPLE__
 
 	VkResult VKAPI_CALL vkCreateMacOSSurfaceMVK(
 		VkInstance instance,

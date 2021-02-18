@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
 
+  <Type Name="ashes::gl::Context">
+    <DisplayString>locked={m_enabled}</DisplayString>
+    <Expand>
+      <Item Name="instance">m_instance</Item>
+      <Item Name="extent">m_extent</Item>
+      <Item Name="mutex">m_mutex</Item>
+      <Item Name="enable">m_enabled</Item>
+      <Item Name="thread">m_activeThread</Item>
+      <Item Name="stats">m_state</Item>
+      <Item Name="buffers">m_buffers</Item>
+      <Item Name="impl">m_impl</Item>
+    </Expand>
+  </Type>
+
   <Type Name="VkDevice_T">
     <DisplayString>{{value={(ashes::gl::Device*)this}}}</DisplayString>
     <Expand>

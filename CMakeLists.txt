@@ -1,5 +1,5 @@
-cmake_minimum_required( VERSION 3.15 )
-cmake_policy( VERSION 3.15 )
+cmake_minimum_required( VERSION 3.13 )
+cmake_policy( VERSION 3.13 )
 
 if ( VCPKG_TARGET_TRIPLET )
 	set( VCPKG_TOOLCHAIN ON )
@@ -36,10 +36,6 @@ include( Doxygen )
 option( ASHES_BUILD_TEMPLATES "Build Ashes template applications" ON )
 option( ASHES_BUILD_TESTS "Build Ashes test applications" ON )
 option( ASHES_BUILD_SAMPLES "Build Ashes sample applications" ON )
-
-if ( NOT APPLE )
-	option( ASHES_BUILD_INFO "Build AshesInfo application" ON )
-endif ()
 
 if ( EXISTS ${CMAKE_SOURCE_DIR}/test/Vulkan/CMakeLists.txt )
 	option( ASHES_BUILD_SW_SAMPLES "Build Sascha Willems examples." FALSE )

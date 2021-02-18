@@ -15,6 +15,7 @@ namespace ashes::gl
 		GL_CULL_MODE_FRONT_AND_BACK = 0x0408,
 	};
 	std::string getName( GlCullMode value );
+	inline std::string toString( GlCullMode value ) { return getName( value ); }
 	/**
 	*\brief
 	*	Convertit un VkCullModeFlags en GlCullMode.

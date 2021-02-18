@@ -39,6 +39,7 @@ namespace ashes::gl
 			GL_TEXTURE_VIEW_2D_MULTISAMPLE_ARRAY = 0x9102,
 		};
 		std::string getName( GlTextureViewType value );
+		inline std::string toString( GlTextureViewType value ) { return getName( value ); }
 		GlTextureViewType convertViewType( VkImageViewType const & viewType
 			, VkImageType const & imageType
 			, uint32_t arraySize

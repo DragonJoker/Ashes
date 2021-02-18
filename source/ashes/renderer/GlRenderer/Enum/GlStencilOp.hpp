@@ -18,6 +18,7 @@ namespace ashes::gl
 		GL_STENCIL_OP_DECR_WRAP = 0x8508,
 	};
 	std::string getName( GlStencilOp value );
+	inline std::string toString( GlStencilOp value ) { return getName( value ); }
 	/**
 	*\brief
 	*	Convertit un VkStencilOp en GlStencilOp.

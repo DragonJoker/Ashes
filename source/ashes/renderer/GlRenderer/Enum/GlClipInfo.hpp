@@ -18,5 +18,7 @@ namespace ashes::gl
 		GL_ZERO_TO_ONE = 0x935F,
 	};
 	std::string getName( GlClipOrigin value );
+	inline std::string toString( GlClipOrigin value ) { return getName( value ); }
 	std::string getName( GlClipDepth value );
+	inline std::string toString( GlClipDepth value ) { return getName( value ); }
 }

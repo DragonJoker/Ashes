@@ -21,7 +21,7 @@ namespace ashes::gl
 	{
 		ContextState( ContextState const & rhs );
 		ContextState( ContextState && rhs );
-		ContextState( VkPipelineColorBlendStateCreateInfo cbState
+		ContextState( Optional< VkPipelineColorBlendStateCreateInfo > cbState
 			, Optional< VkPipelineDepthStencilStateCreateInfo > dsState
 			, Optional< VkPipelineMultisampleStateCreateInfo > msState
 			, Optional< VkPipelineTessellationStateCreateInfo > tsState
@@ -29,6 +29,14 @@ namespace ashes::gl
 			, VkPipelineViewportStateCreateInfo vpState
 			, VkPipelineRasterizationStateCreateInfo rsState
 			, VkPipelineDynamicStateCreateInfo dyState );
+		ContextState( VkPipelineColorBlendStateCreateInfo const * cbState = nullptr
+			, VkPipelineDepthStencilStateCreateInfo const * dsState = nullptr
+			, VkPipelineMultisampleStateCreateInfo const * msState = nullptr
+			, VkPipelineTessellationStateCreateInfo const * tsState = nullptr
+			, VkPipelineInputAssemblyStateCreateInfo const * iaState = nullptr
+			, VkPipelineViewportStateCreateInfo const * vpState = nullptr
+			, VkPipelineRasterizationStateCreateInfo const * rsState = nullptr
+			, VkPipelineDynamicStateCreateInfo const * dyState = nullptr );
 		ContextState( VkPipelineColorBlendStateCreateInfo cbState
 			, VkPipelineDepthStencilStateCreateInfo const * dsState = nullptr
 			, VkPipelineMultisampleStateCreateInfo const * msState = nullptr
@@ -37,7 +45,6 @@ namespace ashes::gl
 			, VkPipelineViewportStateCreateInfo const * vpState = nullptr
 			, VkPipelineRasterizationStateCreateInfo const * rsState = nullptr
 			, VkPipelineDynamicStateCreateInfo const * dyState = nullptr );
-		ContextState();
 
 		ContextState & swap( ContextState && rhs );
 
@@ -58,14 +65,16 @@ namespace ashes::gl
 
 		void setViewports( VkViewportArray value )
 		{
-			viewports = value;
-			viewportsView = makeArrayView( const_cast< VkViewportArray const & >( viewports ).data(), viewports.size() );
+			viewports = std::move( value );
+			viewportsView = makeArrayView( const_cast< VkViewportArray const & >( viewports ).data()
+				, const_cast< VkViewportArray const & >( viewports ).data() + viewports.size() );
 		}
 
 		void setScissors( VkScissorArray value )
 		{
-			scissors = value;
-			scissorsView = makeArrayView( const_cast< VkScissorArray const & >( scissors ).data(), scissors.size() );
+			scissors = std::move( value );
+			scissorsView = makeArrayView( const_cast< VkScissorArray const & >( scissors ).data()
+				, const_cast< VkScissorArray const & >( scissors ).data() + scissors.size() );
 		}
 
 		VkPipelineColorBlendAttachmentStateArray cbStateAttachments;

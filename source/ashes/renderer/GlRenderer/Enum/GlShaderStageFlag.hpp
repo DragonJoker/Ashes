@@ -16,6 +16,7 @@ namespace ashes::gl
 		GL_SHADER_STAGE_COMPUTE = 0x91B9,
 	};
 	std::string getShaderStageName( GlShaderStage value );
+	inline std::string toString( GlShaderStage value ) { return getShaderStageName( value ); }
 	/**
 	*\brief
 	*	Convertit un VkShaderStageFlagBits en VkShaderStageFlagBits.
@@ -36,6 +37,7 @@ namespace ashes::gl
 	};
 	Ashes_ImplementFlag( GlShaderStageFlag )
 	std::string getShaderStageFlagsName( GlShaderStageFlags value );
+	inline std::string toString( GlShaderStageFlags value ) { return getShaderStageFlagsName( value ); }
 	/**
 	*\brief
 	*	Convertit un VkShaderStageFlags en VkShaderStageFlags.

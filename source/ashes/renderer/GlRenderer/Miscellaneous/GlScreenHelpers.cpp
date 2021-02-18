@@ -211,6 +211,21 @@ namespace ashes::gl
 			return false;
 		}
 
+#elif __APPLE__
+
+		uint32_t countDisplays()
+		{
+			return 0u;
+		}
+
+		bool getScreenData( uint32_t index
+			, VkDisplayPropertiesKHR & data
+			, std::string & name
+			, std::vector< VkDisplayModeParametersKHR > & displayModesParams )
+		{
+			return false;
+		}
+
 #endif
 	}
 

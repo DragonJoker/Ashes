@@ -22,6 +22,11 @@ namespace ashes::d3d11
 			return m_desc;
 		}
 
+		VkDisplayKHR getDisplay()const
+		{
+			return m_display;
+		}
+
 	private:
 		VkDisplayKHR m_display;
 		DXGI_MODE_DESC m_desc;

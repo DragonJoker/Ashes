@@ -11,7 +11,7 @@ See LICENSE file in root folder
 namespace ashes::gl
 {
 	class Device
-		: public AutoIdIcdObject< Device >
+		: public ashes::IcdObject
 	{
 		friend class Instance;
 
@@ -52,8 +52,8 @@ namespace ashes::gl
 			, uint32_t index )const;
 		void swapBuffers()const;
 
-		void link( VkSurfaceKHR surface )const;
-		void unlink( VkSurfaceKHR surface )const;
+		void link( VkSurfaceKHR surface );
+		void unlink( VkSurfaceKHR surface );
 		ContextLock getContext()const;
 
 		inline VkPhysicalDeviceFeatures const & getEnabledFeatures()const
@@ -111,6 +111,8 @@ namespace ashes::gl
 	private:
 		void doInitialiseQueues();
 		void doInitialiseDummy()const;
+		void doInitialiseContextDependent();
+		void doCleanupContextDependent();
 
 	private:
 		struct QueueCreates
@@ -157,4 +159,5 @@ namespace ashes::gl
 	bool hasTextureStorage( VkDevice device );
 	bool hasTextureViews( VkDevice device );
 	bool hasViewportArrays( VkDevice device );
+	bool hasProgramInterfaceQuery( VkDevice device );
 }

@@ -1,9 +1,18 @@
+option( ASHES_TEST_ICD "Test ICD mode for ashes" ON )
+
 if ( ASHES_BUILD_TESTS OR ASHES_BUILD_INFO OR ASHES_BUILD_SW_SAMPLES )
 	set( TARGET_INCLUDE_DIRS
 		${Ashes_SOURCE_DIR}/include
 		${Ashes_BINARY_DIR}/include
 		${Vulkan_INCLUDE_DIR}
 	)
+	find_package( Vulkan QUIET REQUIRED )
+	if ( NOT ASHES_TEST_ICD )
+		set( Vulkan_LIBRARY
+			${Vulkan_LIBRARY}
+			ashes::ashes
+		)
+	endif ()
 endif ()
 
 if ( ASHES_BUILD_TESTS )
@@ -44,10 +53,6 @@ if ( ASHES_BUILD_TESTS )
 	endif ()
 endif ()
 
-if ( ASHES_BUILD_INFO )
-	add_subdirectory( AshesInfo )
-endif ()
-
 if ( ASHES_BUILD_SW_SAMPLES )
 	if ( VCPKG_TOOLCHAIN )
 		find_package( assimp CONFIG REQUIRED assimp )
@@ -59,8 +64,6 @@ if ( ASHES_BUILD_SW_SAMPLES )
 	endif ()
 	include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../external/glm )
 	include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../external/gli )
-	set( Vulkan_FOUND ON )
-	set( Vulkan_LIBRARY ashes::ashes )
 	add_subdirectory( Vulkan )
 	set(EXAMPLES
 		bloom
@@ -137,8 +140,20 @@ if ( ASHES_BUILD_SW_SAMPLES )
 	foreach ( EXAMPLE ${EXAMPLES} )
 		if ( TARGET ${EXAMPLE} )
 			set_property( TARGET ${EXAMPLE} PROPERTY FOLDER "${Ashes_BASE_DIR}/SWExamples" )
+			if ( ASHES_TEST_ICD )
+				target_compile_definitions( ${EXAMPLE}
+					PRIVATE
+						AshesICD
+				)
+			endif ()
 		endif ()
 	endforeach ( EXAMPLE )
 	set_property( TARGET base PROPERTY FOLDER "${Ashes_BASE_DIR}/SWExamples" )
+	if ( ASHES_TEST_ICD )
+		target_compile_definitions( base
+			PRIVATE
+				AshesICD
+		)
+	endif ()
 endif ()
 

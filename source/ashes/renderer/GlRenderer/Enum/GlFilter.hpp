@@ -17,6 +17,7 @@ namespace ashes::gl
 		GL_FILTER_LINEAR_MIPMAP_LINEAR = 0x2703,
 	};
 	std::string getName( GlFilter value );
+	inline std::string toString( GlFilter value ) { return getName( value ); }
 	/**
 	*\brief
 	*	Convertit un VkFilter en GlFilter.

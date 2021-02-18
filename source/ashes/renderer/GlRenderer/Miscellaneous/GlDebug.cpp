@@ -96,27 +96,73 @@ namespace ashes::gl
 		return result;
 	}
 
+#if AshesGL_LogCalls
+
+	struct DebugLog
+	{
+		std::vector< std::string > blocks;
+
+		static DebugLog & get()
+		{
+			thread_local DebugLog log;
+			return log;
+		}
+	};
+
+	void pushDebugBlock( std::string name )
+	{
+		DebugLog::get().blocks.push_back( name );
+		logDebug( ( "BlockBegin: " + DebugLog::get().blocks.back() ).c_str() );
+	}
+
+	void popDebugBlock()
+	{
+		logDebug( ( "BlockEnd: " + DebugLog::get().blocks.back() ).c_str() );
+		DebugLog::get().blocks.pop_back();
+	}
+
+	std::string getDebugPrefix()
+	{
+		return std::string( size_t( DebugLog::get().blocks.size() * 2u ), ' ' );
+	}
+
 	void clearDebugFile()
 	{
-#if AshesGL_LogCalls
 		if ( std::filesystem::exists( debugLogFile ) )
 		{
 			std::filesystem::remove( debugLogFile );
 		}
-#endif
 	}
 
 	void logDebug( char const * const log )
 	{
-#if AshesGL_LogCalls
 		std::ofstream file{ debugLogFile, std::ios::app };
 
 		if ( file )
 		{
-			file << log << std::endl;
+			file << getDebugPrefix() << log << std::endl;
 		}
-#endif
 	}
+
+#else
+
+	void clearDebugFile()
+	{
+	}
+
+	void logDebug( char const * const log )
+	{
+	}
+
+	void pushDebugBlock( std::string name )
+	{
+	}
+
+	void popDebugBlock()
+	{
+	}
+
+#endif
 
 	void logStream( std::stringstream & stream )
 	{

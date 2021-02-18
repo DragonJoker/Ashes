@@ -15,7 +15,7 @@ namespace ashes::gl
 		, CmdList const & cmds );
 
 	class Queue
-		: public IcdObject
+		: public ashes::IcdObject
 	{
 	public:
 		Queue( VkDevice device

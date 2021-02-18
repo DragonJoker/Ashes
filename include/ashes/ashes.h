@@ -28,7 +28,16 @@ See LICENSE file in root folder.
 #	include <Windows.h>
 #	include <vulkan/vulkan_win32.h>
 #elif( __APPLE__ )
-#	include <vulkan/vulkan_macos.h>
+#	include <TargetConditionals.h>
+#	if TARGET_IPHONE_SIMULATOR
+#		include <vulkan/vulkan_ios.h>
+#	elif TARGET_OS_IPHONE
+#		include <vulkan/vulkan_ios.h>
+#	elif TARGET_OS_MAC
+#		include <vulkan/vulkan_macos.h>
+#	else
+#		error "Unknown Apple platform"
+#	endif
 #endif
 
 #if _WIN32
@@ -45,6 +54,26 @@ See LICENSE file in root folder.
 extern "C"
 {
 #endif
+
+	typedef enum AshPluginMode
+	{
+		/**
+		*\brief
+		*	Nothing selected yet.
+		*/
+		ASHPLUGIN_UNDEFINED,
+		/**
+		*\brief
+		*	Drop-in replacement mode.
+		*/
+		ASHPLUGIN_DROPIN,
+		/**
+		*\brief
+		*	ICD mode.
+		*/
+		ASHPLUGIN_ICD,
+	} AshPluginMode;
+
 	typedef struct AshPluginFeatures
 	{
 		/**
@@ -155,10 +184,16 @@ extern "C"
 		*	The plugin's support informations.
 		*/
 		AshPluginSupport support;
+		/**
+		*\brief
+		*	The plugin's current mode.
+		*/
+		AshPluginMode mode;
 	} AshPluginDescription;
 
-	typedef void( VKAPI_PTR * PFN_ashEnumeratePluginsDescriptions )( uint32_t *, AshPluginDescription * );
 	typedef VkResult( VKAPI_PTR * PFN_ashGetPluginDescription )( AshPluginDescription * );
+
+	typedef void( VKAPI_PTR * PFN_ashEnumeratePluginsDescriptions )( uint32_t *, AshPluginDescription * );
 	typedef VkResult( VKAPI_PTR * PFN_ashSelectPlugin )( AshPluginDescription );
 
 	Ashes_API void VKAPI_PTR ashEnumeratePluginsDescriptions( uint32_t * count

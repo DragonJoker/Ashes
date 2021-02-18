@@ -12,4 +12,5 @@ namespace ashes::gl
 		GL_WAIT_FLAG_SYNC_FLUSH_COMMANDS_BIT = 0x00000001,
 	};
 	std::string getName( GlFenceWaitFlag value );
+	inline std::string toString( GlFenceWaitFlag value ) { return getName( value ); }
 }

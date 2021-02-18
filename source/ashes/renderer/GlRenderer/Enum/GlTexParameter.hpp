@@ -69,4 +69,5 @@ namespace ashes::gl
 
 		return std::string{};
 	}
+	inline std::string toString( GlTexParameter value ) { return getName( value ); }
 }

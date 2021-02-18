@@ -18,13 +18,21 @@ namespace utils
 {
 	namespace
 	{
+		bool isValidationLayer( std::string const & name )
+		{
+			static std::set< std::string > const validNames
+			{
+				"VK_LAYER_KHRONOS_validation",
+			};
+			return validNames.find( name ) != validNames.end();
+		}
+
 		void addOptionalValidationLayer( std::string const & layer
 			, std::string description
 			, ashes::StringArray & names )
 		{
 #if LOAD_VALIDATION_LAYERS
-			if ( layer.find( "validation" ) != std::string::npos
-				|| description.find( "LunarG Validation" ) != std::string::npos )
+			if ( isValidationLayer( layer ) )
 			{
 				names.push_back( layer );
 			}
@@ -38,7 +46,7 @@ namespace utils
 			names.push_back( VK_EXT_DEBUG_UTILS_EXTENSION_NAME );
 #	elif VK_EXT_debug_utils
 			names.push_back( VK_EXT_DEBUG_REPORT_EXTENSION_NAME );
-			//names.push_back( VK_EXT_DEBUG_MARKER_EXTENSION_NAME );
+			names.push_back( VK_EXT_DEBUG_MARKER_EXTENSION_NAME );
 #	endif
 #endif
 		}

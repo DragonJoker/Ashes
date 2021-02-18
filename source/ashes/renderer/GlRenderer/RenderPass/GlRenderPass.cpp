@@ -35,10 +35,9 @@ namespace ashes::gl
 						: Optional< VkAttachmentReference >{} ),
 					makeVector( subpass.pPreserveAttachments, subpass.preserveAttachmentCount )
 				} );
-			referenceAttaches( data->colorAttachments );
-			referenceAttaches( data->inputAttachments );
-			referenceAttaches( data->resolveAttachments );
-			referenceAttaches( data->depthStencilAttachment );
+			referenceAttaches( data->colorAttachments, m_referencedAttachments );
+			referenceAttaches( data->resolveAttachments, m_resolveAttachments );
+			referenceAttach( data->depthStencilAttachment, m_referencedAttachments );
 			subpass.pColorAttachments = data->colorAttachments.data();
 			subpass.pInputAttachments = data->inputAttachments.data();
 			subpass.pResolveAttachments = data->resolveAttachments.data();
@@ -51,20 +50,48 @@ namespace ashes::gl
 		}
 
 		uint32_t index = 0u;
+		m_maxLoadClearIndex = InvalidIndex;
 		std::vector< uint32_t > indices;
 
 		for ( auto & attach : m_attachments )
 		{
-			if ( isDepthOrStencilFormat( attach.format ) )
+			if ( isStencilFormat( attach.format ) )
 			{
 				m_hasDepthAttach = true;
 				m_depthAttaches.push_back( attach );
-				indices.push_back( 0u );
+
+				if ( attach.stencilLoadOp == VK_ATTACHMENT_LOAD_OP_CLEAR )
+				{
+					m_maxLoadClearIndex = ( m_maxLoadClearIndex == InvalidIndex
+						? index
+						: std::max( m_maxLoadClearIndex, index ) );
+				}
+			}
+			else if ( isDepthOrStencilFormat( attach.format ) )
+			{
+				m_hasDepthAttach = true;
+				m_depthAttaches.push_back( attach );
+
+				if ( attach.loadOp == VK_ATTACHMENT_LOAD_OP_CLEAR
+					|| attach.stencilLoadOp == VK_ATTACHMENT_LOAD_OP_CLEAR )
+				{
+					m_maxLoadClearIndex = ( m_maxLoadClearIndex == InvalidIndex
+						? index
+						: std::max( m_maxLoadClearIndex, index ) );
+				}
 			}
 			else
 			{
-				indices.push_back( index );
 				m_colourAttaches.push_back( { index, attach } );
+
+				if ( attach.loadOp == VK_ATTACHMENT_LOAD_OP_CLEAR
+					|| attach.stencilLoadOp == VK_ATTACHMENT_LOAD_OP_CLEAR )
+				{
+					m_maxLoadClearIndex = ( m_maxLoadClearIndex == InvalidIndex
+						? index
+						: std::max( m_maxLoadClearIndex, index ) );
+				}
+
 				++index;
 			}
 		}
@@ -83,6 +110,16 @@ namespace ashes::gl
 	VkAttachmentDescription const & RenderPass::getAttachment( VkAttachmentReference const & reference )const
 	{
 		return m_attachments[reference.attachment];
+	}
+
+	bool RenderPass::isFboAttachable( VkAttachmentReference const & reference )const
+	{
+		return m_referencedAttachments.end() != std::find_if( m_referencedAttachments.begin()
+			, m_referencedAttachments .end()
+			, [&reference]( VkAttachmentReference const & lookup )
+			{
+				return lookup.attachment == reference.attachment;
+			} );
 	}
 
 	uint32_t RenderPass::getAttachmentIndex( VkAttachmentDescription const & attach )const
@@ -104,35 +141,40 @@ namespace ashes::gl
 		return result;
 	}
 
-	void RenderPass::referenceAttaches( VkAttachmentReference const & value )
+	void RenderPass::referenceAttach( VkAttachmentReference const & value
+		, VkAttachmentReferenceArray & attachments )
 	{
-		auto it = std::find_if( m_referencedAttachments.begin()
-			, m_referencedAttachments.end()
+		auto it = std::find_if( attachments.begin()
+			, attachments.end()
 			, [&value]( VkAttachmentReference const & lookup )
 			{
 				return value.attachment == lookup.attachment;
 			} );
 
-		if ( it == m_referencedAttachments.end() )
+		if ( it == attachments.end()
+			&& value.attachment != VK_ATTACHMENT_UNUSED )
 		{
-			assert( value.attachment < m_attachments.size() && "Trying to reference a non existing attachment." );
-			m_referencedAttachments.push_back( value );
+			assert( ( value.attachment < m_attachments.size() )
+				&& "Trying to reference a non existing attachment." );
+			attachments.push_back( value );
 		}
 	}
 
-	void RenderPass::referenceAttaches( Optional< VkAttachmentReference > const & value )
+	void RenderPass::referenceAttach( Optional< VkAttachmentReference > const & value
+		, VkAttachmentReferenceArray & attachments )
 	{
 		if ( bool( value ) )
 		{
-			referenceAttaches( value.value() );
+			referenceAttach( value.value(), attachments );
 		}
 	}
 
-	void RenderPass::referenceAttaches( VkAttachmentReferenceArray const & values )
+	void RenderPass::referenceAttaches( VkAttachmentReferenceArray const & values
+		, VkAttachmentReferenceArray & attachments )
 	{
 		for ( auto & value : values )
 		{
-			referenceAttaches( value );
+			referenceAttach( value, attachments );
 		}
 	}
 }

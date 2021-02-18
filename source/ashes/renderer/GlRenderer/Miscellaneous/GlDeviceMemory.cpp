@@ -20,218 +20,44 @@ namespace ashes::gl
 {
 	//************************************************************************************************
 
-	VkMemoryPropertyFlags getFlags( uint32_t memoryTypeIndex )
+	VkMemoryPropertyFlags getFlags( VkDevice device
+		, uint32_t memoryTypeIndex )
 	{
-		assert( memoryTypeIndex < Instance::getMemoryProperties().memoryTypeCount
+		auto & memProps = get( get( device )->getPhysicalDevice() )->getMemoryProperties();
+		assert( memoryTypeIndex < memProps.memoryTypeCount
 			&& "Wrong deduced memory type" );
-		return Instance::getMemoryProperties().memoryTypes[memoryTypeIndex].propertyFlags;
+		return memProps.memoryTypes[memoryTypeIndex].propertyFlags;
 	}
-
-	//************************************************************************************************
 
 	namespace
 	{
-		struct BufferAlloc
-		{
-			GLuint name;
-			GlBufferTarget target;
-			GLsizeiptr size;
-			GlBufferDataUsageFlags flags;
-		};
-		using BufferAllocCont = std::vector< BufferAlloc >;
+		//************************************************************************************************
 
-		BufferAllocCont & getAllocatedBuffers()
-		{
-			static BufferAllocCont result;
-			return result;
-		}
-
-		BufferAllocCont::iterator findBuffer( GLuint buffer )
-		{
-			return std::find_if( getAllocatedBuffers().begin()
-				, getAllocatedBuffers().end()
-				, [buffer]( BufferAlloc const & lookup )
-				{
-					return lookup.name == buffer;
-				} );
-		}
-
-		GLint getBufferSize( ContextLock const & context
-			, GlBufferTarget target
-			, GLuint buffer )
-		{
-			GLint result = 0;
-			auto it = findBuffer( buffer );
-
-			if ( it != getAllocatedBuffers().end() )
-			{
-				target = it->target;
-			}
-
-			glLogCall( context
-				, glBindBuffer
-				, target
-				, buffer );
-			glLogCall( context
-				, glGetBufferParameteriv
-				, target
-				, GL_BUFFER_PARAMETER_SIZE
-				, &result );
-			glLogCall( context
-				, glBindBuffer
-				, target
-				, 0u );
-			return result;
-		}
-
-		GLint getBufferSize( ContextLock const & context
-			, GLuint buffer )
-		{
-			return getBufferSize( context
-				, GL_BUFFER_TARGET_COPY_WRITE
-				, buffer );
-		}
-
-		BufferAllocCont::iterator findBuffer( GLuint buffer
-			, GLsizeiptr size )
-		{
-			return std::find_if( getAllocatedBuffers().begin()
-				, getAllocatedBuffers().end()
-				, [buffer, size]( BufferAlloc const & lookup )
-				{
-					return lookup.name == buffer
-						&& lookup.size == size;
-				} );
-		}
-
-		GLuint createBuffer( ContextLock const & context
-			, GlBufferTarget target
-			, GLsizeiptr size
-			, GlBufferDataUsageFlags flags )
-		{
-			auto allocateBuffer = [&context]( GLuint result
-				, GlBufferTarget target
-				, GLsizeiptr size
-				, GlBufferDataUsageFlags flags )
-			{
-				glLogCall( context
-					, glBindBuffer
-					, target
-					, result );
-				glLogCall( context
-					, glBufferData
-					, target
-					, size
-					, nullptr
-					, flags );
-				glLogCall( context
-					, glBindBuffer
-					, target
-					, 0u );
-				return result;
-			};
-
-			auto & cache = getAllocatedBuffers();
-			GLuint result;
-			glLogCall( context
-				, glGenBuffers
-				, 1u
-				, &result );
-			auto it = findBuffer( result );
-
-			while ( it != cache.end() )
-			{
-				std::cerr << "Buffer " << result << " is being reused" << std::endl;
-				allocateBuffer( it->name, it->target, it->size, it->flags );
-				glLogCall( context
-					, glGenBuffers
-					, 1u
-					, &result );
-				it = findBuffer( result );
-			}
-
-			allocateBuffer( result, target, size, flags );
-			GLint realSize = getBufferSize( context, target, result );
-			assert( realSize >= size );
-			getAllocatedBuffers().push_back( { result, target, GLsizeiptr( realSize ), flags } );
-			return result;
-		}
-
-		void * mapBuffer( ContextLock const & context
-			, GlBufferTarget target
-			, VkDeviceSize offset
-			, VkDeviceSize size
-			, GlMemoryMapFlags mapFlags )
-		{
-			return glLogNonVoidCall( context
-				, glMapBufferRange
-				, target
-				, GLintptr( offset )
-				, GLsizei( size )
-				, mapFlags );
-		}
-
-		void deleteBuffer( ContextLock const & context
-			, GLuint buffer )
-		{
-			if ( buffer != GL_INVALID_INDEX )
-			{
-				GLint size = getBufferSize( context, buffer );
-
-				if ( size != 0 )
-				{
-					auto it = findBuffer( buffer, size );
-
-					if ( it != getAllocatedBuffers().end() )
-					{
-						getAllocatedBuffers().erase( it );
-
-						glLogCall( context
-							, glDeleteBuffers
-							, 1u
-							, &buffer );
-					}
-					else
-					{
-						std::cerr << "Couldn't find buffer " << buffer << " it has probably been reused" << std::endl;
-					}
-				}
-				else
-				{
-					std::cerr << "Couldn't find buffer " << buffer << " it has probably been reused" << std::endl;
-				}
-			}
-		}
-
-		class ImageMemory
-			: public DeviceMemory::DeviceMemoryImpl
+		class ImageMemoryBinding
+			: public DeviceMemory::DeviceMemoryBinding
 		{
 		public:
-			ImageMemory( VkDeviceMemory parent
+			ImageMemoryBinding( VkDeviceMemory parent
 				, VkDevice device
-				, VkMemoryAllocateInfo allocateInfo
-				, VkImage texture
+				, VkImage image
 				, VkDeviceSize memoryOffset )
-				: DeviceMemory::DeviceMemoryImpl
-				{
-					parent,
-					device,
-					std::move( allocateInfo ),
-					get( texture )->getTarget(),
-					memoryOffset,
-					get( device )->getLimits().nonCoherentAtomSize,
-				}
-				, m_texture{ get( texture ) }
+				: DeviceMemory::DeviceMemoryBinding{ parent
+					, device
+					, get( image )->getTarget()
+					, memoryOffset
+					, get( image )->getMemoryRequirements()
+					, image
+					, get( image )->getInternal() }
+				, m_texture{ get( image ) }
 				, m_internal{ getInternalFormat( m_texture->getFormat() ) }
 				, m_format{ getFormat( m_internal ) }
 				, m_type{ getType( m_internal ) }
 			{
-				m_boundResource = get( texture )->getInternal();
 				auto context = get( m_device )->getContext();
 				glLogCall( context
 					, glBindTexture
 					, GlTextureType( m_boundTarget )
-					, m_boundResource );
+					, m_boundName );
 
 				switch ( m_boundTarget )
 				{
@@ -286,14 +112,27 @@ namespace ashes::gl
 						, GlTextureType( m_boundTarget )
 						, GL_TEX_PARAMETER_IMMUTABLE_LEVELS
 						, &levels );
-					assert( levels == m_texture->getMipLevels() );
+					if ( levels != m_texture->getMipLevels() )
+					{
+						reportWarning( parent
+							, VK_SUCCESS
+							, "Image memory"
+							, "Image mip level doesn't match requested one." );
+					}
+
 					int format = 0;
 					glLogCall( context
 						, glGetTexParameteriv
 						, GlTextureType( m_boundTarget )
 						, GL_TEX_PARAMETER_IMMUTABLE_FORMAT
 						, &format );
-					assert( format != 0 );
+					if ( format == 0 )
+					{
+						reportWarning( parent
+							, VK_SUCCESS
+							, "Image memory"
+							, "Image format isn't immutable." );
+					}
 				}
 				else
 				{
@@ -312,86 +151,45 @@ namespace ashes::gl
 					, GlTextureType( m_boundTarget )
 					, 0 );
 
-				if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
+				// Prepare update regions, layer by layer.
+				uint32_t offset = 0u;
+				VkBufferImageCopy bufferCopyRegion = {};
+				bufferCopyRegion.imageSubresource.aspectMask = getAspectMask( m_texture->getFormat() );
+				bufferCopyRegion.imageSubresource.mipLevel = 0u;
+				bufferCopyRegion.imageSubresource.layerCount = 1u;
+				bufferCopyRegion.imageExtent = m_texture->getDimensions();
+				auto levelSize = uint32_t( getSize() / m_texture->getArrayLayers() );
+
+				for ( uint32_t layer = 0; layer < m_texture->getArrayLayers(); layer++ )
 				{
-					// Create the PBO
-					m_buffer = createBuffer( context
-						, GL_BUFFER_TARGET_COPY_WRITE
-						, GLsizeiptr( m_allocateInfo.allocationSize )
-						, getBufferDataUsageFlags( m_flags ) );
-
-					// Prepare update regions, layer by layer.
-					uint32_t offset = 0;
-					VkBufferImageCopy bufferCopyRegion = {};
-					bufferCopyRegion.imageSubresource.aspectMask = getAspectMask( m_texture->getFormat() );
-					bufferCopyRegion.imageSubresource.mipLevel = 0u;
-					bufferCopyRegion.imageSubresource.layerCount = 1u;
-					bufferCopyRegion.imageExtent = m_texture->getDimensions();
-					auto levelSize = uint32_t( m_allocateInfo.allocationSize / m_texture->getArrayLayers() );
-
-					for ( uint32_t layer = 0; layer < m_texture->getArrayLayers(); layer++ )
-					{
-						bufferCopyRegion.imageSubresource.baseArrayLayer = layer;
-						bufferCopyRegion.bufferOffset = offset;
-						m_updateRegions.push_back( bufferCopyRegion );
-						offset += levelSize;
-					}
+					bufferCopyRegion.imageSubresource.baseArrayLayer = layer;
+					bufferCopyRegion.bufferOffset = offset;
+					m_updateRegions.push_back( bufferCopyRegion );
+					offset += levelSize;
 				}
 			}
 
-			~ImageMemory()
+			~ImageMemoryBinding()
 			{
+				m_texture->setMemory( nullptr );
 			}
 
-			VkResult lock( ContextLock const & context
+			void upload( ContextLock const & context
+				, ByteArray const & data
 				, VkDeviceSize offset
-				, VkDeviceSize size
-				, void ** data )const override
+				, VkDeviceSize size )const override
 			{
-				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
-					&& "Unsupported action on a device local texture" );
-
-				auto copySize = size == WholeSize
-					? m_allocateInfo.allocationSize
-					: size;
-				glLogCall( context
-					, glBindBuffer
-					, GL_BUFFER_TARGET_PIXEL_UNPACK
-					, m_buffer );
 				doSetupUpdateRegions( offset, size );
-				auto result = mapBuffer( context
-					, GL_BUFFER_TARGET_PIXEL_UNPACK
-					, offset
-					, copySize
-					, m_mapFlags );
-				*data = result;
-				return result
-					? VK_SUCCESS
-					: VK_ERROR_MEMORY_MAP_FAILED;
-			}
 
-			void unlock( ContextLock const & context )const override
-			{
-				assert( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT )
-					&& "Unsupported action on a device local texture" );
-
-				glLogCall( context
-					, glBindTexture
-					, GlTextureType( m_boundTarget )
-					, m_boundResource );
-				glLogCall( context
-					, glUnmapBuffer
-					, GL_BUFFER_TARGET_PIXEL_UNPACK );
-
-				for( size_t i = m_beginRegion; i < m_endRegion; ++i )
+				for ( size_t i = m_beginRegion; i < m_endRegion; ++i )
 				{
 					updateRegion( context, m_updateRegions[i] );
 				}
 
 				glLogCall( context
-					, glBindBuffer
-					, GL_BUFFER_TARGET_PIXEL_UNPACK
-					, 0u );
+					, glBindTexture
+					, GlTextureType( m_boundTarget )
+					, m_boundName );
 
 				if ( m_texture->getMipLevels() > 1
 					&& !isCompressedFormat( m_texture->getFormat() ) )
@@ -575,7 +373,7 @@ namespace ashes::gl
 				, VkDeviceSize size )const
 			{
 				assert( !m_updateRegions.empty() && "Can't update this texture." );
-				auto layerSize = getSize( m_updateRegions[0].imageExtent
+				auto layerSize = ashes::getSize( m_updateRegions[0].imageExtent
 					, m_texture->getFormat() );
 				m_beginRegion = 0u;
 
@@ -611,7 +409,7 @@ namespace ashes::gl
 			{
 				if ( isCompressedFormat( m_texture->getFormat() ) )
 				{
-					auto layerSize = getSize( copyInfo.imageExtent
+					auto layerSize = ashes::getSize( copyInfo.imageExtent
 						, m_texture->getFormat()
 						, copyInfo.imageSubresource.mipLevel );
 
@@ -626,7 +424,7 @@ namespace ashes::gl
 							, copyInfo.imageExtent.width
 							, m_internal
 							, GLsizei( layerSize )
-							, getBufferOffset( copyInfo.bufferOffset ) );
+							, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 						break;
 
 					case GL_TEXTURE_2D:
@@ -640,7 +438,7 @@ namespace ashes::gl
 							, copyInfo.imageExtent.height
 							, m_internal
 							, GLsizei( layerSize )
-							, getBufferOffset( copyInfo.bufferOffset ) );
+							, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 						break;
 
 					case GL_TEXTURE_3D:
@@ -656,7 +454,7 @@ namespace ashes::gl
 							, copyInfo.imageExtent.depth
 							, m_internal
 							, GLsizei( layerSize )
-							, getBufferOffset( copyInfo.bufferOffset ) );
+							, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 
 					case GL_TEXTURE_1D_ARRAY:
 						glLogCall( context
@@ -669,7 +467,7 @@ namespace ashes::gl
 							, copyInfo.imageSubresource.layerCount
 							, m_internal
 							, GLsizei( layerSize )
-							, getBufferOffset( copyInfo.bufferOffset ) );
+							, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 						break;
 
 					case GL_TEXTURE_2D_ARRAY:
@@ -685,7 +483,7 @@ namespace ashes::gl
 							, copyInfo.imageSubresource.layerCount
 							, m_internal
 							, GLsizei( layerSize )
-							, getBufferOffset( copyInfo.bufferOffset ) );
+							, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 						break;
 					}
 				}
@@ -702,7 +500,7 @@ namespace ashes::gl
 							, copyInfo.imageExtent.width
 							, m_format
 							, m_type
-							, getBufferOffset( copyInfo.bufferOffset ) );
+							, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 						break;
 
 					case GL_TEXTURE_2D:
@@ -716,7 +514,7 @@ namespace ashes::gl
 							, copyInfo.imageExtent.height
 							, m_format
 							, m_type
-							, getBufferOffset( copyInfo.bufferOffset ) );
+							, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 						break;
 
 					case GL_TEXTURE_3D:
@@ -732,7 +530,7 @@ namespace ashes::gl
 							, copyInfo.imageExtent.depth
 							, m_format
 							, m_type
-							, getBufferOffset( copyInfo.bufferOffset ) );
+							, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 						break;
 
 					case GL_TEXTURE_1D_ARRAY:
@@ -746,7 +544,7 @@ namespace ashes::gl
 							, copyInfo.imageSubresource.layerCount
 							, m_format
 							, m_type
-							, getBufferOffset( copyInfo.bufferOffset ) );
+							, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 						break;
 
 					case GL_TEXTURE_2D_ARRAY:
@@ -762,14 +560,14 @@ namespace ashes::gl
 							, copyInfo.imageSubresource.layerCount
 							, m_format
 							, m_type
-							, getBufferOffset( copyInfo.bufferOffset ) );
+							, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 						break;
 					}
 				}
 			}
 
 		private:
-			Image const * m_texture;
+			Image * m_texture;
 			GlInternal m_internal;
 			GlFormat m_format;
 			GlType m_type;
@@ -780,160 +578,64 @@ namespace ashes::gl
 
 		//************************************************************************************************
 
-		class BufferMemory
-			: public DeviceMemory::DeviceMemoryImpl
+		class BufferMemoryBinding
+			: public DeviceMemory::DeviceMemoryBinding
 		{
 		public:
-			BufferMemory( VkDeviceMemory parent
+			BufferMemoryBinding( VkDeviceMemory parent
 				, VkDevice device
-				, VkMemoryAllocateInfo allocateInfo
-				, GlBufferTarget target
+				, VkBuffer buffer
 				, VkDeviceSize memoryOffset )
-				: DeviceMemory::DeviceMemoryImpl
-				{
-					parent,
-					device,
-					std::move( allocateInfo ),
-					target,
-					memoryOffset,
-					get( device )->getLimits().nonCoherentAtomSize,
-				}
-			{
-				auto context = get( m_device )->getContext();
-				m_buffer = createBuffer( context
-					, GlBufferTarget( m_boundTarget )
-					, m_allocateInfo.allocationSize
-					, getBufferDataUsageFlags( m_flags ) );
-				m_boundResource = m_buffer;
-			}
-
-			~BufferMemory()
+				: DeviceMemory::DeviceMemoryBinding{ parent
+					, device
+					, get( buffer )->getTarget()
+					, memoryOffset
+					, get( buffer )->getMemoryRequirements()
+					, buffer
+					, get( parent )->getInternal() }
+				, m_buffer{ get( buffer ) }
 			{
 			}
 
-			VkResult lock( ContextLock const & context
-				, VkDeviceSize offset
-				, VkDeviceSize size
-				, void ** data )const override
+			~BufferMemoryBinding()
 			{
-				glLogCall( context
-					, glBindBuffer
-					, GlBufferTarget( m_boundTarget )
-					, m_buffer );
-				GLint bufferSize = 0;
-				glLogCall( context
-					, glGetBufferParameteriv
-					, GlBufferTarget( m_boundTarget )
-					, GL_BUFFER_PARAMETER_SIZE
-					, &bufferSize );
-
-				if ( size + offset <= bufferSize )
-				{
-					auto result = mapBuffer( context
-						, GlBufferTarget( m_boundTarget )
-						, offset
-						, size == WholeSize ? m_allocateInfo.allocationSize : size
-						, m_mapFlags );
-					*data = result;
-					return result
-						? VK_SUCCESS
-						: VK_ERROR_MEMORY_MAP_FAILED;
-				}
-
-				return VK_ERROR_MEMORY_MAP_FAILED;
-			}
-
-			void unlock( ContextLock const & context )const override
-			{
-				glLogCall( context
-					, glUnmapBuffer
-					, GlBufferTarget( m_boundTarget ) );
-				glLogCall( context
-					, glBindBuffer
-					, GlBufferTarget( m_boundTarget )
-					, 0u );
+				m_buffer->setMemory( nullptr );
 			}
 
 		private:
+			Buffer * m_buffer;
 			mutable GLenum m_copyTarget;
 		};
 	}
 
 	//************************************************************************************************
 
-	DeviceMemory::DeviceMemoryImpl::DeviceMemoryImpl( VkDeviceMemory parent
+	DeviceMemory::DeviceMemoryBinding::DeviceMemoryBinding( VkDeviceMemory parent
 		, VkDevice device
-		, VkMemoryAllocateInfo allocateInfo
 		, GLuint boundTarget
 		, VkDeviceSize memoryOffset
-		, VkDeviceSize align )
+		, VkMemoryRequirements requirements
+		, void * bound
+		, GLuint boundName )
 		: m_parent{ parent }
 		, m_device{ device }
-		, m_allocateInfo{ allocateInfo }
-		, m_flags{ getFlags( m_allocateInfo.memoryTypeIndex ) }
-		, m_mapFlags{ convertMemoryMapFlags( m_flags ) }
-		, m_buffer{ GL_INVALID_INDEX }
 		, m_boundTarget{ boundTarget }
 		, m_memoryOffset{ memoryOffset }
-		, m_align{ align }
+		, m_requirements{ std::move( requirements ) }
+		, m_bound{ bound }
+		, m_boundName{ boundName }
 	{
 	}
 
-	DeviceMemory::DeviceMemoryImpl::~DeviceMemoryImpl()
+	DeviceMemory::DeviceMemoryBinding::~DeviceMemoryBinding()
 	{
-		if ( m_buffer != GL_INVALID_INDEX )
-		{
-			auto context = get( m_device )->getContext();
-			deleteBuffer( context, m_buffer );
-		}
 	}
 
-	void DeviceMemory::DeviceMemoryImpl::upload( ContextLock const & context
+	void DeviceMemory::DeviceMemoryBinding::upload( ContextLock const & context
 		, ByteArray const & data
 		, VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
-		if ( size == WholeSize )
-		{
-			assert( offset == 0ull );
-			size = m_allocateInfo.allocationSize;
-		}
-		else
-		{
-			size = ashes::getAlignedSize( size, m_align );
-			offset = ashes::getAlignedSize( offset, m_align );
-			size = offset + size < m_allocateInfo.allocationSize
-				? size
-				: size = m_allocateInfo.allocationSize - offset;
-		}
-
-		void * dst{ nullptr };
-
-		if ( lock( context, offset, size, &dst ) == VK_SUCCESS )
-		{
-			std::memcpy( dst, data.data() + offset, size );
-			unlock( context );
-		}
-	}
-
-	void DeviceMemory::DeviceMemoryImpl::download( ContextLock const & context
-		, ByteArray & data
-		, VkDeviceSize offset
-		, VkDeviceSize size )const
-	{
-		if ( size == WholeSize )
-		{
-			assert( offset == 0ull );
-			size = m_allocateInfo.allocationSize;
-		}
-
-		void * src{ nullptr };
-
-		if ( lock( context, offset, size, &src ) == VK_SUCCESS )
-		{
-			std::memcpy( data.data() + offset, src, size );
-			unlock( context );
-		}
 	}
 
 	//************************************************************************************************
@@ -942,44 +644,46 @@ namespace ashes::gl
 		, VkMemoryAllocateInfo allocateInfo )
 		: m_device{ device }
 		, m_allocateInfo{ std::move( allocateInfo ) }
-		, m_flags{ getFlags( m_allocateInfo.memoryTypeIndex ) }
-		, m_mapFlags{ convertMemoryMapFlags( m_flags ) }
+		, m_flags{ getFlags( m_device, m_allocateInfo.memoryTypeIndex ) }
 	{
-		if ( ashes::checkFlag( m_flags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
-		{
-			m_data.resize( allocateInfo.allocationSize );
-		}
+		m_data.resize( allocateInfo.allocationSize );
+		// Create the buffer effectively owning the data
+		auto context = get( m_device )->getContext();
+		m_internal = context->createBuffer( GL_BUFFER_TARGET_COPY_WRITE
+			, GLsizeiptr( m_allocateInfo.allocationSize )
+			, getBufferDataUsageFlags( m_flags ) );
 	}
 
 	DeviceMemory::~DeviceMemory()
 	{
+		auto context = get( m_device )->getContext();
+		context->deleteBuffer( m_internal );
 	}
 
-	VkResult DeviceMemory::bindToBuffer( VkBuffer buffer
+	VkResult DeviceMemory::bindBuffer( VkBuffer buffer
 		, VkDeviceSize memoryOffset )
 	{
 		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
 
 		try
 		{
-			m_impl = std::make_unique< BufferMemory >( get( this )
-				, m_device
-				, m_allocateInfo
-				, get( buffer )->getTarget()
-				, memoryOffset );
-			get( buffer )->setInternal( m_impl->getInternal(), memoryOffset );
+			auto & binding = *m_bindings.emplace_back( memoryOffset
+				, std::make_unique< BufferMemoryBinding >( get( this )
+					, m_device
+					, buffer
+					, memoryOffset ) ).second;
+			get( buffer )->setInternal( getInternal(), memoryOffset );
 			get( buffer )->setMemory( get( this ) );
 
 			if ( !m_data.empty() )
 			{
 				auto context = get( m_device )->getContext();
-				m_impl->upload( context
+				binding.upload( context
 					, m_data
 					, 0u
 					, m_data.size() );
 			}
 
-			m_internal = m_impl->getBuffer();
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )
@@ -993,20 +697,19 @@ namespace ashes::gl
 		return result;
 	}
 
-	VkResult DeviceMemory::bindToImage( VkImage image
+	VkResult DeviceMemory::bindImage( VkImage image
 		, VkDeviceSize memoryOffset )
 	{
 		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
 
 		try
 		{
-			m_impl = std::make_unique< ImageMemory >( get( this )
-				, m_device
-				, m_allocateInfo
-				, image
-				, memoryOffset );
+			auto & binding = *m_bindings.emplace_back( memoryOffset
+				, std::make_unique< ImageMemoryBinding >( get( this )
+					, m_device
+					, image
+					, memoryOffset ) ).second;
 			get( image )->setMemory( get( this ) );
-			m_internal = m_impl->getBuffer();
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )
@@ -1018,22 +721,116 @@ namespace ashes::gl
 		}
 
 		return result;
+	}
+
+	void DeviceMemory::unbindBuffer( VkBuffer buffer )
+	{
+		auto it = m_bindings.begin();
+
+		while ( it != m_bindings.end() )
+		{
+			if ( it->second->getBound() == buffer )
+			{
+				it = m_bindings.erase( it );
+			}
+			else
+			{
+				++it;
+			}
+		}
+	}
+
+	void DeviceMemory::unbindImage( VkImage image )
+	{
+		auto it = m_bindings.begin();
+
+		while ( it != m_bindings.end() )
+		{
+			if ( it->second->getBound() == image )
+			{
+				it = m_bindings.erase( it );
+			}
+			else
+			{
+				++it;
+			}
+		}
 	}
 
 	void DeviceMemory::upload( ContextLock const & context
 		, VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
-		assert( m_impl && "VkDeviceMemory should be bound to a buffer or an image, at this point" );
-		m_impl->upload( context, m_data, offset, size );
+		assert( !m_data.empty() );
+		auto copySize = size == WholeSize
+			? getSize()
+			: size;
+		glLogCall( context
+			, glBindBuffer
+			, GL_BUFFER_TARGET_COPY_WRITE
+			, getInternal() );
+		auto result = glLogNonVoidCall( context
+			, glMapBufferRange
+			, GL_BUFFER_TARGET_COPY_WRITE
+			, GLintptr( offset )
+			, GLsizei( copySize )
+			, GL_MEMORY_MAP_WRITE_BIT );
+		assert( result != nullptr );
+
+		if ( result )
+		{
+			std::memcpy( result, m_data.data() + offset, copySize );
+			glLogCall( context
+				, glUnmapBuffer
+				, GL_BUFFER_TARGET_COPY_WRITE );
+			glLogCall( context
+				, glBindBuffer
+				, GL_BUFFER_TARGET_COPY_WRITE
+				, 0u );
+		}
+
+		glLogCall( context
+			, glBindBuffer
+			, GL_BUFFER_TARGET_COPY_WRITE
+			, 0u );
 	}
 
 	void DeviceMemory::download( ContextLock const & context
 		, VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
-		assert( m_impl && "VkDeviceMemory should be bound to a buffer or an image, at this point" );
-		m_impl->download( context, m_data, offset, size );
+		assert( !m_data.empty() );
+		auto copySize = size == WholeSize
+			? getSize()
+			: size;
+		glLogCall( context
+			, glBindBuffer
+			, GL_BUFFER_TARGET_COPY_READ
+			, getInternal() );
+		auto result = glLogNonVoidCall( context
+			, glMapBufferRange
+			, GL_BUFFER_TARGET_COPY_READ
+			, GLintptr( offset )
+			, GLsizei( copySize )
+			, GL_MEMORY_MAP_READ_BIT );
+		assert( result != nullptr );
+
+		if ( result )
+		{
+			std::memcpy( m_data.data() + offset, result, copySize );
+			glLogCall( context
+				, glUnmapBuffer
+				, GL_BUFFER_TARGET_COPY_READ );
+			glLogCall( context
+				, glBindBuffer
+				, GL_BUFFER_TARGET_COPY_READ
+				, 0u );
+		}
+
+		glLogCall( context
+			, glBindBuffer
+			, GL_BUFFER_TARGET_COPY_READ
+			, 0u );
 	}
 
 	VkResult DeviceMemory::lock( ContextLock const & context
@@ -1042,13 +839,15 @@ namespace ashes::gl
 		, VkMemoryMapFlags flags
 		, void ** data )const
 	{
-		assert( !m_mapped && "VkDeviceMemory should not be mapped" );
+		assert( ( !m_mapped || ( size == ~( 0ull ) ? ( m_mappedSize == m_allocateInfo.allocationSize ) : ( m_mappedSize == size ) ) ) 
+			&& "VkDeviceMemory should not be mapped" );
 		*data = m_data.data() + offset;
 		m_mappedOffset = offset;
-		m_mappedSize = size == ~( 0ull )
+		m_mappedSize = size == WholeSize
 			? m_allocateInfo.allocationSize
 			: size;
 		m_mapped = *data != nullptr;
+		assert( m_mapped );
 		m_dirty = true;
 		return VK_SUCCESS;
 	}
@@ -1058,12 +857,7 @@ namespace ashes::gl
 		, VkDeviceSize size )const
 	{
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
-
-		if ( m_impl )
-		{
-			upload( context, offset, size );
-		}
-
+		upload( context, offset, size );
 		return VK_SUCCESS;
 	}
 
@@ -1071,24 +865,16 @@ namespace ashes::gl
 		, VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
-		assert( m_mapped && "VkDeviceMemory should be mapped" );
 		m_dirty = true;
-
-		if ( m_impl )
-		{
-			download( context, m_mappedOffset, m_mappedSize );
-		}
-
+		download( context, m_mappedOffset, m_mappedSize );
 		return VK_SUCCESS;
 	}
 
 	void DeviceMemory::unlock( ContextLock const & context )const
 	{
-		assert( m_mapped && "VkDeviceMemory should be mapped" );
-		m_mapped = false;
-
-		if ( m_impl )
+		if ( m_mapped )
 		{
+			m_mapped = false;
 			upload( context, m_mappedOffset, m_mappedSize );
 		}
 	}

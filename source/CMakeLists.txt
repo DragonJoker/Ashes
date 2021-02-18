@@ -74,6 +74,7 @@ add_subdirectory( ashes/common )
 
 add_subdirectory( ashes )
 set( ENABLED_RENDERERS ${ENABLED_RENDERERS} PARENT_SCOPE )
+set( ENABLED_PDBS ${ENABLED_PDBS} PARENT_SCOPE )
 
 add_subdirectory( ashespp )
 
@@ -82,9 +83,10 @@ if ( ASHES_BUILD_TESTS OR ASHES_BUILD_SAMPLES )
 endif ()
 
 set( Ashes_BINARY_LIBRARIES ${Ashes_BINARY_LIBRARIES} PARENT_SCOPE )
+
 if ( WIN32 )
 	install(
-		TARGETS vulkan ashes_common ashespp ${ENABLED_RENDERERS}
+		TARGETS ashes ashes_common ashespp ${ENABLED_RENDERERS}
 		EXPORT Ashes
 		RUNTIME DESTINATION bin
 		LIBRARY DESTINATION lib
@@ -92,13 +94,18 @@ if ( WIN32 )
 	)
 else ()
 	install(
-		TARGETS vulkan ashes_common ashespp ${ENABLED_RENDERERS}
+		TARGETS ashes ashes_common ashespp ${ENABLED_RENDERERS}
 		EXPORT Ashes
 		RUNTIME DESTINATION bin/Ashes
 		LIBRARY DESTINATION lib/Ashes
 		ARCHIVE DESTINATION lib/Ashes
 	)
 endif ()
+install(
+	FILES ${ENABLED_PDBS}
+	DESTINATION bin
+	OPTIONAL
+)
 install( EXPORT Ashes
 	FILE AshesConfig.cmake
 	NAMESPACE ashes::

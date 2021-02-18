@@ -5,9 +5,11 @@ if ( ${CMAKE_VERSION} VERSION_GREATER "3.10.2" )
 	cmake_policy( SET CMP0072 NEW )
 endif()
 
-set( ${PROJECT_NAME}_VERSION_MAJOR 0 )
-set( ${PROJECT_NAME}_VERSION_MINOR 1 )
+set( ${PROJECT_NAME}_VERSION_MAJOR 1 )
+set( ${PROJECT_NAME}_VERSION_MINOR 0 )
 set( ${PROJECT_NAME}_VERSION_BUILD 0 )
+
+option( ASHES_GL_LOG_CALLS "Log OpenGL calls in CallLogGL.log file." OFF )
 
 set( PROJECT_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}" )
 set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_MAJOR}" )
@@ -18,6 +20,13 @@ if ( OpenGL_FOUND )
 	if ( WIN32 )
 		set( Ashes_BINARY_LIBRARIES
 			${Ashes_BINARY_LIBRARIES}
+			OpenGL::GL
+		)
+	elseif ( APPLE )
+		set( Ashes_BINARY_LIBRARIES
+			${Ashes_BINARY_LIBRARIES}
+			"-framework OpenGL"
+			"-framework AppKit"
 			OpenGL::GL
 		)
 	else ()
@@ -38,7 +47,17 @@ if ( OpenGL_FOUND )
 			OpenGL::EGL
 			OpenGL::GLX
 			OpenGL::OpenGL
-
+		)
+	endif ()
+	if ( ASHES_GL_LOG_CALLS )
+		set( TARGET_CXX_DEFINITIONS
+			${TARGET_CXX_DEFINITIONS}
+			AshesGL_LogCalls=1
+		)
+	else ()
+		set( TARGET_CXX_DEFINITIONS
+			${TARGET_CXX_DEFINITIONS}
+			AshesGL_LogCalls=0
 		)
 	endif ()
 
@@ -198,6 +217,7 @@ if ( OpenGL_FOUND )
 		Core/GlAutoIdIcdObject.cpp
 		Core/GlContext.cpp
 		Core/GlContextImpl.cpp
+		Core/GlContextLock.cpp
 		Core/GlContextState.cpp
 		Core/GlContextStateStack.cpp
 		Core/GlDebugReportCallback.cpp
@@ -279,6 +299,7 @@ if ( OpenGL_FOUND )
 		Enum/GlFenceWaitFlag.cpp
 		Enum/GlFilter.cpp
 		Enum/GlFormat.cpp
+		Enum/GlFormatProperty.cpp
 		Enum/GlFrameBufferTarget.cpp
 		Enum/GlFrontFace.cpp
 		Enum/GlGetParameter.cpp
@@ -304,6 +325,7 @@ if ( OpenGL_FOUND )
 		Enum/GlTextureUnit.cpp
 		Enum/GlTextureViewType.cpp
 		Enum/GlTweak.cpp
+		Enum/GlValueName.cpp
 		Enum/GlWrapMode.cpp
 	)
 	set( ${PROJECT_NAME}_FOLDER_HDR_FILES
@@ -326,6 +348,7 @@ if ( OpenGL_FOUND )
 		Enum/GlFenceWaitFlag.hpp
 		Enum/GlFilter.hpp
 		Enum/GlFormat.hpp
+		Enum/GlFormatProperty.hpp
 		Enum/GlFrameBufferTarget.hpp
 		Enum/GlFrontFace.hpp
 		Enum/GlGetParameter.hpp
@@ -354,6 +377,7 @@ if ( OpenGL_FOUND )
 		Enum/GlTextureUnit.hpp
 		Enum/GlTextureViewType.hpp
 		Enum/GlTweak.hpp
+		Enum/GlValueName.hpp
 		Enum/GlWrapMode.hpp
 	)
 	set( ${PROJECT_NAME}_SRC_FILES
@@ -395,6 +419,8 @@ if ( OpenGL_FOUND )
 		Miscellaneous/GlQueryPool.cpp
 		Miscellaneous/GlScreenHelpers.cpp
 		Miscellaneous/GlValidator.cpp
+		Miscellaneous/GlValidatorInterfaceQuery.cpp
+		Miscellaneous/GlValidatorOldStyle.cpp
 	)
 	set( ${PROJECT_NAME}_FOLDER_HDR_FILES
 		Miscellaneous/GlCallLogger.hpp
@@ -405,6 +431,8 @@ if ( OpenGL_FOUND )
 		Miscellaneous/GlQueryPool.hpp
 		Miscellaneous/GlScreenHelpers.hpp
 		Miscellaneous/GlValidator.hpp
+		Miscellaneous/GlValidatorInterfaceQuery.hpp
+		Miscellaneous/GlValidatorOldStyle.hpp
 		Miscellaneous/OpenGLDefines.hpp
 		Miscellaneous/OpenGLFunctionsList.inl
 	)
@@ -441,6 +469,8 @@ if ( OpenGL_FOUND )
 	source_group( "Source Files\\Pipeline" FILES ${${PROJECT_NAME}_FOLDER_SRC_FILES} )
 
 	set( ${PROJECT_NAME}_FOLDER_SRC_FILES
+		Platform/CGlContext.cpp
+		Platform/CGlWindow.cpp
 		Platform/EglContext.cpp
 		Platform/GlEglContext.cpp
 		Platform/GlMswContext.cpp
@@ -453,6 +483,8 @@ if ( OpenGL_FOUND )
 		Platform/GlXcbWindow.cpp
 	)
 	set( ${PROJECT_NAME}_FOLDER_HDR_FILES
+		Platform/CGlContext.hpp
+		Platform/CGlWindow.hpp
 		Platform/EglContext.hpp
 		Platform/GlEglContext.hpp
 		Platform/GlMswContext.hpp
@@ -464,6 +496,17 @@ if ( OpenGL_FOUND )
 		Platform/GlXcbContext.hpp
 		Platform/GlXcbWindow.hpp
 	)
+	if ( APPLE )
+	set( ${PROJECT_NAME}_FOLDER_SRC_FILES
+		${${PROJECT_NAME}_FOLDER_SRC_FILES}
+		Platform/CGlContext.mm
+		Platform/CGlView.mm
+	)
+	set( ${PROJECT_NAME}_FOLDER_HDR_FILES
+		${${PROJECT_NAME}_FOLDER_HDR_FILES}
+		Platform/CGlView.hh
+	)
+	endif ()
 	set( ${PROJECT_NAME}_SRC_FILES
 		${${PROJECT_NAME}_SRC_FILES}
 		${${PROJECT_NAME}_FOLDER_SRC_FILES}
@@ -569,6 +612,7 @@ if ( OpenGL_FOUND )
 		${_PROJECT_NAME}_EXPORTS
 		${TARGET_CXX_DEFINITIONS}
 		_CRT_SECURE_NO_WARNINGS
+		GL_SILENCE_DEPRECATION
 	)
 	target_compile_options( ${PROJECT_NAME} PRIVATE
 		${TARGET_CXX_OPTIONS}
@@ -587,12 +631,20 @@ if ( OpenGL_FOUND )
 		"${CMAKE_CXX_FLAGS}"
 		${${PROJECT_NAME}_SRC_FILES}
 	)
-
+	ash_update_icd_target( ${PROJECT_NAME} )
 	set( ENABLED_RENDERERS
 		${ENABLED_RENDERERS}
 		${PROJECT_NAME}
 		PARENT_SCOPE
 	)
+
+	if ( MSVC )
+		set( ENABLED_PDBS
+			${ENABLED_PDBS}
+			$<TARGET_PDB_FILE:${PROJECT_NAME}>
+			PARENT_SCOPE
+		)
+	endif ()
 else ()
 	if ( NOT OpenGL_FOUND )
 		message( SEND_ERROR "OpenGL library not found." )

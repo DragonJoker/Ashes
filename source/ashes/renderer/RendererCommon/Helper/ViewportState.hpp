@@ -8,6 +8,8 @@ See LICENSE file in root folder.
 
 #include "renderer/RendererCommon/AshesRendererPrerequisites.hpp"
 
+#include <ashes/common/ArrayView.hpp>
+
 namespace ashes
 {
 	/**

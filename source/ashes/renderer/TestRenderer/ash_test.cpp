@@ -21,7 +21,7 @@ namespace ashes::test
 
 	PFN_vkVoidFunction VKAPI_CALL vkGetInstanceProcAddr(
 		VkInstance instance,
-		const char* pName );
+		const char * pName );
 
 	PFN_vkVoidFunction VKAPI_CALL vkGetDeviceProcAddr(
 		VkDevice device,
@@ -4156,25 +4156,32 @@ namespace ashes::test
 #if VK_NV_glsl_shader
 			VkExtensionProperties{ VK_NV_GLSL_SHADER_EXTENSION_NAME, VK_NV_GLSL_SHADER_SPEC_VERSION },
 #endif
+#if VK_KHR_portability_subset
+			VkExtensionProperties{ VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME, VK_KHR_PORTABILITY_SUBSET_SPEC_VERSION },
+#endif
 		};
 		return extensions;
 	}
 
 	struct GlLibrary
 	{
-		AshPluginDescription description
-		{
-			"test",
-			"Test renderer for Ashes",
-		};
+		AshPluginDescription description{ "test"
+			, "Test renderer for Ashes"
+			, nullptr
+			, {}
+			, {}
+			, ASHPLUGIN_UNDEFINED };
 
-		VkResult init()
+		VkResult init( AshPluginMode mode )
 		{
+			auto validMode = ( description.mode == ASHPLUGIN_UNDEFINED || description.mode == mode );
+			assert( validMode
+				&& "ashesTestRenderer: Plugin mode has already been selected." );
 			VkResult result = description.getInstanceProcAddr
-				? VK_SUCCESS
+				? ( validMode ? VK_SUCCESS : VK_ERROR_INCOMPATIBLE_DRIVER )
 				: VK_ERROR_INITIALIZATION_FAILED;
 
-			if ( result != VK_SUCCESS )
+			if ( result == VK_ERROR_INITIALIZATION_FAILED )
 			{
 				description.getInstanceProcAddr = &vkGetInstanceProcAddr;
 				description.features =
@@ -4191,12 +4198,15 @@ namespace ashes::test
 				description.functions.x = vk##x;
 #define VK_LIB_INSTANCE_FUNCTION( v, x )\
 				description.functions.x = vk##x;
+#define VK_LIB_DEVICE_FUNCTION( v, x )\
+				description.functions.x = vk##x;
 #define VK_LIB_GLOBAL_FUNCTION_EXT( v, n, x )
 #define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )
 #define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )
 #include <ashes/ashes_functions_list.hpp>
 				result = VK_SUCCESS;
 
+				description.mode = mode;
 				description.support.priority = 0u;
 				description.support.supported = VK_TRUE;
 			}
@@ -4244,25 +4254,22 @@ namespace ashes::test
 		const char* pName )
 	{
 		PFN_vkVoidFunction result{ nullptr };
-		auto init = getLibrary().init();
-
-		if ( init == VK_SUCCESS )
+		static std::map< std::string, PFN_vkVoidFunction > functions
 		{
-			static std::map< std::string, PFN_vkVoidFunction > functions
-			{
 #define VK_LIB_GLOBAL_FUNCTION( v, x )\
-				{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
+			{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
 #define VK_LIB_INSTANCE_FUNCTION( v, x )\
-				{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
+			{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
+#define VK_LIB_DEVICE_FUNCTION( v, x )\
+			{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
 #include <ashes/ashes_functions_list.hpp>
-			};
+		};
 
-			auto it = functions.find( pName );
+		auto it = functions.find( pName );
 
-			if ( it != functions.end() )
-			{
-				result = it->second;
-			}
+		if ( it != functions.end() )
+		{
+			result = it->second;
 		}
 
 		return result;
@@ -4273,24 +4280,19 @@ namespace ashes::test
 		const char* pName )
 	{
 		PFN_vkVoidFunction result{ nullptr };
-		auto init = getLibrary().init();
-
-		if ( init == VK_SUCCESS )
+		static std::map< std::string, PFN_vkVoidFunction > functions
 		{
-			static std::map< std::string, PFN_vkVoidFunction > functions
-			{
-				{ "vkGetDeviceProcAddr", PFN_vkVoidFunction( vkGetDeviceProcAddr ) },
+			{ "vkGetDeviceProcAddr", PFN_vkVoidFunction( vkGetDeviceProcAddr ) },
 #define VK_LIB_DEVICE_FUNCTION( v, x )\
-				{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
+			{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
 #include <ashes/ashes_functions_list.hpp>
-			};
+		};
 
-			auto it = functions.find( pName );
+		auto it = functions.find( pName );
 
-			if ( it != functions.end() )
-			{
-				result = it->second;
-			}
+		if ( it != functions.end() )
+		{
+			result = it->second;
 		}
 
 		return result;
@@ -4303,9 +4305,215 @@ extern "C"
 {
 #endif
 
+#pragma region ICD mode
+
+	TestRenderer_API PFN_vkVoidFunction VKAPI_PTR vk_icdGetInstanceProcAddr( VkInstance instance
+		, const char * name )
+	{
+		if ( ashes::test::getLibrary().init( ASHPLUGIN_ICD ) == VK_SUCCESS )
+		{
+			return ashes::test::vkGetInstanceProcAddr( instance, name );
+		}
+
+		return nullptr;
+	}
+
+	TestRenderer_API PFN_vkVoidFunction VKAPI_PTR vk_icdGetPhysicalDeviceProcAddr( VkInstance instance
+		, const char * name )
+	{
+		if ( ashes::test::getLibrary().init( ASHPLUGIN_ICD ) == VK_SUCCESS )
+		{
+			return ashes::test::vkGetInstanceProcAddr( instance, name );
+		}
+
+		return nullptr;
+	}
+
+	TestRenderer_API VkResult VKAPI_PTR vk_icdNegotiateLoaderICDInterfaceVersion( uint32_t * pVersion )
+	{
+		auto result = ashes::test::getLibrary().init( ASHPLUGIN_ICD );
+
+		if ( result == VK_SUCCESS )
+		{
+			if ( !pVersion )
+			{
+				result = VK_ERROR_VALIDATION_FAILED_EXT;
+			}
+			else if ( *pVersion < 4 )
+			{
+				result = VK_ERROR_INCOMPATIBLE_DRIVER;
+			}
+			else
+			{
+				*pVersion = 4;
+			}
+		}
+
+		return result;
+	}
+
+#pragma region VK_KHR_surface
+#ifdef VK_KHR_surface
+
+	TestRenderer_API void VKAPI_CALL vkDestroySurfaceKHR( VkInstance instance, VkSurfaceKHR surface, const  VkAllocationCallbacks * pAllocator )
+	{
+		return ashes::test::vkDestroySurfaceKHR( instance, surface, pAllocator );
+	}
+
+	TestRenderer_API VkResult VKAPI_CALL vkGetPhysicalDeviceSurfaceSupportKHR( VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex, VkSurfaceKHR surface, VkBool32 * pSupported )
+	{
+		return ashes::test::vkGetPhysicalDeviceSurfaceSupportKHR( physicalDevice, queueFamilyIndex, surface, pSupported );
+	}
+
+	TestRenderer_API VkResult VKAPI_CALL vkGetPhysicalDeviceSurfaceCapabilitiesKHR( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, VkSurfaceCapabilitiesKHR * pSurfaceCapabilities )
+	{
+		return ashes::test::vkGetPhysicalDeviceSurfaceCapabilitiesKHR( physicalDevice, surface, pSurfaceCapabilities );
+	}
+
+	TestRenderer_API VkResult VKAPI_CALL vkGetPhysicalDeviceSurfaceFormatsKHR( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32_t * pSurfaceFormatCount, VkSurfaceFormatKHR * pSurfaceFormats )
+	{
+		return ashes::test::vkGetPhysicalDeviceSurfaceFormatsKHR( physicalDevice, surface, pSurfaceFormatCount, pSurfaceFormats );
+	}
+
+	TestRenderer_API VkResult VKAPI_CALL vkGetPhysicalDeviceSurfacePresentModesKHR( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32_t * pPresentModeCount, VkPresentModeKHR * pPresentModes )
+	{
+		return ashes::test::vkGetPhysicalDeviceSurfacePresentModesKHR( physicalDevice, surface, pPresentModeCount, pPresentModes );
+	}
+
+#endif
+#pragma endregion
+#pragma region VK_KHR_swapchain
+#ifdef VK_KHR_swapchain
+
+	TestRenderer_API VkResult VKAPI_CALL vkCreateSwapchainKHR( VkDevice device, const  VkSwapchainCreateInfoKHR * pCreateInfo, const  VkAllocationCallbacks * pAllocator, VkSwapchainKHR * pSwapchain )
+	{
+		return ashes::test::vkCreateSwapchainKHR( device, pCreateInfo, pAllocator, pSwapchain );
+	}
+
+#endif
+#pragma endregion
+#pragma region VK_KHR_display
+#ifdef VK_KHR_display
+
+	TestRenderer_API VkResult VKAPI_CALL vkCreateDisplayPlaneSurfaceKHR(
+		VkInstance instance,
+		const VkDisplaySurfaceCreateInfoKHR * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkSurfaceKHR * pSurface )
+	{
+		return ashes::test::vkCreateDisplayPlaneSurfaceKHR( instance, pCreateInfo, pAllocator, pSurface );
+	}
+
+#endif
+#pragma endregion
+#pragma region VK_KHR_android_surface
+#ifdef VK_KHR_android_surface
+#	ifdef VK_USE_PLATFORM_ANDROID_KHR
+
+	TestRenderer_API VkResult VKAPI_CALL vkCreateAndroidSurfaceKHR( VkInstance instance, const  VkAndroidSurfaceCreateInfoKHR * pCreateInfo, const  VkAllocationCallbacks * pAllocator, VkSurfaceKHR * pSurface )
+	{
+		return ashes::test::vkCreateAndroidSurfaceKHR( instance, pCreateInfo, pAllocator, pSurface );
+	}
+
+#	endif
+#endif
+#pragma endregion
+#pragma region VK_FUCHSIA_imagepipe_surface
+#ifdef VK_FUCHSIA_imagepipe_surface
+#	ifdef VK_USE_PLATFORM_FUCHSIA
+
+	TestRenderer_API VkResult VKAPI_CALL vkCreateImagePipeSurfaceFUCHSIA( VkInstance instance, const  VkImagePipeSurfaceCreateInfoFUCHSIA * pCreateInfo, const  VkAllocationCallbacks * pAllocator, VkSurfaceKHR * pSurface )
+	{
+		return ashes::test::vkCreateImagePipeSurfaceFUCHSIA( instance, pCreateInfo, pAllocator, pSurface );
+	}
+
+#	endif
+#endif
+#pragma endregion
+#pragma region VK_MVK_ios_surface
+#ifdef VK_MVK_ios_surface
+#	ifdef VK_USE_PLATFORM_IOS_MVK
+
+	TestRenderer_API VkResult VKAPI_CALL vkCreateIOSSurfaceMVK( VkInstance instance, const  VkIOSSurfaceCreateInfoMVK * pCreateInfo, const  VkAllocationCallbacks * pAllocator, VkSurfaceKHR * pSurface )
+	{
+		return ashes::test::vkCreateIOSSurfaceMVK( instance, pCreateInfo, pAllocator, pSurface );
+	}
+
+#	endif
+#endif
+#pragma endregion
+#pragma region VK_MVK_macos_surface
+#	ifdef __APPLE__
+
+	TestRenderer_API VkResult VKAPI_CALL vkCreateMacOSSurfaceMVK( VkInstance instance, const  VkMacOSSurfaceCreateInfoMVK * pCreateInfo, const  VkAllocationCallbacks * pAllocator, VkSurfaceKHR * pSurface )
+	{
+		return ashes::test::vkCreateMacOSSurfaceMVK( instance, pCreateInfo, pAllocator, pSurface );
+	}
+
+#	endif
+#pragma endregion
+#pragma region VK_NN_vi_surface
+#ifdef VK_NN_vi_surface
+#	ifdef VK_USE_PLATFORM_VI_NN
+
+	TestRenderer_API VkResult VKAPI_CALL vkCreateViSurfaceNN( VkInstance instance, const  VkViSurfaceCreateInfoNN * pCreateInfo, const  VkAllocationCallbacks * pAllocator, VkSurfaceKHR * pSurface )
+	{
+		return ashes::test::vkCreateViSurfaceNN( instance, pCreateInfo, pAllocator, pSurface );
+	}
+
+#	endif
+#endif
+#pragma endregion
+#pragma region VK_KHR_xcb_surface
+#	ifdef __linux__
+
+	TestRenderer_API VkResult VKAPI_CALL vkCreateXcbSurfaceKHR( VkInstance instance, const  VkXcbSurfaceCreateInfoKHR * pCreateInfo, const  VkAllocationCallbacks * pAllocator, VkSurfaceKHR * pSurface )
+	{
+		return ashes::test::vkCreateXcbSurfaceKHR( instance, pCreateInfo, pAllocator, pSurface );
+	}
+
+#	endif
+#pragma endregion
+#pragma region VK_KHR_xlib_surface
+#	ifdef __linux__
+
+	TestRenderer_API VkResult VKAPI_CALL vkCreateXlibSurfaceKHR( VkInstance instance, const  VkXlibSurfaceCreateInfoKHR * pCreateInfo, const  VkAllocationCallbacks * pAllocator, VkSurfaceKHR * pSurface )
+	{
+		return ashes::test::vkCreateXlibSurfaceKHR( instance, pCreateInfo, pAllocator, pSurface );
+	}
+
+#	endif
+// #endif
+#pragma endregion
+#pragma region VK_KHR_wayland_surface
+#	ifdef __linux__
+
+	TestRenderer_API VkResult VKAPI_CALL vkCreateWaylandSurfaceKHR( VkInstance instance, const  VkWaylandSurfaceCreateInfoKHR * pCreateInfo, const  VkAllocationCallbacks * pAllocator, VkSurfaceKHR * pSurface )
+	{
+		return ashes::test::vkCreateWaylandSurfaceKHR( instance, pCreateInfo, pAllocator, pSurface );
+	}
+
+#	endif
+#pragma endregion
+#pragma region VK_KHR_win32_surface
+#ifdef VK_KHR_win32_surface
+#	ifdef _WIN32
+
+	TestRenderer_API VkResult VKAPI_CALL vkCreateWin32SurfaceKHR( VkInstance instance, const  VkWin32SurfaceCreateInfoKHR * pCreateInfo, const  VkAllocationCallbacks * pAllocator, VkSurfaceKHR * pSurface )
+	{
+		return ashes::test::vkCreateWin32SurfaceKHR( instance, pCreateInfo, pAllocator, pSurface );
+	}
+
+#	endif
+#endif
+#pragma endregion
+
+#pragma endregion
+#pragma region Drop-in replacement mode
+
 	TestRenderer_API VkResult VKAPI_PTR ashGetPluginDescription( AshPluginDescription * pDescription )
 	{
-		auto result = ashes::test::getLibrary().init();
+		auto result = ashes::test::getLibrary().init( ASHPLUGIN_DROPIN );
 
 		if ( result == VK_SUCCESS )
 		{
@@ -4314,6 +4522,8 @@ extern "C"
 
 		return result;
 	}
+
+#pragma endregion
 
 #ifdef __cplusplus
 }

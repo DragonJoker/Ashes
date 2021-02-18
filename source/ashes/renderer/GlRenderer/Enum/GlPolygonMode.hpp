@@ -14,6 +14,7 @@ namespace ashes::gl
 		GL_POLYGON_MODE_FILL = 0x1B02,
 	};
 	std::string getName( GlPolygonMode value );
+	inline std::string toString( GlPolygonMode value ) { return getName( value ); }
 	/**
 	*\brief
 	*	Convertit un VkPolygonMode en GlPolygonMode.

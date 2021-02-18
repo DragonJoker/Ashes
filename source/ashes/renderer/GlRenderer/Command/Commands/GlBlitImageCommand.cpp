@@ -49,19 +49,19 @@ namespace ashes::gl
 			, uint32_t layer
 			, VkImageView & view )
 		{
-			FboAttachment result
-			{
-				getAttachmentPoint( get( image )->getFormat() ),
-				get( image )->getInternal(),
-				getAttachmentType( get( image )->getFormat() ),
-				( get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT
-					? GL_TEXTURE_2D_MULTISAMPLE
-					: ( checkFlag( get( image )->getCreateFlags(), VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT )
-						? GL_TEXTURE_CUBE_POSITIVE_X
-						: GL_TEXTURE_2D ) ),
-				subresource.mipLevel,
-				0u,
-			};
+			FboAttachment result{ 0u
+				, getAttachmentPoint( get( image )->getFormat() )
+				, get( image )->getInternal()
+				, getAttachmentType( get( image )->getFormat() )
+				, ( ( get( image )->getType() == VK_IMAGE_TYPE_3D )
+					? GL_TEXTURE_3D
+					: ( get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT
+						? GL_TEXTURE_2D_MULTISAMPLE
+						: ( checkFlag( get( image )->getCreateFlags(), VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT )
+							? GL_TEXTURE_CUBE_POSITIVE_X
+							: GL_TEXTURE_2D ) ) )
+				, subresource.mipLevel
+				, 0u };
 
 			if ( get( image )->getArrayLayers() > 1u )
 			{
@@ -80,17 +80,17 @@ namespace ashes::gl
 			, uint32_t layer
 			, VkImageView & view )
 		{
-			FboAttachment result
-			{
-				getAttachmentPoint( subresource.aspectMask ),
-				get( image )->getInternal(),
-				getAttachmentType( subresource.aspectMask ),
-				get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT
-					? GL_TEXTURE_2D_MULTISAMPLE
-					: GL_TEXTURE_2D,
-				subresource.mipLevel,
-				0u,
-			};
+			FboAttachment result{ 0u
+				, getAttachmentPoint( subresource.aspectMask )
+				, get( image )->getInternal()
+				, getAttachmentType( subresource.aspectMask )
+				, ( ( get( image )->getType() == VK_IMAGE_TYPE_3D )
+					? GL_TEXTURE_3D
+					: ( get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT
+						? GL_TEXTURE_2D_MULTISAMPLE
+						: GL_TEXTURE_2D ) )
+				, subresource.mipLevel
+				, 0u };
 
 			if ( get( image )->getArrayLayers() > 1u )
 			{
@@ -200,21 +200,45 @@ namespace ashes::gl
 
 			// Setup source FBO
 			list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_FRAMEBUFFER ) );
-			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
-				, layerCopy.src.point
-				, layerCopy.src.target
-				, layerCopy.src.object
-				, layerCopy.region.srcSubresource.mipLevel ) );
+
+			if ( layerCopy.src.target != GL_TEXTURE_3D )
+			{
+				list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
+					, layerCopy.src.point
+					, layerCopy.src.target
+					, layerCopy.src.object
+					, layerCopy.region.srcSubresource.mipLevel ) );
+			}
+			else
+			{
+				list.push_back( makeCmd< OpType::eFramebufferTexture >( GL_FRAMEBUFFER
+					, layerCopy.src.point
+					, layerCopy.src.object
+					, layerCopy.region.srcSubresource.mipLevel ) );
+			}
+
 			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
 				, nullptr ) );
 
 			// Setup dst FBO
 			list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_FRAMEBUFFER ) );
-			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
-				, layerCopy.dst.point
-				, layerCopy.dst.target
-				, layerCopy.dst.object
-				, layerCopy.region.dstSubresource.mipLevel ) );
+
+			if ( layerCopy.dst.target != GL_TEXTURE_3D )
+			{
+				list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
+					, layerCopy.dst.point
+					, layerCopy.dst.target
+					, layerCopy.dst.object
+					, layerCopy.region.dstSubresource.mipLevel ) );
+			}
+			else
+			{
+				list.push_back( makeCmd< OpType::eFramebufferTexture >( GL_FRAMEBUFFER
+					, layerCopy.dst.point
+					, layerCopy.dst.object
+					, layerCopy.region.dstSubresource.mipLevel ) );
+			}
+
 			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
 				, nullptr ) );
 
@@ -246,13 +270,13 @@ namespace ashes::gl
 			}
 		}
 
-		if ( get( get( dstImage )->getMemory() )->getBuffer() != GL_INVALID_INDEX )
+		if ( get( get( dstImage )->getMemory() )->getInternal() != GL_INVALID_INDEX )
 		{
 			auto dstTarget = convert( device
 				, get( dstImage )->getType()
 				, get( dstImage )->getArrayLayers()
 				, get( dstImage )->getCreateFlags() );
-			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, get( get( dstImage )->getMemory() )->getBuffer() ) );
+			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, get( get( dstImage )->getMemory() )->getInternal() ) );
 			list.push_back( makeCmd< OpType::eBindTexture >( dstTarget, get( dstImage )->getInternal() ) );
 			auto internal = getInternalFormat( get( dstImage )->getFormat() );
 			list.push_back( makeCmd< OpType::eGetTexImage >( dstTarget, getFormat( internal ), getType( internal ) ) );

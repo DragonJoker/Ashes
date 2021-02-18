@@ -138,17 +138,6 @@ namespace details
 
 extern "C"
 {
-	Ashes_API PFN_vkVoidFunction VKAPI_PTR vkGetInstanceProcAddr( VkInstance instance
-		, const char * name )
-	{
-		if ( g_library.init() == VK_SUCCESS )
-		{
-			return g_library.getSelectedDesc().getInstanceProcAddr( instance, name );
-		}
-
-		return nullptr;
-	}
-
 	Ashes_API void VKAPI_PTR ashEnumeratePluginsDescriptions( uint32_t * count
 		, AshPluginDescription * pDescriptions )
 	{
@@ -189,6 +178,17 @@ extern "C"
 		}
 
 		return result;
+	}
+
+	Ashes_API PFN_vkVoidFunction VKAPI_PTR vkGetInstanceProcAddr( VkInstance instance
+		, const char * name )
+	{
+		if ( g_library.init() == VK_SUCCESS )
+		{
+			return g_library.getSelectedDesc().getInstanceProcAddr( instance, name );
+		}
+
+		return nullptr;
 	}
 
 #pragma region Vulkan 1.0

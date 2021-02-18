@@ -11,12 +11,6 @@ See LICENSE file in root folder
 #include <mutex>
 #include <thread>
 
-#ifndef NDEBUG
-#	define Ashes_LogContextLocking 0
-#else
-#	define Ashes_LogContextLocking 0
-#endif
-
 namespace ashes::gl
 {
 	class ContextLock;
@@ -24,6 +18,15 @@ namespace ashes::gl
 	class Context
 	{
 	private:
+		struct BufferAlloc
+		{
+			GLuint name;
+			GlBufferTarget target;
+			GLsizeiptr size;
+			GlBufferDataUsageFlags flags;
+		};
+		using BufferAllocCont = std::vector< BufferAlloc >;
+
 		Context( gl::ContextImplPtr impl );
 
 	public:
@@ -48,6 +51,11 @@ namespace ashes::gl
 
 		void lock();
 		void unlock();
+
+		GLuint createBuffer( GlBufferTarget target
+			, GLsizeiptr size
+			, GlBufferDataUsageFlags flags );
+		void deleteBuffer( GLuint buffer );
 
 		template< typename SurfaceCreateInfo >
 		static ContextPtr create( VkInstance instance
@@ -107,6 +115,17 @@ namespace ashes::gl
 		{\
 			return m_gl##fun( params... );\
 		}
+#define GL_LIB_FUNCTION_OPT( fun )\
+		PFN_gl##fun m_gl##fun = nullptr;\
+		template< typename ... Params >\
+		inline auto gl##fun( Params... params )const\
+		{\
+			return m_gl##fun( params... );\
+		}\
+		inline bool has##fun()const\
+		{\
+			return bool( m_gl##fun );\
+		}
 #define GL_LIB_FUNCTION_EXT( fun, ... )\
 		PFN_gl##fun m_gl##fun = nullptr;\
 		template< typename ... Params >\
@@ -122,8 +141,15 @@ namespace ashes::gl
 
 	private:
 		void loadBaseFunctions();
-
 		void initialiseThreadState( gl::ContextState const & state );
+		GLint getBufferSize( ContextLock const & context
+			, GlBufferTarget target
+			, GLuint buffer );
+		GLint getBufferSize( ContextLock const & context
+			, GLuint buffer );
+		BufferAllocCont::iterator findBuffer( GLuint buffer );
+		BufferAllocCont::iterator findBuffer( GLuint buffer
+			, GLsizeiptr size );
 
 	private:
 		gl::ContextImplPtr m_impl;
@@ -135,5 +161,6 @@ namespace ashes::gl
 		std::atomic< bool > m_enabled{ false };
 		std::atomic< std::thread::id > m_activeThread;
 		std::map< std::thread::id, std::unique_ptr< gl::ContextState > > m_state;
+		BufferAllocCont m_buffers;
 	};
 }

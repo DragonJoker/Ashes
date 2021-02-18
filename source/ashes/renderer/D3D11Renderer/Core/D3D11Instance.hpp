@@ -8,6 +8,8 @@
 
 #include "renderer/D3D11Renderer/Core/D3D11Layer.hpp"
 
+#include <renderer/RendererCommon/IcdObject.hpp>
+
 #include <array>
 
 namespace ashes::d3d11
@@ -15,6 +17,7 @@ namespace ashes::d3d11
 	D3D_FEATURE_LEVEL getSupportedFeatureLevel();
 
 	class Instance
+		: public ashes::IcdObject
 	{
 	public:
 		Instance( VkInstanceCreateInfo createInfo );

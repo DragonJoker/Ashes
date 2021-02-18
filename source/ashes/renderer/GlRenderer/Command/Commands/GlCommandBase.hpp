@@ -520,6 +520,9 @@ namespace ashes::gl
 			: cmd{ { OpType::eDrawBuffers, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, count{ 1u }
 		{
+			assert( target != GL_ATTACHMENT_POINT_DEPTH_STENCIL
+				&& target != GL_ATTACHMENT_POINT_DEPTH
+				&& target != GL_ATTACHMENT_POINT_STENCIL );
 			targets[0] = target;
 		}
 
@@ -533,6 +536,9 @@ namespace ashes::gl
 
 			for ( auto & target : makeArrayView( targets, targets + N ) )
 			{
+				assert( target != GL_ATTACHMENT_POINT_DEPTH_STENCIL
+					&& target != GL_ATTACHMENT_POINT_DEPTH
+					&& target != GL_ATTACHMENT_POINT_STENCIL );
 				this->targets[i++] = target;
 			}
 		}
@@ -547,6 +553,9 @@ namespace ashes::gl
 
 			for ( auto & target : targets )
 			{
+				assert( target != GL_ATTACHMENT_POINT_DEPTH_STENCIL
+					&& target != GL_ATTACHMENT_POINT_DEPTH
+					&& target != GL_ATTACHMENT_POINT_STENCIL );
 				this->targets[i++] = target;
 			}
 		}
@@ -561,6 +570,9 @@ namespace ashes::gl
 			{
 				if ( i < this->targets.size() )
 				{
+					assert( target != GL_ATTACHMENT_POINT_DEPTH_STENCIL
+						&& target != GL_ATTACHMENT_POINT_DEPTH
+						&& target != GL_ATTACHMENT_POINT_STENCIL );
 					this->targets[i++] = target;
 				}
 			}

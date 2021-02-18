@@ -9,6 +9,8 @@ See LICENSE file in root folder
 #include "renderer/D3D11Renderer/Buffer/D3D11Buffer.hpp"
 #include "renderer/D3D11Renderer/Core/D3D11Surface.hpp"
 
+#include <renderer/RendererCommon/IcdObject.hpp>
+
 namespace ashes::d3d11
 {
 	VkExtent3D getTexelBlockExtent( VkFormat format );
@@ -22,6 +24,7 @@ namespace ashes::d3d11
 	};
 
 	class Device
+		: public ashes::IcdObject
 	{
 	public:
 		Device( VkInstance instance

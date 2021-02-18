@@ -9,6 +9,7 @@ See LICENSE file in root folder.
 namespace ashes::gl
 {
 	Semaphore::Semaphore( VkDevice device )
+		: m_device{ device }
 	{
 	}
 }

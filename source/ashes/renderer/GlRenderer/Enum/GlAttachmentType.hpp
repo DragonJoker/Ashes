@@ -15,4 +15,5 @@ namespace ashes::gl
 		GL_ATTACHMENT_TYPE_DEPTH_STENCIL = 0x84F9,
 	};
 	std::string getName( GlAttachmentType value );
+	inline std::string toString( GlAttachmentType value ) { return getName( value ); }
 }

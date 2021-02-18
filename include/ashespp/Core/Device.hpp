@@ -1580,11 +1580,6 @@ namespace ashes
 		*	Getters.
 		*/
 		/**@{*/
-		inline std::string const & getShaderVersion()const
-		{
-			return m_physicalDevice.getShaderVersion();
-		}
-
 		inline Instance const & getInstance()const
 		{
 			return m_instance;

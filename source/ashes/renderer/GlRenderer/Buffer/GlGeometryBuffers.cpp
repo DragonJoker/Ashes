@@ -263,6 +263,7 @@ namespace ashes::gl
 			};
 
 			auto bufferOffset = get( vbo.vbo )->getInternalOffset();
+			assert( get( vbo.vbo )->getMemory() != VK_NULL_HANDLE );
 			glLogCall( context
 				, glBindBuffer
 				, GL_BUFFER_TARGET_ARRAY
@@ -309,6 +310,7 @@ namespace ashes::gl
 
 		if ( m_ibo )
 		{
+			assert( get( m_ibo->ibo )->getMemory() != VK_NULL_HANDLE );
 			glLogCall( context
 				, glBindBuffer
 				, GL_BUFFER_TARGET_ELEMENT_ARRAY

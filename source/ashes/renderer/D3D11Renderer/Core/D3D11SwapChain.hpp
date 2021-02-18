@@ -30,6 +30,11 @@ namespace ashes::d3d11
 			return m_swapChain;
 		}
 
+		VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		void doInitPresentParameters();
 

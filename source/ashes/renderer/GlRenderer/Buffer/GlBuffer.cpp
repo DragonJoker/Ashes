@@ -20,6 +20,11 @@ namespace ashes::gl
 
 	Buffer::~Buffer()
 	{
+		if ( m_memory )
+		{
+			get( m_memory )->unbindBuffer( get( this ) );
+		}
+
 		m_copyTarget = GlBufferTarget( 0u );
 		m_memory = VK_NULL_HANDLE;
 		m_target = GlBufferTarget( 0u );

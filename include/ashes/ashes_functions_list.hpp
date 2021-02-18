@@ -72,6 +72,7 @@ See LICENSE file in root folder.
 	VK_LIB_INSTANCE_FUNCTION( VK_MAKE_VERSION( 1, 0, 0 ), GetPhysicalDeviceMemoryProperties )
 	VK_LIB_INSTANCE_FUNCTION( VK_MAKE_VERSION( 1, 0, 0 ), GetPhysicalDeviceProperties )
 	VK_LIB_INSTANCE_FUNCTION( VK_MAKE_VERSION( 1, 0, 0 ), GetPhysicalDeviceQueueFamilyProperties )
+	VK_LIB_INSTANCE_FUNCTION( VK_MAKE_VERSION( 1, 0, 0 ), GetPhysicalDeviceSparseImageFormatProperties )
 #else
 	VK_LIB_INSTANCE_FUNCTION_FALLBACK( CreateDevice )
 	VK_LIB_INSTANCE_FUNCTION_FALLBACK( DestroyInstance )
@@ -85,6 +86,7 @@ See LICENSE file in root folder.
 	VK_LIB_INSTANCE_FUNCTION_FALLBACK( GetPhysicalDeviceMemoryProperties )
 	VK_LIB_INSTANCE_FUNCTION_FALLBACK( GetPhysicalDeviceProperties )
 	VK_LIB_INSTANCE_FUNCTION_FALLBACK( GetPhysicalDeviceQueueFamilyProperties )
+	VK_LIB_INSTANCE_FUNCTION_FALLBACK( GetPhysicalDeviceSparseImageFormatProperties )
 #endif
 
 #ifdef VK_API_VERSION_1_1
@@ -372,7 +374,6 @@ See LICENSE file in root folder.
 	VK_LIB_DEVICE_FUNCTION( VK_MAKE_VERSION( 1, 0, 0 ), GetEventStatus )
 	VK_LIB_DEVICE_FUNCTION( VK_MAKE_VERSION( 1, 0, 0 ), GetImageMemoryRequirements )
 	VK_LIB_DEVICE_FUNCTION( VK_MAKE_VERSION( 1, 0, 0 ), GetImageSparseMemoryRequirements )
-	VK_LIB_DEVICE_FUNCTION( VK_MAKE_VERSION( 1, 0, 0 ), GetPhysicalDeviceSparseImageFormatProperties )
 	VK_LIB_DEVICE_FUNCTION( VK_MAKE_VERSION( 1, 0, 0 ), GetImageSubresourceLayout )
 	VK_LIB_DEVICE_FUNCTION( VK_MAKE_VERSION( 1, 0, 0 ), GetQueryPoolResults )
 	VK_LIB_DEVICE_FUNCTION( VK_MAKE_VERSION( 1, 0, 0 ), InvalidateMappedMemoryRanges )
@@ -494,7 +495,6 @@ See LICENSE file in root folder.
 	VK_LIB_DEVICE_FUNCTION_FALLBACK( GetEventStatus )
 	VK_LIB_DEVICE_FUNCTION_FALLBACK( GetImageMemoryRequirements )
 	VK_LIB_DEVICE_FUNCTION_FALLBACK( GetImageSparseMemoryRequirements )
-	VK_LIB_DEVICE_FUNCTION_FALLBACK( GetPhysicalDeviceSparseImageFormatProperties )
 	VK_LIB_DEVICE_FUNCTION_FALLBACK( GetImageSubresourceLayout )
 	VK_LIB_DEVICE_FUNCTION_FALLBACK( GetQueryPoolResults )
 	VK_LIB_DEVICE_FUNCTION_FALLBACK( InvalidateMappedMemoryRanges )

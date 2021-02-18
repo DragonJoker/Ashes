@@ -13,6 +13,7 @@ namespace ashes::gl
 		GL_FRONT_FACE_CCW = 0x0901,
 	};
 	std::string getName( GlFrontFace value );
+	inline std::string toString( GlFrontFace value ) { return getName( value ); }
 	/**
 	*\brief
 	*	Convertit un VkFrontFace en GlFrontFace.

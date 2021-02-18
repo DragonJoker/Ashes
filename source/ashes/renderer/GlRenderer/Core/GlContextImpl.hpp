@@ -41,6 +41,10 @@ namespace ashes::gl
 		static ContextImplPtr create( VkInstance instance
 			, VkWaylandSurfaceCreateInfoKHR createInfo
 			, ContextImpl const * mainContext );
+#elif __APPLE__
+		static ContextImplPtr create( VkInstance instance
+			, VkMacOSSurfaceCreateInfoMVK createInfo
+			, ContextImpl const * mainContext );
 #endif
 #ifdef VK_KHR_display
 		static ContextImplPtr create( VkInstance instance

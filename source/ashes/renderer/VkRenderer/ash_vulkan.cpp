@@ -57,20 +57,24 @@ namespace ashes::vk
 
 	struct VkLibrary
 	{
-		AshPluginDescription description
-		{
-			"vk",
-			"Vulkan renderer for Ashes",
-		};
+		AshPluginDescription description{ "vk"
+			, "Vulkan renderer for Ashes"
+			, nullptr
+			, {}
+			, {}
+			, ASHPLUGIN_DROPIN };
 		std::unique_ptr< ashes::DynamicLibrary > library;
 
-		VkResult init()
+		VkResult init( AshPluginMode mode )
 		{
+			auto validMode = ( description.mode == ASHPLUGIN_UNDEFINED || description.mode == mode );
+			assert( validMode
+				&& "ashesTestRenderer: Plugin mode has already been selected." );
 			VkResult result = description.getInstanceProcAddr
-				? VK_SUCCESS
+				? ( validMode ? VK_SUCCESS : VK_ERROR_INCOMPATIBLE_DRIVER )
 				: VK_ERROR_INITIALIZATION_FAILED;
 
-			if ( result != VK_SUCCESS )
+			if ( result == VK_ERROR_INITIALIZATION_FAILED )
 			{
 #if defined( _WIN32 )
 				static std::string_view const libraryName = "vulkan-1.dll";
@@ -126,6 +130,7 @@ namespace ashes::vk
 #	include <ashes/ashes_functions_list.hpp>
 					result = VK_SUCCESS;
 
+					description.mode = mode;
 					description.support.priority = 10u;
 					description.support.supported = checkSupport( description );
 					library = std::move( vklibrary );
@@ -155,9 +160,38 @@ namespace ashes::vk
 
 extern "C"
 {
+
+#pragma region ICD mode
+
+	VkRenderer_API PFN_vkVoidFunction VKAPI_PTR vk_icdGetInstanceProcAddr( VkInstance instance
+		, const char * name )
+	{
+		std::cerr << "ashesVkRenderer: Unsupported ICD mode" << std::endl;
+		assert( false && "ashesVkRenderer: Unsupported ICD mode" );
+		return nullptr;
+	}
+
+	VkRenderer_API PFN_vkVoidFunction VKAPI_PTR vk_icdGetPhysicalDeviceProcAddr( VkInstance instance
+		, const char * name )
+	{
+		std::cerr << "ashesVkRenderer: Unsupported ICD mode" << std::endl;
+		assert( false && "ashesVkRenderer: Unsupported ICD mode" );
+		return nullptr;
+	}
+
+	VkRenderer_API VkResult VKAPI_PTR vk_icdNegotiateLoaderICDInterfaceVersion( uint32_t * pVersion )
+	{
+		std::cerr << "ashesVkRenderer: Unsupported ICD mode" << std::endl;
+		assert( false && "ashesVkRenderer: Unsupported ICD mode" );
+		return VK_ERROR_INCOMPATIBLE_DRIVER;
+	}
+
+#pragma endregion
+#pragma region Drop-in replacement mode
+
 	VkRenderer_API VkResult VKAPI_PTR ashGetPluginDescription( AshPluginDescription * pDescription )
 	{
-		auto result = ashes::vk::getLibrary().init();
+		auto result = ashes::vk::getLibrary().init( ASHPLUGIN_DROPIN );
 
 		if ( result == VK_SUCCESS )
 		{

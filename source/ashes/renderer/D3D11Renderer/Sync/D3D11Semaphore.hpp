@@ -13,5 +13,13 @@ namespace ashes::d3d11
 	public:
 		explicit Semaphore( VkDevice device );
 		~Semaphore();
+
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
+	private:
+		VkDevice m_device;
 	};
 }

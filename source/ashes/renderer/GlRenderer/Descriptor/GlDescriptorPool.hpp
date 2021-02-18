@@ -10,6 +10,8 @@
 
 #include "renderer/GlRenderer/GlRendererPrerequisites.hpp"
 
+#include <unordered_set>
+
 namespace ashes::gl
 {
 	class DescriptorPool
@@ -34,7 +36,7 @@ namespace ashes::gl
 		VkDescriptorPoolCreateFlags m_flags;
 		uint32_t m_maxSets;
 		VkDescriptorPoolSizeArray m_poolSizes;
-		VkDescriptorSetArray m_sets;
+		std::unordered_set< VkDescriptorSet > m_sets;
 	};
 }
 

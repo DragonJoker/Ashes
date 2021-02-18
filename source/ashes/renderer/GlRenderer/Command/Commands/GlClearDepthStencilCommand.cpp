@@ -64,8 +64,18 @@ namespace ashes::gl
 
 			if ( isDepthStencilFormat( get( image )->getFormat() ) )
 			{
-				for ( auto & range : ranges )
+				for ( auto range : ranges )
 				{
+					if ( range.levelCount == RemainingArrayLayers )
+					{
+						range.levelCount = ashes::getMaxMipCount( get( image )->getDimensions() );
+					}
+
+					if ( range.layerCount == RemainingArrayLayers )
+					{
+						range.layerCount = get( device )->getLimits().maxImageArrayLayers;
+					}
+
 					for ( uint32_t level = range.baseMipLevel;
 						level < range.baseMipLevel + range.levelCount;
 						++level )
@@ -80,8 +90,18 @@ namespace ashes::gl
 			}
 			else if ( isStencilFormat( get( image )->getFormat() ) )
 			{
-				for ( auto & range : ranges )
+				for ( auto range : ranges )
 				{
+					if ( range.levelCount == RemainingArrayLayers )
+					{
+						range.levelCount = ashes::getMaxMipCount( get( image )->getDimensions() );
+					}
+
+					if ( range.layerCount == RemainingArrayLayers )
+					{
+						range.layerCount = get( device )->getLimits().maxImageArrayLayers;
+					}
+
 					for ( uint32_t level = range.baseMipLevel;
 						level < range.baseMipLevel + range.levelCount;
 						++level )
@@ -96,8 +116,18 @@ namespace ashes::gl
 			}
 			else if ( isDepthFormat( get( image )->getFormat() ) )
 			{
-				for ( auto & range : ranges )
+				for ( auto range : ranges )
 				{
+					if ( range.levelCount == RemainingArrayLayers )
+					{
+						range.levelCount = ashes::getMaxMipCount( get( image )->getDimensions() );
+					}
+
+					if ( range.layerCount == RemainingArrayLayers )
+					{
+						range.layerCount = get( device )->getLimits().maxImageArrayLayers;
+					}
+
 					for ( uint32_t level = range.baseMipLevel;
 						level < range.baseMipLevel + range.levelCount;
 						++level )

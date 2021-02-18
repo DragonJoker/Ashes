@@ -14,6 +14,7 @@ namespace ashes::gl
 		GL_ACCESS_TYPE_READ_WRITE = 0x88BA,
 	};
 	std::string getName( GlAccessType value );
+	inline std::string toString( GlAccessType value ) { return getName( value ); }
 	/**
 	*\brief
 	*	Convertit un VkAccessFlags en GLenum.

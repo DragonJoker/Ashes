@@ -20,6 +20,7 @@ namespace ashes::gl
 	};
 	Ashes_ImplementFlag( GlMemoryMapFlag )
 	std::string getName( GlMemoryMapFlags value );
+	inline std::string toString( GlMemoryMapFlags value ) { return getName( value ); }
 	/**
 	*\brief
 	*	Convertit un VkMemoryMapFlags en GlMemoryMapFlags.

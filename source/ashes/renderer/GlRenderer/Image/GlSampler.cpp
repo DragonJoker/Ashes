@@ -146,6 +146,10 @@ namespace ashes::gl
 				, GL_SAMPLER_PARAMETER_BORDER_COLOR
 				, ivalues );
 			break;
+
+		default:
+			assert( false && "Unsupported VkBorderColor" );
+			break;
 		}
 	}
 

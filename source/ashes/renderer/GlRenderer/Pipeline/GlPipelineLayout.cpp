@@ -32,6 +32,14 @@ namespace ashes::gl
 		}
 	}
 
+	PipelineLayout::~PipelineLayout()
+	{
+		for ( auto & pipeline : m_pipelines )
+		{
+			get( pipeline )->m_layout = nullptr;
+		}
+	}
+
 	ShaderBindings const & PipelineLayout::getShaderBindings()const
 	{
 		return m_shaderBindings;
@@ -53,7 +61,7 @@ namespace ashes::gl
 		return uint32_t( std::distance( layouts.begin(), it ) );
 	}
 
-	ShaderBindings const & PipelineLayout::getDecriptorSetBindings( VkDescriptorSet descriptorSet
+	ShaderBindings const & PipelineLayout::getDescriptorSetBindings( VkDescriptorSet descriptorSet
 		, uint32_t descriptorSetIndex )const
 	{
 		auto key = makeDescriptorKey( descriptorSet, descriptorSetIndex );
@@ -68,5 +76,15 @@ namespace ashes::gl
 		}
 
 		return pair.first->second;
+	}
+
+	void PipelineLayout::addPipeline( VkPipeline pipeline )
+	{
+		m_pipelines.insert( pipeline );
+	}
+
+	void PipelineLayout::removePipeline( VkPipeline pipeline )
+	{
+		m_pipelines.erase( pipeline );
 	}
 }
