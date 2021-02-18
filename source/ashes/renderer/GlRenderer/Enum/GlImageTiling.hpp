@@ -12,6 +12,7 @@ namespace ashes::gl
 		GL_LINEAR_TILING_EXT = 0x9585,
 	};
 	std::string getName( GlImageTiling value );
+	inline std::string toString( GlImageTiling value ) { return getName( value ); }
 	/**
 	*\brief
 	*	Convertit un VkImageTiling en GlImageTiling.

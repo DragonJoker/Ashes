@@ -11,6 +11,7 @@
 #include <array>
 #include <cmath>
 #include <iostream>
+#include <sstream>
 
 #include "ashesgl_api.hpp"
 
@@ -34,9 +35,12 @@ namespace ashes::gl
 		return result;
 	}
 
-	void doCheckEnabledExtensions( ashes::ArrayView< char const * const > const & extensions )
+	bool doCheckEnabledExtensions( VkInstance instance
+		, bool report
+		, ashes::ArrayView< char const * const > const & extensions )
 	{
 		auto & available = getSupportedInstanceExtensions();
+		ashes::StringArray unsupported;
 
 		for ( auto & extension : extensions )
 		{
@@ -47,22 +51,36 @@ namespace ashes::gl
 					return lookup.extensionName == std::string{ extension };
 				} ) )
 			{
-				throw ExtensionNotPresentException{ extension };
+				unsupported.push_back( extension );
 			}
 		}
-	}
 
-	bool doHasEnabledExtensions( ashes::ArrayView< char const * const > const & extensions )
-	{
-		try
+		if ( unsupported.empty() )
 		{
-			doCheckEnabledExtensions( extensions );
 			return true;
 		}
-		catch ( ExtensionNotPresentException & )
+
+		if ( report )
 		{
-			return false;
+			std::stringstream stream;
+
+			for ( auto & ext : unsupported )
+			{
+				stream << "\n    " << ext;
+			}
+
+			reportError( instance
+				, VK_ERROR_EXTENSION_NOT_PRESENT
+				, "Unspported extensions"
+				, stream.str() );
 		}
+		return false;
+	}
+
+	bool doHasEnabledExtensions( VkInstance instance
+		, ashes::ArrayView< char const * const > const & extensions )
+	{
+		return doCheckEnabledExtensions( instance, false, extensions );
 	}
 
 	VkApplicationInfo doGetDefaultApplicationInfo()
@@ -75,7 +93,7 @@ namespace ashes::gl
 			ashes::makeVersion( 1, 0, 0 ),
 			nullptr,
 			ashes::makeVersion( 1, 0, 0 ),
-			ashes::makeVersion( 1, 0, 0 ),
+			Instance::getDefaultApiVersion(),
 		};
 	}
 
@@ -102,7 +120,10 @@ namespace ashes::gl
 		ContextLock context{ *m_context };
 		glCheckError( context, "ContextInitialisation" );
 		m_physicalDevices.emplace_back( VkPhysicalDevice( new PhysicalDevice{ VkInstance( this ) } ) );
-		doCheckEnabledExtensions( ashes::makeArrayView( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) );
+
+		doCheckEnabledExtensions( get( this )
+			, true
+			, ashes::makeArrayView( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) );
 	}
 
 	Instance::~Instance()
@@ -124,7 +145,18 @@ namespace ashes::gl
 	bool Instance::hasExtension( std::string_view extension )const
 	{
 		char const * const version = extension.data();
-		return doHasEnabledExtensions( ashes::makeArrayView( &version, 1u ) );
+		return doHasEnabledExtensions( get( this )
+			, ashes::makeArrayView( &version, 1u ) );
+	}
+
+	bool Instance::hasEnabledExtension( std::string_view name )const
+	{
+		return m_enabledExtensions.end() != std::find_if( m_enabledExtensions.begin()
+			, m_enabledExtensions.end()
+			, [&name]( std::string const & lookup )
+			{
+				return lookup == name;
+			} );
 	}
 
 	void Instance::unregisterDevice( VkDevice device )
@@ -205,6 +237,15 @@ namespace ashes::gl
 		{
 			result = Context::create( get( this )
 				, glSurface->getXlibCreateInfo()
+				, nullptr );
+		}
+
+#elif __APPLE__
+
+		else if ( glSurface->isMacOS() )
+		{
+			result = Context::create( get( this )
+				, glSurface->getMacOSCreateInfo()
 				, nullptr );
 		}
 
@@ -497,37 +538,5 @@ namespace ashes::gl
 				, glEnable
 				, GL_DEBUG_OUTPUT_SYNC );
 		}
-	}
-
-	VkPhysicalDeviceMemoryProperties const & Instance::getMemoryProperties()
-	{
-		static VkPhysicalDeviceMemoryProperties const memoryProperties = []()
-		{
-			VkPhysicalDeviceMemoryProperties result{};
-			// Emulate one device local heap
-			result.memoryHeaps[result.memoryHeapCount++] = { ~( 0ull ), VK_MEMORY_HEAP_DEVICE_LOCAL_BIT };
-			// and one host visible heap
-			result.memoryHeaps[result.memoryHeapCount++] = { ~( 0ull ), 0u };
-
-			// Emulate all combinations of device local memory types
-			// and all combinations of host visible memory types
-			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 0u };
-			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 1u };
-			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT, 1u };
-
-			return result;
-		}( );
-		return memoryProperties;
-	}
-
-	VkPhysicalDeviceMemoryProperties2KHR const & Instance::getMemoryProperties2()
-	{
-		static VkPhysicalDeviceMemoryProperties2KHR const memoryProperties2 = []()
-		{
-			VkPhysicalDeviceMemoryProperties2KHR result{};
-			result.memoryProperties = Instance::getMemoryProperties();
-			return result;
-		}( );
-		return memoryProperties2;
 	}
 }

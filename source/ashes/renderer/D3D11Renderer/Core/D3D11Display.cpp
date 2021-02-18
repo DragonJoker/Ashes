@@ -10,10 +10,12 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	DisplayKHR::DisplayKHR( VkExtent2D const & extent
+	DisplayKHR::DisplayKHR( VkPhysicalDevice physicalDevice
+		, VkExtent2D const & extent
 		, VkFormat format
 		, std::vector< DXGI_MODE_DESC > const & descs )
-		: m_extent{ extent }
+		: m_physicalDevice{ physicalDevice }
+		, m_extent{ extent }
 		, m_format{ format }
 		, m_descs{ descs }
 	{

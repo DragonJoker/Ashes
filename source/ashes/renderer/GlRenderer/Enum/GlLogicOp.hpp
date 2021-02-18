@@ -26,6 +26,7 @@ namespace ashes::gl
 		GL_LOGIC_OP_SET = 0x150F,
 	};
 	std::string getName( GlLogicOp value );
+	inline std::string toString( GlLogicOp value ) { return getName( value ); }
 	/**
 	*\brief
 	*	Convertit un VkLogicOp en GlLogicOp.

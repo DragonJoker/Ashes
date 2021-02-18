@@ -23,6 +23,7 @@ namespace ashes::gl
 		GL_PRIMITIVE_TOPOLOGY_PATCH_LIST = 0x000E,
 	};
 	std::string getName( GlPrimitiveTopology value );
+	inline std::string toString( GlPrimitiveTopology value ) { return getName( value ); }
 	/**
 	*\brief
 	*	Convertit un VkPrimitiveTopology en GlPrimitiveTopolgy.

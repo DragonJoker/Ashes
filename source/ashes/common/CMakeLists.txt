@@ -12,6 +12,9 @@ set( ${PROJECT_NAME}_SRC_FILES
 	Common.cpp
 	Format.cpp
 )
+set( ${PROJECT_NAME}_NVS_FILES
+	ashes_common.natvis
+)
 
 if ( WIN32 )
 	set( ${PROJECT_NAME}_PLATFORM_SRC_FILES
@@ -50,6 +53,7 @@ set( ${PROJECT_NAME}_HDR_FILES
 add_library( ${PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_SRC_FILES}
 	${${PROJECT_NAME}_HDR_FILES}
+	${${PROJECT_NAME}_NVS_FILES}
 	${${PROJECT_NAME}_PLATFORM_SRC_FILES}
 	${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES}
 	${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
@@ -91,3 +95,4 @@ target_install_dir_headers( ${PROJECT_NAME}
 	${Ashes_SOURCE_DIR}/include/ashes/${_PROJECT_NAME}
 	ashes/${_PROJECT_NAME}
 )
+

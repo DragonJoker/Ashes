@@ -27,6 +27,7 @@ namespace ashes::gl
 		GL_TEXTURE_2D_MULTISAMPLE_ARRAY = 0x9102,
 	};
 	std::string getName( GlTextureType value );
+	inline std::string toString( GlTextureType value ) { return getName( value ); }
 
 	namespace gl3
 	{

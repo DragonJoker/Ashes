@@ -19,6 +19,7 @@ namespace ashes::gl
 		GL_LAYOUT_TRANSFER_DST_EXT = 0x9593,
 	};
 	std::string getName( GlImageLayout value );
+	inline std::string toString( GlImageLayout value ) { return getName( value ); }
 	/**
 	*\brief
 	*	Convertit un VkImageLayout en VkImageLayout.

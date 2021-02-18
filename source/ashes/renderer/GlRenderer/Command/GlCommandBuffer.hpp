@@ -12,7 +12,7 @@ See LICENSE file in root folder
 namespace ashes::gl
 {
 	class CommandBuffer
-		: public AutoIdIcdObject< CommandBuffer >
+		: public ashes::IcdObject
 	{
 	public:
 		CommandBuffer( VkDevice device
@@ -231,7 +231,8 @@ namespace ashes::gl
 		BufferIndex & doAddMappedBuffer( VkBuffer buffer, bool isInput )const;
 		void doRemoveMappedBuffer( GLuint internal )const;
 		bool doIsRtotFbo()const;
-		void doCheckPipelineLayoutCompatibility( VkPipelineLayout layout )const;
+		void doCheckPipelineLayoutCompatibility( VkPipelineLayout layout
+			, VkPipelineLayout & currentLayout )const;
 
 	private:
 		VkDevice m_device;
@@ -245,8 +246,9 @@ namespace ashes::gl
 		{
 			std::unique_ptr< ContextStateStack > stack;
 			VkCommandBufferUsageFlags beginFlags{ 0u };
-			VkPipelineLayout currentPipelineLayout{ nullptr };
-			VkPipeline currentPipeline{ nullptr };
+			VkPipelineLayout currentGraphicsPipelineLayout{ nullptr };
+			VkPipelineLayout currentComputePipelineLayout{ nullptr };
+			VkPipeline currentGraphicsPipeline{ nullptr };
 			VkPipeline currentComputePipeline{ nullptr };
 			std::vector< std::pair < VkPipelineLayout, PushConstantsDesc > > pushConstantBuffers;
 			VkRenderPass currentRenderPass{ nullptr };
@@ -260,7 +262,7 @@ namespace ashes::gl
 			GeometryBuffers * selectedVao{ nullptr };
 			GeometryBuffersRefArray vaos;
 			std::map< uint32_t, VkDescriptorSet > boundDescriptors;
-			std::map< uint32_t, std::function< void() > > waitingDescriptors;
+			std::map< uint32_t, std::function< VkDescriptorSet( VkDescriptorSet, uint32_t & ) > > waitingDescriptors;
 		};
 		mutable State m_state;
 		mutable VkImageViewArray m_blitViews;

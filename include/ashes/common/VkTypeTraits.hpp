@@ -26,14 +26,34 @@ namespace ashes
 	template<>
 	struct VkTypeTraits< VkDebugUtilsMessengerEXT >
 	{
+		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_DEBUG_UTILS_MESSENGER_EXT;
+#if VK_EXT_debug_report || VK_EXT_debug_marker
+		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT_EXT;
+#endif
 		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE;
+
+		static std::string const & getName()
+		{
+			static std::string result{ "VkDebugUtilsMessengerEXT" };
+			return result;
+		}
 	};
 #endif
 #if VK_EXT_debug_report
 	template<>
 	struct VkTypeTraits< VkDebugReportCallbackEXT >
 	{
+#if VK_EXT_debug_utils
+		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT;
+#endif
+		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT_EXT;
 		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE;
+
+		static std::string const & getName()
+		{
+			static std::string result{ "VkDebugReportCallbackEXT" };
+			return result;
+		}
 	};
 #endif
 
@@ -551,19 +571,19 @@ namespace ashes
 	template< typename T >
 	T const * tryGet( void const * next )
 	{
-		T const * result{ nullptr };
-
-		if ( next )
+		while ( next )
 		{
-			result = reinterpret_cast< T const * >( next );
+			auto vkStruct = reinterpret_cast< T const * >( next );
 
-			if ( result->sType != VkStructureTypeTraits< T >::TypeValue )
+			if ( vkStruct->sType == VkStructureTypeTraits< T >::TypeValue )
 			{
-				result = nullptr;
+				return reinterpret_cast< T const * >( vkStruct );
 			}
+
+			next = vkStruct->pNext;
 		}
 
-		return result;
+		return nullptr;
 	}
 
 	struct CompareImageViewCreate

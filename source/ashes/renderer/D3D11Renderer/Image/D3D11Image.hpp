@@ -136,6 +136,11 @@ namespace ashes::d3d11
 		{
 			return m_createInfo.imageType;
 		}
+		
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
 
 		inline ObjectMemory const & getObjectMemory()const
 		{

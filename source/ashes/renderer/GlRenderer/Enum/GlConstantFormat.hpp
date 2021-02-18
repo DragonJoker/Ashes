@@ -16,6 +16,7 @@ namespace ashes::gl
 		GL_CONSTANT_FORMAT_BASE_TYPE_FLOAT = 0x1406,
 	};
 	std::string getName( GlConstantFormatBaseType value );
+	inline std::string toString( GlConstantFormatBaseType value ) { return getName( value ); }
 
 	/**
 	*\brief

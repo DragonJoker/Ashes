@@ -23,8 +23,8 @@ namespace ashes::gl
 			, int32_t y
 			, uint32_t width
 			, uint32_t height
-			, uint32_t format
-			, uint32_t type )
+			, GlFormat format
+			, GlType type )
 			: cmd{ { OpType::eReadPixels, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, x{ std::move( x ) }
 			, y{ std::move( y ) }
@@ -40,8 +40,8 @@ namespace ashes::gl
 		int32_t y;
 		uint32_t width;
 		uint32_t height;
-		uint32_t format;
-		uint32_t type;
+		GlFormat format;
+		GlType type;
 	};
 	using CmdReadPixels = CmdT< OpType::eReadPixels >;
 

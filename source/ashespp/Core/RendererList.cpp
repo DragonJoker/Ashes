@@ -14,21 +14,21 @@ namespace ashes
 	{
 #if defined( _WIN32 )
 #	if defined( NDEBUG )
-		static std::string const libraryName = "vulkan-1.dll";
+		static std::string const libraryName = "ashes-1.dll";
 #	else
-		static std::string const libraryName = "vulkand-1.dll";
+		static std::string const libraryName = "ashesd-1.dll";
 #	endif
 #elif defined( __linux__ )
 #	if defined( NDEBUG )
-		static std::string const libraryName = "libvulkan.so.1";
+		static std::string const libraryName = "libashes.so.1";
 #	else
-		static std::string const libraryName = "libvulkand.so.1";
+		static std::string const libraryName = "libashesd.so.1";
 #	endif
 #elif defined( __APPLE__ )
 #	if defined( NDEBUG )
-		static std::string const libraryName = "libvulkan.1.dylib";
+		static std::string const libraryName = "libashes.1.dylib";
 #	else
-		static std::string const libraryName = "libvulkand.1.dylib";
+		static std::string const libraryName = "libashesd.1.dylib";
 #	endif
 #else
 #	error Unsupported platform

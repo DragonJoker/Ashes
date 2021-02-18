@@ -32,6 +32,11 @@ namespace ashes::d3d11
 			return m_bindings.end();
 		}
 
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		VkDevice m_device;
 		VkDescriptorSetLayoutBindingArray m_bindings;

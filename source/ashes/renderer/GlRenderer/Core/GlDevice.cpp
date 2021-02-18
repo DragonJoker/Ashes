@@ -174,14 +174,7 @@ namespace ashes::gl
 		doCheckEnabledExtensions( m_physicalDevice
 			, ashes::makeArrayView( m_createInfos.ppEnabledExtensionNames, m_createInfos.enabledExtensionCount ) );
 		doInitialiseQueues();
-		allocate( m_blitFbos[0]
-			, getAllocationCallbacks()
-			, get( this )
-			, GL_INVALID_INDEX );
-		allocate( m_blitFbos[1]
-			, getAllocationCallbacks()
-			, get( this )
-			, GL_INVALID_INDEX );
+		doInitialiseContextDependent();
 	}
 
 	Device::~Device()
@@ -198,15 +191,7 @@ namespace ashes::gl
 				}
 			}
 
-			if ( m_sampler )
-			{
-				deallocate( m_sampler
-					, getAllocationCallbacks() );
-				deallocate( m_blitFbos[0]
-					, getAllocationCallbacks() );
-				deallocate( m_blitFbos[1]
-					, getAllocationCallbacks() );
-			}
+			doCleanupContextDependent();
 
 			if ( m_dummyIndexed.indexMemory )
 			{
@@ -460,7 +445,7 @@ namespace ashes::gl
 		getContext()->swapBuffers();
 	}
 
-	void Device::link( VkSurfaceKHR surface )const
+	void Device::link( VkSurfaceKHR surface )
 	{
 		try
 		{
@@ -472,31 +457,7 @@ namespace ashes::gl
 				get( m_instance )->registerContext( *m_ownContext );
 			}
 
-			auto lock = getContext();
-			allocate( m_sampler
-				, getAllocationCallbacks()
-				, get( this )
-				, VkSamplerCreateInfo
-				{
-					VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
-					nullptr,
-					0u,
-					VK_FILTER_NEAREST,
-					VK_FILTER_NEAREST,
-					VK_SAMPLER_MIPMAP_MODE_NEAREST,
-					VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-					VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-					VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-					0.0f,
-					VK_FALSE,
-					1.0f,
-					VK_FALSE,
-					VK_COMPARE_OP_ALWAYS,
-					0.0f,
-					1.0f,
-					VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK,
-					VK_FALSE,
-				} );
+			doInitialiseContextDependent();
 		}
 		catch ( std::exception & exc )
 		{
@@ -511,14 +472,9 @@ namespace ashes::gl
 		}
 	}
 
-	void Device::unlink( VkSurfaceKHR surface )const
+	void Device::unlink( VkSurfaceKHR surface )
 	{
-		if ( m_sampler )
-		{
-			deallocate( m_sampler
-				, getAllocationCallbacks() );
-			m_sampler = nullptr;
-		}
+		doCleanupContextDependent();
 	}
 
 	ContextLock Device::getContext()const
@@ -568,13 +524,14 @@ namespace ashes::gl
 				} );
 			auto indexBuffer = get( m_dummyIndexed.indexBuffer );
 			auto requirements = indexBuffer->getMemoryRequirements();
-			auto deduced = deduceMemoryType( requirements.memoryTypeBits
+			auto deduced = deduceMemoryType( get( this )
+				, requirements.memoryTypeBits
 				, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
 			allocate( m_dummyIndexed.indexMemory
 				, getAllocationCallbacks()
 				, get( this )
 				, VkMemoryAllocateInfo{ VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, requirements.size, deduced } );
-			get( m_dummyIndexed.indexMemory )->bindToBuffer( m_dummyIndexed.indexBuffer, 0u );
+			get( m_dummyIndexed.indexMemory )->bindBuffer( m_dummyIndexed.indexBuffer, 0u );
 			auto memory = get( m_dummyIndexed.indexMemory );
 			uint8_t * buffer{ nullptr };
 			auto size = count * sizeof( uint32_t );
@@ -593,6 +550,67 @@ namespace ashes::gl
 				, InputsLayout{}
 				, VK_INDEX_TYPE_UINT32 );
 			m_dummyIndexed.geometryBuffers->initialise( context );
+		}
+	}
+
+	void Device::doInitialiseContextDependent()
+	{
+		auto lock = getContext();
+		allocate( m_blitFbos[0]
+			, getAllocationCallbacks()
+			, get( this )
+			, GL_INVALID_INDEX );
+		allocate( m_blitFbos[1]
+			, getAllocationCallbacks()
+			, get( this )
+			, GL_INVALID_INDEX );
+		allocate( m_sampler
+			, getAllocationCallbacks()
+			, get( this )
+			, VkSamplerCreateInfo
+			{
+				VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+				nullptr,
+				0u,
+				VK_FILTER_NEAREST,
+				VK_FILTER_NEAREST,
+				VK_SAMPLER_MIPMAP_MODE_NEAREST,
+				VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+				VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+				VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+				0.0f,
+				VK_FALSE,
+				1.0f,
+				VK_FALSE,
+				VK_COMPARE_OP_ALWAYS,
+				0.0f,
+				1.0f,
+				VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK,
+				VK_FALSE,
+			} );
+	}
+
+	void Device::doCleanupContextDependent()
+	{
+		if ( m_sampler )
+		{
+			deallocate( m_sampler
+				, getAllocationCallbacks() );
+			m_sampler = nullptr;
+		}
+
+		if ( m_blitFbos[0] )
+		{
+			deallocate( m_blitFbos[0]
+				, getAllocationCallbacks() );
+			m_blitFbos[0] = nullptr;
+		}
+
+		if ( m_blitFbos[1] )
+		{
+			deallocate( m_blitFbos[1]
+				, getAllocationCallbacks() );
+			m_blitFbos[1] = nullptr;
 		}
 	}
 
@@ -629,5 +647,10 @@ namespace ashes::gl
 	bool hasViewportArrays( VkDevice device )
 	{
 		return hasViewportArrays( get( device )->getPhysicalDevice() );
+	}
+
+	bool hasProgramInterfaceQuery( VkDevice device )
+	{
+		return hasProgramInterfaceQuery( get( device )->getPhysicalDevice() );
 	}
 }

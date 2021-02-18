@@ -75,6 +75,11 @@ namespace ashes::d3d11
 			return m_multisampled;
 		}
 
+		VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		VkDevice m_device;
 		VkFramebufferCreateInfo m_createInfo;

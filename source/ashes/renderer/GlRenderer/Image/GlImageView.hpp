@@ -25,6 +25,11 @@ namespace ashes::gl
 	class ImageView
 		: public IcdObject
 	{
+	private:
+		ImageView( VkDevice device
+			, VkImageViewCreateInfo createInfo
+			, bool createView );
+
 	public:
 		ImageView( VkDevice device
 			, VkImage image );
@@ -46,37 +51,32 @@ namespace ashes::gl
 
 		inline VkImageViewType getType()const noexcept
 		{
-			return m_viewType;
+			return m_createInfo.viewType;
 		}
 
 		inline VkFormat getFormat()const noexcept
 		{
-			return m_format;
+			return m_createInfo.format;
 		}
 
 		inline VkComponentMapping const & getComponents()const noexcept
 		{
-			return m_components;
+			return m_createInfo.components;
 		}
 
 		inline VkImageSubresourceRange const & getSubresourceRange()const noexcept
 		{
-			return m_subresourceRange;
+			return m_createInfo.subresourceRange;
 		}
 
 		inline VkImage getImage()const noexcept
 		{
-			return m_image;
+			return m_createInfo.image;
 		}
 
 	private:
 		VkDevice m_device;
-		VkImageViewCreateFlags m_flags;
-		VkImage m_image;
-		VkImageViewType m_viewType;
-		VkFormat m_format;
-		VkComponentMapping m_components;
-		VkImageSubresourceRange m_subresourceRange;
+		VkImageViewCreateInfo m_createInfo;
 		GlTextureType m_gltextureType;
 		gl4::GlTextureViewType m_glviewType;
 	};

@@ -38,7 +38,11 @@ namespace ashes::gl
 		, VkPrimitiveTopology mode
 		, CmdList & list )
 	{
-		assert( instCount >= 1 );
+		if ( vtxCount == 0 || instCount == 0 )
+		{
+			return;
+		}
+
 		glLogCommand( list, "DrawCommand" );
 
 		if ( firstInstance > 0 )

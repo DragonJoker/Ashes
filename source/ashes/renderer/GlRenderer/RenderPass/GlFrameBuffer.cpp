@@ -63,7 +63,8 @@ namespace ashes::gl
 			}
 		}
 
-		FboAttachment initialiseAttachment( VkImageView view
+		FboAttachment initialiseAttachment( uint32_t referenceIndex
+			, VkImageView view
 			, uint32_t index
 			, bool & multisampled )
 		{
@@ -75,6 +76,7 @@ namespace ashes::gl
 				, VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT );
 
 			FboAttachment attachment{};
+			attachment.referenceIndex = referenceIndex;
 			attachment.point = getAttachmentPoint( view );
 			attachment.type = getAttachmentType( view );
 			attachment.originalObject = get( image )->getInternal();
@@ -127,7 +129,8 @@ namespace ashes::gl
 			}
 		}
 
-		FboAttachment initialiseAttachment( VkImageView view
+		FboAttachment initialiseAttachment( uint32_t referenceIndex
+			, VkImageView view
 			, uint32_t index
 			, bool & multisampled )
 		{
@@ -135,6 +138,7 @@ namespace ashes::gl
 			multisampled = get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT;
 
 			FboAttachment attachment{};
+			attachment.referenceIndex = referenceIndex;
 			attachment.point = getAttachmentPoint( view );
 			attachment.type = getAttachmentType( view );
 			attachment.originalObject = get( image )->getInternal();
@@ -147,13 +151,17 @@ namespace ashes::gl
 				: get( view )->getSubresourceRange().layerCount );
 			attachment.target = ( get( image )->getType() == VK_IMAGE_TYPE_3D
 				? GL_TEXTURE_3D
-				: ( attachment.viewLayerCount > 1u
-					? ( multisampled
-						? GL_TEXTURE_2D_MULTISAMPLE_ARRAY
-						: GL_TEXTURE_2D_ARRAY )
-					: ( multisampled
-						? GL_TEXTURE_2D_MULTISAMPLE
-						: GL_TEXTURE_2D ) ) );
+				: ( get( image )->getType() == VK_IMAGE_TYPE_2D
+					? ( attachment.viewLayerCount > 1u
+						? ( multisampled
+							? GL_TEXTURE_2D_MULTISAMPLE_ARRAY
+							: GL_TEXTURE_2D_ARRAY )
+						: ( multisampled
+							? GL_TEXTURE_2D_MULTISAMPLE
+							: GL_TEXTURE_2D ) )
+					: ( attachment.viewLayerCount > 1u
+						? GL_TEXTURE_1D_ARRAY
+						: GL_TEXTURE_1D ) ) );
 			attachment.index = index;
 
 			if ( get( view )->getSubresourceRange().baseMipLevel )
@@ -191,18 +199,21 @@ namespace ashes::gl
 	}
 
 	FboAttachment initialiseAttachment( VkDevice device
+		, uint32_t referenceIndex
 		, VkImageView view
 		, uint32_t index
 		, bool & multisampled )
 	{
 		if ( hasTextureViews( device ) )
 		{
-			return gl4::initialiseAttachment( view
+			return gl4::initialiseAttachment( referenceIndex
+				, view
 				, index
 				, multisampled );
 		}
 
-		return gl3::initialiseAttachment( view
+		return gl3::initialiseAttachment( referenceIndex
+			, view
 			, index
 			, multisampled );
 	}
@@ -266,66 +277,84 @@ namespace ashes::gl
 
 	GlAttachmentType getAttachmentType( VkImageView texture )
 	{
-		return getAttachmentType( get( texture )->getFormat() );
+		return getAttachmentType( get( texture )->getSubresourceRange().aspectMask );
 	}
 
-	void checkCompleteness( GLenum status )
+	template< typename VkObjectT >
+	void doCheckCompleteness( VkObjectT object
+		, GLenum status )
 	{
 		switch ( status )
 		{
 		case 0:
-			std::cerr << "An error has occured." << std::endl;
-			assert( false );
+			reportWarning( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
+				, "An error has occured." );
 			break;
 
 		case GL_FRAMEBUFFER_STATUS_COMPLETE:
 			break;
 
 		case GL_FRAMEBUFFER_STATUS_UNDEFINED:
-			std::cerr << "The specified framebuffer is the default read or draw framebuffer, but the default framebuffer does not exist." << std::endl;
-			assert( false );
+			reportWarning( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
+				, "The specified framebuffer is the default read or draw framebuffer, but the default framebuffer does not exist." );
 			break;
 
 		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_ATTACHMENT:
-			std::cerr << "At least one of the framebuffer attachment points are framebuffer incomplete." << std::endl;
-			assert( false );
+			reportWarning( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
+				, "At least one of the framebuffer attachment points are framebuffer incomplete." );
 			break;
 
 		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_MISSING_ATTACHMENT:
-			std::cerr << "The framebuffer does not have at least one image attached to it." << std::endl;
-			assert( false );
+			reportWarning( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
+				, "The framebuffer does not have at least one image attached to it." );
 			break;
 
 		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_DRAW_BUFFER:
-			std::cerr << "The value of GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is GL_NONE for any color attachment point(s) named by GL_DRAW_BUFFERi." << std::endl;
-			assert( false );
+			reportWarning( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
+				, "The value of GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is GL_NONE for any color attachment point(s) named by GL_DRAW_BUFFERi." );
 			break;
 
 		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_READ_BUFFER:
-			std::cerr << "GL_READ_BUFFER is not GL_NONE and the value of GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is GL_NONE for the color attachment point named by GL_READ_BUFFER." << std::endl;
-			assert( false );
+			reportWarning( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
+				, "GL_READ_BUFFER is not GL_NONE and the value of GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is GL_NONE for the color attachment point named by GL_READ_BUFFER." );
 			break;
 
 		case GL_FRAMEBUFFER_STATUS_UNSUPPORTED:
-			std::cerr << "The combination of internal formats of the attached images violates an implementation-dependent set of restrictions." << std::endl;
-			assert( false );
+			reportWarning( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
+				, "The combination of internal formats of the attached images violates an implementation-dependent set of restrictions." );
 			break;
 
 		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_MULTISAMPLE:
-			std::cerr << "One of the following:" << std::endl;
-			std::cerr << "  - The value of GL_RENDERBUFFER_SAMPLES is not the same for all attached renderbuffers;" << std::endl;
-			std::cerr << "  - The value of GL_TEXTURE_SAMPLES is the not same for all attached textures;" << std::endl;
-			std::cerr << "  - The attached images are a mix of renderbuffers and textures, the value of GL_RENDERBUFFER_SAMPLES does not match the value of GL_TEXTURE_SAMPLES;" << std::endl;
-			std::cerr << "  - The value of GL_TEXTURE_FIXED_SAMPLE_LOCATIONS is not the same for all attached textures;" << std::endl;
-			std::cerr << "  - The attached images are a mix of renderbuffers and textures, the value of GL_TEXTURE_FIXED_SAMPLE_LOCATIONS is not GL_TRUE for all attached textures." << std::endl;
-			assert( false );
+			{
+				std::stringstream stream;
+				stream << "One of the following:" << std::endl;
+				stream << "  - The value of GL_RENDERBUFFER_SAMPLES is not the same for all attached renderbuffers;" << std::endl;
+				stream << "  - The value of GL_TEXTURE_SAMPLES is the not same for all attached textures;" << std::endl;
+				stream << "  - The attached images are a mix of renderbuffers and textures, the value of GL_RENDERBUFFER_SAMPLES does not match the value of GL_TEXTURE_SAMPLES;" << std::endl;
+				stream << "  - The value of GL_TEXTURE_FIXED_SAMPLE_LOCATIONS is not the same for all attached textures;" << std::endl;
+				stream << "  - The attached images are a mix of renderbuffers and textures, the value of GL_TEXTURE_FIXED_SAMPLE_LOCATIONS is not GL_TRUE for all attached textures." << std::endl;
+				reportWarning( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
+					, stream.str() );
+			}
 			break;
 
 		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_LAYER_TARGETS:
-			std::cerr << "At least one framebuffer attachment is layered, and any populated attachment is not layered, or all populated color attachments are not from textures of the same target." << std::endl;
-			assert( false );
+			reportWarning( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
+				, "At least one framebuffer attachment is layered, and any populated attachment is not layered, or all populated color attachments are not from textures of the same target." );
 			break;
 		}
+	}
+
+	void checkCompleteness( VkSwapchainKHR swapchain
+		, GLenum status )
+	{
+		doCheckCompleteness( swapchain, status );
+	}
+
+	void checkCompleteness( VkFramebuffer framebuffer
+		, GLenum status )
+	{
+		doCheckCompleteness( framebuffer, status );
 	}
 
 	Framebuffer::Framebuffer( VkDevice device
@@ -338,8 +367,12 @@ namespace ashes::gl
 		, m_layers{ createInfo.layers }
 	{
 		doInitialiseAttaches();
-		doBindAttaches();
-		doCreateFramebuffer();
+
+		if ( !isEmpty() )
+		{
+			doBindAttaches();
+			doCreateFramebuffer();
+		}
 	}
 
 	Framebuffer::Framebuffer( VkDevice device
@@ -361,51 +394,78 @@ namespace ashes::gl
 		}
 	}
 
-	UInt32Array Framebuffer::getDrawBuffers( ArrayView < VkAttachmentReference const > const & references )const
+	UInt32Array Framebuffer::getDrawBuffers( ArrayView< VkAttachmentReference const > const & references )const
 	{
 		assert( getInternal() != GL_INVALID_INDEX );
 		UInt32Array drawBuffers;
-		auto & attaches = getAllAttaches();
 
-		for ( auto & reference : references )
+		if ( !isEmpty() )
 		{
-			auto & attach = attaches[reference.attachment];
-			drawBuffers.push_back( attach.point + attach.index );
+			auto & attaches = getRenderableAttaches();
+
+			for ( auto & reference : references )
+			{
+				if ( reference.attachment != VK_ATTACHMENT_UNUSED )
+				{
+					auto attachIt = std::find_if( attaches.begin()
+						, attaches.end()
+						, [&reference]( FboAttachment const & lookup )
+						{
+							return lookup.referenceIndex == reference.attachment;
+						} );
+					assert( attachIt != attaches.end() );
+					auto & attach = *attachIt;
+					drawBuffers.push_back( attach.point + attach.index );
+				}
+			}
+
+			if ( m_drawBuffers != drawBuffers )
+			{
+				m_drawBuffers = drawBuffers;
+			}
 		}
 
-		if ( m_drawBuffers != drawBuffers )
-		{
-			m_drawBuffers = drawBuffers;
-		}
-
-		return m_drawBuffers;
+		return drawBuffers;
 	}
 
-	UInt32Array Framebuffer::getDrawBuffers( ArrayView < VkAttachmentReference > const & references )const
+	UInt32Array Framebuffer::getDrawBuffers( ArrayView< VkAttachmentReference > const & references )const
 	{
 		m_drawBuffers.clear();
 
-		assert( getInternal() != GL_INVALID_INDEX );
-		auto & attachments = getAttachments();
-		auto & attaches = getAllAttaches();
-
-		for ( auto & reference : references )
+		if ( !isEmpty() )
 		{
-			auto fboAttach = attachments[reference.attachment];
-			auto fboView = get( fboAttach );
+			assert( getInternal() != GL_INVALID_INDEX );
+			auto & attachments = getAttachments();
+			auto & attaches = getRenderableAttaches();
 
-			if ( !isDepthOrStencilFormat( fboView->getFormat() ) )
+			for ( auto & reference : references )
 			{
-				auto & attach = attaches[reference.attachment];
-				auto fboImage = get( fboView->getImage() );
+				if ( reference.attachment != VK_ATTACHMENT_UNUSED )
+				{
+					auto fboAttach = attachments[reference.attachment];
+					auto fboView = get( fboAttach );
 
-				if ( fboImage->hasInternal() )
-				{
-					m_drawBuffers.push_back( attach.point + attach.index );
-				}
-				else if ( attaches.size() == 1 )
-				{
-					m_drawBuffers.push_back( GL_ATTACHMENT_POINT_BACK );
+					if ( !isDepthOrStencilFormat( fboView->getFormat() ) )
+					{
+						auto attachIt = std::find_if( attaches.begin()
+							, attaches.end()
+							, [&reference]( FboAttachment const & lookup )
+							{
+								return lookup.referenceIndex == reference.attachment;
+							} );
+						assert( attachIt != attaches.end() );
+						auto & attach = *attachIt;
+						auto fboImage = get( fboView->getImage() );
+
+						if ( fboImage->hasInternal() )
+						{
+							m_drawBuffers.push_back( attach.point + attach.index );
+						}
+						else if ( attaches.size() == 1 )
+						{
+							m_drawBuffers.push_back( GL_ATTACHMENT_POINT_BACK );
+						}
+					}
 				}
 			}
 		}
@@ -436,22 +496,51 @@ namespace ashes::gl
 	void Framebuffer::doInitialiseAttaches()
 	{
 		auto renderPass = get( m_renderPass );
-		auto itPassAttach = renderPass->begin();
 		uint32_t index = 0u;
 		uint32_t msIndex = 0u;
-		auto fboAttachIt = m_attachments.begin();
 
-		for ( auto & passAttach : *renderPass )
+		for ( auto & passAttach : renderPass->getFboAttachable() )
 		{
-			assert( fboAttachIt != m_attachments.end() );
-			auto attach = renderPass->getAttachment( passAttach );
-			doInitialiseAttach( *fboAttachIt
-				, ( ashes::isDepthOrStencilFormat( get( *fboAttachIt )->getFormat() )
-					? 0u
-					: ( get( get( *fboAttachIt )->getImage() )->getSamples() > VK_SAMPLE_COUNT_1_BIT
-						? msIndex++
-						: index++ ) ) );
-			++fboAttachIt;
+			if ( passAttach.attachment != VK_ATTACHMENT_UNUSED )
+			{
+				bool multisampled{ false };
+				assert( passAttach.attachment < m_attachments.size() );
+				auto view = m_attachments[passAttach.attachment];
+				auto attachment = initialiseAttachment( m_device
+					, passAttach.attachment
+					, view
+					, ( ashes::isDepthOrStencilFormat( get( view )->getFormat() )
+						? 0u
+						: ( get( get( view )->getImage() )->getSamples() > VK_SAMPLE_COUNT_1_BIT
+							? msIndex++
+							: index++ ) )
+					, multisampled );
+				auto attach = renderPass->getAttachment( passAttach );
+				doInitialiseAttach( attachment
+					, multisampled
+					, isSRGBFormat( get( view )->getFormat() ) );
+				m_renderableAttaches.push_back( attachment );
+			}
+		}
+
+		for ( auto & passAttach : renderPass->getResolveAttachments() )
+		{
+			if ( passAttach.attachment != VK_ATTACHMENT_UNUSED )
+			{
+				bool multisampled{ false };
+				assert( passAttach.attachment < m_attachments.size() );
+				auto view = m_attachments[passAttach.attachment];
+				auto attachment = initialiseAttachment( m_device
+					, passAttach.attachment
+					, view
+					, ( ashes::isDepthOrStencilFormat( get( view )->getFormat() )
+						? 0u
+						: ( get( get( view )->getImage() )->getSamples() > VK_SAMPLE_COUNT_1_BIT
+							? msIndex++
+							: index++ ) )
+					, multisampled );
+				m_resolveAttaches.push_back( attachment );
+			}
 		}
 	}
 
@@ -495,18 +584,18 @@ namespace ashes::gl
 			, GL_FRAMEBUFFER
 			, m_internal );
 		applyList( context, m_bindAttaches );
-		checkCompleteness( context->glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
+		checkCompleteness( get( this )
+			, context->glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
 		glLogCall( context
 			, glBindFramebuffer
 			, GL_FRAMEBUFFER
 			, 0 );
 	}
 
-	void Framebuffer::doInitialiseAttach( VkImageView view
-		, uint32_t index )
+	void Framebuffer::doInitialiseAttach( FboAttachment attachment
+		, bool multisampled
+		, bool isSRGB )
 	{
-		bool multisampled{ false };
-		auto attachment = initialiseAttachment( m_device, view, index, multisampled );
 		m_multisampled = m_multisampled || multisampled;
 
 		if ( attachment.point == GL_ATTACHMENT_POINT_DEPTH_STENCIL
@@ -536,9 +625,7 @@ namespace ashes::gl
 			}
 
 			m_allColourAttaches.push_back( attachment );
-			m_srgb |= isSRGBFormat( get( view )->getFormat() );
+			m_srgb |= isSRGB;
 		}
-
-		m_allAttaches.push_back( attachment );
 	}
 }

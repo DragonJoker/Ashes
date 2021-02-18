@@ -14,4 +14,5 @@ namespace ashes::gl
 		GL_DRAW_FRAMEBUFFER = 0x8CA9,
 	};
 	std::string getName( GlFrameBufferTarget value );
+	inline std::string toString( GlFrameBufferTarget value ) { return getName( value ); }
 }

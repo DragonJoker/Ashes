@@ -203,7 +203,9 @@ namespace ashes::gl
 		, m_tiling{ createInfo.tiling }
 		, m_usage{ createInfo.usage }
 		, m_sharingMode{ createInfo.sharingMode }
-		, m_queueFamilyIndices{ createInfo.pQueueFamilyIndices, createInfo.pQueueFamilyIndices + createInfo.queueFamilyIndexCount }
+		, m_queueFamilyIndices{ ( createInfo.pQueueFamilyIndices
+			? UInt32Array{ createInfo.pQueueFamilyIndices, createInfo.pQueueFamilyIndices + createInfo.queueFamilyIndexCount }
+			: UInt32Array{} ) }
 		, m_device{ device }
 		, m_target{ convert( device, m_imageType, m_arrayLayers, m_flags, m_samples ) }
 		, m_swapchainImage{ swapchainImage }
@@ -226,6 +228,11 @@ namespace ashes::gl
 
 	Image::~Image()
 	{
+		if ( m_memory )
+		{
+			get( m_memory )->unbindImage( get( this ) );
+		}
+
 		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glDeleteTextures

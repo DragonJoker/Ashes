@@ -30,6 +30,12 @@ The API selection will be done on first call of `vkGetInstanceProcAddr` (for dyn
 You can ask for the list of loaded plugins, through a call to the function `int ashEnumeratePlugins( uint32_t * count , AshPluginDescription * plugins );`.  
 It works as Vulkan ones : if `plugins` is set to `NULL`, `count` will then contain the number of loaded plugins.  
 
+### Supported platforms
+
+- Windows.
+- Linux.
+- MacOS.
+
 ### API
 
 The following API is available, in `ashes.h`:  

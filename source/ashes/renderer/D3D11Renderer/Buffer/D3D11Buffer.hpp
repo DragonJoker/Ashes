@@ -75,7 +75,11 @@ namespace ashes::d3d11
 			return m_createInfo.size;
 		}
 
-	private:
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		VkDevice m_device;
 		VkBufferCreateInfo m_createInfo;

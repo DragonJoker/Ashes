@@ -38,8 +38,18 @@ namespace ashes::gl
 			auto format = getFormat( internal );
 			auto type = getType( internal );
 
-			for ( auto & range : ranges )
+			for ( auto range : ranges )
 			{
+				if ( range.levelCount == RemainingArrayLayers )
+				{
+					range.levelCount = ashes::getMaxMipCount( get( image )->getDimensions() );
+				}
+
+				if ( range.layerCount == RemainingArrayLayers )
+				{
+					range.layerCount = get( device )->getLimits().maxImageArrayLayers;
+				}
+
 				for ( uint32_t level = range.baseMipLevel;
 					level < range.baseMipLevel + range.levelCount;
 					++level )

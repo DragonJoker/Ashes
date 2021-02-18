@@ -13,5 +13,13 @@ namespace ashes::gl
 	{
 	public:
 		explicit Semaphore( VkDevice device );
+
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
+	private:
+		VkDevice m_device;
 	};
 }

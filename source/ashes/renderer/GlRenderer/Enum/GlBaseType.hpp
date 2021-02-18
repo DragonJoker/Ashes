@@ -17,4 +17,5 @@ namespace ashes::gl
 		GL_FLOAT = 0x1406,
 	};
 	std::string getName( GlBaseType value );
+	inline std::string toString( GlBaseType value ) { return getName( value ); }
 }

@@ -6,6 +6,8 @@ See LICENSE file in root folder
 
 #include "renderer/D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
+#include <renderer/RendererCommon/IcdObject.hpp>
+
 struct AGSContext;
 
 namespace ashes::d3d11
@@ -13,6 +15,7 @@ namespace ashes::d3d11
 	VkImageUsageFlags getUsageFlags( VkFormatFeatureFlags flags );
 
 	class PhysicalDevice
+		: public ashes::IcdObject
 	{
 	public:
 		PhysicalDevice( VkInstance instance
@@ -122,6 +125,7 @@ namespace ashes::d3d11
 		void doInitialiseFeatures();
 		void doInitialiseQueueProperties();
 		void doInitialiseFormatProperties();
+		void doInitialisePortability();
 #ifdef VK_KHR_display
 		void doInitialiseDisplayProperties();
 		void doInitialiseDisplayPlaneProperties();
@@ -134,6 +138,9 @@ namespace ashes::d3d11
 		VkPhysicalDeviceProperties m_properties{};
 		VkQueueFamilyPropertiesArray m_queueProperties{};
 		mutable std::map< VkFormat, VkFormatProperties > m_formatProperties;
+#if VK_KHR_portability_subset
+		VkPhysicalDevicePortabilitySubsetFeaturesKHR m_portabilityFeatures{};
+#endif
 #if VK_VERSION_1_1
 		VkPhysicalDeviceFeatures2 m_features2{};
 		VkPhysicalDeviceProperties2 m_properties2{};

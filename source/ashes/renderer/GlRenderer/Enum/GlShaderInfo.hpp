@@ -15,4 +15,5 @@ namespace ashes::gl
 		GL_INFO_ATTACHED_SHADERS = 0x8B85,
 	};
 	std::string getName( GlShaderInfo value );
+	inline std::string toString( GlShaderInfo value ) { return getName( value ); }
 }

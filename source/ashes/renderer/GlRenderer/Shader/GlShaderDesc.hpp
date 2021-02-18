@@ -6,22 +6,8 @@ See LICENSE file in root folder.
 
 #include "renderer/GlRenderer/GlRendererPrerequisites.hpp"
 
-inline bool operator==( VkVertexInputBindingDescription const & lhs
-	, VkVertexInputBindingDescription const & rhs )
-{
-	return lhs.binding == rhs.binding
-		&& lhs.stride == rhs.stride
-		&& lhs.inputRate == rhs.inputRate;
-}
-
-inline bool operator==( VkVertexInputAttributeDescription const & lhs
-	, VkVertexInputAttributeDescription const & rhs )
-{
-	return lhs.location == rhs.location
-		&&lhs.binding == rhs.binding
-		&& lhs.format == rhs.format
-		&& lhs.offset == rhs.offset;
-}
+using ashes::operator==;
+using ashes::operator!=;
 
 namespace ashes::gl
 {
@@ -57,6 +43,28 @@ namespace ashes::gl
 		eCubeArray,
 		e2DMultisample,
 		e2DMultisampleArray,
+		eInt1D,
+		eInt2D,
+		eInt3D,
+		eIntCube,
+		eIntBuffer,
+		eInt2DRect,
+		eInt1DArray,
+		eInt2DArray,
+		eIntCubeArray,
+		eInt2DMultisample,
+		eInt2DMultisampleArray,
+		eUInt1D,
+		eUInt2D,
+		eUInt3D,
+		eUIntCube,
+		eUIntBuffer,
+		eUInt2DRect,
+		eUInt1DArray,
+		eUInt2DArray,
+		eUIntCubeArray,
+		eUInt2DMultisample,
+		eUInt2DMultisampleArray,
 	};
 	
 	enum class SamplerFormat
@@ -180,6 +188,7 @@ namespace ashes::gl
 		InterfaceBlocksLayout sbo;
 		SamplersLayout tbo;
 		SamplersLayout tex;
+		ImagesLayout ibo;
 		ImagesLayout img;
 	};
 
@@ -190,6 +199,7 @@ namespace ashes::gl
 			&& lhs.pcb == rhs.pcb
 			&& lhs.ubo == rhs.ubo
 			&& lhs.tex == rhs.tex
+			&& lhs.ibo == rhs.ibo
 			&& lhs.img == rhs.img;
 	}
 

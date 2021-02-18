@@ -34,8 +34,18 @@ namespace ashes::gl
 		list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_FRAMEBUFFER ) );
 		auto point = getAttachmentPoint( glimage.getFormat() );
 
-		for ( auto & range : ranges )
+		for ( auto range : ranges )
 		{
+			if ( range.levelCount == RemainingArrayLayers )
+			{
+				range.levelCount = ashes::getMaxMipCount( get( image )->getDimensions() );
+			}
+
+			if ( range.layerCount == RemainingArrayLayers )
+			{
+				range.layerCount = get( device )->getLimits().maxImageArrayLayers;
+			}
+
 			for ( auto level = range.baseMipLevel; level < range.baseMipLevel + range.levelCount; ++level )
 			{
 				if ( get( image )->getArrayLayers() > 1u )

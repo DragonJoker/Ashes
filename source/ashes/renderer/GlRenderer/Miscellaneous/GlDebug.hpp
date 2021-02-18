@@ -29,4 +29,7 @@ namespace ashes::gl
 		, std::string const & text );
 	void clearDebugFile();
 	void logDebug( char const * const log );
+
+	void pushDebugBlock( std::string name );
+	void popDebugBlock();
 }

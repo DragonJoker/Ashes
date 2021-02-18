@@ -14,6 +14,7 @@ namespace ashes::gl
 	};
 	Ashes_ImplementFlag( GlQueryResultFlag )
 	std::string getName( GlQueryResultFlags value );
+	inline std::string toString( GlQueryResultFlags value ) { return getName( value ); }
 	/**
 	*\brief
 	*	Convertit un VkQueryResultFlags en GLuint.

@@ -6,9 +6,12 @@ See LICENSE file in root folder
 
 #include "renderer/TestRenderer/TestRendererPrerequisites.hpp"
 
+#include <renderer/RendererCommon/IcdObject.hpp>
+
 namespace ashes::test
 {
 	class PhysicalDevice
+		: public ashes::IcdObject
 	{
 	public:
 		PhysicalDevice( VkInstance instance );
@@ -76,6 +79,9 @@ namespace ashes::test
 		VkPhysicalDeviceProperties m_properties{};
 		VkQueueFamilyPropertiesArray m_queueProperties{};
 		mutable std::map< VkFormat, VkFormatProperties > m_formatProperties;
+#if VK_KHR_portability_subset
+		VkPhysicalDevicePortabilitySubsetFeaturesKHR m_portabilityFeatures{};
+#endif
 #if VK_VERSION_1_1
 		VkPhysicalDeviceFeatures2 m_features2{};
 		VkPhysicalDeviceProperties2 m_properties2{};

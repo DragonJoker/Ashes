@@ -19,6 +19,7 @@ namespace ashes::gl
 		GL_COMPARE_OP_ALWAYS = 0x0207,
 	};
 	std::string getName( GlCompareOp value );
+	inline std::string toString( GlCompareOp value ) { return getName( value ); }
 	/**
 	*\brief
 	*	Convertit un VkCompareOp en GlCompareOp.

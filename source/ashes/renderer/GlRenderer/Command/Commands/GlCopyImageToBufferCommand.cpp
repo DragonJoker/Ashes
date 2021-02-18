@@ -82,9 +82,6 @@ namespace ashes::gl
 		auto type = getType( internal );
 		auto view = createView( device, src, copyInfo );
 
-		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK
-			, get( dst )->getInternal() ) );
-
 		// Setup source FBO
 		list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_FRAMEBUFFER ) );
 
@@ -110,6 +107,8 @@ namespace ashes::gl
 			, nullptr ) );
 
 		// Read pixels
+		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK
+			, get( dst )->getInternal() ) );
 		list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_READ_FRAMEBUFFER ) );
 		list.push_back( makeCmd< OpType::eReadPixels >( copyInfo.imageOffset.x
 			, copyInfo.imageOffset.y
@@ -119,7 +118,6 @@ namespace ashes::gl
 			, type ) );
 		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
 			, nullptr ) );
-
 		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK
 			, 0u ) );
 

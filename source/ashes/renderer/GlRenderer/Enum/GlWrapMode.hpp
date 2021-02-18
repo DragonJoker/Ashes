@@ -16,6 +16,7 @@ namespace ashes::gl
 		GL_WRAP_MODE_MIRROR_CLAMP_TO_EDGE = 0x8743,
 	};
 	std::string getName( GlWrapMode value );
+	inline std::string toString( GlWrapMode value ) { return getName( value ); }
 	/**
 	*\brief
 	*	Convertit un VkSamplerAddressMode en GlWrapMode.

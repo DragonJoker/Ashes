@@ -12,7 +12,8 @@ namespace ashes::gl
 		: public AutoIdIcdObject< DisplayKHR >
 	{
 	public:
-		DisplayKHR( VkDisplayPropertiesKHR const & properties
+		DisplayKHR( VkPhysicalDevice physicalDevice
+			, VkDisplayPropertiesKHR const & properties
 			, VkFormat format
 			, uint32_t screenIndex
 			, std::vector< VkDisplayModeParametersKHR > const & displayModesParams );
@@ -40,7 +41,13 @@ namespace ashes::gl
 			return m_properties.physicalResolution;
 		}
 
+		VkPhysicalDevice getPhysicalDevice()const
+		{
+			return m_physicalDevice;
+		}
+
 	private:
+		VkPhysicalDevice m_physicalDevice;
 		VkDisplayPropertiesKHR m_properties;
 		VkFormat m_format;
 		uint32_t m_screenIndex;

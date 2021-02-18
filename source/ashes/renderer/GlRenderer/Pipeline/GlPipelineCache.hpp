@@ -36,6 +36,11 @@ namespace ashes::gl
 			return m_data;
 		}
 
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		VkDevice m_device;
 		VkPipelineCacheCreateInfo m_createInfo;

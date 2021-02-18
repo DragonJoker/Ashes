@@ -12,10 +12,10 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	Instance::Instance( AshPluginDescription plugin
+	Instance::Instance( AshPluginDescription const & plugin
 		, DeviceAllocatorPtr allocator
 		, ashes::InstanceCreateInfo createInfo )
-		: m_plugin{ std::move( plugin ) }
+		: m_getInstanceProcAddr{ plugin.getInstanceProcAddr }
 		, m_allocator{ std::move( allocator ) }
 		, m_createInfo{ std::move( createInfo ) }
 		, m_features{ plugin.features }
@@ -24,9 +24,29 @@ namespace ashes
 		callstack::initialise();
 #endif
 #define VK_LIB_GLOBAL_FUNCTION( ver, fun )\
-		vk##fun = reinterpret_cast< PFN_vk##fun >( m_plugin.getInstanceProcAddr( nullptr, "vk"#fun ) );
+		vk##fun = reinterpret_cast< PFN_vk##fun >( m_getInstanceProcAddr( nullptr, "vk"#fun ) );
 #define VK_LIB_GLOBAL_FUNCTION_EXT( ver, ext, fun )\
-		vk##fun = reinterpret_cast< PFN_vk##fun >( m_plugin.getInstanceProcAddr( nullptr, "vk"#fun ) );
+		vk##fun = reinterpret_cast< PFN_vk##fun >( m_getInstanceProcAddr( nullptr, "vk"#fun ) );
+#	include <ashes/ashes_functions_list.hpp>
+
+		doInitInstance();
+	}
+
+	Instance::Instance( PFN_vkGetInstanceProcAddr getInstanceProcAddr
+		, DeviceAllocatorPtr allocator
+		, ashes::InstanceCreateInfo createInfo )
+		: m_getInstanceProcAddr{ getInstanceProcAddr }
+		, m_allocator{ std::move( allocator ) }
+		, m_createInfo{ std::move( createInfo ) }
+		, m_features{ VK_TRUE, VK_TRUE, VK_TRUE, VK_TRUE, VK_TRUE, VK_TRUE, VK_TRUE, makeVersion( 1, 0, 0 ) }
+	{
+#ifndef NDEBUG
+		callstack::initialise();
+#endif
+#define VK_LIB_GLOBAL_FUNCTION( ver, fun )\
+		vk##fun = reinterpret_cast< PFN_vk##fun >( m_getInstanceProcAddr( nullptr, "vk"#fun ) );
+#define VK_LIB_GLOBAL_FUNCTION_EXT( ver, ext, fun )\
+		vk##fun = reinterpret_cast< PFN_vk##fun >( m_getInstanceProcAddr( nullptr, "vk"#fun ) );
 #	include <ashes/ashes_functions_list.hpp>
 
 		doInitInstance();
@@ -258,7 +278,7 @@ namespace ashes
 
 	PFN_vkVoidFunction Instance::getInstanceProcAddr( char const * const name )
 	{
-		auto result = m_plugin.getInstanceProcAddr( m_instance, name );
+		auto result = m_getInstanceProcAddr( m_instance, name );
 
 		if ( !result )
 		{

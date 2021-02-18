@@ -43,4 +43,5 @@ namespace ashes::gl
 		GL_TEXTURE31 = 0x84DF,
 	};
 	std::string getName( GlTextureUnit value );
+	inline std::string toString( GlTextureUnit value ) { return getName( value ); }
 }

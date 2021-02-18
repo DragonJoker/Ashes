@@ -23,6 +23,7 @@ namespace ashes::gl
 		GL_BUFFER_TARGET_QUERY = 0x9192,
 	};
 	std::string getName( GlBufferTarget value );
+	inline std::string toString( GlBufferTarget value ) { return getName( value ); }
 
 	/**
 	*\brief

@@ -11,7 +11,8 @@ namespace ashes::d3d11
 	class DisplayKHR
 	{
 	public:
-		DisplayKHR( VkExtent2D const & extent
+		DisplayKHR( VkPhysicalDevice physicalDevice
+			, VkExtent2D const & extent
 			, VkFormat format
 			, std::vector< DXGI_MODE_DESC > const & desc );
 		~DisplayKHR();
@@ -24,7 +25,13 @@ namespace ashes::d3d11
 			return m_extent;
 		}
 
+		VkPhysicalDevice getPhysicalDevice()const
+		{
+			return m_physicalDevice;
+		}
+
 	private:
+		VkPhysicalDevice m_physicalDevice;
 		VkExtent2D m_extent;
 		VkFormat m_format;
 		std::vector< DXGI_MODE_DESC > m_descs;

@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "renderer/GlRenderer/Core/GlContextImpl.hpp"
 
-#ifndef _WIN32
+#if defined( __linux__ )
 
 #	include <EGL/egl.h>
 #	include <memory>

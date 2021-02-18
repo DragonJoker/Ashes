@@ -22,6 +22,7 @@ namespace ashes::gl
 			GL_DYNAMIC_COPY = 0x88EA,
 		};
 		std::string getName( GlBufferMemoryPropertyFlag value );
+		inline std::string toString( GlBufferMemoryPropertyFlag value ) { return getName( value ); }
 		GlBufferMemoryPropertyFlag getBufferMemoryPropertyFlag( VkMemoryPropertyFlags flags );
 	}
 
@@ -38,6 +39,7 @@ namespace ashes::gl
 		};
 		Ashes_ImplementFlag( GlMemoryPropertyFlag )
 		std::string getName( GlMemoryPropertyFlags value );
+		inline std::string toString( GlMemoryPropertyFlags value ) { return getName( value ); }
 		GlMemoryPropertyFlags convertMemoryPropertyFlags( VkMemoryPropertyFlags const & flags );
 	}
 }

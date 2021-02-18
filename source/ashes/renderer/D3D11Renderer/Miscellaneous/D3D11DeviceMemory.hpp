@@ -126,6 +126,11 @@ namespace ashes::d3d11
 			return m_propertyFlags;
 		}
 
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	public:
 		mutable DeviceMemoryDestroySignal onDestroy;
 

@@ -2,6 +2,8 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
+#pragma once
+
 #include "Buffer/D3D11Buffer.hpp"
 #include "Buffer/D3D11BufferView.hpp"
 #include "Command/D3D11CommandBuffer.hpp"
@@ -41,7 +43,7 @@ See LICENSE file in root folder.
 namespace ashes::d3d11
 {
 	template< typename T >
-	static constexpr T NonAvailable = std::numeric_limits< T >::max();
+	static constexpr T inline NonAvailable = std::numeric_limits< T >::max();
 
 	template< typename VkType  >
 	struct VkDxTypeTraits;
@@ -137,139 +139,6 @@ namespace ashes::d3d11
 		return VkType( vkValue );
 	}
 
-	template< typename VkType, typename ... Params >
-	VkResult allocateNA( VkType & vkValue
-		, Params && ... params )
-	{
-		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
-
-		try
-		{
-			using Type = typename VkDxTypeTraits< VkType >::Type;
-
-			vkValue = VkType( new Type{ std::forward< Params && >( params )... } );
-			result = VK_SUCCESS;
-		}
-		catch ( Exception & exc )
-		{
-			std::cerr << exc.what() << std::endl;
-			result = exc.getResult();
-		}
-		catch ( std::exception & exc )
-		{
-			std::cerr << exc.what() << std::endl;
-		}
-		catch ( ... )
-		{
-			std::cerr << "Unknown error" << std::endl;
-		}
-
-		return result;
-	}
-
-	template< typename VkType, typename ... Params >
-	VkResult allocate( VkType & vkValue
-		, const VkAllocationCallbacks * allocInfo
-		, Params && ... params )
-	{
-		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
-
-		try
-		{
-			using Type = typename VkDxTypeTraits< VkType >::Type;
-
-			if ( allocInfo )
-			{
-				auto mem = allocInfo->pfnAllocation( allocInfo->pUserData
-					, sizeof( Type )
-					, alignof( Type )
-					, allocationScopeT< VkType > );
-				vkValue = VkType( new( mem )Type{ std::forward< Params && >( params )... } );
-			}
-			else
-			{
-				vkValue = VkType( new Type{ std::forward< Params && >( params )... } );
-			}
-
-			result = VK_SUCCESS;
-		}
-		catch ( Exception & exc )
-		{
-			std::cerr << exc.what() << std::endl;
-			result = exc.getResult();
-		}
-		catch ( std::exception & exc )
-		{
-			std::cerr << exc.what() << std::endl;
-		}
-		catch ( ... )
-		{
-			std::cerr << "Unknown error" << std::endl;
-		}
-
-		return result;
-	}
-
-	template< typename VkType >
-	VkResult deallocateNA( VkType & vkValue )
-	{
-		auto value = get( vkValue );
-		delete value;
-		vkValue = nullptr;
-		return VK_SUCCESS;
-	}
-
-	template< typename VkType >
-	VkResult deallocateNA( VkType const & vkValue )
-	{
-		auto value = get( vkValue );
-		delete value;
-		return VK_SUCCESS;
-	}
-
-	template< typename VkType >
-	VkResult deallocate( VkType & vkValue, const VkAllocationCallbacks * allocInfo )
-	{
-		auto value = get( vkValue );
-
-		if ( allocInfo )
-		{
-			using Type = typename VkDxTypeTraits< VkType >::Type;
-
-			value->~Type();
-			auto scope = allocationScopeT< VkType >;
-			allocInfo->pfnFree( allocInfo->pUserData, value );
-		}
-		else
-		{
-			delete value;
-		}
-
-		vkValue = nullptr;
-		return VK_SUCCESS;
-	}
-	
-	template< typename VkType >
-	VkResult deallocate( VkType const & vkValue, const VkAllocationCallbacks * allocInfo )
-	{
-		auto value = get( vkValue );
-
-		if ( allocInfo )
-		{
-			using Type = typename VkDxTypeTraits< VkType >::Type;
-
-			value->~Type();
-			auto scope = allocationScopeT< VkType >;
-			allocInfo->pfnFree( allocInfo->pUserData, value );
-		}
-		else
-		{
-			delete value;
-		}
-
-		return VK_SUCCESS;
-	}
-
 	inline bool operator==( VkOffset2D const & lhs, VkOffset2D const & rhs )
 	{
 		return lhs.x == rhs.x
@@ -363,7 +232,6 @@ namespace ashes::d3d11
 	std::vector< VkExtensionProperties > const & getSupportedInstanceExtensions( const char * pLayerName );
 	std::vector< VkLayerProperties > const & getInstanceLayerProperties();
 
-
 	inline VkInstance getInstance( VkInstance object )
 	{
 		return object;
@@ -384,29 +252,47 @@ namespace ashes::d3d11
 		return get( object )->getInstance();
 	}
 
-	inline VkInstance getInstance( VkCommandBuffer object )
+#if VK_EXT_debug_utils
+
+	inline VkInstance getInstance( VkDebugUtilsMessengerEXT object )
+	{
+		return get( object )->getInstance();
+	}
+
+#endif
+#if VK_EXT_debug_report
+
+	inline VkInstance getInstance( VkDebugReportCallbackEXT object )
+	{
+		return get( object )->getInstance();
+	}
+
+#endif
+
+	template< typename VkDeviceObjectT >
+	inline VkInstance getInstance( VkDeviceObjectT object )
 	{
 		return getInstance( get( object )->getDevice() );
 	}
 
-	inline VkInstance getInstance( VkQueue object )
+	inline VkInstance getInstance( VkDescriptorSet object )
 	{
-		return getInstance( get( object )->getDevice() );
+		return getInstance( get( object )->getLayout() );
 	}
 
-	inline VkInstance getInstance( VkQueryPool object )
+	inline VkInstance getInstance( VkDisplayKHR object )
 	{
-		return getInstance( get( object )->getDevice() );
+		return getInstance( get( object )->getPhysicalDevice() );
 	}
 
-	inline VkInstance getInstance( VkPipeline object )
+	inline VkInstance getInstance( VkDisplayModeKHR object )
 	{
-		return getInstance( get( object )->getDevice() );
+		return getInstance( get( object )->getDisplay() );
 	}
 
-	inline VkInstance getInstance( VkShaderModule object )
+	inline VkInstance getInstance( VkImageView object )
 	{
-		return getInstance( get( object )->getDevice() );
+		return getInstance( get( object )->getImage() );
 	}
 
 	template< typename VkObject >
@@ -518,6 +404,164 @@ namespace ashes::d3d11
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
 
+
+	template< typename VkType, typename ... Params >
+	VkResult allocateNA( VkType & vkValue
+		, Params && ... params )
+	{
+		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
+		vkValue = VK_NULL_HANDLE;
+
+		try
+		{
+			using Type = typename VkDxTypeTraits< VkType >::Type;
+
+			vkValue = VkType( new Type{ std::forward< Params && >( params )... } );
+			result = VK_SUCCESS;
+		}
+		catch ( Exception & exc )
+		{
+			result = exc.getResult();
+			reportError( vkValue, result, "Allocation", exc.what() );
+		}
+		catch ( std::exception & exc )
+		{
+			reportError( vkValue, result, "Allocation", exc.what() );
+		}
+		catch ( ... )
+		{
+			reportError( vkValue, result, "Allocation", "Unknown error" );
+		}
+
+		return result;
+	}
+
+	template< typename VkType, typename ... Params >
+	VkResult allocate( VkType & vkValue
+		, const VkAllocationCallbacks * allocInfo
+		, Params && ... params )
+	{
+		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
+		vkValue = VK_NULL_HANDLE;
+
+		try
+		{
+			using Type = typename VkDxTypeTraits< VkType >::Type;
+
+			if ( allocInfo )
+			{
+				auto mem = allocInfo->pfnAllocation( allocInfo->pUserData
+					, sizeof( Type )
+					, alignof( Type )
+					, allocationScopeT< VkType > );
+
+				if ( mem )
+				{
+					vkValue = VkType( new( mem )Type{ std::forward< Params && >( params )... } );
+					result = VK_SUCCESS;
+				}
+				else
+				{
+					result = VK_ERROR_OUT_OF_HOST_MEMORY;
+				}
+			}
+			else
+			{
+				vkValue = VkType( new Type{ std::forward< Params && >( params )... } );
+				result = VK_SUCCESS;
+			}
+		}
+		catch ( Exception & exc )
+		{
+			result = exc.getResult();
+			reportError( vkValue, result, "Allocation", exc.what() );
+		}
+		catch ( std::exception & exc )
+		{
+			reportError( vkValue, result, "Allocation", exc.what() );
+		}
+		catch ( ... )
+		{
+			reportError( vkValue, result, "Allocation", "Unknown error" );
+		}
+
+		return result;
+	}
+
+	template< typename VkType >
+	VkResult deallocateNA( VkType & vkValue )
+	{
+		if ( vkValue )
+		{
+			auto value = get( vkValue );
+			delete value;
+			vkValue = nullptr;
+		}
+
+		return VK_SUCCESS;
+	}
+
+	template< typename VkType >
+	VkResult deallocateNA( VkType const & vkValue )
+	{
+		if ( vkValue )
+		{
+			auto value = get( vkValue );
+			delete value;
+		}
+
+		return VK_SUCCESS;
+	}
+
+	template< typename VkType >
+	VkResult deallocate( VkType & vkValue, const VkAllocationCallbacks * allocInfo )
+	{
+		if ( vkValue )
+		{
+			auto value = get( vkValue );
+
+			if ( allocInfo )
+			{
+				using Type = typename VkDxTypeTraits< VkType >::Type;
+
+				value->~Type();
+				auto scope = allocationScopeT< VkType >;
+				allocInfo->pfnFree( allocInfo->pUserData, value );
+			}
+			else
+			{
+				delete value;
+			}
+
+			vkValue = nullptr;
+		}
+
+		return VK_SUCCESS;
+	}
+
+	template< typename VkType >
+	VkResult deallocate( VkType const & vkValue, const VkAllocationCallbacks * allocInfo )
+	{
+		if ( vkValue )
+		{
+			auto value = get( vkValue );
+
+			if ( allocInfo )
+			{
+				using Type = typename VkDxTypeTraits< VkType >::Type;
+
+				value->~Type();
+				auto scope = allocationScopeT< VkType >;
+				allocInfo->pfnFree( allocInfo->pUserData, value );
+			}
+			else
+			{
+				delete value;
+			}
+		}
+
+		return VK_SUCCESS;
+	}
 #pragma region Vulkan 1.0
 #ifdef VK_VERSION_1_0
 

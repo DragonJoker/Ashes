@@ -9,11 +9,13 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	DisplayKHR::DisplayKHR( VkDisplayPropertiesKHR const & properties
+	DisplayKHR::DisplayKHR( VkPhysicalDevice physicalDevice
+		, VkDisplayPropertiesKHR const & properties
 		, VkFormat format
 		, uint32_t screenIndex
 		, std::vector< VkDisplayModeParametersKHR > const & displayModesParams )
-		: m_properties{ properties }
+		: m_physicalDevice{ physicalDevice }
+		, m_properties{ properties }
 		, m_format{ format }
 		, m_screenIndex{ screenIndex }
 	{

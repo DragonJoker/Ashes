@@ -9,6 +9,7 @@ See LICENSE file in root folder.
 namespace ashes::d3d11
 {
 	Event::Event( VkDevice device )
+		: m_device{ device }
 	{
 	}
 

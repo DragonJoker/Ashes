@@ -13,6 +13,17 @@ namespace ashes::d3d11
 		, m_createInfo{ std::move( createInfo ) }
 	{
 		auto image = get( m_createInfo.image );
+		auto & range = m_createInfo.subresourceRange;
+
+		if ( range.levelCount == RemainingArrayLayers )
+		{
+			range.levelCount = ashes::getMaxMipCount( image->getDimensions() );
+		}
+
+		if ( range.layerCount == RemainingArrayLayers )
+		{
+			range.layerCount = get( device )->getLimits().maxImageArrayLayers;
+		}
 
 		switch ( createInfo.viewType )
 		{

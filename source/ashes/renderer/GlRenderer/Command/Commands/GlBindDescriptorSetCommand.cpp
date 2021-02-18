@@ -265,26 +265,30 @@ namespace ashes::gl
 			, ShaderBindings const & bindings
 			, uint32_t setIndex
 			, ArrayView< uint32_t const > const & offsets
+			, uint32_t & dynamicOffsetIndex
 			, CmdList & list )
 		{
-			for ( auto i = 0u; i < offsets.size(); ++i )
+			for ( auto & write : writes )
 			{
-				auto & write = writes[i];
-
-				switch ( write->descriptorType )
+				if ( write->descriptorCount )
 				{
-				case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:
-					bindDynamicUniformBuffer( write, bindings.ubo, setIndex, offsets[i], list );
-					break;
+					switch ( write->descriptorType )
+					{
+					case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:
+						bindDynamicUniformBuffer( write, bindings.ubo, setIndex, offsets[dynamicOffsetIndex], list );
+						break;
 
-				case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
-					bindDynamicStorageBuffer( write, bindings.sbo, setIndex, offsets[i], list );
-					break;
+					case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
+						bindDynamicStorageBuffer( write, bindings.sbo, setIndex, offsets[dynamicOffsetIndex], list );
+						break;
 
-				default:
-					assert( false && "Unsupported dynamic descriptor type" );
-					throw std::runtime_error{ "Unsupported dynamic descriptor type" };
-					break;
+					default:
+						assert( false && "Unsupported dynamic descriptor type" );
+						throw std::runtime_error{ "Unsupported dynamic descriptor type" };
+						break;
+					}
+
+					++dynamicOffsetIndex;
 				}
 			}
 		}
@@ -378,6 +382,7 @@ namespace ashes::gl
 		void bindCombinedSampler( VkWriteDescriptorSet const & write
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
+			, VkSampler sampler
 			, CmdList & list )
 		{
 			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
@@ -387,10 +392,23 @@ namespace ashes::gl
 			for ( auto i = 0u; i < write.descriptorCount; ++i )
 			{
 				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
-				bindTextureAndSampler( common::getView( write, i )
-					, common::getSampler( write, i )
-					, bindingIndex
-					, list );
+				auto writeSampler = common::getSampler( write, i );
+
+				if ( write.descriptorType == VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT
+					|| writeSampler == VK_NULL_HANDLE )
+				{
+					bindTextureAndSampler( common::getView( write, i )
+						, sampler
+						, bindingIndex
+						, list );
+				}
+				else
+				{
+					bindTextureAndSampler( common::getView( write, i )
+						, writeSampler
+						, bindingIndex
+						, list );
+				}
 			}
 		}
 
@@ -468,14 +486,23 @@ namespace ashes::gl
 			}
 		}
 
-		void bindCombinedSampler( LayoutBindingWrites const * writes
+		void bindImageBuffer( VkWriteDescriptorSet const & write
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
 		{
+			common::bindTexelBuffer( write, bindings, setIndex, list );
+		}
+
+		void bindCombinedSampler( LayoutBindingWrites const * writes
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
+			, VkSampler sampler
+			, CmdList & list )
+		{
 			for ( auto & write : writes->writes )
 			{
-				bindCombinedSampler( write, bindings, setIndex, list );
+				bindCombinedSampler( write, bindings, setIndex, sampler, list );
 			}
 		}
 
@@ -521,6 +548,17 @@ namespace ashes::gl
 			for ( auto & write : writes->writes )
 			{
 				bindStorageTexture( write, bindings, setIndex, list );
+			}
+		}
+
+		void bindImageBuffer( LayoutBindingWrites const * writes
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
+			, CmdList & list )
+		{
+			for ( auto & write : writes->writes )
+			{
+				bindImageBuffer( write, bindings, setIndex, list );
 			}
 		}
 	}
@@ -571,6 +609,7 @@ namespace ashes::gl
 		void bindCombinedSampler( VkWriteDescriptorSet const & write
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
+			, VkSampler sampler
 			, CmdList & list )
 		{
 			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
@@ -580,10 +619,24 @@ namespace ashes::gl
 			for ( auto i = 0u; i < write.descriptorCount; ++i )
 			{
 				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
-				bindTextureAndSampler( common::getView( write, i )
-					, common::getSampler( write, i )
-					, bindingIndex
-					, list );
+				auto writeSampler = common::getSampler( write, i );
+
+				if ( write.descriptorType == VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT
+					|| writeSampler == VK_NULL_HANDLE )
+				{
+					bindTextureAndSampler( common::getView( write, i )
+						, sampler
+						, bindingIndex
+						, list );
+				}
+				else
+				{
+
+					bindTextureAndSampler( common::getView( write, i )
+						, writeSampler
+						, bindingIndex
+						, list );
+				}
 			}
 		}
 
@@ -661,14 +714,23 @@ namespace ashes::gl
 			}
 		}
 
-		void bindCombinedSampler( LayoutBindingWrites const * writes
+		void bindImageBuffer( VkWriteDescriptorSet const & write
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
 		{
+			common::bindTexelBuffer( write, bindings, setIndex, list );
+		}
+
+		void bindCombinedSampler( LayoutBindingWrites const * writes
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
+			, VkSampler sampler
+			, CmdList & list )
+		{
 			for ( auto & write : writes->writes )
 			{
-				bindCombinedSampler( write, bindings, setIndex, list );
+				bindCombinedSampler( write, bindings, setIndex, sampler, list );
 			}
 		}
 
@@ -716,21 +778,33 @@ namespace ashes::gl
 				bindStorageTexture( write, bindings, setIndex, list );
 			}
 		}
+
+		void bindImageBuffer( LayoutBindingWrites const * writes
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
+			, CmdList & list )
+		{
+			for ( auto & write : writes->writes )
+			{
+				bindImageBuffer( write, bindings, setIndex, list );
+			}
+		}
 	}
 
 	void buildBindDescriptorSetCommand( VkDevice device
 		, VkDescriptorSet descriptorSet
 		, uint32_t setIndex
-		, VkPipeline pipeline
+		, VkPipelineLayout pipelineLayout
 		, ArrayView< uint32_t const > const & dynamicOffsets
+		, uint32_t & dynamicOffsetIndex
 		, VkPipelineBindPoint bindingPoint
 		, CmdList & list )
 	{
-		assert( get( descriptorSet )->getDynamicBuffers().size() == dynamicOffsets.size()
+		assert( get( descriptorSet )->getDynamicBuffers().size() + dynamicOffsetIndex <= dynamicOffsets.size()
 			&& "Dynamic descriptors and dynamic offsets sizes must match." );
 		glLogCommand( list, "BindDescriptorSetCommand" );
 
-		auto & bindings = get( pipeline )->getDescriptorSetBindings( descriptorSet, setIndex );
+		auto & bindings = get( pipelineLayout )->getDescriptorSetBindings( descriptorSet, setIndex );
 
 		if ( setIndex != GL_INVALID_INDEX )
 		{
@@ -743,7 +817,7 @@ namespace ashes::gl
 
 				for ( auto & write : get( descriptorSet )->getCombinedTextureSamplers() )
 				{
-					gl4::bindCombinedSampler( write, bindings.tex, setIndex, list );
+					gl4::bindCombinedSampler( write, bindings.tex, setIndex, get( device )->getSampler(), list );
 				}
 
 				for ( auto & write : get( descriptorSet )->getSamplers() )
@@ -761,6 +835,11 @@ namespace ashes::gl
 					gl4::bindStorageTexture( write, bindings.img, setIndex, list );
 				}
 
+				for ( auto & write : get( descriptorSet )->getTexelImageBuffers() )
+				{
+					gl4::bindImageBuffer( write, bindings.ibo, setIndex, list );
+				}
+
 				for ( auto & write : get( descriptorSet )->getUniformBuffers() )
 				{
 					common::bindUniformBuffer( write, bindings.ubo, setIndex, list );
@@ -776,7 +855,7 @@ namespace ashes::gl
 					common::bindStorageBuffer( write, bindings.sbo, setIndex, list );
 				}
 
-				for ( auto & write : get( descriptorSet )->getTexelBuffers() )
+				for ( auto & write : get( descriptorSet )->getTexelSamplerBuffers() )
 				{
 					common::bindTexelBuffer( write, bindings.tbo, setIndex, list );
 				}
@@ -785,6 +864,7 @@ namespace ashes::gl
 					, bindings
 					, setIndex
 					, dynamicOffsets
+					, dynamicOffsetIndex
 					, list );
 			}
 			else
@@ -796,7 +876,7 @@ namespace ashes::gl
 
 				for ( auto & write : get( descriptorSet )->getCombinedTextureSamplers() )
 				{
-					gl3::bindCombinedSampler( write, bindings.tex, setIndex, list );
+					gl3::bindCombinedSampler( write, bindings.tex, setIndex, get( device )->getSampler(), list );
 				}
 
 				for ( auto & write : get( descriptorSet )->getSamplers() )
@@ -814,6 +894,11 @@ namespace ashes::gl
 					gl3::bindStorageTexture( write, bindings.img, setIndex, list );
 				}
 
+				for ( auto & write : get( descriptorSet )->getTexelImageBuffers() )
+				{
+					gl3::bindImageBuffer( write, bindings.ibo, setIndex, list );
+				}
+
 				for ( auto & write : get( descriptorSet )->getUniformBuffers() )
 				{
 					common::bindUniformBuffer( write, bindings.ubo, setIndex, list );
@@ -829,7 +914,7 @@ namespace ashes::gl
 					common::bindStorageBuffer( write, bindings.sbo, setIndex, list );
 				}
 
-				for ( auto & write : get( descriptorSet )->getTexelBuffers() )
+				for ( auto & write : get( descriptorSet )->getTexelSamplerBuffers() )
 				{
 					common::bindTexelBuffer( write, bindings.tbo, setIndex, list );
 				}
@@ -838,6 +923,7 @@ namespace ashes::gl
 					, bindings
 					, setIndex
 					, dynamicOffsets
+					, dynamicOffsetIndex
 					, list );
 			}
 		}

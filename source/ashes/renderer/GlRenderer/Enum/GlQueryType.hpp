@@ -27,6 +27,7 @@ namespace ashes::gl
 		GL_QUERY_TYPE_CLIPPING_OUTPUT_PRIMITIVES = 0x82F7,
 	};
 	std::string getName( GlQueryType value );
+	inline std::string toString( GlQueryType value ) { return getName( value ); }
 	/**
 	*\brief
 	*	Convertit un VkQueryType en GlQueryType.

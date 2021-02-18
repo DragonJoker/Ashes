@@ -21,12 +21,13 @@ namespace ashes::gl
 		}
 	}
 
-	uint32_t deduceMemoryType( uint32_t typeBits
+	uint32_t deduceMemoryType( VkDevice device
+		, uint32_t typeBits
 		, VkMemoryPropertyFlags requirements )
 	{
 		return ashes::deduceMemoryType( typeBits
 			, requirements
-			, Instance::getMemoryProperties() );
+			, get( get( device )->getPhysicalDevice() )->getMemoryProperties() );
 	}
 
 	bool areCompatible( VkCommandBuffer cmd

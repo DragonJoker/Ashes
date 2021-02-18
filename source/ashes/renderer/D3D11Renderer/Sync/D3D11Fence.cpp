@@ -8,6 +8,7 @@ namespace ashes::d3d11
 {
 	Fence::Fence( VkDevice device
 		, VkFenceCreateFlags flags )
+		: m_device{ device }
 	{
 	}
 

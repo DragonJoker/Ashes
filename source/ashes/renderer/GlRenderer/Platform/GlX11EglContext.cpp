@@ -31,10 +31,11 @@ namespace ashes::gl
 
 	void X11EglContext::preInitialise( int reqMajor, int reqMinor )
 	{
+		auto & extensions = get( instance )->getExtensions();
 		m_context = std::make_unique< ContextEgl >( createInfo.dpy
 			, createInfo.window
-			, reqMajor
-			, reqMinor
+			, std::max( reqMajor, extensions.getMajor() )
+			, std::max( reqMinor, extensions.getMinor() )
 			, ( m_mainContext
 				? m_mainContext->m_context->getContext()
 				: EGL_NO_CONTEXT ) );
