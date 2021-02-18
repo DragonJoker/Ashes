@@ -47,14 +47,25 @@ macro( ash_update_icd_target TARGET_NAME )
 				$<$<CONFIG:Debug>:${OUT_ICD_FILE_DEBUG}>
 				$<$<CONFIG:Debug>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}${TARGET_NAME}d_icd.json>
 	)
-	install(
-		FILES
-			$<$<CONFIG:Release>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE}${TARGET_NAME}_icd.json>
-			$<$<CONFIG:RelWithDebugInfo>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO}${TARGET_NAME}_icd.json>
-			$<$<CONFIG:Debug>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}${TARGET_NAME}d_icd.json>
-		COMPONENT ${TARGET_NAME}
-		DESTINATION bin
-	)
+	if ( WIN32 )
+		install(
+			FILES
+				$<$<CONFIG:Release>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE}${TARGET_NAME}_icd.json>
+				$<$<CONFIG:RelWithDebugInfo>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO}${TARGET_NAME}_icd.json>
+				$<$<CONFIG:Debug>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}${TARGET_NAME}d_icd.json>
+			COMPONENT AshesRenderers
+			DESTINATION bin
+		)
+	else ()
+		install(
+			FILES
+				$<$<CONFIG:Release>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE}${TARGET_NAME}_icd.json>
+				$<$<CONFIG:RelWithDebugInfo>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO}${TARGET_NAME}_icd.json>
+				$<$<CONFIG:Debug>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}${TARGET_NAME}d_icd.json>
+			COMPONENT AshesRenderers
+			DESTINATION lib
+		)
+	endif ()
 endmacro( ash_update_icd_target )
 
 if ( ASHES_BUILD_RENDERER_PLUGINS )
@@ -141,6 +152,24 @@ if ( ASHES_BUILD_PLUGINS )
 	if ( ASHES_BUILD_TEST )
 		add_subdirectory( TestRenderer )
 	endif ()
-	set( ENABLED_RENDERERS ${ENABLED_RENDERERS} PARENT_SCOPE )
-	set( ENABLED_PDBS ${ENABLED_PDBS} PARENT_SCOPE )
+
+	install(
+		TARGETS ${ENABLED_RENDERERS}
+		COMPONENT AshesRenderers
+		EXPORT AshesRenderers
+		RUNTIME DESTINATION bin
+		LIBRARY DESTINATION lib
+		ARCHIVE DESTINATION lib
+	)
+	install(
+		FILES ${ENABLED_PDBS}
+		DESTINATION bin
+		OPTIONAL
+	)
+	install( EXPORT AshesRenderers
+		COMPONENT AshesRenderers
+		FILE AshesRenderersConfig.cmake
+		NAMESPACE ashes::
+		DESTINATION lib/cmake/ashes
+	)
 endif ()

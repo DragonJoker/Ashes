@@ -84,29 +84,21 @@ endif ()
 
 set( Ashes_BINARY_LIBRARIES ${Ashes_BINARY_LIBRARIES} PARENT_SCOPE )
 
-if ( WIN32 )
-	install(
-		TARGETS ashes ashes_common ashespp ${ENABLED_RENDERERS}
-		EXPORT Ashes
-		RUNTIME DESTINATION bin
-		LIBRARY DESTINATION lib
-		ARCHIVE DESTINATION lib
-	)
-else ()
-	install(
-		TARGETS ashes ashes_common ashespp ${ENABLED_RENDERERS}
-		EXPORT Ashes
-		RUNTIME DESTINATION bin/Ashes
-		LIBRARY DESTINATION lib/Ashes
-		ARCHIVE DESTINATION lib/Ashes
-	)
-endif ()
+install(
+	TARGETS ashes ashes_common ashespp
+	COMPONENT Ashes
+	EXPORT Ashes
+	RUNTIME DESTINATION bin
+	LIBRARY DESTINATION lib
+	ARCHIVE DESTINATION lib
+)
 install(
 	FILES ${ENABLED_PDBS}
 	DESTINATION bin
 	OPTIONAL
 )
 install( EXPORT Ashes
+	COMPONENT Ashes
 	FILE AshesConfig.cmake
 	NAMESPACE ashes::
 	DESTINATION lib/cmake/ashes
