@@ -199,31 +199,41 @@ namespace ashes::gl
 		, VkDeviceSize offset
 		, VkVertexInputAttributeDescription const * programAttribute )
 	{
-		auto pAttribute = programAttribute ? programAttribute : &attribute;
-		glLogCall( context
-			, glEnableVertexAttribArray
-			, attribute.location );
-
-		if ( isInteger( attribute.format ) )
+		if ( isSupportedInternal( attribute.format ) )
 		{
+			auto pAttribute = programAttribute ? programAttribute : &attribute;
 			glLogCall( context
-				, glVertexAttribIPointer
-				, attribute.location
-				, ashes::getCount( attribute.format )
-				, getType( getInternalFormat( attribute.format ) )
-				, binding.stride
-				, getBufferOffset( offset + attribute.offset ) );
+				, glEnableVertexAttribArray
+				, attribute.location );
+
+			if ( isInteger( attribute.format ) )
+			{
+				glLogCall( context
+					, glVertexAttribIPointer
+					, attribute.location
+					, ashes::getCount( attribute.format )
+					, getType( getInternalFormat( attribute.format ) )
+					, binding.stride
+					, getBufferOffset( offset + attribute.offset ) );
+			}
+			else
+			{
+				glLogCall( context
+					, glVertexAttribPointer
+					, attribute.location
+					, ashes::getCount( attribute.format )
+					, getType( getInternalFormat( attribute.format ) )
+					, isNormalized( attribute.format ) ? GL_TRUE : GL_FALSE
+					, binding.stride
+					, getBufferOffset( offset + attribute.offset ) );
+			}
 		}
 		else
 		{
-			glLogCall( context
-				, glVertexAttribPointer
-				, attribute.location
-				, ashes::getCount( attribute.format )
-				, getType( getInternalFormat( attribute.format ) )
-				, isNormalized( attribute.format ) ? GL_TRUE : GL_FALSE
-				, binding.stride
-				, getBufferOffset( offset + attribute.offset ) );
+			reportError( m_device
+				, VK_ERROR_FORMAT_NOT_SUPPORTED
+				, "OpenGL"
+				, "Unsupported internal format: " + ashes::getName( attribute.format ) );
 		}
 	}
 
