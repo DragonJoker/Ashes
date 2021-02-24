@@ -21,7 +21,8 @@ namespace ashes::gl
 	{
 		m_context = get( m_instance )->registerSurface( get( this ) );
 		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
-		getSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
+		getDefaultSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
+		updateSurfaceInfos();
 	}
 
 #elif __linux__
@@ -34,7 +35,8 @@ namespace ashes::gl
 	{
 		m_context = get( m_instance )->registerSurface( get( this ) );
 		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
-		getSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
+		getDefaultSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
+		updateSurfaceInfos();
 	}
 
 	SurfaceKHR::SurfaceKHR( VkAllocationCallbacks const * allocInfo
@@ -45,7 +47,8 @@ namespace ashes::gl
 	{
 		m_context = get( m_instance )->registerSurface( get( this ) );
 		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
-		getSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
+		getDefaultSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
+		updateSurfaceInfos();
 	}
 
 	SurfaceKHR::SurfaceKHR( VkAllocationCallbacks const * allocInfo
@@ -56,7 +59,8 @@ namespace ashes::gl
 	{
 		m_context = get( m_instance )->registerSurface( get( this ) );
 		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
-		getSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
+		getDefaultSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
+		updateSurfaceInfos();
 	}
 
 #elif __APPLE__
@@ -69,7 +73,8 @@ namespace ashes::gl
 	{
 		m_context = get( m_instance )->registerSurface( get( this ) );
 		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
-		getSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
+		getDefaultSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
+		updateSurfaceInfos();
 	}
 
 #endif
@@ -84,7 +89,8 @@ namespace ashes::gl
 		m_context = get( m_instance )->registerSurface( get( this ) );
 		m_displayCreateInfo.imageExtent = m_context->getExtent();
 		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
-		getSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
+		getDefaultSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
+		updateSurfaceInfos();
 	}
 
 #endif
@@ -94,7 +100,12 @@ namespace ashes::gl
 		get( m_instance )->unregisterSurface( get( this ) );
 	}
 
-	void SurfaceKHR::getSurfaceInfos( VkSurfaceFormatArrayKHR & formats
+	void SurfaceKHR::updateSurfaceInfos()
+	{
+		m_surfaceCapabilities.currentExtent = m_context->getExtent();
+	}
+
+	void SurfaceKHR::getDefaultSurfaceInfos( VkSurfaceFormatArrayKHR & formats
 		, VkSurfaceCapabilitiesKHR & capabilities )
 	{
 		formats.push_back( { VK_FORMAT_R8G8B8A8_UNORM, VK_COLORSPACE_SRGB_NONLINEAR_KHR } );

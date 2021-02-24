@@ -15,8 +15,6 @@ See LICENSE file in root folder
 #include <cstdio>
 
 void * CGLGetProcAddress( const char * name );
-void linkContextToView( CGLContextObj context
-	, const void * view );
 
 namespace ashes::gl
 {
@@ -95,7 +93,7 @@ namespace ashes::gl
 	CoreContext::CoreContext( VkInstance instance
 		, VkDisplaySurfaceCreateInfoKHR createInfo
 		, ContextImpl const * mainContext )
-		: ContextImpl{ instance, createInfo.imageExtent }
+		: ContextImpl{ instance }
 		, displayCreateInfo{ std::move( createInfo ) }
 		, m_mainContext{ static_cast< CoreContext const * >( mainContext ) }
 	{
@@ -184,6 +182,21 @@ namespace ashes::gl
 	{
 		auto errorCode = CGLFlushDrawable( m_cglContext );
 		checkCGLErrorCode( errorCode, "CGLFlushDrawable" );
+	}
+
+	VkExtent2D CoreContext::getExtent()const
+	{
+		if ( displayCreateInfo.sType )
+		{
+			return displayCreateInfo.imageExtent;
+		}
+		VkExtent2D result{};
+		int width = 0;
+		int height = 0;
+		getGLViewSize( m_glView, &width, &height );
+		result.width = uint32_t( width );
+		result.height = uint32_t( height );
+		return result;
 	}
 }
 

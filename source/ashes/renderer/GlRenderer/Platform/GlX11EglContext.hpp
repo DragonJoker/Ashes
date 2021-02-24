@@ -26,6 +26,7 @@ namespace ashes::gl
 		void enable()const override;
 		void disable()const override;
 		void swapBuffers()const override;
+		VkExtent2D getExtent()const override;
 
 	private:
 		VkXlibSurfaceCreateInfoKHR createInfo;

@@ -15,7 +15,7 @@ namespace ashes::gl
 	EglContext::EglContext( VkInstance instance
 		, VkDisplaySurfaceCreateInfoKHR createInfo
 		, ContextImpl const * mainContext )
-		: ContextImpl{ instance, createInfo.imageExtent }
+		: ContextImpl{ instance }
 		, createInfo{ createInfo }
 		, m_mainContext{ static_cast< EglContext const * >( mainContext ) }
 	{
@@ -168,6 +168,22 @@ namespace ashes::gl
 	void EglContext::swapBuffers()const
 	{
 		eglSwapBuffers( m_display, m_surface );
+	}
+
+	VkExtent2D EglContext::getExtent()const
+	{
+		VkExtent2D result{};
+		EGLint width = 0;
+		EGLint height = 0;
+
+		if ( eglQuerySurface( m_display, m_surface, EGL_WIDTH, &width )
+			&& eglQuerySurface( m_display, m_surface, EGL_HEIGHT, &height ) )
+		{
+			result.width = width;
+			result.height = height;
+		}
+
+		return result;
 	}
 
 	void EglContext::doCleanup()
