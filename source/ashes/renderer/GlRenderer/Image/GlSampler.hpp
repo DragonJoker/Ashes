@@ -16,7 +16,8 @@ namespace ashes::gl
 		: public IcdObject
 	{
 	public:
-		Sampler( VkDevice device
+		Sampler( VkAllocationCallbacks const * allocInfo
+			, VkDevice device
 			, VkSamplerCreateInfo const & createInfo );
 		~Sampler();
 

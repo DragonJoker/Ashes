@@ -9,7 +9,8 @@
 
 namespace ashes::gl
 {
-	PipelineLayout::PipelineLayout( VkDevice device
+	PipelineLayout::PipelineLayout( VkAllocationCallbacks const * allocInfo
+		, VkDevice device
 		, VkPipelineLayoutCreateInfo createInfo )
 		: m_device{ device }
 		, m_setLayouts{ createInfo.pSetLayouts, createInfo.pSetLayouts + createInfo.setLayoutCount }

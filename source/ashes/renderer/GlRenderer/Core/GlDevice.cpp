@@ -159,9 +159,9 @@ namespace ashes::gl
 		}
 	}
 
-	Device::Device( VkInstance instance
+	Device::Device( VkAllocationCallbacks const * callbacks
+		, VkInstance instance
 		, VkPhysicalDevice physicalDevice
-		, VkAllocationCallbacks const * callbacks
 		, VkDeviceCreateInfo createInfos )
 		: m_instance{ instance }
 		, m_physicalDevice{ physicalDevice }

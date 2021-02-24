@@ -780,7 +780,8 @@ namespace ashes::gl
 
 	//*************************************************************************
 
-	ShaderModule::ShaderModule( VkDevice device
+	ShaderModule::ShaderModule( VkAllocationCallbacks const * allocInfo
+		, VkDevice device
 		, VkShaderModuleCreateInfo createInfo )
 		: m_device{ device }
 		, m_flags{ createInfo.flags }

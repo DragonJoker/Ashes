@@ -12,7 +12,8 @@ namespace ashes::gl
 		: public AutoIdIcdObject< DisplayKHR >
 	{
 	public:
-		DisplayKHR( VkPhysicalDevice physicalDevice
+		DisplayKHR( VkAllocationCallbacks const * allocInfo
+			, VkPhysicalDevice physicalDevice
 			, VkDisplayPropertiesKHR const & properties
 			, VkFormat format
 			, uint32_t screenIndex
@@ -47,6 +48,7 @@ namespace ashes::gl
 		}
 
 	private:
+		VkAllocationCallbacks const * m_allocInfo;
 		VkPhysicalDevice m_physicalDevice;
 		VkDisplayPropertiesKHR m_properties;
 		VkFormat m_format;

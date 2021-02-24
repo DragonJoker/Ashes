@@ -181,7 +181,8 @@ namespace ashes::gl
 		}
 	}
 
-	DebugUtilsMessengerEXT::DebugUtilsMessengerEXT( VkInstance instance
+	DebugUtilsMessengerEXT::DebugUtilsMessengerEXT( VkAllocationCallbacks const * callbacks
+		, VkInstance instance
 		, VkDebugUtilsMessengerCreateInfoEXT createInfo )
 		: m_instance{ instance }
 		, m_createInfo{ std::move( createInfo ) }
@@ -337,7 +338,8 @@ namespace ashes::gl
 		}
 	}
 
-	DebugReportCallbackEXT::DebugReportCallbackEXT( VkInstance instance
+	DebugReportCallbackEXT::DebugReportCallbackEXT( VkAllocationCallbacks const * callbacks
+		, VkInstance instance
 		, VkDebugReportCallbackCreateInfoEXT createInfo )
 		: m_instance{ instance }
 		, m_createInfo{ std::move( createInfo ) }

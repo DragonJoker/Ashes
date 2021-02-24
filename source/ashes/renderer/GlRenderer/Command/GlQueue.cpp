@@ -481,7 +481,8 @@ namespace ashes::gl
 		}
 	}
 
-	Queue::Queue( VkDevice device
+	Queue::Queue( VkAllocationCallbacks const * allocInfo
+		, VkDevice device
 		, VkDeviceQueueCreateInfo createInfo
 		, uint32_t index )
 		: m_device{ device }

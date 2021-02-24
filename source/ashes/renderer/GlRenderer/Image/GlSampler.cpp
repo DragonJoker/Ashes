@@ -6,7 +6,8 @@
 
 namespace ashes::gl
 {
-	Sampler::Sampler( VkDevice device
+	Sampler::Sampler( VkAllocationCallbacks const * allocInfo
+		, VkDevice device
 		, VkSamplerCreateInfo const & createInfo )
 		: m_device{ device }
 		, m_lodBias{ createInfo.mipLodBias }

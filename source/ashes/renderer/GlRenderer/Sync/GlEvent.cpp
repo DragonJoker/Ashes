@@ -8,7 +8,8 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	Event::Event( VkDevice device )
+	Event::Event( VkAllocationCallbacks const * allocInfo
+		, VkDevice device )
 		: m_device{ device }
 	{
 	}

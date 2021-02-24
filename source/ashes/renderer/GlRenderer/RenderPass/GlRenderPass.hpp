@@ -12,7 +12,8 @@ namespace ashes::gl
 		: public AutoIdIcdObject< RenderPass >
 	{
 	public:
-		RenderPass( VkDevice device
+		RenderPass( VkAllocationCallbacks const * allocInfo
+			, VkDevice device
 			, VkRenderPassCreateInfo createInfo );
 
 		uint32_t getAttachmentIndex( VkAttachmentDescription const & attach )const;

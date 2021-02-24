@@ -640,7 +640,8 @@ namespace ashes::gl
 
 	//************************************************************************************************
 
-	DeviceMemory::DeviceMemory( VkDevice device
+	DeviceMemory::DeviceMemory( VkAllocationCallbacks const * allocInfo
+		, VkDevice device
 		, VkMemoryAllocateInfo allocateInfo )
 		: m_device{ device }
 		, m_allocateInfo{ std::move( allocateInfo ) }

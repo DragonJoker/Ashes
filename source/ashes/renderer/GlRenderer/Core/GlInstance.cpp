@@ -97,7 +97,8 @@ namespace ashes::gl
 		};
 	}
 
-	Instance::Instance( VkInstanceCreateInfo createInfo )
+	Instance::Instance( VkAllocationCallbacks const * allocInfo
+		, VkInstanceCreateInfo createInfo )
 		: m_flags{ createInfo.flags }
 		, m_applicationInfo{ createInfo.pApplicationInfo ? *createInfo.pApplicationInfo : doGetDefaultApplicationInfo() }
 		, m_enabledLayerNames{ convert( createInfo.ppEnabledLayerNames, createInfo.enabledLayerCount ) }

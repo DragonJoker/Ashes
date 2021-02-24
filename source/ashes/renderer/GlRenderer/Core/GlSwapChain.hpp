@@ -14,7 +14,8 @@ namespace ashes::gl
 		: public IcdObject
 	{
 	public:
-		SwapchainKHR( VkDevice device
+		SwapchainKHR( VkAllocationCallbacks const * allocInfo
+			, VkDevice device
 			, VkSwapchainCreateInfoKHR createInfo );
 		~SwapchainKHR();
 
@@ -33,6 +34,7 @@ namespace ashes::gl
 		}
 
 	private:
+		VkAllocationCallbacks const * m_allocInfo;
 		VkDevice m_device;
 		VkSwapchainCreateInfoKHR m_createInfo;
 		VkImage m_image;

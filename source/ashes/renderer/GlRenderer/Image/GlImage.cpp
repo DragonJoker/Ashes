@@ -164,33 +164,30 @@ namespace ashes::gl
 			, samples );
 	}
 
-	Image::Image( VkDevice device
+	Image::Image( VkAllocationCallbacks const * allocInfo
+		, VkDevice device
 		, VkFormat format
 		, VkExtent2D const & dimensions
 		, bool swapchainImage )
-		: Image
-		{
-			device,
-			VkImageCreateInfo
-			{
-				VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-				nullptr,
-				0u,
-				VK_IMAGE_TYPE_2D,
-				format,
-				VkExtent3D{ dimensions.width, dimensions.height, 1u },
-				1u,
-				1u,
-				VK_SAMPLE_COUNT_1_BIT,
-				VK_IMAGE_TILING_OPTIMAL,
-				VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT
-			},
-			swapchainImage
-		}
+		: Image{ allocInfo
+			, device
+			, VkImageCreateInfo{ VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO
+				, nullptr
+				, 0u
+				, VK_IMAGE_TYPE_2D
+				, format
+				, VkExtent3D{ dimensions.width, dimensions.height, 1u }
+				, 1u
+				, 1u
+				, VK_SAMPLE_COUNT_1_BIT
+				, VK_IMAGE_TILING_OPTIMAL
+				, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT }
+			, swapchainImage }
 	{
 	}
 
-	Image::Image( VkDevice device
+	Image::Image( VkAllocationCallbacks const * allocInfo
+		, VkDevice device
 		, VkImageCreateInfo createInfo
 		, bool swapchainImage )
 		: m_flags{ createInfo.flags }

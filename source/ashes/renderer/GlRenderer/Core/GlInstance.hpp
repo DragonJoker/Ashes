@@ -20,7 +20,8 @@ namespace ashes::gl
 		: public ashes::IcdObject
 	{
 	public:
-		Instance( VkInstanceCreateInfo createInfo );
+		Instance( VkAllocationCallbacks const * allocInfo
+			, VkInstanceCreateInfo createInfo );
 		~Instance();
 
 		uint32_t getApiVersion()const;

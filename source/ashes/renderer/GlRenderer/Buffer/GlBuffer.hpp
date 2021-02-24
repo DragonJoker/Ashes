@@ -19,7 +19,8 @@ namespace ashes::gl
 		friend class DeviceMemory;
 
 	public:
-		Buffer( VkDevice device
+		Buffer( VkAllocationCallbacks const * allocInfo
+			, VkDevice device
 			, VkBufferCreateInfo createInfo );
 		~Buffer();
 

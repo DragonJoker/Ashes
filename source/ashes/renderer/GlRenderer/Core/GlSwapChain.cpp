@@ -13,13 +13,14 @@ namespace ashes::gl
 	namespace
 	{
 		VkImage createImage( VkDevice device
+			, VkAllocationCallbacks const * allocInfo
 			, VkFormat format
 			, VkExtent2D dimensions
 			, VkDeviceMemory & deviceMemory )
 		{
 			VkImage result;
-			allocate( result
-				, get( device )->getAllocationCallbacks()
+			auto err = allocate( result
+				, allocInfo
 				, device
 				, VkImageCreateInfo{ VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO
 					, nullptr
@@ -34,25 +35,40 @@ namespace ashes::gl
 					, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT
 				}
 				, true );
+
+			if ( err != VK_SUCCESS )
+			{
+				throw ashes::Exception{ err, "Swapchain image allocation" };
+			}
+
 			auto requirements = get( result )->getMemoryRequirements();
 			uint32_t deduced = deduceMemoryType( device
 				, requirements.memoryTypeBits
 				, VK_MEMORY_HEAP_DEVICE_LOCAL_BIT );
-			allocate( deviceMemory
-				, get( device )->getAllocationCallbacks()
+			err = allocate( deviceMemory
+				, allocInfo
 				, device
 				, VkMemoryAllocateInfo{ VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, requirements.size, deduced } );
+
+			if ( err != VK_SUCCESS )
+			{
+				deallocate( result
+					, allocInfo );
+				throw ashes::Exception{ err, "Swapchain image memory allocation" };
+			}
+
 			get( deviceMemory )->bindImage( result, 0u );
 			return result;
 		}
 
 		VkImageView createImageView( VkDevice device
+			, VkAllocationCallbacks const * allocInfo
 			, VkImage image
 			, VkFormat format )
 		{
 			VkImageView result;
-			allocate( result
-				, get( device )->getAllocationCallbacks()
+			auto err = allocate( result
+				, allocInfo
 				, device
 				, VkImageViewCreateInfo
 				{
@@ -65,13 +81,21 @@ namespace ashes::gl
 					VkComponentMapping{},
 					VkImageSubresourceRange{ VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT, 0u, 1u, 0u, 1u },
 				} );
+
+			if ( err != VK_SUCCESS )
+			{
+				throw ashes::Exception{ err, "Swapchain image allocation" };
+			}
+
 			return result;
 		}
 	}
 
-	SwapchainKHR::SwapchainKHR( VkDevice device
+	SwapchainKHR::SwapchainKHR( VkAllocationCallbacks const * allocInfo
+		, VkDevice device
 		, VkSwapchainCreateInfoKHR createInfo )
-		: m_device{ device }
+		: m_allocInfo{ allocInfo }
+		, m_device{ device }
 		, m_createInfo{ createInfo }
 	{
 		get( m_device )->link( m_createInfo.surface );
@@ -79,15 +103,28 @@ namespace ashes::gl
 		m_createInfo.imageExtent.width = std::max( 1u, m_createInfo.imageExtent.width );
 
 		m_image = createImage( device
+			, m_allocInfo
 			, m_createInfo.imageFormat
 			, m_createInfo.imageExtent
 			, m_deviceMemory );
 
 		if ( hasTextureViews( device ) )
 		{
-			m_view = createImageView( device
-				, m_image
-				, m_createInfo.imageFormat );
+			try
+			{
+				m_view = createImageView( device
+					, m_allocInfo
+					, m_image
+					, m_createInfo.imageFormat );
+			}
+			catch ( ashes::Exception & )
+			{
+				deallocate( m_deviceMemory
+					, m_allocInfo );
+				deallocate( m_image
+					, m_allocInfo );
+				throw;
+			}
 		}
 
 		auto context = get( m_device )->getContext();
@@ -128,13 +165,13 @@ namespace ashes::gl
 			if ( hasTextureViews( m_device ) )
 			{
 				deallocate( m_view
-					, get( m_device )->getAllocationCallbacks() );
+					, m_allocInfo );
 			}
 
 			deallocate( m_deviceMemory
-				, get( m_device )->getAllocationCallbacks() );
+				, m_allocInfo );
 			deallocate( m_image
-				, get( m_device )->getAllocationCallbacks() );
+				, m_allocInfo );
 		}
 		get( m_device )->unlink( m_createInfo.surface );
 	}

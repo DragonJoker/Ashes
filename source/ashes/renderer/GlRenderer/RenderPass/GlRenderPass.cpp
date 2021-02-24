@@ -15,7 +15,8 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	RenderPass::RenderPass( VkDevice device
+	RenderPass::RenderPass( VkAllocationCallbacks const * allocInfo
+		, VkDevice device
 		, VkRenderPassCreateInfo createInfo )
 		: m_device{ device }
 		, m_flags{ createInfo.flags }
