@@ -184,7 +184,215 @@ namespace ashes::gl
 
 	VkFormatProperties const & PhysicalDevice::getFormatProperties( VkFormat fmt )const
 	{
-		return m_formatProperties[fmt];
+		auto iresult = m_formatProperties.insert( { fmt, VkFormatProperties{} } );
+
+		if ( iresult.second )
+		{
+			auto & properties = iresult.first->second;
+
+			if ( !find( ARB_internalformat_query2 ) )
+			{
+				properties.optimalTilingFeatures = VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT
+					| VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT
+					| VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT
+					| VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT
+					| VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT
+					| VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT
+					| VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT
+					| ( ashes::isDepthOrStencilFormat( fmt ) ? VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT : 0 )
+					| VK_FORMAT_FEATURE_BLIT_SRC_BIT
+					| VK_FORMAT_FEATURE_BLIT_DST_BIT
+					| VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT
+					| VK_FORMAT_FEATURE_TRANSFER_SRC_BIT
+					| VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
+				properties.linearTilingFeatures = properties.optimalTilingFeatures;
+			}
+			else
+			{
+				ContextLock context{ get( m_instance )->getCurrentContext() };
+				assert( context->m_glGetInternalformativ );
+				if ( isSupportedInternal( fmt ) )
+				{
+					auto internal = getInternalFormat( fmt );
+					GLint value;
+					glLogCall( context, glGetInternalformativ
+						, GL_TEXTURE_2D
+						, internal
+						, GL_FORMAT_PROPERTY_SUPPORTED
+						, 1
+						, &value );
+
+					if ( value == GL_TRUE )
+					{
+#if defined( VK_KHR_maintenance ) || defined( VK_API_VERSION_1_1 )
+						properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+						properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
+#endif
+						glLogCall( context, glGetInternalformativ
+							, GL_TEXTURE_2D
+							, internal
+							, GL_FORMAT_PROPERTY_RENDERABLE
+							, 1
+							, &value );
+
+						if ( value != 0 )
+						{
+							if ( isDepthOrStencilFormat( fmt ) )
+							{
+								properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
+							}
+							else
+							{
+								properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT;
+								properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT;
+							}
+						}
+
+						glLogCall( context, glGetInternalformativ
+							, GL_TEXTURE_2D
+							, internal
+							, GL_FORMAT_PROPERTY_BLEND
+							, 1
+							, &value );
+
+						if ( value != 0 )
+						{
+							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT;
+							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT;
+						}
+
+						glLogCall( context, glGetInternalformativ
+							, GL_TEXTURE_2D
+							, internal
+							, GL_FORMAT_PROPERTY_FRAGMENT_TEXTURE
+							, 1
+							, &value );
+
+						if ( value != 0 )
+						{
+							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
+							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT;
+						}
+
+						glLogCall( context, glGetInternalformativ
+							, GL_TEXTURE_2D
+							, internal
+							, GL_FORMAT_PROPERTY_FILTER
+							, 1
+							, &value );
+
+						if ( value != 0 )
+						{
+							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT;
+						}
+
+						glLogCall( context, glGetInternalformativ
+							, GL_TEXTURE_2D
+							, internal
+							, GL_FORMAT_PROPERTY_SHADER_IMAGE_LOAD
+							, 1
+							, &value );
+
+						if ( value != 0 )
+						{
+							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT;
+							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT;
+						}
+
+						glLogCall( context, glGetInternalformativ
+							, GL_TEXTURE_2D
+							, internal
+							, GL_FORMAT_PROPERTY_SHADER_IMAGE_ATOMIC
+							, 1
+							, &value );
+
+						if ( value != 0 )
+						{
+							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT;
+							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT;
+						}
+
+#if defined( VK_KHR_maintenance ) || defined( VK_API_VERSION_1_1 )
+						glLogCall( context, glGetInternalformativ
+							, GL_TEXTURE_2D
+							, internal
+							, GL_FORMAT_PROPERTY_READ_PIXELS
+							, 1
+							, &value );
+
+						if ( value != 0 )
+						{
+							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;
+							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
+						}
+#endif
+					}
+
+					if ( !isCompressedFormat( fmt ) )
+					{
+						GlType dataType = getType( internal );
+						properties.bufferFeatures = 0u;
+
+						switch ( dataType )
+						{
+						case ashes::gl::GL_TYPE_I8:
+							break;
+						case ashes::gl::GL_TYPE_UI8:
+							properties.bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
+							break;
+						case ashes::gl::GL_TYPE_I16:
+							properties.bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
+							break;
+						case ashes::gl::GL_TYPE_UI16:
+							properties.bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
+							break;
+						case ashes::gl::GL_TYPE_I32:
+							properties.bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
+							break;
+						case ashes::gl::GL_TYPE_UI32:
+							properties.bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
+							break;
+						case ashes::gl::GL_TYPE_F32:
+							properties.bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
+							break;
+						case ashes::gl::GL_TYPE_F16:
+							properties.bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
+							break;
+						case ashes::gl::GL_TYPE_US4444:
+							break;
+						case ashes::gl::GL_TYPE_US5551:
+							break;
+						case ashes::gl::GL_TYPE_UI8888:
+							break;
+						case ashes::gl::GL_TYPE_UI_10_10_10_2:
+							properties.bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
+							break;
+						case ashes::gl::GL_TYPE_UI565:
+							break;
+						case ashes::gl::GL_TYPE_UI8888_REV:
+							break;
+						case ashes::gl::GL_TYPE_UI_2_10_10_10:
+							break;
+						case ashes::gl::GL_TYPE_UI24_8:
+							break;
+						case ashes::gl::GL_TYPE_32F_UI24_8:
+							break;
+						case ashes::gl::GL_UI_5_9_9_9:
+							break;
+						case ashes::gl::GL_UI_10F_11F_11F:
+							properties.bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
+							break;
+						default:
+							break;
+						}
+					}
+				}
+
+				properties.linearTilingFeatures = properties.optimalTilingFeatures;
+			}
+		}
+
+		return iresult.first->second;
 	}
 
 	VkResult PhysicalDevice::getImageFormatProperties( VkFormat format
@@ -220,6 +428,7 @@ namespace ashes::gl
 
 					if ( value != GL_FALSE )
 					{
+						value = 0u;
 						glLogCall( context, glGetInternalformativ, gltype, internal, GL_FORMAT_PROPERTY_MAX_WIDTH, 1, &value );
 						imageFormatProperties.maxExtent.width = uint32_t( value );
 						imageFormatProperties.maxExtent.height = 1u;
@@ -227,25 +436,43 @@ namespace ashes::gl
 
 						if ( type == VK_IMAGE_TYPE_2D )
 						{
+							value = 0u;
 							glLogCall( context, glGetInternalformativ, gltype, internal, GL_FORMAT_PROPERTY_MAX_HEIGHT, 1, &value );
 							imageFormatProperties.maxExtent.height = uint32_t( value );
 						}
 						else if ( type == VK_IMAGE_TYPE_3D )
 						{
+							value = 0u;
 							glLogCall( context, glGetInternalformativ, GL_TEXTURE_3D, internal, GL_FORMAT_PROPERTY_MAX_HEIGHT, 1, &value );
 							imageFormatProperties.maxExtent.height = uint32_t( value );
 
+							value = 0u;
 							glLogCall( context, glGetInternalformativ, GL_TEXTURE_3D, internal, GL_FORMAT_PROPERTY_MAX_DEPTH, 1, &value );
 							imageFormatProperties.maxExtent.depth = uint32_t( value );
 						}
 
-						glLogCall( context, glGetInternalformativ, gltype, internal, GL_FORMAT_PROPERTY_MAX_SAMPLES, 1, &value );
-						imageFormatProperties.sampleCounts = std::min( VK_SAMPLE_COUNT_1_BIT, VkSampleCountFlagBits( value ) );
+						if ( gltype == GL_TEXTURE_2D )
+						{
+							value = 0u;
+							glLogCall( context, glGetInternalformativ, GL_TEXTURE_2D_MULTISAMPLE, internal, GL_FORMAT_PROPERTY_NUM_SAMPLE_COUNTS, 1, &value );
 
+							std::vector< GLint > samples;
+							samples.resize( value );
+							glLogCall( context, glGetInternalformativ, GL_TEXTURE_2D_MULTISAMPLE, internal, GL_FORMAT_PROPERTY_SAMPLES, GLsizei( samples.size() ), samples.data() );
+							imageFormatProperties.sampleCounts = VK_SAMPLE_COUNT_1_BIT;;
+
+							for ( auto sample : samples )
+							{
+								imageFormatProperties.sampleCounts |= VkSampleCountFlagBits( sample );
+							}
+						}
+
+						value = 0u;
 						glLogCall( context, glGetInternalformativ, gltype, internal, GL_FORMAT_PROPERTY_TEXEL_SIZE, 1, &value );
 						VkDeviceSize texelSize = VkDeviceSize( value );
 
 						gltype = convert( get( this ), type, 2u, 0u );
+						value = 0u;
 						glLogCall( context, glGetInternalformativ, gltype, internal, GL_FORMAT_PROPERTY_MAX_LAYERS, 1, &value );
 						imageFormatProperties.maxArrayLayers = uint32_t( value );
 
@@ -489,7 +716,6 @@ namespace ashes::gl
 		doInitialiseProperties( context );
 		doInitialiseFeatures( context );
 		doInitialiseQueueProperties( context );
-		doInitialiseFormatProperties( context );
 		doInitialiseDisplayProperties( context );
 		doInitialisePortability( context );
 		doInitialiseDriverProperties( context );
@@ -744,217 +970,6 @@ namespace ashes::gl
 					1u,
 				}
 			} );
-	}
-
-	void PhysicalDevice::doInitialiseFormatProperties( ContextLock & context )
-	{
-		if ( !find( ARB_internalformat_query2 ) )
-		{
-			for ( VkFormat fmt = beginFmt(); fmt < endFmt(); fmt = VkFormat( fmt + 1 ) )
-			{
-				m_formatProperties[fmt].optimalTilingFeatures = VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT
-					| VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT
-					| VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT
-					| VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT
-					| VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT
-					| VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT
-					| VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT
-					| ( ashes::isDepthOrStencilFormat( fmt ) ? VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT : 0 )
-					| VK_FORMAT_FEATURE_BLIT_SRC_BIT
-					| VK_FORMAT_FEATURE_BLIT_DST_BIT
-					| VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT
-					| VK_FORMAT_FEATURE_TRANSFER_SRC_BIT
-					| VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
-				m_formatProperties[fmt].linearTilingFeatures = m_formatProperties[fmt].optimalTilingFeatures;
-			}
-		}
-		else
-		{
-			assert( context->m_glGetInternalformativ );
-
-			for ( VkFormat fmt = beginFmt(); fmt != endFmt(); fmt = VkFormat( fmt + 1 ) )
-			{
-				if ( isSupportedInternal( fmt ) )
-				{
-					auto internal = getInternalFormat( fmt );
-					GLint value;
-					glLogCall( context, glGetInternalformativ
-						, GL_TEXTURE_2D
-						, internal
-						, GL_FORMAT_PROPERTY_SUPPORTED
-						, 1
-						, &value );
-
-					if ( value == GL_TRUE )
-					{
-#if defined( VK_KHR_maintenance ) || defined( VK_API_VERSION_1_1 )
-						m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
-						m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
-#endif
-						glLogCall( context, glGetInternalformativ
-							, GL_TEXTURE_2D
-							, internal
-							, GL_FORMAT_PROPERTY_RENDERABLE
-							, 1
-							, &value );
-
-						if ( value != 0 )
-						{
-							if ( isDepthOrStencilFormat( fmt ) )
-							{
-								m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
-							}
-							else
-							{
-								m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT;
-								m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT;
-							}
-						}
-
-						glLogCall( context, glGetInternalformativ
-							, GL_TEXTURE_2D
-							, internal
-							, GL_FORMAT_PROPERTY_BLEND
-							, 1
-							, &value );
-
-						if ( value != 0 )
-						{
-							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT;
-							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT;
-						}
-
-						glLogCall( context, glGetInternalformativ
-							, GL_TEXTURE_2D
-							, internal
-							, GL_FORMAT_PROPERTY_FRAGMENT_TEXTURE
-							, 1
-							, &value );
-
-						if ( value != 0 )
-						{
-							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
-							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT;
-						}
-
-						glLogCall( context, glGetInternalformativ
-							, GL_TEXTURE_2D
-							, internal
-							, GL_FORMAT_PROPERTY_FILTER
-							, 1
-							, &value );
-
-						if ( value != 0 )
-						{
-							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT;
-						}
-
-						glLogCall( context, glGetInternalformativ
-							, GL_TEXTURE_2D
-							, internal
-							, GL_FORMAT_PROPERTY_SHADER_IMAGE_LOAD
-							, 1
-							, &value );
-
-						if ( value != 0 )
-						{
-							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT;
-							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT;
-						}
-
-						glLogCall( context, glGetInternalformativ
-							, GL_TEXTURE_2D
-							, internal
-							, GL_FORMAT_PROPERTY_SHADER_IMAGE_ATOMIC
-							, 1
-							, &value );
-
-						if ( value != 0 )
-						{
-							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT;
-							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT;
-						}
-
-#if defined( VK_KHR_maintenance ) || defined( VK_API_VERSION_1_1 )
-						glLogCall( context, glGetInternalformativ
-							, GL_TEXTURE_2D
-							, internal
-							, GL_FORMAT_PROPERTY_READ_PIXELS
-							, 1
-							, &value );
-
-						if ( value != 0 )
-						{
-							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;
-							m_formatProperties[fmt].optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
-						}
-#endif
-					}
-
-					if ( !isCompressedFormat( fmt ) )
-					{
-						GlType dataType = getType( internal );
-						m_formatProperties[fmt].bufferFeatures = 0u;
-
-						switch ( dataType )
-						{
-						case ashes::gl::GL_TYPE_I8:
-							break;
-						case ashes::gl::GL_TYPE_UI8:
-							m_formatProperties[fmt].bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
-							break;
-						case ashes::gl::GL_TYPE_I16:
-							m_formatProperties[fmt].bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
-							break;
-						case ashes::gl::GL_TYPE_UI16:
-							m_formatProperties[fmt].bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
-							break;
-						case ashes::gl::GL_TYPE_I32:
-							m_formatProperties[fmt].bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
-							break;
-						case ashes::gl::GL_TYPE_UI32:
-							m_formatProperties[fmt].bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
-							break;
-						case ashes::gl::GL_TYPE_F32:
-							m_formatProperties[fmt].bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
-							break;
-						case ashes::gl::GL_TYPE_F16:
-							m_formatProperties[fmt].bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
-							break;
-						case ashes::gl::GL_TYPE_US4444:
-							break;
-						case ashes::gl::GL_TYPE_US5551:
-							break;
-						case ashes::gl::GL_TYPE_UI8888:
-							break;
-						case ashes::gl::GL_TYPE_UI_10_10_10_2:
-							m_formatProperties[fmt].bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
-							break;
-						case ashes::gl::GL_TYPE_UI565:
-							break;
-						case ashes::gl::GL_TYPE_UI8888_REV:
-							break;
-						case ashes::gl::GL_TYPE_UI_2_10_10_10:
-							m_formatProperties[fmt].bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
-							break;
-						case ashes::gl::GL_TYPE_UI24_8:
-							break;
-						case ashes::gl::GL_TYPE_32F_UI24_8:
-							break;
-						case ashes::gl::GL_UI_5_9_9_9:
-							break;
-						case ashes::gl::GL_UI_10F_11F_11F:
-							m_formatProperties[fmt].bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
-							break;
-						default:
-							break;
-						}
-					}
-				}
-
-				m_formatProperties[fmt].linearTilingFeatures = m_formatProperties[fmt].optimalTilingFeatures;
-			}
-		}
 	}
 
 	void PhysicalDevice::doInitialiseDisplayProperties( ContextLock & context )

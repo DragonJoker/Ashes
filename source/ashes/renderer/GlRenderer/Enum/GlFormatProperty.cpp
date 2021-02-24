@@ -6,8 +6,8 @@ namespace ashes::gl
 	{
 		switch ( value )
 		{
-		case GL_FORMAT_PROPERTY_MAX_SAMPLES:
-			return "GL_MAX_SAMPLES";
+		case GL_FORMAT_PROPERTY_SAMPLES:
+			return "GL_SAMPLES";
 		case GL_FORMAT_PROPERTY_SUPPORTED:
 			return "GL_INTERNALFORMAT_SUPPORTED";
 		case GL_FORMAT_PROPERTY_MAX_WIDTH:
