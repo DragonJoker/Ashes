@@ -93,7 +93,6 @@ namespace ashes::gl
 		void doInitialiseFeatures( ContextLock & context );
 		void doInitialiseMemoryProperties( ContextLock & context );
 		void doInitialiseQueueProperties( ContextLock & context );
-		void doInitialiseFormatProperties( ContextLock & context );
 		void doInitialiseDisplayProperties( ContextLock & context );
 		void doInitialiseDriverProperties( ContextLock & context );
 		void doInitialiseMemoryProperties2( ContextLock & context );
