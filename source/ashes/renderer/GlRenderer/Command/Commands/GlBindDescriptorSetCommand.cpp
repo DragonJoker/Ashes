@@ -588,8 +588,8 @@ namespace ashes::gl
 			list.push_back( makeCmd< OpType::eBindImage >( bindingIndex
 				, name
 				, range.baseMipLevel
-				, range.layerCount
-				, range.baseArrayLayer
+				, range.layerCount > 1u ? GL_TRUE : GL_FALSE
+				, range.layerCount > 1u ? 0u : range.baseArrayLayer
 				, getInternalFormat( get( view )->getFormat() ) ) );
 		}
 
