@@ -9,12 +9,14 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	DisplayKHR::DisplayKHR( VkPhysicalDevice physicalDevice
+	DisplayKHR::DisplayKHR( VkAllocationCallbacks const * allocInfo
+		, VkPhysicalDevice physicalDevice
 		, VkDisplayPropertiesKHR const & properties
 		, VkFormat format
 		, uint32_t screenIndex
 		, std::vector< VkDisplayModeParametersKHR > const & displayModesParams )
-		: m_physicalDevice{ physicalDevice }
+		: m_allocInfo{ allocInfo }
+		, m_physicalDevice{ physicalDevice }
 		, m_properties{ properties }
 		, m_format{ format }
 		, m_screenIndex{ screenIndex }
@@ -30,7 +32,7 @@ namespace ashes::gl
 			};
 			VkDisplayModeKHR displayMode;
 			allocate( displayMode
-				, nullptr
+				, m_allocInfo
 				, get( this )
 				, createInfo );
 			m_displayModes.push_back( { displayMode, parameters } );
@@ -41,7 +43,7 @@ namespace ashes::gl
 	{
 		for ( auto & displayMode : m_displayModes )
 		{
-			deallocate( displayMode.displayMode, nullptr );
+			deallocate( displayMode.displayMode, m_allocInfo );
 		}
 	}
 

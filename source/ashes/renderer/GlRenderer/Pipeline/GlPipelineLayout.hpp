@@ -18,7 +18,8 @@ namespace ashes::gl
 		friend class Pipeline;
 
 	public:
-		PipelineLayout( VkDevice device
+		PipelineLayout( VkAllocationCallbacks const * allocInfo
+			, VkDevice device
 			, VkPipelineLayoutCreateInfo createInfo );
 		~PipelineLayout();
 

@@ -13,7 +13,8 @@ namespace ashes::gl
 {
 #if _WIN32
 
-	SurfaceKHR::SurfaceKHR( VkInstance instance
+	SurfaceKHR::SurfaceKHR( VkAllocationCallbacks const * allocInfo
+		, VkInstance instance
 		, VkWin32SurfaceCreateInfoKHR createInfo )
 		: m_instance{ instance }
 		, m_win32CreateInfo{ createInfo }
@@ -25,7 +26,8 @@ namespace ashes::gl
 
 #elif __linux__
 
-	SurfaceKHR::SurfaceKHR( VkInstance instance
+	SurfaceKHR::SurfaceKHR( VkAllocationCallbacks const * allocInfo
+		, VkInstance instance
 		, VkXlibSurfaceCreateInfoKHR createInfo )
 		: m_instance{ instance }
 		, m_xlibCreateInfo{ createInfo }
@@ -35,7 +37,8 @@ namespace ashes::gl
 		getSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
 	}
 
-	SurfaceKHR::SurfaceKHR( VkInstance instance
+	SurfaceKHR::SurfaceKHR( VkAllocationCallbacks const * allocInfo
+		, VkInstance instance
 		, VkXcbSurfaceCreateInfoKHR createInfo )
 		: m_instance{ instance }
 		, m_xcbCreateInfo{ createInfo }
@@ -45,7 +48,8 @@ namespace ashes::gl
 		getSurfaceInfos( m_surfaceFormats, m_surfaceCapabilities );
 	}
 
-	SurfaceKHR::SurfaceKHR( VkInstance instance
+	SurfaceKHR::SurfaceKHR( VkAllocationCallbacks const * allocInfo
+		, VkInstance instance
 		, VkWaylandSurfaceCreateInfoKHR createInfo )
 		: m_instance{ instance }
 		, m_waylandCreateInfo{ createInfo }
@@ -57,7 +61,8 @@ namespace ashes::gl
 
 #elif __APPLE__
 
-	SurfaceKHR::SurfaceKHR( VkInstance instance
+	SurfaceKHR::SurfaceKHR( VkAllocationCallbacks const * allocInfo
+		, VkInstance instance
 		, VkMacOSSurfaceCreateInfoMVK createInfo )
 		: m_instance{ instance }
 		, m_macOSCreateInfo{ createInfo }
@@ -70,7 +75,8 @@ namespace ashes::gl
 #endif
 #ifdef VK_KHR_display
 
-	SurfaceKHR::SurfaceKHR( VkInstance instance
+	SurfaceKHR::SurfaceKHR( VkAllocationCallbacks const * allocInfo
+		, VkInstance instance
 		, VkDisplaySurfaceCreateInfoKHR createInfo )
 		: m_instance{ instance }
 		, m_displayCreateInfo{ std::move( createInfo ) }

@@ -25,7 +25,8 @@ namespace ashes::gl
 		*	Construction / Destruction.
 		*/
 		/**@{*/
-		PipelineCache( VkDevice device
+		PipelineCache( VkAllocationCallbacks const * allocInfo
+			, VkDevice device
 			, VkPipelineCacheCreateInfo createInfo );
 		/**@}*/
 

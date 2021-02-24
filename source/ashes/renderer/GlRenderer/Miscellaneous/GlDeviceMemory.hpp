@@ -63,7 +63,8 @@ namespace ashes::gl
 		using BindingPtr = std::unique_ptr< DeviceMemoryBinding >;
 
 	public:
-		DeviceMemory( VkDevice device
+		DeviceMemory( VkAllocationCallbacks const * allocInfo
+			, VkDevice device
 			, VkMemoryAllocateInfo allocateInfo );
 		~DeviceMemory();
 		VkResult bindBuffer( VkBuffer buffer

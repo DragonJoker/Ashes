@@ -7,7 +7,8 @@
 
 namespace ashes::gl
 {
-	QueryPool::QueryPool( VkDevice device
+	QueryPool::QueryPool( VkAllocationCallbacks const * allocInfo
+		, VkDevice device
 		, VkQueryPoolCreateInfo createInfo )
 		: m_device{ device }
 		, m_flags{ createInfo.flags }

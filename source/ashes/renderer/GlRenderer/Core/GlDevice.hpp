@@ -16,9 +16,9 @@ namespace ashes::gl
 		friend class Instance;
 
 	public:
-		Device( VkInstance instance
+		Device( VkAllocationCallbacks const * callbacks
+			, VkInstance instance
 			, VkPhysicalDevice gpu
-			, VkAllocationCallbacks const * callbacks
 			, VkDeviceCreateInfo createInfos );
 		~Device();
 

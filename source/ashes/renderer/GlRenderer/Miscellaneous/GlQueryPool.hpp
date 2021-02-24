@@ -12,7 +12,8 @@ namespace ashes::gl
 		: public AutoIdIcdObject< QueryPool >
 	{
 	public:
-		QueryPool( VkDevice device
+		QueryPool( VkAllocationCallbacks const * allocInfo
+			, VkDevice device
 			, VkQueryPoolCreateInfo createInfo );
 		~QueryPool();
 

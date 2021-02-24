@@ -20,7 +20,8 @@ namespace ashes::gl
 		GL_WAIT_RESULT_TIMEOUT_EXPIRED = 0x911B,
 	};
 
-	Fence::Fence( VkDevice device
+	Fence::Fence( VkAllocationCallbacks const * allocInfo
+		, VkDevice device
 		, VkFenceCreateFlags flags )
 		: m_device{ device }
 	{

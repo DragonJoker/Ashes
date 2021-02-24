@@ -12,7 +12,8 @@ namespace ashes::gl
 		: public IcdObject
 	{
 	public:
-		Fence( VkDevice device
+		Fence( VkAllocationCallbacks const * allocInfo
+			, VkDevice device
 			, VkFenceCreateFlags flags = 0 );
 		~Fence();
 

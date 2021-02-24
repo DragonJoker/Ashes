@@ -7,7 +7,8 @@
 
 namespace ashes::gl
 {
-	BufferView::BufferView( VkDevice device
+	BufferView::BufferView( VkAllocationCallbacks const * allocInfo
+		, VkDevice device
 		, VkBufferViewCreateInfo createInfo )
 		: m_device{ device }
 		, m_format{ createInfo.format }

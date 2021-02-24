@@ -15,7 +15,8 @@ namespace ashes::gl
 		: public ashes::IcdObject
 	{
 	public:
-		CommandBuffer( VkDevice device
+		CommandBuffer( VkAllocationCallbacks const * allocInfo
+			, VkDevice device
 			, VkCommandBufferLevel level );
 		~CommandBuffer();
 

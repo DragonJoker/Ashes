@@ -28,7 +28,8 @@ namespace ashes::gl
 		}
 	}
 
-	ImageView::ImageView( VkDevice device
+	ImageView::ImageView( VkAllocationCallbacks const * allocInfo
+		, VkDevice device
 		, VkImageViewCreateInfo createInfo
 		, bool createView )
 		: m_device{ device }
@@ -193,9 +194,11 @@ namespace ashes::gl
 		}
 	}
 
-	ImageView::ImageView( VkDevice device
+	ImageView::ImageView( VkAllocationCallbacks const * allocInfo
+		, VkDevice device
 		, VkImage image )
-		: ImageView{ device
+		: ImageView{ allocInfo
+			, device
 			, { VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO
 				, nullptr
 				, 0u
@@ -208,9 +211,11 @@ namespace ashes::gl
 	{
 	}
 
-	ImageView::ImageView( VkDevice device
+	ImageView::ImageView( VkAllocationCallbacks const * allocInfo
+		, VkDevice device
 		, VkImageViewCreateInfo createInfo )
-		: ImageView{ device
+		: ImageView{ allocInfo
+			, device
 			, std::move( createInfo )
 			, true }
 	{

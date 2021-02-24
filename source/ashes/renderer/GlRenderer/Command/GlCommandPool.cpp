@@ -11,7 +11,8 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	CommandPool::CommandPool( VkDevice device
+	CommandPool::CommandPool( VkAllocationCallbacks const * allocInfo
+		, VkDevice device
 		, VkCommandPoolCreateInfo createInfo )
 		: m_device{ device }
 	{

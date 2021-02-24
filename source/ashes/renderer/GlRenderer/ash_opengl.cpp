@@ -151,7 +151,6 @@ namespace ashes::gl
 			, pAllocator
 			, instance
 			, physicalDevice
-			, pAllocator
 			, *pCreateInfo );
 	}
 

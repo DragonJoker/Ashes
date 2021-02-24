@@ -16,7 +16,8 @@ namespace ashes::gl
 		: public AutoIdIcdObject< SurfaceKHR >
 	{
 	public:
-		DescriptorSetLayout( VkDevice device
+		DescriptorSetLayout( VkAllocationCallbacks const * allocInfo
+			, VkDevice device
 			, VkDescriptorSetLayoutCreateInfo createInfo );
 
 		auto begin()const

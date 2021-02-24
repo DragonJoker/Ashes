@@ -13,7 +13,8 @@ namespace ashes::gl
 	class DebugUtilsMessengerEXT
 	{
 	public:
-		DebugUtilsMessengerEXT( VkInstance instance
+		DebugUtilsMessengerEXT( VkAllocationCallbacks const * callbacks
+			, VkInstance instance
 			, VkDebugUtilsMessengerCreateInfoEXT createInfo );
 		~DebugUtilsMessengerEXT();
 		void submit( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
@@ -49,7 +50,8 @@ namespace ashes::gl
 	class DebugReportCallbackEXT
 	{
 	public:
-		DebugReportCallbackEXT( VkInstance instance
+		DebugReportCallbackEXT( VkAllocationCallbacks const * callbacks
+			, VkInstance instance
 			, VkDebugReportCallbackCreateInfoEXT createInfo );
 		~DebugReportCallbackEXT();
 		void report( VkDebugReportFlagsEXT flags

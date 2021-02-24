@@ -26,14 +26,17 @@ namespace ashes::gl
 		: public IcdObject
 	{
 	private:
-		ImageView( VkDevice device
+		ImageView( VkAllocationCallbacks const * allocInfo
+			, VkDevice device
 			, VkImageViewCreateInfo createInfo
 			, bool createView );
 
 	public:
-		ImageView( VkDevice device
+		ImageView( VkAllocationCallbacks const * allocInfo
+			, VkDevice device
 			, VkImage image );
-		ImageView( VkDevice device
+		ImageView( VkAllocationCallbacks const * allocInfo
+			, VkDevice device
 			, VkImageViewCreateInfo createInfo );
 		~ImageView();
 
