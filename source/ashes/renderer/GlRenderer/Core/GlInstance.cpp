@@ -233,11 +233,16 @@ namespace ashes::gl
 				, glSurface->getXcbCreateInfo()
 				, nullptr );
 		}
-
 		else if ( glSurface->isXlib() )
 		{
 			result = Context::create( get( this )
 				, glSurface->getXlibCreateInfo()
+				, nullptr );
+		}
+		else if ( glSurface->isWayland() )
+		{
+			result = Context::create( get( this )
+				, glSurface->getWaylandCreateInfo()
 				, nullptr );
 		}
 
