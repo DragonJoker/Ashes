@@ -2296,17 +2296,40 @@ namespace ashes::gl
 		VkDisplayPlanePropertiesKHR * pProperties )
 	{
 		auto props = get( physicalDevice )->getDisplayPlaneProperties();
-		*pPropertyCount = uint32_t( props.size() );
 
-		if ( pProperties )
+		if ( pProperties
+			&& pPropertyCount )
 		{
+			auto requested = *pPropertyCount;
+			uint32_t index = 0u;
+
 			for ( auto & prop : props )
 			{
-				*pProperties = prop;
-				++pProperties;
+				if ( index < requested )
+				{
+					*pProperties = prop;
+					++pProperties;
+				}
+
+				++index;
 			}
+
+			*pPropertyCount = std::min( requested, uint32_t( props.size() ) );
+
+			if ( requested >= uint32_t( props.size() ) )
+			{
+				return VK_SUCCESS;
+			}
+
+			return VK_INCOMPLETE;
 		}
 
+		if ( !pPropertyCount )
+		{
+			return VK_ERROR_OUT_OF_HOST_MEMORY;
+		}
+
+		*pPropertyCount = uint32_t( props.size() );
 		return VK_SUCCESS;
 	}
 
@@ -2338,17 +2361,40 @@ namespace ashes::gl
 		VkDisplayModePropertiesKHR * pProperties )
 	{
 		auto props = get( display )->getDisplayModeProperties();
-		*pPropertyCount = uint32_t( props.size() );
 
-		if ( pProperties )
+		if ( pProperties
+			&& pPropertyCount )
 		{
+			auto requested = *pPropertyCount;
+			uint32_t index = 0u;
+
 			for ( auto & prop : props )
 			{
-				*pProperties = prop;
-				++pProperties;
+				if ( index < requested )
+				{
+					*pProperties = prop;
+					++pProperties;
+				}
+
+				++index;
 			}
+
+			*pPropertyCount = std::min( requested, uint32_t( props.size() ) );
+
+			if ( requested >= uint32_t( props.size() ) )
+			{
+				return VK_SUCCESS;
+			}
+
+			return VK_INCOMPLETE;
 		}
 
+		if ( !pPropertyCount )
+		{
+			return VK_ERROR_OUT_OF_HOST_MEMORY;
+		}
+
+		*pPropertyCount = uint32_t( props.size() );
 		return VK_SUCCESS;
 	}
 
