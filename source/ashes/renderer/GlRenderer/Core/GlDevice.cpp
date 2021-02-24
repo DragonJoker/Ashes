@@ -449,6 +449,8 @@ namespace ashes::gl
 	{
 		try
 		{
+			doCleanupContextDependent();
+
 			if ( !m_ownContext )
 			{
 				m_ownContext = Context::create( m_instance
