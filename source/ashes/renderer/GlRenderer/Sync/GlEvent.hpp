@@ -12,7 +12,8 @@ namespace ashes::gl
 		: public AutoIdIcdObject< Event >
 	{
 	public:
-		Event( VkDevice device );
+		Event( VkAllocationCallbacks const * allocInfo
+			, VkDevice device );
 		~Event();
 
 		VkResult getStatus()const;

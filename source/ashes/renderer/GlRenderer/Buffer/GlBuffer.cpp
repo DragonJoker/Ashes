@@ -8,7 +8,8 @@
 
 namespace ashes::gl
 {
-	Buffer::Buffer( VkDevice device
+	Buffer::Buffer( VkAllocationCallbacks const * allocInfo
+		, VkDevice device
 		, VkBufferCreateInfo createInfo )
 		: m_device{ device }
 		, m_queueFamilyIndices{ makeVector( createInfo.pQueueFamilyIndices, createInfo.queueFamilyIndexCount ) }

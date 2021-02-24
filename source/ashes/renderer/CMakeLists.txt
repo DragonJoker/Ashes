@@ -172,4 +172,9 @@ if ( ASHES_BUILD_PLUGINS )
 		NAMESPACE ashes::
 		DESTINATION lib/cmake/ashes
 	)
+
+	set( ENABLED_RENDERERS
+		${ENABLED_RENDERERS}
+		PARENT_SCOPE
+	)
 endif ()

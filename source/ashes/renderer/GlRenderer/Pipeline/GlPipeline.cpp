@@ -272,7 +272,8 @@ namespace ashes::gl
 		}
 	}
 
-	Pipeline::Pipeline( VkDevice device
+	Pipeline::Pipeline( VkAllocationCallbacks const * allocInfo
+		, VkDevice device
 		, VkGraphicsPipelineCreateInfo createInfo )
 		: m_device{ device }
 		, m_flags{ createInfo.flags }
@@ -319,7 +320,8 @@ namespace ashes::gl
 		get( m_layout )->addPipeline( get( this ) );
 	}
 
-	Pipeline::Pipeline( VkDevice device
+	Pipeline::Pipeline( VkAllocationCallbacks const * allocInfo
+		, VkDevice device
 		, VkComputePipelineCreateInfo createInfo )
 		: m_device{ device }
 		, m_stages{ makeVector( &createInfo.stage, 1u ) }

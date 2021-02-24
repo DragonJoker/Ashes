@@ -17,11 +17,13 @@ namespace ashes::gl
 		: public IcdObject
 	{
 	public:
-		Image( VkDevice device
+		Image( VkAllocationCallbacks const * allocInfo
+			, VkDevice device
 			, VkFormat format
 			, VkExtent2D const & dimensions
 			, bool swapchainImage = false );
-		Image( VkDevice device
+		Image( VkAllocationCallbacks const * allocInfo
+			, VkDevice device
 			, VkImageCreateInfo createInfo
 			, bool swapchainImage = false );
 		~Image();

@@ -8,7 +8,8 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	Semaphore::Semaphore( VkDevice device )
+	Semaphore::Semaphore( VkAllocationCallbacks const * allocInfo
+		, VkDevice device )
 		: m_device{ device }
 	{
 	}

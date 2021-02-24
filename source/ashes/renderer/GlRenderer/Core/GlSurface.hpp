@@ -13,21 +13,27 @@ namespace ashes::gl
 	{
 	public:
 #if _WIN32
-		SurfaceKHR( VkInstance instance
+		SurfaceKHR( VkAllocationCallbacks const * allocInfo
+			, VkInstance instance
 			, VkWin32SurfaceCreateInfoKHR createInfo );
 #elif __linux__
-		SurfaceKHR( VkInstance instance
+		SurfaceKHR( VkAllocationCallbacks const * allocInfo
+			, VkInstance instance
 			, VkXlibSurfaceCreateInfoKHR createInfo );
-		SurfaceKHR( VkInstance instance
+		SurfaceKHR( VkAllocationCallbacks const * allocInfo
+			, VkInstance instance
 			, VkXcbSurfaceCreateInfoKHR createInfo );
-		SurfaceKHR( VkInstance instance
+		SurfaceKHR( VkAllocationCallbacks const * allocInfo
+			, VkInstance instance
 			, VkWaylandSurfaceCreateInfoKHR createInfo );
 #elif __APPLE__
-		SurfaceKHR( VkInstance instance
+		SurfaceKHR( VkAllocationCallbacks const * allocInfo
+			, VkInstance instance
 			, VkMacOSSurfaceCreateInfoMVK createInfo );
 #endif
 #ifdef VK_KHR_display
-		SurfaceKHR( VkInstance instance
+		SurfaceKHR( VkAllocationCallbacks const * allocInfo
+			, VkInstance instance
 			, VkDisplaySurfaceCreateInfoKHR createInfo );
 #endif
 		~SurfaceKHR();

@@ -26,7 +26,8 @@ namespace ashes::gl
 		*\param[in] flags
 		*	Combinaison binaire de VkCommandPoolCreateFlagBits.
 		*/
-		CommandPool( VkDevice device
+		CommandPool( VkAllocationCallbacks const * allocInfo
+			, VkDevice device
 			, VkCommandPoolCreateInfo createInfo );
 
 		VkResult reset( VkCommandPoolResetFlags flags );

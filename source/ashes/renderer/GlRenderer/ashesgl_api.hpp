@@ -437,7 +437,7 @@ namespace ashes::gl
 		{
 			using Type = typename VkGlTypeTraits< VkType >::Type;
 
-			vkValue = VkType( new Type{ std::forward< Params && >( params )... } );
+			vkValue = VkType( new Type{ nullptr, std::forward< Params && >( params )... } );
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )
@@ -459,7 +459,7 @@ namespace ashes::gl
 
 	template< typename VkType, typename ... Params >
 	VkResult allocate( VkType & vkValue
-		, const VkAllocationCallbacks * allocInfo
+		, VkAllocationCallbacks const * allocInfo
 		, Params && ... params )
 	{
 		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
@@ -478,8 +478,16 @@ namespace ashes::gl
 
 				if ( mem )
 				{
-					vkValue = VkType( new( mem )Type{ std::forward< Params && >( params )... } );
-					result = VK_SUCCESS;
+					try
+					{
+						vkValue = VkType( new( mem )Type{ allocInfo, std::forward< Params && >( params )... } );
+						result = VK_SUCCESS;
+					}
+					catch ( Exception & )
+					{
+						allocInfo->pfnFree( allocInfo->pUserData, mem );
+						throw;
+					}
 				}
 				else
 				{
@@ -488,7 +496,7 @@ namespace ashes::gl
 			}
 			else
 			{
-				vkValue = VkType( new Type{ std::forward< Params && >( params )... } );
+				vkValue = VkType( new Type{ allocInfo, std::forward< Params && >( params )... } );
 				result = VK_SUCCESS;
 			}
 		}

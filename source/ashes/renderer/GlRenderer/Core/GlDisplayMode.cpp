@@ -9,7 +9,8 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	DisplayModeKHR::DisplayModeKHR( VkDisplayKHR display
+	DisplayModeKHR::DisplayModeKHR( VkAllocationCallbacks const * allocInfo
+		, VkDisplayKHR display
 		, VkDisplayModeCreateInfoKHR createInfo )
 		: m_display{ display }
 		, m_createInfo{ std::move( createInfo ) }

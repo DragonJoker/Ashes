@@ -31,7 +31,8 @@ namespace ashes::gl
 		: public AutoIdIcdObject< DescriptorSet >
 	{
 	public:
-		DescriptorSet( VkDescriptorPool pool
+		DescriptorSet( VkAllocationCallbacks const * allocInfo
+			, VkDescriptorPool pool
 			, VkDescriptorSetLayout layout );
 		~DescriptorSet();
 
@@ -102,6 +103,7 @@ namespace ashes::gl
 		void mergeWrites( LayoutBindingWrites & writes, VkWriteDescriptorSet const & write );
 
 	private:
+		VkAllocationCallbacks const * m_allocInfo;
 		VkDescriptorPool m_pool;
 		VkDescriptorSetLayout m_layout;
 		std::vector< std::vector< VkDescriptorImageInfo > > m_imagesInfos;

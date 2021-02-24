@@ -16,7 +16,8 @@ namespace ashes::gl
 		: public IcdObject
 	{
 	public:
-		BufferView( VkDevice device
+		BufferView( VkAllocationCallbacks const * allocInfo
+			, VkDevice device
 			, VkBufferViewCreateInfo createInfo );
 		~BufferView();
 

@@ -25,9 +25,11 @@ namespace ashes::gl
 		: public IcdObject
 	{
 	public:
-		Framebuffer( VkDevice device
+		Framebuffer( VkAllocationCallbacks const * allocInfo
+			, VkDevice device
 			, VkFramebufferCreateInfo createInfo );
-		Framebuffer( VkDevice device
+		Framebuffer( VkAllocationCallbacks const * allocInfo
+			, VkDevice device
 			, GLuint name );
 		~Framebuffer();
 

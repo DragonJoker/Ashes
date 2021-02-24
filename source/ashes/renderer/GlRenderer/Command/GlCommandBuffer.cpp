@@ -163,7 +163,8 @@ namespace ashes::gl
 		}
 	}
 
-	CommandBuffer::CommandBuffer( VkDevice device
+	CommandBuffer::CommandBuffer( VkAllocationCallbacks const * allocInfo
+		, VkDevice device
 		, VkCommandBufferLevel level )
 		: m_device{ device }
 		, m_level{ level }

@@ -13,9 +13,11 @@
 
 namespace ashes::gl
 {
-	DescriptorSet::DescriptorSet( VkDescriptorPool pool
+	DescriptorSet::DescriptorSet( VkAllocationCallbacks const * allocInfo
+		, VkDescriptorPool pool
 		, VkDescriptorSetLayout layout )
-		: m_pool{ pool }
+		: m_allocInfo{ allocInfo }
+		, m_pool{ pool }
 		, m_layout{ layout }
 	{
 		get( pool )->registerSet( get( this ) );
@@ -98,9 +100,9 @@ namespace ashes::gl
 		for ( auto & inlineUbo : m_inlineUbos )
 		{
 			deallocate( inlineUbo->buffer
-				, get( get( m_pool )->getDevice() )->getAllocationCallbacks() );
+				, m_allocInfo );
 			deallocate( inlineUbo->memory
-				, get( get( m_pool )->getDevice() )->getAllocationCallbacks() );
+				, m_allocInfo );
 		}
 	}
 

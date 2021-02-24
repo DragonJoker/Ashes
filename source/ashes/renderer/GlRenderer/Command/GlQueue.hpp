@@ -18,7 +18,8 @@ namespace ashes::gl
 		: public ashes::IcdObject
 	{
 	public:
-		Queue( VkDevice device
+		Queue( VkAllocationCallbacks const * allocInfo
+			, VkDevice device
 			, VkDeviceQueueCreateInfo createInfo
 			, uint32_t index );
 

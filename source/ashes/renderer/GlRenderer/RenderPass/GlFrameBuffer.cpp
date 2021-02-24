@@ -357,7 +357,8 @@ namespace ashes::gl
 		doCheckCompleteness( framebuffer, status );
 	}
 
-	Framebuffer::Framebuffer( VkDevice device
+	Framebuffer::Framebuffer( VkAllocationCallbacks const * allocInfo
+		, VkDevice device
 		, VkFramebufferCreateInfo createInfo )
 		: m_device{ device }
 		, m_flags{ createInfo.flags }
@@ -375,7 +376,8 @@ namespace ashes::gl
 		}
 	}
 
-	Framebuffer::Framebuffer( VkDevice device
+	Framebuffer::Framebuffer( VkAllocationCallbacks const * allocInfo
+		, VkDevice device
 		, GLuint name )
 		: m_device{ device }
 	{

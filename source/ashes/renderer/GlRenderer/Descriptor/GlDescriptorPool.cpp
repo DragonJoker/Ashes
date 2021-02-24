@@ -7,7 +7,8 @@
 
 namespace ashes::gl
 {
-	DescriptorPool::DescriptorPool( VkDevice device
+	DescriptorPool::DescriptorPool( VkAllocationCallbacks const * allocInfo
+		, VkDevice device
 		, VkDescriptorPoolCreateInfo createInfo )
 		: m_device{ device }
 		, m_flags{ createInfo.flags }

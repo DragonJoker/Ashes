@@ -35,9 +35,11 @@ namespace ashes::gl
 		*	Construction / Destruction.
 		*/
 		/**@{*/
-		Pipeline( VkDevice device
+		Pipeline( VkAllocationCallbacks const * allocInfo
+			, VkDevice device
 			, VkGraphicsPipelineCreateInfo createInfo );
-		Pipeline( VkDevice device
+		Pipeline( VkAllocationCallbacks const * allocInfo
+			, VkDevice device
 			, VkComputePipelineCreateInfo createInfo );
 		~Pipeline();
 		GeometryBuffers * findGeometryBuffers( VboBindings const & vbos

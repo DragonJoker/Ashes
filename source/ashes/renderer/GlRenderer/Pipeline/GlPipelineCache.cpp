@@ -2,7 +2,8 @@
 
 namespace ashes::gl
 {
-	PipelineCache::PipelineCache( VkDevice device
+	PipelineCache::PipelineCache( VkAllocationCallbacks const * allocInfo
+		, VkDevice device
 		, VkPipelineCacheCreateInfo createInfo )
 		: m_device{ device }
 		, m_createInfo{ createInfo }

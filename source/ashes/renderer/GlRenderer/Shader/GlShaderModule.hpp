@@ -25,7 +25,8 @@ namespace ashes::gl
 		: public AutoIdIcdObject< ShaderModule >
 	{
 	public:
-		ShaderModule( VkDevice device
+		ShaderModule( VkAllocationCallbacks const * allocInfo
+			, VkDevice device
 			, VkShaderModuleCreateInfo createInfo );
 
 		ShaderDesc compile( VkPipeline pipeline

@@ -18,7 +18,8 @@ namespace ashes::gl
 		: public AutoIdIcdObject< DescriptorPool >
 	{
 	public:
-		DescriptorPool( VkDevice device
+		DescriptorPool( VkAllocationCallbacks const * allocInfo
+			, VkDevice device
 			, VkDescriptorPoolCreateInfo createInfo );
 		~DescriptorPool();
 

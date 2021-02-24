@@ -2,7 +2,8 @@
 
 namespace ashes::gl
 {
-	DescriptorSetLayout::DescriptorSetLayout( VkDevice device
+	DescriptorSetLayout::DescriptorSetLayout( VkAllocationCallbacks const * allocInfo
+		, VkDevice device
 		, VkDescriptorSetLayoutCreateInfo createInfo )
 		: m_device{ device }
 		, m_createInfo{ std::move( createInfo ) }

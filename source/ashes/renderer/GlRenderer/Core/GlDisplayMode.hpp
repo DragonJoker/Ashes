@@ -12,7 +12,8 @@ namespace ashes::gl
 		: public AutoIdIcdObject< DisplayModeKHR >
 	{
 	public:
-		DisplayModeKHR( VkDisplayKHR display
+		DisplayModeKHR( VkAllocationCallbacks const * allocInfo
+			, VkDisplayKHR display
 			, VkDisplayModeCreateInfoKHR createInfo );
 		~DisplayModeKHR();
 
