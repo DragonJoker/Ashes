@@ -364,7 +364,7 @@ namespace ashes::gl
 	void apply( ContextLock const & context
 		, CmdLogCommand const & cmd )
 	{
-		logDebug( cmd.value );
+		logDebug( ( "*** " + std::string{ cmd.value } + " ***" ).c_str() );
 	}
 
 	void apply( ContextLock const & context
