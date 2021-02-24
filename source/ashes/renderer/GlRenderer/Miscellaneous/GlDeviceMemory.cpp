@@ -56,22 +56,22 @@ namespace ashes::gl
 				auto context = get( m_device )->getContext();
 				glLogCall( context
 					, glBindTexture
-					, GlTextureType( m_boundTarget )
+					, m_texture->getTarget()
 					, m_boundName );
 
-				switch ( m_boundTarget )
+				switch ( m_texture->getTarget() )
 				{
 				case GL_TEXTURE_1D:
 					doSetImage1D( context );
 					break;
 				case GL_TEXTURE_2D:
-					doSetImage2D( context );
+					doSetImage2D( context, m_texture->getDimensions().height );
 					break;
 				case GL_TEXTURE_3D:
 					doSetImage3D( context, m_texture->getDimensions().depth );
 					break;
 				case GL_TEXTURE_1D_ARRAY:
-					doSetImage2D( context );
+					doSetImage2D( context, m_texture->getArrayLayers() );
 					break;
 				case GL_TEXTURE_2D_ARRAY:
 					doSetImage3D( context, m_texture->getArrayLayers() );
@@ -79,7 +79,7 @@ namespace ashes::gl
 				case GL_TEXTURE_CUBE:
 					if ( hasTextureStorage( m_device ) )
 					{
-						doSetImage2D( context );
+						doSetImage2D( context, m_texture->getDimensions().height );
 					}
 					else
 					{
@@ -98,7 +98,7 @@ namespace ashes::gl
 					doSetImage2DMS( context );
 					break;
 				case GL_TEXTURE_2D_MULTISAMPLE_ARRAY:
-					doSetImage3DMS( context );
+					doSetImage3DMS( context, m_texture->getArrayLayers() );
 					break;
 				default:
 					break;
@@ -109,7 +109,7 @@ namespace ashes::gl
 					int levels = 0;
 					glLogCall( context
 						, glGetTexParameteriv
-						, GlTextureType( m_boundTarget )
+						, m_texture->getTarget()
 						, GL_TEX_PARAMETER_IMMUTABLE_LEVELS
 						, &levels );
 					if ( levels != m_texture->getMipLevels() )
@@ -123,7 +123,7 @@ namespace ashes::gl
 					int format = 0;
 					glLogCall( context
 						, glGetTexParameteriv
-						, GlTextureType( m_boundTarget )
+						, m_texture->getTarget()
 						, GL_TEX_PARAMETER_IMMUTABLE_FORMAT
 						, &format );
 					if ( format == 0 )
@@ -138,17 +138,17 @@ namespace ashes::gl
 				{
 					glLogCall( context
 						, glTexParameteri
-						, GlTextureType( m_boundTarget )
+						, m_texture->getTarget()
 						, GL_TEX_PARAMETER_MAX_LEVEL
 						, std::max( 0, GLint( m_texture->getMipLevels() ) - 1 ) );
 					glLogCall( context
 						, glGenerateMipmap
-						, m_boundTarget );
+						, m_texture->getTarget() );
 				}
 
 				glLogCall( context
 					, glBindTexture
-					, GlTextureType( m_boundTarget )
+					, m_texture->getTarget()
 					, 0 );
 
 				// Prepare update regions, layer by layer.
@@ -188,7 +188,7 @@ namespace ashes::gl
 
 				glLogCall( context
 					, glBindTexture
-					, GlTextureType( m_boundTarget )
+					, m_texture->getTarget()
 					, m_boundName );
 
 				if ( m_texture->getMipLevels() > 1
@@ -203,12 +203,12 @@ namespace ashes::gl
 
 					glLogCall( context
 						, glGenerateMipmap
-						, GlTextureType( m_boundTarget ) );
+						, m_texture->getTarget() );
 				}
 
 				glLogCall( context
 					, glBindTexture
-					, GlTextureType( m_boundTarget )
+					, m_texture->getTarget()
 					, 0u );
 			}
 
@@ -219,7 +219,7 @@ namespace ashes::gl
 				{
 					glLogCall( context
 						, glTexStorage1D
-						, GlTextureType( m_boundTarget )
+						, m_texture->getTarget()
 						, GLsizei( m_texture->getMipLevels() )
 						, m_internal
 						, m_texture->getDimensions().width );
@@ -228,7 +228,7 @@ namespace ashes::gl
 				{
 					glLogCall( context
 						, glTexImage1D
-						, GlTextureType( m_boundTarget )
+						, m_texture->getTarget()
 						, 0u
 						, m_internal
 						, m_texture->getDimensions().width
@@ -239,27 +239,28 @@ namespace ashes::gl
 				}
 			}
 
-			void doSetImage2D( ContextLock const & context )
+			void doSetImage2D( ContextLock const & context
+				, uint32_t height )
 			{
 				if ( hasTextureStorage( m_device ) )
 				{
 					glLogCall( context
 						, glTexStorage2D
-						, GlTextureType( m_boundTarget )
+						, m_texture->getTarget()
 						, GLsizei( m_texture->getMipLevels() )
 						, m_internal
 						, m_texture->getDimensions().width
-						, m_texture->getDimensions().height );
+						, height );
 				}
 				else
 				{
 					glLogCall( context
 						, glTexImage2D
-						, GlTextureType( m_boundTarget )
+						, m_texture->getTarget()
 						, 0u
 						, m_internal
 						, m_texture->getDimensions().width
-						, m_texture->getDimensions().height
+						, height
 						, 0
 						, m_format
 						, m_type
@@ -291,7 +292,7 @@ namespace ashes::gl
 				{
 					glLogCall( context
 						, glTexStorage3D
-						, GlTextureType( m_boundTarget )
+						, m_texture->getTarget()
 						, GLsizei( m_texture->getMipLevels() )
 						, m_internal
 						, m_texture->getDimensions().width
@@ -302,7 +303,7 @@ namespace ashes::gl
 				{
 					glLogCall( context
 						, glTexImage3D
-						, GlTextureType( m_boundTarget )
+						, m_texture->getTarget()
 						, 0u
 						, m_internal
 						, m_texture->getDimensions().width
@@ -321,7 +322,7 @@ namespace ashes::gl
 				{
 					glLogCall( context
 						, glTexStorage2DMultisample
-						, GlTextureType( m_boundTarget )
+						, m_texture->getTarget()
 						, GLsizei( m_texture->getSamples() )
 						, m_internal
 						, m_texture->getDimensions().width
@@ -332,7 +333,7 @@ namespace ashes::gl
 				{
 					glLogCall( context
 						, glTexImage2DMultisample
-						, GlTextureType( m_boundTarget )
+						, m_texture->getTarget()
 						, GLsizei( m_texture->getSamples() )
 						, m_internal
 						, m_texture->getDimensions().width
@@ -341,30 +342,31 @@ namespace ashes::gl
 				}
 			}
 
-			void doSetImage3DMS( ContextLock const & context )
+			void doSetImage3DMS( ContextLock const & context
+				, uint32_t depth )
 			{
 				if ( hasTextureStorage( m_device ) )
 				{
 					glLogCall( context
 						, glTexStorage3DMultisample
-						, GlTextureType( m_boundTarget )
+						, m_texture->getTarget()
 						, GLsizei( m_texture->getSamples() )
 						, m_internal
 						, m_texture->getDimensions().width
 						, m_texture->getDimensions().height
-						, m_texture->getDimensions().depth
+						, depth
 						, GL_TRUE );
 				}
 				else
 				{
 					glLogCall( context
 						, glTexImage3DMultisample
-						, GlTextureType( m_boundTarget )
+						, m_texture->getTarget()
 						, GLsizei( m_texture->getSamples() )
 						, m_internal
 						, m_texture->getDimensions().width
 						, m_texture->getDimensions().height
-						, m_texture->getDimensions().depth
+						, depth
 						, GL_TRUE );
 				}
 			}
@@ -413,12 +415,12 @@ namespace ashes::gl
 						, m_texture->getFormat()
 						, copyInfo.imageSubresource.mipLevel );
 
-					switch ( m_boundTarget )
+					switch ( m_texture->getTarget() )
 					{
 					case GL_TEXTURE_1D:
 						glLogCall( context
 							, glCompressedTexSubImage1D
-							, GlTextureType( m_boundTarget )
+							, m_texture->getTarget()
 							, copyInfo.imageSubresource.mipLevel
 							, copyInfo.imageOffset.x
 							, copyInfo.imageExtent.width
@@ -430,7 +432,7 @@ namespace ashes::gl
 					case GL_TEXTURE_2D:
 						glLogCall( context
 							, glCompressedTexSubImage2D
-							, GlTextureType( m_boundTarget )
+							, m_texture->getTarget()
 							, copyInfo.imageSubresource.mipLevel
 							, copyInfo.imageOffset.x
 							, copyInfo.imageOffset.y
@@ -444,7 +446,7 @@ namespace ashes::gl
 					case GL_TEXTURE_3D:
 						glLogCall( context
 							, glCompressedTexSubImage3D
-							, GlTextureType( m_boundTarget )
+							, m_texture->getTarget()
 							, copyInfo.imageSubresource.mipLevel
 							, copyInfo.imageOffset.x
 							, copyInfo.imageOffset.y
@@ -459,7 +461,7 @@ namespace ashes::gl
 					case GL_TEXTURE_1D_ARRAY:
 						glLogCall( context
 							, glCompressedTexSubImage2D
-							, GlTextureType( m_boundTarget )
+							, m_texture->getTarget()
 							, copyInfo.imageSubresource.mipLevel
 							, copyInfo.imageOffset.x
 							, copyInfo.imageSubresource.baseArrayLayer
@@ -473,7 +475,7 @@ namespace ashes::gl
 					case GL_TEXTURE_2D_ARRAY:
 						glLogCall( context
 							, glCompressedTexSubImage3D
-							, GlTextureType( m_boundTarget )
+							, m_texture->getTarget()
 							, copyInfo.imageSubresource.mipLevel
 							, copyInfo.imageOffset.x
 							, copyInfo.imageOffset.y
@@ -489,12 +491,12 @@ namespace ashes::gl
 				}
 				else
 				{
-					switch ( m_boundTarget )
+					switch ( m_texture->getTarget() )
 					{
 					case GL_TEXTURE_1D:
 						glLogCall( context
 							, glTexSubImage1D
-							, GlTextureType( m_boundTarget )
+							, m_texture->getTarget()
 							, copyInfo.imageSubresource.mipLevel
 							, copyInfo.imageOffset.x
 							, copyInfo.imageExtent.width
@@ -506,7 +508,7 @@ namespace ashes::gl
 					case GL_TEXTURE_2D:
 						glLogCall( context
 							, glTexSubImage2D
-							, GlTextureType( m_boundTarget )
+							, m_texture->getTarget()
 							, copyInfo.imageSubresource.mipLevel
 							, copyInfo.imageOffset.x
 							, copyInfo.imageOffset.y
@@ -520,7 +522,7 @@ namespace ashes::gl
 					case GL_TEXTURE_3D:
 						glLogCall( context
 							, glTexSubImage3D
-							, GlTextureType( m_boundTarget )
+							, m_texture->getTarget()
 							, copyInfo.imageSubresource.mipLevel
 							, copyInfo.imageOffset.x
 							, copyInfo.imageOffset.y
@@ -536,7 +538,7 @@ namespace ashes::gl
 					case GL_TEXTURE_1D_ARRAY:
 						glLogCall( context
 							, glTexSubImage2D
-							, GlTextureType( m_boundTarget )
+							, m_texture->getTarget()
 							, copyInfo.imageSubresource.mipLevel
 							, copyInfo.imageOffset.x
 							, copyInfo.imageSubresource.baseArrayLayer
@@ -550,7 +552,7 @@ namespace ashes::gl
 					case GL_TEXTURE_2D_ARRAY:
 						glLogCall( context
 							, glTexSubImage3D
-							, GlTextureType( m_boundTarget )
+							, m_texture->getTarget()
 							, copyInfo.imageSubresource.mipLevel
 							, copyInfo.imageOffset.x
 							, copyInfo.imageOffset.y
@@ -640,6 +642,47 @@ namespace ashes::gl
 
 	//************************************************************************************************
 
+#if !defined( NDEBUG )
+
+	static uint32_t constexpr ControlValueCount = 64u;
+	static uint8_t constexpr ControlValue = 0xDC;
+
+	void initControlValue( ByteArray & data )
+	{
+		auto it = data.begin() + ( data.size() - ControlValueCount );
+
+		while ( it != data.end() )
+		{
+			*it = ControlValue;
+			++it;
+		}
+	}
+
+	void checkControlValue( ByteArray const & data )
+	{
+		auto it = data.begin() + ( data.size() - ControlValueCount );
+
+		while ( it != data.end() )
+		{
+			assert( *it == ControlValue );
+			++it;
+		}
+	}
+
+#else
+
+	static uint32_t constexpr ControlValueCount = 0u;
+
+	void initControlValue( ByteArray const & data )
+	{
+	}
+
+	void checkControlValue( ByteArray const & data )
+	{
+	}
+
+#endif
+
 	DeviceMemory::DeviceMemory( VkAllocationCallbacks const * allocInfo
 		, VkDevice device
 		, VkMemoryAllocateInfo allocateInfo )
@@ -647,7 +690,8 @@ namespace ashes::gl
 		, m_allocateInfo{ std::move( allocateInfo ) }
 		, m_flags{ getFlags( m_device, m_allocateInfo.memoryTypeIndex ) }
 	{
-		m_data.resize( allocateInfo.allocationSize );
+		m_data.resize( allocateInfo.allocationSize + ControlValueCount );
+		initControlValue( m_data );
 		// Create the buffer effectively owning the data
 		auto context = get( m_device )->getContext();
 		m_internal = context->createBuffer( GL_BUFFER_TARGET_COPY_WRITE
@@ -784,10 +828,6 @@ namespace ashes::gl
 			glLogCall( context
 				, glUnmapBuffer
 				, GL_BUFFER_TARGET_COPY_WRITE );
-			glLogCall( context
-				, glBindBuffer
-				, GL_BUFFER_TARGET_COPY_WRITE
-				, 0u );
 		}
 
 		glLogCall( context
@@ -842,13 +882,22 @@ namespace ashes::gl
 	{
 		assert( ( !m_mapped || ( size == ~( 0ull ) ? ( m_mappedSize == m_allocateInfo.allocationSize ) : ( m_mappedSize == size ) ) ) 
 			&& "VkDeviceMemory should not be mapped" );
+
+		if ( size == WholeSize )
+		{
+			m_mappedOffset = 0u;
+			m_mappedSize = m_allocateInfo.allocationSize;
+		}
+		else
+		{
+			m_mappedOffset = offset;
+			m_mappedSize = size;
+		}
+
 		*data = m_data.data() + offset;
-		m_mappedOffset = offset;
-		m_mappedSize = size == WholeSize
-			? m_allocateInfo.allocationSize
-			: size;
 		m_mapped = *data != nullptr;
 		assert( m_mapped );
+		assert( m_mappedOffset + m_mappedSize < m_data.size() );
 		m_dirty = true;
 		return VK_SUCCESS;
 	}
@@ -857,7 +906,13 @@ namespace ashes::gl
 		, VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
-		assert( m_mapped && "VkDeviceMemory should be mapped" );
+		if ( size == WholeSize )
+		{
+			offset = 0u;
+			size = m_allocateInfo.allocationSize;
+		}
+
+		checkControlValue( m_data );
 		upload( context, offset, size );
 		return VK_SUCCESS;
 	}
@@ -866,8 +921,15 @@ namespace ashes::gl
 		, VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
+		if ( size == WholeSize )
+		{
+			offset = 0u;
+			size = m_allocateInfo.allocationSize;
+		}
+
 		m_dirty = true;
-		download( context, m_mappedOffset, m_mappedSize );
+		checkControlValue( m_data );
+		download( context, offset, size );
 		return VK_SUCCESS;
 	}
 
@@ -876,6 +938,7 @@ namespace ashes::gl
 		if ( m_mapped )
 		{
 			m_mapped = false;
+			checkControlValue( m_data );
 			upload( context, m_mappedOffset, m_mappedSize );
 		}
 	}
