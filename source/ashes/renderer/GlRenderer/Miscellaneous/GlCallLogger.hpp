@@ -21,6 +21,7 @@ See LICENSE file in root folder
 #include "renderer/GlRenderer/Enum/GlCullModeFlag.hpp"
 #include "renderer/GlRenderer/Enum/GlDebugReportObjectType.hpp"
 #include "renderer/GlRenderer/Enum/GlFenceWaitFlag.hpp"
+#include "renderer/GlRenderer/Enum/GlFenceWaitResult.hpp"
 #include "renderer/GlRenderer/Enum/GlFilter.hpp"
 #include "renderer/GlRenderer/Enum/GlFormat.hpp"
 #include "renderer/GlRenderer/Enum/GlFormatProperty.hpp"

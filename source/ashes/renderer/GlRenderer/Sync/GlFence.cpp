@@ -10,16 +10,6 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	enum GlFenceWaitResult
-	{
-		GL_SYNC_STATUS = 0x9114,
-		GL_UNSIGNALED = 0x9118,
-		GL_SIGNALED = 0x9119,
-		GL_WAIT_RESULT_ALREADY_SIGNALED = 0x911A,
-		GL_WAIT_RESULT_CONDITION_SATISFIED = 0x911C,
-		GL_WAIT_RESULT_TIMEOUT_EXPIRED = 0x911B,
-	};
-
 	Fence::Fence( VkAllocationCallbacks const * allocInfo
 		, VkDevice device
 		, VkFenceCreateFlags flags )
@@ -91,11 +81,11 @@ namespace ashes::gl
 		glLogCall( context
 			, glGetSynciv
 			, m_fence
-			, GL_SYNC_STATUS
+			, GL_WAIT_RESULT_SYNC_STATUS
 			, GLsizei( sizeof( value ) )
 			, &size
 			, &value );
-		return value == GL_UNSIGNALED
+		return value == GL_WAIT_RESULT_UNSIGNALED
 			? VK_NOT_READY
 			: VK_SUCCESS;
 	}
