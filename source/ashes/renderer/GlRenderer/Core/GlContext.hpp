@@ -75,65 +75,65 @@ namespace ashes::gl
 		static ContextPtr create( VkInstance instance
 			, VkSurfaceKHR surface );
 
-		inline void swapBuffers()const
+		void swapBuffers()const
 		{
 			m_impl->swapBuffers();
 		}
 
-		inline bool isEnabled()const
+		bool isEnabled()const
 		{
 			return m_enabled
 				&& m_activeThread == std::this_thread::get_id();
 		}
 
-		inline gl::ContextImpl const & getImpl()const
+		gl::ContextImpl const & getImpl()const
 		{
 			return *m_impl;
 		}
 
-		inline VkInstance getInstance()const
+		VkInstance getInstance()const
 		{
 			return m_instance;
 		}
 
 		VkExtent2D const & getExtent()const
 		{
-			return m_extent;
+			return m_impl->getExtent();
 		}
 
 #define GL_LIB_BASE_FUNCTION( fun )\
 		PFN_gl##fun m_gl##fun = nullptr;\
 		template< typename ... Params >\
-		inline auto gl##fun( Params... params )const\
+		auto gl##fun( Params... params )const\
 		{\
 			return m_gl##fun( params... );\
 		}
 #define GL_LIB_FUNCTION( fun )\
 		PFN_gl##fun m_gl##fun = nullptr;\
 		template< typename ... Params >\
-		inline auto gl##fun( Params... params )const\
+		auto gl##fun( Params... params )const\
 		{\
 			return m_gl##fun( params... );\
 		}
 #define GL_LIB_FUNCTION_OPT( fun )\
 		PFN_gl##fun m_gl##fun = nullptr;\
 		template< typename ... Params >\
-		inline auto gl##fun( Params... params )const\
+		auto gl##fun( Params... params )const\
 		{\
 			return m_gl##fun( params... );\
 		}\
-		inline bool has##fun()const\
+		bool has##fun()const\
 		{\
 			return bool( m_gl##fun );\
 		}
 #define GL_LIB_FUNCTION_EXT( fun, ... )\
 		PFN_gl##fun m_gl##fun = nullptr;\
 		template< typename ... Params >\
-		inline auto gl##fun( Params... params )const\
+		auto gl##fun( Params... params )const\
 		{\
 			return m_gl##fun( params... );\
 		}\
-		inline bool has##fun()const\
+		bool has##fun()const\
 		{\
 			return bool( m_gl##fun );\
 		}
@@ -156,7 +156,6 @@ namespace ashes::gl
 
 	protected:
 		VkInstance m_instance;
-		VkExtent2D m_extent;
 		std::mutex m_mutex;
 		std::atomic< bool > m_enabled{ false };
 		std::atomic< std::thread::id > m_activeThread;

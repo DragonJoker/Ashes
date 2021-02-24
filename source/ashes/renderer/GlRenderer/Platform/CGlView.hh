@@ -15,5 +15,6 @@ struct GLView
 
 GLView makeGLView( const void * handle );
 void freeGLView( GLView view );
+void getGLViewSize( GLView view, int * width, int * height );
 
 #endif

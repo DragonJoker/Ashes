@@ -59,6 +59,11 @@ namespace ashes::gl
 	{
 		m_context->swap();
 	}
+
+	VkExtent2D X11EglContext::getExtent()const
+	{
+		return m_context->getExtent();
+	}
 }
 
 #	endif

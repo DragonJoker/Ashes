@@ -200,6 +200,22 @@ namespace ashes::gl
 		return eglSwapBuffers( m_display, m_surface );
 	}
 
+	VkExtent2D ContextEgl::getExtent()const
+	{
+		VkExtent2D result{};
+		EGLint width = 0;
+		EGLint height = 0;
+
+		if ( eglQuerySurface( m_display, m_surface, EGL_WIDTH, &width )
+			&& eglQuerySurface( m_display, m_surface, EGL_HEIGHT, &height ) )
+		{
+			result.width = width;
+			result.height = height;
+		}
+
+		return result;
+	}
+
 	void ContextEgl::doCleanup()
 	{
 		if ( m_context )
