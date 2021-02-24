@@ -129,7 +129,7 @@ namespace ashes::gl
 	MswContext::MswContext( VkInstance instance
 		, VkDisplaySurfaceCreateInfoKHR createInfo
 		, ContextImpl const * mainContext )
-		: ContextImpl{ instance, createInfo.imageExtent }
+		: ContextImpl{ instance }
 		, displayCreateInfo{ std::move( createInfo ) }
 		, m_pfd{ getPfd( reinterpret_cast< VkStructure const * >( &displayCreateInfo ) ) }
 		, m_hWnd{ ::GetActiveWindow() }
@@ -234,6 +234,25 @@ namespace ashes::gl
 	void MswContext::swapBuffers()const
 	{
 		::SwapBuffers( m_hDC );
+	}
+
+	VkExtent2D MswContext::getExtent()const
+	{
+		if ( displayCreateInfo.sType )
+		{
+			return displayCreateInfo.imageExtent;
+		}
+
+		VkExtent2D result{};
+		RECT rect;
+
+		if ( ::GetClientRect( m_hWnd, &rect ) )
+		{
+			result.width = rect.right - rect.left;
+			result.height = rect.bottom - rect.top;
+		}
+
+		return result;
 	}
 
 	void MswContext::doSelectFormat()

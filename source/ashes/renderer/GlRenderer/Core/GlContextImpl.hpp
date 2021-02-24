@@ -11,10 +11,8 @@ namespace ashes::gl
 	class ContextImpl
 	{
 	protected:
-		ContextImpl( VkInstance instance
-			, VkExtent2D const & extent = {} )
+		ContextImpl( VkInstance instance )
 			: instance{ instance }
-			, extent{ extent }
 		{
 		}
 
@@ -26,6 +24,7 @@ namespace ashes::gl
 		virtual void enable()const = 0;
 		virtual void disable()const = 0;
 		virtual void swapBuffers()const = 0;
+		virtual VkExtent2D getExtent()const = 0;
 
 #ifdef _WIN32
 		static ContextImplPtr create( VkInstance instance
@@ -53,6 +52,5 @@ namespace ashes::gl
 #endif
 
 		VkInstance instance;
-		VkExtent2D extent;
 	};
 }

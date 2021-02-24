@@ -90,6 +90,11 @@ namespace ashes::gl
 	{
 		m_context->swap();
 	}
+
+	VkExtent2D CoreContext::getExtent()const
+	{
+		return m_context->getExtent();
+	}
 }
 
 #endif

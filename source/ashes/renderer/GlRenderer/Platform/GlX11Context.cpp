@@ -126,7 +126,7 @@ namespace ashes::gl
 	X11Context::X11Context( VkInstance instance
 		, VkDisplaySurfaceCreateInfoKHR createInfo
 		, ContextImpl const * mainContext )
-		: ContextImpl{ instance, createInfo.imageExtent }
+		: ContextImpl{ instance }
 		, displayCreateInfo{ std::move( createInfo ) }
 		, m_mainContext{ static_cast< X11Context const * >( mainContext ) }
 		, m_display{ XOpenDisplay( nullptr ) }
@@ -253,6 +253,25 @@ namespace ashes::gl
 	void X11Context::swapBuffers()const
 	{
 		glXSwapBuffers( m_display, m_window );
+	}
+
+	VkExtent2D X11Context::getExtent()const
+	{
+		if ( displayCreateInfo.sType )
+		{
+			return displayCreateInfo.imageExtent;
+		}
+
+		VkExtent2D result{};
+		XWindowAttributes attribs;
+
+		if ( XGetWindowAttributes( m_display, m_window, &attribs ) )
+		{
+			result.width = attribs.width;
+			result.height = attribs.height;
+		}
+
+		return result;
 	}
 
 	void X11Context::doLoadSytemFunctions() try

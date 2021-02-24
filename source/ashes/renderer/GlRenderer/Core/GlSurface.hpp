@@ -38,8 +38,9 @@ namespace ashes::gl
 #endif
 		~SurfaceKHR();
 
-		VkSurfaceCapabilitiesKHR getCapabilities()const
+		VkSurfaceCapabilitiesKHR getCapabilities()
 		{
+			updateSurfaceInfos();
 			return m_surfaceCapabilities;
 		}
 
@@ -135,7 +136,8 @@ namespace ashes::gl
 		}
 
 	private:
-		static void getSurfaceInfos( VkSurfaceFormatArrayKHR & formats
+		void updateSurfaceInfos();
+		static void getDefaultSurfaceInfos( VkSurfaceFormatArrayKHR & formats
 			, VkSurfaceCapabilitiesKHR & capabilities );
 
 	private:

@@ -94,7 +94,6 @@ namespace ashes::gl
 		loadBaseFunctions();
 		m_impl->disable();
 		m_impl->postInitialise();
-		m_extent = m_impl->extent;
 	}
 
 	Context::~Context()

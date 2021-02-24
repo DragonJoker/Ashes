@@ -33,6 +33,7 @@ namespace ashes::gl
 		EGLBoolean enable()const;
 		EGLBoolean disable()const;
 		EGLBoolean swap()const;
+		VkExtent2D getExtent()const;
 
 		inline EGLContext getContext()const
 		{
