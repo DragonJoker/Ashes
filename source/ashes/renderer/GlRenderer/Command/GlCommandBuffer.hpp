@@ -270,5 +270,7 @@ namespace ashes::gl
 		mutable Optional< DebugLabel > m_label;
 		std::vector< std::unique_ptr< ByteArray > > m_updatesData;
 		mutable PreExecuteActions m_preExecuteActions;
+		mutable VkDeviceMemorySet m_downloads;
+		mutable VkDeviceMemorySet m_uploads;
 	};
 }

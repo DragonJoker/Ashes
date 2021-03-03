@@ -3,6 +3,7 @@
 #include "Core/GlContextLock.hpp"
 #include "Core/GlDevice.hpp"
 #include "Miscellaneous/GlDeviceMemory.hpp"
+#include "Miscellaneous/GlDeviceMemoryBinding.hpp"
 
 #include "ashesgl_api.hpp"
 
@@ -21,13 +22,12 @@ namespace ashes::gl
 
 	Buffer::~Buffer()
 	{
-		if ( m_memory )
+		if ( m_binding )
 		{
-			get( m_memory )->unbindBuffer( get( this ) );
+			get( m_binding->getParent() )->unbindBuffer( get( this ) );
 		}
 
 		m_copyTarget = GlBufferTarget( 0u );
-		m_memory = VK_NULL_HANDLE;
 		m_target = GlBufferTarget( 0u );
 		m_internal = GL_INVALID_INDEX;
 		m_queueFamilyIndices.clear();
@@ -54,7 +54,13 @@ namespace ashes::gl
 
 	bool Buffer::isMapped()const
 	{
-		assert( m_memory != VK_NULL_HANDLE );
-		return get( m_memory )->isMapped();
+		assert( m_binding != nullptr );
+		return m_binding->isMapped();
+	}
+
+	VkDeviceSize Buffer::getOffset()const
+	{
+		assert( m_binding != nullptr );
+		return m_binding->getOffset();
 	}
 }

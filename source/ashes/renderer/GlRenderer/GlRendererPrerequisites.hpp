@@ -30,6 +30,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #if defined( _WIN32 ) && !defined( GlRenderer_STATIC )
@@ -101,6 +102,7 @@ namespace ashes::gl
 	class DescriptorSetLayout;
 	class Device;
 	class DeviceMemory;
+	class DeviceMemoryBinding;
 	class Event;
 	class Fence;
 	class Framebuffer;
@@ -145,6 +147,7 @@ namespace ashes::gl
 	using ContextPtr = std::unique_ptr< Context >;
 	using CommandPtr = std::unique_ptr< CommandBase >;
 	using ContextImplPtr = std::unique_ptr< ContextImpl >;
+	using DeviceMemoryBindingPtr = std::unique_ptr< DeviceMemoryBinding >;
 
 	using CommandArray = std::vector< CommandPtr >;
 	using ContextStateArray = std::vector< ContextState >;
@@ -154,6 +157,7 @@ namespace ashes::gl
 	using GeometryBuffersRef = std::reference_wrapper< GeometryBuffers >;
 	using GeometryBuffersPtr = std::unique_ptr< GeometryBuffers >;
 	using GeometryBuffersRefArray = std::vector< GeometryBuffersRef >;
+	using VkDeviceMemorySet = std::unordered_set< VkDeviceMemory >;
 
 	struct GlPhysicalDeviceFeatures
 	{

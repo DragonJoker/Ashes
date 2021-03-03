@@ -577,7 +577,7 @@ namespace ashes::gl
 	void Framebuffer::doCreateFramebuffer()
 	{
 		auto context = get( m_device )->getContext();
-		glLogCall( context
+		glLogCreateCall( context
 			, glGenFramebuffers
 			, 1
 			, &m_internal );

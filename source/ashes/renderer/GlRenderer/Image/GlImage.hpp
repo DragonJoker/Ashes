@@ -86,14 +86,14 @@ namespace ashes::gl
 			return m_swapchainImage;
 		}
 
-		inline void setMemory( VkDeviceMemory memory )
+		void setMemoryBinding( DeviceMemoryBinding const * binding )
 		{
-			m_memory = memory;
+			m_binding = binding;
 		}
 
-		inline VkDeviceMemory getMemory()const
+		DeviceMemoryBinding const & getMemoryBinding()const
 		{
-			return m_memory;
+			return *m_binding;
 		}
 
 	private:
@@ -114,7 +114,7 @@ namespace ashes::gl
 		UInt32Array m_queueFamilyIndices;
 		GlTextureType m_target;
 		bool m_swapchainImage{ false };
-		VkDeviceMemory m_memory{ nullptr };
+		DeviceMemoryBinding const * m_binding{ nullptr };
 		VkMemoryRequirements m_memoryRequirements;
 	};
 }
