@@ -71,7 +71,7 @@ namespace ashes::gl
 				&& hasTextureViews( m_device ) )
 			{
 				auto context = get( m_device )->getContext();
-				glLogCall( context
+				glLogCreateCall( context
 					, glGenTextures
 					, 1
 					, &m_internal );

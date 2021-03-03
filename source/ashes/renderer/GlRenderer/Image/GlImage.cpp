@@ -208,7 +208,7 @@ namespace ashes::gl
 		, m_swapchainImage{ swapchainImage }
 	{
 		auto context = get( m_device )->getContext();
-		glLogCall( context
+		glLogCreateCall( context
 			, glGenTextures
 			, 1
 			, &m_internal );

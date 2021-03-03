@@ -2,6 +2,7 @@
 
 #include "Buffer/GlBuffer.hpp"
 #include "Core/GlDevice.hpp"
+#include "Miscellaneous/GlDeviceMemory.hpp"
 
 #include "ashesgl_api.hpp"
 
@@ -16,7 +17,7 @@ namespace ashes::gl
 		, m_range{ createInfo.range }
 	{
 		auto context = get( m_device )->getContext();
-		glLogCall( context
+		glLogCreateCall( context
 			, glGenTextures
 			, 1
 			, &m_internal );

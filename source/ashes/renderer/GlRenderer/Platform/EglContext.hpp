@@ -4,6 +4,8 @@ See LICENSE file in root folder
 */
 #pragma once
 
+#include "renderer/GlRenderer/GlRendererPrerequisites.hpp"
+
 #if defined( __linux__ )
 
 #include <EGL/egl.h>
