@@ -252,7 +252,7 @@ namespace ashes::gl
 		, Optional< VkPipelineVertexInputStateCreateInfo > const & vertexInputState )
 	{
 		program = merge( descs );
-		glLogCall( context
+		glLogCreateCall( context
 			, glGenProgramPipelines
 			, 1
 			, &program.program );

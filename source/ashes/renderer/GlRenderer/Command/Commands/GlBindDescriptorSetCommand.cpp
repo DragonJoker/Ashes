@@ -115,7 +115,7 @@ namespace ashes::gl
 				list.push_back( makeCmd< OpType::eBindBufferRange >( bindingIndex
 					, GL_BUFFER_TARGET_UNIFORM
 					, get( buffer )->getInternal()
-					, int64_t( get( buffer )->getInternalOffset() + write.pBufferInfo[i].offset )
+					, int64_t( get( buffer )->getOffset() + write.pBufferInfo[i].offset )
 					, int64_t( std::min( write.pBufferInfo[i].range, uint64_t( get( buffer )->getMemoryRequirements().size ) ) ) ) );
 			}
 		}
@@ -136,7 +136,7 @@ namespace ashes::gl
 				list.push_back( makeCmd< OpType::eBindBufferRange >( bindingIndex
 					, GL_BUFFER_TARGET_SHADER_STORAGE
 					, get( buffer )->getInternal()
-					, int64_t( get( buffer )->getInternalOffset() + write.pBufferInfo[i].offset )
+					, int64_t( get( buffer )->getOffset() + write.pBufferInfo[i].offset )
 					, int64_t( std::min( write.pBufferInfo[i].range, uint64_t( get( buffer )->getMemoryRequirements().size ) ) ) ) );
 			}
 		}
@@ -177,7 +177,7 @@ namespace ashes::gl
 				list.push_back( makeCmd< OpType::eBindBufferRange >( bindingIndex
 					, GL_BUFFER_TARGET_UNIFORM
 					, get( buffer )->getInternal()
-					, int64_t( get( buffer )->getInternalOffset() + write.pBufferInfo[i].offset + offset )
+					, int64_t( get( buffer )->getOffset() + write.pBufferInfo[i].offset + offset )
 					, int64_t( std::min( write.pBufferInfo[i].range, uint64_t( get( buffer )->getMemoryRequirements().size ) ) ) ) );
 			}
 		}
@@ -199,7 +199,7 @@ namespace ashes::gl
 				list.push_back( makeCmd< OpType::eBindBufferRange >( bindingIndex
 					, GL_BUFFER_TARGET_SHADER_STORAGE
 					, get( buffer )->getInternal()
-					, int64_t( get( buffer )->getInternalOffset() + write.pBufferInfo[i].offset + offset )
+					, int64_t( get( buffer )->getOffset() + write.pBufferInfo[i].offset + offset )
 					, int64_t( std::min( write.pBufferInfo[i].range, uint64_t( get( buffer )->getMemoryRequirements().size ) ) ) ) );
 			}
 		}

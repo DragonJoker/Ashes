@@ -5,6 +5,7 @@
 #include "Image/GlImageView.hpp"
 #include "Miscellaneous/GlCallLogger.hpp"
 #include "Miscellaneous/GlDeviceMemory.hpp"
+#include "Miscellaneous/GlDeviceMemoryBinding.hpp"
 
 #include "ashesgl_api.hpp"
 
@@ -225,9 +226,9 @@ namespace ashes::gl
 
 	Image::~Image()
 	{
-		if ( m_memory )
+		if ( m_binding )
 		{
-			get( m_memory )->unbindImage( get( this ) );
+			get( m_binding->getParent() )->unbindImage( get( this ) );
 		}
 
 		auto context = get( m_device )->getContext();
