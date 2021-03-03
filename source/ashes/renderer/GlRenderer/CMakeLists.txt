@@ -415,9 +415,12 @@ if ( OpenGL_FOUND )
 	source_group( "Source Files\\Image" FILES ${${PROJECT_NAME}_FOLDER_SRC_FILES} )
 
 	set( ${PROJECT_NAME}_FOLDER_SRC_FILES
+		Miscellaneous/GlBufferMemoryBinding.cpp
 		Miscellaneous/GlDebug.cpp
 		Miscellaneous/GlDeviceMemory.cpp
+		Miscellaneous/GlDeviceMemoryBinding.cpp
 		Miscellaneous/GlExtensionsHandler.cpp
+		Miscellaneous/GlImageMemoryBinding.cpp
 		Miscellaneous/GlQueryPool.cpp
 		Miscellaneous/GlScreenHelpers.cpp
 		Miscellaneous/GlValidator.cpp
@@ -425,11 +428,14 @@ if ( OpenGL_FOUND )
 		Miscellaneous/GlValidatorOldStyle.cpp
 	)
 	set( ${PROJECT_NAME}_FOLDER_HDR_FILES
+		Miscellaneous/GlBufferMemoryBinding.hpp
 		Miscellaneous/GlCallLogger.hpp
 		Miscellaneous/GlDebug.hpp
 		Miscellaneous/GlDeviceMemory.hpp
+		Miscellaneous/GlDeviceMemoryBinding.hpp
 		Miscellaneous/GlDummyIndexBuffer.hpp
 		Miscellaneous/GlExtensionsHandler.hpp
+		Miscellaneous/GlImageMemoryBinding.hpp
 		Miscellaneous/GlQueryPool.hpp
 		Miscellaneous/GlScreenHelpers.hpp
 		Miscellaneous/GlValidator.hpp

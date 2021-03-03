@@ -9,7 +9,6 @@
 #pragma once
 
 #include "renderer/GlRenderer/GlRendererPrerequisites.hpp"
-#include "renderer/GlRenderer/Enum/GlBufferTarget.hpp"
 
 namespace ashes::gl
 {
@@ -26,48 +25,40 @@ namespace ashes::gl
 
 		VkMemoryRequirements getMemoryRequirements()const;
 		bool isMapped()const;
+		VkDeviceSize getOffset()const;
 
-		inline VkDeviceSize getInternalOffset()const
-		{
-			assert( m_internal != GL_INVALID_INDEX );
-			return m_internalOffset;
-		}
-
-		inline GlBufferTarget getTarget()const
+		GlBufferTarget getTarget()const
 		{
 			return m_target;
 		}
 
-		inline void setMemory( VkDeviceMemory memory )
+		void setMemoryBinding( DeviceMemoryBinding const * binding )
 		{
-			m_memory = memory;
+			m_binding = binding;
 		}
 
-		inline VkDeviceMemory getMemory()const
+		DeviceMemoryBinding const & getMemoryBinding()const
 		{
-			return m_memory;
+			return *m_binding;
 		}
 
-		inline VkDevice getDevice()const
+		VkDevice getDevice()const
 		{
 			return m_device;
 		}
 
 	private:
-		inline void setInternal( GLuint value, VkDeviceSize internalOffset )
+		void setInternal( uint32_t v )
 		{
-			assert( m_internal == GL_INVALID_INDEX );
-			m_internal = value;
-			m_internalOffset = internalOffset;
+			m_internal = v;
 		}
 
 	private:
 		VkDevice m_device;
 		UInt32Array m_queueFamilyIndices;
 		VkBufferCreateInfo m_createInfo;
-		VkDeviceSize m_internalOffset{ 0u };
 		GlBufferTarget m_target;
-		VkDeviceMemory m_memory{ VK_NULL_HANDLE };
+		DeviceMemoryBinding const * m_binding{ nullptr };
 		mutable GlBufferTarget m_copyTarget;
 	};
 }

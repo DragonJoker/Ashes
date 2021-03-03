@@ -7,61 +7,13 @@ See LICENSE file in root folder
 #include "renderer/GlRenderer/GlRendererPrerequisites.hpp"
 
 #include "renderer/GlRenderer/Enum/GlMemoryMapFlag.hpp"
+#include "renderer/GlRenderer/Miscellaneous/GlDeviceMemoryBinding.hpp"
 
 namespace ashes::gl
 {
 	class DeviceMemory
 		: public IcdObject
 	{
-	public:
-		class DeviceMemoryBinding
-		{
-		public:
-			DeviceMemoryBinding( VkDeviceMemory parent
-				, VkDevice device
-				, GLenum boundTarget
-				, VkDeviceSize memoryOffset
-				, VkMemoryRequirements requirements
-				, void * bound
-				, GLuint boundName );
-			virtual ~DeviceMemoryBinding();
-
-			virtual void upload( ContextLock const & context
-				, ByteArray const & data
-				, VkDeviceSize offset
-				, VkDeviceSize size )const;
-
-			inline GLuint getInternal()const
-			{
-				return m_boundName;
-			}
-
-			inline void * getBound()const
-			{
-				return m_bound;
-			}
-
-			inline VkDeviceSize getSize()const
-			{
-				return m_requirements.size;
-			}
-
-			inline VkDeviceSize getAlignment()const
-			{
-				return m_requirements.alignment;
-			}
-
-		protected:
-			VkDeviceMemory m_parent;
-			VkDevice m_device;
-			GLenum m_boundTarget;
-			VkDeviceSize m_memoryOffset;
-			VkMemoryRequirements m_requirements;
-			void * m_bound;
-			GLuint m_boundName;
-		};
-		using BindingPtr = std::unique_ptr< DeviceMemoryBinding >;
-
 	public:
 		DeviceMemory( VkAllocationCallbacks const * allocInfo
 			, VkDevice device
@@ -94,11 +46,6 @@ namespace ashes::gl
 			, VkDeviceSize size )const;
 		void unlock( ContextLock const & context )const;
 
-		bool isMapped()const
-		{
-			return m_mapped;
-		}
-
 		VkDeviceSize getSize()const
 		{
 			return m_allocateInfo.allocationSize;
@@ -118,9 +65,8 @@ namespace ashes::gl
 		VkMemoryPropertyFlags m_flags;
 		GlMemoryMapFlags m_mapFlags;
 		// Bindings, by offset
-		std::vector< std::pair< VkDeviceSize, BindingPtr > > m_bindings;
+		std::vector< std::pair< VkDeviceSize, DeviceMemoryBindingPtr > > m_bindings;
 		mutable bool m_dirty = true;
-		mutable bool m_mapped = false;
 		mutable VkDeviceSize m_mappedOffset;
 		mutable VkDeviceSize m_mappedSize;
 		mutable ByteArray m_data;

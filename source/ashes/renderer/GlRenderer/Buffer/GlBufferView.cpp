@@ -25,7 +25,7 @@ namespace ashes::gl
 			, glBindTexture
 			, GL_TEXTURE_BUFFER
 			, m_internal );
-		auto offset = get( createInfo.buffer )->getInternalOffset() + m_offset;
+		auto offset = get( createInfo.buffer )->getOffset() + m_offset;
 
 		if ( get( getInstance( device ) )->getFeatures().hasTexBufferRange )
 		{
@@ -39,7 +39,7 @@ namespace ashes::gl
 		}
 		else
 		{
-			if ( ( offset > 0 || m_range != get( get( createInfo.buffer )->getMemory() )->getSize() ) )
+			if ( ( offset > 0 || m_range != get( get( createInfo.buffer )->getMemoryBinding().getParent() )->getSize() ) )
 			{
 				reportError( get( this )
 					, VK_ERROR_VALIDATION_FAILED_EXT

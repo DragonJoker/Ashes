@@ -373,7 +373,7 @@ namespace ashes::gl
 		{
 			auto & vbo = binding.second;
 			m_connections.emplace( vbo.bo
-				, get( get( vbo.buffer )->getMemory() )->onDestroy.connect( [this]( GLuint name )
+				, get( get( vbo.buffer )->getMemoryBinding().getParent() )->onDestroy.connect( [this]( GLuint name )
 					{
 						auto it = std::remove_if( m_geometryBuffers.begin()
 							, m_geometryBuffers.end()

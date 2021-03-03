@@ -781,8 +781,8 @@ namespace ashes::gl
 		, ArrayView< uint8_t const > data )
 	{
 		m_updatesData.push_back( std::make_unique< ByteArray >( data.begin(), data.end() ) );
-		m_cmdList.push_back( makeCmd< OpType::eUpdateBuffer >( get( dstBuffer )->getMemory()
-			, dstOffset + get( dstBuffer )->getInternalOffset()
+		m_cmdList.push_back( makeCmd< OpType::eUpdateBuffer >( get( dstBuffer )->getMemoryBinding().getParent()
+			, dstOffset + get( dstBuffer )->getOffset()
 			, VkDeviceSize( data.size() )
 			, m_updatesData.back()->data() ) );
 	}
@@ -792,8 +792,8 @@ namespace ashes::gl
 		, VkDeviceSize size
 		, uint32_t data )
 	{
-		m_cmdList.push_back( makeCmd< OpType::eFillBuffer >( get( dstBuffer )->getMemory()
-			, dstOffset + get( dstBuffer )->getInternalOffset()
+		m_cmdList.push_back( makeCmd< OpType::eFillBuffer >( get( dstBuffer )->getMemoryBinding().getParent()
+			, dstOffset + get( dstBuffer )->getOffset()
 			, size == VK_WHOLE_SIZE ? get( dstBuffer )->getMemoryRequirements().size : size
 			, data ) );
 	}
@@ -933,7 +933,7 @@ namespace ashes::gl
 				, queryCount
 				, stride
 				, flags
-				, dstOffset + get( dstBuffer )->getInternalOffset() ) );
+				, dstOffset + get( dstBuffer )->getOffset() ) );
 			m_cmdList.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_QUERY
 				, 0u ) );
 		}
@@ -1152,6 +1152,8 @@ namespace ashes::gl
 				, std::move( memoryBarriers )
 				, std::move( bufferMemoryBarriers )
 				, std::move( imageMemoryBarriers )
+				, m_downloads
+				, m_uploads
 				, m_cmdList );
 		}
 	}
@@ -1234,6 +1236,8 @@ namespace ashes::gl
 		m_cmds.clear();
 		m_cmdAfterSubmit.clear();
 		m_cmdsAfterSubmit.clear();
+		m_downloads.clear();
+		m_uploads.clear();
 
 		for ( auto & view : m_blitViews )
 		{
@@ -1360,11 +1364,14 @@ namespace ashes::gl
 
 		if ( isInput )
 		{
-			m_cmdList.emplace_back( makeCmd< OpType::eUploadMemory >( buf->getMemory() ) );
+			if ( m_uploads.insert( buf->getMemoryBinding().getParent() ).second )
+			{
+				m_cmdList.emplace_back( makeCmd< OpType::eUploadMemory >( buf->getMemoryBinding().getParent() ) );
+			}
 		}
-		else
+		else if ( m_downloads.insert( buf->getMemoryBinding().getParent() ).second )
 		{
-			m_cmdList.emplace_back( makeCmd< OpType::eDownloadMemory >( buf->getMemory() ) );
+			m_cmdList.emplace_back( makeCmd< OpType::eDownloadMemory >( buf->getMemoryBinding().getParent() ) );
 		}
 
 		auto it = std::find_if( m_mappedBuffers.begin()
@@ -1380,7 +1387,7 @@ namespace ashes::gl
 		{
 			m_mappedBuffers.emplace_back( internal
 				, m_cmdList.size() - 1u
-				, get( buf->getMemory() )->onDestroy.connect( [this]( GLuint name )
+				, get( buf->getMemoryBinding().getParent() )->onDestroy.connect( [this]( GLuint name )
 				{
 					doRemoveMappedBuffer( name );
 				} ) );
