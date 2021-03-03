@@ -13,7 +13,7 @@ namespace ashes::gl
 		, m_lodBias{ createInfo.mipLodBias }
 	{
 		auto context = get( m_device )->getContext();
-		glLogCall( context
+		glLogCreateCall( context
 			, glGenSamplers
 			, 1
 			, &m_internal );

@@ -174,6 +174,7 @@ namespace ashes::gl
 
 		if ( ashes::checkFlag( flags, VK_PIPELINE_STAGE_HOST_BIT ) )
 		{
+			result |= GL_MEMORY_BARRIER_CLIENT_MAPPED_BUFFER;
 		}
 
 		if ( ashes::checkFlag( flags, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT ) )

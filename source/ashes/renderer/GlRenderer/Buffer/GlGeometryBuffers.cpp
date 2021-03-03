@@ -239,7 +239,7 @@ namespace ashes::gl
 
 	void GeometryBuffers::initialise( ContextLock & context )
 	{
-		glLogCall( context
+		glLogCreateCall( context
 			, glGenVertexArrays
 			, 1
 			, &m_vao );

@@ -302,7 +302,7 @@ namespace ashes::gl
 			throw std::runtime_error{ "Couldn't create X Colormap" };
 		}
 
-		extent = getDisplayResolution( displayCreateInfo.displayMode );
+		auto extent = getDisplayResolution( displayCreateInfo.displayMode );
 		XSetWindowAttributes swa;
 		swa.colormap = m_map;
 		swa.background_pixmap = 0;
