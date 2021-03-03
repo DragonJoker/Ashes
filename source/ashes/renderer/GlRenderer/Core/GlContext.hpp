@@ -96,7 +96,7 @@ namespace ashes::gl
 			return m_instance;
 		}
 
-		VkExtent2D const & getExtent()const
+		VkExtent2D getExtent()const
 		{
 			return m_impl->getExtent();
 		}

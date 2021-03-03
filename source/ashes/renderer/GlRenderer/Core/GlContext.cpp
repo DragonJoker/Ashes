@@ -251,7 +251,7 @@ namespace ashes::gl
 		GLuint result;
 		ContextLock context{ *this };
 		assert( isEnabled() );
-		glLogCall( context
+		glLogCreateCall( context
 			, glGenBuffers
 			, 1u
 			, &result );
@@ -263,7 +263,7 @@ namespace ashes::gl
 			err << "Buffer " << result << " is being reused";
 			reportWarning( m_instance, VK_SUCCESS, "Buffer memory", err.str() );
 			allocateBuffer( context, it->name, it->target, it->size, it->flags );
-			glLogCall( context
+			glLogCreateCall( context
 				, glGenBuffers
 				, 1u
 				, &result );

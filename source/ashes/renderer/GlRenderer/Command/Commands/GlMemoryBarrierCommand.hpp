@@ -19,14 +19,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eMemoryBarrier >
 	{
-		inline CmdT( uint32_t flags )
+		inline CmdT( GlMemoryBarrierFlags flags )
 			: cmd{ { OpType::eMemoryBarrier, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, flags{ std::move( flags ) }
 		{
 		}
 
 		Command cmd;
-		uint32_t flags;
+		GlMemoryBarrierFlags flags;
 	};
 	using CmdMemoryBarrier = CmdT< OpType::eMemoryBarrier >;
 
@@ -41,6 +41,8 @@ namespace ashes::gl
 		, ArrayView< VkMemoryBarrier const > memoryBarriers
 		, ArrayView< VkBufferMemoryBarrier const > bufferMemoryBarriers
 		, ArrayView< VkImageMemoryBarrier const > imageMemoryBarriers
+		, VkDeviceMemorySet & downloads
+		, VkDeviceMemorySet & uploads
 		, CmdList & list );
 
 	//*************************************************************************

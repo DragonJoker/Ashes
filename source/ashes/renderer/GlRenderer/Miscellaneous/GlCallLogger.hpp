@@ -158,14 +158,49 @@ namespace ashes::gl
 		}
 	};
 
-	template< typename ParamT, typename ... ParamsT >
-	struct GlParamLoggerRec< ParamT, ParamsT... >
+	template< typename ParamT, typename ParamU >
+	struct GlParamLoggerRec< ParamT, ParamU >
 	{
 		static inline void log( std::stringstream & stream
-			, ParamT const & param
+			, ParamT const & lastT
+			, ParamU const & lastU )
+		{
+			if constexpr ( std::is_same_v< ParamU, GLuint * >
+				&& ( std::is_same_v< ParamT, GLsizei >
+					|| std::is_same_v< ParamT, unsigned int >
+					|| std::is_same_v< ParamT, unsigned long >
+					|| std::is_same_v< ParamT, unsigned long long > ) )
+			{
+				auto pElems = lastU;
+				std::string sep = "[";
+
+				for ( ParamT i = 0; i < lastT; ++i )
+				{
+					stream << sep << toString( *pElems );
+					sep = ", ";
+					++pElems;
+				}
+
+				stream << "]";
+			}
+			else
+			{
+				stream << toString( lastT ) << ", ";
+				stream << toString( lastU );
+			}
+		}
+	};
+
+	template< typename ParamT, typename ParamU, typename ... ParamsT >
+	struct GlParamLoggerRec< ParamT, ParamU, ParamsT... >
+	{
+		static inline void log( std::stringstream & stream
+			, ParamT const & paramT
+			, ParamU const & paramU
 			, ParamsT ... params )
 		{
-			stream << toString( param ) + ", ";
+			GlParamLoggerRec< ParamT, ParamU >::log( stream, paramT, paramU );
+			stream << ", ";
 			GlParamLoggerRec< ParamsT... >::log( stream, std::forward< ParamsT >( params )... );
 		}
 	};
@@ -194,12 +229,33 @@ namespace ashes::gl
 			logStream( stream );
 			return function( std::forward< ParamsT >( params )... );
 		}
+
+		static inline void callCreate( std::stringstream & stream
+			, FuncT function
+			, char const * const name
+			, ParamsT ... params )
+		{
+			function( std::forward< ParamsT >( params )... );
+			stream << name;
+			logParams( stream, std::forward< ParamsT >( params )... );
+			logStream( stream );
+		}
 	};
 
 	template< typename FuncT >
 	struct GlFuncCaller< FuncT, void >
 	{
 		static inline void call( std::stringstream & stream
+			, FuncT function
+			, char const * const name )
+		{
+			stream << name;
+			logParams( stream );
+			logStream( stream );
+			function();
+		}
+
+		static inline void callCreate( std::stringstream & stream
 			, FuncT function
 			, char const * const name )
 		{
@@ -231,6 +287,20 @@ namespace ashes::gl
 	{
 		std::stringstream stream;
 		GlFuncCaller< FuncT, ParamsT... >::call( stream
+			, function
+			, name
+			, std::forward< ParamsT >( params )... );
+		return glCheckError( context, name );
+	}
+
+	template< typename FuncT, typename ... ParamsT >
+	inline bool executeCreateFunction( ContextLock const & context
+		, FuncT function
+		, char const * const name
+		, ParamsT ... params )
+	{
+		std::stringstream stream;
+		GlFuncCaller< FuncT, ParamsT... >::callCreate( stream
 			, function
 			, name
 			, std::forward< ParamsT >( params )... );
@@ -276,6 +346,8 @@ namespace ashes::gl
 	executeFunction( lock, ashes::gl::getContext( lock ).m_##name, #name )
 #	define glLogCall( lock, name, ... )\
 	executeFunction( lock, ashes::gl::getContext( lock ).m_##name, #name, __VA_ARGS__ )
+#	define glLogCreateCall( lock, name, ... )\
+	executeCreateFunction( lock, ashes::gl::getContext( lock ).m_##name, #name, __VA_ARGS__ )
 #	define glLogNonVoidCall( lock, name, ... )\
 	executeNonVoidFunction( lock, ashes::gl::getContext( lock ).m_##name, #name, __VA_ARGS__ )
 #	define glLogNonVoidEmptyCall( lock, name, ... )\
@@ -287,6 +359,8 @@ namespace ashes::gl
 	( ( lock->m_##name() ), true )
 #	define glLogCall( lock, name, ... )\
 	( ( lock->m_##name( __VA_ARGS__ ) ), true )
+#	define glLogCreateCall( lock, name, ... )\
+	( ( lock->m_##name( __VA_ARGS__ ) ), true )
 #	define glLogNonVoidCall( lock, name, ... )\
 	( lock->m_##name( __VA_ARGS__ ) )
 #	define glLogNonVoidEmptyCall( lock, name )\
@@ -296,6 +370,8 @@ namespace ashes::gl
 #	define glLogEmptyCall( lock, name )\
 	( ( lock->m_##name() ), glCallCheckError( lock, #name ) )
 #	define glLogCall( lock, name, ... )\
+	( ( lock->m_##name( __VA_ARGS__ ) ), glCallCheckError( lock, #name, __VA_ARGS__ ) )
+#	define glLogCreateCall( lock, name, ... )\
 	( ( lock->m_##name( __VA_ARGS__ ) ), glCallCheckError( lock, #name, __VA_ARGS__ ) )
 #	define glLogNonVoidCall( lock, name, ... )\
 	( lock->m_##name( __VA_ARGS__ ) );\

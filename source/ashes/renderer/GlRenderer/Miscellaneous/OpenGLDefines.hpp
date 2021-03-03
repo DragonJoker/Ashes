@@ -156,6 +156,7 @@ namespace ashes::gl
 	using PFN_glBlendFuncSeparatei = void ( GLAPIENTRY * )( GLuint buf, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha );
 	using PFN_glBlitFramebuffer = void ( GLAPIENTRY * )( GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter );
 	using PFN_glBufferData = void ( GLAPIENTRY * )( GlBufferTarget target, GLsizeiptr size, const void * data, GlBufferDataUsageFlags usage );
+	using PFN_glBufferSubData = void ( GLAPIENTRY * )( GlBufferTarget target, GLintptr offset, GLsizeiptr size, const void * data );
 	using PFN_glBufferStorage = void ( GLAPIENTRY * )( GlBufferTarget target, GLsizeiptr size, const void * data, gl4::GlMemoryPropertyFlags flags );
 	using PFN_glCheckFramebufferStatus = GLenum( GLAPIENTRY * )( GLenum target );
 	using PFN_glClear = void ( GLAPIENTRY * )( GLbitfield mask );
@@ -237,6 +238,7 @@ namespace ashes::gl
 	using PFN_glGetActiveUniformsiv = void ( GLAPIENTRY * )( GLuint program, GLsizei uniformCount, const GLuint * uniformIndices, GLenum pname, GLint * params );
 	using PFN_glGetAttribLocation = GLint ( GLAPIENTRY * )( GLuint program, const char * name );
 	using PFN_glGetBufferParameteriv = GLenum ( GLAPIENTRY * )( GlBufferTarget target, GlBufferParameter value, GLint * data );
+	using PFN_glGetBufferSubData = void ( GLAPIENTRY * )( GlBufferTarget target, GLintptr offset, GLsizeiptr size, void * data );
 	using PFN_glGetError = GLenum ( GLAPIENTRY * )( void );
 	using PFN_glGetFloatv = void ( GLAPIENTRY * )( GlValueName pname, GLfloat * data );
 	using PFN_glGetFloati_v = void( GLAPIENTRY * )( GlValueName target, GLuint index, GLfloat * data );
@@ -275,7 +277,7 @@ namespace ashes::gl
 	using PFN_glLogicOp = void ( GLAPIENTRY * )( GLenum opcode );
 	using PFN_glMapBuffer = void * ( GLAPIENTRY * )( GlBufferTarget target, GLbitfield access );
 	using PFN_glMapBufferRange = void * ( GLAPIENTRY * )( GlBufferTarget target, GLintptr offset, GLsizeiptr length, GLbitfield access );
-	using PFN_glMemoryBarrier = void ( GLAPIENTRY * )( GLbitfield barriers );
+	using PFN_glMemoryBarrier = void ( GLAPIENTRY * )( GlMemoryBarrierFlags barriers );
 	using PFN_glMinSampleShading = void ( GLAPIENTRY * )( GLfloat value );
 	using PFN_glMultiDrawArraysIndirect = void ( GLAPIENTRY * )( GLenum mode, const void * indirect, GLsizei drawcount, GLsizei stride );
 	using PFN_glMultiDrawElementsIndirect = void ( GLAPIENTRY * )( GLenum mode, GLenum type, const void * indirect, GLsizei drawcount, GLsizei stride );
@@ -355,7 +357,7 @@ namespace ashes::gl
 	using PFN_glUniformMatrix4fv = void ( GLAPIENTRY * )( GLint location, GLsizei count, GLboolean transpose, const GLfloat* value );
 	using PFN_glUnmapBuffer = GLboolean( GLAPIENTRY * )( GlBufferTarget target );
 	using PFN_glUseProgram = void ( GLAPIENTRY * )( GLuint program );
-	using PFN_glUseProgramStages = void ( GLAPIENTRY * )( GLuint pipeline, GLbitfield stages, GLuint program );
+	using PFN_glUseProgramStages = void ( GLAPIENTRY * )( GLuint pipeline, GlShaderStageFlags stages, GLuint program );
 	using PFN_glVertexAttribDivisor = void ( GLAPIENTRY * )( GLuint index, GLuint divisor );
 	using PFN_glVertexAttribIPointer = void ( GLAPIENTRY * )( GLuint index, GLint size, GLenum type, GLsizei stride, const void* pointer );
 	using PFN_glVertexAttribPointer = void ( GLAPIENTRY * )( GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer );
