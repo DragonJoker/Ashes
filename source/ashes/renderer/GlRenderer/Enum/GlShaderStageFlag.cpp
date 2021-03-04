@@ -87,6 +87,34 @@ namespace ashes::gl
 		return result;
 	}
 
+	std::string getName( GlShaderStageFlag value )
+	{
+		switch ( value )
+		{
+		case GL_SHADER_STAGE_FLAG_VERTEX:
+			return "GL_SHADER_STAGE_FLAG_VERTEX";
+
+		case GL_SHADER_STAGE_FLAG_TESS_CONTROL:
+			return "GL_SHADER_STAGE_FLAG_TESS_CONTROL";
+
+		case GL_SHADER_STAGE_FLAG_TESS_EVALUATION:
+			return "GL_SHADER_STAGE_FLAG_TESS_EVALUATION";
+
+		case GL_SHADER_STAGE_FLAG_GEOMETRY:
+			return "GL_SHADER_STAGE_FLAG_GEOMETRY";
+
+		case GL_SHADER_STAGE_FLAG_FRAGMENT:
+			return "GL_SHADER_STAGE_FLAG_FRAGMENT";
+
+		case GL_SHADER_STAGE_FLAG_COMPUTE:
+			return "GL_SHADER_STAGE_FLAG_COMPUTE";
+
+		default:
+			assert( false && "Unsupported shader stage." );
+			return "GlShaderStageFlag_UNK";
+		}
+	}
+
 	GlShaderStageFlag convert( VkShaderStageFlagBits flag )
 	{
 		switch ( flag )
