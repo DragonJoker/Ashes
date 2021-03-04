@@ -128,7 +128,7 @@ namespace ashes::gl
 
 			auto & binding = *it->second;
 
-			if ( !m_data.empty() )
+			if ( !m_data.empty() && binding.isMapped() )
 			{
 				auto context = get( m_device )->getContext();
 				binding.upload( context
@@ -164,7 +164,8 @@ namespace ashes::gl
 					return memoryOffset == lookup.first;
 				} );
 
-			if ( it == m_bindings.end() )
+			if ( it == m_bindings.end()
+				|| it->second->getBound() != image )
 			{
 				auto & binding = *m_bindings.emplace_back( memoryOffset
 					, std::make_unique< ImageMemoryBinding >( get( this )
@@ -172,10 +173,18 @@ namespace ashes::gl
 						, image
 						, memoryOffset ) ).second;
 				binding.map( m_mappedOffset, m_mappedSize );
+				it = m_bindings.begin() + ( m_bindings.size() - 1 );
 			}
-			else
+
+			auto & binding = *it->second;
+
+			if ( !m_data.empty() && binding.isMapped() )
 			{
-				assert( it->second->getBound() == image );
+				auto context = get( m_device )->getContext();
+				binding.upload( context
+					, m_data
+					, 0u
+					, m_data.size() );
 			}
 
 			result = VK_SUCCESS;
@@ -239,17 +248,27 @@ namespace ashes::gl
 
 		glLogCall( context
 			, glBindBuffer
-			, GL_BUFFER_TARGET_SHADER_STORAGE
+			, GL_BUFFER_TARGET_COPY_WRITE
 			, getInternal() );
-		glLogCall( context
-			, glBufferSubData
-			, GL_BUFFER_TARGET_SHADER_STORAGE
+		auto result = glLogNonVoidCall( context
+			, glMapBufferRange
+			, GL_BUFFER_TARGET_COPY_WRITE
 			, GLintptr( offset )
 			, GLsizei( size )
-			, m_data.data() + offset );
+			, GL_MEMORY_MAP_WRITE_BIT );
+		assert( result != nullptr );
+
+		if ( result )
+		{
+			std::memcpy( result, m_data.data() + offset, size );
+			glLogCall( context
+				, glUnmapBuffer
+				, GL_BUFFER_TARGET_COPY_WRITE );
+		}
+
 		glLogCall( context
 			, glBindBuffer
-			, GL_BUFFER_TARGET_SHADER_STORAGE
+			, GL_BUFFER_TARGET_COPY_WRITE
 			, 0u );
 	}
 
@@ -267,17 +286,27 @@ namespace ashes::gl
 
 		glLogCall( context
 			, glBindBuffer
-			, GL_BUFFER_TARGET_SHADER_STORAGE
+			, GL_BUFFER_TARGET_COPY_READ
 			, getInternal() );
-		glLogCall( context
-			, glGetBufferSubData
-			, GL_BUFFER_TARGET_SHADER_STORAGE
+		auto result = glLogNonVoidCall( context
+			, glMapBufferRange
+			, GL_BUFFER_TARGET_COPY_READ
 			, GLintptr( offset )
 			, GLsizei( size )
-			, m_data.data() + offset );
+			, GL_MEMORY_MAP_READ_BIT );
+		assert( result != nullptr );
+
+		if ( result )
+		{
+			std::memcpy( m_data.data() + offset, result, size );
+			glLogCall( context
+				, glUnmapBuffer
+				, GL_BUFFER_TARGET_COPY_READ );
+		}
+
 		glLogCall( context
 			, glBindBuffer
-			, GL_BUFFER_TARGET_SHADER_STORAGE
+			, GL_BUFFER_TARGET_COPY_READ
 			, 0u );
 	}
 
