@@ -271,7 +271,8 @@ namespace ashes::gl
 						if ( value != 0 )
 						{
 							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
-							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT;
+							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;
+							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
 						}
 
 						glLogCall( context, glGetInternalformativ
@@ -296,7 +297,6 @@ namespace ashes::gl
 						if ( value != 0 )
 						{
 							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT;
-							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT;
 						}
 
 						glLogCall( context, glGetInternalformativ
@@ -309,7 +309,44 @@ namespace ashes::gl
 						if ( value != 0 )
 						{
 							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT;
-							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT;
+						}
+
+						glLogCall( context, glGetInternalformativ
+							, GL_TEXTURE_BUFFER
+							, internal
+							, GL_FORMAT_PROPERTY_FRAGMENT_TEXTURE
+							, 1
+							, &value );
+
+						if ( value != 0 )
+						{
+							properties.bufferFeatures |= VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT;
+							properties.bufferFeatures |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;
+							properties.bufferFeatures |= VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
+						}
+
+						glLogCall( context, glGetInternalformativ
+							, GL_TEXTURE_BUFFER
+							, internal
+							, GL_FORMAT_PROPERTY_SHADER_IMAGE_LOAD
+							, 1
+							, &value );
+
+						if ( value != 0 )
+						{
+							properties.bufferFeatures |= VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT;
+						}
+
+						glLogCall( context, glGetInternalformativ
+							, GL_TEXTURE_BUFFER
+							, internal
+							, GL_FORMAT_PROPERTY_SHADER_IMAGE_ATOMIC
+							, 1
+							, &value );
+
+						if ( value != 0 )
+						{
+							properties.bufferFeatures |= VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT;
 						}
 
 #if defined( VK_KHR_maintenance ) || defined( VK_API_VERSION_1_1 )
@@ -325,13 +362,25 @@ namespace ashes::gl
 							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;
 							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
 						}
+
+						glLogCall( context, glGetInternalformativ
+							, GL_TEXTURE_BUFFER
+							, internal
+							, GL_FORMAT_PROPERTY_READ_PIXELS
+							, 1
+							, &value );
+
+						if ( value != 0 )
+						{
+							properties.bufferFeatures |= VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
+							properties.bufferFeatures |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;
+						}
 #endif
 					}
 
 					if ( !isCompressedFormat( fmt ) )
 					{
 						GlType dataType = getType( internal );
-						properties.bufferFeatures = 0u;
 
 						switch ( dataType )
 						{
@@ -433,6 +482,7 @@ namespace ashes::gl
 						imageFormatProperties.maxExtent.width = uint32_t( value );
 						imageFormatProperties.maxExtent.height = 1u;
 						imageFormatProperties.maxExtent.depth = 1u;
+						imageFormatProperties.sampleCounts = VK_SAMPLE_COUNT_1_BIT;
 
 						if ( type == VK_IMAGE_TYPE_2D )
 						{
@@ -459,7 +509,6 @@ namespace ashes::gl
 							std::vector< GLint > samples;
 							samples.resize( value );
 							glLogCall( context, glGetInternalformativ, GL_TEXTURE_2D_MULTISAMPLE, internal, GL_FORMAT_PROPERTY_SAMPLES, GLsizei( samples.size() ), samples.data() );
-							imageFormatProperties.sampleCounts = VK_SAMPLE_COUNT_1_BIT;;
 
 							for ( auto sample : samples )
 							{
@@ -474,7 +523,7 @@ namespace ashes::gl
 						gltype = convert( get( this ), type, 2u, 0u );
 						value = 0u;
 						glLogCall( context, glGetInternalformativ, gltype, internal, GL_FORMAT_PROPERTY_MAX_LAYERS, 1, &value );
-						imageFormatProperties.maxArrayLayers = uint32_t( value );
+						imageFormatProperties.maxArrayLayers = std::max( 1u, uint32_t( value ) );
 
 						if ( imageFormatProperties.maxExtent.width > 0u )
 						{
