@@ -1177,27 +1177,26 @@ namespace ashes::gl
 #	if VK_KHR_portability_subset
 
 		auto & extensions = get( m_instance )->getExtensions();
-		m_portabilityFeatures = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_FEATURES_KHR
-			, nullptr
-			, VK_TRUE /* constantAlphaColorBlendFactors; */
-			, VK_FALSE /* events; */
-			, VK_TRUE /* imageViewFormatReinterpretation; */
-			, VK_TRUE /* imageViewFormatSwizzle; */
-			, VK_FALSE /* imageView2DOn3DImage; */
-			, VkBool32( extensions.find( ARB_texture_multisample ) /* multisampleArrayImage; */
-				? VK_TRUE
-				: VK_FALSE )
-			, VK_TRUE /* mutableComparisonSamplers; */
-			, VK_TRUE /* pointPolygons; */
-			, VK_TRUE /* samplerMipLodBias; */
-			, VK_TRUE /* separateStencilMaskRef; */
-			, VkBool32( ( extensions.getShaderVersion() >= 400 )  /* shaderSampleRateInterpolationFunctions; */
-				? m_features.sampleRateShading
-				: VK_FALSE )
-			, m_features.tessellationShader /* tessellationIsolines; */
-			, m_features.tessellationShader /* tessellationPointMode; */
-			, VK_TRUE /* triangleFans; */
-			, VK_FALSE /* vertexAttributeAccessBeyondStride; */ };
+		m_portabilityFeatures = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_FEATURES_KHR, nullptr };
+		m_portabilityFeatures.constantAlphaColorBlendFactors = VK_TRUE;
+		m_portabilityFeatures.events = VK_FALSE;
+		m_portabilityFeatures.imageViewFormatReinterpretation = VK_TRUE;
+		m_portabilityFeatures.imageViewFormatSwizzle = VK_TRUE;
+		m_portabilityFeatures.imageView2DOn3DImage = VK_FALSE;
+		m_portabilityFeatures.multisampleArrayImage = VkBool32( extensions.find( ARB_texture_multisample )
+			? VK_TRUE
+			: VK_FALSE );
+		m_portabilityFeatures.mutableComparisonSamplers = VK_TRUE;
+		m_portabilityFeatures.pointPolygons = VK_TRUE;
+		m_portabilityFeatures.samplerMipLodBias = VK_TRUE;
+		m_portabilityFeatures.separateStencilMaskRef = VK_TRUE;
+		m_portabilityFeatures.shaderSampleRateInterpolationFunctions = VkBool32( ( extensions.getShaderVersion() >= 400 )
+			? m_features.sampleRateShading
+			: VK_FALSE );
+		m_portabilityFeatures.tessellationIsolines = m_features.tessellationShader;
+		m_portabilityFeatures.tessellationPointMode = m_features.tessellationShader;
+		m_portabilityFeatures.triangleFans = VK_TRUE;
+		m_portabilityFeatures.vertexAttributeAccessBeyondStride = VK_FALSE;
 
 #	endif
 	}
