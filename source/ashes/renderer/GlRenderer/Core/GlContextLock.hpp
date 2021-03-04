@@ -152,6 +152,34 @@ namespace ashes::gl
 			}
 		}
 
+		template< typename ValueT >
+		void getValue( GlValueName name, ValueT & value, ValueT const & min )
+		{
+			ValueGetter< ValueT >::get( *this, name, &value );
+			value = std::max( value, min );
+		}
+
+		template< typename ValueT, size_t CountT >
+		void getValues( GlValueName name, ValueT ( & value )[CountT], std::array< ValueT, CountT > const & min )
+		{
+			ValueGetter< ValueT >::get( *this, name, value );
+
+			for ( GLint i = 0u; i < GLint( CountT ); ++i )
+			{
+				value[i] = std::max( value[i], min[i] );
+			}
+		}
+
+		template< typename ValueT, size_t CountT >
+		void getValuesI( GlValueName name, ValueT ( & value )[CountT], std::array< ValueT, CountT > const & min )
+		{
+			for ( GLint i = 0u; i < GLint( CountT ); ++i )
+			{
+				ValueGetter< ValueT >::get( *this, name, i, value );
+				value[i] = std::max( value[i], min[i] );
+			}
+		}
+
 	private:
 		Context * m_context;
 		VkDevice m_device;
