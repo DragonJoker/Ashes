@@ -5,6 +5,7 @@ See LICENSE file in root folder
 #pragma once
 
 #include <array>
+#include <functional>
 #include <string>
 
 #if !defined( CALLBACK )
@@ -27,6 +28,8 @@ namespace ashes::gl
 	std::string getErrorName( uint32_t code, uint32_t category );
 	bool glCheckError( ContextLock const & context
 		, std::string const & text );
+	bool glCheckError( ContextLock const & context
+		, std::function< std::string() > stringifier );
 	void clearDebugFile();
 	void logDebug( char const * const log );
 
