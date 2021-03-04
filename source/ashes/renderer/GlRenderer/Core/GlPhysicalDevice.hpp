@@ -14,7 +14,7 @@ namespace ashes::gl
 	public:
 		PhysicalDevice( VkInstance instance );
 
-		inline VkBool32 getPresentationSupport( uint32_t queueFamilyIndex )const
+		VkBool32 getPresentationSupport( uint32_t queueFamilyIndex )const
 		{
 			return true;
 		}
@@ -70,6 +70,12 @@ namespace ashes::gl
 		std::vector< VkDisplayPlanePropertiesKHR > getDisplayPlaneProperties()const;
 		std::vector< VkDisplayKHR > getDisplayPlaneSupportedDisplays( uint32_t planeIndex )const;
 #endif
+#if VK_KHR_portability_subset
+		VkPhysicalDevicePortabilitySubsetFeaturesKHR getPortabilitySubset()const
+		{
+			return m_portabilityFeatures;
+		}
+#endif
 
 		bool find( VkExtensionProperties const & name )const;
 		bool findAny( VkExtensionPropertiesArray const & names )const;
@@ -77,12 +83,12 @@ namespace ashes::gl
 		int getMajor()const;
 		int getMinor()const;
 
-		inline VkInstance getInstance()const
+		VkInstance getInstance()const
 		{
 			return m_instance;
 		}
 		
-		inline GlPhysicalDeviceFeatures const & getGlFeatures()const
+		GlPhysicalDeviceFeatures const & getGlFeatures()const
 		{
 			return m_glFeatures;
 		}
