@@ -21,14 +21,19 @@ namespace ashes::gl
 			, VkBufferViewCreateInfo createInfo );
 		~BufferView();
 
-		inline GLuint getImage()const
+		GLuint getImage()const
 		{
 			return getInternal();
 		}
 
-		inline VkDevice getDevice()const
+		VkDevice getDevice()const
 		{
 			return m_device;
+		}
+
+		VkFormat getFormat()const
+		{
+			return m_format;
 		}
 
 	private:

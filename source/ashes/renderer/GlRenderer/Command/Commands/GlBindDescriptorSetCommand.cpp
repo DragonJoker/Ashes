@@ -92,6 +92,12 @@ namespace ashes::gl
 			return write.pBufferInfo[index].buffer;
 		}
 
+		VkBufferView getBufferView( VkWriteDescriptorSet const & write, uint32_t index )
+		{
+			assert( index < write.descriptorCount );
+			return write.pTexelBufferView[index];
+		}
+
 		void bindSampler( VkSampler sampler
 			, uint32_t bindingIndex
 			, CmdList & list )
@@ -141,7 +147,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindTexelBuffer( VkWriteDescriptorSet const & write
+		void bindUniformTexelBuffer( VkWriteDescriptorSet const & write
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
@@ -153,10 +159,35 @@ namespace ashes::gl
 			for ( auto i = 0u; i < write.descriptorCount; ++i )
 			{
 				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+				auto bufferView = getBufferView( write, i );
 				list.push_back( makeCmd< OpType::eActiveTexture >( bindingIndex ) );
 
 				list.push_back( makeCmd< OpType::eBindTexture >( GL_TEXTURE_BUFFER
-					, get( write.pTexelBufferView[i] )->getImage() ) );
+					, get( bufferView )->getImage() ) );
+			}
+		}
+
+		void bindStorageTexelBuffer( VkWriteDescriptorSet const & write
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
+			, CmdList & list )
+		{
+			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+			assert( it != bindings.end() );
+			auto dstBinding = it->second;
+
+			for ( auto i = 0u; i < write.descriptorCount; ++i )
+			{
+				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+				auto bufferView = getBufferView( write, i );
+				list.push_back( makeCmd< OpType::eActiveTexture >( bindingIndex ) );
+
+				list.push_back( makeCmd< OpType::eBindImage >( bindingIndex
+					, get( bufferView )->getInternal()
+					, 0u
+					, 0u
+					, 0u
+					, getInternalFormat( get( bufferView )->getFormat() ) ) );
 			}
 		}
 
@@ -226,14 +257,14 @@ namespace ashes::gl
 			}
 		}
 
-		void bindTexelBuffer( LayoutBindingWrites const * writes
+		void bindUniformTexelBuffer( LayoutBindingWrites const * writes
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
 		{
 			for ( auto & write : writes->writes )
 			{
-				bindTexelBuffer( write, bindings, setIndex, list );
+				bindUniformTexelBuffer( write, bindings, setIndex, list );
 			}
 		}
 
@@ -486,12 +517,12 @@ namespace ashes::gl
 			}
 		}
 
-		void bindImageBuffer( VkWriteDescriptorSet const & write
+		void bindStorageTexelBuffer( VkWriteDescriptorSet const & write
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
 		{
-			common::bindTexelBuffer( write, bindings, setIndex, list );
+			common::bindStorageTexelBuffer( write, bindings, setIndex, list );
 		}
 
 		void bindCombinedSampler( LayoutBindingWrites const * writes
@@ -551,14 +582,14 @@ namespace ashes::gl
 			}
 		}
 
-		void bindImageBuffer( LayoutBindingWrites const * writes
+		void bindStorageTexelBuffer( LayoutBindingWrites const * writes
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
 		{
 			for ( auto & write : writes->writes )
 			{
-				bindImageBuffer( write, bindings, setIndex, list );
+				bindStorageTexelBuffer( write, bindings, setIndex, list );
 			}
 		}
 	}
@@ -714,12 +745,12 @@ namespace ashes::gl
 			}
 		}
 
-		void bindImageBuffer( VkWriteDescriptorSet const & write
+		void bindStorageTexelBuffer( VkWriteDescriptorSet const & write
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
 		{
-			common::bindTexelBuffer( write, bindings, setIndex, list );
+			common::bindStorageTexelBuffer( write, bindings, setIndex, list );
 		}
 
 		void bindCombinedSampler( LayoutBindingWrites const * writes
@@ -779,14 +810,14 @@ namespace ashes::gl
 			}
 		}
 
-		void bindImageBuffer( LayoutBindingWrites const * writes
+		void bindStorageTexelBuffer( LayoutBindingWrites const * writes
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
 		{
 			for ( auto & write : writes->writes )
 			{
-				bindImageBuffer( write, bindings, setIndex, list );
+				bindStorageTexelBuffer( write, bindings, setIndex, list );
 			}
 		}
 	}
@@ -837,7 +868,7 @@ namespace ashes::gl
 
 				for ( auto & write : get( descriptorSet )->getTexelImageBuffers() )
 				{
-					gl4::bindImageBuffer( write, bindings.ibo, setIndex, list );
+					gl4::bindStorageTexelBuffer( write, bindings.ibo, setIndex, list );
 				}
 
 				for ( auto & write : get( descriptorSet )->getUniformBuffers() )
@@ -857,7 +888,7 @@ namespace ashes::gl
 
 				for ( auto & write : get( descriptorSet )->getTexelSamplerBuffers() )
 				{
-					common::bindTexelBuffer( write, bindings.tbo, setIndex, list );
+					common::bindUniformTexelBuffer( write, bindings.tbo, setIndex, list );
 				}
 
 				common::bindDynamicBuffers( get( descriptorSet )->getDynamicBuffers()
@@ -896,7 +927,7 @@ namespace ashes::gl
 
 				for ( auto & write : get( descriptorSet )->getTexelImageBuffers() )
 				{
-					gl3::bindImageBuffer( write, bindings.ibo, setIndex, list );
+					gl3::bindStorageTexelBuffer( write, bindings.ibo, setIndex, list );
 				}
 
 				for ( auto & write : get( descriptorSet )->getUniformBuffers() )
@@ -916,7 +947,7 @@ namespace ashes::gl
 
 				for ( auto & write : get( descriptorSet )->getTexelSamplerBuffers() )
 				{
-					common::bindTexelBuffer( write, bindings.tbo, setIndex, list );
+					common::bindUniformTexelBuffer( write, bindings.tbo, setIndex, list );
 				}
 
 				common::bindDynamicBuffers( get( descriptorSet )->getDynamicBuffers()
