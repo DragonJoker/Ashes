@@ -492,7 +492,7 @@ namespace ashes::gl
 			doReworkBindings( device, module, "UniformBuffer", compiler, resources.uniform_buffers, bindings.ubo, failOnError );
 			doReworkBindings( device, module, "StorageBuffer", compiler, resources.storage_buffers, bindings.sbo, failOnError );
 			doReworkBindings( device, module, "CombinedSamplerImage", compiler, resources.sampled_images, bindings.tex, failOnError, &bindings.tbo );
-			doReworkBindings( device, module, "SampledImage", compiler, resources.separate_images, bindings.tex, failOnError );
+			doReworkBindings( device, module, "SampledImage", compiler, resources.separate_images, bindings.tex, failOnError, &bindings.tbo );
 			doReworkBindings( device, module, "Sampler", compiler, resources.separate_samplers, bindings.tex, failOnError );
 			doReworkBindings( device, module, "StorageImage", compiler, resources.storage_images, bindings.img, failOnError );
 			doReworkBindings( device, module, "SubpassInput", compiler, resources.subpass_inputs, bindings.tex, failOnError );
