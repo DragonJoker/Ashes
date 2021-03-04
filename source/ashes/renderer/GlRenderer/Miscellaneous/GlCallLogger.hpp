@@ -137,6 +137,16 @@ namespace ashes::gl
 		return std::string( "nullptr" );
 	}
 
+	inline std::string toString( GLchar * txt )
+	{
+		if ( !txt )
+		{
+			return std::string( "nullstr" );
+		}
+
+		return std::string( reinterpret_cast< char const * >( txt ) );
+	}
+
 	template< typename ... ParamsT >
 	struct GlParamLoggerRec;
 
@@ -183,6 +193,24 @@ namespace ashes::gl
 
 				stream << "]";
 			}
+			else if constexpr ( std::is_same_v< ParamU, const char ** >
+				&& ( std::is_same_v< ParamT, GLsizei >
+					|| std::is_same_v< ParamT, unsigned int >
+					|| std::is_same_v< ParamT, unsigned long >
+					|| std::is_same_v< ParamT, unsigned long long > ) )
+			{
+				auto pElems = lastU;
+				std::string sep = "[";
+
+				for ( ParamT i = 0; i < lastT; ++i )
+				{
+					stream << sep << "\n" << *pElems;
+					sep = ",";
+					++pElems;
+				}
+
+				stream << "\n]";
+			}
 			else
 			{
 				stream << toString( lastT ) << ", ";
@@ -199,9 +227,23 @@ namespace ashes::gl
 			, ParamU const & paramU
 			, ParamsT ... params )
 		{
-			GlParamLoggerRec< ParamT, ParamU >::log( stream, paramT, paramU );
-			stream << ", ";
-			GlParamLoggerRec< ParamsT... >::log( stream, std::forward< ParamsT >( params )... );
+			if constexpr ( ( std::is_same_v< ParamU, GLuint * >
+					|| std::is_same_v< ParamU, const char ** > )
+				&& ( std::is_same_v< ParamT, GLsizei >
+					|| std::is_same_v< ParamT, unsigned int >
+					|| std::is_same_v< ParamT, unsigned long >
+					|| std::is_same_v< ParamT, unsigned long long > ) )
+			{
+				GlParamLoggerRec< ParamT, ParamU >::log( stream, paramT, paramU );
+				stream << ", ";
+				GlParamLoggerRec< ParamsT... >::log( stream, std::forward< ParamsT >( params )... );
+			}
+			else
+			{
+				GlParamLoggerRec< ParamT >::log( stream, paramT );
+				stream << ", ";
+				GlParamLoggerRec< ParamU, ParamsT... >::log( stream, paramU, std::forward< ParamsT >( params )... );
+			}
 		}
 	};
 
@@ -239,6 +281,18 @@ namespace ashes::gl
 			stream << name;
 			logParams( stream, std::forward< ParamsT >( params )... );
 			logStream( stream );
+		}
+
+		static inline auto callNonVoid( std::stringstream & stream
+			, FuncT function
+			, char const * const name
+			, ParamsT ... params )
+		{
+			auto result = function( std::forward< ParamsT >( params )... );
+			stream << toString( result ) << " = " << name;
+			logParams( stream, std::forward< ParamsT >( params )... );
+			logStream( stream );
+			return result;
 		}
 	};
 
@@ -314,7 +368,7 @@ namespace ashes::gl
 		, ParamsT ... params )
 	{
 		std::stringstream stream;
-		auto result = GlFuncCaller< FuncT, ParamsT... >::call( stream
+		auto result = GlFuncCaller< FuncT, ParamsT... >::callNonVoid( stream
 			, function
 			, name
 			, std::forward< ParamsT >( params )... );
@@ -327,21 +381,29 @@ namespace ashes::gl
 		, char const * const name
 		, ParamsT ... params )
 	{
-		std::stringstream stream;
-		stream << name;
-		logParams( stream, std::forward< ParamsT >( params )... );
-		return glCheckError( context, stream.str() );
+		return glCheckError( context
+			, [name , &params...]()
+			{
+				std::stringstream stream;
+				stream << name;
+				logParams( stream, std::forward< ParamsT >( params )... );
+				return stream.str();
+			} );
 	}
 
 	inline auto glCallCheckError( ContextLock const & context
 		, char const * const name )
 	{
-		std::stringstream stream;
-		stream << name << "()";
-		return glCheckError( context, stream.str() );
+		return glCheckError( context
+			, [name]()
+			{
+				std::stringstream stream;
+				stream << name << "()";
+				return stream.str();
+			} );
 	}
 
-#if AshesGL_LogCalls
+#if AshesGL_LogCalls && !defined( NDEBUG )
 #	define glLogEmptyCall( lock, name )\
 	executeFunction( lock, ashes::gl::getContext( lock ).m_##name, #name )
 #	define glLogCall( lock, name, ... )\

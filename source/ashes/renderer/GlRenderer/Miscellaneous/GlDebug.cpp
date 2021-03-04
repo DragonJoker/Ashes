@@ -11,9 +11,7 @@
 #include <fstream>
 #include <sstream>
 #include <map>
-#if AshesGL_LogCalls
-#	include <filesystem>
-#endif
+#include <filesystem>
 
 #ifdef _WIN32
 #	include <gl/GL.h>
@@ -23,7 +21,11 @@ namespace ashes::gl
 {
 	namespace
 	{
-		static std::string const debugLogFile = "CallLogGL.log";
+		std::string getDebugLogFile()
+		{
+			static std::string const debugLogBaseName = "CallLogGL.log";
+			return  debugLogBaseName + toString( std::this_thread::get_id() ) + ".log";
+		}
 	}
 
 	std::string getErrorName( uint32_t code, uint32_t category )
@@ -65,14 +67,27 @@ namespace ashes::gl
 		}
 	}
 
+	void logError( char const * const log );
+
 	bool glCheckError( ContextLock const & context
 		, std::string const & text )
+	{
+		return glCheckError( context
+			, [&text]()
+			{
+				return text;
+			} );
+	}
+
+	bool glCheckError( ContextLock const & context
+		, std::function< std::string() > stringifier )
 	{
 		bool result = true;
 		uint32_t errorCode = context->glGetError();
 
-		if ( errorCode )
+		while ( errorCode )
 		{
+			auto text = stringifier();
 			{
 				std::stringstream stream;
 				stream.imbue( std::locale{ "C" } );
@@ -126,17 +141,9 @@ namespace ashes::gl
 		return std::string( size_t( DebugLog::get().blocks.size() * 2u ), ' ' );
 	}
 
-	void clearDebugFile()
-	{
-		if ( std::filesystem::exists( debugLogFile ) )
-		{
-			std::filesystem::remove( debugLogFile );
-		}
-	}
-
 	void logDebug( char const * const log )
 	{
-		std::ofstream file{ debugLogFile, std::ios::app };
+		std::ofstream file{ getDebugLogFile(), std::ios::app };
 
 		if ( file )
 		{
@@ -145,10 +152,6 @@ namespace ashes::gl
 	}
 
 #else
-
-	void clearDebugFile()
-	{
-	}
 
 	void logDebug( char const * const log )
 	{
@@ -163,6 +166,28 @@ namespace ashes::gl
 	}
 
 #endif
+
+	void clearDebugFile()
+	{
+		if ( std::filesystem::exists( getDebugLogFile() ) )
+		{
+			std::filesystem::remove( getDebugLogFile() );
+		}
+	}
+
+	void logError( char const * const log )
+	{
+#if !defined( NDEBUG )
+
+		std::ofstream file{ getDebugLogFile(), std::ios::app };
+
+		if ( file )
+		{
+			file << log << std::endl;
+		}
+
+#endif
+	}
 
 	void logStream( std::stringstream & stream )
 	{

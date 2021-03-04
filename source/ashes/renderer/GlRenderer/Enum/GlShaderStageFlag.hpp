@@ -37,7 +37,9 @@ namespace ashes::gl
 	};
 	Ashes_ImplementFlag( GlShaderStageFlag )
 	std::string getShaderStageFlagsName( GlShaderStageFlags value );
+	std::string getName( GlShaderStageFlag value );
 	inline std::string toString( GlShaderStageFlags value ) { return getShaderStageFlagsName( value ); }
+	inline std::string toString( GlShaderStageFlag value ) { return getName( value ); }
 	/**
 	*\brief
 	*	Convertit un VkShaderStageFlags en VkShaderStageFlags.
