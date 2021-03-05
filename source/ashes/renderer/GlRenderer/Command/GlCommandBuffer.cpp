@@ -772,7 +772,8 @@ namespace ashes::gl
 				, std::move( copyInfo )
 				, src
 				, dst
-				, m_cmdList );
+				, m_cmdList
+				, m_blitViews );
 		}
 	}
 

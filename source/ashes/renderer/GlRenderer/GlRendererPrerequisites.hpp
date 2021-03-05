@@ -189,6 +189,15 @@ namespace ashes::gl
 	using VboBindings = std::map< uint32_t, BufferObjectBinding >;
 	using IboBinding = Optional< BufferObjectBinding >;
 
+	using DeviceMemoryDestroyFunc = std::function< void( GLuint ) >;
+	using DeviceMemoryDestroySignal = Signal< DeviceMemoryDestroyFunc >;
+	using DeviceMemoryDestroyConnection = SignalConnection< DeviceMemoryDestroySignal >;
+
+	using CmdBuffer = UInt32Array;
+	using CmdList = std::vector< CmdBuffer >;
+	using PreExecuteAction = std::function< void( CmdList &, ContextStateStack const & ) >;
+	using PreExecuteActions = std::vector< PreExecuteAction >;
+
 	struct FboAttachment
 	{
 		uint32_t referenceIndex;
@@ -203,18 +212,13 @@ namespace ashes::gl
 		uint32_t viewLayerCount;
 		GLuint originalObject;
 		GLuint originalMipLevel;
+
+		void bind( VkImageSubresourceLayers subresource
+			, uint32_t layer
+			, CmdList & list );
 	};
 
 	using FboAttachmentArray = std::vector< FboAttachment >;
-
-	using DeviceMemoryDestroyFunc = std::function< void( GLuint ) >;
-	using DeviceMemoryDestroySignal = Signal< DeviceMemoryDestroyFunc >;
-	using DeviceMemoryDestroyConnection = SignalConnection< DeviceMemoryDestroySignal >;
-
-	using CmdBuffer = UInt32Array;
-	using CmdList = std::vector< CmdBuffer >;
-	using PreExecuteAction = std::function< void( CmdList &, ContextStateStack const & ) >;
-	using PreExecuteActions = std::vector< PreExecuteAction >;
 
 	PFN_vkVoidFunction getFunction( char const * const name );
 
