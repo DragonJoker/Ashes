@@ -66,7 +66,7 @@ namespace ashes::gl
 			{
 				GL_USE_OF_DEVICE_LOCAL_MEMORY_FOR_CPU_TRANSFERS,
 			};
-			return ignoredIds.end() == ignoredIds.find( id );
+			return ignoredIds.end() != ignoredIds.find( id );
 		}
 
 		bool isIgnored( GlDebugType type )
@@ -77,7 +77,7 @@ namespace ashes::gl
 				GL_DEBUG_TYPE_PUSH_GROUP,
 				GL_DEBUG_TYPE_MARKER,
 			};
-			return ignoredTypes.end() == ignoredTypes.find( type );
+			return ignoredTypes.end() != ignoredTypes.find( type );
 		}
 
 		bool isIgnored( uint32_t id

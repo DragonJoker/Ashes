@@ -70,40 +70,47 @@ namespace ashes::gl
 	void logError( char const * const log );
 
 	bool glCheckError( ContextLock const & context
-		, std::string const & text )
+		, std::string const & text
+		, bool log )
 	{
 		return glCheckError( context
 			, [&text]()
 			{
 				return text;
-			} );
+			}
+			, log );
 	}
 
 	bool glCheckError( ContextLock const & context
-		, std::function< std::string() > stringifier )
+		, std::function< std::string() > stringifier
+		, bool log )
 	{
 		bool result = true;
 		uint32_t errorCode = context->glGetError();
 
 		while ( errorCode )
 		{
-			auto text = stringifier();
+			if ( log )
 			{
+				auto text = stringifier();
+				{
+					std::stringstream stream;
+					stream.imbue( std::locale{ "C" } );
+					stream << "OpenGL Error, on function: " << text;
+					reportError( context->getInstance()
+						, VkResult( errorCode )
+						, stream.str()
+						, getErrorName( errorCode, GL_DEBUG_TYPE_ERROR ) );
+				}
+#if AshesGL_LogCalls
 				std::stringstream stream;
 				stream.imbue( std::locale{ "C" } );
 				stream << "OpenGL Error, on function: " << text;
-				reportError( context->getInstance()
-					, VkResult( errorCode )
-					, stream.str()
-					, getErrorName( errorCode, GL_DEBUG_TYPE_ERROR ) );
-			}
-#if AshesGL_LogCalls
-			std::stringstream stream;
-			stream.imbue( std::locale{ "C" } );
-			stream << "OpenGL Error, on function: " << text;
-			stream << ", ID: 0x" << std::hex << errorCode << " (" << getErrorName( errorCode, GL_DEBUG_TYPE_ERROR ) << ")";
-			logStream( stream );
+				stream << ", ID: 0x" << std::hex << errorCode << " (" << getErrorName( errorCode, GL_DEBUG_TYPE_ERROR ) << ")";
+				logStream( stream );
 #endif
+			}
+
 			errorCode = context->glGetError();
 			result = false;
 		}
