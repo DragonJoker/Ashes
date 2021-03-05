@@ -313,6 +313,7 @@ if ( OpenGL_FOUND )
 		Enum/GlMemoryMapFlag.cpp
 		Enum/GlMemoryPropertyFlag.cpp
 		Enum/GlMipmapMode.cpp
+		Enum/GlPackAlignment.cpp
 		Enum/GlPolygonMode.cpp
 		Enum/GlPrimitiveTopology.cpp
 		Enum/GlQueryResultFlag.cpp
@@ -363,6 +364,7 @@ if ( OpenGL_FOUND )
 		Enum/GlMemoryMapFlag.hpp
 		Enum/GlMemoryPropertyFlag.hpp
 		Enum/GlMipmapMode.hpp
+		Enum/GlPackAlignment.hpp
 		Enum/GlPolygonMode.hpp
 		Enum/GlPrimitiveTopology.hpp
 		Enum/GlQueryResultFlag.hpp

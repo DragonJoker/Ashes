@@ -172,9 +172,9 @@ namespace ashes::gl
 	using PFN_glClipControl = void ( GLAPIENTRY * )( GLenum origin, GLenum depth );
 	using PFN_glColorMaski = void ( GLAPIENTRY * )( GLuint buf, GLboolean r, GLboolean g, GLboolean b, GLboolean a );
 	using PFN_glCompileShader = void ( GLAPIENTRY * )( GLuint shader );
-	using PFN_glCompressedTexSubImage1D = void ( GLAPIENTRY * )( GlTextureType target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLsizei imageSize, const GLvoid * data );
-	using PFN_glCompressedTexSubImage2D = void ( GLAPIENTRY * )( GlTextureType target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLsizei imageSize, const GLvoid * data );
-	using PFN_glCompressedTexSubImage3D = void ( GLAPIENTRY * )( GlTextureType target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLsizei imageSize, const GLvoid * data );
+	using PFN_glCompressedTexSubImage1D = void ( GLAPIENTRY * )( GlTextureType target, GLint level, GLint xoffset, GLsizei width, GlInternal format, GLsizei imageSize, const GLvoid * data );
+	using PFN_glCompressedTexSubImage2D = void ( GLAPIENTRY * )( GlTextureType target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GlInternal format, GLsizei imageSize, const GLvoid * data );
+	using PFN_glCompressedTexSubImage3D = void ( GLAPIENTRY * )( GlTextureType target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GlInternal format, GLsizei imageSize, const GLvoid * data );
 	using PFN_glCopyBufferSubData = void ( GLAPIENTRY * )( GlBufferTarget readtarget, GlBufferTarget writetarget, GLintptr readoffset, GLintptr writeoffset, GLsizeiptr size );
 	using PFN_glCopyImageSubData = void ( GLAPIENTRY * )( GLuint srcName, GlTextureType srcTarget, GLint srcLevel, GLint srcX, GLint srcY, GLint srcZ, GLuint dstName, GlTextureType dstTarget, GLint dstLevel, GLint dstX, GLint dstY, GLint dstZ, GLsizei srcWidth, GLsizei srcHeight, GLsizei srcDepth );
 	using PFN_glCreateProgram = GLuint( GLAPIENTRY * )( void );
@@ -331,9 +331,9 @@ namespace ashes::gl
 	using PFN_glTexImage3DMultisample = void ( GLAPIENTRY * )( GlTextureType target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLboolean fixedsamplelocations );
 	using PFN_glTexParameteri = void( GLAPIENTRY * )( GlTextureType target, GLenum pname, GLint param );
 	using PFN_glTexParameterf = void( GLAPIENTRY * )( GlTextureType target, GLenum pname, GLfloat param );
-	using PFN_glTexSubImage1D = void ( GLAPIENTRY * )( GlTextureType target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, const void *pixels );
-	using PFN_glTexSubImage2D = void ( GLAPIENTRY * )( GlTextureType target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void *pixels );
-	using PFN_glTexSubImage3D = void ( GLAPIENTRY * )( GlTextureType target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const void *pixels );
+	using PFN_glTexSubImage1D = void ( GLAPIENTRY * )( GlTextureType target, GLint level, GLint xoffset, GLsizei width, GlFormat format, GlType type, const void *pixels );
+	using PFN_glTexSubImage2D = void ( GLAPIENTRY * )( GlTextureType target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GlFormat format, GlType type, const void *pixels );
+	using PFN_glTexSubImage3D = void ( GLAPIENTRY * )( GlTextureType target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GlFormat format, GlType type, const void *pixels );
 	using PFN_glTexStorage1D = void ( GLAPIENTRY * )( GlTextureType target, GLsizei levels, GLenum internalformat, GLsizei width );
 	using PFN_glTexStorage2D = void ( GLAPIENTRY * )( GlTextureType target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height );
 	using PFN_glTexStorage2DMultisample = void ( GLAPIENTRY * )( GlTextureType target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLboolean fixedsamplelocations );

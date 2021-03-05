@@ -119,7 +119,7 @@ namespace ashes::gl
 			, m_window->getCreateInfo()
 			, nullptr );
 		ContextLock context{ *m_context };
-		glCheckError( context, "ContextInitialisation" );
+		glCheckError( context, "ContextInitialisation", true );
 		m_physicalDevices.emplace_back( VkPhysicalDevice( new PhysicalDevice{ VkInstance( this ) } ) );
 
 		doCheckEnabledExtensions( get( this )

@@ -37,6 +37,7 @@ See LICENSE file in root folder
 #include "renderer/GlRenderer/Enum/GlMemoryMapFlag.hpp"
 #include "renderer/GlRenderer/Enum/GlMemoryPropertyFlag.hpp"
 #include "renderer/GlRenderer/Enum/GlMipmapMode.hpp"
+#include "renderer/GlRenderer/Enum/GlPackAlignment.hpp"
 #include "renderer/GlRenderer/Enum/GlPolygonMode.hpp"
 #include "renderer/GlRenderer/Enum/GlPrimitiveTopology.hpp"
 #include "renderer/GlRenderer/Enum/GlQueryResultFlag.hpp"
@@ -344,7 +345,7 @@ namespace ashes::gl
 			, function
 			, name
 			, std::forward< ParamsT >( params )... );
-		return glCheckError( context, name );
+		return glCheckError( context, name, false );
 	}
 
 	template< typename FuncT, typename ... ParamsT >
@@ -358,7 +359,7 @@ namespace ashes::gl
 			, function
 			, name
 			, std::forward< ParamsT >( params )... );
-		return glCheckError( context, name );
+		return glCheckError( context, name, false );
 	}
 
 	template< typename FuncT, typename ... ParamsT >
@@ -372,7 +373,7 @@ namespace ashes::gl
 			, function
 			, name
 			, std::forward< ParamsT >( params )... );
-		glCheckError( context, name );
+		glCheckError( context, name, false );
 		return result;
 	}
 
@@ -388,7 +389,8 @@ namespace ashes::gl
 				stream << name;
 				logParams( stream, std::forward< ParamsT >( params )... );
 				return stream.str();
-			} );
+			}
+			, true );
 	}
 
 	inline auto glCallCheckError( ContextLock const & context
@@ -400,7 +402,8 @@ namespace ashes::gl
 				std::stringstream stream;
 				stream << name << "()";
 				return stream.str();
-			} );
+			}
+			, true );
 	}
 
 #if AshesGL_LogCalls && !defined( NDEBUG )
