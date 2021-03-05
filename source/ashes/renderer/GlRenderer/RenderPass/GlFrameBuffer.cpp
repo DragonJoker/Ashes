@@ -104,6 +104,34 @@ namespace ashes::gl
 			attachment.index = index;
 			return attachment;
 		}
+
+		FboAttachment initialiseAttachment( VkDevice device
+			, VkImageSubresourceLayers & subresource
+			, VkImage image
+			, uint32_t layer
+			, VkImageView & view )
+		{
+			FboAttachment result{ 0u
+				, getAttachmentPoint( get( image )->getFormat() )
+				, get( image )->getInternal()
+				, getAttachmentType( get( image )->getFormat() )
+				, ( ( get( image )->getType() == VK_IMAGE_TYPE_3D )
+					? GL_TEXTURE_3D
+					: ( get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT
+						? GL_TEXTURE_2D_MULTISAMPLE
+						: ( checkFlag( get( image )->getCreateFlags(), VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT )
+							? GL_TEXTURE_CUBE_POSITIVE_X
+							: GL_TEXTURE_2D ) ) )
+				, subresource.mipLevel
+				, 0u };
+
+			if ( get( image )->getArrayLayers() > 1u )
+			{
+				result.mipLevel = 0u;
+			}
+
+			return result;
+		}
 	}
 
 	namespace gl4
@@ -178,6 +206,48 @@ namespace ashes::gl
 
 			return attachment;
 		}
+
+		FboAttachment initialiseAttachment( VkDevice device
+			, VkImageSubresourceLayers & subresource
+			, VkImage image
+			, uint32_t layer
+			, VkImageView & view )
+		{
+			FboAttachment result{ 0u
+				, getAttachmentPoint( subresource.aspectMask )
+				, get( image )->getInternal()
+				, getAttachmentType( subresource.aspectMask )
+				, ( ( get( image )->getType() == VK_IMAGE_TYPE_3D )
+					? GL_TEXTURE_3D
+					: ( get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT
+						? GL_TEXTURE_2D_MULTISAMPLE
+						: GL_TEXTURE_2D ) )
+				, subresource.mipLevel
+				, 0u };
+
+			if ( get( image )->getArrayLayers() > 1u )
+			{
+				allocate( view
+					, get( device )->getAllocationCallbacks()
+					, device
+					, VkImageViewCreateInfo{ VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO
+						, nullptr
+						, 0u
+						, image
+						, VkImageViewType( get( image )->getType() )
+						, get( image )->getFormat()
+						, VkComponentMapping{}
+						, { subresource.aspectMask
+							, subresource.mipLevel
+							, 1u
+							, layer
+							, 1u } } );
+				result.object = get( view )->getInternal();
+				result.mipLevel = 0u;
+			}
+
+			return result;
+		}
 	}
 
 	void bindAttach( VkDevice device
@@ -216,6 +286,28 @@ namespace ashes::gl
 			, view
 			, index
 			, multisampled );
+	}
+
+	FboAttachment initialiseAttachment( VkDevice device
+		, VkImageSubresourceLayers & subresource
+		, VkImage image
+		, uint32_t layer
+		, VkImageView & view )
+	{
+		if ( hasTextureViews( device ) )
+		{
+			return gl4::initialiseAttachment( device
+				, subresource
+				, image
+				, layer
+				, view );
+		}
+
+		return gl3::initialiseAttachment( device
+			, subresource
+			, image
+			, layer
+			, view );
 	}
 
 	bool isSRGBFormat( VkFormat format )

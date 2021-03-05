@@ -151,4 +151,53 @@ namespace ashes::gl
 	{
 		return get( get( displayMode )->getDisplay() )->getResolution();
 	}
+
+	void FboAttachment::bind( VkImageSubresourceLayers subresource
+		, uint32_t layer
+		, CmdList & list )
+	{
+		if ( target == GL_TEXTURE_1D )
+		{
+			list.push_back( makeCmd< OpType::eFramebufferTexture1D >( GL_FRAMEBUFFER
+				, point
+				, target
+				, object
+				, subresource.mipLevel ) );
+		}
+		else if ( target == GL_TEXTURE_2D )
+		{
+			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
+				, point
+				, target
+				, object
+				, subresource.mipLevel ) );
+		}
+		else if ( target == GL_TEXTURE_3D )
+		{
+			list.push_back( makeCmd< OpType::eFramebufferTexture3D >( GL_FRAMEBUFFER
+				, point
+				, target
+				, object
+				, subresource.mipLevel
+				, layer ) );
+		}
+		else if ( target == GL_TEXTURE_CUBE
+			|| target == GL_TEXTURE_1D_ARRAY
+			|| target == GL_TEXTURE_2D_ARRAY
+			|| target == GL_TEXTURE_CUBE_ARRAY )
+		{
+			list.push_back( makeCmd< OpType::eFramebufferTextureLayer >( GL_FRAMEBUFFER
+				, point
+				, object
+				, subresource.mipLevel
+				, layer ) );
+		}
+		else
+		{
+			list.push_back( makeCmd< OpType::eFramebufferTexture >( GL_FRAMEBUFFER
+				, point
+				, object
+				, subresource.mipLevel ) );
+		}
+	}
 }
