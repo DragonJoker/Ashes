@@ -484,6 +484,18 @@ namespace ashes::gl
 	}
 
 	void apply( ContextLock const & context
+		, CmdFramebufferTexture1D const & cmd )
+	{
+		glLogCall( context
+			, glFramebufferTexture1D
+			, cmd.target
+			, cmd.point
+			, cmd.texTarget
+			, cmd.object
+			, cmd.mipLevel );
+	}
+
+	void apply( ContextLock const & context
 		, CmdFramebufferTexture2D const & cmd )
 	{
 		glLogCall( context
@@ -493,6 +505,19 @@ namespace ashes::gl
 			, cmd.texTarget
 			, cmd.object
 			, cmd.mipLevel );
+	}
+
+	void apply( ContextLock const & context
+		, CmdFramebufferTexture3D const & cmd )
+	{
+		glLogCall( context
+			, glFramebufferTexture3D
+			, cmd.target
+			, cmd.point
+			, cmd.texTarget
+			, cmd.object
+			, cmd.mipLevel
+			, cmd.slice );
 	}
 
 	void apply( ContextLock const & context
@@ -559,5 +584,124 @@ namespace ashes::gl
 			get( cmd.memory )->flush( context, cmd.memoryOffset, cmd.dataSize );
 			get( cmd.memory )->unlock( context );
 		}
+	}
+
+	void apply( ContextLock const & context
+		, CmdReadPixels const & cmd )
+	{
+		glLogCall( context
+			, glReadPixels
+			, cmd.x
+			, cmd.y
+			, cmd.width
+			, cmd.height
+			, cmd.format
+			, cmd.type
+			, nullptr );
+	}
+
+	void apply( ContextLock const & context
+		, CmdPixelStore const & cmd )
+	{
+		glLogCall( context
+			, glPixelStorei
+			, cmd.name
+			, cmd.param );
+	}
+
+	void apply( ContextLock const & context
+		, CmdCompressedTexSubImage1D const & cmd )
+	{
+		glLogCall( context
+			, glCompressedTexSubImage1D
+			, cmd.copyTarget
+			, cmd.mipLevel
+			, cmd.x
+			, cmd.width
+			, cmd.format
+			, cmd.imageSize
+			, getBufferOffset( cmd.bufferOffset ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdCompressedTexSubImage2D const & cmd )
+	{
+		glLogCall( context
+			, glCompressedTexSubImage2D
+			, cmd.copyTarget
+			, cmd.mipLevel
+			, cmd.x
+			, cmd.y
+			, cmd.width
+			, cmd.height
+			, cmd.format
+			, cmd.imageSize
+			, getBufferOffset( cmd.bufferOffset ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdCompressedTexSubImage3D const & cmd )
+	{
+		glLogCall( context
+			, glCompressedTexSubImage3D
+			, cmd.copyTarget
+			, cmd.mipLevel
+			, cmd.x
+			, cmd.y
+			, cmd.z
+			, cmd.width
+			, cmd.height
+			, cmd.depth
+			, cmd.format
+			, cmd.imageSize
+			, getBufferOffset( cmd.bufferOffset ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdTexSubImage1D const & cmd )
+	{
+		glLogCall( context
+			, glTexSubImage1D
+			, cmd.copyTarget
+			, cmd.mipLevel
+			, cmd.x
+			, cmd.width
+			, cmd.format
+			, cmd.type
+			, getBufferOffset( cmd.bufferOffset ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdTexSubImage2D const & cmd )
+	{
+		glLogCall( context
+			, glTexSubImage2D
+			, cmd.copyTarget
+			, cmd.mipLevel
+			, cmd.x
+			, cmd.y
+			, cmd.width
+			, cmd.height
+			, cmd.format
+			, cmd.type
+			, getBufferOffset( cmd.bufferOffset ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdTexSubImage3D const & cmd )
+	{
+		glLogCall( context
+			, glTexSubImage3D
+			, cmd.copyTarget
+			, cmd.mipLevel
+			, cmd.x
+			, cmd.y
+			, cmd.z
+			, cmd.width
+			, cmd.height
+			, cmd.depth
+			, cmd.format
+			, cmd.type
+			, getBufferOffset( cmd.bufferOffset ) );
 	}
 }

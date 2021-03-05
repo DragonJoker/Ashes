@@ -14,95 +14,31 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	namespace
-	{
-		VkImageView createView( VkDevice device
-			, VkImage texture
-			, VkBufferImageCopy const & copy )
-		{
-			VkImageType type = get( texture )->getType();
-			VkImageViewType viewType{};
-
-			if ( type == VK_IMAGE_TYPE_3D )
-			{
-				viewType = VK_IMAGE_VIEW_TYPE_3D;
-			}
-			else if ( type == VK_IMAGE_TYPE_2D )
-			{
-				viewType = VK_IMAGE_VIEW_TYPE_2D;
-			}
-			else if ( type == VK_IMAGE_TYPE_1D )
-			{
-				viewType = VK_IMAGE_VIEW_TYPE_1D;
-			}
-
-			VkImageViewCreateInfo createInfo{ VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, nullptr, 0u };
-			createInfo.image = texture;
-			createInfo.viewType = viewType;
-			createInfo.format = get( texture )->getFormat();
-			createInfo.subresourceRange.aspectMask = getAspectMask( createInfo.format );
-			createInfo.subresourceRange.baseArrayLayer = copy.imageSubresource.baseArrayLayer;
-			createInfo.subresourceRange.layerCount = copy.imageSubresource.layerCount;
-			createInfo.subresourceRange.baseMipLevel = copy.imageSubresource.mipLevel;
-			createInfo.subresourceRange.levelCount = 1u;
-			VkImageView result;
-			allocate( result
-				, get( device )->getAllocationCallbacks()
-				, device
-				, createInfo );
-
-			return result;
-		}
-	}
-
-	void apply( ContextLock const & context
-		, CmdReadPixels const & cmd )
-	{
-		glLogCall( context
-			, glReadPixels
-			, cmd.x
-			, cmd.y
-			, cmd.width
-			, cmd.height
-			, cmd.format
-			, cmd.type
-			, nullptr );
-	}
-
 	void buildCopyImageToBufferCommand( ContextStateStack & stack
 		, VkDevice device
 		, VkBufferImageCopy copyInfo
 		, VkImage src
 		, VkBuffer dst
-		, CmdList & list )
+		, CmdList & list
+		, VkImageViewArray & views )
 	{
 		glLogCommand( list, "CopyImageToBufferCommand" );
 		auto internal = getInternalFormat( get( src )->getFormat() );
 		auto format = getFormat( internal );
 		auto type = getType( internal );
-		auto view = createView( device, src, copyInfo );
+
+		VkImageView srcView{ VK_NULL_HANDLE };
+		FboAttachment srcAttach{ initialiseAttachment( device, copyInfo.imageSubresource, src, 0u, srcView ) };
+
+		if ( srcView != VK_NULL_HANDLE )
+		{
+			views.push_back( srcView );
+			copyInfo.imageSubresource.mipLevel = 0u;
+		}
 
 		// Setup source FBO
 		list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_FRAMEBUFFER ) );
-
-		if ( hasTextureViews( device ) )
-		{
-			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
-				, GL_ATTACHMENT_POINT_COLOR0
-				, GL_TEXTURE_2D
-				, get( view )->getInternal()
-				, 0u ) );
-		}
-		else
-		{
-			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
-				, GL_ATTACHMENT_POINT_COLOR0
-				, GL_TEXTURE_2D
-				, get( get( view )->getImage() )->getInternal()
-				, get( view )->getSubresourceRange().baseMipLevel ) );
-		}
-
-		list.push_back( makeCmd< OpType::eReadBuffer >( GL_ATTACHMENT_POINT_COLOR0 ) );
+		srcAttach.bind( copyInfo.imageSubresource, 0u, list );
 		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
 			, nullptr ) );
 
@@ -110,6 +46,14 @@ namespace ashes::gl
 		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK
 			, get( dst )->getInternal() ) );
 		list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_READ_FRAMEBUFFER ) );
+
+		if ( srcAttach.point != GL_ATTACHMENT_POINT_DEPTH_STENCIL
+			&& srcAttach.point != GL_ATTACHMENT_POINT_DEPTH
+			&& srcAttach.point != GL_ATTACHMENT_POINT_STENCIL )
+		{
+			list.push_back( makeCmd< OpType::eReadBuffer >( uint32_t( srcAttach.point ) ) );
+		}
+
 		list.push_back( makeCmd< OpType::eReadPixels >( copyInfo.imageOffset.x
 			, copyInfo.imageOffset.y
 			, copyInfo.imageExtent.width

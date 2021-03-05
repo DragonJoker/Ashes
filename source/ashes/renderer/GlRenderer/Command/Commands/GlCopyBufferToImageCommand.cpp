@@ -13,118 +13,6 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	enum GlPackAlignment
-		: uint32_t
-	{
-		GL_UNPACK_ALIGNMENT = 0x0CF5,
-		GL_PACK_ALIGNMENT = 0x0D05,
-	};
-
-	void apply( ContextLock const & context
-		, CmdPixelStore const & cmd )
-	{
-		glLogCall( context
-			, glPixelStorei
-			, cmd.name
-			, cmd.param );
-	}
-
-	void apply( ContextLock const & context
-		, CmdCompressedTexSubImage1D const & cmd )
-	{
-		glLogCall( context
-			, glCompressedTexSubImage1D
-			, cmd.copyTarget
-			, cmd.mipLevel
-			, cmd.x
-			, cmd.width
-			, cmd.format
-			, cmd.imageSize
-			, getBufferOffset( cmd.bufferOffset ) );
-	}
-
-	void apply( ContextLock const & context
-		, CmdCompressedTexSubImage2D const & cmd )
-	{
-		glLogCall( context
-			, glCompressedTexSubImage2D
-			, cmd.copyTarget
-			, cmd.mipLevel
-			, cmd.x
-			, cmd.y
-			, cmd.width
-			, cmd.height
-			, cmd.format
-			, cmd.imageSize
-			, getBufferOffset( cmd.bufferOffset ) );
-	}
-
-	void apply( ContextLock const & context
-		, CmdCompressedTexSubImage3D const & cmd )
-	{
-		glLogCall( context
-			, glCompressedTexSubImage3D
-			, cmd.copyTarget
-			, cmd.mipLevel
-			, cmd.x
-			, cmd.y
-			, cmd.z
-			, cmd.width
-			, cmd.height
-			, cmd.depth
-			, cmd.format
-			, cmd.imageSize
-			, getBufferOffset( cmd.bufferOffset ) );
-	}
-
-	void apply( ContextLock const & context
-		, CmdTexSubImage1D const & cmd )
-	{
-		glLogCall( context
-			, glTexSubImage1D
-			, cmd.copyTarget
-			, cmd.mipLevel
-			, cmd.x
-			, cmd.width
-			, cmd.format
-			, cmd.type
-			, getBufferOffset( cmd.bufferOffset ) );
-	}
-
-	void apply( ContextLock const & context
-		, CmdTexSubImage2D const & cmd )
-	{
-		glLogCall( context
-			, glTexSubImage2D
-			, cmd.copyTarget
-			, cmd.mipLevel
-			, cmd.x
-			, cmd.y
-			, cmd.width
-			, cmd.height
-			, cmd.format
-			, cmd.type
-			, getBufferOffset( cmd.bufferOffset ) );
-	}
-
-	void apply( ContextLock const & context
-		, CmdTexSubImage3D const & cmd )
-	{
-		glLogCall( context
-			, glTexSubImage3D
-			, cmd.copyTarget
-			, cmd.mipLevel
-			, cmd.x
-			, cmd.y
-			, cmd.z
-			, cmd.width
-			, cmd.height
-			, cmd.depth
-			, cmd.format
-			, cmd.type
-			, getBufferOffset( cmd.bufferOffset ) );
-	}
-
 	void buildCopyBufferToImageCommand( VkDevice device
 		, VkBufferImageCopy copyInfo
 		, VkBuffer src
@@ -136,12 +24,12 @@ namespace ashes::gl
 			, get( dst )->getType()
 			, get( dst )->getArrayLayers()
 			, get( dst )->getCreateFlags() );
-		list.push_back( makeCmd< OpType::eBindTexture >( copyTarget
-			, get( dst )->getInternal() ) );
-		list.push_back( makeCmd< OpType::ePixelStore >( GL_UNPACK_ALIGNMENT
-			, 1 ) );
 		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_UNPACK
 			, get( src )->getInternal() ) );
+		list.push_back( makeCmd< OpType::ePixelStore >( GL_UNPACK_ALIGNMENT
+			, int32_t( getMinimalSize( get( dst )->getFormat() ) ) ) );
+		list.push_back( makeCmd< OpType::eBindTexture >( copyTarget
+			, get( dst )->getInternal() ) );
 
 		if ( isCompressedFormat( get( dst )->getFormat() ) )
 		{

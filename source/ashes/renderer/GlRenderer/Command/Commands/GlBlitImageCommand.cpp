@@ -41,88 +41,6 @@ namespace ashes::gl
 		}
 	}
 
-	namespace gl3
-	{
-		FboAttachment makeFboAttachment( VkDevice device
-			, VkImageSubresourceLayers & subresource
-			, VkImage image
-			, uint32_t layer
-			, VkImageView & view )
-		{
-			FboAttachment result{ 0u
-				, getAttachmentPoint( get( image )->getFormat() )
-				, get( image )->getInternal()
-				, getAttachmentType( get( image )->getFormat() )
-				, ( ( get( image )->getType() == VK_IMAGE_TYPE_3D )
-					? GL_TEXTURE_3D
-					: ( get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT
-						? GL_TEXTURE_2D_MULTISAMPLE
-						: ( checkFlag( get( image )->getCreateFlags(), VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT )
-							? GL_TEXTURE_CUBE_POSITIVE_X
-							: GL_TEXTURE_2D ) ) )
-				, subresource.mipLevel
-				, 0u };
-
-			if ( get( image )->getArrayLayers() > 1u )
-			{
-				result.mipLevel = 0u;
-			}
-
-			return result;
-		}
-	}
-
-	namespace gl4
-	{
-		FboAttachment makeFboAttachment( VkDevice device
-			, VkImageSubresourceLayers & subresource
-			, VkImage image
-			, uint32_t layer
-			, VkImageView & view )
-		{
-			FboAttachment result{ 0u
-				, getAttachmentPoint( subresource.aspectMask )
-				, get( image )->getInternal()
-				, getAttachmentType( subresource.aspectMask )
-				, ( ( get( image )->getType() == VK_IMAGE_TYPE_3D )
-					? GL_TEXTURE_3D
-					: ( get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT
-						? GL_TEXTURE_2D_MULTISAMPLE
-						: GL_TEXTURE_2D ) )
-				, subresource.mipLevel
-				, 0u };
-
-			if ( get( image )->getArrayLayers() > 1u )
-			{
-				allocate( view
-					, get( device )->getAllocationCallbacks()
-					, device
-					, VkImageViewCreateInfo
-					{
-						VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-						nullptr,
-						0u,
-						image,
-						VkImageViewType( get( image )->getType() ),
-						get( image )->getFormat(),
-						VkComponentMapping{},
-						{
-							subresource.aspectMask,
-							subresource.mipLevel,
-							1u,
-							layer,
-							1u
-						},
-					} );
-				result.object = get( view )->getInternal();
-				result.mipLevel = 0u;
-			}
-
-			return result;
-		}
-	}
-
-
 	struct LayerCopy
 	{
 		LayerCopy( VkDevice device
@@ -131,12 +49,8 @@ namespace ashes::gl
 			, VkImage dstImage
 			, uint32_t layer )
 			: region{ region }
-			, src{ hasTextureViews( device )
-				? gl4::makeFboAttachment( device, region.srcSubresource, srcImage, layer, srcView )
-				: gl3::makeFboAttachment( device, region.srcSubresource, srcImage, layer, srcView ) }
-			, dst{ hasTextureViews( device )
-				? gl4::makeFboAttachment( device, region.dstSubresource, dstImage, layer, dstView )
-				: gl3::makeFboAttachment( device, region.dstSubresource, dstImage, layer, dstView ) }
+			, src{ initialiseAttachment( device, region.srcSubresource, srcImage, layer, srcView ) }
+			, dst{ initialiseAttachment( device, region.dstSubresource, dstImage, layer, dstView ) }
 		{
 		}
 
@@ -173,9 +87,12 @@ namespace ashes::gl
 		, CmdList & list
 		, VkImageViewArray & views )
 	{
-		assert( get( srcImage )->getArrayLayers() == get( dstImage )->getArrayLayers() );
+		assert( get( srcImage )->getArrayLayers() == get( dstImage )->getArrayLayers()
+			&& get( srcImage )->getDimensions().depth == get( dstImage )->getDimensions().depth );
+		auto layerCount = std::max( get( srcImage )->getArrayLayers()
+			, get( srcImage )->getDimensions().depth );
 
-		for ( uint32_t layer = 0u; layer < get( srcImage )->getArrayLayers(); ++layer )
+		for ( uint32_t layer = 0u; layer < layerCount; ++layer )
 		{
 			LayerCopy layerCopy
 			{
@@ -200,53 +117,35 @@ namespace ashes::gl
 
 			// Setup source FBO
 			list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_FRAMEBUFFER ) );
-
-			if ( layerCopy.src.target != GL_TEXTURE_3D )
-			{
-				list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
-					, layerCopy.src.point
-					, layerCopy.src.target
-					, layerCopy.src.object
-					, layerCopy.region.srcSubresource.mipLevel ) );
-			}
-			else
-			{
-				list.push_back( makeCmd< OpType::eFramebufferTexture >( GL_FRAMEBUFFER
-					, layerCopy.src.point
-					, layerCopy.src.object
-					, layerCopy.region.srcSubresource.mipLevel ) );
-			}
-
+			layerCopy.src.bind( region.srcSubresource, layer, list );
 			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
 				, nullptr ) );
 
 			// Setup dst FBO
 			list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_FRAMEBUFFER ) );
-
-			if ( layerCopy.dst.target != GL_TEXTURE_3D )
-			{
-				list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
-					, layerCopy.dst.point
-					, layerCopy.dst.target
-					, layerCopy.dst.object
-					, layerCopy.region.dstSubresource.mipLevel ) );
-			}
-			else
-			{
-				list.push_back( makeCmd< OpType::eFramebufferTexture >( GL_FRAMEBUFFER
-					, layerCopy.dst.point
-					, layerCopy.dst.object
-					, layerCopy.region.dstSubresource.mipLevel ) );
-			}
-
+			layerCopy.dst.bind( region.dstSubresource, layer, list );
 			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
 				, nullptr ) );
 
 			// Perform the blit
 			list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_READ_FRAMEBUFFER ) );
-			list.push_back( makeCmd< OpType::eReadBuffer >( uint32_t( layerCopy.src.point ) ) );
+
+			if ( layerCopy.src.point != GL_ATTACHMENT_POINT_DEPTH_STENCIL
+				&& layerCopy.src.point != GL_ATTACHMENT_POINT_DEPTH
+				&& layerCopy.src.point != GL_ATTACHMENT_POINT_STENCIL )
+			{
+				list.push_back( makeCmd< OpType::eReadBuffer >( uint32_t( layerCopy.src.point ) ) );
+			}
+
 			list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_DRAW_FRAMEBUFFER ) );
-			list.push_back( makeCmd< OpType::eDrawBuffers >( uint32_t( layerCopy.dst.point ) ) );
+
+			if ( layerCopy.dst.point != GL_ATTACHMENT_POINT_DEPTH_STENCIL
+				&& layerCopy.dst.point != GL_ATTACHMENT_POINT_DEPTH
+				&& layerCopy.dst.point != GL_ATTACHMENT_POINT_STENCIL )
+			{
+				list.push_back( makeCmd< OpType::eDrawBuffers >( uint32_t( layerCopy.dst.point ) ) );
+			}
+
 			list.push_back( makeCmd< OpType::eBlitFramebuffer >( layerCopy.region.srcOffsets[0].x
 				, layerCopy.region.srcOffsets[0].y
 				, layerCopy.region.srcOffsets[1].x
