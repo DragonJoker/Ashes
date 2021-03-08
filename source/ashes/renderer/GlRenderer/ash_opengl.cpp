@@ -1743,14 +1743,12 @@ namespace ashes::gl
 
 		while ( pNext )
 		{
-			switch ( pNext->sType )
-			{
 #if VK_KHR_portability_subset
-			case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_FEATURES_KHR:
+			if ( pNext->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_FEATURES_KHR )
+			{
 				*reinterpret_cast< VkPhysicalDevicePortabilitySubsetFeaturesKHR * >( pNext ) = get( physicalDevice )->getPortabilitySubset();
-				break;
-#endif
 			}
+#endif
 
 			pNext = reinterpret_cast< VkBaseOutStructure * >( pNext->pNext );
 		}
@@ -1765,19 +1763,18 @@ namespace ashes::gl
 
 		while ( pNext )
 		{
-			switch ( pNext->sType )
-			{
 #if VK_VERSION_1_2
-			case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES:
+			if ( pNext->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES )
+			{
 				*reinterpret_cast< VkPhysicalDeviceDriverProperties * >( pNext ) = get( physicalDevice )->getDriverProperties();
-				break;
+			}
 #endif
 #if VK_KHR_portability_subset
-			case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_PROPERTIES_KHR:
+			if ( pNext->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_PROPERTIES_KHR )
+			{
 				reinterpret_cast< VkPhysicalDevicePortabilitySubsetPropertiesKHR * >( pNext )->minVertexInputBindingStrideAlignment = 1u;
-				break;
-#endif
 			}
+#endif
 
 			pNext = reinterpret_cast< VkBaseOutStructure * >( pNext->pNext );
 		}
@@ -2470,14 +2467,12 @@ namespace ashes::gl
 
 		while ( pNext )
 		{
-			switch ( pNext->sType )
-			{
 #if VK_KHR_portability_subset
-			case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_FEATURES_KHR:
+			if ( pNext->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_FEATURES_KHR )
+			{
 				*reinterpret_cast< VkPhysicalDevicePortabilitySubsetFeaturesKHR * >( pNext ) = get( physicalDevice )->getPortabilitySubset();
-				break;
-#endif
 			}
+#endif
 
 			pNext = reinterpret_cast< VkBaseOutStructure * >( pNext->pNext );
 		}
@@ -2492,20 +2487,18 @@ namespace ashes::gl
 
 		while ( pNext )
 		{
-			switch ( pNext->sType )
-			{
 #if VK_KHR_driver_properties
-			case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES_KHR:
+			if ( pNext->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES_KHR )
+			{
 				*reinterpret_cast< VkPhysicalDeviceDriverPropertiesKHR * >( pNext ) = get( physicalDevice )->getDriverProperties();
-				break;
-#endif
-
-#if VK_KHR_portability_subset
-			case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_PROPERTIES_KHR:
-				reinterpret_cast< VkPhysicalDevicePortabilitySubsetPropertiesKHR * >( pNext )->minVertexInputBindingStrideAlignment = 1u;
-				break;
-#endif
 			}
+#endif
+#if VK_KHR_portability_subset
+			if ( pNext->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_PROPERTIES_KHR )
+			{
+				reinterpret_cast< VkPhysicalDevicePortabilitySubsetPropertiesKHR * >( pNext )->minVertexInputBindingStrideAlignment = 1u;
+			}
+#endif
 
 			pNext = reinterpret_cast< VkBaseOutStructure * >( pNext->pNext );
 		}

@@ -976,7 +976,7 @@ namespace ashes::gl
 		}
 
 		if ( ( !m_state.currentGraphicsPipeline
-				|| 0 == ( stageFlags, VK_SHADER_STAGE_ALL_GRAPHICS ) )
+				|| !checkFlag( stageFlags, VK_SHADER_STAGE_ALL_GRAPHICS ) )
 			&& ( !m_state.currentComputePipeline
 				|| !checkFlag( stageFlags, VK_SHADER_STAGE_COMPUTE_BIT ) ) )
 		{
