@@ -458,6 +458,10 @@ namespace ashes::gl
 					, GLsizei( layerSize )
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 				break;
+
+			default:
+				assert( false && "Unexpected GlTextureType" );
+				break;
 			}
 		}
 		else
@@ -534,6 +538,10 @@ namespace ashes::gl
 					, m_format
 					, m_type
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
+				break;
+
+			default:
+				assert( false && "Unexpected GlTextureType" );
 				break;
 			}
 		}
