@@ -9,6 +9,7 @@ See LICENSE file in root folder
 #include <renderer/RendererCommon/ShaderBindings.hpp>
 
 #include <unordered_set>
+#include <unordered_map>
 
 namespace ashes::gl
 {
