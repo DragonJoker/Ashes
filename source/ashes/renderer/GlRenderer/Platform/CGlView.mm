@@ -20,7 +20,7 @@ GLView makeGLView( const void * handle )
 	};
 	NSOpenGLPixelFormat * pixelFormat = [[[NSOpenGLPixelFormat alloc] initWithAttributes:attributes] autorelease];
 	NSOpenGLView * openGLView = [[[NSOpenGLView alloc] initWithFrame:[[[contentView window] contentView] bounds] pixelFormat:pixelFormat] autorelease];
-	[openGLView  setWantsBestResolutionOpenGLSurface:NO];
+	[openGLView setWantsBestResolutionOpenGLSurface:NO];
 	openGLView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
 	[contentView addSubview:openGLView];
 	[openGLView prepareOpenGL];
@@ -42,7 +42,7 @@ void freeGLView( GLView view )
 void getGLViewSize( GLView view, int * width, int * height )
 {
 	NSOpenGLView * openGLView = static_cast< NSOpenGLView * >( view.view );
-	NSSize viewSize = [openGLView contentView].size;
+	NSSize viewSize = [openGLView frame].size;
 	*width = (int)viewSize.width;
 	*height = (int)viewSize.height;
 }
