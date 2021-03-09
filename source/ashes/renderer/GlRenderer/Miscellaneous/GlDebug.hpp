@@ -34,6 +34,7 @@ namespace ashes::gl
 		, bool log );
 	void clearDebugFile();
 	void logDebug( char const * const log );
+	void logError( char const * const log );
 
 	void pushDebugBlock( std::string name );
 	void popDebugBlock();
