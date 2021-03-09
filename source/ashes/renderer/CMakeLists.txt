@@ -21,14 +21,14 @@ macro( ash_update_icd_target TARGET_NAME )
 	endif ()
 	set( IN_ICD_FILE ${Ashes_SOURCE_DIR}/source/ashes/ashes_icd.json.in )
 	set( OUT_ICD_FILE_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}_icd.json.release )
-	set( OUT_ICD_FILE_RELWITHDEBUGINFO ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}_icd.json.relwithdebuginfo )
+	set( OUT_ICD_FILE_RELWITHDEBINFO ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}_icd.json.relwithdebinfo )
 	set( OUT_ICD_FILE_DEBUG ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}_icd.json.debug )
 	configure_file( ${IN_ICD_FILE}
 		${OUT_ICD_FILE_RELEASE}
 		NEWLINE_STYLE LF
 	)
 	configure_file( ${IN_ICD_FILE}
-		${OUT_ICD_FILE_RELWITHDEBUGINFO}
+		${OUT_ICD_FILE_RELWITHDEBINFO}
 		NEWLINE_STYLE LF
 	)
 	set( NAME ${NAMEDEBUG} )
@@ -42,8 +42,8 @@ macro( ash_update_icd_target TARGET_NAME )
 			copy_if_different
 				$<$<CONFIG:Release>:${OUT_ICD_FILE_RELEASE}>
 				$<$<CONFIG:Release>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE}${TARGET_NAME}_icd.json>
-				$<$<CONFIG:RelWithDebugInfo>:${OUT_ICD_FILE_RELWITHDEBINFO}>
-				$<$<CONFIG:RelWithDebugInfo>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO}${TARGET_NAME}_icd.json>
+				$<$<CONFIG:RelWithDebInfo>:${OUT_ICD_FILE_RELWITHDEBINFO}>
+				$<$<CONFIG:RelWithDebInfo>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO}${TARGET_NAME}_icd.json>
 				$<$<CONFIG:Debug>:${OUT_ICD_FILE_DEBUG}>
 				$<$<CONFIG:Debug>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}${TARGET_NAME}d_icd.json>
 	)
@@ -51,7 +51,7 @@ macro( ash_update_icd_target TARGET_NAME )
 		install(
 			FILES
 				$<$<CONFIG:Release>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE}${TARGET_NAME}_icd.json>
-				$<$<CONFIG:RelWithDebugInfo>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO}${TARGET_NAME}_icd.json>
+				$<$<CONFIG:RelWithDebInfo>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO}${TARGET_NAME}_icd.json>
 				$<$<CONFIG:Debug>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}${TARGET_NAME}d_icd.json>
 			COMPONENT AshesRenderers
 			DESTINATION bin
@@ -60,7 +60,7 @@ macro( ash_update_icd_target TARGET_NAME )
 		install(
 			FILES
 				$<$<CONFIG:Release>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE}${TARGET_NAME}_icd.json>
-				$<$<CONFIG:RelWithDebugInfo>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO}${TARGET_NAME}_icd.json>
+				$<$<CONFIG:RelWithDebInfo>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO}${TARGET_NAME}_icd.json>
 				$<$<CONFIG:Debug>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}${TARGET_NAME}d_icd.json>
 			COMPONENT AshesRenderers
 			DESTINATION lib
