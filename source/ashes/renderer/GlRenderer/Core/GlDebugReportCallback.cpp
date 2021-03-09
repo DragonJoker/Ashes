@@ -12,7 +12,10 @@ namespace ashes::gl
 {
 	namespace
 	{
+		static const uint32_t GL_PIXEL_TRANSFER_IS_SYNC_WITH_RENDERING = 0x00020052;
 		static const uint32_t GL_USE_OF_DEVICE_LOCAL_MEMORY_FOR_CPU_TRANSFERS = 0x00020071;
+		static const uint32_t GL_COPY_BUFFER_FROM_VIDEO_TO_HOST_MEMORY = 0x00020072;
+		static const uint32_t GL_SHADER_PROGRAM_IS_RECOMPILED_BASED_ON_GL_STATE = 0x00020092;
 
 		char const * const convert( GlDebugSource source )
 		{
@@ -64,7 +67,10 @@ namespace ashes::gl
 		{
 			static const std::set< uint32_t > ignoredIds
 			{
+				GL_PIXEL_TRANSFER_IS_SYNC_WITH_RENDERING,
 				GL_USE_OF_DEVICE_LOCAL_MEMORY_FOR_CPU_TRANSFERS,
+				GL_COPY_BUFFER_FROM_VIDEO_TO_HOST_MEMORY,
+				GL_SHADER_PROGRAM_IS_RECOMPILED_BASED_ON_GL_STATE,
 			};
 			return ignoredIds.end() != ignoredIds.find( id );
 		}
@@ -160,6 +166,12 @@ namespace ashes::gl
 					, GlDebugSeverity( severity )
 					, length
 					, message );
+
+				if ( type == GlDebugType::GL_DEBUG_TYPE_ERROR
+					|| type == GlDebugType::GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR )
+				{
+					logError( message );
+				}
 			}
 		}
 
@@ -177,6 +189,12 @@ namespace ashes::gl
 					, GlDebugSeverity( severity )
 					, length
 					, message );
+
+				if ( category == GlDebugCategory::GL_DEBUG_CATEGORY_API_ERROR_AMD
+					|| category == GlDebugCategory::GL_DEBUG_CATEGORY_UNDEFINED_BEHAVIOR_AMD )
+				{
+					logError( message );
+				}
 			}
 		}
 	}
