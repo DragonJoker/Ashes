@@ -7,7 +7,7 @@ Ashes
 =====
 Ashes is a drop-in replacement or ICD to Vulkan.  
 It allows to write Vulkan code, and to select the rendering API that will be used.  
-  
+It also comes with ashespp, a C++ wrapper for Vulkan.  
 To build it, you can use CMake.
 
 ## Renderers available
@@ -181,7 +181,7 @@ I've forked it, to be able to test the drivers.
 
 ## Test applications
 
-These applications are used to validate the basic functionalities of the library.
+These applications are used to validate the basic functionalities of the ashespp library.
 
 ### [Device creation](test/01-DeviceCreation/)
 
