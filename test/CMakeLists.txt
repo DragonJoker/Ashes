@@ -4,12 +4,16 @@ if ( ASHES_BUILD_TESTS OR ASHES_BUILD_INFO OR ASHES_BUILD_SW_SAMPLES )
 	set( TARGET_INCLUDE_DIRS
 		${Ashes_SOURCE_DIR}/include
 		${Ashes_BINARY_DIR}/include
-		${Vulkan_INCLUDE_DIR}
 	)
+	if ( ASHES_TEST_ICD )
+		set( TARGET_INCLUDE_DIRS
+			${TARGET_INCLUDE_DIRS}
+			${Vulkan_INCLUDE_DIR}
+		)
+	endif ()
 	find_package( Vulkan QUIET REQUIRED )
 	if ( NOT ASHES_TEST_ICD )
 		set( Vulkan_LIBRARY
-			${Vulkan_LIBRARY}
 			ashes::ashes
 		)
 	endif ()
