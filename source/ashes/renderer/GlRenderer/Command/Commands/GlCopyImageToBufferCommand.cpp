@@ -51,7 +51,7 @@ namespace ashes::gl
 			&& srcAttach.point != GL_ATTACHMENT_POINT_DEPTH
 			&& srcAttach.point != GL_ATTACHMENT_POINT_STENCIL )
 		{
-			list.push_back( makeCmd< OpType::eReadBuffer >( uint32_t( srcAttach.point ) ) );
+			list.push_back( makeCmd< OpType::eReadBuffer >( srcAttach.point ) );
 		}
 
 		list.push_back( makeCmd< OpType::eReadPixels >( copyInfo.imageOffset.x

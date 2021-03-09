@@ -202,8 +202,8 @@ namespace ashes::gl
 	using PFN_glDispatchComputeIndirect = void ( GLAPIENTRY * )( GLintptr indirect );
 	using PFN_glDrawArraysInstanced = void ( GLAPIENTRY * )( GLenum mode, GLint first, GLsizei count, GLsizei primcount );
 	using PFN_glDrawArraysInstancedBaseInstance = void ( GLAPIENTRY * )( GLenum mode, GLint first, GLsizei count, GLsizei primcount, GLuint baseinstance );
-	using PFN_glDrawBuffer = void ( GLAPIENTRY * )( GLenum buf );
-	using PFN_glDrawBuffers = void ( GLAPIENTRY * )( GLsizei n, const GLenum* bufs );
+	using PFN_glDrawBuffer = void ( GLAPIENTRY * )( GlAttachmentPoint buf );
+	using PFN_glDrawBuffers = void ( GLAPIENTRY * )( GLsizei n, const GlAttachmentPoint * bufs );
 	using PFN_glDrawElementsBaseVertex = void ( GLAPIENTRY * )( GLenum mode, GLsizei count, GLenum type, void *indices, GLint basevertex );
 	using PFN_glDrawElementsInstanced = void ( GLAPIENTRY * )( GLenum mode, GLsizei count, GLenum type, const void * indices, GLsizei primcount );
 	using PFN_glDrawElementsInstancedBaseInstance = void ( GLAPIENTRY * )( GLenum mode, GLsizei count, GLenum type, const void *indices, GLsizei primcount, GLuint baseinstance );
@@ -307,7 +307,7 @@ namespace ashes::gl
 	using PFN_glProgramUniformMatrix4fv = void ( GLAPIENTRY * )( GLuint program, GLint location, GLsizei count, GLboolean transpose, const GLfloat * value );
 	using PFN_glPushDebugGroup = void( GLAPIENTRY * )( GLenum source, GLuint id, GLsizei length, const GLchar * message );
 	using PFN_glQueryCounter = void ( GLAPIENTRY * )( GLuint id, GLenum target );
-	using PFN_glReadBuffer = void ( GLAPIENTRY * )( GLenum mode );
+	using PFN_glReadBuffer = void ( GLAPIENTRY * )( GlAttachmentPoint mode );
 	using PFN_glReadPixels = void( GLAPIENTRY * )( GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, void *pixels );
 	using PFN_glSamplerParameterf = void ( GLAPIENTRY * )( GLuint sampler, GLenum pname, GLfloat param );
 	using PFN_glSamplerParameterfv = void ( GLAPIENTRY * )( GLuint sampler, GLenum pname, const GLfloat * param );

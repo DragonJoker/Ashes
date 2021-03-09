@@ -216,6 +216,12 @@ namespace ashes::gl
 		void bind( VkImageSubresourceLayers subresource
 			, uint32_t layer
 			, CmdList & list );
+		bool isDepthOrStencil()const
+		{
+			return point == GL_ATTACHMENT_POINT_DEPTH_STENCIL
+				|| point == GL_ATTACHMENT_POINT_DEPTH
+				|| point == GL_ATTACHMENT_POINT_STENCIL;
+		}
 	};
 
 	using FboAttachmentArray = std::vector< FboAttachment >;

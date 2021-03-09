@@ -79,9 +79,9 @@ namespace ashes::gl
 
 						// Perform blit
 						list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_READ_FRAMEBUFFER ) );
-						list.push_back( makeCmd< OpType::eReadBuffer >( uint32_t( srcAttach.point ) ) );
+						list.push_back( makeCmd< OpType::eReadBuffer >( srcAttach.point ) );
 						list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_DRAW_FRAMEBUFFER ) );
-						list.push_back( makeCmd< OpType::eDrawBuffers >( uint32_t( dstAttach.point ) ) );
+						list.push_back( makeCmd< OpType::eDrawBuffers >( dstAttach.point ) );
 						list.push_back( makeCmd< OpType::eBlitFramebuffer >(
 							0, 0, int32_t( get( frameBuffer )->getWidth() ), int32_t( get( frameBuffer )->getHeight() ),
 							0, 0, int32_t( get( frameBuffer )->getWidth() ), int32_t( get( frameBuffer )->getHeight() ),
