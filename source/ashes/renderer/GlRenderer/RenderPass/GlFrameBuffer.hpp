@@ -38,8 +38,8 @@ namespace ashes::gl
 			, GLuint name );
 		~Framebuffer();
 
-		UInt32Array getDrawBuffers( ArrayView < VkAttachmentReference const > const & attaches )const;
-		UInt32Array getDrawBuffers( ArrayView < VkAttachmentReference > const & attaches )const;
+		std::vector< GlAttachmentPoint > getDrawBuffers( ArrayView < VkAttachmentReference const > const & attaches )const;
+		std::vector< GlAttachmentPoint > getDrawBuffers( ArrayView < VkAttachmentReference > const & attaches )const;
 
 		bool hasOnlySwapchainImage()const;
 		bool hasSwapchainImage()const;
@@ -160,7 +160,7 @@ namespace ashes::gl
 		FboAttachmentArray m_colourMsAttaches;
 		Optional< FboAttachment > m_depthStencilAttach;
 		Optional< FboAttachment > m_depthStencilMsAttach;
-		mutable UInt32Array m_drawBuffers;
+		mutable std::vector< GlAttachmentPoint > m_drawBuffers;
 		CmdList m_bindAttaches;
 		bool m_srgb{ false };
 		bool m_multisampled{ false };

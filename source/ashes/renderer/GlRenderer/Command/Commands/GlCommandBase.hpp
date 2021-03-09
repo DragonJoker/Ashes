@@ -518,7 +518,7 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDrawBuffers >
 	{
-		inline CmdT( uint32_t target )
+		inline CmdT( GlAttachmentPoint target )
 			: cmd{ { OpType::eDrawBuffers, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, count{ 1u }
 		{
@@ -529,7 +529,7 @@ namespace ashes::gl
 		}
 
 		template< size_t N >
-		inline CmdT( uint32_t targets[N] )
+		inline CmdT( GlAttachmentPoint targets[N] )
 			: cmd{ { OpType::eDrawBuffers, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, count{ uint32_t( N ) }
 		{
@@ -546,7 +546,7 @@ namespace ashes::gl
 		}
 
 		template< size_t N >
-		inline CmdT( std::array< uint32_t, N > targets )
+		inline CmdT( std::array< GlAttachmentPoint, N > targets )
 			: cmd{ { OpType::eDrawBuffers, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, count{ uint32_t( N ) }
 		{
@@ -562,7 +562,7 @@ namespace ashes::gl
 			}
 		}
 
-		inline CmdT( std::vector< uint32_t > targets )
+		inline CmdT( std::vector< GlAttachmentPoint > targets )
 			: cmd{ { OpType::eDrawBuffers, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, count{ std::min( 16u, uint32_t( targets.size() ) ) }
 		{
@@ -582,7 +582,7 @@ namespace ashes::gl
 
 		Command cmd;
 		uint32_t count;
-		std::array< uint32_t, 16u > targets{ 0u };
+		std::array< GlAttachmentPoint, 16u > targets{ GlAttachmentPoint( 0u ) };
 	};
 	using CmdDrawBuffers = CmdT< OpType::eDrawBuffers >;
 
@@ -600,14 +600,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDrawBuffer >
 	{
-		inline CmdT( uint32_t value )
+		inline CmdT( GlAttachmentPoint value )
 			: cmd{ { OpType::eDrawBuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, target{ std::move( value ) }
 		{
 		}
 
 		Command cmd;
-		uint32_t target;
+		GlAttachmentPoint target;
 	};
 	using CmdDrawBuffer = CmdT< OpType::eDrawBuffer >;
 
@@ -1879,14 +1879,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eReadBuffer >
 	{
-		inline CmdT( uint32_t point )
+		inline CmdT( GlAttachmentPoint point )
 			: cmd{ { OpType::eReadBuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, point{ std::move( point ) }
 		{
 		}
 
 		Command cmd;
-		uint32_t point;
+		GlAttachmentPoint point;
 	};
 	using CmdReadBuffer = CmdT< OpType::eReadBuffer >;
 

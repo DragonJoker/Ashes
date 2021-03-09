@@ -318,9 +318,9 @@ namespace ashes::gl
 
 			// Perform the blit
 			list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_READ_FRAMEBUFFER ) );
-			list.push_back( makeCmd< OpType::eReadBuffer >( uint32_t( getAttachmentPoint( get( srcImage )->getFormat() ) ) ) );
+			list.push_back( makeCmd< OpType::eReadBuffer >( getAttachmentPoint( get( srcImage )->getFormat() ) ) );
 			list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_DRAW_FRAMEBUFFER ) );
-			list.push_back( makeCmd< OpType::eDrawBuffers >( uint32_t( getAttachmentPoint( get( dstImage )->getFormat() ) ) ) );
+			list.push_back( makeCmd< OpType::eDrawBuffers >( getAttachmentPoint( get( dstImage )->getFormat() ) ) );
 
 			if ( copyInfo.dstSubresource.mipLevel > copyInfo.srcSubresource.mipLevel )
 			{
