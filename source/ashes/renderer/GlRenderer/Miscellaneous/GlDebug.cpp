@@ -88,7 +88,7 @@ namespace ashes::gl
 		bool result = true;
 		uint32_t errorCode = context->glGetError();
 
-		while ( errorCode )
+		if ( errorCode )
 		{
 			if ( log )
 			{
@@ -101,6 +101,7 @@ namespace ashes::gl
 						, VkResult( errorCode )
 						, stream.str()
 						, getErrorName( errorCode, GL_DEBUG_TYPE_ERROR ) );
+					logError( ( stream.str() + ": " + getErrorName( errorCode, GL_DEBUG_TYPE_ERROR ) ).c_str() );
 				}
 #if AshesGL_LogCalls
 				std::stringstream stream;
@@ -156,6 +157,14 @@ namespace ashes::gl
 		{
 			file << getDebugPrefix() << log << std::endl;
 		}
+
+#if defined( _WIN32 )
+		if ( ::IsDebuggerPresent() )
+		{
+			::OutputDebugStringA( log );
+			::OutputDebugStringA( "\n" );
+		}
+#endif
 	}
 
 #else
@@ -193,6 +202,13 @@ namespace ashes::gl
 			file << log << std::endl;
 		}
 
+#if defined( _WIN32 )
+		if ( ::IsDebuggerPresent() )
+		{
+			::OutputDebugStringA( log );
+			::OutputDebugStringA( "\n" );
+		}
+#endif
 #endif
 	}
 
