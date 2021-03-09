@@ -199,6 +199,11 @@ namespace ashes::gl
 	{
 		if ( m_context )
 		{
+			for ( auto & device : m_devices )
+			{
+				get( device )->cleanupContextDependent( *m_context );
+			}
+
 			m_context.reset();
 		}
 

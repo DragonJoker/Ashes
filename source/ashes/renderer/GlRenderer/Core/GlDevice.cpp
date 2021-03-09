@@ -205,6 +205,14 @@ namespace ashes::gl
 		get( m_instance )->unregisterDevice( get( this ) );
 	}
 
+	void Device::cleanupContextDependent( Context const & context )
+	{
+		if ( &context == m_currentContext )
+		{
+			doCleanupContextDependent();
+		}
+	}
+
 	bool Device::hasExtension( std::string_view extension )const
 	{
 		char const * const version = extension.data();
