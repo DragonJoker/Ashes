@@ -26,8 +26,7 @@ namespace ashes::gl
 			, get( dst )->getCreateFlags() );
 		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_UNPACK
 			, get( src )->getInternal() ) );
-		list.push_back( makeCmd< OpType::ePixelStore >( GL_UNPACK_ALIGNMENT
-			, int32_t( getMinimalSize( get( dst )->getFormat() ) ) ) );
+		list.push_back( makeCmd< OpType::ePixelStore >( GL_UNPACK_ALIGNMENT, 1 ) );
 		list.push_back( makeCmd< OpType::eBindTexture >( copyTarget
 			, get( dst )->getInternal() ) );
 
