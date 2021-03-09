@@ -26,16 +26,61 @@ namespace ashes::gl
 	void DeviceMemoryBinding::map( VkDeviceSize offset
 		, VkDeviceSize size )
 	{
-		m_mappedMin = std::max( offset, getOffset() );
-		m_mappedMax = std::min( offset + size, getOffset() + getSize() );
-		m_mapped = m_mappedMax > m_mappedMin;
+		if ( size )
+		{
+			auto rngMin = std::max( offset, getOffset() );
+			auto rngMax = std::min( offset + size, getOffset() + getSize() );
+			m_mapped = rngMax > rngMin;
+
+			if ( m_mapped )
+			{
+				m_mappedMin = rngMin;
+				m_mappedMax = rngMax;
+				m_dirty = true;
+			}
+		}
 	}
 
-	void DeviceMemoryBinding::unmap()
+	bool DeviceMemoryBinding::unmap()
 	{
 		m_mappedMin = 0;
 		m_mappedMax = 0;
 		m_mapped = false;
+		auto dirty = m_dirty;
+		m_dirty = false;
+		return dirty;
+	}
+
+	void DeviceMemoryBinding::flush( VkDeviceSize offset
+		, VkDeviceSize size )
+	{
+		if ( m_mapped && size )
+		{
+			auto rngMin = std::max( offset, getOffset() );
+			auto rngMax = std::min( offset + size, getOffset() + getSize() );
+			auto flushed = rngMax > rngMin;
+
+			if ( flushed )
+			{
+				m_dirty = false;
+			}
+		}
+	}
+
+	void DeviceMemoryBinding::invalidate( VkDeviceSize offset
+		, VkDeviceSize size )
+	{
+		if ( m_mapped && size )
+		{
+			auto rngMin = std::max( offset, getOffset() );
+			auto rngMax = std::min( offset + size, getOffset() + getSize() );
+			auto invalidated = rngMax > rngMin;
+
+			if ( invalidated )
+			{
+				m_dirty = true;
+			}
+		}
 	}
 
 	void DeviceMemoryBinding::upload( ContextLock const & context

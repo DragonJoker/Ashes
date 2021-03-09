@@ -155,16 +155,19 @@ namespace ashes::gl
 		, VkDeviceSize size )const
 	{
 		setupUpdateRegions( offset, size );
+		glLogCall( context
+			, glPixelStorei
+			, GL_UNPACK_ALIGNMENT
+			, GLint( getMinimalSize( m_texture->getFormat() ) ) );
+		glLogCall( context
+			, glBindTexture
+			, m_texture->getTarget()
+			, m_boundName );
 
 		for ( size_t i = m_beginRegion; i < m_endRegion; ++i )
 		{
 			updateRegion( context, m_updateRegions[i] );
 		}
-
-		glLogCall( context
-			, glBindTexture
-			, m_texture->getTarget()
-			, m_boundName );
 
 		if ( m_texture->getMipLevels() > 1
 			&& !isCompressedFormat( m_texture->getFormat() ) )
