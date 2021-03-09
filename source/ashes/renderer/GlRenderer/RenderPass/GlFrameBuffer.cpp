@@ -488,10 +488,10 @@ namespace ashes::gl
 		}
 	}
 
-	UInt32Array Framebuffer::getDrawBuffers( ArrayView< VkAttachmentReference const > const & references )const
+	std::vector< GlAttachmentPoint > Framebuffer::getDrawBuffers( ArrayView< VkAttachmentReference const > const & references )const
 	{
 		assert( getInternal() != GL_INVALID_INDEX );
-		UInt32Array drawBuffers;
+		std::vector< GlAttachmentPoint > drawBuffers;
 
 		if ( !isEmpty() )
 		{
@@ -509,7 +509,7 @@ namespace ashes::gl
 						} );
 					assert( attachIt != attaches.end() );
 					auto & attach = *attachIt;
-					drawBuffers.push_back( attach.point + attach.index );
+					drawBuffers.push_back( GlAttachmentPoint( attach.point + attach.index ) );
 				}
 			}
 
@@ -522,7 +522,7 @@ namespace ashes::gl
 		return drawBuffers;
 	}
 
-	UInt32Array Framebuffer::getDrawBuffers( ArrayView< VkAttachmentReference > const & references )const
+	std::vector< GlAttachmentPoint > Framebuffer::getDrawBuffers( ArrayView< VkAttachmentReference > const & references )const
 	{
 		m_drawBuffers.clear();
 
@@ -553,7 +553,7 @@ namespace ashes::gl
 
 						if ( fboImage->hasInternal() )
 						{
-							m_drawBuffers.push_back( attach.point + attach.index );
+							m_drawBuffers.push_back( GlAttachmentPoint( attach.point + attach.index ) );
 						}
 						else if ( attaches.size() == 1 )
 						{

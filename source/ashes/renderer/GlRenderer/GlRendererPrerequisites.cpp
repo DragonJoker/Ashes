@@ -172,15 +172,6 @@ namespace ashes::gl
 				, object
 				, subresource.mipLevel ) );
 		}
-		else if ( target == GL_TEXTURE_3D )
-		{
-			list.push_back( makeCmd< OpType::eFramebufferTexture3D >( GL_FRAMEBUFFER
-				, point
-				, target
-				, object
-				, subresource.mipLevel
-				, layer ) );
-		}
 		else if ( target == GL_TEXTURE_CUBE
 			|| target == GL_TEXTURE_1D_ARRAY
 			|| target == GL_TEXTURE_2D_ARRAY
