@@ -5,7 +5,7 @@
 
 Ashes
 =====
-Ashes is a drop-in replacement to Vulkan.  
+Ashes is a drop-in replacement or ICD to Vulkan.  
 It allows to write Vulkan code, and to select the rendering API that will be used.  
   
 To build it, you can use CMake.
@@ -13,18 +13,24 @@ To build it, you can use CMake.
 ## Renderers available
 
 - Vulkan: Ashes is a passthrough, when using Vulkan rendering API, and it has no additional cost if dynamic loader is used.
-- OpenGL: From OpenGL 3.3 to OpenGL 4.6 (Core profile).
+- OpenGL: From OpenGL 3.3 to OpenGL 4.6 (Core profile), it can be used directly as an ICD.
 - Direct3D 11: From feature level 11.0.
+
+## Supported platforms
+
+- Windows.
+- Linux.
+- MacOS.
 
 ## How to use it
 
-Two workflows are possible:
+Three workflows are possible:
 
 ### ICD mode
 
 Just set the environment variable VK_ICD_FILENAMES to one of the jsons in Ashes' install dir, and you're done. 
 
-### Automatic mode
+### Drop-in replacement mode
 
 You load Ashes' shared library instead of Vulkan's, and you're done.  
 The API selection will be done on first call of `vkGetInstanceProcAddr` (for dynamic loader), or on first Vulkan API call (for static loader).  
@@ -33,12 +39,6 @@ The API selection will be done on first call of `vkGetInstanceProcAddr` (for dyn
 
 You can ask for the list of loaded plugins, through a call to the function `int ashEnumeratePlugins( uint32_t * count , AshPluginDescription * plugins );`.  
 It works as Vulkan ones : if `plugins` is set to `NULL`, `count` will then contain the number of loaded plugins.  
-
-### Supported platforms
-
-- Windows.
-- Linux.
-- MacOS.
 
 ### API
 
