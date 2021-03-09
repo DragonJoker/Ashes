@@ -256,7 +256,6 @@ namespace ashes::gl
 			, GLintptr( offset )
 			, GLsizei( size )
 			, GL_MEMORY_MAP_WRITE_BIT );
-		assert( result != nullptr );
 
 		if ( result )
 		{
@@ -269,6 +268,23 @@ namespace ashes::gl
 		glLogCall( context
 			, glBindBuffer
 			, GL_BUFFER_TARGET_COPY_WRITE
+			, 0u );
+		glLogCall( context
+			, glBindBuffer
+			, GL_BUFFER_TARGET_PIXEL_UNPACK
+			, 0u );
+
+		for ( auto & binding : m_bindings )
+		{
+			binding.second->upload( context
+				, m_data
+				, offset
+				, size );
+		}
+
+		glLogCall( context
+			, glBindBuffer
+			, GL_BUFFER_TARGET_PIXEL_UNPACK
 			, 0u );
 	}
 
@@ -294,7 +310,6 @@ namespace ashes::gl
 			, GLintptr( offset )
 			, GLsizei( size )
 			, GL_MEMORY_MAP_READ_BIT );
-		assert( result != nullptr );
 
 		if ( result )
 		{
@@ -345,6 +360,12 @@ namespace ashes::gl
 			size = m_allocateInfo.allocationSize;
 		}
 
+		for ( auto & [key, binding] : m_bindings )
+		{
+			binding->flush( offset, size );
+		}
+
+		m_dirty = false;
 		checkControlValue( m_data );
 		upload( context, offset, size );
 		return VK_SUCCESS;
@@ -360,6 +381,11 @@ namespace ashes::gl
 			size = m_allocateInfo.allocationSize;
 		}
 
+		for ( auto & [key, binding] : m_bindings )
+		{
+			binding->invalidate( offset, size );
+		}
+
 		m_dirty = true;
 		checkControlValue( m_data );
 		download( context, m_mappedOffset, m_mappedSize );
@@ -368,11 +394,14 @@ namespace ashes::gl
 
 	void DeviceMemory::unlock( ContextLock const & context )const
 	{
+		auto dirty = m_dirty;
+
 		for ( auto & [key, binding] : m_bindings )
 		{
-			binding->unmap();
+			dirty = binding->unmap() || dirty;
 		}
 
+		upload( context, m_mappedOffset, m_mappedSize );
 		m_mappedOffset = 0ull;
 		m_mappedSize = 0ull;;
 	}
