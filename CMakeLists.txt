@@ -94,6 +94,11 @@ macro( parse_subdir_files _BASE_DIR _FOLDER _GROUP )
 	parse_subdir_files_ex( ${_BASE_DIR} "" ${_FOLDER} ${_GROUP} )
 endmacro()
 
+if ( VCPKG_TOOLCHAIN )
+	set( CMAKE_MAP_IMPORTED_CONFIG_MINSIZEREL Release )
+	set( CMAKE_MAP_IMPORTED_CONFIG_RELWITHDEBINFO Release ) 
+endif ()
+
 if ( MSVC )
 	string( REGEX REPLACE "/Zi" "/ZI" CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG} )
 endif ()

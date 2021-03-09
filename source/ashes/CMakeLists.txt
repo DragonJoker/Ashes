@@ -38,8 +38,8 @@ target_include_directories( ${PROJECT_NAME}
 	PUBLIC
 		$<BUILD_INTERFACE:${Ashes_SOURCE_DIR}/include>
 		$<INSTALL_INTERFACE:include>
+		$<BUILD_INTERFACE:${Vulkan_INCLUDE_DIR}>
 	PRIVATE
-		${Vulkan_INCLUDE_DIR}
 		${Ashes_SOURCE_DIR}/include/ashes
 		${Ashes_SOURCE_DIR}/source
 		${Ashes_SOURCE_DIR}/source/ashes
