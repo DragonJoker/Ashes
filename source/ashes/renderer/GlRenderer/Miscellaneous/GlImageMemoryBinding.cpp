@@ -158,7 +158,7 @@ namespace ashes::gl
 		glLogCall( context
 			, glPixelStorei
 			, GL_UNPACK_ALIGNMENT
-			, GLint( getMinimalSize( m_texture->getFormat() ) ) );
+			, 1 );
 		glLogCall( context
 			, glBindTexture
 			, m_texture->getTarget()
