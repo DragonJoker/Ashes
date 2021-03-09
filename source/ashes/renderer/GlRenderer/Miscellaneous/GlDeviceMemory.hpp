@@ -67,8 +67,8 @@ namespace ashes::gl
 		// Bindings, by offset
 		std::vector< std::pair< VkDeviceSize, DeviceMemoryBindingPtr > > m_bindings;
 		mutable bool m_dirty = true;
-		mutable VkDeviceSize m_mappedOffset;
-		mutable VkDeviceSize m_mappedSize;
+		mutable VkDeviceSize m_mappedOffset{ 0u };
+		mutable VkDeviceSize m_mappedSize{ 0u };
 		mutable ByteArray m_data;
 	};
 }

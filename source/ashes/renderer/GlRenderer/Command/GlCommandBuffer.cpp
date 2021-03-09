@@ -1311,8 +1311,7 @@ namespace ashes::gl
 				{
 					for ( auto & write : writes->writes )
 					{
-						if ( write.descriptorType )
-							doProcessMappedBoundBufferOut( write.pBufferInfo->buffer );
+						doProcessMappedBoundBufferOut( write.pBufferInfo->buffer );
 					}
 				}
 			}
@@ -1365,12 +1364,9 @@ namespace ashes::gl
 
 		if ( isInput )
 		{
-			if ( m_uploads.insert( buf->getMemoryBinding().getParent() ).second )
-			{
-				m_cmdList.emplace_back( makeCmd< OpType::eUploadMemory >( buf->getMemoryBinding().getParent() ) );
-			}
+			m_cmdList.emplace_back( makeCmd< OpType::eUploadMemory >( buf->getMemoryBinding().getParent() ) );
 		}
-		else if ( m_downloads.insert( buf->getMemoryBinding().getParent() ).second )
+		else
 		{
 			m_cmdList.emplace_back( makeCmd< OpType::eDownloadMemory >( buf->getMemoryBinding().getParent() ) );
 		}

@@ -24,7 +24,11 @@ namespace ashes::gl
 
 		void map( VkDeviceSize offset
 			, VkDeviceSize size );
-		void unmap();
+		void flush( VkDeviceSize offset
+			, VkDeviceSize size );
+		void invalidate( VkDeviceSize offset
+			, VkDeviceSize size );
+		bool unmap();
 
 		virtual void upload( ContextLock const & context
 			, ByteArray const & data
@@ -74,8 +78,9 @@ namespace ashes::gl
 		VkMemoryRequirements m_requirements;
 		void * m_bound;
 		GLuint m_boundName;
-		mutable bool m_mapped = false;
-		mutable VkDeviceSize m_mappedMin;
-		mutable VkDeviceSize m_mappedMax;
+		bool m_mapped = false;
+		bool m_dirty = false;
+		VkDeviceSize m_mappedMin;
+		VkDeviceSize m_mappedMax;
 	};
 }
