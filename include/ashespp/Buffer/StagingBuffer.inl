@@ -698,7 +698,7 @@ namespace ashes
 		, VkExtent2D const & extent
 		, ByteArray const & data
 		, ImageView const & texture
-		, VkPipelineStageFlags dstStageFlags )const
+		, VkImageLayout dstLayout )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( "StaginBufferUploadTex"
 			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
@@ -710,7 +710,7 @@ namespace ashes
 			, extent
 			, data.data()
 			, texture
-			, dstStageFlags );
+			, dstLayout );
 		commandBuffer->end();
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
@@ -726,7 +726,7 @@ namespace ashes
 		, VkExtent2D const & extent
 		, ArrayView< uint8_t > data
 		, ImageView const & texture
-		, VkPipelineStageFlags dstStageFlags )const
+		, VkImageLayout dstLayout )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( "StaginBufferUploadTex"
 			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
@@ -738,7 +738,7 @@ namespace ashes
 			, extent
 			, data.data()
 			, texture
-			, dstStageFlags );
+			, dstLayout );
 		commandBuffer->end();
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
@@ -751,7 +751,7 @@ namespace ashes
 		, VkFormat format
 		, ByteArray const & data
 		, ImageView const & texture
-		, VkPipelineStageFlags dstStageFlags )const
+		, VkImageLayout dstLayout )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( "StaginBufferUploadTex"
 			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
@@ -760,7 +760,7 @@ namespace ashes
 			, format
 			, data.data()
 			, texture
-			, dstStageFlags );
+			, dstLayout );
 		commandBuffer->end();
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
@@ -775,7 +775,7 @@ namespace ashes
 		, VkExtent2D const & extent
 		, ByteArray const & data
 		, ImageView const & texture
-		, VkPipelineStageFlags dstStageFlags )const
+		, VkImageLayout dstLayout )const
 	{
 		uploadTextureData( commandBuffer
 			, subresourceLayers
@@ -784,20 +784,20 @@ namespace ashes
 			, extent
 			, data.data()
 			, texture
-			, dstStageFlags );
+			, dstLayout );
 	}
 
 	inline void StagingBuffer::uploadTextureData( CommandBuffer const & commandBuffer
 		, VkFormat format
 		, ByteArray const & data
 		, ImageView const & texture
-		, VkPipelineStageFlags dstStageFlags )const
+		, VkImageLayout dstLayout )const
 	{
 		uploadTextureData( commandBuffer
 			, format
 			, data.data()
 			, texture
-			, dstStageFlags );
+			, dstLayout );
 	}
 	/**@}*/
 	/**@}*/
@@ -1113,7 +1113,7 @@ namespace ashes
 		, VkExtent2D const & extent
 		, ByteArray & data
 		, ImageView const & texture
-		, VkPipelineStageFlags dstStageFlags )const
+		, VkImageLayout dstLayout )const
 	{
 		downloadTextureData( queue
 			, commandPool
@@ -1123,7 +1123,7 @@ namespace ashes
 			, extent
 			, data.data()
 			, texture
-			, dstStageFlags );
+			, dstLayout );
 	}
 
 	inline void StagingBuffer::downloadTextureData( Queue const & queue
@@ -1131,14 +1131,14 @@ namespace ashes
 		, VkFormat format
 		, ByteArray & data
 		, ImageView const & texture
-		, VkPipelineStageFlags dstStageFlags )const
+		, VkImageLayout dstLayout )const
 	{
 		downloadTextureData( queue
 			, commandPool
 			, format
 			, data.data()
 			, texture
-			, dstStageFlags );
+			, dstLayout );
 	}
 	/**@}*/
 	/**@}*/

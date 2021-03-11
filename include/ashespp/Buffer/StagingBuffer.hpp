@@ -328,7 +328,7 @@ namespace ashes
 			, VkExtent2D const & extent
 			, uint8_t const * const data
 			, ImageView const & texture
-			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT )const;
+			, VkImageLayout dstLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
 		inline void uploadTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, VkImageSubresourceLayers const & subresourceLayers
@@ -337,7 +337,7 @@ namespace ashes
 			, VkExtent2D const & extent
 			, ByteArray const & data
 			, ImageView const & texture
-			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT )const;
+			, VkImageLayout dstLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
 		inline void uploadTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, VkImageSubresourceLayers const & subresourceLayers
@@ -346,19 +346,19 @@ namespace ashes
 			, VkExtent2D const & extent
 			, ArrayView< uint8_t > data
 			, ImageView const & texture
-			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT )const;
+			, VkImageLayout dstLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
 		void uploadTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, VkFormat format
 			, uint8_t const * const data
 			, ImageView const & texture
-			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT )const;
+			, VkImageLayout dstLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
 		inline void uploadTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, VkFormat format
 			, ByteArray const & data
 			, ImageView const & texture
-			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT )const;
+			, VkImageLayout dstLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
 		void uploadTextureData( CommandBuffer const & commandBuffer
 			, VkImageSubresourceLayers const & subresourceLayers
 			, VkFormat format
@@ -366,7 +366,7 @@ namespace ashes
 			, VkExtent2D const & extent
 			, uint8_t const * const data
 			, ImageView const & texture
-			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT )const;
+			, VkImageLayout dstLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
 		inline void uploadTextureData( CommandBuffer const & commandBuffer
 			, VkImageSubresourceLayers const & subresourceLayers
 			, VkFormat format
@@ -374,17 +374,17 @@ namespace ashes
 			, VkExtent2D const & extent
 			, ByteArray const & data
 			, ImageView const & texture
-			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT )const;
+			, VkImageLayout dstLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
 		void uploadTextureData( CommandBuffer const & commandBuffer
 			, VkFormat format
 			, uint8_t const * const data
 			, ImageView const & texture
-			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT )const;
+			, VkImageLayout dstLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
 		inline void uploadTextureData( CommandBuffer const & commandBuffer
 			, VkFormat format
 			, ByteArray const & data
 			, ImageView const & texture
-			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT )const;
+			, VkImageLayout dstLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
 		/**@}*/
 		/**@}*/
 		/**
@@ -521,7 +521,7 @@ namespace ashes
 			, VkExtent2D const & extent
 			, uint8_t * data
 			, ImageView const & texture
-			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT )const;
+			, VkImageLayout dstLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
 		inline void downloadTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, VkImageSubresourceLayers const & subresourceLayers
@@ -530,19 +530,19 @@ namespace ashes
 			, VkExtent2D const & extent
 			, ByteArray & data
 			, ImageView const & texture
-			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT )const;
+			, VkImageLayout dstLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
 		void downloadTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, VkFormat format
 			, uint8_t * data
 			, ImageView const & texture
-			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT )const;
+			, VkImageLayout dstLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
 		inline void downloadTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, VkFormat format
 			, ByteArray & data
 			, ImageView const & texture
-			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT )const;
+			, VkImageLayout dstLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
 		/**@}*/
 		/**@}*/
 		/**
@@ -583,7 +583,7 @@ namespace ashes
 			, VkExtent2D const & size
 			, VkOffset3D const & offset
 			, ImageView const & view
-			, VkPipelineStageFlags dstStageFlags
+			, VkImageLayout dstLayout
 			, VkImageSubresourceLayers const & subresourceLayers )const;
 		/**@{*/
 		/**
@@ -614,7 +614,7 @@ namespace ashes
 			, VkExtent2D const & size
 			, VkOffset3D const & offset
 			, ImageView const & view
-			, VkPipelineStageFlags dstStageFlags
+			, VkImageLayout dstLayout
 			, VkImageSubresourceLayers const & subresourceLayers )const;
 		/**@}*/
 
