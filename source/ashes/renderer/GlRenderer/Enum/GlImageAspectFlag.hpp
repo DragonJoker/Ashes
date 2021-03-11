@@ -18,6 +18,8 @@ namespace ashes::gl
 	Ashes_ImplementFlag( GlImageAspectFlag )
 	std::string getName( GlImageAspectFlags value );
 	inline std::string toString( GlImageAspectFlags value ) { return getName( value ); }
+	std::string getName( GlImageAspectFlag value );
+	inline std::string toString( GlImageAspectFlag value ) { return getName( value ); }
 	/**
 	*\brief
 	*	Convertit un VkImageAspectFlags en GlImageAspectFlags.

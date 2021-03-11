@@ -213,6 +213,26 @@ namespace ashes::gl
 		}
 	}
 
+	void Device::cleanupBlitSrcFbo()
+	{
+		if ( m_blitFbos[0] )
+		{
+			deallocate( m_blitFbos[0]
+				, getAllocationCallbacks() );
+			m_blitFbos[0] = nullptr;
+		}
+	}
+
+	void Device::cleanupBlitDstFbo()
+	{
+		if ( m_blitFbos[1] )
+		{
+			deallocate( m_blitFbos[1]
+				, getAllocationCallbacks() );
+			m_blitFbos[1] = nullptr;
+		}
+	}
+
 	bool Device::hasExtension( std::string_view extension )const
 	{
 		char const * const version = extension.data();
@@ -287,18 +307,7 @@ namespace ashes::gl
 			return VK_ERROR_EXTENSION_NOT_PRESENT;
 		}
 
-		if ( nameInfo.objectType == VK_OBJECT_TYPE_FENCE )
-		{
-			if ( context->m_glObjectPtrLabel )
-			{
-				isOk = glLogCall( context
-					, glObjectPtrLabel
-					, get( VkFence( nameInfo.objectHandle ) )->getInternal()
-					, GLsizei( strlen( nameInfo.pObjectName ) )
-					, nameInfo.pObjectName );
-			}
-		}
-		else
+		if ( nameInfo.objectType != VK_OBJECT_TYPE_FENCE )
 		{
 			if ( context->m_glObjectLabel )
 			{
@@ -609,19 +618,8 @@ namespace ashes::gl
 			m_sampler = nullptr;
 		}
 
-		if ( m_blitFbos[0] )
-		{
-			deallocate( m_blitFbos[0]
-				, getAllocationCallbacks() );
-			m_blitFbos[0] = nullptr;
-		}
-
-		if ( m_blitFbos[1] )
-		{
-			deallocate( m_blitFbos[1]
-				, getAllocationCallbacks() );
-			m_blitFbos[1] = nullptr;
-		}
+		cleanupBlitSrcFbo();
+		cleanupBlitDstFbo();
 	}
 
 	bool has420PackExtensions( VkDevice device )

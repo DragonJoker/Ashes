@@ -118,6 +118,9 @@ namespace ashes::gl
 			case OpType::eBlitFramebuffer:
 				apply( lock, map< OpType::eBlitFramebuffer >( cmd ) );
 				break;
+			case OpType::eCheckFramebuffer:
+				apply( lock, map< OpType::eCheckFramebuffer >( cmd ) );
+				break;
 			case OpType::eClearBack:
 				apply( lock, map< OpType::eClearBack >( cmd ) );
 				break;

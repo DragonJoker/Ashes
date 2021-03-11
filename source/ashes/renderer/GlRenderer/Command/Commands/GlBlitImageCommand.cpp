@@ -41,72 +41,6 @@ namespace ashes::gl
 		}
 	}
 
-	struct LayerCopy
-	{
-		LayerCopy( VkDevice device
-			, VkImageBlit origRegion
-			, VkImage srcImage
-			, VkImage dstImage
-			, uint32_t layer
-			, VkImageViewArray & views )
-			: region{ origRegion }
-			, src{ initialiseAttachment( device, origRegion.srcSubresource, srcImage, layer, srcView ) }
-			, dst{ initialiseAttachment( device, origRegion.dstSubresource, dstImage, layer, dstView ) }
-		{
-			if ( srcView != VK_NULL_HANDLE )
-			{
-				views.push_back( srcView );
-				region.srcSubresource.mipLevel = 0u;
-			}
-
-			if ( dstView != VK_NULL_HANDLE )
-			{
-				views.push_back( dstView );
-				region.dstSubresource.mipLevel = 0u;
-			}
-		}
-
-		void bindSrc( uint32_t layer
-			, CmdList & list )
-		{
-			src.bind( region.srcSubresource, layer, list );
-		}
-
-		void bindDst( uint32_t layer
-			, CmdList & list )
-		{
-			dst.bind( region.dstSubresource, layer, list );
-		}
-
-		GlAttachmentPoint getSrcPoint()const
-		{
-			return src.point;
-		}
-
-		GlAttachmentPoint getDstPoint()const
-		{
-			return dst.point;
-		}
-
-		bool isSrcDepthOrStencil()const
-		{
-			return src.isDepthOrStencil();
-		}
-
-		bool isDstDepthOrStencil()const
-		{
-			return dst.isDepthOrStencil();
-		}
-
-		VkImageBlit region;
-
-	private:
-		VkImageView srcView{ VK_NULL_HANDLE };
-		VkImageView dstView{ VK_NULL_HANDLE };
-		FboAttachment src;
-		FboAttachment dst;
-	};
-
 	void apply( ContextLock const & context
 		, CmdBlitFramebuffer const & cmd )
 	{
@@ -124,6 +58,22 @@ namespace ashes::gl
 			, cmd.filter );
 	}
 
+	VkExtent3D convert( VkOffset3D const & src )
+	{
+		return VkExtent3D{ uint32_t( src.x )
+			, uint32_t( src.y )
+			, uint32_t( src.z ) };
+	}
+
+	VkImageCopy convert( VkImageBlit const & src )
+	{
+		return VkImageCopy{ src.srcSubresource
+			, src.srcOffsets[0]
+			, src.dstSubresource
+			, src.dstOffsets[0]
+			, convert( src.srcOffsets[1] ) };
+	}
+
 	void buildBlitImageCommand( ContextStateStack & stack
 		, VkDevice device
 		, VkImage srcImage
@@ -133,66 +83,76 @@ namespace ashes::gl
 		, CmdList & list
 		, VkImageViewArray & views )
 	{
-		assert( get( srcImage )->getArrayLayers() == get( dstImage )->getArrayLayers()
-			&& get( srcImage )->getDimensions().depth == get( dstImage )->getDimensions().depth );
-		auto layerCount = get( srcImage )->getArrayLayers();
+		glLogCommand( list, "BlitImageCommand" );
+		assert( region.srcSubresource.layerCount == region.dstSubresource.layerCount );
 
-		for ( uint32_t layer = 0u; layer < layerCount; ++layer )
+		if ( hasCopyImage( device )
+			&& areCopyCompatible( get( srcImage )->getFormatVk(), get( dstImage )->getFormatVk() )
+			&& region.srcOffsets[1] == region.dstOffsets[1] )
 		{
-			LayerCopy layerCopy{ device
-				, region
-				, srcImage
-				, dstImage
-				, layer
-				, views };
+			list.push_back( makeCmd< OpType::eCopyImageSubData >( get( srcImage )->getInternal()
+				, convert( device
+					, get( srcImage )->getType()
+					, get( srcImage )->getArrayLayers()
+					, get( srcImage )->getCreateFlags() )
+				, get( dstImage )->getInternal()
+				, convert( device
+					, get( dstImage )->getType()
+					, get( dstImage )->getArrayLayers()
+					, get( srcImage )->getCreateFlags() )
+				, convert( region ) ) );
+		}
+		else
+		{
+			auto layerCount = region.srcSubresource.layerCount;
 
-			// Setup source FBO
-			list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_FRAMEBUFFER ) );
-			layerCopy.bindSrc( layer, list );
-			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
-				, nullptr ) );
-
-			// Setup dst FBO
-			list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_FRAMEBUFFER ) );
-			layerCopy.bindDst( layer, list );
-			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
-				, nullptr ) );
-
-			// Perform the blit
-			list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_READ_FRAMEBUFFER ) );
-
-			if ( !layerCopy.isSrcDepthOrStencil() )
+			for ( uint32_t layer = 0u; layer < layerCount; ++layer )
 			{
-				list.push_back( makeCmd< OpType::eReadBuffer >( layerCopy.getSrcPoint() ) );
-			}
+				LayerCopy layerCopy{ device
+					, region
+					, srcImage
+					, dstImage
+					, layer
+					, views };
 
-			list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_DRAW_FRAMEBUFFER ) );
+				// Setup source FBO
+				list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_FRAMEBUFFER ) );
+				layerCopy.bindSrc( layer, list );
+				list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+					, nullptr ) );
 
-			if ( !layerCopy.isDstDepthOrStencil() )
-			{
-				list.push_back( makeCmd< OpType::eDrawBuffers >( layerCopy.getDstPoint() ) );
-			}
+				// Setup dst FBO
+				list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_FRAMEBUFFER ) );
+				layerCopy.bindDst( layer, list );
+				list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+					, nullptr ) );
 
-			list.push_back( makeCmd< OpType::eBlitFramebuffer >( layerCopy.region.srcOffsets[0].x
-				, layerCopy.region.srcOffsets[0].y
-				, layerCopy.region.srcOffsets[1].x
-				, layerCopy.region.srcOffsets[1].y
-				, layerCopy.region.dstOffsets[0].x
-				, layerCopy.region.dstOffsets[0].y
-				, layerCopy.region.dstOffsets[1].x
-				, layerCopy.region.dstOffsets[1].y
-				, getMask( get( srcImage )->getFormat() )
-				, convert( filter ) ) );
+				// Perform the blit
+				list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_READ_FRAMEBUFFER ) );
+				layerCopy.read( stack, list );
+				list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_DRAW_FRAMEBUFFER ) );
+				layerCopy.draw( stack, list );
+				list.push_back( makeCmd< OpType::eBlitFramebuffer >( layerCopy.region.srcOffsets[0].x
+					, layerCopy.region.srcOffsets[0].y
+					, layerCopy.region.srcOffsets[1].x
+					, layerCopy.region.srcOffsets[1].y
+					, layerCopy.region.dstOffsets[0].x
+					, layerCopy.region.dstOffsets[0].y
+					, layerCopy.region.dstOffsets[1].x
+					, layerCopy.region.dstOffsets[1].y
+					, getMask( get( srcImage )->getFormatVk() )
+					, convert( filter ) ) );
 
-			// Unbind
-			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
-				, nullptr ) );
-			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_DRAW_FRAMEBUFFER
-				, nullptr ) );
+				// Unbind
+				list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
+					, nullptr ) );
+				list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_DRAW_FRAMEBUFFER
+					, nullptr ) );
 
-			if ( stack.hasCurrentFramebuffer() )
-			{
-				stack.setCurrentFramebuffer( VK_NULL_HANDLE );
+				if ( stack.hasCurrentFramebuffer() )
+				{
+					stack.setCurrentFramebuffer( VK_NULL_HANDLE );
+				}
 			}
 		}
 

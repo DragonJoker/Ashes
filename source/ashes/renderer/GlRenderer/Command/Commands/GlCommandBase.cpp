@@ -6,6 +6,7 @@ See LICENSE file in root folder.
 
 #include "Core/GlContextLock.hpp"
 #include "Miscellaneous/GlDeviceMemory.hpp"
+#include "RenderPass/GlFrameBuffer.hpp"
 
 #include "ashesgl_api.hpp"
 
@@ -132,6 +133,15 @@ namespace ashes::gl
 			, 0u
 			, cmd.flags
 			, getBufferOffset( cmd.bufferOffset ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdCheckFramebuffer const & cmd )
+	{
+		auto status = glLogNonVoidCall( context
+			, glCheckFramebufferStatus
+			, GL_FRAMEBUFFER );
+		checkCompleteness( context.getDevice(), status );
 	}
 
 	void apply( ContextLock const & context

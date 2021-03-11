@@ -1178,4 +1178,154 @@ namespace ashes::gl
 		udpateSwizzle( components.a, source, result.a );
 		return result;
 	}
+
+	bool isCompatible8( GlInternal value )
+	{
+		return value == GL_INTERNAL_R8_UNORM
+			|| value == GL_INTERNAL_R8_SNORM
+			|| value == GL_INTERNAL_R8_UINT
+			|| value == GL_INTERNAL_R8_SINT;
+	}
+
+	bool isCompatible16( GlInternal value )
+	{
+		return value == GL_INTERNAL_R16_SFLOAT
+			|| value == GL_INTERNAL_R16_SINT
+			|| value == GL_INTERNAL_R16_UINT
+			|| value == GL_INTERNAL_R16_SNORM
+			|| value == GL_INTERNAL_R16_UNORM
+			|| value == GL_INTERNAL_R8G8_UNORM
+			|| value == GL_INTERNAL_R8G8_SNORM
+			|| value == GL_INTERNAL_R8G8_UINT
+			|| value == GL_INTERNAL_R8G8_SINT;
+	}
+
+	bool isCompatible24( GlInternal value )
+	{
+		return value == GL_INTERNAL_R8G8B8_UNORM
+			|| value == GL_INTERNAL_R8G8B8_SNORM
+			|| value == GL_INTERNAL_R8G8B8_UINT
+			|| value == GL_INTERNAL_R8G8B8_SINT
+			|| value == GL_INTERNAL_R8G8B8_SRGB;
+	}
+
+	bool isCompatible32( GlInternal value )
+	{
+		return value == GL_INTERNAL_R8G8B8A8_UNORM
+			|| value == GL_INTERNAL_R8G8B8A8_SNORM
+			|| value == GL_INTERNAL_R8G8B8A8_UINT
+			|| value == GL_INTERNAL_R8G8B8A8_SINT
+			|| value == GL_INTERNAL_R8G8B8A8_SRGB
+			|| value == GL_INTERNAL_R16G16_SFLOAT
+			|| value == GL_INTERNAL_R16G16_SINT
+			|| value == GL_INTERNAL_R16G16_UINT
+			|| value == GL_INTERNAL_R16G16_SNORM
+			|| value == GL_INTERNAL_R16G16_UNORM
+			|| value == GL_INTERNAL_R32_SFLOAT
+			|| value == GL_INTERNAL_R32_SINT
+			|| value == GL_INTERNAL_R32_UINT
+			|| value == GL_INTERNAL_B10G11R11_UFLOAT_PACK32
+			|| value == GL_INTERNAL_A2R10G10B10_UNORM_PACK32
+			|| value == GL_INTERNAL_A2R10G10B10_UINT_PACK32
+			|| value == GL_INTERNAL_E5B9G9R9_UFLOAT_PACK32;
+	}
+
+	bool isCompatible48( GlInternal value )
+	{
+		return value == GL_INTERNAL_R16G16B16_SFLOAT
+			|| value == GL_INTERNAL_R16G16B16_SINT
+			|| value == GL_INTERNAL_R16G16B16_UINT
+			|| value == GL_INTERNAL_R16G16B16_SNORM
+			|| value == GL_INTERNAL_R16G16B16_UNORM;
+	}
+
+	bool isCompatible64( GlInternal value )
+	{
+		return value == GL_INTERNAL_R16G16B16A16_SFLOAT
+			|| value == GL_INTERNAL_R16G16B16A16_SINT
+			|| value == GL_INTERNAL_R16G16B16A16_UINT
+			|| value == GL_INTERNAL_R16G16B16A16_SNORM
+			|| value == GL_INTERNAL_R16G16B16A16_UNORM
+			|| value == GL_INTERNAL_R32G32_SFLOAT
+			|| value == GL_INTERNAL_R32G32_SINT
+			|| value == GL_INTERNAL_R32G32_UINT
+			|| value == GL_INTERNAL_BC4_UNORM_BLOCK
+			|| value == GL_INTERNAL_BC4_SNORM_BLOCK;
+	}
+
+	bool isCompatible96( GlInternal value )
+	{
+		return value == GL_INTERNAL_R32G32B32_SFLOAT
+			|| value == GL_INTERNAL_R32G32B32_SINT
+			|| value == GL_INTERNAL_R32G32B32_UINT;
+	}
+
+	bool isCompatible128( GlInternal value )
+	{
+		return value == GL_INTERNAL_R32G32B32A32_SFLOAT
+			|| value == GL_INTERNAL_R32G32B32A32_SINT
+			|| value == GL_INTERNAL_R32G32B32A32_UINT
+			|| value == GL_INTERNAL_BC5_UNORM_BLOCK
+			|| value == GL_INTERNAL_BC5_SNORM_BLOCK
+			|| value == GL_INTERNAL_BC6H_UFLOAT_BLOCK
+			|| value == GL_INTERNAL_BC6H_SFLOAT_BLOCK
+			|| value == GL_INTERNAL_BC7_UNORM_BLOCK
+			|| value == GL_INTERNAL_BC7_SRGB_BLOCK;
+	}
+
+	bool areCopyCompatible( VkFormat lhs, VkFormat rhs )
+	{
+		if ( lhs == rhs )
+		{
+			return true;
+		}
+
+		auto size = getMinimalSize( lhs );
+		auto result = size == getMinimalSize( rhs );
+
+		if ( result )
+		{
+			auto lhsInternal = getInternalFormat( lhs );
+			auto rhsInternal = getInternalFormat( rhs );
+
+			if ( size == 1u )
+			{
+				result = isCompatible8( lhsInternal ) && isCompatible8( rhsInternal );
+			}
+			else if ( size == 2u )
+			{
+				result = isCompatible16( lhsInternal ) && isCompatible16( rhsInternal );
+			}
+			else if ( size == 3u )
+			{
+				result = isCompatible24( lhsInternal ) && isCompatible24( rhsInternal );
+			}
+			else if ( size == 4u )
+			{
+				result = isCompatible32( lhsInternal ) && isCompatible32( rhsInternal );
+			}
+			else if ( size == 6u )
+			{
+				result = isCompatible48( lhsInternal ) && isCompatible48( rhsInternal );
+			}
+			else if ( size == 8u )
+			{
+				result = isCompatible64( lhsInternal ) && isCompatible64( rhsInternal );
+			}
+			else if ( size == 12u )
+			{
+				result = isCompatible96( lhsInternal ) && isCompatible96( rhsInternal );
+			}
+			else if ( size == 16u )
+			{
+				result = isCompatible128( lhsInternal ) && isCompatible128( rhsInternal );
+			}
+			else
+			{
+				result = false;
+			}
+		}
+
+		return result;
+	}
 }

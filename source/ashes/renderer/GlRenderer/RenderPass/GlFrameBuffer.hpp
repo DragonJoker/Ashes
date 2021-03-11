@@ -18,6 +18,8 @@ namespace ashes::gl
 	GlAttachmentType getAttachmentType( VkImageAspectFlags aspectMask );
 	GlAttachmentType getAttachmentType( VkImageView texture );
 	GlAttachmentType getAttachmentType( VkFormat format );
+	void checkCompleteness( VkDevice device
+		, GLenum status );
 	void checkCompleteness( VkSwapchainKHR swapchain
 		, GLenum status );
 	void checkCompleteness( VkFramebuffer framebuffer
