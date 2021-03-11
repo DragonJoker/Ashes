@@ -8,7 +8,7 @@ namespace ashes::gl
 		{
 		case GL_FORMAT_PROPERTY_SAMPLES:
 			return "GL_SAMPLES";
-		case GL_FORMAT_PROPERTY_SUPPORTED:
+		case GL_FORMAT_PROPERTY_IS_SUPPORTED:
 			return "GL_INTERNALFORMAT_SUPPORTED";
 		case GL_FORMAT_PROPERTY_MAX_WIDTH:
 			return "GL_MAX_WIDTH";
@@ -157,6 +157,24 @@ namespace ashes::gl
 		default:
 			assert( false && "Unsupported GlFormatProperty" );
 			return "GlFormatProperty_UNKNOWN";
+		}
+	}
+
+	std::string getName( GlFormatPropertyResult value )
+	{
+		switch ( value )
+		{
+		case GL_FORMAT_PROPERTY_UNSUPPORTED:
+			return "GL_NONE";
+		case GL_FORMAT_PROPERTY_SUPPORTED:
+			return "GL_TRUE";
+		case GL_FORMAT_PROPERTY_FULL_SUPPORT:
+			return "GL_FULL_SUPPORT";
+		case GL_FORMAT_PROPERTY_CAVEAT_SUPPORT:
+			return "GL_CAVEAT_SUPPORT";
+		default:
+			assert( false && "Unsupported GlFormatPropertyResult" );
+			return "GlFormatPropertyResult_UNKNOWN";
 		}
 	}
 }

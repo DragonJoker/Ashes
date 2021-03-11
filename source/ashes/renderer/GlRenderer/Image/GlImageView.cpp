@@ -44,6 +44,11 @@ namespace ashes::gl
 			, m_createInfo.subresourceRange.layerCount
 			, get( m_createInfo.image )->getSamples() ) }
 	{
+		auto context = get( m_device )->getContext();
+		m_pixelFormat = PixelFormat{ context
+			, GlTextureType( m_glviewType )
+			, m_createInfo.format
+			, getComponents() };
 		auto image = get( m_createInfo.image );
 		auto & range = m_createInfo.subresourceRange;
 
@@ -70,7 +75,6 @@ namespace ashes::gl
 			if ( image->hasInternal()
 				&& hasTextureViews( m_device ) )
 			{
-				auto context = get( m_device )->getContext();
 				glLogCreateCall( context
 					, glGenTextures
 					, 1
@@ -80,7 +84,7 @@ namespace ashes::gl
 					, m_internal
 					, m_glviewType
 					, image->getInternal()
-					, getInternalFormat( getFormat() )
+					, getFormatInternal()
 					, getSubresourceRange().baseMipLevel
 					, getSubresourceRange().levelCount
 					, getSubresourceRange().baseArrayLayer
@@ -89,46 +93,7 @@ namespace ashes::gl
 					, glBindTexture
 					, GlTextureType( m_glviewType )
 					, m_internal );
-
-				if ( getComponents().r != VK_COMPONENT_SWIZZLE_IDENTITY
-					&& getComponents().r != VK_COMPONENT_SWIZZLE_R )
-				{
-					glLogCall( context
-						, glTexParameteri
-						, GlTextureType( m_glviewType )
-						, GL_SWIZZLE_R
-						, convertComponentSwizzle( getComponents().r ) );
-				}
-
-				if ( getComponents().g != VK_COMPONENT_SWIZZLE_IDENTITY
-					&& getComponents().g != VK_COMPONENT_SWIZZLE_G )
-				{
-					glLogCall( context
-						, glTexParameteri
-						, GlTextureType( m_glviewType )
-						, GL_SWIZZLE_G
-						, convertComponentSwizzle( getComponents().g ) );
-				}
-
-				if ( getComponents().b != VK_COMPONENT_SWIZZLE_IDENTITY
-					&& getComponents().b != VK_COMPONENT_SWIZZLE_B )
-				{
-					glLogCall( context
-						, glTexParameteri
-						, GlTextureType( m_glviewType )
-						, GL_SWIZZLE_B
-						, convertComponentSwizzle( getComponents().b ) );
-				}
-
-				if ( getComponents().a != VK_COMPONENT_SWIZZLE_IDENTITY
-					&& getComponents().a != VK_COMPONENT_SWIZZLE_A )
-				{
-					glLogCall( context
-						, glTexParameteri
-						, GlTextureType( m_glviewType )
-						, GL_SWIZZLE_A
-						, convertComponentSwizzle( getComponents().a ) );
-				}
+				m_pixelFormat.applySwizzle( context, GlTextureType( m_glviewType ) );
 
 				int minLevel = 0;
 				glLogCall( context
@@ -204,7 +169,7 @@ namespace ashes::gl
 				, 0u
 				, image
 				, VK_IMAGE_VIEW_TYPE_2D
-				, get( image )->getFormat()
+				, get( image )->getFormatVk()
 				, {}
 				, { VK_IMAGE_ASPECT_COLOR_BIT, 0u, 1u, 0u, 1u } }
 			, false }

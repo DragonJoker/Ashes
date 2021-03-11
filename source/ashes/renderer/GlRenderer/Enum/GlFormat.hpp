@@ -19,7 +19,6 @@ namespace ashes::gl
 		*	Colour formats.
 		*/
 		/**@{*/
-		GL_INTERNAL_R4G4_UNORM_PACK8 = 0x8043, // GL_LUMINANCE4_ALPHA4
 		GL_INTERNAL_R4G4B4A4_UNORM_PACK16 = 0x8056,
 		GL_INTERNAL_R5G6B5_UNORM_PACK16 = 0x8D62,
 		GL_INTERNAL_R5G5B5A1_UNORM_PACK16 = 0x8057,
@@ -43,7 +42,6 @@ namespace ashes::gl
 		GL_INTERNAL_R8G8B8A8_UINT = 0x8D7C,
 		GL_INTERNAL_R8G8B8A8_SINT = 0x8D8E,
 		GL_INTERNAL_R8G8B8A8_SRGB = 0x8C43,
-		GL_INTERNAL_B8G8R8A8_UNORM = 0x93A1,
 		GL_INTERNAL_A2R10G10B10_UNORM_PACK32 = 0x8059,
 		GL_INTERNAL_A2R10G10B10_UINT_PACK32 = 0x906F,
 		GL_INTERNAL_R16_UNORM = 0x822A,
@@ -87,7 +85,6 @@ namespace ashes::gl
 		*/
 		/**@{*/
 		GL_INTERNAL_D16_UNORM = 0x81A5,
-		GL_INTERNAL_D24_UNORM = 0x81A6,
 		GL_INTERNAL_D32_SFLOAT = 0x8CAC,
 		GL_INTERNAL_S_INDEX8 = 0x8D48,
 		GL_INTERNAL_D24_UNORM_S8_UINT = 0x88F0,
@@ -175,7 +172,7 @@ namespace ashes::gl
 	enum GlFormat
 		: GLenum
 	{
-		GL_FORMAT_S = 0x1802,
+		GL_FORMAT_S = 0x1901,
 		GL_FORMAT_D = 0x1902,
 		GL_FORMAT_R = 0x1903,
 		GL_FORMAT_R_INTEGER = 0x8D94,
@@ -205,11 +202,11 @@ namespace ashes::gl
 		GL_TYPE_F16 = 0x140B,
 		GL_TYPE_US4444 = 0x8033,
 		GL_TYPE_US5551 = 0x8034,
+		GL_TYPE_US1555_REV = 0x8366,
 		GL_TYPE_UI8888 = 0x8035,
-		GL_TYPE_UI_10_10_10_2 = 0x8036,
-		GL_TYPE_UI565 = 0x8363,
+		GL_TYPE_US565 = 0x8363,
 		GL_TYPE_UI8888_REV = 0x8367,
-		GL_TYPE_UI_2_10_10_10 = 0x8368,
+		GL_TYPE_UI_2_10_10_10_REV = 0x8368,
 		GL_TYPE_UI24_8 = 0x84FA,
 		GL_TYPE_32F_UI24_8 = 0x8DAD,
 		GL_UI_5_9_9_9 = 0x8C3E,
@@ -223,7 +220,8 @@ namespace ashes::gl
 	inline std::string toString( GlType value ) { return getName( value ); }
 	bool isSupportedInternal( VkFormat const & format )noexcept;
 	GlInternal getInternalFormat( VkFormat const & format )noexcept;
-	GlFormat getFormat( GlInternal format )noexcept;
-	GlType getType( GlInternal format )noexcept;
-	VkFormat convert( GlInternal format )noexcept;
+	GlFormat getFormat( VkFormat format )noexcept;
+	GlType getType( VkFormat format )noexcept;
+	GlComponentMapping getSwizzle( VkFormat format );
+	GlComponentMapping getSwizzle( VkFormat format, VkComponentMapping const & components );
 }

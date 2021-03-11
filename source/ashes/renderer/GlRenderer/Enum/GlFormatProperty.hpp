@@ -10,7 +10,7 @@ namespace ashes::gl
 		: GLenum
 	{
 		GL_FORMAT_PROPERTY_SAMPLES = 0x80A9, // GL_SAMPLES
-		GL_FORMAT_PROPERTY_SUPPORTED = 0x826F, // GL_INTERNALFORMAT_SUPPORTED
+		GL_FORMAT_PROPERTY_IS_SUPPORTED = 0x826F, // GL_INTERNALFORMAT_SUPPORTED
 		GL_FORMAT_PROPERTY_MAX_WIDTH = 0x827E, // GL_MAX_WIDTH
 		GL_FORMAT_PROPERTY_MAX_HEIGHT = 0x827F, // GL_MAX_HEIGHT
 		GL_FORMAT_PROPERTY_MAX_DEPTH = 0x8280, // GL_MAX_DEPTH
@@ -84,6 +84,19 @@ namespace ashes::gl
 		GL_FORMAT_PROPERTY_TEXTURE_VIEW = 0x82B5,
 		GL_FORMAT_PROPERTY_VIEW_COMPATIBILITY_CLASS = 0x82B6,
 	};
+
 	std::string getName( GlFormatProperty value );
 	inline std::string toString( GlFormatProperty value ) { return getName( value ); }
+
+	enum GlFormatPropertyResult
+		: GLint
+	{
+		GL_FORMAT_PROPERTY_UNSUPPORTED = 0,
+		GL_FORMAT_PROPERTY_SUPPORTED = 1,
+		GL_FORMAT_PROPERTY_FULL_SUPPORT = 0x82B7,
+		GL_FORMAT_PROPERTY_CAVEAT_SUPPORT = 0x82B8,
+	};
+
+	std::string getName( GlFormatPropertyResult value );
+	inline std::string toString( GlFormatPropertyResult value ){ return getName( value ); }
 }
