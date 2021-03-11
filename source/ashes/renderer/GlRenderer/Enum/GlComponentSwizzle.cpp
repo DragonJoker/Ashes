@@ -57,7 +57,7 @@ namespace ashes::gl
 		switch ( value )
 		{
 		case VK_COMPONENT_SWIZZLE_IDENTITY:
-			return GL_COMPONENT_SWIZZLE_IDENTITTY;
+			return GL_COMPONENT_SWIZZLE_IDENTITY;
 
 		case VK_COMPONENT_SWIZZLE_ZERO:
 			return GL_COMPONENT_SWIZZLE_ZERO;
@@ -79,7 +79,32 @@ namespace ashes::gl
 
 		default:
 			assert( false && "Unsupported ComponentSwizzle." );
-			return GL_COMPONENT_SWIZZLE_IDENTITTY;
+			return GL_COMPONENT_SWIZZLE_IDENTITY;
 		}
+	}
+
+	bool operator==( GlComponentMapping const & lhs, GlComponentMapping const & rhs )
+	{
+		return lhs.r == rhs.r
+			&& lhs.g == rhs.g
+			&& lhs.b == rhs.b
+			&& lhs.a == rhs.a;
+	}
+
+	GlComponentMapping const & getIdentitySwizzle()
+	{
+		static GlComponentMapping const SwizzleIdentity
+		{
+			GlComponentSwizzle::GL_COMPONENT_SWIZZLE_RED,
+			GlComponentSwizzle::GL_COMPONENT_SWIZZLE_GREEN,
+			GlComponentSwizzle::GL_COMPONENT_SWIZZLE_BLUE,
+			GlComponentSwizzle::GL_COMPONENT_SWIZZLE_ALPHA,
+		};
+		return SwizzleIdentity;
+	}
+
+	bool isIdentity( GlComponentMapping const & value )
+	{
+		return value == getIdentitySwizzle();
 	}
 }

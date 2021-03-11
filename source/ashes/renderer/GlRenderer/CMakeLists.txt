@@ -423,6 +423,7 @@ if ( OpenGL_FOUND )
 		Miscellaneous/GlDeviceMemoryBinding.cpp
 		Miscellaneous/GlExtensionsHandler.cpp
 		Miscellaneous/GlImageMemoryBinding.cpp
+		Miscellaneous/GlPixelFormat.cpp
 		Miscellaneous/GlQueryPool.cpp
 		Miscellaneous/GlScreenHelpers.cpp
 		Miscellaneous/GlValidator.cpp
@@ -438,6 +439,7 @@ if ( OpenGL_FOUND )
 		Miscellaneous/GlDummyIndexBuffer.hpp
 		Miscellaneous/GlExtensionsHandler.hpp
 		Miscellaneous/GlImageMemoryBinding.hpp
+		Miscellaneous/GlPixelFormat.hpp
 		Miscellaneous/GlQueryPool.hpp
 		Miscellaneous/GlScreenHelpers.hpp
 		Miscellaneous/GlValidator.hpp

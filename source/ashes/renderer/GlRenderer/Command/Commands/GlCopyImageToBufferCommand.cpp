@@ -23,9 +23,8 @@ namespace ashes::gl
 		, VkImageViewArray & views )
 	{
 		glLogCommand( list, "CopyImageToBufferCommand" );
-		auto internal = getInternalFormat( get( src )->getFormat() );
-		auto format = getFormat( internal );
-		auto type = getType( internal );
+		auto srcFormat = get( src )->getFormatFormat();
+		auto srcType = get( src )->getFormatType();
 
 		VkImageView srcView{ VK_NULL_HANDLE };
 		FboAttachment srcAttach{ initialiseAttachment( device, copyInfo.imageSubresource, src, 0u, srcView ) };
@@ -46,20 +45,14 @@ namespace ashes::gl
 		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK
 			, get( dst )->getInternal() ) );
 		list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_READ_FRAMEBUFFER ) );
-
-		if ( srcAttach.point != GL_ATTACHMENT_POINT_DEPTH_STENCIL
-			&& srcAttach.point != GL_ATTACHMENT_POINT_DEPTH
-			&& srcAttach.point != GL_ATTACHMENT_POINT_STENCIL )
-		{
-			list.push_back( makeCmd< OpType::eReadBuffer >( srcAttach.point ) );
-		}
+		srcAttach.read( stack, list );
 
 		list.push_back( makeCmd< OpType::eReadPixels >( copyInfo.imageOffset.x
 			, copyInfo.imageOffset.y
 			, copyInfo.imageExtent.width
 			, copyInfo.imageExtent.height
-			, format
-			, type ) );
+			, srcFormat
+			, srcType ) );
 		list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
 			, nullptr ) );
 		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK

@@ -209,6 +209,9 @@ namespace ashes::gl
 		, m_swapchainImage{ swapchainImage }
 	{
 		auto context = get( m_device )->getContext();
+		m_pixelFormat = PixelFormat{ context
+			, m_target
+			, m_format };
 		glLogCreateCall( context
 			, glGenTextures
 			, 1
@@ -217,6 +220,7 @@ namespace ashes::gl
 			, glBindTexture
 			, m_target
 			, m_internal );
+		m_pixelFormat.applySwizzle( context, m_target );
 		glLogCall( context
 			, glBindTexture
 			, m_target
@@ -251,9 +255,9 @@ namespace ashes::gl
 	void Image::doInitialiseMemoryRequirements()
 	{
 		auto physicalDevice = get( get( m_device )->getPhysicalDevice() );
-		auto extent = ashes::getMinimalExtent3D( getFormat() );
-		m_memoryRequirements.alignment = getSize( extent, getFormat() );
-		m_memoryRequirements.size = getTotalSize( getDimensions(), getFormat(), getArrayLayers(), getMipLevels(), uint32_t( m_memoryRequirements.alignment ) );
+		auto extent = ashes::getMinimalExtent3D( getFormatVk() );
+		m_memoryRequirements.alignment = getSize( extent, getFormatVk() );
+		m_memoryRequirements.size = getTotalSize( getDimensions(), getFormatVk(), getArrayLayers(), getMipLevels(), uint32_t( m_memoryRequirements.alignment ) );
 		m_memoryRequirements.memoryTypeBits = physicalDevice->getMemoryTypeBits( VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
 			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT );
 		m_memoryRequirements.size = ashes::getAlignedSize( m_memoryRequirements.size, m_memoryRequirements.alignment );

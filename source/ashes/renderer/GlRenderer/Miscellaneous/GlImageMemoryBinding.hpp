@@ -41,9 +41,6 @@ namespace ashes::gl
 
 	private:
 		Image * m_texture;
-		GlInternal m_internal;
-		GlFormat m_format;
-		GlType m_type;
 		std::vector< VkBufferImageCopy > m_updateRegions;
 		mutable size_t m_beginRegion{ 0u };
 		mutable size_t m_endRegion{ 0u };

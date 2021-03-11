@@ -211,166 +211,289 @@ namespace ashes::gl
 			{
 				ContextLock context{ get( m_instance )->getCurrentContext() };
 				assert( context->m_glGetInternalformativ );
-				if ( isSupportedInternal( fmt ) )
+				auto internal = getInternalFormat( fmt );
+
+				if ( internal != GL_INTERNAL_UNSUPPORTED )
 				{
-					auto internal = getInternalFormat( fmt );
-					GLint value;
+					GlFormatPropertyResult support = GL_FORMAT_PROPERTY_UNSUPPORTED;
 					glLogCall( context, glGetInternalformativ
 						, GL_TEXTURE_2D
 						, internal
-						, GL_FORMAT_PROPERTY_SUPPORTED
+						, GL_FORMAT_PROPERTY_IS_SUPPORTED
 						, 1
-						, &value );
+						, reinterpret_cast< GLint * >( &support ) );
 
-					if ( value == GL_TRUE )
+					if ( support == GL_FORMAT_PROPERTY_SUPPORTED )
 					{
 #if defined( VK_KHR_maintenance ) || defined( VK_API_VERSION_1_1 )
-						properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
-						properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
+						support = GL_FORMAT_PROPERTY_UNSUPPORTED;
+						glLogCall( context, glGetInternalformativ
+							, GL_TEXTURE_2D
+							, internal
+							, GL_FORMAT_PROPERTY_READ_PIXELS
+							, 1
+							, reinterpret_cast< GLint * >( &support ) );
+
+						if ( support != GL_FORMAT_PROPERTY_UNSUPPORTED )
+						{
+							if ( isSRGBFormat( fmt ) )
+							{
+								support = GL_FORMAT_PROPERTY_UNSUPPORTED;
+								glLogCall( context, glGetInternalformativ
+									, GL_TEXTURE_2D
+									, internal
+									, GL_FORMAT_PROPERTY_SRGB_READ
+									, 1
+									, reinterpret_cast< GLint * >( &support ) );
+
+								if ( support != GL_FORMAT_PROPERTY_UNSUPPORTED )
+								{
+									properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+								}
+							}
+							else
+							{
+								properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+							}
+						}
+
+						if ( isSRGBFormat( fmt ) )
+						{
+							support = GL_FORMAT_PROPERTY_UNSUPPORTED;
+							glLogCall( context, glGetInternalformativ
+								, GL_TEXTURE_2D
+								, internal
+								, GL_FORMAT_PROPERTY_SRGB_WRITE
+								, 1
+								, reinterpret_cast< GLint * >( &support ) );
+
+							if ( support != GL_FORMAT_PROPERTY_UNSUPPORTED )
+							{
+								properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
+							}
+						}
+						else
+						{
+							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
+						}
 #endif
+						support = GL_FORMAT_PROPERTY_UNSUPPORTED;
 						glLogCall( context, glGetInternalformativ
 							, GL_TEXTURE_2D
 							, internal
 							, GL_FORMAT_PROPERTY_RENDERABLE
 							, 1
-							, &value );
+							, reinterpret_cast< GLint * >( &support ) );
 
-						if ( value != 0 )
+						if ( support != GL_FORMAT_PROPERTY_UNSUPPORTED )
 						{
-							if ( isDepthOrStencilFormat( fmt ) )
+							if ( isDepthStencilFormat( fmt ) )
 							{
-								properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
+								support = GL_FORMAT_PROPERTY_UNSUPPORTED;
+								glLogCall( context, glGetInternalformativ
+									, GL_TEXTURE_2D
+									, internal
+									, GL_FORMAT_PROPERTY_DEPTH_RENDERABLE
+									, 1
+									, reinterpret_cast< GLint * >( &support ) );
+
+								if ( support != GL_FORMAT_PROPERTY_UNSUPPORTED )
+								{
+									support = GL_FORMAT_PROPERTY_UNSUPPORTED;
+									glLogCall( context, glGetInternalformativ
+										, GL_TEXTURE_2D
+										, internal
+										, GL_FORMAT_PROPERTY_STENCIL_RENDERABLE
+										, 1
+										, reinterpret_cast< GLint * >( &support ) );
+
+									if ( support != GL_FORMAT_PROPERTY_UNSUPPORTED )
+									{
+										properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
+									}
+								}
+							}
+							else if ( isDepthFormat( fmt ) )
+							{
+								support = GL_FORMAT_PROPERTY_UNSUPPORTED;
+								glLogCall( context, glGetInternalformativ
+									, GL_TEXTURE_2D
+									, internal
+									, GL_FORMAT_PROPERTY_DEPTH_RENDERABLE
+									, 1
+									, reinterpret_cast< GLint * >( &support ) );
+
+								if ( support != GL_FORMAT_PROPERTY_UNSUPPORTED )
+								{
+									properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
+								}
+							}
+							else if ( isStencilFormat( fmt ) )
+							{
+								support = GL_FORMAT_PROPERTY_UNSUPPORTED;
+								glLogCall( context, glGetInternalformativ
+									, GL_TEXTURE_2D
+									, internal
+									, GL_FORMAT_PROPERTY_STENCIL_RENDERABLE
+									, 1
+									, reinterpret_cast< GLint * >( &support ) );
+
+								if ( support != GL_FORMAT_PROPERTY_UNSUPPORTED )
+								{
+									properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
+								}
 							}
 							else
 							{
-								properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT;
-								properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT;
+								support = GL_FORMAT_PROPERTY_UNSUPPORTED;
+								glLogCall( context, glGetInternalformativ
+									, GL_TEXTURE_2D
+									, internal
+									, GL_FORMAT_PROPERTY_COLOR_RENDERABLE
+									, 1
+									, reinterpret_cast< GLint * >( &support ) );
+
+								if ( support != GL_FORMAT_PROPERTY_UNSUPPORTED )
+								{
+									properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT;
+									support = GL_FORMAT_PROPERTY_UNSUPPORTED;
+									glLogCall( context, glGetInternalformativ
+										, GL_TEXTURE_2D
+										, internal
+										, GL_FORMAT_PROPERTY_BLEND
+										, 1
+										, reinterpret_cast< GLint * >( &support ) );
+
+									if ( support != GL_FORMAT_PROPERTY_UNSUPPORTED )
+									{
+										properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT;
+									}
+								}
 							}
 						}
 
-						glLogCall( context, glGetInternalformativ
-							, GL_TEXTURE_2D
-							, internal
-							, GL_FORMAT_PROPERTY_BLEND
-							, 1
-							, &value );
-
-						if ( value != 0 )
-						{
-							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT;
-							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT;
-						}
-
+						support = GL_FORMAT_PROPERTY_UNSUPPORTED;
 						glLogCall( context, glGetInternalformativ
 							, GL_TEXTURE_2D
 							, internal
 							, GL_FORMAT_PROPERTY_FRAGMENT_TEXTURE
 							, 1
-							, &value );
+							, reinterpret_cast< GLint * >( &support ) );
 
-						if ( value != 0 )
+						if ( support != 0 )
 						{
 							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
 							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;
 							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
 						}
 
+						support = GL_FORMAT_PROPERTY_UNSUPPORTED;
 						glLogCall( context, glGetInternalformativ
 							, GL_TEXTURE_2D
 							, internal
 							, GL_FORMAT_PROPERTY_FILTER
 							, 1
-							, &value );
+							, reinterpret_cast< GLint * >( &support ) );
 
-						if ( value != 0 )
+						if ( support != 0 )
 						{
+							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
+							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;
+							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
 							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT;
 						}
 
+						support = GL_FORMAT_PROPERTY_UNSUPPORTED;
 						glLogCall( context, glGetInternalformativ
 							, GL_TEXTURE_2D
 							, internal
 							, GL_FORMAT_PROPERTY_SHADER_IMAGE_LOAD
 							, 1
-							, &value );
+							, reinterpret_cast< GLint * >( &support ) );
 
-						if ( value != 0 )
+						if ( support != 0 )
 						{
 							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT;
 						}
 
+						support = GL_FORMAT_PROPERTY_UNSUPPORTED;
 						glLogCall( context, glGetInternalformativ
 							, GL_TEXTURE_2D
 							, internal
 							, GL_FORMAT_PROPERTY_SHADER_IMAGE_ATOMIC
 							, 1
-							, &value );
+							, reinterpret_cast< GLint * >( &support ) );
 
-						if ( value != 0 )
+						if ( support != 0 )
 						{
 							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT;
 						}
 
+						support = GL_FORMAT_PROPERTY_UNSUPPORTED;
 						glLogCall( context, glGetInternalformativ
 							, GL_TEXTURE_BUFFER
 							, internal
 							, GL_FORMAT_PROPERTY_FRAGMENT_TEXTURE
 							, 1
-							, &value );
+							, reinterpret_cast< GLint * >( &support ) );
 
-						if ( value != 0 )
+						if ( support != 0 )
 						{
 							properties.bufferFeatures |= VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT;
 							properties.bufferFeatures |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;
 							properties.bufferFeatures |= VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
 						}
 
+						support = GL_FORMAT_PROPERTY_UNSUPPORTED;
 						glLogCall( context, glGetInternalformativ
 							, GL_TEXTURE_BUFFER
 							, internal
 							, GL_FORMAT_PROPERTY_SHADER_IMAGE_LOAD
 							, 1
-							, &value );
+							, reinterpret_cast< GLint * >( &support ) );
 
-						if ( value != 0 )
+						if ( support != 0 )
 						{
 							properties.bufferFeatures |= VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT;
 						}
 
+						support = GL_FORMAT_PROPERTY_UNSUPPORTED;
 						glLogCall( context, glGetInternalformativ
 							, GL_TEXTURE_BUFFER
 							, internal
 							, GL_FORMAT_PROPERTY_SHADER_IMAGE_ATOMIC
 							, 1
-							, &value );
+							, reinterpret_cast< GLint * >( &support ) );
 
-						if ( value != 0 )
+						if ( support != 0 )
 						{
 							properties.bufferFeatures |= VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT;
 						}
 
 #if defined( VK_KHR_maintenance ) || defined( VK_API_VERSION_1_1 )
+						support = GL_FORMAT_PROPERTY_UNSUPPORTED;
 						glLogCall( context, glGetInternalformativ
 							, GL_TEXTURE_2D
 							, internal
 							, GL_FORMAT_PROPERTY_READ_PIXELS
 							, 1
-							, &value );
+							, reinterpret_cast< GLint * >( &support ) );
 
-						if ( value != 0 )
+						if ( support != 0 )
 						{
 							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;
 							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
 						}
 
+						support = GL_FORMAT_PROPERTY_UNSUPPORTED;
 						glLogCall( context, glGetInternalformativ
 							, GL_TEXTURE_BUFFER
 							, internal
 							, GL_FORMAT_PROPERTY_READ_PIXELS
 							, 1
-							, &value );
+							, reinterpret_cast< GLint * >( &support ) );
 
-						if ( value != 0 )
+						if ( support != 0 )
 						{
 							properties.bufferFeatures |= VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
 							properties.bufferFeatures |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;
@@ -380,7 +503,7 @@ namespace ashes::gl
 
 					if ( !isCompressedFormat( fmt ) )
 					{
-						GlType dataType = getType( internal );
+						GlType dataType = getType( fmt );
 
 						switch ( dataType )
 						{
@@ -413,14 +536,12 @@ namespace ashes::gl
 							break;
 						case ashes::gl::GL_TYPE_UI8888:
 							break;
-						case ashes::gl::GL_TYPE_UI_10_10_10_2:
+						case ashes::gl::GL_TYPE_UI_2_10_10_10_REV:
 							properties.bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
 							break;
-						case ashes::gl::GL_TYPE_UI565:
+						case ashes::gl::GL_TYPE_US565:
 							break;
 						case ashes::gl::GL_TYPE_UI8888_REV:
-							break;
-						case ashes::gl::GL_TYPE_UI_2_10_10_10:
 							break;
 						case ashes::gl::GL_TYPE_UI24_8:
 							break;
@@ -464,82 +585,133 @@ namespace ashes::gl
 			pair.first->second.second = VK_ERROR_FORMAT_NOT_SUPPORTED;
 			imageFormatProperties = {};
 			ContextLock context{ get( m_instance )->getCurrentContext() };
+			auto internal = getInternalFormat( format );
 
-			if ( context->m_glGetInternalformativ )
+			if ( context->m_glGetInternalformativ
+				&& internal != GL_INTERNAL_UNSUPPORTED )
 			{
-				auto internal = getInternalFormat( format );
+				auto gltype = convert( get( this ), type, 1u, 0u );
+				GlFormatPropertyResult support = GL_FORMAT_PROPERTY_UNSUPPORTED;
+				glLogCall( context
+					, glGetInternalformativ
+					, gltype
+					, internal
+					, GL_FORMAT_PROPERTY_IS_SUPPORTED
+					, 1
+					, reinterpret_cast< GLint * >( &support ) );
 
-				if ( internal != GL_INTERNAL_UNSUPPORTED )
+				if ( support == GL_FORMAT_PROPERTY_SUPPORTED )
 				{
-					auto gltype = convert( get( this ), type, 1u, 0u );
-					GLint value;
-					glLogCall( context, glGetInternalformativ, gltype, internal, GL_FORMAT_PROPERTY_SUPPORTED, 1, &value );
+					GLint w = 0;
+					glLogCall( context
+						, glGetInternalformativ
+						, gltype
+						, internal
+						, GL_FORMAT_PROPERTY_MAX_WIDTH
+						, 1
+						, &w );
+					imageFormatProperties.maxExtent.width = uint32_t( w );
+					imageFormatProperties.maxExtent.height = 1u;
+					imageFormatProperties.maxExtent.depth = 1u;
+					imageFormatProperties.sampleCounts = VK_SAMPLE_COUNT_1_BIT;
 
-					if ( value != GL_FALSE )
+					if ( type == VK_IMAGE_TYPE_2D )
 					{
-						value = 0u;
-						glLogCall( context, glGetInternalformativ, gltype, internal, GL_FORMAT_PROPERTY_MAX_WIDTH, 1, &value );
-						imageFormatProperties.maxExtent.width = uint32_t( value );
-						imageFormatProperties.maxExtent.height = 1u;
-						imageFormatProperties.maxExtent.depth = 1u;
-						imageFormatProperties.sampleCounts = VK_SAMPLE_COUNT_1_BIT;
+						GLint h = 0;
+						glLogCall( context
+							, glGetInternalformativ
+							, gltype
+							, internal
+							, GL_FORMAT_PROPERTY_MAX_HEIGHT
+							, 1
+							, &h );
+						imageFormatProperties.maxExtent.height = uint32_t( h );
+					}
+					else if ( type == VK_IMAGE_TYPE_3D )
+					{
+						GLint h = 0;
+						glLogCall( context
+							, glGetInternalformativ
+							, GL_TEXTURE_3D
+							, internal
+							, GL_FORMAT_PROPERTY_MAX_HEIGHT
+							, 1
+							, &h );
+						imageFormatProperties.maxExtent.height = uint32_t( h );
 
-						if ( type == VK_IMAGE_TYPE_2D )
+						GLint d = 0;
+						glLogCall( context
+							, glGetInternalformativ
+							, GL_TEXTURE_3D
+							, internal
+							, GL_FORMAT_PROPERTY_MAX_DEPTH
+							, 1
+							, &d );
+						imageFormatProperties.maxExtent.depth = uint32_t( d );
+					}
+
+					if ( gltype == GL_TEXTURE_2D )
+					{
+						GLint n = 0;
+						glLogCall( context
+							, glGetInternalformativ
+							, GL_TEXTURE_2D_MULTISAMPLE
+							, internal
+							, GL_FORMAT_PROPERTY_NUM_SAMPLE_COUNTS
+							, 1
+							, &n );
+
+						std::vector< GLint > samples;
+						samples.resize( n );
+						glLogCall( context
+							, glGetInternalformativ
+							, GL_TEXTURE_2D_MULTISAMPLE
+							, internal
+							, GL_FORMAT_PROPERTY_SAMPLES
+							, GLsizei( samples.size() )
+							, samples.data() );
+
+						for ( auto sample : samples )
 						{
-							value = 0u;
-							glLogCall( context, glGetInternalformativ, gltype, internal, GL_FORMAT_PROPERTY_MAX_HEIGHT, 1, &value );
-							imageFormatProperties.maxExtent.height = uint32_t( value );
+							imageFormatProperties.sampleCounts |= VkSampleCountFlagBits( sample );
 						}
-						else if ( type == VK_IMAGE_TYPE_3D )
-						{
-							value = 0u;
-							glLogCall( context, glGetInternalformativ, GL_TEXTURE_3D, internal, GL_FORMAT_PROPERTY_MAX_HEIGHT, 1, &value );
-							imageFormatProperties.maxExtent.height = uint32_t( value );
+					}
 
-							value = 0u;
-							glLogCall( context, glGetInternalformativ, GL_TEXTURE_3D, internal, GL_FORMAT_PROPERTY_MAX_DEPTH, 1, &value );
-							imageFormatProperties.maxExtent.depth = uint32_t( value );
-						}
+					GLint t = 0;
+					glLogCall( context
+						, glGetInternalformativ
+						, gltype
+						, internal
+						, GL_FORMAT_PROPERTY_TEXEL_SIZE
+						, 1
+						, &t );
+					VkDeviceSize texelSize = VkDeviceSize( t );
 
-						if ( gltype == GL_TEXTURE_2D )
-						{
-							value = 0u;
-							glLogCall( context, glGetInternalformativ, GL_TEXTURE_2D_MULTISAMPLE, internal, GL_FORMAT_PROPERTY_NUM_SAMPLE_COUNTS, 1, &value );
+					gltype = convert( get( this ), type, 2u, 0u );
+					GLint l = 0;
+					glLogCall( context
+						, glGetInternalformativ
+						, gltype
+						, internal
+						, GL_FORMAT_PROPERTY_MAX_LAYERS
+						, 1
+						, &l );
+					imageFormatProperties.maxArrayLayers = std::max( 1u, uint32_t( l ) );
 
-							std::vector< GLint > samples;
-							samples.resize( value );
-							glLogCall( context, glGetInternalformativ, GL_TEXTURE_2D_MULTISAMPLE, internal, GL_FORMAT_PROPERTY_SAMPLES, GLsizei( samples.size() ), samples.data() );
-
-							for ( auto sample : samples )
-							{
-								imageFormatProperties.sampleCounts |= VkSampleCountFlagBits( sample );
-							}
-						}
-
-						value = 0u;
-						glLogCall( context, glGetInternalformativ, gltype, internal, GL_FORMAT_PROPERTY_TEXEL_SIZE, 1, &value );
-						VkDeviceSize texelSize = VkDeviceSize( value );
-
-						gltype = convert( get( this ), type, 2u, 0u );
-						value = 0u;
-						glLogCall( context, glGetInternalformativ, gltype, internal, GL_FORMAT_PROPERTY_MAX_LAYERS, 1, &value );
-						imageFormatProperties.maxArrayLayers = std::max( 1u, uint32_t( value ) );
-
-						if ( imageFormatProperties.maxExtent.width > 0u )
-						{
-							imageFormatProperties.maxMipLevels = getMaxMipCount( imageFormatProperties.maxExtent );
-							imageFormatProperties.maxResourceSize = getLevelsSize( imageFormatProperties.maxExtent
-								, format
-								, 0u
-								, imageFormatProperties.maxMipLevels
-								, uint32_t( getBlockSize( format ).size ) );
-							pair.first->second.second = VK_SUCCESS;
-						}
-						else
-						{
-							imageFormatProperties.maxMipLevels = 0u;
-							pair.first->second.second = VK_ERROR_FORMAT_NOT_SUPPORTED;
-						}
+					if ( imageFormatProperties.maxExtent.width > 0u )
+					{
+						imageFormatProperties.maxMipLevels = getMaxMipCount( imageFormatProperties.maxExtent );
+						imageFormatProperties.maxResourceSize = getLevelsSize( imageFormatProperties.maxExtent
+							, format
+							, 0u
+							, imageFormatProperties.maxMipLevels
+							, uint32_t( getBlockSize( format ).size ) );
+						pair.first->second.second = VK_SUCCESS;
+					}
+					else
+					{
+						imageFormatProperties.maxMipLevels = 0u;
+						pair.first->second.second = VK_ERROR_FORMAT_NOT_SUPPORTED;
 					}
 				}
 			}

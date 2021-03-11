@@ -112,9 +112,9 @@ namespace ashes::gl
 			, VkImageView & view )
 		{
 			FboAttachment result{ 0u
-				, getAttachmentPoint( get( image )->getFormat() )
+				, getAttachmentPoint( get( image )->getFormatVk() )
 				, get( image )->getInternal()
-				, getAttachmentType( get( image )->getFormat() )
+				, getAttachmentType( get( image )->getFormatVk() )
 				, ( ( get( image )->getType() == VK_IMAGE_TYPE_3D )
 					? GL_TEXTURE_3D
 					: ( get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT
@@ -235,7 +235,7 @@ namespace ashes::gl
 						, 0u
 						, image
 						, VkImageViewType( get( image )->getType() )
-						, get( image )->getFormat()
+						, get( image )->getFormatVk()
 						, VkComponentMapping{}
 						, { subresource.aspectMask
 							, subresource.mipLevel
@@ -539,7 +539,7 @@ namespace ashes::gl
 					auto fboAttach = attachments[reference.attachment];
 					auto fboView = get( fboAttach );
 
-					if ( !isDepthOrStencilFormat( fboView->getFormat() ) )
+					if ( !isDepthOrStencilFormat( fboView->getFormatVk() ) )
 					{
 						auto attachIt = std::find_if( attaches.begin()
 							, attaches.end()
@@ -603,7 +603,7 @@ namespace ashes::gl
 				auto attachment = initialiseAttachment( m_device
 					, passAttach.attachment
 					, view
-					, ( ashes::isDepthOrStencilFormat( get( view )->getFormat() )
+					, ( ashes::isDepthOrStencilFormat( get( view )->getFormatVk() )
 						? 0u
 						: ( get( get( view )->getImage() )->getSamples() > VK_SAMPLE_COUNT_1_BIT
 							? msIndex++
@@ -612,7 +612,7 @@ namespace ashes::gl
 				auto attach = renderPass->getAttachment( passAttach );
 				doInitialiseAttach( attachment
 					, multisampled
-					, isSRGBFormat( get( view )->getFormat() ) );
+					, isSRGBFormat( get( view )->getFormatVk() ) );
 				m_renderableAttaches.push_back( attachment );
 			}
 		}
@@ -627,7 +627,7 @@ namespace ashes::gl
 				auto attachment = initialiseAttachment( m_device
 					, passAttach.attachment
 					, view
-					, ( ashes::isDepthOrStencilFormat( get( view )->getFormat() )
+					, ( ashes::isDepthOrStencilFormat( get( view )->getFormatVk() )
 						? 0u
 						: ( get( get( view )->getImage() )->getSamples() > VK_SAMPLE_COUNT_1_BIT
 							? msIndex++

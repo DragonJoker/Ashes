@@ -32,7 +32,7 @@ namespace ashes::gl
 
 		bool hadFbo = stack.hasCurrentFramebuffer();
 		list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_FRAMEBUFFER ) );
-		auto point = getAttachmentPoint( glimage.getFormat() );
+		auto point = getAttachmentPoint( glimage.getFormatVk() );
 
 		for ( auto range : ranges )
 		{
@@ -57,7 +57,7 @@ namespace ashes::gl
 							, get( image )->getInternal()
 							, level
 							, layer ) );
-						auto format = get( image )->getFormat();
+						auto format = get( image )->getFormatVk();
 
 						if ( isDepthStencilFormat( format ) )
 						{
@@ -80,7 +80,7 @@ namespace ashes::gl
 						, target
 						, get( image )->getInternal()
 						, level ) );
-					auto format = get( image )->getFormat();
+					auto format = get( image )->getFormatVk();
 
 					if ( isDepthStencilFormat( format ) )
 					{

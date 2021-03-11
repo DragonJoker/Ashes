@@ -212,7 +212,7 @@ namespace ashes::gl
 					, glVertexAttribIPointer
 					, attribute.location
 					, ashes::getCount( attribute.format )
-					, getType( getInternalFormat( attribute.format ) )
+					, getType( attribute.format )
 					, binding.stride
 					, getBufferOffset( offset + attribute.offset ) );
 			}
@@ -222,7 +222,7 @@ namespace ashes::gl
 					, glVertexAttribPointer
 					, attribute.location
 					, ashes::getCount( attribute.format )
-					, getType( getInternalFormat( attribute.format ) )
+					, getType( attribute.format )
 					, isNormalized( attribute.format ) ? GL_TRUE : GL_FALSE
 					, binding.stride
 					, getBufferOffset( offset + attribute.offset ) );

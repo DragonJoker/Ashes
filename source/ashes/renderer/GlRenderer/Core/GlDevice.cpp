@@ -248,7 +248,7 @@ namespace ashes::gl
 			, glBindTexture
 			, target
 			, 0 );
-		auto extent = getTexelBlockExtent( get( image )->getFormat() );
+		auto extent = getTexelBlockExtent( get( image )->getFormatVk() );
 		layout.rowPitch = extent.width * getAligned( std::max( w, 1 ), extent.width );
 		layout.arrayPitch = layout.rowPitch * getAligned( std::max( h, 1 ), extent.height );
 		layout.depthPitch = layout.arrayPitch;
