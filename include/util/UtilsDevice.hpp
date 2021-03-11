@@ -104,6 +104,9 @@ namespace utils
 		*/
 		ashes::ImagePtr createImage( ashes::ImageCreateInfo const & createInfo
 			, VkMemoryPropertyFlags flags )const;
+		ashes::ImagePtr createImage( ashes::ImageCreateInfo const & createInfo
+			, VkMemoryPropertyFlags flags
+			, std::string const & debugName )const;
 
 		uint32_t deduceMemoryType( VkMemoryPropertyFlags typeBits
 			, VkMemoryPropertyFlags requirements )const;
