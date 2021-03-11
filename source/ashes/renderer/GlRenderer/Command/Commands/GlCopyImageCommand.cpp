@@ -251,12 +251,14 @@ namespace ashes::gl
 		, VkImageCopy copyInfo
 		, VkImage srcImage
 		, VkImage dstImage
-		, CmdList & list )
+		, CmdList & list
+		, VkImageViewArray & views )
 	{
 		glLogCommand( list, "CopyImageCommand" );
+		assert( copyInfo.srcSubresource.layerCount == copyInfo.dstSubresource.layerCount );
 
-		if ( copyInfo.srcSubresource.mipLevel == copyInfo.dstSubresource.mipLevel
-			&& hasCopyImage( device ) )
+		if (false ) /*( hasCopyImage( device )
+			&& areCopyCompatible( get( srcImage )->getFormatVk(), get( dstImage )->getFormatVk() ) )*/
 		{
 			auto srcTarget = convert( device
 				, get( srcImage )->getType()
@@ -274,96 +276,58 @@ namespace ashes::gl
 		}
 		else
 		{
-			// Setup source FBO
-			list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_FRAMEBUFFER ) );
+			auto layerCount = copyInfo.srcSubresource.layerCount;
 
-			if ( get( srcImage )->getArrayLayers() > 1u )
+			for ( uint32_t layer = 0u; layer < layerCount; ++layer )
 			{
-				list.push_back( makeCmd< OpType::eFramebufferTextureLayer >( GL_FRAMEBUFFER
-					, getAttachmentPoint( get( srcImage )->getFormat() )
-					, get( srcImage )->getInternal()
-					, copyInfo.srcSubresource.mipLevel
-					, copyInfo.srcSubresource.baseArrayLayer ) );
-			}
-			else
-			{
-				list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
-					, getAttachmentPoint( get( srcImage )->getFormat() )
-					, get( srcImage )->getSamples() > VK_SAMPLE_COUNT_1_BIT ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D
-					, get( srcImage )->getInternal()
-					, copyInfo.srcSubresource.mipLevel ) );
-			}
+				LayerCopy layerCopy{ device
+					, copyInfo
+					, srcImage
+					, dstImage
+					, layer
+					, views };
+				auto filter = layerCopy.isDstDepthOrStencil() || layerCopy.isSrcDepthOrStencil()
+					? GL_FILTER_NEAREST
+					: GL_FILTER_LINEAR;
 
-			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
-				, nullptr ) );
+				// Setup source FBO
+				list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_FRAMEBUFFER ) );
+				layerCopy.bindSrc( layer, list );
+				list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+					, nullptr ) );
 
-			// Setup dst FBO
-			list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_FRAMEBUFFER ) );
+				// Setup dst FBO
+				list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_FRAMEBUFFER ) );
+				layerCopy.bindDst( layer, list );
+				list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
+					, nullptr ) );
 
-			if ( get( dstImage )->getArrayLayers() > 1u )
-			{
-				list.push_back( makeCmd< OpType::eFramebufferTextureLayer >( GL_FRAMEBUFFER
-					, getAttachmentPoint( get( dstImage )->getFormat() )
-					, get( dstImage )->getInternal()
-					, copyInfo.dstSubresource.mipLevel
-					, copyInfo.dstSubresource.baseArrayLayer ) );
-			}
-			else
-			{
-				list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
-					, getAttachmentPoint( get( dstImage )->getFormat() )
-					, get( dstImage )->getSamples() > VK_SAMPLE_COUNT_1_BIT ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D
-					, get( dstImage )->getInternal()
-					, copyInfo.dstSubresource.mipLevel ) );
-			}
+				// Perform the blit
+				list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_READ_FRAMEBUFFER ) );
+				layerCopy.read( stack, list );
+				list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_DRAW_FRAMEBUFFER ) );
+				layerCopy.draw( stack, list );
+				list.push_back( makeCmd< OpType::eBlitFramebuffer >( layerCopy.region.srcOffsets[0].x
+					, layerCopy.region.srcOffsets[0].y
+					, layerCopy.region.srcOffsets[1].x
+					, layerCopy.region.srcOffsets[1].y
+					, layerCopy.region.dstOffsets[0].x
+					, layerCopy.region.dstOffsets[0].y
+					, layerCopy.region.dstOffsets[1].x
+					, layerCopy.region.dstOffsets[1].y
+					, getMask( get( srcImage )->getFormatVk() )
+					, GL_FILTER_NEAREST ) );
 
-			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
-				, nullptr ) );
+				// Unbind
+				list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
+					, nullptr ) );
+				list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_DRAW_FRAMEBUFFER
+					, nullptr ) );
 
-			// Perform the blit
-			list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_READ_FRAMEBUFFER ) );
-			list.push_back( makeCmd< OpType::eReadBuffer >( getAttachmentPoint( get( srcImage )->getFormat() ) ) );
-			list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_DRAW_FRAMEBUFFER ) );
-			list.push_back( makeCmd< OpType::eDrawBuffers >( getAttachmentPoint( get( dstImage )->getFormat() ) ) );
-
-			if ( copyInfo.dstSubresource.mipLevel > copyInfo.srcSubresource.mipLevel )
-			{
-				auto diff = copyInfo.dstSubresource.mipLevel - copyInfo.srcSubresource.mipLevel;
-				list.push_back( makeCmd< OpType::eBlitFramebuffer >( copyInfo.srcOffset.x
-					, copyInfo.srcOffset.y
-					, int32_t( copyInfo.extent.width << diff )
-					, int32_t( copyInfo.extent.height << diff )
-					, copyInfo.dstOffset.x
-					, copyInfo.dstOffset.y
-					, int32_t( copyInfo.extent.width )
-					, int32_t( copyInfo.extent.height )
-					, getMask( get( srcImage )->getFormat() )
-					, GL_FILTER_LINEAR ) );
-			}
-			else
-			{
-				auto diff = copyInfo.srcSubresource.mipLevel - copyInfo.dstSubresource.mipLevel;
-				list.push_back( makeCmd< OpType::eBlitFramebuffer >( copyInfo.srcOffset.x
-					, copyInfo.srcOffset.y
-					, int32_t( copyInfo.extent.width )
-					, int32_t( copyInfo.extent.height )
-					, copyInfo.dstOffset.x
-					, copyInfo.dstOffset.y
-					, int32_t( copyInfo.extent.width << diff )
-					, int32_t( copyInfo.extent.height << diff )
-					, getMask( get( srcImage )->getFormat() )
-					, GL_FILTER_LINEAR ) );
-			}
-
-			// Unbind
-			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
-				, nullptr ) );
-			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_DRAW_FRAMEBUFFER
-				, nullptr ) );
-
-			if ( stack.hasCurrentFramebuffer() )
-			{
-				stack.setCurrentFramebuffer( VK_NULL_HANDLE );
+				if ( stack.hasCurrentFramebuffer() )
+				{
+					stack.setCurrentFramebuffer( VK_NULL_HANDLE );
+				}
 			}
 		}
 

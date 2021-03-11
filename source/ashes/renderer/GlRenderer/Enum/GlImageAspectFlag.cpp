@@ -52,4 +52,21 @@ namespace ashes::gl
 
 		return result;
 	}
+
+	std::string getName( GlImageAspectFlag value )
+	{
+		switch ( value )
+		{
+		case ashes::gl::GL_DEPTH_BUFFER_BIT:
+			return "GL_DEPTH_BUFFER_BIT";
+		case ashes::gl::GL_STENCIL_BUFFER_BIT:
+			return "GL_STENCIL_BUFFER_BIT";
+		case ashes::gl::GL_COLOR_BUFFER_BIT:
+			return "GL_COLOR_BUFFER_BIT";
+		default:
+			assert( false && "Unsupported GlImageAspectFlag" );
+			return "GlImageAspectFlag_UNKNOWN";
+			break;
+		}
+	}
 }

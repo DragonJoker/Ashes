@@ -102,6 +102,7 @@ namespace ashes::gl
 							? GL_TEXTURE_2D_ARRAY
 							: GL_TEXTURE_2D ) ) ) );
 			attachment.index = index;
+			attachment.isSrgb = isSRGBFormat( get( image )->getFormatVk() );
 			return attachment;
 		}
 
@@ -124,6 +125,7 @@ namespace ashes::gl
 							: GL_TEXTURE_2D ) ) )
 				, subresource.mipLevel
 				, 0u };
+			result.isSrgb = isSRGBFormat( get( image )->getFormatVk() );
 
 			if ( get( image )->getArrayLayers() > 1u )
 			{
@@ -191,6 +193,7 @@ namespace ashes::gl
 						? GL_TEXTURE_1D_ARRAY
 						: GL_TEXTURE_1D ) ) );
 			attachment.index = index;
+			attachment.isSrgb = isSRGBFormat( get( image )->getFormatVk() );
 
 			if ( get( view )->getSubresourceRange().baseMipLevel )
 			{
@@ -224,6 +227,7 @@ namespace ashes::gl
 						: GL_TEXTURE_2D ) )
 				, subresource.mipLevel
 				, 0u };
+			result.isSrgb = isSRGBFormat( get( image )->getFormatVk() );
 
 			if ( get( image )->getArrayLayers() > 1u )
 			{
@@ -240,7 +244,7 @@ namespace ashes::gl
 						, { subresource.aspectMask
 							, subresource.mipLevel
 							, 1u
-							, layer
+							, subresource.baseArrayLayer + layer
 							, 1u } } );
 				result.object = get( view )->getInternal();
 				result.mipLevel = 0u;
@@ -312,12 +316,35 @@ namespace ashes::gl
 
 	bool isSRGBFormat( VkFormat format )
 	{
-		return format == VK_FORMAT_R8G8_SRGB
+		return format == VK_FORMAT_R8_SRGB
+			|| format == VK_FORMAT_R8G8_SRGB
 			|| format == VK_FORMAT_R8G8B8_SRGB
 			|| format == VK_FORMAT_B8G8R8_SRGB
 			|| format == VK_FORMAT_R8G8B8A8_SRGB
 			|| format == VK_FORMAT_B8G8R8A8_SRGB
-			|| format == VK_FORMAT_A8B8G8R8_SRGB_PACK32;
+			|| format == VK_FORMAT_A8B8G8R8_SRGB_PACK32
+			|| format == VK_FORMAT_BC1_RGB_SRGB_BLOCK
+			|| format == VK_FORMAT_BC1_RGBA_SRGB_BLOCK
+			|| format == VK_FORMAT_BC2_SRGB_BLOCK
+			|| format == VK_FORMAT_BC3_SRGB_BLOCK
+			|| format == VK_FORMAT_BC7_SRGB_BLOCK
+			|| format == VK_FORMAT_ETC2_R8G8B8_SRGB_BLOCK
+			|| format == VK_FORMAT_ETC2_R8G8B8A1_SRGB_BLOCK
+			|| format == VK_FORMAT_ETC2_R8G8B8A8_SRGB_BLOCK
+			|| format == VK_FORMAT_ASTC_4x4_SRGB_BLOCK
+			|| format == VK_FORMAT_ASTC_5x4_SRGB_BLOCK
+			|| format == VK_FORMAT_ASTC_5x5_SRGB_BLOCK
+			|| format == VK_FORMAT_ASTC_6x5_SRGB_BLOCK
+			|| format == VK_FORMAT_ASTC_6x6_SRGB_BLOCK
+			|| format == VK_FORMAT_ASTC_8x5_SRGB_BLOCK
+			|| format == VK_FORMAT_ASTC_8x6_SRGB_BLOCK
+			|| format == VK_FORMAT_ASTC_8x8_SRGB_BLOCK
+			|| format == VK_FORMAT_ASTC_10x5_SRGB_BLOCK
+			|| format == VK_FORMAT_ASTC_10x6_SRGB_BLOCK
+			|| format == VK_FORMAT_ASTC_10x8_SRGB_BLOCK
+			|| format == VK_FORMAT_ASTC_10x10_SRGB_BLOCK
+			|| format == VK_FORMAT_ASTC_12x10_SRGB_BLOCK
+			|| format == VK_FORMAT_ASTC_12x12_SRGB_BLOCK;
 	}
 
 	GlAttachmentPoint getAttachmentPoint( VkImageAspectFlags aspectMask )
@@ -414,12 +441,16 @@ namespace ashes::gl
 
 	template< typename VkObjectT >
 	void doCheckCompleteness( VkObjectT object
-		, GLenum status )
+		, GLenum status
+		, void ( *report )( VkObjectT
+			, VkResult
+			, std::string const &
+			, std::string const & ) )
 	{
 		switch ( status )
 		{
 		case 0:
-			reportWarning( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
+			report( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
 				, "An error has occured." );
 			break;
 
@@ -427,32 +458,32 @@ namespace ashes::gl
 			break;
 
 		case GL_FRAMEBUFFER_STATUS_UNDEFINED:
-			reportWarning( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
+			report( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
 				, "The specified framebuffer is the default read or draw framebuffer, but the default framebuffer does not exist." );
 			break;
 
 		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_ATTACHMENT:
-			reportWarning( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
+			report( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
 				, "At least one of the framebuffer attachment points are framebuffer incomplete." );
 			break;
 
 		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_MISSING_ATTACHMENT:
-			reportWarning( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
+			report( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
 				, "The framebuffer does not have at least one image attached to it." );
 			break;
 
 		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_DRAW_BUFFER:
-			reportWarning( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
+			report( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
 				, "The value of GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is GL_NONE for any color attachment point(s) named by GL_DRAW_BUFFERi." );
 			break;
 
 		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_READ_BUFFER:
-			reportWarning( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
+			report( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
 				, "GL_READ_BUFFER is not GL_NONE and the value of GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE is GL_NONE for the color attachment point named by GL_READ_BUFFER." );
 			break;
 
 		case GL_FRAMEBUFFER_STATUS_UNSUPPORTED:
-			reportWarning( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
+			report( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
 				, "The combination of internal formats of the attached images violates an implementation-dependent set of restrictions." );
 			break;
 
@@ -465,28 +496,34 @@ namespace ashes::gl
 				stream << "  - The attached images are a mix of renderbuffers and textures, the value of GL_RENDERBUFFER_SAMPLES does not match the value of GL_TEXTURE_SAMPLES;" << std::endl;
 				stream << "  - The value of GL_TEXTURE_FIXED_SAMPLE_LOCATIONS is not the same for all attached textures;" << std::endl;
 				stream << "  - The attached images are a mix of renderbuffers and textures, the value of GL_TEXTURE_FIXED_SAMPLE_LOCATIONS is not GL_TRUE for all attached textures." << std::endl;
-				reportWarning( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
+				report( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
 					, stream.str() );
 			}
 			break;
 
 		case GL_FRAMEBUFFER_STATUS_INCOMPLETE_LAYER_TARGETS:
-			reportWarning( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
+			report( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
 				, "At least one framebuffer attachment is layered, and any populated attachment is not layered, or all populated color attachments are not from textures of the same target." );
 			break;
 		}
 	}
 
+	void checkCompleteness( VkDevice device
+		, GLenum status )
+	{
+		doCheckCompleteness( device, status, reportError< VkDevice > );
+	}
+
 	void checkCompleteness( VkSwapchainKHR swapchain
 		, GLenum status )
 	{
-		doCheckCompleteness( swapchain, status );
+		doCheckCompleteness( swapchain, status, reportWarning< VkSwapchainKHR > );
 	}
 
 	void checkCompleteness( VkFramebuffer framebuffer
 		, GLenum status )
 	{
-		doCheckCompleteness( framebuffer, status );
+		doCheckCompleteness( framebuffer, status, reportWarning< VkFramebuffer > );
 	}
 
 	Framebuffer::Framebuffer( VkAllocationCallbacks const * allocInfo
@@ -732,9 +769,7 @@ namespace ashes::gl
 	{
 		m_multisampled = m_multisampled || multisampled;
 
-		if ( attachment.point == GL_ATTACHMENT_POINT_DEPTH_STENCIL
-			|| attachment.point == GL_ATTACHMENT_POINT_DEPTH
-			|| attachment.point == GL_ATTACHMENT_POINT_STENCIL )
+		if ( attachment.isDepthOrStencil() )
 		{
 			assert( attachment.index == 0u );
 

@@ -224,4 +224,5 @@ namespace ashes::gl
 	GlType getType( VkFormat format )noexcept;
 	GlComponentMapping getSwizzle( VkFormat format );
 	GlComponentMapping getSwizzle( VkFormat format, VkComponentMapping const & components );
+	bool areCopyCompatible( VkFormat lhs, VkFormat rhs );
 }

@@ -825,7 +825,8 @@ namespace ashes::gl
 				, std::move( copyInfo )
 				, src
 				, dst
-				, m_cmdList );
+				, m_cmdList
+				, m_blitViews );
 		}
 	}
 
@@ -1123,28 +1124,6 @@ namespace ashes::gl
 		, ArrayView< VkBufferMemoryBarrier const > bufferMemoryBarriers
 		, ArrayView< VkImageMemoryBarrier const > imageMemoryBarriers )const
 	{
-#ifndef NDEBUG
-
-		for ( auto & barrier : memoryBarriers )
-		{
-			areCompatible( get( this ), after, barrier.srcAccessMask );
-			areCompatible( get( this ), before, barrier.dstAccessMask );
-		}
-
-		for ( auto & barrier : bufferMemoryBarriers )
-		{
-			areCompatible( get( this ), after, barrier.srcAccessMask );
-			areCompatible( get( this ), before, barrier.dstAccessMask );
-		}
-
-		for ( auto & barrier : imageMemoryBarriers )
-		{
-			areCompatible( get( this ), after, barrier.srcAccessMask );
-			areCompatible( get( this ), before, barrier.dstAccessMask );
-		}
-
-#endif
-
 		if ( get( m_device )->hasMemoryBarrier() )
 		{
 			buildMemoryBarrierCommand( after

@@ -4,6 +4,8 @@
 
 namespace ashes::gl
 {
+	//*********************************************************************************************
+
 	namespace
 	{
 		template< typename VkObjectT >
@@ -19,7 +21,48 @@ namespace ashes::gl
 					, msg );
 			}
 		}
+
+		VkOffset3D convert( VkExtent3D const & src )
+		{
+			return VkOffset3D{ int32_t( src.width )
+				, int32_t( src.height )
+				, int32_t( src.depth ) };
+		}
+
+		VkOffset3D convert( VkExtent3D const & src
+			, uint32_t mipDiff )
+		{
+			return VkOffset3D{ int32_t( src.width << mipDiff )
+				, int32_t( src.height << mipDiff )
+				, int32_t( src.depth << mipDiff ) };
+		}
+
+		VkImageBlit convert( VkImageCopy const & src )
+		{
+			if ( src.dstSubresource.mipLevel == src.srcSubresource.mipLevel )
+			{
+				return VkImageBlit{ src.srcSubresource
+					, { src.srcOffset, convert( src.extent ) }
+					, src.dstSubresource
+					, { src.dstOffset, convert( src.extent ) } };
+			}
+
+			if ( src.dstSubresource.mipLevel > src.srcSubresource.mipLevel )
+			{
+				return VkImageBlit{ src.srcSubresource
+					, { src.srcOffset, convert( src.extent, src.dstSubresource.mipLevel - src.srcSubresource.mipLevel ) }
+					, src.dstSubresource
+					, { src.dstOffset, convert( src.extent ) } };
+			}
+
+			return VkImageBlit{ src.srcSubresource
+				, { src.srcOffset, convert( src.extent ) }
+				, src.dstSubresource
+				, { src.dstOffset, convert( src.extent, src.srcSubresource.mipLevel - src.dstSubresource.mipLevel ) } };
+		}
 	}
+
+	//*********************************************************************************************
 
 	uint32_t deduceMemoryType( VkDevice device
 		, uint32_t typeBits
@@ -28,113 +71,6 @@ namespace ashes::gl
 		return ashes::deduceMemoryType( typeBits
 			, requirements
 			, get( get( device )->getPhysicalDevice() )->getMemoryProperties() );
-	}
-
-	bool areCompatible( VkCommandBuffer cmd
-		, VkPipelineStageFlags pipelineFlags
-		, VkAccessFlags accessFlags )
-	{
-		if ( ( pipelineFlags & VK_PIPELINE_STAGE_ALL_COMMANDS_BIT )
-			|| ( pipelineFlags & VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT )
-			|| ( accessFlags & VK_ACCESS_MEMORY_READ_BIT )
-			|| ( accessFlags & VK_ACCESS_MEMORY_WRITE_BIT ) )
-		{
-			return true;
-		}
-
-		if ( ( accessFlags & VK_ACCESS_INDIRECT_COMMAND_READ_BIT ) )
-		{
-			assertReport( cmd
-				, ( pipelineFlags & VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT )
-				, "VK_ACCESS_INDIRECT_COMMAND_READ_BIT access flags are only compatible with VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT pipeline stage flags" );
-			return ( pipelineFlags & VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT );
-		}
-
-		if ( ( accessFlags & VK_ACCESS_INDEX_READ_BIT )
-			|| ( accessFlags & VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT ) )
-		{
-			assertReport( cmd
-				, ( pipelineFlags & VK_PIPELINE_STAGE_VERTEX_INPUT_BIT )
-				, "VK_ACCESS_INDEX_READ_BIT or VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT access flags only compatible with VK_PIPELINE_STAGE_VERTEX_INPUT_BIT pipeline stage flags" );
-			return ( pipelineFlags & VK_PIPELINE_STAGE_VERTEX_INPUT_BIT );
-		}
-
-		if ( ( accessFlags & VK_ACCESS_UNIFORM_READ_BIT )
-			|| ( accessFlags & VK_ACCESS_SHADER_READ_BIT )
-			|| ( accessFlags & VK_ACCESS_SHADER_WRITE_BIT ) )
-		{
-			assertReport( cmd
-				, ( ( pipelineFlags & VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )
-				|| ( pipelineFlags & VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT )
-				|| ( pipelineFlags & VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT )
-				|| ( pipelineFlags & VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT )
-				|| ( pipelineFlags & VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT )
-				|| ( pipelineFlags & VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT )
-				|| ( pipelineFlags & VK_PIPELINE_STAGE_TASK_SHADER_BIT_NV )
-				|| ( pipelineFlags & VK_PIPELINE_STAGE_MESH_SHADER_BIT_NV )
-				|| ( pipelineFlags & VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_NV ) )
-				, "VK_ACCESS_UNIFORM_READ_BIT, VK_ACCESS_SHADER_READ_BIT or VK_ACCESS_SHADER_WRITE_BIT access flags only compatible with VK_PIPELINE_STAGE_XXX_SHADER_BIT pipeline stage flags" );
-			return ( pipelineFlags & VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )
-				|| ( pipelineFlags & VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT )
-				|| ( pipelineFlags & VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT )
-				|| ( pipelineFlags & VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT )
-				|| ( pipelineFlags & VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT )
-				|| ( pipelineFlags & VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT )
-				|| ( pipelineFlags & VK_PIPELINE_STAGE_TASK_SHADER_BIT_NV )
-				|| ( pipelineFlags & VK_PIPELINE_STAGE_MESH_SHADER_BIT_NV )
-				|| ( pipelineFlags & VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_NV );
-		}
-
-		if ( ( accessFlags & VK_ACCESS_INPUT_ATTACHMENT_READ_BIT ) )
-		{
-			assertReport( cmd
-				, ( pipelineFlags & VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT )
-				, "VK_ACCESS_INPUT_ATTACHMENT_READ_BIT access flags are only compatible with VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT pipeline stage flags" );
-			return ( pipelineFlags & VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT );
-		}
-
-		if ( ( accessFlags & VK_ACCESS_COLOR_ATTACHMENT_READ_BIT )
-			|| ( accessFlags & VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT ) )
-		{
-			assertReport( cmd
-				, ( pipelineFlags & VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT )
-				, "VK_ACCESS_COLOR_ATTACHMENT_READ_BIT or VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT access flags only compatible with VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT pipeline stage flags" );
-			return ( pipelineFlags & VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT );
-		}
-
-		if ( ( accessFlags & VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT )
-			|| ( accessFlags & VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT ) )
-		{
-			assertReport( cmd
-				, ( ( pipelineFlags & VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT )
-				|| ( pipelineFlags & VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT ) )
-				, "VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT or VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT access flags only compatible with VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT or VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT pipeline stage flags" );
-			return ( pipelineFlags & VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT )
-				|| ( pipelineFlags & VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT );
-		}
-
-		if ( ( accessFlags & VK_ACCESS_TRANSFER_READ_BIT )
-			|| ( accessFlags & VK_ACCESS_TRANSFER_WRITE_BIT ) )
-		{
-			assertReport( cmd
-				, ( pipelineFlags & VK_PIPELINE_STAGE_TRANSFER_BIT )
-				, "VK_ACCESS_TRANSFER_READ_BIT or VK_ACCESS_TRANSFER_WRITE_BIT access flags only compatible with VK_PIPELINE_STAGE_TRANSFER_BIT pipeline stage flags" );
-			return ( pipelineFlags & VK_PIPELINE_STAGE_TRANSFER_BIT );
-		}
-
-		if ( ( accessFlags & VK_ACCESS_HOST_READ_BIT )
-			|| ( accessFlags & VK_ACCESS_HOST_WRITE_BIT ) )
-		{
-			assertReport( cmd
-				, ( pipelineFlags & VK_PIPELINE_STAGE_HOST_BIT )
-				, "VK_ACCESS_HOST_READ_BIT or VK_ACCESS_HOST_WRITE_BIT access flags only compatible with VK_PIPELINE_STAGE_HOST_BIT pipeline stage flags" );
-			return ( pipelineFlags & VK_PIPELINE_STAGE_HOST_BIT );
-		}
-
-		assertReport( cmd
-			, !accessFlags
-			, "Unsupported combination for accessFlags and pipelineFlags." );
-		return !accessFlags;
 	}
 
 	uint32_t getScreenIndex( VkDisplayModeKHR displayMode )
@@ -152,9 +88,11 @@ namespace ashes::gl
 		return get( get( displayMode )->getDisplay() )->getResolution();
 	}
 
+	//*********************************************************************************************
+
 	void FboAttachment::bind( VkImageSubresourceLayers subresource
 		, uint32_t layer
-		, CmdList & list )
+		, CmdList & list )const
 	{
 		if ( target == GL_TEXTURE_1D )
 		{
@@ -191,4 +129,88 @@ namespace ashes::gl
 				, subresource.mipLevel ) );
 		}
 	}
+
+	void FboAttachment::read( ContextStateStack & stack
+		, CmdList & list )const
+	{
+		if ( !isDepthOrStencil() )
+		{
+			if ( isSrgb )
+			{
+				stack.applySRGBStatus( list, isSrgb );
+			}
+
+			list.push_back( makeCmd< OpType::eReadBuffer >( point ) );
+#if !defined( NDEBUG )
+			list.push_back( makeCmd< OpType::eCheckFramebuffer >() );
+#endif
+		}
+	}
+
+	void FboAttachment::draw( ContextStateStack & stack
+		, CmdList & list )const
+	{
+		if ( !isDepthOrStencil() )
+		{
+			if ( isSrgb )
+			{
+				stack.applySRGBStatus( list, isSrgb );
+			}
+
+			list.push_back( makeCmd< OpType::eDrawBuffers >( point ) );
+#if !defined( NDEBUG )
+			list.push_back( makeCmd< OpType::eCheckFramebuffer >() );
+#endif
+		}
+	}
+
+	//*********************************************************************************************
+
+	LayerCopy::LayerCopy( VkDevice device
+		, VkImageBlit origRegion
+		, VkImage srcImage
+		, VkImage dstImage
+		, uint32_t layer
+		, VkImageViewArray & views )
+		: region{ origRegion }
+		, src{ initialiseAttachment( device, origRegion.srcSubresource, srcImage, layer, srcView ) }
+		, dst{ initialiseAttachment( device, origRegion.dstSubresource, dstImage, layer, dstView ) }
+	{
+		auto srcExtent = getSubresourceDimensions( get( srcImage )->getDimensions(), region.srcSubresource.mipLevel );
+		auto dstExtent = getSubresourceDimensions( get( dstImage )->getDimensions(), region.dstSubresource.mipLevel );
+
+		if ( srcView != VK_NULL_HANDLE )
+		{
+			views.push_back( srcView );
+			region.srcSubresource.mipLevel = 0u;
+		}
+
+		if ( dstView != VK_NULL_HANDLE )
+		{
+			views.push_back( dstView );
+			region.dstSubresource.mipLevel = 0u;
+		}
+
+		// Convert extent to rectangle bounds for src
+		region.srcOffsets[1].x += region.srcOffsets[0].x;
+		region.srcOffsets[1].y += region.srcOffsets[0].y;
+		region.srcOffsets[1].z += region.srcOffsets[0].z;
+
+		// Convert extent to rectangle bounds for dst
+		region.dstOffsets[1].x += region.dstOffsets[0].x;
+		region.dstOffsets[1].y += region.dstOffsets[0].y;
+		region.dstOffsets[1].z += region.dstOffsets[0].z;
+	}
+
+	LayerCopy::LayerCopy( VkDevice device
+		, VkImageCopy origRegion
+		, VkImage srcImage
+		, VkImage dstImage
+		, uint32_t layer
+		, VkImageViewArray & views )
+		: LayerCopy{ device, convert( origRegion ), srcImage, dstImage, layer, views }
+	{
+	}
+
+	//*********************************************************************************************
 }

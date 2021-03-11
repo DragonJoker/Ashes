@@ -23,6 +23,8 @@ namespace ashes::gl
 		~Device();
 
 		void cleanupContextDependent( Context const & context );
+		void cleanupBlitSrcFbo();
+		void cleanupBlitDstFbo();
 		bool hasExtension( std::string_view extension )const;
 		VkPhysicalDeviceLimits const & getLimits()const;
 		void getImageSubresourceLayout( VkImage image
