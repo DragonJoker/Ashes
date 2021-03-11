@@ -136,6 +136,18 @@ namespace ashes::gl
 	}
 
 	void apply( ContextLock const & context
+		, CmdGetTexImage const & cmd )
+	{
+		glLogCall( context
+			, glGetTexImage
+			, cmd.target
+			, cmd.level
+			, cmd.format
+			, cmd.type
+			, getBufferOffset( cmd.offset ) );
+	}
+
+	void apply( ContextLock const & context
 		, CmdCheckFramebuffer const & cmd )
 	{
 		auto status = glLogNonVoidCall( context
