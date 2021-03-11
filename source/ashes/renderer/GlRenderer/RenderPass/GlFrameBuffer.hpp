@@ -14,8 +14,10 @@ namespace ashes::gl
 	bool isSRGBFormat( VkFormat format );
 	GlAttachmentPoint getAttachmentPoint( VkImageAspectFlags aspectMask );
 	GlAttachmentPoint getAttachmentPoint( VkImageView texture );
+	GlAttachmentPoint getAttachmentPoint( VkFormat format );
 	GlAttachmentType getAttachmentType( VkImageAspectFlags aspectMask );
 	GlAttachmentType getAttachmentType( VkImageView texture );
+	GlAttachmentType getAttachmentType( VkFormat format );
 	void checkCompleteness( VkSwapchainKHR swapchain
 		, GLenum status );
 	void checkCompleteness( VkFramebuffer framebuffer

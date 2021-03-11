@@ -346,6 +346,26 @@ namespace ashes::gl
 		return getAttachmentPoint( get( texture )->getSubresourceRange().aspectMask );
 	}
 
+	GlAttachmentPoint getAttachmentPoint( VkFormat format )
+	{
+		if ( isDepthStencilFormat( format ) )
+		{
+			return GL_ATTACHMENT_POINT_DEPTH_STENCIL;
+		}
+
+		if ( isDepthFormat( format ) )
+		{
+			return GL_ATTACHMENT_POINT_DEPTH;
+		}
+
+		if ( isStencilFormat( format ) )
+		{
+			return GL_ATTACHMENT_POINT_STENCIL;
+		}
+
+		return GL_ATTACHMENT_POINT_COLOR0;
+	}
+
 	GlAttachmentType getAttachmentType( VkImageAspectFlags aspectMask )
 	{
 		if ( checkFlag( aspectMask, VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT )
@@ -370,6 +390,26 @@ namespace ashes::gl
 	GlAttachmentType getAttachmentType( VkImageView texture )
 	{
 		return getAttachmentType( get( texture )->getSubresourceRange().aspectMask );
+	}
+
+	GlAttachmentType getAttachmentType( VkFormat format )
+	{
+		if ( isDepthStencilFormat( format ) )
+		{
+			return GL_ATTACHMENT_TYPE_DEPTH_STENCIL;
+		}
+
+		if ( isDepthFormat( format ) )
+		{
+			return GL_ATTACHMENT_TYPE_DEPTH;
+		}
+
+		if ( isStencilFormat( format ) )
+		{
+			return GL_ATTACHMENT_TYPE_STENCIL;
+		}
+
+		return GL_ATTACHMENT_TYPE_COLOR;
 	}
 
 	template< typename VkObjectT >

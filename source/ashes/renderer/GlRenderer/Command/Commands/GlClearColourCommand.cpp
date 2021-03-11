@@ -18,9 +18,24 @@ namespace ashes::gl
 			, glClearTexImage
 			, cmd.name
 			, cmd.mipLevel
-			, cmd.format
-			, cmd.type
-			, cmd.color.float32 );
+			, GL_FORMAT_RGBA
+			, GL_TYPE_F32
+			, cmd.color.data() );
+	}
+
+	template< typename ValueT >
+	bool operator==( ValueT const( & lhs )[4], std::array< ValueT, 4u > rhs )
+	{
+		return lhs[0] == rhs[0]
+			&& lhs[1] == rhs[1]
+			&& lhs[2] == rhs[2]
+			&& lhs[3] == rhs[3];
+	}
+
+	template< typename ValueT >
+	bool operator!=( ValueT const( &lhs )[4], std::array< ValueT, 4u > rhs )
+	{
+		return !( lhs == rhs );
 	}
 
 	void buildClearColourCommand( VkDevice device
@@ -34,10 +49,6 @@ namespace ashes::gl
 
 		if ( get( getInstance( device ) )->hasClearTexImage() )
 		{
-			auto internal = getInternalFormat( get( image )->getFormat() );
-			auto format = getFormat( internal );
-			auto type = getType( internal );
-
 			for ( auto range : ranges )
 			{
 				if ( range.levelCount == RemainingArrayLayers )
@@ -56,9 +67,7 @@ namespace ashes::gl
 				{
 					list.push_back( makeCmd< OpType::eClearTexColor >( get( image )->getInternal()
 						, level
-						, format
-						, type
-						, value ) );
+						, value.float32 ) );
 				}
 			}
 		}
