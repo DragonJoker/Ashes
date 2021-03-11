@@ -154,7 +154,7 @@ namespace ashes::gl
 	using PFN_glBlendEquationSeparatei = void ( GLAPIENTRY * )( GLuint buf, GLenum modeRGB, GLenum modeAlpha );
 	using PFN_glBlendFuncSeparate = void ( GLAPIENTRY * )( GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha );
 	using PFN_glBlendFuncSeparatei = void ( GLAPIENTRY * )( GLuint buf, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha );
-	using PFN_glBlitFramebuffer = void ( GLAPIENTRY * )( GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter );
+	using PFN_glBlitFramebuffer = void ( GLAPIENTRY * )( GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GlImageAspectFlags mask, GlFilter filter );
 	using PFN_glBufferData = void ( GLAPIENTRY * )( GlBufferTarget target, GLsizeiptr size, const void * data, GlBufferDataUsageFlags usage );
 	using PFN_glBufferSubData = void ( GLAPIENTRY * )( GlBufferTarget target, GLintptr offset, GLsizeiptr size, const void * data );
 	using PFN_glBufferStorage = void ( GLAPIENTRY * )( GlBufferTarget target, GLsizeiptr size, const void * data, gl4::GlMemoryPropertyFlags flags );

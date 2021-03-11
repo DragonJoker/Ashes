@@ -32,8 +32,8 @@ namespace ashes::gl
 			, int32_t dstT
 			, int32_t dstR
 			, int32_t dstB
-			, uint32_t mask
-			, uint32_t filter )
+			, GlImageAspectFlags mask
+			, GlFilter filter )
 			: cmd{ { OpType::eBlitFramebuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, srcL{ srcL }
 			, srcT{ srcT }
@@ -57,8 +57,8 @@ namespace ashes::gl
 		int32_t dstT;
 		int32_t dstR;
 		int32_t dstB;
-		uint32_t mask;
-		uint32_t filter;
+		GlImageAspectFlags mask;
+		GlFilter filter;
 	};
 	using CmdBlitFramebuffer = CmdT< OpType::eBlitFramebuffer >;
 

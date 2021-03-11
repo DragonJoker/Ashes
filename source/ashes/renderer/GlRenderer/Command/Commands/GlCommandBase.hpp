@@ -40,6 +40,7 @@ namespace ashes::gl
 		eBlendEquation,
 		eBlendFunc,
 		eBlitFramebuffer,
+		eCheckFramebuffer,
 		eCleanupFramebuffer,
 		eClearBack,
 		eClearBackColour,
@@ -703,6 +704,29 @@ namespace ashes::gl
 
 	void apply( ContextLock const & context
 		, CmdGetQueryResults const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct CmdConfig< OpType::eCheckFramebuffer >
+	{
+		static Op constexpr value = { OpType::eCheckFramebuffer, 4u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eCheckFramebuffer >
+	{
+		inline CmdT()
+			: cmd{ { OpType::eCheckFramebuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
+		{
+		}
+
+		Command cmd;
+	};
+	using CmdCheckFramebuffer = CmdT< OpType::eCheckFramebuffer >;
+
+	void apply( ContextLock const & context
+		, CmdCheckFramebuffer const & cmd );
 
 	//*************************************************************************
 

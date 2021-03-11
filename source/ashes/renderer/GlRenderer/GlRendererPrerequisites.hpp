@@ -212,10 +212,15 @@ namespace ashes::gl
 		uint32_t viewLayerCount;
 		GLuint originalObject;
 		GLuint originalMipLevel;
+		bool isSrgb{ false };
 
 		void bind( VkImageSubresourceLayers subresource
 			, uint32_t layer
-			, CmdList & list );
+			, CmdList & list )const;
+		void read( ContextStateStack & stack
+			, CmdList & list )const;
+		void draw( ContextStateStack & stack
+			, CmdList & list )const;
 		bool isDepthOrStencil()const
 		{
 			return point == GL_ATTACHMENT_POINT_DEPTH_STENCIL
@@ -226,6 +231,73 @@ namespace ashes::gl
 
 	using FboAttachmentArray = std::vector< FboAttachment >;
 
+	struct LayerCopy
+	{
+		LayerCopy( VkDevice device
+			, VkImageBlit origRegion
+			, VkImage srcImage
+			, VkImage dstImage
+			, uint32_t layer
+			, VkImageViewArray & views );		
+		LayerCopy( VkDevice device
+			, VkImageCopy origRegion
+			, VkImage srcImage
+			, VkImage dstImage
+			, uint32_t layer
+			, VkImageViewArray & views );
+
+		void bindSrc( uint32_t layer
+			, CmdList & list )const
+		{
+			src.bind( region.srcSubresource, layer, list );
+		}
+
+		void bindDst( uint32_t layer
+			, CmdList & list )const
+		{
+			dst.bind( region.dstSubresource, layer, list );
+		}
+
+		void read( ContextStateStack & stack
+			, CmdList & list )const
+		{
+			src.read( stack, list );
+		}
+
+		void draw( ContextStateStack & stack
+			, CmdList & list )const
+		{
+			dst.draw( stack, list );
+		}
+
+		GlAttachmentPoint getSrcPoint()const
+		{
+			return src.point;
+		}
+
+		GlAttachmentPoint getDstPoint()const
+		{
+			return dst.point;
+		}
+
+		bool isSrcDepthOrStencil()const
+		{
+			return src.isDepthOrStencil();
+		}
+
+		bool isDstDepthOrStencil()const
+		{
+			return dst.isDepthOrStencil();
+		}
+
+		VkImageBlit region;
+
+	private:
+		VkImageView srcView{ VK_NULL_HANDLE };
+		VkImageView dstView{ VK_NULL_HANDLE };
+		FboAttachment src;
+		FboAttachment dst;
+	};
 	PFN_vkVoidFunction getFunction( char const * const name );
 
 	namespace details
@@ -349,9 +421,6 @@ namespace ashes::gl
 	uint32_t deduceMemoryType( VkDevice device
 		, uint32_t typeBits
 		, VkMemoryPropertyFlags requirements );
-	bool areCompatible( VkCommandBuffer cmd
-		, VkPipelineStageFlags pipelineFlags
-		, VkAccessFlags accessFlags );
 	uint32_t getScreenIndex( VkDisplayModeKHR displayMode );
 	VkDisplayModeParametersKHR getDisplayModeParameters( VkDisplayModeKHR displayMode );
 	VkExtent2D getDisplayResolution( VkDisplayModeKHR displayMode );

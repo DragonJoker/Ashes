@@ -230,7 +230,8 @@ namespace ashes::gl
 		, VkImageCopy copyInfo
 		, VkImage srcImage
 		, VkImage dstImage
-		, CmdList & list );
+		, CmdList & list
+		, VkImageViewArray & views );
 
 	//*************************************************************************
 }
