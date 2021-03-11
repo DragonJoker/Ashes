@@ -13,7 +13,8 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	void buildCopyBufferToImageCommand( VkDevice device
+	void buildCopyBufferToImageCommand( ContextStateStack & stack
+		, VkDevice device
 		, VkBufferImageCopy copyInfo
 		, VkBuffer src
 		, VkImage dst
@@ -26,7 +27,7 @@ namespace ashes::gl
 			, get( dst )->getCreateFlags() );
 		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_UNPACK
 			, get( src )->getInternal() ) );
-		list.push_back( makeCmd< OpType::ePixelStore >( GL_UNPACK_ALIGNMENT, 1 ) );
+		stack.applyUnpackAlign( list, 1 );
 		list.push_back( makeCmd< OpType::eBindTexture >( copyTarget
 			, get( dst )->getInternal() ) );
 

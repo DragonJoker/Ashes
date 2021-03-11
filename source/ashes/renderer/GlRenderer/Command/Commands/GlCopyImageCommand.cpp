@@ -330,6 +330,7 @@ namespace ashes::gl
 				, get( dstImage )->getArrayLayers()
 				, get( dstImage )->getCreateFlags() );
 			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, get( get( dstImage )->getMemoryBinding().getParent() )->getInternal() ) );
+			stack.applyPackAlign( list, 1 );
 			list.push_back( makeCmd< OpType::eBindTexture >( dstTarget, get( dstImage )->getInternal() ) );
 			list.push_back( makeCmd< OpType::eGetTexImage >( dstTarget, get( dstImage )->getGetFormat(), get( dstImage )->getGetType() ) );
 			list.push_back( makeCmd< OpType::eBindTexture >( dstTarget, 0u ) );

@@ -21,7 +21,7 @@ namespace ashes::gl
 			VkPipelineColorBlendAttachmentStateArray cbStateAttachments{ 1u, getColourBlendStateAttachment() };
 			VkPipelineColorBlendStateCreateInfo cbState{ getDefaultColorBlendState( cbStateAttachments ) };
 			return ContextState{ std::move( cbState ) };
-		}();
+		}( );
 
 		bool doApplyEnable( CmdList & list
 			, uint32_t value
@@ -397,7 +397,7 @@ namespace ashes::gl
 			if ( doApplyEnable( list
 				, GL_DEPTH_CLAMP
 				, state.depthBoundsTestEnable
-					&& ( state.minDepthBounds != 0.0f || state.maxDepthBounds != 0.0f ) ) )
+				&& ( state.minDepthBounds != 0.0f || state.maxDepthBounds != 0.0f ) ) )
 			{
 				list.emplace_back( makeCmd< OpType::eDepthRange >( state.minDepthBounds
 					, state.maxDepthBounds ) );
@@ -525,7 +525,7 @@ namespace ashes::gl
 
 	ContextStateStack::ContextStateStack( VkDevice device )
 		: ContextStateStack{ get( device )->getEnabledFeatures().tessellationShader != VK_FALSE
-			, get( getInstance( device ) )->hasViewportArray() }
+		, get( getInstance( device ) )->hasViewportArray() }
 	{
 	}
 
@@ -734,7 +734,7 @@ namespace ashes::gl
 									oldCmd.scissor = VkRect2D
 									{
 										{ 0, 0 },
-									{ stack.m_renderArea.width, stack.m_renderArea.height },
+										{ stack.m_renderArea.width, stack.m_renderArea.height },
 									};
 								}
 							}
@@ -816,6 +816,30 @@ namespace ashes::gl
 			, save.depthBiasClamp
 			, slopeFactor
 			, save.depthBiasSlopeFactor );
+	}
+
+	void ContextStateStack::applyPackAlign( CmdList & list
+		, int32_t align )
+	{
+		doCheckSave();
+
+		if ( align != m_save->packAlign )
+		{
+			list.push_back( makeCmd< OpType::ePixelStore >( GL_PACK_ALIGNMENT, align ) );
+			m_save->packAlign = align;
+		}
+	}
+
+	void ContextStateStack::applyUnpackAlign( CmdList & list
+		, int32_t align )
+	{
+		doCheckSave();
+
+		if ( align != m_save->unpackAlign )
+		{
+			list.push_back( makeCmd< OpType::ePixelStore >( GL_UNPACK_ALIGNMENT, align ) );
+			m_save->unpackAlign = align;
+		}
 	}
 
 	void ContextStateStack::applyStencilCompareMask( CmdList & list
