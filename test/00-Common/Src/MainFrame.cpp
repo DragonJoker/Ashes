@@ -16,23 +16,25 @@ namespace common
 {
 	MainFrame::MainFrame( wxString const & name
 		, wxString const & rendererName
-		, ashes::RendererList const & renderers )
+		, ashes::RendererList const & renderers
+		, wxSize const & size )
 		: wxFrame{ nullptr
-		, wxID_ANY
-		, name + wxT( " (" ) + rendererName + wxT( ")" )
-		, wxDefaultPosition
-		, WindowSize
-		, wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN | wxRESIZE_BORDER | wxMAXIMIZE_BOX }
+			, wxID_ANY
+			, name + wxT( " (" ) + rendererName + wxT( ")" )
+			, wxDefaultPosition
+			, size
+			, wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN | wxRESIZE_BORDER | wxMAXIMIZE_BOX }
 		, m_name{ name.ToStdString() }
 		, m_rendererName{ rendererName }
 		, m_renderers{ renderers }
+		, m_defaultSize{ size }
 	{
 	}
 
 	void MainFrame::initialise()
 	{
-		SetClientSize( WindowSize );
-		SetMinClientSize( WindowSize );
+		SetClientSize( m_defaultSize );
+		SetMinClientSize( m_defaultSize );
 		Show( true );
 
 		try
@@ -49,7 +51,7 @@ namespace common
 				} );
 
 			std::cout << "Instance created." << std::endl;
-			m_panel = doCreatePanel( WindowSize, *m_instance );
+			m_panel = doCreatePanel( m_defaultSize, *m_instance );
 
 			wxBoxSizer * sizer{ new wxBoxSizer{ wxVERTICAL } };
 			sizer->Add( m_panel, wxSizerFlags{ 1 }.Expand() );

@@ -14,7 +14,8 @@ namespace common
 	public:
 		MainFrame( wxString const & name
 			, wxString const & rendererName
-			, ashes::RendererList const & renderers );
+			, ashes::RendererList const & renderers
+			, wxSize const & size = WindowSize );
 		virtual ~MainFrame() = default;
 
 		void initialise();
@@ -41,5 +42,6 @@ namespace common
 		std::array< std::chrono::microseconds, FrameSamplesCount > m_gpuFramesTimes;
 		uint32_t m_frameIndex{ 0 };
 		size_t m_frameCount{ 0 };
+		wxSize m_defaultSize;
 	};
 }
