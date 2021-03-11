@@ -175,7 +175,7 @@ namespace ashes::gl
 		stack.setRenderArea( get( frameBuffer )->getDimensions() );
 		stack.apply( list, preExecuteActions, 0u, ArrayView< VkRect2D const >(), true );
 		stack.apply( list, preExecuteActions, 0u, ArrayView< VkViewport const >(), true );
-		stack.applySRGBStatus( list, get( frameBuffer )->isSRGB(), true );
+		stack.applySRGBStatus( list, get( frameBuffer )->isSRGB() );
 
 		if ( ( !stack.hasCurrentFramebuffer()
 			|| stack.getCurrentFramebuffer() != frameBuffer )

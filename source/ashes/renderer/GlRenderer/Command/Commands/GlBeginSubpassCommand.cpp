@@ -26,6 +26,6 @@ namespace ashes::gl
 			list.push_back( makeCmd< OpType::eDrawBuffers >( get( frameBuffer )->getDrawBuffers( references ) ) );
 		}
 
-		stack.applySRGBStatus( list, get( frameBuffer )->isSRGB(), true );
+		stack.applySRGBStatus( list, get( frameBuffer )->isSRGB() );
 	}
 }
