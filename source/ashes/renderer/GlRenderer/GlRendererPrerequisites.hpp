@@ -216,6 +216,17 @@ namespace ashes::gl
 
 		void bind( VkImageSubresourceLayers subresource
 			, uint32_t layer
+			, GlFrameBufferTarget fboTarget
+			, CmdList & list )const;
+		void bindRead( ContextStateStack & stack
+			, VkImageSubresourceLayers subresource
+			, uint32_t layer
+			, GlFrameBufferTarget fboTarget
+			, CmdList & list )const;
+		void bindDraw( ContextStateStack & stack
+			, VkImageSubresourceLayers subresource
+			, uint32_t layer
+			, GlFrameBufferTarget fboTarget
 			, CmdList & list )const;
 		void read( ContextStateStack & stack
 			, CmdList & list )const;
@@ -246,28 +257,28 @@ namespace ashes::gl
 			, uint32_t layer
 			, VkImageViewArray & views );
 
-		void bindSrc( uint32_t layer
+		void bindSrc( ContextStateStack & stack
+			, uint32_t layer
+			, GlFrameBufferTarget fboTarget
 			, CmdList & list )const
 		{
-			src.bind( region.srcSubresource, layer, list );
+			src.bindRead( stack
+				, region.srcSubresource
+				, layer
+				, fboTarget
+				, list );
 		}
 
-		void bindDst( uint32_t layer
+		void bindDst( ContextStateStack & stack
+			, uint32_t layer
+			, GlFrameBufferTarget fboTarget
 			, CmdList & list )const
 		{
-			dst.bind( region.dstSubresource, layer, list );
-		}
-
-		void read( ContextStateStack & stack
-			, CmdList & list )const
-		{
-			src.read( stack, list );
-		}
-
-		void draw( ContextStateStack & stack
-			, CmdList & list )const
-		{
-			dst.draw( stack, list );
+			src.bindDraw( stack
+				, region.srcSubresource
+				, layer
+				, fboTarget
+				, list );
 		}
 
 		GlAttachmentPoint getSrcPoint()const
