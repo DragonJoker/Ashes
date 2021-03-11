@@ -61,6 +61,7 @@ using PluginArray = std::vector< Plugin >;
 namespace details
 {
 	Plugin * findFirstSupportedPlugin( PluginArray & plugins );
+	Plugin * findDefaultPlugin( PluginArray & plugins );
 	PluginArray listPlugins();
 }
 
@@ -90,7 +91,12 @@ struct PluginLibrary
 			}
 			else
 			{
-				selectedPlugin = details::findFirstSupportedPlugin( plugins );
+				selectedPlugin = details::findDefaultPlugin( plugins );
+
+				if ( !selectedPlugin )
+				{
+					selectedPlugin = details::findFirstSupportedPlugin( plugins );
+				}
 
 				if ( selectedPlugin )
 				{
