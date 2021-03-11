@@ -10,7 +10,7 @@ namespace vkapp
 		utils::Vec2 uv;
 	};
 
-	static wxString const AppName{ common::makeName( TEST_ID, wxT( "Texture2D" ) ) };
+	static wxString const AppName{ common::makeName( TEST_ID, wxT( TEST_NAME ) ) };
 
 	class RenderPanel;
 	class MainFrame;

@@ -41,10 +41,12 @@ if ( ASHES_BUILD_TESTS )
 
 		foreach ( child ${children} )
 			if ( IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${child} )
+				string( REGEX REPLACE "[^-]*-([a-zA-Z0-9]*)" "\\1" TEST_NAME ${child} )
 				set( TARGET_NAME Test-${child} )
 				add_subdirectory( ${child} )
 				target_compile_definitions( ${TARGET_NAME} PRIVATE
 					TEST_ID=${TEST_ID}
+					TEST_NAME="${TEST_NAME}"
 				)
 				set_target_properties( ${TARGET_NAME} PROPERTIES
 					CXX_STANDARD 17
