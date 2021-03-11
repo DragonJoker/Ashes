@@ -10,16 +10,13 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	void apply( ContextLock const & context
-		, CmdCopyBufferSubData const & cmd )
+	namespace
 	{
-		glLogCall( context
-			, glCopyBufferSubData
-			, cmd.srcTarget
-			, cmd.dstTarget
-			, GLintptr( cmd.copy.srcOffset )
-			, GLintptr( cmd.copy.dstOffset )
-			, GLsizeiptr( cmd.copy.size ) );
+		void adjustCopyInfo( DeviceMemoryBinding const & binding
+			, VkDeviceSize & offset )
+		{
+			offset += binding.getOffset();
+		}
 	}
 
 	void buildCopyBufferCommand( VkBufferCopy copyInfo
@@ -28,34 +25,25 @@ namespace ashes::gl
 		, CmdList & list )
 	{
 		glLogCommand( list, "CopyBufferCommand" );
+		adjustCopyInfo( get( src )->getMemoryBinding(), copyInfo.srcOffset );
+		adjustCopyInfo( get( dst )->getMemoryBinding(), copyInfo.dstOffset );
 
-		if ( get( src )->getTarget() == get( dst )->getTarget() )
+		if ( copyInfo.size == WholeSize )
 		{
-			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_COPY_READ
-				, get( src )->getInternal() ) );
-			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_COPY_WRITE
-				, get( dst )->getInternal() ) );
-			list.push_back( makeCmd< OpType::eCopyBufferSubData >( GL_BUFFER_TARGET_COPY_READ
-				, GL_BUFFER_TARGET_COPY_WRITE
-				, std::move( copyInfo ) ) );
-			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_COPY_READ
-				, 0u ) );
-			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_COPY_WRITE
-				, 0u ) );
+			copyInfo.size = std::min( get( src )->getMemoryBinding().getSize()
+				, get( dst )->getMemoryBinding().getSize() );
 		}
-		else
-		{
-			list.push_back( makeCmd< OpType::eBindBuffer >( get( src )->getTarget()
-				, get( src )->getInternal() ) );
-			list.push_back( makeCmd< OpType::eBindBuffer >( get( dst )->getTarget()
-				, get( dst )->getInternal() ) );
-			list.push_back( makeCmd< OpType::eCopyBufferSubData >( get( src )->getTarget()
-				, get( dst )->getTarget()
-				, std::move( copyInfo ) ) );
-			list.push_back( makeCmd< OpType::eBindBuffer >( get( src )->getTarget()
-				, 0u ) );
-			list.push_back( makeCmd< OpType::eBindBuffer >( get( dst )->getTarget()
-				, 0u ) );
-		}
+
+		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_COPY_READ
+			, get( src )->getInternal() ) );
+		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_COPY_WRITE
+			, get( dst )->getInternal() ) );
+		list.push_back( makeCmd< OpType::eCopyBufferSubData >( GL_BUFFER_TARGET_COPY_READ
+			, GL_BUFFER_TARGET_COPY_WRITE
+			, std::move( copyInfo ) ) );
+		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_COPY_WRITE
+			, 0u ) );
+		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_COPY_READ
+			, 0u ) );
 	}
 }
