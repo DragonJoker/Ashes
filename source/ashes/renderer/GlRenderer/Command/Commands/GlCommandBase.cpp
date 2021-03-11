@@ -668,6 +668,18 @@ namespace ashes::gl
 	}
 
 	void apply( ContextLock const & context
+		, CmdCopyBufferSubData const & cmd )
+	{
+		glLogCall( context
+			, glCopyBufferSubData
+			, cmd.srcTarget
+			, cmd.dstTarget
+			, GLintptr( cmd.copy.srcOffset )
+			, GLintptr( cmd.copy.dstOffset )
+			, GLsizeiptr( cmd.copy.size ) );
+	}
+
+	void apply( ContextLock const & context
 		, CmdTexSubImage1D const & cmd )
 	{
 		glLogCall( context
