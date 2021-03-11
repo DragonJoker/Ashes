@@ -91,6 +91,8 @@ namespace ashes::gl
 		VkDynamicStateArray dynamicStates;
 		VkPipelineDynamicStateCreateInfo dyState;
 		bool sRGB{ false };
+		int32_t packAlign{ 1 };
+		int32_t unpackAlign{ 1 };
 
 	private:
 		void doInit();

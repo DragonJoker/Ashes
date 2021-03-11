@@ -37,6 +37,10 @@ namespace ashes::gl
 			, float constantFactor
 			, float clamp
 			, float slopeFactor );
+		void applyPackAlign( CmdList & list
+			, int32_t align );
+		void applyUnpackAlign( CmdList & list
+			, int32_t align );
 		void applyStencilCompareMask( CmdList & list
 			, uint32_t compareMask
 			, VkStencilFaceFlags faceFlags );

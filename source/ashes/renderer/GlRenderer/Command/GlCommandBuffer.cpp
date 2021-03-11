@@ -752,7 +752,8 @@ namespace ashes::gl
 	{
 		for ( auto & copyInfo : copyInfos )
 		{
-			buildCopyBufferToImageCommand( get( src )->getDevice()
+			buildCopyBufferToImageCommand( *m_state.stack
+				, get( src )->getDevice()
 				, std::move( copyInfo )
 				, src
 				, dst

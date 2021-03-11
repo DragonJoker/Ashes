@@ -8,7 +8,8 @@ See LICENSE file in root folder
 
 namespace ashes::gl
 {
-	void buildCopyBufferToImageCommand( VkDevice device
+	void buildCopyBufferToImageCommand( ContextStateStack & stack
+		, VkDevice device
 		, VkBufferImageCopy copyInfo
 		, VkBuffer src
 		, VkImage dst
