@@ -975,7 +975,7 @@ namespace ashes::gl
 		m_features.multiViewport = find( ARB_viewport_array );
 		m_features.samplerAnisotropy = find( ARB_texture_filter_anisotropic );
 		m_features.textureCompressionETC2 = findAll( { ARB_ES3_compatibility, ARB_ES2_compatibility, ARB_invalidate_subdata, ARB_texture_storage } );
-		m_features.textureCompressionASTC_LDR = find( KHR_texture_compression_astc_ldr );
+		m_features.textureCompressionASTC_LDR = findAny( { KHR_texture_compression_astc_ldr, KHR_texture_compression_astc_hdr } );
 		m_features.textureCompressionBC = findAll( { ARB_texture_compression, EXT_texture_compression_s3tc, EXT_texture_sRGB } );
 		m_features.occlusionQueryPrecise = true;
 		m_features.pipelineStatisticsQuery = find( ARB_pipeline_statistics_query );
