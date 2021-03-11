@@ -175,7 +175,7 @@ namespace ashes
 		, VkExtent2D const & extent
 		, uint8_t const * const data
 		, ImageView const & view
-		, VkPipelineStageFlags dstStageFlags )const
+		, VkImageLayout dstLayout )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( "StagingBufferUploadTex"
 			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
@@ -186,7 +186,8 @@ namespace ashes
 			, offset
 			, extent
 			, data
-			, view );
+			, view
+			, dstLayout );
 		commandBuffer->end();
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
@@ -199,7 +200,7 @@ namespace ashes
 		, VkFormat format
 		, uint8_t const * const data
 		, ImageView const & view
-		, VkPipelineStageFlags dstStageFlags )const
+		, VkImageLayout dstLayout )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( "StagingBufferUploadTex"
 			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
@@ -208,7 +209,7 @@ namespace ashes
 			, format
 			, data
 			, view
-			, dstStageFlags );
+			, dstLayout );
 		commandBuffer->end();
 		auto fence = m_device.createFence();
 		queue.submit( *commandBuffer
@@ -223,7 +224,7 @@ namespace ashes
 		, VkExtent2D const & extent
 		, uint8_t const * const data
 		, ImageView const & view
-		, VkPipelineStageFlags dstStageFlags )const
+		, VkImageLayout dstLayout )const
 	{
 		auto range = view->subresourceRange;
 		auto layerSize = getLevelsSize( extent
@@ -237,7 +238,7 @@ namespace ashes
 			, extent
 			, offset
 			, view
-			, dstStageFlags
+			, dstLayout
 			, subresourceLayers );
 	}
 
@@ -245,7 +246,7 @@ namespace ashes
 		, VkFormat format
 		, uint8_t const * const data
 		, ImageView const & view
-		, VkPipelineStageFlags dstStageFlags )const
+		, VkImageLayout dstLayout )const
 	{
 		auto extent = VkExtent3D{ view.image->getDimensions() };
 		auto mipLevel = view->subresourceRange.baseMipLevel;
@@ -261,7 +262,7 @@ namespace ashes
 			, { extent.width, extent.height }
 			, data
 			, view
-			, dstStageFlags );
+			, dstLayout );
 	}
 
 	void StagingBuffer::downloadTextureData( Queue const & queue
@@ -272,7 +273,7 @@ namespace ashes
 		, VkExtent2D const & extent
 		, uint8_t * data
 		, ImageView const & view
-		, VkPipelineStageFlags dstStageFlags )const
+		, VkImageLayout dstLayout )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( "StagingBufferDownloadTex"
 			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
@@ -285,13 +286,11 @@ namespace ashes
 			, extent
 			, offset
 			, view
-			, dstStageFlags
-			, {
-				getAspectMask( view->format ),
-				mipLevel,
-				view->subresourceRange.baseArrayLayer,
-				view->subresourceRange.layerCount
-			} );
+			, dstLayout
+			, { getAspectMask( view->format )
+				, mipLevel
+				, view->subresourceRange.baseArrayLayer
+				, view->subresourceRange.layerCount } );
 		commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 			, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
 			, view.makeShaderInputResource( VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL ) );
@@ -316,7 +315,7 @@ namespace ashes
 		, VkFormat format
 		, uint8_t * data
 		, ImageView const & view
-		, VkPipelineStageFlags dstStageFlags )const
+		, VkImageLayout dstLayout )const
 	{
 		auto extent = view.image->getDimensions();
 		auto mipLevel = view->subresourceRange.baseMipLevel;
@@ -333,7 +332,7 @@ namespace ashes
 			, { extent.width, extent.height }
 			, data
 			, view
-			, dstStageFlags );
+			, dstLayout );
 	}
 
 	void StagingBuffer::doCopyToStagingBuffer( uint8_t const * data
@@ -428,7 +427,7 @@ namespace ashes
 		, VkExtent2D const & size
 		, VkOffset3D const & offset
 		, ImageView const & view
-		, VkPipelineStageFlags dstStageFlags
+		, VkImageLayout dstLayout
 		, VkImageSubresourceLayers const & subresourceLayers )const
 	{
 		auto realSize = getLevelsSize( size
@@ -448,8 +447,11 @@ namespace ashes
 			, getBuffer()
 			, *view.image );
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
-			, dstStageFlags
-			, view.makeShaderInputResource( VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL ) );
+			, getStageMask( dstLayout )
+			, view.makeLayoutTransition( VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+				, dstLayout
+				, VK_QUEUE_FAMILY_IGNORED
+				, VK_QUEUE_FAMILY_IGNORED ) );
 	}
 
 	void StagingBuffer::doCopyFromStagingBuffer( uint8_t * data
@@ -544,7 +546,7 @@ namespace ashes
 		, VkExtent2D const & size
 		, VkOffset3D const & offset
 		, ImageView const & view
-		, VkPipelineStageFlags dstStageFlags
+		, VkImageLayout dstLayout
 		, VkImageSubresourceLayers const & subresourceLayers )const
 	{
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
@@ -557,7 +559,7 @@ namespace ashes
 			, *view.image
 			, getBuffer() );
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
-			, dstStageFlags
+			, getStageMask( dstLayout )
 			, view.makeShaderInputResource( VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL ) );
 	}
 }
