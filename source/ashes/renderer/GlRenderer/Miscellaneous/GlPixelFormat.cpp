@@ -3,6 +3,46 @@
 
 namespace ashes::gl
 {
+	namespace
+	{
+		void getFormatAndType( ContextLock const & context
+			, GlTextureType target
+			, VkFormat vkformat
+			, GlInternal internal
+			, GlFormatProperty formatProp
+			, GlFormatProperty typeProp
+			, GlFormat & format
+			, GlType & type )
+		{
+			glLogCall( context
+				, glGetInternalformativ
+				, target
+				, internal
+				, formatProp
+				, 1
+				, reinterpret_cast< GLint * >( &format ) );
+			glLogCall( context
+				, glGetInternalformativ
+				, target
+				, internal
+				, typeProp
+				, 1
+				, reinterpret_cast< GLint * >( &type ) );
+
+			if ( format == 0
+				|| type == 0 )
+			{
+				format = getFormat( vkformat );
+				type = getType( vkformat );
+			}
+
+			if ( type == GlType::GL_TYPE_UI8888_REV )
+			{
+				type = getType( vkformat );
+			}
+		}
+	}
+
 	PixelFormat::PixelFormat( ContextLock const & context
 		, GlTextureType target
 		, VkFormat vkformat
@@ -10,29 +50,47 @@ namespace ashes::gl
 		: internal{ getInternalFormat( vkformat ) }
 		, swizzle{ std::move( swizzle ) }
 	{
-		glLogCall( context, glGetInternalformativ
+		getFormatAndType( context
 			, target
+			, vkformat
 			, internal
 			, GL_FORMAT_PROPERTY_TEXTURE_IMAGE_FORMAT
-			, 1
-			, reinterpret_cast< GLint * >( &format ) );
-		glLogCall( context, glGetInternalformativ
+			, GL_FORMAT_PROPERTY_TEXTURE_IMAGE_TYPE
+			, drawFormat
+			, drawType );
+		getFormatAndType( context
+			, target
+			, vkformat
+			, internal
+			, GL_FORMAT_PROPERTY_GET_TEXTURE_IMAGE_FORMAT
+			, GL_FORMAT_PROPERTY_GET_TEXTURE_IMAGE_TYPE
+			, getFormat
+			, getType );
+		GlFormatPropertyResult support{ GL_FORMAT_PROPERTY_UNSUPPORTED };
+		glLogCall( context
+			, glGetInternalformativ
 			, target
 			, internal
-			, GL_FORMAT_PROPERTY_TEXTURE_IMAGE_TYPE
+			, GL_FORMAT_PROPERTY_READ_PIXELS
 			, 1
-			, reinterpret_cast< GLint * >( &type ) );
+			, reinterpret_cast< GLint * >( &support ) );
 
-		if ( format == 0
-			|| type == 0 )
+		if ( support != GL_FORMAT_PROPERTY_UNSUPPORTED )
 		{
-			format = getFormat( vkformat );
-			type = getType( vkformat );
+			readSupport = true;
+			getFormatAndType( context
+				, target
+				, vkformat
+				, internal
+				, GL_FORMAT_PROPERTY_READ_PIXELS_FORMAT
+				, GL_FORMAT_PROPERTY_READ_PIXELS_TYPE
+				, readFormat
+				, readType );
 		}
-
-		if ( type == GlType::GL_TYPE_UI8888_REV )
+		else
 		{
-			type = getType( vkformat );
+			readFormat = drawFormat;
+			readType = drawType;
 		}
 	}
 

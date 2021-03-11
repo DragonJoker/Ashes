@@ -57,19 +57,46 @@ namespace ashes::gl
 			return m_format;
 		}
 
-		inline GlInternal getFormatInternal()const noexcept
+		inline GlInternal getInternalFormat()const noexcept
 		{
 			return m_pixelFormat.internal;
 		}
 
-		inline GlFormat getFormatFormat()const noexcept
+		inline GlFormat getDrawFormat()const noexcept
 		{
-			return m_pixelFormat.format;
+			return m_pixelFormat.drawFormat;
 		}
 
-		inline GlType getFormatType()const noexcept
+		inline GlType getDrawType()const noexcept
 		{
-			return m_pixelFormat.type;
+			return m_pixelFormat.drawType;
+		}
+
+		inline GlFormat getGetFormat()const noexcept
+		{
+			return m_pixelFormat.getFormat;
+		}
+
+		inline GlType getGetType()const noexcept
+		{
+			return m_pixelFormat.getType;
+		}
+
+		inline bool isReadSupported()const noexcept
+		{
+			return m_pixelFormat.readSupport;
+		}
+
+		inline GlFormat getReadFormat()const noexcept
+		{
+			assert( isReadSupported() );
+			return m_pixelFormat.readFormat;
+		}
+
+		inline GlType getReadType()const noexcept
+		{
+			assert( isReadSupported() );
+			return m_pixelFormat.readType;
 		}
 
 		inline GlComponentMapping getFormatSwizzle()const noexcept

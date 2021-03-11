@@ -32,8 +32,13 @@ namespace ashes::gl
 			, GlTextureType target )const;
 
 		GlInternal internal{};
-		GlFormat format{};
-		GlType type{};
+		GlFormat drawFormat{};
+		GlType drawType{};
+		GlFormat getFormat{};
+		GlType getType{};
+		bool readSupport{ false };
+		GlFormat readFormat{};
+		GlType readType{};
 		GlComponentMapping swizzle{};
 	};
 }
