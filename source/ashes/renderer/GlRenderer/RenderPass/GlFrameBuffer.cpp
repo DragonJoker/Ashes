@@ -118,11 +118,13 @@ namespace ashes::gl
 				, getAttachmentType( get( image )->getFormatVk() )
 				, ( ( get( image )->getType() == VK_IMAGE_TYPE_3D )
 					? GL_TEXTURE_3D
-					: ( get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT
-						? GL_TEXTURE_2D_MULTISAMPLE
-						: ( checkFlag( get( image )->getCreateFlags(), VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT )
-							? GL_TEXTURE_CUBE_POSITIVE_X
-							: GL_TEXTURE_2D ) ) )
+					: ( ( get( image )->getType() == VK_IMAGE_TYPE_2D )
+						? ( get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT
+							? GL_TEXTURE_2D_MULTISAMPLE
+							: ( checkFlag( get( image )->getCreateFlags(), VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT )
+								? GL_TEXTURE_CUBE_POSITIVE_X
+								: GL_TEXTURE_2D ) )
+						: GL_TEXTURE_1D ) )
 				, subresource.mipLevel
 				, 0u };
 			result.isSrgb = isSRGBFormat( get( image )->getFormatVk() );
@@ -222,9 +224,11 @@ namespace ashes::gl
 				, getAttachmentType( subresource.aspectMask )
 				, ( ( get( image )->getType() == VK_IMAGE_TYPE_3D )
 					? GL_TEXTURE_3D
-					: ( get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT
-						? GL_TEXTURE_2D_MULTISAMPLE
-						: GL_TEXTURE_2D ) )
+					: ( ( get( image )->getType() == VK_IMAGE_TYPE_2D )
+						? ( get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT
+							? GL_TEXTURE_2D_MULTISAMPLE
+							: GL_TEXTURE_2D )
+						: GL_TEXTURE_1D ) )
 				, subresource.mipLevel
 				, 0u };
 			result.isSrgb = isSRGBFormat( get( image )->getFormatVk() );
