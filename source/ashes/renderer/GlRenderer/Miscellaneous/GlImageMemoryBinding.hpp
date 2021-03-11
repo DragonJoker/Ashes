@@ -18,6 +18,8 @@ namespace ashes::gl
 			, VkDeviceSize memoryOffset );
 		~ImageMemoryBinding();
 
+		VkDeviceSize getMipLevelOffset( uint32_t mipLevel )const;
+		VkDeviceSize getMipLevelLayerSize( uint32_t mipLevel )const;
 		void upload( ContextLock const & context
 			, ByteArray const & data
 			, VkDeviceSize offset

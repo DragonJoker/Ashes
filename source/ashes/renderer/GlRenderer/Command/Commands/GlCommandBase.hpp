@@ -708,6 +708,43 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
+	struct CmdConfig< OpType::eGetTexImage >
+	{
+		static Op constexpr value = { OpType::eGetTexImage, 5u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eGetTexImage >
+	{
+		inline CmdT( GlTextureType target
+			, GlFormat format
+			, GlType type
+			, GLint level = 0
+			, intptr_t offset = 0 )
+			: cmd{ { OpType::eGetTexImage, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, target{ std::move( target ) }
+			, format{ std::move( format ) }
+			, type{ std::move( type ) }
+			, level{ std::move( level ) }
+			, offset{ std::move( offset ) }
+		{
+		}
+
+		Command cmd;
+		GlTextureType target;
+		GlFormat format;
+		GlType type;
+		GLint level;
+		intptr_t offset;
+	};
+	using CmdGetTexImage = CmdT< OpType::eGetTexImage >;
+
+	void apply( ContextLock const & context
+		, CmdGetTexImage const & cmd );
+
+	//*************************************************************************
+
+	template<>
 	struct CmdConfig< OpType::eCheckFramebuffer >
 	{
 		static Op constexpr value = { OpType::eCheckFramebuffer, 4u };

@@ -146,6 +146,24 @@ namespace ashes::gl
 		m_texture->setMemoryBinding( nullptr );
 	}
 
+	VkDeviceSize ImageMemoryBinding::getMipLevelOffset( uint32_t mipLevel )const
+	{
+		return intptr_t( getOffset() + getTotalSize( m_texture->getDimensions()
+			, m_texture->getFormatVk()
+			, m_texture->getArrayLayers()
+			, mipLevel
+			, uint32_t( getMinimalSize( m_texture->getFormatVk() ) ) ) );
+	}
+
+	VkDeviceSize ImageMemoryBinding::getMipLevelLayerSize( uint32_t mipLevel )const
+	{
+		return intptr_t( getLevelsSize( VkExtent2D{ m_texture->getDimensions().width, m_texture->getDimensions().height }
+			, m_texture->getFormatVk()
+			, mipLevel
+			, 1u
+			, uint32_t( getMinimalSize( m_texture->getFormatVk() ) ) ) );
+	}
+
 	void ImageMemoryBinding::upload( ContextLock const & context
 		, ByteArray const & data
 		, VkDeviceSize offset
