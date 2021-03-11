@@ -134,6 +134,42 @@ namespace details
 
 		return result;
 	}
+
+	Plugin * findDefaultPlugin( PluginArray & plugins )
+	{
+		static std::string const defaultName = []()
+		{
+			auto name = getenv( "ASHES_RENDERER_NAME" );
+			std::string result;
+
+			if ( name
+				&& strnlen( name, 6 ) < 6 )
+			{
+				result = name;
+			}
+
+			return result;
+		}();
+		Plugin * result{};
+
+		if ( !defaultName.empty() )
+		{
+			auto it = std::find_if( plugins.begin()
+				, plugins.end()
+				, []( Plugin const & lookup )
+				{
+					return lookup.description.name == defaultName
+						&& isSupported( lookup );
+				} );
+
+			if ( it != plugins.end() )
+			{
+				result = &( *it );
+			}
+		}
+
+		return result;
+	}
 }
 
 extern "C"
