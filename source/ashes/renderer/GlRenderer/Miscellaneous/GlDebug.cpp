@@ -101,15 +101,13 @@ namespace ashes::gl
 						, VkResult( errorCode )
 						, stream.str()
 						, getErrorName( errorCode, GL_DEBUG_TYPE_ERROR ) );
-					logError( ( stream.str() + ": " + getErrorName( errorCode, GL_DEBUG_TYPE_ERROR ) ).c_str() );
 				}
-#if AshesGL_LogCalls
+
 				std::stringstream stream;
 				stream.imbue( std::locale{ "C" } );
 				stream << "OpenGL Error, on function: " << text;
 				stream << ", ID: 0x" << std::hex << errorCode << " (" << getErrorName( errorCode, GL_DEBUG_TYPE_ERROR ) << ")";
-				logStream( stream );
-#endif
+				logError( stream.str().c_str() );
 			}
 
 			errorCode = context->glGetError();

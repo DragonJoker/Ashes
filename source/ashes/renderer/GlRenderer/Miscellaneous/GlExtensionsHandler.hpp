@@ -86,6 +86,7 @@ namespace ashes::gl
 	makeGlExtension( NotInCore, NotInCore, EXT_texture_compression_s3tc );
 	makeGlExtension( NotInCore, NotInCore, EXT_texture_sRGB );
 	makeGlExtension( NotInCore, NotInCore, KHR_texture_compression_astc_ldr );
+	makeGlExtension( NotInCore, NotInCore, KHR_texture_compression_astc_hdr );
 #undef makeGlExtension
 
 	class ExtensionsHandler
