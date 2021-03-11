@@ -247,7 +247,9 @@ namespace ashes::gl
 		, VkImageViewArray & views )
 	{
 		glLogCommand( list, "CopyImageCommand" );
-		assert( copyInfo.srcSubresource.layerCount == copyInfo.dstSubresource.layerCount );
+		assert( copyInfo.srcSubresource.layerCount == copyInfo.dstSubresource.layerCount
+			|| copyInfo.srcSubresource.layerCount == copyInfo.extent.depth
+			|| copyInfo.dstSubresource.layerCount == copyInfo.extent.depth );
 
 		if ( hasCopyImage( device )
 			&& areCopyCompatible( get( srcImage )->getFormatVk(), get( dstImage )->getFormatVk() ) )
@@ -278,27 +280,11 @@ namespace ashes::gl
 					, dstImage
 					, layer
 					, views };
-				auto filter = layerCopy.isDstDepthOrStencil() || layerCopy.isSrcDepthOrStencil()
-					? GL_FILTER_NEAREST
-					: GL_FILTER_LINEAR;
 
-				// Setup source FBO
-				list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_FRAMEBUFFER ) );
-				layerCopy.bindSrc( layer, list );
-				list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
-					, nullptr ) );
-
-				// Setup dst FBO
-				list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_FRAMEBUFFER ) );
-				layerCopy.bindDst( layer, list );
-				list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
-					, nullptr ) );
-
-				// Perform the blit
 				list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_READ_FRAMEBUFFER ) );
-				layerCopy.read( stack, list );
+				layerCopy.bindSrc( stack, layer, GL_READ_FRAMEBUFFER, list );
 				list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_DRAW_FRAMEBUFFER ) );
-				layerCopy.draw( stack, list );
+				layerCopy.bindDst( stack, layer, GL_DRAW_FRAMEBUFFER, list );
 				list.push_back( makeCmd< OpType::eBlitFramebuffer >( layerCopy.region.srcOffsets[0].x
 					, layerCopy.region.srcOffsets[0].y
 					, layerCopy.region.srcOffsets[1].x
@@ -309,8 +295,6 @@ namespace ashes::gl
 					, layerCopy.region.dstOffsets[1].y
 					, getMask( get( srcImage )->getFormatVk() )
 					, GL_FILTER_NEAREST ) );
-
-				// Unbind
 				list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
 					, nullptr ) );
 				list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_DRAW_FRAMEBUFFER

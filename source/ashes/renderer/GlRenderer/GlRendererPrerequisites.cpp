@@ -92,11 +92,12 @@ namespace ashes::gl
 
 	void FboAttachment::bind( VkImageSubresourceLayers subresource
 		, uint32_t layer
+		, GlFrameBufferTarget fboTarget
 		, CmdList & list )const
 	{
 		if ( target == GL_TEXTURE_1D )
 		{
-			list.push_back( makeCmd< OpType::eFramebufferTexture1D >( GL_FRAMEBUFFER
+			list.push_back( makeCmd< OpType::eFramebufferTexture1D >( fboTarget
 				, point
 				, target
 				, object
@@ -104,7 +105,7 @@ namespace ashes::gl
 		}
 		else if ( target == GL_TEXTURE_2D )
 		{
-			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
+			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( fboTarget
 				, point
 				, target
 				, object
@@ -115,7 +116,7 @@ namespace ashes::gl
 			|| target == GL_TEXTURE_2D_ARRAY
 			|| target == GL_TEXTURE_CUBE_ARRAY )
 		{
-			list.push_back( makeCmd< OpType::eFramebufferTextureLayer >( GL_FRAMEBUFFER
+			list.push_back( makeCmd< OpType::eFramebufferTextureLayer >( fboTarget
 				, point
 				, object
 				, subresource.mipLevel
@@ -123,11 +124,31 @@ namespace ashes::gl
 		}
 		else
 		{
-			list.push_back( makeCmd< OpType::eFramebufferTexture >( GL_FRAMEBUFFER
+			list.push_back( makeCmd< OpType::eFramebufferTexture >( fboTarget
 				, point
 				, object
 				, subresource.mipLevel ) );
 		}
+	}
+
+	void FboAttachment::bindRead( ContextStateStack & stack
+		, VkImageSubresourceLayers subresource
+		, uint32_t layer
+		, GlFrameBufferTarget target
+		, CmdList & list )const
+	{
+		bind( subresource, layer, target, list );
+		read( stack, list );
+	}
+
+	void FboAttachment::bindDraw( ContextStateStack & stack
+		, VkImageSubresourceLayers subresource
+		, uint32_t layer
+		, GlFrameBufferTarget target
+		, CmdList & list )const
+	{
+		bind( subresource, layer, target, list );
+		draw( stack, list );
 	}
 
 	void FboAttachment::read( ContextStateStack & stack
@@ -141,10 +162,11 @@ namespace ashes::gl
 			}
 
 			list.push_back( makeCmd< OpType::eReadBuffer >( point ) );
-#if !defined( NDEBUG )
-			list.push_back( makeCmd< OpType::eCheckFramebuffer >() );
-#endif
 		}
+
+#if !defined( NDEBUG )
+		list.push_back( makeCmd< OpType::eCheckFramebuffer >() );
+#endif
 	}
 
 	void FboAttachment::draw( ContextStateStack & stack
@@ -158,10 +180,11 @@ namespace ashes::gl
 			}
 
 			list.push_back( makeCmd< OpType::eDrawBuffers >( point ) );
-#if !defined( NDEBUG )
-			list.push_back( makeCmd< OpType::eCheckFramebuffer >() );
-#endif
 		}
+
+#if !defined( NDEBUG )
+		list.push_back( makeCmd< OpType::eCheckFramebuffer >() );
+#endif
 	}
 
 	//*********************************************************************************************
