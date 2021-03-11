@@ -2203,6 +2203,37 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
+	struct CmdConfig< OpType::eCopyBufferSubData >
+	{
+		static Op constexpr value = { OpType::eCopyBufferSubData, 5u };
+	};
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eCopyBufferSubData >
+	{
+		inline CmdT( uint32_t srcTarget
+			, uint32_t dstTarget
+			, VkBufferCopy copy )
+			: cmd{ { OpType::eCopyBufferSubData, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, srcTarget{ GlBufferTarget( srcTarget ) }
+			, dstTarget{ GlBufferTarget( dstTarget ) }
+			, copy{ std::move( copy ) }
+		{
+		}
+
+		Command cmd;
+		GlBufferTarget srcTarget;
+		GlBufferTarget dstTarget;
+		VkBufferCopy copy;
+	};
+	using CmdCopyBufferSubData = CmdT< OpType::eCopyBufferSubData >;
+
+	void apply( ContextLock const & context
+		, CmdCopyBufferSubData const & cmd );
+
+	//*************************************************************************
+
+	template<>
 	struct CmdConfig< OpType::eTexSubImage1D >
 	{
 		static Op constexpr value = { OpType::eTexSubImage1D, 8u };
