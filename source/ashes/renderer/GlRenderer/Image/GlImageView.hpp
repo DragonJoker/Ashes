@@ -57,9 +57,29 @@ namespace ashes::gl
 			return m_createInfo.viewType;
 		}
 
-		inline VkFormat getFormat()const noexcept
+		inline VkFormat getFormatVk()const noexcept
 		{
 			return m_createInfo.format;
+		}
+
+		inline GlInternal getFormatInternal()const noexcept
+		{
+			return m_pixelFormat.internal;
+		}
+
+		inline GlFormat getFormatFormat()const noexcept
+		{
+			return m_pixelFormat.format;
+		}
+
+		inline GlType getFormatType()const noexcept
+		{
+			return m_pixelFormat.type;
+		}
+
+		inline GlComponentMapping getFormatSwizzle()const noexcept
+		{
+			return m_pixelFormat.swizzle;
 		}
 
 		inline VkComponentMapping const & getComponents()const noexcept
@@ -82,6 +102,7 @@ namespace ashes::gl
 		VkImageViewCreateInfo m_createInfo;
 		GlTextureType m_gltextureType;
 		gl4::GlTextureViewType m_glviewType;
+		PixelFormat m_pixelFormat;
 	};
 }
 

@@ -10,6 +10,7 @@
 
 #include "renderer/GlRenderer/GlRendererPrerequisites.hpp"
 #include "renderer/GlRenderer/Enum/GlTextureType.hpp"
+#include "renderer/GlRenderer/Miscellaneous/GlPixelFormat.hpp"
 
 namespace ashes::gl
 {
@@ -51,9 +52,29 @@ namespace ashes::gl
 			return m_imageType;
 		}
 
-		inline VkFormat getFormat()const noexcept
+		inline VkFormat getFormatVk()const noexcept
 		{
 			return m_format;
+		}
+
+		inline GlInternal getFormatInternal()const noexcept
+		{
+			return m_pixelFormat.internal;
+		}
+
+		inline GlFormat getFormatFormat()const noexcept
+		{
+			return m_pixelFormat.format;
+		}
+
+		inline GlType getFormatType()const noexcept
+		{
+			return m_pixelFormat.type;
+		}
+
+		inline GlComponentMapping getFormatSwizzle()const noexcept
+		{
+			return m_pixelFormat.swizzle;
 		}
 
 		inline uint32_t getArrayLayers()const noexcept
@@ -113,6 +134,7 @@ namespace ashes::gl
 		VkSharingMode m_sharingMode;
 		UInt32Array m_queueFamilyIndices;
 		GlTextureType m_target;
+		PixelFormat m_pixelFormat;
 		bool m_swapchainImage{ false };
 		DeviceMemoryBinding const * m_binding{ nullptr };
 		VkMemoryRequirements m_memoryRequirements;

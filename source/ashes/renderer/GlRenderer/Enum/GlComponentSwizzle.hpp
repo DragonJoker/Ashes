@@ -4,6 +4,8 @@ See LICENSE file in root folder
 */
 #pragma once
 
+#include <array>
+
 namespace ashes::gl
 {
 	enum GlSwizzle
@@ -20,7 +22,7 @@ namespace ashes::gl
 	enum GlComponentSwizzle
 		: GLenum
 	{
-		GL_COMPONENT_SWIZZLE_IDENTITTY = ~GLenum( 0 ),
+		GL_COMPONENT_SWIZZLE_IDENTITY = ~GLenum( 0 ),
 		GL_COMPONENT_SWIZZLE_ZERO = 0,
 		GL_COMPONENT_SWIZZLE_ONE = 1,
 		GL_COMPONENT_SWIZZLE_RED = 0x1903,
@@ -28,7 +30,17 @@ namespace ashes::gl
 		GL_COMPONENT_SWIZZLE_BLUE = 0x1905,
 		GL_COMPONENT_SWIZZLE_ALPHA = 0x1906,
 	};
+	struct GlComponentMapping
+	{
+		GlComponentSwizzle r;
+		GlComponentSwizzle g;
+		GlComponentSwizzle b;
+		GlComponentSwizzle a;
+	};
+	bool operator==( GlComponentMapping const & lhs, GlComponentMapping const & rhs );
 	std::string getName( GlComponentSwizzle value );
 	inline std::string toString( GlComponentSwizzle value ) { return getName( value ); }
 	GlComponentSwizzle convertComponentSwizzle( VkComponentSwizzle const & value );
+	GlComponentMapping const & getIdentitySwizzle();
+	bool isIdentity( GlComponentMapping const & value );
 }

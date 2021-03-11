@@ -23,9 +23,6 @@ namespace ashes::gl
 			, image
 			, get( image )->getInternal() }
 		, m_texture{ get( image ) }
-		, m_internal{ getInternalFormat( m_texture->getFormat() ) }
-		, m_format{ getFormat( m_internal ) }
-		, m_type{ getType( m_internal ) }
 	{
 		m_texture->setMemoryBinding( this );
 		auto context = get( m_device )->getContext();
@@ -129,7 +126,7 @@ namespace ashes::gl
 		// Prepare update regions, layer by layer.
 		uint32_t offset = 0u;
 		VkBufferImageCopy bufferCopyRegion = {};
-		bufferCopyRegion.imageSubresource.aspectMask = getAspectMask( m_texture->getFormat() );
+		bufferCopyRegion.imageSubresource.aspectMask = getAspectMask( m_texture->getFormatVk() );
 		bufferCopyRegion.imageSubresource.mipLevel = 0u;
 		bufferCopyRegion.imageSubresource.layerCount = 1u;
 		bufferCopyRegion.imageExtent = m_texture->getDimensions();
@@ -170,7 +167,7 @@ namespace ashes::gl
 		}
 
 		if ( m_texture->getMipLevels() > 1
-			&& !isCompressedFormat( m_texture->getFormat() ) )
+			&& !isCompressedFormat( m_texture->getFormatVk() ) )
 		{
 			if ( context->hasMemoryBarrier() )
 			{
@@ -198,7 +195,7 @@ namespace ashes::gl
 				, glTexStorage1D
 				, m_texture->getTarget()
 				, GLsizei( m_texture->getMipLevels() )
-				, m_internal
+				, m_texture->getFormatInternal()
 				, m_texture->getDimensions().width );
 		}
 		else
@@ -207,11 +204,11 @@ namespace ashes::gl
 				, glTexImage1D
 				, m_texture->getTarget()
 				, 0u
-				, m_internal
+				, m_texture->getFormatInternal()
 				, m_texture->getDimensions().width
 				, 0
-				, m_format
-				, m_type
+				, m_texture->getFormatFormat()
+				, m_texture->getFormatType()
 				, nullptr );
 		}
 	}
@@ -225,7 +222,7 @@ namespace ashes::gl
 				, glTexStorage2D
 				, m_texture->getTarget()
 				, GLsizei( m_texture->getMipLevels() )
-				, m_internal
+				, m_texture->getFormatInternal()
 				, m_texture->getDimensions().width
 				, height );
 		}
@@ -235,12 +232,12 @@ namespace ashes::gl
 				, glTexImage2D
 				, m_texture->getTarget()
 				, 0u
-				, m_internal
+				, m_texture->getFormatInternal()
 				, m_texture->getDimensions().width
 				, height
 				, 0
-				, m_format
-				, m_type
+				, m_texture->getFormatFormat()
+				, m_texture->getFormatType()
 				, nullptr );
 		}
 	}
@@ -253,12 +250,12 @@ namespace ashes::gl
 			, glTexImage2D
 			, GlTextureType( GL_TEXTURE_CUBE_POSITIVE_X + face )
 			, 0u
-			, m_internal
+			, m_texture->getFormatInternal()
 			, m_texture->getDimensions().width
 			, m_texture->getDimensions().height
 			, 0
-			, m_format
-			, m_type
+			, m_texture->getFormatFormat()
+			, m_texture->getFormatType()
 			, nullptr );
 	}
 
@@ -271,7 +268,7 @@ namespace ashes::gl
 				, glTexStorage3D
 				, m_texture->getTarget()
 				, GLsizei( m_texture->getMipLevels() )
-				, m_internal
+				, m_texture->getFormatInternal()
 				, m_texture->getDimensions().width
 				, m_texture->getDimensions().height
 				, depth );
@@ -282,13 +279,13 @@ namespace ashes::gl
 				, glTexImage3D
 				, m_texture->getTarget()
 				, 0u
-				, m_internal
+				, m_texture->getFormatInternal()
 				, m_texture->getDimensions().width
 				, m_texture->getDimensions().height
 				, depth
 				, 0
-				, m_format
-				, m_type
+				, m_texture->getFormatFormat()
+				, m_texture->getFormatType()
 				, nullptr );
 		}
 	}
@@ -301,7 +298,7 @@ namespace ashes::gl
 				, glTexStorage2DMultisample
 				, m_texture->getTarget()
 				, GLsizei( m_texture->getSamples() )
-				, m_internal
+				, m_texture->getFormatInternal()
 				, m_texture->getDimensions().width
 				, m_texture->getDimensions().height
 				, GL_TRUE );
@@ -312,7 +309,7 @@ namespace ashes::gl
 				, glTexImage2DMultisample
 				, m_texture->getTarget()
 				, GLsizei( m_texture->getSamples() )
-				, m_internal
+				, m_texture->getFormatInternal()
 				, m_texture->getDimensions().width
 				, m_texture->getDimensions().height
 				, GL_TRUE );
@@ -328,7 +325,7 @@ namespace ashes::gl
 				, glTexStorage3DMultisample
 				, m_texture->getTarget()
 				, GLsizei( m_texture->getSamples() )
-				, m_internal
+				, m_texture->getFormatInternal()
 				, m_texture->getDimensions().width
 				, m_texture->getDimensions().height
 				, depth
@@ -340,7 +337,7 @@ namespace ashes::gl
 				, glTexImage3DMultisample
 				, m_texture->getTarget()
 				, GLsizei( m_texture->getSamples() )
-				, m_internal
+				, m_texture->getFormatInternal()
 				, m_texture->getDimensions().width
 				, m_texture->getDimensions().height
 				, depth
@@ -353,7 +350,7 @@ namespace ashes::gl
 	{
 		assert( !m_updateRegions.empty() && "Can't update this texture." );
 		auto layerSize = ashes::getSize( m_updateRegions[0].imageExtent
-			, m_texture->getFormat() );
+			, m_texture->getFormatVk() );
 		m_beginRegion = 0u;
 
 		while ( offset >= layerSize )
@@ -383,10 +380,10 @@ namespace ashes::gl
 	void ImageMemoryBinding::updateRegion( ContextLock const & context
 		, VkBufferImageCopy const & copyInfo )const
 	{
-		if ( isCompressedFormat( m_texture->getFormat() ) )
+		if ( isCompressedFormat( m_texture->getFormatVk() ) )
 		{
 			auto layerSize = ashes::getSize( copyInfo.imageExtent
-				, m_texture->getFormat()
+				, m_texture->getFormatVk()
 				, copyInfo.imageSubresource.mipLevel );
 
 			switch ( m_texture->getTarget() )
@@ -398,7 +395,7 @@ namespace ashes::gl
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
 					, copyInfo.imageExtent.width
-					, m_internal
+					, m_texture->getFormatInternal()
 					, GLsizei( layerSize )
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 				break;
@@ -412,7 +409,7 @@ namespace ashes::gl
 					, copyInfo.imageOffset.y
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
-					, m_internal
+					, m_texture->getFormatInternal()
 					, GLsizei( layerSize )
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 				break;
@@ -428,7 +425,7 @@ namespace ashes::gl
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, copyInfo.imageExtent.depth
-					, m_internal
+					, m_texture->getFormatInternal()
 					, GLsizei( layerSize )
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 
@@ -441,7 +438,7 @@ namespace ashes::gl
 					, copyInfo.imageSubresource.baseArrayLayer
 					, copyInfo.imageExtent.width
 					, copyInfo.imageSubresource.layerCount
-					, m_internal
+					, m_texture->getFormatInternal()
 					, GLsizei( layerSize )
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 				break;
@@ -457,7 +454,7 @@ namespace ashes::gl
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, copyInfo.imageSubresource.layerCount
-					, m_internal
+					, m_texture->getFormatInternal()
 					, GLsizei( layerSize )
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 				break;
@@ -478,8 +475,8 @@ namespace ashes::gl
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
 					, copyInfo.imageExtent.width
-					, m_format
-					, m_type
+					, m_texture->getFormatFormat()
+					, m_texture->getFormatType()
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 				break;
 
@@ -492,8 +489,8 @@ namespace ashes::gl
 					, copyInfo.imageOffset.y
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
-					, m_format
-					, m_type
+					, m_texture->getFormatFormat()
+					, m_texture->getFormatType()
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 				break;
 
@@ -508,8 +505,8 @@ namespace ashes::gl
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, copyInfo.imageExtent.depth
-					, m_format
-					, m_type
+					, m_texture->getFormatFormat()
+					, m_texture->getFormatType()
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 				break;
 
@@ -522,8 +519,8 @@ namespace ashes::gl
 					, copyInfo.imageSubresource.baseArrayLayer
 					, copyInfo.imageExtent.width
 					, copyInfo.imageSubresource.layerCount
-					, m_format
-					, m_type
+					, m_texture->getFormatFormat()
+					, m_texture->getFormatType()
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 				break;
 
@@ -538,8 +535,8 @@ namespace ashes::gl
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, copyInfo.imageSubresource.layerCount
-					, m_format
-					, m_type
+					, m_texture->getFormatFormat()
+					, m_texture->getFormatType()
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 				break;
 

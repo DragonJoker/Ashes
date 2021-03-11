@@ -41,7 +41,7 @@ namespace ashes::gl
 		{
 			auto dimensions = get( src )->getDimensions();
 			auto texels = dimensions.width * dimensions.height * dimensions.depth;
-			return ByteArray( texels * ashes::getSize( get( src )->getFormat() ), uint8_t( 0 ) );
+			return ByteArray( texels * ashes::getSize( get( src )->getFormatVk() ), uint8_t( 0 ) );
 		}
 
 		ByteArray allocateData( VkImage src
@@ -49,7 +49,7 @@ namespace ashes::gl
 		{
 			auto dimensions = copyInfo.extent;
 			auto texels = dimensions.width * dimensions.height * dimensions.depth;
-			return ByteArray( texels * ashes::getSize( get( src )->getFormat() ), uint8_t( 0 ) );
+			return ByteArray( texels * ashes::getSize( get( src )->getFormatVk() ), uint8_t( 0 ) );
 		}
 
 		void copyData( ashes::ByteArray const & srcData
@@ -58,7 +58,7 @@ namespace ashes::gl
 			, ByteArray & dstData )
 		{
 			auto dimensions = copyInfo.extent;
-			auto texelSize = ashes::getSize( get( src )->getFormat() );
+			auto texelSize = ashes::getSize( get( src )->getFormatVk() );
 			auto dstRowSize = dimensions.width * texelSize;
 			auto srcRowSize = get( src )->getDimensions().width * texelSize;
 			auto planeSize = get( src )->getDimensions().height * srcRowSize;
@@ -88,7 +88,8 @@ namespace ashes::gl
 		{
 			auto srcData = allocateData( src );
 			auto dstData = allocateData( src, copy );
-			auto srcInternal{ getInternalFormat( get( src )->getFormat() ) };
+			auto srcFormat = get( src )->getFormatFormat();
+			auto srcType = get( src )->getFormatType();
 			glLogCall( context
 				, glBindTexture
 				, srcTarget
@@ -97,8 +98,8 @@ namespace ashes::gl
 				, glGetTexImage
 				, srcTarget
 				, copy.srcSubresource.mipLevel
-				, getFormat( srcInternal )
-				, getType( srcInternal )
+				, srcFormat
+				, srcType
 				, srcData.data() );
 			glLogCall( context
 				, glBindTexture
@@ -143,7 +144,8 @@ namespace ashes::gl
 	void apply( ContextLock const & context
 		, CmdCopyImageSubData1D const & cmd )
 	{
-		auto srcInternal{ getInternalFormat( get( cmd.src )->getFormat() ) };
+		auto srcFormat = get( cmd.src )->getFormatFormat();
+		auto srcType = get( cmd.src )->getFormatType();
 		auto dstData = retrieveData( context
 			, cmd.src
 			, cmd.copy
@@ -159,8 +161,8 @@ namespace ashes::gl
 			, cmd.copy.dstSubresource.mipLevel
 			, cmd.copy.dstOffset.x
 			, cmd.copy.extent.width
-			, getFormat( srcInternal )
-			, getType( srcInternal )
+			, srcFormat
+			, srcType
 			, dstData.data() );
 		glLogCall( context
 			, glBindTexture
@@ -171,7 +173,8 @@ namespace ashes::gl
 	void apply( ContextLock const & context
 		, CmdCopyImageSubData2D const & cmd )
 	{
-		auto srcInternal{ getInternalFormat( get( cmd.src )->getFormat() ) };
+		auto srcFormat = get( cmd.src )->getFormatFormat();
+		auto srcType = get( cmd.src )->getFormatType();
 		auto dstData = retrieveData( context
 			, cmd.src
 			, cmd.copy
@@ -189,8 +192,8 @@ namespace ashes::gl
 			, cmd.dstOffsetY
 			, cmd.copy.extent.width
 			, cmd.dstExtentY
-			, getFormat( srcInternal )
-			, getType( srcInternal )
+			, srcFormat
+			, srcType
 			, dstData.data() );
 		glLogCall( context
 			, glBindTexture
@@ -201,7 +204,8 @@ namespace ashes::gl
 	void apply( ContextLock const & context
 		, CmdCopyImageSubData3D const & cmd )
 	{
-		auto srcInternal{ getInternalFormat( get( cmd.src )->getFormat() ) };
+		auto srcFormat = get( cmd.src )->getFormatFormat();
+		auto srcType = get( cmd.src )->getFormatType();
 		auto dstData = retrieveData( context
 			, cmd.src
 			, cmd.copy
@@ -221,8 +225,8 @@ namespace ashes::gl
 			, cmd.copy.extent.width
 			, cmd.copy.extent.height
 			, cmd.dstExtentZ
-			, getFormat( srcInternal )
-			, getType( srcInternal )
+			, srcFormat
+			, srcType
 			, dstData.data() );
 		glLogCall( context
 			, glBindTexture
@@ -371,8 +375,7 @@ namespace ashes::gl
 				, get( dstImage )->getCreateFlags() );
 			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, get( get( dstImage )->getMemoryBinding().getParent() )->getInternal() ) );
 			list.push_back( makeCmd< OpType::eBindTexture >( dstTarget, get( dstImage )->getInternal() ) );
-			auto internal = getInternalFormat( get( dstImage )->getFormat() );
-			list.push_back( makeCmd< OpType::eGetTexImage >( dstTarget, getFormat( internal ), getType( internal ) ) );
+			list.push_back( makeCmd< OpType::eGetTexImage >( dstTarget, get( dstImage )->getFormatFormat(), get( dstImage )->getFormatType() ) );
 			list.push_back( makeCmd< OpType::eBindTexture >( dstTarget, 0u ) );
 			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, 0u ) );
 			list.push_back( makeCmd< OpType::eDownloadMemory >( get( dstImage )->getMemoryBinding().getParent() ) );
