@@ -58,9 +58,8 @@ namespace ashes::gl
 
 		if ( get( getInstance( device ) )->hasClearTexImage() )
 		{
-			auto internal = get( image )->getFormatInternal();
-			auto format = get( image )->getFormatFormat();
-			auto type = get( image )->getFormatType();
+			auto format = get( image )->getDrawFormat();
+			auto type = get( image )->getDrawType();
 
 			if ( isDepthStencilFormat( get( image )->getFormatVk() ) )
 			{
