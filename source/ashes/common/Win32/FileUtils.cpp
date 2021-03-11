@@ -73,8 +73,6 @@ namespace ashes
 
 		if ( handle == INVALID_HANDLE_VALUE )
 		{
-			std::cerr << "Couldn't list files of folder [" << folderPath << "], ";
-			std::cerr << getLastErrorText() << std::endl;
 			return false;
 		}
 
