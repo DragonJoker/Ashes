@@ -391,7 +391,7 @@ namespace ashes::gl
 				, range.baseMipLevel
 				, range.layerCount
 				, range.baseArrayLayer
-				, get( view )->getFormatInternal() ) );
+				, get( view )->getInternalFormat() ) );
 		}
 
 		void bindTextureAndSampler( VkImageView view
@@ -621,7 +621,7 @@ namespace ashes::gl
 				, range.baseMipLevel
 				, range.layerCount > 1u ? GL_TRUE : GL_FALSE
 				, range.layerCount > 1u ? 0u : range.baseArrayLayer
-				, get( view )->getFormatInternal() ) );
+				, get( view )->getInternalFormat() ) );
 		}
 
 		void bindTextureAndSampler( VkImageView view

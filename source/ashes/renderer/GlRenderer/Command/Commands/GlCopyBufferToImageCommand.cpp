@@ -39,7 +39,7 @@ namespace ashes::gl
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
 					, copyInfo.imageExtent.width
-					, get( dst )->getFormatInternal()
+					, get( dst )->getInternalFormat()
 					, int32_t( getSize( copyInfo.imageExtent, get( dst )->getFormatVk() ) )
 					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
@@ -51,7 +51,7 @@ namespace ashes::gl
 					, copyInfo.imageOffset.y
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
-					, get( dst )->getFormatInternal()
+					, get( dst )->getInternalFormat()
 					, int32_t( getSize( copyInfo.imageExtent, get( dst )->getFormatVk() ) )
 					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
@@ -65,7 +65,7 @@ namespace ashes::gl
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, copyInfo.imageExtent.depth
-					, get( dst )->getFormatInternal()
+					, get( dst )->getInternalFormat()
 					, int32_t( getSize( copyInfo.imageExtent, get( dst )->getFormatVk() ) )
 					, int32_t( copyInfo.bufferOffset ) ) );
 
@@ -76,7 +76,7 @@ namespace ashes::gl
 					, int32_t( copyInfo.imageSubresource.baseArrayLayer )
 					, copyInfo.imageExtent.width
 					, copyInfo.imageSubresource.layerCount
-					, get( dst )->getFormatInternal()
+					, get( dst )->getInternalFormat()
 					, int32_t( getSize( copyInfo.imageExtent, get( dst )->getFormatVk() ) )
 					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
@@ -90,7 +90,7 @@ namespace ashes::gl
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, copyInfo.imageSubresource.layerCount
-					, get( dst )->getFormatInternal()
+					, get( dst )->getInternalFormat()
 					, int32_t( getSize( copyInfo.imageExtent, get( dst )->getFormatVk() ) )
 					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
@@ -102,7 +102,7 @@ namespace ashes::gl
 					, copyInfo.imageOffset.y
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
-					, get( dst )->getFormatInternal()
+					, get( dst )->getInternalFormat()
 					, int32_t( getSize( copyInfo.imageExtent, get( dst )->getFormatVk() ) )
 					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
@@ -116,7 +116,7 @@ namespace ashes::gl
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, copyInfo.imageSubresource.layerCount / 6u
-					, get( dst )->getFormatInternal()
+					, get( dst )->getInternalFormat()
 					, int32_t( getSize( copyInfo.imageExtent, get( dst )->getFormatVk() ) )
 					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
@@ -128,10 +128,6 @@ namespace ashes::gl
 		}
 		else
 		{
-			auto internal = get( dst )->getFormatInternal();
-			auto format = get( dst )->getFormatFormat();
-			auto type = get( dst )->getFormatType();
-
 			switch ( copyTarget )
 			{
 			case GL_TEXTURE_1D:
@@ -139,8 +135,8 @@ namespace ashes::gl
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
 					, copyInfo.imageExtent.width
-					, format
-					, type
+					, get( dst )->getDrawFormat()
+					, get( dst )->getDrawType()
 					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
 
@@ -151,8 +147,8 @@ namespace ashes::gl
 					, copyInfo.imageOffset.y
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
-					, format
-					, type
+					, get( dst )->getDrawFormat()
+					, get( dst )->getDrawType()
 					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
 
@@ -165,8 +161,8 @@ namespace ashes::gl
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, copyInfo.imageExtent.depth
-					, format
-					, type
+					, get( dst )->getDrawFormat()
+					, get( dst )->getDrawType()
 					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
 
@@ -177,8 +173,8 @@ namespace ashes::gl
 					, int32_t( copyInfo.imageSubresource.baseArrayLayer )
 					, copyInfo.imageExtent.width
 					, copyInfo.imageSubresource.layerCount
-					, format
-					, type
+					, get( dst )->getDrawFormat()
+					, get( dst )->getDrawType()
 					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
 
@@ -191,8 +187,8 @@ namespace ashes::gl
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, copyInfo.imageSubresource.layerCount
-					, format
-					, type
+					, get( dst )->getDrawFormat()
+					, get( dst )->getDrawType()
 					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
 
@@ -203,8 +199,8 @@ namespace ashes::gl
 					, copyInfo.imageOffset.y
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
-					, format
-					, type
+					, get( dst )->getDrawFormat()
+					, get( dst )->getDrawType()
 					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
 
@@ -217,8 +213,8 @@ namespace ashes::gl
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, copyInfo.imageSubresource.layerCount / 6u
-					, format
-					, type
+					, get( dst )->getDrawFormat()
+					, get( dst )->getDrawType()
 					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
 

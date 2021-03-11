@@ -195,7 +195,7 @@ namespace ashes::gl
 				, glTexStorage1D
 				, m_texture->getTarget()
 				, GLsizei( m_texture->getMipLevels() )
-				, m_texture->getFormatInternal()
+				, m_texture->getInternalFormat()
 				, m_texture->getDimensions().width );
 		}
 		else
@@ -204,11 +204,11 @@ namespace ashes::gl
 				, glTexImage1D
 				, m_texture->getTarget()
 				, 0u
-				, m_texture->getFormatInternal()
+				, m_texture->getInternalFormat()
 				, m_texture->getDimensions().width
 				, 0
-				, m_texture->getFormatFormat()
-				, m_texture->getFormatType()
+				, m_texture->getDrawFormat()
+				, m_texture->getDrawType()
 				, nullptr );
 		}
 	}
@@ -222,7 +222,7 @@ namespace ashes::gl
 				, glTexStorage2D
 				, m_texture->getTarget()
 				, GLsizei( m_texture->getMipLevels() )
-				, m_texture->getFormatInternal()
+				, m_texture->getInternalFormat()
 				, m_texture->getDimensions().width
 				, height );
 		}
@@ -232,12 +232,12 @@ namespace ashes::gl
 				, glTexImage2D
 				, m_texture->getTarget()
 				, 0u
-				, m_texture->getFormatInternal()
+				, m_texture->getInternalFormat()
 				, m_texture->getDimensions().width
 				, height
 				, 0
-				, m_texture->getFormatFormat()
-				, m_texture->getFormatType()
+				, m_texture->getDrawFormat()
+				, m_texture->getDrawType()
 				, nullptr );
 		}
 	}
@@ -250,12 +250,12 @@ namespace ashes::gl
 			, glTexImage2D
 			, GlTextureType( GL_TEXTURE_CUBE_POSITIVE_X + face )
 			, 0u
-			, m_texture->getFormatInternal()
+			, m_texture->getInternalFormat()
 			, m_texture->getDimensions().width
 			, m_texture->getDimensions().height
 			, 0
-			, m_texture->getFormatFormat()
-			, m_texture->getFormatType()
+			, m_texture->getDrawFormat()
+			, m_texture->getDrawType()
 			, nullptr );
 	}
 
@@ -268,7 +268,7 @@ namespace ashes::gl
 				, glTexStorage3D
 				, m_texture->getTarget()
 				, GLsizei( m_texture->getMipLevels() )
-				, m_texture->getFormatInternal()
+				, m_texture->getInternalFormat()
 				, m_texture->getDimensions().width
 				, m_texture->getDimensions().height
 				, depth );
@@ -279,13 +279,13 @@ namespace ashes::gl
 				, glTexImage3D
 				, m_texture->getTarget()
 				, 0u
-				, m_texture->getFormatInternal()
+				, m_texture->getInternalFormat()
 				, m_texture->getDimensions().width
 				, m_texture->getDimensions().height
 				, depth
 				, 0
-				, m_texture->getFormatFormat()
-				, m_texture->getFormatType()
+				, m_texture->getDrawFormat()
+				, m_texture->getDrawType()
 				, nullptr );
 		}
 	}
@@ -298,7 +298,7 @@ namespace ashes::gl
 				, glTexStorage2DMultisample
 				, m_texture->getTarget()
 				, GLsizei( m_texture->getSamples() )
-				, m_texture->getFormatInternal()
+				, m_texture->getInternalFormat()
 				, m_texture->getDimensions().width
 				, m_texture->getDimensions().height
 				, GL_TRUE );
@@ -309,7 +309,7 @@ namespace ashes::gl
 				, glTexImage2DMultisample
 				, m_texture->getTarget()
 				, GLsizei( m_texture->getSamples() )
-				, m_texture->getFormatInternal()
+				, m_texture->getInternalFormat()
 				, m_texture->getDimensions().width
 				, m_texture->getDimensions().height
 				, GL_TRUE );
@@ -325,7 +325,7 @@ namespace ashes::gl
 				, glTexStorage3DMultisample
 				, m_texture->getTarget()
 				, GLsizei( m_texture->getSamples() )
-				, m_texture->getFormatInternal()
+				, m_texture->getInternalFormat()
 				, m_texture->getDimensions().width
 				, m_texture->getDimensions().height
 				, depth
@@ -337,7 +337,7 @@ namespace ashes::gl
 				, glTexImage3DMultisample
 				, m_texture->getTarget()
 				, GLsizei( m_texture->getSamples() )
-				, m_texture->getFormatInternal()
+				, m_texture->getInternalFormat()
 				, m_texture->getDimensions().width
 				, m_texture->getDimensions().height
 				, depth
@@ -395,7 +395,7 @@ namespace ashes::gl
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
 					, copyInfo.imageExtent.width
-					, m_texture->getFormatInternal()
+					, m_texture->getInternalFormat()
 					, GLsizei( layerSize )
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 				break;
@@ -409,7 +409,7 @@ namespace ashes::gl
 					, copyInfo.imageOffset.y
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
-					, m_texture->getFormatInternal()
+					, m_texture->getInternalFormat()
 					, GLsizei( layerSize )
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 				break;
@@ -425,7 +425,7 @@ namespace ashes::gl
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, copyInfo.imageExtent.depth
-					, m_texture->getFormatInternal()
+					, m_texture->getInternalFormat()
 					, GLsizei( layerSize )
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 
@@ -438,7 +438,7 @@ namespace ashes::gl
 					, copyInfo.imageSubresource.baseArrayLayer
 					, copyInfo.imageExtent.width
 					, copyInfo.imageSubresource.layerCount
-					, m_texture->getFormatInternal()
+					, m_texture->getInternalFormat()
 					, GLsizei( layerSize )
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 				break;
@@ -454,7 +454,7 @@ namespace ashes::gl
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, copyInfo.imageSubresource.layerCount
-					, m_texture->getFormatInternal()
+					, m_texture->getInternalFormat()
 					, GLsizei( layerSize )
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 				break;
@@ -475,8 +475,8 @@ namespace ashes::gl
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
 					, copyInfo.imageExtent.width
-					, m_texture->getFormatFormat()
-					, m_texture->getFormatType()
+					, m_texture->getDrawFormat()
+					, m_texture->getDrawType()
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 				break;
 
@@ -489,8 +489,8 @@ namespace ashes::gl
 					, copyInfo.imageOffset.y
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
-					, m_texture->getFormatFormat()
-					, m_texture->getFormatType()
+					, m_texture->getDrawFormat()
+					, m_texture->getDrawType()
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 				break;
 
@@ -505,8 +505,8 @@ namespace ashes::gl
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, copyInfo.imageExtent.depth
-					, m_texture->getFormatFormat()
-					, m_texture->getFormatType()
+					, m_texture->getDrawFormat()
+					, m_texture->getDrawType()
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 				break;
 
@@ -519,8 +519,8 @@ namespace ashes::gl
 					, copyInfo.imageSubresource.baseArrayLayer
 					, copyInfo.imageExtent.width
 					, copyInfo.imageSubresource.layerCount
-					, m_texture->getFormatFormat()
-					, m_texture->getFormatType()
+					, m_texture->getDrawFormat()
+					, m_texture->getDrawType()
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 				break;
 
@@ -535,8 +535,8 @@ namespace ashes::gl
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, copyInfo.imageSubresource.layerCount
-					, m_texture->getFormatFormat()
-					, m_texture->getFormatType()
+					, m_texture->getDrawFormat()
+					, m_texture->getDrawType()
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 				break;
 

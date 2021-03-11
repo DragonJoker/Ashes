@@ -84,7 +84,7 @@ namespace ashes::gl
 					, m_internal
 					, m_glviewType
 					, image->getInternal()
-					, getFormatInternal()
+					, getInternalFormat()
 					, getSubresourceRange().baseMipLevel
 					, getSubresourceRange().levelCount
 					, getSubresourceRange().baseArrayLayer

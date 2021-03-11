@@ -88,8 +88,6 @@ namespace ashes::gl
 		{
 			auto srcData = allocateData( src );
 			auto dstData = allocateData( src, copy );
-			auto srcFormat = get( src )->getFormatFormat();
-			auto srcType = get( src )->getFormatType();
 			glLogCall( context
 				, glBindTexture
 				, srcTarget
@@ -98,8 +96,8 @@ namespace ashes::gl
 				, glGetTexImage
 				, srcTarget
 				, copy.srcSubresource.mipLevel
-				, srcFormat
-				, srcType
+				, get( src )->getGetFormat()
+				, get( src )->getGetType()
 				, srcData.data() );
 			glLogCall( context
 				, glBindTexture
@@ -144,8 +142,6 @@ namespace ashes::gl
 	void apply( ContextLock const & context
 		, CmdCopyImageSubData1D const & cmd )
 	{
-		auto srcFormat = get( cmd.src )->getFormatFormat();
-		auto srcType = get( cmd.src )->getFormatType();
 		auto dstData = retrieveData( context
 			, cmd.src
 			, cmd.copy
@@ -161,8 +157,8 @@ namespace ashes::gl
 			, cmd.copy.dstSubresource.mipLevel
 			, cmd.copy.dstOffset.x
 			, cmd.copy.extent.width
-			, srcFormat
-			, srcType
+			, get( cmd.src )->getDrawFormat()
+			, get( cmd.src )->getDrawType()
 			, dstData.data() );
 		glLogCall( context
 			, glBindTexture
@@ -173,8 +169,6 @@ namespace ashes::gl
 	void apply( ContextLock const & context
 		, CmdCopyImageSubData2D const & cmd )
 	{
-		auto srcFormat = get( cmd.src )->getFormatFormat();
-		auto srcType = get( cmd.src )->getFormatType();
 		auto dstData = retrieveData( context
 			, cmd.src
 			, cmd.copy
@@ -192,8 +186,8 @@ namespace ashes::gl
 			, cmd.dstOffsetY
 			, cmd.copy.extent.width
 			, cmd.dstExtentY
-			, srcFormat
-			, srcType
+			, get( cmd.src )->getDrawFormat()
+			, get( cmd.src )->getDrawType()
 			, dstData.data() );
 		glLogCall( context
 			, glBindTexture
@@ -204,8 +198,6 @@ namespace ashes::gl
 	void apply( ContextLock const & context
 		, CmdCopyImageSubData3D const & cmd )
 	{
-		auto srcFormat = get( cmd.src )->getFormatFormat();
-		auto srcType = get( cmd.src )->getFormatType();
 		auto dstData = retrieveData( context
 			, cmd.src
 			, cmd.copy
@@ -225,8 +217,8 @@ namespace ashes::gl
 			, cmd.copy.extent.width
 			, cmd.copy.extent.height
 			, cmd.dstExtentZ
-			, srcFormat
-			, srcType
+			, get( cmd.src )->getDrawFormat()
+			, get( cmd.src )->getDrawType()
 			, dstData.data() );
 		glLogCall( context
 			, glBindTexture
@@ -257,8 +249,8 @@ namespace ashes::gl
 		glLogCommand( list, "CopyImageCommand" );
 		assert( copyInfo.srcSubresource.layerCount == copyInfo.dstSubresource.layerCount );
 
-		if (false ) /*( hasCopyImage( device )
-			&& areCopyCompatible( get( srcImage )->getFormatVk(), get( dstImage )->getFormatVk() ) )*/
+		if ( hasCopyImage( device )
+			&& areCopyCompatible( get( srcImage )->getFormatVk(), get( dstImage )->getFormatVk() ) )
 		{
 			auto srcTarget = convert( device
 				, get( srcImage )->getType()
@@ -339,7 +331,7 @@ namespace ashes::gl
 				, get( dstImage )->getCreateFlags() );
 			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, get( get( dstImage )->getMemoryBinding().getParent() )->getInternal() ) );
 			list.push_back( makeCmd< OpType::eBindTexture >( dstTarget, get( dstImage )->getInternal() ) );
-			list.push_back( makeCmd< OpType::eGetTexImage >( dstTarget, get( dstImage )->getFormatFormat(), get( dstImage )->getFormatType() ) );
+			list.push_back( makeCmd< OpType::eGetTexImage >( dstTarget, get( dstImage )->getGetFormat(), get( dstImage )->getGetType() ) );
 			list.push_back( makeCmd< OpType::eBindTexture >( dstTarget, 0u ) );
 			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, 0u ) );
 			list.push_back( makeCmd< OpType::eDownloadMemory >( get( dstImage )->getMemoryBinding().getParent() ) );
