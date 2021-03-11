@@ -190,6 +190,18 @@ namespace utils
 		return result;
 	}
 
+	ashes::ImagePtr Device::createImage( ashes::ImageCreateInfo const & createInfo
+		, VkMemoryPropertyFlags flags
+		, std::string const & debugName )const
+	{
+		auto result = m_device->createImage( debugName, createInfo );
+		auto requirements = result->getMemoryRequirements();
+		uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
+			, flags );
+		result->bindMemory( m_device->allocateMemory( debugName, { VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO, nullptr, requirements.size, deduced } ) );
+		return result;
+	}
+
 	ashes::UniformBufferPtr Device::createUniformBuffer( uint32_t count
 		, uint32_t size
 		, VkBufferUsageFlags usage
