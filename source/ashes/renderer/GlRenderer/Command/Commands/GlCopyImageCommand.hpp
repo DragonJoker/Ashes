@@ -194,37 +194,6 @@ namespace ashes::gl
 
 	//*************************************************************************
 
-	template<>
-	struct CmdConfig< OpType::eGetTexImage >
-	{
-		static Op constexpr value = { OpType::eGetTexImage, 5u };
-	};
-
-	template<>
-	struct alignas( uint64_t ) CmdT< OpType::eGetTexImage >
-	{
-		inline CmdT( GlTextureType target
-			, GlFormat format
-			, GlType type )
-			: cmd{ { OpType::eGetTexImage, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, target{ std::move( target ) }
-			, format{ std::move( format ) }
-			, type{ std::move( type ) }
-		{
-		}
-
-		Command cmd;
-		GlTextureType target;
-		GlFormat format;
-		GlType type;
-	};
-	using CmdGetTexImage = CmdT< OpType::eGetTexImage >;
-
-	void apply( ContextLock const & context
-		, CmdGetTexImage const & cmd );
-
-	//*************************************************************************
-
 	void buildCopyImageCommand( ContextStateStack & stack
 		, VkDevice device
 		, VkImageCopy copyInfo

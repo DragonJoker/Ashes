@@ -226,18 +226,6 @@ namespace ashes::gl
 			, 0u );
 	}
 
-	void apply( ContextLock const & context
-		, CmdGetTexImage const & cmd )
-	{
-		glLogCall( context
-			, glGetTexImage
-			, cmd.target
-			, 0
-			, cmd.format
-			, cmd.type
-			, getBufferOffset( 0 ) );
-	}
-
 	void buildCopyImageCommand( ContextStateStack & stack
 		, VkDevice device
 		, VkImageCopy copyInfo
