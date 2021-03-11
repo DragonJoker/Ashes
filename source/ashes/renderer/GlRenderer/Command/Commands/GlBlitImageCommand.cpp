@@ -204,8 +204,7 @@ namespace ashes::gl
 				, get( dstImage )->getCreateFlags() );
 			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, get( get( dstImage )->getMemoryBinding().getParent() )->getInternal() ) );
 			list.push_back( makeCmd< OpType::eBindTexture >( dstTarget, get( dstImage )->getInternal() ) );
-			auto internal = getInternalFormat( get( dstImage )->getFormat() );
-			list.push_back( makeCmd< OpType::eGetTexImage >( dstTarget, getFormat( internal ), getType( internal ) ) );
+			list.push_back( makeCmd< OpType::eGetTexImage >( dstTarget, get( dstImage )->getFormatFormat(), get( dstImage )->getFormatType() ) );
 			list.push_back( makeCmd< OpType::eBindTexture >( dstTarget, 0u ) );
 			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, 0u ) );
 			list.push_back( makeCmd< OpType::eDownloadMemory >( get( dstImage )->getMemoryBinding().getParent() ) );

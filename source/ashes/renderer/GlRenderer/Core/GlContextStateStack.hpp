@@ -32,8 +32,7 @@ namespace ashes::gl
 			, ArrayView< VkRect2D const > const & scissors
 			, bool force );
 		void applySRGBStatus( CmdList & list
-			, bool enable
-			, bool force );
+			, bool enable );
 		void applyDepthBias( CmdList & list
 			, float constantFactor
 			, float clamp

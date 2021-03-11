@@ -780,10 +780,9 @@ namespace ashes::gl
 	}
 
 	void ContextStateStack::applySRGBStatus( CmdList & list
-		, bool enable
-		, bool force )
+		, bool enable )
 	{
-		force = doCheckSave() || force;
+		doCheckSave();
 
 		if ( enable != m_save->sRGB )
 		{
