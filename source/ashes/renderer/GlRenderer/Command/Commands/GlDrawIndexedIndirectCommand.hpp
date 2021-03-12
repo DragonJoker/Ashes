@@ -11,12 +11,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eDrawIndexedIndirect >
-	{
-		static Op constexpr value = { OpType::eDrawIndexedIndirect, 7u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDrawIndexedIndirect >
 	{
 		inline CmdT( uint64_t offset

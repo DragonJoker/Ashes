@@ -11,12 +11,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eBindVextexArrayObject >
-	{
-		static Op constexpr value = { OpType::eBindVextexArrayObject, 4u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBindVextexArrayObject >
 	{
 		inline CmdT( GLuint vao )
@@ -34,12 +28,6 @@ namespace ashes::gl
 		, CmdBindVextexArrayObject const & cmd );
 	
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eBindVextexArray >
-	{
-		static Op constexpr value = { OpType::eBindVextexArray, 4u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBindVextexArray >

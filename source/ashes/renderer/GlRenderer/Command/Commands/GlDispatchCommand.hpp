@@ -11,12 +11,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eDispatch >
-	{
-		static Op constexpr value = { OpType::eDispatch, 4u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDispatch >
 	{
 		inline CmdT( uint32_t groupCountX

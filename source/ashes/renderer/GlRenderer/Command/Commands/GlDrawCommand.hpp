@@ -11,12 +11,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eDraw >
-	{
-		static Op constexpr value = { OpType::eDraw, 6u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDraw >
 	{
 		inline CmdT( uint32_t vtxCount
@@ -43,12 +37,6 @@ namespace ashes::gl
 		, CmdDraw const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eDrawBaseInstance >
-	{
-		static Op constexpr value = { OpType::eDrawBaseInstance, 6u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDrawBaseInstance >

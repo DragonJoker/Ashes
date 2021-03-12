@@ -11,12 +11,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eSetLineWidth >
-	{
-		static Op constexpr value = { OpType::eSetLineWidth, 2u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eSetLineWidth >
 	{
 		inline CmdT( float width )

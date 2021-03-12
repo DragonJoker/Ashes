@@ -11,12 +11,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eGenerateMipmaps >
-	{
-		static Op constexpr value = { OpType::eGenerateMipmaps, 2u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eGenerateMipmaps >
 	{
 		inline CmdT( uint32_t target )

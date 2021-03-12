@@ -11,12 +11,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eBindContextState >
-	{
-		static Op constexpr value = { OpType::eBindContextState, 6u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBindContextState >
 	{
 		inline CmdT( ContextStateStack * stack
