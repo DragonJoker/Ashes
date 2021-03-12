@@ -281,7 +281,7 @@ namespace ashes::gl
 			, GlFrameBufferTarget fboTarget
 			, CmdList & list )const
 		{
-			src.bindDraw( stack
+			dst.bindDraw( stack
 				, region.dstSubresource.mipLevel
 				, fboTarget
 				, list );
@@ -304,7 +304,7 @@ namespace ashes::gl
 			, GlFrameBufferTarget fboTarget
 			, CmdList & list )const
 		{
-			src.bindDraw( stack
+			dst.bindDraw( stack
 				, region.dstSubresource.mipLevel
 				, layer
 				, fboTarget
