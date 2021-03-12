@@ -22,19 +22,19 @@ namespace ashes::gl
 			}
 		}
 
-		VkOffset3D convert( VkExtent3D const & src )
+		VkOffset3D operator+( VkOffset3D const & lhs, VkExtent3D const & rhs )
 		{
-			return VkOffset3D{ int32_t( src.width )
-				, int32_t( src.height )
-				, int32_t( src.depth ) };
+			return VkOffset3D{ lhs.x + int32_t( rhs.width )
+				, lhs.x + int32_t( rhs.height )
+				, lhs.x + int32_t( rhs.depth ) };
 		}
 
-		VkOffset3D convert( VkExtent3D const & src
+		VkExtent3D getExtent( VkExtent3D const & src
 			, uint32_t mipDiff )
 		{
-			return VkOffset3D{ int32_t( src.width << mipDiff )
-				, int32_t( src.height << mipDiff )
-				, int32_t( src.depth << mipDiff ) };
+			return VkExtent3D{ uint32_t( src.width << mipDiff )
+				, uint32_t( src.height << mipDiff )
+				, uint32_t( src.depth << mipDiff ) };
 		}
 
 		VkImageBlit convert( VkImageCopy const & src )
@@ -42,23 +42,23 @@ namespace ashes::gl
 			if ( src.dstSubresource.mipLevel == src.srcSubresource.mipLevel )
 			{
 				return VkImageBlit{ src.srcSubresource
-					, { src.srcOffset, convert( src.extent ) }
+					, { src.srcOffset, src.srcOffset + src.extent }
 					, src.dstSubresource
-					, { src.dstOffset, convert( src.extent ) } };
+					, { src.dstOffset, src.dstOffset + src.extent } };
 			}
 
 			if ( src.dstSubresource.mipLevel > src.srcSubresource.mipLevel )
 			{
 				return VkImageBlit{ src.srcSubresource
-					, { src.srcOffset, convert( src.extent, src.dstSubresource.mipLevel - src.srcSubresource.mipLevel ) }
+					, { src.srcOffset, src.srcOffset + getExtent( src.extent, src.dstSubresource.mipLevel - src.srcSubresource.mipLevel ) }
 					, src.dstSubresource
-					, { src.dstOffset, convert( src.extent ) } };
+					, { src.dstOffset, src.dstOffset + src.extent } };
 			}
 
 			return VkImageBlit{ src.srcSubresource
-				, { src.srcOffset, convert( src.extent ) }
+				, { src.srcOffset, src.srcOffset + src.extent }
 				, src.dstSubresource
-				, { src.dstOffset, convert( src.extent, src.srcSubresource.mipLevel - src.dstSubresource.mipLevel ) } };
+				, { src.dstOffset, src.dstOffset + getExtent( src.extent, src.srcSubresource.mipLevel - src.dstSubresource.mipLevel ) } };
 		}
 	}
 
@@ -257,9 +257,6 @@ namespace ashes::gl
 		, src{ initialiseAttachment( device, origRegion.srcSubresource, srcImage, srcView ) }
 		, dst{ initialiseAttachment( device, origRegion.dstSubresource, dstImage, dstView ) }
 	{
-		auto srcExtent = getSubresourceDimensions( get( srcImage )->getDimensions(), region.srcSubresource.mipLevel );
-		auto dstExtent = getSubresourceDimensions( get( dstImage )->getDimensions(), region.dstSubresource.mipLevel );
-
 		if ( srcView != VK_NULL_HANDLE )
 		{
 			views.push_back( srcView );
@@ -271,16 +268,6 @@ namespace ashes::gl
 			views.push_back( dstView );
 			region.dstSubresource.mipLevel = 0u;
 		}
-
-		// Convert extent to rectangle bounds for src
-		region.srcOffsets[1].x += region.srcOffsets[0].x;
-		region.srcOffsets[1].y += region.srcOffsets[0].y;
-		region.srcOffsets[1].z += region.srcOffsets[0].z;
-
-		// Convert extent to rectangle bounds for dst
-		region.dstOffsets[1].x += region.dstOffsets[0].x;
-		region.dstOffsets[1].y += region.dstOffsets[0].y;
-		region.dstOffsets[1].z += region.dstOffsets[0].z;
 	}
 
 	LayerCopy::LayerCopy( VkDevice device
