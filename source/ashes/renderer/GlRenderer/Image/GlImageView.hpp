@@ -10,6 +10,7 @@
 
 #include "renderer/GlRenderer/GlRendererPrerequisites.hpp"
 #include "renderer/GlRenderer/Enum/GlTextureViewType.hpp"
+#include "renderer/GlRenderer/Miscellaneous/GlPixelFormat.hpp"
 
 namespace ashes::gl
 {
