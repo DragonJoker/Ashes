@@ -11,12 +11,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eWriteTimestamp >
-	{
-		static Op constexpr value = { OpType::eWriteTimestamp, 2u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eWriteTimestamp >
 	{
 		inline CmdT( uint32_t name )

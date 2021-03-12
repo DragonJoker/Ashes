@@ -16,12 +16,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eBlitFramebuffer >
-	{
-		static Op constexpr value = { OpType::eBlitFramebuffer, 11u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBlitFramebuffer >
 	{
 		inline CmdT( int32_t srcL

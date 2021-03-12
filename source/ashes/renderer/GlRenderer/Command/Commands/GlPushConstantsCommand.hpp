@@ -13,12 +13,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eProgramUniform1fv >
-	{
-		static Op constexpr value = { OpType::eProgramUniform1fv, 4u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniform1fv >
 	{
 		inline CmdT( uint32_t program
@@ -42,12 +36,6 @@ namespace ashes::gl
 		, CmdProgramUniform1fv const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eProgramUniform2fv >
-	{
-		static Op constexpr value = { OpType::eProgramUniform2fv, 5u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniform2fv >
@@ -75,12 +63,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eProgramUniform3fv >
-	{
-		static Op constexpr value = { OpType::eProgramUniform3fv, 6u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniform3fv >
 	{
 		inline CmdT( uint32_t program
@@ -106,12 +88,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eProgramUniform4fv >
-	{
-		static Op constexpr value = { OpType::eProgramUniform4fv, 7u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniform4fv >
 	{
 		inline CmdT( uint32_t program
@@ -135,12 +111,6 @@ namespace ashes::gl
 		, CmdProgramUniform4fv const & cmd );
 	
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eProgramUniformMatrix2fv >
-	{
-		static Op constexpr value = { OpType::eProgramUniformMatrix2fv, 8u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniformMatrix2fv >
@@ -175,12 +145,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eProgramUniformMatrix3fv >
-	{
-		static Op constexpr value = { OpType::eProgramUniformMatrix3fv, 13u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniformMatrix3fv >
 	{
 		inline CmdT( uint32_t program
@@ -212,12 +176,6 @@ namespace ashes::gl
 		, CmdProgramUniformMatrix3fv const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eProgramUniformMatrix4fv >
-	{
-		static Op constexpr value = { OpType::eProgramUniformMatrix4fv, 20u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniformMatrix4fv >
@@ -254,12 +212,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eProgramUniform1iv >
-	{
-		static Op constexpr value = { OpType::eProgramUniform1iv, 4u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniform1iv >
 	{
 		inline CmdT( uint32_t program
@@ -283,12 +235,6 @@ namespace ashes::gl
 		, CmdProgramUniform1iv const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eProgramUniform2iv >
-	{
-		static Op constexpr value = { OpType::eProgramUniform2iv, 5u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniform2iv >
@@ -316,12 +262,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eProgramUniform3iv >
-	{
-		static Op constexpr value = { OpType::eProgramUniform3iv, 6u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniform3iv >
 	{
 		inline CmdT( uint32_t program
@@ -345,12 +285,6 @@ namespace ashes::gl
 		, CmdProgramUniform3iv const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eProgramUniform4iv >
-	{
-		static Op constexpr value = { OpType::eProgramUniform4iv, 7u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniform4iv >
@@ -378,12 +312,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eProgramUniform1uiv >
-	{
-		static Op constexpr value = { OpType::eProgramUniform1uiv, 4u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniform1uiv >
 	{
 		inline CmdT( uint32_t program
@@ -407,12 +335,6 @@ namespace ashes::gl
 		, CmdProgramUniform1uiv const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eProgramUniform2uiv >
-	{
-		static Op constexpr value = { OpType::eProgramUniform2uiv, 5u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniform2uiv >
@@ -440,12 +362,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eProgramUniform3uiv >
-	{
-		static Op constexpr value = { OpType::eProgramUniform3uiv, 6u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniform3uiv >
 	{
 		inline CmdT( uint32_t program
@@ -469,12 +385,6 @@ namespace ashes::gl
 		, CmdProgramUniform3uiv const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eProgramUniform4uiv >
-	{
-		static Op constexpr value = { OpType::eProgramUniform4uiv, 7u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniform4uiv >
@@ -502,12 +412,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eUniform1fv >
-	{
-		static Op constexpr value = { OpType::eUniform1fv, 4u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniform1fv >
 	{
 		inline CmdT( uint32_t location
@@ -528,12 +432,6 @@ namespace ashes::gl
 		, CmdUniform1fv const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eUniform2fv >
-	{
-		static Op constexpr value = { OpType::eUniform2fv, 5u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniform2fv >
@@ -558,12 +456,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eUniform3fv >
-	{
-		static Op constexpr value = { OpType::eUniform3fv, 6u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniform3fv >
 	{
 		inline CmdT( uint32_t location
@@ -586,12 +478,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eUniform4fv >
-	{
-		static Op constexpr value = { OpType::eUniform4fv, 7u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniform4fv >
 	{
 		inline CmdT( uint32_t location
@@ -612,12 +498,6 @@ namespace ashes::gl
 		, CmdUniform4fv const & cmd );
 	
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eUniformMatrix2fv >
-	{
-		static Op constexpr value = { OpType::eUniformMatrix2fv, 8u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniformMatrix2fv >
@@ -649,12 +529,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eUniformMatrix3fv >
-	{
-		static Op constexpr value = { OpType::eUniformMatrix3fv, 13u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniformMatrix3fv >
 	{
 		inline CmdT( uint32_t location
@@ -683,12 +557,6 @@ namespace ashes::gl
 		, CmdUniformMatrix3fv const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eUniformMatrix4fv >
-	{
-		static Op constexpr value = { OpType::eUniformMatrix4fv, 20u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniformMatrix4fv >
@@ -722,12 +590,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eUniform1iv >
-	{
-		static Op constexpr value = { OpType::eUniform1iv, 4u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniform1iv >
 	{
 		inline CmdT( uint32_t location
@@ -748,12 +610,6 @@ namespace ashes::gl
 		, CmdUniform1iv const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eUniform2iv >
-	{
-		static Op constexpr value = { OpType::eUniform2iv, 5u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniform2iv >
@@ -778,12 +634,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eUniform3iv >
-	{
-		static Op constexpr value = { OpType::eUniform3iv, 6u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniform3iv >
 	{
 		inline CmdT( uint32_t location
@@ -804,12 +654,6 @@ namespace ashes::gl
 		, CmdUniform3iv const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eUniform4iv >
-	{
-		static Op constexpr value = { OpType::eUniform4iv, 7u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniform4iv >
@@ -834,12 +678,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eUniform1uiv >
-	{
-		static Op constexpr value = { OpType::eUniform1uiv, 4u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniform1uiv >
 	{
 		inline CmdT( uint32_t location
@@ -860,12 +698,6 @@ namespace ashes::gl
 		, CmdUniform1uiv const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eUniform2uiv >
-	{
-		static Op constexpr value = { OpType::eUniform2uiv, 5u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniform2uiv >
@@ -890,12 +722,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eUniform3uiv >
-	{
-		static Op constexpr value = { OpType::eUniform3uiv, 6u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniform3uiv >
 	{
 		inline CmdT( uint32_t location
@@ -916,12 +742,6 @@ namespace ashes::gl
 		, CmdUniform3uiv const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eUniform4uiv >
-	{
-		static Op constexpr value = { OpType::eUniform4uiv, 7u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniform4uiv >

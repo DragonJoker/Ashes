@@ -11,12 +11,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eClearBack >
-	{
-		static Op constexpr value = { OpType::eClearBack, 2u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearBack >
 	{
 		inline CmdT( uint32_t mask )
@@ -34,12 +28,6 @@ namespace ashes::gl
 		, CmdClearBack const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eClearBackColour >
-	{
-		static Op constexpr value = { OpType::eClearBackColour, 6u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearBackColour >
@@ -64,12 +52,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eClearBackDepth >
-	{
-		static Op constexpr value = { OpType::eClearBackDepth, 2u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearBackDepth >
 	{
 		inline CmdT( float depth )
@@ -89,12 +71,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eClearBackStencil >
-	{
-		static Op constexpr value = { OpType::eClearBackStencil, 2u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearBackStencil >
 	{
 		inline CmdT( int32_t stencil )
@@ -112,12 +88,6 @@ namespace ashes::gl
 		, CmdClearBackStencil const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eClearBackDepthStencil >
-	{
-		static Op constexpr value = { OpType::eClearBackDepthStencil, 3u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearBackDepthStencil >

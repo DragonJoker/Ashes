@@ -11,12 +11,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eBeginQuery >
-	{
-		static Op constexpr value = { OpType::eBeginQuery, 3u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBeginQuery >
 	{
 		inline CmdT( uint32_t target
