@@ -1275,7 +1275,8 @@ namespace ashes::gl
 
 	bool areCopyCompatible( VkFormat lhs, VkFormat rhs )
 	{
-		if ( lhs == rhs )
+		if ( lhs == rhs
+			|| getInternalFormat( lhs ) == getInternalFormat( rhs ) )
 		{
 			return true;
 		}
