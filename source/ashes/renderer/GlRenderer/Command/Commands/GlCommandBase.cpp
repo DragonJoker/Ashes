@@ -692,6 +692,34 @@ namespace ashes::gl
 	}
 
 	void apply( ContextLock const & context
+		, CmdCopyImageSubData const & cmd )
+	{
+		glLogCall( context
+			, glCopyImageSubData
+			, cmd.srcName
+			, cmd.srcTarget
+			, cmd.copy.srcSubresource.mipLevel
+			, cmd.copy.srcOffset.x
+			, cmd.copy.srcOffset.y
+			, ( cmd.copy.srcSubresource.baseArrayLayer
+				? GLint( cmd.copy.srcSubresource.baseArrayLayer )
+				: GLint( cmd.copy.srcOffset.z ) )
+			, cmd.dstName
+			, cmd.dstTarget
+			, cmd.copy.dstSubresource.mipLevel
+			, cmd.copy.dstOffset.x
+			, cmd.copy.dstOffset.y
+			, ( cmd.copy.dstSubresource.baseArrayLayer
+				? GLint( cmd.copy.dstSubresource.baseArrayLayer )
+				: GLint( cmd.copy.dstOffset.z ) )
+			, GLsizei( cmd.copy.extent.width )
+			, GLsizei( cmd.copy.extent.height )
+			, ( cmd.copy.srcSubresource.layerCount > 1u
+				? GLsizei( cmd.copy.srcSubresource.layerCount )
+				: GLsizei( cmd.copy.extent.depth ) ) );
+	}
+
+	void apply( ContextLock const & context
 		, CmdTexSubImage1D const & cmd )
 	{
 		glLogCall( context
