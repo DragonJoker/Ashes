@@ -1,4 +1,3 @@
-set( FOLDER_NAME 21-DynamicUniformBuffer )
 project( "Test-${FOLDER_NAME}" )
 
 set( ${PROJECT_NAME}_VERSION_MAJOR 0 )

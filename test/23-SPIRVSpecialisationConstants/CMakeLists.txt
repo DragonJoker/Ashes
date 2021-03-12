@@ -1,4 +1,3 @@
-set( FOLDER_NAME 23-SPIRVSpecialisationConstants )
 project( "Test-${FOLDER_NAME}" )
 
 set( ${PROJECT_NAME}_VERSION_MAJOR 0 )

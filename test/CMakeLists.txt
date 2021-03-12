@@ -39,11 +39,11 @@ if ( ASHES_BUILD_TESTS )
 		file( GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*-* )
 		set( TEST_ID 0 )
 
-		foreach ( child ${children} )
-			if ( IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${child} )
-				string( REGEX REPLACE "[^-]*-([a-zA-Z0-9]*)" "\\1" TEST_NAME ${child} )
-				set( TARGET_NAME Test-${child} )
-				add_subdirectory( ${child} )
+		foreach ( FOLDER_NAME ${children} )
+			if ( IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${FOLDER_NAME} )
+				string( REGEX REPLACE "[^-]*-([a-zA-Z0-9]*)" "\\1" TEST_NAME ${FOLDER_NAME} )
+				set( TARGET_NAME Test-${FOLDER_NAME} )
+				add_subdirectory( ${FOLDER_NAME} )
 				target_compile_definitions( ${TARGET_NAME} PRIVATE
 					TEST_ID=${TEST_ID}
 					TEST_NAME="${TEST_NAME}"
