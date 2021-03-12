@@ -178,15 +178,6 @@ namespace ashes::gl
 			case OpType::eCopyImageSubData:
 				apply( lock, map< OpType::eCopyImageSubData >( cmd ) );
 				break;
-			case OpType::eCopyImageSubData1D:
-				apply( lock, map< OpType::eCopyImageSubData1D >( cmd ) );
-				break;
-			case OpType::eCopyImageSubData2D:
-				apply( lock, map< OpType::eCopyImageSubData2D >( cmd ) );
-				break;
-			case OpType::eCopyImageSubData3D:
-				apply( lock, map< OpType::eCopyImageSubData3D >( cmd ) );
-				break;
 			case OpType::eCullFace:
 				apply( lock, map< OpType::eCullFace >( cmd ) );
 				break;

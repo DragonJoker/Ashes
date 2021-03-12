@@ -61,9 +61,6 @@ namespace ashes::gl
 		eCompressedTexSubImage3D,
 		eCopyBufferSubData,
 		eCopyImageSubData,
-		eCopyImageSubData1D,
-		eCopyImageSubData2D,
-		eCopyImageSubData3D,
 		eCullFace,
 		eDepthFunc,
 		eDepthMask,
@@ -1883,6 +1880,37 @@ namespace ashes::gl
 
 	void apply( ContextLock const & context
 		, CmdCopyBufferSubData const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eCopyImageSubData >
+	{
+		inline CmdT( uint32_t srcName
+			, GlTextureType srcTarget
+			, uint32_t dstName
+			, GlTextureType dstTarget
+			, VkImageCopy copy )
+			: cmd{ { OpType::eCopyImageSubData, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, srcName{ std::move( srcName ) }
+			, srcTarget{ std::move( srcTarget ) }
+			, dstName{ std::move( dstName ) }
+			, dstTarget{ std::move( dstTarget ) }
+			, copy{ std::move( copy ) }
+		{
+		}
+
+		Command cmd;
+		uint32_t srcName;
+		GlTextureType srcTarget;
+		uint32_t dstName;
+		GlTextureType dstTarget;
+		VkImageCopy copy;
+	};
+	using CmdCopyImageSubData = CmdT< OpType::eCopyImageSubData >;
+
+	void apply( ContextLock const & context
+		, CmdCopyImageSubData const & cmd );
 
 	//*************************************************************************
 
