@@ -27,7 +27,6 @@ namespace ashes::gl
 	FboAttachment initialiseAttachment( VkDevice device
 		, VkImageSubresourceLayers & subresource
 		, VkImage image
-		, uint32_t layer
 		, VkImageView & view );
 
 	class Framebuffer

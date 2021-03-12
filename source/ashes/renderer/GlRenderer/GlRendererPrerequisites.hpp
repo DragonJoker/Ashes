@@ -214,17 +214,28 @@ namespace ashes::gl
 		GLuint originalMipLevel;
 		bool isSrgb{ false };
 
-		void bind( VkImageSubresourceLayers subresource
+		void bind( uint32_t mipLevel
+			, GlFrameBufferTarget fboTarget
+			, CmdList & list )const;
+		void bindRead( ContextStateStack & stack
+			, uint32_t mipLevel
+			, GlFrameBufferTarget fboTarget
+			, CmdList & list )const;
+		void bindDraw( ContextStateStack & stack
+			, uint32_t mipLevel
+			, GlFrameBufferTarget fboTarget
+			, CmdList & list )const;
+		void bind( uint32_t mipLevel
 			, uint32_t layer
 			, GlFrameBufferTarget fboTarget
 			, CmdList & list )const;
 		void bindRead( ContextStateStack & stack
-			, VkImageSubresourceLayers subresource
+			, uint32_t mipLevel
 			, uint32_t layer
 			, GlFrameBufferTarget fboTarget
 			, CmdList & list )const;
 		void bindDraw( ContextStateStack & stack
-			, VkImageSubresourceLayers subresource
+			, uint32_t mipLevel
 			, uint32_t layer
 			, GlFrameBufferTarget fboTarget
 			, CmdList & list )const;
@@ -232,6 +243,7 @@ namespace ashes::gl
 			, CmdList & list )const;
 		void draw( ContextStateStack & stack
 			, CmdList & list )const;
+
 		bool isDepthOrStencil()const
 		{
 			return point == GL_ATTACHMENT_POINT_DEPTH_STENCIL
@@ -248,14 +260,32 @@ namespace ashes::gl
 			, VkImageBlit origRegion
 			, VkImage srcImage
 			, VkImage dstImage
-			, uint32_t layer
 			, VkImageViewArray & views );		
 		LayerCopy( VkDevice device
 			, VkImageCopy origRegion
 			, VkImage srcImage
 			, VkImage dstImage
-			, uint32_t layer
 			, VkImageViewArray & views );
+
+		void bindSrc( ContextStateStack & stack
+			, GlFrameBufferTarget fboTarget
+			, CmdList & list )const
+		{
+			src.bindRead( stack
+				, region.srcSubresource.mipLevel
+				, fboTarget
+				, list );
+		}
+
+		void bindDst( ContextStateStack & stack
+			, GlFrameBufferTarget fboTarget
+			, CmdList & list )const
+		{
+			src.bindDraw( stack
+				, region.dstSubresource.mipLevel
+				, fboTarget
+				, list );
+		}
 
 		void bindSrc( ContextStateStack & stack
 			, uint32_t layer
@@ -263,7 +293,7 @@ namespace ashes::gl
 			, CmdList & list )const
 		{
 			src.bindRead( stack
-				, region.srcSubresource
+				, region.srcSubresource.mipLevel
 				, layer
 				, fboTarget
 				, list );
@@ -275,7 +305,7 @@ namespace ashes::gl
 			, CmdList & list )const
 		{
 			src.bindDraw( stack
-				, region.srcSubresource
+				, region.dstSubresource.mipLevel
 				, layer
 				, fboTarget
 				, list );
