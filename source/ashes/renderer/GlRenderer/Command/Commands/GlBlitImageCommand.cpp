@@ -90,7 +90,7 @@ namespace ashes::gl
 
 		if ( hasCopyImage( device )
 			&& areCopyCompatible( get( srcImage )->getFormatVk(), get( dstImage )->getFormatVk() )
-			&& region.srcOffsets[1] == region.dstOffsets[1] )
+			&& ( region.srcOffsets[1] - region.srcOffsets[0] ) == ( region.dstOffsets[1] - region.dstOffsets[0] ) )
 		{
 			list.push_back( makeCmd< OpType::eCopyImageSubData >( get( srcImage )->getInternal()
 				, convert( device
