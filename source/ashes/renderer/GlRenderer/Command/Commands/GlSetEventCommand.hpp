@@ -11,12 +11,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eSetEvent >
-	{
-		static Op constexpr value = { OpType::eSetEvent, 3u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eSetEvent >
 	{
 		inline CmdT( VkEvent event )

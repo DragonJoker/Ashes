@@ -11,12 +11,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eMemoryBarrier >
-	{
-		static Op constexpr value = { OpType::eMemoryBarrier, 2u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eMemoryBarrier >
 	{
 		inline CmdT( GlMemoryBarrierFlags flags )

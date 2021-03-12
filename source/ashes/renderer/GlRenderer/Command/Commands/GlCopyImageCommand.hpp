@@ -11,12 +11,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eCopyImageSubData >
-	{
-		static Op constexpr value = { OpType::eCopyImageSubData, 22u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eCopyImageSubData >
 	{
 		inline CmdT( uint32_t srcName
@@ -46,12 +40,6 @@ namespace ashes::gl
 		, CmdCopyImageSubData const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eCopyImageSubData1D >
-	{
-		static Op constexpr value = { OpType::eCopyImageSubData1D, 22u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eCopyImageSubData1D >
@@ -89,12 +77,6 @@ namespace ashes::gl
 		, CmdCopyImageSubData1D const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eCopyImageSubData2D >
-	{
-		static Op constexpr value = { OpType::eCopyImageSubData2D, 22u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eCopyImageSubData2D >
@@ -141,12 +123,6 @@ namespace ashes::gl
 		, CmdCopyImageSubData2D const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eCopyImageSubData3D >
-	{
-		static Op constexpr value = { OpType::eCopyImageSubData3D, 22u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eCopyImageSubData3D >

@@ -13,12 +13,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eClearTexDepth >
-	{
-		static Op constexpr value = { OpType::eClearTexDepth, 6u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearTexDepth >
 	{
 		inline CmdT( uint32_t name
@@ -50,12 +44,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eClearTexStencil >
-	{
-		static Op constexpr value = { OpType::eClearTexStencil, 6u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearTexStencil >
 	{
 		inline CmdT( uint32_t name
@@ -85,12 +73,6 @@ namespace ashes::gl
 		, CmdClearTexStencil const & cmd );
 	
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eClearTexDepthStencil >
-	{
-		static Op constexpr value = { OpType::eClearTexDepthStencil, 7u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearTexDepthStencil >

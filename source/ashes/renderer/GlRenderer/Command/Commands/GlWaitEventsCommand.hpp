@@ -11,12 +11,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eWaitEvents >
-	{
-		static Op constexpr value = { OpType::eWaitEvents, 1u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eWaitEvents >
 	{
 		inline CmdT( VkEventArray events )

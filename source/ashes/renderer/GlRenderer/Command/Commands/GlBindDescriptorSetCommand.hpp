@@ -11,12 +11,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eBindSampler >
-	{
-		static Op constexpr value = { OpType::eBindSampler, 3u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBindSampler >
 	{
 		inline CmdT( uint32_t binding
@@ -37,12 +31,6 @@ namespace ashes::gl
 		, CmdBindSampler const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eTexParameteri >
-	{
-		static Op constexpr value = { OpType::eTexParameteri, 4u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eTexParameteri >
@@ -70,12 +58,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eTexParameterf >
-	{
-		static Op constexpr value = { OpType::eTexParameterf, 4u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eTexParameterf >
 	{
 		inline CmdT( GlTextureType target
@@ -99,12 +81,6 @@ namespace ashes::gl
 		, CmdTexParameterf const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eBindImage >
-	{
-		static Op constexpr value = { OpType::eBindImage, 7u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBindImage >
@@ -139,12 +115,6 @@ namespace ashes::gl
 		, CmdBindImage const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eBindBufferRange >
-	{
-		static Op constexpr value = { OpType::eBindBufferRange, 6u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBindBufferRange >

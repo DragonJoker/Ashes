@@ -170,12 +170,6 @@ namespace ashes::gl
 	template< OpType OpT >
 	struct CmdT;
 
-	template< OpType OpT >
-	struct CmdConfig;
-
-	template< OpType OpT >
-	static Op constexpr CmdConfigT = CmdConfig< OpT >::value;
-
 	//*************************************************************************
 
 	template< typename TypeT, typename IterT >
@@ -198,12 +192,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eEnable >
-	{
-		static Op constexpr value = { OpType::eEnable, 2u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eEnable >
 	{
 		inline CmdT( GlTweak value )
@@ -223,12 +211,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eDisable >
-	{
-		static Op constexpr value = { OpType::eDisable, 2u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDisable >
 	{
 		inline CmdT( GlTweak value )
@@ -246,12 +228,6 @@ namespace ashes::gl
 		, CmdDisable const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eApplyScissors >
-	{
-		static Op constexpr value = { OpType::eApplyScissors, 5u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eApplyScissors >
@@ -322,12 +298,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eApplyViewports >
-	{
-		static Op constexpr value = { OpType::eApplyViewports, 7u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eApplyViewports >
 	{
 		static uint32_t constexpr MaxElems = 16u;
@@ -396,12 +366,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eApplyDepthRanges >
-	{
-		static Op constexpr value = { OpType::eApplyDepthRanges, 7u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eApplyDepthRanges >
 	{
 		static uint32_t constexpr MaxElems = 16u;
@@ -460,12 +424,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eApplyScissor >
-	{
-		static Op constexpr value = { OpType::eApplyScissor, 5u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eApplyScissor >
 	{
 		inline CmdT( VkRect2D const & scissor )
@@ -483,12 +441,6 @@ namespace ashes::gl
 		, CmdApplyScissor const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eApplyViewport >
-	{
-		static Op constexpr value = { OpType::eApplyViewport, 7u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eApplyViewport >
@@ -509,12 +461,6 @@ namespace ashes::gl
 		, CmdApplyViewport const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eDrawBuffers >
-	{
-		static Op constexpr value = { OpType::eDrawBuffers, 18u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDrawBuffers >
@@ -593,12 +539,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eDrawBuffer >
-	{
-		static Op constexpr value = { OpType::eDrawBuffer, 2u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDrawBuffer >
 	{
 		inline CmdT( GlAttachmentPoint value )
@@ -616,12 +556,6 @@ namespace ashes::gl
 		, CmdDrawBuffer const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eUseProgram >
-	{
-		static Op constexpr value = { OpType::eUseProgram, 2u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUseProgram >
@@ -643,12 +577,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eUseProgramPipeline >
-	{
-		static Op constexpr value = { OpType::eUseProgramPipeline, 2u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUseProgramPipeline >
 	{
 		inline CmdT( uint32_t value )
@@ -666,12 +594,6 @@ namespace ashes::gl
 		, CmdUseProgramPipeline const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eGetQueryResults >
-	{
-		static Op constexpr value = { OpType::eGetQueryResults, 13u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eGetQueryResults >
@@ -708,12 +630,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eGetTexImage >
-	{
-		static Op constexpr value = { OpType::eGetTexImage, 5u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eGetTexImage >
 	{
 		inline CmdT( GlTextureType target
@@ -745,12 +661,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eCheckFramebuffer >
-	{
-		static Op constexpr value = { OpType::eCheckFramebuffer, 4u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eCheckFramebuffer >
 	{
 		inline CmdT()
@@ -766,12 +676,6 @@ namespace ashes::gl
 		, CmdCheckFramebuffer const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eCleanupFramebuffer >
-	{
-		static Op constexpr value = { OpType::eCleanupFramebuffer, 4u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eCleanupFramebuffer >
@@ -791,12 +695,6 @@ namespace ashes::gl
 		, CmdCleanupFramebuffer const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eBindFramebuffer >
-	{
-		static Op constexpr value = { OpType::eBindFramebuffer, 3u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBindFramebuffer >
@@ -821,12 +719,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eBindSrcFramebuffer >
-	{
-		static Op constexpr value = { OpType::eBindSrcFramebuffer, 2u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBindSrcFramebuffer >
 	{
 		inline CmdT( GlFrameBufferTarget target )
@@ -846,12 +738,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eBindDstFramebuffer >
-	{
-		static Op constexpr value = { OpType::eBindDstFramebuffer, 2u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBindDstFramebuffer >
 	{
 		inline CmdT( GlFrameBufferTarget target )
@@ -869,12 +755,6 @@ namespace ashes::gl
 		, CmdBindDstFramebuffer const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eBindBuffer >
-	{
-		static Op constexpr value = { OpType::eBindBuffer, 3u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBindBuffer >
@@ -899,12 +779,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eBindTexture >
-	{
-		static Op constexpr value = { OpType::eBindTexture, 3u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBindTexture >
 	{
 		inline CmdT( GlTextureType type
@@ -925,12 +799,6 @@ namespace ashes::gl
 		, CmdBindTexture const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eBlendConstants >
-	{
-		static Op constexpr value = { OpType::eBlendConstants, 6u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBlendConstants >
@@ -970,12 +838,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eBlendEquation >
-	{
-		static Op constexpr value = { OpType::eBlendEquation, 5u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBlendEquation >
 	{
 		inline CmdT( uint32_t index
@@ -999,12 +861,6 @@ namespace ashes::gl
 		, CmdBlendEquation const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eBlendFunc >
-	{
-		static Op constexpr value = { OpType::eBlendFunc, 5u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBlendFunc >
@@ -1038,12 +894,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eColorMask >
-	{
-		static Op constexpr value = { OpType::eColorMask, 4u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eColorMask >
 	{
 		inline CmdT( uint32_t index
@@ -1075,12 +925,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eClearColour >
-	{
-		static Op constexpr value = { OpType::eClearColour, 7u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearColour >
 	{
 		inline CmdT( VkClearColorValue color
@@ -1103,12 +947,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eClearDepth >
-	{
-		static Op constexpr value = { OpType::eClearDepth, 2u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearDepth >
 	{
 		inline CmdT( float depth )
@@ -1126,12 +964,6 @@ namespace ashes::gl
 		, CmdClearDepth const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eClearStencil >
-	{
-		static Op constexpr value = { OpType::eClearStencil, 2u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearStencil >
@@ -1153,12 +985,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eClearDepthStencil >
-	{
-		static Op constexpr value = { OpType::eClearDepthStencil, 3u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearDepthStencil >
 	{
 		inline CmdT( VkClearDepthStencilValue depthStencil )
@@ -1176,12 +1002,6 @@ namespace ashes::gl
 		, CmdClearDepthStencil const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eCullFace >
-	{
-		static Op constexpr value = { OpType::eCullFace, 2u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eCullFace >
@@ -1203,12 +1023,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eDepthFunc >
-	{
-		static Op constexpr value = { OpType::eDepthFunc, 2u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDepthFunc >
 	{
 		inline CmdT( GlCompareOp value )
@@ -1228,12 +1042,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eDepthMask >
-	{
-		static Op constexpr value = { OpType::eDepthMask, 3u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDepthMask >
 	{
 		inline CmdT( uint32_t value )
@@ -1251,12 +1059,6 @@ namespace ashes::gl
 		, CmdDepthMask const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eDepthRange >
-	{
-		static Op constexpr value = { OpType::eDepthRange, 2u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDepthRange >
@@ -1281,12 +1083,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eFrontFace >
-	{
-		static Op constexpr value = { OpType::eFrontFace, 2u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eFrontFace >
 	{
 		inline CmdT( GlFrontFace value )
@@ -1304,12 +1100,6 @@ namespace ashes::gl
 		, CmdFrontFace const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eLineWidth >
-	{
-		static Op constexpr value = { OpType::eLineWidth, 3u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eLineWidth >
@@ -1331,12 +1121,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eLogCommand >
-	{
-		static Op constexpr value = { OpType::eLogCommand, 66u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eLogCommand >
 	{
 		inline CmdT( char const * const value )
@@ -1354,12 +1138,6 @@ namespace ashes::gl
 		, CmdLogCommand const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eLogicOp >
-	{
-		static Op constexpr value = { OpType::eLogicOp, 3u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eLogicOp >
@@ -1381,12 +1159,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eMinSampleShading >
-	{
-		static Op constexpr value = { OpType::eMinSampleShading, 3u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eMinSampleShading >
 	{
 		inline CmdT( float value )
@@ -1404,12 +1176,6 @@ namespace ashes::gl
 		, CmdMinSampleShading const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::ePatchParameter >
-	{
-		static Op constexpr value = { OpType::ePatchParameter, 3u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::ePatchParameter >
@@ -1434,12 +1200,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::ePolygonMode >
-	{
-		static Op constexpr value = { OpType::ePolygonMode, 3u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::ePolygonMode >
 	{
 		inline CmdT( GlPolygonMode value )
@@ -1457,12 +1217,6 @@ namespace ashes::gl
 		, CmdPolygonMode const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::ePolygonOffset >
-	{
-		static Op constexpr value = { OpType::ePolygonOffset, 5u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::ePolygonOffset >
@@ -1490,12 +1244,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::ePopDebugGroup >
-	{
-		static Op constexpr value = { OpType::ePopDebugGroup, 2u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::ePopDebugGroup >
 	{
 		inline CmdT()
@@ -1511,12 +1259,6 @@ namespace ashes::gl
 		, CmdPopDebugGroup const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::ePrimitiveRestartIndex >
-	{
-		static Op constexpr value = { OpType::ePrimitiveRestartIndex, 3u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::ePrimitiveRestartIndex >
@@ -1536,12 +1278,6 @@ namespace ashes::gl
 		, CmdPrimitiveRestartIndex const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::ePushDebugGroup >
-	{
-		static Op constexpr value = { OpType::ePushDebugGroup, 6u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::ePushDebugGroup >
@@ -1576,12 +1312,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eStencilFunc >
-	{
-		static Op constexpr value = { OpType::eStencilFunc, 4u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eStencilFunc >
 	{
 		inline CmdT( GlCullMode face
@@ -1610,12 +1340,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eStencilMask >
-	{
-		static Op constexpr value = { OpType::eStencilMask, 4u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eStencilMask >
 	{
 		inline CmdT( GlCullMode face
@@ -1636,12 +1360,6 @@ namespace ashes::gl
 		, CmdStencilMask const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eStencilOp >
-	{
-		static Op constexpr value = { OpType::eStencilOp, 4u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eStencilOp >
@@ -1672,12 +1390,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eFramebufferTexture >
-	{
-		static Op constexpr value = { OpType::eFramebufferTexture, 5u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eFramebufferTexture >
 	{
 		inline CmdT( GlFrameBufferTarget target
@@ -1704,12 +1416,6 @@ namespace ashes::gl
 		, CmdFramebufferTexture const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eFramebufferTexture1D >
-	{
-		static Op constexpr value = { OpType::eFramebufferTexture1D, 6u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eFramebufferTexture1D >
@@ -1743,12 +1449,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eFramebufferTexture2D >
-	{
-		static Op constexpr value = { OpType::eFramebufferTexture2D, 6u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eFramebufferTexture2D >
 	{
 		inline CmdT( GlFrameBufferTarget target
@@ -1778,12 +1478,6 @@ namespace ashes::gl
 		, CmdFramebufferTexture2D const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eFramebufferTexture3D >
-	{
-		static Op constexpr value = { OpType::eFramebufferTexture3D, 6u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eFramebufferTexture3D >
@@ -1820,12 +1514,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eFramebufferTextureLayer >
-	{
-		static Op constexpr value = { OpType::eFramebufferTextureLayer, 6u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eFramebufferTextureLayer >
 	{
 		inline CmdT( GlFrameBufferTarget target
@@ -1857,12 +1545,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eActiveTexture >
-	{
-		static Op constexpr value = { OpType::eActiveTexture, 2u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eActiveTexture >
 	{
 		inline CmdT( uint32_t binding )
@@ -1880,12 +1562,6 @@ namespace ashes::gl
 		, CmdActiveTexture const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eUploadMemory >
-	{
-		static Op constexpr value = { OpType::eUploadMemory, 2u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUploadMemory >
@@ -1907,12 +1583,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eDownloadMemory >
-	{
-		static Op constexpr value = { OpType::eDownloadMemory, 2u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDownloadMemory >
 	{
 		inline CmdT( VkDeviceMemory memory )
@@ -1932,12 +1602,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eReadBuffer >
-	{
-		static Op constexpr value = { OpType::eReadBuffer, 2u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eReadBuffer >
 	{
 		inline CmdT( GlAttachmentPoint point )
@@ -1955,12 +1619,6 @@ namespace ashes::gl
 		, CmdReadBuffer const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eUpdateBuffer >
-	{
-		static Op constexpr value = { OpType::eUpdateBuffer, 5 };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUpdateBuffer >
@@ -1991,12 +1649,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eFillBuffer >
-	{
-		static Op constexpr value = { OpType::eFillBuffer, 5 };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eFillBuffer >
 	{
 		inline CmdT( VkDeviceMemory memory
@@ -2023,12 +1675,6 @@ namespace ashes::gl
 		, CmdFillBuffer const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eReadPixels >
-	{
-		static Op constexpr value = { OpType::eReadPixels, 7u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eReadPixels >
@@ -2065,12 +1711,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::ePixelStore >
-	{
-		static Op constexpr value = { OpType::ePixelStore, 3u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::ePixelStore >
 	{
 		inline CmdT( GlPackAlignment name
@@ -2091,12 +1731,6 @@ namespace ashes::gl
 		, CmdPixelStore const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eCompressedTexSubImage1D >
-	{
-		static Op constexpr value = { OpType::eCompressedTexSubImage1D, 8u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eCompressedTexSubImage1D >
@@ -2134,12 +1768,6 @@ namespace ashes::gl
 		, CmdCompressedTexSubImage1D const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eCompressedTexSubImage2D >
-	{
-		static Op constexpr value = { OpType::eCompressedTexSubImage2D, 10u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eCompressedTexSubImage2D >
@@ -2183,12 +1811,6 @@ namespace ashes::gl
 		, CmdCompressedTexSubImage2D const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eCompressedTexSubImage3D >
-	{
-		static Op constexpr value = { OpType::eCompressedTexSubImage3D, 12u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eCompressedTexSubImage3D >
@@ -2240,12 +1862,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eCopyBufferSubData >
-	{
-		static Op constexpr value = { OpType::eCopyBufferSubData, 5u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eCopyBufferSubData >
 	{
 		inline CmdT( uint32_t srcTarget
@@ -2269,12 +1885,6 @@ namespace ashes::gl
 		, CmdCopyBufferSubData const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eTexSubImage1D >
-	{
-		static Op constexpr value = { OpType::eTexSubImage1D, 8u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eTexSubImage1D >
@@ -2312,12 +1922,6 @@ namespace ashes::gl
 		, CmdTexSubImage1D const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eTexSubImage2D >
-	{
-		static Op constexpr value = { OpType::eTexSubImage2D, 10u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eTexSubImage2D >
@@ -2361,12 +1965,6 @@ namespace ashes::gl
 		, CmdTexSubImage2D const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eTexSubImage3D >
-	{
-		static Op constexpr value = { OpType::eTexSubImage3D, 12u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eTexSubImage3D >

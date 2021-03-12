@@ -13,12 +13,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eClearTexColor >
-	{
-		static Op constexpr value = { OpType::eClearTexColor, 9u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearTexColor >
 	{
 		inline CmdT( uint32_t name

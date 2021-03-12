@@ -11,12 +11,6 @@ namespace ashes::gl
 	//*************************************************************************
 
 	template<>
-	struct CmdConfig< OpType::eDrawIndexed >
-	{
-		static Op constexpr value = { OpType::eDrawIndexed, 8u };
-	};
-
-	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDrawIndexed >
 	{
 		inline CmdT( uint32_t indexCount
@@ -49,12 +43,6 @@ namespace ashes::gl
 		, CmdDrawIndexed const & cmd );
 
 	//*************************************************************************
-
-	template<>
-	struct CmdConfig< OpType::eDrawIndexedBaseInstance >
-	{
-		static Op constexpr value = { OpType::eDrawIndexedBaseInstance, 8u };
-	};
 
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDrawIndexedBaseInstance >
