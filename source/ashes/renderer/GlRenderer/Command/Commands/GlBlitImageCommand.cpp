@@ -58,11 +58,11 @@ namespace ashes::gl
 			, cmd.filter );
 	}
 
-	VkExtent3D convert( VkOffset3D const & src )
+	VkExtent3D operator-( VkOffset3D const & lhs, VkOffset3D const & rhs )
 	{
-		return VkExtent3D{ uint32_t( src.x )
-			, uint32_t( src.y )
-			, uint32_t( src.z ) };
+		return VkExtent3D{ uint32_t( std::abs( lhs.x - rhs.x ) )
+			, uint32_t( std::abs( lhs.y - rhs.y ) )
+			, uint32_t( std::abs( lhs.z - rhs.z ) ) };
 	}
 
 	VkImageCopy convert( VkImageBlit const & src )
@@ -71,7 +71,7 @@ namespace ashes::gl
 			, src.srcOffsets[0]
 			, src.dstSubresource
 			, src.dstOffsets[0]
-			, convert( src.srcOffsets[1] ) };
+			, src.srcOffsets[1] - src.srcOffsets[0] };
 	}
 
 	void buildBlitImageCommand( ContextStateStack & stack
