@@ -1,4 +1,3 @@
-set( FOLDER_NAME 02-SwapChainCreation )
 project( "Test-${FOLDER_NAME}" )
 
 set( ${PROJECT_NAME}_VERSION_MAJOR 0 )
