@@ -25,36 +25,36 @@ namespace ashes::gl
 			, CmdList & list
 			, VkImageViewArray & views )
 		{
+			auto baseArrayLayer = std::max( srcCopyInfo.imageSubresource.baseArrayLayer
+				, uint32_t( srcCopyInfo.imageOffset.z ) );
+
+			auto copyInfo = srcCopyInfo;
+			VkImageView srcView{ VK_NULL_HANDLE };
+			FboAttachment srcAttach{ initialiseAttachment( device
+				, copyInfo.imageSubresource
+				, src
+				, srcView ) };
+
+			if ( srcView != VK_NULL_HANDLE )
+			{
+				views.push_back( srcView );
+				copyInfo.imageSubresource.mipLevel = 0u;
+			}
+
 			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK
 				, get( dst )->getInternal() ) );
 			stack.applyPackAlign( list, 1 );
-
-			for ( uint32_t layer = 0u; layer < srcCopyInfo.imageSubresource.layerCount; ++layer )
-			{
-				auto copyInfo = srcCopyInfo;
-				VkImageView srcView{ VK_NULL_HANDLE };
-				FboAttachment srcAttach{ initialiseAttachment( device
-					, copyInfo.imageSubresource
-					, src
-					, layer
-					, srcView ) };
-
-				if ( srcView != VK_NULL_HANDLE )
-				{
-					views.push_back( srcView );
-					copyInfo.imageSubresource.mipLevel = 0u;
-				}
-
-				list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_READ_FRAMEBUFFER ) );
-				srcAttach.bindRead( stack, copyInfo.imageSubresource, 0u, GL_READ_FRAMEBUFFER, list );
-				list.push_back( makeCmd< OpType::eReadPixels >( copyInfo.imageOffset.x
-					, copyInfo.imageOffset.y
-					, copyInfo.imageExtent.width
-					, copyInfo.imageExtent.height
-					, get( src )->getReadFormat()
-					, get( src )->getReadType() ) );
-			}
-
+			list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_READ_FRAMEBUFFER ) );
+			srcAttach.bindRead( stack
+				, copyInfo.imageSubresource.mipLevel
+				, baseArrayLayer
+				, GL_READ_FRAMEBUFFER, list );
+			list.push_back( makeCmd< OpType::eReadPixels >( copyInfo.imageOffset.x
+				, copyInfo.imageOffset.y
+				, copyInfo.imageExtent.width
+				, copyInfo.imageExtent.height
+				, get( src )->getReadFormat()
+				, get( src )->getReadType() ) );
 			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
 				, nullptr ) );
 			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK
@@ -90,7 +90,7 @@ namespace ashes::gl
 			, VkImage src
 			, VkBuffer dst
 			, VkDeviceSize srcBufferOffset
-			, VkDeviceSize mipLayerSize
+			, VkDeviceSize srcMipLayerSize
 			, CmdList & list )
 		{
 			auto dstBufferOffset = copyInfo.bufferOffset;
@@ -98,13 +98,19 @@ namespace ashes::gl
 				, get( get( src )->getMemoryBinding().getParent() )->getInternal() ) );
 			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_COPY_WRITE
 				, get( dst )->getInternal() ) );
+			auto layerCount = std::max( copyInfo.imageSubresource.layerCount
+				, copyInfo.imageExtent.depth );
+			auto dstRowWidth = ( copyInfo.bufferRowLength == 0 || copyInfo.bufferRowLength == copyInfo.imageExtent.width )
+				? copyInfo.imageExtent.width
+				: copyInfo.bufferRowLength;
 
-			for ( uint32_t layer = 0u; layer < copyInfo.imageSubresource.layerCount; ++layer )
+			for ( uint32_t layer = 0u; layer < layerCount; ++layer )
 			{
 				list.push_back( makeCmd< OpType::eCopyBufferSubData >( GL_BUFFER_TARGET_COPY_READ
 					, GL_BUFFER_TARGET_COPY_WRITE
-					, VkBufferCopy{ srcBufferOffset, dstBufferOffset, mipLayerSize } ) );
-				srcBufferOffset += mipLayerSize;
+					, VkBufferCopy{ srcBufferOffset, dstBufferOffset, srcMipLayerSize } ) );
+				srcBufferOffset += srcMipLayerSize;
+				dstBufferOffset += srcMipLayerSize;
 			}
 
 			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_COPY_WRITE
@@ -134,13 +140,15 @@ namespace ashes::gl
 			auto srcRowSize = srcMipLayerSize / mipExtent.height;
 			auto dstRowSize = dstRowWidth * getMinimalSize( get( src )->getFormatVk() );
 			auto dstMipLayerSize = dstRowSize * rowCount;
+			auto layerCount = std::max( copyInfo.imageSubresource.layerCount
+				, copyInfo.imageExtent.depth );
 
 			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_COPY_READ
 				, get( get( src )->getMemoryBinding().getParent() )->getInternal() ) );
 			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_COPY_WRITE
 				, get( dst )->getInternal() ) );
 
-			for ( uint32_t layer = 0u; layer < copyInfo.imageSubresource.layerCount; ++layer )
+			for ( uint32_t layer = 0u; layer < layerCount; ++layer )
 			{
 				auto srcRowOffset = srcBufferOffset + ( srcRowSize * copyInfo.imageOffset.x );
 				auto dstRowOffset = dstBufferOffset;
@@ -176,8 +184,11 @@ namespace ashes::gl
 	{
 		glLogCommand( list, "CopyImageToBufferCommand" );
 		copyInfo.bufferOffset += get( dst )->getMemoryBinding().getOffset();
+		auto layerCount = std::max( copyInfo.imageSubresource.layerCount
+			, copyInfo.imageExtent.depth );
 
-		if ( get( src )->isReadSupported() )
+		if ( get( src )->isReadSupported()
+			&& layerCount == 1u )
 		{
 			readImagePixels( stack, device, copyInfo, src, dst, list, views );
 		}
@@ -187,7 +198,9 @@ namespace ashes::gl
 			auto & srcBinding = static_cast< ImageMemoryBinding const & >( get( src )->getMemoryBinding() );
 			auto mipExtent = getSubresourceDimensions( get( src )->getDimensions(), copyInfo.imageSubresource.mipLevel );
 			auto mipLayerSize = srcBinding.getMipLevelLayerSize( copyInfo.imageSubresource.mipLevel );
-			srcBufferOffset += mipLayerSize * copyInfo.imageSubresource.baseArrayLayer;
+			auto baseArrayLayer = std::max( copyInfo.imageSubresource.baseArrayLayer
+				, uint32_t( copyInfo.imageOffset.z ) );
+			srcBufferOffset += mipLayerSize * baseArrayLayer;
 
 			if ( mipExtent == copyInfo.imageExtent
 				&& ( copyInfo.bufferRowLength == 0 || copyInfo.bufferRowLength == copyInfo.imageExtent.width )

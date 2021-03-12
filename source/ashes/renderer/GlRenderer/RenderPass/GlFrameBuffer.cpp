@@ -109,7 +109,6 @@ namespace ashes::gl
 		FboAttachment initialiseAttachment( VkDevice device
 			, VkImageSubresourceLayers & subresource
 			, VkImage image
-			, uint32_t layer
 			, VkImageView & view )
 		{
 			FboAttachment result{ 0u
@@ -215,7 +214,6 @@ namespace ashes::gl
 		FboAttachment initialiseAttachment( VkDevice device
 			, VkImageSubresourceLayers & subresource
 			, VkImage image
-			, uint32_t layer
 			, VkImageView & view )
 		{
 			FboAttachment result{ 0u
@@ -235,22 +233,6 @@ namespace ashes::gl
 
 			if ( get( image )->getArrayLayers() > 1u )
 			{
-				allocate( view
-					, get( device )->getAllocationCallbacks()
-					, device
-					, VkImageViewCreateInfo{ VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO
-						, nullptr
-						, 0u
-						, image
-						, VkImageViewType( get( image )->getType() )
-						, get( image )->getFormatVk()
-						, VkComponentMapping{}
-						, { subresource.aspectMask
-							, subresource.mipLevel
-							, 1u
-							, subresource.baseArrayLayer + layer
-							, 1u } } );
-				result.object = get( view )->getInternal();
 				result.mipLevel = 0u;
 			}
 
@@ -299,7 +281,6 @@ namespace ashes::gl
 	FboAttachment initialiseAttachment( VkDevice device
 		, VkImageSubresourceLayers & subresource
 		, VkImage image
-		, uint32_t layer
 		, VkImageView & view )
 	{
 		if ( hasTextureViews( device ) )
@@ -307,14 +288,12 @@ namespace ashes::gl
 			return gl4::initialiseAttachment( device
 				, subresource
 				, image
-				, layer
 				, view );
 		}
 
 		return gl3::initialiseAttachment( device
 			, subresource
 			, image
-			, layer
 			, view );
 	}
 

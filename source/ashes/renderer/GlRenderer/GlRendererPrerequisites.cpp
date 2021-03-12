@@ -90,7 +90,55 @@ namespace ashes::gl
 
 	//*********************************************************************************************
 
-	void FboAttachment::bind( VkImageSubresourceLayers subresource
+	void FboAttachment::bind( uint32_t mipLevel
+		, GlFrameBufferTarget fboTarget
+		, CmdList & list )const
+	{
+		if ( target == GL_TEXTURE_1D )
+		{
+			list.push_back( makeCmd< OpType::eFramebufferTexture1D >( fboTarget
+				, point
+				, target
+				, object
+				, mipLevel ) );
+		}
+		else if ( target == GL_TEXTURE_2D
+			|| target == GL_TEXTURE_2D_MULTISAMPLE )
+		{
+			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( fboTarget
+				, point
+				, target
+				, object
+				, mipLevel ) );
+		}
+		else
+		{
+			list.push_back( makeCmd< OpType::eFramebufferTexture >( fboTarget
+				, point
+				, object
+				, mipLevel ) );
+		}
+	}
+
+	void FboAttachment::bindRead( ContextStateStack & stack
+		, uint32_t mipLevel
+		, GlFrameBufferTarget target
+		, CmdList & list )const
+	{
+		bind( mipLevel, target, list );
+		read( stack, list );
+	}
+
+	void FboAttachment::bindDraw( ContextStateStack & stack
+		, uint32_t mipLevel
+		, GlFrameBufferTarget target
+		, CmdList & list )const
+	{
+		bind( mipLevel, target, list );
+		draw( stack, list );
+	}
+
+	void FboAttachment::bind( uint32_t mipLevel
 		, uint32_t layer
 		, GlFrameBufferTarget fboTarget
 		, CmdList & list )const
@@ -101,25 +149,36 @@ namespace ashes::gl
 				, point
 				, target
 				, object
-				, subresource.mipLevel ) );
+				, mipLevel ) );
 		}
-		else if ( target == GL_TEXTURE_2D )
+		else if ( target == GL_TEXTURE_2D
+			|| target == GL_TEXTURE_2D_MULTISAMPLE )
 		{
 			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( fboTarget
 				, point
 				, target
 				, object
-				, subresource.mipLevel ) );
+				, mipLevel ) );
+		}
+		else if ( target == GL_TEXTURE_3D )
+		{
+			list.push_back( makeCmd< OpType::eFramebufferTexture3D >( fboTarget
+				, point
+				, target
+				, object
+				, mipLevel
+				, layer ) );
 		}
 		else if ( target == GL_TEXTURE_CUBE
 			|| target == GL_TEXTURE_1D_ARRAY
 			|| target == GL_TEXTURE_2D_ARRAY
+			|| target == GL_TEXTURE_2D_MULTISAMPLE_ARRAY
 			|| target == GL_TEXTURE_CUBE_ARRAY )
 		{
 			list.push_back( makeCmd< OpType::eFramebufferTextureLayer >( fboTarget
 				, point
 				, object
-				, subresource.mipLevel
+				, mipLevel
 				, layer ) );
 		}
 		else
@@ -127,27 +186,27 @@ namespace ashes::gl
 			list.push_back( makeCmd< OpType::eFramebufferTexture >( fboTarget
 				, point
 				, object
-				, subresource.mipLevel ) );
+				, mipLevel ) );
 		}
 	}
 
 	void FboAttachment::bindRead( ContextStateStack & stack
-		, VkImageSubresourceLayers subresource
+		, uint32_t mipLevel
 		, uint32_t layer
 		, GlFrameBufferTarget target
 		, CmdList & list )const
 	{
-		bind( subresource, layer, target, list );
+		bind( mipLevel, layer, target, list );
 		read( stack, list );
 	}
 
 	void FboAttachment::bindDraw( ContextStateStack & stack
-		, VkImageSubresourceLayers subresource
+		, uint32_t mipLevel
 		, uint32_t layer
 		, GlFrameBufferTarget target
 		, CmdList & list )const
 	{
-		bind( subresource, layer, target, list );
+		bind( mipLevel, layer, target, list );
 		draw( stack, list );
 	}
 
@@ -193,11 +252,10 @@ namespace ashes::gl
 		, VkImageBlit origRegion
 		, VkImage srcImage
 		, VkImage dstImage
-		, uint32_t layer
 		, VkImageViewArray & views )
 		: region{ origRegion }
-		, src{ initialiseAttachment( device, origRegion.srcSubresource, srcImage, layer, srcView ) }
-		, dst{ initialiseAttachment( device, origRegion.dstSubresource, dstImage, layer, dstView ) }
+		, src{ initialiseAttachment( device, origRegion.srcSubresource, srcImage, srcView ) }
+		, dst{ initialiseAttachment( device, origRegion.dstSubresource, dstImage, dstView ) }
 	{
 		auto srcExtent = getSubresourceDimensions( get( srcImage )->getDimensions(), region.srcSubresource.mipLevel );
 		auto dstExtent = getSubresourceDimensions( get( dstImage )->getDimensions(), region.dstSubresource.mipLevel );
@@ -229,9 +287,8 @@ namespace ashes::gl
 		, VkImageCopy origRegion
 		, VkImage srcImage
 		, VkImage dstImage
-		, uint32_t layer
 		, VkImageViewArray & views )
-		: LayerCopy{ device, convert( origRegion ), srcImage, dstImage, layer, views }
+		: LayerCopy{ device, convert( origRegion ), srcImage, dstImage, views }
 	{
 	}
 

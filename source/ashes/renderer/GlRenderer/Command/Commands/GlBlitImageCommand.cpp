@@ -106,7 +106,14 @@ namespace ashes::gl
 		}
 		else
 		{
-			auto layerCount = region.srcSubresource.layerCount;
+			auto layerCount = std::max( region.srcSubresource.layerCount
+				, std::max( region.dstSubresource.layerCount
+					, uint32_t( std::max( region.srcOffsets[1].z
+						, region.dstOffsets[1].z ) ) ) );
+			auto srcBaseArrayLayer = std::max( region.srcSubresource.baseArrayLayer
+				, uint32_t( region.srcOffsets[0].z ) );
+			auto dstBaseArrayLayer = std::max( region.dstSubresource.baseArrayLayer
+				, uint32_t( region.dstOffsets[0].z ) );
 
 			for ( uint32_t layer = 0u; layer < layerCount; ++layer )
 			{
@@ -114,13 +121,18 @@ namespace ashes::gl
 					, region
 					, srcImage
 					, dstImage
-					, layer
 					, views };
 
 				list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_READ_FRAMEBUFFER ) );
-				layerCopy.bindSrc( stack, layer, GL_READ_FRAMEBUFFER, list );
+				layerCopy.bindSrc( stack
+					, srcBaseArrayLayer + layer
+					, GL_READ_FRAMEBUFFER
+					, list );
 				list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_DRAW_FRAMEBUFFER ) );
-				layerCopy.bindDst( stack, layer, GL_DRAW_FRAMEBUFFER, list );
+				layerCopy.bindDst( stack
+					, dstBaseArrayLayer + layer
+					, GL_DRAW_FRAMEBUFFER
+					, list );
 				list.push_back( makeCmd< OpType::eBlitFramebuffer >( layerCopy.region.srcOffsets[0].x
 					, layerCopy.region.srcOffsets[0].y
 					, layerCopy.region.srcOffsets[1].x
