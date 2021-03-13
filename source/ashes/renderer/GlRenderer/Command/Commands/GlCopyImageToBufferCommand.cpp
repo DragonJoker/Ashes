@@ -76,11 +76,22 @@ namespace ashes::gl
 			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, get( srcBinding.getParent() )->getInternal() ) );
 			stack.applyPackAlign( list, 1 );
 			list.push_back( makeCmd< OpType::eBindTexture >( get( src )->getTarget(), get( src )->getInternal() ) );
-			list.push_back( makeCmd< OpType::eGetTexImage >( get( src )->getTarget()
-				, get( src )->getGetFormat()
-				, get( src )->getGetType()
-				, GLint( copyInfo.imageSubresource.mipLevel )
-				, intptr_t( srcBufferOffset ) ) );
+
+			if ( isCompressedFormat( get( src )->getFormatVk() ) )
+			{
+				list.push_back( makeCmd< OpType::eGetCompressedTexImage >( get( src )->getTarget()
+					, GLint( copyInfo.imageSubresource.mipLevel )
+					, intptr_t( srcBufferOffset ) ) );
+			}
+			else
+			{
+				list.push_back( makeCmd< OpType::eGetTexImage >( get( src )->getTarget()
+					, get( src )->getGetFormat()
+					, get( src )->getGetType()
+					, GLint( copyInfo.imageSubresource.mipLevel )
+					, intptr_t( srcBufferOffset ) ) );
+			}
+
 			list.push_back( makeCmd< OpType::eBindTexture >( get( src )->getTarget(), 0u ) );
 			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, 0u ) );
 			return srcBufferOffset;
@@ -188,7 +199,8 @@ namespace ashes::gl
 			, copyInfo.imageExtent.depth );
 
 		if ( get( src )->isReadSupported()
-			&& layerCount == 1u )
+			&& layerCount == 1u
+			&& !isCompressedFormat( get( src )->getFormatVk() ) )
 		{
 			readImagePixels( stack, device, copyInfo, src, dst, list, views );
 		}

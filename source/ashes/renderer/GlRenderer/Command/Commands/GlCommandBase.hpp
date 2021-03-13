@@ -87,6 +87,7 @@ namespace ashes::gl
 		eFramebufferTextureLayer,
 		eFrontFace,
 		eGenerateMipmaps,
+		eGetCompressedTexImage,
 		eGetQueryResults,
 		eGetTexImage,
 		eLineWidth,
@@ -589,6 +590,31 @@ namespace ashes::gl
 
 	void apply( ContextLock const & context
 		, CmdUseProgramPipeline const & cmd );
+
+	//*************************************************************************
+
+	template<>
+	struct alignas( uint64_t ) CmdT< OpType::eGetCompressedTexImage >
+	{
+		inline CmdT( GlTextureType target
+			, GLint level = 0
+			, intptr_t offset = 0 )
+			: cmd{ { OpType::eGetCompressedTexImage, sizeof( CmdT ) / sizeof( uint32_t ) } }
+			, target{ std::move( target ) }
+			, level{ std::move( level ) }
+			, offset{ std::move( offset ) }
+		{
+		}
+
+		Command cmd;
+		GlTextureType target;
+		GLint level;
+		intptr_t offset;
+	};
+	using CmdGetCompressedTexImage = CmdT< OpType::eGetCompressedTexImage >;
+
+	void apply( ContextLock const & context
+		, CmdGetCompressedTexImage const & cmd );
 
 	//*************************************************************************
 

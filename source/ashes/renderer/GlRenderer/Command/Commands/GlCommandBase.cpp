@@ -124,6 +124,16 @@ namespace ashes::gl
 	}
 
 	void apply( ContextLock const & context
+		, CmdGetCompressedTexImage const & cmd )
+	{
+		glLogCall( context
+			, glGetCompressedTexImage
+			, cmd.target
+			, cmd.level
+			, getBufferOffset( cmd.offset ) );
+	}
+
+	void apply( ContextLock const & context
 		, CmdGetQueryResults const & cmd )
 	{
 		get( cmd.queryPool )->getResults( context
