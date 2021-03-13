@@ -256,6 +256,9 @@ namespace ashes::gl
 			case OpType::eGenerateMipmaps:
 				apply( lock, map< OpType::eGenerateMipmaps >( cmd ) );
 				break;
+			case OpType::eGetCompressedTexImage:
+				apply( lock, map< OpType::eGetCompressedTexImage >( cmd ) );
+				break;
 			case OpType::eGetTexImage:
 				apply( lock, map< OpType::eGetTexImage >( cmd ) );
 				break;
