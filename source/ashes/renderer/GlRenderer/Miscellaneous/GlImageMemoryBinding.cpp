@@ -207,7 +207,28 @@ namespace ashes::gl
 
 	void ImageMemoryBinding::setImage1D( ContextLock const & context )
 	{
-		if ( hasTextureStorage( m_device ) )
+		if ( false && isCompressedFormat( m_texture->getFormatVk() ) )
+		{
+			intptr_t offset = 0;
+			auto width = m_texture->getDimensions().width;
+
+			for ( uint32_t level = 0u; level < m_texture->getMipLevels(); ++level )
+			{
+				auto bufSize = ashes::getSize( VkExtent3D{ width, 1u, 1u }, m_texture->getFormatVk(), level );
+				glLogCall( context
+					, glCompressedTexImage1D
+					, m_texture->getTarget()
+					, GLint( level )
+					, m_texture->getInternalFormat()
+					, width
+					, 0
+					, GLsizei( bufSize )
+					, getBufferOffset( offset ) );
+				width >>= 1u;
+				offset += bufSize;
+			}
+		}
+		else if ( hasTextureStorage( m_device ) )
 		{
 			glLogCall( context
 				, glTexStorage1D
@@ -218,23 +239,55 @@ namespace ashes::gl
 		}
 		else
 		{
-			glLogCall( context
-				, glTexImage1D
-				, m_texture->getTarget()
-				, 0u
-				, m_texture->getInternalFormat()
-				, m_texture->getDimensions().width
-				, 0
-				, m_texture->getDrawFormat()
-				, m_texture->getDrawType()
-				, nullptr );
+			intptr_t offset = 0;
+			auto width = m_texture->getDimensions().width;
+
+			for ( uint32_t level = 0u; level < m_texture->getMipLevels(); ++level )
+			{
+				auto bufSize = ashes::getSize( VkExtent3D{ width, 1u, 1u }, m_texture->getFormatVk(), level );
+				glLogCall( context
+					, glTexImage1D
+					, m_texture->getTarget()
+					, GLint( level )
+					, m_texture->getInternalFormat()
+					, width
+					, 0
+					, m_texture->getDrawFormat()
+					, m_texture->getDrawType()
+					, getBufferOffset( offset ) );
+				width >>= 1u;
+				offset += bufSize;
+			}
 		}
 	}
 
 	void ImageMemoryBinding::setImage2D( ContextLock const & context
 		, uint32_t height )
 	{
-		if ( hasTextureStorage( m_device ) )
+		if ( false && isCompressedFormat( m_texture->getFormatVk() ) )
+		{
+			intptr_t offset = 0;
+			auto width = m_texture->getDimensions().width;
+
+			for ( uint32_t level = 0u; level < m_texture->getMipLevels(); ++level )
+			{
+				auto bufSize = ashes::getSize( VkExtent3D{ width, height, 1u }, m_texture->getFormatVk(), level );
+				glLogCall( context
+					, glCompressedTexImage2D
+					, m_texture->getTarget()
+					, GLint( level )
+					, m_texture->getInternalFormat()
+					, width
+					, height
+					, 0
+					, GLsizei( bufSize )
+					, getBufferOffset( offset ) );
+				width >>= 1u;
+				height >>= 1u;
+				offset += bufSize;
+			}
+		}
+		else if ( hasTextureStorage( m_device ) )
 		{
 			glLogCall( context
 				, glTexStorage2D
@@ -246,17 +299,27 @@ namespace ashes::gl
 		}
 		else
 		{
-			glLogCall( context
-				, glTexImage2D
-				, m_texture->getTarget()
-				, 0u
-				, m_texture->getInternalFormat()
-				, m_texture->getDimensions().width
-				, height
-				, 0
-				, m_texture->getDrawFormat()
-				, m_texture->getDrawType()
-				, nullptr );
+			intptr_t offset = 0;
+			auto width = m_texture->getDimensions().width;
+
+			for ( uint32_t level = 0u; level < m_texture->getMipLevels(); ++level )
+			{
+				auto bufSize = ashes::getSize( VkExtent3D{ width, height, 1u }, m_texture->getFormatVk(), level );
+				glLogCall( context
+					, glTexImage2D
+					, m_texture->getTarget()
+					, GLint( level )
+					, m_texture->getInternalFormat()
+					, m_texture->getDimensions().width
+					, height
+					, 0
+					, m_texture->getDrawFormat()
+					, m_texture->getDrawType()
+					, getBufferOffset( offset ) );
+				width >>= 1u;
+				height >>= 1u;
+				offset += bufSize;
+			}
 		}
 	}
 
@@ -264,23 +327,79 @@ namespace ashes::gl
 		, int face )
 	{
 		assert( !hasTextureStorage( m_device ) );
-		glLogCall( context
-			, glTexImage2D
-			, GlTextureType( GL_TEXTURE_CUBE_POSITIVE_X + face )
-			, 0u
-			, m_texture->getInternalFormat()
-			, m_texture->getDimensions().width
-			, m_texture->getDimensions().height
-			, 0
-			, m_texture->getDrawFormat()
-			, m_texture->getDrawType()
-			, nullptr );
+		auto width = m_texture->getDimensions().width;
+		auto height = m_texture->getDimensions().height;
+		intptr_t offset = 0;
+
+		for ( uint32_t level = 0u; level < m_texture->getMipLevels(); ++level )
+		{
+			auto bufSize = ashes::getSize( VkExtent3D{ width, height, 1u }, m_texture->getFormatVk(), level );
+
+			if ( false && isCompressedFormat( m_texture->getFormatVk() ) )
+			{
+				glLogCall( context
+					, glCompressedTexImage2D
+					, m_texture->getTarget()
+					, GLint( level )
+					, m_texture->getInternalFormat()
+					, width
+					, height
+					, 0
+					, GLsizei( bufSize )
+					, getBufferOffset( offset ) );
+				offset += bufSize;
+			}
+			else
+			{
+				glLogCall( context
+					, glTexImage2D
+					, GlTextureType( GL_TEXTURE_CUBE_POSITIVE_X + face )
+					, GLint( level )
+					, m_texture->getInternalFormat()
+					, m_texture->getDimensions().width
+					, m_texture->getDimensions().height
+					, 0
+					, m_texture->getDrawFormat()
+					, m_texture->getDrawType()
+					, getBufferOffset( offset ) );
+				offset += bufSize;
+			}
+
+			width >>= 1u;
+			height >>= 1u;
+		}
 	}
 
 	void ImageMemoryBinding::setImage3D( ContextLock const & context
 		, uint32_t depth )
 	{
-		if ( hasTextureStorage( m_device ) )
+		if ( false && isCompressedFormat( m_texture->getFormatVk() ) )
+		{
+			intptr_t offset = 0;
+			auto width = m_texture->getDimensions().width;
+			auto height = m_texture->getDimensions().height;
+
+			for ( uint32_t level = 0u; level < m_texture->getMipLevels(); ++level )
+			{
+				auto bufSize = ashes::getSize( VkExtent3D{ width, height, depth }, m_texture->getFormatVk(), level );
+				glLogCall( context
+					, glCompressedTexImage3D
+					, m_texture->getTarget()
+					, GLint( level )
+					, m_texture->getInternalFormat()
+					, width
+					, height
+					, depth
+					, 0
+					, GLsizei( bufSize )
+					, getBufferOffset( offset ) );
+				width >>= 1u;
+				height >>= 1u;
+				depth >>= 1u;
+				offset += bufSize;
+			}
+		}
+		else if ( hasTextureStorage( m_device ) )
 		{
 			glLogCall( context
 				, glTexStorage3D
@@ -293,18 +412,30 @@ namespace ashes::gl
 		}
 		else
 		{
-			glLogCall( context
-				, glTexImage3D
-				, m_texture->getTarget()
-				, 0u
-				, m_texture->getInternalFormat()
-				, m_texture->getDimensions().width
-				, m_texture->getDimensions().height
-				, depth
-				, 0
-				, m_texture->getDrawFormat()
-				, m_texture->getDrawType()
-				, nullptr );
+			intptr_t offset = 0;
+			auto width = m_texture->getDimensions().width;
+			auto height = m_texture->getDimensions().height;
+
+			for ( uint32_t level = 0u; level < m_texture->getMipLevels(); ++level )
+			{
+				auto bufSize = ashes::getSize( VkExtent3D{ width, height, depth }, m_texture->getFormatVk(), level );
+				glLogCall( context
+					, glTexImage3D
+					, m_texture->getTarget()
+					, GLint( level )
+					, m_texture->getInternalFormat()
+					, m_texture->getDimensions().width
+					, m_texture->getDimensions().height
+					, depth
+					, 0
+					, m_texture->getDrawFormat()
+					, m_texture->getDrawType()
+					, getBufferOffset( offset ) );
+				width >>= 1u;
+				height >>= 1u;
+				depth >>= 1u;
+				offset += bufSize;
+			}
 		}
 	}
 
