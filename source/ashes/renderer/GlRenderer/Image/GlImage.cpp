@@ -191,27 +191,16 @@ namespace ashes::gl
 		, VkDevice device
 		, VkImageCreateInfo createInfo
 		, bool swapchainImage )
-		: m_flags{ createInfo.flags }
-		, m_imageType{ createInfo.imageType }
-		, m_format{ createInfo.format }
-		, m_extent{ createInfo.extent }
-		, m_mipLevels{ createInfo.mipLevels }
-		, m_arrayLayers{ createInfo.arrayLayers }
-		, m_samples{ createInfo.samples }
-		, m_tiling{ createInfo.tiling }
-		, m_usage{ createInfo.usage }
-		, m_sharingMode{ createInfo.sharingMode }
-		, m_queueFamilyIndices{ ( createInfo.pQueueFamilyIndices
-			? UInt32Array{ createInfo.pQueueFamilyIndices, createInfo.pQueueFamilyIndices + createInfo.queueFamilyIndexCount }
-			: UInt32Array{} ) }
+		: m_allocInfo{ allocInfo }
+		, m_createInfo{ std::move( createInfo ) }
 		, m_device{ device }
-		, m_target{ convert( device, m_imageType, m_arrayLayers, m_flags, m_samples ) }
+		, m_target{ convert( device, getType(), getArrayLayers(), getCreateFlags(), getSamples() ) }
 		, m_swapchainImage{ swapchainImage }
 	{
 		auto context = get( m_device )->getContext();
 		m_pixelFormat = PixelFormat{ context
 			, m_target
-			, m_format };
+			, getFormatVk() };
 		glLogCreateCall( context
 			, glGenTextures
 			, 1
@@ -230,6 +219,11 @@ namespace ashes::gl
 
 	Image::~Image()
 	{
+		while ( !m_views.empty() )
+		{
+			doDestroyView( m_views.begin()->second );
+		}
+
 		if ( m_binding )
 		{
 			get( m_binding->getParent() )->unbindImage( get( this ) );
@@ -240,6 +234,21 @@ namespace ashes::gl
 			, glDeleteTextures
 			, 1
 			, &m_internal );
+	}
+
+	VkImageView Image::createView( VkImageViewCreateInfo const & createInfo )
+	{
+		auto pair = m_views.emplace( createInfo, VkImageView{} );
+
+		if ( pair.second )
+		{
+			allocate( pair.first->second
+				, m_allocInfo
+				, getDevice()
+				, createInfo );
+		}
+
+		return pair.first->second;
 	}
 
 	VkMemoryRequirements Image::getMemoryRequirements()const
@@ -261,5 +270,13 @@ namespace ashes::gl
 		m_memoryRequirements.memoryTypeBits = physicalDevice->getMemoryTypeBits( VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
 			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT );
 		m_memoryRequirements.size = ashes::getAlignedSize( m_memoryRequirements.size, m_memoryRequirements.alignment );
+	}
+
+	void Image::doDestroyView( VkImageView view )
+	{
+		auto it = m_views.find( get( view )->getCreateInfo() );
+		assert( it != m_views.end() );
+		deallocate( it->second, m_allocInfo );
+		m_views.erase( it );
 	}
 }

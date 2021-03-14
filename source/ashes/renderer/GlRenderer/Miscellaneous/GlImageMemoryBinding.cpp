@@ -157,11 +157,20 @@ namespace ashes::gl
 
 	VkDeviceSize ImageMemoryBinding::getMipLevelLayerSize( uint32_t mipLevel )const
 	{
-		return intptr_t( getLevelsSize( VkExtent2D{ m_texture->getDimensions().width, m_texture->getDimensions().height }
+		return getLevelsSize( VkExtent2D{ m_texture->getDimensions().width, m_texture->getDimensions().height }
 			, m_texture->getFormatVk()
 			, mipLevel
 			, 1u
-			, uint32_t( getMinimalSize( m_texture->getFormatVk() ) ) ) );
+			, uint32_t( getMinimalSize( m_texture->getFormatVk() ) ) );
+	}
+
+	VkDeviceSize ImageMemoryBinding::getArrayLayerSize()const
+	{
+		return getLevelsSize( VkExtent2D{ m_texture->getDimensions().width, m_texture->getDimensions().height }
+			, m_texture->getFormatVk()
+			, 0u
+			, m_texture->getMipLevels()
+			, uint32_t( getMinimalSize( m_texture->getFormatVk() ) ) );
 	}
 
 	void ImageMemoryBinding::upload( ContextLock const & context
@@ -252,8 +261,8 @@ namespace ashes::gl
 					, m_texture->getInternalFormat()
 					, width
 					, 0
-					, m_texture->getDrawFormat()
-					, m_texture->getDrawType()
+					, m_texture->getUnpackFormat()
+					, m_texture->getUnpackType()
 					, getBufferOffset( offset ) );
 				width >>= 1u;
 				offset += bufSize;
@@ -313,8 +322,8 @@ namespace ashes::gl
 					, m_texture->getDimensions().width
 					, height
 					, 0
-					, m_texture->getDrawFormat()
-					, m_texture->getDrawType()
+					, m_texture->getUnpackFormat()
+					, m_texture->getUnpackType()
 					, getBufferOffset( offset ) );
 				width >>= 1u;
 				height >>= 1u;
@@ -359,8 +368,8 @@ namespace ashes::gl
 					, m_texture->getDimensions().width
 					, m_texture->getDimensions().height
 					, 0
-					, m_texture->getDrawFormat()
-					, m_texture->getDrawType()
+					, m_texture->getUnpackFormat()
+					, m_texture->getUnpackType()
 					, getBufferOffset( offset ) );
 				offset += bufSize;
 			}
@@ -428,8 +437,8 @@ namespace ashes::gl
 					, m_texture->getDimensions().height
 					, depth
 					, 0
-					, m_texture->getDrawFormat()
-					, m_texture->getDrawType()
+					, m_texture->getUnpackFormat()
+					, m_texture->getUnpackType()
 					, getBufferOffset( offset ) );
 				width >>= 1u;
 				height >>= 1u;
@@ -624,8 +633,8 @@ namespace ashes::gl
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
 					, copyInfo.imageExtent.width
-					, m_texture->getDrawFormat()
-					, m_texture->getDrawType()
+					, m_texture->getUnpackFormat()
+					, m_texture->getUnpackType()
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 				break;
 
@@ -638,8 +647,8 @@ namespace ashes::gl
 					, copyInfo.imageOffset.y
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
-					, m_texture->getDrawFormat()
-					, m_texture->getDrawType()
+					, m_texture->getUnpackFormat()
+					, m_texture->getUnpackType()
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 				break;
 
@@ -654,8 +663,8 @@ namespace ashes::gl
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, copyInfo.imageExtent.depth
-					, m_texture->getDrawFormat()
-					, m_texture->getDrawType()
+					, m_texture->getUnpackFormat()
+					, m_texture->getUnpackType()
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 				break;
 
@@ -668,8 +677,8 @@ namespace ashes::gl
 					, copyInfo.imageSubresource.baseArrayLayer
 					, copyInfo.imageExtent.width
 					, copyInfo.imageSubresource.layerCount
-					, m_texture->getDrawFormat()
-					, m_texture->getDrawType()
+					, m_texture->getUnpackFormat()
+					, m_texture->getUnpackType()
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 				break;
 
@@ -684,8 +693,8 @@ namespace ashes::gl
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, copyInfo.imageSubresource.layerCount
-					, m_texture->getDrawFormat()
-					, m_texture->getDrawType()
+					, m_texture->getUnpackFormat()
+					, m_texture->getUnpackType()
 					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
 				break;
 

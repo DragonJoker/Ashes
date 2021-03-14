@@ -20,6 +20,7 @@ namespace ashes::gl
 
 		VkDeviceSize getMipLevelOffset( uint32_t mipLevel )const;
 		VkDeviceSize getMipLevelLayerSize( uint32_t mipLevel )const;
+		VkDeviceSize getArrayLayerSize()const;
 		void upload( ContextLock const & context
 			, ByteArray const & data
 			, VkDeviceSize offset

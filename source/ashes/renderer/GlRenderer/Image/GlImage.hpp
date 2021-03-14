@@ -12,6 +12,8 @@
 #include "renderer/GlRenderer/Enum/GlTextureType.hpp"
 #include "renderer/GlRenderer/Miscellaneous/GlPixelFormat.hpp"
 
+#include <ashes/common/VkTypeTraits.hpp>
+
 namespace ashes::gl
 {
 	class Image
@@ -29,6 +31,7 @@ namespace ashes::gl
 			, bool swapchainImage = false );
 		~Image();
 
+		VkImageView createView( VkImageViewCreateInfo const & info );
 		VkMemoryRequirements getMemoryRequirements()const;
 		std::vector< VkSparseImageMemoryRequirements > getSparseImageMemoryRequirements()const;
 
@@ -44,17 +47,42 @@ namespace ashes::gl
 
 		inline VkImageCreateFlags getCreateFlags()const noexcept
 		{
-			return m_flags;
+			return m_createInfo.flags;
 		}
 
 		inline VkImageType getType()const noexcept
 		{
-			return m_imageType;
+			return m_createInfo.imageType;
 		}
 
 		inline VkFormat getFormatVk()const noexcept
 		{
-			return m_format;
+			return m_createInfo.format;
+		}
+
+		inline uint32_t getArrayLayers()const noexcept
+		{
+			return m_createInfo.arrayLayers;
+		}
+
+		inline VkImageUsageFlags getUsage()const noexcept
+		{
+			return m_createInfo.usage;
+		}
+
+		inline VkSampleCountFlagBits getSamples()const noexcept
+		{
+			return m_createInfo.samples;
+		}
+
+		inline VkExtent3D const & getDimensions()const noexcept
+		{
+			return m_createInfo.extent;
+		}
+
+		inline uint32_t getMipLevels()const noexcept
+		{
+			return m_createInfo.mipLevels;
 		}
 
 		inline GlInternal getInternalFormat()const noexcept
@@ -62,24 +90,24 @@ namespace ashes::gl
 			return m_pixelFormat.internal;
 		}
 
-		inline GlFormat getDrawFormat()const noexcept
+		inline GlFormat getUnpackFormat()const noexcept
 		{
-			return m_pixelFormat.drawFormat;
+			return m_pixelFormat.unpackFormat;
 		}
 
-		inline GlType getDrawType()const noexcept
+		inline GlType getUnpackType()const noexcept
 		{
-			return m_pixelFormat.drawType;
+			return m_pixelFormat.unpackType;
 		}
 
-		inline GlFormat getGetFormat()const noexcept
+		inline GlFormat getPackFormat()const noexcept
 		{
-			return m_pixelFormat.getFormat;
+			return m_pixelFormat.packFormat;
 		}
 
-		inline GlType getGetType()const noexcept
+		inline GlType getPackType()const noexcept
 		{
-			return m_pixelFormat.getType;
+			return m_pixelFormat.packType;
 		}
 
 		inline bool isReadSupported()const noexcept
@@ -104,31 +132,6 @@ namespace ashes::gl
 			return m_pixelFormat.swizzle;
 		}
 
-		inline uint32_t getArrayLayers()const noexcept
-		{
-			return m_arrayLayers;
-		}
-
-		inline VkImageUsageFlags getUsage()const noexcept
-		{
-			return m_usage;
-		}
-
-		inline VkSampleCountFlagBits getSamples()const noexcept
-		{
-			return m_samples;
-		}
-
-		inline VkExtent3D const & getDimensions()const noexcept
-		{
-			return m_extent;
-		}
-
-		inline uint32_t getMipLevels()const noexcept
-		{
-			return m_mipLevels;
-		}
-
 		inline bool isSwapchainImage()const noexcept
 		{
 			return m_swapchainImage;
@@ -146,25 +149,18 @@ namespace ashes::gl
 
 	private:
 		void doInitialiseMemoryRequirements();
+		void doDestroyView( VkImageView view );
 
 	private:
+		VkAllocationCallbacks const * m_allocInfo;
 		VkDevice m_device;
-		VkImageCreateFlags m_flags;
-		VkImageType m_imageType;
-		VkFormat m_format;
-		VkExtent3D m_extent;
-		uint32_t m_mipLevels;
-		uint32_t m_arrayLayers;
-		VkSampleCountFlagBits m_samples;
-		VkImageTiling m_tiling;
-		VkImageUsageFlags m_usage;
-		VkSharingMode m_sharingMode;
-		UInt32Array m_queueFamilyIndices;
+		VkImageCreateInfo m_createInfo;
 		GlTextureType m_target;
 		PixelFormat m_pixelFormat;
 		bool m_swapchainImage{ false };
 		DeviceMemoryBinding const * m_binding{ nullptr };
 		VkMemoryRequirements m_memoryRequirements;
+		ImageViewCache m_views;
 	};
 }
 

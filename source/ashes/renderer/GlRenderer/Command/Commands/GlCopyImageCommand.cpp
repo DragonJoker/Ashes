@@ -3,7 +3,8 @@ This file belongs to Ashes.
 See LICENSE file in root folder.
 */
 #include "Command/Commands/GlCopyImageCommand.hpp"
-#include "Command/Commands/GlBlitImageCommand.hpp"
+#include "Command/Commands/GlCopyImageToBufferCommand.hpp"
+#include "Miscellaneous/GlImageMemoryBinding.hpp"
 
 #include "Image/GlImage.hpp"
 #include "Image/GlImageView.hpp"
@@ -96,8 +97,8 @@ namespace ashes::gl
 				, glGetTexImage
 				, srcTarget
 				, copy.srcSubresource.mipLevel
-				, get( src )->getGetFormat()
-				, get( src )->getGetType()
+				, get( src )->getPackFormat()
+				, get( src )->getPackType()
 				, srcData.data() );
 			glLogCall( context
 				, glBindTexture
@@ -108,6 +109,18 @@ namespace ashes::gl
 				, copy
 				, dstData );
 			return dstData;
+		}
+
+		VkBufferImageCopy getBufferImageCopy( VkImageCopy const & copyInfo
+			, VkImage dstImage )
+		{
+			VkBufferImageCopy result{};
+			auto & dstBinding = static_cast< ImageMemoryBinding const & >( get( dstImage )->getMemoryBinding() );
+			result.bufferOffset = dstBinding.getMipLevelOffset( copyInfo.dstSubresource.mipLevel ) - dstBinding.getOffset();
+			result.imageExtent = copyInfo.extent;
+			result.imageOffset = copyInfo.dstOffset;
+			result.imageSubresource = copyInfo.dstSubresource;
+			return result;
 		}
 	}
 
@@ -139,7 +152,7 @@ namespace ashes::gl
 				, srcTarget
 				, get( dstImage )->getInternal()
 				, dstTarget
-				, std::move( copyInfo ) ) );
+				, copyInfo ) );
 		}
 		else
 		{
@@ -193,26 +206,13 @@ namespace ashes::gl
 
 		if ( get( get( dstImage )->getMemoryBinding().getParent() )->getInternal() != GL_INVALID_INDEX )
 		{
-			auto dstTarget = convert( device
-				, get( dstImage )->getType()
-				, get( dstImage )->getArrayLayers()
-				, get( dstImage )->getCreateFlags() );
-			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, get( get( dstImage )->getMemoryBinding().getParent() )->getInternal() ) );
-			stack.applyPackAlign( list, 1 );
-			list.push_back( makeCmd< OpType::eBindTexture >( dstTarget, get( dstImage )->getInternal() ) );
-
-			if ( isCompressedFormat( get( dstImage )->getFormatVk() ) )
-			{
-				list.push_back( makeCmd< OpType::eGetCompressedTexImage >( dstTarget ) );
-			}
-			else
-			{
-				list.push_back( makeCmd< OpType::eGetTexImage >( dstTarget, get( dstImage )->getGetFormat(), get( dstImage )->getGetType() ) );
-			}
-
-			list.push_back( makeCmd< OpType::eBindTexture >( dstTarget, 0u ) );
-			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, 0u ) );
-			list.push_back( makeCmd< OpType::eDownloadMemory >( get( dstImage )->getMemoryBinding().getParent() ) );
+			buildCopyImageToBufferCommand( stack
+				, device
+				, getBufferImageCopy( copyInfo, dstImage )
+				, dstImage
+				, get( dstImage )->getMemoryBinding()
+				, list
+				, views );
 		}
 	}
 }
