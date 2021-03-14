@@ -32,10 +32,10 @@ namespace ashes::gl
 			, GlTextureType target )const;
 
 		GlInternal internal{};
-		GlFormat drawFormat{};
-		GlType drawType{};
-		GlFormat getFormat{};
-		GlType getType{};
+		GlFormat unpackFormat{};
+		GlType unpackType{};
+		GlFormat packFormat{};
+		GlType packType{};
 		bool readSupport{ false };
 		GlFormat readFormat{};
 		GlType readType{};

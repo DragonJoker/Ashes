@@ -56,16 +56,16 @@ namespace ashes::gl
 			, internal
 			, GL_FORMAT_PROPERTY_TEXTURE_IMAGE_FORMAT
 			, GL_FORMAT_PROPERTY_TEXTURE_IMAGE_TYPE
-			, drawFormat
-			, drawType );
+			, unpackFormat
+			, unpackType );
 		getFormatAndType( context
 			, target
 			, vkformat
 			, internal
 			, GL_FORMAT_PROPERTY_GET_TEXTURE_IMAGE_FORMAT
 			, GL_FORMAT_PROPERTY_GET_TEXTURE_IMAGE_TYPE
-			, getFormat
-			, getType );
+			, packFormat
+			, packType );
 		GlFormatPropertyResult support{ GL_FORMAT_PROPERTY_UNSUPPORTED };
 		glLogCall( context
 			, glGetInternalformativ
@@ -89,8 +89,8 @@ namespace ashes::gl
 		}
 		else
 		{
-			readFormat = drawFormat;
-			readType = drawType;
+			readFormat = packFormat;
+			readType = packType;
 		}
 	}
 
