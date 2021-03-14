@@ -21,7 +21,7 @@ namespace ashes::gl
 			, VkDevice device
 			, VkBufferImageCopy srcCopyInfo
 			, VkImage src
-			, VkBuffer dst
+			, GLuint dst
 			, CmdList & list
 			, VkImageViewArray & views )
 		{
@@ -42,7 +42,7 @@ namespace ashes::gl
 			}
 
 			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK
-				, get( dst )->getInternal() ) );
+				, dst ) );
 			stack.applyPackAlign( list, 1 );
 			list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_READ_FRAMEBUFFER ) );
 			srcAttach.bindRead( stack
@@ -86,8 +86,8 @@ namespace ashes::gl
 			else
 			{
 				list.push_back( makeCmd< OpType::eGetTexImage >( get( src )->getTarget()
-					, get( src )->getGetFormat()
-					, get( src )->getGetType()
+					, get( src )->getPackFormat()
+					, get( src )->getPackType()
 					, GLint( copyInfo.imageSubresource.mipLevel )
 					, intptr_t( srcBufferOffset ) ) );
 			}
@@ -97,9 +97,83 @@ namespace ashes::gl
 			return srcBufferOffset;
 		}
 
+		VkImageViewType getLayerViewType( VkImageType src )
+		{
+			switch ( src )
+			{
+			case VK_IMAGE_TYPE_1D:
+				return VK_IMAGE_VIEW_TYPE_1D;
+			case VK_IMAGE_TYPE_2D:
+				return VK_IMAGE_VIEW_TYPE_2D;
+			case VK_IMAGE_TYPE_3D:
+				return VK_IMAGE_VIEW_TYPE_3D;
+			default:
+				return VK_IMAGE_VIEW_TYPE_2D;
+			}
+		}
+
+		VkImageViewCreateInfo getViewCreateInfo( VkImage src
+			, VkBufferImageCopy copyInfo
+			, uint32_t arrayLayer )
+		{
+			return VkImageViewCreateInfo{ VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO
+				, nullptr
+				, 0u
+				, src
+				, getLayerViewType( get( src )->getType() )
+				, get( src )->getFormatVk()
+				, VkComponentMapping{}
+				, VkImageSubresourceRange{ copyInfo.imageSubresource.aspectMask
+					, copyInfo.imageSubresource.mipLevel
+					, 1u
+					, copyInfo.imageSubresource.baseArrayLayer
+					, copyInfo.imageSubresource.layerCount } };
+		}
+
+		void copyImageFullDataToImgBuffer( ContextStateStack & stack
+			, VkBufferImageCopy copyInfo
+			, VkImage src
+			, ImageMemoryBinding const & srcBinding
+			, CmdList & list
+			, VkImageViewArray & views )
+		{
+			auto bufferOffset = srcBinding.getMipLevelOffset( copyInfo.imageSubresource.mipLevel );
+			auto layerSize = srcBinding.getArrayLayerSize();
+			auto layerCount = std::max( copyInfo.imageSubresource.layerCount
+				, copyInfo.imageExtent.depth );
+			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, get( srcBinding.getParent() )->getInternal() ) );
+			stack.applyPackAlign( list, 1 );
+
+			for ( uint32_t layer = 0u; layer < layerCount; ++layer )
+			{
+				VkImageView layerView = get( src )->createView( getViewCreateInfo( src, copyInfo, layer ) );
+				list.push_back( makeCmd< OpType::eBindTexture >( get( layerView )->getTextureType(), get( src )->getInternal() ) );
+
+				if ( isCompressedFormat( get( src )->getFormatVk() ) )
+				{
+					list.push_back( makeCmd< OpType::eGetCompressedTexImage >( get( layerView )->getTextureType()
+						, GLint( copyInfo.imageSubresource.mipLevel )
+						, intptr_t( bufferOffset ) ) );
+				}
+				else
+				{
+					list.push_back( makeCmd< OpType::eGetTexImage >( get( layerView )->getTextureType()
+						, get( src )->getPackFormat()
+						, get( src )->getPackType()
+						, GLint( copyInfo.imageSubresource.mipLevel )
+						, intptr_t( bufferOffset ) ) );
+				}
+
+				list.push_back( makeCmd< OpType::eBindTexture >( get( layerView )->getTextureType(), 0u ) );
+				bufferOffset += layerSize;
+			}
+
+			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, 0u ) );
+		}
+
 		void copyImageFullDataToBuffer( VkBufferImageCopy copyInfo
 			, VkImage src
-			, VkBuffer dst
+			, GLuint dst
 			, VkDeviceSize srcBufferOffset
 			, VkDeviceSize srcMipLayerSize
 			, CmdList & list )
@@ -108,7 +182,7 @@ namespace ashes::gl
 			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_COPY_READ
 				, get( get( src )->getMemoryBinding().getParent() )->getInternal() ) );
 			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_COPY_WRITE
-				, get( dst )->getInternal() ) );
+				, dst ) );
 			auto layerCount = std::max( copyInfo.imageSubresource.layerCount
 				, copyInfo.imageExtent.depth );
 			auto dstRowWidth = ( copyInfo.bufferRowLength == 0 || copyInfo.bufferRowLength == copyInfo.imageExtent.width )
@@ -132,7 +206,7 @@ namespace ashes::gl
 
 		void copyImagePartialDataToBuffer( VkBufferImageCopy copyInfo
 			, VkImage src
-			, VkBuffer dst
+			, GLuint dst
 			, VkExtent3D mipExtent
 			, VkDeviceSize srcBufferOffset
 			, VkDeviceSize srcMipLayerSize
@@ -157,7 +231,7 @@ namespace ashes::gl
 			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_COPY_READ
 				, get( get( src )->getMemoryBinding().getParent() )->getInternal() ) );
 			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_COPY_WRITE
-				, get( dst )->getInternal() ) );
+				, dst ) );
 
 			for ( uint32_t layer = 0u; layer < layerCount; ++layer )
 			{
@@ -189,25 +263,40 @@ namespace ashes::gl
 		, VkDevice device
 		, VkBufferImageCopy copyInfo
 		, VkImage src
-		, VkBuffer dst
+		, DeviceMemoryBinding const & dst
 		, CmdList & list
 		, VkImageViewArray & views )
 	{
 		glLogCommand( list, "CopyImageToBufferCommand" );
-		copyInfo.bufferOffset += get( dst )->getMemoryBinding().getOffset();
+		copyInfo.bufferOffset += dst.getOffset();
 		auto layerCount = std::max( copyInfo.imageSubresource.layerCount
 			, copyInfo.imageExtent.depth );
+		auto & srcBinding = static_cast< ImageMemoryBinding const & >( get( src )->getMemoryBinding() );
 
 		if ( get( src )->isReadSupported()
 			&& layerCount == 1u
 			&& !isCompressedFormat( get( src )->getFormatVk() ) )
 		{
-			readImagePixels( stack, device, copyInfo, src, dst, list, views );
+			readImagePixels( stack
+				, device
+				, copyInfo
+				, src
+				, dst.getInternal()
+				, list
+				, views );
+		}
+		else if ( &srcBinding == &dst )
+		{
+			copyImageFullDataToImgBuffer( stack
+				, copyInfo
+				, src
+				, srcBinding
+				, list
+				, views );
 		}
 		else
 		{
 			auto srcBufferOffset = getTextureImage( stack, copyInfo, src, list );
-			auto & srcBinding = static_cast< ImageMemoryBinding const & >( get( src )->getMemoryBinding() );
 			auto mipExtent = getSubresourceDimensions( get( src )->getDimensions(), copyInfo.imageSubresource.mipLevel );
 			auto mipLayerSize = srcBinding.getMipLevelLayerSize( copyInfo.imageSubresource.mipLevel );
 			auto baseArrayLayer = std::max( copyInfo.imageSubresource.baseArrayLayer
@@ -218,12 +307,40 @@ namespace ashes::gl
 				&& ( copyInfo.bufferRowLength == 0 || copyInfo.bufferRowLength == copyInfo.imageExtent.width )
 				&& ( copyInfo.bufferImageHeight == 0 || copyInfo.bufferImageHeight == copyInfo.imageExtent.height ) )
 			{
-				copyImageFullDataToBuffer( copyInfo, src, dst, srcBufferOffset, mipLayerSize, list );
+				copyImageFullDataToBuffer( copyInfo
+					, src
+					, dst.getInternal()
+					, srcBufferOffset
+					, mipLayerSize
+					, list );
 			}
 			else
 			{
-				copyImagePartialDataToBuffer( copyInfo, src, dst, mipExtent, srcBufferOffset, mipLayerSize, list );
+				copyImagePartialDataToBuffer( copyInfo
+					, src
+					, dst.getInternal()
+					, mipExtent
+					, srcBufferOffset
+					, mipLayerSize
+					, list );
 			}
 		}
+	}
+
+	void buildCopyImageToBufferCommand( ContextStateStack & stack
+		, VkDevice device
+		, VkBufferImageCopy copyInfo
+		, VkImage src
+		, VkBuffer dst
+		, CmdList & list
+		, VkImageViewArray & views )
+	{
+		buildCopyImageToBufferCommand( stack
+			, device
+			, copyInfo
+			, src
+			, get( dst )->getMemoryBinding()
+			, list
+			, views );
 	}
 }

@@ -5,10 +5,12 @@ See LICENSE file in root folder.
 #include "Command/Commands/GlBlitImageCommand.hpp"
 
 #include "Command/Commands/GlCopyImageCommand.hpp"
+#include "Command/Commands/GlCopyImageToBufferCommand.hpp"
 #include "Core/GlDevice.hpp"
 #include "Image/GlImage.hpp"
 #include "Image/GlImageView.hpp"
 #include "Miscellaneous/GlCallLogger.hpp"
+#include "Miscellaneous/GlImageMemoryBinding.hpp"
 #include "RenderPass/GlFrameBuffer.hpp"
 
 #include "ashesgl_api.hpp"
@@ -39,39 +41,36 @@ namespace ashes::gl
 
 			return result;
 		}
-	}
 
-	void apply( ContextLock const & context
-		, CmdBlitFramebuffer const & cmd )
-	{
-		glLogCall( context
-			, glBlitFramebuffer
-			, cmd.srcL
-			, cmd.srcT
-			, cmd.srcR
-			, cmd.srcB
-			, cmd.dstL
-			, cmd.dstT
-			, cmd.dstR
-			, cmd.dstB
-			, cmd.mask
-			, cmd.filter );
-	}
+		VkExtent3D operator-( VkOffset3D const & lhs, VkOffset3D const & rhs )
+		{
+			return VkExtent3D{ uint32_t( std::abs( lhs.x - rhs.x ) )
+				, uint32_t( std::abs( lhs.y - rhs.y ) )
+				, uint32_t( std::abs( lhs.z - rhs.z ) ) };
+		}
 
-	VkExtent3D operator-( VkOffset3D const & lhs, VkOffset3D const & rhs )
-	{
-		return VkExtent3D{ uint32_t( std::abs( lhs.x - rhs.x ) )
-			, uint32_t( std::abs( lhs.y - rhs.y ) )
-			, uint32_t( std::abs( lhs.z - rhs.z ) ) };
-	}
+		VkImageCopy convert( VkImageBlit const & src )
+		{
+			return VkImageCopy{ src.srcSubresource
+				, src.srcOffsets[0]
+				, src.dstSubresource
+				, src.dstOffsets[0]
+				, src.srcOffsets[1] - src.srcOffsets[0] };
+		}
 
-	VkImageCopy convert( VkImageBlit const & src )
-	{
-		return VkImageCopy{ src.srcSubresource
-			, src.srcOffsets[0]
-			, src.dstSubresource
-			, src.dstOffsets[0]
-			, src.srcOffsets[1] - src.srcOffsets[0] };
+		VkBufferImageCopy getBufferImageCopy( VkImageBlit const & copyInfo
+			, VkImage dstImage )
+		{
+			VkBufferImageCopy result{};
+			auto & dstBinding = static_cast< ImageMemoryBinding const & >( get( dstImage )->getMemoryBinding() );
+			result.bufferOffset = dstBinding.getMipLevelOffset( copyInfo.dstSubresource.mipLevel ) - dstBinding.getOffset();
+			result.imageExtent.width = uint32_t( copyInfo.dstOffsets[1].x );
+			result.imageExtent.height = uint32_t( copyInfo.dstOffsets[1].y );
+			result.imageExtent.depth = uint32_t( copyInfo.dstOffsets[1].z );
+			result.imageOffset = copyInfo.dstOffsets[0];
+			result.imageSubresource = copyInfo.dstSubresource;
+			return result;
+		}
 	}
 
 	void buildBlitImageCommand( ContextStateStack & stack
@@ -157,26 +156,13 @@ namespace ashes::gl
 
 		if ( get( get( dstImage )->getMemoryBinding().getParent() )->getInternal() != GL_INVALID_INDEX )
 		{
-			auto dstTarget = convert( device
-				, get( dstImage )->getType()
-				, get( dstImage )->getArrayLayers()
-				, get( dstImage )->getCreateFlags() );
-			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, get( get( dstImage )->getMemoryBinding().getParent() )->getInternal() ) );
-			stack.applyPackAlign( list, 1 );
-			list.push_back( makeCmd< OpType::eBindTexture >( dstTarget, get( dstImage )->getInternal() ) );
-
-			if ( isCompressedFormat( get( dstImage )->getFormatVk() ) )
-			{
-				list.push_back( makeCmd< OpType::eGetCompressedTexImage >( dstTarget ) );
-			}
-			else
-			{
-				list.push_back( makeCmd< OpType::eGetTexImage >( dstTarget, get( dstImage )->getGetFormat(), get( dstImage )->getGetType() ) );
-			}
-
-			list.push_back( makeCmd< OpType::eBindTexture >( dstTarget, 0u ) );
-			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, 0u ) );
-			list.push_back( makeCmd< OpType::eDownloadMemory >( get( dstImage )->getMemoryBinding().getParent() ) );
+			buildCopyImageToBufferCommand( stack
+				, device
+				, getBufferImageCopy( region, dstImage )
+				, dstImage
+				, get( dstImage )->getMemoryBinding()
+				, list
+				, views );
 		}
 	}
 }
