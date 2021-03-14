@@ -158,6 +158,23 @@ namespace ashes::gl
 	}
 
 	void apply( ContextLock const & context
+		, CmdBlitFramebuffer const & cmd )
+	{
+		glLogCall( context
+			, glBlitFramebuffer
+			, cmd.srcL
+			, cmd.srcT
+			, cmd.srcR
+			, cmd.srcB
+			, cmd.dstL
+			, cmd.dstT
+			, cmd.dstR
+			, cmd.dstB
+			, cmd.mask
+			, cmd.filter );
+	}
+
+	void apply( ContextLock const & context
 		, CmdCheckFramebuffer const & cmd )
 	{
 		auto status = glLogNonVoidCall( context

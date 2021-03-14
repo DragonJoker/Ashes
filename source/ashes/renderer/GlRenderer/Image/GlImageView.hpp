@@ -43,86 +43,91 @@ namespace ashes::gl
 
 		GLuint getInternal()const noexcept;
 
-		inline GlTextureType getTextureType()const noexcept
+		GlTextureType getTextureType()const noexcept
 		{
 			return m_gltextureType;
 		}
 
-		inline gl4::GlTextureViewType getViewType()const noexcept
+		gl4::GlTextureViewType getViewType()const noexcept
 		{
 			return m_glviewType;
 		}
 
-		inline VkImageViewType getType()const noexcept
+		VkImageViewCreateInfo const & getCreateInfo()const noexcept
+		{
+			return m_createInfo;
+		}
+
+		VkImageViewType getType()const noexcept
 		{
 			return m_createInfo.viewType;
 		}
 
-		inline VkFormat getFormatVk()const noexcept
+		VkFormat getFormatVk()const noexcept
 		{
 			return m_createInfo.format;
 		}
 
-		inline GlInternal getInternalFormat()const noexcept
+		VkComponentMapping const & getComponents()const noexcept
+		{
+			return m_createInfo.components;
+		}
+
+		VkImageSubresourceRange const & getSubresourceRange()const noexcept
+		{
+			return m_createInfo.subresourceRange;
+		}
+
+		VkImage getImage()const noexcept
+		{
+			return m_createInfo.image;
+		}
+
+		GlInternal getInternalFormat()const noexcept
 		{
 			return m_pixelFormat.internal;
 		}
 
-		inline GlFormat getDrawFormat()const noexcept
+		inline GlFormat getUnpackFormat()const noexcept
 		{
-			return m_pixelFormat.drawFormat;
+			return m_pixelFormat.unpackFormat;
 		}
 
-		inline GlType getDrawType()const noexcept
+		inline GlType getUnpackType()const noexcept
 		{
-			return m_pixelFormat.drawType;
+			return m_pixelFormat.unpackType;
 		}
 
-		inline GlFormat getGetFormat()const noexcept
+		inline GlFormat getPackFormat()const noexcept
 		{
-			return m_pixelFormat.getFormat;
+			return m_pixelFormat.packFormat;
 		}
 
-		inline GlType getGetType()const noexcept
+		inline GlType getPackType()const noexcept
 		{
-			return m_pixelFormat.getType;
+			return m_pixelFormat.packType;
 		}
 
-		inline bool isReadSupported()const noexcept
+		bool isReadSupported()const noexcept
 		{
 			return m_pixelFormat.readSupport;
 		}
 
-		inline GlFormat getReadFormat()const noexcept
+		GlFormat getReadFormat()const noexcept
 		{
 			assert( isReadSupported() );
 			return m_pixelFormat.readFormat;
 		}
 
-		inline GlType getReadType()const noexcept
+		GlType getReadType()const noexcept
 		{
 			assert( isReadSupported() );
 			return m_pixelFormat.readType;
 		}
 
-		inline GlComponentMapping getFormatSwizzle()const noexcept
+		GlComponentMapping getFormatSwizzle()const noexcept
 		{
 			return m_pixelFormat.swizzle;
-		}
-
-		inline VkComponentMapping const & getComponents()const noexcept
-		{
-			return m_createInfo.components;
-		}
-
-		inline VkImageSubresourceRange const & getSubresourceRange()const noexcept
-		{
-			return m_createInfo.subresourceRange;
-		}
-
-		inline VkImage getImage()const noexcept
-		{
-			return m_createInfo.image;
 		}
 
 	private:

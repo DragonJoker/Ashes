@@ -13,54 +13,6 @@ See LICENSE file in root folder
 
 namespace ashes::gl
 {
-	//*************************************************************************
-
-	template<>
-	struct alignas( uint64_t ) CmdT< OpType::eBlitFramebuffer >
-	{
-		inline CmdT( int32_t srcL
-			, int32_t srcT
-			, int32_t srcR
-			, int32_t srcB
-			, int32_t dstL
-			, int32_t dstT
-			, int32_t dstR
-			, int32_t dstB
-			, GlImageAspectFlags mask
-			, GlFilter filter )
-			: cmd{ { OpType::eBlitFramebuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, srcL{ srcL }
-			, srcT{ srcT }
-			, srcR{ srcR }
-			, srcB{ srcB }
-			, dstL{ dstL }
-			, dstT{ dstT }
-			, dstR{ dstR }
-			, dstB{ dstB }
-			, mask{ mask }
-			, filter{ filter }
-		{
-		}
-
-		Command cmd;
-		int32_t srcL;
-		int32_t srcT;
-		int32_t srcR;
-		int32_t srcB;
-		int32_t dstL;
-		int32_t dstT;
-		int32_t dstR;
-		int32_t dstB;
-		GlImageAspectFlags mask;
-		GlFilter filter;
-	};
-	using CmdBlitFramebuffer = CmdT< OpType::eBlitFramebuffer >;
-
-	void apply( ContextLock const & context
-		, CmdBlitFramebuffer const & cmd );
-
-	//*************************************************************************
-
 	void buildBlitImageCommand( ContextStateStack & stack
 		, VkDevice device
 		, VkImage srcImage
@@ -69,6 +21,4 @@ namespace ashes::gl
 		, VkFilter filter
 		, CmdList & list
 		, VkImageViewArray & views );
-
-	//*************************************************************************
 }
