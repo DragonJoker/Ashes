@@ -530,26 +530,26 @@ namespace ashes::gl
 						case ashes::gl::GL_TYPE_F16:
 							properties.bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
 							break;
-						case ashes::gl::GL_TYPE_US4444:
+						case ashes::gl::GL_TYPE_US_4_4_4_4:
 							break;
-						case ashes::gl::GL_TYPE_US5551:
+						case ashes::gl::GL_TYPE_US_5_5_5_1:
 							break;
-						case ashes::gl::GL_TYPE_UI8888:
+						case ashes::gl::GL_TYPE_UI_8_8_8_8:
 							break;
 						case ashes::gl::GL_TYPE_UI_2_10_10_10_REV:
 							properties.bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
 							break;
-						case ashes::gl::GL_TYPE_US565:
+						case ashes::gl::GL_TYPE_US_5_6_5:
 							break;
-						case ashes::gl::GL_TYPE_UI8888_REV:
+						case ashes::gl::GL_TYPE_UI_8_8_8_8_REV:
 							break;
-						case ashes::gl::GL_TYPE_UI24_8:
+						case ashes::gl::GL_TYPE_UI_24_8:
 							break;
 						case ashes::gl::GL_TYPE_32F_UI24_8:
 							break;
-						case ashes::gl::GL_UI_5_9_9_9:
+						case ashes::gl::GL_UI_5_9_9_9_REV:
 							break;
-						case ashes::gl::GL_UI_10F_11F_11F:
+						case ashes::gl::GL_UI_10F_11F_11F_REV:
 							properties.bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
 							break;
 						default:
