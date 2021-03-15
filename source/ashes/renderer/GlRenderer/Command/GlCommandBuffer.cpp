@@ -351,6 +351,7 @@ namespace ashes::gl
 		else
 		{
 			buildClearColourCommand( m_device
+				, *m_state.stack
 				, image
 				, imageLayout
 				, std::move( value )
@@ -377,6 +378,7 @@ namespace ashes::gl
 		else
 		{
 			buildClearDepthStencilCommand( m_device
+				, *m_state.stack
 				, image
 				, imageLayout
 				, std::move( value )

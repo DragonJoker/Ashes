@@ -4,6 +4,7 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlClearDepthStencilFboCommand.hpp"
 
+#include "Core/GlContextStateStack.hpp"
 #include "Core/GlDevice.hpp"
 #include "Image/GlImageView.hpp"
 #include "Image/GlImage.hpp"
@@ -14,7 +15,7 @@ See LICENSE file in root folder.
 namespace ashes::gl
 {
 	void buildClearDepthStencilFboCommand( VkDevice device
-		, ContextStateStack const & stack
+		, ContextStateStack & stack
 		, VkImage image
 		, VkImageLayout imageLayout
 		, VkClearDepthStencilValue value
@@ -22,6 +23,7 @@ namespace ashes::gl
 		, CmdList & list )
 	{
 		glLogCommand( list, "ClearDepthStencilFboCommand" );
+		stack.applyDisableBlend( list );
 		auto & glimage = *get( image );
 		auto target = GL_TEXTURE_2D;
 

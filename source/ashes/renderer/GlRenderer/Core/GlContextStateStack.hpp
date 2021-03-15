@@ -33,14 +33,15 @@ namespace ashes::gl
 			, bool force );
 		void applySRGBStatus( CmdList & list
 			, bool enable );
-		void applyDepthBias( CmdList & list
-			, float constantFactor
-			, float clamp
-			, float slopeFactor );
 		void applyPackAlign( CmdList & list
 			, int32_t align );
 		void applyUnpackAlign( CmdList & list
 			, int32_t align );
+		void applyDisableBlend( CmdList & list );
+		void applyDepthBias( CmdList & list
+			, float constantFactor
+			, float clamp
+			, float slopeFactor );
 		void applyStencilCompareMask( CmdList & list
 			, uint32_t compareMask
 			, VkStencilFaceFlags faceFlags );

@@ -106,6 +106,7 @@ namespace ashes::gl
 	//*************************************************************************
 
 	void buildClearDepthStencilCommand( VkDevice device
+		, ContextStateStack & stack
 		, VkImage image
 		, VkImageLayout imageLayout
 		, VkClearDepthStencilValue value

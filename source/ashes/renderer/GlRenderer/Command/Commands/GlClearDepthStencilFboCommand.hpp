@@ -11,7 +11,7 @@ See LICENSE file in root folder
 namespace ashes::gl
 {
 	void buildClearDepthStencilFboCommand( VkDevice device
-		, ContextStateStack const & stack
+		, ContextStateStack & stack
 		, VkImage image
 		, VkImageLayout imageLayout
 		, VkClearDepthStencilValue value
