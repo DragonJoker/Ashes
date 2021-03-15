@@ -4,6 +4,7 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlClearColourCommand.hpp"
 
+#include "Core/GlContextStateStack.hpp"
 #include "Image/GlImage.hpp"
 #include "Miscellaneous/GlCallLogger.hpp"
 
@@ -39,6 +40,7 @@ namespace ashes::gl
 	}
 
 	void buildClearColourCommand( VkDevice device
+		, ContextStateStack & stack
 		, VkImage image
 		, VkImageLayout imageLayout
 		, VkClearColorValue value
@@ -46,6 +48,7 @@ namespace ashes::gl
 		, CmdList & list )
 	{
 		glLogCommand( list, "ClearColourCommand" );
+		stack.applyDisableBlend( list );
 
 		if ( get( getInstance( device ) )->hasClearTexImage() )
 		{

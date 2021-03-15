@@ -21,6 +21,7 @@ namespace ashes::gl
 		, PreExecuteActions & preExecuteActions )
 	{
 		glLogCommand( list, "ClearAttachmentsCommand" );
+		stack.applyDisableBlend( list );
 
 		for ( auto & clearAttach : clearAttaches )
 		{

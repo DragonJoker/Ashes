@@ -82,9 +82,10 @@ namespace ashes::gl
 
 		bool doApplyBlendAttach( CmdList & list
 			, VkPipelineColorBlendAttachmentState const & state
-			, uint32_t index )
+			, uint32_t index
+			, bool force )
 		{
-			if ( state.blendEnable )
+			if ( state.blendEnable || force )
 			{
 				list.emplace_back( makeCmd< OpType::eBlendEquation >( index
 					, convert( state.colorBlendOp )
@@ -105,14 +106,15 @@ namespace ashes::gl
 		}
 
 		bool doApplyBlendAttaches( CmdList & list
-			, VkPipelineColorBlendStateCreateInfo const & state )
+			, VkPipelineColorBlendStateCreateInfo const & state
+			, bool force )
 		{
 			bool result = false;
 			GLuint index = 0u;
 
 			for ( auto & attach : makeArrayView( state.pAttachments, state.attachmentCount ) )
 			{
-				result = doApplyBlendAttach( list, attach, index )
+				result = doApplyBlendAttach( list, attach, index, force )
 					|| result;
 				++index;
 			}
@@ -799,25 +801,6 @@ namespace ashes::gl
 		}
 	}
 
-	void ContextStateStack::applyDepthBias( CmdList & list
-		, float constantFactor
-		, float clamp
-		, float slopeFactor )
-	{
-		doCheckSave();
-		auto & save = m_save->rsState;
-		doApplyDepthBias( list
-			, save.polygonMode
-			, VK_TRUE
-			, save.depthBiasEnable
-			, constantFactor
-			, save.depthBiasConstantFactor
-			, clamp
-			, save.depthBiasClamp
-			, slopeFactor
-			, save.depthBiasSlopeFactor );
-	}
-
 	void ContextStateStack::applyPackAlign( CmdList & list
 		, int32_t align )
 	{
@@ -840,6 +823,31 @@ namespace ashes::gl
 			list.push_back( makeCmd< OpType::ePixelStore >( GL_UNPACK_ALIGNMENT, align ) );
 			m_save->unpackAlign = align;
 		}
+	}
+
+	void ContextStateStack::applyDisableBlend( CmdList & list )
+	{
+		doCheckSave();
+		doApply( list, initialState.cbState, true );
+	}
+
+	void ContextStateStack::applyDepthBias( CmdList & list
+		, float constantFactor
+		, float clamp
+		, float slopeFactor )
+	{
+		doCheckSave();
+		auto & save = m_save->rsState;
+		doApplyDepthBias( list
+			, save.polygonMode
+			, VK_TRUE
+			, save.depthBiasEnable
+			, constantFactor
+			, save.depthBiasConstantFactor
+			, clamp
+			, save.depthBiasClamp
+			, slopeFactor
+			, save.depthBiasSlopeFactor );
 	}
 
 	void ContextStateStack::applyStencilCompareMask( CmdList & list
@@ -975,7 +983,7 @@ namespace ashes::gl
 			doApplyBlendConstants( list, newState );
 		}
 
-		bool blend = doApplyBlendAttaches( list, newState );
+		bool blend = doApplyBlendAttaches( list, newState, force );
 
 		if ( force || hadBlend != blend )
 		{
