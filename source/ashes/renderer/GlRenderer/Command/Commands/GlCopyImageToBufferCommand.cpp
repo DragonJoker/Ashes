@@ -169,6 +169,9 @@ namespace ashes::gl
 			}
 
 			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK, 0u ) );
+			list.push_back( makeCmd< OpType::eDownloadMemory >( srcBinding.getParent()
+				, srcBinding.getOffset()
+				, srcBinding.getSize() ) );
 		}
 
 		void copyImageFullDataToBuffer( VkBufferImageCopy copyInfo
@@ -281,7 +284,7 @@ namespace ashes::gl
 				, device
 				, copyInfo
 				, src
-				, dst.getInternal()
+				, get( dst.getParent() )->getInternal()
 				, list
 				, views );
 		}
@@ -309,7 +312,7 @@ namespace ashes::gl
 			{
 				copyImageFullDataToBuffer( copyInfo
 					, src
-					, dst.getInternal()
+					, get( dst.getParent() )->getInternal()
 					, srcBufferOffset
 					, mipLayerSize
 					, list );
@@ -318,7 +321,7 @@ namespace ashes::gl
 			{
 				copyImagePartialDataToBuffer( copyInfo
 					, src
-					, dst.getInternal()
+					, get( dst.getParent() )->getInternal()
 					, mipExtent
 					, srcBufferOffset
 					, mipLayerSize
