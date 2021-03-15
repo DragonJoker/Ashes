@@ -1635,14 +1635,20 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUploadMemory >
 	{
-		inline CmdT( VkDeviceMemory memory )
+		inline CmdT( VkDeviceMemory memory
+			, VkDeviceSize offset
+			, VkDeviceSize size )
 			: cmd{ { OpType::eUploadMemory, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, memory{ memory }
+			, offset{ offset }
+			, size{ size }
 		{
 		}
 
 		Command cmd;
 		VkDeviceMemory memory;
+		VkDeviceSize offset;
+		VkDeviceSize size;
 	};
 	using CmdUploadMemory = CmdT< OpType::eUploadMemory >;
 
@@ -1654,14 +1660,20 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDownloadMemory >
 	{
-		inline CmdT( VkDeviceMemory memory )
+		inline CmdT( VkDeviceMemory memory
+			, VkDeviceSize offset
+			, VkDeviceSize size )
 			: cmd{ { OpType::eDownloadMemory, sizeof( CmdT ) / sizeof( uint32_t ) } }
 			, memory{ memory }
+			, offset{ offset }
+			, size{ size }
 		{
 		}
 
 		Command cmd;
 		VkDeviceMemory memory;
+		VkDeviceSize offset;
+		VkDeviceSize size;
 	};
 	using CmdDownloadMemory = CmdT< OpType::eDownloadMemory >;
 

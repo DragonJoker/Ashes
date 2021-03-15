@@ -41,12 +41,16 @@ namespace ashes::gl
 						|| checkFlag( barrier.srcAccessMask, VK_ACCESS_HOST_WRITE_BIT ) ) )
 				{
 					uploads.insert( get( barrier.buffer )->getMemoryBinding().getParent() );
-					list.push_back( makeCmd< OpType::eUploadMemory >( get( barrier.buffer )->getMemoryBinding().getParent() ) );
+					list.push_back( makeCmd< OpType::eUploadMemory >( get( barrier.buffer )->getMemoryBinding().getParent()
+						, get( barrier.buffer )->getMemoryBinding().getOffset()
+						, get( barrier.buffer )->getMemoryBinding().getSize() ) );
 				}
 				else if ( checkFlag( barrier.srcAccessMask, VK_ACCESS_TRANSFER_WRITE_BIT ) )
 				{
 					downloads.insert( get( barrier.buffer )->getMemoryBinding().getParent() );
-					list.push_back( makeCmd< OpType::eDownloadMemory >( get( barrier.buffer )->getMemoryBinding().getParent() ) );
+					list.push_back( makeCmd< OpType::eDownloadMemory >( get( barrier.buffer )->getMemoryBinding().getParent()
+						, get( barrier.buffer )->getMemoryBinding().getOffset()
+						, get( barrier.buffer )->getMemoryBinding().getSize() ) );
 				}
 			}
 		}
@@ -65,12 +69,16 @@ namespace ashes::gl
 						|| checkFlag( barrier.dstAccessMask, VK_ACCESS_MEMORY_READ_BIT ) ) )
 				{
 					downloads.insert( get( barrier.buffer )->getMemoryBinding().getParent() );
-					list.push_back( makeCmd< OpType::eDownloadMemory >( get( barrier.buffer )->getMemoryBinding().getParent() ) );
+					list.push_back( makeCmd< OpType::eDownloadMemory >( get( barrier.buffer )->getMemoryBinding().getParent()
+						, get( barrier.buffer )->getMemoryBinding().getOffset()
+						, get( barrier.buffer )->getMemoryBinding().getSize() ) );
 				}
 				else if ( checkFlag( barrier.dstAccessMask, VK_ACCESS_TRANSFER_READ_BIT ) )
 				{
 					uploads.insert( get( barrier.buffer )->getMemoryBinding().getParent() );
-					list.push_back( makeCmd< OpType::eUploadMemory >( get( barrier.buffer )->getMemoryBinding().getParent() ) );
+					list.push_back( makeCmd< OpType::eUploadMemory >( get( barrier.buffer )->getMemoryBinding().getParent()
+						, get( barrier.buffer )->getMemoryBinding().getOffset()
+						, get( barrier.buffer )->getMemoryBinding().getSize() ) );
 				}
 			}
 		}
