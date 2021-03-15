@@ -456,37 +456,37 @@ namespace ashes::gl
 		case GL_TYPE_F16:
 			return "GL_HALF_FLOAT";
 
-		case GL_TYPE_US4444:
+		case GL_TYPE_US_4_4_4_4:
 			return "GL_UNSIGNED_SHORT_4_4_4_4";
 
-		case GL_TYPE_US5551:
+		case GL_TYPE_US_5_5_5_1:
 			return "GL_UNSIGNED_SHORT_5_5_5_1";
 			
-		case GL_TYPE_US1555_REV:
+		case GL_TYPE_US_1_5_5_5_REV:
 			return "GL_UNSIGNED_SHORT_1_5_5_5_REV";
 
-		case GL_TYPE_UI8888:
+		case GL_TYPE_UI_8_8_8_8:
 			return "GL_UNSIGNED_INT_8_8_8_8";
 			
-		case GL_TYPE_UI8888_REV:
+		case GL_TYPE_UI_8_8_8_8_REV:
 			return "GL_UNSIGNED_INT_8_8_8_8_REV";
 
 		case GL_TYPE_UI_2_10_10_10_REV:
 			return "GL_UNSIGNED_INT_2_10_10_10_REV";
 
-		case GL_TYPE_US565:
+		case GL_TYPE_US_5_6_5:
 			return "GL_UNSIGNED_SHORT_5_6_5";
 
-		case GL_TYPE_UI24_8:
+		case GL_TYPE_UI_24_8:
 			return "GL_UNSIGNED_INT_24_8";
 
 		case GL_TYPE_32F_UI24_8:
 			return "GL_FLOAT_UNSIGNED_INT_24_8";
 
-		case GL_UI_5_9_9_9:
+		case GL_UI_5_9_9_9_REV:
 			return "GL_UNSIGNED_INT_5_9_9_9";
 
-		case GL_UI_10F_11F_11F:
+		case GL_UI_10F_11F_11F_REV:
 			return "GL_FLOAT_10F_11F_11F";
 
 		default:
@@ -898,16 +898,16 @@ namespace ashes::gl
 		{
 		case VK_FORMAT_R4G4B4A4_UNORM_PACK16:
 		case VK_FORMAT_B4G4R4A4_UNORM_PACK16:
-			return GL_TYPE_US4444;
+			return GL_TYPE_US_4_4_4_4;
 
 		case VK_FORMAT_R5G6B5_UNORM_PACK16:
 		case VK_FORMAT_B5G6R5_UNORM_PACK16:
-			return GL_TYPE_US565;
+			return GL_TYPE_US_5_6_5;
 
 		case VK_FORMAT_R5G5B5A1_UNORM_PACK16:
 		case VK_FORMAT_B5G5R5A1_UNORM_PACK16:
 		case VK_FORMAT_A1R5G5B5_UNORM_PACK16:
-			return GL_TYPE_US5551;
+			return GL_TYPE_US_5_5_5_1;
 
 		case VK_FORMAT_R8_SNORM:
 		case VK_FORMAT_R8G8_SNORM:
@@ -1026,10 +1026,10 @@ namespace ashes::gl
 			return GL_TYPE_F32;
 
 		case VK_FORMAT_B10G11R11_UFLOAT_PACK32:
-			return GL_UI_10F_11F_11F;
+			return GL_UI_10F_11F_11F_REV;
 
 		case VK_FORMAT_E5B9G9R9_UFLOAT_PACK32:
-			return GL_UI_5_9_9_9;
+			return GL_UI_5_9_9_9_REV;
 
 		case VK_FORMAT_D16_UNORM:
 			return GL_TYPE_UI16;
@@ -1041,7 +1041,7 @@ namespace ashes::gl
 			return GL_TYPE_UI8;
 
 		case VK_FORMAT_D24_UNORM_S8_UINT:
-			return GL_TYPE_UI24_8;
+			return GL_TYPE_UI_24_8;
 
 		case VK_FORMAT_D32_SFLOAT_S8_UINT:
 			return GL_TYPE_32F_UI24_8;
@@ -1102,7 +1102,7 @@ namespace ashes::gl
 
 		default:
 			assert( false && "Unsupported pixel format." );
-			return GL_TYPE_UI8888;
+			return GL_TYPE_UI_8_8_8_8;
 		}
 	}
 

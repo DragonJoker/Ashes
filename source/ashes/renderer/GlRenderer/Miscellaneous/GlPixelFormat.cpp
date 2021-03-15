@@ -35,11 +35,6 @@ namespace ashes::gl
 				format = getFormat( vkformat );
 				type = getType( vkformat );
 			}
-
-			if ( type == GlType::GL_TYPE_UI8888_REV )
-			{
-				type = getType( vkformat );
-			}
 		}
 	}
 
