@@ -592,13 +592,17 @@ namespace ashes::gl
 	void apply( ContextLock const & context
 		, CmdUploadMemory const & cmd )
 	{
-		get( cmd.memory )->upload( context, 0u, WholeSize );
+		get( cmd.memory )->upload( context
+			, cmd.offset
+			, cmd.size );
 	}
 
 	void apply( ContextLock const & context
 		, CmdDownloadMemory const & cmd )
 	{
-		get( cmd.memory )->download( context, 0u, WholeSize );
+		get( cmd.memory )->download( context
+			, cmd.offset
+			, cmd.size );
 	}
 
 	void apply( ContextLock const & context

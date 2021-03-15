@@ -1346,11 +1346,15 @@ namespace ashes::gl
 
 		if ( isInput )
 		{
-			m_cmdList.emplace_back( makeCmd< OpType::eUploadMemory >( buf->getMemoryBinding().getParent() ) );
+			m_cmdList.emplace_back( makeCmd< OpType::eUploadMemory >( buf->getMemoryBinding().getParent()
+				, buf->getMemoryBinding().getOffset()
+				, buf->getMemoryBinding().getSize() ) );
 		}
 		else
 		{
-			m_cmdList.emplace_back( makeCmd< OpType::eDownloadMemory >( buf->getMemoryBinding().getParent() ) );
+			m_cmdList.emplace_back( makeCmd< OpType::eDownloadMemory >( buf->getMemoryBinding().getParent()
+				, buf->getMemoryBinding().getOffset()
+				, buf->getMemoryBinding().getSize() ) );
 		}
 
 		auto it = std::find_if( m_mappedBuffers.begin()
