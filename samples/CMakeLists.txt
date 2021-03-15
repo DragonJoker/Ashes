@@ -32,7 +32,7 @@ else ()
 	find_package( assimp )
 endif ()
 
-if( wxWidgets_FOUND AND GTK2_FOUND AND ASSIMP_FOUND )
+if( wxWidgets_FOUND AND GTK2_FOUND AND ( ASSIMP_FOUND OR assimp_FOUND ) )
 	file( GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*-* )
 	set( SAMPLE_ID 0 )
 	set( Ashes_BINARY_LIBRARIES
