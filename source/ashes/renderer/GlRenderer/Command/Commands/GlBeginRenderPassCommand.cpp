@@ -150,6 +150,7 @@ namespace ashes::gl
 	{
 		VkClearValueArray rtClearValues{};
 		VkClearValue dsClearValue{};
+		stack.applyDisableBlend( list );
 
 		if ( get( renderPass )->getMaxLoadClearIndex() != InvalidIndex )
 		{

@@ -4,6 +4,7 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlClearDepthStencilCommand.hpp"
 
+#include "Core/GlContextStateStack.hpp"
 #include "Image/GlImageView.hpp"
 #include "Miscellaneous/GlCallLogger.hpp"
 
@@ -48,6 +49,7 @@ namespace ashes::gl
 	}
 
 	void buildClearDepthStencilCommand( VkDevice device
+		, ContextStateStack & stack
 		, VkImage image
 		, VkImageLayout imageLayout
 		, VkClearDepthStencilValue value
@@ -55,6 +57,7 @@ namespace ashes::gl
 		, CmdList & list )
 	{
 		glLogCommand( list, "ClearDepthStencilCommand" );
+		stack.applyDisableBlend( list );
 
 		if ( get( getInstance( device ) )->hasClearTexImage() )
 		{

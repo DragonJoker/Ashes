@@ -48,6 +48,7 @@ namespace ashes::gl
 	//*************************************************************************
 
 	void buildClearColourCommand( VkDevice device
+		, ContextStateStack & stack
 		, VkImage image
 		, VkImageLayout imageLayout
 		, VkClearColorValue value

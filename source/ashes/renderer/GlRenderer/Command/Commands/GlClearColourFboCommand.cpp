@@ -4,6 +4,7 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/GlClearColourFboCommand.hpp"
 
+#include "Core/GlContextStateStack.hpp"
 #include "Core/GlDevice.hpp"
 #include "Image/GlImageView.hpp"
 #include "Image/GlImage.hpp"
@@ -14,7 +15,7 @@ See LICENSE file in root folder.
 namespace ashes::gl
 {
 	void buildClearColourFboCommand( VkDevice device
-		, ContextStateStack const & stack
+		, ContextStateStack & stack
 		, VkImage image
 		, VkImageLayout imageLayout
 		, VkClearColorValue value
@@ -22,6 +23,7 @@ namespace ashes::gl
 		, CmdList & list )
 	{
 		glLogCommand( list, "ClearColourFboCommand" );
+		stack.applyDisableBlend( list );
 		auto & glimage = *get( image );
 		auto target = GL_TEXTURE_2D;
 

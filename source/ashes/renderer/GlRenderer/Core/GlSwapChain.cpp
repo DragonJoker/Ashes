@@ -41,6 +41,20 @@ namespace ashes::gl
 				throw ashes::Exception{ err, "Swapchain image allocation" };
 			}
 
+#if VK_EXT_debug_utils
+			get( device )->setDebugUtilsObjectName( { VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT
+				, nullptr
+				, VK_OBJECT_TYPE_IMAGE
+				, uint64_t( result )
+				, "SwapchainImage" } );
+#elif VK_EXT_debug_marker
+			get( device )->debugMarkerSetObjectName( { VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT
+				, nullptr
+				, VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT
+				, uint64_t( result )
+				, "SwapchainImage" } )const;
+#endif
+
 			auto requirements = get( result )->getMemoryRequirements();
 			uint32_t deduced = deduceMemoryType( device
 				, requirements.memoryTypeBits
@@ -56,6 +70,20 @@ namespace ashes::gl
 					, allocInfo );
 				throw ashes::Exception{ err, "Swapchain image memory allocation" };
 			}
+
+#if VK_EXT_debug_utils
+			get( device )->setDebugUtilsObjectName( { VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT
+				, nullptr
+				, VK_OBJECT_TYPE_DEVICE_MEMORY
+				, uint64_t( result )
+				, "SwapchainImageMem" } );
+#elif VK_EXT_debug_marker
+			get( device )->debugMarkerSetObjectName( { VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT
+				, nullptr
+				, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT
+				, uint64_t( result )
+				, "SwapchainImageMem" } )const;
+#endif
 
 			get( deviceMemory )->bindImage( result, 0u );
 			return result;
@@ -86,6 +114,20 @@ namespace ashes::gl
 			{
 				throw ashes::Exception{ err, "Swapchain image allocation" };
 			}
+
+#if VK_EXT_debug_utils
+			get( device )->setDebugUtilsObjectName( { VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT
+				, nullptr
+				, VK_OBJECT_TYPE_IMAGE_VIEW
+				, uint64_t( result )
+				, "SwapchainImageView" } );
+#elif VK_EXT_debug_marker
+			get( device )->debugMarkerSetObjectName( { VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT
+				, nullptr
+				, VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT
+				, uint64_t( result )
+				, "SwapchainImageView" } )const;
+#endif
 
 			return result;
 		}
