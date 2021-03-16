@@ -257,24 +257,35 @@ namespace ashes::gl
 							}
 						}
 
-						if ( isSRGBFormat( fmt ) )
-						{
-							support = GL_FORMAT_PROPERTY_UNSUPPORTED;
-							glLogCall( context, glGetInternalformativ
-								, GL_TEXTURE_2D
-								, internal
-								, GL_FORMAT_PROPERTY_SRGB_WRITE
-								, 1
-								, reinterpret_cast< GLint * >( &support ) );
+						support = GL_FORMAT_PROPERTY_UNSUPPORTED;
+						glLogCall( context, glGetInternalformativ
+							, GL_TEXTURE_2D
+							, internal
+							, GL_FORMAT_PROPERTY_RENDERABLE
+							, 1
+							, reinterpret_cast< GLint * >( &support ) );
 
-							if ( support != GL_FORMAT_PROPERTY_UNSUPPORTED )
+						if ( support != GL_FORMAT_PROPERTY_UNSUPPORTED )
+						{
+							if ( isSRGBFormat( fmt ) )
+							{
+								support = GL_FORMAT_PROPERTY_UNSUPPORTED;
+								glLogCall( context, glGetInternalformativ
+									, GL_TEXTURE_2D
+									, internal
+									, GL_FORMAT_PROPERTY_SRGB_WRITE
+									, 1
+									, reinterpret_cast< GLint * >( &support ) );
+
+								if ( support != GL_FORMAT_PROPERTY_UNSUPPORTED )
+								{
+									properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
+								}
+							}
+							else
 							{
 								properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
 							}
-						}
-						else
-						{
-							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
 						}
 #endif
 						support = GL_FORMAT_PROPERTY_UNSUPPORTED;
