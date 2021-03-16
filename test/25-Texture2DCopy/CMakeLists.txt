@@ -7,6 +7,12 @@ set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 file( GLOB SOURCE_FILES
 	Src/*.cpp
 )
+set( SOURCE_FILES
+	${SOURCE_FILES}
+	${Ashes_SOURCE_DIR}/external/imgui/imgui.cpp
+	${Ashes_SOURCE_DIR}/external/imgui/imgui_draw.cpp
+	${Ashes_SOURCE_DIR}/external/imgui/imgui_widgets.cpp
+)
 
 file( GLOB HEADER_FILES
 	Src/*.hpp
@@ -23,6 +29,10 @@ add_executable( ${PROJECT_NAME} WIN32
 	${SOURCE_FILES}
 	${HEADER_FILES}
 	${SHADER_FILES}
+)
+target_include_directories( ${PROJECT_NAME}
+	PUBLIC
+		${Ashes_SOURCE_DIR}/external/imgui
 )
 target_link_libraries( ${TARGET_NAME} PRIVATE
 	ashes::test::Common

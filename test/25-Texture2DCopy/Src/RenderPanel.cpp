@@ -1,5 +1,6 @@
 #include "RenderPanel.hpp"
 #include "Application.hpp"
+#include "Gui.hpp"
 
 #include <ashespp/Buffer/VertexBuffer.hpp>
 #include <ashespp/Command/CommandBuffer.hpp>
@@ -16,6 +17,7 @@
 
 #include <FileUtils.hpp>
 
+#include <numeric>
 #include <fstream>
 #include <cstring>
 
@@ -66,18 +68,24 @@ namespace vkapp
 			std::cout << "Swapchain created." << std::endl;
 			doCreateStagingBuffer();
 			std::cout << "Staging buffer created." << std::endl;
-			doCreateTexture();
-			std::cout << "Image created." << std::endl;
 			doCreateDescriptorSet();
 			std::cout << "Descriptor set created." << std::endl;
+			doCreateTexture();
+			std::cout << "Image created." << std::endl;
 			doCreateRenderPass();
 			std::cout << "Render pass created." << std::endl;
 			doCreateVertexBuffer();
 			std::cout << "Vertex buffer created." << std::endl;
 			doCreatePipeline();
 			std::cout << "Pipeline created." << std::endl;
+			m_gui = std::make_unique< Gui >( *m_device
+				, *m_graphicsQueue
+				, *m_commandPool
+				, VkExtent2D{ uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
+			m_gui->initialise( *m_renderPass );
 			doPrepareFrames();
 			std::cout << "Frames prepared." << std::endl;
+			doUpdateGui();
 		}
 		catch ( std::exception & )
 		{
@@ -87,8 +95,56 @@ namespace vkapp
 
 		m_timer->Start( TimerTimeMs );
 
-		Connect( int( Ids::RenderTimer ), wxEVT_TIMER, wxTimerEventHandler( RenderPanel::onTimer ), nullptr, this );
-		Connect( wxID_ANY, wxEVT_SIZE, wxSizeEventHandler( RenderPanel::onSize ), nullptr, this );
+		Connect( int( Ids::RenderTimer )
+			, wxEVT_TIMER
+			, wxTimerEventHandler( RenderPanel::onTimer )
+			, nullptr
+			, this );
+		Connect( wxID_ANY
+			, wxEVT_SIZE
+			, wxSizeEventHandler( RenderPanel::onSize )
+			, nullptr
+			, this );
+		Connect( GetId()
+			, wxEVT_LEFT_DOWN
+			, wxMouseEventHandler( RenderPanel::onMouseLDown )
+			, nullptr
+			, this );
+		Connect( GetId()
+			, wxEVT_LEFT_UP
+			, wxMouseEventHandler( RenderPanel::onMouseLUp )
+			, nullptr
+			, this );
+		Connect( GetId()
+			, wxEVT_LEFT_DCLICK
+			, wxMouseEventHandler( RenderPanel::onMouseLDClick )
+			, nullptr
+			, this );
+		Connect( GetId()
+			, wxEVT_RIGHT_DOWN
+			, wxMouseEventHandler( RenderPanel::onMouseRDown )
+			, nullptr
+			, this );
+		Connect( GetId()
+			, wxEVT_RIGHT_UP
+			, wxMouseEventHandler( RenderPanel::onMouseRUp )
+			, nullptr
+			, this );
+		Connect( GetId()
+			, wxEVT_RIGHT_DCLICK
+			, wxMouseEventHandler( RenderPanel::onMouseRDClick )
+			, nullptr
+			, this );
+		Connect( GetId()
+			, wxEVT_MOTION
+			, wxMouseEventHandler( RenderPanel::onMouseMove )
+			, nullptr
+			, this );
+		Connect( GetId()
+			, wxEVT_KEY_UP
+			, wxKeyEventHandler( RenderPanel::onKeyUp )
+			, nullptr
+			, this );
 	}
 
 	RenderPanel::~RenderPanel()
@@ -103,12 +159,13 @@ namespace vkapp
 		if ( m_device )
 		{
 			m_device->getDevice().waitIdle();
+			m_gui.reset();
 			m_queryPool.reset();
-			m_descriptorSet.reset();
+			m_descriptorSets.clear();
 			m_descriptorPool.reset();
 			m_descriptorLayout.reset();
 			m_sampler.reset();
-			m_dstTexture.reset();
+			m_dstTextures.clear();
 			m_srcTexture.reset();
 			m_stagingBuffer.reset();
 			m_pipeline.reset();
@@ -151,7 +208,7 @@ namespace vkapp
 			, *m_commandPool
 			, std::move( surface )
 			, VkExtent2D{ uint32_t( size.x ), uint32_t( size.y ) } );
-		m_clearColour = VkClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f };
+		m_clearColour = VkClearColorValue{ 1.0f, 0.8f, 0.4f, 1.0f };
 		m_swapChainReset = m_swapChain->onReset.connect( [this]()
 		{
 			doResetSwapChain();
@@ -172,22 +229,8 @@ namespace vkapp
 				, VK_IMAGE_TILING_OPTIMAL
 				, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_SAMPLED_BIT }
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
-			, "Src" );
+			, "Src" + ashes::getName( image.format ) );
 		m_srcView = m_srcTexture->createView( "Src"
-			, VK_IMAGE_VIEW_TYPE_2D
-			, image.format );
-		m_dstTexture = m_device->createImage( ashes::ImageCreateInfo{ 0u
-				, VK_IMAGE_TYPE_2D
-				, image.format
-				, { image.size.width, image.size.height, 1u }
-				, 1u
-				, 1u
-				, VK_SAMPLE_COUNT_1_BIT
-				, VK_IMAGE_TILING_OPTIMAL
-				, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT }
-			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
-			, "Dst" );
-		m_dstView = m_dstTexture->createView( "Dst"
 			, VK_IMAGE_VIEW_TYPE_2D
 			, image.format );
 		m_sampler = m_device->getDevice().createSampler( VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
@@ -196,51 +239,114 @@ namespace vkapp
 			, VK_FILTER_LINEAR
 			, VK_FILTER_LINEAR );
 
-		auto commandBuffer = m_commandPool->createCommandBuffer( "StagingBufferUploadTex"
-			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
-		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
-
 		// Upload image from RAM to VRAM
-		m_stagingBuffer->uploadTextureData( *commandBuffer
+		m_stagingBuffer->uploadTextureData( *m_graphicsQueue
+			, *m_commandPool
 			, image.format
 			, image.data
 			, m_srcView
 			, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL );
 
-		// Copy parts of src image to dst image
-		commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
-			, VK_PIPELINE_STAGE_TRANSFER_BIT
-			, m_dstView.makeTransferDestination( VK_IMAGE_LAYOUT_UNDEFINED ) );
-		// First clear it
-		commandBuffer->clear( m_dstView, m_clearColour );
-
-		// Then copy some bits of src image
-		auto copySize = image.size.width / 4u;
-		VkImageCopy copy{ { VK_IMAGE_ASPECT_COLOR_BIT, 0u, 0u, 1u }
-			, { 0, 0, 0 }
-			, { VK_IMAGE_ASPECT_COLOR_BIT, 0u, 0u, 1u }
-			, { 0, int32_t( image.size.height - copySize ), 0 }
-			, { copySize, copySize, 1u } };
-
-		for ( auto i = 0; i < 4; ++i )
+		for ( int32_t fmt = ashes::beginFmt() + 1u; fmt <= ashes::endFmt(); ++fmt )
 		{
-			commandBuffer->copyImage( copy
-				, *m_srcTexture
-				, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
-				, *m_dstTexture
-				, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL );
-			copy.dstOffset.x += copySize;
-			copy.dstOffset.y -= copySize;
+			auto props = m_device->getPhysicalDevice().getFormatProperties( VkFormat( fmt ) );
+
+			if ( ashes::checkFlag( props.optimalTilingFeatures, VK_FORMAT_FEATURE_BLIT_DST_BIT ) )
+			{
+				VkImageFormatProperties imageProperties{};
+
+				if ( VK_SUCCESS == m_device->getPhysicalDevice().getImageFormatProperties( VkFormat( fmt )
+					, VK_IMAGE_TYPE_2D
+					, VK_IMAGE_TILING_OPTIMAL
+					, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT
+					, 0u
+					, imageProperties ) )
+				{
+					m_choices.push_back( ashes::getName( VkFormat( fmt ) ) );
+					m_choicesIndex.push_back( VkFormat( fmt ) );
+				}
+			}
 		}
 
-		commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
-			, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
-			, m_dstView.makeShaderInputResource( VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL ) );
-		commandBuffer->end();
-		auto fence = m_device->getDevice().createFence();
-		m_graphicsQueue->submit( *commandBuffer
-			, fence.get() );
-		fence->wait( ashes::MaxTimeout );
+		// Prepare first texture.
+		m_curIndex = 0u;
+		doCreateTextureDst( m_curIndex );
+	}
+
+	void RenderPanel::doCreateTextureDst( size_t index )
+	{
+		auto format = m_choicesIndex[index];
+		auto it = m_dstTextures.find( format );
+
+		if ( it == m_dstTextures.end() )
+		{
+			auto size = m_srcTexture->getDimensions();
+			m_dstTextures[format] = m_device->createImage( ashes::ImageCreateInfo{ 0u
+				, VK_IMAGE_TYPE_2D
+				, format
+				, { size.width, size.height, 1u }
+				, 1u
+				, 1u
+				, VK_SAMPLE_COUNT_1_BIT
+				, VK_IMAGE_TILING_OPTIMAL
+				, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT }
+				, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+				, "Dst" + ashes::getName( format ) );
+			m_dstViews[format] = m_dstTextures[format]->createView( "Dst"
+				, VK_IMAGE_VIEW_TYPE_2D
+				, format );
+
+			auto commandBuffer = m_commandPool->createCommandBuffer( "BlitTex"
+				, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
+			commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
+
+			// Copy parts of src image to dst image
+			commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
+				, VK_PIPELINE_STAGE_TRANSFER_BIT
+				, m_dstViews[format].makeTransferDestination( VK_IMAGE_LAYOUT_UNDEFINED ) );
+			// First clear it
+			commandBuffer->clear( m_dstViews[format], m_clearColour );
+
+			// Then copy some bits of src image
+			auto copySize = int32_t( size.width / 4u );
+			VkImageBlit blit{ { VK_IMAGE_ASPECT_COLOR_BIT, 0u, 0u, 1u }
+				, { { 0, 0, 0 }, { int32_t( size.width ), int32_t( size.height ), 1u } }
+				, { VK_IMAGE_ASPECT_COLOR_BIT, 0u, 0u, 1u }
+				, { { 0, int32_t( size.height - copySize ), 0 }, { copySize, int32_t( size.height ), 1u } } };
+			ashes::VkImageBlitArray blits;
+
+			for ( auto i = 0; i < 4; ++i )
+			{
+				blits.push_back( blit );
+				blit.dstOffsets[0].x += copySize;
+				blit.dstOffsets[1].x += copySize;
+				blit.dstOffsets[0].y -= copySize;
+				blit.dstOffsets[1].y -= copySize;
+			}
+
+			commandBuffer->blitImage( *m_srcTexture
+				, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
+				, *m_dstTextures[format]
+				, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+				, blits
+				, VK_FILTER_LINEAR );
+			commandBuffer->memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
+				, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+				, m_dstViews[format].makeShaderInputResource( VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL ) );
+			commandBuffer->end();
+			auto fence = m_device->getDevice().createFence();
+			m_graphicsQueue->submit( *commandBuffer
+				, fence.get() );
+			fence->wait( ashes::MaxTimeout );
+
+			m_descriptorSets[format] = m_descriptorPool->createDescriptorSet();
+			m_descriptorSets[format]->createBinding( m_descriptorLayout->getBinding( 0u )
+				, m_dstViews[format]
+				, *m_sampler );
+			m_descriptorSets[format]->update();
+		}
+
+		m_curIndex = index;
 	}
 
 	void RenderPanel::doCreateDescriptorSet()
@@ -250,12 +356,7 @@ namespace vkapp
 			{ 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr }
 		};
 		m_descriptorLayout = m_device->getDevice().createDescriptorSetLayout( std::move( bindings ) );
-		m_descriptorPool = m_descriptorLayout->createPool( 1u );
-		m_descriptorSet = m_descriptorPool->createDescriptorSet();
-		m_descriptorSet->createBinding( m_descriptorLayout->getBinding( 0u )
-			, m_dstView
-			, *m_sampler );
-		m_descriptorSet->update();
+		m_descriptorPool = m_descriptorLayout->createPool( uint32_t( ashes::endFmt() ) + 1 );
 	}
 
 	void RenderPanel::doCreateRenderPass()
@@ -404,9 +505,14 @@ namespace vkapp
 		m_queryPool = m_device->getDevice().createQueryPool( VK_QUERY_TYPE_TIMESTAMP
 			, 2u
 			, 0u );
-		m_commandBuffers = m_swapChain->createCommandBuffers();
 		m_frameBuffers = m_swapChain->createFrameBuffers( *m_renderPass );
+		doPrepareCommandBuffers();
+	}
+
+	void RenderPanel::doPrepareCommandBuffers()
+	{
 		auto dimensions = m_swapChain->getDimensions();
+		m_commandBuffers = m_swapChain->createCommandBuffers();
 
 		for ( size_t i = 0u; i < m_commandBuffers.size(); ++i )
 		{
@@ -414,6 +520,7 @@ namespace vkapp
 			auto & commandBuffer = *m_commandBuffers[i];
 
 			commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT );
+			m_gui->preUpdateCommandBuffer( commandBuffer );
 			commandBuffer.resetQueryPool( *m_queryPool
 				, 0u
 				, 2u );
@@ -428,24 +535,91 @@ namespace vkapp
 			commandBuffer.setViewport( { 0.0f, 0.0f, float( dimensions.width ), float( dimensions.height ), 0.0f, 1.0f } );
 			commandBuffer.setScissor( { { 0, 0 }, { dimensions.width, dimensions.height } } );
 			commandBuffer.bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
-			commandBuffer.bindDescriptorSet( *m_descriptorSet
+			commandBuffer.bindDescriptorSet( *m_descriptorSets[m_choicesIndex[m_curIndex]]
 				, *m_pipelineLayout );
 			commandBuffer.draw( 4u );
+			m_gui->updateCommandBuffer( commandBuffer );
 			commandBuffer.writeTimestamp( VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
 				, *m_queryPool
 				, 1u );
 			commandBuffer.endRenderPass();
 
+			m_gui->postUpdateCommandBuffer( commandBuffer );
 			commandBuffer.end();
+		}
+	}
+
+	void RenderPanel::doUpdateGui()
+	{
+		static utils::Clock::time_point save = utils::Clock::now();
+		m_frameTime = std::chrono::duration_cast< std::chrono::microseconds >( utils::Clock::now() - save );
+
+		auto size = GetClientSize();
+		ImGuiIO & io = ImGui::GetIO();
+
+		io.DisplaySize = ImVec2( float( size.GetWidth() ), float( size.GetHeight() ) );
+		io.DeltaTime = m_frameTime.count() / 1000000.0f;
+
+		io.MousePos = ImVec2( m_mouse.position.x, m_mouse.position.y );
+		io.MouseDown[0] = m_mouse.left;
+		io.MouseDown[1] = m_mouse.right;
+
+		ImGui::NewFrame();
+
+		ImGui::PushStyleVar( ImGuiStyleVar_WindowRounding, 10 );
+		ImGui::SetNextWindowPos( ImVec2( 10, 10 ) );
+		ImGui::SetNextWindowSize( ImVec2( 0, 0 ), ImGuiCond_FirstUseEver );
+		ImGui::Begin( AppName.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove );
+
+#if defined( VK_USE_PLATFORM_ANDROID_KHR )
+		ImGui::PushStyleVar( ImGuiStyleVar_ItemSpacing, ImVec2( 0.0f, 5.0f * UIOverlay->scale ) );
+#endif
+
+		ImGui::PushItemWidth( 400.0f );
+		int32_t index( m_curIndex );
+		m_gui->comboBox( "Format", &index, m_choices );
+		ImGui::PopItemWidth();
+
+#if defined( VK_USE_PLATFORM_ANDROID_KHR )
+		ImGui::PopStyleVar();
+#endif
+
+		ImGui::End();
+		ImGui::PopStyleVar();
+		ImGui::Render();
+
+#if defined( VK_USE_PLATFORM_ANDROID_KHR )
+		m_mouse.left = false;
+#endif
+		save = utils::Clock::now();
+		bool invalid = false;
+
+		if ( index != m_curIndex )
+		{
+			doCreateTextureDst( size_t( index ) );
+			invalid = true;
+		}
+
+		invalid = m_gui->update() || invalid;
+
+		if ( invalid )
+		{
+			m_device->getDevice().waitIdle();
+			doPrepareCommandBuffers();
 		}
 	}
 
 	void RenderPanel::doDraw()
 	{
+		doUpdateGui();
 		auto resources = m_swapChain->getResources();
 
 		if ( resources )
 		{
+			++m_frameCount;
+			m_framesTimes[m_frameIndex] = m_frameTime;
+			m_frameIndex = ++m_frameIndex % FrameSamplesCount;
+
 			auto before = std::chrono::high_resolution_clock::now();
 			m_graphicsQueue->submit( *m_commandBuffers[resources->getImageIndex()]
 				, resources->getImageAvailableSemaphore()
@@ -493,5 +667,67 @@ namespace vkapp
 		m_swapChain->reset( { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
 		m_timer->Start( TimerTimeMs );
 		event.Skip();
+	}
+
+	void RenderPanel::onMouseLDown( wxMouseEvent & event )
+	{
+		m_mouse.left = true;
+		m_mouse.position.x = event.GetPosition().x;
+		m_mouse.position.y = event.GetPosition().y;
+	}
+
+	void RenderPanel::onMouseLUp( wxMouseEvent & event )
+	{
+		m_mouse.left = false;
+		m_mouse.position.x = event.GetPosition().x;
+		m_mouse.position.y = event.GetPosition().y;
+	}
+
+	void RenderPanel::onMouseLDClick( wxMouseEvent & event )
+	{
+		m_mouse.left = true;
+		m_mouse.position.x = event.GetPosition().x;
+		m_mouse.position.y = event.GetPosition().y;
+	}
+
+	void RenderPanel::onMouseRDown( wxMouseEvent & event )
+	{
+		m_mouse.right = true;
+		m_mouse.position.x = event.GetPosition().x;
+		m_mouse.position.y = event.GetPosition().y;
+	}
+
+	void RenderPanel::onMouseRUp( wxMouseEvent & event )
+	{
+		m_mouse.right = false;
+		m_mouse.position.x = event.GetPosition().x;
+		m_mouse.position.y = event.GetPosition().y;
+	}
+
+	void RenderPanel::onMouseRDClick( wxMouseEvent & event )
+	{
+		m_mouse.right = true;
+		m_mouse.position.x = event.GetPosition().x;
+		m_mouse.position.y = event.GetPosition().y;
+	}
+
+	void RenderPanel::onMouseMove( wxMouseEvent & event )
+	{
+		m_mouse.position.x = event.GetPosition().x;
+		m_mouse.position.y = event.GetPosition().y;
+	}
+
+	void RenderPanel::onKeyUp( wxKeyEvent & event )
+	{
+		auto key = event.GetUnicodeKey();
+
+		if ( key == wxT( 'F' ) )
+		{
+			if ( m_curIndex < m_choicesIndex.size() - 1u )
+			{
+				doCreateTextureDst( m_curIndex + 1u );
+				doUpdateGui();
+			}
+		}
 	}
 }

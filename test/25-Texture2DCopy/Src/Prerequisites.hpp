@@ -15,4 +15,5 @@ namespace vkapp
 	class RenderPanel;
 	class MainFrame;
 	class Application;
+	class Gui;
 }
