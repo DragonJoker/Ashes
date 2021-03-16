@@ -306,6 +306,17 @@ namespace ashes
 			, uint32_t( copyInfo.size() )
 			, copyInfo.data() );
 	}
+
+	void CommandBuffer::updateBuffer( BufferBase const & dst
+		, VkDeviceSize dstOffset
+		, ArrayView< uint8_t > const & data )const
+	{
+		m_device.vkCmdUpdateBuffer( m_internal
+			, dst
+			, dstOffset
+			, data.size()
+			, data.data() );
+	}
 	
 	void CommandBuffer::copyImage( VkImageCopy const & copyInfo
 		, Image const & src
