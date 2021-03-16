@@ -188,6 +188,7 @@ namespace ashes::gl
 		GL_FORMAT_RG = 0x8227,
 		GL_FORMAT_RG_INTEGER = 0x8228,
 		GL_FORMAT_DS = 0x84F9,
+		GL_FORMAT_R11F_G11F_B10F = 0x8C3A,
 	};
 	enum GlType
 		: GLenum
