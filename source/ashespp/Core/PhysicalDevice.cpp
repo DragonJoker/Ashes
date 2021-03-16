@@ -136,6 +136,22 @@ namespace ashes
 		return props;
 	}
 
+	VkResult PhysicalDevice::getImageFormatProperties( VkFormat format
+		, VkImageType type
+		, VkImageTiling tiling
+		, VkImageUsageFlags usage
+		, VkImageCreateFlags flags
+		, VkImageFormatProperties & imageProperties )const
+	{
+		return m_instance.vkGetPhysicalDeviceImageFormatProperties( m_gpu
+			, format
+			, type
+			, tiling
+			, usage
+			, flags
+			, &imageProperties );
+	}
+
 	std::string PhysicalDevice::dumpProperties()const
 	{
 		auto features = getFeatures();

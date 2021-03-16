@@ -69,6 +69,16 @@ namespace ashes
 		VkFormatProperties getFormatProperties( VkFormat fmt )const;
 		/**
 		*\brief
+		*	Retrieves the image format properties.
+		*/
+		VkResult getImageFormatProperties( VkFormat format
+			, VkImageType type
+			, VkImageTiling tiling
+			, VkImageUsageFlags usage
+			, VkImageCreateFlags flags
+			, VkImageFormatProperties & imageProperties )const;
+		/**
+		*\brief
 		*	Dumps the properties and features to a std::string.
 		*/ 
 		std::string dumpProperties()const;
