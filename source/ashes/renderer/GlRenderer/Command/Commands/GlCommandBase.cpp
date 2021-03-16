@@ -616,14 +616,20 @@ namespace ashes::gl
 	void apply( ContextLock const & context
 		, CmdUpdateBuffer const & cmd )
 	{
-		void * data;
-
-		if ( VK_SUCCESS == get( cmd.memory )->lock( context, cmd.memoryOffset, cmd.dataSize, 0u, &data ) )
-		{
-			std::memcpy( data, cmd.pData, cmd.dataSize );
-			get( cmd.memory )->flush( context, cmd.memoryOffset, cmd.dataSize );
-			get( cmd.memory )->unlock( context );
-		}
+		glLogCall( context
+			, glBindBuffer
+			, GL_BUFFER_TARGET_COPY_WRITE
+			, get( cmd.memory )->getInternal() );
+		glLogCall( context
+			, glBufferSubData
+			, GL_BUFFER_TARGET_COPY_WRITE
+			, cmd.memoryOffset
+			, cmd.dataSize
+			, cmd.pData );
+		glLogCall( context
+			, glBindBuffer
+			, GL_BUFFER_TARGET_COPY_WRITE
+			, 0 );
 	}
 
 	void apply( ContextLock const & context
