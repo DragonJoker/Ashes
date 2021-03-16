@@ -6,6 +6,7 @@ See LICENSE file in root folder.
 
 #include "Command/Commands/GlCopyImageCommand.hpp"
 #include "Command/Commands/GlCopyImageToBufferCommand.hpp"
+#include "Command/Commands/GlCopyBufferToImageCommand.hpp"
 #include "Core/GlDevice.hpp"
 #include "Image/GlImage.hpp"
 #include "Image/GlImageView.hpp"
@@ -58,7 +59,21 @@ namespace ashes::gl
 				, src.srcOffsets[1] - src.srcOffsets[0] };
 		}
 
-		VkBufferImageCopy getBufferImageCopy( VkImageBlit const & copyInfo
+		VkBufferImageCopy getImageToBufferCopy( VkImageBlit const & copyInfo
+			, VkImage dstImage )
+		{
+			VkBufferImageCopy result{};
+			auto & dstBinding = static_cast< ImageMemoryBinding const & >( get( dstImage )->getMemoryBinding() );
+			result.bufferOffset = dstBinding.getMipLevelOffset( copyInfo.dstSubresource.mipLevel ) - dstBinding.getOffset();
+			result.imageExtent.width = uint32_t( copyInfo.dstOffsets[1].x );
+			result.imageExtent.height = uint32_t( copyInfo.dstOffsets[1].y );
+			result.imageExtent.depth = uint32_t( copyInfo.dstOffsets[1].z );
+			result.imageOffset = copyInfo.dstOffsets[0];
+			result.imageSubresource = copyInfo.dstSubresource;
+			return result;
+		}
+
+		VkBufferImageCopy getBufferToImageCopy( VkImageBlit const & copyInfo
 			, VkImage dstImage )
 		{
 			VkBufferImageCopy result{};
@@ -87,70 +102,51 @@ namespace ashes::gl
 			|| region.srcSubresource.layerCount == region.dstOffsets[1].z
 			|| region.dstSubresource.layerCount == region.srcOffsets[1].z );
 
-		if ( hasCopyImage( device )
-			&& areCopyCompatible( get( srcImage )->getFormatVk(), get( dstImage )->getFormatVk() )
-			&& ( region.srcOffsets[1] - region.srcOffsets[0] ) == ( region.dstOffsets[1] - region.dstOffsets[0] ) )
-		{
-			list.push_back( makeCmd< OpType::eCopyImageSubData >( get( srcImage )->getInternal()
-				, convert( device
-					, get( srcImage )->getType()
-					, get( srcImage )->getArrayLayers()
-					, get( srcImage )->getCreateFlags() )
-				, get( dstImage )->getInternal()
-				, convert( device
-					, get( dstImage )->getType()
-					, get( dstImage )->getArrayLayers()
-					, get( srcImage )->getCreateFlags() )
-				, convert( region ) ) );
-		}
-		else
-		{
-			auto layerCount = std::max( region.srcSubresource.layerCount
-				, std::max( region.dstSubresource.layerCount
-					, uint32_t( std::max( region.srcOffsets[1].z
-						, region.dstOffsets[1].z ) ) ) );
-			auto srcBaseArrayLayer = std::max( region.srcSubresource.baseArrayLayer
-				, uint32_t( region.srcOffsets[0].z ) );
-			auto dstBaseArrayLayer = std::max( region.dstSubresource.baseArrayLayer
-				, uint32_t( region.dstOffsets[0].z ) );
+		auto layerCount = std::max( region.srcSubresource.layerCount
+			, std::max( region.dstSubresource.layerCount
+				, uint32_t( std::max( region.srcOffsets[1].z
+					, region.dstOffsets[1].z ) ) ) );
+		auto srcBaseArrayLayer = std::max( region.srcSubresource.baseArrayLayer
+			, uint32_t( region.srcOffsets[0].z ) );
+		auto dstBaseArrayLayer = std::max( region.dstSubresource.baseArrayLayer
+			, uint32_t( region.dstOffsets[0].z ) );
 
-			for ( uint32_t layer = 0u; layer < layerCount; ++layer )
+		for ( uint32_t layer = 0u; layer < layerCount; ++layer )
+		{
+			LayerCopy layerCopy{ device
+				, region
+				, srcImage
+				, dstImage
+				, views };
+
+			list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_READ_FRAMEBUFFER ) );
+			layerCopy.bindSrc( stack
+				, srcBaseArrayLayer + layer
+				, GL_READ_FRAMEBUFFER
+				, list );
+			list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_DRAW_FRAMEBUFFER ) );
+			layerCopy.bindDst( stack
+				, dstBaseArrayLayer + layer
+				, GL_DRAW_FRAMEBUFFER
+				, list );
+			list.push_back( makeCmd< OpType::eBlitFramebuffer >( layerCopy.region.srcOffsets[0].x
+				, layerCopy.region.srcOffsets[0].y
+				, layerCopy.region.srcOffsets[1].x
+				, layerCopy.region.srcOffsets[1].y
+				, layerCopy.region.dstOffsets[0].x
+				, layerCopy.region.dstOffsets[0].y
+				, layerCopy.region.dstOffsets[1].x
+				, layerCopy.region.dstOffsets[1].y
+				, getMask( get( srcImage )->getFormatVk() )
+				, convert( filter ) ) );
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
+				, nullptr ) );
+			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_DRAW_FRAMEBUFFER
+				, nullptr ) );
+
+			if ( stack.hasCurrentFramebuffer() )
 			{
-				LayerCopy layerCopy{ device
-					, region
-					, srcImage
-					, dstImage
-					, views };
-
-				list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_READ_FRAMEBUFFER ) );
-				layerCopy.bindSrc( stack
-					, srcBaseArrayLayer + layer
-					, GL_READ_FRAMEBUFFER
-					, list );
-				list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_DRAW_FRAMEBUFFER ) );
-				layerCopy.bindDst( stack
-					, dstBaseArrayLayer + layer
-					, GL_DRAW_FRAMEBUFFER
-					, list );
-				list.push_back( makeCmd< OpType::eBlitFramebuffer >( layerCopy.region.srcOffsets[0].x
-					, layerCopy.region.srcOffsets[0].y
-					, layerCopy.region.srcOffsets[1].x
-					, layerCopy.region.srcOffsets[1].y
-					, layerCopy.region.dstOffsets[0].x
-					, layerCopy.region.dstOffsets[0].y
-					, layerCopy.region.dstOffsets[1].x
-					, layerCopy.region.dstOffsets[1].y
-					, getMask( get( srcImage )->getFormatVk() )
-					, convert( filter ) ) );
-				list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
-					, nullptr ) );
-				list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_DRAW_FRAMEBUFFER
-					, nullptr ) );
-
-				if ( stack.hasCurrentFramebuffer() )
-				{
-					stack.setCurrentFramebuffer( VK_NULL_HANDLE );
-				}
+				stack.setCurrentFramebuffer( VK_NULL_HANDLE );
 			}
 		}
 
@@ -158,7 +154,7 @@ namespace ashes::gl
 		{
 			buildCopyImageToBufferCommand( stack
 				, device
-				, getBufferImageCopy( region, dstImage )
+				, getImageToBufferCopy( region, dstImage )
 				, dstImage
 				, get( dstImage )->getMemoryBinding()
 				, list
