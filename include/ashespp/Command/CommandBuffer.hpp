@@ -437,6 +437,19 @@ namespace ashes
 			, BufferBase const & dst )const;
 		/**
 		*\brief
+		*	Copies data from a buffer to another one.
+		*\param[in] copyInfo
+		*	The copy informations.
+		*\param[in] src
+		*	The source buffer.
+		*\param[in] dst
+		*	The destination buffer.
+		*/
+		void updateBuffer( BufferBase const & dst
+			, VkDeviceSize dstOffset
+			, ArrayView< uint8_t > const & data )const;
+		/**
+		*\brief
 		*	Copies data from an image to another one.
 		*\param[in] copyInfo
 		*	The copy informations.
