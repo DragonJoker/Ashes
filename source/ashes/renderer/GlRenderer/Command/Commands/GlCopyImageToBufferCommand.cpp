@@ -53,8 +53,8 @@ namespace ashes::gl
 				, copyInfo.imageOffset.y
 				, copyInfo.imageExtent.width
 				, copyInfo.imageExtent.height
-				, get( src )->getReadFormat()
-				, get( src )->getReadType() ) );
+				, get( src )->getPackFormat()
+				, get( src )->getPackType() ) );
 			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
 				, nullptr ) );
 			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK
