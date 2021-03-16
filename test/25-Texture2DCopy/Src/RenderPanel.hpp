@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Prerequisites.hpp"
+#include "Gui.hpp"
 
 #include <ashespp/Descriptor/DescriptorSetLayout.hpp>
 #include <ashespp/Descriptor/DescriptorSetPool.hpp>
@@ -18,6 +18,14 @@ namespace vkapp
 	class RenderPanel
 		: public wxPanel
 	{
+	private:
+		struct MouseState
+		{
+			VkOffset2D position;
+			bool left{ false };
+			bool right{ false };
+		};
+
 	public:
 		RenderPanel( wxWindow * parent
 			, wxSize const & size
@@ -36,18 +44,21 @@ namespace vkapp
 			, ashes::Surface const & surface );
 		void doCreateSwapChain( ashes::SurfacePtr surface );
 		void doCreateTexture();
+		void doCreateTextureDst( size_t index );
 		void doCreateDescriptorSet();
 		void doCreateRenderPass();
 		void doCreateVertexBuffer();
 		void doCreateStagingBuffer();
 		void doCreatePipeline();
 		void doPrepareFrames();
+		void doPrepareCommandBuffers();
 		/**@}*/
 		/**
 		*\name
 		*	Rendering.
 		*/
 		/**@{*/
+		void doUpdateGui();
 		void doDraw();
 		void doResetSwapChain();
 		/**@}*/
@@ -58,11 +69,25 @@ namespace vkapp
 		/**@{*/
 		void onTimer( wxTimerEvent & event );
 		void onSize( wxSizeEvent & event );
+		void onMouseLDown( wxMouseEvent & event );
+		void onMouseLUp( wxMouseEvent & event );
+		void onMouseLDClick( wxMouseEvent & event );
+		void onMouseRDown( wxMouseEvent & event );
+		void onMouseRUp( wxMouseEvent & event );
+		void onMouseRDClick( wxMouseEvent & event );
+		void onMouseMove( wxMouseEvent & event );
+		void onKeyUp( wxKeyEvent & event );
 		/**@}*/
 
 	private:
+		static size_t constexpr FrameSamplesCount = 1000;
 		wxTimer * m_timer{ nullptr };
 		std::vector< TexturedVertexData > m_vertexData;
+		MouseState m_mouse;
+		std::chrono::microseconds m_frameTime;
+		std::array< std::chrono::microseconds, FrameSamplesCount > m_framesTimes;
+		uint32_t m_frameIndex{ 0 };
+		size_t m_frameCount{ 0 };
 		/**
 		*\name
 		*	Global.
@@ -81,13 +106,17 @@ namespace vkapp
 		ashes::StagingBufferPtr m_stagingBuffer;
 		ashes::ImagePtr m_srcTexture;
 		ashes::ImageView m_srcView;
-		ashes::ImagePtr m_dstTexture;
-		ashes::ImageView m_dstView;
+		std::map< VkFormat, ashes::ImagePtr > m_dstTextures;
+		std::map< VkFormat, ashes::ImageView > m_dstViews;
+		size_t m_curIndex;
 		ashes::SamplerPtr m_sampler;
 		ashes::DescriptorSetLayoutPtr m_descriptorLayout;
 		ashes::DescriptorSetPoolPtr m_descriptorPool;
-		ashes::DescriptorSetPtr m_descriptorSet;
+		std::map< VkFormat, ashes::DescriptorSetPtr > m_descriptorSets;
 		ashes::QueryPoolPtr m_queryPool;
+		std::unique_ptr< Gui > m_gui;
+		std::vector< std::string > m_choices;
+		std::vector< VkFormat > m_choicesIndex;
 		/**@}*/
 		/**
 		*\name
