@@ -16,17 +16,20 @@ namespace ashes::gl
 	void buildCopyBufferToImageCommand( ContextStateStack & stack
 		, VkDevice device
 		, VkBufferImageCopy copyInfo
-		, VkBuffer src
+		, GlFormat unpackFormat
+		, GlType unpackType
+		, DeviceMemoryBinding const & src
 		, VkImage dst
 		, CmdList & list )
 	{
 		glLogCommand( list, "CopyBufferToImageCommand" );
+		copyInfo.bufferOffset += src.getOffset();
 		auto copyTarget = convert( device
 			, get( dst )->getType()
 			, get( dst )->getArrayLayers()
 			, get( dst )->getCreateFlags() );
 		list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_UNPACK
-			, get( src )->getInternal() ) );
+			, src.getInternal() ) );
 		stack.applyUnpackAlign( list, 1 );
 		list.push_back( makeCmd< OpType::eBindTexture >( copyTarget
 			, get( dst )->getInternal() ) );
@@ -136,8 +139,8 @@ namespace ashes::gl
 					, copyInfo.imageSubresource.mipLevel
 					, copyInfo.imageOffset.x
 					, copyInfo.imageExtent.width
-					, get( dst )->getUnpackFormat()
-					, get( dst )->getUnpackType()
+					, unpackFormat
+					, unpackType
 					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
 
@@ -148,8 +151,8 @@ namespace ashes::gl
 					, copyInfo.imageOffset.y
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
-					, get( dst )->getUnpackFormat()
-					, get( dst )->getUnpackType()
+					, unpackFormat
+					, unpackType
 					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
 
@@ -162,8 +165,8 @@ namespace ashes::gl
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, copyInfo.imageExtent.depth
-					, get( dst )->getUnpackFormat()
-					, get( dst )->getUnpackType()
+					, unpackFormat
+					, unpackType
 					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
 
@@ -174,8 +177,8 @@ namespace ashes::gl
 					, int32_t( copyInfo.imageSubresource.baseArrayLayer )
 					, copyInfo.imageExtent.width
 					, copyInfo.imageSubresource.layerCount
-					, get( dst )->getUnpackFormat()
-					, get( dst )->getUnpackType()
+					, unpackFormat
+					, unpackType
 					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
 
@@ -188,8 +191,8 @@ namespace ashes::gl
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, copyInfo.imageSubresource.layerCount
-					, get( dst )->getUnpackFormat()
-					, get( dst )->getUnpackType()
+					, unpackFormat
+					, unpackType
 					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
 
@@ -200,8 +203,8 @@ namespace ashes::gl
 					, copyInfo.imageOffset.y
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
-					, get( dst )->getUnpackFormat()
-					, get( dst )->getUnpackType()
+					, unpackFormat
+					, unpackType
 					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
 
@@ -214,8 +217,8 @@ namespace ashes::gl
 					, copyInfo.imageExtent.width
 					, copyInfo.imageExtent.height
 					, copyInfo.imageSubresource.layerCount / 6u
-					, get( dst )->getUnpackFormat()
-					, get( dst )->getUnpackType()
+					, unpackFormat
+					, unpackType
 					, int32_t( copyInfo.bufferOffset ) ) );
 				break;
 
@@ -229,5 +232,22 @@ namespace ashes::gl
 			, 0u ) );
 		list.push_back( makeCmd< OpType::eBindTexture >( copyTarget
 			, 0u ) );
+	}
+
+	void buildCopyBufferToImageCommand( ContextStateStack & stack
+		, VkDevice device
+		, VkBufferImageCopy copyInfo
+		, VkBuffer src
+		, VkImage dst
+		, CmdList & list )
+	{
+		buildCopyBufferToImageCommand( stack
+			, device
+			, copyInfo
+			, get( dst )->getUnpackFormat()
+			, get( dst )->getUnpackType()
+			, get( src )->getMemoryBinding()
+			, dst
+			, list );
 	}
 }
