@@ -141,6 +141,11 @@ namespace utils
 			return m_computeQueueFamilyIndex;
 		}
 
+		ashes::PhysicalDevice const & getPhysicalDevice()const
+		{
+			return m_gpu;
+		}
+
 	private:
 		ashes::PhysicalDevice const & m_gpu;
 		uint32_t m_presentQueueFamilyIndex;
