@@ -1068,10 +1068,8 @@ namespace ashes::gl
 			itSet != pDescriptorSets + pAllocateInfo->descriptorSetCount;
 			++itLayout, ++itSet )
 		{
-			auto tmp = allocateNA( *itSet
-				, pAllocateInfo->descriptorPool
-				, *itLayout );
-			result = VkResult( std::max< uint32_t >( tmp, result ) );
+			result = std::max( result
+				, get( pAllocateInfo->descriptorPool )->allocate( *itLayout, *itSet ) );
 		}
 
 		return result;
@@ -1083,7 +1081,8 @@ namespace ashes::gl
 		uint32_t descriptorSetCount,
 		const VkDescriptorSet* pDescriptorSets )
 	{
-		return get( descriptorPool )->free( { pDescriptorSets, pDescriptorSets + descriptorSetCount } );
+		return get( descriptorPool )->free( ashes::makeArrayView( pDescriptorSets
+			, pDescriptorSets + descriptorSetCount ) );
 	}
 
 	void VKAPI_CALL vkUpdateDescriptorSets(
