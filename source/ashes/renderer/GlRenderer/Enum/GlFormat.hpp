@@ -189,6 +189,7 @@ namespace ashes::gl
 		GL_FORMAT_RG_INTEGER = 0x8228,
 		GL_FORMAT_DS = 0x84F9,
 		GL_FORMAT_R11F_G11F_B10F = 0x8C3A,
+		GL_FORMAT_E5B9G9R9_UFLOAT = 0x8C3D,
 	};
 	enum GlType
 		: GLenum
@@ -225,6 +226,7 @@ namespace ashes::gl
 	inline std::string toString( GlType value ) { return getName( value ); }
 	bool isSupportedInternal( VkFormat const & format )noexcept;
 	GlInternal getInternalFormat( VkFormat const & format )noexcept;
+	GlInternal getInternalFormat( VkFormat const & format, ContextLock const &  )noexcept;
 	GlFormat getFormat( VkFormat format )noexcept;
 	GlType getType( VkFormat format )noexcept;
 	GlComponentMapping getSwizzle( VkFormat format );
