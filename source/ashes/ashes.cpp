@@ -1098,45 +1098,6 @@ extern "C"
 		return g_library.getSelectedDesc().functions.DestroySwapchainKHR( device, swapchain, pAllocator );
 	}
 
-	Ashes_API VkResult VKAPI_CALL vkGetSwapchainImagesKHR( VkDevice device, VkSwapchainKHR swapchain, uint32_t* pSwapchainImageCount, VkImage* pSwapchainImages )
-	{
-		return g_library.getSelectedDesc().functions.GetSwapchainImagesKHR( device, swapchain, pSwapchainImageCount, pSwapchainImages );
-	}
-
-	Ashes_API VkResult VKAPI_CALL vkAcquireNextImageKHR( VkDevice device, VkSwapchainKHR swapchain, uint64_t timeout, VkSemaphore semaphore, VkFence fence, uint32_t* pImageIndex )
-	{
-		return g_library.getSelectedDesc().functions.AcquireNextImageKHR( device, swapchain, timeout, semaphore, fence, pImageIndex );
-	}
-
-	Ashes_API VkResult VKAPI_CALL vkQueuePresentKHR( VkQueue queue, const  VkPresentInfoKHR* pPresentInfo )
-	{
-		return g_library.getSelectedDesc().functions.QueuePresentKHR( queue, pPresentInfo );
-	}
-
-#	ifdef VK_API_VERSION_1_1
-
-	Ashes_API VkResult VKAPI_CALL vkGetDeviceGroupPresentCapabilitiesKHR( VkDevice device, VkDeviceGroupPresentCapabilitiesKHR* pDeviceGroupPresentCapabilities )
-	{
-		return g_library.getSelectedDesc().functions.GetDeviceGroupPresentCapabilitiesKHR( device, pDeviceGroupPresentCapabilities );
-	}
-
-	Ashes_API VkResult VKAPI_CALL vkGetDeviceGroupSurfacePresentModesKHR( VkDevice device, VkSurfaceKHR surface, VkDeviceGroupPresentModeFlagsKHR*  pModes )
-	{
-		return g_library.getSelectedDesc().functions.GetDeviceGroupSurfacePresentModesKHR( device, surface, pModes );
-	}
-
-	Ashes_API VkResult VKAPI_CALL vkGetPhysicalDevicePresentRectanglesKHR( VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32_t* pRectCount, VkRect2D* pRects )
-	{
-		return g_library.getSelectedDesc().functions.GetPhysicalDevicePresentRectanglesKHR( physicalDevice, surface, pRectCount, pRects );
-	}
-
-	Ashes_API VkResult VKAPI_CALL vkAcquireNextImage2KHR( VkDevice device, const  VkAcquireNextImageInfoKHR* pAcquireInfo, uint32_t* pImageIndex )
-	{
-		return g_library.getSelectedDesc().functions.AcquireNextImage2KHR( device, pAcquireInfo, pImageIndex );
-	}
-
-#	endif
-
 #endif
 #pragma endregion
 #pragma region VK_KHR_device_group
