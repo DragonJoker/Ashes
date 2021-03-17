@@ -367,7 +367,12 @@ namespace ashes::gl
 
 		m_dirty = false;
 		checkControlValue( m_data );
-		upload( context, offset, size );
+
+		if ( size != 0 )
+		{
+			upload( context, offset, size );
+		}
+
 		return VK_SUCCESS;
 	}
 
@@ -388,7 +393,12 @@ namespace ashes::gl
 
 		m_dirty = true;
 		checkControlValue( m_data );
-		download( context, m_mappedOffset, m_mappedSize );
+
+		if ( size != 0 )
+		{
+			download( context, offset, size );
+		}
+
 		return VK_SUCCESS;
 	}
 
@@ -401,7 +411,11 @@ namespace ashes::gl
 			dirty = binding->unmap() || dirty;
 		}
 
-		upload( context, m_mappedOffset, m_mappedSize );
+		if ( m_mappedSize != 0 )
+		{
+			upload( context, m_mappedOffset, m_mappedSize );
+		}
+
 		m_mappedOffset = 0ull;
 		m_mappedSize = 0ull;;
 	}
