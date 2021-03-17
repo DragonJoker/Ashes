@@ -20,8 +20,6 @@ namespace ashes::gl
 		, m_pool{ pool }
 		, m_layout{ layout }
 	{
-		get( pool )->registerSet( get( this ) );
-
 		for ( auto & binding : *get( layout ) )
 		{
 			LayoutBindingWrites bindingWrites
