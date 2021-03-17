@@ -298,12 +298,14 @@ namespace ashes::gl
 
 								if ( support != GL_FORMAT_PROPERTY_UNSUPPORTED )
 								{
+									properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
 									properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
 								}
 							}
 							else
 							{
 								properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
+								properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
 							}
 						}
 #endif
@@ -340,6 +342,10 @@ namespace ashes::gl
 									if ( support != GL_FORMAT_PROPERTY_UNSUPPORTED )
 									{
 										properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
+#if defined( VK_KHR_maintenance ) || defined( VK_API_VERSION_1_1 )
+										properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+										properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
+#endif
 									}
 								}
 							}
@@ -356,6 +362,10 @@ namespace ashes::gl
 								if ( support != GL_FORMAT_PROPERTY_UNSUPPORTED )
 								{
 									properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
+#if defined( VK_KHR_maintenance ) || defined( VK_API_VERSION_1_1 )
+									properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+									properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
+#endif
 								}
 							}
 							else if ( isStencilFormat( fmt ) )
@@ -371,6 +381,10 @@ namespace ashes::gl
 								if ( support != GL_FORMAT_PROPERTY_UNSUPPORTED )
 								{
 									properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
+#if defined( VK_KHR_maintenance ) || defined( VK_API_VERSION_1_1 )
+									properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+									properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
+#endif
 								}
 							}
 							else
@@ -386,6 +400,10 @@ namespace ashes::gl
 								if ( support != GL_FORMAT_PROPERTY_UNSUPPORTED )
 								{
 									properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT;
+#if defined( VK_KHR_maintenance ) || defined( VK_API_VERSION_1_1 )
+									properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+									properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
+#endif
 									support = GL_FORMAT_PROPERTY_UNSUPPORTED;
 									glLogCall( context, glGetInternalformativ
 										, GL_TEXTURE_2D
@@ -415,6 +433,9 @@ namespace ashes::gl
 							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
 							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;
 							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
+#if defined( VK_KHR_maintenance ) || defined( VK_API_VERSION_1_1 )
+							properties.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+#endif
 						}
 
 						support = GL_FORMAT_PROPERTY_UNSUPPORTED;
