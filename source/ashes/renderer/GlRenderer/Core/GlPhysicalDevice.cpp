@@ -786,146 +786,18 @@ namespace ashes::gl
 		return VK_ERROR_FORMAT_NOT_SUPPORTED;
 	}
 
-#if VK_VERSION_1_1
-
-	VkPhysicalDeviceFeatures2 const & PhysicalDevice::getFeatures2()const
-	{
-		return m_features2;
-	}
-
-	VkPhysicalDeviceProperties2 const & PhysicalDevice::getProperties2()const
-	{
-		return m_properties2;
-	}
+#if VK_VERSION_1_2
 
 	VkPhysicalDeviceDriverProperties const & PhysicalDevice::getDriverProperties()const
 	{
 		return m_driverProperties;
 	}
 
-	VkFormatProperties2 const & PhysicalDevice::getFormatProperties2( VkFormat format )const
-	{
-		return m_formatProperties2[format];
-	}
-
-	VkResult PhysicalDevice::getImageFormatProperties2( VkPhysicalDeviceImageFormatInfo2 const & imageFormatInfo
-		, VkImageFormatProperties2 & imageFormatProperties )const
-	{
-		return getImageFormatProperties( imageFormatInfo.format
-			, imageFormatInfo.type
-			, imageFormatInfo.tiling
-			, imageFormatInfo.usage
-			, imageFormatInfo.flags
-			, imageFormatProperties.imageFormatProperties );
-	}
-
-	std::vector< VkQueueFamilyProperties2 > PhysicalDevice::getQueueFamilyProperties2()const
-	{
-		return m_queueProperties2;
-	}
-
-	VkPhysicalDeviceMemoryProperties2 const & PhysicalDevice::getMemoryProperties2()const
-	{
-		return m_memoryProperties2;
-	}
-
-	VkResult PhysicalDevice::getSparseImageFormatProperties2( VkPhysicalDeviceSparseImageFormatInfo2 const & formatInfo
-		, std::vector< VkSparseImageFormatProperties2 > & sparseImageFormatProperties )const
-	{
-		std::vector< VkSparseImageFormatProperties > props;
-		auto result = getSparseImageFormatProperties( formatInfo.format
-			, formatInfo.type
-			, formatInfo.samples
-			, formatInfo.usage
-			, formatInfo.tiling
-			, props );
-
-		if ( result != VK_ERROR_FORMAT_NOT_SUPPORTED )
-		{
-			for ( auto & prop : props )
-			{
-				sparseImageFormatProperties.push_back(
-					{
-						VK_STRUCTURE_TYPE_SPARSE_IMAGE_FORMAT_PROPERTIES_2,
-						nullptr,
-						prop,
-					} );
-			}
-		}
-
-		return result;
-	}
-
-#elif VK_KHR_get_physical_device_properties2
-
-	VkPhysicalDeviceFeatures2KHR const & PhysicalDevice::getFeatures2()const
-	{
-		return m_features2;
-	}
-
-	VkPhysicalDeviceProperties2KHR const & PhysicalDevice::getProperties2()const
-	{
-		return m_properties2;
-	}
+#elif VK_KHR_driver_properties
 
 	VkPhysicalDeviceDriverPropertiesKHR const & PhysicalDevice::getDriverProperties()const
 	{
 		return m_driverProperties;
-	}
-
-	VkFormatProperties2KHR const & PhysicalDevice::getFormatProperties2( VkFormat format )const
-	{
-		return m_formatProperties2[format];
-	}
-
-	VkResult PhysicalDevice::getImageFormatProperties2( VkPhysicalDeviceImageFormatInfo2KHR const & imageFormatInfo
-		, VkImageFormatProperties2KHR & imageFormatProperties )const
-	{
-		imageFormatProperties.sType = VK_STRUCTURE_TYPE_IMAGE_FORMAT_PROPERTIES_2_KHR;
-		imageFormatProperties.pNext = nullptr;
-		return getImageFormatProperties( imageFormatInfo.format
-			, imageFormatInfo.type
-			, imageFormatInfo.tiling
-			, imageFormatInfo.usage
-			, imageFormatInfo.flags
-			, imageFormatProperties.imageFormatProperties );
-	}
-
-	std::vector< VkQueueFamilyProperties2KHR > PhysicalDevice::getQueueFamilyProperties2()const
-	{
-		return m_queueProperties2;
-	}
-
-	VkPhysicalDeviceMemoryProperties2KHR const & PhysicalDevice::getMemoryProperties2()const
-	{
-		return Instance::getMemoryProperties2();
-	}
-
-	VkResult PhysicalDevice::getSparseImageFormatProperties2( VkPhysicalDeviceSparseImageFormatInfo2KHR const & formatInfo
-		, std::vector< VkSparseImageFormatProperties2KHR > & sparseImageFormatProperties )const
-	{
-		std::vector< VkSparseImageFormatProperties > props;
-		auto result = getSparseImageFormatProperties( formatInfo.format
-			, formatInfo.type
-			, formatInfo.samples
-			, formatInfo.usage
-			, formatInfo.tiling
-			, props );
-
-		if ( result != VK_ERROR_FORMAT_NOT_SUPPORTED )
-		{
-			for ( auto & prop : props )
-			{
-				sparseImageFormatProperties.push_back(
-					{
-						VK_STRUCTURE_TYPE_SPARSE_IMAGE_FORMAT_PROPERTIES_2_KHR,
-						nullptr,
-						prop,
-					} );
-			}
-		}
-
-		return result;
 	}
 
 #endif
@@ -995,8 +867,6 @@ namespace ashes::gl
 		doInitialiseDisplayProperties( context );
 		doInitialisePortability( context );
 		doInitialiseDriverProperties( context );
-		doInitialiseMemoryProperties2( context );
-		doInitialiseProperties2( context );
 	}
 
 	void PhysicalDevice::doInitialiseFeatures( ContextLock & context )
@@ -1306,104 +1176,9 @@ namespace ashes::gl
 #endif
 	}
 
-	void PhysicalDevice::doInitialiseMemoryProperties2( ContextLock & context )
-	{
-#if VK_VERSION_1_1
-		m_memoryProperties2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_PROPERTIES_2;
-#elif VK_KHR_get_physical_device_properties2
-		m_memoryProperties2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_PROPERTIES_2_KHR;
-#endif
-#if VK_VERSION_1_1 || VK_KHR_get_physical_device_properties2
-		m_memoryProperties2.pNext = nullptr;
-		m_memoryProperties2.memoryProperties = m_memoryProperties;
-#endif
-	}
-
-	void PhysicalDevice::doInitialiseProperties2( ContextLock & context )
-	{
-#if VK_VERSION_1_1
-#	if VK_KHR_portability_subset
-		if ( get( m_instance )->hasEnabledExtension( VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME ) )
-		{
-			m_features2.pNext = &m_portabilityFeatures;
-		}
-		else
-		{
-			m_features2.pNext = nullptr;
-		}
-#	else
-		m_features2.pNext = nullptr;
-#	endif
-		m_features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-		m_features2.features = m_features;
-
-		m_properties2.pNext = nullptr;
-		m_properties2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
-		m_properties2.properties = m_properties;
-
-		m_properties2.pNext = &m_driverProperties;
-
-		for ( auto & queueProperty : m_queueProperties )
-		{
-			m_queueProperties2.push_back(
-				{
-					VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2,
-					nullptr,
-					queueProperty,
-				} );
-		}
-
-		for ( auto & formatProperty : m_formatProperties )
-		{
-			m_formatProperties2.emplace( formatProperty.first
-				, VkFormatProperties2
-				{
-					VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2,
-					nullptr,
-					formatProperty.second,
-				} );
-		}
-
-#elif 
-#	if VK_KHR_portability_subset
-		m_features2.pNext = &m_portabilityFeatures;
-#	else
-		m_features2.pNext = nullptr;
-#	endif
-		m_features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
-		m_features2.features = m_features;
-
-		m_properties2.pNext = nullptr;
-		m_properties2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
-		m_properties2.properties = m_properties;
-
-		for ( auto & queueProperty : m_queueProperties )
-		{
-			m_queueProperties2.push_back(
-				{
-					VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2_KHR,
-					nullptr,
-					queueProperty,
-				} );
-		}
-
-		for ( auto & formatProperty : m_formatProperties )
-		{
-			m_formatProperties2.emplace( formatProperty.first
-				, VkFormatProperties2
-				{
-					VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2_KHR,
-					nullptr,
-					formatProperty.second,
-				} );
-		}
-
-#endif
-	}
-
 	void PhysicalDevice::doInitialisePortability( ContextLock & context )
 	{
-#	if VK_KHR_portability_subset
+#if VK_KHR_portability_subset
 
 		auto & extensions = get( m_instance )->getExtensions();
 		m_portabilityFeatures = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_FEATURES_KHR, nullptr };
@@ -1427,7 +1202,7 @@ namespace ashes::gl
 		m_portabilityFeatures.triangleFans = VK_TRUE;
 		m_portabilityFeatures.vertexAttributeAccessBeyondStride = VK_FALSE;
 
-#	endif
+#endif
 	}
 
 	bool has420PackExtensions( VkPhysicalDevice physicalDevice )
