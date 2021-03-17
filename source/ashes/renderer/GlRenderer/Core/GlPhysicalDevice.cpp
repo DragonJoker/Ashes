@@ -213,6 +213,28 @@ namespace ashes::gl
 				assert( context->m_glGetInternalformativ );
 				auto internal = getInternalFormat( fmt );
 
+				if ( isCompressedFormat( fmt ) )
+				{
+					if ( isBCFormat( fmt ) )
+					{
+						internal = ( m_features.textureCompressionBC
+							? internal
+							: GL_INTERNAL_UNSUPPORTED );
+					}
+					else if ( isEACFormat( fmt ) || isETC2Format( fmt ) )
+					{
+						internal = ( m_features.textureCompressionETC2
+							? internal
+							: GL_INTERNAL_UNSUPPORTED );
+					}
+					else if ( isASTCFormat( fmt ) )
+					{
+						internal = ( m_features.textureCompressionASTC_LDR
+							? internal
+							: GL_INTERNAL_UNSUPPORTED );
+					}
+				}
+
 				if ( internal != GL_INTERNAL_UNSUPPORTED )
 				{
 					GlFormatPropertyResult support = GL_FORMAT_PROPERTY_UNSUPPORTED;
@@ -597,6 +619,28 @@ namespace ashes::gl
 			imageFormatProperties = {};
 			ContextLock context{ get( m_instance )->getCurrentContext() };
 			auto internal = getInternalFormat( format );
+
+			if ( isCompressedFormat( format ) )
+			{
+				if ( isBCFormat( format ) )
+				{
+					internal = ( m_features.textureCompressionBC
+						? internal
+						: GL_INTERNAL_UNSUPPORTED );
+				}
+				else if ( isEACFormat( format ) || isETC2Format( format ) )
+				{
+					internal = ( m_features.textureCompressionETC2
+						? internal
+						: GL_INTERNAL_UNSUPPORTED );
+				}
+				else if ( isASTCFormat( format ) )
+				{
+					internal = ( m_features.textureCompressionASTC_LDR
+						? internal
+						: GL_INTERNAL_UNSUPPORTED );
+				}
+			}
 
 			if ( context->m_glGetInternalformativ
 				&& internal != GL_INTERNAL_UNSUPPORTED )
@@ -985,7 +1029,7 @@ namespace ashes::gl
 		m_features.alphaToOne = true;
 		m_features.multiViewport = find( ARB_viewport_array );
 		m_features.samplerAnisotropy = find( ARB_texture_filter_anisotropic );
-		m_features.textureCompressionETC2 = findAll( { ARB_ES3_compatibility, ARB_ES2_compatibility, ARB_invalidate_subdata, ARB_texture_storage } );
+		m_features.textureCompressionETC2 = false;
 		m_features.textureCompressionASTC_LDR = findAny( { KHR_texture_compression_astc_ldr, KHR_texture_compression_astc_hdr } );
 		m_features.textureCompressionBC = findAll( { ARB_texture_compression, EXT_texture_compression_s3tc, EXT_texture_sRGB } );
 		m_features.occlusionQueryPrecise = true;
