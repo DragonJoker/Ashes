@@ -424,6 +424,9 @@ namespace ashes::gl
 
 		case GL_FORMAT_R11F_G11F_B10F:
 			return "GL_R11F_G11F_B10F";
+			
+		case GL_FORMAT_E5B9G9R9_UFLOAT:
+			return "GL_RGB9_E5";
 
 		default:
 			assert( false && "Unupported GlFormat" );
