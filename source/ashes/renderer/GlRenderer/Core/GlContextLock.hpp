@@ -52,7 +52,7 @@ namespace ashes::gl
 
 		static void get( ContextLock & context, GlValueName name, GLint index, ValueT * value )
 		{
-			ValueGetter< SignedT >::get( context, name, index, reinterpret_cast< SignedT * >( value ) );
+			ValueGetter< SignedT >::get( context, name, index, reinterpret_cast< SignedT * >( &value[index] ) );
 		}
 	};
 
@@ -69,7 +69,7 @@ namespace ashes::gl
 
 		static void get( ContextLock & context, GlValueName name, GLint index, ValueT * value )
 		{
-			ValueGetter< SignedT >::get( context, name, index, reinterpret_cast< SignedT * >( value ) );
+			ValueGetter< SignedT >::get( context, name, index, reinterpret_cast< SignedT * >( &value[index] ) );
 		}
 	};
 
@@ -132,9 +132,10 @@ namespace ashes::gl
 		}
 
 		template< typename ValueT >
-		void getValue( GlValueName name, ValueT & value )
+		ValueT & getValue( GlValueName name, ValueT & value )
 		{
 			ValueGetter< ValueT >::get( *this, name, &value );
+			return value;
 		}
 
 		template< typename ValueT, size_t CountT >
@@ -153,10 +154,28 @@ namespace ashes::gl
 		}
 
 		template< typename ValueT >
-		void getValue( GlValueName name, ValueT & value, ValueT const & min )
+		ValueT & getValue( GlValueName name, ValueT & value, ValueT const & min )
 		{
 			ValueGetter< ValueT >::get( *this, name, &value );
 			value = std::max( value, min );
+			return value;
+		}
+
+		template< typename ValueT >
+		ValueT & getBitfieldValue( GlValueName name, ValueT & value, ValueT const & min )
+		{
+			ValueT bitfield;
+			ValueGetter< ValueT >::get( *this, name, &bitfield );
+			value = ValueT{};
+
+			while ( bitfield )
+			{
+				value |= bitfield;
+				bitfield >>= 1;
+			}
+
+			value = std::max( value, min );
+			return value;
 		}
 
 		template< typename ValueT, size_t CountT >
