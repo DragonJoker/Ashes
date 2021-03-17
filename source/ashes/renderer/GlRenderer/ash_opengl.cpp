@@ -1862,7 +1862,17 @@ namespace ashes::gl
 #if VK_KHR_portability_subset
 			if ( pNext->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_FEATURES_KHR )
 			{
+				auto next = pNext->pNext;
 				*reinterpret_cast< VkPhysicalDevicePortabilitySubsetFeaturesKHR * >( pNext ) = get( physicalDevice )->getPortabilitySubset();
+				pNext->pNext = next;
+			}
+#endif
+#if VK_EXT_inline_uniform_block
+			if ( pNext->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_FEATURES_EXT )
+			{
+				auto next = pNext->pNext;
+				*reinterpret_cast< VkPhysicalDeviceInlineUniformBlockFeaturesEXT * >( pNext ) = get( physicalDevice )->getInlineUniformBlockFeatures();
+				pNext->pNext = next;
 			}
 #endif
 
@@ -1882,13 +1892,23 @@ namespace ashes::gl
 #if VK_VERSION_1_2
 			if ( pNext->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES )
 			{
+				auto next = pNext->pNext;
 				*reinterpret_cast< VkPhysicalDeviceDriverProperties * >( pNext ) = get( physicalDevice )->getDriverProperties();
+				pNext->pNext = next;
 			}
 #endif
 #if VK_KHR_portability_subset
 			if ( pNext->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_PROPERTIES_KHR )
 			{
 				reinterpret_cast< VkPhysicalDevicePortabilitySubsetPropertiesKHR * >( pNext )->minVertexInputBindingStrideAlignment = 1u;
+			}
+#endif
+#if VK_EXT_inline_uniform_block
+			if ( pNext->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_PROPERTIES_EXT )
+			{
+				auto next = pNext->pNext;
+				*reinterpret_cast< VkPhysicalDeviceInlineUniformBlockPropertiesEXT * >( pNext ) = get( physicalDevice )->getInlineUniformBlockProperties();
+				pNext->pNext = next;
 			}
 #endif
 
@@ -2595,6 +2615,14 @@ namespace ashes::gl
 				*reinterpret_cast< VkPhysicalDevicePortabilitySubsetFeaturesKHR * >( pNext ) = get( physicalDevice )->getPortabilitySubset();
 			}
 #endif
+#if VK_EXT_inline_uniform_block
+			if ( pNext->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_FEATURES_EXT )
+			{
+				auto next = pNext->pNext;
+				*reinterpret_cast< VkPhysicalDeviceInlineUniformBlockFeaturesEXT * >( pNext ) = get( physicalDevice )->getInlineUniformBlockFeatures();
+				pNext->pNext = next;
+			}
+#endif
 
 			pNext = reinterpret_cast< VkBaseOutStructure * >( pNext->pNext );
 		}
@@ -2619,6 +2647,14 @@ namespace ashes::gl
 			if ( pNext->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_PROPERTIES_KHR )
 			{
 				reinterpret_cast< VkPhysicalDevicePortabilitySubsetPropertiesKHR * >( pNext )->minVertexInputBindingStrideAlignment = 1u;
+			}
+#endif
+#if VK_EXT_inline_uniform_block
+			if ( pNext->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_PROPERTIES_EXT )
+			{
+				auto next = pNext->pNext;
+				*reinterpret_cast< VkPhysicalDeviceInlineUniformBlockPropertiesEXT * >( pNext ) = get( physicalDevice )->getInlineUniformBlockProperties();
+				pNext->pNext = next;
 			}
 #endif
 
