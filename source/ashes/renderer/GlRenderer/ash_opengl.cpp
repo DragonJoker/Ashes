@@ -51,16 +51,40 @@ namespace ashes::gl
 		try
 		{
 			auto gpus = get( instance )->enumeratePhysicalDevices();
-			*pPhysicalDeviceCount = uint32_t( gpus.size() );
 
-			if ( pPhysicalDevices )
+			if ( pPhysicalDevices
+				&& pPhysicalDeviceCount )
 			{
+				auto requested = *pPhysicalDeviceCount;
+				uint32_t index = 0u;
+
 				for ( auto & gpu : gpus )
 				{
-					*pPhysicalDevices = gpu;
-					++pPhysicalDevices;
+					if ( index < requested )
+					{
+						*pPhysicalDevices = gpu;
+						++pPhysicalDevices;
+					}
+
+					++index;
 				}
+
+				*pPhysicalDeviceCount = std::min( requested, uint32_t( gpus.size() ) );
+
+				if ( requested >= uint32_t( gpus.size() ) )
+				{
+					return VK_SUCCESS;
+				}
+
+				return VK_INCOMPLETE;
 			}
+
+			if ( !pPhysicalDeviceCount )
+			{
+				return VK_ERROR_OUT_OF_HOST_MEMORY;
+			}
+
+			*pPhysicalDeviceCount = uint32_t( gpus.size() );
 		}
 		catch ( Exception & exc )
 		{
@@ -166,18 +190,41 @@ namespace ashes::gl
 		uint32_t* pPropertyCount,
 		VkExtensionProperties* pProperties )
 	{
-		auto & extensions = getSupportedInstanceExtensions();
-		*pPropertyCount = uint32_t( extensions.size() );
+		auto & props = getSupportedInstanceExtensions();
 
-		if ( pProperties )
+		if ( pProperties
+			&& pPropertyCount )
 		{
-			for ( auto & extension : extensions )
+			auto requested = *pPropertyCount;
+			uint32_t index = 0u;
+
+			for ( auto & prop : props )
 			{
-				*pProperties = extension;
-				++pProperties;
+				if ( index < requested )
+				{
+					*pProperties = prop;
+					++pProperties;
+				}
+
+				++index;
 			}
+
+			*pPropertyCount = std::min( requested, uint32_t( props.size() ) );
+
+			if ( requested >= uint32_t( props.size() ) )
+			{
+				return VK_SUCCESS;
+			}
+
+			return VK_INCOMPLETE;
 		}
 
+		if ( !pPropertyCount )
+		{
+			return VK_ERROR_OUT_OF_HOST_MEMORY;
+		}
+
+		*pPropertyCount = uint32_t( props.size() );
 		return VK_SUCCESS;
 	}
 
@@ -188,17 +235,40 @@ namespace ashes::gl
 		VkExtensionProperties* pProperties )
 	{
 		auto props = get( physicalDevice )->enumerateExtensionProperties( pLayerName );
-		*pPropertyCount = uint32_t( props.size() );
 
-		if ( pProperties )
+		if ( pProperties
+			&& pPropertyCount )
 		{
+			auto requested = *pPropertyCount;
+			uint32_t index = 0u;
+
 			for ( auto & prop : props )
 			{
-				*pProperties = prop;
-				++pProperties;
+				if ( index < requested )
+				{
+					*pProperties = prop;
+					++pProperties;
+				}
+
+				++index;
 			}
+
+			*pPropertyCount = std::min( requested, uint32_t( props.size() ) );
+
+			if ( requested >= uint32_t( props.size() ) )
+			{
+				return VK_SUCCESS;
+			}
+
+			return VK_INCOMPLETE;
 		}
 
+		if ( !pPropertyCount )
+		{
+			return VK_ERROR_OUT_OF_HOST_MEMORY;
+		}
+
+		*pPropertyCount = uint32_t( props.size() );
 		return VK_SUCCESS;
 	}
 
@@ -207,17 +277,40 @@ namespace ashes::gl
 		VkLayerProperties* pProperties )
 	{
 		auto & props = getInstanceLayerProperties();
-		*pPropertyCount = uint32_t( props.size() );
 
-		if ( pProperties )
+		if ( pProperties
+			&& pPropertyCount )
 		{
+			auto requested = *pPropertyCount;
+			uint32_t index = 0u;
+
 			for ( auto & prop : props )
 			{
-				*pProperties = prop;
-				++pProperties;
+				if ( index < requested )
+				{
+					*pProperties = prop;
+					++pProperties;
+				}
+
+				++index;
 			}
+
+			*pPropertyCount = std::min( requested, uint32_t( props.size() ) );
+
+			if ( requested >= uint32_t( props.size() ) )
+			{
+				return VK_SUCCESS;
+			}
+
+			return VK_INCOMPLETE;
 		}
 
+		if ( !pPropertyCount )
+		{
+			return VK_ERROR_OUT_OF_HOST_MEMORY;
+		}
+
+		*pPropertyCount = uint32_t( props.size() );
 		return VK_SUCCESS;
 	}
 
@@ -227,17 +320,40 @@ namespace ashes::gl
 		VkLayerProperties* pProperties )
 	{
 		auto props = get( physicalDevice )->enumerateLayerProperties();
-		*pPropertyCount = uint32_t( props.size() );
 
-		if ( pProperties )
+		if ( pProperties
+			&& pPropertyCount )
 		{
+			auto requested = *pPropertyCount;
+			uint32_t index = 0u;
+
 			for ( auto & prop : props )
 			{
-				*pProperties = prop;
-				++pProperties;
+				if ( index < requested )
+				{
+					*pProperties = prop;
+					++pProperties;
+				}
+
+				++index;
 			}
+
+			*pPropertyCount = std::min( requested, uint32_t( props.size() ) );
+
+			if ( requested >= uint32_t( props.size() ) )
+			{
+				return VK_SUCCESS;
+			}
+
+			return VK_INCOMPLETE;
 		}
 
+		if ( !pPropertyCount )
+		{
+			return VK_ERROR_OUT_OF_HOST_MEMORY;
+		}
+
+		*pPropertyCount = uint32_t( props.size() );
 		return VK_SUCCESS;
 	}
 
@@ -1806,17 +1922,34 @@ namespace ashes::gl
 		uint32_t * pQueueFamilyPropertyCount,
 		VkQueueFamilyProperties2 * pQueueFamilyProperties )
 	{
-		auto props = get( physicalDevice )->getQueueFamilyProperties2();
-		*pQueueFamilyPropertyCount = uint32_t( props.size() );
+		auto props = get( physicalDevice )->getQueueFamilyProperties();
 
-		if ( pQueueFamilyProperties )
+		if ( pQueueFamilyProperties
+			&& pQueueFamilyPropertyCount )
 		{
+			auto requested = *pQueueFamilyPropertyCount;
+			uint32_t index = 0u;
+
 			for ( auto & prop : props )
 			{
-				( *pQueueFamilyProperties ) = prop;
-				++pQueueFamilyProperties;
+				if ( index < requested )
+				{
+					pQueueFamilyProperties->queueFamilyProperties = prop;
+					++pQueueFamilyProperties;
+				}
+
+				++index;
 			}
+
+			*pQueueFamilyPropertyCount = std::min( requested, uint32_t( props.size() ) );
 		}
+
+		if ( !pQueueFamilyPropertyCount )
+		{
+			return;
+		}
+
+		*pQueueFamilyPropertyCount = uint32_t( props.size() );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceMemoryProperties2(
@@ -1832,18 +1965,7 @@ namespace ashes::gl
 		uint32_t * pPropertyCount,
 		VkSparseImageFormatProperties2 * pProperties )
 	{
-		std::vector< VkSparseImageFormatProperties2 > props;
-		get( physicalDevice )->getSparseImageFormatProperties2( *pFormatInfo, props );
-		*pPropertyCount = uint32_t( props.size() );
-
-		if ( pProperties )
-		{
-			for ( auto & prop : props )
-			{
-				( *pProperties ) = prop;
-				++pProperties;
-			}
-		}
+		reportUnsupported( physicalDevice, "vkGetPhysicalDeviceSparseImageFormatProperties2" );
 	}
 
 	void VKAPI_CALL vkTrimCommandPool(
@@ -2530,17 +2652,34 @@ namespace ashes::gl
 		uint32_t* pQueueFamilyPropertyCount,
 		VkQueueFamilyProperties2KHR * pQueueFamilyProperties )
 	{
-		auto props = get( physicalDevice )->getQueueFamilyProperties2();
-		*pQueueFamilyPropertyCount = uint32_t( props.size() );
+		auto props = get( physicalDevice )->getQueueFamilyProperties();
 
-		if ( pQueueFamilyProperties )
+		if ( pQueueFamilyProperties
+			&& pQueueFamilyPropertyCount )
 		{
+			auto requested = *pQueueFamilyPropertyCount;
+			uint32_t index = 0u;
+
 			for ( auto & prop : props )
 			{
-				( *pQueueFamilyProperties ) = prop;
-				++pQueueFamilyProperties;
+				if ( index < requested )
+				{
+					pQueueFamilyProperties->queueFamilyProperties = prop;
+					++pQueueFamilyProperties;
+				}
+
+				++index;
 			}
+
+			*pQueueFamilyPropertyCount = std::min( requested, uint32_t( props.size() ) );
 		}
+
+		if ( !pQueueFamilyPropertyCount )
+		{
+			return;
+		}
+
+		*pQueueFamilyPropertyCount = uint32_t( props.size() );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceMemoryProperties2KHR(
@@ -2556,18 +2695,7 @@ namespace ashes::gl
 		uint32_t* pPropertyCount,
 		VkSparseImageFormatProperties2KHR* pProperties )
 	{
-		std::vector< VkSparseImageFormatProperties2KHR > props;
-		get( physicalDevice )->getSparseImageFormatProperties2( *pFormatInfo, props );
-		*pPropertyCount = uint32_t( props.size() );
-
-		if ( pProperties )
-		{
-			for ( auto & prop : props )
-			{
-				( *pProperties ) = prop;
-				++pProperties;
-			}
-		}
+		reportUnsupported( physicalDevice, "vkGetPhysicalDeviceSparseImageFormatProperties2" );
 	}
 
 #endif
