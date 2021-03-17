@@ -126,7 +126,7 @@ namespace ashes::gl
 		}
 
 		void doCheckEnabledExtensions( VkPhysicalDevice physicalDevice
-			, ashes::ArrayView< char const * const > const & extensions )
+			, StringArray const & extensions )
 		{
 			auto available = get( physicalDevice )->enumerateExtensionProperties( nullptr );
 
@@ -136,7 +136,7 @@ namespace ashes::gl
 					, available.end()
 					, [&extension]( VkExtensionProperties const & lookup )
 					{
-						return lookup.extensionName == std::string{ extension };
+						return lookup.extensionName == extension;
 					} ) )
 				{
 					throw ExtensionNotPresentException{ extension };
@@ -144,12 +144,23 @@ namespace ashes::gl
 			}
 		}
 
-		bool doHasEnabledExtensions( VkPhysicalDevice physicalDevice
+		bool doHasEnabledExtensions( StringArray const & available
 			, ashes::ArrayView< char const * const > const & extensions )
 		{
 			try
 			{
-				doCheckEnabledExtensions( physicalDevice, extensions );
+				for ( auto & extension : extensions )
+				{
+					if ( available.end() == std::find_if( available.begin()
+						, available.end()
+						, [&extension]( std::string const & lookup )
+						{
+							return lookup == std::string{ extension };
+						} ) )
+					{
+						throw ExtensionNotPresentException{ extension };
+					}
+				}
 				return true;
 			}
 			catch ( ExtensionNotPresentException & )
@@ -170,9 +181,14 @@ namespace ashes::gl
 		, m_enabledFeatures{ m_createInfos.pEnabledFeatures ? *m_createInfos.pEnabledFeatures : get( m_physicalDevice )->getFeatures() }
 		, m_dyState{ VK_DYNAMIC_STATE_SCISSOR, VK_DYNAMIC_STATE_VIEWPORT }
 	{
+		for ( auto & name : ashes::makeArrayView( m_createInfos.ppEnabledExtensionNames, m_createInfos.enabledExtensionCount ) )
+		{
+			m_enabledExtensions.emplace_back( name );
+		}
+
 		m_currentContext = get( m_instance )->registerDevice( get( this ) );
 		doCheckEnabledExtensions( m_physicalDevice
-			, ashes::makeArrayView( m_createInfos.ppEnabledExtensionNames, m_createInfos.enabledExtensionCount ) );
+			, m_enabledExtensions );
 		doInitialiseQueues();
 		doInitialiseContextDependent();
 	}
@@ -236,7 +252,7 @@ namespace ashes::gl
 	bool Device::hasExtension( std::string_view extension )const
 	{
 		char const * const version = extension.data();
-		return doHasEnabledExtensions( m_physicalDevice
+		return doHasEnabledExtensions( m_enabledExtensions
 			, ashes::makeArrayView( &version, 1u ) );
 	}
 
