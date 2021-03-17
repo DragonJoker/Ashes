@@ -136,6 +136,18 @@ namespace ashes
 		}
 	}
 
+	void copyBinding( uint32_t key
+		, ShaderBindingMap const & srcBindings
+		, ShaderBindingMap & dstBindings )
+	{
+		auto it = srcBindings.find( key );
+
+		if ( it != srcBindings.end() )
+		{
+			dstBindings.insert( *it );
+		}
+	}
+
 	void copyBinding( uint32_t set
 		, VkDescriptorSetLayoutBinding const & binding
 		, ShaderBindings const & srcBindings
@@ -150,27 +162,27 @@ namespace ashes
 
 		if ( isUniformBuffer( binding.descriptorType ) )
 		{
-			dstBindings.ubo.insert( *srcBindings.ubo.find( key ) );
+			copyBinding( key, srcBindings.ubo, dstBindings.ubo );
 		}
 		else if ( isStorageBuffer( binding.descriptorType ) )
 		{
-			dstBindings.sbo.insert( *srcBindings.sbo.find( key ) );
+			copyBinding( key, srcBindings.sbo, dstBindings.sbo );
 		}
 		else if ( isStorageImage( binding.descriptorType ) )
 		{
-			dstBindings.img.insert( *srcBindings.img.find( key ) );
+			copyBinding( key, srcBindings.img, dstBindings.img );
 		}
 		else if ( isSampledImage( binding.descriptorType ) )
 		{
-			dstBindings.tex.insert( *srcBindings.tex.find( key ) );
+			copyBinding( key, srcBindings.tex, dstBindings.tex );
 		}
 		else if ( isSamplerBuffer( binding.descriptorType ) )
 		{
-			dstBindings.tbo.insert( *srcBindings.tbo.find( key ) );
+			copyBinding( key, srcBindings.tbo, dstBindings.tbo );
 		}
 		else if ( isImageBuffer( binding.descriptorType ) )
 		{
-			dstBindings.ibo.insert( *srcBindings.ibo.find( key ) );
+			copyBinding( key, srcBindings.ibo, dstBindings.ibo );
 		}
 	}
 }
