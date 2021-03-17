@@ -4488,11 +4488,11 @@ namespace ashes::gl
 			&& get( device )->hasExtension( extension.data() );
 	}
 
-	using InstanceFunctions = std::map< std::string, PFN_vkVoidFunction >;
+	using ObjectFunctions = std::map< std::string, PFN_vkVoidFunction >;
 
-	InstanceFunctions const & getFunctions( VkInstance instance )
+	ObjectFunctions const & getInstanceFunctions( VkInstance instance )
 	{
-		static std::map< VkInstance, InstanceFunctions > functions;
+		static std::map< VkInstance, ObjectFunctions > functions;
 		auto it = functions.insert( { instance, {} } );
 
 		if ( it.second )
@@ -4537,12 +4537,33 @@ namespace ashes::gl
 		return it.first->second;
 	}
 
+	ObjectFunctions const & getDeviceFunctions( VkDevice device )
+	{
+		static std::map< VkDevice, ObjectFunctions > functions;
+		auto it = functions.insert( { device, {} } );
+
+		if ( it.second )
+		{
+			it.first->second =
+			{
+				{ "vkGetDeviceProcAddr", PFN_vkVoidFunction( vkGetDeviceProcAddr ) },
+#define VK_LIB_DEVICE_FUNCTION( v, x )\
+				{ "vk"#x, checkVersion( device, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )\
+				{ "vk"#x, checkVersionExt( device, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#include <ashes/ashes_functions_list.hpp>
+			};
+		}
+
+		return it.first->second;
+	}
+
 	PFN_vkVoidFunction VKAPI_CALL vkGetInstanceProcAddr(
 		VkInstance instance,
 		const char* pName )
 	{
 		PFN_vkVoidFunction result{ nullptr };
-		auto & functions = getFunctions( instance );
+		auto & functions = getInstanceFunctions( instance );
 		auto it = functions.find( pName );
 
 		if ( it != functions.end() )
@@ -4558,16 +4579,7 @@ namespace ashes::gl
 		const char* pName )
 	{
 		PFN_vkVoidFunction result{ nullptr };
-		static std::map< std::string, PFN_vkVoidFunction > functions
-		{
-			{ "vkGetDeviceProcAddr", PFN_vkVoidFunction( vkGetDeviceProcAddr ) },
-#define VK_LIB_DEVICE_FUNCTION( v, x )\
-			{ "vk"#x, checkVersion( getInstance( device ), v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
-#define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )\
-			{ "vk"#x, checkVersionExt( getInstance( device ), v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
-#include <ashes/ashes_functions_list.hpp>
-		};
-
+		auto & functions = getDeviceFunctions( device );
 		auto it = functions.find( pName );
 
 		if ( it != functions.end() )
