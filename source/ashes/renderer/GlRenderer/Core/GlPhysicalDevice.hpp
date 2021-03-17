@@ -42,28 +42,10 @@ namespace ashes::gl
 			, VkImageTiling tiling
 			, std::vector< VkSparseImageFormatProperties > & sparseImageFormatProperties )const;
 
-#ifdef VK_VERSION_1_1
-		VkPhysicalDeviceFeatures2 const & getFeatures2()const;
-		VkPhysicalDeviceProperties2 const & getProperties2()const;
+#ifdef VK_VERSION_1_2
 		VkPhysicalDeviceDriverProperties const & getDriverProperties()const;
-		VkFormatProperties2 const & getFormatProperties2( VkFormat format )const;
-		VkResult getImageFormatProperties2( VkPhysicalDeviceImageFormatInfo2 const & imageFormatInfo
-			, VkImageFormatProperties2 & imageProperties )const;
-		std::vector< VkQueueFamilyProperties2 > getQueueFamilyProperties2()const;
-		VkPhysicalDeviceMemoryProperties2 const & getMemoryProperties2()const;
-		VkResult getSparseImageFormatProperties2( VkPhysicalDeviceSparseImageFormatInfo2 const & formatInfo
-			, std::vector< VkSparseImageFormatProperties2 > & sparseImageFormatProperties )const;
-#elif VK_KHR_get_physical_device_properties2
-		VkPhysicalDeviceFeatures2KHR const & getFeatures2()const;
-		VkPhysicalDeviceProperties2KHR const & getProperties2()const;
+#elif VK_KHR_driver_properties
 		VkPhysicalDeviceDriverPropertiesKHR const & getDriverProperties()const;
-		VkFormatProperties2KHR const & getFormatProperties2( VkFormat format )const;
-		VkResult getImageFormatProperties2( VkPhysicalDeviceImageFormatInfo2KHR const & imageFormatInfo
-			, VkImageFormatProperties2KHR & imageProperties )const;
-		std::vector< VkQueueFamilyProperties2KHR > getQueueFamilyProperties2()const;
-		VkPhysicalDeviceMemoryProperties2KHR const & getMemoryProperties2()const;
-		VkResult getSparseImageFormatProperties2( VkPhysicalDeviceSparseImageFormatInfo2KHR const & formatInfo
-			, std::vector< VkSparseImageFormatProperties2KHR > & sparseImageFormatProperties )const;
 #endif
 #ifdef VK_KHR_display
 		std::vector< VkDisplayPropertiesKHR > const & getDisplayProperties()const;
@@ -101,8 +83,6 @@ namespace ashes::gl
 		void doInitialiseQueueProperties( ContextLock & context );
 		void doInitialiseDisplayProperties( ContextLock & context );
 		void doInitialiseDriverProperties( ContextLock & context );
-		void doInitialiseMemoryProperties2( ContextLock & context );
-		void doInitialiseProperties2( ContextLock & context );
 		void doInitialisePortability( ContextLock & context );
 
 	private:
@@ -114,23 +94,15 @@ namespace ashes::gl
 		std::vector< VkQueueFamilyProperties > m_queueProperties{};
 		mutable std::map< VkFormat, VkFormatProperties > m_formatProperties;
 		mutable std::map< size_t, std::pair< VkImageFormatProperties, VkResult > > m_imageFormatProperties;
+#if VK_VERSION_1_2
+		VkPhysicalDeviceDriverProperties m_driverProperties{};
+#elif VK_KHR_driver_properties
+		VkPhysicalDeviceDriverPropertiesKHR m_driverProperties{};
+#endif
 #if VK_KHR_portability_subset
 		VkPhysicalDevicePortabilitySubsetFeaturesKHR m_portabilityFeatures{};
 #endif
 #if VK_VERSION_1_1
-		VkPhysicalDeviceFeatures2 m_features2{};
-		VkPhysicalDeviceMemoryProperties2 m_memoryProperties2{};
-		VkPhysicalDeviceProperties2 m_properties2{};
-		VkPhysicalDeviceDriverProperties m_driverProperties{};
-		std::vector< VkQueueFamilyProperties2 > m_queueProperties2{};
-		mutable std::map< VkFormat, VkFormatProperties2 > m_formatProperties2;
-#elif VK_KHR_get_physical_device_properties2
-		VkPhysicalDeviceFeatures2KHR m_features2{};
-		VkPhysicalDeviceMemoryProperties2KHR m_memoryProperties2{};
-		VkPhysicalDeviceProperties2KHR m_properties2{};
-		VkPhysicalDeviceDriverPropertiesKHR m_driverProperties{};
-		std::vector< VkQueueFamilyProperties2KHR > m_queueProperties2{};
-		mutable std::map< VkFormat, VkFormatProperties2KHR > m_formatProperties2;
 #endif
 #ifdef VK_KHR_display
 		std::vector< std::string > m_displayNames;
