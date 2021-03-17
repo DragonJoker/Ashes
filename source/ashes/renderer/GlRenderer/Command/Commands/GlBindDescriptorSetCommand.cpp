@@ -111,18 +111,28 @@ namespace ashes::gl
 			, CmdList & list )
 		{
 			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
-			assert( it != bindings.end() );
-			auto dstBinding = it->second;
 
-			for ( auto i = 0u; i < write.descriptorCount; ++i )
+			if ( it != bindings.end() )
 			{
-				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
-				auto buffer = getBuffer( write, i );
-				list.push_back( makeCmd< OpType::eBindBufferRange >( bindingIndex
-					, GL_BUFFER_TARGET_UNIFORM
-					, get( buffer )->getInternal()
-					, int64_t( get( buffer )->getOffset() + write.pBufferInfo[i].offset )
-					, int64_t( std::min( write.pBufferInfo[i].range, uint64_t( get( buffer )->getMemoryRequirements().size ) ) ) ) );
+				auto dstBinding = it->second;
+
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
+				{
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					auto buffer = getBuffer( write, i );
+					list.push_back( makeCmd< OpType::eBindBufferRange >( bindingIndex
+						, GL_BUFFER_TARGET_UNIFORM
+						, get( buffer )->getInternal()
+						, int64_t( get( buffer )->getOffset() + write.pBufferInfo[i].offset )
+						, int64_t( std::min( write.pBufferInfo[i].range, uint64_t( get( buffer )->getMemoryRequirements().size ) ) ) ) );
+				}
+			}
+			else
+			{
+				reportWarning( write.dstSet
+					, VK_ERROR_UNKNOWN
+					, "vkCmdBindDescriptorSets"
+					, "Couldn't find binding" );
 			}
 		}
 
@@ -132,18 +142,28 @@ namespace ashes::gl
 			, CmdList & list )
 		{
 			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
-			assert( it != bindings.end() );
-			auto dstBinding = it->second;
 
-			for ( auto i = 0u; i < write.descriptorCount; ++i )
+			if ( it != bindings.end() )
 			{
-				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
-				auto buffer = getBuffer( write, i );
-				list.push_back( makeCmd< OpType::eBindBufferRange >( bindingIndex
-					, GL_BUFFER_TARGET_SHADER_STORAGE
-					, get( buffer )->getInternal()
-					, int64_t( get( buffer )->getOffset() + write.pBufferInfo[i].offset )
-					, int64_t( std::min( write.pBufferInfo[i].range, uint64_t( get( buffer )->getMemoryRequirements().size ) ) ) ) );
+				auto dstBinding = it->second;
+
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
+				{
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					auto buffer = getBuffer( write, i );
+					list.push_back( makeCmd< OpType::eBindBufferRange >( bindingIndex
+						, GL_BUFFER_TARGET_SHADER_STORAGE
+						, get( buffer )->getInternal()
+						, int64_t( get( buffer )->getOffset() + write.pBufferInfo[i].offset )
+						, int64_t( std::min( write.pBufferInfo[i].range, uint64_t( get( buffer )->getMemoryRequirements().size ) ) ) ) );
+				}
+			}
+			else
+			{
+				reportWarning( write.dstSet
+					, VK_ERROR_UNKNOWN
+					, "vkCmdBindDescriptorSets"
+					, "Couldn't find binding" );
 			}
 		}
 
@@ -153,17 +173,27 @@ namespace ashes::gl
 			, CmdList & list )
 		{
 			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
-			assert( it != bindings.end() );
-			auto dstBinding = it->second;
 
-			for ( auto i = 0u; i < write.descriptorCount; ++i )
+			if ( it != bindings.end() )
 			{
-				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
-				auto bufferView = getBufferView( write, i );
-				list.push_back( makeCmd< OpType::eActiveTexture >( bindingIndex ) );
+				auto dstBinding = it->second;
 
-				list.push_back( makeCmd< OpType::eBindTexture >( GL_TEXTURE_BUFFER
-					, get( bufferView )->getImage() ) );
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
+				{
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					auto bufferView = getBufferView( write, i );
+					list.push_back( makeCmd< OpType::eActiveTexture >( bindingIndex ) );
+
+					list.push_back( makeCmd< OpType::eBindTexture >( GL_TEXTURE_BUFFER
+						, get( bufferView )->getImage() ) );
+				}
+			}
+			else
+			{
+				reportWarning( write.dstSet
+					, VK_ERROR_UNKNOWN
+					, "vkCmdBindDescriptorSets"
+					, "Couldn't find binding" );
 			}
 		}
 
@@ -173,21 +203,31 @@ namespace ashes::gl
 			, CmdList & list )
 		{
 			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
-			assert( it != bindings.end() );
-			auto dstBinding = it->second;
 
-			for ( auto i = 0u; i < write.descriptorCount; ++i )
+			if ( it != bindings.end() )
 			{
-				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
-				auto bufferView = getBufferView( write, i );
-				list.push_back( makeCmd< OpType::eActiveTexture >( bindingIndex ) );
+				auto dstBinding = it->second;
 
-				list.push_back( makeCmd< OpType::eBindImage >( bindingIndex
-					, get( bufferView )->getInternal()
-					, 0u
-					, 0u
-					, 0u
-					, getInternalFormat( get( bufferView )->getFormat() ) ) );
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
+				{
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					auto bufferView = getBufferView( write, i );
+					list.push_back( makeCmd< OpType::eActiveTexture >( bindingIndex ) );
+
+					list.push_back( makeCmd< OpType::eBindImage >( bindingIndex
+						, get( bufferView )->getInternal()
+						, 0u
+						, 0u
+						, 0u
+						, getInternalFormat( get( bufferView )->getFormat() ) ) );
+				}
+			}
+			else
+			{
+				reportWarning( write.dstSet
+					, VK_ERROR_UNKNOWN
+					, "vkCmdBindDescriptorSets"
+					, "Couldn't find binding" );
 			}
 		}
 
@@ -198,18 +238,28 @@ namespace ashes::gl
 			, CmdList & list )
 		{
 			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
-			assert( it != bindings.end() );
-			auto dstBinding = it->second;
 
-			for ( auto i = 0u; i < write.descriptorCount; ++i )
+			if ( it != bindings.end() )
 			{
-				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
-				auto buffer = getBuffer( write, i );
-				list.push_back( makeCmd< OpType::eBindBufferRange >( bindingIndex
-					, GL_BUFFER_TARGET_UNIFORM
-					, get( buffer )->getInternal()
-					, int64_t( get( buffer )->getOffset() + write.pBufferInfo[i].offset + offset )
-					, int64_t( std::min( write.pBufferInfo[i].range, uint64_t( get( buffer )->getMemoryRequirements().size ) ) ) ) );
+				auto dstBinding = it->second;
+
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
+				{
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					auto buffer = getBuffer( write, i );
+					list.push_back( makeCmd< OpType::eBindBufferRange >( bindingIndex
+						, GL_BUFFER_TARGET_UNIFORM
+						, get( buffer )->getInternal()
+						, int64_t( get( buffer )->getOffset() + write.pBufferInfo[i].offset + offset )
+						, int64_t( std::min( write.pBufferInfo[i].range, uint64_t( get( buffer )->getMemoryRequirements().size ) ) ) ) );
+				}
+			}
+			else
+			{
+				reportWarning( write.dstSet
+					, VK_ERROR_UNKNOWN
+					, "vkCmdBindDescriptorSets"
+					, "Couldn't find binding" );
 			}
 		}
 
@@ -220,18 +270,28 @@ namespace ashes::gl
 			, CmdList & list )
 		{
 			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
-			assert( it != bindings.end() );
-			auto dstBinding = it->second;
 
-			for ( auto i = 0u; i < write.descriptorCount; ++i )
+			if ( it != bindings.end() )
 			{
-				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
-				auto buffer = getBuffer( write, i );
-				list.push_back( makeCmd< OpType::eBindBufferRange >( bindingIndex
-					, GL_BUFFER_TARGET_SHADER_STORAGE
-					, get( buffer )->getInternal()
-					, int64_t( get( buffer )->getOffset() + write.pBufferInfo[i].offset + offset )
-					, int64_t( std::min( write.pBufferInfo[i].range, uint64_t( get( buffer )->getMemoryRequirements().size ) ) ) ) );
+				auto dstBinding = it->second;
+
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
+				{
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					auto buffer = getBuffer( write, i );
+					list.push_back( makeCmd< OpType::eBindBufferRange >( bindingIndex
+						, GL_BUFFER_TARGET_SHADER_STORAGE
+						, get( buffer )->getInternal()
+						, int64_t( get( buffer )->getOffset() + write.pBufferInfo[i].offset + offset )
+						, int64_t( std::min( write.pBufferInfo[i].range, uint64_t( get( buffer )->getMemoryRequirements().size ) ) ) ) );
+				}
+			}
+			else
+			{
+				reportWarning( write.dstSet
+					, VK_ERROR_UNKNOWN
+					, "vkCmdBindDescriptorSets"
+					, "Couldn't find binding" );
 			}
 		}
 
@@ -417,29 +477,39 @@ namespace ashes::gl
 			, CmdList & list )
 		{
 			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
-			assert( it != bindings.end() );
-			auto dstBinding = it->second;
 
-			for ( auto i = 0u; i < write.descriptorCount; ++i )
+			if ( it != bindings.end() )
 			{
-				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
-				auto writeSampler = common::getSampler( write, i );
+				auto dstBinding = it->second;
 
-				if ( write.descriptorType == VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT
-					|| writeSampler == VK_NULL_HANDLE )
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					bindTextureAndSampler( common::getView( write, i )
-						, sampler
-						, bindingIndex
-						, list );
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					auto writeSampler = common::getSampler( write, i );
+
+					if ( write.descriptorType == VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT
+						|| writeSampler == VK_NULL_HANDLE )
+					{
+						bindTextureAndSampler( common::getView( write, i )
+							, sampler
+							, bindingIndex
+							, list );
+					}
+					else
+					{
+						bindTextureAndSampler( common::getView( write, i )
+							, writeSampler
+							, bindingIndex
+							, list );
+					}
 				}
-				else
-				{
-					bindTextureAndSampler( common::getView( write, i )
-						, writeSampler
-						, bindingIndex
-						, list );
-				}
+			}
+			else
+			{
+				reportWarning( write.dstSet
+					, VK_ERROR_UNKNOWN
+					, "vkCmdBindDescriptorSets"
+					, "Couldn't find binding" );
 			}
 		}
 
@@ -449,15 +519,25 @@ namespace ashes::gl
 			, CmdList & list )
 		{
 			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
-			assert( it != bindings.end() );
-			auto dstBinding = it->second;
 
-			for ( auto i = 0u; i < write.descriptorCount; ++i )
+			if ( it != bindings.end() )
 			{
-				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
-				common::bindSampler( common::getSampler( write, i )
-					, bindingIndex
-					, list );
+				auto dstBinding = it->second;
+
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
+				{
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					common::bindSampler( common::getSampler( write, i )
+						, bindingIndex
+						, list );
+				}
+			}
+			else
+			{
+				reportWarning( write.dstSet
+					, VK_ERROR_UNKNOWN
+					, "vkCmdBindDescriptorSets"
+					, "Couldn't find binding" );
 			}
 		}
 
@@ -467,15 +547,25 @@ namespace ashes::gl
 			, CmdList & list )
 		{
 			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
-			assert( it != bindings.end() );
-			auto dstBinding = it->second;
 
-			for ( auto i = 0u; i < write.descriptorCount; ++i )
+			if ( it != bindings.end() )
 			{
-				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
-				bindTexture( common::getView( write, i )
-					, bindingIndex
-					, list );
+				auto dstBinding = it->second;
+
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
+				{
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					bindTexture( common::getView( write, i )
+						, bindingIndex
+						, list );
+				}
+			}
+			else
+			{
+				reportWarning( write.dstSet
+					, VK_ERROR_UNKNOWN
+					, "vkCmdBindDescriptorSets"
+					, "Couldn't find binding" );
 			}
 		}
 
@@ -486,16 +576,26 @@ namespace ashes::gl
 			, CmdList & list )
 		{
 			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
-			assert( it != bindings.end() );
-			auto dstBinding = it->second;
 
-			for ( auto i = 0u; i < write.descriptorCount; ++i )
+			if ( it != bindings.end() )
 			{
-				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
-				bindTextureAndSampler( common::getView( write, i )
-					, sampler
-					, bindingIndex
-					, list );
+				auto dstBinding = it->second;
+
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
+				{
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					bindTextureAndSampler( common::getView( write, i )
+						, sampler
+						, bindingIndex
+						, list );
+				}
+			}
+			else
+			{
+				reportWarning( write.dstSet
+					, VK_ERROR_UNKNOWN
+					, "vkCmdBindDescriptorSets"
+					, "Couldn't find binding" );
 			}
 		}
 
@@ -505,15 +605,25 @@ namespace ashes::gl
 			, CmdList & list )
 		{
 			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
-			assert( it != bindings.end() );
-			auto dstBinding = it->second;
 
-			for ( auto i = 0u; i < write.descriptorCount; ++i )
+			if ( it != bindings.end() )
 			{
-				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
-				bindImage( common::getView( write, i )
-					, bindingIndex
-					, list );
+				auto dstBinding = it->second;
+
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
+				{
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					bindImage( common::getView( write, i )
+						, bindingIndex
+						, list );
+				}
+			}
+			else
+			{
+				reportWarning( write.dstSet
+					, VK_ERROR_UNKNOWN
+					, "vkCmdBindDescriptorSets"
+					, "Couldn't find binding" );
 			}
 		}
 
@@ -644,30 +754,40 @@ namespace ashes::gl
 			, CmdList & list )
 		{
 			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
-			assert( it != bindings.end() );
-			auto dstBinding = it->second;
 
-			for ( auto i = 0u; i < write.descriptorCount; ++i )
+			if ( it != bindings.end() )
 			{
-				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
-				auto writeSampler = common::getSampler( write, i );
+				auto dstBinding = it->second;
 
-				if ( write.descriptorType == VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT
-					|| writeSampler == VK_NULL_HANDLE )
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					bindTextureAndSampler( common::getView( write, i )
-						, sampler
-						, bindingIndex
-						, list );
-				}
-				else
-				{
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					auto writeSampler = common::getSampler( write, i );
 
-					bindTextureAndSampler( common::getView( write, i )
-						, writeSampler
-						, bindingIndex
-						, list );
+					if ( write.descriptorType == VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT
+						|| writeSampler == VK_NULL_HANDLE )
+					{
+						bindTextureAndSampler( common::getView( write, i )
+							, sampler
+							, bindingIndex
+							, list );
+					}
+					else
+					{
+
+						bindTextureAndSampler( common::getView( write, i )
+							, writeSampler
+							, bindingIndex
+							, list );
+					}
 				}
+			}
+			else
+			{
+				reportWarning( write.dstSet
+					, VK_ERROR_UNKNOWN
+					, "vkCmdBindDescriptorSets"
+					, "Couldn't find binding" );
 			}
 		}
 
@@ -677,15 +797,25 @@ namespace ashes::gl
 			, CmdList & list )
 		{
 			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
-			assert( it != bindings.end() );
-			auto dstBinding = it->second;
 
-			for ( auto i = 0u; i < write.descriptorCount; ++i )
+			if ( it != bindings.end() )
 			{
-				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
-				common::bindSampler( common::getSampler( write, i )
-					, bindingIndex
-					, list );
+				auto dstBinding = it->second;
+
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
+				{
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					common::bindSampler( common::getSampler( write, i )
+						, bindingIndex
+						, list );
+				}
+			}
+			else
+			{
+				reportWarning( write.dstSet
+					, VK_ERROR_UNKNOWN
+					, "vkCmdBindDescriptorSets"
+					, "Couldn't find binding" );
 			}
 		}
 
@@ -695,15 +825,25 @@ namespace ashes::gl
 			, CmdList & list )
 		{
 			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
-			assert( it != bindings.end() );
-			auto dstBinding = it->second;
 
-			for ( auto i = 0u; i < write.descriptorCount; ++i )
+			if ( it != bindings.end() )
 			{
-				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
-				bindTexture( common::getView( write, i )
-					, bindingIndex
-					, list );
+				auto dstBinding = it->second;
+
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
+				{
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					bindTexture( common::getView( write, i )
+						, bindingIndex
+						, list );
+				}
+			}
+			else
+			{
+				reportWarning( write.dstSet
+					, VK_ERROR_UNKNOWN
+					, "vkCmdBindDescriptorSets"
+					, "Couldn't find binding" );
 			}
 		}
 
@@ -714,16 +854,26 @@ namespace ashes::gl
 			, CmdList & list )
 		{
 			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
-			assert( it != bindings.end() );
-			auto dstBinding = it->second;
 
-			for ( auto i = 0u; i < write.descriptorCount; ++i )
+			if ( it != bindings.end() )
 			{
-				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
-				bindTextureAndSampler( common::getView( write, i )
-					, sampler
-					, bindingIndex
-					, list );
+				auto dstBinding = it->second;
+
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
+				{
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					bindTextureAndSampler( common::getView( write, i )
+						, sampler
+						, bindingIndex
+						, list );
+				}
+			}
+			else
+			{
+				reportWarning( write.dstSet
+					, VK_ERROR_UNKNOWN
+					, "vkCmdBindDescriptorSets"
+					, "Couldn't find binding" );
 			}
 		}
 
@@ -733,15 +883,25 @@ namespace ashes::gl
 			, CmdList & list )
 		{
 			auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
-			assert( it != bindings.end() );
-			auto dstBinding = it->second;
 
-			for ( auto i = 0u; i < write.descriptorCount; ++i )
+			if ( it != bindings.end() )
 			{
-				uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
-				bindImage( common::getView( write, i )
-					, bindingIndex
-					, list );
+				auto dstBinding = it->second;
+
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
+				{
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					bindImage( common::getView( write, i )
+						, bindingIndex
+						, list );
+				}
+			}
+			else
+			{
+				reportWarning( write.dstSet
+					, VK_ERROR_UNKNOWN
+					, "vkCmdBindDescriptorSets"
+					, "Couldn't find binding" );
 			}
 		}
 
