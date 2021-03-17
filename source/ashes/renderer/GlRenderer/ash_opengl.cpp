@@ -4513,6 +4513,8 @@ namespace ashes::gl
 					{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
 #define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )\
 					{ "vk"#x, checkVersionExt( instance, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#define VK_STATIC_LIB_DEVICE_FUNCTION_EXT( v, n, x )\
+					{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
 #include <ashes/ashes_functions_list.hpp>
 				};
 			}
@@ -4550,6 +4552,8 @@ namespace ashes::gl
 #define VK_LIB_DEVICE_FUNCTION( v, x )\
 				{ "vk"#x, checkVersion( device, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
 #define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )\
+				{ "vk"#x, checkVersionExt( device, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#define VK_STATIC_LIB_DEVICE_FUNCTION_EXT( v, n, x )\
 				{ "vk"#x, checkVersionExt( device, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
 #include <ashes/ashes_functions_list.hpp>
 			};
