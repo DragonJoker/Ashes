@@ -23,9 +23,10 @@ namespace ashes::gl
 			, VkDescriptorPoolCreateInfo createInfo );
 		~DescriptorPool();
 
-		void registerSet( VkDescriptorSet set );
+		VkResult allocate( VkDescriptorSetLayout layout
+			, VkDescriptorSet & set );
 		VkResult reset( VkDescriptorPoolResetFlags flags );
-		VkResult free( VkDescriptorSetArray sets );
+		VkResult free( ArrayView< VkDescriptorSet const > const & sets );
 
 		inline VkDevice getDevice()const
 		{
@@ -38,6 +39,8 @@ namespace ashes::gl
 		uint32_t m_maxSets;
 		VkDescriptorPoolSizeArray m_poolSizes;
 		std::unordered_set< VkDescriptorSet > m_sets;
+		ByteArray m_memory;
+		std::vector< VkDescriptorSet > m_free;
 	};
 }
 
