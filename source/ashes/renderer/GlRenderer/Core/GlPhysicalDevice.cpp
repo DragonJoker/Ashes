@@ -559,6 +559,7 @@ namespace ashes::gl
 						switch ( dataType )
 						{
 						case ashes::gl::GL_TYPE_I8:
+							properties.bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
 							break;
 						case ashes::gl::GL_TYPE_UI8:
 							properties.bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
@@ -586,13 +587,15 @@ namespace ashes::gl
 						case ashes::gl::GL_TYPE_US_5_5_5_1:
 							break;
 						case ashes::gl::GL_TYPE_UI_8_8_8_8:
+							properties.bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
+							break;
+						case ashes::gl::GL_TYPE_UI_8_8_8_8_REV:
+							properties.bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
 							break;
 						case ashes::gl::GL_TYPE_UI_2_10_10_10_REV:
 							properties.bufferFeatures |= VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT;
 							break;
 						case ashes::gl::GL_TYPE_US_5_6_5:
-							break;
-						case ashes::gl::GL_TYPE_UI_8_8_8_8_REV:
 							break;
 						case ashes::gl::GL_TYPE_UI_24_8:
 							break;
