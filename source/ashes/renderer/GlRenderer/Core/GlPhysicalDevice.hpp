@@ -58,6 +58,16 @@ namespace ashes::gl
 			return m_portabilityFeatures;
 		}
 #endif
+#if VK_EXT_inline_uniform_block
+		VkPhysicalDeviceInlineUniformBlockFeaturesEXT getInlineUniformBlockFeatures()const
+		{
+			return m_inlineUniformBlockFeatures;
+		}
+		VkPhysicalDeviceInlineUniformBlockPropertiesEXT getInlineUniformBlockProperties()const
+		{
+			return m_inlineUniformBlockProperties;
+		}
+#endif
 
 		bool find( VkExtensionProperties const & name )const;
 		bool findAny( VkExtensionPropertiesArray const & names )const;
@@ -84,6 +94,7 @@ namespace ashes::gl
 		void doInitialiseDisplayProperties( ContextLock & context );
 		void doInitialiseDriverProperties( ContextLock & context );
 		void doInitialisePortability( ContextLock & context );
+		void doInitialiseInlineUniformBlock( ContextLock & context );
 
 	private:
 		VkInstance m_instance;
@@ -102,7 +113,9 @@ namespace ashes::gl
 #if VK_KHR_portability_subset
 		VkPhysicalDevicePortabilitySubsetFeaturesKHR m_portabilityFeatures{};
 #endif
-#if VK_VERSION_1_1
+#if VK_EXT_inline_uniform_block
+		VkPhysicalDeviceInlineUniformBlockFeaturesEXT m_inlineUniformBlockFeatures{};
+		VkPhysicalDeviceInlineUniformBlockPropertiesEXT m_inlineUniformBlockProperties{};
 #endif
 #ifdef VK_KHR_display
 		std::vector< std::string > m_displayNames;
