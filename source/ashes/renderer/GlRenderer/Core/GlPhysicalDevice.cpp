@@ -867,6 +867,7 @@ namespace ashes::gl
 		doInitialiseDisplayProperties( context );
 		doInitialisePortability( context );
 		doInitialiseDriverProperties( context );
+		doInitialiseInlineUniformBlock( context );
 	}
 
 	void PhysicalDevice::doInitialiseFeatures( ContextLock & context )
@@ -1201,6 +1202,24 @@ namespace ashes::gl
 		m_portabilityFeatures.tessellationPointMode = m_features.tessellationShader;
 		m_portabilityFeatures.triangleFans = VK_TRUE;
 		m_portabilityFeatures.vertexAttributeAccessBeyondStride = VK_FALSE;
+
+#endif
+	}
+
+	void PhysicalDevice::doInitialiseInlineUniformBlock( ContextLock & context )
+	{
+#if VK_EXT_inline_uniform_block
+
+		m_inlineUniformBlockFeatures = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_FEATURES_EXT, nullptr };
+		m_inlineUniformBlockFeatures.descriptorBindingInlineUniformBlockUpdateAfterBind = VK_FALSE;
+		m_inlineUniformBlockFeatures.inlineUniformBlock = VK_TRUE;
+
+		m_inlineUniformBlockProperties = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_PROPERTIES_EXT, nullptr };
+		context.getValue( GL_VALUE_NAME_MAX_COMBINED_UNIFORM_BLOCKS, m_inlineUniformBlockProperties.maxDescriptorSetInlineUniformBlocks );
+		context.getValue( GL_VALUE_NAME_MAX_UNIFORM_BLOCK_SIZE, m_inlineUniformBlockProperties.maxInlineUniformBlockSize );
+		context.getValue( GL_VALUE_NAME_MAX_FRAGMENT_UNIFORM_BLOCKS, m_inlineUniformBlockProperties.maxPerStageDescriptorInlineUniformBlocks );
+		m_inlineUniformBlockProperties.maxDescriptorSetUpdateAfterBindInlineUniformBlocks = 4u;
+		m_inlineUniformBlockProperties.maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks = 4u;
 
 #endif
 	}
