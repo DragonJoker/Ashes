@@ -129,6 +129,7 @@ namespace ashes::gl
 		VkInstance m_instance;
 		VkPhysicalDevice m_physicalDevice;
 		VkAllocationCallbacks const * m_callbacks;
+		StringArray m_enabledExtensions;
 		VkDeviceCreateInfo m_createInfos;
 		VkPhysicalDeviceFeatures m_enabledFeatures{};
 		QueueCreateCountMap m_queues;
