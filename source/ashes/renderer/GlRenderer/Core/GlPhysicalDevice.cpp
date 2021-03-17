@@ -882,8 +882,8 @@ namespace ashes::gl
 
 		ContextLock context{ get( m_instance )->getCurrentContext() };
 		doInitialiseMemoryProperties( context );
-		doInitialiseProperties( context );
 		doInitialiseFeatures( context );
+		doInitialiseProperties( context );
 		doInitialiseQueueProperties( context );
 		doInitialiseDisplayProperties( context );
 		doInitialisePortability( context );
@@ -912,11 +912,11 @@ namespace ashes::gl
 		glLogCall( context, glGetIntegerv
 			, GL_VALUE_NAME_ALIASED_LINE_WIDTH_RANGE
 			, range );
-		m_features.wideLines = ( range[1] > 1 );
+		m_features.wideLines = ( range[1] >= 1 );
 		glLogCall( context, glGetIntegerv
 			, GL_VALUE_NAME_SMOOTH_LINE_WIDTH_RANGE
 			, range );
-		m_features.wideLines &= ( range[1] > 1 );
+		m_features.wideLines &= ( range[1] >= 1 );
 		m_features.largePoints = true;
 		m_features.alphaToOne = true;
 		m_features.multiViewport = find( ARB_viewport_array );
@@ -973,6 +973,17 @@ namespace ashes::gl
 		m_properties.vendorID = doGetVendorID( ( char const * )context->glGetString( GL_VENDOR ) );
 		m_properties.deviceType = VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
 		m_properties.driverVersion = 0;
+		uint32_t shaderStages = 3;
+
+		if ( m_features.tessellationShader )
+		{
+			shaderStages += 2;
+		}
+
+		if ( m_features.geometryShader )
+		{
+			shaderStages++;
+		}
 
 		context.getValue( GL_VALUE_NAME_MAX_TEXTURE_SIZE, m_properties.limits.maxImageDimension1D, 16384u );
 		context.getValue( GL_VALUE_NAME_MAX_TEXTURE_SIZE, m_properties.limits.maxImageDimension2D, 16384u );
@@ -981,7 +992,7 @@ namespace ashes::gl
 		context.getValue( GL_VALUE_NAME_MAX_ARRAY_TEXTURE_LAYERS, m_properties.limits.maxImageArrayLayers, 2048u );
 		context.getValue( GL_VALUE_NAME_MAX_TEXTURE_BUFFER_SIZE, m_properties.limits.maxTexelBufferElements, 65536u );
 		context.getValue( GL_VALUE_NAME_MAX_UNIFORM_BLOCK_SIZE, m_properties.limits.maxUniformBufferRange, 65536u );
-		m_properties.limits.maxStorageBufferRange = uint32_t( m_memoryProperties.memoryHeaps[0].size );
+		context.getValue( GL_VALUE_NAME_MAX_FRAGMENT_SHADER_STORAGE_BLOCKS, m_properties.limits.maxStorageBufferRange, 134217728u );
 		context.getValue( GL_VALUE_NAME_MAX_UNIFORM_BLOCK_SIZE, m_properties.limits.maxPushConstantsSize, 16384u );
 		m_properties.limits.maxMemoryAllocationCount = NonAvailable< uint32_t >;
 		m_properties.limits.maxSamplerAllocationCount = NonAvailable< uint32_t >;
@@ -1001,7 +1012,7 @@ namespace ashes::gl
 		context.getValue( GL_VALUE_NAME_MAX_COMBINED_SHADER_STORAGE_BINDINGS, m_properties.limits.maxDescriptorSetStorageBuffers, 8u );
 		context.getValue( GL_VALUE_NAME_MAX_COMBINED_SHADER_STORAGE_BINDINGS, m_properties.limits.maxDescriptorSetStorageBuffersDynamic, 8u );
 		context.getValue( GL_VALUE_NAME_MAX_COMBINED_TEXTURE_IMAGE_UNITS, m_properties.limits.maxDescriptorSetSampledImages, 8u );
-		context.getValue( GL_VALUE_NAME_MAX_IMAGE_UNITS, m_properties.limits.maxDescriptorSetStorageImages, 8u );
+		context.getValue( GL_VALUE_NAME_MAX_IMAGE_UNITS, m_properties.limits.maxDescriptorSetStorageImages, 8u ) *= shaderStages;
 		m_properties.limits.maxDescriptorSetInputAttachments = NonAvailable< uint32_t >;
 		context.getValue( GL_VALUE_NAME_MAX_VERTEX_ATTRIBS, m_properties.limits.maxVertexInputAttributes, 16u );
 		context.getValue( GL_VALUE_NAME_MAX_VERTEX_ATTRIB_BINDINGS, m_properties.limits.maxVertexInputBindings, 16u );
@@ -1032,7 +1043,7 @@ namespace ashes::gl
 		context.getValue( GL_VALUE_NAME_SUBPIXEL_BITS, m_properties.limits.subPixelPrecisionBits, 4u );
 		m_properties.limits.subTexelPrecisionBits = m_properties.limits.subPixelPrecisionBits;
 		m_properties.limits.mipmapPrecisionBits = NonAvailable< uint32_t >;
-		context.getValue( GL_VALUE_NAME_MAX_ELEMENTS_INDICES, m_properties.limits.maxDrawIndexedIndexValue );
+		m_properties.limits.maxDrawIndexedIndexValue = NonAvailable< uint32_t >;
 		m_properties.limits.maxDrawIndirectCount = NonAvailable< uint32_t >;
 		context.getValue( GL_VALUE_NAME_MAX_TEXTURE_LOD_BIAS, m_properties.limits.maxSamplerLodBias, 2.0f );
 		context.getValue( GL_VALUE_NAME_MAX_TEXTURE_MAX_ANISOTROPY, m_properties.limits.maxSamplerAnisotropy );
@@ -1041,7 +1052,7 @@ namespace ashes::gl
 		m_properties.limits.viewportBoundsRange[0] = -2.0f * std::max( m_properties.limits.maxViewportDimensions[0], m_properties.limits.maxViewportDimensions[1] );
 		m_properties.limits.viewportBoundsRange[1] = 2.0f * std::max( m_properties.limits.maxViewportDimensions[0], m_properties.limits.maxViewportDimensions[1] );
 		m_properties.limits.viewportSubPixelBits = m_properties.limits.subPixelPrecisionBits;
-		m_properties.limits.minMemoryMapAlignment = DefaultAlign< size_t >;
+		m_properties.limits.minMemoryMapAlignment = 64u;
 		m_properties.limits.minTexelBufferOffsetAlignment = DefaultAlign< VkDeviceSize >;
 		context.getValue( GL_VALUE_NAME_UNIFORM_BUFFER_OFFSET_ALIGNMENT, m_properties.limits.minUniformBufferOffsetAlignment );
 		m_properties.limits.minStorageBufferOffsetAlignment = 1u;
@@ -1051,22 +1062,22 @@ namespace ashes::gl
 		context.getValue( GL_VALUE_NAME_MIN_PROGRAM_TEXTURE_GATHER_OFFSET, m_properties.limits.minTexelGatherOffset );
 		m_properties.limits.minTexelGatherOffset = std::min( m_properties.limits.minTexelGatherOffset, -8 );
 		context.getValue( GL_VALUE_NAME_MAX_PROGRAM_TEXTURE_GATHER_OFFSET, m_properties.limits.maxTexelGatherOffset, 7u );
-		m_properties.limits.minInterpolationOffset = 0u;
-		m_properties.limits.maxInterpolationOffset = 0u;
-		m_properties.limits.subPixelInterpolationOffsetBits = 0u;
+		m_properties.limits.subPixelInterpolationOffsetBits = 4u;
+		m_properties.limits.minInterpolationOffset = -0.5f;
+		m_properties.limits.maxInterpolationOffset = 0.5f - ( 1.0f / pow( 2.0f, ( float )m_properties.limits.subPixelInterpolationOffsetBits ) );
 		context.getValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_WIDTH, m_properties.limits.maxFramebufferWidth, 16384u );
 		context.getValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_HEIGHT, m_properties.limits.maxFramebufferHeight, 16384u );
 		context.getValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_LAYERS, m_properties.limits.maxFramebufferLayers, 2048u );
-		context.getValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.framebufferColorSampleCounts ), 4u );
-		context.getValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.framebufferDepthSampleCounts ), 4u );
-		context.getValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.framebufferStencilSampleCounts ), 4u );
-		context.getValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.framebufferNoAttachmentsSampleCounts ), 4u );
+		context.getBitfieldValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.framebufferColorSampleCounts ), 5u );
+		context.getBitfieldValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.framebufferDepthSampleCounts ), 5u );
+		context.getBitfieldValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.framebufferStencilSampleCounts ), 5u );
+		context.getBitfieldValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.framebufferNoAttachmentsSampleCounts ), 5u );
 		context.getValue( GL_VALUE_NAME_MAX_COLOR_ATTACHMENTS, m_properties.limits.maxColorAttachments, 8u );
-		context.getValue( GL_VALUE_NAME_MAX_COLOR_TEXTURE_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.sampledImageColorSampleCounts ), 1u );
-		context.getValue( GL_VALUE_NAME_MAX_INTEGER_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.sampledImageIntegerSampleCounts ), 1u );
-		context.getValue( GL_VALUE_NAME_MAX_DEPTH_TEXTURE_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.sampledImageDepthSampleCounts ), 1u );
-		context.getValue( GL_VALUE_NAME_MAX_DEPTH_TEXTURE_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.sampledImageStencilSampleCounts ), 1u );
-		context.getValue( GL_VALUE_NAME_MAX_COLOR_TEXTURE_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.storageImageSampleCounts ), 1u );
+		context.getBitfieldValue( GL_VALUE_NAME_MAX_COLOR_TEXTURE_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.sampledImageColorSampleCounts ), 1u );
+		context.getBitfieldValue( GL_VALUE_NAME_MAX_INTEGER_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.sampledImageIntegerSampleCounts ), 1u );
+		context.getBitfieldValue( GL_VALUE_NAME_MAX_DEPTH_TEXTURE_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.sampledImageDepthSampleCounts ), 1u );
+		context.getBitfieldValue( GL_VALUE_NAME_MAX_DEPTH_TEXTURE_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.sampledImageStencilSampleCounts ), 1u );
+		context.getBitfieldValue( GL_VALUE_NAME_MAX_COLOR_TEXTURE_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.storageImageSampleCounts ), 1u );
 		context.getValue( GL_VALUE_NAME_MAX_SAMPLE_MASK_WORDS, m_properties.limits.maxSampleMaskWords, 1u );
 		m_properties.limits.timestampComputeAndGraphics = true;
 		m_properties.limits.timestampPeriod = 1;
