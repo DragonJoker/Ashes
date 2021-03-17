@@ -144,6 +144,78 @@ namespace ashes::gl
 			}
 		}
 
+		void doCheckEnabledFeature( VkBool32 available
+			, VkBool32 enabled )
+		{
+			if ( enabled && !available )
+			{
+				throw ashes::Exception{ VK_ERROR_FEATURE_NOT_PRESENT
+					, "Enabled feature is not supported" };
+			}
+		}
+
+		void doCheckEnabledFeatures( VkPhysicalDevice physicalDevice
+			, VkPhysicalDeviceFeatures const & enabledFeatures )
+		{
+			auto available = get( physicalDevice )->getFeatures();
+			doCheckEnabledFeature( available.robustBufferAccess, enabledFeatures.robustBufferAccess );
+			doCheckEnabledFeature( available.fullDrawIndexUint32, enabledFeatures.fullDrawIndexUint32 );
+			doCheckEnabledFeature( available.imageCubeArray, enabledFeatures.imageCubeArray );
+			doCheckEnabledFeature( available.independentBlend, enabledFeatures.independentBlend );
+			doCheckEnabledFeature( available.geometryShader, enabledFeatures.geometryShader );
+			doCheckEnabledFeature( available.tessellationShader, enabledFeatures.tessellationShader );
+			doCheckEnabledFeature( available.sampleRateShading, enabledFeatures.sampleRateShading );
+			doCheckEnabledFeature( available.dualSrcBlend, enabledFeatures.dualSrcBlend );
+			doCheckEnabledFeature( available.logicOp, enabledFeatures.logicOp );
+			doCheckEnabledFeature( available.multiDrawIndirect, enabledFeatures.multiDrawIndirect );
+			doCheckEnabledFeature( available.drawIndirectFirstInstance, enabledFeatures.drawIndirectFirstInstance );
+			doCheckEnabledFeature( available.depthClamp, enabledFeatures.depthClamp );
+			doCheckEnabledFeature( available.depthBiasClamp, enabledFeatures.depthBiasClamp );
+			doCheckEnabledFeature( available.fillModeNonSolid, enabledFeatures.fillModeNonSolid );
+			doCheckEnabledFeature( available.depthBounds, enabledFeatures.depthBounds );
+			doCheckEnabledFeature( available.wideLines, enabledFeatures.wideLines );
+			doCheckEnabledFeature( available.largePoints, enabledFeatures.largePoints );
+			doCheckEnabledFeature( available.alphaToOne, enabledFeatures.alphaToOne );
+			doCheckEnabledFeature( available.multiViewport, enabledFeatures.multiViewport );
+			doCheckEnabledFeature( available.samplerAnisotropy, enabledFeatures.samplerAnisotropy );
+			doCheckEnabledFeature( available.textureCompressionETC2, enabledFeatures.textureCompressionETC2 );
+			doCheckEnabledFeature( available.textureCompressionASTC_LDR, enabledFeatures.textureCompressionASTC_LDR );
+			doCheckEnabledFeature( available.textureCompressionBC, enabledFeatures.textureCompressionBC );
+			doCheckEnabledFeature( available.occlusionQueryPrecise, enabledFeatures.occlusionQueryPrecise );
+			doCheckEnabledFeature( available.pipelineStatisticsQuery, enabledFeatures.pipelineStatisticsQuery );
+			doCheckEnabledFeature( available.vertexPipelineStoresAndAtomics, enabledFeatures.vertexPipelineStoresAndAtomics );
+			doCheckEnabledFeature( available.fragmentStoresAndAtomics, enabledFeatures.fragmentStoresAndAtomics );
+			doCheckEnabledFeature( available.shaderTessellationAndGeometryPointSize, enabledFeatures.shaderTessellationAndGeometryPointSize );
+			doCheckEnabledFeature( available.shaderImageGatherExtended, enabledFeatures.shaderImageGatherExtended );
+			doCheckEnabledFeature( available.shaderStorageImageExtendedFormats, enabledFeatures.shaderStorageImageExtendedFormats );
+			doCheckEnabledFeature( available.shaderStorageImageMultisample, enabledFeatures.shaderStorageImageMultisample );
+			doCheckEnabledFeature( available.shaderStorageImageReadWithoutFormat, enabledFeatures.shaderStorageImageReadWithoutFormat );
+			doCheckEnabledFeature( available.shaderStorageImageWriteWithoutFormat, enabledFeatures.shaderStorageImageWriteWithoutFormat );
+			doCheckEnabledFeature( available.shaderUniformBufferArrayDynamicIndexing, enabledFeatures.shaderUniformBufferArrayDynamicIndexing );
+			doCheckEnabledFeature( available.shaderSampledImageArrayDynamicIndexing, enabledFeatures.shaderSampledImageArrayDynamicIndexing );
+			doCheckEnabledFeature( available.shaderStorageBufferArrayDynamicIndexing, enabledFeatures.shaderStorageBufferArrayDynamicIndexing );
+			doCheckEnabledFeature( available.shaderStorageImageArrayDynamicIndexing, enabledFeatures.shaderStorageImageArrayDynamicIndexing );
+			doCheckEnabledFeature( available.shaderClipDistance, enabledFeatures.shaderClipDistance );
+			doCheckEnabledFeature( available.shaderCullDistance, enabledFeatures.shaderCullDistance );
+			doCheckEnabledFeature( available.shaderFloat64, enabledFeatures.shaderFloat64 );
+			doCheckEnabledFeature( available.shaderInt64, enabledFeatures.shaderInt64 );
+			doCheckEnabledFeature( available.shaderInt16, enabledFeatures.shaderInt16 );
+			doCheckEnabledFeature( available.shaderResourceResidency, enabledFeatures.shaderResourceResidency );
+			doCheckEnabledFeature( available.shaderResourceMinLod, enabledFeatures.shaderResourceMinLod );
+			doCheckEnabledFeature( available.sparseBinding, enabledFeatures.sparseBinding );
+			doCheckEnabledFeature( available.sparseResidencyBuffer, enabledFeatures.sparseResidencyBuffer );
+			doCheckEnabledFeature( available.sparseResidencyImage2D, enabledFeatures.sparseResidencyImage2D );
+			doCheckEnabledFeature( available.sparseResidencyImage3D, enabledFeatures.sparseResidencyImage3D );
+			doCheckEnabledFeature( available.sparseResidency2Samples, enabledFeatures.sparseResidency2Samples );
+			doCheckEnabledFeature( available.sparseResidency4Samples, enabledFeatures.sparseResidency4Samples );
+			doCheckEnabledFeature( available.sparseResidency8Samples, enabledFeatures.sparseResidency8Samples );
+			doCheckEnabledFeature( available.sparseResidency16Samples, enabledFeatures.sparseResidency16Samples );
+			doCheckEnabledFeature( available.sparseResidencyAliased, enabledFeatures.sparseResidencyAliased );
+			doCheckEnabledFeature( available.variableMultisampleRate, enabledFeatures.variableMultisampleRate );
+			doCheckEnabledFeature( available.inheritedQueries, enabledFeatures.inheritedQueries );
+
+		}
+
 		bool doHasEnabledExtensions( StringArray const & available
 			, ashes::ArrayView< char const * const > const & extensions )
 		{
@@ -189,6 +261,8 @@ namespace ashes::gl
 		m_currentContext = get( m_instance )->registerDevice( get( this ) );
 		doCheckEnabledExtensions( m_physicalDevice
 			, m_enabledExtensions );
+		doCheckEnabledFeatures( m_physicalDevice
+			, m_enabledFeatures );
 		doInitialiseQueues();
 		doInitialiseContextDependent();
 	}
