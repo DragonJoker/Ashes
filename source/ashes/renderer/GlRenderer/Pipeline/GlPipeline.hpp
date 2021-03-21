@@ -52,14 +52,8 @@ namespace ashes::gl
 		VkDescriptorSetLayoutArray const & getDescriptorsLayouts()const;
 		ShaderBindings const & getDescriptorSetBindings( VkDescriptorSet descriptorSet
 			, uint32_t descriptorSetIndex )const;
-		void pushConstants( PushConstantsDesc const & desc );
 		ConstantsLayout const & getPushConstantsDesc( bool isRtot );
 		ConstantsLayout const & getPushConstantsDesc();
-
-		ByteArray const & getPushConstantsBuffer()const
-		{
-			return m_pushConstantsBuffer;
-		}
 
 		bool isCompute()const
 		{
@@ -220,7 +214,6 @@ namespace ashes::gl
 		mutable std::unordered_map< GLuint, DeviceMemoryDestroyConnection > m_connections;
 		mutable std::unordered_map< uint64_t, ShaderBindings > m_dsBindings;
 		size_t m_vertexInputStateHash;
-		ByteArray m_pushConstantsBuffer;
 	};
 }
 
