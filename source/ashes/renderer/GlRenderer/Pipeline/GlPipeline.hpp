@@ -52,57 +52,65 @@ namespace ashes::gl
 		VkDescriptorSetLayoutArray const & getDescriptorsLayouts()const;
 		ShaderBindings const & getDescriptorSetBindings( VkDescriptorSet descriptorSet
 			, uint32_t descriptorSetIndex )const;
+		void pushConstants( PushConstantsDesc const & desc );
+		ConstantsLayout const & getPushConstantsDesc( bool isRtot );
+		ConstantsLayout const & getPushConstantsDesc();
 
-		inline bool isCompute()const
+		ByteArray const & getPushConstantsBuffer()const
+		{
+			return m_pushConstantsBuffer;
+		}
+
+		bool isCompute()const
 		{
 			return m_compPipeline != nullptr;
 		}
 
-		inline ContextState & getBackContextState()const
+		ContextState & getBackContextState()const
 		{
 			assert( !isCompute() );
 			return m_backContextState;
 		}
 
-		inline ContextState & getRtotContextState()const
+		ContextState & getRtotContextState()const
 		{
 			assert( !isCompute() );
 			return m_rtotContextState;
 		}
 
-		inline GLuint getBackProgram()const
+		GLuint getBackProgram()const
 		{
 			assert( !isCompute() );
 			assert( m_backPipeline != nullptr );
 			return m_backPipeline->program.program;
 		}
 
-		inline GLuint getRtotProgram()const
+		GLuint getRtotProgram()const
 		{
 			assert( !isCompute() );
 			assert( m_rtotPipeline != nullptr );
 			return m_rtotPipeline->program.program;
 		}
 
-		inline GLuint getCompProgram()const
+		GLuint getCompProgram()const
 		{
 			assert( isCompute() );
 			return m_compPipeline->modules.front();
 		}
 
-		inline auto const & getInputAssemblyState()const
+		auto const & getInputAssemblyState()const
 		{
 			assert( !isCompute() );
 			return m_backContextState.iaState;
 		}
 
-		inline auto const & getColourBlendState()const
+		auto const & getColourBlendState()const
 		{
 			assert( !isCompute() );
 			return m_backContextState.cbState;
 		}
 
-		inline auto const & getRasterisationState( bool isRtot )const
+		auto const & getRasterisationState( bool isRtot )const
 		{
 			assert( !isCompute() );
 			return isRtot
@@ -110,61 +118,61 @@ namespace ashes::gl
 				: m_backContextState.rsState;
 		}
 
-		inline auto const & getDepthStencilState()const
+		auto const & getDepthStencilState()const
 		{
 			assert( !isCompute() );
 			return m_backContextState.dsState;
 		}
 
-		inline auto const & getMultisampleState()const
+		auto const & getMultisampleState()const
 		{
 			assert( !isCompute() );
 			return m_backContextState.msState;
 		}
 
-		inline auto const & getTessellationState()const
+		auto const & getTessellationState()const
 		{
 			assert( !isCompute() );
 			return m_backContextState.tsState;
 		}
 
-		inline auto const & getVertexInputState()const
+		auto const & getVertexInputState()const
 		{
 			assert( !isCompute() );
 			return m_vertexInputState.value();
 		}
 
-		inline auto const & getViewportState()const
+		auto const & getViewportState()const
 		{
 			assert( !isCompute() );
 			return m_backContextState.vpState;
 		}
 
-		inline bool hasViewport()const
+		bool hasViewport()const
 		{
 			assert( !isCompute() );
 			return m_backContextState.vpState.viewportCount > 0;
 		}
 
-		inline bool hasScissor()const
+		bool hasScissor()const
 		{
 			assert( !isCompute() );
 			return m_backContextState.vpState.scissorCount > 0;
 		}
 
-		inline ArrayView< VkViewport const > const & getViewports()const
+		ArrayView< VkViewport const > const & getViewports()const
 		{
 			assert( !isCompute() );
 			return m_backContextState.viewportsView;
 		}
 
-		inline ArrayView< VkRect2D const > const & getScissors()const
+		ArrayView< VkRect2D const > const & getScissors()const
 		{
 			assert( !isCompute() );
 			return m_backContextState.scissorsView;
 		}
 
-		inline bool hasDynamicStateEnable( VkDynamicState state )const
+		bool hasDynamicStateEnable( VkDynamicState state )const
 		{
 			assert( !isCompute() );
 			auto view = makeArrayView( m_backContextState.dyState.pDynamicStates
@@ -174,17 +182,17 @@ namespace ashes::gl
 				, state );
 		}
 
-		inline VkPipelineLayout getLayout()const
+		VkPipelineLayout getLayout()const
 		{
 			return m_layout;
 		}
 
-		inline VkDevice getDevice()const
+		VkDevice getDevice()const
 		{
 			return m_device;
 		}
 
-		inline size_t getVertexInputStateHash()const
+		size_t getVertexInputStateHash()const
 		{
 			assert( !isCompute() );
 			return m_vertexInputStateHash;
@@ -212,6 +220,7 @@ namespace ashes::gl
 		mutable std::unordered_map< GLuint, DeviceMemoryDestroyConnection > m_connections;
 		mutable std::unordered_map< uint64_t, ShaderBindings > m_dsBindings;
 		size_t m_vertexInputStateHash;
+		ByteArray m_pushConstantsBuffer;
 	};
 }
 

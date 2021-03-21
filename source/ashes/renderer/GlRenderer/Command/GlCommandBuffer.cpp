@@ -469,9 +469,14 @@ namespace ashes::gl
 
 			for ( auto & pcb : m_state.pushConstantBuffers )
 			{
+				get( pipeline )->pushConstants( pcb.second );
 				buildPushConstantsCommand( get( pipeline )->getDevice()
 					, pcb.second.stageFlags
-					, get( pipeline )->findPushConstantBuffer( pcb.second, doIsRtotFbo() )
+					, pcb.first
+					, ( m_state.currentGraphicsPipeline == pipeline
+						? get( pipeline )->getPushConstantsDesc( doIsRtotFbo() )
+						: get( pipeline )->getPushConstantsDesc() )
+					, get( pipeline )->getPushConstantsBuffer()
 					, m_cmdList );
 			}
 
@@ -784,10 +789,18 @@ namespace ashes::gl
 		, VkDeviceSize dstOffset
 		, ArrayView< uint8_t const > data )
 	{
-		m_updatesData.push_back( std::make_unique< ByteArray >( data.begin(), data.end() ) );
+		auto realOffset = dstOffset + get( dstBuffer )->getOffset();
+		auto realSize = VkDeviceSize( data.size() );
+
+		if ( realSize + dstOffset > get( dstBuffer )->getMemoryRequirements().size )
+		{
+			realSize = get( dstBuffer )->getMemoryRequirements().size - dstOffset;
+		}
+
+		m_updatesData.push_back( std::make_unique< ByteArray >( data.begin(), data.begin() + realSize ) );
 		m_cmdList.push_back( makeCmd< OpType::eUpdateBuffer >( get( dstBuffer )->getMemoryBinding().getParent()
-			, dstOffset + get( dstBuffer )->getOffset()
-			, VkDeviceSize( data.size() )
+			, realOffset
+			, realSize
 			, m_updatesData.back()->data() ) );
 	}
 
@@ -796,9 +809,19 @@ namespace ashes::gl
 		, VkDeviceSize size
 		, uint32_t data )
 	{
+		auto realOffset = dstOffset + get( dstBuffer )->getOffset();
+		auto realSize = size == VK_WHOLE_SIZE
+			? get( dstBuffer )->getMemoryRequirements().size
+			: size;
+
+		if ( realSize + dstOffset > get( dstBuffer )->getMemoryRequirements().size )
+		{
+			realSize = get( dstBuffer )->getMemoryRequirements().size - dstOffset;
+		}
+
 		m_cmdList.push_back( makeCmd< OpType::eFillBuffer >( get( dstBuffer )->getMemoryBinding().getParent()
-			, dstOffset + get( dstBuffer )->getOffset()
-			, size == VK_WHOLE_SIZE ? get( dstBuffer )->getMemoryRequirements().size : size
+			, realOffset
+			, realSize
 			, data ) );
 	}
 
@@ -960,12 +983,15 @@ namespace ashes::gl
 		};
 
 		if ( m_state.currentGraphicsPipeline
-			&& 0 != ( stageFlags & VK_SHADER_STAGE_ALL_GRAPHICS ) )
+			&& checkFlag( stageFlags, VK_SHADER_STAGE_ALL_GRAPHICS ) )
 		{
 			doCheckPipelineLayoutCompatibility( layout, m_state.currentGraphicsPipelineLayout );
+			get( m_state.currentGraphicsPipeline )->pushConstants( desc );
 			buildPushConstantsCommand( get( layout )->getDevice()
 				, stageFlags
-				, get( m_state.currentGraphicsPipeline )->findPushConstantBuffer( desc, doIsRtotFbo() )
+				, layout
+				, get( m_state.currentGraphicsPipeline )->getPushConstantsDesc( doIsRtotFbo() )
+				, get( m_state.currentGraphicsPipeline )->getPushConstantsBuffer()
 				, m_cmdList );
 		}
 
@@ -973,9 +999,12 @@ namespace ashes::gl
 			&& checkFlag( stageFlags, VK_SHADER_STAGE_COMPUTE_BIT ) )
 		{
 			doCheckPipelineLayoutCompatibility( layout, m_state.currentComputePipelineLayout );
+			get( m_state.currentComputePipeline )->pushConstants( desc );
 			buildPushConstantsCommand( get( layout )->getDevice()
 				, stageFlags
-				, get( m_state.currentComputePipeline )->findPushConstantBuffer( desc, false )
+				, layout
+				, get( m_state.currentComputePipeline )->getPushConstantsDesc()
+				, get( m_state.currentComputePipeline )->getPushConstantsBuffer()
 				, m_cmdList );
 		}
 

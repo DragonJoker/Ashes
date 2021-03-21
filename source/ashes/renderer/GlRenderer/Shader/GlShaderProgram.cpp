@@ -329,8 +329,9 @@ namespace ashes::gl
 
 		if ( usable )
 		{
+			auto constants = mergeConstants( stages );
 			program = getShaderDesc( context
-				, mergeConstants( stages )
+				, constants
 				, VkShaderStageFlagBits( stageFlags )
 				, programObject
 				, true );

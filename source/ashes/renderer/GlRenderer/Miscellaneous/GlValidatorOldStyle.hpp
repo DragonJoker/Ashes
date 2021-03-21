@@ -26,7 +26,8 @@ namespace ashes::gl::gl3
 	InputsLayout getInputs( ContextLock const & context
 		, VkShaderStageFlagBits stage
 		, GLuint program );
-	ConstantsLayout getPushConstants( ContextLock const & context
+	ConstantsLayout & getPushConstants( ContextLock const & context
+		, ConstantsLayout & constants
 		, VkShaderStageFlagBits stage
 		, GLuint program );
 	InterfaceBlocksLayout getUniformBuffers( ContextLock const & context
