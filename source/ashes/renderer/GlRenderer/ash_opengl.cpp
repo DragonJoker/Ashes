@@ -887,13 +887,23 @@ namespace ashes::gl
 		void* pData )
 	{
 		auto & data = get( pipelineCache )->getData();
+		auto expectedSize = *pDataSize;
 		*pDataSize = data.size();
 
-		if ( pData )
+		if ( !pData )
 		{
-			std::memcpy( pData, data.data(), data.size() );
+			return VK_SUCCESS;
 		}
 
+		if ( expectedSize != data.size() )
+		{
+			*pDataSize = 0u;
+			return VK_INCOMPLETE;
+		}
+
+		std::memcpy( pData
+			, data.data()
+			, std::min( *pDataSize, expectedSize ) );
 		return VK_SUCCESS;
 	}
 
@@ -903,7 +913,7 @@ namespace ashes::gl
 		uint32_t srcCacheCount,
 		const VkPipelineCache* pSrcCaches )
 	{
-		return get( dstCache )->merge( makeVector( pSrcCaches, srcCacheCount ) );
+		return get( dstCache )->merge( makeArrayView( pSrcCaches, srcCacheCount ) );
 	}
 
 	VkResult VKAPI_CALL vkCreateGraphicsPipelines(
