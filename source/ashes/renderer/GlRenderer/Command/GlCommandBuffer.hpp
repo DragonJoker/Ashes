@@ -234,6 +234,7 @@ namespace ashes::gl
 		bool doIsRtotFbo()const;
 		void doCheckPipelineLayoutCompatibility( VkPipelineLayout layout
 			, VkPipelineLayout & currentLayout )const;
+		void doPushConstants( PushConstantsDesc const & desc )const;
 
 	private:
 		VkDevice m_device;
@@ -251,6 +252,7 @@ namespace ashes::gl
 			VkPipelineLayout currentComputePipelineLayout{ nullptr };
 			VkPipeline currentGraphicsPipeline{ nullptr };
 			VkPipeline currentComputePipeline{ nullptr };
+			ByteArray currentPushConstantsBuffer;
 			std::vector< std::pair < VkPipelineLayout, PushConstantsDesc > > pushConstantBuffers;
 			VkRenderPass currentRenderPass{ nullptr };
 			VkFramebuffer currentFrameBuffer{ nullptr };
