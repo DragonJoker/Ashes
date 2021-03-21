@@ -767,7 +767,9 @@ namespace ashes::gl
 
 	void buildPushConstantsCommand( VkDevice device
 		, VkShaderStageFlags stageFlags
-		, PushConstantsDesc const & pcb
+		, VkPipelineLayout pipelineLayout
+		, ConstantsLayout const & constants
+		, ByteArray const & data
 		, CmdList & list );
 
 	//*************************************************************************

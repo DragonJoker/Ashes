@@ -864,15 +864,15 @@ namespace ashes::gl::gl4
 		return result;
 	}
 
-	ConstantsLayout getPushConstants( ContextLock const & context
+	ConstantsLayout & getPushConstants( ContextLock const & context
+		, ConstantsLayout & constants
 		, VkShaderStageFlagBits stage
 		, GLuint program )
 	{
-		ConstantsLayout result;
 		getVariableInfos( context
 			, program
 			, GLSL_INTERFACE_UNIFORM
-			, [&result, &stage, &program]( std::string name
+			, [&constants, &stage, &program]( std::string name
 				, GlslAttributeType type
 				, GLint location
 				, GLint arraySize
@@ -881,21 +881,22 @@ namespace ashes::gl::gl4
 				if ( !isSampler( type )
 					&& !isImage( type )
 					&& !isSamplerBuffer( type )
-					&& !isImageBuffer( type ) )
+					&& !isImageBuffer( type )
+					&& location != -1 )
 				{
-					result.push_back( { program
-						, stage
-						, name
-						, uint32_t( location )
-						, getConstantFormat( type )
-						, getSize( type )
-						, uint32_t( arraySize )
-						, ( offset == -1
-							? 0u
-							: uint32_t( offset ) ) } );
+					auto it = std::find_if( constants.begin()
+						, constants.end()
+						, [&name]( FormatDescT< ConstantFormat > const & desc )
+						{
+							return name == desc.name;
+						} );
+					if ( it != constants.end() )
+					{
+						it->location = uint32_t( location );
+					}
 				}
 			} );
-		return result;
+		return constants;
 	}
 
 	InterfaceBlocksLayout getUniformBuffers( ContextLock const & context

@@ -404,7 +404,7 @@ namespace ashes::gl
 							0u,
 							shaderStage,
 							name,
-							0u,
+							~( 0u ),
 							getFormat( mbrType ),
 							getSize( getFormat( mbrType ) ),
 							getArraySize( compiler, mbrType ),
@@ -657,6 +657,7 @@ namespace ashes::gl
 				doReworkBindings( pipelineLayout, createFlags, module, compiler, resources );
 				doReworkIntermediateInOut( previousStage, currentStage, compiler, resources );
 				doReworkAbsoluteInOut( currentStage, compiler, resources );
+				compiler.build_combined_image_samplers();
 				auto result = compiler.compile();
 				doReworkFrontFace( invertY, result );
 				return result;
