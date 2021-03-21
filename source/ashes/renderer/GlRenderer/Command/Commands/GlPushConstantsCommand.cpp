@@ -181,7 +181,7 @@ namespace ashes::gl
 		, uint8_t const *& buffer
 		, CmdList & list )
 	{
-		auto arraySize = std::min( 1u, constant.arraySize );
+		auto arraySize = std::max( 1u, constant.arraySize );
 
 		for ( auto layer = 0u; layer < arraySize; ++layer )
 		{
@@ -367,7 +367,7 @@ namespace ashes::gl
 		, uint8_t const *& buffer
 		, CmdList & list )
 	{
-		auto arraySize = std::min( 1u, constant.arraySize );
+		auto arraySize = std::max( 1u, constant.arraySize );
 
 		for ( auto layer = 0u; layer < arraySize; ++layer )
 		{

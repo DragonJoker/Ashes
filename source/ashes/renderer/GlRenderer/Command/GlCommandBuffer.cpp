@@ -161,6 +161,22 @@ namespace ashes::gl
 
 			return result;
 		}
+
+		ByteArray doInitialisePcb( VkPipelineLayout layout )
+		{
+			auto & pushConstants = get( layout )->getPushConstants();
+			uint32_t size = 0u;
+
+			for ( auto & range : pushConstants )
+			{
+				size = std::max( size
+					, range.offset + range.size );
+			}
+
+			ByteArray result;
+			result.resize( size );
+			return result;
+		}
 	}
 
 	CommandBuffer::CommandBuffer( VkAllocationCallbacks const * allocInfo
@@ -469,14 +485,14 @@ namespace ashes::gl
 
 			for ( auto & pcb : m_state.pushConstantBuffers )
 			{
-				get( pipeline )->pushConstants( pcb.second );
+				doPushConstants( pcb.second );
 				buildPushConstantsCommand( get( pipeline )->getDevice()
 					, pcb.second.stageFlags
 					, pcb.first
 					, ( m_state.currentGraphicsPipeline == pipeline
 						? get( pipeline )->getPushConstantsDesc( doIsRtotFbo() )
 						: get( pipeline )->getPushConstantsDesc() )
-					, get( pipeline )->getPushConstantsBuffer()
+					, m_state.currentPushConstantsBuffer
 					, m_cmdList );
 			}
 
@@ -986,12 +1002,12 @@ namespace ashes::gl
 			&& ( stageFlags & VK_SHADER_STAGE_ALL_GRAPHICS ) )
 		{
 			doCheckPipelineLayoutCompatibility( layout, m_state.currentGraphicsPipelineLayout );
-			get( m_state.currentGraphicsPipeline )->pushConstants( desc );
+			doPushConstants( desc );
 			buildPushConstantsCommand( get( layout )->getDevice()
 				, stageFlags
 				, layout
 				, get( m_state.currentGraphicsPipeline )->getPushConstantsDesc( doIsRtotFbo() )
-				, get( m_state.currentGraphicsPipeline )->getPushConstantsBuffer()
+				, m_state.currentPushConstantsBuffer
 				, m_cmdList );
 		}
 
@@ -999,12 +1015,12 @@ namespace ashes::gl
 			&& ( stageFlags & VK_SHADER_STAGE_COMPUTE_BIT ) )
 		{
 			doCheckPipelineLayoutCompatibility( layout, m_state.currentComputePipelineLayout );
-			get( m_state.currentComputePipeline )->pushConstants( desc );
+			doPushConstants( desc );
 			buildPushConstantsCommand( get( layout )->getDevice()
 				, stageFlags
 				, layout
 				, get( m_state.currentComputePipeline )->getPushConstantsDesc()
-				, get( m_state.currentComputePipeline )->getPushConstantsBuffer()
+				, m_state.currentPushConstantsBuffer
 				, m_cmdList );
 		}
 
@@ -1445,13 +1461,17 @@ namespace ashes::gl
 	void CommandBuffer::doCheckPipelineLayoutCompatibility( VkPipelineLayout layout
 		, VkPipelineLayout & currentLayout )const
 	{
-		if ( currentLayout
-			&& currentLayout != layout )
+		if ( !currentLayout )
+		{
+			m_state.currentPushConstantsBuffer = doInitialisePcb( layout );
+		}
+		else if ( currentLayout != layout )
 		{
 			// Check push constants compatibility.
 			if ( !areCompatible( get( currentLayout )->getPushConstants()
 				, get( layout )->getPushConstants() ) )
 			{
+				m_state.currentPushConstantsBuffer = doInitialisePcb( layout );
 				m_state.boundDescriptors.clear();
 				m_state.pushConstantBuffers.clear();
 			}
@@ -1474,5 +1494,11 @@ namespace ashes::gl
 		}
 
 		currentLayout = layout;
+	}
+
+	void CommandBuffer::doPushConstants( PushConstantsDesc const & desc )const
+	{
+		assert( ( desc.offset + desc.size ) <= m_state.currentPushConstantsBuffer.size() );
+		std::memcpy( m_state.currentPushConstantsBuffer.data() + desc.offset, desc.data.data(), desc.size );
 	}
 }

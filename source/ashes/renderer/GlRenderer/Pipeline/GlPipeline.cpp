@@ -270,22 +270,6 @@ namespace ashes::gl
 
 			return result;
 		}
-
-		ByteArray doInitialisePcb( VkPipelineLayout layout )
-		{
-			auto & pushConstants = get( layout )->getPushConstants();
-			uint32_t size = 0u;
-
-			for ( auto & range : pushConstants )
-			{
-				size = std::max( size
-					, range.offset + range.size );
-			}
-
-			ByteArray result;
-			result.resize( size );
-			return result;
-		}
 	}
 
 	Pipeline::Pipeline( VkAllocationCallbacks const * allocInfo
@@ -332,7 +316,6 @@ namespace ashes::gl
 		, m_vertexInputStateHash{ ( m_vertexInputState
 			? doHash( m_vertexInputState.value() )
 			: 0u ) }
-		, m_pushConstantsBuffer{ doInitialisePcb( m_layout ) }
 	{
 		get( m_layout )->addPipeline( get( this ) );
 	}
@@ -346,7 +329,6 @@ namespace ashes::gl
 		, m_basePipelineHandle{ createInfo.basePipelineHandle }
 		, m_basePipelineIndex{ createInfo.basePipelineIndex }
 		, m_compPipeline{ std::make_unique< ShaderProgram >( m_device, nullptr, get( this ), m_stages, m_layout, createInfo.flags, m_renderPass, m_vertexInputState ) }
-		, m_pushConstantsBuffer{ doInitialisePcb( m_layout ) }
 	{
 		get( m_layout )->addPipeline( get( this ) );
 	}
@@ -507,12 +489,6 @@ namespace ashes::gl
 
 		static ShaderBindings const dummy;
 		return dummy;
-	}
-
-	void Pipeline::pushConstants( PushConstantsDesc const & desc )
-	{
-		assert( ( desc.offset + desc.size ) <= m_pushConstantsBuffer.size() );
-		std::memcpy( m_pushConstantsBuffer.data() + desc.offset, desc.data.data(), desc.size );
 	}
 
 	ConstantsLayout const & Pipeline::getPushConstantsDesc( bool isRtot )
