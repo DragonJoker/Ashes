@@ -10,6 +10,8 @@
 
 #include "renderer/GlRenderer/GlRendererPrerequisites.hpp"
 
+#include <common/ArrayView.hpp>
+
 namespace ashes::gl
 {
 	/**
@@ -30,7 +32,7 @@ namespace ashes::gl
 			, VkPipelineCacheCreateInfo createInfo );
 		/**@}*/
 
-		VkResult merge( VkPipelineCacheArray pipelines );
+		VkResult merge( ArrayView< VkPipelineCache const > pipelines );
 
 		inline ByteArray const & getData()const
 		{
@@ -43,6 +45,17 @@ namespace ashes::gl
 		}
 
 	private:
+		struct Header
+		{
+			uint32_t headerLength;
+			uint32_t headerVersion;
+			uint32_t vendorID;
+			uint32_t deviceID;
+			uint8_t pipelineCacheUUID[VK_UUID_SIZE];
+		};
+
+	private:
+		Header m_header;
 		VkDevice m_device;
 		VkPipelineCacheCreateInfo m_createInfo;
 		ByteArray m_data;
