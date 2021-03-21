@@ -532,6 +532,8 @@ namespace ashes::gl
 				, VK_ERROR_VALIDATION_FAILED_EXT
 				, "OpenGL"
 				, "Invalid offset and/or size." );
+			m_beginRegion = std::min( m_beginRegion, m_updateRegions.size() );
+			m_endRegion = std::min( m_endRegion, m_updateRegions.size() - 1u );
 		}
 	}
 
