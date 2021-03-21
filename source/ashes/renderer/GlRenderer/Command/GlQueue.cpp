@@ -262,6 +262,9 @@ namespace ashes::gl
 			case OpType::eGetTexImage:
 				apply( lock, map< OpType::eGetTexImage >( cmd ) );
 				break;
+			case OpType::eGetQueryResults:
+				apply( lock, map< OpType::eGetQueryResults >( cmd ) );
+				break;
 			case OpType::eLineWidth:
 				apply( lock, map< OpType::eLineWidth >( cmd ) );
 				break;
