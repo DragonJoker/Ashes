@@ -983,7 +983,7 @@ namespace ashes::gl
 		};
 
 		if ( m_state.currentGraphicsPipeline
-			&& checkFlag( stageFlags, VK_SHADER_STAGE_ALL_GRAPHICS ) )
+			&& ( stageFlags & VK_SHADER_STAGE_ALL_GRAPHICS ) )
 		{
 			doCheckPipelineLayoutCompatibility( layout, m_state.currentGraphicsPipelineLayout );
 			get( m_state.currentGraphicsPipeline )->pushConstants( desc );
@@ -996,7 +996,7 @@ namespace ashes::gl
 		}
 
 		if ( m_state.currentComputePipeline
-			&& checkFlag( stageFlags, VK_SHADER_STAGE_COMPUTE_BIT ) )
+			&& ( stageFlags & VK_SHADER_STAGE_COMPUTE_BIT ) )
 		{
 			doCheckPipelineLayoutCompatibility( layout, m_state.currentComputePipelineLayout );
 			get( m_state.currentComputePipeline )->pushConstants( desc );
@@ -1009,9 +1009,9 @@ namespace ashes::gl
 		}
 
 		if ( ( !m_state.currentGraphicsPipeline
-				|| !checkFlag( stageFlags, VK_SHADER_STAGE_ALL_GRAPHICS ) )
+				|| !( stageFlags & VK_SHADER_STAGE_ALL_GRAPHICS ) )
 			&& ( !m_state.currentComputePipeline
-				|| !checkFlag( stageFlags, VK_SHADER_STAGE_COMPUTE_BIT ) ) )
+				|| !( stageFlags & VK_SHADER_STAGE_COMPUTE_BIT ) ) )
 		{
 			m_state.pushConstantBuffers.emplace_back( layout, desc );
 		}
