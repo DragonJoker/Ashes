@@ -85,6 +85,9 @@ namespace ashes::gl
 		GLSL_ATTRIBUTE_DOUBLE_VEC3 = 0x8FFD,
 		GLSL_ATTRIBUTE_DOUBLE_VEC4 = 0x8FFE,
 		GLSL_ATTRIBUTE_SAMPLER_CUBE_ARRAY = 0x900C,
+		GLSL_ATTRIBUTE_SAMPLER_CUBE_ARRAY_SHADOW = 0x900D,
+		GLSL_ATTRIBUTE_INT_SAMPLER_CUBE_ARRAY = 0x900E,
+		GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_CUBE_ARRAY = 0x900F,
 		GLSL_ATTRIBUTE_IMAGE_1D = 0x904C,
 		GLSL_ATTRIBUTE_IMAGE_2D = 0x904D,
 		GLSL_ATTRIBUTE_IMAGE_3D = 0x904E,
@@ -140,7 +143,8 @@ namespace ashes::gl
 	InputsLayout getInputs( ContextLock const & context
 		, VkShaderStageFlagBits stage
 		, GLuint program );
-	ConstantsLayout getPushConstants( ContextLock const & context
+	ConstantsLayout & getPushConstants( ContextLock const & context
+		, ConstantsLayout & constants
 		, VkShaderStageFlagBits stage
 		, GLuint program );
 	InterfaceBlocksLayout getUniformBuffers( ContextLock const & context
@@ -162,7 +166,7 @@ namespace ashes::gl
 		, VkShaderStageFlagBits stage
 		, GLuint program );
 	ShaderDesc getShaderDesc( ContextLock const & context
-		, ConstantsLayout const & constants
+		, ConstantsLayout & constants
 		, VkShaderStageFlagBits stage
 		, GLuint program
 		, bool separable );

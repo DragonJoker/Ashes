@@ -87,7 +87,10 @@ namespace ashes::gl
 		case GLSL_ATTRIBUTE_DOUBLE_VEC2:								return "GL_DOUBLE_VEC2";
 		case GLSL_ATTRIBUTE_DOUBLE_VEC3:								return "GL_DOUBLE_VEC3";
 		case GLSL_ATTRIBUTE_DOUBLE_VEC4:								return "GL_DOUBLE_VEC4";
-		case GLSL_ATTRIBUTE_SAMPLER_CUBE_ARRAY:							return "GL_SAMPLER_CUBE_ARRAY";
+		case GLSL_ATTRIBUTE_SAMPLER_CUBE_ARRAY:							return "GL_SAMPLER_CUBE_MAP_ARRAY";
+		case GLSL_ATTRIBUTE_SAMPLER_CUBE_ARRAY_SHADOW:					return "GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW";
+		case GLSL_ATTRIBUTE_INT_SAMPLER_CUBE_ARRAY:						return "GL_INT_SAMPLER_CUBE_MAP_ARRAY";
+		case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_CUBE_ARRAY:			return "GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY";
 		case GLSL_ATTRIBUTE_IMAGE_1D:									return "GL_IMAGE_1D";
 		case GLSL_ATTRIBUTE_IMAGE_2D:									return "GL_IMAGE_2D";
 		case GLSL_ATTRIBUTE_IMAGE_3D:									return "GL_IMAGE_3D";
@@ -197,6 +200,7 @@ namespace ashes::gl
 			|| type == GLSL_ATTRIBUTE_SAMPLER_1D_ARRAY_SHADOW
 			|| type == GLSL_ATTRIBUTE_SAMPLER_2D_ARRAY_SHADOW
 			|| type == GLSL_ATTRIBUTE_SAMPLER_CUBE_SHADOW
+			|| type == GLSL_ATTRIBUTE_SAMPLER_CUBE_ARRAY_SHADOW
 			|| type == GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE
 			|| type == GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE_ARRAY
 			|| type == GLSL_ATTRIBUTE_INT_SAMPLER_1D
@@ -206,6 +210,7 @@ namespace ashes::gl
 			|| type == GLSL_ATTRIBUTE_INT_SAMPLER_2D_RECT
 			|| type == GLSL_ATTRIBUTE_INT_SAMPLER_1D_ARRAY
 			|| type == GLSL_ATTRIBUTE_INT_SAMPLER_2D_ARRAY
+			|| type == GLSL_ATTRIBUTE_INT_SAMPLER_CUBE_ARRAY
 			|| type == GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE
 			|| type == GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE_ARRAY
 			|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_1D
@@ -215,6 +220,7 @@ namespace ashes::gl
 			|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_RECT
 			|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_1D_ARRAY
 			|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_ARRAY
+			|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_CUBE_ARRAY
 			|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE
 			|| type == GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY;
 	}
@@ -309,6 +315,7 @@ namespace ashes::gl
 		case GLSL_ATTRIBUTE_SAMPLER_1D_ARRAY_SHADOW:					return SamplerFormat::e1DArrayShadow;
 		case GLSL_ATTRIBUTE_SAMPLER_2D_ARRAY_SHADOW:					return SamplerFormat::e2DArrayShadow;
 		case GLSL_ATTRIBUTE_SAMPLER_CUBE_SHADOW:						return SamplerFormat::eCubeShadow;
+		case GLSL_ATTRIBUTE_SAMPLER_CUBE_ARRAY_SHADOW:					return SamplerFormat::eCubeArrayShadow;
 		case GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE:						return SamplerFormat::e2DMultisample;
 		case GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE_ARRAY:				return SamplerFormat::e2DMultisampleArray;
 		case GLSL_ATTRIBUTE_INT_SAMPLER_1D:								return SamplerFormat::eInt1D;
@@ -318,6 +325,7 @@ namespace ashes::gl
 		case GLSL_ATTRIBUTE_INT_SAMPLER_2D_RECT:						return SamplerFormat::eInt2DRect;
 		case GLSL_ATTRIBUTE_INT_SAMPLER_1D_ARRAY:						return SamplerFormat::eInt1DArray;
 		case GLSL_ATTRIBUTE_INT_SAMPLER_2D_ARRAY:						return SamplerFormat::eInt2DArray;
+		case GLSL_ATTRIBUTE_INT_SAMPLER_CUBE_ARRAY:						return SamplerFormat::eIntCubeArray;
 		case GLSL_ATTRIBUTE_INT_SAMPLER_BUFFER:							return SamplerFormat::eIntBuffer;
 		case GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE:					return SamplerFormat::eInt2DMultisample;
 		case GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:			return SamplerFormat::eInt2DMultisampleArray;
@@ -328,6 +336,7 @@ namespace ashes::gl
 		case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_RECT:				return SamplerFormat::eUInt2DRect;
 		case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_1D_ARRAY:				return SamplerFormat::eUInt1DArray;
 		case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_ARRAY:				return SamplerFormat::eUInt2DArray;
+		case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_CUBE_ARRAY:			return SamplerFormat::eUIntCubeArray;
 		case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_BUFFER:				return SamplerFormat::eUIntBuffer;
 		case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE:		return SamplerFormat::eUInt2DMultisample;
 		case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:	return SamplerFormat::eUInt2DMultisampleArray;
@@ -436,10 +445,12 @@ namespace ashes::gl
 		case GLSL_ATTRIBUTE_SAMPLER_2D_RECT_SHADOW:
 		case GLSL_ATTRIBUTE_SAMPLER_1D_ARRAY:
 		case GLSL_ATTRIBUTE_SAMPLER_2D_ARRAY:
+		case GLSL_ATTRIBUTE_SAMPLER_CUBE_ARRAY:
 		case GLSL_ATTRIBUTE_SAMPLER_BUFFER:
 		case GLSL_ATTRIBUTE_SAMPLER_1D_ARRAY_SHADOW:
 		case GLSL_ATTRIBUTE_SAMPLER_2D_ARRAY_SHADOW:
 		case GLSL_ATTRIBUTE_SAMPLER_CUBE_SHADOW:
+		case GLSL_ATTRIBUTE_SAMPLER_CUBE_ARRAY_SHADOW:
 		case GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE:
 		case GLSL_ATTRIBUTE_SAMPLER_2D_MULTISAMPLE_ARRAY:
 		case GLSL_ATTRIBUTE_INT_SAMPLER_1D:
@@ -449,6 +460,7 @@ namespace ashes::gl
 		case GLSL_ATTRIBUTE_INT_SAMPLER_2D_RECT:
 		case GLSL_ATTRIBUTE_INT_SAMPLER_1D_ARRAY:
 		case GLSL_ATTRIBUTE_INT_SAMPLER_2D_ARRAY:
+		case GLSL_ATTRIBUTE_INT_SAMPLER_CUBE_ARRAY:
 		case GLSL_ATTRIBUTE_INT_SAMPLER_BUFFER:
 		case GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE:
 		case GLSL_ATTRIBUTE_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:
@@ -459,6 +471,7 @@ namespace ashes::gl
 		case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_RECT:
 		case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_1D_ARRAY:
 		case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_ARRAY:
+		case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_CUBE_ARRAY:
 		case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_BUFFER:
 		case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE:
 		case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:
@@ -513,13 +526,14 @@ namespace ashes::gl
 			: gl3::getInputs( context, stage, program ) );
 	}
 
-	ConstantsLayout getPushConstants( ContextLock const & context
+	ConstantsLayout & getPushConstants( ContextLock const & context
+		, ConstantsLayout & constants
 		, VkShaderStageFlagBits stage
 		, GLuint program )
 	{
 		return ( hasProgramInterfaceQuery( context.getDevice() )
-			? gl4::getPushConstants( context, stage, program )
-			: gl3::getPushConstants( context, stage, program ) );
+			? gl4::getPushConstants( context, constants, stage, program )
+			: gl3::getPushConstants( context, constants, stage, program ) );
 	}
 
 	InterfaceBlocksLayout getUniformBuffers( ContextLock const & context
@@ -577,7 +591,7 @@ namespace ashes::gl
 	}
 
 	ShaderDesc getShaderDesc( ContextLock const & context
-		, ConstantsLayout const & constants
+		, ConstantsLayout & constants
 		, VkShaderStageFlagBits stage
 		, GLuint programObject
 		, bool separable )
@@ -588,7 +602,7 @@ namespace ashes::gl
 			0u,
 			0u,
 			getInputs( context, stage, programObject ),
-			getPushConstants( context, stage, programObject ),
+			getPushConstants( context, constants, stage, programObject ),
 			getUniformBuffers( context, stage, programObject ),
 			getStorageBuffers( context, stage, programObject ),
 			getSamplerBuffers( context, stage, programObject ),
@@ -596,40 +610,6 @@ namespace ashes::gl
 			getImageBuffers( context, stage, programObject ),
 			getImages( context, stage, programObject ),
 		};
-
-		if ( !constants.empty() )
-		{
-			for ( auto & constant : result.pcb )
-			{
-				auto it = std::find_if( constants.begin()
-					, constants.end()
-					, [&constant]( ConstantDesc const & lookup )
-					{
-						return lookup.name == constant.name;
-					} );
-
-				if ( it != constants.end() )
-				{
-					constant.stageFlag = separable
-						? stage
-						: it->stageFlag;
-					constant.offset = it->offset;
-				}
-			}
-		}
-		else
-		{
-			uint32_t offset = 0u;
-
-			for ( auto & constant : result.pcb )
-			{
-				constant.offset = offset;
-				constant.stageFlag = separable
-					? stage
-					: constant.stageFlag;
-				offset += constant.size;
-			}
-		}
 
 		return result;
 	}
