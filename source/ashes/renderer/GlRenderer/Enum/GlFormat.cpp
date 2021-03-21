@@ -1141,16 +1141,22 @@ namespace ashes::gl
 		{
 		case VK_COMPONENT_SWIZZLE_R:
 			result = source.r;
+			break;
 		case VK_COMPONENT_SWIZZLE_G:
 			result = source.g;
+			break;
 		case VK_COMPONENT_SWIZZLE_B:
 			result = source.b;
+			break;
 		case VK_COMPONENT_SWIZZLE_A:
 			result = source.a;
+			break;
 		case VK_COMPONENT_SWIZZLE_ONE:
 			result = GL_COMPONENT_SWIZZLE_ONE;
+			break;
 		case VK_COMPONENT_SWIZZLE_ZERO:
 			result = GL_COMPONENT_SWIZZLE_ZERO;
+			break;
 		}
 	}
 
