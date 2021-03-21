@@ -272,7 +272,7 @@ namespace ashes::gl
 		glLogCall( context
 			, glBindBuffer
 			, GL_BUFFER_TARGET_PIXEL_UNPACK
-			, 0u );
+			, getInternal() );
 
 		for ( auto & binding : m_bindings )
 		{
