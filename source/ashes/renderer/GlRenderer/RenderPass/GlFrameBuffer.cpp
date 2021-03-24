@@ -32,37 +32,6 @@ namespace ashes::gl
 
 	namespace gl3
 	{
-		void bindAttach( FboAttachment const & attachment
-			, uint32_t index
-			, CmdList & list )
-		{
-			if ( attachment.baseArrayLayer
-				|| ( attachment.imgLayerCount > 1 && attachment.viewLayerCount <= 1 ) )
-			{
-				list.push_back( makeCmd< OpType::eFramebufferTextureLayer >( GL_FRAMEBUFFER
-					, GlAttachmentPoint( attachment.point + index )
-					, attachment.object
-					, attachment.mipLevel
-					, attachment.baseArrayLayer ) );
-			}
-			else if ( attachment.viewLayerCount
-				&& ( attachment.target < GL_TEXTURE_CUBE_POSITIVE_X || attachment.target > GL_TEXTURE_CUBE_NEGATIVE_Z ) )
-			{
-				list.push_back( makeCmd< OpType::eFramebufferTexture >( GL_FRAMEBUFFER
-					, GlAttachmentPoint( attachment.point + index )
-					, attachment.object
-					, attachment.mipLevel ) );
-			}
-			else
-			{
-				list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
-					, GlAttachmentPoint( attachment.point + index )
-					, attachment.target
-					, attachment.object
-					, attachment.mipLevel ) );
-			}
-		}
-
 		FboAttachment initialiseAttachment( uint32_t referenceIndex
 			, VkImageView view
 			, uint32_t index
@@ -139,27 +108,6 @@ namespace ashes::gl
 
 	namespace gl4
 	{
-		void bindAttach( FboAttachment const & attachment
-			, uint32_t index
-			, CmdList & list )
-		{
-			if ( attachment.viewLayerCount > 1u )
-			{
-				list.push_back( makeCmd< OpType::eFramebufferTexture >( GL_FRAMEBUFFER
-					, GlAttachmentPoint( attachment.point + index )
-					, attachment.object
-					, attachment.mipLevel ) );
-			}
-			else
-			{
-				list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
-					, GlAttachmentPoint( attachment.point + index )
-					, attachment.target
-					, attachment.object
-					, attachment.mipLevel ) );
-			}
-		}
-
 		FboAttachment initialiseAttachment( uint32_t referenceIndex
 			, VkImageView view
 			, uint32_t index
@@ -237,24 +185,6 @@ namespace ashes::gl
 			}
 
 			return result;
-		}
-	}
-
-	void bindAttach( VkDevice device
-		, FboAttachment const & attachment
-		, CmdList & list )
-	{
-		if ( hasTextureViews( device ) )
-		{
-			gl4::bindAttach( attachment
-				, attachment.index
-				, list );
-		}
-		else
-		{
-			gl3::bindAttach( attachment
-				, attachment.index
-				, list );
 		}
 	}
 
@@ -523,7 +453,6 @@ namespace ashes::gl
 
 		if ( !isEmpty() )
 		{
-			doBindAttaches();
 			doCreateFramebuffer();
 		}
 	}
@@ -555,6 +484,7 @@ namespace ashes::gl
 
 		if ( !isEmpty() )
 		{
+			uint32_t index = 0u;
 			auto & attaches = getRenderableAttaches();
 
 			for ( auto & reference : references )
@@ -569,7 +499,15 @@ namespace ashes::gl
 						} );
 					assert( attachIt != attaches.end() );
 					auto & attach = *attachIt;
-					drawBuffers.push_back( GlAttachmentPoint( attach.point + attach.index ) );
+
+					if ( attach.point != GL_ATTACHMENT_POINT_DEPTH
+						&& attach.point != GL_ATTACHMENT_POINT_STENCIL
+						&& attach.point != GL_ATTACHMENT_POINT_DEPTH_STENCIL )
+					{
+						drawBuffers.push_back( GlAttachmentPoint( attach.point + index ) );
+					}
+
+					++index;
 				}
 			}
 
@@ -582,49 +520,26 @@ namespace ashes::gl
 		return drawBuffers;
 	}
 
-	std::vector< GlAttachmentPoint > Framebuffer::getDrawBuffers( ArrayView< VkAttachmentReference > const & references )const
+	FboAttachment Framebuffer::getAttachment( VkAttachmentReference const & reference )const
 	{
-		m_drawBuffers.clear();
-
-		if ( !isEmpty() )
+		if ( reference.attachment != VK_ATTACHMENT_UNUSED )
 		{
-			assert( getInternal() != GL_INVALID_INDEX );
 			auto & attachments = getAttachments();
+			auto fboAttach = attachments[reference.attachment];
+			auto fboView = get( fboAttach );
+
 			auto & attaches = getRenderableAttaches();
-
-			for ( auto & reference : references )
-			{
-				if ( reference.attachment != VK_ATTACHMENT_UNUSED )
+			auto attachIt = std::find_if( attaches.begin()
+				, attaches.end()
+				, [&reference]( FboAttachment const & lookup )
 				{
-					auto fboAttach = attachments[reference.attachment];
-					auto fboView = get( fboAttach );
-
-					if ( !isDepthOrStencilFormat( fboView->getFormatVk() ) )
-					{
-						auto attachIt = std::find_if( attaches.begin()
-							, attaches.end()
-							, [&reference]( FboAttachment const & lookup )
-							{
-								return lookup.referenceIndex == reference.attachment;
-							} );
-						assert( attachIt != attaches.end() );
-						auto & attach = *attachIt;
-						auto fboImage = get( fboView->getImage() );
-
-						if ( fboImage->hasInternal() )
-						{
-							m_drawBuffers.push_back( GlAttachmentPoint( attach.point + attach.index ) );
-						}
-						else if ( attaches.size() == 1 )
-						{
-							m_drawBuffers.push_back( GL_ATTACHMENT_POINT_BACK );
-						}
-					}
-				}
-			}
+					return lookup.referenceIndex == reference.attachment;
+				} );
+			assert( attachIt != attaches.end() );
+			return *attachIt;
 		}
 
-		return m_drawBuffers;
+		return FboAttachment{};
 	}
 
 	bool Framebuffer::hasOnlySwapchainImage()const
@@ -698,34 +613,6 @@ namespace ashes::gl
 		}
 	}
 
-	void Framebuffer::doBindAttaches()
-	{
-		if ( !m_multisampled )
-		{
-			if ( m_depthStencilAttach )
-			{
-				bindAttach( m_device, *m_depthStencilAttach, m_bindAttaches );
-			}
-
-			for ( auto & attachment : m_colourAttaches )
-			{
-				bindAttach( m_device, attachment, m_bindAttaches );
-			}
-		}
-		else
-		{
-			if ( m_depthStencilMsAttach )
-			{
-				bindAttach( m_device, *m_depthStencilMsAttach, m_bindAttaches );
-			}
-
-			for ( auto & attachment : m_colourMsAttaches )
-			{
-				bindAttach( m_device, attachment, m_bindAttaches );
-			}
-		}
-	}
-
 	void Framebuffer::doCreateFramebuffer()
 	{
 		auto context = get( m_device )->getContext();
@@ -733,17 +620,6 @@ namespace ashes::gl
 			, glGenFramebuffers
 			, 1
 			, &m_internal );
-		glLogCall( context
-			, glBindFramebuffer
-			, GL_FRAMEBUFFER
-			, m_internal );
-		applyList( context, m_bindAttaches );
-		checkCompleteness( get( this )
-			, context->glCheckFramebufferStatus( GL_FRAMEBUFFER ) );
-		glLogCall( context
-			, glBindFramebuffer
-			, GL_FRAMEBUFFER
-			, 0 );
 	}
 
 	void Framebuffer::doInitialiseAttach( FboAttachment attachment
