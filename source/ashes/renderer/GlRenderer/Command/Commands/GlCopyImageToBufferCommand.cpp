@@ -216,16 +216,18 @@ namespace ashes::gl
 			, CmdList & list )
 		{
 			auto dstBufferOffset = copyInfo.bufferOffset;
+			auto srcRowSize = srcMipLayerSize / mipExtent.height;
+			auto srcPixelSize = srcRowSize / mipExtent.width;
 			mipExtent.width = std::min( mipExtent.width, copyInfo.imageExtent.width );
 			mipExtent.height = std::min( mipExtent.height, copyInfo.imageExtent.height );
 			mipExtent.depth = std::min( mipExtent.depth, copyInfo.imageExtent.depth );
+			auto srcSubRowSize = srcPixelSize * mipExtent.width;
 			auto dstRowWidth = ( copyInfo.bufferRowLength == 0 || copyInfo.bufferRowLength == copyInfo.imageExtent.width )
 				? copyInfo.imageExtent.width
 				: copyInfo.bufferRowLength;
 			auto rowCount = ( copyInfo.bufferImageHeight == 0 || copyInfo.bufferImageHeight == copyInfo.imageExtent.height )
 				? copyInfo.imageExtent.height
 				: copyInfo.bufferImageHeight;
-			auto srcRowSize = srcMipLayerSize / mipExtent.height;
 			auto dstRowSize = dstRowWidth * getMinimalSize( get( src )->getFormatVk() );
 			auto dstMipLayerSize = dstRowSize * rowCount;
 			auto layerCount = std::max( copyInfo.imageSubresource.layerCount
@@ -238,14 +240,14 @@ namespace ashes::gl
 
 			for ( uint32_t layer = 0u; layer < layerCount; ++layer )
 			{
-				auto srcRowOffset = srcBufferOffset + ( srcRowSize * copyInfo.imageOffset.x );
+				auto srcRowOffset = srcBufferOffset + ( srcPixelSize * copyInfo.imageOffset.x );
 				auto dstRowOffset = dstBufferOffset;
 
 				for ( uint32_t row = 0u; row < rowCount; ++row )
 				{
 					list.push_back( makeCmd< OpType::eCopyBufferSubData >( GL_BUFFER_TARGET_COPY_READ
 						, GL_BUFFER_TARGET_COPY_WRITE
-						, VkBufferCopy{ srcRowOffset, dstRowOffset, srcRowSize } ) );
+						, VkBufferCopy{ srcRowOffset, dstRowOffset, srcSubRowSize } ) );
 
 					srcRowOffset += srcRowSize;
 					dstRowOffset += dstRowSize;
