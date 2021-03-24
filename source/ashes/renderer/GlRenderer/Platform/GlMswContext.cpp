@@ -87,6 +87,90 @@ namespace ashes::gl
 		static const int GL_CONTEXT_CREATION_DEFAULT_MASK = GL_CONTEXT_CORE_PROFILE_BIT;
 
 #endif
+
+		std::string & replace( std::string & text
+			, std::string const & lookup
+			, std::string const & replacement )
+		{
+			std::string result;
+			std::size_t currentPos = 0;
+			std::size_t pos = 0;
+
+			while ( ( pos = text.find( lookup, currentPos ) ) != std::string::npos )
+			{
+				result.append( text.substr( currentPos, pos - currentPos ) );
+				result.append( replacement );
+				currentPos = pos + lookup.size();
+			}
+
+			if ( currentPos != text.size() )
+			{
+				result.append( text.substr( currentPos, pos - currentPos ) );
+			}
+
+			text = result;
+			return text;
+		}
+
+		std::string getLastErrorText()
+		{
+			uint32_t errorCode = ::GetLastError();
+			std::stringstream stream;
+			std::locale loc{ "C" };
+			stream.imbue( loc );
+			stream << "0x" << std::hex << errorCode;
+
+			if ( errorCode != ERROR_SUCCESS )
+			{
+				LPWSTR errorText = nullptr;
+
+				if ( ::FormatMessageW( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM
+					, nullptr
+					, errorCode
+					, 0
+					, LPWSTR( &errorText )
+					, 0
+					, nullptr ) != 0 )
+				{
+					int length = WideCharToMultiByte( CP_UTF8, 0u, errorText, -1, nullptr, 0u, 0u, 0u );
+
+					if ( length > 0 )
+					{
+						std::string converted( size_t( length ), 0 );
+						WideCharToMultiByte( CP_UTF8, 0u, errorText, -1, converted.data(), length, 0u, 0u );
+						replace( converted, "\r", std::string{} );
+						replace( converted, "\n", std::string{} );
+						stream << " (" << converted.c_str() << ")";
+					}
+				}
+				else
+				{
+					stream << " (Unable to retrieve error text)";
+				}
+			}
+			else
+			{
+				stream << " (No error)";
+			}
+
+			auto result = stream.str();
+			replace( result, "\r", "" );
+			replace( result, "\n", "" );
+			return result;
+		}
+
+		HWND createFullscreenWindow( VkDisplaySurfaceCreateInfoKHR const & createInfo )
+		{
+			auto hInstance = ::GetModuleHandleA( nullptr );
+			auto name = "fullscreen_" + std::to_string( uint64_t( createInfo.displayMode ) );
+			auto classId = win::registerClass( hInstance
+				, name );
+			return win::createWindow( hInstance
+				, classId
+				, name
+				, WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE
+				, createInfo.imageExtent );
+		}
 	}
 
 	struct VkStructure
@@ -132,7 +216,7 @@ namespace ashes::gl
 		: ContextImpl{ instance }
 		, displayCreateInfo{ std::move( createInfo ) }
 		, m_pfd{ getPfd( reinterpret_cast< VkStructure const * >( &displayCreateInfo ) ) }
-		, m_hWnd{ ::GetActiveWindow() }
+		, m_hWnd{ createFullscreenWindow( displayCreateInfo ) }
 		, m_hDC{ ::GetDC( m_hWnd ) }
 		, m_mainContext{ static_cast< MswContext const * >( mainContext ) }
 	{
@@ -153,6 +237,11 @@ namespace ashes::gl
 			}
 
 			::ReleaseDC( m_hWnd, m_hDC );
+
+			if ( displayCreateInfo.sType )
+			{
+				::DestroyWindow( m_hWnd );
+			}
 		}
 		catch ( ... )
 		{
@@ -169,7 +258,7 @@ namespace ashes::gl
 
 		if ( !m_hContext )
 		{
-			throw std::runtime_error{ "Couldn't create preliminary context." };
+			throw std::runtime_error{ "Couldn't create preliminary context: " + getLastErrorText() };
 		}
 
 		doLoadSystemFunctions();
@@ -187,38 +276,32 @@ namespace ashes::gl
 
 	void MswContext::doSetFullscreen()
 	{
-		SetWindowLongPtr( m_hWnd, GWL_STYLE,
-			WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE );
-		MoveWindow( m_hWnd, 0, 0, displayCreateInfo.imageExtent.width, displayCreateInfo.imageExtent.height, TRUE );
+		if ( displayCreateInfo.transform != VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR )
+		{
+			DEVMODE dm{};
+			dm.dmSize = sizeof( DEVMODE );
+			dm.dmFields = DM_DISPLAYORIENTATION;
 
-		DEVMODE dm{};
-		dm.dmSize = sizeof( DEVMODE );
-		dm.dmFields = DM_DISPLAYORIENTATION | DM_DISPLAYFREQUENCY;
-		dm.dmBitsPerPel = 32u;
-		dm.dmPelsWidth = displayCreateInfo.imageExtent.width;
-		dm.dmPelsHeight = displayCreateInfo.imageExtent.height;
-		dm.dmDisplayFrequency = getDisplayModeParameters( displayCreateInfo.displayMode ).refreshRate / 1000;
+			if ( displayCreateInfo.transform == VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR )
+			{
+				dm.dmDisplayOrientation = DMDO_DEFAULT;
+			}
+			else if ( displayCreateInfo.transform == VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR )
+			{
+				dm.dmDisplayOrientation = DMDO_90;
+			}
+			else if ( displayCreateInfo.transform == VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR )
+			{
+				dm.dmDisplayOrientation = DMDO_180;
+			}
+			else if ( displayCreateInfo.transform == VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR )
+			{
+				dm.dmDisplayOrientation = DMDO_270;
+			}
 
-		if ( displayCreateInfo.transform == VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR )
-		{
-			dm.dmDisplayOrientation = DMDO_DEFAULT;
+			auto res = ChangeDisplaySettings( &dm, 0 );
+			assert( res == DISP_CHANGE_SUCCESSFUL );
 		}
-		else if ( displayCreateInfo.transform == VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR )
-		{
-			dm.dmDisplayOrientation = DMDO_90;
-		}
-		else if ( displayCreateInfo.transform == VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR )
-		{
-			dm.dmDisplayOrientation = DMDO_180;
-		}
-		else if ( displayCreateInfo.transform == VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR )
-		{
-			dm.dmDisplayOrientation = DMDO_270;
-		}
-
-		dm.dmFields |= DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL;
-		auto res = ChangeDisplaySettings( &dm, 0 );
-		assert( res == DISP_CHANGE_SUCCESSFUL );
 	}
 
 	void MswContext::enable()const
@@ -281,12 +364,12 @@ namespace ashes::gl
 
 		if ( !pixelFormats )
 		{
-			throw std::runtime_error{ "Couldn't choose a pixel format" };
+			throw std::runtime_error{ "Couldn't choose a pixel format: " + getLastErrorText() };
 		}
 
 		if ( !::SetPixelFormat( m_hDC, pixelFormats, &pfd ) )
 		{
-			throw std::runtime_error{ "Couldn't set pixel format" };
+			throw std::runtime_error{ "Couldn't set pixel format: " + getLastErrorText() };
 		}
 	}
 

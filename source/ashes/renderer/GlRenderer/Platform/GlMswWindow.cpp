@@ -10,7 +10,7 @@ See LICENSE file in root folder
 
 namespace ashes::gl
 {
-	namespace
+	namespace win
 	{
 		LRESULT CALLBACK DummyWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 		{
@@ -51,18 +51,20 @@ namespace ashes::gl
 
 		HWND createWindow( HINSTANCE hInstance
 			, ATOM classId
-			, std::string const & name )
-	{
+			, std::string const & name
+			, DWORD dwFlags
+			, VkExtent2D const & extent )
+		{
 			static std::atomic_uint32_t id{};
 			auto windowName = "Window" + name + std::to_string( id++ );
 			auto hWnd = ::CreateWindowExA( 0L
 				, LPCSTR( WPARAM( classId ) )
 				, windowName.c_str()
-				, WS_OVERLAPPEDWINDOW
+				, dwFlags
 				, 0
 				, 0
-				, 640
-				, 480
+				, int( extent.width )
+				, int( extent.height )
 				, nullptr
 				, nullptr
 				, hInstance
@@ -75,54 +77,54 @@ namespace ashes::gl
 
 			return hWnd;
 		}
+	}
 
-		HGLRC createContext( HDC hDC
-			, int reqMajor
-			, int reqMinor
-			, PIXELFORMATDESCRIPTOR & pfd )
+	HGLRC createContext( HDC hDC
+		, int reqMajor
+		, int reqMinor
+		, PIXELFORMATDESCRIPTOR & pfd )
+	{
+		pfd.nSize = sizeof( PIXELFORMATDESCRIPTOR );
+		pfd.nVersion = 1;
+		pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+		pfd.iPixelType = PFD_TYPE_RGBA;
+		pfd.iLayerType = PFD_MAIN_PLANE;
+		pfd.cColorBits = 24;
+		pfd.cRedBits = 8;
+		pfd.cGreenBits = 8;
+		pfd.cBlueBits = 8;
+		pfd.cAlphaBits = 8;
+		pfd.cDepthBits = 0;
+		pfd.cStencilBits = 0;
+
+		int pixelFormat = ::ChoosePixelFormat( hDC, &pfd );
+
+		if ( !pixelFormat )
 		{
-			pfd.nSize = sizeof( PIXELFORMATDESCRIPTOR );
-			pfd.nVersion = 1;
-			pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-			pfd.iPixelType = PFD_TYPE_RGBA;
-			pfd.iLayerType = PFD_MAIN_PLANE;
-			pfd.cColorBits = 24;
-			pfd.cRedBits = 8;
-			pfd.cGreenBits = 8;
-			pfd.cBlueBits = 8;
-			pfd.cAlphaBits = 8;
-			pfd.cDepthBits = 0;
-			pfd.cStencilBits = 0;
-
-			int pixelFormat = ::ChoosePixelFormat( hDC, &pfd );
-
-			if ( !pixelFormat )
-			{
-				throw std::runtime_error{ "Couldn't find matching pixel formats" };
-			}
-
-			if ( ::SetPixelFormat( hDC, pixelFormat, &pfd ) == FALSE )
-			{
-				throw std::runtime_error{ "Couldn't set matching pixel format" };
-			}
-
-			auto context = wglCreateContext( hDC );
-
-			if ( !context )
-			{
-				throw std::runtime_error{ "Couldn't create OpenGL context" };
-			}
-
-			return context;
+			throw std::runtime_error{ "Couldn't find matching pixel formats" };
 		}
+
+		if ( ::SetPixelFormat( hDC, pixelFormat, &pfd ) == FALSE )
+		{
+			throw std::runtime_error{ "Couldn't set matching pixel format" };
+		}
+
+		auto context = wglCreateContext( hDC );
+
+		if ( !context )
+		{
+			throw std::runtime_error{ "Couldn't create OpenGL context" };
+		}
+
+		return context;
 	}
 
 	RenderWindow::RenderWindow( int major
 		, int minor
 		, std::string const & name ) try
 		: m_hInstance{ ::GetModuleHandleA( nullptr ) }
-		, m_class{ registerClass( m_hInstance, name ) }
-		, m_hWnd{ createWindow( m_hInstance, m_class, name ) }
+		, m_class{ win::registerClass( m_hInstance, name ) }
+		, m_hWnd{ win::createWindow( m_hInstance, m_class, name, WS_OVERLAPPEDWINDOW, { 640u, 480u } ) }
 		, m_hDC{ ::GetDC( m_hWnd ) }
 		, m_hContext{ createContext( m_hDC, major, minor, m_pfd.pfd ) }
 	{
