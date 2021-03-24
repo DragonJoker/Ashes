@@ -240,7 +240,13 @@ namespace ashes::gl
 		case GLSL_ATTRIBUTE_INT_VEC3:									return ConstantFormat::eVec3i;
 		case GLSL_ATTRIBUTE_INT_VEC4:									return ConstantFormat::eVec4i;
 		case GLSL_ATTRIBUTE_FLOAT_MAT2:									return ConstantFormat::eMat2f;
+		case GLSL_ATTRIBUTE_FLOAT_MAT3x2:								return ConstantFormat::eMat3x2f;
+		case GLSL_ATTRIBUTE_FLOAT_MAT4x2:								return ConstantFormat::eMat4x2f;
+		case GLSL_ATTRIBUTE_FLOAT_MAT2x3:								return ConstantFormat::eMat2x3f;
 		case GLSL_ATTRIBUTE_FLOAT_MAT3:									return ConstantFormat::eMat3f;
+		case GLSL_ATTRIBUTE_FLOAT_MAT4x3:								return ConstantFormat::eMat4x3f;
+		case GLSL_ATTRIBUTE_FLOAT_MAT2x4:								return ConstantFormat::eMat2x4f;
+		case GLSL_ATTRIBUTE_FLOAT_MAT3x4:								return ConstantFormat::eMat3x4f;
 		case GLSL_ATTRIBUTE_FLOAT_MAT4:									return ConstantFormat::eMat4f;
 		case GLSL_ATTRIBUTE_UNSIGNED_INT_VEC2:							return ConstantFormat::eVec2ui;
 		case GLSL_ATTRIBUTE_UNSIGNED_INT_VEC3:							return ConstantFormat::eVec3ui;

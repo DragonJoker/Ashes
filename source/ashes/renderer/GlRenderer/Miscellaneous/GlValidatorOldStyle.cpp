@@ -108,29 +108,48 @@ namespace ashes::gl::gl3
 					, glGetAttribLocation
 					, program
 					, nameBuf.data() );
+				uint32_t locOffset = 0u;
 
 				switch ( attributeType )
 				{
-				case GLSL_ATTRIBUTE_FLOAT_MAT2:
-					result.vertexAttributeDescriptions.push_back( { location + 0u, 0u, VK_FORMAT_R32G32_SFLOAT, offset } );
+				case GLSL_ATTRIBUTE_FLOAT_MAT4x2:
+					result.vertexAttributeDescriptions.push_back( { location + locOffset++, 0u, VK_FORMAT_R32G32_SFLOAT, offset } );
 					offset += 2 * sizeof( float );
-					result.vertexAttributeDescriptions.push_back( { location + 1u, 0u, VK_FORMAT_R32G32_SFLOAT, offset } );
+					[[fallthrough]];
+				case GLSL_ATTRIBUTE_FLOAT_MAT3x2:
+					result.vertexAttributeDescriptions.push_back( { location + locOffset++, 0u, VK_FORMAT_R32G32_SFLOAT, offset } );
+					offset += 2 * sizeof( float );
+					[[fallthrough]];
+				case GLSL_ATTRIBUTE_FLOAT_MAT2:
+					result.vertexAttributeDescriptions.push_back( { location + locOffset++, 0u, VK_FORMAT_R32G32_SFLOAT, offset } );
+					offset += 2 * sizeof( float );
+					result.vertexAttributeDescriptions.push_back( { location + locOffset++, 0u, VK_FORMAT_R32G32_SFLOAT, offset } );
 					break;
+				case GLSL_ATTRIBUTE_FLOAT_MAT4x3:
+					result.vertexAttributeDescriptions.push_back( { location + locOffset++, 0u, VK_FORMAT_R32G32B32_SFLOAT, offset } );
+					offset += 3 * sizeof( float );
+					[[fallthrough]];
 				case GLSL_ATTRIBUTE_FLOAT_MAT3:
-					result.vertexAttributeDescriptions.push_back( { location + 0u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offset } );
+					result.vertexAttributeDescriptions.push_back( { location + locOffset++, 0u, VK_FORMAT_R32G32B32_SFLOAT, offset } );
 					offset += 3 * sizeof( float );
-					result.vertexAttributeDescriptions.push_back( { location + 1u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offset } );
+					[[fallthrough]];
+				case GLSL_ATTRIBUTE_FLOAT_MAT2x3:
+					result.vertexAttributeDescriptions.push_back( { location + locOffset++, 0u, VK_FORMAT_R32G32B32_SFLOAT, offset } );
 					offset += 3 * sizeof( float );
-					result.vertexAttributeDescriptions.push_back( { location + 2u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offset } );
+					result.vertexAttributeDescriptions.push_back( { location + locOffset++, 0u, VK_FORMAT_R32G32B32_SFLOAT, offset } );
 					break;
 				case GLSL_ATTRIBUTE_FLOAT_MAT4:
-					result.vertexAttributeDescriptions.push_back( { location + 0u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offset } );
+					result.vertexAttributeDescriptions.push_back( { location + locOffset++, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offset } );
 					offset += 4 * sizeof( float );
-					result.vertexAttributeDescriptions.push_back( { location + 1u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offset } );
+					[[fallthrough]];
+				case GLSL_ATTRIBUTE_FLOAT_MAT3x4:
+					result.vertexAttributeDescriptions.push_back( { location + locOffset++, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offset } );
 					offset += 4 * sizeof( float );
-					result.vertexAttributeDescriptions.push_back( { location + 2u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offset } );
+					[[fallthrough]];
+				case GLSL_ATTRIBUTE_FLOAT_MAT2x4:
+					result.vertexAttributeDescriptions.push_back( { location + locOffset++, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offset } );
 					offset += 4 * sizeof( float );
-					result.vertexAttributeDescriptions.push_back( { location + 2u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offset } );
+					result.vertexAttributeDescriptions.push_back( { location + locOffset++, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offset } );
 					break;
 				default:
 					result.vertexAttributeDescriptions.push_back( { location + 0u, 0u, getAttributeFormat( attributeType ), offset } );
