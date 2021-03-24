@@ -27,12 +27,9 @@ namespace ashes::gl
 		void unbindImage( VkImage image );
 
 		void upload( ContextLock const & context
-			, VkDeviceSize offset
-			, VkDeviceSize size )const;
+			, BindingRange const & range )const;
 		void download( ContextLock const & context
-			, VkDeviceSize offset
-			, VkDeviceSize size )const;
-
+			, BindingRange const & range )const;
 		VkResult lock( ContextLock const & context
 			, VkDeviceSize offset
 			, VkDeviceSize size
@@ -45,6 +42,20 @@ namespace ashes::gl
 			, VkDeviceSize offset
 			, VkDeviceSize size )const;
 		void unlock( ContextLock const & context )const;
+
+		void upload( ContextLock const & context
+			, VkDeviceSize offset
+			, VkDeviceSize size )const
+		{
+			upload( context, { offset, size, getSize() } );
+		}
+
+		void download( ContextLock const & context
+			, VkDeviceSize offset
+			, VkDeviceSize size )const
+		{
+			download( context, { offset, size, getSize() } );
+		}
 
 		VkDeviceSize getSize()const
 		{
@@ -67,8 +78,7 @@ namespace ashes::gl
 		// Bindings, by offset
 		std::vector< std::pair< VkDeviceSize, DeviceMemoryBindingPtr > > m_bindings;
 		mutable bool m_dirty = true;
-		mutable VkDeviceSize m_mappedOffset{ 0u };
-		mutable VkDeviceSize m_mappedSize{ 0u };
+		mutable BindingRange m_mappedRange;
 		mutable ByteArray m_data;
 	};
 }

@@ -122,7 +122,7 @@ namespace ashes::gl
 						, buffer
 						, memoryOffset ) ).second;
 				get( buffer )->setInternal( getInternal() );
-				binding.map( m_mappedOffset, m_mappedSize );
+				binding.map( m_mappedRange );
 				it = m_bindings.begin() + ( m_bindings.size() - 1 );
 			}
 
@@ -133,8 +133,7 @@ namespace ashes::gl
 				auto context = get( m_device )->getContext();
 				binding.upload( context
 					, m_data
-					, 0u
-					, m_data.size() );
+					, { 0u, m_data.size() } );
 			}
 
 			result = VK_SUCCESS;
@@ -172,7 +171,7 @@ namespace ashes::gl
 						, m_device
 						, image
 						, memoryOffset ) ).second;
-				binding.map( m_mappedOffset, m_mappedSize );
+				binding.map( m_mappedRange );
 				it = m_bindings.begin() + ( m_bindings.size() - 1 );
 			}
 
@@ -181,10 +180,17 @@ namespace ashes::gl
 			if ( !m_data.empty() && binding.isMapped() )
 			{
 				auto context = get( m_device )->getContext();
+				glLogCall( context
+					, glBindBuffer
+					, GL_BUFFER_TARGET_PIXEL_UNPACK
+					, getInternal() );
 				binding.upload( context
 					, m_data
-					, 0u
-					, m_data.size() );
+					, { 0u, m_data.size() } );
+				glLogCall( context
+					, glBindBuffer
+					, GL_BUFFER_TARGET_PIXEL_UNPACK
+					, 0 );
 			}
 
 			result = VK_SUCCESS;
@@ -235,17 +241,9 @@ namespace ashes::gl
 	}
 
 	void DeviceMemory::upload( ContextLock const & context
-		, VkDeviceSize offset
-		, VkDeviceSize size )const
+		, BindingRange const & range )const
 	{
 		assert( !m_data.empty() );
-
-		if ( size == WholeSize )
-		{
-			size = getSize();
-			offset = 0;
-		}
-
 		glLogCall( context
 			, glBindBuffer
 			, GL_BUFFER_TARGET_COPY_WRITE
@@ -253,13 +251,13 @@ namespace ashes::gl
 		auto result = glLogNonVoidCall( context
 			, glMapBufferRange
 			, GL_BUFFER_TARGET_COPY_WRITE
-			, GLintptr( offset )
-			, GLsizei( size )
+			, GLintptr( range.getOffset() )
+			, GLsizei( range.getSize() )
 			, GL_MEMORY_MAP_WRITE_BIT );
 
 		if ( result )
 		{
-			std::memcpy( result, m_data.data() + offset, size );
+			std::memcpy( result, m_data.data() + range.getOffset(), range.getSize() );
 			glLogCall( context
 				, glUnmapBuffer
 				, GL_BUFFER_TARGET_COPY_WRITE );
@@ -278,8 +276,7 @@ namespace ashes::gl
 		{
 			binding.second->upload( context
 				, m_data
-				, offset
-				, size );
+				, range );
 		}
 
 		glLogCall( context
@@ -289,17 +286,9 @@ namespace ashes::gl
 	}
 
 	void DeviceMemory::download( ContextLock const & context
-		, VkDeviceSize offset
-		, VkDeviceSize size )const
+		, BindingRange const & range )const
 	{
 		assert( !m_data.empty() );
-
-		if ( size == WholeSize )
-		{
-			size = getSize();
-			offset = 0;
-		}
-
 		glLogCall( context
 			, glBindBuffer
 			, GL_BUFFER_TARGET_COPY_READ
@@ -307,13 +296,13 @@ namespace ashes::gl
 		auto result = glLogNonVoidCall( context
 			, glMapBufferRange
 			, GL_BUFFER_TARGET_COPY_READ
-			, GLintptr( offset )
-			, GLsizei( size )
+			, GLintptr( range.getOffset() )
+			, GLsizei( range.getSize() )
 			, GL_MEMORY_MAP_READ_BIT );
 
 		if ( result )
 		{
-			std::memcpy( m_data.data() + offset, result, size );
+			std::memcpy( m_data.data() + range.getOffset(), result, range.getSize() );
 			glLogCall( context
 				, glUnmapBuffer
 				, GL_BUFFER_TARGET_COPY_READ );
@@ -337,12 +326,11 @@ namespace ashes::gl
 			size = m_allocateInfo.allocationSize;
 		}
 
-		m_mappedOffset = offset;
-		m_mappedSize = size;;
+		m_mappedRange = { offset, size };
 
 		for ( auto & [key, binding] : m_bindings )
 		{
-			binding->map( offset, size );
+			binding->map( m_mappedRange );
 		}
 
 		*data = m_data.data() + offset;
@@ -354,15 +342,11 @@ namespace ashes::gl
 		, VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
-		if ( size == WholeSize )
-		{
-			offset = 0u;
-			size = m_allocateInfo.allocationSize;
-		}
+		BindingRange range{ offset, size, getSize() };
 
 		for ( auto & [key, binding] : m_bindings )
 		{
-			binding->flush( offset, size );
+			binding->flush( range );
 		}
 
 		m_dirty = false;
@@ -370,7 +354,7 @@ namespace ashes::gl
 
 		if ( size != 0 )
 		{
-			upload( context, offset, size );
+			upload( context, range.getOffset(), range.getSize() );
 		}
 
 		return VK_SUCCESS;
@@ -380,15 +364,11 @@ namespace ashes::gl
 		, VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
-		if ( size == WholeSize )
-		{
-			offset = 0u;
-			size = m_allocateInfo.allocationSize;
-		}
+		BindingRange range{ offset, size, getSize() };
 
 		for ( auto & [key, binding] : m_bindings )
 		{
-			binding->invalidate( offset, size );
+			binding->invalidate( range );
 		}
 
 		m_dirty = true;
@@ -396,7 +376,7 @@ namespace ashes::gl
 
 		if ( size != 0 )
 		{
-			download( context, offset, size );
+			download( context, range.getOffset(), range.getSize() );
 		}
 
 		return VK_SUCCESS;
@@ -411,13 +391,12 @@ namespace ashes::gl
 			dirty = binding->unmap() || dirty;
 		}
 
-		if ( m_mappedSize != 0 )
+		if ( m_mappedRange )
 		{
-			upload( context, m_mappedOffset, m_mappedSize );
+			upload( context, m_mappedRange.getOffset(), m_mappedRange.getSize() );
 		}
 
-		m_mappedOffset = 0ull;
-		m_mappedSize = 0ull;;
+		m_mappedRange = {};
 	}
 
 	//************************************************************************************************
