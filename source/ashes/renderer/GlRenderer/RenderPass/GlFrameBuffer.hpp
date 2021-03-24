@@ -41,8 +41,8 @@ namespace ashes::gl
 			, GLuint name );
 		~Framebuffer();
 
+		FboAttachment getAttachment( VkAttachmentReference const & reference )const;
 		std::vector< GlAttachmentPoint > getDrawBuffers( ArrayView < VkAttachmentReference const > const & attaches )const;
-		std::vector< GlAttachmentPoint > getDrawBuffers( ArrayView < VkAttachmentReference > const & attaches )const;
 
 		bool hasOnlySwapchainImage()const;
 		bool hasSwapchainImage()const;
@@ -126,11 +126,6 @@ namespace ashes::gl
 			return m_multisampled;
 		}
 
-		CmdList const & getBindAttaches()const
-		{
-			return m_bindAttaches;
-		}
-
 		VkRenderPass getRenderPass()const
 		{
 			return m_renderPass;
@@ -143,7 +138,6 @@ namespace ashes::gl
 
 	private:
 		void doInitialiseAttaches();
-		void doBindAttaches();
 		void doCreateFramebuffer();
 		void doInitialiseAttach( FboAttachment attach
 			, bool multisampled
@@ -164,7 +158,6 @@ namespace ashes::gl
 		Optional< FboAttachment > m_depthStencilAttach;
 		Optional< FboAttachment > m_depthStencilMsAttach;
 		mutable std::vector< GlAttachmentPoint > m_drawBuffers;
-		CmdList m_bindAttaches;
 		bool m_srgb{ false };
 		bool m_multisampled{ false };
 	};

@@ -61,83 +61,40 @@ namespace ashes::gl
 			, cmd.stencil );
 	}
 
-	GLbitfield clearAttaches( VkFramebuffer framebuffer
+	void clearAttach( FboAttachment attach
+		, uint32_t index
 		, VkRenderPass renderPass
 		, VkClearValueArray rtClearValues
 		, VkClearValue dsClearValue
 		, CmdList & list
-		, bool back )
+		, uint32_t & clearIndex )
 	{
-		uint32_t clearIndex = 0u;
-		auto & attaches = get( framebuffer )->getRenderableAttaches();
-		GLbitfield mask{ 0u };
-
-		for ( auto viewIndex = 0u; viewIndex < attaches.size(); ++viewIndex )
+		if ( auto attachDesc = get( renderPass )->findAttachment( index ) )
 		{
-			if ( auto attachDesc = get( renderPass )->findAttachment( viewIndex ) )
+			if ( attachDesc->loadOp == VK_ATTACHMENT_LOAD_OP_CLEAR )
 			{
-				if ( attachDesc->loadOp == VK_ATTACHMENT_LOAD_OP_CLEAR )
+				if ( getAspectMask( attachDesc->format ) == VK_IMAGE_ASPECT_COLOR_BIT )
 				{
-					if ( getAspectMask( attachDesc->format ) == VK_IMAGE_ASPECT_COLOR_BIT )
+					list.push_back( makeCmd< OpType::eClearColour >( rtClearValues[clearIndex].color, 0u ) );
+					++clearIndex;
+				}
+				else
+				{
+					if ( isDepthStencilFormat( attachDesc->format ) )
 					{
-						if ( back )
-						{
-							list.push_back( makeCmd< OpType::eClearBackColour >( rtClearValues[clearIndex].color
-								, clearIndex ) );
-						}
-						else
-						{
-							list.push_back( makeCmd< OpType::eClearColour >( rtClearValues[clearIndex].color
-								, clearIndex ) );
-						}
-						mask |= GL_COLOR_BUFFER_BIT;
-						++clearIndex;
+						list.push_back( makeCmd< OpType::eClearDepthStencil >( dsClearValue.depthStencil ) );
 					}
-					else
+					else if ( isDepthFormat( attachDesc->format ) )
 					{
-						if ( isDepthStencilFormat( attachDesc->format ) )
-						{
-							if ( back )
-							{
-								list.push_back( makeCmd< OpType::eClearBackDepthStencil >( dsClearValue.depthStencil.depth
-									, int32_t( dsClearValue.depthStencil.stencil ) ) );
-							}
-							else
-							{
-								list.push_back( makeCmd< OpType::eClearDepthStencil >( dsClearValue.depthStencil ) );
-							}
-							mask |= GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
-						}
-						else if ( isDepthFormat( attachDesc->format ) )
-						{
-							if ( back )
-							{
-								list.push_back( makeCmd< OpType::eClearBackDepth >( dsClearValue.depthStencil.depth ) );
-							}
-							else
-							{
-								list.push_back( makeCmd< OpType::eClearDepth >( dsClearValue.depthStencil.depth ) );
-							}
-							mask |= GL_DEPTH_BUFFER_BIT;
-						}
-						else if ( isStencilFormat( attachDesc->format ) )
-						{
-							if ( back )
-							{
-								list.push_back( makeCmd< OpType::eClearBackStencil >( int32_t( dsClearValue.depthStencil.stencil ) ) );
-							}
-							else
-							{
-								list.push_back( makeCmd< OpType::eClearStencil >( int32_t( dsClearValue.depthStencil.stencil ) ) );
-							}
-							mask |= GL_STENCIL_BUFFER_BIT;
-						}
+						list.push_back( makeCmd< OpType::eClearDepth >( dsClearValue.depthStencil.depth ) );
+					}
+					else if ( isStencilFormat( attachDesc->format ) )
+					{
+						list.push_back( makeCmd< OpType::eClearStencil >( int32_t( dsClearValue.depthStencil.stencil ) ) );
 					}
 				}
 			}
 		}
-
-		return mask;
 	}
 
 	void buildBeginRenderPassCommand( ContextStateStack & stack
@@ -159,15 +116,20 @@ namespace ashes::gl
 			for ( auto & reference : get( renderPass )->getFboAttachable() )
 			{
 				auto & attach = get( renderPass )->getAttachment( reference );
-				auto & clearValue = clearValues[reference.attachment];
 
-				if ( ashes::isDepthOrStencilFormat( attach.format ) )
+				if ( attach.loadOp == VK_ATTACHMENT_LOAD_OP_CLEAR
+					|| attach.stencilLoadOp == VK_ATTACHMENT_LOAD_OP_CLEAR )
 				{
-					dsClearValue = clearValue;
-				}
-				else
-				{
-					rtClearValues.push_back( clearValue );
+					auto & clearValue = clearValues[reference.attachment];
+
+					if ( ashes::isDepthOrStencilFormat( attach.format ) )
+					{
+						dsClearValue = clearValue;
+					}
+					else
+					{
+						rtClearValues.push_back( clearValue );
+					}
 				}
 			}
 		}
@@ -190,13 +152,18 @@ namespace ashes::gl
 		if ( get( frameBuffer )->getInternal() != GL_INVALID_INDEX )
 		{
 			assert( get( frameBuffer )->getInternal() );
-			list.insert( list.end()
-				, get( frameBuffer )->getBindAttaches().begin()
-				, get( frameBuffer )->getBindAttaches().end() );
-			auto references = makeArrayView( get( renderPass )->getFboAttachable().begin()
-				, get( renderPass )->getFboAttachable().end() );
-			list.push_back( makeCmd< OpType::eDrawBuffers >( get( frameBuffer )->getDrawBuffers( references ) ) );
-			clearAttaches( frameBuffer, renderPass, rtClearValues, dsClearValue, list, false );
+			uint32_t clearIndex = 0u;
+
+			for ( auto & reference : get( renderPass )->getFboAttachable() )
+			{
+				auto attach = get( frameBuffer )->getAttachment( reference );
+
+				if ( attach.point )
+				{
+					attach.bindDraw( stack, 0u, GL_FRAMEBUFFER, list );
+					clearAttach( attach, reference.attachment, renderPass, rtClearValues, dsClearValue, list, clearIndex );
+				}
+			}
 		}
 	}
 }
