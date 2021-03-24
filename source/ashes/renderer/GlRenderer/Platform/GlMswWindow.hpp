@@ -23,6 +23,17 @@ struct VkWin32PixelFormatDescriptorASH
 
 namespace ashes::gl
 {
+	namespace win
+	{
+		ATOM registerClass( HINSTANCE hInstance
+			, std::string const & name );
+		HWND createWindow( HINSTANCE hInstance
+			, ATOM classId
+			, std::string const & name
+			, DWORD dwFlags
+			, VkExtent2D const & extent );
+	}
+
 	class RenderWindow
 	{
 	public:
