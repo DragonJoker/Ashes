@@ -16,26 +16,23 @@ namespace ashes::gl
 		: m_parent{ parent }
 		, m_device{ device }
 		, m_boundTarget{ boundTarget }
-		, m_memoryOffset{ memoryOffset }
+		, m_range{ memoryOffset, requirements.size }
 		, m_requirements{ std::move( requirements ) }
 		, m_bound{ bound }
 		, m_boundName{ boundName }
 	{
 	}
 
-	void DeviceMemoryBinding::map( VkDeviceSize offset
-		, VkDeviceSize size )
+	void DeviceMemoryBinding::map( BindingRange const & range )
 	{
-		if ( size )
+		if ( range )
 		{
-			auto rngMin = std::max( offset, getOffset() );
-			auto rngMax = std::min( offset + size, getOffset() + getSize() );
-			m_mapped = rngMax > rngMin;
+			auto inter = m_range.intersect( range );
+			m_mapped = inter;
 
 			if ( m_mapped )
 			{
-				m_mappedMin = rngMin;
-				m_mappedMax = rngMax;
+				m_mappedRange = inter;
 				m_dirty = true;
 			}
 		}
@@ -43,22 +40,19 @@ namespace ashes::gl
 
 	bool DeviceMemoryBinding::unmap()
 	{
-		m_mappedMin = 0;
-		m_mappedMax = 0;
+		m_mappedRange = {};
 		m_mapped = false;
 		auto dirty = m_dirty;
 		m_dirty = false;
 		return dirty;
 	}
 
-	void DeviceMemoryBinding::flush( VkDeviceSize offset
-		, VkDeviceSize size )
+	void DeviceMemoryBinding::flush( BindingRange const & range )
 	{
-		if ( m_mapped && size )
+		if ( m_mapped && range )
 		{
-			auto rngMin = std::max( offset, getOffset() );
-			auto rngMax = std::min( offset + size, getOffset() + getSize() );
-			auto flushed = rngMax > rngMin;
+			auto inter = m_range.intersect( range );
+			auto flushed = inter;
 
 			if ( flushed )
 			{
@@ -67,14 +61,12 @@ namespace ashes::gl
 		}
 	}
 
-	void DeviceMemoryBinding::invalidate( VkDeviceSize offset
-		, VkDeviceSize size )
+	void DeviceMemoryBinding::invalidate( BindingRange const & range )
 	{
-		if ( m_mapped && size )
+		if ( m_mapped && range )
 		{
-			auto rngMin = std::max( offset, getOffset() );
-			auto rngMax = std::min( offset + size, getOffset() + getSize() );
-			auto invalidated = rngMax > rngMin;
+			auto inter = m_range.intersect( range );
+			auto invalidated = inter;
 
 			if ( invalidated )
 			{
@@ -85,8 +77,7 @@ namespace ashes::gl
 
 	void DeviceMemoryBinding::upload( ContextLock const & context
 		, ByteArray const & data
-		, VkDeviceSize offset
-		, VkDeviceSize size )const
+		, BindingRange const & range )const
 	{
 	}
 }

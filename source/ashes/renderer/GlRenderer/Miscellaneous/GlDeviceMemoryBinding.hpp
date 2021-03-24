@@ -10,6 +10,67 @@ See LICENSE file in root folder
 
 namespace ashes::gl
 {
+	struct BindingRange
+	{
+		BindingRange( VkDeviceSize offset = 0u
+			, VkDeviceSize size = 0u )
+			: m_offset{ offset }
+			, m_size{ size }
+		{
+		}
+
+		BindingRange( VkDeviceSize offset
+			, VkDeviceSize size
+			, VkDeviceSize maxSize )
+			: m_offset{ offset }
+			, m_size{ size }
+		{
+			if ( m_size == WholeSize )
+			{
+				m_size = maxSize;
+				m_offset = 0u;
+			}
+		}
+
+		BindingRange intersect( BindingRange const & range )const
+		{
+			auto rngMin = std::max( range.getMin(), getMin() );
+			auto rngMax = std::min( range.getMax(), getMax() );
+			return ( rngMax > rngMin
+				? BindingRange{ rngMin, rngMax - rngMin }
+				: BindingRange{ 0u, 0u } );
+		}
+
+		operator bool()const
+		{
+			return getMax() > getMin();
+		}
+
+		VkDeviceSize getOffset()const
+		{
+			return m_offset;
+		}
+
+		VkDeviceSize getSize()const
+		{
+			return m_offset + m_size;
+		}
+
+		VkDeviceSize getMin()const
+		{
+			return m_offset;
+		}
+
+		VkDeviceSize getMax()const
+		{
+			return m_offset + m_size;
+		}
+
+	private:
+		VkDeviceSize m_offset;
+		VkDeviceSize m_size;
+	};
+
 	class DeviceMemoryBinding
 	{
 	public:
@@ -22,18 +83,14 @@ namespace ashes::gl
 			, GLuint boundName );
 		virtual ~DeviceMemoryBinding() = default;
 
-		void map( VkDeviceSize offset
-			, VkDeviceSize size );
-		void flush( VkDeviceSize offset
-			, VkDeviceSize size );
-		void invalidate( VkDeviceSize offset
-			, VkDeviceSize size );
+		void map( BindingRange const & range );
+		void flush( BindingRange const & range );
+		void invalidate( BindingRange const & range );
 		bool unmap();
 
 		virtual void upload( ContextLock const & context
 			, ByteArray const & data
-			, VkDeviceSize offset
-			, VkDeviceSize size )const;
+			, BindingRange const & range )const;
 
 		GLuint getInternal()const
 		{
@@ -45,19 +102,19 @@ namespace ashes::gl
 			return m_bound;
 		}
 
-		VkDeviceSize getSize()const
-		{
-			return m_requirements.size;
-		}
-
 		VkDeviceSize getAlignment()const
 		{
 			return m_requirements.alignment;
 		}
 
+		VkDeviceSize getSize()const
+		{
+			return m_range.getSize();
+		}
+
 		VkDeviceSize getOffset()const
 		{
-			return m_memoryOffset;
+			return m_range.getOffset();
 		}
 
 		bool isMapped()const
@@ -74,13 +131,12 @@ namespace ashes::gl
 		VkDeviceMemory m_parent;
 		VkDevice m_device;
 		GLenum m_boundTarget;
-		VkDeviceSize m_memoryOffset;
+		BindingRange m_range;
 		VkMemoryRequirements m_requirements;
 		void * m_bound;
 		GLuint m_boundName;
 		bool m_mapped = false;
 		bool m_dirty = false;
-		VkDeviceSize m_mappedMin;
-		VkDeviceSize m_mappedMax;
+		BindingRange m_mappedRange;
 	};
 }

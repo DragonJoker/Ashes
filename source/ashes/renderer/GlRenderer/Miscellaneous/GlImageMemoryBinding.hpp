@@ -23,8 +23,7 @@ namespace ashes::gl
 		VkDeviceSize getArrayLayerSize()const;
 		void upload( ContextLock const & context
 			, ByteArray const & data
-			, VkDeviceSize offset
-			, VkDeviceSize size )const override;
+			, BindingRange const & range )const override;
 
 	private:
 		void setImage1D( ContextLock const & context );
@@ -37,8 +36,7 @@ namespace ashes::gl
 		void setImage2DMS( ContextLock const & context );
 		void setImage3DMS( ContextLock const & context
 			, uint32_t depth );
-		void setupUpdateRegions( VkDeviceSize offset
-			, VkDeviceSize size )const;
+		void setupUpdateRegions( BindingRange const & range )const;
 		void updateRegion( ContextLock const & context
 			, VkBufferImageCopy const & copyInfo )const;
 
