@@ -27,8 +27,6 @@ namespace ashes::gl
 
 		if ( get( pool )->getType() == VK_QUERY_TYPE_PIPELINE_STATISTICS )
 		{
-			assert( query == 0u );
-
 			for ( auto type : get( pool )->getTypes() )
 			{
 				list.push_back( makeCmd< OpType::eBeginQuery >( type
