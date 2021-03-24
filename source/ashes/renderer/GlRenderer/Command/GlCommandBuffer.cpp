@@ -1463,7 +1463,10 @@ namespace ashes::gl
 	{
 		if ( !currentLayout )
 		{
-			m_state.currentPushConstantsBuffer = doInitialisePcb( layout );
+			if ( layout )
+			{
+				m_state.currentPushConstantsBuffer = doInitialisePcb( layout );
+			}
 		}
 		else if ( currentLayout != layout )
 		{
