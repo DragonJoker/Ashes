@@ -2370,6 +2370,14 @@ namespace ashes::gl
 		const VkAllocationCallbacks * pAllocator,
 		VkDisplayModeKHR * pMode )
 	{
+		if ( !pCreateInfo
+			|| pCreateInfo->parameters.refreshRate == 0u
+			|| pCreateInfo->parameters.visibleRegion.width == 0u
+			|| pCreateInfo->parameters.visibleRegion.height == 0u )
+		{
+			return VK_ERROR_INITIALIZATION_FAILED;
+		}
+
 		return allocate( *pMode
 			, pAllocator
 			, display
