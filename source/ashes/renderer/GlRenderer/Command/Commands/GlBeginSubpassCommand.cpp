@@ -23,6 +23,17 @@ namespace ashes::gl
 		{
 			auto references = ashes::makeArrayView( subpass.pColorAttachments
 				, subpass.colorAttachmentCount );
+
+			for ( auto & reference : references )
+			{
+				auto attach = get( frameBuffer )->getAttachment( reference );
+
+				if ( attach.point )
+				{
+					attach.bind( 0u, GL_FRAMEBUFFER, list );
+				}
+			}
+
 			list.push_back( makeCmd< OpType::eDrawBuffers >( get( frameBuffer )->getDrawBuffers( references ) ) );
 		}
 
