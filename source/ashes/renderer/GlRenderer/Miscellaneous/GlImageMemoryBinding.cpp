@@ -175,10 +175,21 @@ namespace ashes::gl
 
 	void ImageMemoryBinding::upload( ContextLock const & context
 		, ByteArray const & data
-		, VkDeviceSize offset
-		, VkDeviceSize size )const
+		, BindingRange const & range )const
 	{
-		setupUpdateRegions( offset, size );
+		if ( !range )
+		{
+			return;
+		}
+
+		auto inter = m_range.intersect( range );
+
+		if ( !inter )
+		{
+			return;
+		}
+
+		setupUpdateRegions( inter );
 		glLogCall( context
 			, glPixelStorei
 			, GL_UNPACK_ALIGNMENT
@@ -503,13 +514,14 @@ namespace ashes::gl
 		}
 	}
 
-	void ImageMemoryBinding::setupUpdateRegions( VkDeviceSize offset
-		, VkDeviceSize size )const
+	void ImageMemoryBinding::setupUpdateRegions( BindingRange const & range )const
 	{
 		assert( !m_updateRegions.empty() && "Can't update this texture." );
 		auto layerSize = ashes::getSize( m_updateRegions[0].imageExtent
 			, m_texture->getFormatVk() );
 		m_beginRegion = 0u;
+		auto offset = range.getOffset();
+		auto size = range.getSize();
 
 		while ( offset >= layerSize )
 		{
@@ -557,7 +569,7 @@ namespace ashes::gl
 					, copyInfo.imageExtent.width
 					, m_texture->getInternalFormat()
 					, GLsizei( layerSize )
-					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
+					, getBufferOffset( getOffset() + copyInfo.bufferOffset ) );
 				break;
 
 			case GL_TEXTURE_2D:
@@ -571,7 +583,7 @@ namespace ashes::gl
 					, copyInfo.imageExtent.height
 					, m_texture->getInternalFormat()
 					, GLsizei( layerSize )
-					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
+					, getBufferOffset( getOffset() + copyInfo.bufferOffset ) );
 				break;
 
 			case GL_TEXTURE_3D:
@@ -587,7 +599,7 @@ namespace ashes::gl
 					, copyInfo.imageExtent.depth
 					, m_texture->getInternalFormat()
 					, GLsizei( layerSize )
-					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
+					, getBufferOffset( getOffset() + copyInfo.bufferOffset ) );
 
 			case GL_TEXTURE_1D_ARRAY:
 				glLogCall( context
@@ -600,7 +612,7 @@ namespace ashes::gl
 					, copyInfo.imageSubresource.layerCount
 					, m_texture->getInternalFormat()
 					, GLsizei( layerSize )
-					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
+					, getBufferOffset( getOffset() + copyInfo.bufferOffset ) );
 				break;
 
 			case GL_TEXTURE_2D_ARRAY:
@@ -616,7 +628,7 @@ namespace ashes::gl
 					, copyInfo.imageSubresource.layerCount
 					, m_texture->getInternalFormat()
 					, GLsizei( layerSize )
-					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
+					, getBufferOffset( getOffset() + copyInfo.bufferOffset ) );
 				break;
 
 			default:
@@ -637,7 +649,7 @@ namespace ashes::gl
 					, copyInfo.imageExtent.width
 					, m_texture->getUnpackFormat()
 					, m_texture->getUnpackType()
-					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
+					, getBufferOffset( getOffset() + copyInfo.bufferOffset ) );
 				break;
 
 			case GL_TEXTURE_2D:
@@ -651,7 +663,7 @@ namespace ashes::gl
 					, copyInfo.imageExtent.height
 					, m_texture->getUnpackFormat()
 					, m_texture->getUnpackType()
-					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
+					, getBufferOffset( getOffset() + copyInfo.bufferOffset ) );
 				break;
 
 			case GL_TEXTURE_3D:
@@ -667,7 +679,7 @@ namespace ashes::gl
 					, copyInfo.imageExtent.depth
 					, m_texture->getUnpackFormat()
 					, m_texture->getUnpackType()
-					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
+					, getBufferOffset( getOffset() + copyInfo.bufferOffset ) );
 				break;
 
 			case GL_TEXTURE_1D_ARRAY:
@@ -681,7 +693,7 @@ namespace ashes::gl
 					, copyInfo.imageSubresource.layerCount
 					, m_texture->getUnpackFormat()
 					, m_texture->getUnpackType()
-					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
+					, getBufferOffset( getOffset() + copyInfo.bufferOffset ) );
 				break;
 
 			case GL_TEXTURE_2D_ARRAY:
@@ -697,7 +709,7 @@ namespace ashes::gl
 					, copyInfo.imageSubresource.layerCount
 					, m_texture->getUnpackFormat()
 					, m_texture->getUnpackType()
-					, getBufferOffset( m_memoryOffset + copyInfo.bufferOffset ) );
+					, getBufferOffset( getOffset() + copyInfo.bufferOffset ) );
 				break;
 
 			default:
