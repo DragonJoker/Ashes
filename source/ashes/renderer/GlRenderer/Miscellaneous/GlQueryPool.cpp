@@ -18,7 +18,9 @@ namespace ashes::gl
 		, m_names( size_t( m_queryCount ), GLuint( GL_INVALID_INDEX ) )
 	{
 		assert( m_queryType != VK_QUERY_TYPE_PIPELINE_STATISTICS
-			|| m_queryCount == m_pipelineStatistics.size() );
+			|| m_queryCount == m_pipelineStatistics.size()
+			|| m_pipelineStatistics.size() == 1u
+			|| ( m_queryCount % m_pipelineStatistics.size() ) == 0u );
 		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glGenQueries
