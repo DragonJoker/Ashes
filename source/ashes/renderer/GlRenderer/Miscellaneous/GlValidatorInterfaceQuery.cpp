@@ -601,23 +601,39 @@ namespace ashes::gl::gl4
 			{
 				auto glslType = GlslAttributeType( values[0] );
 				auto location = uint32_t( values[2] );
+				uint32_t locOffset = 0u;
 
 				switch ( glslType )
 				{
+				case GLSL_ATTRIBUTE_FLOAT_MAT4x2:
+					findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC2, location + locOffset++ );
+					[[fallthrough]];
+				case GLSL_ATTRIBUTE_FLOAT_MAT3x2:
+					findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC2, location + locOffset++ );
+					[[fallthrough]];
 				case GLSL_ATTRIBUTE_FLOAT_MAT2:
-					findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC2, location + 0u );
-					findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC2, location + 1u );
+					findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC2, location + locOffset++ );
+					findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC2, location + locOffset++ );
 					break;
+				case GLSL_ATTRIBUTE_FLOAT_MAT4x3:
+					findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC3, location + locOffset++ );
+					[[fallthrough]];
 				case GLSL_ATTRIBUTE_FLOAT_MAT3:
-					findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC3, location + 0u );
-					findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC3, location + 1u );
-					findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC3, location + 2u );
+					findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC3, location + locOffset++ );
+					[[fallthrough]];
+				case GLSL_ATTRIBUTE_FLOAT_MAT2x3:
+					findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC3, location + locOffset++ );
+					findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC3, location + locOffset++ );
 					break;
 				case GLSL_ATTRIBUTE_FLOAT_MAT4:
-					findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC4, location + 0u );
-					findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC4, location + 1u );
-					findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC4, location + 2u );
-					findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC4, location + 3u );
+					findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC4, location + locOffset++ );
+					[[fallthrough]];
+				case GLSL_ATTRIBUTE_FLOAT_MAT3x4:
+					findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC4, location + locOffset++ );
+					[[fallthrough]];
+				case GLSL_ATTRIBUTE_FLOAT_MAT2x4:
+					findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC4, location + locOffset++ );
+					findAttribute( name, GLSL_ATTRIBUTE_FLOAT_VEC4, location + locOffset++ );
 					break;
 				default:
 					findAttribute( name, glslType, location );
@@ -832,29 +848,48 @@ namespace ashes::gl::gl4
 				auto glslType = GlslAttributeType( values[0] );
 				auto location = uint32_t( values[2] );
 				auto offset = 0u;
+				auto locOffset = 0u;
 
 				switch ( glslType )
 				{
-				case GLSL_ATTRIBUTE_FLOAT_MAT2:
-					result.vertexAttributeDescriptions.push_back( { location + 0u, 0u, VK_FORMAT_R32G32_SFLOAT, offset } );
+				case GLSL_ATTRIBUTE_FLOAT_MAT4x2:
+					result.vertexAttributeDescriptions.push_back( { location + locOffset++, 0u, VK_FORMAT_R32G32_SFLOAT, offset } );
 					offset += 2 * sizeof( float );
-					result.vertexAttributeDescriptions.push_back( { location + 1u, 0u, VK_FORMAT_R32G32_SFLOAT, offset } );
+					[[fallthrough]];
+				case GLSL_ATTRIBUTE_FLOAT_MAT3x2:
+					result.vertexAttributeDescriptions.push_back( { location + locOffset++, 0u, VK_FORMAT_R32G32_SFLOAT, offset } );
+					offset += 2 * sizeof( float );
+					[[fallthrough]];
+				case GLSL_ATTRIBUTE_FLOAT_MAT2:
+					result.vertexAttributeDescriptions.push_back( { location + locOffset++, 0u, VK_FORMAT_R32G32_SFLOAT, offset } );
+					offset += 2 * sizeof( float );
+					result.vertexAttributeDescriptions.push_back( { location + locOffset++, 0u, VK_FORMAT_R32G32_SFLOAT, offset } );
 					break;
+				case GLSL_ATTRIBUTE_FLOAT_MAT4x3:
+					result.vertexAttributeDescriptions.push_back( { location + locOffset++, 0u, VK_FORMAT_R32G32B32_SFLOAT, offset } );
+					offset += 3 * sizeof( float );
+					[[fallthrough]];
 				case GLSL_ATTRIBUTE_FLOAT_MAT3:
-					result.vertexAttributeDescriptions.push_back( { location + 0u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offset } );
+					result.vertexAttributeDescriptions.push_back( { location + locOffset++, 0u, VK_FORMAT_R32G32B32_SFLOAT, offset } );
 					offset += 3 * sizeof( float );
-					result.vertexAttributeDescriptions.push_back( { location + 1u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offset } );
+					[[fallthrough]];
+				case GLSL_ATTRIBUTE_FLOAT_MAT2x3:
+					result.vertexAttributeDescriptions.push_back( { location + locOffset++, 0u, VK_FORMAT_R32G32B32_SFLOAT, offset } );
 					offset += 3 * sizeof( float );
-					result.vertexAttributeDescriptions.push_back( { location + 2u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offset } );
+					result.vertexAttributeDescriptions.push_back( { location + locOffset++, 0u, VK_FORMAT_R32G32B32_SFLOAT, offset } );
 					break;
 				case GLSL_ATTRIBUTE_FLOAT_MAT4:
-					result.vertexAttributeDescriptions.push_back( { location + 0u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offset } );
+					result.vertexAttributeDescriptions.push_back( { location + locOffset++, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offset } );
 					offset += 4 * sizeof( float );
-					result.vertexAttributeDescriptions.push_back( { location + 1u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offset } );
+					[[fallthrough]];
+				case GLSL_ATTRIBUTE_FLOAT_MAT3x4:
+					result.vertexAttributeDescriptions.push_back( { location + locOffset++, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offset } );
 					offset += 4 * sizeof( float );
-					result.vertexAttributeDescriptions.push_back( { location + 2u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offset } );
+					[[fallthrough]];
+				case GLSL_ATTRIBUTE_FLOAT_MAT2x4:
+					result.vertexAttributeDescriptions.push_back( { location + locOffset++, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offset } );
 					offset += 4 * sizeof( float );
-					result.vertexAttributeDescriptions.push_back( { location + 2u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offset } );
+					result.vertexAttributeDescriptions.push_back( { location + locOffset++, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offset } );
 					break;
 				default:
 					result.vertexAttributeDescriptions.push_back( { location + 0u, 0u, getAttributeFormat( glslType ), offset } );
