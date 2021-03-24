@@ -43,16 +43,10 @@ namespace ashes::gl
 		, VkFormat vkformat
 		, GlComponentMapping swizzle )
 		: internal{ getInternalFormat( vkformat ) }
+		, unpackFormat{ getFormat( vkformat ) }
+		, unpackType{ getType( vkformat ) }
 		, swizzle{ std::move( swizzle ) }
 	{
-		getFormatAndType( context
-			, target
-			, vkformat
-			, internal
-			, GL_FORMAT_PROPERTY_TEXTURE_IMAGE_FORMAT
-			, GL_FORMAT_PROPERTY_TEXTURE_IMAGE_TYPE
-			, unpackFormat
-			, unpackType );
 		getFormatAndType( context
 			, target
 			, vkformat
