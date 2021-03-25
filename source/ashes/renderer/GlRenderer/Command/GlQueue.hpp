@@ -42,8 +42,7 @@ namespace ashes::gl
 
 	private:
 		void submit( ContextLock & context
-			, VkSubmitInfo const & value
-			, VkFence fence )const;
+			, VkSubmitInfo const & value )const;
 
 	private:
 		VkDevice m_device;

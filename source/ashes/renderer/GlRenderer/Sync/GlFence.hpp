@@ -17,9 +17,12 @@ namespace ashes::gl
 			, VkFenceCreateFlags flags = 0 );
 		~Fence();
 
+		void insert( ContextLock & context );
 		VkResult wait( ContextLock & context
-			, uint64_t timeout )const;
-		VkResult wait( uint64_t timeout )const;
+			, uint64_t timeout
+			, bool forceWait )const;
+		VkResult wait( uint64_t timeout
+			, bool forceWait )const;
 		void reset( ContextLock & context )const;
 		VkResult getStatus( ContextLock & context )const;
 		void reset()const;
@@ -33,9 +36,6 @@ namespace ashes::gl
 		{
 			return m_device;
 		}
-
-	private:
-		void doCheckCreate( ContextLock & context )const;
 
 	private:
 		mutable GLsync m_fence{ nullptr };
