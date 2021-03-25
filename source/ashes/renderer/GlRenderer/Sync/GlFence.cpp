@@ -28,12 +28,10 @@ namespace ashes::gl
 		}
 	}
 
-	void Fence::doCheckCreate( ContextLock & context )const
+	void Fence::insert( ContextLock & context )
 	{
 		if ( !m_fence )
 		{
-			// Since the fence is not only created but also inserted in the command stream,
-			// we must create it on the fly.
 			m_fence = glLogNonVoidCall( context
 				, glFenceSync
 				, GL_WAIT_FLAG_SYNC_GPU_COMMANDS_COMPLETE
@@ -42,9 +40,19 @@ namespace ashes::gl
 	}
 
 	VkResult Fence::wait( ContextLock & context
-		, uint64_t timeout )const
+		, uint64_t timeout
+		, bool forceWait )const
 	{
-		doCheckCreate( context );
+		if ( !m_fence )
+		{
+			if ( forceWait )
+			{
+				std::this_thread::sleep_for( std::chrono::milliseconds( timeout ) );
+			}
+
+			return VK_TIMEOUT;
+		}
+
 		glLogEmptyCall( context
 			, glFlush );
 		auto res = glLogNonVoidCall( context
@@ -59,10 +67,11 @@ namespace ashes::gl
 				: VK_NOT_READY );
 	}
 
-	VkResult Fence::wait( uint64_t timeout )const
+	VkResult Fence::wait( uint64_t timeout
+		, bool forceWait )const
 	{
 		auto context = get( m_device )->getContext();
-		return wait( context, timeout );
+		return wait( context, timeout, forceWait );
 	}
 
 	void Fence::reset( ContextLock & context )const
@@ -75,9 +84,13 @@ namespace ashes::gl
 
 	VkResult Fence::getStatus( ContextLock & context )const
 	{
+		if ( !m_fence )
+		{
+			return VK_NOT_READY;
+		}
+
 		GLint value;
 		GLsizei size;
-		assert( m_fence );
 		glLogCall( context
 			, glGetSynciv
 			, m_fence

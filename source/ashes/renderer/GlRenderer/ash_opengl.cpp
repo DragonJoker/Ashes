@@ -495,12 +495,32 @@ namespace ashes::gl
 	{
 		auto context = get( device )->getContext();
 
-		for ( uint32_t i = 0u; i < fenceCount; ++i )
+		if ( waitAll )
 		{
-			get( *pFences )->wait( context, timeout );
+			VkResult result = VK_SUCCESS;
+
+			for ( uint32_t i = 0u; i < fenceCount; ++i )
+			{
+				result = std::max( result
+					, get( *pFences )->wait( context, timeout, true ) );
+				++pFences;
+			}
+
+			return result;
 		}
 
-		return VK_SUCCESS;
+		VkResult result = fenceCount
+			? VK_TIMEOUT
+			: VK_SUCCESS;
+
+		for ( uint32_t i = 0u; i < fenceCount; ++i )
+		{
+			result = std::min( result
+				, get( *pFences )->wait( context, timeout, false ) );
+			++pFences;
+		}
+
+		return result;
 	}
 
 	VkResult VKAPI_CALL vkCreateSemaphore(
