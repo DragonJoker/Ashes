@@ -504,7 +504,12 @@ namespace ashes::gl
 
 		for ( auto & value : values )
 		{
-			submit( context, value, fence );
+			submit( context, value );
+		}
+
+		if ( fence )
+		{
+			get( fence )->insert( context );
 		}
 
 		return VK_SUCCESS;
@@ -554,8 +559,7 @@ namespace ashes::gl
 	}
 
 	void Queue::submit( ContextLock & context
-		, VkSubmitInfo const & value
-		, VkFence fence )const
+		, VkSubmitInfo const & value )const
 	{
 		for ( auto it = value.pCommandBuffers; it != value.pCommandBuffers + value.commandBufferCount; ++it )
 		{
