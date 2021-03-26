@@ -19,6 +19,7 @@ See LICENSE file in root folder.
 #endif
 
 #include <algorithm>
+#include <cmath>
 #include <cstring>
 #include <iterator>
 #include <stdexcept>
