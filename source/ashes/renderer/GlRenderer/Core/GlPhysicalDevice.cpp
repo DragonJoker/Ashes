@@ -1053,7 +1053,7 @@ namespace ashes::gl
 		m_properties.limits.viewportBoundsRange[1] = 2.0f * std::max( m_properties.limits.maxViewportDimensions[0], m_properties.limits.maxViewportDimensions[1] );
 		m_properties.limits.viewportSubPixelBits = m_properties.limits.subPixelPrecisionBits;
 		m_properties.limits.minMemoryMapAlignment = 64u;
-		m_properties.limits.minTexelBufferOffsetAlignment = DefaultAlign< VkDeviceSize >;
+		context.getValue( GL_VALUE_NAME_TEXTURE_BUFFER_OFFSET_ALIGNMENT, m_properties.limits.minTexelBufferOffsetAlignment );
 		context.getValue( GL_VALUE_NAME_UNIFORM_BUFFER_OFFSET_ALIGNMENT, m_properties.limits.minUniformBufferOffsetAlignment );
 		m_properties.limits.minStorageBufferOffsetAlignment = 1u;
 		context.getValue( GL_VALUE_NAME_MIN_PROGRAM_TEXEL_OFFSET, m_properties.limits.minTexelOffset );
