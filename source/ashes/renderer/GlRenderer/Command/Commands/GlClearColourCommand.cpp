@@ -13,14 +13,38 @@ See LICENSE file in root folder.
 namespace ashes::gl
 {
 	void apply( ContextLock const & context
-		, CmdClearTexColor const & cmd )
+		, CmdClearTexColorF const & cmd )
 	{
 		glLogCall( context
 			, glClearTexImage
 			, cmd.name
 			, cmd.mipLevel
-			, GL_FORMAT_RGBA
+			, cmd.format
 			, GL_TYPE_F32
+			, cmd.color.data() );
+	}
+	
+	void apply( ContextLock const & context
+		, CmdClearTexColorSI const & cmd )
+	{
+		glLogCall( context
+			, glClearTexImage
+			, cmd.name
+			, cmd.mipLevel
+			, cmd.format
+			, GL_TYPE_I32
+			, cmd.color.data() );
+	}
+	
+	void apply( ContextLock const & context
+		, CmdClearTexColorUI const & cmd )
+	{
+		glLogCall( context
+			, glClearTexImage
+			, cmd.name
+			, cmd.mipLevel
+			, cmd.format
+			, GL_TYPE_UI32
 			, cmd.color.data() );
 	}
 
@@ -68,9 +92,27 @@ namespace ashes::gl
 					level < range.baseMipLevel + range.levelCount;
 					++level )
 				{
-					list.push_back( makeCmd< OpType::eClearTexColor >( get( image )->getInternal()
-						, level
-						, value.float32 ) );
+					if ( isUIntFormat( get( image )->getFormatVk() ) )
+					{
+						list.push_back( makeCmd< OpType::eClearTexColorUI >( get( image )->getInternal()
+							, level
+							, get( image )->getUnpackFormat()
+							, value.uint32 ) );
+					}
+					else if ( isSIntFormat( get( image )->getFormatVk() ) )
+					{
+						list.push_back( makeCmd< OpType::eClearTexColorSI >( get( image )->getInternal()
+							, level
+							, get( image )->getUnpackFormat()
+							, value.int32 ) );
+					}
+					else
+					{
+						list.push_back( makeCmd< OpType::eClearTexColorF >( get( image )->getInternal()
+							, level
+							, get( image )->getUnpackFormat()
+							, value.float32 ) );
+					}
 				}
 			}
 		}

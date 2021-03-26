@@ -148,8 +148,14 @@ namespace ashes::gl
 			case OpType::eClearStencil:
 				apply( lock, map< OpType::eClearStencil >( cmd ) );
 				break;
-			case OpType::eClearTexColor:
-				apply( lock, map< OpType::eClearTexColor >( cmd ) );
+			case OpType::eClearTexColorF:
+				apply( lock, map< OpType::eClearTexColorF >( cmd ) );
+				break;
+			case OpType::eClearTexColorSI:
+				apply( lock, map< OpType::eClearTexColorSI >( cmd ) );
+				break;
+			case OpType::eClearTexColorUI:
+				apply( lock, map< OpType::eClearTexColorUI >( cmd ) );
 				break;
 			case OpType::eClearTexDepth:
 				apply( lock, map< OpType::eClearTexDepth >( cmd ) );
