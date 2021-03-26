@@ -494,7 +494,7 @@ namespace ashes::gl
 			doReworkBindings( device, module, "CombinedSamplerImage", compiler, resources.sampled_images, bindings.tex, failOnError, &bindings.tbo );
 			doReworkBindings( device, module, "SampledImage", compiler, resources.separate_images, bindings.tex, failOnError, &bindings.tbo );
 			doReworkBindings( device, module, "Sampler", compiler, resources.separate_samplers, bindings.tex, failOnError );
-			doReworkBindings( device, module, "StorageImage", compiler, resources.storage_images, bindings.img, failOnError );
+			doReworkBindings( device, module, "StorageImage", compiler, resources.storage_images, bindings.img, failOnError, &bindings.ibo );
 			doReworkBindings( device, module, "SubpassInput", compiler, resources.subpass_inputs, bindings.tex, failOnError );
 		}
 
