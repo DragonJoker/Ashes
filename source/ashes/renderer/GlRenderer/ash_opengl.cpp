@@ -724,9 +724,7 @@ namespace ashes::gl
 			return VK_ERROR_FORMAT_NOT_SUPPORTED;
 		}
 
-		return allocate( *pView
-			, pAllocator
-			, device
+		return get( pCreateInfo->image )->createView( *pView
 			, *pCreateInfo );
 	}
 
@@ -735,7 +733,7 @@ namespace ashes::gl
 		VkImageView imageView,
 		const VkAllocationCallbacks* pAllocator )
 	{
-		deallocate( imageView, pAllocator );
+		return get( get( imageView )->getImage() )->destroyView( imageView );
 	}
 
 	VkResult VKAPI_CALL vkCreateShaderModule(

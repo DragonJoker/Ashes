@@ -5,7 +5,6 @@
     <DisplayString>locked={m_enabled}</DisplayString>
     <Expand>
       <Item Name="instance">m_instance</Item>
-      <Item Name="extent">m_extent</Item>
       <Item Name="mutex">m_mutex</Item>
       <Item Name="enable">m_enabled</Item>
       <Item Name="thread">m_activeThread</Item>

@@ -221,7 +221,7 @@ namespace ashes::gl
 	{
 		while ( !m_views.empty() )
 		{
-			doDestroyView( m_views.begin()->second );
+			destroyView( m_views.begin()->second );
 		}
 
 		if ( m_binding )
@@ -236,19 +236,37 @@ namespace ashes::gl
 			, &m_internal );
 	}
 
-	VkImageView Image::createView( VkImageViewCreateInfo const & createInfo )
+	VkResult Image::createView( VkImageView & imageView
+		, VkImageViewCreateInfo const & createInfo )
 	{
+		VkResult result = VK_SUCCESS;
 		auto pair = m_views.emplace( createInfo, VkImageView{} );
 
 		if ( pair.second )
 		{
-			allocate( pair.first->second
+			result = allocate( pair.first->second
 				, m_allocInfo
 				, getDevice()
 				, createInfo );
 		}
 
-		return pair.first->second;
+		imageView = pair.first->second;
+		return result;
+	}
+
+	VkImageView Image::createView( VkImageViewCreateInfo const & createInfo )
+	{
+		VkImageView imageView{};
+		createView( imageView, createInfo );
+		return imageView;
+	}
+
+	void Image::destroyView( VkImageView view )
+	{
+		auto it = m_views.find( get( view )->getCreateInfo() );
+		assert( it != m_views.end() );
+		deallocate( it->second, m_allocInfo );
+		m_views.erase( it );
 	}
 
 	VkMemoryRequirements Image::getMemoryRequirements()const
@@ -270,13 +288,5 @@ namespace ashes::gl
 		m_memoryRequirements.memoryTypeBits = physicalDevice->getMemoryTypeBits( VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
 			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT );
 		m_memoryRequirements.size = ashes::getAlignedSize( m_memoryRequirements.size, m_memoryRequirements.alignment );
-	}
-
-	void Image::doDestroyView( VkImageView view )
-	{
-		auto it = m_views.find( get( view )->getCreateInfo() );
-		assert( it != m_views.end() );
-		deallocate( it->second, m_allocInfo );
-		m_views.erase( it );
 	}
 }
