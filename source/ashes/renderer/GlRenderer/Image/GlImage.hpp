@@ -32,6 +32,9 @@ namespace ashes::gl
 		~Image();
 
 		VkImageView createView( VkImageViewCreateInfo const & info );
+		VkResult createView( VkImageView & imageView
+			, VkImageViewCreateInfo const & info );
+		void destroyView( VkImageView view );
 		VkMemoryRequirements getMemoryRequirements()const;
 		std::vector< VkSparseImageMemoryRequirements > getSparseImageMemoryRequirements()const;
 
@@ -149,7 +152,6 @@ namespace ashes::gl
 
 	private:
 		void doInitialiseMemoryRequirements();
-		void doDestroyView( VkImageView view );
 
 	private:
 		VkAllocationCallbacks const * m_allocInfo;
