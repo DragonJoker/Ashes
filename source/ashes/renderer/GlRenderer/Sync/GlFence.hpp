@@ -40,5 +40,6 @@ namespace ashes::gl
 	private:
 		mutable GLsync m_fence{ nullptr };
 		VkDevice m_device;
+		bool m_firstUse{ true };
 	};
 }
