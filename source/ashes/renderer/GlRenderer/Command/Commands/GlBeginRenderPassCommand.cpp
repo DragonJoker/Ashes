@@ -62,36 +62,35 @@ namespace ashes::gl
 	}
 
 	void clearAttach( FboAttachment attach
-		, uint32_t index
+		, VkAttachmentReference const & reference
 		, VkRenderPass renderPass
 		, VkClearValueArray rtClearValues
 		, VkClearValue dsClearValue
 		, CmdList & list
 		, uint32_t & clearIndex )
 	{
-		if ( auto attachDesc = get( renderPass )->findAttachment( index ) )
+		auto & attachDesc = get( renderPass )->getAttachment( reference );
+
+		if ( attachDesc.loadOp == VK_ATTACHMENT_LOAD_OP_CLEAR )
 		{
-			if ( attachDesc->loadOp == VK_ATTACHMENT_LOAD_OP_CLEAR )
+			if ( getAspectMask( attachDesc.format ) == VK_IMAGE_ASPECT_COLOR_BIT )
 			{
-				if ( getAspectMask( attachDesc->format ) == VK_IMAGE_ASPECT_COLOR_BIT )
+				list.push_back( makeCmd< OpType::eClearColour >( rtClearValues[clearIndex].color, 0u ) );
+				++clearIndex;
+			}
+			else
+			{
+				if ( isDepthStencilFormat( attachDesc.format ) )
 				{
-					list.push_back( makeCmd< OpType::eClearColour >( rtClearValues[clearIndex].color, 0u ) );
-					++clearIndex;
+					list.push_back( makeCmd< OpType::eClearDepthStencil >( dsClearValue.depthStencil ) );
 				}
-				else
+				else if ( isDepthFormat( attachDesc.format ) )
 				{
-					if ( isDepthStencilFormat( attachDesc->format ) )
-					{
-						list.push_back( makeCmd< OpType::eClearDepthStencil >( dsClearValue.depthStencil ) );
-					}
-					else if ( isDepthFormat( attachDesc->format ) )
-					{
-						list.push_back( makeCmd< OpType::eClearDepth >( dsClearValue.depthStencil.depth ) );
-					}
-					else if ( isStencilFormat( attachDesc->format ) )
-					{
-						list.push_back( makeCmd< OpType::eClearStencil >( int32_t( dsClearValue.depthStencil.stencil ) ) );
-					}
+					list.push_back( makeCmd< OpType::eClearDepth >( dsClearValue.depthStencil.depth ) );
+				}
+				else if ( isStencilFormat( attachDesc.format ) )
+				{
+					list.push_back( makeCmd< OpType::eClearStencil >( int32_t( dsClearValue.depthStencil.stencil ) ) );
 				}
 			}
 		}
@@ -161,7 +160,7 @@ namespace ashes::gl
 				if ( attach.point )
 				{
 					attach.bindDraw( stack, 0u, GL_FRAMEBUFFER, list );
-					clearAttach( attach, reference.attachment, renderPass, rtClearValues, dsClearValue, list, clearIndex );
+					clearAttach( attach, reference, renderPass, rtClearValues, dsClearValue, list, clearIndex );
 				}
 			}
 		}
