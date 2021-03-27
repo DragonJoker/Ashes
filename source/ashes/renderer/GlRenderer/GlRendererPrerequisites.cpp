@@ -94,10 +94,18 @@ namespace ashes::gl
 		, GlFrameBufferTarget fboTarget
 		, CmdList & list )const
 	{
+		bindIndex( mipLevel, fboTarget, 0u, list );
+	}
+
+	void FboAttachment::bindIndex( uint32_t mipLevel
+		, GlFrameBufferTarget fboTarget
+		, uint32_t index
+		, CmdList & list )const
+	{
 		if ( target == GL_TEXTURE_1D )
 		{
 			list.push_back( makeCmd< OpType::eFramebufferTexture1D >( fboTarget
-				, point
+				, GlAttachmentPoint( point + index )
 				, target
 				, object
 				, mipLevel ) );
@@ -106,7 +114,7 @@ namespace ashes::gl
 			|| target == GL_TEXTURE_2D_MULTISAMPLE )
 		{
 			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( fboTarget
-				, point
+				, GlAttachmentPoint( point + index )
 				, target
 				, object
 				, mipLevel ) );
@@ -114,7 +122,7 @@ namespace ashes::gl
 		else
 		{
 			list.push_back( makeCmd< OpType::eFramebufferTexture >( fboTarget
-				, point
+				, GlAttachmentPoint( point + index )
 				, object
 				, mipLevel ) );
 		}
@@ -143,10 +151,19 @@ namespace ashes::gl
 		, GlFrameBufferTarget fboTarget
 		, CmdList & list )const
 	{
+		bindIndex( mipLevel, layer, fboTarget, 0u, list );
+	}
+
+	void FboAttachment::bindIndex( uint32_t mipLevel
+		, uint32_t layer
+		, GlFrameBufferTarget fboTarget
+		, uint32_t index
+		, CmdList & list )const
+	{
 		if ( target == GL_TEXTURE_1D )
 		{
 			list.push_back( makeCmd< OpType::eFramebufferTexture1D >( fboTarget
-				, point
+				, GlAttachmentPoint( point + index )
 				, target
 				, object
 				, mipLevel ) );
@@ -155,7 +172,7 @@ namespace ashes::gl
 			|| target == GL_TEXTURE_2D_MULTISAMPLE )
 		{
 			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( fboTarget
-				, point
+				, GlAttachmentPoint( point + index )
 				, target
 				, object
 				, mipLevel ) );
@@ -163,7 +180,7 @@ namespace ashes::gl
 		else if ( target == GL_TEXTURE_3D )
 		{
 			list.push_back( makeCmd< OpType::eFramebufferTexture3D >( fboTarget
-				, point
+				, GlAttachmentPoint( point + index )
 				, target
 				, object
 				, mipLevel
@@ -176,7 +193,7 @@ namespace ashes::gl
 			|| target == GL_TEXTURE_CUBE_ARRAY )
 		{
 			list.push_back( makeCmd< OpType::eFramebufferTextureLayer >( fboTarget
-				, point
+				, GlAttachmentPoint( point + index )
 				, object
 				, mipLevel
 				, layer ) );
@@ -184,7 +201,7 @@ namespace ashes::gl
 		else
 		{
 			list.push_back( makeCmd< OpType::eFramebufferTexture >( fboTarget
-				, point
+				, GlAttachmentPoint( point + index )
 				, object
 				, mipLevel ) );
 		}
