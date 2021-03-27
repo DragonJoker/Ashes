@@ -61,7 +61,7 @@ namespace ashes::gl
 						list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_READ_FRAMEBUFFER ) );
 						srcAttach.bindRead( stack, srcAttach.mipLevel, GL_READ_FRAMEBUFFER, list );
 						list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_DRAW_FRAMEBUFFER ) );
-						dstAttach.bindDraw( stack, dstAttach.mipLevel, GL_READ_FRAMEBUFFER, list );
+						dstAttach.bindDraw( stack, dstAttach.mipLevel, GL_DRAW_FRAMEBUFFER, list );
 						list.push_back( makeCmd< OpType::eBlitFramebuffer >(
 							0, 0, int32_t( get( frameBuffer )->getWidth() ), int32_t( get( frameBuffer )->getHeight() ),
 							0, 0, int32_t( get( frameBuffer )->getWidth() ), int32_t( get( frameBuffer )->getHeight() ),
