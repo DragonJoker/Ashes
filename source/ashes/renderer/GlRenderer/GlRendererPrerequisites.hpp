@@ -217,6 +217,10 @@ namespace ashes::gl
 		void bind( uint32_t mipLevel
 			, GlFrameBufferTarget fboTarget
 			, CmdList & list )const;
+		void bindIndex( uint32_t mipLevel
+			, GlFrameBufferTarget fboTarget
+			, uint32_t index
+			, CmdList & list )const;
 		void bindRead( ContextStateStack & stack
 			, uint32_t mipLevel
 			, GlFrameBufferTarget fboTarget
@@ -228,6 +232,11 @@ namespace ashes::gl
 		void bind( uint32_t mipLevel
 			, uint32_t layer
 			, GlFrameBufferTarget fboTarget
+			, CmdList & list )const;
+		void bindIndex( uint32_t mipLevel
+			, uint32_t layer
+			, GlFrameBufferTarget fboTarget
+			, uint32_t index
 			, CmdList & list )const;
 		void bindRead( ContextStateStack & stack
 			, uint32_t mipLevel

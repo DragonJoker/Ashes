@@ -23,6 +23,7 @@ namespace ashes::gl
 		{
 			auto references = ashes::makeArrayView( subpass.pColorAttachments
 				, subpass.colorAttachmentCount );
+			uint32_t index = 0u;
 
 			for ( auto & reference : references )
 			{
@@ -30,7 +31,12 @@ namespace ashes::gl
 
 				if ( attach.point )
 				{
-					attach.bind( 0u, GL_FRAMEBUFFER, list );
+					attach.bindIndex( 0u
+						, GL_FRAMEBUFFER
+						, ( attach.isDepthOrStencil()
+							? 0u
+							: index++ )
+						, list );
 				}
 			}
 
