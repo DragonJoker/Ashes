@@ -32,6 +32,7 @@ namespace ashes::gl
 	{
 		if ( !m_fence )
 		{
+			m_firstUse = false;
 			m_fence = glLogNonVoidCall( context
 				, glFenceSync
 				, GL_WAIT_FLAG_SYNC_GPU_COMMANDS_COMPLETE
@@ -43,6 +44,11 @@ namespace ashes::gl
 		, uint64_t timeout
 		, bool forceWait )const
 	{
+		if ( m_firstUse )
+		{
+			return VK_SUCCESS;
+		}
+
 		if ( !m_fence )
 		{
 			if ( forceWait )
