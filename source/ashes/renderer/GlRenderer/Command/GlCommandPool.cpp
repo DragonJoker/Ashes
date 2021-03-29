@@ -39,12 +39,15 @@ namespace ashes::gl
 
 	void CommandPool::destroyCommandBuffer( VkCommandBuffer commandBuffer )
 	{
-		auto it = std::find( m_commandBuffers.begin()
-			, m_commandBuffers.end()
-			, commandBuffer );
-		assert( it != m_commandBuffers.end() );
-		deallocate( commandBuffer, m_allocInfo );
-		m_commandBuffers.erase( it );
+		if ( commandBuffer )
+		{
+			auto it = std::find( m_commandBuffers.begin()
+				, m_commandBuffers.end()
+				, commandBuffer );
+			assert( it != m_commandBuffers.end() );
+			deallocate( commandBuffer, m_allocInfo );
+			m_commandBuffers.erase( it );
+		}
 	}
 
 	VkResult CommandPool::reset( VkCommandPoolResetFlags flags )
