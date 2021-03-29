@@ -23,10 +23,14 @@ namespace ashes::gl
 			m_free.push_back( get( buffer ) );
 			++buffer;
 		}
+
+		registerObject( m_device, *this );
 	}
 
 	DescriptorPool::~DescriptorPool()
 	{
+		unregisterObject( m_device, *this );
+
 		for ( auto & set : m_sets )
 		{
 			get( set )->~DescriptorSet();

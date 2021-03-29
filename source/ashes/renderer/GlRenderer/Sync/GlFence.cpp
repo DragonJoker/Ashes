@@ -15,10 +15,13 @@ namespace ashes::gl
 		, VkFenceCreateFlags flags )
 		: m_device{ device }
 	{
+		registerObject( m_device, *this );
 	}
 
 	Fence::~Fence()
 	{
+		unregisterObject( m_device, *this );
+
 		if ( m_fence )
 		{
 			auto context = get( m_device )->getContext();

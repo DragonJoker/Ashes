@@ -16,6 +16,12 @@ namespace ashes::gl
 		, VkCommandPoolCreateInfo createInfo )
 		: m_device{ device }
 	{
+		registerObject( m_device, *this );
+	}
+
+	CommandPool::~CommandPool()
+	{
+		unregisterObject( m_device, *this );
 	}
 
 	VkResult CommandPool::reset( VkCommandPoolResetFlags flags )

@@ -6,16 +6,20 @@ See LICENSE file in root folder.
 
 #include "Core/GlDevice.hpp"
 
+#include "ashesgl_api.hpp"
+
 namespace ashes::gl
 {
 	Event::Event( VkAllocationCallbacks const * allocInfo
 		, VkDevice device )
 		: m_device{ device }
 	{
+		registerObject( m_device, *this );
 	}
 
 	Event::~Event()
 	{
+		unregisterObject( m_device, *this );
 	}
 
 	VkResult Event::getStatus()const

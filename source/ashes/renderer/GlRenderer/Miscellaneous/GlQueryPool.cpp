@@ -26,10 +26,12 @@ namespace ashes::gl
 			, glGenQueries
 			, GLsizei( m_names.size() )
 			, m_names.data() );
+		registerObject( m_device, *this );
 	}
 
 	QueryPool::~QueryPool()
 	{
+		unregisterObject( m_device, *this );
 		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glDeleteQueries

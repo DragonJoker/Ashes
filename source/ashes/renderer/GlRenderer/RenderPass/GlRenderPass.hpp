@@ -15,6 +15,7 @@ namespace ashes::gl
 		RenderPass( VkAllocationCallbacks const * allocInfo
 			, VkDevice device
 			, VkRenderPassCreateInfo createInfo );
+		~RenderPass();
 
 		uint32_t getAttachmentIndex( VkAttachmentDescription const & attach )const;
 

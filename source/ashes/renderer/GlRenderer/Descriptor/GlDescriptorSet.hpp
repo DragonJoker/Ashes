@@ -103,6 +103,7 @@ namespace ashes::gl
 		void mergeWrites( LayoutBindingWrites & writes, VkWriteDescriptorSet const & write );
 
 	private:
+		VkDevice m_device;
 		VkAllocationCallbacks const * m_allocInfo;
 		VkDescriptorPool m_pool;
 		VkDescriptorSetLayout m_layout;

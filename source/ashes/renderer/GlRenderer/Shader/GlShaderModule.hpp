@@ -28,6 +28,7 @@ namespace ashes::gl
 		ShaderModule( VkAllocationCallbacks const * allocInfo
 			, VkDevice device
 			, VkShaderModuleCreateInfo createInfo );
+		~ShaderModule();
 
 		ShaderDesc compile( VkPipeline pipeline
 			, VkPipelineShaderStageCreateInfo const * previousState
