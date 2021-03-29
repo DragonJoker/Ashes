@@ -455,6 +455,8 @@ namespace ashes::gl
 		{
 			doCreateFramebuffer();
 		}
+
+		registerObject( m_device, *this );
 	}
 
 	Framebuffer::Framebuffer( VkAllocationCallbacks const * allocInfo
@@ -463,10 +465,13 @@ namespace ashes::gl
 		: m_device{ device }
 	{
 		m_internal = name;
+		registerObject( m_device, *this );
 	}
 
 	Framebuffer::~Framebuffer()
 	{
+		unregisterObject( m_device, *this );
+
 		if ( m_internal != GL_INVALID_INDEX )
 		{
 			auto context = get( m_device )->getContext();

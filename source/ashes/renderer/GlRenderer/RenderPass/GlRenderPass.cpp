@@ -96,6 +96,13 @@ namespace ashes::gl
 				++index;
 			}
 		}
+
+		registerObject( m_device, *this );
+	}
+
+	RenderPass::~RenderPass()
+	{
+		unregisterObject( m_device, *this );
 	}
 
 	VkAttachmentDescription const * RenderPass::findAttachment( uint32_t referenceIndex )const

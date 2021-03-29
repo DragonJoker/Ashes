@@ -157,6 +157,8 @@ namespace ashes::gl
 					, 0u );
 			}
 		}
+
+		registerObject( m_device, *this );
 	}
 
 	ImageView::ImageView( VkAllocationCallbacks const * allocInfo
@@ -188,6 +190,8 @@ namespace ashes::gl
 
 	ImageView::~ImageView()
 	{
+		unregisterObject( m_device, *this );
+
 		if ( hasTextureViews( m_device ) )
 		{
 			auto context = get( m_device )->getContext();

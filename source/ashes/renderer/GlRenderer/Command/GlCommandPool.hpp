@@ -29,6 +29,7 @@ namespace ashes::gl
 		CommandPool( VkAllocationCallbacks const * allocInfo
 			, VkDevice device
 			, VkCommandPoolCreateInfo createInfo );
+		~CommandPool();
 
 		VkResult reset( VkCommandPoolResetFlags flags );
 		VkResult free( VkCommandBufferArray sets );

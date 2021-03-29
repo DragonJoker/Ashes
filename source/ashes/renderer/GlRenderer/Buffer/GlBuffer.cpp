@@ -18,10 +18,13 @@ namespace ashes::gl
 		, m_target{ getTargetFromUsageFlags( m_createInfo.usage ) }
 	{
 		m_createInfo.pQueueFamilyIndices = m_queueFamilyIndices.data();
+		registerObject( m_device, *this );
 	}
 
 	Buffer::~Buffer()
 	{
+		unregisterObject( m_device, *this );
+
 		if ( m_binding )
 		{
 			get( m_binding->getParent() )->unbindBuffer( get( this ) );

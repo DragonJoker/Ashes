@@ -91,10 +91,12 @@ namespace ashes::gl
 		m_internal = context->createBuffer( GL_BUFFER_TARGET_COPY_WRITE
 			, GLsizeiptr( m_allocateInfo.allocationSize )
 			, getBufferDataUsageFlags( m_flags ) );
+		registerObject( m_device, *this );
 	}
 
 	DeviceMemory::~DeviceMemory()
 	{
+		unregisterObject( m_device, *this );
 		auto context = get( m_device )->getContext();
 		context->deleteBuffer( m_internal );
 	}

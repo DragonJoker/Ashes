@@ -22,6 +22,7 @@ namespace ashes::gl
 			, VkDevice device
 			, VkDeviceQueueCreateInfo createInfo
 			, uint32_t index );
+		~Queue();
 
 		VkResult submit( VkSubmitInfoArray const & values
 			, VkFence fence )const;

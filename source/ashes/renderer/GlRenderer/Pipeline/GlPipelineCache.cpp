@@ -27,6 +27,13 @@ namespace ashes::gl
 		{
 			std::memcpy( buffer, m_createInfo.pInitialData, m_createInfo.initialDataSize );
 		}
+
+		registerObject( m_device, *this );
+	}
+
+	PipelineCache::~PipelineCache()
+	{
+		unregisterObject( m_device, *this );
 	}
 
 	VkResult PipelineCache::merge( ArrayView< VkPipelineCache const > pipelines )

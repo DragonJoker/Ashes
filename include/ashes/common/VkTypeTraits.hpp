@@ -143,6 +143,7 @@ namespace ashes
 	template<>
 	struct VkTypeTraits< VkCommandBuffer >
 	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_OBJECT;
 #if VK_EXT_debug_utils
 		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_COMMAND_BUFFER;
 #endif

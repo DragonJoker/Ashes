@@ -152,10 +152,13 @@ namespace ashes::gl
 			assert( false && "Unsupported VkBorderColor" );
 			break;
 		}
+
+		registerObject( m_device, *this );
 	}
 
 	Sampler::~Sampler()
 	{
+		unregisterObject( m_device, *this );
 		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glDeleteSamplers

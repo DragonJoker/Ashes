@@ -215,10 +215,13 @@ namespace ashes::gl
 			, m_target
 			, 0 );
 		doInitialiseMemoryRequirements();
+		registerObject( m_device, *this );
 	}
 
 	Image::~Image()
 	{
+		unregisterObject( m_device, *this );
+
 		while ( !m_views.empty() )
 		{
 			destroyView( m_views.begin()->second );
