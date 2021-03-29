@@ -118,7 +118,7 @@ namespace ashes::gl
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + i;
 					auto buffer = getBuffer( write, i );
 					list.push_back( makeCmd< OpType::eBindBufferRange >( bindingIndex
 						, GL_BUFFER_TARGET_UNIFORM
@@ -149,7 +149,7 @@ namespace ashes::gl
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + i;
 					auto buffer = getBuffer( write, i );
 					list.push_back( makeCmd< OpType::eBindBufferRange >( bindingIndex
 						, GL_BUFFER_TARGET_SHADER_STORAGE
@@ -180,7 +180,7 @@ namespace ashes::gl
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + i;
 					auto bufferView = getBufferView( write, i );
 					list.push_back( makeCmd< OpType::eActiveTexture >( bindingIndex ) );
 
@@ -210,7 +210,7 @@ namespace ashes::gl
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + i;
 					auto bufferView = getBufferView( write, i );
 					list.push_back( makeCmd< OpType::eActiveTexture >( bindingIndex ) );
 
@@ -245,7 +245,7 @@ namespace ashes::gl
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + i;
 					auto buffer = getBuffer( write, i );
 					list.push_back( makeCmd< OpType::eBindBufferRange >( bindingIndex
 						, GL_BUFFER_TARGET_UNIFORM
@@ -277,7 +277,7 @@ namespace ashes::gl
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + i;
 					auto buffer = getBuffer( write, i );
 					list.push_back( makeCmd< OpType::eBindBufferRange >( bindingIndex
 						, GL_BUFFER_TARGET_SHADER_STORAGE
@@ -484,7 +484,7 @@ namespace ashes::gl
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + i;
 					auto writeSampler = common::getSampler( write, i );
 
 					if ( write.descriptorType == VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT
@@ -526,7 +526,7 @@ namespace ashes::gl
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + i;
 					common::bindSampler( common::getSampler( write, i )
 						, bindingIndex
 						, list );
@@ -554,7 +554,7 @@ namespace ashes::gl
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + i;
 					bindTexture( common::getView( write, i )
 						, bindingIndex
 						, list );
@@ -583,7 +583,7 @@ namespace ashes::gl
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + i;
 					bindTextureAndSampler( common::getView( write, i )
 						, sampler
 						, bindingIndex
@@ -612,7 +612,7 @@ namespace ashes::gl
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + i;
 					bindImage( common::getView( write, i )
 						, bindingIndex
 						, list );
@@ -761,7 +761,7 @@ namespace ashes::gl
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + i;
 					auto writeSampler = common::getSampler( write, i );
 
 					if ( write.descriptorType == VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT
@@ -804,7 +804,7 @@ namespace ashes::gl
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + i;
 					common::bindSampler( common::getSampler( write, i )
 						, bindingIndex
 						, list );
@@ -832,7 +832,7 @@ namespace ashes::gl
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + i;
 					bindTexture( common::getView( write, i )
 						, bindingIndex
 						, list );
@@ -861,7 +861,7 @@ namespace ashes::gl
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + i;
 					bindTextureAndSampler( common::getView( write, i )
 						, sampler
 						, bindingIndex
@@ -890,7 +890,7 @@ namespace ashes::gl
 
 				for ( auto i = 0u; i < write.descriptorCount; ++i )
 				{
-					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					uint32_t bindingIndex = dstBinding + i;
 					bindImage( common::getView( write, i )
 						, bindingIndex
 						, list );
