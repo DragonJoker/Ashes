@@ -193,10 +193,12 @@ namespace ashes::gl
 			, glBindFramebuffer
 			, GL_FRAMEBUFFER
 			, 0 );
+		registerObject( m_device, *this );
 	}
 
 	SwapchainKHR::~SwapchainKHR()
 	{
+		unregisterObject( m_device, *this );
 		{
 			auto context = get( m_device )->getContext();
 			glLogCall( context

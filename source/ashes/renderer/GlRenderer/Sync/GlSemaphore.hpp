@@ -12,8 +12,9 @@ namespace ashes::gl
 		: public AutoIdIcdObject< Semaphore >
 	{
 	public:
-		explicit Semaphore( VkAllocationCallbacks const * allocInfo
+		Semaphore( VkAllocationCallbacks const * allocInfo
 			, VkDevice device );
+		~Semaphore();
 
 		inline VkDevice getDevice()const
 		{

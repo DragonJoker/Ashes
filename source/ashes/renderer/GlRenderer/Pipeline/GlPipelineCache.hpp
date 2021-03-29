@@ -30,6 +30,7 @@ namespace ashes::gl
 		PipelineCache( VkAllocationCallbacks const * allocInfo
 			, VkDevice device
 			, VkPipelineCacheCreateInfo createInfo );
+		~PipelineCache();
 		/**@}*/
 
 		VkResult merge( ArrayView< VkPipelineCache const > pipelines );

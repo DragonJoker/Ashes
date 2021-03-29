@@ -788,6 +788,12 @@ namespace ashes::gl
 		, m_flags{ createInfo.flags }
 		, m_code{ UInt32Array( createInfo.pCode, createInfo.pCode + ( createInfo.codeSize / sizeof( uint32_t ) ) ) }
 	{
+		registerObject( m_device, *this );
+	}
+
+	ShaderModule::~ShaderModule()
+	{
+		unregisterObject( m_device, *this );
 	}
 
 	ShaderDesc ShaderModule::compile( VkPipeline pipeline

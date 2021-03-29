@@ -58,10 +58,12 @@ namespace ashes::gl
 			, glBindTexture
 			, GL_TEXTURE_BUFFER
 			, 0u );
+		registerObject( m_device, *this );
 	}
 
 	BufferView::~BufferView()
 	{
+		unregisterObject( m_device, *this );
 		auto context = get( m_device )->getContext();
 		glLogCall( context
 			, glDeleteTextures

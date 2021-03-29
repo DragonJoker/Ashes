@@ -31,10 +31,14 @@ namespace ashes::gl
 
 			++set;
 		}
+
+		registerObject( m_device, *this );
 	}
 
 	PipelineLayout::~PipelineLayout()
 	{
+		unregisterObject( m_device, *this );
+
 		for ( auto & pipeline : m_pipelines )
 		{
 			get( pipeline )->m_layout = nullptr;

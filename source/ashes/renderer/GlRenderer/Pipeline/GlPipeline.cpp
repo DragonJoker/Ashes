@@ -318,6 +318,7 @@ namespace ashes::gl
 			: 0u ) }
 	{
 		get( m_layout )->addPipeline( get( this ) );
+		registerObject( m_device, *this );
 	}
 
 	Pipeline::Pipeline( VkAllocationCallbacks const * allocInfo
@@ -331,10 +332,13 @@ namespace ashes::gl
 		, m_compPipeline{ std::make_unique< ShaderProgram >( m_device, nullptr, get( this ), m_stages, m_layout, createInfo.flags, m_renderPass, m_vertexInputState ) }
 	{
 		get( m_layout )->addPipeline( get( this ) );
+		registerObject( m_device, *this );
 	}
 
 	Pipeline::~Pipeline()
 	{
+		unregisterObject( m_device, *this );
+
 		if ( m_layout )
 		{
 			get( m_layout )->removePipeline( get( this ) );

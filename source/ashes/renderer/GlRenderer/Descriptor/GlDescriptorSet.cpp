@@ -16,7 +16,8 @@ namespace ashes::gl
 	DescriptorSet::DescriptorSet( VkAllocationCallbacks const * allocInfo
 		, VkDescriptorPool pool
 		, VkDescriptorSetLayout layout )
-		: m_allocInfo{ allocInfo }
+		: m_device{ get( pool )->getDevice() }
+		, m_allocInfo{ allocInfo }
 		, m_pool{ pool }
 		, m_layout{ layout }
 	{
@@ -91,10 +92,14 @@ namespace ashes::gl
 			{
 				return lhs->binding < rhs->binding;
 			} );
+
+		registerObject( m_device, *this );
 	}
 
 	DescriptorSet::~DescriptorSet()
 	{
+		unregisterObject( m_device, *this );
+
 		for ( auto & inlineUbo : m_inlineUbos )
 		{
 			deallocate( inlineUbo->buffer

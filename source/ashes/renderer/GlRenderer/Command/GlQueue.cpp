@@ -501,6 +501,12 @@ namespace ashes::gl
 		, m_createInfo{ std::move( createInfo ) }
 		, m_index{ index }
 	{
+		registerObject( m_device, *this );
+	}
+
+	Queue::~Queue()
+	{
+		unregisterObject( m_device, *this );
 	}
 
 	VkResult Queue::submit( VkSubmitInfoArray const & values

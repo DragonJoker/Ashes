@@ -185,10 +185,12 @@ namespace ashes::gl
 		: m_device{ device }
 		, m_level{ level }
 	{
+		registerObject( m_device, *this );
 	}
 
 	CommandBuffer::~CommandBuffer()
 	{
+		unregisterObject( m_device, *this );
 		doReset();
 	}
 
