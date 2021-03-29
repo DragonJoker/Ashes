@@ -6,6 +6,8 @@ See LICENSE file in root folder
 
 #include "renderer/GlRenderer/GlRendererPrerequisites.hpp"
 
+#include <map>
+
 namespace ashes::gl
 {
 	/**
@@ -31,6 +33,9 @@ namespace ashes::gl
 			, VkCommandPoolCreateInfo createInfo );
 		~CommandPool();
 
+		VkResult createCommandBuffer( VkCommandBuffer & commandBuffer
+			, VkCommandBufferAllocateInfo const & info );
+		void destroyCommandBuffer( VkCommandBuffer commandBuffer );
 		VkResult reset( VkCommandPoolResetFlags flags );
 		VkResult free( VkCommandBufferArray sets );
 
@@ -41,5 +46,7 @@ namespace ashes::gl
 
 	private:
 		VkDevice m_device;
+		VkAllocationCallbacks const * m_allocInfo;
+		VkCommandBufferArray m_commandBuffers;
 	};
 }

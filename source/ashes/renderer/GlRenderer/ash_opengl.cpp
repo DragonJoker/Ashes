@@ -1101,9 +1101,8 @@ namespace ashes::gl
 			it != pCommandBuffers + pAllocateInfo->commandBufferCount;
 			++it )
 		{
-			auto tmp = allocateNA( *it
-				, device
-				, pAllocateInfo->level );
+			auto tmp = get( pAllocateInfo->commandPool )->createCommandBuffer( *it
+				, *pAllocateInfo );
 			result = VkResult( std::max< uint32_t >( tmp, result ) );
 		}
 
