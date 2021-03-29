@@ -733,7 +733,6 @@ namespace ashes::gl
 		VkImageView imageView,
 		const VkAllocationCallbacks* pAllocator )
 	{
-		return get( get( imageView )->getImage() )->destroyView( imageView );
 	}
 
 	VkResult VKAPI_CALL vkCreateShaderModule(
