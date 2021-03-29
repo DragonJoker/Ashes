@@ -17,8 +17,9 @@ namespace ashes::gl
 		~Event();
 
 		VkResult getStatus()const;
-		VkResult set()const;
-		VkResult reset()const;
+		void updateStatus( VkResult status );
+		VkResult set();
+		VkResult reset();
 
 		inline VkDevice getDevice()const
 		{
@@ -26,8 +27,7 @@ namespace ashes::gl
 		}
 
 	private:
-		mutable VkResult m_status{ VK_EVENT_RESET };
-
 		VkDevice m_device;
+		VkResult m_status{ VK_EVENT_RESET };
 	};
 }
