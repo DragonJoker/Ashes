@@ -17,6 +17,10 @@ namespace ashes::gl
 		, m_createInfo{ createInfo }
 		, m_target{ getTargetFromUsageFlags( m_createInfo.usage ) }
 	{
+		if ( m_createInfo.size > get( get( device )->getPhysicalDevice() )->getMemoryProperties().memoryHeaps[0].size )
+		{
+			throw ashes::Exception{ VK_ERROR_OUT_OF_DEVICE_MEMORY, "Buffer size is too large" };
+		}
 		m_createInfo.pQueueFamilyIndices = m_queueFamilyIndices.data();
 		registerObject( m_device, *this );
 	}
