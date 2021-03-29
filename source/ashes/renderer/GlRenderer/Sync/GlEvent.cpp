@@ -27,15 +27,20 @@ namespace ashes::gl
 		return m_status;
 	}
 
-	VkResult Event::set()const
+	void Event::updateStatus( VkResult status )
 	{
-		m_status = VK_EVENT_SET;
+		m_status = status;
+	}
+
+	VkResult Event::set()
+	{
+		updateStatus( VK_EVENT_SET );
 		return VK_SUCCESS;
 	}
 
-	VkResult Event::reset()const
+	VkResult Event::reset()
 	{
-		m_status = VK_EVENT_RESET;
+		updateStatus( VK_EVENT_RESET );
 		return VK_SUCCESS;
 	}
 }
