@@ -493,7 +493,7 @@ namespace ashes::gl
 		VkViewport adjust( VkViewport const & value
 			, VkExtent2D const & renderArea )
 		{
-			auto vkbottom = value.y + value.height;
+			auto vkbottom = value.y + std::min( value.height, float( renderArea.height ) );
 			auto vktop = value.y;
 			return
 			{
