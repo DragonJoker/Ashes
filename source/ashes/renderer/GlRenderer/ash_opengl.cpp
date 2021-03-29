@@ -2194,19 +2194,9 @@ namespace ashes::gl
 		uint32_t* pSurfaceFormatCount,
 		VkSurfaceFormatKHR* pSurfaceFormats )
 	{
-		auto formats = get( surface )->getFormats();
-		*pSurfaceFormatCount = uint32_t( formats.size() );
-
-		if ( pSurfaceFormats )
-		{
-			for ( auto & format : formats )
-			{
-				*pSurfaceFormats = format;
-				++pSurfaceFormats;
-			}
-		}
-
-		return VK_SUCCESS;
+		return getCountedProps( get( surface )->getFormats()
+			, pSurfaceFormatCount
+			, pSurfaceFormats );
 	}
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceSurfacePresentModesKHR(
@@ -2215,19 +2205,9 @@ namespace ashes::gl
 		uint32_t* pPresentModeCount,
 		VkPresentModeKHR* pPresentModes )
 	{
-		auto modes = get( surface )->getPresentModes();
-		*pPresentModeCount = uint32_t( modes.size() );
-
-		if ( pPresentModes )
-		{
-			for ( auto & mode : modes )
-			{
-				*pPresentModes = mode;
-				++pPresentModes;
-			}
-		}
-
-		return VK_SUCCESS;
+		return getCountedProps( get( surface )->getPresentModes()
+			, pPresentModeCount
+			, pPresentModes );
 	}
 
 #endif
@@ -2262,19 +2242,9 @@ namespace ashes::gl
 		uint32_t* pSwapchainImageCount,
 		VkImage* pSwapchainImages )
 	{
-		auto result = get( swapchain )->getImages();
-		*pSwapchainImageCount = uint32_t( result.size() );
-
-		if ( pSwapchainImages )
-		{
-			for ( auto & image : result )
-			{
-				*pSwapchainImages = image;
-				++pSwapchainImages;
-			}
-		}
-
-		return VK_SUCCESS;
+		return getCountedProps( get( swapchain )->getImages()
+			, pSwapchainImageCount
+			, pSwapchainImages );
 	}
 
 	VkResult VKAPI_CALL vkAcquireNextImageKHR(
