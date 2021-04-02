@@ -268,31 +268,18 @@ namespace ashes::gl
 	LayerCopy::LayerCopy( VkDevice device
 		, VkImageBlit origRegion
 		, VkImage srcImage
-		, VkImage dstImage
-		, VkImageViewArray & views )
+		, VkImage dstImage )
 		: region{ origRegion }
-		, src{ initialiseAttachment( device, origRegion.srcSubresource, srcImage, srcView ) }
-		, dst{ initialiseAttachment( device, origRegion.dstSubresource, dstImage, dstView ) }
+		, src{ initialiseAttachment( device, origRegion.srcSubresource, srcImage ) }
+		, dst{ initialiseAttachment( device, origRegion.dstSubresource, dstImage ) }
 	{
-		if ( srcView != VK_NULL_HANDLE )
-		{
-			views.push_back( srcView );
-			region.srcSubresource.mipLevel = 0u;
-		}
-
-		if ( dstView != VK_NULL_HANDLE )
-		{
-			views.push_back( dstView );
-			region.dstSubresource.mipLevel = 0u;
-		}
 	}
 
 	LayerCopy::LayerCopy( VkDevice device
 		, VkImageCopy origRegion
 		, VkImage srcImage
-		, VkImage dstImage
-		, VkImageViewArray & views )
-		: LayerCopy{ device, convert( origRegion ), srcImage, dstImage, views }
+		, VkImage dstImage )
+		: LayerCopy{ device, convert( origRegion ), srcImage, dstImage }
 	{
 	}
 

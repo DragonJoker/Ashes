@@ -129,8 +129,7 @@ namespace ashes::gl
 		, VkImageCopy copyInfo
 		, VkImage srcImage
 		, VkImage dstImage
-		, CmdList & list
-		, VkImageViewArray & views )
+		, CmdList & list )
 	{
 		glLogCommand( list, "CopyImageCommand" );
 		assert( copyInfo.srcSubresource.layerCount == copyInfo.dstSubresource.layerCount
@@ -169,8 +168,7 @@ namespace ashes::gl
 				LayerCopy layerCopy{ device
 					, copyInfo
 					, srcImage
-					, dstImage
-					, views };
+					, dstImage };
 
 				list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_READ_FRAMEBUFFER ) );
 				layerCopy.bindSrc( stack
@@ -211,8 +209,7 @@ namespace ashes::gl
 				, getBufferImageCopy( copyInfo, dstImage )
 				, dstImage
 				, get( dstImage )->getMemoryBinding()
-				, list
-				, views );
+				, list );
 		}
 	}
 }

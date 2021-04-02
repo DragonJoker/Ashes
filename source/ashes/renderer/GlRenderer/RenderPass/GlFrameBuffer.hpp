@@ -26,8 +26,7 @@ namespace ashes::gl
 		, GLenum status );
 	FboAttachment initialiseAttachment( VkDevice device
 		, VkImageSubresourceLayers & subresource
-		, VkImage image
-		, VkImageView & view );
+		, VkImage image );
 
 	class Framebuffer
 		: public IcdObject

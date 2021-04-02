@@ -13,13 +13,11 @@ namespace ashes::gl
 		, VkBufferImageCopy copyInfo
 		, VkImage src
 		, VkBuffer dst
-		, CmdList & list
-		, VkImageViewArray & views );
+		, CmdList & list );
 	void buildCopyImageToBufferCommand( ContextStateStack & stack
 		, VkDevice device
 		, VkBufferImageCopy copyInfo
 		, VkImage src
 		, DeviceMemoryBinding const & dst
-		, CmdList & list
-		, VkImageViewArray & views );
+		, CmdList & list );
 }
