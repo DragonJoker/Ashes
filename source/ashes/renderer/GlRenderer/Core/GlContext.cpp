@@ -420,5 +420,13 @@ namespace ashes::gl
 			} );
 	}
 
+	void Context::checkOutOfMemory()const
+	{
+		if ( m_outOfMemory )
+		{
+			throw Exception{ VK_ERROR_OUT_OF_DEVICE_MEMORY, "" };
+		}
+	}
+
 	//*************************************************************************
 }

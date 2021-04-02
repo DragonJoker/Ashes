@@ -243,7 +243,7 @@ namespace ashes::gl
 	using PFN_glGetBufferParameteriv = GLenum ( GLAPIENTRY * )( GlBufferTarget target, GlBufferParameter value, GLint * data );
 	using PFN_glGetBufferSubData = void ( GLAPIENTRY * )( GlBufferTarget target, GLintptr offset, GLsizeiptr size, void * data );
 	using PFN_glGetCompressedTexImage = void ( GLAPIENTRY * )( GlTextureType target, GLint level, void * pixels );
-	using PFN_glGetError = GLenum ( GLAPIENTRY * )( void );
+	using PFN_glGetError = GlError ( GLAPIENTRY * )( void );
 	using PFN_glGetFloatv = void ( GLAPIENTRY * )( GlValueName pname, GLfloat * data );
 	using PFN_glGetFloati_v = void( GLAPIENTRY * )( GlValueName target, GLuint index, GLfloat * data );
  	using PFN_glGetFragDataIndex = GLint ( GLAPIENTRY * )( GLuint program, const char * name );
