@@ -502,7 +502,7 @@ namespace ashes::gl
 			for ( uint32_t i = 0u; i < fenceCount; ++i )
 			{
 				result = std::max( result
-					, get( *pFences )->wait( context, timeout, true ) );
+					, get( *pFences )->wait( context, timeout, true, i > 0u ) );
 				++pFences;
 			}
 
@@ -516,7 +516,7 @@ namespace ashes::gl
 		for ( uint32_t i = 0u; i < fenceCount; ++i )
 		{
 			result = std::min( result
-				, get( *pFences )->wait( context, timeout, false ) );
+				, get( *pFences )->wait( context, timeout, false, i > 0u ) );
 			++pFences;
 		}
 
