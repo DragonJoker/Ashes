@@ -8,6 +8,8 @@ See LICENSE file in root folder
 #include "renderer/GlRenderer/Core/GlContextLock.hpp"
 #include "renderer/GlRenderer/Core/GlPhysicalDevice.hpp"
 
+#include <unordered_map>
+
 namespace ashes::gl
 {
 	template< typename AshesType >
