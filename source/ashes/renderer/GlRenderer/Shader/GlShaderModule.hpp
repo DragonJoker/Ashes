@@ -15,11 +15,6 @@ namespace ashes::gl
 		, int modulesCount
 		, std::string const & from
 		, std::string const & source = std::string{} );
-	ShaderDesc fillProgramDesc( ContextLock const & context
-		, ConstantsLayout & constants
-		, GLuint programObject
-		, VkShaderStageFlags stageFlags
-		, bool separable );
 
 	class ShaderModule
 		: public AutoIdIcdObject< ShaderModule >
@@ -30,12 +25,13 @@ namespace ashes::gl
 			, VkShaderModuleCreateInfo createInfo );
 		~ShaderModule();
 
-		ShaderDesc compile( VkPipeline pipeline
+		VkResult compile( VkPipeline pipeline
 			, VkPipelineShaderStageCreateInfo const * previousState
 			, VkPipelineShaderStageCreateInfo const & currentState
 			, VkPipelineLayout pipelineLayout
 			, VkPipelineCreateFlags createFlags
-			, bool invertY );
+			, bool invertY
+			, ShaderDesc & result );
 
 		inline ConstantsLayout const & getConstants()const
 		{
