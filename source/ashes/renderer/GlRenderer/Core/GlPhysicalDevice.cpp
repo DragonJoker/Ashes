@@ -1115,7 +1115,7 @@ namespace ashes::gl
 
 			if ( memSizeAMD[0] )
 			{
-				memSizeNV = memSizeAMD[0];
+				memSizeNV = memSizeAMD[0] + memSizeAMD[2];
 			}
 			else
 			{
