@@ -713,6 +713,46 @@ namespace ashes::gl
 		cleanupBlitDstFbo();
 	}
 
+	Device * Device::getDevice( VkDevice device )
+	{
+		return get( device );
+	}
+
+#if VK_EXT_debug_utils || VK_EXT_debug_marker
+
+	void Device::doRegisterObject( uint64_t object
+		, uint32_t objectType
+		, std::string const & typeName )const
+	{
+		std::stringstream stream;
+		stream.imbue( std::locale{ "C" } );
+		stream << "Created " << typeName
+			<< " [0x" << std::hex << std::setw( 8u ) << std::setfill( '0' ) << object << "]";
+		m_allocated.emplace( object
+			, ObjectAllocation{
+				typeName
+			} );
+	}
+
+	void Device::doUnregisterObject( uint64_t object )const
+	{
+		auto it = m_allocated.find( object );
+		assert( it != m_allocated.end() );
+		m_allocated.erase( it );
+	}
+
+	void Device::doReportRegisteredObjects()const
+	{
+		for ( auto & alloc : m_allocated )
+		{
+			std::stringstream stream;
+			stream << "Leaked [" << alloc.second.type << "]";
+			logError( stream.str().c_str() );
+		}
+	}
+
+#endif
+
 	bool has420PackExtensions( VkDevice device )
 	{
 		return has420PackExtensions( get( device )->getPhysicalDevice() );
@@ -752,39 +792,4 @@ namespace ashes::gl
 	{
 		return hasProgramInterfaceQuery( get( device )->getPhysicalDevice() );
 	}
-
-#if VK_EXT_debug_utils || VK_EXT_debug_marker
-
-	void Device::doRegisterObject( uint64_t object
-		, uint32_t objectType
-		, std::string const & typeName )const
-	{
-		std::stringstream stream;
-		stream.imbue( std::locale{ "C" } );
-		stream << "Created " << typeName
-			<< " [0x" << std::hex << std::setw( 8u ) << std::setfill( '0' ) << object << "]";
-		m_allocated.emplace( object
-			, ObjectAllocation{
-				typeName
-			} );
-	}
-
-	void Device::doUnregisterObject( uint64_t object )const
-	{
-		auto it = m_allocated.find( object );
-		assert( it != m_allocated.end() );
-		m_allocated.erase( it );
-	}
-
-	void Device::doReportRegisteredObjects()const
-	{
-		for ( auto & alloc : m_allocated )
-		{
-			std::stringstream stream;
-			stream << "Leaked [" << alloc.second.type << "]";
-			logError( stream.str().c_str() );
-		}
-	}
-
-#endif
 }

@@ -791,7 +791,7 @@ namespace ashes::gl
 		{
 			using VkType = typename AshesTypeTraits< AshesType >::VkType;
 			using DebugTypeTraits = AshesDebugTypeTraits< AshesType >;
-			get( device )->doRegisterObject( uint64_t( get( &object ) )
+			getDevice( device )->doRegisterObject( uint64_t( get( &object ) )
 #if VK_EXT_debug_utils
 				, uint32_t( DebugTypeTraits::UtilsValue )
 #elif VK_EXT_debug_marker
@@ -805,10 +805,11 @@ namespace ashes::gl
 			, AshesType & object )
 		{
 			using VkType = typename AshesTypeTraits< AshesType >::VkType;
-			get( device )->doUnregisterObject( uint64_t( get( &object ) ) );
+			getDevice( device )->doUnregisterObject( uint64_t( get( &object ) ) );
 		}
 
 	private:
+		static Device * getDevice( VkDevice device );
 		void doRegisterObject( uint64_t object
 			, uint32_t objectType
 			, std::string const & typeName )const;
