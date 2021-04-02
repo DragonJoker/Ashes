@@ -32,6 +32,11 @@ jobs:
     - name: Install dependencies from vcpkg
       run: $VCPKG_ROOT/vcpkg install spirv-cross:${{ matrix.os[1] }} vulkan-headers:${{ matrix.os[1] }}
       shell: bash
+  
+    - name: Install necessary G++ version (Linux)
+      if: runner.os == 'Linux'
+      shell: bash
+      sudo apt-get install -y --no-install-recommends ccache gcc-8 g++-8
 
     - name: Install necessary packages (Linux)
       if: runner.os == 'Linux'
