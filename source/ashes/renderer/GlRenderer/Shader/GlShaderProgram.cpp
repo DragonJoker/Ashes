@@ -202,12 +202,21 @@ namespace ashes::gl
 		for ( auto & stage : this->stages )
 		{
 			stageFlags |= stage.stage;
-			descs.push_back( get( stage.module )->compile( pipeline
+			ShaderDesc desc{};
+			auto result = get( stage.module )->compile( pipeline
 				, previousStage
 				, stage
 				, layout
 				, createFlags
-				, invertY ) );
+				, invertY
+				, desc );
+
+			if ( result != VK_SUCCESS )
+			{
+				throw Exception{ result, "ShaderModule compilation" };
+			}
+
+			descs.push_back( desc );
 			previousStage = &stage;
 		}
 

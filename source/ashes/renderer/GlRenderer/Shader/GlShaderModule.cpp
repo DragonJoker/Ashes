@@ -623,9 +623,31 @@ namespace ashes::gl
 			}
 		}
 
+		template< typename CompileT >
+		VkResult compileChecked( CompileT comp )
+		{
+#if _WIN32
+			__try
+			{
+				comp();
+				return VK_SUCCESS;
+			}
+			__except ( GetExceptionCode() == EXCEPTION_STACK_OVERFLOW )
+			{
+				return VK_ERROR_OUT_OF_HOST_MEMORY;
+			}
+
+#else
+
+			comp();
+			return VK_SUCCESS;
+
+#endif
+		}
+
 #endif
 
-		std::string compileSpvToGlsl( VkDevice device
+		VkResult compileSpvToGlsl( VkDevice device
 			, VkPipelineLayout pipelineLayout
 			, VkPipelineCreateFlags createFlags
 			, VkShaderModule module
@@ -635,7 +657,8 @@ namespace ashes::gl
 			, VkPipelineShaderStageCreateInfo const & state
 			, bool invertY
 			, ConstantsLayout & constants
-			, bool & isGlsl )
+			, bool & isGlsl
+			, std::string & result )
 		{
 			if ( shader[0] == OpCodeSPIRV )
 			{
@@ -658,18 +681,22 @@ namespace ashes::gl
 				doReworkIntermediateInOut( previousStage, currentStage, compiler, resources );
 				doReworkAbsoluteInOut( currentStage, compiler, resources );
 				compiler.build_combined_image_samplers();
-				auto result = compiler.compile();
+				auto vkres = compileChecked( [&compiler, &result]()
+					{
+						result = compiler.compile();
+					} );
 				doReworkFrontFace( invertY, result );
-				return result;
 #else
 				throw std::runtime_error{ "Can't parse SPIR-V shaders, pull submodule SpirvCross" };
 #endif
+				return vkres;
 			}
 
 			isGlsl = true;
 			std::vector< char > glslCode( shader.size() * sizeof( uint32_t ) );
 			std::memcpy( glslCode.data(), shader.data(), glslCode.size() );
-			return std::string( glslCode.data(), glslCode.data() + strlen( glslCode.data() ) );
+			result = std::string( glslCode.data(), glslCode.data() + strlen( glslCode.data() ) );
+			return VK_SUCCESS;
 		}
 
 		std::string retrieveLinkerLog( ContextLock const & context
@@ -796,17 +823,17 @@ namespace ashes::gl
 		unregisterObject( m_device, *this );
 	}
 
-	ShaderDesc ShaderModule::compile( VkPipeline pipeline
+	VkResult ShaderModule::compile( VkPipeline pipeline
 		, VkPipelineShaderStageCreateInfo const * previousState
 		, VkPipelineShaderStageCreateInfo const & currentState
 		, VkPipelineLayout pipelineLayout
 		, VkPipelineCreateFlags createFlags
-		, bool invertY )
+		, bool invertY
+		, ShaderDesc & result )
 	{
 		auto context = get( m_device )->getContext();
-		ShaderDesc result{};
 		bool isGlsl;
-		m_source = common::compileSpvToGlsl( m_device
+		auto res = common::compileSpvToGlsl( m_device
 			, pipelineLayout
 			, createFlags
 			, get( this )
@@ -818,22 +845,26 @@ namespace ashes::gl
 			, currentState
 			, invertY
 			, m_constants
-			, isGlsl );
+			, isGlsl
+			, m_source );
 
-		if ( !hasProgramPipelines( m_device ) )
+		if ( res == VK_SUCCESS )
 		{
-			result = compileCombined( context
-				, currentState );
-		}
-		else
-		{
-			result = compileSeparate( context
-				, pipeline
-				, currentState
-				, isGlsl );
+			if ( !hasProgramPipelines( m_device ) )
+			{
+				result = compileCombined( context
+					, currentState );
+			}
+			else
+			{
+				result = compileSeparate( context
+					, pipeline
+					, currentState
+					, isGlsl );
+			}
 		}
 
-		return result;
+		return res;
 	}
 
 	ShaderDesc ShaderModule::compileCombined( ContextLock const & context
