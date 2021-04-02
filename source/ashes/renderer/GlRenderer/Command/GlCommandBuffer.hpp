@@ -268,7 +268,6 @@ namespace ashes::gl
 			std::map< uint32_t, std::function< VkDescriptorSet( VkDescriptorSet, uint32_t & ) > > waitingDescriptors;
 		};
 		mutable State m_state;
-		mutable VkImageViewArray m_blitViews;
 		mutable Optional< DebugLabel > m_label;
 		std::vector< std::unique_ptr< ByteArray > > m_updatesData;
 		mutable PreExecuteActions m_preExecuteActions;

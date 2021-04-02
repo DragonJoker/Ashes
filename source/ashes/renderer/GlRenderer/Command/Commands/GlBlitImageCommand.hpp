@@ -19,6 +19,5 @@ namespace ashes::gl
 		, VkImage dstImage
 		, VkImageBlit region
 		, VkFilter filter
-		, CmdList & list
-		, VkImageViewArray & views );
+		, CmdList & list );
 }

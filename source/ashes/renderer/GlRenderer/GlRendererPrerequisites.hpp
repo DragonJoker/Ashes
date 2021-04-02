@@ -268,13 +268,11 @@ namespace ashes::gl
 		LayerCopy( VkDevice device
 			, VkImageBlit origRegion
 			, VkImage srcImage
-			, VkImage dstImage
-			, VkImageViewArray & views );		
+			, VkImage dstImage );
 		LayerCopy( VkDevice device
 			, VkImageCopy origRegion
 			, VkImage srcImage
-			, VkImage dstImage
-			, VkImageViewArray & views );
+			, VkImage dstImage );
 
 		void bindSrc( ContextStateStack & stack
 			, GlFrameBufferTarget fboTarget
@@ -343,8 +341,6 @@ namespace ashes::gl
 		VkImageBlit region;
 
 	private:
-		VkImageView srcView{ VK_NULL_HANDLE };
-		VkImageView dstView{ VK_NULL_HANDLE };
 		FboAttachment src;
 		FboAttachment dst;
 	};

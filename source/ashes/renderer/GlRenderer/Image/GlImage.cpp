@@ -240,9 +240,11 @@ namespace ashes::gl
 	}
 
 	VkResult Image::createView( VkImageView & imageView
-		, VkImageViewCreateInfo const & createInfo )
+		, VkImageViewCreateInfo createInfo )
 	{
 		VkResult result = VK_SUCCESS;
+		createInfo = ImageView::adjustCreateInfo( getDevice(), std::move( createInfo ) );
+		auto lock = std::unique_lock{ m_mtx };
 		auto pair = m_views.emplace( createInfo, VkImageView{} );
 
 		if ( pair.second )
@@ -250,22 +252,23 @@ namespace ashes::gl
 			result = allocate( pair.first->second
 				, m_allocInfo
 				, getDevice()
-				, createInfo );
+				, std::move( createInfo ) );
 		}
 
 		imageView = pair.first->second;
 		return result;
 	}
 
-	VkImageView Image::createView( VkImageViewCreateInfo const & createInfo )
+	VkImageView Image::createView( VkImageViewCreateInfo createInfo )
 	{
 		VkImageView imageView{};
-		createView( imageView, createInfo );
+		createView( imageView, std::move( createInfo ) );
 		return imageView;
 	}
 
 	void Image::destroyView( VkImageView view )
 	{
+		auto lock = std::unique_lock{ m_mtx };
 		auto it = m_views.find( get( view )->getCreateInfo() );
 		assert( it != m_views.end() );
 		deallocate( it->second, m_allocInfo );
