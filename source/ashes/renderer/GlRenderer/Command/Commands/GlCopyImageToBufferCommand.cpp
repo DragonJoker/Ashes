@@ -22,8 +22,7 @@ namespace ashes::gl
 			, VkBufferImageCopy srcCopyInfo
 			, VkImage src
 			, GLuint dst
-			, CmdList & list
-			, VkImageViewArray & views )
+			, CmdList & list )
 		{
 			auto baseArrayLayer = std::max( srcCopyInfo.imageSubresource.baseArrayLayer
 				, uint32_t( srcCopyInfo.imageOffset.z ) );
@@ -32,15 +31,7 @@ namespace ashes::gl
 			VkImageView srcView{ VK_NULL_HANDLE };
 			FboAttachment srcAttach{ initialiseAttachment( device
 				, copyInfo.imageSubresource
-				, src
-				, srcView ) };
-
-			if ( srcView != VK_NULL_HANDLE )
-			{
-				views.push_back( srcView );
-				copyInfo.imageSubresource.mipLevel = 0u;
-			}
-
+				, src ) };
 			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK
 				, dst ) );
 			stack.applyPackAlign( list, 1 );
@@ -134,8 +125,7 @@ namespace ashes::gl
 			, VkBufferImageCopy copyInfo
 			, VkImage src
 			, ImageMemoryBinding const & srcBinding
-			, CmdList & list
-			, VkImageViewArray & views )
+			, CmdList & list )
 		{
 			auto bufferOffset = srcBinding.getMipLevelOffset( copyInfo.imageSubresource.mipLevel );
 			auto layerSize = srcBinding.getArrayLayerSize();
@@ -269,8 +259,7 @@ namespace ashes::gl
 		, VkBufferImageCopy copyInfo
 		, VkImage src
 		, DeviceMemoryBinding const & dst
-		, CmdList & list
-		, VkImageViewArray & views )
+		, CmdList & list )
 	{
 		glLogCommand( list, "CopyImageToBufferCommand" );
 		copyInfo.bufferOffset += dst.getOffset();
@@ -287,8 +276,7 @@ namespace ashes::gl
 				, copyInfo
 				, src
 				, get( dst.getParent() )->getInternal()
-				, list
-				, views );
+				, list );
 		}
 		else if ( &srcBinding == &dst )
 		{
@@ -296,8 +284,7 @@ namespace ashes::gl
 				, copyInfo
 				, src
 				, srcBinding
-				, list
-				, views );
+				, list );
 		}
 		else
 		{
@@ -337,15 +324,13 @@ namespace ashes::gl
 		, VkBufferImageCopy copyInfo
 		, VkImage src
 		, VkBuffer dst
-		, CmdList & list
-		, VkImageViewArray & views )
+		, CmdList & list )
 	{
 		buildCopyImageToBufferCommand( stack
 			, device
 			, copyInfo
 			, src
 			, get( dst )->getMemoryBinding()
-			, list
-			, views );
+			, list );
 	}
 }

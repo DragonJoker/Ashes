@@ -14,6 +14,8 @@
 
 #include <ashes/common/VkTypeTraits.hpp>
 
+#include <mutex>
+
 namespace ashes::gl
 {
 	class Image
@@ -31,9 +33,9 @@ namespace ashes::gl
 			, bool swapchainImage = false );
 		~Image();
 
-		VkImageView createView( VkImageViewCreateInfo const & info );
+		VkImageView createView( VkImageViewCreateInfo info );
 		VkResult createView( VkImageView & imageView
-			, VkImageViewCreateInfo const & info );
+			, VkImageViewCreateInfo info );
 		void destroyView( VkImageView view );
 		VkMemoryRequirements getMemoryRequirements()const;
 		std::vector< VkSparseImageMemoryRequirements > getSparseImageMemoryRequirements()const;
@@ -162,6 +164,7 @@ namespace ashes::gl
 		bool m_swapchainImage{ false };
 		DeviceMemoryBinding const * m_binding{ nullptr };
 		VkMemoryRequirements m_memoryRequirements;
+		std::mutex m_mtx;
 		ImageViewCache m_views;
 	};
 }

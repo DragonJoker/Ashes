@@ -77,8 +77,7 @@ namespace ashes::gl
 
 		FboAttachment initialiseAttachment( VkDevice device
 			, VkImageSubresourceLayers & subresource
-			, VkImage image
-			, VkImageView & view )
+			, VkImage image )
 		{
 			FboAttachment result{ 0u
 				, getAttachmentPoint( get( image )->getFormatVk() )
@@ -161,8 +160,7 @@ namespace ashes::gl
 
 		FboAttachment initialiseAttachment( VkDevice device
 			, VkImageSubresourceLayers & subresource
-			, VkImage image
-			, VkImageView & view )
+			, VkImage image )
 		{
 			FboAttachment result{ 0u
 				, getAttachmentPoint( subresource.aspectMask )
@@ -210,21 +208,18 @@ namespace ashes::gl
 
 	FboAttachment initialiseAttachment( VkDevice device
 		, VkImageSubresourceLayers & subresource
-		, VkImage image
-		, VkImageView & view )
+		, VkImage image )
 	{
 		if ( hasTextureViews( device ) )
 		{
 			return gl4::initialiseAttachment( device
 				, subresource
-				, image
-				, view );
+				, image );
 		}
 
 		return gl3::initialiseAttachment( device
 			, subresource
-			, image
-			, view );
+			, image );
 	}
 
 	bool isSRGBFormat( VkFormat format )

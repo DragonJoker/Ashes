@@ -13,6 +13,5 @@ namespace ashes::gl
 		, VkImageCopy copyInfo
 		, VkImage srcImage
 		, VkImage dstImage
-		, CmdList & list
-		, VkImageViewArray & views );
+		, CmdList & list );
 }

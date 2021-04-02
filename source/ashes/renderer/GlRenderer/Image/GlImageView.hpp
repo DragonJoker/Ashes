@@ -41,6 +41,9 @@ namespace ashes::gl
 			, VkImageViewCreateInfo createInfo );
 		~ImageView();
 
+		static VkImageViewCreateInfo adjustCreateInfo( VkDevice device
+			, VkImageViewCreateInfo createInfo );
+
 		GLuint getInternal()const noexcept;
 
 		GlTextureType getTextureType()const noexcept
@@ -132,7 +135,7 @@ namespace ashes::gl
 
 	private:
 		VkDevice m_device;
-		VkImageViewCreateInfo m_createInfo;
+		VkImageViewCreateInfo const m_createInfo;
 		GlTextureType m_gltextureType;
 		gl4::GlTextureViewType m_glviewType;
 		PixelFormat m_pixelFormat;

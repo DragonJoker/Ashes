@@ -94,8 +94,7 @@ namespace ashes::gl
 		, VkImage dstImage
 		, VkImageBlit region
 		, VkFilter filter
-		, CmdList & list
-		, VkImageViewArray & views )
+		, CmdList & list )
 	{
 		glLogCommand( list, "BlitImageCommand" );
 		assert( region.srcSubresource.layerCount == region.dstSubresource.layerCount
@@ -116,8 +115,7 @@ namespace ashes::gl
 			LayerCopy layerCopy{ device
 				, region
 				, srcImage
-				, dstImage
-				, views };
+				, dstImage };
 
 			list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_READ_FRAMEBUFFER ) );
 			layerCopy.bindSrc( stack
@@ -157,8 +155,7 @@ namespace ashes::gl
 				, getImageToBufferCopy( region, dstImage )
 				, dstImage
 				, get( dstImage )->getMemoryBinding()
-				, list
-				, views );
+				, list );
 		}
 	}
 }

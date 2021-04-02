@@ -798,8 +798,7 @@ namespace ashes::gl
 				, std::move( copyInfo )
 				, src
 				, dst
-				, m_cmdList
-				, m_blitViews );
+				, m_cmdList );
 		}
 	}
 
@@ -869,8 +868,7 @@ namespace ashes::gl
 				, std::move( copyInfo )
 				, src
 				, dst
-				, m_cmdList
-				, m_blitViews );
+				, m_cmdList );
 		}
 	}
 
@@ -889,8 +887,7 @@ namespace ashes::gl
 				, dstImage
 				, std::move( region )
 				, filter
-				, m_cmdList
-				, m_blitViews );
+				, m_cmdList );
 		}
 	}
 
@@ -913,8 +910,7 @@ namespace ashes::gl
 					{ region.dstOffset, { int32_t( region.extent.width ), int32_t( region.extent.height ), int32_t( region.extent.depth ) } },
 				}
 				, VK_FILTER_NEAREST
-				, m_cmdList
-				, m_blitViews );
+				, m_cmdList );
 		}
 	}
 
@@ -1268,14 +1264,6 @@ namespace ashes::gl
 		m_cmdsAfterSubmit.clear();
 		m_downloads.clear();
 		m_uploads.clear();
-
-		for ( auto & view : m_blitViews )
-		{
-			deallocate( view
-				, get( m_device )->getAllocationCallbacks() );
-		}
-
-		m_blitViews.clear();
 	}
 
 	void CommandBuffer::doSelectVao()const
