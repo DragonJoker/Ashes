@@ -57,6 +57,11 @@ namespace ashes::gl
 			, GlBufferDataUsageFlags flags );
 		void deleteBuffer( GLuint buffer );
 
+		void setOutOfMemory()
+		{
+			m_outOfMemory = true;
+		}
+
 		template< typename SurfaceCreateInfo >
 		static ContextPtr create( VkInstance instance
 			, SurfaceCreateInfo createInfo
@@ -106,6 +111,7 @@ namespace ashes::gl
 		template< typename ... Params >\
 		auto gl##fun( Params... params )const\
 		{\
+			checkOutOfMemory();\
 			return m_gl##fun( params... );\
 		}
 #define GL_LIB_FUNCTION( fun )\
@@ -113,6 +119,7 @@ namespace ashes::gl
 		template< typename ... Params >\
 		auto gl##fun( Params... params )const\
 		{\
+			checkOutOfMemory();\
 			return m_gl##fun( params... );\
 		}
 #define GL_LIB_FUNCTION_OPT( fun )\
@@ -120,6 +127,7 @@ namespace ashes::gl
 		template< typename ... Params >\
 		auto gl##fun( Params... params )const\
 		{\
+			checkOutOfMemory();\
 			return m_gl##fun( params... );\
 		}\
 		bool has##fun()const\
@@ -131,6 +139,7 @@ namespace ashes::gl
 		template< typename ... Params >\
 		auto gl##fun( Params... params )const\
 		{\
+			checkOutOfMemory();\
 			return m_gl##fun( params... );\
 		}\
 		bool has##fun()const\
@@ -150,6 +159,7 @@ namespace ashes::gl
 		BufferAllocCont::iterator findBuffer( GLuint buffer );
 		BufferAllocCont::iterator findBuffer( GLuint buffer
 			, GLsizeiptr size );
+		void checkOutOfMemory()const;
 
 	private:
 		gl::ContextImplPtr m_impl;
@@ -161,5 +171,6 @@ namespace ashes::gl
 		std::atomic< std::thread::id > m_activeThread;
 		std::map< std::thread::id, std::unique_ptr< gl::ContextState > > m_state;
 		BufferAllocCont m_buffers;
+		std::atomic< bool > m_outOfMemory{ false };
 	};
 }

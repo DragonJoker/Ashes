@@ -296,6 +296,7 @@ if ( OpenGL_FOUND )
 		Enum/GlConstantFormat.cpp
 		Enum/GlCullModeFlag.cpp
 		Enum/GlDebugReportObjectType.cpp
+		Enum/GlError.cpp
 		Enum/GlFenceWaitFlag.cpp
 		Enum/GlFenceWaitResult.cpp
 		Enum/GlFilter.cpp
@@ -347,6 +348,7 @@ if ( OpenGL_FOUND )
 		Enum/GlConstantFormat.hpp
 		Enum/GlCullModeFlag.hpp
 		Enum/GlDebugReportObjectType.hpp
+		Enum/GlError.hpp
 		Enum/GlFenceWaitFlag.hpp
 		Enum/GlFenceWaitResult.hpp
 		Enum/GlFilter.hpp

@@ -20,6 +20,7 @@ See LICENSE file in root folder
 #include "renderer/GlRenderer/Enum/GlConstantFormat.hpp"
 #include "renderer/GlRenderer/Enum/GlCullModeFlag.hpp"
 #include "renderer/GlRenderer/Enum/GlDebugReportObjectType.hpp"
+#include "renderer/GlRenderer/Enum/GlError.hpp"
 #include "renderer/GlRenderer/Enum/GlFenceWaitFlag.hpp"
 #include "renderer/GlRenderer/Enum/GlFenceWaitResult.hpp"
 #include "renderer/GlRenderer/Enum/GlFilter.hpp"
@@ -393,6 +394,11 @@ namespace ashes::gl
 			, true );
 	}
 
+	inline auto glCallCheckOutOfMemory( ContextLock const & context )
+	{
+		return glCheckOutOfMemory( context );
+	}
+
 	inline auto glCallCheckError( ContextLock const & context
 		, char const * const name )
 	{
@@ -421,15 +427,17 @@ namespace ashes::gl
 	list.push_back( makeCmd< OpType::eLogCommand >( name ) );
 #elif defined( NDEBUG )
 #	define glLogEmptyCall( lock, name )\
-	( ( lock->m_##name() ), true )
+	( ( lock->m_##name() ), glCallCheckOutOfMemory( lock ) )
 #	define glLogCall( lock, name, ... )\
-	( ( lock->m_##name( __VA_ARGS__ ) ), true )
+	( ( lock->m_##name( __VA_ARGS__ ) ), glCallCheckOutOfMemory( lock ) )
 #	define glLogCreateCall( lock, name, ... )\
-	( ( lock->m_##name( __VA_ARGS__ ) ), true )
+	( ( lock->m_##name( __VA_ARGS__ ) ), glCallCheckOutOfMemory( lock ) )
 #	define glLogNonVoidCall( lock, name, ... )\
-	( lock->m_##name( __VA_ARGS__ ) )
+	( lock->m_##name( __VA_ARGS__ ) );\
+	glCallCheckOutOfMemory( lock )
 #	define glLogNonVoidEmptyCall( lock, name )\
-	( lock->m_##name() );
+	( lock->m_##name() );\
+	glCallCheckOutOfMemory( lock )
 #	define glLogCommand( list, name )
 #else
 #	define glLogEmptyCall( lock, name )\
