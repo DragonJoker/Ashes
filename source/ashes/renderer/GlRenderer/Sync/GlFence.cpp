@@ -45,11 +45,12 @@ namespace ashes::gl
 
 	VkResult Fence::wait( ContextLock & context
 		, uint64_t timeout
-		, bool forceWait )const
+		, bool forceWait
+		, bool ignoreFirst )const
 	{
-		if ( m_firstUse )
+		if ( !m_fence && m_firstUse && !ignoreFirst )
 		{
-			return VK_SUCCESS;
+			return VK_TIMEOUT;
 		}
 
 		if ( !m_fence )
@@ -76,13 +77,6 @@ namespace ashes::gl
 				: VK_NOT_READY );
 	}
 
-	VkResult Fence::wait( uint64_t timeout
-		, bool forceWait )const
-	{
-		auto context = get( m_device )->getContext();
-		return wait( context, timeout, forceWait );
-	}
-
 	void Fence::reset( ContextLock & context )const
 	{
 		glLogCall( context
@@ -91,8 +85,10 @@ namespace ashes::gl
 		m_fence = nullptr;
 	}
 
-	VkResult Fence::getStatus( ContextLock & context )const
+	VkResult Fence::getStatus( ContextLock & context )
 	{
+		m_firstUse = false;
+
 		if ( !m_fence )
 		{
 			return VK_NOT_READY;

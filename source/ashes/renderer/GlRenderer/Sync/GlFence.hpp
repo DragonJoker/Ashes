@@ -20,11 +20,10 @@ namespace ashes::gl
 		void insert( ContextLock & context );
 		VkResult wait( ContextLock & context
 			, uint64_t timeout
-			, bool forceWait )const;
-		VkResult wait( uint64_t timeout
-			, bool forceWait )const;
+			, bool forceWait
+			, bool ignoreFirst )const;
 		void reset( ContextLock & context )const;
-		VkResult getStatus( ContextLock & context )const;
+		VkResult getStatus( ContextLock & context );
 		void reset()const;
 
 		inline GLsync getInternal()const
