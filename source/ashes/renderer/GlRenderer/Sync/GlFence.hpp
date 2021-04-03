@@ -21,10 +21,9 @@ namespace ashes::gl
 		VkResult wait( ContextLock & context
 			, uint64_t timeout
 			, bool forceWait
-			, bool ignoreFirst )const;
-		void reset( ContextLock & context )const;
+			, bool ignoreFirst );
+		void reset( ContextLock & context );
 		VkResult getStatus( ContextLock & context );
-		void reset()const;
 
 		inline GLsync getInternal()const
 		{
@@ -40,5 +39,6 @@ namespace ashes::gl
 		mutable GLsync m_fence{ nullptr };
 		VkDevice m_device;
 		bool m_firstUse{ true };
+		bool m_signaled{ false };
 	};
 }
