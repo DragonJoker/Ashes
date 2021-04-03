@@ -251,15 +251,16 @@ namespace ashes::gl
 
 		void doSetupOptions( VkDevice device
 			, spirv_cross::CompilerGLSL & compiler
-			, bool invertY )
+			, bool invertY
+			, bool isVertexShader )
 		{
 			auto options = compiler.get_common_options();
 			options.version = get( getInstance( device ) )->getExtensions().getShaderVersion();
 			options.es = false;
 			options.separate_shader_objects = hasProgramPipelines( device );
 			options.enable_420pack_extension = true;// has420PackExtensions( device );
-			options.vertex.fixup_clipspace = true;
-			options.vertex.flip_vert_y = invertY;
+			options.vertex.fixup_clipspace = isVertexShader;
+			options.vertex.flip_vert_y = invertY && isVertexShader;
 			options.vertex.support_nonzero_base_instance = get( getInstance( device ) )->getFeatures ().hasBaseInstance;
 			compiler.set_common_options( options );
 		}
@@ -669,7 +670,7 @@ namespace ashes::gl
 				spirv_cross::ShaderResources resources = compiler.get_shader_resources();
 				doProcessSpecializationConstants( state, compiler );
 				doSetEntryPoint( currentStage, compiler );
-				doSetupOptions( device, compiler, invertY );
+				doSetupOptions( device, compiler, invertY, currentStage == VK_SHADER_STAGE_VERTEX_BIT );
 				constants = doRetrievePushConstants( compiler, currentStage );
 
 				if ( !hasProgramPipelines( device ) )
