@@ -525,7 +525,8 @@ void main( uint3 threadID : SV_DispatchThreadID )
 
 		VkImageCopyArray doGetCopyInfos( VkImage source
 			, uint32_t baseMipLevel
-			, uint32_t levelCount )
+			, uint32_t levelCount
+			, VkFormat format )
 		{
 			VkImageCopyArray result;
 
@@ -537,7 +538,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 						VkOffset3D{ 0, 0, 0 },
 						VkImageSubresourceLayers{ getAspectMask( get( source )->getFormat() ), level, 0u, 1u },
 						VkOffset3D{ 0, 0, 0 },
-						getSubresourceDimensions( get( source )->getDimensions(), level ),
+						getSubresourceDimensions( get( source )->getDimensions(), level, format ),
 					} );
 			}
 

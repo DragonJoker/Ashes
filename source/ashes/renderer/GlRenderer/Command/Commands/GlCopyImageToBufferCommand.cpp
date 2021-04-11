@@ -289,7 +289,9 @@ namespace ashes::gl
 		else
 		{
 			auto srcBufferOffset = getTextureImage( stack, copyInfo, src, list );
-			auto mipExtent = getSubresourceDimensions( get( src )->getDimensions(), copyInfo.imageSubresource.mipLevel );
+			auto mipExtent = getSubresourceDimensions( get( src )->getDimensions()
+				, copyInfo.imageSubresource.mipLevel
+				, get( src )->getFormatVk() );
 			auto mipLayerSize = srcBinding.getMipLevelLayerSize( copyInfo.imageSubresource.mipLevel );
 			auto baseArrayLayer = std::max( copyInfo.imageSubresource.baseArrayLayer
 				, uint32_t( copyInfo.imageOffset.z ) );
