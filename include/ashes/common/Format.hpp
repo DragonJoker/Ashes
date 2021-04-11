@@ -381,6 +381,30 @@ namespace ashes
 	}
 	/**
 	*\brief
+	*	Retrieves the real extent for the given mipmap level and image format.
+	*\param[in] extent
+	*	The level 0 extent.
+	*\param[in] mipLevel
+	*	The mipmap level for which dimensions are computed.
+	*\param[in] format
+	*	The image format.
+	*\return
+	*	The dimensions.
+	*/
+	inline VkExtent3D getSubresourceDimensions( VkExtent2D const & extent
+		, uint32_t mipLevel
+		, VkFormat format )noexcept
+	{
+		auto blockSize = getBlockSize( format );
+		return
+		{
+			std::max( blockSize.extent.width, getSubresourceDimension( extent.width, mipLevel ) ),
+			std::max( blockSize.extent.height, getSubresourceDimension( extent.height, mipLevel ) ),
+			1u
+		};
+	}
+	/**
+	*\brief
 	*	Retrieves the real extent for the given mipmap level.
 	*\param[in] extent
 	*	The level 0 extent.
@@ -396,7 +420,31 @@ namespace ashes
 		{
 			getSubresourceDimension( extent.width, mipLevel ),
 			getSubresourceDimension( extent.height, mipLevel ),
-			extent.depth
+			getSubresourceDimension( extent.depth, mipLevel )
+		};
+	}
+	/**
+	*\brief
+	*	Retrieves the real extent for the given mipmap level and image format.
+	*\param[in] extent
+	*	The level 0 extent.
+	*\param[in] mipLevel
+	*	The mipmap level.
+	*\param[in] format
+	*	The image format.
+	*\return
+	*	The dimensions.
+	*/
+	inline VkExtent3D getSubresourceDimensions( VkExtent3D const & extent
+		, uint32_t mipLevel
+		, VkFormat format )noexcept
+	{
+		auto blockSize = getBlockSize( format );
+		return
+		{
+			std::max( blockSize.extent.width, getSubresourceDimension( extent.width, mipLevel ) ),
+			std::max( blockSize.extent.height, getSubresourceDimension( extent.height, mipLevel ) ),
+			std::max( blockSize.extent.depth, getSubresourceDimension( extent.depth, mipLevel ) )
 		};
 	}
 	/**
