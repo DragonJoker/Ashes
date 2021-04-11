@@ -7,6 +7,7 @@ See LICENSE file in root folder.
 #pragma once
 
 #include "ComputePipelineCreateInfo.hpp"
+#include "Pipeline.hpp"
 
 namespace ashes
 {
@@ -15,6 +16,7 @@ namespace ashes
 	*	A compute pipeline.
 	*/
 	class ComputePipeline
+		: public Pipeline
 	{
 	public:
 		/**
@@ -38,24 +40,9 @@ namespace ashes
 		ComputePipeline( Device const & device
 			, std::string const & debugName
 			, ComputePipelineCreateInfo createInfo );
-		/**
-		*\brief
-		*	Destructor.
-		*/
-		~ComputePipeline();
-		/**
-		*\brief
-		*	VkPipeline implicit cast operator.
-		*/
-		inline operator VkPipeline const & ()const
-		{
-			return m_internal;
-		}
 
 	protected:
-		Device const & m_device;
 		ComputePipelineCreateInfo m_createInfo;
-		VkPipeline m_internal{ VK_NULL_HANDLE };
 	};
 }
 

@@ -300,6 +300,7 @@ source_group( "Source Files\\Miscellaneous" FILES ${${PROJECT_NAME}_FOLDER_SRC_F
 set( ${PROJECT_NAME}_FOLDER_SRC_FILES
 	${Ashes_SOURCE_DIR}/source/ashespp/Pipeline/ComputePipeline.cpp
 	${Ashes_SOURCE_DIR}/source/ashespp/Pipeline/GraphicsPipeline.cpp
+	${Ashes_SOURCE_DIR}/source/ashespp/Pipeline/Pipeline.cpp
 	${Ashes_SOURCE_DIR}/source/ashespp/Pipeline/PipelineLayout.cpp
 )
 set( ${PROJECT_NAME}_FOLDER_HDR_FILES
@@ -307,6 +308,7 @@ set( ${PROJECT_NAME}_FOLDER_HDR_FILES
 	${Ashes_SOURCE_DIR}/include/ashespp/Pipeline/ComputePipelineCreateInfo.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Pipeline/GraphicsPipeline.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Pipeline/GraphicsPipelineCreateInfo.hpp
+	${Ashes_SOURCE_DIR}/include/ashespp/Pipeline/Pipeline.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Pipeline/PipelineColorBlendStateCreateInfo.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Pipeline/PipelineDepthStencilStateCreateInfo.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Pipeline/PipelineDynamicStateCreateInfo.hpp

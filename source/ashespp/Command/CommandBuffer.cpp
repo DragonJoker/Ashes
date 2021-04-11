@@ -136,7 +136,7 @@ namespace ashes
 			, clearRects.data() );
 	}
 
-	void CommandBuffer::bindPipeline( GraphicsPipeline const & pipeline
+	void CommandBuffer::bindPipeline( Pipeline const & pipeline
 		, VkPipelineBindPoint bindingPoint )const
 	{
 		m_device.vkCmdBindPipeline( m_internal
@@ -144,12 +144,16 @@ namespace ashes
 			, pipeline );
 	}
 
-	void CommandBuffer::bindPipeline( ComputePipeline const & pipeline
-		, VkPipelineBindPoint bindingPoint )const
+	void CommandBuffer::bindPipeline( GraphicsPipeline const & pipeline )const
 	{
-		m_device.vkCmdBindPipeline( m_internal
-			, bindingPoint
-			, pipeline );
+		bindPipeline( pipeline
+			, VK_PIPELINE_BIND_POINT_GRAPHICS );
+	}
+
+	void CommandBuffer::bindPipeline( ComputePipeline const & pipeline )const
+	{
+		bindPipeline( pipeline
+			, VK_PIPELINE_BIND_POINT_COMPUTE );
 	}
 
 	void CommandBuffer::bindVertexBuffers( uint32_t firstBinding

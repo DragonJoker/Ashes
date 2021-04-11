@@ -214,8 +214,17 @@ namespace ashes
 		*\param[in] bindingPoint
 		*	Specifies whether to bind to the compute or graphics bind point.
 		*/
-		void bindPipeline( GraphicsPipeline const & pipeline
-			, VkPipelineBindPoint bindingPoint = VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS )const;
+		void bindPipeline( Pipeline const & pipeline
+			, VkPipelineBindPoint bindingPoint )const;
+		/**
+		*\brief
+		*	Binds a pipeline to the command buffer.
+		*\param[in] pipeline
+		*	The pipeline to be bound.
+		*\param[in] bindingPoint
+		*	Specifies whether to bind to the compute or graphics bind point.
+		*/
+		void bindPipeline( GraphicsPipeline const & pipeline )const;
 		/**
 		*\brief
 		*	Binds a compute pipeline to the command buffer.
@@ -224,8 +233,7 @@ namespace ashes
 		*\param[in] bindingPoint
 		*	Specifies whether to bind to the compute or graphics bind point.
 		*/
-		void bindPipeline( ComputePipeline const & pipeline
-			, VkPipelineBindPoint bindingPoint = VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_COMPUTE )const;
+		void bindPipeline( ComputePipeline const & pipeline )const;
 		/**
 		*\brief
 		*	Binds vertex buffers to the command buffer.
