@@ -150,6 +150,7 @@ namespace ashes
 	class Instance;
 	class IWindowHandle;
 	class PhysicalDevice;
+	class Pipeline;
 	class PipelineLayout;
 	class PushConstantsBufferBase;
 	class QueryPool;
@@ -199,6 +200,7 @@ namespace ashes
 	using InstancePtr = std::unique_ptr< Instance >;
 	using IWindowHandlePtr = std::unique_ptr< IWindowHandle >;
 	using PhysicalDevicePtr = std::unique_ptr< PhysicalDevice >;
+	using PipelinePtr = std::unique_ptr< Pipeline >;
 	using PipelineLayoutPtr = std::unique_ptr< PipelineLayout >;
 	using PipelineVertexInputStateCreateInfoPtr = std::unique_ptr< PipelineVertexInputStateCreateInfo >;
 	using PushConstantsBufferPtr = std::unique_ptr< PushConstantsBufferBase >;

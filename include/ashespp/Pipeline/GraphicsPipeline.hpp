@@ -2,11 +2,11 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___AshesPP_Pipeline_HPP___
-#define ___AshesPP_Pipeline_HPP___
+#ifndef ___AshesPP_GraphicsPipeline_HPP___
+#define ___AshesPP_GraphicsPipeline_HPP___
 #pragma once
 
-#include "GraphicsPipelineCreateInfo.hpp"
+#include "Pipeline.hpp"
 
 namespace ashes
 {
@@ -15,6 +15,7 @@ namespace ashes
 	*	A rendering pipeline.
 	*/
 	class GraphicsPipeline
+		: public Pipeline
 	{
 	public:
 		/**
@@ -42,24 +43,9 @@ namespace ashes
 		GraphicsPipeline( Device const & device
 			, std::string const & debugName
 			, GraphicsPipelineCreateInfo createInfo );
-		/**
-		*\brief
-		*	Destructor.
-		*/
-		~GraphicsPipeline();
-		/**
-		*\brief
-		*	Conversion implicite vers VkPipeline.
-		*/
-		inline operator VkPipeline const & ()const
-		{
-			return m_internal;
-		}
 
 	protected:
-		Device const & m_device;
 		GraphicsPipelineCreateInfo m_createInfo;
-		VkPipeline m_internal{ VK_NULL_HANDLE };
 	};
 }
 

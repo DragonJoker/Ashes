@@ -148,13 +148,7 @@ namespace ashes
 	};
 
 	template<>
-	struct AshesTypeTraits< ashes::GraphicsPipeline >
-	{
-		using VkType = VkPipeline;
-	};
-
-	template<>
-	struct AshesTypeTraits< ashes::ComputePipeline >
+	struct AshesTypeTraits< ashes::Pipeline >
 	{
 		using VkType = VkPipeline;
 	};
@@ -537,7 +531,7 @@ namespace ashes
 	};
 
 	template<>
-	struct AshesDebugTypeTraits< ashes::GraphicsPipeline >
+	struct AshesDebugTypeTraits< ashes::Pipeline >
 	{
 #if VK_EXT_debug_utils
 		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_PIPELINE;
@@ -547,23 +541,7 @@ namespace ashes
 #endif
 		static std::string const & getName()
 		{
-			static std::string result{ "VkGraphicsPipeline" };
-			return result;
-		}
-	};
-
-	template<>
-	struct AshesDebugTypeTraits< ashes::ComputePipeline >
-	{
-#if VK_EXT_debug_utils
-		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_PIPELINE;
-#endif
-#if VK_EXT_debug_report || VK_EXT_debug_marker
-		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT;
-#endif
-		static std::string const & getName()
-		{
-			static std::string result{ "VkComputePipeline" };
+			static std::string result{ "VkPipeline" };
 			return result;
 		}
 	};
