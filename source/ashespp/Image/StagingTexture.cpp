@@ -181,14 +181,10 @@ namespace ashes
 		, ImageView const & view )const
 	{
 		auto mipLevel = view->subresourceRange.baseMipLevel;
-		VkExtent2D extent
-		{
-			std::max( 1u, view.image->getDimensions().width >> mipLevel ),
-			std::max( 1u, view.image->getDimensions().height >> mipLevel )
-		};
+		auto extent = getSubresourceDimensions( view.image->getDimensions(), mipLevel, format );
 		doCopyToStagingTexture( data
 			, format
-			, extent
+			, { extent.width, extent.height }
 			, view->subresourceRange.levelCount );
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
 			, VK_PIPELINE_STAGE_TRANSFER_BIT
@@ -207,7 +203,7 @@ namespace ashes
 
 		for ( uint32_t level = 0u; level < view->subresourceRange.levelCount; ++level )
 		{
-			subresourceLayers.mipLevel = level;
+			subresourceLayers.mipLevel = mipLevel;
 			VkDeviceSize size = getSize( extent, format );
 			assert( offset + size <= m_buffer.getSize() );
 			commandBuffer.copyToImage( VkBufferImageCopy
@@ -219,16 +215,15 @@ namespace ashes
 					VkOffset3D{},
 					VkExtent3D
 					{
-						std::max( 1u, extent.width ),
-						std::max( 1u, extent.height ),
+						std::max( 1u, view.image->getDimensions().width >> mipLevel ),
+						std::max( 1u, view.image->getDimensions().height >> mipLevel ),
 						1u
 					}
 				}
 				, m_buffer
 				, *view.image );
 			offset += size;
-			extent.width = std::max( 1u, extent.width >> 1u );
-			extent.height = std::max( 1u, extent.height >> 1u );
+			++mipLevel;
 		}
 
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
@@ -240,10 +235,8 @@ namespace ashes
 		, VkFormat format
 		, ImageView const & view )const
 	{
-		auto extent = view.image->getDimensions();
 		auto mipLevel = view->subresourceRange.baseMipLevel;
-		extent.width = std::max( 1u, extent.width >> mipLevel );
-		extent.height = std::max( 1u, extent.height >> mipLevel );
+		auto extent = getSubresourceDimensions( view.image->getDimensions(), mipLevel, format );
 		copyTextureData( commandBuffer
 			, {
 				view->subresourceRange.aspectMask,
@@ -323,10 +316,8 @@ namespace ashes
 		, uint8_t * data
 		, ImageView const & view )const
 	{
-		auto extent = view.image->getDimensions();
 		auto mipLevel = view->subresourceRange.baseMipLevel;
-		extent.width = std::max( 1u, extent.width >> mipLevel );
-		extent.height = std::max( 1u, extent.height >> mipLevel );
+		auto extent = getSubresourceDimensions( view.image->getDimensions(), mipLevel, format );
 		downloadTextureData( queue
 			, commandPool
 			, {
