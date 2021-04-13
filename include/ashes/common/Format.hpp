@@ -398,8 +398,8 @@ namespace ashes
 		auto blockSize = getBlockSize( format );
 		return
 		{
-			std::max( blockSize.extent.width, getSubresourceDimension( extent.width, mipLevel ) ),
-			std::max( blockSize.extent.height, getSubresourceDimension( extent.height, mipLevel ) ),
+			uint32_t( getAlignedSize( getSubresourceDimension( extent.width, mipLevel ), blockSize.extent.width ) ),
+			uint32_t( getAlignedSize( getSubresourceDimension( extent.height, mipLevel ), blockSize.extent.height ) ),
 			1u
 		};
 	}
@@ -442,9 +442,9 @@ namespace ashes
 		auto blockSize = getBlockSize( format );
 		return
 		{
-			std::max( blockSize.extent.width, getSubresourceDimension( extent.width, mipLevel ) ),
-			std::max( blockSize.extent.height, getSubresourceDimension( extent.height, mipLevel ) ),
-			std::max( blockSize.extent.depth, getSubresourceDimension( extent.depth, mipLevel ) )
+			uint32_t( getAlignedSize( getSubresourceDimension( extent.width, mipLevel ), blockSize.extent.width ) ),
+			uint32_t( getAlignedSize( getSubresourceDimension( extent.height, mipLevel ), blockSize.extent.height ) ),
+			uint32_t( getAlignedSize( getSubresourceDimension( extent.depth, mipLevel ), blockSize.extent.depth ) )
 		};
 	}
 	/**
