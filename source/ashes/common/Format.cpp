@@ -981,8 +981,11 @@ namespace ashes
 		alignment = ( alignment <= 1u
 			? uint32_t( getMinimalSize( format ) )
 			: alignment );
-		auto levelExtent = getSubresourceDimensions( extent, mipLevel );
-		auto result = texel.size * ( VkDeviceSize( levelExtent.width ) * levelExtent.height * levelExtent.depth );
+		auto levelExtent = getSubresourceDimensions( extent, mipLevel, format );
+		auto result = texel.size
+			* getAlignedSize( levelExtent.width, texel.extent.width )
+			* getAlignedSize( levelExtent.height, texel.extent.height )
+			* getAlignedSize( levelExtent.depth, texel.extent.depth );
 		return std::max( VkDeviceSize( alignment )
 			, getAlignedSize( result / ( VkDeviceSize( texel.extent.width ) * texel.extent.height * texel.extent.depth )
 				, alignment ) );
