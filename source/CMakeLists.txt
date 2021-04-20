@@ -11,6 +11,11 @@ elseif ( MSVC )
 		_SCL_SECURE_NO_WARNINGS
 		_ENFORCE_MATCHING_ALLOCATORS=0
 	)
+	if ( ASHES_ENABLE_ASAN )
+		set( TARGET_COMPILE_OPTIONS
+			$<$<CONFIG:Debug>:/fsanitize=address>
+		)
+	endif ()
 endif ()
 
 if ( EXISTS ${Ashes_SOURCE_DIR}/external/spirv_cross/spirv_cross.cpp )
