@@ -100,7 +100,12 @@ if ( VCPKG_TOOLCHAIN )
 endif ()
 
 if ( MSVC )
-	string( REGEX REPLACE "/Zi" "/ZI" CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG} )
+	option( ASHES_ENABLE_ASAN "Enable address sanitizer on Ashes projects" OFF )
+	if ( ASHES_ENABLE_ASAN )
+		string( REGEX REPLACE "/ZI" "/Zi" CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG} )
+	else ()
+		string( REGEX REPLACE "/Zi" "/ZI" CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG} )
+	endif ()
 endif ()
 
 if ( NOT EXISTS ${CMAKE_SOURCE_DIR}/external/Vulkan-Headers/include/ )
