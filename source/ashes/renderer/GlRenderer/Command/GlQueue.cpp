@@ -512,47 +512,75 @@ namespace ashes::gl
 	VkResult Queue::submit( VkSubmitInfoArray const & values
 		, VkFence fence )const
 	{
-		auto context = get( m_device )->getContext();
-
-		for ( auto & value : values )
+		try
 		{
-			submit( context, value );
-		}
+			auto context = get( m_device )->getContext();
 
-		if ( fence )
+			for ( auto & value : values )
+			{
+				for ( auto commandBuffer : makeArrayView( value.pCommandBuffers, value.commandBufferCount ) )
+				{
+					auto & glCommandBuffer = *get( commandBuffer );
+					glCommandBuffer.initialiseGeometryBuffers( context );
+					applyBuffer( context, glCommandBuffer.getCmds() );
+					applyBuffer( context, glCommandBuffer.getCmdsAfterSubmit() );
+				}
+			}
+
+			if ( fence )
+			{
+				get( fence )->insert( context );
+			}
+
+			return VK_SUCCESS;
+		}
+		catch ( Exception & exc )
 		{
-			get( fence )->insert( context );
+			return exc.getResult();
 		}
-
-		return VK_SUCCESS;
+		catch ( ... )
+		{
+			return VK_ERROR_DEVICE_LOST;
+		}
 	}
 
 	VkResult Queue::present( VkPresentInfoKHR const & presentInfo )const
 	{
-		auto itIndex = presentInfo.pImageIndices;
-
-		if ( presentInfo.pResults )
+		try
 		{
-			auto itResult = presentInfo.pResults;
+			auto itIndex = presentInfo.pImageIndices;
 
-			for ( auto itSwapchain = presentInfo.pSwapchains;
-				itSwapchain != presentInfo.pSwapchains + presentInfo.swapchainCount;
-				++itIndex, ++itResult, ++itSwapchain )
+			if ( presentInfo.pResults )
 			{
-				*itResult = get( *itSwapchain )->present( *itIndex );
+				auto itResult = presentInfo.pResults;
+
+				for ( auto itSwapchain = presentInfo.pSwapchains;
+					itSwapchain != presentInfo.pSwapchains + presentInfo.swapchainCount;
+					++itIndex, ++itResult, ++itSwapchain )
+				{
+					*itResult = get( *itSwapchain )->present( *itIndex );
+				}
 			}
+			else
+			{
+				for ( auto itSwapchain = presentInfo.pSwapchains;
+					itSwapchain != presentInfo.pSwapchains + presentInfo.swapchainCount;
+					++itIndex, ++itSwapchain )
+				{
+					get( *itSwapchain )->present( *itIndex );
+				}
+			}
+
+			return VK_SUCCESS;
 		}
-		else
+		catch ( Exception & exc )
 		{
-			for ( auto itSwapchain = presentInfo.pSwapchains;
-				itSwapchain != presentInfo.pSwapchains + presentInfo.swapchainCount;
-				++itIndex, ++itSwapchain )
-			{
-				get( *itSwapchain )->present( *itIndex );
-			}
+			return exc.getResult();
 		}
-
-		return VK_SUCCESS;
+		catch ( ... )
+		{
+			return VK_ERROR_DEVICE_LOST;
+		}
 	}
 
 	VkResult Queue::bindSparse( ArrayView< VkBindSparseInfo const > values
@@ -563,23 +591,21 @@ namespace ashes::gl
 
 	VkResult Queue::waitIdle()const
 	{
-		auto context = ( ( Device * )m_device )->getContext();
-		logDebug( "*** vkQueueWaitIdle ***" );
-		glLogEmptyCall( context
-			, glFinish );
-		return VK_SUCCESS;
-	}
-
-	void Queue::submit( ContextLock & context
-		, VkSubmitInfo const & value )const
-	{
-		for ( auto it = value.pCommandBuffers; it != value.pCommandBuffers + value.commandBufferCount; ++it )
+		try
 		{
-			auto & commandBuffer = *it;
-			auto & glCommandBuffer = *( ( CommandBuffer * )commandBuffer );
-			glCommandBuffer.initialiseGeometryBuffers( context );
-			applyBuffer( context, glCommandBuffer.getCmds() );
-			applyBuffer( context, glCommandBuffer.getCmdsAfterSubmit() );
+			auto context = ( ( Device * )m_device )->getContext();
+			logDebug( "*** vkQueueWaitIdle ***" );
+			glLogEmptyCall( context
+				, glFinish );
+			return VK_SUCCESS;
+		}
+		catch ( Exception & exc )
+		{
+			return exc.getResult();
+		}
+		catch ( ... )
+		{
+			return VK_ERROR_DEVICE_LOST;
 		}
 	}
 

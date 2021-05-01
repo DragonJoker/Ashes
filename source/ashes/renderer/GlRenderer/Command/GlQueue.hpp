@@ -42,10 +42,6 @@ namespace ashes::gl
 		}
 
 	private:
-		void submit( ContextLock & context
-			, VkSubmitInfo const & value )const;
-
-	private:
 		VkDevice m_device;
 		VkDeviceQueueCreateInfo m_createInfo;
 		uint32_t m_index;
