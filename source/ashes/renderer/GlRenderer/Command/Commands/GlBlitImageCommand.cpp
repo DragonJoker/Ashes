@@ -101,14 +101,17 @@ namespace ashes::gl
 			|| region.srcSubresource.layerCount == region.dstOffsets[1].z
 			|| region.dstSubresource.layerCount == region.srcOffsets[1].z );
 
-		auto layerCount = std::max( region.srcSubresource.layerCount
-			, std::max( region.dstSubresource.layerCount
-				, uint32_t( std::max( region.srcOffsets[1].z
-					, region.dstOffsets[1].z ) ) ) );
-		auto srcBaseArrayLayer = std::max( region.srcSubresource.baseArrayLayer
-			, uint32_t( region.srcOffsets[0].z ) );
-		auto dstBaseArrayLayer = std::max( region.dstSubresource.baseArrayLayer
-			, uint32_t( region.dstOffsets[0].z ) );
+		auto srcLayerCount = region.srcSubresource.layerCount;
+		auto dstLayerCount = region.dstSubresource.layerCount;
+		auto srcSliceCount = region.srcOffsets[1].z;
+		auto dstSliceCount = region.dstOffsets[1].z;
+		float sliceRatio = float( srcSliceCount ) / dstSliceCount;
+		auto layerCount = std::max( std::max( srcLayerCount, dstLayerCount )
+			, std::min< uint32_t >( srcSliceCount, dstSliceCount ) );
+		auto srcBaseArrayLayer = region.srcSubresource.baseArrayLayer;
+		auto dstBaseArrayLayer = region.dstSubresource.baseArrayLayer;
+		auto srcBaseSlice = region.srcOffsets[0].z;
+		auto dstBaseSlice = region.dstOffsets[0].z;
 
 		for ( uint32_t layer = 0u; layer < layerCount; ++layer )
 		{
@@ -120,11 +123,13 @@ namespace ashes::gl
 			list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_READ_FRAMEBUFFER ) );
 			layerCopy.bindSrc( stack
 				, srcBaseArrayLayer + layer
+				, uint32_t( ( srcBaseSlice + layer ) * sliceRatio )
 				, GL_READ_FRAMEBUFFER
 				, list );
 			list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_DRAW_FRAMEBUFFER ) );
 			layerCopy.bindDst( stack
 				, dstBaseArrayLayer + layer
+				, dstBaseSlice + layer
 				, GL_DRAW_FRAMEBUFFER
 				, list );
 			list.push_back( makeCmd< OpType::eBlitFramebuffer >( layerCopy.region.srcOffsets[0].x

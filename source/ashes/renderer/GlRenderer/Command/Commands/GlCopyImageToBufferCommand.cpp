@@ -29,9 +29,9 @@ namespace ashes::gl
 
 			auto copyInfo = srcCopyInfo;
 			VkImageView srcView{ VK_NULL_HANDLE };
-			FboAttachment srcAttach{ initialiseAttachment( device
+			FboAttachment srcAttach{ device
 				, copyInfo.imageSubresource
-				, src ) };
+				, src };
 			list.push_back( makeCmd< OpType::eBindBuffer >( GL_BUFFER_TARGET_PIXEL_PACK
 				, dst ) );
 			stack.applyPackAlign( list, 1 );

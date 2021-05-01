@@ -200,19 +200,29 @@ namespace ashes::gl
 
 	struct FboAttachment
 	{
-		uint32_t referenceIndex;
-		GlAttachmentPoint point;
-		GLuint object;
-		GlAttachmentType type;
-		GlTextureType target;
-		uint32_t mipLevel;
-		uint32_t index;
-		uint32_t baseArrayLayer;
-		uint32_t imgLayerCount;
-		uint32_t viewLayerCount;
-		GLuint originalObject;
-		GLuint originalMipLevel;
-		bool isSrgb{ false };
+		uint32_t referenceIndex{};
+		GlAttachmentPoint point{};
+		GLuint object{};
+		GLuint originalObject{};
+		GlAttachmentType type{};
+		uint32_t index{};
+		uint32_t imgLayerCount{};
+		uint32_t viewLayerCount{};
+		GlTextureType target{};
+		uint32_t baseArrayLayer{};
+		GLuint originalMipLevel{};
+		uint32_t mipLevel{};
+		bool isSrgb{};
+
+		FboAttachment();
+		FboAttachment( VkDevice device
+			, uint32_t referenceIndex
+			, VkImageView view
+			, uint32_t index
+			, bool & multisampled );
+		FboAttachment( VkDevice device
+			, VkImageSubresourceLayers & subresource
+			, VkImage image );
 
 		void bind( uint32_t mipLevel
 			, GlFrameBufferTarget fboTarget
@@ -246,6 +256,29 @@ namespace ashes::gl
 		void bindDraw( ContextStateStack & stack
 			, uint32_t mipLevel
 			, uint32_t layer
+			, GlFrameBufferTarget fboTarget
+			, CmdList & list )const;
+		void bind( uint32_t mipLevel
+			, uint32_t layer
+			, uint32_t slice
+			, GlFrameBufferTarget fboTarget
+			, CmdList & list )const;
+		void bindIndex( uint32_t mipLevel
+			, uint32_t layer
+			, uint32_t slice
+			, GlFrameBufferTarget fboTarget
+			, uint32_t index
+			, CmdList & list )const;
+		void bindRead( ContextStateStack & stack
+			, uint32_t mipLevel
+			, uint32_t layer
+			, uint32_t slice
+			, GlFrameBufferTarget fboTarget
+			, CmdList & list )const;
+		void bindDraw( ContextStateStack & stack
+			, uint32_t mipLevel
+			, uint32_t layer
+			, uint32_t slice
 			, GlFrameBufferTarget fboTarget
 			, CmdList & list )const;
 		void read( ContextStateStack & stack
@@ -314,6 +347,34 @@ namespace ashes::gl
 			dst.bindDraw( stack
 				, region.dstSubresource.mipLevel
 				, layer
+				, fboTarget
+				, list );
+		}
+
+		void bindSrc( ContextStateStack & stack
+			, uint32_t layer
+			, uint32_t slice
+			, GlFrameBufferTarget fboTarget
+			, CmdList & list )const
+		{
+			src.bindRead( stack
+				, region.srcSubresource.mipLevel
+				, layer
+				, slice
+				, fboTarget
+				, list );
+		}
+
+		void bindDst( ContextStateStack & stack
+			, uint32_t layer
+			, uint32_t slice
+			, GlFrameBufferTarget fboTarget
+			, CmdList & list )const
+		{
+			dst.bindDraw( stack
+				, region.dstSubresource.mipLevel
+				, layer
+				, slice
 				, fboTarget
 				, list );
 		}

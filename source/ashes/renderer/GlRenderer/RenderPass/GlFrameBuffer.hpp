@@ -24,9 +24,6 @@ namespace ashes::gl
 		, GLenum status );
 	void checkCompleteness( VkFramebuffer framebuffer
 		, GLenum status );
-	FboAttachment initialiseAttachment( VkDevice device
-		, VkImageSubresourceLayers & subresource
-		, VkImage image );
 
 	class Framebuffer
 		: public IcdObject

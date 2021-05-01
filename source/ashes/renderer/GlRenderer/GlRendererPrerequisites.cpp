@@ -90,6 +90,112 @@ namespace ashes::gl
 
 	//*********************************************************************************************
 
+	namespace
+	{
+		bool isCube( VkImage image )
+		{
+			return checkFlag( get( image )->getCreateFlags()
+				, VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT );
+		}
+
+		bool isCube( VkImageView view )
+		{
+			return isCube( get( view )->getImage() );
+		}
+
+		bool isMultisampled( VkImage image )
+		{
+			return get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT;
+		}
+
+		bool isMultisampled( VkImageView view )
+		{
+			return isMultisampled( get( view )->getImage() );
+		}
+	}
+
+	FboAttachment::FboAttachment()
+	{
+	}
+
+	FboAttachment::FboAttachment( VkDevice device
+		, uint32_t referenceIndex
+		, VkImageView view
+		, uint32_t index
+		, bool & multisampled )
+		: referenceIndex{ referenceIndex }
+		, point{ getAttachmentPoint( view ) }
+		, object{ get( view )->getInternal() }
+		, originalObject{ get( get( view )->getImage() )->getInternal() }
+		, type{ getAttachmentType( view ) }
+		, index{ index }
+		, imgLayerCount{ std::max( get( get( view )->getImage() )->getArrayLayers()
+			, get( get( view )->getImage() )->getDimensions().depth ) }
+		, viewLayerCount{ ( ( get( view )->getType() == VK_IMAGE_VIEW_TYPE_3D )
+			? imgLayerCount
+			: get( view )->getSubresourceRange().layerCount ) }
+		, target{ ( get( get( view )->getImage() )->getType() == VK_IMAGE_TYPE_3D
+			? GL_TEXTURE_3D
+			: ( get( get( view )->getImage() )->getType() == VK_IMAGE_TYPE_2D
+				? ( viewLayerCount > 1u
+					? ( isMultisampled( view )
+						? GL_TEXTURE_2D_MULTISAMPLE_ARRAY
+						: GL_TEXTURE_2D_ARRAY )
+					: ( isMultisampled( view )
+						? GL_TEXTURE_2D_MULTISAMPLE
+						: GL_TEXTURE_2D ) )
+				: ( viewLayerCount > 1u
+					? GL_TEXTURE_1D_ARRAY
+					: GL_TEXTURE_1D ) ) ) }
+		, baseArrayLayer{ ( hasTextureViews( device )
+			? 0
+			: ( ( ( !isCube( view ) && imgLayerCount > 1u ) || ( isCube( view ) && imgLayerCount > 6u ) )
+				? get( view )->getSubresourceRange().baseArrayLayer
+				: 0u ) ) }
+		, originalMipLevel{ get( view )->getSubresourceRange().baseMipLevel }
+		, mipLevel{ originalMipLevel }
+		, isSrgb{ isSRGBFormat( get( get( view )->getImage() )->getFormatVk() ) }
+	{
+		multisampled = isMultisampled( view );
+	}
+
+	FboAttachment::FboAttachment( VkDevice device
+		, VkImageSubresourceLayers & subresource
+		, VkImage image )
+		: referenceIndex{ 0u }
+		, point{ ( hasTextureViews( device )
+			? getAttachmentPoint( subresource.aspectMask )
+			: getAttachmentPoint( get( image )->getFormatVk() ) ) }
+		, object{ get( image )->getInternal() }
+		, originalObject{}
+		, type{ ( hasTextureViews( device )
+			? getAttachmentType( subresource.aspectMask )
+			: getAttachmentType( get( image )->getFormatVk() ) ) }
+		, index{ 0u }
+		, imgLayerCount{ get( image )->getArrayLayers() }
+		, viewLayerCount{ imgLayerCount }
+		, target{ ( get( image )->getType() == VK_IMAGE_TYPE_3D
+			? GL_TEXTURE_3D
+			: ( get( image )->getType() == VK_IMAGE_TYPE_2D
+				? ( viewLayerCount > 1u
+					? ( isMultisampled( image )
+						? GL_TEXTURE_2D_MULTISAMPLE_ARRAY
+						: GL_TEXTURE_2D_ARRAY )
+					: ( isMultisampled( image )
+						? GL_TEXTURE_2D_MULTISAMPLE
+						: GL_TEXTURE_2D ) )
+				: ( viewLayerCount > 1u
+					? GL_TEXTURE_1D_ARRAY
+					: GL_TEXTURE_1D ) ) ) }
+		, baseArrayLayer{ subresource.baseArrayLayer }
+		, originalMipLevel{}
+		, mipLevel{ ( get( image )->getArrayLayers() > 1u
+			? 0u
+			: subresource.mipLevel ) }
+		, isSrgb{ isSRGBFormat( get( image )->getFormatVk() ) }
+	{
+	}
+
 	void FboAttachment::bind( uint32_t mipLevel
 		, GlFrameBufferTarget fboTarget
 		, CmdList & list )const
@@ -227,6 +333,91 @@ namespace ashes::gl
 		draw( stack, list );
 	}
 
+	void FboAttachment::bind( uint32_t mipLevel
+		, uint32_t layer
+		, uint32_t slice
+		, GlFrameBufferTarget fboTarget
+		, CmdList & list )const
+	{
+		bindIndex( mipLevel, layer, slice, fboTarget, 0u, list );
+	}
+
+	void FboAttachment::bindIndex( uint32_t mipLevel
+		, uint32_t layer
+		, uint32_t slice
+		, GlFrameBufferTarget fboTarget
+		, uint32_t index
+		, CmdList & list )const
+	{
+		if ( target == GL_TEXTURE_1D )
+		{
+			list.push_back( makeCmd< OpType::eFramebufferTexture1D >( fboTarget
+				, GlAttachmentPoint( point + index )
+				, target
+				, object
+				, mipLevel ) );
+		}
+		else if ( target == GL_TEXTURE_2D
+			|| target == GL_TEXTURE_2D_MULTISAMPLE )
+		{
+			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( fboTarget
+				, GlAttachmentPoint( point + index )
+				, target
+				, object
+				, mipLevel ) );
+		}
+		else if ( target == GL_TEXTURE_3D )
+		{
+			list.push_back( makeCmd< OpType::eFramebufferTexture3D >( fboTarget
+				, GlAttachmentPoint( point + index )
+				, target
+				, object
+				, mipLevel
+				, slice ) );
+		}
+		else if ( target == GL_TEXTURE_CUBE
+			|| target == GL_TEXTURE_1D_ARRAY
+			|| target == GL_TEXTURE_2D_ARRAY
+			|| target == GL_TEXTURE_2D_MULTISAMPLE_ARRAY
+			|| target == GL_TEXTURE_CUBE_ARRAY )
+		{
+			list.push_back( makeCmd< OpType::eFramebufferTextureLayer >( fboTarget
+				, GlAttachmentPoint( point + index )
+				, object
+				, mipLevel
+				, layer ) );
+		}
+		else
+		{
+			list.push_back( makeCmd< OpType::eFramebufferTexture >( fboTarget
+				, GlAttachmentPoint( point + index )
+				, object
+				, mipLevel ) );
+		}
+	}
+
+	void FboAttachment::bindRead( ContextStateStack & stack
+		, uint32_t mipLevel
+		, uint32_t layer
+		, uint32_t slice
+		, GlFrameBufferTarget target
+		, CmdList & list )const
+	{
+		bind( mipLevel, layer, slice, target, list );
+		read( stack, list );
+	}
+
+	void FboAttachment::bindDraw( ContextStateStack & stack
+		, uint32_t mipLevel
+		, uint32_t layer
+		, uint32_t slice
+		, GlFrameBufferTarget target
+		, CmdList & list )const
+	{
+		bind( mipLevel, layer, slice, target, list );
+		draw( stack, list );
+	}
+
 	void FboAttachment::read( ContextStateStack & stack
 		, CmdList & list )const
 	{
@@ -270,8 +461,8 @@ namespace ashes::gl
 		, VkImage srcImage
 		, VkImage dstImage )
 		: region{ origRegion }
-		, src{ initialiseAttachment( device, origRegion.srcSubresource, srcImage ) }
-		, dst{ initialiseAttachment( device, origRegion.dstSubresource, dstImage ) }
+		, src{ device, origRegion.srcSubresource, srcImage }
+		, dst{ device, origRegion.dstSubresource, dstImage }
 	{
 	}
 
