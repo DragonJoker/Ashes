@@ -177,6 +177,8 @@ extern "C"
 	Ashes_API void VKAPI_PTR ashEnumeratePluginsDescriptions( uint32_t * count
 		, AshPluginDescription * pDescriptions )
 	{
+		*count = 0u;
+
 		if ( g_library.init() == VK_SUCCESS )
 		{
 			*count = uint32_t( g_library.plugins.size() );
