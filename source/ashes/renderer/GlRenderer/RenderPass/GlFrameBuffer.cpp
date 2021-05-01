@@ -30,198 +30,6 @@ namespace ashes::gl
 		GL_FRAMEBUFFER_STATUS_INCOMPLETE_LAYER_TARGETS = 0x8DA8,
 	};
 
-	namespace gl3
-	{
-		FboAttachment initialiseAttachment( uint32_t referenceIndex
-			, VkImageView view
-			, uint32_t index
-			, bool & multisampled )
-		{
-			auto image = get( view )->getImage();
-			multisampled = get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT;
-
-			auto layersCount = get( image )->getArrayLayers();
-			bool isCube = checkFlag( get( image )->getCreateFlags()
-				, VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT );
-
-			FboAttachment attachment{};
-			attachment.referenceIndex = referenceIndex;
-			attachment.point = getAttachmentPoint( view );
-			attachment.type = getAttachmentType( view );
-			attachment.originalObject = get( image )->getInternal();
-			attachment.originalMipLevel = get( view )->getSubresourceRange().baseMipLevel;
-			attachment.object = get( view )->getInternal();
-			attachment.mipLevel = attachment.originalMipLevel;
-			attachment.imgLayerCount = std::max( get( image )->getArrayLayers(), get( image )->getDimensions().depth );
-			attachment.viewLayerCount = ( ( get( view )->getType() == VK_IMAGE_VIEW_TYPE_3D )
-				? attachment.imgLayerCount
-				: get( view )->getSubresourceRange().layerCount );
-			attachment.baseArrayLayer = ( ( ( !isCube && attachment.imgLayerCount > 1u ) || ( isCube && attachment.imgLayerCount > 6u ) )
-				? get( view )->getSubresourceRange().baseArrayLayer
-				: 0u );
-			attachment.target = ( get( image )->getType() == VK_IMAGE_TYPE_3D
-				? GL_TEXTURE_3D
-				: ( multisampled
-					? ( attachment.viewLayerCount > 1u
-						? GL_TEXTURE_2D_MULTISAMPLE_ARRAY
-						: GL_TEXTURE_2D_MULTISAMPLE )
-					: ( isCube
-						? get( view )->getTextureType()
-						: ( attachment.viewLayerCount > 1u
-							? GL_TEXTURE_2D_ARRAY
-							: GL_TEXTURE_2D ) ) ) );
-			attachment.index = index;
-			attachment.isSrgb = isSRGBFormat( get( image )->getFormatVk() );
-			return attachment;
-		}
-
-		FboAttachment initialiseAttachment( VkDevice device
-			, VkImageSubresourceLayers & subresource
-			, VkImage image )
-		{
-			FboAttachment result{ 0u
-				, getAttachmentPoint( get( image )->getFormatVk() )
-				, get( image )->getInternal()
-				, getAttachmentType( get( image )->getFormatVk() )
-				, ( ( get( image )->getType() == VK_IMAGE_TYPE_3D )
-					? GL_TEXTURE_3D
-					: ( ( get( image )->getType() == VK_IMAGE_TYPE_2D )
-						? ( get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT
-							? GL_TEXTURE_2D_MULTISAMPLE
-							: ( checkFlag( get( image )->getCreateFlags(), VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT )
-								? GL_TEXTURE_CUBE_POSITIVE_X
-								: GL_TEXTURE_2D ) )
-						: GL_TEXTURE_1D ) )
-				, subresource.mipLevel
-				, 0u };
-			result.isSrgb = isSRGBFormat( get( image )->getFormatVk() );
-
-			if ( get( image )->getArrayLayers() > 1u )
-			{
-				result.mipLevel = 0u;
-			}
-
-			return result;
-		}
-	}
-
-	namespace gl4
-	{
-		FboAttachment initialiseAttachment( uint32_t referenceIndex
-			, VkImageView view
-			, uint32_t index
-			, bool & multisampled )
-		{
-			auto image = get( view )->getImage();
-			multisampled = get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT;
-
-			FboAttachment attachment{};
-			attachment.referenceIndex = referenceIndex;
-			attachment.point = getAttachmentPoint( view );
-			attachment.type = getAttachmentType( view );
-			attachment.originalObject = get( image )->getInternal();
-			attachment.originalMipLevel = get( view )->getSubresourceRange().baseMipLevel;
-			attachment.object = get( view )->getInternal();
-			attachment.mipLevel = attachment.originalMipLevel;
-			attachment.imgLayerCount = std::max( get( image )->getArrayLayers(), get( image )->getDimensions().depth );
-			attachment.viewLayerCount = ( ( get( view )->getType() == VK_IMAGE_VIEW_TYPE_3D )
-				? attachment.imgLayerCount
-				: get( view )->getSubresourceRange().layerCount );
-			attachment.target = ( get( image )->getType() == VK_IMAGE_TYPE_3D
-				? GL_TEXTURE_3D
-				: ( get( image )->getType() == VK_IMAGE_TYPE_2D
-					? ( attachment.viewLayerCount > 1u
-						? ( multisampled
-							? GL_TEXTURE_2D_MULTISAMPLE_ARRAY
-							: GL_TEXTURE_2D_ARRAY )
-						: ( multisampled
-							? GL_TEXTURE_2D_MULTISAMPLE
-							: GL_TEXTURE_2D ) )
-					: ( attachment.viewLayerCount > 1u
-						? GL_TEXTURE_1D_ARRAY
-						: GL_TEXTURE_1D ) ) );
-			attachment.index = index;
-			attachment.isSrgb = isSRGBFormat( get( image )->getFormatVk() );
-
-			if ( get( view )->getSubresourceRange().baseMipLevel )
-			{
-				if ( get( image )->getArrayLayers() == 1u )
-				{
-					attachment.object = get( image )->getInternal();
-				}
-				else
-				{
-					attachment.mipLevel = 0u;
-				}
-			}
-
-			return attachment;
-		}
-
-		FboAttachment initialiseAttachment( VkDevice device
-			, VkImageSubresourceLayers & subresource
-			, VkImage image )
-		{
-			FboAttachment result{ 0u
-				, getAttachmentPoint( subresource.aspectMask )
-				, get( image )->getInternal()
-				, getAttachmentType( subresource.aspectMask )
-				, ( ( get( image )->getType() == VK_IMAGE_TYPE_3D )
-					? GL_TEXTURE_3D
-					: ( ( get( image )->getType() == VK_IMAGE_TYPE_2D )
-						? ( get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT
-							? GL_TEXTURE_2D_MULTISAMPLE
-							: GL_TEXTURE_2D )
-						: GL_TEXTURE_1D ) )
-				, subresource.mipLevel
-				, 0u };
-			result.isSrgb = isSRGBFormat( get( image )->getFormatVk() );
-
-			if ( get( image )->getArrayLayers() > 1u )
-			{
-				result.mipLevel = 0u;
-			}
-
-			return result;
-		}
-	}
-
-	FboAttachment initialiseAttachment( VkDevice device
-		, uint32_t referenceIndex
-		, VkImageView view
-		, uint32_t index
-		, bool & multisampled )
-	{
-		if ( hasTextureViews( device ) )
-		{
-			return gl4::initialiseAttachment( referenceIndex
-				, view
-				, index
-				, multisampled );
-		}
-
-		return gl3::initialiseAttachment( referenceIndex
-			, view
-			, index
-			, multisampled );
-	}
-
-	FboAttachment initialiseAttachment( VkDevice device
-		, VkImageSubresourceLayers & subresource
-		, VkImage image )
-	{
-		if ( hasTextureViews( device ) )
-		{
-			return gl4::initialiseAttachment( device
-				, subresource
-				, image );
-		}
-
-		return gl3::initialiseAttachment( device
-			, subresource
-			, image );
-	}
-
 	bool isSRGBFormat( VkFormat format )
 	{
 		return format == VK_FORMAT_R8_SRGB
@@ -575,7 +383,7 @@ namespace ashes::gl
 				bool multisampled{ false };
 				assert( passAttach.attachment < m_attachments.size() );
 				auto view = m_attachments[passAttach.attachment];
-				auto attachment = initialiseAttachment( m_device
+				FboAttachment attachment{ m_device
 					, passAttach.attachment
 					, view
 					, ( ashes::isDepthOrStencilFormat( get( view )->getFormatVk() )
@@ -583,7 +391,7 @@ namespace ashes::gl
 						: ( get( get( view )->getImage() )->getSamples() > VK_SAMPLE_COUNT_1_BIT
 							? msIndex++
 							: index++ ) )
-					, multisampled );
+					, multisampled };
 				auto attach = renderPass->getAttachment( passAttach );
 				doInitialiseAttach( attachment
 					, multisampled
@@ -599,7 +407,7 @@ namespace ashes::gl
 				bool multisampled{ false };
 				assert( passAttach.attachment < m_attachments.size() );
 				auto view = m_attachments[passAttach.attachment];
-				auto attachment = initialiseAttachment( m_device
+				FboAttachment attachment{ m_device
 					, passAttach.attachment
 					, view
 					, ( ashes::isDepthOrStencilFormat( get( view )->getFormatVk() )
@@ -607,7 +415,7 @@ namespace ashes::gl
 						: ( get( get( view )->getImage() )->getSamples() > VK_SAMPLE_COUNT_1_BIT
 							? msIndex++
 							: index++ ) )
-					, multisampled );
+					, multisampled };
 				m_resolveAttaches.push_back( attachment );
 			}
 		}
