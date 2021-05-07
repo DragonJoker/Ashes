@@ -31,8 +31,9 @@ namespace ashes
 		: m_device{ pool.getDevice() }
 		, m_bindingPoint{ bindingPoint }
 		, m_pool{ pool }
+		, m_layout{ layout }
 	{
-		VkDescriptorSetLayout vkLayout = layout;
+		VkDescriptorSetLayout vkLayout = m_layout;
 		VkDescriptorSetAllocateInfo allocateInfo
 		{
 			VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,

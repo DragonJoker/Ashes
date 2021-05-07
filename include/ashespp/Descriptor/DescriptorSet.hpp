@@ -529,6 +529,14 @@ namespace ashes
 		}
 		/**
 		*\return
+		*	The descriptor layout this descriptor set is created from.
+		*/
+		inline DescriptorSetLayout const & getLayout()
+		{
+			return m_layout;
+		}
+		/**
+		*\return
 		*	Tells if the set is empty.
 		*/
 		inline bool empty()const
@@ -550,6 +558,7 @@ namespace ashes
 	private:
 		Device const & m_device;
 		DescriptorPool const & m_pool;
+		DescriptorSetLayout const & m_layout;
 		uint32_t m_bindingPoint;
 		VkDescriptorSet m_internal{ VK_NULL_HANDLE };
 		std::list< VkDescriptorImageInfo > m_imageBindings;
