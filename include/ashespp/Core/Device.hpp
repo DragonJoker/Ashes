@@ -18,6 +18,7 @@ See LICENSE file in root folder.
 #include "ashespp/Pipeline/GraphicsPipelineCreateInfo.hpp"
 #include "ashespp/RenderPass/RenderPassCreateInfo.hpp"
 
+#include <mutex>
 #include <string>
 #include <sstream>
 #include <unordered_map>
@@ -1632,6 +1633,7 @@ namespace ashes
 			std::string callstack;
 		};
 
+		mutable std::mutex m_allocationMutex;
 		mutable std::unordered_map< size_t, ObjectAllocation > m_allocated;
 
 	public:
