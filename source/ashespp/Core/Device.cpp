@@ -649,6 +649,15 @@ namespace ashes
 		, std::string const & objectName
 		, std::string const & typeName )const
 	{
+		std::stringstream stream;
+		stream.imbue( std::locale{ "C" } );
+		stream << "Created " << typeName
+			<< " [0x" << std::hex << std::setw( 8u ) << std::setfill( '0' ) << object << "]"
+			<< " - " << objectName;
+		Logger::logTrace( stream );
+		std::stringstream callStack;
+		callStack << callstack::Backtrace{ 20, 4 };
+		m_allocationMutex.lock();
 #	if VK_EXT_debug_utils
 		if ( m_instance.checkExtension( VK_EXT_DEBUG_UTILS_EXTENSION_NAME ) )
 		{
@@ -675,31 +684,28 @@ namespace ashes
 				} );
 		}
 #	endif
-		std::stringstream stream;
-		stream.imbue( std::locale{ "C" } );
-		stream << "Created " << typeName
-			<< " [0x" << std::hex << std::setw( 8u ) << std::setfill( '0' ) << object << "]"
-			<< " - " << objectName;
-		Logger::logTrace( stream );
-		std::stringstream callStack;
-		callStack << callstack::Backtrace{ 20, 4 };
 		m_allocated.emplace( object
 			, ObjectAllocation{
 				typeName,
 				objectName,
 				callStack.str()
 			} );
+		m_allocationMutex.unlock();
 	}
 
 	void Device::doUnregisterObject( uint64_t object )const
 	{
+		m_allocationMutex.lock();
 		auto it = m_allocated.find( object );
 		assert( it != m_allocated.end() );
 		m_allocated.erase( it );
+		m_allocationMutex.unlock();
 	}
 
 	void Device::doReportRegisteredObjects()const
 	{
+		m_allocationMutex.lock();
+
 		for ( auto & alloc : m_allocated )
 		{
 			std::stringstream stream;
@@ -707,6 +713,8 @@ namespace ashes
 			stream << alloc.second.callstack;
 			log::error << stream.str() << "\n";
 		}
+
+		m_allocationMutex.unlock();
 	}
 
 #endif
