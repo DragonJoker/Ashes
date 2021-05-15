@@ -606,7 +606,7 @@ namespace ashes
 #endif
 		static std::string const & getName()
 		{
-			static std::string result{ "VkDecriptorPool" };
+			static std::string result{ "VkDescriptorPool" };
 			return result;
 		}
 	};
