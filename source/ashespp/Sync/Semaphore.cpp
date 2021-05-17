@@ -34,12 +34,23 @@ namespace ashes
 		registerObject( m_device, debugName, *this );
 	}
 
+	Semaphore::Semaphore( Device const & device
+		, VkSemaphore internal )
+		: m_device{ device }
+		, m_internal{ internal }
+		, m_ownInternal{ false }
+	{
+	}
+
 	Semaphore::~Semaphore()
 	{
-		unregisterObject( m_device, *this );
-		m_device.vkDestroySemaphore( m_device
-			, m_internal
-			, m_device.getAllocationCallbacks() );
+		if ( m_ownInternal )
+		{
+			unregisterObject( m_device, *this );
+			m_device.vkDestroySemaphore( m_device
+				, m_internal
+				, m_device.getAllocationCallbacks() );
+		}
 	}
 
 	void Semaphore::wait( std::set< Semaphore const * > & list )const

@@ -76,6 +76,17 @@ namespace ashes
 			, VkImage image );
 		/**
 		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] image
+		*	The image.
+		*/
+		Image( Device const & device
+			, VkImage image
+			, ImageCreateInfo createInfo );
+		/**
+		*\brief
 		*	Destructor.
 		*/
 		~Image();
@@ -348,6 +359,16 @@ namespace ashes
 		inline VkImageTiling getTiling()const
 		{
 			return m_createInfo->tiling;
+		}
+
+		inline VkSampleCountFlagBits getSampleCount()const
+		{
+			return m_createInfo->samples;
+		}
+
+		inline VkImageUsageFlags getUsage()const
+		{
+			return m_createInfo->usage;
 		}
 		/**@}*/
 		/**
