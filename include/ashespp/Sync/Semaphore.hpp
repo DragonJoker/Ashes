@@ -31,6 +31,14 @@ namespace ashes
 		*	The logical device.
 		*/
 		Semaphore( Device const & device
+			, VkSemaphore internal );
+		/**
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*/
+		Semaphore( Device const & device
 			, std::string const & debugName );
 		/**
 		*\brief
@@ -46,6 +54,11 @@ namespace ashes
 			return m_internal;
 		}
 
+		Device const & getDevice()const
+		{
+			return m_device;
+		}
+
 		void wait( std::set< Semaphore const * > & list )const;
 		void signal( Fence const * fence )const;
 
@@ -55,6 +68,7 @@ namespace ashes
 	private:
 		Device const & m_device;
 		VkSemaphore m_internal{ VK_NULL_HANDLE };
+		bool m_ownInternal{ true };
 		mutable enum class State
 		{
 			eSignalable,
