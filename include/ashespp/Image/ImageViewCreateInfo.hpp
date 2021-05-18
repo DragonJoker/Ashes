@@ -18,17 +18,25 @@ namespace ashes
 			, VkFormat format
 			, VkComponentMapping components
 			, VkImageSubresourceRange subresourceRange )
-			: vk
-			{
-				VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-				nullptr,
-				flags,
-				image,
-				viewType,
-				format,
-				std::move( components ),
-				std::move( subresourceRange ),
-			}
+			: vk{ VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO
+				, nullptr
+				, flags
+				, image
+				, viewType
+				, format
+				, std::move( components )
+				, std::move( subresourceRange ) }
+		{
+		}
+
+		ImageViewCreateInfo( VkImage image
+			, VkImageViewCreateInfo createInfo )
+			: ImageViewCreateInfo{ createInfo.flags
+				, image
+				, createInfo.viewType
+				, createInfo.format
+				, std::move( createInfo.components )
+				, std::move( createInfo.subresourceRange ) }
 		{
 		}
 

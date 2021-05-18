@@ -25,24 +25,37 @@ namespace ashes
 			, UInt32Array queueFamilyIndices = {}
 			, VkImageLayout initialLayout = VK_IMAGE_LAYOUT_UNDEFINED )
 			: queueFamilyIndices{ std::move( queueFamilyIndices ) }
-			, vk
-			{
-				VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-				nullptr,
-				flags,
-				imageType,
-				format,
-				std::move( extent ),
-				mipLevels,
-				arrayLayers,
-				samples,
-				tiling,
-				usage,
-				sharingMode,
-				uint32_t( this->queueFamilyIndices.size() ),
-				this->queueFamilyIndices.data(),
-				initialLayout
-			}
+			, vk{ VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO
+				, nullptr
+				, flags
+				, imageType
+				, format
+				, std::move( extent )
+				, mipLevels
+				, arrayLayers
+				, samples
+				, tiling
+				, usage
+				, sharingMode
+				, uint32_t( this->queueFamilyIndices.size() )
+				, this->queueFamilyIndices.data()
+				, initialLayout }
+		{
+		}
+
+		ImageCreateInfo( VkImageCreateInfo createInfo )
+			: ImageCreateInfo{ createInfo.flags
+				, createInfo.imageType
+				, createInfo.format
+				, std::move( createInfo.extent )
+				, createInfo.mipLevels
+				, createInfo.arrayLayers
+				, createInfo.samples
+				, createInfo.tiling
+				, createInfo.usage
+				, createInfo.sharingMode
+				, { createInfo.pQueueFamilyIndices , createInfo.pQueueFamilyIndices + createInfo.queueFamilyIndexCount }
+				, createInfo.initialLayout }
 		{
 		}
 
