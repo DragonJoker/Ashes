@@ -84,6 +84,48 @@ namespace ashes
 		m_writes = std::move( bindings );
 	}
 
+	void DescriptorSet::setBindings( VkWriteDescriptorSetArray bindings )
+	{
+		m_writes.clear();
+
+		for ( auto binding : bindings )
+		{
+			WriteDescriptorSet write{ binding.dstBinding
+				, binding.dstArrayElement
+				, binding.descriptorCount
+				, binding.descriptorType };
+
+			if ( binding.pImageInfo )
+			{
+				for ( uint32_t i = 0; i < binding.descriptorCount; ++i )
+				{
+					write.imageInfo.push_back( *binding.pImageInfo );
+					++binding.pImageInfo;
+				}
+			}
+
+			if ( binding.pBufferInfo )
+			{
+				for ( uint32_t i = 0; i < binding.descriptorCount; ++i )
+				{
+					write.bufferInfo.push_back( *binding.pBufferInfo );
+					++binding.pBufferInfo;
+				}
+			}
+
+			if ( binding.pTexelBufferView )
+			{
+				for ( uint32_t i = 0; i < binding.descriptorCount; ++i )
+				{
+					write.texelBufferView.push_back( *binding.pTexelBufferView );
+					++binding.pTexelBufferView;
+				}
+			}
+
+			m_writes.push_back( write );
+		}
+	}
+
 	void DescriptorSet::createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
 		, ImageView const & view
 		, Sampler const & sampler
