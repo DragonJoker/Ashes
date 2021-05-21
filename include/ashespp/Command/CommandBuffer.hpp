@@ -111,6 +111,23 @@ namespace ashes
 		*\param[in] contents
 		*	Specifies how the commands in the first subpass will be provided.
 		*/
+		void beginRenderPass( VkRenderPass renderPass
+			, VkFramebuffer frameBuffer
+			, VkExtent2D dimensions
+			, VkClearValueArray const & clearValues
+			, VkSubpassContents contents )const;
+		/**
+		*\brief
+		*	Begins a new render pass.
+		*\param[in] renderPass
+		*	The render pass to begin.
+		*\param[in] frameBuffer
+		*	The framebuffer containing the attachments that are used with the render pass.
+		*\param[in] clearValues
+		*	The clear values for each attachment that needs to be cleared.
+		*\param[in] contents
+		*	Specifies how the commands in the first subpass will be provided.
+		*/
 		void beginRenderPass( RenderPass const & renderPass
 			, FrameBuffer const & frameBuffer
 			, VkClearValueArray const & clearValues
@@ -402,6 +419,19 @@ namespace ashes
 		*	The destination image.
 		*/
 		void copyToImage( VkBufferImageCopyArray const & copyInfo
+			, VkBuffer src
+			, VkImage dst )const;
+		/**
+		*\brief
+		*	Copies data from a buffer to an image.
+		*\param[in] copyInfo
+		*	The copy informations.
+		*\param[in] src
+		*	The source buffer.
+		*\param[in] dst
+		*	The destination image.
+		*/
+		void copyToImage( VkBufferImageCopyArray const & copyInfo
 			, BufferBase const & src
 			, Image const & dst )const;
 		/**
@@ -415,8 +445,34 @@ namespace ashes
 		*	The destination image.
 		*/
 		void copyToBuffer( VkBufferImageCopyArray const & copyInfo
+			, VkImage src
+			, VkBuffer dst )const;
+		/**
+		*\brief
+		*	Copies data from a buffer to an image.
+		*\param[in] copyInfo
+		*	The copy informations.
+		*\param[in] src
+		*	The source buffer.
+		*\param[in] dst
+		*	The destination image.
+		*/
+		void copyToBuffer( VkBufferImageCopyArray const & copyInfo
 			, Image const & src
 			, BufferBase const & dst )const;
+		/**
+		*\brief
+		*	Copies data from a buffer to another one.
+		*\param[in] copyInfo
+		*	The copy informations.
+		*\param[in] src
+		*	The source buffer.
+		*\param[in] dst
+		*	The destination buffer.
+		*/
+		void copyBuffer( VkBufferCopy const & copyInfo
+			, VkBuffer src
+			, VkBuffer dst )const;
 		/**
 		*\brief
 		*	Copies data from a buffer to another one.
@@ -687,6 +743,19 @@ namespace ashes
 		*	The destination image.
 		*/
 		void copyToImage( VkBufferImageCopy const & copyInfo
+			, VkBuffer src
+			, VkImage dst )const;
+		/**
+		*\brief
+		*	Copies data from a buffer to an image.
+		*\param[in] copyInfo
+		*	The copy informations.
+		*\param[in] src
+		*	The source buffer.
+		*\param[in] dst
+		*	The destination image.
+		*/
+		void copyToImage( VkBufferImageCopy const & copyInfo
 			, BufferBase const & src
 			, Image const & dst )const;
 		/**
@@ -700,8 +769,37 @@ namespace ashes
 		*	The destination image.
 		*/
 		void copyToBuffer( VkBufferImageCopy const & copyInfo
+			, VkImage src
+			, VkBuffer dst )const;
+		/**
+		*\brief
+		*	Copies data from a buffer to an image.
+		*\param[in] copyInfo
+		*	The copy informations.
+		*\param[in] src
+		*	The source buffer.
+		*\param[in] dst
+		*	The destination image.
+		*/
+		void copyToBuffer( VkBufferImageCopy const & copyInfo
 			, Image const & src
 			, BufferBase const & dst )const;
+		/**
+		*\brief
+		*	Copies data from a buffer to another one.
+		*\param[in] src
+		*	The source buffer.
+		*\param[in] dst
+		*	The destination buffer.
+		*\param[in] size
+		*	The byte size of the data to copy.
+		*\param[in] offset
+		*	The offset in the source buffer.
+		*/
+		void copyBuffer( VkBuffer src
+			, VkBuffer dst
+			, uint32_t size
+			, uint32_t offset = 0 )const;
 		/**
 		*\brief
 		*	Copies data from a buffer to another one.

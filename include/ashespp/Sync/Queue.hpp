@@ -36,11 +36,68 @@ namespace ashes
 		*\return
 		*	\p true on ok.
 		*/ 
+		void submit( VkCommandBufferArray const & commandBuffers
+			, VkSemaphoreArray const & semaphoresToWait
+			, VkPipelineStageFlagsArray const & semaphoresStage
+			, VkSemaphoreArray const & semaphoresToSignal
+			, VkFence fence = VK_NULL_HANDLE )const;
+		/**
+		*\brief
+		*	Submits given command buffers.
+		*\param[in] commandBuffers
+		*	The command buffers.
+		*\param[in] semaphoresToWait
+		*	The semaphores to wait.
+		*\param[in] semaphoresStage
+		*	The semaphores respective stages.
+		*\param[in] semaphoresToSignal
+		*	The semaphores to signal.
+		*\param[in] fence
+		*	An optional fence.
+		*\return
+		*	\p true on ok.
+		*/ 
+		void submit( VkCommandBuffer commandBuffers
+			, VkSemaphoreArray const & semaphoresToWait
+			, VkPipelineStageFlagsArray const & semaphoresStage
+			, VkSemaphore semaphoresToSignal
+			, VkFence fence = VK_NULL_HANDLE )const;
+		/**
+		*\brief
+		*	Submits given command buffers.
+		*\param[in] commandBuffers
+		*	The command buffers.
+		*\param[in] semaphoresToWait
+		*	The semaphores to wait.
+		*\param[in] semaphoresStage
+		*	The semaphores respective stages.
+		*\param[in] semaphoresToSignal
+		*	The semaphores to signal.
+		*\param[in] fence
+		*	An optional fence.
+		*\return
+		*	\p true on ok.
+		*/ 
 		void submit( CommandBufferCRefArray const & commandBuffers
 			, SemaphoreCRefArray const & semaphoresToWait
 			, VkPipelineStageFlagsArray const & semaphoresStage
 			, SemaphoreCRefArray const & semaphoresToSignal
 			, Fence const * fence )const;
+		/**
+		*\brief
+		*	Presents the swapchains.
+		*\param[in] swapChains
+		*	The swapchains.
+		*\param[in] imagesIndex
+		*	The image to present for each swapchain.
+		*\param[in] semaphoresToWait
+		*	The semaphore to wait for each presented swapchain.
+		*\return
+		*	The result for each swapchain presentation.
+		*/ 
+		VkResultArray present( VkSwapchainArrayKHR const & swapChains
+			, UInt32Array const & imagesIndex
+			, VkSemaphoreArray const & semaphoresToWait )const;
 		/**
 		*\brief
 		*	Presents the swapchains.
@@ -68,9 +125,38 @@ namespace ashes
 		*\return
 		*	The presentation result.
 		*/
+		VkResult present( VkSwapchainKHR swapChain
+			, uint32_t imageIndex
+			, VkSemaphore semaphoreToWait )const;
+		/**
+		*\brief
+		*	Presents a swapchain.
+		*\param[in] swapChain
+		*	The swapchain.
+		*\param[in] imageIndex
+		*	The image to present.
+		*\param[in] semaphoreToWait
+		*	The semaphore to wait.
+		*\return
+		*	The presentation result.
+		*/
 		VkResult present( SwapChain const & swapChain
 			, uint32_t imageIndex
 			, Semaphore const & semaphoreToWait )const;
+		/**
+		*\brief
+		*	Presents a swapchain.
+		*\param[in] swapChain
+		*	The swapchain.
+		*\param[in] imageIndex
+		*	The image to present.
+		*\param[in] semaphoreToWait
+		*	The semaphore to wait.
+		*\return
+		*	The presentation result.
+		*/
+		VkResult present( VkSwapchainKHR swapChain
+			, uint32_t imageIndex )const;
 		/**
 		*\brief
 		*	Presents a swapchain.
@@ -117,7 +203,7 @@ namespace ashes
 		*\return
 		*	The queue family index.
 		*/
-		inline uint32_t getFamilyIndex()const
+		uint32_t getFamilyIndex()const
 		{
 			return m_familyIndex;
 		}
@@ -125,7 +211,7 @@ namespace ashes
 		*\return
 		*	The queue index within its family.
 		*/
-		inline uint32_t getIndex()const
+		uint32_t getIndex()const
 		{
 			return m_index;
 		}
@@ -139,7 +225,26 @@ namespace ashes
 		*\return
 		*	\p true on ok.
 		*/
-		inline void submit( CommandBuffer const & commandBuffer
+		void submit( VkCommandBuffer commandBuffer
+			, VkFence fence = VK_NULL_HANDLE )const
+		{
+			submit( { commandBuffer }
+				, VkSemaphoreArray{}
+				, VkPipelineStageFlagsArray{}
+				, VkSemaphoreArray{}
+				, fence );
+		}
+		/**
+		*\brief
+		*	Submits given command buffer.
+		*\param[in] commandBuffer
+		*	The command buffer.
+		*\param[in] fence
+		*	An optional fence.
+		*\return
+		*	\p true on ok.
+		*/
+		void submit( CommandBuffer const & commandBuffer
 			, Fence const * fence )const
 		{
 			submit( { commandBuffer }
@@ -164,7 +269,35 @@ namespace ashes
 		*\return
 		*	\p true on ok.
 		*/
-		inline void submit( CommandBuffer const & commandBuffer
+		void submit( VkCommandBuffer commandBuffer
+			, VkSemaphore semaphoreToWait
+			, VkPipelineStageFlags const & semaphoreStage
+			, VkSemaphore semaphoreToSignal
+			, VkFence fence = VK_NULL_HANDLE )const
+		{
+			submit( { commandBuffer }
+				, VkSemaphoreArray{ semaphoreToWait }
+				, VkPipelineStageFlagsArray{ semaphoreStage }
+				, VkSemaphoreArray{ semaphoreToSignal }
+				, fence );
+		}
+		/**
+		*\brief
+		*	Submits given command buffer.
+		*\param[in] commandBuffer
+		*	The command buffer.
+		*\param[in] semaphoreToWait
+		*	The semaphore to wait.
+		*\param[in] semaphoreStage
+		*	The semaphore respective stages.
+		*\param[in] semaphoreToSignal
+		*	The semaphore to signal.
+		*\param[in] fence
+		*	An optional fence.
+		*\return
+		*	\p true on ok.
+		*/
+		void submit( CommandBuffer const & commandBuffer
 			, Semaphore const & semaphoreToWait
 			, VkPipelineStageFlags const & semaphoreStage
 			, Semaphore const & semaphoreToSignal
@@ -180,7 +313,7 @@ namespace ashes
 		*\brief
 		*	VkQueue implicit cast operator.
 		*/
-		inline operator VkQueue const &()const
+		operator VkQueue const &()const
 		{
 			return m_internal;
 		}
