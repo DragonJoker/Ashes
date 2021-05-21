@@ -262,6 +262,19 @@ namespace ashes
 	}
 
 	void CommandBuffer::copyToImage( VkBufferImageCopyArray const & copyInfo
+		, VkBuffer src
+		, VkImage dst )const
+	{
+		DEBUG_DUMP( copyInfo );
+		m_device.vkCmdCopyBufferToImage( m_internal
+			, src
+			, dst
+			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+			, uint32_t( copyInfo.size() )
+			, copyInfo.data() );
+	}
+
+	void CommandBuffer::copyToImage( VkBufferImageCopyArray const & copyInfo
 		, BufferBase const & src
 		, Image const & dst )const
 	{
@@ -270,6 +283,19 @@ namespace ashes
 			, src
 			, dst
 			, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+			, uint32_t( copyInfo.size() )
+			, copyInfo.data() );
+	}
+
+	void CommandBuffer::copyToBuffer( VkBufferImageCopyArray const & copyInfo
+		, VkImage src
+		, VkBuffer dst )const
+	{
+		DEBUG_DUMP( copyInfo );
+		m_device.vkCmdCopyImageToBuffer( m_internal
+			, src
+			, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
+			, dst
 			, uint32_t( copyInfo.size() )
 			, copyInfo.data() );
 	}
@@ -285,6 +311,18 @@ namespace ashes
 			, dst
 			, uint32_t( copyInfo.size() )
 			, copyInfo.data() );
+	}
+
+	void CommandBuffer::copyBuffer( VkBufferCopy const & copyInfo
+		, VkBuffer src
+		, VkBuffer dst )const
+	{
+		DEBUG_DUMP( copyInfo );
+		m_device.vkCmdCopyBuffer( m_internal
+			, src
+			, dst
+			, 1
+			, &copyInfo );
 	}
 
 	void CommandBuffer::copyBuffer( VkBufferCopy const & copyInfo
@@ -516,25 +554,37 @@ namespace ashes
 			, imageMemoryBarriers.empty() ? nullptr : imageMemoryBarriers.data() );
 	}
 
+	void CommandBuffer::beginRenderPass( VkRenderPass renderPass
+		, VkFramebuffer frameBuffer
+		, VkExtent2D dimensions
+		, VkClearValueArray const & clearValues
+		, VkSubpassContents contents )const
+	{
+		beginRenderPass( { VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO
+				, nullptr
+				, renderPass
+				, frameBuffer
+				, { { 0, 0 }
+					, std::move( dimensions ) }
+				, uint32_t( clearValues.size() )
+				, clearValues.data() }
+			, contents );
+	}
+
 	void CommandBuffer::beginRenderPass( RenderPass const & renderPass
 		, FrameBuffer const & frameBuffer
 		, VkClearValueArray const & clearValues
 		, VkSubpassContents contents )const
 	{
-		beginRenderPass( VkRenderPassBeginInfo
-			{
-				VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-				nullptr,
-				renderPass,
-				frameBuffer,
-				{
-					{ 0, 0 },
-					frameBuffer.getDimensions()
-				},
-				uint32_t( clearValues.size() ),
-				clearValues.data()
-			},
-			contents );
+		beginRenderPass( { VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO
+				, nullptr
+				, renderPass
+				, frameBuffer
+				, { { 0, 0 }
+					, frameBuffer.getDimensions() }
+				, uint32_t( clearValues.size() )
+				, clearValues.data() }
+			, contents );
 	}
 
 	void CommandBuffer::bindVertexBuffer( uint32_t binding
@@ -547,10 +597,28 @@ namespace ashes
 	}
 
 	void CommandBuffer::copyToImage( VkBufferImageCopy const & copyInfo
+		, VkBuffer src
+		, VkImage dst )const
+	{
+		copyToImage( VkBufferImageCopyArray{ 1u, copyInfo }
+			, src
+			, dst );
+	}
+
+	void CommandBuffer::copyToImage( VkBufferImageCopy const & copyInfo
 		, BufferBase const & src
 		, Image const & dst )const
 	{
 		copyToImage( VkBufferImageCopyArray{ 1u, copyInfo }
+			, src
+			, dst );
+	}
+
+	void CommandBuffer::copyToBuffer( VkBufferImageCopy const & copyInfo
+		, VkImage src
+		, VkBuffer dst )const
+	{
+		copyToBuffer( VkBufferImageCopyArray{ 1u, copyInfo }
 			, src
 			, dst );
 	}
@@ -564,17 +632,25 @@ namespace ashes
 			, dst );
 	}
 
+	void CommandBuffer::copyBuffer( VkBuffer src
+		, VkBuffer dst
+		, uint32_t size
+		, uint32_t offset )const
+	{
+		VkBufferCopy copyInfo{ offset
+			, 0
+			, size };
+		copyBuffer( copyInfo, src, dst );
+	}
+
 	void CommandBuffer::copyBuffer( BufferBase const & src
 		, BufferBase const & dst
 		, uint32_t size
 		, uint32_t offset )const
 	{
-		VkBufferCopy copyInfo
-		{
-			offset,
-			0,
-			size
-		};
+		VkBufferCopy copyInfo{ offset
+			, 0
+			, size };
 		copyBuffer( copyInfo, src, dst );
 	}
 

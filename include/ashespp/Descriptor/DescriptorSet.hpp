@@ -128,6 +128,13 @@ namespace ashes
 		void setBindings( WriteDescriptorSetArray bindings );
 		/**
 		*\brief
+		*	Sets the descriptor set's attaches.
+		*\param[in] bindings
+		*	The bindings.
+		*/
+		void setBindings( VkWriteDescriptorSetArray bindings );
+		/**
+		*\brief
 		*	Creates a combined image and sampler binding.
 		*\param[in] layoutBinding
 		*	The layout binding.
