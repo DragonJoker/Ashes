@@ -83,6 +83,20 @@ namespace ashes
 	{
 	}
 
+	FrameBuffer::FrameBuffer( Device const & device
+		, std::string const & debugName
+		, VkFramebufferCreateInfo const & createInfo )
+		: m_device{ device }
+	{
+		DEBUG_DUMP( createInfo );
+		auto res = m_device.vkCreateFramebuffer( m_device
+			, &createInfo
+			, m_device.getAllocationCallbacks()
+			, &m_internal );
+		checkError( res, "FrameBuffer creation" );
+		registerObject( m_device, debugName, *this );
+	}
+
 	FrameBuffer::~FrameBuffer()
 	{
 		unregisterObject( m_device, *this );

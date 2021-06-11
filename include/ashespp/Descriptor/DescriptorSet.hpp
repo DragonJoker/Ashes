@@ -148,9 +148,41 @@ namespace ashes
 		*	The array index.
 		*/
 		void createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+			, VkImageView view
+			, VkSampler sampler
+			, VkImageLayout layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+			, uint32_t index = 0u );
+		/**
+		*\brief
+		*	Creates a combined image and sampler binding.
+		*\param[in] layoutBinding
+		*	The layout binding.
+		*\param[in] view
+		*	The image.
+		*\param[in] sampler
+		*	The sampler.
+		*\param[in] layout
+		*	The wanted image layout.
+		*\param[in] index
+		*	The array index.
+		*/
+		void createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
 			, ImageView const & view
 			, Sampler const & sampler
 			, VkImageLayout layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+			, uint32_t index = 0u );
+		/**
+		*\brief
+		*	Creates a sampler binding.
+		*\param[in] layoutBinding
+		*	The layout binding.
+		*\param[in] sampler
+		*	The sampler.
+		*\param[in] index
+		*	The array index.
+		*/
+		void createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+			, VkSampler sampler
 			, uint32_t index = 0u );
 		/**
 		*\brief
@@ -178,8 +210,37 @@ namespace ashes
 		*	The array index.
 		*/
 		void createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+			, VkImageView view
+			, VkImageLayout layout
+			, uint32_t index = 0u );
+		/**
+		*\brief
+		*	Creates a sampled image binding.
+		*\param[in] layoutBinding
+		*	The layout binding.
+		*\param[in] view
+		*	The image.
+		*\param[in] layout
+		*	The image layout.
+		*\param[in] index
+		*	The array index.
+		*/
+		void createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
 			, ImageView const & view
 			, VkImageLayout layout
+			, uint32_t index = 0u );
+		/**
+		*\brief
+		*	Creates a storage image binding.
+		*\param[in] layoutBinding
+		*	The layout binding.
+		*\param[in] view
+		*	The image.
+		*\param[in] index
+		*	The array index.
+		*/
+		void createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+			, VkImageView view
 			, uint32_t index = 0u );
 		/**
 		*\brief
@@ -228,7 +289,44 @@ namespace ashes
 		*	The array index.
 		*/
 		void createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+			, VkBuffer buffer
+			, uint32_t offset
+			, uint32_t range
+			, uint32_t index = 0u );
+		/**
+		*\brief
+		*	Creates a storage or uniform buffer binding.
+		*\param[in] layoutBinding
+		*	The layout binding.
+		*\param[in] buffer
+		*	The buffer.
+		*\param[in] offset
+		*	The attach's offset in the buffer.
+		*\param[in] range
+		*	The amount of data that can be read from the buffer.
+		*\param[in] index
+		*	The array index.
+		*/
+		void createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
 			, BufferBase const & buffer
+			, uint32_t offset
+			, uint32_t range
+			, uint32_t index = 0u );
+		/**
+		*\brief
+		*	Creates a texel buffer binding.
+		*\param[in] layoutBinding
+		*	The layout binding.
+		*\param[in] buffer
+		*	The buffer.
+		*\param[in] view
+		*	The view to the buffer.
+		*\param[in] index
+		*	The array index.
+		*/
+		void createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+			, VkBuffer buffer
+			, VkBufferView view
 			, uint32_t offset
 			, uint32_t range
 			, uint32_t index = 0u );
@@ -269,6 +367,27 @@ namespace ashes
 			, uint32_t offset
 			, uint32_t range
 			, uint32_t index );
+		/**
+		*\brief
+		*	Creates a dynamic storage or uniform buffer binding.
+		*\remarks
+		*	Allow specification of an additional offset at descriptor's binding time.
+		*\param[in] layoutBinding
+		*	The layout binding.
+		*\param[in] buffer
+		*	The buffer.
+		*\param[in] offset
+		*	The attach's offset in the buffer.
+		*\param[in] range
+		*	The amount of data that can be read from the buffer.
+		*\param[in] index
+		*	The array index.
+		*/
+		void createDynamicBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+			, VkBuffer buffer
+			, uint32_t offset
+			, uint32_t range
+			, uint32_t index = 0u );
 		/**
 		*\brief
 		*	Creates a dynamic storage or uniform buffer binding.

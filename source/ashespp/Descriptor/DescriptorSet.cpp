@@ -127,6 +127,22 @@ namespace ashes
 	}
 
 	void DescriptorSet::createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+		, VkImageView view
+		, VkSampler sampler
+		, VkImageLayout layout
+		, uint32_t index )
+	{
+		m_writes.push_back(
+			{
+				layoutBinding.binding,
+				index,
+				1u,
+				VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+			} );
+		m_writes.back().imageInfo.push_back( VkDescriptorImageInfo{ sampler, view, layout } );
+	}
+
+	void DescriptorSet::createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
 		, ImageView const & view
 		, Sampler const & sampler
 		, VkImageLayout layout
@@ -140,6 +156,20 @@ namespace ashes
 				VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
 			} );
 		m_writes.back().imageInfo.push_back( VkDescriptorImageInfo{ sampler, view, layout } );
+	}
+
+	void DescriptorSet::createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+		, VkSampler sampler
+		, uint32_t index )
+	{
+		m_writes.push_back(
+			{
+				layoutBinding.binding,
+				index,
+				1u,
+				VK_DESCRIPTOR_TYPE_SAMPLER,
+			} );
+		m_writes.back().imageInfo.push_back( VkDescriptorImageInfo{ sampler, VK_NULL_HANDLE, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL } );
 	}
 
 	void DescriptorSet::createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
@@ -157,6 +187,21 @@ namespace ashes
 	}
 
 	void DescriptorSet::createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+		, VkImageView view
+		, VkImageLayout layout
+		, uint32_t index )
+	{
+		m_writes.push_back(
+			{
+				layoutBinding.binding,
+				index,
+				1u,
+				VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
+			} );
+		m_writes.back().imageInfo.push_back( VkDescriptorImageInfo{ VK_NULL_HANDLE, view, layout } );
+	}
+
+	void DescriptorSet::createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
 		, ImageView const & view
 		, VkImageLayout layout
 		, uint32_t index )
@@ -169,6 +214,20 @@ namespace ashes
 				VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
 			} );
 		m_writes.back().imageInfo.push_back( VkDescriptorImageInfo{ VK_NULL_HANDLE, view, layout } );
+	}
+
+	void DescriptorSet::createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+		, VkImageView view
+		, uint32_t index )
+	{
+		m_writes.push_back(
+			{
+				layoutBinding.binding,
+				index,
+				1u,
+				VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
+			} );
+		m_writes.back().imageInfo.push_back( VkDescriptorImageInfo{ VK_NULL_HANDLE, view, VK_IMAGE_LAYOUT_GENERAL } );
 	}
 
 	void DescriptorSet::createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
@@ -207,6 +266,22 @@ namespace ashes
 	}
 
 	void DescriptorSet::createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+		, VkBuffer buffer
+		, uint32_t offset
+		, uint32_t range
+		, uint32_t index )
+	{
+		m_writes.push_back(
+			{
+				layoutBinding.binding,
+				index,
+				1u,
+				layoutBinding.descriptorType,
+			} );
+		m_writes.back().bufferInfo.push_back( VkDescriptorBufferInfo{ buffer, offset, range } );
+	}
+
+	void DescriptorSet::createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
 		, BufferBase const & buffer
 		, uint32_t offset
 		, uint32_t range
@@ -222,6 +297,24 @@ namespace ashes
 					: VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER ),
 			} );
 		m_writes.back().bufferInfo.push_back( VkDescriptorBufferInfo{ buffer, offset, range } );
+	}
+
+	void DescriptorSet::createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+		, VkBuffer buffer
+		, VkBufferView view
+		, uint32_t offset
+		, uint32_t range
+		, uint32_t index )
+	{
+		m_writes.push_back(
+			{
+				layoutBinding.binding,
+				index,
+				1u,
+				layoutBinding.descriptorType,
+			} );
+		m_writes.back().bufferInfo.push_back( VkDescriptorBufferInfo{ buffer, offset, range } );
+		m_writes.back().texelBufferView.push_back( view );
 	}
 
 	void DescriptorSet::createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
@@ -261,6 +354,22 @@ namespace ashes
 				offset * uniformBuffer.getAlignedSize( uniformBuffer.getElementSize() ),
 				range * uniformBuffer.getAlignedSize( uniformBuffer.getElementSize() )
 			} );
+	}
+
+	void DescriptorSet::createDynamicBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+		, VkBuffer buffer
+		, uint32_t offset
+		, uint32_t range
+		, uint32_t index )
+	{
+		m_writes.push_back(
+			{
+				layoutBinding.binding,
+				index,
+				1u,
+				layoutBinding.descriptorType,
+			} );
+		m_writes.back().bufferInfo.push_back( VkDescriptorBufferInfo{ buffer, offset, range } );
 	}
 
 	void DescriptorSet::createDynamicBinding( VkDescriptorSetLayoutBinding const & layoutBinding
