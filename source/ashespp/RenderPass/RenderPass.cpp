@@ -39,6 +39,20 @@ namespace ashes
 			, m_device.getAllocationCallbacks() );
 	}
 
+	FrameBufferPtr RenderPass::createFrameBuffer( VkFramebufferCreateInfo info )const
+	{
+		return createFrameBuffer( "FrameBuffer", info );
+	}
+
+	FrameBufferPtr RenderPass::createFrameBuffer( std::string const & debugName
+		, VkFramebufferCreateInfo info )const
+	{
+		info.renderPass = *this;
+		return std::make_unique< FrameBuffer >( m_device
+			, debugName
+			, info );
+	}
+
 	FrameBufferPtr RenderPass::createFrameBuffer( VkExtent2D const & dimensions
 		, ImageViewCRefArray views
 		, uint32_t layers )const

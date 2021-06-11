@@ -79,6 +79,19 @@ namespace ashes
 			, uint32_t layers = 1u );
 		/**
 		*\brief
+		*	Creates a framebuffer compatible with the given render pass.
+		*\param[in] renderPass
+		*	The render pass, containing the attachments.
+		*\param[in] dimensions
+		*	The frame buffer dimensions.
+		*\param[in] views
+		*	The views wanted for the framebuffer.
+		*/
+		FrameBuffer( Device const & device
+			, std::string const & debugName
+			, VkFramebufferCreateInfo const & createInfo );
+		/**
+		*\brief
 		*	Destructor.
 		*/
 		~FrameBuffer();
