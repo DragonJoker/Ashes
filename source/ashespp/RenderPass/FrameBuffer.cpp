@@ -87,6 +87,7 @@ namespace ashes
 		, std::string const & debugName
 		, VkFramebufferCreateInfo const & createInfo )
 		: m_device{ device }
+		, m_dimensions{ createInfo.width, createInfo.height }
 	{
 		DEBUG_DUMP( createInfo );
 		auto res = m_device.vkCreateFramebuffer( m_device
