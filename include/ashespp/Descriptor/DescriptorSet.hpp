@@ -35,6 +35,29 @@ namespace ashes
 		{
 		}
 
+		WriteDescriptorSet( uint32_t dstBinding
+			, uint32_t dstArrayElement
+			, VkDescriptorType descriptorType
+			, VkDescriptorBufferInfoArray bufferInfos )
+			: bufferInfo{ std::move( bufferInfos ) }
+			, vk{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, VK_NULL_HANDLE, dstBinding, dstArrayElement, uint32_t( this->bufferInfo.size() ), descriptorType }
+			, needsUpdate{ true }
+		{
+		}
+
+		WriteDescriptorSet( uint32_t dstBinding
+			, uint32_t dstArrayElement
+			, VkDescriptorType descriptorType
+			, VkDescriptorBufferInfoArray bufferInfos
+			, VkBufferViewArray viewInfos )
+			: bufferInfo{ std::move( bufferInfos ) }
+			, texelBufferView{ std::move( viewInfos ) }
+			, vk{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, VK_NULL_HANDLE, dstBinding, dstArrayElement, uint32_t( this->bufferInfo.size() ), descriptorType }
+			, needsUpdate{ true }
+		{
+			assert( bufferInfo.size() == texelBufferView.size() );
+		}
+
 		WriteDescriptorSet( VkDescriptorSet set
 			, uint32_t dstBinding
 			, uint32_t dstArrayElement
