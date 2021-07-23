@@ -1700,7 +1700,7 @@ namespace ashes::gl
 		VkPeerMemoryFeatureFlags* pPeerMemoryFeatures )
 	{
 		reportUnsupported( device, "vkGetDeviceGroupPeerMemoryFeatures" );
-		*pPeerMemoryFeatures = VK_NULL_HANDLE;
+		*pPeerMemoryFeatures = VkPeerMemoryFeatureFlags{};
 	}
 
 	void VKAPI_CALL vkCmdSetDeviceMask(

@@ -1688,7 +1688,7 @@ namespace ashes::d3d11
 		VkPeerMemoryFeatureFlags * pPeerMemoryFeatures )
 	{
 		reportUnsupported( device, "vkGetDeviceGroupPeerMemoryFeatures" );
-		*pPeerMemoryFeatures = VK_NULL_HANDLE;
+		*pPeerMemoryFeatures = VkPeerMemoryFeatureFlags{};
 	}
 
 	void VKAPI_CALL vkCmdSetDeviceMask(
