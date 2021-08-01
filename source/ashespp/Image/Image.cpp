@@ -20,9 +20,18 @@ namespace ashes
 			, VkImageLayout srcLayout
 			, VkImageLayout dstLayout
 			, VkImageSubresourceRange mipSubRange
-			, uint32_t mipLevel )
+			, uint32_t mipLevel
+			, uint32_t srcQueueFamily
+			, uint32_t dstQueueFamily )
 		{
 			mipSubRange.baseMipLevel = mipLevel;
+
+			if ( srcQueueFamily == dstQueueFamily )
+			{
+				srcQueueFamily = VK_QUEUE_FAMILY_IGNORED;
+				dstQueueFamily = VK_QUEUE_FAMILY_IGNORED;
+			}
+
 			return VkImageMemoryBarrier
 			{
 				VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
@@ -31,8 +40,8 @@ namespace ashes
 				getAccessMask( dstLayout ),
 				srcLayout,
 				dstLayout,
-				VK_QUEUE_FAMILY_IGNORED,
-				VK_QUEUE_FAMILY_IGNORED,
+				srcQueueFamily,
+				dstQueueFamily,
 				image,
 				std::move( mipSubRange ),
 			};
@@ -41,14 +50,18 @@ namespace ashes
 		VkImageMemoryBarrier makeTransition( VkImage image
 			, VkImageLayout prv
 			, VkImageLayout cur
-			, VkImageSubresourceRange mipSubRange )
+			, VkImageSubresourceRange mipSubRange
+			, uint32_t srcQueueFamily
+			, uint32_t dstQueueFamily )
 		{
 			auto mipLevel = mipSubRange.baseMipLevel;
 			return makeTransition( image
 				, prv
 				, cur
 				, std::move( mipSubRange )
-				, mipLevel );
+				, mipLevel
+				, srcQueueFamily
+				, dstQueueFamily );
 		}
 	}
 
@@ -565,23 +578,31 @@ namespace ashes
 	VkImageMemoryBarrier Image::makeTransition( VkImageLayout srcLayout
 		, VkImageLayout dstLayout
 		, VkImageSubresourceRange mipSubRange
-		, uint32_t mipLevel )const
+		, uint32_t mipLevel
+		, uint32_t srcQueueFamily
+		, uint32_t dstQueueFamily )const
 	{
 		return ashes::makeTransition( *this
 			, srcLayout
 			, dstLayout
 			, mipSubRange
-			, mipLevel );
+			, mipLevel
+			, srcQueueFamily
+			, dstQueueFamily );
 	}
 
 	VkImageMemoryBarrier Image::makeTransition( VkImageLayout srcLayout
 		, VkImageLayout dstLayout
-		, VkImageSubresourceRange mipSubRange )const
+		, VkImageSubresourceRange mipSubRange
+		, uint32_t srcQueueFamily
+		, uint32_t dstQueueFamily )const
 	{
 		return ashes::makeTransition( *this
 			, srcLayout
 			, dstLayout
-			, mipSubRange );
+			, mipSubRange
+			, srcQueueFamily
+			, dstQueueFamily );
 	}
 
 	void Image::doDestroyView( VkImageViewCreateInfo const & createInfo )const

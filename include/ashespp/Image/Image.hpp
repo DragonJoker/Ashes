@@ -317,10 +317,38 @@ namespace ashes
 		VkImageMemoryBarrier makeTransition( VkImageLayout srcLayout
 			, VkImageLayout dstLayout
 			, VkImageSubresourceRange mipSubRange
-			, uint32_t mipLevel )const;
+			, uint32_t mipLevel
+			, uint32_t srcQueueFamily
+			, uint32_t dstQueueFamily )const;
 		VkImageMemoryBarrier makeTransition( VkImageLayout srcLayout
 			, VkImageLayout dstLayout
-			, VkImageSubresourceRange mipSubRange )const;
+			, VkImageSubresourceRange mipSubRange
+			, uint32_t srcQueueFamily
+			, uint32_t dstQueueFamily )const;
+
+		VkImageMemoryBarrier makeTransition( VkImageLayout srcLayout
+			, VkImageLayout dstLayout
+			, VkImageSubresourceRange mipSubRange
+			, uint32_t mipLevel )const
+		{
+			return makeTransition( srcLayout
+				, dstLayout
+				, mipSubRange
+				, mipLevel
+				, VK_QUEUE_FAMILY_IGNORED
+				, VK_QUEUE_FAMILY_IGNORED );
+		}
+
+		VkImageMemoryBarrier makeTransition( VkImageLayout srcLayout
+			, VkImageLayout dstLayout
+			, VkImageSubresourceRange mipSubRange )const
+		{
+			return makeTransition( srcLayout
+				, dstLayout
+				, mipSubRange
+				, VK_QUEUE_FAMILY_IGNORED
+				, VK_QUEUE_FAMILY_IGNORED );
+		}
 		/**
 		*\name
 		*	Getters.
