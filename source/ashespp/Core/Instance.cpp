@@ -6,7 +6,6 @@ See LICENSE file in root folder.
 
 #include "ashespp/Core/Device.hpp"
 #include "ashespp/Core/Surface.hpp"
-#include "ashespp/Utils/CallStack.hpp"
 
 #include <cmath>
 
@@ -20,9 +19,6 @@ namespace ashes
 		, m_createInfo{ std::move( createInfo ) }
 		, m_features{ plugin.features }
 	{
-#ifndef NDEBUG
-		callstack::initialise();
-#endif
 #define VK_LIB_GLOBAL_FUNCTION( ver, fun )\
 		vk##fun = reinterpret_cast< PFN_vk##fun >( m_getInstanceProcAddr( nullptr, "vk"#fun ) );
 #define VK_LIB_GLOBAL_FUNCTION_EXT( ver, ext, fun )\
@@ -40,9 +36,6 @@ namespace ashes
 		, m_createInfo{ std::move( createInfo ) }
 		, m_features{ VK_TRUE, VK_TRUE, VK_TRUE, VK_TRUE, VK_TRUE, VK_TRUE, VK_TRUE, makeVersion( 1, 0, 0 ) }
 	{
-#ifndef NDEBUG
-		callstack::initialise();
-#endif
 #define VK_LIB_GLOBAL_FUNCTION( ver, fun )\
 		vk##fun = reinterpret_cast< PFN_vk##fun >( m_getInstanceProcAddr( nullptr, "vk"#fun ) );
 #define VK_LIB_GLOBAL_FUNCTION_EXT( ver, ext, fun )\
@@ -60,10 +53,6 @@ namespace ashes
 		}
 
 		DEBUG_WRITE( "VkInstance.log" );
-
-#ifndef NDEBUG
-		callstack::cleanup();
-#endif
 	}
 
 	std::array< float, 16 > Instance::frustum( float left
