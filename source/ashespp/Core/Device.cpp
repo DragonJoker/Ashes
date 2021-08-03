@@ -20,7 +20,6 @@ See LICENSE file in root folder.
 #include "ashespp/Sync/Event.hpp"
 #include "ashespp/Sync/Fence.hpp"
 #include "ashespp/Sync/Semaphore.hpp"
-#include "ashespp/Utils/CallStack.hpp"
 
 #include <ashes/common/Exception.hpp>
 
@@ -656,7 +655,12 @@ namespace ashes
 			<< " - " << objectName;
 		Logger::logTrace( stream );
 		std::stringstream callStack;
-		callStack << callstack::Backtrace{ 20, 4 };
+
+		if ( m_callstackCallback )
+		{
+			callStack << m_callstackCallback();
+		}
+
 		m_allocationMutex.lock();
 #	if VK_EXT_debug_utils
 		if ( m_instance.checkExtension( VK_EXT_DEBUG_UTILS_EXTENSION_NAME ) )

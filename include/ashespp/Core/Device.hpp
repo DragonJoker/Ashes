@@ -1612,7 +1612,7 @@ namespace ashes
 #define VK_LIB_DEVICE_FUNCTION( ver, fun ) PFN_vk##fun vk##fun{ nullptr };
 #	include <ashes/ashes_functions_list.hpp>
 
-	protected:
+	private:
 		Instance const & m_instance;
 		VkAllocationCallbacks const * m_callbacks;
 		PhysicalDevice const & m_physicalDevice;
@@ -1633,10 +1633,17 @@ namespace ashes
 			std::string callstack;
 		};
 
+		using CallstackCallback = std::function< std::string() >;
+		CallstackCallback m_callstackCallback;
 		mutable std::mutex m_allocationMutex;
 		mutable std::unordered_map< size_t, ObjectAllocation > m_allocated;
 
 	public:
+		void setCallstackCallback( CallstackCallback callback )
+		{
+			m_callstackCallback = callback;
+		}
+
 		template< typename AshesType >
 		static inline void stRegisterObject( Device const & device
 			, std::string const & name

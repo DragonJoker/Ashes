@@ -116,6 +116,11 @@ namespace ashes
 		return features;
 	}
 
+	void PhysicalDevice::getFeatures( VkPhysicalDeviceFeatures2 & features )const
+	{
+		m_instance.vkGetPhysicalDeviceFeatures2( m_gpu, &features );
+	}
+
 	VkQueueFamilyPropertiesArray PhysicalDevice::getQueueFamilyProperties()const
 	{
 		uint32_t queueCount{ 0 };
