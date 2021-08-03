@@ -59,6 +59,11 @@ namespace ashes
 		VkPhysicalDeviceFeatures getFeatures()const;
 		/**
 		*\brief
+		*	Retrieves the physical device features.
+		*/
+		void getFeatures( VkPhysicalDeviceFeatures2 & features )const;
+		/**
+		*\brief
 		*	Retrieves the physical device queues properties.
 		*/
 		VkQueueFamilyPropertiesArray getQueueFamilyProperties()const;

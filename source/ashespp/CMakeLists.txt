@@ -394,23 +394,6 @@ set( ${PROJECT_NAME}_HDR_FILES
 source_group( "Header Files\\Sync" FILES ${${PROJECT_NAME}_FOLDER_HDR_FILES} )
 source_group( "Source Files\\Sync" FILES ${${PROJECT_NAME}_FOLDER_SRC_FILES} )
 
-set( ${PROJECT_NAME}_FOLDER_SRC_FILES
-	${Ashes_SOURCE_DIR}/source/ashespp/Utils/CallStack.cpp
-)
-set( ${PROJECT_NAME}_FOLDER_HDR_FILES
-	${Ashes_SOURCE_DIR}/include/ashespp/Utils/CallStack.hpp
-)
-set( ${PROJECT_NAME}_SRC_FILES
-	${${PROJECT_NAME}_SRC_FILES}
-	${${PROJECT_NAME}_FOLDER_SRC_FILES}
-)
-set( ${PROJECT_NAME}_HDR_FILES
-	${${PROJECT_NAME}_HDR_FILES}
-	${${PROJECT_NAME}_FOLDER_HDR_FILES}
-)
-source_group( "Header Files\\Utils" FILES ${${PROJECT_NAME}_FOLDER_HDR_FILES} )
-source_group( "Source Files\\Utils" FILES ${${PROJECT_NAME}_FOLDER_SRC_FILES} )
-
 add_library( ${_PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_SRC_FILES}
 	${${PROJECT_NAME}_HDR_FILES}
