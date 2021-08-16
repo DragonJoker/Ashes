@@ -276,9 +276,9 @@ namespace ashes
 			, VkFence fence = VK_NULL_HANDLE )const
 		{
 			submit( { commandBuffer }
-				, VkSemaphoreArray{ semaphoreToWait }
-				, VkPipelineStageFlagsArray{ semaphoreStage }
-				, VkSemaphoreArray{ semaphoreToSignal }
+				, semaphoreToWait ? VkSemaphoreArray{ semaphoreToWait } : VkSemaphoreArray{}
+				, semaphoreStage ? VkPipelineStageFlagsArray{ semaphoreStage } : VkPipelineStageFlagsArray{}
+				, semaphoreToSignal ? VkSemaphoreArray{ semaphoreToSignal } : VkSemaphoreArray{}
 				, fence );
 		}
 		/**
