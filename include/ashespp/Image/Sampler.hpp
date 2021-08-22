@@ -40,6 +40,27 @@ namespace ashes
 			, SamplerCreateInfo createInfo );
 		/**
 		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] createInfo
+		*	The creation informations.
+		*/
+		Sampler( Device const & device
+			, VkSamplerCreateInfo createInfo );
+		/**
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] createInfo
+		*	The creation informations.
+		*/
+		Sampler( Device const & device
+			, std::string const & debugName
+			, VkSamplerCreateInfo createInfo );
+		/**
+		*\brief
 		*	Destructor.
 		*/
 		~Sampler();
