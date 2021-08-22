@@ -36,12 +36,7 @@ jobs:
     - name: Install necessary G++ version (Linux)
       if: runner.os == 'Linux'
       shell: bash
-      run: sudo apt-get install -y --no-install-recommends ccache gcc-8 g++-8
-
-    - name: Install necessary packages (Linux)
-      if: runner.os == 'Linux'
-      shell: bash
-      run: sudo apt-get install libxi-dev libgl1-mesa-dev libglu1-mesa-dev mesa-common-dev libxrandr-dev libxxf86vm-dev libxaw7-dev libwayland-dev libx11-xcb-dev
+      run: sudo apt-get install -y --no-install-recommends ccache gcc-10 g++-10
 
     - name: Install dependencies from vcpkg (Linux)
       if: runner.os == 'Linux'
@@ -61,19 +56,19 @@ jobs:
       if: runner.os == 'Linux'
       shell: bash
       working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
-      run: echo "CC=gcc-8" >> $GITHUB_ENV
+      run: echo "CC=gcc-10" >> $GITHUB_ENV
 
     - name: Configure G++ version (Linux)
       if: runner.os == 'Linux'
       shell: bash
       working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
-      run: echo "CXX=g++-8" >> $GITHUB_ENV
+      run: echo "CXX=g++-10" >> $GITHUB_ENV
 
     - name: Configure CMake (Linux)
       if: runner.os == 'Linux'
       shell: bash
       working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/package/ashes -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_INFO=OFF -DASHES_BUILD_SAMPLES=OFF -DASHES_BUILD_RENDERER_OGL=ON
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/package/ashes -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_INFO=OFF -DASHES_BUILD_SAMPLES=OFF -DASHES_BUILD_RENDERER_OGL=OFF
 
     - name: Configure CMake (MacOS)
       if: runner.os == 'macOS'
