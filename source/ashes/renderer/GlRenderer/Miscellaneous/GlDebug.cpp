@@ -11,7 +11,7 @@
 #include <fstream>
 #include <sstream>
 #include <map>
-#include <filesystem>
+#include <sys/stat.h>
 
 #ifdef _WIN32
 #	include <gl/GL.h>
@@ -176,9 +176,11 @@ namespace ashes::gl
 
 	void clearDebugFile()
 	{
-		if ( std::filesystem::exists( getDebugLogFile() ) )
+		struct stat buffer;
+
+		if ( stat( getDebugLogFile().c_str(), &buffer ) == 0 )
 		{
-			std::filesystem::remove( getDebugLogFile() );
+			remove( getDebugLogFile().c_str() );
 		}
 	}
 
