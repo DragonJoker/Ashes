@@ -12,6 +12,11 @@ namespace ashes
 {
 	struct SamplerCreateInfo
 	{
+		SamplerCreateInfo( VkSamplerCreateInfo && info )
+			: vk{ std::move( info ) }
+		{
+		}
+
 		SamplerCreateInfo( VkSamplerCreateFlags flags
 			, VkFilter magFilter
 			, VkFilter minFilter
@@ -28,27 +33,24 @@ namespace ashes
 			, float maxLod = 1000.0f
 			, VkBorderColor borderColor = VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK
 			, VkBool32 unnormalizedCoordinates = VK_FALSE )
-			: vk
-			{
-				VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
-				nullptr,
-				flags,
-				magFilter,
-				minFilter,
-				mipmapMode,
-				addressModeU,
-				addressModeV,
-				addressModeW,
-				mipLodBias,
-				anisotropyEnable,
-				maxAnisotropy,
-				compareEnable,
-				compareOp,
-				minLod,
-				maxLod,
-				borderColor,
-				unnormalizedCoordinates,
-			}
+			: vk{ VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO
+				, nullptr
+				, flags
+				, magFilter
+				, minFilter
+				, mipmapMode
+				, addressModeU
+				, addressModeV
+				, addressModeW
+				, mipLodBias
+				, anisotropyEnable
+				, maxAnisotropy
+				, compareEnable
+				, compareOp
+				, minLod
+				, maxLod
+				, borderColor
+				, unnormalizedCoordinates }
 		{
 		}
 
