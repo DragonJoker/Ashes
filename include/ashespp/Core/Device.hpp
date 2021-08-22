@@ -1007,6 +1007,21 @@ namespace ashes
 			, SamplerCreateInfo createInfo )const;
 		/**
 		*\brief
+		*	Creates a sampler.
+		*\param[in] createInfo
+		*	The creation informations.
+		*/
+		SamplerPtr createSampler( VkSamplerCreateInfo createInfo )const;
+		/**
+		*\brief
+		*	Creates a sampler.
+		*\param[in] createInfo
+		*	The creation informations.
+		*/
+		SamplerPtr createSampler( std::string const & debugName
+			, VkSamplerCreateInfo createInfo )const;
+		/**
+		*\brief
 		*	Creates a GPU buffer.
 		*\param[in] size
 		*	The buffer size.

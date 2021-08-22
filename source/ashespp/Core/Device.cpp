@@ -265,6 +265,20 @@ namespace ashes
 			, std::move( createInfo ) );
 	}
 
+	SamplerPtr Device::createSampler( VkSamplerCreateInfo createInfo )const
+	{
+		return std::make_unique< Sampler >( *this
+			, std::move( createInfo ) );
+	}
+
+	SamplerPtr Device::createSampler( std::string const & debugName
+		, VkSamplerCreateInfo createInfo )const
+	{
+		return std::make_unique< Sampler >( *this
+			, debugName
+			, std::move( createInfo ) );
+	}
+
 	BufferBasePtr Device::createBuffer( VkDeviceSize size
 		, VkBufferUsageFlags usage
 		, QueueShare sharingMode )const
@@ -661,54 +675,54 @@ namespace ashes
 			callStack << m_callstackCallback();
 		}
 
-		m_allocationMutex.lock();
-#	if VK_EXT_debug_utils
-		if ( m_instance.checkExtension( VK_EXT_DEBUG_UTILS_EXTENSION_NAME ) )
 		{
-			setDebugUtilsObjectName(
-				{
-					VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
-					nullptr,
-					VkObjectType( objectType ),
-					object,
-					objectName.c_str(),
-				} );
-		}
+			std::unique_lock< std::mutex > lock{ m_allocationMutex };
+#	if VK_EXT_debug_utils
+			if ( m_instance.checkExtension( VK_EXT_DEBUG_UTILS_EXTENSION_NAME ) )
+			{
+				setDebugUtilsObjectName(
+					{
+						VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+						nullptr,
+						VkObjectType( objectType ),
+						object,
+						objectName.c_str(),
+					} );
+			}
 #	endif
 #	if VK_EXT_debug_marker
-		if ( m_instance.checkExtension( VK_EXT_DEBUG_MARKER_EXTENSION_NAME ) )
-		{
-			debugMarkerSetObjectName(
-				{
-					VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT,
-					nullptr,
-					VkDebugReportObjectTypeEXT( objectType ),
-					object,
-					objectName.c_str(),
+			if ( m_instance.checkExtension( VK_EXT_DEBUG_MARKER_EXTENSION_NAME ) )
+			{
+				debugMarkerSetObjectName(
+					{
+						VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT,
+						nullptr,
+						VkDebugReportObjectTypeEXT( objectType ),
+						object,
+						objectName.c_str(),
+					} );
+			}
+#	endif
+			m_allocated.emplace( object
+				, ObjectAllocation{
+					typeName,
+					objectName,
+					callStack.str()
 				} );
 		}
-#	endif
-		m_allocated.emplace( object
-			, ObjectAllocation{
-				typeName,
-				objectName,
-				callStack.str()
-			} );
-		m_allocationMutex.unlock();
 	}
 
 	void Device::doUnregisterObject( uint64_t object )const
 	{
-		m_allocationMutex.lock();
+		std::unique_lock< std::mutex > lock{ m_allocationMutex };
 		auto it = m_allocated.find( object );
 		assert( it != m_allocated.end() );
 		m_allocated.erase( it );
-		m_allocationMutex.unlock();
 	}
 
 	void Device::doReportRegisteredObjects()const
 	{
-		m_allocationMutex.lock();
+		std::unique_lock< std::mutex > lock{ m_allocationMutex };
 
 		for ( auto & alloc : m_allocated )
 		{
@@ -717,8 +731,6 @@ namespace ashes
 			stream << alloc.second.callstack;
 			log::error << stream.str() << "\n";
 		}
-
-		m_allocationMutex.unlock();
 	}
 
 #endif
