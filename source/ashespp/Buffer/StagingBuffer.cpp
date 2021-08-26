@@ -358,7 +358,6 @@ namespace ashes
 			, size );
 		getBuffer().flush( 0u, mappedSize );
 		getBuffer().unlock();
-		m_device.waitIdle();
 	}
 
 	void StagingBuffer::doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
@@ -477,7 +476,6 @@ namespace ashes
 			, size );
 		getBuffer().flush( 0u, mappedSize );
 		getBuffer().unlock();
-		m_device.waitIdle();
 	}
 
 	void StagingBuffer::doCopyToStagingBuffer( CommandBuffer const & commandBuffer
