@@ -358,7 +358,6 @@ namespace ashes
 			, size );
 		m_buffer.flush( 0u, mappedSize );
 		m_buffer.unlock();
-		m_device.waitIdle();
 	}
 
 	void StagingTexture::doCopyStagingToDestination( CommandBuffer const & commandBuffer
@@ -440,7 +439,6 @@ namespace ashes
 			, size );
 		m_buffer.flush( 0u, mappedSize );
 		m_buffer.unlock();
-		m_device.waitIdle();
 	}
 
 	uint8_t * StagingTexture::lock( VkDeviceSize offset
