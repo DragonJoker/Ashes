@@ -11,6 +11,7 @@ namespace ashes::d3d11
 	class Layer
 	{
 	public:
+		virtual ~Layer() = default;
 		bool bufferImageCommand( VkCommandBuffer cmd
 			, VkBufferImageCopy const & copyInfo
 			, VkBuffer buffer
