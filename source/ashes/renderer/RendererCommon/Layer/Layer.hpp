@@ -11,6 +11,7 @@
 //	class Layer
 //	{
 //	public:
+//		virtual ~Layer() = default;
 //		virtual bool onCopyToImageCommand( VkCommandBuffer cmd
 //			, ArrayView< VkBufferImageCopy const > const & copyInfo
 //			, VkBuffer src
