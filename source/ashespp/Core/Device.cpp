@@ -664,10 +664,9 @@ namespace ashes
 	{
 		std::stringstream stream;
 		stream.imbue( std::locale{ "C" } );
-		stream << "Created " << typeName
-			<< " [0x" << std::hex << std::setw( 8u ) << std::setfill( '0' ) << object << "]"
+		stream << "Created [0x" << std::hex << std::setw( 8u ) << std::setfill( '0' ) << object << "]"
+			<< " - " << typeName
 			<< " - " << objectName;
-		Logger::logTrace( stream );
 		std::stringstream callStack;
 
 		if ( m_callstackCallback )
@@ -703,21 +702,42 @@ namespace ashes
 					} );
 			}
 #	endif
-			m_allocated.emplace( object
+			auto ires = m_allocated.emplace( object
 				, ObjectAllocation{
 					typeName,
 					objectName,
 					callStack.str()
 				} );
+
+			if ( !ires.second )
+			{
+				stream << " - Already found in allocated objects ?";
+			}
 		}
+
+		Logger::logTrace( stream );
 	}
 
 	void Device::doUnregisterObject( uint64_t object )const
 	{
 		std::unique_lock< std::mutex > lock{ m_allocationMutex };
 		auto it = m_allocated.find( object );
-		assert( it != m_allocated.end() );
-		m_allocated.erase( it );
+		std::stringstream stream;
+		stream.imbue( std::locale{ "C" } );
+		stream << "Destroyed [0x" << std::hex << std::setw( 8u ) << std::setfill( '0' ) << object << "]";
+
+		if ( it != m_allocated.end() )
+		{
+			stream << " - " << it->second.type
+				<< " - " << it->second.name;
+			m_allocated.erase( it );
+		}
+		else
+		{
+			stream << " - Not found in allocated objects ?";
+		}
+
+		Logger::logTrace( stream );
 	}
 
 	void Device::doReportRegisteredObjects()const
