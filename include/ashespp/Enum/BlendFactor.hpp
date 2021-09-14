@@ -60,10 +60,8 @@ namespace ashes
 			return "inv_src1_alpha";
 		default:
 			assert( false && "Unsupported VkBlendFactor." );
-			throw std::runtime_error{ "Unsupported VkBlendFactor" };
+			return "Unsupported VkBlendFactor";
 		}
-
-		return 0;
 	}
 }
 

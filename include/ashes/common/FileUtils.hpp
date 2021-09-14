@@ -5,11 +5,14 @@ See LICENSE file in root folder
 #define ___Ashes_common_FileUtils_HPP___
 #pragma once
 
+#pragma warning( push )
+#pragma warning( disable: 4365 )
 #include <fstream>
 #include <functional>
 #include <set>
 #include <string>
 #include <vector>
+#pragma warning( pop )
 
 namespace ashes
 {
@@ -58,7 +61,7 @@ namespace ashes
 	*	The files list.
 	*/
 	ashes::StringArray listDirectoryFiles( std::string const & folderPath
-		, bool recursive = false );
+		, bool recursive = false )noexcept;
 	/**
 	*\brief
 	*	Looks for a library in current bin dir, or current lib dir, or system dir.

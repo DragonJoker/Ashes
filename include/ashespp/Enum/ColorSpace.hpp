@@ -54,10 +54,8 @@ namespace ashes
 #endif
 		default:
 			assert( false && "Unsupported VkColorSpaceKHR." );
-			throw std::runtime_error{ "Unsupported VkColorSpaceKHR" };
+			return "Unsupported VkColorSpaceKHR";
 		}
-
-		return 0;
 	}
 }
 

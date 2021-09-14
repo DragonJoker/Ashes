@@ -19,10 +19,10 @@ namespace ashes
 			, VkSampleCountFlagBits rasterizationSamples = VK_SAMPLE_COUNT_1_BIT
 			, VkBool32 sampleShadingEnable = VK_FALSE
 			, float minSampleShading = 1.0f
-			, Optional< VkSampleMask > sampleMask = Optional< VkSampleMask >{}
+			, Optional< VkSampleMask > psampleMask = Optional< VkSampleMask >{}
 			, VkBool32 alphaToCoverageEnable = VK_FALSE
 			, VkBool32 alphaToOneEnable = VK_FALSE )
-			: sampleMask{ std::move( sampleMask ) }
+			: sampleMask{ std::move( psampleMask ) }
 			, vk
 			{
 				VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
@@ -31,7 +31,7 @@ namespace ashes
 				rasterizationSamples,
 				sampleShadingEnable,
 				minSampleShading,
-				bool( this->sampleMask ) ? &this->sampleMask.value() : nullptr,
+				bool( sampleMask ) ? &sampleMask.value() : nullptr,
 				alphaToCoverageEnable,
 				alphaToOneEnable,
 			}
@@ -48,7 +48,7 @@ namespace ashes
 				rhs.vk.rasterizationSamples,
 				rhs.vk.sampleShadingEnable,
 				rhs.vk.minSampleShading,
-				bool( this->sampleMask ) ? &this->sampleMask.value() : nullptr,
+				bool( sampleMask ) ? &sampleMask.value() : nullptr,
 				rhs.vk.alphaToCoverageEnable,
 				rhs.vk.alphaToOneEnable,
 			}
@@ -66,7 +66,7 @@ namespace ashes
 				rhs.vk.rasterizationSamples,
 				rhs.vk.sampleShadingEnable,
 				rhs.vk.minSampleShading,
-				bool( this->sampleMask ) ? &this->sampleMask.value() : nullptr,
+				bool( sampleMask ) ? &sampleMask.value() : nullptr,
 				rhs.vk.alphaToCoverageEnable,
 				rhs.vk.alphaToOneEnable,
 			};

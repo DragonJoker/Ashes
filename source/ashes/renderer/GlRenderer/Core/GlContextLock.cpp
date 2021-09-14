@@ -9,7 +9,7 @@ namespace ashes::gl
 
 	void ValueGetter< int32_t >::get( ContextLock & context, GlValueName name, GLint index, int32_t * value )
 	{
-		glLogCall( context, glGetIntegeri_v, name, index, value );
+		glLogCall( context, glGetIntegeri_v, name, GLuint( index ), value );
 	}
 
 	void ValueGetter< int64_t >::get( ContextLock & context, GlValueName name, int64_t * value )
@@ -19,7 +19,7 @@ namespace ashes::gl
 
 	void ValueGetter< int64_t >::get( ContextLock & context, GlValueName name, GLint index, int64_t * value )
 	{
-		glLogCall( context, glGetInteger64i_v, name, index, value );
+		glLogCall( context, glGetInteger64i_v, name, GLuint( index ), value );
 	}
 
 	void ValueGetter< float >::get( ContextLock & context, GlValueName name, float * value )
@@ -29,6 +29,6 @@ namespace ashes::gl
 
 	void ValueGetter< float >::get( ContextLock & context, GlValueName name, GLint index, float * value )
 	{
-		glLogCall( context, glGetFloati_v, name, index, value );
+		glLogCall( context, glGetFloati_v, name, GLuint( index ), value );
 	}
 }

@@ -52,7 +52,7 @@ namespace ashes::gl
 		{
 			if ( doApplyEnable( list
 				, GL_PRIMITIVE_RESTART
-				, state.primitiveRestartEnable ) )
+				, state.primitiveRestartEnable != 0 ) )
 			{
 			}
 		}
@@ -102,7 +102,7 @@ namespace ashes::gl
 					, checkFlag( state.colorWriteMask, VK_COLOR_COMPONENT_A_BIT ) ) );
 			}
 
-			return state.blendEnable;
+			return state.blendEnable != 0;
 		}
 
 		bool doApplyBlendAttaches( CmdList & list
@@ -159,19 +159,19 @@ namespace ashes::gl
 			case VK_POLYGON_MODE_FILL_RECTANGLE_NV:
 				doApplyEnable( list
 					, GL_POLYGON_OFFSET_FILL
-					, rasterState.depthBiasEnable );
+					, rasterState.depthBiasEnable != 0 );
 				break;
 
 			case VK_POLYGON_MODE_LINE:
 				doApplyEnable( list
 					, GL_POLYGON_OFFSET_LINE
-					, rasterState.depthBiasEnable );
+					, rasterState.depthBiasEnable != 0 );
 				break;
 
 			case VK_POLYGON_MODE_POINT:
 				doApplyEnable( list
 					, GL_POLYGON_OFFSET_POINT
-					, rasterState.depthBiasEnable );
+					, rasterState.depthBiasEnable != 0 );
 				break;
 
 			default:
@@ -197,7 +197,7 @@ namespace ashes::gl
 		{
 			doApplyEnable( list
 				, GL_DEPTH_CLAMP
-				, state.depthClampEnable );
+				, state.depthClampEnable != 0 );
 		}
 
 		void doApplyRasterizerDiscard( CmdList & list
@@ -205,7 +205,7 @@ namespace ashes::gl
 		{
 			doApplyEnable( list
 				, GL_RASTERIZER_DISCARD
-				, state.rasterizerDiscardEnable );
+				, state.rasterizerDiscardEnable != 0 );
 		}
 
 		void doApplyAlphaToCoverage( CmdList & list
@@ -213,7 +213,7 @@ namespace ashes::gl
 		{
 			doApplyEnable( list
 				, GL_SAMPLE_ALPHA_TO_COVERAGE
-				, state.alphaToCoverageEnable );
+				, state.alphaToCoverageEnable != 0 );
 		}
 
 		void doApplyAlphaToOne( CmdList & list
@@ -221,7 +221,7 @@ namespace ashes::gl
 		{
 			doApplyEnable( list
 				, GL_SAMPLE_ALPHA_TO_ONE
-				, state.alphaToOneEnable );
+				, state.alphaToOneEnable != 0 );
 		}
 
 		void doApplySampleShading( CmdList & list
@@ -229,7 +229,7 @@ namespace ashes::gl
 		{
 			if ( doApplyEnable( list
 				, GL_SAMPLE_SHADING
-				, state.sampleShadingEnable ) )
+				, state.sampleShadingEnable != 0 ) )
 			{
 				list.emplace_back( makeCmd< OpType::eMinSampleShading >( state.minSampleShading ) );
 			}
@@ -256,7 +256,7 @@ namespace ashes::gl
 		{
 			if ( doApplyEnable( list
 				, GL_DEPTH_TEST
-				, state.depthTestEnable ) )
+				, state.depthTestEnable != 0 ) )
 			{
 				list.emplace_back( makeCmd< OpType::eDepthFunc >( convert( state.depthCompareOp ) ) );
 			}
@@ -289,19 +289,19 @@ namespace ashes::gl
 			case VK_POLYGON_MODE_FILL_RECTANGLE_NV:
 				doApplyEnable( list
 					, GL_POLYGON_OFFSET_FILL
-					, newEnable );
+					, newEnable != 0 );
 				break;
 
 			case VK_POLYGON_MODE_LINE:
 				doApplyEnable( list
 					, GL_POLYGON_OFFSET_LINE
-					, newEnable );
+					, newEnable != 0 );
 				break;
 
 			case VK_POLYGON_MODE_POINT:
 				doApplyEnable( list
 					, GL_POLYGON_OFFSET_POINT
-					, newEnable );
+					, newEnable != 0 );
 				break;
 
 			default:
@@ -386,7 +386,7 @@ namespace ashes::gl
 		{
 			if ( doApplyEnable( list
 				, GL_STENCIL_TEST
-				, state.stencilTestEnable ) )
+				, state.stencilTestEnable != 0 ) )
 			{
 				doApplyStencilOpState( list, state.back, save.back, GL_CULL_MODE_BACK );
 				doApplyStencilOpState( list, state.front, save.front, GL_CULL_MODE_FRONT );
@@ -428,7 +428,7 @@ namespace ashes::gl
 			, VkExtent2D const & renderArea )
 		{
 			auto vkbottom = value.y + value.h;
-			value.y = renderArea.height - vkbottom;
+			value.y = int( renderArea.height ) - vkbottom;
 		}
 
 		void adjust( ashes::ArrayView< MocVkScissor > const & values
@@ -444,7 +444,6 @@ namespace ashes::gl
 			, VkExtent2D const & renderArea )
 		{
 			auto vkbottom = value.offset.y + value.extent.height;
-			auto vktop = value.offset.y;
 			return
 			{
 				{ value.offset.x, int32_t( renderArea.height - vkbottom ) },
@@ -478,7 +477,7 @@ namespace ashes::gl
 			, VkExtent2D const & renderArea )
 		{
 			auto vkbottom = value.y + value.h;
-			value.y = renderArea.height - vkbottom;
+			value.y = float( renderArea.height ) - vkbottom;
 		}
 
 		void adjust( ashes::ArrayView< MocVkViewport > const & values
@@ -494,10 +493,9 @@ namespace ashes::gl
 			, VkExtent2D const & renderArea )
 		{
 			auto vkbottom = value.y + std::min( value.height, float( renderArea.height ) );
-			auto vktop = value.y;
 			return
 			{
-				value.x, renderArea.height - vkbottom,
+				value.x, float( renderArea.height ) - vkbottom,
 				value.width, value.height,
 				value.minDepth, value.maxDepth,
 			};
@@ -579,13 +577,13 @@ namespace ashes::gl
 						list.push_back( makeCmd< OpType::eApplyViewports >( firstViewport
 							, uint32_t( viewports.size() )
 							, viewports ) );
-						preExecuteActions.push_back( [index]( CmdList & list
+						preExecuteActions.push_back( [index]( CmdList & plist
 							, ContextStateStack const & stack )
 							{
 								Command * pCmd = nullptr;
-								auto it = list[index].begin();
+								auto it = plist[index].begin();
 
-								if ( map( it, list[index].end(), pCmd ) )
+								if ( map( it, plist[index].end(), pCmd ) )
 								{
 									assert( pCmd->op.type == OpType::eApplyViewports );
 									CmdApplyViewports & oldCmd = map< OpType::eApplyViewports >( *pCmd );
@@ -610,13 +608,13 @@ namespace ashes::gl
 				{
 					auto index = list.size();
 					list.push_back( makeCmd< OpType::eApplyViewport >( viewports.front() ) );
-					preExecuteActions.push_back( [index]( CmdList & list
+					preExecuteActions.push_back( [index]( CmdList & plist
 						, ContextStateStack const & stack )
 						{
 							Command * pCmd = nullptr;
-							auto it = list[index].begin();
+							auto it = plist[index].begin();
 
-							if ( map( it, list[index].end(), pCmd ) )
+							if ( map( it, plist[index].end(), pCmd ) )
 							{
 								assert( pCmd->op.type == OpType::eApplyViewport );
 								CmdApplyViewport & oldCmd = map< OpType::eApplyViewport >( *pCmd );
@@ -633,13 +631,13 @@ namespace ashes::gl
 			{
 				auto index = list.size();
 				list.push_back( makeCmd< OpType::eApplyViewport >( VkViewport{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f } ) );
-				preExecuteActions.push_back( [index]( CmdList & list
+				preExecuteActions.push_back( [index]( CmdList & plist
 					, ContextStateStack const & stack )
 					{
 						Command * pCmd = nullptr;
-						auto it = list[index].begin();
+						auto it = plist[index].begin();
 
-						if ( map( it, list[index].end(), pCmd ) )
+						if ( map( it, plist[index].end(), pCmd ) )
 						{
 							assert( pCmd->op.type == OpType::eApplyViewport );
 							CmdApplyViewport & oldCmd = map< OpType::eApplyViewport >( *pCmd );
@@ -685,15 +683,15 @@ namespace ashes::gl
 						list.push_back( makeCmd< OpType::eApplyScissors >( firstScissor
 							, uint32_t( scissors.size() )
 							, scissors ) );
-						preExecuteActions.push_back( [index]( CmdList & list
+						preExecuteActions.push_back( [index]( CmdList & plist
 							, ContextStateStack const & stack )
 							{
 								if ( stack.isRtot() )
 								{
 									Command * pCmd = nullptr;
-									auto it = list[index].begin();
+									auto it = plist[index].begin();
 
-									if ( map( it, list[index].end(), pCmd ) )
+									if ( map( it, plist[index].end(), pCmd ) )
 									{
 										assert( pCmd->op.type == OpType::eApplyScissors );
 										CmdApplyScissors & oldCmd = map< OpType::eApplyScissors >( *pCmd );
@@ -721,15 +719,15 @@ namespace ashes::gl
 				{
 					auto index = list.size();
 					list.push_back( makeCmd< OpType::eApplyScissor >( VkRect2D{} ) );
-					preExecuteActions.push_back( [index]( CmdList & list
+					preExecuteActions.push_back( [index]( CmdList & plist
 						, ContextStateStack const & stack )
 						{
 							if ( stack.isRtot() )
 							{
 								Command * pCmd = nullptr;
-								auto it = list[index].begin();
+								auto it = plist[index].begin();
 
-								if ( map( it, list[index].end(), pCmd ) )
+								if ( map( it, plist[index].end(), pCmd ) )
 								{
 									assert( pCmd->op.type == OpType::eApplyScissor );
 									CmdApplyScissor & oldCmd = map< OpType::eApplyScissor >( *pCmd );
@@ -755,15 +753,15 @@ namespace ashes::gl
 			{
 				auto index = list.size();
 				list.push_back( makeCmd< OpType::eApplyScissor >( VkRect2D{ {}, {} } ) );
-				preExecuteActions.push_back( [index]( CmdList & list
+				preExecuteActions.push_back( [index]( CmdList & plist
 					, ContextStateStack const & stack )
 					{
 						if ( stack.isRtot() )
 						{
 							Command * pCmd = nullptr;
-							auto it = list[index].begin();
+							auto it = plist[index].begin();
 
-							if ( map( it, list[index].end(), pCmd ) )
+							if ( map( it, plist[index].end(), pCmd ) )
 							{
 								assert( pCmd->op.type == OpType::eApplyScissor );
 								CmdApplyScissor oldCmd = map< OpType::eApplyScissor >( *pCmd );
@@ -1139,7 +1137,7 @@ namespace ashes::gl
 
 	bool ContextStateStack::doCheckSave( ContextState * state )
 	{
-		bool result = m_save;
+		bool result = ( m_save != nullptr );
 
 		if ( !result )
 		{

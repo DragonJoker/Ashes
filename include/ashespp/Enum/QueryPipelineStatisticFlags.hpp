@@ -44,10 +44,8 @@ namespace ashes
 			return "compute_shader_invocations";
 		default:
 			assert( false && "Unsupported VkQueryPipelineStatisticFlagBits." );
-			throw std::runtime_error{ "Unsupported VkQueryPipelineStatisticFlagBits" };
+			return "Unsupported VkQueryPipelineStatisticFlagBits";
 		}
-
-		return 0;
 	}
 }
 

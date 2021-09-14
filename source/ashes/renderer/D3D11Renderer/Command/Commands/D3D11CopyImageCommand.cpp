@@ -32,9 +32,9 @@ namespace ashes::d3d11
 		, VkImage src
 		, VkImage dst )
 		: CommandBase{ device }
-		, m_copyInfo{ copyInfo }
 		, m_src{ src }
 		, m_dst{ dst }
+		, m_copyInfo{ copyInfo }
 		, m_srcBox{ doGetSrcBox( m_copyInfo ) }
 		, m_srcSubresource{ D3D11CalcSubresource( m_copyInfo.srcSubresource.mipLevel
 			, m_copyInfo.srcSubresource.baseArrayLayer
@@ -62,9 +62,9 @@ namespace ashes::d3d11
 		{
 			context.context->CopySubresourceRegion( get( m_dst )->getResource()
 				, m_dstSubresource
-				, m_copyInfo.dstOffset.x
-				, m_copyInfo.dstOffset.y
-				, m_copyInfo.dstOffset.z
+				, UINT( m_copyInfo.dstOffset.x )
+				, UINT( m_copyInfo.dstOffset.y )
+				, UINT( m_copyInfo.dstOffset.z )
 				, get( m_src )->getResource()
 				, m_srcSubresource
 				, &m_srcBox );

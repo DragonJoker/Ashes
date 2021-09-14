@@ -59,7 +59,6 @@ set( ${PROJECT_NAME}_FOLDER_SRC_FILES
 )
 set( ${PROJECT_NAME}_FOLDER_HDR_FILES
 	${Ashes_SOURCE_DIR}/include/ashespp/Command/CommandBuffer.hpp
-	${Ashes_SOURCE_DIR}/include/ashespp/Command/CommandBufferInheritanceInfo.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Command/CommandPool.hpp
 )
 set( ${PROJECT_NAME}_SRC_FILES
@@ -405,14 +404,13 @@ add_library( ashes::${_PROJECT_NAME}
 target_compile_definitions( ${PROJECT_NAME} PUBLIC
 	${Ashes_BINARY_DEFINITIONS}
 )
+target_add_compilation_flags( ${PROJECT_NAME} )
 target_include_directories( ${PROJECT_NAME}
 	PRIVATE
 		${Vulkan_INCLUDE_DIR}
 		${Ashes_SOURCE_DIR}/source
-		${ASHES_CONFIG_DIR}/source
-		${ASHES_CONFIG_DIR}/include/${_PROJECT_NAME}
+		${ASHES_CONFIG_DIR}/${_PROJECT_NAME}
 		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}
-		${ASHES_CONFIG_DIR}/source/${_PROJECT_NAME}
 		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}
 )
 target_link_libraries( ${PROJECT_NAME}

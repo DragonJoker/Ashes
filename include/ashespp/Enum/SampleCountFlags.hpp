@@ -36,10 +36,8 @@ namespace ashes
 			return "64x";
 		default:
 			assert( false && "Unsupported VkSampleCountFlagBits." );
-			throw std::runtime_error{ "Unsupported VkSampleCountFlagBits" };
+			return "Unsupported VkSampleCountFlagBits";
 		}
-
-		return 0;
 	}
 }
 

@@ -2,8 +2,10 @@
 
 #if defined( _WIN32 )
 
+#pragma warning( push )
+#pragma warning( disable: 4365 )
 #include <iomanip>
-#include <iostream>
+#pragma warning( pop )
 #include <sstream>
 #include <stdexcept>
 
@@ -73,7 +75,7 @@ namespace ashes
 	void * DynamicLibrary::doGetFunction( std::string const & name )noexcept
 	{
 		UINT oldMode = ::SetErrorMode( SEM_FAILCRITICALERRORS );
-		auto err = ::GetLastError();
+		( void )::GetLastError();
 		void * result = ( void * )::GetProcAddress( static_cast< HMODULE >( m_library ), name.c_str() );
 		auto error = ::GetLastError();
 		::SetErrorMode( oldMode );

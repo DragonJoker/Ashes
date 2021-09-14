@@ -66,8 +66,6 @@ namespace ashes::gl
 			assert( false && "Unsupported GlTexParameter" );
 			return "GlTexParameter_UNKNOWN";
 		}
-
-		return std::string{};
 	}
 	inline std::string toString( GlTexParameter value ) { return getName( value ); }
 }

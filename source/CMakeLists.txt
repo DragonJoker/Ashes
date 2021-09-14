@@ -90,7 +90,7 @@ endif ()
 set( Ashes_BINARY_LIBRARIES ${Ashes_BINARY_LIBRARIES} PARENT_SCOPE )
 
 install(
-	TARGETS ashes ashes_common ashespp
+	TARGETS ashes ashesCommon ashespp
 	COMPONENT Ashes
 	EXPORT Ashes
 	RUNTIME DESTINATION bin

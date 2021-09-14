@@ -10,12 +10,6 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	void apply( ContextLock const & context
-		, CmdSetEvent const & cmd )
-	{
-		get( cmd.event )->set();
-	}
-
 	void buildSetEventCommand( VkEvent event
 		, VkPipelineStageFlags stageFlags
 		, CmdList & list )

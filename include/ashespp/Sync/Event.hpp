@@ -40,6 +40,27 @@ namespace ashes
 			, std::string const & debugName );
 		/**
 		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The parent logical device.
+		*\param[in] createInfo
+		*	The creation informations.
+		*/
+		Event( Device const & device
+			, VkEventCreateInfo createInfo );
+		/**
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The parent logical device.
+		*\param[in] createInfo
+		*	The creation informations.
+		*/
+		Event( Device const & device
+			, std::string const & debugName
+			, VkEventCreateInfo createInfo );
+		/**
+		*\brief
 		*	Destructor.
 		*/
 		~Event();

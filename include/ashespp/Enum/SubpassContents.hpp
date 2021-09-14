@@ -26,10 +26,8 @@ namespace ashes
 			return "secondaryy_command_buffers";
 		default:
 			assert( false && "Unsupported VkSubpassContents." );
-			throw std::runtime_error{ "Unsupported VkSubpassContents" };
+			return "Unsupported VkSubpassContents";
 		}
-
-		return 0;
 	}
 }
 

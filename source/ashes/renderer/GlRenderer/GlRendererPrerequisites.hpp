@@ -12,26 +12,25 @@
 
 #include <ashes/ashes.h>
 
-#include <vulkan/vk_icd.h>
-
 #include "renderer/GlRenderer/Core/GlAutoIdIcdObject.hpp"
 #include "renderer/GlRenderer/Miscellaneous/GlDebug.hpp"
 #include "renderer/GlRenderer/Miscellaneous/OpenGLDefines.hpp"
 #include "renderer/GlRenderer/Core/GlContextState.hpp"
 
-#include <renderer/RendererCommon/AshesRendererPrerequisites.hpp>
-#include <renderer/RendererCommon/Helper/ConstantFormat.hpp>
-
-#include <ashes/common/Format.hpp>
+#include <map>
+#include <vector>
+#include <unordered_set>
 
 #include <cassert>
 #include <functional>
-#include <map>
 #include <memory>
 #include <sstream>
 #include <string>
-#include <unordered_set>
-#include <vector>
+
+#include <ashes/common/Format.hpp>
+
+#include <renderer/RendererCommon/AshesRendererPrerequisites.hpp>
+#include <renderer/RendererCommon/Helper/ConstantFormat.hpp>
 
 #if defined( _WIN32 ) && !defined( GlRenderer_STATIC )
 #	ifdef GlRenderer_EXPORTS
@@ -426,7 +425,10 @@ namespace ashes::gl
 				return false;
 			}
 
+#pragma warning( push )
+#pragma warning( disable: 4191 )
 			function = FuncT( getFunction( name.c_str() ) );
+#pragma warning( pop )
 
 			if ( function )
 			{
@@ -445,7 +447,10 @@ namespace ashes::gl
 			, char const * const lastShort
 			, VkExtensionProperties const & lastExtension )
 		{
+#pragma warning( push )
+#pragma warning( disable: 4191 )
 			function = FuncT( getFunction( ( name + lastShort ).c_str() ) );
+#pragma warning( pop )
 
 			if ( function )
 			{
@@ -465,7 +470,10 @@ namespace ashes::gl
 			, VkExtensionProperties const & currentExtension
 			, ParamsT ... params )
 		{
+#pragma warning( push )
+#pragma warning( disable: 4191 )
 			function = FuncT( getFunction( ( name + currentShort ).c_str() ) );
+#pragma warning( pop )
 
 			if ( function )
 			{
@@ -522,7 +530,8 @@ namespace ashes::gl
 
 	inline void * getBufferOffset( intptr_t value )
 	{
-		return reinterpret_cast< void * >( reinterpret_cast< uint8_t * >( 0u ) + value );
+		using BytePtr = uint8_t *;
+		return reinterpret_cast< void * >( BytePtr{} + value );
 	}
 
 	uint32_t deduceMemoryType( VkDevice device

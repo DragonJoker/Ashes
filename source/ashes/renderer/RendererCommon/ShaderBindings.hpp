@@ -13,7 +13,10 @@
 #include <vulkan/vulkan.h>
 
 #include <cstdint>
+#pragma warning( push )
+#pragma warning( disable: 4365 )
 #include <map>
+#pragma warning( pop )
 
 namespace ashes
 {

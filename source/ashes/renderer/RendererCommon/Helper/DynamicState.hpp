@@ -22,9 +22,7 @@ namespace ashes
 			0u,
 			nullptr,
 		};
-	};
-
-	VkPipelineDynamicStateCreateInfo const & getDeactivatedDynamicState();
+	}
 
 	template< typename ItType >
 	bool hasDynamicState( ItType begin

@@ -14,12 +14,12 @@ namespace ashes::gl
 		, msState{ rhs.msState }
 		, tsState{ rhs.tsState }
 		, iaState{ rhs.iaState }
-		, viewports{ rhs.viewports }
-		, scissors{ rhs.scissors }
 		, vpState{ rhs.vpState }
 		, rsState{ rhs.rsState }
 		, dynamicStates{ rhs.dynamicStates }
 		, dyState{ rhs.dyState }
+		, viewports{ rhs.viewports }
+		, scissors{ rhs.scissors }
 	{
 		doInit();
 	}
@@ -32,12 +32,12 @@ namespace ashes::gl
 		, msState{ std::move( rhs.msState ) }
 		, tsState{ std::move( rhs.tsState ) }
 		, iaState{ std::move( rhs.iaState ) }
-		, viewports{ std::move( rhs.viewports ) }
-		, scissors{ std::move( rhs.scissors ) }
 		, vpState{ std::move( rhs.vpState ) }
 		, rsState{ std::move( rhs.rsState ) }
 		, dynamicStates{ std::move( rhs.dynamicStates ) }
 		, dyState{ std::move( rhs.dyState ) }
+		, viewports{ std::move( rhs.viewports ) }
+		, scissors{ std::move( rhs.scissors ) }
 	{
 		doInit();
 	}
@@ -113,12 +113,6 @@ namespace ashes::gl
 		, iaState{ ( iaState
 			? *iaState
 			: getDeactivatedInputAssemblyState() ) }
-		, viewports{ ( vpState && vpState->pViewports
-			? makeVector( vpState->pViewports, vpState->viewportCount )
-			: VkViewportArray{} ) }
-		, scissors{ ( vpState && vpState->pScissors
-			? makeVector( vpState->pScissors, vpState->scissorCount )
-			: VkScissorArray{} ) }
 		, vpState{ ( vpState
 			? *vpState
 			: getDeactivatedViewportState() ) }
@@ -131,6 +125,12 @@ namespace ashes::gl
 		, dyState{ ( dyState
 			? *dyState
 			: getDeactivatedDynamicState() ) }
+		, viewports{ ( vpState && vpState->pViewports
+			? makeVector( vpState->pViewports, vpState->viewportCount )
+			: VkViewportArray{} ) }
+		, scissors{ ( vpState && vpState->pScissors
+			? makeVector( vpState->pScissors, vpState->scissorCount )
+			: VkScissorArray{} ) }
 	{
 		doInit();
 	}

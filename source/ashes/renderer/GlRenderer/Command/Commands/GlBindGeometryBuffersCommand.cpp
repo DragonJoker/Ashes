@@ -10,31 +10,6 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	void apply( ContextLock const & context
-		, CmdBindVextexArrayObject const & cmd )
-	{
-		glLogCall( context
-			, glBindVertexArray
-			, cmd.vao );
-	}
-
-	void apply( ContextLock const & context
-		, CmdBindVextexArray const & cmd )
-	{
-		if ( cmd.vao )
-		{
-			glLogCall( context
-				, glBindVertexArray
-				, cmd.vao->getVao() );
-		}
-		else
-		{
-			glLogCall( context
-				, glBindVertexArray
-				, 0u );
-		}
-	}
-
 	void buildBindGeometryBuffersCommand( GeometryBuffers const & vao
 		, CmdList & list )
 	{

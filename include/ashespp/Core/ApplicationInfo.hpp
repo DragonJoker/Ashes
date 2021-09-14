@@ -18,20 +18,20 @@ namespace ashes
 		ApplicationInfo( ApplicationInfo  const & ) = delete;
 		ApplicationInfo& operator=( ApplicationInfo  const & ) = delete;
 
-		ApplicationInfo( std::string applicationName
+		ApplicationInfo( std::string papplicationName
 			, uint32_t applicationVersion
-			, std::string engineName
+			, std::string pengineName
 			, uint32_t engineVersion
 			, uint32_t apiVersion )
-			: applicationName{ applicationName }
-			, engineName{ engineName }
+			: applicationName{ papplicationName }
+			, engineName{ pengineName }
 			, vk
 			{
 				VK_STRUCTURE_TYPE_APPLICATION_INFO,
 				nullptr,
-				this->applicationName.c_str(),
+				applicationName.c_str(),
 				applicationVersion,
-				this->engineName.c_str(),
+				engineName.c_str(),
 				engineVersion,
 				apiVersion,
 			}
@@ -45,9 +45,9 @@ namespace ashes
 			{
 				VK_STRUCTURE_TYPE_APPLICATION_INFO,
 				nullptr,
-				this->applicationName.c_str(),
+				applicationName.c_str(),
 				application.vk.applicationVersion,
-				this->engineName.c_str(),
+				engineName.c_str(),
 				application.vk.engineVersion,
 				application.vk.apiVersion,
 			}

@@ -23,7 +23,7 @@ namespace ashes::gl
 		};
 		std::string getName( GlBufferMemoryPropertyFlag value );
 		inline std::string toString( GlBufferMemoryPropertyFlag value ) { return getName( value ); }
-		GlBufferMemoryPropertyFlag getBufferMemoryPropertyFlag( VkMemoryPropertyFlags flags );
+		GlBufferMemoryPropertyFlag getBufferMemoryPropertyFlag( VkMemoryPropertyFlags const & flags );
 	}
 
 	namespace gl4

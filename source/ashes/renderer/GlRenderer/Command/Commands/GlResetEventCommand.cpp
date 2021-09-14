@@ -10,12 +10,6 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	void apply( ContextLock const & context
-		, CmdResetEvent const & cmd )
-	{
-		get( cmd.event )->reset();
-	}
-
 	void buildResetEventCommand( VkEvent event
 		, VkPipelineStageFlags stageFlags
 		, CmdList & list )

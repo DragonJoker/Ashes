@@ -73,7 +73,10 @@ namespace ashes::gl
 			std::transform( vendorName.begin()
 				, vendorName.end()
 				, vendorName.begin()
-				, ::tolower );
+				, []( char c )
+				{
+					return char( ::tolower( c ) );
+				} );
 
 			if ( vendorName.find( "nvidia" ) != std::string::npos )
 			{
@@ -190,19 +193,23 @@ namespace ashes::gl
 
 			if ( !find( ARB_internalformat_query2 ) )
 			{
-				properties.optimalTilingFeatures = VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuseless-cast"
+#pragma GCC diagnostic ignored "-Wextra"
+				properties.optimalTilingFeatures = VkFormatFeatureFlags( VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT
 					| VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT
 					| VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT
 					| VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT
 					| VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT
 					| VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT
 					| VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT
-					| ( ashes::isDepthOrStencilFormat( fmt ) ? VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT : 0 )
+					| VkFormatFeatureFlagBits( ashes::isDepthOrStencilFormat( fmt ) ? VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT : 0u )
 					| VK_FORMAT_FEATURE_BLIT_SRC_BIT
 					| VK_FORMAT_FEATURE_BLIT_DST_BIT
 					| VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT
 					| VK_FORMAT_FEATURE_TRANSFER_SRC_BIT
-					| VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
+					| VK_FORMAT_FEATURE_TRANSFER_DST_BIT );
+#pragma GCC diagnostic pop
 				properties.linearTilingFeatures = properties.optimalTilingFeatures;
 			}
 			else
@@ -739,7 +746,7 @@ namespace ashes::gl
 							, &n );
 
 						std::vector< GLint > samples;
-						samples.resize( n );
+						samples.resize( size_t( n ) );
 						glLogCall( context
 							, glGetInternalformativ
 							, GL_TEXTURE_2D_MULTISAMPLE
@@ -762,7 +769,6 @@ namespace ashes::gl
 						, GL_FORMAT_PROPERTY_TEXEL_SIZE
 						, 1
 						, &t );
-					VkDeviceSize texelSize = VkDeviceSize( t );
 
 					gltype = convert( get( this ), type, 2u, 0u );
 					GLint l = 0;
@@ -863,12 +869,12 @@ namespace ashes::gl
 
 	int PhysicalDevice::getMajor()const
 	{
-		return get( m_instance )->getExtensions().getMajor();
+		return int( get( m_instance )->getExtensions().getMajor() );
 	}
 
 	int PhysicalDevice::getMinor()const
 	{
-		return get( m_instance )->getExtensions().getMinor();
+		return int( get( m_instance )->getExtensions().getMinor() );
 	}
 
 	void PhysicalDevice::doInitialise()
@@ -961,17 +967,16 @@ namespace ashes::gl
 
 	void PhysicalDevice::doInitialiseProperties( ContextLock & context )
 	{
-		auto & extensions = get( m_instance )->getExtensions();
 		m_properties.apiVersion = get( m_instance )->getApiVersion();
 		m_properties.deviceID = 0u;
 		strncpy( m_properties.deviceName
-			, ( char const * )context->glGetString( GL_RENDERER )
-			, VK_MAX_PHYSICAL_DEVICE_NAME_SIZE );
+			, reinterpret_cast< char const * >( context->glGetString( GL_INFO_RENDERER ) )
+			, VK_MAX_PHYSICAL_DEVICE_NAME_SIZE - 1 );
 		strncat( m_properties.deviceName
 			, " (gl)"
-			, VK_MAX_PHYSICAL_DEVICE_NAME_SIZE );
+			, VK_MAX_PHYSICAL_DEVICE_NAME_SIZE - 1 );
 		std::memset( m_properties.pipelineCacheUUID, 0u, sizeof( m_properties.pipelineCacheUUID ) );
-		m_properties.vendorID = doGetVendorID( ( char const * )context->glGetString( GL_VENDOR ) );
+		m_properties.vendorID = doGetVendorID( reinterpret_cast< char const * >( context->glGetString( GL_INFO_VENDOR ) ) );
 		m_properties.deviceType = VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
 		m_properties.driverVersion = 0;
 		uint32_t shaderStages = 3;
@@ -1050,8 +1055,8 @@ namespace ashes::gl
 		context.getValue( GL_VALUE_NAME_MAX_TEXTURE_MAX_ANISOTROPY, m_properties.limits.maxSamplerAnisotropy );
 		context.getValue( GL_VALUE_NAME_MAX_VIEWPORTS, m_properties.limits.maxViewports, 16u );
 		context.getValues( GL_VALUE_NAME_MAX_VIEWPORT_DIMS, m_properties.limits.maxViewportDimensions );
-		m_properties.limits.viewportBoundsRange[0] = -2.0f * std::max( m_properties.limits.maxViewportDimensions[0], m_properties.limits.maxViewportDimensions[1] );
-		m_properties.limits.viewportBoundsRange[1] = 2.0f * std::max( m_properties.limits.maxViewportDimensions[0], m_properties.limits.maxViewportDimensions[1] );
+		m_properties.limits.viewportBoundsRange[0] = -2.0f * float( std::max( m_properties.limits.maxViewportDimensions[0], m_properties.limits.maxViewportDimensions[1] ) );
+		m_properties.limits.viewportBoundsRange[1] = 2.0f * float( std::max( m_properties.limits.maxViewportDimensions[0], m_properties.limits.maxViewportDimensions[1] ) );
 		m_properties.limits.viewportSubPixelBits = m_properties.limits.subPixelPrecisionBits;
 		m_properties.limits.minMemoryMapAlignment = 64u;
 		context.getValue( GL_VALUE_NAME_TEXTURE_BUFFER_OFFSET_ALIGNMENT, m_properties.limits.minTexelBufferOffsetAlignment );
@@ -1065,20 +1070,20 @@ namespace ashes::gl
 		context.getValue( GL_VALUE_NAME_MAX_PROGRAM_TEXTURE_GATHER_OFFSET, m_properties.limits.maxTexelGatherOffset, 7u );
 		m_properties.limits.subPixelInterpolationOffsetBits = 4u;
 		m_properties.limits.minInterpolationOffset = -0.5f;
-		m_properties.limits.maxInterpolationOffset = 0.5f - ( 1.0f / pow( 2.0f, ( float )m_properties.limits.subPixelInterpolationOffsetBits ) );
+		m_properties.limits.maxInterpolationOffset = float( 0.5f - ( 1.0f / pow( 2.0f, float( m_properties.limits.subPixelInterpolationOffsetBits ) ) ) );
 		context.getValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_WIDTH, m_properties.limits.maxFramebufferWidth, 16384u );
 		context.getValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_HEIGHT, m_properties.limits.maxFramebufferHeight, 16384u );
 		context.getValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_LAYERS, m_properties.limits.maxFramebufferLayers, 2048u );
-		context.getBitfieldValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.framebufferColorSampleCounts ), 5u );
-		context.getBitfieldValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.framebufferDepthSampleCounts ), 5u );
-		context.getBitfieldValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.framebufferStencilSampleCounts ), 5u );
-		context.getBitfieldValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.framebufferNoAttachmentsSampleCounts ), 5u );
+		context.getBitfieldValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_SAMPLES, m_properties.limits.framebufferColorSampleCounts, 5u );
+		context.getBitfieldValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_SAMPLES, m_properties.limits.framebufferDepthSampleCounts, 5u );
+		context.getBitfieldValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_SAMPLES, m_properties.limits.framebufferStencilSampleCounts, 5u );
+		context.getBitfieldValue( GL_VALUE_NAME_MAX_FRAMEBUFFER_SAMPLES, m_properties.limits.framebufferNoAttachmentsSampleCounts, 5u );
 		context.getValue( GL_VALUE_NAME_MAX_COLOR_ATTACHMENTS, m_properties.limits.maxColorAttachments, 8u );
-		context.getBitfieldValue( GL_VALUE_NAME_MAX_COLOR_TEXTURE_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.sampledImageColorSampleCounts ), 1u );
-		context.getBitfieldValue( GL_VALUE_NAME_MAX_INTEGER_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.sampledImageIntegerSampleCounts ), 1u );
-		context.getBitfieldValue( GL_VALUE_NAME_MAX_DEPTH_TEXTURE_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.sampledImageDepthSampleCounts ), 1u );
-		context.getBitfieldValue( GL_VALUE_NAME_MAX_DEPTH_TEXTURE_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.sampledImageStencilSampleCounts ), 1u );
-		context.getBitfieldValue( GL_VALUE_NAME_MAX_COLOR_TEXTURE_SAMPLES, *reinterpret_cast< uint32_t * >( &m_properties.limits.storageImageSampleCounts ), 1u );
+		context.getBitfieldValue( GL_VALUE_NAME_MAX_COLOR_TEXTURE_SAMPLES, m_properties.limits.sampledImageColorSampleCounts, 1u );
+		context.getBitfieldValue( GL_VALUE_NAME_MAX_INTEGER_SAMPLES, m_properties.limits.sampledImageIntegerSampleCounts, 1u );
+		context.getBitfieldValue( GL_VALUE_NAME_MAX_DEPTH_TEXTURE_SAMPLES, m_properties.limits.sampledImageDepthSampleCounts, 1u );
+		context.getBitfieldValue( GL_VALUE_NAME_MAX_DEPTH_TEXTURE_SAMPLES, m_properties.limits.sampledImageStencilSampleCounts, 1u );
+		context.getBitfieldValue( GL_VALUE_NAME_MAX_COLOR_TEXTURE_SAMPLES, m_properties.limits.storageImageSampleCounts, 1u );
 		context.getValue( GL_VALUE_NAME_MAX_SAMPLE_MASK_WORDS, m_properties.limits.maxSampleMaskWords, 1u );
 		m_properties.limits.timestampComputeAndGraphics = true;
 		m_properties.limits.timestampPeriod = 1;
@@ -1172,7 +1177,6 @@ namespace ashes::gl
 				, nullptr
 				, get( this )
 				, displayProps
-				, VK_FORMAT_R8G8B8A8_UNORM
 				, i
 				, displayModesParams );
 			m_displays.push_back( displayProps );
@@ -1201,10 +1205,10 @@ namespace ashes::gl
 		snprintf( m_driverProperties.driverInfo
 			, sizeof( m_driverProperties.driverInfo )
 			, "Ashes OpenGL %d.%d Renderer"
-			, extensions.getMajor()
-			, extensions.getMinor() );
-		m_driverProperties.conformanceVersion.major = Instance::getDefaultMajor();
-		m_driverProperties.conformanceVersion.minor = Instance::getDefaultMinor();
+			, int( extensions.getMajor() )
+			, int( extensions.getMinor() ) );
+		m_driverProperties.conformanceVersion.major = uint8_t( Instance::getDefaultMajor() );
+		m_driverProperties.conformanceVersion.minor = uint8_t( Instance::getDefaultMinor() );
 		m_driverProperties.conformanceVersion.subminor = 0;
 		m_driverProperties.conformanceVersion.patch = 0;
 #endif
@@ -1215,20 +1219,21 @@ namespace ashes::gl
 #if VK_KHR_portability_subset
 
 		auto & extensions = get( m_instance )->getExtensions();
-		m_portabilityFeatures = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_FEATURES_KHR, nullptr };
+		m_portabilityFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_FEATURES_KHR;
+		m_portabilityFeatures.pNext = nullptr;
 		m_portabilityFeatures.constantAlphaColorBlendFactors = VK_TRUE;
 		m_portabilityFeatures.events = VK_FALSE;
 		m_portabilityFeatures.imageViewFormatReinterpretation = VK_TRUE;
 		m_portabilityFeatures.imageViewFormatSwizzle = VK_TRUE;
 		m_portabilityFeatures.imageView2DOn3DImage = VK_FALSE;
-		m_portabilityFeatures.multisampleArrayImage = VkBool32( extensions.find( ARB_texture_multisample )
+		m_portabilityFeatures.multisampleArrayImage = ( extensions.find( ARB_texture_multisample )
 			? VK_TRUE
 			: VK_FALSE );
 		m_portabilityFeatures.mutableComparisonSamplers = VK_TRUE;
 		m_portabilityFeatures.pointPolygons = VK_TRUE;
 		m_portabilityFeatures.samplerMipLodBias = VK_TRUE;
 		m_portabilityFeatures.separateStencilMaskRef = VK_TRUE;
-		m_portabilityFeatures.shaderSampleRateInterpolationFunctions = VkBool32( ( extensions.getShaderVersion() >= 400 )
+		m_portabilityFeatures.shaderSampleRateInterpolationFunctions = ( ( extensions.getShaderVersion() >= 400 )
 			? m_features.sampleRateShading
 			: VK_FALSE );
 		m_portabilityFeatures.tessellationIsolines = m_features.tessellationShader;
@@ -1243,11 +1248,13 @@ namespace ashes::gl
 	{
 #if VK_EXT_inline_uniform_block
 
-		m_inlineUniformBlockFeatures = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_FEATURES_EXT, nullptr };
+		m_inlineUniformBlockFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_FEATURES_EXT;
+		m_inlineUniformBlockFeatures.pNext = nullptr;
 		m_inlineUniformBlockFeatures.descriptorBindingInlineUniformBlockUpdateAfterBind = VK_FALSE;
 		m_inlineUniformBlockFeatures.inlineUniformBlock = VK_TRUE;
 
-		m_inlineUniformBlockProperties = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_PROPERTIES_EXT, nullptr };
+		m_inlineUniformBlockProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_PROPERTIES_EXT;
+		m_inlineUniformBlockProperties.pNext = nullptr;
 		context.getValue( GL_VALUE_NAME_MAX_COMBINED_UNIFORM_BLOCKS, m_inlineUniformBlockProperties.maxDescriptorSetInlineUniformBlocks );
 		context.getValue( GL_VALUE_NAME_MAX_UNIFORM_BLOCK_SIZE, m_inlineUniformBlockProperties.maxInlineUniformBlockSize );
 		context.getValue( GL_VALUE_NAME_MAX_FRAGMENT_UNIFORM_BLOCKS, m_inlineUniformBlockProperties.maxPerStageDescriptorInlineUniformBlocks );
@@ -1259,41 +1266,41 @@ namespace ashes::gl
 
 	bool has420PackExtensions( VkPhysicalDevice physicalDevice )
 	{
-		return get( physicalDevice )->getGlFeatures().has420PackExtensions;
+		return get( physicalDevice )->getGlFeatures().has420PackExtensions != 0;
 	}
 
 	bool hasCopyImage( VkPhysicalDevice physicalDevice )
 	{
-		return get( physicalDevice )->getGlFeatures().hasCopyImage;
+		return get( physicalDevice )->getGlFeatures().hasCopyImage != 0;
 	}
 
 	bool hasProgramPipelines( VkPhysicalDevice physicalDevice )
 	{
-		return get( physicalDevice )->getGlFeatures().hasProgramPipelines;
+		return get( physicalDevice )->getGlFeatures().hasProgramPipelines != 0;
 	}
 
 	bool hasSamplerAnisotropy( VkPhysicalDevice physicalDevice )
 	{
-		return get( physicalDevice )->getFeatures().samplerAnisotropy;
+		return get( physicalDevice )->getFeatures().samplerAnisotropy != 0;
 	}
 
 	bool hasTextureStorage( VkPhysicalDevice physicalDevice )
 	{
-		return get( physicalDevice )->getGlFeatures().hasTextureStorage;
+		return get( physicalDevice )->getGlFeatures().hasTextureStorage != 0;
 	}
 
 	bool hasTextureViews( VkPhysicalDevice physicalDevice )
 	{
-		return get( physicalDevice )->getGlFeatures().hasTextureViews;
+		return get( physicalDevice )->getGlFeatures().hasTextureViews != 0;
 	}
 
 	bool hasViewportArrays( VkPhysicalDevice physicalDevice )
 	{
-		return get( physicalDevice )->getGlFeatures().hasViewportArrays;
+		return get( physicalDevice )->getGlFeatures().hasViewportArrays != 0;
 	}
 
 	bool hasProgramInterfaceQuery( VkPhysicalDevice physicalDevice )
 	{
-		return get( physicalDevice )->getGlFeatures().hasProgramInterfaceQuery;
+		return get( physicalDevice )->getGlFeatures().hasProgramInterfaceQuery != 0;
 	}
 }

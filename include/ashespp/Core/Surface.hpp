@@ -101,7 +101,6 @@ namespace ashes
 		WindowHandle m_handle;
 		VkSurfaceKHR m_internal;
 		std::string m_type;
-		uint32_t m_imageCount;
 	};
 }
 

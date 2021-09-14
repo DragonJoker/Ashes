@@ -81,7 +81,7 @@ namespace ashes::d3d11
 		auto convertedSize = WideCharToMultiByte( CP_UTF8
 			, 0
 			, text.c_str()
-			, UINT( text.size() )
+			, int( text.size() )
 			, nullptr
 			, 0
 			, nullptr
@@ -90,14 +90,14 @@ namespace ashes::d3d11
 
 		if ( convertedSize > 0 )
 		{
-			std::vector< char > res( convertedSize + 1, '\0' );
+			std::vector< char > res( size_t( convertedSize + 1 ), '\0' );
 
 			if ( !WideCharToMultiByte( CP_UTF8
 				, 0
 				, text.c_str()
-				, UINT( text.size() )
+				, int( text.size() )
 				, res.data()
-				, UINT( res.size() )
+				, int( res.size() )
 				, nullptr
 				, nullptr ) )
 			{

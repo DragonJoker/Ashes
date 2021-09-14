@@ -10,76 +10,71 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	void apply( ContextLock const & context
-		, CmdMemoryBarrier const & cmd )
+	namespace
 	{
-		glLogCall( context
-			, glMemoryBarrier
-			, cmd.flags );
-	}
-
-	bool bindPreBarrier( DeviceMemoryBinding const & binding
-		, VkAccessFlags srcAccessMask
-		, VkAccessFlags dstAccessMask
-		, VkDeviceMemorySet & downloads
-		, VkDeviceMemorySet & uploads
-		, CmdList & list )
-	{
-		bool result = binding.isMapped();
-
-		if ( result )
+		bool bindPreBarrier( DeviceMemoryBinding const & binding
+			, VkAccessFlags srcAccessMask
+			, VkAccessFlags dstAccessMask
+			, VkDeviceMemorySet & downloads
+			, VkDeviceMemorySet & uploads
+			, CmdList & list )
 		{
-			if ( !checkFlag( dstAccessMask, VK_ACCESS_TRANSFER_READ_BIT )
-				&& ( checkFlag( srcAccessMask, VK_ACCESS_MEMORY_WRITE_BIT )
-					|| checkFlag( srcAccessMask, VK_ACCESS_HOST_WRITE_BIT ) ) )
+			bool result = binding.isMapped();
+
+			if ( result )
 			{
-				uploads.insert( binding.getParent() );
-				list.push_back( makeCmd< OpType::eUploadMemory >( binding.getParent()
-					, binding.getOffset()
-					, binding.getSize() ) );
+				if ( !checkFlag( dstAccessMask, VK_ACCESS_TRANSFER_READ_BIT )
+					&& ( checkFlag( srcAccessMask, VK_ACCESS_MEMORY_WRITE_BIT )
+						|| checkFlag( srcAccessMask, VK_ACCESS_HOST_WRITE_BIT ) ) )
+				{
+					uploads.insert( binding.getParent() );
+					list.push_back( makeCmd< OpType::eUploadMemory >( binding.getParent()
+						, binding.getOffset()
+						, binding.getSize() ) );
+				}
+				else if ( checkFlag( srcAccessMask, VK_ACCESS_TRANSFER_WRITE_BIT ) )
+				{
+					downloads.insert( binding.getParent() );
+					list.push_back( makeCmd< OpType::eDownloadMemory >( binding.getParent()
+						, binding.getOffset()
+						, binding.getSize() ) );
+				}
 			}
-			else if ( checkFlag( srcAccessMask, VK_ACCESS_TRANSFER_WRITE_BIT ) )
-			{
-				downloads.insert( binding.getParent() );
-				list.push_back( makeCmd< OpType::eDownloadMemory >( binding.getParent()
-					, binding.getOffset()
-					, binding.getSize() ) );
-			}
+
+			return result;
 		}
 
-		return result;
-	}
-
-	bool bindPostBarrier( DeviceMemoryBinding const & binding
-		, VkAccessFlags srcAccessMask
-		, VkAccessFlags dstAccessMask
-		, VkDeviceMemorySet & downloads
-		, VkDeviceMemorySet & uploads
-		, CmdList & list )
-	{
-		bool result = binding.isMapped();
-
-		if ( binding.isMapped() )
+		bool bindPostBarrier( DeviceMemoryBinding const & binding
+			, VkAccessFlags srcAccessMask
+			, VkAccessFlags dstAccessMask
+			, VkDeviceMemorySet & downloads
+			, VkDeviceMemorySet & uploads
+			, CmdList & list )
 		{
-			if ( !checkFlag( srcAccessMask, VK_ACCESS_TRANSFER_WRITE_BIT )
-				&& ( checkFlag( dstAccessMask, VK_ACCESS_HOST_READ_BIT )
-					|| checkFlag( dstAccessMask, VK_ACCESS_MEMORY_READ_BIT ) ) )
-			{
-				downloads.insert( binding.getParent() );
-				list.push_back( makeCmd< OpType::eDownloadMemory >( binding.getParent()
-					, binding.getOffset()
-					, binding.getSize() ) );
-			}
-			else if ( checkFlag( dstAccessMask, VK_ACCESS_TRANSFER_READ_BIT ) )
-			{
-				uploads.insert( binding.getParent() );
-				list.push_back( makeCmd< OpType::eUploadMemory >( binding.getParent()
-					, binding.getOffset()
-					, binding.getSize() ) );
-			}
-		}
+			bool result = binding.isMapped();
 
-		return result;
+			if ( binding.isMapped() )
+			{
+				if ( !checkFlag( srcAccessMask, VK_ACCESS_TRANSFER_WRITE_BIT )
+					&& ( checkFlag( dstAccessMask, VK_ACCESS_HOST_READ_BIT )
+						|| checkFlag( dstAccessMask, VK_ACCESS_MEMORY_READ_BIT ) ) )
+				{
+					downloads.insert( binding.getParent() );
+					list.push_back( makeCmd< OpType::eDownloadMemory >( binding.getParent()
+						, binding.getOffset()
+						, binding.getSize() ) );
+				}
+				else if ( checkFlag( dstAccessMask, VK_ACCESS_TRANSFER_READ_BIT ) )
+				{
+					uploads.insert( binding.getParent() );
+					list.push_back( makeCmd< OpType::eUploadMemory >( binding.getParent()
+						, binding.getOffset()
+						, binding.getSize() ) );
+				}
+			}
+
+			return result;
+		}
 	}
 
 	void buildMemoryBarrierCommand( VkPipelineStageFlags after

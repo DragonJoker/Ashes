@@ -71,8 +71,7 @@ struct PluginLibrary
 	{
 		getSelectedDesc = [this]() -> AshPluginDescription &
 		{
-			auto res = init();
-			assert( res == VK_SUCCESS );
+			( void )init();
 			return getSelectedDesc();
 		};
 	}
@@ -111,20 +110,20 @@ struct PluginLibrary
 
 			if ( result == VK_SUCCESS )
 			{
-				getSelectedDesc = [this]() -> AshPluginDescription &
+				getSelectedDesc = [this]()noexcept -> AshPluginDescription &
 				{
 					return selectedPlugin->description;
 				};
 			}
 		}
 
+		assert( result == VK_SUCCESS );
 		return result;
 	}
 
 	inline VkResult selectDesc( AshPluginDescription const & description )
 	{
-		auto res = init();
-		assert( res == VK_SUCCESS );
+		( void )init();
 		auto it = std::find_if( plugins.begin()
 			, plugins.end()
 			, [&description]( Plugin const & lookup )

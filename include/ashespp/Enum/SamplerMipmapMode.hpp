@@ -26,10 +26,8 @@ namespace ashes
 			return "linear";
 		default:
 			assert( false && "Unsupported VkSamplerMipmapMode." );
-			throw std::runtime_error{ "Unsupported VkSamplerMipmapMode" };
+			return "Unsupported VkSamplerMipmapMode";
 		}
-
-		return 0;
 	}
 }
 

@@ -1,5 +1,5 @@
 set( _PROJECT_NAME common )
-project( ashes_${_PROJECT_NAME} )
+project( ashesCommon )
 
 set( ${PROJECT_NAME}_VERSION_MAJOR 0 )
 set( ${PROJECT_NAME}_VERSION_MINOR 1 )
@@ -62,28 +62,33 @@ add_library( ashes::${_PROJECT_NAME}
 	ALIAS
 	${PROJECT_NAME}
 )
-target_link_libraries( ${PROJECT_NAME} PUBLIC
-	${CMAKE_DL_LIBS}
+target_link_libraries( ${PROJECT_NAME}
+	PUBLIC
+		${CMAKE_DL_LIBS}
 )
 target_include_directories( ${PROJECT_NAME}
 	PRIVATE
 		${Ashes_SOURCE_DIR}/include
-		${ASHES_CONFIG_DIR}/include
+		${ASHES_CONFIG_DIR}
 		${Vulkan_INCLUDE_DIR}
 		${Ashes_SOURCE_DIR}/include/ashes
 		${Ashes_SOURCE_DIR}/include/ashes/${_PROJECT_NAME}
 )
 if ( NOT MSVC )
-	target_compile_features( ${PROJECT_NAME} PUBLIC
-		cxx_std_17
+	target_compile_features( ${PROJECT_NAME}
+		PUBLIC
+			cxx_std_17
 	)
 endif ()
-target_compile_definitions( ${PROJECT_NAME} PUBLIC
-	${TARGET_COMPILE_DEFINITIONS}
+target_compile_definitions( ${PROJECT_NAME}
+	PUBLIC
+		${TARGET_COMPILE_DEFINITIONS}
 )
-target_compile_options( ${PROJECT_NAME} PUBLIC
-	${TARGET_COMPILE_OPTIONS}
+target_compile_options( ${PROJECT_NAME}
+	PUBLIC
+		${TARGET_COMPILE_OPTIONS}
 )
+target_add_compilation_flags( ${PROJECT_NAME} )
 set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 17
 	CXX_EXTENSIONS OFF

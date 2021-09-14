@@ -4,11 +4,14 @@
 
 #include <algorithm>
 
+#pragma GCC diagnostic ignored "-Wmissing-declarations"
+#pragma GCC diagnostic ignored "-Wmissing-prototypes"
+
 #if defined( CreateEvent )
 #	undef CreateEvent
 #endif
 
-PluginLibrary g_library;
+static PluginLibrary g_library;
 
 namespace details
 {

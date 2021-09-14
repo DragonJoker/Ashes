@@ -4,8 +4,11 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include <array>
+#pragma warning( push )
+#pragma warning( disable: 4365 )
 #include <functional>
+#pragma warning( pop )
+#include <array>
 #include <string>
 
 #if !defined( CALLBACK )

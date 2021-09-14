@@ -112,8 +112,8 @@ namespace ashes::gl
 
 		capabilities.minImageCount = 1u;
 		capabilities.maxImageCount = 1u;
-		capabilities.currentExtent.width = (uint32_t)-1;
-		capabilities.currentExtent.height = (uint32_t)-1;
+		capabilities.currentExtent.width = ~( 0u );
+		capabilities.currentExtent.height = ~( 0u );
 		capabilities.minImageExtent = { 1u, 1u };
 		capabilities.maxImageExtent = { 65536u, 65536u };
 		capabilities.maxImageArrayLayers = 1u;

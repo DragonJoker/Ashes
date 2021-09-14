@@ -17,28 +17,28 @@ namespace ashes
 
 		SubpassDescription( VkSubpassDescriptionFlags flags
 			, VkPipelineBindPoint pipelineBindPoint
-			, VkAttachmentReferenceArray inputAttachments
-			, VkAttachmentReferenceArray colorAttachments
-			, VkAttachmentReferenceArray resolveAttachments
-			, Optional< VkAttachmentReference > depthStencilAttachment = Optional< VkAttachmentReference >{}
-			, UInt32Array reserveAttachments = {} )
-			: inputAttachments{ std::move( inputAttachments ) }
-			, colorAttachments{ std::move( colorAttachments ) }
-			, resolveAttachments{ std::move( resolveAttachments ) }
-			, depthStencilAttachment{ std::move( depthStencilAttachment ) }
-			, reserveAttachments{ std::move( reserveAttachments ) }
+			, VkAttachmentReferenceArray pinputAttachments
+			, VkAttachmentReferenceArray pcolorAttachments
+			, VkAttachmentReferenceArray presolveAttachments
+			, Optional< VkAttachmentReference > pdepthStencilAttachment = Optional< VkAttachmentReference >{}
+			, UInt32Array preserveAttachments = {} )
+			: inputAttachments{ std::move( pinputAttachments ) }
+			, colorAttachments{ std::move( pcolorAttachments ) }
+			, resolveAttachments{ std::move( presolveAttachments ) }
+			, depthStencilAttachment{ std::move( pdepthStencilAttachment ) }
+			, reserveAttachments{ std::move( preserveAttachments ) }
 			, vk
 			{
 				flags,
 				pipelineBindPoint,
-				uint32_t( this->inputAttachments.size() ),
-				this->inputAttachments.data(),
-				uint32_t( this->colorAttachments.size() ),
-				this->colorAttachments.data(),
-				this->resolveAttachments.data(),
-				bool( this->depthStencilAttachment ) ? &this->depthStencilAttachment.value() : nullptr,
-				uint32_t( this->reserveAttachments.size() ),
-				this->reserveAttachments.data(),
+				uint32_t( inputAttachments.size() ),
+				inputAttachments.data(),
+				uint32_t( colorAttachments.size() ),
+				colorAttachments.data(),
+				resolveAttachments.data(),
+				bool( depthStencilAttachment ) ? &depthStencilAttachment.value() : nullptr,
+				uint32_t( reserveAttachments.size() ),
+				reserveAttachments.data(),
 			}
 		{
 		}
@@ -53,14 +53,14 @@ namespace ashes
 			{
 				rhs.vk.flags,
 				rhs.vk.pipelineBindPoint,
-				uint32_t( this->inputAttachments.size() ),
-				this->inputAttachments.data(),
-				uint32_t( this->colorAttachments.size() ),
-				this->colorAttachments.data(),
-				this->resolveAttachments.data(),
-				bool( this->depthStencilAttachment ) ? &this->depthStencilAttachment.value() : nullptr,
-				uint32_t( this->reserveAttachments.size() ),
-				this->reserveAttachments.data(),
+				uint32_t( inputAttachments.size() ),
+				inputAttachments.data(),
+				uint32_t( colorAttachments.size() ),
+				colorAttachments.data(),
+				resolveAttachments.data(),
+				bool( depthStencilAttachment ) ? &depthStencilAttachment.value() : nullptr,
+				uint32_t( reserveAttachments.size() ),
+				reserveAttachments.data(),
 			}
 		{
 		}
@@ -76,14 +76,14 @@ namespace ashes
 			{
 				rhs.vk.flags,
 				rhs.vk.pipelineBindPoint,
-				uint32_t( this->inputAttachments.size() ),
-				this->inputAttachments.data(),
-				uint32_t( this->colorAttachments.size() ),
-				this->colorAttachments.data(),
-				this->resolveAttachments.data(),
-				bool( this->depthStencilAttachment ) ? &this->depthStencilAttachment.value() : nullptr,
-				uint32_t( this->reserveAttachments.size() ),
-				this->reserveAttachments.data(),
+				uint32_t( inputAttachments.size() ),
+				inputAttachments.data(),
+				uint32_t( colorAttachments.size() ),
+				colorAttachments.data(),
+				resolveAttachments.data(),
+				bool( depthStencilAttachment ) ? &depthStencilAttachment.value() : nullptr,
+				uint32_t( reserveAttachments.size() ),
+				reserveAttachments.data(),
 			};
 
 			return *this;

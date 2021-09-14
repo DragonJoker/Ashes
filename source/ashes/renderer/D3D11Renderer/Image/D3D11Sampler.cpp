@@ -24,10 +24,11 @@ namespace ashes::d3d11
 
 		case VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE:
 			return D3D11_TEXTURE_ADDRESS_MIRROR_ONCE;
-		}
 
-		assert( false );
-		return D3D11_TEXTURE_ADDRESS_WRAP;
+		default:
+			assert( false && "Unsupported VkSamplerAddressMode" );
+			return D3D11_TEXTURE_ADDRESS_WRAP;
+		}
 	}
 
 	void convert( VkBorderColor colour
@@ -56,6 +57,8 @@ namespace ashes::d3d11
 			output[2] = 1.0;
 			output[3] = 1.0;
 			break;
+		default:
+			break;
 		}
 	}
 
@@ -77,63 +80,46 @@ namespace ashes::d3d11
 				{
 				case VK_SAMPLER_MIPMAP_MODE_NEAREST:
 					return D3D11_FILTER_MIN_MAG_MIP_POINT;
-
 				case VK_SAMPLER_MIPMAP_MODE_LINEAR:
 					return D3D11_FILTER_MIN_MAG_POINT_MIP_LINEAR;
-
 				default:
 					return D3D11_FILTER_MIN_MAG_MIP_POINT;
 				}
 			}
-			else
+
+			switch ( mip )
 			{
-				switch ( mip )
-				{
-				case VK_SAMPLER_MIPMAP_MODE_NEAREST:
-					return D3D11_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;
-
-				case VK_SAMPLER_MIPMAP_MODE_LINEAR:
-					return D3D11_FILTER_MIN_POINT_MAG_MIP_LINEAR;
-
-				default:
-					return D3D11_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;
-				}
+			case VK_SAMPLER_MIPMAP_MODE_NEAREST:
+				return D3D11_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;
+			case VK_SAMPLER_MIPMAP_MODE_LINEAR:
+				return D3D11_FILTER_MIN_POINT_MAG_MIP_LINEAR;
+			default:
+				return D3D11_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;
 			}
 		}
-		else
+
+		if ( mag == VK_FILTER_NEAREST )
 		{
-			if ( mag == VK_FILTER_NEAREST )
+			switch ( mip )
 			{
-				switch ( mip )
-				{
-				case VK_SAMPLER_MIPMAP_MODE_NEAREST:
-					return D3D11_FILTER_MIN_LINEAR_MAG_MIP_POINT;
-
-				case VK_SAMPLER_MIPMAP_MODE_LINEAR:
-					return D3D11_FILTER_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
-
-				default:
-					return D3D11_FILTER_MIN_LINEAR_MAG_MIP_POINT;
-				}
-			}
-			else
-			{
-				switch ( mip )
-				{
-				case VK_SAMPLER_MIPMAP_MODE_NEAREST:
-					return D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
-
-				case VK_SAMPLER_MIPMAP_MODE_LINEAR:
-					return D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-
-				default:
-					return D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
-				}
+			case VK_SAMPLER_MIPMAP_MODE_NEAREST:
+				return D3D11_FILTER_MIN_LINEAR_MAG_MIP_POINT;
+			case VK_SAMPLER_MIPMAP_MODE_LINEAR:
+				return D3D11_FILTER_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
+			default:
+				return D3D11_FILTER_MIN_LINEAR_MAG_MIP_POINT;
 			}
 		}
 
-		assert( false );
-		return D3D11_FILTER_MIN_MAG_MIP_POINT;
+		switch ( mip )
+		{
+		case VK_SAMPLER_MIPMAP_MODE_NEAREST:
+			return D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+		case VK_SAMPLER_MIPMAP_MODE_LINEAR:
+			return D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		default:
+			return D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+		}
 	}
 
 	Sampler::Sampler( VkDevice device

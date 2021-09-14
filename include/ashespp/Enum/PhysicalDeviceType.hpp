@@ -32,10 +32,8 @@ namespace ashes
 			return "cpu";
 		default:
 			assert( false && "Unsupported VkPhysicalDeviceType." );
-			throw std::runtime_error{ "Unsupported VkPhysicalDeviceType" };
+			return "Unsupported VkPhysicalDeviceType";
 		}
-
-		return std::string{};
 	}
 }
 

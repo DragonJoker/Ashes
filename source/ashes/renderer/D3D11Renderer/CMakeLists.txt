@@ -419,17 +419,6 @@ if ( ASHES_HAS_SPIRV_CROSS )
 	set( ${PROJECT_NAME}_USE_SPIRV_CROSS 1 )
 endif ()
 
-if ( ASHES_BUILD_SPIRV_CROSS )
-	set( ${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES
-		${SPIRV_CROSS_DIR}/spirv_hlsl.cpp
-	)
-	set( ${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES
-		${SPIRV_CROSS_DIR}/spirv_hlsl.hpp
-	)
-	source_group( "Header Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES} )
-	source_group( "Source Files\\SPIRV-Cross" FILES ${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES} )
-endif ()
-
 if ( EXISTS ${Ashes_SOURCE_DIR}/external/AGS_SDK/ags_lib/inc/ )
 	set( AGS_INCLUDE_DIR ${Ashes_SOURCE_DIR}/external/AGS_SDK/ags_lib/inc )
 	if ( MSVC )
@@ -514,6 +503,7 @@ target_compile_definitions( ${PROJECT_NAME} PRIVATE
 target_compile_options( ${PROJECT_NAME} PRIVATE
 	${TARGET_CXX_OPTIONS}
 )
+target_add_compilation_flags( ${PROJECT_NAME} )
 set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 17
 	CXX_EXTENSIONS OFF

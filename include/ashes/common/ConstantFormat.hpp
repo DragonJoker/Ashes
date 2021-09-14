@@ -90,8 +90,6 @@ namespace ashes
 			assert( false && "Unsupported vertex buffer attribute type." );
 			throw std::runtime_error{ "Unsupported vertex buffer attribute type" };
 		}
-
-		return 0;
 	}
 	/**
 	*\brief
@@ -142,7 +140,7 @@ namespace ashes
 			throw std::runtime_error{ "Unsupported ConstantFormat" };
 		}
 
-		return 0;
+		return "unknown";
 	}
 }
 

@@ -33,7 +33,7 @@ namespace ashes::gl
 		void listScreenResolutions( VkDisplayPropertiesKHR & displayProps
 			, std::vector< VkDisplayModeParametersKHR > & params )
 		{
-			int modeIndex = 0;
+			DWORD modeIndex = 0;
 			DEVMODEA devMode;
 			std::set< size_t > hashedParams;
 

@@ -34,10 +34,8 @@ namespace ashes
 			return "shared_continuous_refresh";
 		default:
 			assert( false && "Unsupported VkPresentModeKHR." );
-			throw std::runtime_error{ "Unsupported VkPresentModeKHR" };
+			return "Unsupported VkPresentModeKHR";
 		}
-
-		return 0;
 	}
 }
 

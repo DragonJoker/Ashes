@@ -19,39 +19,11 @@ using ashes::operator!=;
 namespace ashes::gl
 {
 	void apply( ContextLock const & context
-		, CmdEnable const & cmd )
+		, CmdActiveTexture const & cmd )
 	{
 		glLogCall( context
-			, glEnable
-			, cmd.value );
-	}
-	
-	void apply( ContextLock const & context
-		, CmdDisable const & cmd )
-	{
-		glLogCall( context
-			, glDisable
-			, cmd.value );
-	}
-
-	void apply( ContextLock const & context
-		, CmdApplyScissors const & cmd )
-	{
-		glLogCall( context
-			, glScissorArrayv
-			, GLuint( cmd.first )
-			, GLsizei( cmd.count )
-			, cmd.scissors.data() );
-	}
-
-	void apply( ContextLock const & context
-		, CmdApplyViewports const & cmd )
-	{
-		glLogCall( context
-			, glViewportArrayv
-			, GLuint( cmd.first )
-			, GLsizei( cmd.count )
-			, cmd.viewports.data() );
+			, glActiveTexture
+			, GlTextureUnit( GL_TEXTURE0 + cmd.binding ) );
 	}
 
 	void apply( ContextLock const & context
@@ -76,6 +48,16 @@ namespace ashes::gl
 	}
 
 	void apply( ContextLock const & context
+		, CmdApplyScissors const & cmd )
+	{
+		glLogCall( context
+			, glScissorArrayv
+			, GLuint( cmd.first )
+			, GLsizei( cmd.count )
+			, cmd.scissors.data() );
+	}
+
+	void apply( ContextLock const & context
 		, CmdApplyViewport const & cmd )
 	{
 		glLogCall( context
@@ -91,108 +73,49 @@ namespace ashes::gl
 	}
 
 	void apply( ContextLock const & context
-		, CmdDrawBuffer const & cmd )
+		, CmdApplyViewports const & cmd )
 	{
 		glLogCall( context
-			, glDrawBuffer
-			, cmd.target );
-	}
-
-	void apply( ContextLock const & context
-		, CmdDrawBuffers const & cmd )
-	{
-		glLogCall( context
-			, glDrawBuffers
+			, glViewportArrayv
+			, GLuint( cmd.first )
 			, GLsizei( cmd.count )
-			, cmd.targets.data() );
+			, cmd.viewports.data() );
 	}
 
 	void apply( ContextLock const & context
-		, CmdUseProgram const & cmd )
+		, CmdBeginQuery const & cmd )
 	{
 		glLogCall( context
-			, glUseProgram
-			, cmd.program );
+			, glBeginQuery
+			, GlQueryType( cmd.target )
+			, GLuint( cmd.query ) );
 	}
 
 	void apply( ContextLock const & context
-		, CmdUseProgramPipeline const & cmd )
+		, CmdBindBuffer const & cmd )
 	{
 		glLogCall( context
-			, glBindProgramPipeline
-			, cmd.program );
-	}
-
-	void apply( ContextLock const & context
-		, CmdGetCompressedTexImage const & cmd )
-	{
-		glLogCall( context
-			, glGetCompressedTexImage
+			, glBindBuffer
 			, cmd.target
-			, cmd.level
-			, getBufferOffset( cmd.offset ) );
+			, cmd.name );
 	}
 
 	void apply( ContextLock const & context
-		, CmdGetQueryResults const & cmd )
-	{
-		get( cmd.queryPool )->getResults( context
-			, cmd.firstQuery
-			, cmd.queryCount
-			, cmd.stride
-			, 0u
-			, cmd.flags
-			, getBufferOffset( cmd.bufferOffset ) );
-	}
-
-	void apply( ContextLock const & context
-		, CmdGetTexImage const & cmd )
+		, CmdBindBufferRange const & cmd )
 	{
 		glLogCall( context
-			, glGetTexImage
+			, glBindBufferRange
 			, cmd.target
-			, cmd.level
-			, cmd.format
-			, cmd.type
-			, getBufferOffset( cmd.offset ) );
+			, cmd.binding
+			, cmd.name
+			, GLintptr( cmd.offset )
+			, GLsizeiptr( cmd.range ) );
 	}
 
 	void apply( ContextLock const & context
-		, CmdBlitFramebuffer const & cmd )
+		, CmdBindContextState const & cmd )
 	{
-		glLogCall( context
-			, glBlitFramebuffer
-			, cmd.srcL
-			, cmd.srcT
-			, cmd.srcR
-			, cmd.srcB
-			, cmd.dstL
-			, cmd.dstT
-			, cmd.dstR
-			, cmd.dstB
-			, cmd.mask
-			, cmd.filter );
-	}
-
-	void apply( ContextLock const & context
-		, CmdCheckFramebuffer const & cmd )
-	{
-		auto status = glLogNonVoidCall( context
-			, glCheckFramebufferStatus
-			, GL_FRAMEBUFFER );
-		checkCompleteness( context.getDevice(), status );
-	}
-
-	void apply( ContextLock const & context
-		, CmdCleanupFramebuffer const & cmd )
-	{
-		if ( ( *cmd.fbo ) != GL_INVALID_INDEX )
-		{
-			glLogCall( context
-				, glDeleteFramebuffers
-				, 1
-				, cmd.fbo );
-		}
+		cmd.stack->apply( context, *cmd.state );
 	}
 
 	void apply( ContextLock const & context
@@ -249,11 +172,25 @@ namespace ashes::gl
 	}
 
 	void apply( ContextLock const & context
-		, CmdBindBuffer const & cmd )
+		, CmdBindImage const & cmd )
 	{
 		glLogCall( context
-			, glBindBuffer
-			, cmd.target
+			, glBindImageTexture
+			, cmd.binding
+			, cmd.name
+			, GLint( cmd.baseMipLevel )
+			, cmd.layerCount != 0 ? GL_TRUE : GL_FALSE
+			, GLint( cmd.baseArrayLayer )
+			, GL_ACCESS_TYPE_READ_WRITE
+			, cmd.internal );
+	}
+
+	void apply( ContextLock const & context
+		, CmdBindSampler const & cmd )
+	{
+		glLogCall( context
+			, glBindSampler
+			, cmd.binding
 			, cmd.name );
 	}
 
@@ -264,6 +201,31 @@ namespace ashes::gl
 			, glBindTexture
 			, cmd.type
 			, cmd.name );
+	}
+
+	void apply( ContextLock const & context
+		, CmdBindVextexArray const & cmd )
+	{
+		if ( cmd.vao )
+		{
+			glLogCall( context
+				, glBindVertexArray
+				, cmd.vao->getVao() );
+		}
+		else
+		{
+			glLogCall( context
+				, glBindVertexArray
+				, 0u );
+		}
+	}
+
+	void apply( ContextLock const & context
+		, CmdBindVextexArrayObject const & cmd )
+	{
+		glLogCall( context
+			, glBindVertexArray
+			, cmd.vao );
 	}
 
 	void apply( ContextLock const & context
@@ -300,15 +262,87 @@ namespace ashes::gl
 	}
 
 	void apply( ContextLock const & context
-		, CmdColorMask const & cmd )
+		, CmdBlitFramebuffer const & cmd )
 	{
 		glLogCall( context
-			, glColorMaski
-			, cmd.index
-			, cmd.r
-			, cmd.g
-			, cmd.b
-			, cmd.a );
+			, glBlitFramebuffer
+			, cmd.srcL
+			, cmd.srcT
+			, cmd.srcR
+			, cmd.srcB
+			, cmd.dstL
+			, cmd.dstT
+			, cmd.dstR
+			, cmd.dstB
+			, cmd.mask
+			, cmd.filter );
+	}
+
+	void apply( ContextLock const & context
+		, CmdCheckFramebuffer const & cmd )
+	{
+		auto status = glLogNonVoidCall( context
+			, glCheckFramebufferStatus
+			, GL_FRAMEBUFFER );
+		checkCompleteness( context.getDevice(), status );
+	}
+
+	void apply( ContextLock const & context
+		, CmdCleanupFramebuffer const & cmd )
+	{
+		if ( ( *cmd.fbo ) != GL_INVALID_INDEX )
+		{
+			glLogCall( context
+				, glDeleteFramebuffers
+				, 1
+				, cmd.fbo );
+		}
+	}
+
+	void apply( ContextLock const & context
+		, CmdClearBack const & cmd )
+	{
+		glLogCall( context
+			, glClear
+			, cmd.mask );
+	}
+
+	void apply( ContextLock const & context
+		, CmdClearBackColour const & cmd )
+	{
+		glLogCall( context
+			, glClearColor
+			, cmd.color.float32[0]
+			, cmd.color.float32[1]
+			, cmd.color.float32[2]
+			, cmd.color.float32[3] );
+	}
+
+	void apply( ContextLock const & context
+		, CmdClearBackDepth const & cmd )
+	{
+		glLogCall( context
+			, glClearDepth
+			, cmd.depth );
+	}
+
+	void apply( ContextLock const & context
+		, CmdClearBackStencil const & cmd )
+	{
+		glLogCall( context
+			, glClearStencil
+			, cmd.stencil );
+	}
+
+	void apply( ContextLock const & context
+		, CmdClearBackDepthStencil const & cmd )
+	{
+		glLogCall( context
+			, glClearDepth
+			, cmd.depth );
+		glLogCall( context
+			, glClearStencil
+			, cmd.stencil );
 	}
 
 	void apply( ContextLock const & context
@@ -317,7 +351,7 @@ namespace ashes::gl
 		glLogCall( context
 			, glClearBufferfv
 			, GL_CLEAR_TARGET_COLOR
-			, cmd.colourIndex
+			, GLint( cmd.colourIndex )
 			, cmd.color.float32 );
 	}
 
@@ -330,8 +364,22 @@ namespace ashes::gl
 		glLogCall( context
 			, glClearBufferfv
 			, GL_CLEAR_TARGET_DEPTH
-			, 0u
+			, 0
 			, &cmd.depth );
+	}
+
+	void apply( ContextLock const & context
+		, CmdClearDepthStencil const & cmd )
+	{
+		glLogCall( context
+			, glDepthMask
+			, GL_TRUE );
+		glLogCall( context
+			, glClearBufferfi
+			, GL_CLEAR_TARGET_DEPTH_STENCIL
+			, 0
+			, cmd.depthStencil.depth
+			, GLint( cmd.depthStencil.stencil ) );
 	}
 
 	void apply( ContextLock const & context
@@ -348,17 +396,175 @@ namespace ashes::gl
 	}
 
 	void apply( ContextLock const & context
-		, CmdClearDepthStencil const & cmd )
+		, CmdClearTexColorF const & cmd )
 	{
 		glLogCall( context
-			, glDepthMask
-			, GL_TRUE );
+			, glClearTexImage
+			, cmd.name
+			, GLint( cmd.mipLevel )
+			, cmd.format
+			, GL_TYPE_F32
+			, cmd.color.data() );
+	}
+
+	void apply( ContextLock const & context
+		, CmdClearTexColorUI const & cmd )
+	{
 		glLogCall( context
-			, glClearBufferfi
-			, GL_CLEAR_TARGET_DEPTH_STENCIL
-			, 0u
-			, cmd.depthStencil.depth
-			, cmd.depthStencil.stencil );
+			, glClearTexImage
+			, cmd.name
+			, GLint( cmd.mipLevel )
+			, cmd.format
+			, GL_TYPE_UI32
+			, cmd.color.data() );
+	}
+
+	void apply( ContextLock const & context
+		, CmdClearTexColorSI const & cmd )
+	{
+		glLogCall( context
+			, glClearTexImage
+			, cmd.name
+			, GLint( cmd.mipLevel )
+			, cmd.format
+			, GL_TYPE_I32
+			, cmd.color.data() );
+	}
+
+	void apply( ContextLock const & context
+		, CmdClearTexDepth const & cmd )
+	{
+		glLogCall( context
+			, glClearTexImage
+			, cmd.name
+			, GLint( cmd.mipLevel )
+			, cmd.format
+			, cmd.type
+			, &cmd.depth );
+	}
+
+	void apply( ContextLock const & context
+		, CmdClearTexDepthStencil const & cmd )
+	{
+		glLogCall( context
+			, glClearTexImage
+			, cmd.name
+			, GLint( cmd.mipLevel )
+			, cmd.format
+			, cmd.type
+			, &cmd.depthStencil.depth );
+	}
+
+	void apply( ContextLock const & context
+		, CmdClearTexStencil const & cmd )
+	{
+		glLogCall( context
+			, glClearTexImage
+			, cmd.name
+			, GLint( cmd.mipLevel )
+			, cmd.format
+			, cmd.type
+			, &cmd.stencil );
+	}
+
+	void apply( ContextLock const & context
+		, CmdColorMask const & cmd )
+	{
+		glLogCall( context
+			, glColorMaski
+			, cmd.index
+			, cmd.r
+			, cmd.g
+			, cmd.b
+			, cmd.a );
+	}
+
+	void apply( ContextLock const & context
+		, CmdCompressedTexSubImage1D const & cmd )
+	{
+		glLogCall( context
+			, glCompressedTexSubImage1D
+			, cmd.copyTarget
+			, GLint( cmd.mipLevel )
+			, cmd.x
+			, GLsizei( cmd.width )
+			, cmd.format
+			, GLsizei( cmd.imageSize )
+			, getBufferOffset( cmd.bufferOffset ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdCompressedTexSubImage2D const & cmd )
+	{
+		glLogCall( context
+			, glCompressedTexSubImage2D
+			, cmd.copyTarget
+			, GLint( cmd.mipLevel )
+			, cmd.x
+			, cmd.y
+			, GLsizei( cmd.width )
+			, GLsizei( cmd.height )
+			, cmd.format
+			, GLsizei( cmd.imageSize )
+			, getBufferOffset( cmd.bufferOffset ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdCompressedTexSubImage3D const & cmd )
+	{
+		glLogCall( context
+			, glCompressedTexSubImage3D
+			, cmd.copyTarget
+			, GLint( cmd.mipLevel )
+			, cmd.x
+			, cmd.y
+			, cmd.z
+			, GLsizei( cmd.width )
+			, GLsizei( cmd.height )
+			, GLsizei( cmd.depth )
+			, cmd.format
+			, GLsizei( cmd.imageSize )
+			, getBufferOffset( cmd.bufferOffset ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdCopyBufferSubData const & cmd )
+	{
+		glLogCall( context
+			, glCopyBufferSubData
+			, cmd.srcTarget
+			, cmd.dstTarget
+			, GLintptr( cmd.copy.srcOffset )
+			, GLintptr( cmd.copy.dstOffset )
+			, GLsizeiptr( cmd.copy.size ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdCopyImageSubData const & cmd )
+	{
+		glLogCall( context
+			, glCopyImageSubData
+			, cmd.srcName
+			, cmd.srcTarget
+			, GLint( cmd.copy.srcSubresource.mipLevel )
+			, cmd.copy.srcOffset.x
+			, cmd.copy.srcOffset.y
+			, ( cmd.copy.srcSubresource.baseArrayLayer
+				? GLint( cmd.copy.srcSubresource.baseArrayLayer )
+				: GLint( cmd.copy.srcOffset.z ) )
+			, cmd.dstName
+			, cmd.dstTarget
+			, GLint( cmd.copy.dstSubresource.mipLevel )
+			, cmd.copy.dstOffset.x
+			, cmd.copy.dstOffset.y
+			, ( cmd.copy.dstSubresource.baseArrayLayer
+				? GLint( cmd.copy.dstSubresource.baseArrayLayer )
+				: GLint( cmd.copy.dstOffset.z ) )
+			, GLsizei( cmd.copy.extent.width )
+			, GLsizei( cmd.copy.extent.height )
+			, ( cmd.copy.srcSubresource.layerCount > 1u
+				? GLsizei( cmd.copy.srcSubresource.layerCount )
+				: GLsizei( cmd.copy.extent.depth ) ) );
 	}
 
 	void apply( ContextLock const & context
@@ -382,7 +588,7 @@ namespace ashes::gl
 	{
 		glLogCall( context
 			, glDepthMask
-			, cmd.value );
+			, GLboolean( cmd.value ) );
 	}
 
 	void apply( ContextLock const & context
@@ -395,11 +601,266 @@ namespace ashes::gl
 	}
 
 	void apply( ContextLock const & context
+		, CmdDisable const & cmd )
+	{
+		glLogCall( context
+			, glDisable
+			, cmd.value );
+	}
+
+	void apply( ContextLock const & context
+		, CmdDispatch const & cmd )
+	{
+		glLogCall( context
+			, glDispatchCompute
+			, cmd.groupCountX
+			, cmd.groupCountY
+			, cmd.groupCountZ );
+	}
+
+	void apply( ContextLock const & context
+		, CmdDispatchIndirect const & cmd )
+	{
+		glLogCall( context
+			, glDispatchComputeIndirect
+			, GLintptr( getBufferOffset( intptr_t( cmd.offset ) ) ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdDownloadMemory const & cmd )
+	{
+		get( cmd.memory )->download( context
+			, cmd.offset
+			, cmd.size );
+	}
+
+	void apply( ContextLock const & context
+		, CmdDraw const & cmd )
+	{
+		glLogCall( context
+			, glDrawArraysInstanced
+			, cmd.mode
+			, GLint( cmd.firstVertex )
+			, GLsizei( cmd.vtxCount )
+			, GLsizei( cmd.instCount ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdDrawBaseInstance const & cmd )
+	{
+		glLogCall( context
+			, glDrawArraysInstancedBaseInstance
+			, cmd.mode
+			, GLint( cmd.firstVertex )
+			, GLsizei( cmd.vtxCount )
+			, GLsizei( cmd.instCount )
+			, GLuint( cmd.firstInstance ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdDrawBuffer const & cmd )
+	{
+		glLogCall( context
+			, glDrawBuffer
+			, cmd.target );
+	}
+
+	void apply( ContextLock const & context
+		, CmdDrawBuffers const & cmd )
+	{
+		glLogCall( context
+			, glDrawBuffers
+			, GLsizei( cmd.count )
+			, cmd.targets.data() );
+	}
+
+	void apply( ContextLock const & context
+		, CmdDrawIndexed const & cmd )
+	{
+		glLogCall( context
+			, glDrawElementsInstancedBaseVertex
+			, cmd.mode
+			, GLsizei( cmd.indexCount )
+			, cmd.type
+			, getBufferOffset( intptr_t( cmd.indexOffset ) )
+			, GLsizei( cmd.instCount )
+			, GLint( cmd.vertexOffset ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdDrawIndexedBaseInstance const & cmd )
+	{
+		glLogCall( context
+			, glDrawElementsInstancedBaseVertexBaseInstance
+			, cmd.mode
+			, GLsizei( cmd.indexCount )
+			, cmd.type
+			, getBufferOffset( intptr_t( cmd.indexOffset ) )
+			, GLsizei( cmd.instCount )
+			, GLint( cmd.vertexOffset )
+			, GLuint( cmd.firstInstance ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdDrawIndexedIndirect const & cmd )
+	{
+		glLogCall( context
+			, glMultiDrawElementsIndirect
+			, cmd.mode
+			, cmd.type
+			, getBufferOffset( intptr_t( cmd.offset ) )
+			, GLsizei( cmd.drawCount )
+			, GLsizei( cmd.stride ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdDrawIndirect const & cmd )
+	{
+		glLogCall( context
+			, glMultiDrawArraysIndirect
+			, cmd.mode
+			, getBufferOffset( intptr_t( cmd.offset ) )
+			, GLsizei( cmd.drawCount )
+			, GLsizei( cmd.stride ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdEnable const & cmd )
+	{
+		glLogCall( context
+			, glEnable
+			, cmd.value );
+	}
+
+	void apply( ContextLock const & context
+		, CmdEndQuery const & cmd )
+	{
+		glLogCall( context
+			, glEndQuery
+			, cmd.target );
+	}
+
+	void apply( ContextLock const & context
+		, CmdFillBuffer const & cmd )
+	{
+		uint32_t * data;
+
+		if ( VK_SUCCESS == get( cmd.memory )->lock( context, cmd.memoryOffset, cmd.dataSize, 0u, reinterpret_cast< void ** >( &data ) ) )
+		{
+			std::fill_n( data, cmd.dataSize / sizeof( uint32_t ), cmd.data );
+			get( cmd.memory )->flush( context, cmd.memoryOffset, cmd.dataSize );
+			get( cmd.memory )->unlock( context );
+		}
+	}
+
+	void apply( ContextLock const & context
+		, CmdFramebufferTexture const & cmd )
+	{
+		glLogCall( context
+			, glFramebufferTexture
+			, cmd.target
+			, cmd.point
+			, cmd.object
+			, GLint( cmd.mipLevel ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdFramebufferTexture1D const & cmd )
+	{
+		glLogCall( context
+			, glFramebufferTexture1D
+			, cmd.target
+			, cmd.point
+			, cmd.texTarget
+			, cmd.object
+			, GLint( cmd.mipLevel ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdFramebufferTexture2D const & cmd )
+	{
+		glLogCall( context
+			, glFramebufferTexture2D
+			, cmd.target
+			, cmd.point
+			, cmd.texTarget
+			, cmd.object
+			, GLint( cmd.mipLevel ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdFramebufferTexture3D const & cmd )
+	{
+		glLogCall( context
+			, glFramebufferTexture3D
+			, cmd.target
+			, cmd.point
+			, cmd.texTarget
+			, cmd.object
+			, GLint( cmd.mipLevel )
+			, GLint( cmd.slice ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdFramebufferTextureLayer const & cmd )
+	{
+		glLogCall( context
+			, glFramebufferTextureLayer
+			, cmd.target
+			, cmd.point
+			, cmd.object
+			, GLint( cmd.mipLevel )
+			, GLint( cmd.arrayLayer ) );
+	}
+
+	void apply( ContextLock const & context
 		, CmdFrontFace const & cmd )
 	{
 		glLogCall( context
 			, glFrontFace
 			, cmd.value );
+	}
+
+	void apply( ContextLock const & context
+		, CmdGenerateMipmaps const & cmd )
+	{
+		glLogCall( context
+			, glGenerateMipmap
+			, cmd.target );
+	}
+
+	void apply( ContextLock const & context
+		, CmdGetCompressedTexImage const & cmd )
+	{
+		glLogCall( context
+			, glGetCompressedTexImage
+			, cmd.target
+			, cmd.level
+			, getBufferOffset( cmd.offset ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdGetQueryResults const & cmd )
+	{
+		get( cmd.queryPool )->getResults( context
+			, cmd.firstQuery
+			, cmd.queryCount
+			, cmd.stride
+			, 0u
+			, cmd.flags
+			, getBufferOffset( intptr_t( cmd.bufferOffset ) ) );
+	}
+
+	void apply( ContextLock const & context
+		, CmdGetTexImage const & cmd )
+	{
+		glLogCall( context
+			, glGetTexImage
+			, cmd.target
+			, cmd.level
+			, cmd.format
+			, cmd.type
+			, getBufferOffset( cmd.offset ) );
 	}
 
 	void apply( ContextLock const & context
@@ -425,6 +886,14 @@ namespace ashes::gl
 	}
 
 	void apply( ContextLock const & context
+		, CmdMemoryBarrier const & cmd )
+	{
+		glLogCall( context
+			, glMemoryBarrier
+			, cmd.flags );
+	}
+
+	void apply( ContextLock const & context
 		, CmdMinSampleShading const & cmd )
 	{
 		glLogCall( context
@@ -439,6 +908,15 @@ namespace ashes::gl
 			, glPatchParameteri
 			, cmd.param
 			, cmd.value );
+	}
+
+	void apply( ContextLock const & context
+		, CmdPixelStore const & cmd )
+	{
+		glLogCall( context
+			, glPixelStorei
+			, cmd.name
+			, cmd.param );
 	}
 
 	void apply( ContextLock const & context
@@ -474,7 +952,175 @@ namespace ashes::gl
 		glLogCall( context
 			, glPrimitiveRestartIndex
 			, cmd.index );
-		
+
+	}
+
+	void apply( ContextLock const & context
+		, CmdProgramUniform1fv const & cmd )
+	{
+		glLogCall( context
+			, glProgramUniform1fv
+			, cmd.program
+			, GLint( cmd.location )
+			, 1u
+			, &cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdProgramUniform2fv const & cmd )
+	{
+		glLogCall( context
+			, glProgramUniform2fv
+			, cmd.program
+			, GLint( cmd.location )
+			, 1u
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdProgramUniform3fv const & cmd )
+	{
+		glLogCall( context
+			, glProgramUniform3fv
+			, cmd.program
+			, GLint( cmd.location )
+			, 1u
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdProgramUniform4fv const & cmd )
+	{
+		glLogCall( context
+			, glProgramUniform4fv
+			, cmd.program
+			, GLint( cmd.location )
+			, 1u
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdProgramUniform1iv const & cmd )
+	{
+		glLogCall( context
+			, glProgramUniform1iv
+			, cmd.program
+			, GLint( cmd.location )
+			, 1u
+			, &cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdProgramUniform2iv const & cmd )
+	{
+		glLogCall( context
+			, glProgramUniform2iv
+			, cmd.program
+			, GLint( cmd.location )
+			, 1u
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdProgramUniform3iv const & cmd )
+	{
+		glLogCall( context
+			, glProgramUniform3iv
+			, cmd.program
+			, GLint( cmd.location )
+			, 1u
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdProgramUniform4iv const & cmd )
+	{
+		glLogCall( context
+			, glProgramUniform4iv
+			, cmd.program
+			, GLint( cmd.location )
+			, 1u
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdProgramUniform1uiv const & cmd )
+	{
+		glLogCall( context
+			, glProgramUniform1uiv
+			, cmd.program
+			, GLint( cmd.location )
+			, 1u
+			, &cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdProgramUniform2uiv const & cmd )
+	{
+		glLogCall( context
+			, glProgramUniform2uiv
+			, cmd.program
+			, GLint( cmd.location )
+			, 1u
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdProgramUniform3uiv const & cmd )
+	{
+		glLogCall( context
+			, glProgramUniform3uiv
+			, cmd.program
+			, GLint( cmd.location )
+			, 1u
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdProgramUniform4uiv const & cmd )
+	{
+		glLogCall( context
+			, glProgramUniform4uiv
+			, cmd.program
+			, GLint( cmd.location )
+			, 1u
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdProgramUniformMatrix2fv const & cmd )
+	{
+		glLogCall( context
+			, glProgramUniformMatrix2fv
+			, cmd.program
+			, GLint( cmd.location )
+			, 1u
+			, cmd.transpose ? GL_TRUE : GL_FALSE
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdProgramUniformMatrix3fv const & cmd )
+	{
+		glLogCall( context
+			, glProgramUniformMatrix3fv
+			, cmd.program
+			, GLint( cmd.location )
+			, 1u
+			, cmd.transpose ? GL_TRUE : GL_FALSE
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdProgramUniformMatrix4fv const & cmd )
+	{
+		glLogCall( context
+			, glProgramUniformMatrix4fv
+			, cmd.program
+			, GLint( cmd.location )
+			, 1u
+			, cmd.transpose ? GL_TRUE : GL_FALSE
+			, cmd.buffer );
 	}
 
 	void apply( ContextLock const & context
@@ -487,7 +1133,49 @@ namespace ashes::gl
 			, cmd.id
 			, cmd.length
 			, cmd.message );
-		
+
+	}
+
+	void apply( ContextLock const & context
+		, CmdReadBuffer const & cmd )
+	{
+		glLogCall( context
+			, glReadBuffer
+			, cmd.point );
+	}
+
+	void apply( ContextLock const & context
+		, CmdReadPixels const & cmd )
+	{
+		glLogCall( context
+			, glReadPixels
+			, cmd.x
+			, cmd.y
+			, GLsizei( cmd.width )
+			, GLsizei( cmd.height )
+			, cmd.format
+			, cmd.type
+			, nullptr );
+	}
+
+	void apply( ContextLock const & context
+		, CmdResetEvent const & cmd )
+	{
+		get( cmd.event )->reset();
+	}
+
+	void apply( ContextLock const & context
+		, CmdSetEvent const & cmd )
+	{
+		get( cmd.event )->set();
+	}
+
+	void apply( ContextLock const & context
+		, CmdSetLineWidth const & cmd )
+	{
+		glLogCall( context
+			, glLineWidth
+			, cmd.width );
 	}
 
 	void apply( ContextLock const & context
@@ -497,7 +1185,7 @@ namespace ashes::gl
 			, glStencilFuncSeparate
 			, cmd.face
 			, cmd.op
-			, cmd.ref
+			, GLint( cmd.ref )
 			, cmd.compMask );
 	}
 
@@ -522,95 +1210,224 @@ namespace ashes::gl
 	}
 
 	void apply( ContextLock const & context
-		, CmdFramebufferTexture const & cmd )
+		, CmdTexParameteri const & cmd )
 	{
 		glLogCall( context
-			, glFramebufferTexture
+			, glTexParameteri
 			, cmd.target
-			, cmd.point
-			, cmd.object
-			, cmd.mipLevel );
+			, cmd.name
+			, cmd.param );
 	}
 
 	void apply( ContextLock const & context
-		, CmdFramebufferTexture1D const & cmd )
+		, CmdTexParameterf const & cmd )
 	{
 		glLogCall( context
-			, glFramebufferTexture1D
+			, glTexParameterf
 			, cmd.target
-			, cmd.point
-			, cmd.texTarget
-			, cmd.object
-			, cmd.mipLevel );
+			, cmd.name
+			, cmd.param );
 	}
 
 	void apply( ContextLock const & context
-		, CmdFramebufferTexture2D const & cmd )
+		, CmdTexSubImage1D const & cmd )
 	{
 		glLogCall( context
-			, glFramebufferTexture2D
-			, cmd.target
-			, cmd.point
-			, cmd.texTarget
-			, cmd.object
-			, cmd.mipLevel );
+			, glTexSubImage1D
+			, cmd.copyTarget
+			, GLint( cmd.mipLevel )
+			, cmd.x
+			, GLsizei( cmd.width )
+			, cmd.format
+			, cmd.type
+			, getBufferOffset( cmd.bufferOffset ) );
 	}
 
 	void apply( ContextLock const & context
-		, CmdFramebufferTexture3D const & cmd )
+		, CmdTexSubImage2D const & cmd )
 	{
 		glLogCall( context
-			, glFramebufferTexture3D
-			, cmd.target
-			, cmd.point
-			, cmd.texTarget
-			, cmd.object
-			, cmd.mipLevel
-			, cmd.slice );
+			, glTexSubImage2D
+			, cmd.copyTarget
+			, GLint( cmd.mipLevel )
+			, cmd.x
+			, cmd.y
+			, GLsizei( cmd.width )
+			, GLsizei( cmd.height )
+			, cmd.format
+			, cmd.type
+			, getBufferOffset( cmd.bufferOffset ) );
 	}
 
 	void apply( ContextLock const & context
-		, CmdFramebufferTextureLayer const & cmd )
+		, CmdTexSubImage3D const & cmd )
 	{
 		glLogCall( context
-			, glFramebufferTextureLayer
-			, cmd.target
-			, cmd.point
-			, cmd.object
-			, cmd.mipLevel
-			, cmd.arrayLayer );
+			, glTexSubImage3D
+			, cmd.copyTarget
+			, GLint( cmd.mipLevel )
+			, cmd.x
+			, cmd.y
+			, cmd.z
+			, GLsizei( cmd.width )
+			, GLsizei( cmd.height )
+			, GLsizei( cmd.depth )
+			, cmd.format
+			, cmd.type
+			, getBufferOffset( cmd.bufferOffset ) );
 	}
 
 	void apply( ContextLock const & context
-		, CmdActiveTexture const & cmd )
+		, CmdUniform1fv const & cmd )
 	{
 		glLogCall( context
-			, glActiveTexture
-			, GlTextureUnit( GL_TEXTURE0 + cmd.binding ) );
+			, glUniform1fv
+			, GLint( cmd.location )
+			, 1u
+			, &cmd.buffer );
 	}
 
 	void apply( ContextLock const & context
-		, CmdUploadMemory const & cmd )
-	{
-		get( cmd.memory )->upload( context
-			, cmd.offset
-			, cmd.size );
-	}
-
-	void apply( ContextLock const & context
-		, CmdDownloadMemory const & cmd )
-	{
-		get( cmd.memory )->download( context
-			, cmd.offset
-			, cmd.size );
-	}
-
-	void apply( ContextLock const & context
-		, CmdReadBuffer const & cmd )
+		, CmdUniform2fv const & cmd )
 	{
 		glLogCall( context
-			, glReadBuffer
-			, cmd.point );
+			, glUniform2fv
+			, GLint( cmd.location )
+			, 1u
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdUniform3fv const & cmd )
+	{
+		glLogCall( context
+			, glUniform3fv
+			, GLint( cmd.location )
+			, 1u
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdUniform4fv const & cmd )
+	{
+		glLogCall( context
+			, glUniform4fv
+			, GLint( cmd.location )
+			, 1u
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdUniform1iv const & cmd )
+	{
+		glLogCall( context
+			, glUniform1iv
+			, GLint( cmd.location )
+			, 1u
+			, &cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdUniform2iv const & cmd )
+	{
+		glLogCall( context
+			, glUniform2iv
+			, GLint( cmd.location )
+			, 1u
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdUniform3iv const & cmd )
+	{
+		glLogCall( context
+			, glUniform3iv
+			, GLint( cmd.location )
+			, 1u
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdUniform4iv const & cmd )
+	{
+		glLogCall( context
+			, glUniform4iv
+			, GLint( cmd.location )
+			, 1u
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdUniform1uiv const & cmd )
+	{
+		glLogCall( context
+			, glUniform1uiv
+			, GLint( cmd.location )
+			, 1u
+			, &cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdUniform2uiv const & cmd )
+	{
+		glLogCall( context
+			, glUniform2uiv
+			, GLint( cmd.location )
+			, 1u
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdUniform3uiv const & cmd )
+	{
+		glLogCall( context
+			, glUniform3uiv
+			, GLint( cmd.location )
+			, 1u
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdUniform4uiv const & cmd )
+	{
+		glLogCall( context
+			, glUniform4uiv
+			, GLint( cmd.location )
+			, 1u
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdUniformMatrix2fv const & cmd )
+	{
+		glLogCall( context
+			, glUniformMatrix2fv
+			, GLint( cmd.location )
+			, 1u
+			, cmd.transpose ? GL_TRUE : GL_FALSE
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdUniformMatrix3fv const & cmd )
+	{
+		glLogCall( context
+			, glUniformMatrix3fv
+			, GLint( cmd.location )
+			, 1u
+			, cmd.transpose ? GL_TRUE : GL_FALSE
+			, cmd.buffer );
+	}
+
+	void apply( ContextLock const & context
+		, CmdUniformMatrix4fv const & cmd )
+	{
+		glLogCall( context
+			, glUniformMatrix4fv
+			, GLint( cmd.location )
+			, 1u
+			, cmd.transpose ? GL_TRUE : GL_FALSE
+			, cmd.buffer );
 	}
 
 	void apply( ContextLock const & context
@@ -623,8 +1440,8 @@ namespace ashes::gl
 		glLogCall( context
 			, glBufferSubData
 			, GL_BUFFER_TARGET_COPY_WRITE
-			, cmd.memoryOffset
-			, cmd.dataSize
+			, GLintptr( cmd.memoryOffset )
+			, GLsizeiptr( cmd.dataSize )
 			, cmd.pData );
 		glLogCall( context
 			, glBindBuffer
@@ -633,174 +1450,54 @@ namespace ashes::gl
 	}
 
 	void apply( ContextLock const & context
-		, CmdFillBuffer const & cmd )
+		, CmdUploadMemory const & cmd )
 	{
-		uint32_t * data;
+		get( cmd.memory )->upload( context
+			, cmd.offset
+			, cmd.size );
+	}
 
-		if ( VK_SUCCESS == get( cmd.memory )->lock( context, cmd.memoryOffset, cmd.dataSize, 0u, reinterpret_cast< void ** >( &data ) ) )
+	void apply( ContextLock const & context
+		, CmdUseProgram const & cmd )
+	{
+		glLogCall( context
+			, glUseProgram
+			, cmd.program );
+	}
+
+	void apply( ContextLock const & context
+		, CmdUseProgramPipeline const & cmd )
+	{
+		glLogCall( context
+			, glBindProgramPipeline
+			, cmd.program );
+	}
+
+	void apply( ContextLock const & context
+		, CmdWaitEvents const & cmd )
+	{
+		auto count = 0u;
+
+		do
 		{
-			std::fill_n( data, cmd.dataSize / sizeof( uint32_t ), cmd.data );
-			get( cmd.memory )->flush( context, cmd.memoryOffset, cmd.dataSize );
-			get( cmd.memory )->unlock( context );
+			count = uint32_t( std::count_if( cmd.events.begin()
+				, cmd.events.end()
+				, []( VkEvent event )
+				{
+					return get( event )->getStatus() == VK_EVENT_SET
+						|| get( event )->getStatus() == VK_EVENT_RESET;
+				} ) );
+			std::this_thread::sleep_for( std::chrono::nanoseconds{ 10 } );
 		}
+		while ( count != cmd.events.size() );
 	}
 
 	void apply( ContextLock const & context
-		, CmdReadPixels const & cmd )
+		, CmdWriteTimestamp const & cmd )
 	{
 		glLogCall( context
-			, glReadPixels
-			, cmd.x
-			, cmd.y
-			, cmd.width
-			, cmd.height
-			, cmd.format
-			, cmd.type
-			, nullptr );
-	}
-
-	void apply( ContextLock const & context
-		, CmdPixelStore const & cmd )
-	{
-		glLogCall( context
-			, glPixelStorei
+			, glQueryCounter
 			, cmd.name
-			, cmd.param );
-	}
-
-	void apply( ContextLock const & context
-		, CmdCompressedTexSubImage1D const & cmd )
-	{
-		glLogCall( context
-			, glCompressedTexSubImage1D
-			, cmd.copyTarget
-			, cmd.mipLevel
-			, cmd.x
-			, cmd.width
-			, cmd.format
-			, cmd.imageSize
-			, getBufferOffset( cmd.bufferOffset ) );
-	}
-
-	void apply( ContextLock const & context
-		, CmdCompressedTexSubImage2D const & cmd )
-	{
-		glLogCall( context
-			, glCompressedTexSubImage2D
-			, cmd.copyTarget
-			, cmd.mipLevel
-			, cmd.x
-			, cmd.y
-			, cmd.width
-			, cmd.height
-			, cmd.format
-			, cmd.imageSize
-			, getBufferOffset( cmd.bufferOffset ) );
-	}
-
-	void apply( ContextLock const & context
-		, CmdCompressedTexSubImage3D const & cmd )
-	{
-		glLogCall( context
-			, glCompressedTexSubImage3D
-			, cmd.copyTarget
-			, cmd.mipLevel
-			, cmd.x
-			, cmd.y
-			, cmd.z
-			, cmd.width
-			, cmd.height
-			, cmd.depth
-			, cmd.format
-			, cmd.imageSize
-			, getBufferOffset( cmd.bufferOffset ) );
-	}
-
-	void apply( ContextLock const & context
-		, CmdCopyBufferSubData const & cmd )
-	{
-		glLogCall( context
-			, glCopyBufferSubData
-			, cmd.srcTarget
-			, cmd.dstTarget
-			, GLintptr( cmd.copy.srcOffset )
-			, GLintptr( cmd.copy.dstOffset )
-			, GLsizeiptr( cmd.copy.size ) );
-	}
-
-	void apply( ContextLock const & context
-		, CmdCopyImageSubData const & cmd )
-	{
-		glLogCall( context
-			, glCopyImageSubData
-			, cmd.srcName
-			, cmd.srcTarget
-			, cmd.copy.srcSubresource.mipLevel
-			, cmd.copy.srcOffset.x
-			, cmd.copy.srcOffset.y
-			, ( cmd.copy.srcSubresource.baseArrayLayer
-				? GLint( cmd.copy.srcSubresource.baseArrayLayer )
-				: GLint( cmd.copy.srcOffset.z ) )
-			, cmd.dstName
-			, cmd.dstTarget
-			, cmd.copy.dstSubresource.mipLevel
-			, cmd.copy.dstOffset.x
-			, cmd.copy.dstOffset.y
-			, ( cmd.copy.dstSubresource.baseArrayLayer
-				? GLint( cmd.copy.dstSubresource.baseArrayLayer )
-				: GLint( cmd.copy.dstOffset.z ) )
-			, GLsizei( cmd.copy.extent.width )
-			, GLsizei( cmd.copy.extent.height )
-			, ( cmd.copy.srcSubresource.layerCount > 1u
-				? GLsizei( cmd.copy.srcSubresource.layerCount )
-				: GLsizei( cmd.copy.extent.depth ) ) );
-	}
-
-	void apply( ContextLock const & context
-		, CmdTexSubImage1D const & cmd )
-	{
-		glLogCall( context
-			, glTexSubImage1D
-			, cmd.copyTarget
-			, cmd.mipLevel
-			, cmd.x
-			, cmd.width
-			, cmd.format
-			, cmd.type
-			, getBufferOffset( cmd.bufferOffset ) );
-	}
-
-	void apply( ContextLock const & context
-		, CmdTexSubImage2D const & cmd )
-	{
-		glLogCall( context
-			, glTexSubImage2D
-			, cmd.copyTarget
-			, cmd.mipLevel
-			, cmd.x
-			, cmd.y
-			, cmd.width
-			, cmd.height
-			, cmd.format
-			, cmd.type
-			, getBufferOffset( cmd.bufferOffset ) );
-	}
-
-	void apply( ContextLock const & context
-		, CmdTexSubImage3D const & cmd )
-	{
-		glLogCall( context
-			, glTexSubImage3D
-			, cmd.copyTarget
-			, cmd.mipLevel
-			, cmd.x
-			, cmd.y
-			, cmd.z
-			, cmd.width
-			, cmd.height
-			, cmd.depth
-			, cmd.format
-			, cmd.type
-			, getBufferOffset( cmd.bufferOffset ) );
+			, GL_QUERY_TYPE_TIMESTAMP );
 	}
 }

@@ -32,10 +32,8 @@ namespace ashes
 			return "protected";
 		default:
 			assert( false && "Unsupported VkQueueFlagBits." );
-			throw std::runtime_error{ "Unsupported VkQueueFlagBits" };
+			return "Unsupported VkQueueFlagBits";
 		}
-
-		return 0;
 	}
 }
 

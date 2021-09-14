@@ -63,14 +63,14 @@ namespace ashes::d3d11
 			context.context->DrawIndexedInstanced( m_indexCount
 				, m_instCount
 				, m_firstIndex
-				, m_vertexOffset
+				, INT( m_vertexOffset )
 				, m_firstInstance );
 		}
 		else
 		{
 			context.context->DrawIndexed( m_indexCount
 				, m_firstIndex
-				, m_vertexOffset );
+				, INT( m_vertexOffset ) );
 		}
 	}
 

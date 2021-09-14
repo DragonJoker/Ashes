@@ -20,13 +20,13 @@ namespace ashes
 		T getAligned( T value, U align )
 		{
 			return T( ( value + align - 1 ) & ~( align - 1 ) );
-		};
+		}
 
 		template< typename T >
 		T getSubresourceValue( T value, uint32_t mipLevel )
 		{
 			return T( value >> mipLevel );
-		};
+		}
 
 		VkMemoryAllocateInfo getAllocateInfo( Device const & device
 			, BufferBase const & buffer )
@@ -53,12 +53,6 @@ namespace ashes
 			auto type = image.getType();
 			auto texelBlockExtent = getMinimalExtent3D( format );
 
-			VkImageSubresource subresource
-			{
-				subresourceLayers.aspectMask,
-				subresourceLayers.mipLevel,
-				subresourceLayers.baseArrayLayer,
-			};
 			VkImageSubresourceLayers layers{ subresourceLayers };
 			layers.baseArrayLayer = type == VK_IMAGE_TYPE_3D
 				? 0
@@ -344,7 +338,7 @@ namespace ashes
 		mappedSize = mappedSize > getBuffer().getSize()
 			? WholeSize
 			: mappedSize;
-		auto buffer = static_cast< BufferBase const & >( getBuffer() ).lock( 0u
+		auto buffer = getBuffer().lock( 0u
 			, mappedSize
 			, 0u );
 
@@ -429,12 +423,11 @@ namespace ashes
 		, VkImageLayout dstLayout
 		, VkImageSubresourceLayers const & subresourceLayers )const
 	{
-		auto realSize = getLevelsSize( size
+		assert( getLevelsSize( size
 			, view->format
 			, view->subresourceRange.baseMipLevel
 			, view->subresourceRange.levelCount
-			, uint32_t( view.image->getMemoryRequirements().alignment ) );
-		assert( realSize <= getBuffer().getSize() );
+			, uint32_t( view.image->getMemoryRequirements().alignment ) ) <= getBuffer().getSize() );
 
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 			, VK_PIPELINE_STAGE_TRANSFER_BIT
@@ -462,7 +455,7 @@ namespace ashes
 		mappedSize = mappedSize > getBuffer().getSize()
 			? WholeSize
 			: mappedSize;
-		auto buffer = static_cast< BufferBase const & >( getBuffer() ).lock( 0u
+		auto buffer = getBuffer().lock( 0u
 			, mappedSize
 			, 0u );
 

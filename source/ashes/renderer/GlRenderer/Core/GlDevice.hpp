@@ -791,7 +791,6 @@ namespace ashes::gl
 		static inline void stRegisterObject( VkDevice device
 			, AshesType & object )
 		{
-			using VkType = typename AshesTypeTraits< AshesType >::VkType;
 			using DebugTypeTraits = AshesDebugTypeTraits< AshesType >;
 			getDevice( device )->doRegisterObject( uint64_t( get( &object ) )
 #if VK_EXT_debug_utils
@@ -806,7 +805,6 @@ namespace ashes::gl
 		static inline void stUnregisterObject( VkDevice device
 			, AshesType & object )
 		{
-			using VkType = typename AshesTypeTraits< AshesType >::VkType;
 			getDevice( device )->doUnregisterObject( uint64_t( get( &object ) ) );
 		}
 

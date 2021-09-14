@@ -426,7 +426,7 @@ namespace ashes::d3d11
 		VkSparseImageFormatProperties * pProperties )
 	{
 		std::vector< VkSparseImageFormatProperties > props;
-		auto result = get( physicalDevice )->getSparseImageFormatProperties( format
+		get( physicalDevice )->getSparseImageFormatProperties( format
 			, type
 			, samples
 			, usage
@@ -1065,7 +1065,6 @@ namespace ashes::d3d11
 		VkCommandBuffer * pCommandBuffers )
 	{
 		VkResult result = VK_SUCCESS;
-		auto itLayout = pAllocateInfo->commandBufferCount;
 
 		for ( auto it = pCommandBuffers;
 			it != pCommandBuffers + pAllocateInfo->commandBufferCount;
@@ -1265,7 +1264,7 @@ namespace ashes::d3d11
 		get( commandBuffer )->drawIndexed( indexCount
 			, instanceCount
 			, firstIndex
-			, vertexOffset
+			, uint32_t( vertexOffset )
 			, firstInstance );
 	}
 
@@ -1651,7 +1650,7 @@ namespace ashes::d3d11
 
 		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
 		{
-			if ( result = VK_SUCCESS )
+			if ( result == VK_SUCCESS )
 			{
 				result = get( bindInfo.buffer )->bindMemory( bindInfo.memory
 					, bindInfo.memoryOffset );
@@ -1670,7 +1669,7 @@ namespace ashes::d3d11
 
 		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
 		{
-			if ( result = VK_SUCCESS )
+			if ( result == VK_SUCCESS )
 			{
 				result = get( bindInfo.image )->bindMemory( bindInfo.memory
 					, bindInfo.memoryOffset );
@@ -1805,7 +1804,7 @@ namespace ashes::d3d11
 		VkSparseImageFormatProperties2 * pProperties )
 	{
 		std::vector< VkSparseImageFormatProperties2 > props;
-		auto result = get( physicalDevice )->getSparseImageFormatProperties2( *pFormatInfo, props );
+		get( physicalDevice )->getSparseImageFormatProperties2( *pFormatInfo, props );
 		*pPropertyCount = uint32_t( props.size() );
 
 		if ( pProperties )
@@ -2450,7 +2449,7 @@ namespace ashes::d3d11
 		VkSparseImageFormatProperties2KHR * pProperties )
 	{
 		std::vector< VkSparseImageFormatProperties2KHR > props;
-		auto result = get( physicalDevice )->getSparseImageFormatProperties2( *pFormatInfo, props );
+		get( physicalDevice )->getSparseImageFormatProperties2( *pFormatInfo, props );
 		*pPropertyCount = uint32_t( props.size() );
 
 		if ( pProperties )
@@ -2855,7 +2854,7 @@ namespace ashes::d3d11
 
 		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
 		{
-			if ( result = VK_SUCCESS )
+			if ( result == VK_SUCCESS )
 			{
 				result = get( bindInfo.buffer )->bindMemory( bindInfo.memory
 					, bindInfo.memoryOffset );
@@ -2874,7 +2873,7 @@ namespace ashes::d3d11
 
 		for ( auto & bindInfo : makeArrayView( pBindInfos, bindInfoCount ) )
 		{
-			if ( result = VK_SUCCESS )
+			if ( result == VK_SUCCESS )
 			{
 				result = get( bindInfo.image )->bindMemory( bindInfo.memory
 					, bindInfo.memoryOffset );
@@ -3439,7 +3438,6 @@ namespace ashes::d3d11
 			, pAllocator
 			, instance
 			, *pCreateInfo );
-		return VK_SUCCESS;
 	}
 
 	void VKAPI_CALL vkDestroyDebugUtilsMessengerEXT(
@@ -4219,6 +4217,9 @@ namespace ashes::d3d11
 
 	using InstanceFunctions = std::map< std::string, PFN_vkVoidFunction >;
 
+#pragma warning( push )
+#pragma warning( disable: 4191 )
+
 	InstanceFunctions const & getFunctions( VkInstance instance )
 	{
 		static std::map< VkInstance, InstanceFunctions > functions;
@@ -4306,6 +4307,8 @@ namespace ashes::d3d11
 
 		return result;
 	}
+
+#pragma warning( pop )
 }
 
 #ifdef __cplusplus

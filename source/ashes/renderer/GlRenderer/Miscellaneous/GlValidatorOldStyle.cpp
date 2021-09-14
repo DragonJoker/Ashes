@@ -43,37 +43,38 @@ namespace ashes::gl::gl3
 			GL_UNIFORM_BLOCK_BINDING = 0x8A3F,
 			GL_UNIFORM_BLOCK_DATA_SIZE = 0x8A40,
 		};
-	}
 
-	template< typename FuncT >
-	void getInterfaceInfos( ContextLock const & context
-		, GLuint program
-		, GlslInterface interfaceName
-		, GlslInterface interfaceMaxLengthName
-		, FuncT func )
-	{
-		GLint count = 0u;
-		glLogCall( context
-			, glGetProgramiv
-			, program
-			, interfaceName
-			, &count );
+		using AttributeFunction = std::function< void( GLuint index, GLsizei maxLength ) >;
 
-		if ( count )
+		void getInterfaceInfos( ContextLock const & context
+			, GLuint program
+			, GlslInterface interfaceName
+			, GlslInterface interfaceMaxLengthName
+			, AttributeFunction func )
 		{
-			GLint maxLength = 0;
+			GLint count = 0u;
 			glLogCall( context
 				, glGetProgramiv
 				, program
-				, interfaceMaxLengthName
-				, &maxLength );
-			maxLength = maxLength
-				? std::min( 256, maxLength )
-				: 256;
+				, interfaceName
+				, &count );
 
-			for ( GLuint i = 0u; i < GLuint( count ); ++i )
+			if ( count )
 			{
-				func( i, maxLength );
+				GLint maxLength = 0;
+				glLogCall( context
+					, glGetProgramiv
+					, program
+					, interfaceMaxLengthName
+					, &maxLength );
+				maxLength = maxLength
+					? std::min( 256, maxLength )
+					: 256;
+
+				for ( GLuint i = 0u; i < GLuint( count ); ++i )
+				{
+					func( i, maxLength );
+				}
 			}
 		}
 	}
@@ -87,10 +88,10 @@ namespace ashes::gl::gl3
 			, program
 			, GL_ACTIVE_ATTRIBUTES
 			, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH
-			, [&result, &context, &program]( GLint index, GLint maxLength )
+			, [&result, &context, &program]( GLuint index, GLsizei maxLength )
 			{
 				std::vector< char > nameBuf;
-				nameBuf.resize( maxLength );
+				nameBuf.resize( size_t( maxLength ) );
 				GLsizei nameLength = 0;
 				GLint arraySize = 0;
 				auto offset = 0u;
@@ -102,7 +103,7 @@ namespace ashes::gl::gl3
 					, maxLength - 1
 					, &nameLength
 					, &arraySize
-					, (GLenum * )&attributeType
+					, reinterpret_cast< GLenum * >( &attributeType )
 					, nameBuf.data() );
 				auto location = glLogNonVoidCall( context
 					, glGetAttribLocation
@@ -177,10 +178,9 @@ namespace ashes::gl::gl3
 		std::vector< const char * > uniformNames;
 		uniformNamesData.resize( uniformCount );
 
-		for ( auto index = 0u; index < uniformCount; ++index )
+		for ( GLuint index = 0u; index < uniformCount; ++index )
 		{
 			GLint actualLength = 0;
-			GLint arraySize = 0;
 			glLogCall( context
 				, glGetActiveUniformName
 				, program
@@ -196,7 +196,7 @@ namespace ashes::gl::gl3
 		glLogCall( context
 			, glGetUniformIndices
 			, program
-			, uniformCount
+			, GLsizei( uniformCount )
 			, uniformNames.data()
 			, uniformIndices.data() );
 		std::vector< GlslAttributeType > uniformBlockIndices;
@@ -204,7 +204,7 @@ namespace ashes::gl::gl3
 		glLogCall( context
 			, glGetActiveUniformsiv
 			, program
-			, uniformCount
+			, GLsizei( uniformCount )
 			, uniformIndices.data()
 			, GL_UNIFORM_BLOCK_INDEX
 			, reinterpret_cast< GLint * >( uniformBlockIndices.data() ) );
@@ -213,7 +213,7 @@ namespace ashes::gl::gl3
 		glLogCall( context
 			, glGetActiveUniformsiv
 			, program
-			, uniformCount
+			, GLsizei( uniformCount )
 			, uniformIndices.data()
 			, GL_UNIFORM_TYPE
 			, reinterpret_cast< GLint * >( uniformTypes.data() ) );
@@ -222,7 +222,7 @@ namespace ashes::gl::gl3
 		glLogCall( context
 			, glGetActiveUniformsiv
 			, program
-			, uniformCount
+			, GLsizei( uniformCount )
 			, uniformIndices.data()
 			, GL_UNIFORM_SIZE
 			, reinterpret_cast< GLint * >( uniformArraySizes.data() ) );
@@ -231,7 +231,7 @@ namespace ashes::gl::gl3
 		glLogCall( context
 			, glGetActiveUniformsiv
 			, program
-			, uniformCount
+			, GLsizei( uniformCount )
 			, uniformIndices.data()
 			, GL_UNIFORM_OFFSET
 			, reinterpret_cast< GLint * >( uniformOffsets.data() ) );
@@ -257,8 +257,8 @@ namespace ashes::gl::gl3
 		getUniformInfos( context
 			, stage
 			, program
-			, []( GLuint blockIndex ){ return blockIndex == -1; }
-			, [&constants, &stage, &program]( const char * name
+			, []( GLuint blockIndex ){ return blockIndex == ~( 0u ); }
+			, [&constants]( const char * name
 				, GlslAttributeType type
 				, GLuint location
 				, GLuint offset
@@ -268,7 +268,7 @@ namespace ashes::gl::gl3
 					&& !isImage( type )
 					&& !isSamplerBuffer( type )
 					&& !isImageBuffer( type )
-					&& location != -1 )
+					&& location != ~( 0u ) )
 				{
 					auto it = std::find_if( constants.begin()
 						, constants.end()
@@ -278,7 +278,7 @@ namespace ashes::gl::gl3
 						} );
 					if ( it != constants.end() )
 					{
-						it->location = uint32_t( location );
+						it->location = location;
 					}
 				}
 			} );
@@ -294,7 +294,7 @@ namespace ashes::gl::gl3
 			, program
 			, GL_ACTIVE_UNIFORM_BLOCKS
 			, GL_ACTIVE_UNIFORM_BLOCK_NAME_LENGTH
-			, [&result, &context, &program, &stage]( GLint index, GLint maxLength )
+			, [&result, &context, &program, &stage]( GLuint index, GLsizei maxLength )
 			{
 				ConstantBufferDesc desc;
 				glLogCall( context
@@ -310,7 +310,7 @@ namespace ashes::gl::gl3
 					, GL_UNIFORM_BLOCK_DATA_SIZE
 					, reinterpret_cast< GLint * >( &desc.size ) );
 				std::vector< char > nameBuf;
-				nameBuf.resize( maxLength );
+				nameBuf.resize( size_t( maxLength ) );
 				glLogCall( context
 					, glGetActiveUniformBlockName
 					, program
@@ -336,13 +336,13 @@ namespace ashes::gl::gl3
 							desc.constants.push_back( { program
 								, stage
 								, name
-								, uint32_t( location )
+								, location
 								, getConstantFormat( type )
 								, getSize( type )
-								, uint32_t( arraySize )
-								, ( offset == -1
+								, arraySize
+								, ( offset == ~( 0u )
 									? 0u
-									: uint32_t( offset ) ) } );
+									: offset ) } );
 						}
 					} );
 				result.push_back( desc );
@@ -366,7 +366,7 @@ namespace ashes::gl::gl3
 		getUniformInfos( context
 			, stage
 			, program
-			, []( GLuint blockIndex ){ return blockIndex == -1; }
+			, []( GLuint blockIndex ){ return blockIndex == ~( 0u ); }
 			, [&result, &stage, &program]( const char * name
 				, GlslAttributeType type
 				, GLuint location
@@ -378,10 +378,10 @@ namespace ashes::gl::gl3
 					result.push_back( { program
 						, stage
 						, name
-						, uint32_t( location )
+						, location
 						, getSamplerFormat( type )
 						, 1u
-						, uint32_t( arraySize )
+						, arraySize
 						, 0u } );
 				}
 			} );
@@ -396,7 +396,7 @@ namespace ashes::gl::gl3
 		getUniformInfos( context
 			, stage
 			, program
-			, []( GLuint blockIndex ){ return blockIndex == -1; }
+			, []( GLuint blockIndex ){ return blockIndex == ~( 0u ); }
 			, [&result, &stage, &program]( const char * name
 				, GlslAttributeType type
 				, GLuint location
@@ -408,10 +408,10 @@ namespace ashes::gl::gl3
 					result.push_back( { program
 						, stage
 						, name
-						, uint32_t( location )
+						, location
 						, getSamplerFormat( type )
 						, 1u
-						, uint32_t( arraySize )
+						, arraySize
 						, 0u } );
 				}
 			} );
@@ -426,10 +426,7 @@ namespace ashes::gl::gl3
 		getUniformInfos( context
 			, stage
 			, program
-			, []( GLuint blockIndex )
-			{
-				return blockIndex == -1;
-			}
+			, []( GLuint blockIndex ){ return blockIndex == ~( 0u ); }
 			, [&result, &stage, &program]( const char * name
 				, GlslAttributeType type
 				, GLuint location
@@ -441,10 +438,10 @@ namespace ashes::gl::gl3
 					result.push_back( { program
 						, stage
 						, name
-						, uint32_t( location )
+						, location
 						, getImageFormat( type )
 						, 1u
-						, uint32_t( arraySize )
+						, arraySize
 						, 0u } );
 				}
 			} );
@@ -459,7 +456,7 @@ namespace ashes::gl::gl3
 		getUniformInfos( context
 			, stage
 			, program
-			, []( GLuint blockIndex ){ return blockIndex == -1; }
+			, []( GLuint blockIndex ){ return blockIndex == ~( 0u ); }
 			, [&result, &stage, &program]( const char * name
 				, GlslAttributeType type
 				, GLuint location
@@ -471,10 +468,10 @@ namespace ashes::gl::gl3
 					result.push_back( { program
 						, stage
 						, name
-						, uint32_t( location )
+						, location
 						, getImageFormat( type )
 						, 1u
-						, uint32_t( arraySize )
+						, arraySize
 						, 0u } );
 				}
 			} );

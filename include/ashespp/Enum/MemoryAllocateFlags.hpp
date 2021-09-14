@@ -35,10 +35,8 @@ namespace ashes
 #endif
 		default:
 			assert( false && "Unsupported VkMemoryAllocateFlagBits." );
-			throw std::runtime_error{ "Unsupported VkMemoryAllocateFlagBits" };
+			return "Unsupported VkMemoryAllocateFlagBits";
 		}
-
-		return 0;
 	}
 }
 

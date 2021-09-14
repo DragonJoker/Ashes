@@ -135,8 +135,8 @@ namespace ashes::gl
 	template< typename VkType >
 	typename VkGlTypeTraits< VkType >::Type * get( VkType vkValue )
 	{
-		using Type = typename VkGlTypeTraits< VkType >::Type;
-		return ( ( Type * )vkValue );
+		using Type = typename VkGlTypeTraits< VkType >::Type *;
+		return Type( vkValue );
 	}
 
 	template< typename Type >
@@ -149,8 +149,11 @@ namespace ashes::gl
 	template< typename Type >
 	typename GlVkTypeTraits< Type >::VkType get( Type const * vkValue )
 	{
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-qual"
 		using VkType = typename GlVkTypeTraits< Type >::VkType;
 		return VkType( vkValue );
+#pragma GCC diagnostic pop
 	}
 
 	std::vector< VkExtensionProperties > const & getSupportedInstanceExtensions();
@@ -542,7 +545,6 @@ namespace ashes::gl
 				using Type = typename VkGlTypeTraits< VkType >::Type;
 
 				value->~Type();
-				auto scope = allocationScopeT< VkType >;
 				allocInfo->pfnFree( allocInfo->pUserData, value );
 			}
 			else
@@ -1341,6 +1343,101 @@ namespace ashes::gl
 		VkDevice device,
 		const VkDescriptorSetLayoutCreateInfo * pCreateInfo,
 		VkDescriptorSetLayoutSupport * pSupport );
+
+#endif
+#pragma endregion
+#pragma region VK_API_VERSION_1_2
+#ifdef VK_API_VERSION_1_2
+
+	VKAPI_ATTR void VKAPI_CALL vkCmdDrawIndirectCount(
+		VkCommandBuffer commandBuffer,
+		VkBuffer buffer,
+		VkDeviceSize offset,
+		VkBuffer countBuffer,
+		VkDeviceSize countBufferOffset,
+		uint32_t maxDrawCount,
+		uint32_t stride );
+	VKAPI_ATTR void VKAPI_CALL vkCmdDrawIndexedIndirectCount(
+		VkCommandBuffer commandBuffer,
+		VkBuffer buffer,
+		VkDeviceSize offset,
+		VkBuffer countBuffer,
+		VkDeviceSize countBufferOffset,
+		uint32_t maxDrawCount,
+		uint32_t stride );
+	VKAPI_ATTR VkResult VKAPI_CALL vkCreateRenderPass2(
+		VkDevice device,
+		const VkRenderPassCreateInfo2 * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkRenderPass * pRenderPass );
+	VKAPI_ATTR void VKAPI_CALL vkCmdBeginRenderPass2(
+		VkCommandBuffer commandBuffer,
+		const VkRenderPassBeginInfo * pRenderPassBegin,
+		const VkSubpassBeginInfo * pSubpassBeginInfo );
+	VKAPI_ATTR void VKAPI_CALL vkCmdNextSubpass2(
+		VkCommandBuffer commandBuffer,
+		const VkSubpassBeginInfo * pSubpassBeginInfo,
+		const VkSubpassEndInfo * pSubpassEndInfo );
+	VKAPI_ATTR void VKAPI_CALL vkCmdEndRenderPass2(
+		VkCommandBuffer commandBuffer,
+		const VkSubpassEndInfo * pSubpassEndInfo );
+	VKAPI_ATTR void VKAPI_CALL vkResetQueryPool(
+		VkDevice device,
+		VkQueryPool queryPool,
+		uint32_t firstQuery,
+		uint32_t queryCount );
+	VKAPI_ATTR VkResult VKAPI_CALL vkGetSemaphoreCounterValue(
+		VkDevice device,
+		VkSemaphore semaphore,
+		uint64_t * pValue );
+	VKAPI_ATTR VkResult VKAPI_CALL vkWaitSemaphores(
+		VkDevice device,
+		const VkSemaphoreWaitInfo * pWaitInfo,
+		uint64_t timeout );
+	VKAPI_ATTR VkResult VKAPI_CALL vkSignalSemaphore(
+		VkDevice device,
+		const VkSemaphoreSignalInfo * pSignalInfo );
+	VKAPI_ATTR VkDeviceAddress VKAPI_CALL vkGetBufferDeviceAddress(
+		VkDevice device,
+		const VkBufferDeviceAddressInfo * pInfo );
+	VKAPI_ATTR uint64_t VKAPI_CALL vkGetBufferOpaqueCaptureAddress(
+		VkDevice device,
+		const VkBufferDeviceAddressInfo * pInfo );
+	VKAPI_ATTR uint64_t VKAPI_CALL vkGetDeviceMemoryOpaqueCaptureAddress(
+		VkDevice device,
+		const VkDeviceMemoryOpaqueCaptureAddressInfo * pInfo );
+
+#endif
+#pragma endregion
+#pragma region VK_KHR_timeline_semaphore
+#ifdef VK_KHR_timeline_semaphore
+
+	VKAPI_ATTR VkResult VKAPI_CALL vkGetSemaphoreCounterValueKHR(
+		VkDevice device,
+		VkSemaphore semaphore,
+		uint64_t * pValue );
+	VKAPI_ATTR VkResult VKAPI_CALL vkWaitSemaphoresKHR(
+		VkDevice device,
+		const VkSemaphoreWaitInfoKHR * pWaitInfo,
+		uint64_t timeout );
+	VKAPI_ATTR VkResult VKAPI_CALL vkSignalSemaphoreKHR(
+		VkDevice device,
+		const VkSemaphoreSignalInfoKHR * pSignalInfo );
+
+#endif
+#pragma endregion
+#pragma region VK_KHR_buffer_device_address
+#ifdef VK_KHR_buffer_device_address
+
+	VKAPI_ATTR VkDeviceAddress VKAPI_CALL vkGetBufferDeviceAddressKHR(
+		VkDevice device,
+		const VkBufferDeviceAddressInfoKHR * pInfo );
+	VKAPI_ATTR uint64_t VKAPI_CALL vkGetBufferOpaqueCaptureAddressKHR(
+		VkDevice device,
+		const VkBufferDeviceAddressInfoKHR * pInfo );
+	VKAPI_ATTR uint64_t VKAPI_CALL vkGetDeviceMemoryOpaqueCaptureAddressKHR(
+		VkDevice device,
+		const VkDeviceMemoryOpaqueCaptureAddressInfoKHR * pInfo );
 
 #endif
 #pragma endregion
@@ -2539,3 +2636,173 @@ namespace ashes::gl
 #endif
 #pragma endregion
 }
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+#pragma region ICD mode
+
+	GlRenderer_API PFN_vkVoidFunction VKAPI_PTR vk_icdGetInstanceProcAddr( VkInstance instance
+		, const char * name );
+	GlRenderer_API PFN_vkVoidFunction VKAPI_PTR vk_icdGetPhysicalDeviceProcAddr( VkInstance instance
+		, const char * name );
+	GlRenderer_API VkResult VKAPI_PTR vk_icdNegotiateLoaderICDInterfaceVersion( uint32_t * pVersion );
+#pragma region VK_KHR_surface
+#ifdef VK_KHR_surface
+
+	GlRenderer_API void VKAPI_CALL vkDestroySurfaceKHR( VkInstance instance
+		, VkSurfaceKHR surface
+		, const  VkAllocationCallbacks * pAllocator );
+	GlRenderer_API VkResult VKAPI_CALL vkGetPhysicalDeviceSurfaceSupportKHR( VkPhysicalDevice physicalDevice
+		, uint32_t queueFamilyIndex
+		, VkSurfaceKHR surface
+		, VkBool32 * pSupported );
+	GlRenderer_API VkResult VKAPI_CALL vkGetPhysicalDeviceSurfaceCapabilitiesKHR( VkPhysicalDevice physicalDevice
+		, VkSurfaceKHR surface
+		, VkSurfaceCapabilitiesKHR * pSurfaceCapabilities );
+	GlRenderer_API VkResult VKAPI_CALL vkGetPhysicalDeviceSurfaceFormatsKHR( VkPhysicalDevice physicalDevice
+		, VkSurfaceKHR surface
+		, uint32_t * pSurfaceFormatCount
+		, VkSurfaceFormatKHR * pSurfaceFormats );
+	GlRenderer_API VkResult VKAPI_CALL vkGetPhysicalDeviceSurfacePresentModesKHR( VkPhysicalDevice physicalDevice
+		, VkSurfaceKHR surface
+		, uint32_t * pPresentModeCount
+		, VkPresentModeKHR * pPresentModes );
+
+#endif
+#pragma endregion
+#pragma region VK_KHR_swapchain
+#ifdef VK_KHR_swapchain
+
+	GlRenderer_API VkResult VKAPI_CALL vkCreateSwapchainKHR( VkDevice device
+		, const VkSwapchainCreateInfoKHR * pCreateInfo
+		, const  VkAllocationCallbacks * pAllocator
+		, VkSwapchainKHR * pSwapchain );
+
+#endif
+#pragma endregion
+#pragma region VK_KHR_display
+#ifdef VK_KHR_display
+
+	GlRenderer_API VkResult VKAPI_CALL vkCreateDisplayPlaneSurfaceKHR(
+		VkInstance instance,
+		const VkDisplaySurfaceCreateInfoKHR * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkSurfaceKHR * pSurface );
+
+#endif
+#pragma endregion
+#pragma region VK_KHR_android_surface
+#ifdef VK_KHR_android_surface
+#	ifdef VK_USE_PLATFORM_ANDROID_KHR
+
+	GlRenderer_API VkResult VKAPI_CALL vkCreateAndroidSurfaceKHR( VkInstance instance
+		, const VkAndroidSurfaceCreateInfoKHR * pCreateInfo
+		, const VkAllocationCallbacks * pAllocator
+		, VkSurfaceKHR * pSurface );
+
+#	endif
+#endif
+#pragma endregion
+#pragma region VK_FUCHSIA_imagepipe_surface
+#ifdef VK_FUCHSIA_imagepipe_surface
+#	ifdef VK_USE_PLATFORM_FUCHSIA
+
+	GlRenderer_API VkResult VKAPI_CALL vkCreateImagePipeSurfaceFUCHSIA( VkInstance instance
+		, const VkImagePipeSurfaceCreateInfoFUCHSIA * pCreateInfo
+		, const VkAllocationCallbacks * pAllocator
+		, VkSurfaceKHR * pSurface );
+
+#	endif
+#endif
+#pragma endregion
+#pragma region VK_MVK_ios_surface
+#ifdef VK_MVK_ios_surface
+#	ifdef VK_USE_PLATFORM_IOS_MVK
+
+	GlRenderer_API VkResult VKAPI_CALL vkCreateIOSSurfaceMVK( VkInstance instance
+		, const VkIOSSurfaceCreateInfoMVK * pCreateInfo
+		, const VkAllocationCallbacks * pAllocator
+		, VkSurfaceKHR * pSurface );
+
+#	endif
+#endif
+#pragma endregion
+#pragma region VK_MVK_macos_surface
+#	ifdef __APPLE__
+
+	GlRenderer_API VkResult VKAPI_CALL vkCreateMacOSSurfaceMVK( VkInstance instance
+		, const VkMacOSSurfaceCreateInfoMVK * pCreateInfo
+		, const VkAllocationCallbacks * pAllocator
+		, VkSurfaceKHR * pSurface );
+
+#	endif
+#pragma endregion
+#pragma region VK_NN_vi_surface
+#ifdef VK_NN_vi_surface
+#	ifdef VK_USE_PLATFORM_VI_NN
+
+	GlRenderer_API VkResult VKAPI_CALL vkCreateViSurfaceNN( VkInstance instance
+		, const VkViSurfaceCreateInfoNN * pCreateInfo
+		, const VkAllocationCallbacks * pAllocator
+		, VkSurfaceKHR * pSurface );
+
+#	endif
+#endif
+#pragma endregion
+#pragma region VK_KHR_xcb_surface
+#	ifdef __linux__
+
+	GlRenderer_API VkResult VKAPI_CALL vkCreateXcbSurfaceKHR( VkInstance instance
+		, const VkXcbSurfaceCreateInfoKHR * pCreateInfo
+		, const VkAllocationCallbacks * pAllocator
+		, VkSurfaceKHR * pSurface );
+
+#	endif
+#pragma endregion
+#pragma region VK_KHR_xlib_surface
+#	ifdef __linux__
+
+	GlRenderer_API VkResult VKAPI_CALL vkCreateXlibSurfaceKHR( VkInstance instance
+		, const VkXlibSurfaceCreateInfoKHR * pCreateInfo
+		, const VkAllocationCallbacks * pAllocator
+		, VkSurfaceKHR * pSurface );
+
+#	endif
+// #endif
+#pragma endregion
+#pragma region VK_KHR_wayland_surface
+#	ifdef __linux__
+
+	GlRenderer_API VkResult VKAPI_CALL vkCreateWaylandSurfaceKHR( VkInstance instance
+		, const VkWaylandSurfaceCreateInfoKHR * pCreateInfo
+		, const VkAllocationCallbacks * pAllocator
+		, VkSurfaceKHR * pSurface );
+
+#	endif
+#pragma endregion
+#pragma region VK_KHR_win32_surface
+#ifdef VK_KHR_win32_surface
+#	ifdef _WIN32
+
+	GlRenderer_API VkResult VKAPI_CALL vkCreateWin32SurfaceKHR( VkInstance instance
+		, const VkWin32SurfaceCreateInfoKHR * pCreateInfo
+		, const VkAllocationCallbacks * pAllocator
+		, VkSurfaceKHR * pSurface );
+
+#	endif
+#endif
+#pragma endregion
+
+#pragma endregion
+#pragma region Drop-in replacement mode
+
+	GlRenderer_API VkResult VKAPI_PTR ashGetPluginDescription( AshPluginDescription * pDescription );
+
+#pragma endregion
+
+#ifdef __cplusplus
+}
+#endif

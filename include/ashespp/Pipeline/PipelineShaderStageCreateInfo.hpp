@@ -14,21 +14,21 @@ namespace ashes
 {
 	struct SpecializationInfo
 	{
-		SpecializationInfo( VkSpecializationMapEntryArray mapEntries
-			, ByteArray data )
-			: mapEntries{ std::move( mapEntries ) }
-			, data{ std::move( data ) }
+		SpecializationInfo( VkSpecializationMapEntryArray pmapEntries
+			, ByteArray pdata )
+			: mapEntries{ std::move( pmapEntries ) }
+			, data{ std::move( pdata ) }
 			, vk
 			{
-				uint32_t( this->mapEntries.size() ),
-				this->mapEntries.data(),
-				uint32_t( this->data.size() ),
-				this->data.data()
+				uint32_t( mapEntries.size() ),
+				mapEntries.data(),
+				uint32_t( data.size() ),
+				data.data()
 			}
 		{
 		}
 
-		inline operator VkSpecializationInfo const &( )const
+		inline operator VkSpecializationInfo const &()const
 		{
 			return vk;
 		}
@@ -43,20 +43,20 @@ namespace ashes
 	{
 		PipelineShaderStageCreateInfo( VkPipelineShaderStageCreateFlags flags
 			, VkShaderStageFlagBits stage
-			, ShaderModulePtr module
-			, std::string name
-			, Optional< SpecializationInfo > specializationInfo )
-			: module{ std::move( module ) }
-			, name{ std::move( name ) }
-			, specializationInfo{ std::move( specializationInfo ) }
+			, ShaderModulePtr pmodule
+			, std::string pname
+			, Optional< SpecializationInfo > pspecializationInfo )
+			: module{ std::move( pmodule ) }
+			, name{ std::move( pname ) }
+			, specializationInfo{ std::move( pspecializationInfo ) }
 			, vk
 			{
 				VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
 				nullptr,
 				flags,
 				stage,
-				*this->module,
-				this->name.data(),
+				*module,
+				name.data(),
 				nullptr,
 			}
 		{
@@ -111,8 +111,8 @@ namespace ashes
 				nullptr,
 				rhs.vk.flags,
 				rhs.vk.stage,
-				*this->module,
-				this->name.data(),
+				*module,
+				name.data(),
 				nullptr,
 			}
 		{
@@ -140,8 +140,8 @@ namespace ashes
 				nullptr,
 				rhs.vk.flags,
 				rhs.vk.stage,
-				*this->module,
-				this->name.data(),
+				*module,
+				name.data(),
 				nullptr,
 			};
 			rhs.vk =

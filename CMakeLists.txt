@@ -23,11 +23,12 @@ else ()
 		${CMAKE_SOURCE_DIR}/CMake/Toolchains
 	)
 endif ()
+
 set( CMAKE_TEMPLATES_DIR ${CMAKE_SOURCE_DIR}/CMake/Templates )
+set( CMAKE_POSITION_INDEPENDENT_CODE ON )
 
 project( ${MAIN_PROJECT_NAME} )
 
-include( Platform )
 include( FileUtils )
 include( PCHSupport )
 include( Project )

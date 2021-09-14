@@ -728,16 +728,16 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		, blitBox
 		{
 			{
-				float( blitRegion.srcOffsets[0].x ) / get( srcImage )->getDimensions().width,
-				float( blitRegion.srcOffsets[0].y ) / get( srcImage )->getDimensions().height,
-				1.0f / blitRegion.srcOffsets[1].x,
-				1.0f / blitRegion.srcOffsets[1].y,
+				float( blitRegion.srcOffsets[0].x ) / float( get( srcImage )->getDimensions().width ),
+				float( blitRegion.srcOffsets[0].y ) / float( get( srcImage )->getDimensions().height ),
+				1.0f / float( blitRegion.srcOffsets[1].x ),
+				1.0f / float( blitRegion.srcOffsets[1].y ),
 			},
 			{
 				float( blitRegion.dstOffsets[0].x ),
 				float( blitRegion.dstOffsets[0].y ),
-				float( blitRegion.dstOffsets[1].x ) / blitRegion.srcOffsets[1].x,
-				float( blitRegion.dstOffsets[1].y ) / blitRegion.srcOffsets[1].y,
+				float( blitRegion.dstOffsets[1].x ) / float( blitRegion.srcOffsets[1].x ),
+				float( blitRegion.dstOffsets[1].y ) / float( blitRegion.srcOffsets[1].y ),
 			},
 		}
 	{
@@ -940,7 +940,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 			for ( auto & copy : m_layerStretches )
 			{
 				uint32_t srcWidth = copy->srcBox.right - copy->srcBox.left;
-				uint32_t srcHeight = std::abs( int( copy->srcBox.bottom ) - int( copy->srcBox.top ) );
+				uint32_t srcHeight = uint32_t( std::abs( int( copy->srcBox.bottom ) - int( copy->srcBox.top ) ) );
 				get( m_commandBuffer )->bindDescriptorSets( VK_PIPELINE_BIND_POINT_COMPUTE
 					, pipelineLayout
 					, 0u

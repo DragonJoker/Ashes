@@ -12,42 +12,6 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	void apply( ContextLock const & context
-		, CmdClearTexColorF const & cmd )
-	{
-		glLogCall( context
-			, glClearTexImage
-			, cmd.name
-			, cmd.mipLevel
-			, cmd.format
-			, GL_TYPE_F32
-			, cmd.color.data() );
-	}
-	
-	void apply( ContextLock const & context
-		, CmdClearTexColorSI const & cmd )
-	{
-		glLogCall( context
-			, glClearTexImage
-			, cmd.name
-			, cmd.mipLevel
-			, cmd.format
-			, GL_TYPE_I32
-			, cmd.color.data() );
-	}
-	
-	void apply( ContextLock const & context
-		, CmdClearTexColorUI const & cmd )
-	{
-		glLogCall( context
-			, glClearTexImage
-			, cmd.name
-			, cmd.mipLevel
-			, cmd.format
-			, GL_TYPE_UI32
-			, cmd.color.data() );
-	}
-
 	template< typename ValueT >
 	bool operator==( ValueT const( & lhs )[4], std::array< ValueT, 4u > rhs )
 	{

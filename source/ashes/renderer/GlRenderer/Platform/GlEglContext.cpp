@@ -144,7 +144,7 @@ namespace ashes::gl
 			eglSwapInterval( m_display, 0 );
 			eglMakeCurrent( m_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT );
 		}
-		catch ( std::exception & p_exc )
+		catch ( std::exception & )
 		{
 			doCleanup();
 			throw;

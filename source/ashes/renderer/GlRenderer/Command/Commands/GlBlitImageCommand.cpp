@@ -43,37 +43,7 @@ namespace ashes::gl
 			return result;
 		}
 
-		VkExtent3D operator-( VkOffset3D const & lhs, VkOffset3D const & rhs )
-		{
-			return VkExtent3D{ uint32_t( std::abs( lhs.x - rhs.x ) )
-				, uint32_t( std::abs( lhs.y - rhs.y ) )
-				, uint32_t( std::abs( lhs.z - rhs.z ) ) };
-		}
-
-		VkImageCopy convert( VkImageBlit const & src )
-		{
-			return VkImageCopy{ src.srcSubresource
-				, src.srcOffsets[0]
-				, src.dstSubresource
-				, src.dstOffsets[0]
-				, src.srcOffsets[1] - src.srcOffsets[0] };
-		}
-
 		VkBufferImageCopy getImageToBufferCopy( VkImageBlit const & copyInfo
-			, VkImage dstImage )
-		{
-			VkBufferImageCopy result{};
-			auto & dstBinding = static_cast< ImageMemoryBinding const & >( get( dstImage )->getMemoryBinding() );
-			result.bufferOffset = dstBinding.getMipLevelOffset( copyInfo.dstSubresource.mipLevel ) - dstBinding.getOffset();
-			result.imageExtent.width = uint32_t( copyInfo.dstOffsets[1].x );
-			result.imageExtent.height = uint32_t( copyInfo.dstOffsets[1].y );
-			result.imageExtent.depth = uint32_t( copyInfo.dstOffsets[1].z );
-			result.imageOffset = copyInfo.dstOffsets[0];
-			result.imageSubresource = copyInfo.dstSubresource;
-			return result;
-		}
-
-		VkBufferImageCopy getBufferToImageCopy( VkImageBlit const & copyInfo
 			, VkImage dstImage )
 		{
 			VkBufferImageCopy result{};
@@ -98,16 +68,16 @@ namespace ashes::gl
 	{
 		glLogCommand( list, "BlitImageCommand" );
 		assert( region.srcSubresource.layerCount == region.dstSubresource.layerCount
-			|| region.srcSubresource.layerCount == region.dstOffsets[1].z
-			|| region.dstSubresource.layerCount == region.srcOffsets[1].z );
+			|| region.srcSubresource.layerCount == uint32_t( region.dstOffsets[1].z )
+			|| region.dstSubresource.layerCount == uint32_t( region.srcOffsets[1].z ) );
 
 		auto srcLayerCount = region.srcSubresource.layerCount;
 		auto dstLayerCount = region.dstSubresource.layerCount;
 		auto srcSliceCount = region.srcOffsets[1].z;
 		auto dstSliceCount = region.dstOffsets[1].z;
-		float sliceRatio = float( srcSliceCount ) / dstSliceCount;
+		float sliceRatio = float( srcSliceCount ) / float( dstSliceCount );
 		auto layerCount = std::max( std::max( srcLayerCount, dstLayerCount )
-			, std::min< uint32_t >( srcSliceCount, dstSliceCount ) );
+			, uint32_t( std::min( srcSliceCount, dstSliceCount ) ) );
 		auto srcBaseArrayLayer = region.srcSubresource.baseArrayLayer;
 		auto dstBaseArrayLayer = region.dstSubresource.baseArrayLayer;
 		auto srcBaseSlice = region.srcOffsets[0].z;
@@ -123,7 +93,7 @@ namespace ashes::gl
 			list.push_back( makeCmd< OpType::eBindSrcFramebuffer >( GL_READ_FRAMEBUFFER ) );
 			layerCopy.bindSrc( stack
 				, srcBaseArrayLayer + layer
-				, uint32_t( ( srcBaseSlice + layer ) * sliceRatio )
+				, uint32_t( float( srcBaseSlice + layer ) * sliceRatio )
 				, GL_READ_FRAMEBUFFER
 				, list );
 			list.push_back( makeCmd< OpType::eBindDstFramebuffer >( GL_DRAW_FRAMEBUFFER ) );

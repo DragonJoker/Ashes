@@ -17,6 +17,8 @@ See LICENSE file in root folder
 #	define GLAPIENTRY
 #endif
 
+#pragma warning( disable: 4191 )
+
 namespace ashes::gl
 {
 	PFN_vkVoidFunction getFunction( char const * const name )
@@ -252,8 +254,8 @@ namespace ashes::gl
 	{
 		doSelectFormat();
 		auto & extensions = get( instance )->getExtensions();
-		m_major = std::max( reqMajor, extensions.getMajor() );
-		m_minor = std::max( reqMinor, extensions.getMinor() );
+		m_major = std::max( reqMajor, int( extensions.getMajor() ) );
+		m_minor = std::max( reqMinor, int( extensions.getMinor() ) );
 		m_hContext = wglCreateContext( m_hDC );
 
 		if ( !m_hContext )
@@ -331,8 +333,8 @@ namespace ashes::gl
 
 		if ( ::GetClientRect( m_hWnd, &rect ) )
 		{
-			result.width = rect.right - rect.left;
-			result.height = rect.bottom - rect.top;
+			result.width = uint32_t( rect.right - rect.left );
+			result.height = uint32_t( rect.bottom - rect.top );
 		}
 
 		return result;

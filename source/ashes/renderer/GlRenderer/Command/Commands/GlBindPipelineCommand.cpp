@@ -15,12 +15,6 @@ using ashes::operator!=;
 
 namespace ashes::gl
 {
-	void apply( ContextLock const & context
-		, CmdBindContextState const & cmd )
-	{
-		cmd.stack->apply( context, *cmd.state );
-	}
-
 	void buildBindPipelineCommand( ContextStateStack & stack
 		, VkDevice device
 		, VkPipeline pipeline

@@ -21,7 +21,7 @@ namespace ashes::gl
 		std::string fullName = "DummyWindow" + name;
 		try
 		{
-			m_display = XOpenDisplay( NULL );
+			m_display = XOpenDisplay( nullptr );
 
 			if ( !m_display )
 			{
@@ -59,7 +59,7 @@ namespace ashes::gl
 					glXGetFBConfigAttrib( m_display, configs[i], GLX_SAMPLE_BUFFERS, &sampleBuffers );
 					glXGetFBConfigAttrib( m_display, configs[i], GLX_SAMPLES, &samples );
 
-					if ( bestFbcIndex < 0 || sampleBuffers && samples > bestNumSamp )
+					if ( bestFbcIndex < 0 || ( sampleBuffers && samples > bestNumSamp ) )
 					{
 						bestFbcIndex = i;
 						bestNumSamp = samples;
@@ -132,10 +132,14 @@ namespace ashes::gl
 #else
 
 			m_fbConfig = fbConfig;
-			int screen = DefaultScreen( m_display );
 			int major{ 0 };
 			int minor{ 0 };
 			bool ok = glXQueryVersion( m_display, &major, &minor );
+
+			if ( !ok )
+			{
+				throw std::runtime_error{ "Could not query GLX version." };
+			}
 
 			m_glxContext = glXCreateContext( m_display, vi, nullptr, GL_TRUE );
 
@@ -149,7 +153,7 @@ namespace ashes::gl
 
 #endif
 		}
-		catch ( std::exception & p_exc )
+		catch ( std::exception & )
 		{
 			doCleanup();
 			throw;

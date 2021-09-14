@@ -72,6 +72,7 @@ namespace ashes::gl
 					, get( dst )->getInternalFormat()
 					, int32_t( getSize( copyInfo.imageExtent, get( dst )->getFormatVk() ) )
 					, int32_t( copyInfo.bufferOffset ) ) );
+				break;
 
 			case GL_TEXTURE_1D_ARRAY:
 				list.push_back( makeCmd< OpType::eCompressedTexSubImage2D >( copyTarget

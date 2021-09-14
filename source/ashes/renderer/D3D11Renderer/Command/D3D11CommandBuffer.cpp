@@ -1207,7 +1207,7 @@ namespace ashes::d3d11
 		if ( it != m_mappedResources.end() )
 		{
 			auto index = it->index;
-			m_commands.erase( m_commands.begin() + index );
+			m_commands.erase( m_commands.begin() + ptrdiff_t( index ) );
 			it = m_mappedResources.erase( it );
 
 			while ( it != m_mappedResources.end() )

@@ -13,8 +13,8 @@ namespace ashes
 		, PhysicalDevice const & gpu
 		, WindowHandle handle )
 		: m_instance{ instance }
-		, m_handle{ std::move( handle ) }
 		, m_gpu{ gpu }
+		, m_handle{ std::move( handle ) }
 	{
 		doCreate();
 		m_handle.setSurface( *this );

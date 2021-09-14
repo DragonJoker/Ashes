@@ -15,82 +15,39 @@ using ashes::operator!=;
 
 namespace ashes::gl
 {
-	void apply( ContextLock const & context
-		, CmdClearBack const & cmd )
+	namespace
 	{
-		glLogCall( context
-			, glClear
-			, cmd.mask );
-	}
-
-	void apply( ContextLock const & context
-		, CmdClearBackColour const & cmd )
-	{
-		glLogCall( context
-			, glClearColor
-			, cmd.color.float32[0]
-			, cmd.color.float32[1]
-			, cmd.color.float32[2]
-			, cmd.color.float32[3] );
-	}
-
-	void apply( ContextLock const & context
-		, CmdClearBackDepth const & cmd )
-	{
-		glLogCall( context
-			, glClearDepth
-			, cmd.depth );
-	}
-
-	void apply( ContextLock const & context
-		, CmdClearBackStencil const & cmd )
-	{
-		glLogCall( context
-			, glClearStencil
-			, cmd.stencil );
-	}
-
-	void apply( ContextLock const & context
-		, CmdClearBackDepthStencil const & cmd )
-	{
-		glLogCall( context
-			, glClearDepth
-			, cmd.depth );
-		glLogCall( context
-			, glClearStencil
-			, cmd.stencil );
-	}
-
-	void clearAttach( FboAttachment attach
-		, VkAttachmentReference const & reference
-		, VkRenderPass renderPass
-		, VkClearValueArray rtClearValues
-		, VkClearValue dsClearValue
-		, CmdList & list
-		, uint32_t & clearIndex )
-	{
-		auto & attachDesc = get( renderPass )->getAttachment( reference );
-
-		if ( attachDesc.loadOp == VK_ATTACHMENT_LOAD_OP_CLEAR )
+		void clearAttach( FboAttachment attach
+			, VkAttachmentReference const & reference
+			, VkRenderPass renderPass
+			, VkClearValueArray rtClearValues
+			, VkClearValue dsClearValue
+			, CmdList & list
+			, uint32_t & clearIndex )
 		{
-			if ( getAspectMask( attachDesc.format ) == VK_IMAGE_ASPECT_COLOR_BIT )
+			auto & attachDesc = get( renderPass )->getAttachment( reference );
+
+			if ( attachDesc.loadOp == VK_ATTACHMENT_LOAD_OP_CLEAR )
 			{
-				list.push_back( makeCmd< OpType::eClearColour >( rtClearValues[clearIndex].color, 0u ) );
-				++clearIndex;
-			}
-			else
-			{
-				if ( isDepthStencilFormat( attachDesc.format ) )
+				if ( getAspectMask( attachDesc.format ) == VK_IMAGE_ASPECT_COLOR_BIT )
 				{
-					list.push_back( makeCmd< OpType::eClearDepthStencil >( dsClearValue.depthStencil ) );
+					list.push_back( makeCmd< OpType::eClearColour >( rtClearValues[clearIndex].color, 0u ) );
+					++clearIndex;
 				}
-				else if ( isDepthFormat( attachDesc.format ) )
+				else
 				{
-					list.push_back( makeCmd< OpType::eClearDepth >( dsClearValue.depthStencil.depth ) );
-				}
-				else if ( isStencilFormat( attachDesc.format ) )
-				{
-					list.push_back( makeCmd< OpType::eClearStencil >( int32_t( dsClearValue.depthStencil.stencil ) ) );
+					if ( isDepthStencilFormat( attachDesc.format ) )
+					{
+						list.push_back( makeCmd< OpType::eClearDepthStencil >( dsClearValue.depthStencil ) );
+					}
+					else if ( isDepthFormat( attachDesc.format ) )
+					{
+						list.push_back( makeCmd< OpType::eClearDepth >( dsClearValue.depthStencil.depth ) );
+					}
+					else if ( isStencilFormat( attachDesc.format ) )
+					{
+						list.push_back( makeCmd< OpType::eClearStencil >( int32_t( dsClearValue.depthStencil.stencil ) ) );
+					}
 				}
 			}
 		}

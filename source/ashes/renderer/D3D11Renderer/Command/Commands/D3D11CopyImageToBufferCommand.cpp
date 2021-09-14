@@ -23,7 +23,7 @@ namespace ashes::d3d11
 		{
 			VkImageViewArray result;
 			VkImageType type = get( texture )->getType();
-			VkImageViewType viewType;
+			VkImageViewType viewType{};
 
 			if ( type == VK_IMAGE_TYPE_3D )
 			{
@@ -183,18 +183,15 @@ namespace ashes::d3d11
 			auto extentCombined = extent.width * extent.height * extent.depth;
 			auto byteSize = getTexelBlockByteSize( extent, format );
 
-			auto dstSize = dstBox.right - dstBox.left;
 			auto dstRowPitch = byteSize * getBufferRowPitch( copyInfo ) / extentCombined;
 			auto dstHeightPitch = getBufferHeightPitch( copyInfo );
 			auto dstLayerPitch = dstRowPitch * dstHeightPitch;
 			auto dstDepthPitch = dstLayerPitch * getBufferDepthPitch( copyInfo );
 
-			auto srcSize = srcLayout.size;
 			auto srcRowPitch = srcLayout.rowPitch;
 			auto srcLayerPitch = srcLayout.arrayPitch;
 			auto srcDepthPitch = srcLayout.depthPitch;
 
-			auto width = copyInfo.imageExtent.width;
 			auto height = copyInfo.imageExtent.height;
 			auto depth = copyInfo.imageExtent.depth;
 
@@ -345,10 +342,10 @@ namespace ashes::d3d11
 		, VkSubresourceLayout const & srcLayout
 		, D3D11_BOX const & dstBox )const
 	{
-		VkImage stagingSrc;
-		VkBuffer stagingDst;
-		VkDeviceMemory stagingSrcMemory;
-		VkDeviceMemory stagingDstMemory;
+		VkImage stagingSrc{};
+		VkBuffer stagingDst{};
+		VkDeviceMemory stagingSrcMemory{};
+		VkDeviceMemory stagingDstMemory{};
 		VkImage const * src = &m_src;
 		VkBuffer const * dst = &m_dst;
 

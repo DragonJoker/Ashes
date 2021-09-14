@@ -20,9 +20,7 @@ namespace ashes
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
 			VK_FALSE,
 		};
-	};
-
-	VkPipelineInputAssemblyStateCreateInfo const & getDeactivatedInputAssemblyState();
+	}
 
 	inline bool operator==( VkPipelineInputAssemblyStateCreateInfo const & lhs, VkPipelineInputAssemblyStateCreateInfo const & rhs )
 	{

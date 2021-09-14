@@ -106,10 +106,8 @@ namespace ashes
 		char path[FILENAME_MAX];
 		char buffer[32];
 		sprintf( buffer, "/proc/%d/exe", getpid() );
-		int bytes = std::min< std::size_t >( readlink( buffer
-			, path
-			, sizeof( path ) )
-			, sizeof( path ) - 1 );
+		auto bytes = std::min< std::size_t >( sizeof( path ) - 1
+			, readlink( buffer, path, sizeof( path ) ) );
 
 		if ( bytes > 0 )
 		{

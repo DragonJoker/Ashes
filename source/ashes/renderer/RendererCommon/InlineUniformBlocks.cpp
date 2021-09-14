@@ -22,7 +22,7 @@ namespace ashes
 		, PFN_vkUnmapMemory unmapMemory )
 	{
 		InlineUboPtr inlineUbo = std::make_unique< InlineUbo >();
-		VkBufferCreateInfo buffer
+		VkBufferCreateInfo bufferInfo
 		{
 			VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
 			nullptr,
@@ -34,7 +34,7 @@ namespace ashes
 			nullptr,
 		};
 		auto res = createBuffer( device
-			, &buffer
+			, &bufferInfo
 			, nullptr
 			, &inlineUbo->buffer );
 

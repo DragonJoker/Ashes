@@ -22,9 +22,9 @@ namespace ashes
 				{
 					[]()
 					{
-						char result[MAX_PATH]{};
-						GetSystemDirectoryA( result, MAX_PATH );
-						return std::string{ result };
+						char tmp[MAX_PATH]{};
+						GetSystemDirectoryA( tmp, MAX_PATH );
+						return std::string{ tmp };
 					}(),
 					false,
 				},
@@ -59,14 +59,14 @@ namespace ashes
 		{
 			static std::vector< Folder > result = []()
 			{
-				std::vector< Folder > result
+				std::vector< Folder > tmp
 				{
 					{ ashes::getExecutableDirectory(), false },
 					{ ashes::getPath( ashes::getExecutableDirectory() ) / "lib", false },
 				};
 				auto & system = getSystemFolders();
-				result.insert( result.end(), system.begin(), system.end() );
-				return result;
+				tmp.insert( tmp.end(), system.begin(), system.end() );
+				return tmp;
 			}();
 			return result;
 		}
@@ -100,7 +100,7 @@ namespace ashes
 		}
 		else
 		{
-			directoryFunction = []( std::string const & path )
+			directoryFunction = []( std::string const & path )noexcept
 			{
 				return true;
 			};
@@ -113,11 +113,11 @@ namespace ashes
 	}
 
 	StringArray listDirectoryFiles( std::string const & folderPath
-		, bool recursive )
+		, bool recursive )noexcept
 	{
 		return filterDirectoryFiles( folderPath
 			, []( std::string const & folder
-				, std::string const & name )
+				, std::string const & name )noexcept
 			{
 				return true;
 			}

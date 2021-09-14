@@ -58,10 +58,13 @@ See LICENSE file in root folder
 #include "renderer/GlRenderer/Enum/GlValueName.hpp"
 #include "renderer/GlRenderer/Enum/GlWrapMode.hpp"
 
+#pragma warning( push )
+#pragma warning( disable: 4365 )
 #include <iostream>
 #include <iomanip>
-#include <locale>
 #include <sstream>
+#include <locale>
+#pragma warning( pop )
 
 namespace ashes::gl
 {

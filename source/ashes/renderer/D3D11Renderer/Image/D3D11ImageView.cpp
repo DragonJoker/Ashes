@@ -37,11 +37,9 @@ namespace ashes::d3d11
 				doCreate1D();
 			}
 			break;
-
 		case VK_IMAGE_VIEW_TYPE_1D_ARRAY:
 			doCreate1DArray();
 			break;
-
 		case VK_IMAGE_VIEW_TYPE_2D:
 			if ( image->getLayerCount() > 1 )
 			{
@@ -52,15 +50,12 @@ namespace ashes::d3d11
 				doCreate2D();
 			}
 			break;
-
 		case VK_IMAGE_VIEW_TYPE_2D_ARRAY:
 			doCreate2DArray();
 			break;
-
 		case VK_IMAGE_VIEW_TYPE_3D:
 			doCreate3D();
 			break;
-
 		case VK_IMAGE_VIEW_TYPE_CUBE:
 			if ( image->getLayerCount() > 1 )
 			{
@@ -71,9 +66,10 @@ namespace ashes::d3d11
 				doCreateCube();
 			}
 			break;
-
 		case VK_IMAGE_VIEW_TYPE_CUBE_ARRAY:
 			doCreateCubeArray();
+			break;
+		default:
 			break;
 		}
 	}

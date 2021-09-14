@@ -24,10 +24,8 @@ namespace ashes
 			return "release_resources";
 		default:
 			assert( false && "Unsupported VkCommandBufferResetFlagBits." );
-			throw std::runtime_error{ "Unsupported VkCommandBufferResetFlagBits" };
+			return "Unsupported VkCommandBufferResetFlagBits";
 		}
-
-		return 0;
 	}
 }
 

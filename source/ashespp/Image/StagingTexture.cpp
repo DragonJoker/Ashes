@@ -27,7 +27,6 @@ namespace ashes
 		, VkExtent2D const & extent
 		, uint32_t mipLevels )
 		: m_device{ device }
-		, m_extent{ extent }
 		, m_buffer
 		{
 			device,
@@ -367,8 +366,7 @@ namespace ashes
 		, VkExtent2D const & extent
 		, ImageView const & texture )const
 	{
-		VkDeviceSize size = getSize( extent, format );
-		assert( size <= m_buffer.getSize() );
+		assert( getSize( extent, format ) <= m_buffer.getSize() );
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 			, VK_PIPELINE_STAGE_TRANSFER_BIT
 			, m_buffer.makeTransferSource() );
@@ -397,8 +395,7 @@ namespace ashes
 		, VkExtent2D const & extent
 		, ImageView const & texture )const
 	{
-		VkDeviceSize size = getSize( extent, format );
-		assert( size <= m_buffer.getSize() );
+		assert( getSize( extent, format ) <= m_buffer.getSize() );
 		commandBuffer.copyToBuffer( VkBufferImageCopy
 			{
 				0u,

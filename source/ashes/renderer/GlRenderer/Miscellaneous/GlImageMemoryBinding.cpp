@@ -9,6 +9,8 @@ See LICENSE file in root folder
 
 #include "ashesgl_api.hpp"
 
+#pragma warning( disable: 4127 )
+
 namespace ashes::gl
 {
 	ImageMemoryBinding::ImageMemoryBinding( VkDeviceMemory parent
@@ -84,7 +86,7 @@ namespace ashes::gl
 				, m_texture->getTarget()
 				, GL_TEX_PARAMETER_IMMUTABLE_LEVELS
 				, &levels );
-			if ( levels != m_texture->getMipLevels() )
+			if ( levels != int( m_texture->getMipLevels() ) )
 			{
 				reportWarning( parent
 					, VK_SUCCESS
@@ -148,11 +150,12 @@ namespace ashes::gl
 
 	VkDeviceSize ImageMemoryBinding::getMipLevelOffset( uint32_t mipLevel )const
 	{
-		return intptr_t( getOffset() + getTotalSize( m_texture->getDimensions()
-			, m_texture->getFormatVk()
-			, m_texture->getArrayLayers()
-			, mipLevel
-			, uint32_t( getMinimalSize( m_texture->getFormatVk() ) ) ) );
+		return getOffset()
+			+ getTotalSize( m_texture->getDimensions()
+				, m_texture->getFormatVk()
+				, m_texture->getArrayLayers()
+				, mipLevel
+				, uint32_t( getMinimalSize( m_texture->getFormatVk() ) ) );
 	}
 
 	VkDeviceSize ImageMemoryBinding::getMipLevelLayerSize( uint32_t mipLevel )const
@@ -240,7 +243,7 @@ namespace ashes::gl
 					, m_texture->getTarget()
 					, GLint( level )
 					, m_texture->getInternalFormat()
-					, width
+					, GLsizei( width )
 					, 0
 					, GLsizei( bufSize )
 					, getBufferOffset( offset ) );
@@ -255,7 +258,7 @@ namespace ashes::gl
 				, m_texture->getTarget()
 				, GLsizei( m_texture->getMipLevels() )
 				, m_texture->getInternalFormat()
-				, m_texture->getDimensions().width );
+				, GLsizei( m_texture->getDimensions().width ) );
 		}
 		else
 		{
@@ -270,7 +273,7 @@ namespace ashes::gl
 					, m_texture->getTarget()
 					, GLint( level )
 					, m_texture->getInternalFormat()
-					, width
+					, GLsizei( width )
 					, 0
 					, m_texture->getUnpackFormat()
 					, m_texture->getUnpackType()
@@ -297,8 +300,8 @@ namespace ashes::gl
 					, m_texture->getTarget()
 					, GLint( level )
 					, m_texture->getInternalFormat()
-					, width
-					, height
+					, GLsizei( width )
+					, GLsizei( height )
 					, 0
 					, GLsizei( bufSize )
 					, getBufferOffset( offset ) );
@@ -314,8 +317,8 @@ namespace ashes::gl
 				, m_texture->getTarget()
 				, GLsizei( m_texture->getMipLevels() )
 				, m_texture->getInternalFormat()
-				, m_texture->getDimensions().width
-				, height );
+				, GLsizei( m_texture->getDimensions().width )
+				, GLsizei( height ) );
 		}
 		else
 		{
@@ -330,8 +333,8 @@ namespace ashes::gl
 					, m_texture->getTarget()
 					, GLint( level )
 					, m_texture->getInternalFormat()
-					, m_texture->getDimensions().width
-					, height
+					, GLsizei( m_texture->getDimensions().width )
+					, GLsizei( height )
 					, 0
 					, m_texture->getUnpackFormat()
 					, m_texture->getUnpackType()
@@ -362,8 +365,8 @@ namespace ashes::gl
 					, m_texture->getTarget()
 					, GLint( level )
 					, m_texture->getInternalFormat()
-					, width
-					, height
+					, GLsizei( width )
+					, GLsizei( height )
 					, 0
 					, GLsizei( bufSize )
 					, getBufferOffset( offset ) );
@@ -376,8 +379,8 @@ namespace ashes::gl
 					, GlTextureType( GL_TEXTURE_CUBE_POSITIVE_X + face )
 					, GLint( level )
 					, m_texture->getInternalFormat()
-					, m_texture->getDimensions().width
-					, m_texture->getDimensions().height
+					, GLsizei( m_texture->getDimensions().width )
+					, GLsizei( m_texture->getDimensions().height )
 					, 0
 					, m_texture->getUnpackFormat()
 					, m_texture->getUnpackType()
@@ -407,9 +410,9 @@ namespace ashes::gl
 					, m_texture->getTarget()
 					, GLint( level )
 					, m_texture->getInternalFormat()
-					, width
-					, height
-					, depth
+					, GLsizei( width )
+					, GLsizei( height )
+					, GLsizei( depth )
 					, 0
 					, GLsizei( bufSize )
 					, getBufferOffset( offset ) );
@@ -426,9 +429,9 @@ namespace ashes::gl
 				, m_texture->getTarget()
 				, GLsizei( m_texture->getMipLevels() )
 				, m_texture->getInternalFormat()
-				, m_texture->getDimensions().width
-				, m_texture->getDimensions().height
-				, depth );
+				, GLsizei( m_texture->getDimensions().width )
+				, GLsizei( m_texture->getDimensions().height )
+				, GLsizei( depth ) );
 		}
 		else
 		{
@@ -444,9 +447,9 @@ namespace ashes::gl
 					, m_texture->getTarget()
 					, GLint( level )
 					, m_texture->getInternalFormat()
-					, m_texture->getDimensions().width
-					, m_texture->getDimensions().height
-					, depth
+					, GLsizei( m_texture->getDimensions().width )
+					, GLsizei( m_texture->getDimensions().height )
+					, GLsizei( depth )
 					, 0
 					, m_texture->getUnpackFormat()
 					, m_texture->getUnpackType()
@@ -468,8 +471,8 @@ namespace ashes::gl
 				, m_texture->getTarget()
 				, GLsizei( m_texture->getSamples() )
 				, m_texture->getInternalFormat()
-				, m_texture->getDimensions().width
-				, m_texture->getDimensions().height
+				, GLsizei( m_texture->getDimensions().width )
+				, GLsizei( m_texture->getDimensions().height )
 				, GL_TRUE );
 		}
 		else
@@ -479,8 +482,8 @@ namespace ashes::gl
 				, m_texture->getTarget()
 				, GLsizei( m_texture->getSamples() )
 				, m_texture->getInternalFormat()
-				, m_texture->getDimensions().width
-				, m_texture->getDimensions().height
+				, GLsizei( m_texture->getDimensions().width )
+				, GLsizei( m_texture->getDimensions().height )
 				, GL_TRUE );
 		}
 	}
@@ -495,9 +498,9 @@ namespace ashes::gl
 				, m_texture->getTarget()
 				, GLsizei( m_texture->getSamples() )
 				, m_texture->getInternalFormat()
-				, m_texture->getDimensions().width
-				, m_texture->getDimensions().height
-				, depth
+				, GLsizei( m_texture->getDimensions().width )
+				, GLsizei( m_texture->getDimensions().height )
+				, GLsizei( depth )
 				, GL_TRUE );
 		}
 		else
@@ -507,9 +510,9 @@ namespace ashes::gl
 				, m_texture->getTarget()
 				, GLsizei( m_texture->getSamples() )
 				, m_texture->getInternalFormat()
-				, m_texture->getDimensions().width
-				, m_texture->getDimensions().height
-				, depth
+				, GLsizei( m_texture->getDimensions().width )
+				, GLsizei( m_texture->getDimensions().height )
+				, GLsizei( depth )
 				, GL_TRUE );
 		}
 	}
@@ -564,71 +567,72 @@ namespace ashes::gl
 				glLogCall( context
 					, glCompressedTexSubImage1D
 					, m_texture->getTarget()
-					, copyInfo.imageSubresource.mipLevel
+					, GLint( copyInfo.imageSubresource.mipLevel )
 					, copyInfo.imageOffset.x
-					, copyInfo.imageExtent.width
+					, GLsizei( copyInfo.imageExtent.width )
 					, m_texture->getInternalFormat()
 					, GLsizei( layerSize )
-					, getBufferOffset( getOffset() + copyInfo.bufferOffset ) );
+					, getBufferOffset( intptr_t( getOffset() + copyInfo.bufferOffset ) ) );
 				break;
 
 			case GL_TEXTURE_2D:
 				glLogCall( context
 					, glCompressedTexSubImage2D
 					, m_texture->getTarget()
-					, copyInfo.imageSubresource.mipLevel
+					, GLint( copyInfo.imageSubresource.mipLevel )
 					, copyInfo.imageOffset.x
 					, copyInfo.imageOffset.y
-					, copyInfo.imageExtent.width
-					, copyInfo.imageExtent.height
+					, GLsizei( copyInfo.imageExtent.width )
+					, GLsizei( copyInfo.imageExtent.height )
 					, m_texture->getInternalFormat()
 					, GLsizei( layerSize )
-					, getBufferOffset( getOffset() + copyInfo.bufferOffset ) );
+					, getBufferOffset( intptr_t( getOffset() + copyInfo.bufferOffset ) ) );
 				break;
 
 			case GL_TEXTURE_3D:
 				glLogCall( context
 					, glCompressedTexSubImage3D
 					, m_texture->getTarget()
-					, copyInfo.imageSubresource.mipLevel
+					, GLint( copyInfo.imageSubresource.mipLevel )
 					, copyInfo.imageOffset.x
 					, copyInfo.imageOffset.y
 					, copyInfo.imageOffset.z
-					, copyInfo.imageExtent.width
-					, copyInfo.imageExtent.height
-					, copyInfo.imageExtent.depth
+					, GLsizei( copyInfo.imageExtent.width )
+					, GLsizei( copyInfo.imageExtent.height )
+					, GLsizei( copyInfo.imageExtent.depth )
 					, m_texture->getInternalFormat()
 					, GLsizei( layerSize )
-					, getBufferOffset( getOffset() + copyInfo.bufferOffset ) );
+					, getBufferOffset( intptr_t( getOffset() + copyInfo.bufferOffset ) ) );
+				break;
 
 			case GL_TEXTURE_1D_ARRAY:
 				glLogCall( context
 					, glCompressedTexSubImage2D
 					, m_texture->getTarget()
-					, copyInfo.imageSubresource.mipLevel
+					, GLint( copyInfo.imageSubresource.mipLevel )
 					, copyInfo.imageOffset.x
-					, copyInfo.imageSubresource.baseArrayLayer
-					, copyInfo.imageExtent.width
-					, copyInfo.imageSubresource.layerCount
+					, GLint( copyInfo.imageSubresource.baseArrayLayer )
+					, GLsizei( copyInfo.imageExtent.width )
+					, GLsizei( copyInfo.imageSubresource.layerCount )
 					, m_texture->getInternalFormat()
 					, GLsizei( layerSize )
-					, getBufferOffset( getOffset() + copyInfo.bufferOffset ) );
+					, getBufferOffset( intptr_t( getOffset() + copyInfo.bufferOffset ) ) );
 				break;
 
 			case GL_TEXTURE_2D_ARRAY:
 				glLogCall( context
 					, glCompressedTexSubImage3D
 					, m_texture->getTarget()
-					, copyInfo.imageSubresource.mipLevel
+					, GLint( copyInfo.imageSubresource.mipLevel )
 					, copyInfo.imageOffset.x
 					, copyInfo.imageOffset.y
-					, copyInfo.imageSubresource.baseArrayLayer
-					, copyInfo.imageExtent.width
-					, copyInfo.imageExtent.height
-					, copyInfo.imageSubresource.layerCount
+					, GLint( copyInfo.imageSubresource.baseArrayLayer )
+					, GLsizei( copyInfo.imageExtent.width )
+					, GLsizei( copyInfo.imageExtent.height )
+					, GLsizei( copyInfo.imageSubresource.layerCount )
 					, m_texture->getInternalFormat()
 					, GLsizei( layerSize )
-					, getBufferOffset( getOffset() + copyInfo.bufferOffset ) );
+					, getBufferOffset( intptr_t( getOffset() + copyInfo.bufferOffset ) ) );
 				break;
 
 			default:
@@ -644,72 +648,72 @@ namespace ashes::gl
 				glLogCall( context
 					, glTexSubImage1D
 					, m_texture->getTarget()
-					, copyInfo.imageSubresource.mipLevel
+					, GLint( copyInfo.imageSubresource.mipLevel )
 					, copyInfo.imageOffset.x
-					, copyInfo.imageExtent.width
+					, GLsizei( copyInfo.imageExtent.width )
 					, m_texture->getUnpackFormat()
 					, m_texture->getUnpackType()
-					, getBufferOffset( getOffset() + copyInfo.bufferOffset ) );
+					, getBufferOffset( intptr_t( getOffset() + copyInfo.bufferOffset ) ) );
 				break;
 
 			case GL_TEXTURE_2D:
 				glLogCall( context
 					, glTexSubImage2D
 					, m_texture->getTarget()
-					, copyInfo.imageSubresource.mipLevel
+					, GLint( copyInfo.imageSubresource.mipLevel )
 					, copyInfo.imageOffset.x
 					, copyInfo.imageOffset.y
-					, copyInfo.imageExtent.width
-					, copyInfo.imageExtent.height
+					, GLsizei( copyInfo.imageExtent.width )
+					, GLsizei( copyInfo.imageExtent.height )
 					, m_texture->getUnpackFormat()
 					, m_texture->getUnpackType()
-					, getBufferOffset( getOffset() + copyInfo.bufferOffset ) );
+					, getBufferOffset( intptr_t( getOffset() + copyInfo.bufferOffset ) ) );
 				break;
 
 			case GL_TEXTURE_3D:
 				glLogCall( context
 					, glTexSubImage3D
 					, m_texture->getTarget()
-					, copyInfo.imageSubresource.mipLevel
+					, GLint( copyInfo.imageSubresource.mipLevel )
 					, copyInfo.imageOffset.x
 					, copyInfo.imageOffset.y
 					, copyInfo.imageOffset.z
-					, copyInfo.imageExtent.width
-					, copyInfo.imageExtent.height
-					, copyInfo.imageExtent.depth
+					, GLsizei( copyInfo.imageExtent.width )
+					, GLsizei( copyInfo.imageExtent.height )
+					, GLsizei( copyInfo.imageExtent.depth )
 					, m_texture->getUnpackFormat()
 					, m_texture->getUnpackType()
-					, getBufferOffset( getOffset() + copyInfo.bufferOffset ) );
+					, getBufferOffset( intptr_t( getOffset() + copyInfo.bufferOffset ) ) );
 				break;
 
 			case GL_TEXTURE_1D_ARRAY:
 				glLogCall( context
 					, glTexSubImage2D
 					, m_texture->getTarget()
-					, copyInfo.imageSubresource.mipLevel
+					, GLint( copyInfo.imageSubresource.mipLevel )
 					, copyInfo.imageOffset.x
-					, copyInfo.imageSubresource.baseArrayLayer
-					, copyInfo.imageExtent.width
-					, copyInfo.imageSubresource.layerCount
+					, GLint( copyInfo.imageSubresource.baseArrayLayer )
+					, GLsizei( copyInfo.imageExtent.width )
+					, GLsizei( copyInfo.imageSubresource.layerCount )
 					, m_texture->getUnpackFormat()
 					, m_texture->getUnpackType()
-					, getBufferOffset( getOffset() + copyInfo.bufferOffset ) );
+					, getBufferOffset( intptr_t( getOffset() + copyInfo.bufferOffset ) ) );
 				break;
 
 			case GL_TEXTURE_2D_ARRAY:
 				glLogCall( context
 					, glTexSubImage3D
 					, m_texture->getTarget()
-					, copyInfo.imageSubresource.mipLevel
+					, GLint( copyInfo.imageSubresource.mipLevel )
 					, copyInfo.imageOffset.x
 					, copyInfo.imageOffset.y
-					, copyInfo.imageSubresource.baseArrayLayer
-					, copyInfo.imageExtent.width
-					, copyInfo.imageExtent.height
-					, copyInfo.imageSubresource.layerCount
+					, GLint( copyInfo.imageSubresource.baseArrayLayer )
+					, GLsizei( copyInfo.imageExtent.width )
+					, GLsizei( copyInfo.imageExtent.height )
+					, GLsizei( copyInfo.imageSubresource.layerCount )
 					, m_texture->getUnpackFormat()
 					, m_texture->getUnpackType()
-					, getBufferOffset( getOffset() + copyInfo.bufferOffset ) );
+					, getBufferOffset( intptr_t( getOffset() + copyInfo.bufferOffset ) ) );
 				break;
 
 			default:

@@ -12,8 +12,8 @@ namespace ashes
 {
 	struct QueueShare
 	{
-		QueueShare( UInt32Array queueFamilyIndices = {} )
-			: queueFamilyIndices{ std::move( queueFamilyIndices ) }
+		QueueShare( UInt32Array pqueueFamilyIndices = {} )
+			: queueFamilyIndices{ std::move( pqueueFamilyIndices ) }
 		{
 			doInit();
 		}

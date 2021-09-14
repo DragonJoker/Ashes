@@ -6,7 +6,11 @@ See LICENSE file in root folder
 
 #include <iterator>
 #include <type_traits>
+
+#pragma warning( push )
+#pragma warning( disable: 4365 )
 #include <vector>
+#pragma warning( pop )
 
 namespace ashes
 {
@@ -70,7 +74,7 @@ namespace ashes
 
 		size_t size()const noexcept
 		{
-			return m_end - m_begin;
+			return size_t( m_end - m_begin );
 		}
 
 		pointer data()noexcept

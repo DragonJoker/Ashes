@@ -15,14 +15,24 @@ namespace ashes
 
 	Event::Event( Device const & device
 		, std::string const & debugName )
+		: Event{ device, debugName
+			, { VK_STRUCTURE_TYPE_EVENT_CREATE_INFO
+				, nullptr
+				, 0u } }
+	{
+	}
+
+	Event::Event( Device const & device
+		, VkEventCreateInfo createInfo )
+		: Event{ device, "Event", std::move( createInfo ) }
+	{
+	}
+
+	Event::Event( Device const & device
+		, std::string const & debugName
+		, VkEventCreateInfo createInfo )
 		: m_device{ device }
 	{
-		VkEventCreateInfo createInfo
-		{
-			VK_STRUCTURE_TYPE_EVENT_CREATE_INFO,
-			nullptr,
-			0u,// flags
-		};
 		DEBUG_DUMP( createInfo );
 		auto res = m_device.vkCreateEvent( device
 			, &createInfo
@@ -44,11 +54,14 @@ namespace ashes
 	{
 		auto res = m_device.vkGetEventStatus( m_device
 			, m_internal );
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuseless-cast"
 		return res == VK_EVENT_SET
 			? EventStatus::eSet
 			: ( res == VK_EVENT_RESET
 				? EventStatus::eReset
-				: ( checkError( res, "Event get status" ), EventStatus::eError ) );
+				: ( (void)checkError( res, "Event get status" ), EventStatus::eError ) );
+#pragma GCC diagnostic pop
 	}
 
 	void Event::set()const

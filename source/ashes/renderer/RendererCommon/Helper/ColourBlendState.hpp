@@ -26,8 +26,6 @@ namespace ashes
 		};
 	}
 
-	VkPipelineColorBlendStateCreateInfo const & getDeactivatedColorBlendState();
-
 	inline bool operator==( VkPipelineColorBlendStateCreateInfo const & lhs
 		, VkPipelineColorBlendStateCreateInfo const & rhs )
 	{

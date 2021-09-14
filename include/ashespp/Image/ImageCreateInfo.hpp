@@ -12,34 +12,34 @@ namespace ashes
 {
 	struct ImageCreateInfo
 	{
-		ImageCreateInfo( VkImageCreateFlags flags
-			, VkImageType imageType
-			, VkFormat format
-			, VkExtent3D extent
-			, uint32_t mipLevels
-			, uint32_t arrayLayers
-			, VkSampleCountFlagBits samples
-			, VkImageTiling tiling
-			, VkImageUsageFlags usage
-			, VkSharingMode sharingMode = VK_SHARING_MODE_EXCLUSIVE
-			, UInt32Array queueFamilyIndices = {}
-			, VkImageLayout initialLayout = VK_IMAGE_LAYOUT_UNDEFINED )
-			: queueFamilyIndices{ std::move( queueFamilyIndices ) }
+		ImageCreateInfo( VkImageCreateFlags pflags
+			, VkImageType pimageType
+			, VkFormat pformat
+			, VkExtent3D pextent
+			, uint32_t pmipLevels
+			, uint32_t parrayLayers
+			, VkSampleCountFlagBits psamples
+			, VkImageTiling ptiling
+			, VkImageUsageFlags pusage
+			, VkSharingMode psharingMode = VK_SHARING_MODE_EXCLUSIVE
+			, UInt32Array pqueueFamilyIndices = {}
+			, VkImageLayout pinitialLayout = VK_IMAGE_LAYOUT_UNDEFINED )
+			: queueFamilyIndices{ std::move( pqueueFamilyIndices ) }
 			, vk{ VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO
 				, nullptr
-				, flags
-				, imageType
-				, format
-				, std::move( extent )
-				, mipLevels
-				, arrayLayers
-				, samples
-				, tiling
-				, usage
-				, sharingMode
-				, uint32_t( this->queueFamilyIndices.size() )
-				, this->queueFamilyIndices.data()
-				, initialLayout }
+				, pflags
+				, pimageType
+				, pformat
+				, std::move( pextent )
+				, pmipLevels
+				, parrayLayers
+				, psamples
+				, ptiling
+				, pusage
+				, psharingMode
+				, uint32_t( queueFamilyIndices.size() )
+				, queueFamilyIndices.data()
+				, pinitialLayout }
 		{
 		}
 
@@ -54,7 +54,7 @@ namespace ashes
 				, createInfo.tiling
 				, createInfo.usage
 				, createInfo.sharingMode
-				, { createInfo.pQueueFamilyIndices , createInfo.pQueueFamilyIndices + createInfo.queueFamilyIndexCount }
+				, { createInfo.pQueueFamilyIndices, createInfo.pQueueFamilyIndices + createInfo.queueFamilyIndexCount }
 				, createInfo.initialLayout }
 		{
 		}

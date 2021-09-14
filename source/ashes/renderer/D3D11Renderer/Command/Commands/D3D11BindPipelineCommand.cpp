@@ -10,11 +10,17 @@ See LICENSE file in root folder.
 #include "Shader/D3D11ShaderModule.hpp"
 
 #if defined( ASHES_D3D11_USE_AMD_AGS )
+#	pragma warning( push )
+#	pragma warning( disable: 4828 )
 #	include <amd_ags.h>
+#	pragma warning( pop )
 #endif
 
 #if defined( ASHES_D3D11_USE_NVAPI )
+#	pragma warning( push )
+#	pragma warning( disable: 4828 )
 #	include <nvapi.h>
+#	pragma warning( pop )
 #endif
 
 #include <array>
@@ -81,14 +87,14 @@ namespace ashes::d3d11
 		, m_pipeline{ pipeline }
 		, m_layout{ get( m_pipeline )->getLayout() }
 		, m_bindingPoint{ bindingPoint }
+		, m_dynamicBlendFactor{ get( m_pipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_BLEND_CONSTANTS ) }
 		, m_dynamicLineWidth{ get( m_pipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_LINE_WIDTH ) }
 		, m_dynamicDepthBias{ get( m_pipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_DEPTH_BIAS ) }
+		, m_dynamicStencil{ ( get( m_pipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_STENCIL_COMPARE_MASK )
+			|| get( m_pipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_STENCIL_WRITE_MASK )
+			|| get( m_pipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_STENCIL_REFERENCE ) ) }
 		, m_dynamicScissor{ get( m_pipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_SCISSOR ) }
 		, m_dynamicViewport{ get( m_pipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_VIEWPORT ) }
-		, m_dynamicBlendFactor{ get( m_pipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_BLEND_CONSTANTS ) }
-		, m_dynamicStencil{ get( m_pipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_STENCIL_COMPARE_MASK )
-			|| get( m_pipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_STENCIL_WRITE_MASK )
-			|| get( m_pipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_STENCIL_REFERENCE ) }
 	{
 	}
 

@@ -17,34 +17,34 @@ namespace ashes
 
 		PipelineViewportStateCreateInfo( VkPipelineViewportStateCreateFlags flags
 			, uint32_t viewportCount
-			, VkViewportArray viewports
+			, VkViewportArray pviewports
 			, uint32_t scissorCount
-			, VkScissorArray scissors )
-			: viewports{ std::move( viewports ) }
-			, scissors{ std::move( scissors ) }
+			, VkScissorArray pscissors )
+			: viewports{ std::move( pviewports ) }
+			, scissors{ std::move( pscissors ) }
 			, vk
 			{
 				VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
 				nullptr,
 				flags,
 				viewportCount,
-				this->viewports.data(),
+				viewports.data(),
 				scissorCount,
-				this->scissors.data(),
+				scissors.data(),
 			}
 		{
 		}
 
 		PipelineViewportStateCreateInfo( VkPipelineViewportStateCreateFlags flags = 0u
-			, VkViewportArray viewports = {}
-			, VkScissorArray scissors = {} )
+			, VkViewportArray pviewports = {}
+			, VkScissorArray pscissors = {} )
 			: PipelineViewportStateCreateInfo
 			{
 				flags,
-				std::max( 1u, uint32_t( viewports.size() ) ),
-				viewports,
-				std::max( 1u, uint32_t( scissors.size() ) ),
-				scissors,
+				std::max( 1u, uint32_t( pviewports.size() ) ),
+				pviewports,
+				std::max( 1u, uint32_t( pscissors.size() ) ),
+				pscissors,
 			}
 		{
 		}
@@ -58,9 +58,9 @@ namespace ashes
 				nullptr,
 				rhs.vk.flags,
 				rhs.vk.viewportCount,
-				this->viewports.data(),
+				viewports.data(),
 				rhs.vk.scissorCount,
-				this->scissors.data(),
+				scissors.data(),
 			}
 		{
 		}
@@ -75,9 +75,9 @@ namespace ashes
 				nullptr,
 				rhs.vk.flags,
 				rhs.vk.viewportCount,
-				this->viewports.data(),
+				viewports.data(),
 				rhs.vk.scissorCount,
-				this->scissors.data(),
+				scissors.data(),
 			};
 
 			return *this;

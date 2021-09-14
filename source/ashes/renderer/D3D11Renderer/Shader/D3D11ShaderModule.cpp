@@ -17,9 +17,14 @@ See LICENSE file in root folder.
 #include <regex>
 #include <sstream>
 
+#pragma warning( push )
+#pragma warning( disable: 4191 )
+#pragma warning( disable: 4365 )
+#pragma warning( disable: 5204 )
 #define CreateEvent CreateEventA
 #include <atlbase.h>
 #undef CreateEvent
+#pragma warning( pop )
 
 #include <D3DCompiler.h>
 
@@ -97,7 +102,6 @@ namespace ashes::d3d11
 			, spirv_cross::SPIRConstant & constant )
 		{
 			auto offset = entry.offset;
-			auto size = type.width;
 			auto entrySize = uint32_t( entry.size / ( size_t( type.columns ) * type.vecsize ) );
 
 			for ( auto col = 0u; col < type.columns; ++col )
@@ -315,7 +319,7 @@ namespace ashes::d3d11
 				name = name.substr( 0u, name.size() - 1u );
 				auto index = name.find_last_not_of( "0123456789" );
 				name = name.substr( index + 1 );
-				result = std::stoi( name );
+				result = uint32_t( std::stoi( name ) );
 			}
 
 			return result;
@@ -499,25 +503,22 @@ namespace ashes::d3d11
 		case VK_SHADER_STAGE_VERTEX_BIT:
 			safeRelease( m_shader.vertex );
 			break;
-
 		case VK_SHADER_STAGE_GEOMETRY_BIT:
 			safeRelease( m_shader.geometry );
 			break;
-
 		case VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT:
 			safeRelease( m_shader.hull );
 			break;
-
 		case VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT:
 			safeRelease( m_shader.domain );
 			break;
-
 		case VK_SHADER_STAGE_FRAGMENT_BIT:
 			safeRelease( m_shader.pixel );
 			break;
-
 		case VK_SHADER_STAGE_COMPUTE_BIT:
 			safeRelease( m_shader.compute );
+			break;
+		default:
 			break;
 		}
 	}
@@ -525,7 +526,7 @@ namespace ashes::d3d11
 	void CompiledShaderModule::doRetrieveShader( VkDevice device )
 	{
 		auto dxDevice = get( device )->getDevice();
-		HRESULT hr;
+		HRESULT hr{};
 
 		switch ( m_stage )
 		{
