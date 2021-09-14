@@ -20,7 +20,7 @@ namespace ashes::d3d11
 			if ( ashes::checkFlag( clearAttach.clear.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT ) )
 			{
 				auto & colour = clearAttach.clear.clearValue.color;
-				context.context->ClearRenderTargetView( reinterpret_cast< ID3D11RenderTargetView * >( clearAttach.view )
+				context.context->ClearRenderTargetView( static_cast< ID3D11RenderTargetView * >( clearAttach.view )
 					, colour.float32 );
 			}
 			else
@@ -32,10 +32,10 @@ namespace ashes::d3d11
 					| ( ashes::checkFlag( clearAttach.clear.aspectMask, VK_IMAGE_ASPECT_STENCIL_BIT )
 						? D3D11_CLEAR_STENCIL
 						: 0u );
-				context.context->ClearDepthStencilView( reinterpret_cast< ID3D11DepthStencilView * >( clearAttach.view )
+				context.context->ClearDepthStencilView( static_cast< ID3D11DepthStencilView * >( clearAttach.view )
 					, flags
 					, depthStencil.depth
-					, depthStencil.stencil );
+					, UINT8( depthStencil.stencil ) );
 			}
 		}
 	}

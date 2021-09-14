@@ -30,10 +30,8 @@ namespace ashes
 			return "fill_rectangle";
 		default:
 			assert( false && "Unsupported VkPolygonMode." );
-			throw std::runtime_error{ "Unsupported VkPolygonMode" };
+			return "Unsupported VkPolygonMode";
 		}
-
-		return 0;
 	}
 }
 

@@ -28,9 +28,7 @@ namespace ashes
 			0.0f,
 			1.0f,
 		};
-	};
-
-	VkPipelineRasterizationStateCreateInfo const & getDeactivatedRasterizationState();
+	}
 
 	inline bool operator==( VkPipelineRasterizationStateCreateInfo const & lhs, VkPipelineRasterizationStateCreateInfo const & rhs )
 	{

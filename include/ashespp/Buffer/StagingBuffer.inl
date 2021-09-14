@@ -1084,8 +1084,8 @@ namespace ashes
 
 		auto elemAlignedSize = buffer.getAlignedSize();
 		doCopyToStagingBuffer( *commandBuffer
-			, elemAlignedSize * count
-			, elemAlignedSize * offset
+			, uint32_t( elemAlignedSize * count )
+			, uint32_t( elemAlignedSize * offset )
 			, buffer
 			, dstStageFlags );
 		commandBuffer->end();
@@ -1097,7 +1097,7 @@ namespace ashes
 
 		doCopyUniformDataFromStagingBuffer( data
 			, count
-			, elemAlignedSize );
+			, uint32_t( elemAlignedSize ) );
 	}
 	/**@}*/
 	/**

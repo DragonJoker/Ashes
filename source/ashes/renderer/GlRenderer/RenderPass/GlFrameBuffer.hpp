@@ -141,11 +141,9 @@ namespace ashes::gl
 
 	private:
 		VkDevice m_device;
-		VkFramebufferCreateFlags m_flags;
 		VkRenderPass m_renderPass;
 		VkImageViewArray m_attachments;
 		VkExtent2D m_dimensions;
-		uint32_t m_layers;
 		FboAttachmentArray m_renderableAttaches;
 		FboAttachmentArray m_resolveAttaches;
 		FboAttachmentArray m_allColourAttaches;

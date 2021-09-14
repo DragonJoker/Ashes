@@ -10,13 +10,13 @@ namespace ashes::gl
 	PipelineCache::PipelineCache( VkAllocationCallbacks const * allocInfo
 		, VkDevice device
 		, VkPipelineCacheCreateInfo createInfo )
-		: m_device{ device }
-		, m_createInfo{ createInfo }
-		, m_header{ sizeof( Header )
+		: m_header{ sizeof( Header )
 			, 1u
 			, get( get( device )->getPhysicalDevice() )->getProperties().vendorID
 			, get( get( device )->getPhysicalDevice() )->getProperties().deviceID
 			, {} }
+		, m_device{ device }
+		, m_createInfo{ createInfo }
 	{
 		m_data.resize( sizeof( Header ) + m_createInfo.initialDataSize );
 		auto buffer = m_data.data();

@@ -51,10 +51,10 @@ namespace ashes
 			, m_internal
 			, timeout
 			, ( semaphore
-				? VkSemaphore( static_cast< Semaphore const & >( *semaphore ) )
+				? VkSemaphore( *semaphore )
 				: VK_NULL_HANDLE )
 			, ( fence
-				? VkFence( static_cast< Fence const & >( *fence ) )
+				? VkFence( *fence )
 				: VK_NULL_HANDLE )
 			, &imageIndex );
 	}

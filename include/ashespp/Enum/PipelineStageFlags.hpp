@@ -88,10 +88,8 @@ namespace ashes
 #endif
 		default:
 			assert( false && "Unsupported VkPipelineStageFlagBits." );
-			throw std::runtime_error{ "Unsupported VkPipelineStageFlagBits" };
+			return "Unsupported VkPipelineStageFlagBits";
 		}
-
-		return 0;
 	}
 }
 

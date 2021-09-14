@@ -30,10 +30,8 @@ namespace ashes
 			return "partial";
 		default:
 			assert( false && "Unsupported VkQueryResultFlagBits." );
-			throw std::runtime_error{ "Unsupported VkQueryResultFlagBits" };
+			return "Unsupported VkQueryResultFlagBits";
 		}
-
-		return 0;
 	}
 }
 

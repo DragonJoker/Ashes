@@ -54,10 +54,8 @@ namespace ashes
 #endif
 		default:
 			assert( false && "Unsupported VkShaderStageFlagBits." );
-			throw std::runtime_error{ "Unsupported VkShaderStageFlagBits" };
+			return "Unsupported VkShaderStageFlagBits";
 		}
-
-		return 0;
 	}
 }
 

@@ -30,10 +30,8 @@ namespace ashes
 #endif
 		default:
 			assert( false && "Unsupported VkIndexType." );
-			throw std::runtime_error{ "Unsupported VkIndexType" };
+			return "Unsupported VkIndexType";
 		}
-
-		return 0;
 	}
 }
 

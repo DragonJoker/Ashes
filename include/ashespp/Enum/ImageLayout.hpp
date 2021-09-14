@@ -86,10 +86,8 @@ namespace ashes
 #endif
 		default:
 			assert( false && "Unsupported VkImageLayout." );
-			throw std::runtime_error{ "Unsupported VkImageLayout" };
+			return "Unsupported VkImageLayout";
 		}
-
-		return 0;
 	}
 }
 

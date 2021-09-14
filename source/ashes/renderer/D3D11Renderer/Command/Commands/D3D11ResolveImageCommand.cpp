@@ -15,9 +15,9 @@ namespace ashes::d3d11
 		, VkImage dstImage
 		, ArrayView< VkImageResolve const > regions )
 		: CommandBase{ device }
+		, m_format{ getDxgiFormat( get( srcImage )->getFormat() ) }
 		, m_srcResource{ get( srcImage )->getResource() }
 		, m_dstResource{ get( dstImage )->getResource() }
-		, m_format{ getDxgiFormat( get( srcImage )->getFormat() ) }
 	{
 		for ( auto & region : regions )
 		{

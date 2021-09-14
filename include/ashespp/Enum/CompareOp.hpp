@@ -38,10 +38,8 @@ namespace ashes
 			return "always";
 		default:
 			assert( false && "Unsupported VkCompareOp." );
-			throw std::runtime_error{ "Unsupported VkCompareOp" };
+			return "Unsupported VkCompareOp";
 		}
-
-		return 0;
 	}
 }
 

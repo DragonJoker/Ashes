@@ -131,6 +131,9 @@ namespace ashes::d3d11
 				return *reinterpret_cast< uint64_t * >( m_data.data() );
 			};
 			break;
+
+		default:
+			break;
 		}
 	}
 

@@ -36,10 +36,8 @@ namespace ashes
 			return "a";
 		default:
 			assert( false && "Unsupported VkComponentSwizzle." );
-			throw std::runtime_error{ "Unsupported VkComponentSwizzle" };
+			return "Unsupported VkComponentSwizzle";
 		}
-
-		return 0;
 	}
 }
 

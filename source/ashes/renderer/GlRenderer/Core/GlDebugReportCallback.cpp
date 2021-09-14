@@ -17,7 +17,7 @@ namespace ashes::gl
 		static const uint32_t GL_COPY_BUFFER_FROM_VIDEO_TO_HOST_MEMORY = 0x00020072;
 		static const uint32_t GL_SHADER_PROGRAM_IS_RECOMPILED_BASED_ON_GL_STATE = 0x00020092;
 
-		char const * const convert( GlDebugSource source )
+		char const * convert( GlDebugSource source )
 		{
 			switch ( source )
 			{
@@ -38,7 +38,7 @@ namespace ashes::gl
 			}
 		}
 
-		char const * const convert( GlDebugCategory category )
+		char const * convert( GlDebugCategory category )
 		{
 			switch ( category )
 			{
@@ -403,7 +403,7 @@ namespace ashes::gl
 			, VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT
 			, 0ull
 			, 0u
-			, id
+			, int32_t( id )
 			, layer
 			, message
 			, m_createInfo.pUserData );
@@ -421,7 +421,7 @@ namespace ashes::gl
 			, VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT
 			, 0ull
 			, 0u
-			, id
+			, int32_t( id )
 			, layer
 			, message
 			, m_createInfo.pUserData );

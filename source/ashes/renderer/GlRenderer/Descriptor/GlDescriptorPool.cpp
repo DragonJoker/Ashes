@@ -50,10 +50,14 @@ namespace ashes::gl
 		try
 		{
 			set = m_free.back();
-			m_free.erase( m_free.begin() + ( m_free.size() - 1 ) );
+			m_free.erase( m_free.begin() + ptrdiff_t( m_free.size() - 1 ) );
 			new ( set )DescriptorSet{ nullptr, get( this ), layout };
+#if !defined( NDEBUG )
 			auto ires = m_sets.insert( set );
 			assert( ires.second );
+#else
+			m_sets.insert( set );
+#endif
 		}
 		catch ( Exception & exc )
 		{

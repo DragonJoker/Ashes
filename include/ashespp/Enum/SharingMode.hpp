@@ -26,10 +26,8 @@ namespace ashes
 			return "concurrent";
 		default:
 			assert( false && "Unsupported VkSharingMode." );
-			throw std::runtime_error{ "Unsupported VkSharingMode" };
+			return "Unsupported VkSharingMode";
 		}
-
-		return 0;
 	}
 }
 

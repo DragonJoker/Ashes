@@ -30,8 +30,6 @@ namespace ashes
 		};
 	}
 
-	VkPipelineViewportStateCreateInfo const & getDeactivatedViewportState();
-
 	inline bool operator==( VkPipelineViewportStateCreateInfo const & lhs
 		, VkPipelineViewportStateCreateInfo const & rhs )
 	{

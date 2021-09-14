@@ -135,7 +135,7 @@ namespace ashes
 
 	template< typename TraitsT >
 	inline void BuddyAllocatorT< TraitsT >::doMergeLevel( typename BuddyAllocatorT< TraitsT >::Block const & block
-		, uint32_t index
+		, uint32_t pindex
 		, uint32_t level )
 	{
 		auto & freeList = m_freeLists[level];
@@ -143,7 +143,7 @@ namespace ashes
 		Block rhs;
 		typename FreeList::iterator it;
 
-		if ( index % 2u )
+		if ( pindex % 2u )
 		{
 			// RHS block => find LHS in free blocks of same level.
 			lhs.data = PointerType( block.data - doGetLevelSize( level ) );

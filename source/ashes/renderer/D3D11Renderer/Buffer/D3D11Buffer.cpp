@@ -85,7 +85,6 @@ namespace ashes::d3d11
 			D3D11_UNORDERED_ACCESS_VIEW_DESC desc{};
 			desc.Format = DXGI_FORMAT_R8_UINT;
 			desc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
-			auto elemSize = 1u;
 			desc.Buffer.FirstElement = 0u;
 			desc.Buffer.NumElements = UINT( m_createInfo.size );
 			auto hr = device->CreateUnorderedAccessView( m_objectMemory->resource

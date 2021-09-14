@@ -10,7 +10,11 @@ See LICENSE file in root folder
 #include <functional>
 #include <set>
 #include <map>
+
+#pragma warning( push )
+#pragma warning( disable: 4365 )
 #include <mutex>
+#pragma warning( pop )
 
 namespace ashes
 {

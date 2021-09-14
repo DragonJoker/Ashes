@@ -22,19 +22,17 @@ namespace ashes::gl
 {
 	//************************************************************************************************
 
-	VkMemoryPropertyFlags getFlags( VkDevice device
-		, uint32_t memoryTypeIndex )
-	{
-		auto & memProps = get( get( device )->getPhysicalDevice() )->getMemoryProperties();
-		assert( memoryTypeIndex < memProps.memoryTypeCount
-			&& "Wrong deduced memory type" );
-		return memProps.memoryTypes[memoryTypeIndex].propertyFlags;
-	}
-
-	//************************************************************************************************
-
 	namespace
 	{
+		VkMemoryPropertyFlags getFlags( VkDevice device
+			, uint32_t memoryTypeIndex )
+		{
+			auto & memProps = get( get( device )->getPhysicalDevice() )->getMemoryProperties();
+			assert( memoryTypeIndex < memProps.memoryTypeCount
+				&& "Wrong deduced memory type" );
+			return memProps.memoryTypes[memoryTypeIndex].propertyFlags;
+		}
+
 #if !defined( NDEBUG )
 
 		static uint32_t constexpr ControlValueCount = 64u;
@@ -42,7 +40,8 @@ namespace ashes::gl
 
 		void initControlValue( ByteArray & data )
 		{
-			auto it = data.begin() + ( data.size() - ControlValueCount );
+			auto it = std::next( data.begin()
+				, ptrdiff_t( data.size() - ControlValueCount ) );
 
 			while ( it != data.end() )
 			{
@@ -53,7 +52,8 @@ namespace ashes::gl
 
 		void checkControlValue( ByteArray const & data )
 		{
-			auto it = data.begin() + ( data.size() - ControlValueCount );
+			auto it = std::next( data.begin()
+				, ptrdiff_t( data.size() - ControlValueCount ) );
 
 			while ( it != data.end() )
 			{
@@ -125,7 +125,8 @@ namespace ashes::gl
 						, memoryOffset ) ).second;
 				get( buffer )->setInternal( getInternal() );
 				binding.map( m_mappedRange );
-				it = m_bindings.begin() + ( m_bindings.size() - 1 );
+				it = std::next( m_bindings.begin()
+					, ptrdiff_t( m_bindings.size() - 1 ) );
 			}
 
 			auto & binding = *it->second;
@@ -174,7 +175,8 @@ namespace ashes::gl
 						, image
 						, memoryOffset ) ).second;
 				binding.map( m_mappedRange );
-				it = m_bindings.begin() + ( m_bindings.size() - 1 );
+				it = std::next( m_bindings.begin()
+					, ptrdiff_t( m_bindings.size() - 1 ) );
 			}
 
 			auto & binding = *it->second;

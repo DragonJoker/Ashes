@@ -25,10 +25,8 @@ namespace ashes
 			return "protected";
 		default:
 			assert( false && "Unsupported VkDeviceQueueCreateFlagBits." );
-			throw std::runtime_error{ "Unsupported VkDeviceQueueCreateFlagBits" };
+			return "Unsupported VkDeviceQueueCreateFlagBits";
 		}
-
-		return 0;
 	}
 #endif
 }

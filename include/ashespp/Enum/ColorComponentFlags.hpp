@@ -30,10 +30,8 @@ namespace ashes
 			return "a";
 		default:
 			assert( false && "Unsupported VkColorComponentFlagBits." );
-			throw std::runtime_error{ "Unsupported VkColorComponentFlagBits" };
+			return "Unsupported VkColorComponentFlagBits";
 		}
-
-		return 0;
 	}
 }
 

@@ -17,90 +17,92 @@
 
 namespace ashes::gl
 {
-	std::string convert( const char * ptr )
+	namespace
 	{
-		return std::string{ ptr };
-	}
-
-	StringArray convert( const char * const * ptr
-		, uint32_t count )
-	{
-		StringArray result;
-
-		for ( auto it = ptr; it < ptr + count; ++it )
+		std::string convert( const char * ptr )
 		{
-			result.push_back( convert( *it ) );
+			return std::string{ ptr };
 		}
 
-		return result;
-	}
-
-	bool doCheckEnabledExtensions( VkInstance instance
-		, bool report
-		, ashes::ArrayView< char const * const > const & extensions )
-	{
-		auto & available = getSupportedInstanceExtensions();
-		ashes::StringArray unsupported;
-
-		for ( auto & extension : extensions )
+		StringArray convert( const char * const * ptr
+			, uint32_t count )
 		{
-			if ( available.end() == std::find_if( available.begin()
-				, available.end()
-				, [&extension]( VkExtensionProperties const & lookup )
+			StringArray result;
+
+			for ( auto it = ptr; it < ptr + count; ++it )
+			{
+				result.push_back( convert( *it ) );
+			}
+
+			return result;
+		}
+
+		bool doCheckEnabledExtensions( VkInstance instance
+			, bool report
+			, ashes::ArrayView< char const * const > const & extensions )
+		{
+			auto & available = getSupportedInstanceExtensions();
+			ashes::StringArray unsupported;
+
+			for ( auto & extension : extensions )
+			{
+				if ( available.end() == std::find_if( available.begin()
+					, available.end()
+					, [&extension]( VkExtensionProperties const & lookup )
+					{
+						return lookup.extensionName == std::string{ extension };
+					} ) )
 				{
-					return lookup.extensionName == std::string{ extension };
-				} ) )
-			{
-				unsupported.push_back( extension );
-			}
-		}
-
-		if ( unsupported.empty() )
-		{
-			return true;
-		}
-
-		if ( report )
-		{
-			std::stringstream stream;
-
-			for ( auto & ext : unsupported )
-			{
-				stream << "\n    " << ext;
+					unsupported.push_back( extension );
+				}
 			}
 
-			reportError( instance
-				, VK_ERROR_EXTENSION_NOT_PRESENT
-				, "Unspported extensions"
-				, stream.str() );
+			if ( unsupported.empty() )
+			{
+				return true;
+			}
+
+			if ( report )
+			{
+				std::stringstream stream;
+
+				for ( auto & ext : unsupported )
+				{
+					stream << "\n    " << ext;
+				}
+
+				reportError( instance
+					, VK_ERROR_EXTENSION_NOT_PRESENT
+					, "Unspported extensions"
+					, stream.str() );
+			}
+			return false;
 		}
-		return false;
-	}
 
-	bool doHasEnabledExtensions( VkInstance instance
-		, ashes::ArrayView< char const * const > const & extensions )
-	{
-		return doCheckEnabledExtensions( instance, false, extensions );
-	}
-
-	VkApplicationInfo doGetDefaultApplicationInfo()
-	{
-		return
+		bool doHasEnabledExtensions( VkInstance instance
+			, ashes::ArrayView< char const * const > const & extensions )
 		{
-			VK_STRUCTURE_TYPE_APPLICATION_INFO,
-			nullptr,
-			nullptr,
-			ashes::makeVersion( 1, 0, 0 ),
-			nullptr,
-			ashes::makeVersion( 1, 0, 0 ),
-			Instance::getDefaultApiVersion(),
-		};
+			return doCheckEnabledExtensions( instance, false, extensions );
+		}
+
+		VkApplicationInfo doGetDefaultApplicationInfo()
+		{
+			return
+			{
+				VK_STRUCTURE_TYPE_APPLICATION_INFO,
+				nullptr,
+				nullptr,
+				ashes::makeVersion( 1, 0, 0 ),
+				nullptr,
+				ashes::makeVersion( 1, 0, 0 ),
+				Instance::getDefaultApiVersion(),
+			};
+		}
 	}
 
 	Instance::Instance( VkAllocationCallbacks const * allocInfo
 		, VkInstanceCreateInfo createInfo )
-		: m_flags{ createInfo.flags }
-		, m_applicationInfo{ createInfo.pApplicationInfo ? *createInfo.pApplicationInfo : doGetDefaultApplicationInfo() }
+		: m_applicationInfo{ createInfo.pApplicationInfo ? *createInfo.pApplicationInfo : doGetDefaultApplicationInfo() }
 		, m_enabledLayerNames{ convert( createInfo.ppEnabledLayerNames, createInfo.enabledLayerCount ) }
 		, m_enabledExtensions{ convert( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) }
 		, m_window{ new gl::RenderWindow( MinMajor, MinMinor, "GlInstance" ) }
@@ -289,13 +291,13 @@ namespace ashes::gl
 	{
 		// OpenGL right handed (cf. https://www.opengl.org/sdk/docs/man2/xhtml/glFrustum.xml)
 		std::array< float, 16 > result{ 0.0f };
-		result[0] = ( float( 2 ) * zNear ) / ( right - left ),
-		result[5] = ( float( 2 ) * zNear ) / ( top - bottom );
+		result[0] = ( 2.0f * zNear ) / ( right - left );
+		result[5] = ( 2.0f * zNear ) / ( top - bottom );
 		result[8] = ( right + left ) / ( right - left );
 		result[9] = ( top + bottom ) / ( top - bottom );
 		result[10] = ( zNear + zFar ) / ( zNear - zFar );
-		result[11] = float( -1 );
-		result[13] = ( float( -2 ) * zFar * zNear ) / ( zFar - zNear );
+		result[11] = -1.0f;
+		result[13] = ( -2.0f * zFar * zNear ) / ( zFar - zNear );
 
 		return result;
 	}
@@ -307,12 +309,12 @@ namespace ashes::gl
 	{
 		// OpenGL right handed (cf. https://www.opengl.org/sdk/docs/man2/xhtml/gluPerspective.xml)
 		std::array< float, 16 > result{ 0.0f };
-		float const tanHalfFovy = tan( radiansFovY / float( 2 ) );
-		result[0] = float( 1 / ( tanHalfFovy * aspect ) );
-		result[5] = float( 1 / tanHalfFovy );
-		result[10] = float( -( zFar + zNear ) / ( zFar - zNear ) );
-		result[11] = float( -1 );
-		result[14] = float( -2 * zFar * zNear / ( zFar - zNear ) );
+		auto const tanHalfFovy = float( tan( radiansFovY / 2.0f ) );
+		result[0] = 1.0f / ( tanHalfFovy * aspect );
+		result[5] = 1.0f / tanHalfFovy;
+		result[10] = -( zFar + zNear ) / ( zFar - zNear );
+		result[11] = -1.0f;
+		result[14] = -2.0f * zFar * zNear / ( zFar - zNear );
 
 		return result;
 	}
@@ -326,9 +328,9 @@ namespace ashes::gl
 	{
 		// OpenGL right handed (cf. https://www.opengl.org/sdk/docs/man2/xhtml/glOrtho.xml)
 		std::array< float, 16 > result{ 0.0f };
-		result[0] = float( 2 ) / ( right - left );
-		result[5] = float( 2 ) / ( top - bottom );
-		result[10] = float( -2 ) / ( zFar - zNear );
+		result[0] = 2.0f / ( right - left );
+		result[5] = 2.0f / ( top - bottom );
+		result[10] = -2.0f / ( zFar - zNear );
 		result[12] = -( right + left ) / ( right - left );
 		result[13] = -( top + bottom ) / ( top - bottom );
 		result[14] = -( zFar + zNear ) / ( zFar - zNear );
@@ -341,18 +343,19 @@ namespace ashes::gl
 		, float aspect
 		, float zNear )const
 	{
-		float const range = tan( radiansFovY / float( 2 ) ) * zNear;
+		auto const tanHalfFovy = float( tan( radiansFovY / 2.0f ) );
+		float const range = tanHalfFovy * zNear;
 		float const left = -range * aspect;
 		float const right = range * aspect;
 		float const bottom = -range;
 		float const top = range;
 
 		std::array< float, 16 > result{ 0.0f };
-		result[0] = ( float( 2 ) * zNear ) / ( right - left );
-		result[5] = ( float( 2 ) * zNear ) / ( top - bottom );
-		result[10] = -float( 1 );
-		result[11] = -float( 1 );
-		result[14] = -float( 2 ) * zNear;
+		result[0] = ( 2.0f * zNear ) / ( right - left );
+		result[5] = ( 2.0f * zNear ) / ( top - bottom );
+		result[10] = -1.0f;
+		result[11] = -1.0f;
+		result[14] = -2.0f * zNear;
 		return result;
 	}
 

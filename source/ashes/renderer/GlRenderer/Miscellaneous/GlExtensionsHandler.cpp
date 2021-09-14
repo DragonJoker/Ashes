@@ -74,7 +74,7 @@ namespace ashes::gl
 		getIntegerv = glGetIntegerv;
 #endif
 
-		char const * const cversion = ( char const * )getString( GL_VERSION );
+		char const * const cversion = reinterpret_cast< char const * >( getString( GL_INFO_VERSION ) );
 
 		if ( cversion )
 		{
@@ -106,7 +106,7 @@ namespace ashes::gl
 			}
 		}
 
-		auto const * cextensions = ( char const * )getString( GL_EXTENSIONS );
+		auto const * cextensions = reinterpret_cast< char const * >( getString( GL_INFO_EXTENSIONS ) );
 
 		if ( cextensions )
 		{
@@ -119,11 +119,11 @@ namespace ashes::gl
 		else
 		{
 			int max = 0;
-			getIntegerv( GL_NUM_EXTENSIONS, &max );
+			getIntegerv( GL_INFO_NUM_EXTENSIONS, &max );
 
-			for ( int i = 0; i < max; ++i )
+			for ( GLuint i = 0; i < GLuint( max ); ++i )
 			{
-				m_deviceExtensionNames.push_back( ( char const * )getStringi( GL_EXTENSIONS, i ) );
+				m_deviceExtensionNames.push_back( reinterpret_cast< char const * >( getStringi( GL_INFO_EXTENSIONS, i ) ) );
 			}
 		}
 		
@@ -131,9 +131,9 @@ namespace ashes::gl
 		int numSpirvExtensions = 0;
 		getIntegerv( GL_SPIRV_NUM_SPIR_V_EXTENSIONS, &numSpirvExtensions );
 
-		for ( auto index = 0; index < numSpirvExtensions; ++index )
+		for ( GLuint index = 0; index < GLuint( numSpirvExtensions ); ++index )
 		{
-			auto const * cspirvext = ( char const * )getStringi( GL_SPIRV_SPIR_V_EXTENSIONS, index );
+			auto const * cspirvext = reinterpret_cast< char const * >( getStringi( GL_SPIRV_SPIR_V_EXTENSIONS, index ) );
 
 			if ( cspirvext )
 			{
@@ -146,14 +146,17 @@ namespace ashes::gl
 
 		if ( numBinaryFormats > 0 )
 		{
-			m_shaderBinaryFormats.resize( numBinaryFormats );
+			m_shaderBinaryFormats.resize( size_t( numBinaryFormats ) );
 			getIntegerv( GL_SPIRV_SHADER_BINARY_FORMATS, reinterpret_cast< int * >( m_shaderBinaryFormats.data() ) );
 		}
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunreachable-code"
 		// Currently disabled, because I need to parse SPIR-V to retrieve push constant blocks...
 		m_spirvSupported = false
 			&& ( find( ARB_gl_spirv )
 				|| hasSPIRVShaderBinaryFormat() );
+#pragma GCC diagnostic pop
 
 		m_features.hasTexBufferRange = find( ARB_texture_buffer_range );
 		m_features.hasImageTexture = findAll( { ARB_texture_storage, ARB_shader_image_load_store } );

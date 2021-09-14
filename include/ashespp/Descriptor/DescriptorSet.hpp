@@ -20,7 +20,7 @@ namespace ashes
 			, uint32_t dstArrayElement
 			, uint32_t descriptorCount
 			, VkDescriptorType descriptorType )
-			: vk{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, VK_NULL_HANDLE, dstBinding, dstArrayElement, descriptorCount, descriptorType }
+			: vk{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, nullptr, dstBinding, dstArrayElement, descriptorCount, descriptorType, nullptr, nullptr, nullptr }
 			, needsUpdate{ true }
 		{
 		}
@@ -30,7 +30,7 @@ namespace ashes
 			, VkDescriptorType descriptorType
 			, VkDescriptorImageInfoArray imageInfos )
 			: imageInfo{ std::move( imageInfos ) }
-			, vk{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, VK_NULL_HANDLE, dstBinding, dstArrayElement, uint32_t( this->imageInfo.size() ), descriptorType }
+			, vk{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, nullptr, dstBinding, dstArrayElement, uint32_t( this->imageInfo.size() ), descriptorType, nullptr, nullptr, nullptr }
 			, needsUpdate{ true }
 		{
 		}
@@ -40,7 +40,7 @@ namespace ashes
 			, VkDescriptorType descriptorType
 			, VkDescriptorBufferInfoArray bufferInfos )
 			: bufferInfo{ std::move( bufferInfos ) }
-			, vk{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, VK_NULL_HANDLE, dstBinding, dstArrayElement, uint32_t( this->bufferInfo.size() ), descriptorType }
+			, vk{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, nullptr, dstBinding, dstArrayElement, uint32_t( this->bufferInfo.size() ), descriptorType, nullptr, nullptr, nullptr }
 			, needsUpdate{ true }
 		{
 		}
@@ -52,7 +52,7 @@ namespace ashes
 			, VkBufferViewArray viewInfos )
 			: bufferInfo{ std::move( bufferInfos ) }
 			, texelBufferView{ std::move( viewInfos ) }
-			, vk{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, VK_NULL_HANDLE, dstBinding, dstArrayElement, uint32_t( this->bufferInfo.size() ), descriptorType }
+			, vk{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, nullptr, dstBinding, dstArrayElement, uint32_t( this->bufferInfo.size() ), descriptorType, nullptr, nullptr, nullptr }
 			, needsUpdate{ true }
 		{
 			assert( bufferInfo.size() == texelBufferView.size() );
@@ -63,10 +63,10 @@ namespace ashes
 			, uint32_t dstArrayElement
 			, uint32_t descriptorCount
 			, VkDescriptorType descriptorType
-			, VkDescriptorImageInfo const * imageInfo
-			, VkDescriptorBufferInfo const * bufferInfo
-			, VkBufferView const * texelBufferView )
-			: vk{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, set, dstBinding, dstArrayElement, descriptorCount, descriptorType, imageInfo, bufferInfo, texelBufferView }
+			, VkDescriptorImageInfo const * pimageInfo
+			, VkDescriptorBufferInfo const * pbufferInfo
+			, VkBufferView const * ptexelBufferView )
+			: vk{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, set, dstBinding, dstArrayElement, descriptorCount, descriptorType, pimageInfo, pbufferInfo, ptexelBufferView }
 			, needsUpdate{ false }
 		{
 		}
@@ -102,7 +102,7 @@ namespace ashes
 		VkBufferViewArray texelBufferView;
 
 	private:
-		mutable VkWriteDescriptorSet vk;
+		mutable VkWriteDescriptorSet vk{};
 		bool needsUpdate;
 	};
 	/**

@@ -16,19 +16,19 @@ namespace ashes
 	struct PipelineVertexInputStateCreateInfo
 	{
 		PipelineVertexInputStateCreateInfo( VkPipelineVertexInputStateCreateFlags flags
-			, VkVertexInputBindingDescriptionArray vertexBindingDescriptions
-			, VkVertexInputAttributeDescriptionArray vertexAttributeDescriptions )
-			: vertexBindingDescriptions{ std::move( vertexBindingDescriptions ) }
-			, vertexAttributeDescriptions{ std::move( vertexAttributeDescriptions ) }
+			, VkVertexInputBindingDescriptionArray pvertexBindingDescriptions
+			, VkVertexInputAttributeDescriptionArray pvertexAttributeDescriptions )
+			: vertexBindingDescriptions{ std::move( pvertexBindingDescriptions ) }
+			, vertexAttributeDescriptions{ std::move( pvertexAttributeDescriptions ) }
 			, vk
 			{
 				VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
 				nullptr,
 				flags,
-				uint32_t( this->vertexBindingDescriptions.size() ),
-				this->vertexBindingDescriptions.data(),
-				uint32_t( this->vertexAttributeDescriptions.size() ),
-				this->vertexAttributeDescriptions.data(),
+				uint32_t( vertexBindingDescriptions.size() ),
+				vertexBindingDescriptions.data(),
+				uint32_t( vertexAttributeDescriptions.size() ),
+				vertexAttributeDescriptions.data(),
 			}
 		{
 		}
@@ -57,10 +57,10 @@ namespace ashes
 				VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
 				nullptr,
 				rhs.vk.flags,
-				uint32_t( this->vertexBindingDescriptions.size() ),
-				this->vertexBindingDescriptions.data(),
-				uint32_t( this->vertexAttributeDescriptions.size() ),
-				this->vertexAttributeDescriptions.data(),
+				uint32_t( vertexBindingDescriptions.size() ),
+				vertexBindingDescriptions.data(),
+				uint32_t( vertexAttributeDescriptions.size() ),
+				vertexAttributeDescriptions.data(),
 			}
 		{
 		}
@@ -92,10 +92,10 @@ namespace ashes
 				VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
 				nullptr,
 				rhs.vk.flags,
-				uint32_t( this->vertexBindingDescriptions.size() ),
-				this->vertexBindingDescriptions.data(),
-				uint32_t( this->vertexAttributeDescriptions.size() ),
-				this->vertexAttributeDescriptions.data(),
+				uint32_t( vertexBindingDescriptions.size() ),
+				vertexBindingDescriptions.data(),
+				uint32_t( vertexAttributeDescriptions.size() ),
+				vertexAttributeDescriptions.data(),
 			};
 
 			return *this;

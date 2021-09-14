@@ -30,10 +30,8 @@ namespace ashes
 #endif
 		default:
 			assert( false && "Unsupported VkSwapchainCreateFlagBitsKHR." );
-			throw std::runtime_error{ "Unsupported VkSwapchainCreateFlagBitsKHR" };
+			return "Unsupported VkSwapchainCreateFlagBitsKHR";
 		}
-
-		return 0;
 	}
 }
 

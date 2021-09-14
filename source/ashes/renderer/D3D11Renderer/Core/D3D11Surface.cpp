@@ -150,7 +150,6 @@ namespace ashes::d3d11
 
 			if ( !matchingDisplayModes.empty() )
 			{
-				float ratio = float( width ) / height;
 				std::sort( matchingDisplayModes.begin()
 					, matchingDisplayModes.end()
 					, []( DXGI_MODE_DESC const & lhs, DXGI_MODE_DESC const & rhs )
@@ -160,7 +159,6 @@ namespace ashes::d3d11
 								&& lhs.Height < rhs.Height );
 					} );
 
-				auto & displayMode = matchingDisplayModes.front();
 				capabilities.currentExtent.width = width;
 				capabilities.currentExtent.height = height;
 			}
@@ -301,8 +299,8 @@ namespace ashes::d3d11
 			else if ( isDisplay() )
 			{
 				RECT rect{};
-				rect.right = m_displayCreateInfo.imageExtent.width;
-				rect.bottom = m_displayCreateInfo.imageExtent.height;
+				rect.right = LONG( m_displayCreateInfo.imageExtent.width );
+				rect.bottom = LONG( m_displayCreateInfo.imageExtent.height );
 				updateSurfaceCapabilities( m_displayModes
 					, rect
 					, m_surfaceCapabilities

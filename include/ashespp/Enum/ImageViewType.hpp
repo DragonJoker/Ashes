@@ -36,10 +36,8 @@ namespace ashes
 			return "cube_array";
 		default:
 			assert( false && "Unsupported VkImageViewType." );
-			throw std::runtime_error{ "Unsupported VkImageViewType" };
+			return "Unsupported VkImageViewType";
 		}
-
-		return 0;
 	}
 }
 

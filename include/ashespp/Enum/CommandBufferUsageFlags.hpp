@@ -28,10 +28,8 @@ namespace ashes
 			return "simultaneous_use";
 		default:
 			assert( false && "Unsupported VkCommandBufferUsageFlagBits." );
-			throw std::runtime_error{ "Unsupported VkCommandBufferUsageFlagBits" };
+			return "Unsupported VkCommandBufferUsageFlagBits";
 		}
-
-		return 0;
 	}
 }
 

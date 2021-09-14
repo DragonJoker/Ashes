@@ -246,11 +246,9 @@ namespace ashes::gl
 		, VkDevice device
 		, VkFramebufferCreateInfo createInfo )
 		: m_device{ device }
-		, m_flags{ createInfo.flags }
 		, m_renderPass{ createInfo.renderPass }
 		, m_attachments{ makeVector( createInfo.pAttachments, createInfo.attachmentCount ) }
 		, m_dimensions{ createInfo.width, createInfo.height }
-		, m_layers{ createInfo.layers }
 	{
 		doInitialiseAttaches();
 
@@ -332,10 +330,6 @@ namespace ashes::gl
 	{
 		if ( reference.attachment != VK_ATTACHMENT_UNUSED )
 		{
-			auto & attachments = getAttachments();
-			auto fboAttach = attachments[reference.attachment];
-			auto fboView = get( fboAttach );
-
 			auto & attaches = getRenderableAttaches();
 			auto attachIt = std::find_if( attaches.begin()
 				, attaches.end()
@@ -392,7 +386,6 @@ namespace ashes::gl
 							? msIndex++
 							: index++ ) )
 					, multisampled };
-				auto attach = renderPass->getAttachment( passAttach );
 				doInitialiseAttach( attachment
 					, multisampled
 					, isSRGBFormat( get( view )->getFormatVk() ) );

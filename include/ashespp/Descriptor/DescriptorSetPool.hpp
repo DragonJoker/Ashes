@@ -99,7 +99,6 @@ namespace ashes
 
 	private:
 		DescriptorSetLayout const & m_layout;
-		uint32_t m_maxSets;
 		DescriptorPoolPtr m_pool;
 	};
 }

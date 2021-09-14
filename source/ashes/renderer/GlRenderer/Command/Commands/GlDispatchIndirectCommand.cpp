@@ -10,14 +10,6 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	void apply( ContextLock const & context
-		, CmdDispatchIndirect const & cmd )
-	{
-		glLogCall( context
-			, glDispatchComputeIndirect
-			, GLintptr( getBufferOffset( cmd.offset ) ) );
-	}
-
 	void buildDispatchIndirectCommand( VkBuffer buffer
 		, VkDeviceSize offset
 		, CmdList & list )

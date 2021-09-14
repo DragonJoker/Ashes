@@ -15,7 +15,6 @@ namespace ashes::gl
 		DisplayKHR( VkAllocationCallbacks const * allocInfo
 			, VkPhysicalDevice physicalDevice
 			, VkDisplayPropertiesKHR const & properties
-			, VkFormat format
 			, uint32_t screenIndex
 			, std::vector< VkDisplayModeParametersKHR > const & displayModesParams );
 		~DisplayKHR();
@@ -27,7 +26,7 @@ namespace ashes::gl
 			return m_properties.physicalResolution;
 		}
 
-		char const * const getName()const
+		char const * getName()const
 		{
 			return m_properties.displayName;
 		}
@@ -51,7 +50,6 @@ namespace ashes::gl
 		VkAllocationCallbacks const * m_allocInfo;
 		VkPhysicalDevice m_physicalDevice;
 		VkDisplayPropertiesKHR m_properties;
-		VkFormat m_format;
 		uint32_t m_screenIndex;
 		std::vector< VkDisplayModePropertiesKHR > m_displayModes;
 	};

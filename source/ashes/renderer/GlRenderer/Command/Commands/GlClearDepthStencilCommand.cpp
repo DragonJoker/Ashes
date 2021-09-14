@@ -12,42 +12,6 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	void apply( ContextLock const & context
-		, CmdClearTexDepth const & cmd )
-	{
-		glLogCall( context
-			, glClearTexImage
-			, cmd.name
-			, cmd.mipLevel
-			, cmd.format
-			, cmd.type
-			, &cmd.depth );
-	}
-	
-	void apply( ContextLock const & context
-		, CmdClearTexStencil const & cmd )
-	{
-		glLogCall( context
-			, glClearTexImage
-			, cmd.name
-			, cmd.mipLevel
-			, cmd.format
-			, cmd.type
-			, &cmd.stencil );
-	}
-	
-	void apply( ContextLock const & context
-		, CmdClearTexDepthStencil const & cmd )
-	{
-		glLogCall( context
-			, glClearTexImage
-			, cmd.name
-			, cmd.mipLevel
-			, cmd.format
-			, cmd.type
-			, &cmd.depthStencil.depth );
-	}
-
 	void buildClearDepthStencilCommand( VkDevice device
 		, ContextStateStack & stack
 		, VkImage image

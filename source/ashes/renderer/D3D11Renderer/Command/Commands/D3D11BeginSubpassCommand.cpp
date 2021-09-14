@@ -62,13 +62,13 @@ namespace ashes::d3d11
 
 		for ( auto & attach : attaches )
 		{
-			m_attaches.push_back( reinterpret_cast< ID3D11RenderTargetView * >( allViews[attach.attachment]->view ) );
+			m_attaches.push_back( static_cast< ID3D11RenderTargetView * >( allViews[attach.attachment]->view ) );
 		}
 
 		if ( m_subpass.pDepthStencilAttachment )
 		{
 			auto & attach = *m_subpass.pDepthStencilAttachment;
-			m_depthAttach = reinterpret_cast< ID3D11DepthStencilView * >( allViews[attach.attachment]->view );
+			m_depthAttach = static_cast< ID3D11DepthStencilView * >( allViews[attach.attachment]->view );
 		}
 	}
 

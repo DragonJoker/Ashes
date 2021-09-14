@@ -24,9 +24,7 @@ namespace ashes
 			VK_FALSE,
 			VK_FALSE,
 		};
-	};
-
-	VkPipelineMultisampleStateCreateInfo const & getDeactivatedMultisampleState();
+	}
 
 	inline bool operator==( VkPipelineMultisampleStateCreateInfo const & lhs, VkPipelineMultisampleStateCreateInfo const & rhs )
 	{

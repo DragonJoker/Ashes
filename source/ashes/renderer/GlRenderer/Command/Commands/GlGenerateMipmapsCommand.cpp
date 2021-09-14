@@ -10,16 +10,6 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	void apply( ContextLock const & context
-		, CmdGenerateMipmaps const & cmd )
-	{
-		glLogCall( context
-			, glGenerateMipmap
-			, cmd.target );
-	}
-
-	//*************************************************************************
-
 	void buildGenerateMipmapsCommand( VkImage texture
 		, CmdList & list )
 	{

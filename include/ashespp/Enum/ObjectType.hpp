@@ -122,10 +122,8 @@ namespace ashes
 #endif
 		default:
 			assert( false && "Unsupported VkDebugReportObjectTypeEXT." );
-			throw std::runtime_error{ "Unsupported VkDebugReportObjectTypeEXT" };
+			return "Unsupported VkDebugReportObjectTypeEXT";
 		}
-
-		return 0;
 	}
 
 #endif

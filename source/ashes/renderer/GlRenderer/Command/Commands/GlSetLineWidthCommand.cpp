@@ -8,14 +8,6 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	void apply( ContextLock const & context
-		, CmdSetLineWidth const & cmd )
-	{
-		glLogCall( context
-			, glLineWidth
-			, cmd.width );
-	}
-
 	void buildSetLineWidthCommand( float width
 		, CmdList & list )
 	{

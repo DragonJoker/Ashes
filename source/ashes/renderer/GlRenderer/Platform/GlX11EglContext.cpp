@@ -34,8 +34,8 @@ namespace ashes::gl
 		auto & extensions = get( instance )->getExtensions();
 		m_context = std::make_unique< ContextEgl >( createInfo.dpy
 			, createInfo.window
-			, std::max( reqMajor, extensions.getMajor() )
-			, std::max( reqMinor, extensions.getMinor() )
+			, std::max( reqMajor, int( extensions.getMajor() ) )
+			, std::max( reqMinor, int( extensions.getMinor() ) )
 			, ( m_mainContext
 				? m_mainContext->m_context->getContext()
 				: EGL_NO_CONTEXT ) );

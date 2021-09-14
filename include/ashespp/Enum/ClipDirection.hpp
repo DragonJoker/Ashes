@@ -37,10 +37,8 @@ namespace ashes
 			return "top_down";
 		default:
 			assert( false && "Unsupported ClipDirection." );
-			throw std::runtime_error{ "Unsupported ClipDirection" };
+			return "Unsupported ClipDirection";
 		}
-
-		return 0;
 	}
 }
 

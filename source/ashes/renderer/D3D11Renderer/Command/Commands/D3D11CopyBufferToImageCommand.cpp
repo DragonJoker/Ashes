@@ -498,9 +498,9 @@ namespace ashes::d3d11
 
 				for ( uint32_t layer = 0u; layer < copy.imageSubresource.layerCount; ++layer )
 				{
-					for ( uint32_t slice = copy.imageOffset.z; slice < copy.imageOffset.z + copy.imageExtent.depth; ++slice )
+					for ( int32_t slice = copy.imageOffset.z; slice < copy.imageOffset.z + int32_t( copy.imageExtent.depth ); ++slice )
 					{
-						auto srcBox = doGetSrcBox( get( dst )->getFormat(), copyInfo, slice );
+						auto srcBox = doGetSrcBox( get( dst )->getFormat(), copyInfo, uint32_t( slice ) );
 						auto dstLayout = doGetDstLayout( device, dst, copyInfo );
 						MapCopyImage mapCopyImage
 						{

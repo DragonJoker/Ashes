@@ -28,7 +28,6 @@ namespace ashes::gl
 				, uint32_t( srcCopyInfo.imageOffset.z ) );
 
 			auto copyInfo = srcCopyInfo;
-			VkImageView srcView{ VK_NULL_HANDLE };
 			FboAttachment srcAttach{ device
 				, copyInfo.imageSubresource
 				, src };
@@ -178,9 +177,6 @@ namespace ashes::gl
 				, dst ) );
 			auto layerCount = std::max( copyInfo.imageSubresource.layerCount
 				, copyInfo.imageExtent.depth );
-			auto dstRowWidth = ( copyInfo.bufferRowLength == 0 || copyInfo.bufferRowLength == copyInfo.imageExtent.width )
-				? copyInfo.imageExtent.width
-				: copyInfo.bufferRowLength;
 
 			for ( uint32_t layer = 0u; layer < layerCount; ++layer )
 			{

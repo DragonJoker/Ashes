@@ -53,7 +53,6 @@ namespace ashes::gl
 
 	private:
 		VkDevice m_device;
-		VkShaderModuleCreateFlags m_flags;
 		UInt32Array m_code;
 		mutable std::string m_source;
 		mutable ConstantsLayout m_constants;

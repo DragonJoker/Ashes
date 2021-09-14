@@ -37,15 +37,12 @@ namespace ashes::d3d11
 			{
 				for ( auto & write : writes->writes )
 				{
-					for ( auto & uav : makeArrayView( write.pBufferInfo, write.descriptorCount ) )
-					{
-						uavs.push_back( nullptr );
-					}
-
-					for ( auto & uav : makeArrayView( write.pTexelBufferView, write.descriptorCount ) )
-					{
-						uavs.push_back( nullptr );
-					}
+					uavs.insert( uavs.end()
+						, makeArrayView( write.pBufferInfo, write.descriptorCount ).size()
+						, nullptr );
+					uavs.insert( uavs.end()
+						, makeArrayView( write.pTexelBufferView, write.descriptorCount ).size()
+						, nullptr );
 				}
 			}
 

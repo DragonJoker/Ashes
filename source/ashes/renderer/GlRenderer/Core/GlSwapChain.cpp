@@ -33,6 +33,10 @@ namespace ashes::gl
 					, VK_SAMPLE_COUNT_1_BIT
 					, VK_IMAGE_TILING_OPTIMAL
 					, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT
+					, {} // sharingMode
+					, {} // queueFamilyIndexCount
+					, {} // pQueueFamilyIndices
+					, {} // initialLayout
 				}
 				, true );
 
@@ -285,8 +289,8 @@ namespace ashes::gl
 			, 0 );
 		glLogCall( context
 			, glBlitFramebuffer
-			, 0, 0, srcExtent.width, srcExtent.height
-			, 0, 0, dstExtent.width, dstExtent.height
+			, 0, 0, GLint( srcExtent.width ), GLint( srcExtent.height )
+			, 0, 0, GLint( dstExtent.width ), GLint( dstExtent.height )
 			, GL_COLOR_BUFFER_BIT, GL_FILTER_LINEAR );
 		glLogCall( context
 			, glBindFramebuffer

@@ -30,10 +30,8 @@ namespace ashes
 #endif
 		default:
 			assert( false && "Unsupported VkPipelineBindPoint." );
-			throw std::runtime_error{ "Unsupported VkPipelineBindPoint" };
+			return "Unsupported VkPipelineBindPoint";
 		}
-
-		return 0;
 	}
 }
 

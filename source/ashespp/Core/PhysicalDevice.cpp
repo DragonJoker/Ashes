@@ -10,30 +10,6 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	namespace
-	{
-		std::string makeShaderVersion( std::string desc
-			, uint32_t maxShaderLanguageVersion )
-		{
-			if ( desc.find( "vk" ) )
-			{
-				return "spirv" + std::to_string( maxShaderLanguageVersion );
-			}
-
-			if ( desc.find( "gl" ) )
-			{
-				return "glsl" + std::to_string( maxShaderLanguageVersion );
-			}
-
-			if ( desc.find( "d3d" ) )
-			{
-				return "sm" + std::to_string( maxShaderLanguageVersion );
-			}
-
-			return "unk" + std::to_string( maxShaderLanguageVersion );
-		}
-	}
-
 	PhysicalDevice::PhysicalDevice( Instance const & instance
 		, VkPhysicalDevice gpu )
 		: m_instance{ instance }
@@ -51,7 +27,7 @@ namespace ashes
 			uint32_t layersCount = 0u;
 			res = m_instance.vkEnumerateDeviceLayerProperties( m_gpu
 				, &layersCount
-				, NULL );
+				, nullptr );
 
 			if ( layersCount )
 			{
@@ -137,7 +113,7 @@ namespace ashes
 	VkFormatProperties PhysicalDevice::getFormatProperties( VkFormat fmt )const
 	{
 		VkFormatProperties props;
-		m_instance.vkGetPhysicalDeviceFormatProperties( m_gpu, VkFormat( fmt ), &props );
+		m_instance.vkGetPhysicalDeviceFormatProperties( m_gpu, fmt, &props );
 		return props;
 	}
 

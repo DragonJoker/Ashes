@@ -1,8 +1,5 @@
-/**
-*\file
-*	RenderLibPrerequisites.h
-*\author
-*	Sylvain Doremus
+/*
+See LICENSE file in root folder
 */
 #pragma once
 
@@ -28,4 +25,12 @@
 
 namespace ashes
 {
+	VkPipelineColorBlendStateCreateInfo const & getDeactivatedColorBlendState()noexcept;
+	VkPipelineDepthStencilStateCreateInfo const & getDeactivatedDepthStencilState()noexcept;
+	VkPipelineDynamicStateCreateInfo const & getDeactivatedDynamicState()noexcept;
+	VkPipelineInputAssemblyStateCreateInfo const & getDeactivatedInputAssemblyState()noexcept;
+	VkPipelineMultisampleStateCreateInfo const & getDeactivatedMultisampleState()noexcept;
+	VkPipelineRasterizationStateCreateInfo const & getDeactivatedRasterizationState()noexcept;
+	VkPipelineTessellationStateCreateInfo const & getDeactivatedTessellationState()noexcept;
+	VkPipelineViewportStateCreateInfo const & getDeactivatedViewportState()noexcept;
 }

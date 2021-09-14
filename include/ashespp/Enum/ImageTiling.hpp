@@ -30,10 +30,8 @@ namespace ashes
 #endif
 		default:
 			assert( false && "Unsupported VkImageTiling." );
-			throw std::runtime_error{ "Unsupported VkImageTiling" };
+			return "Unsupported VkImageTiling";
 		}
-
-		return 0;
 	}
 }
 

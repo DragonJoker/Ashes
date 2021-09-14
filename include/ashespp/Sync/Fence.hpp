@@ -42,6 +42,27 @@ namespace ashes
 			, VkFenceCreateFlags flags );
 		/**
 		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The parent logical device.
+		*\param[in] createInfo
+		*	The creation informations.
+		*/
+		Fence( Device const & device
+			, VkFenceCreateInfo createInfo );
+		/**
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The parent logical device.
+		*\param[in] createInfo
+		*	The creation informations.
+		*/
+		Fence( Device const & device
+			, std::string const & debugName
+			, VkFenceCreateInfo createInfo );
+		/**
+		*\brief
 		*	Destructor.
 		*/
 		~Fence();

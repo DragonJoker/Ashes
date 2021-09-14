@@ -2,6 +2,8 @@
 
 #ifdef _WIN32
 
+#pragma warning( push )
+#pragma warning( disable: 4365 )
 #include <cassert>
 #include <filesystem>
 #include <iomanip>
@@ -16,6 +18,7 @@
 #include <direct.h>
 #include <Shlobj.h>
 #include <windows.h>
+#pragma warning( pop )
 
 namespace ashes
 {

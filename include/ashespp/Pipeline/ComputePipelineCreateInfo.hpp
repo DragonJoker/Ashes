@@ -20,17 +20,17 @@ namespace ashes
 		ComputePipelineCreateInfo & operator=( ComputePipelineCreateInfo const & ) = delete;
 
 		ComputePipelineCreateInfo( VkPipelineCreateFlags flags
-			, PipelineShaderStageCreateInfo stage
+			, PipelineShaderStageCreateInfo pstage
 			, VkPipelineLayout layout
 			, VkPipeline basePipelineHandle = VK_NULL_HANDLE
 			, int32_t basePipelineIndex = 0 )
-			: stage{ std::move( stage ) }
+			: stage{ std::move( pstage ) }
 			, vk
 			{
 				VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO,
 				nullptr,
 				flags,
-				this->stage,
+				stage,
 				layout,
 				basePipelineHandle,
 				basePipelineIndex,
@@ -45,7 +45,7 @@ namespace ashes
 				VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO,
 				nullptr,
 				rhs.vk.flags,
-				this->stage,
+				stage,
 				rhs.vk.layout,
 				rhs.vk.basePipelineHandle,
 				rhs.vk.basePipelineIndex,
@@ -61,7 +61,7 @@ namespace ashes
 				VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO,
 				nullptr,
 				rhs.vk.flags,
-				this->stage,
+				stage,
 				rhs.vk.layout,
 				rhs.vk.basePipelineHandle,
 				rhs.vk.basePipelineIndex,

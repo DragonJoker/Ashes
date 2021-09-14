@@ -8,16 +8,6 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	void apply( ContextLock const & context
-		, CmdDispatch const & cmd )
-	{
-		glLogCall( context
-			, glDispatchCompute
-			, cmd.groupCountX
-			, cmd.groupCountY
-			, cmd.groupCountZ );
-	}
-
 	void buildDispatchCommand( uint32_t groupCountX
 		, uint32_t groupCountY
 		, uint32_t groupCountZ

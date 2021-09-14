@@ -6,7 +6,10 @@ See LICENSE file in root folder.
 #define ___Ashes_common_DynamicLibrary_HPP___
 #pragma once
 
+#pragma warning( push )
+#pragma warning( disable: 4365 )
 #include <string>
+#pragma warning( pop )
 
 namespace ashes
 {
@@ -50,7 +53,10 @@ namespace ashes
 		template< typename FuncType >
 		bool getFunction( std::string const & name, FuncType & function )noexcept
 		{
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconditionally-supported"
 			function = reinterpret_cast< FuncType >( doGetFunction( name ) );
+#pragma GCC diagnostic pop
 			return function != nullptr;
 		}
 		/**

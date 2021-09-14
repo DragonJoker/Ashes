@@ -385,15 +385,15 @@ namespace ashes::gl
 							{
 								bool result = false;
 
-								for ( auto & vbo : pair.second->getVbos() )
+								for ( auto & vboDecl : pair.second->getVbos() )
 								{
 									if ( !result )
 									{
-										result = get( vbo.vbo )->getInternal() == name;
+										result = get( vboDecl.vbo )->getInternal() == name;
 									}
 								}
 
-								if ( !result && bool( pair.second->hasIbo() ) )
+								if ( !result && pair.second->hasIbo() )
 								{
 									result = get( pair.second->getIbo().ibo )->getInternal() == name;
 								}

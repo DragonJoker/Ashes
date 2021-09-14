@@ -54,10 +54,8 @@ namespace ashes
 			return "set";
 		default:
 			assert( false && "Unsupported VkLogicOp." );
-			throw std::runtime_error{ "Unsupported VkLogicOp" };
+			return "Unsupported VkLogicOp";
 		}
-
-		return 0;
 	}
 }
 

@@ -5,12 +5,12 @@
 
 namespace ashes
 {
-	ImageView::ImageView( VkImageViewCreateInfo createInfo
-		, VkImageView internal
-		, Image const * image )
-		: createInfo{ std::move( createInfo ) }
-		, internal{ internal }
-		, image{ image }
+	ImageView::ImageView( VkImageViewCreateInfo pcreateInfo
+		, VkImageView pinternal
+		, Image const * pimage )
+		: createInfo{ std::move( pcreateInfo ) }
+		, internal{ pinternal }
+		, image{ pimage }
 	{
 	}
 

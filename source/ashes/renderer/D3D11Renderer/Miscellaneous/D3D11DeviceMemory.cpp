@@ -138,18 +138,18 @@ namespace ashes::d3d11
 
 	void ObjectMemory::upload( uint8_t const * data
 		, UINT subresource
-		, VkDeviceSize offset
-		, VkDeviceSize size )const
+		, VkDeviceSize poffset
+		, VkDeviceSize psize )const
 	{
 		assert( subresource < subresources.size() );
 		auto & subresourceLayout = subresources[subresource];
-		auto maxOffset = std::max( this->offset, offset );
-		auto objectOffset = maxOffset - this->offset;
-		auto copySize = VkDeviceSize( size - std::abs( int64_t( offset ) - int64_t( this->offset ) ) );
+		auto maxOffset = std::max( offset, poffset );
+		auto objectOffset = maxOffset - offset;
+		auto copySize = VkDeviceSize( psize - std::abs( int64_t( poffset ) - int64_t( offset ) ) );
 
-		if ( size == WholeSize )
+		if ( psize == WholeSize )
 		{
-			assert( offset == 0ull );
+			assert( poffset == 0ull );
 			copySize = allocateInfo.allocationSize;
 		}
 		else if ( copySize > allocateInfo.allocationSize )
@@ -196,18 +196,18 @@ namespace ashes::d3d11
 
 	void ObjectMemory::download( uint8_t * data
 		, UINT subresource
-		, VkDeviceSize offset
-		, VkDeviceSize size )const
+		, VkDeviceSize poffset
+		, VkDeviceSize psize )const
 	{
 		assert( subresource < subresources.size() );
 		auto & subresourceLayout = subresources[subresource];
-		auto maxOffset = std::max( this->offset, offset );
+		auto maxOffset = std::max( this->offset, poffset );
 		auto objectOffset = maxOffset - this->offset;
-		auto copySize = VkDeviceSize( size - std::abs( int64_t( offset ) - int64_t( this->offset ) ) );
+		auto copySize = VkDeviceSize( psize - std::abs( int64_t( poffset ) - int64_t( this->offset ) ) );
 
-		if ( size == WholeSize )
+		if ( psize == WholeSize )
 		{
-			assert( offset == 0ull );
+			assert( poffset == 0ull );
 			objectOffset = 0u;
 			copySize = allocateInfo.allocationSize;
 		}

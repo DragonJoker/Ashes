@@ -1634,7 +1634,6 @@ namespace ashes
 		ashes::DeviceCreateInfo m_createInfos;
 		VkDevice m_internal{ VK_NULL_HANDLE };
 		float m_timestampPeriod;
-		uint32_t m_shaderVersion{ 0u };
 		VkPhysicalDeviceMemoryProperties m_memoryProperties;
 		VkPhysicalDeviceProperties m_properties;
 		VkPhysicalDeviceFeatures m_features;

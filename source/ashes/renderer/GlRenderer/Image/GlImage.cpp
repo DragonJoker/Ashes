@@ -18,7 +18,7 @@ namespace ashes::gl
 {
 	namespace gl3
 	{
-		GlTextureType convert( VkImageType type
+		static GlTextureType convert( VkImageType type
 			, uint32_t layerCount
 			, VkImageCreateFlags flags
 			, VkSampleCountFlagBits samples )
@@ -89,7 +89,7 @@ namespace ashes::gl
 
 	namespace gl4
 	{
-		GlTextureType convert( VkImageType type
+		static GlTextureType convert( VkImageType type
 			, uint32_t layerCount
 			, VkImageCreateFlags flags
 			, VkSampleCountFlagBits samples )
@@ -145,7 +145,7 @@ namespace ashes::gl
 		}
 	}
 
-	GlTextureType convert( VkDevice device
+	static GlTextureType convert( VkDevice device
 		, VkImageType type
 		, uint32_t layerCount
 		, VkImageCreateFlags flags
@@ -182,7 +182,11 @@ namespace ashes::gl
 				, 1u
 				, VK_SAMPLE_COUNT_1_BIT
 				, VK_IMAGE_TILING_OPTIMAL
-				, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT }
+				, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT
+				, {} // sharingMode
+				, {} // queueFamilyIndexCount
+				, {} // pQueueFamilyIndices
+				, {} } // initialLayout
 			, swapchainImage }
 	{
 	}
@@ -192,8 +196,8 @@ namespace ashes::gl
 		, VkImageCreateInfo createInfo
 		, bool swapchainImage )
 		: m_allocInfo{ allocInfo }
-		, m_createInfo{ std::move( createInfo ) }
 		, m_device{ device }
+		, m_createInfo{ std::move( createInfo ) }
 		, m_target{ convert( device, getType(), getArrayLayers(), getCreateFlags(), getSamples() ) }
 		, m_swapchainImage{ swapchainImage }
 	{
@@ -244,7 +248,7 @@ namespace ashes::gl
 	{
 		VkResult result = VK_SUCCESS;
 		createInfo = ImageView::adjustCreateInfo( getDevice(), std::move( createInfo ) );
-		auto lock = std::unique_lock{ m_mtx };
+		auto lock = std::unique_lock< std::mutex >{ m_mtx };
 		auto pair = m_views.emplace( createInfo, VkImageView{} );
 
 		if ( pair.second )
@@ -268,7 +272,7 @@ namespace ashes::gl
 
 	void Image::destroyView( VkImageView view )
 	{
-		auto lock = std::unique_lock{ m_mtx };
+		auto lock = std::unique_lock< std::mutex >{ m_mtx };
 		auto it = m_views.find( get( view )->getCreateInfo() );
 		assert( it != m_views.end() );
 		deallocate( it->second, m_allocInfo );

@@ -32,10 +32,8 @@ namespace ashes
 			return "mirrored_clamp_to_edge";
 		default:
 			assert( false && "Unsupported VkSamplerAddressMode." );
-			throw std::runtime_error{ "Unsupported VkSamplerAddressMode" };
+			return "Unsupported VkSamplerAddressMode";
 		}
-
-		return 0;
 	}
 }
 

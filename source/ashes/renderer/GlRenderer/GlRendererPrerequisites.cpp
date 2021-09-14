@@ -32,9 +32,9 @@ namespace ashes::gl
 		VkExtent3D getExtent( VkExtent3D const & src
 			, uint32_t mipDiff )
 		{
-			return VkExtent3D{ uint32_t( src.width << mipDiff )
-				, uint32_t( src.height << mipDiff )
-				, uint32_t( src.depth << mipDiff ) };
+			return VkExtent3D{ src.width << mipDiff
+				, src.height << mipDiff
+				, src.depth << mipDiff };
 		}
 
 		VkImageBlit convert( VkImageCopy const & src )
@@ -196,100 +196,100 @@ namespace ashes::gl
 	{
 	}
 
-	void FboAttachment::bind( uint32_t mipLevel
+	void FboAttachment::bind( uint32_t pmipLevel
 		, GlFrameBufferTarget fboTarget
 		, CmdList & list )const
 	{
-		bindIndex( mipLevel, fboTarget, 0u, list );
+		bindIndex( pmipLevel, fboTarget, 0u, list );
 	}
 
-	void FboAttachment::bindIndex( uint32_t mipLevel
+	void FboAttachment::bindIndex( uint32_t pmipLevel
 		, GlFrameBufferTarget fboTarget
-		, uint32_t index
+		, uint32_t pindex
 		, CmdList & list )const
 	{
 		if ( target == GL_TEXTURE_1D )
 		{
 			list.push_back( makeCmd< OpType::eFramebufferTexture1D >( fboTarget
-				, GlAttachmentPoint( point + index )
+				, GlAttachmentPoint( point + pindex )
 				, target
 				, object
-				, mipLevel ) );
+				, pmipLevel ) );
 		}
 		else if ( target == GL_TEXTURE_2D
 			|| target == GL_TEXTURE_2D_MULTISAMPLE )
 		{
 			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( fboTarget
-				, GlAttachmentPoint( point + index )
+				, GlAttachmentPoint( point + pindex )
 				, target
 				, object
-				, mipLevel ) );
+				, pmipLevel ) );
 		}
 		else
 		{
 			list.push_back( makeCmd< OpType::eFramebufferTexture >( fboTarget
-				, GlAttachmentPoint( point + index )
+				, GlAttachmentPoint( point + pindex )
 				, object
-				, mipLevel ) );
+				, pmipLevel ) );
 		}
 	}
 
 	void FboAttachment::bindRead( ContextStateStack & stack
-		, uint32_t mipLevel
-		, GlFrameBufferTarget target
+		, uint32_t pmipLevel
+		, GlFrameBufferTarget fboTarget
 		, CmdList & list )const
 	{
-		bind( mipLevel, target, list );
+		bind( pmipLevel, fboTarget, list );
 		read( stack, list );
 	}
 
 	void FboAttachment::bindDraw( ContextStateStack & stack
-		, uint32_t mipLevel
-		, GlFrameBufferTarget target
+		, uint32_t pmipLevel
+		, GlFrameBufferTarget fboTarget
 		, CmdList & list )const
 	{
-		bind( mipLevel, target, list );
+		bind( pmipLevel, fboTarget, list );
 		draw( stack, list );
 	}
 
-	void FboAttachment::bind( uint32_t mipLevel
+	void FboAttachment::bind( uint32_t pmipLevel
 		, uint32_t layer
 		, GlFrameBufferTarget fboTarget
 		, CmdList & list )const
 	{
-		bindIndex( mipLevel, layer, fboTarget, 0u, list );
+		bindIndex( pmipLevel, layer, fboTarget, 0u, list );
 	}
 
-	void FboAttachment::bindIndex( uint32_t mipLevel
+	void FboAttachment::bindIndex( uint32_t pmipLevel
 		, uint32_t layer
 		, GlFrameBufferTarget fboTarget
-		, uint32_t index
+		, uint32_t pindex
 		, CmdList & list )const
 	{
 		if ( target == GL_TEXTURE_1D )
 		{
 			list.push_back( makeCmd< OpType::eFramebufferTexture1D >( fboTarget
-				, GlAttachmentPoint( point + index )
+				, GlAttachmentPoint( point + pindex )
 				, target
 				, object
-				, mipLevel ) );
+				, pmipLevel ) );
 		}
 		else if ( target == GL_TEXTURE_2D
 			|| target == GL_TEXTURE_2D_MULTISAMPLE )
 		{
 			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( fboTarget
-				, GlAttachmentPoint( point + index )
+				, GlAttachmentPoint( point + pindex )
 				, target
 				, object
-				, mipLevel ) );
+				, pmipLevel ) );
 		}
 		else if ( target == GL_TEXTURE_3D )
 		{
 			list.push_back( makeCmd< OpType::eFramebufferTexture3D >( fboTarget
-				, GlAttachmentPoint( point + index )
+				, GlAttachmentPoint( point + pindex )
 				, target
 				, object
-				, mipLevel
+				, pmipLevel
 				, layer ) );
 		}
 		else if ( target == GL_TEXTURE_CUBE
@@ -299,80 +299,80 @@ namespace ashes::gl
 			|| target == GL_TEXTURE_CUBE_ARRAY )
 		{
 			list.push_back( makeCmd< OpType::eFramebufferTextureLayer >( fboTarget
-				, GlAttachmentPoint( point + index )
+				, GlAttachmentPoint( point + pindex )
 				, object
-				, mipLevel
+				, pmipLevel
 				, layer ) );
 		}
 		else
 		{
 			list.push_back( makeCmd< OpType::eFramebufferTexture >( fboTarget
-				, GlAttachmentPoint( point + index )
+				, GlAttachmentPoint( point + pindex )
 				, object
-				, mipLevel ) );
+				, pmipLevel ) );
 		}
 	}
 
 	void FboAttachment::bindRead( ContextStateStack & stack
-		, uint32_t mipLevel
+		, uint32_t pmipLevel
 		, uint32_t layer
-		, GlFrameBufferTarget target
+		, GlFrameBufferTarget fboTarget
 		, CmdList & list )const
 	{
-		bind( mipLevel, layer, target, list );
+		bind( pmipLevel, layer, fboTarget, list );
 		read( stack, list );
 	}
 
 	void FboAttachment::bindDraw( ContextStateStack & stack
-		, uint32_t mipLevel
+		, uint32_t pmipLevel
 		, uint32_t layer
-		, GlFrameBufferTarget target
+		, GlFrameBufferTarget fboTarget
 		, CmdList & list )const
 	{
-		bind( mipLevel, layer, target, list );
+		bind( pmipLevel, layer, fboTarget, list );
 		draw( stack, list );
 	}
 
-	void FboAttachment::bind( uint32_t mipLevel
+	void FboAttachment::bind( uint32_t pmipLevel
 		, uint32_t layer
 		, uint32_t slice
 		, GlFrameBufferTarget fboTarget
 		, CmdList & list )const
 	{
-		bindIndex( mipLevel, layer, slice, fboTarget, 0u, list );
+		bindIndex( pmipLevel, layer, slice, fboTarget, 0u, list );
 	}
 
-	void FboAttachment::bindIndex( uint32_t mipLevel
+	void FboAttachment::bindIndex( uint32_t pmipLevel
 		, uint32_t layer
 		, uint32_t slice
 		, GlFrameBufferTarget fboTarget
-		, uint32_t index
+		, uint32_t pindex
 		, CmdList & list )const
 	{
 		if ( target == GL_TEXTURE_1D )
 		{
 			list.push_back( makeCmd< OpType::eFramebufferTexture1D >( fboTarget
-				, GlAttachmentPoint( point + index )
+				, GlAttachmentPoint( point + pindex )
 				, target
 				, object
-				, mipLevel ) );
+				, pmipLevel ) );
 		}
 		else if ( target == GL_TEXTURE_2D
 			|| target == GL_TEXTURE_2D_MULTISAMPLE )
 		{
 			list.push_back( makeCmd< OpType::eFramebufferTexture2D >( fboTarget
-				, GlAttachmentPoint( point + index )
+				, GlAttachmentPoint( point + pindex )
 				, target
 				, object
-				, mipLevel ) );
+				, pmipLevel ) );
 		}
 		else if ( target == GL_TEXTURE_3D )
 		{
 			list.push_back( makeCmd< OpType::eFramebufferTexture3D >( fboTarget
-				, GlAttachmentPoint( point + index )
+				, GlAttachmentPoint( point + pindex )
 				, target
 				, object
-				, mipLevel
+				, pmipLevel
 				, slice ) );
 		}
 		else if ( target == GL_TEXTURE_CUBE
@@ -382,39 +382,39 @@ namespace ashes::gl
 			|| target == GL_TEXTURE_CUBE_ARRAY )
 		{
 			list.push_back( makeCmd< OpType::eFramebufferTextureLayer >( fboTarget
-				, GlAttachmentPoint( point + index )
+				, GlAttachmentPoint( point + pindex )
 				, object
-				, mipLevel
+				, pmipLevel
 				, layer ) );
 		}
 		else
 		{
 			list.push_back( makeCmd< OpType::eFramebufferTexture >( fboTarget
-				, GlAttachmentPoint( point + index )
+				, GlAttachmentPoint( point + pindex )
 				, object
-				, mipLevel ) );
+				, pmipLevel ) );
 		}
 	}
 
 	void FboAttachment::bindRead( ContextStateStack & stack
-		, uint32_t mipLevel
+		, uint32_t pmipLevel
 		, uint32_t layer
 		, uint32_t slice
-		, GlFrameBufferTarget target
+		, GlFrameBufferTarget fboTarget
 		, CmdList & list )const
 	{
-		bind( mipLevel, layer, slice, target, list );
+		bind( pmipLevel, layer, slice, fboTarget, list );
 		read( stack, list );
 	}
 
 	void FboAttachment::bindDraw( ContextStateStack & stack
-		, uint32_t mipLevel
+		, uint32_t pmipLevel
 		, uint32_t layer
 		, uint32_t slice
-		, GlFrameBufferTarget target
+		, GlFrameBufferTarget fboTarget
 		, CmdList & list )const
 	{
-		bind( mipLevel, layer, slice, target, list );
+		bind( pmipLevel, layer, slice, fboTarget, list );
 		draw( stack, list );
 	}
 

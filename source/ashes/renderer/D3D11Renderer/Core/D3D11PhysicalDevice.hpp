@@ -8,6 +8,9 @@ See LICENSE file in root folder
 
 #include <renderer/RendererCommon/IcdObject.hpp>
 
+#include <map>
+#include <vector>
+
 struct AGSContext;
 
 namespace ashes::d3d11
@@ -146,11 +149,13 @@ namespace ashes::d3d11
 		VkPhysicalDeviceProperties2 m_properties2{};
 		std::vector< VkQueueFamilyProperties2 > m_queueProperties2{};
 		mutable std::map< VkFormat, VkFormatProperties2 > m_formatProperties2;
-#elif VK_KHR_get_physical_device_properties2
+#else
+#	if VK_KHR_get_physical_device_properties2
 		VkPhysicalDeviceFeatures2KHR m_features2{};
 		VkPhysicalDeviceProperties2KHR m_properties2{};
 		std::vector< VkQueueFamilyProperties2KHR > m_queueProperties2{};
 		mutable std::map< VkFormat, VkFormatProperties2KHR > m_formatProperties2;
+#	endif
 #endif
 #ifdef VK_KHR_display
 		std::vector< VkDisplayPropertiesKHR > m_displays;

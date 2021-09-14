@@ -26,10 +26,8 @@ namespace ashes
 			return "per_view_position_x_only";
 		default:
 			assert( false && "Unsupported VkSubpassDescriptionFlagBits." );
-			throw std::runtime_error{ "Unsupported VkSubpassDescriptionFlagBits" };
+			return "Unsupported VkSubpassDescriptionFlagBits";
 		}
-
-		return 0;
 	}
 }
 

@@ -8,39 +8,6 @@ See LICENSE file in root folder
 
 namespace ashes::gl
 {
-	//*************************************************************************
-
-	template<>
-	struct alignas( uint64_t ) CmdT< OpType::eDrawIndexedIndirect >
-	{
-		inline CmdT( uint64_t offset
-			, uint32_t drawCount
-			, uint32_t stride
-			, GlPrimitiveTopology mode
-			, GlIndexType type )
-			: cmd{ { OpType::eDrawIndexedIndirect, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, offset{ std::move( offset ) }
-			, drawCount{ std::move( drawCount ) }
-			, stride{ std::move( stride ) }
-			, mode{ std::move( mode ) }
-			, type{ std::move( type ) }
-		{
-		}
-
-		Command cmd;
-		uint64_t offset;
-		uint32_t drawCount;
-		uint32_t stride;
-		GlPrimitiveTopology mode;
-		GlIndexType type;
-	};
-	using CmdDrawIndexedIndirect = CmdT< OpType::eDrawIndexedIndirect >;
-
-	void apply( ContextLock const & context
-		, CmdDrawIndexedIndirect const & cmd );
-
-	//*************************************************************************
-
 	void buildDrawIndexedIndirectCommand( VkBuffer buffer
 		, VkDeviceSize offset
 		, uint32_t drawCount
@@ -48,6 +15,4 @@ namespace ashes::gl
 		, VkPrimitiveTopology mode
 		, VkIndexType type
 		, CmdList & list );
-
-	//*************************************************************************
 }

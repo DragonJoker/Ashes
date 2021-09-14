@@ -62,7 +62,7 @@ namespace ashes::d3d11
 
 		inline ID3D11Buffer * getBuffer()const
 		{
-			return reinterpret_cast< ID3D11Buffer * >( getResource() );
+			return &static_cast< ID3D11Buffer & >( *getResource() );
 		}
 
 		inline VkBufferUsageFlags getUsage()const

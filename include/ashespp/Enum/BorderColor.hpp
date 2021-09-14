@@ -33,11 +33,9 @@ namespace ashes
 		case VK_BORDER_COLOR_INT_OPAQUE_WHITE:
 			return "int_opaque_white";
 		default:
-			assert( false && "Unsupported BorderColour." );
-			throw std::runtime_error{ "Unsupported BorderColour" };
+			assert( false && "Unsupported VkBorderColor." );
+			return "Unsupported VkBorderColor";
 		}
-
-		return 0;
 	}
 }
 

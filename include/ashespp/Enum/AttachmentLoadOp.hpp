@@ -28,10 +28,8 @@ namespace ashes
 			return "dont_care";
 		default:
 			assert( false && "Unsupported VkAttachmentLoadOp." );
-			throw std::runtime_error{ "Unsupported VkAttachmentLoadOp" };
+			return "Unsupported VkAttachmentLoadOp";
 		}
-
-		return 0;
 	}
 }
 

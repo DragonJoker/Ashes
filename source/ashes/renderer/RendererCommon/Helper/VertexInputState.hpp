@@ -22,7 +22,7 @@ namespace ashes
 			0u,
 			nullptr,
 		};
-	};
+	}
 
 	inline bool operator==( VkPipelineVertexInputStateCreateInfo const & lhs
 		, VkPipelineVertexInputStateCreateInfo const & rhs )

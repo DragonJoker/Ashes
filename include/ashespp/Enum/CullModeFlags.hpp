@@ -26,10 +26,8 @@ namespace ashes
 			return "back";
 		default:
 			assert( false && "Unsupported VkCullModeFlagBits." );
-			throw std::runtime_error{ "Unsupported VkCullModeFlagBits" };
+			return "Unsupported VkCullModeFlagBits";
 		}
-
-		return 0;
 	}
 }
 

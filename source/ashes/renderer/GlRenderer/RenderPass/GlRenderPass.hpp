@@ -90,8 +90,6 @@ namespace ashes::gl
 
 	private:
 		VkDevice m_device;
-		VkRenderPassCreateFlags m_flags;
-		uint32_t m_attachmentCount;
 		VkAttachmentDescriptionArray m_attachments;
 		VkAttachmentReferenceArray m_referencedAttachments;
 		VkAttachmentReferenceArray m_resolveAttachments;

@@ -30,60 +30,60 @@ namespace ashes
 		GraphicsPipelineCreateInfo( GraphicsPipelineCreateInfo const & ) = delete;
 		GraphicsPipelineCreateInfo & operator=( GraphicsPipelineCreateInfo const & ) = delete;
 
-		GraphicsPipelineCreateInfo( VkPipelineCreateFlags flags
-			, PipelineShaderStageCreateInfoArray stages
-			, PipelineVertexInputStateCreateInfo vertexInputState
-			, PipelineInputAssemblyStateCreateInfo inputAssemblyState
-			, Optional< PipelineTessellationStateCreateInfo > tessellationState
-			, PipelineViewportStateCreateInfo viewportState
-			, PipelineRasterizationStateCreateInfo rasterizationState
-			, PipelineMultisampleStateCreateInfo multisampleState
-			, Optional< PipelineDepthStencilStateCreateInfo > depthStencilState
-			, PipelineColorBlendStateCreateInfo colorBlendState
-			, Optional< PipelineDynamicStateCreateInfo > dynamicState
-			, VkPipelineLayout layout
-			, VkRenderPass renderPass
-			, uint32_t subpass = 0u
-			, VkPipeline basePipelineHandle = VK_NULL_HANDLE
-			, int32_t basePipelineIndex = 0 )
-			: stages{ std::move( stages ) }
-			, vertexInputState{ std::move( vertexInputState ) }
-			, inputAssemblyState{ std::move( inputAssemblyState ) }
-			, tessellationState{ std::move( tessellationState ) }
-			, viewportState{ std::move( viewportState ) }
-			, rasterizationState{ std::move( rasterizationState ) }
-			, multisampleState{ std::move( multisampleState ) }
-			, depthStencilState{ std::move( depthStencilState ) }
-			, colorBlendState{ std::move( colorBlendState ) }
-			, dynamicState{ std::move( dynamicState ) }
+		GraphicsPipelineCreateInfo( VkPipelineCreateFlags pflags
+			, PipelineShaderStageCreateInfoArray pstages
+			, PipelineVertexInputStateCreateInfo pvertexInputState
+			, PipelineInputAssemblyStateCreateInfo pinputAssemblyState
+			, Optional< PipelineTessellationStateCreateInfo > ptessellationState
+			, PipelineViewportStateCreateInfo pviewportState
+			, PipelineRasterizationStateCreateInfo prasterizationState
+			, PipelineMultisampleStateCreateInfo pmultisampleState
+			, Optional< PipelineDepthStencilStateCreateInfo > pdepthStencilState
+			, PipelineColorBlendStateCreateInfo pcolorBlendState
+			, Optional< PipelineDynamicStateCreateInfo > pdynamicState
+			, VkPipelineLayout playout
+			, VkRenderPass prenderPass
+			, uint32_t psubpass = 0u
+			, VkPipeline pbasePipelineHandle = VK_NULL_HANDLE
+			, int32_t pbasePipelineIndex = 0 )
+			: stages{ std::move( pstages ) }
+			, vertexInputState{ std::move( pvertexInputState ) }
+			, inputAssemblyState{ std::move( pinputAssemblyState ) }
+			, tessellationState{ std::move( ptessellationState ) }
+			, viewportState{ std::move( pviewportState ) }
+			, rasterizationState{ std::move( prasterizationState ) }
+			, multisampleState{ std::move( pmultisampleState ) }
+			, depthStencilState{ std::move( pdepthStencilState ) }
+			, colorBlendState{ std::move( pcolorBlendState ) }
+			, dynamicState{ std::move( pdynamicState ) }
 			, vkStages{ makeVkArray< VkPipelineShaderStageCreateInfo >( stages ) }
 			, vk
 			{
 				VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
 				nullptr,
-				flags,
-				uint32_t( this->vkStages.size() ),
-				this->vkStages.data(),
-				&static_cast< VkPipelineVertexInputStateCreateInfo const & >( this->vertexInputState ),
-				&static_cast< VkPipelineInputAssemblyStateCreateInfo const & >( this->inputAssemblyState ),
-				( bool( this->tessellationState )
-					? &static_cast< VkPipelineTessellationStateCreateInfo const & >( this->tessellationState.value() )
+				pflags,
+				uint32_t( vkStages.size() ),
+				vkStages.data(),
+				&static_cast< VkPipelineVertexInputStateCreateInfo const & >( vertexInputState ),
+				&static_cast< VkPipelineInputAssemblyStateCreateInfo const & >( inputAssemblyState ),
+				( bool( tessellationState )
+					? &static_cast< VkPipelineTessellationStateCreateInfo const & >( tessellationState.value() )
 					: nullptr ),
-				&static_cast< VkPipelineViewportStateCreateInfo const & >( this->viewportState ),
-				&static_cast< VkPipelineRasterizationStateCreateInfo const & >( this->rasterizationState ),
-				&static_cast< VkPipelineMultisampleStateCreateInfo const & >( this->multisampleState ),
-				( bool( this->depthStencilState )
-					? &static_cast< VkPipelineDepthStencilStateCreateInfo const & >( this->depthStencilState.value() )
+				&static_cast< VkPipelineViewportStateCreateInfo const & >( viewportState ),
+				&static_cast< VkPipelineRasterizationStateCreateInfo const & >( rasterizationState ),
+				&static_cast< VkPipelineMultisampleStateCreateInfo const & >( multisampleState ),
+				( bool( depthStencilState )
+					? &static_cast< VkPipelineDepthStencilStateCreateInfo const & >( depthStencilState.value() )
 					: nullptr ),
-				&static_cast< VkPipelineColorBlendStateCreateInfo const & >( this->colorBlendState ),
-				( bool( this->dynamicState )
-					? &static_cast< VkPipelineDynamicStateCreateInfo const & >( this->dynamicState.value() )
+				&static_cast< VkPipelineColorBlendStateCreateInfo const & >( colorBlendState ),
+				( bool( dynamicState )
+					? &static_cast< VkPipelineDynamicStateCreateInfo const & >( dynamicState.value() )
 					: nullptr ),
-				layout,
-				renderPass,
-				subpass,
-				basePipelineHandle,
-				basePipelineIndex,
+				playout,
+				prenderPass,
+				psubpass,
+				pbasePipelineHandle,
+				pbasePipelineIndex,
 			}
 		{
 		}
@@ -105,22 +105,22 @@ namespace ashes
 				VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
 				nullptr,
 				rhs.vk.flags,
-				uint32_t( this->vkStages.size() ),
-				this->vkStages.data(),
-				&static_cast< VkPipelineVertexInputStateCreateInfo const & >( this->vertexInputState ),
-				&static_cast< VkPipelineInputAssemblyStateCreateInfo const & >( this->inputAssemblyState ),
-				( bool( this->tessellationState )
-					? &static_cast< VkPipelineTessellationStateCreateInfo const & >( this->tessellationState.value() )
+				uint32_t( vkStages.size() ),
+				vkStages.data(),
+				&static_cast< VkPipelineVertexInputStateCreateInfo const & >( vertexInputState ),
+				&static_cast< VkPipelineInputAssemblyStateCreateInfo const & >( inputAssemblyState ),
+				( bool( tessellationState )
+					? &static_cast< VkPipelineTessellationStateCreateInfo const & >( tessellationState.value() )
 					: nullptr ),
-				&static_cast< VkPipelineViewportStateCreateInfo const & >( this->viewportState ),
-				&static_cast< VkPipelineRasterizationStateCreateInfo const & >( this->rasterizationState ),
-				&static_cast< VkPipelineMultisampleStateCreateInfo const & >( this->multisampleState ),
-				( bool( this->depthStencilState )
-					? &static_cast< VkPipelineDepthStencilStateCreateInfo const & >( this->depthStencilState.value() )
+				&static_cast< VkPipelineViewportStateCreateInfo const & >( viewportState ),
+				&static_cast< VkPipelineRasterizationStateCreateInfo const & >( rasterizationState ),
+				&static_cast< VkPipelineMultisampleStateCreateInfo const & >( multisampleState ),
+				( bool( depthStencilState )
+					? &static_cast< VkPipelineDepthStencilStateCreateInfo const & >( depthStencilState.value() )
 					: nullptr ),
-				&static_cast< VkPipelineColorBlendStateCreateInfo const & >( this->colorBlendState ),
-				( bool( this->dynamicState )
-					? &static_cast< VkPipelineDynamicStateCreateInfo const & >( this->dynamicState.value() )
+				&static_cast< VkPipelineColorBlendStateCreateInfo const & >( colorBlendState ),
+				( bool( dynamicState )
+					? &static_cast< VkPipelineDynamicStateCreateInfo const & >( dynamicState.value() )
 					: nullptr ),
 				rhs.vk.layout,
 				rhs.vk.renderPass,
@@ -149,22 +149,22 @@ namespace ashes
 				VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
 				nullptr,
 				rhs.vk.flags,
-				uint32_t( this->vkStages.size() ),
-				this->vkStages.data(),
-				&static_cast< VkPipelineVertexInputStateCreateInfo const & >( this->vertexInputState ),
-				&static_cast< VkPipelineInputAssemblyStateCreateInfo const & >( this->inputAssemblyState ),
-				( bool( this->tessellationState )
-					? &static_cast< VkPipelineTessellationStateCreateInfo const & >( this->tessellationState.value() )
+				uint32_t( vkStages.size() ),
+				vkStages.data(),
+				&static_cast< VkPipelineVertexInputStateCreateInfo const & >( vertexInputState ),
+				&static_cast< VkPipelineInputAssemblyStateCreateInfo const & >( inputAssemblyState ),
+				( bool( tessellationState )
+					? &static_cast< VkPipelineTessellationStateCreateInfo const & >( tessellationState.value() )
 					: nullptr ),
-				&static_cast< VkPipelineViewportStateCreateInfo const & >( this->viewportState ),
-				&static_cast< VkPipelineRasterizationStateCreateInfo const & >( this->rasterizationState ),
-				&static_cast< VkPipelineMultisampleStateCreateInfo const & >( this->multisampleState ),
-				( bool( this->depthStencilState )
-					? &static_cast< VkPipelineDepthStencilStateCreateInfo const & >( this->depthStencilState.value() )
+				&static_cast< VkPipelineViewportStateCreateInfo const & >( viewportState ),
+				&static_cast< VkPipelineRasterizationStateCreateInfo const & >( rasterizationState ),
+				&static_cast< VkPipelineMultisampleStateCreateInfo const & >( multisampleState ),
+				( bool( depthStencilState )
+					? &static_cast< VkPipelineDepthStencilStateCreateInfo const & >( depthStencilState.value() )
 					: nullptr ),
-				&static_cast< VkPipelineColorBlendStateCreateInfo const & >( this->colorBlendState ),
-				( bool( this->dynamicState )
-					? &static_cast< VkPipelineDynamicStateCreateInfo const & >( this->dynamicState.value() )
+				&static_cast< VkPipelineColorBlendStateCreateInfo const & >( colorBlendState ),
+				( bool( dynamicState )
+					? &static_cast< VkPipelineDynamicStateCreateInfo const & >( dynamicState.value() )
 					: nullptr ),
 				rhs.vk.layout,
 				rhs.vk.renderPass,

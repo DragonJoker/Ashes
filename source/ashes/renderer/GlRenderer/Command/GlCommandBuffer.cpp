@@ -66,7 +66,7 @@ See LICENSE file in root folder.
 using ashes::operator==;
 using ashes::operator!=;
 
-bool operator==( VkPushConstantRange const & lhs
+static bool operator==( VkPushConstantRange const & lhs
 	, VkPushConstantRange const & rhs )
 {
 	return lhs.offset == rhs.offset
@@ -81,13 +81,13 @@ namespace ashes::gl
 		void mergeList( CmdList const & list
 			, CmdBuffer & cmds )
 		{
-			size_t totalSize = size_t( std::accumulate( list.begin()
+			size_t totalSize = std::accumulate( list.begin()
 				, list.end()
 				, size_t( 0u )
 				, []( size_t value, CmdBuffer const & lookup )
 				{
 					return value + lookup.size();
-				} ) );
+				} );
 
 			if ( totalSize )
 			{
@@ -99,7 +99,7 @@ namespace ashes::gl
 					std::copy( cmd.begin()
 						, cmd.end()
 						, it );
-					it += cmd.size();
+					it += ptrdiff_t( cmd.size() );
 				}
 			}
 		}
@@ -146,9 +146,6 @@ namespace ashes::gl
 
 			for ( size_t i = 0u; i < size; ++i )
 			{
-				auto lhsLayout = lhs[i];
-				auto rhsLayout = rhs[i];
-
 				if ( !areCompatible( lhs[i], rhs[i] ) )
 				{
 					i = size;
@@ -807,7 +804,7 @@ namespace ashes::gl
 		, ArrayView< uint8_t const > data )
 	{
 		auto realOffset = dstOffset + get( dstBuffer )->getOffset();
-		auto realSize = VkDeviceSize( data.size() );
+		auto realSize = data.size();
 
 		if ( realSize + dstOffset > get( dstBuffer )->getMemoryRequirements().size )
 		{
@@ -1430,7 +1427,7 @@ namespace ashes::gl
 
 		if ( it != m_mappedBuffers.end() )
 		{
-			auto index = it->index;
+			auto index = ptrdiff_t( it->index );
 			m_cmdList.erase( m_cmdList.begin() + index );
 			it = m_mappedBuffers.erase( it );
 

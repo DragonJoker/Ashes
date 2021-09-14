@@ -209,7 +209,6 @@ namespace ashes::gl
 	{
 		if ( isSupportedInternal( attribute.format ) )
 		{
-			auto pAttribute = programAttribute ? programAttribute : &attribute;
 			glLogCall( context
 				, glEnableVertexAttribArray
 				, attribute.location );
@@ -219,21 +218,21 @@ namespace ashes::gl
 				glLogCall( context
 					, glVertexAttribIPointer
 					, attribute.location
-					, ashes::getCount( attribute.format )
+					, GLint( ashes::getCount( attribute.format ) )
 					, getType( attribute.format )
-					, binding.stride
-					, getBufferOffset( offset + attribute.offset ) );
+					, GLsizei( binding.stride )
+					, getBufferOffset( intptr_t( offset + attribute.offset ) ) );
 			}
 			else
 			{
 				glLogCall( context
 					, glVertexAttribPointer
 					, attribute.location
-					, ashes::getCount( attribute.format )
+					, GLint( ashes::getCount( attribute.format ) )	
 					, getType( attribute.format )
 					, isNormalized( attribute.format ) ? GL_TRUE : GL_FALSE
-					, binding.stride
-					, getBufferOffset( offset + attribute.offset ) );
+					, GLsizei( binding.stride )
+					, getBufferOffset( intptr_t( offset + attribute.offset ) ) );
 			}
 		}
 		else

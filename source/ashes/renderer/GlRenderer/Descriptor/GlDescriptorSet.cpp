@@ -27,7 +27,8 @@ namespace ashes::gl
 			{
 				binding.binding,
 				binding.descriptorCount,
-				binding.descriptorType
+				binding.descriptorType,
+				{}
 			};
 			m_writes.insert( { binding.binding, bindingWrites } );
 		}

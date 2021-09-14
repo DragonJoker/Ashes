@@ -34,8 +34,8 @@ namespace ashes::gl
 				, GL_TEXTURE_BUFFER
 				, getInternalFormat( m_format )
 				, get( createInfo.buffer )->getInternal()
-				, offset
-				, m_range );
+				, GLintptr( offset )
+				, GLsizeiptr( m_range ) );
 		}
 		else
 		{

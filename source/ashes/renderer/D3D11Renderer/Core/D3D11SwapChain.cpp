@@ -234,9 +234,9 @@ namespace ashes::d3d11
 		result.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
 		// Set the advanced flags, if surface is a display surface.
-		result.Flags = get( m_createInfo.surface )->isDisplay()
+		result.Flags = UINT( get( m_createInfo.surface )->isDisplay()
 			? DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH
-			: 0;
+			: 0 );
 
 		m_presentDesc = result;
 	}

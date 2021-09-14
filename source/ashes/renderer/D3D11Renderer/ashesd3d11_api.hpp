@@ -525,7 +525,6 @@ namespace ashes::d3d11
 				using Type = typename VkDxTypeTraits< VkType >::Type;
 
 				value->~Type();
-				auto scope = allocationScopeT< VkType >;
 				allocInfo->pfnFree( allocInfo->pUserData, value );
 			}
 			else

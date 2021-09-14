@@ -633,6 +633,7 @@ if ( OpenGL_FOUND )
 	target_compile_options( ${PROJECT_NAME} PRIVATE
 		${TARGET_CXX_OPTIONS}
 	)
+	target_add_compilation_flags( ${PROJECT_NAME} )
 	set_target_properties( ${PROJECT_NAME} PROPERTIES
 		CXX_STANDARD 17
 		CXX_EXTENSIONS OFF

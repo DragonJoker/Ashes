@@ -26,10 +26,8 @@ namespace ashes
 			return "dont_care";
 		default:
 			assert( false && "Unsupported VkAttachmentStoreOp." );
-			throw std::runtime_error{ "Unsupported VkAttachmentStoreOp" };
+			return "Unsupported VkAttachmentStoreOp";
 		}
-
-		return 0;
 	}
 }
 

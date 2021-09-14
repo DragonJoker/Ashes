@@ -30,10 +30,8 @@ namespace ashes
 			return "inherit";
 		default:
 			assert( false && "Unsupported VkCompositeAlphaFlagBitsKHR." );
-			throw std::runtime_error{ "Unsupported VkCompositeAlphaFlagBitsKHR" };
+			return "Unsupported VkCompositeAlphaFlagBitsKHR";
 		}
-
-		return 0;
 	}
 }
 

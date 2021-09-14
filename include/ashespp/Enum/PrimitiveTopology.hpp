@@ -44,10 +44,8 @@ namespace ashes
 			return "patch_list";
 		default:
 			assert( false && "Unsupported VkPrimitiveTopology." );
-			throw std::runtime_error{ "Unsupported VkPrimitiveTopology" };
+			return "Unsupported VkPrimitiveTopology";
 		}
-
-		return 0;
 	}
 }
 
