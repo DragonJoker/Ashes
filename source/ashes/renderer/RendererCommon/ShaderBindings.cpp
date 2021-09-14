@@ -48,6 +48,18 @@ namespace ashes
 		{
 			return type == VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER;
 		}
+
+		void copyBinding( uint32_t key
+			, ShaderBindingMap const & srcBindings
+			, ShaderBindingMap & dstBindings )
+		{
+			auto it = srcBindings.find( key );
+
+			if ( it != srcBindings.end() )
+			{
+				dstBindings.insert( *it );
+			}
+		}
 	}
 
 	void addBinding( uint32_t set
@@ -133,18 +145,6 @@ namespace ashes
 		{
 			auto it = bindings.ibo.emplace( makeShaderBindingKey( set, srcBinding ), index ).first;
 			it->second = index;
-		}
-	}
-
-	void copyBinding( uint32_t key
-		, ShaderBindingMap const & srcBindings
-		, ShaderBindingMap & dstBindings )
-	{
-		auto it = srcBindings.find( key );
-
-		if ( it != srcBindings.end() )
-		{
-			dstBindings.insert( *it );
 		}
 	}
 

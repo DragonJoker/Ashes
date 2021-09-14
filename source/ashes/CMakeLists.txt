@@ -43,9 +43,7 @@ target_include_directories( ${PROJECT_NAME}
 		${Ashes_SOURCE_DIR}/include/ashes
 		${Ashes_SOURCE_DIR}/source
 		${Ashes_SOURCE_DIR}/source/ashes
-		${ASHES_CONFIG_DIR}/include/ashes
-		${ASHES_CONFIG_DIR}/source
-		${ASHES_CONFIG_DIR}/source/ashes
+		${ASHES_CONFIG_DIR}/ashes
 )
 target_link_libraries( ${PROJECT_NAME}
 	PRIVATE
@@ -60,10 +58,12 @@ target_compile_definitions( ${PROJECT_NAME}
 	PRIVATE
 		AshesC_EXPORTS
 )
-target_compile_options( ${PROJECT_NAME} PRIVATE
-	${TARGET_CXX_OPTIONS}
-	${TARGET_COMPILE_OPTIONS}
+target_compile_options( ${PROJECT_NAME}
+	PRIVATE
+		${TARGET_CXX_OPTIONS}
+		${TARGET_COMPILE_OPTIONS}
 )
+target_add_compilation_flags( ${PROJECT_NAME} )
 
 if ( WIN32 )
 	set_target_properties( ${PROJECT_NAME} PROPERTIES

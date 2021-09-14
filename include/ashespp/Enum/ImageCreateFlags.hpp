@@ -83,10 +83,8 @@ namespace ashes
 #endif
 		default:
 			assert( false && "Unsupported VkImageCreateFlagBits." );
-			throw std::runtime_error{ "Unsupported VkImageCreateFlagBits" };
+			return "Unsupported VkImageCreateFlagBits";
 		}
-
-		return 0;
 	}
 }
 

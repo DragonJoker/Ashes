@@ -41,8 +41,6 @@ namespace ashes::gl
 		}
 	}
 
-	void logError( char const * const log );
-
 	bool glCheckError( ContextLock const & context
 		, std::string const & text
 		, bool log )

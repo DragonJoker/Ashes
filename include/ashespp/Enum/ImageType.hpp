@@ -28,10 +28,8 @@ namespace ashes
 			return "3d";
 		default:
 			assert( false && "Unsupported VkImageType." );
-			throw std::runtime_error{ "Unsupported VkImageType" };
+			return "Unsupported VkImageType";
 		}
-
-		return 0;
 	}
 }
 

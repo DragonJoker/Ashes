@@ -12,7 +12,10 @@ See LICENSE file in root folder
 #include <vulkan/vulkan.h>
 
 #include <cstdint>
+#pragma warning( push )
+#pragma warning( disable: 4365 )
 #include <string>
+#pragma warning( pop )
 #include <algorithm>
 
 #ifdef min
@@ -1144,7 +1147,7 @@ namespace ashes
 	*/
 	inline constexpr VkImageAspectFlags getAspectMask( VkFormat format )noexcept
 	{
-		return ( isDepthStencilFormat( format )
+		return VkImageAspectFlags( isDepthStencilFormat( format )
 			? VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT
 			: ( isDepthFormat( format )
 				? VK_IMAGE_ASPECT_DEPTH_BIT

@@ -8,29 +8,6 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	void apply( ContextLock const & context
-		, CmdDrawBaseInstance const & cmd )
-	{
-		glLogCall( context
-			, glDrawArraysInstancedBaseInstance
-			, cmd.mode
-			, cmd.firstVertex
-			, cmd.vtxCount
-			, cmd.instCount
-			, cmd.firstInstance );
-	}
-
-	void apply( ContextLock const & context
-		, CmdDraw const & cmd )
-	{
-		glLogCall( context
-			, glDrawArraysInstanced
-			, cmd.mode
-			, cmd.firstVertex
-			, cmd.vtxCount
-			, cmd.instCount );
-	}
-
 	void buildDrawCommand( uint32_t vtxCount
 		, uint32_t instCount
 		, uint32_t firstVertex

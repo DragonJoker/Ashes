@@ -16,24 +16,24 @@ namespace ashes
 		RenderPassCreateInfo& operator=( RenderPassCreateInfo  const & ) = delete;
 
 		RenderPassCreateInfo( VkRenderPassCreateFlags flags
-			, VkAttachmentDescriptionArray attachments
-			, SubpassDescriptionArray subpasses
-			, VkSubpassDependencyArray dependencies )
-			: attachments{ std::move( attachments ) }
-			, subpasses{ std::move( subpasses ) }
-			, dependencies{ std::move( dependencies ) }
-			, vkSubpasses{ makeVkArray< VkSubpassDescription >( this->subpasses ) }
+			, VkAttachmentDescriptionArray pattachments
+			, SubpassDescriptionArray psubpasses
+			, VkSubpassDependencyArray pdependencies )
+			: attachments{ std::move( pattachments ) }
+			, subpasses{ std::move( psubpasses ) }
+			, dependencies{ std::move( pdependencies ) }
+			, vkSubpasses{ makeVkArray< VkSubpassDescription >( subpasses ) }
 			, vk
 			{
 				VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
 				nullptr,
 				flags,
-				uint32_t( this->attachments.size() ),
-				this->attachments.data(),
-				uint32_t( this->vkSubpasses.size() ),
-				this->vkSubpasses.data(),
-				uint32_t( this->dependencies.size() ),
-				this->dependencies.data(),
+				uint32_t( attachments.size() ),
+				attachments.data(),
+				uint32_t( vkSubpasses.size() ),
+				vkSubpasses.data(),
+				uint32_t( dependencies.size() ),
+				dependencies.data(),
 			}
 		{
 		}
@@ -42,18 +42,18 @@ namespace ashes
 			: attachments{ std::move( rhs.attachments ) }
 			, subpasses{ std::move( rhs.subpasses ) }
 			, dependencies{ std::move( rhs.dependencies ) }
-			, vkSubpasses{ makeVkArray< VkSubpassDescription >( this->subpasses ) }
+			, vkSubpasses{ makeVkArray< VkSubpassDescription >( subpasses ) }
 			, vk
 			{
 				VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
 				nullptr,
 				rhs.vk.flags,
-				uint32_t( this->attachments.size() ),
-				this->attachments.data(),
-				uint32_t( this->vkSubpasses.size() ),
-				this->vkSubpasses.data(),
-				uint32_t( this->dependencies.size() ),
-				this->dependencies.data(),
+				uint32_t( attachments.size() ),
+				attachments.data(),
+				uint32_t( vkSubpasses.size() ),
+				vkSubpasses.data(),
+				uint32_t( dependencies.size() ),
+				dependencies.data(),
 			}
 		{
 		}
@@ -63,18 +63,18 @@ namespace ashes
 			attachments = std::move( rhs.attachments );
 			subpasses = std::move( rhs.subpasses );
 			dependencies = std::move( rhs.dependencies );
-			vkSubpasses = makeVkArray< VkSubpassDescription >( this->subpasses );
+			vkSubpasses = makeVkArray< VkSubpassDescription >( subpasses );
 			vk =
 			{
 				VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
 				nullptr,
 				rhs.vk.flags,
-				uint32_t( this->attachments.size() ),
-				this->attachments.data(),
-				uint32_t( this->vkSubpasses.size() ),
-				this->vkSubpasses.data(),
-				uint32_t( this->dependencies.size() ),
-				this->dependencies.data(),
+				uint32_t( attachments.size() ),
+				attachments.data(),
+				uint32_t( vkSubpasses.size() ),
+				vkSubpasses.data(),
+				uint32_t( dependencies.size() ),
+				dependencies.data(),
 			};
 
 			return *this;

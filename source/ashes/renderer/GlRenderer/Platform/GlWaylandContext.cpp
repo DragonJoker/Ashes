@@ -11,6 +11,7 @@ See LICENSE file in root folder
 #include <EGL/egl.h>
 #include <wayland-egl.h>
 
+#include <algorithm>
 #include <unistd.h>
 #include <iostream>
 #include <cstdlib>
@@ -39,8 +40,8 @@ namespace ashes::gl
 		m_window = wl_egl_window_create (createInfo.surface, 0, 0);
 		m_context = std::make_unique< ContextEgl >( createInfo.display
 			, m_window
-			, std::max( reqMajor, extensions.getMajor() )
-			, std::max( reqMinor, extensions.getMinor() )
+			, std::max( reqMajor, int( extensions.getMajor() ) )
+			, std::max( reqMinor, int( extensions.getMinor() ) )
 			, ( m_mainContext
 				? m_mainContext->m_context->getContext()
 				: EGL_NO_CONTEXT ) );

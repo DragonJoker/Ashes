@@ -25,33 +25,6 @@ namespace ashes::gl
 		}
 	}
 
-	void apply( ContextLock const & context
-		, CmdDrawIndexed const & cmd )
-	{
-		glLogCall( context
-			, glDrawElementsInstancedBaseVertex
-			, cmd.mode
-			, cmd.indexCount
-			, cmd.type
-			, getBufferOffset( cmd.indexOffset )
-			, cmd.instCount
-			, cmd.vertexOffset );
-	}
-
-	void apply( ContextLock const & context
-		, CmdDrawIndexedBaseInstance const & cmd )
-	{
-		glLogCall( context
-			, glDrawElementsInstancedBaseVertexBaseInstance
-			, cmd.mode
-			, cmd.indexCount
-			, cmd.type
-			, getBufferOffset( cmd.indexOffset )
-			, cmd.instCount
-			, cmd.vertexOffset
-			, cmd.firstInstance );
-	}
-
 	void buildDrawIndexedCommand( uint32_t indexCount
 		, uint32_t instCount
 		, uint32_t firstIndex

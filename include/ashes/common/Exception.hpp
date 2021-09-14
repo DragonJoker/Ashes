@@ -95,10 +95,8 @@ namespace ashes
 			return "One or more shaders failed to compile or link.";
 
 		default:
-			return "Unknowns error.";
+			return "Unknown error.";
 		}
-
-		return 0;
 	}
 	/**
 	*\brief

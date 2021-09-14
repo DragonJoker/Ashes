@@ -415,7 +415,7 @@ namespace ashes
 	private:
 		Device const * m_device{ nullptr };
 		ImageCreateInfo m_createInfo{ 0u, VK_IMAGE_TYPE_2D, VK_FORMAT_UNDEFINED, { 1u, 1u, 1u }, 1u, 1u, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_OPTIMAL, 0u };
-		VkImage m_internal{ VK_NULL_HANDLE };
+		VkImage m_internal{ nullptr };
 		DeviceMemoryPtr m_storage;
 		bool m_ownInternal{ true };
 		mutable ImageViewCache m_views;

@@ -161,17 +161,17 @@ namespace ashes
 
 	inline constexpr uint32_t getMajor( uint32_t version )
 	{
-		return ( ( uint32_t )( version ) >> 22 );
+		return ( version >> 22u );
 	}
 
 	inline constexpr uint32_t getMinor( uint32_t version )
 	{
-		return ( ( ( uint32_t )( version ) >> 12 ) & 0x3ff );
+		return ( version >> 12u ) & 0x000003ffu;
 	}
 
 	inline constexpr uint32_t getPatch( uint32_t version )
 	{
-		return ( ( uint32_t )( version ) & 0xfff );
+		return version & 0x00000fffu;
 	}
 
 	inline constexpr uint32_t makeVersion( uint32_t major
@@ -845,7 +845,6 @@ namespace ashes
 		}
 
 		throw ashes::Exception{ VK_ERROR_OUT_OF_DEVICE_MEMORY, "Could not deduce memory type" };
-		return 0;
 	}
 }
 

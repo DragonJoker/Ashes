@@ -19,9 +19,7 @@ namespace ashes
 			0u,
 			0u,
 		};
-	};
-
-	VkPipelineTessellationStateCreateInfo const & getDeactivatedTessellationState();
+	}
 
 	inline bool operator==( VkPipelineTessellationStateCreateInfo const & lhs, VkPipelineTessellationStateCreateInfo const & rhs )
 	{

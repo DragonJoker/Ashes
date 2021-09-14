@@ -233,7 +233,7 @@ namespace ashes
 			, indexCount
 			, instCount
 			, firstIndex
-			, vertexOffset
+			, int32_t( vertexOffset )
 			, firstInstance );
 	}
 
@@ -425,7 +425,7 @@ namespace ashes
 		, VkQueryControlFlags flags )const
 	{
 		m_device.vkCmdBeginQuery( m_internal
-			, static_cast< QueryPool const & >( pool )
+			, pool
 			, query
 			, flags );
 	}
@@ -434,7 +434,7 @@ namespace ashes
 		, uint32_t query )const
 	{
 		m_device.vkCmdEndQuery( m_internal
-			, static_cast< QueryPool const & >( pool )
+			, pool
 			, query );
 	}
 
@@ -444,7 +444,7 @@ namespace ashes
 	{
 		m_device.vkCmdWriteTimestamp( m_internal
 			, pipelineStage
-			, static_cast< QueryPool const & >( pool )
+			, pool
 			, query );
 	}
 
@@ -455,7 +455,7 @@ namespace ashes
 		, void const * data )const
 	{
 		m_device.vkCmdPushConstants( m_internal
-			, static_cast< PipelineLayout const & >( layout )
+			, layout
 			, stageFlags
 			, offset
 			, size
@@ -507,7 +507,7 @@ namespace ashes
 		, VkPipelineStageFlags stageMask )const
 	{
 		m_device.vkCmdResetEvent( m_internal
-			, static_cast< Event const & >( event )
+			, event
 			, stageMask );
 	}
 

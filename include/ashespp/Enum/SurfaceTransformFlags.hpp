@@ -40,10 +40,8 @@ namespace ashes
 			return "inherit";
 		default:
 			assert( false && "Unsupported VkStencilOp." );
-			throw std::runtime_error{ "Unsupported VkStencilOp" };
+			return "Unsupported VkStencilOp";
 		}
-
-		return 0;
 	}
 }
 

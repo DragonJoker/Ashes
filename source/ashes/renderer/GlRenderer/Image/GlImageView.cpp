@@ -50,7 +50,6 @@ namespace ashes::gl
 			, m_createInfo.format
 			, getComponents() };
 		auto image = get( m_createInfo.image );
-		auto & range = m_createInfo.subresourceRange;
 
 		if ( createView )
 		{
@@ -84,7 +83,7 @@ namespace ashes::gl
 					, GlTextureType( m_glviewType )
 					, GL_TEX_PARAMETER_VIEW_MIN_LEVEL
 					, &minLevel );
-				if ( minLevel != getSubresourceRange().baseMipLevel )
+				if ( minLevel != int( getSubresourceRange().baseMipLevel ) )
 				{
 					reportWarning( get( this )
 						, VK_SUCCESS
@@ -98,7 +97,7 @@ namespace ashes::gl
 					, GlTextureType( m_glviewType )
 					, GL_TEX_PARAMETER_VIEW_NUM_LEVELS
 					, &numLevels );
-				if ( numLevels != getSubresourceRange().levelCount )
+				if ( numLevels != int( getSubresourceRange().levelCount ) )
 				{
 					reportWarning( get( this )
 						, VK_SUCCESS
@@ -112,7 +111,7 @@ namespace ashes::gl
 					, GlTextureType( m_glviewType )
 					, GL_TEX_PARAMETER_VIEW_MIN_LAYER
 					, &minLayer );
-				if ( minLayer != getSubresourceRange().baseArrayLayer )
+				if ( minLayer != int( getSubresourceRange().baseArrayLayer ) )
 				{
 					reportWarning( get( this )
 						, VK_SUCCESS
@@ -126,7 +125,7 @@ namespace ashes::gl
 					, GlTextureType( m_glviewType )
 					, GL_TEX_PARAMETER_VIEW_NUM_LAYERS
 					, &numLayers );
-				if ( numLayers != getSubresourceRange().layerCount )
+				if ( numLayers != int( getSubresourceRange().layerCount ) )
 				{
 					reportWarning( get( this )
 						, VK_SUCCESS

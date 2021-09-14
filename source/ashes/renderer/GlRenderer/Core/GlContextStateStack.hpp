@@ -56,7 +56,7 @@ namespace ashes::gl
 		inline bool isPrimitiveRestartEnabled()const
 		{
 			assert( m_save != nullptr );
-			return m_save->iaState.primitiveRestartEnable;
+			return m_save->iaState.primitiveRestartEnable != 0;
 		}
 
 		inline VkExtent2D const & getRenderArea()const

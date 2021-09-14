@@ -15,30 +15,30 @@ namespace ashes
 		DeviceCreateInfo( DeviceCreateInfo const & ) = delete;
 		DeviceCreateInfo & operator=( DeviceCreateInfo const & ) = delete;
 
-		DeviceCreateInfo( VkDeviceCreateFlags flags
-			, DeviceQueueCreateInfoArray queueCreateInfos
-			, StringArray enabledLayerNames
-			, StringArray enabledExtensionNames
-			, VkPhysicalDeviceFeatures enabledFeatures )
-			: queueCreateInfos{ std::move( queueCreateInfos ) }
-			, enabledLayerNames{ std::move( enabledLayerNames ) }
-			, enabledExtensionNames{ std::move( enabledExtensionNames ) }
-			, ptrEnabledLayerNames{ convert( this->enabledLayerNames ) }
-			, ptrEnabledExtensionNames{ convert( this->enabledExtensionNames ) }
-			, vkQueueCreateInfos{ makeVkArray< VkDeviceQueueCreateInfo >( this->queueCreateInfos ) }
-			, enabledFeatures{ std::move( enabledFeatures ) }
+		DeviceCreateInfo( VkDeviceCreateFlags pflags
+			, DeviceQueueCreateInfoArray pqueueCreateInfos
+			, StringArray penabledLayerNames
+			, StringArray penabledExtensionNames
+			, VkPhysicalDeviceFeatures penabledFeatures )
+			: queueCreateInfos{ std::move( pqueueCreateInfos ) }
+			, enabledLayerNames{ std::move( penabledLayerNames ) }
+			, enabledExtensionNames{ std::move( penabledExtensionNames ) }
+			, ptrEnabledLayerNames{ convert( enabledLayerNames ) }
+			, ptrEnabledExtensionNames{ convert( enabledExtensionNames ) }
+			, enabledFeatures{ std::move( penabledFeatures ) }
+			, vkQueueCreateInfos{ makeVkArray< VkDeviceQueueCreateInfo >( queueCreateInfos ) }
 			, vk
 			{
 				VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
 				nullptr,
-				flags,
-				uint32_t( this->vkQueueCreateInfos.size() ),
-				this->vkQueueCreateInfos.data(),
-				uint32_t( this->ptrEnabledLayerNames.size() ),
-				this->ptrEnabledLayerNames.data(),
-				uint32_t( this->ptrEnabledExtensionNames.size() ),
-				this->ptrEnabledExtensionNames.data(),
-				&this->enabledFeatures,
+				pflags,
+				uint32_t( vkQueueCreateInfos.size() ),
+				vkQueueCreateInfos.data(),
+				uint32_t( ptrEnabledLayerNames.size() ),
+				ptrEnabledLayerNames.data(),
+				uint32_t( ptrEnabledExtensionNames.size() ),
+				ptrEnabledExtensionNames.data(),
+				&enabledFeatures,
 			}
 		{
 		}
@@ -47,22 +47,22 @@ namespace ashes
 			: queueCreateInfos{ std::move( rhs.queueCreateInfos ) }
 			, enabledLayerNames{ std::move( rhs.enabledLayerNames ) }
 			, enabledExtensionNames{ std::move( rhs.enabledExtensionNames ) }
-			, ptrEnabledLayerNames{ convert( this->enabledLayerNames ) }
-			, ptrEnabledExtensionNames{ convert( this->enabledExtensionNames ) }
-			, vkQueueCreateInfos{ makeVkArray< VkDeviceQueueCreateInfo >( this->queueCreateInfos ) }
+			, ptrEnabledLayerNames{ convert( enabledLayerNames ) }
+			, ptrEnabledExtensionNames{ convert( enabledExtensionNames ) }
 			, enabledFeatures{ std::move( rhs.enabledFeatures ) }
+			, vkQueueCreateInfos{ makeVkArray< VkDeviceQueueCreateInfo >( queueCreateInfos ) }
 			, vk
 			{
 				VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
 				nullptr,
 				rhs.vk.flags,
-				uint32_t( this->vkQueueCreateInfos.size() ),
-				this->vkQueueCreateInfos.data(),
-				uint32_t( this->ptrEnabledLayerNames.size() ),
-				this->ptrEnabledLayerNames.data(),
-				uint32_t( this->ptrEnabledExtensionNames.size() ),
-				this->ptrEnabledExtensionNames.data(),
-				&this->enabledFeatures,
+				uint32_t( vkQueueCreateInfos.size() ),
+				vkQueueCreateInfos.data(),
+				uint32_t( ptrEnabledLayerNames.size() ),
+				ptrEnabledLayerNames.data(),
+				uint32_t( ptrEnabledExtensionNames.size() ),
+				ptrEnabledExtensionNames.data(),
+				&enabledFeatures,
 			}
 		{
 		}
@@ -72,22 +72,22 @@ namespace ashes
 			queueCreateInfos = std::move( rhs.queueCreateInfos );
 			enabledLayerNames = std::move( rhs.enabledLayerNames );
 			enabledExtensionNames = std::move( rhs.enabledExtensionNames );
-			ptrEnabledLayerNames = convert( this->enabledLayerNames );
-			ptrEnabledExtensionNames = convert( this->enabledExtensionNames );
-			vkQueueCreateInfos = makeVkArray< VkDeviceQueueCreateInfo >( this->queueCreateInfos );
+			ptrEnabledLayerNames = convert( enabledLayerNames );
+			ptrEnabledExtensionNames = convert( enabledExtensionNames );
 			enabledFeatures = std::move( rhs.enabledFeatures );
+			vkQueueCreateInfos = makeVkArray< VkDeviceQueueCreateInfo >( queueCreateInfos );
 			vk =
 			{
 				VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
 				nullptr,
 				rhs.vk.flags,
-				uint32_t( this->vkQueueCreateInfos.size() ),
-				this->vkQueueCreateInfos.data(),
-				uint32_t( this->ptrEnabledLayerNames.size() ),
-				this->ptrEnabledLayerNames.data(),
-				uint32_t( this->ptrEnabledExtensionNames.size() ),
-				this->ptrEnabledExtensionNames.data(),
-				&this->enabledFeatures,
+				uint32_t( vkQueueCreateInfos.size() ),
+				vkQueueCreateInfos.data(),
+				uint32_t( ptrEnabledLayerNames.size() ),
+				ptrEnabledLayerNames.data(),
+				uint32_t( ptrEnabledExtensionNames.size() ),
+				ptrEnabledExtensionNames.data(),
+				&enabledFeatures,
 			};
 
 			return *this;

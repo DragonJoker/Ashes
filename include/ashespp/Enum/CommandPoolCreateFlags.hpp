@@ -30,10 +30,8 @@ namespace ashes
 #endif
 		default:
 			assert( false && "Unsupported VkCommandPoolCreateFlagBits." );
-			throw std::runtime_error{ "Unsupported VkCommandPoolCreateFlagBits" };
+			return "Unsupported VkCommandPoolCreateFlagBits";
 		}
-
-		return 0;
 	}
 }
 

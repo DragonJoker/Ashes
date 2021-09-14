@@ -29,9 +29,9 @@ namespace ashes
 		, DescriptorSetLayout const & layout
 		, uint32_t bindingPoint )
 		: m_device{ pool.getDevice() }
-		, m_bindingPoint{ bindingPoint }
 		, m_pool{ pool }
 		, m_layout{ layout }
+		, m_bindingPoint{ bindingPoint }
 	{
 		VkDescriptorSetLayout vkLayout = m_layout;
 		VkDescriptorSetAllocateInfo allocateInfo

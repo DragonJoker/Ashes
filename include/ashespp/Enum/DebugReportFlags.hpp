@@ -32,10 +32,8 @@ namespace ashes
 			return "debug";
 		default:
 			assert( false && "Unsupported VkDebugReportFlagBitsEXT." );
-			throw std::runtime_error{ "Unsupported VkDebugReportFlagBitsEXT" };
+			return "Unsupported VkDebugReportFlagBitsEXT";
 		}
-
-		return 0;
 	}
 }
 

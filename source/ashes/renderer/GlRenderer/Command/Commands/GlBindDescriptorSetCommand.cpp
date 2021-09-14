@@ -17,95 +17,40 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	void apply( ContextLock const & context
-		, CmdBindSampler const & cmd )
-	{
-		glLogCall( context
-			, glBindSampler
-			, cmd.binding
-			, cmd.name );
-	}
-
-	void apply( ContextLock const & context
-		, CmdBindImage const & cmd )
-	{
-		glLogCall( context
-			, glBindImageTexture
-			, cmd.binding
-			, cmd.name
-			, cmd.baseMipLevel
-			, cmd.layerCount
-			, cmd.baseArrayLayer
-			, GL_ACCESS_TYPE_READ_WRITE
-			, cmd.internal );
-	}
-
-	void apply( ContextLock const & context
-		, CmdBindBufferRange const & cmd )
-	{
-		glLogCall( context
-			, glBindBufferRange
-			, cmd.target
-			, cmd.binding
-			, cmd.name
-			, GLintptr( cmd.offset )
-			, GLsizeiptr( cmd.range ) );
-	}
-
-	void apply( ContextLock const & context
-		, CmdTexParameteri const & cmd )
-	{
-		glLogCall( context
-			, glTexParameteri
-			, cmd.target
-			, cmd.name
-			, cmd.param );
-	}
-
-	void apply( ContextLock const & context
-		, CmdTexParameterf const & cmd )
-	{
-		glLogCall( context
-			, glTexParameterf
-			, cmd.target
-			, cmd.name
-			, cmd.param );
-	}
-
 	namespace common
 	{
-		VkImageView getView( VkWriteDescriptorSet const & write, uint32_t index )
+		static VkImageView getView( VkWriteDescriptorSet const & write, uint32_t index )
 		{
 			assert( index < write.descriptorCount );
 			return write.pImageInfo[index].imageView;
 		}
 
-		VkSampler getSampler( VkWriteDescriptorSet const & write, uint32_t index )
+		static VkSampler getSampler( VkWriteDescriptorSet const & write, uint32_t index )
 		{
 			assert( index < write.descriptorCount );
 			return write.pImageInfo[index].sampler;
 		}
 
-		VkBuffer getBuffer( VkWriteDescriptorSet const & write, uint32_t index )
+		static VkBuffer getBuffer( VkWriteDescriptorSet const & write, uint32_t index )
 		{
 			assert( index < write.descriptorCount );
 			return write.pBufferInfo[index].buffer;
 		}
 
-		VkBufferView getBufferView( VkWriteDescriptorSet const & write, uint32_t index )
+		static VkBufferView getBufferView( VkWriteDescriptorSet const & write, uint32_t index )
 		{
 			assert( index < write.descriptorCount );
 			return write.pTexelBufferView[index];
 		}
 
-		void bindSampler( VkSampler sampler
+		static void bindSampler( VkSampler sampler
 			, uint32_t bindingIndex
 			, CmdList & list )
 		{
 			list.push_back( makeCmd< OpType::eBindSampler >( bindingIndex, get( sampler )->getInternal() ) );
 		}
 
-		void bindUniformBuffer( VkWriteDescriptorSet const & write
+		static void bindUniformBuffer( VkWriteDescriptorSet const & write
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
@@ -124,7 +69,7 @@ namespace ashes::gl
 						, GL_BUFFER_TARGET_UNIFORM
 						, get( buffer )->getInternal()
 						, int64_t( get( buffer )->getOffset() + write.pBufferInfo[i].offset )
-						, int64_t( std::min( write.pBufferInfo[i].range, uint64_t( get( buffer )->getMemoryRequirements().size ) ) ) ) );
+						, int64_t( std::min( write.pBufferInfo[i].range, get( buffer )->getMemoryRequirements().size ) ) ) );
 				}
 			}
 			else
@@ -136,7 +81,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindStorageBuffer( VkWriteDescriptorSet const & write
+		static void bindStorageBuffer( VkWriteDescriptorSet const & write
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
@@ -155,7 +100,7 @@ namespace ashes::gl
 						, GL_BUFFER_TARGET_SHADER_STORAGE
 						, get( buffer )->getInternal()
 						, int64_t( get( buffer )->getOffset() + write.pBufferInfo[i].offset )
-						, int64_t( std::min( write.pBufferInfo[i].range, uint64_t( get( buffer )->getMemoryRequirements().size ) ) ) ) );
+						, int64_t( std::min( write.pBufferInfo[i].range, get( buffer )->getMemoryRequirements().size ) ) ) );
 				}
 			}
 			else
@@ -167,7 +112,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindUniformTexelBuffer( VkWriteDescriptorSet const & write
+		static void bindUniformTexelBuffer( VkWriteDescriptorSet const & write
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
@@ -197,7 +142,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindStorageTexelBuffer( VkWriteDescriptorSet const & write
+		static void bindStorageTexelBuffer( VkWriteDescriptorSet const & write
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
@@ -231,7 +176,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindDynamicUniformBuffer( VkWriteDescriptorSet const & write
+		static void bindDynamicUniformBuffer( VkWriteDescriptorSet const & write
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, uint32_t offset
@@ -251,7 +196,7 @@ namespace ashes::gl
 						, GL_BUFFER_TARGET_UNIFORM
 						, get( buffer )->getInternal()
 						, int64_t( get( buffer )->getOffset() + write.pBufferInfo[i].offset + offset )
-						, int64_t( std::min( write.pBufferInfo[i].range, uint64_t( get( buffer )->getMemoryRequirements().size ) ) ) ) );
+						, int64_t( std::min( write.pBufferInfo[i].range, get( buffer )->getMemoryRequirements().size ) ) ) );
 				}
 			}
 			else
@@ -263,7 +208,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindDynamicStorageBuffer( VkWriteDescriptorSet const & write
+		static void bindDynamicStorageBuffer( VkWriteDescriptorSet const & write
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, uint32_t offset
@@ -283,7 +228,7 @@ namespace ashes::gl
 						, GL_BUFFER_TARGET_SHADER_STORAGE
 						, get( buffer )->getInternal()
 						, int64_t( get( buffer )->getOffset() + write.pBufferInfo[i].offset + offset )
-						, int64_t( std::min( write.pBufferInfo[i].range, uint64_t( get( buffer )->getMemoryRequirements().size ) ) ) ) );
+						, int64_t( std::min( write.pBufferInfo[i].range, get( buffer )->getMemoryRequirements().size ) ) ) );
 				}
 			}
 			else
@@ -295,7 +240,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindUniformBuffer( LayoutBindingWrites const * writes
+		static void bindUniformBuffer( LayoutBindingWrites const * writes
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
@@ -306,7 +251,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindStorageBuffer( LayoutBindingWrites const * writes
+		static void bindStorageBuffer( LayoutBindingWrites const * writes
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
@@ -317,7 +262,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindUniformTexelBuffer( LayoutBindingWrites const * writes
+		static void bindUniformTexelBuffer( LayoutBindingWrites const * writes
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
@@ -328,7 +273,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindDynamicUniformBuffer( LayoutBindingWrites const * writes
+		static void bindDynamicUniformBuffer( LayoutBindingWrites const * writes
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, uint32_t offset
@@ -340,7 +285,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindDynamicStorageBuffer( LayoutBindingWrites const * writes
+		static void bindDynamicStorageBuffer( LayoutBindingWrites const * writes
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, uint32_t offset
@@ -352,7 +297,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindDynamicBuffers( LayoutBindingWritesArray const & writes
+		static void bindDynamicBuffers( LayoutBindingWritesArray const & writes
 			, ShaderBindings const & bindings
 			, uint32_t setIndex
 			, ArrayView< uint32_t const > const & offsets
@@ -376,7 +321,6 @@ namespace ashes::gl
 					default:
 						assert( false && "Unsupported dynamic descriptor type" );
 						throw std::runtime_error{ "Unsupported dynamic descriptor type" };
-						break;
 					}
 
 					++dynamicOffsetIndex;
@@ -387,7 +331,7 @@ namespace ashes::gl
 
 	namespace gl3
 	{
-		void setLodBias( VkSampler sampler
+		static void setLodBias( VkSampler sampler
 			, GlTextureType target
 			, CmdList & list )
 		{
@@ -396,7 +340,7 @@ namespace ashes::gl
 				, get( sampler )->getLodBias() ) );
 		}
 
-		GlTextureType bindTexture( VkImageView view
+		static GlTextureType bindTexture( VkImageView view
 			, uint32_t bindingIndex
 			, CmdList & list )
 		{
@@ -439,7 +383,7 @@ namespace ashes::gl
 			return target;
 		}
 
-		void bindImage( VkImageView view
+		static void bindImage( VkImageView view
 			, uint32_t bindingIndex
 			, CmdList & list )
 		{
@@ -454,7 +398,7 @@ namespace ashes::gl
 				, get( view )->getInternalFormat() ) );
 		}
 
-		void bindTextureAndSampler( VkImageView view
+		static void bindTextureAndSampler( VkImageView view
 			, VkSampler sampler
 			, uint32_t bindingIndex
 			, CmdList & list )
@@ -470,7 +414,7 @@ namespace ashes::gl
 				, list );
 		}
 
-		void bindCombinedSampler( VkWriteDescriptorSet const & write
+		static void bindCombinedSampler( VkWriteDescriptorSet const & write
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, VkSampler sampler
@@ -513,7 +457,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindSampler( VkWriteDescriptorSet const & write
+		static void bindSampler( VkWriteDescriptorSet const & write
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
@@ -541,7 +485,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindSampledTexture( VkWriteDescriptorSet const & write
+		static void bindSampledTexture( VkWriteDescriptorSet const & write
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
@@ -569,7 +513,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindInputAttachment( VkWriteDescriptorSet const & write
+		static void bindInputAttachment( VkWriteDescriptorSet const & write
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, VkSampler sampler
@@ -599,7 +543,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindStorageTexture( VkWriteDescriptorSet const & write
+		static void bindStorageTexture( VkWriteDescriptorSet const & write
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
@@ -627,7 +571,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindStorageTexelBuffer( VkWriteDescriptorSet const & write
+		static void bindStorageTexelBuffer( VkWriteDescriptorSet const & write
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
@@ -635,7 +579,7 @@ namespace ashes::gl
 			common::bindStorageTexelBuffer( write, bindings, setIndex, list );
 		}
 
-		void bindCombinedSampler( LayoutBindingWrites const * writes
+		static void bindCombinedSampler( LayoutBindingWrites const * writes
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, VkSampler sampler
@@ -647,7 +591,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindSampler( LayoutBindingWrites const * writes
+		static void bindSampler( LayoutBindingWrites const * writes
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
@@ -658,7 +602,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindSampledTexture( LayoutBindingWrites const * writes
+		static void bindSampledTexture( LayoutBindingWrites const * writes
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
@@ -669,7 +613,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindInputAttachment( LayoutBindingWrites const * writes
+		static void bindInputAttachment( LayoutBindingWrites const * writes
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, VkSampler sampler
@@ -681,7 +625,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindStorageTexture( LayoutBindingWrites const * writes
+		static void bindStorageTexture( LayoutBindingWrites const * writes
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
@@ -692,7 +636,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindStorageTexelBuffer( LayoutBindingWrites const * writes
+		static void bindStorageTexelBuffer( LayoutBindingWrites const * writes
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
@@ -706,7 +650,7 @@ namespace ashes::gl
 
 	namespace gl4
 	{
-		GlTextureType bindTexture( VkImageView view
+		static GlTextureType bindTexture( VkImageView view
 			, uint32_t bindingIndex
 			, CmdList & list )
 		{
@@ -719,7 +663,7 @@ namespace ashes::gl
 			return GlTextureType{};
 		}
 
-		void bindImage( VkImageView view
+		static void bindImage( VkImageView view
 			, uint32_t bindingIndex
 			, CmdList & list )
 		{
@@ -734,7 +678,7 @@ namespace ashes::gl
 				, get( view )->getInternalFormat() ) );
 		}
 
-		void bindTextureAndSampler( VkImageView view
+		static void bindTextureAndSampler( VkImageView view
 			, VkSampler sampler
 			, uint32_t bindingIndex
 			, CmdList & list )
@@ -747,7 +691,7 @@ namespace ashes::gl
 				, list );
 		}
 
-		void bindCombinedSampler( VkWriteDescriptorSet const & write
+		static void bindCombinedSampler( VkWriteDescriptorSet const & write
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, VkSampler sampler
@@ -791,7 +735,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindSampler( VkWriteDescriptorSet const & write
+		static void bindSampler( VkWriteDescriptorSet const & write
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
@@ -819,7 +763,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindSampledTexture( VkWriteDescriptorSet const & write
+		static void bindSampledTexture( VkWriteDescriptorSet const & write
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
@@ -847,7 +791,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindInputAttachment( VkWriteDescriptorSet const & write
+		static void bindInputAttachment( VkWriteDescriptorSet const & write
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, VkSampler sampler
@@ -877,7 +821,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindStorageTexture( VkWriteDescriptorSet const & write
+		static void bindStorageTexture( VkWriteDescriptorSet const & write
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
@@ -905,7 +849,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindStorageTexelBuffer( VkWriteDescriptorSet const & write
+		static void bindStorageTexelBuffer( VkWriteDescriptorSet const & write
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
@@ -913,7 +857,7 @@ namespace ashes::gl
 			common::bindStorageTexelBuffer( write, bindings, setIndex, list );
 		}
 
-		void bindCombinedSampler( LayoutBindingWrites const * writes
+		static void bindCombinedSampler( LayoutBindingWrites const * writes
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, VkSampler sampler
@@ -925,7 +869,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindSampler( LayoutBindingWrites const * writes
+		static void bindSampler( LayoutBindingWrites const * writes
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
@@ -936,7 +880,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindSampledTexture( LayoutBindingWrites const * writes
+		static void bindSampledTexture( LayoutBindingWrites const * writes
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
@@ -947,7 +891,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindInputAttachment( LayoutBindingWrites const * writes
+		static void bindInputAttachment( LayoutBindingWrites const * writes
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, VkSampler sampler
@@ -959,7 +903,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindStorageTexture( LayoutBindingWrites const * writes
+		static void bindStorageTexture( LayoutBindingWrites const * writes
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )
@@ -970,7 +914,7 @@ namespace ashes::gl
 			}
 		}
 
-		void bindStorageTexelBuffer( LayoutBindingWrites const * writes
+		static void bindStorageTexelBuffer( LayoutBindingWrites const * writes
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, CmdList & list )

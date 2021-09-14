@@ -24,10 +24,8 @@ namespace ashes
 			return "signaled";
 		default:
 			assert( false && "Unsupported VkFenceCreateFlagBits." );
-			throw std::runtime_error{ "Unsupported VkFenceCreateFlagBits" };
+			return "Unsupported VkFenceCreateFlagBits";
 		}
-
-		return 0;
 	}
 }
 

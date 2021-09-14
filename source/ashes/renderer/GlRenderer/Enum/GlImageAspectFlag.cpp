@@ -66,7 +66,6 @@ namespace ashes::gl
 		default:
 			assert( false && "Unsupported GlImageAspectFlag" );
 			return "GlImageAspectFlag_UNKNOWN";
-			break;
 		}
 	}
 }

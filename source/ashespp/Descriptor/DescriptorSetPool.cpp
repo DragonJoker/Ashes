@@ -41,7 +41,6 @@ namespace ashes
 		, uint32_t maxSets
 		, bool automaticFree )
 		: m_layout{ layout }
-		, m_maxSets{ maxSets }
 		, m_pool{ device.createDescriptorPool( debugName
 			, ( ( !automaticFree )
 				? VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT

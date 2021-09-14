@@ -92,9 +92,9 @@ namespace ashes::gl
 
 			std::sort( result.begin()
 				, result.end()
-				, []( ConstantBufferDesc const & lhs, ConstantBufferDesc const & rhs )
+				, []( ConstantBufferDesc const & tlhs, ConstantBufferDesc const & trhs )
 				{
-					return lhs.binding < rhs.binding;
+					return tlhs.binding < trhs.binding;
 				} );
 
 			return result;
@@ -134,9 +134,9 @@ namespace ashes::gl
 
 			std::sort( result.begin()
 				, result.end()
-				, []( FormatDescT< FormatT > const & lhs, FormatDescT< FormatT > const & rhs )
+				, []( FormatDescT< FormatT > const & tlhs, FormatDescT< FormatT > const & trhs )
 				{
-					return lhs.offset < rhs.offset;
+					return tlhs.offset < trhs.offset;
 				} );
 
 			return result;
@@ -184,8 +184,8 @@ namespace ashes::gl
 		, Optional< VkPipelineVertexInputStateCreateInfo > const & vertexInputState
 		, bool invertY )
 		: m_device{ device }
-		, stages{ std::move( stages ) }
 		, bindings{ get( layout )->getShaderBindings() }
+		, stages{ std::move( stages ) }
 	{
 		auto context = get( m_device )->getContext();
 

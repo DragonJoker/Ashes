@@ -174,7 +174,7 @@ namespace ashes
 		, m_ownInternal{ rhs.m_ownInternal }
 		, m_views{ std::move( rhs.m_views ) }
 	{
-		rhs.m_internal = VK_NULL_HANDLE;
+		rhs.m_internal = nullptr;
 		rhs.m_ownInternal = true;
 
 		if ( m_ownInternal )
@@ -192,7 +192,7 @@ namespace ashes
 			m_storage = std::move( rhs.m_storage );
 			m_ownInternal = rhs.m_ownInternal;
 			m_views = std::move( rhs.m_views );
-			rhs.m_internal = VK_NULL_HANDLE;
+			rhs.m_internal = nullptr;
 			rhs.m_ownInternal = true;
 
 			if ( m_ownInternal )
@@ -245,18 +245,18 @@ namespace ashes
 		, VkImage image
 		, ImageCreateInfo createInfo )
 		: m_device{ &device }
-		, m_internal{ image }
 		, m_createInfo{ std::move( createInfo ) }
+		, m_internal{ image }
 		, m_ownInternal{ false }
 	{
 	}
 
 	Image::~Image()
 	{
-		assert( ( ( m_internal != VK_NULL_HANDLE ) || m_views.empty() )
+		assert( ( ( m_internal != nullptr ) || m_views.empty() )
 			&& "No more internal handle, but some image views remain." );
 
-		if ( m_internal != VK_NULL_HANDLE )
+		if ( m_internal != nullptr )
 		{
 			while ( !m_views.empty() )
 			{
@@ -378,7 +378,6 @@ namespace ashes
 		auto const srcStageMask = getStageMask( srcImageLayout );
 		auto const srcMipsStageMask = getStageMask( srcMipsImageLayout );
 		auto const dstStageMask = getStageMask( dstImageLayout );
-		auto const imageViewType = VkImageViewType( getType() );
 
 		for ( uint32_t i = 0u; i < layerCount; ++i )
 		{

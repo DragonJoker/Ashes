@@ -16,15 +16,15 @@ namespace ashes
 		PipelineDynamicStateCreateInfo & operator=( PipelineDynamicStateCreateInfo const & ) = delete;
 
 		PipelineDynamicStateCreateInfo( VkPipelineDynamicStateCreateFlags flags = 0u
-			, VkDynamicStateArray dynamicStates = {} )
-			: dynamicStates{ std::move( dynamicStates ) }
+			, VkDynamicStateArray pdynamicStates = {} )
+			: dynamicStates{ std::move( pdynamicStates ) }
 			, vk
 			{
 				VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
 				nullptr,
 				flags,
-				uint32_t( this->dynamicStates.size() ),
-				this->dynamicStates.data(),
+				uint32_t( dynamicStates.size() ),
+				dynamicStates.data(),
 			}
 		{
 		}
@@ -36,8 +36,8 @@ namespace ashes
 				VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
 				nullptr,
 				rhs.vk.flags,
-				uint32_t( this->dynamicStates.size() ),
-				this->dynamicStates.data(),
+				uint32_t( dynamicStates.size() ),
+				dynamicStates.data(),
 			}
 		{
 		}
@@ -50,8 +50,8 @@ namespace ashes
 				VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
 				nullptr,
 				rhs.vk.flags,
-				uint32_t( this->dynamicStates.size() ),
-				this->dynamicStates.data(),
+				uint32_t( dynamicStates.size() ),
+				dynamicStates.data(),
 			};
 
 			return *this;

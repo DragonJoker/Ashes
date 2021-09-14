@@ -99,13 +99,13 @@ namespace ashes::gl
 		T getAligned( T value, U align )
 		{
 			return T( ( value + align - 1 ) & ~( align - 1 ) );
-		};
+		}
 
 		template< typename T >
 		T getSubresourceValue( T value, uint32_t mipLevel )
 		{
 			return T( value >> mipLevel );
-		};
+		}
 
 		VkExtent3D getTexelBlockExtent( VkFormat format )
 		{
@@ -352,9 +352,9 @@ namespace ashes::gl
 		int w = 0;
 		int h = 0;
 		int d = 0;
-		context->glGetTexLevelParameteriv( target, subresource.mipLevel, GL_TEXTURE_WIDTH, &w );
-		context->glGetTexLevelParameteriv( target, subresource.mipLevel, GL_TEXTURE_HEIGHT, &h );
-		context->glGetTexLevelParameteriv( target, subresource.mipLevel, GL_TEXTURE_DEPTH, &d );
+		context->glGetTexLevelParameteriv( target, int( subresource.mipLevel ), GL_TEXTURE_WIDTH, &w );
+		context->glGetTexLevelParameteriv( target, int( subresource.mipLevel ), GL_TEXTURE_HEIGHT, &h );
+		context->glGetTexLevelParameteriv( target, int( subresource.mipLevel ), GL_TEXTURE_DEPTH, &d );
 		glLogCall( context
 			, glBindTexture
 			, target
@@ -606,8 +606,7 @@ namespace ashes::gl
 			VkQueue queue;
 			allocateNA( queue
 				, get( this )
-				, it->second.createInfo
-				, uint32_t( it->second.queues.size() ) );
+				, it->second.createInfo );
 			it->second.queues.emplace_back( queue );
 		}
 	}

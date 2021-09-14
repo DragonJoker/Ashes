@@ -86,7 +86,7 @@ namespace ashes::d3d11
 			context.context->ClearDepthStencilView( get( view )->getDepthStencilView()
 				, m_flags
 				, m_value.depth
-				, m_value.stencil );
+				, UINT8( m_value.stencil ) );
 		}
 	}
 

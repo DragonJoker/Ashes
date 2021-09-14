@@ -14,6 +14,94 @@
 
 namespace ashes::gl
 {
+	namespace
+	{
+		std::string getName( VkVertexInputRate value )
+		{
+			switch ( value )
+			{
+			case VK_VERTEX_INPUT_RATE_VERTEX:
+				return "vertex";
+			case VK_VERTEX_INPUT_RATE_INSTANCE:
+				return "instance";
+			default:
+				assert( false && "Unsupported VkVertexInputRate" );
+				return "Unknown";
+			}
+		}
+
+		void validateInputs( ContextLock const & context
+			, GLuint program
+			, VkPipelineVertexInputStateCreateInfo const & vertexInputState )
+		{
+			auto inputs = getInputs( context
+				, VK_SHADER_STAGE_VERTEX_BIT
+				, program );
+			auto attribsEnd = vertexInputState.pVertexAttributeDescriptions + vertexInputState.vertexAttributeDescriptionCount;
+
+			for ( auto & input : inputs.vertexAttributeDescriptions )
+			{
+				auto it = std::find( vertexInputState.pVertexAttributeDescriptions
+					, attribsEnd
+					, input );
+
+				if ( it == attribsEnd )
+				{
+					std::stringstream stream;
+					stream << "Attribute"
+						<< " of type: " << ashes::getName( input.format )
+						<< ", at binding: " << input.binding
+						<< ", at location: " << input.location
+						<< ", bin. offset: " << input.offset
+						<< " is used in the shader program, but is not listed in the vertex layouts" << std::endl;
+					context->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+						, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+						, 0ull
+						, 0u
+						, VK_ERROR_VALIDATION_FAILED_EXT
+						, "OpenGL"
+						, stream.str().c_str() );
+				}
+			}
+
+			auto bindingsEnd = vertexInputState.pVertexBindingDescriptions + vertexInputState.vertexBindingDescriptionCount;
+
+			for ( auto & input : inputs.vertexBindingDescriptions )
+			{
+				auto it = std::find( vertexInputState.pVertexBindingDescriptions
+					, bindingsEnd
+					, input );
+
+				if ( it == bindingsEnd )
+				{
+					std::stringstream stream;
+					stream << "Attribute"
+						<< " at binding: " << input.binding
+						<< ", with input rate: " << getName( input.inputRate )
+						<< ", bin. stride: " << input.stride
+						<< " is used in the shader program, but is not listed in the vertex layouts" << std::endl;
+					context->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+						, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+						, 0ull
+						, 0u
+						, VK_ERROR_VALIDATION_FAILED_EXT
+						, "OpenGL"
+						, stream.str().c_str() );
+				}
+			}
+		}
+
+		void validateOutputs( ContextLock const & context
+			, GLuint program
+			, VkRenderPass renderPass )
+		{
+			if ( hasProgramInterfaceQuery( context.getDevice() ) )
+			{
+				gl4::validateOutputs( context, program, renderPass );
+			}
+		}
+	}
+
 	std::string getName( GlslAttributeType type )noexcept
 	{
 		switch ( type )
@@ -482,7 +570,6 @@ namespace ashes::gl
 		case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE:
 		case GLSL_ATTRIBUTE_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:
 			return 0u;
-			break;
 		default:
 			assert( false && "Unsupported attribute type" );
 			return 4u;
@@ -602,134 +689,19 @@ namespace ashes::gl
 		, GLuint programObject
 		, bool separable )
 	{
-		ShaderDesc result
-		{
-			true,
-			0u,
-			0u,
-			getInputs( context, stage, programObject ),
-			getPushConstants( context, constants, stage, programObject ),
-			getUniformBuffers( context, stage, programObject ),
-			getStorageBuffers( context, stage, programObject ),
-			getSamplerBuffers( context, stage, programObject ),
-			getSamplers( context, stage, programObject ),
-			getImageBuffers( context, stage, programObject ),
-			getImages( context, stage, programObject ),
-		};
+		ShaderDesc result{ true
+			, 0u
+			, 0u
+			, getInputs( context, stage, programObject )
+			, getPushConstants( context, constants, stage, programObject )
+			, getUniformBuffers( context, stage, programObject )
+			, getStorageBuffers( context, stage, programObject )
+			, getSamplerBuffers( context, stage, programObject )
+			, getSamplers( context, stage, programObject )
+			, getImageBuffers( context, stage, programObject )
+			, getImages( context, stage, programObject ) };
 
 		return result;
-	}
-
-	std::string getName( VkVertexInputRate value )
-	{
-		switch ( value )
-		{
-		case VK_VERTEX_INPUT_RATE_VERTEX:
-			return "vertex";
-		case VK_VERTEX_INPUT_RATE_INSTANCE:
-			return "instance";
-		default:
-			assert( false && "Unsupported VkVertexInputRate" );
-			return "Unknown";
-		}
-	}
-
-	void validateInputs( ContextLock const & context
-		, GLuint program
-		, VkPipelineVertexInputStateCreateInfo const & vertexInputState )
-	{
-		auto inputs = getInputs( context
-			, VK_SHADER_STAGE_VERTEX_BIT
-			, program );
-		auto attribsEnd = vertexInputState.pVertexAttributeDescriptions + vertexInputState.vertexAttributeDescriptionCount;
-
-		for ( auto & input : inputs.vertexAttributeDescriptions )
-		{
-			auto it = std::find( vertexInputState.pVertexAttributeDescriptions
-				, attribsEnd
-				, input );
-
-			if ( it == attribsEnd )
-			{
-				std::stringstream stream;
-				stream << "Attribute"
-					<< " of type: " << ashes::getName( input.format )
-					<< ", at binding: " << input.binding
-					<< ", at location: " << input.location
-					<< ", bin. offset: " << input.offset
-					<< " is used in the shader program, but is not listed in the vertex layouts" << std::endl;
-				context->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
-					, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
-					, 0ull
-					, 0u
-					, VK_ERROR_VALIDATION_FAILED_EXT
-					, "OpenGL"
-					, stream.str().c_str() );
-			}
-		}
-
-		auto bindingsEnd = vertexInputState.pVertexBindingDescriptions + vertexInputState.vertexBindingDescriptionCount;
-
-		for ( auto & input : inputs.vertexBindingDescriptions )
-		{
-			auto it = std::find( vertexInputState.pVertexBindingDescriptions
-				, bindingsEnd
-				, input );
-
-			if ( it == bindingsEnd )
-			{
-				std::stringstream stream;
-				stream << "Attribute"
-					<< " at binding: " << input.binding
-					<< ", with input rate: " << getName( input.inputRate )
-					<< ", bin. stride: " << input.stride
-					<< " is used in the shader program, but is not listed in the vertex layouts" << std::endl;
-				context->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
-					, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
-					, 0ull
-					, 0u
-					, VK_ERROR_VALIDATION_FAILED_EXT
-					, "OpenGL"
-					, stream.str().c_str() );
-			}
-		}
-	}
-
-	void validateOutputs( ContextLock const & context
-		, GLuint program
-		, VkRenderPass renderPass )
-	{
-		if ( hasProgramInterfaceQuery( context.getDevice() ) )
-		{
-			gl4::validateOutputs( context, program, renderPass );
-		}
-	}
-
-	void validateUbos( ContextLock const & context
-		, GLuint program )
-	{
-		if ( hasProgramInterfaceQuery( context.getDevice() ) )
-		{
-			gl4::validateUbos( context, program );
-		}
-	}
-
-	void validateSsbos( ContextLock const & context
-		, GLuint program )
-	{
-		if ( hasProgramInterfaceQuery( context.getDevice() ) )
-		{
-			gl4::validateSsbos( context, program );
-		}
-	}
-
-	void validateUniforms( ContextLock const & context
-		, GLuint program )
-	{
-		if ( hasProgramInterfaceQuery( context.getDevice() ) )
-		{
-			gl4::validateUniforms( context, program );
-		}
 	}
 
 	void validatePipeline( ContextLock const & context

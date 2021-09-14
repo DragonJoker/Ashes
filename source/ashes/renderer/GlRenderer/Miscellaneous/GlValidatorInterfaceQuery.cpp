@@ -266,14 +266,15 @@ namespace ashes::gl::gl4
 			, std::vector< GlslProperty > const & properties
 			, FuncType function )
 		{
-			int count = 0;
+			int count{};
 			glLogCall( context
 				, glGetProgramInterfaceiv
 				, program
 				, interface
 				, GLSL_DATANAME_MAX_NAME_LENGTH
 				, &count );
-			std::vector< char > buffer( count );
+			std::vector< char > buffer;
+			buffer.resize( size_t( count ) );
 			glLogCall( context
 				, glGetProgramInterfaceiv
 				, program
@@ -289,18 +290,18 @@ namespace ashes::gl::gl4
 				props.push_back( prop );
 			}
 
-			for ( int i = 0; i < count; ++i )
+			for ( GLuint i = 0; i < GLuint( count ); ++i )
 			{
-				GLsizei length;
+				GLsizei length{};
 				glLogCall( context
 					, glGetProgramResourceName
 					, program
 					, interface
 					, i
-					, uint32_t( buffer.size() )
+					, GLsizei( buffer.size() )
 					, &length
 					, buffer.data() );
-				std::string name( buffer.data(), length );
+				std::string name( buffer.data(), size_t( length ) );
 				glLogCall( context
 					, glGetProgramResourceiv
 					, program
@@ -331,7 +332,7 @@ namespace ashes::gl::gl4
 				, bufferInterface
 				, GLSL_DATANAME_MAX_NAME_LENGTH
 				, &maxNameLength );
-			std::vector< char > buffer( maxNameLength );
+			std::vector< char > buffer( size_t( std::abs( maxNameLength ) ) );
 			GLint numBlocks;
 			glLogCall( context
 				, glGetProgramInterfaceiv
@@ -346,7 +347,7 @@ namespace ashes::gl::gl4
 			uint32_t const uniformPropertyCount = 4u;
 			GLenum const uniformProperties[uniformPropertyCount] = { GLSL_PROPERTY_NAME_LENGTH, GLSL_PROPERTY_TYPE, GLSL_PROPERTY_OFFSET, GLSL_PROPERTY_ARRAY_SIZE };
 
-			for ( int blockIx = 0; blockIx < numBlocks; ++blockIx )
+			for ( GLuint blockIx = 0; blockIx < GLuint( numBlocks ); ++blockIx )
 			{
 				GLsizei nameLength = 0;
 				glLogCall( context
@@ -354,10 +355,10 @@ namespace ashes::gl::gl4
 					, program
 					, bufferInterface
 					, blockIx
-					, uint32_t( buffer.size() )
+					, GLsizei( buffer.size() )
 					, &nameLength
 					, buffer.data() );
-				std::string bufferName( buffer.data(), nameLength );
+				std::string bufferName( buffer.data(), size_t( nameLength ) );
 				GLint blockProps[2];
 				glLogCall( context
 					, glGetProgramResourceiv
@@ -386,14 +387,15 @@ namespace ashes::gl::gl4
 					, nullptr
 					, &numActiveUnifs );
 				bufferFunction( bufferName
-					, blockProps[0]
-					, blockProps[1]
+					, uint32_t( blockProps[0] )
+					, uint32_t( blockProps[1] )
 					, index
-					, numActiveUnifs );
+					, uint32_t( numActiveUnifs ) );
 
 				if ( numActiveUnifs && variableFunction )
 				{
-					std::vector< GLint > blockUnifs( numActiveUnifs );
+					std::vector< GLint > blockUnifs;
+					blockUnifs.resize( size_t( numActiveUnifs ) );
 					glLogCall( context
 						, glGetProgramResourceiv
 						, program
@@ -405,36 +407,37 @@ namespace ashes::gl::gl4
 						, nullptr
 						, blockUnifs.data() );
 
-					for ( GLint unifIx = 0; unifIx < numActiveUnifs; ++unifIx )
+					for ( GLuint unifIx = 0; unifIx < GLuint( numActiveUnifs) ; ++unifIx )
 					{
 						GLint values[uniformPropertyCount]{};
 						glLogCall( context
 							, glGetProgramResourceiv
 							, program
 							, variableInterface
-							, blockUnifs[unifIx]
-							, uniformPropertyCount
+							, GLuint( blockUnifs[unifIx] )
+							, GLsizei( uniformPropertyCount )
 							, uniformProperties
-							, uniformPropertyCount
+							, GLsizei( uniformPropertyCount )
 							, nullptr
 							, values );
 
 						if ( values[0] > 0 )
 						{
-							std::vector< char > nameData( values[0] );
+							std::vector< char > nameData;
+							nameData.resize( size_t( values[0] ) );
 							glLogCall( context
 								, glGetProgramResourceName
 								, program
 								, variableInterface
-								, blockUnifs[unifIx]
+								, GLuint( blockUnifs[unifIx] )
 								, GLsizei( nameData.size() )
 								, nullptr
-								, &nameData[0] );
+								, nameData.data() );
 							std::string variableName( nameData.begin(), nameData.end() - 1 );
 							variableFunction( variableName
 								, GlslAttributeType( values[1] )
-								, values[2]
-								, values[3] );
+								, VkDeviceSize( values[2] )
+								, uint32_t( values[3] ) );
 						}
 					}
 				}
@@ -465,7 +468,7 @@ namespace ashes::gl::gl4
 				, GLSL_DATANAME_ACTIVE_RESOURCES
 				, &numUniforms );
 
-			for ( int unif = 0; unif < numUniforms; ++unif )
+			for ( GLuint unif = 0; unif < GLuint( numUniforms ); ++unif )
 			{
 				GLint values[count];
 				glLogCall( context
@@ -510,17 +513,17 @@ namespace ashes::gl::gl4
 			, GlslProperty property
 			, FuncType function )
 		{
-			int count = 0;
+			uint32_t count{};
 			glLogCall( context
 				, glGetProgramInterfaceiv
 				, program
 				, interface
 				, GLSL_DATANAME_ACTIVE_RESOURCES
-				, &count );
+				, reinterpret_cast< GLint * >( &count ) );
 			std::vector< int > values( count );
 			std::vector< int > lengths( count );
 
-			for ( int i = 0; i < count; ++i )
+			for ( GLuint i = 0; i < count; ++i )
 			{
 				GLenum prop = property;
 				glLogCall( context
@@ -907,7 +910,7 @@ namespace ashes::gl::gl4
 		getVariableInfos( context
 			, program
 			, GLSL_INTERFACE_UNIFORM
-			, [&constants, &stage, &program]( std::string name
+			, [&constants]( std::string name
 				, GlslAttributeType type
 				, GLint location
 				, GLint arraySize
@@ -954,6 +957,7 @@ namespace ashes::gl::gl4
 						name,
 						point,
 						dataSize,
+						{},
 					} );
 			}
 			, [&result, &stage, &program]( std::string name
@@ -969,7 +973,7 @@ namespace ashes::gl::gl4
 						0u,
 						getConstantFormat( type ),
 						getSize( type ),
-						uint32_t( arraySize ? arraySize : 1 ),
+						( arraySize ? arraySize : 1u ),
 						uint32_t( offset ),
 					} );
 			} );
@@ -996,6 +1000,7 @@ namespace ashes::gl::gl4
 						name,
 						point,
 						dataSize,
+						{},
 					} );
 			} );
 		return result;

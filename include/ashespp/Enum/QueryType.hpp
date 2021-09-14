@@ -36,10 +36,8 @@ namespace ashes
 #endif
 		default:
 			assert( false && "Unsupported VkQueryType." );
-			throw std::runtime_error{ "Unsupported VkQueryType" };
+			return "Unsupported VkQueryType";
 		}
-
-		return 0;
 	}
 }
 

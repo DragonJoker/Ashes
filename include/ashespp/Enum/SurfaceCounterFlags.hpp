@@ -24,10 +24,8 @@ namespace ashes
 			return "vblank";
 		default:
 			assert( false && "Unsupported VkSurfaceCounterFlagBitsEXT." );
-			throw std::runtime_error{ "Unsupported VkSurfaceCounterFlagBitsEXT" };
+			return "Unsupported VkSurfaceCounterFlagBitsEXT";
 		}
-
-		return 0;
 	}
 }
 

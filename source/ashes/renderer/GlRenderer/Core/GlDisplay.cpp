@@ -12,13 +12,11 @@ namespace ashes::gl
 	DisplayKHR::DisplayKHR( VkAllocationCallbacks const * allocInfo
 		, VkPhysicalDevice physicalDevice
 		, VkDisplayPropertiesKHR const & properties
-		, VkFormat format
 		, uint32_t screenIndex
 		, std::vector< VkDisplayModeParametersKHR > const & displayModesParams )
 		: m_allocInfo{ allocInfo }
 		, m_physicalDevice{ physicalDevice }
 		, m_properties{ properties }
-		, m_format{ format }
 		, m_screenIndex{ screenIndex }
 	{
 		for ( auto & parameters : displayModesParams )

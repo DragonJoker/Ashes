@@ -62,10 +62,8 @@ namespace ashes
 #endif
 		default:
 			assert( false && "Unsupported VkDynamicState." );
-			throw std::runtime_error{ "Unsupported VkDynamicState" };
+			return "Unsupported VkDynamicState";
 		}
-
-		return 0;
 	}
 }
 

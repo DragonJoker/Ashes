@@ -21,22 +21,10 @@ namespace ashes::gl
 {
 	PFN_vkVoidFunction getFunction( char const * const name )
 	{
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuseless-cast"
 		return reinterpret_cast< PFN_vkVoidFunction >( glXGetProcAddressARB( reinterpret_cast< GLubyte const * >( name ) ) );
-	}
-
-	namespace
-	{
-#if !defined( NDEBUG )
-
-		static const int GL_CONTEXT_CREATION_DEFAULT_FLAGS = GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT | GL_CONTEXT_FLAG_DEBUG_BIT;
-		static const int GL_CONTEXT_CREATION_DEFAULT_MASK = GL_CONTEXT_CORE_PROFILE_BIT;
-
-#else
-
-		static const int GL_CONTEXT_CREATION_DEFAULT_FLAGS = GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT;
-		static const int GL_CONTEXT_CREATION_DEFAULT_MASK = GL_CONTEXT_CORE_PROFILE_BIT;
-
-#endif
+#pragma GCC diagnostic pop
 	}
 
 	XcbContext::XcbContext( VkInstance instance
@@ -65,8 +53,8 @@ namespace ashes::gl
 		auto & extensions = get( instance )->getExtensions();
 		m_context = std::make_unique< ContextEgl >( m_xdisplay
 			, createInfo.window
-			, std::max( reqMajor, extensions.getMajor() )
-			, std::max( reqMinor, extensions.getMinor() )
+			, std::max( reqMajor, int( extensions.getMajor() ) )
+			, std::max( reqMinor, int( extensions.getMinor() ) )
 			, ( m_mainContext
 				? m_mainContext->m_context->getContext()
 				: EGL_NO_CONTEXT ) );

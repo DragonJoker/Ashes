@@ -19,7 +19,6 @@ namespace ashes::gl
 		, VkDevice device
 		, VkRenderPassCreateInfo createInfo )
 		: m_device{ device }
-		, m_flags{ createInfo.flags }
 		, m_attachments{ makeVector( createInfo.pAttachments, createInfo.attachmentCount ) }
 		, m_subpasses{ makeVector( createInfo.pSubpasses, createInfo.subpassCount ) }
 		, m_dependencies{ makeVector( createInfo.pDependencies, createInfo.dependencyCount ) }
@@ -136,14 +135,13 @@ namespace ashes::gl
 
 		if ( !isDepthOrStencilFormat( attach.format ) )
 		{
-			auto it = std::find_if( m_colourAttaches.begin()
+			result = uint32_t( std::count_if( m_colourAttaches.begin()
 				, m_colourAttaches.end()
-				, [&attach, &result]( AttachmentDescription const & lookup )
+				, [&attach]( AttachmentDescription const & lookup )
 				{
-					++result;
 					return &attach == &lookup.attach.get();
-				} );
-			assert( it != m_colourAttaches.end() );
+				} ) );
+			assert( result != 0u );
 		}
 
 		return result;

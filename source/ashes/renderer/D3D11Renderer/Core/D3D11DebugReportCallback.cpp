@@ -427,12 +427,12 @@ namespace ashes::d3d11
 			stream.imbue( std::locale{ "C" } );
 			stream << "Error calling [" << message << "]: " << std::hex << hresult;
 			auto it = getErrors().find( hresult );
-			VkResult result{ VK_ERROR_INITIALIZATION_FAILED };
+			VkResult ret{ VK_ERROR_INITIALIZATION_FAILED };
 
 			if ( it != getErrors().end() )
 			{
 				stream << "\n    Direct3D: " << it->second.name;
-				result = it->second.result;
+				ret = it->second.result;
 			}
 
 			stream << "\n    Windows: " << getLastErrorText();
@@ -525,7 +525,7 @@ namespace ashes::d3d11
 			return m_createInfo.pfnUserCallback( report.messageSeverity
 				, report.messageTypes
 				, &report.callbackData
-				, m_createInfo.pUserData );
+				, m_createInfo.pUserData ) != 0;
 		}
 
 		return false;
@@ -629,12 +629,12 @@ namespace ashes::d3d11
 			stream.imbue( std::locale{ "C" } );
 			stream << "Error calling [" << message << "]: " << std::hex << hresult;
 			auto it = getErrors().find( hresult );
-			VkResult result{ VK_ERROR_INITIALIZATION_FAILED };
+			VkResult ret{ VK_ERROR_INITIALIZATION_FAILED };
 
 			if ( it != getErrors().end() )
 			{
 				stream << "\n    Direct3D: " << it->second.name;
-				result = it->second.result;
+				ret = it->second.result;
 			}
 
 			stream << "\n    Windows: " << getLastErrorText();
@@ -720,7 +720,7 @@ namespace ashes::d3d11
 				, report.messageCode
 				, report.layerPrefix.c_str()
 				, report.message.c_str()
-				, m_createInfo.pUserData );
+				, m_createInfo.pUserData ) != 0;
 		}
 
 		return false;

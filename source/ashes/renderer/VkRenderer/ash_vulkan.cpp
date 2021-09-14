@@ -1,4 +1,3 @@
-#define ASHES_VK_PROTOTYPES
 #include <ashes/ashes.h>
 
 #include <ashes/common/DynamicLibrary.hpp>
@@ -33,15 +32,17 @@ namespace ashes::vk
 				VkInstance instance{ VK_NULL_HANDLE };
 				auto res = description.functions.CreateInstance( &instanceInfo, nullptr, &instance );
 
-				if ( instance )
+				if ( res == VK_SUCCESS && instance )
 				{
 					if ( description.functions.EnumeratePhysicalDevices )
 					{
 						uint32_t gpuCount{ 0u };
-						description.functions.EnumeratePhysicalDevices( instance
+						res = description.functions.EnumeratePhysicalDevices( instance
 							, &gpuCount
 							, nullptr );
-						result = gpuCount ? VK_TRUE : VK_FALSE;
+						result = ( res == VK_SUCCESS && gpuCount )
+							? VK_TRUE
+							: VK_FALSE;
 					}
 
 					if ( description.functions.DestroyInstance )
@@ -53,71 +54,72 @@ namespace ashes::vk
 
 			return result;
 		}
-	}
 
-	struct VkLibrary
-	{
-		AshPluginDescription description{ "vk"
-			, "Vulkan renderer for Ashes"
-			, nullptr
-			, {}
-			, {}
-			, ASHPLUGIN_DROPIN };
-		std::unique_ptr< ashes::DynamicLibrary > library;
-
-		VkResult init( AshPluginMode mode )
+		struct VkLibrary
 		{
-			auto validMode = ( description.mode == ASHPLUGIN_UNDEFINED || description.mode == mode );
-			assert( validMode
-				&& "ashesTestRenderer: Plugin mode has already been selected." );
-			VkResult result = description.getInstanceProcAddr
-				? ( validMode ? VK_SUCCESS : VK_ERROR_INCOMPATIBLE_DRIVER )
-				: VK_ERROR_INITIALIZATION_FAILED;
+			AshPluginDescription description{ "vk"
+				, "Vulkan renderer for Ashes"
+				, {}
+				, {}
+				, {}
+				, {}
+			, ASHPLUGIN_DROPIN };
+			std::unique_ptr< ashes::DynamicLibrary > library;
 
-			if ( result == VK_ERROR_INITIALIZATION_FAILED )
+			VkResult init( AshPluginMode mode )
 			{
+				auto validMode = ( description.mode == ASHPLUGIN_UNDEFINED || description.mode == mode );
+				assert( validMode
+					&& "ashesTestRenderer: Plugin mode has already been selected." );
+				VkResult result = description.getInstanceProcAddr
+					? ( validMode ? VK_SUCCESS : VK_ERROR_INCOMPATIBLE_DRIVER )
+					: VK_ERROR_INITIALIZATION_FAILED;
+
+				if ( result == VK_ERROR_INITIALIZATION_FAILED )
+				{
 #if defined( _WIN32 )
-				static std::string_view const libraryName = "vulkan-1.dll";
+					static std::string_view const libraryName = "vulkan-1.dll";
 #elif defined( __linux__ )
-				static std::string_view const libraryName = "libvulkan.so.1";
+					static std::string_view const libraryName = "libvulkan.so.1";
 #elif defined( __APPLE__ )
-				static std::string_view const libraryName = "libvulkan.1.dylib";
+					static std::string_view const libraryName = "libvulkan.1.dylib";
 #else
 #	error Unsupported platform
 #endif
 
-				std::unique_ptr< ashes::DynamicLibrary > vklibrary;
-				ashes::lookForSharedLibrary( [&vklibrary]( std::string const & folder
-					, std::string const & name )
-					{
-						if ( libraryName == name
-							&& !vklibrary )
+					std::unique_ptr< ashes::DynamicLibrary > vklibrary;
+					ashes::lookForSharedLibrary( [&vklibrary]( std::string const & folder
+						, std::string const & name )
 						{
-							vklibrary = std::make_unique< ashes::DynamicLibrary >( folder / name );
-							PFN_ashSelectPlugin selectPlugin;
-
-							if ( vklibrary->getFunction( "ashSelectPlugin", selectPlugin ) )
+							if ( libraryName == name
+								&& !vklibrary )
 							{
-								vklibrary.reset();
+								vklibrary = std::make_unique< ashes::DynamicLibrary >( folder / name );
+								PFN_ashSelectPlugin selectPlugin;
+
+								if ( vklibrary->getFunction( "ashSelectPlugin", selectPlugin ) )
+								{
+									vklibrary.reset();
+								}
 							}
-						}
 
-						return vklibrary != nullptr;
-					} );
+							return vklibrary != nullptr;
+						} );
 
-				if ( vklibrary )
-				{
-					vklibrary->getFunction( "vkGetInstanceProcAddr", description.getInstanceProcAddr );
-					description.features =
+					if ( vklibrary )
 					{
-						true, // hasTexBufferRange
-						true, // hasImageTexture
-						true, // hasBaseInstance
-						true, // hasClearTexImage
-						true, // hasComputeShaders
-						true, // hasStorageBuffers
-						true, // supportsPersistentMapping
-					};
+						vklibrary->getFunction( "vkGetInstanceProcAddr", description.getInstanceProcAddr );
+						description.features =
+						{
+							true, // hasTexBufferRange
+							true, // hasImageTexture
+							true, // hasBaseInstance
+							true, // hasClearTexImage
+							true, // hasComputeShaders
+							true, // hasStorageBuffers
+							true, // supportsPersistentMapping
+							{}, // maxShaderLanguageVersion
+						};
 #define VK_LIB_GLOBAL_FUNCTION( v, x )\
 					vklibrary->getFunction( "vk"#x, description.functions.x );
 #define VK_LIB_INSTANCE_FUNCTION( v, x )\
@@ -128,23 +130,24 @@ namespace ashes::vk
 #define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )
 #define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )
 #	include <ashes/ashes_functions_list.hpp>
-					result = VK_SUCCESS;
+						result = VK_SUCCESS;
 
-					description.mode = mode;
-					description.support.priority = 10u;
-					description.support.supported = checkSupport( description );
-					library = std::move( vklibrary );
+						description.mode = mode;
+						description.support.priority = 10u;
+						description.support.supported = checkSupport( description );
+						library = std::move( vklibrary );
+					}
 				}
+
+				return result;
 			}
+		};
 
-			return result;
+		VkLibrary & getLibrary()
+		{
+			thread_local VkLibrary library;
+			return library;
 		}
-	};
-
-	VkLibrary & getLibrary()
-	{
-		thread_local VkLibrary library;
-		return library;
 	}
 }
 
@@ -160,6 +163,12 @@ namespace ashes::vk
 
 extern "C"
 {
+	VkRenderer_API PFN_vkVoidFunction VKAPI_PTR vk_icdGetInstanceProcAddr( VkInstance instance
+		, const char * name );
+	VkRenderer_API PFN_vkVoidFunction VKAPI_PTR vk_icdGetPhysicalDeviceProcAddr( VkInstance instance
+		, const char * name );
+	VkRenderer_API VkResult VKAPI_PTR vk_icdNegotiateLoaderICDInterfaceVersion( uint32_t * pVersion );
+	VkRenderer_API VkResult VKAPI_PTR ashGetPluginDescription( AshPluginDescription * pDescription );
 
 #pragma region ICD mode
 

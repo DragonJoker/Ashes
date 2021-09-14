@@ -15,25 +15,25 @@ namespace ashes
 		InstanceCreateInfo( InstanceCreateInfo const & ) = delete;
 		InstanceCreateInfo & operator=( InstanceCreateInfo const & ) = delete;
 
-		InstanceCreateInfo( VkDeviceCreateFlags flags
-			, ApplicationInfo applicationInfo
-			, StringArray enabledLayerNames
-			, StringArray enabledExtensionNames )
-			: applicationInfo{ std::move( applicationInfo ) }
-			, enabledLayerNames{ std::move( enabledLayerNames ) }
-			, enabledExtensionNames{ std::move( enabledExtensionNames ) }
-			, ptrEnabledLayerNames{ convert( this->enabledLayerNames ) }
-			, ptrEnabledExtensionNames{ convert( this->enabledExtensionNames ) }
+		InstanceCreateInfo( VkDeviceCreateFlags pflags
+			, ApplicationInfo papplicationInfo
+			, StringArray penabledLayerNames
+			, StringArray penabledExtensionNames )
+			: applicationInfo{ std::move( papplicationInfo ) }
+			, enabledLayerNames{ std::move( penabledLayerNames ) }
+			, enabledExtensionNames{ std::move( penabledExtensionNames ) }
+			, ptrEnabledLayerNames{ convert( enabledLayerNames ) }
+			, ptrEnabledExtensionNames{ convert( enabledExtensionNames ) }
 			, vk
 			{
 				VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
 				nullptr,
-				flags,
-				&static_cast< VkApplicationInfo const & >( this->applicationInfo ),
-				uint32_t( this->ptrEnabledLayerNames.size() ),
-				this->ptrEnabledLayerNames.data(),
-				uint32_t( this->ptrEnabledExtensionNames.size() ),
-				this->ptrEnabledExtensionNames.data(),
+				pflags,
+				&static_cast< VkApplicationInfo const & >( applicationInfo ),
+				uint32_t( ptrEnabledLayerNames.size() ),
+				ptrEnabledLayerNames.data(),
+				uint32_t( ptrEnabledExtensionNames.size() ),
+				ptrEnabledExtensionNames.data(),
 			}
 		{
 		}
@@ -42,18 +42,18 @@ namespace ashes
 			: applicationInfo{ std::move( rhs.applicationInfo ) }
 			, enabledLayerNames{ std::move( rhs.enabledLayerNames ) }
 			, enabledExtensionNames{ std::move( rhs.enabledExtensionNames ) }
-			, ptrEnabledLayerNames{ convert( this->enabledLayerNames ) }
-			, ptrEnabledExtensionNames{ convert( this->enabledExtensionNames ) }
+			, ptrEnabledLayerNames{ convert( enabledLayerNames ) }
+			, ptrEnabledExtensionNames{ convert( enabledExtensionNames ) }
 			, vk
 			{
 				VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
 				nullptr,
 				rhs.vk.flags,
-				&static_cast< VkApplicationInfo const & >( this->applicationInfo ),
-				uint32_t( this->ptrEnabledLayerNames.size() ),
-				this->ptrEnabledLayerNames.data(),
-				uint32_t( this->ptrEnabledExtensionNames.size() ),
-				this->ptrEnabledExtensionNames.data(),
+				&static_cast< VkApplicationInfo const & >( applicationInfo ),
+				uint32_t( ptrEnabledLayerNames.size() ),
+				ptrEnabledLayerNames.data(),
+				uint32_t( ptrEnabledExtensionNames.size() ),
+				ptrEnabledExtensionNames.data(),
 			}
 		{
 		}
@@ -64,18 +64,18 @@ namespace ashes
 			enabledLayerNames = std::move( rhs.enabledLayerNames );
 			enabledExtensionNames = std::move( rhs.enabledExtensionNames );
 			enabledFeatures = std::move( rhs.enabledFeatures );
-			ptrEnabledLayerNames = convert( this->enabledLayerNames );
-			ptrEnabledExtensionNames = convert( this->enabledExtensionNames );
+			ptrEnabledLayerNames = convert( enabledLayerNames );
+			ptrEnabledExtensionNames = convert( enabledExtensionNames );
 			vk =
 			{
 				VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
 				nullptr,
 				rhs.vk.flags,
-				&static_cast< VkApplicationInfo const & >( this->applicationInfo ),
-				uint32_t( this->ptrEnabledLayerNames.size() ),
-				this->ptrEnabledLayerNames.data(),
-				uint32_t( this->ptrEnabledExtensionNames.size() ),
-				this->ptrEnabledExtensionNames.data(),
+				&static_cast< VkApplicationInfo const & >( applicationInfo ),
+				uint32_t( ptrEnabledLayerNames.size() ),
+				ptrEnabledLayerNames.data(),
+				uint32_t( ptrEnabledExtensionNames.size() ),
+				ptrEnabledExtensionNames.data(),
 			};
 
 			return *this;

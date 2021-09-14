@@ -15,18 +15,18 @@ namespace ashes
 		DeviceQueueCreateInfo( DeviceQueueCreateInfo const & ) = delete;
 		DeviceQueueCreateInfo& operator=( DeviceQueueCreateInfo  const & ) = delete;
 
-		DeviceQueueCreateInfo( VkDeviceQueueCreateFlags flags
-			, uint32_t queueFamilyIndex
-			, FloatArray queuePriorities )
-			: queuePriorities{ std::move( queuePriorities ) }
+		DeviceQueueCreateInfo( VkDeviceQueueCreateFlags pflags
+			, uint32_t pqueueFamilyIndex
+			, FloatArray pqueuePriorities )
+			: queuePriorities{ std::move( pqueuePriorities ) }
 			, vk
 			{
 				VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
 				nullptr,
-				flags,
-				queueFamilyIndex,
-				uint32_t( this->queuePriorities.size() ),
-				this->queuePriorities.data(),
+				pflags,
+				pqueueFamilyIndex,
+				uint32_t( queuePriorities.size() ),
+				queuePriorities.data(),
 			}
 		{
 		}
@@ -39,8 +39,8 @@ namespace ashes
 				nullptr,
 				rhs.vk.flags,
 				rhs.vk.queueFamilyIndex,
-				uint32_t( this->queuePriorities.size() ),
-				this->queuePriorities.data(),
+				uint32_t( queuePriorities.size() ),
+				queuePriorities.data(),
 			}
 		{
 		}
@@ -54,8 +54,8 @@ namespace ashes
 				nullptr,
 				rhs.vk.flags,
 				rhs.vk.queueFamilyIndex,
-				uint32_t( this->queuePriorities.size() ),
-				this->queuePriorities.data(),
+				uint32_t( queuePriorities.size() ),
+				queuePriorities.data(),
 			};
 
 			return *this;

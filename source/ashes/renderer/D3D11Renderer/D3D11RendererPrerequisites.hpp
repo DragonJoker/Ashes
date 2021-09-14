@@ -1,4 +1,4 @@
-/**
+﻿/**
 *\file
 *	RenderLibPrerequisites.h
 *\author
@@ -8,12 +8,10 @@
 #define ___D3D11Renderer_Prerequisites_HPP___
 #pragma once
 
-#if defined( _MSC_VER )
-#	pragma warning( push )
-#	pragma warning( disable:4005 )	// Red�finition de macrao
-#	pragma warning( disable:4311 )
-#	pragma warning( disable:4312 )
-#endif
+#pragma warning( push )
+#pragma warning( disable:4005 )	// Redéfinition de macrao
+#pragma warning( disable:4311 )
+#pragma warning( disable:4312 )
 
 #if defined __GNUG__
 #   define __in
@@ -66,12 +64,16 @@ typedef uint8_t UINT8;
 #include <Windows.h>
 #include <initguid.h>
 
+#pragma warning( push )
+#pragma warning( disable: 4365 )
+#pragma warning( disable: 5219 )
 #include <d3d11.h>
 #include <d3d11_2.h>
 
 #include <dxgi.h>
 #include <dxgi1_2.h>
 #include <dxgi1_3.h>
+#pragma warning( pop )
 
 #include "renderer/D3D11Renderer/Enum/D3D11BlendFactor.hpp"
 #include "renderer/D3D11Renderer/Enum/D3D11BlendOp.hpp"
@@ -420,5 +422,7 @@ namespace ashes::d3d11
 	using DeviceMemoryDestroySignal = Signal< DeviceMemoryDestroyFunc >;
 	using DeviceMemoryDestroyConnection = SignalConnection< DeviceMemoryDestroySignal >;
 }
+
+#pragma warning( pop )
 
 #endif

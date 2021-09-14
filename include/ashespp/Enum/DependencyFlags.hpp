@@ -30,10 +30,8 @@ namespace ashes
 #endif
 		default:
 			assert( false && "Unsupported VkDependencyFlagBits." );
-			throw std::runtime_error{ "Unsupported VkDependencyFlagBits" };
+			return "Unsupported VkDependencyFlagBits";
 		}
-
-		return 0;
 	}
 }
 

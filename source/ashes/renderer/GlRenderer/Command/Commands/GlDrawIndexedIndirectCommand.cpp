@@ -10,18 +10,6 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	void apply( ContextLock const & context
-		, CmdDrawIndexedIndirect const & cmd )
-	{
-		glLogCall( context
-			, glMultiDrawElementsIndirect
-			, cmd.mode
-			, cmd.type
-			, getBufferOffset( cmd.offset )
-			, cmd.drawCount
-			, cmd.stride );
-	}
-
 	void buildDrawIndexedIndirectCommand( VkBuffer buffer
 		, VkDeviceSize offset
 		, uint32_t drawCount

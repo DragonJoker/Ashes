@@ -29,10 +29,8 @@ namespace ashes
 #endif
 		default:
 			assert( false && "Unsupported VkFramebufferCreateFlagBits." );
-			throw std::runtime_error{ "Unsupported VkFramebufferCreateFlagBits" };
+			return "Unsupported VkFramebufferCreateFlagBits";
 		}
-
-		return 0;
 	}
 }
 

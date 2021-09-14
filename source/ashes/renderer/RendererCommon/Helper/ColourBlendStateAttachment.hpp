@@ -23,7 +23,7 @@ namespace ashes
 			VK_BLEND_OP_ADD,
 			VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT| VK_COLOR_COMPONENT_A_BIT
 		};
-	};
+	}
 
 	inline bool operator==( VkPipelineColorBlendAttachmentState const & lhs, VkPipelineColorBlendAttachmentState const & rhs )
 	{

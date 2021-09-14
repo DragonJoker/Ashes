@@ -49,7 +49,7 @@ namespace ashes::gl
 	using GLvoid = void;
 	typedef struct __GLsync *GLsync;
 
-	static GLuint constexpr GL_INVALID_INDEX = ~GLuint( 0u );
+	static GLuint constexpr GL_INVALID_INDEX = ~( 0u );
 	static GLuint constexpr GL_NO_ERROR = 0;
 	static GLboolean constexpr GL_TRUE = 1;
 	static GLboolean constexpr GL_FALSE = 0;
@@ -120,13 +120,13 @@ namespace ashes::gl
 		GL_CONTEXT_CORE_PROFILE_BIT = 0x00000001,
 	};
 
-	enum InformationType
+	enum InformationType : GLenum
 	{
-		GL_VENDOR = 0x1F00,
-		GL_RENDERER = 0x1F01,
-		GL_VERSION = 0x1F02,
-		GL_EXTENSIONS = 0x1F03,
-		GL_NUM_EXTENSIONS = 0x821D,
+		GL_INFO_VENDOR = 0x1F00,
+		GL_INFO_RENDERER = 0x1F01,
+		GL_INFO_VERSION = 0x1F02,
+		GL_INFO_EXTENSIONS = 0x1F03,
+		GL_INFO_NUM_EXTENSIONS = 0x821D,
 	};
 }
 

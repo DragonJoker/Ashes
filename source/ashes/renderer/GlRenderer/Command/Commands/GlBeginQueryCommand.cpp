@@ -10,15 +10,6 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	void apply( ContextLock const & context
-		, CmdBeginQuery const & cmd )
-	{
-		glLogCall( context
-			, glBeginQuery
-			, GlQueryType( cmd.target )
-			, GLuint( cmd.query ) );
-	}
-
 	void buildBeginQueryCommand( VkQueryPool pool
 		, uint32_t query
 		, CmdList & list )

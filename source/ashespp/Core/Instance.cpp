@@ -9,6 +9,8 @@ See LICENSE file in root folder.
 
 #include <cmath>
 
+#pragma warning( disable: 4191 )
+
 namespace ashes
 {
 	Instance::Instance( AshPluginDescription const & plugin
@@ -28,10 +30,10 @@ namespace ashes
 		doInitInstance();
 	}
 
-	Instance::Instance( PFN_vkGetInstanceProcAddr getInstanceProcAddr
+	Instance::Instance( PFN_vkGetInstanceProcAddr pgetInstanceProcAddr
 		, DeviceAllocatorPtr allocator
 		, ashes::InstanceCreateInfo createInfo )
-		: m_getInstanceProcAddr{ getInstanceProcAddr }
+		: m_getInstanceProcAddr{ pgetInstanceProcAddr }
 		, m_allocator{ std::move( allocator ) }
 		, m_createInfo{ std::move( createInfo ) }
 		, m_features{ VK_TRUE, VK_TRUE, VK_TRUE, VK_TRUE, VK_TRUE, VK_TRUE, VK_TRUE, makeVersion( 1, 0, 0 ) }
@@ -79,7 +81,7 @@ namespace ashes
 		, float zNear
 		, float zFar )const
 	{
-		float const tanHalfFovy = tan( radiansFovY / float( 2 ) );
+		auto const tanHalfFovy = float( tan( radiansFovY / float( 2 ) ) );
 
 		std::array< float, 16 > result{ 0.0f };
 		result[0] = float( 1 ) / ( aspect * tanHalfFovy );
@@ -114,7 +116,8 @@ namespace ashes
 		, float aspect
 		, float zNear )const
 	{
-		float const range = tan( radiansFovY / float( 2 ) ) * zNear;
+		auto const tanHalfFovy = float( tan( radiansFovY / float( 2 ) ) );
+		float const range = tanHalfFovy * zNear;
 		float const left = -range * aspect;
 		float const right = range * aspect;
 		float const bottom = -range;

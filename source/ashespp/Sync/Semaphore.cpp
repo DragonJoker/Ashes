@@ -10,6 +10,14 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
+	Semaphore::Semaphore( Device const & device
+		, VkSemaphore internal )
+		: m_device{ device }
+		, m_internal{ internal }
+		, m_ownInternal{ false }
+	{
+	}
+
 	Semaphore::Semaphore( Device const & device )
 		: Semaphore{ device, "Semaphore" }
 	{
@@ -17,14 +25,24 @@ namespace ashes
 
 	Semaphore::Semaphore( Device const & device
 		, std::string const & debugName )
+		: Semaphore{ device, debugName
+			, { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
+				, nullptr
+				, 0 } }
+	{
+	}
+
+	Semaphore::Semaphore( Device const & device
+		, VkSemaphoreCreateInfo createInfo )
+		: Semaphore{ device, "Semaphore", std::move( createInfo ) }
+	{
+	}
+
+	Semaphore::Semaphore( Device const & device
+		, std::string const & debugName
+		, VkSemaphoreCreateInfo createInfo )
 		: m_device{ device }
 	{
-		VkSemaphoreCreateInfo createInfo
-		{
-			VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
-			nullptr,
-			0                                         // flags
-		};
 		DEBUG_DUMP( createInfo );
 		auto res = m_device.vkCreateSemaphore( m_device
 			, &createInfo
@@ -32,14 +50,6 @@ namespace ashes
 			, &m_internal );
 		checkError( res, "Semaphore creation" );
 		registerObject( m_device, debugName, *this );
-	}
-
-	Semaphore::Semaphore( Device const & device
-		, VkSemaphore internal )
-		: m_device{ device }
-		, m_internal{ internal }
-		, m_ownInternal{ false }
-	{
 	}
 
 	Semaphore::~Semaphore()

@@ -43,9 +43,7 @@ namespace ashes
 			0.0f,
 			1.0f,
 		};
-	};
-
-	VkPipelineDepthStencilStateCreateInfo const & getDeactivatedDepthStencilState();
+	}
 
 	inline bool operator==( VkPipelineDepthStencilStateCreateInfo const & lhs, VkPipelineDepthStencilStateCreateInfo const & rhs )
 	{

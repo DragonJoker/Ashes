@@ -9,14 +9,13 @@ set( PROJECT_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION
 set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_BUILD}" )
 
 if ( ASHES_BUILD_SPIRV_CROSS )
-	set( ${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES
+	set( ${PROJECT_NAME}_SPIRV_CROSS_SRC_FILES
 		${SPIRV_CROSS_DIR}/spirv_cross.cpp
 		${SPIRV_CROSS_DIR}/spirv_cross_parsed_ir.cpp
 		${SPIRV_CROSS_DIR}/spirv_cfg.cpp
 		${SPIRV_CROSS_DIR}/spirv_glsl.cpp
 		${SPIRV_CROSS_DIR}/spirv_parser.cpp
 	)
-
 	set( ${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES
 		${SPIRV_CROSS_DIR}/GLSL.std.450.h
 		${SPIRV_CROSS_DIR}/spirv_common.hpp
@@ -27,9 +26,39 @@ if ( ASHES_BUILD_SPIRV_CROSS )
 		${SPIRV_CROSS_DIR}/spirv_glsl.hpp
 		${SPIRV_CROSS_DIR}/spirv_parser.hpp
 	)
+	if ( ASHES_BUILD_RENDERER_D3D11 )
+		set( ${PROJECT_NAME}_SPIRV_CROSS_SRC_FILES
+			${${PROJECT_NAME}_SPIRV_CROSS_SRC_FILES}
+			${SPIRV_CROSS_DIR}/spirv_hlsl.cpp
+		)
+		set( ${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES
+			${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
+			${SPIRV_CROSS_DIR}/spirv_hlsl.hpp
+		)
+	endif ()
+	add_library( ashesSpirVCross STATIC
+		${${PROJECT_NAME}_SPIRV_CROSS_SRC_FILES}
+		${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
+	)
+	add_library( ashes::SpirVCross
+		ALIAS
+		ashesSpirVCross
+	)
+	target_include_directories( ashesSpirVCross
+		PUBLIC
+			${SPIRV_CROSS_DIR}
+	)
+	set( SPIRV_CROSS_LIBRARIES ashes::SpirVCross )
+	set_target_properties( ashesSpirVCross
+		PROPERTIES
+			CXX_STANDARD 17
+			CXX_EXTENSIONS OFF
+			FOLDER "${Ashes_BASE_DIR}/Renderer"
+	)
 endif ()
 
 set( ${PROJECT_NAME}_SRC_FILES
+	AshesRendererPrerequisites.cpp
 	IcdObject.cpp
 	InlineUniformBlocks.cpp
 	ShaderBindings.cpp
@@ -40,8 +69,8 @@ set( ${PROJECT_NAME}_HDR_FILES
 	InlineUniformBlocks.hpp
 	ShaderBindings.hpp
 )
-source_group( "Header Files" FILES ${${PROJECT_NAME}_SRC_FILES} )
-source_group( "Source Files" FILES ${${PROJECT_NAME}_HDR_FILES} )
+source_group( "Header Files" FILES ${${PROJECT_NAME}_HDR_FILES} )
+source_group( "Source Files" FILES ${${PROJECT_NAME}_SRC_FILES} )
 
 set( ${PROJECT_NAME}_FOLDER_HDR_FILES
 	Helper/ColourBlendState.hpp
@@ -86,18 +115,17 @@ source_group( "Source Files\\Layer" FILES ${${PROJECT_NAME}_FOLDER_SRC_FILES} )
 add_library( ${PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_SRC_FILES}
 	${${PROJECT_NAME}_HDR_FILES}
-	${${PROJECT_NAME}_SPIRV_CROSS_CXX_FILES}
-	${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
 )
 add_library( ashes::${_PROJECT_NAME}
 	ALIAS
 	${PROJECT_NAME}
 )
-target_link_libraries( ${PROJECT_NAME} PUBLIC
-	ashes::ashes
-	${Ashes_BINARY_LIBRARIES}
-	${SPIRV_CROSS_LIBRARIES}
-	${RendererDependencies}
+target_link_libraries( ${PROJECT_NAME}
+	PUBLIC
+		ashes::ashes
+		${Ashes_BINARY_LIBRARIES}
+		${SPIRV_CROSS_LIBRARIES}
+		${RendererDependencies}
 )
 target_include_directories( ${PROJECT_NAME}
 	PUBLIC
@@ -119,6 +147,7 @@ target_compile_definitions( ${PROJECT_NAME} PUBLIC
 target_compile_options( ${PROJECT_NAME} PUBLIC
 	${TARGET_CXX_OPTIONS}
 )
+target_add_compilation_flags( ${PROJECT_NAME} )
 set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 17
 	CXX_EXTENSIONS OFF

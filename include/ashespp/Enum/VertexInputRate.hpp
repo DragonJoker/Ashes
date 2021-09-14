@@ -26,10 +26,8 @@ namespace ashes
 			return "instance";
 		default:
 			assert( false && "Unsupported VkVertexInputRate." );
-			throw std::runtime_error{ "Unsupported VkVertexInputRate" };
+			return "Unsupported VkVertexInputRate";
 		}
-
-		return 0;
 	}
 }
 

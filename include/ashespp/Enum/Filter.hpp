@@ -28,10 +28,8 @@ namespace ashes
 			return "cubic";
 		default:
 			assert( false && "Unsupported VkFilter." );
-			throw std::runtime_error{ "Unsupported VkFilter" };
+			return "Unsupported VkFilter";
 		}
-
-		return 0;
 	}
 }
 

@@ -182,17 +182,42 @@ namespace ashes::gl
 
 	struct ShaderDesc
 	{
-		bool isGlsl;
-		GLuint program;
-		VkShaderStageFlags stageFlags;
-		InputsLayout inputs;
-		ConstantsLayout pcb;
-		InterfaceBlocksLayout ubo;
-		InterfaceBlocksLayout sbo;
-		SamplersLayout tbo;
-		SamplersLayout tex;
-		ImagesLayout ibo;
-		ImagesLayout img;
+		explicit ShaderDesc( bool isGlsl = {}
+			, GLuint program = {}
+			, VkShaderStageFlags stageFlags = {}
+			, InputsLayout inputs = {}
+			, ConstantsLayout pcb = {}
+			, InterfaceBlocksLayout ubo = {}
+			, InterfaceBlocksLayout sbo = {}
+			, SamplersLayout tbo = {}
+			, SamplersLayout tex = {}
+			, ImagesLayout ibo = {}
+			, ImagesLayout img = {} )
+			: isGlsl{ isGlsl }
+			, program{ program }
+			, stageFlags{ stageFlags }
+			, inputs{ std::move( inputs ) }
+			, pcb{ std::move( pcb ) }
+			, ubo{ std::move( ubo ) }
+			, sbo{ std::move( sbo ) }
+			, tbo{ std::move( tbo ) }
+			, tex{ std::move( tex ) }
+			, ibo{ std::move( ibo ) }
+			, img{ std::move( img ) }
+		{
+		}
+
+		bool isGlsl{};
+		GLuint program{};
+		VkShaderStageFlags stageFlags{};
+		InputsLayout inputs{};
+		ConstantsLayout pcb{};
+		InterfaceBlocksLayout ubo{};
+		InterfaceBlocksLayout sbo{};
+		SamplersLayout tbo{};
+		SamplersLayout tex{};
+		ImagesLayout ibo{};
+		ImagesLayout img{};
 	};
 
 	inline bool operator==( ShaderDesc const & lhs, ShaderDesc const & rhs )
@@ -201,6 +226,8 @@ namespace ashes::gl
 			&& lhs.inputs == rhs.inputs
 			&& lhs.pcb == rhs.pcb
 			&& lhs.ubo == rhs.ubo
+			&& lhs.sbo == rhs.sbo
+			&& lhs.tbo == rhs.tbo
 			&& lhs.tex == rhs.tex
 			&& lhs.ibo == rhs.ibo
 			&& lhs.img == rhs.img;

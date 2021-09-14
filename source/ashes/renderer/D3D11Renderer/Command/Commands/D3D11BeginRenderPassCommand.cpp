@@ -53,16 +53,16 @@ namespace ashes::d3d11
 			{
 				if ( getAspectMask( attachDesc.format ) == VK_IMAGE_ASPECT_COLOR_BIT )
 				{
-					context.context->ClearRenderTargetView( reinterpret_cast< ID3D11RenderTargetView * >( views[reference.attachment]->view )
+					context.context->ClearRenderTargetView( static_cast< ID3D11RenderTargetView * >( views[reference.attachment]->view )
 						, m_rtClearValues[clearIndex].color.float32 );
 					++clearIndex;
 				}
 				else
 				{
-					context.context->ClearDepthStencilView( reinterpret_cast< ID3D11DepthStencilView * >( views[reference.attachment]->view )
+					context.context->ClearDepthStencilView( static_cast< ID3D11DepthStencilView * >( views[reference.attachment]->view )
 						, get( m_frameBuffer )->getDSViewFlags()
 						, m_dsClearValue.depthStencil.depth
-						, m_dsClearValue.depthStencil.stencil );
+						, UINT8( m_dsClearValue.depthStencil.stencil ) );
 				}
 			}
 		}

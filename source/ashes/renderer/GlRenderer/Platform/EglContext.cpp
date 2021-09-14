@@ -164,7 +164,7 @@ namespace ashes::gl
 			eglSwapInterval( m_display, 0 );
 			disable();
 		}
-		catch ( std::exception & p_exc )
+		catch ( std::exception & )
 		{
 			doCleanup();
 			throw;

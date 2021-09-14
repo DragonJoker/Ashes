@@ -9,7 +9,10 @@
 #ifndef VK_NO_PROTOTYPES
 #	define VK_NO_PROTOTYPES
 #endif
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
 #include <vulkan/vk_icd.h>
+#pragma GCC diagnostic pop
 
 namespace ashes
 {

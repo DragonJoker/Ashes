@@ -14,7 +14,7 @@ namespace ashes::d3d11
 
 		for ( auto & attach : ashes::makeArrayView( state.pAttachments, state.attachmentCount ) )
 		{
-			result.RenderTarget[i].BlendEnable = attach.blendEnable;
+			result.RenderTarget[i].BlendEnable = attach.blendEnable != 0;
 			result.RenderTarget[i].BlendOp = getBlendOp( attach.colorBlendOp );
 			result.RenderTarget[i].BlendOpAlpha = getBlendOp( attach.alphaBlendOp );
 			result.RenderTarget[i].DestBlend = getBlendFactor( attach.dstColorBlendFactor );

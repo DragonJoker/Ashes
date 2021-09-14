@@ -126,10 +126,8 @@ namespace ashes
 #endif
 		default:
 			assert( false && "Unsupported VkBlendOp." );
-			throw std::runtime_error{ "Unsupported VkBlendOp" };
+			return "Unsupported VkBlendOp";
 		}
-
-		return 0;
 	}
 }
 

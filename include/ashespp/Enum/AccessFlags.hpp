@@ -94,10 +94,8 @@ namespace ashes
 #endif
 		default:
 			assert( false && "Unsupported VkAccessFlagBits." );
-			throw std::runtime_error{ "Unsupported VkAccessFlagBits" };
+			return "Unsupported VkAccessFlagBits";
 		}
-
-		return 0;
 	}
 }
 

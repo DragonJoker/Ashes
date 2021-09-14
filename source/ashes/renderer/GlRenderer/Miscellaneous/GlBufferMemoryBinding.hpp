@@ -20,6 +20,5 @@ namespace ashes::gl
 
 	private:
 		Buffer * m_buffer;
-		mutable GLenum m_copyTarget;
 	};
 }

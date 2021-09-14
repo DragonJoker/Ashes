@@ -10,15 +10,6 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	void apply( ContextLock const & context
-		, CmdWriteTimestamp const & cmd )
-	{
-		glLogCall( context
-			, glQueryCounter
-			, cmd.name
-			, GL_QUERY_TYPE_TIMESTAMP );
-	}
-
 	void buildWriteTimestampCommand( VkPipelineStageFlagBits pipelineStage
 		, VkQueryPool pool
 		, uint32_t query

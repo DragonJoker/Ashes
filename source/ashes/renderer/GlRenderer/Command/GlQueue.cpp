@@ -495,11 +495,9 @@ namespace ashes::gl
 
 	Queue::Queue( VkAllocationCallbacks const * allocInfo
 		, VkDevice device
-		, VkDeviceQueueCreateInfo createInfo
-		, uint32_t index )
+		, VkDeviceQueueCreateInfo createInfo )
 		: m_device{ device }
 		, m_createInfo{ std::move( createInfo ) }
-		, m_index{ index }
 	{
 		registerObject( m_device, *this );
 	}
@@ -593,7 +591,7 @@ namespace ashes::gl
 	{
 		try
 		{
-			auto context = ( ( Device * )m_device )->getContext();
+			auto context = get( m_device )->getContext();
 			logDebug( "*** vkQueueWaitIdle ***" );
 			glLogEmptyCall( context
 				, glFinish );

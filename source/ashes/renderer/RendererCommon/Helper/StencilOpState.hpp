@@ -22,7 +22,7 @@ namespace ashes
 			0xFFFFFFFFu,
 			0u,
 		};
-	};
+	}
 
 	inline bool operator==( VkStencilOpState const & lhs, VkStencilOpState const & rhs )
 	{

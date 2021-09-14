@@ -6,13 +6,14 @@ See LICENSE file in root folder
 
 namespace ashes::gl
 {
-	enum GlQueryResultFlag
+	enum GlQueryResultFlag : GLenum
 	{
 		GL_QUERY_NONE = 0,
 		GL_QUERY_RESULT = 0x8866,
 		GL_QUERY_RESULT_NO_WAIT = 0x9194,
 	};
 	Ashes_ImplementFlag( GlQueryResultFlag )
+	std::string getName( GlQueryResultFlag value );
 	std::string getName( GlQueryResultFlags value );
 	inline std::string toString( GlQueryResultFlags value ) { return getName( value ); }
 	/**

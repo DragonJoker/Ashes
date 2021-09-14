@@ -24,7 +24,7 @@ namespace ashes::d3d11
 			VkDisplayModeParametersKHR parameters
 			{
 				extent,
-				uint32_t( ( 1000.0f * desc.RefreshRate.Numerator ) / desc.RefreshRate.Denominator ),
+				uint32_t( ( 1000.0f * float( desc.RefreshRate.Numerator ) ) / float( desc.RefreshRate.Denominator ) ),
 			};
 			m_displayModes.push_back(
 				{

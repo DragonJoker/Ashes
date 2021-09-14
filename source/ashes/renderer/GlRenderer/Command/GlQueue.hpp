@@ -20,8 +20,7 @@ namespace ashes::gl
 	public:
 		Queue( VkAllocationCallbacks const * allocInfo
 			, VkDevice device
-			, VkDeviceQueueCreateInfo createInfo
-			, uint32_t index );
+			, VkDeviceQueueCreateInfo createInfo );
 		~Queue();
 
 		VkResult submit( VkSubmitInfoArray const & values
@@ -44,7 +43,6 @@ namespace ashes::gl
 	private:
 		VkDevice m_device;
 		VkDeviceQueueCreateInfo m_createInfo;
-		uint32_t m_index;
 		mutable Optional< DebugLabel > m_label;
 	};
 }

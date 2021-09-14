@@ -31,10 +31,8 @@ namespace ashes
 #endif
 		default:
 			assert( false && "Unsupported VkDescriptorSetLayoutCreateFlagBits." );
-			throw std::runtime_error{ "Unsupported VkDescriptorSetLayoutCreateFlagBits" };
+			return "Unsupported VkDescriptorSetLayoutCreateFlagBits";
 		}
-
-		return 0;
 	}
 }
 

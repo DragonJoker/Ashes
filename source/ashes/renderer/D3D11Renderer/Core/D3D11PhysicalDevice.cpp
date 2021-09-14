@@ -10,11 +10,17 @@ See LICENSE file in root folder.
 #include <ashes/common/Hash.hpp>
 
 #if defined( ASHES_D3D11_USE_AMD_AGS )
+#	pragma warning( push )
+#	pragma warning( disable: 4828 )
 #	include <amd_ags.h>
+#	pragma warning( pop )
 #endif
 
 #if defined( ASHES_D3D11_USE_NVAPI )
+#	pragma warning( push )
+#	pragma warning( disable: 4828 )
 #	include <nvapi.h>
+#	pragma warning( pop )
 #endif
 
 #include "ashesd3d11_api.hpp"
@@ -162,7 +168,7 @@ namespace ashes::d3d11
 	uint32_t PhysicalDevice::getMemoryTypeBits( VkMemoryPropertyFlags properties )const
 	{
 		uint32_t result{};
-		auto & memoryProperties = getMemoryProperties();
+		auto memoryProperties = getMemoryProperties();
 
 		for ( auto i = 0u; i < memoryProperties.memoryTypeCount; ++i )
 		{
@@ -291,6 +297,8 @@ namespace ashes::d3d11
 			imageProperties.maxExtent.width = m_properties.limits.maxImageDimension3D;
 			imageProperties.maxExtent.height = m_properties.limits.maxImageDimension3D;
 			imageProperties.maxExtent.depth = m_properties.limits.maxImageDimension3D;
+			break;
+		default:
 			break;
 		}
 
@@ -632,12 +640,10 @@ namespace ashes::d3d11
 			m_properties.deviceID = adapterDesc.DeviceId;
 			m_properties.vendorID = adapterDesc.VendorId;
 			m_properties.driverVersion = adapterDesc.Revision;
-			// Store the dedicated video card memory in megabytes.
-			auto videoCardMemory = int( adapterDesc.DedicatedVideoMemory / 1024 / 1024 );
 		}
 
-		uint32_t major = m_adapterInfo.featureLevel >> 12;
-		uint32_t minor = ( m_adapterInfo.featureLevel >> 8 ) & 0x01;
+		auto major = uint32_t( m_adapterInfo.featureLevel >> 12 );
+		auto minor = uint32_t( ( m_adapterInfo.featureLevel >> 8 ) & 0x01 );
 		m_properties.apiVersion = ( major << 22 ) | ( minor << 12 );
 		m_properties.deviceType = VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
 
@@ -645,7 +651,7 @@ namespace ashes::d3d11
 		m_properties.limits.maxImageDimension2D = D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION;
 		m_properties.limits.maxImageDimension3D = D3D11_REQ_TEXTURE3D_U_V_OR_W_DIMENSION;
 		m_properties.limits.maxImageDimensionCube = D3D11_REQ_TEXTURECUBE_DIMENSION;
-		m_properties.limits.maxImageArrayLayers = std::min( D3D11_REQ_TEXTURE1D_ARRAY_AXIS_DIMENSION, D3D11_REQ_TEXTURE2D_ARRAY_AXIS_DIMENSION );
+		m_properties.limits.maxImageArrayLayers = uint32_t( std::min( D3D11_REQ_TEXTURE1D_ARRAY_AXIS_DIMENSION, D3D11_REQ_TEXTURE2D_ARRAY_AXIS_DIMENSION ) );
 		m_properties.limits.maxTexelBufferElements = 1 << D3D11_REQ_BUFFER_RESOURCE_TEXEL_COUNT_2_TO_EXP;
 		m_properties.limits.maxUniformBufferRange = 65536u;
 		m_properties.limits.maxStorageBufferRange = 4294967295u;

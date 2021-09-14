@@ -24,10 +24,8 @@ namespace ashes
 			return "precise";
 		default:
 			assert( false && "Unsupported VkQueryControlFlagBits." );
-			throw std::runtime_error{ "Unsupported VkQueryControlFlagBits" };
+			return "Unsupported VkQueryControlFlagBits";
 		}
-
-		return 0;
 	}
 }
 

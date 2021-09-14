@@ -23,6 +23,8 @@ See LICENSE file in root folder.
 
 #include <ashes/common/Exception.hpp>
 
+#pragma warning( disable: 4191 )
+
 namespace ashes
 {
 	Device::Device( Instance const & instance

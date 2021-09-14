@@ -26,10 +26,8 @@ namespace ashes
 			return "cw";
 		default:
 			assert( false && "Unsupported VkFrontFace." );
-			throw std::runtime_error{ "Unsupported VkFrontFace" };
+			return "Unsupported VkFrontFace";
 		}
-
-		return 0;
 	}
 }
 

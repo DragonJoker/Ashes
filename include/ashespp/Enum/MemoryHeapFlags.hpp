@@ -26,10 +26,8 @@ namespace ashes
 			return "multi_instance";
 		default:
 			assert( false && "Unsupported VkMemoryHeapFlagBits." );
-			throw std::runtime_error{ "Unsupported VkMemoryHeapFlagBits" };
+			return "Unsupported VkMemoryHeapFlagBits";
 		}
-
-		return 0;
 	}
 }
 

@@ -106,10 +106,8 @@ namespace ashes
 #endif
 		default:
 			assert( false && "Unsupported VkDeviceQueueCreateFlagBits." );
-			throw std::runtime_error{ "Unsupported VkDeviceQueueCreateFlagBits" };
+			return "Unsupported VkDeviceQueueCreateFlagBits";
 		}
-
-		return 0;
 	}
 }
 

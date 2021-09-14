@@ -36,23 +36,6 @@ namespace ashes::gl
 
 #endif
 
-		Rotation convert( VkSurfaceTransformFlagBitsKHR transform )
-		{
-			switch ( transform )
-			{
-			case VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR:
-				return Rotation( RR_Rotate_0 );
-			case VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR:
-				return Rotation( RR_Rotate_90 );
-			case VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR:
-				return Rotation( RR_Rotate_180 );
-			case VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR:
-				return Rotation( RR_Rotate_270 );
-			default:
-				return Rotation( RR_Rotate_0 );
-			}
-		}
-
 		XVisualInfo * createVisualInfoWithoutFBConfig( Display * dpy
 			, std::vector< int > arrayAttribs
 			, int screen )
@@ -117,9 +100,9 @@ namespace ashes::gl
 		, ContextImpl const * mainContext )
 		: ContextImpl{ instance }
 		, xlibCreateInfo{ std::move( createInfo ) }
-		, m_mainContext{ static_cast< X11Context const * >( mainContext ) }
 		, m_display{ xlibCreateInfo.dpy }
 		, m_window{ xlibCreateInfo.window }
+		, m_mainContext{ static_cast< X11Context const * >( mainContext ) }
 	{
 	}
 
@@ -128,8 +111,8 @@ namespace ashes::gl
 		, ContextImpl const * mainContext )
 		: ContextImpl{ instance }
 		, displayCreateInfo{ std::move( createInfo ) }
-		, m_mainContext{ static_cast< X11Context const * >( mainContext ) }
 		, m_display{ XOpenDisplay( nullptr ) }
+		, m_mainContext{ static_cast< X11Context const * >( mainContext ) }
 	{
 	}
 
@@ -186,15 +169,7 @@ namespace ashes::gl
 		};
 
 		attribList.push_back( 0 );
-
-		if ( glXChooseFBConfig )
-		{
-			m_visualInfo = createVisualInfoWithFBConfig( m_display, attribList, m_screenIndex, m_fbConfig );
-		}
-		else
-		{
-			m_visualInfo = createVisualInfoWithoutFBConfig( m_display, attribList, m_screenIndex );
-		}
+		m_visualInfo = createVisualInfoWithFBConfig( m_display, attribList, m_screenIndex, m_fbConfig );
 
 		if ( !m_visualInfo )
 		{
@@ -215,10 +190,10 @@ namespace ashes::gl
 
 		doLoadSytemFunctions();
 		auto & extensions = get( instance )->getExtensions();
-		m_major = std::max( reqMajor, extensions.getMajor() );
-		m_minor = std::max( reqMinor, extensions.getMinor() );
+		m_major = std::max( reqMajor, int( extensions.getMajor() ) );
+		m_minor = std::max( reqMinor, int( extensions.getMinor() ) );
 	}
-	catch ( std::exception & exc )
+	catch ( std::exception & )
 	{
 		disable();
 
@@ -286,7 +261,7 @@ namespace ashes::gl
 
 		getFunction( "glXSwapIntervalEXT", glXSwapInterval, errStream );
 	}
-	catch ( std::exception & exc )
+	catch ( std::exception & )
 	{
 		disable();
 		glXDestroyContext( m_display, m_glxContext );
@@ -336,7 +311,7 @@ namespace ashes::gl
 			, XA_ATOM
 			, 32
 			, PropModeReplace
-			, (unsigned char *)&wmFullscreen
+			, reinterpret_cast< unsigned char *>( &wmFullscreen )
 			, 1 ) )
 		{
 			throw std::runtime_error{ "Couldn't set X Window fulsscreen" };
@@ -349,7 +324,7 @@ namespace ashes::gl
 
 		XSync( m_display, False );
 	}
-	catch ( std::exception & exc )
+	catch ( std::exception & )
 	{
 		disable();
 		glXDestroyContext( m_display, m_glxContext );
@@ -395,7 +370,7 @@ namespace ashes::gl
 
 		XFree( m_visualInfo );
 	}
-	catch ( std::exception & exc )
+	catch ( std::exception & )
 	{
 		disable();
 		glXDestroyContext( m_display, m_glxContext );

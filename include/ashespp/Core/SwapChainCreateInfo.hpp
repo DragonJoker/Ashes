@@ -15,42 +15,42 @@ namespace ashes
 		SwapChainCreateInfo( SwapChainCreateInfo const & ) = delete;
 		SwapChainCreateInfo & operator=( SwapChainCreateInfo const & ) = delete;
 
-		SwapChainCreateInfo( VkSwapchainCreateFlagsKHR flags
-			, VkSurfaceKHR surface
-			, uint32_t minImageCount
-			, VkFormat imageFormat
-			, VkColorSpaceKHR imageColorSpace
-			, VkExtent2D imageExtent
-			, uint32_t imageArrayLayers
-			, VkImageUsageFlags imageUsage
-			, VkSharingMode imageSharingMode
-			, UInt32Array queueFamilyIndices
-			, VkSurfaceTransformFlagBitsKHR preTransform
-			, VkCompositeAlphaFlagBitsKHR compositeAlpha
-			, VkPresentModeKHR presentMode
-			, VkBool32 clipped
-			, VkSwapchainKHR oldSwapchain )
-			: queueFamilyIndices{ std::move( queueFamilyIndices ) }
+		SwapChainCreateInfo( VkSwapchainCreateFlagsKHR pflags
+			, VkSurfaceKHR psurface
+			, uint32_t pminImageCount
+			, VkFormat pimageFormat
+			, VkColorSpaceKHR pimageColorSpace
+			, VkExtent2D pimageExtent
+			, uint32_t pimageArrayLayers
+			, VkImageUsageFlags pimageUsage
+			, VkSharingMode pimageSharingMode
+			, UInt32Array pqueueFamilyIndices
+			, VkSurfaceTransformFlagBitsKHR ppreTransform
+			, VkCompositeAlphaFlagBitsKHR pcompositeAlpha
+			, VkPresentModeKHR ppresentMode
+			, VkBool32 pclipped
+			, VkSwapchainKHR poldSwapchain )
+			: queueFamilyIndices{ std::move( pqueueFamilyIndices ) }
 			, vk
 			{
 				VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
 				nullptr,
-				flags,
-				surface,
-				minImageCount,
-				imageFormat,
-				imageColorSpace,
-				imageExtent,
-				imageArrayLayers,
-				imageUsage,
-				imageSharingMode,
-				uint32_t( this->queueFamilyIndices.size() ),
-				this->queueFamilyIndices.data(),
-				preTransform,
-				compositeAlpha,
-				presentMode,
-				clipped,
-				oldSwapchain,
+				pflags,
+				psurface,
+				pminImageCount,
+				pimageFormat,
+				pimageColorSpace,
+				pimageExtent,
+				pimageArrayLayers,
+				pimageUsage,
+				pimageSharingMode,
+				uint32_t( queueFamilyIndices.size() ),
+				queueFamilyIndices.data(),
+				ppreTransform,
+				pcompositeAlpha,
+				ppresentMode,
+				pclipped,
+				poldSwapchain,
 			}
 		{
 		}
@@ -70,8 +70,8 @@ namespace ashes
 				rhs.vk.imageArrayLayers,
 				rhs.vk.imageUsage,
 				rhs.vk.imageSharingMode,
-				uint32_t( this->queueFamilyIndices.size() ),
-				this->queueFamilyIndices.data(),
+				uint32_t( queueFamilyIndices.size() ),
+				queueFamilyIndices.data(),
 				rhs.vk.preTransform,
 				rhs.vk.compositeAlpha,
 				rhs.vk.presentMode,
@@ -97,8 +97,8 @@ namespace ashes
 				rhs.vk.imageArrayLayers,
 				rhs.vk.imageUsage,
 				rhs.vk.imageSharingMode,
-				uint32_t( this->queueFamilyIndices.size() ),
-				this->queueFamilyIndices.data(),
+				uint32_t( queueFamilyIndices.size() ),
+				queueFamilyIndices.data(),
 				rhs.vk.preTransform,
 				rhs.vk.compositeAlpha,
 				rhs.vk.presentMode,

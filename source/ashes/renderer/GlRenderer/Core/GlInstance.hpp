@@ -82,7 +82,7 @@ namespace ashes::gl
 
 		bool isSPIRVSupported()const
 		{
-			return m_extensions.isSPIRVSupported();
+			return m_extensions.isSPIRVSupported() != 0;
 		}
 
 		bool isValidationEnabled()const
@@ -142,7 +142,7 @@ namespace ashes::gl
 
 		bool hasClearTexImage()const
 		{
-			return m_features.hasClearTexImage;
+			return m_features.hasClearTexImage != 0;
 		}
 
 		static constexpr uint32_t getDefaultMajor()
@@ -161,7 +161,6 @@ namespace ashes::gl
 		}
 
 	private:
-		VkInstanceCreateFlags m_flags;
 		VkApplicationInfo m_applicationInfo;
 		StringArray m_enabledLayerNames;
 		StringArray m_enabledExtensions;

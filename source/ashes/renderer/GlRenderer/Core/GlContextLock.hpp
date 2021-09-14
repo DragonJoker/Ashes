@@ -183,7 +183,7 @@ namespace ashes::gl
 		{
 			ValueGetter< ValueT >::get( *this, name, value );
 
-			for ( GLint i = 0u; i < GLint( CountT ); ++i )
+			for ( size_t i = 0u; i < CountT; ++i )
 			{
 				value[i] = std::max( value[i], min[i] );
 			}
@@ -192,9 +192,9 @@ namespace ashes::gl
 		template< typename ValueT, size_t CountT >
 		void getValuesI( GlValueName name, ValueT ( & value )[CountT], std::array< ValueT, CountT > const & min )
 		{
-			for ( GLint i = 0u; i < GLint( CountT ); ++i )
+			for ( size_t i = 0u; i < CountT; ++i )
 			{
-				ValueGetter< ValueT >::get( *this, name, i, value );
+				ValueGetter< ValueT >::get( *this, name, GLint( i ), value );
 				value[i] = std::max( value[i], min[i] );
 			}
 		}

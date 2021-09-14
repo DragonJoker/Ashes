@@ -59,14 +59,6 @@ namespace ashes::gl
 #pragma region Vulkan 1.0
 #ifdef VK_VERSION_1_0
 
-	PFN_vkVoidFunction VKAPI_CALL vkGetInstanceProcAddr(
-		VkInstance instance,
-		const char* pName );
-
-	PFN_vkVoidFunction VKAPI_CALL vkGetDeviceProcAddr(
-		VkDevice device,
-		const char* pName );
-
 	VkResult VKAPI_CALL vkCreateInstance(
 		const VkInstanceCreateInfo* pCreateInfo,
 		const VkAllocationCallbacks* pAllocator,
@@ -1095,7 +1087,6 @@ namespace ashes::gl
 		VkCommandBuffer* pCommandBuffers )
 	{
 		VkResult result = VK_SUCCESS;
-		auto itLayout = pAllocateInfo->commandBufferCount;
 
 		for ( auto it = pCommandBuffers;
 			it != pCommandBuffers + pAllocateInfo->commandBufferCount;
@@ -1285,7 +1276,7 @@ namespace ashes::gl
 		get( commandBuffer )->drawIndexed( indexCount
 			, instanceCount
 			, firstIndex
-			, vertexOffset
+			, uint32_t( vertexOffset )
 			, firstInstance );
 	}
 
@@ -1781,7 +1772,7 @@ namespace ashes::gl
 			}
 #endif
 
-			pNext = reinterpret_cast< VkBaseOutStructure * >( pNext->pNext );
+			pNext = pNext->pNext;
 		}
 	}
 
@@ -1817,7 +1808,7 @@ namespace ashes::gl
 			}
 #endif
 
-			pNext = reinterpret_cast< VkBaseOutStructure * >( pNext->pNext );
+			pNext = pNext->pNext;
 		}
 	}
 
@@ -2421,7 +2412,7 @@ namespace ashes::gl
 			}
 #endif
 
-			pNext = reinterpret_cast< VkBaseOutStructure * >( pNext->pNext );
+			pNext = pNext->pNext;
 		}
 	}
 
@@ -2455,7 +2446,7 @@ namespace ashes::gl
 			}
 #endif
 
-			pNext = reinterpret_cast< VkBaseOutStructure * >( pNext->pNext );
+			pNext = pNext->pNext;
 		}
 	}
 
@@ -3501,7 +3492,6 @@ namespace ashes::gl
 			, pAllocator
 			, instance
 			, *pCreateInfo );
-		return VK_SUCCESS;
 	}
 
 	void VKAPI_CALL vkDestroyDebugUtilsMessengerEXT(
@@ -4146,6 +4136,182 @@ namespace ashes::gl
 
 namespace ashes::gl
 {
+	namespace
+	{
+		struct Library
+		{
+			AshPluginDescription description{ "gl"
+				, "OpenGL renderer for Ashes"
+				, nullptr
+				, {}
+				, {}
+				, {}
+				, ASHPLUGIN_UNDEFINED };
+
+			VkResult init( AshPluginMode mode )
+			{
+				auto validMode = ( description.mode == ASHPLUGIN_UNDEFINED || description.mode == mode );
+				assert( validMode
+					&& "ashesTestRenderer: Plugin mode has already been selected." );
+				VkResult result = description.getInstanceProcAddr
+					? ( validMode ? VK_SUCCESS : VK_ERROR_INCOMPATIBLE_DRIVER )
+					: VK_ERROR_INITIALIZATION_FAILED;
+
+				if ( result == VK_ERROR_INITIALIZATION_FAILED )
+				{
+					clearDebugFile();
+					bool supported = false;
+					gl::ExtensionsHandler extensions;
+
+					try
+					{
+						gl::RenderWindow window{ MinMajor, MinMinor, "Gl4Init" };
+						extensions.initialise();
+						supported = extensions.getMajor() > MinMajor
+							|| ( extensions.getMajor() == MinMajor && extensions.getMinor() >= MinMinor );
+					}
+					catch ( std::exception & exc )
+					{
+						std::cerr << exc.what() << std::endl;
+					}
+
+					description.getInstanceProcAddr = &vkGetInstanceProcAddr;
+					description.features = extensions.getFeatures();
+#define VK_LIB_GLOBAL_FUNCTION( v, x )\
+					description.functions.x = vk##x;
+#define VK_LIB_INSTANCE_FUNCTION( v, x )\
+					description.functions.x = vk##x;
+#define VK_LIB_DEVICE_FUNCTION( v, x )\
+					description.functions.x = vk##x;
+#define VK_LIB_GLOBAL_FUNCTION_EXT( v, n, x )
+#define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )
+#define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )
+#include <ashes/ashes_functions_list.hpp>
+					result = VK_SUCCESS;
+
+					description.mode = mode;
+					description.support.priority = 7u;
+					description.support.supported = supported ? VK_TRUE : VK_FALSE;
+				}
+
+				return result;
+			}
+		};
+
+		Library & getLibrary()
+		{
+			thread_local Library library;
+			return library;
+		}
+
+		bool checkVersion( VkInstance instance
+			, uint32_t version )
+		{
+			return Instance::getDefaultApiVersion() >= version;
+		}
+
+		bool checkVersionExt( VkInstance instance
+			, uint32_t version
+			, std::string_view extension )
+		{
+			return checkVersion( instance, version )
+				&& get( instance )->hasExtension( extension.data() );
+		}
+
+		bool checkVersion( VkDevice device
+			, uint32_t version )
+		{
+			return checkVersion( getInstance( device ), version );
+		}
+
+		bool checkVersionExt( VkDevice device
+			, uint32_t version
+			, std::string_view extension )
+		{
+			return checkVersion( getInstance( device ), version )
+				&& get( device )->hasExtension( extension.data() );
+		}
+
+		using ObjectFunctions = std::map< std::string, PFN_vkVoidFunction >;
+
+#pragma warning( push )
+#pragma warning( disable: 4191 )
+
+		ObjectFunctions const & getInstanceFunctions( VkInstance instance )
+		{
+			static std::map< VkInstance, ObjectFunctions > functions;
+			auto it = functions.insert( { instance, {} } );
+
+			if ( it.second )
+			{
+				if ( instance != VK_NULL_HANDLE )
+				{
+					it.first->second =
+					{
+#define VK_LIB_GLOBAL_FUNCTION( v, x )\
+						{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#define VK_LIB_GLOBAL_FUNCTION_EXT( v, n, x )\
+						{ "vk"#x, checkVersionExt( instance, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#define VK_LIB_INSTANCE_FUNCTION( v, x )\
+						{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )\
+						{ "vk"#x, checkVersionExt( instance, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#define VK_LIB_DEVICE_FUNCTION( v, x )\
+						{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )\
+						{ "vk"#x, checkVersionExt( instance, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#define VK_STATIC_LIB_DEVICE_FUNCTION_EXT( v, n, x )\
+						{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#include <ashes/ashes_functions_list.hpp>
+					};
+				}
+				else
+				{
+					it.first->second =
+					{
+#define VK_LIB_GLOBAL_FUNCTION( v, x )\
+						{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
+#define VK_LIB_INSTANCE_FUNCTION( v, x )\
+						{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
+#define VK_LIB_DEVICE_FUNCTION( v, x )\
+						{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
+#define VK_LIB_GLOBAL_FUNCTION_EXT( v, n, x )
+#define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )
+#	define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )
+#include <ashes/ashes_functions_list.hpp>
+					};
+				}
+			}
+
+			return it.first->second;
+		}
+
+		ObjectFunctions const & getDeviceFunctions( VkDevice device )
+		{
+			static std::map< VkDevice, ObjectFunctions > functions;
+			auto it = functions.insert( { device, {} } );
+
+			if ( it.second )
+			{
+				it.first->second =
+				{
+					{ "vkGetDeviceProcAddr", PFN_vkVoidFunction( vkGetDeviceProcAddr ) },
+#define VK_LIB_DEVICE_FUNCTION( v, x )\
+					{ "vk"#x, checkVersion( device, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )\
+					{ "vk"#x, checkVersionExt( device, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#define VK_STATIC_LIB_DEVICE_FUNCTION_EXT( v, n, x )\
+					{ "vk"#x, checkVersionExt( device, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#include <ashes/ashes_functions_list.hpp>
+				};
+			}
+
+			return it.first->second;
+		}
+	}
+
+#pragma warning( pop )
+
 	std::vector< VkExtensionProperties > const & getSupportedInstanceExtensions()
 	{
 		static std::vector< VkExtensionProperties > const extensions
@@ -4190,173 +4356,6 @@ namespace ashes::gl
 	{
 		static std::vector< VkLayerProperties > result;
 		return result;
-	}
-
-	struct Library
-	{
-		AshPluginDescription description{ "gl"
-			, "OpenGL renderer for Ashes"
-			, nullptr
-			, {}
-			, {}
-			, ASHPLUGIN_UNDEFINED };
-
-		VkResult init( AshPluginMode mode )
-		{
-			auto validMode = ( description.mode == ASHPLUGIN_UNDEFINED || description.mode == mode );
-			assert( validMode
-				&& "ashesTestRenderer: Plugin mode has already been selected." );
-			VkResult result = description.getInstanceProcAddr
-				? ( validMode ? VK_SUCCESS : VK_ERROR_INCOMPATIBLE_DRIVER )
-				: VK_ERROR_INITIALIZATION_FAILED;
-
-			if ( result == VK_ERROR_INITIALIZATION_FAILED )
-			{
-				clearDebugFile();
-				bool supported = false;
-				gl::ExtensionsHandler extensions;
-
-				try
-				{
-					gl::RenderWindow window{ MinMajor, MinMinor, "Gl4Init" };
-					extensions.initialise();
-					supported = extensions.getMajor() > MinMajor
-						|| ( extensions.getMajor() == MinMajor && extensions.getMinor() >= MinMinor );
-				}
-				catch ( std::exception & exc )
-				{
-					std::cerr << exc.what() << std::endl;
-				}
-
-				description.getInstanceProcAddr = &vkGetInstanceProcAddr;
-				description.features = extensions.getFeatures();
-#define VK_LIB_GLOBAL_FUNCTION( v, x )\
-				description.functions.x = vk##x;
-#define VK_LIB_INSTANCE_FUNCTION( v, x )\
-				description.functions.x = vk##x;
-#define VK_LIB_DEVICE_FUNCTION( v, x )\
-				description.functions.x = vk##x;
-#define VK_LIB_GLOBAL_FUNCTION_EXT( v, n, x )
-#define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )
-#define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )
-#include <ashes/ashes_functions_list.hpp>
-				result = VK_SUCCESS;
-
-				description.mode = mode;
-				description.support.priority = 7u;
-				description.support.supported = supported ? VK_TRUE : VK_FALSE;
-			}
-
-			return result;
-		}
-	};
-
-	Library & getLibrary()
-	{
-		thread_local Library library;
-		return library;
-	}
-
-	bool checkVersion( VkInstance instance
-		, uint32_t version )
-	{
-		return Instance::getDefaultApiVersion() >= version;
-	}
-
-	bool checkVersionExt( VkInstance instance
-		, uint32_t version
-		, std::string_view extension )
-	{
-		return checkVersion( instance, version )
-			&& get( instance )->hasExtension( extension.data() );
-	}
-
-	bool checkVersion( VkDevice device
-		, uint32_t version )
-	{
-		return checkVersion( getInstance( device ), version );
-	}
-
-	bool checkVersionExt( VkDevice device
-		, uint32_t version
-		, std::string_view extension )
-	{
-		return checkVersion( getInstance( device ), version )
-			&& get( device )->hasExtension( extension.data() );
-	}
-
-	using ObjectFunctions = std::map< std::string, PFN_vkVoidFunction >;
-
-	ObjectFunctions const & getInstanceFunctions( VkInstance instance )
-	{
-		static std::map< VkInstance, ObjectFunctions > functions;
-		auto it = functions.insert( { instance, {} } );
-
-		if ( it.second )
-		{
-			if ( instance != VK_NULL_HANDLE )
-			{
-				it.first->second =
-				{
-#define VK_LIB_GLOBAL_FUNCTION( v, x )\
-					{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
-#define VK_LIB_GLOBAL_FUNCTION_EXT( v, n, x )\
-					{ "vk"#x, checkVersionExt( instance, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
-#define VK_LIB_INSTANCE_FUNCTION( v, x )\
-					{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
-#define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )\
-					{ "vk"#x, checkVersionExt( instance, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
-#define VK_LIB_DEVICE_FUNCTION( v, x )\
-					{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
-#define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )\
-					{ "vk"#x, checkVersionExt( instance, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
-#define VK_STATIC_LIB_DEVICE_FUNCTION_EXT( v, n, x )\
-					{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
-#include <ashes/ashes_functions_list.hpp>
-				};
-			}
-			else
-			{
-				it.first->second =
-				{
-#define VK_LIB_GLOBAL_FUNCTION( v, x )\
-					{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
-#define VK_LIB_INSTANCE_FUNCTION( v, x )\
-					{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
-#define VK_LIB_DEVICE_FUNCTION( v, x )\
-					{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
-#define VK_LIB_GLOBAL_FUNCTION_EXT( v, n, x )
-#define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )
-#	define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )
-#include <ashes/ashes_functions_list.hpp>
-				};
-			}
-		}
-
-		return it.first->second;
-	}
-
-	ObjectFunctions const & getDeviceFunctions( VkDevice device )
-	{
-		static std::map< VkDevice, ObjectFunctions > functions;
-		auto it = functions.insert( { device, {} } );
-
-		if ( it.second )
-		{
-			it.first->second =
-			{
-				{ "vkGetDeviceProcAddr", PFN_vkVoidFunction( vkGetDeviceProcAddr ) },
-#define VK_LIB_DEVICE_FUNCTION( v, x )\
-				{ "vk"#x, checkVersion( device, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
-#define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )\
-				{ "vk"#x, checkVersionExt( device, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
-#define VK_STATIC_LIB_DEVICE_FUNCTION_EXT( v, n, x )\
-				{ "vk"#x, checkVersionExt( device, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
-#include <ashes/ashes_functions_list.hpp>
-			};
-		}
-
-		return it.first->second;
 	}
 
 	PFN_vkVoidFunction VKAPI_CALL vkGetInstanceProcAddr(
