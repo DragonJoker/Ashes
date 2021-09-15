@@ -48,6 +48,10 @@ jobs:
       run: $VCPKG_ROOT/vcpkg install egl-registry:${{ matrix.os[1] }}
       shell: bash
 
+    - name: Checkout submodules
+      run: |
+        git submodule update --init -- "CMake"
+
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/build-${{ matrix.buildType }}
 
