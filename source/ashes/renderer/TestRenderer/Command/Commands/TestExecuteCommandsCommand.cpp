@@ -17,10 +17,6 @@ namespace ashes::test
 	{
 	}
 
-	ExecuteCommandsCommand::~ExecuteCommandsCommand()
-	{
-	}
-
 	void ExecuteCommandsCommand::apply()const
 	{
 		for ( auto & command : get( m_commandBuffer )->getCommands() )

@@ -17,11 +17,10 @@ namespace ashes::test
 {
 	BindPipelineCommand::BindPipelineCommand( VkDevice device
 		, VkPipeline pipeline
-		, VkPipelineBindPoint bindingPoint )
+		, VkPipelineBindPoint )
 		: CommandBase{ device }
 		, m_pipeline{ pipeline }
 		, m_layout{ get( m_pipeline )->getLayout() }
-		, m_bindingPoint{ bindingPoint }
 		, m_dynamicLineWidth{ get( m_pipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_LINE_WIDTH ) }
 		, m_dynamicDepthBias{ get( m_pipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_DEPTH_BIAS ) }
 		, m_dynamicScissor{ get( m_pipeline )->hasDynamicStateEnable( VK_DYNAMIC_STATE_SCISSOR ) }

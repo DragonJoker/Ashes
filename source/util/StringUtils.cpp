@@ -86,7 +86,10 @@ namespace utils
 		std::transform( result.begin()
 			, result.end()
 			, result.begin()
-			, tolower );
+			, []( char c )
+			{
+				return char( tolower( c ) );
+			} );
 		return result;
 	}
 
@@ -96,7 +99,10 @@ namespace utils
 		std::transform( result.begin()
 			, result.end()
 			, result.begin()
-			, toupper );
+			, []( char c )
+			{
+				return char( toupper( c ) );
+			} );
 		return result;
 	}
 

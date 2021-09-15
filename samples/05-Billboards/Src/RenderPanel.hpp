@@ -11,7 +11,8 @@ namespace vkapp
 	{
 	public:
 		RenderPanel( wxWindow * parent
-			, wxSize const & size );
+			, wxSize const & size
+			, std::string const & rndName );
 
 	private:
 		void doInitialise( utils::Device const & device

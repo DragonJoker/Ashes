@@ -534,7 +534,7 @@ namespace common
 		, common::TextureNodePtrArray const & textureNodes
 		, uint32_t & matIndex )
 	{
-		if ( !object.empty() )
+		if ( !object.empty() && m_objectsCount )
 		{
 			ashes::VkDescriptorSetLayoutBindingArray bindings
 			{

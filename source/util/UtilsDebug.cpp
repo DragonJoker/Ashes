@@ -6,6 +6,8 @@ See LICENSE file in root folder.
 
 #include <ashespp/Core/Instance.hpp>
 
+#pragma GCC diagnostic ignored "-Wunused-function"
+
 namespace utils
 {
 	namespace
@@ -19,7 +21,7 @@ namespace utils
 			stream << lineBegin << name << ": " << ( value ? std::string( value ) : std::string() ) << lineEnd;
 		}
 
-		char const * const getName( VkDebugReportObjectTypeEXT value )
+		char const * getName( VkDebugReportObjectTypeEXT value )
 		{
 			switch ( value )
 			{
@@ -90,6 +92,7 @@ namespace utils
 	}
 
 #if VK_EXT_debug_utils
+
 	namespace
 	{
 		std::ostream & operator<<( std::ostream & stream, VkDebugUtilsObjectNameInfoEXT const & value )
@@ -240,17 +243,17 @@ namespace utils
 			if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_ERROR_BIT_EXT ) )
 			{
 				stream << "Error:\n";
-			};
+			}
 			// Warnings may hint at unexpected / non-spec API usage
 			if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_WARNING_BIT_EXT ) )
 			{
 				stream << "Warning:\n";
-			};
+			}
 			// May indicate sub-optimal usage of the API
 			if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT ) )
 			{
 				stream << "Performance:\n";
-			};
+			}
 			// Informal messages that may become handy during debugging
 			if ( ashes::checkFlag( flags, VK_DEBUG_REPORT_INFORMATION_BIT_EXT ) )
 			{
@@ -463,5 +466,6 @@ namespace utils
 
 		return instance.createDebugReportCallback( dbgCreateInfo );
 	}
+
 #endif
 }

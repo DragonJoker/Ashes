@@ -90,15 +90,18 @@ namespace ashes
 		Device const & m_device;
 		VkSemaphore m_internal{ VK_NULL_HANDLE };
 		bool m_ownInternal{ true };
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-private-field"
+#pragma warning( push )
+#pragma warning( disable: 4068 )
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-private-field"
 		mutable enum class State
 		{
 			eSignalable,
 			eWaitable,
 		} m_state{ State::eSignalable };
 		mutable std::set< Semaphore const * > * m_list{ nullptr };
-#pragma GCC diagnostic pop
+#pragma clang diagnostic pop
+#pragma warning( pop )
 	};
 }
 

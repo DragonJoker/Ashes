@@ -15,10 +15,8 @@ namespace ashes::test
 	public:
 		GenerateMipsCommand( VkDevice device
 			, VkImage texture );
+
 		void apply()const;
 		CommandPtr clone()const;
-
-	private:
-		VkImage m_texture;
 	};
 }

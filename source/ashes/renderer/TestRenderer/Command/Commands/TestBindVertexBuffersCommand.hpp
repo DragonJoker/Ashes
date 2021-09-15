@@ -21,7 +21,6 @@ namespace ashes::test
 		CommandPtr clone()const;
 
 	private:
-		uint32_t m_firstBinding;
 		VkBufferArray m_vbos;
 		std::vector< uint32_t > m_offsets;
 		std::vector< uint32_t > m_strides;

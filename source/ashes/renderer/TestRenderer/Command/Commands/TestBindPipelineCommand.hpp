@@ -22,7 +22,6 @@ namespace ashes::test
 	private:
 		VkPipeline m_pipeline;
 		VkPipelineLayout m_layout;
-		VkPipelineBindPoint m_bindingPoint;
 		bool m_dynamicLineWidth;
 		bool m_dynamicDepthBias;
 		bool m_dynamicScissor;

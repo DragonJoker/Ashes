@@ -119,8 +119,8 @@ namespace ashes::test
 	template< typename VkType >
 	typename VkTestTypeTraits< VkType >::Type * get( VkType vkValue )
 	{
-		using Type = typename VkTestTypeTraits< VkType >::Type;
-		return ( ( Type * )vkValue );
+		using Type = typename VkTestTypeTraits< VkType >::Type *;
+		return Type( vkValue );
 	}
 
 	template< typename Type >
@@ -133,8 +133,11 @@ namespace ashes::test
 	template< typename Type >
 	typename TestVkTypeTraits< Type >::VkType get( Type const * vkValue )
 	{
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-qual"
 		using VkType = typename TestVkTypeTraits< Type >::VkType;
 		return VkType( vkValue );
+#pragma GCC diagnostic pop
 	}
 
 	template< typename VkType, typename ... Params >

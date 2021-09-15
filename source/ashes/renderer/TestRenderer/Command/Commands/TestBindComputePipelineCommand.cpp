@@ -18,11 +18,10 @@ namespace ashes::test
 {
 	BindComputePipelineCommand::BindComputePipelineCommand( VkDevice device
 		, VkPipeline pipeline
-		, VkPipelineBindPoint bindingPoint )
+		, VkPipelineBindPoint )
 		: CommandBase{ device }
 		, m_pipeline{ pipeline }
 		, m_layout{ get( m_pipeline )->getLayout() }
-		, m_bindingPoint{ bindingPoint }
 	{
 	}
 

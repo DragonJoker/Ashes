@@ -180,19 +180,6 @@ namespace utils
 
 			return doGetSwapChainCreateInfo( surface, surfaceCaps );
 		}
-
-		ashes::ImageView doCloneView( ashes::ImageView const & view )
-		{
-			return view.image->createView( ashes::ImageViewCreateInfo
-				{
-					0u,
-					*view.image,
-					view->viewType,
-					view->format,
-					view->components,
-					view->subresourceRange,
-				} );
-		}
 	}
 
 	SwapChain::SwapChain( ashes::Device const & device
@@ -237,7 +224,7 @@ namespace utils
 			auto attaches = doPrepareAttaches( uint32_t( i )
 				, renderPass.getAttachments()
 				, nullptr );
-			result[i] = static_cast< ashes::RenderPass const & >( renderPass ).createFrameBuffer( m_swapChain->getDimensions()
+			result[i] = renderPass.createFrameBuffer( m_swapChain->getDimensions()
 				, std::move( attaches ) );
 		}
 
@@ -255,7 +242,7 @@ namespace utils
 			auto attaches = doPrepareAttaches( uint32_t( i )
 				, renderPass.getAttachments()
 				, &depthImage );
-			result[i] = static_cast< ashes::RenderPass const & >( renderPass ).createFrameBuffer( m_swapChain->getDimensions()
+			result[i] = renderPass.createFrameBuffer( m_swapChain->getDimensions()
 				, std::move( attaches ) );
 		}
 
@@ -287,7 +274,7 @@ namespace utils
 				, resources.getImageAvailableSemaphore()
 				, imageIndex );
 
-			if ( doCheckNeedReset( VkResult( res )
+			if ( doCheckNeedReset( res
 				, true
 				, "Swap chain image acquisition" ) )
 			{
@@ -307,7 +294,7 @@ namespace utils
 	{
 		try
 		{
-			auto res = queue.present( *m_swapChain
+			queue.present( *m_swapChain
 				, resources.getImageIndex()
 				, resources.getRenderingFinishedSemaphore() );
 		}
@@ -394,7 +381,6 @@ namespace utils
 
 		default:
 			throw ashes::Exception{ errCode, action };
-			break;
 		}
 
 		return result;

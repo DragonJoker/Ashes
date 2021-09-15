@@ -22,7 +22,7 @@ namespace ashes::test
 			, VkExtent2D dimensions
 			, VkDeviceMemory & deviceMemory )
 		{
-			VkImage result;
+			VkImage result{};
 			allocate( result
 				, nullptr
 				, device
@@ -44,7 +44,7 @@ namespace ashes::test
 			, VkImage image
 			, VkFormat format )
 		{
-			VkImageView result;
+			VkImageView result{};
 			allocate( result
 				, nullptr
 				, device
@@ -64,32 +64,35 @@ namespace ashes::test
 	}
 
 	SwapchainKHR::SwapchainKHR( VkDevice device
-		, VkSwapchainCreateInfoKHR createInfo ) try
+		, VkSwapchainCreateInfoKHR createInfo )
 		: m_device{ device }
 		, m_createInfo{ std::move( createInfo ) }
 	{
-		m_image = createImage( device
-			, m_createInfo.imageFormat
-			, m_createInfo.imageExtent
-			, m_deviceMemory );
-		m_view = createImageView( device
-			, m_image
-			, m_createInfo.imageFormat );
-	}
-	catch ( std::exception & exc )
-	{
-		deallocate( m_view, nullptr );
-		deallocate( m_image, nullptr );
+		try
+		{
+			m_image = createImage( device
+				, m_createInfo.imageFormat
+				, m_createInfo.imageExtent
+				, m_deviceMemory );
+			m_view = createImageView( device
+				, m_image
+				, m_createInfo.imageFormat );
+		}
+		catch ( std::exception & exc )
+		{
+			deallocate( m_view, nullptr );
+			deallocate( m_image, nullptr );
 
-		std::stringstream stream;
-		stream << "Swapchain creation failed: " << exc.what() << std::endl;
-		get( device )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
-			, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
-			, uint64_t( device )
-			, 0u
-			, VK_ERROR_INCOMPATIBLE_DRIVER
-			, "Test"
-			, stream.str().c_str() );
+			std::stringstream stream;
+			stream << "Swapchain creation failed: " << exc.what() << std::endl;
+			get( device )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+				, uint64_t( device )
+				, 0u
+				, VK_ERROR_INCOMPATIBLE_DRIVER
+				, "Test"
+				, stream.str().c_str() );
+		}
 	}
 
 	SwapchainKHR::~SwapchainKHR()

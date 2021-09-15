@@ -197,7 +197,7 @@ namespace common
 
 	bool Gui::inputFloat( const char *caption, float *value, float step, uint32_t precision )
 	{
-		return ImGui::InputFloat( caption, value, step, step * 10.0f, precision );
+		return ImGui::InputFloat( caption, value, step, step * 10.0f, "%.3f", precision );
 	}
 
 	bool Gui::sliderFloat( char const * caption, float* value, float min, float max )

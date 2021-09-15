@@ -10,11 +10,10 @@ See LICENSE file in root folder.
 namespace ashes::test
 {
 	DisplayKHR::DisplayKHR( VkDisplayPropertiesKHR const & properties
-		, VkFormat format
+		, VkFormat
 		, uint32_t screenIndex
 		, std::vector< VkDisplayModeParametersKHR > const & displayModesParams )
 		: m_properties{ properties }
-		, m_format{ format }
 		, m_screenIndex{ screenIndex }
 	{
 		for ( auto & parameters : displayModesParams )
@@ -26,7 +25,7 @@ namespace ashes::test
 				0u,
 				parameters,
 			};
-			VkDisplayModeKHR displayMode;
+			VkDisplayModeKHR displayMode{};
 			allocate( displayMode
 				, nullptr
 				, get( this )

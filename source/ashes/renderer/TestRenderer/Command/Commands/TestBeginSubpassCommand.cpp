@@ -14,13 +14,10 @@ See LICENSE file in root folder.
 namespace ashes::test
 {
 	BeginSubpassCommand::BeginSubpassCommand( VkDevice device
-		, VkRenderPass renderPass
-		, VkFramebuffer frameBuffer
-		, VkSubpassDescription const & subpass )
+		, VkRenderPass
+		, VkFramebuffer
+		, VkSubpassDescription const & )
 		: CommandBase{ device }
-		, m_renderPass{ renderPass }
-		, m_subpass{ subpass }
-		, m_frameBuffer{ frameBuffer }
 	{
 	}
 

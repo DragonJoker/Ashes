@@ -24,7 +24,7 @@ namespace ashes::test
 			return m_properties.physicalResolution;
 		}
 
-		char const * const getName()const
+		char const * getName()const
 		{
 			return m_properties.displayName;
 		}
@@ -41,7 +41,6 @@ namespace ashes::test
 
 	private:
 		VkDisplayPropertiesKHR m_properties;
-		VkFormat m_format;
 		uint32_t m_screenIndex;
 		std::vector< VkDisplayModePropertiesKHR > m_displayModes;
 	};

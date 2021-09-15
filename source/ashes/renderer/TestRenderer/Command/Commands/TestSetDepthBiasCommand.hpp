@@ -19,10 +19,5 @@ namespace ashes::test
 
 		void apply()const;
 		CommandPtr clone()const;
-
-	private:
-		float m_constantFactor;
-		float m_clamp;
-		float m_slopeFactor;
 	};
 }

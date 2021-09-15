@@ -21,6 +21,7 @@ set( SOURCE_FILES
 	Src/TransparentRendering.cpp
 	${Ashes_SOURCE_DIR}/external/imgui/imgui.cpp
 	${Ashes_SOURCE_DIR}/external/imgui/imgui_draw.cpp
+	${Ashes_SOURCE_DIR}/external/imgui/imgui_tables.cpp
 	${Ashes_SOURCE_DIR}/external/imgui/imgui_widgets.cpp
 )
 file( GLOB HEADER_FILES

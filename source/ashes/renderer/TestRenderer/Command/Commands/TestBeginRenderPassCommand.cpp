@@ -18,8 +18,6 @@ namespace ashes::test
 		, VkFramebuffer frameBuffer
 		, VkClearValueArray const & clearValues )
 		: CommandBase{ device }
-		, m_renderPass{ renderPass }
-		, m_frameBuffer{ frameBuffer }
 	{
 		auto rp = get( renderPass );
 		assert( clearValues.size() == rp->size() );

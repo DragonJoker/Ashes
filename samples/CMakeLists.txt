@@ -1,17 +1,24 @@
 set( wxWidgets_IGNORE_VCPKG ON )
-find_package( wxWidgets REQUIRED COMPONENTS core base )
+find_package( wxWidgets COMPONENTS core base )
 
 if( APPLE )
-	set( GTK2_FOUND TRUE )
+	set( GTK_FOUND ON )
 	set( Ashes_BINARY_LIBRARIES
 		${Ashes_BINARY_LIBRARIES}
 		"-framework AppKit"
 		"-framework QuartzCore"
 	)
 elseif( WIN32 )
-	set( GTK2_FOUND TRUE )
+	set( GTK_FOUND ON )
 else ()
-	find_package( GTK2 )
+	find_package( GTK3 )
+	if ( GTK3_FOUND )
+		set( GTK_FOUND ${GTK3_FOUND} )
+		set( GTK_INCLUDE_DIRS ${GTK3_INCLUDE_DIRS} )
+		set( GTK_LIBRARIES ${GTK3_LIBRARIES} )
+	else ()
+		set( GTK_FOUND OFF )
+	endif ()
 endif()
 
 if ( NOT ASHES_ICD )
@@ -26,19 +33,28 @@ else ()
 endif ()
 
 if ( VCPKG_TOOLCHAIN )
-	find_package( assimp CONFIG REQUIRED assimp )
+	find_package( irrlicht CONFIG QUIET )
+	find_package( polyclipping CONFIG QUIET )
+	find_package( minizip CONFIG QUIET )
+	find_package( kubazip CONFIG QUIET )
+	find_package( poly2tri CONFIG QUIET )
+	find_package( utf8cpp CONFIG QUIET )
+	find_package( assimp CONFIG QUIET )
 	set( assimp_LIBRARIES assimp::assimp )
+	if ( TARGET assimp::assimp )
+		set( assimp_FOUND ON )
+	endif ()
 else ()
-	find_package( assimp )
+	find_package( assimp 5.0 )
 endif ()
 
-if( wxWidgets_FOUND AND GTK2_FOUND AND ( ASSIMP_FOUND OR assimp_FOUND ) )
+if( wxWidgets_FOUND AND GTK_FOUND AND assimp_FOUND )
 	file( GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*-* )
 	set( SAMPLE_ID 0 )
 	set( Ashes_BINARY_LIBRARIES
 		${Ashes_BINARY_LIBRARIES}
 		${wxWidgets_LIBRARIES}
-		${GTK2_LIBRARIES}
+		${GTK_LIBRARIES}
 		${assimp_LIBRARIES}
 		${Vulkan_LIBRARY}
 		ashes::ashespp
@@ -59,7 +75,7 @@ if( wxWidgets_FOUND AND GTK2_FOUND AND ( ASSIMP_FOUND OR assimp_FOUND ) )
 				${CMAKE_BINARY_DIR}/include
 				${CMAKE_SOURCE_DIR}/include
 				${wxWidgets_INCLUDE_DIRS}
-				${GTK2_INCLUDE_DIRS}
+				${GTK_INCLUDE_DIRS}
 				${assimp_INCLUDE_DIR}
 				${CMAKE_SOURCE_DIR}/external/imgui
 				${CMAKE_SOURCE_DIR}/samples/00-Common/Src

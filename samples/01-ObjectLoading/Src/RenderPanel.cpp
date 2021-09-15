@@ -10,11 +10,13 @@
 namespace vkapp
 {
 	RenderPanel::RenderPanel( wxWindow * parent
-		, wxSize const & size )
+		, wxSize const & size
+		, std::string const & rndName )
 		: common::RenderPanel{ parent
 			, size
 			, AppName.ToStdString()
-			, AppDesc.ToStdString() }
+			, AppDesc.ToStdString()
+			, rndName }
 	{
 	}
 	

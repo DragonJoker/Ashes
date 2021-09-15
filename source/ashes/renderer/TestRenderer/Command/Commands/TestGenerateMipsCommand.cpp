@@ -11,9 +11,8 @@ See LICENSE file in root folder.
 namespace ashes::test
 {
 	GenerateMipsCommand::GenerateMipsCommand( VkDevice device
-		, VkImage texture )
+		, VkImage )
 		: CommandBase{ device }
-		, m_texture{ texture }
 	{
 	}
 

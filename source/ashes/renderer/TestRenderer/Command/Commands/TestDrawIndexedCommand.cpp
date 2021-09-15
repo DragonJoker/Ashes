@@ -7,20 +7,15 @@ See LICENSE file in root folder.
 namespace ashes::test
 {
 	DrawIndexedCommand::DrawIndexedCommand( VkDevice device
-		, uint32_t indexCount
-		, uint32_t instCount
-		, uint32_t firstIndex
-		, uint32_t vertexOffset
-		, uint32_t firstInstance
-		, VkPrimitiveTopology mode
-		, VkIndexType type
+		, uint32_t
+		, uint32_t
+		, uint32_t
+		, uint32_t
+		, uint32_t
+		, VkPrimitiveTopology
+		, VkIndexType
 		, VbosBindingArray const & vbos )
 		: CommandBase{ device }
-		, m_indexCount{ indexCount }
-		, m_instCount{ instCount }
-		, m_firstIndex{ firstIndex }
-		, m_vertexOffset{ vertexOffset }
-		, m_firstInstance{ firstInstance }
 		, m_vbos{ vbos }
 	{
 	}

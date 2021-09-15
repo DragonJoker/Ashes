@@ -67,6 +67,8 @@ namespace ashes::test
 				break;
 			case VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT:
 				break;
+			default:
+				break;
 			}
 		}
 

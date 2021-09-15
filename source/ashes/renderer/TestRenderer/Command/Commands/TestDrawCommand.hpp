@@ -24,10 +24,6 @@ namespace ashes::test
 		CommandPtr clone()const;
 
 	private:
-		uint32_t m_vtxCount;
-		uint32_t m_instCount;
-		uint32_t m_firstVertex;
-		uint32_t m_firstInstance;
 		VbosBindingArray m_vbos;
 	};
 }
