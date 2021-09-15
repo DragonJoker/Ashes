@@ -53,10 +53,16 @@ namespace ashes
 		template< typename FuncType >
 		bool getFunction( std::string const & name, FuncType & function )noexcept
 		{
+#pragma warning( push )
+#pragma warning( disable: 4068 ) // MSVC doesn't support the next ones...
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-warning-option" //clang 10 doesn't support the next GCC one...
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconditionally-supported"
 			function = reinterpret_cast< FuncType >( doGetFunction( name ) );
 #pragma GCC diagnostic pop
+#pragma clang diagnostic pop
+#pragma warning( pop )
 			return function != nullptr;
 		}
 		/**

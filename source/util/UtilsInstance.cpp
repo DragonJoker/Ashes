@@ -2,6 +2,8 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
+#pragma GCC diagnostic ignored "-Wunused-private-field"
+
 #include "util/UtilsInstance.hpp"
 
 #include "util/UtilsDebug.hpp"
@@ -18,6 +20,8 @@ namespace utils
 {
 	namespace
 	{
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-function"
 		bool isValidationLayer( std::string const & name )
 		{
 			static std::set< std::string > const validNames
@@ -26,6 +30,7 @@ namespace utils
 			};
 			return validNames.find( name ) != validNames.end();
 		}
+#pragma GCC diagnostic pop
 
 		void addOptionalValidationLayer( std::string const & layer
 			, std::string description
@@ -147,12 +152,18 @@ namespace utils
 			plugin = rendererList.selectPlugin( name );
 		}
 
+#pragma warning( push )
+#pragma warning( disable: 4191 )
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
 		PFN_vkEnumerateInstanceLayerProperties enumLayerProperties;
-		enumLayerProperties = ( PFN_vkEnumerateInstanceLayerProperties )plugin.getInstanceProcAddr( VK_NULL_HANDLE,
-			"vkEnumerateInstanceLayerProperties" );
+		enumLayerProperties = reinterpret_cast< PFN_vkEnumerateInstanceLayerProperties >( plugin.getInstanceProcAddr( VK_NULL_HANDLE,
+			"vkEnumerateInstanceLayerProperties" ) );
 		PFN_vkEnumerateInstanceExtensionProperties enumInstanceExtensionProperties;
-		enumInstanceExtensionProperties = ( PFN_vkEnumerateInstanceExtensionProperties )plugin.getInstanceProcAddr( VK_NULL_HANDLE,
-			"vkEnumerateInstanceExtensionProperties" );
+		enumInstanceExtensionProperties = reinterpret_cast< PFN_vkEnumerateInstanceExtensionProperties >( plugin.getInstanceProcAddr( VK_NULL_HANDLE,
+			"vkEnumerateInstanceExtensionProperties" ) );
+#pragma GCC diagnostic pop
+#pragma warning( pop )
 
 		m_layers = enumerateLayerProperties( enumLayerProperties );
 		m_globalLayerExtensions = enumerateExtensionProperties( enumInstanceExtensionProperties

@@ -73,6 +73,11 @@ namespace ashes::test
 				, state );
 		}
 
+		VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		VkDevice m_device{};
 		VkPipelineLayout m_layout{};

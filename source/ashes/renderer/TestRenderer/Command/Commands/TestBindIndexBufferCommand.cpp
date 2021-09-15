@@ -11,12 +11,10 @@ See LICENSE file in root folder.
 namespace ashes::test
 {
 	BindIndexBufferCommand::BindIndexBufferCommand( VkDevice device
-		, VkBuffer ibo
-		, uint64_t offset
-		, VkIndexType indexType )
+		, VkBuffer
+		, uint64_t
+		, VkIndexType )
 		: CommandBase{ device }
-		, m_ibo{ ibo }
-		, m_offset{ uint32_t( offset ) }
 	{
 	}
 

@@ -107,6 +107,7 @@ namespace ashes::test
 	{
 	public:
 		DebugUtilsLayer( DebugUtilsMessengerEXT & callback );
+		~DebugUtilsLayer() = default;
 		bool onBufferImageCommand( VkCommandBuffer cmd
 			, VkBufferImageCopy const & copyInfo
 			, VkBuffer buffer
@@ -173,6 +174,7 @@ namespace ashes::test
 	{
 	public:
 		DebugReportLayer( DebugReportCallbackEXT & callback );
+		~DebugReportLayer() = default;
 		bool onBufferImageCommand( VkCommandBuffer cmd
 			, VkBufferImageCopy const & copyInfo
 			, VkBuffer buffer

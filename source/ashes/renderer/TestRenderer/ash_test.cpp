@@ -14,6 +14,9 @@
 #include <cstring>
 #include <iostream>
 
+#pragma GCC diagnostic ignored "-Wmissing-declarations"
+#pragma GCC diagnostic ignored "-Wmissing-prototypes"
+
 namespace ashes::test
 {
 #pragma region Vulkan 1.0
@@ -637,9 +640,9 @@ namespace ashes::test
 				: stride );
 			auto data = reinterpret_cast< uint8_t * >( pData );
 
-			for ( auto & result : results )
+			for ( auto & value : results )
 			{
-				*reinterpret_cast< uint64_t * >( data ) = result;
+				*reinterpret_cast< uint64_t * >( data ) = value;
 				data += stride;
 			}
 		}
@@ -657,9 +660,9 @@ namespace ashes::test
 				: stride );
 			auto data = reinterpret_cast< uint8_t * >( pData );
 
-			for ( auto & result : results )
+			for ( auto & value : results )
 			{
-				*reinterpret_cast< uint64_t * >( data ) = result;
+				*reinterpret_cast< uint64_t * >( data ) = value;
 				data += stride;
 			}
 		}
@@ -1123,7 +1126,6 @@ namespace ashes::test
 		VkCommandBuffer* pCommandBuffers )
 	{
 		VkResult result = VK_SUCCESS;
-		auto itLayout = pAllocateInfo->commandBufferCount;
 
 		for ( auto it = pCommandBuffers;
 			it != pCommandBuffers + pAllocateInfo->commandBufferCount;
@@ -3480,7 +3482,6 @@ namespace ashes::test
 			, pAllocator
 			, instance
 			, *pCreateInfo );
-		return VK_SUCCESS;
 	}
 
 	void VKAPI_CALL vkDestroyDebugUtilsMessengerEXT(
@@ -4170,6 +4171,7 @@ namespace ashes::test
 			, nullptr
 			, {}
 			, {}
+			, {}
 			, ASHPLUGIN_UNDEFINED };
 
 		VkResult init( AshPluginMode mode )
@@ -4193,6 +4195,7 @@ namespace ashes::test
 					true, // hasComputeShaders
 					true, // hasStorageBuffers
 					true, // supportsPersistentMapping
+					0xFFFFFFFF, // maxShaderLanguageVersion
 				};
 #define VK_LIB_GLOBAL_FUNCTION( v, x )\
 				description.functions.x = vk##x;

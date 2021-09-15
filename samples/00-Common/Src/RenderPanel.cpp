@@ -51,9 +51,11 @@ namespace common
 
 	RenderPanel::RenderPanel( wxWindow * parent
 		, wxSize const & size
+		, std::string const & rndName
 		, std::string const & appName
 		, std::string const & appDesc )
 		: wxPanel{ parent, wxID_ANY, wxDefaultPosition, size }
+		, m_rndName{ rndName }
 		, m_appName{ appName }
 		, m_appDesc{ appDesc }
 		, m_vertexData
@@ -478,7 +480,7 @@ namespace common
 		ImGui::SetNextWindowPos( ImVec2( 10, 10 ) );
 		ImGui::SetNextWindowSize( ImVec2( 0, 0 ), ImGuiCond_FirstUseEver );
 		ImGui::Begin( "Ashes Sample", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove );
-		ImGui::TextUnformatted( getName( m_appDesc, m_device->getDevice().getInstance().getName() ).c_str() );
+		ImGui::TextUnformatted( getName( m_appDesc, m_rndName ).c_str() );
 		ImGui::TextUnformatted( m_device->getDevice().getProperties().deviceName );
 
 		auto count = std::min( m_frameCount, m_framesTimes.size() );

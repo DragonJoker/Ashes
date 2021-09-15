@@ -165,6 +165,11 @@ namespace utils
 		/**\}*/
 
 	private:
+#pragma warning( push )
+#pragma warning( disable: 4201 )
+#pragma warning( disable: 4068 )
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 		union
 		{
 			std::array< T, 16 > data;
@@ -177,6 +182,8 @@ namespace utils
 				Vec4T< T > col3;
 			};
 		};
+#pragma GCC diagnostic pop
+#pragma warning( pop )
 	};
 	/**
 	*\name Opérateurs logiques.

@@ -41,6 +41,11 @@ namespace ashes::test
 			return m_createInfo.subresourceRange;
 		}
 
+		VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		VkDevice m_device;
 		VkImageViewCreateInfo m_createInfo;

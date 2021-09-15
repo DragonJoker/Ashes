@@ -26,11 +26,10 @@ namespace ashes::test
 	}
 
 	BindVertexBuffersCommand::BindVertexBuffersCommand( VkDevice device
-		, uint32_t firstBinding
+		, uint32_t
 		, VkBufferArray const & buffers
 		, UInt64Array const & offsets )
 		: CommandBase{ device }
-		, m_firstBinding{ firstBinding }
 		, m_vbos{ buffers }
 		, m_offsets{ convert( offsets ) }
 		, m_strides( m_offsets.size(), 24u )

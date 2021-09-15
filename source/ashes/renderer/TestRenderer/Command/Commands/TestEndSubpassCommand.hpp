@@ -18,9 +18,5 @@ namespace ashes::test
 
 		void apply()const;
 		CommandPtr clone()const;
-
-	private:
-		VkFramebuffer m_frameBuffer;
-		VkSubpassDescription const & m_subpass;
 	};
 }

@@ -12,7 +12,8 @@ namespace ashes::test
 	{
 	public:
 		CommandBase( VkDevice device );
-		virtual ~CommandBase()noexcept;
+		CommandBase() = delete;
+		virtual ~CommandBase()noexcept = default;
 
 		virtual CommandPtr clone()const = 0;
 		virtual void apply()const = 0;

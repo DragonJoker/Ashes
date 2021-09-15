@@ -14,8 +14,4 @@ namespace ashes::test
 		: m_device{ device }
 	{
 	}
-
-	CommandBase::~CommandBase()noexcept
-	{
-	}
 }

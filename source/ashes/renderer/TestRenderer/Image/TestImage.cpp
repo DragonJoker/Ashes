@@ -122,17 +122,17 @@ namespace ashes::test
 				, m_memoryOffset
 				, m_objectMemory );
 			break;
-
 		case VK_IMAGE_TYPE_2D:
 			result = get( m_memory )->bindToImage2D( get( this )
 				, m_memoryOffset
 				, m_objectMemory );
 			break;
-
 		case VK_IMAGE_TYPE_3D:
 			result = get( m_memory )->bindToImage3D( get( this )
 				, m_memoryOffset
 				, m_objectMemory );
+			break;
+		default:
 			break;
 		}
 

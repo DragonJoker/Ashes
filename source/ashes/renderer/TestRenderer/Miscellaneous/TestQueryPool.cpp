@@ -65,7 +65,6 @@ namespace ashes::test
 				return *reinterpret_cast< uint64_t * >( m_data.data() );
 			};
 			break;
-
 		case VK_QUERY_TYPE_PIPELINE_STATISTICS:
 			m_data.resize( sizeof( PipelineStatistics ) );
 			getUint32 = [this]( uint32_t index )
@@ -79,7 +78,6 @@ namespace ashes::test
 				return getPipelineStatistic( index, data );
 			};
 			break;
-
 		case VK_QUERY_TYPE_TIMESTAMP:
 			m_data.resize( sizeof( uint64_t ) );
 			getUint32 = [this]( uint32_t index )
@@ -90,6 +88,8 @@ namespace ashes::test
 			{
 				return *reinterpret_cast< uint64_t * >( m_data.data() );
 			};
+			break;
+		default:
 			break;
 		}
 	}

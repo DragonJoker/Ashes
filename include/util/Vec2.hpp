@@ -158,7 +158,11 @@ namespace utils
 		/**\}*/
 
 	public:
-		//! Les composantes du point.
+#pragma warning( push )
+#pragma warning( disable: 4068 )
+#pragma warning( disable: 4201 )
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 		union
 		{
 			T data[2];
@@ -173,6 +177,8 @@ namespace utils
 				T g;
 			};
 		};
+#pragma GCC diagnostic pop
+#pragma warning( pop )
 	};
 	/**
 	*\brief

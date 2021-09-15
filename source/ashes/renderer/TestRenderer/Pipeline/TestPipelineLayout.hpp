@@ -23,6 +23,11 @@ namespace ashes::test
 			return m_setLayouts;
 		}
 
+		VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		VkDevice m_device;
 		VkDescriptorSetLayoutArray m_setLayouts;

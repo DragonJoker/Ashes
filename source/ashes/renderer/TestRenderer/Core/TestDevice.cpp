@@ -41,13 +41,13 @@ namespace ashes::test
 		T getAligned( T value, U align )
 		{
 			return T( ( value + align - 1 ) & ~( align - 1 ) );
-		};
+		}
 
 		template< typename T >
 		T getSubresourceValue( T value, uint32_t mipLevel )
 		{
 			return T( value >> mipLevel );
-		};
+		}
 
 		VkExtent3D getTexelBlockExtent( VkFormat format )
 		{
@@ -186,7 +186,7 @@ namespace ashes::test
 
 		if ( it == m_stagingTextures.end() )
 		{
-			VkImage result;
+			VkImage result{};
 			allocate( result
 				, nullptr
 				, get( this )
@@ -212,7 +212,7 @@ namespace ashes::test
 			uint32_t deduced = deduceMemoryType( requirements.memoryTypeBits
 				, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
 				, get( m_physicalDevice )->getMemoryProperties() );
-			VkDeviceMemory resMem;
+			VkDeviceMemory resMem{};
 			allocate( resMem
 				, nullptr
 				, get( this )

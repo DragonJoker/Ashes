@@ -7,11 +7,9 @@ See LICENSE file in root folder.
 namespace ashes::test
 {
 	DispatchIndirectCommand::DispatchIndirectCommand( VkDevice device
-		, VkBuffer buffer
-		, VkDeviceSize offset )
+		, VkBuffer
+		, VkDeviceSize )
 		: CommandBase{ device }
-		, m_buffer{ buffer }
-		, m_offset{ uint32_t( offset ) }
 	{
 	}
 

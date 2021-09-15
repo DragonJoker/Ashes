@@ -7,13 +7,10 @@ See LICENSE file in root folder.
 namespace ashes::test
 {
 	DispatchCommand::DispatchCommand( VkDevice device
-		, uint32_t groupCountX
-		, uint32_t groupCountY
-		, uint32_t groupCountZ )
+		, uint32_t
+		, uint32_t
+		, uint32_t )
 		: CommandBase{ device }
-		, m_groupCountX{ groupCountX }
-		, m_groupCountY{ groupCountY }
-		, m_groupCountZ{ groupCountZ }
 	{
 	}
 

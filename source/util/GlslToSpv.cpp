@@ -4,8 +4,20 @@ See LICENSE file in root folder.
 */
 #include "util/GlslToSpv.hpp"
 
+#pragma warning( push )
+#pragma warning( disable: 4365 )
+#pragma warning( disable: 4464 )
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#pragma GCC diagnostic ignored "-Wuseless-cast"
+#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+#pragma GCC diagnostic ignored "-Wdeprecated-copy-dtor"
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic ignored "-Wsigned-enum-bitfield"
 #include <glslang/Public/ShaderLang.h>
 #include <SPIRV/GlslangToSpv.h>
+#pragma GCC diagnostic pop
+#pragma warning( pop )
 
 #include <iostream>
 #include <locale>
@@ -186,7 +198,7 @@ namespace utils
 		doInitResources( props, resources );
 
 		// Enable SPIR-V and Vulkan rules when parsing GLSL
-		auto messages = ( EShMessages )( EShMsgSpvRules | EShMsgVulkanRules );
+		auto messages = EShMessages( EShMsgSpvRules | EShMsgVulkanRules );
 		auto glstage = doGetLanguage( stage );
 
 		std::string source = shader;

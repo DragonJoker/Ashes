@@ -22,6 +22,5 @@ namespace ashes::test
 	private:
 		VkPipeline m_pipeline;
 		VkPipelineLayout m_layout;
-		VkPipelineBindPoint m_bindingPoint;
 	};
 }

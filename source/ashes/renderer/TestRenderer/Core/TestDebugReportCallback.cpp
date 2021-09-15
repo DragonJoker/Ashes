@@ -101,21 +101,21 @@ namespace ashes::test
 				, data
 				, ( copyInfo.imageOffset.x >= 0 && copyInfo.imageOffset.x <= int32_t( subresourceWidth ) )
 				&& ( copyInfo.imageExtent.width + copyInfo.imageOffset.x >= 0
-					&& copyInfo.imageExtent.width + copyInfo.imageOffset.x <= int32_t( subresourceWidth ) )
+					&& int32_t( copyInfo.imageExtent.width ) + copyInfo.imageOffset.x <= int32_t( subresourceWidth ) )
 				, "imageOffset.x and (imageExtent.width + imageOffset.x) must both be greater than or equal to 0 and less than or equal to the image subresource width" );
 			auto subresourceHeight = texelBlockHeight * get( image )->getDimensions().height >> copyInfo.imageSubresource.mipLevel;
 			result = result && VK_SUCCESS == check( callback
 				, data
 				, ( copyInfo.imageOffset.y >= 0 && copyInfo.imageOffset.y <= int32_t( subresourceHeight ) )
 				&& ( copyInfo.imageExtent.height + copyInfo.imageOffset.y >= 0
-					&& copyInfo.imageExtent.height + copyInfo.imageOffset.y <= int32_t( subresourceHeight ) )
+					&& int32_t( copyInfo.imageExtent.height ) + copyInfo.imageOffset.y <= int32_t( subresourceHeight ) )
 				, "imageOffset.y and (imageExtent.height + imageOffset.y) must both be greater than or equal to 0 and less than or equal to the image subresource height" );
 			auto subresourceDepth = texelBlockDepth * get( image )->getDimensions().depth;
 			result = result && VK_SUCCESS == check( callback
 				, data
 				, ( copyInfo.imageOffset.z >= 0 && copyInfo.imageOffset.z <= int32_t( subresourceDepth ) )
 				&& ( copyInfo.imageExtent.depth + copyInfo.imageOffset.z >= 0
-					&& copyInfo.imageExtent.depth + copyInfo.imageOffset.z <= int32_t( subresourceDepth ) )
+					&& int32_t( copyInfo.imageExtent.depth ) + copyInfo.imageOffset.z <= int32_t( subresourceDepth ) )
 				, "imageOffset.z and (imageExtent.depth + imageOffset.z) must both be greater than or equal to 0 and less than or equal to the image subresource depth" );
 			auto imageType = get( image )->getType();
 			result = result && VK_SUCCESS == check( callback
@@ -162,19 +162,19 @@ namespace ashes::test
 				, data
 				, ( ( !ashes::isCompressedFormat( format ) )
 					|| ( copyInfo.imageExtent.width % texelBlockExtent.width ) == 0
-					|| ( copyInfo.imageExtent.width + copyInfo.imageOffset.x ) == subresourceWidth )
+					|| uint64_t( copyInfo.imageExtent.width + copyInfo.imageOffset.x ) == subresourceWidth )
 				, "If the calling command's VkImage parameter is a compressed image, or a single-plane, _422 image format, imageExtent.width must be a multiple of the compressed texel block width or (imageExtent.width + imageOffset.x) must equal the image subresource width." );
 			result = result && VK_SUCCESS == check( callback
 				, data
 				, ( ( !ashes::isCompressedFormat( format ) )
 					|| ( copyInfo.imageExtent.height % texelBlockExtent.height ) == 0
-					|| ( copyInfo.imageExtent.height + copyInfo.imageOffset.y ) == subresourceHeight )
+					|| uint64_t( copyInfo.imageExtent.height + copyInfo.imageOffset.y ) == subresourceHeight )
 				, "If the calling command's VkImage parameter is a compressed image, or a single-plane, _422 image format, imageExtent.height must be a multiple of the compressed texel block height or (imageExtent.height + imageOffset.y) must equal the image subresource height." );
 			result = result && VK_SUCCESS == check( callback
 				, data
 				, ( ( !ashes::isCompressedFormat( format ) )
 					|| ( copyInfo.imageExtent.depth % texelBlockExtent.depth ) == 0
-					|| ( copyInfo.imageExtent.depth + copyInfo.imageOffset.z ) == subresourceDepth )
+					|| uint64_t( copyInfo.imageExtent.depth + copyInfo.imageOffset.z ) == subresourceDepth )
 				, "If the calling command's VkImage parameter is a compressed image, or a single-plane, _422 image format, imageExtent.depth must be a multiple of the compressed texel block depth or (imageExtent.depth + imageOffset.z) must equal the image subresource depth." );
 			result = result && VK_SUCCESS == check( callback
 				, data
@@ -201,50 +201,53 @@ namespace ashes::test
 
 	namespace dudr
 	{
-		VkDebugUtilsMessageSeverityFlagBitsEXT getDebugUtilsSeverity( VkDebugReportFlagsEXT flags )
+		namespace
 		{
-			switch ( flags )
+			VkDebugUtilsMessageSeverityFlagBitsEXT getDebugUtilsSeverity( VkDebugReportFlagsEXT flags )
 			{
-			case VK_DEBUG_REPORT_INFORMATION_BIT_EXT:
-				return VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT;
-			case VK_DEBUG_REPORT_WARNING_BIT_EXT:
-				return VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
-			case VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT:
-				return VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
-			case VK_DEBUG_REPORT_ERROR_BIT_EXT:
-				return VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-			case VK_DEBUG_REPORT_DEBUG_BIT_EXT:
-				return VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
-			default:
-				return VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
+				switch ( flags )
+				{
+				case VK_DEBUG_REPORT_INFORMATION_BIT_EXT:
+					return VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT;
+				case VK_DEBUG_REPORT_WARNING_BIT_EXT:
+					return VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
+				case VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT:
+					return VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
+				case VK_DEBUG_REPORT_ERROR_BIT_EXT:
+					return VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+				case VK_DEBUG_REPORT_DEBUG_BIT_EXT:
+					return VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
+				default:
+					return VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
+				}
 			}
-		}
 		
-		VkDebugReportFlagsEXT getDebugUtilsSeverity( VkDebugUtilsMessageSeverityFlagBitsEXT flags )
-		{
-			switch ( flags )
+			VkDebugReportFlagsEXT getDebugUtilsSeverity( VkDebugUtilsMessageSeverityFlagBitsEXT flags )
 			{
-			case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
-				return VK_DEBUG_REPORT_INFORMATION_BIT_EXT;
-			case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-				return VK_DEBUG_REPORT_WARNING_BIT_EXT;
-			case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-				return VK_DEBUG_REPORT_ERROR_BIT_EXT;
-			case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
-				return VK_DEBUG_REPORT_DEBUG_BIT_EXT;
-			default:
-				return VK_DEBUG_REPORT_DEBUG_BIT_EXT;
+				switch ( flags )
+				{
+				case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+					return VK_DEBUG_REPORT_INFORMATION_BIT_EXT;
+				case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+					return VK_DEBUG_REPORT_WARNING_BIT_EXT;
+				case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+					return VK_DEBUG_REPORT_ERROR_BIT_EXT;
+				case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
+					return VK_DEBUG_REPORT_DEBUG_BIT_EXT;
+				default:
+					return VK_DEBUG_REPORT_DEBUG_BIT_EXT;
+				}
 			}
-		}
 
-		VkObjectType getObjectType( VkDebugReportObjectTypeEXT type )
-		{
-			return VkObjectType( type );
-		}
+			VkObjectType getObjectType( VkDebugReportObjectTypeEXT type )
+			{
+				return VkObjectType( type );
+			}
 
-		VkDebugReportObjectTypeEXT getObjectType( VkObjectType type )
-		{
-			return VkDebugReportObjectTypeEXT( type );
+			VkDebugReportObjectTypeEXT getObjectType( VkObjectType type )
+			{
+				return VkDebugReportObjectTypeEXT( type );
+			}
 		}
 	}
 
@@ -252,31 +255,34 @@ namespace ashes::test
 
 	namespace du
 	{
-		VkResult check( DebugUtilsMessengerEXT & callback
-			, MessageData report
-			, bool condition
-			, std::string message )
+		namespace
 		{
-			if ( !condition )
+			VkResult check( DebugUtilsMessengerEXT & callback
+				, MessageData report
+				, bool condition
+				, std::string message )
 			{
-				report.message += "Condition failed: " + message + " | ";
-				callback.report( report );
-				return VkResult( report.callbackData.messageIdNumber );
+				if ( !condition )
+				{
+					report.message += "Condition failed: " + message + " | ";
+					callback.report( report );
+					return VkResult( report.callbackData.messageIdNumber );
+				}
+
+				return VK_SUCCESS;
 			}
 
-			return VK_SUCCESS;
-		}
-
-		template< typename T >
-		VkResult checkEqual( DebugUtilsMessengerEXT callback
-			, ReportData report
-			, T const & lhs
-			, T const & rhs )
-		{
-			return check( callback
-				, report
-				, !( lhs == rhs )
-				, toString( lhs ) + " != " + toString( rhs ) );
+			template< typename T >
+			VkResult checkEqual( DebugUtilsMessengerEXT callback
+				, ReportData report
+				, T const & lhs
+				, T const & rhs )
+			{
+				return check( callback
+					, report
+					, !( lhs == rhs )
+					, toString( lhs ) + " != " + toString( rhs ) );
+			}
 		}
 	}
 
@@ -300,7 +306,14 @@ namespace ashes::test
 				nullptr,
 				0u,
 				"VALIDATION",
-				0u,
+				0u, // messageIdNumber
+				{},	// pMessage
+				{},	// queueLabelCount
+				{},	// pQueueLabels
+				{},	// cmdBufLabelCount
+				{},	// pCmdBufLabels
+				{},	// objectCount
+				{},	// pObjects
 			},
 		};
 		MessageData message{ baseMessage };
@@ -350,10 +363,12 @@ namespace ashes::test
 				pLayerPrefix,
 				messageCode,
 				pMessage,
-				0u,
-				nullptr,
-				0u,
-				nullptr,
+				{},	// queueLabelCount
+				{},	// pQueueLabels
+				{},	// cmdBufLabelCount
+				{},	// pCmdBufLabels
+				{},	// objectCount
+				{},	// pObjects
 			},
 		};
 		MessageData message{ baseMessage };
@@ -421,31 +436,34 @@ namespace ashes::test
 
 	namespace dr
 	{
-		VkResult check( DebugReportCallbackEXT & callback
-			, ReportData report
-			, bool condition
-			, std::string message )
+		namespace
 		{
-			if ( !condition )
+			VkResult check( DebugReportCallbackEXT & callback
+				, ReportData report
+				, bool condition
+				, std::string message )
 			{
-				report.message += "Condition failed: " + message + " | ";
-				callback.report( report );
-				return VkResult( report.messageCode );
+				if ( !condition )
+				{
+					report.message += "Condition failed: " + message + " | ";
+					callback.report( report );
+					return VkResult( report.messageCode );
+				}
+
+				return VK_SUCCESS;
 			}
 
-			return VK_SUCCESS;
-		}
-
-		template< typename T >
-		VkResult checkEqual( DebugReportCallbackEXT callback
-			, ReportData report
-			, T const & lhs
-			, T const & rhs )
-		{
-			return check( callback
-				, report
-				, !( lhs == rhs )
-				, toString( lhs ) + " != " + toString( rhs ) );
+			template< typename T >
+			VkResult checkEqual( DebugReportCallbackEXT callback
+				, ReportData report
+				, T const & lhs
+				, T const & rhs )
+			{
+				return check( callback
+					, report
+					, !( lhs == rhs )
+					, toString( lhs ) + " != " + toString( rhs ) );
+			}
 		}
 	}
 
@@ -469,6 +487,7 @@ namespace ashes::test
 			0u,
 			0u,
 			"VALIDATION",
+			{}
 		};
 		ReportData report{ baseReport };
 		report.object = uint64_t( &cmd );

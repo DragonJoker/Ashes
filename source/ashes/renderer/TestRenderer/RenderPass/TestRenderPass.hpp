@@ -58,6 +58,11 @@ namespace ashes::test
 			return m_referencedAttachments.end();
 		}
 
+		VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		struct SubpassDescriptionData
 		{

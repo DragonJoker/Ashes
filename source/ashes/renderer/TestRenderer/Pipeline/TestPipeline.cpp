@@ -21,7 +21,7 @@ namespace ashes::test
 			uint64_t b = ( seed ^ a ) * kMul;
 			b ^= ( b >> 47 );
 
-			seed = static_cast< std::size_t >( b * kMul );
+			seed = ( b * kMul );
 		}
 
 		size_t doHash( VkVertexInputAttributeDescription const & desc )

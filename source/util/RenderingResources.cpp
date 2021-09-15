@@ -15,10 +15,10 @@ namespace utils
 		, ashes::CommandPool const & commandPool )
 		: m_device{ device }
 		, m_swapChain{ swapChain }
-		, m_commandBuffer{ commandPool.createCommandBuffer() }
 		, m_imageAvailableSemaphore{ m_device.createSemaphore() }
 		, m_finishedRenderingSemaphore{ m_device.createSemaphore() }
 		, m_fence{ m_device.createFence( VK_FENCE_CREATE_SIGNALED_BIT ) }
+		, m_commandBuffer{ commandPool.createCommandBuffer() }
 	{
 	}
 

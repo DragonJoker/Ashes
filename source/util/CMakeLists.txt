@@ -1,5 +1,5 @@
 set( _PROJECT_NAME util )
-project( ashes_${_PROJECT_NAME} )
+project( ashesUtil )
 
 if ( NOT TARGET glslang )
 	if ( VCPKG_TOOLCHAIN AND NOT EXISTS ${Ashes_SOURCE_DIR}/external/glslang/CMakeLists.txt )
@@ -45,7 +45,7 @@ if ( NOT TARGET glslang )
 			SPIRV
 		)
 		set( glslang_INCLUDE_DIR
-			${CMAKE_CURRENT_SOURCE_DIR}/external/glslang
+			${Ashes_SOURCE_DIR}/external/glslang
 		)
 	endif ()
 endif ()
@@ -124,13 +124,11 @@ add_library( ashes::${_PROJECT_NAME}
 target_include_directories( ${PROJECT_NAME}
 	PRIVATE
 		${Vulkan_INCLUDE_DIR}
-		${ASHES_CONFIG_DIR}/include
+		${ASHES_CONFIG_DIR}
+		${ASHES_CONFIG_DIR}/${_PROJECT_NAME}
 		${Ashes_SOURCE_DIR}/include
 		${Ashes_SOURCE_DIR}/source
-		${ASHES_CONFIG_DIR}/source
-		${ASHES_CONFIG_DIR}/include/${_PROJECT_NAME}
 		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}
-		${ASHES_CONFIG_DIR}/source/${_PROJECT_NAME}
 		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}
 		${glslang_INCLUDE_DIR}
 )

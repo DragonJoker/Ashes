@@ -20,23 +20,26 @@ namespace ashes::test
 {
 	//*********************************************************************************************
 
-	VkMemoryPropertyFlags getMemoryProperties( uint32_t memoryTypeIndex )
+	namespace
 	{
-		assert( memoryTypeIndex < Instance::getMemoryProperties().memoryTypeCount
-			&& "Wrong deduced memory type" );
-		return Instance::getMemoryProperties().memoryTypes[memoryTypeIndex].propertyFlags;
+		VkMemoryPropertyFlags getMemoryProperties( uint32_t memoryTypeIndex )
+		{
+			assert( memoryTypeIndex < Instance::getMemoryProperties().memoryTypeCount
+				&& "Wrong deduced memory type" );
+			return Instance::getMemoryProperties().memoryTypes[memoryTypeIndex].propertyFlags;
+		}
 	}
 
 	//*********************************************************************************************
 
-	ObjectMemory::ObjectMemory( VkDevice device
-		, VkDeviceMemory deviceMemory
-		, VkDeviceSize offset
-		, VkMemoryAllocateInfo allocateInfo )
-		: device{ device }
-		, deviceMemory{ deviceMemory }
-		, offset{ offset }
-		, allocateInfo{ std::move( allocateInfo ) }
+	ObjectMemory::ObjectMemory( VkDevice pdevice
+		, VkDeviceMemory pdeviceMemory
+		, VkDeviceSize poffset
+		, VkMemoryAllocateInfo pallocateInfo )
+		: device{ pdevice }
+		, deviceMemory{ pdeviceMemory }
+		, offset{ poffset }
+		, allocateInfo{ std::move( pallocateInfo ) }
 	{
 	}
 
@@ -76,16 +79,16 @@ namespace ashes::test
 	}
 
 	void ObjectMemory::upload( uint8_t const * buffer
-		, VkDeviceSize offset
-		, VkDeviceSize size )const
+		, VkDeviceSize poffset
+		, VkDeviceSize psize )const
 	{
-		auto maxOffset = std::max( this->offset, offset );
-		auto objectOffset = maxOffset - this->offset;
-		auto copySize = VkDeviceSize( size - std::abs( int64_t( offset ) - int64_t( this->offset ) ) );
+		auto maxOffset = std::max( offset, poffset );
+		auto objectOffset = maxOffset - offset;
+		auto copySize = psize - VkDeviceSize( std::abs( int64_t( poffset ) - int64_t( offset ) ) );
 
-		if ( size == WholeSize )
+		if ( psize == WholeSize )
 		{
-			assert( offset == 0ull );
+			assert( poffset == 0ull );
 			copySize = allocateInfo.allocationSize;
 		}
 		else if ( copySize > allocateInfo.allocationSize )
@@ -105,16 +108,16 @@ namespace ashes::test
 	}
 
 	void ObjectMemory::download( uint8_t * buffer
-		, VkDeviceSize offset
-		, VkDeviceSize size )const
+		, VkDeviceSize poffset
+		, VkDeviceSize psize )const
 	{
-		auto maxOffset = std::max( this->offset, offset );
-		auto objectOffset = maxOffset - this->offset;
-		auto copySize = VkDeviceSize( size - std::abs( int64_t( offset ) - int64_t( this->offset ) ) );
+		auto maxOffset = std::max( offset, poffset );
+		auto objectOffset = maxOffset - offset;
+		auto copySize = psize - VkDeviceSize( std::abs( int64_t( poffset ) - int64_t( offset ) ) );
 
-		if ( size == WholeSize )
+		if ( psize == WholeSize )
 		{
-			assert( offset == 0ull );
+			assert( poffset == 0ull );
 			objectOffset = 0u;
 			copySize = allocateInfo.allocationSize;
 		}
@@ -143,16 +146,10 @@ namespace ashes::test
 			, VkDeviceMemory parent
 			, VkDeviceSize offset
 			, VkMemoryAllocateInfo allocateInfo
-			, VkBufferUsageFlags targets )
-			: m_bufferTargets{ targets }
-			, m_propertyFlags{ getMemoryProperties( allocateInfo.memoryTypeIndex ) }
-			, memory{ device, parent, offset, std::move( allocateInfo ) }
+			, VkBufferUsageFlags )
+			: memory{ device, parent, offset, std::move( allocateInfo ) }
 		{
 		}
-
-	private:
-		VkBufferUsageFlags m_bufferTargets;
-		VkMemoryPropertyFlags m_propertyFlags;
 
 	public:
 		ObjectMemory memory;
@@ -167,15 +164,10 @@ namespace ashes::test
 			, VkDeviceMemory parent
 			, VkDeviceSize offset
 			, VkMemoryAllocateInfo allocateInfo
-			, VkImageCreateInfo const & createInfo )
-			: m_usage{ createInfo.usage }
-			, memory{ device, parent, offset, std::move( allocateInfo ) }
+			, VkImageCreateInfo const & )
+			: memory{ device, parent, offset, std::move( allocateInfo ) }
 		{
 		}
-
-	private:
-		VkImageUsageFlags m_usage;
-		VkMemoryPropertyFlags m_propertyFlags{};
 
 	public:
 		ObjectMemory memory;
@@ -190,16 +182,10 @@ namespace ashes::test
 			, VkDeviceMemory parent
 			, VkDeviceSize offset
 			, VkMemoryAllocateInfo allocateInfo
-			, VkImageCreateInfo const & createInfo )
-			: m_usage{ createInfo.usage }
-			, m_propertyFlags{ getMemoryProperties( allocateInfo.memoryTypeIndex ) }
-			, memory{ device, parent, offset, std::move( allocateInfo ) }
+			, VkImageCreateInfo const & )
+			: memory{ device, parent, offset, std::move( allocateInfo ) }
 		{
 		}
-
-	private:
-		VkImageUsageFlags m_usage;
-		VkMemoryPropertyFlags m_propertyFlags;
 
 	public:
 		ObjectMemory memory;
@@ -214,16 +200,10 @@ namespace ashes::test
 			, VkDeviceMemory parent
 			, VkDeviceSize offset
 			, VkMemoryAllocateInfo allocateInfo
-			, VkImageCreateInfo const & createInfo )
-			: m_usage{ createInfo.usage }
-			, m_propertyFlags{ getMemoryProperties( allocateInfo.memoryTypeIndex ) }
-			, memory{ device, parent, offset, std::move( allocateInfo ) }
+			, VkImageCreateInfo const & )
+			: memory{ device, parent, offset, std::move( allocateInfo ) }
 		{
 		}
-
-	private:
-		VkImageUsageFlags m_usage;
-		VkMemoryPropertyFlags m_propertyFlags;
 
 	public:
 		ObjectMemory memory;

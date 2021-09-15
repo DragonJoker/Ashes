@@ -203,7 +203,7 @@ namespace utils
 	template< typename T >
 	T length( Vec3T< T > const & vec )noexcept
 	{
-		return sqrt( dot( vec, vec ) );
+		return T( sqrt( dot( vec, vec ) ) );
 	}
 
 	template< typename T >

@@ -14,7 +14,6 @@ namespace ashes::test
 	public:
 		ExecuteCommandsCommand( VkDevice device
 			, VkCommandBuffer commandBuffer );
-		~ExecuteCommandsCommand();
 
 		void apply()const;
 		CommandPtr clone()const;

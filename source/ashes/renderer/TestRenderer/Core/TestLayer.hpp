@@ -11,6 +11,7 @@ namespace ashes::test
 	class Layer
 	{
 	public:
+		virtual ~Layer() = default;
 		bool bufferImageCommand( VkCommandBuffer cmd
 			, VkBufferImageCopy const & copyInfo
 			, VkBuffer buffer

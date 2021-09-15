@@ -16,7 +16,13 @@
 
 #include <FileUtils.hpp>
 
+#pragma warning( push )
+#pragma warning( disable: 4068 )
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
 #include <gli/gli.hpp>
+#pragma GCC diagnostic pop
+#pragma warning( pop )
 
 #include <fstream>
 #include <cstring>

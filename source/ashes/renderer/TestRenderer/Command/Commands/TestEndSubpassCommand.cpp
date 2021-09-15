@@ -12,11 +12,9 @@ See LICENSE file in root folder.
 namespace ashes::test
 {
 	EndSubpassCommand::EndSubpassCommand( VkDevice device
-		, VkFramebuffer frameBuffer
-		, VkSubpassDescription const & subpass )
+		, VkFramebuffer
+		, VkSubpassDescription const & )
 		: CommandBase{ device }
-		, m_frameBuffer{ frameBuffer }
-		, m_subpass{ subpass }
 	{
 	}
 
