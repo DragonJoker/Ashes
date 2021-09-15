@@ -12,6 +12,6 @@ namespace vkapp
 
 	common::RenderPanel * MainFrame::doCreatePanel( wxSize const & size, utils::Instance const & instance )
 	{
-		return new RenderPanel{ this, size };
+		return new RenderPanel{ this, size, getRendererName().ToStdString() };
 	}
 }

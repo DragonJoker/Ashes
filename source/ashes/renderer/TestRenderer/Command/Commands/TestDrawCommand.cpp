@@ -7,17 +7,13 @@ See LICENSE file in root folder.
 namespace ashes::test
 {
 	DrawCommand::DrawCommand( VkDevice device
-		, uint32_t vtxCount
-		, uint32_t instCount
-		, uint32_t firstVertex
-		, uint32_t firstInstance
-		, VkPrimitiveTopology mode
+		, uint32_t
+		, uint32_t
+		, uint32_t
+		, uint32_t
+		, VkPrimitiveTopology
 		, VbosBindingArray const & vbos )
 		: CommandBase{ device }
-		, m_vtxCount{ vtxCount }
-		, m_instCount{ instCount }
-		, m_firstVertex{ firstVertex }
-		, m_firstInstance{ firstInstance }
 		, m_vbos{ vbos }
 	{
 	}

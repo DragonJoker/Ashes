@@ -75,11 +75,11 @@ namespace utils
 			if ( presentQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
 			{
 				// Pas de file supportant les deux, on a donc 2 files distinctes.
-				for ( size_t i = 0; i < queueProps.size(); ++i )
+				for ( size_t j = 0; j < queueProps.size(); ++j )
 				{
-					if ( supportsPresent[i] )
+					if ( supportsPresent[j] )
 					{
-						presentQueueFamilyIndex = static_cast< uint32_t >( i );
+						presentQueueFamilyIndex = static_cast< uint32_t >( j );
 						break;
 					}
 				}
@@ -111,7 +111,7 @@ namespace utils
 			std::vector< float > queuePriorities = { 1.0f };
 			ashes::DeviceQueueCreateInfoArray queueCreateInfos;
 
-			if ( graphicsQueueFamilyIndex != uint32_t( ~( 0u ) ) )
+			if ( graphicsQueueFamilyIndex != ~( 0u ) )
 			{
 				queueCreateInfos.push_back(
 					{
@@ -155,6 +155,7 @@ namespace utils
 	Device::Device( ashes::Instance const & instance
 		, ashes::Surface const & surface )
 		: m_gpu{ surface.getGpu() }
+		, m_memoryProperties{ m_gpu.getMemoryProperties() }
 		, m_createInfos{ doGetDeviceCreateInfo( instance
 			, surface
 			, m_gpu
@@ -163,7 +164,6 @@ namespace utils
 			, m_computeQueueFamilyIndex ) }
 		, m_device{ instance.createDevice( surface.getGpu()
 			, std::move( m_createInfos ) ) }
-		, m_memoryProperties{ m_gpu.getMemoryProperties() }
 	{
 	}
 

@@ -19,10 +19,5 @@ namespace ashes::test
 
 		void apply()const;
 		CommandPtr clone()const;
-
-	private:
-		uint32_t m_groupCountX;
-		uint32_t m_groupCountY;
-		uint32_t m_groupCountZ;
 	};
 }

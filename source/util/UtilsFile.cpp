@@ -19,7 +19,7 @@ namespace utils
 
 		std::string result( static_cast< size_t >( end - begin ) + 1u, '\0' );
 		file.seekg( 0, std::ios::beg );
-		file.read( reinterpret_cast< char * >( &result[0] ), end - begin );
+		file.read( result.data(), end - begin );
 
 		return result;
 	}

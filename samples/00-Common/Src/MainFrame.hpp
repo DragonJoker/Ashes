@@ -21,6 +21,11 @@ namespace common
 		void initialise();
 		void cleanup();
 
+		wxString const & getRendererName()const
+		{
+			return m_rendererName;
+		}
+
 	private:
 		virtual RenderPanel * doCreatePanel( wxSize const & size, utils::Instance const & instance ) = 0;
 

@@ -7,11 +7,9 @@ See LICENSE file in root folder.
 namespace ashes::test
 {
 	EndRenderPassCommand::EndRenderPassCommand( VkDevice device
-		, VkRenderPass renderPass
-		, VkFramebuffer frameBuffer )
+		, VkRenderPass
+		, VkFramebuffer )
 		: CommandBase{ device }
-		, m_renderPass{ renderPass }
-		, m_frameBuffer{ frameBuffer }
 	{
 	}
 

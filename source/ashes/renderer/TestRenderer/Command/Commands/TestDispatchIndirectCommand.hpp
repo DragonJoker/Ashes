@@ -18,9 +18,5 @@ namespace ashes::test
 
 		void apply()const;
 		CommandPtr clone()const;
-
-	private:
-		VkBuffer m_buffer;
-		uint32_t m_offset;
 	};
 }

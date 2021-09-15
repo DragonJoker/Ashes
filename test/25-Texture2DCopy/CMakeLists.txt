@@ -11,6 +11,7 @@ set( SOURCE_FILES
 	${SOURCE_FILES}
 	${Ashes_SOURCE_DIR}/external/imgui/imgui.cpp
 	${Ashes_SOURCE_DIR}/external/imgui/imgui_draw.cpp
+	${Ashes_SOURCE_DIR}/external/imgui/imgui_tables.cpp
 	${Ashes_SOURCE_DIR}/external/imgui/imgui_widgets.cpp
 )
 

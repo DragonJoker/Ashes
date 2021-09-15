@@ -11,7 +11,6 @@ namespace ashes::test
 		, VkDeviceSize offset
 		, VkDeviceSize size )
 		: CommandBase{ device }
-		, m_memory{ memory }
 		, m_range{ offset, size }
 	{
 	}

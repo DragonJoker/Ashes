@@ -18,16 +18,13 @@ namespace ashes::test
 {
 	BindDescriptorSetCommand::BindDescriptorSetCommand( VkDevice context
 		, VkDescriptorSet descriptorSet
-		, VkPipelineLayout layout
+		, VkPipelineLayout
 		, UInt32Array const & dynamicOffsets
-		, VkPipelineBindPoint bindingPoint )
+		, VkPipelineBindPoint )
 		: CommandBase{ context }
-		, m_descriptorSet{ descriptorSet }
-		, m_layout{ layout }
-		, m_bindingPoint{ bindingPoint }
 		, m_dynamicOffsets{ dynamicOffsets }
 	{
-		assert( get( m_descriptorSet )->getDynamicBuffers().size() == m_dynamicOffsets.size()
+		assert( get( descriptorSet )->getDynamicBuffers().size() == m_dynamicOffsets.size()
 			&& "Dynamic descriptors and dynamic offsets sizes must match." );
 	}
 

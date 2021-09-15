@@ -22,9 +22,6 @@ namespace ashes::test
 		CommandPtr clone()const;
 
 	private:
-		VkDescriptorSet m_descriptorSet;
-		VkPipelineLayout m_layout;
-		VkPipelineBindPoint m_bindingPoint;
 		UInt32Array m_dynamicOffsets;
 	};
 }

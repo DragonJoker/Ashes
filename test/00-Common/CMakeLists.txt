@@ -47,7 +47,7 @@ add_dependencies( ${PROJECT_NAME}
 target_link_libraries( ${PROJECT_NAME} PUBLIC
 	${Ashes_BINARY_LIBRARIES}
 	${wxWidgets_LIBRARIES}
-	${GTK2_LIBRARIES}
+	${GTK_LIBRARIES}
 	ashes::common
 	${Vulkan_LIBRARY}
 	ashes::ashespp
@@ -60,7 +60,7 @@ target_include_directories( ${PROJECT_NAME} PUBLIC
 	${Ashes_SOURCE_DIR}/external/imgui
 	${Ashes_SOURCE_DIR}/external/imgui
 	${wxWidgets_INCLUDE_DIRS}
-	${GTK2_INCLUDE_DIRS}
+	${GTK_INCLUDE_DIRS}
 	${TARGET_INCLUDE_DIRS}
 )
 target_compile_definitions( ${PROJECT_NAME} PUBLIC

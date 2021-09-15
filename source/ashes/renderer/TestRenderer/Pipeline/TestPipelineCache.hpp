@@ -35,9 +35,13 @@ namespace ashes::test
 			return m_data;
 		}
 
+		VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		VkDevice m_device;
-		VkPipelineCacheCreateInfo m_createInfo;
 		ByteArray m_data;
 	};
 }

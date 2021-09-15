@@ -33,6 +33,11 @@ namespace ashes::test
 		VkResult reset( VkDescriptorPoolResetFlags flags );
 		VkResult free( VkDescriptorSetArray sets );
 
+		VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
 	private:
 		VkDevice m_device;
 		VkDescriptorPoolSizeArray m_poolSizes;

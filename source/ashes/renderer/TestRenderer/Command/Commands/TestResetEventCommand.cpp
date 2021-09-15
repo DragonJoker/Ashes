@@ -7,10 +7,9 @@ See LICENSE file in root folder.
 namespace ashes::test
 {
 	ResetEventCommand::ResetEventCommand( VkDevice device
-		, VkEvent event
-		, VkPipelineStageFlags stageFlags )
+		, VkEvent
+		, VkPipelineStageFlags )
 		: CommandBase{ device }
-		, m_event{ event }
 	{
 	}
 

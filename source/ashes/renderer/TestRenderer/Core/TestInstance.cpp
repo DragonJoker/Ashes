@@ -83,8 +83,8 @@ namespace ashes::test
 	}();
 
 	Instance::Instance( VkInstanceCreateInfo createInfo )
-		: m_flags{ createInfo.flags }
-		, m_applicationInfo{ createInfo.pApplicationInfo ? *createInfo.pApplicationInfo : doGetDefaultApplicationInfo() }
+		: m_applicationInfo{ createInfo.pApplicationInfo ? *createInfo.pApplicationInfo : doGetDefaultApplicationInfo() }
+		, m_flags{ createInfo.flags }
 		, m_enabledLayerNames{ ashes::convert( CharPtrArray{ createInfo.ppEnabledLayerNames, createInfo.ppEnabledLayerNames + createInfo.enabledLayerCount } ) }
 		, m_enabledExtensions{ ashes::convert( CharPtrArray{ createInfo.ppEnabledExtensionNames, createInfo.ppEnabledExtensionNames + createInfo.enabledExtensionCount } ) }
 	{
@@ -147,7 +147,7 @@ namespace ashes::test
 		, float zNear
 		, float zFar )const
 	{
-		float const tanHalfFovy = tan( radiansFovY / float( 2 ) );
+		float const tanHalfFovy = float( tan( radiansFovY / float( 2 ) ) );
 
 		std::array< float, 16 > result{ 0.0f };
 		result[0] = 1.0f / ( aspect * tanHalfFovy );

@@ -18,8 +18,5 @@ namespace ashes::test
 
 		void apply()const;
 		CommandPtr clone()const;
-
-	private:
-		VkEvent m_event;
 	};
 }

@@ -25,10 +25,6 @@ namespace ashes::test
 		CommandPtr clone()const;
 
 	private:
-		VkBuffer m_buffer;
-		uint32_t m_offset;
-		uint32_t m_drawCount;
-		uint32_t m_stride;
 		VbosBindingArray m_vbos;
 	};
 }

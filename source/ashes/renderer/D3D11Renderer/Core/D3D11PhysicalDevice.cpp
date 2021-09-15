@@ -133,7 +133,10 @@ namespace ashes::d3d11
 #if defined( ASHES_D3D11_USE_AMD_AGS )
 		if ( isAMD() )
 		{
-			agsInit( &m_AGSContext, nullptr, nullptr );
+			agsInitialize( AGS_MAKE_VERSION( AMD_AGS_VERSION_MAJOR, AMD_AGS_VERSION_MINOR, AMD_AGS_VERSION_PATCH )
+				, nullptr
+				, &m_AGSContext
+				, nullptr );
 		}
 #endif
 #if defined( ASHES_D3D11_USE_NVAPI )
@@ -149,7 +152,7 @@ namespace ashes::d3d11
 #if defined( ASHES_D3D11_USE_AMD_AGS )
 		if ( isAMD() )
 		{
-			agsDeInit( m_AGSContext );
+			agsDeInitialize( m_AGSContext );
 		}
 #endif
 #if defined( ASHES_D3D11_USE_NVAPI )

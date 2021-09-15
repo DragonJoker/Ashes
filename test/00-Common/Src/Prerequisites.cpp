@@ -5,6 +5,7 @@
 #if defined( __WXGTK__ )
 #	include <gdk/gdkx.h>
 #	include <gtk/gtk.h>
+#	include <GL/glx.h>
 #elif defined( __WXMSW__ )
 #	include <wx/msw/private.h>
 #elif defined( __WXOSX_COCOA__ )
@@ -30,29 +31,23 @@ namespace common
 
 #elif defined( __WXGTK__ )
 
-		GtkWidget * widget{ static_cast< GtkWidget * >( window.GetHandle() ) };
-		Window xwindow{ None };
-		Display * xdisplay{ nullptr };
+		auto gtkWidget = static_cast< GtkWidget * >( window.GetHandle() );
+		auto gdkWindow = gtk_widget_get_window( gtkWidget );
+		GLXDrawable drawable = 0;
+		Display * display = nullptr;
 
-		if ( widget )
+		if ( gtkWidget && gdkWindow )
 		{
-			auto gtkWindow{ gtk_widget_get_window( widget ) };
-
-			if ( gtkWindow )
-			{
-				xwindow = gdk_x11_drawable_get_xid( gtkWindow );
-			}
-
-			auto gtkDisplay{ gtk_widget_get_display( widget ) };
+			drawable = GDK_WINDOW_XID( gdkWindow );
+			GdkDisplay * gtkDisplay = gtk_widget_get_display( gtkWidget );
 
 			if ( gtkDisplay )
 			{
-				xdisplay = gdk_x11_display_get_xdisplay( gtkDisplay );
+				display = gdk_x11_display_get_xdisplay( gtkDisplay );
 			}
 		}
 
-		return ashes::WindowHandle{ std::make_unique< ashes::IXWindowHandle >( xwindow
-				, xdisplay ) };
+		return ashes::WindowHandle( std::make_unique< ashes::IXWindowHandle >( drawable, display ) );
 
 #elif defined( __WXOSX_COCOA__ )
 

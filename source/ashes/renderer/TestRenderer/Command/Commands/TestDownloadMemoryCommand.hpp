@@ -20,7 +20,6 @@ namespace ashes::test
 		CommandPtr clone()const;
 
 	private:
-		ObjectMemory const * m_memory;
 		std::pair< VkDeviceSize, VkDeviceSize > m_range;
 	};
 }

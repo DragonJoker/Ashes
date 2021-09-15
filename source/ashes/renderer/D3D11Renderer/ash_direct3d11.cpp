@@ -13,6 +13,9 @@
 #include <cstring>
 #include <iostream>
 
+#pragma GCC diagnostic ignored "-Wmissing-declarations"
+#pragma GCC diagnostic ignored "-Wmissing-prototypes"
+
 namespace ashes::d3d11
 {
 #pragma region Vulkan 1.0

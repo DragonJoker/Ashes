@@ -11,17 +11,13 @@ See LICENSE file in root folder.
 namespace ashes::test
 {
 	DrawIndirectCommand::DrawIndirectCommand( VkDevice device
-		, VkBuffer buffer
-		, VkDeviceSize offset
-		, uint32_t drawCount
-		, uint32_t stride
-		, VkPrimitiveTopology mode
+		, VkBuffer
+		, VkDeviceSize
+		, uint32_t
+		, uint32_t
+		, VkPrimitiveTopology
 		, VbosBindingArray const & vbos )
 		: CommandBase{ device }
-		, m_buffer{ buffer }
-		, m_offset{ uint32_t( offset ) }
-		, m_drawCount{ drawCount }
-		, m_stride{ stride }
 		, m_vbos{ vbos }
 	{
 	}

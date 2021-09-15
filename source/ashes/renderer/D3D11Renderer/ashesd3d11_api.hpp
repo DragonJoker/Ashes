@@ -135,8 +135,11 @@ namespace ashes::d3d11
 	template< typename Type >
 	typename DxVkTypeTraits< Type >::VkType get( Type const * vkValue )
 	{
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-qual"
 		using VkType = typename DxVkTypeTraits< Type >::VkType;
 		return VkType( vkValue );
+#pragma GCC diagnostic pop
 	}
 
 	inline bool operator==( VkOffset2D const & lhs, VkOffset2D const & rhs )

@@ -33,6 +33,7 @@ namespace common
 	public:
 		RenderPanel( wxWindow * parent
 			, wxSize const & size
+			, std::string const & rndName
 			, std::string const & appName
 			, std::string const & appDesc );
 		virtual ~RenderPanel();
@@ -79,6 +80,7 @@ namespace common
 
 	private:
 		static size_t constexpr FrameSamplesCount = 1000;
+		std::string m_rndName;
 		std::string m_appName;
 		std::string m_appDesc;
 		bool m_ready{ false };

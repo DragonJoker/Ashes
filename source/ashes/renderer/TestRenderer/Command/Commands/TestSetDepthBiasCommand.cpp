@@ -7,13 +7,10 @@ See LICENSE file in root folder.
 namespace ashes::test
 {
 	SetDepthBiasCommand::SetDepthBiasCommand( VkDevice device
-		, float constantFactor
-		, float clamp
-		, float slopeFactor )
+		, float
+		, float
+		, float )
 		: CommandBase{ device }
-		, m_constantFactor{ constantFactor }
-		, m_clamp{ clamp }
-		, m_slopeFactor{ slopeFactor }
 	{
 	}
 

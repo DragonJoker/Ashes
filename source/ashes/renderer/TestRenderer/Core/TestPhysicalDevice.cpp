@@ -271,13 +271,14 @@ namespace ashes::test
 
 	void PhysicalDevice::doInitialise()
 	{
+		std::string_view name{ "Test" };
 		strncpy( m_properties.deviceName
-			, "Test"
-			, 4u );
+			, name.data()
+			, std::min( name.size() + 1u, size_t( VK_MAX_PHYSICAL_DEVICE_NAME_SIZE - 1u ) ) );
 		m_properties.deviceID = 0u;
 		m_properties.vendorID = 0u;
-		m_properties.driverVersion = VK_MAKE_VERSION( 1, 0, 0 );
-		m_properties.apiVersion = VK_MAKE_VERSION( 1, 0, 0 );
+		m_properties.driverVersion = ashes::makeVersion( 1, 0, 0 );
+		m_properties.apiVersion = ashes::makeVersion( 1, 0, 0 );
 		m_properties.deviceType = VK_PHYSICAL_DEVICE_TYPE_CPU;
 
 #	if VK_KHR_portability_subset

@@ -126,7 +126,6 @@ namespace ashes::test
 		VkDevice m_device{};
 		VkMemoryAllocateInfo m_allocateInfo{};
 		VkMemoryPropertyFlags m_propertyFlags{};
-		VkMemoryRequirements m_requirements{};
 		std::vector< ObjectMemoryPtr > m_objects;
 		mutable bool m_dirty{ true };
 		mutable bool m_mapped{ false };

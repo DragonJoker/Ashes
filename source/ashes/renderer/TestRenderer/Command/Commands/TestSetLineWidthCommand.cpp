@@ -7,9 +7,8 @@ See LICENSE file in root folder.
 namespace ashes::test
 {
 	SetLineWidthCommand::SetLineWidthCommand( VkDevice device
-		, float width )
+		, float )
 		: CommandBase{ device }
-		, m_width{ width }
 	{
 	}
 

@@ -17,8 +17,5 @@ namespace ashes::test
 
 		void apply()const;
 		CommandPtr clone()const;
-
-	private:
-		float m_width;
 	};
 }
