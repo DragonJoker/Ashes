@@ -16,7 +16,7 @@ namespace ashes::test
 			, uint32_t first
 			, VkViewportArray const & viewports );
 
-		void apply()const;
-		CommandPtr clone()const;
+		void apply()const override;
+		CommandPtr clone()const override;
 	};
 }

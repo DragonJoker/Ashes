@@ -20,8 +20,8 @@ namespace ashes::test
 			, VkPrimitiveTopology mode
 			, VbosBindingArray const & vbos );
 
-		void apply()const;
-		CommandPtr clone()const;
+		void apply()const override;
+		CommandPtr clone()const override;
 
 	private:
 		VbosBindingArray m_vbos;

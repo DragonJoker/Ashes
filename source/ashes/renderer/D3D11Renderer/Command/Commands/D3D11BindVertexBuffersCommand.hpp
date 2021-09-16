@@ -17,9 +17,9 @@ namespace ashes::d3d11
 			, VkBufferArray const & buffers
 			, UInt64Array const & offsets );
 
-		void apply( Context const & context )const;
-		void remove( Context const & context )const;
-		CommandPtr clone()const;
+		void apply( Context const & context )const override;
+		void remove( Context const & context )const override;
+		CommandPtr clone()const override;
 
 	private:
 		uint32_t m_firstBinding;

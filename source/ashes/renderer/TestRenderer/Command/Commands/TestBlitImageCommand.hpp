@@ -20,7 +20,7 @@ namespace ashes::test
 			, VkImageBlitArray const & regions
 			, VkFilter filter );
 
-		void apply()const;
-		CommandPtr clone()const;
+		void apply()const override;
+		CommandPtr clone()const override;
 	};
 }

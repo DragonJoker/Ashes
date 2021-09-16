@@ -18,8 +18,9 @@ namespace ashes::test
 			, VkPipelineStageFlags dstStageMask
 			, VkBufferMemoryBarrierArray const & bufferMemoryBarriers
 			, VkImageMemoryBarrierArray const & imageMemoryBarriers );
-		void apply()const;
-		CommandPtr clone()const;
+
+		void apply()const override;
+		CommandPtr clone()const override;
 
 	private:
 		VkEventArray m_events;

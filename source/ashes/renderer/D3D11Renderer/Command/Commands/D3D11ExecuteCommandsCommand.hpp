@@ -14,9 +14,10 @@ namespace ashes::d3d11
 	public:
 		ExecuteCommandsCommand( VkDevice device
 			, VkCommandBuffer commandBuffer );
-		~ExecuteCommandsCommand();
-		void apply( Context const & context )const;
-		CommandPtr clone()const;
+		~ExecuteCommandsCommand()override;
+
+		void apply( Context const & context )const override;
+		CommandPtr clone()const override;
 
 	private:
 		VkCommandBuffer m_commandBuffer;

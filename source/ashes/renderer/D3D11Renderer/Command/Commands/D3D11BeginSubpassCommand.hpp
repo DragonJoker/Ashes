@@ -33,8 +33,8 @@ namespace ashes::d3d11
 			, VkFramebuffer frameBuffer
 			, VkSubpassDescription const & subpass );
 
-		void apply( Context const & context )const;
-		CommandPtr clone()const;
+		void apply( Context const & context )const override;
+		CommandPtr clone()const override;
 
 	private:
 		VkRenderPass m_renderPass;

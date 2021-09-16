@@ -17,7 +17,7 @@ namespace ashes::test
 			, uint32_t firstQuery
 			, uint32_t queryCount );
 
-		void apply()const;
-		CommandPtr clone()const;
+		void apply()const override;
+		CommandPtr clone()const override;
 	};
 }

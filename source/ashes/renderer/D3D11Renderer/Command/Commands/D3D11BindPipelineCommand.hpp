@@ -16,9 +16,9 @@ namespace ashes::d3d11
 			, VkPipeline pipeline
 			, VkPipelineBindPoint bindingPoint );
 
-		void apply( Context const & context )const;
-		void remove( Context const & context )const;
-		CommandPtr clone()const;
+		void apply( Context const & context )const override;
+		void remove( Context const & context )const override;
+		CommandPtr clone()const override;
 
 	private:
 		VkPipeline m_pipeline;
@@ -39,9 +39,9 @@ namespace ashes::d3d11
 		BindDepthStencilStateCommand( VkDevice device
 			, VkPipeline pipeline );
 
-		void apply( Context const & context )const;
-		void remove( Context const & context )const;
-		CommandPtr clone()const;
+		void apply( Context const & context )const override;
+		void remove( Context const & context )const override;
+		CommandPtr clone()const override;
 
 	private:
 		VkPipeline m_pipeline;
@@ -54,9 +54,9 @@ namespace ashes::d3d11
 		BindRasterizerStateCommand( VkDevice device
 			, VkPipeline pipeline );
 
-		void apply( Context const & context )const;
-		void remove( Context const & context )const;
-		CommandPtr clone()const;
+		void apply( Context const & context )const override;
+		void remove( Context const & context )const override;
+		CommandPtr clone()const override;
 
 	private:
 		VkPipeline m_pipeline;
@@ -70,9 +70,9 @@ namespace ashes::d3d11
 			, VkPipeline pipeline
 			, std::array< float, 4u > const & blendConstants );
 
-		void apply( Context const & context )const;
-		void remove( Context const & context )const;
-		CommandPtr clone()const;
+		void apply( Context const & context )const override;
+		void remove( Context const & context )const override;
+		CommandPtr clone()const override;
 
 	private:
 		VkPipeline m_pipeline;
@@ -86,9 +86,9 @@ namespace ashes::d3d11
 		SetDepthBoundsCommand( VkDevice device
 			, DepthBounds const & depthBounds );
 
-		void apply( Context const & context )const;
-		void remove( Context const & context )const;
-		CommandPtr clone()const;
+		void apply( Context const & context )const override;
+		void remove( Context const & context )const override;
+		CommandPtr clone()const override;
 
 	private:
 		VkPhysicalDevice m_physicalDevice;

@@ -18,8 +18,9 @@ namespace ashes::d3d11
 			, VkPipelineStageFlags dstStageMask
 			, ArrayView< VkBufferMemoryBarrier const > const & bufferMemoryBarriers
 			, ArrayView< VkImageMemoryBarrier const > const & imageMemoryBarriers );
-		void apply( Context const & context )const;
-		CommandPtr clone()const;
+
+		void apply( Context const & context )const override;
+		CommandPtr clone()const override;
 
 	private:
 		VkEventArray m_events;

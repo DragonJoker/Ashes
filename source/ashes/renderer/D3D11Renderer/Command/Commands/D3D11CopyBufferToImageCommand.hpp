@@ -69,10 +69,10 @@ namespace ashes::d3d11
 			, ArrayView< VkBufferImageCopy const > const & copyInfo
 			, VkBuffer src
 			, VkImage dst );
-		~CopyBufferToImageCommand();
+		~CopyBufferToImageCommand()override;
 
-		void apply( Context const & context )const;
-		CommandPtr clone()const;
+		void apply( Context const & context )const override;
+		CommandPtr clone()const override;
 
 	private:
 		void apply( Context const & context

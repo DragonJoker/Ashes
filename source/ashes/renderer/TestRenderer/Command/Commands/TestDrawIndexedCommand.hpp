@@ -22,8 +22,8 @@ namespace ashes::test
 			, VkIndexType type
 			, VbosBindingArray const & vbos );
 
-		void apply()const;
-		CommandPtr clone()const;
+		void apply()const override;
+		CommandPtr clone()const override;
 
 	private:
 		VbosBindingArray m_vbos;
