@@ -17,8 +17,8 @@ namespace ashes::test
 		PushConstantsCommand( VkDevice device
 			, PushConstantsDesc const & pcb );
 
-		void apply()const;
-		CommandPtr clone()const;
+		void apply()const override;
+		CommandPtr clone()const override;
 
 	private:
 		PushConstantsBuffer m_pcb;

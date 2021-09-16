@@ -20,7 +20,8 @@ namespace ashes::d3d11
 			, VkQueryPool pool
 			, uint32_t firstQuery
 			, uint32_t queryCount );
-		void apply( Context const & context )const;
-		CommandPtr clone()const;
+
+		void apply( Context const & context )const override;
+		CommandPtr clone()const override;
 	};
 }

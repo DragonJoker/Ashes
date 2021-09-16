@@ -23,8 +23,8 @@ namespace ashes::d3d11
 		ExecuteActionsCommand( VkDevice device
 			, ActionArray actions );
 
-		void apply( Context const & context )const;
-		CommandPtr clone()const;
+		void apply( Context const & context )const override;
+		CommandPtr clone()const override;
 
 	private:
 		ActionArray m_actions;

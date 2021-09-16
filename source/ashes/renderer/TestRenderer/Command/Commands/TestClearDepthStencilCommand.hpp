@@ -17,7 +17,7 @@ namespace ashes::test
 			, VkImageSubresourceRangeArray ranges
 			, VkClearDepthStencilValue value );
 
-		void apply()const;
-		CommandPtr clone()const;
+		void apply()const override;
+		CommandPtr clone()const override;
 	};
 }

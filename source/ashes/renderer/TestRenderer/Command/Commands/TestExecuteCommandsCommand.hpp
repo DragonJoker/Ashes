@@ -15,8 +15,8 @@ namespace ashes::test
 		ExecuteCommandsCommand( VkDevice device
 			, VkCommandBuffer commandBuffer );
 
-		void apply()const;
-		CommandPtr clone()const;
+		void apply()const override;
+		CommandPtr clone()const override;
 
 	private:
 		VkCommandBuffer m_commandBuffer;

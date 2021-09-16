@@ -17,7 +17,7 @@ namespace ashes::test
 			, float clamp
 			, float slopeFactor );
 
-		void apply()const;
-		CommandPtr clone()const;
+		void apply()const override;
+		CommandPtr clone()const override;
 	};
 }

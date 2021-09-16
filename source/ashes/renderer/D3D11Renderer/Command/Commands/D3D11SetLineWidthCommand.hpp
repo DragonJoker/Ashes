@@ -25,8 +25,8 @@ namespace ashes::d3d11
 		SetLineWidthCommand( VkDevice device
 			, float width );
 
-		void apply( Context const & context )const;
-		CommandPtr clone()const;
+		void apply( Context const & context )const override;
+		CommandPtr clone()const override;
 
 	private:
 		float m_width;

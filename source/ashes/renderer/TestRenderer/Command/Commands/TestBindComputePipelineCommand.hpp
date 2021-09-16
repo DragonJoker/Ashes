@@ -16,8 +16,8 @@ namespace ashes::test
 			, VkPipeline pipeline
 			, VkPipelineBindPoint bindingPoint );
 
-		void apply()const;
-		CommandPtr clone()const;
+		void apply()const override;
+		CommandPtr clone()const override;
 
 	private:
 		VkPipeline m_pipeline;

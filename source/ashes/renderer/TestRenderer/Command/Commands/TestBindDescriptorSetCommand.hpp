@@ -18,8 +18,8 @@ namespace ashes::test
 			, UInt32Array const & dynamicOffsets
 			, VkPipelineBindPoint bindingPoint );
 
-		void apply()const;
-		CommandPtr clone()const;
+		void apply()const override;
+		CommandPtr clone()const override;
 
 	private:
 		UInt32Array m_dynamicOffsets;

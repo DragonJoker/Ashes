@@ -17,8 +17,8 @@ namespace ashes::test
 			, VkBufferArray const & buffers
 			, UInt64Array const & offsets );
 
-		void apply()const;
-		CommandPtr clone()const;
+		void apply()const override;
+		CommandPtr clone()const override;
 
 	private:
 		VkBufferArray m_vbos;

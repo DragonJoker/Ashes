@@ -15,8 +15,9 @@ namespace ashes::test
 		SetEventCommand( VkDevice device
 			, VkEvent event
 			, VkPipelineStageFlags stageFlags );
-		void apply()const;
-		CommandPtr clone()const;
+
+		void apply()const override;
+		CommandPtr clone()const override;
 
 	private:
 		VkEvent m_event;

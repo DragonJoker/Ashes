@@ -20,9 +20,10 @@ namespace ashes::d3d11
 	public:
 		PushConstantsCommand( VkDevice device
 			, PushConstantsBuffer const & pcb );
-		void apply( Context const & context )const;
-		void remove( Context const & context )const;
-		CommandPtr clone()const;
+
+		void apply( Context const & context )const override;
+		void remove( Context const & context )const override;
+		CommandPtr clone()const override;
 
 	private:
 		PushConstantsBuffer m_pcb;

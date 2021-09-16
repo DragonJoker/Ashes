@@ -20,8 +20,8 @@ namespace ashes::d3d11
 			, VkPrimitiveTopology mode
 			, VbosBindingArray const & vbos );
 
-		void apply( Context const & context )const;
-		CommandPtr clone()const;
+		void apply( Context const & context )const override;
+		CommandPtr clone()const override;
 
 	private:
 		VkBuffer m_buffer;

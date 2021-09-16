@@ -81,10 +81,10 @@ namespace ashes::d3d11
 			, VkImage dstImage
 			, ArrayView< VkImageBlit const > const & regions
 			, VkFilter filter );
-		~BlitImageCommand();
+		~BlitImageCommand()override;
 
-		void apply( Context const & context )const;
-		CommandPtr clone()const;
+		void apply( Context const & context )const override;
+		CommandPtr clone()const override;
 
 	private:
 		void doInitialiseStretchUbo( VkDescriptorSetLayout descriptorLayout

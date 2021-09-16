@@ -19,8 +19,8 @@ namespace ashes::test
 			, VkBufferMemoryBarrierArray const & bufferBarriers
 			, VkImageMemoryBarrierArray const & imageBarriers );
 
-		void apply()const;
-		CommandPtr clone()const;
+		void apply()const override;
+		CommandPtr clone()const override;
 
 	private:
 		struct BufferLock

@@ -32,10 +32,10 @@ namespace ashes::d3d11
 			, ArrayView< uint32_t const > const & dynamicOffsets
 			, VkPipelineBindPoint bindingPoint );
 
-		void apply( Context const & context )const;
-		void remove( Context const & context )const;
-		void fillContext( Context & context )const;
-		CommandPtr clone()const;
+		void apply( Context const & context )const override;
+		void remove( Context const & context )const override;
+		void fillContext( Context & context )const override;
+		CommandPtr clone()const override;
 
 	private:
 		VkDescriptorSet m_descriptorSet;

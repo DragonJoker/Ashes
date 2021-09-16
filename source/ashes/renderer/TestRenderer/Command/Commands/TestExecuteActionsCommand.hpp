@@ -15,8 +15,8 @@ namespace ashes::test
 		ExecuteActionsCommand( VkDevice device
 			, ActionArray actions );
 
-		void apply()const;
-		CommandPtr clone()const;
+		void apply()const override;
+		CommandPtr clone()const override;
 
 	private:
 		ActionArray m_actions;

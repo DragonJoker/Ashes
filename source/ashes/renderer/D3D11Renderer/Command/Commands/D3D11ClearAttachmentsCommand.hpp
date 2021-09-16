@@ -27,8 +27,8 @@ namespace ashes::d3d11
 			, ArrayView< VkClearAttachment const > const & clearAttaches
 			, ArrayView< VkClearRect const > const & clearRects );
 
-		void apply( Context const & context )const;
-		CommandPtr clone()const;
+		void apply( Context const & context )const override;
+		CommandPtr clone()const override;
 
 	private:
 		VkClearRectArray m_clearRects;
