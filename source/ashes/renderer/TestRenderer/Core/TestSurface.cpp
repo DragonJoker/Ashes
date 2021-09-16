@@ -30,6 +30,7 @@ namespace ashes::test
 	}
 
 #if _WIN32
+
 	SurfaceKHR::SurfaceKHR( VkInstance instance
 		, VkWin32SurfaceCreateInfoKHR createInfo )
 		: SurfaceKHR{}
@@ -37,6 +38,7 @@ namespace ashes::test
 	}
 
 #elif __linux__
+
 	SurfaceKHR::SurfaceKHR( VkInstance instance
 		, VkXlibSurfaceCreateInfoKHR createInfo )
 		: SurfaceKHR{}
@@ -51,6 +53,14 @@ namespace ashes::test
 
 	SurfaceKHR::SurfaceKHR( VkInstance instance
 		, VkWaylandSurfaceCreateInfoKHR createInfo )
+		: SurfaceKHR{}
+	{
+	}
+
+#elif __APPLE__
+
+	SurfaceKHR::SurfaceKHR( VkInstance instance
+		, VkMacOSSurfaceCreateInfoMVK createInfo )
 		: SurfaceKHR{}
 	{
 	}

@@ -5,7 +5,7 @@
 void * CGLGetProcAddress( const char * name )
 {
 	std::string symbolName = std::string( "_" ) + name;
-	NSSymbol symbol = NULL;
+	NSSymbol symbol = nullptr;
 
 	if (NSIsSymbolNameDefined( symbolName.c_str() ) )
 	{
@@ -14,5 +14,5 @@ void * CGLGetProcAddress( const char * name )
 
 	return ( symbol
 		? NSAddressOfSymbol( symbol )
-		: NULL );
+		: nullptr );
 }
