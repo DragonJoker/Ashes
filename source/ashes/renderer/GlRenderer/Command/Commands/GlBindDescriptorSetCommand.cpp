@@ -432,7 +432,7 @@ namespace ashes::gl
 					auto writeSampler = common::getSampler( write, i );
 
 					if ( write.descriptorType == VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT
-						|| writeSampler == VK_NULL_HANDLE )
+						|| writeSampler == nullptr )
 					{
 						bindTextureAndSampler( common::getView( write, i )
 							, sampler
@@ -709,7 +709,7 @@ namespace ashes::gl
 					auto writeSampler = common::getSampler( write, i );
 
 					if ( write.descriptorType == VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT
-						|| writeSampler == VK_NULL_HANDLE )
+						|| writeSampler == nullptr )
 					{
 						bindTextureAndSampler( common::getView( write, i )
 							, sampler

@@ -15,7 +15,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [[ubuntu-latest,x64-linux,gcc], [ubuntu-latest,x64-linux,clang], [windows-latest,x64-windows,msvc]]
+        os: [[ubuntu-latest,x64-linux,gcc], [ubuntu-latest,x64-linux,clang], [windows-latest,x64-windows,msvc], [macos-latest,x64-osx,clang]]
         buildType: [Release]
 
     runs-on: ${{ matrix.os[0] }}
@@ -41,7 +41,7 @@ jobs:
     - name: Install necessary Clang++ version (Linux)
       if: runner.os == 'Linux' && matrix.os[2] == 'clang'
       shell: bash
-      run: sudo apt-get install -y --no-install-recommends ccache clang-10 clang++-10
+      run: sudo apt-get install -y --no-install-recommends ccache clang-12 clang++-12
 
     - name: Install dependencies from vcpkg (Linux)
       if: runner.os == 'Linux'
@@ -59,7 +59,7 @@ jobs:
       if: runner.os == 'Windows'
       shell: bash
       working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/package/ashes -DPROJECTS_USE_PRECOMPILED_HEADERS=ON -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_INFO=OFF -DASHES_BUILD_SAMPLES=OFF -DASHES_BUILD_RENDERER_OGL=ON -DASHES_BUILD_RENDERER_D3D11=ON
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/package/ashes -DPROJECTS_USE_PRECOMPILED_HEADERS=ON -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_INFO=OFF -DASHES_BUILD_SAMPLES=OFF -DASHES_BUILD_RENDERER_OGL=ON -DASHES_BUILD_RENDERER_D3D11=ON -DASHES_BUILD_RENDERER_TEST=ON
 
     - name: Configure GCC version (Linux)
       if: runner.os == 'Linux' && matrix.os[2] == 'gcc'
@@ -77,25 +77,25 @@ jobs:
       if: runner.os == 'Linux' && matrix.os[2] == 'clang'
       shell: bash
       working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
-      run: echo "CC=clang-10" >> $GITHUB_ENV
+      run: echo "CC=clang-12" >> $GITHUB_ENV
 
     - name: Configure Clang++ version (Linux)
       if: runner.os == 'Linux' && matrix.os[2] == 'clang'
       shell: bash
       working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
-      run: echo "CXX=clang++-10" >> $GITHUB_ENV
+      run: echo "CXX=clang++-12" >> $GITHUB_ENV
 
     - name: Configure CMake (Linux)
       if: runner.os == 'Linux'
       shell: bash
       working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/package/ashes -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_INFO=OFF -DASHES_BUILD_SAMPLES=OFF -DASHES_BUILD_RENDERER_OGL=OFF
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/package/ashes -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_INFO=OFF -DASHES_BUILD_SAMPLES=OFF -DASHES_BUILD_RENDERER_OGL=OFF -DASHES_BUILD_RENDERER_TEST=ON
 
     - name: Configure CMake (MacOS)
       if: runner.os == 'macOS'
       shell: bash
       working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/package/ashes -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_INFO=OFF -DASHES_BUILD_SAMPLES=OFF -DASHES_BUILD_RENDERER_OGL=ON
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/package/ashes -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_INFO=OFF -DASHES_BUILD_SAMPLES=OFF -DASHES_BUILD_RENDERER_OGL=ON -DASHES_BUILD_RENDERER_TEST=ON
 
     - name: Build
       working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}

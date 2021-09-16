@@ -119,7 +119,7 @@ namespace ashes::gl
 
 			if ( stack.hasCurrentFramebuffer() )
 			{
-				stack.setCurrentFramebuffer( VK_NULL_HANDLE );
+				stack.setCurrentFramebuffer( nullptr );
 			}
 		}
 

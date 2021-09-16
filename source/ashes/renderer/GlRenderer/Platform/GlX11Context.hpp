@@ -22,7 +22,7 @@ namespace ashes::gl
 		X11Context( VkInstance instance
 			, VkDisplaySurfaceCreateInfoKHR createInfo
 			, ContextImpl const * mainContext );
-		~X11Context();
+		~X11Context()noexcept override;
 
 		void preInitialise( int major, int minor )override;
 		void postInitialise()override;

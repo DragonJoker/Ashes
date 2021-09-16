@@ -150,7 +150,7 @@ namespace ashes
 	protected:
 		Device const & m_device;
 		VkSwapchainCreateInfoKHR m_createInfo;
-		VkSwapchainKHR m_internal{ VK_NULL_HANDLE };
+		VkSwapchainKHR m_internal{};
 	};
 }
 

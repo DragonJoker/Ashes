@@ -42,7 +42,7 @@ namespace ashes::test
 		VkImageView doGetDepthStencilAttach( VkImageViewArray const & attaches
 			, bool msaa )
 		{
-			VkImageView result{ VK_NULL_HANDLE };
+			VkImageView result{};
 
 			for ( auto & attach : attaches )
 			{
@@ -67,7 +67,7 @@ namespace ashes::test
 		VkImageView getDepthStencilView( VkImageViewArray const & attaches
 			, bool msaa )
 		{
-			VkImageView result{ VK_NULL_HANDLE };
+			VkImageView result{};
 			auto attach = doGetDepthStencilAttach( attaches, msaa );
 
 			if ( attach )
@@ -96,7 +96,7 @@ namespace ashes::test
 		, m_msRtViews{ getRenderTargetViews( m_views, true ) }
 		, m_dsView{ getDepthStencilView( m_views, false ) }
 		, m_msDsView{ getDepthStencilView( m_views, true ) }
-		, m_multisampled{ ( !m_msRtViews.empty() ) || ( m_msDsView != VK_NULL_HANDLE ) }
+		, m_multisampled{ ( !m_msRtViews.empty() ) || ( m_msDsView != nullptr ) }
 	{
 	}
 }

@@ -1632,7 +1632,7 @@ namespace ashes
 		VkAllocationCallbacks const * m_callbacks;
 		PhysicalDevice const & m_physicalDevice;
 		ashes::DeviceCreateInfo m_createInfos;
-		VkDevice m_internal{ VK_NULL_HANDLE };
+		VkDevice m_internal{};
 		float m_timestampPeriod;
 		VkPhysicalDeviceMemoryProperties m_memoryProperties;
 		VkPhysicalDeviceProperties m_properties;

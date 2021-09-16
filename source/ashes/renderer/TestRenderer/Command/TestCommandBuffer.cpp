@@ -388,7 +388,7 @@ namespace ashes::test
 		, uint32_t firstInstance )const
 	{
 		if ( !get( m_state.currentPipeline )->hasVertexLayout()
-			&& m_state.newlyBoundIbo == VK_NULL_HANDLE )
+			&& m_state.newlyBoundIbo == nullptr )
 		{
 			bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
 		}
@@ -405,7 +405,7 @@ namespace ashes::test
 			, m_state.indexType
 			, m_state.vbos ) );
 		doProcessMappedBoundDescriptorsResourcesOut();
-		m_state.newlyBoundIbo = VK_NULL_HANDLE;
+		m_state.newlyBoundIbo = nullptr;
 	}
 
 	void CommandBuffer::drawIndirect( VkBuffer buffer
@@ -431,7 +431,7 @@ namespace ashes::test
 		, uint32_t stride )const
 	{
 		if ( !get( m_state.currentPipeline )->hasVertexLayout()
-			&& m_state.newlyBoundIbo == VK_NULL_HANDLE )
+			&& m_state.newlyBoundIbo == nullptr )
 		{
 			bindIndexBuffer( get( m_device )->getEmptyIndexedVaoIdx(), 0u, VK_INDEX_TYPE_UINT32 );
 		}
@@ -447,7 +447,7 @@ namespace ashes::test
 			, m_state.indexType
 			, m_state.vbos ) );
 		doProcessMappedBoundDescriptorsResourcesOut();
-		m_state.newlyBoundIbo = VK_NULL_HANDLE;
+		m_state.newlyBoundIbo = nullptr;
 	}
 
 	void CommandBuffer::copyToImage( VkBuffer src

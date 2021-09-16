@@ -108,7 +108,7 @@ namespace ashes
 		VkFormat m_format;
 		VkDeviceSize m_offset;
 		VkDeviceSize m_range;
-		VkBufferView m_internal{ VK_NULL_HANDLE };
+		VkBufferView m_internal{};
 	};
 }
 

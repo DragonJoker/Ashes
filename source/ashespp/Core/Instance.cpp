@@ -49,7 +49,7 @@ namespace ashes
 
 	Instance::~Instance()
 	{
-		if ( m_instance != VK_NULL_HANDLE )
+		if ( m_instance != nullptr )
 		{
 			vkDestroyInstance( m_instance, nullptr );
 		}
@@ -145,7 +145,7 @@ namespace ashes
 			checkError( VK_ERROR_FEATURE_NOT_PRESENT, "Vulkan supporting GPU" );
 		}
 
-		std::vector< VkPhysicalDevice > gpus( gpuCount, VK_NULL_HANDLE );
+		std::vector< VkPhysicalDevice > gpus( gpuCount, nullptr );
 		res = vkEnumeratePhysicalDevices( m_instance
 			, &gpuCount
 			, gpus.data() );
@@ -195,7 +195,7 @@ namespace ashes
 
 	VkDebugUtilsMessengerEXT Instance::createDebugUtilsMessenger( VkDebugUtilsMessengerCreateInfoEXT & createInfo )const
 	{
-		VkDebugUtilsMessengerEXT result{ VK_NULL_HANDLE };
+		VkDebugUtilsMessengerEXT result{};
 
 		if ( vkCreateDebugUtilsMessengerEXT )
 		{
@@ -237,7 +237,7 @@ namespace ashes
 
 	VkDebugReportCallbackEXT Instance::createDebugReportCallback( VkDebugReportCallbackCreateInfoEXT & createInfo )const
 	{
-		VkDebugReportCallbackEXT result{ VK_NULL_HANDLE };
+		VkDebugReportCallbackEXT result{};
 
 		if ( vkCreateDebugReportCallbackEXT )
 		{

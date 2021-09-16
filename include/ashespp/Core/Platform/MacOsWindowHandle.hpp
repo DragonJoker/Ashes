@@ -19,16 +19,12 @@ namespace ashes
 		{
 		}
 
-		virtual ~IMacOsWindowHandle()
-		{
-		}
-
-		virtual operator bool()
+		operator bool()override
 		{
 			return m_view != nullptr;
 		}
 
-		inline void * getView()const
+		void * getView()const
 		{
 			return m_view;
 		}

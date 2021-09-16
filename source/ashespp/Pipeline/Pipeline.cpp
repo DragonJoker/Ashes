@@ -16,7 +16,7 @@ namespace ashes
 		DEBUG_DUMP( m_createInfo );
 		DEBUG_WRITE( "pipeline.log" );
 		auto res = m_device.vkCreateComputePipelines( m_device
-			, VK_NULL_HANDLE
+			, nullptr
 			, 1
 			, &static_cast< VkComputePipelineCreateInfo const & >( createInfo )
 			, m_device.getAllocationCallbacks()
@@ -33,7 +33,7 @@ namespace ashes
 		DEBUG_DUMP( m_createInfo );
 		DEBUG_WRITE( "pipeline.log" );
 		auto res = m_device.vkCreateGraphicsPipelines( m_device
-			, VK_NULL_HANDLE
+			, nullptr
 			, 1
 			, &static_cast< VkGraphicsPipelineCreateInfo const & >( createInfo )
 			, m_device.getAllocationCallbacks()

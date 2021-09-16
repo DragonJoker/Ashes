@@ -17,7 +17,7 @@ namespace ashes::gl
 		{
 			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_FRAMEBUFFER
 				, nullptr ) );
-			stack.setCurrentFramebuffer( VK_NULL_HANDLE );
+			stack.setCurrentFramebuffer( nullptr );
 		}
 	}
 }

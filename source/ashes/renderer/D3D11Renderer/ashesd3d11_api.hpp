@@ -413,7 +413,7 @@ namespace ashes::d3d11
 		, Params && ... params )
 	{
 		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
-		vkValue = VK_NULL_HANDLE;
+		vkValue = nullptr;
 
 		try
 		{
@@ -445,7 +445,7 @@ namespace ashes::d3d11
 		, Params && ... params )
 	{
 		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
-		vkValue = VK_NULL_HANDLE;
+		vkValue = nullptr;
 
 		try
 		{

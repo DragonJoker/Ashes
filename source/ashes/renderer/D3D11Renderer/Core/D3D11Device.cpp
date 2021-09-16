@@ -462,7 +462,7 @@ namespace ashes::d3d11
 				, VK_ERROR_INCOMPATIBLE_DRIVER
 				, "Direct3D11"
 				, "Couldn't find family index within created queues" );
-			return VK_NULL_HANDLE;
+			return nullptr;
 		}
 
 		if ( it->second.queues.size() <= index )
@@ -474,7 +474,7 @@ namespace ashes::d3d11
 				, VK_ERROR_INCOMPATIBLE_DRIVER
 				, "Direct3D11"
 				, "Couldn't find queue with wanted index within its family" );
-			return VK_NULL_HANDLE;
+			return nullptr;
 		}
 
 		return it->second.queues[index];

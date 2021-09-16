@@ -23,8 +23,8 @@ namespace ashes
 		Image const * image;
 
 		ImageView( VkImageViewCreateInfo createInfo = {}
-			, VkImageView internal = VK_NULL_HANDLE
-			, Image const * image = nullptr );
+			, VkImageView internal = {}
+			, Image const * image = {} );
 		/**
 		*\brief
 		*	Prepares a transition memory barrier, for a general layout.

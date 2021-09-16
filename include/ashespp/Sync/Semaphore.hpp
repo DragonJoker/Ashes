@@ -88,7 +88,7 @@ namespace ashes
 
 	private:
 		Device const & m_device;
-		VkSemaphore m_internal{ VK_NULL_HANDLE };
+		VkSemaphore m_internal{};
 		bool m_ownInternal{ true };
 #pragma warning( push )
 #pragma warning( disable: 4068 )

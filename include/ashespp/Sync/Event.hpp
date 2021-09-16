@@ -90,7 +90,7 @@ namespace ashes
 
 	private:
 		Device const & m_device;
-		VkEvent m_internal{ VK_NULL_HANDLE };
+		VkEvent m_internal{};
 	};
 }
 

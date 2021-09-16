@@ -288,7 +288,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 						nullptr,
 					},
 					pipelineLayout,
-					VK_NULL_HANDLE,
+					nullptr,
 					0u,
 				} );
 			return result;
@@ -298,7 +298,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 			, VkFilter filter
 			, uint32_t mipLevels )
 		{
-			VkSampler result{ VK_NULL_HANDLE };
+			VkSampler result{};
 			allocate( result
 				, get( device )->getAllocationCallbacks()
 				, device
@@ -331,7 +331,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 			, VkDeviceMemory & memory
 			, VkDeviceSize & range )
 		{
-			VkBuffer result{ VK_NULL_HANDLE };
+			VkBuffer result{};
 			allocate( result
 				, get( device )->getAllocationCallbacks()
 				, device
@@ -347,7 +347,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 					nullptr,
 				} );
 
-			if ( result != VK_NULL_HANDLE )
+			if ( result != nullptr )
 			{
 				auto requirements = get( result )->getMemoryRequirements();
 				range = requirements.alignment;
@@ -380,7 +380,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 			, VkImageView srcView
 			, VkImageView dstView )
 		{
-			VkDescriptorSet result{ VK_NULL_HANDLE };
+			VkDescriptorSet result{};
 			allocateNA( result
 				, device
 				, pool
@@ -410,7 +410,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 				VkDescriptorImageInfo srcSampler
 				{
 					sampler,
-					VK_NULL_HANDLE,
+					nullptr,
 					VK_IMAGE_LAYOUT_UNDEFINED,
 				};
 				get( result )->update( VkWriteDescriptorSet
@@ -428,7 +428,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 					} );
 				VkDescriptorImageInfo srcImageInfo
 				{
-					VK_NULL_HANDLE,
+					nullptr,
 					srcView,
 					VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 				};
@@ -447,7 +447,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 					} );
 				VkDescriptorImageInfo dstImageInfo
 				{
-					VK_NULL_HANDLE,
+					nullptr,
 					dstView,
 					VK_IMAGE_LAYOUT_GENERAL,
 				};
@@ -880,7 +880,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 	{
 		auto srcTexture = m_srcTexture;
 
-		if ( m_tmpSrcTexture != VK_NULL_HANDLE
+		if ( m_tmpSrcTexture != nullptr
 			&& m_tmpSrcTexture != m_srcTexture
 			&& !m_layerBlitsToTmp.empty() )
 		{
@@ -899,7 +899,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 
 	void BlitImageCommand::doUpdateTmpDst()
 	{
-		if ( m_tmpDstTexture != VK_NULL_HANDLE
+		if ( m_tmpDstTexture != nullptr
 			&& m_tmpDstTexture != m_dstTexture
 			&& !m_layerBlitsFromTmp.empty() )
 		{

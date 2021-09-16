@@ -21,21 +21,17 @@ namespace ashes
 		{
 		}
 
-		virtual ~IMirWindowHandle()
-		{
-		}
-
-		virtual operator bool()
+		operator bool()override
 		{
 			return m_connection != nullptr && m_surface != nullptr;
 		}
 
-		inline MirConnection * getConnection()const
+		MirConnection * getConnection()const
 		{
 			return m_connection;
 		}
 
-		inline MirSurface * getSurface()const
+		MirSurface * getSurface()const
 		{
 			return m_surface;
 		}

@@ -18,7 +18,7 @@ namespace ashes::gl
 		XcbContext( VkInstance instance
 			, VkXcbSurfaceCreateInfoKHR createInfo
 			, ContextImpl const * mainContext );
-		~XcbContext();
+		~XcbContext()noexcept override;
 
 		void preInitialise( int major, int minor )override;
 		void postInitialise()override;

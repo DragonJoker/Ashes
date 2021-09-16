@@ -345,14 +345,14 @@ namespace ashes::d3d11
 			{
 				PushConstantsBuffer pcb
 				{
-					VK_NULL_HANDLE,
+					nullptr,
 					blockLayout.binding,
 					{
 						VkShaderStageFlags( shaderLayoutIt.first ),
 						0u,
 						blockLayout.size
 					},
-					VK_NULL_HANDLE,
+					nullptr,
 				};
 				allocate( pcb.ubo
 					, get( device )->getAllocationCallbacks()

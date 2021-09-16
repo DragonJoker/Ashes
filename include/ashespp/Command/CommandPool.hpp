@@ -125,7 +125,7 @@ namespace ashes
 
 	protected:
 		Device const & m_device;
-		VkCommandPool m_internal{ VK_NULL_HANDLE };
+		VkCommandPool m_internal{};
 	};
 }
 

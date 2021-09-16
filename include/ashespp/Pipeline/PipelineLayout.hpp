@@ -77,7 +77,7 @@ namespace ashes
 
 	private:
 		Device const & m_device;
-		VkPipelineLayout m_internal{ VK_NULL_HANDLE };
+		VkPipelineLayout m_internal{};
 		DescriptorSetLayoutCRefArray m_setLayouts;
 		VkPushConstantRangeArray m_pushConstantRanges;
 	};

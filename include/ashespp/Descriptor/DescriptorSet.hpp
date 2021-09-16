@@ -709,7 +709,7 @@ namespace ashes
 		DescriptorPool const & m_pool;
 		DescriptorSetLayout const & m_layout;
 		uint32_t m_bindingPoint;
-		VkDescriptorSet m_internal{ VK_NULL_HANDLE };
+		VkDescriptorSet m_internal{};
 		std::list< VkDescriptorImageInfo > m_imageBindings;
 		std::list< VkDescriptorBufferInfo > m_bufferBindings;
 		std::list< VkBufferView > m_bufferViews;

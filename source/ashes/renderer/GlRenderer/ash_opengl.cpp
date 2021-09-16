@@ -4244,7 +4244,7 @@ namespace ashes::gl
 
 			if ( it.second )
 			{
-				if ( instance != VK_NULL_HANDLE )
+				if ( instance != nullptr )
 				{
 					it.first->second =
 					{

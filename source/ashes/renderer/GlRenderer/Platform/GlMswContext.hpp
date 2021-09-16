@@ -27,7 +27,7 @@ namespace ashes::gl
 		MswContext( VkInstance instance
 			, VkDisplaySurfaceCreateInfoKHR createInfo
 			, ContextImpl const * mainContext );
-		~MswContext();
+		~MswContext()noexcept override;
 
 		void preInitialise( int major, int minor )override;
 		void postInitialise()override;

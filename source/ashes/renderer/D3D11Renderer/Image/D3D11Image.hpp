@@ -93,7 +93,7 @@ namespace ashes::d3d11
 
 		inline VkDeviceMemory getMemory()const
 		{
-			assert( m_memory != VK_NULL_HANDLE );
+			assert( m_memory != nullptr );
 			return m_memory;
 		}
 
@@ -166,7 +166,7 @@ namespace ashes::d3d11
 			ID3D11Texture2D * tex2D;
 			ID3D11Texture3D * tex3D;
 		} m_image;
-		VkDeviceMemory m_memory{ VK_NULL_HANDLE };
+		VkDeviceMemory m_memory{};
 		VkDeviceSize m_memoryOffset{ 0u };
 		ObjectMemory * m_objectMemory{ nullptr };
 		std::string m_debugName;

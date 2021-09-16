@@ -98,7 +98,7 @@ namespace ashes
 	protected:
 		Device const & m_device;
 		VkDescriptorSetLayoutBindingArray m_bindings;
-		VkDescriptorSetLayout m_internal{ VK_NULL_HANDLE };
+		VkDescriptorSetLayout m_internal{};
 	};
 }
 

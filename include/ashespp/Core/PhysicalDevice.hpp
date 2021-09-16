@@ -98,7 +98,7 @@ namespace ashes
 
 	private:
 		Instance const & m_instance;
-		VkPhysicalDevice m_gpu{ VK_NULL_HANDLE };
+		VkPhysicalDevice m_gpu{};
 	};
 }
 

@@ -224,7 +224,7 @@ namespace ashes::gl
 	{
 	}
 
-	MswContext::~MswContext()
+	MswContext::~MswContext()noexcept
 	{
 		try
 		{

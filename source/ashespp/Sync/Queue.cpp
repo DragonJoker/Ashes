@@ -122,7 +122,7 @@ namespace ashes
 			, makeVkArray< VkSemaphore >( semaphoresToWait )
 			, semaphoresStage
 			, makeVkArray< VkSemaphore >( semaphoresToSignal )
-			, fence ? VkFence( *fence ) : VK_NULL_HANDLE );
+			, fence ? VkFence( *fence ) : nullptr );
 		signalSemaphores( semaphoresToSignal, fence );
 	}
 

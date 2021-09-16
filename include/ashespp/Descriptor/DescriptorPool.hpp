@@ -106,7 +106,7 @@ namespace ashes
 	private:
 		Device const & m_device;
 		bool m_automaticFree;
-		VkDescriptorPool m_internal{ VK_NULL_HANDLE };
+		VkDescriptorPool m_internal{};
 	};
 }
 

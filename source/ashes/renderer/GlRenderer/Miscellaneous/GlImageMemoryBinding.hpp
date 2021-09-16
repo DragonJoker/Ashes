@@ -16,7 +16,7 @@ namespace ashes::gl
 			, VkDevice device
 			, VkImage image
 			, VkDeviceSize memoryOffset );
-		~ImageMemoryBinding();
+		~ImageMemoryBinding()override;
 
 		VkDeviceSize getMipLevelOffset( uint32_t mipLevel )const;
 		VkDeviceSize getMipLevelLayerSize( uint32_t mipLevel )const;

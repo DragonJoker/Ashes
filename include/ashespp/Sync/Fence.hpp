@@ -94,7 +94,7 @@ namespace ashes
 
 	private:
 		Device const & m_device;
-		VkFence m_internal{ VK_NULL_HANDLE };
+		VkFence m_internal{};
 
 	};
 }

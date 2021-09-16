@@ -20,7 +20,7 @@ namespace ashes::gl
 		EglContext( VkInstance instance
 			, VkDisplaySurfaceCreateInfoKHR createInfo
 			, ContextImpl const * mainContext );
-		~EglContext();
+		~EglContext()noexcept override;
 
 		void preInitialise( int major, int minor )override;
 		void postInitialise()override;

@@ -39,7 +39,7 @@ namespace ashes
 		*\return
 		*	The surface type name.
 		*/
-		inline std::string const & getSurfaceName()const
+		std::string const & getSurfaceName()const
 		{
 			return m_surfaceName;
 		}
@@ -81,7 +81,7 @@ namespace ashes
 		*	The window handle, cast in wanted format (IMswWindowHandle, IXWindowHandle, ...).
 		*/
 		template< class T >
-		inline T const & getInternal()const
+		T const & getInternal()const
 		{
 			return static_cast< T const & >( *m_handle );
 		}
@@ -89,7 +89,7 @@ namespace ashes
 		*\return
 		*	The surface type name.
 		*/
-		inline std::string const & getSurfaceName()const
+		std::string const & getSurfaceName()const
 		{
 			return m_handle->getSurfaceName();
 		}
@@ -97,7 +97,7 @@ namespace ashes
 		*\return
 		*	The surface.
 		*/
-		inline Surface const & getSurface()const
+		Surface const & getSurface()const
 		{
 			return *m_surface;
 		}
@@ -105,7 +105,7 @@ namespace ashes
 		*\param[in] surface
 		*	The surface.
 		*/
-		inline void setSurface( Surface const & surface )
+		void setSurface( Surface const & surface )
 		{
 			m_surface = &surface;
 		}

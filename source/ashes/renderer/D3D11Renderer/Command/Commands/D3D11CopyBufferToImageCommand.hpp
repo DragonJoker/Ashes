@@ -10,23 +10,23 @@ namespace ashes::d3d11
 {
 	struct CopyToStagingProcess
 	{
-		VkBuffer stagingSrc{ VK_NULL_HANDLE };
-		VkDeviceMemory stagingSrcMemory{ VK_NULL_HANDLE };
+		VkBuffer stagingSrc{};
+		VkDeviceMemory stagingSrcMemory{};
 		VkBufferCopy copyToStaging;
 	};
 
 	struct CopyFromStagingProcess
 	{
-		VkImage stagingDst{ VK_NULL_HANDLE };
-		VkDeviceMemory stagingDstMemory{ VK_NULL_HANDLE };
+		VkImage stagingDst{};
+		VkDeviceMemory stagingDstMemory{};
 		UINT stagingDstSubresource;
 		VkImageCopy copyFromStaging;
 	};
 
 	struct MapCopyImage
 	{
-		VkImage dst{ VK_NULL_HANDLE };
-		VkDeviceMemory dstMemory{ VK_NULL_HANDLE };
+		VkImage dst{};
+		VkDeviceMemory dstMemory{};
 		VkBufferImageCopy mapCopy;
 		D3D11_BOX srcBox;
 		UINT dstSubresource;
@@ -37,8 +37,8 @@ namespace ashes::d3d11
 
 	struct MapCopyProcess
 	{
-		VkBuffer src{ VK_NULL_HANDLE };
-		VkDeviceMemory srcMemory{ VK_NULL_HANDLE };
+		VkBuffer src{};
+		VkDeviceMemory srcMemory{};
 		MapCopyImageArray mapCopyImages;
 	};
 
