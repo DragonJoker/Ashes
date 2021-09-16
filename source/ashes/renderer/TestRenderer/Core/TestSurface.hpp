@@ -24,6 +24,9 @@ namespace ashes::test
 			, VkXcbSurfaceCreateInfoKHR createInfo );
 		SurfaceKHR( VkInstance instance
 			, VkWaylandSurfaceCreateInfoKHR createInfo );
+#elif __APPLE__
+		SurfaceKHR( VkInstance instance
+			, VkMacOSSurfaceCreateInfoMVK createInfo );
 #endif
 #if VK_KHR_display
 		SurfaceKHR( VkInstance instance
