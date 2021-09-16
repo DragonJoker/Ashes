@@ -17,7 +17,7 @@ namespace ashes::test
 			, uint32_t groupCountY
 			, uint32_t groupCountZ );
 
-		void apply()const;
-		CommandPtr clone()const;
+		void apply()const override;
+		CommandPtr clone()const override;
 	};
 }

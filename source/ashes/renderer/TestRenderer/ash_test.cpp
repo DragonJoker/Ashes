@@ -3948,7 +3948,7 @@ namespace ashes::test
 #pragma endregion
 #pragma region VK_MVK_macos_surface
 #ifdef VK_MVK_macos_surface
-#	ifdef VK_USE_PLATFORM_MACOS_MVK
+#	ifdef __APPLE__
 
 	VkResult VKAPI_CALL vkCreateMacOSSurfaceMVK(
 		VkInstance instance,

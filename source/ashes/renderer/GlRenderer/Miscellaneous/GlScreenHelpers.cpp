@@ -13,6 +13,8 @@ namespace ashes::gl
 {
 	namespace
 	{
+#if _WIN32
+
 		size_t makeKey( uint32_t width
 			, uint32_t height
 			, uint32_t refreshRate )
@@ -22,8 +24,6 @@ namespace ashes::gl
 			hashCombine( result, refreshRate );
 			return result;
 		}
-
-#if _WIN32
 
 		uint32_t countDisplays()
 		{
@@ -113,6 +113,16 @@ namespace ashes::gl
 		}
 
 #elif __linux__
+
+		size_t makeKey( uint32_t width
+			, uint32_t height
+			, uint32_t refreshRate )
+		{
+			auto result = std::hash< uint32_t >{}( width );
+			hashCombine( result, height );
+			hashCombine( result, refreshRate );
+			return result;
+		}
 
 		uint32_t countDisplays()
 		{

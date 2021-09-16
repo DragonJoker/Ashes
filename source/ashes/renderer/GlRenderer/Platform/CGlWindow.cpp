@@ -18,8 +18,8 @@ namespace ashes::gl
 			{
 				kCGLPFAAccelerated,   // no software rendering
 				kCGLPFAOpenGLProfile, // core profile with the version stated below
-				(CGLPixelFormatAttribute) kCGLOGLPVersion_3_2_Core,
-				(CGLPixelFormatAttribute) 0
+				CGLPixelFormatAttribute( kCGLOGLPVersion_3_2_Core ),
+				CGLPixelFormatAttribute{}
 			};
 			CGLPixelFormatObj pix;
 			int num; // stores the number of possible pixel formats

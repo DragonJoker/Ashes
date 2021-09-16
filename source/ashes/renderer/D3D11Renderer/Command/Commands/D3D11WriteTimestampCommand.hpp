@@ -20,8 +20,9 @@ namespace ashes::d3d11
 			, VkPipelineStageFlagBits pipelineStage
 			, VkQueryPool pool
 			, uint32_t query );
-		void apply( Context const & context )const;
-		CommandPtr clone()const;
+
+		void apply( Context const & context )const override;
+		CommandPtr clone()const override;
 
 	private:
 		ID3D11Query * m_query;

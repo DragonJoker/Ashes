@@ -17,8 +17,8 @@ namespace ashes::test
 			, VkFramebuffer frameBuffer
 			, VkClearValueArray const & clearValues );
 
-		void apply()const;
-		CommandPtr clone()const;
+		void apply()const override;
+		CommandPtr clone()const override;
 
 	private:
 		VkRenderPass m_renderPass{};

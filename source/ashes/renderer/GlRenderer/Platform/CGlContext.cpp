@@ -99,7 +99,7 @@ namespace ashes::gl
 	{
 	}
 
-	CoreContext::~CoreContext()
+	CoreContext::~CoreContext()noexcept
 	{
 		if (surfaceCreateInfo.pView)
 		{
@@ -147,7 +147,7 @@ namespace ashes::gl
 		m_major = reqMajor;
 		m_minor = reqMinor;
 	}
-	catch ( std::exception & exc )
+	catch ( std::exception & )
 	{
 		if ( m_cglContext )
 		{

@@ -17,7 +17,7 @@ namespace ashes::test
 			, uint64_t offset
 			, VkIndexType indexType );
 
-		void apply()const;
-		CommandPtr clone()const;
+		void apply()const override;
+		CommandPtr clone()const override;
 	};
 }

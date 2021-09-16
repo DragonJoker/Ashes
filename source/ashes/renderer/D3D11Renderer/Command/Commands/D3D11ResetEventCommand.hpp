@@ -19,8 +19,9 @@ namespace ashes::d3d11
 		ResetEventCommand( VkDevice device
 			, VkEvent event
 			, VkPipelineStageFlags stageFlags );
-		void apply( Context const & context )const;
-		CommandPtr clone()const;
+
+		void apply( Context const & context )const override;
+		CommandPtr clone()const override;
 
 	private:
 		VkEvent m_event;

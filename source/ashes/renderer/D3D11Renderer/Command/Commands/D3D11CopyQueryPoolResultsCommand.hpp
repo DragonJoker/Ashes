@@ -21,8 +21,8 @@ namespace ashes::d3d11
 			, VkDeviceSize stride
 			, VkQueryResultFlags flags );
 
-		void apply( Context const & context )const;
-		CommandPtr clone()const;
+		void apply( Context const & context )const override;
+		CommandPtr clone()const override;
 
 	private:
 		VkQueryPool m_queryPool;

@@ -15,8 +15,9 @@ namespace ashes::d3d11
 	public:
 		GenerateMipsCommand( VkDevice device
 			, VkImage texture );
-		void apply( Context const & context )const;
-		CommandPtr clone()const;
+
+		void apply( Context const & context )const override;
+		CommandPtr clone()const override;
 
 	private:
 		VkImage m_texture;

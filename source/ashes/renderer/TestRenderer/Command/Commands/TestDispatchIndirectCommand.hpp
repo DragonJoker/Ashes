@@ -16,7 +16,7 @@ namespace ashes::test
 			, VkBuffer buffer
 			, VkDeviceSize offset );
 
-		void apply()const;
-		CommandPtr clone()const;
+		void apply()const override;
+		CommandPtr clone()const override;
 	};
 }

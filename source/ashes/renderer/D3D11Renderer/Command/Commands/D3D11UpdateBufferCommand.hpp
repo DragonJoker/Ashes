@@ -17,8 +17,8 @@ namespace ashes::d3d11
 			, VkDeviceSize bufferOffset
 			, ArrayView< uint8_t const > const & data );
 
-		void apply( Context const & context )const;
-		CommandPtr clone()const;
+		void apply( Context const & context )const override;
+		CommandPtr clone()const override;
 
 	private:
 		VkBuffer m_buffer;

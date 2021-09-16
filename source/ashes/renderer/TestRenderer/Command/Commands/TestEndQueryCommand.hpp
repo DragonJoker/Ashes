@@ -16,7 +16,7 @@ namespace ashes::test
 			, VkQueryPool pool
 			, uint32_t query );
 
-		void apply()const;
-		CommandPtr clone()const;
+		void apply()const override;
+		CommandPtr clone()const override;
 	};
 }

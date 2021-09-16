@@ -16,8 +16,9 @@ namespace ashes::test
 			, ObjectMemory const * memory
 			, VkDeviceSize offset
 			, VkDeviceSize size );
-		void apply()const;
-		CommandPtr clone()const;
+
+		void apply()const override;
+		CommandPtr clone()const override;
 
 	private:
 		std::pair< VkDeviceSize, VkDeviceSize > m_range;

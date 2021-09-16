@@ -27,8 +27,8 @@ namespace ashes::d3d11
 			, uint32_t groupCountY
 			, uint32_t groupCountZ );
 
-		void apply( Context const & context )const;
-		CommandPtr clone()const;
+		void apply( Context const & context )const override;
+		CommandPtr clone()const override;
 
 	private:
 		uint32_t m_groupCountX;
