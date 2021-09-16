@@ -60,7 +60,7 @@ namespace ashes
 
 	protected:
 		Device const & m_device;
-		VkPipeline m_internal{ VK_NULL_HANDLE };
+		VkPipeline m_internal{};
 	};
 }
 

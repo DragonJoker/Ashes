@@ -22,8 +22,8 @@ namespace ashes
 		ComputePipelineCreateInfo( VkPipelineCreateFlags flags
 			, PipelineShaderStageCreateInfo pstage
 			, VkPipelineLayout layout
-			, VkPipeline basePipelineHandle = VK_NULL_HANDLE
-			, int32_t basePipelineIndex = 0 )
+			, VkPipeline basePipelineHandle = {}
+			, int32_t basePipelineIndex = {} )
 			: stage{ std::move( pstage ) }
 			, vk
 			{

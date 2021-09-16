@@ -21,21 +21,17 @@ namespace ashes
 		{
 		}
 
-		virtual ~IXcbWindowHandle()
-		{
-		}
-
-		virtual operator bool()
+		operator bool()override
 		{
 			return m_connection != nullptr && m_window != 0;
 		}
 
-		inline xcb_connection_t * getConnection()const
+		xcb_connection_t * getConnection()const
 		{
 			return m_connection;
 		}
 
-		inline xcb_window_t getWindow()const
+		xcb_window_t getWindow()const
 		{
 			return m_window;
 		}

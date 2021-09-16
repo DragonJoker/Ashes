@@ -125,7 +125,7 @@ namespace ashes
 		VkQueryType m_type;
 		uint32_t m_count;
 		VkQueryPipelineStatisticFlags m_pipelineStatistics;
-		VkQueryPool m_internal{ VK_NULL_HANDLE };
+		VkQueryPool m_internal{};
 	};
 }
 

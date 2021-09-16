@@ -121,7 +121,7 @@ namespace ashes::gl
 	void apply( ContextLock const & context
 		, CmdBindFramebuffer const & cmd )
 	{
-		if ( cmd.fbo != VK_NULL_HANDLE )
+		if ( cmd.fbo != nullptr )
 		{
 			glLogCall( context
 				, glBindFramebuffer

@@ -530,7 +530,7 @@ namespace ashes::gl
 				, VK_ERROR_INCOMPATIBLE_DRIVER
 				, "OpenGL"
 				, "Couldn't find family index within created queues" );
-			return VK_NULL_HANDLE;
+			return nullptr;
 		}
 
 		if ( it->second.queues.size() <= index )
@@ -542,7 +542,7 @@ namespace ashes::gl
 				, VK_ERROR_INCOMPATIBLE_DRIVER
 				, "OpenGL"
 				, "Couldn't find queue with wanted index within its family" );
-			return VK_NULL_HANDLE;
+			return nullptr;
 		}
 
 		return it->second.queues[index];

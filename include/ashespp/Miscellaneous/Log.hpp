@@ -122,10 +122,6 @@ namespace ashes
 				this->imbue( std::locale{ "C" } );
 			}
 
-			~LogStreamT()
-			{
-			}
-
 		private:
 			StreambufPtrT m_streambuf;
 		};
@@ -147,7 +143,7 @@ namespace ashes
 				m_old = m_stream.rdbuf( this );
 			}
 
-			~LogStreambufT()noexcept
+			~LogStreambufT()noexcept override
 			{
 				doSync();
 				m_stream.rdbuf( m_old );

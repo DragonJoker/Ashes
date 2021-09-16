@@ -233,7 +233,7 @@ namespace ashes::gl
 	{
 		VkInstance instance = object
 			? getInstance( object )
-			: VK_NULL_HANDLE;
+			: nullptr;
 
 		if ( instance )
 		{
@@ -276,7 +276,7 @@ namespace ashes::gl
 	{
 		VkInstance instance = object
 			? getInstance( object )
-			: VK_NULL_HANDLE;
+			: nullptr;
 
 		if ( instance )
 		{
@@ -434,7 +434,7 @@ namespace ashes::gl
 		, Params && ... params )
 	{
 		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
-		vkValue = VK_NULL_HANDLE;
+		vkValue = nullptr;
 
 		try
 		{
@@ -466,7 +466,7 @@ namespace ashes::gl
 		, Params && ... params )
 	{
 		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
-		vkValue = VK_NULL_HANDLE;
+		vkValue = nullptr;
 
 		try
 		{

@@ -23,7 +23,7 @@ namespace ashes::gl
 		CoreContext( VkInstance instance
 			, VkDisplaySurfaceCreateInfoKHR createInfo
 			, ContextImpl const * mainContext );
-		~CoreContext();
+		~CoreContext()noexcept override;
 
 		void preInitialise( int major, int minor )override;
 		void postInitialise()override;

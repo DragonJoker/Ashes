@@ -473,7 +473,7 @@ namespace ashes::gl
 		if ( m_state.currentGraphicsPipeline || m_state.currentComputePipeline )
 		{
 			uint32_t dynamicOffsetIndex = 0u;
-			VkDescriptorSet ds = VK_NULL_HANDLE;
+			VkDescriptorSet ds{};
 
 			for ( auto & waiting : m_state.waitingDescriptors )
 			{

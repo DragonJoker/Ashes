@@ -40,7 +40,7 @@ namespace ashes
 			, VkSemaphoreArray const & semaphoresToWait
 			, VkPipelineStageFlagsArray const & semaphoresStage
 			, VkSemaphoreArray const & semaphoresToSignal
-			, VkFence fence = VK_NULL_HANDLE )const;
+			, VkFence fence = {} )const;
 		/**
 		*\brief
 		*	Submits given command buffers.
@@ -61,7 +61,7 @@ namespace ashes
 			, VkSemaphoreArray const & semaphoresToWait
 			, VkPipelineStageFlagsArray const & semaphoresStage
 			, VkSemaphore semaphoresToSignal
-			, VkFence fence = VK_NULL_HANDLE )const;
+			, VkFence fence = {} )const;
 		/**
 		*\brief
 		*	Submits given command buffers.
@@ -226,7 +226,7 @@ namespace ashes
 		*	\p true on ok.
 		*/
 		void submit( VkCommandBuffer commandBuffer
-			, VkFence fence = VK_NULL_HANDLE )const
+			, VkFence fence = {} )const
 		{
 			submit( { commandBuffer }
 				, VkSemaphoreArray{}
@@ -273,7 +273,7 @@ namespace ashes
 			, VkSemaphore semaphoreToWait
 			, VkPipelineStageFlags const & semaphoreStage
 			, VkSemaphore semaphoreToSignal
-			, VkFence fence = VK_NULL_HANDLE )const
+			, VkFence fence = {} )const
 		{
 			submit( { commandBuffer }
 				, semaphoreToWait ? VkSemaphoreArray{ semaphoreToWait } : VkSemaphoreArray{}
@@ -328,7 +328,7 @@ namespace ashes
 		Device const & m_device;
 		uint32_t m_familyIndex;
 		uint32_t m_index;
-		VkQueue m_internal{ VK_NULL_HANDLE };
+		VkQueue m_internal{};
 		mutable std::set< Semaphore const * > m_waitingSemaphores;
 	};
 }

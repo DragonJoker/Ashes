@@ -80,7 +80,7 @@ namespace ashes::gl
 		ContextLock & operator=( ContextLock const & ) = delete;
 
 		inline ContextLock( Context & context
-			, VkDevice device = VK_NULL_HANDLE )
+			, VkDevice device = {} )
 			: m_context{ &context }
 			, m_device{ device }
 			, m_disable{ !context.isEnabled() }

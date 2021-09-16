@@ -26,7 +26,7 @@ namespace ashes::d3d11
 
 		VkSurfaceCapabilitiesKHR getCapabilities( VkPhysicalDevice physicalDevice )const
 		{
-			m_currentPhysicalDevice = VK_NULL_HANDLE;
+			m_currentPhysicalDevice = nullptr;
 			doUpdate( physicalDevice );
 			return m_surfaceCapabilities;
 		}
@@ -79,7 +79,7 @@ namespace ashes::d3d11
 		mutable VkSurfaceFormatArrayKHR m_surfaceFormats;
 		mutable VkSurfaceCapabilitiesKHR m_surfaceCapabilities;
 		mutable VkPresentModeArrayKHR m_presentModes;
-		mutable VkPhysicalDevice m_currentPhysicalDevice{ VK_NULL_HANDLE };
+		mutable VkPhysicalDevice m_currentPhysicalDevice{};
 		mutable std::vector< DXGI_MODE_DESC > m_displayModes;
 		mutable std::map< VkFormat, std::vector< DXGI_MODE_DESC > > m_descs;
 		mutable std::map< VkFormat, DXGI_MODE_DESC > m_matchingDescs;

@@ -4230,7 +4230,7 @@ namespace ashes::d3d11
 
 		if ( it.second )
 		{
-			if ( instance != VK_NULL_HANDLE )
+			if ( instance != nullptr )
 			{
 				it.first->second =
 				{

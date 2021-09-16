@@ -61,8 +61,8 @@ namespace ashes::test
 		VkExtent2D m_dimensions;
 		VkImageViewArray m_rtViews;
 		VkImageViewArray m_msRtViews;
-		VkImageView m_dsView{ VK_NULL_HANDLE };
-		VkImageView m_msDsView{ VK_NULL_HANDLE };
+		VkImageView m_dsView{};
+		VkImageView m_msDsView{};
 		bool m_multisampled{ false };
 	};
 }

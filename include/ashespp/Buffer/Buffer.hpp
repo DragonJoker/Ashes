@@ -249,7 +249,7 @@ namespace ashes
 		Device const & m_device;
 		QueueShare m_sharingMode;
 		VkBufferCreateInfo m_createInfo;
-		VkBuffer m_internal{ VK_NULL_HANDLE };
+		VkBuffer m_internal{};
 		DeviceMemoryPtr m_storage;
 		mutable VkAccessFlags m_currentAccessFlags{ VK_ACCESS_MEMORY_WRITE_BIT };
 		mutable VkPipelineStageFlags m_compatibleStageFlags{ VK_PIPELINE_STAGE_HOST_BIT };

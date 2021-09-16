@@ -1081,7 +1081,7 @@ namespace ashes
 	private:
 		Device const & m_device;
 		CommandPool const & m_pool;
-		VkCommandBuffer m_internal{ VK_NULL_HANDLE };
+		VkCommandBuffer m_internal{};
 	};
 }
 

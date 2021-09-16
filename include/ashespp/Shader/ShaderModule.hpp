@@ -54,7 +54,7 @@ namespace ashes
 
 	protected:
 		Device const & m_device;
-		VkShaderModule m_internal{ VK_NULL_HANDLE };
+		VkShaderModule m_internal{};
 	};
 }
 
