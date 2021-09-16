@@ -128,7 +128,7 @@ namespace ashes
 		Device const & m_device;
 		VkExtent2D m_dimensions;
 		ImageViewCRefArray m_views;
-		VkFramebuffer m_internal{ VK_NULL_HANDLE };
+		VkFramebuffer m_internal{};
 	};
 }
 

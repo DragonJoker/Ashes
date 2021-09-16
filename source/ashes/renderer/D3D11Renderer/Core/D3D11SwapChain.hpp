@@ -45,10 +45,10 @@ namespace ashes::d3d11
 		DXGI_MODE_DESC m_displayMode;
 		uint32_t m_currentBuffer{};
 		IDXGISwapChain * m_swapChain{ nullptr };
-		VkImage m_swapChainImage{ VK_NULL_HANDLE };
-		VkImage m_image{ VK_NULL_HANDLE };
-		VkDeviceMemory m_deviceMemory{ VK_NULL_HANDLE };
-		VkImageView m_view{ VK_NULL_HANDLE };
+		VkImage m_swapChainImage{};
+		VkImage m_image{};
+		VkDeviceMemory m_deviceMemory{};
+		VkImageView m_view{};
 		VkExtent2D m_swapchainExtent;
 		VkExtent2D m_windowExtent;
 	};

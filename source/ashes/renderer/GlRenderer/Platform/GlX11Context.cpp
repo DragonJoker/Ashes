@@ -116,7 +116,7 @@ namespace ashes::gl
 	{
 	}
 
-	X11Context::~X11Context()
+	X11Context::~X11Context()noexcept
 	{
 		glXDestroyContext( m_display, m_glxContext );
 

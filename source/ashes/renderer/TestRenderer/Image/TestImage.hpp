@@ -61,7 +61,7 @@ namespace ashes::test
 
 		inline VkDeviceMemory getMemory()const
 		{
-			assert( m_memory != VK_NULL_HANDLE );
+			assert( m_memory != nullptr );
 			return m_memory;
 		}
 
@@ -114,7 +114,7 @@ namespace ashes::test
 	private:
 		VkDevice m_device;
 		VkImageCreateInfo m_createInfo;
-		VkDeviceMemory m_memory{ VK_NULL_HANDLE };
+		VkDeviceMemory m_memory{};
 		VkDeviceSize m_memoryOffset{ 0u };
 		ObjectMemory * m_objectMemory{ nullptr };
 		std::string m_debugName;

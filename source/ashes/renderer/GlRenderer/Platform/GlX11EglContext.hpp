@@ -19,7 +19,7 @@ namespace ashes::gl
 		X11EglContext( VkInstance instance
 			, VkXlibSurfaceCreateInfoKHR createInfo
 			, ContextImpl const * mainContext );
-		~X11EglContext();
+		~X11EglContext()noexcept override;
 
 		void preInitialise( int major, int minor )override;
 		void postInitialise()override;

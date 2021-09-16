@@ -28,7 +28,7 @@ namespace ashes::d3d11
 			};
 			m_displayModes.push_back(
 				{
-					VK_NULL_HANDLE,
+					nullptr,
 					parameters,
 				} );
 		}

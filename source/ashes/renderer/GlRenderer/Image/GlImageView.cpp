@@ -218,7 +218,7 @@ namespace ashes::gl
 			return m_internal;
 		}
 
-		assert( m_createInfo.image != VK_NULL_HANDLE );
+		assert( m_createInfo.image != nullptr );
 		return get( m_createInfo.image )->getInternal();
 	}
 }

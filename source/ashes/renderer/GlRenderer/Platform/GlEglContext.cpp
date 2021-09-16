@@ -21,7 +21,7 @@ namespace ashes::gl
 	{
 	}
 
-	EglContext::~EglContext()
+	EglContext::~EglContext()noexcept
 	{
 		doCleanup();
 	}

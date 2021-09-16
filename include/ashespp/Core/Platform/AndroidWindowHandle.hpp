@@ -19,16 +19,12 @@ namespace ashes
 		{
 		}
 
-		virtual ~IAndroidWindowHandle()
-		{
-		}
-
-		virtual operator bool()
+		operator bool()override
 		{
 			return m_window != nullptr;
 		}
 
-		inline ANativeWindow * getWindow()const
+		ANativeWindow * getWindow()const
 		{
 			return m_window;
 		}

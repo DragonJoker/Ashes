@@ -36,7 +36,7 @@ namespace ashes::gl
 	{
 	}
 
-	XcbContext::~XcbContext()
+	XcbContext::~XcbContext()noexcept
 	{
 		XCloseDisplay( m_xdisplay );
 	}

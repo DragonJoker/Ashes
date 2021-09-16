@@ -1,5 +1,4 @@
 set( wxWidgets_IGNORE_VCPKG ON )
-find_package( wxWidgets COMPONENTS core base )
 
 if( APPLE )
 	set( GTK_FOUND ON )
@@ -20,6 +19,8 @@ else ()
 		set( GTK_FOUND OFF )
 	endif ()
 endif()
+
+find_package( wxWidgets COMPONENTS core base )
 
 if ( NOT ASHES_ICD )
 	set( Vulkan_FOUND ON )

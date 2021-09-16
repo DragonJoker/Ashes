@@ -28,8 +28,8 @@ namespace ashes::test
 	protected:
 		VkDevice m_device;
 		VkSwapchainCreateInfoKHR m_createInfo;
-		VkImage m_image{ VK_NULL_HANDLE };
-		VkDeviceMemory m_deviceMemory{ VK_NULL_HANDLE };
-		VkImageView m_view{ VK_NULL_HANDLE };
+		VkImage m_image{};
+		VkDeviceMemory m_deviceMemory{};
+		VkImageView m_view{};
 	};
 }

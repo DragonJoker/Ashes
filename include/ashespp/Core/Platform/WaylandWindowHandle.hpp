@@ -21,21 +21,17 @@ namespace ashes
 		{
 		}
 
-		virtual ~IWaylandWindowHandle()
-		{
-		}
-
-		virtual operator bool()
+		operator bool()override
 		{
 			return m_display != nullptr && m_surface != nullptr;
 		}
 
-		inline wl_display * getDisplay()const
+		wl_display * getDisplay()const
 		{
 			return m_display;
 		}
 
-		inline wl_surface * getSurface()const
+		wl_surface * getSurface()const
 		{
 			return m_window;
 		}

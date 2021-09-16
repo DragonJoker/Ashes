@@ -25,7 +25,7 @@ namespace ashes::gl
 	{
 	}
 
-	X11EglContext::~X11EglContext()
+	X11EglContext::~X11EglContext()noexcept
 	{
 	}
 

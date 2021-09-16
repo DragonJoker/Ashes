@@ -77,7 +77,7 @@ namespace ashes
 	protected:
 		Device const & m_device;
 		VkMemoryAllocateInfo m_allocateInfo;
-		VkDeviceMemory m_internal{ VK_NULL_HANDLE };
+		VkDeviceMemory m_internal{};
 	};
 }
 

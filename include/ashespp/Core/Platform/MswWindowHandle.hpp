@@ -21,22 +21,18 @@ namespace ashes
 		{
 		}
 
-		virtual ~IMswWindowHandle()
-		{
-		}
-
-		virtual operator bool()
+		operator bool()override
 		{
 			return m_hWnd != nullptr
 				&& m_hInstance != nullptr;
 		}
 
-		inline HINSTANCE getHinstance()const
+		HINSTANCE getHinstance()const
 		{
 			return m_hInstance;
 		}
 
-		inline HWND getHwnd()const
+		HWND getHwnd()const
 		{
 			return m_hWnd;
 		}

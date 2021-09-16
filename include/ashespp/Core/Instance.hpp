@@ -217,7 +217,7 @@ namespace ashes
 		PFN_vkGetInstanceProcAddr m_getInstanceProcAddr;
 		DeviceAllocatorPtr m_allocator;
 		ashes::InstanceCreateInfo m_createInfo;
-		VkInstance m_instance{ VK_NULL_HANDLE };
+		VkInstance m_instance{};
 		ashes::PluginFeatures m_features;
 	};
 }

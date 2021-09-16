@@ -109,21 +109,21 @@ namespace ashes::d3d11
 			, uint32_t dstMaxLevel );
 
 	private:
-		VkImage m_srcTexture{ VK_NULL_HANDLE };
-		VkImage m_dstTexture{ VK_NULL_HANDLE };
-		VkDeviceMemory m_srcMemory{ VK_NULL_HANDLE };
-		VkDeviceMemory m_dstMemory{ VK_NULL_HANDLE };
-		VkImage m_tmpSrcTexture{ VK_NULL_HANDLE };
-		VkImage m_tmpDstTexture{ VK_NULL_HANDLE };
-		VkSampler m_sampler{ VK_NULL_HANDLE };
-		VkDescriptorPool m_pool{ VK_NULL_HANDLE };
+		VkImage m_srcTexture{};
+		VkImage m_dstTexture{};
+		VkDeviceMemory m_srcMemory{};
+		VkDeviceMemory m_dstMemory{};
+		VkImage m_tmpSrcTexture{};
+		VkImage m_tmpDstTexture{};
+		VkSampler m_sampler{};
+		VkDescriptorPool m_pool{};
 		std::vector< std::shared_ptr< LayerCopy > > m_layerStretches;
 		ashes::VkImageCopyArray m_layerBlitsToTmp;
 		ashes::VkImageCopyArray m_layerBlitsFromTmp;
 		ashes::VkImageCopyArray m_layerBlits;
-		VkDeviceMemory m_uboMemory{ VK_NULL_HANDLE };
-		VkBuffer m_ubo{ VK_NULL_HANDLE };
-		VkCommandBuffer m_commandBuffer{ VK_NULL_HANDLE };
+		VkDeviceMemory m_uboMemory{};
+		VkBuffer m_ubo{};
+		VkCommandBuffer m_commandBuffer{};
 		VkImageBlitArray m_blitRegions;
 		VkImageBlitArray m_stretchRegions;
 	};

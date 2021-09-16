@@ -235,17 +235,17 @@ namespace ashes::test
 		struct State
 		{
 			VkCommandBufferBeginInfo beginInfo{};
-			VkPipeline currentPipeline{ VK_NULL_HANDLE };
+			VkPipeline currentPipeline{};
 			std::vector< std::pair < VkPipelineLayout, PushConstantsDesc > > pushConstantBuffers;
-			VkPipeline currentComputePipeline{ VK_NULL_HANDLE };
-			VkSubpassDescription const * currentSubpass{ VK_NULL_HANDLE };
-			VkRenderPass currentRenderPass{ VK_NULL_HANDLE };
-			VkFramebuffer currentFrameBuffer{ VK_NULL_HANDLE };
+			VkPipeline currentComputePipeline{};
+			VkSubpassDescription const * currentSubpass{};
+			VkRenderPass currentRenderPass{};
+			VkFramebuffer currentFrameBuffer{};
 			uint32_t currentSubpassIndex{ 0u };
 			mutable VbosBindingArray vbos;
 			VkIndexType indexType{};
 			VkDescriptorSetArray boundDescriptors;
-			VkBuffer newlyBoundIbo{ VK_NULL_HANDLE };
+			VkBuffer newlyBoundIbo{};
 		};
 		mutable State m_state;
 		mutable ActionArray m_afterSubmitActions;

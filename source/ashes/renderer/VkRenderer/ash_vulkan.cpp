@@ -29,7 +29,7 @@ namespace ashes::vk
 					0u,
 					nullptr,
 				};
-				VkInstance instance{ VK_NULL_HANDLE };
+				VkInstance instance{ nullptr };
 				auto res = description.functions.CreateInstance( &instanceInfo, nullptr, &instance );
 
 				if ( res == VK_SUCCESS && instance )
@@ -40,9 +40,9 @@ namespace ashes::vk
 						res = description.functions.EnumeratePhysicalDevices( instance
 							, &gpuCount
 							, nullptr );
-						result = ( res == VK_SUCCESS && gpuCount )
+						result = VkBool32( ( res == VK_SUCCESS && gpuCount )
 							? VK_TRUE
-							: VK_FALSE;
+							: VK_FALSE );
 					}
 
 					if ( description.functions.DestroyInstance )

@@ -42,11 +42,7 @@ namespace ashes
 		{
 		}
 
-		virtual ~IWindowlessHandle()
-		{
-		}
-
-		virtual operator bool()
+		operator bool()override
 		{
 			return true;
 		}

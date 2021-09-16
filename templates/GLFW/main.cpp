@@ -140,11 +140,11 @@ int main( int argc, char * argv[] )
 	}
 
 	PFN_vkEnumerateInstanceLayerProperties enumLayerProperties;
-	enumLayerProperties = ( PFN_vkEnumerateInstanceLayerProperties )plugin.getInstanceProcAddr( VK_NULL_HANDLE,
-		"vkEnumerateInstanceLayerProperties" );
+	enumLayerProperties = reinterpret_cast< PFN_vkEnumerateInstanceLayerProperties >( plugin.getInstanceProcAddr( nullptr,
+		"vkEnumerateInstanceLayerProperties" ) );
 	PFN_vkEnumerateInstanceExtensionProperties enumInstanceExtensionProperties;
-	enumInstanceExtensionProperties = ( PFN_vkEnumerateInstanceExtensionProperties )plugin.getInstanceProcAddr( VK_NULL_HANDLE,
-		"vkEnumerateInstanceExtensionProperties" );
+	enumInstanceExtensionProperties = reinterpret_cast< PFN_vkEnumerateInstanceExtensionProperties >( plugin.getInstanceProcAddr( nullptr,
+		"vkEnumerateInstanceExtensionProperties" ) );
 
 	auto globalLayerProperties = enumerateLayerProperties( enumLayerProperties );
 	ashes::VkExtensionPropertiesArray globalExtensions;

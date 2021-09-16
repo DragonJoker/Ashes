@@ -20,7 +20,7 @@ namespace ashes::gl
 		WaylandContext( VkInstance instance
 			, VkWaylandSurfaceCreateInfoKHR createInfo
 			, ContextImpl const * mainContext );
-		~WaylandContext();
+		~WaylandContext()noexcept override;
 
 		void preInitialise( int major, int minor )override;
 		void postInitialise()override;

@@ -21,21 +21,17 @@ namespace ashes
 		{
 		}
 
-		virtual ~IXWindowHandle()
-		{
-		}
-
-		virtual operator bool()
+		operator bool()override
 		{
 			return m_drawable != 0 && m_display != nullptr;
 		}
 
-		inline Window getDrawable()const
+		Window getDrawable()const
 		{
 			return m_drawable;
 		}
 
-		inline Display * getDisplay()const
+		Display * getDisplay()const
 		{
 			return m_display;
 		}

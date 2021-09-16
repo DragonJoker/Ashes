@@ -81,8 +81,8 @@ namespace ashes::d3d11
 		, mapFlags{ rhs.mapFlags }
 		, subresources{ std::move( rhs.subresources ) }
 	{
-		rhs.device = VK_NULL_HANDLE;
-		rhs.deviceMemory = VK_NULL_HANDLE;
+		rhs.device = nullptr;
+		rhs.deviceMemory = nullptr;
 		rhs.resource = nullptr;
 		rhs.offset = 0;
 		rhs.mapFlags = D3D11_MAP( 0 );
@@ -98,8 +98,8 @@ namespace ashes::d3d11
 		mapFlags = rhs.mapFlags;
 		subresources = std::move( rhs.subresources );
 
-		rhs.device = VK_NULL_HANDLE;
-		rhs.deviceMemory = VK_NULL_HANDLE;
+		rhs.device = nullptr;
+		rhs.deviceMemory = nullptr;
 		rhs.resource = nullptr;
 		rhs.offset = 0;
 		rhs.mapFlags = D3D11_MAP( 0 );

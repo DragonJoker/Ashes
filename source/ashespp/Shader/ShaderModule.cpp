@@ -40,7 +40,7 @@ namespace ashes
 	{
 		unregisterObject( m_device, *this );
 
-		if ( m_internal != VK_NULL_HANDLE )
+		if ( m_internal != nullptr )
 		{
 			m_device.vkDestroyShaderModule( m_device
 				, m_internal

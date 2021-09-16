@@ -141,7 +141,7 @@ namespace ashes
 	private:
 		Device const & m_device;
 		SamplerCreateInfo m_createInfo;
-		VkSampler m_internal{ VK_NULL_HANDLE };
+		VkSampler m_internal{};
 	};
 }
 

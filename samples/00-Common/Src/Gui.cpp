@@ -71,7 +71,7 @@ namespace common
 	{
 		if ( m_colourView != colourView )
 		{
-			bool first = m_colourView.internal == VK_NULL_HANDLE;
+			bool first = m_colourView.internal == nullptr;
 			m_colourView = std::move( colourView );
 			doPreparePipeline();
 

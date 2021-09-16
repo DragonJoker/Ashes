@@ -155,7 +155,7 @@ namespace ashes
 	private:
 		Device const & m_device;
 		RenderPassCreateInfo m_createInfo;
-		VkRenderPass m_internal{ VK_NULL_HANDLE };
+		VkRenderPass m_internal{};
 	};
 }
 

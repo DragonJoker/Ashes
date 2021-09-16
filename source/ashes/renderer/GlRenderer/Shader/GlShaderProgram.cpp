@@ -297,7 +297,7 @@ namespace ashes::gl
 		constantsPcb.size = size;
 
 		if ( get( getInstance( m_device ) )->isValidationEnabled()
-			&& renderPass != VK_NULL_HANDLE )
+			&& renderPass != nullptr )
 		{
 			validatePipeline( context
 				, layout

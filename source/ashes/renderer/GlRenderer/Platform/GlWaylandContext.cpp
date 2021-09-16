@@ -29,7 +29,7 @@ namespace ashes::gl
 	{
 	}
 
-	WaylandContext::~WaylandContext()
+	WaylandContext::~WaylandContext()noexcept
 	{
 		wl_egl_window_destroy( m_window );
 	}

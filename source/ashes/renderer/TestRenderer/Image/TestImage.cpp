@@ -141,7 +141,7 @@ namespace ashes::test
 
 	bool Image::isMapped()const
 	{
-		assert( m_memory != VK_NULL_HANDLE );
+		assert( m_memory != nullptr );
 		return get( m_memory )->isMapped();
 	}
 }

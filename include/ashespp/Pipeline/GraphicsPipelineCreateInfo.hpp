@@ -43,9 +43,9 @@ namespace ashes
 			, Optional< PipelineDynamicStateCreateInfo > pdynamicState
 			, VkPipelineLayout playout
 			, VkRenderPass prenderPass
-			, uint32_t psubpass = 0u
-			, VkPipeline pbasePipelineHandle = VK_NULL_HANDLE
-			, int32_t pbasePipelineIndex = 0 )
+			, uint32_t psubpass = {}
+			, VkPipeline pbasePipelineHandle = {}
+			, int32_t pbasePipelineIndex = {} )
 			: stages{ std::move( pstages ) }
 			, vertexInputState{ std::move( pvertexInputState ) }
 			, inputAssemblyState{ std::move( pinputAssemblyState ) }

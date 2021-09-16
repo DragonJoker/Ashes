@@ -109,7 +109,7 @@ namespace ashes::gl
 
 		inline bool hasCurrentFramebuffer()const
 		{
-			return m_currentFbo != VK_NULL_HANDLE;
+			return m_currentFbo != nullptr;
 		}
 
 		inline VkFramebuffer getCurrentFramebuffer()const
@@ -156,7 +156,7 @@ namespace ashes::gl
 		VkScissorArray m_scissors;
 		VkViewportArray m_viewports;
 		GLuint m_currentProgram{ 0u };
-		VkFramebuffer m_currentFbo{ VK_NULL_HANDLE };
+		VkFramebuffer m_currentFbo{};
 		bool m_tessellation{ false };
 		bool m_viewportArrays{ false };
 		bool m_isRtot{ false };

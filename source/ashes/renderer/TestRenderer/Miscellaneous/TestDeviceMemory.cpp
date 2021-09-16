@@ -49,8 +49,8 @@ namespace ashes::test
 		, offset{ rhs.offset }
 		, allocateInfo{ std::move( rhs.allocateInfo ) }
 	{
-		rhs.device = VK_NULL_HANDLE;
-		rhs.deviceMemory = VK_NULL_HANDLE;
+		rhs.device = nullptr;
+		rhs.deviceMemory = nullptr;
 		rhs.offset = 0;
 	}
 
@@ -61,8 +61,8 @@ namespace ashes::test
 		offset = rhs.offset;
 		allocateInfo = std::move( rhs.allocateInfo );
 
-		rhs.device = VK_NULL_HANDLE;
-		rhs.deviceMemory = VK_NULL_HANDLE;
+		rhs.device = nullptr;
+		rhs.deviceMemory = nullptr;
 		rhs.offset = 0;
 
 		return *this;

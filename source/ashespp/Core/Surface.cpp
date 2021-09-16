@@ -22,7 +22,7 @@ namespace ashes
 
 	Surface::~Surface()
 	{
-		if ( m_internal != VK_NULL_HANDLE )
+		if ( m_internal != nullptr )
 		{
 			m_instance.vkDestroySurfaceKHR( m_instance
 				, m_internal
