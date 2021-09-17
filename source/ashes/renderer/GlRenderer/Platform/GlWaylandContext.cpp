@@ -65,6 +65,15 @@ namespace ashes::gl
 	{
 		m_context->swap();
 	}
+
+	VkExtent2D WaylandContext::getExtent()const
+	{
+		int w{};
+		int h{};
+		wl_egl_window_get_attached_size( m_window, &w, &h );
+		return { uint32_t( std::max( 1, w ) )
+			, uint32_t( std::max( 1, h ) ) };
+	}
 }
 
 #endif
