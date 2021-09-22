@@ -70,9 +70,12 @@ target_include_directories( ${PROJECT_NAME}
 	PRIVATE
 		${Ashes_SOURCE_DIR}/include
 		${ASHES_CONFIG_DIR}
-		${Vulkan_INCLUDE_DIR}
 		${Ashes_SOURCE_DIR}/include/ashes
 		${Ashes_SOURCE_DIR}/include/ashes/${_PROJECT_NAME}
+)
+target_include_directories( ${PROJECT_NAME}
+	SYSTEM PRIVATE
+		${Vulkan_INCLUDE_DIR}
 )
 if ( NOT MSVC )
 	target_compile_features( ${PROJECT_NAME}

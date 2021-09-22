@@ -40,9 +40,9 @@ namespace ashes::vk
 						res = description.functions.EnumeratePhysicalDevices( instance
 							, &gpuCount
 							, nullptr );
-						result = VkBool32( ( res == VK_SUCCESS && gpuCount )
+						result = ( res == VK_SUCCESS && gpuCount )
 							? VK_TRUE
-							: VK_FALSE );
+							: VK_FALSE;
 					}
 
 					if ( description.functions.DestroyInstance )

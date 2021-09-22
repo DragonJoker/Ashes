@@ -129,17 +129,21 @@ target_link_libraries( ${PROJECT_NAME}
 )
 target_include_directories( ${PROJECT_NAME}
 	PUBLIC
-		${Vulkan_INCLUDE_DIR}
-		${TARGET_INCLUDE_DIRS}
 		${Ashes_SOURCE_DIR}/include/ashes
-		${Ashes_BINARY_DIR}/source/ashes
 		${Ashes_SOURCE_DIR}/source/ashes
-		${Ashes_BINARY_DIR}/source/ashes/renderer
 		${Ashes_SOURCE_DIR}/source/ashes/renderer
-		${SPIRV_CROSS_INCLUDE_DIR}
+		${Ashes_BINARY_DIR}/ashes
+		${Ashes_BINARY_DIR}/ashes/renderer
 	PRIVATE
-		${Ashes_BINARY_DIR}/source/ashes/renderer/${_PROJECT_NAME}
+		${Ashes_BINARY_DIR}/ashes/renderer/${_PROJECT_NAME}
 		${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}
+)
+target_include_directories( ${PROJECT_NAME}
+	SYSTEM PUBLIC
+		${Vulkan_INCLUDE_DIR}
+		${SPIRV_CROSS_DIR}
+		${SPIRV_CROSS_INCLUDE_DIR}
+		${TARGET_INCLUDE_DIRS}
 )
 target_compile_definitions( ${PROJECT_NAME} PUBLIC
 	${TARGET_CXX_DEFINITIONS}

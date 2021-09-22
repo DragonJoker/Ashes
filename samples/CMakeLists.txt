@@ -71,16 +71,20 @@ if( wxWidgets_FOUND AND GTK_FOUND AND assimp_FOUND )
 			set( FOLDER_NAME ${child} )
 			set( TARGET_NAME Sample-${FOLDER_NAME} )
 			add_subdirectory( ${child} )
-			target_include_directories( ${TARGET_NAME} PRIVATE
-				${TARGET_INCLUDE_DIRS}
-				${CMAKE_BINARY_DIR}/include
-				${CMAKE_SOURCE_DIR}/include
-				${wxWidgets_INCLUDE_DIRS}
-				${GTK_INCLUDE_DIRS}
-				${assimp_INCLUDE_DIR}
-				${CMAKE_SOURCE_DIR}/external/imgui
-				${CMAKE_SOURCE_DIR}/samples/00-Common/Src
-				${Vulkan_INCLUDE_DIR}
+			target_include_directories( ${TARGET_NAME}
+				PRIVATE
+					${CMAKE_BINARY_DIR}/include
+					${CMAKE_SOURCE_DIR}/include
+					${CMAKE_SOURCE_DIR}/samples/00-Common/Src
+			)
+			target_include_directories( ${TARGET_NAME}
+				SYSTEM PRIVATE
+					${TARGET_INCLUDE_DIRS}
+					${wxWidgets_INCLUDE_DIRS}
+					${GTK_INCLUDE_DIRS}
+					${assimp_INCLUDE_DIR}
+					${CMAKE_SOURCE_DIR}/external/imgui
+					${Vulkan_INCLUDE_DIR}
 			)
 			target_compile_definitions( ${TARGET_NAME} PRIVATE
 				SAMPLE_ID=${SAMPLE_ID}
