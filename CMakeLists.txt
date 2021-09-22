@@ -125,7 +125,7 @@ set(CMAKE_DEBUG_POSTFIX "d")
 
 set( Ashes_BASE_DIR "Ashes" )
 set( Ashes_SOURCE_DIR ${CMAKE_SOURCE_DIR} )
-set( Ashes_BINARY_DIR ${CMAKE_BINARY_DIR} )
+set( Ashes_BINARY_DIR ${CMAKE_BINARY_DIR}/source )
 
 if ( WIN32 )
 	set( Ashes_BINARY_DEFINITIONS VK_USE_PLATFORM_WIN32_KHR=1 )

@@ -3,7 +3,7 @@ option( ASHES_TEST_ICD "Test ICD mode for ashes" ON )
 if ( ASHES_BUILD_TESTS OR ASHES_BUILD_INFO OR ASHES_BUILD_SW_SAMPLES )
 	set( TARGET_INCLUDE_DIRS
 		${Ashes_SOURCE_DIR}/include
-		${Ashes_BINARY_DIR}/include
+		${Ashes_BINARY_DIR}
 	)
 	if ( ASHES_TEST_ICD )
 		set( TARGET_INCLUDE_DIRS

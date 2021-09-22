@@ -48,20 +48,24 @@ target_link_libraries( ${PROJECT_NAME} PUBLIC
 	${Ashes_BINARY_LIBRARIES}
 	${wxWidgets_LIBRARIES}
 	${GTK_LIBRARIES}
-	ashes::common
 	${Vulkan_LIBRARY}
+	ashes::common
 	ashes::ashespp
 	ashes::util
 )
-target_include_directories( ${PROJECT_NAME} PUBLIC
-	${CMAKE_CURRENT_SOURCE_DIR}/Src
-	${Ashes_SOURCE_DIR}/external/gli
-	${Ashes_SOURCE_DIR}/external/glm
-	${Ashes_SOURCE_DIR}/external/imgui
-	${Ashes_SOURCE_DIR}/external/imgui
-	${wxWidgets_INCLUDE_DIRS}
-	${GTK_INCLUDE_DIRS}
-	${TARGET_INCLUDE_DIRS}
+target_include_directories( ${PROJECT_NAME}
+	PUBLIC
+		${CMAKE_CURRENT_SOURCE_DIR}/Src
+)
+target_include_directories( ${PROJECT_NAME}
+	SYSTEM PUBLIC
+		${Ashes_SOURCE_DIR}/external/gli
+		${Ashes_SOURCE_DIR}/external/glm
+		${Ashes_SOURCE_DIR}/external/imgui
+		${Ashes_SOURCE_DIR}/external/imgui
+		${wxWidgets_INCLUDE_DIRS}
+		${GTK_INCLUDE_DIRS}
+		${TARGET_INCLUDE_DIRS}
 )
 target_compile_definitions( ${PROJECT_NAME} PUBLIC
 	${TARGET_CXX_DEFINITIONS}
