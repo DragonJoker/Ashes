@@ -11,14 +11,22 @@ if ( MSVC )
 		DbgHelp )
 endif ()
 
-set( ${PROJECT_NAME}_SRC_FILES
-	${Ashes_SOURCE_DIR}/source/ashespp/AshesPPPch.cpp
-)
 set( ${PROJECT_NAME}_HDR_FILES
 	${Ashes_SOURCE_DIR}/include/ashespp/ashespp.hpp
-	${Ashes_SOURCE_DIR}/include/ashespp/AshesPPPch.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/AshesPPPrerequisites.hpp
 )
+if ( PROJECTS_USE_PRECOMPILED_HEADERS )
+	if ( ${CMAKE_VERSION} VERSION_LESS "3.16.0" )
+		set( ${PROJECT_NAME}_SRC_FILES
+		${${PROJECT_NAME}_SRC_FILES}
+			${Ashes_SOURCE_DIR}/source/ashespp/AshesPPPch.cpp
+		)
+	endif ()
+	set( ${PROJECT_NAME}_SRC_FILES
+		${${PROJECT_NAME}_SRC_FILES}
+		${Ashes_SOURCE_DIR}/source/ashespp/AshesPPPch.cpp
+	)
+endif ()
 source_group( "Header Files" FILES ${${PROJECT_NAME}_HDR_FILES} )
 source_group( "Source Files" FILES ${${PROJECT_NAME}_SRC_FILES} )
 
@@ -407,11 +415,14 @@ target_compile_definitions( ${PROJECT_NAME} PUBLIC
 target_add_compilation_flags( ${PROJECT_NAME} )
 target_include_directories( ${PROJECT_NAME}
 	PRIVATE
-		${Vulkan_INCLUDE_DIR}
 		${Ashes_SOURCE_DIR}/source
 		${ASHES_CONFIG_DIR}/${_PROJECT_NAME}
 		${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME}
 		${Ashes_SOURCE_DIR}/source/${_PROJECT_NAME}
+)
+target_include_directories( ${PROJECT_NAME}
+	SYSTEM PRIVATE
+		${Vulkan_INCLUDE_DIR}
 )
 target_link_libraries( ${PROJECT_NAME}
 	PRIVATE

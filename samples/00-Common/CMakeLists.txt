@@ -79,9 +79,12 @@ target_link_libraries( ${PROJECT_NAME}
 )
 target_include_directories( ${PROJECT_NAME}
 	PUBLIC
-		${Vulkan_INCLUDE_DIR}
 		${Ashes_SOURCE_DIR}/include
 		${CMAKE_CURRENT_SOURCE_DIR}/Src
+)
+target_include_directories( ${PROJECT_NAME}
+	SYSTEM PUBLIC
+		${Vulkan_INCLUDE_DIR}
 		${Ashes_SOURCE_DIR}/external/imgui
 )
 add_target_precompiled_header( ${PROJECT_NAME}

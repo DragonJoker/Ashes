@@ -301,8 +301,12 @@ namespace ashes::gl
 				dm.dmDisplayOrientation = DMDO_270;
 			}
 
+#if !defined( NDEBUG )
 			auto res = ChangeDisplaySettings( &dm, 0 );
 			assert( res == DISP_CHANGE_SUCCESSFUL );
+#else
+			ChangeDisplaySettings( &dm, 0 );
+#endif
 		}
 	}
 

@@ -421,7 +421,7 @@ namespace ashes::test
 			return m_createInfo.pfnUserCallback( report.messageSeverity
 				, report.messageTypes
 				, &report.callbackData
-				, m_createInfo.pUserData );
+				, m_createInfo.pUserData ) != VK_FALSE;
 		}
 
 		return false;
@@ -578,7 +578,7 @@ namespace ashes::test
 				, report.messageCode
 				, report.layerPrefix.c_str()
 				, report.message.c_str()
-				, m_createInfo.pUserData );
+				, m_createInfo.pUserData ) != VK_FALSE;
 		}
 
 		return false;

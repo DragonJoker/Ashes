@@ -1318,7 +1318,7 @@ namespace ashes::test
 		get( commandBuffer )->drawIndexed( indexCount
 			, instanceCount
 			, firstIndex
-			, vertexOffset
+			, uint32_t( vertexOffset )
 			, firstInstance );
 	}
 
@@ -4126,6 +4126,9 @@ namespace ashes::test
 
 namespace ashes::test
 {
+#pragma warning( push )
+#pragma warning( disable: 4191 )
+
 	std::vector< VkExtensionProperties > const & getSupportedInstanceExtensions()
 	{
 		static std::vector< VkExtensionProperties > const extensions
@@ -4301,6 +4304,7 @@ namespace ashes::test
 		return result;
 	}
 
+#pragma warning( pop )
 }
 
 #ifdef __cplusplus
