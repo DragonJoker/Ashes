@@ -17,49 +17,6 @@ namespace ashes::d3d11
 {
 	namespace
 	{
-		VkImageViewArray createViews( VkDevice device
-			, VkImage texture
-			, ArrayView< VkBufferImageCopy const > const & copies )
-		{
-			VkImageViewArray result;
-			VkImageType type = get( texture )->getType();
-			VkImageViewType viewType{};
-
-			if ( type == VK_IMAGE_TYPE_3D )
-			{
-				viewType = VK_IMAGE_VIEW_TYPE_3D;
-			}
-			else if ( type == VK_IMAGE_TYPE_2D )
-			{
-				viewType = VK_IMAGE_VIEW_TYPE_2D;
-			}
-			else if ( type == VK_IMAGE_TYPE_1D )
-			{
-				viewType = VK_IMAGE_VIEW_TYPE_1D;
-			}
-
-			for ( auto & copy : copies )
-			{
-				VkImageViewCreateInfo createInfo{};
-				createInfo.image = texture;
-				createInfo.viewType = viewType;
-				createInfo.format = get( texture )->getFormat();
-				createInfo.subresourceRange.aspectMask = ashes::getAspectMask( createInfo.format );
-				createInfo.subresourceRange.baseArrayLayer = copy.imageSubresource.baseArrayLayer;
-				createInfo.subresourceRange.layerCount = copy.imageSubresource.layerCount;
-				createInfo.subresourceRange.baseMipLevel = copy.imageSubresource.mipLevel;
-				createInfo.subresourceRange.levelCount = 1u;
-				VkImageView view;
-				allocate( view
-					, get( device )->getAllocationCallbacks()
-					, device
-					, createInfo );
-				result.emplace_back( view );
-			}
-
-			return result;
-		}
-
 		uint32_t getBufferRowPitch( VkBufferImageCopy const & copyInfo )
 		{
 			return ( copyInfo.bufferRowLength
@@ -77,12 +34,6 @@ namespace ashes::d3d11
 		uint32_t getBufferDepthPitch( VkBufferImageCopy const & copyInfo )
 		{
 			return copyInfo.imageExtent.depth;
-		}
-
-		uint32_t getBufferLayerPitch( VkBufferImageCopy const & copyInfo )
-		{
-			return getBufferRowPitch( copyInfo )
-				* getBufferHeightPitch( copyInfo );
 		}
 
 		std::vector< D3D11_BOX > doGetDstBoxes( VkImage image

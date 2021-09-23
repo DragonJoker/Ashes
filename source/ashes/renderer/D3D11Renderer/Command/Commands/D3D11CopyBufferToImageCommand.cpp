@@ -18,27 +18,6 @@ namespace ashes::d3d11
 {
 	namespace
 	{
-		uint32_t getBufferRowPitch( uint32_t bufferRowLength
-			, uint32_t imageWidth )
-		{
-			return ( bufferRowLength
-				? bufferRowLength
-				: imageWidth );
-		}
-		
-		uint32_t getBufferHeightPitch( uint32_t bufferImageHeight
-			, uint32_t imageHeight )
-		{
-			return ( bufferImageHeight
-				? bufferImageHeight
-				: imageHeight );
-		}
-
-		uint32_t getBufferDepthPitch( uint32_t imageDepth )
-		{
-			return imageDepth;
-		}
-		
 		uint32_t getBufferRowPitch( VkBufferImageCopy const & copyInfo )
 		{
 			return ( copyInfo.bufferRowLength
@@ -58,12 +37,6 @@ namespace ashes::d3d11
 			return copyInfo.imageExtent.depth;
 		}
 		
-		uint32_t getBufferLayerPitch( VkBufferImageCopy const & copyInfo )
-		{
-			return getBufferRowPitch( copyInfo )
-				* getBufferHeightPitch( copyInfo );
-		}
-
 		VkDeviceSize doGetBufferSize( VkFormat format
 			, VkBufferImageCopy const & copyInfo
 			, uint32_t mipLevel )
@@ -114,24 +87,6 @@ namespace ashes::d3d11
 			}
 
 			return layout;
-		}
-
-		VkExtent3D getTexelBlockExtent( VkFormat format )
-		{
-			VkExtent3D texelBlockExtent{ 1u, 1u, 1u };
-
-			if ( ashes::isCompressedFormat( format ) )
-			{
-				auto extent = ashes::getMinimalExtent2D( format );
-				texelBlockExtent.width = extent.width;
-				texelBlockExtent.height = extent.height;
-			}
-			else
-			{
-				texelBlockExtent.width = 1u;
-			}
-
-			return texelBlockExtent;
 		}
 
 		uint32_t getTexelBlockByteSize( VkExtent3D const & texelBlockExtent

@@ -4191,7 +4191,12 @@ namespace ashes::gl
 
 					description.mode = mode;
 					description.support.priority = 7u;
-					description.support.supported = supported ? VK_TRUE : VK_FALSE;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuseless-cast"
+					description.support.supported = VkBool32( supported
+						? VK_TRUE
+						: VK_FALSE );
+#pragma GCC diagnostic pop
 				}
 
 				return result;

@@ -1226,9 +1226,12 @@ namespace ashes::gl
 		m_portabilityFeatures.imageViewFormatReinterpretation = VK_TRUE;
 		m_portabilityFeatures.imageViewFormatSwizzle = VK_TRUE;
 		m_portabilityFeatures.imageView2DOn3DImage = VK_FALSE;
-		m_portabilityFeatures.multisampleArrayImage = ( extensions.find( ARB_texture_multisample )
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuseless-cast"
+		m_portabilityFeatures.multisampleArrayImage = VkBool32( extensions.find( ARB_texture_multisample )
 			? VK_TRUE
 			: VK_FALSE );
+#pragma GCC diagnostic pop
 		m_portabilityFeatures.mutableComparisonSamplers = VK_TRUE;
 		m_portabilityFeatures.pointPolygons = VK_TRUE;
 		m_portabilityFeatures.samplerMipLodBias = VK_TRUE;

@@ -523,27 +523,6 @@ void main( uint3 threadID : SV_DispatchThreadID )
 				, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_STORAGE_BIT );
 		}
 
-		VkImageCopyArray doGetCopyInfos( VkImage source
-			, uint32_t baseMipLevel
-			, uint32_t levelCount )
-		{
-			VkImageCopyArray result;
-
-			for ( uint32_t level = baseMipLevel; level < baseMipLevel + levelCount; ++level )
-			{
-				result.push_back( VkImageCopy
-					{
-						VkImageSubresourceLayers{ getAspectMask( get( source )->getFormat() ), level, 0u, 1u },
-						VkOffset3D{ 0, 0, 0 },
-						VkImageSubresourceLayers{ getAspectMask( get( source )->getFormat() ), level, 0u, 1u },
-						VkOffset3D{ 0, 0, 0 },
-						getSubresourceDimensions( get( source )->getDimensions(), level ),
-					} );
-			}
-
-			return result;
-		}
-
 		bool areInSameGroup( DXGI_FORMAT src, DXGI_FORMAT dst )
 		{
 			return getDxgiFormatGroup( src ) == getDxgiFormatGroup( dst );
