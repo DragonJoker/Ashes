@@ -50,11 +50,17 @@ jobs:
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/build-${{ matrix.buildType }}
 
-    - name: Configure CMake (Windows)
-      if: runner.os == 'Windows'
+    - name: Configure Warnings as errors (OFF)
+      if: github.event_name == 'push'
       shell: bash
       working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/package/ashes -DPROJECTS_USE_PRECOMPILED_HEADERS=ON -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_INFO=OFF -DASHES_BUILD_SAMPLES=OFF -DASHES_BUILD_RENDERER_OGL=ON -DASHES_BUILD_RENDERER_D3D11=ON -DASHES_BUILD_RENDERER_TEST=ON
+      run: echo "PROJ_WAE=OFF" >> $GITHUB_ENV
+
+    - name: Configure Warnings as errors (ON)
+      if: github.event_name == 'pull_request'
+      shell: bash
+      working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
+      run: echo "PROJ_WAE=ON" >> $GITHUB_ENV
 
     - name: Configure GCC version (Linux)
       if: runner.os == 'Linux' && matrix.os[2] == 'gcc'
@@ -80,17 +86,23 @@ jobs:
       working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
       run: echo "CXX=clang++-12" >> $GITHUB_ENV
 
+    - name: Configure CMake (Windows)
+      if: runner.os == 'Windows'
+      shell: bash
+      working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/package/ashes -DPROJECTS_WARNINGS_AS_ERRORS=$PROJ_WAE -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_INFO=OFF -DASHES_BUILD_SAMPLES=OFF -DASHES_BUILD_RENDERER_OGL=ON -DASHES_BUILD_RENDERER_D3D11=ON -DASHES_BUILD_RENDERER_TEST=ON
+
     - name: Configure CMake (Linux)
       if: runner.os == 'Linux'
       shell: bash
       working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/package/ashes -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_INFO=OFF -DASHES_BUILD_SAMPLES=OFF -DASHES_BUILD_RENDERER_OGL=OFF -DASHES_BUILD_RENDERER_TEST=ON
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/package/ashes -DPROJECTS_WARNINGS_AS_ERRORS=$PROJ_WAE -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_INFO=OFF -DASHES_BUILD_SAMPLES=OFF -DASHES_BUILD_RENDERER_OGL=OFF -DASHES_BUILD_RENDERER_TEST=ON
 
     - name: Configure CMake (MacOS)
       if: runner.os == 'macOS'
       shell: bash
       working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/package/ashes -DPROJECTS_USE_PRECOMPILED_HEADERS=OFF -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_INFO=OFF -DASHES_BUILD_SAMPLES=OFF -DASHES_BUILD_RENDERER_OGL=ON -DASHES_BUILD_RENDERER_TEST=ON
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} -DCMAKE_TOOLCHAIN_FILE=$GITHUB_WORKSPACE/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/package/ashes -DPROJECTS_WARNINGS_AS_ERRORS=$PROJ_WAE -DASHES_BUILD_TEMPLATES=OFF -DASHES_BUILD_TESTS=OFF -DASHES_BUILD_INFO=OFF -DASHES_BUILD_SAMPLES=OFF -DASHES_BUILD_RENDERER_OGL=ON -DASHES_BUILD_RENDERER_TEST=ON
 
     - name: Build
       working-directory: ${{runner.workspace}}/build-${{ matrix.buildType }}

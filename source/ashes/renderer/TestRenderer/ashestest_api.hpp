@@ -353,7 +353,7 @@ namespace ashes::test
 				, uint64_t( object )
 				, 0u
 				, result
-				, "OpenGL3"
+				, "RenderAPI"
 				, text.c_str() );
 		}
 #endif
@@ -402,7 +402,7 @@ namespace ashes::test
 				, uint64_t( object )
 				, 0u
 				, result
-				, "OpenGL3"
+				, "RenderAPI"
 				, text.c_str() );
 		}
 #endif
