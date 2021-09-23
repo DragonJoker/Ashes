@@ -37,7 +37,7 @@ namespace ashes::gl
 			errorCode = CGLSetCurrentContext( m_cglContext );
 			checkCGLErrorCode( errorCode, "CGLSetCurrentContext - m_cglContext" );
 		}
-		catch ( std::exception & exc )
+		catch ( std::exception & )
 		{
 			if ( m_cglContext )
 			{
