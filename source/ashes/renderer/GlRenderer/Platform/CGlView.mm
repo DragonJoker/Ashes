@@ -43,6 +43,6 @@ void getGLViewSize( GLView view, int * width, int * height )
 {
 	NSOpenGLView * openGLView = static_cast< NSOpenGLView * >( view.view );
 	NSSize viewSize = [openGLView frame].size;
-	*width = (int)viewSize.width;
-	*height = (int)viewSize.height;
+	*width = int( viewSize.width );
+	*height = int( viewSize.height );
 }
