@@ -483,7 +483,7 @@ namespace ashes::test
 		m_queueProperties.push_back(
 			{
 				0xFFFFFFFF,
-				1u,
+				16u,
 				1u,
 				{
 					1u,

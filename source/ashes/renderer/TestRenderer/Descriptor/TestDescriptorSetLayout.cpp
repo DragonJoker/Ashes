@@ -37,7 +37,7 @@ namespace ashes::test
 				, uint64_t( get( this ) )
 				, 0u
 				, VK_ERROR_INCOMPATIBLE_DRIVER
-				, "Direct3D11"
+				, "RenderAPI"
 				, "Descriptor set layout binding was not found." );
 			static VkDescriptorSetLayoutBinding dummy;
 			return dummy;

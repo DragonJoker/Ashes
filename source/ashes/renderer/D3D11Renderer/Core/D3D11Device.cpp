@@ -613,12 +613,15 @@ namespace ashes::d3d11
 			auto it = m_queues.emplace( queueCreateInfo.queueFamilyIndex
 				, QueueCreates{ queueCreateInfo, {} } ).first;
 
-			VkQueue queue;
-			allocateNA( queue
-				, get( this )
-				, it->second.createInfo
-				, uint32_t( it->second.queues.size() ) );
-			it->second.queues.emplace_back( queue );
+			for ( auto i = 0u; i < queueCreateInfo.queueCount; ++i )
+			{
+				VkQueue queue;
+				allocateNA( queue
+					, get( this )
+					, it->second.createInfo
+					, uint32_t( it->second.queues.size() ) );
+				it->second.queues.emplace_back( queue );
+			}
 		}
 	}
 }
