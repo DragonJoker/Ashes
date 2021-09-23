@@ -40,9 +40,12 @@ namespace ashes::vk
 						res = description.functions.EnumeratePhysicalDevices( instance
 							, &gpuCount
 							, nullptr );
-						result = ( res == VK_SUCCESS && gpuCount )
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuseless-cast"
+						result = VkBool32( ( res == VK_SUCCESS && gpuCount )
 							? VK_TRUE
-							: VK_FALSE;
+							: VK_FALSE );
+#pragma GCC diagnostic pop
 					}
 
 					if ( description.functions.DestroyInstance )
