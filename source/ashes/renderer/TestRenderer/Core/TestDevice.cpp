@@ -309,7 +309,7 @@ namespace ashes::test
 				, uint64_t( get( this ) )
 				, 0u
 				, VK_ERROR_INCOMPATIBLE_DRIVER
-				, "Direct3D11"
+				, "RenderAPI"
 				, "Couldn't find family index within created queues" );
 			return nullptr;
 		}
@@ -321,7 +321,7 @@ namespace ashes::test
 				, uint64_t( get( this ) )
 				, 0u
 				, VK_ERROR_INCOMPATIBLE_DRIVER
-				, "Direct3D11"
+				, "RenderAPI"
 				, "Couldn't find queue with wanted index within its family" );
 			return nullptr;
 		}
@@ -412,12 +412,15 @@ namespace ashes::test
 			auto it = m_queues.emplace( queueCreateInfo.queueFamilyIndex
 				, QueueCreates{ queueCreateInfo, {} } ).first;
 
-			VkQueue queue;
-			allocate( queue
-				, nullptr
-				, get( this )
-				, it->second.createInfo );
-			it->second.queues.emplace_back( queue );
+			for ( auto i = 0u; i < queueCreateInfo.queueCount; ++i )
+			{
+				VkQueue queue;
+				allocate( queue
+					, nullptr
+					, get( this )
+					, it->second.createInfo );
+				it->second.queues.emplace_back( queue );
+			}
 		}
 	}
 }
