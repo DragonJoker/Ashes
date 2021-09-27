@@ -31,6 +31,7 @@ if ( APPLE )
 		${HEADER_FILES}
 		Src/MetalLayer.h
 	)
+	set( PROJECTS_USE_PRECOMPILED_HEADERS OFF )
 endif ()
 
 add_library( ${PROJECT_NAME} STATIC
