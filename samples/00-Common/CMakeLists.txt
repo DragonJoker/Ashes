@@ -57,6 +57,7 @@ if ( APPLE )
 		${HEADER_FILES}
 		Src/MetalLayer.h
 	)
+	set( PROJECTS_USE_PRECOMPILED_HEADERS OFF )
 endif ()
 
 source_group( "Shader Files" FILES ${GLSL_SHADER_FILES} )

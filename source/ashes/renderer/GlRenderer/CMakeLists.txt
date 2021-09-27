@@ -31,6 +31,7 @@ if ( OpenGL_FOUND )
 			"-framework AppKit"
 			OpenGL::GL
 		)
+		set( PROJECTS_USE_PRECOMPILED_HEADERS OFF )
 	else ()
 		find_package( X11 )
 		if ( ASHES_USE_XLIB_EGL )
