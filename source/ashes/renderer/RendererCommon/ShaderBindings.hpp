@@ -48,6 +48,8 @@ namespace ashes
 		ShaderBindingMap tbo;
 		// Image buffer bindings
 		ShaderBindingMap ibo;
+		// Unordered access view bindings
+		ShaderBindingMap uav;
 	};
 
 	struct ShaderBindingIndices
@@ -56,18 +58,22 @@ namespace ashes
 		uint32_t sbo{ 0u };
 		uint32_t img{ 0u };
 		uint32_t tex{ 0u };
-		//uint32_t tbo{ 0u };
+		uint32_t uav{ 0u };
 	};
+
+	bool isUniformBuffer( VkDescriptorType type );
+	bool isSampledImage( VkDescriptorType type );
+	bool isSamplerBuffer( VkDescriptorType type );
+
+	bool isStorageBuffer( VkDescriptorType type );
+	bool isStorageImage( VkDescriptorType type );
+	bool isImageBuffer( VkDescriptorType type );
 
 	void addBinding( uint32_t set
 		, VkDescriptorSetLayoutBinding const & binding
 		, ShaderBindings & bindings
-		, ShaderBindingIndices & indices );
-
-	void addReplaceBinding( uint32_t set
-		, uint32_t srcBinding
-		, VkDescriptorSetLayoutBinding const & binding
-		, ShaderBindings & bindings );
+		, ShaderBindingIndices & indices
+		, bool commonUavNamespace );
 
 	void copyBinding( uint32_t set
 		, VkDescriptorSetLayoutBinding const & binding

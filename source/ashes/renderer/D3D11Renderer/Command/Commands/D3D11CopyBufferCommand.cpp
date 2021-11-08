@@ -24,7 +24,7 @@ namespace ashes::d3d11
 
 	void CopyBufferCommand::apply( Context const & context )const
 	{
-		get( m_dst )->copyFrom( context.context
+		get( m_dst )->copyFrom( *context.context
 			, m_src
 			, m_srcBox
 			, m_dstOffset );

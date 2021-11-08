@@ -49,10 +49,10 @@ namespace ashes::d3d11
 				m_storageTextures.push_back( &write.second );
 				break;
 			case VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER:
-				m_texelBuffers.push_back( &write.second );
+				m_uniformTexelBuffers.push_back( &write.second );
 				break;
 			case VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER:
-				m_texelBuffers.push_back( &write.second );
+				m_storageTexelBuffers.push_back( &write.second );
 				break;
 			case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER:
 				m_uniformBuffers.push_back( &write.second );

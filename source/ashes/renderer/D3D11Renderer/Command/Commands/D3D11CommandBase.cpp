@@ -12,11 +12,9 @@ namespace ashes::d3d11
 {
 	//*************************************************************************
 
-	ID3D11DeviceContext * Context::getImmediateContext( VkDevice device )
+	DeviceContextLock Context::getImmediateContext( VkDevice device )
 	{
-		ID3D11DeviceContext * result;
-		get( device )->getDevice()->GetImmediateContext( &result );
-		return result;
+		return get( device )->getImmediateContext();
 	}
 
 	//*************************************************************************

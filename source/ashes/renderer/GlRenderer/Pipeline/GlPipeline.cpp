@@ -176,6 +176,51 @@ namespace ashes::gl
 			};
 		}
 
+
+		void addReplaceBinding( uint32_t set
+			, uint32_t srcBinding
+			, VkDescriptorSetLayoutBinding const & dstBinding
+			, ShaderBindings & bindings )
+		{
+			if ( !dstBinding.descriptorCount )
+			{
+				return;
+			}
+
+			uint32_t index = dstBinding.binding;
+
+			if ( ashes::isUniformBuffer( dstBinding.descriptorType ) )
+			{
+				auto it = bindings.ubo.emplace( makeShaderBindingKey( set, srcBinding ), index ).first;
+				it->second = index;
+			}
+			else if ( ashes::isStorageBuffer( dstBinding.descriptorType ) )
+			{
+				auto it = bindings.sbo.emplace( makeShaderBindingKey( set, srcBinding ), index ).first;
+				it->second = index;
+			}
+			else if ( ashes::isStorageImage( dstBinding.descriptorType ) )
+			{
+				auto it = bindings.img.emplace( makeShaderBindingKey( set, srcBinding ), index ).first;
+				it->second = index;
+			}
+			else if ( ashes::isSampledImage( dstBinding.descriptorType ) )
+			{
+				auto it = bindings.tex.emplace( makeShaderBindingKey( set, srcBinding ), index ).first;
+				it->second = index;
+			}
+			else if ( ashes::isSamplerBuffer( dstBinding.descriptorType ) )
+			{
+				auto it = bindings.tbo.emplace( makeShaderBindingKey( set, srcBinding ), index ).first;
+				it->second = index;
+			}
+			else if ( ashes::isImageBuffer( dstBinding.descriptorType ) )
+			{
+				auto it = bindings.ibo.emplace( makeShaderBindingKey( set, srcBinding ), index ).first;
+				it->second = index;
+			}
+		}
+
 		template< typename DescContT >
 		void doReworkWrites( uint32_t descriptorSetIndex
 			, LayoutBindingWritesArray const & writesArray

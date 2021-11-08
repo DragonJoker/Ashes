@@ -246,9 +246,70 @@ namespace ashes::d3d11
 			}
 		}
 
+		void doReworkUavBindings( VkDevice device
+			, VkShaderModule module
+			, std::string const & typeName
+			, spirv_cross::CompilerGLSL & compiler
+			, spirv_cross::SmallVector< spirv_cross::Resource > & resources
+			, ShaderBindingMap const & bindings
+			, uint32_t uavStart
+			, bool failOnError
+			, ShaderBindingMap const * fallback = nullptr )
+		{
+			for ( auto & obj : resources )
+			{
+				auto binding = compiler.get_decoration( obj.id, spv::DecorationBinding );
+				auto set = compiler.get_decoration( obj.id, spv::DecorationDescriptorSet );
+				compiler.unset_decoration( obj.id, spv::DecorationDescriptorSet );
+				auto it = bindings.find( makeShaderBindingKey( set, binding ) );
+
+				if ( it != bindings.end() )
+				{
+					// UAV and fragment outputs share the same namespace,
+					// hence we add UAV start offset (which is just the outputs count).
+					compiler.set_decoration( obj.id, spv::DecorationBinding, uavStart + it->second );
+				}
+				else if ( fallback )
+				{
+					it = fallback->find( makeShaderBindingKey( set, binding ) );
+
+					if ( it != fallback->end() )
+					{
+						// Fallback is used only for storage texel buffers,
+						// which are handled the same way as uniform texel buffers,
+						// hence we don't add the UAV start offset.
+						compiler.set_decoration( obj.id, spv::DecorationBinding, it->second );
+					}
+					else if ( failOnError )
+					{
+						reportMissingBinding( device, module, typeName, binding, set );
+					}
+				}
+				else if ( failOnError )
+				{
+					reportMissingBinding( device, module, typeName, binding, set );
+				}
+			}
+		}
+
+		void doReworkOutputs( VkDevice device
+			, VkShaderModule module
+			, std::string const & typeName
+			, spirv_cross::CompilerGLSL & compiler
+			, spirv_cross::SmallVector< spirv_cross::Resource > & resources
+			, uint32_t & index )
+		{
+			for ( auto & obj : resources )
+			{
+				auto location = compiler.get_decoration( obj.id, spv::DecorationLocation );
+				index = std::max( index, location );
+			}
+		}
+
 		void doReworkBindings( VkPipelineLayout pipelineLayout
 			, VkPipelineCreateFlags createFlags
 			, VkShaderModule module
+			, VkShaderStageFlagBits stage
 			, spirv_cross::CompilerGLSL & compiler )
 		{
 			uint32_t const ssboMask = ( 1u << 16u );
@@ -258,12 +319,21 @@ namespace ashes::d3d11
 			auto failOnError = !( checkFlag( createFlags, VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT )
 				|| checkFlag( createFlags, VK_PIPELINE_CREATE_DERIVATIVE_BIT ) );
 			doReworkBindings( device, module, "UniformBuffer", compiler, resources.uniform_buffers, bindings.ubo, failOnError );
-			doReworkBindings( device, module, "StorageBuffer", compiler, resources.storage_buffers, bindings.sbo, failOnError );
 			doReworkBindings( device, module, "CombinedSamplerImage", compiler, resources.sampled_images, bindings.tex, failOnError, &bindings.tbo );
 			doReworkBindings( device, module, "SampledImage", compiler, resources.separate_images, bindings.tex, failOnError );
 			doReworkBindings( device, module, "Sampler", compiler, resources.separate_samplers, bindings.tex, failOnError );
-			doReworkBindings( device, module, "StorageImage", compiler, resources.storage_images, bindings.img, failOnError );
 			doReworkBindings( device, module, "SubpassInput", compiler, resources.subpass_inputs, bindings.tex, failOnError );
+
+			uint32_t uav{};
+
+			if ( stage == VK_SHADER_STAGE_FRAGMENT_BIT )
+			{
+				// Tightly pack outputs indices.
+				doReworkOutputs( device, module, "FragmentOutputs", compiler, resources.stage_outputs, uav );
+			}
+
+			doReworkUavBindings( device, module, "StorageBuffer", compiler, resources.storage_buffers, bindings.uav, uav, failOnError );
+			doReworkUavBindings( device, module, "StorageImage", compiler, resources.storage_images, bindings.uav, uav, failOnError, &bindings.ibo );
 		}
 
 #endif
@@ -288,7 +358,7 @@ namespace ashes::d3d11
 					doSetEntryPoint( stage, compiler );
 					doSetupOptions( device, compiler );
 					doSetupHlslOptions( device, compiler );
-					doReworkBindings( pipelineLayout, createFlags, module, compiler );
+					doReworkBindings( pipelineLayout, createFlags, module, stage, compiler );
 					return compiler.compile();
 				}
 				catch ( std::exception & exc )

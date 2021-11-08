@@ -157,11 +157,10 @@ namespace ashes::d3d11
 			copySize = allocateInfo.allocationSize - objectOffset;
 		}
 
-		ID3D11DeviceContext * context;
-		get( device )->getDevice()->GetImmediateContext( &context );
+		auto context{ get( device )->getImmediateContext() };
 		D3D11_MAPPED_SUBRESOURCE mapped{};
 
-		if ( lock( context, subresource, mapped ) == VK_SUCCESS )
+		if ( lock( *context, subresource, mapped ) == VK_SUCCESS )
 		{
 			if ( mapped.DepthPitch == subresourceLayout.SysMemSlicePitch
 				|| mapped.RowPitch == subresourceLayout.SysMemPitch )
@@ -188,10 +187,8 @@ namespace ashes::d3d11
 				}
 			}
 
-			unlock( context, subresource );
+			unlock( *context, subresource );
 		}
-
-		safeRelease( context );
 	}
 
 	void ObjectMemory::download( uint8_t * data
@@ -216,11 +213,10 @@ namespace ashes::d3d11
 			copySize = allocateInfo.allocationSize - objectOffset;
 		}
 
-		ID3D11DeviceContext * context;
-		get( device )->getDevice()->GetImmediateContext( &context );
+		auto context{ get( device )->getImmediateContext() };
 		D3D11_MAPPED_SUBRESOURCE mapped{};
 
-		if ( lock( context, subresource, mapped ) == VK_SUCCESS )
+		if ( lock( *context, subresource, mapped ) == VK_SUCCESS )
 		{
 			if ( mapped.RowPitch != subresourceLayout.SysMemPitch )
 			{
@@ -246,10 +242,8 @@ namespace ashes::d3d11
 					, copySize );
 			}
 
-			unlock( context, subresource );
+			unlock( *context, subresource );
 		}
-
-		safeRelease( context );
 	}
 
 	//*********************************************************************************************

@@ -33,6 +33,7 @@ namespace ashes::d3d11
 		if ( checkFlag( targets, VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT ) )
 		{
 			result |= D3D11_BIND_UNORDERED_ACCESS;
+			result |= D3D11_BIND_SHADER_RESOURCE;
 		}
 
 		if ( checkFlag( targets, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT ) )

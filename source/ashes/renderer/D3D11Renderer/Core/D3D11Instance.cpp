@@ -82,16 +82,14 @@ namespace ashes::d3d11
 
 				if ( SUCCEEDED( hr ) )
 				{
-					hr = info.adapter1->QueryInterface( __uuidof( IDXGIAdapter2 )
+					( void )info.adapter1->QueryInterface( __uuidof( IDXGIAdapter2 )
 						, reinterpret_cast< void ** >( &info.adapter2 ) );
 				}
 
-				if ( SUCCEEDED( adapter->EnumOutputs( 0, &info.output ) )
-					&& info.output )
-				{
-					info.featureLevel = getSupportedFeatureLevel( factory, adapter );
-					result.push_back( info );
-				}
+				( void )adapter->EnumOutputs( 0, &info.output );
+
+				info.featureLevel = getSupportedFeatureLevel( factory, adapter );
+				result.push_back( info );
 
 				++index;
 			}

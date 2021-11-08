@@ -27,62 +27,67 @@ namespace ashes::d3d11
 		void update( VkWriteDescriptorSet const & write );
 		void update( VkCopyDescriptorSet const & write );
 
-		inline VkDescriptorSetLayout getLayout()const
+		VkDescriptorSetLayout getLayout()const
 		{
 			return m_layout;
 		}
 
-		inline LayoutBindingWritesArray const & getInputAttachments()const
+		LayoutBindingWritesArray const & getInputAttachments()const
 		{
 			return m_inputAttachments;
 		}
 
-		inline LayoutBindingWritesArray const & getCombinedTextureSamplers()const
+		LayoutBindingWritesArray const & getCombinedTextureSamplers()const
 		{
 			return m_combinedTextureSamplers;
 		}
 
-		inline LayoutBindingWritesArray const & getSamplers()const
+		LayoutBindingWritesArray const & getSamplers()const
 		{
 			return m_samplers;
 		}
 
-		inline LayoutBindingWritesArray const & getSampledTextures()const
+		LayoutBindingWritesArray const & getSampledTextures()const
 		{
 			return m_sampledTextures;
 		}
 
-		inline LayoutBindingWritesArray const & getStorageTextures()const
+		LayoutBindingWritesArray const & getStorageTextures()const
 		{
 			return m_storageTextures;
 		}
 
-		inline LayoutBindingWritesArray const & getUniformBuffers()const
+		LayoutBindingWritesArray const & getUniformBuffers()const
 		{
 			return m_uniformBuffers;
 		}
 
-		inline LayoutBindingWritesArray const & getInlineUniforms()const
+		LayoutBindingWritesArray const & getInlineUniforms()const
 		{
 			return m_inlineUniforms;
 		}
 
-		inline LayoutBindingWritesArray const & getStorageBuffers()const
+		LayoutBindingWritesArray const & getStorageBuffers()const
 		{
 			return m_storageBuffers;
 		}
 
-		inline LayoutBindingWritesArray const & getTexelBuffers()const
+		LayoutBindingWritesArray const & getUniformTexelBuffers()const
 		{
-			return m_texelBuffers;
+			return m_uniformTexelBuffers;
 		}
 
-		inline LayoutBindingWritesArray const & getDynamicBuffers()const
+		LayoutBindingWritesArray const & getStorageTexelBuffers()const
+		{
+			return m_storageTexelBuffers;
+		}
+
+		LayoutBindingWritesArray const & getDynamicBuffers()const
 		{
 			return m_dynamicBuffers;
 		}
 
-		inline LayoutBindingWritesArray const & getDynamicStorageBuffers()const
+		LayoutBindingWritesArray const & getDynamicStorageBuffers()const
 		{
 			return m_dynamicStorageBuffers;
 		}
@@ -104,7 +109,8 @@ namespace ashes::d3d11
 		LayoutBindingWritesArray m_uniformBuffers;
 		LayoutBindingWritesArray m_inlineUniforms;
 		LayoutBindingWritesArray m_storageBuffers;
-		LayoutBindingWritesArray m_texelBuffers;
+		LayoutBindingWritesArray m_uniformTexelBuffers;
+		LayoutBindingWritesArray m_storageTexelBuffers;
 		LayoutBindingWritesArray m_dynamicUniformBuffers;
 		LayoutBindingWritesArray m_dynamicStorageBuffers;
 		LayoutBindingWritesArray m_dynamicBuffers;

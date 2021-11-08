@@ -126,6 +126,37 @@ namespace ashes::d3d11
 				return false;
 			}
 		}
+
+		ID3D11DeviceContext * getContext( std::mutex & mtx
+			, std::map< std::thread::id, ID3D11DeviceContext * > & deviceContexts
+			, ID3D11Device * device )
+		{
+			std::unique_lock< std::mutex > lock{ mtx };
+			auto ires = deviceContexts.emplace( std::this_thread::get_id(), nullptr );
+
+			if ( ires.second )
+			{
+				device->GetImmediateContext( &ires.first->second );
+			}
+
+			return ires.first->second;
+		}
+
+		void flushContexts( std::mutex & mtx
+			, std::map< std::thread::id, ID3D11DeviceContext * > & deviceContexts )
+		{
+			std::unique_lock< std::mutex > lock{ mtx };
+
+			for ( auto & it : deviceContexts )
+			{
+				auto context = it.second;
+				context->ClearState();
+				context->Flush();
+				safeRelease( context );
+			}
+
+			deviceContexts.clear();
+		}
 	}
 
 	Device::Device( VkInstance instance
@@ -188,10 +219,11 @@ namespace ashes::d3d11
 		deallocate( m_dummyIndexed.memory, getAllocationCallbacks() );
 		deallocate( m_dummyIndexed.buffer, getAllocationCallbacks() );
 
-		m_deviceContext->ClearState();
-		m_deviceContext->Flush();
-		safeRelease( m_waitIdleQuery );
+		m_mtxDeviceContext.lock();
 		safeRelease( m_deviceContext );
+		m_mtxDeviceContext.unlock();
+
+		safeRelease( m_waitIdleQuery );
 		safeRelease( m_d3dDevice );
 
 #if !defined( NDEBUG )
@@ -200,6 +232,22 @@ namespace ashes::d3d11
 		safeRelease( m_debug );
 
 #endif
+	}
+
+	DeviceContextLock Device::getImmediateContext()const
+	{
+		return DeviceContextLock{ this };
+	}
+
+	ID3D11DeviceContext * Device::lockImmediateContext()const
+	{
+		m_mtxDeviceContext.lock();
+		return m_deviceContext;
+	}
+
+	void Device::unlockImmediateContext()const
+	{
+		m_mtxDeviceContext.unlock();
 	}
 
 	bool Device::hasExtension( std::string_view extension )const
@@ -482,11 +530,12 @@ namespace ashes::d3d11
 
 	VkResult Device::waitIdle()const
 	{
-		m_deviceContext->End( m_waitIdleQuery );
-		m_deviceContext->Flush();
+		auto context = getImmediateContext();
+		context->End( m_waitIdleQuery );
+		context->Flush();
 		BOOL data{ FALSE };
 
-		while ( ( S_FALSE == m_deviceContext->GetData( m_waitIdleQuery
+		while ( ( S_FALSE == context->GetData( m_waitIdleQuery
 				, &data
 				, UINT( sizeof( data ) )
 				, 0u ) )
@@ -534,16 +583,19 @@ namespace ashes::d3d11
 #endif
 
 		D3D_FEATURE_LEVEL supportedFeatureLevel = get( m_physicalDevice )->getFeatureLevel();
-		hr = D3D11CreateDevice( nullptr
-			, D3D_DRIVER_TYPE_HARDWARE
-			, nullptr
-			, flags
-			, &supportedFeatureLevel
-			, 1
-			, D3D11_SDK_VERSION
-			, &m_d3dDevice
-			, &m_featureLevel
-			, &m_deviceContext );
+		{
+			std::unique_lock< std::mutex > lock{ m_mtxDeviceContext };
+			hr = D3D11CreateDevice( nullptr
+				, D3D_DRIVER_TYPE_HARDWARE
+				, nullptr
+				, flags
+				, &supportedFeatureLevel
+				, 1
+				, D3D11_SDK_VERSION
+				, &m_d3dDevice
+				, &m_featureLevel
+				, &m_deviceContext );
+		}
 
 		if ( m_d3dDevice )
 		{
