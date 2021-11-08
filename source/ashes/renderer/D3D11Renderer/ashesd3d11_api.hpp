@@ -304,8 +304,12 @@ namespace ashes::d3d11
 		, std::string const & errorName
 		, std::string const & name )
 	{
-		VkInstance instance = getInstance( object );
+		VkInstance instance = object
+			? getInstance( object )
+			: nullptr;
+
 #if VK_EXT_debug_utils
+		if ( instance )
 		{
 			VkDebugUtilsObjectNameInfoEXT info
 			{
@@ -334,6 +338,7 @@ namespace ashes::d3d11
 		}
 #endif
 #if VK_EXT_debug_report
+		if ( instance )
 		{
 			std::string text = errorName + ": " + name;
 			get( instance )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT

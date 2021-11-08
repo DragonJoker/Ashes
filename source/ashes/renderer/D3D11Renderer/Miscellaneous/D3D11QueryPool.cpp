@@ -179,8 +179,7 @@ namespace ashes::d3d11
 	{
 		auto max = firstQuery + queryCount;
 		assert( max <= m_queries.size() );
-		ID3D11DeviceContext * context;
-		get( m_device )->getDevice()->GetImmediateContext( &context );
+		auto context{ get( m_device )->getImmediateContext() };
 		VkResult result = VK_SUCCESS;
 
 		for ( auto i = firstQuery; i < max; ++i )
@@ -240,7 +239,6 @@ namespace ashes::d3d11
 			}
 		}
 
-		safeRelease( context );
 		return result;
 	}
 
@@ -253,8 +251,7 @@ namespace ashes::d3d11
 	{
 		auto max = firstQuery + queryCount;
 		assert( max <= m_queries.size() );
-		ID3D11DeviceContext * context;
-		get( m_device )->getDevice()->GetImmediateContext( &context );
+		auto context{ get( m_device )->getImmediateContext() };
 		VkResult result = VK_SUCCESS;
 		stride = stride
 			? stride
@@ -295,7 +292,6 @@ namespace ashes::d3d11
 			}
 		}
 
-		safeRelease( context );
 		return result;
 	}
 }

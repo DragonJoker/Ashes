@@ -175,6 +175,7 @@ source_group( "Source Files\\Command\\Commands" FILES ${${PROJECT_NAME}_FOLDER_S
 set( ${PROJECT_NAME}_FOLDER_SRC_FILES
 	Core/D3D11DebugReportCallback.cpp
 	Core/D3D11Device.cpp
+	Core/D3D11DeviceContextLock.cpp
 	Core/D3D11Display.cpp
 	Core/D3D11DisplayMode.cpp
 	Core/D3D11Instance.cpp
@@ -186,6 +187,7 @@ set( ${PROJECT_NAME}_FOLDER_SRC_FILES
 set( ${PROJECT_NAME}_FOLDER_HDR_FILES
 	Core/D3D11DebugReportCallback.hpp
 	Core/D3D11Device.hpp
+	Core/D3D11DeviceContextLock.hpp
 	Core/D3D11Display.hpp
 	Core/D3D11DisplayMode.hpp
 	Core/D3D11DummyIndexBuffer.hpp

@@ -20,7 +20,8 @@ namespace ashes::d3d11
 			, VkDisplaySurfaceCreateInfoKHR createInfo );
 		~SurfaceKHR();
 
-		bool getSupport( uint32_t queueFamilyIndex )const;
+		VkBool32 getSupport( VkPhysicalDevice physicalDevice
+			, uint32_t queueFamilyIndex )const;
 		HWND getHwnd()const;
 		DXGI_MODE_DESC const & getDisplayMode()const;
 

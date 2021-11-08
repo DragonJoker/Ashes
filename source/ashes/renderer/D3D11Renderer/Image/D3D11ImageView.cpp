@@ -51,7 +51,14 @@ namespace ashes::d3d11
 			}
 			break;
 		case VK_IMAGE_VIEW_TYPE_2D_ARRAY:
-			doCreate2DArray();
+			if ( image->getType() == VK_IMAGE_TYPE_3D )
+			{
+				doCreate3D();
+			}
+			else
+			{
+				doCreate2DArray();
+			}
 			break;
 		case VK_IMAGE_VIEW_TYPE_3D:
 			doCreate3D();
@@ -332,6 +339,9 @@ namespace ashes::d3d11
 		auto device = get( m_device )->getDevice();
 		auto image = get( m_createInfo.image );
 		auto multisampled = image->getSamplesCount() > VK_SAMPLE_COUNT_1_BIT;
+		ID3D11Resource * texture = ( ( image->getType() == VK_IMAGE_TYPE_3D )
+			? static_cast< ID3D11Resource * >( image->getTexture3D() )
+			: static_cast< ID3D11Resource * >( image->getTexture2D() ) );
 
 		if ( image->isRenderTarget() )
 		{
@@ -345,7 +355,7 @@ namespace ashes::d3d11
 				desc.Texture2DArray.ArraySize = getSubResourceRange().layerCount;
 				desc.Texture2DArray.FirstArraySlice = getSubResourceRange().baseArrayLayer;
 				desc.Texture2DArray.MipSlice = getSubResourceRange().baseMipLevel;
-				auto hr = device->CreateDepthStencilView( image->getTexture2D()
+				auto hr = device->CreateDepthStencilView( texture
 					, &desc
 					, &m_depthStencilView );
 				checkError( m_device, hr, "CreateDepthStencilView2D" );
@@ -361,7 +371,7 @@ namespace ashes::d3d11
 				desc.Texture2DArray.ArraySize = getSubResourceRange().layerCount;
 				desc.Texture2DArray.FirstArraySlice = getSubResourceRange().baseArrayLayer;
 				desc.Texture2DArray.MipSlice = getSubResourceRange().baseMipLevel;
-				auto hr = device->CreateRenderTargetView( image->getTexture2D()
+				auto hr = device->CreateRenderTargetView( texture
 					, &desc
 					, &m_renderTargetView );
 				checkError( m_device, hr, "CreateRenderTargetView2DArray" );
@@ -380,7 +390,7 @@ namespace ashes::d3d11
 			desc.Texture2DArray.FirstArraySlice = getSubResourceRange().baseArrayLayer;
 			desc.Texture2DArray.MipLevels = getSubResourceRange().levelCount;
 			desc.Texture2DArray.MostDetailedMip = getSubResourceRange().baseMipLevel;
-			auto hr = device->CreateShaderResourceView( image->getTexture2D()
+			auto hr = device->CreateShaderResourceView( texture
 				, &desc
 				, &m_shaderView );
 			checkError( m_device, hr, "CreateShaderResourceView2DArray" );
@@ -396,7 +406,7 @@ namespace ashes::d3d11
 			desc.Texture2DArray.ArraySize = getSubResourceRange().layerCount;
 			desc.Texture2DArray.FirstArraySlice = getSubResourceRange().baseArrayLayer;
 			desc.Texture2DArray.MipSlice = getSubResourceRange().baseMipLevel;
-			auto hr = device->CreateUnorderedAccessView( image->getTexture2D()
+			auto hr = device->CreateUnorderedAccessView( texture
 				, &desc
 				, &m_unorderedAccessView );
 			checkError( m_device, hr, "CreateUnorderedAccessView2DArray" );

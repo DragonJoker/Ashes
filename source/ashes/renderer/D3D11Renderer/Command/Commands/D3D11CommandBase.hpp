@@ -4,24 +4,24 @@ See LICENSE file in root folder
 */
 #pragma once
 
-#include "renderer/D3D11Renderer/D3D11RendererPrerequisites.hpp"
+#include "renderer/D3D11Renderer/Core/D3D11DeviceContextLock.hpp"
 
 namespace ashes::d3d11
 {
 	struct Context
 	{
-		Context( D3D_FEATURE_LEVEL featureLevel
-			, VkDevice device )
-			: Context{ featureLevel, device, getImmediateContext( device ) }
+		Context( D3D_FEATURE_LEVEL pfeatureLevel
+			, VkDevice pdevice )
+			: Context{ pfeatureLevel, pdevice, getImmediateContext( pdevice ) }
 		{
 		}
 
-		Context( D3D_FEATURE_LEVEL featureLevel
-			, VkDevice device
-			, ID3D11DeviceContext * context )
-			: device{ device }
-			, context{ context }
-			, featureLevel{ featureLevel }
+		Context( D3D_FEATURE_LEVEL pfeatureLevel
+			, VkDevice pdevice
+			, DeviceContextLock pcontext )
+			: device{ pdevice }
+			, context{ std::move( pcontext ) }
+			, featureLevel{ pfeatureLevel }
 		{
 			auto hr = context->QueryInterface( __uuidof( ID3D11DeviceContext1 )
 				, reinterpret_cast< void ** >( &context1 ) );
@@ -31,17 +31,18 @@ namespace ashes::d3d11
 		~Context()
 		{
 			safeRelease( context1 );
-			safeRelease( context );
 		}
 
 		VkDevice device{};
-		ID3D11DeviceContext * context{};
+		DeviceContextLock context;
 		ID3D11DeviceContext1 * context1{};
-		LayoutBindingWritesArray uavs;
 		D3D_FEATURE_LEVEL featureLevel{};
+		mutable std::map< UINT, ID3D11UnorderedAccessView * > uavs{};
+		mutable std::vector< ID3D11UnorderedAccessView * > rawUavs{};
+		mutable UINT uavStart{};
 
 	private:
-		static ID3D11DeviceContext * getImmediateContext( VkDevice device );
+		static DeviceContextLock getImmediateContext( VkDevice device );
 	};
 
 	class CommandBase

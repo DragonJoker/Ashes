@@ -42,5 +42,6 @@ namespace ashes::d3d11
 		VkPipelineLayout m_layout;
 		VkPipelineBindPoint m_bindingPoint;
 		UInt32Array m_dynamicOffsets;
+		std::map< UINT, ID3D11UnorderedAccessView * > m_uavs;
 	};
 }

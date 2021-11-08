@@ -2102,7 +2102,7 @@ namespace ashes::d3d11
 		VkSurfaceKHR surface,
 		VkBool32 * pSupported )
 	{
-		*pSupported = get( physicalDevice )->getPresentationSupport( queueFamilyIndex );
+		*pSupported = get( surface )->getSupport( physicalDevice, queueFamilyIndex );
 		return VK_SUCCESS;
 	}
 
