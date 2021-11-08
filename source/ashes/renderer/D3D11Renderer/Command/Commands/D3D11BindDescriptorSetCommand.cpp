@@ -60,155 +60,190 @@ namespace ashes::d3d11
 		template<>
 		struct Binder< VK_SHADER_STAGE_COMPUTE_BIT, true >
 		{
+			// Combined Image + Sampler
 			static void bind( ID3D11DeviceContext1 * context, UINT bindingIndex, ID3D11ShaderResourceView * image, ID3D11SamplerState * sampler )
 			{
 				bind( context, bindingIndex, image );
 				bind( context, bindingIndex, sampler );
 			}
-
+			// Sampler
 			static void bind( ID3D11DeviceContext1 * context, UINT bindingIndex, ID3D11SamplerState * sampler )
 			{
 				context->CSSetSamplers( bindingIndex, 1u, &sampler );
 			}
-
+			// Sampled Image
 			static void bind( ID3D11DeviceContext1 * context, UINT bindingIndex, ID3D11ShaderResourceView * image )
 			{
 				context->CSSetShaderResources( bindingIndex, 1u, &image );
 			}
-
+			// Uniform Buffer
 			static void bind( ID3D11DeviceContext1 * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT range )
 			{
 				context->CSSetConstantBuffers1( bindingIndex, 1u, &buffer, &offset, &range );
 			}
-
+			// Storage buffer/image
 			static void bind( ID3D11DeviceContext1 * context, UINT bindingIndex, ID3D11UnorderedAccessView * view )
 			{
 				context->CSSetUnorderedAccessViews( bindingIndex, 1u, &view, nullptr );
+			}
+			// Storage buffer/image
+			static void gather( UINT bindingIndex, ID3D11UnorderedAccessView * view, std::map< UINT, ID3D11UnorderedAccessView * > * uavs )
+			{
 			}
 		};
 
 		template<>
 		struct Binder< VK_SHADER_STAGE_VERTEX_BIT, true >
 		{
+			// Combined Image + Sampler
 			static void bind( ID3D11DeviceContext1 * context, UINT bindingIndex, ID3D11ShaderResourceView * image, ID3D11SamplerState * sampler )
 			{
 				bind( context, bindingIndex, image );
 				bind( context, bindingIndex, sampler );
 			}
-
+			// Sampler
 			static void bind( ID3D11DeviceContext1 * context, UINT bindingIndex, ID3D11SamplerState * sampler )
 			{
 				context->VSSetSamplers( bindingIndex, 1u, &sampler );
 			}
-
+			// Sampled Image
 			static void bind( ID3D11DeviceContext1 * context, UINT bindingIndex, ID3D11ShaderResourceView * image )
 			{
 				context->VSSetShaderResources( bindingIndex, 1u, &image );
 			}
-
+			// Uniform Buffer
 			static void bind( ID3D11DeviceContext1 * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT range )
 			{
 				context->VSSetConstantBuffers1( bindingIndex, 1u, &buffer, &offset, &range );
+			}
+			// Storage buffer/image
+			static void gather( UINT bindingIndex, ID3D11UnorderedAccessView * view, std::map< UINT, ID3D11UnorderedAccessView * > * uavs )
+			{
+				( *uavs )[bindingIndex] = view;
 			}
 		};
 
 		template<>
 		struct Binder< VK_SHADER_STAGE_GEOMETRY_BIT, true >
 		{
+			// Combined Image + Sampler
 			static void bind( ID3D11DeviceContext1 * context, UINT bindingIndex, ID3D11ShaderResourceView * image, ID3D11SamplerState * sampler )
 			{
 				bind( context, bindingIndex, image );
 				bind( context, bindingIndex, sampler );
 			}
-
+			// Sampler
 			static void bind( ID3D11DeviceContext1 * context, UINT bindingIndex, ID3D11SamplerState * sampler )
 			{
 				context->GSSetSamplers( bindingIndex, 1u, &sampler );
 			}
-
+			// Sampled Image
 			static void bind( ID3D11DeviceContext1 * context, UINT bindingIndex, ID3D11ShaderResourceView * image )
 			{
 				context->GSSetShaderResources( bindingIndex, 1u, &image );
 			}
-
+			// Uniform Buffer
 			static void bind( ID3D11DeviceContext1 * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT range )
 			{
 				context->GSSetConstantBuffers1( bindingIndex, 1u, &buffer, &offset, &range );
+			}
+			// Storage buffer/image
+			static void gather( UINT bindingIndex, ID3D11UnorderedAccessView * view, std::map< UINT, ID3D11UnorderedAccessView * > * uavs )
+			{
+				( *uavs )[bindingIndex] = view;
 			}
 		};
 
 		template<>
 		struct Binder< VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT, true >
 		{
+			// Combined Image + Sampler
 			static void bind( ID3D11DeviceContext1 * context, UINT bindingIndex, ID3D11ShaderResourceView * image, ID3D11SamplerState * sampler )
 			{
 				bind( context, bindingIndex, image );
 				bind( context, bindingIndex, sampler );
 			}
-
+			// Sampler
 			static void bind( ID3D11DeviceContext1 * context, UINT bindingIndex, ID3D11SamplerState * sampler )
 			{
 				context->HSSetSamplers( bindingIndex, 1u, &sampler );
 			}
-
+			// Sampled Image
 			static void bind( ID3D11DeviceContext1 * context, UINT bindingIndex, ID3D11ShaderResourceView * image )
 			{
 				context->HSSetShaderResources( bindingIndex, 1u, &image );
 			}
-
+			// Uniform Buffer
 			static void bind( ID3D11DeviceContext1 * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT range )
 			{
 				context->HSSetConstantBuffers1( bindingIndex, 1u, &buffer, &offset, &range );
+			}
+			// Storage buffer/image
+			static void gather( UINT bindingIndex, ID3D11UnorderedAccessView * view, std::map< UINT, ID3D11UnorderedAccessView * > * uavs )
+			{
+				( *uavs )[bindingIndex] = view;
 			}
 		};
 
 		template<>
 		struct Binder< VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT, true >
 		{
+			// Combined Image + Sampler
 			static void bind( ID3D11DeviceContext1 * context, UINT bindingIndex, ID3D11ShaderResourceView * image, ID3D11SamplerState * sampler )
 			{
 				bind( context, bindingIndex, image );
 				bind( context, bindingIndex, sampler );
 			}
-
+			// Sampler
 			static void bind( ID3D11DeviceContext1 * context, UINT bindingIndex, ID3D11SamplerState * sampler )
 			{
 				context->DSSetSamplers( bindingIndex, 1u, &sampler );
 			}
-
+			// Sampled Image
 			static void bind( ID3D11DeviceContext1 * context, UINT bindingIndex, ID3D11ShaderResourceView * image )
 			{
 				context->DSSetShaderResources( bindingIndex, 1u, &image );
 			}
-
+			// Uniform Buffer
 			static void bind( ID3D11DeviceContext1 * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT range )
 			{
 				context->DSSetConstantBuffers1( bindingIndex, 1u, &buffer, &offset, &range );
+			}
+			// Storage buffer/image
+			static void gather( UINT bindingIndex, ID3D11UnorderedAccessView * view, std::map< UINT, ID3D11UnorderedAccessView * > * uavs )
+			{
+				( *uavs )[bindingIndex] = view;
 			}
 		};
 
 		template<>
 		struct Binder< VK_SHADER_STAGE_FRAGMENT_BIT, true >
 		{
+			// Combined Image + Sampler
 			static void bind( ID3D11DeviceContext1 * context, UINT bindingIndex, ID3D11ShaderResourceView * image, ID3D11SamplerState * sampler )
 			{
 				bind( context, bindingIndex, image );
 				bind( context, bindingIndex, sampler );
 			}
-
+			// Sampler
 			static void bind( ID3D11DeviceContext1 * context, UINT bindingIndex, ID3D11SamplerState * sampler )
 			{
 				context->PSSetSamplers( bindingIndex, 1u, &sampler );
 			}
-
+			// Sampled Image
 			static void bind( ID3D11DeviceContext1 * context, UINT bindingIndex, ID3D11ShaderResourceView * image )
 			{
 				context->PSSetShaderResources( bindingIndex, 1u, &image );
 			}
-
+			// Uniform Buffer
 			static void bind( ID3D11DeviceContext1 * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT range )
 			{
 				context->PSSetConstantBuffers1( bindingIndex, 1u, &buffer, &offset, &range );
+			}
+			// Storage buffer/image
+			static void gather( UINT bindingIndex, ID3D11UnorderedAccessView * view, std::map< UINT, ID3D11UnorderedAccessView * > * uavs )
+			{
+				( *uavs )[bindingIndex] = view;
 			}
 		};
 
@@ -225,161 +260,196 @@ namespace ashes::d3d11
 		template<>
 		struct Binder< VK_SHADER_STAGE_COMPUTE_BIT, false >
 		{
+			// Combined Image + Sampler
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11ShaderResourceView * image, ID3D11SamplerState * sampler )
 			{
 				bind( context, bindingIndex, image );
 				bind( context, bindingIndex, sampler );
 			}
-
+			// Sampler
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11SamplerState * sampler )
 			{
 				context->CSSetSamplers( bindingIndex, 1u, &sampler );
 			}
-
+			// Sampled Image
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11ShaderResourceView * image )
 			{
 				context->CSSetShaderResources( bindingIndex, 1u, &image );
 			}
-
+			// Uniform Buffer
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT range )
 			{
 				checkOffset( offset );
 				context->CSSetConstantBuffers( bindingIndex, 1u, &buffer );
 			}
-
+			// Storage buffer/image
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11UnorderedAccessView * view )
 			{
 				context->CSSetUnorderedAccessViews( bindingIndex, 1u, &view, nullptr );
+			}
+			// Storage buffer/image
+			static void gather( UINT bindingIndex, ID3D11UnorderedAccessView * view, std::map< UINT, ID3D11UnorderedAccessView * > * uavs )
+			{
 			}
 		};
 
 		template<>
 		struct Binder< VK_SHADER_STAGE_VERTEX_BIT, false >
 		{
+			// Combined Image + Sampler
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11ShaderResourceView * image, ID3D11SamplerState * sampler )
 			{
 				bind( context, bindingIndex, image );
 				bind( context, bindingIndex, sampler );
 			}
-
+			// Sampler
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11SamplerState * sampler )
 			{
 				context->VSSetSamplers( bindingIndex, 1u, &sampler );
 			}
-
+			// Sampled Image
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11ShaderResourceView * image )
 			{
 				context->VSSetShaderResources( bindingIndex, 1u, &image );
 			}
-
+			// Uniform Buffer
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT range )
 			{
 				checkOffset( offset );
 				context->VSSetConstantBuffers( bindingIndex, 1u, &buffer );
+			}
+			// Storage buffer/image
+			static void gather( UINT bindingIndex, ID3D11UnorderedAccessView * view, std::map< UINT, ID3D11UnorderedAccessView * > * uavs )
+			{
+				( *uavs )[bindingIndex] = view;
 			}
 		};
 
 		template<>
 		struct Binder< VK_SHADER_STAGE_GEOMETRY_BIT, false >
 		{
+			// Combined Image + Sampler
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11ShaderResourceView * image, ID3D11SamplerState * sampler )
 			{
 				bind( context, bindingIndex, image );
 				bind( context, bindingIndex, sampler );
 			}
-
+			// Sampler
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11SamplerState * sampler )
 			{
 				context->GSSetSamplers( bindingIndex, 1u, &sampler );
 			}
-
+			// Sampled Image
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11ShaderResourceView * image )
 			{
 				context->GSSetShaderResources( bindingIndex, 1u, &image );
 			}
-
+			// Uniform Buffer
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT range )
 			{
 				checkOffset( offset );
 				context->GSSetConstantBuffers( bindingIndex, 1u, &buffer );
+			}
+			// Storage buffer/image
+			static void gather( UINT bindingIndex, ID3D11UnorderedAccessView * view, std::map< UINT, ID3D11UnorderedAccessView * > * uavs )
+			{
+				( *uavs )[bindingIndex] = view;
 			}
 		};
 
 		template<>
 		struct Binder< VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT, false >
 		{
+			// Combined Image + Sampler
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11ShaderResourceView * image, ID3D11SamplerState * sampler )
 			{
 				bind( context, bindingIndex, image );
 				bind( context, bindingIndex, sampler );
 			}
-
+			// Sampler
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11SamplerState * sampler )
 			{
 				context->HSSetSamplers( bindingIndex, 1u, &sampler );
 			}
-
+			// Sampled Image
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11ShaderResourceView * image )
 			{
 				context->HSSetShaderResources( bindingIndex, 1u, &image );
 			}
-
+			// Uniform Buffer
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT range )
 			{
 				checkOffset( offset );
 				context->HSSetConstantBuffers( bindingIndex, 1u, &buffer );
+			}
+			// Storage buffer/image
+			static void gather( UINT bindingIndex, ID3D11UnorderedAccessView * view, std::map< UINT, ID3D11UnorderedAccessView * > * uavs )
+			{
+				( *uavs )[bindingIndex] = view;
 			}
 		};
 
 		template<>
 		struct Binder< VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT, false >
 		{
+			// Combined Image + Sampler
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11ShaderResourceView * image, ID3D11SamplerState * sampler )
 			{
 				bind( context, bindingIndex, image );
 				bind( context, bindingIndex, sampler );
 			}
-
+			// Sampler
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11SamplerState * sampler )
 			{
 				context->DSSetSamplers( bindingIndex, 1u, &sampler );
 			}
-
+			// Sampled Image
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11ShaderResourceView * image )
 			{
 				context->DSSetShaderResources( bindingIndex, 1u, &image );
 			}
-
+			// Uniform Buffer
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT range )
 			{
 				checkOffset( offset );
 				context->DSSetConstantBuffers( bindingIndex, 1u, &buffer );
+			}
+			// Storage buffer/image
+			static void gather( UINT bindingIndex, ID3D11UnorderedAccessView * view, std::map< UINT, ID3D11UnorderedAccessView * > * uavs )
+			{
+				( *uavs )[bindingIndex] = view;
 			}
 		};
 
 		template<>
 		struct Binder< VK_SHADER_STAGE_FRAGMENT_BIT, false >
 		{
+			// Combined Image + Sampler
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11ShaderResourceView * image, ID3D11SamplerState * sampler )
 			{
 				bind( context, bindingIndex, image );
 				bind( context, bindingIndex, sampler );
 			}
-
+			// Sampler
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11SamplerState * sampler )
 			{
 				context->PSSetSamplers( bindingIndex, 1u, &sampler );
 			}
-
+			// Sampled Image
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11ShaderResourceView * image )
 			{
 				context->PSSetShaderResources( bindingIndex, 1u, &image );
 			}
-
+			// Uniform Buffer
 			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT range )
 			{
 				checkOffset( offset );
 				context->PSSetConstantBuffers( bindingIndex, 1u, &buffer );
+			}
+			// Storage buffer/image
+			static void gather( UINT bindingIndex, ID3D11UnorderedAccessView * view, std::map< UINT, ID3D11UnorderedAccessView * > * uavs )
+			{
+				( *uavs )[bindingIndex] = view;
 			}
 		};
 
@@ -520,31 +590,6 @@ namespace ashes::d3d11
 		}
 
 		template< bool Supports11_1 >
-		void bindStorageImage( ID3D11DeviceContext1 * context
-			, LayoutBindingWrites const & writeBinding
-			, ShaderBindingMap const & bindings
-			, uint32_t setIndex )
-		{
-			for ( auto & write : writeBinding.writes )
-			{
-				auto flags = writeBinding.binding.stageFlags;
-				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
-				assert( it != bindings.end() );
-				auto dstBinding = it->second;
-
-				for ( auto i = 0u; i < write.descriptorCount; ++i )
-				{
-					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
-					auto view = getImageUAV( write, i );
-					tryBindOne< VK_SHADER_STAGE_COMPUTE_BIT, Supports11_1 >( context
-						, bindingIndex
-						, flags
-						, view );
-				}
-			}
-		}
-
-		template< bool Supports11_1 >
 		void bindUniformBuffer( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
@@ -574,7 +619,87 @@ namespace ashes::d3d11
 		}
 
 		template< bool Supports11_1 >
-		void bindTexelBuffer( ID3D11DeviceContext1 * context
+		void bindUniformTexelBuffer( ID3D11DeviceContext1 * context
+			, LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex )
+		{
+			for ( auto & write : writeBinding.writes )
+			{
+				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
+
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
+				{
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					auto view = getBufferView( write, i );
+					tryBind< Supports11_1 >( context
+						, bindingIndex
+						, flags
+						, view );
+				}
+			}
+		}
+
+		template< bool Supports11_1 >
+		void bindDynamicUniformBuffer( ID3D11DeviceContext1 * context
+			, LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
+			, uint32_t offset )
+		{
+			for ( auto & write : writeBinding.writes )
+			{
+				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
+
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
+				{
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					auto buffer = getBuffer( write, i );
+					auto range = std::min( write.pBufferInfo[i].range
+						, get( write.pBufferInfo[i].buffer )->getSize() );
+					tryBind< Supports11_1 >( context
+						, bindingIndex
+						, flags
+						, buffer
+						, UINT( ( offset + write.pBufferInfo[i].offset ) / 16 )
+						, UINT( ashes::getAlignedSize( range, 256ull ) / 16ull ) );
+				}
+			}
+		}
+
+		template< bool Supports11_1 >
+		void bindStorageImage( ID3D11DeviceContext1 * context
+			, LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex )
+		{
+			for ( auto & write : writeBinding.writes )
+			{
+				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
+
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
+				{
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					auto view = getImageUAV( write, i );
+					tryBindOne< VK_SHADER_STAGE_COMPUTE_BIT, Supports11_1 >( context
+						, bindingIndex
+						, flags
+						, view );
+				}
+			}
+		}
+
+		template< bool Supports11_1 >
+		void bindStorageTexelBuffer( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex )
@@ -624,36 +749,6 @@ namespace ashes::d3d11
 		}
 
 		template< bool Supports11_1 >
-		void bindDynamicUniformBuffer( ID3D11DeviceContext1 * context
-			, LayoutBindingWrites const & writeBinding
-			, ShaderBindingMap const & bindings
-			, uint32_t setIndex
-			, uint32_t offset )
-		{
-			for ( auto & write : writeBinding.writes )
-			{
-				auto flags = writeBinding.binding.stageFlags;
-				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
-				assert( it != bindings.end() );
-				auto dstBinding = it->second;
-
-				for ( auto i = 0u; i < write.descriptorCount; ++i )
-				{
-					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
-					auto buffer = getBuffer( write, i );
-					auto range = std::min( write.pBufferInfo[i].range
-						, get( write.pBufferInfo[i].buffer )->getSize() );
-					tryBind< Supports11_1 >( context
-						, bindingIndex
-						, flags
-						, buffer
-						, UINT( ( offset + write.pBufferInfo[i].offset ) / 16 )
-						, UINT( ashes::getAlignedSize( range, 256ull ) / 16ull ) );
-				}
-			}
-		}
-
-		template< bool Supports11_1 >
 		void bindDynamicStorageBuffer( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
@@ -698,6 +793,144 @@ namespace ashes::d3d11
 
 				case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
 					bindDynamicStorageBuffer< Supports11_1 >( context, writeBinding, bindings.sbo, setIndex, offsets[i] );
+					break;
+
+				default:
+					assert( false && "Unsupported dynamic descriptor type" );
+					throw std::runtime_error{ "Unsupported dynamic descriptor type" };
+					break;
+				}
+			}
+		}
+
+		template< VkShaderStageFlagBits Flag, typename ... Params >
+		void tryGatherOne( UINT bindingIndex
+			, VkShaderStageFlags const & flags
+			, Params ... params )
+		{
+			if ( checkFlag( flags, Flag ) )
+			{
+				Binder< Flag, true >::gather( bindingIndex
+					, params... );
+			}
+		}
+
+		template< typename ... Params >
+		void tryGather( UINT bindingIndex
+			, VkShaderStageFlags const & flags
+			, Params ... params )
+		{
+			tryGatherOne< VK_SHADER_STAGE_COMPUTE_BIT >( bindingIndex
+				, flags
+				, params... );
+			tryGatherOne< VK_SHADER_STAGE_VERTEX_BIT >( bindingIndex
+				, flags
+				, params... );
+			tryGatherOne< VK_SHADER_STAGE_GEOMETRY_BIT >( bindingIndex
+				, flags
+				, params... );
+			tryGatherOne< VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT >( bindingIndex
+				, flags
+				, params... );
+			tryGatherOne< VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT >( bindingIndex
+				, flags
+				, params... );
+			tryGatherOne< VK_SHADER_STAGE_FRAGMENT_BIT >( bindingIndex
+				, flags
+				, params... );
+		}
+
+		inline void gatherStorageImage( LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
+			, std::map< UINT, ID3D11UnorderedAccessView * > & uavs )
+		{
+			for ( auto & write : writeBinding.writes )
+			{
+				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
+
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
+				{
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					auto view = getImageUAV( write, i );
+					tryGather( bindingIndex
+						, flags
+						, view
+						, &uavs );
+				}
+			}
+		}
+
+		inline void gatherStorageBuffer( LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
+			, std::map< UINT, ID3D11UnorderedAccessView * > & uavs )
+		{
+			for ( auto & write : writeBinding.writes )
+			{
+				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
+
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
+				{
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					auto view = getBufferUAV( write, i );
+					tryGather( bindingIndex
+						, flags
+						, view
+						, &uavs );
+				}
+			}
+		}
+
+		inline void gatherDynamicStorageBuffer( LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
+			, std::map< UINT, ID3D11UnorderedAccessView * > & uavs
+			, uint32_t offset )
+		{
+			for ( auto & write : writeBinding.writes )
+			{
+				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
+
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
+				{
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					auto view = getBufferUAV( write, i );
+					tryGather( bindingIndex
+						, flags
+						, view
+						, &uavs );
+				}
+			}
+		}
+
+		inline void gatherDynamicBuffers( LayoutBindingWritesArray const & writes
+			, ShaderBindings const & bindings
+			, uint32_t setIndex
+			, std::map< UINT, ID3D11UnorderedAccessView * > & uavs
+			, UInt32Array const & offsets )
+		{
+			for ( auto i = 0u; i < offsets.size(); ++i )
+			{
+				auto & writeBinding = *writes[i];
+
+				switch ( writeBinding.binding.descriptorType )
+				{
+				case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
+					gatherDynamicStorageBuffer( writeBinding
+						, bindings.sbo
+						, setIndex
+						, uavs
+						, offsets[i] );
 					break;
 
 				default:
@@ -807,30 +1040,6 @@ namespace ashes::d3d11
 		}
 
 		template< bool Supports11_1 >
-		void unbindStorageImage( ID3D11DeviceContext1 * context
-			, LayoutBindingWrites const & writeBinding
-			, ShaderBindingMap const & bindings
-			, uint32_t setIndex )
-		{
-			for ( auto & write : writeBinding.writes )
-			{
-				auto flags = writeBinding.binding.stageFlags;
-				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
-				assert( it != bindings.end() );
-				auto dstBinding = it->second;
-
-				for ( auto i = 0u; i < write.descriptorCount; ++i )
-				{
-					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
-					tryBindOne< VK_SHADER_STAGE_COMPUTE_BIT, Supports11_1 >( context
-						, bindingIndex
-						, flags
-						, ( ID3D11UnorderedAccessView * )nullptr );
-				}
-			}
-		}
-
-		template< bool Supports11_1 >
 		void unbindUniformBuffer( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
@@ -859,7 +1068,84 @@ namespace ashes::d3d11
 		}
 
 		template< bool Supports11_1 >
-		void unbindTexelBuffer( ID3D11DeviceContext1 * context
+		void unbindUniformTexelBuffer( ID3D11DeviceContext1 * context
+			, LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex )
+		{
+			for ( auto & write : writeBinding.writes )
+			{
+				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
+
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
+				{
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					tryBind< Supports11_1 >( context
+						, bindingIndex
+						, flags
+						, ( ID3D11ShaderResourceView * )nullptr );
+				}
+			}
+		}
+
+		template< bool Supports11_1 >
+		void unbindDynamicUniformBuffer( ID3D11DeviceContext1 * context
+			, LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex
+			, uint32_t offset )
+		{
+			for ( auto & write : writeBinding.writes )
+			{
+				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
+
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
+				{
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					auto range = std::min( write.pBufferInfo[i].range
+						, get( write.pBufferInfo[i].buffer )->getSize() );
+					tryBind< Supports11_1 >( context
+						, bindingIndex
+						, flags
+						, ( ID3D11Buffer * )nullptr
+						, UINT( ( offset + write.pBufferInfo[i].offset ) / 16 )
+						, UINT( ashes::getAlignedSize( range, 256ull ) / 16ull ) );
+				}
+			}
+		}
+
+		template< bool Supports11_1 >
+		void unbindStorageImage( ID3D11DeviceContext1 * context
+			, LayoutBindingWrites const & writeBinding
+			, ShaderBindingMap const & bindings
+			, uint32_t setIndex )
+		{
+			for ( auto & write : writeBinding.writes )
+			{
+				auto flags = writeBinding.binding.stageFlags;
+				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
+				assert( it != bindings.end() );
+				auto dstBinding = it->second;
+
+				for ( auto i = 0u; i < write.descriptorCount; ++i )
+				{
+					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
+					tryBindOne< VK_SHADER_STAGE_COMPUTE_BIT, Supports11_1 >( context
+						, bindingIndex
+						, flags
+						, ( ID3D11UnorderedAccessView * )nullptr );
+				}
+			}
+		}
+
+		template< bool Supports11_1 >
+		void unbindStorageTexelBuffer( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex )
@@ -902,35 +1188,6 @@ namespace ashes::d3d11
 						, bindingIndex
 						, flags
 						, ( ID3D11UnorderedAccessView * )nullptr );
-				}
-			}
-		}
-
-		template< bool Supports11_1 >
-		void unbindDynamicUniformBuffer( ID3D11DeviceContext1 * context
-			, LayoutBindingWrites const & writeBinding
-			, ShaderBindingMap const & bindings
-			, uint32_t setIndex
-			, uint32_t offset )
-		{
-			for ( auto & write : writeBinding.writes )
-			{
-				auto flags = writeBinding.binding.stageFlags;
-				auto it = bindings.find( makeShaderBindingKey( setIndex, write.dstBinding ) );
-				assert( it != bindings.end() );
-				auto dstBinding = it->second;
-
-				for ( auto i = 0u; i < write.descriptorCount; ++i )
-				{
-					uint32_t bindingIndex = dstBinding + write.dstArrayElement + i;
-					auto range = std::min( write.pBufferInfo[i].range
-						, get( write.pBufferInfo[i].buffer )->getSize() );
-					tryBind< Supports11_1 >( context
-						, bindingIndex
-						, flags
-						, ( ID3D11Buffer * )nullptr
-						, UINT( ( offset + write.pBufferInfo[i].offset ) / 16 )
-						, UINT( ashes::getAlignedSize( range, 256ull ) / 16ull ) );
 				}
 			}
 		}
@@ -1029,19 +1286,24 @@ namespace ashes::d3d11
 				bindUniformBuffer< Supports11_1 >( context.context1, *write, bindings.ubo, setIndex );
 			}
 
-			for ( auto & write : d3dDescriptorSet->getTexelBuffers() )
+			for ( auto & write : d3dDescriptorSet->getUniformTexelBuffers() )
 			{
-				bindTexelBuffer< Supports11_1 >( context.context1, *write, bindings.tbo, setIndex );
+				bindUniformTexelBuffer< Supports11_1 >( context.context1, *write, bindings.tbo, setIndex );
+			}
+
+			for ( auto & write : d3dDescriptorSet->getStorageTexelBuffers() )
+			{
+				unbindStorageTexelBuffer< Supports11_1 >( context.context1, *write, bindings.uav, setIndex );
 			}
 
 			for ( auto & write : d3dDescriptorSet->getStorageBuffers() )
 			{
-				bindStorageBuffer< Supports11_1 >( context.context1, *write, bindings.sbo, setIndex );
+				bindStorageBuffer< Supports11_1 >( context.context1, *write, bindings.uav, setIndex );
 			}
 
 			for ( auto & write : d3dDescriptorSet->getStorageTextures() )
 			{
-				bindStorageImage< Supports11_1 >( context.context1, *write, bindings.img, setIndex );
+				bindStorageImage< Supports11_1 >( context.context1, *write, bindings.uav, setIndex );
 			}
 
 			bindDynamicBuffers< Supports11_1 >( context.context1, d3dDescriptorSet->getDynamicBuffers(), bindings, setIndex, dynamicOffsets );
@@ -1087,22 +1349,50 @@ namespace ashes::d3d11
 				unbindUniformBuffer< Supports11_1 >( context.context1, *write, bindings.ubo, setIndex );
 			}
 
-			for ( auto & write : d3dDescriptorSet->getTexelBuffers() )
+			for ( auto & write : d3dDescriptorSet->getUniformTexelBuffers() )
 			{
-				unbindTexelBuffer< Supports11_1 >( context.context1, *write, bindings.tbo, setIndex );
+				unbindUniformTexelBuffer< Supports11_1 >( context.context1, *write, bindings.tbo, setIndex );
+			}
+
+			for ( auto & write : d3dDescriptorSet->getStorageTexelBuffers() )
+			{
+				unbindStorageTexelBuffer< Supports11_1 >( context.context1, *write, bindings.uav, setIndex );
 			}
 
 			for ( auto & write : d3dDescriptorSet->getStorageBuffers() )
 			{
-				unbindStorageBuffer< Supports11_1 >( context.context1, *write, bindings.sbo, setIndex );
+				unbindStorageBuffer< Supports11_1 >( context.context1, *write, bindings.uav, setIndex );
 			}
 
 			for ( auto & write : d3dDescriptorSet->getStorageTextures() )
 			{
-				unbindStorageImage< Supports11_1 >( context.context1, *write, bindings.img, setIndex );
+				unbindStorageImage< Supports11_1 >( context.context1, *write, bindings.uav, setIndex );
 			}
 
 			unbindDynamicBuffers< Supports11_1 >( context.context1, d3dDescriptorSet->getDynamicBuffers(), bindings, setIndex, dynamicOffsets );
+		}
+
+		std::map< UINT, ID3D11UnorderedAccessView * > gatherUavs( VkDescriptorSet descriptorSet
+			, VkPipelineLayout pipelineLayout
+			, UInt32Array const & dynamicOffsets )
+		{
+			auto d3dDescriptorSet = get( descriptorSet );
+			auto & bindings = get( pipelineLayout )->getShaderBindings();
+			auto setIndex = get( pipelineLayout )->getDescriptorSetIndex( descriptorSet );
+			std::map< UINT, ID3D11UnorderedAccessView * > result;
+
+			for ( auto & write : d3dDescriptorSet->getStorageBuffers() )
+			{
+				gatherStorageBuffer( *write, bindings.uav, setIndex, result );
+			}
+
+			for ( auto & write : d3dDescriptorSet->getStorageTextures() )
+			{
+				gatherStorageImage( *write, bindings.uav, setIndex, result );
+			}
+
+			gatherDynamicBuffers( d3dDescriptorSet->getDynamicBuffers(), bindings, setIndex, result, dynamicOffsets );
+			return result;
 		}
 	}
 
@@ -1116,6 +1406,7 @@ namespace ashes::d3d11
 		, m_layout{ layout }
 		, m_bindingPoint{ bindingPoint }
 		, m_dynamicOffsets{ dynamicOffsets.begin(), dynamicOffsets.end() }
+		, m_uavs{ gatherUavs( m_descriptorSet, m_layout, m_dynamicOffsets ) }
 	{
 		assert( get( m_descriptorSet )->getDynamicBuffers().size() == m_dynamicOffsets.size()
 			&& "Dynamic descriptors and dynamic offsets sizes must match." );
@@ -1130,6 +1421,37 @@ namespace ashes::d3d11
 		else
 		{
 			bindAll< false >( context, m_layout, m_descriptorSet, m_dynamicOffsets );
+		}
+
+		auto newUavs = context.uavs;
+
+		for ( auto it : m_uavs )
+		{
+			newUavs[it.first] = it.second;
+		}
+
+		bool dirtyUavs = context.uavs != newUavs;
+
+		if ( dirtyUavs )
+		{
+			context.uavs = std::move( newUavs );
+			context.rawUavs.clear();
+
+			for ( auto & uav : context.uavs )
+			{
+				context.rawUavs.push_back( uav.second );
+			}
+
+			if ( !context.rawUavs.empty() )
+			{
+				context.context1->OMSetRenderTargetsAndUnorderedAccessViews( D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL
+					, nullptr
+					, nullptr
+					, context.uavStart
+					, UINT( context.rawUavs.size() )
+					, context.rawUavs.data()
+					, nullptr );
+			}
 		}
 	}
 
@@ -1147,12 +1469,6 @@ namespace ashes::d3d11
 
 	void BindDescriptorSetCommand::fillContext( Context & context )const
 	{
-		context.uavs.insert( context.uavs.end()
-			, get( m_descriptorSet )->getStorageBuffers().begin()
-			, get( m_descriptorSet )->getStorageBuffers().end() );
-		context.uavs.insert( context.uavs.end()
-			, get( m_descriptorSet )->getStorageTextures().begin()
-			, get( m_descriptorSet )->getStorageTextures().end() );
 	}
 
 	CommandPtr BindDescriptorSetCommand::clone()const

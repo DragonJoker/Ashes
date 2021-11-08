@@ -82,8 +82,7 @@ namespace ashes::d3d11
 
 	VkResult Queue::waitIdle()const
 	{
-		ID3D11DeviceContext * context;
-		get( m_device )->getDevice()->GetImmediateContext( &context );
+		auto context{ get( m_device )->getImmediateContext() };
 		context->End( m_waitIdleQuery );
 		context->Flush();
 		BOOL data{ FALSE };
@@ -97,7 +96,6 @@ namespace ashes::d3d11
 			std::this_thread::sleep_for( std::chrono::microseconds{ 1ull } );
 		}
 
-		safeRelease( context );
 		return data
 			? VK_SUCCESS
 			: VK_TIMEOUT;

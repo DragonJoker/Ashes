@@ -170,8 +170,7 @@ namespace ashes::d3d11
 
 	VkResult SwapchainKHR::present( uint32_t imageIndex )const
 	{
-		ID3D11DeviceContext * context;
-		get( m_device )->getDevice()->GetImmediateContext( &context );
+		auto context{ get( m_device )->getImmediateContext() };
 		D3D11_BOX srcBox{};
 		srcBox.right = m_windowExtent.width;
 		srcBox.bottom = m_windowExtent.height;

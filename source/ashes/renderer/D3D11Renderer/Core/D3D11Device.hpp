@@ -33,6 +33,8 @@ namespace ashes::d3d11
 			, VkDeviceCreateInfo createInfos );
 		~Device();
 
+		DeviceContextLock getImmediateContext()const;
+
 		bool hasExtension( std::string_view extension )const;
 		VkPhysicalDeviceLimits const & getLimits()const;
 		VkImage getStagingImage( VkImage image
@@ -90,44 +92,44 @@ namespace ashes::d3d11
 		*	Getters.
 		*/
 		/**@{*/
-		inline VkInstance getInstance()const
+		VkInstance getInstance()const
 		{
 			return m_instance;
 		}
 
-		inline D3D_FEATURE_LEVEL getFeatureLevel()const
+		D3D_FEATURE_LEVEL getFeatureLevel()const
 		{
 			return m_featureLevel;
 		}
 
-		inline ID3D11Device * getDevice()const
+		ID3D11Device * getDevice()const
 		{
 			return m_d3dDevice;
 		}
 
-		inline VkBuffer getEmptyIndexedVaoIdx()const
+		VkBuffer getEmptyIndexedVaoIdx()const
 		{
 			return m_dummyIndexed.buffer;
 		}
 
-		inline VkPhysicalDevice getPhysicalDevice()const
+		VkPhysicalDevice getPhysicalDevice()const
 		{
 			return m_physicalDevice;
 		}
 
-		inline VkSampler getSampler()const
+		VkSampler getSampler()const
 		{
 			return m_sampler;
 		}
 
-		inline VkAllocationCallbacks const * getAllocationCallbacks()const
+		VkAllocationCallbacks const * getAllocationCallbacks()const
 		{
 			return m_callbacks;
 		}
 
 #if !defined( NDEBUG )
 
-		inline ID3D11Debug * getDebug()
+		ID3D11Debug * getDebug()
 		{
 			return m_debug;
 		}
@@ -139,6 +141,10 @@ namespace ashes::d3d11
 		void doCreateD3D11Device();
 		void doCreateDummyIndexBuffer();
 		void doCreateQueues();
+
+		friend class DeviceContextLock;
+		ID3D11DeviceContext * lockImmediateContext()const;
+		void unlockImmediateContext()const;
 
 	private:
 		struct QueueCreates
@@ -154,7 +160,6 @@ namespace ashes::d3d11
 		VkAllocationCallbacks const * m_callbacks;
 		VkDeviceCreateInfo m_createInfos;
 		ID3D11Device * m_d3dDevice;
-		ID3D11DeviceContext * m_deviceContext;
 		ID3D11Query * m_waitIdleQuery;
 		D3D_FEATURE_LEVEL m_featureLevel;
 		QueueCreateCountMap m_queues;
@@ -170,5 +175,7 @@ namespace ashes::d3d11
 		Buffer m_dummyIndexed;
 		VkSampler m_sampler;
 		std::unordered_map< size_t, std::pair< VkImage, VkDeviceMemory > > m_stagingTextures;
+		mutable std::mutex m_mtxDeviceContext;
+		ID3D11DeviceContext * m_deviceContext;
 	};
 }

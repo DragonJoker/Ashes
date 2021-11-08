@@ -737,8 +737,6 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		, m_dstTexture{ dstImage }
 		, m_sampler{ doCreateSampler( device, filter, get( m_srcTexture )->getMipmapLevels() ) }
 	{
-		assert( get( m_srcTexture )->getLayerCount() == get( m_dstTexture )->getLayerCount() );
-
 		uint32_t count = 0u;
 		uint32_t srcMinLevel = std::numeric_limits< uint32_t >::max();
 		uint32_t srcMaxLevel = std::numeric_limits< uint32_t >::lowest();
@@ -747,6 +745,8 @@ void main( uint3 threadID : SV_DispatchThreadID )
 
 		for ( auto & region : regions )
 		{
+			assert( region.srcSubresource.layerCount == region.dstSubresource.layerCount );
+
 			if ( region.dstOffsets[1] == region.srcOffsets[1]
 				&& areBlitCompatible( get( srcImage )->getFormat(), get( dstImage )->getFormat() ) )
 			{

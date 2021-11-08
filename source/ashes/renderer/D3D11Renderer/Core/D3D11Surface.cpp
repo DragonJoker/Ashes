@@ -282,46 +282,56 @@ namespace ashes::d3d11
 		if ( m_currentPhysicalDevice != physicalDevice )
 		{
 			m_currentPhysicalDevice = physicalDevice;
-			m_displayModes = getDisplayModesList( m_instance, get( physicalDevice )->getOutput() );
-			m_surfaceFormats = getSurfaceFormats( m_displayModes );
+			auto d3dOutput = get( physicalDevice )->getOutput();
 
-			if ( isWin32() )
+			if ( d3dOutput )
 			{
-				auto hWnd = m_win32CreateInfo.hwnd;
-				RECT rect{};
-				::GetWindowRect( hWnd, &rect );
-				updateSurfaceCapabilities( m_displayModes
-					, rect
-					, m_surfaceCapabilities
-					, m_descs
-					, m_matchingDescs );
-			}
-			else if ( isDisplay() )
-			{
-				RECT rect{};
-				rect.right = LONG( m_displayCreateInfo.imageExtent.width );
-				rect.bottom = LONG( m_displayCreateInfo.imageExtent.height );
-				updateSurfaceCapabilities( m_displayModes
-					, rect
-					, m_surfaceCapabilities
-					, m_descs
-					, m_matchingDescs );
-			}
+				m_displayModes = getDisplayModesList( m_instance, d3dOutput );
+				m_surfaceFormats = getSurfaceFormats( m_displayModes );
 
-			m_surfaceCapabilities.supportedUsageFlags = VK_IMAGE_TYPE_MAX_ENUM;
+				if ( isWin32() )
+				{
+					auto hWnd = m_win32CreateInfo.hwnd;
+					RECT rect{};
+					::GetWindowRect( hWnd, &rect );
+					updateSurfaceCapabilities( m_displayModes
+						, rect
+						, m_surfaceCapabilities
+						, m_descs
+						, m_matchingDescs );
+				}
+				else if ( isDisplay() )
+				{
+					RECT rect{};
+					rect.right = LONG( m_displayCreateInfo.imageExtent.width );
+					rect.bottom = LONG( m_displayCreateInfo.imageExtent.height );
+					updateSurfaceCapabilities( m_displayModes
+						, rect
+						, m_surfaceCapabilities
+						, m_descs
+						, m_matchingDescs );
+				}
 
-			for ( auto surfaceFormat : m_surfaceFormats )
-			{
-				auto props = get( m_currentPhysicalDevice )->getFormatProperties( surfaceFormat.format );
-				mergeFlags( m_surfaceCapabilities.supportedUsageFlags
-					, getUsageFlags( props.linearTilingFeatures ) );
+				m_surfaceCapabilities.supportedUsageFlags = VK_IMAGE_TYPE_MAX_ENUM;
+
+				for ( auto surfaceFormat : m_surfaceFormats )
+				{
+					auto props = get( m_currentPhysicalDevice )->getFormatProperties( surfaceFormat.format );
+					mergeFlags( m_surfaceCapabilities.supportedUsageFlags
+						, getUsageFlags( props.linearTilingFeatures ) );
+				}
 			}
 		}
 	}
 
-	bool SurfaceKHR::getSupport( uint32_t queueFamilyIndex )const
+	VkBool32 SurfaceKHR::getSupport( VkPhysicalDevice physicalDevice
+		, uint32_t queueFamilyIndex )const
 	{
-		return true;
+		m_currentPhysicalDevice = nullptr;
+		doUpdate( physicalDevice );
+		return ( ( m_currentPhysicalDevice && get( m_currentPhysicalDevice )->getOutput() )
+			? VK_TRUE
+			: VK_FALSE );
 	}
 
 	HWND SurfaceKHR::getHwnd()const

@@ -23,37 +23,13 @@ namespace ashes::d3d11
 
 	void EndSubpassCommand::apply( Context const & context )const
 	{
-		if ( context.uavs.empty() )
-		{
-			context.context->OMSetRenderTargets( UINT( m_attaches.size() )
-				, m_attaches.data()
-				, nullptr );
-		}
-		else
-		{
-			std::vector< ID3D11UnorderedAccessView * > uavs;
-
-			for ( auto & writes : context.uavs )
-			{
-				for ( auto & write : writes->writes )
-				{
-					uavs.insert( uavs.end()
-						, makeArrayView( write.pBufferInfo, write.descriptorCount ).size()
-						, nullptr );
-					uavs.insert( uavs.end()
-						, makeArrayView( write.pTexelBufferView, write.descriptorCount ).size()
-						, nullptr );
-				}
-			}
-
-			context.context->OMSetRenderTargetsAndUnorderedAccessViews( UINT( m_attaches.size() )
-				, m_attaches.data()
-				, nullptr
-				, UINT( m_attaches.size() )
-				, UINT( uavs.size() )
-				, uavs.data()
-				, nullptr );
-		}
+		context.context->OMSetRenderTargetsAndUnorderedAccessViews( UINT( m_attaches.size() )
+			, m_attaches.data()
+			, nullptr
+			, UINT( m_attaches.size() )
+			, D3D11_KEEP_UNORDERED_ACCESS_VIEWS
+			, nullptr
+			, nullptr );
 
 		if ( m_subpass.pResolveAttachments )
 		{

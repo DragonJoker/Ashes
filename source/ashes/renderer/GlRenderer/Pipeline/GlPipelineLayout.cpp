@@ -26,7 +26,7 @@ namespace ashes::gl
 		{
 			for ( auto & binding : *get( descriptorLayout ) )
 			{
-				addBinding( set, binding, m_shaderBindings, indices );
+				addBinding( set, binding, m_shaderBindings, indices, false );
 			}
 
 			++set;

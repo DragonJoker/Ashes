@@ -76,27 +76,27 @@ namespace ashes::d3d11
 	{
 		VkImageUsageFlags result{};
 
-		if ( checkFlag( flags, VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT
-			| VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT
-			| VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT
-			| VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER_BIT
-			| VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT
-			| VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE_BIT
-			| VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG
-			| VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT_EXT ) )
+		if ( checkFlag( flags, VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT )
+			|| checkFlag( flags, VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT )
+			|| checkFlag( flags, VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT )
+			|| checkFlag( flags, VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER_BIT )
+			|| checkFlag( flags, VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT )
+			|| checkFlag( flags, VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE_BIT )
+			|| checkFlag( flags, VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG )
+			|| checkFlag( flags, VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT_EXT ) )
 		{
 			result |= VK_IMAGE_USAGE_SAMPLED_BIT;
 			result |= VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
 		}
 
-		if ( checkFlag( flags, VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT
-			| VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT ) )
+		if ( checkFlag( flags, VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT )
+			|| checkFlag( flags, VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT ) )
 		{
 			result |= VK_IMAGE_USAGE_STORAGE_BIT;
 		}
 
-		if ( checkFlag( flags, VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT
-			| VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT ) )
+		if ( checkFlag( flags, VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT )
+			|| checkFlag( flags, VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT ) )
 		{
 			result |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 		}
@@ -194,7 +194,7 @@ namespace ashes::d3d11
 
 	VkBool32 PhysicalDevice::getPresentationSupport( uint32_t queueFamilyIndex )const
 	{
-		return VK_TRUE;
+		return getOutput() != nullptr;
 	}
 
 	VkLayerPropertiesArray PhysicalDevice::enumerateLayerProperties()const
@@ -838,7 +838,7 @@ namespace ashes::d3d11
 		m_queueProperties.push_back(
 			{
 				0xFFFFFFFF,
-				1u,
+				8u,
 				1u,
 				{
 					1u,
@@ -933,13 +933,10 @@ namespace ashes::d3d11
 						props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
 					}
 
-					if ( checkFlag( support, D3D11_FORMAT_SUPPORT_CPU_LOCKABLE ) )
-					{
-						props.optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;
-						props.optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
-						props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
-						props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
-					}
+					props.optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;
+					props.optimalTilingFeatures |= VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
+					props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_SRC_BIT;
+					props.optimalTilingFeatures |= VK_FORMAT_FEATURE_BLIT_DST_BIT;
 				}
 			};
 
@@ -1012,41 +1009,40 @@ namespace ashes::d3d11
 
 	void PhysicalDevice::doInitialiseDisplayProperties()
 	{
-		DXGI_OUTPUT_DESC desc{};
-		getOutput()->GetDesc( &desc );
-		std::vector< DXGI_MODE_DESC > displayModes = getDisplayModesList( m_instance, getOutput() );
-		std::map< ExtentFormat, std::vector< DXGI_MODE_DESC >, ExtentFormatComp > grouped;
+		auto output = getOutput();
 
-		for ( auto & displayMode : displayModes )
+		if ( output )
 		{
-			ExtentFormat key
+			DXGI_OUTPUT_DESC desc{};
+			output->GetDesc( &desc );
+			std::vector< DXGI_MODE_DESC > displayModes = getDisplayModesList( m_instance, output );
+			std::map< ExtentFormat, std::vector< DXGI_MODE_DESC >, ExtentFormatComp > grouped;
+
+			for ( auto & displayMode : displayModes )
 			{
-				VkExtent2D{ displayMode.Width, displayMode.Height },
-				getVkFormat( displayMode.Format ),
-			};
-			auto it = grouped.insert( { key, {} } ).first;
-			it->second.push_back( displayMode );
-		}
+				ExtentFormat key{ VkExtent2D{ displayMode.Width, displayMode.Height }
+					, getVkFormat( displayMode.Format ) };
+				auto it = grouped.insert( { key, {} } ).first;
+				it->second.push_back( displayMode );
+			}
 
-		for ( auto & pair : grouped )
-		{
-			VkDisplayKHR display{};
-			allocate( display
-				, nullptr
-				, get( this )
-				, pair.first.extent
-				, pair.first.format
-				, pair.second );
-			m_displays.push_back(
-				{
-					display,
-					"coin",
-					pair.first.extent,
-					pair.first.extent,
-					VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR,
-					VK_FALSE,
-					VK_TRUE,
-				} );
+			for ( auto & pair : grouped )
+			{
+				VkDisplayKHR display{};
+				allocate( display
+					, nullptr
+					, get( this )
+					, pair.first.extent
+					, pair.first.format
+					, pair.second );
+				m_displays.push_back( { display
+					, "coin"
+					, pair.first.extent
+					, pair.first.extent
+					, VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR
+					, VK_FALSE
+					, VK_TRUE } );
+			}
 		}
 	}
 

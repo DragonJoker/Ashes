@@ -74,22 +74,29 @@ namespace ashes::d3d11
 
 	void BeginSubpassCommand::apply( Context const & context )const
 	{
-		if ( context.uavs.empty() )
+		auto uavStart = UINT( m_attaches.size() );
+		context.context->OMSetRenderTargetsAndUnorderedAccessViews( UINT( m_attaches.size() )
+			, m_attaches.data()
+			, m_depthAttach
+			, uavStart
+			, D3D11_KEEP_UNORDERED_ACCESS_VIEWS
+			, nullptr
+			, nullptr );
+
+		if ( context.uavStart != uavStart )
 		{
-			context.context->OMSetRenderTargets( UINT( m_attaches.size() )
-				, m_attaches.data()
-				, m_depthAttach );
-		}
-		else
-		{
-			auto uavs = doListUavs( context.uavs );
-			context.context->OMSetRenderTargetsAndUnorderedAccessViews( UINT( m_attaches.size() )
-				, m_attaches.data()
-				, m_depthAttach
-				, UINT( m_attaches.size() )
-				, UINT( uavs.size() )
-				, uavs.data()
-				, nullptr );
+			context.uavStart = uavStart;
+
+			if ( !context.rawUavs.empty() )
+			{
+				context.context->OMSetRenderTargetsAndUnorderedAccessViews( D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL
+					, nullptr
+					, nullptr
+					, context.uavStart
+					, UINT( context.rawUavs.size() )
+					, context.rawUavs.data()
+					, nullptr );
+			}
 		}
 	}
 

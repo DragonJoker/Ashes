@@ -574,7 +574,7 @@ namespace ashes::d3d11
 		D3D11_MAPPED_SUBRESOURCE srcMapped{};
 		auto & src = get( process.src )->getObjectMemory();
 
-		if ( VK_SUCCESS == src.lock( context.context
+		if ( VK_SUCCESS == src.lock( *context.context
 			, 0u
 			, srcMapped ) )
 		{
@@ -595,7 +595,7 @@ namespace ashes::d3d11
 				}
 			}
 
-			src.unlock( context.context, 0u );
+			src.unlock( *context.context, 0u );
 		}
 	}
 
@@ -628,7 +628,7 @@ namespace ashes::d3d11
 
 		D3D11_MAPPED_SUBRESOURCE dstMapped{};
 
-		if ( VK_SUCCESS == dst.lock( context.context
+		if ( VK_SUCCESS == dst.lock( *context.context
 			, mapCopy.dstSubresource
 			, dstMapped )
 			&& dstMapped.pData )
@@ -639,7 +639,7 @@ namespace ashes::d3d11
 				, mapCopy.srcBox
 				, dstMapped
 				, mapCopy.dstLayout );
-			dst.unlock( context.context, mapCopy.dstSubresource );
+			dst.unlock( *context.context, mapCopy.dstSubresource );
 		}
 	}
 
