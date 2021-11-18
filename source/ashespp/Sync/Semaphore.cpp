@@ -76,7 +76,10 @@ namespace ashes
 
 	void Semaphore::signal( Fence const * fence )const
 	{
-		signal();
+		if ( fence )
+		{
+			signal();
+		}
 	}
 
 	void Semaphore::signal()const

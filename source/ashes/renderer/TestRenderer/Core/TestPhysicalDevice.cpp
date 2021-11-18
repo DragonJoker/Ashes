@@ -98,7 +98,7 @@ namespace ashes::test
 		, VkImageCreateFlags flags
 		, VkImageFormatProperties & imageProperties )const
 	{
-		return VK_ERROR_FORMAT_NOT_SUPPORTED;
+		return VK_SUCCESS;
 	}
 
 	VkResult PhysicalDevice::getSparseImageFormatProperties( VkFormat format

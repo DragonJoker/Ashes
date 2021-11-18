@@ -9,6 +9,7 @@ See LICENSE file in root folder.
 #include "ashespp/Core/SwapChain.hpp"
 #include "ashespp/Sync/Fence.hpp"
 #include "ashespp/Sync/Semaphore.hpp"
+#include "ashespp/Sync/SyncException.hpp"
 
 namespace ashes
 {

@@ -221,7 +221,7 @@ namespace ashes::test
 		uint32_t* pPropertyCount,
 		VkExtensionProperties* pProperties )
 	{
-		auto props = get( physicalDevice )->enumerateExtensionProperties( pLayerName );
+		auto props = get( physicalDevice )->enumerateExtensionProperties( pLayerName ? std::string{ pLayerName } : std::string{} );
 		*pPropertyCount = uint32_t( props.size() );
 
 		if ( pProperties )
