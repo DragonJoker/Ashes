@@ -45,6 +45,17 @@ namespace ashes
 		{
 		}
 		
+		DeviceQueueCreateInfo( VkDeviceQueueCreateInfo rhs )noexcept
+			: queuePriorities{ makeArray( rhs.pQueuePriorities, rhs.queueCount ) }
+			, vk{ VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO
+				, rhs.pNext
+				, rhs.flags
+				, rhs.queueFamilyIndex
+				, uint32_t( queuePriorities.size() )
+				, queuePriorities.data() }
+		{
+		}
+		
 		DeviceQueueCreateInfo & operator=( DeviceQueueCreateInfo && rhs )noexcept
 		{
 			queuePriorities = std::move( rhs.queuePriorities );
@@ -71,6 +82,25 @@ namespace ashes
 		VkDeviceQueueCreateInfo vk;
 	};
 	using DeviceQueueCreateInfoArray = std::vector< DeviceQueueCreateInfo >;
+
+	inline DeviceQueueCreateInfo convert( VkDeviceQueueCreateInfo const & vk )
+	{
+		return DeviceQueueCreateInfo{ vk };
+	}
+
+	template< typename Type >
+	std::vector< Type > makeArray( std::vector< VkDeviceQueueCreateInfo > const & values )
+	{
+		std::vector< Type > result;
+		result.reserve( values.size() );
+
+		for ( auto & value : values )
+		{
+			result.emplace_back( value );
+		}
+
+		return result;
+	}
 }
 
 #endif
