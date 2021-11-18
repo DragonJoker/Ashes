@@ -258,9 +258,11 @@ namespace ashes
 
 		if ( m_internal != nullptr )
 		{
-			while ( !m_views.empty() )
+			auto it = m_views.begin();
+
+			while ( it != m_views.end() )
 			{
-				doDestroyView( m_views.begin()->first );
+				it = doDestroyView( m_views.begin()->first );
 			}
 
 			if ( m_ownInternal )
@@ -604,19 +606,28 @@ namespace ashes
 			, dstQueueFamily );
 	}
 
-	void Image::doDestroyView( VkImageViewCreateInfo const & createInfo )const
+	ImageViewCache::iterator Image::doDestroyView( VkImageViewCreateInfo const & createInfo )const
 	{
 		auto it = m_views.find( createInfo );
-		assert( it != m_views.end() );
-		unregisterObject( *m_device, it->second );
-		m_device->vkDestroyImageView( *m_device
-			, it->second
-			, m_device->getAllocationCallbacks() );
-		m_views.erase( it );
+
+		if ( it != m_views.end() )
+		{
+			unregisterObject( *m_device, it->second );
+			m_device->vkDestroyImageView( *m_device
+				, it->second
+				, m_device->getAllocationCallbacks() );
+			it = m_views.erase( it );
+		}
+		else
+		{
+			++it;
+		}
+
+		return it;
 	}
 
-	void Image::doDestroyView( ImageView view )const
+	ImageViewCache::iterator Image::doDestroyView( ImageView view )const
 	{
-		doDestroyView( view.createInfo );
+		return doDestroyView( view.createInfo );
 	}
 }

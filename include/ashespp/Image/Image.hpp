@@ -409,8 +409,8 @@ namespace ashes
 		}
 
 	private:
-		void doDestroyView( VkImageViewCreateInfo const & view )const;
-		void doDestroyView( ImageView view )const;
+		ImageViewCache::iterator doDestroyView( VkImageViewCreateInfo const & view )const;
+		ImageViewCache::iterator doDestroyView( ImageView view )const;
 
 	private:
 		Device const * m_device{ nullptr };

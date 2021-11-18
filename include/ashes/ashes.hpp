@@ -242,6 +242,49 @@ namespace ashes
 		return result;
 	}
 
+	template< typename Type >
+	inline std::vector< Type > makeArray( Type const * values
+		, uint32_t count )
+	{
+		std::vector< Type > result;
+
+		for ( uint32_t i = 0u; i < count; ++i )
+		{
+			result.push_back( *values );
+			++values;
+		}
+
+		return result;
+	}
+
+	inline StringArray makeArray( char const * const * values
+		, uint32_t count )
+	{
+		StringArray result;
+
+		for ( uint32_t i = 0u; i < count; ++i )
+		{
+			result.push_back( *values );
+			++values;
+		}
+
+		return result;
+	}
+
+	template< typename LibType, typename VkType >
+	std::vector< LibType > makeArray( std::vector< VkType > const & values )
+	{
+		std::vector< LibType > result;
+		result.reserve( values.size() );
+
+		for ( auto & value : values )
+		{
+			result.push_back( convert( value ) );
+		}
+
+		return result;
+	}
+
 	inline CharPtrArray convert( StringArray const & values )
 	{
 		CharPtrArray result;
@@ -261,34 +304,6 @@ namespace ashes
 		for ( auto & value : values )
 		{
 			result.push_back( value );
-		}
-
-		return result;
-	}
-
-	template< typename VkType, typename LibType >
-	std::vector< VkType > convert( std::vector< LibType > const & values )
-	{
-		std::vector< VkType > result;
-		result.reserve( values.size() );
-
-		for ( auto & value : values )
-		{
-			result.emplace_back( convert( value ) );
-		}
-
-		return result;
-	}
-
-	template< typename VkType, typename LibType >
-	std::vector< VkType > convert( std::vector< std::reference_wrapper< LibType const > > const & values )
-	{
-		std::vector< VkType > result;
-		result.reserve( values.size() );
-
-		for ( auto & value : values )
-		{
-			result.emplace_back( convert( value.get() ) );
 		}
 
 		return result;

@@ -43,6 +43,27 @@ namespace ashes
 		{
 		}
 
+		DeviceCreateInfo( VkDeviceCreateInfo rhs )noexcept
+			: queueCreateInfos{ makeArray< DeviceQueueCreateInfo >( makeArray( rhs.pQueueCreateInfos, rhs.queueCreateInfoCount ) ) }
+			, enabledLayerNames{ makeArray( rhs.ppEnabledLayerNames, rhs.enabledLayerCount ) }
+			, enabledExtensionNames{ makeArray( rhs.ppEnabledExtensionNames, rhs.enabledExtensionCount ) }
+			, ptrEnabledLayerNames{ convert( enabledLayerNames ) }
+			, ptrEnabledExtensionNames{ convert( enabledExtensionNames ) }
+			, enabledFeatures{ rhs.pEnabledFeatures ? *rhs.pEnabledFeatures : VkPhysicalDeviceFeatures{} }
+			, vkQueueCreateInfos{ makeVkArray< VkDeviceQueueCreateInfo >( queueCreateInfos ) }
+			, vk{ rhs.sType
+				, rhs.pNext
+				, rhs.flags
+				, uint32_t( vkQueueCreateInfos.size() )
+				, vkQueueCreateInfos.data()
+				, uint32_t( ptrEnabledLayerNames.size() )
+				, ptrEnabledLayerNames.data()
+				, uint32_t( ptrEnabledExtensionNames.size() )
+				, ptrEnabledExtensionNames.data()
+				, ( rhs.pEnabledFeatures ? &enabledFeatures : nullptr ) }
+		{
+		}
+
 		DeviceCreateInfo( DeviceCreateInfo && rhs )noexcept
 			: queueCreateInfos{ std::move( rhs.queueCreateInfos ) }
 			, enabledLayerNames{ std::move( rhs.enabledLayerNames ) }
@@ -93,7 +114,12 @@ namespace ashes
 			return *this;
 		}
 
-		inline operator VkDeviceCreateInfo const &()const
+		VkDeviceCreateInfo * operator->()
+		{
+			return &vk;
+		}
+
+		operator VkDeviceCreateInfo const &()const
 		{
 			return vk;
 		}

@@ -1149,7 +1149,7 @@ namespace ashes::gl
 		m_queueProperties.push_back(
 			{
 				0xFF,
-				1u,
+				8u,
 				64u,
 				{
 					1u,
