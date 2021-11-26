@@ -10,6 +10,7 @@ See LICENSE file in root folder.
 #include <cmath>
 
 #pragma warning( disable: 4191 )
+#pragma clang diagnostic ignored "-Wimplicit-float-conversion"
 
 namespace ashes
 {
@@ -81,7 +82,7 @@ namespace ashes
 		, float zNear
 		, float zFar )const
 	{
-		auto const tanHalfFovy = float( tan( radiansFovY / float( 2 ) ) );
+		auto const tanHalfFovy = tan( radiansFovY / float( 2 ) );
 
 		std::array< float, 16 > result{ 0.0f };
 		result[0] = float( 1 ) / ( aspect * tanHalfFovy );
@@ -116,7 +117,7 @@ namespace ashes
 		, float aspect
 		, float zNear )const
 	{
-		auto const tanHalfFovy = float( tan( radiansFovY / float( 2 ) ) );
+		auto const tanHalfFovy = tan( radiansFovY / float( 2 ) );
 		float const range = tanHalfFovy * zNear;
 		float const left = -range * aspect;
 		float const right = range * aspect;

@@ -32,7 +32,7 @@ namespace ashes
 
 	bool Surface::getSupport( uint32_t queueFamilyIndex )const
 	{
-		VkBool32 result;
+		VkBool32 result{};
 		auto res = m_instance.vkGetPhysicalDeviceSurfaceSupportKHR( m_gpu
 			, queueFamilyIndex
 			, m_internal
@@ -43,7 +43,7 @@ namespace ashes
 
 	VkSurfaceCapabilitiesKHR Surface::getCapabilities()const
 	{
-		VkSurfaceCapabilitiesKHR caps;
+		VkSurfaceCapabilitiesKHR caps{};
 		auto res = m_instance.vkGetPhysicalDeviceSurfaceCapabilitiesKHR( m_gpu
 			, m_internal
 			, &caps );
@@ -97,149 +97,148 @@ namespace ashes
 		return result;
 	}
 
+	void Surface::doCreate()
+	{
 #if defined( VK_USE_PLATFORM_WIN32_KHR )
-
-	void Surface::doCreate()
-	{
-		VkWin32SurfaceCreateInfoKHR createInfo
+		if ( m_handle.getSurfaceName() == VK_KHR_WIN32_SURFACE_EXTENSION_NAME )
 		{
-			VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
-			nullptr,
-			0,
-			m_handle.getInternal< IMswWindowHandle >().getHinstance(),
-			m_handle.getInternal< IMswWindowHandle >().getHwnd(),
-		};
-		DEBUG_DUMP( createInfo );
-		auto res = m_instance.vkCreateWin32SurfaceKHR( m_instance
-			, &createInfo
-			, m_instance.getAllocationCallbacks()
-			, &m_internal );
-		checkError( res, "Presentation surface creation" );
-		m_type = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
-	}
-
-#elif defined( VK_USE_PLATFORM_ANDROID_KHR )
-
-	void Surface::doCreate()
-	{
-		VkAndroidSurfaceCreateInfoKHR createInfo =
-		{
-			VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR,
-			nullptr,
-			0,
-			m_handle.getInternal< IAndroidWindowHandle >().getWindow(),
-		};
-		DEBUG_DUMP( createInfo );
-		auto res = m_instance.vkCreateAndroidSurfaceKHR( m_instance
-			, &createInfo
-			, m_instance.getAllocationCallbacks()
-			, &m_internal );
-		checkError( res, "Presentation surface creation" );
-		m_type = VK_KHR_ANDROID_SURFACE_EXTENSION_NAME;
-	}
-
-#elif defined( VK_USE_PLATFORM_XCB_KHR )
-
-	void Surface::doCreate()
-	{
-		VkXcbSurfaceCreateInfoKHR createInfo
-		{
-			VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR,
-			nullptr,
-			0,
-			m_handle.getInternal< IXcbWindowHandle >().getConnection(),
-			m_handle.getInternal< IXcbWindowHandle >().getWindow(),
-		};
-		auto res = m_instance.vkCreateXcbSurfaceKHR( m_instance
-			, &createInfo
-			, m_instance.getAllocationCallbacks()
-			, &m_internal );
-		checkError( res, "Presentation surface creation" );
-		m_type = VK_KHR_XCB_SURFACE_EXTENSION_NAME;
-	}
-
-#elif defined( VK_USE_PLATFORM_MIR_KHR )
-
-	void Surface::doCreate()
-	{
-		VkMirSurfaceCreateInfoKHR createInfo =
-		{
-			VK_STRUCTURE_TYPE_MIR_SURFACE_CREATE_INFO_KHR,
-			nullptr,
-			flags,
-			m_handle.getInternal< IMirWindowHandle >().getConnection(),
-			m_handle.getInternal< IMirWindowHandle >().getSurface(),
-		};
-		auto res = m_instance.vkCreateMirSurfaceKHR( m_instance
-			, &createInfo
-			, m_instance.getAllocationCallbacks()
-			, &m_internal );
-		checkError( res, "Presentation surface creation" );
-		m_type = VK_KHR_MIR_SURFACE_EXTENSION_NAME;
-	}
-
-#elif defined( VK_USE_PLATFORM_WAYLAND_KHR )
-
-	void Surface::doCreate()
-	{
-		VkWaylandSurfaceCreateInfoKHR createInfo =
-		{
-			VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR,
-			nullptr,
-			0,
-			m_handle.getInternal< IWaylandWindowHandle >().getDisplay(),
-			m_handle.getInternal< IWaylandWindowHandle >().getSurface(),
-		};
-		auto res = m_instance.vkCreateWaylandSurfaceKHR( m_instance
-			, &createInfo
-			, m_instance.getAllocationCallbacks()
-			, &m_internal );
-		checkError( res, "Presentation surface creation" );
-		m_type = VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME;
-	}
-
-#elif defined( VK_USE_PLATFORM_XLIB_KHR )
-
-	void Surface::doCreate()
-	{
-		VkXlibSurfaceCreateInfoKHR createInfo
-		{
-			VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR,
-			nullptr,
-			0,
-			m_handle.getInternal< IXWindowHandle >().getDisplay(),
-			m_handle.getInternal< IXWindowHandle >().getDrawable(),
-		};
-		auto res = m_instance.vkCreateXlibSurfaceKHR( m_instance
-			, &createInfo
-			, m_instance.getAllocationCallbacks()
-			, &m_internal );
-		checkError( res, "Presentation surface creation" );
-		m_type = VK_KHR_XLIB_SURFACE_EXTENSION_NAME;
-	}
-
-#elif defined( VK_USE_PLATFORM_MACOS_MVK )
-
-	void Surface::doCreate()
-	{
-		VkMacOSSurfaceCreateInfoMVK createInfo
-		{
-			VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK,
-			nullptr,
-			0,
-			m_handle.getInternal< IMacOsWindowHandle >().getView(),
-		};
-		auto res = m_instance.vkCreateMacOSSurfaceMVK( m_instance
-			, &createInfo
-			, m_instance.getAllocationCallbacks()
-			, &m_internal );
-		checkError( res, "Presentation surface creation" );
-		m_type = VK_MVK_MACOS_SURFACE_EXTENSION_NAME;
-	}
-
-#else
-
-#	error "Unsupported window system."
+			VkWin32SurfaceCreateInfoKHR createInfo
+			{
+				VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
+				nullptr,
+				0,
+				m_handle.getInternal< IMswWindowHandle >().getHinstance(),
+				m_handle.getInternal< IMswWindowHandle >().getHwnd(),
+			};
+			DEBUG_DUMP( createInfo );
+			auto res = m_instance.vkCreateWin32SurfaceKHR( m_instance
+				, &createInfo
+				, m_instance.getAllocationCallbacks()
+				, &m_internal );
+			checkError( res, "Presentation surface creation" );
+			m_type = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
+			return;
+		}
 
 #endif
+#if defined( VK_USE_PLATFORM_ANDROID_KHR )
+		if ( m_handle.getSurfaceName() == VK_KHR_ANDROID_SURFACE_EXTENSION_NAME )
+		{
+			VkAndroidSurfaceCreateInfoKHR createInfo =
+			{
+				VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR,
+				nullptr,
+				0,
+				m_handle.getInternal< IAndroidWindowHandle >().getWindow(),
+			};
+			DEBUG_DUMP( createInfo );
+			auto res = m_instance.vkCreateAndroidSurfaceKHR( m_instance
+				, &createInfo
+				, m_instance.getAllocationCallbacks()
+				, &m_internal );
+			checkError( res, "Presentation surface creation" );
+			m_type = VK_KHR_ANDROID_SURFACE_EXTENSION_NAME;
+			return;
+		}
+#endif
+#if defined( VK_USE_PLATFORM_XCB_KHR )
+		if ( m_handle.getSurfaceName() == VK_KHR_XCB_SURFACE_EXTENSION_NAME )
+		{
+			VkXcbSurfaceCreateInfoKHR createInfo
+			{
+				VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR,
+				nullptr,
+				0,
+				m_handle.getInternal< IXcbWindowHandle >().getConnection(),
+				m_handle.getInternal< IXcbWindowHandle >().getWindow(),
+			};
+			auto res = m_instance.vkCreateXcbSurfaceKHR( m_instance
+				, &createInfo
+				, m_instance.getAllocationCallbacks()
+				, &m_internal );
+			checkError( res, "Presentation surface creation" );
+			m_type = VK_KHR_XCB_SURFACE_EXTENSION_NAME;
+			return;
+		}
+#endif
+#if defined( VK_USE_PLATFORM_MIR_KHR )
+		if ( m_handle.getSurfaceName() == VK_KHR_MIR_SURFACE_EXTENSION_NAME )
+		{
+			VkMirSurfaceCreateInfoKHR createInfo =
+			{
+				VK_STRUCTURE_TYPE_MIR_SURFACE_CREATE_INFO_KHR,
+				nullptr,
+				flags,
+				m_handle.getInternal< IMirWindowHandle >().getConnection(),
+				m_handle.getInternal< IMirWindowHandle >().getSurface(),
+			};
+			auto res = m_instance.vkCreateMirSurfaceKHR( m_instance
+				, &createInfo
+				, m_instance.getAllocationCallbacks()
+				, &m_internal );
+			checkError( res, "Presentation surface creation" );
+			m_type = VK_KHR_MIR_SURFACE_EXTENSION_NAME;
+			return;
+		}
+#endif
+#if defined( VK_USE_PLATFORM_WAYLAND_KHR )
+		if ( m_handle.getSurfaceName() == VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME )
+		{
+			VkWaylandSurfaceCreateInfoKHR createInfo =
+			{
+				VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR,
+				nullptr,
+				0,
+				m_handle.getInternal< IWaylandWindowHandle >().getDisplay(),
+				m_handle.getInternal< IWaylandWindowHandle >().getSurface(),
+			};
+			auto res = m_instance.vkCreateWaylandSurfaceKHR( m_instance
+				, &createInfo
+				, m_instance.getAllocationCallbacks()
+				, &m_internal );
+			checkError( res, "Presentation surface creation" );
+			m_type = VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME;
+			return;
+		}
+#endif
+#if defined( VK_USE_PLATFORM_XLIB_KHR )
+		if ( m_handle.getSurfaceName() == VK_KHR_XLIB_SURFACE_EXTENSION_NAME )
+		{
+			VkXlibSurfaceCreateInfoKHR createInfo
+			{
+				VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR,
+				nullptr,
+				0,
+				m_handle.getInternal< IXWindowHandle >().getDisplay(),
+				m_handle.getInternal< IXWindowHandle >().getDrawable(),
+			};
+			auto res = m_instance.vkCreateXlibSurfaceKHR( m_instance
+				, &createInfo
+				, m_instance.getAllocationCallbacks()
+				, &m_internal );
+			checkError( res, "Presentation surface creation" );
+			m_type = VK_KHR_XLIB_SURFACE_EXTENSION_NAME;
+			return;
+		}
+#endif
+#if defined( VK_USE_PLATFORM_MACOS_MVK )
+		if ( m_handle.getSurfaceName() == VK_MVK_MACOS_SURFACE_EXTENSION_NAME )
+		{
+			VkMacOSSurfaceCreateInfoMVK createInfo
+			{
+				VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK,
+				nullptr,
+				0,
+				m_handle.getInternal< IMacOsWindowHandle >().getView(),
+			};
+			auto res = m_instance.vkCreateMacOSSurfaceMVK( m_instance
+				, &createInfo
+				, m_instance.getAllocationCallbacks()
+				, &m_internal );
+			checkError( res, "Presentation surface creation" );
+			m_type = VK_MVK_MACOS_SURFACE_EXTENSION_NAME;
+			return;
+		}
+#endif
+	}
 }

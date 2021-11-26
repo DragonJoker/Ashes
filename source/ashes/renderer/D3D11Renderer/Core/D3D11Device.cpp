@@ -74,12 +74,6 @@ namespace ashes::d3d11
 
 	namespace
 	{
-		template< typename T, typename U >
-		T getAligned( T value, U align )
-		{
-			return T( ( value + align - 1 ) & ~( align - 1 ) );
-		};
-
 		size_t makeKey( VkImageType type
 			, VkFormat format
 			, VkExtent3D const & extent
@@ -125,37 +119,6 @@ namespace ashes::d3d11
 			{
 				return false;
 			}
-		}
-
-		ID3D11DeviceContext * getContext( std::mutex & mtx
-			, std::map< std::thread::id, ID3D11DeviceContext * > & deviceContexts
-			, ID3D11Device * device )
-		{
-			std::unique_lock< std::mutex > lock{ mtx };
-			auto ires = deviceContexts.emplace( std::this_thread::get_id(), nullptr );
-
-			if ( ires.second )
-			{
-				device->GetImmediateContext( &ires.first->second );
-			}
-
-			return ires.first->second;
-		}
-
-		void flushContexts( std::mutex & mtx
-			, std::map< std::thread::id, ID3D11DeviceContext * > & deviceContexts )
-		{
-			std::unique_lock< std::mutex > lock{ mtx };
-
-			for ( auto & it : deviceContexts )
-			{
-				auto context = it.second;
-				context->ClearState();
-				context->Flush();
-				safeRelease( context );
-			}
-
-			deviceContexts.clear();
 		}
 	}
 

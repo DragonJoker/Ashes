@@ -491,53 +491,6 @@ namespace ashes
 	using VkViewportArray = std::vector< VkViewport >;
 	using VkWriteDescriptorSetArray = std::vector< VkWriteDescriptorSet >;
 
-#if defined( VK_USE_PLATFORM_ANDROID_KHR )
-
-	using VkSurfaceCreateInfoKHR = VkAndroidSurfaceCreateInfoKHR;
-	static std::string const KHR_PLATFORM_SURFACE_EXTENSION_NAME = "VK_KHR_android_surface";
-
-#elif defined( VK_USE_PLATFORM_FUCHSIA )
-
-	using VkSurfaceCreateInfoKHR = VkImagePipeSurfaceCreateInfoFUCHSIA;
-	static std::string const KHR_PLATFORM_SURFACE_EXTENSION_NAME = "VK_FUCHSIA_imagepipe_surface";
-
-#elif defined( VK_USE_PLATFORM_IOS_MVK )
-
-	using VkSurfaceCreateInfoKHR = VkIOSSurfaceCreateInfoMVK;
-	static std::string const KHR_PLATFORM_SURFACE_EXTENSION_NAME = "VK_MVK_ios_surface";
-
-#elif defined( VK_USE_PLATFORM_MACOS_MVK )
-
-	using VkSurfaceCreateInfoKHR = VkMacOSSurfaceCreateInfoMVK;
-	static std::string const KHR_PLATFORM_SURFACE_EXTENSION_NAME = "VK_MVK_macos_surface";
-
-#elif defined( VK_USE_PLATFORM_VI_NN )
-
-	using VkSurfaceCreateInfoKHR = VkViSurfaceCreateInfoNN;
-	static std::string const KHR_PLATFORM_SURFACE_EXTENSION_NAME = "VK_NN_vi_surface";
-
-#elif defined( VK_USE_PLATFORM_XCB_KHR )
-
-	using VkSurfaceCreateInfoKHR = VkXcbSurfaceCreateInfoKHR;
-	static std::string const KHR_PLATFORM_SURFACE_EXTENSION_NAME = "VK_KHR_xcb_surface";
-
-#elif defined( VK_USE_PLATFORM_XLIB_KHR )
-
-	using VkSurfaceCreateInfoKHR = VkXlibSurfaceCreateInfoKHR;
-	static std::string const KHR_PLATFORM_SURFACE_EXTENSION_NAME = "VK_KHR_xlib_surface";
-
-#elif defined( VK_USE_PLATFORM_WAYLAND_KHR )
-
-	using VkSurfaceCreateInfoKHR = VkWaylandSurfaceCreateInfoKHR;
-	static std::string const KHR_PLATFORM_SURFACE_EXTENSION_NAME = "VK_KHR_wayland_surface";
-
-#elif defined( VK_USE_PLATFORM_WIN32_KHR )
-
-	using VkSurfaceCreateInfoKHR = VkWin32SurfaceCreateInfoKHR;
-	static std::string const KHR_PLATFORM_SURFACE_EXTENSION_NAME = "VK_KHR_win32_surface";
-
-#endif
-
 	template< typename Type, typename ... Params >
 	inline std::vector< Type > makeVector( Type const * ptr
 		, size_t count
