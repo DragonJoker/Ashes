@@ -13,40 +13,6 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	namespace
-	{
-		std::vector< ID3D11UnorderedAccessView * > doListUavs( LayoutBindingWritesArray uavs )
-		{
-			std::vector< ID3D11UnorderedAccessView * > result;
-
-			for ( auto & writes : uavs )
-			{
-				for ( auto & write : writes->writes )
-				{
-					if ( write.pBufferInfo )
-					{
-						for ( auto & uav : makeArrayView( write.pBufferInfo, write.descriptorCount ) )
-						{
-							auto buffer = uav.buffer;
-							result.push_back( get( buffer )->getUnorderedAccessView() );
-						}
-					}
-					else
-					{
-						assert( write.pImageInfo );
-						for ( auto & uav : makeArrayView( write.pImageInfo, write.descriptorCount ) )
-						{
-							auto view = uav.imageView;
-							result.push_back( get( view )->getUnorderedAccessView() );
-						}
-					}
-				}
-			}
-
-			return result;
-		}
-	}
-
 	BeginSubpassCommand::BeginSubpassCommand( VkDevice device
 		, VkRenderPass renderPass
 		, VkFramebuffer frameBuffer
