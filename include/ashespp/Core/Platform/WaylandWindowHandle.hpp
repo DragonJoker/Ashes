@@ -33,7 +33,7 @@ namespace ashes
 
 		wl_surface * getSurface()const
 		{
-			return m_window;
+			return m_surface;
 		}
 
 	private:

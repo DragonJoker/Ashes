@@ -312,7 +312,6 @@ namespace ashes::d3d11
 			, VkShaderStageFlagBits stage
 			, spirv_cross::CompilerGLSL & compiler )
 		{
-			uint32_t const ssboMask = ( 1u << 16u );
 			spirv_cross::ShaderResources resources = compiler.get_shader_resources();
 			auto & bindings = get( pipelineLayout )->getShaderBindings();
 			auto device = get( pipelineLayout )->getDevice();

@@ -20,8 +20,7 @@ namespace utils
 {
 	namespace
 	{
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-function"
+#if LOAD_VALIDATION_LAYERS
 		bool isValidationLayer( std::string const & name )
 		{
 			static std::set< std::string > const validNames
@@ -30,7 +29,7 @@ namespace utils
 			};
 			return validNames.find( name ) != validNames.end();
 		}
-#pragma GCC diagnostic pop
+#endif
 
 		void addOptionalValidationLayer( std::string const & layer
 			, std::string description
@@ -177,7 +176,36 @@ namespace utils
 		completeLayerNames( m_layerNames );
 
 		m_extensionNames.push_back( VK_KHR_SURFACE_EXTENSION_NAME );
-		m_extensionNames.push_back( ashes::KHR_PLATFORM_SURFACE_EXTENSION_NAME );
+#if defined( VK_USE_PLATFORM_ANDROID_KHR )
+		m_extensionNames.push_back( VK_KHR_ANDROID_SURFACE_EXTENSION_NAME );
+#endif
+#if defined( VK_USE_PLATFORM_MIR_KHR )
+		m_extensionNames.push_back( VK_KHR_MIR_SURFACE_EXTENSION_NAME );
+#endif
+#if defined( VK_USE_PLATFORM_FUCHSIA )
+		m_extensionNames.push_back( VK_FUCHSIA_IMAGEPIPE_SURFACE_EXTENSION_NAME );
+#endif
+#if defined( VK_USE_PLATFORM_IOS_MVK )
+		m_extensionNames.push_back( VK_MVK_IOS_SURFACE_EXTENSION_NAME );
+#endif
+#if defined( VK_USE_PLATFORM_MACOS_MVK )
+		m_extensionNames.push_back( VK_MVK_MACOS_SURFACE_EXTENSION_NAME );
+#endif
+#if defined( VK_USE_PLATFORM_VI_NN )
+		m_extensionNames.push_back( VK_NN_VI_SURFACE_EXTENSION_NAME );
+#endif
+#if defined( VK_USE_PLATFORM_XCB_KHR )
+		m_extensionNames.push_back( VK_KHR_XCB_SURFACE_EXTENSION_NAME );
+#endif
+#if defined( VK_USE_PLATFORM_XLIB_KHR )
+		m_extensionNames.push_back( VK_KHR_XLIB_SURFACE_EXTENSION_NAME );
+#endif
+#if defined( VK_USE_PLATFORM_WAYLAND_KHR )
+		m_extensionNames.push_back( VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME );
+#endif
+#if defined( VK_USE_PLATFORM_WIN32_KHR )
+		m_extensionNames.push_back( VK_KHR_WIN32_SURFACE_EXTENSION_NAME );
+#endif
 		addOptionalDebugReportLayer( m_extensionNames );
 		checkExtensionsAvailability( m_globalLayerExtensions, m_extensionNames );
 		ashes::InstanceCreateInfo createInfo

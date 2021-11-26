@@ -91,7 +91,10 @@ namespace ashes
 		*/
 		std::string const & getSurfaceName()const
 		{
-			return m_handle->getSurfaceName();
+			static std::string const dummy;
+			return ( m_handle
+				? m_handle->getSurfaceName()
+				: dummy );
 		}
 		/**
 		*\return
