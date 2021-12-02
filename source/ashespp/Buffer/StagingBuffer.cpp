@@ -227,7 +227,7 @@ namespace ashes
 			, range.levelCount
 			, uint32_t( view.image->getMemoryRequirements().alignment ) );
 		doCopyToStagingBuffer( data
-			, uint32_t( layerSize ) );
+			, layerSize );
 		doCopyFromStagingBuffer( commandBuffer
 			, extent
 			, offset
@@ -297,11 +297,11 @@ namespace ashes
 
 		auto range = view->subresourceRange;
 		doCopyFromStagingBuffer( data
-			, uint32_t( getLevelsSize( extent
+			, getLevelsSize( extent
 				, format
 				, range.baseMipLevel
 				, range.levelCount
-				, uint32_t( view.image->getMemoryRequirements().alignment ) ) ) );
+				, uint32_t( view.image->getMemoryRequirements().alignment ) ) );
 	}
 
 	void StagingBuffer::downloadTextureData( Queue const & queue
@@ -330,11 +330,11 @@ namespace ashes
 	}
 
 	void StagingBuffer::doCopyToStagingBuffer( uint8_t const * data
-		, uint32_t size )const
+		, VkDeviceSize size )const
 	{
 		assert( size <= getBuffer().getSize() );
 		auto mappedSize = getAlignedSize( size
-			, uint32_t( m_device.getProperties().limits.nonCoherentAtomSize ) );
+			, m_device.getProperties().limits.nonCoherentAtomSize );
 		mappedSize = mappedSize > getBuffer().getSize()
 			? WholeSize
 			: mappedSize;
@@ -355,8 +355,8 @@ namespace ashes
 	}
 
 	void StagingBuffer::doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
-		, uint32_t size
-		, uint32_t offset
+		, VkDeviceSize size
+		, VkDeviceSize offset
 		, BufferBase const & buffer )const
 	{
 		assert( size <= getBuffer().getSize() );
@@ -373,8 +373,8 @@ namespace ashes
 	}
 
 	void StagingBuffer::doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
-		, uint32_t size
-		, uint32_t offset
+		, VkDeviceSize size
+		, VkDeviceSize offset
 		, VertexBufferBase const & buffer )const
 	{
 		assert( size <= getBuffer().getSize() );
@@ -395,8 +395,8 @@ namespace ashes
 	}
 
 	void StagingBuffer::doCopyFromStagingBuffer( CommandBuffer const & commandBuffer
-		, uint32_t size
-		, uint32_t offset
+		, VkDeviceSize size
+		, VkDeviceSize offset
 		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
@@ -447,11 +447,11 @@ namespace ashes
 	}
 
 	void StagingBuffer::doCopyFromStagingBuffer( uint8_t * data
-		, uint32_t size )const
+		, VkDeviceSize size )const
 	{
 		assert( size <= getBuffer().getSize() );
 		auto mappedSize = getAlignedSize( size
-			, uint32_t( m_device.getProperties().limits.nonCoherentAtomSize ) );
+			, m_device.getProperties().limits.nonCoherentAtomSize );
 		mappedSize = mappedSize > getBuffer().getSize()
 			? WholeSize
 			: mappedSize;
@@ -472,8 +472,8 @@ namespace ashes
 	}
 
 	void StagingBuffer::doCopyToStagingBuffer( CommandBuffer const & commandBuffer
-		, uint32_t size
-		, uint32_t offset
+		, VkDeviceSize size
+		, VkDeviceSize offset
 		, BufferBase const & buffer )const
 	{
 		assert( size <= getBuffer().getSize() );
@@ -490,8 +490,8 @@ namespace ashes
 	}
 
 	void StagingBuffer::doCopyToStagingBuffer( CommandBuffer const & commandBuffer
-		, uint32_t size
-		, uint32_t offset
+		, VkDeviceSize size
+		, VkDeviceSize offset
 		, VertexBufferBase const & buffer )const
 	{
 		assert( size <= getBuffer().getSize() );
@@ -512,8 +512,8 @@ namespace ashes
 	}
 
 	void StagingBuffer::doCopyToStagingBuffer( CommandBuffer const & commandBuffer
-		, uint32_t size
-		, uint32_t offset
+		, VkDeviceSize size
+		, VkDeviceSize offset
 		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
