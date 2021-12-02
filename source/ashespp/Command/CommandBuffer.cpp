@@ -634,8 +634,8 @@ namespace ashes
 
 	void CommandBuffer::copyBuffer( VkBuffer src
 		, VkBuffer dst
-		, uint32_t size
-		, uint32_t offset )const
+		, VkDeviceSize size
+		, VkDeviceSize offset )const
 	{
 		VkBufferCopy copyInfo{ offset
 			, 0
@@ -645,8 +645,8 @@ namespace ashes
 
 	void CommandBuffer::copyBuffer( BufferBase const & src
 		, BufferBase const & dst
-		, uint32_t size
-		, uint32_t offset )const
+		, VkDeviceSize size
+		, VkDeviceSize offset )const
 	{
 		VkBufferCopy copyInfo{ offset
 			, 0
@@ -656,8 +656,8 @@ namespace ashes
 
 	void CommandBuffer::copyBuffer( BufferBase const & src
 		, VertexBufferBase const & dst
-		, uint32_t size
-		, uint32_t offset )const
+		, VkDeviceSize size
+		, VkDeviceSize offset )const
 	{
 		VkBufferCopy copyInfo
 		{
@@ -670,8 +670,8 @@ namespace ashes
 
 	void CommandBuffer::copyBuffer( VertexBufferBase const & src
 		, BufferBase const & dst
-		, uint32_t size
-		, uint32_t offset )const
+		, VkDeviceSize size
+		, VkDeviceSize offset )const
 	{
 		VkBufferCopy copyInfo
 		{
@@ -684,8 +684,8 @@ namespace ashes
 
 	void CommandBuffer::copyBuffer( VertexBufferBase const & src
 		, VertexBufferBase const & dst
-		, uint32_t size
-		, uint32_t offset )const
+		, VkDeviceSize size
+		, VkDeviceSize offset )const
 	{
 		VkBufferCopy copyInfo
 		{
@@ -698,8 +698,8 @@ namespace ashes
 
 	void CommandBuffer::copyBuffer( BufferBase const & src
 		, UniformBuffer const & dst
-		, uint32_t size
-		, uint32_t offset )const
+		, VkDeviceSize size
+		, VkDeviceSize offset )const
 	{
 		VkBufferCopy copyInfo
 		{
@@ -712,8 +712,8 @@ namespace ashes
 
 	void CommandBuffer::copyBuffer( UniformBuffer const & src
 		, BufferBase const & dst
-		, uint32_t size
-		, uint32_t offset )const
+		, VkDeviceSize size
+		, VkDeviceSize offset )const
 	{
 		VkBufferCopy copyInfo
 		{
@@ -726,8 +726,8 @@ namespace ashes
 
 	void CommandBuffer::copyBuffer( UniformBuffer const & src
 		, UniformBuffer const & dst
-		, uint32_t size
-		, uint32_t offset )const
+		, VkDeviceSize size
+		, VkDeviceSize offset )const
 	{
 		VkBufferCopy copyInfo
 		{

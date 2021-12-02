@@ -28,7 +28,7 @@ namespace ashes
 		uploadBufferData( queue
 			, commandPool
 			, reinterpret_cast< uint8_t const * const >( data.data() )
-			, uint32_t( N * sizeof( T ) )
+			, N * sizeof( T )
 			, 0u
 			, buffer );
 	}
@@ -42,7 +42,7 @@ namespace ashes
 		uploadBufferData( queue
 			, commandPool
 			, reinterpret_cast< uint8_t const * const >( data.data() )
-			, uint32_t( data.size() * sizeof( T ) )
+			, data.size() * sizeof( T )
 			, 0u
 			, buffer );
 	}
@@ -56,7 +56,7 @@ namespace ashes
 		uploadBufferData( queue
 			, commandPool
 			, data.data()
-			, uint32_t( data.size() )
+			, data.size()
 			, 0u
 			, buffer );
 	}
@@ -65,7 +65,7 @@ namespace ashes
 	inline void StagingBuffer::uploadBufferData( Queue const & queue
 		, CommandPool const & commandPool
 		, uint8_t const * const data
-		, uint32_t size
+		, VkDeviceSize size
 		, Buffer< T > const & buffer )const
 	{
 		uploadBufferData( queue
@@ -80,14 +80,14 @@ namespace ashes
 	inline void StagingBuffer::uploadBufferData( Queue const & queue
 		, CommandPool const & commandPool
 		, std::array< T, N > const & data
-		, uint32_t offset
+		, VkDeviceSize offset
 		, Buffer< T > const & buffer )const
 	{
 		uploadBufferData( queue
 			, commandPool
 			, reinterpret_cast< uint8_t const * const >( data.data() )
-			, uint32_t( N * sizeof( T ) )
-			, uint32_t( offset * sizeof( T ) )
+			, N * sizeof( T )
+			, offset * sizeof( T )
 			, buffer );
 	}
 
@@ -95,14 +95,14 @@ namespace ashes
 	inline void StagingBuffer::uploadBufferData( Queue const & queue
 		, CommandPool const & commandPool
 		, std::vector< T > const & data
-		, uint32_t offset
+		, VkDeviceSize offset
 		, Buffer< T > const & buffer )const
 	{
 		uploadBufferData( queue
 			, commandPool
 			, reinterpret_cast< uint8_t const * const >( data.data() )
-			, uint32_t( data.size() * sizeof( T ) )
-			, uint32_t( offset * sizeof( T ) )
+			, data.size() * sizeof( T )
+			, offset * sizeof( T )
 			, buffer );
 	}
 
@@ -110,13 +110,13 @@ namespace ashes
 	inline void StagingBuffer::uploadBufferData( Queue const & queue
 		, CommandPool const & commandPool
 		, ByteArray const & data
-		, uint32_t offset
+		, VkDeviceSize offset
 		, Buffer< T > const & buffer )const
 	{
 		uploadBufferData( queue
 			, commandPool
 			, data.data()
-			, uint32_t( data.size() )
+			, data.size()
 			, offset
 			, buffer );
 	}
@@ -125,8 +125,8 @@ namespace ashes
 	void StagingBuffer::uploadBufferData( Queue const & queue
 		, CommandPool const & commandPool
 		, uint8_t const * const data
-		, uint32_t size
-		, uint32_t offset
+		, VkDeviceSize size
+		, VkDeviceSize offset
 		, Buffer< T > const & buffer )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( "StaginBufferUpload"
@@ -151,7 +151,7 @@ namespace ashes
 	{
 		uploadBufferData( commandBuffer
 			, reinterpret_cast< uint8_t const * const >( data.data() )
-			, uint32_t( N * sizeof( T ) )
+			, N * sizeof( T )
 			, 0u
 			, buffer );
 	}
@@ -163,7 +163,7 @@ namespace ashes
 	{
 		uploadBufferData( commandBuffer
 			, reinterpret_cast< uint8_t const * const >( data.data() )
-			, uint32_t( data.size() * sizeof( T ) )
+			, data.size() * sizeof( T )
 			, 0u
 			, buffer );
 	}
@@ -175,7 +175,7 @@ namespace ashes
 	{
 		uploadBufferData( commandBuffer
 			, data.data()
-			, uint32_t( data.size() )
+			, data.size()
 			, 0u
 			, buffer );
 	}
@@ -183,7 +183,7 @@ namespace ashes
 	template< typename T >
 	inline void StagingBuffer::uploadBufferData( CommandBuffer const & commandBuffer
 		, uint8_t const * const data
-		, uint32_t size
+		, VkDeviceSize size
 		, Buffer< T > const & buffer )const
 	{
 		uploadBufferData( commandBuffer
@@ -196,38 +196,38 @@ namespace ashes
 	template< typename T, size_t N >
 	inline void StagingBuffer::uploadBufferData( CommandBuffer const & commandBuffer
 		, std::array< T, N > const & data
-		, uint32_t offset
+		, VkDeviceSize offset
 		, Buffer< T > const & buffer )const
 	{
 		uploadBufferData( commandBuffer
 			, reinterpret_cast< uint8_t const * const >( data.data() )
-			, uint32_t( N * sizeof( T ) )
-			, uint32_t( offset * sizeof( T ) )
+			, N * sizeof( T )
+			, offset * sizeof( T )
 			, buffer );
 	}
 
 	template< typename T >
 	inline void StagingBuffer::uploadBufferData( CommandBuffer const & commandBuffer
 		, std::vector< T > const & data
-		, uint32_t offset
+		, VkDeviceSize offset
 		, Buffer< T > const & buffer )const
 	{
 		uploadBufferData( commandBuffer
 			, reinterpret_cast< uint8_t const * const >( data.data() )
-			, uint32_t( data.size() * sizeof( T ) )
-			, uint32_t( offset * sizeof( T ) )
+			, data.size() * sizeof( T )
+			, offset * sizeof( T )
 			, buffer );
 	}
 
 	template< typename T >
 	inline void StagingBuffer::uploadBufferData( CommandBuffer const & commandBuffer
 		, ByteArray const & data
-		, uint32_t offset
+		, VkDeviceSize offset
 		, Buffer< T > const & buffer )const
 	{
 		uploadBufferData( commandBuffer
 			, data.data()
-			, uint32_t( data.size() )
+			, data.size()
 			, offset
 			, buffer );
 	}
@@ -235,8 +235,8 @@ namespace ashes
 	template< typename T >
 	void StagingBuffer::uploadBufferData( CommandBuffer const & commandBuffer
 		, uint8_t const * const data
-		, uint32_t size
-		, uint32_t offset
+		, VkDeviceSize size
+		, VkDeviceSize offset
 		, Buffer< T > const & buffer )const
 	{
 		doCopyToStagingBuffer( data
@@ -261,7 +261,7 @@ namespace ashes
 		uploadVertexData( queue
 			, commandPool
 			, reinterpret_cast< uint8_t const * const >( data.data() )
-			, uint32_t( N * sizeof( T ) )
+			, N * sizeof( T )
 			, 0u
 			, buffer );
 	}
@@ -275,7 +275,7 @@ namespace ashes
 		uploadVertexData( queue
 			, commandPool
 			, reinterpret_cast< uint8_t const * const >( data.data() )
-			, uint32_t( data.size() * sizeof( T ) )
+			, data.size() * sizeof( T )
 			, 0u
 			, buffer );
 	}
@@ -289,7 +289,7 @@ namespace ashes
 		uploadVertexData( queue
 			, commandPool
 			, data.data()
-			, uint32_t( data.size() )
+			, data.size()
 			, 0u
 			, buffer );
 	}
@@ -298,7 +298,7 @@ namespace ashes
 	inline void StagingBuffer::uploadVertexData( Queue const & queue
 		, CommandPool const & commandPool
 		, uint8_t const * const data
-		, uint32_t size
+		, VkDeviceSize size
 		, VertexBuffer< T > const & buffer )const
 	{
 		uploadVertexData( queue
@@ -313,14 +313,14 @@ namespace ashes
 	inline void StagingBuffer::uploadVertexData( Queue const & queue
 		, CommandPool const & commandPool
 		, std::array< T, N > const & data
-		, uint32_t offset
+		, VkDeviceSize offset
 		, VertexBuffer< T > const & buffer )const
 	{
 		uploadVertexData( queue
 			, commandPool
 			, reinterpret_cast< uint8_t const * const >( data.data() )
-			, uint32_t( N * sizeof( T ) )
-			, uint32_t( offset * sizeof( T ) )
+			, N * sizeof( T )
+			, offset * sizeof( T )
 			, buffer );
 	}
 
@@ -328,14 +328,14 @@ namespace ashes
 	inline void StagingBuffer::uploadVertexData( Queue const & queue
 		, CommandPool const & commandPool
 		, std::vector< T > const & data
-		, uint32_t offset
+		, VkDeviceSize offset
 		, VertexBuffer< T > const & buffer )const
 	{
 		uploadVertexData( queue
 			, commandPool
 			, reinterpret_cast< uint8_t const * const >( data.data() )
-			, uint32_t( data.size() * sizeof( T ) )
-			, uint32_t( offset * sizeof( T ) )
+			, data.size() * sizeof( T )
+			, offset * sizeof( T )
 			, buffer );
 	}
 
@@ -343,13 +343,13 @@ namespace ashes
 	inline void StagingBuffer::uploadVertexData( Queue const & queue
 		, CommandPool const & commandPool
 		, ByteArray const & data
-		, uint32_t offset
+		, VkDeviceSize offset
 		, VertexBuffer< T > const & buffer )const
 	{
 		uploadVertexData( queue
 			, commandPool
 			, data.data()
-			, uint32_t( data.size() )
+			, data.size()
 			, offset
 			, buffer );
 	}
@@ -358,8 +358,8 @@ namespace ashes
 	inline void StagingBuffer::uploadVertexData( Queue const & queue
 		, CommandPool const & commandPool
 		, uint8_t const * const data
-		, uint32_t size
-		, uint32_t offset
+		, VkDeviceSize size
+		, VkDeviceSize offset
 		, VertexBuffer< T > const & buffer )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( "StaginBufferUploadVtx"
@@ -384,7 +384,7 @@ namespace ashes
 	{
 		uploadVertexData( commandBuffer
 			, reinterpret_cast< uint8_t const * const >( data.data() )
-			, uint32_t( N * sizeof( T ) )
+			, N * sizeof( T )
 			, 0u
 			, buffer );
 	}
@@ -396,7 +396,7 @@ namespace ashes
 	{
 		uploadVertexData( commandBuffer
 			, reinterpret_cast< uint8_t const * const >( data.data() )
-			, uint32_t( data.size() * sizeof( T ) )
+			, data.size() * sizeof( T )
 			, 0u
 			, buffer );
 	}
@@ -408,7 +408,7 @@ namespace ashes
 	{
 		uploadVertexData( commandBuffer
 			, data.data()
-			, uint32_t( data.size() )
+			, data.size()
 			, 0u
 			, buffer );
 	}
@@ -416,7 +416,7 @@ namespace ashes
 	template< typename T >
 	inline void StagingBuffer::uploadVertexData( CommandBuffer const & commandBuffer
 		, uint8_t const * const data
-		, uint32_t size
+		, VkDeviceSize size
 		, VertexBuffer< T > const & buffer )const
 	{
 		uploadVertexData( commandBuffer
@@ -429,38 +429,38 @@ namespace ashes
 	template< typename T, size_t N >
 	inline void StagingBuffer::uploadVertexData( CommandBuffer const & commandBuffer
 		, std::array< T, N > const & data
-		, uint32_t offset
+		, VkDeviceSize offset
 		, VertexBuffer< T > const & buffer )const
 	{
 		uploadVertexData( commandBuffer
 			, reinterpret_cast< uint8_t const * const >( data.data() )
-			, uint32_t( N * sizeof( T ) )
-			, uint32_t( offset * sizeof( T ) )
+			, N * sizeof( T )
+			, offset * sizeof( T )
 			, buffer );
 	}
 
 	template< typename T >
 	inline void StagingBuffer::uploadVertexData( CommandBuffer const & commandBuffer
 		, std::vector< T > const & data
-		, uint32_t offset
+		, VkDeviceSize offset
 		, VertexBuffer< T > const & buffer )const
 	{
 		uploadVertexData( commandBuffer
 			, reinterpret_cast< uint8_t const * const >( data.data() )
-			, uint32_t( data.size() * sizeof( T ) )
-			, uint32_t( offset * sizeof( T ) )
+			, data.size() * sizeof( T )
+			, offset * sizeof( T )
 			, buffer );
 	}
 
 	template< typename T >
 	inline void StagingBuffer::uploadVertexData( CommandBuffer const & commandBuffer
 		, ByteArray const & data
-		, uint32_t offset
+		, VkDeviceSize offset
 		, VertexBuffer< T > const & buffer )const
 	{
 		uploadVertexData( commandBuffer
 			, data.data()
-			, uint32_t( data.size() )
+			, data.size()
 			, offset
 			, buffer );
 	}
@@ -468,8 +468,8 @@ namespace ashes
 	template< typename T >
 	inline void StagingBuffer::uploadVertexData( CommandBuffer const & commandBuffer
 		, uint8_t const * const data
-		, uint32_t size
-		, uint32_t offset
+		, VkDeviceSize size
+		, VkDeviceSize offset
 		, VertexBuffer< T > const & buffer )const
 	{
 		doCopyToStagingBuffer( data
@@ -495,7 +495,7 @@ namespace ashes
 		uploadUniformData( queue
 			, commandPool
 			, data.data()
-			, uint32_t( N )
+			, N
 			, 0u
 			, buffer
 			, dstStageFlags );
@@ -511,7 +511,7 @@ namespace ashes
 		uploadUniformData( queue
 			, commandPool
 			, data.data()
-			, uint32_t( data.size() )
+			, data.size()
 			, 0u
 			, buffer
 			, dstStageFlags );
@@ -521,7 +521,7 @@ namespace ashes
 	inline void StagingBuffer::uploadUniformData( Queue const & queue
 		, CommandPool const & commandPool
 		, T const * const data
-		, uint32_t count
+		, VkDeviceSize count
 		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
@@ -538,14 +538,14 @@ namespace ashes
 	inline void StagingBuffer::uploadUniformData( Queue const & queue
 		, CommandPool const & commandPool
 		, std::vector< T > const & data
-		, uint32_t offset
+		, VkDeviceSize offset
 		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
 		uploadUniformData( queue
 			, commandPool
 			, data.data()
-			, uint32_t( data.size() )
+			, data.size()
 			, offset
 			, buffer
 			, dstStageFlags );
@@ -555,14 +555,14 @@ namespace ashes
 	inline void StagingBuffer::uploadUniformData( Queue const & queue
 		, CommandPool const & commandPool
 		, std::array< T, N > const & data
-		, uint32_t offset
+		, VkDeviceSize offset
 		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
 		uploadUniformData( queue
 			, commandPool
 			, data.data()
-			, uint32_t( N )
+			, N
 			, offset
 			, buffer
 			, dstStageFlags );
@@ -572,8 +572,8 @@ namespace ashes
 	inline void StagingBuffer::uploadUniformData( Queue const & queue
 		, CommandPool const & commandPool
 		, T const * const data
-		, uint32_t count
-		, uint32_t offset
+		, VkDeviceSize count
+		, VkDeviceSize offset
 		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
@@ -601,7 +601,7 @@ namespace ashes
 	{
 		uploadUniformData( commandBuffer
 			, data.data()
-			, uint32_t( N )
+			, N
 			, 0u
 			, buffer
 			, dstStageFlags );
@@ -615,7 +615,7 @@ namespace ashes
 	{
 		uploadUniformData( commandBuffer
 			, data.data()
-			, uint32_t( data.size() )
+			, data.size()
 			, 0u
 			, buffer
 			, dstStageFlags );
@@ -624,7 +624,7 @@ namespace ashes
 	template< typename T >
 	inline void StagingBuffer::uploadUniformData( CommandBuffer const & commandBuffer
 		, T const * const data
-		, uint32_t count
+		, VkDeviceSize count
 		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
@@ -639,13 +639,13 @@ namespace ashes
 	template< typename T, size_t N >
 	inline void StagingBuffer::uploadUniformData( CommandBuffer const & commandBuffer
 		, std::array< T, N > const & data
-		, uint32_t offset
+		, VkDeviceSize offset
 		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
 		uploadUniformData( commandBuffer
 			, data.data()
-			, uint32_t( N )
+			, N
 			, 0u
 			, buffer
 			, dstStageFlags );
@@ -654,13 +654,13 @@ namespace ashes
 	template< typename T >
 	inline void StagingBuffer::uploadUniformData( CommandBuffer const & commandBuffer
 		, std::vector< T > const & data
-		, uint32_t offset
+		, VkDeviceSize offset
 		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
 		uploadUniformData( commandBuffer
 			, data.data()
-			, uint32_t( data.size() )
+			, data.size()
 			, 0u
 			, buffer
 			, dstStageFlags );
@@ -669,12 +669,12 @@ namespace ashes
 	template< typename T >
 	inline void StagingBuffer::uploadUniformData( CommandBuffer const & commandBuffer
 		, T const * const data
-		, uint32_t count
-		, uint32_t offset
+		, VkDeviceSize count
+		, VkDeviceSize offset
 		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
-		auto elemAlignedSize = uint32_t( buffer.getAlignedSize() );
+		auto elemAlignedSize = buffer.getAlignedSize();
 		doCopyUniformDataToStagingBuffer( data
 			, count
 			, elemAlignedSize );
@@ -820,7 +820,7 @@ namespace ashes
 		downloadBufferData( queue
 			, commandPool
 			, reinterpret_cast< uint8_t const * const >( data.data() )
-			, uint32_t( data.size() * sizeof( T ) )
+			, data.size() * sizeof( T )
 			, 0u
 			, buffer );
 	}
@@ -834,7 +834,7 @@ namespace ashes
 		downloadBufferData( queue
 			, commandPool
 			, data.data()
-			, uint32_t( data.size() )
+			, data.size()
 			, 0u
 			, buffer );
 	}
@@ -843,7 +843,7 @@ namespace ashes
 	inline void StagingBuffer::downloadBufferData( Queue const & queue
 		, CommandPool const & commandPool
 		, uint8_t * data
-		, uint32_t size
+		, VkDeviceSize size
 		, Buffer< T > const & buffer )const
 	{
 		downloadBufferData( queue
@@ -858,14 +858,14 @@ namespace ashes
 	inline void StagingBuffer::downloadBufferData( Queue const & queue
 		, CommandPool const & commandPool
 		, std::vector< T > & data
-		, uint32_t offset
+		, VkDeviceSize offset
 		, Buffer< T > const & buffer )const
 	{
 		downloadBufferData( queue
 			, commandPool
 			, reinterpret_cast< uint8_t const * const >( data.data() )
-			, uint32_t( data.size() * sizeof( T ) )
-			, uint32_t( offset * sizeof( T ) )
+			, data.size() * sizeof( T )
+			, offset * sizeof( T )
 			, buffer );
 	}
 
@@ -873,13 +873,13 @@ namespace ashes
 	inline void StagingBuffer::downloadBufferData( Queue const & queue
 		, CommandPool const & commandPool
 		, ByteArray & data
-		, uint32_t offset
+		, VkDeviceSize offset
 		, Buffer< T > const & buffer )const
 	{
 		downloadBufferData( queue
 			, commandPool
 			, data.data()
-			, uint32_t( data.size() )
+			, data.size()
 			, offset
 			, buffer );
 	}
@@ -888,8 +888,8 @@ namespace ashes
 	void StagingBuffer::downloadBufferData( Queue const & queue
 		, CommandPool const & commandPool
 		, uint8_t * data
-		, uint32_t size
-		, uint32_t offset
+		, VkDeviceSize size
+		, VkDeviceSize offset
 		, Buffer< T > const & buffer )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( "StaginBufferDownload"
@@ -924,7 +924,7 @@ namespace ashes
 		downloadVertexData( queue
 			, commandPool
 			, reinterpret_cast< uint8_t const * const >( data.data() )
-			, uint32_t( data.size() * sizeof( T ) )
+			, data.size() * sizeof( T )
 			, 0u
 			, buffer );
 	}
@@ -938,7 +938,7 @@ namespace ashes
 		downloadVertexData( queue
 			, commandPool
 			, data.data()
-			, uint32_t( data.size() )
+			, data.size()
 			, 0u
 			, buffer );
 	}
@@ -947,7 +947,7 @@ namespace ashes
 	inline void StagingBuffer::downloadVertexData( Queue const & queue
 		, CommandPool const & commandPool
 		, uint8_t * data
-		, uint32_t size
+		, VkDeviceSize size
 		, VertexBuffer< T > const & buffer )const
 	{
 		downloadVertexData( queue
@@ -962,14 +962,14 @@ namespace ashes
 	inline void StagingBuffer::downloadVertexData( Queue const & queue
 		, CommandPool const & commandPool
 		, std::vector< T > & data
-		, uint32_t offset
+		, VkDeviceSize offset
 		, VertexBuffer< T > const & buffer )const
 	{
 		downloadVertexData( queue
 			, commandPool
 			, reinterpret_cast< uint8_t const * const >( data.data() )
-			, uint32_t( data.size() * sizeof( T ) )
-			, uint32_t( offset * sizeof( T ) )
+			, data.size() * sizeof( T )
+			, offset * sizeof( T )
 			, buffer );
 	}
 
@@ -977,13 +977,13 @@ namespace ashes
 	inline void StagingBuffer::downloadVertexData( Queue const & queue
 		, CommandPool const & commandPool
 		, ByteArray & data
-		, uint32_t offset
+		, VkDeviceSize offset
 		, VertexBuffer< T > const & buffer )const
 	{
 		downloadVertexData( queue
 			, commandPool
 			, data.data()
-			, uint32_t( data.size() )
+			, data.size()
 			, offset
 			, buffer );
 	}
@@ -992,8 +992,8 @@ namespace ashes
 	inline void StagingBuffer::downloadVertexData( Queue const & queue
 		, CommandPool const & commandPool
 		, uint8_t * data
-		, uint32_t size
-		, uint32_t offset
+		, VkDeviceSize size
+		, VkDeviceSize offset
 		, VertexBuffer< T > const & buffer )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( "StaginBufferDownloadVtx"
@@ -1029,7 +1029,7 @@ namespace ashes
 		downloadUniformData( queue
 			, commandPool
 			, data.data()
-			, uint32_t( data.size() )
+			, data.size()
 			, 0u
 			, buffer
 			, dstStageFlags );
@@ -1039,7 +1039,7 @@ namespace ashes
 	inline void StagingBuffer::downloadUniformData( Queue const & queue
 		, CommandPool const & commandPool
 		, T * data
-		, uint32_t count
+		, VkDeviceSize count
 		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
@@ -1056,14 +1056,14 @@ namespace ashes
 	inline void StagingBuffer::downloadUniformData( Queue const & queue
 		, CommandPool const & commandPool
 		, std::vector< T > & data
-		, uint32_t offset
+		, VkDeviceSize offset
 		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
 		downloadUniformData( queue
 			, commandPool
 			, data.data()
-			, uint32_t( data.size() )
+			, data.size()
 			, offset
 			, buffer
 			, dstStageFlags );
@@ -1073,8 +1073,8 @@ namespace ashes
 	inline void StagingBuffer::downloadUniformData( Queue const & queue
 		, CommandPool const & commandPool
 		, T * data
-		, uint32_t count
-		, uint32_t offset
+		, VkDeviceSize count
+		, VkDeviceSize offset
 		, UniformBuffer const & buffer
 		, VkPipelineStageFlags dstStageFlags )const
 	{
@@ -1084,8 +1084,8 @@ namespace ashes
 
 		auto elemAlignedSize = buffer.getAlignedSize();
 		doCopyToStagingBuffer( *commandBuffer
-			, uint32_t( elemAlignedSize * count )
-			, uint32_t( elemAlignedSize * offset )
+			, elemAlignedSize * count
+			, elemAlignedSize * offset
 			, buffer
 			, dstStageFlags );
 		commandBuffer->end();
@@ -1097,7 +1097,7 @@ namespace ashes
 
 		doCopyUniformDataFromStagingBuffer( data
 			, count
-			, uint32_t( elemAlignedSize ) );
+			, elemAlignedSize );
 	}
 	/**@}*/
 	/**
@@ -1149,14 +1149,14 @@ namespace ashes
 	/**@{*/
 	template< typename T >
 	inline void StagingBuffer::doCopyUniformDataToStagingBuffer( T const * const datas
-		, uint32_t count
-		, uint32_t elemAlignedSize )const
+		, VkDeviceSize count
+		, VkDeviceSize elemAlignedSize )const
 	{
 		auto size = count * elemAlignedSize;
 		ByteArray data( size_t( size ), uint8_t{} );
 		auto buffer = data.data();
 
-		for ( uint32_t i = 0u; i < count; ++i )
+		for ( VkDeviceSize i = 0u; i < count; ++i )
 		{
 			std::memcpy( buffer, &datas[i], sizeof( T ) );
 			buffer += elemAlignedSize;
@@ -1172,15 +1172,15 @@ namespace ashes
 	/**@{*/
 	template< typename T >
 	inline void StagingBuffer::doCopyUniformDataFromStagingBuffer( T * datas
-		, uint32_t count
-		, uint32_t offset )const
+		, VkDeviceSize count
+		, VkDeviceSize offset )const
 	{
 		auto size = count * offset;
 		ByteArray data( size_t( size ), uint8_t{} );
 		doCopyFromStagingBuffer( data.data(), size );
 		auto buffer = data.data();
 
-		for ( uint32_t i = 0u; i < count; ++i )
+		for ( VkDeviceSize i = 0u; i < count; ++i )
 		{
 			std::memcpy( &datas[i], buffer, sizeof( T ) );
 			buffer += offset;
