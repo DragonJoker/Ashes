@@ -798,8 +798,8 @@ namespace ashes
 		*/
 		void copyBuffer( VkBuffer src
 			, VkBuffer dst
-			, uint32_t size
-			, uint32_t offset = 0 )const;
+			, VkDeviceSize size
+			, VkDeviceSize offset = 0 )const;
 		/**
 		*\brief
 		*	Copies data from a buffer to another one.
@@ -814,8 +814,8 @@ namespace ashes
 		*/
 		void copyBuffer( BufferBase const & src
 			, BufferBase const & dst
-			, uint32_t size
-			, uint32_t offset = 0 )const;
+			, VkDeviceSize size
+			, VkDeviceSize offset = 0 )const;
 		/**
 		*\brief
 		*	Binds a descriptor set to the command buffer.
@@ -890,8 +890,8 @@ namespace ashes
 		*/
 		void copyBuffer( BufferBase const & src
 			, VertexBufferBase const & dst
-			, uint32_t size
-			, uint32_t offset = 0 )const;
+			, VkDeviceSize size
+			, VkDeviceSize offset = 0 )const;
 		/**
 		*\brief
 		*	Copies data from a buffer to another one.
@@ -906,8 +906,8 @@ namespace ashes
 		*/
 		void copyBuffer( VertexBufferBase const & src
 			, BufferBase const & dst
-			, uint32_t size
-			, uint32_t offset = 0 )const;
+			, VkDeviceSize size
+			, VkDeviceSize offset = 0 )const;
 		/**
 		*\brief
 		*	Copies data from a buffer to another one.
@@ -922,8 +922,8 @@ namespace ashes
 		*/
 		void copyBuffer( VertexBufferBase const & src
 			, VertexBufferBase const & dst
-			, uint32_t size
-			, uint32_t offset = 0 )const;
+			, VkDeviceSize size
+			, VkDeviceSize offset = 0 )const;
 		/**
 		*\brief
 		*	Copies data from a buffer to another one.
@@ -938,8 +938,8 @@ namespace ashes
 		*/
 		void copyBuffer( BufferBase const & src
 			, UniformBuffer const & dst
-			, uint32_t size
-			, uint32_t offset = 0 )const;
+			, VkDeviceSize size
+			, VkDeviceSize offset = 0 )const;
 		/**
 		*\brief
 		*	Copies data from a buffer to another one.
@@ -954,8 +954,8 @@ namespace ashes
 		*/
 		void copyBuffer( UniformBuffer const & src
 			, BufferBase const & dst
-			, uint32_t size
-			, uint32_t offset = 0 )const;
+			, VkDeviceSize size
+			, VkDeviceSize offset = 0 )const;
 		/**
 		*\brief
 		*	Copies data from a buffer to another one.
@@ -970,8 +970,8 @@ namespace ashes
 		*/
 		void copyBuffer( UniformBuffer const & src
 			, UniformBuffer const & dst
-			, uint32_t size
-			, uint32_t offset = 0 )const;
+			, VkDeviceSize size
+			, VkDeviceSize offset = 0 )const;
 		/**
 		*\brief
 		*	Copies data from an image to another one.
