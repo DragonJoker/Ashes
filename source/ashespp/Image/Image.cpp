@@ -618,10 +618,6 @@ namespace ashes
 				, m_device->getAllocationCallbacks() );
 			it = m_views.erase( it );
 		}
-		else
-		{
-			++it;
-		}
 
 		return it;
 	}
