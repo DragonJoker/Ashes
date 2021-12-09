@@ -203,7 +203,7 @@ namespace ashes
 		for ( uint32_t level = 0u; level < view->subresourceRange.levelCount; ++level )
 		{
 			subresourceLayers.mipLevel = mipLevel;
-			VkDeviceSize size = getSize( extent, format );
+			VkDeviceSize size = getSize( extent, format, mipLevel );
 			assert( offset + size <= m_buffer.getSize() );
 			commandBuffer.copyToImage( VkBufferImageCopy
 				{
