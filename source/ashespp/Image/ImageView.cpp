@@ -12,6 +12,7 @@ namespace ashes
 		, internal{ pinternal }
 		, image{ pimage }
 	{
+		createInfo.image = image ? *image : VkImage{};
 	}
 
 	VkImageMemoryBarrier ImageView::makeGeneralLayout( VkImageLayout srcLayout
