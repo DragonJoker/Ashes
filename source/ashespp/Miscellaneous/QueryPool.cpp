@@ -17,7 +17,8 @@ namespace ashes
 		, VkQueryType type
 		, uint32_t count
 		, VkQueryPipelineStatisticFlags pipelineStatistics )
-		: m_device{ device }
+		: VkObject{ debugName }
+		, m_device{ device }
 		, m_type{ type }
 		, m_count{ count }
 		, m_pipelineStatistics{ pipelineStatistics }

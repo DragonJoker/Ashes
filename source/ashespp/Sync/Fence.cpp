@@ -18,7 +18,8 @@ namespace ashes
 	Fence::Fence( Device const & device
 		, std::string const & debugName
 		, VkFenceCreateFlags flags )
-		: Fence{ device, debugName
+		: Fence{ device
+			, debugName
 			, { VK_STRUCTURE_TYPE_FENCE_CREATE_INFO
 				, nullptr
 				, flags } }
@@ -34,7 +35,8 @@ namespace ashes
 	Fence::Fence( Device const & device
 		, std::string const & debugName
 		, VkFenceCreateInfo createInfo )
-		: m_device{ device }
+		: VkObject{ debugName }
+		, m_device{ device }
 	{
 		DEBUG_DUMP( createInfo );
 		auto res = m_device.vkCreateFence( device

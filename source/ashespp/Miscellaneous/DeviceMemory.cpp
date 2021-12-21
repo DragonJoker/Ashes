@@ -18,7 +18,8 @@ namespace ashes
 	DeviceMemory::DeviceMemory( Device const & device
 		, std::string const & debugName
 		, VkMemoryAllocateInfo allocateInfo )
-		: m_device{ device }
+		: VkObject{ debugName }
+		, m_device{ device }
 		, m_allocateInfo{ std::move( allocateInfo ) }
 	{
 		DEBUG_DUMP( m_allocateInfo );

@@ -15,6 +15,7 @@ namespace ashes
 	*	Class holding the concept of a swapchain.
 	*/
 	class SwapChain
+		: public VkObject
 	{
 	public:
 		/**

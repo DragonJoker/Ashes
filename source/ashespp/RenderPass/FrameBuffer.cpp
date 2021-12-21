@@ -19,7 +19,8 @@ namespace ashes
 		, VkExtent2D const & dimensions
 		,  ImageViewCRefArray views
 		, uint32_t layers )
-		: m_device{ device }
+		: VkObject{ debugName }
+		, m_device{ device }
 		, m_dimensions{ dimensions }
 		, m_views{ std::move( views ) }
 	{
@@ -86,7 +87,8 @@ namespace ashes
 	FrameBuffer::FrameBuffer( Device const & device
 		, std::string const & debugName
 		, VkFramebufferCreateInfo const & createInfo )
-		: m_device{ device }
+		: VkObject{ debugName }
+		, m_device{ device }
 		, m_dimensions{ createInfo.width, createInfo.height }
 	{
 		DEBUG_DUMP( createInfo );

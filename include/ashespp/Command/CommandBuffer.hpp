@@ -15,6 +15,7 @@ namespace ashes
 	*	A command buffer.
 	*/
 	class CommandBuffer
+		: public VkObject
 	{
 	private:
 		CommandBuffer( CommandBuffer const & ) = delete;

@@ -22,7 +22,8 @@ namespace ashes
 		, std::string const & debugName
 		, DescriptorSetLayoutCRefArray const & layouts
 		, VkPushConstantRangeArray const & pushConstantRanges )
-		: m_device{ device }
+		: VkObject{ debugName }
+		, m_device{ device }
 		, m_setLayouts{ layouts }
 		, m_pushConstantRanges{ pushConstantRanges }
 	{

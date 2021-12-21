@@ -20,7 +20,8 @@ namespace ashes
 	DescriptorSetLayout::DescriptorSetLayout( Device const & device
 		, std::string const & debugName
 		, VkDescriptorSetLayoutBindingArray bindings )
-		: m_device{ device }
+		: VkObject{ debugName }
+		, m_device{ device }
 		, m_bindings{ std::move( bindings ) }
 	{
 		VkDescriptorSetLayoutCreateInfo createInfo

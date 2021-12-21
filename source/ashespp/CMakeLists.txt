@@ -153,6 +153,7 @@ set( ${PROJECT_NAME}_FOLDER_HDR_FILES
 	${Ashes_SOURCE_DIR}/include/ashespp/Descriptor/DescriptorSet.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Descriptor/DescriptorSetLayout.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Descriptor/DescriptorSetPool.hpp
+	${Ashes_SOURCE_DIR}/include/ashespp/Descriptor/WriteDescriptorSet.hpp
 )
 set( ${PROJECT_NAME}_SRC_FILES
 	${${PROJECT_NAME}_SRC_FILES}

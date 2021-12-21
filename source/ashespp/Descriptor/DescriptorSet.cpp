@@ -28,7 +28,8 @@ namespace ashes
 		, DescriptorPool const & pool
 		, DescriptorSetLayout const & layout
 		, uint32_t bindingPoint )
-		: m_device{ pool.getDevice() }
+		: VkObject{ debugName }
+		, m_device{ pool.getDevice() }
 		, m_pool{ pool }
 		, m_layout{ layout }
 		, m_bindingPoint{ bindingPoint }

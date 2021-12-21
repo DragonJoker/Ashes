@@ -15,6 +15,7 @@ namespace ashes
 	*	Semaphore wrapper.
 	*/
 	class Semaphore
+		: public VkObject
 	{
 	public:
 		/**
