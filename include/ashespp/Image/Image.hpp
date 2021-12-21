@@ -20,6 +20,7 @@ namespace ashes
 	*	A texture image.
 	*/
 	class Image
+		: public VkObject
 	{
 	public:
 		/**

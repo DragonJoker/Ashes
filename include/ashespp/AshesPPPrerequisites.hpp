@@ -291,6 +291,23 @@ namespace ashes
 		size_t tagSize;
 		const void * pTag;
 	};
+
+	class VkObject
+	{
+	public:
+		VkObject( std::string name )
+			: m_name{ std::move( name ) }
+		{
+		}
+
+		std::string const & getName()
+		{
+			return m_name;
+		}
+
+	private:
+		std::string m_name;
+	};
 }
 
 #endif

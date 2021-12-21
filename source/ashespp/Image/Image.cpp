@@ -163,11 +163,13 @@ namespace ashes
 	}
 
 	Image::Image()
+		: VkObject{ {} }
 	{
 	}
 
 	Image::Image( Image && rhs )noexcept
-		: m_device{ rhs.m_device }
+		: VkObject{ std::forward< VkObject && >( rhs ) }
+		, m_device{ rhs.m_device }
 		, m_createInfo{ std::move( rhs.m_createInfo ) }
 		, m_internal{ rhs.m_internal }
 		, m_storage{ std::move( rhs.m_storage ) }
@@ -213,7 +215,8 @@ namespace ashes
 	Image::Image( Device const & device
 		, std::string const & debugName
 		, ImageCreateInfo createInfo )
-		: m_device{ &device }
+		: VkObject{ debugName }
+		, m_device{ &device }
 		, m_createInfo{ std::move( createInfo ) }
 	{
 		DEBUG_DUMP( m_createInfo );
@@ -244,7 +247,8 @@ namespace ashes
 	Image::Image( Device const & device
 		, VkImage image
 		, ImageCreateInfo createInfo )
-		: m_device{ &device }
+		: VkObject{ {} }
+		, m_device{ &device }
 		, m_createInfo{ std::move( createInfo ) }
 		, m_internal{ image }
 		, m_ownInternal{ false }

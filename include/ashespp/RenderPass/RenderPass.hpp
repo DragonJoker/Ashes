@@ -15,6 +15,7 @@ namespace ashes
 	*	Describes a render pass (which can contain one or more render subpasses).
 	*/
 	class RenderPass
+		: public VkObject
 	{
 	public:
 		/**

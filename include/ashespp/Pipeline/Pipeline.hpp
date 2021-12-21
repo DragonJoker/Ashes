@@ -16,6 +16,7 @@ namespace ashes
 	*	A Vulkan pipeline.
 	*/
 	class Pipeline
+		: public VkObject
 	{
 	public:
 		/**

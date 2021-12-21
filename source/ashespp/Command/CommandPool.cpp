@@ -18,7 +18,8 @@ namespace ashes
 	CommandPool::CommandPool( Device const & device
 		, std::string const & debugName
 		, VkCommandPoolCreateInfo createInfo )
-		: m_device{ device }
+		: VkObject{ debugName }
+		, m_device{ device }
 	{
 		DEBUG_DUMP( createInfo );
 		auto res = m_device.vkCreateCommandPool( m_device

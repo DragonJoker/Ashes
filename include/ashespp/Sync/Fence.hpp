@@ -17,6 +17,7 @@ namespace ashes
 	*	Allows synchronisations of operations on a queue.
 	*/
 	class Fence
+		: public VkObject
 	{
 	public:
 		/**

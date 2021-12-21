@@ -15,6 +15,7 @@ namespace ashes
 	*	Wrapper to a pipeline shader module.
 	*/
 	class ShaderModule
+		: public VkObject
 	{
 	public:
 		/**

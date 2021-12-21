@@ -16,6 +16,7 @@ namespace ashes
 	*	The pipeline layout.
 	*/
 	class PipelineLayout
+		: public VkObject
 	{
 	public:
 		/**

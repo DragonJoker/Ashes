@@ -23,7 +23,8 @@ namespace ashes
 		, VkFormat format
 		, VkDeviceSize offset
 		, VkDeviceSize range )
-		: m_device{ device }
+		: VkObject{ debugName }
+		, m_device{ device }
 		, m_buffer{ buffer }
 		, m_format{ format }
 		, m_offset{ offset }
