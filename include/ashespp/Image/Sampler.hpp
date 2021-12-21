@@ -15,6 +15,7 @@ namespace ashes
 	*	Sampler wrapper.
 	*/
 	class Sampler
+		: public VkObject
 	{
 	public:
 		/**

@@ -13,6 +13,7 @@ namespace ashes
 	*	GPU query pool implementation.
 	*/
 	class QueryPool
+		: public VkObject
 	{
 	public:
 		/**

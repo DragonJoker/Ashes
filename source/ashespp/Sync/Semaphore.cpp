@@ -12,7 +12,8 @@ namespace ashes
 {
 	Semaphore::Semaphore( Device const & device
 		, VkSemaphore internal )
-		: m_device{ device }
+		: VkObject{ {} }
+		, m_device{ device }
 		, m_internal{ internal }
 		, m_ownInternal{ false }
 	{
@@ -25,7 +26,8 @@ namespace ashes
 
 	Semaphore::Semaphore( Device const & device
 		, std::string const & debugName )
-		: Semaphore{ device, debugName
+		: Semaphore{ device
+			, debugName
 			, { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
 				, nullptr
 				, 0 } }
@@ -34,14 +36,17 @@ namespace ashes
 
 	Semaphore::Semaphore( Device const & device
 		, VkSemaphoreCreateInfo createInfo )
-		: Semaphore{ device, "Semaphore", std::move( createInfo ) }
+		: Semaphore{ device
+			, "Semaphore"
+			, std::move( createInfo ) }
 	{
 	}
 
 	Semaphore::Semaphore( Device const & device
 		, std::string const & debugName
 		, VkSemaphoreCreateInfo createInfo )
-		: m_device{ device }
+		: VkObject{ debugName }
+		, m_device{ device }
 	{
 		DEBUG_DUMP( createInfo );
 		auto res = m_device.vkCreateSemaphore( m_device

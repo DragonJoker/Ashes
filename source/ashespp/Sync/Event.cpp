@@ -15,7 +15,8 @@ namespace ashes
 
 	Event::Event( Device const & device
 		, std::string const & debugName )
-		: Event{ device, debugName
+		: Event{ device
+			, debugName
 			, { VK_STRUCTURE_TYPE_EVENT_CREATE_INFO
 				, nullptr
 				, 0u } }
@@ -31,7 +32,8 @@ namespace ashes
 	Event::Event( Device const & device
 		, std::string const & debugName
 		, VkEventCreateInfo createInfo )
-		: m_device{ device }
+		: VkObject{ debugName }
+		, m_device{ device }
 	{
 		DEBUG_DUMP( createInfo );
 		auto res = m_device.vkCreateEvent( device

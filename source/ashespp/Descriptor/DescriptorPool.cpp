@@ -22,7 +22,8 @@ namespace ashes
 		, VkDescriptorPoolCreateFlags flags
 		, uint32_t maxSets
 		, VkDescriptorPoolSizeArray poolSizes )
-		: m_device{ device }
+		: VkObject{ debugName }
+		, m_device{ device }
 		, m_automaticFree{ !checkFlag( flags, VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT ) }
 	{
 		VkDescriptorPoolCreateInfo createInfo

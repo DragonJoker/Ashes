@@ -15,6 +15,7 @@ namespace ashes
 	*	Class wrapping the concept of a Framebuffer.
 	*/
 	class FrameBuffer
+		: public VkObject
 	{
 	public:
 		/**

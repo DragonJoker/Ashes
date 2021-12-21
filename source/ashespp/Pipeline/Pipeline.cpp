@@ -11,7 +11,8 @@ namespace ashes
 	Pipeline::Pipeline( Device const & device
 		, std::string const & debugName
 		, ComputePipelineCreateInfo const & createInfo )
-		: m_device{ device }
+		: VkObject{ debugName }
+		, m_device{ device }
 	{
 		DEBUG_DUMP( m_createInfo );
 		DEBUG_WRITE( "pipeline.log" );
@@ -28,7 +29,8 @@ namespace ashes
 	Pipeline::Pipeline( Device const & device
 		, std::string const & debugName
 		, GraphicsPipelineCreateInfo const & createInfo )
-		: m_device{ device }
+		: VkObject{ debugName }
+		, m_device{ device }
 	{
 		DEBUG_DUMP( m_createInfo );
 		DEBUG_WRITE( "pipeline.log" );

@@ -35,6 +35,7 @@ namespace ashes
 	*	GPU buffer class.
 	*/
 	class BufferBase
+		: public VkObject
 	{
 	public:
 		/**

@@ -15,6 +15,7 @@ namespace ashes
 	*	A view on a buffer.
 	*/
 	class BufferView
+		: public VkObject
 	{
 	public:
 		/**

@@ -17,7 +17,8 @@ namespace ashes
 	ShaderModule::ShaderModule( Device const & device
 		, std::string const & debugName
 		, UInt32Array const & shader )
-		: m_device{ device }
+		: VkObject{ debugName }
+		, m_device{ device }
 	{
 		VkShaderModuleCreateInfo createInfo
 		{

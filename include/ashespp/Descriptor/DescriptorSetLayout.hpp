@@ -15,6 +15,7 @@ namespace ashes
 	*	A descriptor set layout.
 	*/
 	class DescriptorSetLayout
+		: public VkObject
 	{
 	public:
 		/**

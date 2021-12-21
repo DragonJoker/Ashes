@@ -32,7 +32,8 @@ namespace ashes
 		, std::string const & debugName
 		, CommandPool const & pool
 		, VkCommandBufferLevel level )
-		: m_device{ device }
+		: VkObject{ debugName }
+		, m_device{ device }
 		, m_pool{ pool }
 	{
 		uint32_t const commandBufferCount = 1u;

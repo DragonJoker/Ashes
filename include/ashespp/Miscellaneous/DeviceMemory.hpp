@@ -17,6 +17,7 @@ namespace ashes
 	*	A device memory object.
 	*/
 	class DeviceMemory
+		: public VkObject
 	{
 	public:
 		DeviceMemory( Device const & device

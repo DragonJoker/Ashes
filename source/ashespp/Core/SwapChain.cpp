@@ -21,7 +21,8 @@ namespace ashes
 	SwapChain::SwapChain( Device const & device
 		, std::string const & debugName
 		, VkSwapchainCreateInfoKHR createInfo )
-		: m_device{ device }
+		: VkObject{ debugName }
+		, m_device{ device }
 		, m_createInfo{ std::move( createInfo ) }
 	{
 		DEBUG_DUMP( createInfo );

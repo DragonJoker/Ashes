@@ -17,6 +17,7 @@ namespace ashes
 	*	Descriptor pool wrapper.
 	*/
 	class DescriptorPool
+		: public VkObject
 	{
 	public:
 		/**

@@ -17,7 +17,8 @@ namespace ashes
 	Sampler::Sampler( Device const & device
 		, std::string const & debugName
 		, SamplerCreateInfo createInfo )
-		: m_device{ device }
+		: VkObject{ debugName }
+		, m_device{ device }
 		, m_createInfo{ std::move( createInfo ) }
 	{
 		DEBUG_DUMP( m_info );
@@ -38,7 +39,8 @@ namespace ashes
 	Sampler::Sampler( Device const & device
 		, std::string const & debugName
 		, VkSamplerCreateInfo createInfo )
-		: m_device{ device }
+		: VkObject{ debugName }
+		, m_device{ device }
 		, m_createInfo{ std::move( createInfo ) }
 	{
 		DEBUG_DUMP( m_info );

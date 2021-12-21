@@ -21,6 +21,7 @@ namespace ashes
 	*	Synchronization primitive that can be used to insert a fine-grained dependency between commands submitted to the same queue, or between the host and a queue.
 	*/
 	class Event
+		: public VkObject
 	{
 	public:
 		/**

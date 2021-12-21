@@ -15,6 +15,7 @@ namespace ashes
 	*	Command buffers pool wrapper.
 	*/
 	class CommandPool
+		: public VkObject
 	{
 	public:
 		/**
