@@ -463,10 +463,12 @@ namespace ashes
 			, pipelineStatistics );
 	}
 
-	QueuePtr Device::getQueue( uint32_t familyIndex
+	QueuePtr Device::getQueue( std::string const & debugName
+		, uint32_t familyIndex
 		, uint32_t index )const
 	{
 		return std::make_unique< Queue >( *this
+			, debugName
 			, familyIndex
 			, index );
 	}

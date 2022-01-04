@@ -15,11 +15,17 @@ namespace ashes
 	*	Queue wrapper.
 	*/
 	class Queue
+		: public VkObject
 	{
 	public:
 		Queue( Device const & device
 			, uint32_t familyIndex
 			, uint32_t index );
+		Queue( Device const & device
+			, std::string const & debugName
+			, uint32_t familyIndex
+			, uint32_t index );
+		~Queue();
 		/**
 		*\brief
 		*	Submits given command buffers.

@@ -16,7 +16,16 @@ namespace ashes
 	Queue::Queue( Device const & device
 		, uint32_t familyIndex
 		, uint32_t index )
-		: m_device{ device }
+		: Queue{ device, "Queue", familyIndex, index }
+	{
+	}
+
+	Queue::Queue( Device const & device
+		, std::string const & debugName
+		, uint32_t familyIndex
+		, uint32_t index )
+		: VkObject{ debugName }
+		, m_device{ device }
 		, m_familyIndex{ familyIndex }
 		, m_index{ index }
 	{
@@ -24,6 +33,12 @@ namespace ashes
 			, m_familyIndex
 			, m_index
 			, &m_internal );
+		registerObject( m_device, debugName, *this );
+	}
+
+	Queue::~Queue()
+	{
+		unregisterObject( m_device, *this );
 	}
 
 	VkResult Queue::present( VkSwapchainKHR swapChain
