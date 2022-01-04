@@ -1346,6 +1346,21 @@ namespace ashes
 		/**
 		*\brief
 		*	Retrieves a device queue with given queue family index.
+		*\param[in] debugName
+		*	The device queue debug name.
+		*\param[in] familyIndex
+		*	The device queue family index.
+		*\param[in] index
+		*	The index within this queue family of the queue to retrieve.
+		*\return
+		*	The device queue.
+		*/
+		QueuePtr getQueue( std::string const & debugName
+			, uint32_t familyIndex
+			, uint32_t index )const;
+		/**
+		*\brief
+		*	Retrieves a device queue with given queue family index.
 		*\param[in] familyIndex
 		*	The device queue family index.
 		*\param[in] index
@@ -1354,7 +1369,10 @@ namespace ashes
 		*	The device queue.
 		*/
 		QueuePtr getQueue( uint32_t familyIndex
-			, uint32_t index )const;
+			, uint32_t index )const
+		{
+			return getQueue( "Queue", familyIndex, index );
+		}
 		/**
 		*\brief
 		*	Creates a pipeline layout.
