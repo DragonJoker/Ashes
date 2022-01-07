@@ -17,7 +17,7 @@ namespace ashes
 		, VkImageSubresourceLayers const & subresourceLayers
 		, VkFormat format
 		, VkOffset3D const & offset
-		, VkExtent2D const & extent
+		, VkExtent3D const & extent
 		, ByteArray const & data
 		, ImageView const & texture )const
 	{
@@ -62,7 +62,7 @@ namespace ashes
 		, VkImageSubresourceLayers const & subresourceLayers
 		, VkFormat format
 		, VkOffset3D const & offset
-		, VkExtent2D const & extent
+		, VkExtent3D const & extent
 		, ByteArray const & data
 		, ImageView const & texture )const
 	{
@@ -96,7 +96,7 @@ namespace ashes
 		, VkImageSubresourceLayers const & subresourceLayers
 		, VkFormat format
 		, VkOffset3D const & offset
-		, VkExtent2D const & extent
+		, VkExtent3D const & extent
 		, ByteArray & data
 		, ImageView const & texture )const
 	{
