@@ -22,9 +22,30 @@ namespace ashes
 	}
 
 	StagingTexture::StagingTexture( Device const & device
+		, VkFormat format
+		, VkExtent3D const & extent
+		, uint32_t mipLevels )
+		: StagingTexture{ device, "StagingTexture", format, extent, mipLevels }
+	{
+	}
+
+	StagingTexture::StagingTexture( Device const & device
 		, std::string const & debugName
 		, VkFormat format
 		, VkExtent2D const & extent
+		, uint32_t mipLevels )
+		: StagingTexture{ device
+			, debugName
+			, format
+			, { extent.width, extent.height, 1u }
+			, mipLevels }
+	{
+	}
+
+	StagingTexture::StagingTexture( Device const & device
+		, std::string const & debugName
+		, VkFormat format
+		, VkExtent3D const & extent
 		, uint32_t mipLevels )
 		: m_device{ device }
 		, m_buffer
@@ -53,7 +74,7 @@ namespace ashes
 		, VkImageSubresourceLayers const & subresourceLayers
 		, VkFormat format
 		, VkOffset3D const & offset
-		, VkExtent2D const & extent
+		, VkExtent3D const & extent
 		, uint8_t const * data
 		, ImageView const & view )const
 	{
@@ -126,7 +147,7 @@ namespace ashes
 		, VkImageSubresourceLayers const & subresourceLayers
 		, VkFormat format
 		, VkOffset3D const & offset
-		, VkExtent2D const & extent
+		, VkExtent3D const & extent
 		, ImageView const & view )const
 	{
 		auto commandBuffer = commandPool.createCommandBuffer( "StagingTextureCopy"
@@ -152,7 +173,7 @@ namespace ashes
 		, VkImageSubresourceLayers const & subresourceLayers
 		, VkFormat format
 		, VkOffset3D const & offset
-		, VkExtent2D const & extent
+		, VkExtent3D const & extent
 		, uint8_t const * data
 		, ImageView const & view )const
 	{
@@ -183,7 +204,7 @@ namespace ashes
 		auto extent = getSubresourceDimensions( view.image->getDimensions(), mipLevel, format );
 		doCopyToStagingTexture( data
 			, format
-			, { extent.width, extent.height }
+			, extent
 			, view->subresourceRange.levelCount );
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
 			, VK_PIPELINE_STAGE_TRANSFER_BIT
@@ -216,7 +237,7 @@ namespace ashes
 					{
 						std::max( 1u, view.image->getDimensions().width >> mipLevel ),
 						std::max( 1u, view.image->getDimensions().height >> mipLevel ),
-						1u
+						std::max( 1u, view.image->getDimensions().depth >> mipLevel ),
 					}
 				}
 				, m_buffer
@@ -253,7 +274,7 @@ namespace ashes
 		, VkImageSubresourceLayers const & subresourceLayers
 		, VkFormat format
 		, VkOffset3D const & offset
-		, VkExtent2D const & extent
+		, VkExtent3D const & extent
 		, ImageView const & view )const
 	{
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
@@ -275,7 +296,7 @@ namespace ashes
 		, VkImageSubresourceLayers const & subresourceLayers
 		, VkFormat format
 		, VkOffset3D const & offset
-		, VkExtent2D const & extent
+		, VkExtent3D const & extent
 		, uint8_t * data
 		, ImageView const & view )const
 	{
@@ -334,7 +355,7 @@ namespace ashes
 
 	void StagingTexture::doCopyToStagingTexture( uint8_t const * data
 		, VkFormat format
-		, VkExtent2D const & extent
+		, VkExtent3D const & extent
 		, uint32_t mipLevels )const
 	{
 		VkDeviceSize size = getLevelsSize( extent, format, 0u, mipLevels, 1u );
@@ -363,7 +384,7 @@ namespace ashes
 		, VkImageSubresourceLayers const & subresourceLayers
 		, VkFormat format
 		, VkOffset3D const & offset
-		, VkExtent2D const & extent
+		, VkExtent3D const & extent
 		, ImageView const & texture )const
 	{
 		assert( getSize( extent, format ) <= m_buffer.getSize() );
@@ -381,7 +402,7 @@ namespace ashes
 				{
 					std::max( 1u, extent.width ),
 					std::max( 1u, extent.height ),
-					1u
+					std::max( 1u, extent.depth ),
 				}
 			}
 			, m_buffer
@@ -392,7 +413,7 @@ namespace ashes
 		, VkImageSubresourceLayers const & subresourceLayers
 		, VkFormat format
 		, VkOffset3D const & offset
-		, VkExtent2D const & extent
+		, VkExtent3D const & extent
 		, ImageView const & texture )const
 	{
 		assert( getSize( extent, format ) <= m_buffer.getSize() );
@@ -407,7 +428,7 @@ namespace ashes
 				{
 					std::max( 1u, extent.width ),
 					std::max( 1u, extent.height ),
-					1u
+					std::max( 1u, extent.depth ),
 				}
 			}
 			, *texture.image
@@ -416,7 +437,7 @@ namespace ashes
 
 	void StagingTexture::doCopyFromStagingTexture( uint8_t * data
 		, VkFormat format
-		, VkExtent2D const & extent )const
+		, VkExtent3D const & extent )const
 	{
 		VkDeviceSize size = getSize( extent, format );
 		auto mappedSize = getAlignedSize( size
