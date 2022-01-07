@@ -807,9 +807,32 @@ namespace ashes
 		*\return
 		*	The created staging texture.
 		*/
+		StagingTexturePtr createStagingTexture( VkFormat format
+			, VkExtent3D const & extent
+			, uint32_t mipLevels = 1u )const;
+		/**
+		*\brief
+		*	Creates a staging texture.
+		*\param[in] extent
+		*	The texture dimensions.
+		*\return
+		*	The created staging texture.
+		*/
 		StagingTexturePtr createStagingTexture( std::string const & debugName
 			, VkFormat format
 			, VkExtent2D const & extent
+			, uint32_t mipLevels = 1u )const;
+		/**
+		*\brief
+		*	Creates a staging texture.
+		*\param[in] extent
+		*	The texture dimensions.
+		*\return
+		*	The created staging texture.
+		*/
+		StagingTexturePtr createStagingTexture( std::string const & debugName
+			, VkFormat format
+			, VkExtent3D const & extent
 			, uint32_t mipLevels = 1u )const;
 		/*
 		*\brief

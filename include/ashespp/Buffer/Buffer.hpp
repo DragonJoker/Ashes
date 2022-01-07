@@ -217,7 +217,7 @@ namespace ashes
 		*\return
 		*	The buffer size.
 		*/
-		inline VkDeviceSize getSize()const
+		VkDeviceSize getSize()const
 		{
 			return m_createInfo.size;
 		}
@@ -225,15 +225,23 @@ namespace ashes
 		*\return
 		*	The buffer usage flags.
 		*/
-		inline VkBufferUsageFlags getUsage()const
+		VkBufferUsageFlags getUsage()const
 		{
 			return m_createInfo.usage;
+		}
+		/**
+		*\return
+		*	The buffer device memory.
+		*/
+		DeviceMemory const & getStorage()const
+		{
+			return *m_storage;
 		}
 		/**
 		*\brief
 		*	Conversion implicite vers VkBuffer.
 		*/
-		inline operator VkBuffer const & ()const
+		operator VkBuffer const & ()const
 		{
 			return m_internal;
 		}
@@ -241,7 +249,7 @@ namespace ashes
 		*\brief
 		*	Conversion implicite vers VkBufferCreateInfo.
 		*/
-		inline VkBufferCreateInfo const & operator->()const
+		VkBufferCreateInfo const & operator->()const
 		{
 			return m_createInfo;
 		}

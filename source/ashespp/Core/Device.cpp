@@ -107,9 +107,31 @@ namespace ashes
 			, mipLevels );
 	}
 
+	StagingTexturePtr Device::createStagingTexture( VkFormat format
+		, VkExtent3D const & extent
+		, uint32_t mipLevels )const
+	{
+		return std::make_unique< StagingTexture >( *this
+			, format
+			, extent
+			, mipLevels );
+	}
+
 	StagingTexturePtr Device::createStagingTexture( std::string const & debugName
 		, VkFormat format
 		, VkExtent2D const & extent
+		, uint32_t mipLevels )const
+	{
+		return std::make_unique< StagingTexture >( *this
+			, debugName
+			, format
+			, extent
+			, mipLevels );
+	}
+
+	StagingTexturePtr Device::createStagingTexture( std::string const & debugName
+		, VkFormat format
+		, VkExtent3D const & extent
 		, uint32_t mipLevels )const
 	{
 		return std::make_unique< StagingTexture >( *this

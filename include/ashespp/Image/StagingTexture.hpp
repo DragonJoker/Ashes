@@ -40,13 +40,35 @@ namespace ashes
 		*	The texture dimensions.
 		*/
 		StagingTexture( Device const & device
+			, VkFormat format
+			, VkExtent3D const & extent
+			, uint32_t mipLevels = 1u );
+		/**
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] extent
+		*	The texture dimensions.
+		*/
+		StagingTexture( Device const & device
 			, std::string const & debugName
 			, VkFormat format
 			, VkExtent2D const & extent
 			, uint32_t mipLevels = 1u );
-		~StagingTexture()
-		{
-		}
+		/**
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] extent
+		*	The texture dimensions.
+		*/
+		StagingTexture( Device const & device
+			, std::string const & debugName
+			, VkFormat format
+			, VkExtent3D const & extent
+			, uint32_t mipLevels = 1u );
 		/**
 		*\name
 		*	Upload.
@@ -57,7 +79,7 @@ namespace ashes
 			, VkImageSubresourceLayers const & subresourceLayers
 			, VkFormat format
 			, VkOffset3D const & offset
-			, VkExtent2D const & extent
+			, VkExtent3D const & extent
 			, uint8_t const * data
 			, ImageView const & texture )const;
 		inline void uploadTextureData( Queue const & queue
@@ -65,7 +87,7 @@ namespace ashes
 			, VkImageSubresourceLayers const & subresourceLayers
 			, VkFormat format
 			, VkOffset3D const & offset
-			, VkExtent2D const & extent
+			, VkExtent3D const & extent
 			, ByteArray const & data
 			, ImageView const & texture )const;
 		void uploadTextureData( Queue const & queue
@@ -87,20 +109,20 @@ namespace ashes
 			, VkImageSubresourceLayers const & subresourceLayers
 			, VkFormat format
 			, VkOffset3D const & offset
-			, VkExtent2D const & extent
+			, VkExtent3D const & extent
 			, ImageView const & texture )const;
 		void uploadTextureData( CommandBuffer const & commandBuffer
 			, VkImageSubresourceLayers const & subresourceLayers
 			, VkFormat format
 			, VkOffset3D const & offset
-			, VkExtent2D const & extent
+			, VkExtent3D const & extent
 			, uint8_t const * data
 			, ImageView const & texture )const;
 		inline void uploadTextureData( CommandBuffer const & commandBuffer
 			, VkImageSubresourceLayers const & subresourceLayers
 			, VkFormat format
 			, VkOffset3D const & offset
-			, VkExtent2D const & extent
+			, VkExtent3D const & extent
 			, ByteArray const & data
 			, ImageView const & texture )const;
 		void uploadTextureData( CommandBuffer const & commandBuffer
@@ -118,7 +140,7 @@ namespace ashes
 			, VkImageSubresourceLayers const & subresourceLayers
 			, VkFormat format
 			, VkOffset3D const & offset
-			, VkExtent2D const & extent
+			, VkExtent3D const & extent
 			, ImageView const & texture )const;
 		/**@}*/
 		/**
@@ -131,7 +153,7 @@ namespace ashes
 			, VkImageSubresourceLayers const & subresourceLayers
 			, VkFormat format
 			, VkOffset3D const & offset
-			, VkExtent2D const & extent
+			, VkExtent3D const & extent
 			, uint8_t * data
 			, ImageView const & texture )const;
 		inline void downloadTextureData( Queue const & queue
@@ -139,7 +161,7 @@ namespace ashes
 			, VkImageSubresourceLayers const & subresourceLayers
 			, VkFormat format
 			, VkOffset3D const & offset
-			, VkExtent2D const & extent
+			, VkExtent3D const & extent
 			, ByteArray & data
 			, ImageView const & texture )const;
 		void downloadTextureData( Queue const & queue
@@ -196,13 +218,13 @@ namespace ashes
 		/**@{*/
 		void doCopyToStagingTexture( uint8_t const * data
 			, VkFormat format
-			, VkExtent2D const & extent
+			, VkExtent3D const & extent
 			, uint32_t mipLevels )const;
 		void doCopyStagingToDestination( CommandBuffer const & commandBuffer
 			, VkImageSubresourceLayers const & subresourceLayers
 			, VkFormat format
 			, VkOffset3D const & offset
-			, VkExtent2D const & extent
+			, VkExtent3D const & extent
 			, ImageView const & texture )const;
 		/**@{*/
 		/**
@@ -214,11 +236,11 @@ namespace ashes
 			, VkImageSubresourceLayers const & subresourceLayers
 			, VkFormat format
 			, VkOffset3D const & offset
-			, VkExtent2D const & extent
+			, VkExtent3D const & extent
 			, ImageView const & texture )const;
 		void doCopyFromStagingTexture( uint8_t * data
 			, VkFormat format
-			, VkExtent2D const & extent )const;
+			, VkExtent3D const & extent )const;
 		/**@}*/
 
 	private:
