@@ -62,7 +62,7 @@ namespace ashes
 			VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,
 			nullptr,
 			m_internal,                                       // memory
-			0,                                                // offset
+			offset,                                           // offset
 			size                                              // size
 		};
 		DEBUG_DUMP( mappedRange );
@@ -78,7 +78,7 @@ namespace ashes
 			VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,
 			nullptr,
 			m_internal,                                       // memory
-			0,                                                // offset
+			offset,                                           // offset
 			size                                              // size
 		};
 		DEBUG_DUMP( mappedRange );
