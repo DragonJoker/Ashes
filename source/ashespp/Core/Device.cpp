@@ -4,6 +4,7 @@ See LICENSE file in root folder.
 */
 #include "ashespp/Core/Device.hpp"
 
+#include "ashespp/AccelerationStructure/AccelerationStructure.hpp"
 #include "ashespp/Buffer/Buffer.hpp"
 #include "ashespp/Buffer/BufferView.hpp"
 #include "ashespp/Core/Instance.hpp"
@@ -520,6 +521,76 @@ namespace ashes
 	DeferredOperationPtr Device::createDeferredOperation()const
 	{
 		return std::make_unique< DeferredOperation >( *this );
+	}
+
+#endif
+#if VK_KHR_acceleration_structure
+
+	AccelerationStructurePtr Device::createAccelerationStructure( std::string debugName
+		, VkAccelerationStructureCreateInfoKHR infos )const
+	{
+		return std::make_unique< AccelerationStructure >( *this
+			, std::move( debugName )
+			, std::move( infos ) );
+	}
+
+	AccelerationStructurePtr Device::createAccelerationStructure( VkAccelerationStructureCreateInfoKHR infos )const
+	{
+		return std::make_unique< AccelerationStructure >( *this
+			, std::move( infos ) );
+	}
+
+	void Device::buildAccelerationStructuresKHR( VkDeferredOperationKHR deferredOperation
+		, VkAccelerationStructureBuildGeometryInfoArray const & infos
+		, VkAccelerationStructureBuildRangeInfoPtrArray const & buildRangeInfos )const
+	{
+		auto res = vkBuildAccelerationStructuresKHR( m_internal
+			, deferredOperation
+			, uint32_t( infos.size() )
+			, infos.data()
+			, buildRangeInfos.data() );
+		checkError( res, "vkBuildAccelerationStructuresKHR" );
+	}
+
+	void Device::writeAccelerationStructuresPropertiesKHR( VkAccelerationStructureArray const & accelerationStructures
+		, VkQueryType queryType
+		, ByteArray data
+		, size_t stride )const
+	{
+		auto res = vkWriteAccelerationStructuresPropertiesKHR( m_internal
+			, uint32_t( accelerationStructures.size() )
+			, accelerationStructures.data()
+			, queryType
+			, data.size()
+			, data.data()
+			, stride );
+		checkError( res, "vkWriteAccelerationStructuresPropertiesKHR" );
+	}
+
+	VkAccelerationStructureCompatibilityKHR Device::getDeviceAccelerationStructureCompatibilityKHR( VkAccelerationStructureVersionInfoKHR & versionInfo )const
+	{
+		VkAccelerationStructureCompatibilityKHR result;
+		vkGetDeviceAccelerationStructureCompatibilityKHR( m_internal
+			, &versionInfo
+			, &result );
+		return result;
+	}
+
+	VkAccelerationStructureBuildSizesInfoKHR Device::getAccelerationStructureBuildSizesKHR( VkAccelerationStructureBuildTypeKHR buildType
+		, VkAccelerationStructureBuildGeometryInfoKHR const & buildInfo
+		, UInt32Array const & maxPrimitiveCounts )const
+	{
+		VkAccelerationStructureBuildSizesInfoKHR result{ VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR
+			, nullptr
+			, {}
+			, {}
+			, {} };
+		vkGetAccelerationStructureBuildSizesKHR( m_internal
+			, buildType
+			, &buildInfo
+			, maxPrimitiveCounts.empty() ? nullptr : maxPrimitiveCounts.data()
+			, &result );
+		return result;
 	}
 
 #endif

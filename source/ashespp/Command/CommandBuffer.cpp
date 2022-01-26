@@ -4,6 +4,7 @@ See LICENSE file in root folder.
 */
 #include "ashespp/Command/CommandBuffer.hpp"
 
+#include "ashespp/AccelerationStructure/AccelerationStructure.hpp"
 #include "ashespp/Buffer/VertexBuffer.hpp"
 #include "ashespp/Buffer/UniformBuffer.hpp"
 #include "ashespp/Descriptor/DescriptorSet.hpp"
@@ -848,6 +849,63 @@ namespace ashes
 	{
 		m_device.vkCmdSetRayTracingPipelineStackSizeKHR( m_internal
 			, pipelineStackSize );
+	}
+
+#endif
+#if VK_KHR_acceleration_structure
+
+	void CommandBuffer::buildAccelerationStructures( AccelerationStructureBuildGeometryInfoArray const & infos
+		, AccelerationStructureBuildRangeInfoPtrArray const & pBuildRangeInfos )const
+	{
+		auto vkinfos = makeVkArray< VkAccelerationStructureBuildGeometryInfoKHR >( infos );
+		auto vkbuildRangesInfos = makeVkArray< VkAccelerationStructureBuildRangeInfoKHR const * >( pBuildRangeInfos );
+		m_device.vkCmdBuildAccelerationStructuresKHR( m_internal
+			, uint32_t( vkinfos.size() )
+			, vkinfos.data()
+			, vkbuildRangesInfos.data() );
+	}
+
+	void CommandBuffer::buildAccelerationStructuresIndirect( AccelerationStructureBuildGeometryInfoArray const & infos
+		, VkDeviceAddressArray const & indirectDeviceAddresses
+		, UInt32Array const & indirectStrides
+		, UInt32PtrArray const & pMaxPrimitiveCounts )const
+	{
+		auto vkinfos = makeVkArray< VkAccelerationStructureBuildGeometryInfoKHR >( infos );
+		m_device.vkCmdBuildAccelerationStructuresIndirectKHR( m_internal
+			, uint32_t( vkinfos.size() )
+			, vkinfos.data()
+			, indirectDeviceAddresses.data()
+			, indirectStrides.data()
+			, pMaxPrimitiveCounts.data() );
+	}
+
+	void CommandBuffer::copyAccelerationStructure( VkCopyAccelerationStructureInfoKHR const & info )const
+	{
+		m_device.vkCmdCopyAccelerationStructureKHR( m_internal, &info );
+	}
+
+	void CommandBuffer::copyAccelerationStructureToMemory( VkCopyAccelerationStructureToMemoryInfoKHR const & info )const
+	{
+		m_device.vkCmdCopyAccelerationStructureToMemoryKHR( m_internal, &info );
+	}
+
+	void CommandBuffer::copyMemoryToAccelerationStructure( VkCopyMemoryToAccelerationStructureInfoKHR const & info )const
+	{
+		m_device.vkCmdCopyMemoryToAccelerationStructureKHR( m_internal, &info );
+	}
+
+	void CommandBuffer::writeAccelerationStructuresProperties( AccelerationStructureCRefArray const & accelerationStructures
+		, VkQueryType queryType
+		, VkQueryPool queryPool
+		, uint32_t firstQuery )const
+	{
+		auto vkacc = makeVkArray< VkAccelerationStructureKHR >( accelerationStructures );
+		m_device.vkCmdWriteAccelerationStructuresPropertiesKHR( m_internal
+			, uint32_t( vkacc.size() )
+			, vkacc.data()
+			, queryType
+			, queryPool
+			, firstQuery );
 	}
 
 #endif
