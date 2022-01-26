@@ -2484,6 +2484,155 @@ namespace ashes::gl
 
 #endif
 #pragma endregion
+#pragma region VK_KHR_deferred_host_operations
+#ifdef VK_KHR_deferred_host_operations
+
+	VkResult VKAPI_CALL vkCreateDeferredOperationKHR(
+		VkDevice device,
+		const VkAllocationCallbacks * pAllocator,
+		VkDeferredOperationKHR * pDeferredOperation );
+	void VKAPI_CALL vkDestroyDeferredOperationKHR(
+		VkDevice device,
+		VkDeferredOperationKHR operation,
+		const VkAllocationCallbacks * pAllocator );
+	uint32_t VKAPI_CALL vkGetDeferredOperationMaxConcurrencyKHR(
+		VkDevice device,
+		VkDeferredOperationKHR operation );
+	VkResult VKAPI_CALL vkGetDeferredOperationResultKHR(
+		VkDevice device,
+		VkDeferredOperationKHR operation );
+	VkResult VKAPI_CALL vkDeferredOperationJoinKHR(
+		VkDevice device,
+		VkDeferredOperationKHR operation );
+
+#endif
+#pragma endregion
+#pragma region VK_KHR_ray_tracing_pipeline
+#ifdef VK_KHR_ray_tracing_pipeline
+
+	void VKAPI_CALL vkCmdTraceRaysKHR(
+		VkCommandBuffer commandBuffer,
+		const VkStridedDeviceAddressRegionKHR * pRaygenShaderBindingTable,
+		const VkStridedDeviceAddressRegionKHR * pMissShaderBindingTable,
+		const VkStridedDeviceAddressRegionKHR * pHitShaderBindingTable,
+		const VkStridedDeviceAddressRegionKHR * pCallableShaderBindingTable,
+		uint32_t width,
+		uint32_t height,
+		uint32_t depth );
+	VkResult VKAPI_CALL vkCreateRayTracingPipelinesKHR(
+		VkDevice device,
+		VkDeferredOperationKHR deferredOperation,
+		VkPipelineCache pipelineCache,
+		uint32_t createInfoCount,
+		const VkRayTracingPipelineCreateInfoKHR * pCreateInfos,
+		const VkAllocationCallbacks * pAllocator,
+		VkPipeline * pPipelines );
+	VkResult VKAPI_CALL vkGetRayTracingCaptureReplayShaderGroupHandlesKHR(
+		VkDevice device,
+		VkPipeline pipeline,
+		uint32_t firstGroup,
+		uint32_t groupCount,
+		size_t dataSize,
+		void * pData );
+	void VKAPI_CALL vkCmdTraceRaysIndirectKHR(
+		VkCommandBuffer commandBuffer,
+		const VkStridedDeviceAddressRegionKHR * pRaygenShaderBindingTable,
+		const VkStridedDeviceAddressRegionKHR * pMissShaderBindingTable,
+		const VkStridedDeviceAddressRegionKHR * pHitShaderBindingTable,
+		const VkStridedDeviceAddressRegionKHR * pCallableShaderBindingTable,
+		VkDeviceAddress indirectDeviceAddress );
+	VkDeviceSize VKAPI_CALL vkGetRayTracingShaderGroupStackSizeKHR(
+		VkDevice device,
+		VkPipeline pipeline,
+		uint32_t group,
+		VkShaderGroupShaderKHR groupShader );
+	void VKAPI_CALL vkCmdSetRayTracingPipelineStackSizeKHR(
+		VkCommandBuffer commandBuffer,
+		uint32_t pipelineStackSize );
+
+#endif
+#pragma endregion
+#pragma region VK_KHR_acceleration_structure
+#ifdef VK_KHR_acceleration_structure
+
+	VkResult VKAPI_CALL vkCreateAccelerationStructureKHR(
+		VkDevice device,
+		const VkAccelerationStructureCreateInfoKHR * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkAccelerationStructureKHR * pAccelerationStructure );
+	void VKAPI_CALL vkDestroyAccelerationStructureKHR(
+		VkDevice device,
+		VkAccelerationStructureKHR accelerationStructure,
+		const VkAllocationCallbacks * pAllocator );
+	void VKAPI_CALL vkCmdBuildAccelerationStructuresKHR(
+		VkCommandBuffer commandBuffer,
+		uint32_t infoCount,
+		const VkAccelerationStructureBuildGeometryInfoKHR * pInfos,
+		const VkAccelerationStructureBuildRangeInfoKHR * const * ppBuildRangeInfos );
+	void VKAPI_CALL vkCmdBuildAccelerationStructuresIndirectKHR(
+		VkCommandBuffer commandBuffer,
+		uint32_t infoCount,
+		const VkAccelerationStructureBuildGeometryInfoKHR * pInfos,
+		const VkDeviceAddress * pIndirectDeviceAddresses,
+		const uint32_t * pIndirectStrides,
+		const uint32_t * const * ppMaxPrimitiveCounts );
+	VkResult VKAPI_CALL vkBuildAccelerationStructuresKHR(
+		VkDevice device,
+		VkDeferredOperationKHR deferredOperation,
+		uint32_t infoCount,
+		const VkAccelerationStructureBuildGeometryInfoKHR * pInfos,
+		const VkAccelerationStructureBuildRangeInfoKHR * const * ppBuildRangeInfos );
+	VkResult VKAPI_CALL vkCopyAccelerationStructureKHR(
+		VkDevice device,
+		VkDeferredOperationKHR deferredOperation,
+		const VkCopyAccelerationStructureInfoKHR * pInfo );
+	VkResult VKAPI_CALL vkCopyAccelerationStructureToMemoryKHR(
+		VkDevice device,
+		VkDeferredOperationKHR deferredOperation,
+		const VkCopyAccelerationStructureToMemoryInfoKHR * pInfo );
+	VkResult VKAPI_CALL vkCopyMemoryToAccelerationStructureKHR(
+		VkDevice device,
+		VkDeferredOperationKHR deferredOperation,
+		const VkCopyMemoryToAccelerationStructureInfoKHR * pInfo );
+	VkResult VKAPI_CALL vkWriteAccelerationStructuresPropertiesKHR(
+		VkDevice device,
+		uint32_t accelerationStructureCount,
+		const VkAccelerationStructureKHR * pAccelerationStructures,
+		VkQueryType queryType,
+		size_t dataSize,
+		void * pData,
+		size_t stride );
+	void VKAPI_CALL vkCmdCopyAccelerationStructureKHR(
+		VkCommandBuffer commandBuffer,
+		const VkCopyAccelerationStructureInfoKHR * pInfo );
+	void VKAPI_CALL vkCmdCopyAccelerationStructureToMemoryKHR(
+		VkCommandBuffer commandBuffer,
+		const VkCopyAccelerationStructureToMemoryInfoKHR * pInfo );
+	void VKAPI_CALL vkCmdCopyMemoryToAccelerationStructureKHR(
+		VkCommandBuffer commandBuffer,
+		const VkCopyMemoryToAccelerationStructureInfoKHR * pInfo );
+	VkDeviceAddress VKAPI_CALL vkGetAccelerationStructureDeviceAddressKHR(
+		VkDevice device,
+		const VkAccelerationStructureDeviceAddressInfoKHR * pInfo );
+	void VKAPI_CALL vkCmdWriteAccelerationStructuresPropertiesKHR(
+		VkCommandBuffer commandBuffer,
+		uint32_t accelerationStructureCount,
+		const VkAccelerationStructureKHR * pAccelerationStructures,
+		VkQueryType queryType,
+		VkQueryPool queryPool,
+		uint32_t firstQuery );
+	void VKAPI_CALL vkGetDeviceAccelerationStructureCompatibilityKHR(
+		VkDevice device,
+		const VkAccelerationStructureVersionInfoKHR * pVersionInfo,
+		VkAccelerationStructureCompatibilityKHR * pCompatibility );
+	void VKAPI_CALL vkGetAccelerationStructureBuildSizesKHR(
+		VkDevice device,
+		VkAccelerationStructureBuildTypeKHR buildType,
+		const VkAccelerationStructureBuildGeometryInfoKHR * pBuildInfo,
+		const uint32_t * pMaxPrimitiveCounts,
+		VkAccelerationStructureBuildSizesInfoKHR * pSizeInfo );
+#endif
+#pragma endregion
 #pragma region VK_KHR_android_surface
 #ifdef VK_KHR_android_surface
 #	ifdef ASHES_ANDROID
@@ -2692,179 +2841,6 @@ extern "C"
 		const VkAllocationCallbacks * pAllocator,
 		VkSurfaceKHR * pSurface );
 
-#endif
-#pragma endregion
-#pragma region VK_KHR_deferred_host_operations
-#ifdef VK_KHR_deferred_host_operations
-
-	VkResult VKAPI_CALL vkCreateDeferredOperationKHR(
-		VkDevice device,
-		const VkAllocationCallbacks * pAllocator,
-		VkDeferredOperationKHR * pDeferredOperation );
-
-	void VKAPI_CALL vkDestroyDeferredOperationKHR(
-		VkDevice device,
-		VkDeferredOperationKHR operation,
-		const VkAllocationCallbacks * pAllocator );
-
-	uint32_t VKAPI_CALL vkGetDeferredOperationMaxConcurrencyKHR(
-		VkDevice device,
-		VkDeferredOperationKHR operation );
-
-	VkResult VKAPI_CALL vkGetDeferredOperationResultKHR(
-		VkDevice device,
-		VkDeferredOperationKHR operation );
-
-	VkResult VKAPI_CALL vkDeferredOperationJoinKHR(
-		VkDevice device,
-		VkDeferredOperationKHR operation );
-
-#endif
-#pragma endregion
-#pragma region VK_KHR_ray_tracing_pipeline
-#ifdef VK_KHR_ray_tracing_pipeline
-
-	void VKAPI_CALL vkCmdTraceRaysKHR(
-		VkCommandBuffer commandBuffer,
-		const VkStridedDeviceAddressRegionKHR * pRaygenShaderBindingTable,
-		const VkStridedDeviceAddressRegionKHR * pMissShaderBindingTable,
-		const VkStridedDeviceAddressRegionKHR * pHitShaderBindingTable,
-		const VkStridedDeviceAddressRegionKHR * pCallableShaderBindingTable,
-		uint32_t width,
-		uint32_t height,
-		uint32_t depth );
-
-	VkResult VKAPI_CALL vkCreateRayTracingPipelinesKHR(
-		VkDevice device,
-		VkDeferredOperationKHR deferredOperation,
-		VkPipelineCache pipelineCache,
-		uint32_t createInfoCount,
-		const VkRayTracingPipelineCreateInfoKHR * pCreateInfos,
-		const VkAllocationCallbacks * pAllocator,
-		VkPipeline * pPipelines );
-
-	VkResult VKAPI_CALL vkGetRayTracingCaptureReplayShaderGroupHandlesKHR(
-		VkDevice device,
-		VkPipeline pipeline,
-		uint32_t firstGroup,
-		uint32_t groupCount,
-		size_t dataSize,
-		void * pData );
-
-	void VKAPI_CALL vkCmdTraceRaysIndirectKHR(
-		VkCommandBuffer commandBuffer,
-		const VkStridedDeviceAddressRegionKHR * pRaygenShaderBindingTable,
-		const VkStridedDeviceAddressRegionKHR * pMissShaderBindingTable,
-		const VkStridedDeviceAddressRegionKHR * pHitShaderBindingTable,
-		const VkStridedDeviceAddressRegionKHR * pCallableShaderBindingTable,
-		VkDeviceAddress indirectDeviceAddress );
-
-	VkDeviceSize VKAPI_CALL vkGetRayTracingShaderGroupStackSizeKHR(
-		VkDevice device,
-		VkPipeline pipeline,
-		uint32_t group,
-		VkShaderGroupShaderKHR groupShader );
-
-	void VKAPI_CALL vkCmdSetRayTracingPipelineStackSizeKHR(
-		VkCommandBuffer commandBuffer,
-		uint32_t pipelineStackSize );
-
-#endif
-#pragma endregion
-#pragma region VK_KHR_acceleration_structure
-#ifdef VK_KHR_acceleration_structure
-
-	VkResult VKAPI_CALL vkCreateAccelerationStructureKHR(
-		VkDevice device,
-		const VkAccelerationStructureCreateInfoKHR * pCreateInfo,
-		const VkAllocationCallbacks * pAllocator,
-		VkAccelerationStructureKHR * pAccelerationStructure );
-
-	void VKAPI_CALL vkDestroyAccelerationStructureKHR(
-		VkDevice device,
-		VkAccelerationStructureKHR accelerationStructure,
-		const VkAllocationCallbacks * pAllocator );
-
-	void VKAPI_CALL vkCmdBuildAccelerationStructuresKHR(
-		VkCommandBuffer commandBuffer,
-		uint32_t infoCount,
-		const VkAccelerationStructureBuildGeometryInfoKHR * pInfos,
-		const VkAccelerationStructureBuildRangeInfoKHR * const * ppBuildRangeInfos );
-
-	void VKAPI_CALL vkCmdBuildAccelerationStructuresIndirectKHR(
-		VkCommandBuffer commandBuffer,
-		uint32_t infoCount,
-		const VkAccelerationStructureBuildGeometryInfoKHR * pInfos,
-		const VkDeviceAddress * pIndirectDeviceAddresses,
-		const uint32_t * pIndirectStrides,
-		const uint32_t * const * ppMaxPrimitiveCounts );
-
-	VkResult VKAPI_CALL vkBuildAccelerationStructuresKHR(
-		VkDevice device,
-		VkDeferredOperationKHR deferredOperation,
-		uint32_t infoCount,
-		const VkAccelerationStructureBuildGeometryInfoKHR * pInfos,
-		const VkAccelerationStructureBuildRangeInfoKHR * const * ppBuildRangeInfos );
-
-	VkResult VKAPI_CALL vkCopyAccelerationStructureKHR(
-		VkDevice device,
-		VkDeferredOperationKHR deferredOperation,
-		const VkCopyAccelerationStructureInfoKHR * pInfo );
-
-	VkResult VKAPI_CALL vkCopyAccelerationStructureToMemoryKHR(
-		VkDevice device,
-		VkDeferredOperationKHR deferredOperation,
-		const VkCopyAccelerationStructureToMemoryInfoKHR * pInfo );
-
-	VkResult VKAPI_CALL vkCopyMemoryToAccelerationStructureKHR(
-		VkDevice device,
-		VkDeferredOperationKHR deferredOperation,
-		const VkCopyMemoryToAccelerationStructureInfoKHR * pInfo );
-
-	VkResult VKAPI_CALL vkWriteAccelerationStructuresPropertiesKHR(
-		VkDevice device,
-		uint32_t accelerationStructureCount,
-		const VkAccelerationStructureKHR * pAccelerationStructures,
-		VkQueryType queryType,
-		size_t dataSize,
-		void * pData,
-		size_t stride );
-
-	void VKAPI_CALL vkCmdCopyAccelerationStructureKHR(
-		VkCommandBuffer commandBuffer,
-		const VkCopyAccelerationStructureInfoKHR * pInfo );
-
-	void VKAPI_CALL vkCmdCopyAccelerationStructureToMemoryKHR(
-		VkCommandBuffer commandBuffer,
-		const VkCopyAccelerationStructureToMemoryInfoKHR * pInfo );
-
-	void VKAPI_CALL vkCmdCopyMemoryToAccelerationStructureKHR(
-		VkCommandBuffer commandBuffer,
-		const VkCopyMemoryToAccelerationStructureInfoKHR * pInfo );
-
-	VkDeviceAddress VKAPI_CALL vkGetAccelerationStructureDeviceAddressKHR(
-		VkDevice device,
-		const VkAccelerationStructureDeviceAddressInfoKHR * pInfo );
-
-	void VKAPI_CALL vkCmdWriteAccelerationStructuresPropertiesKHR(
-		VkCommandBuffer commandBuffer,
-		uint32_t accelerationStructureCount,
-		const VkAccelerationStructureKHR * pAccelerationStructures,
-		VkQueryType queryType,
-		VkQueryPool queryPool,
-		uint32_t firstQuery );
-
-	void VKAPI_CALL vkGetDeviceAccelerationStructureCompatibilityKHR(
-		VkDevice device,
-		const VkAccelerationStructureVersionInfoKHR * pVersionInfo,
-		VkAccelerationStructureCompatibilityKHR * pCompatibility );
-
-	void VKAPI_CALL vkGetAccelerationStructureBuildSizesKHR(
-		VkDevice device,
-		VkAccelerationStructureBuildTypeKHR buildType,
-		const VkAccelerationStructureBuildGeometryInfoKHR * pBuildInfo,
-		const uint32_t * pMaxPrimitiveCounts,
-		VkAccelerationStructureBuildSizesInfoKHR * pSizeInfo );
 #endif
 #pragma endregion
 #pragma region VK_KHR_android_surface
