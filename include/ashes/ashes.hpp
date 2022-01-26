@@ -151,6 +151,7 @@ namespace ashes
 	using ByteArray = std::vector< uint8_t >;
 	using UInt16Array = std::vector< uint16_t >;
 	using UInt32Array = std::vector< uint32_t >;
+	using UInt32PtrArray = std::vector< uint32_t const * >;
 	using UInt64Array = std::vector< uint64_t >;
 	using FloatArray = std::vector< float >;
 	using StringArray = std::vector< std::string >;
@@ -491,6 +492,10 @@ namespace ashes
 	using VkViewportArray = std::vector< VkViewport >;
 	using VkWriteDescriptorSetArray = std::vector< VkWriteDescriptorSet >;
 	using VkDeviceAddressArray = std::vector< VkDeviceAddress >;
+	using VkAccelerationStructureBuildGeometryInfoArray = std::vector< VkAccelerationStructureBuildGeometryInfoKHR >;
+	using VkAccelerationStructureBuildRangeInfoArray = std::vector< VkAccelerationStructureBuildRangeInfoKHR >;
+	using VkAccelerationStructureBuildRangeInfoPtrArray = std::vector< VkAccelerationStructureBuildRangeInfoKHR const * >;
+	using VkAccelerationStructureArray = std::vector< VkAccelerationStructureKHR >;
 
 	template< typename Type, typename ... Params >
 	inline std::vector< Type > makeVector( Type const * ptr

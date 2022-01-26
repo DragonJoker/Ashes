@@ -742,6 +742,31 @@ namespace ashes
 	};
 
 #endif
+#if VK_KHR_acceleration_structure
+
+	template<>
+	struct AshesTypeTraits< ashes::AccelerationStructure >
+	{
+		using VkType = VkAccelerationStructureKHR;
+	};
+
+	template<>
+	struct AshesDebugTypeTraits< ashes::AccelerationStructure >
+	{
+#	if VK_EXT_debug_utils
+		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_ACCELERATION_STRUCTURE_KHR;
+#	endif
+#	if VK_EXT_debug_report || VK_EXT_debug_marker
+		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT;
+#	endif
+		static std::string const & getName()
+		{
+			static std::string result{ "VkAccelerationStructureKHR" };
+			return result;
+		}
+	};
+
+#endif
 
 	/**
 	*\brief
@@ -1356,7 +1381,50 @@ namespace ashes
 		DeferredOperationPtr createDeferredOperation()const;
 
 #endif
+#if VK_KHR_acceleration_structure
 
+		/**
+		*\brief
+		*	Creates an acceleration structure.
+		*\param[in] debugName
+		*	The object debug name.
+		*/
+		AccelerationStructurePtr createAccelerationStructure( std::string debugName
+			, VkAccelerationStructureCreateInfoKHR infos )const;
+		/**
+		*\brief
+		*	Creates an acceleration structure.
+		*/
+		AccelerationStructurePtr createAccelerationStructure( VkAccelerationStructureCreateInfoKHR infos )const;
+		/**
+		*\brief
+		*	Build an acceleration structure on the host.
+		*/
+		void buildAccelerationStructuresKHR( VkDeferredOperationKHR deferredOperation
+			, VkAccelerationStructureBuildGeometryInfoArray const & infos
+			, VkAccelerationStructureBuildRangeInfoPtrArray const & buildRangeInfos )const;
+		/**
+		*\brief
+		*	Query acceleration structure meta-data on the host.
+		*/
+		void writeAccelerationStructuresPropertiesKHR( VkAccelerationStructureArray const & accelerationStructures
+			, VkQueryType queryType
+			, ByteArray data
+			, size_t stride )const;
+		/**
+		*\brief
+		*	Build an acceleration structure on the host.
+		*/
+		VkAccelerationStructureCompatibilityKHR getDeviceAccelerationStructureCompatibilityKHR( VkAccelerationStructureVersionInfoKHR & versionInfo )const;
+		/**
+		*\brief
+		*	Build an acceleration structure on the host.
+		*/
+		VkAccelerationStructureBuildSizesInfoKHR getAccelerationStructureBuildSizesKHR( VkAccelerationStructureBuildTypeKHR buildType
+			, VkAccelerationStructureBuildGeometryInfoKHR const & buildInfo
+			, UInt32Array const & maxPrimitiveCounts )const;
+
+#endif
 #if VK_EXT_debug_utils
 
 		inline bool hasDebugUtils()const

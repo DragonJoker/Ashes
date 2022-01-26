@@ -7,6 +7,7 @@ See LICENSE file in root folder.
 #pragma once
 
 #include "ashespp/Buffer/PushConstantsBuffer.hpp"
+#include "ashespp/AccelerationStructure/AccelerationStructureBuildGeometryInfo.hpp"
 
 namespace ashes
 {
@@ -1023,6 +1024,23 @@ namespace ashes
 			, Optional< VkStridedDeviceAddressRegionKHR > const & callableShaderBindingTable
 			, VkDeviceAddress indirectDeviceAddress )const;
 		void setRayTracingPipelineStackSize( uint32_t pipelineStackSize )const;
+
+#endif
+#if VK_KHR_acceleration_structure
+
+		void buildAccelerationStructures( AccelerationStructureBuildGeometryInfoArray const & infos
+			, AccelerationStructureBuildRangeInfoPtrArray const & pBuildRangeInfos )const;
+		void buildAccelerationStructuresIndirect( AccelerationStructureBuildGeometryInfoArray const & infos
+			, VkDeviceAddressArray const & indirectDeviceAddresses
+			, UInt32Array const & indirectStrides
+			, UInt32PtrArray const & pMaxPrimitiveCounts )const;
+		void copyAccelerationStructure( VkCopyAccelerationStructureInfoKHR const & info )const;
+		void copyAccelerationStructureToMemory( VkCopyAccelerationStructureToMemoryInfoKHR const & info )const;
+		void copyMemoryToAccelerationStructure( VkCopyMemoryToAccelerationStructureInfoKHR const & info )const;
+		void writeAccelerationStructuresProperties( AccelerationStructureCRefArray const & accelerationStructures
+			, VkQueryType queryType
+			, VkQueryPool queryPool
+			, uint32_t firstQuery )const;
 
 #endif
 #if VK_EXT_debug_utils
