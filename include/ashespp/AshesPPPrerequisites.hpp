@@ -77,6 +77,7 @@ See LICENSE file in root folder.
 #include "Enum/SampleCountFlags.hpp"
 #include "Enum/SamplerAddressMode.hpp"
 #include "Enum/SamplerMipmapMode.hpp"
+#include "Enum/ShaderGroupShader.hpp"
 #include "Enum/ShaderStageFlags.hpp"
 #include "Enum/SharingMode.hpp"
 #include "Enum/StencilOp.hpp"
@@ -157,7 +158,7 @@ namespace ashes
 	class PushConstantsBufferBase;
 	class QueryPool;
 	class Queue;
-	class Renderer;
+	class RayTracingPipeline;
 	class RenderPass;
 	class Sampler;
 	class Semaphore;
@@ -209,6 +210,7 @@ namespace ashes
 	using PushConstantsBufferPtr = std::unique_ptr< PushConstantsBufferBase >;
 	using QueryPoolPtr = std::unique_ptr< QueryPool >;
 	using QueuePtr = std::unique_ptr< Queue >;
+	using RayTracingPipelinePtr = std::unique_ptr< RayTracingPipeline >;
 	using RenderPassPtr = std::unique_ptr< RenderPass >;
 	using SamplerPtr = std::unique_ptr< Sampler >;
 	using SemaphorePtr = std::unique_ptr< Semaphore >;

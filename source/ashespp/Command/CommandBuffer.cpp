@@ -810,6 +810,47 @@ namespace ashes
 			, reinterpret_cast< void const * >( pcb.getData() ) );
 	}
 
+#ifdef VK_KHR_ray_tracing_pipeline
+
+	void CommandBuffer::traceRays( Optional< VkStridedDeviceAddressRegionKHR > const & raygenShaderBindingTable
+		, Optional< VkStridedDeviceAddressRegionKHR > const & missShaderBindingTable
+		, Optional< VkStridedDeviceAddressRegionKHR > const & hitShaderBindingTable
+		, Optional< VkStridedDeviceAddressRegionKHR > const & callableShaderBindingTable
+		, uint32_t width
+		, uint32_t height
+		, uint32_t depth )const
+	{
+		m_device.vkCmdTraceRaysKHR( m_internal
+			, convert( raygenShaderBindingTable )
+			, convert( missShaderBindingTable )
+			, convert( hitShaderBindingTable )
+			, convert( callableShaderBindingTable )
+			, width
+			, height
+			, depth );
+	}
+
+	void CommandBuffer::traceRaysIndirect( Optional< VkStridedDeviceAddressRegionKHR > const & raygenShaderBindingTable
+		, Optional< VkStridedDeviceAddressRegionKHR > const & missShaderBindingTable
+		, Optional< VkStridedDeviceAddressRegionKHR > const & hitShaderBindingTable
+		, Optional< VkStridedDeviceAddressRegionKHR > const & callableShaderBindingTable
+		, VkDeviceAddress indirectDeviceAddress )const
+	{
+		m_device.vkCmdTraceRaysIndirectKHR( m_internal
+			, convert( raygenShaderBindingTable )
+			, convert( missShaderBindingTable )
+			, convert( hitShaderBindingTable )
+			, convert( callableShaderBindingTable )
+			, indirectDeviceAddress );
+	}
+
+	void CommandBuffer::setRayTracingPipelineStackSize( uint32_t pipelineStackSize )const
+	{
+		m_device.vkCmdSetRayTracingPipelineStackSizeKHR( m_internal
+			, pipelineStackSize );
+	}
+
+#endif
 #if VK_EXT_debug_utils
 
 	void CommandBuffer::beginDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const

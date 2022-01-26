@@ -237,6 +237,7 @@ set( ${PROJECT_NAME}_FOLDER_HDR_FILES
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/SampleCountFlags.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/SamplerAddressMode.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/SamplerMipmapMode.hpp
+	${Ashes_SOURCE_DIR}/include/ashespp/Enum/ShaderGroupShader.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/ShaderStageFlags.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/SharingMode.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/StencilOp.hpp
@@ -313,6 +314,7 @@ set( ${PROJECT_NAME}_FOLDER_SRC_FILES
 	${Ashes_SOURCE_DIR}/source/ashespp/Pipeline/GraphicsPipeline.cpp
 	${Ashes_SOURCE_DIR}/source/ashespp/Pipeline/Pipeline.cpp
 	${Ashes_SOURCE_DIR}/source/ashespp/Pipeline/PipelineLayout.cpp
+	${Ashes_SOURCE_DIR}/source/ashespp/Pipeline/RayTracingPipeline.cpp
 )
 set( ${PROJECT_NAME}_FOLDER_HDR_FILES
 	${Ashes_SOURCE_DIR}/include/ashespp/Pipeline/ComputePipeline.hpp
@@ -332,6 +334,8 @@ set( ${PROJECT_NAME}_FOLDER_HDR_FILES
 	${Ashes_SOURCE_DIR}/include/ashespp/Pipeline/PipelineTessellationStateCreateInfo.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Pipeline/PipelineVertexInputStateCreateInfo.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Pipeline/PipelineViewportStateCreateInfo.hpp
+	${Ashes_SOURCE_DIR}/include/ashespp/Pipeline/RayTracingPipeline.hpp
+	${Ashes_SOURCE_DIR}/include/ashespp/Pipeline/RayTracingPipelineCreateInfo.hpp
 )
 set( ${PROJECT_NAME}_SRC_FILES
 	${${PROJECT_NAME}_SRC_FILES}
