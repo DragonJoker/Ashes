@@ -101,6 +101,28 @@ namespace ashes
 		return m_storage->unlock();
 	}
 
+#if VK_KHR_buffer_device_address
+
+	VkDeviceAddress BufferBase::getDeviceAddress()const
+	{
+		VkBufferDeviceAddressInfoKHR info{ VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO_KHR
+			, nullptr
+			, m_internal };
+		return m_device.vkGetBufferDeviceAddressKHR( m_device
+			, &info );
+	}
+
+	uint64_t BufferBase::getOpaqueCaptureAddress()const
+	{
+		VkBufferDeviceAddressInfoKHR info{ VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO_KHR
+			, nullptr
+			, m_internal };
+		return m_device.vkGetBufferOpaqueCaptureAddressKHR( m_device
+			, &info );
+	}
+
+#endif
+
 	VkPipelineStageFlags BufferBase::getCompatibleStageFlags()const
 	{
 		VkPipelineStageFlags result = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;

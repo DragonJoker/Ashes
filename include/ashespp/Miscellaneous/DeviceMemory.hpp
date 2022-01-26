@@ -66,6 +66,16 @@ namespace ashes
 		*	Unmaps the memory from RAM.
 		*/
 		void unlock()const;
+
+#if VK_KHR_buffer_device_address
+
+		/**
+		*\return
+		*	An opaque capture address of the memory object.
+		*/
+		uint64_t getOpaqueCaptureAddress()const;
+
+#endif
 		/**
 		*\brief
 		*	Conversion implicite vers VkDeviceMemory.

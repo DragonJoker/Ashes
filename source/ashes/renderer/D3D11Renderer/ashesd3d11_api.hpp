@@ -45,10 +45,10 @@ namespace ashes::d3d11
 	template< typename T >
 	static constexpr T inline NonAvailable = std::numeric_limits< T >::max();
 
-	template< typename VkType  >
+	template< typename VkType >
 	struct VkDxTypeTraits;
 	
-	template< typename Type  >
+	template< typename Type >
 	struct DxVkTypeTraits;
 
 #define VK_IMPLEMENT_HANDLE(object)\
@@ -2424,6 +2424,23 @@ namespace ashes::d3d11
 	VkResult VKAPI_CALL vkDeferredOperationJoinKHR(
 		VkDevice device,
 		VkDeferredOperationKHR operation );
+
+#endif
+#pragma endregion
+#pragma region VK_KHR_buffer_device_address
+#ifdef VK_KHR_buffer_device_address
+
+	VkDeviceAddress VKAPI_CALL vkGetBufferDeviceAddressKHR(
+		VkDevice                                    device,
+		const VkBufferDeviceAddressInfo * pInfo );
+
+	uint64_t VKAPI_CALL vkGetBufferOpaqueCaptureAddressKHR(
+		VkDevice                                    device,
+		const VkBufferDeviceAddressInfo * pInfo );
+
+	uint64_t VKAPI_CALL vkGetDeviceMemoryOpaqueCaptureAddressKHR(
+		VkDevice                                    device,
+		const VkDeviceMemoryOpaqueCaptureAddressInfo * pInfo );
 
 #endif
 #pragma endregion
