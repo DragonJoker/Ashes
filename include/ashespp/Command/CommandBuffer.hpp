@@ -1007,6 +1007,24 @@ namespace ashes
 		{
 			pushConstants( layout, pcb.getBuffer() );
 		}
+
+#ifdef VK_KHR_ray_tracing_pipeline
+
+		void traceRays( Optional< VkStridedDeviceAddressRegionKHR > const & raygenShaderBindingTable
+			, Optional< VkStridedDeviceAddressRegionKHR > const & missShaderBindingTable
+			, Optional< VkStridedDeviceAddressRegionKHR > const & hitShaderBindingTable
+			, Optional< VkStridedDeviceAddressRegionKHR > const & callableShaderBindingTable
+			, uint32_t width
+			, uint32_t height
+			, uint32_t depth )const;
+		void traceRaysIndirect( Optional< VkStridedDeviceAddressRegionKHR > const & raygenShaderBindingTable
+			, Optional< VkStridedDeviceAddressRegionKHR > const & missShaderBindingTable
+			, Optional< VkStridedDeviceAddressRegionKHR > const & hitShaderBindingTable
+			, Optional< VkStridedDeviceAddressRegionKHR > const & callableShaderBindingTable
+			, VkDeviceAddress indirectDeviceAddress )const;
+		void setRayTracingPipelineStackSize( uint32_t pipelineStackSize )const;
+
+#endif
 #if VK_EXT_debug_utils
 		/**
 		*\brief

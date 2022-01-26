@@ -8,6 +8,7 @@ See LICENSE file in root folder.
 
 #include "ComputePipelineCreateInfo.hpp"
 #include "GraphicsPipelineCreateInfo.hpp"
+#include "RayTracingPipelineCreateInfo.hpp"
 
 namespace ashes
 {
@@ -45,6 +46,22 @@ namespace ashes
 		Pipeline( Device const & device
 			, std::string const & debugName
 			, GraphicsPipelineCreateInfo const & createInfo );
+		/**
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The parent device.
+		*\param[in] debugName
+		*	The object debug name.
+		*\param[in] deferredOperation
+		*	The deferred operation.
+		*\param[in] createInfos
+		*	The creation informations.
+		*/
+		Pipeline( Device const & device
+			, std::string const & debugName
+			, DeferredOperation const & deferredOperation
+			, RayTracingPipelineCreateInfoArray const & createInfos );
 		/**
 		*\brief
 		*	Destructor.
