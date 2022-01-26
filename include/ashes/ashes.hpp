@@ -492,10 +492,13 @@ namespace ashes
 	using VkViewportArray = std::vector< VkViewport >;
 	using VkWriteDescriptorSetArray = std::vector< VkWriteDescriptorSet >;
 	using VkDeviceAddressArray = std::vector< VkDeviceAddress >;
+
+#if VK_KHR_acceleration_structure
 	using VkAccelerationStructureBuildGeometryInfoArray = std::vector< VkAccelerationStructureBuildGeometryInfoKHR >;
 	using VkAccelerationStructureBuildRangeInfoArray = std::vector< VkAccelerationStructureBuildRangeInfoKHR >;
 	using VkAccelerationStructureBuildRangeInfoPtrArray = std::vector< VkAccelerationStructureBuildRangeInfoKHR const * >;
 	using VkAccelerationStructureArray = std::vector< VkAccelerationStructureKHR >;
+#endif
 
 	template< typename Type, typename ... Params >
 	inline std::vector< Type > makeVector( Type const * ptr
