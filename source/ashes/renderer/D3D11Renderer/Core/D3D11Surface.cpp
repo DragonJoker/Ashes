@@ -329,7 +329,7 @@ namespace ashes::d3d11
 	{
 		m_currentPhysicalDevice = nullptr;
 		doUpdate( physicalDevice );
-		return ( ( m_currentPhysicalDevice && get( m_currentPhysicalDevice )->getOutput() )
+		return VkBool32( ( m_currentPhysicalDevice && get( m_currentPhysicalDevice )->getOutput() )
 			? VK_TRUE
 			: VK_FALSE );
 	}

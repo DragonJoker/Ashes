@@ -83,7 +83,9 @@ namespace ashes
 				, convert( libraryInfo )
 				, convert( libraryInterface )
 				, convert( dynamicState )
-				, rhs.vk.layout };
+				, rhs.vk.layout
+				, rhs.vk.basePipelineHandle
+				, rhs.vk.basePipelineIndex };
 			return *this;
 		}
 

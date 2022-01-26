@@ -85,8 +85,8 @@ namespace ashes
 		auto const tanHalfFovy = tan( radiansFovY / float( 2 ) );
 
 		std::array< float, 16 > result{ 0.0f };
-		result[0] = float( 1 ) / ( aspect * tanHalfFovy );
-		result[5] = float( 1 ) / ( tanHalfFovy );
+		result[0] = float( 1.0 / ( aspect * tanHalfFovy ) );
+		result[5] = float( 1.0 / ( tanHalfFovy ) );
 		result[11] = -float( 1 );
 		result[10] = zFar / ( zNear - zFar );
 		result[14] = -( zFar * zNear ) / ( zFar - zNear );
@@ -118,7 +118,7 @@ namespace ashes
 		, float zNear )const
 	{
 		auto const tanHalfFovy = tan( radiansFovY / float( 2 ) );
-		float const range = tanHalfFovy * zNear;
+		float const range = float( tanHalfFovy * zNear );
 		float const left = -range * aspect;
 		float const right = range * aspect;
 		float const bottom = -range;
