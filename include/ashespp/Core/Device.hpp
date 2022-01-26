@@ -846,7 +846,7 @@ namespace ashes
 		*\return
 		*	The created staging texture.
 		*/
-		StagingTexturePtr createStagingTexture( std::string const & debugName
+		StagingTexturePtr createStagingTexture( std::string debugName
 			, VkFormat format
 			, VkExtent2D const & extent
 			, uint32_t mipLevels = 1u )const;
@@ -860,7 +860,7 @@ namespace ashes
 		*\return
 		*	The created staging texture.
 		*/
-		StagingTexturePtr createStagingTexture( std::string const & debugName
+		StagingTexturePtr createStagingTexture( std::string debugName
 			, VkFormat format
 			, VkExtent3D const & extent
 			, uint32_t mipLevels = 1u )const;
@@ -883,11 +883,11 @@ namespace ashes
 		*\return
 		*	The created pass.
 		*/
-		RenderPassPtr createRenderPass( std::string const & debugName
+		RenderPassPtr createRenderPass( std::string debugName
 			, RenderPassCreateInfo createInfo )const;
 		/**
 		*\brief
-		*	Creates a graphics pipeline using this layout.
+		*	Creates a graphics pipeline.
 		*\param[in] createInfo
 		*	The creation informations.
 		*\return
@@ -896,7 +896,7 @@ namespace ashes
 		GraphicsPipelinePtr createPipeline( GraphicsPipelineCreateInfo createInfo )const;
 		/**
 		*\brief
-		*	Creates a graphics pipeline using this layout.
+		*	Creates a graphics pipeline.
 		*\param[in] debugName
 		*	The object debug name.
 		*\param[in] createInfo
@@ -904,11 +904,11 @@ namespace ashes
 		*\return
 		*	The created pipeline.
 		*/
-		GraphicsPipelinePtr createPipeline( std::string const & debugName
+		GraphicsPipelinePtr createPipeline( std::string debugName
 			, GraphicsPipelineCreateInfo createInfo )const;
 		/**
 		*\brief
-		*	Creates a compute pipeline using this layout.
+		*	Creates a compute pipeline.
 		*\param[in] createInfo
 		*	The creation informations.
 		*\return
@@ -917,7 +917,7 @@ namespace ashes
 		ComputePipelinePtr createPipeline( ComputePipelineCreateInfo createInfo )const;
 		/**
 		*\brief
-		*	Creates a compute pipeline using this layout.
+		*	Creates a compute pipeline.
 		*\param[in] debugName
 		*	The object debug name.
 		*\param[in] createInfo
@@ -925,7 +925,7 @@ namespace ashes
 		*\return
 		*	The created pipeline.
 		*/
-		ComputePipelinePtr createPipeline( std::string const & debugName
+		ComputePipelinePtr createPipeline( std::string debugName
 			, ComputePipelineCreateInfo createInfo )const;
 		/**
 		*\brief
@@ -951,7 +951,7 @@ namespace ashes
 		*\return
 		*	The created layout.
 		*/
-		PipelineLayoutPtr createPipelineLayout( std::string const & debugName
+		PipelineLayoutPtr createPipelineLayout( std::string debugName
 			, DescriptorSetLayoutCRefArray const & setLayouts
 			, VkPushConstantRangeArray const & pushConstantRanges )const;
 		/**
@@ -973,7 +973,7 @@ namespace ashes
 		*\return
 		*	The created layout.
 		*/
-		DescriptorSetLayoutPtr createDescriptorSetLayout( std::string const & debugName
+		DescriptorSetLayoutPtr createDescriptorSetLayout( std::string debugName
 			, VkDescriptorSetLayoutBindingArray bindings )const;
 		/**
 		*\brief
@@ -1004,7 +1004,7 @@ namespace ashes
 		*\return
 		*	The created pool.
 		*/
-		DescriptorPoolPtr createDescriptorPool( std::string const & debugName
+		DescriptorPoolPtr createDescriptorPool( std::string debugName
 			, VkDescriptorPoolCreateFlags flags
 			, uint32_t maxSets
 			, VkDescriptorPoolSizeArray poolSizes )const;
@@ -1027,7 +1027,7 @@ namespace ashes
 		*\return
 		*	The DeviceMemory object holding the allocated memory.
 		*/
-		DeviceMemoryPtr allocateMemory( std::string const & debugName
+		DeviceMemoryPtr allocateMemory( std::string debugName
 			, VkMemoryAllocateInfo allocateInfo )const;
 		/**
 		*\brief
@@ -1044,7 +1044,7 @@ namespace ashes
 		*\param[in] createInfo
 		*	The creation informations.
 		*/
-		ImagePtr createImage( std::string const & debugName
+		ImagePtr createImage( std::string debugName
 			, ImageCreateInfo createInfo )const;
 		/**
 		*\brief
@@ -1074,7 +1074,7 @@ namespace ashes
 		*\param[in] createInfo
 		*	The creation informations.
 		*/
-		SamplerPtr createSampler( std::string const & debugName
+		SamplerPtr createSampler( std::string debugName
 			, SamplerCreateInfo createInfo )const;
 		/**
 		*\brief
@@ -1091,7 +1091,7 @@ namespace ashes
 		*\param[in] createInfo
 		*	The creation informations.
 		*/
-		SamplerPtr createSampler( std::string const & debugName
+		SamplerPtr createSampler( std::string debugName
 			, VkSamplerCreateInfo createInfo )const;
 		/**
 		*\brief
@@ -1114,7 +1114,7 @@ namespace ashes
 		*\param[in] usage
 		*	The buffer usage flags.
 		*/
-		BufferBasePtr createBuffer( std::string const & debugName
+		BufferBasePtr createBuffer( std::string debugName
 			, VkDeviceSize size
 			, VkBufferUsageFlags usage
 			, QueueShare sharingMode = {} )const;
@@ -1148,7 +1148,7 @@ namespace ashes
 		*\param[in] range
 		*	Le nombre d'éléments dans le tampon.
 		*/
-		BufferViewPtr createBufferView( std::string const & debugName
+		BufferViewPtr createBufferView( std::string debugName
 			, BufferBase const & buffer
 			, VkFormat format
 			, VkDeviceSize offset
@@ -1168,7 +1168,7 @@ namespace ashes
 		*\param[in] createInfo
 		*	The creation info.
 		*/
-		SwapChainPtr createSwapChain( std::string const & debugName
+		SwapChainPtr createSwapChain( std::string debugName
 			, VkSwapchainCreateInfoKHR createInfo )const;
 		/**
 		*\brief
@@ -1181,7 +1181,7 @@ namespace ashes
 		*\param[in] debugName
 		*	The object debug name.
 		*/
-		SemaphorePtr createSemaphore( std::string const & debugName )const;
+		SemaphorePtr createSemaphore( std::string debugName )const;
 		/**
 		*\brief
 		*	Creates a fence.
@@ -1197,7 +1197,7 @@ namespace ashes
 		*\param[in] flags
 		*	The fence creation flags.
 		*/
-		FencePtr createFence( std::string const & debugName
+		FencePtr createFence( std::string debugName
 			, VkFenceCreateFlags flags = 0 )const;
 		/**
 		*\brief
@@ -1210,7 +1210,7 @@ namespace ashes
 		*\param[in] debugName
 		*	The object debug name.
 		*/
-		EventPtr createEvent( std::string const & debugName )const;
+		EventPtr createEvent( std::string debugName )const;
 		/**
 		*\brief
 		*	Creates a command buffer pool.
@@ -1231,7 +1231,7 @@ namespace ashes
 		*\param[in] flags
 		*	The command pool creation flags.
 		*/
-		CommandPoolPtr createCommandPool( std::string const & debugName
+		CommandPoolPtr createCommandPool( std::string debugName
 			, uint32_t queueFamilyIndex
 			, VkCommandPoolCreateFlags const & flags = 0 )const;
 		/**
@@ -1249,7 +1249,7 @@ namespace ashes
 		*\param[in] shader
 		*	The module's SPIR-V code.
 		*/
-		ShaderModulePtr createShaderModule( std::string const & debugName
+		ShaderModulePtr createShaderModule( std::string debugName
 			, UInt32Array const & shader )const;
 		/**
 		*\brief
@@ -1276,7 +1276,7 @@ namespace ashes
 		*\param[in] pipelineStatistics
 		*	Specifies the counters to be returned in queries.
 		*/
-		QueryPoolPtr createQueryPool( std::string const & debugName
+		QueryPoolPtr createQueryPool( std::string debugName
 			, VkQueryType type
 			, uint32_t count
 			, VkQueryPipelineStatisticFlags pipelineStatistics )const;
@@ -1289,7 +1289,7 @@ namespace ashes
 		*\param[in] debugName
 		*	The object debug name.
 		*/
-		DeferredOperationPtr createDeferredOperation( std::string const & debugName )const;
+		DeferredOperationPtr createDeferredOperation( std::string debugName )const;
 		/**
 		*\brief
 		*	Creates a deferred operation.
@@ -1463,7 +1463,7 @@ namespace ashes
 		*\return
 		*	The device queue.
 		*/
-		QueuePtr getQueue( std::string const & debugName
+		QueuePtr getQueue( std::string debugName
 			, uint32_t familyIndex
 			, uint32_t index )const;
 		/**
@@ -1496,7 +1496,7 @@ namespace ashes
 		*\return
 		*	The created layout.
 		*/
-		PipelineLayoutPtr createPipelineLayout( std::string const & debugName )const;
+		PipelineLayoutPtr createPipelineLayout( std::string debugName )const;
 		/**
 		*\brief
 		*	Creates a pipeline layout.
@@ -1516,7 +1516,7 @@ namespace ashes
 		*\return
 		*	The created layout.
 		*/
-		PipelineLayoutPtr createPipelineLayout( std::string const & debugName
+		PipelineLayoutPtr createPipelineLayout( std::string debugName
 			, DescriptorSetLayout const & layout )const;
 		/**
 		*\brief
@@ -1541,7 +1541,7 @@ namespace ashes
 		*\return
 		*	Le layout créé.
 		*/
-		PipelineLayoutPtr createPipelineLayout( std::string const & debugName
+		PipelineLayoutPtr createPipelineLayout( std::string debugName
 			, VkPushConstantRange const & pushConstantRange )const;
 		/**
 		*\brief
@@ -1567,7 +1567,7 @@ namespace ashes
 		*\return
 		*	The created layout.
 		*/
-		PipelineLayoutPtr createPipelineLayout( std::string const & debugName
+		PipelineLayoutPtr createPipelineLayout( std::string debugName
 			, DescriptorSetLayout const & layout
 			, VkPushConstantRange const & pushConstantRange )const;
 		/**
@@ -1589,7 +1589,7 @@ namespace ashes
 		*\return
 		*	The created layout.
 		*/
-		PipelineLayoutPtr createPipelineLayout( std::string const & debugName
+		PipelineLayoutPtr createPipelineLayout( std::string debugName
 			, DescriptorSetLayoutCRefArray const & layouts )const;
 		/**
 		*\brief
@@ -1610,7 +1610,7 @@ namespace ashes
 		*\return
 		*	The created layout.
 		*/
-		PipelineLayoutPtr createPipelineLayout( std::string const & debugName
+		PipelineLayoutPtr createPipelineLayout( std::string debugName
 			, VkPushConstantRangeArray const & pushConstantRanges )const;
 		/**
 		*\brief
@@ -1670,7 +1670,7 @@ namespace ashes
 		*\param[in] compareOp
 		*	The comparison operator, for depth maps.
 		*/
-		SamplerPtr createSampler( std::string const & debugName
+		SamplerPtr createSampler( std::string debugName
 			, VkSamplerAddressMode wrapS
 			, VkSamplerAddressMode wrapT
 			, VkSamplerAddressMode wrapR
