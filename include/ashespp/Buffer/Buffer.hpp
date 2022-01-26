@@ -140,6 +140,21 @@ namespace ashes
 		*	Unmaps the buffer's memory from RAM.
 		*/
 		void unlock()const;
+
+#if VK_KHR_buffer_device_address
+
+		/**
+		*\return
+		*	 An address of the buffer.
+		*/
+		VkDeviceAddress getDeviceAddress()const;
+		/**
+		*\return
+		*	An opaque capture address of the buffer.
+		*/
+		uint64_t getOpaqueCaptureAddress()const;
+
+#endif
 		/**
 		*\return
 		*	The compatible pipeline stage flags for current access.

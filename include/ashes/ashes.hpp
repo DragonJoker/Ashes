@@ -490,6 +490,7 @@ namespace ashes
 	using VkVertexInputBindingDescriptionArray = std::vector< VkVertexInputBindingDescription >;
 	using VkViewportArray = std::vector< VkViewport >;
 	using VkWriteDescriptorSetArray = std::vector< VkWriteDescriptorSet >;
+	using VkDeviceAddressArray = std::vector< VkDeviceAddress >;
 
 	template< typename Type, typename ... Params >
 	inline std::vector< Type > makeVector( Type const * ptr
