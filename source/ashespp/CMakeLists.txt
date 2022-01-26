@@ -280,6 +280,7 @@ source_group( "Header Files\\Image" FILES ${${PROJECT_NAME}_FOLDER_HDR_FILES} )
 source_group( "Source Files\\Image" FILES ${${PROJECT_NAME}_FOLDER_SRC_FILES} )
 
 set( ${PROJECT_NAME}_FOLDER_SRC_FILES
+	${Ashes_SOURCE_DIR}/source/ashespp/Miscellaneous/DeferredOperation.cpp
 	${Ashes_SOURCE_DIR}/source/ashespp/Miscellaneous/DeviceMemory.cpp
 	${Ashes_SOURCE_DIR}/source/ashespp/Miscellaneous/Error.cpp
 	${Ashes_SOURCE_DIR}/source/ashespp/Miscellaneous/Log.cpp
@@ -287,6 +288,7 @@ set( ${PROJECT_NAME}_FOLDER_SRC_FILES
 )
 set( ${PROJECT_NAME}_FOLDER_HDR_FILES
 	${Ashes_SOURCE_DIR}/include/ashespp/Miscellaneous/Debug.hpp
+	${Ashes_SOURCE_DIR}/include/ashespp/Miscellaneous/DeferredOperation.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Miscellaneous/DeviceMemory.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Miscellaneous/Error.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Miscellaneous/Log.hpp

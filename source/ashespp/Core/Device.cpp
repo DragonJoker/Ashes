@@ -13,6 +13,7 @@ See LICENSE file in root folder.
 #include "ashespp/Image/Image.hpp"
 #include "ashespp/Image/Sampler.hpp"
 #include "ashespp/Image/StagingTexture.hpp"
+#include "ashespp/Miscellaneous/DeferredOperation.hpp"
 #include "ashespp/Miscellaneous/QueryPool.hpp"
 #include "ashespp/Pipeline/PipelineLayout.hpp"
 #include "ashespp/RenderPass/RenderPass.hpp"
@@ -484,6 +485,21 @@ namespace ashes
 			, count
 			, pipelineStatistics );
 	}
+
+#if VK_KHR_deferred_host_operations
+
+	DeferredOperationPtr Device::createDeferredOperation( std::string const & debugName )const
+	{
+		return std::make_unique< DeferredOperation >( *this
+			, debugName );
+	}
+
+	DeferredOperationPtr Device::createDeferredOperation()const
+	{
+		return std::make_unique< DeferredOperation >( *this );
+	}
+
+#endif
 
 	QueuePtr Device::getQueue( std::string const & debugName
 		, uint32_t familyIndex
