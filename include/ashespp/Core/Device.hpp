@@ -691,6 +691,32 @@ namespace ashes
 		}
 	};
 
+#if VK_KHR_deferred_host_operations
+
+	template<>
+	struct AshesTypeTraits< ashes::DeferredOperation >
+	{
+		using VkType = VkDeferredOperationKHR;
+	};
+
+	template<>
+	struct AshesDebugTypeTraits< ashes::DeferredOperation >
+	{
+#	if VK_EXT_debug_utils
+		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_DEFERRED_OPERATION_KHR;
+#	endif
+#	if VK_EXT_debug_report || VK_EXT_debug_marker
+		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT;
+#	endif
+		static std::string const & getName()
+		{
+			static std::string result{ "VkDeferredOperationKHR" };
+			return result;
+		}
+	};
+
+#endif
+
 	/**
 	*\brief
 	*	The class containing the informations related to the logical device.
@@ -813,6 +839,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Creates a staging texture.
+		*\param[in] debugName
+		*	The object debug name.
 		*\param[in] extent
 		*	The texture dimensions.
 		*\return
@@ -825,6 +853,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Creates a staging texture.
+		*\param[in] debugName
+		*	The object debug name.
 		*\param[in] extent
 		*	The texture dimensions.
 		*\return
@@ -846,6 +876,8 @@ namespace ashes
 		/*
 		*\brief
 		*	Creates a render pass.
+		*\param[in] debugName
+		*	The object debug name.
 		*\param[in] createInfo
 		*	The creation informations.
 		*\return
@@ -865,6 +897,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Creates a graphics pipeline using this layout.
+		*\param[in] debugName
+		*	The object debug name.
 		*\param[in] createInfo
 		*	The creation informations.
 		*\return
@@ -884,6 +918,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Creates a compute pipeline using this layout.
+		*\param[in] debugName
+		*	The object debug name.
 		*\param[in] createInfo
 		*	The creation informations.
 		*\return
@@ -906,6 +942,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Creates a pipeline layout.
+		*\param[in] debugName
+		*	The object debug name.
 		*\param[in] setLayouts
 		*	The descriptor sets layouts.
 		*\param[in] pushConstantRanges
@@ -928,6 +966,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Creates a descriptor set layout.
+		*\param[in] debugName
+		*	The object debug name.
 		*\param[in] bindings
 		*	The layout bindings.
 		*\return
@@ -953,6 +993,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Creates a descriptor pool.
+		*\param[in] debugName
+		*	The object debug name.
 		*\param[in] flags
 		*	Bitmask specifying certain supported operations on a descriptor pool.
 		*\param[in] maxSets
@@ -978,6 +1020,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Allocates memory on the device.
+		*\param[in] debugName
+		*	The object debug name.
 		*\param[in] allocateInfo
 		*	The memory allocation requirements.
 		*\return
@@ -995,6 +1039,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Creates a texture.
+		*\param[in] debugName
+		*	The object debug name.
 		*\param[in] createInfo
 		*	The creation informations.
 		*/
@@ -1023,6 +1069,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Creates a sampler.
+		*\param[in] debugName
+		*	The object debug name.
 		*\param[in] createInfo
 		*	The creation informations.
 		*/
@@ -1038,6 +1086,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Creates a sampler.
+		*\param[in] debugName
+		*	The object debug name.
 		*\param[in] createInfo
 		*	The creation informations.
 		*/
@@ -1057,6 +1107,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Creates a GPU buffer.
+		*\param[in] debugName
+		*	The object debug name.
 		*\param[in] size
 		*	The buffer size.
 		*\param[in] usage
@@ -1085,6 +1137,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Crée une vue sur un tampon GPU.
+		*\param[in] debugName
+		*	The object debug name.
 		*\param[in] buffer
 		*	Le tampon sur lequel la vue est créée.
 		*\param[in] format
@@ -1109,6 +1163,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Creates a swap chain.
+		*\param[in] debugName
+		*	The object debug name.
 		*\param[in] createInfo
 		*	The creation info.
 		*/
@@ -1122,6 +1178,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Creates a semaphore.
+		*\param[in] debugName
+		*	The object debug name.
 		*/
 		SemaphorePtr createSemaphore( std::string const & debugName )const;
 		/**
@@ -1134,6 +1192,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Creates a fence.
+		*\param[in] debugName
+		*	The object debug name.
 		*\param[in] flags
 		*	The fence creation flags.
 		*/
@@ -1147,6 +1207,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Creates an event.
+		*\param[in] debugName
+		*	The object debug name.
 		*/
 		EventPtr createEvent( std::string const & debugName )const;
 		/**
@@ -1162,6 +1224,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Creates a command buffer pool.
+		*\param[in] debugName
+		*	The object debug name.
 		*\param[in] queueFamilyIndex
 		*	The family index of the queue to which the pool belongs.
 		*\param[in] flags
@@ -1180,6 +1244,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Creates a shader module.
+		*\param[in] debugName
+		*	The object debug name.
 		*\param[in] shader
 		*	The module's SPIR-V code.
 		*/
@@ -1201,6 +1267,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Creates a query pool.
+		*\param[in] debugName
+		*	The object debug name.
 		*\param[in] type
 		*	The query type.
 		*\param[in] count
@@ -1212,6 +1280,23 @@ namespace ashes
 			, VkQueryType type
 			, uint32_t count
 			, VkQueryPipelineStatisticFlags pipelineStatistics )const;
+
+#if VK_KHR_deferred_host_operations
+
+		/**
+		*\brief
+		*	Creates a deferred operation.
+		*\param[in] debugName
+		*	The object debug name.
+		*/
+		DeferredOperationPtr createDeferredOperation( std::string const & debugName )const;
+		/**
+		*\brief
+		*	Creates a deferred operation.
+		*/
+		DeferredOperationPtr createDeferredOperation()const;
+
+#endif
 
 #if VK_EXT_debug_utils
 
@@ -1370,7 +1455,7 @@ namespace ashes
 		*\brief
 		*	Retrieves a device queue with given queue family index.
 		*\param[in] debugName
-		*	The device queue debug name.
+		*	The object debug name.
 		*\param[in] familyIndex
 		*	The device queue family index.
 		*\param[in] index
@@ -1406,6 +1491,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Creates a pipeline layout.
+		*\param[in] debugName
+		*	The object debug name.
 		*\return
 		*	The created layout.
 		*/
@@ -1422,6 +1509,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Creates a pipeline layout.
+		*\param[in] debugName
+		*	The object debug name.
 		*\param[in] layout
 		*	The descriptor set layout.
 		*\return
@@ -1443,6 +1532,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Creates a pipeline layout.
+		*\param[in] debugName
+		*	The object debug name.
 		*\param[in] pushConstantRange
 		*	The push constants range.
 		*\return
@@ -1467,6 +1558,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Creates a pipeline layout.
+		*\param[in] debugName
+		*	The object debug name.
 		*\param[in] layout
 		*	The descriptor set layout.
 		*\param[in] pushConstantRange
@@ -1489,6 +1582,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Creates a pipeline layout.
+		*\param[in] debugName
+		*	The object debug name.
 		*\param[in] layouts
 		*	The descriptor sets layouts.
 		*\return
@@ -1508,6 +1603,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Creates a pipeline layout.
+		*\param[in] debugName
+		*	The object debug name.
 		*\param[in] pushConstantRanges
 		*	The push constants ranges.
 		*\return
@@ -1552,6 +1649,8 @@ namespace ashes
 		/**
 		*\brief
 		*	Creates a sampler.
+		*\param[in] debugName
+		*	The object debug name.
 		*\param[in] wrapS, wrapT, wrapR
 		*	The texture wrap modes.
 		*\param[in] minFilter, magFilter
