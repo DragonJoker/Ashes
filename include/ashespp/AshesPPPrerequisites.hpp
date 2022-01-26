@@ -136,6 +136,7 @@ namespace ashes
 	class CommandBuffer;
 	class CommandPool;
 	class ComputePipeline;
+	class DeferredOperation;
 	class DescriptorPool;
 	class DescriptorSet;
 	class DescriptorSetLayout;
@@ -188,6 +189,7 @@ namespace ashes
 	using CommandBufferPtr = std::unique_ptr< CommandBuffer >;
 	using CommandPoolPtr = std::unique_ptr< CommandPool >;
 	using ComputePipelinePtr = std::unique_ptr< ComputePipeline >;
+	using DeferredOperationPtr = std::unique_ptr< DeferredOperation >;
 	using DescriptorPoolPtr = std::unique_ptr< DescriptorPool >;
 	using DescriptorSetLayoutPtr = std::unique_ptr< DescriptorSetLayout >;
 	using DescriptorSetPoolPtr = std::unique_ptr< DescriptorSetPool >;

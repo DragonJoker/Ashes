@@ -3896,6 +3896,49 @@ namespace ashes::gl
 
 #endif
 #pragma endregion
+#pragma region VK_KHR_deferred_host_operations
+#ifdef VK_KHR_deferred_host_operations
+
+	VkResult VKAPI_CALL vkCreateDeferredOperationKHR(
+		VkDevice device,
+		const VkAllocationCallbacks * pAllocator,
+		VkDeferredOperationKHR * pDeferredOperation )
+	{
+		return reportUnsupported( device, "vkCreateDeferredOperationKHR" );
+	}
+
+	void VKAPI_CALL vkDestroyDeferredOperationKHR(
+		VkDevice device,
+		VkDeferredOperationKHR operation,
+		const VkAllocationCallbacks * pAllocator )
+	{
+		reportUnsupported( device, "vkDestroyDeferredOperationKHR" );
+	}
+
+	uint32_t VKAPI_CALL vkGetDeferredOperationMaxConcurrencyKHR(
+		VkDevice device,
+		VkDeferredOperationKHR operation )
+	{
+		reportUnsupported( device, "vkGetDeferredOperationMaxConcurrencyKHR" );
+		return 0u;
+	}
+
+	VkResult VKAPI_CALL vkGetDeferredOperationResultKHR(
+		VkDevice device,
+		VkDeferredOperationKHR operation )
+	{
+		return reportUnsupported( device, "vkGetDeferredOperationResultKHR" );
+	}
+
+	VkResult VKAPI_CALL vkDeferredOperationJoinKHR(
+		VkDevice device,
+		VkDeferredOperationKHR operation )
+	{
+		return reportUnsupported( device, "vkDeferredOperationJoinKHR" );
+	}
+
+#endif
+#pragma endregion
 #pragma region VK_KHR_android_surface
 #ifdef VK_KHR_android_surface
 #	ifdef VK_USE_PLATFORM_ANDROID_KHR
