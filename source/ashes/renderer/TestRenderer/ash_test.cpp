@@ -3998,6 +3998,152 @@ namespace ashes::test
 
 #endif
 #pragma endregion
+#pragma region VK_KHR_acceleration_structure
+#ifdef VK_KHR_acceleration_structure
+
+	VkResult VKAPI_CALL vkCreateAccelerationStructureKHR(
+		VkDevice device,
+		const VkAccelerationStructureCreateInfoKHR * pCreateInfo,
+		const VkAllocationCallbacks * pAllocator,
+		VkAccelerationStructureKHR * pAccelerationStructure )
+	{
+		return reportUnsupported( device, "vkCreateAccelerationStructureKHR" );
+	}
+
+	void VKAPI_CALL vkDestroyAccelerationStructureKHR(
+		VkDevice device,
+		VkAccelerationStructureKHR accelerationStructure,
+		const VkAllocationCallbacks * pAllocator )
+	{
+		reportUnsupported( device, "vkDestroyAccelerationStructureKHR" );
+	}
+
+	void VKAPI_CALL vkCmdBuildAccelerationStructuresKHR(
+		VkCommandBuffer commandBuffer,
+		uint32_t infoCount,
+		const VkAccelerationStructureBuildGeometryInfoKHR * pInfos,
+		const VkAccelerationStructureBuildRangeInfoKHR * const * ppBuildRangeInfos )
+	{
+		reportUnsupported( commandBuffer, "vkCmdBuildAccelerationStructuresKHR" );
+	}
+
+	void VKAPI_CALL vkCmdBuildAccelerationStructuresIndirectKHR(
+		VkCommandBuffer commandBuffer,
+		uint32_t infoCount,
+		const VkAccelerationStructureBuildGeometryInfoKHR * pInfos,
+		const VkDeviceAddress * pIndirectDeviceAddresses,
+		const uint32_t * pIndirectStrides,
+		const uint32_t * const * ppMaxPrimitiveCounts )
+	{
+		reportUnsupported( commandBuffer, "vkCmdBuildAccelerationStructuresIndirectKHR" );
+	}
+
+	VkResult VKAPI_CALL vkBuildAccelerationStructuresKHR(
+		VkDevice device,
+		VkDeferredOperationKHR deferredOperation,
+		uint32_t infoCount,
+		const VkAccelerationStructureBuildGeometryInfoKHR * pInfos,
+		const VkAccelerationStructureBuildRangeInfoKHR * const * ppBuildRangeInfos )
+	{
+		return reportUnsupported( device, "vkBuildAccelerationStructuresKHR" );
+	}
+
+	VkResult VKAPI_CALL vkCopyAccelerationStructureKHR(
+		VkDevice device,
+		VkDeferredOperationKHR deferredOperation,
+		const VkCopyAccelerationStructureInfoKHR * pInfo )
+	{
+		return reportUnsupported( device, "vkCopyAccelerationStructureKHR" );
+	}
+
+	VkResult VKAPI_CALL vkCopyAccelerationStructureToMemoryKHR(
+		VkDevice device,
+		VkDeferredOperationKHR deferredOperation,
+		const VkCopyAccelerationStructureToMemoryInfoKHR * pInfo )
+	{
+		return reportUnsupported( device, "vkCopyAccelerationStructureToMemoryKHR" );
+	}
+
+	VkResult VKAPI_CALL vkCopyMemoryToAccelerationStructureKHR(
+		VkDevice device,
+		VkDeferredOperationKHR deferredOperation,
+		const VkCopyMemoryToAccelerationStructureInfoKHR * pInfo )
+	{
+		return reportUnsupported( device, "vkCopyMemoryToAccelerationStructureKHR" );
+	}
+
+	VkResult VKAPI_CALL vkWriteAccelerationStructuresPropertiesKHR(
+		VkDevice device,
+		uint32_t accelerationStructureCount,
+		const VkAccelerationStructureKHR * pAccelerationStructures,
+		VkQueryType queryType,
+		size_t dataSize,
+		void * pData,
+		size_t stride )
+	{
+		return reportUnsupported( device, "vkWriteAccelerationStructuresPropertiesKHR" );
+	}
+
+	void VKAPI_CALL vkCmdCopyAccelerationStructureKHR(
+		VkCommandBuffer commandBuffer,
+		const VkCopyAccelerationStructureInfoKHR * pInfo )
+	{
+		reportUnsupported( commandBuffer, "vkCmdCopyAccelerationStructureKHR" );
+	}
+
+	void VKAPI_CALL vkCmdCopyAccelerationStructureToMemoryKHR(
+		VkCommandBuffer commandBuffer,
+		const VkCopyAccelerationStructureToMemoryInfoKHR * pInfo )
+	{
+		reportUnsupported( commandBuffer, "vkCmdCopyAccelerationStructureToMemoryKHR" );
+	}
+
+	void VKAPI_CALL vkCmdCopyMemoryToAccelerationStructureKHR(
+		VkCommandBuffer commandBuffer,
+		const VkCopyMemoryToAccelerationStructureInfoKHR * pInfo )
+	{
+		reportUnsupported( commandBuffer, "vkCmdCopyMemoryToAccelerationStructureKHR" );
+	}
+
+	VkDeviceAddress VKAPI_CALL vkGetAccelerationStructureDeviceAddressKHR(
+		VkDevice device,
+		const VkAccelerationStructureDeviceAddressInfoKHR * pInfo )
+	{
+		reportUnsupported( device, "vkGetAccelerationStructureDeviceAddressKHR" );
+		return 0u;
+	}
+
+	void VKAPI_CALL vkCmdWriteAccelerationStructuresPropertiesKHR(
+		VkCommandBuffer commandBuffer,
+		uint32_t accelerationStructureCount,
+		const VkAccelerationStructureKHR * pAccelerationStructures,
+		VkQueryType queryType,
+		VkQueryPool queryPool,
+		uint32_t firstQuery )
+	{
+		reportUnsupported( commandBuffer, "vkCmdWriteAccelerationStructuresPropertiesKHR" );
+	}
+
+	void VKAPI_CALL vkGetDeviceAccelerationStructureCompatibilityKHR(
+		VkDevice device,
+		const VkAccelerationStructureVersionInfoKHR * pVersionInfo,
+		VkAccelerationStructureCompatibilityKHR * pCompatibility )
+	{
+		reportUnsupported( device, "vkGetDeviceAccelerationStructureCompatibilityKHR" );
+	}
+
+	void VKAPI_CALL vkGetAccelerationStructureBuildSizesKHR(
+		VkDevice device,
+		VkAccelerationStructureBuildTypeKHR buildType,
+		const VkAccelerationStructureBuildGeometryInfoKHR * pBuildInfo,
+		const uint32_t * pMaxPrimitiveCounts,
+		VkAccelerationStructureBuildSizesInfoKHR * pSizeInfo )
+	{
+		reportUnsupported( device, "vkGetAccelerationStructureBuildSizesKHR" );
+	}
+
+#endif
+#pragma endregion
 #pragma region VK_KHR_android_surface
 #ifdef VK_KHR_android_surface
 #	ifdef VK_USE_PLATFORM_ANDROID_KHR

@@ -8,6 +8,9 @@ See LICENSE file in root folder.
 
 #include <ashes/ashes.hpp>
 
+#include "Enum/AccelerationStructureBuildType.hpp"
+#include "Enum/AccelerationStructureCompatibility.hpp"
+#include "Enum/AccelerationStructureCreateFlags.hpp"
 #include "Enum/AccessFlags.hpp"
 #include "Enum/AttachmentLoadOp.hpp"
 #include "Enum/AttachmentStoreOp.hpp"
@@ -16,6 +19,7 @@ See LICENSE file in root folder.
 #include "Enum/BorderColor.hpp"
 #include "Enum/BufferCreateFlags.hpp"
 #include "Enum/BufferUsageFlags.hpp"
+#include "Enum/BuildAccelerationStructureMode.hpp"
 #include "Enum/ClipDirection.hpp"
 #include "Enum/ColorComponentFlags.hpp"
 #include "Enum/ColorSpace.hpp"
@@ -133,6 +137,7 @@ namespace ashes
 	struct PipelineVertexInputStateCreateInfo;
 	struct WriteDescriptorSet;
 
+	class AccelerationStructure;
 	class BufferBase;
 	class BufferView;
 	class CommandBuffer;
@@ -186,6 +191,7 @@ namespace ashes
 	template< typename T >
 	using SpecialisationInfoPtr = std::unique_ptr< SpecialisationInfo< T > >;
 
+	using AccelerationStructurePtr = std::unique_ptr< AccelerationStructure >;
 	using BufferBasePtr = std::unique_ptr< BufferBase >;
 	using BufferViewPtr = std::unique_ptr< BufferView >;
 	using CommandBufferPtr = std::unique_ptr< CommandBuffer >;
@@ -236,6 +242,7 @@ namespace ashes
 	using PhysicalDevicePtrArray = std::vector< PhysicalDevicePtr >;
 	using ImagePtrArray = std::vector< ImagePtr >;
 
+	using AccelerationStructureCRef = std::reference_wrapper< AccelerationStructure const >;
 	using BufferCRef = std::reference_wrapper< BufferBase const >;
 	using BufferViewCRef = std::reference_wrapper< BufferView const >;
 	using CommandBufferCRef = std::reference_wrapper< CommandBuffer const >;
@@ -254,6 +261,7 @@ namespace ashes
 	using VertexBufferCRef = std::reference_wrapper< VertexBufferBase const >;
 	using PipelineVertexInputStateCreateInfoCRef = std::reference_wrapper< PipelineVertexInputStateCreateInfo const >;
 
+	using AccelerationStructureCRefArray = std::vector< AccelerationStructureCRef >;
 	using BufferCRefArray = std::vector< BufferCRef >;
 	using CommandBufferCRefArray = std::vector< CommandBufferCRef >;
 	using DescriptorSetCRefArray = std::vector< DescriptorSetCRef >;

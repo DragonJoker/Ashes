@@ -31,6 +31,24 @@ source_group( "Header Files" FILES ${${PROJECT_NAME}_HDR_FILES} )
 source_group( "Source Files" FILES ${${PROJECT_NAME}_SRC_FILES} )
 
 set( ${PROJECT_NAME}_FOLDER_SRC_FILES
+	${Ashes_SOURCE_DIR}/source/ashespp/AccelerationStructure/AccelerationStructure.cpp
+)
+set( ${PROJECT_NAME}_FOLDER_HDR_FILES
+	${Ashes_SOURCE_DIR}/include/ashespp/AccelerationStructure/AccelerationStructure.hpp
+	${Ashes_SOURCE_DIR}/include/ashespp/AccelerationStructure/AccelerationStructureBuildGeometryInfo.hpp
+)
+set( ${PROJECT_NAME}_SRC_FILES
+	${${PROJECT_NAME}_SRC_FILES}
+	${${PROJECT_NAME}_FOLDER_SRC_FILES}
+)
+set( ${PROJECT_NAME}_HDR_FILES
+	${${PROJECT_NAME}_HDR_FILES}
+	${${PROJECT_NAME}_FOLDER_HDR_FILES}
+)
+source_group( "Header Files\\AccelerationStructure" FILES ${${PROJECT_NAME}_FOLDER_HDR_FILES} )
+source_group( "Source Files\\AccelerationStructure" FILES ${${PROJECT_NAME}_FOLDER_SRC_FILES} )
+
+set( ${PROJECT_NAME}_FOLDER_SRC_FILES
 	${Ashes_SOURCE_DIR}/source/ashespp/Buffer/Buffer.cpp
 	${Ashes_SOURCE_DIR}/source/ashespp/Buffer/BufferView.cpp
 	${Ashes_SOURCE_DIR}/source/ashespp/Buffer/PushConstantsBuffer.cpp
@@ -167,6 +185,9 @@ source_group( "Header Files\\Descriptor" FILES ${${PROJECT_NAME}_FOLDER_HDR_FILE
 source_group( "Source Files\\Descriptor" FILES ${${PROJECT_NAME}_FOLDER_SRC_FILES} )
 
 set( ${PROJECT_NAME}_FOLDER_HDR_FILES
+	${Ashes_SOURCE_DIR}/include/ashespp/Enum/AccelerationStructureBuildType.hpp
+	${Ashes_SOURCE_DIR}/include/ashespp/Enum/AccelerationStructureCompatibility.hpp
+	${Ashes_SOURCE_DIR}/include/ashespp/Enum/AccelerationStructureCreateFlags.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/AccessFlags.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/AttachmentLoadOp.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/AttachmentStoreOp.hpp
@@ -175,6 +196,7 @@ set( ${PROJECT_NAME}_FOLDER_HDR_FILES
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/BorderColor.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/BufferCreateFlags.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/BufferUsageFlags.hpp
+	${Ashes_SOURCE_DIR}/include/ashespp/Enum/BuildAccelerationStructureMode.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/ClipDirection.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/ColorComponentFlags.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/ColorSpace.hpp
