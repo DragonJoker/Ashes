@@ -16,6 +16,7 @@ See LICENSE file in root folder.
 #include "ashespp/Miscellaneous/QueueShare.hpp"
 #include "ashespp/Pipeline/ComputePipelineCreateInfo.hpp"
 #include "ashespp/Pipeline/GraphicsPipelineCreateInfo.hpp"
+#include "ashespp/Pipeline/RayTracingPipelineCreateInfo.hpp"
 #include "ashespp/RenderPass/RenderPassCreateInfo.hpp"
 
 #include <mutex>
@@ -716,6 +717,31 @@ namespace ashes
 	};
 
 #endif
+#if VK_KHR_ray_tracing_pipeline
+
+	template<>
+	struct AshesTypeTraits< ashes::RayTracingPipeline >
+	{
+		using VkType = VkPipeline;
+	};
+
+	template<>
+	struct AshesDebugTypeTraits< ashes::RayTracingPipeline >
+	{
+#	if VK_EXT_debug_utils
+		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_PIPELINE;
+#	endif
+#	if VK_EXT_debug_report || VK_EXT_debug_marker
+		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT;
+#	endif
+		static std::string const & getName()
+		{
+			static std::string result{ "VkRayTracingPipelineKHR" };
+			return result;
+		}
+	};
+
+#endif
 
 	/**
 	*\brief
@@ -927,6 +953,39 @@ namespace ashes
 		*/
 		ComputePipelinePtr createPipeline( std::string debugName
 			, ComputePipelineCreateInfo createInfo )const;
+
+#if VK_KHR_ray_tracing_pipeline
+
+		/**
+		*\brief
+		*	Creates a ray tracing pipeline.
+		*\param[in] deferredOperation
+		*	The deferred operation.
+		*\param[in] createInfos
+		*	The creation informations.
+		*\return
+		*	The created pipeline.
+		*/
+		RayTracingPipelinePtr createPipeline( DeferredOperation const & deferredOperation
+			, RayTracingPipelineCreateInfoArray createInfos )const;
+		/**
+		*\brief
+		*	Creates a compute pipeline using this layout.
+		*\param[in] debugName
+		*	The object debug name.
+		*\param[in] deferredOperation
+		*	The deferred operation.
+		*\param[in] createInfos
+		*	The creation informations.
+		*\return
+		*	The created pipeline.
+		*/
+		RayTracingPipelinePtr createPipeline( std::string debugName
+			, DeferredOperation const & deferredOperation
+			, RayTracingPipelineCreateInfoArray createInfos )const;
+
+#endif
+
 		/**
 		*\brief
 		*	Creates a pipeline layout.

@@ -5,6 +5,7 @@ See LICENSE file in root folder.
 #include "ashespp/Pipeline/Pipeline.hpp"
 
 #include "ashespp/Core/Device.hpp"
+#include "ashespp/Miscellaneous/DeferredOperation.hpp"
 
 namespace ashes
 {
@@ -41,6 +42,26 @@ namespace ashes
 			, m_device.getAllocationCallbacks()
 			, &m_internal );
 		checkError( res, "GraphicsPipeline creation" );
+		registerObject( m_device, debugName, *this );
+	}
+
+	Pipeline::Pipeline( Device const & device
+		, std::string const & debugName
+		, DeferredOperation const & deferredOperation
+		, RayTracingPipelineCreateInfoArray const & createInfos )
+		: VkObject{ debugName }
+		, m_device{ device }
+	{
+		DEBUG_WRITE( "pipeline.log" );
+		auto vkCreateInfos = makeVkArray< VkRayTracingPipelineCreateInfoKHR >( createInfos );
+		auto res = m_device.vkCreateRayTracingPipelinesKHR( m_device
+			, deferredOperation
+			, nullptr
+			, uint32_t( vkCreateInfos.size() )
+			, vkCreateInfos.data()
+			, m_device.getAllocationCallbacks()
+			, &m_internal );
+		checkError( res, "RayTracingPipeline creation" );
 		registerObject( m_device, debugName, *this );
 	}
 

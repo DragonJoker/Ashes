@@ -16,6 +16,7 @@ See LICENSE file in root folder.
 #include "ashespp/Miscellaneous/DeferredOperation.hpp"
 #include "ashespp/Miscellaneous/QueryPool.hpp"
 #include "ashespp/Pipeline/PipelineLayout.hpp"
+#include "ashespp/Pipeline/RayTracingPipeline.hpp"
 #include "ashespp/RenderPass/RenderPass.hpp"
 #include "ashespp/Shader/ShaderModule.hpp"
 #include "ashespp/Sync/Event.hpp"
@@ -183,6 +184,28 @@ namespace ashes
 			, std::move( debugName )
 			, std::move( createInfo ) );
 	}
+
+#if VK_KHR_ray_tracing_pipeline
+
+	RayTracingPipelinePtr Device::createPipeline( DeferredOperation const & deferredOperation
+		, RayTracingPipelineCreateInfoArray createInfos )const
+	{
+		return std::make_unique< RayTracingPipeline >( *this
+			, deferredOperation
+			, std::move( createInfos ) );
+	}
+
+	RayTracingPipelinePtr Device::createPipeline( std::string debugName
+		, DeferredOperation const & deferredOperation
+		, RayTracingPipelineCreateInfoArray createInfos )const
+	{
+		return std::make_unique< RayTracingPipeline >( *this
+			, std::move( debugName )
+			, deferredOperation
+			, std::move( createInfos ) );
+	}
+
+#endif
 
 	PipelineLayoutPtr Device::createPipelineLayout( DescriptorSetLayoutCRefArray const & setLayouts
 		, VkPushConstantRangeArray const & pushConstantRanges )const

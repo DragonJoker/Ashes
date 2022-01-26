@@ -3929,6 +3929,75 @@ namespace ashes::test
 
 #endif
 #pragma endregion
+#pragma region VK_KHR_ray_tracing_pipeline
+#ifdef VK_KHR_ray_tracing_pipeline
+
+	void VKAPI_CALL vkCmdTraceRaysKHR(
+		VkCommandBuffer commandBuffer,
+		const VkStridedDeviceAddressRegionKHR * pRaygenShaderBindingTable,
+		const VkStridedDeviceAddressRegionKHR * pMissShaderBindingTable,
+		const VkStridedDeviceAddressRegionKHR * pHitShaderBindingTable,
+		const VkStridedDeviceAddressRegionKHR * pCallableShaderBindingTable,
+		uint32_t width,
+		uint32_t height,
+		uint32_t depth )
+	{
+		reportUnsupported( commandBuffer, "vkCmdTraceRaysKHR" );
+	}
+
+	VkResult VKAPI_CALL vkCreateRayTracingPipelinesKHR(
+		VkDevice device,
+		VkDeferredOperationKHR deferredOperation,
+		VkPipelineCache pipelineCache,
+		uint32_t createInfoCount,
+		const VkRayTracingPipelineCreateInfoKHR * pCreateInfos,
+		const VkAllocationCallbacks * pAllocator,
+		VkPipeline * pPipelines )
+	{
+		return reportUnsupported( device, "vkCreateRayTracingPipelinesKHR" );
+	}
+
+	VkResult VKAPI_CALL vkGetRayTracingCaptureReplayShaderGroupHandlesKHR(
+		VkDevice device,
+		VkPipeline pipeline,
+		uint32_t firstGroup,
+		uint32_t groupCount,
+		size_t dataSize,
+		void * pData )
+	{
+		return reportUnsupported( device, "vkGetRayTracingCaptureReplayShaderGroupHandlesKHR" );
+	}
+
+	void VKAPI_CALL vkCmdTraceRaysIndirectKHR(
+		VkCommandBuffer commandBuffer,
+		const VkStridedDeviceAddressRegionKHR * pRaygenShaderBindingTable,
+		const VkStridedDeviceAddressRegionKHR * pMissShaderBindingTable,
+		const VkStridedDeviceAddressRegionKHR * pHitShaderBindingTable,
+		const VkStridedDeviceAddressRegionKHR * pCallableShaderBindingTable,
+		VkDeviceAddress indirectDeviceAddress )
+	{
+		reportUnsupported( commandBuffer, "vkCmdTraceRaysIndirectKHR" );
+	}
+
+	VkDeviceSize VKAPI_CALL vkGetRayTracingShaderGroupStackSizeKHR(
+		VkDevice device,
+		VkPipeline pipeline,
+		uint32_t group,
+		VkShaderGroupShaderKHR groupShader )
+	{
+		reportUnsupported( device, "vkGetRayTracingShaderGroupStackSizeKHR" );
+		return 0u;
+	}
+
+	void VKAPI_CALL vkCmdSetRayTracingPipelineStackSizeKHR(
+		VkCommandBuffer commandBuffer,
+		uint32_t pipelineStackSize )
+	{
+		reportUnsupported( commandBuffer, "vkCmdSetRayTracingPipelineStackSizeKHR" );
+	}
+
+#endif
+#pragma endregion
 #pragma region VK_KHR_android_surface
 #ifdef VK_KHR_android_surface
 #	ifdef VK_USE_PLATFORM_ANDROID_KHR
