@@ -49,12 +49,12 @@ namespace ashes
 		*\brief
 		*	Destructor.
 		*/
-		virtual ~Pipeline();
+		~Pipeline();
 		/**
 		*\brief
 		*	VkPipeline implicit cast operator.
 		*/
-		inline operator VkPipeline const & ()const
+		operator VkPipeline const & ()const
 		{
 			return m_internal;
 		}

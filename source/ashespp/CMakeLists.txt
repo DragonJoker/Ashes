@@ -217,6 +217,7 @@ set( ${PROJECT_NAME}_FOLDER_HDR_FILES
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/ObjectType.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/PhysicalDeviceType.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/PipelineBindPoint.hpp
+	${Ashes_SOURCE_DIR}/include/ashespp/Enum/PipelineCreateFlags.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/PipelineDepthStencilStateCreateFlags.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/PipelineDynamicStateCreateFlags.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Enum/PipelineMultisampleStateCreateFlags.hpp
@@ -324,6 +325,7 @@ set( ${PROJECT_NAME}_FOLDER_HDR_FILES
 	${Ashes_SOURCE_DIR}/include/ashespp/Pipeline/PipelineDynamicStateCreateInfo.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Pipeline/PipelineInputAssemblyStateCreateInfo.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Pipeline/PipelineLayout.hpp
+	${Ashes_SOURCE_DIR}/include/ashespp/Pipeline/PipelineLibraryCreateInfo.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Pipeline/PipelineMultisampleStateCreateInfo.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Pipeline/PipelineRasterizationStateCreateInfo.hpp
 	${Ashes_SOURCE_DIR}/include/ashespp/Pipeline/PipelineShaderStageCreateInfo.hpp

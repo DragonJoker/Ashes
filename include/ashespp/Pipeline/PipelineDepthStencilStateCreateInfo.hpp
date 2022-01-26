@@ -21,54 +21,56 @@ namespace ashes
 			, VkCompareOp depthCompareOp = VK_COMPARE_OP_LESS
 			, VkBool32 depthBoundsTestEnable = VK_FALSE
 			, VkBool32 stencilTestEnable = VK_FALSE
-			, VkStencilOpState front =
-			{
-				VK_STENCIL_OP_KEEP,
-				VK_STENCIL_OP_KEEP,
-				VK_STENCIL_OP_KEEP,
-				VK_COMPARE_OP_ALWAYS,
-				0xFFFFFFFFu,
-				0xFFFFFFFFu,
-				0x0u,
-			}
-			, VkStencilOpState back =
-			{
-				VK_STENCIL_OP_KEEP,
-				VK_STENCIL_OP_KEEP,
-				VK_STENCIL_OP_KEEP,
-				VK_COMPARE_OP_ALWAYS,
-				0xFFFFFFFFu,
-				0xFFFFFFFFu,
-				0x0u,
-			}
+			, VkStencilOpState front = { VK_STENCIL_OP_KEEP
+				, VK_STENCIL_OP_KEEP
+				, VK_STENCIL_OP_KEEP
+				, VK_COMPARE_OP_ALWAYS
+				, 0xFFFFFFFFu
+				, 0xFFFFFFFFu
+				, 0x0u }
+			, VkStencilOpState back = { VK_STENCIL_OP_KEEP
+				, VK_STENCIL_OP_KEEP
+				, VK_STENCIL_OP_KEEP
+				, VK_COMPARE_OP_ALWAYS
+				, 0xFFFFFFFFu
+				, 0xFFFFFFFFu
+				, 0x0u }
 			, float minDepthBounds = 0.0f
 			, float maxDepthBounds = 1.0f )
-			: vk
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
-				nullptr,
-				flags,
-				depthTestEnable,
-				depthWriteEnable,
-				depthCompareOp,
-				depthBoundsTestEnable,
-				stencilTestEnable,
-				front,
-				back,
-				minDepthBounds,
-				maxDepthBounds,
-			}
+			: vk{ VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO
+				, nullptr
+				, flags
+				, depthTestEnable
+				, depthWriteEnable
+				, depthCompareOp
+				, depthBoundsTestEnable
+				, stencilTestEnable
+				, front
+				, back
+				, minDepthBounds
+				, maxDepthBounds }
 		{
 		}
 		
 		PipelineDepthStencilStateCreateInfo( PipelineDepthStencilStateCreateInfo && rhs )noexcept
-			: vk{ rhs.vk }
+			: vk{ std::move( rhs.vk ) }
+		{
+		}
+		
+		PipelineDepthStencilStateCreateInfo( VkPipelineDepthStencilStateCreateInfo rhs )noexcept
+			: vk{ std::move( rhs ) }
 		{
 		}
 		
 		PipelineDepthStencilStateCreateInfo & operator=( PipelineDepthStencilStateCreateInfo && rhs )noexcept
 		{
-			vk = rhs.vk;
+			vk = std::move( rhs.vk );
+			return *this;
+		}
+		
+		PipelineDepthStencilStateCreateInfo & operator=( VkPipelineDepthStencilStateCreateInfo rhs )noexcept
+		{
+			vk = std::move( rhs );
 			return *this;
 		}
 
