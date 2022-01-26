@@ -28,7 +28,7 @@ namespace ashes
 		{
 		}
 
-		inline operator VkSpecializationInfo const &()const
+		operator VkSpecializationInfo const &()const
 		{
 			return vk;
 		}
@@ -49,36 +49,40 @@ namespace ashes
 			: module{ std::move( pmodule ) }
 			, name{ std::move( pname ) }
 			, specializationInfo{ std::move( pspecializationInfo ) }
-			, vk
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-				nullptr,
-				flags,
-				stage,
-				*module,
-				name.data(),
-				nullptr,
-			}
+			, vk{ VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
+				, nullptr
+				, flags
+				, stage
+				, *module
+				, name.data()
+				, nullptr }
 		{
 			doInit();
 		}
 
 		PipelineShaderStageCreateInfo( PipelineShaderStageCreateInfo const & rhs )
-			: module{ rhs.module }
-			, name{ rhs.name }
-			, specializationInfo{ rhs.specializationInfo }
-			, vk
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				rhs.vk.stage,
-				*module,
-				name.data(),
-				nullptr,
-			}
+			: PipelineShaderStageCreateInfo{ rhs.vk.flags
+				, rhs.vk.stage
+				, rhs.module
+				, rhs.name
+				, rhs.specializationInfo }
 		{
-			doInit();
+		}
+
+		PipelineShaderStageCreateInfo( PipelineShaderStageCreateInfo && rhs )noexcept
+			: PipelineShaderStageCreateInfo{ rhs.vk.flags
+				, rhs.vk.stage
+				, std::move( rhs.module )
+				, std::move( rhs.name )
+				, std::move( rhs.specializationInfo ) }
+		{
+			rhs.vk = { VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
+				, nullptr
+				, 0u
+				, rhs.vk.stage
+				, nullptr
+				, nullptr
+				, nullptr };
 		}
 
 		PipelineShaderStageCreateInfo & operator=( PipelineShaderStageCreateInfo const & rhs )
@@ -86,47 +90,16 @@ namespace ashes
 			module = rhs.module;
 			name = rhs.name;
 			specializationInfo = rhs.specializationInfo;
-			vk =
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				rhs.vk.stage,
-				*module,
-				name.data(),
-				nullptr,
-			};
+			vk = { VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
+				, nullptr
+				, rhs.vk.flags
+				, rhs.vk.stage
+				, *module
+				, name.data()
+				, nullptr };
 			doInit();
 
 			return *this;
-		}
-
-		PipelineShaderStageCreateInfo( PipelineShaderStageCreateInfo && rhs )noexcept
-			: module{ std::move( rhs.module ) }
-			, name{ std::move( rhs.name ) }
-			, specializationInfo{ std::move( rhs.specializationInfo ) }
-			, vk
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				rhs.vk.stage,
-				*module,
-				name.data(),
-				nullptr,
-			}
-		{
-			rhs.vk =
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-				nullptr,
-				0u,
-				rhs.vk.stage,
-				nullptr,
-				nullptr,
-				nullptr,
-			};
-			doInit();
 		}
 
 		PipelineShaderStageCreateInfo & operator=( PipelineShaderStageCreateInfo && rhs )noexcept
@@ -134,32 +107,26 @@ namespace ashes
 			module = std::move( rhs.module );
 			name = std::move( rhs.name );
 			specializationInfo = std::move( rhs.specializationInfo );
-			vk =
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				rhs.vk.stage,
-				*module,
-				name.data(),
-				nullptr,
-			};
-			rhs.vk =
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-				nullptr,
-				0u,
-				rhs.vk.stage,
-				nullptr,
-				nullptr,
-				nullptr,
-			};
+			vk = { VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
+				, nullptr
+				, rhs.vk.flags
+				, rhs.vk.stage
+				, *module
+				, name.data()
+				, nullptr };
+			rhs.vk = { VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
+				, nullptr
+				, 0u
+				, rhs.vk.stage
+				, nullptr
+				, nullptr
+				, nullptr };
 			doInit();
 
 			return *this;
 		}
 
-		inline operator VkPipelineShaderStageCreateInfo const &()const
+		operator VkPipelineShaderStageCreateInfo const &()const
 		{
 			return vk;
 		}
@@ -182,6 +149,35 @@ namespace ashes
 	};
 
 	using PipelineShaderStageCreateInfoArray = std::vector< PipelineShaderStageCreateInfo >;
+
+	template< typename Type >
+	std::vector< Type > makeArray( std::vector< VkPipelineShaderStageCreateInfo > const & values )
+	{
+		std::vector< Type > result;
+		result.reserve( values.size() );
+
+		for ( auto & value : values )
+		{
+			result.emplace_back( value );
+		}
+
+		return result;
+	}
+
+	template< typename Type >
+	std::vector< Type > makeArray( VkPipelineShaderStageCreateInfo const * values
+		, uint32_t count )
+	{
+		std::vector< Type > result;
+		result.reserve( count );
+
+		for ( uint32_t i = 0u; i < count; ++i )
+		{
+			result.emplace_back( values[i] );
+		}
+
+		return result;
+	}
 }
 
 #endif

@@ -1002,7 +1002,7 @@ namespace ashes
 		*	The push constants buffer.
 		*/
 		template< typename T >
-		inline void pushConstants( PipelineLayout const & layout
+		void pushConstants( PipelineLayout const & layout
 			, PushConstantsBuffer< T > const & pcb )const
 		{
 			pushConstants( layout, pcb.getBuffer() );

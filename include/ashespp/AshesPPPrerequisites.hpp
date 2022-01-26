@@ -57,6 +57,7 @@ See LICENSE file in root folder.
 #include "Enum/ObjectType.hpp"
 #include "Enum/PhysicalDeviceType.hpp"
 #include "Enum/PipelineBindPoint.hpp"
+#include "Enum/PipelineCreateFlags.hpp"
 #include "Enum/PipelineDepthStencilStateCreateFlags.hpp"
 #include "Enum/PipelineDynamicStateCreateFlags.hpp"
 #include "Enum/PipelineMultisampleStateCreateFlags.hpp"
@@ -310,6 +311,11 @@ namespace ashes
 	private:
 		std::string m_name;
 	};
+
+	inline std::string convert( char const * const v )noexcept
+	{
+		return v ? std::string{ v } : std::string{};
+	}
 }
 
 #endif

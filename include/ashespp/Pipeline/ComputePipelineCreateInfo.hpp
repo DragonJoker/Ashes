@@ -25,47 +25,36 @@ namespace ashes
 			, VkPipeline basePipelineHandle = {}
 			, int32_t basePipelineIndex = {} )
 			: stage{ std::move( pstage ) }
-			, vk
-			{
-				VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO,
-				nullptr,
-				flags,
-				stage,
-				layout,
-				basePipelineHandle,
-				basePipelineIndex,
+			, vk{ VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO
+				, nullptr
+				, flags
+				, stage
+				, layout
+				, basePipelineHandle
+				, basePipelineIndex
 			}
 		{
 		}
 
 		ComputePipelineCreateInfo( ComputePipelineCreateInfo && rhs )noexcept
-			: stage{ std::move( rhs.stage ) }
-			, vk
-			{
-				VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				stage,
-				rhs.vk.layout,
-				rhs.vk.basePipelineHandle,
-				rhs.vk.basePipelineIndex,
-			}
+			: ComputePipelineCreateInfo{ rhs.vk.flags
+				, std::move( rhs.stage )
+				, rhs.vk.layout
+				, rhs.vk.basePipelineHandle
+				, rhs.vk.basePipelineIndex }
 		{
 		}
 
 		ComputePipelineCreateInfo & operator=( ComputePipelineCreateInfo && rhs )noexcept
 		{
 			stage = std::move( rhs.stage );
-			vk =
-			{
-				VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				stage,
-				rhs.vk.layout,
-				rhs.vk.basePipelineHandle,
-				rhs.vk.basePipelineIndex,
-			};
+			vk = { VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO
+				, nullptr
+				, rhs.vk.flags
+				, stage
+				, rhs.vk.layout
+				, rhs.vk.basePipelineHandle
+				, rhs.vk.basePipelineIndex };
 
 			return *this;
 		}
