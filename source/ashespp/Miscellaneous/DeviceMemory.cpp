@@ -90,4 +90,17 @@ namespace ashes
 	{
 		m_device.vkUnmapMemory( m_device, m_internal );
 	}
+
+#if VK_KHR_buffer_device_address
+
+	uint64_t DeviceMemory::getOpaqueCaptureAddress()const
+	{
+		VkDeviceMemoryOpaqueCaptureAddressInfoKHR info{ VK_STRUCTURE_TYPE_DEVICE_MEMORY_OPAQUE_CAPTURE_ADDRESS_INFO_KHR
+			, nullptr
+			, m_internal };
+		return m_device.vkGetDeviceMemoryOpaqueCaptureAddressKHR( m_device
+			, &info );
+	}
+
+#endif
 }
