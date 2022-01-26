@@ -266,7 +266,7 @@ namespace ashes
 			}
 			, format
 			, VkOffset3D{}
-			, { extent.width, extent.height }
+			, { extent.width, extent.height, 1u }
 			, view );
 	}
 
@@ -348,7 +348,7 @@ namespace ashes
 			}
 			, format
 			, VkOffset3D{}
-			, { extent.width, extent.height }
+			, { extent.width, extent.height, 1u }
 			, data
 			, view );
 	}
