@@ -24,17 +24,14 @@ namespace ashes
 			, enabledExtensionNames{ std::move( penabledExtensionNames ) }
 			, ptrEnabledLayerNames{ convert( enabledLayerNames ) }
 			, ptrEnabledExtensionNames{ convert( enabledExtensionNames ) }
-			, vk
-			{
-				VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-				nullptr,
-				pflags,
-				&static_cast< VkApplicationInfo const & >( applicationInfo ),
-				uint32_t( ptrEnabledLayerNames.size() ),
-				ptrEnabledLayerNames.data(),
-				uint32_t( ptrEnabledExtensionNames.size() ),
-				ptrEnabledExtensionNames.data(),
-			}
+			, vk{ VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO
+				, nullptr
+				, pflags
+				, &static_cast< VkApplicationInfo const & >( applicationInfo )
+				, uint32_t( ptrEnabledLayerNames.size() )
+				, ptrEnabledLayerNames.data()
+				, uint32_t( ptrEnabledExtensionNames.size() )
+				, ptrEnabledExtensionNames.data() }
 		{
 		}
 		
@@ -44,17 +41,14 @@ namespace ashes
 			, enabledExtensionNames{ std::move( rhs.enabledExtensionNames ) }
 			, ptrEnabledLayerNames{ convert( enabledLayerNames ) }
 			, ptrEnabledExtensionNames{ convert( enabledExtensionNames ) }
-			, vk
-			{
-				VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				&static_cast< VkApplicationInfo const & >( applicationInfo ),
-				uint32_t( ptrEnabledLayerNames.size() ),
-				ptrEnabledLayerNames.data(),
-				uint32_t( ptrEnabledExtensionNames.size() ),
-				ptrEnabledExtensionNames.data(),
-			}
+			, vk{ VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, &static_cast< VkApplicationInfo const & >( applicationInfo )
+				, uint32_t( ptrEnabledLayerNames.size() )
+				, ptrEnabledLayerNames.data()
+				, uint32_t( ptrEnabledExtensionNames.size() )
+				, ptrEnabledExtensionNames.data() }
 		{
 		}
 		
@@ -66,24 +60,31 @@ namespace ashes
 			enabledFeatures = std::move( rhs.enabledFeatures );
 			ptrEnabledLayerNames = convert( enabledLayerNames );
 			ptrEnabledExtensionNames = convert( enabledExtensionNames );
-			vk =
-			{
-				VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				&static_cast< VkApplicationInfo const & >( applicationInfo ),
-				uint32_t( ptrEnabledLayerNames.size() ),
-				ptrEnabledLayerNames.data(),
-				uint32_t( ptrEnabledExtensionNames.size() ),
-				ptrEnabledExtensionNames.data(),
-			};
+			vk = { VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, &static_cast< VkApplicationInfo const & >( applicationInfo )
+				, uint32_t( ptrEnabledLayerNames.size() )
+				, ptrEnabledLayerNames.data()
+				, uint32_t( ptrEnabledExtensionNames.size() )
+				, ptrEnabledExtensionNames.data() };
 
 			return *this;
 		}
 
-		inline operator VkInstanceCreateInfo const &()const
+		operator VkInstanceCreateInfo const &()const
 		{
 			return vk;
+		}
+
+		VkInstanceCreateInfo const * operator->()const
+		{
+			return &vk;
+		}
+
+		VkInstanceCreateInfo * operator->()
+		{
+			return &vk;
 		}
 
 		ApplicationInfo applicationInfo;

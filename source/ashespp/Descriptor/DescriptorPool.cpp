@@ -53,23 +53,27 @@ namespace ashes
 	}
 
 	DescriptorSetPtr DescriptorPool::createDescriptorSet( DescriptorSetLayout const & layout
-		, uint32_t bindingPoint )const
+		, uint32_t bindingPoint
+		, void * pNext )const
 	{
 		return std::make_unique< DescriptorSet >( m_device
 			, *this
 			, layout
-			, bindingPoint );
+			, bindingPoint
+			, pNext );
 	}
 	
 	DescriptorSetPtr DescriptorPool::createDescriptorSet( std::string const & debugName
 		, DescriptorSetLayout const & layout
-		, uint32_t bindingPoint )const
+		, uint32_t bindingPoint
+		, void * pNext )const
 	{
 		return std::make_unique< DescriptorSet >( m_device
 			, debugName
 			, *this
 			, layout
-			, bindingPoint );
+			, bindingPoint
+			, pNext );
 	}
 
 	void DescriptorPool::freeDescriptorSet( DescriptorSetPtr set )const

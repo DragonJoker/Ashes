@@ -18,48 +18,48 @@ namespace ashes
 		PipelineDynamicStateCreateInfo( VkPipelineDynamicStateCreateFlags flags = 0u
 			, VkDynamicStateArray pdynamicStates = {} )
 			: dynamicStates{ std::move( pdynamicStates ) }
-			, vk
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
-				nullptr,
-				flags,
-				uint32_t( dynamicStates.size() ),
-				dynamicStates.data(),
-			}
+			, vk{ VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO
+				, nullptr
+				, flags
+				, uint32_t( dynamicStates.size() )
+				, dynamicStates.data() }
 		{
 		}
 
 		PipelineDynamicStateCreateInfo( PipelineDynamicStateCreateInfo && rhs )noexcept
 			: dynamicStates{ std::move( rhs.dynamicStates ) }
-			, vk
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				uint32_t( dynamicStates.size() ),
-				dynamicStates.data(),
-			}
+			, vk{ VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, uint32_t( dynamicStates.size() )
+				, dynamicStates.data() }
 		{
 		}
 
 		PipelineDynamicStateCreateInfo & operator=( PipelineDynamicStateCreateInfo && rhs )noexcept
 		{
 			dynamicStates = std::move( rhs.dynamicStates );
-			vk =
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				uint32_t( dynamicStates.size() ),
-				dynamicStates.data(),
-			};
-
+			vk = { VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, uint32_t( dynamicStates.size() )
+				, dynamicStates.data() };
 			return *this;
 		}
 
-		inline operator VkPipelineDynamicStateCreateInfo const &()const
+		operator VkPipelineDynamicStateCreateInfo const &()const
 		{
 			return vk;
+		}
+
+		VkPipelineDynamicStateCreateInfo const * operator->()const
+		{
+			return &vk;
+		}
+
+		VkPipelineDynamicStateCreateInfo * operator->()
+		{
+			return &vk;
 		}
 
 	private:

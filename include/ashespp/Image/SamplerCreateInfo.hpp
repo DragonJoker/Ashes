@@ -54,17 +54,17 @@ namespace ashes
 		{
 		}
 
-		inline operator VkSamplerCreateInfo const &()const
+		operator VkSamplerCreateInfo const &()const
 		{
 			return vk;
 		}
 
-		inline VkSamplerCreateInfo const * operator->()const
+		VkSamplerCreateInfo const * operator->()const
 		{
 			return &vk;
 		}
 
-		inline VkSamplerCreateInfo * operator->()
+		VkSamplerCreateInfo * operator->()
 		{
 			return &vk;
 		}

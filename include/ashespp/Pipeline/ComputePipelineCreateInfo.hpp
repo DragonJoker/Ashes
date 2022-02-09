@@ -37,8 +37,11 @@ namespace ashes
 		}
 
 		ComputePipelineCreateInfo( ComputePipelineCreateInfo && rhs )noexcept
-			: ComputePipelineCreateInfo{ rhs.vk.flags
-				, std::move( rhs.stage )
+			: stage{ std::move( rhs.stage ) }
+			, vk{ VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, stage
 				, rhs.vk.layout
 				, rhs.vk.basePipelineHandle
 				, rhs.vk.basePipelineIndex }
@@ -49,7 +52,7 @@ namespace ashes
 		{
 			stage = std::move( rhs.stage );
 			vk = { VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO
-				, nullptr
+				, rhs.vk.pNext
 				, rhs.vk.flags
 				, stage
 				, rhs.vk.layout
@@ -59,9 +62,19 @@ namespace ashes
 			return *this;
 		}
 
-		inline operator VkComputePipelineCreateInfo const & ()const
+		operator VkComputePipelineCreateInfo const & ()const
 		{
 			return vk;
+		}
+
+		VkComputePipelineCreateInfo const * operator->()const
+		{
+			return &vk;
+		}
+
+		VkComputePipelineCreateInfo * operator->()
+		{
+			return &vk;
 		}
 
 		PipelineShaderStageCreateInfo stage;

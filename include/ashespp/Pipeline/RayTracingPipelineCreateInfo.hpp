@@ -51,13 +51,23 @@ namespace ashes
 		}
 		
 		RayTracingPipelineCreateInfo( RayTracingPipelineCreateInfo && rhs )noexcept
-			: RayTracingPipelineCreateInfo{ rhs.vk.flags
-				, std::move( rhs.stages )
-				, std::move( rhs.groups )
+			: stages{ std::move( rhs.stages ) }
+			, vkStages{ makeVkArray< VkPipelineShaderStageCreateInfo >( stages ) }
+			, groups{ std::move( rhs.groups ) }
+			, libraryInfo{ std::move( rhs.libraryInfo ) }
+			, libraryInterface{ std::move( rhs.libraryInterface ) }
+			, dynamicState{ std::move( rhs.dynamicState ) }
+			, vk{ VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, uint32_t( vkStages.size() )
+				, vkStages.data()
+				, uint32_t( groups.size() )
+				, groups.data()
 				, rhs.vk.maxPipelineRayRecursionDepth
-				, std::move( rhs.libraryInfo )
-				, std::move( rhs.libraryInterface )
-				, std::move( rhs.dynamicState )
+				, convert( libraryInfo )
+				, convert( libraryInterface )
+				, convert( dynamicState )
 				, rhs.vk.layout
 				, rhs.vk.basePipelineHandle
 				, rhs.vk.basePipelineIndex }
@@ -73,7 +83,7 @@ namespace ashes
 			libraryInterface = std::move( rhs.libraryInterface );
 			dynamicState = std::move( rhs.dynamicState );
 			vk = { VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR
-				, nullptr
+				, rhs.vk.pNext
 				, rhs.vk.flags
 				, uint32_t( vkStages.size() )
 				, vkStages.data()
@@ -92,6 +102,16 @@ namespace ashes
 		operator VkRayTracingPipelineCreateInfoKHR const &()const
 		{
 			return vk;
+		}
+
+		VkRayTracingPipelineCreateInfoKHR const * operator->()const
+		{
+			return &vk;
+		}
+
+		VkRayTracingPipelineCreateInfoKHR * operator->()
+		{
+			return &vk;
 		}
 
 	private:

@@ -86,17 +86,36 @@ namespace ashes
 		}
 
 		GraphicsPipelineCreateInfo( GraphicsPipelineCreateInfo && rhs )noexcept
-			: GraphicsPipelineCreateInfo{ rhs.vk.flags
-				, std::move( rhs.stages )
-				, std::move( rhs.vertexInputState )
-				, std::move( rhs.inputAssemblyState )
-				, std::move( rhs.tessellationState )
-				, std::move( rhs.viewportState )
-				, std::move( rhs.rasterizationState )
-				, std::move( rhs.multisampleState )
-				, std::move( rhs.depthStencilState )
-				, std::move( rhs.colorBlendState )
-				, std::move( rhs.dynamicState )
+			: stages{ std::move( rhs.stages ) }
+			, vertexInputState{ std::move( rhs.vertexInputState ) }
+			, inputAssemblyState{ std::move( rhs.inputAssemblyState ) }
+			, tessellationState{ std::move( rhs.tessellationState ) }
+			, viewportState{ std::move( rhs.viewportState ) }
+			, rasterizationState{ std::move( rhs.rasterizationState ) }
+			, multisampleState{ std::move( rhs.multisampleState ) }
+			, depthStencilState{ std::move( rhs.depthStencilState ) }
+			, colorBlendState{ std::move( rhs.colorBlendState ) }
+			, dynamicState{ std::move( rhs.dynamicState ) }
+			, vk{ VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, uint32_t( vkStages.size() )
+				, vkStages.data()
+				, &static_cast< VkPipelineVertexInputStateCreateInfo const & >( vertexInputState )
+				, &static_cast< VkPipelineInputAssemblyStateCreateInfo const & >( inputAssemblyState )
+				, ( bool( tessellationState )
+					? &static_cast< VkPipelineTessellationStateCreateInfo const & >( tessellationState.value() )
+					: nullptr )
+				, &static_cast< VkPipelineViewportStateCreateInfo const & >( viewportState )
+				, &static_cast< VkPipelineRasterizationStateCreateInfo const & >( rasterizationState )
+				, &static_cast< VkPipelineMultisampleStateCreateInfo const & >( multisampleState )
+				, ( bool( depthStencilState )
+					? &static_cast< VkPipelineDepthStencilStateCreateInfo const & >( depthStencilState.value() )
+					: nullptr )
+				, &static_cast< VkPipelineColorBlendStateCreateInfo const & >( colorBlendState )
+				, ( bool( dynamicState )
+					? &static_cast< VkPipelineDynamicStateCreateInfo const & >( dynamicState.value() )
+					: nullptr )
 				, rhs.vk.layout
 				, rhs.vk.renderPass
 				, rhs.vk.subpass
@@ -119,7 +138,7 @@ namespace ashes
 			dynamicState = std::move( rhs.dynamicState );
 			vkStages = makeVkArray< VkPipelineShaderStageCreateInfo >( stages );
 			vk = { VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO
-				, nullptr
+				, rhs.vk.pNext
 				, rhs.vk.flags
 				, uint32_t( vkStages.size() )
 				, vkStages.data()
@@ -150,6 +169,16 @@ namespace ashes
 		operator VkGraphicsPipelineCreateInfo const &()const
 		{
 			return vk;
+		}
+
+		VkGraphicsPipelineCreateInfo const * operator->()const
+		{
+			return &vk;
+		}
+
+		VkGraphicsPipelineCreateInfo * operator->()
+		{
+			return &vk;
 		}
 
 		PipelineShaderStageCreateInfoArray stages;

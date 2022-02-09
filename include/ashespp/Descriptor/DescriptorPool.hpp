@@ -61,7 +61,8 @@ namespace ashes
 		*	The created descriptor set.
 		*/
 		DescriptorSetPtr createDescriptorSet( DescriptorSetLayout const & layout
-			, uint32_t bindingPoint = 0u )const;
+			, uint32_t bindingPoint = 0u
+			, void * pNext = nullptr )const;
 		/**
 		*\brief
 		*	Creates a descriptor set matching the given layout.
@@ -74,7 +75,8 @@ namespace ashes
 		*/
 		DescriptorSetPtr createDescriptorSet( std::string const & debugName
 			, DescriptorSetLayout const & layout
-			, uint32_t bindingPoint = 0u )const;
+			, uint32_t bindingPoint = 0u
+			, void * pNext = nullptr )const;
 		void freeDescriptorSet( DescriptorSetPtr set )const;
 		/**
 		*\name

@@ -61,20 +61,30 @@ namespace ashes
 		}
 
 		PipelineShaderStageCreateInfo( PipelineShaderStageCreateInfo const & rhs )
-			: PipelineShaderStageCreateInfo{ rhs.vk.flags
+			: module{ rhs.module }
+			, name{ rhs.name }
+			, specializationInfo{ rhs.specializationInfo }
+			, vk{ VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
 				, rhs.vk.stage
-				, rhs.module
-				, rhs.name
-				, rhs.specializationInfo }
+				, *module
+				, name.data()
+				, nullptr }
 		{
 		}
 
 		PipelineShaderStageCreateInfo( PipelineShaderStageCreateInfo && rhs )noexcept
-			: PipelineShaderStageCreateInfo{ rhs.vk.flags
+			: module{ std::move( rhs.module ) }
+			, name{ std::move( rhs.name ) }
+			, specializationInfo{ std::move( rhs.specializationInfo ) }
+			, vk{ VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
 				, rhs.vk.stage
-				, std::move( rhs.module )
-				, std::move( rhs.name )
-				, std::move( rhs.specializationInfo ) }
+				, *module
+				, name.data()
+				, nullptr }
 		{
 			rhs.vk = { VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
 				, nullptr
@@ -91,7 +101,7 @@ namespace ashes
 			name = rhs.name;
 			specializationInfo = rhs.specializationInfo;
 			vk = { VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
-				, nullptr
+				, rhs.vk.pNext
 				, rhs.vk.flags
 				, rhs.vk.stage
 				, *module
@@ -108,7 +118,7 @@ namespace ashes
 			name = std::move( rhs.name );
 			specializationInfo = std::move( rhs.specializationInfo );
 			vk = { VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
-				, nullptr
+				, rhs.vk.pNext
 				, rhs.vk.flags
 				, rhs.vk.stage
 				, *module
@@ -129,6 +139,16 @@ namespace ashes
 		operator VkPipelineShaderStageCreateInfo const &()const
 		{
 			return vk;
+		}
+
+		VkPipelineShaderStageCreateInfo const * operator->()const
+		{
+			return &vk;
+		}
+
+		VkPipelineShaderStageCreateInfo * operator->()
+		{
+			return &vk;
 		}
 
 		ShaderModulePtr module;

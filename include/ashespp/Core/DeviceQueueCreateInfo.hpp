@@ -19,29 +19,23 @@ namespace ashes
 			, uint32_t pqueueFamilyIndex
 			, FloatArray pqueuePriorities )
 			: queuePriorities{ std::move( pqueuePriorities ) }
-			, vk
-			{
-				VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-				nullptr,
-				pflags,
-				pqueueFamilyIndex,
-				uint32_t( queuePriorities.size() ),
-				queuePriorities.data(),
-			}
+			, vk{ VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO
+				, nullptr
+				, pflags
+				, pqueueFamilyIndex
+				, uint32_t( queuePriorities.size() )
+				, queuePriorities.data() }
 		{
 		}
 		
 		DeviceQueueCreateInfo( DeviceQueueCreateInfo && rhs )noexcept
 			: queuePriorities{ std::move( rhs.queuePriorities ) }
-			, vk
-			{
-				VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				rhs.vk.queueFamilyIndex,
-				uint32_t( queuePriorities.size() ),
-				queuePriorities.data(),
-			}
+			, vk{ VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, rhs.vk.queueFamilyIndex
+				, uint32_t( queuePriorities.size() )
+				, queuePriorities.data() }
 		{
 		}
 		
@@ -59,22 +53,28 @@ namespace ashes
 		DeviceQueueCreateInfo & operator=( DeviceQueueCreateInfo && rhs )noexcept
 		{
 			queuePriorities = std::move( rhs.queuePriorities );
-			vk =
-			{
-				VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				rhs.vk.queueFamilyIndex,
-				uint32_t( queuePriorities.size() ),
-				queuePriorities.data(),
-			};
-
+			vk = { VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, rhs.vk.queueFamilyIndex
+				, uint32_t( queuePriorities.size() )
+				, queuePriorities.data() };
 			return *this;
 		}
 
-		inline operator VkDeviceQueueCreateInfo const &()const
+		operator VkDeviceQueueCreateInfo const &()const
 		{
 			return vk;
+		}
+
+		VkDeviceQueueCreateInfo const * operator->()const
+		{
+			return &vk;
+		}
+
+		VkDeviceQueueCreateInfo * operator->()
+		{
+			return &vk;
 		}
 
 	private:

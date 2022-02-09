@@ -26,78 +26,44 @@ namespace ashes
 			, float depthBiasClamp = 0.0f
 			, float depthBiasSlopeFactor = 0.0f
 			, float lineWidth = 1.0f )
-			: vk
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
-				nullptr,
-				flags,
-				depthClampEnable,
-				rasterizerDiscardEnable,
-				polygonMode,
-				cullMode,
-				frontFace,
-				depthBiasEnable,
-				depthBiasConstantFactor,
-				depthBiasClamp,
-				depthBiasSlopeFactor,
-				lineWidth,
-			}
+			: vk{ VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO
+				, nullptr
+				, flags
+				, depthClampEnable
+				, rasterizerDiscardEnable
+				, polygonMode
+				, cullMode
+				, frontFace
+				, depthBiasEnable
+				, depthBiasConstantFactor
+				, depthBiasClamp
+				, depthBiasSlopeFactor
+				, lineWidth }
 		{
 		}
 		
 		PipelineRasterizationStateCreateInfo( PipelineRasterizationStateCreateInfo && rhs )noexcept
-			: vk
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				rhs.vk.depthClampEnable,
-				rhs.vk.rasterizerDiscardEnable,
-				rhs.vk.polygonMode,
-				rhs.vk.cullMode,
-				rhs.vk.frontFace,
-				rhs.vk.depthBiasEnable,
-				rhs.vk.depthBiasConstantFactor,
-				rhs.vk.depthBiasClamp,
-				rhs.vk.depthBiasSlopeFactor,
-				rhs.vk.lineWidth,
-			}
+			: vk{ std::move( rhs.vk ) }
 		{
 		}
 		
 		PipelineRasterizationStateCreateInfo & operator=( PipelineRasterizationStateCreateInfo && rhs )noexcept
 		{
-			vk =
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				rhs.vk.depthClampEnable,
-				rhs.vk.rasterizerDiscardEnable,
-				rhs.vk.polygonMode,
-				rhs.vk.cullMode,
-				rhs.vk.frontFace,
-				rhs.vk.depthBiasEnable,
-				rhs.vk.depthBiasConstantFactor,
-				rhs.vk.depthBiasClamp,
-				rhs.vk.depthBiasSlopeFactor,
-				rhs.vk.lineWidth,
-			};
-
+			vk = std::move( rhs.vk );
 			return *this;
 		}
 
-		inline operator VkPipelineRasterizationStateCreateInfo const &()const
+		operator VkPipelineRasterizationStateCreateInfo const &()const
 		{
 			return vk;
 		}
 
-		inline VkPipelineRasterizationStateCreateInfo const * operator->()const
+		VkPipelineRasterizationStateCreateInfo const * operator->()const
 		{
 			return &vk;
 		}
 
-		inline VkPipelineRasterizationStateCreateInfo * operator->()
+		VkPipelineRasterizationStateCreateInfo * operator->()
 		{
 			return &vk;
 		}

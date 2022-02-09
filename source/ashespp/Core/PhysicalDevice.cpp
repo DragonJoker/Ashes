@@ -78,11 +78,21 @@ namespace ashes
 		return properties;
 	}
 
+	void PhysicalDevice::getProperties( VkPhysicalDeviceProperties2 & properties )const
+	{
+		m_instance.vkGetPhysicalDeviceProperties2( m_gpu, &properties );
+	}
+
 	VkPhysicalDeviceMemoryProperties PhysicalDevice::getMemoryProperties()const
 	{
 		VkPhysicalDeviceMemoryProperties memoryProperties;
 		m_instance.vkGetPhysicalDeviceMemoryProperties( m_gpu, &memoryProperties );
 		return memoryProperties;
+	}
+
+	void PhysicalDevice::getMemoryProperties( VkPhysicalDeviceMemoryProperties2 & properties )const
+	{
+		m_instance.vkGetPhysicalDeviceMemoryProperties2( m_gpu, &properties );
 	}
 
 	VkPhysicalDeviceFeatures PhysicalDevice::getFeatures()const
