@@ -49,9 +49,19 @@ namespace ashes
 		VkPhysicalDeviceProperties getProperties()const;
 		/**
 		*\brief
+		*	Retrieves the physical device properties.
+		*/
+		void getProperties( VkPhysicalDeviceProperties2 & properties )const;
+		/**
+		*\brief
 		*	Retrieves the physical device memory properties.
 		*/
 		VkPhysicalDeviceMemoryProperties getMemoryProperties()const;
+		/**
+		*\brief
+		*	Retrieves the physical device memory properties.
+		*/
+		void getMemoryProperties( VkPhysicalDeviceMemoryProperties2 & properties )const;
 		/**
 		*\brief
 		*	Retrieves the physical device features.

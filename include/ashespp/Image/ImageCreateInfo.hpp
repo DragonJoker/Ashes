@@ -44,7 +44,10 @@ namespace ashes
 		}
 
 		ImageCreateInfo( VkImageCreateInfo createInfo )
-			: ImageCreateInfo{ createInfo.flags
+			: queueFamilyIndices{ createInfo.pQueueFamilyIndices, createInfo.pQueueFamilyIndices + createInfo.queueFamilyIndexCount }
+			, vk{ VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO
+				, createInfo.pNext
+				, createInfo.flags
 				, createInfo.imageType
 				, createInfo.format
 				, std::move( createInfo.extent )
@@ -54,22 +57,23 @@ namespace ashes
 				, createInfo.tiling
 				, createInfo.usage
 				, createInfo.sharingMode
-				, { createInfo.pQueueFamilyIndices, createInfo.pQueueFamilyIndices + createInfo.queueFamilyIndexCount }
+				, uint32_t( queueFamilyIndices.size() )
+				, queueFamilyIndices.data()
 				, createInfo.initialLayout }
 		{
 		}
 
-		inline operator VkImageCreateInfo const &()const
+		operator VkImageCreateInfo const &()const
 		{
 			return vk;
 		}
 
-		inline VkImageCreateInfo const * operator->()const
+		VkImageCreateInfo const * operator->()const
 		{
 			return &vk;
 		}
 
-		inline VkImageCreateInfo * operator->()
+		VkImageCreateInfo * operator->()
 		{
 			return &vk;
 		}

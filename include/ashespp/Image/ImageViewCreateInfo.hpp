@@ -31,8 +31,10 @@ namespace ashes
 
 		ImageViewCreateInfo( VkImage image
 			, VkImageViewCreateInfo createInfo )
-			: ImageViewCreateInfo{ createInfo.flags
-				, image
+			: vk{ VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO
+				, createInfo.pNext
+				, createInfo.flags
+				, createInfo.image
 				, createInfo.viewType
 				, createInfo.format
 				, std::move( createInfo.components )
@@ -40,17 +42,17 @@ namespace ashes
 		{
 		}
 
-		inline operator VkImageViewCreateInfo const &()const
+		operator VkImageViewCreateInfo const &()const
 		{
 			return vk;
 		}
 
-		inline VkImageViewCreateInfo const * operator->()const
+		VkImageViewCreateInfo const * operator->()const
 		{
 			return &vk;
 		}
 
-		inline VkImageViewCreateInfo * operator->()
+		VkImageViewCreateInfo * operator->()
 		{
 			return &vk;
 		}

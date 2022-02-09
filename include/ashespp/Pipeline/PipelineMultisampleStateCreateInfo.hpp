@@ -23,60 +23,60 @@ namespace ashes
 			, VkBool32 alphaToCoverageEnable = VK_FALSE
 			, VkBool32 alphaToOneEnable = VK_FALSE )
 			: sampleMask{ std::move( psampleMask ) }
-			, vk
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
-				nullptr,
-				flags,
-				rasterizationSamples,
-				sampleShadingEnable,
-				minSampleShading,
-				bool( sampleMask ) ? &sampleMask.value() : nullptr,
-				alphaToCoverageEnable,
-				alphaToOneEnable,
-			}
+			, vk{ VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO
+				, nullptr
+				, flags
+				, rasterizationSamples
+				, sampleShadingEnable
+				, minSampleShading
+				, ( bool( sampleMask ) ? &sampleMask.value() : nullptr )
+				, alphaToCoverageEnable
+				, alphaToOneEnable }
 		{
 		}
 		
 		PipelineMultisampleStateCreateInfo( PipelineMultisampleStateCreateInfo && rhs )noexcept
 			: sampleMask{ std::move( rhs.sampleMask ) }
-			, vk
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				rhs.vk.rasterizationSamples,
-				rhs.vk.sampleShadingEnable,
-				rhs.vk.minSampleShading,
-				bool( sampleMask ) ? &sampleMask.value() : nullptr,
-				rhs.vk.alphaToCoverageEnable,
-				rhs.vk.alphaToOneEnable,
-			}
+			, vk{ VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, rhs.vk.rasterizationSamples
+				, rhs.vk.sampleShadingEnable
+				, rhs.vk.minSampleShading
+				, ( bool( sampleMask ) ? &sampleMask.value() : nullptr )
+				, rhs.vk.alphaToCoverageEnable
+				, rhs.vk.alphaToOneEnable }
 		{
 		}
 		
 		PipelineMultisampleStateCreateInfo & operator=( PipelineMultisampleStateCreateInfo && rhs )noexcept
 		{
 			sampleMask = std::move( rhs.sampleMask );
-			vk =
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				rhs.vk.rasterizationSamples,
-				rhs.vk.sampleShadingEnable,
-				rhs.vk.minSampleShading,
-				bool( sampleMask ) ? &sampleMask.value() : nullptr,
-				rhs.vk.alphaToCoverageEnable,
-				rhs.vk.alphaToOneEnable,
-			};
-
+			vk = { VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, rhs.vk.rasterizationSamples
+				, rhs.vk.sampleShadingEnable
+				, rhs.vk.minSampleShading
+				, ( bool( sampleMask ) ? &sampleMask.value() : nullptr )
+				, rhs.vk.alphaToCoverageEnable
+				, rhs.vk.alphaToOneEnable };
 			return *this;
 		}
 
-		inline operator VkPipelineMultisampleStateCreateInfo const &()const
+		operator VkPipelineMultisampleStateCreateInfo const &()const
 		{
 			return vk;
+		}
+
+		VkPipelineMultisampleStateCreateInfo const * operator->()const
+		{
+			return &vk;
+		}
+
+		VkPipelineMultisampleStateCreateInfo * operator->()
+		{
+			return &vk;
 		}
 
 		Optional< VkSampleMask > sampleMask;

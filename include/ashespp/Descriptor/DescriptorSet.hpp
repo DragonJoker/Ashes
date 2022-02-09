@@ -33,7 +33,8 @@ namespace ashes
 		DescriptorSet( Device const & device
 			, DescriptorPool const & pool
 			, DescriptorSetLayout const & layout
-			, uint32_t bindingPoint );
+			, uint32_t bindingPoint
+			, void * pNext = nullptr );
 		/**
 		*\brief
 		*	Constructor.
@@ -46,7 +47,8 @@ namespace ashes
 			, std::string const & debugName
 			, DescriptorPool const & pool
 			, DescriptorSetLayout const & layout
-			, uint32_t bindingPoint );
+			, uint32_t bindingPoint
+			, void * pNext = nullptr );
 		/**
 		*\brief
 		*	Destructor.
@@ -66,6 +68,20 @@ namespace ashes
 		*	The bindings.
 		*/
 		void setBindings( VkWriteDescriptorSetArray bindings );
+		/**
+		*\brief
+		*	Updates some descriptor set's attaches.
+		*\param[in] bindings
+		*	The bindings.
+		*/
+		void updateBindings( WriteDescriptorSetArray const & bindings )const;
+		/**
+		*\brief
+		*	Updates some descriptor set's attaches.
+		*\param[in] bindings
+		*	The bindings.
+		*/
+		void updateBindings( VkWriteDescriptorSetArray const & bindings )const;
 		/**
 		*\brief
 		*	Creates a combined image and sampler binding.

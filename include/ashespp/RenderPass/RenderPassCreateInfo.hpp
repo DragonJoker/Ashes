@@ -23,18 +23,15 @@ namespace ashes
 			, subpasses{ std::move( psubpasses ) }
 			, dependencies{ std::move( pdependencies ) }
 			, vkSubpasses{ makeVkArray< VkSubpassDescription >( subpasses ) }
-			, vk
-			{
-				VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-				nullptr,
-				flags,
-				uint32_t( attachments.size() ),
-				attachments.data(),
-				uint32_t( vkSubpasses.size() ),
-				vkSubpasses.data(),
-				uint32_t( dependencies.size() ),
-				dependencies.data(),
-			}
+			, vk{ VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO
+				, nullptr
+				, flags
+				, uint32_t( attachments.size() )
+				, attachments.data()
+				, uint32_t( vkSubpasses.size() )
+				, vkSubpasses.data()
+				, uint32_t( dependencies.size() )
+				, dependencies.data() }
 		{
 		}
 
@@ -43,18 +40,15 @@ namespace ashes
 			, subpasses{ std::move( rhs.subpasses ) }
 			, dependencies{ std::move( rhs.dependencies ) }
 			, vkSubpasses{ makeVkArray< VkSubpassDescription >( subpasses ) }
-			, vk
-			{
-				VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				uint32_t( attachments.size() ),
-				attachments.data(),
-				uint32_t( vkSubpasses.size() ),
-				vkSubpasses.data(),
-				uint32_t( dependencies.size() ),
-				dependencies.data(),
-			}
+			, vk{ VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, uint32_t( attachments.size() )
+				, attachments.data()
+				, uint32_t( vkSubpasses.size() )
+				, vkSubpasses.data()
+				, uint32_t( dependencies.size() )
+				, dependencies.data() }
 		{
 		}
 
@@ -64,25 +58,32 @@ namespace ashes
 			subpasses = std::move( rhs.subpasses );
 			dependencies = std::move( rhs.dependencies );
 			vkSubpasses = makeVkArray< VkSubpassDescription >( subpasses );
-			vk =
-			{
-				VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				uint32_t( attachments.size() ),
-				attachments.data(),
-				uint32_t( vkSubpasses.size() ),
-				vkSubpasses.data(),
-				uint32_t( dependencies.size() ),
-				dependencies.data(),
-			};
+			vk = { VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, uint32_t( attachments.size() )
+				, attachments.data()
+				, uint32_t( vkSubpasses.size() )
+				, vkSubpasses.data()
+				, uint32_t( dependencies.size() )
+				, dependencies.data() };
 
 			return *this;
 		}
 
-		inline operator VkRenderPassCreateInfo const &()const
+		operator VkRenderPassCreateInfo const &()const
 		{
 			return vk;
+		}
+
+		VkRenderPassCreateInfo const * operator->()const
+		{
+			return &vk;
+		}
+
+		VkRenderPassCreateInfo * operator->()
+		{
+			return &vk;
 		}
 
 		VkAttachmentDescriptionArray attachments;

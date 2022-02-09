@@ -27,7 +27,8 @@ namespace ashes
 		*	The layout bindings.
 		*/
 		DescriptorSetLayout( Device const & device
-			, VkDescriptorSetLayoutBindingArray bindings );
+			, VkDescriptorSetLayoutBindingArray bindings
+			, VkDescriptorBindingFlags flags = {} );
 		/**
 		*\brief
 		*	Constructor.
@@ -37,8 +38,20 @@ namespace ashes
 		*	The layout bindings.
 		*/
 		DescriptorSetLayout( Device const & device
-			, std::string const & debugName
-			, VkDescriptorSetLayoutBindingArray bindings );
+			, std::string debugName
+			, VkDescriptorSetLayoutBindingArray bindings
+			, VkDescriptorBindingFlags flags = {} );
+		/**
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] bindings
+		*	The layout bindings.
+		*/
+		DescriptorSetLayout( Device const & device
+			, std::string debugName
+			, VkDescriptorSetLayoutCreateInfo createInfo );
 		/**
 		*\brief
 		*	Destructor.

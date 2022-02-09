@@ -1046,7 +1046,8 @@ namespace ashes
 		*\return
 		*	The created layout.
 		*/
-		DescriptorSetLayoutPtr createDescriptorSetLayout( VkDescriptorSetLayoutBindingArray bindings )const;
+		DescriptorSetLayoutPtr createDescriptorSetLayout( std::string debugName
+			, VkDescriptorSetLayoutCreateInfo createInfo )const;
 		/**
 		*\brief
 		*	Creates a descriptor set layout.
@@ -1058,7 +1059,18 @@ namespace ashes
 		*	The created layout.
 		*/
 		DescriptorSetLayoutPtr createDescriptorSetLayout( std::string debugName
-			, VkDescriptorSetLayoutBindingArray bindings )const;
+			, VkDescriptorSetLayoutBindingArray bindings
+			, VkDescriptorBindingFlags flags = {} )const;
+		/**
+		*\brief
+		*	Creates a descriptor set layout.
+		*\param[in] bindings
+		*	The layout bindings.
+		*\return
+		*	The created layout.
+		*/
+		DescriptorSetLayoutPtr createDescriptorSetLayout( VkDescriptorSetLayoutBindingArray bindings
+			, VkDescriptorBindingFlags flags = {} )const;
 		/**
 		*\brief
 		*	Creates a descriptor pool.

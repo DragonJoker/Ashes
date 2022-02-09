@@ -226,18 +226,30 @@ namespace ashes
 			, pushConstantRanges );
 	}
 
-	DescriptorSetLayoutPtr Device::createDescriptorSetLayout( VkDescriptorSetLayoutBindingArray bindings )const
-	{
-		return std::make_unique< DescriptorSetLayout >( *this
-			, std::move( bindings ) );
-	}
-
 	DescriptorSetLayoutPtr Device::createDescriptorSetLayout( std::string debugName
-		, VkDescriptorSetLayoutBindingArray bindings )const
+		, VkDescriptorSetLayoutCreateInfo createInfo )const
 	{
 		return std::make_unique< DescriptorSetLayout >( *this
 			, std::move( debugName )
-			, std::move( bindings ) );
+			, std::move( createInfo ) );
+	}
+
+	DescriptorSetLayoutPtr Device::createDescriptorSetLayout( VkDescriptorSetLayoutBindingArray bindings
+		, VkDescriptorBindingFlags flags )const
+	{
+		return std::make_unique< DescriptorSetLayout >( *this
+			, std::move( bindings )
+			, flags );
+	}
+
+	DescriptorSetLayoutPtr Device::createDescriptorSetLayout( std::string debugName
+		, VkDescriptorSetLayoutBindingArray bindings
+		, VkDescriptorBindingFlags flags )const
+	{
+		return std::make_unique< DescriptorSetLayout >( *this
+			, std::move( debugName )
+			, std::move( bindings )
+			, flags );
 	}
 
 	DescriptorPoolPtr Device::createDescriptorPool( VkDescriptorPoolCreateFlags flags
