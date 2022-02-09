@@ -117,8 +117,8 @@ namespace ashes
 		, float aspect
 		, float zNear )const
 	{
-		auto const tanHalfFovy = tan( radiansFovY / float( 2 ) );
-		float const range = float( tanHalfFovy * zNear );
+		float const tanHalfFovy = tan( radiansFovY / float( 2 ) );
+		float const range = tanHalfFovy * zNear;
 		float const left = -range * aspect;
 		float const right = range * aspect;
 		float const bottom = -range;
