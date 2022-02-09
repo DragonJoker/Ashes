@@ -25,32 +25,26 @@ namespace ashes
 			, uint32_t apiVersion )
 			: applicationName{ papplicationName }
 			, engineName{ pengineName }
-			, vk
-			{
-				VK_STRUCTURE_TYPE_APPLICATION_INFO,
-				nullptr,
-				applicationName.c_str(),
-				applicationVersion,
-				engineName.c_str(),
-				engineVersion,
-				apiVersion,
-			}
+			, vk{ VK_STRUCTURE_TYPE_APPLICATION_INFO
+				, nullptr
+				, applicationName.c_str()
+				, applicationVersion
+				, engineName.c_str()
+				, engineVersion
+				, apiVersion }
 		{
 		}
 
 		ApplicationInfo( ApplicationInfo && application )noexcept
 			: applicationName{ std::move( application.applicationName ) }
 			, engineName{ std::move( application.engineName ) }
-			, vk
-			{
-				VK_STRUCTURE_TYPE_APPLICATION_INFO,
-				nullptr,
-				applicationName.c_str(),
-				application.vk.applicationVersion,
-				engineName.c_str(),
-				application.vk.engineVersion,
-				application.vk.apiVersion,
-			}
+			, vk{ VK_STRUCTURE_TYPE_APPLICATION_INFO
+				, application.vk.pNext
+				, applicationName.c_str()
+				, application.vk.applicationVersion
+				, engineName.c_str()
+				, application.vk.engineVersion
+				, application.vk.apiVersion }
 		{
 		}
 
@@ -58,21 +52,17 @@ namespace ashes
 		{
 			applicationName = std::move( application.applicationName );
 			engineName = std::move( application.engineName );
-			vk =
-			{
-				VK_STRUCTURE_TYPE_APPLICATION_INFO,
-				nullptr,
-				applicationName.c_str(),
-				application.vk.applicationVersion,
-				engineName.c_str(),
-				application.vk.engineVersion,
-				application.vk.apiVersion,
-			};
-
+			vk = { VK_STRUCTURE_TYPE_APPLICATION_INFO
+				, application.vk.pNext
+				, applicationName.c_str()
+				, application.vk.applicationVersion
+				, engineName.c_str()
+				, application.vk.engineVersion
+				, application.vk.apiVersion };
 			return *this;
 		}
 
-		inline operator VkApplicationInfo const &()const
+		operator VkApplicationInfo const &()const
 		{
 			return vk;
 		}

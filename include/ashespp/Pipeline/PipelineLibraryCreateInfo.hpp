@@ -27,12 +27,20 @@ namespace ashes
 		}
 		
 		PipelineLibraryCreateInfo( PipelineLibraryCreateInfo && rhs )noexcept
-			: PipelineLibraryCreateInfo{ std::move( rhs.libraries ) }
+			: libraries{ std::move( rhs.libraries ) }
+			, vk{ VK_STRUCTURE_TYPE_PIPELINE_LIBRARY_CREATE_INFO_KHR
+				, rhs.vk.pNext
+				, uint32_t( libraries.size() )
+				, libraries.data() }
 		{
 		}
 		
 		PipelineLibraryCreateInfo( VkPipelineLibraryCreateInfoKHR rhs )noexcept
-			: PipelineLibraryCreateInfo{ makeArray( rhs.pLibraries, rhs.libraryCount ) }
+			: libraries{ makeArray( rhs.pLibraries, rhs.libraryCount ) }
+			, vk{ VK_STRUCTURE_TYPE_PIPELINE_LIBRARY_CREATE_INFO_KHR
+				, rhs.pNext
+				, uint32_t( libraries.size() )
+				, libraries.data() }
 		{
 		}
 		
@@ -40,15 +48,25 @@ namespace ashes
 		{
 			libraries = std::move( rhs.libraries );
 			vk = { VK_STRUCTURE_TYPE_PIPELINE_LIBRARY_CREATE_INFO_KHR
-				, nullptr
+				, rhs.vk.pNext
 				, uint32_t( libraries.size() )
 				, libraries.data() };
 			return *this;
 		}
 
-		inline operator VkPipelineLibraryCreateInfoKHR const &()const
+		operator VkPipelineLibraryCreateInfoKHR const &()const
 		{
 			return vk;
+		}
+
+		VkPipelineLibraryCreateInfoKHR const * operator->()const
+		{
+			return &vk;
+		}
+
+		VkPipelineLibraryCreateInfoKHR * operator->()
+		{
+			return &vk;
 		}
 
 	private:

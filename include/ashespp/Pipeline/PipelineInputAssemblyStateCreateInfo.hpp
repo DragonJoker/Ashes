@@ -18,46 +18,38 @@ namespace ashes
 		PipelineInputAssemblyStateCreateInfo( VkPipelineInputAssemblyStateCreateFlags flags = 0u
 			, VkPrimitiveTopology topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST
 			, VkBool32 primitiveRestartEnable = VK_FALSE )
-			: vk
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
-				nullptr,
-				flags,
-				topology,
-				primitiveRestartEnable,
-			}
+			: vk{ VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO
+				, nullptr
+				, flags
+				, topology
+				, primitiveRestartEnable }
 		{
 		}
 		
 		PipelineInputAssemblyStateCreateInfo( PipelineInputAssemblyStateCreateInfo && rhs )noexcept
-			: vk
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				rhs.vk.topology,
-				rhs.vk.primitiveRestartEnable,
-			}
+			: vk{ std::move( rhs.vk ) }
 		{
 		}
 		
 		PipelineInputAssemblyStateCreateInfo & operator=( PipelineInputAssemblyStateCreateInfo && rhs )noexcept
 		{
-			vk =
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				rhs.vk.topology,
-				rhs.vk.primitiveRestartEnable,
-			};
-
+			vk = std::move( rhs.vk );
 			return *this;
 		}
 
-		inline operator VkPipelineInputAssemblyStateCreateInfo const &()const
+		operator VkPipelineInputAssemblyStateCreateInfo const &()const
 		{
 			return vk;
+		}
+
+		VkPipelineInputAssemblyStateCreateInfo const * operator->()const
+		{
+			return &vk;
+		}
+
+		VkPipelineInputAssemblyStateCreateInfo * operator->()
+		{
+			return &vk;
 		}
 
 	private:

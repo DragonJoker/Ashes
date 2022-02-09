@@ -27,19 +27,40 @@ namespace ashes
 			, ptrEnabledExtensionNames{ convert( enabledExtensionNames ) }
 			, enabledFeatures{ std::move( penabledFeatures ) }
 			, vkQueueCreateInfos{ makeVkArray< VkDeviceQueueCreateInfo >( queueCreateInfos ) }
-			, vk
-			{
-				VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-				nullptr,
-				pflags,
-				uint32_t( vkQueueCreateInfos.size() ),
-				vkQueueCreateInfos.data(),
-				uint32_t( ptrEnabledLayerNames.size() ),
-				ptrEnabledLayerNames.data(),
-				uint32_t( ptrEnabledExtensionNames.size() ),
-				ptrEnabledExtensionNames.data(),
-				&enabledFeatures,
-			}
+			, vk{ VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO
+				, nullptr
+				, pflags
+				, uint32_t( vkQueueCreateInfos.size() )
+				, vkQueueCreateInfos.data()
+				, uint32_t( ptrEnabledLayerNames.size() )
+				, ptrEnabledLayerNames.data()
+				, uint32_t( ptrEnabledExtensionNames.size() )
+				, ptrEnabledExtensionNames.data()
+				, enabledFeatures ? &enabledFeatures.value() : nullptr }
+		{
+		}
+
+		DeviceCreateInfo( VkDeviceCreateFlags pflags
+			, DeviceQueueCreateInfoArray pqueueCreateInfos
+			, StringArray penabledLayerNames
+			, StringArray penabledExtensionNames )
+			: queueCreateInfos{ std::move( pqueueCreateInfos ) }
+			, enabledLayerNames{ std::move( penabledLayerNames ) }
+			, enabledExtensionNames{ std::move( penabledExtensionNames ) }
+			, ptrEnabledLayerNames{ convert( enabledLayerNames ) }
+			, ptrEnabledExtensionNames{ convert( enabledExtensionNames ) }
+			, enabledFeatures{ nullopt }
+			, vkQueueCreateInfos{ makeVkArray< VkDeviceQueueCreateInfo >( queueCreateInfos ) }
+			, vk{ VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO
+				, nullptr
+				, pflags
+				, uint32_t( vkQueueCreateInfos.size() )
+				, vkQueueCreateInfos.data()
+				, uint32_t( ptrEnabledLayerNames.size() )
+				, ptrEnabledLayerNames.data()
+				, uint32_t( ptrEnabledExtensionNames.size() )
+				, ptrEnabledExtensionNames.data()
+				, nullptr }
 		{
 		}
 
@@ -49,7 +70,7 @@ namespace ashes
 			, enabledExtensionNames{ makeArray( rhs.ppEnabledExtensionNames, rhs.enabledExtensionCount ) }
 			, ptrEnabledLayerNames{ convert( enabledLayerNames ) }
 			, ptrEnabledExtensionNames{ convert( enabledExtensionNames ) }
-			, enabledFeatures{ rhs.pEnabledFeatures ? *rhs.pEnabledFeatures : VkPhysicalDeviceFeatures{} }
+			, enabledFeatures{ rhs.pEnabledFeatures ? Optional< VkPhysicalDeviceFeatures >( *rhs.pEnabledFeatures ) : nullopt }
 			, vkQueueCreateInfos{ makeVkArray< VkDeviceQueueCreateInfo >( queueCreateInfos ) }
 			, vk{ rhs.sType
 				, rhs.pNext
@@ -60,7 +81,7 @@ namespace ashes
 				, ptrEnabledLayerNames.data()
 				, uint32_t( ptrEnabledExtensionNames.size() )
 				, ptrEnabledExtensionNames.data()
-				, ( rhs.pEnabledFeatures ? &enabledFeatures : nullptr ) }
+				, enabledFeatures ? &enabledFeatures.value() : nullptr }
 		{
 		}
 
@@ -72,19 +93,16 @@ namespace ashes
 			, ptrEnabledExtensionNames{ convert( enabledExtensionNames ) }
 			, enabledFeatures{ std::move( rhs.enabledFeatures ) }
 			, vkQueueCreateInfos{ makeVkArray< VkDeviceQueueCreateInfo >( queueCreateInfos ) }
-			, vk
-			{
-				VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				uint32_t( vkQueueCreateInfos.size() ),
-				vkQueueCreateInfos.data(),
-				uint32_t( ptrEnabledLayerNames.size() ),
-				ptrEnabledLayerNames.data(),
-				uint32_t( ptrEnabledExtensionNames.size() ),
-				ptrEnabledExtensionNames.data(),
-				&enabledFeatures,
-			}
+			, vk{ VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, uint32_t( vkQueueCreateInfos.size() )
+				, vkQueueCreateInfos.data()
+				, uint32_t( ptrEnabledLayerNames.size() )
+				, ptrEnabledLayerNames.data()
+				, uint32_t( ptrEnabledExtensionNames.size() )
+				, ptrEnabledExtensionNames.data()
+				, enabledFeatures ? &enabledFeatures.value() : nullptr }
 		{
 		}
 
@@ -97,26 +115,18 @@ namespace ashes
 			ptrEnabledExtensionNames = convert( enabledExtensionNames );
 			enabledFeatures = std::move( rhs.enabledFeatures );
 			vkQueueCreateInfos = makeVkArray< VkDeviceQueueCreateInfo >( queueCreateInfos );
-			vk =
-			{
-				VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				uint32_t( vkQueueCreateInfos.size() ),
-				vkQueueCreateInfos.data(),
-				uint32_t( ptrEnabledLayerNames.size() ),
-				ptrEnabledLayerNames.data(),
-				uint32_t( ptrEnabledExtensionNames.size() ),
-				ptrEnabledExtensionNames.data(),
-				&enabledFeatures,
-			};
+			vk = { VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, uint32_t( vkQueueCreateInfos.size() )
+				, vkQueueCreateInfos.data()
+				, uint32_t( ptrEnabledLayerNames.size() )
+				, ptrEnabledLayerNames.data()
+				, uint32_t( ptrEnabledExtensionNames.size() )
+				, ptrEnabledExtensionNames.data()
+				, enabledFeatures ? &enabledFeatures.value() : nullptr };
 
 			return *this;
-		}
-
-		VkDeviceCreateInfo * operator->()
-		{
-			return &vk;
 		}
 
 		operator VkDeviceCreateInfo const &()const
@@ -124,12 +134,22 @@ namespace ashes
 			return vk;
 		}
 
+		VkDeviceCreateInfo const * operator->()const
+		{
+			return &vk;
+		}
+
+		VkDeviceCreateInfo * operator->()
+		{
+			return &vk;
+		}
+
 		DeviceQueueCreateInfoArray queueCreateInfos;
 		StringArray enabledLayerNames;
 		StringArray enabledExtensionNames;
 		CharPtrArray ptrEnabledLayerNames;
 		CharPtrArray ptrEnabledExtensionNames;
-		VkPhysicalDeviceFeatures enabledFeatures;
+		Optional< VkPhysicalDeviceFeatures > enabledFeatures;
 
 	private:
 		VkDeviceQueueCreateInfoArray vkQueueCreateInfos;

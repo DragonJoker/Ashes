@@ -20,48 +20,39 @@ namespace ashes
 			, VkVertexInputAttributeDescriptionArray pvertexAttributeDescriptions )
 			: vertexBindingDescriptions{ std::move( pvertexBindingDescriptions ) }
 			, vertexAttributeDescriptions{ std::move( pvertexAttributeDescriptions ) }
-			, vk
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-				nullptr,
-				flags,
-				uint32_t( vertexBindingDescriptions.size() ),
-				vertexBindingDescriptions.data(),
-				uint32_t( vertexAttributeDescriptions.size() ),
-				vertexAttributeDescriptions.data(),
-			}
+			, vk{ VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO
+				, nullptr
+				, flags
+				, uint32_t( vertexBindingDescriptions.size() )
+				, vertexBindingDescriptions.data()
+				, uint32_t( vertexAttributeDescriptions.size() )
+				, vertexAttributeDescriptions.data() }
 		{
 		}
 
 		PipelineVertexInputStateCreateInfo( PipelineVertexInputStateCreateInfo const & rhs )
 			: vertexBindingDescriptions{ rhs.vertexBindingDescriptions }
 			, vertexAttributeDescriptions{ rhs.vertexAttributeDescriptions }
-			, vk
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				uint32_t( vertexBindingDescriptions.size() ),
-				vertexBindingDescriptions.data(),
-				uint32_t( vertexAttributeDescriptions.size() ),
-				vertexAttributeDescriptions.data(),
-			}
+			, vk{ VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, uint32_t( vertexBindingDescriptions.size() )
+				, vertexBindingDescriptions.data()
+				, uint32_t( vertexAttributeDescriptions.size() )
+				, vertexAttributeDescriptions.data() }
 		{
 		}
 
 		PipelineVertexInputStateCreateInfo( PipelineVertexInputStateCreateInfo && rhs )noexcept
 			: vertexBindingDescriptions{ std::move( rhs.vertexBindingDescriptions ) }
 			, vertexAttributeDescriptions{ std::move( rhs.vertexAttributeDescriptions ) }
-			, vk
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				uint32_t( vertexBindingDescriptions.size() ),
-				vertexBindingDescriptions.data(),
-				uint32_t( vertexAttributeDescriptions.size() ),
-				vertexAttributeDescriptions.data(),
-			}
+			, vk{ VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, uint32_t( vertexBindingDescriptions.size() )
+				, vertexBindingDescriptions.data()
+				, uint32_t( vertexAttributeDescriptions.size() )
+				, vertexAttributeDescriptions.data() }
 		{
 		}
 
@@ -69,16 +60,13 @@ namespace ashes
 		{
 			vertexBindingDescriptions = rhs.vertexBindingDescriptions;
 			vertexAttributeDescriptions = rhs.vertexAttributeDescriptions;
-			vk =
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				uint32_t( vertexBindingDescriptions.size() ),
-				vertexBindingDescriptions.data(),
-				uint32_t( vertexAttributeDescriptions.size() ),
-				vertexAttributeDescriptions.data(),
-			};
+			vk = { VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, uint32_t( vertexBindingDescriptions.size() )
+				, vertexBindingDescriptions.data()
+				, uint32_t( vertexAttributeDescriptions.size() )
+				, vertexAttributeDescriptions.data() };
 
 			return *this;
 		}
@@ -87,23 +75,30 @@ namespace ashes
 		{
 			vertexBindingDescriptions = std::move( rhs.vertexBindingDescriptions );
 			vertexAttributeDescriptions = std::move( rhs.vertexAttributeDescriptions );
-			vk =
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				uint32_t( vertexBindingDescriptions.size() ),
-				vertexBindingDescriptions.data(),
-				uint32_t( vertexAttributeDescriptions.size() ),
-				vertexAttributeDescriptions.data(),
-			};
+			vk = { VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, uint32_t( vertexBindingDescriptions.size() )
+				, vertexBindingDescriptions.data()
+				, uint32_t( vertexAttributeDescriptions.size() )
+				, vertexAttributeDescriptions.data() };
 
 			return *this;
 		}
 
-		inline operator VkPipelineVertexInputStateCreateInfo const &()const
+		operator VkPipelineVertexInputStateCreateInfo const &()const
 		{
 			return vk;
+		}
+
+		VkPipelineVertexInputStateCreateInfo const * operator->()const
+		{
+			return &vk;
+		}
+
+		VkPipelineVertexInputStateCreateInfo * operator->()
+		{
+			return &vk;
 		}
 
 		VkVertexInputBindingDescriptionArray vertexBindingDescriptions;

@@ -18,16 +18,18 @@ namespace ashes
 	DescriptorSet::DescriptorSet( Device const & device
 		, DescriptorPool const & pool
 		, DescriptorSetLayout const & layout
-		, uint32_t bindingPoint )
-		: DescriptorSet{ device, "DescriptorSet", pool, layout, bindingPoint }
+		, uint32_t bindingPoint
+		, void * pNext )
+		: DescriptorSet{ device, "DescriptorSet", pool, layout, bindingPoint, pNext }
 	{
 	}
-	
+
 	DescriptorSet::DescriptorSet( Device const & device
 		, std::string const & debugName
 		, DescriptorPool const & pool
 		, DescriptorSetLayout const & layout
-		, uint32_t bindingPoint )
+		, uint32_t bindingPoint
+		, void * pNext )
 		: VkObject{ debugName }
 		, m_device{ pool.getDevice() }
 		, m_pool{ pool }
@@ -38,7 +40,7 @@ namespace ashes
 		VkDescriptorSetAllocateInfo allocateInfo
 		{
 			VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
-			nullptr,
+			pNext,
 			pool,
 			1u,
 			&vkLayout
@@ -71,13 +73,7 @@ namespace ashes
 			write.update( m_internal );
 		}
 
-		auto vkwrites = ashes::makeVkArray< VkWriteDescriptorSet >( m_writes );
-		DEBUG_DUMP( vkwrites );
-		m_device.vkUpdateDescriptorSets( m_device
-			, static_cast< uint32_t >( vkwrites.size() )
-			, vkwrites.data()
-			, 0
-			, nullptr );
+		updateBindings( m_writes );
 	}
 
 	void DescriptorSet::setBindings( WriteDescriptorSetArray bindings )
@@ -125,6 +121,26 @@ namespace ashes
 
 			m_writes.push_back( write );
 		}
+	}
+
+	void DescriptorSet::updateBindings( WriteDescriptorSetArray const & bindings )const
+	{
+		for ( auto & write : bindings )
+		{
+			write.update( *this );
+		}
+
+		updateBindings( ashes::makeVkArray< VkWriteDescriptorSet >( bindings ) );
+	}
+
+	void DescriptorSet::updateBindings( VkWriteDescriptorSetArray const & bindings )const
+	{
+		DEBUG_DUMP( vkwrites );
+		m_device.vkUpdateDescriptorSets( m_device
+			, static_cast< uint32_t >( bindings.size() )
+			, bindings.data()
+			, 0
+			, nullptr );
 	}
 
 	void DescriptorSet::createBinding( VkDescriptorSetLayoutBinding const & layoutBinding

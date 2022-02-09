@@ -31,87 +31,88 @@ namespace ashes
 			, VkBool32 pclipped
 			, VkSwapchainKHR poldSwapchain )
 			: queueFamilyIndices{ std::move( pqueueFamilyIndices ) }
-			, vk
-			{
-				VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
-				nullptr,
-				pflags,
-				psurface,
-				pminImageCount,
-				pimageFormat,
-				pimageColorSpace,
-				pimageExtent,
-				pimageArrayLayers,
-				pimageUsage,
-				pimageSharingMode,
-				uint32_t( queueFamilyIndices.size() ),
-				queueFamilyIndices.data(),
-				ppreTransform,
-				pcompositeAlpha,
-				ppresentMode,
-				pclipped,
-				poldSwapchain,
-			}
+			, vk{ VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR
+				, nullptr
+				, pflags
+				, psurface
+				, pminImageCount
+				, pimageFormat
+				, pimageColorSpace
+				, pimageExtent
+				, pimageArrayLayers
+				, pimageUsage
+				, pimageSharingMode
+				, uint32_t( queueFamilyIndices.size() )
+				, queueFamilyIndices.data()
+				, ppreTransform
+				, pcompositeAlpha
+				, ppresentMode
+				, pclipped
+				, poldSwapchain }
 		{
 		}
 		
 		SwapChainCreateInfo( SwapChainCreateInfo && rhs )noexcept
 			: queueFamilyIndices{ std::move( rhs.queueFamilyIndices ) }
-			, vk
-			{
-				VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
-				nullptr,
-				rhs.vk.flags,
-				rhs.vk.surface,
-				rhs.vk.minImageCount,
-				rhs.vk.imageFormat,
-				rhs.vk.imageColorSpace,
-				rhs.vk.imageExtent,
-				rhs.vk.imageArrayLayers,
-				rhs.vk.imageUsage,
-				rhs.vk.imageSharingMode,
-				uint32_t( queueFamilyIndices.size() ),
-				queueFamilyIndices.data(),
-				rhs.vk.preTransform,
-				rhs.vk.compositeAlpha,
-				rhs.vk.presentMode,
-				rhs.vk.clipped,
-				rhs.vk.oldSwapchain,
-			}
+			, vk{ VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, rhs.vk.surface
+				, rhs.vk.minImageCount
+				, rhs.vk.imageFormat
+				, rhs.vk.imageColorSpace
+				, rhs.vk.imageExtent
+				, rhs.vk.imageArrayLayers
+				, rhs.vk.imageUsage
+				, rhs.vk.imageSharingMode
+				, uint32_t( queueFamilyIndices.size() )
+				, queueFamilyIndices.data()
+				, rhs.vk.preTransform
+				, rhs.vk.compositeAlpha
+				, rhs.vk.presentMode
+				, rhs.vk.clipped
+				, rhs.vk.oldSwapchain }
 		{
 		}
 		
 		SwapChainCreateInfo & operator=( SwapChainCreateInfo && rhs )noexcept
 		{
 			queueFamilyIndices = std::move( rhs.queueFamilyIndices );
-			vk =
-			{
-				VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
-				nullptr,
-				rhs.vk.flags,
-				rhs.vk.surface,
-				rhs.vk.minImageCount,
-				rhs.vk.imageFormat,
-				rhs.vk.imageColorSpace,
-				rhs.vk.imageExtent,
-				rhs.vk.imageArrayLayers,
-				rhs.vk.imageUsage,
-				rhs.vk.imageSharingMode,
-				uint32_t( queueFamilyIndices.size() ),
-				queueFamilyIndices.data(),
-				rhs.vk.preTransform,
-				rhs.vk.compositeAlpha,
-				rhs.vk.presentMode,
-				rhs.vk.clipped,
-				rhs.vk.oldSwapchain,
-			};
+			vk = { VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, rhs.vk.surface
+				, rhs.vk.minImageCount
+				, rhs.vk.imageFormat
+				, rhs.vk.imageColorSpace
+				, rhs.vk.imageExtent
+				, rhs.vk.imageArrayLayers
+				, rhs.vk.imageUsage
+				, rhs.vk.imageSharingMode
+				, uint32_t( queueFamilyIndices.size() )
+				, queueFamilyIndices.data()
+				, rhs.vk.preTransform
+				, rhs.vk.compositeAlpha
+				, rhs.vk.presentMode
+				, rhs.vk.clipped
+				, rhs.vk.oldSwapchain };
 
 			return *this;
 		}
 
-		inline operator VkSwapchainCreateInfoKHR const &()const
+		operator VkSwapchainCreateInfoKHR const &()const
 		{
 			return vk;
+		}
+
+		VkSwapchainCreateInfoKHR const * operator->()const
+		{
+			return &vk;
+		}
+
+		VkSwapchainCreateInfoKHR * operator->()
+		{
+			return &vk;
 		}
 
 	private:

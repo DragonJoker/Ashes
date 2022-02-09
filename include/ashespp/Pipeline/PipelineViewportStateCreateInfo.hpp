@@ -38,30 +38,24 @@ namespace ashes
 		PipelineViewportStateCreateInfo( VkPipelineViewportStateCreateFlags flags = 0u
 			, VkViewportArray pviewports = {}
 			, VkScissorArray pscissors = {} )
-			: PipelineViewportStateCreateInfo
-			{
-				flags,
-				std::max( 1u, uint32_t( pviewports.size() ) ),
-				pviewports,
-				std::max( 1u, uint32_t( pscissors.size() ) ),
-				pscissors,
-			}
+			: PipelineViewportStateCreateInfo{ flags
+				, std::max( 1u, uint32_t( pviewports.size() ) )
+				, pviewports
+				, std::max( 1u, uint32_t( pscissors.size() ) )
+				, pscissors }
 		{
 		}
 
 		PipelineViewportStateCreateInfo( PipelineViewportStateCreateInfo && rhs )noexcept
 			: viewports{ std::move( rhs.viewports ) }
 			, scissors{ std::move( rhs.scissors ) }
-			, vk
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				rhs.vk.viewportCount,
-				viewports.data(),
-				rhs.vk.scissorCount,
-				scissors.data(),
-			}
+			, vk{ VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, rhs.vk.viewportCount
+				, viewports.data()
+				, rhs.vk.scissorCount
+				, scissors.data() }
 		{
 		}
 
@@ -69,31 +63,28 @@ namespace ashes
 		{
 			viewports = std::move( rhs.viewports );
 			scissors = std::move( rhs.scissors );
-			vk =
-			{
-				VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
-				nullptr,
-				rhs.vk.flags,
-				rhs.vk.viewportCount,
-				viewports.data(),
-				rhs.vk.scissorCount,
-				scissors.data(),
-			};
+			vk = { VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, rhs.vk.viewportCount
+				, viewports.data()
+				, rhs.vk.scissorCount
+				, scissors.data() };
 
 			return *this;
 		}
 
-		inline operator VkPipelineViewportStateCreateInfo const &()const
+		operator VkPipelineViewportStateCreateInfo const &()const
 		{
 			return vk;
 		}
 
-		inline VkPipelineViewportStateCreateInfo const * operator->()const
+		VkPipelineViewportStateCreateInfo const * operator->()const
 		{
 			return &vk;
 		}
 
-		inline VkPipelineViewportStateCreateInfo * operator->()
+		VkPipelineViewportStateCreateInfo * operator->()
 		{
 			return &vk;
 		}

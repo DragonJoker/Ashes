@@ -12,26 +12,25 @@ See LICENSE file in root folder.
 namespace ashes
 {
 	DescriptorSetLayout::DescriptorSetLayout( Device const & device
-		, VkDescriptorSetLayoutBindingArray bindings )
-		: DescriptorSetLayout{ device, "DescriptorSetLayout", bindings }
+		, VkDescriptorSetLayoutBindingArray bindings
+		, VkDescriptorBindingFlags flags )
+		: DescriptorSetLayout{ device
+			, "DescriptorSetLayout"
+			, VkDescriptorSetLayoutCreateInfo{ VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO
+				, nullptr
+				, flags
+				, static_cast< uint32_t >( bindings.size() )
+				, bindings.data() } }
 	{
 	}
 	
 	DescriptorSetLayout::DescriptorSetLayout( Device const & device
-		, std::string const & debugName
-		, VkDescriptorSetLayoutBindingArray bindings )
+		, std::string debugName
+		, VkDescriptorSetLayoutCreateInfo createInfo )
 		: VkObject{ debugName }
 		, m_device{ device }
-		, m_bindings{ std::move( bindings ) }
+		, m_bindings{ createInfo.pBindings, createInfo.pBindings + createInfo.bindingCount }
 	{
-		VkDescriptorSetLayoutCreateInfo createInfo
-		{
-			VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,  // sType
-			nullptr,                                              // pNext
-			0,                                                    // flags
-			static_cast< uint32_t >( m_bindings.size() ),         // bindingCount
-			m_bindings.data()                                     // pBindings
-		};
 		DEBUG_DUMP( createInfo );
 		auto res = m_device.vkCreateDescriptorSetLayout( m_device
 			, &createInfo
@@ -39,6 +38,20 @@ namespace ashes
 			, &m_internal );
 		checkError( res, "DescriptorSetLayout creation" );
 		registerObject( m_device, debugName, *this );
+	}
+	
+	DescriptorSetLayout::DescriptorSetLayout( Device const & device
+		, std::string debugName
+		, VkDescriptorSetLayoutBindingArray bindings
+		, VkDescriptorBindingFlags flags )
+		: DescriptorSetLayout{ device
+			, std::move( debugName )
+			, VkDescriptorSetLayoutCreateInfo{ VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO
+				, nullptr
+				, flags
+				, static_cast< uint32_t >( bindings.size() )
+				, bindings.data() } }
+	{
 	}
 
 	DescriptorSetLayout::~DescriptorSetLayout()

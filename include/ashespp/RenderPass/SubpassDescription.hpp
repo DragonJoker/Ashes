@@ -27,19 +27,16 @@ namespace ashes
 			, resolveAttachments{ std::move( presolveAttachments ) }
 			, depthStencilAttachment{ std::move( pdepthStencilAttachment ) }
 			, reserveAttachments{ std::move( preserveAttachments ) }
-			, vk
-			{
-				flags,
-				pipelineBindPoint,
-				uint32_t( inputAttachments.size() ),
-				inputAttachments.data(),
-				uint32_t( colorAttachments.size() ),
-				colorAttachments.data(),
-				resolveAttachments.data(),
-				bool( depthStencilAttachment ) ? &depthStencilAttachment.value() : nullptr,
-				uint32_t( reserveAttachments.size() ),
-				reserveAttachments.data(),
-			}
+			, vk{ flags
+				, pipelineBindPoint
+				, uint32_t( inputAttachments.size() )
+				, inputAttachments.data()
+				, uint32_t( colorAttachments.size() )
+				, colorAttachments.data()
+				, resolveAttachments.data()
+				, bool( depthStencilAttachment ) ? &depthStencilAttachment.value() : nullptr
+				, uint32_t( reserveAttachments.size() )
+				, reserveAttachments.data() }
 		{
 		}
 
@@ -49,19 +46,16 @@ namespace ashes
 			, resolveAttachments{ std::move( rhs.resolveAttachments ) }
 			, depthStencilAttachment{ std::move( rhs.depthStencilAttachment ) }
 			, reserveAttachments{ std::move( rhs.reserveAttachments ) }
-			, vk
-			{
-				rhs.vk.flags,
-				rhs.vk.pipelineBindPoint,
-				uint32_t( inputAttachments.size() ),
-				inputAttachments.data(),
-				uint32_t( colorAttachments.size() ),
-				colorAttachments.data(),
-				resolveAttachments.data(),
-				bool( depthStencilAttachment ) ? &depthStencilAttachment.value() : nullptr,
-				uint32_t( reserveAttachments.size() ),
-				reserveAttachments.data(),
-			}
+			, vk{ rhs.vk.flags
+				, rhs.vk.pipelineBindPoint
+				, uint32_t( inputAttachments.size() )
+				, inputAttachments.data()
+				, uint32_t( colorAttachments.size() )
+				, colorAttachments.data()
+				, resolveAttachments.data()
+				, bool( depthStencilAttachment ) ? &depthStencilAttachment.value() : nullptr
+				, uint32_t( reserveAttachments.size() )
+				, reserveAttachments.data() }
 		{
 		}
 
@@ -72,26 +66,32 @@ namespace ashes
 			resolveAttachments = std::move( rhs.resolveAttachments );
 			depthStencilAttachment = std::move( rhs.depthStencilAttachment );
 			reserveAttachments = std::move( rhs.reserveAttachments );
-			vk =
-			{
-				rhs.vk.flags,
-				rhs.vk.pipelineBindPoint,
-				uint32_t( inputAttachments.size() ),
-				inputAttachments.data(),
-				uint32_t( colorAttachments.size() ),
-				colorAttachments.data(),
-				resolveAttachments.data(),
-				bool( depthStencilAttachment ) ? &depthStencilAttachment.value() : nullptr,
-				uint32_t( reserveAttachments.size() ),
-				reserveAttachments.data(),
-			};
-
+			vk = { rhs.vk.flags
+				, rhs.vk.pipelineBindPoint
+				, uint32_t( inputAttachments.size() )
+				, inputAttachments.data()
+				, uint32_t( colorAttachments.size() )
+				, colorAttachments.data()
+				, resolveAttachments.data()
+				, bool( depthStencilAttachment ) ? &depthStencilAttachment.value() : nullptr
+				, uint32_t( reserveAttachments.size() )
+				, reserveAttachments.data() };
 			return *this;
 		}
 
-		inline operator VkSubpassDescription const &()const
+		operator VkSubpassDescription const &()const
 		{
 			return vk;
+		}
+
+		VkSubpassDescription const * operator->()const
+		{
+			return &vk;
+		}
+
+		VkSubpassDescription * operator->()
+		{
+			return &vk;
 		}
 
 		VkAttachmentReferenceArray inputAttachments;

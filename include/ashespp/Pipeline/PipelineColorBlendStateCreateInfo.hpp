@@ -43,11 +43,18 @@ namespace ashes
 		}
 		
 		PipelineColorBlendStateCreateInfo( PipelineColorBlendStateCreateInfo && rhs )noexcept
-			: PipelineColorBlendStateCreateInfo{ rhs.vk.flags
-				, rhs.vk.logicOpEnable
-				, rhs.vk.logicOp
-				, std::move( rhs.attachments )
-				, { rhs.vk.blendConstants[0], rhs.vk.blendConstants[1], rhs.vk.blendConstants[2], rhs.vk.blendConstants[3] } }
+			: attachments{ std::move( rhs.attachments ) }
+			, vk{ VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO
+				, rhs->pNext
+				, rhs->flags
+				, rhs->logicOpEnable
+				, rhs->logicOp
+				, uint32_t( attachments.size() )
+				, attachments.data()
+				, { rhs.vk.blendConstants[0]
+					, rhs.vk.blendConstants[1]
+					, rhs.vk.blendConstants[2]
+					, rhs.vk.blendConstants[3] } }
 		{
 		}
 		
@@ -55,7 +62,7 @@ namespace ashes
 		{
 			attachments = std::move( rhs.attachments );
 			vk = { VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO
-				, nullptr
+				, rhs.vk.pNext
 				, rhs.vk.flags
 				, rhs.vk.logicOpEnable
 				, rhs.vk.logicOp
@@ -69,9 +76,19 @@ namespace ashes
 			return *this;
 		}
 
-		inline operator VkPipelineColorBlendStateCreateInfo const &()const
+		operator VkPipelineColorBlendStateCreateInfo const &()const
 		{
 			return vk;
+		}
+
+		VkPipelineColorBlendStateCreateInfo const * operator->()const
+		{
+			return &vk;
+		}
+
+		VkPipelineColorBlendStateCreateInfo * operator->()
+		{
+			return &vk;
 		}
 
 		VkPipelineColorBlendAttachmentStateArray attachments;
