@@ -96,6 +96,7 @@ namespace ashes
 			, depthStencilState{ std::move( rhs.depthStencilState ) }
 			, colorBlendState{ std::move( rhs.colorBlendState ) }
 			, dynamicState{ std::move( rhs.dynamicState ) }
+			, vkStages{ makeVkArray< VkPipelineShaderStageCreateInfo >( stages ) }
 			, vk{ VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO
 				, rhs.vk.pNext
 				, rhs.vk.flags
