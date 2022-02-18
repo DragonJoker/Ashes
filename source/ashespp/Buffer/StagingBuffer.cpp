@@ -161,6 +161,118 @@ namespace ashes
 		m_buffer->bindMemory( m_storage );
 	}
 
+	void StagingBuffer::uploadBufferData( Queue const & queue
+		, CommandPool const & commandPool
+		, ByteArray const & data
+		, BufferBase const & buffer )const
+	{
+		uploadBufferData( queue
+			, commandPool
+			, data.data()
+			, data.size()
+			, 0u
+			, buffer );
+	}
+
+	void StagingBuffer::uploadBufferData( Queue const & queue
+		, CommandPool const & commandPool
+		, uint8_t const * const data
+		, VkDeviceSize size
+		, BufferBase const & buffer )const
+	{
+		uploadBufferData( queue
+			, commandPool
+			, data
+			, size
+			, 0u
+			, buffer );
+	}
+
+	void StagingBuffer::uploadBufferData( Queue const & queue
+		, CommandPool const & commandPool
+		, ByteArray const & data
+		, VkDeviceSize offset
+		, BufferBase const & buffer )const
+	{
+		uploadBufferData( queue
+			, commandPool
+			, data.data()
+			, data.size()
+			, offset
+			, buffer );
+	}
+
+	void StagingBuffer::uploadBufferData( Queue const & queue
+		, CommandPool const & commandPool
+		, uint8_t const * const data
+		, VkDeviceSize size
+		, VkDeviceSize offset
+		, BufferBase const & buffer )const
+	{
+		auto commandBuffer = commandPool.createCommandBuffer( "StaginBufferUpload"
+			, VK_COMMAND_BUFFER_LEVEL_PRIMARY );
+		commandBuffer->begin( VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT );
+		uploadBufferData( *commandBuffer
+			, data
+			, size
+			, offset
+			, buffer );
+		commandBuffer->end();
+		auto fence = m_device.createFence();
+		queue.submit( *commandBuffer
+			, fence.get() );
+		fence->wait( MaxTimeout );
+	}
+
+	void StagingBuffer::uploadBufferData( CommandBuffer const & commandBuffer
+		, ByteArray const & data
+		, BufferBase const & buffer )const
+	{
+		uploadBufferData( commandBuffer
+			, data.data()
+			, data.size()
+			, 0u
+			, buffer );
+	}
+
+	void StagingBuffer::uploadBufferData( CommandBuffer const & commandBuffer
+		, uint8_t const * const data
+		, VkDeviceSize size
+		, BufferBase const & buffer )const
+	{
+		uploadBufferData( commandBuffer
+			, data
+			, size
+			, 0u
+			, buffer );
+	}
+
+	void StagingBuffer::uploadBufferData( CommandBuffer const & commandBuffer
+		, ByteArray const & data
+		, VkDeviceSize offset
+		, BufferBase const & buffer )const
+	{
+		uploadBufferData( commandBuffer
+			, data.data()
+			, data.size()
+			, offset
+			, buffer );
+	}
+
+	void StagingBuffer::uploadBufferData( CommandBuffer const & commandBuffer
+		, uint8_t const * const data
+		, VkDeviceSize size
+		, VkDeviceSize offset
+		, BufferBase const & buffer )const
+	{
+		doCopyToStagingBuffer( data
+			, size );
+		doCopyFromStagingBuffer( commandBuffer
+			, size
+			, offset
+			, buffer );
+	}
+
 	void StagingBuffer::uploadTextureData( Queue const & queue
 		, CommandPool const & commandPool
 		, VkImageSubresourceLayers const & subresourceLayers
@@ -369,6 +481,7 @@ namespace ashes
 		commandBuffer.copyBuffer( getBuffer()
 			, buffer
 			, size
+			, 0u
 			, offset );
 	}
 
@@ -388,6 +501,7 @@ namespace ashes
 		commandBuffer.copyBuffer( getBuffer()
 			, buffer.getBuffer()
 			, size
+			, 0u
 			, offset );
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 			, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
@@ -410,6 +524,7 @@ namespace ashes
 		commandBuffer.copyBuffer( getBuffer()
 			, buffer.getBuffer()
 			, size
+			, 0u
 			, offset );
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 			, dstStageFlags
@@ -486,6 +601,7 @@ namespace ashes
 		commandBuffer.copyBuffer( buffer
 			, getBuffer()
 			, size
+			, 0u
 			, offset );
 	}
 
@@ -505,6 +621,7 @@ namespace ashes
 		commandBuffer.copyBuffer( buffer.getBuffer()
 			, getBuffer()
 			, size
+			, 0u
 			, offset );
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 			, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
@@ -527,6 +644,7 @@ namespace ashes
 		commandBuffer.copyBuffer( buffer.getBuffer()
 			, getBuffer()
 			, size
+			, 0u
 			, offset );
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 			, dstStageFlags

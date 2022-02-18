@@ -637,10 +637,11 @@ namespace ashes
 	void CommandBuffer::copyBuffer( VkBuffer src
 		, VkBuffer dst
 		, VkDeviceSize size
-		, VkDeviceSize offset )const
+		, VkDeviceSize srcOffset
+		, VkDeviceSize dstOffset )const
 	{
-		VkBufferCopy copyInfo{ offset
-			, 0
+		VkBufferCopy copyInfo{ srcOffset
+			, dstOffset
 			, size };
 		copyBuffer( copyInfo, src, dst );
 	}
@@ -648,10 +649,11 @@ namespace ashes
 	void CommandBuffer::copyBuffer( BufferBase const & src
 		, BufferBase const & dst
 		, VkDeviceSize size
-		, VkDeviceSize offset )const
+		, VkDeviceSize srcOffset
+		, VkDeviceSize dstOffset )const
 	{
-		VkBufferCopy copyInfo{ offset
-			, 0
+		VkBufferCopy copyInfo{ srcOffset
+			, dstOffset
 			, size };
 		copyBuffer( copyInfo, src, dst );
 	}
@@ -659,84 +661,72 @@ namespace ashes
 	void CommandBuffer::copyBuffer( BufferBase const & src
 		, VertexBufferBase const & dst
 		, VkDeviceSize size
-		, VkDeviceSize offset )const
+		, VkDeviceSize srcOffset
+		, VkDeviceSize dstOffset )const
 	{
-		VkBufferCopy copyInfo
-		{
-			offset,
-			0,
-			size
-		};
+		VkBufferCopy copyInfo{ srcOffset
+			, dstOffset
+			, size };
 		copyBuffer( copyInfo, src, dst.getBuffer() );
 	}
 
 	void CommandBuffer::copyBuffer( VertexBufferBase const & src
 		, BufferBase const & dst
 		, VkDeviceSize size
-		, VkDeviceSize offset )const
+		, VkDeviceSize srcOffset
+		, VkDeviceSize dstOffset )const
 	{
-		VkBufferCopy copyInfo
-		{
-			offset,
-			0,
-			size
-		};
+		VkBufferCopy copyInfo{ srcOffset
+			, dstOffset
+			, size };
 		copyBuffer( copyInfo, src.getBuffer(), dst );
 	}
 
 	void CommandBuffer::copyBuffer( VertexBufferBase const & src
 		, VertexBufferBase const & dst
 		, VkDeviceSize size
-		, VkDeviceSize offset )const
+		, VkDeviceSize srcOffset
+		, VkDeviceSize dstOffset )const
 	{
-		VkBufferCopy copyInfo
-		{
-			offset,
-			0,
-			size
-		};
+		VkBufferCopy copyInfo{ srcOffset
+			, dstOffset
+			, size };
 		copyBuffer( copyInfo, src.getBuffer(), dst.getBuffer() );
 	}
 
 	void CommandBuffer::copyBuffer( BufferBase const & src
 		, UniformBuffer const & dst
 		, VkDeviceSize size
-		, VkDeviceSize offset )const
+		, VkDeviceSize srcOffset
+		, VkDeviceSize dstOffset )const
 	{
-		VkBufferCopy copyInfo
-		{
-			offset,
-			0,
-			size
-		};
+		VkBufferCopy copyInfo{ srcOffset
+			, dstOffset
+			, size };
 		copyBuffer( copyInfo, src, dst.getBuffer() );
 	}
 
 	void CommandBuffer::copyBuffer( UniformBuffer const & src
 		, BufferBase const & dst
 		, VkDeviceSize size
-		, VkDeviceSize offset )const
+		, VkDeviceSize srcOffset
+		, VkDeviceSize dstOffset )const
 	{
-		VkBufferCopy copyInfo
-		{
-			offset,
-			0,
-			size
-		};
+		VkBufferCopy copyInfo{ srcOffset
+			, dstOffset
+			, size };
 		copyBuffer( copyInfo, src.getBuffer(), dst );
 	}
 
 	void CommandBuffer::copyBuffer( UniformBuffer const & src
 		, UniformBuffer const & dst
 		, VkDeviceSize size
-		, VkDeviceSize offset )const
+		, VkDeviceSize srcOffset
+		, VkDeviceSize dstOffset )const
 	{
-		VkBufferCopy copyInfo
-		{
-			offset,
-			0,
-			size
-		};
+		VkBufferCopy copyInfo{ srcOffset
+			, dstOffset
+			, size };
 		copyBuffer( copyInfo, src.getBuffer(), dst.getBuffer() );
 	}
 
