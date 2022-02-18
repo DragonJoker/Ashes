@@ -142,6 +142,82 @@ namespace ashes
 			, VkDeviceSize size
 			, VkDeviceSize offset
 			, Buffer< T > const & buffer )const;
+		template< typename T, size_t N >
+		inline void uploadBufferData( Queue const & queue
+			, CommandPool const & commandPool
+			, std::array< T, N > const & data
+			, BufferBase const & buffer )const;
+		template< typename T >
+		inline void uploadBufferData( Queue const & queue
+			, CommandPool const & commandPool
+			, std::vector< T > const & data
+			, BufferBase const & buffer )const;
+		void uploadBufferData( Queue const & queue
+			, CommandPool const & commandPool
+			, ByteArray const & data
+			, BufferBase const & buffer )const;
+		void uploadBufferData( Queue const & queue
+			, CommandPool const & commandPool
+			, uint8_t const * const data
+			, VkDeviceSize size
+			, BufferBase const & buffer )const;
+		template< typename T, size_t N >
+		inline void uploadBufferData( Queue const & queue
+			, CommandPool const & commandPool
+			, std::array< T, N > const & data
+			, VkDeviceSize offset
+			, BufferBase const & buffer )const;
+		template< typename T >
+		inline void uploadBufferData( Queue const & queue
+			, CommandPool const & commandPool
+			, std::vector< T > const & data
+			, VkDeviceSize offset
+			, BufferBase const & buffer )const;
+		void uploadBufferData( Queue const & queue
+			, CommandPool const & commandPool
+			, ByteArray const & data
+			, VkDeviceSize offset
+			, BufferBase const & buffer )const;
+		void uploadBufferData( Queue const & queue
+			, CommandPool const & commandPool
+			, uint8_t const * const data
+			, VkDeviceSize size
+			, VkDeviceSize offset
+			, BufferBase const & buffer )const;
+		template< typename T, size_t N >
+		inline void uploadBufferData( CommandBuffer const & commandBuffer
+			, std::array< T, N > const & data
+			, BufferBase const & buffer )const;
+		template< typename T >
+		inline void uploadBufferData( CommandBuffer const & commandBuffer
+			, std::vector< T > const & data
+			, BufferBase const & buffer )const;
+		void uploadBufferData( CommandBuffer const & commandBuffer
+			, ByteArray const & data
+			, BufferBase const & buffer )const;
+		void uploadBufferData( CommandBuffer const & commandBuffer
+			, uint8_t const * const data
+			, VkDeviceSize size
+			, BufferBase const & buffer )const;
+		template< typename T, size_t N >
+		inline void uploadBufferData( CommandBuffer const & commandBuffer
+			, std::array< T, N > const & data
+			, VkDeviceSize offset
+			, BufferBase const & buffer )const;
+		template< typename T >
+		inline void uploadBufferData( CommandBuffer const & commandBuffer
+			, std::vector< T > const & data
+			, VkDeviceSize offset
+			, BufferBase const & buffer )const;
+		void uploadBufferData( CommandBuffer const & commandBuffer
+			, ByteArray const & data
+			, VkDeviceSize offset
+			, BufferBase const & buffer )const;
+		void uploadBufferData( CommandBuffer const & commandBuffer
+			, uint8_t const * const data
+			, VkDeviceSize size
+			, VkDeviceSize offset
+			, BufferBase const & buffer )const;
 		/**@}*/
 		/**
 		*\name
