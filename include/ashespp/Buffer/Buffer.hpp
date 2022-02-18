@@ -475,16 +475,27 @@ namespace ashes
 		uint64_t doComputeSize( VkDeviceSize count, VkDeviceSize & offset )const
 		{
 			offset *= sizeof( T );
-			count *= sizeof( T );
+
+			if ( count != WholeSize )
+			{
+				count *= sizeof( T );
+			}
+			else
+			{
+				offset = 0u;
+			}
+
 			auto const aligned = getAlignedSize( count
 				, m_device.getProperties().limits.nonCoherentAtomSize );
-			auto result = count == m_buffer->getSize()
-				? ( offset == VkDeviceSize( 0 )
-					? WholeSize
-					: aligned )
-				: ( offset + count == m_buffer->getSize()
-					? count
-					: aligned );
+			auto result = count  == WholeSize
+				? WholeSize
+				: ( count == m_buffer->getSize()
+					? ( offset == VkDeviceSize( 0 )
+						? WholeSize
+						: aligned )
+					: ( offset + count == m_buffer->getSize()
+						? count
+						: aligned ) );
 			assert( result == WholeSize || offset + result <= m_buffer->getSize() );
 			return result;
 		}

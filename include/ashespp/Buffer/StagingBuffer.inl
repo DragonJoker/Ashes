@@ -246,6 +246,114 @@ namespace ashes
 			, offset
 			, buffer.getBuffer() );
 	}
+
+	template< typename T, size_t N >
+	inline void StagingBuffer::uploadBufferData( Queue const & queue
+		, CommandPool const & commandPool
+		, std::array< T, N > const & data
+		, BufferBase const & buffer )const
+	{
+		uploadBufferData( queue
+			, commandPool
+			, reinterpret_cast< uint8_t const * const >( data.data() )
+			, N * sizeof( T )
+			, 0u
+			, buffer );
+	}
+	
+	template< typename T >
+	inline void StagingBuffer::uploadBufferData( Queue const & queue
+		, CommandPool const & commandPool
+		, std::vector< T > const & data
+		, BufferBase const & buffer )const
+	{
+		uploadBufferData( queue
+			, commandPool
+			, reinterpret_cast< uint8_t const * const >( data.data() )
+			, data.size() * sizeof( T )
+			, 0u
+			, buffer );
+	}
+
+	template< typename T, size_t N >
+	inline void StagingBuffer::uploadBufferData( Queue const & queue
+		, CommandPool const & commandPool
+		, std::array< T, N > const & data
+		, VkDeviceSize offset
+		, BufferBase const & buffer )const
+	{
+		uploadBufferData( queue
+			, commandPool
+			, reinterpret_cast< uint8_t const * const >( data.data() )
+			, N * sizeof( T )
+			, offset * sizeof( T )
+			, buffer );
+	}
+
+	template< typename T >
+	inline void StagingBuffer::uploadBufferData( Queue const & queue
+		, CommandPool const & commandPool
+		, std::vector< T > const & data
+		, VkDeviceSize offset
+		, BufferBase const & buffer )const
+	{
+		uploadBufferData( queue
+			, commandPool
+			, reinterpret_cast< uint8_t const * const >( data.data() )
+			, data.size() * sizeof( T )
+			, offset * sizeof( T )
+			, buffer );
+	}
+
+	template< typename T, size_t N >
+	inline void StagingBuffer::uploadBufferData( CommandBuffer const & commandBuffer
+		, std::array< T, N > const & data
+		, BufferBase const & buffer )const
+	{
+		uploadBufferData( commandBuffer
+			, reinterpret_cast< uint8_t const * const >( data.data() )
+			, N * sizeof( T )
+			, 0u
+			, buffer );
+	}
+
+	template< typename T >
+	inline void StagingBuffer::uploadBufferData( CommandBuffer const & commandBuffer
+		, std::vector< T > const & data
+		, BufferBase const & buffer )const
+	{
+		uploadBufferData( commandBuffer
+			, reinterpret_cast< uint8_t const * const >( data.data() )
+			, data.size() * sizeof( T )
+			, 0u
+			, buffer );
+	}
+
+	template< typename T, size_t N >
+	inline void StagingBuffer::uploadBufferData( CommandBuffer const & commandBuffer
+		, std::array< T, N > const & data
+		, VkDeviceSize offset
+		, BufferBase const & buffer )const
+	{
+		uploadBufferData( commandBuffer
+			, reinterpret_cast< uint8_t const * const >( data.data() )
+			, N * sizeof( T )
+			, offset * sizeof( T )
+			, buffer );
+	}
+
+	template< typename T >
+	inline void StagingBuffer::uploadBufferData( CommandBuffer const & commandBuffer
+		, std::vector< T > const & data
+		, VkDeviceSize offset
+		, BufferBase const & buffer )const
+	{
+		uploadBufferData( commandBuffer
+			, reinterpret_cast< uint8_t const * const >( data.data() )
+			, data.size() * sizeof( T )
+			, offset * sizeof( T )
+			, buffer );
+	}
 	/**@}*/
 	/**
 	*\name
