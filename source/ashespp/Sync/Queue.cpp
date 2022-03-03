@@ -123,7 +123,9 @@ namespace ashes
 		submit( { 1u, commandBuffers }
 			, semaphoresToWait
 			, semaphoresStage
-			, { 1u, semaphoresToSignal }
+			, ( semaphoresToSignal
+				? VkSemaphoreArray{ 1u, semaphoresToSignal }
+				: VkSemaphoreArray{} )
 			, fence );
 	}
 
