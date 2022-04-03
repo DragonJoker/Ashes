@@ -1146,17 +1146,10 @@ namespace ashes::gl
 
 	void PhysicalDevice::doInitialiseQueueProperties( ContextLock & context )
 	{
-		m_queueProperties.push_back(
-			{
-				0xFF,
-				8u,
-				64u,
-				{
-					1u,
-					1u,
-					1u,
-				}
-			} );
+		m_queueProperties.push_back( { 0xFF	// queueFlags
+			, 1u							// queueCount
+			, 64u							// timestampValidBits
+			, { 1u, 1u, 1u } } );			// minImageTransferGranularity
 	}
 
 	void PhysicalDevice::doInitialiseDisplayProperties( ContextLock & context )
