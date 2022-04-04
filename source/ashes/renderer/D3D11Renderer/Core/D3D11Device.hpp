@@ -4,6 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
+#include "renderer/D3D11Renderer/Core/D3D11DeviceContextLock.hpp"
 #include "renderer/D3D11Renderer/Core/D3D11Layer.hpp"
 
 #include "renderer/D3D11Renderer/Buffer/D3D11Buffer.hpp"
