@@ -9,19 +9,21 @@ set( MAIN_PROJECT_NAME "Ashes" )
 set( BUILD_ASHES 1 )
 
 # Used to look for external modules
-if ( VCPKG_TOOLCHAIN )
-	set( CMAKE_MODULE_PATH
-		${CMAKE_SOURCE_DIR}/CMake
-		${CMAKE_SOURCE_DIR}/CMake/Modules
-		${CMAKE_SOURCE_DIR}/CMake/Toolchains
-	)
-else ()
-	set( CMAKE_MODULE_PATH
-		${CMAKE_SOURCE_DIR}/CMake
-		${CMAKE_SOURCE_DIR}/CMake/Modules
-		${CMAKE_SOURCE_DIR}/CMake/Modules/Traditional
-		${CMAKE_SOURCE_DIR}/CMake/Toolchains
-	)
+if ( NOT CMAKE_MODULE_PATH )
+	if ( VCPKG_TOOLCHAIN )
+		set( CMAKE_MODULE_PATH
+			${CMAKE_SOURCE_DIR}/CMake
+			${CMAKE_SOURCE_DIR}/CMake/Modules
+			${CMAKE_SOURCE_DIR}/CMake/Toolchains
+		)
+	else ()
+		set( CMAKE_MODULE_PATH
+			${CMAKE_SOURCE_DIR}/CMake
+			${CMAKE_SOURCE_DIR}/CMake/Modules
+			${CMAKE_SOURCE_DIR}/CMake/Modules/Traditional
+			${CMAKE_SOURCE_DIR}/CMake/Toolchains
+		)
+	endif ()
 endif ()
 
 set( CMAKE_TEMPLATES_DIR ${CMAKE_SOURCE_DIR}/CMake/Templates )
