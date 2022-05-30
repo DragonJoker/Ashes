@@ -53,7 +53,7 @@ namespace ashes::gl
 
 		VkDeviceSize getSize()const
 		{
-			return m_offset + m_size;
+			return m_size;
 		}
 
 		VkDeviceSize getMin()const
