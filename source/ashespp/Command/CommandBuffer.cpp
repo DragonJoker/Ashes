@@ -263,6 +263,46 @@ namespace ashes
 			, stride );
 	}
 
+#if VK_NV_mesh_shader
+
+	void CommandBuffer::drawMeshTasks( uint32_t taskCount
+		, uint32_t firstTask )const
+	{
+		m_device.vkCmdDrawMeshTasksNV( m_internal
+			, taskCount
+			, firstTask );
+	}
+
+	void CommandBuffer::drawMeshTasksIndirect( BufferBase const & buffer
+		, VkDeviceSize offset
+		, uint32_t drawCount
+		, uint32_t stride )const
+	{
+		m_device.vkCmdDrawMeshTasksIndirectNV( m_internal
+			, buffer
+			, offset
+			, drawCount
+			, stride );
+	}
+
+	void CommandBuffer::drawMeshTasksIndirectCount( BufferBase const & buffer
+		, VkDeviceSize offset
+		, BufferBase const & countBuffer
+		, VkDeviceSize countBufferOffset
+		, uint32_t maxDrawCount
+		, uint32_t stride )const
+	{
+		m_device.vkCmdDrawMeshTasksIndirectCountNV( m_internal
+			, buffer
+			, offset
+			, countBuffer
+			, countBufferOffset
+			, maxDrawCount
+			, stride );
+	}
+
+#endif
+
 	void CommandBuffer::copyToImage( VkBufferImageCopyArray const & copyInfo
 		, VkBuffer src
 		, VkImage dst )const
