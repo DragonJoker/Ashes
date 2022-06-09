@@ -480,5 +480,6 @@ if ( BUILD_ASHES )
 endif ()
 
 #For libs, we install headers to <install_dir>/include/${PROJECT_NAME}
-target_install_headers( ${PROJECT_NAME}
+target_install_headers_ex( ${PROJECT_NAME}
+	Ashes
 	${Ashes_SOURCE_DIR}/include/${_PROJECT_NAME} )

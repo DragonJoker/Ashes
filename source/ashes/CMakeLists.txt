@@ -88,7 +88,8 @@ if ( BUILD_ASHES )
 	target_add_doc( ${PROJECT_NAME} "" "*.h *.hpp" )
 endif ()
 
-target_install_dir_headers( ${PROJECT_NAME}
+target_install_dir_headers_ex( ${PROJECT_NAME}
+	Ashes
 	${Ashes_SOURCE_DIR}/include/ashes
 	ashes
 )

@@ -99,7 +99,8 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 
 source_group( "Source Files\\Platform" FILES ${${PROJECT_NAME}_PLATFORM_SRC_FILES} )
 
-target_install_dir_headers( ${PROJECT_NAME}
+target_install_dir_headers_ex( ${PROJECT_NAME}
+	Ashes
 	${Ashes_SOURCE_DIR}/include/ashes/${_PROJECT_NAME}
 	ashes/${_PROJECT_NAME}
 )
