@@ -66,7 +66,7 @@ namespace ashes
 		*\brief
 		*	Destructor.
 		*/
-		~Pipeline();
+		virtual ~Pipeline();
 		/**
 		*\brief
 		*	VkPipeline implicit cast operator.
