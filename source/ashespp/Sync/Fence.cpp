@@ -62,6 +62,12 @@ namespace ashes
 			, &m_internal
 			, VK_TRUE
 			, timeout );
+
+		if ( res == VK_ERROR_DEVICE_LOST )
+		{
+			checkError( res, "Fence wait" );
+		}
+
 		auto result = res == VK_SUCCESS
 			? WaitResult::eSuccess
 			: ( res == VK_TIMEOUT
