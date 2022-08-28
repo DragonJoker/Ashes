@@ -156,6 +156,7 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 17
 	CXX_EXTENSIONS OFF
 	FOLDER "${Ashes_BASE_DIR}/Renderer"
+	DEBUG_POSTFIX "d"
 )
 
 parse_subdir_files_ex( "${Ashes_SOURCE_DIR}" ashes/renderer Helper "Helper" )

@@ -95,7 +95,9 @@ target_add_compilation_flags( ${PROJECT_NAME} )
 set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 17
 	CXX_EXTENSIONS OFF
-	FOLDER "${Ashes_BASE_DIR}/Core" )
+	FOLDER "${Ashes_BASE_DIR}/Core"
+	DEBUG_POSTFIX "d"
+)
 
 source_group( "Source Files\\Platform" FILES ${${PROJECT_NAME}_PLATFORM_SRC_FILES} )
 
