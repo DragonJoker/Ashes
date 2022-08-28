@@ -645,6 +645,7 @@ if ( OpenGL_FOUND )
 		FOLDER "${Ashes_BASE_DIR}/Renderer"
 		VERSION ${PROJECT_VERSION}
 		SOVERSION ${PROJECT_SOVERSION}
+		DEBUG_POSTFIX "d"
 	)
 	add_target_precompiled_header_ex( ${PROJECT_NAME}
 		ashes/renderer

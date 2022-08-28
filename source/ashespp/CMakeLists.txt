@@ -466,6 +466,7 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 17
 	CXX_EXTENSIONS OFF
 	FOLDER "${Ashes_BASE_DIR}/Core"
+	DEBUG_POSTFIX "d"
 )
 
 add_target_precompiled_header( ${PROJECT_NAME}
