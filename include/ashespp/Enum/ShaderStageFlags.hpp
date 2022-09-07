@@ -46,7 +46,12 @@ namespace ashes
 		case VK_SHADER_STAGE_CALLABLE_BIT_NV:
 			return "callable";
 #endif
-#ifdef VK_NV_mesh_shader
+#ifdef VK_EXT_mesh_shader
+		case VK_SHADER_STAGE_TASK_BIT_EXT:
+			return "task";
+		case VK_SHADER_STAGE_MESH_BIT_EXT:
+			return "mesh";
+#elif defined( VK_NV_mesh_shader )
 		case VK_SHADER_STAGE_TASK_BIT_NV:
 			return "task";
 		case VK_SHADER_STAGE_MESH_BIT_NV:

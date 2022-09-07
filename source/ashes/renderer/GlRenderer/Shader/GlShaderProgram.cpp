@@ -116,6 +116,8 @@ namespace ashes::gl
 				{
 					for ( auto & constant : rhs )
 					{
+#pragma warning( push )
+#pragma warning( disable:5233 )
 						auto it = std::find_if( result.begin()
 							, result.end()
 							, [&constant]( FormatDescT< FormatT > const & lookup )
@@ -128,6 +130,7 @@ namespace ashes::gl
 						{
 							result.push_back( constant );
 						}
+#pragma warning( pop )
 					}
 				}
 			}
