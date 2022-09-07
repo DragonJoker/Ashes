@@ -40,10 +40,6 @@ option( ASHES_BUILD_TEMPLATES "Build Ashes template applications" ON )
 option( ASHES_BUILD_TESTS "Build Ashes test applications" ON )
 option( ASHES_BUILD_SAMPLES "Build Ashes sample applications" ON )
 
-if ( EXISTS ${CMAKE_SOURCE_DIR}/test/Vulkan/CMakeLists.txt )
-	option( ASHES_BUILD_SW_SAMPLES "Build Sascha Willems examples." FALSE )
-endif ()
-
 # Organize projects into folders
 set_property( GLOBAL PROPERTY USE_FOLDERS ON )
 
