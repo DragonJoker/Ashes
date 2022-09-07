@@ -76,7 +76,12 @@ namespace ashes
 		case VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_NV:
 			return "acceleration_structure_build";
 #endif
-#ifdef VK_NV_mesh_shader
+#ifdef VK_EXT_mesh_shader
+		case VK_PIPELINE_STAGE_TASK_SHADER_BIT_EXT:
+			return "task_shader";
+		case VK_PIPELINE_STAGE_MESH_SHADER_BIT_EXT:
+			return "mesh_shader";
+#elif defined( VK_NV_mesh_shader )
 		case VK_PIPELINE_STAGE_TASK_SHADER_BIT_NV:
 			return "task_shader";
 		case VK_PIPELINE_STAGE_MESH_SHADER_BIT_NV:
