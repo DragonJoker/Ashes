@@ -410,18 +410,16 @@ namespace ashes
 			, uint32_t offset
 			, uint32_t drawCount
 			, uint32_t stride = 0u )const;
-#if VK_NV_mesh_shader
+#if VK_EXT_mesh_shader
 		/**
 		*\brief
 		*	Draw mesh task work items.
-		*\param[in] taskCount
-		*	The number of local workgroups to dispatch in the X dimension.
-		*	Y and Z dimension are implicitly set to one.
-		*\param[in] firstTask
-		*	The X component of the first workgroup ID.
+		*\param[in] groupCountX, groupCountY, groupCountZ
+		*	The number of local workgroups to dispatch in the X, Y and Z dimension.
 		*/
-		void drawMeshTasks( uint32_t taskCount
-			, uint32_t firstTask )const;
+		void drawMeshTasks( uint32_t groupCountX
+			, uint32_t groupCountY
+			, uint32_t groupCountZ )const;
 		/**
 		*\brief
 		*	Issue an indirect mesh tasks draw into a command buffer.
@@ -434,7 +432,7 @@ namespace ashes
 		*\param[in] stride
 		*	The byte stride between successive sets of draw parameters.
 		*/
-		void drawMeshTasksIndirect( BufferBase const & buffer 
+		void drawMeshTasksIndirect( BufferBase const & buffer
 			, VkDeviceSize offset
 			, uint32_t drawCount
 			, uint32_t stride )const;
@@ -456,6 +454,58 @@ namespace ashes
 		*	The byte stride between successive sets of draw parameters.
 		*/
 		void drawMeshTasksIndirectCount( BufferBase const & buffer
+			, VkDeviceSize offset
+			, BufferBase const & countBuffer
+			, VkDeviceSize countBufferOffset
+			, uint32_t maxDrawCount
+			, uint32_t stride )const;
+#endif
+#if VK_NV_mesh_shader
+		/**
+		*\brief
+		*	Draw mesh task work items.
+		*\param[in] taskCount
+		*	The number of local workgroups to dispatch in the X dimension.
+		*	Y and Z dimension are implicitly set to one.
+		*\param[in] firstTask
+		*	The X component of the first workgroup ID.
+		*/
+		void drawMeshTasksNV( uint32_t taskCount
+			, uint32_t firstTask )const;
+		/**
+		*\brief
+		*	Issue an indirect mesh tasks draw into a command buffer.
+		*\param[in] buffer
+		*	 The buffer containing draw parameters.
+		*\param[in] offset
+		*	 The byte offset into \p buffer where parameters begin.
+		*\param[in] drawCount
+		*	The number of draws to execute, and *can* be zero.
+		*\param[in] stride
+		*	The byte stride between successive sets of draw parameters.
+		*/
+		void drawMeshTasksIndirectNV( BufferBase const & buffer
+			, VkDeviceSize offset
+			, uint32_t drawCount
+			, uint32_t stride )const;
+		/**
+		*\brief
+		*	Issue an indirect mesh tasks draw into a command buffer.
+		*\param[in] buffer
+		*	 The buffer containing draw parameters.
+		*\param[in] offset
+		*	 The byte offset into \p buffer where parameters begin.
+		*\param[in] countBuffer
+		*	 The buffer containing the draw count.
+		*\param[in] countBufferOffset
+		*	 The byte offset into \p countBuffer where the draw count begins.
+		*\param[in] maxDrawCount
+		*	The maximum number of draws that will be executed.
+		The actual number of executed draw calls is the minimum of the count specified in \p countBuffer and \p maxDrawCount.
+		*\param[in] stride
+		*	The byte stride between successive sets of draw parameters.
+		*/
+		void drawMeshTasksIndirectCountNV( BufferBase const & buffer
 			, VkDeviceSize offset
 			, BufferBase const & countBuffer
 			, VkDeviceSize countBufferOffset

@@ -3751,6 +3751,42 @@ namespace ashes::d3d11
 
 #endif
 #pragma endregion
+#pragma region VK_EXT_mesh_shader
+#ifdef VK_EXT_mesh_shader
+
+	void VKAPI_CALL vkCmdDrawMeshTasksEXT(
+		VkCommandBuffer commandBuffer,
+		uint32_t groupCountX,
+		uint32_t groupCountY,
+		uint32_t groupCountZ )
+	{
+		reportUnsupported( commandBuffer, "vkCmdDrawMeshTasksEXT" );
+	}
+
+	void VKAPI_CALL vkCmdDrawMeshTasksIndirectEXT(
+		VkCommandBuffer commandBuffer,
+		VkBuffer buffer,
+		VkDeviceSize offset,
+		uint32_t drawCount,
+		uint32_t stride )
+	{
+		reportUnsupported( commandBuffer, "vkCmdDrawMeshTasksIndirectEXT" );
+	}
+
+	void VKAPI_CALL vkCmdDrawMeshTasksIndirectCountEXT(
+		VkCommandBuffer commandBuffer,
+		VkBuffer buffer,
+		VkDeviceSize offset,
+		VkBuffer countBuffer,
+		VkDeviceSize countBufferOffset,
+		uint32_t maxDrawCount,
+		uint32_t stride )
+	{
+		reportUnsupported( commandBuffer, "vkCmdDrawMeshTasksIndirectCountEXT" );
+	}
+
+#endif
+#pragma endregion
 #pragma region VK_NV_mesh_shader
 #ifdef VK_NV_mesh_shader
 

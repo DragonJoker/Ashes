@@ -263,9 +263,50 @@ namespace ashes
 			, stride );
 	}
 
+#if VK_EXT_mesh_shader
+
+	void CommandBuffer::drawMeshTasks( uint32_t groupCountX
+		, uint32_t groupCountY
+		, uint32_t groupCountZ )const
+	{
+		m_device.vkCmdDrawMeshTasksEXT( m_internal
+			, groupCountX
+			, groupCountY
+			, groupCountZ );
+	}
+
+	void CommandBuffer::drawMeshTasksIndirect( BufferBase const & buffer
+		, VkDeviceSize offset
+		, uint32_t drawCount
+		, uint32_t stride )const
+	{
+		m_device.vkCmdDrawMeshTasksIndirectEXT( m_internal
+			, buffer
+			, offset
+			, drawCount
+			, stride );
+	}
+
+	void CommandBuffer::drawMeshTasksIndirectCount( BufferBase const & buffer
+		, VkDeviceSize offset
+		, BufferBase const & countBuffer
+		, VkDeviceSize countBufferOffset
+		, uint32_t maxDrawCount
+		, uint32_t stride )const
+	{
+		m_device.vkCmdDrawMeshTasksIndirectCountEXT( m_internal
+			, buffer
+			, offset
+			, countBuffer
+			, countBufferOffset
+			, maxDrawCount
+			, stride );
+	}
+
+#endif
 #if VK_NV_mesh_shader
 
-	void CommandBuffer::drawMeshTasks( uint32_t taskCount
+	void CommandBuffer::drawMeshTasksNV( uint32_t taskCount
 		, uint32_t firstTask )const
 	{
 		m_device.vkCmdDrawMeshTasksNV( m_internal
@@ -273,7 +314,7 @@ namespace ashes
 			, firstTask );
 	}
 
-	void CommandBuffer::drawMeshTasksIndirect( BufferBase const & buffer
+	void CommandBuffer::drawMeshTasksIndirectNV( BufferBase const & buffer
 		, VkDeviceSize offset
 		, uint32_t drawCount
 		, uint32_t stride )const
@@ -285,7 +326,7 @@ namespace ashes
 			, stride );
 	}
 
-	void CommandBuffer::drawMeshTasksIndirectCount( BufferBase const & buffer
+	void CommandBuffer::drawMeshTasksIndirectCountNV( BufferBase const & buffer
 		, VkDeviceSize offset
 		, BufferBase const & countBuffer
 		, VkDeviceSize countBufferOffset
