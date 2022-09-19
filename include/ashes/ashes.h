@@ -9,6 +9,8 @@ See LICENSE file in root folder.
 #include <vulkan/vulkan.h>
 
 #if __linux__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreserved-identifier"
 	typedef unsigned long XID;
 	typedef XID Window;
 	typedef unsigned long VisualID;
@@ -21,6 +23,7 @@ See LICENSE file in root folder.
     struct wl_display;
     struct wl_surface;
 #	include <vulkan/vulkan_wayland.h>
+#pragma clang diagnostic pop
 #elif _WIN32
 #	ifndef NOMINMAX
 #		define NOMINMAX
