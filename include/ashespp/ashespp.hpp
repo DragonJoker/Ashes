@@ -6,6 +6,6 @@ See LICENSE file in root folder.
 #define ___AshesPP_HPP___
 #pragma once
 
-#include "ashespp/AshesPPPrerequisites"
+#include "ashespp/AshesPPPrerequisites.hpp"
 
 #endif

@@ -14,7 +14,10 @@
 
 #include <ashes/common/VkTypeTraits.hpp>
 
+#pragma warning( push )
+#pragma warning( disable: 5262 )
 #include <mutex>
+#pragma warning( pop )
 
 namespace ashes::gl
 {

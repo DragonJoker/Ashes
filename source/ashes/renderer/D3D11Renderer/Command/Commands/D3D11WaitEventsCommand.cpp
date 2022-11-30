@@ -6,11 +6,15 @@ See LICENSE file in root folder.
 
 #include "Sync/D3D11Event.hpp"
 
+#include "ashesd3d11_api.hpp"
+
 #include <algorithm>
 #include <chrono>
-#include <thread>
 
-#include "ashesd3d11_api.hpp"
+#pragma warning( push )
+#pragma warning( disable: 5262 )
+#include <thread>
+#pragma warning( pop )
 
 namespace ashes::d3d11
 {

@@ -38,7 +38,10 @@ See LICENSE file in root folder.
 #include <ashes/common/Exception.hpp>
 #include <ashes/common/VkTypeTraits.hpp>
 
+#pragma warning( push )
+#pragma warning( disable: 5262 )
 #include <iostream>
+#pragma warning( pop )
 
 namespace ashes::d3d11
 {

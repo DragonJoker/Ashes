@@ -4,6 +4,7 @@
 
 #pragma warning( push )
 #pragma warning( disable: 4365 )
+#pragma warning( disable: 5262 )
 #include <cassert>
 #include <filesystem>
 #include <iomanip>

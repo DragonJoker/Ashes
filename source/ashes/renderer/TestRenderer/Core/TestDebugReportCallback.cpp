@@ -7,9 +7,9 @@ See LICENSE file in root folder.
 #include "renderer/TestRenderer/Core/TestInstance.hpp"
 #include "renderer/TestRenderer/Image/TestImage.hpp"
 
-#include <sstream>
-
 #include "ashestest_api.hpp"
+
+#include <sstream>
 
 namespace ashes::test
 {

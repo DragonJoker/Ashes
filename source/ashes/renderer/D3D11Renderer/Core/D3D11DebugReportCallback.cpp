@@ -7,9 +7,9 @@ See LICENSE file in root folder.
 #include "renderer/D3D11Renderer/Core/D3D11Instance.hpp"
 #include "renderer/D3D11Renderer/Image/D3D11Image.hpp"
 
-#include <sstream>
-
 #include "ashesd3d11_api.hpp"
+
+#include <sstream>
 
 namespace ashes::d3d11
 {

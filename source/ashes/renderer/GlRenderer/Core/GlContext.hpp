@@ -7,9 +7,12 @@ See LICENSE file in root folder
 #include "renderer/GlRenderer/Core/GlContextImpl.hpp"
 #include "renderer/GlRenderer/Core/GlContextState.hpp"
 
+#pragma warning( push )
+#pragma warning( disable: 5262 )
 #include <atomic>
 #include <mutex>
 #include <thread>
+#pragma warning( pop )
 
 namespace ashes::gl
 {

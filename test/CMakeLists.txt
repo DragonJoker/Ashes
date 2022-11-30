@@ -20,8 +20,7 @@ if ( ASHES_BUILD_TESTS OR ASHES_BUILD_INFO )
 endif ()
 
 if ( ASHES_BUILD_TESTS )
-	set( wxWidgets_IGNORE_VCPKG ON )
-	find_package( wxWidgets COMPONENTS core base )
+	find_package( wxWidgets CONFIG COMPONENTS core base )
 	if( APPLE )
 		set( GTK_FOUND ON )
 		set( Ashes_BINARY_LIBRARIES

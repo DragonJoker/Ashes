@@ -98,6 +98,8 @@ See LICENSE file in root folder.
 
 #include <ashes/common/Format.hpp>
 
+#pragma warning( push )
+#pragma warning( disable: 5262 )
 #include <array>
 #include <cassert>
 #include <cstdint>
@@ -109,6 +111,7 @@ See LICENSE file in root folder.
 #include <memory>
 #include <sstream>
 #include <string>
+#pragma warning( pop )
 
 namespace ashes
 {

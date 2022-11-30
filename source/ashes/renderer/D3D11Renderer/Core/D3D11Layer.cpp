@@ -4,7 +4,10 @@ See LICENSE file in root folder.
 */
 #include "Core/D3D11Layer.hpp"
 
+#pragma warning( push )
+#pragma warning( disable: 5262 )
 #include <iostream>
+#pragma warning( pop )
 
 namespace ashes::d3d11
 {

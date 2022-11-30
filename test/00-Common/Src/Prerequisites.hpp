@@ -1,5 +1,9 @@
 #pragma once
 
+#pragma warning( disable: 4996 )
+#include <wx/wx.h>
+#include <wx/windowptr.h>
+
 #include <ashespp/Core/Surface.hpp>
 #include <ashespp/Core/Instance.hpp>
 
@@ -8,10 +12,6 @@
 #include <util/UtilsDevice.hpp>
 #include <util/UtilsInstance.hpp>
 #include <util/UtilsSwapChain.hpp>
-
-#pragma warning( disable: 4996 )
-#include <wx/wx.h>
-#include <wx/windowptr.h>
 
 #include <array>
 #include <chrono>
