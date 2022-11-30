@@ -12,23 +12,25 @@ See LICENSE file in root folder.
 #	include "spirv_hlsl.hpp"
 #endif
 
-#include <iostream>
-#include <locale>
-#include <regex>
-#include <sstream>
+#include "ashesd3d11_api.hpp"
+
 
 #pragma warning( push )
 #pragma warning( disable: 4191 )
 #pragma warning( disable: 4365 )
 #pragma warning( disable: 5204 )
+#pragma warning( disable: 5262 )
 #define CreateEvent CreateEventA
 #include <atlbase.h>
 #undef CreateEvent
+
+#include <iostream>
+#include <locale>
+#include <regex>
+#include <sstream>
 #pragma warning( pop )
 
 #include <D3DCompiler.h>
-
-#include "ashesd3d11_api.hpp"
 
 namespace ashes::d3d11
 {

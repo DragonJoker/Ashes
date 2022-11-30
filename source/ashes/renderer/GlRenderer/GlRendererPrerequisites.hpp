@@ -24,8 +24,12 @@
 #include <cassert>
 #include <functional>
 #include <memory>
-#include <sstream>
 #include <string>
+
+#pragma warning( push )
+#pragma warning( disable: 5262 )
+#include <sstream>
+#pragma warning( pop )
 
 #include <ashes/common/Format.hpp>
 

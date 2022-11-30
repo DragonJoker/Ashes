@@ -5,9 +5,9 @@
 
 #include <ashes/common/Exception.hpp>
 
-#include <iostream>
-
 #include "ashestest_api.hpp"
+
+#include <iostream>
 
 namespace ashes::test
 {

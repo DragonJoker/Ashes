@@ -31,7 +31,10 @@ See LICENSE file in root folder.
 
 #include <ashes/common/Hash.hpp>
 
+#pragma warning( push )
+#pragma warning( disable: 5262 )
 #include <iomanip>
+#pragma warning( pop )
 
 namespace ashes::test
 {

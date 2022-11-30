@@ -5,7 +5,10 @@
 
 #include <ashes/common/Exception.hpp>
 
+#pragma warning( push )
+#pragma warning( disable: 5262 )
 #include <iostream>
+#pragma warning( pop )
 
 #if defined __GNUG__
 #   ifdef DEFINE_GUID

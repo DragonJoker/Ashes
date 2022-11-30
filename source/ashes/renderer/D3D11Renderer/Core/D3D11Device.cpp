@@ -33,7 +33,10 @@ See LICENSE file in root folder.
 
 #include <D3DCommon.h>
 
+#pragma warning( push )
+#pragma warning( disable: 5262 )
 #include <iomanip>
+#pragma warning( pop )
 
 namespace ashes::d3d11
 {

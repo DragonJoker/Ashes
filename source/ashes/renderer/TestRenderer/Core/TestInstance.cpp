@@ -9,12 +9,15 @@
 #include <ashes/common/Exception.hpp>
 #include <ashes/ashes.hpp>
 
+#include "ashestest_api.hpp"
+
+#pragma warning( push )
+#pragma warning( disable: 5262 )
 #include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <locale>
-
-#include "ashestest_api.hpp"
+#pragma warning( pop )
 
 namespace ashes::test
 {
