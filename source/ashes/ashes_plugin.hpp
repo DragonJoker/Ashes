@@ -6,6 +6,8 @@
 #include <ashes/common/DynamicLibrary.hpp>
 #include <ashes/common/FileUtils.hpp>
 
+#pragma warning( push )
+#pragma warning( disable: 5262 )
 #include <algorithm>
 #include <cassert>
 #include <cstring>
@@ -16,6 +18,7 @@
 #include <set>
 #include <stdexcept>
 #include <vector>
+#pragma warning( pop )
 
 struct Plugin
 {

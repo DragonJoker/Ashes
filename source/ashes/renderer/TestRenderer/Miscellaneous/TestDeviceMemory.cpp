@@ -10,11 +10,11 @@ See LICENSE file in root folder
 
 #include <ashes/common/Exception.hpp>
 
+#include "ashestest_api.hpp"
+
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
-
-#include "ashestest_api.hpp"
 
 namespace ashes::test
 {

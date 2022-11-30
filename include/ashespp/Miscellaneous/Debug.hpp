@@ -4,12 +4,15 @@ See LICENSE file in root folder
 */
 #pragma once
 
+#pragma warning( push )
+#pragma warning( disable: 5262 )
 #include <map>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <vector>
+#pragma warning( pop )
 
 namespace ashes
 {

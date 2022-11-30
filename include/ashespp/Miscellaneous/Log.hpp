@@ -6,8 +6,12 @@ See LICENSE file in root folder
 
 #include <functional>
 #include <memory>
-#include <sstream>
 #include <string>
+
+#pragma warning( push )
+#pragma warning( disable:5262 )
+#include <sstream>
+#pragma warning( pop )
 
 namespace ashes
 {

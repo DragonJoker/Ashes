@@ -18,6 +18,8 @@
 #include <ashes/common/FlagCombination.hpp>
 #include <ashes/common/Signal.hpp>
 
+#pragma warning( push )
+#pragma warning( disable: 5262 )
 #include <array>
 #include <cassert>
 #include <functional>
@@ -26,6 +28,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#pragma warning( pop )
 
 #if defined( _WIN32 ) && !defined( TestRenderer_STATIC )
 #	ifdef TestRenderer_EXPORTS

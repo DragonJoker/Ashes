@@ -11,7 +11,11 @@
 #include <ashes/common/Exception.hpp>
 
 #include <cstring>
+
+#pragma warning( push )
+#pragma warning( disable: 5262 )
 #include <iostream>
+#pragma warning( pop )
 
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Wmissing-prototypes"

@@ -9,12 +9,16 @@
 #include <ashes/common/Exception.hpp>
 #include <ashes/ashes.hpp>
 
+#include "ashesd3d11_api.hpp"
+
 #include <cmath>
+
+#pragma warning( push )
+#pragma warning( disable: 5262 )
 #include <iomanip>
 #include <iostream>
 #include <locale>
-
-#include "ashesd3d11_api.hpp"
+#pragma warning( pop )
 
 namespace ashes::d3d11
 {
