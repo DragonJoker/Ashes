@@ -12,54 +12,17 @@ See LICENSE file in root folder.
 
 #include <memory>
 
+#if ANDROID
+#	define AAPCS_VFP_ATTRIBUTE __attribute__( ( pcs( "aapcs-vfp" ) ) )
+#else
+#	define AAPCS_VFP_ATTRIBUTE
+#endif
+
 namespace ashes
 {
 	class DeviceAllocatorBase
 	{
-	public:
-		DeviceAllocatorBase()
-			: m_callbacks{ this
-				, &DeviceAllocatorBase::allocate
-				, &DeviceAllocatorBase::reallocate
-				, &DeviceAllocatorBase::deallocate
-				, &DeviceAllocatorBase::onInternalAllocation
-				, &DeviceAllocatorBase::onInternalFree }
-		{
-		}
-
-		virtual ~DeviceAllocatorBase()noexcept = default;
-
-		inline operator VkAllocationCallbacks const & ()const
-		{
-			return m_callbacks;
-		}
-
-		inline VkAllocationCallbacks const * getAllocationCallbacks()const
-		{
-			return &m_callbacks;
-		}
-
-		inline VkAllocationCallbacks const * getAllocationCallbacks()
-		{
-			return &m_callbacks;
-		}
-
-	private:
-		virtual void * allocate( size_t size
-			, size_t alignment
-			, VkSystemAllocationScope allocationScope ) = 0;
-		virtual void * reallocate( void * pOriginal
-			, size_t size
-			, size_t alignment
-			, VkSystemAllocationScope allocationScope ) = 0;
-		virtual void deallocate( void * pMemory ) = 0;
-		virtual void onInternalAllocation( size_t size
-			, VkInternalAllocationType allocationType
-			, VkSystemAllocationScope allocationScope ) = 0;
-		virtual void onInternalFree( size_t size
-			, VkInternalAllocationType allocationType
-			, VkSystemAllocationScope allocationScope ) = 0;
-
+#if VK_USE_64_BIT_PTR_DEFINES == 1
 		static inline void * allocate( void * pUserData
 			, size_t size
 			, size_t alignment
@@ -107,6 +70,99 @@ namespace ashes
 				, allocationType
 				, allocationScope );
 		}
+#else
+		static inline void * allocate( void * pUserData
+			, unsigned int size
+			, unsigned int alignment
+			, VkSystemAllocationScope allocationScope )AAPCS_VFP_ATTRIBUTE
+		{
+			return reinterpret_cast< DeviceAllocatorBase * >( pUserData )->allocate( size
+				, alignment
+				, allocationScope );
+		}
+
+		static inline void * reallocate( void * pUserData
+			, void * pOriginal
+			, unsigned int size
+			, unsigned int alignment
+			, VkSystemAllocationScope allocationScope )AAPCS_VFP_ATTRIBUTE
+		{
+			return reinterpret_cast< DeviceAllocatorBase * >( pUserData )->reallocate( pOriginal
+				, size
+				, alignment
+				, allocationScope );
+		}
+
+		static inline void deallocate( void * pUserData
+			, void * pMemory )AAPCS_VFP_ATTRIBUTE
+		{
+			return reinterpret_cast< DeviceAllocatorBase * >( pUserData )->deallocate( pMemory );
+		}
+
+		static inline void onInternalAllocation( void * pUserData
+			, unsigned int size
+			, VkInternalAllocationType allocationType
+			, VkSystemAllocationScope allocationScope )AAPCS_VFP_ATTRIBUTE
+		{
+			return reinterpret_cast< DeviceAllocatorBase * >( pUserData )->onInternalAllocation( size
+				, allocationType
+				, allocationScope );
+		}
+
+		static inline void onInternalFree( void * pUserData
+			, unsigned int size
+			, VkInternalAllocationType allocationType
+			, VkSystemAllocationScope allocationScope )AAPCS_VFP_ATTRIBUTE
+		{
+			return reinterpret_cast< DeviceAllocatorBase * >( pUserData )->onInternalFree( size
+				, allocationType
+				, allocationScope );
+		}
+#endif
+
+	public:
+		DeviceAllocatorBase()
+			: m_callbacks{ this
+				, &DeviceAllocatorBase::allocate
+				, &DeviceAllocatorBase::reallocate
+				, &DeviceAllocatorBase::deallocate
+				, &DeviceAllocatorBase::onInternalAllocation
+				, &DeviceAllocatorBase::onInternalFree }
+		{
+		}
+
+		virtual ~DeviceAllocatorBase()noexcept = default;
+
+		inline operator VkAllocationCallbacks const & ()const
+		{
+			return m_callbacks;
+		}
+
+		inline VkAllocationCallbacks const * getAllocationCallbacks()const
+		{
+			return &m_callbacks;
+		}
+
+		inline VkAllocationCallbacks const * getAllocationCallbacks()
+		{
+			return &m_callbacks;
+		}
+
+	private:
+		virtual void * allocate( size_t size
+			, size_t alignment
+			, VkSystemAllocationScope allocationScope ) = 0;
+		virtual void * reallocate( void * pOriginal
+			, size_t size
+			, size_t alignment
+			, VkSystemAllocationScope allocationScope ) = 0;
+		virtual void deallocate( void * pMemory ) = 0;
+		virtual void onInternalAllocation( size_t size
+			, VkInternalAllocationType allocationType
+			, VkSystemAllocationScope allocationScope ) = 0;
+		virtual void onInternalFree( size_t size
+			, VkInternalAllocationType allocationType
+			, VkSystemAllocationScope allocationScope ) = 0;
 
 	private:
 		VkAllocationCallbacks m_callbacks;

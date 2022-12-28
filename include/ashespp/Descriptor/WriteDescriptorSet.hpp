@@ -16,7 +16,7 @@ namespace ashes
 			, uint32_t dstArrayElement
 			, uint32_t descriptorCount
 			, VkDescriptorType descriptorType )
-			: vk{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, nullptr, dstBinding, dstArrayElement, descriptorCount, descriptorType, nullptr, nullptr, nullptr }
+			: vk{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, VkDescriptorSet{}, dstBinding, dstArrayElement, descriptorCount, descriptorType, nullptr, nullptr, nullptr }
 			, needsUpdate{ true }
 		{
 		}
@@ -26,7 +26,7 @@ namespace ashes
 			, VkDescriptorType descriptorType
 			, VkDescriptorImageInfoArray imageInfos )
 			: imageInfo{ std::move( imageInfos ) }
-			, vk{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, nullptr, dstBinding, dstArrayElement, uint32_t( this->imageInfo.size() ), descriptorType, nullptr, nullptr, nullptr }
+			, vk{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, VkDescriptorSet{}, dstBinding, dstArrayElement, uint32_t( this->imageInfo.size() ), descriptorType, nullptr, nullptr, nullptr }
 			, needsUpdate{ true }
 		{
 		}
@@ -36,7 +36,7 @@ namespace ashes
 			, VkDescriptorType descriptorType
 			, VkDescriptorBufferInfoArray bufferInfos )
 			: bufferInfo{ std::move( bufferInfos ) }
-			, vk{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, nullptr, dstBinding, dstArrayElement, uint32_t( this->bufferInfo.size() ), descriptorType, nullptr, nullptr, nullptr }
+			, vk{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, VkDescriptorSet{}, dstBinding, dstArrayElement, uint32_t( this->bufferInfo.size() ), descriptorType, nullptr, nullptr, nullptr }
 			, needsUpdate{ true }
 		{
 		}
@@ -48,7 +48,7 @@ namespace ashes
 			, VkBufferViewArray viewInfos )
 			: bufferInfo{ std::move( bufferInfos ) }
 			, texelBufferView{ std::move( viewInfos ) }
-			, vk{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, nullptr, dstBinding, dstArrayElement, uint32_t( this->bufferInfo.size() ), descriptorType, nullptr, nullptr, nullptr }
+			, vk{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, VkDescriptorSet{}, dstBinding, dstArrayElement, uint32_t( this->bufferInfo.size() ), descriptorType, nullptr, nullptr, nullptr }
 			, needsUpdate{ true }
 		{
 			assert( bufferInfo.size() == texelBufferView.size() );

@@ -53,10 +53,10 @@ namespace ashes
 			, timeout
 			, ( semaphore
 				? VkSemaphore( *semaphore )
-				: nullptr )
+				: VkSemaphore{} )
 			, ( fence
 				? VkFence( *fence )
-				: nullptr )
+				: VkFence{} )
 			, &imageIndex );
 	}
 

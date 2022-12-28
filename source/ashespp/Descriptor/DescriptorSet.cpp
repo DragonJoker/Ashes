@@ -175,7 +175,7 @@ namespace ashes
 		m_writes.back().imageInfo.push_back( VkDescriptorImageInfo{ sampler, view, layout } );
 	}
 
-	void DescriptorSet::createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+	void DescriptorSet::createSamplerBinding( VkDescriptorSetLayoutBinding const & layoutBinding
 		, VkSampler sampler
 		, uint32_t index )
 	{
@@ -186,10 +186,10 @@ namespace ashes
 				1u,
 				VK_DESCRIPTOR_TYPE_SAMPLER,
 			} );
-		m_writes.back().imageInfo.push_back( VkDescriptorImageInfo{ sampler, nullptr, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL } );
+		m_writes.back().imageInfo.push_back( VkDescriptorImageInfo{ sampler, VkImageView{}, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL } );
 	}
 
-	void DescriptorSet::createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+	void DescriptorSet::createSamplerBinding( VkDescriptorSetLayoutBinding const & layoutBinding
 		, Sampler const & sampler
 		, uint32_t index )
 	{
@@ -200,7 +200,7 @@ namespace ashes
 				1u,
 				VK_DESCRIPTOR_TYPE_SAMPLER,
 			} );
-		m_writes.back().imageInfo.push_back( VkDescriptorImageInfo{ sampler, nullptr, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL } );
+		m_writes.back().imageInfo.push_back( VkDescriptorImageInfo{ sampler, VkImageView{}, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL } );
 	}
 
 	void DescriptorSet::createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
@@ -215,7 +215,7 @@ namespace ashes
 				1u,
 				VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
 			} );
-		m_writes.back().imageInfo.push_back( VkDescriptorImageInfo{ nullptr, view, layout } );
+		m_writes.back().imageInfo.push_back( VkDescriptorImageInfo{ VkSampler{}, view, layout } );
 	}
 
 	void DescriptorSet::createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
@@ -230,7 +230,7 @@ namespace ashes
 				1u,
 				VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
 			} );
-		m_writes.back().imageInfo.push_back( VkDescriptorImageInfo{ nullptr, view, layout } );
+		m_writes.back().imageInfo.push_back( VkDescriptorImageInfo{ VkSampler{}, view, layout } );
 	}
 
 	void DescriptorSet::createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
@@ -244,7 +244,7 @@ namespace ashes
 				1u,
 				VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
 			} );
-		m_writes.back().imageInfo.push_back( VkDescriptorImageInfo{ nullptr, view, VK_IMAGE_LAYOUT_GENERAL } );
+		m_writes.back().imageInfo.push_back( VkDescriptorImageInfo{ VkSampler{}, view, VK_IMAGE_LAYOUT_GENERAL } );
 	}
 
 	void DescriptorSet::createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
@@ -258,7 +258,7 @@ namespace ashes
 				1u,
 				VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
 			} );
-		m_writes.back().imageInfo.push_back( VkDescriptorImageInfo{ nullptr, view, VK_IMAGE_LAYOUT_GENERAL } );
+		m_writes.back().imageInfo.push_back( VkDescriptorImageInfo{ VkSampler{}, view, VK_IMAGE_LAYOUT_GENERAL } );
 	}
 
 	void DescriptorSet::createBinding( VkDescriptorSetLayoutBinding const & layoutBinding

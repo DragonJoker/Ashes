@@ -90,7 +90,7 @@ namespace ashes
 				, nullptr
 				, 0u
 				, rhs.vk.stage
-				, nullptr
+				, VkShaderModule{}
 				, nullptr
 				, nullptr };
 		}
@@ -128,7 +128,7 @@ namespace ashes
 				, nullptr
 				, 0u
 				, rhs.vk.stage
-				, nullptr
+				, VkShaderModule{}
 				, nullptr
 				, nullptr };
 			doInit();

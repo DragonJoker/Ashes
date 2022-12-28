@@ -22,41 +22,6 @@ namespace ashes
 	template< typename AshesType >
 	struct VkTypeTraits;
 
-#if VK_EXT_debug_utils
-	template<>
-	struct VkTypeTraits< VkDebugUtilsMessengerEXT >
-	{
-		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_DEBUG_UTILS_MESSENGER_EXT;
-#if VK_EXT_debug_report || VK_EXT_debug_marker
-		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT_EXT;
-#endif
-		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE;
-
-		static std::string const & getName()
-		{
-			static std::string result{ "VkDebugUtilsMessengerEXT" };
-			return result;
-		}
-	};
-#endif
-#if VK_EXT_debug_report
-	template<>
-	struct VkTypeTraits< VkDebugReportCallbackEXT >
-	{
-#if VK_EXT_debug_utils
-		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT;
-#endif
-		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT_EXT;
-		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE;
-
-		static std::string const & getName()
-		{
-			static std::string result{ "VkDebugReportCallbackEXT" };
-			return result;
-		}
-	};
-#endif
-
 	template<>
 	struct VkTypeTraits< VkInstance >
 	{
@@ -123,22 +88,23 @@ namespace ashes
 		}
 	};
 
-	template<>
-	struct VkTypeTraits< VkSemaphore >
-	{
-		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_DEVICE;
 #if VK_EXT_debug_utils
-		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_SEMAPHORE;
-#endif
+	template<>
+	struct VkTypeTraits< VkDebugUtilsMessengerEXT >
+	{
+		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_DEBUG_UTILS_MESSENGER_EXT;
 #if VK_EXT_debug_report || VK_EXT_debug_marker
-		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT;
+		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT_EXT;
 #endif
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE;
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkSemaphore" };
+			static std::string result{ "VkDebugUtilsMessengerEXT" };
 			return result;
 		}
 	};
+#endif
 
 	template<>
 	struct VkTypeTraits< VkCommandBuffer >
@@ -153,6 +119,43 @@ namespace ashes
 		static std::string const & getName()
 		{
 			static std::string result{ "VkCommandBuffer" };
+			return result;
+		}
+	};
+
+#if ( VK_USE_64_BIT_PTR_DEFINES == 1 )
+
+#if VK_EXT_debug_report
+	template<>
+	struct VkTypeTraits< VkDebugReportCallbackEXT >
+	{
+#if VK_EXT_debug_utils
+		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT;
+#endif
+		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_CALLBACK_EXT_EXT;
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE;
+
+		static std::string const & getName()
+		{
+			static std::string result{ "VkDebugReportCallbackEXT" };
+			return result;
+		}
+	};
+#endif
+
+	template<>
+	struct VkTypeTraits< VkSemaphore >
+	{
+		static constexpr VkSystemAllocationScope Scope = VK_SYSTEM_ALLOCATION_SCOPE_DEVICE;
+#if VK_EXT_debug_utils
+		static VkObjectType constexpr UtilsValue = VK_OBJECT_TYPE_SEMAPHORE;
+#endif
+#if VK_EXT_debug_report || VK_EXT_debug_marker
+		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT;
+#endif
+		static std::string const & getName()
+		{
+			static std::string result{ "VkSemaphore" };
 			return result;
 		}
 	};
@@ -546,6 +549,8 @@ namespace ashes
 			return result;
 		}
 	};
+
+#endif // ( VK_USE_64_BIT_PTR_DEFINES == 1 )
 
 	template< typename VkStructure >
 	struct VkStructureTypeTraits;
