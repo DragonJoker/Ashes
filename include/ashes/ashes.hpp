@@ -577,10 +577,17 @@ namespace ashes
 		return rhs;
 	}
 
+#if ( VK_USE_64_BIT_PTR_DEFINES == 1 )
 	inline VkImageView deepCopy( VkImageView const & rhs )
 	{
 		return rhs;
 	}
+
+	inline VkPipelineCache deepCopy( VkPipelineCache const & rhs )
+	{
+		return rhs;
+	}
+#endif
 
 	inline VkAttachmentDescription deepCopy( VkAttachmentDescription const & rhs )
 	{
@@ -598,11 +605,6 @@ namespace ashes
 	}
 
 	inline VkAttachmentReference deepCopy( VkAttachmentReference const & rhs )
-	{
-		return rhs;
-	}
-
-	inline VkPipelineCache deepCopy( VkPipelineCache const & rhs )
 	{
 		return rhs;
 	}
@@ -777,6 +779,7 @@ namespace ashes
 		return result;
 	}
 
+#if ( VK_USE_64_BIT_PTR_DEFINES == 1 )
 	template< typename Type, typename ... Params >
 	inline std::vector< Type > makeVector( Type const * ptr
 		, uint32_t count
@@ -794,6 +797,7 @@ namespace ashes
 
 		return result;
 	}
+#endif
 
 	template< typename Type, typename ... Params >
 	inline Optional< Type > makeOptional( Type const * ptr

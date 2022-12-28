@@ -869,7 +869,7 @@ namespace ashes
 	void Device::doUnregisterObject( uint64_t object )const
 	{
 		std::unique_lock< std::mutex > lock{ m_allocationMutex };
-		auto it = m_allocated.find( object );
+		auto it = m_allocated.find( size_t( object ) );
 		std::stringstream stream;
 		stream.imbue( std::locale{ "C" } );
 		stream << "Destroyed [0x" << std::hex << std::setw( 8u ) << std::setfill( '0' ) << object << "]";

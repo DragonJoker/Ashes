@@ -130,7 +130,7 @@ namespace ashes
 		*\param[in] index
 		*	The array index.
 		*/
-		void createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+		void createSamplerBinding( VkDescriptorSetLayoutBinding const & layoutBinding
 			, VkSampler sampler
 			, uint32_t index = 0u );
 		/**
@@ -143,7 +143,7 @@ namespace ashes
 		*\param[in] index
 		*	The array index.
 		*/
-		void createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+		void createSamplerBinding( VkDescriptorSetLayoutBinding const & layoutBinding
 			, Sampler const & sampler
 			, uint32_t index = 0u );
 		/**

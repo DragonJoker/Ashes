@@ -461,7 +461,7 @@ namespace ashes
 
 		std::memcpy( buffer
 			, data
-			, size );
+			, size_t( size ) );
 		getBuffer().flush( 0u, mappedSize );
 		getBuffer().unlock();
 	}
@@ -581,7 +581,7 @@ namespace ashes
 
 		std::memcpy( data
 			, buffer
-			, size );
+			, size_t( size ) );
 		getBuffer().flush( 0u, mappedSize );
 		getBuffer().unlock();
 	}
