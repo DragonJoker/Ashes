@@ -176,7 +176,7 @@ namespace ashes
 		, m_ownInternal{ rhs.m_ownInternal }
 		, m_views{ std::move( rhs.m_views ) }
 	{
-		rhs.m_internal = nullptr;
+		rhs.m_internal = VkImage{};
 		rhs.m_ownInternal = true;
 
 		if ( m_ownInternal )
@@ -194,7 +194,7 @@ namespace ashes
 			m_storage = std::move( rhs.m_storage );
 			m_ownInternal = rhs.m_ownInternal;
 			m_views = std::move( rhs.m_views );
-			rhs.m_internal = nullptr;
+			rhs.m_internal = VkImage{};
 			rhs.m_ownInternal = true;
 
 			if ( m_ownInternal )
@@ -257,10 +257,10 @@ namespace ashes
 
 	Image::~Image()
 	{
-		assert( ( ( m_internal != nullptr ) || m_views.empty() )
+		assert( ( ( m_internal != VkImage{} ) || m_views.empty() )
 			&& "No more internal handle, but some image views remain." );
 
-		if ( m_internal != nullptr )
+		if ( m_internal != VkImage{} )
 		{
 			auto it = m_views.begin();
 
