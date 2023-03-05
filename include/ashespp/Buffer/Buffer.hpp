@@ -224,6 +224,22 @@ namespace ashes
 			, uint32_t srcQueueFamily = VK_QUEUE_FAMILY_IGNORED
 			, uint32_t dstQueueFamily = VK_QUEUE_FAMILY_IGNORED )const;
 		/**
+		*\brief
+		*	Prepares a buffer memory barrier, to a given memory layout.
+		*\param[in] dstAccessFlags
+		*	The wanted access flags, after the transition.
+		*\param[in] srcQueueFamily
+		*	The source queue family, if a responsibility transfer must happen.
+		*\param[in] dstQueueFamily
+		*	The destination queue family, if a responsibility transfer must happen.
+		*\return
+		*	The memory barrier.
+		*/
+		VkBufferMemoryBarrier makeMemoryTransitionBarrier( VkAccessFlags dstAccessFlags
+			, VkPipelineStageFlags dstStageFlags
+			, uint32_t srcQueueFamily
+			, uint32_t dstQueueFamily )const;
+		/**
 		*\return
 		*	The memory requirements for this buffer.
 		*/

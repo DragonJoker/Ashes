@@ -221,6 +221,28 @@ namespace ashes
 	}
 
 	VkBufferMemoryBarrier BufferBase::makeMemoryTransitionBarrier( VkAccessFlags dstAccessFlags
+		, VkPipelineStageFlags dstStageFlags
+		, uint32_t srcQueueFamily
+		, uint32_t dstQueueFamily )const
+	{
+		VkBufferMemoryBarrier result
+		{
+			VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,
+			nullptr,
+			m_currentAccessFlags,
+			dstAccessFlags,
+			srcQueueFamily,
+			dstQueueFamily,
+			*this,
+			0,
+			WholeSize
+		};
+		m_currentAccessFlags = dstAccessFlags;
+		m_compatibleStageFlags = dstStageFlags;
+		return result;
+	}
+
+	VkBufferMemoryBarrier BufferBase::makeMemoryTransitionBarrier( VkAccessFlags dstAccessFlags
 		, uint32_t srcQueueFamily
 		, uint32_t dstQueueFamily )const
 	{
