@@ -311,12 +311,12 @@ namespace ashes
 	class VkObject
 	{
 	public:
-		VkObject( std::string name )
+		VkObject( std::string name )noexcept
 			: m_name{ std::move( name ) }
 		{
 		}
 
-		std::string const & getName()
+		std::string const & getName()const noexcept
 		{
 			return m_name;
 		}
