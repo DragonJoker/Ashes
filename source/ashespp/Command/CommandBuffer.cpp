@@ -442,6 +442,18 @@ namespace ashes
 			, data.size()
 			, data.data() );
 	}
+
+	void CommandBuffer::fillBuffer( BufferBase const & dst
+		, VkDeviceSize dstOffset
+		, VkDeviceSize size
+		, uint32_t data )const
+	{
+		m_device.vkCmdFillBuffer( m_internal
+			, dst
+			, dstOffset
+			, size
+			, data );
+	}
 	
 	void CommandBuffer::copyImage( VkImageCopy const & copyInfo
 		, Image const & src
