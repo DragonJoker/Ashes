@@ -605,17 +605,33 @@ namespace ashes
 			, BufferBase const & dst )const;
 		/**
 		*\brief
-		*	Copies data from a buffer to another one.
-		*\param[in] copyInfo
-		*	The copy informations.
-		*\param[in] src
-		*	The source buffer.
+		*	Copies data from RAM directly to VRAM.
 		*\param[in] dst
 		*	The destination buffer.
+		*\param[in] dstOffset
+		*	The offset in the destination buffer.
+		*\param[in] data
+		*	The data to copy.
 		*/
 		void updateBuffer( BufferBase const & dst
 			, VkDeviceSize dstOffset
 			, ArrayView< uint8_t > const & data )const;
+		/**
+		*\brief
+		*	Fills a buffer with given value.
+		*\param[in] dst
+		*	The destination buffer.
+		*\param[in] dstOffset
+		*	The offset in the destination buffer.
+		*\param[in] size
+		*	The size in bytes, must be a multiple of 4 or ashes::WholeSize.
+		*\param[in] data
+		*	The 4-byte word written repeatedly in the buffer.
+		*/
+		void fillBuffer( BufferBase const & dst
+			, VkDeviceSize dstOffset
+			, VkDeviceSize size
+			, uint32_t data )const;
 		/**
 		*\brief
 		*	Copies data from an image to another one.
