@@ -1,0 +1,203 @@
+{
+    "version": 3,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 21,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "default-base",
+            "hidden": true,
+            "installDir": "${sourceDir}/package/Ashes",
+            "cacheVariables": {
+                "VCPKG_MANIFEST_FEATURES": "vulkan",
+                "ASHES_TEST_ICD": false,
+                "ASHES_BUILD_RENDERER_PLUGINS": true,
+                "ASHES_BUILD_RENDERER_VKN": true,
+                "ASHES_BUILD_RENDERER_OGL": true,
+                "PROJECTS_OUTPUT_DIR": "${sourceDir}",
+                "PROJECTS_USE_PRECOMPILED_HEADERS": true
+            }
+        },
+        {
+            "name": "default-msvc",
+            "displayName": "Default Visual Studio Config",
+            "description": "Default build configuration using Visual Studio",
+            "inherits": "default-base",
+            "generator": "Visual Studio 17 2022",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "cacheVariables": {
+                "VCPKG_MANIFEST_FEATURES": "vulkan;opengl;direct3d11",
+                "ASHES_BUILD_RENDERER_D3D11": true
+            }
+        },
+        {
+            "name": "default-ninja-base",
+            "inherits": "default-base",
+            "hidden": true,
+            "generator": "Ninja",
+            "cacheVariables": {
+                "VCPKG_MANIFEST_FEATURES": "vulkan;opengl"
+            }
+        },
+        {
+            "name": "default-ninja-debug",
+            "displayName": "Default Ninja Config, Debug",
+            "description": "Default build configuration using Ninja, Debug",
+            "inherits": "default-ninja-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "default-ninja-release",
+            "displayName": "Default Ninja Config, Release",
+            "description": "Default build configuration using Ninja, Release",
+            "inherits": "default-ninja-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "dev-base",
+            "hidden": true,
+            "installDir": "${sourceDir}/package/Ashes",
+            "cacheVariables": {
+                "ASHES_TEST_ICD": false,
+                "ASHES_BUILD_RENDERER_PLUGINS": true,
+                "ASHES_BUILD_RENDERER_VKN": true,
+                "ASHES_BUILD_RENDERER_OGL": true,
+                "ASHES_BUILD_RENDERER_TEST": true,
+                "ASHES_BUILD_SAMPLES": true,
+                "ASHES_BUILD_TEMPLATES": true,
+                "ASHES_BUILD_TESTS": true,
+                "PROJECTS_USE_PRECOMPILED_HEADERS": true,
+                "PROJECTS_WARNINGS_AS_ERRORS": true
+            }
+        },
+        {
+            "name": "dev-msvc",
+            "displayName": "Developer Visual Studio Config",
+            "description": "Developer build configuration using Visual Studio",
+            "inherits": "dev-base",
+            "generator": "Visual Studio 17 2022",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "cacheVariables": {
+                "VCPKG_MANIFEST_FEATURES": "vulkan;opengl;tests;samples;templates;util;direct3d11",
+                "ASHES_BUILD_RENDERER_D3D11": true
+            }
+        },
+        {
+            "name": "dev-ninja-base",
+            "hidden": true,
+            "inherits": "dev-base",
+            "generator": "Ninja",
+            "cacheVariables": {
+                "VCPKG_MANIFEST_FEATURES": "vulkan;opengl;tests;samples;templates;util"
+            }
+        },
+        {
+            "name": "dev-ninja-debug",
+            "displayName": "Developer Ninja Config, Debug",
+            "description": "Developer build configuration using Ninja, Debug",
+            "inherits": "dev-ninja-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "dev-ninja-release",
+            "displayName": "Developer Ninja Config, Release",
+            "description": "Developer build configuration using Ninja, Release",
+            "inherits": "dev-ninja-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "dev-vcpkg-base",
+            "hidden": true,
+            "installDir": "${sourceDir}/package/Ashes",
+            "cacheVariables": {
+                "ASHES_TEST_ICD": false,
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/external/vcpkg/scripts/buildsystems/vcpkg.cmake",
+                "ASHES_BUILD_RENDERER_VKN": true,
+                "ASHES_BUILD_RENDERER_OGL": true,
+                "ASHES_BUILD_RENDERER_TEST": true,
+                "ASHES_BUILD_SAMPLES": true,
+                "ASHES_BUILD_TEMPLATES": true,
+                "ASHES_BUILD_TESTS": true,
+                "PROJECTS_USE_PRECOMPILED_HEADERS": true,
+                "PROJECTS_WARNINGS_AS_ERRORS": true
+            }
+        },
+        {
+            "name": "dev-vcpkg-msvc",
+            "inherits": "dev-vcpkg-base",
+            "displayName": "Developer Visual Studio Config, using vcpkg",
+            "description": "Developer build configuration using Visual Studio, using vcpkg",
+            "generator": "Visual Studio 17 2022",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "cacheVariables": {
+                "VCPKG_MANIFEST_FEATURES": "vulkan;opengl;tests;samples;templates;util;direct3d11",
+                "ASHES_BUILD_RENDERER_D3D11": true
+            }
+        },
+        {
+            "name": "dev-vcpkg-ninja-base",
+            "hidden": true,
+            "inherits": "dev-vcpkg-base",
+            "generator": "Ninja",
+            "cacheVariables": {
+                "VCPKG_MANIFEST_FEATURES": "vulkan;opengl;tests;samples;templates;util"
+            }
+        },
+        {
+            "name": "dev-vcpkg-ninja-debug",
+            "displayName": "Developer Ninja Config, using vcpkg, Debug",
+            "description": "Developer build configuration using Ninja, using vcpkg, Debug",
+            "inherits": "dev-vcpkg-ninja-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "dev-vcpkg-ninja-release",
+            "displayName": "Developer Ninja Config, using vcpkg, Release",
+            "description": "Developer build configuration using Ninja, using vcpkg, Release",
+            "inherits": "dev-vcpkg-ninja-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "ci-vcpkg",
+            "installDir": "${sourceDir}/package/Ashes",
+            "cacheVariables": {
+                "ASHES_TEST_ICD": false,
+                "ASHES_BUILD_RENDERER_VKN": true,
+                "ASHES_BUILD_RENDERER_OGL": true,
+                "ASHES_BUILD_RENDERER_TEST": true,
+                "ASHES_BUILD_SAMPLES": false,
+                "ASHES_BUILD_TEMPLATES": false,
+                "ASHES_BUILD_TESTS": false,
+                "PROJECTS_USE_PRECOMPILED_HEADERS": true,
+                "PROJECTS_WARNINGS_AS_ERRORS": false,
+                "VCPKG_MANIFEST_FEATURES": "vulkan;opengl;test"
+            }
+        }
+    ]
+}

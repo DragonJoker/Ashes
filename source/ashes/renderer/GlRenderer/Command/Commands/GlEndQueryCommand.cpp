@@ -20,7 +20,6 @@ namespace ashes::gl
 			for ( auto type : get( pool )->getTypes() )
 			{
 				list.push_back( makeCmd< OpType::eEndQuery >( type ) );
-				++query;
 			}
 		}
 		else

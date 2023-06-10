@@ -19,9 +19,14 @@ namespace ashes::test
 		VkResult reset( VkCommandPoolResetFlags flags );
 		VkResult free( VkCommandBufferArray sets );
 
-		VkDevice getDevice()const
+		VkDevice getDevice()const noexcept
 		{
 			return m_device;
+		}
+
+		VkCommandPoolCreateInfo const &  getCreateInfo()const noexcept
+		{
+			return m_createInfo;
 		}
 
 	private:

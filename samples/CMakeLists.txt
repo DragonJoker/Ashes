@@ -1,4 +1,7 @@
-set( wxWidgets_IGNORE_VCPKG ON )
+if ( VCPKG_TOOLCHAIN AND ( MSVC OR APPLE ) )
+	set( NanoSVG_DIR ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/NanoSVG )
+	set( wxWidgets_DIR ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/wxwidgets )
+endif ()
 
 if( APPLE )
 	set( GTK_FOUND ON )
@@ -20,7 +23,17 @@ else ()
 	endif ()
 endif()
 
-find_package( wxWidgets COMPONENTS core base )
+if ( VCPKG_TOOLCHAIN AND ( MSVC OR APPLE ) )
+	find_package( wxWidgets CONFIG COMPONENTS core base )
+else ()
+	set( CMAKE_MODULE_PATH
+		${CMAKE_SOURCE_DIR}/CMake
+		${CMAKE_SOURCE_DIR}/CMake/Modules
+		${CMAKE_SOURCE_DIR}/CMake/Modules/Traditional
+		${CMAKE_SOURCE_DIR}/CMake/Toolchains
+	)
+	find_package( wxWidgets COMPONENTS core base )
+endif ()
 
 if ( NOT ASHES_ICD )
 	set( Vulkan_FOUND ON )
@@ -33,10 +46,10 @@ else ()
 	)
 endif ()
 
-if ( VCPKG_TOOLCHAIN )
+if ( VCPKG_TOOLCHAIN AND ( MSVC OR APPLE ) )
 	find_package( irrlicht CONFIG QUIET )
 	find_package( polyclipping CONFIG QUIET )
-	find_package( minizip CONFIG QUIET )
+	find_package( unofficial-minizip CONFIG QUIET )
 	find_package( kubazip CONFIG QUIET )
 	find_package( poly2tri CONFIG QUIET )
 	find_package( utf8cpp CONFIG QUIET )

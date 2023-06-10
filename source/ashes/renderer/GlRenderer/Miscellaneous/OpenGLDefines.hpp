@@ -24,6 +24,9 @@ See LICENSE file in root folder.
 
 #include <cstddef>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreserved-identifier"
+
 namespace ashes::gl
 {
 	using GLbitfield = unsigned int;
@@ -368,5 +371,7 @@ namespace ashes::gl
 	using PFN_glViewport = void ( GLAPIENTRY * )( GLint x, GLint y, GLsizei width, GLsizei height );
 	using PFN_glViewportArrayv = void ( GLAPIENTRY * )( GLuint first, GLsizei count, const GLfloat * v );
 }
+
+#pragma clang diagnostic pop
 
 #endif

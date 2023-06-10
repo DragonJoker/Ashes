@@ -1,6 +1,6 @@
 option( ASHES_TEST_ICD "Test ICD mode for ashes" ON )
 
-if ( ASHES_BUILD_TESTS OR ASHES_BUILD_INFO )
+if ( ASHES_BUILD_TST OR ASHES_BUILD_INFO )
 	set( TARGET_INCLUDE_DIRS
 		${Ashes_SOURCE_DIR}/include
 		${Ashes_BINARY_DIR}
@@ -19,8 +19,22 @@ if ( ASHES_BUILD_TESTS OR ASHES_BUILD_INFO )
 	endif ()
 endif ()
 
-if ( ASHES_BUILD_TESTS )
-	find_package( wxWidgets CONFIG COMPONENTS core base )
+if ( ASHES_BUILD_TST )
+	if ( VCPKG_TOOLCHAIN AND ( MSVC OR APPLE ) )
+		set( NanoSVG_DIR ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/NanoSVG )
+		set( wxWidgets_DIR ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/wxwidgets )
+		find_package( NanoSVG CONFIG )
+		find_package( wxWidgets CONFIG COMPONENTS core base )
+	else ()
+		set( CMAKE_MODULE_PATH
+			${CMAKE_SOURCE_DIR}/CMake
+			${CMAKE_SOURCE_DIR}/CMake/Modules
+			${CMAKE_SOURCE_DIR}/CMake/Modules/Traditional
+			${CMAKE_SOURCE_DIR}/CMake/Toolchains
+		)
+		find_package( wxWidgets COMPONENTS core base )
+	endif ()
+
 	if( APPLE )
 		set( GTK_FOUND ON )
 		set( Ashes_BINARY_LIBRARIES
@@ -60,6 +74,7 @@ if ( ASHES_BUILD_TESTS )
 						CXX_STANDARD 17
 						CXX_EXTENSIONS OFF
 						FOLDER "${Ashes_BASE_DIR}/Tests"
+						UNITY_BUILD "${ASHES_UNITY_BUILD}"
 				)
 				math( EXPR TEST_ID
 					"${TEST_ID} + 1"

@@ -1,0 +1,67 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
+  "name": "ashes",
+  "version-date": "2023-03-12",
+  "builtin-baseline": "638b1588be3a265a9c7ad5b212cef72a1cad336a",
+  "dependencies": [
+    "vulkan-headers"
+  ],
+  "default-features": [
+    "vulkan"
+  ],
+  "vcpkg-configuration": {
+    "overlay-ports": [
+      "./data/vcpkg/ports/draco"
+    ]
+  },
+  "features": {
+    "direct3d11": {
+      "description": "Compiles Direct3D11 renderer.",
+      "dependencies": [
+        "directxsdk",
+        "spirv-cross"
+      ]
+    },
+    "opengl": {
+      "description": "Compiles OpenGL renderer.",
+      "dependencies": [
+        "opengl",
+        "spirv-cross"
+      ]
+    },
+    "samples": {
+      "description": "Sample applications.",
+      "dependencies": [
+        "assimp",
+        {
+          "name": "wxwidgets",
+          "platform": "!linux"
+        }
+      ]
+    },
+    "templates": {
+      "description": "Template applications.",
+      "dependencies": [
+        "glfw3"
+      ]
+    },
+    "tests": {
+      "description": "Test applications.",
+      "dependencies": [
+        {
+          "name": "wxwidgets",
+          "platform": "!linux"
+        }
+      ]
+    },
+    "util": {
+      "description": "Utils library.",
+      "dependencies": [
+        "glslang"
+      ]
+    },
+    "vulkan": {
+      "description": "Compiles Vulkan renderer."
+    }
+  }
+}

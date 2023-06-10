@@ -35,9 +35,14 @@ namespace ashes::test
 		void debugMarkerInsert( VkDebugMarkerMarkerInfoEXT const & labelInfo )const;
 #endif
 
-		inline VkDevice getDevice()const
+		VkDevice getDevice()const noexcept
 		{
 			return m_device;
+		}
+
+		VkDeviceQueueCreateInfo const & getCreateInfo()const noexcept
+		{
+			return m_createInfo;
 		}
 
 	private:
