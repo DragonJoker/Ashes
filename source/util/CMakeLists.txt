@@ -2,31 +2,27 @@ set( _PROJECT_NAME util )
 project( ashesUtil )
 
 if ( NOT TARGET glslang )
-	if ( VCPKG_TOOLCHAIN AND NOT EXISTS ${Ashes_SOURCE_DIR}/external/glslang/CMakeLists.txt )
-		if ( VCPKG_TOOLCHAIN )
-			message( STATUS "Coin" )
-			find_package( glslang CONFIG REQUIRED glslang OSDependent OGLCompiler SPIRV HLSL )
-			if ( ${glslang_FOUND} )
-				set( GLSLANG_FOUND ON )
-				set( glslang_LIBRARIES
-					glslang::OSDependent
-					glslang::glslang
-					glslang::OGLCompiler
-					glslang::SPIRV
-					glslang::HLSL )
-				set( glslang_INCLUDE_DIR
-					${Ashes_SOURCE_DIR}/external/glslang
-				)
-			endif ()
-		else ()
-			find_package( glslang )
+	if ( VCPKG_TOOLCHAIN )
+		find_package( Threads REQUIRED )
+		find_package( glslang CONFIG REQUIRED glslang OSDependent OGLCompiler SPIRV HLSL )
+		if ( ${glslang_FOUND} )
+			set( GLSLANG_FOUND ON )
+			set( glslang_LIBRARIES
+				glslang::OSDependent
+				glslang::glslang
+				glslang::OGLCompiler
+				glslang::SPIRV
+				glslang::HLSL )
+			set( glslang_INCLUDE_DIR
+				${Ashes_SOURCE_DIR}/external/glslang
+			)
 		endif ()
 		if ( GLSLANG_FOUND )
 			set( ASHES_HAS_GLSLANG ON )
 		else ()
 			set( ASHES_HAS_GLSLANG OFF )
 		endif ()
-	else ()
+	elseif ( EXISTS ${Ashes_SOURCE_DIR}/external/glslang/CMakeLists.txt )
 		set( ASHES_HAS_GLSLANG ON )
 		set( ASHES_BUILD_GLSLANG ON )
 		set( ENABLE_GLSLANG_BINARIES FALSE CACHE BOOL "Builds glslangValidator and spirv-remap" FORCE )
@@ -47,6 +43,8 @@ if ( NOT TARGET glslang )
 		set( glslang_INCLUDE_DIR
 			${Ashes_SOURCE_DIR}/external/glslang
 		)
+	else ()
+		find_package( glslang )
 	endif ()
 endif ()
 
@@ -152,4 +150,5 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_EXTENSIONS OFF
 	FOLDER "${Ashes_BASE_DIR}/Core"
 	DEBUG_POSTFIX "d"
+	UNITY_BUILD "${ASHES_UNITY_BUILD}"
 )

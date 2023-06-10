@@ -242,8 +242,8 @@ namespace ashes::gl
 
 		if ( XGetWindowAttributes( m_display, m_window, &attribs ) )
 		{
-			result.width = attribs.width;
-			result.height = attribs.height;
+			result.width = attribs.x == -1 ? ~( 0u ) : attribs.width;
+			result.height = attribs.y == -1 ? ~( 0u ) : attribs.height;
 		}
 
 		return result;

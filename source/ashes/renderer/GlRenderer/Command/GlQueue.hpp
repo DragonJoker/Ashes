@@ -35,9 +35,14 @@ namespace ashes::gl
 		void insertDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const;
 #endif
 
-		inline VkDevice getDevice()const
+		inline VkDevice getDevice()const noexcept
 		{
 			return m_device;
+		}
+
+		VkDeviceQueueCreateInfo const & getCreateInfo()const noexcept
+		{
+			return m_createInfo;
 		}
 
 	private:

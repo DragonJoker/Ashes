@@ -1,7 +1,8 @@
 project( GLFW-Template )
 
 if ( VCPKG_TOOLCHAIN )
-	find_package( glfw3 CONFIG REQUIRED glfw )
+	set( glfw3_DIR ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/glfw3 )
+	find_package( glfw3 CONFIG REQUIRED )
 else ()
 	find_package( glfw3 )
 endif ()

@@ -18,9 +18,14 @@ namespace ashes::test
 		Sampler( VkDevice device
 			, VkSamplerCreateInfo createInfo );
 
-		VkDevice getDevice()const
+		VkDevice getDevice()const noexcept
 		{
 			return m_device;
+		}
+
+		VkSamplerCreateInfo const & getCreateInfo()const noexcept
+		{
+			return m_createInfo;
 		}
 
 	private:

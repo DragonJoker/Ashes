@@ -19,9 +19,14 @@ namespace ashes::test
 			, VkBufferViewCreateInfo createInfo );
 		~BufferView();
 
-		VkDevice getDevice()const
+		VkDevice getDevice()const noexcept
 		{
 			return m_device;
+		}
+
+		VkBufferViewCreateInfo const & getCreateInfo()const noexcept
+		{
+			return m_createInfo;
 		}
 
 	private:

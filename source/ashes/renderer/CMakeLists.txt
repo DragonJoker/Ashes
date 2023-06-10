@@ -8,16 +8,24 @@ macro( ash_update_icd_target TARGET_NAME )
 		set( NAME "${TARGET_NAME}" )
 		set( NAMEDEBUG "${TARGET_NAME}d" )
 		set( EXT "dll" )
-	elseif ( APPLE )
-		set( PATH "./" )
-		set( NAME "lib${TARGET_NAME}" )
-		set( NAMEDEBUG "lib${TARGET_NAME}d" )
-		set( EXT "dylib" )
+		set( CMAKE_ICD_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE} )
+		set( CMAKE_ICD_DIRECTORY_RELWITHDEBINFO ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO} )
+		set( CMAKE_ICD_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG} )
 	else ()
-		set( PATH "./" )
-		set( NAME "lib${TARGET_NAME}" )
-		set( NAMEDEBUG "lib${TARGET_NAME}d" )
-		set( EXT "so.1" )
+		if ( APPLE )
+			set( PATH "./" )
+			set( NAME "lib${TARGET_NAME}" )
+			set( NAMEDEBUG "lib${TARGET_NAME}d" )
+			set( EXT "dylib" )
+		else ()
+			set( PATH "./" )
+			set( NAME "lib${TARGET_NAME}" )
+			set( NAMEDEBUG "lib${TARGET_NAME}d" )
+			set( EXT "so.1" )
+		endif ()
+		set( CMAKE_ICD_DIRECTORY_RELEASE ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE} )
+		set( CMAKE_ICD_DIRECTORY_RELWITHDEBINFO ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO} )
+		set( CMAKE_ICD_DIRECTORY_DEBUG ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG} )
 	endif ()
 	set( IN_ICD_FILE ${Ashes_SOURCE_DIR}/source/ashes/ashes_icd.json.in )
 	set( OUT_ICD_FILE_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}_icd.json.release )
@@ -41,27 +49,27 @@ macro( ash_update_icd_target TARGET_NAME )
 		COMMAND ${CMAKE_COMMAND} -E
 			copy_if_different
 				$<$<CONFIG:Release>:${OUT_ICD_FILE_RELEASE}>
-				$<$<CONFIG:Release>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE}${TARGET_NAME}_icd.json>
+				$<$<CONFIG:Release>:${CMAKE_ICD_DIRECTORY_RELEASE}${TARGET_NAME}_icd.json>
 				$<$<CONFIG:RelWithDebInfo>:${OUT_ICD_FILE_RELWITHDEBINFO}>
-				$<$<CONFIG:RelWithDebInfo>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO}${TARGET_NAME}_icd.json>
+				$<$<CONFIG:RelWithDebInfo>:${CMAKE_ICD_DIRECTORY_RELWITHDEBINFO}${TARGET_NAME}_icd.json>
 				$<$<CONFIG:Debug>:${OUT_ICD_FILE_DEBUG}>
-				$<$<CONFIG:Debug>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}${TARGET_NAME}d_icd.json>
+				$<$<CONFIG:Debug>:${CMAKE_ICD_DIRECTORY_DEBUG}${TARGET_NAME}d_icd.json>
 	)
 	if ( WIN32 )
 		install(
 			FILES
-				$<$<CONFIG:Release>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE}${TARGET_NAME}_icd.json>
-				$<$<CONFIG:RelWithDebInfo>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO}${TARGET_NAME}_icd.json>
-				$<$<CONFIG:Debug>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}${TARGET_NAME}d_icd.json>
+				$<$<CONFIG:Release>:${CMAKE_ICD_DIRECTORY_RELEASE}${TARGET_NAME}_icd.json>
+				$<$<CONFIG:RelWithDebInfo>:${CMAKE_ICD_DIRECTORY_RELWITHDEBINFO}${TARGET_NAME}_icd.json>
+				$<$<CONFIG:Debug>:${CMAKE_ICD_DIRECTORY_DEBUG}${TARGET_NAME}d_icd.json>
 			COMPONENT AshesRenderers
 			DESTINATION bin
 		)
 	else ()
 		install(
 			FILES
-				$<$<CONFIG:Release>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE}${TARGET_NAME}_icd.json>
-				$<$<CONFIG:RelWithDebInfo>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO}${TARGET_NAME}_icd.json>
-				$<$<CONFIG:Debug>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}${TARGET_NAME}d_icd.json>
+				$<$<CONFIG:Release>:${CMAKE_ICD_DIRECTORY_RELEASE}${TARGET_NAME}_icd.json>
+				$<$<CONFIG:RelWithDebInfo>:${CMAKE_ICD_DIRECTORY_RELWITHDEBINFO}${TARGET_NAME}_icd.json>
+				$<$<CONFIG:Debug>:${CMAKE_ICD_DIRECTORY_DEBUG}${TARGET_NAME}d_icd.json>
 			COMPONENT AshesRenderers
 			DESTINATION lib
 		)

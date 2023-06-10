@@ -150,7 +150,7 @@ namespace ashes
 	{
 		assert( swapchains.size() == imagesIndex.size() );
 		std::vector< VkResult > results;
-		results.resize( swapchains.size() );
+		results.resize( std::max( size_t( 1u ), swapchains.size() ) );
 		VkPresentInfoKHR presentInfo
 		{
 			VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
