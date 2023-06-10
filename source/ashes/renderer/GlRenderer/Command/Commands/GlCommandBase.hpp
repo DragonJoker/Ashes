@@ -14,6 +14,9 @@ See LICENSE file in root folder
 #pragma warning( push )
 #pragma warning( disable: 4324 )
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wnull-dereference"
+
 namespace ashes::gl
 {
 	//*************************************************************************
@@ -3906,4 +3909,5 @@ namespace ashes::gl
 	//*************************************************************************
 }
 
+#pragma GCC diagnostic pop
 #pragma warning( pop )

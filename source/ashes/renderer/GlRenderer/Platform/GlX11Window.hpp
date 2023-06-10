@@ -8,6 +8,9 @@ See LICENSE file in root folder
 
 #include "GlRendererPrerequisites.hpp"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreserved-identifier"
+
 #if ASHES_USE_XLIB_EGL
 #	include "EglContext.hpp"
 #else
@@ -42,5 +45,7 @@ namespace ashes::gl
 #endif
 	};
 }
+
+#pragma clang diagnostic pop
 
 #endif

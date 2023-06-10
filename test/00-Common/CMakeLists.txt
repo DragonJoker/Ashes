@@ -5,34 +5,35 @@ set( ${PROJECT_NAME}_VERSION_MINOR 1 )
 set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 
 set( SOURCE_FILES
-	Src/Application.cpp
-	Src/Camera.cpp
-	Src/FileUtils.cpp
-	Src/MainFrame.cpp
-	Src/ObjLoader.cpp
-	Src/Prerequisites.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/Application.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/Camera.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/FileUtils.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/MainFrame.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/ObjLoader.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/Prerequisites.cpp
 )
 
 file( GLOB HEADER_FILES
-	Src/Application.hpp
-	Src/Camera.hpp
-	Src/FileUtils.hpp
-	Src/MainFrame.hpp
-	Src/ObjLoader.hpp
-	Src/Prerequisites.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/Application.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/Camera.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/FileUtils.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/MainFrame.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/ObjLoader.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Src/Prerequisites.hpp
 )
 
 if ( APPLE )
 	set( SOURCE_FILES
 		${SOURCE_FILES}
-		Src/MetalLayer.mm
+		${CMAKE_CURRENT_SOURCE_DIR}/Src/MetalLayer.mm
 	)
 	set( HEADER_FILES
 		${HEADER_FILES}
-		Src/MetalLayer.h
+		${CMAKE_CURRENT_SOURCE_DIR}/Src/MetalLayer.h
 	)
-	set( PROJECTS_USE_PRECOMPILED_HEADERS OFF )
 endif ()
+
+set( PROJECTS_USE_PRECOMPILED_HEADERS OFF )
 
 add_library( ${PROJECT_NAME} STATIC
 	${SOURCE_FILES}
@@ -73,8 +74,9 @@ target_compile_definitions( ${PROJECT_NAME} PUBLIC
 	${Ashes_BINARY_DEFINITIONS}
 	${wxWidgets_DEFINITIONS}
 )
-target_compile_options( ${PROJECT_NAME} PUBLIC
-	${TARGET_CXX_OPTIONS}
+target_compile_options( ${PROJECT_NAME}
+	PUBLIC
+		${TARGET_CXX_OPTIONS}
 )
 set_property( TARGET ${PROJECT_NAME}
 	PROPERTY

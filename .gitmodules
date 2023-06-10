@@ -22,3 +22,6 @@
 [submodule "CMake"]
 	path = CMake
 	url = https://github.com/DragonJoker/CMakeUtils.git
+[submodule "external/vcpkg"]
+	path = external/vcpkg
+	url = https://github.com/microsoft/vcpkg.git

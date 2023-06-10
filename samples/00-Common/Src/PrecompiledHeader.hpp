@@ -1,5 +1,21 @@
 #pragma once
 
+#pragma warning( disable: 4996 )
+#include <wx/app.h>
+#include <wx/cmdline.h>
+#include <wx/frame.h>
+#include <wx/panel.h>
+#include <wx/sizer.h>
+#include <wx/windowptr.h>
+#include <wx/wx.h>
+
+#if defined( __WXGTK__ )
+#	include <gdk/gdkx.h>
+#	include <gtk/gtk.h>
+#elif defined( __WXMSW__ )
+#	include <wx/msw/private.h>
+#endif
+
 #include "Prerequisites.hpp"
 
 #include <ashespp/Buffer/Buffer.hpp>
@@ -45,22 +61,6 @@
 #include <assimp/scene.h> // Output data structure
 #include <assimp/postprocess.h> // Post processing flags
 #include <assimp/Importer.hpp>
-
-#pragma warning( disable: 4996 )
-#include <wx/app.h>
-#include <wx/cmdline.h>
-#include <wx/frame.h>
-#include <wx/panel.h>
-#include <wx/sizer.h>
-#include <wx/windowptr.h>
-#include <wx/wx.h>
-
-#if defined( __WXGTK__ )
-#	include <gdk/gdkx.h>
-#	include <gtk/gtk.h>
-#elif defined( __WXMSW__ )
-#	include <wx/msw/private.h>
-#endif
 
 
 #if defined( _WIN32 )

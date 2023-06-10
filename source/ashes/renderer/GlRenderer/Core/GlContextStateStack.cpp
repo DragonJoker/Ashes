@@ -976,7 +976,11 @@ namespace ashes::gl
 			doApplyLogicOp( list, newState );
 		}
 
-		if ( force || newState.blendConstants != save.blendConstants )
+		if ( force
+			|| newState.blendConstants[0] != save.blendConstants[0]
+			|| newState.blendConstants[1] != save.blendConstants[1]
+			|| newState.blendConstants[2] != save.blendConstants[2]
+			|| newState.blendConstants[3] != save.blendConstants[3] )
 		{
 			doApplyBlendConstants( list, newState );
 		}

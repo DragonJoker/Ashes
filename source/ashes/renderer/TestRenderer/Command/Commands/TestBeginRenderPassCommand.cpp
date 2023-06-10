@@ -19,43 +19,10 @@ namespace ashes::test
 		, VkClearValueArray const & clearValues )
 		: CommandBase{ device }
 	{
-		auto rp = get( renderPass );
-		assert( clearValues.size() == rp->size() );
-		for ( auto & attach : *rp )
-		{
-			auto & clearValue = clearValues[attach.attachment];
-
-			if ( ashes::isDepthOrStencilFormat( rp->getAttachment( attach ).format ) )
-			{
-				m_dsClearValue = clearValue;
-			}
-			else
-			{
-				m_rtClearValues.push_back( clearValue );
-			}
-		}
 	}
 
 	void BeginRenderPassCommand::apply()const
 	{
-		auto & views = get( m_frameBuffer )->getAllViews();
-		uint32_t clearIndex = 0u;
-		auto it = get( m_renderPass )->begin();
-
-		for ( auto viewIndex = 0u; viewIndex < views.size(); ++viewIndex )
-		{
-			auto & attachDesc = get( m_renderPass )->getAttachment( *it );
-
-			if ( attachDesc.loadOp == VK_ATTACHMENT_LOAD_OP_CLEAR )
-			{
-				if ( getAspectMask( attachDesc.format ) == VK_IMAGE_ASPECT_COLOR_BIT )
-				{
-					++clearIndex;
-				}
-			}
-
-			++it;
-		}
 	}
 
 	CommandPtr BeginRenderPassCommand::clone()const

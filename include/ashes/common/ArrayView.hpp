@@ -38,7 +38,8 @@ namespace ashes
 	public:
 		using value_type = typename my_traits::value_type;
 		using reference = typename my_traits::reference;
-		using pointer = typename my_traits::pointer;
+		using pointer = value_type *;
+		using const_pointer = value_type const *;
 		using iterator = typename my_traits::pointer;
 		using const_iterator = const iterator;
 		using reverse_iterator = std::reverse_iterator< iterator >;
@@ -82,7 +83,7 @@ namespace ashes
 			return &( *m_begin );
 		}
 
-		pointer const data()const noexcept
+		const_pointer data()const noexcept
 		{
 			return &( *m_begin );
 		}

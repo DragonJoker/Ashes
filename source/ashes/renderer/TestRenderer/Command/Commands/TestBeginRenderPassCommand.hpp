@@ -19,11 +19,5 @@ namespace ashes::test
 
 		void apply()const override;
 		CommandPtr clone()const override;
-
-	private:
-		VkRenderPass m_renderPass{};
-		VkFramebuffer m_frameBuffer{};
-		VkClearValueArray m_rtClearValues;
-		VkClearValue m_dsClearValue{};
 	};
 }

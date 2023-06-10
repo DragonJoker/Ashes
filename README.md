@@ -170,6 +170,15 @@ int main( int argc, char ** argv )
 }
 ```
 
+## Building Ashes from source
+
+Ashes relies on CMake as project generator.
+The easiest way to build it is to use the presets already defined:
+- dev-msvc: Visual Studio build, you need to provide the necessary libraries.
+- dev-ninja-debug, dev-ninja-release]: Ninja build, you need to provide the necessary libraries.
+- dev-vcpkg-msvc: Visual Studio build, using vcpkg to fetch the dependencies.
+- dev-vcpkg-ninja-debug, dev-vcpkg-ninja-release]: Ninja build, using vcpkg to fetch the dependencies.
+
 ## Contact
 
 You can reach me on the Discord server dedicated to my projects: [DragonJoker's Lair](https://discord.gg/yVmaAvQ)
