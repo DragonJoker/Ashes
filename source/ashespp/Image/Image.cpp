@@ -255,6 +255,18 @@ namespace ashes
 	{
 	}
 
+	Image::Image( Device const & device
+		, std::string const & debugName
+		, VkImage image
+		, ImageCreateInfo createInfo )
+		: VkObject{ debugName }
+		, m_device{ &device }
+		, m_createInfo{ std::move( createInfo ) }
+		, m_internal{ image }
+		, m_ownInternal{ false }
+	{
+	}
+
 	Image::~Image()
 	{
 		assert( ( ( m_internal != VkImage{} ) || m_views.empty() )
