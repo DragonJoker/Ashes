@@ -88,6 +88,18 @@ namespace ashes
 			, ImageCreateInfo createInfo );
 		/**
 		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] image
+		*	The image.
+		*/
+		Image( Device const & device
+			, std::string const & debugName
+			, VkImage image
+			, ImageCreateInfo createInfo );
+		/**
+		*\brief
 		*	Destructor.
 		*/
 		~Image();
@@ -398,6 +410,11 @@ namespace ashes
 		inline VkImageUsageFlags getUsage()const
 		{
 			return m_createInfo->usage;
+		}
+
+		inline ImageCreateInfo const & getCreateInfo()const
+		{
+			return m_createInfo;
 		}
 		/**@}*/
 		/**
