@@ -13,6 +13,16 @@ namespace ashes
 		: Sampler{ device, "Sampler", std::move( createInfo ) }
 	{
 	}
+
+	Sampler::Sampler( Device const & device
+		, VkSampler sampler
+		, SamplerCreateInfo createInfo )
+		: VkObject{ "Sampler" }
+		, m_device{ device }
+		, m_createInfo{ std::move( createInfo ) }
+		, m_internal{ sampler }
+	{
+	}
 	
 	Sampler::Sampler( Device const & device
 		, std::string const & debugName
@@ -25,7 +35,8 @@ namespace ashes
 		auto res = m_device.vkCreateSampler( m_device
 			, &static_cast< VkSamplerCreateInfo const & >( m_createInfo )
 			, m_device.getAllocationCallbacks()
-			, &m_internal );
+			, &m_ownInternal );
+		m_internal = m_ownInternal;
 		checkError( res, "Sampler creation" );
 		registerObject( m_device, debugName, *this );
 	}
@@ -47,16 +58,20 @@ namespace ashes
 		auto res = m_device.vkCreateSampler( m_device
 			, &static_cast< VkSamplerCreateInfo const & >( m_createInfo )
 			, m_device.getAllocationCallbacks()
-			, &m_internal );
+			, &m_ownInternal );
+		m_internal = m_ownInternal;
 		checkError( res, "Sampler creation" );
 		registerObject( m_device, debugName, *this );
 	}
 	
 	Sampler::~Sampler()
 	{
-		unregisterObject( m_device, *this );
-		m_device.vkDestroySampler( m_device
-			, m_internal
-			, m_device.getAllocationCallbacks() );
+		if ( m_ownInternal )
+		{
+			unregisterObject( m_device, *this );
+			m_device.vkDestroySampler( m_device
+				, m_ownInternal
+				, m_device.getAllocationCallbacks() );
+		}
 	}
 }

@@ -37,6 +37,17 @@ namespace ashes
 		*	The creation informations.
 		*/
 		Sampler( Device const & device
+			, VkSampler sampler
+			, SamplerCreateInfo createInfo );
+		/**
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] createInfo
+		*	The creation informations.
+		*/
+		Sampler( Device const & device
 			, std::string const & debugName
 			, SamplerCreateInfo createInfo );
 		/**
@@ -142,6 +153,7 @@ namespace ashes
 	private:
 		Device const & m_device;
 		SamplerCreateInfo m_createInfo;
+		VkSampler m_ownInternal{};
 		VkSampler m_internal{};
 	};
 }
