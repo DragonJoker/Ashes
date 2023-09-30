@@ -606,6 +606,20 @@ namespace ashes
 	}
 
 #endif
+#if VK_EXT_device_fault
+	std::pair< VkDeviceFaultCountsEXT, VkDeviceFaultInfoEXT > Device::getDeviceFaultInfo()const
+	{
+		VkDeviceFaultCountsEXT counts{};
+		VkDeviceFaultInfoEXT info{};
+
+		if ( vkGetDeviceFaultInfoEXT )
+		{
+			vkGetDeviceFaultInfoEXT( m_internal, &counts, &info );
+		}
+
+		return { counts, info };
+	}
+#endif
 
 	QueuePtr Device::getQueue( std::string debugName
 		, uint32_t familyIndex
