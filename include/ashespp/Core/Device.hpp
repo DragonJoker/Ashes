@@ -1437,6 +1437,15 @@ namespace ashes
 			, UInt32Array const & maxPrimitiveCounts )const;
 
 #endif
+#if VK_EXT_device_fault
+
+		/**
+		*\brief
+		*	Retrieves device fault info on VK_ERROR_DEVICE_LOST error.
+		*/
+		std::pair< VkDeviceFaultCountsEXT, VkDeviceFaultInfoEXT > getDeviceFaultInfo()const;
+
+#endif
 #if VK_EXT_debug_utils
 
 		inline bool hasDebugUtils()const
