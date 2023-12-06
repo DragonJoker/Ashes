@@ -12,15 +12,22 @@ namespace ashes
 {
 	struct PipelineDynamicStateCreateInfo
 	{
-		PipelineDynamicStateCreateInfo( PipelineDynamicStateCreateInfo const & ) = delete;
-		PipelineDynamicStateCreateInfo & operator=( PipelineDynamicStateCreateInfo const & ) = delete;
-
 		PipelineDynamicStateCreateInfo( VkPipelineDynamicStateCreateFlags flags = 0u
 			, VkDynamicStateArray pdynamicStates = {} )
 			: dynamicStates{ std::move( pdynamicStates ) }
 			, vk{ VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO
 				, nullptr
 				, flags
+				, uint32_t( dynamicStates.size() )
+				, dynamicStates.data() }
+		{
+		}
+
+		PipelineDynamicStateCreateInfo( PipelineDynamicStateCreateInfo const & rhs )
+			: dynamicStates{ rhs.dynamicStates }
+			, vk{ VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
 				, uint32_t( dynamicStates.size() )
 				, dynamicStates.data() }
 		{
@@ -34,6 +41,17 @@ namespace ashes
 				, uint32_t( dynamicStates.size() )
 				, dynamicStates.data() }
 		{
+		}
+
+		PipelineDynamicStateCreateInfo & operator=( PipelineDynamicStateCreateInfo const & rhs )
+		{
+			dynamicStates = rhs.dynamicStates;
+			vk = { VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, uint32_t( dynamicStates.size() )
+				, dynamicStates.data() };
+			return *this;
 		}
 
 		PipelineDynamicStateCreateInfo & operator=( PipelineDynamicStateCreateInfo && rhs )noexcept

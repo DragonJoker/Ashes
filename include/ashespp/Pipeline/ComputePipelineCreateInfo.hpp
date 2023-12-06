@@ -16,9 +16,6 @@ namespace ashes
 	*/
 	struct ComputePipelineCreateInfo
 	{
-		ComputePipelineCreateInfo( ComputePipelineCreateInfo const & ) = delete;
-		ComputePipelineCreateInfo & operator=( ComputePipelineCreateInfo const & ) = delete;
-
 		ComputePipelineCreateInfo( VkPipelineCreateFlags flags
 			, PipelineShaderStageCreateInfo pstage
 			, VkPipelineLayout layout
@@ -36,8 +33,8 @@ namespace ashes
 		{
 		}
 
-		ComputePipelineCreateInfo( ComputePipelineCreateInfo && rhs )noexcept
-			: stage{ std::move( rhs.stage ) }
+		ComputePipelineCreateInfo( ComputePipelineCreateInfo const & rhs )
+			: stage{ rhs.stage }
 			, vk{ VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO
 				, rhs.vk.pNext
 				, rhs.vk.flags
@@ -46,6 +43,32 @@ namespace ashes
 				, rhs.vk.basePipelineHandle
 				, rhs.vk.basePipelineIndex }
 		{
+		}
+
+		ComputePipelineCreateInfo( ComputePipelineCreateInfo && rhs )noexcept
+			: stage{ rhs.stage }
+			, vk{ VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO
+			, rhs.vk.pNext
+			, rhs.vk.flags
+			, stage
+			, rhs.vk.layout
+			, rhs.vk.basePipelineHandle
+			, rhs.vk.basePipelineIndex }
+		{
+		}
+
+		ComputePipelineCreateInfo & operator=( ComputePipelineCreateInfo const & rhs )
+		{
+			stage = std::move( rhs.stage );
+			vk = { VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, stage
+				, rhs.vk.layout
+				, rhs.vk.basePipelineHandle
+				, rhs.vk.basePipelineIndex };
+
+			return *this;
 		}
 
 		ComputePipelineCreateInfo & operator=( ComputePipelineCreateInfo && rhs )noexcept

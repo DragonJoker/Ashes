@@ -12,9 +12,6 @@ namespace ashes
 {
 	struct PipelineTessellationStateCreateInfo
 	{
-		PipelineTessellationStateCreateInfo( PipelineTessellationStateCreateInfo const & ) = delete;
-		PipelineTessellationStateCreateInfo & operator=( PipelineTessellationStateCreateInfo const & ) = delete;
-
 		PipelineTessellationStateCreateInfo( VkPipelineTessellationStateCreateFlags flags = 0u
 			, uint32_t patchControlPoints = 0u )
 			: vk{ VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO
@@ -23,12 +20,23 @@ namespace ashes
 				, patchControlPoints }
 		{
 		}
-		
+
+		PipelineTessellationStateCreateInfo( PipelineTessellationStateCreateInfo const & rhs )
+			: vk{ rhs.vk }
+		{
+		}
+
 		PipelineTessellationStateCreateInfo( PipelineTessellationStateCreateInfo && rhs )noexcept
 			: vk{ std::move( rhs.vk ) }
 		{
 		}
-		
+
+		PipelineTessellationStateCreateInfo & operator=( PipelineTessellationStateCreateInfo const & rhs )
+		{
+			vk = rhs.vk;
+			return *this;
+		}
+
 		PipelineTessellationStateCreateInfo & operator=( PipelineTessellationStateCreateInfo && rhs )noexcept
 		{
 			vk = std::move( rhs.vk );
