@@ -14,9 +14,6 @@ namespace ashes
 
 	struct PipelineLibraryCreateInfo
 	{
-		PipelineLibraryCreateInfo( PipelineLibraryCreateInfo const & ) = delete;
-		PipelineLibraryCreateInfo& operator=( PipelineLibraryCreateInfo  const & ) = delete;
-
 		PipelineLibraryCreateInfo( PipelineArray plibraries )
 			: libraries{ std::move( plibraries ) }
 			, vk{ VK_STRUCTURE_TYPE_PIPELINE_LIBRARY_CREATE_INFO_KHR
@@ -25,7 +22,16 @@ namespace ashes
 				, libraries.data() }
 		{
 		}
-		
+
+		PipelineLibraryCreateInfo( PipelineLibraryCreateInfo const & rhs )
+			: libraries{ rhs.libraries }
+			, vk{ VK_STRUCTURE_TYPE_PIPELINE_LIBRARY_CREATE_INFO_KHR
+				, rhs.vk.pNext
+				, uint32_t( libraries.size() )
+				, libraries.data() }
+		{
+		}
+
 		PipelineLibraryCreateInfo( PipelineLibraryCreateInfo && rhs )noexcept
 			: libraries{ std::move( rhs.libraries ) }
 			, vk{ VK_STRUCTURE_TYPE_PIPELINE_LIBRARY_CREATE_INFO_KHR
@@ -34,7 +40,7 @@ namespace ashes
 				, libraries.data() }
 		{
 		}
-		
+
 		PipelineLibraryCreateInfo( VkPipelineLibraryCreateInfoKHR rhs )noexcept
 			: libraries{ makeArray( rhs.pLibraries, rhs.libraryCount ) }
 			, vk{ VK_STRUCTURE_TYPE_PIPELINE_LIBRARY_CREATE_INFO_KHR
@@ -43,7 +49,17 @@ namespace ashes
 				, libraries.data() }
 		{
 		}
-		
+
+		PipelineLibraryCreateInfo & operator=( PipelineLibraryCreateInfo const & rhs )
+		{
+			libraries = rhs.libraries;
+			vk = { VK_STRUCTURE_TYPE_PIPELINE_LIBRARY_CREATE_INFO_KHR
+				, rhs.vk.pNext
+				, uint32_t( libraries.size() )
+				, libraries.data() };
+			return *this;
+		}
+
 		PipelineLibraryCreateInfo & operator=( PipelineLibraryCreateInfo && rhs )noexcept
 		{
 			libraries = std::move( rhs.libraries );

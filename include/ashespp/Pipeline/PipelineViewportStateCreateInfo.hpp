@@ -12,9 +12,6 @@ namespace ashes
 {
 	struct PipelineViewportStateCreateInfo
 	{
-		PipelineViewportStateCreateInfo( PipelineViewportStateCreateInfo const & ) = delete;
-		PipelineViewportStateCreateInfo & operator=( PipelineViewportStateCreateInfo const & ) = delete;
-
 		PipelineViewportStateCreateInfo( VkPipelineViewportStateCreateFlags flags
 			, uint32_t viewportCount
 			, VkViewportArray pviewports
@@ -46,6 +43,19 @@ namespace ashes
 		{
 		}
 
+		PipelineViewportStateCreateInfo( PipelineViewportStateCreateInfo const & rhs )
+			: viewports{ rhs.viewports }
+			, scissors{ rhs.scissors }
+			, vk{ VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, rhs.vk.viewportCount
+				, viewports.data()
+				, rhs.vk.scissorCount
+				, scissors.data() }
+		{
+		}
+
 		PipelineViewportStateCreateInfo( PipelineViewportStateCreateInfo && rhs )noexcept
 			: viewports{ std::move( rhs.viewports ) }
 			, scissors{ std::move( rhs.scissors ) }
@@ -57,6 +67,21 @@ namespace ashes
 				, rhs.vk.scissorCount
 				, scissors.data() }
 		{
+		}
+
+		PipelineViewportStateCreateInfo & operator=( PipelineViewportStateCreateInfo const & rhs )
+		{
+			viewports = rhs.viewports;
+			scissors = rhs.scissors;
+			vk = { VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, rhs.vk.viewportCount
+				, viewports.data()
+				, rhs.vk.scissorCount
+				, scissors.data() };
+
+			return *this;
 		}
 
 		PipelineViewportStateCreateInfo & operator=( PipelineViewportStateCreateInfo && rhs )noexcept

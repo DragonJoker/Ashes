@@ -12,9 +12,6 @@ namespace ashes
 {
 	struct PipelineDepthStencilStateCreateInfo
 	{
-		PipelineDepthStencilStateCreateInfo( PipelineDepthStencilStateCreateInfo const & ) = delete;
-		PipelineDepthStencilStateCreateInfo & operator=( PipelineDepthStencilStateCreateInfo const & ) = delete;
-
 		PipelineDepthStencilStateCreateInfo( VkPipelineDepthStencilStateCreateFlags flags = 0u
 			, VkBool32 depthTestEnable = VK_TRUE
 			, VkBool32 depthWriteEnable = VK_TRUE
@@ -51,23 +48,34 @@ namespace ashes
 				, maxDepthBounds }
 		{
 		}
-		
+
+		PipelineDepthStencilStateCreateInfo( PipelineDepthStencilStateCreateInfo const & rhs )
+			: vk{ rhs.vk }
+		{
+		}
+
 		PipelineDepthStencilStateCreateInfo( PipelineDepthStencilStateCreateInfo && rhs )noexcept
 			: vk{ std::move( rhs.vk ) }
 		{
 		}
-		
+
 		PipelineDepthStencilStateCreateInfo( VkPipelineDepthStencilStateCreateInfo rhs )noexcept
 			: vk{ std::move( rhs ) }
 		{
 		}
-		
+
+		PipelineDepthStencilStateCreateInfo & operator=( PipelineDepthStencilStateCreateInfo const & rhs )
+		{
+			vk = rhs.vk;
+			return *this;
+		}
+
 		PipelineDepthStencilStateCreateInfo & operator=( PipelineDepthStencilStateCreateInfo && rhs )noexcept
 		{
 			vk = std::move( rhs.vk );
 			return *this;
 		}
-		
+
 		PipelineDepthStencilStateCreateInfo & operator=( VkPipelineDepthStencilStateCreateInfo rhs )noexcept
 		{
 			vk = std::move( rhs );
