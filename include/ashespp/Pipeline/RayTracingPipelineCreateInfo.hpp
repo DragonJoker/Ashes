@@ -14,9 +14,6 @@ namespace ashes
 
 	struct RayTracingPipelineCreateInfo
 	{
-		RayTracingPipelineCreateInfo( RayTracingPipelineCreateInfo const & ) = delete;
-		RayTracingPipelineCreateInfo & operator=( RayTracingPipelineCreateInfo  const & ) = delete;
-
 		RayTracingPipelineCreateInfo( VkPipelineCreateFlags pflags
 			, PipelineShaderStageCreateInfoArray pstages
 			, RayTracingShaderGroupCreateInfoArray pgroups
@@ -49,7 +46,31 @@ namespace ashes
 				, basePipelineIndex }
 		{
 		}
-		
+
+		RayTracingPipelineCreateInfo( RayTracingPipelineCreateInfo const & rhs )
+			: stages{ rhs.stages }
+			, vkStages{ makeVkArray< VkPipelineShaderStageCreateInfo >( stages ) }
+			, groups{ rhs.groups }
+			, libraryInfo{ rhs.libraryInfo }
+			, libraryInterface{ rhs.libraryInterface }
+			, dynamicState{ rhs.dynamicState }
+			, vk{ VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, uint32_t( vkStages.size() )
+				, vkStages.data()
+				, uint32_t( groups.size() )
+				, groups.data()
+				, rhs.vk.maxPipelineRayRecursionDepth
+				, convert( libraryInfo )
+				, convert( libraryInterface )
+				, convert( dynamicState )
+				, rhs.vk.layout
+				, rhs.vk.basePipelineHandle
+				, rhs.vk.basePipelineIndex }
+		{
+		}
+
 		RayTracingPipelineCreateInfo( RayTracingPipelineCreateInfo && rhs )noexcept
 			: stages{ std::move( rhs.stages ) }
 			, vkStages{ makeVkArray< VkPipelineShaderStageCreateInfo >( stages ) }
@@ -73,7 +94,32 @@ namespace ashes
 				, rhs.vk.basePipelineIndex }
 		{
 		}
-		
+
+		RayTracingPipelineCreateInfo & operator=( RayTracingPipelineCreateInfo const & rhs )
+		{
+			stages = rhs.stages;
+			vkStages = makeVkArray< VkPipelineShaderStageCreateInfo >( stages );
+			groups = rhs.groups;
+			libraryInfo = rhs.libraryInfo;
+			libraryInterface = rhs.libraryInterface;
+			dynamicState = rhs.dynamicState;
+			vk = { VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, uint32_t( vkStages.size() )
+				, vkStages.data()
+				, uint32_t( groups.size() )
+				, groups.data()
+				, rhs.vk.maxPipelineRayRecursionDepth
+				, convert( libraryInfo )
+				, convert( libraryInterface )
+				, convert( dynamicState )
+				, rhs.vk.layout
+				, rhs.vk.basePipelineHandle
+				, rhs.vk.basePipelineIndex };
+			return *this;
+		}
+
 		RayTracingPipelineCreateInfo & operator=( RayTracingPipelineCreateInfo && rhs )noexcept
 		{
 			stages = std::move( rhs.stages );

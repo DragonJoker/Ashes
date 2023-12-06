@@ -12,9 +12,6 @@ namespace ashes
 {
 	struct PipelineMultisampleStateCreateInfo
 	{
-		PipelineMultisampleStateCreateInfo( PipelineMultisampleStateCreateInfo const & ) = delete;
-		PipelineMultisampleStateCreateInfo & operator=( PipelineMultisampleStateCreateInfo const & ) = delete;
-
 		PipelineMultisampleStateCreateInfo( VkPipelineMultisampleStateCreateFlags flags = 0u
 			, VkSampleCountFlagBits rasterizationSamples = VK_SAMPLE_COUNT_1_BIT
 			, VkBool32 sampleShadingEnable = VK_FALSE
@@ -34,7 +31,21 @@ namespace ashes
 				, alphaToOneEnable }
 		{
 		}
-		
+
+		PipelineMultisampleStateCreateInfo( PipelineMultisampleStateCreateInfo const & rhs )
+			: sampleMask{ rhs.sampleMask }
+			, vk{ VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, rhs.vk.rasterizationSamples
+				, rhs.vk.sampleShadingEnable
+				, rhs.vk.minSampleShading
+				, ( bool( sampleMask ) ? &sampleMask.value() : nullptr )
+				, rhs.vk.alphaToCoverageEnable
+				, rhs.vk.alphaToOneEnable }
+		{
+		}
+
 		PipelineMultisampleStateCreateInfo( PipelineMultisampleStateCreateInfo && rhs )noexcept
 			: sampleMask{ std::move( rhs.sampleMask ) }
 			, vk{ VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO
@@ -48,7 +59,22 @@ namespace ashes
 				, rhs.vk.alphaToOneEnable }
 		{
 		}
-		
+
+		PipelineMultisampleStateCreateInfo & operator=( PipelineMultisampleStateCreateInfo const & rhs )
+		{
+			sampleMask = rhs.sampleMask;
+			vk = { VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, rhs.vk.rasterizationSamples
+				, rhs.vk.sampleShadingEnable
+				, rhs.vk.minSampleShading
+				, ( bool( sampleMask ) ? &sampleMask.value() : nullptr )
+				, rhs.vk.alphaToCoverageEnable
+				, rhs.vk.alphaToOneEnable };
+			return *this;
+		}
+
 		PipelineMultisampleStateCreateInfo & operator=( PipelineMultisampleStateCreateInfo && rhs )noexcept
 		{
 			sampleMask = std::move( rhs.sampleMask );

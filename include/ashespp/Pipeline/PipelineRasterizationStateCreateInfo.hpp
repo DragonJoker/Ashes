@@ -12,9 +12,6 @@ namespace ashes
 {
 	struct PipelineRasterizationStateCreateInfo
 	{
-		PipelineRasterizationStateCreateInfo( PipelineRasterizationStateCreateInfo const & ) = delete;
-		PipelineRasterizationStateCreateInfo & operator=( PipelineRasterizationStateCreateInfo const & ) = delete;
-
 		PipelineRasterizationStateCreateInfo( VkPipelineRasterizationStateCreateFlags flags = 0u
 			, VkBool32 depthClampEnable = VK_FALSE
 			, VkBool32 rasterizerDiscardEnable = VK_FALSE
@@ -41,12 +38,23 @@ namespace ashes
 				, lineWidth }
 		{
 		}
-		
+
+		PipelineRasterizationStateCreateInfo( PipelineRasterizationStateCreateInfo const & rhs )
+			: vk{ rhs.vk }
+		{
+		}
+
 		PipelineRasterizationStateCreateInfo( PipelineRasterizationStateCreateInfo && rhs )noexcept
 			: vk{ std::move( rhs.vk ) }
 		{
 		}
-		
+
+		PipelineRasterizationStateCreateInfo & operator=( PipelineRasterizationStateCreateInfo const & rhs )
+		{
+			vk = rhs.vk;
+			return *this;
+		}
+
 		PipelineRasterizationStateCreateInfo & operator=( PipelineRasterizationStateCreateInfo && rhs )noexcept
 		{
 			vk = std::move( rhs.vk );
