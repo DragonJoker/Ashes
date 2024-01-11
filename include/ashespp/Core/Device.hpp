@@ -221,10 +221,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT;
 #endif
+		static inline std::string Name{ "VkInstance" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkInstance" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -237,10 +238,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT;
 #endif
+		static inline std::string Name{ "VkPhysicalDevice" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkPhysicalDevice" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -253,10 +255,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT;
 #endif
+		static inline std::string Name{ "VkDevice" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkDevice" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -269,10 +272,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT;
 #endif
+		static inline std::string Name{ "VkQueue" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkQueue" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -285,10 +289,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT;
 #endif
+		static inline std::string Name{ "VkSemaphore" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkSemaphore" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -301,10 +306,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT;
 #endif
+		static inline std::string Name{ "VkCommandBuffer" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkCommandBuffer" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -317,10 +323,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT;
 #endif
+		static inline std::string Name{ "VkFence" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkFence" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -333,10 +340,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT;
 #endif
+		static inline std::string Name{ "VkDeviceMemory" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkDeviceMemory" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -349,10 +357,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT;
 #endif
+		static inline std::string Name{ "VkBuffer" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkBuffer" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -365,10 +374,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT;
 #endif
+		static inline std::string Name{ "VkUniformBuffer" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkUniformBuffer" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -381,10 +391,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT;
 #endif
+		static inline std::string Name{ "VkVertexBuffer" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkVertexBuffer" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -397,10 +408,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT;
 #endif
+		static inline std::string Name{ "VkImage" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkImage" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -413,10 +425,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_EVENT_EXT;
 #endif
+		static inline std::string Name{ "VkEvent" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkEvent" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -429,10 +442,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_QUERY_POOL_EXT;
 #endif
+		static inline std::string Name{ "VkQueryPool" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkQueryPool" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -445,10 +459,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT;
 #endif
+		static inline std::string Name{ "VkBufferView" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkBufferView" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -461,10 +476,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT;
 #endif
+		static inline std::string Name{ "VkImageView" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkImageView" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -477,10 +493,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT;
 #endif
+		static inline std::string Name{ "VkImageView" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkImageView" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -493,10 +510,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT;
 #endif
+		static inline std::string Name{ "VkShaderModule" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkShaderModule" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -509,10 +527,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT;
 #endif
+		static inline std::string Name{ "VkPipelineLayout" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkPipelineLayout" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -525,10 +544,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT;
 #endif
+		static inline std::string Name{ "VkRenderPass" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkRenderPass" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -541,10 +561,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT;
 #endif
+		static inline std::string Name{ "VkPipeline" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkPipeline" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -557,10 +578,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT_EXT;
 #endif
+		static inline std::string Name{ "VkDescriptorSetLayout" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkDescriptorSetLayout" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -573,10 +595,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT;
 #endif
+		static inline std::string Name{ "VkSampler" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkSampler" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -589,10 +612,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_POOL_EXT;
 #endif
+		static inline std::string Name{ "VkDescriptorSetPool" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkDescriptorSetPool" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -605,10 +629,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_POOL_EXT;
 #endif
+		static inline std::string Name{ "VkDescriptorPool" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkDescriptorPool" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -621,10 +646,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT;
 #endif
+		static inline std::string Name{ "VkDescriptorSet" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkDescriptorSet" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -637,10 +663,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT;
 #endif
+		static inline std::string Name{ "VkFramebuffer" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkFramebuffer" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -653,10 +680,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT;
 #endif
+		static inline std::string Name{ "VkCommandPool" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkCommandPool" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -669,10 +697,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_SURFACE_KHR_EXT;
 #endif
+		static inline std::string Name{ "VkSurfaceKHR" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkSurfaceKHR" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -685,10 +714,11 @@ namespace ashes
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT;
 #endif
+		static inline std::string Name{ "VkSwapchainKHR" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkSwapchainKHR" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -709,10 +739,11 @@ namespace ashes
 #	if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT;
 #	endif
+		static inline std::string Name{ "VkDeferredOperationKHR" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkDeferredOperationKHR" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -734,10 +765,11 @@ namespace ashes
 #	if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT;
 #	endif
+		static inline std::string Name{ "VkRayTracingPipelineKHR" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkRayTracingPipelineKHR" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -759,10 +791,11 @@ namespace ashes
 #	if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT;
 #	endif
+		static inline std::string Name{ "VkAccelerationStructureKHR" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkAccelerationStructureKHR" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -897,7 +930,7 @@ namespace ashes
 		*\return
 		*	The created staging texture.
 		*/
-		StagingTexturePtr createStagingTexture( std::string debugName
+		StagingTexturePtr createStagingTexture( std::string const & debugName
 			, VkFormat format
 			, VkExtent2D const & extent
 			, uint32_t mipLevels = 1u )const;
@@ -911,7 +944,7 @@ namespace ashes
 		*\return
 		*	The created staging texture.
 		*/
-		StagingTexturePtr createStagingTexture( std::string debugName
+		StagingTexturePtr createStagingTexture( std::string const & debugName
 			, VkFormat format
 			, VkExtent3D const & extent
 			, uint32_t mipLevels = 1u )const;
@@ -934,7 +967,7 @@ namespace ashes
 		*\return
 		*	The created pass.
 		*/
-		RenderPassPtr createRenderPass( std::string debugName
+		RenderPassPtr createRenderPass( std::string const & debugName
 			, RenderPassCreateInfo createInfo )const;
 		/**
 		*\brief
@@ -955,7 +988,7 @@ namespace ashes
 		*\return
 		*	The created pipeline.
 		*/
-		GraphicsPipelinePtr createPipeline( std::string debugName
+		GraphicsPipelinePtr createPipeline( std::string const & debugName
 			, GraphicsPipelineCreateInfo createInfo )const;
 		/**
 		*\brief
@@ -976,7 +1009,7 @@ namespace ashes
 		*\return
 		*	The created pipeline.
 		*/
-		ComputePipelinePtr createPipeline( std::string debugName
+		ComputePipelinePtr createPipeline( std::string const & debugName
 			, ComputePipelineCreateInfo createInfo )const;
 
 #if VK_KHR_ray_tracing_pipeline
@@ -1005,7 +1038,7 @@ namespace ashes
 		*\return
 		*	The created pipeline.
 		*/
-		RayTracingPipelinePtr createPipeline( std::string debugName
+		RayTracingPipelinePtr createPipeline( std::string const & debugName
 			, DeferredOperation const & deferredOperation
 			, RayTracingPipelineCreateInfoArray createInfos )const;
 
@@ -1035,7 +1068,7 @@ namespace ashes
 		*\return
 		*	The created layout.
 		*/
-		PipelineLayoutPtr createPipelineLayout( std::string debugName
+		PipelineLayoutPtr createPipelineLayout( std::string const & debugName
 			, DescriptorSetLayoutCRefArray const & setLayouts
 			, VkPushConstantRangeArray const & pushConstantRanges )const;
 		/**
@@ -1046,7 +1079,7 @@ namespace ashes
 		*\return
 		*	The created layout.
 		*/
-		DescriptorSetLayoutPtr createDescriptorSetLayout( std::string debugName
+		DescriptorSetLayoutPtr createDescriptorSetLayout( std::string const & debugName
 			, VkDescriptorSetLayoutCreateInfo createInfo )const;
 		/**
 		*\brief
@@ -1058,7 +1091,7 @@ namespace ashes
 		*\return
 		*	The created layout.
 		*/
-		DescriptorSetLayoutPtr createDescriptorSetLayout( std::string debugName
+		DescriptorSetLayoutPtr createDescriptorSetLayout( std::string const & debugName
 			, VkDescriptorSetLayoutBindingArray bindings
 			, VkDescriptorBindingFlags flags = {} )const;
 		/**
@@ -1100,7 +1133,7 @@ namespace ashes
 		*\return
 		*	The created pool.
 		*/
-		DescriptorPoolPtr createDescriptorPool( std::string debugName
+		DescriptorPoolPtr createDescriptorPool( std::string const & debugName
 			, VkDescriptorPoolCreateFlags flags
 			, uint32_t maxSets
 			, VkDescriptorPoolSizeArray poolSizes )const;
@@ -1123,7 +1156,7 @@ namespace ashes
 		*\return
 		*	The DeviceMemory object holding the allocated memory.
 		*/
-		DeviceMemoryPtr allocateMemory( std::string debugName
+		DeviceMemoryPtr allocateMemory( std::string const & debugName
 			, VkMemoryAllocateInfo allocateInfo )const;
 		/**
 		*\brief
@@ -1140,7 +1173,7 @@ namespace ashes
 		*\param[in] createInfo
 		*	The creation informations.
 		*/
-		ImagePtr createImage( std::string debugName
+		ImagePtr createImage( std::string const & debugName
 			, ImageCreateInfo createInfo )const;
 		/**
 		*\brief
@@ -1170,7 +1203,7 @@ namespace ashes
 		*\param[in] createInfo
 		*	The creation informations.
 		*/
-		SamplerPtr createSampler( std::string debugName
+		SamplerPtr createSampler( std::string const & debugName
 			, SamplerCreateInfo createInfo )const;
 		/**
 		*\brief
@@ -1187,7 +1220,7 @@ namespace ashes
 		*\param[in] createInfo
 		*	The creation informations.
 		*/
-		SamplerPtr createSampler( std::string debugName
+		SamplerPtr createSampler( std::string const & debugName
 			, VkSamplerCreateInfo createInfo )const;
 		/**
 		*\brief
@@ -1199,7 +1232,7 @@ namespace ashes
 		*/
 		BufferBasePtr createBuffer( VkDeviceSize size
 			, VkBufferUsageFlags usage
-			, QueueShare sharingMode = {} )const;
+			, QueueShare sharingMode = QueueShare{} )const;
 		/**
 		*\brief
 		*	Creates a GPU buffer.
@@ -1210,10 +1243,10 @@ namespace ashes
 		*\param[in] usage
 		*	The buffer usage flags.
 		*/
-		BufferBasePtr createBuffer( std::string debugName
+		BufferBasePtr createBuffer( std::string const & debugName
 			, VkDeviceSize size
 			, VkBufferUsageFlags usage
-			, QueueShare sharingMode = {} )const;
+			, QueueShare sharingMode = QueueShare{} )const;
 		/**
 		*\brief
 		*	Crée une vue sur un tampon GPU.
@@ -1244,7 +1277,7 @@ namespace ashes
 		*\param[in] range
 		*	Le nombre d'éléments dans le tampon.
 		*/
-		BufferViewPtr createBufferView( std::string debugName
+		BufferViewPtr createBufferView( std::string const & debugName
 			, BufferBase const & buffer
 			, VkFormat format
 			, VkDeviceSize offset
@@ -1264,7 +1297,7 @@ namespace ashes
 		*\param[in] createInfo
 		*	The creation info.
 		*/
-		SwapChainPtr createSwapChain( std::string debugName
+		SwapChainPtr createSwapChain( std::string const & debugName
 			, VkSwapchainCreateInfoKHR createInfo )const;
 		/**
 		*\brief
@@ -1277,7 +1310,7 @@ namespace ashes
 		*\param[in] debugName
 		*	The object debug name.
 		*/
-		SemaphorePtr createSemaphore( std::string debugName )const;
+		SemaphorePtr createSemaphore( std::string const & debugName )const;
 		/**
 		*\brief
 		*	Creates a fence.
@@ -1293,7 +1326,7 @@ namespace ashes
 		*\param[in] flags
 		*	The fence creation flags.
 		*/
-		FencePtr createFence( std::string debugName
+		FencePtr createFence( std::string const & debugName
 			, VkFenceCreateFlags flags = 0 )const;
 		/**
 		*\brief
@@ -1306,7 +1339,7 @@ namespace ashes
 		*\param[in] debugName
 		*	The object debug name.
 		*/
-		EventPtr createEvent( std::string debugName )const;
+		EventPtr createEvent( std::string const & debugName )const;
 		/**
 		*\brief
 		*	Creates a command buffer pool.
@@ -1327,7 +1360,7 @@ namespace ashes
 		*\param[in] flags
 		*	The command pool creation flags.
 		*/
-		CommandPoolPtr createCommandPool( std::string debugName
+		CommandPoolPtr createCommandPool( std::string const & debugName
 			, uint32_t queueFamilyIndex
 			, VkCommandPoolCreateFlags const & flags = 0 )const;
 		/**
@@ -1345,7 +1378,7 @@ namespace ashes
 		*\param[in] shader
 		*	The module's SPIR-V code.
 		*/
-		ShaderModulePtr createShaderModule( std::string debugName
+		ShaderModulePtr createShaderModule( std::string const & debugName
 			, UInt32Array const & shader )const;
 		/**
 		*\brief
@@ -1372,7 +1405,7 @@ namespace ashes
 		*\param[in] pipelineStatistics
 		*	Specifies the counters to be returned in queries.
 		*/
-		QueryPoolPtr createQueryPool( std::string debugName
+		QueryPoolPtr createQueryPool( std::string const & debugName
 			, VkQueryType type
 			, uint32_t count
 			, VkQueryPipelineStatisticFlags pipelineStatistics )const;
@@ -1385,7 +1418,7 @@ namespace ashes
 		*\param[in] debugName
 		*	The object debug name.
 		*/
-		DeferredOperationPtr createDeferredOperation( std::string debugName )const;
+		DeferredOperationPtr createDeferredOperation( std::string const & debugName )const;
 		/**
 		*\brief
 		*	Creates a deferred operation.
@@ -1401,7 +1434,7 @@ namespace ashes
 		*\param[in] debugName
 		*	The object debug name.
 		*/
-		AccelerationStructurePtr createAccelerationStructure( std::string debugName
+		AccelerationStructurePtr createAccelerationStructure( std::string const & debugName
 			, VkAccelerationStructureCreateInfoKHR infos )const;
 		/**
 		*\brief
@@ -1427,7 +1460,7 @@ namespace ashes
 		*\brief
 		*	Build an acceleration structure on the host.
 		*/
-		VkAccelerationStructureCompatibilityKHR getDeviceAccelerationStructureCompatibilityKHR( VkAccelerationStructureVersionInfoKHR & versionInfo )const;
+		VkAccelerationStructureCompatibilityKHR getDeviceAccelerationStructureCompatibilityKHR( VkAccelerationStructureVersionInfoKHR const & versionInfo )const;
 		/**
 		*\brief
 		*	Build an acceleration structure on the host.
@@ -1448,7 +1481,7 @@ namespace ashes
 #endif
 #if VK_EXT_debug_utils
 
-		inline bool hasDebugUtils()const
+		bool hasDebugUtils()const
 		{
 			return vkSetDebugUtilsObjectNameEXT
 				&& vkSetDebugUtilsObjectTagEXT;
@@ -1459,7 +1492,7 @@ namespace ashes
 		*\param[in] nameInfo
 		*	The parameters of the name to set on the object.
 		*/
-		inline VkResult setDebugUtilsObjectName( VkDebugUtilsObjectNameInfoEXT const & nameInfo )const
+		VkResult setDebugUtilsObjectName( VkDebugUtilsObjectNameInfoEXT const & nameInfo )const
 		{
 			VkResult result = VK_ERROR_EXTENSION_NOT_PRESENT;
 
@@ -1476,7 +1509,7 @@ namespace ashes
 		*\param[in] tagInfo
 		*	The parameters of the tag to set on the object.
 		*/
-		inline VkResult setDebugUtilsObjectTag( VkDebugUtilsObjectTagInfoEXT const & tagInfo )const
+		VkResult setDebugUtilsObjectTag( VkDebugUtilsObjectTagInfoEXT const & tagInfo )const
 		{
 			VkResult result = VK_ERROR_EXTENSION_NOT_PRESENT;
 
@@ -1491,7 +1524,7 @@ namespace ashes
 #endif
 #if VK_EXT_debug_marker
 
-		inline bool hasDebugMarker()const
+		bool hasDebugMarker()const
 		{
 			return vkDebugMarkerSetObjectTagEXT
 				&& vkDebugMarkerSetObjectNameEXT;
@@ -1502,7 +1535,7 @@ namespace ashes
 		*\param[in] nameInfo
 		*	The parameters of the tag to set on the object.
 		*/
-		inline VkResult debugMarkerSetObjectTag( VkDebugMarkerObjectTagInfoEXT const & tagInfo )const
+		VkResult debugMarkerSetObjectTag( VkDebugMarkerObjectTagInfoEXT const & tagInfo )const
 		{
 			VkResult result = VK_ERROR_EXTENSION_NOT_PRESENT;
 
@@ -1519,7 +1552,7 @@ namespace ashes
 		*\param[in] nameInfo
 		*	The parameters of the name to set on the object.
 		*/
-		inline VkResult debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const
+		VkResult debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const
 		{
 			VkResult result = VK_ERROR_EXTENSION_NOT_PRESENT;
 
@@ -1540,7 +1573,7 @@ namespace ashes
 		*\param[in] nameInfo
 		*	The parameters of the tag to set on the object.
 		*/
-		inline void debugSetObjectTag( DebugObjectTagInfo const & tagInfo )const
+		void debugSetObjectTag( DebugObjectTagInfo const & tagInfo )const
 		{
 #	if VK_EXT_debug_utils
 			setDebugUtilsObjectTag(
@@ -1573,7 +1606,7 @@ namespace ashes
 		*\param[in] nameInfo
 		*	The parameters of the name to set on the object.
 		*/
-		inline void setDebugObjectName( DebugObjectNameInfo const & nameInfo )const
+		void setDebugObjectName( DebugObjectNameInfo const & nameInfo )const
 		{
 #	if VK_EXT_debug_utils
 			setDebugUtilsObjectName(
@@ -1611,7 +1644,7 @@ namespace ashes
 		*\return
 		*	The device queue.
 		*/
-		QueuePtr getQueue( std::string debugName
+		QueuePtr getQueue( std::string const & debugName
 			, uint32_t familyIndex
 			, uint32_t index )const;
 		/**
@@ -1644,7 +1677,7 @@ namespace ashes
 		*\return
 		*	The created layout.
 		*/
-		PipelineLayoutPtr createPipelineLayout( std::string debugName )const;
+		PipelineLayoutPtr createPipelineLayout( std::string const & debugName )const;
 		/**
 		*\brief
 		*	Creates a pipeline layout.
@@ -1664,7 +1697,7 @@ namespace ashes
 		*\return
 		*	The created layout.
 		*/
-		PipelineLayoutPtr createPipelineLayout( std::string debugName
+		PipelineLayoutPtr createPipelineLayout( std::string const & debugName
 			, DescriptorSetLayout const & layout )const;
 		/**
 		*\brief
@@ -1689,7 +1722,7 @@ namespace ashes
 		*\return
 		*	Le layout créé.
 		*/
-		PipelineLayoutPtr createPipelineLayout( std::string debugName
+		PipelineLayoutPtr createPipelineLayout( std::string const & debugName
 			, VkPushConstantRange const & pushConstantRange )const;
 		/**
 		*\brief
@@ -1715,7 +1748,7 @@ namespace ashes
 		*\return
 		*	The created layout.
 		*/
-		PipelineLayoutPtr createPipelineLayout( std::string debugName
+		PipelineLayoutPtr createPipelineLayout( std::string const & debugName
 			, DescriptorSetLayout const & layout
 			, VkPushConstantRange const & pushConstantRange )const;
 		/**
@@ -1737,7 +1770,7 @@ namespace ashes
 		*\return
 		*	The created layout.
 		*/
-		PipelineLayoutPtr createPipelineLayout( std::string debugName
+		PipelineLayoutPtr createPipelineLayout( std::string const & debugName
 			, DescriptorSetLayoutCRefArray const & layouts )const;
 		/**
 		*\brief
@@ -1758,7 +1791,7 @@ namespace ashes
 		*\return
 		*	The created layout.
 		*/
-		PipelineLayoutPtr createPipelineLayout( std::string debugName
+		PipelineLayoutPtr createPipelineLayout( std::string const & debugName
 			, VkPushConstantRangeArray const & pushConstantRanges )const;
 		/**
 		*\brief
@@ -1818,7 +1851,7 @@ namespace ashes
 		*\param[in] compareOp
 		*	The comparison operator, for depth maps.
 		*/
-		SamplerPtr createSampler( std::string debugName
+		SamplerPtr createSampler( std::string const & debugName
 			, VkSamplerAddressMode wrapS
 			, VkSamplerAddressMode wrapT
 			, VkSamplerAddressMode wrapR
@@ -1862,42 +1895,42 @@ namespace ashes
 		*	Getters.
 		*/
 		/**@{*/
-		inline Instance const & getInstance()const
+		Instance const & getInstance()const
 		{
 			return m_instance;
 		}
 
-		inline PhysicalDevice const & getPhysicalDevice()const
+		PhysicalDevice const & getPhysicalDevice()const
 		{
 			return m_physicalDevice;
 		}
 
-		inline float getTimestampPeriod()const
+		float getTimestampPeriod()const
 		{
 			return m_timestampPeriod;
 		}
 
-		inline VkPhysicalDeviceMemoryProperties const & getMemoryProperties()const
+		VkPhysicalDeviceMemoryProperties const & getMemoryProperties()const
 		{
 			return m_memoryProperties;
 		}
 
-		inline VkPhysicalDeviceProperties const & getProperties()const
+		VkPhysicalDeviceProperties const & getProperties()const
 		{
 			return m_properties;
 		}
 
-		inline VkPhysicalDeviceFeatures const & getFeatures()const
+		VkPhysicalDeviceFeatures const & getFeatures()const
 		{
 			return m_features;
 		}
 
-		inline VkQueueFamilyPropertiesArray const & getQueueFamilyProperties()const
+		VkQueueFamilyPropertiesArray const & getQueueFamilyProperties()const
 		{
 			return m_queueFamilyProperties;
 		}
 
-		inline VkAllocationCallbacks const * getAllocationCallbacks()const
+		VkAllocationCallbacks const * getAllocationCallbacks()const
 		{
 			return m_callbacks;
 		}
@@ -1906,7 +1939,7 @@ namespace ashes
 		*\brief
 		*	VkDevice implicit cast operator.
 		*/
-		inline operator VkDevice const & ()const
+		operator VkDevice const & ()const
 		{
 			return m_internal;
 		}
@@ -1930,6 +1963,15 @@ namespace ashes
 #if VK_EXT_debug_utils || VK_EXT_debug_marker
 		struct ObjectAllocation
 		{
+			ObjectAllocation( std::string ptype
+				, std::string pname
+				, std::string pcallstack )
+				: type{ std::move( ptype ) }
+				, name{ std::move( pname ) }
+				, callstack{ std::move( pcallstack ) }
+			{
+			}
+
 			std::string type;
 			std::string name;
 			std::string callstack;
@@ -1940,14 +1982,16 @@ namespace ashes
 		mutable std::mutex m_allocationMutex;
 		mutable std::unordered_map< size_t, ObjectAllocation > m_allocated;
 
+		using lock_type = std::unique_lock< std::mutex >;
+
 	public:
 		void setCallstackCallback( CallstackCallback callback )
 		{
-			m_callstackCallback = callback;
+			m_callstackCallback = std::move( callback );
 		}
 
 		template< typename AshesType >
-		static inline void stRegisterObject( Device const & device
+		static void stRegisterObject( Device const & device
 			, std::string const & name
 			, AshesType & object )
 		{
@@ -1964,7 +2008,7 @@ namespace ashes
 		}
 
 		template< typename AshesType >
-		static inline void stUnregisterObject( Device const & device, AshesType & object )
+		static void stUnregisterObject( Device const & device, AshesType & object )
 		{
 			using VkType = typename AshesTypeTraits< AshesType >::VkType;
 			device.doUnregisterObject( uint64_t( VkType( object ) ) );

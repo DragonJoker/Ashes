@@ -12,6 +12,8 @@ namespace ashes
 {
 	struct PipelineColorBlendStateCreateInfo
 	{
+		~PipelineColorBlendStateCreateInfo()noexcept = default;
+
 		PipelineColorBlendStateCreateInfo( VkPipelineColorBlendStateCreateFlags flags = 0u
 			, VkBool32 logicOpEnable = VK_FALSE
 			, VkLogicOp logicOp = VK_LOGIC_OP_COPY
@@ -107,17 +109,17 @@ namespace ashes
 			return *this;
 		}
 
-		operator VkPipelineColorBlendStateCreateInfo const &()const
+		operator VkPipelineColorBlendStateCreateInfo const &()const noexcept
 		{
 			return vk;
 		}
 
-		VkPipelineColorBlendStateCreateInfo const * operator->()const
+		VkPipelineColorBlendStateCreateInfo const * operator->()const noexcept
 		{
 			return &vk;
 		}
 
-		VkPipelineColorBlendStateCreateInfo * operator->()
+		VkPipelineColorBlendStateCreateInfo * operator->()noexcept
 		{
 			return &vk;
 		}

@@ -18,7 +18,7 @@ namespace ashes
 	struct IteratorTraits : std::iterator_traits< IterT >
 	{
 		using iterator_category = typename std::iterator_traits< IterT >::iterator_category;
-		static_assert( std::is_convertible< iterator_category, std::random_access_iterator_tag >::value );
+		static_assert( std::is_convertible_v< iterator_category, std::random_access_iterator_tag > );
 	};
 
 	template< class TypeT >
@@ -63,7 +63,7 @@ namespace ashes
 			return *( m_begin + index );
 		}
 
-		const reference operator[]( size_t index )const noexcept
+		reference operator[]( size_t index )const noexcept
 		{
 			return *( m_begin + index );
 		}
@@ -93,7 +93,7 @@ namespace ashes
 			return *m_begin;
 		}
 
-		const reference front()const noexcept
+		reference front()const noexcept
 		{
 			return *m_begin;
 		}
@@ -108,7 +108,7 @@ namespace ashes
 			return reverse_iterator{ end() };
 		}
 
-		const_iterator begin()const noexcept
+		iterator begin()const noexcept
 		{
 			return m_begin;
 		}
@@ -118,7 +118,7 @@ namespace ashes
 			return reverse_iterator{ end() };
 		}
 
-		const_iterator cbegin()const noexcept
+		iterator cbegin()const noexcept
 		{
 			return m_begin;
 		}
@@ -138,7 +138,7 @@ namespace ashes
 			return reverse_iterator{ begin() };
 		}
 
-		const_iterator end()const noexcept
+		iterator end()const noexcept
 		{
 			return m_end;
 		}
@@ -148,7 +148,7 @@ namespace ashes
 			return reverse_iterator{ begin() };
 		}
 
-		const_iterator cend()const noexcept
+		iterator cend()const noexcept
 		{
 			return m_end;
 		}

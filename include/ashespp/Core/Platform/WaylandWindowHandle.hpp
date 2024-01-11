@@ -21,17 +21,17 @@ namespace ashes
 		{
 		}
 
-		operator bool()override
+		operator bool()noexcept override
 		{
 			return m_display != nullptr && m_surface != nullptr;
 		}
 
-		wl_display * getDisplay()const
+		wl_display * getDisplay()const noexcept
 		{
 			return m_display;
 		}
 
-		wl_surface * getSurface()const
+		wl_surface * getSurface()const noexcept
 		{
 			return m_surface;
 		}

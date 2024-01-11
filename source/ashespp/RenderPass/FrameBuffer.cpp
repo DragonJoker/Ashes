@@ -17,7 +17,7 @@ namespace ashes
 		, std::string const & debugName
 		, VkRenderPass renderPass
 		, VkExtent2D const & dimensions
-		,  ImageViewCRefArray views
+		, ImageViewCRefArray views
 		, uint32_t layers )
 		: VkObject{ debugName }
 		, m_device{ device }
@@ -100,7 +100,7 @@ namespace ashes
 		registerObject( m_device, debugName, *this );
 	}
 
-	FrameBuffer::~FrameBuffer()
+	FrameBuffer::~FrameBuffer()noexcept
 	{
 		unregisterObject( m_device, *this );
 		m_device.vkDestroyFramebuffer( m_device

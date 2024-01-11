@@ -55,7 +55,7 @@ namespace ashes
 		VkDeviceSize getShaderGroupStackSize( uint32_t group
 			, VkShaderGroupShaderKHR groupShader )const;
 
-	protected:
+	private:
 		RayTracingPipelineCreateInfoArray m_createInfos;
 	};
 }

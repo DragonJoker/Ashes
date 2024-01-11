@@ -48,14 +48,14 @@ namespace ashes
 		doInitInstance();
 	}
 
-	Instance::~Instance()
+	Instance::~Instance()noexcept
 	{
 		if ( m_instance != nullptr )
 		{
 			vkDestroyInstance( m_instance, nullptr );
 		}
 
-		DEBUG_WRITE( "VkInstance.log" );
+		DEBUG_WRITE( "VkInstance.log" )
 	}
 
 	std::array< float, 16 > Instance::frustum( float left
@@ -86,7 +86,7 @@ namespace ashes
 
 		std::array< float, 16 > result{ 0.0f };
 		result[0] = float( 1.0 / ( aspect * tanHalfFovy ) );
-		result[5] = float( 1.0 / ( tanHalfFovy ) );
+		result[5] = float( 1.0 / tanHalfFovy );
 		result[11] = -float( 1 );
 		result[10] = zFar / ( zNear - zFar );
 		result[14] = -( zFar * zNear ) / ( zFar - zNear );
@@ -117,7 +117,7 @@ namespace ashes
 		, float aspect
 		, float zNear )const
 	{
-		float const tanHalfFovy = float( tan( radiansFovY / float( 2 ) ) );
+		auto const tanHalfFovy = float( tan( radiansFovY / float( 2 ) ) );
 		float const range = tanHalfFovy * zNear;
 		float const left = -range * aspect;
 		float const right = range * aspect;
@@ -194,7 +194,7 @@ namespace ashes
 
 #if VK_EXT_debug_utils
 
-	VkDebugUtilsMessengerEXT Instance::createDebugUtilsMessenger( VkDebugUtilsMessengerCreateInfoEXT & createInfo )const
+	VkDebugUtilsMessengerEXT Instance::createDebugUtilsMessenger( VkDebugUtilsMessengerCreateInfoEXT const & createInfo )const
 	{
 		VkDebugUtilsMessengerEXT result{};
 
@@ -236,7 +236,7 @@ namespace ashes
 #endif
 #if VK_EXT_debug_report
 
-	VkDebugReportCallbackEXT Instance::createDebugReportCallback( VkDebugReportCallbackCreateInfoEXT & createInfo )const
+	VkDebugReportCallbackEXT Instance::createDebugReportCallback( VkDebugReportCallbackCreateInfoEXT const & createInfo )const
 	{
 		VkDebugReportCallbackEXT result{};
 

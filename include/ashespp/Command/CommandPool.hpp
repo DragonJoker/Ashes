@@ -49,19 +49,16 @@ namespace ashes
 		*\param[in] flags
 		*	VkCommandPoolCreateFlagBits combination.
 		*/
-		inline CommandPool( Device const & device
+		CommandPool( Device const & device
+			, std::string const & debugName
 			, uint32_t queueFamilyIndex
 			, VkCommandPoolCreateFlags flags = 0 )
-			: CommandPool
-			{
-				device,
-				{
-					VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
-					nullptr,
-					flags,
-					queueFamilyIndex,
-				},
-			}
+			: CommandPool{ device
+				, debugName
+				, { VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO
+					, nullptr
+					, flags
+					, queueFamilyIndex } }
 		{
 		}
 		/**
@@ -74,28 +71,17 @@ namespace ashes
 		*\param[in] flags
 		*	VkCommandPoolCreateFlagBits combination.
 		*/
-		inline CommandPool( Device const & device
-			, std::string const & debugName
+		CommandPool( Device const & device
 			, uint32_t queueFamilyIndex
 			, VkCommandPoolCreateFlags flags = 0 )
-			: CommandPool
-			{
-				device,
-				debugName,
-				{
-					VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
-					nullptr,
-					flags,
-					queueFamilyIndex,
-				},
-			}
+			: CommandPool{ device, "CommandPool", queueFamilyIndex, flags }
 		{
 		}
 		/**
 		*\brief
 		*	Destructor..
 		*/
-		~CommandPool();
+		~CommandPool()noexcept;
 		/**
 		*\brief
 		*	Creates a command buffer.
@@ -119,12 +105,12 @@ namespace ashes
 		*\brief
 		*	VkCommandPool implicit cast operator.
 		*/
-		inline operator VkCommandPool const & ()const
+		operator VkCommandPool const & ()const noexcept
 		{
 			return m_internal;
 		}
 
-	protected:
+	private:
 		Device const & m_device;
 		VkCommandPool m_internal{};
 	};

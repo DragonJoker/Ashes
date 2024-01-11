@@ -66,12 +66,12 @@ namespace ashes
 		*\brief
 		*	Destructor.
 		*/
-		~Semaphore();
+		~Semaphore()noexcept;
 		/**
 		*\brief
 		*	VkSemaphore implicit cast operator.
 		*/
-		inline operator VkSemaphore const & ()const
+		operator VkSemaphore const & ()const
 		{
 			return m_internal;
 		}
@@ -95,11 +95,12 @@ namespace ashes
 #pragma warning( disable: 4068 )
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-private-field"
-		mutable enum class State
+		enum class State
 		{
 			eSignalable,
 			eWaitable,
-		} m_state{ State::eSignalable };
+		};
+		mutable State m_state{ State::eSignalable };
 		mutable std::set< Semaphore const * > * m_list{ nullptr };
 #pragma clang diagnostic pop
 #pragma warning( pop )

@@ -2,8 +2,8 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#ifndef ___AshesPP_AttributeFormat_HPP___
-#define ___AshesPP_AttributeFormat_HPP___
+#ifndef ___AshesPP_ConstantFormat_HPP___
+#define ___AshesPP_ConstantFormat_HPP___
 #pragma once
 
 #include <cassert>
@@ -13,6 +13,11 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
+	class FormatException
+		: public std::runtime_error
+	{
+		using std::runtime_error::runtime_error;
+	};
 	/**
 	*\brief
 	*	The suppported attribute formats list.
@@ -63,11 +68,11 @@ namespace ashes
 		case ConstantFormat::eVec4f:
 			return uint32_t( 4u * sizeof( float ) );
 		case ConstantFormat::eMat2f:
-			return uint32_t( 2u * 2u * sizeof( float ) );
+			return uint32_t( 2ULL * 2u * sizeof( float ) );
 		case ConstantFormat::eMat3f:
-			return uint32_t( 3u * 3u * sizeof( float ) );
+			return uint32_t( 3ULL * 3u * sizeof( float ) );
 		case ConstantFormat::eMat4f:
-			return uint32_t( 4u * 4u * sizeof( float ) );
+			return uint32_t( 4ULL * 4u * sizeof( float ) );
 		case ConstantFormat::eColour:
 			return uint32_t( 4 * sizeof( uint8_t ) );
 		case ConstantFormat::eInt:
@@ -88,7 +93,7 @@ namespace ashes
 			return uint32_t( 4u * sizeof( uint32_t ) );
 		default:
 			assert( false && "Unsupported vertex buffer attribute type." );
-			throw std::runtime_error{ "Unsupported vertex buffer attribute type" };
+			throw FormatException{ "Unsupported vertex buffer attribute type" };
 		}
 	}
 	/**
@@ -137,10 +142,8 @@ namespace ashes
 			return "colour";
 		default:
 			assert( false && "Unsupported ConstantFormat." );
-			throw std::runtime_error{ "Unsupported ConstantFormat" };
+			throw FormatException{ "Unsupported ConstantFormat" };
 		}
-
-		return "unknown";
 	}
 }
 

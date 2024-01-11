@@ -30,7 +30,7 @@ namespace utils
 		*\brief
 		*	Constructeur sans initialisation.
 		*/
-		Vec2T( NoInit const & )noexcept;
+		explicit Vec2T( NoInit const & )noexcept;
 		/**
 		*\brief
 		*	Constructeur par défaut.
@@ -117,7 +117,7 @@ namespace utils
 		*\return
 		*	Le pointeur.
 		*/
-		inline T const * constPtr()const
+		T const * constPtr()const
 		{
 			return &data[0];
 		}
@@ -133,7 +133,7 @@ namespace utils
 		*\return
 		*	Le pointeur.
 		*/
-		inline T * ptr()
+		T * ptr()
 		{
 			return &data[0];
 		}
@@ -142,19 +142,19 @@ namespace utils
 		*/
 		/**\{*/
 		template< typename U >
-		inline Vec2T & operator+=( Vec2T< U > const & rhs )noexcept;
+		Vec2T & operator+=( Vec2T< U > const & rhs )noexcept;
 		template< typename U >
-		inline Vec2T & operator-=( Vec2T< U > const & rhs )noexcept;
+		Vec2T & operator-=( Vec2T< U > const & rhs )noexcept;
 		template< typename U >
-		inline Vec2T & operator*=( Vec2T< U > const & rhs )noexcept;
+		Vec2T & operator*=( Vec2T< U > const & rhs )noexcept;
 		template< typename U >
-		inline Vec2T & operator+=( U const & rhs )noexcept;
+		Vec2T & operator+=( U const & rhs )noexcept;
 		template< typename U >
-		inline Vec2T & operator-=( U const & rhs )noexcept;
+		Vec2T & operator-=( U const & rhs )noexcept;
 		template< typename U >
-		inline Vec2T & operator*=( U const & rhs )noexcept;
+		Vec2T & operator*=( U const & rhs )noexcept;
 		template< typename U >
-		inline Vec2T & operator/=( U const & rhs )noexcept;
+		Vec2T & operator/=( U const & rhs )noexcept;
 		/**\}*/
 
 	public:
@@ -165,7 +165,7 @@ namespace utils
 #pragma GCC diagnostic ignored "-Wpedantic"
 		union
 		{
-			T data[2];
+			std::array< T, 2u > data;
 			struct
 			{
 				T x;

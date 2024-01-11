@@ -16,6 +16,8 @@ namespace ashes
 	*/
 	struct ComputePipelineCreateInfo
 	{
+		~ComputePipelineCreateInfo()noexcept = default;
+
 		ComputePipelineCreateInfo( VkPipelineCreateFlags flags
 			, PipelineShaderStageCreateInfo pstage
 			, VkPipelineLayout layout
@@ -59,7 +61,7 @@ namespace ashes
 
 		ComputePipelineCreateInfo & operator=( ComputePipelineCreateInfo const & rhs )
 		{
-			stage = std::move( rhs.stage );
+			stage = rhs.stage;
 			vk = { VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO
 				, rhs.vk.pNext
 				, rhs.vk.flags
@@ -85,17 +87,17 @@ namespace ashes
 			return *this;
 		}
 
-		operator VkComputePipelineCreateInfo const & ()const
+		operator VkComputePipelineCreateInfo const & ()const noexcept
 		{
 			return vk;
 		}
 
-		VkComputePipelineCreateInfo const * operator->()const
+		VkComputePipelineCreateInfo const * operator->()const noexcept
 		{
 			return &vk;
 		}
 
-		VkComputePipelineCreateInfo * operator->()
+		VkComputePipelineCreateInfo * operator->()noexcept
 		{
 			return &vk;
 		}

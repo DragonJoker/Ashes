@@ -5,6 +5,7 @@
 #pragma warning( push )
 #pragma warning( disable: 4365 )
 #pragma warning( disable: 5262 )
+#include <array>
 #include <cassert>
 #include <filesystem>
 #include <iomanip>
@@ -48,12 +49,12 @@ namespace ashes
 				, 0
 				, nullptr ) == 0 )
 			{
-				int length = WideCharToMultiByte( CP_UTF8, 0u, errorText, -1, nullptr, 0u, 0u, 0u );
+				int length = WideCharToMultiByte( CP_UTF8, 0u, errorText, -1, nullptr, 0u, nullptr, nullptr );
 
 				if ( length > 0 )
 				{
 					std::string converted( size_t( length ), 0 );
-					WideCharToMultiByte( CP_UTF8, 0u, errorText, -1, converted.data(), length, 0u, 0u );
+					WideCharToMultiByte( CP_UTF8, 0u, errorText, -1, converted.data(), length, nullptr, nullptr );
 					stream << converted.c_str() << std::endl;
 				}
 			}
@@ -67,8 +68,8 @@ namespace ashes
 	}
 
 	bool traverseDirectory( std::string const & folderPath
-		, TraverseDirFunction directoryFunction
-		, HitFileFunction fileFunction )
+		, TraverseDirFunction const & directoryFunction
+		, HitFileFunction const & fileFunction )
 	{
 		assert( !folderPath.empty() );
 
@@ -131,19 +132,17 @@ namespace ashes
 
 	std::string getExecutableDirectory()
 	{
-		std::string pathReturn;
-		char path[FILENAME_MAX];
-		DWORD result = ::GetModuleFileNameA( nullptr
-			, path
-			, sizeof( path ) );
-
-		if ( result != 0 )
+		std::string result;
+		std::array< char, FILENAME_MAX > path{};
+		
+		if ( DWORD ret = ::GetModuleFileNameA( nullptr, path.data(), DWORD( sizeof( char ) * path.size() ) );
+			ret != 0 )
 		{
-			pathReturn = path;
+			result = path.data();
 		}
 
-		pathReturn = getPath( pathReturn );
-		return pathReturn;
+		result = getPath( result );
+		return result;
 	}
 }
 

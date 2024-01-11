@@ -25,7 +25,7 @@ namespace ashes
 			, std::string const & debugName
 			, uint32_t familyIndex
 			, uint32_t index );
-		~Queue();
+		~Queue()noexcept;
 		/**
 		*\brief
 		*	Submits given command buffers.

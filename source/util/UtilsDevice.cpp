@@ -17,8 +17,7 @@ namespace utils
 {
 	namespace
 	{
-		void doInitialiseQueueFamilies( ashes::Instance const & instance
-			, ashes::Surface const & surface
+		void doInitialiseQueueFamilies( ashes::Surface const & surface
 			, ashes::PhysicalDevice const & gpu
 			, uint32_t & presentQueueFamilyIndex
 			, uint32_t & graphicsQueueFamilyIndex
@@ -102,8 +101,7 @@ namespace utils
 			, uint32_t & graphicsQueueFamilyIndex
 			, uint32_t & computeQueueFamilyIndex )
 		{
-			doInitialiseQueueFamilies( instance
-				, surface
+			doInitialiseQueueFamilies( surface
 				, gpu
 				, presentQueueFamilyIndex
 				, graphicsQueueFamilyIndex
@@ -111,44 +109,26 @@ namespace utils
 			std::vector< float > queuePriorities = { 1.0f };
 			ashes::DeviceQueueCreateInfoArray queueCreateInfos;
 
-			if ( graphicsQueueFamilyIndex != ~( 0u ) )
+			if ( graphicsQueueFamilyIndex != ~0u )
 			{
-				queueCreateInfos.push_back(
-					{
-						0u,
-						graphicsQueueFamilyIndex,
-						queuePriorities,
-					} );
+				queueCreateInfos.emplace_back( 0u, graphicsQueueFamilyIndex, queuePriorities );
 			}
 
 			if ( presentQueueFamilyIndex != graphicsQueueFamilyIndex )
 			{
-				queueCreateInfos.push_back(
-					{
-						0u,
-						presentQueueFamilyIndex,
-						queuePriorities,
-					} );
+				queueCreateInfos.emplace_back( 0u, presentQueueFamilyIndex, queuePriorities );
 			}
 
 			if ( computeQueueFamilyIndex != graphicsQueueFamilyIndex )
 			{
-				queueCreateInfos.push_back(
-					{
-						0u,
-						computeQueueFamilyIndex,
-						queuePriorities,
-					} );
+				queueCreateInfos.emplace_back( 0u, computeQueueFamilyIndex, queuePriorities );
 			}
 
-			return ashes::DeviceCreateInfo
-			{
-				0u,
-				std::move( queueCreateInfos ),
-				instance.getEnabledLayerNames(),
-				{ VK_KHR_SWAPCHAIN_EXTENSION_NAME },
-				gpu.getFeatures()
-			};
+			return ashes::DeviceCreateInfo{ 0u
+				, std::move( queueCreateInfos )
+				, instance.getEnabledLayerNames()
+				, { VK_KHR_SWAPCHAIN_EXTENSION_NAME }
+				, gpu.getFeatures() };
 		}
 	}
 

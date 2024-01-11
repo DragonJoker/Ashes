@@ -28,7 +28,7 @@ struct Plugin
 	PFN_ashGetPluginDescription fnGetPluginDescription;
 	AshPluginDescription description;
 
-	inline Plugin( std::unique_ptr< ashes::DynamicLibrary > lib )
+	Plugin( std::unique_ptr< ashes::DynamicLibrary > lib )
 		: library{ std::move( lib ) }
 	{
 

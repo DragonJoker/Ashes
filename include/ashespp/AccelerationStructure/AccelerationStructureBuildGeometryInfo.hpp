@@ -40,6 +40,8 @@ namespace ashes
 		}
 
 	public:
+		~AccelerationStructureBuildGeometryInfo()noexcept = default;
+
 		AccelerationStructureBuildGeometryInfo( VkAccelerationStructureTypeKHR type
 			, VkBuildAccelerationStructureFlagsKHR flags
 			, VkBuildAccelerationStructureModeKHR mode
@@ -52,7 +54,7 @@ namespace ashes
 				, mode
 				, srcAccelerationStructure
 				, dstAccelerationStructure
-				, ppgeometries
+			, std::move( ppgeometries )
 				, {}
 				, scratchData }
 		{
@@ -71,7 +73,7 @@ namespace ashes
 				, srcAccelerationStructure
 				, dstAccelerationStructure
 				, {}
-				, ppgeometries
+				, std::move( ppgeometries )
 				, scratchData }
 		{
 		}
@@ -88,7 +90,7 @@ namespace ashes
 		{
 		}
 
-		AccelerationStructureBuildGeometryInfo( AccelerationStructureBuildGeometryInfo && rhs )
+		AccelerationStructureBuildGeometryInfo( AccelerationStructureBuildGeometryInfo && rhs )noexcept
 			: AccelerationStructureBuildGeometryInfo{ rhs.vk.type
 			, rhs.vk.flags
 			, rhs.vk.mode
@@ -100,7 +102,7 @@ namespace ashes
 		{
 		}
 
-		AccelerationStructureBuildGeometryInfo( VkAccelerationStructureBuildGeometryInfoKHR rhs )
+		explicit AccelerationStructureBuildGeometryInfo( VkAccelerationStructureBuildGeometryInfoKHR const & rhs )noexcept
 			: AccelerationStructureBuildGeometryInfo{ rhs.type
 			, rhs.flags
 			, rhs.mode
@@ -112,7 +114,7 @@ namespace ashes
 		{
 		}
 
-		operator VkAccelerationStructureBuildGeometryInfoKHR const & ()const
+		operator VkAccelerationStructureBuildGeometryInfoKHR const & ()const noexcept
 		{
 			return vk;
 		}

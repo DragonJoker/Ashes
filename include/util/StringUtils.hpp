@@ -117,9 +117,9 @@ namespace utils
 		, char toReplace
 		, char replacement )
 	{
-		char find[2] = { toReplace, '\0' };
-		char replaced[2] = { replacement, '\0' };
-		return replace( text, find, replaced );
+		std::array< char, 2u > find{ toReplace, '\0' };
+		std::array< char, 2u > replaced{ replacement, '\0' };
+		return replace( text, find.data(), replaced.data() );
 	}
 	/**
 	*\brief
@@ -137,8 +137,8 @@ namespace utils
 		, std::string const & toReplace
 		, char replacement )
 	{
-		char replaced[2] = { replacement, '\0' };
-		return replace( text, toReplace, replaced );
+		std::array< char, 2u > replaced{ replacement, '\0' };
+		return replace( text, toReplace, replaced.data() );
 	}
 	/**
 	*\brief
@@ -156,8 +156,8 @@ namespace utils
 		, char toReplace
 		, std::string const & replacement )
 	{
-		char find[2] = { toReplace, '\0' };
-		return replace( text, find, replacement );
+		std::array< char, 2u > find{ toReplace, '\0' };
+		return replace( text, find.data(), replacement );
 	}
 	/**
 	*\brief

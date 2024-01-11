@@ -35,8 +35,8 @@ namespace ashes
 	{
 		ByteArray result;
 		result.resize( dataSize );
-		auto res = m_device.vkGetRayTracingCaptureReplayShaderGroupHandlesKHR( m_device
-			, m_internal
+		auto res = getDevice().vkGetRayTracingCaptureReplayShaderGroupHandlesKHR( getDevice()
+			, *this
 			, firstGroup
 			, groupCount
 			, dataSize
@@ -48,8 +48,8 @@ namespace ashes
 	VkDeviceSize RayTracingPipeline::getShaderGroupStackSize( uint32_t group
 		, VkShaderGroupShaderKHR groupShader )const
 	{
-		return m_device.vkGetRayTracingShaderGroupStackSizeKHR( m_device
-			, m_internal
+		return getDevice().vkGetRayTracingShaderGroupStackSizeKHR( getDevice()
+			, *this
 			, group
 			, groupShader );
 	}

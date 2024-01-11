@@ -14,6 +14,8 @@ namespace ashes
 
 	struct PipelineLibraryCreateInfo
 	{
+		~PipelineLibraryCreateInfo()noexcept = default;
+
 		PipelineLibraryCreateInfo( PipelineArray plibraries )
 			: libraries{ std::move( plibraries ) }
 			, vk{ VK_STRUCTURE_TYPE_PIPELINE_LIBRARY_CREATE_INFO_KHR
@@ -41,7 +43,7 @@ namespace ashes
 		{
 		}
 
-		PipelineLibraryCreateInfo( VkPipelineLibraryCreateInfoKHR rhs )noexcept
+		explicit PipelineLibraryCreateInfo( VkPipelineLibraryCreateInfoKHR rhs )noexcept
 			: libraries{ makeArray( rhs.pLibraries, rhs.libraryCount ) }
 			, vk{ VK_STRUCTURE_TYPE_PIPELINE_LIBRARY_CREATE_INFO_KHR
 				, rhs.pNext
@@ -70,17 +72,17 @@ namespace ashes
 			return *this;
 		}
 
-		operator VkPipelineLibraryCreateInfoKHR const &()const
+		operator VkPipelineLibraryCreateInfoKHR const &()const noexcept
 		{
 			return vk;
 		}
 
-		VkPipelineLibraryCreateInfoKHR const * operator->()const
+		VkPipelineLibraryCreateInfoKHR const * operator->()const noexcept
 		{
 			return &vk;
 		}
 
-		VkPipelineLibraryCreateInfoKHR * operator->()
+		VkPipelineLibraryCreateInfoKHR * operator->()noexcept
 		{
 			return &vk;
 		}

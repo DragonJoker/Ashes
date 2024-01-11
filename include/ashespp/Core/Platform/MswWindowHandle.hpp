@@ -21,18 +21,18 @@ namespace ashes
 		{
 		}
 
-		operator bool()override
+		operator bool()noexcept override
 		{
 			return m_hWnd != nullptr
 				&& m_hInstance != nullptr;
 		}
 
-		HINSTANCE getHinstance()const
+		HINSTANCE getHinstance()const noexcept
 		{
 			return m_hInstance;
 		}
 
-		HWND getHwnd()const
+		HWND getHwnd()const noexcept
 		{
 			return m_hWnd;
 		}

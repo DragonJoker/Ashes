@@ -23,23 +23,23 @@ namespace ashes
 		*\brief
 		*	Constructor.
 		*/
-		IWindowHandle( std::string surfaceName )
+		explicit IWindowHandle( std::string surfaceName )noexcept
 			: m_surfaceName{ std::move( surfaceName ) }
 		{
 		}
 
 	public:
-		virtual ~IWindowHandle() = default;
+		virtual ~IWindowHandle()noexcept = default;
 		/**
 		*\brief
 		*	Boolean convertion operator.
 		*/
-		virtual operator bool() = 0;
+		virtual operator bool()noexcept = 0;
 		/**
 		*\return
 		*	The surface type name.
 		*/
-		std::string const & getSurfaceName()const
+		std::string const & getSurfaceName()const noexcept
 		{
 			return m_surfaceName;
 		}
@@ -57,31 +57,31 @@ namespace ashes
 	public:
 		WindowHandle( WindowHandle const & ) = delete;
 		WindowHandle & operator=( WindowHandle const & ) = delete;
-		WindowHandle( WindowHandle && rhs ) = default;
-		WindowHandle & operator=( WindowHandle && rhs ) = default;
+		WindowHandle( WindowHandle && rhs )noexcept = default;
+		WindowHandle & operator=( WindowHandle && rhs )noexcept = default;
 		/**
 		*\brief
 		*	Constructor.
 		*\param[in] handle
 		*	The allocated handle.
 		*/
-		explicit WindowHandle( IWindowHandlePtr handle );
+		explicit WindowHandle( IWindowHandlePtr handle )noexcept;
 		/**
 		*\brief
 		*	Destructor.
 		*/
-		~WindowHandle() = default;
+		~WindowHandle()noexcept = default;
 		/**
 		*\brief
 		*	Boolean convertion operator.
 		*/
-		operator bool();
+		operator bool()noexcept;
 		/**
 		*\return
 		*	The window handle, cast in wanted format (IMswWindowHandle, IXWindowHandle, ...).
 		*/
 		template< class T >
-		T const & getInternal()const
+		T const & getInternal()const noexcept
 		{
 			return static_cast< T const & >( *m_handle );
 		}
@@ -89,7 +89,7 @@ namespace ashes
 		*\return
 		*	The surface type name.
 		*/
-		std::string const & getSurfaceName()const
+		std::string const & getSurfaceName()const noexcept
 		{
 			static std::string const dummy;
 			return ( m_handle
@@ -100,7 +100,7 @@ namespace ashes
 		*\return
 		*	The surface.
 		*/
-		Surface const & getSurface()const
+		Surface const & getSurface()const noexcept
 		{
 			return *m_surface;
 		}
@@ -108,7 +108,7 @@ namespace ashes
 		*\param[in] surface
 		*	The surface.
 		*/
-		void setSurface( Surface const & surface )
+		void setSurface( Surface const & surface )noexcept
 		{
 			m_surface = &surface;
 		}

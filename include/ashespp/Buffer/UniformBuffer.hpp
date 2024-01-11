@@ -32,7 +32,7 @@ namespace ashes
 			, VkDeviceSize count
 			, VkDeviceSize size
 			, VkBufferUsageFlags usage
-			, QueueShare sharingMode = {} );
+			, QueueShare const & sharingMode = {} );
 		/**
 		*	Constructor.
 		*\param[in] device
@@ -49,7 +49,7 @@ namespace ashes
 			, VkDeviceSize count
 			, VkDeviceSize size
 			, VkBufferUsageFlags usage
-			, QueueShare sharingMode = {} );
+			, QueueShare const & sharingMode = {} );
 		/**
 		*\brief
 		*	Binds this buffer to given device memory object.
@@ -75,7 +75,7 @@ namespace ashes
 		*\return
 		*	The aligned size for an element.
 		*/
-		inline VkDeviceSize getAlignedSize()const
+		VkDeviceSize getAlignedSize()const
 		{
 			return getAlignedSize( getElementSize() );
 		}
@@ -83,7 +83,7 @@ namespace ashes
 		*\return
 		*	The GPU buffer.
 		*/
-		inline BufferBase const & getBuffer()const
+		BufferBase const & getBuffer()const
 		{
 			return *m_buffer;
 		}
@@ -91,7 +91,7 @@ namespace ashes
 		*\return
 		*	The GPU buffer.
 		*/
-		inline BufferBase & getBuffer()
+		BufferBase & getBuffer()
 		{
 			return *m_buffer;
 		}
@@ -99,7 +99,7 @@ namespace ashes
 		*\return
 		*	The size of one element in the buffer.
 		*/
-		inline VkDeviceSize getElementSize()const
+		VkDeviceSize getElementSize()const
 		{
 			return m_size;
 		}
@@ -107,16 +107,15 @@ namespace ashes
 		*\brief
 		*	Conversion implicite vers VkBuffer.
 		*/
-		inline operator VkBuffer const & ()const
+		operator VkBuffer const & ()const
 		{
 			return *m_buffer;
 		}
 
-	protected:
+	private:
 		Device const & m_device;
-		VkDeviceSize m_count;
-		VkDeviceSize m_size;
-		BufferBasePtr m_buffer;
+		VkDeviceSize m_size{};
+		BufferBasePtr m_buffer{};
 	};
 	/**
 	*\brief

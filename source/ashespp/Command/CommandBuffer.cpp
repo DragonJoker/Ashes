@@ -54,7 +54,7 @@ namespace ashes
 		registerObject( m_device, debugName, *this );
 	}
 
-	CommandBuffer::~CommandBuffer()
+	CommandBuffer::~CommandBuffer()noexcept
 	{
 		unregisterObject( m_device, *this );
 		m_device.vkFreeCommandBuffers( m_device, m_pool, 1, &m_internal );

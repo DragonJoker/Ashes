@@ -67,7 +67,7 @@ namespace ashes
 		{
 		}
 
-		void update( VkDescriptorSet descriptorSet )const
+		void update( VkDescriptorSet descriptorSet )const noexcept
 		{
 			if ( needsUpdate )
 			{
@@ -78,17 +78,17 @@ namespace ashes
 			}
 		}
 
-		operator VkWriteDescriptorSet const &()const
+		operator VkWriteDescriptorSet const &()const noexcept
 		{
 			return vk;
 		}
 
-		inline VkWriteDescriptorSet const * operator->()const
+		inline VkWriteDescriptorSet const * operator->()const noexcept
 		{
 			return &vk;
 		}
 
-		inline VkWriteDescriptorSet * operator->()
+		inline VkWriteDescriptorSet * operator->()noexcept
 		{
 			return &vk;
 		}

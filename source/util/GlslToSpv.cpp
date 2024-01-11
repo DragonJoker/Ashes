@@ -7,6 +7,7 @@ See LICENSE file in root folder.
 #pragma warning( push )
 #pragma warning( disable: 4365 )
 #pragma warning( disable: 4464 )
+#pragma warning( disable: 5267 )
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wconversion"
 #pragma GCC diagnostic ignored "-Wuseless-cast"
@@ -19,6 +20,7 @@ See LICENSE file in root folder.
 #pragma clang diagnostic ignored "-Wsigned-enum-bitfield"
 #pragma clang diagnostic ignored "-Wsuggest-destructor-override"
 #pragma clang diagnostic ignored "-Wsuggest-override"
+#pragma clang diagnostic ignored "-Wunused-but-set-variable"
 #include <glslang/Public/ShaderLang.h>
 #include <SPIRV/GlslangToSpv.h>
 #pragma clang diagnostic pop
@@ -35,6 +37,11 @@ namespace utils
 	{
 		struct BlockLocale
 		{
+			BlockLocale( BlockLocale const & ) = delete;
+			BlockLocale & operator=( BlockLocale const & ) = delete;
+			BlockLocale( BlockLocale && )noexcept = delete;
+			BlockLocale & operator=( BlockLocale && )noexcept = delete;
+
 			BlockLocale()
 			{
 				m_prvLoc = std::locale( "" );
@@ -45,7 +52,7 @@ namespace utils
 				}
 			}
 
-			~BlockLocale()
+			~BlockLocale()noexcept
 			{
 				if ( m_prvLoc.name() != "C" )
 				{

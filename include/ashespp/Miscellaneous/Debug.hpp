@@ -39,12 +39,12 @@ namespace ashes
 		*\param[in,out] stream
 		*	The stream.
 		*/
-		static inline void write( std::ostream & stream )
+		static void write( std::ostream & stream )
 		{
-			for ( auto const & it : m_dump )
+			for ( auto const & [lhs, rhs] : m_dump )
 			{
-				stream << it.first << ":" << std::endl;
-				stream << it.second << std::endl;
+				stream << lhs << ":" << std::endl;
+				stream << rhs << std::endl;
 			}
 		}
 		/**
@@ -54,7 +54,7 @@ namespace ashes
 		*	The value to dump.
 		*/
 		template< typename VkType >
-		static inline void dump( VkType const & value )
+		static void dump( VkType const & value )
 		{
 			using Namer = VkTypeNamer< VkType >;
 			m_dump.emplace( Namer::Name, subDump( value, std::string{} ) );
@@ -66,7 +66,7 @@ namespace ashes
 		*	The values array to dump.
 		*/
 		template< typename VkType >
-		static inline void dump( std::vector< VkType > const & value )
+		static void dump( std::vector< VkType > const & value )
 		{
 			std::string dump;
 
@@ -81,7 +81,7 @@ namespace ashes
 
 	private:
 		template< typename VkType >
-		static inline std::string subDump( VkType const * const value, uint32_t count, std::string const & tabs )
+		static std::string subDump( VkType const * const value, uint32_t count, std::string const & tabs )
 		{
 			std::stringstream dump;
 
@@ -105,7 +105,7 @@ namespace ashes
 		}
 
 		template< typename VkType >
-		static inline std::string subDump( VkType const * const value, std::string const & tabs )
+		static std::string subDump( VkType const * const value, std::string const & tabs )
 		{
 			std::stringstream dump;
 
@@ -121,7 +121,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( char const * const value, std::string const & tabs )
+		static std::string subDump( char const * const value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << value << std::endl;
@@ -129,84 +129,84 @@ namespace ashes
 		}
 
 		template< typename VkType >
-		static inline std::string subDump( VkType * value, std::string const & tabs )
+		static std::string subDump( VkType * value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << value << std::endl;
 			return dump.str();
 		}
 
-		static inline std::string subDump( int8_t value, std::string const & tabs )
+		static std::string subDump( int8_t value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << value << std::endl;
 			return dump.str();
 		}
 
-		static inline std::string subDump( uint8_t value, std::string const & tabs )
+		static std::string subDump( uint8_t value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << value << std::endl;
 			return dump.str();
 		}
 
-		static inline std::string subDump( int16_t value, std::string const & tabs )
+		static std::string subDump( int16_t value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << value << std::endl;
 			return dump.str();
 		}
 
-		static inline std::string subDump( uint16_t value, std::string const & tabs )
+		static std::string subDump( uint16_t value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << value << std::endl;
 			return dump.str();
 		}
 
-		static inline std::string subDump( int32_t value, std::string const & tabs )
+		static std::string subDump( int32_t value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << value << std::endl;
 			return dump.str();
 		}
 
-		static inline std::string subDump( uint32_t value, std::string const & tabs )
+		static std::string subDump( uint32_t value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << value << std::endl;
 			return dump.str();
 		}
 
-		static inline std::string subDump( int64_t value, std::string const & tabs )
+		static std::string subDump( int64_t value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << value << std::endl;
 			return dump.str();
 		}
 
-		static inline std::string subDump( uint64_t value, std::string const & tabs )
+		static std::string subDump( uint64_t value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << value << std::endl;
 			return dump.str();
 		}
 
-		static inline std::string subDump( float value, std::string const & tabs )
+		static std::string subDump( float value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << value << std::endl;
 			return dump.str();
 		}
 
-		static inline std::string subDump( double value, std::string const & tabs )
+		static std::string subDump( double value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << value << std::endl;
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkDescriptorPoolCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkDescriptorPoolCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -220,7 +220,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkWriteDescriptorSet const & value, std::string const & tabs )
+		static std::string subDump( VkWriteDescriptorSet const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -238,7 +238,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkDescriptorImageInfo const & value, std::string const & tabs )
+		static std::string subDump( VkDescriptorImageInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -249,7 +249,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkDescriptorBufferInfo const & value, std::string const & tabs )
+		static std::string subDump( VkDescriptorBufferInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -260,7 +260,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkDescriptorSetAllocateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkDescriptorSetAllocateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -273,7 +273,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkDescriptorPoolSize const & value, std::string const & tabs )
+		static std::string subDump( VkDescriptorPoolSize const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -283,7 +283,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkDescriptorSetLayoutCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkDescriptorSetLayoutCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -296,7 +296,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkDescriptorSetLayoutBinding const & value, std::string const & tabs )
+		static std::string subDump( VkDescriptorSetLayoutBinding const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -309,7 +309,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkImageCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkImageCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -332,7 +332,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkSamplerCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkSamplerCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -358,7 +358,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkBufferImageCopy const & value, std::string const & tabs )
+		static std::string subDump( VkBufferImageCopy const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -372,7 +372,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkImageCopy const & value, std::string const & tabs )
+		static std::string subDump( VkImageCopy const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -385,7 +385,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkImageBlit const & value, std::string const & tabs )
+		static std::string subDump( VkImageBlit const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -397,7 +397,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkImageSubresourceLayers const & value, std::string const & tabs )
+		static std::string subDump( VkImageSubresourceLayers const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -409,7 +409,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkBufferCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkBufferCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -425,7 +425,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkBufferCopy const & value, std::string const & tabs )
+		static std::string subDump( VkBufferCopy const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -436,7 +436,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkBufferMemoryBarrier const & value, std::string const & tabs )
+		static std::string subDump( VkBufferMemoryBarrier const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -453,7 +453,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkMemoryAllocateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkMemoryAllocateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -465,7 +465,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkMappedMemoryRange const & value, std::string const & tabs )
+		static std::string subDump( VkMappedMemoryRange const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -478,7 +478,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkLayerProperties const & value, std::string const & tabs )
+		static std::string subDump( VkLayerProperties const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -490,7 +490,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkExtensionProperties const & value, std::string const & tabs )
+		static std::string subDump( VkExtensionProperties const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -500,7 +500,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkApplicationInfo const & value, std::string const & tabs )
+		static std::string subDump( VkApplicationInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -515,7 +515,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkInstanceCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkInstanceCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -531,7 +531,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkDeviceQueueCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkDeviceQueueCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -545,7 +545,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkPhysicalDeviceFeatures const & value, std::string const & tabs )
+		static std::string subDump( VkPhysicalDeviceFeatures const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -608,7 +608,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkDeviceCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkDeviceCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -626,7 +626,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkPushConstantRange const & value, std::string const & tabs )
+		static std::string subDump( VkPushConstantRange const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -637,7 +637,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkPipelineLayoutCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkPipelineLayoutCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -652,7 +652,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkSpecializationMapEntry const & value, std::string const & tabs )
+		static std::string subDump( VkSpecializationMapEntry const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -663,7 +663,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkSpecializationInfo const & value, std::string const & tabs )
+		static std::string subDump( VkSpecializationInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -675,7 +675,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkPipelineShaderStageCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkPipelineShaderStageCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -690,7 +690,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkVertexInputBindingDescription const & value, std::string const & tabs )
+		static std::string subDump( VkVertexInputBindingDescription const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -701,7 +701,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkVertexInputAttributeDescription const & value, std::string const & tabs )
+		static std::string subDump( VkVertexInputAttributeDescription const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -713,7 +713,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkPipelineVertexInputStateCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkPipelineVertexInputStateCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -728,7 +728,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkPipelineInputAssemblyStateCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkPipelineInputAssemblyStateCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -741,7 +741,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkPipelineTessellationStateCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkPipelineTessellationStateCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -753,7 +753,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkPipelineViewportStateCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkPipelineViewportStateCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -768,7 +768,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkPipelineRasterizationStateCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkPipelineRasterizationStateCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -789,7 +789,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkPipelineMultisampleStateCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkPipelineMultisampleStateCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -806,7 +806,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkStencilOpState const & value, std::string const & tabs )
+		static std::string subDump( VkStencilOpState const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -821,7 +821,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkPipelineDepthStencilStateCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkPipelineDepthStencilStateCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -841,7 +841,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkPipelineColorBlendAttachmentState const & value, std::string const & tabs )
+		static std::string subDump( VkPipelineColorBlendAttachmentState const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -857,7 +857,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkPipelineColorBlendStateCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkPipelineColorBlendStateCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -873,7 +873,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkPipelineDynamicStateCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkPipelineDynamicStateCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -886,7 +886,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkGraphicsPipelineCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkGraphicsPipelineCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -913,7 +913,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkComputePipelineCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkComputePipelineCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -928,7 +928,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkCommandBufferAllocateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkCommandBufferAllocateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -941,7 +941,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkCommandBufferInheritanceInfo const & value, std::string const & tabs )
+		static std::string subDump( VkCommandBufferInheritanceInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -957,7 +957,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkCommandBufferBeginInfo const & value, std::string const & tabs )
+		static std::string subDump( VkCommandBufferBeginInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -969,7 +969,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkSubmitInfo const & value, std::string const & tabs )
+		static std::string subDump( VkSubmitInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -986,7 +986,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkPresentInfoKHR const & value, std::string const & tabs )
+		static std::string subDump( VkPresentInfoKHR const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1002,7 +1002,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkAttachmentReference const & value, std::string const & tabs )
+		static std::string subDump( VkAttachmentReference const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1012,7 +1012,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkSubpassDescription const & value, std::string const & tabs )
+		static std::string subDump( VkSubpassDescription const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1030,7 +1030,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkAttachmentDescription const & value, std::string const & tabs )
+		static std::string subDump( VkAttachmentDescription const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1047,7 +1047,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkSubpassDependency const & value, std::string const & tabs )
+		static std::string subDump( VkSubpassDependency const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1062,7 +1062,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkRenderPassCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkRenderPassCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1079,7 +1079,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkClearColorValue const & value, std::string const & tabs )
+		static std::string subDump( VkClearColorValue const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1091,7 +1091,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkClearDepthStencilValue const & value, std::string const & tabs )
+		static std::string subDump( VkClearDepthStencilValue const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1101,7 +1101,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkClearValue const & value, std::string const & tabs )
+		static std::string subDump( VkClearValue const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1111,7 +1111,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkRenderPassBeginInfo const & value, std::string const & tabs )
+		static std::string subDump( VkRenderPassBeginInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1126,7 +1126,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkSemaphoreCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkSemaphoreCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1137,7 +1137,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkShaderModuleCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkShaderModuleCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1150,7 +1150,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkSwapchainCreateInfoKHR const & value, std::string const & tabs )
+		static std::string subDump( VkSwapchainCreateInfoKHR const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1176,7 +1176,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkViewport const & value, std::string const & tabs )
+		static std::string subDump( VkViewport const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1190,7 +1190,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkExtent2D const & value, std::string const & tabs )
+		static std::string subDump( VkExtent2D const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1200,7 +1200,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkOffset2D const & value, std::string const & tabs )
+		static std::string subDump( VkOffset2D const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1210,7 +1210,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkExtent3D const & value, std::string const & tabs )
+		static std::string subDump( VkExtent3D const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1221,7 +1221,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkOffset3D const & value, std::string const & tabs )
+		static std::string subDump( VkOffset3D const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1232,7 +1232,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkRect2D const & value, std::string const & tabs )
+		static std::string subDump( VkRect2D const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1242,7 +1242,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkImageSubresourceRange const & value, std::string const & tabs )
+		static std::string subDump( VkImageSubresourceRange const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1255,7 +1255,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkImageMemoryBarrier const & value, std::string const & tabs )
+		static std::string subDump( VkImageMemoryBarrier const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1273,7 +1273,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkCommandPoolCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkCommandPoolCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1285,7 +1285,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkFenceCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkFenceCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1296,7 +1296,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkFramebufferCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkFramebufferCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1313,7 +1313,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkComponentMapping const & value, std::string const & tabs )
+		static std::string subDump( VkComponentMapping const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1325,7 +1325,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkImageViewCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkImageViewCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1341,7 +1341,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkBufferViewCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkBufferViewCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1356,7 +1356,7 @@ namespace ashes
 			return dump.str();
 		}
 
-		static inline std::string subDump( VkQueryPoolCreateInfo const & value, std::string const & tabs )
+		static std::string subDump( VkQueryPoolCreateInfo const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1372,7 +1372,7 @@ namespace ashes
 
 #ifdef VK_USE_PLATFORM_WIN32_KHR
 
-		static inline std::string subDump( VkWin32SurfaceCreateInfoKHR const & value, std::string const & tabs )
+		static std::string subDump( VkWin32SurfaceCreateInfoKHR const & value, std::string const & tabs )
 		{
 			std::stringstream dump;
 			dump << tabs << "{" << std::endl;
@@ -1388,7 +1388,7 @@ namespace ashes
 #endif
 
 	private:
-		static std::multimap< std::string, std::string > m_dump;
+		static std::multimap< std::string, std::string, std::less<> > m_dump;
 	};
 }
 
@@ -1413,8 +1413,14 @@ namespace ashes
 	*	Writes the trace content to a stream.
 	*/
 #	define DEBUG_WRITE( file )\
-	std::ofstream debugDumpFile{ file };\
-	vk_renderer::Debug::write( debugDumpFile )
+	try\
+	{\
+		std::ofstream debugDumpFile{ file };\
+		vk_renderer::Debug::write( debugDumpFile );]
+	}\
+	catch ( ... )\
+	{\
+	}
 
 #else
 

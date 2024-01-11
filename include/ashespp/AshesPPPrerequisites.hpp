@@ -236,7 +236,6 @@ namespace ashes
 	using DeviceMemoryPtr = std::shared_ptr< DeviceMemory >;
 
 	using PushConstantArray = std::vector< PushConstant >;
-	using ImageArray = std::vector< Image >;
 	using ImageViewArray = std::vector< ImageView >;
 	using WriteDescriptorSetArray = std::vector< WriteDescriptorSet >;
 
@@ -311,6 +310,11 @@ namespace ashes
 	class VkObject
 	{
 	public:
+		VkObject( VkObject const & ) = delete;
+		VkObject( VkObject && )noexcept = delete;
+		VkObject & operator=( VkObject const & ) = delete;
+		VkObject & operator=( VkObject && )noexcept = delete;
+
 		VkObject( std::string name )noexcept
 			: m_name{ std::move( name ) }
 		{

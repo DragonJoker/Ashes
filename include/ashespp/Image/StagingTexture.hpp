@@ -82,7 +82,7 @@ namespace ashes
 			, VkExtent3D const & extent
 			, uint8_t const * data
 			, ImageView const & texture )const;
-		inline void uploadTextureData( Queue const & queue
+		void uploadTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, VkImageSubresourceLayers const & subresourceLayers
 			, VkFormat format
@@ -95,7 +95,7 @@ namespace ashes
 			, VkFormat format
 			, uint8_t const * data
 			, ImageView const & texture )const;
-		inline void uploadTextureData( Queue const & queue
+		void uploadTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, VkFormat format
 			, ByteArray const & data
@@ -107,7 +107,6 @@ namespace ashes
 		void copyTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, VkImageSubresourceLayers const & subresourceLayers
-			, VkFormat format
 			, VkOffset3D const & offset
 			, VkExtent3D const & extent
 			, ImageView const & texture )const;
@@ -118,7 +117,7 @@ namespace ashes
 			, VkExtent3D const & extent
 			, uint8_t const * data
 			, ImageView const & texture )const;
-		inline void uploadTextureData( CommandBuffer const & commandBuffer
+		void uploadTextureData( CommandBuffer const & commandBuffer
 			, VkImageSubresourceLayers const & subresourceLayers
 			, VkFormat format
 			, VkOffset3D const & offset
@@ -129,7 +128,7 @@ namespace ashes
 			, VkFormat format
 			, uint8_t const * const data
 			, ImageView const & texture )const;
-		inline void uploadTextureData( CommandBuffer const & commandBuffer
+		void uploadTextureData( CommandBuffer const & commandBuffer
 			, VkFormat format
 			, ByteArray const & data
 			, ImageView const & texture )const;
@@ -138,7 +137,6 @@ namespace ashes
 			, ImageView const & texture )const;
 		void copyTextureData( CommandBuffer const & commandBuffer
 			, VkImageSubresourceLayers const & subresourceLayers
-			, VkFormat format
 			, VkOffset3D const & offset
 			, VkExtent3D const & extent
 			, ImageView const & texture )const;
@@ -156,7 +154,7 @@ namespace ashes
 			, VkExtent3D const & extent
 			, uint8_t * data
 			, ImageView const & texture )const;
-		inline void downloadTextureData( Queue const & queue
+		void downloadTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, VkImageSubresourceLayers const & subresourceLayers
 			, VkFormat format
@@ -169,7 +167,7 @@ namespace ashes
 			, VkFormat format
 			, uint8_t * data
 			, ImageView const & texture )const;
-		inline void downloadTextureData( Queue const & queue
+		void downloadTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, VkFormat format
 			, ByteArray & data
@@ -222,7 +220,6 @@ namespace ashes
 			, uint32_t mipLevels )const;
 		void doCopyStagingToDestination( CommandBuffer const & commandBuffer
 			, VkImageSubresourceLayers const & subresourceLayers
-			, VkFormat format
 			, VkOffset3D const & offset
 			, VkExtent3D const & extent
 			, ImageView const & texture )const;
@@ -234,7 +231,6 @@ namespace ashes
 		/**@{*/
 		void doCopyDestinationToStaging( CommandBuffer const & commandBuffer
 			, VkImageSubresourceLayers const & subresourceLayers
-			, VkFormat format
 			, VkOffset3D const & offset
 			, VkExtent3D const & extent
 			, ImageView const & texture )const;

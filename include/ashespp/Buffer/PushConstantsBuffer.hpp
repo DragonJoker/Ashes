@@ -50,17 +50,10 @@ namespace ashes
 		PushConstantsBufferBase( VkShaderStageFlags stageFlags
 			, PushConstantArray const & variables );
 		/**
-		*\brief
-		*	Destructor.
-		*/
-		~PushConstantsBufferBase()
-		{
-		}
-		/**
 		*\return
 		*	The base offset.
 		*/
-		inline uint32_t getOffset()const
+		uint32_t getOffset()const
 		{
 			return m_offset;
 		}
@@ -68,7 +61,7 @@ namespace ashes
 		*\return
 		*	The data size.
 		*/
-		inline uint32_t getSize()const
+		uint32_t getSize()const
 		{
 			return uint32_t( m_data.size() );
 		}
@@ -76,7 +69,7 @@ namespace ashes
 		*\return
 		*	The shader stages that will use the push constants in the updated range.
 		*/
-		inline VkShaderStageFlags getStageFlags()const
+		VkShaderStageFlags getStageFlags()const
 		{
 			return m_stageFlags;
 		}
@@ -84,7 +77,7 @@ namespace ashes
 		*\brief
 		*	A pointer to the buffer data.
 		*/
-		inline uint8_t const * getData()const
+		uint8_t const * getData()const
 		{
 			return m_data.data();
 		}
@@ -92,7 +85,7 @@ namespace ashes
 		*\brief
 		*	A pointer to the buffer data.
 		*/
-		inline uint8_t * getData()
+		uint8_t * getData()
 		{
 			return m_data.data();
 		}
@@ -100,7 +93,7 @@ namespace ashes
 		*\return
 		*	The beginning of the constants array.
 		*/
-		inline PushConstantArray::const_iterator begin()const
+		PushConstantArray::const_iterator begin()const
 		{
 			return m_variables.begin();
 		}
@@ -108,7 +101,7 @@ namespace ashes
 		*\return
 		*	The end of the constants array.
 		*/
-		inline PushConstantArray::const_iterator end()const
+		PushConstantArray::const_iterator end()const
 		{
 			return m_variables.end();
 		}
@@ -144,7 +137,7 @@ namespace ashes
 		*\return
 		*	The base offset.
 		*/
-		inline uint32_t getOffset()const
+		uint32_t getOffset()const
 		{
 			return getBuffer().getOffset();
 		}
@@ -152,7 +145,7 @@ namespace ashes
 		*\return
 		*	The data size.
 		*/
-		inline uint32_t getSize()const
+		uint32_t getSize()const
 		{
 			return getBuffer().getSize();
 		}
@@ -160,7 +153,7 @@ namespace ashes
 		*\return
 		*	The shader stages that will use the push constants in the updated range.
 		*/
-		inline VkShaderStageFlags getStageFlags()const
+		VkShaderStageFlags getStageFlags()const
 		{
 			return getBuffer().getStageFlags();
 		}
@@ -168,7 +161,7 @@ namespace ashes
 		*\brief
 		*	A pointer to the buffer data.
 		*/
-		inline T const * getData()const
+		T const * getData()const
 		{
 			return reinterpret_cast< T const * >( getBuffer().getData() );
 		}
@@ -176,7 +169,7 @@ namespace ashes
 		*\brief
 		*	A pointer to the buffer data.
 		*/
-		inline T * getData()
+		T * getData()
 		{
 			return reinterpret_cast< T * >( getBuffer().getData() );
 		}
@@ -184,7 +177,7 @@ namespace ashes
 		*\return
 		*	The beginning of the constants array.
 		*/
-		inline PushConstantArray::const_iterator begin()const
+		PushConstantArray::const_iterator begin()const
 		{
 			return getBuffer().begin();
 		}
@@ -192,7 +185,7 @@ namespace ashes
 		*\return
 		*	The end of the constants array.
 		*/
-		inline PushConstantArray::const_iterator end()const
+		PushConstantArray::const_iterator end()const
 		{
 			return getBuffer().end();
 		}
@@ -200,7 +193,7 @@ namespace ashes
 		*\brief
 		*	The internal PCB.
 		*/
-		inline PushConstantsBufferBase const & getBuffer()const
+		PushConstantsBufferBase const & getBuffer()const
 		{
 			return m_pcb;
 		}
@@ -208,7 +201,7 @@ namespace ashes
 		*\brief
 		*	The internal PCB.
 		*/
-		inline PushConstantsBufferBase & getBuffer()
+		PushConstantsBufferBase & getBuffer()
 		{
 			return m_pcb;
 		}

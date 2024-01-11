@@ -32,9 +32,32 @@ namespace ashes
 			, &m_internal );
 		checkError( res, "Swap chain creation" );
 		registerObject( m_device, debugName, *this );
+
+		uint32_t imageCount{ 0u };
+		res = m_device.vkGetSwapchainImagesKHR( m_device
+			, m_internal
+			, &imageCount
+			, nullptr );
+		checkError( res, "Swap chain images count retrieval" );
+
+		if ( imageCount )
+		{
+			VkImageArray images;
+			images.resize( imageCount );
+			res = m_device.vkGetSwapchainImagesKHR( m_device
+				, m_internal
+				, &imageCount
+				, &images[0] );
+			checkError( res, "Swap chain images retrieval" );
+
+			for ( auto image : images )
+			{
+				m_images.emplace_back( std::make_unique< Image >( m_device, image ) );
+			}
+		}
 	}
 
-	SwapChain::~SwapChain()
+	SwapChain::~SwapChain()noexcept
 	{
 		unregisterObject( m_device, *this );
 		m_device.vkDestroySwapchainKHR( m_device
@@ -47,7 +70,11 @@ namespace ashes
 		, Fence const * fence
 		, uint32_t & imageIndex )const
 	{
-		semaphore->signal( fence );
+		if ( semaphore )
+		{
+			semaphore->signal( fence );
+		}
+
 		return m_device.vkAcquireNextImageKHR( m_device
 			, m_internal
 			, timeout
@@ -98,35 +125,5 @@ namespace ashes
 			, nullptr
 			, nullptr
 			, imageIndex );
-	}
-
-	ImageArray SwapChain::getImages()const
-	{
-		uint32_t imageCount{ 0u };
-		auto res = m_device.vkGetSwapchainImagesKHR( m_device
-			, m_internal
-			, &imageCount
-			, nullptr );
-		checkError( res, "Swap chain images count retrieval" );
-
-		ImageArray result;
-
-		if ( imageCount )
-		{
-			VkImageArray images;
-			images.resize( imageCount );
-			res = m_device.vkGetSwapchainImagesKHR( m_device
-				, m_internal
-				, &imageCount
-				, &images[0] );
-			checkError( res, "Swap chain images retrieval" );
-
-			for ( auto image : images )
-			{
-				result.emplace_back( m_device, image );
-			}
-		}
-
-		return result;
 	}
 }

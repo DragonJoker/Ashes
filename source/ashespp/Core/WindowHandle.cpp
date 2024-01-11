@@ -6,12 +6,12 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	WindowHandle::WindowHandle( IWindowHandlePtr handle )
+	WindowHandle::WindowHandle( IWindowHandlePtr handle )noexcept
 		: m_handle{ std::move( handle ) }
 	{
 	}
 
-	WindowHandle::operator bool()
+	WindowHandle::operator bool()noexcept
 	{
 		return m_handle && m_handle->operator bool();
 	}

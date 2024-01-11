@@ -228,7 +228,7 @@ namespace ashes
 			, uint32_t srcQueueFamily
 			, uint32_t dstQueueFamily )const;
 
-		inline VkFormat getFormat()const
+		VkFormat getFormat()const
 		{
 			return createInfo.format;
 		}
@@ -236,7 +236,7 @@ namespace ashes
 		*\brief
 		*	Forward to VkImageView.
 		*/
-		inline VkImageViewCreateInfo const * operator->()const
+		VkImageViewCreateInfo const * operator->()const noexcept
 		{
 			return &createInfo;
 		}
@@ -244,7 +244,7 @@ namespace ashes
 		*\brief
 		*	Forward to VkImageView.
 		*/
-		inline VkImageViewCreateInfo * operator->()
+		VkImageViewCreateInfo * operator->()noexcept
 		{
 			return &createInfo;
 		}
@@ -252,7 +252,7 @@ namespace ashes
 		*\brief
 		*	VkImageViewCreateInfo cast operator.
 		*/
-		inline explicit operator VkImageViewCreateInfo const & ()const
+		explicit operator VkImageViewCreateInfo const & ()const noexcept
 		{
 			return createInfo;
 		}
@@ -260,7 +260,7 @@ namespace ashes
 		*\brief
 		*	VkImageView implicit cast operator.
 		*/
-		inline operator VkImageView const & ()const
+		operator VkImageView const & ()const noexcept
 		{
 			return internal;
 		}

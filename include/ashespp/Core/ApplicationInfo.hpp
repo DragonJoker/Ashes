@@ -15,16 +15,15 @@ namespace ashes
 {
 	struct ApplicationInfo
 	{
-		ApplicationInfo( ApplicationInfo  const & ) = delete;
-		ApplicationInfo& operator=( ApplicationInfo  const & ) = delete;
+		~ApplicationInfo()noexcept = default;
 
 		ApplicationInfo( std::string papplicationName
 			, uint32_t applicationVersion
 			, std::string pengineName
 			, uint32_t engineVersion
 			, uint32_t apiVersion )
-			: applicationName{ papplicationName }
-			, engineName{ pengineName }
+			: applicationName{ std::move( papplicationName ) }
+			, engineName{ std::move( pengineName ) }
 			, vk{ VK_STRUCTURE_TYPE_APPLICATION_INFO
 				, nullptr
 				, applicationName.c_str()
@@ -32,6 +31,19 @@ namespace ashes
 				, engineName.c_str()
 				, engineVersion
 				, apiVersion }
+		{
+		}
+
+		ApplicationInfo( ApplicationInfo const & application )
+			: applicationName{ application.applicationName }
+			, engineName{ application.engineName }
+			, vk{ VK_STRUCTURE_TYPE_APPLICATION_INFO
+				, application.vk.pNext
+				, applicationName.c_str()
+				, application.vk.applicationVersion
+				, engineName.c_str()
+				, application.vk.engineVersion
+				, application.vk.apiVersion }
 		{
 		}
 
@@ -48,6 +60,20 @@ namespace ashes
 		{
 		}
 
+		ApplicationInfo & operator=( ApplicationInfo const & application )
+		{
+			applicationName = application.applicationName;
+			engineName = application.engineName;
+			vk = { VK_STRUCTURE_TYPE_APPLICATION_INFO
+				, application.vk.pNext
+				, applicationName.c_str()
+				, application.vk.applicationVersion
+				, engineName.c_str()
+				, application.vk.engineVersion
+				, application.vk.apiVersion };
+			return *this;
+		}
+
 		ApplicationInfo & operator=( ApplicationInfo && application )noexcept
 		{
 			applicationName = std::move( application.applicationName );
@@ -62,7 +88,7 @@ namespace ashes
 			return *this;
 		}
 
-		operator VkApplicationInfo const &()const
+		operator VkApplicationInfo const &()const noexcept
 		{
 			return vk;
 		}

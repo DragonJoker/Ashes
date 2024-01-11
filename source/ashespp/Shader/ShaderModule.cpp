@@ -37,7 +37,7 @@ namespace ashes
 		registerObject( m_device, debugName, *this );
 	}
 
-	ShaderModule::~ShaderModule()
+	ShaderModule::~ShaderModule()noexcept
 	{
 		unregisterObject( m_device, *this );
 

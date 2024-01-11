@@ -39,7 +39,7 @@ namespace utils
 
 	VkClearColorValue makeClearColorValue( RgbColour const & value )
 	{
-		VkClearColorValue result;
+		VkClearColorValue result{};
 		result.float32[0] = value.r;
 		result.float32[1] = value.g;
 		result.float32[2] = value.b;
@@ -49,7 +49,7 @@ namespace utils
 
 	VkClearColorValue makeClearColorValue( RgbaColour const & value )
 	{
-		VkClearColorValue result;
+		VkClearColorValue result{};
 		result.float32[0] = value.r;
 		result.float32[1] = value.g;
 		result.float32[2] = value.b;

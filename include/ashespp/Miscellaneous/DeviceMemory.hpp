@@ -25,7 +25,7 @@ namespace ashes
 		DeviceMemory( Device const & device
 			, std::string const & debugName
 			, VkMemoryAllocateInfo allocateInfo );
-		~DeviceMemory();
+		~DeviceMemory()noexcept;
 		/**
 		*\brief
 		*	Maps a range of the memory in RAM.
@@ -85,7 +85,7 @@ namespace ashes
 			return m_internal;
 		}
 
-	protected:
+	private:
 		Device const & m_device;
 		VkMemoryAllocateInfo m_allocateInfo;
 		VkDeviceMemory m_internal{};

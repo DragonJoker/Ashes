@@ -21,39 +21,17 @@ namespace ashes
 		{
 		}
 
-		PipelineTessellationStateCreateInfo( PipelineTessellationStateCreateInfo const & rhs )
-			: vk{ rhs.vk }
-		{
-		}
-
-		PipelineTessellationStateCreateInfo( PipelineTessellationStateCreateInfo && rhs )noexcept
-			: vk{ std::move( rhs.vk ) }
-		{
-		}
-
-		PipelineTessellationStateCreateInfo & operator=( PipelineTessellationStateCreateInfo const & rhs )
-		{
-			vk = rhs.vk;
-			return *this;
-		}
-
-		PipelineTessellationStateCreateInfo & operator=( PipelineTessellationStateCreateInfo && rhs )noexcept
-		{
-			vk = std::move( rhs.vk );
-			return *this;
-		}
-
-		operator VkPipelineTessellationStateCreateInfo const &()const
+		operator VkPipelineTessellationStateCreateInfo const &()const noexcept
 		{
 			return vk;
 		}
 
-		VkPipelineTessellationStateCreateInfo const * operator->()const
+		VkPipelineTessellationStateCreateInfo const * operator->()const noexcept
 		{
 			return &vk;
 		}
 
-		VkPipelineTessellationStateCreateInfo * operator->()
+		VkPipelineTessellationStateCreateInfo * operator->()noexcept
 		{
 			return &vk;
 		}

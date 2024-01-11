@@ -41,7 +41,7 @@ namespace ashes
 		registerObject( m_device, debugName, *this );
 	}
 	
-	QueryPool::~QueryPool()
+	QueryPool::~QueryPool()noexcept
 	{
 		unregisterObject( m_device, *this );
 		m_device.vkDestroyQueryPool( m_device

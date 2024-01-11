@@ -37,12 +37,12 @@ namespace utils
 
 		VkSurfaceFormatKHR doSelectFormat( ashes::Surface const & surface )
 		{
-			VkSurfaceFormatKHR result;
-			auto formats = surface.getFormats();
+			VkSurfaceFormatKHR result{};
 			// Si la liste de formats ne contient qu'une entr�e VK_FORMAT_UNDEFINED,
 			// la surface n'a pas de format préféré. Sinon, au moins un format supporté
 			// sera renvoyé.
-			if ( formats.size() == 1u && formats[0].format == VK_FORMAT_UNDEFINED )
+			if ( auto formats = surface.getFormats();
+				formats.size() == 1u && formats[0].format == VK_FORMAT_UNDEFINED )
 			{
 				result.format = VK_FORMAT_R8G8B8A8_UNORM;
 				result.colorSpace = VK_COLORSPACE_SRGB_NONLINEAR_KHR;
@@ -143,7 +143,7 @@ namespace utils
 		ashes::SwapChainCreateInfo doGetSwapChainResetInfo( ashes::Surface const & surface
 			, VkExtent2D const & size )
 		{
-			static uint32_t constexpr invalidSize = ~( 0u );
+			static uint32_t constexpr invalidSize = ~0u;
 			auto surfaceCaps = surface.getCapabilities();
 			surfaceCaps.currentExtent.width = ( surfaceCaps.maxImageExtent.width == invalidSize
 				? size.width
@@ -191,9 +191,8 @@ namespace utils
 		, m_surface{ std::move( surface ) }
 		, m_dimensions{ size }
 		, m_swapChain{ device.createSwapChain( doGetSwapChainCreateInfo( *m_surface, size ) ) }
-		, m_swapChainImages{ m_swapChain->getImages() }
 	{
-		for ( uint32_t i = 0u; i < uint32_t( m_swapChainImages.size() ); ++i )
+		for ( uint32_t i = 0u; i < m_swapChain->getImageCount(); ++i )
 		{
 			m_renderingResources.emplace_back( std::make_unique< RenderingResources >( m_device
 				, *m_swapChain
@@ -204,7 +203,6 @@ namespace utils
 	SwapChain::~SwapChain()
 	{
 		m_renderingResources.clear();
-		m_swapChainImages.clear();
 		m_swapChain.reset();
 	}
 
@@ -217,7 +215,7 @@ namespace utils
 	ashes::FrameBufferPtrArray SwapChain::createFrameBuffers( ashes::RenderPass const & renderPass )const
 	{
 		ashes::FrameBufferPtrArray result;
-		result.resize( m_swapChainImages.size() );
+		result.resize( m_swapChain->getImageCount() );
 
 		for ( size_t i = 0u; i < result.size(); ++i )
 		{
@@ -235,7 +233,7 @@ namespace utils
 		, ashes::Image const & depthImage )const
 	{
 		ashes::FrameBufferPtrArray result;
-		result.resize( m_swapChainImages.size() );
+		result.resize( m_swapChain->getImageCount() );
 
 		for ( size_t i = 0u; i < result.size(); ++i )
 		{
@@ -252,7 +250,7 @@ namespace utils
 	ashes::CommandBufferPtrArray SwapChain::createCommandBuffers()const
 	{
 		ashes::CommandBufferPtrArray result;
-		result.resize( m_swapChainImages.size() );
+		result.resize( m_swapChain->getImageCount() );
 
 		for ( auto & commandBuffer : result )
 		{
@@ -270,13 +268,11 @@ namespace utils
 		if ( resources.waitRecord( ashes::MaxTimeout ) )
 		{
 			uint32_t imageIndex{ 0u };
-			auto res = m_swapChain->acquireNextImage( std::numeric_limits< uint64_t >::max()
+
+			if ( auto res = m_swapChain->acquireNextImage( std::numeric_limits< uint64_t >::max()
 				, resources.getImageAvailableSemaphore()
 				, imageIndex );
-
-			if ( doCheckNeedReset( res
-				, true
-				, "Swap chain image acquisition" ) )
+				doCheckNeedReset( res , true , "Swap chain image acquisition" ) )
 			{
 				resources.setImageIndex( imageIndex );
 				return &resources;
@@ -316,7 +312,7 @@ namespace utils
 
 		for ( auto & attach : attaches )
 		{
-			auto & image = m_swapChainImages[backBuffer];
+			auto const & image = *m_swapChain->getImages()[backBuffer];
 
 			if ( !ashes::isDepthOrStencilFormat( attach.format ) )
 			{
@@ -389,13 +385,11 @@ namespace utils
 	void SwapChain::doResetSwapChain()
 	{
 		m_device.waitIdle();
-		m_swapChainImages.clear();
 		m_renderingResources.clear();
 		m_swapChain.reset();
 		m_swapChain = m_device.createSwapChain( doGetSwapChainResetInfo( *m_surface, m_dimensions ) );
-		m_swapChainImages = m_swapChain->getImages();
 
-		for ( uint32_t i = 0u; i < uint32_t( m_swapChainImages.size() ); ++i )
+		for ( uint32_t i = 0u; i < m_swapChain->getImageCount(); ++i )
 		{
 			m_renderingResources.emplace_back( std::make_unique< RenderingResources >( m_device
 				, *m_swapChain

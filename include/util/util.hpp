@@ -6,6 +6,6 @@ See LICENSE file in root folder.
 #define ___ashes_util_HPP___
 #pragma once
 
-#include "util/UtilsPrerequisites"
+#include "util/UtilsPrerequisites.hpp"
 
 #endif

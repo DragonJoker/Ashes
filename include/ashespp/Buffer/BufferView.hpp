@@ -61,12 +61,12 @@ namespace ashes
 		*\brief
 		*	Destructor.
 		*/
-		~BufferView();
+		~BufferView()noexcept;
 		/**
 		*\return
 		*	The view's pixels format.
 		*/
-		inline VkFormat getFormat()const
+		VkFormat getFormat()const
 		{
 			return m_format;
 		}
@@ -74,7 +74,7 @@ namespace ashes
 		*\return
 		*	The view's buffer.
 		*/
-		inline BufferBase const & getBuffer()const
+		BufferBase const & getBuffer()const
 		{
 			return m_buffer;
 		}
@@ -82,7 +82,7 @@ namespace ashes
 		*\return
 		*	The offset in the buffer.
 		*/
-		inline VkDeviceSize getOffset()const
+		VkDeviceSize getOffset()const
 		{
 			return m_offset;
 		}
@@ -90,7 +90,7 @@ namespace ashes
 		*\return
 		*	The number of elements from the buffer.
 		*/
-		inline VkDeviceSize getRange()const
+		VkDeviceSize getRange()const
 		{
 			return m_range;
 		}
@@ -98,7 +98,7 @@ namespace ashes
 		*\brief
 		*	VkBufferView implicit cast operator.
 		*/
-		inline operator VkBufferView const &()const
+		operator VkBufferView const &()const
 		{
 			return m_internal;
 		}

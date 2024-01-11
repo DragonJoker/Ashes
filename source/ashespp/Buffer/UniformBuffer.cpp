@@ -12,8 +12,8 @@ namespace ashes
 		, VkDeviceSize count
 		, VkDeviceSize size
 		, VkBufferUsageFlags usage
-		, QueueShare sharingMode )
-		: UniformBuffer{ device, "UniformBuffer", count, size, usage, std::move( sharingMode ) }
+		, QueueShare const & sharingMode )
+		: UniformBuffer{ device, "UniformBuffer", count, size, usage, sharingMode }
 	{
 	}
 	
@@ -22,15 +22,14 @@ namespace ashes
 		, VkDeviceSize count
 		, VkDeviceSize size
 		, VkBufferUsageFlags usage
-		, QueueShare sharingMode )
+		, QueueShare const & sharingMode )
 		: m_device{ device }
-		, m_count{ count }
 		, m_size{ size }
 		, m_buffer{ std::make_unique< BufferBase >( device
 			, debugName
 			, count * getAlignedSize( getElementSize() )
 			, usage | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT
-			, std::move( sharingMode ) ) }
+			, sharingMode ) }
 	{
 	}
 

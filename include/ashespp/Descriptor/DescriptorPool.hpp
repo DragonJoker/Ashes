@@ -31,7 +31,7 @@ namespace ashes
 		DescriptorPool( Device const & device
 			, VkDescriptorPoolCreateFlags flags
 			, uint32_t maxSets
-			, VkDescriptorPoolSizeArray poolSizes );
+			, VkDescriptorPoolSizeArray const & poolSizes );
 		/**
 		*\brief
 		*	Constructor.
@@ -44,12 +44,12 @@ namespace ashes
 			, std::string const & debugName
 			, VkDescriptorPoolCreateFlags flags
 			, uint32_t maxSets
-			, VkDescriptorPoolSizeArray poolSizes );
+			, VkDescriptorPoolSizeArray const & poolSizes );
 		/**
 		*\brief
 		*	Destructor.
 		*/
-		~DescriptorPool();
+		~DescriptorPool()noexcept;
 		/**
 		*\brief
 		*	Creates a descriptor set matching the given layout.
@@ -62,7 +62,7 @@ namespace ashes
 		*/
 		DescriptorSetPtr createDescriptorSet( DescriptorSetLayout const & layout
 			, uint32_t bindingPoint = 0u
-			, void * pNext = nullptr )const;
+			, void const * pNext = nullptr )const;
 		/**
 		*\brief
 		*	Creates a descriptor set matching the given layout.
@@ -76,7 +76,7 @@ namespace ashes
 		DescriptorSetPtr createDescriptorSet( std::string const & debugName
 			, DescriptorSetLayout const & layout
 			, uint32_t bindingPoint = 0u
-			, void * pNext = nullptr )const;
+			, void const * pNext = nullptr )const;
 		void freeDescriptorSet( DescriptorSetPtr set )const;
 		/**
 		*\name
@@ -87,12 +87,12 @@ namespace ashes
 		*\return
 		*	Tells if the pool automatically deallocates the descriptor sets during its on destruction.
 		*/
-		inline bool hasAutomaticFree()const
+		bool hasAutomaticFree()const noexcept
 		{
 			return m_automaticFree;
 		}
 
-		inline Device const & getDevice()const
+		Device const & getDevice()const noexcept
 		{
 			return m_device;
 		}
@@ -101,7 +101,7 @@ namespace ashes
 		*\brief
 		*	VkDescriptorPool implicit cast operator.
 		*/
-		inline operator VkDescriptorPool const & ()const
+		operator VkDescriptorPool const & ()const noexcept
 		{
 			return m_internal;
 		}

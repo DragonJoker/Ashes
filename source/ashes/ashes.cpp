@@ -15,7 +15,7 @@ static PluginLibrary g_library;
 
 namespace details
 {
-	namespace
+	namespace ash
 	{
 		bool startsWith( std::string const & value
 			, std::string const & lookup )
@@ -37,44 +37,31 @@ namespace details
 			return result;
 		}
 
-		std::string const & getDebugPostfix()
-		{
 #if defined( NDEBUG )
-			static std::string result;
+		static inline std::string const DebugPostfix{ R"()" };
 #else
-			static std::string result{ R"(d)" };
+		static inline std::string const DebugPostfix{ R"(d)" };
 #endif
-			return result;
-		}
-
-		std::string const & getSharedLibExt()
-		{
 #if defined( _WIN32 )
-			static std::string result{ R"(.dll)" };
+		static inline std::string const SharedLibExt{ R"(.dll)" };
+		static inline std::string const Prefix{ R"(ashes)" };
 #elif defined( __APPLE__ )
-			static std::string result{ R"(.dylib)" };
+		static inline std::string const SharedLibExt{ R"(.dylib)" };
+		static inline std::string const Prefix{ R"(libashes)" };
 #else
-			static std::string result{ R"(.so)" };
+		static inline std::string const SharedLibExt{ R"(.so)" };
+		static inline std::string const Prefix{ R"(libashes)" };
 #endif
-			return result;
-		}
+		static inline std::string const Postfix{ "Renderer" + DebugPostfix + SharedLibExt };
 
 		std::string const & getPrefix()
 		{
-#if defined( _WIN32 )
-			static std::string result{ R"(ashes)" };
-#elif defined( __APPLE__ )
-			static std::string result{ R"(libashes)" };
-#else
-			static std::string result{ R"(libashes)" };
-#endif
-			return result;
+			return Prefix;
 		}
 
 		std::string const & getPostfix()
 		{
-			static std::string result{ "Renderer" + getDebugPostfix() + getSharedLibExt() };
-			return result;
+			return Postfix;
 		}
 
 		bool isAshesPlugin( std::string const & filePath )
@@ -100,13 +87,10 @@ namespace details
 
 		for ( auto & lookup : plugins )
 		{
-			if ( isSupported( lookup ) )
+			if ( ash::isSupported( lookup )
+				&& ( !result || ash::getPriority( lookup ) > ash::getPriority( *result ) ) )
 			{
-				if ( !result
-					|| getPriority( lookup ) > getPriority( *result ) )
-				{
-					result = &lookup;
-				}
+				result = &lookup;
 			}
 		}
 
@@ -116,10 +100,10 @@ namespace details
 	PluginArray listPlugins()
 	{
 		PluginArray result;
-		auto files = ashes::lookForSharedLibrary( []( std::string const & folder
+		auto files = ashes::lookForSharedLibrary( []( std::string const &
 			, std::string const & name )
 			{
-				return isAshesPlugin( name );
+				return ash::isAshesPlugin( name );
 			} );
 
 		for ( auto & file : files )
@@ -162,7 +146,7 @@ namespace details
 				, []( Plugin const & lookup )
 				{
 					return lookup.description.name == defaultName
-						&& isSupported( lookup );
+						&& ash::isSupported( lookup );
 				} );
 
 			if ( it != plugins.end() )
@@ -188,7 +172,7 @@ extern "C"
 
 			if ( pDescriptions )
 			{
-				for ( auto & plugin : g_library.plugins )
+				for ( auto const & plugin : g_library.plugins )
 				{
 					*pDescriptions = plugin.description;
 					++pDescriptions;
@@ -1286,7 +1270,6 @@ extern "C"
 	}
 
 #	endif
-// #endif
 #pragma endregion
 #pragma region VK_KHR_wayland_surface
 #	ifdef __linux__

@@ -41,7 +41,7 @@ namespace utils
 		*\param[in] lower, upper
 		*	Les bornes de l'intervalle.
 		*/
-		inline LogarithmicRange( T const & lower, T const & upper )noexcept
+		LogarithmicRange( T const & lower, T const & upper )noexcept
 			: m_lower{ std::min( lower, upper ) }
 			, m_upper{ std::max( lower, upper ) }
 			, m_b{ doComputeB() }
@@ -66,7 +66,7 @@ namespace utils
 		*\return
 		*	La borne inférieure.
 		*/
-		inline T const & lower()const noexcept
+		T const & lower()const noexcept
 		{
 			return m_lower;
 		}
@@ -74,7 +74,7 @@ namespace utils
 		*\return
 		*	La borne supérieure.
 		*/
-		inline T const & upper()const noexcept
+		T const & upper()const noexcept
 		{
 			return m_upper;
 		}

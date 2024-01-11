@@ -25,7 +25,7 @@ namespace ashes
 	}
 
 	Logger::Logger()
-		: m_trace{ []( std::string const & msg, bool newLine ){} }
+		: m_trace{ []( std::string const &, bool ){} }
 		, m_debug{ []( std::string const & msg, bool newLine ){ doLog( msg, newLine, std::clog ); } }
 		, m_info{ []( std::string const & msg, bool newLine ){ doLog( msg, newLine, std::cout ); } }
 		, m_warning{ []( std::string const & msg, bool newLine ){ doLog( msg, newLine, std::cout ); } }
@@ -127,8 +127,9 @@ namespace ashes
 	{
 		static Logger instance;
 		static std::mutex mutex;
+		using lock_type = std::unique_lock< std::mutex >;
 
-		std::unique_lock< std::mutex > lock{ mutex };
+		lock_type lock{ mutex };
 		return instance;
 	}
 }

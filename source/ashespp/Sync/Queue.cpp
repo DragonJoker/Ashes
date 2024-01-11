@@ -36,7 +36,7 @@ namespace ashes
 		registerObject( m_device, debugName, *this );
 	}
 
-	Queue::~Queue()
+	Queue::~Queue()noexcept
 	{
 		unregisterObject( m_device, *this );
 	}
@@ -215,54 +215,57 @@ namespace ashes
 
 	void Queue::clearSemaphores()const
 	{
-#if Ashes_DebugSync
-		auto it = m_waitingSemaphores.begin();
-		auto end = m_waitingSemaphores.end();
-		auto size = m_waitingSemaphores.size();
-		auto index = 0u;
-
-		while ( it != end )
+		if constexpr ( DebugSync )
 		{
-			( *it )->signal( nullptr );
+			auto it = m_waitingSemaphores.begin();
+			auto end = m_waitingSemaphores.end();
+			auto size = m_waitingSemaphores.size();
+			auto index = 0u;
 
-			if ( size != m_waitingSemaphores.size() )
+			while ( it != end )
 			{
-				size = m_waitingSemaphores.size();
-				it = std::next( m_waitingSemaphores.begin(), index );
+				( *it )->signal( nullptr );
+
+				if ( size != m_waitingSemaphores.size() )
+				{
+					size = m_waitingSemaphores.size();
+					it = std::next( m_waitingSemaphores.begin(), index );
+				}
+				else
+				{
+					++it;
+					++index;
+				}
 			}
-			else
-			{
-				++it;
-				++index;
-			}
+
+			m_waitingSemaphores.clear();
 		}
-
-		m_waitingSemaphores.clear();
-#endif
 	}
 
 	void Queue::waitSemaphores( SemaphoreCRefArray const & semaphores )const
 	{
-#if Ashes_DebugSync
-		for ( auto & semaphore : semaphores )
+		if constexpr ( DebugSync )
 		{
-			semaphore.get().wait( m_waitingSemaphores );
-			auto pair = m_waitingSemaphores.insert( &semaphore.get() );
-			ashesSyncCheck( pair.second
-				, "The same semaphore is being submitted twice"
-				, semaphore.get() );
+			for ( auto & semaphore : semaphores )
+			{
+				semaphore.get().wait( m_waitingSemaphores );
+				auto it = m_waitingSemaphores.emplace( &semaphore.get() ).second;
+				ashesSyncCheck( it
+					, "The same semaphore is being submitted twice"
+					, semaphore.get() );
+			}
 		}
-#endif
 	}
 
 	void Queue::signalSemaphores( SemaphoreCRefArray const & semaphores
 		, Fence const * fence )const
 	{
-#if Ashes_DebugSync
-		for ( auto & semaphore : semaphores )
+		if constexpr ( DebugSync )
 		{
-			semaphore.get().signal( fence );
+			for ( auto & semaphore : semaphores )
+			{
+				semaphore.get().signal( fence );
+			}
 		}
-#endif
 	}
 }

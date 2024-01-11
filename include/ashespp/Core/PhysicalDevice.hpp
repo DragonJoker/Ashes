@@ -101,7 +101,7 @@ namespace ashes
 		*\brief
 		*	VkPhysicalDevice implicit cast operator.
 		*/
-		inline operator VkPhysicalDevice const & ()const
+		operator VkPhysicalDevice const & ()const noexcept
 		{
 			return m_gpu;
 		}
