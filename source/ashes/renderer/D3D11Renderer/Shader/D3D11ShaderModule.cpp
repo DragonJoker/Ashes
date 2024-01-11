@@ -52,11 +52,18 @@ namespace ashes::d3d11
 				}
 			}
 
-			~BlockLocale()
+			~BlockLocale()noexcept
 			{
-				if ( m_prvLoc.name() != "C" )
+				try
 				{
-					std::locale::global( m_prvLoc );
+					if ( m_prvLoc.name() != "C" )
+					{
+						std::locale::global( m_prvLoc );
+					}
+				}
+				catch ( ... )
+				{
+					// Nothing to do here
 				}
 			}
 
@@ -377,7 +384,7 @@ namespace ashes::d3d11
 
 			std::vector< char > hlslCode( shader.size() * sizeof( uint32_t ) );
 			std::memcpy( hlslCode.data(), shader.data(), hlslCode.size() );
-			return std::string( hlslCode.data(), hlslCode.data() + strlen( hlslCode.data() ) );
+			return std::string( hlslCode.data(), hlslCode.data() + strnlen( hlslCode.data(), hlslCode.size() ) );
 		}
 
 		uint32_t extractLocation( InputElementDesc & desc )
@@ -788,7 +795,7 @@ namespace ashes::d3d11
 		m_createInfo.pCode = m_code.data();
 	}
 
-	ShaderModule::~ShaderModule()
+	ShaderModule::~ShaderModule()noexcept
 	{
 	}
 

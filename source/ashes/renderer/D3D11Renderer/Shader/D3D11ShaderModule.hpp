@@ -25,7 +25,7 @@ namespace ashes::d3d11
 			, VkShaderModule module
 			, UInt32Array const & spv
 			, VkPipelineShaderStageCreateInfo const & state );
-		~CompiledShaderModule();
+		~CompiledShaderModule()noexcept;
 
 		inline ID3D11ComputeShader * getCSShader()const
 		{

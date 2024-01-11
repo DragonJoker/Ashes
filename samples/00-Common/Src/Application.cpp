@@ -32,9 +32,16 @@ namespace common
 				m_old = m_stream.rdbuf( this );
 			}
 
-			~LogStreambuf()
+			~LogStreambuf()noexcept
 			{
-				m_stream.rdbuf( m_old );
+				try
+				{
+					m_stream.rdbuf( m_old );
+				}
+				catch ( ... )
+				{
+					// Nothing to do here
+				}
 			}
 
 		private:

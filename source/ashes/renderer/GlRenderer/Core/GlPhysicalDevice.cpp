@@ -1194,9 +1194,11 @@ namespace ashes::gl
 		auto & extensions = get( m_instance )->getExtensions();
 		m_driverProperties.pNext = nullptr;
 		m_driverProperties.driverID = VkDriverId( 0x12345678 );
-		strcpy( m_driverProperties.driverName, "GlRenderer" );
+		strncpy( m_driverProperties.driverName
+			, "GlRenderer"
+			, sizeof( m_driverProperties.driverInfo ) - 1u );
 		snprintf( m_driverProperties.driverInfo
-			, sizeof( m_driverProperties.driverInfo )
+			, sizeof( m_driverProperties.driverInfo ) - 1u
 			, "Ashes OpenGL %d.%d Renderer"
 			, int( extensions.getMajor() )
 			, int( extensions.getMinor() ) );

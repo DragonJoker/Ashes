@@ -229,7 +229,14 @@ namespace ashes::test
 	{
 		if ( !m_objects.empty() )
 		{
-			onDestroy( get( this ) );
+			try
+			{
+				onDestroy( get( this ) );
+			}
+			catch ( ... )
+			{
+				// Nothing to do here
+			}
 		}
 	}
 
