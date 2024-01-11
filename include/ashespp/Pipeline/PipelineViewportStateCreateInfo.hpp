@@ -12,6 +12,8 @@ namespace ashes
 {
 	struct PipelineViewportStateCreateInfo
 	{
+		~PipelineViewportStateCreateInfo()noexcept = default;
+
 		PipelineViewportStateCreateInfo( VkPipelineViewportStateCreateFlags flags
 			, uint32_t viewportCount
 			, VkViewportArray pviewports
@@ -33,8 +35,8 @@ namespace ashes
 		}
 
 		PipelineViewportStateCreateInfo( VkPipelineViewportStateCreateFlags flags = 0u
-			, VkViewportArray pviewports = {}
-			, VkScissorArray pscissors = {} )
+			, VkViewportArray const & pviewports = {}
+			, VkScissorArray const & pscissors = {} )
 			: PipelineViewportStateCreateInfo{ flags
 				, std::max( 1u, uint32_t( pviewports.size() ) )
 				, pviewports
@@ -99,17 +101,17 @@ namespace ashes
 			return *this;
 		}
 
-		operator VkPipelineViewportStateCreateInfo const &()const
+		operator VkPipelineViewportStateCreateInfo const &()const noexcept
 		{
 			return vk;
 		}
 
-		VkPipelineViewportStateCreateInfo const * operator->()const
+		VkPipelineViewportStateCreateInfo const * operator->()const noexcept
 		{
 			return &vk;
 		}
 
-		VkPipelineViewportStateCreateInfo * operator->()
+		VkPipelineViewportStateCreateInfo * operator->()noexcept
 		{
 			return &vk;
 		}

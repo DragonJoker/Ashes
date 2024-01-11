@@ -24,17 +24,17 @@ namespace utils
 		*\name Construction
 		*/
 		/**\{*/
-		explicit inline RadiansT( float value )noexcept
+		explicit RadiansT( float value )noexcept
 			: m_value{ T( value ) }
 		{
 		}
 
-		explicit inline RadiansT( double value )noexcept
+		explicit RadiansT( double value )noexcept
 			: m_value{ T( value ) }
 		{
 		}
 
-		explicit inline RadiansT( long double value )noexcept
+		explicit RadiansT( long double value )noexcept
 			: m_value{ T( value ) }
 		{
 		}
@@ -43,7 +43,7 @@ namespace utils
 		*\name Conversion
 		*/
 		/**\{*/
-		explicit inline operator T()const noexcept
+		explicit operator T()const noexcept
 		{
 			return m_value;
 		}
@@ -52,31 +52,31 @@ namespace utils
 		*\name Opérateurs arithmétiques membres.
 		*/
 		/**\{*/
-		inline RadiansT & operator-()noexcept
+		RadiansT & operator-()noexcept
 		{
 			m_value = -m_value;
 			return *this;
 		}
 
-		inline RadiansT & operator+=( RadiansT< T > const & rhs )noexcept
+		RadiansT & operator+=( RadiansT< T > const & rhs )noexcept
 		{
 			m_value += rhs.m_value;
 			return *this;
 		}
 
-		inline RadiansT & operator-=( RadiansT< T > const & rhs )noexcept
+		RadiansT & operator-=( RadiansT< T > const & rhs )noexcept
 		{
 			m_value -= rhs.m_value;
 			return *this;
 		}
 
-		inline RadiansT & operator*=( T rhs )noexcept
+		RadiansT & operator*=( T rhs )noexcept
 		{
 			m_value *= rhs;
 			return *this;
 		}
 
-		inline RadiansT & operator/=( T rhs )noexcept
+		RadiansT & operator/=( T rhs )noexcept
 		{
 			m_value /= rhs;
 			return *this;

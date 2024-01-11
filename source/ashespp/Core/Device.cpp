@@ -120,25 +120,25 @@ namespace ashes
 			, mipLevels );
 	}
 
-	StagingTexturePtr Device::createStagingTexture( std::string debugName
+	StagingTexturePtr Device::createStagingTexture( std::string const & debugName
 		, VkFormat format
 		, VkExtent2D const & extent
 		, uint32_t mipLevels )const
 	{
 		return std::make_unique< StagingTexture >( *this
-			, std::move( debugName )
+			, debugName
 			, format
 			, extent
 			, mipLevels );
 	}
 
-	StagingTexturePtr Device::createStagingTexture( std::string debugName
+	StagingTexturePtr Device::createStagingTexture( std::string const & debugName
 		, VkFormat format
 		, VkExtent3D const & extent
 		, uint32_t mipLevels )const
 	{
 		return std::make_unique< StagingTexture >( *this
-			, std::move( debugName )
+			, debugName
 			, format
 			, extent
 			, mipLevels );
@@ -150,11 +150,11 @@ namespace ashes
 			, std::move( createInfo ) );
 	}
 
-	RenderPassPtr Device::createRenderPass( std::string debugName
+	RenderPassPtr Device::createRenderPass( std::string const & debugName
 		, RenderPassCreateInfo createInfo )const
 	{
 		return std::make_unique< RenderPass >( *this
-			, std::move( debugName )
+			, debugName
 			, std::move( createInfo ) );
 	}
 
@@ -164,11 +164,11 @@ namespace ashes
 			, std::move( createInfo ) );
 	}
 
-	GraphicsPipelinePtr Device::createPipeline( std::string debugName
+	GraphicsPipelinePtr Device::createPipeline( std::string const & debugName
 		, GraphicsPipelineCreateInfo createInfo )const
 	{
 		return std::make_unique< GraphicsPipeline >( *this
-			, std::move( debugName )
+			, debugName
 			, std::move( createInfo ) );
 	}
 
@@ -178,11 +178,11 @@ namespace ashes
 			, std::move( createInfo ) );
 	}
 
-	ComputePipelinePtr Device::createPipeline( std::string debugName
+	ComputePipelinePtr Device::createPipeline( std::string const & debugName
 		, ComputePipelineCreateInfo createInfo )const
 	{
 		return std::make_unique< ComputePipeline >( *this
-			, std::move( debugName )
+			, debugName
 			, std::move( createInfo ) );
 	}
 
@@ -196,12 +196,12 @@ namespace ashes
 			, std::move( createInfos ) );
 	}
 
-	RayTracingPipelinePtr Device::createPipeline( std::string debugName
+	RayTracingPipelinePtr Device::createPipeline( std::string const & debugName
 		, DeferredOperation const & deferredOperation
 		, RayTracingPipelineCreateInfoArray createInfos )const
 	{
 		return std::make_unique< RayTracingPipeline >( *this
-			, std::move( debugName )
+			, debugName
 			, deferredOperation
 			, std::move( createInfos ) );
 	}
@@ -216,21 +216,21 @@ namespace ashes
 			, pushConstantRanges );
 	}
 
-	PipelineLayoutPtr Device::createPipelineLayout( std::string debugName
+	PipelineLayoutPtr Device::createPipelineLayout( std::string const & debugName
 		, DescriptorSetLayoutCRefArray const & setLayouts
 		, VkPushConstantRangeArray const & pushConstantRanges )const
 	{
 		return std::make_unique< PipelineLayout >( *this
-			, std::move( debugName )
+			, debugName
 			, setLayouts
 			, pushConstantRanges );
 	}
 
-	DescriptorSetLayoutPtr Device::createDescriptorSetLayout( std::string debugName
+	DescriptorSetLayoutPtr Device::createDescriptorSetLayout( std::string const & debugName
 		, VkDescriptorSetLayoutCreateInfo createInfo )const
 	{
 		return std::make_unique< DescriptorSetLayout >( *this
-			, std::move( debugName )
+			, debugName
 			, std::move( createInfo ) );
 	}
 
@@ -242,12 +242,12 @@ namespace ashes
 			, flags );
 	}
 
-	DescriptorSetLayoutPtr Device::createDescriptorSetLayout( std::string debugName
+	DescriptorSetLayoutPtr Device::createDescriptorSetLayout( std::string const & debugName
 		, VkDescriptorSetLayoutBindingArray bindings
 		, VkDescriptorBindingFlags flags )const
 	{
 		return std::make_unique< DescriptorSetLayout >( *this
-			, std::move( debugName )
+			, debugName
 			, std::move( bindings )
 			, flags );
 	}
@@ -262,13 +262,13 @@ namespace ashes
 			, poolSizes );
 	}
 
-	DescriptorPoolPtr Device::createDescriptorPool( std::string debugName
+	DescriptorPoolPtr Device::createDescriptorPool( std::string const & debugName
 		, VkDescriptorPoolCreateFlags flags
 		, uint32_t maxSets
 		, VkDescriptorPoolSizeArray poolSizes )const
 	{
 		return std::make_unique< DescriptorPool >( *this
-			, std::move( debugName )
+			, debugName
 			, flags
 			, maxSets
 			, poolSizes );
@@ -280,11 +280,11 @@ namespace ashes
 			, std::move( allocateInfo ) );
 	}
 
-	DeviceMemoryPtr Device::allocateMemory( std::string debugName
+	DeviceMemoryPtr Device::allocateMemory( std::string const & debugName
 		, VkMemoryAllocateInfo allocateInfo )const
 	{
 		return std::make_unique< DeviceMemory >( *this
-			, std::move( debugName )
+			, debugName
 			, std::move( allocateInfo ) );
 	}
 
@@ -294,11 +294,11 @@ namespace ashes
 			, std::move( createInfo ) );
 	}
 
-	ImagePtr Device::createImage( std::string debugName
+	ImagePtr Device::createImage( std::string const & debugName
 		, ImageCreateInfo createInfo )const
 	{
 		return std::make_unique< Image >( *this
-			, std::move( debugName )
+			, debugName
 			, std::move( createInfo ) );
 	}
 
@@ -318,11 +318,11 @@ namespace ashes
 			, std::move( createInfo ) );
 	}
 
-	SamplerPtr Device::createSampler( std::string debugName
+	SamplerPtr Device::createSampler( std::string const & debugName
 		, SamplerCreateInfo createInfo )const
 	{
 		return std::make_unique< Sampler >( *this
-			, std::move( debugName )
+			, debugName
 			, std::move( createInfo ) );
 	}
 
@@ -332,11 +332,11 @@ namespace ashes
 			, std::move( createInfo ) );
 	}
 
-	SamplerPtr Device::createSampler( std::string debugName
+	SamplerPtr Device::createSampler( std::string const & debugName
 		, VkSamplerCreateInfo createInfo )const
 	{
 		return std::make_unique< Sampler >( *this
-			, std::move( debugName )
+			, debugName
 			, std::move( createInfo ) );
 	}
 
@@ -350,13 +350,13 @@ namespace ashes
 			, std::move( sharingMode ) );
 	}
 
-	BufferBasePtr Device::createBuffer( std::string debugName
+	BufferBasePtr Device::createBuffer( std::string const & debugName
 		, VkDeviceSize size
 		, VkBufferUsageFlags usage
 		, QueueShare sharingMode )const
 	{
 		return std::make_unique< BufferBase >( *this
-			, std::move( debugName )
+			, debugName
 			, size
 			, usage
 			, std::move( sharingMode ) );
@@ -374,14 +374,14 @@ namespace ashes
 			, range );
 	}
 
-	BufferViewPtr Device::createBufferView( std::string debugName
+	BufferViewPtr Device::createBufferView( std::string const & debugName
 		, BufferBase const & buffer
 		, VkFormat format
 		, VkDeviceSize offset
 		, VkDeviceSize range )const
 	{
 		return std::make_unique< BufferView >( *this
-			, std::move( debugName )
+			, debugName
 			, buffer
 			, format
 			, offset
@@ -409,7 +409,7 @@ namespace ashes
 		return result;
 	}
 
-	SwapChainPtr Device::createSwapChain( std::string debugName
+	SwapChainPtr Device::createSwapChain( std::string const & debugName
 		, VkSwapchainCreateInfoKHR createInfo )const
 	{
 		SwapChainPtr result;
@@ -417,7 +417,7 @@ namespace ashes
 		try
 		{
 			result = std::make_unique< SwapChain >( *this
-				, std::move( debugName )
+				, debugName
 				, std::move( createInfo ) );
 		}
 		catch ( std::exception & exc )
@@ -437,10 +437,10 @@ namespace ashes
 		return std::make_unique< Semaphore >( *this );
 	}
 
-	SemaphorePtr Device::createSemaphore( std::string debugName )const
+	SemaphorePtr Device::createSemaphore( std::string const & debugName )const
 	{
 		return std::make_unique< Semaphore >( *this
-				, std::move( debugName ) );
+				, debugName );
 	}
 
 	FencePtr Device::createFence( VkFenceCreateFlags flags )const
@@ -449,11 +449,11 @@ namespace ashes
 			, flags );
 	}
 
-	FencePtr Device::createFence( std::string debugName
+	FencePtr Device::createFence( std::string const & debugName
 		, VkFenceCreateFlags flags )const
 	{
 		return std::make_unique< Fence >( *this
-			, std::move( debugName )
+			, debugName
 			, flags );
 	}
 
@@ -462,10 +462,10 @@ namespace ashes
 		return std::make_unique< Event >( *this );
 	}
 
-	EventPtr Device::createEvent( std::string debugName )const
+	EventPtr Device::createEvent( std::string const & debugName )const
 	{
 		return std::make_unique< Event >( *this
-				, std::move( debugName ) );
+				, debugName );
 	}
 
 	CommandPoolPtr Device::createCommandPool( uint32_t queueFamilyIndex
@@ -476,12 +476,12 @@ namespace ashes
 			, flags );
 	}
 
-	CommandPoolPtr Device::createCommandPool( std::string debugName
+	CommandPoolPtr Device::createCommandPool( std::string const & debugName
 		, uint32_t queueFamilyIndex
 		, VkCommandPoolCreateFlags const & flags )const
 	{
 		return std::make_unique< CommandPool >( *this
-			, std::move( debugName )
+			, debugName
 			, queueFamilyIndex
 			, flags );
 	}
@@ -492,11 +492,11 @@ namespace ashes
 			, shader );
 	}
 
-	ShaderModulePtr Device::createShaderModule( std::string debugName
+	ShaderModulePtr Device::createShaderModule( std::string const & debugName
 		, UInt32Array const & shader )const
 	{
 		return std::make_shared< ShaderModule >( *this
-			, std::move( debugName )
+			, debugName
 			, shader );
 	}
 
@@ -510,13 +510,13 @@ namespace ashes
 			, pipelineStatistics );
 	}
 
-	QueryPoolPtr Device::createQueryPool( std::string debugName
+	QueryPoolPtr Device::createQueryPool( std::string const & debugName
 		, VkQueryType type
 		, uint32_t count
 		, VkQueryPipelineStatisticFlags pipelineStatistics )const
 	{
 		return std::make_unique< QueryPool >( *this
-			, std::move( debugName )
+			, debugName
 			, type
 			, count
 			, pipelineStatistics );
@@ -524,10 +524,10 @@ namespace ashes
 
 #if VK_KHR_deferred_host_operations
 
-	DeferredOperationPtr Device::createDeferredOperation( std::string debugName )const
+	DeferredOperationPtr Device::createDeferredOperation( std::string const & debugName )const
 	{
 		return std::make_unique< DeferredOperation >( *this
-			, std::move( debugName ) );
+			, debugName );
 	}
 
 	DeferredOperationPtr Device::createDeferredOperation()const
@@ -538,11 +538,11 @@ namespace ashes
 #endif
 #if VK_KHR_acceleration_structure
 
-	AccelerationStructurePtr Device::createAccelerationStructure( std::string debugName
+	AccelerationStructurePtr Device::createAccelerationStructure( std::string const & debugName
 		, VkAccelerationStructureCreateInfoKHR infos )const
 	{
 		return std::make_unique< AccelerationStructure >( *this
-			, std::move( debugName )
+			, debugName
 			, std::move( infos ) );
 	}
 
@@ -579,7 +579,7 @@ namespace ashes
 		checkError( res, "vkWriteAccelerationStructuresPropertiesKHR" );
 	}
 
-	VkAccelerationStructureCompatibilityKHR Device::getDeviceAccelerationStructureCompatibilityKHR( VkAccelerationStructureVersionInfoKHR & versionInfo )const
+	VkAccelerationStructureCompatibilityKHR Device::getDeviceAccelerationStructureCompatibilityKHR( VkAccelerationStructureVersionInfoKHR const & versionInfo )const
 	{
 		VkAccelerationStructureCompatibilityKHR result;
 		vkGetDeviceAccelerationStructureCompatibilityKHR( m_internal
@@ -621,12 +621,12 @@ namespace ashes
 	}
 #endif
 
-	QueuePtr Device::getQueue( std::string debugName
+	QueuePtr Device::getQueue( std::string const & debugName
 		, uint32_t familyIndex
 		, uint32_t index )const
 	{
 		return std::make_unique< Queue >( *this
-			, std::move( debugName )
+			, debugName
 			, familyIndex
 			, index );
 	}
@@ -668,7 +668,7 @@ namespace ashes
 			, VkPushConstantRangeArray{} );
 	}
 
-	PipelineLayoutPtr Device::createPipelineLayout( std::string debugName )const
+	PipelineLayoutPtr Device::createPipelineLayout( std::string const & debugName )const
 	{
 		return createPipelineLayout( debugName
 			, DescriptorSetLayoutCRefArray{}
@@ -681,7 +681,7 @@ namespace ashes
 			, VkPushConstantRangeArray{} );
 	}
 
-	PipelineLayoutPtr Device::createPipelineLayout( std::string debugName
+	PipelineLayoutPtr Device::createPipelineLayout( std::string const & debugName
 		, DescriptorSetLayout const & layout )const
 	{
 		return createPipelineLayout( debugName
@@ -695,7 +695,7 @@ namespace ashes
 			, VkPushConstantRangeArray{ 1u, pushConstantRange } );
 	}
 
-	PipelineLayoutPtr Device::createPipelineLayout( std::string debugName
+	PipelineLayoutPtr Device::createPipelineLayout( std::string const & debugName
 		, VkPushConstantRange const & pushConstantRange )const
 	{
 		return createPipelineLayout( debugName
@@ -710,7 +710,7 @@ namespace ashes
 			, VkPushConstantRangeArray{ 1u, pushConstantRange } );
 	}
 
-	PipelineLayoutPtr Device::createPipelineLayout( std::string debugName
+	PipelineLayoutPtr Device::createPipelineLayout( std::string const & debugName
 		, DescriptorSetLayout const & layout
 		, VkPushConstantRange const & pushConstantRange )const
 	{
@@ -725,7 +725,7 @@ namespace ashes
 			, VkPushConstantRangeArray{} );
 	}
 
-	PipelineLayoutPtr Device::createPipelineLayout( std::string debugName
+	PipelineLayoutPtr Device::createPipelineLayout( std::string const & debugName
 		, DescriptorSetLayoutCRefArray const & layouts )const
 	{
 		return createPipelineLayout( debugName
@@ -739,7 +739,7 @@ namespace ashes
 			, pushConstantRanges );
 	}
 
-	PipelineLayoutPtr Device::createPipelineLayout( std::string debugName
+	PipelineLayoutPtr Device::createPipelineLayout( std::string const & debugName
 		, VkPushConstantRangeArray const & pushConstantRanges )const
 	{
 		return createPipelineLayout( debugName
@@ -781,7 +781,7 @@ namespace ashes
 			} );
 	}
 
-	SamplerPtr Device::createSampler( std::string debugName
+	SamplerPtr Device::createSampler( std::string const & debugName
 		, VkSamplerAddressMode wrapS
 		, VkSamplerAddressMode wrapT
 		, VkSamplerAddressMode wrapR
@@ -837,7 +837,7 @@ namespace ashes
 		}
 
 		{
-			std::unique_lock< std::mutex > lock{ m_allocationMutex };
+			lock_type lock{ m_allocationMutex };
 #	if VK_EXT_debug_utils
 			if ( m_instance.checkExtension( VK_EXT_DEBUG_UTILS_EXTENSION_NAME ) )
 			{
@@ -864,14 +864,9 @@ namespace ashes
 					} );
 			}
 #	endif
-			auto ires = m_allocated.emplace( object
-				, ObjectAllocation{
-					typeName,
-					objectName,
-					callStack.str()
-				} );
 
-			if ( !ires.second )
+			if ( !m_allocated.try_emplace( object
+				, typeName, objectName, callStack.str() ).second )
 			{
 				stream << " - Already found in allocated objects ?";
 			}
@@ -882,7 +877,7 @@ namespace ashes
 
 	void Device::doUnregisterObject( uint64_t object )const
 	{
-		std::unique_lock< std::mutex > lock{ m_allocationMutex };
+		lock_type lock{ m_allocationMutex };
 		auto it = m_allocated.find( size_t( object ) );
 		std::stringstream stream;
 		stream.imbue( std::locale{ "C" } );
@@ -904,13 +899,13 @@ namespace ashes
 
 	void Device::doReportRegisteredObjects()const
 	{
-		std::unique_lock< std::mutex > lock{ m_allocationMutex };
+		lock_type lock{ m_allocationMutex };
 
-		for ( auto & alloc : m_allocated )
+		for ( auto const & [size, alloc] : m_allocated )
 		{
 			std::stringstream stream;
-			stream << "Leaked [" << alloc.second.type << "](" << alloc.second.name << "), allocation stack:\n";
-			stream << alloc.second.callstack;
+			stream << "Leaked [" << alloc.type << "](" << alloc.name << "), allocation stack:\n";
+			stream << alloc.callstack;
 			log::error << stream.str() << "\n";
 		}
 	}

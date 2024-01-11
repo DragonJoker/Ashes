@@ -12,8 +12,7 @@ namespace ashes
 {
 	struct DeviceCreateInfo
 	{
-		DeviceCreateInfo( DeviceCreateInfo const & ) = delete;
-		DeviceCreateInfo & operator=( DeviceCreateInfo const & ) = delete;
+		~DeviceCreateInfo()noexcept = default;
 
 		DeviceCreateInfo( VkDeviceCreateFlags pflags
 			, DeviceQueueCreateInfoArray pqueueCreateInfos
@@ -64,7 +63,7 @@ namespace ashes
 		{
 		}
 
-		DeviceCreateInfo( VkDeviceCreateInfo rhs )noexcept
+		explicit DeviceCreateInfo( VkDeviceCreateInfo const & rhs )noexcept
 			: queueCreateInfos{ makeArray< DeviceQueueCreateInfo >( makeArray( rhs.pQueueCreateInfos, rhs.queueCreateInfoCount ) ) }
 			, enabledLayerNames{ makeArray( rhs.ppEnabledLayerNames, rhs.enabledLayerCount ) }
 			, enabledExtensionNames{ makeArray( rhs.ppEnabledExtensionNames, rhs.enabledExtensionCount ) }
@@ -85,13 +84,13 @@ namespace ashes
 		{
 		}
 
-		DeviceCreateInfo( DeviceCreateInfo && rhs )noexcept
-			: queueCreateInfos{ std::move( rhs.queueCreateInfos ) }
-			, enabledLayerNames{ std::move( rhs.enabledLayerNames ) }
-			, enabledExtensionNames{ std::move( rhs.enabledExtensionNames ) }
+		DeviceCreateInfo( DeviceCreateInfo const & rhs )
+			: queueCreateInfos{ rhs.queueCreateInfos }
+			, enabledLayerNames{ rhs.enabledLayerNames }
+			, enabledExtensionNames{ rhs.enabledExtensionNames }
 			, ptrEnabledLayerNames{ convert( enabledLayerNames ) }
 			, ptrEnabledExtensionNames{ convert( enabledExtensionNames ) }
-			, enabledFeatures{ std::move( rhs.enabledFeatures ) }
+			, enabledFeatures{ rhs.enabledFeatures }
 			, vkQueueCreateInfos{ makeVkArray< VkDeviceQueueCreateInfo >( queueCreateInfos ) }
 			, vk{ VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO
 				, rhs.vk.pNext
@@ -104,6 +103,49 @@ namespace ashes
 				, ptrEnabledExtensionNames.data()
 				, enabledFeatures ? &enabledFeatures.value() : nullptr }
 		{
+		}
+
+		DeviceCreateInfo( DeviceCreateInfo && rhs )noexcept
+			: queueCreateInfos{ std::move( rhs.queueCreateInfos ) }
+			, enabledLayerNames{ std::move( rhs.enabledLayerNames ) }
+			, enabledExtensionNames{ std::move( rhs.enabledExtensionNames ) }
+			, ptrEnabledLayerNames{ convert( enabledLayerNames ) }
+			, ptrEnabledExtensionNames{ convert( enabledExtensionNames ) }
+			, enabledFeatures{ std::move( rhs.enabledFeatures ) }
+			, vkQueueCreateInfos{ makeVkArray< VkDeviceQueueCreateInfo >( queueCreateInfos ) }
+			, vk{ VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO
+			, rhs.vk.pNext
+			, rhs.vk.flags
+			, uint32_t( vkQueueCreateInfos.size() )
+			, vkQueueCreateInfos.data()
+			, uint32_t( ptrEnabledLayerNames.size() )
+			, ptrEnabledLayerNames.data()
+			, uint32_t( ptrEnabledExtensionNames.size() )
+			, ptrEnabledExtensionNames.data()
+			, enabledFeatures ? &enabledFeatures.value() : nullptr }
+		{}
+
+		DeviceCreateInfo & operator=( DeviceCreateInfo const & rhs )
+		{
+			queueCreateInfos = rhs.queueCreateInfos;
+			enabledLayerNames = rhs.enabledLayerNames;
+			enabledExtensionNames = rhs.enabledExtensionNames;
+			ptrEnabledLayerNames = convert( enabledLayerNames );
+			ptrEnabledExtensionNames = convert( enabledExtensionNames );
+			enabledFeatures = rhs.enabledFeatures;
+			vkQueueCreateInfos = makeVkArray< VkDeviceQueueCreateInfo >( queueCreateInfos );
+			vk = { VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, uint32_t( vkQueueCreateInfos.size() )
+				, vkQueueCreateInfos.data()
+				, uint32_t( ptrEnabledLayerNames.size() )
+				, ptrEnabledLayerNames.data()
+				, uint32_t( ptrEnabledExtensionNames.size() )
+				, ptrEnabledExtensionNames.data()
+				, enabledFeatures ? &enabledFeatures.value() : nullptr };
+
+			return *this;
 		}
 
 		DeviceCreateInfo & operator=( DeviceCreateInfo && rhs )noexcept
@@ -129,17 +171,17 @@ namespace ashes
 			return *this;
 		}
 
-		operator VkDeviceCreateInfo const &()const
+		operator VkDeviceCreateInfo const &()const noexcept
 		{
 			return vk;
 		}
 
-		VkDeviceCreateInfo const * operator->()const
+		VkDeviceCreateInfo const * operator->()const noexcept
 		{
 			return &vk;
 		}
 
-		VkDeviceCreateInfo * operator->()
+		VkDeviceCreateInfo * operator->()noexcept
 		{
 			return &vk;
 		}

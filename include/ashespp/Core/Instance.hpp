@@ -42,7 +42,7 @@ namespace ashes
 		*\brief
 		*	Destructor.
 		*/
-		~Instance();
+		~Instance()noexcept;
 		/**
 		*\brief
 		*	Lists the available physical GPUs.
@@ -75,7 +75,7 @@ namespace ashes
 		*\param[in] createInfo
 		*	The creation informations.
 		*/
-		VkDebugUtilsMessengerEXT createDebugUtilsMessenger( VkDebugUtilsMessengerCreateInfoEXT & createInfo )const;
+		VkDebugUtilsMessengerEXT createDebugUtilsMessenger( VkDebugUtilsMessengerCreateInfoEXT const & createInfo )const;
 		/**
 		*\brief
 		*	Destroys a debug messenger.
@@ -100,7 +100,7 @@ namespace ashes
 		*\param[in] createInfo
 		*	The creation informations.
 		*/
-		VkDebugReportCallbackEXT createDebugReportCallback( VkDebugReportCallbackCreateInfoEXT & createInfo )const;
+		VkDebugReportCallbackEXT createDebugReportCallback( VkDebugReportCallbackCreateInfoEXT const & createInfo )const;
 #endif
 		/**
 		*\brief
@@ -178,7 +178,7 @@ namespace ashes
 		*\brief
 		*	VkInstance implicit cast operator.
 		*/
-		inline operator VkInstance const & ()const
+		operator VkInstance const & ()const noexcept
 		{
 			return this->m_instance;
 		}
@@ -193,17 +193,17 @@ namespace ashes
 		/**@{*/
 		VkAllocationCallbacks const * getAllocationCallbacks()const;
 
-		inline PluginFeatures const & getFeatures()const
+		PluginFeatures const & getFeatures()const noexcept
 		{
 			return m_features;
 		}
 
-		inline StringArray const & getEnabledLayerNames()const
+		StringArray const & getEnabledLayerNames()const noexcept
 		{
 			return m_createInfo.enabledLayerNames;
 		}
 
-		inline StringArray const & getEnabledExtensionNames()const
+		StringArray const & getEnabledExtensionNames()const noexcept
 		{
 			return m_createInfo.enabledExtensionNames;
 		}

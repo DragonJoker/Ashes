@@ -42,7 +42,7 @@ namespace ashes
 		*\brief
 		*	Destructor.
 		*/
-		~Surface();
+		~Surface()noexcept;
 		/**
 		*\brief
 		*	Checks whether a queue family of the physical device supports presentation to the surface.
@@ -68,17 +68,17 @@ namespace ashes
 		*	Getters.
 		*/
 		/**@{*/
-		inline WindowHandle const & getHandle()const
+		WindowHandle const & getHandle()const noexcept
 		{
 			return m_handle;
 		}
 
-		inline PhysicalDevice const & getGpu()const
+		PhysicalDevice const & getGpu()const noexcept
 		{
 			return m_gpu;
 		}
 
-		inline std::string const & getType()const
+		std::string const & getType()const noexcept
 		{
 			return m_type;
 		}
@@ -87,7 +87,7 @@ namespace ashes
 		*\brief
 		*	VkPhysicalDevice implicit cast operator.
 		*/
-		inline operator VkSurfaceKHR const & ( )const
+		operator VkSurfaceKHR const & ()const noexcept
 		{
 			return m_internal;
 		}

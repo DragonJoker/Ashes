@@ -50,12 +50,12 @@ namespace ashes
 		*\brief
 		*	Destructor.
 		*/
-		~PipelineLayout();
+		~PipelineLayout()noexcept;
 		/**
 		*\return
 		*	The descriptor sets layouts.
 		*/
-		inline DescriptorSetLayoutCRefArray const & getDescriptorSetsLayouts()const
+		DescriptorSetLayoutCRefArray const & getDescriptorSetsLayouts()const
 		{
 			return m_setLayouts;
 		}
@@ -63,7 +63,7 @@ namespace ashes
 		*\return
 		*	The push constant ranges.
 		*/
-		inline VkPushConstantRangeArray const & getPushConstantRanges()const
+		VkPushConstantRangeArray const & getPushConstantRanges()const
 		{
 			return m_pushConstantRanges;
 		}
@@ -71,7 +71,7 @@ namespace ashes
 		*\brief
 		*	VkPipelineLayout implicit cast operator.
 		*/
-		inline operator VkPipelineLayout const & ()const
+		operator VkPipelineLayout const & ()const
 		{
 			return m_internal;
 		}

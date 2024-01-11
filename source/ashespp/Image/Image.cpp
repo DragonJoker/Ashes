@@ -162,53 +162,14 @@ namespace ashes
 		return result;
 	}
 
-	Image::Image()
+	Image::Image()noexcept
 		: VkObject{ {} }
 	{
 	}
 
-	Image::Image( Image && rhs )noexcept
-		: VkObject{ std::forward< VkObject && >( rhs ) }
-		, m_device{ rhs.m_device }
-		, m_createInfo{ std::move( rhs.m_createInfo ) }
-		, m_internal{ rhs.m_internal }
-		, m_storage{ std::move( rhs.m_storage ) }
-		, m_ownInternal{ rhs.m_ownInternal }
-		, m_views{ std::move( rhs.m_views ) }
-	{
-		rhs.m_internal = VkImage{};
-		rhs.m_ownInternal = true;
-
-		if ( m_ownInternal )
-		{
-			registerObject( *m_device, "Image", *this );
-		}
-	}
-
-	Image & Image::operator=( Image && rhs )noexcept
-	{
-		if ( &rhs != this )
-		{
-			m_createInfo = std::move( rhs.m_createInfo );
-			m_internal = rhs.m_internal;
-			m_storage = std::move( rhs.m_storage );
-			m_ownInternal = rhs.m_ownInternal;
-			m_views = std::move( rhs.m_views );
-			rhs.m_internal = VkImage{};
-			rhs.m_ownInternal = true;
-
-			if ( m_ownInternal )
-			{
-				registerObject( *m_device, "Image", *this );
-			}
-		}
-
-		return *this;
-	}
-
 	Image::Image( Device const & device
 		, ImageCreateInfo createInfo )
-		: Image{ device, "Image", createInfo }
+		: Image{ device, "Image", std::move( createInfo ) }
 	{
 	}
 	
@@ -267,7 +228,7 @@ namespace ashes
 	{
 	}
 
-	Image::~Image()
+	Image::~Image()noexcept
 	{
 		assert( ( ( m_internal != VkImage{} ) || m_views.empty() )
 			&& "No more internal handle, but some image views remain." );
@@ -349,7 +310,7 @@ namespace ashes
 		return m_storage->unlock();
 	}
 
-	void Image::generateMipmaps( CommandBuffer & commandBuffer
+	void Image::generateMipmaps( CommandBuffer const & commandBuffer
 		, VkImageLayout srcImageLayout
 		, VkImageLayout srcMipsImageLayout
 		, VkImageLayout dstImageLayout )const
@@ -377,7 +338,7 @@ namespace ashes
 			, dstImageLayout );
 	}
 
-	void Image::generateMipmaps( CommandBuffer & commandBuffer
+	void Image::generateMipmaps( CommandBuffer const & commandBuffer
 		, uint32_t baseArrayLayer
 		, uint32_t layerCount
 		, VkImageLayout srcImageLayout
@@ -526,24 +487,21 @@ namespace ashes
 	{
 		DEBUG_DUMP( createInfo );
 		VkImageView vk{};
-		auto pair = m_views.emplace( createInfo, vk );
+		auto [it, ins] = m_views.try_emplace( createInfo, vk );
 		
-		if ( pair.second )
+		if ( ins )
 		{
 			auto res = m_device->vkCreateImageView( *m_device
 				, &createInfo
 				, m_device->getAllocationCallbacks()
-				, &pair.first->second );
+				, &it->second );
 			checkError( res, "ImageView creation" );
-			registerObject( *m_device, debugName, pair.first->second );
+			registerObject( *m_device, debugName, it->second );
 		}
 
-		return ImageView
-		{
-			std::move( createInfo ),
-			pair.first->second,
-			this,
-		};
+		return ImageView{ std::move( createInfo )
+			, it->second
+			, this };
 	}
 
 	ImageView Image::createView( VkImageViewType type
@@ -638,7 +596,7 @@ namespace ashes
 		return it;
 	}
 
-	ImageViewCache::iterator Image::doDestroyView( ImageView view )const
+	ImageViewCache::iterator Image::doDestroyView( ImageView const & view )const
 	{
 		return doDestroyView( view.createInfo );
 	}

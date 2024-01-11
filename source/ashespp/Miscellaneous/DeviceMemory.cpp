@@ -11,7 +11,7 @@ namespace ashes
 {
 	DeviceMemory::DeviceMemory( Device const & device
 		, VkMemoryAllocateInfo allocateInfo )
-		: DeviceMemory{ device, "DeviceMemory", allocateInfo }
+		: DeviceMemory{ device, "DeviceMemory", std::move( allocateInfo ) }
 	{
 	}
 
@@ -31,7 +31,7 @@ namespace ashes
 		registerObject( m_device, debugName, *this );
 	}
 
-	DeviceMemory::~DeviceMemory()
+	DeviceMemory::~DeviceMemory()noexcept
 	{
 		unregisterObject( m_device, *this );
 		m_device.vkFreeMemory( m_device
@@ -48,7 +48,7 @@ namespace ashes
 			, m_internal
 			, offset
 			, size
-			, 0u/*flags*/
+			, flags
 			, reinterpret_cast< void ** >( &pointer ) );
 		checkError( res, "DeviceMemory mapping" );
 		return pointer;

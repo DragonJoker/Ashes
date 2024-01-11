@@ -39,39 +39,17 @@ namespace ashes
 		{
 		}
 
-		PipelineRasterizationStateCreateInfo( PipelineRasterizationStateCreateInfo const & rhs )
-			: vk{ rhs.vk }
-		{
-		}
-
-		PipelineRasterizationStateCreateInfo( PipelineRasterizationStateCreateInfo && rhs )noexcept
-			: vk{ std::move( rhs.vk ) }
-		{
-		}
-
-		PipelineRasterizationStateCreateInfo & operator=( PipelineRasterizationStateCreateInfo const & rhs )
-		{
-			vk = rhs.vk;
-			return *this;
-		}
-
-		PipelineRasterizationStateCreateInfo & operator=( PipelineRasterizationStateCreateInfo && rhs )noexcept
-		{
-			vk = std::move( rhs.vk );
-			return *this;
-		}
-
-		operator VkPipelineRasterizationStateCreateInfo const &()const
+		operator VkPipelineRasterizationStateCreateInfo const &()const noexcept
 		{
 			return vk;
 		}
 
-		VkPipelineRasterizationStateCreateInfo const * operator->()const
+		VkPipelineRasterizationStateCreateInfo const * operator->()const noexcept
 		{
 			return &vk;
 		}
 
-		VkPipelineRasterizationStateCreateInfo * operator->()
+		VkPipelineRasterizationStateCreateInfo * operator->()noexcept
 		{
 			return &vk;
 		}

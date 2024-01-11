@@ -15,6 +15,8 @@ namespace ashes
 {
 	struct PipelineVertexInputStateCreateInfo
 	{
+		~PipelineVertexInputStateCreateInfo()noexcept = default;
+
 		PipelineVertexInputStateCreateInfo( VkPipelineVertexInputStateCreateFlags flags
 			, VkVertexInputBindingDescriptionArray pvertexBindingDescriptions
 			, VkVertexInputAttributeDescriptionArray pvertexAttributeDescriptions )
@@ -86,17 +88,17 @@ namespace ashes
 			return *this;
 		}
 
-		operator VkPipelineVertexInputStateCreateInfo const &()const
+		operator VkPipelineVertexInputStateCreateInfo const &()const noexcept
 		{
 			return vk;
 		}
 
-		VkPipelineVertexInputStateCreateInfo const * operator->()const
+		VkPipelineVertexInputStateCreateInfo const * operator->()const noexcept
 		{
 			return &vk;
 		}
 
-		VkPipelineVertexInputStateCreateInfo * operator->()
+		VkPipelineVertexInputStateCreateInfo * operator->()noexcept
 		{
 			return &vk;
 		}

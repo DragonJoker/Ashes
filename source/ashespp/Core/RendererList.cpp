@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	namespace
+	namespace lib
 	{
 #if defined( _WIN32 )
 #	if defined( NDEBUG )
@@ -40,7 +40,7 @@ namespace ashes
 		lookForSharedLibrary( [this]( std::string const & folder
 			, std::string const & name )
 			{
-				if ( libraryName == name
+				if ( lib::libraryName == name
 					&& !m_library )
 				{
 					m_library = std::make_unique< ashes::DynamicLibrary >( folder / name );
@@ -73,14 +73,14 @@ namespace ashes
 
 		uint32_t count = 0u;
 		enumeratePluginDescriptions( &count, nullptr );
-		log::info << "RendererList: " << libraryName << ", " << count << " renderer plugins detected" << std::endl;
+		log::info << "RendererList: " << lib::libraryName << ", " << count << " renderer plugins detected" << std::endl;
 
 		if ( count > 0 )
 		{
 			m_plugins.resize( count );
 			enumeratePluginDescriptions( &count, m_plugins.data() );
 
-			for ( auto & plugin : m_plugins )
+			for ( auto const & plugin : m_plugins )
 			{
 				log::info << "    " << plugin.name
 					<< " - " << plugin.description

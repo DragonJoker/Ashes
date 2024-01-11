@@ -49,7 +49,7 @@ namespace ashes
 		registerObject( m_device, debugName, *this );
 	}
 
-	BufferView::~BufferView()
+	BufferView::~BufferView()noexcept
 	{
 		unregisterObject( m_device, *this );
 

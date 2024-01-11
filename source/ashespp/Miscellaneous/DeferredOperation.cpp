@@ -21,7 +21,7 @@ namespace ashes
 		registerObject( m_device, debugName, *this );
 	}
 	
-	DeferredOperation::~DeferredOperation()
+	DeferredOperation::~DeferredOperation()noexcept
 	{
 		unregisterObject( m_device, *this );
 		m_device.vkDestroyDeferredOperationKHR( m_device

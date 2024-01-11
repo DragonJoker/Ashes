@@ -12,6 +12,8 @@ namespace ashes
 {
 	struct PipelineDynamicStateCreateInfo
 	{
+		~PipelineDynamicStateCreateInfo()noexcept = default;
+
 		PipelineDynamicStateCreateInfo( VkPipelineDynamicStateCreateFlags flags = 0u
 			, VkDynamicStateArray pdynamicStates = {} )
 			: dynamicStates{ std::move( pdynamicStates ) }
@@ -65,17 +67,17 @@ namespace ashes
 			return *this;
 		}
 
-		operator VkPipelineDynamicStateCreateInfo const &()const
+		operator VkPipelineDynamicStateCreateInfo const &()const noexcept
 		{
 			return vk;
 		}
 
-		VkPipelineDynamicStateCreateInfo const * operator->()const
+		VkPipelineDynamicStateCreateInfo const * operator->()const noexcept
 		{
 			return &vk;
 		}
 
-		VkPipelineDynamicStateCreateInfo * operator->()
+		VkPipelineDynamicStateCreateInfo * operator->()noexcept
 		{
 			return &vk;
 		}

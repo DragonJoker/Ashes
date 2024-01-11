@@ -22,40 +22,18 @@ namespace ashes
 				, primitiveRestartEnable }
 		{
 		}
-		
-		PipelineInputAssemblyStateCreateInfo( PipelineInputAssemblyStateCreateInfo const & rhs )
-			: vk{ rhs.vk }
-		{
-		}
 
-		PipelineInputAssemblyStateCreateInfo( PipelineInputAssemblyStateCreateInfo && rhs )noexcept
-			: vk{ std::move( rhs.vk ) }
-		{
-		}
-
-		PipelineInputAssemblyStateCreateInfo & operator=( PipelineInputAssemblyStateCreateInfo const & rhs )
-		{
-			vk = rhs.vk;
-			return *this;
-		}
-		
-		PipelineInputAssemblyStateCreateInfo & operator=( PipelineInputAssemblyStateCreateInfo && rhs )noexcept
-		{
-			vk = std::move( rhs.vk );
-			return *this;
-		}
-
-		operator VkPipelineInputAssemblyStateCreateInfo const &()const
+		operator VkPipelineInputAssemblyStateCreateInfo const &()const noexcept
 		{
 			return vk;
 		}
 
-		VkPipelineInputAssemblyStateCreateInfo const * operator->()const
+		VkPipelineInputAssemblyStateCreateInfo const * operator->()const noexcept
 		{
 			return &vk;
 		}
 
-		VkPipelineInputAssemblyStateCreateInfo * operator->()
+		VkPipelineInputAssemblyStateCreateInfo * operator->()noexcept
 		{
 			return &vk;
 		}

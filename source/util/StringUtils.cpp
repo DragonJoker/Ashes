@@ -57,9 +57,9 @@ namespace utils
 	std::string trimLeft( std::string const & text )
 	{
 		std::string ret{ text };
-		size_t index = ret.find_first_not_of( " \t\r" );
 
-		if ( index != std::string::npos )
+		if ( size_t index = ret.find_first_not_of( " \t\r" );
+			index != std::string::npos )
 		{
 			ret = ret.substr( index );
 		}
@@ -70,9 +70,9 @@ namespace utils
 	std::string trimRight( std::string const & text )
 	{
 		std::string ret{ text };
-		size_t index = ret.find_last_not_of( " \t\r" );
-
-		if ( index != std::string::npos )
+		
+		if ( size_t index = ret.find_last_not_of( " \t\r" );
+			index != std::string::npos )
 		{
 			ret = ret.substr( 0, index + 1 );
 		}
@@ -115,7 +115,7 @@ namespace utils
 
 		if ( !str.empty() && !delims.empty() && maxSplits > 0 )
 		{
-			ret.reserve( maxSplits + 1 );
+			ret.reserve( size_t( maxSplits + 1ULL ) );
 			std::size_t	pos = 0;
 			std::size_t	start = 0;
 
@@ -129,16 +129,15 @@ namespace utils
 
 					if ( keepVoid )
 					{
-						ret.push_back( std::string{} );
+						ret.emplace_back();
 					}
 				}
 				else if ( pos == std::string::npos || ret.size() == maxSplits )
 				{
-					std::string remnants = str.substr( start );
-
-					if ( !remnants.empty() || keepVoid )
+					if ( std::string remnants = str.substr( start );
+						!remnants.empty() || keepVoid )
 					{
-						ret.push_back( remnants );
+						ret.emplace_back( remnants );
 					}
 
 					pos = std::string::npos;

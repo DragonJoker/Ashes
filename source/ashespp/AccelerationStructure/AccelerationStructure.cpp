@@ -16,9 +16,9 @@ namespace ashes
 	}
 
 	AccelerationStructure::AccelerationStructure( Device const & device
-		, std::string debugName
+		, std::string const & debugName
 		, VkAccelerationStructureCreateInfoKHR info )
-		: VkObject{ std::move( debugName ) }
+		: VkObject{ debugName }
 		, m_device{ device }
 		, m_info{ std::move( info ) }
 	{
@@ -30,7 +30,7 @@ namespace ashes
 		registerObject( m_device, debugName, *this );
 	}
 
-	AccelerationStructure::~AccelerationStructure()
+	AccelerationStructure::~AccelerationStructure()noexcept
 	{
 		unregisterObject( m_device, *this );
 		m_device.vkDestroyAccelerationStructureKHR( m_device
@@ -39,7 +39,7 @@ namespace ashes
 	}
 
 	void AccelerationStructure::copyAccelerationStructure( VkDeferredOperationKHR deferredOperation
-		, AccelerationStructure & dst
+		, AccelerationStructure const & dst
 		, VkCopyAccelerationStructureModeKHR mode )const
 	{
 		VkCopyAccelerationStructureInfoKHR copy{ VK_STRUCTURE_TYPE_COPY_ACCELERATION_STRUCTURE_INFO_KHR

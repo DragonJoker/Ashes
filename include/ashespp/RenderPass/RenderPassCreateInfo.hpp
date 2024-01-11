@@ -12,8 +12,7 @@ namespace ashes
 {
 	struct RenderPassCreateInfo
 	{
-		RenderPassCreateInfo( RenderPassCreateInfo const & ) = delete;
-		RenderPassCreateInfo& operator=( RenderPassCreateInfo  const & ) = delete;
+		~RenderPassCreateInfo()noexcept = default;
 
 		RenderPassCreateInfo( VkRenderPassCreateFlags flags
 			, VkAttachmentDescriptionArray pattachments
@@ -35,10 +34,10 @@ namespace ashes
 		{
 		}
 
-		RenderPassCreateInfo( RenderPassCreateInfo && rhs )noexcept
-			: attachments{ std::move( rhs.attachments ) }
-			, subpasses{ std::move( rhs.subpasses ) }
-			, dependencies{ std::move( rhs.dependencies ) }
+		RenderPassCreateInfo( RenderPassCreateInfo const & rhs )
+			: attachments{ rhs.attachments }
+			, subpasses{ rhs.subpasses }
+			, dependencies{ rhs.dependencies }
 			, vkSubpasses{ makeVkArray< VkSubpassDescription >( subpasses ) }
 			, vk{ VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO
 				, rhs.vk.pNext
@@ -50,6 +49,41 @@ namespace ashes
 				, uint32_t( dependencies.size() )
 				, dependencies.data() }
 		{
+		}
+
+		RenderPassCreateInfo( RenderPassCreateInfo && rhs )noexcept
+			: attachments{ std::move( rhs.attachments ) }
+			, subpasses{ std::move( rhs.subpasses ) }
+			, dependencies{ std::move( rhs.dependencies ) }
+			, vkSubpasses{ makeVkArray< VkSubpassDescription >( subpasses ) }
+			, vk{ VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO
+			, rhs.vk.pNext
+			, rhs.vk.flags
+			, uint32_t( attachments.size() )
+			, attachments.data()
+			, uint32_t( vkSubpasses.size() )
+			, vkSubpasses.data()
+			, uint32_t( dependencies.size() )
+			, dependencies.data() }
+		{}
+
+		RenderPassCreateInfo & operator=( RenderPassCreateInfo const & rhs )
+		{
+			attachments = rhs.attachments;
+			subpasses = rhs.subpasses;
+			dependencies = rhs.dependencies;
+			vkSubpasses = makeVkArray< VkSubpassDescription >( subpasses );
+			vk = { VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, uint32_t( attachments.size() )
+				, attachments.data()
+				, uint32_t( vkSubpasses.size() )
+				, vkSubpasses.data()
+				, uint32_t( dependencies.size() )
+				, dependencies.data() };
+
+			return *this;
 		}
 
 		RenderPassCreateInfo & operator=( RenderPassCreateInfo && rhs )noexcept
@@ -71,17 +105,17 @@ namespace ashes
 			return *this;
 		}
 
-		operator VkRenderPassCreateInfo const &()const
+		operator VkRenderPassCreateInfo const &()const noexcept
 		{
 			return vk;
 		}
 
-		VkRenderPassCreateInfo const * operator->()const
+		VkRenderPassCreateInfo const * operator->()const noexcept
 		{
 			return &vk;
 		}
 
-		VkRenderPassCreateInfo * operator->()
+		VkRenderPassCreateInfo * operator->()noexcept
 		{
 			return &vk;
 		}

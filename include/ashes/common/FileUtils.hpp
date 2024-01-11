@@ -34,8 +34,8 @@ namespace ashes
 	*	\p false if any error occured.
 	*/
 	bool traverseDirectory( std::string const & folderPath
-		, TraverseDirFunction directoryFunction
-		, HitFileFunction fileFunction );
+		, TraverseDirFunction const & directoryFunction
+		, HitFileFunction const & fileFunction );
 	/**
 	*\brief
 	*	Filters the files in a directory, recursively or not.
@@ -49,7 +49,7 @@ namespace ashes
 	*	The files list.
 	*/
 	StringArray filterDirectoryFiles( std::string const & folderPath
-		, FilterFunction onFile
+		, FilterFunction const & onFile
 		, bool recursive = false );
 	/**
 	*\brief
@@ -69,7 +69,7 @@ namespace ashes
 	*\param[in] onFile
 	*	Filter function to tell if a file is an appropriate library.
 	*/
-	ashes::StringArray lookForSharedLibrary( FilterFunction onFile );
+	ashes::StringArray lookForSharedLibrary( FilterFunction const & onFile );
 	/**
 	*\return
 	*	The executable folder.

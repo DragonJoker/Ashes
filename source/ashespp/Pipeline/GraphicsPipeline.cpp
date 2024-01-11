@@ -4,10 +4,6 @@ See LICENSE file in root folder.
 */
 #include "ashespp/Pipeline/GraphicsPipeline.hpp"
 
-#include "ashespp/Core/Device.hpp"
-
-#include <ashes/common/Exception.hpp>
-
 namespace ashes
 {
 	GraphicsPipeline::GraphicsPipeline( Device const & device

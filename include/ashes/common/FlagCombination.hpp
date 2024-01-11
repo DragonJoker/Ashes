@@ -21,7 +21,7 @@ namespace ashes
 	{
 	public:
 		//!@~english	The basic integer integer.
-		using BaseType = typename std::underlying_type< FlagType >::type;
+		using BaseType = typename std::underlying_type_t< FlagType >;
 
 	public:
 		/**
@@ -104,20 +104,20 @@ namespace ashes
 	{
 	public:
 		//!@~english	The basic integer integer.
-		using BaseType = typename std::underlying_type< FlagType >::type;
+		using BaseType = typename std::underlying_type_t< FlagType >;
 		/**
 		*\name
 		*	Construction.
 		*/
 		/**@{*/
-		inline constexpr FlagCombination( FlagType value )noexcept
+		constexpr FlagCombination( FlagType value )noexcept
 			: m_value{ BaseType( value ) }
 		{
 			static_assert( sizeof( FlagType ) == sizeof( BaseType )
 				, "Can't combine different size parameters" );
 		}
 
-		inline constexpr FlagCombination( BaseType value = BaseType{} )noexcept
+		constexpr FlagCombination( BaseType value = BaseType{} )noexcept
 			: m_value{ value }
 		{
 			static_assert( sizeof( FlagType ) == sizeof( BaseType )
@@ -129,12 +129,12 @@ namespace ashes
 		*	Casting.
 		*/
 		/**\{*/
-		inline operator BaseType const &()const noexcept
+		operator BaseType const &()const noexcept
 		{
 			return m_value;
 		}
 
-		inline BaseType value()const noexcept
+		BaseType value()const noexcept
 		{
 			return m_value;
 		}
@@ -143,12 +143,12 @@ namespace ashes
 		*	Iteration.
 		*/
 		/**\{*/
-		inline FlagIterator< FlagType > begin()const noexcept
+		FlagIterator< FlagType > begin()const noexcept
 		{
 			return FlagIterator< FlagType >( m_value );
 		}
 
-		inline FlagIterator< FlagType > end()const noexcept
+		FlagIterator< FlagType > end()const noexcept
 		{
 			return FlagIterator< FlagType >();
 		}
@@ -158,37 +158,37 @@ namespace ashes
 		*	Member binary operators.
 		*/
 		/**\{*/
-		inline FlagCombination & operator&=( BaseType rhs )noexcept
+		FlagCombination & operator&=( BaseType rhs )noexcept
 		{
 			m_value &= rhs;
 			return *this;
 		}
 
-		inline FlagCombination & operator|=( BaseType rhs )noexcept
+		FlagCombination & operator|=( BaseType rhs )noexcept
 		{
 			m_value |= rhs;
 			return *this;
 		}
 
-		inline FlagCombination & operator&=( FlagType rhs )noexcept
+		FlagCombination & operator&=( FlagType rhs )noexcept
 		{
 			m_value &= BaseType( rhs );
 			return *this;
 		}
 
-		inline FlagCombination & operator|=( FlagType rhs )noexcept
+		FlagCombination & operator|=( FlagType rhs )noexcept
 		{
 			m_value |= BaseType( rhs );
 			return *this;
 		}
 
-		inline FlagCombination & operator&=( FlagCombination< FlagType > const & rhs )noexcept
+		FlagCombination & operator&=( FlagCombination< FlagType > const & rhs )noexcept
 		{
 			m_value &= BaseType( rhs );
 			return *this;
 		}
 
-		inline FlagCombination & operator|=( FlagCombination< FlagType > const & rhs )noexcept
+		FlagCombination & operator|=( FlagCombination< FlagType > const & rhs )noexcept
 		{
 			m_value |= BaseType( rhs );
 			return *this;
@@ -217,22 +217,6 @@ namespace ashes
 	{
 		using Type = typename FlagCombination< FlagType >::BaseType;
 		return Type( lhs ) == Type( rhs );
-	}
-
-	template< typename FlagType >
-	inline bool operator!=( FlagCombination< FlagType > const & lhs
-		, FlagCombination< FlagType > const & rhs )noexcept
-	{
-		using Type = typename FlagCombination< FlagType >::BaseType;
-		return Type( lhs ) != Type( rhs );
-	}
-
-	template< typename FlagType >
-	inline bool operator!=( FlagCombination< FlagType > const & lhs
-		, FlagType const & rhs )noexcept
-	{
-		using Type = typename FlagCombination< FlagType >::BaseType;
-		return Type( lhs ) != Type( rhs );
 	}
 	/**\}*/
 	/**

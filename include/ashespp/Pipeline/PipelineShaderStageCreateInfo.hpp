@@ -28,7 +28,7 @@ namespace ashes
 		{
 		}
 
-		operator VkSpecializationInfo const &()const
+		operator VkSpecializationInfo const &()const noexcept
 		{
 			return vk;
 		}
@@ -41,19 +41,21 @@ namespace ashes
 
 	struct PipelineShaderStageCreateInfo
 	{
+		~PipelineShaderStageCreateInfo()noexcept = default;
+
 		PipelineShaderStageCreateInfo( VkPipelineShaderStageCreateFlags flags
 			, VkShaderStageFlagBits stage
 			, ShaderModulePtr pmodule
 			, std::string pname
 			, Optional< SpecializationInfo > pspecializationInfo )
-			: module{ std::move( pmodule ) }
+			: shaderModule{ std::move( pmodule ) }
 			, name{ std::move( pname ) }
 			, specializationInfo{ std::move( pspecializationInfo ) }
 			, vk{ VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
 				, nullptr
 				, flags
 				, stage
-				, *module
+				, *shaderModule
 				, name.data()
 				, nullptr }
 		{
@@ -61,28 +63,28 @@ namespace ashes
 		}
 
 		PipelineShaderStageCreateInfo( PipelineShaderStageCreateInfo const & rhs )
-			: module{ rhs.module }
+			: shaderModule{ rhs.shaderModule }
 			, name{ rhs.name }
 			, specializationInfo{ rhs.specializationInfo }
 			, vk{ VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
 				, rhs.vk.pNext
 				, rhs.vk.flags
 				, rhs.vk.stage
-				, *module
+				, *shaderModule
 				, name.data()
 				, nullptr }
 		{
 		}
 
 		PipelineShaderStageCreateInfo( PipelineShaderStageCreateInfo && rhs )noexcept
-			: module{ std::move( rhs.module ) }
+			: shaderModule{ std::move( rhs.shaderModule ) }
 			, name{ std::move( rhs.name ) }
 			, specializationInfo{ std::move( rhs.specializationInfo ) }
 			, vk{ VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
 				, rhs.vk.pNext
 				, rhs.vk.flags
 				, rhs.vk.stage
-				, *module
+				, *shaderModule
 				, name.data()
 				, nullptr }
 		{
@@ -97,14 +99,14 @@ namespace ashes
 
 		PipelineShaderStageCreateInfo & operator=( PipelineShaderStageCreateInfo const & rhs )
 		{
-			module = rhs.module;
+			shaderModule = rhs.shaderModule;
 			name = rhs.name;
 			specializationInfo = rhs.specializationInfo;
 			vk = { VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
 				, rhs.vk.pNext
 				, rhs.vk.flags
 				, rhs.vk.stage
-				, *module
+				, *shaderModule
 				, name.data()
 				, nullptr };
 			doInit();
@@ -114,14 +116,14 @@ namespace ashes
 
 		PipelineShaderStageCreateInfo & operator=( PipelineShaderStageCreateInfo && rhs )noexcept
 		{
-			module = std::move( rhs.module );
+			shaderModule = std::move( rhs.shaderModule );
 			name = std::move( rhs.name );
 			specializationInfo = std::move( rhs.specializationInfo );
 			vk = { VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
 				, rhs.vk.pNext
 				, rhs.vk.flags
 				, rhs.vk.stage
-				, *module
+				, *shaderModule
 				, name.data()
 				, nullptr };
 			rhs.vk = { VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
@@ -136,22 +138,22 @@ namespace ashes
 			return *this;
 		}
 
-		operator VkPipelineShaderStageCreateInfo const &()const
+		operator VkPipelineShaderStageCreateInfo const &()const noexcept
 		{
 			return vk;
 		}
 
-		VkPipelineShaderStageCreateInfo const * operator->()const
+		VkPipelineShaderStageCreateInfo const * operator->()const noexcept
 		{
 			return &vk;
 		}
 
-		VkPipelineShaderStageCreateInfo * operator->()
+		VkPipelineShaderStageCreateInfo * operator->()noexcept
 		{
 			return &vk;
 		}
 
-		ShaderModulePtr module;
+		ShaderModulePtr shaderModule;
 		std::string name;
 		Optional< SpecializationInfo > specializationInfo;
 

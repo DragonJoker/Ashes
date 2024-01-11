@@ -41,7 +41,7 @@ namespace ashes
 			, std::string const & debugName
 			, ComputePipelineCreateInfo createInfo );
 
-	protected:
+	private:
 		ComputePipelineCreateInfo m_createInfo;
 	};
 }

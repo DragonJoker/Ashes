@@ -43,17 +43,17 @@ namespace ashes
 		*\brief
 		*	Destructor.
 		*/
-		~ShaderModule();
+		~ShaderModule()noexcept;
 		/**
 		*\brief
 		*	VkShaderModule implicit cast operator.
 		*/
-		inline operator VkShaderModule const & ()const
+		operator VkShaderModule const & ()const
 		{
 			return m_internal;
 		}
 
-	protected:
+	private:
 		Device const & m_device;
 		VkShaderModule m_internal{};
 	};

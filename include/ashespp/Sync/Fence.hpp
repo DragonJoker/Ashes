@@ -66,7 +66,7 @@ namespace ashes
 		*\brief
 		*	Destructor.
 		*/
-		~Fence();
+		~Fence()noexcept;
 		/**
 		*\brief
 		*	Waits for the fence to be signaled.
@@ -85,7 +85,7 @@ namespace ashes
 		*\brief
 		*	VkFence implicit cast operator.
 		*/
-		inline operator VkFence const &()const
+		operator VkFence const &()const
 		{
 			return m_internal;
 		}

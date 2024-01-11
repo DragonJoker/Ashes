@@ -33,7 +33,6 @@ namespace ashes
 
 		hash = size_t( b * kMul );
 	}
-
 }
 
 #endif

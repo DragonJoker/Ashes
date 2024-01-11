@@ -22,7 +22,7 @@ namespace utils
 	{
 	}
 
-	bool RenderingResources::waitRecord( uint64_t timeout )
+	bool RenderingResources::waitRecord( uint64_t timeout )const
 	{
 		bool res = m_fence->wait( timeout ) == ashes::WaitResult::eSuccess;
 
@@ -34,7 +34,7 @@ namespace utils
 		return res;
 	}
 
-	VkResult RenderingResources::present( ashes::Queue const & queue )
+	VkResult RenderingResources::present( ashes::Queue const & queue )const
 	{
 		return queue.present( m_swapChain
 			, m_imageIndex

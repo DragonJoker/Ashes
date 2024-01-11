@@ -16,7 +16,7 @@ namespace utils
 		Instance( ashes::RendererList const & rendererList
 			, std::string const & name
 			, ashes::ApplicationInfo applicationInfo );
-		~Instance();
+		~Instance()noexcept;
 		/**
 		*\~french
 		*\brief
@@ -66,7 +66,7 @@ namespace utils
 		ashes::StringArray m_layerNames;
 		ashes::StringArray m_extensionNames;
 		ashes::VkExtensionPropertiesArray m_globalLayerExtensions;
-		std::map< std::string, ashes::VkExtensionPropertiesArray > m_layersExtensions;
+		std::map< std::string, ashes::VkExtensionPropertiesArray, std::less<> > m_layersExtensions;
 	};
 	using InstancePtr = std::unique_ptr< Instance >;
 }

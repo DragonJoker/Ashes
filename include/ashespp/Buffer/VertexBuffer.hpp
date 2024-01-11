@@ -34,7 +34,7 @@ namespace ashes
 		VertexBufferBase( Device const & device
 			, VkDeviceSize size
 			, VkBufferUsageFlags usage
-			, QueueShare sharingMode = {} );
+			, QueueShare const & sharingMode = {} );
 		/**
 		*\brief
 		*	Constructor.
@@ -51,12 +51,7 @@ namespace ashes
 			, std::string const & debugName
 			, VkDeviceSize size
 			, VkBufferUsageFlags usage
-			, QueueShare sharingMode = {} );
-		/**
-		*\brief
-		*	Destructor.
-		*/
-		~VertexBufferBase() = default;
+			, QueueShare const & sharingMode = {} );
 		/**
 		*\brief
 		*	Binds this buffer to given device memory object.
@@ -71,22 +66,22 @@ namespace ashes
 		/**@{*/
 		VkMemoryRequirements getMemoryRequirements()const;
 
-		inline VkDeviceSize getSize()const
+		VkDeviceSize getSize()const
 		{
 			return m_size;
 		}
 
-		inline BufferBase const & getBuffer()const
+		BufferBase const & getBuffer()const
 		{
 			return *m_buffer;
 		}
 
-		inline BufferBase & getBuffer()
+		BufferBase & getBuffer()
 		{
 			return *m_buffer;
 		}
 
-		inline Device const & getDevice()const
+		Device const & getDevice()const
 		{
 			return m_device;
 		}
@@ -95,12 +90,12 @@ namespace ashes
 		*\brief
 		*	VkBuffer implicit cast operator.
 		*/
-		inline operator VkBuffer const & ()const
+		operator VkBuffer const & ()const
 		{
 			return *m_buffer;
 		}
 
-	protected:
+	private:
 		Device const & m_device;
 		VkDeviceSize m_size;
 		BufferBasePtr m_buffer;
@@ -176,7 +171,7 @@ namespace ashes
 		*\param[in] sharingMode
 		*	The buffer sharing mode.
 		*/
-		inline VertexBuffer( Device const & device
+		VertexBuffer( Device const & device
 			, VkDeviceSize count
 			, VkBufferUsageFlags usage
 			, QueueShare sharingMode = {} );
@@ -192,21 +187,11 @@ namespace ashes
 		*\param[in] sharingMode
 		*	The buffer sharing mode.
 		*/
-		inline VertexBuffer( Device const & device
+		VertexBuffer( Device const & device
 			, std::string const & debugName
 			, VkDeviceSize count
 			, VkBufferUsageFlags usage
 			, QueueShare sharingMode = {} );
-		/**
-		*\brief
-		*	Binds this buffer to given device memory object.
-		*\param[in] memory
-		*	The memory object.
-		*/
-		inline void bindMemory( DeviceMemoryPtr memory )
-		{
-			m_buffer->bindMemory( std::move( memory ) );
-		}
 		/**
 		*\brief
 		*	Maps a range of the buffer's memory in RAM.
@@ -219,12 +204,12 @@ namespace ashes
 		*\return
 		*	\p nullptr if mapping failed.
 		*/
-		inline T * lock( VkDeviceSize offset
+		T * lock( VkDeviceSize offset
 			, VkDeviceSize count
 			, VkMemoryMapFlags flags )const
 		{
 			auto size = doComputeSize( count, offset );
-			return reinterpret_cast< T * >( m_buffer->lock( offset, size, flags ) );
+			return reinterpret_cast< T * >( getBuffer().lock( offset, size, flags ) );
 		}
 		/**
 		*\brief
@@ -234,11 +219,11 @@ namespace ashes
 		*\param[in] count
 		*	The range elements count.
 		*/
-		inline void flush( VkDeviceSize offset
+		void flush( VkDeviceSize offset
 			, VkDeviceSize count )const
 		{
 			auto size = doComputeSize( count, offset );
-			m_buffer->flush( offset, size );
+			getBuffer().flush( offset, size );
 		}
 		/**
 		*\brief
@@ -248,11 +233,11 @@ namespace ashes
 		*\param[in] count
 		*	The range elements count.
 		*/
-		inline void invalidate( VkDeviceSize offset
+		void invalidate( VkDeviceSize offset
 			, VkDeviceSize count )const
 		{
 			auto size = doComputeSize( count, offset );
-			m_buffer->invalidate( offset, size );
+			getBuffer().invalidate( offset, size );
 		}
 		/**
 		*\brief
@@ -260,31 +245,18 @@ namespace ashes
 		*/
 		void unlock()const
 		{
-			m_buffer->unlock();
+			getBuffer().unlock();
 		}
 		/**
 		*\name
 		*	Getters.
 		**/
 		/**@{*/
-		inline VkMemoryRequirements getMemoryRequirements()const
+		VkDeviceSize getCount()const
 		{
-			return m_buffer->getMemoryRequirements();
-		}
-
-		inline VkDeviceSize getCount()const
-		{
-			return m_buffer->getSize() / sizeof( T );
+			return getBuffer().getSize() / sizeof( T );
 		}
 		/**@}*/
-		/**
-		*\brief
-		*	VkBuffer implicit cast operator.
-		*/
-		inline operator VkBuffer const & ()const
-		{
-			return *m_buffer;
-		}
 
 	private:
 		uint64_t doComputeSize( VkDeviceSize count
@@ -293,15 +265,11 @@ namespace ashes
 			offset *= sizeof( T );
 			count *= sizeof( T );
 			auto const aligned = getAlignedSize( count
-				, m_device.getProperties().limits.nonCoherentAtomSize );
-			auto result = count == m_buffer->getSize()
-				? ( offset == 0ull
-					? WholeSize
-					: aligned )
-				: ( offset + count == m_buffer->getSize()
-					? count
-					: aligned );
-			assert( result == WholeSize || offset + result <= m_buffer->getSize() );
+				, getDevice().getProperties().limits.nonCoherentAtomSize );
+			auto result = count == getBuffer().getSize()
+				? ( offset == 0ULL ? WholeSize : aligned )
+				: ( offset + count == getBuffer().getSize() ? count : aligned );
+			assert( result == WholeSize || offset + result <= getBuffer().getSize() );
 			return result;
 		}
 	};

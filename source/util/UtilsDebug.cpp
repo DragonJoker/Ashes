@@ -72,7 +72,7 @@ namespace utils
 		VkBool32 VKAPI_PTR debugUtilsCallback( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
 			, VkDebugUtilsMessageTypeFlagsEXT messageTypes
 			, const VkDebugUtilsMessengerCallbackDataEXT * pCallbackData
-			, void * pUserData )
+			, [[maybe_unused]] void * pUserData )
 		{
 			// Select prefix depending on flags passed to the callback
 			// Note that multiple flags may be set for a single validation message
@@ -157,7 +157,7 @@ namespace utils
 	}
 
 	VkDebugUtilsMessengerEXT setupDebugging( ashes::Instance const & instance
-		, void * userData )
+		, [[maybe_unused]] void * userData )
 	{
 		VkDebugUtilsMessageSeverityFlagsEXT severityFlags = 0u
 			| VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT

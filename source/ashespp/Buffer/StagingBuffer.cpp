@@ -43,8 +43,7 @@ namespace ashes
 			};
 		}
 
-		VkBufferImageCopy makeValidCopyInfo( Device const & device
-			, Image const & image
+		VkBufferImageCopy makeValidCopyInfo( Image const & image
 			, VkExtent2D const & size
 			, VkOffset3D offset
 			, VkImageSubresourceLayers const & subresourceLayers )
@@ -122,15 +121,13 @@ namespace ashes
 			};
 		}
 
-		ashes::VkBufferImageCopyArray makeValidCopyInfos( Device const & device
-			, ImageView const & view
+		ashes::VkBufferImageCopyArray makeValidCopyInfos( ImageView const & view
 			, VkImageSubresourceLayers subresourceLayers
 			, VkExtent2D const & size
 			, VkOffset3D const & offset )
 		{
 			ashes::VkBufferImageCopyArray copyInfos;
-			copyInfos.push_back( makeValidCopyInfo( device
-				, *view.image
+			copyInfos.push_back( makeValidCopyInfo( *view.image
 				, size
 				, offset
 				, subresourceLayers ) );
@@ -141,7 +138,7 @@ namespace ashes
 	StagingBuffer::StagingBuffer( Device const & device
 		, VkBufferUsageFlags usage
 		, VkDeviceSize size
-		, QueueShare sharingMode )
+		, QueueShare const & sharingMode )
 		: StagingBuffer{ device, "StagingBuffer", usage, size, sharingMode }
 	{
 	}
@@ -150,12 +147,12 @@ namespace ashes
 		, std::string const & debugName
 		, VkBufferUsageFlags usage
 		, VkDeviceSize size
-		, QueueShare sharingMode )
+		, QueueShare const & sharingMode )
 		: m_device{ device }
 		, m_buffer{ device.createBuffer( debugName
 			, size
 			, usage | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT
-			, std::move( sharingMode ) ) }
+			, sharingMode ) }
 		, m_storage{ device.allocateMemory( debugName, getAllocateInfo( device, *m_buffer ) ) }
 	{
 		m_buffer->bindMemory( m_storage );
@@ -354,7 +351,7 @@ namespace ashes
 		, ImageView const & view
 		, VkImageLayout dstLayout )const
 	{
-		auto extent = VkExtent3D{ view.image->getDimensions() };
+		VkExtent3D extent{ view.image->getDimensions() };
 		auto mipLevel = view->subresourceRange.baseMipLevel;
 		uploadTextureData( commandBuffer
 			, {
@@ -373,7 +370,7 @@ namespace ashes
 
 	void StagingBuffer::downloadTextureData( Queue const & queue
 		, CommandPool const & commandPool
-		, VkImageSubresourceLayers const & subresourceLayers
+		, [[maybe_unused]] VkImageSubresourceLayers const & subresourceLayers
 		, VkFormat format
 		, VkOffset3D const & offset
 		, VkExtent2D const & extent
@@ -423,7 +420,7 @@ namespace ashes
 		, ImageView const & view
 		, VkImageLayout dstLayout )const
 	{
-		auto extent = view.image->getDimensions();
+		VkExtent3D extent{ view.image->getDimensions() };
 		auto mipLevel = view->subresourceRange.baseMipLevel;
 		downloadTextureData( queue
 			, commandPool
@@ -550,7 +547,7 @@ namespace ashes
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
 			, VK_PIPELINE_STAGE_TRANSFER_BIT
 			, view.makeTransferDestination( VK_IMAGE_LAYOUT_UNDEFINED ) );
-		commandBuffer.copyToImage( makeValidCopyInfos( m_device, view, subresourceLayers, size, offset )
+		commandBuffer.copyToImage( makeValidCopyInfos( view, subresourceLayers, size, offset )
 			, getBuffer()
 			, *view.image );
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
@@ -664,7 +661,7 @@ namespace ashes
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
 			, VK_PIPELINE_STAGE_TRANSFER_BIT
 			, getBuffer().makeTransferDestination() );
-		commandBuffer.copyToBuffer( makeValidCopyInfos( m_device, view, subresourceLayers, size, offset )
+		commandBuffer.copyToBuffer( makeValidCopyInfos( view, subresourceLayers, size, offset )
 			, *view.image
 			, getBuffer() );
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT

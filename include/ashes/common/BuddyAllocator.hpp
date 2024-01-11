@@ -25,34 +25,34 @@ namespace ashes
 		*\param[in] minBlockSize
 		*	The minimum size for a block.
 		*/
-		inline BuddyAllocatorT( uint32_t numLevels
+		BuddyAllocatorT( uint32_t numLevels
 			, uint32_t minBlockSize );
-		inline ~BuddyAllocatorT();
+		~BuddyAllocatorT();
 		/**
 		*\param[in] size
 		*	The requested memory size.
 		*\return
 		*	\p true if there is enough remaining memory for given size.
 		*/
-		inline bool hasAvailable( size_t size )const;
+		bool hasAvailable( size_t size )const;
 		/**
 		 *\param[in] size
 		 *	The requested memory size.
 		 *\return
 		 *	The memory chunk.
 		 */
-		inline PointerType allocate( size_t size );
+		PointerType allocate( size_t size );
 		/**
 		 *\param[in] pointer
 		 *	The memory chunk.
 		 */
-		inline void deallocate( PointerType pointer );
+		void deallocate( PointerType pointer );
 
 	private:
-		inline uint32_t doGetLevel( size_t size )const;
-		inline size_t doGetLevelSize( uint32_t level )const;
-		inline Block doAllocate( uint32_t order );
-		inline void doMergeLevel( Block const & block
+		uint32_t doGetLevel( size_t size )const;
+		size_t doGetLevelSize( uint32_t level )const;
+		Block doAllocate( uint32_t order );
+		void doMergeLevel( Block const & block
 			, uint32_t index
 			, uint32_t level );
 
@@ -61,8 +61,8 @@ namespace ashes
 		using PointerLevel = std::pair< size_t, uint32_t >;
 
 	private:
-		uint32_t m_numLevels;
-		uint32_t m_minBlockSize;
+		uint32_t m_numLevels{};
+		uint32_t m_minBlockSize{};
 		std::vector< FreeList > m_freeLists;
 		std::vector< PointerLevel > m_allocated;
 	};

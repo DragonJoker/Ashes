@@ -75,7 +75,7 @@ namespace utils
 		*\param[in] value
 		*	L'angle, exprimé en degrés.
 		*/
-		explicit inline AngleT( DegreesT< T > const & value )noexcept
+		explicit AngleT( DegreesT< T > const & value )noexcept
 			: m_radians{ toRadians( value ) }
 		{
 			doNormalise();
@@ -86,7 +86,7 @@ namespace utils
 		*\param[in] value
 		*	L'angle, exprimé en radians.
 		*/
-		inline AngleT( RadiansT< T > const & value )noexcept
+		AngleT( RadiansT< T > const & value )noexcept
 			: m_radians{ value }
 		{
 			doNormalise();
@@ -95,7 +95,7 @@ namespace utils
 		*\brief
 		*	Constructeur par défaut, l'angle vaut 0 radians.
 		*/
-		inline AngleT()noexcept
+		AngleT()noexcept
 			: m_radians{ T{ 0.0 } }
 		{
 		}
@@ -108,7 +108,7 @@ namespace utils
 		*\return
 		*	La valeur de l'angle, en degrés.
 		*/
-		explicit inline operator DegreesT< T >()const noexcept
+		explicit operator DegreesT< T >()const noexcept
 		{
 			return to_degrees( m_radians );
 		}
@@ -116,7 +116,7 @@ namespace utils
 		*\return
 		*	La valeur de l'angle, en radians.
 		*/
-		inline operator RadiansT< T >()const noexcept
+		operator RadiansT< T >()const noexcept
 		{
 			return m_radians;
 		}
@@ -124,7 +124,7 @@ namespace utils
 		*\return
 		*	La valeur de l'angle, en radians.
 		*/
-		explicit inline operator T()const noexcept
+		explicit operator T()const noexcept
 		{
 			return T( m_radians );
 		}
@@ -133,37 +133,37 @@ namespace utils
 		*\name Opérateurs arithmétiques membres.
 		*/
 		/**\{*/
-		inline AngleT & operator+=( AngleT< T > const & rhs )noexcept
+		AngleT & operator+=( AngleT< T > const & rhs )noexcept
 		{
 			m_radians += rhs;
 			return *this;
 		}
 
-		inline AngleT & operator-=( AngleT< T > const & rhs )noexcept
+		AngleT & operator-=( AngleT< T > const & rhs )noexcept
 		{
 			m_radians -= rhs;
 			return *this;
 		}
 
-		inline AngleT & operator+=( RadiansT< T > const & rhs )noexcept
+		AngleT & operator+=( RadiansT< T > const & rhs )noexcept
 		{
 			m_radians += rhs;
 			return *this;
 		}
 
-		inline AngleT & operator-=( RadiansT< T > const & rhs )noexcept
+		AngleT & operator-=( RadiansT< T > const & rhs )noexcept
 		{
 			m_radians -= rhs;
 			return *this;
 		}
 
-		inline AngleT & operator*=( T rhs )noexcept
+		AngleT & operator*=( T rhs )noexcept
 		{
 			m_radians *= rhs;
 			return *this;
 		}
 
-		inline AngleT & operator/=( T rhs )noexcept
+		AngleT & operator/=( T rhs )noexcept
 		{
 			m_radians /= rhs;
 			return *this;
@@ -175,7 +175,7 @@ namespace utils
 		*\brief
 		*	Remet les valeurs de l'angle entre 0 et PI * 2.
 		*/
-		inline void doNormalise()noexcept
+		void doNormalise()noexcept
 		{
 			static RadiansT< T > zero{ T { 0 } };
 			m_radians = RadiansT< T >{ T( T( m_radians ) - PiMult2 * floor( T( m_radians ) / PiMult2 ) ) };

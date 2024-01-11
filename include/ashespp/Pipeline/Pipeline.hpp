@@ -66,17 +66,22 @@ namespace ashes
 		*\brief
 		*	Destructor.
 		*/
-		virtual ~Pipeline();
+		virtual ~Pipeline()noexcept;
 		/**
 		*\brief
 		*	VkPipeline implicit cast operator.
 		*/
-		operator VkPipeline const & ()const
+		operator VkPipeline const & ()const noexcept
 		{
 			return m_internal;
 		}
 
-	protected:
+		Device const & getDevice()const noexcept
+		{
+			return m_device;
+		}
+
+	private:
 		Device const & m_device;
 		VkPipeline m_internal{};
 	};

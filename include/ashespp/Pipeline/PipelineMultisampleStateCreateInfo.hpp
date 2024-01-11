@@ -12,6 +12,8 @@ namespace ashes
 {
 	struct PipelineMultisampleStateCreateInfo
 	{
+		~PipelineMultisampleStateCreateInfo()noexcept = default;
+
 		PipelineMultisampleStateCreateInfo( VkPipelineMultisampleStateCreateFlags flags = 0u
 			, VkSampleCountFlagBits rasterizationSamples = VK_SAMPLE_COUNT_1_BIT
 			, VkBool32 sampleShadingEnable = VK_FALSE
@@ -90,17 +92,17 @@ namespace ashes
 			return *this;
 		}
 
-		operator VkPipelineMultisampleStateCreateInfo const &()const
+		operator VkPipelineMultisampleStateCreateInfo const &()const noexcept
 		{
 			return vk;
 		}
 
-		VkPipelineMultisampleStateCreateInfo const * operator->()const
+		VkPipelineMultisampleStateCreateInfo const * operator->()const noexcept
 		{
 			return &vk;
 		}
 
-		VkPipelineMultisampleStateCreateInfo * operator->()
+		VkPipelineMultisampleStateCreateInfo * operator->()noexcept
 		{
 			return &vk;
 		}

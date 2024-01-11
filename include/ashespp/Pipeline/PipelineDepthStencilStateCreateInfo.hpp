@@ -49,31 +49,9 @@ namespace ashes
 		{
 		}
 
-		PipelineDepthStencilStateCreateInfo( PipelineDepthStencilStateCreateInfo const & rhs )
-			: vk{ rhs.vk }
-		{
-		}
-
-		PipelineDepthStencilStateCreateInfo( PipelineDepthStencilStateCreateInfo && rhs )noexcept
-			: vk{ std::move( rhs.vk ) }
-		{
-		}
-
-		PipelineDepthStencilStateCreateInfo( VkPipelineDepthStencilStateCreateInfo rhs )noexcept
+		explicit PipelineDepthStencilStateCreateInfo( VkPipelineDepthStencilStateCreateInfo rhs )noexcept
 			: vk{ std::move( rhs ) }
 		{
-		}
-
-		PipelineDepthStencilStateCreateInfo & operator=( PipelineDepthStencilStateCreateInfo const & rhs )
-		{
-			vk = rhs.vk;
-			return *this;
-		}
-
-		PipelineDepthStencilStateCreateInfo & operator=( PipelineDepthStencilStateCreateInfo && rhs )noexcept
-		{
-			vk = std::move( rhs.vk );
-			return *this;
 		}
 
 		PipelineDepthStencilStateCreateInfo & operator=( VkPipelineDepthStencilStateCreateInfo rhs )noexcept
@@ -82,17 +60,17 @@ namespace ashes
 			return *this;
 		}
 
-		inline operator VkPipelineDepthStencilStateCreateInfo const &()const
+		operator VkPipelineDepthStencilStateCreateInfo const &()const noexcept
 		{
 			return vk;
 		}
 
-		inline VkPipelineDepthStencilStateCreateInfo const * operator->()const
+		VkPipelineDepthStencilStateCreateInfo const * operator->()const noexcept
 		{
 			return &vk;
 		}
 
-		inline VkPipelineDepthStencilStateCreateInfo * operator->()
+		VkPipelineDepthStencilStateCreateInfo * operator->()noexcept
 		{
 			return &vk;
 		}

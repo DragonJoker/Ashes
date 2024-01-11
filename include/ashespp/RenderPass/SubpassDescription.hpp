@@ -12,8 +12,7 @@ namespace ashes
 {
 	struct SubpassDescription
 	{
-		SubpassDescription( SubpassDescription const & ) = delete;
-		SubpassDescription & operator=( SubpassDescription  const & ) = delete;
+		~SubpassDescription()noexcept = default;
 
 		SubpassDescription( VkSubpassDescriptionFlags flags
 			, VkPipelineBindPoint pipelineBindPoint
@@ -29,6 +28,25 @@ namespace ashes
 			, reserveAttachments{ std::move( preserveAttachments ) }
 			, vk{ flags
 				, pipelineBindPoint
+				, uint32_t( inputAttachments.size() )
+				, inputAttachments.data()
+				, uint32_t( colorAttachments.size() )
+				, colorAttachments.data()
+				, resolveAttachments.data()
+				, bool( depthStencilAttachment ) ? &depthStencilAttachment.value() : nullptr
+				, uint32_t( reserveAttachments.size() )
+				, reserveAttachments.data() }
+		{
+		}
+
+		SubpassDescription( SubpassDescription const & rhs )
+			: inputAttachments{ rhs.inputAttachments }
+			, colorAttachments{ rhs.colorAttachments }
+			, resolveAttachments{ rhs.resolveAttachments }
+			, depthStencilAttachment{ rhs.depthStencilAttachment }
+			, reserveAttachments{ rhs.reserveAttachments }
+			, vk{ rhs.vk.flags
+				, rhs.vk.pipelineBindPoint
 				, uint32_t( inputAttachments.size() )
 				, inputAttachments.data()
 				, uint32_t( colorAttachments.size() )
@@ -57,6 +75,26 @@ namespace ashes
 				, uint32_t( reserveAttachments.size() )
 				, reserveAttachments.data() }
 		{
+		}
+
+		SubpassDescription & operator=( SubpassDescription const & rhs )
+		{
+			inputAttachments = rhs.inputAttachments;
+			colorAttachments = rhs.colorAttachments;
+			resolveAttachments = rhs.resolveAttachments;
+			depthStencilAttachment = rhs.depthStencilAttachment;
+			reserveAttachments = rhs.reserveAttachments;
+			vk = { rhs.vk.flags
+				, rhs.vk.pipelineBindPoint
+				, uint32_t( inputAttachments.size() )
+				, inputAttachments.data()
+				, uint32_t( colorAttachments.size() )
+				, colorAttachments.data()
+				, resolveAttachments.data()
+				, bool( depthStencilAttachment ) ? &depthStencilAttachment.value() : nullptr
+				, uint32_t( reserveAttachments.size() )
+				, reserveAttachments.data() };
+			return *this;
 		}
 
 		SubpassDescription & operator=( SubpassDescription && rhs )noexcept

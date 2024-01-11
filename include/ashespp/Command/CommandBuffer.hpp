@@ -54,7 +54,7 @@ namespace ashes
 		*\brief
 		*	Destructor.
 		*/
-		~CommandBuffer();
+		~CommandBuffer()noexcept;
 		/**
 		*\brief
 		*	Starts recording the command buffer.
@@ -66,7 +66,7 @@ namespace ashes
 		*\param[in] flags
 		*	The usage flags for the command buffer.
 		*/
-		inline void begin( VkCommandBufferUsageFlags flags = 0u )const
+		void begin( VkCommandBufferUsageFlags flags = 0u )const
 		{
 			begin( VkCommandBufferBeginInfo{ VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO, nullptr, flags, nullptr } );
 		}
@@ -78,7 +78,7 @@ namespace ashes
 		*\param[in] inheritanceInfo
 		*	The inheritance informations.
 		*/
-		inline void begin( VkCommandBufferUsageFlags flags
+		void begin( VkCommandBufferUsageFlags flags
 			, VkCommandBufferInheritanceInfo const & inheritanceInfo )const
 		{
 			begin( VkCommandBufferBeginInfo{ VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO, nullptr, flags, &inheritanceInfo } );
@@ -315,7 +315,7 @@ namespace ashes
 		*\param[in] viewport
 		*	The viewport.
 		*/
-		inline void setViewport( VkViewport const & viewport )const
+		void setViewport( VkViewport const & viewport )const
 		{
 			setViewport( 0u, VkViewportArray{ viewport } );
 		}
@@ -339,7 +339,7 @@ namespace ashes
 		*\param[in] scissor
 		*	The scissor.
 		*/
-		inline void setScissor( VkRect2D const & scissor )const
+		void setScissor( VkRect2D const & scissor )const
 		{
 			setScissor( 0u, VkScissorArray{ scissor } );
 		}
@@ -950,7 +950,7 @@ namespace ashes
 		*\param[in] bindingPoint
 		*	Indicates whether the descriptor wil be used by graphics or compute pipeline.
 		*/
-		inline void bindDescriptorSet( DescriptorSet const & descriptorSet
+		void bindDescriptorSet( DescriptorSet const & descriptorSet
 			, PipelineLayout const & layout
 			, UInt32Array const & dynamicOffsets
 			, VkPipelineBindPoint bindingPoint = VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS )const
@@ -970,7 +970,7 @@ namespace ashes
 		*\param[in] bindingPoint
 		*	Indicates whether the descriptor wil be used by graphics or compute pipeline.
 		*/
-		inline void bindDescriptorSet( DescriptorSet const & descriptorSet
+		void bindDescriptorSet( DescriptorSet const & descriptorSet
 			, PipelineLayout const & layout
 			, VkPipelineBindPoint bindingPoint = VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS )const
 		{
@@ -989,7 +989,7 @@ namespace ashes
 		*\param[in] bindingPoint
 		*	Indicates whether the descriptor wil be used by graphics or compute pipeline.
 		*/
-		inline void bindDescriptorSets( DescriptorSetCRefArray const & descriptorSet
+		void bindDescriptorSets( DescriptorSetCRefArray const & descriptorSet
 			, PipelineLayout const & layout
 			, VkPipelineBindPoint bindingPoint = VkPipelineBindPoint::VK_PIPELINE_BIND_POINT_GRAPHICS )const
 		{
@@ -1236,7 +1236,7 @@ namespace ashes
 		*\brief
 		*	VkCommandBuffer implicit cast operator.
 		*/
-		inline operator VkCommandBuffer const & ()const
+		operator VkCommandBuffer const & ()const
 		{
 			return m_internal;
 		}

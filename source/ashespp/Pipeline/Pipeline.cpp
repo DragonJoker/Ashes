@@ -65,7 +65,7 @@ namespace ashes
 		registerObject( m_device, debugName, *this );
 	}
 
-	Pipeline::~Pipeline()
+	Pipeline::~Pipeline()noexcept
 	{
 		unregisterObject( m_device, *this );
 		m_device.vkDestroyPipeline( m_device

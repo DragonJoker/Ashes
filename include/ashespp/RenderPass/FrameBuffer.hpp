@@ -95,23 +95,23 @@ namespace ashes
 		*\brief
 		*	Destructor.
 		*/
-		~FrameBuffer();
+		~FrameBuffer()noexcept;
 		/**
 		*\name
 		*	Getters.
 		**/
 		/**@{*/
-		inline VkExtent2D const & getDimensions()const
+		VkExtent2D const & getDimensions()const
 		{
 			return m_dimensions;
 		}
 
-		inline auto begin()const
+		auto begin()const
 		{
 			return m_views.begin();
 		}
 
-		inline auto end()const
+		auto end()const
 		{
 			return m_views.end();
 		}
@@ -120,14 +120,14 @@ namespace ashes
 		*\brief
 		*	VkFramebuffer implicit cast operator.
 		*/
-		inline operator VkFramebuffer const & ()const
+		operator VkFramebuffer const & ()const
 		{
 			return m_internal;
 		}
 
-	protected:
+	private:
 		Device const & m_device;
-		VkExtent2D m_dimensions;
+		VkExtent2D m_dimensions{};
 		ImageViewCRefArray m_views;
 		VkFramebuffer m_internal{};
 	};

@@ -12,8 +12,7 @@ namespace ashes
 {
 	struct DeviceQueueCreateInfo
 	{
-		DeviceQueueCreateInfo( DeviceQueueCreateInfo const & ) = delete;
-		DeviceQueueCreateInfo& operator=( DeviceQueueCreateInfo  const & ) = delete;
+		~DeviceQueueCreateInfo()noexcept = default;
 
 		DeviceQueueCreateInfo( VkDeviceQueueCreateFlags pflags
 			, uint32_t pqueueFamilyIndex
@@ -27,7 +26,18 @@ namespace ashes
 				, queuePriorities.data() }
 		{
 		}
-		
+
+		DeviceQueueCreateInfo( DeviceQueueCreateInfo const & rhs )
+			: queuePriorities{ rhs.queuePriorities }
+			, vk{ VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, rhs.vk.queueFamilyIndex
+				, uint32_t( queuePriorities.size() )
+				, queuePriorities.data() }
+		{
+		}
+
 		DeviceQueueCreateInfo( DeviceQueueCreateInfo && rhs )noexcept
 			: queuePriorities{ std::move( rhs.queuePriorities ) }
 			, vk{ VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO
@@ -38,8 +48,8 @@ namespace ashes
 				, queuePriorities.data() }
 		{
 		}
-		
-		DeviceQueueCreateInfo( VkDeviceQueueCreateInfo rhs )noexcept
+
+		explicit DeviceQueueCreateInfo( VkDeviceQueueCreateInfo const & rhs )noexcept
 			: queuePriorities{ makeArray( rhs.pQueuePriorities, rhs.queueCount ) }
 			, vk{ VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO
 				, rhs.pNext
@@ -49,7 +59,19 @@ namespace ashes
 				, queuePriorities.data() }
 		{
 		}
-		
+
+		DeviceQueueCreateInfo & operator=( DeviceQueueCreateInfo const & rhs )
+		{
+			queuePriorities = rhs.queuePriorities;
+			vk = { VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, rhs.vk.queueFamilyIndex
+				, uint32_t( queuePriorities.size() )
+				, queuePriorities.data() };
+			return *this;
+		}
+
 		DeviceQueueCreateInfo & operator=( DeviceQueueCreateInfo && rhs )noexcept
 		{
 			queuePriorities = std::move( rhs.queuePriorities );
@@ -62,17 +84,17 @@ namespace ashes
 			return *this;
 		}
 
-		operator VkDeviceQueueCreateInfo const &()const
+		operator VkDeviceQueueCreateInfo const &()const noexcept
 		{
 			return vk;
 		}
 
-		VkDeviceQueueCreateInfo const * operator->()const
+		VkDeviceQueueCreateInfo const * operator->()const noexcept
 		{
 			return &vk;
 		}
 
-		VkDeviceQueueCreateInfo * operator->()
+		VkDeviceQueueCreateInfo * operator->()noexcept
 		{
 			return &vk;
 		}

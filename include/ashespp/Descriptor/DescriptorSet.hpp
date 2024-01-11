@@ -34,7 +34,7 @@ namespace ashes
 			, DescriptorPool const & pool
 			, DescriptorSetLayout const & layout
 			, uint32_t bindingPoint
-			, void * pNext = nullptr );
+			, void const * pNext = nullptr );
 		/**
 		*\brief
 		*	Constructor.
@@ -48,12 +48,12 @@ namespace ashes
 			, DescriptorPool const & pool
 			, DescriptorSetLayout const & layout
 			, uint32_t bindingPoint
-			, void * pNext = nullptr );
+			, void const * pNext = nullptr );
 		/**
 		*\brief
 		*	Destructor.
 		*/
-		~DescriptorSet();
+		~DescriptorSet()noexcept;
 		/**
 		*\brief
 		*	Sets the descriptor set's attaches.
@@ -67,21 +67,21 @@ namespace ashes
 		*\param[in] bindings
 		*	The bindings.
 		*/
-		void setBindings( VkWriteDescriptorSetArray bindings );
+		void setBindings( VkWriteDescriptorSetArray const & bindings );
 		/**
 		*\brief
 		*	Updates some descriptor set's attaches.
 		*\param[in] bindings
 		*	The bindings.
 		*/
-		void updateBindings( WriteDescriptorSetArray const & bindings )const;
+		void updateBindings( WriteDescriptorSetArray const & bindings )const noexcept;
 		/**
 		*\brief
 		*	Updates some descriptor set's attaches.
 		*\param[in] bindings
 		*	The bindings.
 		*/
-		void updateBindings( VkWriteDescriptorSetArray const & bindings )const;
+		void updateBindings( VkWriteDescriptorSetArray const & bindings )const noexcept;
 		/**
 		*\brief
 		*	Creates a combined image and sampler binding.
@@ -372,7 +372,7 @@ namespace ashes
 		*\param[in] index
 		*	The array index.
 		*/
-		inline void createSizedBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+		void createSizedBinding( VkDescriptorSetLayoutBinding const & layoutBinding
 			, UniformBuffer const & uniformBuffer
 			, uint32_t elemSize
 			, uint32_t offset
@@ -399,7 +399,7 @@ namespace ashes
 		*\param[in] index
 		*	The array index.
 		*/
-		inline void createSizedBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+		void createSizedBinding( VkDescriptorSetLayoutBinding const & layoutBinding
 			, UniformBuffer const & uniformBuffer
 			, uint32_t offset = 0u
 			, uint32_t range = 1u
@@ -427,7 +427,7 @@ namespace ashes
 		*	The array index.
 		*/
 		template< typename T >
-		inline void createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+		void createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
 			, Buffer< T > const & storageBuffer
 			, uint32_t offset
 			, uint32_t range
@@ -451,7 +451,7 @@ namespace ashes
 		*\param[in] index
 		*	The array index.
 		*/
-		inline void createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+		void createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
 			, UniformBuffer const & buffer
 			, BufferView const & view
 			, uint32_t index = 0u )
@@ -474,7 +474,7 @@ namespace ashes
 		*	The array index.
 		*/
 		template< typename T >
-		inline void createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+		void createBinding( VkDescriptorSetLayoutBinding const & layoutBinding
 			, Buffer< T > const & buffer
 			, BufferView const & view
 			, uint32_t index = 0u )
@@ -500,7 +500,7 @@ namespace ashes
 		*\param[in] index
 		*	The array index.
 		*/
-		inline void createSizedDynamicBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+		void createSizedDynamicBinding( VkDescriptorSetLayoutBinding const & layoutBinding
 			, UniformBuffer const & uniformBuffer
 			, uint32_t elemSize
 			, uint32_t offset = 0u
@@ -529,7 +529,7 @@ namespace ashes
 		*\param[in] index
 		*	The array index.
 		*/
-		inline void createSizedDynamicBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+		void createSizedDynamicBinding( VkDescriptorSetLayoutBinding const & layoutBinding
 			, UniformBuffer const & uniformBuffer
 			, uint32_t offset = 0u
 			, uint32_t range = 1u
@@ -559,7 +559,7 @@ namespace ashes
 		*	The array index.
 		*/
 		template< typename T >
-		inline void createDynamicBinding( VkDescriptorSetLayoutBinding const & layoutBinding
+		void createDynamicBinding( VkDescriptorSetLayoutBinding const & layoutBinding
 			, Buffer< T > const & storageBuffer
 			, uint32_t offset
 			, uint32_t range
@@ -575,12 +575,12 @@ namespace ashes
 		*\brief
 		*	Updates all the bindings in the descriptor set.
 		*/
-		void update()const;
+		void update()const noexcept;
 		/**
 		*\return
 		*	The binding point for the set.
 		*/
-		inline uint32_t getBindingPoint()const
+		uint32_t getBindingPoint()const noexcept
 		{
 			return m_bindingPoint;
 		}
@@ -588,7 +588,7 @@ namespace ashes
 		*\return
 		*	The descriptor at given index.
 		*/
-		inline WriteDescriptorSet const & getBinding( uint32_t index )const
+		WriteDescriptorSet const & getBinding( uint32_t index )const noexcept
 		{
 			assert( index < m_writes.size() );
 			return m_writes[index];
@@ -597,7 +597,7 @@ namespace ashes
 		*\return
 		*	The descriptor at given index.
 		*/
-		inline WriteDescriptorSet & getBinding( uint32_t index )
+		WriteDescriptorSet & getBinding( uint32_t index )noexcept
 		{
 			assert( index < m_writes.size() );
 			return m_writes[index];
@@ -606,7 +606,7 @@ namespace ashes
 		*\return
 		*	The descriptor layout this descriptor set is created from.
 		*/
-		inline DescriptorSetLayout const & getLayout()
+		DescriptorSetLayout const & getLayout()const noexcept
 		{
 			return m_layout;
 		}
@@ -614,7 +614,7 @@ namespace ashes
 		*\return
 		*	Tells if the set is empty.
 		*/
-		inline bool empty()const
+		bool empty()const noexcept
 		{
 			return m_writes.empty();
 		}
@@ -622,13 +622,10 @@ namespace ashes
 		*\brief
 		*	VkDescriptorSet implicit cast operator.
 		*/
-		inline operator VkDescriptorSet const & ()const
+		operator VkDescriptorSet const & ()const noexcept
 		{
 			return m_internal;
 		}
-
-	protected:
-		WriteDescriptorSetArray m_writes;
 
 	private:
 		Device const & m_device;
@@ -639,6 +636,7 @@ namespace ashes
 		std::list< VkDescriptorImageInfo > m_imageBindings;
 		std::list< VkDescriptorBufferInfo > m_bufferBindings;
 		std::list< VkBufferView > m_bufferViews;
+		WriteDescriptorSetArray m_writes;
 	};
 }
 

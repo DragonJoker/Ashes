@@ -24,17 +24,17 @@ namespace utils
 		*\name Construction
 		*/
 		/**\{*/
-		explicit inline DegreesT( float value )noexcept
+		explicit DegreesT( float value )noexcept
 			: m_value{ T( value ) }
 		{
 		}
 
-		explicit inline DegreesT( double value )noexcept
+		explicit DegreesT( double value )noexcept
 			: m_value{ T( value ) }
 		{
 		}
 
-		explicit inline DegreesT( long double value )noexcept
+		explicit DegreesT( long double value )noexcept
 			: m_value{ T( value ) }
 		{
 		}
@@ -43,7 +43,7 @@ namespace utils
 		*\name Conversion
 		*/
 		/**\{*/
-		explicit inline operator T()const noexcept
+		explicit operator T()const noexcept
 		{
 			return m_value;
 		}
@@ -52,31 +52,31 @@ namespace utils
 		*\name Opérateurs arithmétiques membres.
 		*/
 		/**\{*/
-		inline DegreesT & operator-()noexcept
+		DegreesT & operator-()noexcept
 		{
 			m_value = -m_value;
 			return *this;
 		}
 
-		inline DegreesT & operator+=( DegreesT< T > const & rhs )noexcept
+		DegreesT & operator+=( DegreesT< T > const & rhs )noexcept
 		{
 			m_value += rhs.m_value;
 			return *this;
 		}
 
-		inline DegreesT & operator-=( DegreesT< T > const & rhs )noexcept
+		DegreesT & operator-=( DegreesT< T > const & rhs )noexcept
 		{
 			m_value -= rhs.m_value;
 			return *this;
 		}
 
-		inline DegreesT & operator*=( T rhs )noexcept
+		DegreesT & operator*=( T rhs )noexcept
 		{
 			m_value *= rhs;
 			return *this;
 		}
 
-		inline DegreesT & operator/=( T rhs )noexcept
+		DegreesT & operator/=( T rhs )noexcept
 		{
 			m_value /= rhs;
 			return *this;

@@ -6,15 +6,9 @@ See LICENSE file in root folder
 
 namespace utils
 {
-	PlaneEquation::PlaneEquation()
-		: m_d{ 0 }
-	{
-	}
-
 	PlaneEquation::PlaneEquation( Vec3 const & p1
 		, Vec3 const & p2
 		, Vec3 const & p3 )
-		: m_d{ 0 }
 	{
 		set( p1, p2, p3 );
 	}
@@ -22,7 +16,6 @@ namespace utils
 	PlaneEquation::PlaneEquation( Vec3 const & normal
 		, Vec3 const & point )
 		: m_normal{ normal }
-		, m_d{ 0 }
 	{
 		set( normal, point );
 	}
@@ -78,9 +71,9 @@ namespace utils
 			float b2 = plane.m_normal[1];
 			float c2 = plane.m_normal[2];
 			float d2 = m_d;
-			float div = ( b1 * c2 ) - ( b2 * c1 );
 
-			if ( b1 != def && div != def )
+			if ( float div = ( b1 * c2 ) - ( b2 * c1 );
+				b1 != def && div != def )
 			{
 				Vec3 point;
 				point[2] = ( ( b2 * d1 ) - ( b1 * d2 ) ) / div;
@@ -102,25 +95,29 @@ namespace utils
 
 		if ( !parallel( plane1 ) && !parallel( plane2 ) && !plane1.parallel( plane2 ) )
 		{
-			float a1 = m_normal[0], a2 = plane1.m_normal[0], a3 = plane2.m_normal[0];
-			float b1 = m_normal[1], b2 = plane1.m_normal[1], b3 = plane2.m_normal[1];
-			float c1 = m_normal[2], c2 = plane1.m_normal[2], c3 = plane2.m_normal[2];
+			float a1 = m_normal[0];
+			float a2 = plane1.m_normal[0];
+			float a3 = plane2.m_normal[0];
+			float b1 = m_normal[1];
+			float b2 = plane1.m_normal[1];
+			float b3 = plane2.m_normal[1];
+			float c1 = m_normal[2];
+			float c2 = plane1.m_normal[2];
+			float c3 = plane2.m_normal[2];
 			float d = m_d;
 			float d1 = plane1.m_d;
 			float d2 = plane2.m_d;
-			float alpha, beta;
-			alpha = ( a3 - ( a2 * ( b3 - ( a3 / a1 ) ) / ( b2 - ( a2 / a1 ) ) ) ) / a1;
-			beta = ( b3 - ( a3 / a1 ) ) / ( b2 - ( a2 / a1 ) );
+			float alpha = ( a3 - ( a2 * ( b3 - ( a3 / a1 ) ) / ( b2 - ( a2 / a1 ) ) ) ) / a1;
+			float beta = ( b3 - ( a3 / a1 ) ) / ( b2 - ( a2 / a1 ) );
 			float c3b = ( c1 * alpha ) + ( c2 * beta );
 
 			if ( c3 != c3b )
 			{
 				alpha = ( ( a2 * c1 ) / ( a1 * ( b2 - ( a2 * b1 ) / a1 ) ) ) - ( c2 / ( b2 - ( a2 * b1 ) / a1 ) );
 				beta = ( ( a2 * d ) / ( a1 * ( b2 - ( a2 * b1 ) / a1 ) ) ) - ( d1 / ( b2 - ( a2 * b1 ) / a1 ) );
-				float x, y, z;
-				z = ( ( a3 * ( ( d + ( beta * b1 ) ) / a1 ) ) - d2 ) / ( ( b3 * alpha ) + c3 - ( a3 * ( ( alpha * b1 ) + c1 ) / a1 ) );
-				y = ( alpha * z ) + beta;
-				x = ( z * ( 0.0f - ( ( alpha * b1 ) + c1 ) ) / a1 ) - ( ( d + ( b1 * beta ) ) / a1 );
+				float z = ( ( a3 * ( ( d + ( beta * b1 ) ) / a1 ) ) - d2 ) / ( ( b3 * alpha ) + c3 - ( a3 * ( ( alpha * b1 ) + c1 ) / a1 ) );
+				float y = ( alpha * z ) + beta;
+				float x = ( z * ( 0.0f - ( ( alpha * b1 ) + c1 ) ) / a1 ) - ( ( d + ( b1 * beta ) ) / a1 );
 				intersection[0] = x;
 				intersection[1] = y;
 				intersection[2] = z;

@@ -16,8 +16,8 @@ namespace ashes
 	static char constexpr PathSeparator = '/';
 
 	bool traverseDirectory( std::string const & folderPath
-		, TraverseDirFunction directoryFunction
-		, HitFileFunction fileFunction )
+		, TraverseDirFunction const & directoryFunction
+		, HitFileFunction const & fileFunction )
 	{
 		assert( !folderPath.empty() );
 		bool result = false;

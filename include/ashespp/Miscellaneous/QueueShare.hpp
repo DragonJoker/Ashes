@@ -12,10 +12,17 @@ namespace ashes
 {
 	struct QueueShare
 	{
-		QueueShare( UInt32Array pqueueFamilyIndices = {} )
+		~QueueShare()noexcept = default;
+
+		explicit QueueShare( UInt32Array pqueueFamilyIndices )
 			: queueFamilyIndices{ std::move( pqueueFamilyIndices ) }
 		{
 			doInit();
+		}
+
+		QueueShare()
+			: QueueShare{ {} }
+		{
 		}
 
 		QueueShare( QueueShare const & rhs )
@@ -54,7 +61,7 @@ namespace ashes
 		uint32_t * pQueueFamilyIndices;
 
 	private:
-		void doInit()
+		void doInit()noexcept
 		{
 			auto end = queueFamilyIndices.end();
 			end = std::unique( queueFamilyIndices.begin(), end );

@@ -25,8 +25,8 @@ namespace ashes
 	}
 	
 	DescriptorSetLayout::DescriptorSetLayout( Device const & device
-		, std::string debugName
-		, VkDescriptorSetLayoutCreateInfo createInfo )
+		, std::string const & debugName
+		, VkDescriptorSetLayoutCreateInfo const & createInfo )
 		: VkObject{ debugName }
 		, m_device{ device }
 		, m_bindings{ createInfo.pBindings, createInfo.pBindings + createInfo.bindingCount }
@@ -41,11 +41,11 @@ namespace ashes
 	}
 	
 	DescriptorSetLayout::DescriptorSetLayout( Device const & device
-		, std::string debugName
+		, std::string const & debugName
 		, VkDescriptorSetLayoutBindingArray bindings
 		, VkDescriptorBindingFlags flags )
 		: DescriptorSetLayout{ device
-			, std::move( debugName )
+			, debugName
 			, VkDescriptorSetLayoutCreateInfo{ VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO
 				, nullptr
 				, flags
@@ -54,7 +54,7 @@ namespace ashes
 	{
 	}
 
-	DescriptorSetLayout::~DescriptorSetLayout()
+	DescriptorSetLayout::~DescriptorSetLayout()noexcept
 	{
 		unregisterObject( m_device, *this );
 		m_device.vkDestroyDescriptorSetLayout( m_device

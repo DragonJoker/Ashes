@@ -4,6 +4,8 @@
 #	include <Windows.h>
 #endif
 
+#include <array>
+
 namespace ashes
 {
 	namespace
@@ -14,50 +16,32 @@ namespace ashes
 			bool recursive;
 		};
 
+		inline std::vector< Folder > const SystemFolders{
 #if defined( _WIN32 )
-		std::vector< Folder > const & getSystemFolders()
-		{
-			static std::vector< Folder > result
-			{
+			{ []()
 				{
-					[]()
-					{
-						char tmp[MAX_PATH]{};
-						GetSystemDirectoryA( tmp, MAX_PATH );
-						return std::string{ tmp };
-					}(),
-					false,
-				},
-			};
-			return result;
-		}
+					std::array< char, MAX_PATH > tmp{};
+					GetSystemDirectoryA( tmp.data(), MAX_PATH );
+					return std::string{ tmp.data() };
+				}()
+				, false }
 #elif defined( __linux__ )
-		std::vector< Folder > const & getSystemFolders()
-		{
-			static std::vector< Folder > result
-			{
-				{ "/usr/local/lib", true },
-				{ "/usr/lib", true },
-			};
-			return result;
-		}
+			{ "/usr/local/lib", true },
+			{ "/usr/lib", true },
 #elif defined( __APPLE__ )
-		std::vector< Folder > const & getSystemFolders()
-		{
-			static std::vector< Folder > result
-			{
-				{ "/usr/local/lib", true },
-				{ "/usr/lib", true },
-			};
-			return result;
-		}
+			{ "/usr/local/lib", true },
+			{ "/usr/lib", true },
 #else
 #	error Unsupported platform
 #endif
+		};
 
-		std::vector< Folder > const & getSearchFolders()
+		std::vector< Folder > const & getSystemFolders()
 		{
-			static std::vector< Folder > result = []()
+			return SystemFolders;
+		}
+
+		inline std::vector< Folder > const SearchFolders = []()
 			{
 				std::vector< Folder > tmp
 				{
@@ -68,12 +52,15 @@ namespace ashes
 				tmp.insert( tmp.end(), system.begin(), system.end() );
 				return tmp;
 			}();
-			return result;
+
+		std::vector< Folder > const & getSearchFolders()
+		{
+			return SearchFolders;
 		}
 	}
 
 	StringArray filterDirectoryFiles( std::string const & folderPath
-		, FilterFunction onFile
+		, FilterFunction const & onFile
 		, bool recursive )
 	{
 		StringArray files;
@@ -100,7 +87,7 @@ namespace ashes
 		}
 		else
 		{
-			directoryFunction = []( std::string const & path )noexcept
+			directoryFunction = []( std::string const & )noexcept
 			{
 				return true;
 			};
@@ -116,15 +103,15 @@ namespace ashes
 		, bool recursive )noexcept
 	{
 		return filterDirectoryFiles( folderPath
-			, []( std::string const & folder
-				, std::string const & name )noexcept
+			, []( std::string const &
+				, std::string const & )noexcept
 			{
 				return true;
 			}
 			, recursive );
 	}
 
-	StringArray lookForSharedLibrary( FilterFunction onFile )
+	StringArray lookForSharedLibrary( FilterFunction const & onFile )
 	{
 		StringArray files;
 

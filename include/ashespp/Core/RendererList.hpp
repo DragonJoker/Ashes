@@ -22,17 +22,17 @@ namespace ashes
 
 		std::vector< AshPluginDescription >::const_iterator find( std::string const & name )const;
 
-		auto begin()const
+		auto begin()const noexcept
 		{
 			return m_plugins.begin();
 		}
 
-		auto end()const
+		auto end()const noexcept
 		{
 			return m_plugins.end();
 		}
 
-		bool empty()const
+		bool empty()const noexcept
 		{
 			return m_plugins.empty();
 		}
@@ -41,7 +41,7 @@ namespace ashes
 		std::unique_ptr< ashes::DynamicLibrary > m_library;
 		std::vector< AshPluginDescription > m_plugins;
 		PFN_ashSelectPlugin m_selectPlugin{};
-		mutable AshPluginDescription m_current;
+		mutable AshPluginDescription m_current{};
 	};
 }
 

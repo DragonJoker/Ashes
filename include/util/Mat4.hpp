@@ -26,7 +26,7 @@ namespace utils
 		*\remarks
 		*	N'initialise pas les données de la matrice.
 		*/
-		Mat4T( NoInit const & )noexcept;
+		explicit Mat4T( NoInit const & )noexcept;
 		/**
 		*\brief
 		*	Constructeur par défaut.
@@ -34,22 +34,6 @@ namespace utils
 		*	Initialise la matrice à l'identité.
 		*/
 		Mat4T()noexcept;
-		/**
-		*\brief
-		*	Constructeur par copie.
-		*\param[in] rhs
-		*	La matrice à copier.
-		*/
-		Mat4T( Mat4T< T > const & rhs ) = default;
-		/**
-		*\brief
-		*	Opérateur d'affectation par copie.
-		*\param[in] rhs
-		*	La matrice à copier.
-		*\return
-		*	Une référence sur cette matrice.
-		*/
-		Mat4T & operator=( Mat4T< T > const & rhs ) = default;
 		/**
 		*\brief
 		*	Constructeur.
@@ -83,7 +67,7 @@ namespace utils
 		*	La matrice à convertir.
 		*/
 		template< typename U >
-		Mat4T( Mat4T< U > const & rhs )noexcept;
+		explicit Mat4T( Mat4T< U > const & rhs )noexcept;
 		/**
 		*\brief
 		*	Opérateur d'affectation par conversion.
@@ -124,7 +108,7 @@ namespace utils
 		*\return
 		*	Le pointeur.
 		*/
-		inline T const * constPtr()const
+		T const * constPtr()const
 		{
 			return data.data();
 		}
@@ -140,7 +124,7 @@ namespace utils
 		*\return
 		*	Le pointeur.
 		*/
-		inline T * ptr()
+		T * ptr()
 		{
 			return data.data();
 		}
@@ -149,19 +133,19 @@ namespace utils
 		*/
 		/**\{*/
 		template< typename U >
-		inline Mat4T & operator+=( Mat4T< U > const & rhs )noexcept;
+		Mat4T & operator+=( Mat4T< U > const & rhs )noexcept;
 		template< typename U >
-		inline Mat4T & operator-=( Mat4T< U > const & rhs )noexcept;
+		Mat4T & operator-=( Mat4T< U > const & rhs )noexcept;
 		template< typename U >
-		inline Mat4T & operator*=( Mat4T< U > const & rhs )noexcept;
+		Mat4T & operator*=( Mat4T< U > const & rhs )noexcept;
 		template< typename U >
-		inline Mat4T & operator+=( U const & rhs )noexcept;
+		Mat4T & operator+=( U const & rhs )noexcept;
 		template< typename U >
-		inline Mat4T & operator-=( U const & rhs )noexcept;
+		Mat4T & operator-=( U const & rhs )noexcept;
 		template< typename U >
-		inline Mat4T & operator*=( U const & rhs )noexcept;
+		Mat4T & operator*=( U const & rhs )noexcept;
 		template< typename U >
-		inline Mat4T & operator/=( U const & rhs )noexcept;
+		Mat4T & operator/=( U const & rhs )noexcept;
 		/**\}*/
 
 	private:

@@ -52,7 +52,7 @@ namespace utils
 		*\return
 		*	\p true si l'attente n'est pas sortie en timeout.
 		*/
-		bool waitRecord( uint64_t timeout );
+		bool waitRecord( uint64_t timeout )const;
 		/**
 		*\~english
 		*\brief
@@ -69,49 +69,49 @@ namespace utils
 		*\return
 		*	\p VK_SUCCESS si tout va bien.
 		*/
-		VkResult present( ashes::Queue const & queue );
+		VkResult present( ashes::Queue const & queue )const;
 
-		inline void setImageIndex( uint32_t imageIndex )
+		void setImageIndex( uint32_t imageIndex )noexcept
 		{
 			m_imageIndex = imageIndex;
 		}
 
-		inline uint32_t getImageIndex()const
+		uint32_t getImageIndex()const noexcept
 		{
 			return m_imageIndex;
 		}
 
-		inline ashes::Semaphore const & getImageAvailableSemaphore()const
+		ashes::Semaphore const & getImageAvailableSemaphore()const noexcept
 		{
 			return *m_imageAvailableSemaphore;
 		}
 
-		inline ashes::Semaphore const & getRenderingFinishedSemaphore()const
+		ashes::Semaphore const & getRenderingFinishedSemaphore()const noexcept
 		{
 			return *m_finishedRenderingSemaphore;
 		}
 
-		inline ashes::CommandBuffer const & getCommandBuffer()const
+		ashes::CommandBuffer const & getCommandBuffer()const noexcept
 		{
 			return *m_commandBuffer;
 		}
 
-		inline ashes::Fence const & getFence()const
+		ashes::Fence const & getFence()const noexcept
 		{
 			return *m_fence;
 		}
 
-		inline ashes::Device const & getDevice()const
+		ashes::Device const & getDevice()const noexcept
 		{
 			return m_device;
 		}
 
-		inline ashes::SwapChain const & getSwapChain()const
+		ashes::SwapChain const & getSwapChain()const noexcept
 		{
 			return m_swapChain;
 		}
 
-	protected:
+	private:
 		ashes::Device const & m_device;
 		ashes::SwapChain const & m_swapChain;
 		ashes::SemaphorePtr m_imageAvailableSemaphore;
