@@ -2618,6 +2618,16 @@ namespace ashes::d3d11
 		VkAccelerationStructureBuildSizesInfoKHR * pSizeInfo );
 #endif
 #pragma endregion
+#pragma region VK_EXT_device_fault
+#ifdef VK_EXT_device_fault
+
+	void VKAPI_CALL vkGetDeviceFaultInfoEXT(
+		VkDevice device,
+		VkDeviceFaultCountsEXT * pFaultCounts,
+		VkDeviceFaultInfoEXT * pFaultInfo );
+
+#endif
+#pragma endregion
 #pragma region VK_KHR_android_surface
 #ifdef VK_KHR_android_surface
 #	ifdef VK_USE_PLATFORM_ANDROID_KHR

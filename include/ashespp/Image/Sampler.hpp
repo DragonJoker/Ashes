@@ -75,68 +75,68 @@ namespace ashes
 		*\brief
 		*	Destructor.
 		*/
-		~Sampler();
+		~Sampler()noexcept;
 		/**
 		*\name
 		*	Getters.
 		*/
 		/**@{*/
-		inline VkSamplerAddressMode getWrapS()const
+		VkSamplerAddressMode getWrapS()const noexcept
 		{
 			return m_createInfo->addressModeU;
 		}
 
-		inline VkSamplerAddressMode getWrapT()const
+		VkSamplerAddressMode getWrapT()const noexcept
 		{
 			return m_createInfo->addressModeV;
 		}
 
-		inline VkSamplerAddressMode getWrapR()const
+		VkSamplerAddressMode getWrapR()const noexcept
 		{
 			return m_createInfo->addressModeW;
 		}
 
-		inline VkFilter getMinFilter()const
+		VkFilter getMinFilter()const noexcept
 		{
 			return m_createInfo->minFilter;
 		}
 
-		inline VkFilter getMagFilter()const
+		VkFilter getMagFilter()const noexcept
 		{
 			return m_createInfo->magFilter;
 		}
 
-		inline VkSamplerMipmapMode getMipFilter()const
+		VkSamplerMipmapMode getMipFilter()const noexcept
 		{
 			return m_createInfo->mipmapMode;
 		}
 
-		inline float getMinLod()const
+		float getMinLod()const noexcept
 		{
 			return m_createInfo->minLod;
 		}
 
-		inline float getMaxLod()const
+		float getMaxLod()const noexcept
 		{
 			return m_createInfo->maxLod;
 		}
 
-		inline float getLodBias()const
+		float getLodBias()const noexcept
 		{
 			return m_createInfo->mipLodBias;
 		}
 
-		inline VkBorderColor getBorderColour()const
+		VkBorderColor getBorderColour()const noexcept
 		{
 			return m_createInfo->borderColor;
 		}
 
-		inline float getMaxAnisotropy()const
+		float getMaxAnisotropy()const noexcept
 		{
 			return m_createInfo->maxAnisotropy;
 		}
 
-		inline VkCompareOp getCompareOp()const
+		VkCompareOp getCompareOp()const noexcept
 		{
 			return m_createInfo->compareOp;
 		}
@@ -145,7 +145,7 @@ namespace ashes
 		*\brief
 		*	VkSampler implicit cast operator.
 		*/
-		inline operator VkSampler const & ()const
+		operator VkSampler const & ()const noexcept
 		{
 			return m_internal;
 		}

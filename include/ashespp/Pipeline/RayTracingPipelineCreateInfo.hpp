@@ -14,6 +14,8 @@ namespace ashes
 
 	struct RayTracingPipelineCreateInfo
 	{
+		~RayTracingPipelineCreateInfo()noexcept = default;
+
 		RayTracingPipelineCreateInfo( VkPipelineCreateFlags pflags
 			, PipelineShaderStageCreateInfoArray pstages
 			, RayTracingShaderGroupCreateInfoArray pgroups
@@ -145,17 +147,17 @@ namespace ashes
 			return *this;
 		}
 
-		operator VkRayTracingPipelineCreateInfoKHR const &()const
+		operator VkRayTracingPipelineCreateInfoKHR const &()const noexcept
 		{
 			return vk;
 		}
 
-		VkRayTracingPipelineCreateInfoKHR const * operator->()const
+		VkRayTracingPipelineCreateInfoKHR const * operator->()const noexcept
 		{
 			return &vk;
 		}
 
-		VkRayTracingPipelineCreateInfoKHR * operator->()
+		VkRayTracingPipelineCreateInfoKHR * operator->()noexcept
 		{
 			return &vk;
 		}

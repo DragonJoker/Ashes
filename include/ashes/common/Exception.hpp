@@ -137,7 +137,7 @@ namespace ashes
 		}
 		/**@}*/
 
-	protected:
+	private:
 		VkResult m_result;
 		std::string m_text;
 	};

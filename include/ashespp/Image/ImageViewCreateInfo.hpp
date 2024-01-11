@@ -29,30 +29,29 @@ namespace ashes
 		{
 		}
 
-		ImageViewCreateInfo( VkImage image
-			, VkImageViewCreateInfo createInfo )
+		explicit ImageViewCreateInfo( VkImageViewCreateInfo const & createInfo )
 			: vk{ VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO
 				, createInfo.pNext
 				, createInfo.flags
 				, createInfo.image
 				, createInfo.viewType
 				, createInfo.format
-				, std::move( createInfo.components )
-				, std::move( createInfo.subresourceRange ) }
+				, createInfo.components
+				, createInfo.subresourceRange }
 		{
 		}
 
-		operator VkImageViewCreateInfo const &()const
+		operator VkImageViewCreateInfo const &()const noexcept
 		{
 			return vk;
 		}
 
-		VkImageViewCreateInfo const * operator->()const
+		VkImageViewCreateInfo const * operator->()const noexcept
 		{
 			return &vk;
 		}
 
-		VkImageViewCreateInfo * operator->()
+		VkImageViewCreateInfo * operator->()noexcept
 		{
 			return &vk;
 		}

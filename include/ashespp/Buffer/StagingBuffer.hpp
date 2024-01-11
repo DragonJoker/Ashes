@@ -32,7 +32,7 @@ namespace ashes
 		StagingBuffer( Device const & device
 			, VkBufferUsageFlags usage
 			, VkDeviceSize size = 10000000u
-			, QueueShare sharingMode = {} );
+			, QueueShare const & sharingMode = {} );
 		/**
 		*\brief
 		*	Constructor.
@@ -47,7 +47,7 @@ namespace ashes
 			, std::string const & debugName
 			, VkBufferUsageFlags usage
 			, VkDeviceSize size = 10000000u
-			, QueueShare sharingMode = {} );
+			, QueueShare const & sharingMode = {} );
 		/**
 		*\name
 		*	Upload.
@@ -59,40 +59,40 @@ namespace ashes
 		**/
 		/**@{*/
 		template< typename T, size_t N >
-		inline void uploadBufferData( Queue const & queue
+		void uploadBufferData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::array< T, N > const & data
 			, Buffer< T > const & buffer )const;
 		template< typename T >
-		inline void uploadBufferData( Queue const & queue
+		void uploadBufferData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::vector< T > const & data
 			, Buffer< T > const & buffer )const;
 		template< typename T >
-		inline void uploadBufferData( Queue const & queue
+		void uploadBufferData( Queue const & queue
 			, CommandPool const & commandPool
 			, ByteArray const & data
 			, Buffer< T > const & buffer )const;
 		template< typename T >
-		inline void uploadBufferData( Queue const & queue
+		void uploadBufferData( Queue const & queue
 			, CommandPool const & commandPool
 			, uint8_t const * const data
 			, VkDeviceSize size
 			, Buffer< T > const & buffer )const;
 		template< typename T, size_t N >
-		inline void uploadBufferData( Queue const & queue
+		void uploadBufferData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::array< T, N > const & data
 			, VkDeviceSize offset
 			, Buffer< T > const & buffer )const;
 		template< typename T >
-		inline void uploadBufferData( Queue const & queue
+		void uploadBufferData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::vector< T > const & data
 			, VkDeviceSize offset
 			, Buffer< T > const & buffer )const;
 		template< typename T >
-		inline void uploadBufferData( Queue const & queue
+		void uploadBufferData( Queue const & queue
 			, CommandPool const & commandPool
 			, ByteArray const & data
 			, VkDeviceSize offset
@@ -105,34 +105,34 @@ namespace ashes
 			, VkDeviceSize offset
 			, Buffer< T > const & buffer )const;
 		template< typename T, size_t N >
-		inline void uploadBufferData( CommandBuffer const & commandBuffer
+		void uploadBufferData( CommandBuffer const & commandBuffer
 			, std::array< T, N > const & data
 			, Buffer< T > const & buffer )const;
 		template< typename T >
-		inline void uploadBufferData( CommandBuffer const & commandBuffer
+		void uploadBufferData( CommandBuffer const & commandBuffer
 			, std::vector< T > const & data
 			, Buffer< T > const & buffer )const;
 		template< typename T >
-		inline void uploadBufferData( CommandBuffer const & commandBuffer
+		void uploadBufferData( CommandBuffer const & commandBuffer
 			, ByteArray const & data
 			, Buffer< T > const & buffer )const;
 		template< typename T >
-		inline void uploadBufferData( CommandBuffer const & commandBuffer
+		void uploadBufferData( CommandBuffer const & commandBuffer
 			, uint8_t const * const data
 			, VkDeviceSize size
 			, Buffer< T > const & buffer )const;
 		template< typename T, size_t N >
-		inline void uploadBufferData( CommandBuffer const & commandBuffer
+		void uploadBufferData( CommandBuffer const & commandBuffer
 			, std::array< T, N > const & data
 			, VkDeviceSize offset
 			, Buffer< T > const & buffer )const;
 		template< typename T >
-		inline void uploadBufferData( CommandBuffer const & commandBuffer
+		void uploadBufferData( CommandBuffer const & commandBuffer
 			, std::vector< T > const & data
 			, VkDeviceSize offset
 			, Buffer< T > const & buffer )const;
 		template< typename T >
-		inline void uploadBufferData( CommandBuffer const & commandBuffer
+		void uploadBufferData( CommandBuffer const & commandBuffer
 			, ByteArray const & data
 			, VkDeviceSize offset
 			, Buffer< T > const & buffer )const;
@@ -143,12 +143,12 @@ namespace ashes
 			, VkDeviceSize offset
 			, Buffer< T > const & buffer )const;
 		template< typename T, size_t N >
-		inline void uploadBufferData( Queue const & queue
+		void uploadBufferData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::array< T, N > const & data
 			, BufferBase const & buffer )const;
 		template< typename T >
-		inline void uploadBufferData( Queue const & queue
+		void uploadBufferData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::vector< T > const & data
 			, BufferBase const & buffer )const;
@@ -162,13 +162,13 @@ namespace ashes
 			, VkDeviceSize size
 			, BufferBase const & buffer )const;
 		template< typename T, size_t N >
-		inline void uploadBufferData( Queue const & queue
+		void uploadBufferData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::array< T, N > const & data
 			, VkDeviceSize offset
 			, BufferBase const & buffer )const;
 		template< typename T >
-		inline void uploadBufferData( Queue const & queue
+		void uploadBufferData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::vector< T > const & data
 			, VkDeviceSize offset
@@ -185,11 +185,11 @@ namespace ashes
 			, VkDeviceSize offset
 			, BufferBase const & buffer )const;
 		template< typename T, size_t N >
-		inline void uploadBufferData( CommandBuffer const & commandBuffer
+		void uploadBufferData( CommandBuffer const & commandBuffer
 			, std::array< T, N > const & data
 			, BufferBase const & buffer )const;
 		template< typename T >
-		inline void uploadBufferData( CommandBuffer const & commandBuffer
+		void uploadBufferData( CommandBuffer const & commandBuffer
 			, std::vector< T > const & data
 			, BufferBase const & buffer )const;
 		void uploadBufferData( CommandBuffer const & commandBuffer
@@ -200,12 +200,12 @@ namespace ashes
 			, VkDeviceSize size
 			, BufferBase const & buffer )const;
 		template< typename T, size_t N >
-		inline void uploadBufferData( CommandBuffer const & commandBuffer
+		void uploadBufferData( CommandBuffer const & commandBuffer
 			, std::array< T, N > const & data
 			, VkDeviceSize offset
 			, BufferBase const & buffer )const;
 		template< typename T >
-		inline void uploadBufferData( CommandBuffer const & commandBuffer
+		void uploadBufferData( CommandBuffer const & commandBuffer
 			, std::vector< T > const & data
 			, VkDeviceSize offset
 			, BufferBase const & buffer )const;
@@ -225,85 +225,85 @@ namespace ashes
 		**/
 		/**@{*/
 		template< typename T, size_t N >
-		inline void uploadVertexData( Queue const & queue
+		void uploadVertexData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::array< T, N > const & data
 			, VertexBuffer< T > const & buffer )const;
 		template< typename T >
-		inline void uploadVertexData( Queue const & queue
+		void uploadVertexData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::vector< T > const & data
 			, VertexBuffer< T > const & buffer )const;
 		template< typename T >
-		inline void uploadVertexData( Queue const & queue
+		void uploadVertexData( Queue const & queue
 			, CommandPool const & commandPool
 			, ByteArray const & data
 			, VertexBuffer< T > const & buffer )const;
 		template< typename T >
-		inline void uploadVertexData( Queue const & queue
+		void uploadVertexData( Queue const & queue
 			, CommandPool const & commandPool
 			, uint8_t const * const data
 			, VkDeviceSize size
 			, VertexBuffer< T > const & buffer )const;
 		template< typename T, size_t N >
-		inline void uploadVertexData( Queue const & queue
+		void uploadVertexData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::array< T, N > const & data
 			, VkDeviceSize offset
 			, VertexBuffer< T > const & buffer )const;
 		template< typename T >
-		inline void uploadVertexData( Queue const & queue
+		void uploadVertexData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::vector< T > const & data
 			, VkDeviceSize offset
 			, VertexBuffer< T > const & buffer )const;
 		template< typename T >
-		inline void uploadVertexData( Queue const & queue
+		void uploadVertexData( Queue const & queue
 			, CommandPool const & commandPool
 			, ByteArray const & data
 			, VkDeviceSize offset
 			, VertexBuffer< T > const & buffer )const;
 		template< typename T >
-		inline void uploadVertexData( Queue const & queue
+		void uploadVertexData( Queue const & queue
 			, CommandPool const & commandPool
 			, uint8_t const * const data
 			, VkDeviceSize size
 			, VkDeviceSize offset
 			, VertexBuffer< T > const & buffer )const;
 		template< typename T, size_t N >
-		inline void uploadVertexData( CommandBuffer const & commandBuffer
+		void uploadVertexData( CommandBuffer const & commandBuffer
 			, std::array< T, N > const & data
 			, VertexBuffer< T > const & buffer )const;
 		template< typename T >
-		inline void uploadVertexData( CommandBuffer const & commandBuffer
+		void uploadVertexData( CommandBuffer const & commandBuffer
 			, std::vector< T > const & data
 			, VertexBuffer< T > const & buffer )const;
 		template< typename T >
-		inline void uploadVertexData( CommandBuffer const & commandBuffer
+		void uploadVertexData( CommandBuffer const & commandBuffer
 			, ByteArray const & data
 			, VertexBuffer< T > const & buffer )const;
 		template< typename T >
-		inline void uploadVertexData( CommandBuffer const & commandBuffer
+		void uploadVertexData( CommandBuffer const & commandBuffer
 			, uint8_t const * const data
 			, VkDeviceSize size
 			, VertexBuffer< T > const & buffer )const;
 		template< typename T, size_t N >
-		inline void uploadVertexData( CommandBuffer const & commandBuffer
+		void uploadVertexData( CommandBuffer const & commandBuffer
 			, std::array< T, N > const & data
 			, VkDeviceSize offset
 			, VertexBuffer< T > const & buffer )const;
 		template< typename T >
-		inline void uploadVertexData( CommandBuffer const & commandBuffer
+		void uploadVertexData( CommandBuffer const & commandBuffer
 			, std::vector< T > const & data
 			, VkDeviceSize offset
 			, VertexBuffer< T > const & buffer )const;
 		template< typename T >
-		inline void uploadVertexData( CommandBuffer const & commandBuffer
+		void uploadVertexData( CommandBuffer const & commandBuffer
 			, ByteArray const & data
 			, VkDeviceSize offset
 			, VertexBuffer< T > const & buffer )const;
 		template< typename T >
-		inline void uploadVertexData( CommandBuffer const & commandBuffer
+		void uploadVertexData( CommandBuffer const & commandBuffer
 			, uint8_t const * const data
 			, VkDeviceSize size
 			, VkDeviceSize offset
@@ -315,40 +315,40 @@ namespace ashes
 		**/
 		/**@{*/
 		template< typename T, size_t N >
-		inline void uploadUniformData( Queue const & queue
+		void uploadUniformData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::array< T, N > const & data
 			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
-		inline void uploadUniformData( Queue const & queue
+		void uploadUniformData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::vector< T > const & data
 			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
-		inline void uploadUniformData( Queue const & queue
+		void uploadUniformData( Queue const & queue
 			, CommandPool const & commandPool
 			, T const * const data
 			, VkDeviceSize count
 			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T, size_t N >
-		inline void uploadUniformData( Queue const & queue
+		void uploadUniformData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::array< T, N > const & data
 			, VkDeviceSize offset
 			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
-		inline void uploadUniformData( Queue const & queue
+		void uploadUniformData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::vector< T > const & data
 			, VkDeviceSize offset
 			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
-		inline void uploadUniformData( Queue const & queue
+		void uploadUniformData( Queue const & queue
 			, CommandPool const & commandPool
 			, T const * const data
 			, VkDeviceSize count
@@ -356,35 +356,35 @@ namespace ashes
 			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T, size_t N >
-		inline void uploadUniformData( CommandBuffer const & commandBuffer
+		void uploadUniformData( CommandBuffer const & commandBuffer
 			, std::array< T, N > const & data
 			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
-		inline void uploadUniformData( CommandBuffer const & commandBuffer
+		void uploadUniformData( CommandBuffer const & commandBuffer
 			, std::vector< T > const & data
 			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
-		inline void uploadUniformData( CommandBuffer const & commandBuffer
+		void uploadUniformData( CommandBuffer const & commandBuffer
 			, T const * const data
 			, VkDeviceSize count
 			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T, size_t N >
-		inline void uploadUniformData( CommandBuffer const & commandBuffer
+		void uploadUniformData( CommandBuffer const & commandBuffer
 			, std::array< T, N > const & data
 			, VkDeviceSize offset
 			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
-		inline void uploadUniformData( CommandBuffer const & commandBuffer
+		void uploadUniformData( CommandBuffer const & commandBuffer
 			, std::vector< T > const & data
 			, VkDeviceSize offset
 			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
-		inline void uploadUniformData( CommandBuffer const & commandBuffer
+		void uploadUniformData( CommandBuffer const & commandBuffer
 			, T const * const data
 			, VkDeviceSize count
 			, VkDeviceSize offset
@@ -405,7 +405,7 @@ namespace ashes
 			, uint8_t const * const data
 			, ImageView const & texture
 			, VkImageLayout dstLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
-		inline void uploadTextureData( Queue const & queue
+		void uploadTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, VkImageSubresourceLayers const & subresourceLayers
 			, VkFormat format
@@ -414,7 +414,7 @@ namespace ashes
 			, ByteArray const & data
 			, ImageView const & texture
 			, VkImageLayout dstLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
-		inline void uploadTextureData( Queue const & queue
+		void uploadTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, VkImageSubresourceLayers const & subresourceLayers
 			, VkFormat format
@@ -429,7 +429,7 @@ namespace ashes
 			, uint8_t const * const data
 			, ImageView const & texture
 			, VkImageLayout dstLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
-		inline void uploadTextureData( Queue const & queue
+		void uploadTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, VkFormat format
 			, ByteArray const & data
@@ -443,7 +443,7 @@ namespace ashes
 			, uint8_t const * const data
 			, ImageView const & texture
 			, VkImageLayout dstLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
-		inline void uploadTextureData( CommandBuffer const & commandBuffer
+		void uploadTextureData( CommandBuffer const & commandBuffer
 			, VkImageSubresourceLayers const & subresourceLayers
 			, VkFormat format
 			, VkOffset3D const & offset
@@ -456,7 +456,7 @@ namespace ashes
 			, uint8_t const * const data
 			, ImageView const & texture
 			, VkImageLayout dstLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
-		inline void uploadTextureData( CommandBuffer const & commandBuffer
+		void uploadTextureData( CommandBuffer const & commandBuffer
 			, VkFormat format
 			, ByteArray const & data
 			, ImageView const & texture
@@ -474,29 +474,29 @@ namespace ashes
 		**/
 		/**@{*/
 		template< typename T >
-		inline void downloadBufferData( Queue const & queue
+		void downloadBufferData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::vector< T > & data
 			, Buffer< T > const & buffer )const;
 		template< typename T >
-		inline void downloadBufferData( Queue const & queue
+		void downloadBufferData( Queue const & queue
 			, CommandPool const & commandPool
 			, ByteArray & data
 			, Buffer< T > const & buffer )const;
 		template< typename T >
-		inline void downloadBufferData( Queue const & queue
+		void downloadBufferData( Queue const & queue
 			, CommandPool const & commandPool
 			, uint8_t * data
 			, VkDeviceSize size
 			, Buffer< T > const & buffer )const;
 		template< typename T >
-		inline void downloadBufferData( Queue const & queue
+		void downloadBufferData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::vector< T > & data
 			, VkDeviceSize offset
 			, Buffer< T > const & buffer )const;
 		template< typename T >
-		inline void downloadBufferData( Queue const & queue
+		void downloadBufferData( Queue const & queue
 			, CommandPool const & commandPool
 			, ByteArray & data
 			, VkDeviceSize offset
@@ -515,35 +515,35 @@ namespace ashes
 		**/
 		/**@{*/
 		template< typename T >
-		inline void downloadVertexData( Queue const & queue
+		void downloadVertexData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::vector< T > & data
 			, VertexBuffer< T > const & buffer )const;
 		template< typename T >
-		inline void downloadVertexData( Queue const & queue
+		void downloadVertexData( Queue const & queue
 			, CommandPool const & commandPool
 			, ByteArray & data
 			, VertexBuffer< T > const & buffer )const;
 		template< typename T >
-		inline void downloadVertexData( Queue const & queue
+		void downloadVertexData( Queue const & queue
 			, CommandPool const & commandPool
 			, uint8_t * data
 			, VkDeviceSize size
 			, VertexBuffer< T > const & buffer )const;
 		template< typename T >
-		inline void downloadVertexData( Queue const & queue
+		void downloadVertexData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::vector< T > & data
 			, VkDeviceSize offset
 			, VertexBuffer< T > const & buffer )const;
 		template< typename T >
-		inline void downloadVertexData( Queue const & queue
+		void downloadVertexData( Queue const & queue
 			, CommandPool const & commandPool
 			, ByteArray & data
 			, VkDeviceSize offset
 			, VertexBuffer< T > const & buffer )const;
 		template< typename T >
-		inline void downloadVertexData( Queue const & queue
+		void downloadVertexData( Queue const & queue
 			, CommandPool const & commandPool
 			, uint8_t * data
 			, VkDeviceSize size
@@ -556,27 +556,27 @@ namespace ashes
 		**/
 		/**@{*/
 		template< typename T >
-		inline void downloadUniformData( Queue const & queue
+		void downloadUniformData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::vector< T > & data
 			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
-		inline void downloadUniformData( Queue const & queue
+		void downloadUniformData( Queue const & queue
 			, CommandPool const & commandPool
 			, T * data
 			, VkDeviceSize count
 			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
-		inline void downloadUniformData( Queue const & queue
+		void downloadUniformData( Queue const & queue
 			, CommandPool const & commandPool
 			, std::vector< T > & data
 			, VkDeviceSize offset
 			, UniformBuffer const & buffer
 			, VkPipelineStageFlags dstStageFlags = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT )const;
 		template< typename T >
-		inline void downloadUniformData( Queue const & queue
+		void downloadUniformData( Queue const & queue
 			, CommandPool const & commandPool
 			, T * data
 			, VkDeviceSize count
@@ -598,7 +598,7 @@ namespace ashes
 			, uint8_t * data
 			, ImageView const & texture
 			, VkImageLayout dstLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
-		inline void downloadTextureData( Queue const & queue
+		void downloadTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, VkImageSubresourceLayers const & subresourceLayers
 			, VkFormat format
@@ -613,7 +613,7 @@ namespace ashes
 			, uint8_t * data
 			, ImageView const & texture
 			, VkImageLayout dstLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const;
-		inline void downloadTextureData( Queue const & queue
+		void downloadTextureData( Queue const & queue
 			, CommandPool const & commandPool
 			, VkFormat format
 			, ByteArray & data
@@ -625,7 +625,7 @@ namespace ashes
 		*\return
 		*	Le tampon GPU.
 		*/
-		inline BufferBase const & getBuffer()const
+		BufferBase const & getBuffer()const
 		{
 			return *m_buffer;
 		}
@@ -637,7 +637,7 @@ namespace ashes
 		**/
 		/**@{*/
 		template< typename T >
-		inline void doCopyUniformDataToStagingBuffer( T const * const data
+		void doCopyUniformDataToStagingBuffer( T const * const data
 			, VkDeviceSize count
 			, VkDeviceSize elemAlignedSize )const;
 		void doCopyToStagingBuffer( uint8_t const * const data
@@ -668,7 +668,7 @@ namespace ashes
 		**/
 		/**@{*/
 		template< typename T >
-		inline void doCopyUniformDataFromStagingBuffer( T * data
+		void doCopyUniformDataFromStagingBuffer( T * data
 			, VkDeviceSize count
 			, VkDeviceSize elemAlignedSize )const;
 		void doCopyFromStagingBuffer( uint8_t * data
@@ -694,9 +694,8 @@ namespace ashes
 			, VkImageSubresourceLayers const & subresourceLayers )const;
 		/**@}*/
 
-	protected:
+	private:
 		Device const & m_device;
-		VkAccessFlags m_currentAccessMask{ VK_ACCESS_MEMORY_WRITE_BIT };
 		BufferBasePtr m_buffer;
 		DeviceMemoryPtr m_storage;
 	};

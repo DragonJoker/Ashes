@@ -21,7 +21,7 @@ namespace utils
 		*\brief
 		*	Constructeur par défaut.
 		*/
-		PlaneEquation();
+		PlaneEquation() = default;
 		/**
 		*\brief
 		*	Constructeur.
@@ -125,7 +125,7 @@ namespace utils
 		*\return
 		*	La normale du plan.
 		*/
-		inline Vec3 const & normal()const
+		Vec3 const & normal()const
 		{
 			return m_normal;
 		}
@@ -133,7 +133,7 @@ namespace utils
 		*\return
 		*	Le point de référence du plan.
 		*/
-		inline Vec3 const & point()const
+		Vec3 const & point()const
 		{
 			return m_point;
 		}
@@ -144,10 +144,9 @@ namespace utils
 		//! Le point de référence du plan.
 		Vec3 m_point;
 		//! Le coefficient.
-		float m_d;
+		float m_d{};
 
 		friend bool operator==( PlaneEquation const &, PlaneEquation const & );
-		friend bool operator!=( PlaneEquation const &, PlaneEquation const & );
 	};
 	/**
 	*\brief

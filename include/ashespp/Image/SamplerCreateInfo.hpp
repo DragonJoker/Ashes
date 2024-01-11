@@ -12,7 +12,7 @@ namespace ashes
 {
 	struct SamplerCreateInfo
 	{
-		SamplerCreateInfo( VkSamplerCreateInfo && info )
+		explicit SamplerCreateInfo( VkSamplerCreateInfo && info )
 			: vk{ std::move( info ) }
 		{
 		}
@@ -54,17 +54,17 @@ namespace ashes
 		{
 		}
 
-		operator VkSamplerCreateInfo const &()const
+		operator VkSamplerCreateInfo const &()const noexcept
 		{
 			return vk;
 		}
 
-		VkSamplerCreateInfo const * operator->()const
+		VkSamplerCreateInfo const * operator->()const noexcept
 		{
 			return &vk;
 		}
 
-		VkSamplerCreateInfo * operator->()
+		VkSamplerCreateInfo * operator->()noexcept
 		{
 			return &vk;
 		}

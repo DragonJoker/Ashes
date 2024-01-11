@@ -21,17 +21,17 @@ namespace ashes
 		{
 		}
 
-		operator bool()override
+		operator bool()noexcept override
 		{
 			return m_connection != nullptr && m_surface != nullptr;
 		}
 
-		MirConnection * getConnection()const
+		MirConnection * getConnection()const noexcept
 		{
 			return m_connection;
 		}
 
-		MirSurface * getSurface()const
+		MirSurface * getSurface()const noexcept
 		{
 			return m_surface;
 		}

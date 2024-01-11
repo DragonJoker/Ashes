@@ -19,12 +19,12 @@ namespace ashes
 		{
 		}
 
-		operator bool()override
+		operator bool()noexcept override
 		{
 			return m_window != nullptr;
 		}
 
-		ANativeWindow * getWindow()const
+		ANativeWindow * getWindow()const noexcept
 		{
 			return m_window;
 		}

@@ -37,19 +37,19 @@ namespace ashes
 		*	The creation info.
 		*/
 		AccelerationStructure( Device const & device
-			, std::string debugName
+			, std::string const & debugName
 			, VkAccelerationStructureCreateInfoKHR infos );
 		/**
 		*\brief
 		*	Destructor.
 		*/
-		~AccelerationStructure();
+		~AccelerationStructure()noexcept;
 		/**
 		*\brief
 		*	Copy an acceleration structure on the host.
 		*/
 		void copyAccelerationStructure( VkDeferredOperationKHR deferredOperation
-			, AccelerationStructure & dst
+			, AccelerationStructure const & dst
 			, VkCopyAccelerationStructureModeKHR mode )const;
 		/**
 		*\brief
@@ -74,14 +74,14 @@ namespace ashes
 		*\brief
 		*	VkAccelerationStructureKHR implicit cast operator.
 		*/
-		inline operator VkAccelerationStructureKHR const & ()const
+		operator VkAccelerationStructureKHR const & ()const
 		{
 			return m_internal;
 		}
 
-	protected:
+	private:
 		Device const & m_device;
-		VkAccelerationStructureCreateInfoKHR m_info;
+		VkAccelerationStructureCreateInfoKHR m_info{};
 		VkAccelerationStructureKHR m_internal{};
 	};
 }

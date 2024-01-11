@@ -75,7 +75,6 @@ struct Application
 	ashes::DevicePtr device;
 	VkExtent2D dimensions;
 	ashes::SwapChainPtr swapChain;
-	ashes::ImageArray swapChainImages;
 	ashes::ImageViewArray views;
 	std::vector< ashes::FrameBufferPtr > frameBuffers;
 	ashes::CommandPoolPtr commandPool;
@@ -305,7 +304,6 @@ int main( int argc, char * argv[] )
 	app.frameBuffers.clear();
 	app.renderPass.reset();
 	app.renderingResources.clear();
-	app.swapChainImages.clear();
 	app.swapChain.reset();
 	app.graphicsQueue.reset();
 	app.presentQueue.reset();
@@ -690,7 +688,6 @@ void createSwapChain( Application & application )
 {
 	application.swapChain = application.device->createSwapChain( doGetSwapChainCreateInfo( *application.surface
 		, application.dimensions ) );
-	application.swapChainImages = application.swapChain->getImages();
 	application.clearColour = VkClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f };
 	doCreateRenderingResources( application );
 }
@@ -774,7 +771,7 @@ ashes::ImageViewCRefArray doPrepareAttaches( Application const & application
 
 	for ( auto & attach : application.renderPass->getAttachments() )
 	{
-		auto & image = application.swapChainImages[backBuffer];
+		auto const & image = *application.swapChain->getImages()[backBuffer];
 		views.push_back( image.createView( VkImageViewCreateInfo
 			{
 				VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,

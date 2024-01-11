@@ -32,7 +32,7 @@ namespace ashes
 		registerObject( m_device, debugName, *this );
 	}
 
-	RenderPass::~RenderPass()
+	RenderPass::~RenderPass()noexcept
 	{
 		unregisterObject( m_device, *this );
 		m_device.vkDestroyRenderPass( m_device
@@ -40,7 +40,7 @@ namespace ashes
 			, m_device.getAllocationCallbacks() );
 	}
 
-	FrameBufferPtr RenderPass::createFrameBuffer( VkFramebufferCreateInfo info )const
+	FrameBufferPtr RenderPass::createFrameBuffer( VkFramebufferCreateInfo const & info )const
 	{
 		return createFrameBuffer( "FrameBuffer", info );
 	}
@@ -60,7 +60,7 @@ namespace ashes
 	{
 		return createFrameBuffer( "FrameBuffer"
 			, dimensions
-			, views
+			, std::move( views )
 			, layers );
 	}
 

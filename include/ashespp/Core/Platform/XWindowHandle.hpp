@@ -21,17 +21,17 @@ namespace ashes
 		{
 		}
 
-		operator bool()override
+		operator bool()noexcept override
 		{
 			return m_drawable != 0 && m_display != nullptr;
 		}
 
-		Window getDrawable()const
+		Window getDrawable()const noexcept
 		{
 			return m_drawable;
 		}
 
-		Display * getDisplay()const
+		Display * getDisplay()const noexcept
 		{
 			return m_display;
 		}

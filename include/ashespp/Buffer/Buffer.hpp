@@ -16,7 +16,7 @@ namespace ashes
 {
 	inline VkBufferCreateInfo makeCreateInfo( VkDeviceSize size
 		, VkBufferUsageFlags usage
-		, QueueShare const & sharingMode = {} )
+		, QueueShare const & sharingMode = QueueShare{} )
 	{
 		return VkBufferCreateInfo
 		{
@@ -61,7 +61,7 @@ namespace ashes
 		BufferBase( Device const & device
 			, VkDeviceSize size
 			, VkBufferUsageFlags usage
-			, QueueShare sharingMode = {} );
+			, QueueShare const & sharingMode = {} );
 		/**
 		*\brief
 		*	Constructor.
@@ -87,12 +87,12 @@ namespace ashes
 			, std::string const & debugName
 			, VkDeviceSize size
 			, VkBufferUsageFlags usage
-			, QueueShare sharingMode = {} );
+			, QueueShare const & sharingMode = {} );
 		/**
 		*\brief
 		*	Destructor.
 		*/
-		~BufferBase();
+		~BufferBase()noexcept;
 		/**
 		*\brief
 		*	Binds this buffer to given device memory object.
@@ -385,7 +385,7 @@ namespace ashes
 		*\return
 		*	The memory requirements for this buffer.
 		*/
-		inline VkMemoryRequirements getMemoryRequirements()const
+		VkMemoryRequirements getMemoryRequirements()const
 		{
 			return m_buffer->getMemoryRequirements();
 		}
@@ -403,7 +403,7 @@ namespace ashes
 		*\return
 		*	The elements count.
 		*/
-		inline VkDeviceSize getCount()const
+		VkDeviceSize getCount()const
 		{
 			return m_buffer->getSize() / sizeof( T );
 		}
@@ -411,7 +411,7 @@ namespace ashes
 		*\return
 		*	The GPU buffer.
 		*/
-		inline BufferBase const & getBuffer()const
+		BufferBase const & getBuffer()const
 		{
 			return *m_buffer;
 		}
@@ -419,7 +419,7 @@ namespace ashes
 		*\return
 		*	The GPU buffer.
 		*/
-		inline BufferBase & getBuffer()
+		BufferBase & getBuffer()
 		{
 			return *m_buffer;
 		}
@@ -435,7 +435,7 @@ namespace ashes
 		*\return
 		*	\p nullptr if mapping failed.
 		*/
-		inline T * lock( VkDeviceSize offset
+		T * lock( VkDeviceSize offset
 			, VkDeviceSize count
 			, VkMemoryMapFlags flags )const
 		{
@@ -450,7 +450,7 @@ namespace ashes
 		*\param[in] count
 		*	The range elements count.
 		*/
-		inline void flush( VkDeviceSize offset
+		void flush( VkDeviceSize offset
 			, VkDeviceSize count )const
 		{
 			auto size = doComputeSize( count, offset );
@@ -464,7 +464,7 @@ namespace ashes
 		*\param[in] count
 		*	The range elements count.
 		*/
-		inline void invalidate( VkDeviceSize offset
+		void invalidate( VkDeviceSize offset
 			, VkDeviceSize count )const
 		{
 			auto size = doComputeSize( count, offset );
@@ -482,7 +482,7 @@ namespace ashes
 		*\brief
 		*	Conversion implicite vers VkBuffer.
 		*/
-		inline operator VkBuffer const & ()const
+		operator VkBuffer const & ()const
 		{
 			return *m_buffer;
 		}

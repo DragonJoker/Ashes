@@ -96,7 +96,7 @@ namespace vkapp
 		/**@}*/
 
 	private:
-		wxTimer * m_timer{ nullptr };
+		wxTimer m_timer;
 		/**
 		*\name
 		*	Global.
@@ -108,7 +108,6 @@ namespace vkapp
 		ashes::CommandPoolPtr m_commandPool;
 		ashes::SurfacePtr m_surface;
 		ashes::SwapChainPtr m_swapChain;
-		ashes::ImageArray m_swapChainImages;
 		VkClearColorValue m_clearColour;
 		ashes::RenderPassPtr m_renderPass;
 		RenderingResourcesArray m_renderingResources;

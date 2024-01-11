@@ -154,7 +154,6 @@ namespace utils
 		ashes::SurfacePtr m_surface;
 		VkExtent2D m_dimensions;
 		ashes::SwapChainPtr m_swapChain;
-		ashes::ImageArray m_swapChainImages;
 		mutable ashes::ImageViewArray m_swapChainImageViews;
 		RenderingResourcesArray m_renderingResources;
 		mutable size_t m_resourceIndex{ 0u };

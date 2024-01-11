@@ -38,7 +38,7 @@ namespace ashes
 		*	The layout bindings.
 		*/
 		DescriptorSetLayout( Device const & device
-			, std::string debugName
+			, std::string const & debugName
 			, VkDescriptorSetLayoutBindingArray bindings
 			, VkDescriptorBindingFlags flags = {} );
 		/**
@@ -50,13 +50,13 @@ namespace ashes
 		*	The layout bindings.
 		*/
 		DescriptorSetLayout( Device const & device
-			, std::string debugName
-			, VkDescriptorSetLayoutCreateInfo createInfo );
+			, std::string const & debugName
+			, VkDescriptorSetLayoutCreateInfo const & createInfo );
 		/**
 		*\brief
 		*	Destructor.
 		*/
-		~DescriptorSetLayout();
+		~DescriptorSetLayout()noexcept;
 		/**
 		*\return
 		*	The descriptor set attach at given binding point and index.
@@ -71,7 +71,7 @@ namespace ashes
 		*\return
 		*	The descriptor set attaches.
 		*/
-		inline VkDescriptorSetLayoutBindingArray const & getBindings()const
+		VkDescriptorSetLayoutBindingArray const & getBindings()const
 		{
 			return m_bindings;
 		}
@@ -104,12 +104,12 @@ namespace ashes
 		*\brief
 		*	VkDescriptorSetLayout implicit cast operator.
 		*/
-		inline operator VkDescriptorSetLayout const & ()const
+		operator VkDescriptorSetLayout const & ()const noexcept
 		{
 			return m_internal;
 		}
 
-	protected:
+	private:
 		Device const & m_device;
 		VkDescriptorSetLayoutBindingArray m_bindings;
 		VkDescriptorSetLayout m_internal{};

@@ -12,8 +12,7 @@ namespace ashes
 {
 	struct SwapChainCreateInfo
 	{
-		SwapChainCreateInfo( SwapChainCreateInfo const & ) = delete;
-		SwapChainCreateInfo & operator=( SwapChainCreateInfo const & ) = delete;
+		~SwapChainCreateInfo()noexcept = default;
 
 		SwapChainCreateInfo( VkSwapchainCreateFlagsKHR pflags
 			, VkSurfaceKHR psurface
@@ -51,7 +50,30 @@ namespace ashes
 				, poldSwapchain }
 		{
 		}
-		
+
+		SwapChainCreateInfo( SwapChainCreateInfo const & rhs )
+			: queueFamilyIndices{ rhs.queueFamilyIndices }
+			, vk{ VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, rhs.vk.surface
+				, rhs.vk.minImageCount
+				, rhs.vk.imageFormat
+				, rhs.vk.imageColorSpace
+				, rhs.vk.imageExtent
+				, rhs.vk.imageArrayLayers
+				, rhs.vk.imageUsage
+				, rhs.vk.imageSharingMode
+				, uint32_t( queueFamilyIndices.size() )
+				, queueFamilyIndices.data()
+				, rhs.vk.preTransform
+				, rhs.vk.compositeAlpha
+				, rhs.vk.presentMode
+				, rhs.vk.clipped
+				, rhs.vk.oldSwapchain }
+		{
+		}
+
 		SwapChainCreateInfo( SwapChainCreateInfo && rhs )noexcept
 			: queueFamilyIndices{ std::move( rhs.queueFamilyIndices ) }
 			, vk{ VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR
@@ -74,7 +96,32 @@ namespace ashes
 				, rhs.vk.oldSwapchain }
 		{
 		}
-		
+
+		SwapChainCreateInfo & operator=( SwapChainCreateInfo const & rhs )
+		{
+			queueFamilyIndices = rhs.queueFamilyIndices;
+			vk = { VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR
+				, rhs.vk.pNext
+				, rhs.vk.flags
+				, rhs.vk.surface
+				, rhs.vk.minImageCount
+				, rhs.vk.imageFormat
+				, rhs.vk.imageColorSpace
+				, rhs.vk.imageExtent
+				, rhs.vk.imageArrayLayers
+				, rhs.vk.imageUsage
+				, rhs.vk.imageSharingMode
+				, uint32_t( queueFamilyIndices.size() )
+				, queueFamilyIndices.data()
+				, rhs.vk.preTransform
+				, rhs.vk.compositeAlpha
+				, rhs.vk.presentMode
+				, rhs.vk.clipped
+				, rhs.vk.oldSwapchain };
+
+			return *this;
+		}
+
 		SwapChainCreateInfo & operator=( SwapChainCreateInfo && rhs )noexcept
 		{
 			queueFamilyIndices = std::move( rhs.queueFamilyIndices );
@@ -100,17 +147,17 @@ namespace ashes
 			return *this;
 		}
 
-		operator VkSwapchainCreateInfoKHR const &()const
+		operator VkSwapchainCreateInfoKHR const &()const noexcept
 		{
 			return vk;
 		}
 
-		VkSwapchainCreateInfoKHR const * operator->()const
+		VkSwapchainCreateInfoKHR const * operator->()const noexcept
 		{
 			return &vk;
 		}
 
-		VkSwapchainCreateInfoKHR * operator->()
+		VkSwapchainCreateInfoKHR * operator->()noexcept
 		{
 			return &vk;
 		}

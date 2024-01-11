@@ -34,7 +34,7 @@ namespace ashes
 		*\param[in] path
 		*	The file path.
 		*/
-		DynamicLibrary( std::string const & path );
+		explicit DynamicLibrary( std::string const & path );
 		/**
 		*\brief
 		*	Destructor.
@@ -69,7 +69,7 @@ namespace ashes
 		*\return
 		*	The file path to the library.
 		*/
-		inline std::string const & getPath()const
+		std::string const & getPath()const noexcept
 		{
 			return m_path;
 		}

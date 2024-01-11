@@ -21,17 +21,17 @@ namespace ashes
 		{
 		}
 
-		operator bool()override
+		operator bool()noexcept override
 		{
 			return m_connection != nullptr && m_window != 0;
 		}
 
-		xcb_connection_t * getConnection()const
+		xcb_connection_t * getConnection()const noexcept
 		{
 			return m_connection;
 		}
 
-		xcb_window_t getWindow()const
+		xcb_window_t getWindow()const noexcept
 		{
 			return m_window;
 		}

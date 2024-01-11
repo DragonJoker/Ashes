@@ -28,15 +28,15 @@ namespace ashes
 
 	BufferBase::BufferBase( Device const & device
 		, VkBufferCreateInfo createInfo )
-		: BufferBase{ device, "Buffer", createInfo }
+		: BufferBase{ device, "Buffer", std::move( createInfo ) }
 	{
 	}
 
 	BufferBase::BufferBase( Device const & device
 		, VkDeviceSize size
 		, VkBufferUsageFlags usage
-		, QueueShare sharingMode )
-		: BufferBase{ device, "Buffer", size, usage, std::move( sharingMode ) }
+		, QueueShare const & sharingMode )
+		: BufferBase{ device, "Buffer", size, usage, sharingMode }
 	{
 	}
 
@@ -44,12 +44,12 @@ namespace ashes
 		, std::string const & debugName
 		, VkDeviceSize size
 		, VkBufferUsageFlags usage
-		, QueueShare sharingMode )
+		, QueueShare const & sharingMode )
 		: BufferBase{ device, debugName, makeCreateInfo( size, usage, sharingMode ) }
 	{
 	}
 
-	BufferBase::~BufferBase()
+	BufferBase::~BufferBase()noexcept
 	{
 		unregisterObject( m_device, *this );
 		m_device.vkDestroyBuffer( m_device
@@ -127,44 +127,44 @@ namespace ashes
 	{
 		VkPipelineStageFlags result = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
 
-		if ( ( m_currentAccessFlags & VK_ACCESS_INDIRECT_COMMAND_READ_BIT ) )
+		if ( checkFlag( m_currentAccessFlags, VK_ACCESS_INDIRECT_COMMAND_READ_BIT ) )
 		{
 			result = VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT;
 		}
-		else if ( ( m_currentAccessFlags & VK_ACCESS_INDEX_READ_BIT )
-			|| ( m_currentAccessFlags & VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT ) )
+		else if ( checkFlag( m_currentAccessFlags, VK_ACCESS_INDEX_READ_BIT )
+			|| checkFlag( m_currentAccessFlags, VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT ) )
 		{
 			result = VK_PIPELINE_STAGE_VERTEX_INPUT_BIT;
 		}
-		else if ( ( m_currentAccessFlags & VK_ACCESS_INPUT_ATTACHMENT_READ_BIT ) )
+		else if ( checkFlag( m_currentAccessFlags, VK_ACCESS_INPUT_ATTACHMENT_READ_BIT ) )
 		{
 			result = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 		}
-		else if ( ( m_currentAccessFlags & VK_ACCESS_SHADER_READ_BIT )
-			|| ( m_currentAccessFlags & VK_ACCESS_SHADER_WRITE_BIT )
-			|| ( m_currentAccessFlags & VK_ACCESS_UNIFORM_READ_BIT ) )
+		else if ( checkFlag( m_currentAccessFlags, VK_ACCESS_SHADER_READ_BIT )
+			|| checkFlag( m_currentAccessFlags, VK_ACCESS_SHADER_WRITE_BIT )
+			|| checkFlag( m_currentAccessFlags, VK_ACCESS_UNIFORM_READ_BIT ) )
 		{
 			result = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT;
 		}
-		else if ( ( m_currentAccessFlags & VK_ACCESS_COLOR_ATTACHMENT_READ_BIT )
-			|| ( m_currentAccessFlags & VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT ) )
+		else if ( checkFlag( m_currentAccessFlags, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT )
+			|| checkFlag( m_currentAccessFlags, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT ) )
 		{
 			result = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 		}
-		else if ( ( m_currentAccessFlags & VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT )
-			|| ( m_currentAccessFlags & VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT ) )
+		else if ( checkFlag( m_currentAccessFlags, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT )
+			|| checkFlag( m_currentAccessFlags, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT ) )
 		{
 			result = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 		}
-		else if ( ( m_currentAccessFlags & VK_ACCESS_TRANSFER_READ_BIT )
-			|| ( m_currentAccessFlags & VK_ACCESS_TRANSFER_WRITE_BIT ) )
+		else if ( checkFlag( m_currentAccessFlags, VK_ACCESS_TRANSFER_READ_BIT )
+			|| checkFlag( m_currentAccessFlags, VK_ACCESS_TRANSFER_WRITE_BIT ) )
 		{
 			result = VK_PIPELINE_STAGE_TRANSFER_BIT;
 		}
-		else if ( ( m_currentAccessFlags & VK_ACCESS_HOST_READ_BIT )
-			|| ( m_currentAccessFlags & VK_ACCESS_HOST_WRITE_BIT )
-			|| ( m_currentAccessFlags & VK_ACCESS_MEMORY_READ_BIT )
-			|| ( m_currentAccessFlags & VK_ACCESS_MEMORY_WRITE_BIT ) )
+		else if ( checkFlag( m_currentAccessFlags, VK_ACCESS_HOST_READ_BIT )
+			|| checkFlag( m_currentAccessFlags, VK_ACCESS_HOST_WRITE_BIT )
+			|| checkFlag( m_currentAccessFlags, VK_ACCESS_MEMORY_READ_BIT )
+			|| checkFlag( m_currentAccessFlags, VK_ACCESS_MEMORY_WRITE_BIT ) )
 		{
 			result = VK_PIPELINE_STAGE_HOST_BIT;
 		}

@@ -23,7 +23,7 @@ namespace ashes
 	class DeviceAllocatorBase
 	{
 #if VK_USE_64_BIT_PTR_DEFINES == 1
-		static inline void * allocate( void * pUserData
+		static void * allocate( void * pUserData
 			, size_t size
 			, size_t alignment
 			, VkSystemAllocationScope allocationScope )
@@ -33,7 +33,7 @@ namespace ashes
 				, allocationScope );
 		}
 
-		static inline void * reallocate( void * pUserData
+		static void * reallocate( void * pUserData
 			, void * pOriginal
 			, size_t size
 			, size_t alignment
@@ -45,13 +45,13 @@ namespace ashes
 				, allocationScope );
 		}
 
-		static inline void deallocate( void * pUserData
+		static void deallocate( void * pUserData
 			, void * pMemory )
 		{
 			return reinterpret_cast< DeviceAllocatorBase * >( pUserData )->deallocate( pMemory );
 		}
 
-		static inline void onInternalAllocation( void * pUserData
+		static void onInternalAllocation( void * pUserData
 			, size_t size
 			, VkInternalAllocationType allocationType
 			, VkSystemAllocationScope allocationScope )
@@ -61,7 +61,7 @@ namespace ashes
 				, allocationScope );
 		}
 
-		static inline void onInternalFree( void * pUserData
+		static void onInternalFree( void * pUserData
 			, size_t size
 			, VkInternalAllocationType allocationType
 			, VkSystemAllocationScope allocationScope )
@@ -71,7 +71,7 @@ namespace ashes
 				, allocationScope );
 		}
 #else
-		static inline void * allocate( void * pUserData
+		static void * allocate( void * pUserData
 			, unsigned int size
 			, unsigned int alignment
 			, VkSystemAllocationScope allocationScope )AAPCS_VFP_ATTRIBUTE
@@ -81,7 +81,7 @@ namespace ashes
 				, allocationScope );
 		}
 
-		static inline void * reallocate( void * pUserData
+		static void * reallocate( void * pUserData
 			, void * pOriginal
 			, unsigned int size
 			, unsigned int alignment
@@ -93,13 +93,13 @@ namespace ashes
 				, allocationScope );
 		}
 
-		static inline void deallocate( void * pUserData
+		static void deallocate( void * pUserData
 			, void * pMemory )AAPCS_VFP_ATTRIBUTE
 		{
 			return reinterpret_cast< DeviceAllocatorBase * >( pUserData )->deallocate( pMemory );
 		}
 
-		static inline void onInternalAllocation( void * pUserData
+		static void onInternalAllocation( void * pUserData
 			, unsigned int size
 			, VkInternalAllocationType allocationType
 			, VkSystemAllocationScope allocationScope )AAPCS_VFP_ATTRIBUTE
@@ -109,7 +109,7 @@ namespace ashes
 				, allocationScope );
 		}
 
-		static inline void onInternalFree( void * pUserData
+		static void onInternalFree( void * pUserData
 			, unsigned int size
 			, VkInternalAllocationType allocationType
 			, VkSystemAllocationScope allocationScope )AAPCS_VFP_ATTRIBUTE
@@ -133,17 +133,17 @@ namespace ashes
 
 		virtual ~DeviceAllocatorBase()noexcept = default;
 
-		inline operator VkAllocationCallbacks const & ()const
+		operator VkAllocationCallbacks const & ()const
 		{
 			return m_callbacks;
 		}
 
-		inline VkAllocationCallbacks const * getAllocationCallbacks()const
+		VkAllocationCallbacks const * getAllocationCallbacks()const
 		{
 			return &m_callbacks;
 		}
 
-		inline VkAllocationCallbacks const * getAllocationCallbacks()
+		VkAllocationCallbacks const * getAllocationCallbacks()
 		{
 			return &m_callbacks;
 		}
@@ -178,22 +178,18 @@ namespace ashes
 		static constexpr uint32_t LevelCount = 24u;
 
 	public:
-		DeviceAllocatorT()
-			: m_allocator{ LevelCount, MinBlockSize }
-		{
-		}
-
-		~DeviceAllocatorT()noexcept = default;
+		DeviceAllocatorT() = default;
+		~DeviceAllocatorT()noexcept override = default;
 
 	private:
-		inline void * allocate( size_t size
+		void * allocate( size_t size
 			, size_t /*alignment*/
 			, VkSystemAllocationScope )override
 		{
 			return reinterpret_cast< void * >( m_allocator.allocate( size ) );
 		}
 
-		inline void * reallocate( void * pOriginal
+		void * reallocate( void * pOriginal
 			, size_t size
 			, size_t /*alignment*/
 			, VkSystemAllocationScope )override
@@ -202,25 +198,25 @@ namespace ashes
 			return reinterpret_cast< void * >( m_allocator.allocate( size ) );
 		}
 
-		inline void deallocate( void * pMemory )override
+		void deallocate( void * pMemory )override
 		{
 			m_allocator.deallocate( reinterpret_cast< uint8_t * >( pMemory ) );
 		}
 
-		inline void onInternalAllocation( size_t
+		void onInternalAllocation( size_t
 			, VkInternalAllocationType
 			, VkSystemAllocationScope )override
 		{
 		}
 
-		inline void onInternalFree( size_t
+		void onInternalFree( size_t
 			, VkInternalAllocationType
 			, VkSystemAllocationScope )override
 		{
 		}
 
 	private:
-		BuddyAllocatorT< TraitsT > m_allocator;
+		BuddyAllocatorT< TraitsT > m_allocator{ LevelCount, MinBlockSize };
 	};
 
 	template< typename TraitsT >

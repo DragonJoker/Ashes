@@ -47,7 +47,7 @@ namespace ashes
 		registerObject( m_device, debugName, *this );
 	}
 
-	Fence::~Fence()
+	Fence::~Fence()noexcept
 	{
 		unregisterObject( m_device, *this );
 		m_device.vkDestroyFence( m_device

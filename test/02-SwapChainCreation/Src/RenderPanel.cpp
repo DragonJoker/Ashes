@@ -26,7 +26,7 @@ namespace vkapp
 			RenderTimer = 42
 		};
 
-		static int const TimerTimeMs = 40;
+		int constexpr TimerTimeMs = 40;
 
 		uint32_t doGetImageCount( ashes::Surface const & surface )
 		{
@@ -45,12 +45,12 @@ namespace vkapp
 
 		VkSurfaceFormatKHR doSelectFormat( ashes::Surface const & surface )
 		{
-			VkSurfaceFormatKHR result;
-			auto formats = surface.getFormats();
+			VkSurfaceFormatKHR result{};
 			// Si la liste de formats ne contient qu'une entr�e VK_FORMAT_UNDEFINED,
 			// la surface n'a pas de format préféré. Sinon, au moins un format supporté
 			// sera renvoyé.
-			if ( formats.size() == 1u && formats[0].format == VK_FORMAT_UNDEFINED )
+			if ( auto formats = surface.getFormats();
+				formats.size() == 1u && formats[0].format == VK_FORMAT_UNDEFINED )
 			{
 				result.format = VK_FORMAT_R8G8B8A8_UNORM;
 				result.colorSpace = VK_COLORSPACE_SRGB_NONLINEAR_KHR;
@@ -105,8 +105,7 @@ namespace vkapp
 			return result;
 		}
 
-		ashes::SwapChainCreateInfo doGetSwapChainCreateInfo( ashes::Device const & device
-			, ashes::Surface const & surface
+		ashes::SwapChainCreateInfo doGetSwapChainCreateInfo( ashes::Surface const & surface
 			, VkExtent2D const & size )
 		{
 			VkExtent2D swapChainExtent{};
@@ -171,7 +170,7 @@ namespace vkapp
 		, wxSize const & size
 		, utils::Instance const & instance )
 		: wxPanel{ parent, wxID_ANY, wxDefaultPosition, size }
-		, m_timer{ new wxTimer{ this, int( Ids::RenderTimer ) } }
+		, m_timer{ this, int( Ids::RenderTimer ) }
 	{
 		try
 		{
@@ -192,7 +191,7 @@ namespace vkapp
 			throw;
 		}
 
-		m_timer->Start( TimerTimeMs );
+		m_timer.Start( TimerTimeMs );
 
 		Connect( int( Ids::RenderTimer ), wxEVT_TIMER, wxTimerEventHandler( RenderPanel::onTimer ), nullptr, this );
 		Connect( wxID_ANY, wxEVT_SIZE, wxSizeEventHandler( RenderPanel::onSize ), nullptr, this );
@@ -205,8 +204,6 @@ namespace vkapp
 
 	void RenderPanel::doCleanup()
 	{
-		delete m_timer;
-
 		if ( m_device )
 		{
 			m_device->getDevice().waitIdle();
@@ -217,7 +214,6 @@ namespace vkapp
 			m_commandPool.reset();
 			m_frameBuffers.clear();
 			m_renderPass.reset();
-			m_swapChainImages.clear();
 			m_swapChain.reset();
 			m_device.reset();
 		}
@@ -226,7 +222,7 @@ namespace vkapp
 	void RenderPanel::doCreateSurface( utils::Instance const & instance )
 	{
 		auto handle = common::makeWindowHandle( *this );
-		auto & gpu = instance.getPhysicalDevice( 0u );
+		auto const & gpu = instance.getPhysicalDevice( 0u );
 		m_surface = instance.getInstance().createSurface( gpu
 			, std::move( handle ) );
 	}
@@ -244,10 +240,8 @@ namespace vkapp
 	void RenderPanel::doCreateSwapChain()
 	{
 		wxSize size{ GetClientSize() };
-		m_swapChain = m_device->getDevice().createSwapChain( doGetSwapChainCreateInfo( m_device->getDevice()
-			, *m_surface
+		m_swapChain = m_device->getDevice().createSwapChain( doGetSwapChainCreateInfo( *m_surface
 			, { uint32_t( size.x ), uint32_t( size.y ) } ) );
-		m_swapChainImages = m_swapChain->getImages();
 		m_clearColour = VkClearColorValue{ 1.0f, 0.8f, 0.4f, 0.0f };
 		doCreateRenderingResources();
 	}
@@ -316,12 +310,10 @@ namespace vkapp
 		doCreateCommandBuffers();
 		doCreateFrameBuffers();
 
-		wxSize size{ GetClientSize() };
-
 		for ( size_t i = 0u; i < m_commandBuffers.size() && result; ++i )
 		{
-			auto & frameBuffer = *m_frameBuffers[i];
-			auto & commandBuffer = *m_commandBuffers[i];
+			auto const & frameBuffer = *m_frameBuffers[i];
+			auto const & commandBuffer = *m_commandBuffers[i];
 
 			commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT );
 			commandBuffer.beginRenderPass( *m_renderPass
@@ -337,7 +329,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateRenderingResources()
 	{
-		for ( uint32_t i = 0u; i < uint32_t( m_swapChainImages.size() ); ++i )
+		for ( uint32_t i = 0u; i < m_swapChain->getImageCount(); ++i )
 		{
 			m_renderingResources.emplace_back( std::make_unique< RenderingResources >( m_device->getDevice().createSemaphore()
 				, m_device->getDevice().createSemaphore()
@@ -349,7 +341,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateFrameBuffers()
 	{
-		m_frameBuffers.resize( m_swapChainImages.size() );
+		m_frameBuffers.resize( m_swapChain->getImageCount() );
 		m_views.resize( m_frameBuffers.size() );
 
 		for ( size_t i = 0u; i < m_frameBuffers.size(); ++i )
@@ -362,7 +354,7 @@ namespace vkapp
 
 	void RenderPanel::doCreateCommandBuffers()
 	{
-		m_commandBuffers.resize( m_swapChainImages.size() );
+		m_commandBuffers.resize( m_swapChain->getImageCount() );
 
 		for ( auto & commandBuffer : m_commandBuffers )
 		{
@@ -375,25 +367,17 @@ namespace vkapp
 	{
 		views.clear();
 
-		for ( auto & attach : m_renderPass->getAttachments() )
+		for ( auto const & attach : m_renderPass->getAttachments() )
 		{
-			views.push_back( m_swapChainImages[backBuffer].createView( VkImageViewCreateInfo
-				{
-						VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-						nullptr,
-						0u,
-						m_swapChainImages[backBuffer],
-						VK_IMAGE_VIEW_TYPE_2D,
-						m_swapChain->getFormat(),
-						{},
-						{
-							ashes::getAspectMask( m_swapChain->getFormat() ),
-							0u,
-							1u,
-							0u,
-							1u,
-						}
-				} ) );
+			auto const & image = *m_swapChain->getImages()[backBuffer];
+			views.emplace_back( image.createView( VkImageViewCreateInfo{ VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO
+				, nullptr
+				, 0u
+				, image
+				, VK_IMAGE_VIEW_TYPE_2D
+				, m_swapChain->getFormat()
+				, {}
+				, { ashes::getAspectMask( m_swapChain->getFormat() ), 0u, 1u, 0u, 1u } } ) );
 		}
 
 		ashes::ImageViewCRefArray attaches;
@@ -421,7 +405,7 @@ namespace vkapp
 
 			try
 			{
-				auto res = m_presentQueue->present( *m_swapChain
+				m_presentQueue->present( *m_swapChain
 					, resources->imageIndex
 					, *resources->finishedRenderingSemaphore );
 			}
@@ -439,7 +423,7 @@ namespace vkapp
 		}
 		else
 		{
-			m_timer->Stop();
+			m_timer.Stop();
 			std::cerr << "Can't render" << std::endl;
 		}
 	}
@@ -448,19 +432,18 @@ namespace vkapp
 	{
 		auto & resources = *m_renderingResources[m_resourceIndex];
 		m_resourceIndex = ( m_resourceIndex + 1 ) % m_renderingResources.size();
-		bool res = resources.fence->wait( ashes::MaxTimeout ) == ashes::WaitResult::eSuccess;
 
-		if ( res )
+		if ( resources.fence->wait( ashes::MaxTimeout ) == ashes::WaitResult::eSuccess )
 		{
 			resources.fence->reset();
 			uint32_t imageIndex{ 0u };
-			auto res = m_swapChain->acquireNextImage( ashes::MaxTimeout
+
+			if ( auto res = m_swapChain->acquireNextImage( ashes::MaxTimeout
 				, *resources.imageAvailableSemaphore
 				, imageIndex );
-
-			if ( doCheckNeedReset( VkResult( res )
-				, true
-				, "Swap chain image acquisition" ) )
+				doCheckNeedReset( VkResult( res )
+					, true
+					, "Swap chain image acquisition" ) )
 			{
 				resources.imageIndex = imageIndex;
 				return &resources;
@@ -477,7 +460,7 @@ namespace vkapp
 	{
 		try
 		{
-			auto res = m_presentQueue->present( *m_swapChain
+			m_presentQueue->present( *m_swapChain
 				, resources.imageIndex
 				, *resources.finishedRenderingSemaphore );
 		}
@@ -532,7 +515,6 @@ namespace vkapp
 		m_frameBuffers.clear();
 		m_commandBuffers.clear();
 		m_renderingResources.clear();
-		m_swapChainImages.clear();
 		m_swapChain.reset();
 		doCreateSwapChain();
 		doPrepareFrames();
@@ -544,13 +526,15 @@ namespace vkapp
 		{
 			doDraw();
 		}
+
+		event.Skip();
 	}
 
 	void RenderPanel::onSize( wxSizeEvent & event )
 	{
-		m_timer->Stop();
+		m_timer.Stop();
 		doResetSwapChain();
-		m_timer->Start( TimerTimeMs );
+		m_timer.Start( TimerTimeMs );
 		event.Skip();
 	}
 }

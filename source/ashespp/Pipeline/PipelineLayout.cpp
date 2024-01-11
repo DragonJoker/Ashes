@@ -51,7 +51,7 @@ namespace ashes
 		registerObject( m_device, debugName, *this );
 	}
 
-	PipelineLayout::~PipelineLayout()
+	PipelineLayout::~PipelineLayout()noexcept
 	{
 		unregisterObject( m_device, *this );
 		m_device.vkDestroyPipelineLayout( m_device

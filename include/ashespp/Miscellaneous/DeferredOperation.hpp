@@ -22,7 +22,7 @@ namespace ashes
 		*\param[in] device
 		*	The logical device.
 		*/
-		DeferredOperation( Device const & device );
+		explicit DeferredOperation( Device const & device );
 		/**
 		*\brief
 		*	Constructor.
@@ -37,7 +37,7 @@ namespace ashes
 		*\brief
 		*	Destructor.
 		*/
-		~DeferredOperation();
+		~DeferredOperation()noexcept;
 
 		uint32_t getMaxConcurrency()const;
 		VkResult getResult()const;
@@ -46,12 +46,12 @@ namespace ashes
 		*\brief
 		*	VkQueryPool implicit cast operator.
 		*/
-		inline operator VkDeferredOperationKHR const & ()const
+		operator VkDeferredOperationKHR const & ()const noexcept
 		{
 			return m_internal;
 		}
 
-	protected:
+	private:
 		Device const & m_device;
 		VkDeferredOperationKHR m_internal{};
 	};

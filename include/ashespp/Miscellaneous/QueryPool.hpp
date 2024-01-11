@@ -53,7 +53,7 @@ namespace ashes
 		*\brief
 		*	Destructor.
 		*/
-		~QueryPool();
+		~QueryPool()noexcept;
 		/**
 		*\brief
 		*	Rerieves the status or result of a set of queries.
@@ -97,17 +97,17 @@ namespace ashes
 		*	Getters.
 		*/
 		/**@{*/
-		inline VkQueryType getType()const
+		VkQueryType getType()const noexcept
 		{
 			return m_type;
 		}
 
-		inline uint32_t getCount()const
+		uint32_t getCount()const noexcept
 		{
 			return m_count;
 		}
 
-		inline VkQueryPipelineStatisticFlags const & getPipelineStatistics()const
+		VkQueryPipelineStatisticFlags const & getPipelineStatistics()const noexcept
 		{
 			return m_pipelineStatistics;
 		}
@@ -116,12 +116,12 @@ namespace ashes
 		*\brief
 		*	VkQueryPool implicit cast operator.
 		*/
-		inline operator VkQueryPool const & ()const
+		operator VkQueryPool const & ()const noexcept
 		{
 			return m_internal;
 		}
 
-	protected:
+	private:
 		Device const & m_device;
 		VkQueryType m_type;
 		uint32_t m_count;

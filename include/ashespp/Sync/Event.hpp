@@ -30,7 +30,7 @@ namespace ashes
 		*\param[in] device
 		*	The parent device.
 		*/ 
-		Event( Device const & device );
+		explicit Event( Device const & device );
 		/**
 		*\brief
 		*	Constructor.
@@ -84,7 +84,7 @@ namespace ashes
 		*\brief
 		*	VkEvent implicit cast operator.
 		*/
-		inline operator VkEvent const & ()const
+		operator VkEvent const & ()const
 		{
 			return m_internal;
 		}

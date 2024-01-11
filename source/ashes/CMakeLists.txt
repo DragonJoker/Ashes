@@ -34,6 +34,10 @@ add_library( ashes::ashes
 	ALIAS
 	${PROJECT_NAME}
 )
+target_sources( ${PROJECT_NAME} 
+	PRIVATE
+		${Ashes_SOURCE_DIR}/.editorconfig
+)
 target_include_directories( ${PROJECT_NAME}
 	PUBLIC
 		$<BUILD_INTERFACE:${Ashes_SOURCE_DIR}/include>

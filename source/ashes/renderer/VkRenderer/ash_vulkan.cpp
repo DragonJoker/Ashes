@@ -175,23 +175,23 @@ extern "C"
 
 #pragma region ICD mode
 
-	VkRenderer_API PFN_vkVoidFunction VKAPI_PTR vk_icdGetInstanceProcAddr( VkInstance instance
-		, const char * name )
+	VkRenderer_API PFN_vkVoidFunction VKAPI_PTR vk_icdGetInstanceProcAddr( [[maybe_unused]] VkInstance instance
+		, [[maybe_unused]] const char * name )
 	{
 		std::cerr << "ashesVkRenderer: Unsupported ICD mode" << std::endl;
 		assert( false && "ashesVkRenderer: Unsupported ICD mode" );
 		return nullptr;
 	}
 
-	VkRenderer_API PFN_vkVoidFunction VKAPI_PTR vk_icdGetPhysicalDeviceProcAddr( VkInstance instance
-		, const char * name )
+	VkRenderer_API PFN_vkVoidFunction VKAPI_PTR vk_icdGetPhysicalDeviceProcAddr( [[maybe_unused]] VkInstance instance
+		, [[maybe_unused]] const char * name )
 	{
 		std::cerr << "ashesVkRenderer: Unsupported ICD mode" << std::endl;
 		assert( false && "ashesVkRenderer: Unsupported ICD mode" );
 		return nullptr;
 	}
 
-	VkRenderer_API VkResult VKAPI_PTR vk_icdNegotiateLoaderICDInterfaceVersion( uint32_t * pVersion )
+	VkRenderer_API VkResult VKAPI_PTR vk_icdNegotiateLoaderICDInterfaceVersion( [[maybe_unused]] uint32_t * pVersion )
 	{
 		std::cerr << "ashesVkRenderer: Unsupported ICD mode" << std::endl;
 		assert( false && "ashesVkRenderer: Unsupported ICD mode" );

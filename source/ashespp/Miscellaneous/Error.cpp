@@ -6,18 +6,13 @@ See LICENSE file in root folder.
 
 #include <ashes/common/Exception.hpp>
 
-#include <map>
-#include <atomic>
-#include <thread>
-
 namespace ashes
 {
 	void checkError( VkResult errCode
 		, char const * const text )
 	{
-		bool result = errCode == VK_SUCCESS;
-
-		if ( !result )
+		if ( bool result = ( errCode == VK_SUCCESS );
+			!result )
 		{
 			throw Exception{ errCode, text };
 		}

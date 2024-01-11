@@ -48,25 +48,21 @@ namespace ashes
 		, VkExtent3D const & extent
 		, uint32_t mipLevels )
 		: m_device{ device }
-		, m_buffer
-		{
-			device,
-			debugName,
-			uint32_t( getAlignedSize( getLevelsSize( extent, format, 0u, mipLevels, 1u )
-				, uint32_t( m_device.getProperties().limits.nonCoherentAtomSize ) ) ),
-			VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT
+		, m_buffer{ device
+			, debugName
+			, uint32_t( getAlignedSize( getLevelsSize( extent, format, 0u, mipLevels, 1u )
+				, uint32_t( m_device.getProperties().limits.nonCoherentAtomSize ) ) )
+			, VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT
 		}
 	{
 		auto requirements = m_buffer.getMemoryRequirements();
 		auto deduced = m_device.deduceMemoryType( requirements.memoryTypeBits
 			, VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT );
 		m_buffer.bindMemory( device.allocateMemory( debugName
-			, {
-				VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-				nullptr,
-				requirements.size,
-				deduced
-			} ) );
+			, { VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO
+				, nullptr
+				, requirements.size
+				, deduced } ) );
 	}
 
 	void StagingTexture::uploadTextureData( Queue const & queue
@@ -145,7 +141,6 @@ namespace ashes
 	void StagingTexture::copyTextureData( Queue const & queue
 		, CommandPool const & commandPool
 		, VkImageSubresourceLayers const & subresourceLayers
-		, VkFormat format
 		, VkOffset3D const & offset
 		, VkExtent3D const & extent
 		, ImageView const & view )const
@@ -157,7 +152,6 @@ namespace ashes
 			, { 0.5f, 0.5f, 0.5f, 1.0f } } );
 		copyTextureData( *commandBuffer
 			, subresourceLayers
-			, format
 			, offset
 			, extent
 			, view );
@@ -186,7 +180,6 @@ namespace ashes
 			, view.makeTransferDestination( VK_IMAGE_LAYOUT_UNDEFINED ) );
 		doCopyStagingToDestination( commandBuffer
 			, subresourceLayers
-			, format
 			, offset
 			, extent
 			, view );
@@ -226,20 +219,14 @@ namespace ashes
 			subresourceLayers.mipLevel = mipLevel;
 			VkDeviceSize size = getSize( extent, format, mipLevel );
 			assert( offset + size <= m_buffer.getSize() );
-			commandBuffer.copyToImage( VkBufferImageCopy
-				{
-					offset,
-					0u,
-					0u,
-					subresourceLayers,
-					VkOffset3D{},
-					VkExtent3D
-					{
-						std::max( 1u, view.image->getDimensions().width >> mipLevel ),
-						std::max( 1u, view.image->getDimensions().height >> mipLevel ),
-						std::max( 1u, view.image->getDimensions().depth >> mipLevel ),
-					}
-				}
+			commandBuffer.copyToImage( VkBufferImageCopy{ offset
+					, 0u
+					, 0u
+					, subresourceLayers
+					, VkOffset3D{}
+					, VkExtent3D{ std::max( 1u, view.image->getDimensions().width >> mipLevel )
+						, std::max( 1u, view.image->getDimensions().height >> mipLevel )
+						, std::max( 1u, view.image->getDimensions().depth >> mipLevel ) } }
 				, m_buffer
 				, *view.image );
 			offset += size;
@@ -258,13 +245,10 @@ namespace ashes
 		auto mipLevel = view->subresourceRange.baseMipLevel;
 		auto extent = getSubresourceDimensions( view.image->getDimensions(), mipLevel, format );
 		copyTextureData( commandBuffer
-			, {
-				view->subresourceRange.aspectMask,
-				mipLevel,
-				view->subresourceRange.baseArrayLayer,
-				view->subresourceRange.layerCount
-			}
-			, format
+			, { view->subresourceRange.aspectMask
+				, mipLevel
+				, view->subresourceRange.baseArrayLayer
+				, view->subresourceRange.layerCount }
 			, VkOffset3D{}
 			, { extent.width, extent.height, 1u }
 			, view );
@@ -272,7 +256,6 @@ namespace ashes
 
 	void StagingTexture::copyTextureData( CommandBuffer const & commandBuffer
 		, VkImageSubresourceLayers const & subresourceLayers
-		, VkFormat format
 		, VkOffset3D const & offset
 		, VkExtent3D const & extent
 		, ImageView const & view )const
@@ -282,7 +265,6 @@ namespace ashes
 			, view.makeTransferDestination( VK_IMAGE_LAYOUT_UNDEFINED ) );
 		doCopyStagingToDestination( commandBuffer
 			, subresourceLayers
-			, format
 			, offset
 			, extent
 			, view );
@@ -310,7 +292,6 @@ namespace ashes
 			, view.makeTransferSource( VK_IMAGE_LAYOUT_UNDEFINED ) );
 		doCopyDestinationToStaging( *commandBuffer
 			, subresourceLayers
-			, format
 			, offset
 			, extent
 			, view );
@@ -340,12 +321,10 @@ namespace ashes
 		auto extent = getSubresourceDimensions( view.image->getDimensions(), mipLevel, format );
 		downloadTextureData( queue
 			, commandPool
-			, {
-				view->subresourceRange.aspectMask,
-				mipLevel,
-				view->subresourceRange.baseArrayLayer,
-				view->subresourceRange.layerCount
-			}
+			, { view->subresourceRange.aspectMask
+				, mipLevel
+				, view->subresourceRange.baseArrayLayer
+				, view->subresourceRange.layerCount }
 			, format
 			, VkOffset3D{}
 			, { extent.width, extent.height, 1u }
@@ -382,55 +361,39 @@ namespace ashes
 
 	void StagingTexture::doCopyStagingToDestination( CommandBuffer const & commandBuffer
 		, VkImageSubresourceLayers const & subresourceLayers
-		, VkFormat format
 		, VkOffset3D const & offset
 		, VkExtent3D const & extent
 		, ImageView const & texture )const
 	{
-		assert( getSize( extent, format ) <= m_buffer.getSize() );
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 			, VK_PIPELINE_STAGE_TRANSFER_BIT
 			, m_buffer.makeTransferSource() );
-		commandBuffer.copyToImage( VkBufferImageCopy
-			{
-				0u,
-				0u,
-				0u,
-				subresourceLayers,
-				offset,
-				VkExtent3D
-				{
-					std::max( 1u, extent.width ),
-					std::max( 1u, extent.height ),
-					std::max( 1u, extent.depth ),
-				}
-			}
+		commandBuffer.copyToImage( VkBufferImageCopy{ 0u
+				, 0u
+				, 0u
+				, subresourceLayers
+				, offset
+				, VkExtent3D{ std::max( 1u, extent.width )
+					, std::max( 1u, extent.height )
+					, std::max( 1u, extent.depth ) } }
 			, m_buffer
 			, *texture.image );
 	}
 
 	void StagingTexture::doCopyDestinationToStaging( CommandBuffer const & commandBuffer
 		, VkImageSubresourceLayers const & subresourceLayers
-		, VkFormat format
 		, VkOffset3D const & offset
 		, VkExtent3D const & extent
 		, ImageView const & texture )const
 	{
-		assert( getSize( extent, format ) <= m_buffer.getSize() );
-		commandBuffer.copyToBuffer( VkBufferImageCopy
-			{
-				0u,
-				0u,
-				0u,
-				subresourceLayers,
-				offset,
-				VkExtent3D
-				{
-					std::max( 1u, extent.width ),
-					std::max( 1u, extent.height ),
-					std::max( 1u, extent.depth ),
-				}
-			}
+		commandBuffer.copyToBuffer( VkBufferImageCopy{ 0u
+				, 0u
+				, 0u
+				, subresourceLayers
+				, offset
+				, VkExtent3D{ std::max( 1u, extent.width )
+					, std::max( 1u, extent.height )
+					, std::max( 1u, extent.depth ) } }
 			, *texture.image
 			, m_buffer );
 	}

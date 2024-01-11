@@ -76,7 +76,7 @@ namespace ashes
 		*\return
 		*	The descriptor set layout.
 		*/
-		inline DescriptorSetLayout const & getLayout()const
+		inline DescriptorSetLayout const & getLayout()const noexcept
 		{
 			return m_layout;
 		}
@@ -84,7 +84,7 @@ namespace ashes
 		*\return
 		*	The descriptor set layout.
 		*/
-		inline DescriptorPool const & getPool()const
+		inline DescriptorPool const & getPool()const noexcept
 		{
 			return *m_pool;
 		}
@@ -92,7 +92,7 @@ namespace ashes
 		*\brief
 		*	VkDescriptorPool implicit cast operator.
 		*/
-		inline operator VkDescriptorPool const & ()const
+		inline operator VkDescriptorPool const & ()const noexcept
 		{
 			return *m_pool;
 		}

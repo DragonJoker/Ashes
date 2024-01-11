@@ -29,6 +29,7 @@ namespace ashes
 	private:
 		using my_signal = SignalT;
 		using my_signal_ptr = my_signal *;
+
 		SignalConnection( SignalConnection< my_signal > const & ) = delete;
 		SignalConnection & operator=( SignalConnection< my_signal > const & ) = delete;
 
@@ -50,7 +51,7 @@ namespace ashes
 		{
 		}
 
-		SignalConnection( SignalConnection< my_signal > && rhs )
+		SignalConnection( SignalConnection< my_signal > && rhs )noexcept
 			: SignalConnection{ 0u, nullptr }
 		{
 			swap( *this, rhs );
@@ -62,14 +63,14 @@ namespace ashes
 			signal.addConnection( *this );
 		}
 
-		SignalConnection & operator=( SignalConnection< my_signal > && rhs )
+		SignalConnection & operator=( SignalConnection< my_signal > && rhs )noexcept
 		{
 			SignalConnection tmp{ std::move( rhs ) };
 			swap( *this, tmp );
 			return *this;
 		}
 
-		~SignalConnection()
+		~SignalConnection()noexcept
 		{
 			disconnect();
 		}
@@ -78,7 +79,7 @@ namespace ashes
 		*\brief
 		*	Disconnects from the signal.
 		*/
-		void disconnect()
+		void disconnect()noexcept
 		{
 			if ( m_signal && m_connection )
 			{
@@ -89,13 +90,13 @@ namespace ashes
 			}
 		}
 
-		operator bool()const
+		bool isValid()const
 		{
 			return m_signal && m_connection;
 		}
 
 	private:
-		void swap( SignalConnection & lhs, SignalConnection & rhs )
+		void swap( SignalConnection & lhs, SignalConnection & rhs )const noexcept
 		{
 			if ( lhs.m_signal )
 			{
@@ -135,21 +136,29 @@ namespace ashes
 		friend class SignalConnection< Signal< Function > >;
 		using my_connection = SignalConnection< Signal< Function > >;
 		using my_connection_ptr = my_connection *;
+		using lock_type = std::unique_lock< std::recursive_mutex >;
+
+	private:
+		Signal( Signal const & )noexcept = delete;
+		Signal & operator=( Signal const & )noexcept = delete;
+		Signal( Signal && )noexcept = delete;
+		Signal & operator=( Signal && )noexcept = delete;
 
 	public:
+		Signal()noexcept = default;
 		/**
 		*\brief
 		*	Destructor.
 		*\remarks
 		*	Disconnects all remaining connections.
 		*/
-		~Signal()
+		~Signal()noexcept
 		{
 			// SignalConnection::disconnect appelle Signal::remConnection, qui
 			// supprime la connection de m_connections, invalidant ainsi
 			// l'itérateur, donc on ne peut pas utiliser un for_each, ni
 			// un range for loop.
-			std::unique_lock< std::recursive_mutex > lock( m_mutex );
+			lock_type lock{ m_mutex };
 			auto it = m_connections.begin();
 
 			while ( it != m_connections.end() )
@@ -215,11 +224,10 @@ namespace ashes
 		*\param[in] index
 		*	The function index.
 		*/
-		void disconnect( uint32_t index )
+		void disconnect( uint32_t index )noexcept
 		{
-			auto it = m_slots.find( index );
-
-			if ( it != m_slots.end() )
+			if ( auto it = m_slots.find( index );
+				it != m_slots.end() )
 			{
 				m_slots.erase( it );
 			}
@@ -230,10 +238,17 @@ namespace ashes
 		*\param[in] connection
 		*	The connection to add.
 		*/
-		void addConnection( my_connection & connection )
+		void addConnection( my_connection & connection )noexcept
 		{
-			std::unique_lock< std::recursive_mutex > lock( m_mutex );
-			m_connections.insert( &connection );
+			try
+			{
+				lock_type lock( m_mutex );
+				m_connections.emplace( &connection );
+			}
+			catch ( ... )
+			{
+				// Nothing to do here
+			}
 		}
 		/**
 		*\brief
@@ -241,9 +256,9 @@ namespace ashes
 		*\param[in] connection
 		*	The connection to remove.
 		*/
-		void remConnection( my_connection & connection )
+		void remConnection( my_connection & connection )noexcept
 		{
-			std::unique_lock< std::recursive_mutex > lock( m_mutex );
+			lock_type lock( m_mutex );
 			assert( m_connections.find( &connection ) != m_connections.end() );
 			m_connections.erase( &connection );
 		}

@@ -27,6 +27,8 @@ namespace ashes
 	*/
 	struct GraphicsPipelineCreateInfo
 	{
+		~GraphicsPipelineCreateInfo()noexcept = default;
+
 		GraphicsPipelineCreateInfo( VkPipelineCreateFlags pflags
 			, PipelineShaderStageCreateInfoArray pstages
 			, PipelineVertexInputStateCreateInfo pvertexInputState
@@ -246,17 +248,17 @@ namespace ashes
 			return *this;
 		}
 
-		operator VkGraphicsPipelineCreateInfo const &()const
+		operator VkGraphicsPipelineCreateInfo const &()const noexcept
 		{
 			return vk;
 		}
 
-		VkGraphicsPipelineCreateInfo const * operator->()const
+		VkGraphicsPipelineCreateInfo const * operator->()const noexcept
 		{
 			return &vk;
 		}
 
-		VkGraphicsPipelineCreateInfo * operator->()
+		VkGraphicsPipelineCreateInfo * operator->()noexcept
 		{
 			return &vk;
 		}

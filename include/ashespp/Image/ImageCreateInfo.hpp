@@ -43,14 +43,14 @@ namespace ashes
 		{
 		}
 
-		ImageCreateInfo( VkImageCreateInfo createInfo )
+		explicit ImageCreateInfo( VkImageCreateInfo const & createInfo )
 			: queueFamilyIndices{ createInfo.pQueueFamilyIndices, createInfo.pQueueFamilyIndices + createInfo.queueFamilyIndexCount }
 			, vk{ VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO
 				, createInfo.pNext
 				, createInfo.flags
 				, createInfo.imageType
 				, createInfo.format
-				, std::move( createInfo.extent )
+				, createInfo.extent
 				, createInfo.mipLevels
 				, createInfo.arrayLayers
 				, createInfo.samples
@@ -63,17 +63,17 @@ namespace ashes
 		{
 		}
 
-		operator VkImageCreateInfo const &()const
+		operator VkImageCreateInfo const &()const noexcept
 		{
 			return vk;
 		}
 
-		VkImageCreateInfo const * operator->()const
+		VkImageCreateInfo const * operator->()const noexcept
 		{
 			return &vk;
 		}
 
-		VkImageCreateInfo * operator->()
+		VkImageCreateInfo * operator->()noexcept
 		{
 			return &vk;
 		}

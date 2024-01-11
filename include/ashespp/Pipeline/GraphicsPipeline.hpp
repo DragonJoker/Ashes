@@ -44,7 +44,7 @@ namespace ashes
 			, std::string const & debugName
 			, GraphicsPipelineCreateInfo createInfo );
 
-	protected:
+	private:
 		GraphicsPipelineCreateInfo m_createInfo;
 	};
 }

@@ -57,7 +57,7 @@ namespace ashes
 		registerObject( m_device, debugName, *this );
 	}
 
-	Semaphore::~Semaphore()
+	Semaphore::~Semaphore()noexcept
 	{
 		if ( m_ownInternal )
 		{
@@ -70,13 +70,14 @@ namespace ashes
 
 	void Semaphore::wait( std::set< Semaphore const * > & list )const
 	{
-#if Ashes_DebugSync
-		ashesSyncCheck( m_state == State::eWaitable
-			, "You probably expect too much from this semaphore ;)"
-			, *this );
-		m_list = &list;
-		m_state = State::eSignalable;
-#endif
+		if constexpr ( DebugSync )
+		{
+			ashesSyncCheck( m_state == State::eWaitable
+				, "You probably expect too much from this semaphore ;)"
+				, *this );
+			m_list = &list;
+			m_state = State::eSignalable;
+		}
 	}
 
 	void Semaphore::signal( Fence const * fence )const
@@ -89,20 +90,21 @@ namespace ashes
 
 	void Semaphore::signal()const
 	{
-#if Ashes_DebugSync
-		ashesSyncCheck( m_state == State::eSignalable
-			, "You probably expect too much from this semaphore ;)"
-			, *this );
-		m_state = State::eWaitable;
-
-		if ( m_list )
+		if constexpr ( DebugSync )
 		{
-			auto it = m_list->find( this );
-			ashesSyncCheck( it != m_list->end()
-				, "The list isn't waiting for the semaphore anymore"
+			ashesSyncCheck( m_state == State::eSignalable
+				, "You probably expect too much from this semaphore ;)"
 				, *this );
-			m_list->erase( it );
+			m_state = State::eWaitable;
+
+			if ( m_list )
+			{
+				auto it = m_list->find( this );
+				ashesSyncCheck( it != m_list->end()
+					, "The list isn't waiting for the semaphore anymore"
+					, *this );
+				m_list->erase( it );
+			}
 		}
-#endif
 	}
 }

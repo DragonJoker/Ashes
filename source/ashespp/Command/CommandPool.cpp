@@ -30,7 +30,7 @@ namespace ashes
 		registerObject( m_device, debugName, *this );
 	}
 
-	CommandPool::~CommandPool()
+	CommandPool::~CommandPool()noexcept
 	{
 		unregisterObject( m_device, *this );
 		m_device.vkDestroyCommandPool( m_device

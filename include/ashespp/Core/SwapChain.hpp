@@ -35,7 +35,7 @@ namespace ashes
 		*\brief
 		*	Destructor.
 		*/
-		~SwapChain();
+		~SwapChain()noexcept;
 		/**
 		*\brief
 		*	Acquires an available presentable image to use, and retrieve the index of that image.
@@ -105,36 +105,36 @@ namespace ashes
 		VkResult acquireNextImage( uint64_t timeout
 			, uint32_t & imageIndex )const;
 		/**
-		*\return
-		*	The images used by the swapchain.
-		*/
-		ImageArray getImages()const;
-		/**
 		*\name
 		*	Getters.
 		*/
 		/**@{*/
-		inline Device const & getDevice()const
+		Device const & getDevice()const noexcept
 		{
 			return m_device;
 		}
 
-		inline uint32_t getImageCount()const
+		ImagePtrArray const & getImages()const noexcept
+		{
+			return m_images;
+		}
+
+		uint32_t getImageCount()const noexcept
 		{
 			return m_createInfo.minImageCount;
 		}
 
-		inline VkExtent2D getDimensions()const
+		VkExtent2D getDimensions()const noexcept
 		{
 			return m_createInfo.imageExtent;
 		}
 
-		inline VkPresentModeKHR getPresentMode()const
+		VkPresentModeKHR getPresentMode()const noexcept
 		{
 			return m_createInfo.presentMode;
 		}
 
-		inline VkFormat getFormat()const
+		VkFormat getFormat()const noexcept
 		{
 			return m_createInfo.imageFormat;
 		}
@@ -143,15 +143,16 @@ namespace ashes
 		*\brief
 		*	VkSwapchainKHR implicit cast operator.
 		*/
-		inline operator VkSwapchainKHR const & ()const
+		operator VkSwapchainKHR const & ()const noexcept
 		{
 			return m_internal;
 		}
 
-	protected:
+	private:
 		Device const & m_device;
 		VkSwapchainCreateInfoKHR m_createInfo;
 		VkSwapchainKHR m_internal{};
+		ImagePtrArray m_images;
 	};
 }
 

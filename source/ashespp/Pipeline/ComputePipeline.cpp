@@ -4,8 +4,6 @@ See LICENSE file in root folder.
 */
 #include "ashespp/Pipeline/ComputePipeline.hpp"
 
-#include "ashespp/Core/Device.hpp"
-
 namespace ashes
 {
 	ComputePipeline::ComputePipeline( Device const & device

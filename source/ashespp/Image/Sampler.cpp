@@ -64,7 +64,7 @@ namespace ashes
 		registerObject( m_device, debugName, *this );
 	}
 	
-	Sampler::~Sampler()
+	Sampler::~Sampler()noexcept
 	{
 		if ( m_ownInternal )
 		{

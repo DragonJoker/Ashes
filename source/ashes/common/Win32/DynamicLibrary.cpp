@@ -53,7 +53,7 @@ namespace ashes
 	void DynamicLibrary::doOpen()
 	{
 		m_library = ::LoadLibraryExA( m_path.c_str()
-			, NULL
+			, nullptr
 			, 0u );
 
 		if ( !m_library )
@@ -77,7 +77,7 @@ namespace ashes
 	{
 		UINT oldMode = ::SetErrorMode( SEM_FAILCRITICALERRORS );
 		( void )::GetLastError();
-		void * result = ( void * )::GetProcAddress( static_cast< HMODULE >( m_library ), name.c_str() );
+		auto result = ( void * )::GetProcAddress( static_cast< HMODULE >( m_library ), name.c_str() );
 		auto error = ::GetLastError();
 		::SetErrorMode( oldMode );
 

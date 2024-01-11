@@ -19,12 +19,12 @@ namespace ashes
 		{
 		}
 
-		operator bool()override
+		operator bool()noexcept override
 		{
 			return m_view != nullptr;
 		}
 
-		void * getView()const
+		void * getView()const noexcept
 		{
 			return m_view;
 		}

@@ -43,7 +43,7 @@ namespace ashes
 		*\brief
 		*	Destructor.
 		*/
-		~RenderPass();
+		~RenderPass()noexcept;
 		/**
 		*\brief
 		*	Creates a frame buffer compatible with this render pass.
@@ -59,7 +59,7 @@ namespace ashes
 		*\return
 		*	The created frame buffer.
 		*/
-		FrameBufferPtr createFrameBuffer( VkFramebufferCreateInfo info )const;
+		FrameBufferPtr createFrameBuffer( VkFramebufferCreateInfo const & info )const;
 		/**
 		*\brief
 		*	Creates a frame buffer compatible with this render pass.
@@ -119,27 +119,27 @@ namespace ashes
 		*	Getters.
 		*/
 		/**@{*/
-		inline size_t getAttachmentCount()const
+		size_t getAttachmentCount()const
 		{
 			return m_createInfo.attachments.size();
 		}
 
-		inline VkAttachmentDescriptionArray const & getAttachments()const
+		VkAttachmentDescriptionArray const & getAttachments()const
 		{
 			return m_createInfo.attachments;
 		}
 
-		inline Device const & getDevice()const
+		Device const & getDevice()const
 		{
 			return m_device;
 		}
 
-		inline size_t getSubpassCount()const
+		size_t getSubpassCount()const
 		{
 			return m_createInfo.subpasses.size();
 		}
 
-		inline SubpassDescriptionArray const & getSubpasses()const
+		SubpassDescriptionArray const & getSubpasses()const
 		{
 			return m_createInfo.subpasses;
 		}
@@ -148,7 +148,7 @@ namespace ashes
 		*\brief
 		*	VkRenderPass implicit cast operator.
 		*/
-		inline operator VkRenderPass const & ()const
+		operator VkRenderPass const & ()const
 		{
 			return m_internal;
 		}

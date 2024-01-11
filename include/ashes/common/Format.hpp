@@ -62,7 +62,7 @@ namespace ashes
 	*\return
 	*	The aligned size.
 	*/
-	inline constexpr VkDeviceSize getAlignedSize( VkDeviceSize size, VkDeviceSize align )
+	constexpr VkDeviceSize getAlignedSize( VkDeviceSize size, VkDeviceSize align )
 	{
 		auto rem = size % align;
 		return ( rem
@@ -77,7 +77,7 @@ namespace ashes
 	*\return
 	*	\p true if it is usable in depth and stencil buffers.
 	*/
-	inline constexpr bool isDepthStencilFormat( VkFormat format )noexcept
+	constexpr bool isDepthStencilFormat( VkFormat format )noexcept
 	{
 		return format == VK_FORMAT_D16_UNORM_S8_UINT
 			|| format == VK_FORMAT_D24_UNORM_S8_UINT
@@ -91,7 +91,7 @@ namespace ashes
 	*\return
 	*	\p true if it is usable in stencil buffers.
 	*/
-	inline constexpr bool isStencilFormat( VkFormat format )noexcept
+	constexpr bool isStencilFormat( VkFormat format )noexcept
 	{
 		return format == VK_FORMAT_S8_UINT;
 	}
@@ -101,7 +101,7 @@ namespace ashes
 	*\return
 	*	The stencil format matching the given depth and stencil one.
 	*/
-	inline constexpr VkFormat getStencil( VkFormat format )noexcept
+	constexpr VkFormat getStencil( VkFormat format )noexcept
 	{
 		switch ( format )
 		{
@@ -122,7 +122,7 @@ namespace ashes
 	*\return
 	*	\p true if it is usable in depth buffers.
 	*/
-	inline constexpr bool isDepthFormat( VkFormat format )noexcept
+	constexpr bool isDepthFormat( VkFormat format )noexcept
 	{
 		return format == VK_FORMAT_D16_UNORM
 			|| format == VK_FORMAT_X8_D24_UNORM_PACK32
@@ -134,7 +134,7 @@ namespace ashes
 	*\return
 	*	The depth format matching the given depth and stencil one.
 	*/
-	inline constexpr VkFormat getDepth( VkFormat format )noexcept
+	constexpr VkFormat getDepth( VkFormat format )noexcept
 	{
 		switch ( format )
 		{
@@ -158,7 +158,7 @@ namespace ashes
 	*\param[in] format
 	*	The pixel format.
 	*/
-	inline constexpr bool isBCFormat( VkFormat format )noexcept
+	constexpr bool isBCFormat( VkFormat format )noexcept
 	{
 		return format >= VK_FORMAT_BC1_RGB_UNORM_BLOCK
 			&& format <= VK_FORMAT_BC7_SRGB_BLOCK;
@@ -169,7 +169,7 @@ namespace ashes
 	*\param[in] format
 	*	The pixel format.
 	*/
-	inline constexpr bool isETC2Format( VkFormat format )noexcept
+	constexpr bool isETC2Format( VkFormat format )noexcept
 	{
 		return format >= VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK
 			&& format <= VK_FORMAT_ETC2_R8G8B8A8_SRGB_BLOCK;
@@ -180,7 +180,7 @@ namespace ashes
 	*\param[in] format
 	*	The pixel format.
 	*/
-	inline constexpr bool isEACFormat( VkFormat format )noexcept
+	constexpr bool isEACFormat( VkFormat format )noexcept
 	{
 		return format >= VK_FORMAT_EAC_R11_UNORM_BLOCK
 			&& format <= VK_FORMAT_EAC_R11G11_SNORM_BLOCK;
@@ -191,7 +191,7 @@ namespace ashes
 	*\param[in] format
 	*	The pixel format.
 	*/
-	inline constexpr bool isASTCFormat( VkFormat format )noexcept
+	constexpr bool isASTCFormat( VkFormat format )noexcept
 	{
 		return format >= VK_FORMAT_ASTC_4x4_UNORM_BLOCK
 			&& format <= VK_FORMAT_ASTC_12x12_SRGB_BLOCK;
@@ -202,7 +202,7 @@ namespace ashes
 	*\param[in] format
 	*	The pixel format.
 	*/
-	inline constexpr bool isYCBCRFormat( VkFormat format )noexcept
+	constexpr bool isYCBCRFormat( VkFormat format )noexcept
 	{
 #ifdef VK_API_VERSION_1_1
 		return format >= VK_FORMAT_G8B8G8R8_422_UNORM
@@ -217,7 +217,7 @@ namespace ashes
 	*\param[in] format
 	*	The pixel format.
 	*/
-	inline constexpr bool isPVRTCFormat( VkFormat format )noexcept
+	constexpr bool isPVRTCFormat( VkFormat format )noexcept
 	{
 #ifdef VK_API_VERSION_1_1
 		return format >= VK_FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG
@@ -232,7 +232,7 @@ namespace ashes
 	*\param[in] format
 	*	The pixel format.
 	*/
-	inline constexpr bool isSRGBFormat( VkFormat format )noexcept
+	constexpr bool isSRGBFormat( VkFormat format )noexcept
 	{
 		return format == VK_FORMAT_R8_SRGB
 			|| format == VK_FORMAT_R8G8_SRGB
@@ -277,7 +277,7 @@ namespace ashes
 	*\param[in] format
 	*	The pixel format.
 	*/
-	inline constexpr bool isCompressedFormat( VkFormat format )noexcept
+	constexpr bool isCompressedFormat( VkFormat format )noexcept
 	{
 		return isBCFormat( format )
 			|| isEACFormat( format )
@@ -294,7 +294,7 @@ namespace ashes
 	*\return
 	*	\p true if it is usable in depth and/or stencil buffers.
 	*/
-	inline constexpr bool isDepthOrStencilFormat( VkFormat format )noexcept
+	constexpr bool isDepthOrStencilFormat( VkFormat format )noexcept
 	{
 		return isDepthStencilFormat( format )
 			|| isStencilFormat( format )
@@ -306,7 +306,7 @@ namespace ashes
 	*\return
 	*	The byte size of given non compressed pixel format.
 	*/
-	inline constexpr uint32_t getSize( VkFormat format )noexcept
+	constexpr uint32_t getSize( VkFormat format )noexcept
 	{
 		switch ( format )
 		{
@@ -470,7 +470,7 @@ namespace ashes
 	*\param[in] format
 	*	The VkFormat.
 	*/
-	inline constexpr uint32_t getCount( VkFormat format )noexcept
+	constexpr uint32_t getCount( VkFormat format )noexcept
 	{
 		switch ( format )
 		{
@@ -725,7 +725,7 @@ namespace ashes
 	*\return
 	*	The byte size of given BC compressed pixel format, for a 4x4 pixels block.
 	*/
-	inline constexpr uint32_t getBCSize( VkFormat format )noexcept
+	constexpr uint32_t getBCSize( VkFormat format )noexcept
 	{
 		switch ( format )
 		{
@@ -769,7 +769,7 @@ namespace ashes
 	*\return
 	*	The byte size of given ETC2 compressed pixel format, for a 4x4 pixels block.
 	*/
-	inline constexpr uint32_t getETC2Size( VkFormat format )noexcept
+	constexpr uint32_t getETC2Size( VkFormat format )noexcept
 	{
 		switch ( format )
 		{
@@ -795,7 +795,7 @@ namespace ashes
 	*\return
 	*	The byte size of given EAC compressed pixel format, for a 4x4 pixels block.
 	*/
-	inline constexpr uint32_t getEACSize( VkFormat format )noexcept
+	constexpr uint32_t getEACSize( VkFormat format )noexcept
 	{
 		switch ( format )
 		{
@@ -819,7 +819,7 @@ namespace ashes
 	*\return
 	*	The VkExtent2D.
 	*/
-	inline constexpr VkExtent2D getMinimalExtent2D( VkFormat format )noexcept
+	constexpr VkExtent2D getMinimalExtent2D( VkFormat format )noexcept
 	{
 		VkExtent2D result{ 1, 1 };
 
@@ -924,7 +924,7 @@ namespace ashes
 	*\return
 	*	\p true if the extent is compatible with the format.
 	*/
-	inline constexpr bool checkExtent( VkFormat format, VkExtent2D const & extent )noexcept
+	constexpr bool checkExtent( VkFormat format, VkExtent2D const & extent )noexcept
 	{
 		auto minimal = getMinimalExtent2D( format );
 		return extent.width >= minimal.width
@@ -940,7 +940,7 @@ namespace ashes
 	*\return
 	*	\p true if the extent is compatible with the format.
 	*/
-	inline constexpr bool checkExtent( VkFormat format, VkExtent3D const & extent )noexcept
+	constexpr bool checkExtent( VkFormat format, VkExtent3D const & extent )noexcept
 	{
 		return checkExtent( format, VkExtent2D{ extent.width, extent.height } );
 	}
@@ -952,7 +952,7 @@ namespace ashes
 	*\return
 	*	The VkExtent2D.
 	*/
-	inline constexpr VkExtent3D getMinimalExtent3D( VkFormat format )noexcept
+	constexpr VkExtent3D getMinimalExtent3D( VkFormat format )noexcept
 	{
 		auto const minimal = getMinimalExtent2D( format );
 		return VkExtent3D{ minimal.width, minimal.height, 1 };
@@ -965,7 +965,7 @@ namespace ashes
 	*\return
 	*	The byte size.
 	*/
-	inline constexpr VkDeviceSize getMinimalSize( VkFormat format )noexcept
+	constexpr VkDeviceSize getMinimalSize( VkFormat format )noexcept
 	{
 		if ( !ashes::isCompressedFormat( format ) )
 		{
@@ -995,7 +995,7 @@ namespace ashes
 	*\return
 	*	The block size for given pixel format.
 	*/
-	inline constexpr BlockSize getBlockSize( VkFormat format )
+	constexpr BlockSize getBlockSize( VkFormat format )
 	{
 		BlockSize result{ getMinimalExtent3D( format ), 0u };
 		result.size = getMinimalSize( format );
@@ -1012,7 +1012,7 @@ namespace ashes
 	*	The mipmap level extent.
 	*/
 	template< typename T >
-	inline constexpr T getSubresourceDimension( T const & extent
+	constexpr T getSubresourceDimension( T const & extent
 		, uint32_t mipLevel )noexcept
 	{
 		return std::max( T( 1 ), T( extent >> mipLevel ) );
@@ -1027,7 +1027,7 @@ namespace ashes
 	*\return
 	*	The dimensions.
 	*/
-	inline constexpr VkExtent3D getSubresourceDimensions( VkExtent2D const & extent
+	constexpr VkExtent3D getSubresourceDimensions( VkExtent2D const & extent
 		, uint32_t mipLevel )noexcept
 	{
 		return
@@ -1049,7 +1049,7 @@ namespace ashes
 	*\return
 	*	The dimensions.
 	*/
-	inline constexpr VkExtent3D getSubresourceDimensions( VkExtent2D const & extent
+	constexpr VkExtent3D getSubresourceDimensions( VkExtent2D const & extent
 		, uint32_t mipLevel
 		, VkFormat format )noexcept
 	{
@@ -1071,7 +1071,7 @@ namespace ashes
 	*\return
 	*	The dimensions.
 	*/
-	inline constexpr VkExtent3D getSubresourceDimensions( VkExtent3D const & extent
+	constexpr VkExtent3D getSubresourceDimensions( VkExtent3D const & extent
 		, uint32_t mipLevel )noexcept
 	{
 		return
@@ -1093,7 +1093,7 @@ namespace ashes
 	*\return
 	*	The dimensions.
 	*/
-	inline constexpr VkExtent3D getSubresourceDimensions( VkExtent3D const & extent
+	constexpr VkExtent3D getSubresourceDimensions( VkExtent3D const & extent
 		, uint32_t mipLevel
 		, VkFormat format )noexcept
 	{
@@ -1119,7 +1119,7 @@ namespace ashes
 	*\return
 	*	The byte size.
 	*/
-	inline constexpr VkDeviceSize getSize( VkFormat format
+	constexpr VkDeviceSize getSize( VkFormat format
 		, VkExtent3D const & extent
 		, BlockSize const & texel
 		, uint32_t mipLevel
@@ -1145,7 +1145,7 @@ namespace ashes
 	*\return
 	*	The aspects.
 	*/
-	inline constexpr VkImageAspectFlags getAspectMask( VkFormat format )noexcept
+	constexpr VkImageAspectFlags getAspectMask( VkFormat format )noexcept
 	{
 		return VkImageAspectFlags( isDepthStencilFormat( format )
 			? VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT
@@ -1161,7 +1161,7 @@ namespace ashes
 	*\return
 	*	The mipmap levels count.
 	*/
-	inline constexpr uint32_t getMaxMipCount( VkExtent3D extent )
+	constexpr uint32_t getMaxMipCount( VkExtent3D extent )
 	{
 		auto minExtent = extent.width;
 		minExtent = extent.height > 1u
@@ -1190,7 +1190,7 @@ namespace ashes
 	*\return
 	*	The byte size of given pixel format and dimensions.
 	*/
-	inline constexpr VkDeviceSize getSize( VkExtent3D const & extent
+	constexpr VkDeviceSize getSize( VkExtent3D const & extent
 		, VkFormat format
 		, uint32_t mipLevel = 0u
 		, uint32_t alignment = 1u )noexcept
@@ -1213,7 +1213,7 @@ namespace ashes
 	*\return
 	*	The byte size.
 	*/
-	inline constexpr VkDeviceSize getSize( VkExtent2D const & extent
+	constexpr VkDeviceSize getSize( VkExtent2D const & extent
 		, VkFormat format
 		, uint32_t mipLevel = 0u
 		, uint32_t alignment = 1u )noexcept
@@ -1236,7 +1236,7 @@ namespace ashes
 	*\return
 	*	The byte size.
 	*/
-	inline constexpr VkDeviceSize getLevelsSize( VkExtent2D const & extent
+	constexpr VkDeviceSize getLevelsSize( VkExtent2D const & extent
 		, VkFormat format
 		, uint32_t baseMipLevel
 		, uint32_t levelCount
@@ -1269,7 +1269,7 @@ namespace ashes
 	*\return
 	*	The byte size.
 	*/
-	inline constexpr VkDeviceSize getLevelsSize( VkExtent3D const & extent
+	constexpr VkDeviceSize getLevelsSize( VkExtent3D const & extent
 		, VkFormat format
 		, uint32_t baseMipLevel
 		, uint32_t levelCount
@@ -1290,7 +1290,7 @@ namespace ashes
 		return result;
 	}
 
-	inline constexpr VkDeviceSize getTotalSize( VkExtent2D const & extent
+	constexpr VkDeviceSize getTotalSize( VkExtent2D const & extent
 		, VkFormat format
 		, uint32_t layerCount
 		, uint32_t levelCount
@@ -1299,7 +1299,7 @@ namespace ashes
 		return layerCount * getLevelsSize( extent, format, 0u, levelCount, alignment );
 	}
 
-	inline constexpr VkDeviceSize getTotalSize( VkExtent3D const & extent
+	constexpr VkDeviceSize getTotalSize( VkExtent3D const & extent
 		, VkFormat format
 		, uint32_t layerCount
 		, uint32_t levelCount
@@ -1308,12 +1308,12 @@ namespace ashes
 		return layerCount * getLevelsSize( extent, format, 0u, levelCount, alignment );
 	}
 
-	inline constexpr VkFormat beginFmt()
+	constexpr VkFormat beginFmt()
 	{
 		return VK_FORMAT_UNDEFINED;
 	}
 
-	inline constexpr VkFormat endFmt()
+	constexpr VkFormat endFmt()
 	{
 		return VK_FORMAT_ASTC_12x12_SRGB_BLOCK;
 	}

@@ -41,9 +41,7 @@ namespace ashes
 		Image & operator=( Image const & ) = delete;
 
 	public:
-		Image( Image && rhs )noexcept;
-		Image & operator=( Image && rhs )noexcept;
-		Image();
+		Image()noexcept;
 		/**
 		*\brief
 		*	Constructor.
@@ -102,7 +100,7 @@ namespace ashes
 		*\brief
 		*	Destructor.
 		*/
-		~Image();
+		~Image()noexcept;
 		/**
 		*\brief
 		*	Binds this buffer to given device memory object.
@@ -156,7 +154,7 @@ namespace ashes
 		*\param[in] commandBuffer
 		*	A command buffer, in record state.
 		*/
-		void generateMipmaps( CommandBuffer & commandBuffer
+		void generateMipmaps( CommandBuffer const & commandBuffer
 			, VkImageLayout srcImageLayout
 			, VkImageLayout srcMipsImageLayout
 			, VkImageLayout dstImageLayout )const;
@@ -175,7 +173,7 @@ namespace ashes
 		*\param[in] commandBuffer
 		*	A command buffer, in record state.
 		*/
-		void generateMipmaps( CommandBuffer & commandBuffer
+		void generateMipmaps( CommandBuffer const & commandBuffer
 			, uint32_t baseArrayLayer
 			, uint32_t layerCount
 			, VkImageLayout srcImageLayout
@@ -198,7 +196,7 @@ namespace ashes
 		*\param[in] commandBuffer
 		*	A command buffer, in record state.
 		*/
-		void generateMipmaps( CommandBuffer & commandBuffer
+		void generateMipmaps( CommandBuffer const & commandBuffer
 			, VkImageLayout dstImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const
 		{
 			generateMipmaps( commandBuffer
@@ -226,7 +224,7 @@ namespace ashes
 		*\param[in] commandBuffer
 		*	A command buffer, in record state.
 		*/
-		void generateMipmaps( CommandBuffer & commandBuffer
+		void generateMipmaps( CommandBuffer const & commandBuffer
 			, uint32_t baseArrayLayer
 			, uint32_t layerCount
 			, VkImageLayout dstImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )const
@@ -367,52 +365,52 @@ namespace ashes
 		*	Getters.
 		**/
 		/**@{*/
-		inline VkFormat getFormat()const noexcept
+		VkFormat getFormat()const noexcept
 		{
 			return m_createInfo->format;
 		}
 
-		inline uint32_t getLayerCount()const noexcept
+		uint32_t getLayerCount()const noexcept
 		{
 			return m_createInfo->arrayLayers;
 		}
 
-		inline VkImageCreateFlags getFlags()const noexcept
+		VkImageCreateFlags getFlags()const noexcept
 		{
 			return m_createInfo->flags;
 		}
 
-		inline uint32_t getMipmapLevels()const noexcept
+		uint32_t getMipmapLevels()const noexcept
 		{
 			return m_createInfo->mipLevels;
 		}
 
-		inline VkExtent3D const & getDimensions()const noexcept
+		VkExtent3D const & getDimensions()const noexcept
 		{
 			return m_createInfo->extent;
 		}
 
-		inline VkImageType getType()const
+		VkImageType getType()const noexcept
 		{
 			return m_createInfo->imageType;
 		}
 
-		inline VkImageTiling getTiling()const
+		VkImageTiling getTiling()const noexcept
 		{
 			return m_createInfo->tiling;
 		}
 
-		inline VkSampleCountFlagBits getSampleCount()const
+		VkSampleCountFlagBits getSampleCount()const noexcept
 		{
 			return m_createInfo->samples;
 		}
 
-		inline VkImageUsageFlags getUsage()const
+		VkImageUsageFlags getUsage()const noexcept
 		{
 			return m_createInfo->usage;
 		}
 
-		inline ImageCreateInfo const & getCreateInfo()const
+		ImageCreateInfo const & getCreateInfo()const noexcept
 		{
 			return m_createInfo;
 		}
@@ -421,14 +419,14 @@ namespace ashes
 		*\brief
 		*	VkImage implicit cast operator.
 		*/
-		inline operator VkImage const & ()const
+		operator VkImage const & ()const noexcept
 		{
 			return m_internal;
 		}
 
 	private:
 		ImageViewCache::iterator doDestroyView( VkImageViewCreateInfo const & view )const;
-		ImageViewCache::iterator doDestroyView( ImageView view )const;
+		ImageViewCache::iterator doDestroyView( ImageView const & view )const;
 
 	private:
 		Device const * m_device{ nullptr };

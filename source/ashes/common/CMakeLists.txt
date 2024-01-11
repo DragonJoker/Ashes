@@ -62,6 +62,10 @@ add_library( ashes::${_PROJECT_NAME}
 	ALIAS
 	${PROJECT_NAME}
 )
+target_sources( ${PROJECT_NAME} 
+	PRIVATE
+		../../../.editorconfig
+)
 target_link_libraries( ${PROJECT_NAME}
 	PUBLIC
 		${CMAKE_DL_LIBS}

@@ -21,7 +21,7 @@ namespace utils
 		*\brief
 		*	Constructeur sans initialisation.
 		*/
-		QuaternionT( NoInit const & )noexcept;
+		explicit QuaternionT( NoInit const & )noexcept;
 		/**
 		*\brief
 		*	Constructeur par défaut.
@@ -40,7 +40,7 @@ namespace utils
 		*\param[in] euler
 		*	Les angles.
 		*/
-		QuaternionT( Vec3T< RadiansT< T > > const & euler )noexcept;
+		explicit QuaternionT( Vec3T< RadiansT< T > > const & euler )noexcept;
 		/**
 		*\brief
 		*	Constructeur par copie.
@@ -78,7 +78,7 @@ namespace utils
 		*	Le point à convertir.
 		*/
 		template< typename U >
-		QuaternionT( QuaternionT< U > const & rhs )noexcept;
+		explicit QuaternionT( QuaternionT< U > const & rhs )noexcept;
 		/**
 		*\brief
 		*	Opérateur d'affectation par conversion.
@@ -94,15 +94,15 @@ namespace utils
 		*/
 		/**\{*/
 		template< typename U >
-		inline QuaternionT & operator+=( QuaternionT< U > const & rhs )noexcept;
+		QuaternionT & operator+=( QuaternionT< U > const & rhs )noexcept;
 		template< typename U >
-		inline QuaternionT & operator-=( QuaternionT< U > const & rhs )noexcept;
+		QuaternionT & operator-=( QuaternionT< U > const & rhs )noexcept;
 		template< typename U >
-		inline QuaternionT & operator*=( QuaternionT< U > const & rhs )noexcept;
+		QuaternionT & operator*=( QuaternionT< U > const & rhs )noexcept;
 		template< typename U >
-		inline QuaternionT & operator*=( U const & rhs )noexcept;
+		QuaternionT & operator*=( U const & rhs )noexcept;
 		template< typename U >
-		inline QuaternionT & operator/=( U const & rhs )noexcept;
+		QuaternionT & operator/=( U const & rhs )noexcept;
 		/**\}*/
 
 	public:

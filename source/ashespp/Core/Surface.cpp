@@ -20,7 +20,7 @@ namespace ashes
 		m_handle.setSurface( *this );
 	}
 
-	Surface::~Surface()
+	Surface::~Surface()noexcept
 	{
 		if ( m_internal != VkSurfaceKHR{} )
 		{

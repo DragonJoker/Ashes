@@ -111,37 +111,37 @@ namespace utils
 		uint32_t deduceMemoryType( VkMemoryPropertyFlags typeBits
 			, VkMemoryPropertyFlags requirements )const;
 
-		inline ashes::Device const * operator->()const
+		ashes::Device const * operator->()const noexcept
 		{
 			return &getDevice();
 		}
 
-		inline ashes::Device const & getDevice()const
+		ashes::Device const & getDevice()const noexcept
 		{
 			return *m_device;
 		}
 
-		inline operator ashes::Device const &()const
+		operator ashes::Device const &()const noexcept
 		{
 			return *m_device;
 		}
 
-		inline uint32_t getPresentQueueFamily()const
+		uint32_t getPresentQueueFamily()const noexcept
 		{
 			return m_presentQueueFamilyIndex;
 		}
 
-		inline uint32_t getGraphicsQueueFamily()const
+		uint32_t getGraphicsQueueFamily()const noexcept
 		{
 			return m_graphicsQueueFamilyIndex;
 		}
 
-		inline uint32_t getComputeQueueFamily()const
+		uint32_t getComputeQueueFamily()const noexcept
 		{
 			return m_computeQueueFamilyIndex;
 		}
 
-		ashes::PhysicalDevice const & getPhysicalDevice()const
+		ashes::PhysicalDevice const & getPhysicalDevice()const noexcept
 		{
 			return m_gpu;
 		}

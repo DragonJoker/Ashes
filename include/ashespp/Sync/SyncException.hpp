@@ -14,17 +14,17 @@ See LICENSE file in root folder.
 #include <sstream>
 #include <iomanip>
 
-#if !defined( NDEBUG )
-#	define Ashes_DebugSync 0
-#else
-#	define Ashes_DebugSync 0
-#endif
-
 #define ashesSyncCheck( condition, text, semaphore )\
 	ashes::syncCheck( condition, #condition, text, semaphore )
 
 namespace ashes
 {
+#if !defined( NDEBUG )
+	static bool constexpr DebugSync = false;
+#else
+	static bool constexpr DebugSync = false;
+#endif
+
 	class SyncException
 		: public std::exception
 	{

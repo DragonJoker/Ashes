@@ -30,6 +30,12 @@ namespace utils
 		using streambuf_type = std::basic_streambuf< CharType >;
 		using int_type = typename std::basic_streambuf< CharType >::int_type;
 		using traits_type = typename std::basic_streambuf< CharType >::traits_type;
+
+		LogStreambuf( LogStreambuf const & ) = delete;
+		LogStreambuf & operator=( LogStreambuf const & ) = delete;
+		LogStreambuf( LogStreambuf && )noexcept = delete;
+		LogStreambuf & operator=( LogStreambuf && )noexcept = delete;
+
 		/**
 		*\brief
 		*	Constructeur, échange le tampon du flux donné avec celui-ci.
@@ -48,7 +54,7 @@ namespace utils
 		*\brief
 		*	Destructeur, rétablit le tampon d'origine du flux.
 		*/
-		~LogStreambuf()
+		~LogStreambuf()noexcept override
 		{
 			m_stream.rdbuf( m_old );
 		}

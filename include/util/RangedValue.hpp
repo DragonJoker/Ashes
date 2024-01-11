@@ -26,7 +26,7 @@ namespace utils
 		*\param[in] range
 		*	Son intervalle.
 		*/
-		inline RangedValue( T const & value
+		RangedValue( T const & value
 			, Range< T > const & range )noexcept
 			: m_range{ range }
 			, m_value{ m_range.clamp( value ) }
@@ -36,7 +36,7 @@ namespace utils
 		*\brief
 		*	Affectation depuis une valeur.
 		*/
-		inline RangedValue & operator=( T const & value )noexcept
+		RangedValue & operator=( T const & value )noexcept
 		{
 			m_value = m_range.clamp( value );
 			return *this;
@@ -67,7 +67,7 @@ namespace utils
 		*\return
 		*	La valeur.
 		*/
-		inline T const & value()const noexcept
+		T const & value()const noexcept
 		{
 			return m_value;
 		}
@@ -75,7 +75,7 @@ namespace utils
 		*\return
 		*	L'intervalle.
 		*/
-		inline Range< T > const & range()const noexcept
+		Range< T > const & range()const noexcept
 		{
 			return m_range;
 		}
@@ -83,49 +83,49 @@ namespace utils
 		*\name Opérateurs arithmétiques.
 		*/
 		/**\{*/
-		inline RangedValue< T > & operator+=( RangedValue< T > const & rhs )noexcept
+		RangedValue< T > & operator+=( RangedValue< T > const & rhs )noexcept
 		{
 			m_value = m_range.clamp( m_value + rhs.m_value );
 			return *this;
 		}
 
-		inline RangedValue< T > & operator-=( RangedValue< T > const & rhs )noexcept
+		RangedValue< T > & operator-=( RangedValue< T > const & rhs )noexcept
 		{
 			m_value = m_range.clamp( m_value - rhs.m_value );
 			return *this;
 		}
 
-		inline RangedValue< T > & operator*=( RangedValue< T > const & rhs )noexcept
+		RangedValue< T > & operator*=( RangedValue< T > const & rhs )noexcept
 		{
 			m_value = m_range.clamp( m_value * rhs.m_value );
 			return *this;
 		}
 
-		inline RangedValue< T > & operator/=( RangedValue< T > const & rhs )noexcept
+		RangedValue< T > & operator/=( RangedValue< T > const & rhs )noexcept
 		{
 			m_value = m_range.clamp( m_value / rhs.m_value );
 			return *this;
 		}
 
-		inline RangedValue< T > & operator+=( T const & rhs )noexcept
+		RangedValue< T > & operator+=( T const & rhs )noexcept
 		{
 			m_value = m_range.clamp( m_value + rhs );
 			return *this;
 		}
 
-		inline RangedValue< T > & operator-=( T const & rhs )noexcept
+		RangedValue< T > & operator-=( T const & rhs )noexcept
 		{
 			m_value = m_range.clamp( m_value - rhs );
 			return *this;
 		}
 
-		inline RangedValue< T > & operator*=( T const & rhs )noexcept
+		RangedValue< T > & operator*=( T const & rhs )noexcept
 		{
 			m_value = m_range.clamp( m_value * rhs );
 			return *this;
 		}
 
-		inline RangedValue< T > & operator/=( T const & rhs )noexcept
+		RangedValue< T > & operator/=( T const & rhs )noexcept
 		{
 			m_value = m_range.clamp( m_value / rhs );
 			return *this;

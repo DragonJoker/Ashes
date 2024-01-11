@@ -14,64 +14,64 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	inline bool operator==( VkOffset2D const & lhs, VkOffset2D const & rhs )
+	constexpr bool operator==( VkOffset2D const & lhs, VkOffset2D const & rhs )
 	{
 		return lhs.x == rhs.x
 			&& lhs.y == rhs.y;
 	}
 
-	inline bool operator!=( VkOffset2D const & lhs, VkOffset2D const & rhs )
+	constexpr bool operator!=( VkOffset2D const & lhs, VkOffset2D const & rhs )
 	{
 		return !( lhs == rhs );
 	}
 
-	inline bool operator==( VkOffset3D const & lhs, VkOffset3D const & rhs )
+	constexpr bool operator==( VkOffset3D const & lhs, VkOffset3D const & rhs )
 	{
 		return lhs.x == rhs.x
 			&& lhs.y == rhs.y
 			&& lhs.z == rhs.z;
 	}
 
-	inline bool operator!=( VkOffset3D const & lhs, VkOffset3D const & rhs )
+	constexpr bool operator!=( VkOffset3D const & lhs, VkOffset3D const & rhs )
 	{
 		return !( lhs == rhs );
 	}
 
-	inline bool operator==( VkExtent2D const & lhs, VkExtent2D const & rhs )
+	constexpr bool operator==( VkExtent2D const & lhs, VkExtent2D const & rhs )
 	{
 		return lhs.width == rhs.width
 			&& lhs.height == rhs.height;
 	}
 
-	inline bool operator!=( VkExtent2D const & lhs, VkExtent2D const & rhs )
+	constexpr bool operator!=( VkExtent2D const & lhs, VkExtent2D const & rhs )
 	{
 		return !( lhs == rhs );
 	}
 
-	inline bool operator==( VkExtent3D const & lhs, VkExtent3D const & rhs )
+	constexpr bool operator==( VkExtent3D const & lhs, VkExtent3D const & rhs )
 	{
 		return lhs.width == rhs.width
 			&& lhs.height == rhs.height
 			&& lhs.depth == rhs.depth;
 	}
 
-	inline bool operator!=( VkExtent3D const & lhs, VkExtent3D const & rhs )
+	constexpr bool operator!=( VkExtent3D const & lhs, VkExtent3D const & rhs )
 	{
 		return !( lhs == rhs );
 	}
 
-	inline bool operator==( VkRect2D const & lhs, VkRect2D const & rhs )
+	constexpr bool operator==( VkRect2D const & lhs, VkRect2D const & rhs )
 	{
 		return lhs.offset == rhs.offset
 			&& lhs.extent == rhs.extent;
 	}
 
-	inline bool operator!=( VkRect2D const & lhs, VkRect2D const & rhs )
+	constexpr bool operator!=( VkRect2D const & lhs, VkRect2D const & rhs )
 	{
 		return !( lhs == rhs );
 	}
 
-	inline bool operator==( VkViewport const & lhs, VkViewport const & rhs )
+	constexpr bool operator==( VkViewport const & lhs, VkViewport const & rhs )
 	{
 		return lhs.x == rhs.x
 			&& lhs.y == rhs.y
@@ -81,12 +81,12 @@ namespace ashes
 			&& lhs.maxDepth == rhs.maxDepth;
 	}
 
-	inline bool operator!=( VkViewport const & lhs, VkViewport const & rhs )
+	constexpr bool operator!=( VkViewport const & lhs, VkViewport const & rhs )
 	{
 		return !( lhs == rhs );
 	}
 
-	inline bool operator==( VkAttachmentDescription const & lhs, VkAttachmentDescription const & rhs )
+	constexpr bool operator==( VkAttachmentDescription const & lhs, VkAttachmentDescription const & rhs )
 	{
 		return lhs.flags == rhs.flags
 			&& lhs.format == rhs.format
@@ -99,12 +99,12 @@ namespace ashes
 			&& lhs.finalLayout == rhs.finalLayout;
 	}
 
-	inline bool operator!=( VkAttachmentDescription const & lhs, VkAttachmentDescription const & rhs )
+	constexpr bool operator!=( VkAttachmentDescription const & lhs, VkAttachmentDescription const & rhs )
 	{
 		return !( lhs == rhs );
 	}
 
-	inline bool operator==( VkVertexInputAttributeDescription const & lhs, VkVertexInputAttributeDescription const & rhs )
+	constexpr bool operator==( VkVertexInputAttributeDescription const & lhs, VkVertexInputAttributeDescription const & rhs )
 	{
 		return lhs.binding == rhs.binding
 			&& lhs.format == rhs.format
@@ -112,21 +112,21 @@ namespace ashes
 			&& lhs.offset == rhs.offset;
 	}
 
-	inline bool operator!=( VkVertexInputAttributeDescription const & lhs, VkVertexInputAttributeDescription const & rhs )
+	constexpr bool operator!=( VkVertexInputAttributeDescription const & lhs, VkVertexInputAttributeDescription const & rhs )
 	{
 		return !( lhs == rhs );
 	}
 
-	inline bool operator==( VkVertexInputBindingDescription const & lhs, VkVertexInputBindingDescription const & rhs )
+	constexpr bool operator==( VkVertexInputBindingDescription const & lhs, VkVertexInputBindingDescription const & rhs )
 	{
 		return lhs.binding == rhs.binding
 			&& lhs.stride == rhs.stride
 			&& lhs.inputRate == rhs.inputRate;
 	}
 
-	inline bool operator!=( VkVertexInputBindingDescription const & lhs, VkVertexInputBindingDescription const & rhs )
+	constexpr bool operator!=( VkVertexInputBindingDescription const & lhs, VkVertexInputBindingDescription const & rhs )
 	{
-		return !( lhs == rhs );
+		return !( lhs== rhs );
 	}
 }
 
@@ -136,10 +136,6 @@ namespace ashes
 #include "common/Optional.hpp"
 #include "common/Signal.hpp"
 #include "common/Format.hpp"
-
-#if defined( MemoryBarrier )
-#	undef MemoryBarrier
-#endif
 
 #include <cstdint>
 #include <memory>
@@ -157,32 +153,32 @@ namespace ashes
 	using StringArray = std::vector< std::string >;
 	using CharPtrArray = std::vector< char const * >;
 
-	static VkDeviceSize constexpr WholeSize = ~( 0ull );
-	static uint32_t constexpr RemainingArrayLayers = ~( 0u );
+	static VkDeviceSize constexpr WholeSize = ~0ULL;
+	static uint32_t constexpr RemainingArrayLayers = ~0u;
 
-	inline constexpr uint32_t getMajor( uint32_t version )
+	constexpr uint32_t getMajor( uint32_t version )
 	{
 		return ( version >> 22u );
 	}
 
-	inline constexpr uint32_t getMinor( uint32_t version )
+	constexpr uint32_t getMinor( uint32_t version )
 	{
 		return ( version >> 12u ) & 0x000003ffu;
 	}
 
-	inline constexpr uint32_t getPatch( uint32_t version )
+	constexpr uint32_t getPatch( uint32_t version )
 	{
 		return version & 0x00000fffu;
 	}
 
-	inline constexpr uint32_t makeVersion( uint32_t major
+	constexpr uint32_t makeVersion( uint32_t major
 		, uint32_t minor
 		, uint32_t patch )
 	{
-		return ( ( ( major ) << 22 ) | ( ( minor ) << 12 ) | ( patch ) );
+		return ( ( major << 22 ) | ( minor << 12 ) | patch );
 	}
 
-	inline uint32_t checkFlag( uint32_t a, uint32_t b )
+	constexpr uint32_t checkFlag( uint32_t a, uint32_t b )
 	{
 		return ( a & b ) == b;
 	}
@@ -265,7 +261,7 @@ namespace ashes
 
 		for ( uint32_t i = 0u; i < count; ++i )
 		{
-			result.push_back( *values );
+			result.emplace_back( *values );
 			++values;
 		}
 
@@ -304,7 +300,7 @@ namespace ashes
 
 		for ( auto & value : values )
 		{
-			result.push_back( value );
+			result.emplace_back( value );
 		}
 
 		return result;
@@ -326,14 +322,14 @@ namespace ashes
 
 	inline VkClearValue makeClearValue( VkClearColorValue v )
 	{
-		VkClearValue result;
+		VkClearValue result{};
 		result.color = std::move( v );
 		return result;
 	}
 
 	inline VkClearValue makeClearValue( VkClearDepthStencilValue v )
 	{
-		VkClearValue result;
+		VkClearValue result{};
 		result.depthStencil = std::move( v );
 		return result;
 	}
@@ -772,7 +768,7 @@ namespace ashes
 		{
 				for ( auto & elem : makeArrayView( ptr, count ) )
 				{
-						result.push_back( deepCopy( elem, std::forward< Params && >( params )... ) );
+						result.push_back( deepCopy( elem, std::forward< Params >( params )... ) );
 				}
 		}
 
@@ -791,7 +787,7 @@ namespace ashes
 		{
 			for ( auto & elem : makeArrayView( ptr, count ) )
 			{
-				result.push_back( deepCopy( elem, std::forward< Params && >( params )... ) );
+				result.push_back( deepCopy( elem, std::forward< Params >( params )... ) );
 			}
 		}
 
@@ -804,7 +800,7 @@ namespace ashes
 		, Params && ... params )
 	{
 		return ptr
-			? Optional< Type >{ deepCopy( *ptr, std::forward< Params && >( params )... ) }
+			? Optional< Type >{ deepCopy( *ptr, std::forward< Params >( params )... ) }
 			: Optional< Type >{};
 	}
 
@@ -814,12 +810,10 @@ namespace ashes
 	{
 		for ( uint32_t i = 0; i < memoryProperties.memoryTypeCount; ++i )
 		{
-			if ( ( typeBits & 1 ) == 1 )
+			if ( ( typeBits & 1 ) == 1
+				&& ( memoryProperties.memoryTypes[i].propertyFlags & requirements ) == requirements )
 			{
-				if ( ( memoryProperties.memoryTypes[i].propertyFlags & requirements ) == requirements )
-				{
-					return i;
-				}
+				return i;
 			}
 
 			typeBits >>= 1;
