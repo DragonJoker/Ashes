@@ -292,8 +292,7 @@ namespace ashes::d3d11
 				desc.Usage = getBufferUsage( m_propertyFlags, m_bufferTargets );
 				desc.BindFlags = getBindFlags( m_bufferTargets );
 				desc.CPUAccessFlags = getCpuBufferAccessFlags( m_propertyFlags, m_bufferTargets );
-				desc.MiscFlags = ( ( checkFlag( m_bufferTargets, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT )
-					|| checkFlag( m_bufferTargets, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT ) )
+				desc.MiscFlags = ( checkFlag( m_bufferTargets, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT )
 					? D3D11_RESOURCE_MISC_DRAWINDIRECT_ARGS
 					: 0u );
 				desc.StructureByteStride = 0;

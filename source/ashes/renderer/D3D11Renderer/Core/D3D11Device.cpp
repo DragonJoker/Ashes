@@ -308,12 +308,12 @@ namespace ashes::d3d11
 		{
 		case VK_OBJECT_TYPE_DEVICE:
 			hr = get( VkDevice( nameInfo.objectHandle ) )->getDevice()->SetPrivateData( WKPDID_D3DDebugObjectName
-				, UINT( strlen( nameInfo.pObjectName ) )
+				, UINT( strnlen( nameInfo.pObjectName, 256u ) )
 				, nameInfo.pObjectName );
 			break;
 		case VK_OBJECT_TYPE_SWAPCHAIN_KHR:
 			hr = get( VkSwapchainKHR( nameInfo.objectHandle ) )->getSwapChain()->SetPrivateData( WKPDID_D3DDebugObjectName
-				, UINT( strlen( nameInfo.pObjectName ) )
+				, UINT( strnlen( nameInfo.pObjectName, 256u ) )
 				, nameInfo.pObjectName );
 			break;
 		case VK_OBJECT_TYPE_BUFFER:
@@ -329,7 +329,7 @@ namespace ashes::d3d11
 				if ( object )
 				{
 					hr = object->SetPrivateData( WKPDID_D3DDebugObjectName
-						, UINT( strlen( nameInfo.pObjectName ) )
+						, UINT( strnlen( nameInfo.pObjectName, 256u ) )
 						, nameInfo.pObjectName );
 				}
 			}
@@ -385,12 +385,12 @@ namespace ashes::d3d11
 		{
 		case VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT:
 			hr = get( VkDevice( nameInfo.object ) )->getDevice()->SetPrivateData( WKPDID_D3DDebugObjectName
-				, UINT( strlen( nameInfo.pObjectName ) )
+				, UINT( strnlen( nameInfo.pObjectName, 256u ) )
 				, nameInfo.pObjectName );
 			break;
 		case VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT:
 			hr = get( VkSwapchainKHR( nameInfo.object ) )->getSwapChain()->SetPrivateData( WKPDID_D3DDebugObjectName
-				, UINT( strlen( nameInfo.pObjectName ) )
+				, UINT( strnlen( nameInfo.pObjectName, 256u ) )
 				, nameInfo.pObjectName );
 			break;
 		case VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT:
@@ -406,7 +406,7 @@ namespace ashes::d3d11
 				if ( object )
 				{
 					hr = object->SetPrivateData( WKPDID_D3DDebugObjectName
-						, UINT( strlen( nameInfo.pObjectName ) )
+						, UINT( strnlen( nameInfo.pObjectName, 256u ) )
 						, nameInfo.pObjectName );
 				}
 			}

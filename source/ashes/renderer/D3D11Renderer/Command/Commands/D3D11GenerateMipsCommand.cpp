@@ -14,7 +14,7 @@ namespace ashes::d3d11
 	{
 		VkImageViewCreateInfo getCreateInfos( VkImage texture )
 		{
-			VkImageViewCreateInfo result;
+			VkImageViewCreateInfo result{};
 			result.image = texture;
 			result.viewType = VkImageViewType( get( texture )->getType() );
 			result.format = get( texture )->getFormat();

@@ -149,8 +149,15 @@ namespace ashes
 
 			~LogStreambufT()noexcept override
 			{
-				doSync();
-				m_stream.rdbuf( m_old );
+				try
+				{
+					doSync();
+					m_stream.rdbuf( m_old );
+				}
+				catch ( ... )
+				{
+					// Nothing to do here
+				}
 			}
 
 			int_type overflow( int_type c = traits_type::eof() )override

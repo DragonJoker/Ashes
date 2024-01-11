@@ -67,88 +67,91 @@ namespace ashes::d3d11
 	}
 
 	SwapchainKHR::SwapchainKHR( VkDevice device
-		, VkSwapchainCreateInfoKHR createInfo ) try
+		, VkSwapchainCreateInfoKHR createInfo )
 		: m_device{ device }
 		, m_createInfo{ std::move( createInfo ) }
 	{
-		doInitPresentParameters();
-		auto factory = get( get( m_device )->getInstance() )->getDXGIFactory();
-		auto d3ddevice = get( m_device )->getDevice();
-		HRESULT hr = factory->CreateSwapChain( d3ddevice
-			, &m_presentDesc
-			, &m_swapChain );
-
-		if ( !checkError( m_device, hr, "CreateSwapChain" )
-			|| !m_swapChain )
+		try
 		{
-			throw std::runtime_error{ "Could not create the swapchain" };
-		}
+			doInitPresentParameters();
+			auto factory = get( get( m_device )->getInstance() )->getDXGIFactory();
+			auto d3ddevice = get( m_device )->getDevice();
+			HRESULT hr = factory->CreateSwapChain( d3ddevice
+				, &m_presentDesc
+				, &m_swapChain );
 
-		if ( get( m_createInfo.surface )->isDisplay() )
-		{
-			hr = m_swapChain->SetFullscreenState( TRUE, get( get( device )->getPhysicalDevice() )->getOutput() );
-
-			if ( !checkError( m_device, hr, "SetFullscreenState" ) )
+			if ( !checkError( m_device, hr, "CreateSwapChain" )
+				|| !m_swapChain )
 			{
-				throw std::runtime_error{ "Could not set the swapchain to fullscreen mode" };
+				throw std::runtime_error{ "Could not create the swapchain" };
 			}
 
-			hr = m_swapChain->ResizeTarget( &m_displayMode );
-
-			if ( !checkError( m_device, hr, "ResizeTarget" ) )
+			if ( get( m_createInfo.surface )->isDisplay() )
 			{
-				hr = m_swapChain->SetFullscreenState( FALSE, get( get( device )->getPhysicalDevice() )->getOutput() );
-				throw std::runtime_error{ "Could not resize the swapchain" };
+				hr = m_swapChain->SetFullscreenState( TRUE, get( get( device )->getPhysicalDevice() )->getOutput() );
+
+				if ( !checkError( m_device, hr, "SetFullscreenState" ) )
+				{
+					throw std::runtime_error{ "Could not set the swapchain to fullscreen mode" };
+				}
+
+				hr = m_swapChain->ResizeTarget( &m_displayMode );
+
+				if ( !checkError( m_device, hr, "ResizeTarget" ) )
+				{
+					hr = m_swapChain->SetFullscreenState( FALSE, get( get( device )->getPhysicalDevice() )->getOutput() );
+					throw std::runtime_error{ "Could not resize the swapchain" };
+				}
 			}
+
+			dxDebugName( m_swapChain, SwapChain );
+			ID3D11Texture2D * rtTex = nullptr;
+			hr = m_swapChain->GetBuffer( 0
+				, __uuidof( ID3D11Texture2D )
+				, reinterpret_cast< void ** >( &rtTex ) );
+
+			if ( !checkError( m_device, hr, "SwapChain::GetBuffer" ) )
+			{
+				throw std::runtime_error( "GetBuffer() failed" );
+			}
+
+			m_swapchainExtent = VkExtent2D{ m_displayMode.Width, m_displayMode.Height };
+			allocate( m_swapChainImage
+				, get( device )->getAllocationCallbacks()
+				, m_device
+				, m_createInfo.imageFormat
+				, m_swapchainExtent
+				, rtTex );
+			dxDebugName( get( m_swapChainImage )->getResource(), SwapChainImage );
+
+			m_windowExtent = m_createInfo.imageExtent;
+			m_image = createImage( device
+				, m_createInfo.imageFormat
+				, m_windowExtent
+				, m_deviceMemory );
+			dxDebugName( get( m_image )->getResource(), SwapChainFakeImage );
+			m_view = createImageView( device
+				, m_image
+				, m_createInfo.imageFormat );
+			dxDebugName( get( m_view )->getRenderTargetView(), SwapChainFakeImageView );
 		}
-
-		dxDebugName( m_swapChain, SwapChain );
-		ID3D11Texture2D * rtTex = nullptr;
-		hr = m_swapChain->GetBuffer( 0
-			, __uuidof( ID3D11Texture2D )
-			, reinterpret_cast< void ** >( &rtTex ) );
-
-		if ( !checkError( m_device, hr, "SwapChain::GetBuffer" ) )
+		catch ( std::exception & exc )
 		{
-			throw std::runtime_error( "GetBuffer() failed" );
+			deallocate( m_view, get( m_device )->getAllocationCallbacks() );
+			deallocate( m_image, get( m_device )->getAllocationCallbacks() );
+			deallocate( m_swapChainImage, get( m_device )->getAllocationCallbacks() );
+			safeRelease( m_swapChain );
+
+			std::stringstream stream;
+			stream << "Swapchain creation failed: " << exc.what() << std::endl;
+			get( device )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+				, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
+				, uint64_t( device )
+				, 0u
+				, VK_ERROR_INCOMPATIBLE_DRIVER
+				, "Direct3D11"
+				, stream.str().c_str() );
 		}
-
-		m_swapchainExtent = VkExtent2D{ m_displayMode.Width, m_displayMode.Height };
-		allocate( m_swapChainImage
-			, get( device )->getAllocationCallbacks()
-			, m_device
-			, m_createInfo.imageFormat
-			, m_swapchainExtent
-			, rtTex );
-		dxDebugName( get( m_swapChainImage )->getResource(), SwapChainImage );
-
-		m_windowExtent = m_createInfo.imageExtent;
-		m_image = createImage( device
-			, m_createInfo.imageFormat
-			, m_windowExtent
-			, m_deviceMemory );
-		dxDebugName( get( m_image )->getResource(), SwapChainFakeImage );
-		m_view = createImageView( device
-			, m_image
-			, m_createInfo.imageFormat );
-		dxDebugName( get( m_view )->getRenderTargetView(), SwapChainFakeImageView );
-	}
-	catch ( std::exception & exc )
-	{
-		deallocate( m_view, get( m_device )->getAllocationCallbacks() );
-		deallocate( m_image, get( m_device )->getAllocationCallbacks() );
-		deallocate( m_swapChainImage, get( m_device )->getAllocationCallbacks() );
-		safeRelease( m_swapChain );
-
-		std::stringstream stream;
-		stream << "Swapchain creation failed: " << exc.what() << std::endl;
-		get( device )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
-			, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
-			, uint64_t( device )
-			, 0u
-			, VK_ERROR_INCOMPATIBLE_DRIVER
-			, "Direct3D11"
-			, stream.str().c_str() );
 	}
 
 	SwapchainKHR::~SwapchainKHR()

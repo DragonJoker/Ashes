@@ -410,7 +410,7 @@ namespace ashes::gl
 						, glObjectLabel
 						, GLenum( convert( nameInfo.objectType ) )
 						, name
-						, GLsizei( strlen( nameInfo.pObjectName ) )
+						, GLsizei( strnlen( nameInfo.pObjectName, 256u ) )
 						, nameInfo.pObjectName );
 				}
 			}
@@ -467,7 +467,7 @@ namespace ashes::gl
 				isOk = glLogCall( context
 					, glObjectPtrLabel
 					, get( VkFence( nameInfo.object ) )->getInternal()
-					, GLsizei( strlen( nameInfo.pObjectName ) )
+					, GLsizei( strnlen( nameInfo.pObjectName, 256u ) )
 					, nameInfo.pObjectName );
 			}
 		}
@@ -483,7 +483,7 @@ namespace ashes::gl
 						, glObjectLabel
 						, GLenum( convert( nameInfo.objectType ) )
 						, name
-						, GLsizei( strlen( nameInfo.pObjectName ) )
+						, GLsizei( strnlen( nameInfo.pObjectName, 256u ) )
 						, nameInfo.pObjectName );
 				}
 			}
