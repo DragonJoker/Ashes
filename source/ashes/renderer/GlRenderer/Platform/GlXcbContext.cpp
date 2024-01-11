@@ -47,7 +47,7 @@ namespace ashes::gl
 
 		if ( !m_xdisplay )
 		{
-			throw std::runtime_error{ "Couldn't open display" };
+			throw ashes::BaseException{ "Couldn't open display" };
 		}
 
 		auto & extensions = get( instance )->getExtensions();

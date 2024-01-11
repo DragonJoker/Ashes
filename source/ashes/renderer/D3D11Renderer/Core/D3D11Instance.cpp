@@ -32,7 +32,7 @@ namespace ashes::d3d11
 
 			if ( hr != S_OK )
 			{
-				throw std::runtime_error{ "Can't create Factory object" };
+				throw ashes::BaseException{ "Can't create Factory object" };
 			}
 
 			return result;

@@ -96,7 +96,7 @@ namespace ashes
 			{
 				for ( uint32_t i = 0; i < binding.descriptorCount; ++i )
 				{
-					write.imageInfo.push_back( *binding.pImageInfo );
+					write.imageInfo.emplace_back( *binding.pImageInfo );
 					++binding.pImageInfo;
 				}
 			}
@@ -105,7 +105,7 @@ namespace ashes
 			{
 				for ( uint32_t i = 0; i < binding.descriptorCount; ++i )
 				{
-					write.bufferInfo.push_back( *binding.pBufferInfo );
+					write.bufferInfo.emplace_back( *binding.pBufferInfo );
 					++binding.pBufferInfo;
 				}
 			}
@@ -114,12 +114,12 @@ namespace ashes
 			{
 				for ( uint32_t i = 0; i < binding.descriptorCount; ++i )
 				{
-					write.texelBufferView.push_back( *binding.pTexelBufferView );
+					write.texelBufferView.emplace_back( *binding.pTexelBufferView );
 					++binding.pTexelBufferView;
 				}
 			}
 
-			m_writes.push_back( write );
+			m_writes.emplace_back( write );
 		}
 	}
 

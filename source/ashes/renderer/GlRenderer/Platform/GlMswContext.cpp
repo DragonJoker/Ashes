@@ -260,7 +260,7 @@ namespace ashes::gl
 
 		if ( !m_hContext )
 		{
-			throw std::runtime_error{ "Couldn't create preliminary context: " + getLastErrorText() };
+			throw ashes::BaseException{ "Couldn't create preliminary context: " + getLastErrorText() };
 		}
 
 		doLoadSystemFunctions();
@@ -370,12 +370,12 @@ namespace ashes::gl
 
 		if ( !pixelFormats )
 		{
-			throw std::runtime_error{ "Couldn't choose a pixel format: " + getLastErrorText() };
+			throw ashes::BaseException{ "Couldn't choose a pixel format: " + getLastErrorText() };
 		}
 
 		if ( !::SetPixelFormat( m_hDC, pixelFormats, &pfd ) )
 		{
-			throw std::runtime_error{ "Couldn't set pixel format: " + getLastErrorText() };
+			throw ashes::BaseException{ "Couldn't set pixel format: " + getLastErrorText() };
 		}
 	}
 
@@ -386,7 +386,7 @@ namespace ashes::gl
 
 		if ( !getFunction( "wglCreateContextAttribsARB", wglCreateContextAttribsARB, errStream ) )
 		{
-			throw std::runtime_error{ "Couldn't retrieve wglCreateContextAttribsARB: " + errStream.str() };
+			throw ashes::BaseException{ "Couldn't retrieve wglCreateContextAttribsARB: " + errStream.str() };
 		}
 
 		getFunction( "wglSwapIntervalEXT", wglSwapIntervalEXT, errStream );
@@ -430,7 +430,7 @@ namespace ashes::gl
 		{
 			std::stringstream error;
 			error << "Failed to create an OpenGL " << m_major << "." << m_minor << " context (0x" << std::hex << ::glGetError() << ").";
-			throw std::runtime_error{ error.str() };
+			throw ashes::BaseException{ error.str() };
 		}
 
 		enable();

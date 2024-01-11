@@ -30,7 +30,7 @@ namespace ashes
 		*\brief
 		*	Constructor, ppens a library from a path.
 		*\remarks
-		*	If the library couldn't be loaded, throws a std::runtime_error.
+		*	If the library couldn't be loaded, throws a BaseException.
 		*\param[in] path
 		*	The file path.
 		*/

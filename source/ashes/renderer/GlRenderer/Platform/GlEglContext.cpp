@@ -34,14 +34,14 @@ namespace ashes::gl
 
 			if ( !ok )
 			{
-				throw std::runtime_error{ "Couldn't bind EGL API" };
+				throw ashes::BaseException{ "Couldn't bind EGL API" };
 			}
 
 			m_display = eglGetDisplay( EGL_DEFAULT_DISPLAY );
 
 			if ( m_display == EGL_NO_DISPLAY )
 			{
-				throw std::runtime_error{ "Couldn't get EGL display" };
+				throw ashes::BaseException{ "Couldn't get EGL display" };
 			}
 
 			EGLint major, minor;
@@ -49,7 +49,7 @@ namespace ashes::gl
 
 			if ( !ok )
 			{
-				throw std::runtime_error{ "Couldn't initialise EGL" };
+				throw ashes::BaseException{ "Couldn't initialise EGL" };
 			}
 
 			const EGLint eglConfigAttribs[]
@@ -84,12 +84,12 @@ namespace ashes::gl
 
 			if ( !ok )
 			{
-				throw std::runtime_error{ "Couldn't choose EGL config" };
+				throw ashes::BaseException{ "Couldn't choose EGL config" };
 			}
 
 			if ( numConfigs == 0 )
 			{
-				throw std::runtime_error{ "Failed to find suitable EGLConfig" };
+				throw ashes::BaseException{ "Failed to find suitable EGLConfig" };
 			}
 
 			EGLConfig config{ nullptr };
@@ -112,7 +112,7 @@ namespace ashes::gl
 
 			if ( !m_surface )
 			{
-				throw std::runtime_error{ "EGL Surface creation failed" };
+				throw ashes::BaseException{ "EGL Surface creation failed" };
 			}
 
 			auto & extensions = get( instance )->getExtensions();
@@ -131,14 +131,14 @@ namespace ashes::gl
 
 			if ( !m_context )
 			{
-				throw std::runtime_error{ "EGL Context creation failed" };
+				throw ashes::BaseException{ "EGL Context creation failed" };
 			}
 
 			ok = eglMakeCurrent( m_display, m_surface, m_surface, m_context );
 
 			if ( !ok )
 			{
-				throw std::runtime_error{ "eglMakeCurrent() failed" };
+				throw ashes::BaseException{ "eglMakeCurrent() failed" };
 			}
 
 			eglSwapInterval( m_display, 0 );

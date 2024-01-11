@@ -10,7 +10,7 @@ namespace utils
 
 		if ( file.fail() )
 		{
-			throw std::runtime_error{ "Could not open file " + path };
+			throw ashes::BaseException{ "Could not open file " + path };
 		}
 
 		auto begin = file.tellg();
@@ -30,7 +30,7 @@ namespace utils
 
 		if ( file.fail() )
 		{
-			throw std::runtime_error{ "Could not open file " + path };
+			throw ashes::BaseException{ "Could not open file " + path };
 		}
 
 		auto begin = file.tellg();
