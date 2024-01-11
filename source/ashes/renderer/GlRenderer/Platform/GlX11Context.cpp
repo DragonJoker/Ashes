@@ -173,7 +173,7 @@ namespace ashes::gl
 
 		if ( !m_visualInfo )
 		{
-			throw std::runtime_error{ "Could not retrieve visual info." };
+			throw ashes::BaseException{ "Could not retrieve visual info." };
 		}
 
 		m_glxContext = glXCreateContext( m_display
@@ -185,7 +185,7 @@ namespace ashes::gl
 
 		if ( !m_glxContext )
 		{
-			throw std::runtime_error{ "Could not create a rendering context." };
+			throw ashes::BaseException{ "Could not create a rendering context." };
 		}
 
 		doLoadSytemFunctions();
@@ -256,7 +256,7 @@ namespace ashes::gl
 
 		if ( !getFunction( "glXCreateContextAttribsARB", glCreateContextAttribs, errStream ) )
 		{
-			throw std::runtime_error{ "Couldn't retrieve glXCreateContextAttribsARB: " + errStream.str() };
+			throw ashes::BaseException{ "Couldn't retrieve glXCreateContextAttribsARB: " + errStream.str() };
 		}
 
 		getFunction( "glXSwapIntervalEXT", glXSwapInterval, errStream );
@@ -274,7 +274,7 @@ namespace ashes::gl
 
 		if ( !m_map )
 		{
-			throw std::runtime_error{ "Couldn't create X Colormap" };
+			throw ashes::BaseException{ "Couldn't create X Colormap" };
 		}
 
 		auto extent = getDisplayResolution( displayCreateInfo.displayMode );
@@ -295,12 +295,12 @@ namespace ashes::gl
 
 		if ( !m_window )
 		{
-			throw std::runtime_error{ "Couldn't create X Window" };
+			throw ashes::BaseException{ "Couldn't create X Window" };
 		}
 
 		if ( !XStoreName( m_display, m_window, "DummyWindow" ) )
 		{
-			throw std::runtime_error{ "Couldn't set X Window name" };
+			throw ashes::BaseException{ "Couldn't set X Window name" };
 		}
 
 		auto wmState = XInternAtom( m_display, "_NET_WM_STATE", true );
@@ -314,12 +314,12 @@ namespace ashes::gl
 			, reinterpret_cast< unsigned char *>( &wmFullscreen )
 			, 1 ) )
 		{
-			throw std::runtime_error{ "Couldn't set X Window fulsscreen" };
+			throw ashes::BaseException{ "Couldn't set X Window fulsscreen" };
 		}
 
 		if ( !XMapWindow( m_display, m_window ) )
 		{
-			throw std::runtime_error{ "Couldn't map X Window" };
+			throw ashes::BaseException{ "Couldn't map X Window" };
 		}
 
 		XSync( m_display, False );
@@ -358,7 +358,7 @@ namespace ashes::gl
 		{
 			std::stringstream error;
 			error << "Failed to create an OpenGL " << m_major << "." << m_minor << " context (0x" << std::hex << ::glGetError() << ").";
-			throw std::runtime_error{ error.str() };
+			throw ashes::BaseException{ error.str() };
 		}
 
 		if ( glXSwapInterval )

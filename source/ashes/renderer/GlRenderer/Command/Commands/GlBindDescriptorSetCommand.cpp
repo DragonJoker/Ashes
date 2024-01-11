@@ -320,7 +320,7 @@ namespace ashes::gl
 
 					default:
 						assert( false && "Unsupported dynamic descriptor type" );
-						throw std::runtime_error{ "Unsupported dynamic descriptor type" };
+						throw ashes::BaseException{ "Unsupported dynamic descriptor type" };
 					}
 
 					++dynamicOffsetIndex;

@@ -797,7 +797,7 @@ namespace ashes::d3d11
 
 				default:
 					assert( false && "Unsupported dynamic descriptor type" );
-					throw std::runtime_error{ "Unsupported dynamic descriptor type" };
+					throw ashes::BaseException{ "Unsupported dynamic descriptor type" };
 					break;
 				}
 			}
@@ -935,7 +935,7 @@ namespace ashes::d3d11
 
 				default:
 					assert( false && "Unsupported dynamic descriptor type" );
-					throw std::runtime_error{ "Unsupported dynamic descriptor type" };
+					throw ashes::BaseException{ "Unsupported dynamic descriptor type" };
 					break;
 				}
 			}
@@ -1240,7 +1240,7 @@ namespace ashes::d3d11
 
 				default:
 					assert( false && "Unsupported dynamic descriptor type" );
-					throw std::runtime_error{ "Unsupported dynamic descriptor type" };
+					throw ashes::BaseException{ "Unsupported dynamic descriptor type" };
 					break;
 				}
 			}

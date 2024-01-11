@@ -43,7 +43,7 @@ namespace ashes::gl
 
 			if ( !registered )
 			{
-				throw std::runtime_error{ "Couldn't register the window class" };
+				throw ashes::BaseException{ "Couldn't register the window class" };
 			}
 
 			return registered;
@@ -72,7 +72,7 @@ namespace ashes::gl
 
 			if ( !hWnd )
 			{
-				throw std::runtime_error{ "Couldn't create window" };
+				throw ashes::BaseException{ "Couldn't create window" };
 			}
 
 			return hWnd;
@@ -101,19 +101,19 @@ namespace ashes::gl
 
 		if ( !pixelFormat )
 		{
-			throw std::runtime_error{ "Couldn't find matching pixel formats" };
+			throw ashes::BaseException{ "Couldn't find matching pixel formats" };
 		}
 
 		if ( ::SetPixelFormat( hDC, pixelFormat, &pfd ) == FALSE )
 		{
-			throw std::runtime_error{ "Couldn't set matching pixel format" };
+			throw ashes::BaseException{ "Couldn't set matching pixel format" };
 		}
 
 		auto context = wglCreateContext( hDC );
 
 		if ( !context )
 		{
-			throw std::runtime_error{ "Couldn't create OpenGL context" };
+			throw ashes::BaseException{ "Couldn't create OpenGL context" };
 		}
 
 		return context;

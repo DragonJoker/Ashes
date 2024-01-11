@@ -250,7 +250,7 @@ namespace ashes::gl
 
 				if ( entryPoint.empty() )
 				{
-					throw std::runtime_error{ "Could not find an entry point with stage: "
+					throw ashes::BaseException{ "Could not find an entry point with stage: "
 						+ getShaderStageFlagsName( convert( stage ) ) };
 				}
 
@@ -695,7 +695,7 @@ namespace ashes::gl
 						} );
 					doReworkFrontFace( invertY, result );
 #else
-					throw std::runtime_error{ "Can't parse SPIR-V shaders, pull submodule SpirvCross" };
+					throw ashes::BaseException{ "Can't parse SPIR-V shaders, pull submodule SpirvCross" };
 #endif
 					return vkres;
 				}

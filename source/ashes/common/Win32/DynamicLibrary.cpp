@@ -1,5 +1,7 @@
 #include "common/DynamicLibrary.hpp"
 
+#include "common/Exception.hpp"
+
 #if defined( _WIN32 )
 
 #pragma warning( push )
@@ -61,7 +63,7 @@ namespace ashes
 			std::stringstream stream;
 			stream << "Couldn't load dynamic library at [" << m_path << "]: ";
 			stream << "Error code: " << std::hex << ::GetLastError();
-			throw std::runtime_error{ stream.str() };
+			throw ashes::BaseException{ stream.str() };
 		}
 	}
 

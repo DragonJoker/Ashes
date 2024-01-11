@@ -323,21 +323,21 @@ namespace ashes::gl
 		m_gl##fun = PFN_gl##fun( &::gl##fun );\
 		if ( !m_gl##fun )\
 		{\
-			throw std::runtime_error{ std::string{ "Couldn't load base function " } + "gl"#fun };\
+			throw ashes::BaseException{ std::string{ "Couldn't load base function " } + "gl"#fun };\
 		}
 #else
 #	define GL_LIB_BASE_FUNCTION( fun )\
 		std::stringstream err##fun;\
 		if ( !( getFunction( "gl"#fun, m_gl##fun, err##fun ) ) )\
 		{\
-			throw std::runtime_error{ std::string{ "Couldn't load base function " } + "gl"#fun + err##fun.str() };\
+			throw ashes::BaseException{ std::string{ "Couldn't load base function " } + "gl"#fun + err##fun.str() };\
 		}
 #endif
 #define GL_LIB_FUNCTION( fun )\
 		std::stringstream err##fun;\
 		if ( !( getFunction( "gl"#fun, m_gl##fun, err##fun ) ) )\
 		{\
-			throw std::runtime_error{ std::string{ "Couldn't load function " } + "gl"#fun + err##fun.str() };\
+			throw ashes::BaseException{ std::string{ "Couldn't load function " } + "gl"#fun + err##fun.str() };\
 		}
 
 #define GL_LIB_FUNCTION_OPT( fun )\

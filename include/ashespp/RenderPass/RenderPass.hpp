@@ -49,7 +49,7 @@ namespace ashes
 		*	Creates a frame buffer compatible with this render pass.
 		*\remarks
 		*	If the compatibility between wanted views and the render pass' formats
-		*	is not possible, a std::runtime_error will be thrown.
+		*	is not possible, a BaseException will be thrown.
 		*\param[in] dimensions
 		*	The frame buffer's dimensions.
 		*\param[in] views
@@ -65,7 +65,7 @@ namespace ashes
 		*	Creates a frame buffer compatible with this render pass.
 		*\remarks
 		*	If the compatibility between wanted views and the render pass' formats
-		*	is not possible, a std::runtime_error will be thrown.
+		*	is not possible, a BaseException will be thrown.
 		*\param[in] dimensions
 		*	The frame buffer's dimensions.
 		*\param[in] views
@@ -82,7 +82,7 @@ namespace ashes
 		*	Creates a frame buffer compatible with this render pass.
 		*\remarks
 		*	If the compatibility between wanted views and the render pass' formats
-		*	is not possible, a std::runtime_error will be thrown.
+		*	is not possible, a BaseException will be thrown.
 		*\param[in] dimensions
 		*	The frame buffer's dimensions.
 		*\param[in] views
@@ -100,7 +100,7 @@ namespace ashes
 		*	Creates a frame buffer compatible with this render pass.
 		*\remarks
 		*	If the compatibility between wanted views and the render pass' formats
-		*	is not possible, a std::runtime_error will be thrown.
+		*	is not possible, a BaseException will be thrown.
 		*\param[in] dimensions
 		*	The frame buffer's dimensions.
 		*\param[in] views

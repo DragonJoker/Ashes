@@ -44,8 +44,6 @@ namespace utils
 
 			BlockLocale()
 			{
-				m_prvLoc = std::locale( "" );
-
 				if ( m_prvLoc.name() != "C" )
 				{
 					std::locale::global( std::locale{ "C" } );
@@ -61,7 +59,7 @@ namespace utils
 			}
 
 		private:
-			std::locale m_prvLoc;
+			std::locale m_prvLoc{ std::locale( "" ) };
 		};
 
 		void doInitResources( VkPhysicalDeviceProperties const & props
@@ -225,7 +223,7 @@ namespace utils
 			std::cerr << glshader.getInfoLog() << std::endl;
 			std::cerr << glshader.getInfoDebugLog() << std::endl;
 			std::cerr << source << std::endl;
-			throw std::runtime_error{ "Shader compilation failed." };
+			throw ashes::BaseException{ "Shader compilation failed." };
 		}
 
 		glslang::TProgram glprogram;
@@ -236,7 +234,7 @@ namespace utils
 			std::cerr << glprogram.getInfoLog() << std::endl;
 			std::cerr << glprogram.getInfoDebugLog() << std::endl;
 			std::cerr << source << std::endl;
-			throw std::runtime_error{ "Shader linkage failed." };
+			throw ashes::BaseException{ "Shader linkage failed." };
 		}
 
 		ashes::UInt32Array spirv;

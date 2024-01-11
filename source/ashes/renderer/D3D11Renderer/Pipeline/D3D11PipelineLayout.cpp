@@ -23,7 +23,7 @@ namespace ashes::d3d11
 		{
 			for ( auto & binding : *get( descriptorLayout ) )
 			{
-				addBinding( set, binding, m_shaderBindings, indices, true );
+				addBinding( set, binding, m_shaderBindings, indices );
 			}
 
 			++set;

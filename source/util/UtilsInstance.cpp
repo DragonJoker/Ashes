@@ -66,7 +66,7 @@ namespace utils
 						return extension.extensionName == name;
 					} ) )
 				{
-					throw std::runtime_error{ "Extension " + name + " is not supported." };
+					throw ashes::BaseException{ "Extension " + name + " is not supported." };
 				}
 			}
 		}

@@ -21,7 +21,7 @@ namespace ashes
 		, PFN_vkFlushMappedMemoryRanges flushMemory
 		, PFN_vkUnmapMemory unmapMemory )
 	{
-		InlineUboPtr inlineUbo = std::make_unique< InlineUbo >();
+		auto inlineUbo = std::make_unique< InlineUbo >();
 		VkBufferCreateInfo bufferInfo
 		{
 			VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
@@ -33,12 +33,12 @@ namespace ashes
 			0u,
 			nullptr,
 		};
-		auto res = createBuffer( device
-			, &bufferInfo
-			, nullptr
-			, &inlineUbo->buffer );
 
-		if ( res == VK_SUCCESS )
+		if ( auto res = createBuffer( device
+				, &bufferInfo
+				, nullptr
+				, &inlineUbo->buffer );
+			res == VK_SUCCESS )
 		{
 			VkMemoryRequirements requirements;
 			getMemoryRequirements( device

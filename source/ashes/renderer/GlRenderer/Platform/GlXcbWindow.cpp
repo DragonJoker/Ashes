@@ -30,19 +30,19 @@ namespace ashes::gl
 
 			if ( !m_display )
 			{
-				throw std::runtime_error{ "Couldn't open display" };
+				throw ashes::BaseException{ "Couldn't open display" };
 			}
 
 			m_connection = XGetXCBConnection( m_display );
 
 			if ( !m_connection )
 			{
-				throw std::runtime_error{ "Couldn't get xcb connection from display" };
+				throw ashes::BaseException{ "Couldn't get xcb connection from display" };
 			}
 
 			if ( xcb_connection_has_error( m_connection ) )
 			{
-				throw std::runtime_error{ "Errors occured in connecting to X server" };
+				throw ashes::BaseException{ "Errors occured in connecting to X server" };
 			}
 
 			xcb_setup_t const * setup = xcb_get_setup( m_connection );
@@ -71,7 +71,7 @@ namespace ashes::gl
 			{
 				std::stringstream stream;
 				stream << "Failed to create XCB Window: " << int( error->error_code );
-				throw std::runtime_error{ stream.str() };
+				throw ashes::BaseException{ stream.str() };
 			}
 
 			m_context = std::make_unique< ContextEgl >( m_display

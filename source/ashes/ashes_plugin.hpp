@@ -4,6 +4,7 @@
 #include "ashes/ashes.h"
 
 #include <ashes/common/DynamicLibrary.hpp>
+#include <ashes/common/Exception.hpp>
 #include <ashes/common/FileUtils.hpp>
 
 #pragma warning( push )
@@ -34,7 +35,7 @@ struct Plugin
 
 		if ( !library->getFunction( "ashGetPluginDescription", fnGetPluginDescription ) )
 		{
-			throw std::runtime_error{ "[" + ashes::getFileName( library->getPath() ) + "] is not a renderer plugin" };
+			throw ashes::BaseException{ "[" + ashes::getFileName( library->getPath() ) + "] is not a renderer plugin" };
 		}
 
 		fnGetPluginDescription( &description );

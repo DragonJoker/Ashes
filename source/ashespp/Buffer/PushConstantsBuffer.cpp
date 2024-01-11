@@ -32,7 +32,7 @@ namespace ashes
 			{
 				if ( offset > constant.offset )
 				{
-					throw std::runtime_error{ "Inconsistency detected between given and computed offsets" };
+					throw ashes::BaseException{ "Inconsistency detected between given and computed offsets" };
 				}
 
 				offset = constant.offset + getSize( constant.format ) * constant.arraySize;

@@ -72,8 +72,7 @@ namespace ashes
 	void addBinding( uint32_t set
 		, VkDescriptorSetLayoutBinding const & binding
 		, ShaderBindings & bindings
-		, ShaderBindingIndices & indices
-		, bool commonUavNamespace );
+		, ShaderBindingIndices & indices );
 
 	void copyBinding( uint32_t set
 		, VkDescriptorSetLayoutBinding const & binding

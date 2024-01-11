@@ -83,7 +83,7 @@ namespace ashes::d3d11
 			if ( !checkError( m_device, hr, "CreateSwapChain" )
 				|| !m_swapChain )
 			{
-				throw std::runtime_error{ "Could not create the swapchain" };
+				throw ashes::BaseException{ "Could not create the swapchain" };
 			}
 
 			if ( get( m_createInfo.surface )->isDisplay() )
@@ -92,7 +92,7 @@ namespace ashes::d3d11
 
 				if ( !checkError( m_device, hr, "SetFullscreenState" ) )
 				{
-					throw std::runtime_error{ "Could not set the swapchain to fullscreen mode" };
+					throw ashes::BaseException{ "Could not set the swapchain to fullscreen mode" };
 				}
 
 				hr = m_swapChain->ResizeTarget( &m_displayMode );
@@ -100,7 +100,7 @@ namespace ashes::d3d11
 				if ( !checkError( m_device, hr, "ResizeTarget" ) )
 				{
 					hr = m_swapChain->SetFullscreenState( FALSE, get( get( device )->getPhysicalDevice() )->getOutput() );
-					throw std::runtime_error{ "Could not resize the swapchain" };
+					throw ashes::BaseException{ "Could not resize the swapchain" };
 				}
 			}
 
@@ -112,7 +112,7 @@ namespace ashes::d3d11
 
 			if ( !checkError( m_device, hr, "SwapChain::GetBuffer" ) )
 			{
-				throw std::runtime_error( "GetBuffer() failed" );
+				throw ashes::BaseException( "GetBuffer() failed" );
 			}
 
 			m_swapchainExtent = VkExtent2D{ m_displayMode.Width, m_displayMode.Height };
