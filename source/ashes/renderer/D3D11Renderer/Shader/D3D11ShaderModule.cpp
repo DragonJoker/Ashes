@@ -170,7 +170,7 @@ namespace ashes::d3d11
 
 			if ( entryPoint.empty() )
 			{
-				throw std::runtime_error{ "Could not find an entry point." };
+				throw ashes::BaseException{ "Could not find an entry point." };
 			}
 
 			compiler.set_entry_point( entryPoint, model );
@@ -377,7 +377,7 @@ namespace ashes::d3d11
 
 #else
 
-				throw std::runtime_error{ "Can't parse SPIR-V shaders, pull submodule SpirvCross" };
+				throw ashes::BaseException{ "Can't parse SPIR-V shaders, pull submodule SpirvCross" };
 
 #endif
 			}

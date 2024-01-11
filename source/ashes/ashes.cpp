@@ -100,19 +100,18 @@ namespace details
 	PluginArray listPlugins()
 	{
 		PluginArray result;
-		auto files = ashes::lookForSharedLibrary( []( std::string const &
+
+		for ( auto & file : ashes::lookForSharedLibrary( []( std::string const &
 			, std::string const & name )
 			{
 				return ash::isAshesPlugin( name );
-			} );
-
-		for ( auto & file : files )
+			} ) )
 		{
 			try
 			{
 				result.emplace_back( std::make_unique< ashes::DynamicLibrary >( file ) );
 			}
-			catch ( std::exception & exc )
+			catch ( ashes::BaseException & exc )
 			{
 				// Prevent useless noisy message
 				std::clog << exc.what() << std::endl;

@@ -6,8 +6,4 @@ See LICENSE file in root folder.
 #define ___AshesPP_PipelineDynamicStateCreateFlags_HPP___
 #pragma once
 
-namespace ashes
-{
-}
-
 #endif

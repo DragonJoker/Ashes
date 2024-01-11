@@ -6,8 +6,4 @@ See LICENSE file in root folder.
 #define ___AshesPP_PipelineViewportStateCreateFlags_HPP___
 #pragma once
 
-namespace ashes
-{
-}
-
 #endif

@@ -397,7 +397,7 @@ namespace ashes
 			result = std::make_unique< SwapChain >( *this
 				, std::move( createInfo ) );
 		}
-		catch ( std::exception & exc )
+		catch ( Exception & exc )
 		{
 			log::error << "Could not create the swap chain:\n" << exc.what() << "\n";
 		}
@@ -420,7 +420,7 @@ namespace ashes
 				, debugName
 				, std::move( createInfo ) );
 		}
-		catch ( std::exception & exc )
+		catch ( Exception & exc )
 		{
 			log::error << "Could not create the swap chain:\n" << exc.what() << "\n";
 		}

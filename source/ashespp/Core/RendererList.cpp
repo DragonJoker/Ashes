@@ -56,19 +56,19 @@ namespace ashes
 
 		if ( !m_library )
 		{
-			throw std::runtime_error{ "Could not find Ashes shared library" };
+			throw ashes::BaseException{ "Could not find Ashes shared library" };
 		}
 
 		PFN_ashEnumeratePluginsDescriptions enumeratePluginDescriptions;
 		if ( !m_library->getFunction( "ashEnumeratePluginsDescriptions", enumeratePluginDescriptions ) )
 		{
-			throw std::runtime_error{ "[" + ashes::getFileName( m_library->getPath() ) + "] is not Ashes" };
+			throw ashes::BaseException{ "[" + ashes::getFileName( m_library->getPath() ) + "] is not Ashes" };
 		}
 
 		PFN_ashGetPluginDescription getCurrentPluginDescription;
 		if ( !m_library->getFunction( "ashGetCurrentPluginDescription", getCurrentPluginDescription ) )
 		{
-			throw std::runtime_error{ "[" + ashes::getFileName( m_library->getPath() ) + "] is not Ashes" };
+			throw ashes::BaseException{ "[" + ashes::getFileName( m_library->getPath() ) + "] is not Ashes" };
 		}
 
 		uint32_t count = 0u;
@@ -106,7 +106,7 @@ namespace ashes
 		{
 			static std::string const Error = "Unknown Ashes plugin type: ";
 			auto error = Error + name;
-			throw std::runtime_error{ error };
+			throw ashes::BaseException{ error };
 		}
 
 		if ( !it->support.supported )
@@ -114,7 +114,7 @@ namespace ashes
 			static std::string const Plugin = "Plugin [";
 			static std::string const Error = "] is not supported";
 			auto error = Plugin + it->description + Error;
-			throw std::runtime_error{ error };
+			throw ashes::BaseException{ error };
 		}
 
 		m_current = *it;

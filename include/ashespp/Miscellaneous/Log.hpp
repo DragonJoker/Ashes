@@ -141,6 +141,11 @@ namespace ashes
 			using int_type = std::streambuf::int_type;
 			using traits_type = std::streambuf::traits_type;
 
+			LogStreambufT( LogStreambufT const & ) = delete;
+			LogStreambufT & operator=( LogStreambufT const & ) = delete;
+			LogStreambufT( LogStreambufT && )noexcept = delete;
+			LogStreambufT & operator=( LogStreambufT && )noexcept = delete;
+
 			explicit LogStreambufT( ostream_type & stream )
 				: m_stream( stream )
 			{

@@ -24,9 +24,7 @@ namespace ashes
 			set_loader_magic_value( &m_loaderData );
 		}
 
-		~IcdObject()
-		{
-		}
+		~IcdObject()noexcept = default;
 
 	private:
 		VK_LOADER_DATA m_loaderData;

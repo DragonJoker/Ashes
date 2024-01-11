@@ -1,5 +1,7 @@
 #include "common/DynamicLibrary.hpp"
 
+#include "common/Exception.hpp"
+
 #if defined( __linux__ )
 
 #include <iostream>
@@ -52,7 +54,7 @@ namespace ashes
 			std::stringstream stream;
 			stream << "Couldn't load dynamic library at [" << m_path << "]: ";
 			stream << "Error code: " << std::hex << dlerror();
-			throw std::runtime_error{ stream.str() };
+			throw ashes::BaseException{ stream.str() };
 		}
 	}
 

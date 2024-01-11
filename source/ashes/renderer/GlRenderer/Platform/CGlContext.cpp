@@ -77,7 +77,7 @@ namespace ashes::gl
 	{
 		if (error != kCGLNoError)
 		{
-			throw std::runtime_error{ name + ": " + getName( error ) };
+			throw ashes::BaseException{ name + ": " + getName( error ) };
 		}
 	}
 

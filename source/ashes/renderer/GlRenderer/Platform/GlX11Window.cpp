@@ -25,7 +25,7 @@ namespace ashes::gl
 
 			if ( !m_display )
 			{
-				throw std::runtime_error{ "Couldn't open X Display" };
+				throw ashes::BaseException{ "Couldn't open X Display" };
 			}
 
 			int attributes[] =
@@ -77,7 +77,7 @@ namespace ashes::gl
 
 			if ( bestFbcIndex == -1 )
 			{
-				throw std::runtime_error{ "Couldn't find appropriate GLXFBConfig" };
+				throw ashes::BaseException{ "Couldn't find appropriate GLXFBConfig" };
 			}
 
 			auto fbConfig = configs[bestFbcIndex];
@@ -85,7 +85,7 @@ namespace ashes::gl
 
 			if ( !vi )
 			{
-				throw std::runtime_error{ "Couldn't find get XVisualInfo" };
+				throw ashes::BaseException{ "Couldn't find get XVisualInfo" };
 			}
 
 			Window root = RootWindow( m_display, vi->screen );
@@ -93,7 +93,7 @@ namespace ashes::gl
 
 			if ( !m_map )
 			{
-				throw std::runtime_error{ "Couldn't create X Colormap" };
+				throw ashes::BaseException{ "Couldn't create X Colormap" };
 			}
 
 			XSetWindowAttributes swa;
@@ -113,7 +113,7 @@ namespace ashes::gl
 
 			if ( !m_window )
 			{
-				throw std::runtime_error{ "Couldn't create X Window" };
+				throw ashes::BaseException{ "Couldn't create X Window" };
 			}
 
 			XStoreName( m_display, m_window, fullName.c_str() );
@@ -138,14 +138,14 @@ namespace ashes::gl
 
 			if ( !ok )
 			{
-				throw std::runtime_error{ "Could not query GLX version." };
+				throw ashes::BaseException{ "Could not query GLX version." };
 			}
 
 			m_glxContext = glXCreateContext( m_display, vi, nullptr, GL_TRUE );
 
 			if ( !m_glxContext )
 			{
-				throw std::runtime_error{ "Could not create a rendering context." };
+				throw ashes::BaseException{ "Could not create a rendering context." };
 			}
 
 			glXMakeCurrent( m_display, m_window, m_glxContext );

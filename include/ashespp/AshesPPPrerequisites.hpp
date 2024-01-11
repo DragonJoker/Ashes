@@ -183,7 +183,7 @@ namespace ashes
 	*\brief
 	*	Maximum time to wait in nanoseconds.
 	*/
-	static const uint64_t MaxTimeout = ~( 0ull );
+	static const uint64_t MaxTimeout = ~0ULL;
 
 	template< typename T >
 	using BufferPtr = std::unique_ptr< Buffer< T > >;
@@ -315,7 +315,7 @@ namespace ashes
 		VkObject & operator=( VkObject const & ) = delete;
 		VkObject & operator=( VkObject && )noexcept = delete;
 
-		VkObject( std::string name )noexcept
+		explicit VkObject( std::string name )noexcept
 			: m_name{ std::move( name ) }
 		{
 		}

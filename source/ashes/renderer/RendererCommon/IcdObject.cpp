@@ -5,7 +5,3 @@
 *	Sylvain Doremus
 */
 #include "renderer/RendererCommon/IcdObject.hpp"
-
-namespace ashes
-{
-}

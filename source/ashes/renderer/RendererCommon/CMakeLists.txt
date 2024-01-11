@@ -93,25 +93,6 @@ set( ${PROJECT_NAME}_HDR_FILES
 )
 source_group( "Header Files\\Helper" FILES ${${PROJECT_NAME}_FOLDER_HDR_FILES} )
 
-set( ${PROJECT_NAME}_FOLDER_SRC_FILES
-	Layer/Layer.cpp
-	Layer/ValidationLayer.cpp
-)
-set( ${PROJECT_NAME}_FOLDER_HDR_FILES
-	Layer/Layer.hpp
-	Layer/ValidationLayer.hpp
-)
-set( ${PROJECT_NAME}_SRC_FILES
-	${${PROJECT_NAME}_SRC_FILES}
-	${${PROJECT_NAME}_FOLDER_SRC_FILES}
-)
-set( ${PROJECT_NAME}_HDR_FILES
-	${${PROJECT_NAME}_HDR_FILES}
-	${${PROJECT_NAME}_FOLDER_HDR_FILES}
-)
-source_group( "Header Files\\Layer" FILES ${${PROJECT_NAME}_FOLDER_HDR_FILES} )
-source_group( "Source Files\\Layer" FILES ${${PROJECT_NAME}_FOLDER_SRC_FILES} )
-
 add_library( ${PROJECT_NAME} STATIC
 	${${PROJECT_NAME}_SRC_FILES}
 	${${PROJECT_NAME}_HDR_FILES}
