@@ -159,7 +159,7 @@ namespace ashes::gl
 	template<>
 	struct GlParamLoggerRec<>
 	{
-		static inline void log( std::stringstream & stream )
+		static inline void log( [[maybe_unused]] std::stringstream const & stream )
 		{
 		}
 	};
@@ -231,7 +231,7 @@ namespace ashes::gl
 		static inline void log( std::stringstream & stream
 			, ParamT const & paramT
 			, ParamU const & paramU
-			, ParamsT ... params )
+			, ParamsT const & ... params )
 		{
 			if constexpr ( ( std::is_same_v< ParamU, GLuint * >
 					|| std::is_same_v< ParamU, const char ** > )
@@ -242,23 +242,23 @@ namespace ashes::gl
 			{
 				GlParamLoggerRec< ParamT, ParamU >::log( stream, paramT, paramU );
 				stream << ", ";
-				GlParamLoggerRec< ParamsT... >::log( stream, std::forward< ParamsT >( params )... );
+				GlParamLoggerRec< ParamsT... >::log( stream, params... );
 			}
 			else
 			{
 				GlParamLoggerRec< ParamT >::log( stream, paramT );
 				stream << ", ";
-				GlParamLoggerRec< ParamU, ParamsT... >::log( stream, paramU, std::forward< ParamsT >( params )... );
+				GlParamLoggerRec< ParamU, ParamsT... >::log( stream, paramU, params... );
 			}
 		}
 	};
 
 	template< typename ... ParamsT >
 	void logParams( std::stringstream & stream
-		, ParamsT ... params )
+		, ParamsT const & ... params )
 	{
 		stream << "(";
-		GlParamLoggerRec< ParamsT... >::log( stream, std::forward< ParamsT >( params )... );
+		GlParamLoggerRec< ParamsT... >::log( stream, params... );
 		stream << ")";
 	}
 
@@ -270,33 +270,33 @@ namespace ashes::gl
 		static inline auto call( std::stringstream & stream
 			, FuncT function
 			, char const * const name
-			, ParamsT ... params )
+			, ParamsT const & ... params )
 		{
 			stream << name;
-			logParams( stream, std::forward< ParamsT >( params )... );
+			logParams( stream, params... );
 			logStream( stream );
-			return function( std::forward< ParamsT >( params )... );
+			return function( params... );
 		}
 
 		static inline void callCreate( std::stringstream & stream
 			, FuncT function
 			, char const * const name
-			, ParamsT ... params )
+			, ParamsT const & ... params )
 		{
-			function( std::forward< ParamsT >( params )... );
+			function( params... );
 			stream << name;
-			logParams( stream, std::forward< ParamsT >( params )... );
+			logParams( stream, params... );
 			logStream( stream );
 		}
 
 		static inline auto callNonVoid( std::stringstream & stream
 			, FuncT function
 			, char const * const name
-			, ParamsT ... params )
+			, ParamsT const & ... params )
 		{
-			auto result = function( std::forward< ParamsT >( params )... );
+			auto result = function( params... );
 			stream << toString( result ) << " = " << name;
-			logParams( stream, std::forward< ParamsT >( params )... );
+			logParams( stream, params... );
 			logStream( stream );
 			return result;
 		}
@@ -329,7 +329,7 @@ namespace ashes::gl
 	template< typename FuncT, typename ... ParamsT >
 	inline bool executeFunction( FuncT function
 		, char const * const name
-		, ParamsT ... params )
+		, ParamsT && ... params )
 	{
 		std::stringstream stream;
 		GlFuncCaller< FuncT, ParamsT... >::call( stream
@@ -343,7 +343,7 @@ namespace ashes::gl
 	inline bool executeFunction( ContextLock const & context
 		, FuncT function
 		, char const * const name
-		, ParamsT ... params )
+		, ParamsT && ... params )
 	{
 		std::stringstream stream;
 		GlFuncCaller< FuncT, ParamsT... >::call( stream
@@ -357,7 +357,7 @@ namespace ashes::gl
 	inline bool executeCreateFunction( ContextLock const & context
 		, FuncT function
 		, char const * const name
-		, ParamsT ... params )
+		, ParamsT && ... params )
 	{
 		std::stringstream stream;
 		GlFuncCaller< FuncT, ParamsT... >::callCreate( stream
@@ -371,7 +371,7 @@ namespace ashes::gl
 	inline auto executeNonVoidFunction( ContextLock const & context
 		, FuncT function
 		, char const * const name
-		, ParamsT ... params )
+		, ParamsT && ... params )
 	{
 		std::stringstream stream;
 		auto result = GlFuncCaller< FuncT, ParamsT... >::callNonVoid( stream
@@ -385,14 +385,14 @@ namespace ashes::gl
 	template< typename ... ParamsT >
 	inline auto glCallCheckError( ContextLock const & context
 		, char const * const name
-		, ParamsT ... params )
+		, ParamsT const & ... params )
 	{
 		return glCheckError( context
 			, [name , &params...]()
 			{
 				std::stringstream stream;
 				stream << name;
-				logParams( stream, std::forward< ParamsT >( params )... );
+				logParams( stream, params... );
 				return stream.str();
 			}
 			, true );

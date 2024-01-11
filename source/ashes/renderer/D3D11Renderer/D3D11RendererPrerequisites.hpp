@@ -1,4 +1,4 @@
-﻿/**
+/**
 *\file
 *	RenderLibPrerequisites.h
 *\author
@@ -196,7 +196,7 @@ DECLARE_GUID( IID_IDXGIFactory, 0x7b7166ec, 0x21c7, 0x44ae, 0xb2, 0x1a, 0xc9, 0x
 				char name[1024]{ 0 };\
 				uint64_t address = uint64_t( obj );\
 				sprintf_s( name, "%30s [0x%0I64X]", #type, address );\
-				obj->SetPrivateData( WKPDID_D3DDebugObjectName, UINT( strlen( name ) ), name );\
+				obj->SetPrivateData( WKPDID_D3DDebugObjectName, UINT( strnlen( name, 1024 ) ), name );\
 				std::clog << name << "\n";\
 			}
 #	else
@@ -206,7 +206,7 @@ DECLARE_GUID( IID_IDXGIFactory, 0x7b7166ec, 0x21c7, 0x44ae, 0xb2, 0x1a, 0xc9, 0x
 				char name[1024] = { 0 };\
 				uint64_t address = uint64_t( obj );\
 				sprintf( name, "%30s [0x%016X]", #type, address );\
-				obj->SetPrivateData( WKPDID_D3DDebugObjectName, UINT( strlen( name ) ), name );\
+				obj->SetPrivateData( WKPDID_D3DDebugObjectName, UINT( strnlen( name, 1024 ) ), name );\
 				std::clog << name << "\n";\
 			}
 #	endif

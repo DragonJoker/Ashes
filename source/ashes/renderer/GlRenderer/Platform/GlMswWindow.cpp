@@ -121,19 +121,22 @@ namespace ashes::gl
 
 	RenderWindow::RenderWindow( int major
 		, int minor
-		, std::string const & name ) try
-		: m_hInstance{ ::GetModuleHandleA( nullptr ) }
-		, m_class{ win::registerClass( m_hInstance, name ) }
-		, m_hWnd{ win::createWindow( m_hInstance, m_class, name, WS_OVERLAPPEDWINDOW, { 640u, 480u } ) }
-		, m_hDC{ ::GetDC( m_hWnd ) }
-		, m_hContext{ createContext( m_hDC, major, minor, m_pfd.pfd ) }
+		, std::string const & name )
 	{
-		wglMakeCurrent( m_hDC, m_hContext );
-	}
-	catch ( std::exception & )
-	{
-		doCleanup();
-		throw;
+		try
+		{
+			m_hInstance = ::GetModuleHandleA( nullptr );
+			m_class = win::registerClass( m_hInstance, name );
+			m_hWnd = win::createWindow( m_hInstance, m_class, name, WS_OVERLAPPEDWINDOW, { 640u, 480u } );
+			m_hDC = ::GetDC( m_hWnd );
+			m_hContext = createContext( m_hDC, major, minor, m_pfd.pfd );
+			wglMakeCurrent( m_hDC, m_hContext );
+		}
+		catch ( std::exception & )
+		{
+			doCleanup();
+			throw;
+		}
 	}
 
 	RenderWindow::~RenderWindow()
@@ -147,21 +150,25 @@ namespace ashes::gl
 		if ( m_hContext )
 		{
 			wglDeleteContext( m_hContext );
+			m_hContext = nullptr;
 		}
 
 		if ( m_hDC )
 		{
 			::ReleaseDC( m_hWnd, m_hDC );
+			m_hDC = nullptr;
 		}
 
 		if ( m_hWnd )
 		{
 			::DestroyWindow( m_hWnd );
+			m_hWnd = nullptr;
 		}
 
 		if ( m_class )
 		{
 			::UnregisterClassA( LPCSTR( WPARAM( m_class ) ), m_hInstance );
+			m_class = 0;
 		}
 
 	}

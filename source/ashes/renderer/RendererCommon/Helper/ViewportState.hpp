@@ -18,16 +18,13 @@ namespace ashes
 	*/
 	inline VkPipelineViewportStateCreateInfo getDefaultViewportState()
 	{
-		return
-		{
-			VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
-			nullptr,
-			0u,
-			1u,
-			nullptr,
-			1u,
-			nullptr,
-		};
+		return{ VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO
+			, nullptr
+			, 0u
+			, 1u
+			, nullptr
+			, 1u
+			, nullptr };
 	}
 
 	inline bool operator==( VkPipelineViewportStateCreateInfo const & lhs

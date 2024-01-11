@@ -703,7 +703,7 @@ namespace ashes::gl
 				isGlsl = true;
 				std::vector< char > glslCode( shader.size() * sizeof( uint32_t ) );
 				std::memcpy( glslCode.data(), shader.data(), glslCode.size() );
-				result = std::string( glslCode.data(), glslCode.data() + strlen( glslCode.data() ) );
+				result = std::string( glslCode.data(), glslCode.data() + strnlen( glslCode.data(), glslCode.size() ) );
 				return VK_SUCCESS;
 			}
 
