@@ -27,11 +27,11 @@ namespace ashes::gl
 		RenderWindow( int major
 			, int minor
 			, std::string const & name );
-		~RenderWindow();
+		~RenderWindow()noexcept;
 		VkXlibSurfaceCreateInfoKHR getCreateInfo()const;
 
 	private:
-		void doCleanup();
+		void doCleanup()noexcept;
 
 	private:
 		Colormap m_map{ 0 };

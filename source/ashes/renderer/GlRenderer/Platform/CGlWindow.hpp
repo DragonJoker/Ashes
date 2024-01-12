@@ -18,7 +18,7 @@ namespace ashes::gl
 		RenderWindow( int major
 			, int minor
 			, std::string const & name );
-		~RenderWindow();
+		~RenderWindow()noexcept;
 		VkMacOSSurfaceCreateInfoMVK getCreateInfo()const;
 
 	private:

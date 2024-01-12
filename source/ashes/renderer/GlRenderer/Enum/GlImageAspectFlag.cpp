@@ -46,10 +46,6 @@ namespace ashes::gl
 			result |= GL_STENCIL_BUFFER_BIT;
 		}
 
-		if ( ashes::checkFlag( flags, VK_IMAGE_ASPECT_METADATA_BIT ) )
-		{
-		}
-
 		return result;
 	}
 

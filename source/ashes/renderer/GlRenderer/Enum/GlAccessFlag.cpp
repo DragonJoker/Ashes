@@ -21,13 +21,13 @@ namespace ashes::gl
 		}
 	}
 
-	GLenum convertAccessFlags( VkAccessFlags const & flags )
+	GLenum convertAccessFlags( VkAccessFlags const & )
 	{
 		GLenum result{ 0 };
 		return result;
 	}
 
-	VkAccessFlags convertAccessFlags( GLenum flags )
+	VkAccessFlags convertAccessFlags( GLenum )
 	{
 		VkAccessFlags result{ 0u };
 		return result;

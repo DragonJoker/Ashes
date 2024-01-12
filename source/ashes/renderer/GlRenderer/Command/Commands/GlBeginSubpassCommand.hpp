@@ -11,6 +11,6 @@ namespace ashes::gl
 	void buildBeginSubpassCommand( ContextStateStack & stack
 		, VkRenderPass renderPass
 		, VkFramebuffer frameBuffer
-		, VkSubpassDescription subpass
+		, VkSubpassDescription const & subpass
 		, CmdList & list );
 }

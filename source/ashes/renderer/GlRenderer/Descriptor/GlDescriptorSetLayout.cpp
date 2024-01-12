@@ -4,7 +4,7 @@
 
 namespace ashes::gl
 {
-	DescriptorSetLayout::DescriptorSetLayout( VkAllocationCallbacks const * allocInfo
+	DescriptorSetLayout::DescriptorSetLayout( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkDevice device
 		, VkDescriptorSetLayoutCreateInfo createInfo )
 		: m_device{ device }
@@ -14,7 +14,7 @@ namespace ashes::gl
 		registerObject( m_device, *this );
 	}
 
-	DescriptorSetLayout::~DescriptorSetLayout()
+	DescriptorSetLayout::~DescriptorSetLayout()noexcept
 	{
 		unregisterObject( m_device, *this );
 	}

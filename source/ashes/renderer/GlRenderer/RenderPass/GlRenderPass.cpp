@@ -15,9 +15,9 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	RenderPass::RenderPass( VkAllocationCallbacks const * allocInfo
+	RenderPass::RenderPass( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkDevice device
-		, VkRenderPassCreateInfo createInfo )
+		, VkRenderPassCreateInfo const & createInfo )
 		: m_device{ device }
 		, m_attachments{ makeVector( createInfo.pAttachments, createInfo.attachmentCount ) }
 		, m_subpasses{ makeVector( createInfo.pSubpasses, createInfo.subpassCount ) }
@@ -99,7 +99,7 @@ namespace ashes::gl
 		registerObject( m_device, *this );
 	}
 
-	RenderPass::~RenderPass()
+	RenderPass::~RenderPass()noexcept
 	{
 		unregisterObject( m_device, *this );
 	}
@@ -148,7 +148,7 @@ namespace ashes::gl
 	}
 
 	void RenderPass::referenceAttach( VkAttachmentReference const & value
-		, VkAttachmentReferenceArray & attachments )
+		, VkAttachmentReferenceArray & attachments )const
 	{
 		auto it = std::find_if( attachments.begin()
 			, attachments.end()
@@ -167,7 +167,7 @@ namespace ashes::gl
 	}
 
 	void RenderPass::referenceAttach( Optional< VkAttachmentReference > const & value
-		, VkAttachmentReferenceArray & attachments )
+		, VkAttachmentReferenceArray & attachments )const
 	{
 		if ( bool( value ) )
 		{
@@ -176,7 +176,7 @@ namespace ashes::gl
 	}
 
 	void RenderPass::referenceAttaches( VkAttachmentReferenceArray const & values
-		, VkAttachmentReferenceArray & attachments )
+		, VkAttachmentReferenceArray & attachments )const
 	{
 		for ( auto & value : values )
 		{

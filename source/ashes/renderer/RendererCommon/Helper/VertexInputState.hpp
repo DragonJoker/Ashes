@@ -12,16 +12,13 @@ namespace ashes
 {
 	inline VkPipelineVertexInputStateCreateInfo getVertexInputState()
 	{
-		return
-		{
-			VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-			nullptr,
-			0u,
-			0u,
-			nullptr,
-			0u,
-			nullptr,
-		};
+		return { VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO
+			, nullptr
+			, 0u
+			, 0u
+			, nullptr
+			, 0u
+			, nullptr };
 	}
 
 	inline bool operator==( VkPipelineVertexInputStateCreateInfo const & lhs

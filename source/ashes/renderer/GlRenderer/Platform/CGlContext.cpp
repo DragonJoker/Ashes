@@ -172,10 +172,9 @@ namespace ashes::gl
 		checkCGLErrorCode( errorCode, "CGLSetCurrentContext - m_cglContext" );
 	}
 
-	void CoreContext::disable()const
+	void CoreContext::disable()const noexcept
 	{
-		auto errorCode = CGLSetCurrentContext( nullptr );
-		checkCGLErrorCode( errorCode, "CGLSetCurrentContext - nullptr" );
+		CGLSetCurrentContext( nullptr );
 	}
 
 	void CoreContext::swapBuffers()const

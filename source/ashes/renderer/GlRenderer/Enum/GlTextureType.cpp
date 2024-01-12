@@ -154,8 +154,7 @@ namespace ashes::gl
 		}
 
 		GlTextureType convert( VkImageType const & value
-			, uint32_t layerCount
-			, VkImageCreateFlags flags )
+			, uint32_t layerCount )
 		{
 			switch ( value )
 			{
@@ -201,7 +200,7 @@ namespace ashes::gl
 	{
 		if ( hasTextureViews( physicalDevice ) )
 		{
-			return gl4::convert( mode, layerCount, flags );
+			return gl4::convert( mode, layerCount );
 		}
 
 		return gl3::convert( mode, layerCount, flags );

@@ -50,7 +50,7 @@ namespace ashes::gl
 		m_context->enable();
 	}
 
-	void X11EglContext::disable()const
+	void X11EglContext::disable()const noexcept
 	{
 		m_context->disable();
 	}

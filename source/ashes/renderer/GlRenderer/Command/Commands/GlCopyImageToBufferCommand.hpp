@@ -10,7 +10,7 @@ namespace ashes::gl
 {
 	void buildCopyImageToBufferCommand( ContextStateStack & stack
 		, VkDevice device
-		, VkBufferImageCopy copyInfo
+		, VkBufferImageCopy const & copyInfo
 		, VkImage src
 		, VkBuffer dst
 		, CmdList & list );

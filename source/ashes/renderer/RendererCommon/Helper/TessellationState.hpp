@@ -12,13 +12,10 @@ namespace ashes
 {
 	inline VkPipelineTessellationStateCreateInfo getDefaultTessellationState()
 	{
-		return
-		{
-			VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO,
-			nullptr,
-			0u,
-			0u,
-		};
+		return { VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO
+			, nullptr
+			, 0u
+			, 0u };
 	}
 
 	inline bool operator==( VkPipelineTessellationStateCreateInfo const & lhs, VkPipelineTessellationStateCreateInfo const & rhs )

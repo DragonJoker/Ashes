@@ -6,10 +6,10 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	void buildResetQueryPoolCommand( VkQueryPool pool
-		, uint32_t firstQuery
-		, uint32_t queryCount
-		, CmdList & list )
+	void buildResetQueryPoolCommand( [[maybe_unused]] VkQueryPool pool
+		, [[maybe_unused]] uint32_t firstQuery
+		, [[maybe_unused]] uint32_t queryCount
+		, [[maybe_unused]] CmdList & list )
 	{
 		glLogCommand( list, "ResetQueryPoolCommand" );
 	}

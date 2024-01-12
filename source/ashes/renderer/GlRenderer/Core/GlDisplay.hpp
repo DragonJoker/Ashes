@@ -17,7 +17,7 @@ namespace ashes::gl
 			, VkDisplayPropertiesKHR const & properties
 			, uint32_t screenIndex
 			, std::vector< VkDisplayModeParametersKHR > const & displayModesParams );
-		~DisplayKHR();
+		~DisplayKHR()noexcept;
 
 		std::vector< VkDisplayModePropertiesKHR > const & getDisplayModeProperties()const;
 

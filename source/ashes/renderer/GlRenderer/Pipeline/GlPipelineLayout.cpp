@@ -9,9 +9,9 @@
 
 namespace ashes::gl
 {
-	PipelineLayout::PipelineLayout( VkAllocationCallbacks const * allocInfo
+	PipelineLayout::PipelineLayout( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkDevice device
-		, VkPipelineLayoutCreateInfo createInfo )
+		, VkPipelineLayoutCreateInfo const & createInfo )
 		: m_device{ device }
 		, m_setLayouts{ createInfo.pSetLayouts, createInfo.pSetLayouts + createInfo.setLayoutCount }
 		, m_pushConstantRanges{ createInfo.pPushConstantRanges, createInfo.pPushConstantRanges + createInfo.pushConstantRangeCount }
@@ -35,7 +35,7 @@ namespace ashes::gl
 		registerObject( m_device, *this );
 	}
 
-	PipelineLayout::~PipelineLayout()
+	PipelineLayout::~PipelineLayout()noexcept
 	{
 		unregisterObject( m_device, *this );
 
@@ -70,17 +70,17 @@ namespace ashes::gl
 		, uint32_t descriptorSetIndex )const
 	{
 		auto key = makeDescriptorKey( descriptorSet, descriptorSetIndex );
-		auto pair = m_dsBindings.insert( { key, {} } );
+		auto [it, res] = m_dsBindings.try_emplace( key );
 
-		if ( pair.second )
+		if ( res )
 		{
 			for ( auto & binding : *get( get( descriptorSet )->getLayout() ) )
 			{
-				copyBinding( descriptorSetIndex, binding, m_shaderBindings, pair.first->second );
+				copyBinding( descriptorSetIndex, binding, m_shaderBindings, it->second );
 			}
 		}
 
-		return pair.first->second;
+		return it->second;
 	}
 
 	void PipelineLayout::addPipeline( VkPipeline pipeline )
@@ -88,7 +88,7 @@ namespace ashes::gl
 		m_pipelines.insert( pipeline );
 	}
 
-	void PipelineLayout::removePipeline( VkPipeline pipeline )
+	void PipelineLayout::removePipeline( VkPipeline pipeline )noexcept
 	{
 		m_pipelines.erase( pipeline );
 	}

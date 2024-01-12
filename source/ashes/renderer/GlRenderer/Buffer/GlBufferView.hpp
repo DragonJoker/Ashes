@@ -19,19 +19,19 @@ namespace ashes::gl
 		BufferView( VkAllocationCallbacks const * allocInfo
 			, VkDevice device
 			, VkBufferViewCreateInfo createInfo );
-		~BufferView();
+		~BufferView()noexcept;
 
-		GLuint getImage()const
+		GLuint getImage()const noexcept
 		{
 			return getInternal();
 		}
 
-		VkDevice getDevice()const
+		VkDevice getDevice()const noexcept
 		{
 			return m_device;
 		}
 
-		VkFormat getFormat()const
+		VkFormat getFormat()const noexcept
 		{
 			return m_format;
 		}

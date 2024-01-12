@@ -96,10 +96,6 @@ namespace ashes::gl
 		m_impl->postInitialise();
 	}
 
-	Context::~Context()
-	{
-	}
-
 #if _WIN32
 
 	ContextPtr Context::create( VkInstance instance
@@ -186,7 +182,7 @@ namespace ashes::gl
 		{
 			it = m_state.emplace( std::move( id )
 				, std::make_unique< ContextState >() ).first;
-			initialiseThreadState( *it->second );
+			initialiseThreadState();
 		}
 
 		return *it->second;
@@ -234,7 +230,7 @@ namespace ashes::gl
 		logContextLock();
 	}
 
-	void Context::unlock()
+	void Context::unlock()noexcept
 	{
 		logContextUnlock();
 		assert( isEnabled() );
@@ -279,7 +275,7 @@ namespace ashes::gl
 		return result;
 	}
 
-	void Context::deleteBuffer( GLuint buffer )
+	void Context::deleteBuffer( GLuint buffer )noexcept
 	{
 		if ( buffer != GL_INVALID_INDEX )
 		{
@@ -333,11 +329,11 @@ namespace ashes::gl
 			throw ashes::BaseException{ std::string{ "Couldn't load base function " } + "gl"#fun + err##fun.str() };\
 		}
 #endif
+		std::stringstream err;
 #define GL_LIB_FUNCTION( fun )\
-		std::stringstream err##fun;\
-		if ( !( getFunction( "gl"#fun, m_gl##fun, err##fun ) ) )\
+		if ( !( getFunction( "gl"#fun, m_gl##fun, err ) ) )\
 		{\
-			throw ashes::BaseException{ std::string{ "Couldn't load function " } + "gl"#fun + err##fun.str() };\
+			throw ashes::BaseException{ std::string{ "Couldn't load function " } + "gl"#fun + err.str() };\
 		}
 
 #define GL_LIB_FUNCTION_OPT( fun )\
@@ -357,7 +353,7 @@ namespace ashes::gl
 #pragma warning( pop )
 	}
 
-	void Context::initialiseThreadState( ContextState const & state )
+	void Context::initialiseThreadState()
 	{
 		ContextLock lock{ *this };
 		glLogCall( lock
@@ -367,12 +363,12 @@ namespace ashes::gl
 
 	GLint Context::getBufferSize( ContextLock const & context
 		, GlBufferTarget target
-		, GLuint buffer )
+		, GLuint buffer )noexcept
 	{
 		GLint result = 0;
-		auto it = findBuffer( buffer );
 
-		if ( it != m_buffers.end() )
+		if ( auto it = findBuffer( buffer );
+			it != m_buffers.end() )
 		{
 			target = it->target;
 		}
@@ -394,40 +390,40 @@ namespace ashes::gl
 	}
 
 	GLint Context::getBufferSize( ContextLock const & context
-		, GLuint buffer )
+		, GLuint buffer )noexcept
 	{
 		return getBufferSize( context
 			, GL_BUFFER_TARGET_COPY_WRITE
 			, buffer );
 	}
 
-	Context::BufferAllocCont::iterator Context::findBuffer( GLuint buffer )
+	Context::BufferAllocCont::iterator Context::findBuffer( GLuint buffer )noexcept
 	{
 		return std::find_if( m_buffers.begin()
 			, m_buffers.end()
-			, [buffer]( BufferAlloc const & lookup )
+			, [buffer]( BufferAlloc const & lookup )noexcept
 			{
 				return lookup.name == buffer;
 			} );
 	}
 
 	Context::BufferAllocCont::iterator Context::findBuffer( GLuint buffer
-		, GLsizeiptr size )
+		, GLsizeiptr size )noexcept
 	{
 		return std::find_if( m_buffers.begin()
 			, m_buffers.end()
-			, [buffer, size]( BufferAlloc const & lookup )
+			, [buffer, size]( BufferAlloc const & lookup )noexcept
 			{
 				return lookup.name == buffer
 					&& lookup.size == size;
 			} );
 	}
 
-	void Context::checkOutOfMemory()const
+	void Context::checkOutOfMemory()const noexcept
 	{
 		if ( m_outOfMemory )
 		{
-			throw Exception{ VK_ERROR_OUT_OF_DEVICE_MEMORY, "" };
+			reportError( m_instance, VK_ERROR_OUT_OF_DEVICE_MEMORY, "OpenGL context ran out of memory", "GlContext" );
 		}
 	}
 

@@ -77,7 +77,7 @@ namespace ashes::gl
 	template< typename T >
 	struct Stringifier
 	{
-		static inline std::string toString( T const value )
+		static std::string toString( T const value )
 		{
 			std::stringstream stream;
 			stream.imbue( std::locale{ "C" } );
@@ -89,7 +89,7 @@ namespace ashes::gl
 	template<>
 	struct Stringifier< uint8_t >
 	{
-		static inline std::string toString( uint8_t const value )
+		static std::string toString( uint8_t const value )
 		{
 			std::stringstream stream;
 			stream.imbue( std::locale{ "C" } );
@@ -101,7 +101,7 @@ namespace ashes::gl
 	template< typename T >
 	struct Stringifier< T * >
 	{
-		static inline std::string toString( T * const value )
+		static std::string toString( T * const value )
 		{
 			if ( value )
 			{
@@ -118,7 +118,7 @@ namespace ashes::gl
 	template< typename T >
 	struct Stringifier< T const * >
 	{
-		static inline std::string toString( T const * const value )
+		static std::string toString( T const * const value )
 		{
 			if ( value )
 			{
@@ -133,7 +133,7 @@ namespace ashes::gl
 	};
 	
 	template< typename T >
-	inline std::string toString( T const value )
+	std::string toString( T const value )
 	{
 		return Stringifier< T >::toString( value );
 	}
@@ -143,7 +143,7 @@ namespace ashes::gl
 		return std::string( "nullptr" );
 	}
 
-	inline std::string toString( GLchar * txt )
+	inline std::string toString( GLchar const * txt )
 	{
 		if ( !txt )
 		{
@@ -159,7 +159,7 @@ namespace ashes::gl
 	template<>
 	struct GlParamLoggerRec<>
 	{
-		static inline void log( [[maybe_unused]] std::stringstream const & stream )
+		static void log( [[maybe_unused]] std::stringstream const & stream )
 		{
 		}
 	};
@@ -167,7 +167,7 @@ namespace ashes::gl
 	template< typename ParamT >
 	struct GlParamLoggerRec< ParamT >
 	{
-		static inline void log( std::stringstream & stream
+		static void log( std::stringstream & stream
 			, ParamT const & last )
 		{
 			stream << toString( last );
@@ -177,7 +177,7 @@ namespace ashes::gl
 	template< typename ParamT, typename ParamU >
 	struct GlParamLoggerRec< ParamT, ParamU >
 	{
-		static inline void log( std::stringstream & stream
+		static void log( std::stringstream & stream
 			, ParamT const & lastT
 			, ParamU const & lastU )
 		{
@@ -228,7 +228,7 @@ namespace ashes::gl
 	template< typename ParamT, typename ParamU, typename ... ParamsT >
 	struct GlParamLoggerRec< ParamT, ParamU, ParamsT... >
 	{
-		static inline void log( std::stringstream & stream
+		static void log( std::stringstream & stream
 			, ParamT const & paramT
 			, ParamU const & paramU
 			, ParamsT const & ... params )
@@ -262,12 +262,12 @@ namespace ashes::gl
 		stream << ")";
 	}
 
-	void logStream( std::stringstream & stream );
+	void logStream( std::stringstream const & stream );
 
 	template< typename FuncT, typename ... ParamsT >
 	struct GlFuncCaller
 	{
-		static inline auto call( std::stringstream & stream
+		static auto call( std::stringstream & stream
 			, FuncT function
 			, char const * const name
 			, ParamsT const & ... params )
@@ -278,7 +278,7 @@ namespace ashes::gl
 			return function( params... );
 		}
 
-		static inline void callCreate( std::stringstream & stream
+		static void callCreate( std::stringstream & stream
 			, FuncT function
 			, char const * const name
 			, ParamsT const & ... params )
@@ -289,7 +289,7 @@ namespace ashes::gl
 			logStream( stream );
 		}
 
-		static inline auto callNonVoid( std::stringstream & stream
+		static auto callNonVoid( std::stringstream & stream
 			, FuncT function
 			, char const * const name
 			, ParamsT const & ... params )
@@ -305,7 +305,7 @@ namespace ashes::gl
 	template< typename FuncT >
 	struct GlFuncCaller< FuncT, void >
 	{
-		static inline void call( std::stringstream & stream
+		static void call( std::stringstream & stream
 			, FuncT function
 			, char const * const name )
 		{
@@ -315,7 +315,7 @@ namespace ashes::gl
 			function();
 		}
 
-		static inline void callCreate( std::stringstream & stream
+		static void callCreate( std::stringstream & stream
 			, FuncT function
 			, char const * const name )
 		{

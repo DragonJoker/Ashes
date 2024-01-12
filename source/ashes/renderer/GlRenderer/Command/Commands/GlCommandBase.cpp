@@ -279,7 +279,7 @@ namespace ashes::gl
 	}
 
 	void apply( ContextLock const & context
-		, CmdCheckFramebuffer const & cmd )
+		, CmdCheckFramebuffer const & )
 	{
 		auto status = glLogNonVoidCall( context
 			, glCheckFramebufferStatus
@@ -743,9 +743,9 @@ namespace ashes::gl
 	void apply( ContextLock const & context
 		, CmdFillBuffer const & cmd )
 	{
-		uint32_t * data;
+		uint32_t * data{};
 
-		if ( VK_SUCCESS == get( cmd.memory )->lock( context, cmd.memoryOffset, cmd.dataSize, 0u, reinterpret_cast< void ** >( &data ) ) )
+		if ( VK_SUCCESS == get( cmd.memory )->lock( cmd.memoryOffset, cmd.dataSize, 0u, reinterpret_cast< void ** >( &data ) ) )
 		{
 			std::fill_n( data, cmd.dataSize / sizeof( uint32_t ), cmd.data );
 			get( cmd.memory )->flush( context, cmd.memoryOffset, cmd.dataSize );
@@ -846,7 +846,6 @@ namespace ashes::gl
 			, cmd.firstQuery
 			, cmd.queryCount
 			, cmd.stride
-			, 0u
 			, cmd.flags
 			, getBufferOffset( intptr_t( cmd.bufferOffset ) ) );
 	}
@@ -871,7 +870,7 @@ namespace ashes::gl
 			, cmd.value );
 	}
 
-	void apply( ContextLock const & context
+	void apply( ContextLock const &
 		, CmdLogCommand const & cmd )
 	{
 		logDebug( ( "*** " + std::string{ cmd.value } + " ***" ).c_str() );
@@ -939,7 +938,7 @@ namespace ashes::gl
 	}
 
 	void apply( ContextLock const & context
-		, CmdPopDebugGroup const & cmd )
+		, CmdPopDebugGroup const & )
 	{
 		glLogEmptyCall( context
 			, glPopDebugGroup );
@@ -1158,13 +1157,13 @@ namespace ashes::gl
 			, nullptr );
 	}
 
-	void apply( ContextLock const & context
+	void apply( ContextLock const &
 		, CmdResetEvent const & cmd )
 	{
 		get( cmd.event )->reset();
 	}
 
-	void apply( ContextLock const & context
+	void apply( ContextLock const &
 		, CmdSetEvent const & cmd )
 	{
 		get( cmd.event )->set();
@@ -1473,7 +1472,7 @@ namespace ashes::gl
 			, cmd.program );
 	}
 
-	void apply( ContextLock const & context
+	void apply( ContextLock const &
 		, CmdWaitEvents const & cmd )
 	{
 		auto count = 0u;

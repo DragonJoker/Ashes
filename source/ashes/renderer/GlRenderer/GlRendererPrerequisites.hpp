@@ -46,8 +46,6 @@
 #	define GlRenderer_API
 #endif
 
-#define Ashes_GlRemoveExtensions 0
-
 namespace ashes::gl
 {
 #if VK_EXT_debug_utils
@@ -89,7 +87,7 @@ namespace ashes::gl
 		: public ashes::Exception
 	{
 	public:
-		ExtensionNotPresentException( std::string const & name )
+		explicit ExtensionNotPresentException( std::string const & name )
 			: Exception{ VK_ERROR_EXTENSION_NOT_PRESENT, name }
 		{
 		}
@@ -217,14 +215,14 @@ namespace ashes::gl
 		uint32_t mipLevel{};
 		bool isSrgb{};
 
-		FboAttachment();
+		FboAttachment() = default;
 		FboAttachment( VkDevice device
 			, uint32_t referenceIndex
 			, VkImageView view
 			, uint32_t index
 			, bool & multisampled );
 		FboAttachment( VkDevice device
-			, VkImageSubresourceLayers & subresource
+			, VkImageSubresourceLayers const & subresource
 			, VkImage image );
 
 		void bind( uint32_t mipLevel
@@ -306,7 +304,7 @@ namespace ashes::gl
 			, VkImage srcImage
 			, VkImage dstImage );
 		LayerCopy( VkDevice device
-			, VkImageCopy origRegion
+			, VkImageCopy const & origRegion
 			, VkImage srcImage
 			, VkImage dstImage );
 
@@ -392,6 +390,11 @@ namespace ashes::gl
 			return dst.point;
 		}
 
+		VkImageBlit const & getRegion()const
+		{
+			return region;
+		}
+
 		bool isSrcDepthOrStencil()const
 		{
 			return src.isDepthOrStencil();
@@ -402,9 +405,8 @@ namespace ashes::gl
 			return dst.isDepthOrStencil();
 		}
 
-		VkImageBlit region;
-
 	private:
+		VkImageBlit region;
 		FboAttachment src;
 		FboAttachment dst;
 	};
@@ -444,7 +446,7 @@ namespace ashes::gl
 		}
 
 		template< typename FuncT, typename ParamT >
-		inline bool getFunctionRec( bool tryCore
+		inline bool getFunctionRec( [[maybe_unused]] bool tryCore
 			, std::string const & name
 			, FuncT & function
 			, std::stringstream & errStream

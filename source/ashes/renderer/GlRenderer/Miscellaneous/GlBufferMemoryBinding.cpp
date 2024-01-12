@@ -26,7 +26,7 @@ namespace ashes::gl
 		m_buffer->setMemoryBinding( this );
 	}
 
-	BufferMemoryBinding::~BufferMemoryBinding()
+	BufferMemoryBinding::~BufferMemoryBinding()noexcept
 	{
 		m_buffer->setMemoryBinding( nullptr );
 	}

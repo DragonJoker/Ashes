@@ -91,15 +91,16 @@ namespace ashes::gl
 			&& lhs.a == rhs.a;
 	}
 
+	static GlComponentMapping const SwizzleIdentity
+	{
+		GlComponentSwizzle::GL_COMPONENT_SWIZZLE_RED,
+		GlComponentSwizzle::GL_COMPONENT_SWIZZLE_GREEN,
+		GlComponentSwizzle::GL_COMPONENT_SWIZZLE_BLUE,
+		GlComponentSwizzle::GL_COMPONENT_SWIZZLE_ALPHA,
+	};
+
 	GlComponentMapping const & getIdentitySwizzle()
 	{
-		static GlComponentMapping const SwizzleIdentity
-		{
-			GlComponentSwizzle::GL_COMPONENT_SWIZZLE_RED,
-			GlComponentSwizzle::GL_COMPONENT_SWIZZLE_GREEN,
-			GlComponentSwizzle::GL_COMPONENT_SWIZZLE_BLUE,
-			GlComponentSwizzle::GL_COMPONENT_SWIZZLE_ALPHA,
-		};
 		return SwizzleIdentity;
 	}
 

@@ -77,10 +77,10 @@ namespace ashes::gl
 		}
 	}
 
-	void buildMemoryBarrierCommand( VkPipelineStageFlags after
+	void buildMemoryBarrierCommand( [[maybe_unused]] VkPipelineStageFlags after
 		, VkPipelineStageFlags before
-		, VkDependencyFlags dependencyFlags
-		, ArrayView< VkMemoryBarrier const > memoryBarriers
+		, [[maybe_unused]] VkDependencyFlags dependencyFlags
+		, [[maybe_unused]] ArrayView< VkMemoryBarrier const > memoryBarriers
 		, ArrayView< VkBufferMemoryBarrier const > bufferMemoryBarriers
 		, ArrayView< VkImageMemoryBarrier const > imageMemoryBarriers
 		, VkDeviceMemorySet & downloads

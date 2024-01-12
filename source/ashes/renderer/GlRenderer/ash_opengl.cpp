@@ -17,7 +17,7 @@ namespace ashes::gl
 		template< typename PropT >
 		VkResult getCountedProps( std::vector< PropT > const & props
 			, uint32_t * pPropertyCount
-			, PropT * pProperties )
+			, PropT * pProperties )noexcept
 		{
 			if ( pProperties
 				&& pPropertyCount )
@@ -82,24 +82,9 @@ namespace ashes::gl
 		uint32_t* pPhysicalDeviceCount,
 		VkPhysicalDevice* pPhysicalDevices )
 	{
-		VkResult result = VK_SUCCESS;
-
-		try
-		{
-			result = getCountedProps( get( instance )->enumeratePhysicalDevices()
-				, pPhysicalDeviceCount
-				, pPhysicalDevices );
-		}
-		catch ( Exception & exc )
-		{
-			result = exc.getResult();
-		}
-		catch ( ... )
-		{
-			result = VK_ERROR_INITIALIZATION_FAILED;
-		}
-
-		return result;
+		return getCountedProps( get( instance )->enumeratePhysicalDevices()
+			, pPhysicalDeviceCount
+			, pPhysicalDevices );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceFeatures(
@@ -172,7 +157,7 @@ namespace ashes::gl
 		const VkAllocationCallbacks* pAllocator,
 		VkDevice* pDevice )
 	{
-		auto & gpu = *get( physicalDevice );
+		auto const & gpu = *get( physicalDevice );
 		auto instance = gpu.getInstance();
 		assert( pDevice );
 		return allocate( *pDevice
@@ -290,7 +275,7 @@ namespace ashes::gl
 		void** ppData )
 	{
 		auto context = get( device )->getContext();
-		return get( memory )->lock( context, offset, size, flags, ppData );
+		return get( memory )->lock( offset, size, flags, ppData );
 	}
 
 	void VKAPI_CALL vkUnmapMemory(
@@ -613,7 +598,6 @@ namespace ashes::gl
 			, queryCount
 			, stride
 			, flags
-			, dataSize
 			, pData );
 	}
 
@@ -952,7 +936,7 @@ namespace ashes::gl
 		VkDescriptorPool descriptorPool,
 		VkDescriptorPoolResetFlags flags )
 	{
-		return get( descriptorPool )->reset( flags );
+		return get( descriptorPool )->reset();
 	}
 
 	VkResult VKAPI_CALL vkAllocateDescriptorSets(
@@ -980,7 +964,7 @@ namespace ashes::gl
 		uint32_t descriptorSetCount,
 		const VkDescriptorSet* pDescriptorSets )
 	{
-		return get( descriptorPool )->free( ashes::makeArrayView( pDescriptorSets
+		return get( descriptorPool )->freeDescriptors( ashes::makeArrayView( pDescriptorSets
 			, pDescriptorSets + descriptorSetCount ) );
 	}
 
@@ -1106,7 +1090,7 @@ namespace ashes::gl
 		uint32_t commandBufferCount,
 		const VkCommandBuffer* pCommandBuffers )
 	{
-		get( commandPool )->free( { pCommandBuffers, pCommandBuffers + commandBufferCount } );
+		get( commandPool )->freeCommands( { pCommandBuffers, pCommandBuffers + commandBufferCount } );
 	}
 
 	VkResult VKAPI_CALL vkBeginCommandBuffer(
@@ -1126,7 +1110,7 @@ namespace ashes::gl
 		VkCommandBuffer commandBuffer,
 		VkCommandBufferResetFlags flags )
 	{
-		return get( commandBuffer )->reset( flags );
+		return get( commandBuffer )->reset();
 	}
 
 	void VKAPI_CALL vkCmdBindPipeline(
@@ -1622,7 +1606,7 @@ namespace ashes::gl
 		VkCommandBuffer commandBuffer,
 		VkSubpassContents contents )
 	{
-		get( commandBuffer )->nextSubpass( contents );
+		get( commandBuffer )->nextSubpass();
 	}
 
 	void VKAPI_CALL vkCmdEndRenderPass(
@@ -1751,7 +1735,7 @@ namespace ashes::gl
 		VkPhysicalDeviceFeatures2 * pFeatures )
 	{
 		pFeatures->features = get( physicalDevice )->getFeatures();
-		VkBaseOutStructure * pNext = reinterpret_cast< VkBaseOutStructure * >( pFeatures->pNext );
+		auto pNext = reinterpret_cast< VkBaseOutStructure * >( pFeatures->pNext );
 
 		while ( pNext )
 		{
@@ -1781,7 +1765,7 @@ namespace ashes::gl
 		VkPhysicalDeviceProperties2 * pProperties )
 	{
 		pProperties->properties = get( physicalDevice )->getProperties();
-		VkBaseOutStructure * pNext = reinterpret_cast< VkBaseOutStructure * >( pProperties->pNext );
+		auto pNext = reinterpret_cast< VkBaseOutStructure * >( pProperties->pNext );
 
 		while ( pNext )
 		{
@@ -2246,7 +2230,7 @@ namespace ashes::gl
 		VkFence fence,
 		uint32_t* pImageIndex )
 	{
-		return get( swapchain )->acquireNextImage( timeout, semaphore, fence, *pImageIndex );
+		return get( swapchain )->acquireNextImage( *pImageIndex );
 	}
 
 	VkResult VKAPI_CALL vkQueuePresentKHR(
@@ -2367,7 +2351,7 @@ namespace ashes::gl
 		uint32_t planeIndex,
 		VkDisplayPlaneCapabilitiesKHR * pCapabilities )
 	{
-		*pCapabilities = get( mode )->getDisplayPlaneCapabilities( planeIndex );
+		*pCapabilities = get( mode )->getDisplayPlaneCapabilities();
 		return VK_SUCCESS;
 	}
 
@@ -2393,7 +2377,7 @@ namespace ashes::gl
 		VkPhysicalDeviceFeatures2KHR * pFeatures )
 	{
 		pFeatures->features = get( physicalDevice )->getFeatures();
-		VkBaseOutStructure * pNext = reinterpret_cast< VkBaseOutStructure * >( pFeatures->pNext );
+		auto pNext = reinterpret_cast< VkBaseOutStructure * >( pFeatures->pNext );
 
 		while ( pNext )
 		{
@@ -2421,7 +2405,7 @@ namespace ashes::gl
 		VkPhysicalDeviceProperties2KHR * pProperties )
 	{
 		pProperties->properties = get( physicalDevice )->getProperties();
-		VkBaseOutStructure * pNext = reinterpret_cast< VkBaseOutStructure * >( pProperties->pNext );
+		auto pNext = reinterpret_cast< VkBaseOutStructure * >( pProperties->pNext );
 
 		while ( pNext )
 		{
@@ -4455,7 +4439,7 @@ namespace ashes::gl
 				, {}
 				, ASHPLUGIN_UNDEFINED };
 
-			VkResult init( AshPluginMode mode )
+			VkResult init( AshPluginMode mode )noexcept
 			{
 				auto validMode = ( description.mode == ASHPLUGIN_UNDEFINED || description.mode == mode );
 				assert( validMode
@@ -4477,9 +4461,17 @@ namespace ashes::gl
 						supported = extensions.getMajor() > MinMajor
 							|| ( extensions.getMajor() == MinMajor && extensions.getMinor() >= MinMinor );
 					}
+					catch ( ashes::BaseException & exc )
+					{
+						std::cerr << exc.what() << std::endl;
+					}
 					catch ( std::exception & exc )
 					{
 						std::cerr << exc.what() << std::endl;
+					}
+					catch ( ... )
+					{
+						std::cerr << "Unknown error" << std::endl;
 					}
 
 					description.getInstanceProcAddr = &vkGetInstanceProcAddr;
@@ -4544,7 +4536,7 @@ namespace ashes::gl
 				&& get( device )->hasExtension( extension.data() );
 		}
 
-		using ObjectFunctions = std::map< std::string, PFN_vkVoidFunction >;
+		using ObjectFunctions = std::map< std::string, PFN_vkVoidFunction, std::less<> >;
 
 #pragma warning( push )
 #pragma warning( disable: 4191 )
@@ -4552,13 +4544,13 @@ namespace ashes::gl
 		ObjectFunctions const & getInstanceFunctions( VkInstance instance )
 		{
 			static std::map< VkInstance, ObjectFunctions > functions;
-			auto it = functions.insert( { instance, {} } );
+			auto [it, res] = functions.try_emplace( instance );
 
-			if ( it.second )
+			if ( res )
 			{
 				if ( instance != nullptr )
 				{
-					it.first->second =
+					it->second =
 					{
 #define VK_LIB_GLOBAL_FUNCTION( v, x )\
 						{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
@@ -4579,7 +4571,7 @@ namespace ashes::gl
 				}
 				else
 				{
-					it.first->second =
+					it->second =
 					{
 #define VK_LIB_GLOBAL_FUNCTION( v, x )\
 						{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
@@ -4595,17 +4587,17 @@ namespace ashes::gl
 				}
 			}
 
-			return it.first->second;
+			return it->second;
 		}
 
 		ObjectFunctions const & getDeviceFunctions( VkDevice device )
 		{
 			static std::map< VkDevice, ObjectFunctions > functions;
-			auto it = functions.insert( { device, {} } );
+			auto [it, res] = functions.try_emplace( device );
 
-			if ( it.second )
+			if ( res )
 			{
-				it.first->second =
+				it->second =
 				{
 					{ "vkGetDeviceProcAddr", PFN_vkVoidFunction( vkGetDeviceProcAddr ) },
 #define VK_LIB_DEVICE_FUNCTION( v, x )\
@@ -4618,56 +4610,57 @@ namespace ashes::gl
 				};
 			}
 
-			return it.first->second;
+			return it->second;
 		}
 	}
 
 #pragma warning( pop )
 
-	std::vector< VkExtensionProperties > const & getSupportedInstanceExtensions()
+	inline std::vector< VkExtensionProperties > const SupportedInstanceExtensions
 	{
-		static std::vector< VkExtensionProperties > const extensions
-		{
 #if VK_KHR_surface
-			VkExtensionProperties{ VK_KHR_SURFACE_EXTENSION_NAME, VK_KHR_SURFACE_SPEC_VERSION },
+		VkExtensionProperties{ VK_KHR_SURFACE_EXTENSION_NAME, VK_KHR_SURFACE_SPEC_VERSION },
 #endif
 #	if _WIN32
-			VkExtensionProperties{ VK_KHR_WIN32_SURFACE_EXTENSION_NAME, VK_KHR_WIN32_SURFACE_SPEC_VERSION },
+		VkExtensionProperties{ VK_KHR_WIN32_SURFACE_EXTENSION_NAME, VK_KHR_WIN32_SURFACE_SPEC_VERSION },
 #	elif __linux__
-			VkExtensionProperties{ VK_KHR_XLIB_SURFACE_EXTENSION_NAME, VK_KHR_XLIB_SURFACE_SPEC_VERSION },
-			VkExtensionProperties{ VK_KHR_XCB_SURFACE_EXTENSION_NAME, VK_KHR_XCB_SURFACE_SPEC_VERSION },
+		VkExtensionProperties{ VK_KHR_XLIB_SURFACE_EXTENSION_NAME, VK_KHR_XLIB_SURFACE_SPEC_VERSION },
+		VkExtensionProperties{ VK_KHR_XCB_SURFACE_EXTENSION_NAME, VK_KHR_XCB_SURFACE_SPEC_VERSION },
 #	elif __APPLE__
-			VkExtensionProperties{ VK_MVK_MACOS_SURFACE_EXTENSION_NAME, VK_MVK_MACOS_SURFACE_SPEC_VERSION },
+		VkExtensionProperties{ VK_MVK_MACOS_SURFACE_EXTENSION_NAME, VK_MVK_MACOS_SURFACE_SPEC_VERSION },
 #	endif
 #if VK_EXT_debug_report
-			VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, VK_EXT_DEBUG_REPORT_SPEC_VERSION },
+		VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, VK_EXT_DEBUG_REPORT_SPEC_VERSION },
 #endif
 #if VK_EXT_debug_marker
-			VkExtensionProperties{ VK_EXT_DEBUG_MARKER_EXTENSION_NAME, VK_EXT_DEBUG_MARKER_SPEC_VERSION },
+		VkExtensionProperties{ VK_EXT_DEBUG_MARKER_EXTENSION_NAME, VK_EXT_DEBUG_MARKER_SPEC_VERSION },
 #endif
 #if VK_EXT_debug_utils
-			VkExtensionProperties{ VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_EXT_DEBUG_UTILS_SPEC_VERSION },
+		VkExtensionProperties{ VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_EXT_DEBUG_UTILS_SPEC_VERSION },
 #endif
 #if VK_KHR_get_physical_device_properties2
-			VkExtensionProperties{ VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_SPEC_VERSION },
+		VkExtensionProperties{ VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_SPEC_VERSION },
 #endif
 #if VK_KHR_display
-			VkExtensionProperties{ VK_KHR_DISPLAY_EXTENSION_NAME, VK_KHR_DISPLAY_SPEC_VERSION },
+		VkExtensionProperties{ VK_KHR_DISPLAY_EXTENSION_NAME, VK_KHR_DISPLAY_SPEC_VERSION },
 #endif
 #if VK_NV_glsl_shader
-			VkExtensionProperties{ VK_NV_GLSL_SHADER_EXTENSION_NAME, VK_NV_GLSL_SHADER_SPEC_VERSION },
+		VkExtensionProperties{ VK_NV_GLSL_SHADER_EXTENSION_NAME, VK_NV_GLSL_SHADER_SPEC_VERSION },
 #endif
 #if VK_KHR_portability_subset
-			VkExtensionProperties{ VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME, VK_KHR_PORTABILITY_SUBSET_SPEC_VERSION },
+		VkExtensionProperties{ VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME, VK_KHR_PORTABILITY_SUBSET_SPEC_VERSION },
 #endif
-		};
-		return extensions;
+	};
+	inline std::vector< VkLayerProperties > const InstanceLayerProperties{};
+
+	std::vector< VkExtensionProperties > const & getSupportedInstanceExtensions()
+	{
+		return SupportedInstanceExtensions;
 	}
 
 	std::vector< VkLayerProperties > const & getInstanceLayerProperties()
 	{
-		static std::vector< VkLayerProperties > result;
-		return result;
+		return InstanceLayerProperties;
 	}
 
 	PFN_vkVoidFunction VKAPI_CALL vkGetInstanceProcAddr(
@@ -4676,9 +4669,9 @@ namespace ashes::gl
 	{
 		PFN_vkVoidFunction result{ nullptr };
 		auto & functions = getInstanceFunctions( instance );
-		auto it = functions.find( pName );
 
-		if ( it != functions.end() )
+		if ( auto it = functions.find( pName );
+			it != functions.end() )
 		{
 			result = it->second;
 		}
@@ -4692,9 +4685,9 @@ namespace ashes::gl
 	{
 		PFN_vkVoidFunction result{ nullptr };
 		auto & functions = getDeviceFunctions( device );
-		auto it = functions.find( pName );
 
-		if ( it != functions.end() )
+		if ( auto it = functions.find( pName );
+			it != functions.end() )
 		{
 			result = it->second;
 		}
@@ -4886,7 +4879,6 @@ extern "C"
 	}
 
 #	endif
-// #endif
 #pragma endregion
 #pragma region VK_KHR_wayland_surface
 #	ifdef __linux__

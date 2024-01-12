@@ -195,10 +195,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT;
 #endif
+		static inline std::string const Name{ "VkInstance" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkInstance" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -211,10 +212,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT;
 #endif
+		static inline std::string const Name{ "VkPhysicalDevice" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkPhysicalDevice" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -227,10 +229,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_PHYSICAL_DEVICE_EXT;
 #endif
+		static inline std::string const Name{ "VkDevice" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkDevice" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -243,10 +246,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_QUEUE_EXT;
 #endif
+		static inline std::string const Name{ "VkQueue" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkQueue" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -259,10 +263,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_SEMAPHORE_EXT;
 #endif
+		static inline std::string const Name{ "VkSemaphore" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkSemaphore" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -275,10 +280,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_BUFFER_EXT;
 #endif
+		static inline std::string const Name{ "VkCommandBuffer" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkCommandBuffer" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -291,10 +297,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_EVENT_EXT;
 #endif
+		static inline std::string const Name{ "VkEvent" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkEvent" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -307,10 +314,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_FENCE_EXT;
 #endif
+		static inline std::string const Name{ "VkFence" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkFence" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -323,10 +331,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_MEMORY_EXT;
 #endif
+		static inline std::string const Name{ "VkDeviceMemory" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkDeviceMemory" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -339,10 +348,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_EXT;
 #endif
+		static inline std::string const Name{ "VkBuffer" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkBuffer" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -355,10 +365,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT;
 #endif
+		static inline std::string const Name{ "VkImage" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkImage" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -371,10 +382,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_QUERY_POOL_EXT;
 #endif
+		static inline std::string const Name{ "VkQueryPool" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkQueryPool" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -387,10 +399,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_VIEW_EXT;
 #endif
+		static inline std::string const Name{ "VkBufferView" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkBufferView" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -403,10 +416,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT;
 #endif
+		static inline std::string const Name{ "VkImageView" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkImageView" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -419,10 +433,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_VIEW_EXT;
 #endif
+		static inline std::string const Name{ "VkImageView" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkImageView" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -435,10 +450,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_SHADER_MODULE_EXT;
 #endif
+		static inline std::string const Name{ "VkShaderModule" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkShaderModule" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -451,10 +467,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_LAYOUT_EXT;
 #endif
+		static inline std::string const Name{ "VkPipelineLayout" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkPipelineLayout" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -467,10 +484,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_RENDER_PASS_EXT;
 #endif
+		static inline std::string const Name{ "VkRenderPass" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkRenderPass" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -483,10 +501,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT;
 #endif
+		static inline std::string const Name{ "VkPipeline" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkPipeline" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -499,10 +518,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_CACHE_EXT;
 #endif
+		static inline std::string const Name{ "VkPipelineCache" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkPipelineCache" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -515,10 +535,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT_EXT;
 #endif
+		static inline std::string const Name{ "VkDescriptorSetLayout" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkDescriptorSetLayout" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -531,10 +552,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_SAMPLER_EXT;
 #endif
+		static inline std::string const Name{ "VkSampler" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkSampler" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -547,10 +569,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_POOL_EXT;
 #endif
+		static inline std::string const Name{ "VkDecriptorPool" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkDecriptorPool" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -563,10 +586,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_DESCRIPTOR_SET_EXT;
 #endif
+		static inline std::string const Name{ "VkDescriptorSet" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkDescriptorSet" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -579,10 +603,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_FRAMEBUFFER_EXT;
 #endif
+		static inline std::string const Name{ "VkFramebuffer" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkFramebuffer" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -595,10 +620,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT;
 #endif
+		static inline std::string const Name{ "VkCommandPool" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkCommandPool" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -611,10 +637,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_SURFACE_KHR_EXT;
 #endif
+		static inline std::string const Name{ "VkSurfaceKHR" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkSurfaceKHR" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -627,10 +654,11 @@ namespace ashes::gl
 #if VK_EXT_debug_report || VK_EXT_debug_marker
 		static VkDebugReportObjectTypeEXT constexpr ReportValue = VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT;
 #endif
+		static inline std::string const Name{ "VkSwapchainKHR" };
+
 		static std::string const & getName()
 		{
-			static std::string result{ "VkSwapchainKHR" };
-			return result;
+			return Name;
 		}
 	};
 
@@ -644,11 +672,11 @@ namespace ashes::gl
 			, VkInstance instance
 			, VkPhysicalDevice gpu
 			, VkDeviceCreateInfo createInfos );
-		~Device();
+		~Device()noexcept;
 
-		void cleanupContextDependent( Context const & context );
-		void cleanupBlitSrcFbo();
-		void cleanupBlitDstFbo();
+		void cleanupContextDependent( Context const & context )noexcept;
+		void cleanupBlitSrcFbo()noexcept;
+		void cleanupBlitDstFbo()noexcept;
 		bool hasExtension( std::string_view extension )const;
 		VkPhysicalDeviceLimits const & getLimits()const;
 		void getImageSubresourceLayout( VkImage image
@@ -680,57 +708,57 @@ namespace ashes::gl
 		void swapBuffers()const;
 
 		void link( VkSurfaceKHR surface );
-		void unlink( VkSurfaceKHR surface );
-		ContextLock getContext()const;
+		void unlink()noexcept;
+		ContextLock getContext()const noexcept;
 
-		inline VkPhysicalDeviceFeatures const & getEnabledFeatures()const
+		VkPhysicalDeviceFeatures const & getEnabledFeatures()const noexcept
 		{
 			return m_enabledFeatures;
 		}
 
-		inline GeometryBuffers & getEmptyIndexedVao()const
+		GeometryBuffers & getEmptyIndexedVao()const noexcept
 		{
 			doInitialiseDummy();
 			return *m_dummyIndexed.geometryBuffers;
 		}
 
-		inline VkBuffer getEmptyIndexedVaoIdx()const
+		VkBuffer getEmptyIndexedVaoIdx()const noexcept
 		{
 			doInitialiseDummy();
 			return m_dummyIndexed.indexBuffer;
 		}
 
-		inline VkFramebuffer getBlitSrcFbo()const
+		VkFramebuffer getBlitSrcFbo()const noexcept
 		{
 			return m_blitFbos[0];
 		}
 
-		inline VkFramebuffer getBlitDstFbo()const
+		VkFramebuffer getBlitDstFbo()const noexcept
 		{
 			return m_blitFbos[1];
 		}
 
-		inline VkInstance getInstance()const
+		VkInstance getInstance()const noexcept
 		{
 			return m_instance;
 		}
 
-		inline VkPhysicalDevice getPhysicalDevice()const
+		VkPhysicalDevice getPhysicalDevice()const noexcept
 		{
 			return m_physicalDevice;
 		}
 		
-		inline bool hasMemoryBarrier()const
+		bool hasMemoryBarrier()const noexcept
 		{
 			return m_currentContext->hasMemoryBarrier();
 		}
 
-		inline VkSampler getSampler()const
+		VkSampler getSampler()const noexcept
 		{
 			return m_sampler;
 		}
 
-		inline VkAllocationCallbacks const * getAllocationCallbacks()const
+		VkAllocationCallbacks const * getAllocationCallbacks()const noexcept
 		{
 			return m_callbacks;
 		}
@@ -739,11 +767,18 @@ namespace ashes::gl
 		void doInitialiseQueues();
 		void doInitialiseDummy()const;
 		void doInitialiseContextDependent();
-		void doCleanupContextDependent();
+		void doCleanupContextDependent()noexcept;
 
 	private:
 		struct QueueCreates
 		{
+			QueueCreates( VkDeviceQueueCreateInfo pcreateInfo
+				, std::vector< VkQueue > pqueues = {} )
+				: createInfo{ std::move( pcreateInfo ) }
+				, queues{ std::move( pqueues ) }
+			{
+			}
+
 			VkDeviceQueueCreateInfo createInfo;
 			std::vector< VkQueue > queues;
 		};
@@ -774,13 +809,18 @@ namespace ashes::gl
 			VkDeviceMemory vertexMemory{};
 			GeometryBuffersPtr geometryBuffers;
 		} m_dummyIndexed;
-		mutable VkFramebuffer m_blitFbos[2]{};
+		mutable std::array< VkFramebuffer, 2u > m_blitFbos{};
 		mutable VkSampler m_sampler{};
 		VkPipelineColorBlendAttachmentStateArray m_cbStateAttachments;
-		VkDynamicStateArray m_dyState;
+		VkDynamicStateArray m_dyState{ VK_DYNAMIC_STATE_SCISSOR, VK_DYNAMIC_STATE_VIEWPORT };
 
 		struct ObjectAllocation
 		{
+			explicit ObjectAllocation( std::string ptype )
+				: type{ std::move( ptype ) }
+			{
+			}
+
 			std::string type;
 		};
 
@@ -803,7 +843,7 @@ namespace ashes::gl
 
 		template< typename AshesType >
 		static inline void stUnregisterObject( VkDevice device
-			, AshesType & object )
+			, AshesType & object )noexcept
 		{
 			getDevice( device )->doUnregisterObject( uint64_t( get( &object ) ) );
 		}
@@ -813,8 +853,8 @@ namespace ashes::gl
 		void doRegisterObject( uint64_t object
 			, uint32_t objectType
 			, std::string const & typeName )const;
-		void doUnregisterObject( uint64_t object )const;
-		void doReportRegisteredObjects()const;
+		void doUnregisterObject( uint64_t object )const noexcept;
+		void doReportRegisteredObjects()const noexcept;
 
 #ifndef NDEBUG
 #	define reportRegisteredObjects()\
@@ -835,12 +875,12 @@ namespace ashes::gl
 #endif
 
 
-	bool has420PackExtensions( VkDevice device );
-	bool hasCopyImage( VkDevice device );
-	bool hasProgramPipelines( VkDevice device );
-	bool hasSamplerAnisotropy( VkDevice device );
-	bool hasTextureStorage( VkDevice device );
-	bool hasTextureViews( VkDevice device );
-	bool hasViewportArrays( VkDevice device );
-	bool hasProgramInterfaceQuery( VkDevice device );
+	bool has420PackExtensions( VkDevice device )noexcept;
+	bool hasCopyImage( VkDevice device )noexcept;
+	bool hasProgramPipelines( VkDevice device )noexcept;
+	bool hasSamplerAnisotropy( VkDevice device )noexcept;
+	bool hasTextureStorage( VkDevice device )noexcept;
+	bool hasTextureViews( VkDevice device )noexcept;
+	bool hasViewportArrays( VkDevice device )noexcept;
+	bool hasProgramInterfaceQuery( VkDevice device )noexcept;
 }

@@ -220,7 +220,7 @@ namespace ashes::gl
 		glXMakeCurrent( m_display, m_window, m_glxContext );
 	}
 
-	void X11Context::disable()const
+	void X11Context::disable()const noexcept
 	{
 		glXMakeCurrent( m_display, 0, nullptr );
 	}

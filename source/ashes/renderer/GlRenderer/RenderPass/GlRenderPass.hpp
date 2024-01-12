@@ -14,8 +14,8 @@ namespace ashes::gl
 	public:
 		RenderPass( VkAllocationCallbacks const * allocInfo
 			, VkDevice device
-			, VkRenderPassCreateInfo createInfo );
-		~RenderPass();
+			, VkRenderPassCreateInfo const & createInfo );
+		~RenderPass()noexcept;
 
 		uint32_t getAttachmentIndex( VkAttachmentDescription const & attach )const;
 
@@ -23,47 +23,47 @@ namespace ashes::gl
 		VkAttachmentDescription const & getAttachment( VkAttachmentReference const & reference )const;
 		bool isFboAttachable( VkAttachmentReference const & reference )const;
 
-		VkSubpassDescriptionArray const & getSubpasses()const
+		VkSubpassDescriptionArray const & getSubpasses()const noexcept
 		{
 			return m_subpasses;
 		}
 
-		AttachmentDescriptionArray const & getColourAttaches()const
+		AttachmentDescriptionArray const & getColourAttaches()const noexcept
 		{
 			return m_colourAttaches;
 		}
 
-		bool hasDepthAttach()const
+		bool hasDepthAttach()const noexcept
 		{
 			return m_hasDepthAttach;
 		}
 
-		VkExtent2D getRenderAreaGranularity()const
+		VkExtent2D getRenderAreaGranularity()const noexcept
 		{
 			return VkExtent2D{ 1u, 1u };
 		}
 
-		VkAttachmentReferenceArray const & getFboAttachable()const
+		VkAttachmentReferenceArray const & getFboAttachable()const noexcept
 		{
 			return m_referencedAttachments;
 		}
 
-		VkAttachmentReferenceArray & getFboAttachable()
+		VkAttachmentReferenceArray & getFboAttachable()noexcept
 		{
 			return m_referencedAttachments;
 		}
 
-		uint32_t getMaxLoadClearIndex()
+		uint32_t getMaxLoadClearIndex()const noexcept
 		{
 			return m_maxLoadClearIndex;
 		}
 
-		VkAttachmentReferenceArray const & getResolveAttachments()const
+		VkAttachmentReferenceArray const & getResolveAttachments()const noexcept
 		{
 			return m_resolveAttachments;
 		}
 
-		VkDevice getDevice()const
+		VkDevice getDevice()const noexcept
 		{
 			return m_device;
 		}
@@ -82,11 +82,11 @@ namespace ashes::gl
 
 	private:
 		void referenceAttach( VkAttachmentReference const & value
-			, VkAttachmentReferenceArray & attachments );
+			, VkAttachmentReferenceArray & attachments )const;
 		void referenceAttach( Optional< VkAttachmentReference > const & value
-			, VkAttachmentReferenceArray & attachments );
+			, VkAttachmentReferenceArray & attachments )const;
 		void referenceAttaches( VkAttachmentReferenceArray const & value
-			, VkAttachmentReferenceArray & attachments );
+			, VkAttachmentReferenceArray & attachments )const;
 
 	private:
 		VkDevice m_device;
@@ -99,6 +99,6 @@ namespace ashes::gl
 		bool m_hasDepthAttach{ false };
 		VkAttachmentDescriptionArray m_depthAttaches;
 		AttachmentDescriptionArray m_colourAttaches;
-		uint32_t m_maxLoadClearIndex;
+		uint32_t m_maxLoadClearIndex{};
 	};
 }

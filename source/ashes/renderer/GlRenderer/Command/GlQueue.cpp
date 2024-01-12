@@ -493,7 +493,7 @@ namespace ashes::gl
 		}
 	}
 
-	Queue::Queue( VkAllocationCallbacks const * allocInfo
+	Queue::Queue( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkDevice device
 		, VkDeviceQueueCreateInfo createInfo )
 		: m_device{ device }
@@ -502,7 +502,7 @@ namespace ashes::gl
 		registerObject( m_device, *this );
 	}
 
-	Queue::~Queue()
+	Queue::~Queue()noexcept
 	{
 		unregisterObject( m_device, *this );
 	}
@@ -518,7 +518,7 @@ namespace ashes::gl
 			{
 				for ( auto commandBuffer : makeArrayView( value.pCommandBuffers, value.commandBufferCount ) )
 				{
-					auto & glCommandBuffer = *get( commandBuffer );
+					auto const & glCommandBuffer = *get( commandBuffer );
 					glCommandBuffer.initialiseGeometryBuffers( context );
 					applyBuffer( context, glCommandBuffer.getCmds() );
 					applyBuffer( context, glCommandBuffer.getCmdsAfterSubmit() );
@@ -546,26 +546,24 @@ namespace ashes::gl
 	{
 		try
 		{
-			auto itIndex = presentInfo.pImageIndices;
-
 			if ( presentInfo.pResults )
 			{
 				auto itResult = presentInfo.pResults;
 
 				for ( auto itSwapchain = presentInfo.pSwapchains;
 					itSwapchain != presentInfo.pSwapchains + presentInfo.swapchainCount;
-					++itIndex, ++itResult, ++itSwapchain )
+					++itResult, ++itSwapchain )
 				{
-					*itResult = get( *itSwapchain )->present( *itIndex );
+					*itResult = get( *itSwapchain )->present();
 				}
 			}
 			else
 			{
 				for ( auto itSwapchain = presentInfo.pSwapchains;
 					itSwapchain != presentInfo.pSwapchains + presentInfo.swapchainCount;
-					++itIndex, ++itSwapchain )
+					++itSwapchain )
 				{
-					get( *itSwapchain )->present( *itIndex );
+					get( *itSwapchain )->present();
 				}
 			}
 
@@ -581,8 +579,8 @@ namespace ashes::gl
 		}
 	}
 
-	VkResult Queue::bindSparse( ArrayView< VkBindSparseInfo const > values
-		, VkFence fence )const
+	VkResult Queue::bindSparse( [[maybe_unused]] ArrayView< VkBindSparseInfo const > values
+		, [[maybe_unused]] VkFence fence )const
 	{
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}

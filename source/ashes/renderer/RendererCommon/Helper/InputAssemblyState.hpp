@@ -12,14 +12,11 @@ namespace ashes
 {
 	inline VkPipelineInputAssemblyStateCreateInfo getDefaultInputAssemblyState()
 	{
-		return
-		{
-			VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
-			nullptr,
-			0u,
-			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-			VK_FALSE,
-		};
+		return { VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO
+			, nullptr
+			, 0u
+			, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST
+			, VK_FALSE };
 	}
 
 	inline bool operator==( VkPipelineInputAssemblyStateCreateInfo const & lhs, VkPipelineInputAssemblyStateCreateInfo const & rhs )

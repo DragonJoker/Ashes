@@ -21,32 +21,32 @@ namespace ashes::gl
 	public:
 		PipelineLayout( VkAllocationCallbacks const * allocInfo
 			, VkDevice device
-			, VkPipelineLayoutCreateInfo createInfo );
-		~PipelineLayout();
+			, VkPipelineLayoutCreateInfo const & createInfo );
+		~PipelineLayout()noexcept;
 
 		ShaderBindings const & getShaderBindings()const;
 		uint32_t getDescriptorSetIndex( VkDescriptorSet descriptorSet )const;
 		ShaderBindings const & getDescriptorSetBindings( VkDescriptorSet descriptorSet
 			, uint32_t descriptorSetIndex )const;
 
-		VkPushConstantRangeArray const & getPushConstants()const
+		VkPushConstantRangeArray const & getPushConstants()const noexcept
 		{
 			return m_pushConstantRanges;
 		}
 
-		VkDescriptorSetLayoutArray const & getDescriptorsLayouts()const
+		VkDescriptorSetLayoutArray const & getDescriptorsLayouts()const noexcept
 		{
 			return m_setLayouts;
 		}
 
-		VkDevice getDevice()const
+		VkDevice getDevice()const noexcept
 		{
 			return m_device;
 		}
 
 	private:
 		void addPipeline( VkPipeline pipeline );
-		void removePipeline( VkPipeline pipeline );
+		void removePipeline( VkPipeline pipeline )noexcept;
 
 	private:
 		VkDevice m_device;

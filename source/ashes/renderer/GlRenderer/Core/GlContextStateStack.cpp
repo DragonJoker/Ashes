@@ -20,7 +20,7 @@ namespace ashes::gl
 		{
 			VkPipelineColorBlendAttachmentStateArray cbStateAttachments{ 1u, getColourBlendStateAttachment() };
 			VkPipelineColorBlendStateCreateInfo cbState{ getDefaultColorBlendState( cbStateAttachments ) };
-			return ContextState{ std::move( cbState ) };
+			return ContextState{ cbState };
 		}( );
 
 		bool doApplyEnable( CmdList & list
@@ -50,11 +50,9 @@ namespace ashes::gl
 		void doApplyPrimitiveRestart( CmdList & list
 			, VkPipelineInputAssemblyStateCreateInfo const & state )
 		{
-			if ( doApplyEnable( list
+			doApplyEnable( list
 				, GL_PRIMITIVE_RESTART
-				, state.primitiveRestartEnable != 0 ) )
-			{
-			}
+				, state.primitiveRestartEnable != 0 );
 		}
 
 		void doApplyLogicOp( CmdList & list
@@ -138,7 +136,7 @@ namespace ashes::gl
 
 		void doApplyLineWidth( CmdList & list
 			, VkPipelineRasterizationStateCreateInfo const & rasterState
-			, VkPipelineDynamicStateCreateInfo dynamicState )
+			, VkPipelineDynamicStateCreateInfo const & dynamicState )
 		{
 			if ( rasterState.polygonMode == VK_POLYGON_MODE_LINE
 				&& !hasDynamicState( dynamicState.pDynamicStates
@@ -151,7 +149,7 @@ namespace ashes::gl
 
 		void doApplyDepthBias( CmdList & list
 			, VkPipelineRasterizationStateCreateInfo const & rasterState
-			, VkPipelineDynamicStateCreateInfo dynamicState )
+			, VkPipelineDynamicStateCreateInfo const & dynamicState )
 		{
 			switch ( rasterState.polygonMode )
 			{
@@ -179,16 +177,14 @@ namespace ashes::gl
 				break;
 			}
 
-			if ( rasterState.depthBiasEnable )
+			if ( rasterState.depthBiasEnable
+			&& !hasDynamicState( dynamicState.pDynamicStates
+				, dynamicState.pDynamicStates + dynamicState.dynamicStateCount
+				, VK_DYNAMIC_STATE_DEPTH_BIAS ) )
 			{
-				if ( !hasDynamicState( dynamicState.pDynamicStates
-					, dynamicState.pDynamicStates + dynamicState.dynamicStateCount
-					, VK_DYNAMIC_STATE_DEPTH_BIAS ) )
-				{
-					list.emplace_back( makeCmd< OpType::ePolygonOffset >( rasterState.depthBiasConstantFactor
-						, rasterState.depthBiasClamp
-						, rasterState.depthBiasSlopeFactor ) );
-				}
+				list.emplace_back( makeCmd< OpType::ePolygonOffset >( rasterState.depthBiasConstantFactor
+					, rasterState.depthBiasClamp
+					, rasterState.depthBiasSlopeFactor ) );
 			}
 		}
 
@@ -530,7 +526,7 @@ namespace ashes::gl
 	}
 
 	void ContextStateStack::apply( ContextLock const & context
-		, ContextState & state )
+		, ContextState const & state )
 	{
 		doCheckSave( &context->getState() );
 		CmdList list;
@@ -539,7 +535,7 @@ namespace ashes::gl
 	}
 
 	void ContextStateStack::apply( CmdList & list
-		, ContextState & newState
+		, ContextState const & newState
 		, bool force )
 	{
 		force = doCheckSave() || force;
@@ -571,13 +567,13 @@ namespace ashes::gl
 			{
 				if ( m_viewportArrays )
 				{
-					if ( m_renderArea == VkExtent2D{ ~( 0u ), ~( 0u ) } )
+					if ( m_renderArea == VkExtent2D{ ~0u, ~0u } )
 					{
 						auto index = list.size();
 						list.push_back( makeCmd< OpType::eApplyViewports >( firstViewport
 							, uint32_t( viewports.size() )
 							, viewports ) );
-						preExecuteActions.push_back( [index]( CmdList & plist
+						preExecuteActions.emplace_back( [index]( CmdList & plist
 							, ContextStateStack const & stack )
 							{
 								Command * pCmd = nullptr;
@@ -604,11 +600,11 @@ namespace ashes::gl
 						, uint32_t( viewports.size() )
 						, viewports ) );
 				}
-				else if ( m_renderArea == VkExtent2D{ ~( 0u ), ~( 0u ) } )
+				else if ( m_renderArea == VkExtent2D{ ~0u, ~0u } )
 				{
 					auto index = list.size();
 					list.push_back( makeCmd< OpType::eApplyViewport >( viewports.front() ) );
-					preExecuteActions.push_back( [index]( CmdList & plist
+					preExecuteActions.emplace_back( [index]( CmdList & plist
 						, ContextStateStack const & stack )
 						{
 							Command * pCmd = nullptr;
@@ -617,7 +613,7 @@ namespace ashes::gl
 							if ( map( it, plist[index].end(), pCmd ) )
 							{
 								assert( pCmd->op.type == OpType::eApplyViewport );
-								CmdApplyViewport & oldCmd = map< OpType::eApplyViewport >( *pCmd );
+								CmdApplyViewport const & oldCmd = map< OpType::eApplyViewport >( *pCmd );
 								adjust( oldCmd.viewport, stack.m_renderArea );
 							}
 						} );
@@ -627,11 +623,11 @@ namespace ashes::gl
 					list.push_back( makeCmd< OpType::eApplyViewport >( adjust( viewports.front(), m_renderArea ) ) );
 				}
 			}
-			else if ( m_renderArea == VkExtent2D{ ~( 0u ), ~( 0u ) } )
+			else if ( m_renderArea == VkExtent2D{ ~0u, ~0u } )
 			{
 				auto index = list.size();
 				list.push_back( makeCmd< OpType::eApplyViewport >( VkViewport{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f } ) );
-				preExecuteActions.push_back( [index]( CmdList & plist
+				preExecuteActions.emplace_back( [index]( CmdList & plist
 					, ContextStateStack const & stack )
 					{
 						Command * pCmd = nullptr;
@@ -677,13 +673,13 @@ namespace ashes::gl
 			{
 				if ( m_viewportArrays )
 				{
-					if ( m_renderArea == VkExtent2D{ ~( 0u ), ~( 0u ) } )
+					if ( m_renderArea == VkExtent2D{ ~0u, ~0u } )
 					{
 						auto index = list.size();
 						list.push_back( makeCmd< OpType::eApplyScissors >( firstScissor
 							, uint32_t( scissors.size() )
 							, scissors ) );
-						preExecuteActions.push_back( [index]( CmdList & plist
+						preExecuteActions.emplace_back( [index]( CmdList & plist
 							, ContextStateStack const & stack )
 							{
 								if ( stack.isRtot() )
@@ -715,11 +711,11 @@ namespace ashes::gl
 							, scissors ) );
 					}
 				}
-				else if ( m_renderArea == VkExtent2D{ ~( 0u ), ~( 0u ) } )
+				else if ( m_renderArea == VkExtent2D{ ~0u, ~0u } )
 				{
 					auto index = list.size();
 					list.push_back( makeCmd< OpType::eApplyScissor >( VkRect2D{} ) );
-					preExecuteActions.push_back( [index]( CmdList & plist
+					preExecuteActions.emplace_back( [index]( CmdList & plist
 						, ContextStateStack const & stack )
 						{
 							if ( stack.isRtot() )
@@ -749,11 +745,11 @@ namespace ashes::gl
 					list.push_back( makeCmd< OpType::eApplyScissor >( scissors.front() ) );
 				}
 			}
-			else if ( m_renderArea == VkExtent2D{ ~( 0u ), ~( 0u ) } )
+			else if ( m_renderArea == VkExtent2D{ ~0u, ~0u } )
 			{
 				auto index = list.size();
 				list.push_back( makeCmd< OpType::eApplyScissor >( VkRect2D{ {}, {} } ) );
-				preExecuteActions.push_back( [index]( CmdList & plist
+				preExecuteActions.emplace_back( [index]( CmdList & plist
 					, ContextStateStack const & stack )
 					{
 						if ( stack.isRtot() )
@@ -948,9 +944,9 @@ namespace ashes::gl
 
 	void ContextStateStack::doApply( CmdList & list
 		, VkPipelineInputAssemblyStateCreateInfo const & newState
-		, bool force )
+		, bool force )const
 	{
-		auto & save = m_save->iaState;
+		auto const & save = m_save->iaState;
 
 		if ( force || newState.topology != save.topology )
 		{
@@ -965,11 +961,11 @@ namespace ashes::gl
 
 	void ContextStateStack::doApply( CmdList & list
 		, VkPipelineColorBlendStateCreateInfo const & newState
-		, bool force )
+		, bool force )const
 	{
 		thread_local bool hadBlend = false;
 
-		auto & save = m_save->cbState;
+		auto const & save = m_save->cbState;
 
 		if ( force || newState.logicOp != save.logicOp )
 		{
@@ -996,10 +992,10 @@ namespace ashes::gl
 
 	void ContextStateStack::doApply( CmdList & list
 		, VkPipelineRasterizationStateCreateInfo const & newState
-		, VkPipelineDynamicStateCreateInfo newDyState
-		, bool force )
+		, VkPipelineDynamicStateCreateInfo const & newDyState
+		, bool force )const
 	{
-		auto & save = m_save->rsState;
+		auto const & save = m_save->rsState;
 		auto mode = convertCullModeFlags( newState.cullMode );
 		auto enableCulling = newState.cullMode != VK_CULL_MODE_NONE && mode;
 
@@ -1010,12 +1006,10 @@ namespace ashes::gl
 				, enableCulling );
 		}
 
-		if ( force || newState.cullMode != save.cullMode )
+		if ( ( force || newState.cullMode != save.cullMode )
+			&& enableCulling )
 		{
-			if ( enableCulling )
-			{
-				list.emplace_back( makeCmd< OpType::eCullFace >( mode ) );
-			}
+			list.emplace_back( makeCmd< OpType::eCullFace >( mode ) );
 		}
 
 		if ( force || newState.frontFace != save.frontFace )
@@ -1050,9 +1044,9 @@ namespace ashes::gl
 
 	void ContextStateStack::doApply( CmdList & list
 		, VkPipelineMultisampleStateCreateInfo const & newState
-		, bool force )
+		, bool force )const
 	{
-		auto & save = m_save->msState;
+		auto const & save = m_save->msState;
 
 		if ( force || newState.rasterizationSamples != save.rasterizationSamples )
 		{
@@ -1077,7 +1071,7 @@ namespace ashes::gl
 
 	void ContextStateStack::doApply( CmdList & list
 		, VkPipelineDepthStencilStateCreateInfo const & newState
-		, bool force )
+		, bool force )const
 	{
 		auto & save = m_save->dsState;
 
@@ -1112,9 +1106,9 @@ namespace ashes::gl
 
 	void ContextStateStack::doApply( CmdList & list
 		, VkPipelineTessellationStateCreateInfo const & newState
-		, bool force )
+		, bool force )const
 	{
-		auto & save = m_save->tsState;
+		auto const & save = m_save->tsState;
 
 		if ( force || newState.patchControlPoints != save.patchControlPoints )
 		{

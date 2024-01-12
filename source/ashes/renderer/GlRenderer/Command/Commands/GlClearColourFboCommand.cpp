@@ -17,14 +17,14 @@ namespace ashes::gl
 	void buildClearColourFboCommand( VkDevice device
 		, ContextStateStack & stack
 		, VkImage image
-		, VkImageLayout imageLayout
+		, [[maybe_unused]] VkImageLayout imageLayout
 		, VkClearColorValue value
 		, ArrayView< VkImageSubresourceRange const > ranges
 		, CmdList & list )
 	{
 		glLogCommand( list, "ClearColourFboCommand" );
 		stack.applyDisableBlend( list );
-		auto & glimage = *get( image );
+		auto const & glimage = *get( image );
 		auto target = GL_TEXTURE_2D;
 
 		if ( glimage.getSamples() > VK_SAMPLE_COUNT_1_BIT )

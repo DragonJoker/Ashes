@@ -12,7 +12,7 @@ namespace ashes::gl
 {
 	void buildBindComputePipelineCommand( ContextStateStack & stack
 		, VkPipeline pipeline
-		, VkPipelineBindPoint bindingPoint
+		, [[maybe_unused]] VkPipelineBindPoint bindingPoint
 		, CmdList & list )
 	{
 		glLogCommand( list, "BindComputePipelineCommand" );

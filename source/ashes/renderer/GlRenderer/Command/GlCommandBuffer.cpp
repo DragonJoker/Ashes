@@ -148,12 +148,10 @@ namespace ashes::gl
 			{
 				if ( !areCompatible( lhs[i], rhs[i] ) )
 				{
-					i = size;
+					continue;
 				}
-				else
-				{
-					++result;
-				}
+
+				++result;
 			}
 
 			return result;
@@ -176,7 +174,7 @@ namespace ashes::gl
 		}
 	}
 
-	CommandBuffer::CommandBuffer( VkAllocationCallbacks const * allocInfo
+	CommandBuffer::CommandBuffer( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkDevice device
 		, VkCommandBufferLevel level )
 		: m_device{ device }
@@ -185,7 +183,7 @@ namespace ashes::gl
 		registerObject( m_device, *this );
 	}
 
-	CommandBuffer::~CommandBuffer()
+	CommandBuffer::~CommandBuffer()noexcept
 	{
 		unregisterObject( m_device, *this );
 		doReset();
@@ -213,34 +211,32 @@ namespace ashes::gl
 #endif
 	}
 
-	VkResult CommandBuffer::begin( VkCommandBufferBeginInfo info )const
+	VkResult CommandBuffer::begin( VkCommandBufferBeginInfo const & info )const
 	{
 		doReset();
 		m_state = State{};
 		m_state.stack = std::make_unique< ContextStateStack >( m_device );
 		m_state.beginFlags = info.flags;
 
-		if ( checkFlag( m_state.beginFlags, VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT ) )
-		{
-			if ( info.pInheritanceInfo
-				&& checkPointerAccess( VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO
-					, [&info]()
-					{
-						return info.pInheritanceInfo->sType;
-					} ) )
-			{
-				// Fake a bound framebuffer here : the one in the inheritance info.
-				m_state.stack->setCurrentFramebuffer( info.pInheritanceInfo->framebuffer );
-
-				if ( info.pInheritanceInfo->framebuffer )
+		if ( checkFlag( m_state.beginFlags, VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT )
+			&& info.pInheritanceInfo
+			&& checkPointerAccess( VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO
+				, [&info]()
 				{
-					m_state.stack->setRenderArea( get( info.pInheritanceInfo->framebuffer )->getDimensions() );
-				}
+					return info.pInheritanceInfo->sType;
+				} ) )
+		{
+			// Fake a bound framebuffer here : the one in the inheritance info.
+			m_state.stack->setCurrentFramebuffer( info.pInheritanceInfo->framebuffer );
 
-				m_state.currentFrameBuffer = info.pInheritanceInfo->framebuffer;
-				m_state.currentRenderPass = info.pInheritanceInfo->renderPass;
-				m_state.currentSubpassIndex = info.pInheritanceInfo->subpass;
+			if ( info.pInheritanceInfo->framebuffer )
+			{
+				m_state.stack->setRenderArea( get( info.pInheritanceInfo->framebuffer )->getDimensions() );
 			}
+
+			m_state.currentFrameBuffer = info.pInheritanceInfo->framebuffer;
+			m_state.currentRenderPass = info.pInheritanceInfo->renderPass;
+			m_state.currentSubpassIndex = info.pInheritanceInfo->subpass;
 		}
 
 		return VK_SUCCESS;
@@ -259,7 +255,7 @@ namespace ashes::gl
 		return VK_SUCCESS;
 	}
 
-	VkResult CommandBuffer::reset( VkCommandBufferResetFlags flags )const
+	VkResult CommandBuffer::reset()const noexcept
 	{
 		m_preExecuteActions.clear();
 		doReset();
@@ -279,7 +275,8 @@ namespace ashes::gl
 			, contents
 			, m_cmdList
 			, m_preExecuteActions );
-		m_state.currentSubpass = &get( m_state.currentRenderPass )->getSubpasses()[m_state.currentSubpassIndex++];
+		m_state.currentSubpass = &get( m_state.currentRenderPass )->getSubpasses()[m_state.currentSubpassIndex];
+		++m_state.currentSubpassIndex;
 		buildBeginSubpassCommand( *m_state.stack
 			, m_state.currentRenderPass
 			, m_state.currentFrameBuffer
@@ -289,7 +286,7 @@ namespace ashes::gl
 		m_preExecuteActions.clear();
 	}
 
-	void CommandBuffer::nextSubpass( VkSubpassContents contents )const
+	void CommandBuffer::nextSubpass()const
 	{
 		buildEndSubpassCommand( m_device
 			, *m_state.stack
@@ -297,7 +294,8 @@ namespace ashes::gl
 			, *m_state.currentSubpass
 			, m_cmdList
 			, m_preExecuteActions );
-		m_state.currentSubpass = &get( m_state.currentRenderPass )->getSubpasses()[m_state.currentSubpassIndex++];
+		m_state.currentSubpass = &get( m_state.currentRenderPass )->getSubpasses()[m_state.currentSubpassIndex];
+		++m_state.currentSubpassIndex;
 		buildBeginSubpassCommand( *m_state.stack
 			, m_state.currentRenderPass
 			, m_state.currentFrameBuffer
@@ -327,7 +325,7 @@ namespace ashes::gl
 		m_state.waitingDescriptors.clear();
 	}
 
-	void CommandBuffer::executeCommands( VkCommandBufferArray commands )const
+	void CommandBuffer::executeCommands( VkCommandBufferArray const & commands )const
 	{
 		for ( auto & commandBuffer : commands )
 		{
@@ -475,19 +473,19 @@ namespace ashes::gl
 			uint32_t dynamicOffsetIndex = 0u;
 			VkDescriptorSet ds{};
 
-			for ( auto & waiting : m_state.waitingDescriptors )
+			for ( auto const & [_, waiting] : m_state.waitingDescriptors )
 			{
-				ds = waiting.second( ds, dynamicOffsetIndex );
+				ds = waiting( ds, dynamicOffsetIndex );
 			}
 
 			m_state.waitingDescriptors.clear();
 
-			for ( auto & pcb : m_state.pushConstantBuffers )
+			for ( auto const & [layout, constants] : m_state.pushConstantBuffers )
 			{
-				doPushConstants( pcb.second );
+				doPushConstants( constants );
 				buildPushConstantsCommand( get( pipeline )->getDevice()
-					, pcb.second.stageFlags
-					, pcb.first
+					, constants.stageFlags
+					, layout
 					, ( m_state.currentGraphicsPipeline == pipeline
 						? get( pipeline )->getPushConstantsDesc( doIsRtotFbo() )
 						: get( pipeline )->getPushConstantsDesc() )
@@ -620,6 +618,7 @@ namespace ashes::gl
 				}
 
 				doProcessMappedBoundVaoBuffersIn();
+				assert( m_state.selectedVao );
 				buildBindGeometryBuffersCommand( *m_state.selectedVao
 					, m_cmdList );
 				buildDrawCommand( vtxCount
@@ -670,6 +669,7 @@ namespace ashes::gl
 			}
 
 			doProcessMappedBoundVaoBuffersIn();
+			assert( m_state.selectedVao );
 			buildBindGeometryBuffersCommand( *m_state.selectedVao
 				, m_cmdList );
 			buildDrawIndexedCommand( indexCount
@@ -706,6 +706,7 @@ namespace ashes::gl
 			}
 
 			doProcessMappedBoundVaoBuffersIn();
+			assert( m_state.selectedVao );
 			buildBindGeometryBuffersCommand( *m_state.selectedVao
 				, m_cmdList );
 			buildDrawIndirectCommand( buffer
@@ -752,6 +753,7 @@ namespace ashes::gl
 			}
 
 			doProcessMappedBoundVaoBuffersIn();
+			assert( m_state.selectedVao );
 			buildBindGeometryBuffersCommand( *m_state.selectedVao
 				, m_cmdList );
 			buildDrawIndexedIndirectCommand( buffer
@@ -769,14 +771,14 @@ namespace ashes::gl
 
 	void CommandBuffer::copyToImage( VkBuffer src
 		, VkImage dst
-		, VkImageLayout dstLayout
+		, [[maybe_unused]] VkImageLayout dstLayout
 		, ArrayView< VkBufferImageCopy const > copyInfos )const
 	{
-		for ( auto & copyInfo : copyInfos )
+		for ( auto const & copyInfo : copyInfos )
 		{
 			buildCopyBufferToImageCommand( *m_state.stack
 				, get( src )->getDevice()
-				, std::move( copyInfo )
+				, copyInfo
 				, src
 				, dst
 				, m_cmdList );
@@ -784,15 +786,15 @@ namespace ashes::gl
 	}
 
 	void CommandBuffer::copyToBuffer( VkImage src
-		, VkImageLayout srcLayout
+		, [[maybe_unused]] VkImageLayout srcLayout
 		, VkBuffer dst
 		, ArrayView< VkBufferImageCopy const > copyInfos )const
 	{
-		for ( auto & copyInfo : copyInfos )
+		for ( auto const & copyInfo : copyInfos )
 		{
 			buildCopyImageToBufferCommand( *m_state.stack
 				, m_device
-				, std::move( copyInfo )
+				, copyInfo
 				, src
 				, dst
 				, m_cmdList );
@@ -843,9 +845,9 @@ namespace ashes::gl
 		, VkBuffer dst
 		, ArrayView< VkBufferCopy const > copyInfos )const
 	{
-		for ( auto & copyInfo : copyInfos )
+		for ( auto const & copyInfo : copyInfos )
 		{
-			buildCopyBufferCommand( std::move( copyInfo )
+			buildCopyBufferCommand( copyInfo
 				, src
 				, dst
 				, m_cmdList );
@@ -853,16 +855,16 @@ namespace ashes::gl
 	}
 
 	void CommandBuffer::copyImage( VkImage src
-		, VkImageLayout srcLayout
+		, [[maybe_unused]] VkImageLayout srcLayout
 		, VkImage dst
-		, VkImageLayout dstLayout
+		, [[maybe_unused]] VkImageLayout dstLayout
 		, ArrayView< VkImageCopy const > copyInfos )const
 	{
-		for ( auto & copyInfo : copyInfos )
+		for ( auto const & copyInfo : copyInfos )
 		{
 			buildCopyImageCommand( *m_state.stack
 				, m_device
-				, std::move( copyInfo )
+				, copyInfo
 				, src
 				, dst
 				, m_cmdList );
@@ -870,28 +872,28 @@ namespace ashes::gl
 	}
 
 	void CommandBuffer::blitImage( VkImage srcImage
-		, VkImageLayout srcLayout
+		, [[maybe_unused]] VkImageLayout srcLayout
 		, VkImage dstImage
-		, VkImageLayout dstLayout
+		, [[maybe_unused]] VkImageLayout dstLayout
 		, ArrayView< VkImageBlit const > regions
 		, VkFilter filter )const
 	{
-		for ( auto & region : regions )
+		for ( auto const & region : regions )
 		{
 			buildBlitImageCommand( *m_state.stack
 				, m_device
 				, srcImage
 				, dstImage
-				, std::move( region )
+				, region
 				, filter
 				, m_cmdList );
 		}
 	}
 
 	void CommandBuffer::resolveImage( VkImage srcImage
-		, VkImageLayout srcLayout
+		, [[maybe_unused]] VkImageLayout srcLayout
 		, VkImage dstImage
-		, VkImageLayout dstLayout
+		, [[maybe_unused]] VkImageLayout dstLayout
 		, ArrayView< VkImageResolve const > regions )const
 	{
 		for ( auto & region : regions )
@@ -923,7 +925,7 @@ namespace ashes::gl
 
 	void CommandBuffer::beginQuery( VkQueryPool pool
 		, uint32_t query
-		, VkQueryControlFlags flags )const
+		, [[maybe_unused]] VkQueryControlFlags flags )const
 	{
 		buildBeginQueryCommand( pool
 			, query
@@ -1202,7 +1204,7 @@ namespace ashes::gl
 		m_label = ashes::nullopt;
 	}
 
-	void CommandBuffer::insertDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const
+	void CommandBuffer::insertDebugUtilsLabel( [[maybe_unused]] VkDebugUtilsLabelEXT const & labelInfo )const
 	{
 	}
 
@@ -1228,15 +1230,15 @@ namespace ashes::gl
 		m_label = ashes::nullopt;
 	}
 
-	void CommandBuffer::debugMarkerInsert( VkDebugMarkerMarkerInfoEXT const & labelInfo )const
+	void CommandBuffer::debugMarkerInsert( [[maybe_unused]] VkDebugMarkerMarkerInfoEXT const & labelInfo )const
 	{
 	}
 
 #endif
 
-	void CommandBuffer::initialiseGeometryBuffers( ContextLock & context )const
+	void CommandBuffer::initialiseGeometryBuffers( ContextLock const & context )const
 	{
-		for ( auto & vao : m_state.vaos )
+		for ( auto const & vao : m_state.vaos )
 		{
 			vao.get().initialise( context );
 		}
@@ -1246,13 +1248,13 @@ namespace ashes::gl
 
 	void CommandBuffer::doApplyPreExecuteCommands( ContextStateStack const & stack )const
 	{
-		for ( auto & action : m_preExecuteActions )
+		for ( auto const & action : m_preExecuteActions )
 		{
 			action( m_cmdList, stack );
 		}
 	}
 
-	void CommandBuffer::doReset()const
+	void CommandBuffer::doReset()const noexcept
 	{
 		m_mappedBuffers.clear();
 		m_cmdList.clear();
@@ -1290,25 +1292,25 @@ namespace ashes::gl
 
 	void CommandBuffer::doProcessMappedBoundDescriptorBuffersIn( VkDescriptorSet descriptor )const
 	{
-		for ( auto & writes : get( descriptor )->getDynamicBuffers() )
+		for ( auto const & writes : get( descriptor )->getDynamicBuffers() )
 		{
-			for ( auto & write : writes->writes )
+			for ( auto const & write : writes->writes )
 			{
 				doProcessMappedBoundBufferIn( write.pBufferInfo->buffer );
 			}
 		}
 
-		for ( auto & writes : get( descriptor )->getStorageBuffers() )
+		for ( auto const & writes : get( descriptor )->getStorageBuffers() )
 		{
-			for ( auto & write : writes->writes )
+			for ( auto const & write : writes->writes )
 			{
 				doProcessMappedBoundBufferIn( write.pBufferInfo->buffer );
 			}
 		}
 
-		for ( auto & writes : get( descriptor )->getUniformBuffers() )
+		for ( auto const & writes : get( descriptor )->getUniformBuffers() )
 		{
-			for ( auto & write : writes->writes )
+			for ( auto const & write : writes->writes )
 			{
 				doProcessMappedBoundBufferIn( write.pBufferInfo->buffer );
 			}
@@ -1317,22 +1319,22 @@ namespace ashes::gl
 
 	void CommandBuffer::doProcessMappedBoundDescriptorsBuffersOut()const
 	{
-		for ( auto descriptor : m_state.boundDescriptors )
+		for ( auto const & [_, descriptor] : m_state.boundDescriptors )
 		{
-			for ( auto & writes : get( descriptor.second )->getDynamicBuffers() )
+			for ( auto const & writes : get( descriptor )->getDynamicBuffers() )
 			{
 				if ( writes->descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC )
 				{
-					for ( auto & write : writes->writes )
+					for ( auto const & write : writes->writes )
 					{
 						doProcessMappedBoundBufferOut( write.pBufferInfo->buffer );
 					}
 				}
 			}
 
-			for ( auto & writes : get( descriptor.second )->getStorageBuffers() )
+			for ( auto const & writes : get( descriptor )->getStorageBuffers() )
 			{
-				for ( auto & write : writes->writes )
+				for ( auto const & write : writes->writes )
 				{
 					doProcessMappedBoundBufferOut( write.pBufferInfo->buffer );
 				}

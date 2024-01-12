@@ -14,7 +14,7 @@ namespace ashes::gl
 	{
 	public:
 		ShaderProgram( VkDevice device
-			, ContextState * state
+			, ContextState const * state
 			, VkPipeline pipeline
 			, VkPipelineShaderStageCreateInfoArray stages
 			, VkPipelineLayout layout
@@ -22,7 +22,7 @@ namespace ashes::gl
 			, VkRenderPass renderPass
 			, Optional< VkPipelineVertexInputStateCreateInfo > const & vertexInputState
 			, bool invertY = false );
-		~ShaderProgram();
+		~ShaderProgram()noexcept;
 
 	private:
 		VkDevice m_device;
@@ -37,17 +37,14 @@ namespace ashes::gl
 
 	private:
 		void doInitProgramPipeline( ContextLock const & context
-			, std::vector< ShaderDesc > descs
+			, std::vector< ShaderDesc > const & descs
 			, VkPipelineLayout layout
-			, VkPipelineCreateFlags createFlags
 			, VkRenderPass renderPass
 			, Optional< VkPipelineVertexInputStateCreateInfo > const & vertexInputState );
 		void doInitShaderProgram( ContextLock const & context
 			, VkPipeline pipeline
-			, std::vector< ShaderDesc > descs
-			, VkPipelineLayout layout
-			, VkPipelineCreateFlags createFlags );
-		void doCleanupProgramPipeline( ContextLock const & context );
-		void doCleanupShaderProgram( ContextLock const & context );
+			, std::vector< ShaderDesc > const & descs );
+		void doCleanupProgramPipeline( ContextLock const & context )noexcept;
+		void doCleanupShaderProgram( ContextLock const & context )noexcept;
 	};
 }

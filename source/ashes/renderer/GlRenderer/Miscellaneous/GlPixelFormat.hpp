@@ -19,7 +19,7 @@ namespace ashes::gl
 			, GlComponentMapping swizzle );
 
 	public:
-		PixelFormat();
+		PixelFormat()noexcept = default;
 		PixelFormat( ContextLock const & context
 			, GlTextureType target
 			, VkFormat format );

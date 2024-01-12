@@ -53,7 +53,7 @@ namespace ashes::gl
 						return lookup.extensionName == std::string{ extension };
 					} ) )
 				{
-					unsupported.push_back( extension );
+					unsupported.emplace_back( extension );
 				}
 			}
 
@@ -66,7 +66,7 @@ namespace ashes::gl
 			{
 				std::stringstream stream;
 
-				for ( auto & ext : unsupported )
+				for ( auto const & ext : unsupported )
 				{
 					stream << "\n    " << ext;
 				}
@@ -100,8 +100,8 @@ namespace ashes::gl
 		}
 	}
 
-	Instance::Instance( VkAllocationCallbacks const * allocInfo
-		, VkInstanceCreateInfo createInfo )
+	Instance::Instance( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
+		, VkInstanceCreateInfo const & createInfo )
 		: m_applicationInfo{ createInfo.pApplicationInfo ? *createInfo.pApplicationInfo : doGetDefaultApplicationInfo() }
 		, m_enabledLayerNames{ convert( createInfo.ppEnabledLayerNames, createInfo.enabledLayerCount ) }
 		, m_enabledExtensions{ convert( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) }
@@ -129,7 +129,7 @@ namespace ashes::gl
 			, ashes::makeArrayView( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) );
 	}
 
-	Instance::~Instance()
+	Instance::~Instance()noexcept
 	{
 		for ( auto & physicalDevice : m_physicalDevices )
 		{
@@ -162,7 +162,7 @@ namespace ashes::gl
 			} );
 	}
 
-	void Instance::unregisterDevice( VkDevice device )
+	void Instance::unregisterDevice( VkDevice device )noexcept
 	{
 		m_devices.erase( device );
 	}
@@ -179,7 +179,7 @@ namespace ashes::gl
 		return m_context.get();
 	}
 
-	void Instance::unregisterSurface( VkSurfaceKHR surface )
+	void Instance::unregisterSurface( VkSurfaceKHR surface )noexcept
 	{
 		m_surfaces.erase( m_surfaces.find( surface ) );
 
@@ -192,7 +192,7 @@ namespace ashes::gl
 
 			for ( auto & device : m_devices )
 			{
-				get( device )->unlink( surface );
+				get( device )->unlink();
 			}
 		}
 	}
@@ -401,9 +401,9 @@ namespace ashes::gl
 
 	void Instance::submitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
 		, VkDebugUtilsMessageTypeFlagsEXT messageTypes
-		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const
+		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const noexcept
 	{
-		for ( auto & callback : m_debugMessengers )
+		for ( auto const & callback : m_debugMessengers )
 		{
 			get( callback.debugMessenger )->submit( messageSeverity
 				, messageTypes
@@ -411,7 +411,7 @@ namespace ashes::gl
 				, callback.userParam );
 		}
 
-		for ( auto & callback : m_debugAMDMessengers )
+		for ( auto const & callback : m_debugAMDMessengers )
 		{
 			get( callback.debugMessenger )->submit( messageSeverity
 				, messageTypes
@@ -467,9 +467,9 @@ namespace ashes::gl
 		, size_t location
 		, int32_t messageCode
 		, const char * pLayerPrefix
-		, const char * pMessage )
+		, const char * pMessage )const noexcept
 	{
-		for ( auto & callback : m_debugCallbacks )
+		for ( auto const & callback : m_debugCallbacks )
 		{
 			get( callback.debugReport )->report( flags
 				, objectType
@@ -480,7 +480,7 @@ namespace ashes::gl
 				, pMessage );
 		}
 
-		for ( auto & callback : m_debugAMDCallbacks )
+		for ( auto const & callback : m_debugAMDCallbacks )
 		{
 			get( callback.debugReport )->report( flags
 				, objectType

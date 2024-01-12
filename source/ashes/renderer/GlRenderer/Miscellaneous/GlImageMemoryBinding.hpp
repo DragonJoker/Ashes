@@ -16,14 +16,14 @@ namespace ashes::gl
 			, VkDevice device
 			, VkImage image
 			, VkDeviceSize memoryOffset );
-		~ImageMemoryBinding()override;
+		~ImageMemoryBinding()noexcept override;
 
 		VkDeviceSize getMipLevelOffset( uint32_t mipLevel )const;
 		VkDeviceSize getMipLevelLayerSize( uint32_t mipLevel )const;
 		VkDeviceSize getArrayLayerSize()const;
 		void upload( ContextLock const & context
 			, ByteArray const & data
-			, BindingRange const & range )const override;
+			, BindingRange const & range )const noexcept override;
 
 	private:
 		void setImage1D( ContextLock const & context );

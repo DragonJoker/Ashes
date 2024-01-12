@@ -18,7 +18,7 @@ namespace ashes::gl
 	void buildBindPipelineCommand( ContextStateStack & stack
 		, VkDevice device
 		, VkPipeline pipeline
-		, VkPipelineBindPoint bindingPoint
+		, [[maybe_unused]] VkPipelineBindPoint bindingPoint
 		, CmdList & list
 		, PreExecuteActions & preExecuteActions )
 	{

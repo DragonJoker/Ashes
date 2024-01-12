@@ -17,8 +17,7 @@ namespace ashes::gl
 {
 	namespace
 	{
-		void clearAttach( FboAttachment attach
-			, VkAttachmentReference const & reference
+		void clearAttach( VkAttachmentReference const & reference
 			, VkRenderPass renderPass
 			, VkClearValueArray rtClearValues
 			, VkClearValue dsClearValue
@@ -57,7 +56,7 @@ namespace ashes::gl
 		, VkRenderPass renderPass
 		, VkFramebuffer frameBuffer
 		, VkClearValueArray clearValues
-		, VkSubpassContents contents
+		, [[maybe_unused]] VkSubpassContents contents
 		, CmdList & list
 		, PreExecuteActions & preExecuteActions )
 	{
@@ -69,14 +68,14 @@ namespace ashes::gl
 		{
 			assert( clearValues.size() >= get( renderPass )->getMaxLoadClearIndex() );
 
-			for ( auto & reference : get( renderPass )->getFboAttachable() )
+			for ( auto const & reference : get( renderPass )->getFboAttachable() )
 			{
 				auto & attach = get( renderPass )->getAttachment( reference );
 
 				if ( attach.loadOp == VK_ATTACHMENT_LOAD_OP_CLEAR
 					|| attach.stencilLoadOp == VK_ATTACHMENT_LOAD_OP_CLEAR )
 				{
-					auto & clearValue = clearValues[reference.attachment];
+					auto const & clearValue = clearValues[reference.attachment];
 
 					if ( ashes::isDepthOrStencilFormat( attach.format ) )
 					{
@@ -110,14 +109,14 @@ namespace ashes::gl
 			assert( get( frameBuffer )->getInternal() );
 			uint32_t clearIndex = 0u;
 
-			for ( auto & reference : get( renderPass )->getFboAttachable() )
+			for ( auto const & reference : get( renderPass )->getFboAttachable() )
 			{
 				auto attach = get( frameBuffer )->getAttachment( reference );
 
 				if ( attach.point )
 				{
 					attach.bindDraw( stack, 0u, GL_FRAMEBUFFER, list );
-					clearAttach( attach, reference, renderPass, rtClearValues, dsClearValue, list, clearIndex );
+					clearAttach( reference, renderPass, rtClearValues, dsClearValue, list, clearIndex );
 				}
 			}
 		}

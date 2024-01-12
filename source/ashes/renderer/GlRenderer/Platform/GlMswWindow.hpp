@@ -40,11 +40,11 @@ namespace ashes::gl
 		RenderWindow( int major
 			, int minor
 			, std::string const & name );
-		~RenderWindow();
+		~RenderWindow()noexcept;
 		VkWin32SurfaceCreateInfoKHR getCreateInfo()const;
 
 	private:
-		void doCleanup();
+		void doCleanup()noexcept;
 
 	private:
 		VkWin32PixelFormatDescriptorASH m_pfd;

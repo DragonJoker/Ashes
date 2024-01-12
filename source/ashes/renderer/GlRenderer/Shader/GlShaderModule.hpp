@@ -22,8 +22,8 @@ namespace ashes::gl
 	public:
 		ShaderModule( VkAllocationCallbacks const * allocInfo
 			, VkDevice device
-			, VkShaderModuleCreateInfo createInfo );
-		~ShaderModule();
+			, VkShaderModuleCreateInfo const & createInfo );
+		~ShaderModule()noexcept;
 
 		VkResult compile( VkPipeline pipeline
 			, VkPipelineShaderStageCreateInfo const * previousState
@@ -33,12 +33,12 @@ namespace ashes::gl
 			, bool invertY
 			, ShaderDesc & result );
 
-		inline ConstantsLayout const & getConstants()const
+		ConstantsLayout const & getConstants()const
 		{
 			return m_constants;
 		}
 
-		inline VkDevice getDevice()const
+		VkDevice getDevice()const
 		{
 			return m_device;
 		}

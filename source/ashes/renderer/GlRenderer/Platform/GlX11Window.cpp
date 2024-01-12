@@ -160,12 +160,12 @@ namespace ashes::gl
 		}
 	}
 
-	RenderWindow::~RenderWindow()
+	RenderWindow::~RenderWindow()noexcept
 	{
 		doCleanup();
 	}
 
-	void RenderWindow::doCleanup()
+	void RenderWindow::doCleanup()noexcept
 	{
 #if ASHES_USE_XLIB_EGL
 

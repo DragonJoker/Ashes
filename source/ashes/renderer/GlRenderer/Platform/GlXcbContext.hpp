@@ -23,7 +23,7 @@ namespace ashes::gl
 		void preInitialise( int major, int minor )override;
 		void postInitialise()override;
 		void enable()const override;
-		void disable()const override;
+		void disable()const noexcept override;
 		void swapBuffers()const override;
 		VkExtent2D getExtent()const override;
 

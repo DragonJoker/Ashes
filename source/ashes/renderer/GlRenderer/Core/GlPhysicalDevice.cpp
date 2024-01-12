@@ -97,46 +97,35 @@ namespace ashes::gl
 
 			return result;
 		}
-	}
 
-	PhysicalDevice::PhysicalDevice( VkInstance instance )
-		: m_instance{ instance }
-	{
-		doInitialise();
-	}
-
-	std::vector< VkLayerProperties > PhysicalDevice::enumerateLayerProperties()const
-	{
-		return {};
-	}
-
-	uint32_t PhysicalDevice::getMemoryTypeBits( VkMemoryPropertyFlags properties )const
-	{
-		uint32_t result{};
-		auto & memoryProperties = getMemoryProperties();
-
-		for ( auto i = 0u; i < memoryProperties.memoryTypeCount; ++i )
+		GlInternal getCompressedFormatSupport( VkPhysicalDeviceFeatures const & features
+			, VkFormat fmt
+			, GlInternal internal )
 		{
-			if ( ( memoryProperties.memoryTypes[i].propertyFlags & properties ) == properties )
+			if ( isBCFormat( fmt ) )
 			{
-				result |= ( 0x1 << i );
+				internal = ( features.textureCompressionBC
+					? internal
+					: GL_INTERNAL_UNSUPPORTED );
 			}
+			else if ( isEACFormat( fmt ) || isETC2Format( fmt ) )
+			{
+				internal = ( features.textureCompressionETC2
+					? internal
+					: GL_INTERNAL_UNSUPPORTED );
+			}
+			else if ( isASTCFormat( fmt ) )
+			{
+				internal = ( features.textureCompressionASTC_LDR
+					? internal
+					: GL_INTERNAL_UNSUPPORTED );
+			}
+
+			return internal;
 		}
 
-		return result;
-	}
-
-	uint32_t PhysicalDevice::getMemoryTypeBits( VkMemoryPropertyFlags properties1
-		, VkMemoryPropertyFlags properties2 )const
-	{
-		uint32_t result = getMemoryTypeBits( properties1 );
-		result |= getMemoryTypeBits( properties2 );
-		return result;
-	}
-
-	std::vector < VkExtensionProperties > PhysicalDevice::enumerateExtensionProperties( const char * layerName )const
-	{
-		static std::vector< VkExtensionProperties > const extensions
+		std::vector< VkLayerProperties > const SupportedLayers{};
+		std::vector< VkExtensionProperties > const SupportedExtensions
 		{
 #if VK_KHR_swapchain
 			VkExtensionProperties{ VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_SWAPCHAIN_SPEC_VERSION },
@@ -160,36 +149,75 @@ namespace ashes::gl
 			VkExtensionProperties{ VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME, VK_KHR_PORTABILITY_SUBSET_SPEC_VERSION },
 #endif
 		};
-		return extensions;
 	}
 
-	VkPhysicalDeviceProperties const & PhysicalDevice::getProperties()const
+	PhysicalDevice::PhysicalDevice( VkInstance instance )
+		: m_instance{ instance }
+	{
+		doInitialise();
+	}
+
+	uint32_t PhysicalDevice::getMemoryTypeBits( VkMemoryPropertyFlags properties )const noexcept
+	{
+		uint32_t result{};
+		auto & memoryProperties = getMemoryProperties();
+
+		for ( auto i = 0u; i < memoryProperties.memoryTypeCount; ++i )
+		{
+			if ( ( memoryProperties.memoryTypes[i].propertyFlags & properties ) == properties )
+			{
+				result |= ( 0x1 << i );
+			}
+		}
+
+		return result;
+	}
+
+	uint32_t PhysicalDevice::getMemoryTypeBits( VkMemoryPropertyFlags properties1
+		, VkMemoryPropertyFlags properties2 )const noexcept
+	{
+		uint32_t result = getMemoryTypeBits( properties1 );
+		result |= getMemoryTypeBits( properties2 );
+		return result;
+	}
+
+	std::vector< VkLayerProperties > const & PhysicalDevice::enumerateLayerProperties()const  noexcept
+	{
+		return SupportedLayers;
+	}
+
+	std::vector < VkExtensionProperties > const & PhysicalDevice::enumerateExtensionProperties( [[maybe_unused]] const char * layerName )const noexcept
+	{
+		return SupportedExtensions;
+	}
+
+	VkPhysicalDeviceProperties const & PhysicalDevice::getProperties()const noexcept
 	{
 		return m_properties;
 	}
 
-	VkPhysicalDeviceMemoryProperties const & PhysicalDevice::getMemoryProperties()const
+	VkPhysicalDeviceMemoryProperties const & PhysicalDevice::getMemoryProperties()const noexcept
 	{
 		return m_memoryProperties;
 	}
 
-	VkPhysicalDeviceFeatures const & PhysicalDevice::getFeatures()const
+	VkPhysicalDeviceFeatures const & PhysicalDevice::getFeatures()const noexcept
 	{
 		return m_features;
 	}
 
-	std::vector< VkQueueFamilyProperties > const & PhysicalDevice::getQueueFamilyProperties()const
+	std::vector< VkQueueFamilyProperties > const & PhysicalDevice::getQueueFamilyProperties()const noexcept
 	{
 		return m_queueProperties;
 	}
 
 	VkFormatProperties const & PhysicalDevice::getFormatProperties( VkFormat fmt )const
 	{
-		auto iresult = m_formatProperties.insert( { fmt, VkFormatProperties{} } );
+		auto [it, res] = m_formatProperties.try_emplace( fmt );
 
-		if ( iresult.second )
+		if ( res )
 		{
-			auto & properties = iresult.first->second;
+			auto & properties = it->second;
 
 			if ( !find( ARB_internalformat_query2 ) )
 			{
@@ -220,24 +248,7 @@ namespace ashes::gl
 
 				if ( isCompressedFormat( fmt ) )
 				{
-					if ( isBCFormat( fmt ) )
-					{
-						internal = ( m_features.textureCompressionBC
-							? internal
-							: GL_INTERNAL_UNSUPPORTED );
-					}
-					else if ( isEACFormat( fmt ) || isETC2Format( fmt ) )
-					{
-						internal = ( m_features.textureCompressionETC2
-							? internal
-							: GL_INTERNAL_UNSUPPORTED );
-					}
-					else if ( isASTCFormat( fmt ) )
-					{
-						internal = ( m_features.textureCompressionASTC_LDR
-							? internal
-							: GL_INTERNAL_UNSUPPORTED );
-					}
+					internal = getCompressedFormatSupport( m_features, fmt, internal );
 				}
 
 				if ( internal != GL_INTERNAL_UNSUPPORTED )
@@ -624,27 +635,26 @@ namespace ashes::gl
 			}
 		}
 
-		return iresult.first->second;
+		return it->second;
 	}
 
 	VkResult PhysicalDevice::getImageFormatProperties( VkFormat format
 		, VkImageType type
-		, VkImageTiling tiling
-		, VkImageUsageFlags usage
-		, VkImageCreateFlags flags
+		, [[maybe_unused]] VkImageTiling tiling
+		, [[maybe_unused]] VkImageUsageFlags usage
+		, [[maybe_unused]] VkImageCreateFlags flags
 		, VkImageFormatProperties & imageProperties )const
 	{
-		auto pair = m_imageFormatProperties.insert( { makeKey( format
-				, type
-				, VkImageTiling{}
-				, VkImageUsageFlags{}
-				, VkImageCreateFlags{} )
-			, {} } );
+		auto [it, res] = m_imageFormatProperties.try_emplace( makeKey( format
+			, type
+			, VkImageTiling{}
+			, VkImageUsageFlags{}
+			, VkImageCreateFlags{} ) );
 
-		if ( pair.second )
+		if ( res )
 		{
-			auto & imageFormatProperties = pair.first->second.first;
-			pair.first->second.second = VK_ERROR_FORMAT_NOT_SUPPORTED;
+			auto & imageFormatProperties = it->second.first;
+			it->second.second = VK_ERROR_FORMAT_NOT_SUPPORTED;
 			imageFormatProperties = {};
 			ContextLock context{ get( m_instance )->getCurrentContext() };
 			auto internal = getInternalFormat( format );
@@ -789,27 +799,27 @@ namespace ashes::gl
 							, 0u
 							, imageFormatProperties.maxMipLevels
 							, uint32_t( getBlockSize( format ).size ) );
-						pair.first->second.second = VK_SUCCESS;
+						it->second.second = VK_SUCCESS;
 					}
 					else
 					{
 						imageFormatProperties.maxMipLevels = 0u;
-						pair.first->second.second = VK_ERROR_FORMAT_NOT_SUPPORTED;
+						it->second.second = VK_ERROR_FORMAT_NOT_SUPPORTED;
 					}
 				}
 			}
 		}
 
-		imageProperties = pair.first->second.first;
-		return pair.first->second.second;
+		imageProperties = it->second.first;
+		return it->second.second;
 	}
 
-	VkResult PhysicalDevice::getSparseImageFormatProperties( VkFormat format
-		, VkImageType type
-		, VkSampleCountFlagBits samples
-		, VkImageUsageFlags usage
-		, VkImageTiling tiling
-		, std::vector< VkSparseImageFormatProperties > & sparseImageFormatProperties )const
+	VkResult PhysicalDevice::getSparseImageFormatProperties( [[maybe_unused]] VkFormat format
+		, [[maybe_unused]] VkImageType type
+		, [[maybe_unused]] VkSampleCountFlagBits samples
+		, [[maybe_unused]] VkImageUsageFlags usage
+		, [[maybe_unused]] VkImageTiling tiling
+		, [[maybe_unused]] std::vector< VkSparseImageFormatProperties > & sparseImageFormatProperties )const
 	{
 		return VK_ERROR_FORMAT_NOT_SUPPORTED;
 	}
@@ -891,14 +901,14 @@ namespace ashes::gl
 		doInitialiseMemoryProperties( context );
 		doInitialiseFeatures( context );
 		doInitialiseProperties( context );
-		doInitialiseQueueProperties( context );
-		doInitialiseDisplayProperties( context );
-		doInitialisePortability( context );
-		doInitialiseDriverProperties( context );
+		doInitialiseQueueProperties();
+		doInitialiseDisplayProperties();
+		doInitialisePortability();
+		doInitialiseDriverProperties();
 		doInitialiseInlineUniformBlock( context );
 	}
 
-	void PhysicalDevice::doInitialiseFeatures( ContextLock & context )
+	void PhysicalDevice::doInitialiseFeatures( ContextLock const & context )
 	{
 		m_features.robustBufferAccess = find( KHR_robustness );
 		m_features.fullDrawIndexUint32 = false;
@@ -915,15 +925,15 @@ namespace ashes::gl
 		m_features.depthBiasClamp = find( ARB_polygon_offset_clamp );
 		m_features.fillModeNonSolid = true;
 		m_features.depthBounds = true;
-		GLint range[2];
+		std::array< GLint, 2u > range{};
 		glLogCall( context, glGetIntegerv
 			, GL_VALUE_NAME_ALIASED_LINE_WIDTH_RANGE
-			, range );
-		m_features.wideLines = ( range[1] >= 1 );
+			, range.data() );
+		m_features.wideLines = ( range[1] >= 1 ) ? VK_TRUE : VK_FALSE;
 		glLogCall( context, glGetIntegerv
 			, GL_VALUE_NAME_SMOOTH_LINE_WIDTH_RANGE
-			, range );
-		m_features.wideLines &= ( range[1] >= 1 );
+			, range.data() );
+		m_features.wideLines = m_features.wideLines == VK_TRUE && ( range[1] >= 1 );
 		m_features.largePoints = true;
 		m_features.alphaToOne = true;
 		m_features.multiViewport = find( ARB_viewport_array );
@@ -935,7 +945,7 @@ namespace ashes::gl
 		m_features.pipelineStatisticsQuery = find( ARB_pipeline_statistics_query );
 		m_features.vertexPipelineStoresAndAtomics = find( ARB_shader_atomic_counters );
 		m_features.fragmentStoresAndAtomics = m_features.vertexPipelineStoresAndAtomics;
-		m_features.shaderTessellationAndGeometryPointSize = m_features.tessellationShader && m_features.geometryShader;
+		m_features.shaderTessellationAndGeometryPointSize = m_features.tessellationShader == VK_TRUE && m_features.geometryShader == VK_TRUE;
 		m_features.shaderImageGatherExtended = findAll( { ARB_texture_gather, ARB_gpu_shader5 } );
 		m_features.shaderStorageImageExtendedFormats = find( ARB_shader_image_load_store );
 		m_features.shaderStorageImageMultisample = find( ARB_shader_image_load_store );
@@ -950,22 +960,22 @@ namespace ashes::gl
 		m_features.shaderFloat64 = find( ARB_gpu_shader_fp64 );
 		m_features.shaderInt64 = find( ARB_gpu_shader_int64 );
 		m_features.shaderInt16 = false;
-		m_features.shaderResourceResidency = false;// find( ARB_sparse_texture2 );
-		m_features.shaderResourceMinLod = false;// find( ARB_sparse_texture_clamp );
-		m_features.sparseBinding = false;// findAll( { ARB_sparse_buffer, ARB_sparse_texture2 } );
-		m_features.sparseResidencyBuffer = false;// find( ARB_sparse_buffer );
-		m_features.sparseResidencyImage2D = false;// find( ARB_sparse_texture2 );
-		m_features.sparseResidencyImage3D = false;// find( ARB_sparse_texture2 );
-		m_features.sparseResidency2Samples = false;// find( ARB_sparse_texture2 );
-		m_features.sparseResidency4Samples = false;// find( ARB_sparse_texture2 );
-		m_features.sparseResidency8Samples = false;// find( ARB_sparse_texture2 );
-		m_features.sparseResidency16Samples = false;// find( ARB_sparse_texture2 );
+		m_features.shaderResourceResidency = false;//! find( ARB_sparse_texture2 );
+		m_features.shaderResourceMinLod = false;//! find( ARB_sparse_texture_clamp );
+		m_features.sparseBinding = false;//! findAll( { ARB_sparse_buffer, ARB_sparse_texture2 } );
+		m_features.sparseResidencyBuffer = false;//! find( ARB_sparse_buffer );
+		m_features.sparseResidencyImage2D = false;//! find( ARB_sparse_texture2 );
+		m_features.sparseResidencyImage3D = false;//! find( ARB_sparse_texture2 );
+		m_features.sparseResidency2Samples = false;//! find( ARB_sparse_texture2 );
+		m_features.sparseResidency4Samples = false;//! find( ARB_sparse_texture2 );
+		m_features.sparseResidency8Samples = false;//! find( ARB_sparse_texture2 );
+		m_features.sparseResidency16Samples = false;//! find( ARB_sparse_texture2 );
 		m_features.sparseResidencyAliased = false;
 		m_features.variableMultisampleRate = true;
 		m_features.inheritedQueries = true;
 	}
 
-	void PhysicalDevice::doInitialiseProperties( ContextLock & context )
+	void PhysicalDevice::doInitialiseProperties( ContextLock const & context )
 	{
 		m_properties.apiVersion = get( m_instance )->getApiVersion();
 		m_properties.deviceID = 0u;
@@ -1099,7 +1109,7 @@ namespace ashes::gl
 		m_properties.limits.standardSampleLocations = false;
 		m_properties.limits.optimalBufferCopyOffsetAlignment = DefaultAlign< VkDeviceSize >;
 		m_properties.limits.optimalBufferCopyRowPitchAlignment = DefaultAlign< VkDeviceSize >;
-		m_properties.limits.nonCoherentAtomSize = 64ull;
+		m_properties.limits.nonCoherentAtomSize = 64ULL;
 
 		m_properties.sparseProperties.residencyAlignedMipSize = false;
 		m_properties.sparseProperties.residencyNonResidentStrict = false;
@@ -1108,10 +1118,10 @@ namespace ashes::gl
 		m_properties.sparseProperties.residencyStandard3DBlockShape = false;
 	}
 
-	void PhysicalDevice::doInitialiseMemoryProperties( ContextLock & context )
+	void PhysicalDevice::doInitialiseMemoryProperties( ContextLock const & context )
 	{
 		VkDeviceSize memSizeNV{};
-		uint32_t memSizeAMD[4]{};
+		std::array< uint32_t, 4u > memSizeAMD{};
 		context.getValue( GL_VALUE_NAME_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, memSizeNV );
 
 		if ( !memSizeNV )
@@ -1124,7 +1134,7 @@ namespace ashes::gl
 			}
 			else
 			{
-				memSizeNV = ~( 0ull );
+				memSizeNV = ~0ULL;
 			}
 		}
 		else
@@ -1144,7 +1154,7 @@ namespace ashes::gl
 		m_memoryProperties.memoryTypes[m_memoryProperties.memoryTypeCount++] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT, 1u };
 	}
 
-	void PhysicalDevice::doInitialiseQueueProperties( ContextLock & context )
+	void PhysicalDevice::doInitialiseQueueProperties()
 	{
 		m_queueProperties.push_back( { 0xFF	// queueFlags
 			, 1u							// queueCount
@@ -1152,7 +1162,7 @@ namespace ashes::gl
 			, { 1u, 1u, 1u } } );			// minImageTransferGranularity
 	}
 
-	void PhysicalDevice::doInitialiseDisplayProperties( ContextLock & context )
+	void PhysicalDevice::doInitialiseDisplayProperties()
 	{
 #ifdef VK_KHR_display
 
@@ -1183,7 +1193,7 @@ namespace ashes::gl
 #endif
 	}
 
-	void PhysicalDevice::doInitialiseDriverProperties( ContextLock & context )
+	void PhysicalDevice::doInitialiseDriverProperties()
 	{
 #if VK_VERSION_1_1
 		m_driverProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES;
@@ -1209,7 +1219,7 @@ namespace ashes::gl
 #endif
 	}
 
-	void PhysicalDevice::doInitialisePortability( ContextLock & context )
+	void PhysicalDevice::doInitialisePortability()
 	{
 #if VK_KHR_portability_subset
 
@@ -1242,7 +1252,7 @@ namespace ashes::gl
 #endif
 	}
 
-	void PhysicalDevice::doInitialiseInlineUniformBlock( ContextLock & context )
+	void PhysicalDevice::doInitialiseInlineUniformBlock( ContextLock const & context )
 	{
 #if VK_EXT_inline_uniform_block
 
@@ -1262,42 +1272,42 @@ namespace ashes::gl
 #endif
 	}
 
-	bool has420PackExtensions( VkPhysicalDevice physicalDevice )
+	bool has420PackExtensions( VkPhysicalDevice physicalDevice )noexcept
 	{
 		return get( physicalDevice )->getGlFeatures().has420PackExtensions != 0;
 	}
 
-	bool hasCopyImage( VkPhysicalDevice physicalDevice )
+	bool hasCopyImage( VkPhysicalDevice physicalDevice )noexcept
 	{
 		return get( physicalDevice )->getGlFeatures().hasCopyImage != 0;
 	}
 
-	bool hasProgramPipelines( VkPhysicalDevice physicalDevice )
+	bool hasProgramPipelines( VkPhysicalDevice physicalDevice )noexcept
 	{
 		return get( physicalDevice )->getGlFeatures().hasProgramPipelines != 0;
 	}
 
-	bool hasSamplerAnisotropy( VkPhysicalDevice physicalDevice )
+	bool hasSamplerAnisotropy( VkPhysicalDevice physicalDevice )noexcept
 	{
 		return get( physicalDevice )->getFeatures().samplerAnisotropy != 0;
 	}
 
-	bool hasTextureStorage( VkPhysicalDevice physicalDevice )
+	bool hasTextureStorage( VkPhysicalDevice physicalDevice )noexcept
 	{
 		return get( physicalDevice )->getGlFeatures().hasTextureStorage != 0;
 	}
 
-	bool hasTextureViews( VkPhysicalDevice physicalDevice )
+	bool hasTextureViews( VkPhysicalDevice physicalDevice )noexcept
 	{
 		return get( physicalDevice )->getGlFeatures().hasTextureViews != 0;
 	}
 
-	bool hasViewportArrays( VkPhysicalDevice physicalDevice )
+	bool hasViewportArrays( VkPhysicalDevice physicalDevice )noexcept
 	{
 		return get( physicalDevice )->getGlFeatures().hasViewportArrays != 0;
 	}
 
-	bool hasProgramInterfaceQuery( VkPhysicalDevice physicalDevice )
+	bool hasProgramInterfaceQuery( VkPhysicalDevice physicalDevice )noexcept
 	{
 		return get( physicalDevice )->getGlFeatures().hasProgramInterfaceQuery != 0;
 	}

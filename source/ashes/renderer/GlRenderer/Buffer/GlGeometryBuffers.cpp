@@ -32,7 +32,7 @@ namespace ashes::gl
 			return result;
 		}
 
-		bool isNormalized( VkFormat format )
+		bool isNormalized( VkFormat format )noexcept
 		{
 			return format == VK_FORMAT_R4G4_UNORM_PACK8
 				|| format == VK_FORMAT_R4G4B4A4_UNORM_PACK16
@@ -145,7 +145,7 @@ namespace ashes::gl
 			;
 		}
 
-		bool isInteger( VkFormat format )
+		bool isInteger( VkFormat format )noexcept
 		{
 			return format != VK_FORMAT_R8G8B8A8_UNORM
 				&& format != VK_FORMAT_R16_SFLOAT
@@ -201,11 +201,10 @@ namespace ashes::gl
 		}
 	}
 
-	void GeometryBuffers::enableAttribute( ContextLock & context
+	void GeometryBuffers::enableAttribute( ContextLock const & context
 		, VkVertexInputBindingDescription const & binding
 		, VkVertexInputAttributeDescription const & attribute
-		, VkDeviceSize offset
-		, VkVertexInputAttributeDescription const * programAttribute )
+		, VkDeviceSize offset )
 	{
 		if ( isSupportedInternal( attribute.format ) )
 		{
@@ -244,7 +243,7 @@ namespace ashes::gl
 		}
 	}
 
-	void GeometryBuffers::initialise( ContextLock & context )
+	void GeometryBuffers::initialise( ContextLock const & context )
 	{
 		glLogCreateCall( context
 			, glGenVertexArrays
@@ -269,16 +268,6 @@ namespace ashes::gl
 
 		for ( auto & vbo : m_vbos )
 		{
-			auto findAttribute = [&vbo]( uint32_t location )
-			{
-				return std::find_if( vbo.programAttributes.begin()
-					, vbo.programAttributes.end()
-					, [location]( VkVertexInputAttributeDescription const & lookup )
-					{
-						return lookup.location == location;
-					} );
-			};
-
 			auto bufferOffset = get( vbo.vbo )->getOffset();
 			glLogCall( context
 				, glBindBuffer
@@ -287,35 +276,16 @@ namespace ashes::gl
 
 			if ( vbo.binding.inputRate == VK_VERTEX_INPUT_RATE_VERTEX )
 			{
-				for ( auto & attribute : vbo.attributes )
+				for ( auto const & attribute : vbo.attributes )
 				{
-					auto it = findAttribute( attribute.location );
-
-					if ( it == vbo.programAttributes.end() )
-					{
-						enableAttribute( context, vbo.binding, attribute, bufferOffset + vbo.offset, nullptr );
-					}
-					else
-					{
-						enableAttribute( context, vbo.binding, attribute, bufferOffset + vbo.offset, &( *it ) );
-					}
+					enableAttribute( context, vbo.binding, attribute, bufferOffset + vbo.offset );
 				}
 			}
 			else
 			{
-				for ( auto & attribute : vbo.attributes )
+				for ( auto const & attribute : vbo.attributes )
 				{
-					auto it = findAttribute( attribute.location );
-
-					if ( it == vbo.programAttributes.end() )
-					{
-						enableAttribute( context, vbo.binding, attribute, bufferOffset + vbo.offset, nullptr );
-					}
-					else
-					{
-						enableAttribute( context, vbo.binding, attribute, bufferOffset + vbo.offset, &( *it ) );
-					}
-
+					enableAttribute( context, vbo.binding, attribute, bufferOffset + vbo.offset );
 					glLogCall( context
 						, glVertexAttribDivisor
 						, attribute.location

@@ -34,123 +34,123 @@ namespace ashes::gl
 			, VkDevice device
 			, VkImageCreateInfo createInfo
 			, bool swapchainImage = false );
-		~Image();
+		~Image()noexcept;
 
 		VkImageView createView( VkImageViewCreateInfo info );
 		VkResult createView( VkImageView & imageView
 			, VkImageViewCreateInfo info );
-		void destroyView( VkImageView view );
+		void destroyView( VkImageView view )noexcept;
 		VkMemoryRequirements getMemoryRequirements()const;
 		std::vector< VkSparseImageMemoryRequirements > getSparseImageMemoryRequirements()const;
 
-		inline VkDevice getDevice()const noexcept
+		VkDevice getDevice()const noexcept
 		{
 			return m_device;
 		}
 		
-		inline GlTextureType getTarget()const noexcept
+		GlTextureType getTarget()const noexcept
 		{
 			return m_target;
 		}
 
-		inline VkImageCreateFlags getCreateFlags()const noexcept
+		VkImageCreateFlags getCreateFlags()const noexcept
 		{
 			return m_createInfo.flags;
 		}
 
-		inline VkImageType getType()const noexcept
+		VkImageType getType()const noexcept
 		{
 			return m_createInfo.imageType;
 		}
 
-		inline VkFormat getFormatVk()const noexcept
+		VkFormat getFormatVk()const noexcept
 		{
 			return m_createInfo.format;
 		}
 
-		inline uint32_t getArrayLayers()const noexcept
+		uint32_t getArrayLayers()const noexcept
 		{
 			return m_createInfo.arrayLayers;
 		}
 
-		inline VkImageUsageFlags getUsage()const noexcept
+		VkImageUsageFlags getUsage()const noexcept
 		{
 			return m_createInfo.usage;
 		}
 
-		inline VkSampleCountFlagBits getSamples()const noexcept
+		VkSampleCountFlagBits getSamples()const noexcept
 		{
 			return m_createInfo.samples;
 		}
 
-		inline VkExtent3D const & getDimensions()const noexcept
+		VkExtent3D const & getDimensions()const noexcept
 		{
 			return m_createInfo.extent;
 		}
 
-		inline uint32_t getMipLevels()const noexcept
+		uint32_t getMipLevels()const noexcept
 		{
 			return m_createInfo.mipLevels;
 		}
 
-		inline GlInternal getInternalFormat()const noexcept
+		GlInternal getInternalFormat()const noexcept
 		{
 			return m_pixelFormat.internal;
 		}
 
-		inline GlFormat getUnpackFormat()const noexcept
+		GlFormat getUnpackFormat()const noexcept
 		{
 			return m_pixelFormat.unpackFormat;
 		}
 
-		inline GlType getUnpackType()const noexcept
+		GlType getUnpackType()const noexcept
 		{
 			return m_pixelFormat.unpackType;
 		}
 
-		inline GlFormat getPackFormat()const noexcept
+		GlFormat getPackFormat()const noexcept
 		{
 			return m_pixelFormat.packFormat;
 		}
 
-		inline GlType getPackType()const noexcept
+		GlType getPackType()const noexcept
 		{
 			return m_pixelFormat.packType;
 		}
 
-		inline bool isReadSupported()const noexcept
+		bool isReadSupported()const noexcept
 		{
 			return m_pixelFormat.readSupport;
 		}
 
-		inline GlFormat getReadFormat()const noexcept
+		GlFormat getReadFormat()const noexcept
 		{
 			assert( isReadSupported() );
 			return m_pixelFormat.readFormat;
 		}
 
-		inline GlType getReadType()const noexcept
+		GlType getReadType()const noexcept
 		{
 			assert( isReadSupported() );
 			return m_pixelFormat.readType;
 		}
 
-		inline GlComponentMapping getFormatSwizzle()const noexcept
+		GlComponentMapping getFormatSwizzle()const noexcept
 		{
 			return m_pixelFormat.swizzle;
 		}
 
-		inline bool isSwapchainImage()const noexcept
+		bool isSwapchainImage()const noexcept
 		{
 			return m_swapchainImage;
 		}
 
-		void setMemoryBinding( DeviceMemoryBinding const * binding )
+		void setMemoryBinding( DeviceMemoryBinding const * binding )noexcept
 		{
 			m_binding = binding;
 		}
 
-		DeviceMemoryBinding const & getMemoryBinding()const
+		DeviceMemoryBinding const & getMemoryBinding()const noexcept
 		{
 			return *m_binding;
 		}
@@ -159,14 +159,14 @@ namespace ashes::gl
 		void doInitialiseMemoryRequirements();
 
 	private:
-		VkAllocationCallbacks const * m_allocInfo;
-		VkDevice m_device;
-		VkImageCreateInfo m_createInfo;
-		GlTextureType m_target;
-		PixelFormat m_pixelFormat;
+		VkAllocationCallbacks const * m_allocInfo{};
+		VkDevice m_device{};
+		VkImageCreateInfo m_createInfo{};
+		GlTextureType m_target{};
+		PixelFormat m_pixelFormat{};
 		bool m_swapchainImage{ false };
 		DeviceMemoryBinding const * m_binding{ nullptr };
-		VkMemoryRequirements m_memoryRequirements;
+		VkMemoryRequirements m_memoryRequirements{};
 		std::mutex m_mtx;
 		ImageViewCache m_views;
 	};

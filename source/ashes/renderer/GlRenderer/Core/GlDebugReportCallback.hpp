@@ -16,25 +16,24 @@ namespace ashes::gl
 		DebugUtilsMessengerEXT( VkAllocationCallbacks const * callbacks
 			, VkInstance instance
 			, VkDebugUtilsMessengerCreateInfoEXT createInfo );
-		~DebugUtilsMessengerEXT();
 		void submit( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
 			, VkDebugUtilsMessageTypeFlagsEXT messageTypes
 			, VkDebugUtilsMessengerCallbackDataEXT const & callbackData
-			, void * userData );
+			, void * userData )const noexcept;
 
 		void report( GlDebugSource source
 			, GlDebugType type
 			, uint32_t id
 			, GlDebugSeverity severity
 			, int length
-			, const char * const message );
+			, const char * const message )const noexcept;
 		void report( uint32_t id
 			, GlDebugCategory category
 			, GlDebugSeverity severity
 			, int length
-			, const char * const message );
+			, const char * const message )const noexcept;
 
-		VkInstance getInstance()const
+		VkInstance getInstance()const noexcept
 		{
 			return m_instance;
 		}
@@ -53,28 +52,27 @@ namespace ashes::gl
 		DebugReportCallbackEXT( VkAllocationCallbacks const * callbacks
 			, VkInstance instance
 			, VkDebugReportCallbackCreateInfoEXT createInfo );
-		~DebugReportCallbackEXT();
 		void report( VkDebugReportFlagsEXT flags
 			, VkDebugReportObjectTypeEXT objectType
 			, uint64_t object
 			, size_t location
 			, int32_t messageCode
 			, const char * pLayerPrefix
-			, const char * pMessage );
+			, const char * pMessage )const noexcept;
 
 		void report( GlDebugSource source
 			, GlDebugType type
 			, uint32_t id
 			, GlDebugSeverity severity
 			, int length
-			, const char * const message );
+			, const char * const message )const noexcept;
 		void report( uint32_t id
 			, GlDebugCategory category
 			, GlDebugSeverity severity
 			, int length
-			, const char * const message );
+			, const char * const message )const noexcept;
 
-		VkInstance getInstance()const
+		VkInstance getInstance()const noexcept
 		{
 			return m_instance;
 		}

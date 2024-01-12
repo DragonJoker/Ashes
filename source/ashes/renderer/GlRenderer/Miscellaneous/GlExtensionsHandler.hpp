@@ -99,27 +99,27 @@ namespace ashes::gl
 		bool findAll( VkExtensionPropertiesArray const & names )const;
 		bool hasSPIRVShaderBinaryFormat()const;
 
-		inline bool isSPIRVSupported()const
+		bool isSPIRVSupported()const noexcept
 		{
 			return m_spirvSupported;
 		}
 
-		inline uint32_t getMajor()const
+		uint32_t getMajor()const noexcept
 		{
 			return m_major;
 		}
 
-		inline uint32_t getMinor()const
+		uint32_t getMinor()const noexcept
 		{
 			return m_minor;
 		}
 
-		inline uint32_t getShaderVersion()const
+		uint32_t getShaderVersion()const noexcept
 		{
 			return m_shaderVersion;
 		}
 
-		inline AshPluginFeatures const & getFeatures()const
+		AshPluginFeatures const & getFeatures()const noexcept
 		{
 			return m_features;
 		}

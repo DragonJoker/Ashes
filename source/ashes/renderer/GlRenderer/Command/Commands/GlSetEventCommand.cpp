@@ -11,7 +11,7 @@ See LICENSE file in root folder.
 namespace ashes::gl
 {
 	void buildSetEventCommand( VkEvent event
-		, VkPipelineStageFlags stageFlags
+		, [[maybe_unused]] VkPipelineStageFlags stageFlags
 		, CmdList & list )
 	{
 		glLogCommand( list, "SetEventCommand" );

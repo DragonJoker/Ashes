@@ -14,14 +14,14 @@ namespace ashes::gl
 	public:
 		Event( VkAllocationCallbacks const * allocInfo
 			, VkDevice device );
-		~Event();
+		~Event()noexcept;
 
 		VkResult getStatus()const;
 		void updateStatus( VkResult status );
 		VkResult set();
 		VkResult reset();
 
-		inline VkDevice getDevice()const
+		VkDevice getDevice()const noexcept
 		{
 			return m_device;
 		}

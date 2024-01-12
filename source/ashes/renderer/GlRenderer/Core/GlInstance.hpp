@@ -21,15 +21,15 @@ namespace ashes::gl
 	{
 	public:
 		Instance( VkAllocationCallbacks const * allocInfo
-			, VkInstanceCreateInfo createInfo );
-		~Instance();
+			, VkInstanceCreateInfo const & createInfo );
+		~Instance()noexcept;
 
 		uint32_t getApiVersion()const;
 		bool hasExtension( std::string_view extension )const;
 		bool hasEnabledExtension( std::string_view name )const;
-		void unregisterDevice( VkDevice device );
+		void unregisterDevice( VkDevice device )noexcept;
 		Context * registerDevice( VkDevice device );
-		void unregisterSurface( VkSurfaceKHR surface );
+		void unregisterSurface( VkSurfaceKHR surface )noexcept;
 		ContextPtr registerSurface( VkSurfaceKHR surface );
 		VkPhysicalDeviceArray enumeratePhysicalDevices()const;
 		std::array< float, 16 > frustum( float left
@@ -61,7 +61,7 @@ namespace ashes::gl
 			, void * userParam )const;
 		void submitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
 			, VkDebugUtilsMessageTypeFlagsEXT messageTypes
-			, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const;
+			, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const noexcept;
 #endif
 #if VK_EXT_debug_report
 		void registerDebugMessageCallback( VkDebugReportCallbackEXT report
@@ -76,7 +76,7 @@ namespace ashes::gl
 			, size_t location
 			, int32_t messageCode
 			, const char * pLayerPrefix
-			, const char * pMessage );
+			, const char * pMessage )const noexcept;
 #endif
 		void registerContext( Context & context );
 

@@ -10,14 +10,14 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	Event::Event( VkAllocationCallbacks const * allocInfo
+	Event::Event( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkDevice device )
 		: m_device{ device }
 	{
 		registerObject( m_device, *this );
 	}
 
-	Event::~Event()
+	Event::~Event()noexcept
 	{
 		unregisterObject( m_device, *this );
 	}
