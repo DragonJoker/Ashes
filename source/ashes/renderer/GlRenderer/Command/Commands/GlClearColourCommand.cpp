@@ -12,25 +12,10 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	template< typename ValueT >
-	bool operator==( ValueT const( & lhs )[4], std::array< ValueT, 4u > rhs )
-	{
-		return lhs[0] == rhs[0]
-			&& lhs[1] == rhs[1]
-			&& lhs[2] == rhs[2]
-			&& lhs[3] == rhs[3];
-	}
-
-	template< typename ValueT >
-	bool operator!=( ValueT const( &lhs )[4], std::array< ValueT, 4u > rhs )
-	{
-		return !( lhs == rhs );
-	}
-
 	void buildClearColourCommand( VkDevice device
 		, ContextStateStack & stack
 		, VkImage image
-		, VkImageLayout imageLayout
+		, [[maybe_unused]] VkImageLayout imageLayout
 		, VkClearColorValue value
 		, ArrayView< VkImageSubresourceRange const > ranges
 		, CmdList & list )

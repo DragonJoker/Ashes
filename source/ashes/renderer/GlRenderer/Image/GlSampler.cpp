@@ -6,7 +6,7 @@
 
 namespace ashes::gl
 {
-	Sampler::Sampler( VkAllocationCallbacks const * allocInfo
+	Sampler::Sampler( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkDevice device
 		, VkSamplerCreateInfo const & createInfo )
 		: m_device{ device }
@@ -25,7 +25,7 @@ namespace ashes::gl
 			, glSamplerParameteri
 			, m_internal
 			, GL_SAMPLER_PARAMETER_MIN_FILTER
-			, convert( createInfo.minFilter, createInfo.mipmapMode, createInfo.minLod, createInfo.maxLod ) );
+			, convert( createInfo.minFilter, createInfo.mipmapMode ) );
 		glLogCall( context
 			, glSamplerParameteri
 			, m_internal
@@ -85,8 +85,8 @@ namespace ashes::gl
 				, convert( createInfo.compareOp ) );
 		}
 
-		float fvalues[4] = { 0.0f };
-		int ivalues[4] = { 0 };
+		std::array< float, 4u > fvalues = { 0.0f, 0.0f, 0.0f, 0.0f };
+		std::array< int, 4u > ivalues = { 0, 0, 0, 0 };
 
 		switch ( createInfo.borderColor )
 		{
@@ -95,7 +95,7 @@ namespace ashes::gl
 				, glSamplerParameterfv
 				, m_internal
 				, GL_SAMPLER_PARAMETER_BORDER_COLOR
-				, fvalues );
+				, fvalues.data() );
 			break;
 
 		case VK_BORDER_COLOR_INT_TRANSPARENT_BLACK:
@@ -103,7 +103,7 @@ namespace ashes::gl
 				, glSamplerParameteriv
 				, m_internal
 				, GL_SAMPLER_PARAMETER_BORDER_COLOR
-				, ivalues );
+				, ivalues.data() );
 			break;
 
 		case VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK:
@@ -112,7 +112,7 @@ namespace ashes::gl
 				, glSamplerParameterfv
 				, m_internal
 				, GL_SAMPLER_PARAMETER_BORDER_COLOR
-				, fvalues );
+				, fvalues.data() );
 			break;
 
 		case VK_BORDER_COLOR_INT_OPAQUE_BLACK:
@@ -121,7 +121,7 @@ namespace ashes::gl
 				, glSamplerParameteriv
 				, m_internal
 				, GL_SAMPLER_PARAMETER_BORDER_COLOR
-				, ivalues );
+				, ivalues.data() );
 			break;
 
 		case VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE:
@@ -133,7 +133,7 @@ namespace ashes::gl
 				, glSamplerParameterfv
 				, m_internal
 				, GL_SAMPLER_PARAMETER_BORDER_COLOR
-				, fvalues );
+				, fvalues.data() );
 			break;
 
 		case VK_BORDER_COLOR_INT_OPAQUE_WHITE:
@@ -145,7 +145,7 @@ namespace ashes::gl
 				, glSamplerParameteriv
 				, m_internal
 				, GL_SAMPLER_PARAMETER_BORDER_COLOR
-				, ivalues );
+				, ivalues.data() );
 			break;
 
 		default:
@@ -156,7 +156,7 @@ namespace ashes::gl
 		registerObject( m_device, *this );
 	}
 
-	Sampler::~Sampler()
+	Sampler::~Sampler()noexcept
 	{
 		unregisterObject( m_device, *this );
 		auto context = get( m_device )->getContext();

@@ -221,6 +221,11 @@ namespace ashes::gl
 			report( object, VK_ERROR_INITIALIZATION_FAILED, "Framebuffer Completeness"
 				, "At least one framebuffer attachment is layered, and any populated attachment is not layered, or all populated color attachments are not from textures of the same target." );
 			break;
+
+		default:
+			report( object, VK_ERROR_INITIALIZATION_FAILED, "Unknown error"
+				, "An unknown error was encountered." );
+			break;
 		}
 	}
 
@@ -242,7 +247,7 @@ namespace ashes::gl
 		doCheckCompleteness( framebuffer, status, reportWarning< VkFramebuffer > );
 	}
 
-	Framebuffer::Framebuffer( VkAllocationCallbacks const * allocInfo
+	Framebuffer::Framebuffer( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkDevice device
 		, VkFramebufferCreateInfo createInfo )
 		: m_device{ device }
@@ -260,7 +265,7 @@ namespace ashes::gl
 		registerObject( m_device, *this );
 	}
 
-	Framebuffer::Framebuffer( VkAllocationCallbacks const * allocInfo
+	Framebuffer::Framebuffer( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkDevice device
 		, GLuint name )
 		: m_device{ device }
@@ -269,7 +274,7 @@ namespace ashes::gl
 		registerObject( m_device, *this );
 	}
 
-	Framebuffer::~Framebuffer()
+	Framebuffer::~Framebuffer()noexcept
 	{
 		unregisterObject( m_device, *this );
 
@@ -304,11 +309,11 @@ namespace ashes::gl
 							return lookup.referenceIndex == reference.attachment;
 						} );
 					assert( attachIt != attaches.end() );
-					auto & attach = *attachIt;
 
-					if ( attach.point != GL_ATTACHMENT_POINT_DEPTH
-						&& attach.point != GL_ATTACHMENT_POINT_STENCIL
-						&& attach.point != GL_ATTACHMENT_POINT_DEPTH_STENCIL )
+					if ( auto & attach = *attachIt;
+						attach.point != GL_ATTACHMENT_POINT_DEPTH
+							&& attach.point != GL_ATTACHMENT_POINT_STENCIL
+							&& attach.point != GL_ATTACHMENT_POINT_DEPTH_STENCIL )
 					{
 						drawBuffers.push_back( GlAttachmentPoint( attach.point + index ) );
 					}
@@ -370,7 +375,7 @@ namespace ashes::gl
 		uint32_t index = 0u;
 		uint32_t msIndex = 0u;
 
-		for ( auto & passAttach : renderPass->getFboAttachable() )
+		for ( auto const & passAttach : renderPass->getFboAttachable() )
 		{
 			if ( passAttach.attachment != VK_ATTACHMENT_UNUSED )
 			{

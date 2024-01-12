@@ -32,14 +32,14 @@ namespace ashes::gl
 		void preInitialise( int major, int minor )override;
 		void postInitialise()override;
 		void enable()const override;
-		void disable()const override;
+		void disable()const noexcept override;
 		void swapBuffers()const override;
 		VkExtent2D getExtent()const override;
 
 	private:
 		void doSelectFormat();
 		void doLoadSystemFunctions();
-		void doSetFullscreen();
+		void doSetFullscreen()const;
 		void doCreateModernContext();
 
 	private:
@@ -51,12 +51,12 @@ namespace ashes::gl
 		HWND m_hWnd{ nullptr };
 		HDC m_hDC{ nullptr };
 		HGLRC m_hContext{ nullptr };
-		MswContext const * m_mainContext;
+		MswContext const * m_mainContext{};
 
 		using PFN_wglCreateContextAttribsARB = HGLRC( * )( HDC hDC, HGLRC hShareContext, int const * attribList );
 		using PFN_wglSwapIntervalEXT = BOOL( * )( int );
-		PFN_wglCreateContextAttribsARB wglCreateContextAttribsARB;
-		PFN_wglSwapIntervalEXT wglSwapIntervalEXT;
+		PFN_wglCreateContextAttribsARB wglCreateContextAttribsARB{};
+		PFN_wglSwapIntervalEXT wglSwapIntervalEXT{};
 	};
 }
 

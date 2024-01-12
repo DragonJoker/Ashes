@@ -12,7 +12,7 @@ namespace ashes::gl
 		, VkDeviceSize memoryOffset
 		, VkMemoryRequirements requirements
 		, void * bound
-		, GLuint boundName )
+		, GLuint boundName )noexcept
 		: m_parent{ parent }
 		, m_device{ device }
 		, m_boundTarget{ boundTarget }
@@ -23,7 +23,7 @@ namespace ashes::gl
 	{
 	}
 
-	void DeviceMemoryBinding::map( BindingRange const & range )
+	void DeviceMemoryBinding::map( BindingRange const & range )noexcept
 	{
 		if ( range )
 		{
@@ -38,7 +38,7 @@ namespace ashes::gl
 		}
 	}
 
-	bool DeviceMemoryBinding::unmap()
+	bool DeviceMemoryBinding::unmap()noexcept
 	{
 		m_mappedRange = {};
 		m_mapped = false;
@@ -47,7 +47,7 @@ namespace ashes::gl
 		return dirty;
 	}
 
-	void DeviceMemoryBinding::flush( BindingRange const & range )
+	void DeviceMemoryBinding::flush( BindingRange const & range )noexcept
 	{
 		if ( m_mapped && range )
 		{
@@ -61,7 +61,7 @@ namespace ashes::gl
 		}
 	}
 
-	void DeviceMemoryBinding::invalidate( BindingRange const & range )
+	void DeviceMemoryBinding::invalidate( BindingRange const & range )noexcept
 	{
 		if ( m_mapped && range )
 		{
@@ -77,7 +77,7 @@ namespace ashes::gl
 
 	void DeviceMemoryBinding::upload( ContextLock const & context
 		, ByteArray const & data
-		, BindingRange const & range )const
+		, BindingRange const & range )const noexcept
 	{
 	}
 }

@@ -12,22 +12,19 @@ namespace ashes
 {
 	inline VkPipelineRasterizationStateCreateInfo getDefaultRasterisationState()
 	{
-		return
-		{
-			VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
-			nullptr,
-			0u,
-			VK_FALSE,
-			VK_FALSE,	// rasterizerDiscardEnable.
-			VK_POLYGON_MODE_FILL,
-			VK_CULL_MODE_BACK_BIT,
-			VK_FRONT_FACE_COUNTER_CLOCKWISE,
-			VK_FALSE,
-			0.0f,
-			0.0f,
-			0.0f,
-			1.0f,
-		};
+		return { VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO
+			, nullptr
+			, 0u
+			, VK_FALSE
+			, VK_FALSE	// rasterizerDiscardEnable
+			, VK_POLYGON_MODE_FILL
+			, VK_CULL_MODE_BACK_BIT
+			, VK_FRONT_FACE_COUNTER_CLOCKWISE
+			, VK_FALSE
+			, 0.0f
+			, 0.0f
+			, 0.0f
+			, 1.0f };
 	}
 
 	inline bool operator==( VkPipelineRasterizationStateCreateInfo const & lhs, VkPipelineRasterizationStateCreateInfo const & rhs )

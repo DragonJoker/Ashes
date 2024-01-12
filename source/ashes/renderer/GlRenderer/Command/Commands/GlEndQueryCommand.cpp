@@ -11,7 +11,7 @@ See LICENSE file in root folder.
 namespace ashes::gl
 {
 	void buildEndQueryCommand( VkQueryPool pool
-		, uint32_t query
+		, [[maybe_unused]] uint32_t query
 		, CmdList & list )
 	{
 		glLogCommand( list, "EndQueryCommand" );

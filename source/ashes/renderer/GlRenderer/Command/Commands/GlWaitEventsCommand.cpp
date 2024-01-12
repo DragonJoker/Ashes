@@ -15,11 +15,11 @@ See LICENSE file in root folder.
 namespace ashes::gl
 {
 	void buildWaitEventsCommand( VkEventArray events
-		, VkPipelineStageFlags srcStageMask
-		, VkPipelineStageFlags dstStageMask
-		, ArrayView< VkMemoryBarrier const > memoryBarriers
-		, ArrayView< VkBufferMemoryBarrier const > bufferMemoryBarriers
-		, ArrayView< VkImageMemoryBarrier const > imageMemoryBarriers
+		, [[maybe_unused]] VkPipelineStageFlags srcStageMask
+		, [[maybe_unused]] VkPipelineStageFlags dstStageMask
+		, [[maybe_unused]] ArrayView< VkMemoryBarrier const > memoryBarriers
+		, [[maybe_unused]] ArrayView< VkBufferMemoryBarrier const > bufferMemoryBarriers
+		, [[maybe_unused]] ArrayView< VkImageMemoryBarrier const > imageMemoryBarriers
 		, CmdList & list )
 	{
 		glLogCommand( list, "WaitEventsCommand" );

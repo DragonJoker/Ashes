@@ -14,17 +14,75 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
+	static void clearDepthStencilFboLayersCommand( VkImage image
+		, GlAttachmentPoint point
+		, uint32_t level
+		, VkClearDepthStencilValue value
+		, VkImageSubresourceRange const & range
+		, CmdList & list )
+	{
+		for ( auto layer = range.baseArrayLayer; layer < range.baseArrayLayer + range.layerCount; ++layer )
+		{
+			list.push_back( makeCmd< OpType::eFramebufferTextureLayer >( GL_FRAMEBUFFER
+				, point
+				, get( image )->getInternal()
+				, level
+				, layer ) );
+			auto format = get( image )->getFormatVk();
+
+			if ( isDepthStencilFormat( format ) )
+			{
+				list.push_back( makeCmd< OpType::eClearDepthStencil >( value ) );
+			}
+			else if ( isDepthFormat( format ) )
+			{
+				list.push_back( makeCmd< OpType::eClearDepth >( value.depth ) );
+			}
+			else if ( isStencilFormat( format ) )
+			{
+				list.push_back( makeCmd< OpType::eClearStencil >( int32_t( value.stencil ) ) );
+			}
+		}
+	}
+	static void clearDepthStencilFboCommand( VkImage image
+		, GlTextureType target
+		, GlAttachmentPoint point
+		, uint32_t level
+		, VkClearDepthStencilValue value
+		, CmdList & list )
+	{
+		list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
+			, point
+			, target
+			, get( image )->getInternal()
+			, level ) );
+		auto format = get( image )->getFormatVk();
+
+		if ( isDepthStencilFormat( format ) )
+		{
+			list.push_back( makeCmd< OpType::eClearDepthStencil >( value ) );
+		}
+		else if ( isDepthFormat( format ) )
+		{
+			list.push_back( makeCmd< OpType::eClearDepth >( value.depth ) );
+		}
+		else if ( isStencilFormat( format ) )
+		{
+			list.push_back( makeCmd< OpType::eClearStencil >( int32_t( value.stencil ) ) );
+		}
+	}
+
 	void buildClearDepthStencilFboCommand( VkDevice device
 		, ContextStateStack & stack
 		, VkImage image
-		, VkImageLayout imageLayout
+		, [[maybe_unused]] VkImageLayout imageLayout
 		, VkClearDepthStencilValue value
 		, ArrayView< VkImageSubresourceRange const > ranges
 		, CmdList & list )
 	{
 		glLogCommand( list, "ClearDepthStencilFboCommand" );
 		stack.applyDisableBlend( list );
-		auto & glimage = *get( image );
+		auto const & glimage = *get( image );
 		auto target = GL_TEXTURE_2D;
 
 		if ( glimage.getSamples() > VK_SAMPLE_COUNT_1_BIT )
@@ -52,50 +110,11 @@ namespace ashes::gl
 			{
 				if ( get( image )->getArrayLayers() > 1u )
 				{
-					for ( auto layer = range.baseArrayLayer; layer < range.baseArrayLayer + range.layerCount; ++layer )
-					{
-						list.push_back( makeCmd< OpType::eFramebufferTextureLayer >( GL_FRAMEBUFFER
-							, point
-							, get( image )->getInternal()
-							, level
-							, layer ) );
-						auto format = get( image )->getFormatVk();
-
-						if ( isDepthStencilFormat( format ) )
-						{
-							list.push_back( makeCmd< OpType::eClearDepthStencil >( value ) );
-						}
-						else if ( isDepthFormat( format ) )
-						{
-							list.push_back( makeCmd< OpType::eClearDepth >( value.depth ) );
-						}
-						else if ( isStencilFormat( format ) )
-						{
-							list.push_back( makeCmd< OpType::eClearStencil >( int32_t( value.stencil ) ) );
-						}
-					}
+					clearDepthStencilFboLayersCommand( image, point, level, value, range, list );
 				}
 				else
 				{
-					list.push_back( makeCmd< OpType::eFramebufferTexture2D >( GL_FRAMEBUFFER
-						, point
-						, target
-						, get( image )->getInternal()
-						, level ) );
-					auto format = get( image )->getFormatVk();
-
-					if ( isDepthStencilFormat( format ) )
-					{
-						list.push_back( makeCmd< OpType::eClearDepthStencil >( value ) );
-					}
-					else if ( isDepthFormat( format ) )
-					{
-						list.push_back( makeCmd< OpType::eClearDepth >( value.depth ) );
-					}
-					else if ( isStencilFormat( format ) )
-					{
-						list.push_back( makeCmd< OpType::eClearStencil >( int32_t( value.stencil ) ) );
-					}
+					clearDepthStencilFboCommand( image, target, point, level, value, list );
 				}
 			}
 		}

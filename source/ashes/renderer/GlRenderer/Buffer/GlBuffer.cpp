@@ -9,12 +9,12 @@
 
 namespace ashes::gl
 {
-	Buffer::Buffer( VkAllocationCallbacks const * allocInfo
+	Buffer::Buffer( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkDevice device
 		, VkBufferCreateInfo createInfo )
 		: m_device{ device }
 		, m_queueFamilyIndices{ makeVector( createInfo.pQueueFamilyIndices, createInfo.queueFamilyIndexCount ) }
-		, m_createInfo{ createInfo }
+		, m_createInfo{ std::move( createInfo ) }
 		, m_target{ getTargetFromUsageFlags( m_createInfo.usage ) }
 	{
 		if ( m_createInfo.size > get( get( device )->getPhysicalDevice() )->getMemoryProperties().memoryHeaps[0].size )
@@ -25,7 +25,7 @@ namespace ashes::gl
 		registerObject( m_device, *this );
 	}
 
-	Buffer::~Buffer()
+	Buffer::~Buffer()noexcept
 	{
 		unregisterObject( m_device, *this );
 
@@ -34,20 +34,19 @@ namespace ashes::gl
 			get( m_binding->getParent() )->unbindBuffer( get( this ) );
 		}
 
-		m_copyTarget = GlBufferTarget( 0u );
 		m_target = GlBufferTarget( 0u );
 		m_internal = GL_INVALID_INDEX;
 		m_queueFamilyIndices.clear();
 	}
 
-	VkMemoryRequirements Buffer::getMemoryRequirements()const
+	VkMemoryRequirements Buffer::getMemoryRequirements()const noexcept
 	{
 		auto physicalDevice = get( get( m_device )->getPhysicalDevice() );
 		VkMemoryRequirements result{};
 		result.size = m_createInfo.size;
 		result.memoryTypeBits = physicalDevice->getMemoryTypeBits( VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
 			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT );
-		result.memoryTypeBits = ~( 0u );
+		result.memoryTypeBits = ~0u;
 		result.alignment = get( m_device )->getLimits().nonCoherentAtomSize;
 
 		if ( checkFlag( m_createInfo.usage, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT ) )
@@ -59,13 +58,13 @@ namespace ashes::gl
 		return result;
 	}
 
-	bool Buffer::isMapped()const
+	bool Buffer::isMapped()const noexcept
 	{
 		assert( m_binding != nullptr );
 		return m_binding->isMapped();
 	}
 
-	VkDeviceSize Buffer::getOffset()const
+	VkDeviceSize Buffer::getOffset()const noexcept
 	{
 		assert( m_binding != nullptr );
 		return m_binding->getOffset();

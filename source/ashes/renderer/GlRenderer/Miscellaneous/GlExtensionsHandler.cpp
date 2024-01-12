@@ -74,9 +74,7 @@ namespace ashes::gl
 		getIntegerv = glGetIntegerv;
 #endif
 
-		char const * const cversion = reinterpret_cast< char const * >( getString( GL_INFO_VERSION ) );
-
-		if ( cversion )
+		if ( auto const cversion = reinterpret_cast< char const * >( getString( GL_INFO_VERSION ) ) )
 		{
 			std::string sversion = cversion;
 			std::stringstream stream( sversion );
@@ -106,9 +104,7 @@ namespace ashes::gl
 			}
 		}
 
-		auto const * cextensions = reinterpret_cast< char const * >( getString( GL_INFO_EXTENSIONS ) );
-
-		if ( cextensions )
+		if ( auto const * cextensions = reinterpret_cast< char const * >( getString( GL_INFO_EXTENSIONS ) ) )
 		{
 			std::string extensions = cextensions;
 			std::istringstream stream{ extensions };
@@ -123,7 +119,7 @@ namespace ashes::gl
 
 			for ( GLuint i = 0; i < GLuint( max ); ++i )
 			{
-				m_deviceExtensionNames.push_back( reinterpret_cast< char const * >( getStringi( GL_INFO_EXTENSIONS, i ) ) );
+				m_deviceExtensionNames.emplace_back( reinterpret_cast< char const * >( getStringi( GL_INFO_EXTENSIONS, i ) ) );
 			}
 		}
 		

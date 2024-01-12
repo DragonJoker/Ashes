@@ -160,7 +160,7 @@ namespace ashes::gl
 		eglMakeCurrent( m_display, m_surface, m_surface, m_context );
 	}
 
-	void EglContext::disable()const
+	void EglContext::disable()const noexcept
 	{
 		eglMakeCurrent( m_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT );
 	}

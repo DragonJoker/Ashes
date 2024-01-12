@@ -82,9 +82,9 @@ namespace ashes::gl
 			for ( auto & constant : constants )
 			{
 				if ( ( constant.stageFlag & stageFlags ) != 0
-					&& constant.location != ~( 0u ) )
+					&& constant.location != ~0u )
 				{
-					int32_t offset = int32_t( constant.offset );
+					auto offset = int32_t( constant.offset );
 					assert( offset >= 0 && offset + constant.size <= data.size() );
 					auto buffer = data.data() + offset;
 
@@ -170,9 +170,9 @@ namespace ashes::gl
 			for ( auto & constant : constants )
 			{
 				if ( ( constant.stageFlag & stageFlags ) != 0
-					&& constant.location != ~( 0u ) )
+					&& constant.location != ~0u )
 				{
-					int32_t offset = int32_t( constant.offset );
+					auto offset = int32_t( constant.offset );
 					assert( offset >= 0 && offset + constant.size <= data.size() );
 					auto buffer = data.data() + offset;
 
@@ -253,7 +253,7 @@ namespace ashes::gl
 
 	void buildPushConstantsCommand( VkDevice device
 		, VkShaderStageFlags stageFlags
-		, VkPipelineLayout pipelineLayout
+		, [[maybe_unused]] VkPipelineLayout pipelineLayout
 		, ConstantsLayout const & constants
 		, ByteArray const & data
 		, CmdList & list )

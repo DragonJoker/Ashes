@@ -21,7 +21,7 @@ namespace ashes::gl
 		Queue( VkAllocationCallbacks const * allocInfo
 			, VkDevice device
 			, VkDeviceQueueCreateInfo createInfo );
-		~Queue();
+		~Queue()noexcept;
 
 		VkResult submit( VkSubmitInfoArray const & values
 			, VkFence fence )const;

@@ -35,7 +35,7 @@ namespace ashes::gl
 		Framebuffer( VkAllocationCallbacks const * allocInfo
 			, VkDevice device
 			, GLuint name );
-		~Framebuffer();
+		~Framebuffer()noexcept;
 
 		FboAttachment getAttachment( VkAttachmentReference const & reference )const;
 		std::vector< GlAttachmentPoint > getDrawBuffers( ArrayView < VkAttachmentReference const > const & attaches )const;
@@ -141,14 +141,14 @@ namespace ashes::gl
 
 	private:
 		VkDevice m_device;
-		VkRenderPass m_renderPass;
-		VkImageViewArray m_attachments;
-		VkExtent2D m_dimensions;
-		FboAttachmentArray m_renderableAttaches;
-		FboAttachmentArray m_resolveAttaches;
-		FboAttachmentArray m_allColourAttaches;
-		FboAttachmentArray m_colourAttaches;
-		FboAttachmentArray m_colourMsAttaches;
+		VkRenderPass m_renderPass{};
+		VkImageViewArray m_attachments{};
+		VkExtent2D m_dimensions{};
+		FboAttachmentArray m_renderableAttaches{};
+		FboAttachmentArray m_resolveAttaches{};
+		FboAttachmentArray m_allColourAttaches{};
+		FboAttachmentArray m_colourAttaches{};
+		FboAttachmentArray m_colourMsAttaches{};
 		Optional< FboAttachment > m_depthStencilAttach;
 		Optional< FboAttachment > m_depthStencilMsAttach;
 		mutable std::vector< GlAttachmentPoint > m_drawBuffers;

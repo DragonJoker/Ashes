@@ -18,7 +18,7 @@ namespace ashes::gl
 		RenderWindow( int major
 			, int minor
 			, std::string const & name );
-		~RenderWindow();
+		~RenderWindow()noexcept;
 
 	public:
 		VkSurfaceCreateInfoKHR getCreateInfo()const;
@@ -27,7 +27,7 @@ namespace ashes::gl
 		static RenderWindow const & get();
 
 	private:
-		void doCleanup();
+		void doCleanup()noexcept;
 
 	private:
 		Display * m_display;

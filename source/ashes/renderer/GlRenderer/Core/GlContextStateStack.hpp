@@ -14,12 +14,12 @@ namespace ashes::gl
 	public:
 		ContextStateStack( bool tessellation
 			, bool viewportArrays );
-		ContextStateStack( VkDevice device );
+		explicit ContextStateStack( VkDevice device );
 
 		void apply( ContextLock const & context
-			, ContextState & state );
+			, ContextState const & state );
 		void apply( CmdList & list
-			, ContextState & state
+			, ContextState const & state
 			, bool force = false );
 		void apply( CmdList & list
 			, PreExecuteActions & preExecuteActions
@@ -126,23 +126,23 @@ namespace ashes::gl
 	private:
 		void doApply( CmdList & list
 			, VkPipelineInputAssemblyStateCreateInfo const & state
-			, bool force );
+			, bool force )const;
 		void doApply( CmdList & list
 			, VkPipelineColorBlendStateCreateInfo const & newState
-			, bool force );
+			, bool force )const;
 		void doApply( CmdList & list
 			, VkPipelineRasterizationStateCreateInfo const & newState
-			, VkPipelineDynamicStateCreateInfo newDyState
-			, bool force );
+			, VkPipelineDynamicStateCreateInfo const & newDyState
+			, bool force )const;
 		void doApply( CmdList & list
 			, VkPipelineMultisampleStateCreateInfo const & newState
-			, bool force );
+			, bool force )const;
 		void doApply( CmdList & list
 			, VkPipelineDepthStencilStateCreateInfo const & newState
-			, bool force );
+			, bool force )const;
 		void doApply( CmdList & list
 			, VkPipelineTessellationStateCreateInfo const & newState
-			, bool force );
+			, bool force )const;
 		void doApply( CmdList & list
 			, PreExecuteActions & preExecuteActions
 			, VkPipelineViewportStateCreateInfo const & newState
@@ -152,7 +152,7 @@ namespace ashes::gl
 	private:
 		std::unique_ptr< ContextState > m_ownInitial;
 		ContextState * m_save{ nullptr };
-		VkExtent2D m_renderArea{ ~( 0u ), ~( 0u ) };
+		VkExtent2D m_renderArea{ ~0u, ~0u };
 		VkScissorArray m_scissors;
 		VkViewportArray m_viewports;
 		GLuint m_currentProgram{ 0u };

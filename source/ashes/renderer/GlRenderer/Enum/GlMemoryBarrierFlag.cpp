@@ -103,14 +103,6 @@ namespace ashes::gl
 	{
 		GlMemoryBarrierFlags result{ 0 };
 
-		if ( ashes::checkFlag( flags, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT ) )
-		{
-		}
-
-		if ( ashes::checkFlag( flags, VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT ) )
-		{
-		}
-
 		if ( ashes::checkFlag( flags, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT ) )
 		{
 			result |= GL_MEMORY_BARRIER_VERTEX_ATTRIB_ARRAY;
@@ -125,30 +117,10 @@ namespace ashes::gl
 			result |= GL_MEMORY_BARRIER_UNIFORM;
 		}
 
-		if ( ashes::checkFlag( flags, VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT ) )
-		{
-		}
-
-		if ( ashes::checkFlag( flags, VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT ) )
-		{
-		}
-
-		if ( ashes::checkFlag( flags, VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT ) )
-		{
-		}
-
 		if ( ashes::checkFlag( flags, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT ) )
 		{
 			result |= GL_MEMORY_BARRIER_TEXTURE_FETCH;
 			result |= GL_MEMORY_BARRIER_UNIFORM;
-		}
-
-		if ( ashes::checkFlag( flags, VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT ) )
-		{
-		}
-
-		if ( ashes::checkFlag( flags, VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT ) )
-		{
 		}
 
 		if ( ashes::checkFlag( flags, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT ) )
@@ -168,17 +140,9 @@ namespace ashes::gl
 			result |= GL_MEMORY_BARRIER_BUFFER_UPDATE;
 		}
 
-		if ( ashes::checkFlag( flags, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT ) )
-		{
-		}
-
 		if ( ashes::checkFlag( flags, VK_PIPELINE_STAGE_HOST_BIT ) )
 		{
 			result |= GL_MEMORY_BARRIER_CLIENT_MAPPED_BUFFER;
-		}
-
-		if ( ashes::checkFlag( flags, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT ) )
-		{
 		}
 
 		if ( ashes::checkFlag( flags, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT ) )

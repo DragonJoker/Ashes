@@ -18,7 +18,7 @@ namespace ashes
 	*/
 	inline VkPipelineViewportStateCreateInfo getDefaultViewportState()
 	{
-		return{ VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO
+		return { VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO
 			, nullptr
 			, 0u
 			, 1u

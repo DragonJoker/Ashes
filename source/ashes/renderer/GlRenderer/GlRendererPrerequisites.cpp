@@ -114,10 +114,6 @@ namespace ashes::gl
 		}
 	}
 
-	FboAttachment::FboAttachment()
-	{
-	}
-
 	FboAttachment::FboAttachment( VkDevice device
 		, uint32_t referenceIndex
 		, VkImageView view
@@ -160,14 +156,13 @@ namespace ashes::gl
 	}
 
 	FboAttachment::FboAttachment( VkDevice device
-		, VkImageSubresourceLayers & subresource
+		, VkImageSubresourceLayers const & subresource
 		, VkImage image )
 		: referenceIndex{ 0u }
 		, point{ ( hasTextureViews( device )
 			? getAttachmentPoint( subresource.aspectMask )
 			: getAttachmentPoint( get( image )->getFormatVk() ) ) }
 		, object{ get( image )->getInternal() }
-		, originalObject{}
 		, type{ ( hasTextureViews( device )
 			? getAttachmentType( subresource.aspectMask )
 			: getAttachmentType( get( image )->getFormatVk() ) ) }
@@ -188,7 +183,6 @@ namespace ashes::gl
 					? GL_TEXTURE_1D_ARRAY
 					: GL_TEXTURE_1D ) ) ) }
 		, baseArrayLayer{ subresource.baseArrayLayer }
-		, originalMipLevel{}
 		, mipLevel{ ( get( image )->getArrayLayers() > 1u
 			? 0u
 			: subresource.mipLevel ) }
@@ -460,14 +454,14 @@ namespace ashes::gl
 		, VkImageBlit origRegion
 		, VkImage srcImage
 		, VkImage dstImage )
-		: region{ origRegion }
+		: region{ std::move( origRegion ) }
 		, src{ device, origRegion.srcSubresource, srcImage }
 		, dst{ device, origRegion.dstSubresource, dstImage }
 	{
 	}
 
 	LayerCopy::LayerCopy( VkDevice device
-		, VkImageCopy origRegion
+		, VkImageCopy const & origRegion
 		, VkImage srcImage
 		, VkImage dstImage )
 		: LayerCopy{ device, convert( origRegion ), srcImage, dstImage }

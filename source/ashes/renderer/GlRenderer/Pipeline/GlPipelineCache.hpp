@@ -30,17 +30,17 @@ namespace ashes::gl
 		PipelineCache( VkAllocationCallbacks const * allocInfo
 			, VkDevice device
 			, VkPipelineCacheCreateInfo createInfo );
-		~PipelineCache();
+		~PipelineCache()noexcept;
 		/**@}*/
 
-		VkResult merge( ArrayView< VkPipelineCache const > pipelines );
+		VkResult merge( ArrayView< VkPipelineCache const > pipelines )const;
 
-		inline ByteArray const & getData()const
+		ByteArray const & getData()const
 		{
 			return m_data;
 		}
 
-		inline VkDevice getDevice()const
+		VkDevice getDevice()const
 		{
 			return m_device;
 		}
@@ -52,7 +52,7 @@ namespace ashes::gl
 			uint32_t headerVersion;
 			uint32_t vendorID;
 			uint32_t deviceID;
-			uint8_t pipelineCacheUUID[VK_UUID_SIZE];
+			std::array< uint8_t, VK_UUID_SIZE > pipelineCacheUUID;
 		};
 
 	private:

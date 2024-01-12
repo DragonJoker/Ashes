@@ -30,16 +30,16 @@ namespace ashes::gl
 		*/
 		CommandPool( VkAllocationCallbacks const * allocInfo
 			, VkDevice device
-			, VkCommandPoolCreateInfo createInfo );
-		~CommandPool();
+			, VkCommandPoolCreateInfo const & createInfo );
+		~CommandPool()noexcept;
 
 		VkResult createCommandBuffer( VkCommandBuffer & commandBuffer
 			, VkCommandBufferAllocateInfo const & info );
-		void destroyCommandBuffer( VkCommandBuffer commandBuffer );
-		VkResult reset( VkCommandPoolResetFlags flags );
-		VkResult free( VkCommandBufferArray sets );
+		void destroyCommandBuffer( VkCommandBuffer commandBuffer )noexcept;
+		VkResult reset( VkCommandPoolResetFlags flags )const noexcept;
+		VkResult freeCommands( VkCommandBufferArray const & sets )noexcept;
 
-		VkDevice getDevice()const
+		VkDevice getDevice()const noexcept
 		{
 			return m_device;
 		}

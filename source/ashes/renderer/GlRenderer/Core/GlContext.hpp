@@ -30,10 +30,10 @@ namespace ashes::gl
 		};
 		using BufferAllocCont = std::vector< BufferAlloc >;
 
-		Context( gl::ContextImplPtr impl );
+		explicit Context( gl::ContextImplPtr impl );
 
 	public:
-		~Context();
+		~Context()noexcept = default;
 
 		gl::ContextState & getState();
 
@@ -53,12 +53,12 @@ namespace ashes::gl
 #endif
 
 		void lock();
-		void unlock();
+		void unlock()noexcept;
 
 		GLuint createBuffer( GlBufferTarget target
 			, GLsizeiptr size
 			, GlBufferDataUsageFlags flags );
-		void deleteBuffer( GLuint buffer );
+		void deleteBuffer( GLuint buffer )noexcept;
 
 		void setOutOfMemory()
 		{
@@ -88,7 +88,7 @@ namespace ashes::gl
 			m_impl->swapBuffers();
 		}
 
-		bool isEnabled()const
+		bool isEnabled()const noexcept
 		{
 			return m_enabled
 				&& m_activeThread == std::this_thread::get_id();
@@ -112,7 +112,7 @@ namespace ashes::gl
 #define GL_LIB_BASE_FUNCTION( fun )\
 		PFN_gl##fun m_gl##fun = nullptr;\
 		template< typename ... Params >\
-		auto gl##fun( Params... params )const\
+		auto gl##fun( Params... params )const noexcept\
 		{\
 			checkOutOfMemory();\
 			return m_gl##fun( params... );\
@@ -120,7 +120,7 @@ namespace ashes::gl
 #define GL_LIB_FUNCTION( fun )\
 		PFN_gl##fun m_gl##fun = nullptr;\
 		template< typename ... Params >\
-		auto gl##fun( Params... params )const\
+		auto gl##fun( Params... params )const noexcept\
 		{\
 			checkOutOfMemory();\
 			return m_gl##fun( params... );\
@@ -128,24 +128,24 @@ namespace ashes::gl
 #define GL_LIB_FUNCTION_OPT( fun )\
 		PFN_gl##fun m_gl##fun = nullptr;\
 		template< typename ... Params >\
-		auto gl##fun( Params... params )const\
+		auto gl##fun( Params... params )const noexcept\
 		{\
 			checkOutOfMemory();\
 			return m_gl##fun( params... );\
 		}\
-		bool has##fun()const\
+		bool has##fun()const noexcept\
 		{\
 			return bool( m_gl##fun );\
 		}
 #define GL_LIB_FUNCTION_EXT( fun, ... )\
 		PFN_gl##fun m_gl##fun = nullptr;\
 		template< typename ... Params >\
-		auto gl##fun( Params... params )const\
+		auto gl##fun( Params... params )const noexcept\
 		{\
 			checkOutOfMemory();\
 			return m_gl##fun( params... );\
 		}\
-		bool has##fun()const\
+		bool has##fun()const noexcept\
 		{\
 			return bool( m_gl##fun );\
 		}
@@ -153,16 +153,16 @@ namespace ashes::gl
 
 	private:
 		void loadBaseFunctions();
-		void initialiseThreadState( gl::ContextState const & state );
+		void initialiseThreadState();
 		GLint getBufferSize( ContextLock const & context
 			, GlBufferTarget target
-			, GLuint buffer );
+			, GLuint buffer )noexcept;
 		GLint getBufferSize( ContextLock const & context
-			, GLuint buffer );
-		BufferAllocCont::iterator findBuffer( GLuint buffer );
+			, GLuint buffer )noexcept;
+		BufferAllocCont::iterator findBuffer( GLuint buffer )noexcept;
 		BufferAllocCont::iterator findBuffer( GLuint buffer
-			, GLsizeiptr size );
-		void checkOutOfMemory()const;
+			, GLsizeiptr size )noexcept;
+		void checkOutOfMemory()const noexcept;
 
 	private:
 		gl::ContextImplPtr m_impl;

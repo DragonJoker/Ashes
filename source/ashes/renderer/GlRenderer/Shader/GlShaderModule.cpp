@@ -29,18 +29,30 @@ namespace ashes::gl
 
 	namespace
 	{
-		static uint32_t constexpr OpCodeSPIRV = 0x07230203;
+		uint32_t constexpr OpCodeSPIRV = 0x07230203;
 
 		struct BlockLocale
 		{
+			BlockLocale( BlockLocale const & ) = delete;
+			BlockLocale( BlockLocale && ) = delete;
+			BlockLocale & operator=( BlockLocale const & ) = delete;
+			BlockLocale & operator=( BlockLocale && ) = delete;
+
 			BlockLocale()
 			{
 				m_prvLoc = std::locale::global( std::locale{ "C" } );
 			}
 
-			~BlockLocale()
+			~BlockLocale()noexcept
 			{
-				std::locale::global( m_prvLoc );
+				try
+				{
+					std::locale::global( m_prvLoc );
+				}
+				catch ( ... )
+				{
+					// Nothing to do here
+				}
 			}
 
 		private:
@@ -88,7 +100,7 @@ namespace ashes::gl
 			}
 
 			bool checkCompileErrors( ContextLock const & context
-				, VkShaderModule module
+				, VkShaderModule shaderModule
 				, GLuint shaderName
 				, std::string const & source )
 			{
@@ -98,10 +110,10 @@ namespace ashes::gl
 					, shaderName
 					, GL_INFO_COMPILE_STATUS
 					, &compiled );
-				auto compilerLog = retrieveCompilerLog( context
-					, shaderName );
 
-				if ( !compiled || !compilerLog.empty() )
+				if ( auto compilerLog = retrieveCompilerLog( context
+						, shaderName );
+					!compiled || !compilerLog.empty() )
 				{
 					std::stringstream stream;
 
@@ -114,7 +126,7 @@ namespace ashes::gl
 					report( ( compiled
 							? reportWarning< VkShaderModule >
 							: reportError< VkShaderModule > )
-						, module
+						, shaderModule
 						, VK_ERROR_VALIDATION_FAILED_EXT
 						, "Shader compilation"
 						, stream.str() );
@@ -128,13 +140,13 @@ namespace ashes::gl
 			{
 				spirv_cross::ShaderResources resources = compiler.get_shader_resources();
 
-				for ( auto & ubo : resources.uniform_buffers )
+				for ( auto const & ubo : resources.uniform_buffers )
 				{
 					auto name = compiler.get_name( ubo.base_type_id );
 					compiler.set_name( ubo.base_type_id, name + "_" + postfix );
 				}
 
-				for ( auto & ssbo : resources.storage_buffers )
+				for ( auto const & ssbo : resources.storage_buffers )
 				{
 					auto name = compiler.get_name( ssbo.base_type_id );
 					compiler.set_name( ssbo.base_type_id, name + "_" + postfix );
@@ -240,7 +252,7 @@ namespace ashes::gl
 				auto model = getExecutionModel( stage );
 				std::string entryPoint;
 
-				for ( auto & e : compiler.get_entry_points_and_stages() )
+				for ( auto const & e : compiler.get_entry_points_and_stages() )
 				{
 					if ( entryPoint.empty() && e.execution_model == model )
 					{
@@ -266,7 +278,7 @@ namespace ashes::gl
 				options.version = get( getInstance( device ) )->getExtensions().getShaderVersion();
 				options.es = false;
 				options.separate_shader_objects = hasProgramPipelines( device );
-				options.enable_420pack_extension = true;// has420PackExtensions( device );
+				options.enable_420pack_extension = true;
 				options.vertex.fixup_clipspace = isVertexShader;
 				options.vertex.flip_vert_y = invertY && isVertexShader;
 				options.vertex.support_nonzero_base_instance = get( getInstance( device ) )->getFeatures ().hasBaseInstance != 0;
@@ -379,11 +391,10 @@ namespace ashes::gl
 				, VkShaderStageFlagBits shaderStage )
 			{
 				ConstantsLayout result;
-				spirv_cross::ShaderResources resources = compiler.get_shader_resources();
 
-				for ( auto & pcb : resources.push_constant_buffers )
+				for ( auto const & pcb : compiler.get_shader_resources().push_constant_buffers )
 				{
-					auto & pcbType = compiler.get_type( pcb.type_id );
+					auto const & pcbType = compiler.get_type( pcb.type_id );
 					assert( pcbType.parent_type );
 					auto & structType = compiler.get_type( pcbType.parent_type );
 					auto baseName = compiler.get_name( pcb.id );
@@ -413,7 +424,7 @@ namespace ashes::gl
 								0u,
 								shaderStage,
 								name,
-								~( 0u ),
+								~0u,
 								getFormat( mbrType ),
 								getSize( getFormat( mbrType ) ),
 								getArraySize( compiler, mbrType ),
@@ -432,8 +443,7 @@ namespace ashes::gl
 				return result;
 			}
 
-			void reportMissingBinding( VkDevice device
-				, VkShaderModule module
+			void reportMissingBinding( VkShaderModule shaderModule
 				, std::string const & typeName
 				, uint32_t binding
 				, uint32_t set )
@@ -441,22 +451,21 @@ namespace ashes::gl
 				std::stringstream stream;
 				stream.imbue( std::locale{ "C" } );
 				stream << typeName << ", binding=" << binding << ", set=" << set;
-				reportError( module
+				reportError( shaderModule
 					, VK_ERROR_VALIDATION_FAILED_EXT
 					, "Missing binding"
 					, stream.str() );
 			}
 
-			void doReworkBindings( VkDevice device
-				, VkShaderModule module
+			void doReworkBindings( VkShaderModule shaderModule
 				, std::string const & typeName
 				, spirv_cross::CompilerGLSL & compiler
-				, spirv_cross::SmallVector< spirv_cross::Resource > & resources
+				, spirv_cross::SmallVector< spirv_cross::Resource > const & resources
 				, ShaderBindingMap const & bindings
 				, bool failOnError
 				, ShaderBindingMap const * fallback = nullptr )
 			{
-				for ( auto & obj : resources )
+				for ( auto const & obj : resources )
 				{
 					auto binding = compiler.get_decoration( obj.id, spv::DecorationBinding );
 					auto set = compiler.get_decoration( obj.id, spv::DecorationDescriptorSet );
@@ -477,33 +486,32 @@ namespace ashes::gl
 						}
 						else if ( failOnError )
 						{
-							reportMissingBinding( device, module, typeName, binding, set );
+							reportMissingBinding( shaderModule, typeName, binding, set );
 						}
 					}
 					else if ( failOnError )
 					{
-						reportMissingBinding( device, module, typeName, binding, set );
+						reportMissingBinding( shaderModule, typeName, binding, set );
 					}
 				}
 			}
 
 			void doReworkBindings( VkPipelineLayout pipelineLayout
 				, VkPipelineCreateFlags createFlags
-				, VkShaderModule module
+				, VkShaderModule shaderModule
 				, spirv_cross::CompilerGLSL & compiler
-				, spirv_cross::ShaderResources & resources )
+				, spirv_cross::ShaderResources const & resources )
 			{
 				auto & bindings = get( pipelineLayout )->getShaderBindings();
-				auto device = get( pipelineLayout )->getDevice();
 				auto failOnError = !( checkFlag( createFlags, VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT )
 					|| checkFlag( createFlags, VK_PIPELINE_CREATE_DERIVATIVE_BIT ) );
-				doReworkBindings( device, module, "UniformBuffer", compiler, resources.uniform_buffers, bindings.ubo, failOnError );
-				doReworkBindings( device, module, "StorageBuffer", compiler, resources.storage_buffers, bindings.sbo, failOnError );
-				doReworkBindings( device, module, "CombinedSamplerImage", compiler, resources.sampled_images, bindings.tex, failOnError, &bindings.tbo );
-				doReworkBindings( device, module, "SampledImage", compiler, resources.separate_images, bindings.tex, failOnError, &bindings.tbo );
-				doReworkBindings( device, module, "Sampler", compiler, resources.separate_samplers, bindings.tex, failOnError );
-				doReworkBindings( device, module, "StorageImage", compiler, resources.storage_images, bindings.img, failOnError, &bindings.ibo );
-				doReworkBindings( device, module, "SubpassInput", compiler, resources.subpass_inputs, bindings.tex, failOnError );
+				doReworkBindings( shaderModule, "UniformBuffer", compiler, resources.uniform_buffers, bindings.ubo, failOnError );
+				doReworkBindings( shaderModule, "StorageBuffer", compiler, resources.storage_buffers, bindings.sbo, failOnError );
+				doReworkBindings( shaderModule, "CombinedSamplerImage", compiler, resources.sampled_images, bindings.tex, failOnError, &bindings.tbo );
+				doReworkBindings( shaderModule, "SampledImage", compiler, resources.separate_images, bindings.tex, failOnError, &bindings.tbo );
+				doReworkBindings( shaderModule, "Sampler", compiler, resources.separate_samplers, bindings.tex, failOnError );
+				doReworkBindings( shaderModule, "StorageImage", compiler, resources.storage_images, bindings.img, failOnError, &bindings.ibo );
+				doReworkBindings( shaderModule, "SubpassInput", compiler, resources.subpass_inputs, bindings.tex, failOnError );
 			}
 
 			std::string getStagePrefix( VkShaderStageFlagBits stage )
@@ -546,7 +554,7 @@ namespace ashes::gl
 
 			void doReworkAbsoluteInOut( VkShaderStageFlagBits stage
 				, spirv_cross::CompilerGLSL & compiler
-				, spirv_cross::ShaderResources & resources )
+				, spirv_cross::ShaderResources const & resources )
 			{
 				auto & options = compiler.get_common_options();
 
@@ -580,7 +588,7 @@ namespace ashes::gl
 			void doReworkIntermediateInOut( VkShaderStageFlagBits previousStage
 				, VkShaderStageFlagBits currentStage
 				, spirv_cross::CompilerGLSL & compiler
-				, spirv_cross::ShaderResources & resources )
+				, spirv_cross::ShaderResources const & resources )
 			{
 				auto & options = compiler.get_common_options();
 
@@ -590,7 +598,7 @@ namespace ashes::gl
 					{
 						auto inputPrefix = getStagePrefix( previousStage );
 
-						for ( auto & input : resources.stage_inputs )
+						for ( auto const & input : resources.stage_inputs )
 						{
 							auto location = compiler.get_decoration( input.id, spv::DecorationLocation );
 							auto name = inputPrefix + "Output" + std::to_string( location );
@@ -605,7 +613,7 @@ namespace ashes::gl
 					{
 						auto outputPrefix = getStagePrefix( currentStage );
 
-						for ( auto & output : resources.stage_outputs )
+						for ( auto const & output : resources.stage_outputs )
 						{
 							auto location = compiler.get_decoration( output.id, spv::DecorationLocation );
 							auto name = outputPrefix + "Output" + std::to_string( location );
@@ -658,7 +666,7 @@ namespace ashes::gl
 			VkResult compileSpvToGlsl( VkDevice device
 				, VkPipelineLayout pipelineLayout
 				, VkPipelineCreateFlags createFlags
-				, VkShaderModule module
+				, VkShaderModule shaderModule
 				, UInt32Array const & shader
 				, VkShaderStageFlagBits previousStage
 				, VkShaderStageFlagBits currentStage
@@ -685,7 +693,7 @@ namespace ashes::gl
 						gl3::updateUboNames( compiler, std::to_string( currentStage ) );
 					}
 
-					doReworkBindings( pipelineLayout, createFlags, module, compiler, resources );
+					doReworkBindings( pipelineLayout, createFlags, shaderModule, compiler, resources );
 					doReworkIntermediateInOut( previousStage, currentStage, compiler, resources );
 					doReworkAbsoluteInOut( currentStage, compiler, resources );
 					compiler.build_combined_image_samplers();
@@ -818,16 +826,16 @@ namespace ashes::gl
 
 	//*************************************************************************
 
-	ShaderModule::ShaderModule( VkAllocationCallbacks const * allocInfo
+	ShaderModule::ShaderModule( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkDevice device
-		, VkShaderModuleCreateInfo createInfo )
+		, VkShaderModuleCreateInfo const & createInfo )
 		: m_device{ device }
 		, m_code{ UInt32Array( createInfo.pCode, createInfo.pCode + ( createInfo.codeSize / sizeof( uint32_t ) ) ) }
 	{
 		registerObject( m_device, *this );
 	}
 
-	ShaderModule::~ShaderModule()
+	ShaderModule::~ShaderModule()noexcept
 	{
 		unregisterObject( m_device, *this );
 	}
@@ -956,8 +964,7 @@ namespace ashes::gl
 			result = getShaderDesc( context
 				, m_constants
 				, state.stage
-				, programObject
-				, true );
+				, programObject );
 			result.program = programObject;
 			result.isGlsl = isGlsl;
 			result.stageFlags = state.stage;

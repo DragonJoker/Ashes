@@ -11,18 +11,18 @@ namespace ashes::gl
 	class ContextImpl
 	{
 	protected:
-		ContextImpl( VkInstance instance )
+		explicit ContextImpl( VkInstance instance )
 			: instance{ instance }
 		{
 		}
 
 	public:
-		virtual ~ContextImpl() = default;
+		virtual ~ContextImpl()noexcept = default;
 
 		virtual void preInitialise( int major, int minor ) = 0;
 		virtual void postInitialise() = 0;
 		virtual void enable()const = 0;
-		virtual void disable()const = 0;
+		virtual void disable()const noexcept = 0;
 		virtual void swapBuffers()const = 0;
 		virtual VkExtent2D getExtent()const = 0;
 

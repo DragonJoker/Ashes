@@ -7,7 +7,7 @@
 
 namespace ashes::gl
 {
-	PipelineCache::PipelineCache( VkAllocationCallbacks const * allocInfo
+	PipelineCache::PipelineCache( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkDevice device
 		, VkPipelineCacheCreateInfo createInfo )
 		: m_header{ sizeof( Header )
@@ -16,7 +16,7 @@ namespace ashes::gl
 			, get( get( device )->getPhysicalDevice() )->getProperties().deviceID
 			, {} }
 		, m_device{ device }
-		, m_createInfo{ createInfo }
+		, m_createInfo{ std::move( createInfo ) }
 	{
 		m_data.resize( sizeof( Header ) + m_createInfo.initialDataSize );
 		auto buffer = m_data.data();
@@ -31,12 +31,12 @@ namespace ashes::gl
 		registerObject( m_device, *this );
 	}
 
-	PipelineCache::~PipelineCache()
+	PipelineCache::~PipelineCache()noexcept
 	{
 		unregisterObject( m_device, *this );
 	}
 
-	VkResult PipelineCache::merge( ArrayView< VkPipelineCache const > pipelines )
+	VkResult PipelineCache::merge( [[maybe_unused]] ArrayView< VkPipelineCache const > pipelines )const
 	{
 		return VK_SUCCESS;
 	}

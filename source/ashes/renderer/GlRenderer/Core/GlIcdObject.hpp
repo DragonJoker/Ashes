@@ -16,7 +16,7 @@ namespace ashes::gl
 		: public ashes::IcdObject
 	{
 	private:
-		static constexpr uint32_t InvalidValue = ~( 0u );
+		static constexpr uint32_t InvalidValue = ~0u;
 
 	public:
 		inline uint32_t getInternal()const noexcept
@@ -31,14 +31,8 @@ namespace ashes::gl
 		}
 
 	protected:
-		IcdObject()
-		{
-		}
-
-		~IcdObject()
-		{
-			m_internal = InvalidValue;
-		}
+		IcdObject()noexcept = default;
+		~IcdObject()noexcept = default;
 
 	protected:
 		uint32_t m_internal{ InvalidValue };

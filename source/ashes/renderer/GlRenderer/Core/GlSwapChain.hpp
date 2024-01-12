@@ -17,16 +17,13 @@ namespace ashes::gl
 		SwapchainKHR( VkAllocationCallbacks const * allocInfo
 			, VkDevice device
 			, VkSwapchainCreateInfoKHR createInfo );
-		~SwapchainKHR();
+		~SwapchainKHR()noexcept;
 
 		uint32_t getImageCount()const;
 		VkImageArray getImages()const;
-		VkResult acquireNextImage( uint64_t timeout
-			, VkSemaphore semaphore
-			, VkFence fence
-			, uint32_t & imageIndex )const;
+		VkResult acquireNextImage( uint32_t & imageIndex )const;
 
-		VkResult present( uint32_t imageIndex )const;
+		VkResult present()const;
 
 		VkDevice getDevice()const
 		{

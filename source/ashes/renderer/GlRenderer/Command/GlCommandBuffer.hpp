@@ -18,16 +18,16 @@ namespace ashes::gl
 		CommandBuffer( VkAllocationCallbacks const * allocInfo
 			, VkDevice device
 			, VkCommandBufferLevel level );
-		~CommandBuffer();
+		~CommandBuffer()noexcept;
 
-		VkResult begin( VkCommandBufferBeginInfo info )const;
+		VkResult begin( VkCommandBufferBeginInfo const & info )const;
 		VkResult end()const;
-		VkResult reset( VkCommandBufferResetFlags flags )const;
+		VkResult reset()const noexcept;
 		void beginRenderPass( VkRenderPassBeginInfo beginInfo
 			, VkSubpassContents contents )const;
-		void nextSubpass( VkSubpassContents contents )const;
+		void nextSubpass()const;
 		void endRenderPass()const;
-		void executeCommands( VkCommandBufferArray commands )const;
+		void executeCommands( VkCommandBufferArray const & commands )const;
 		void clearColorImage( VkImage image
 			, VkImageLayout imageLayout
 			, VkClearColorValue colour
@@ -175,7 +175,7 @@ namespace ashes::gl
 		void debugMarkerEnd()const;
 		void debugMarkerInsert( VkDebugMarkerMarkerInfoEXT const & labelInfo )const;
 #endif
-		void initialiseGeometryBuffers( ContextLock & context )const;
+		void initialiseGeometryBuffers( ContextLock const & context )const;
 		void addPreExecuteAction( PreExecuteAction action );
 
 		inline ContextStateStack const & getStack()const
@@ -222,7 +222,7 @@ namespace ashes::gl
 
 	private:
 		void doApplyPreExecuteCommands( ContextStateStack const & stack )const;
-		void doReset()const;
+		void doReset()const noexcept;
 		void doSelectVao()const;
 		void doProcessMappedBoundDescriptorBuffersIn( VkDescriptorSet descriptor )const;
 		void doProcessMappedBoundDescriptorsBuffersOut()const;
@@ -261,7 +261,7 @@ namespace ashes::gl
 			VboBindings boundVbos;
 			IboBinding boundIbo;
 			IboBinding newlyBoundIbo;
-			VkIndexType indexType;
+			VkIndexType indexType{};
 			GeometryBuffers * selectedVao{ nullptr };
 			GeometryBuffersRefArray vaos;
 			std::map< uint32_t, VkDescriptorSet > boundDescriptors;

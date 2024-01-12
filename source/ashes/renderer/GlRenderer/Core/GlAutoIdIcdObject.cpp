@@ -5,7 +5,3 @@
 *	Sylvain Doremus
 */
 #include "renderer/GlRenderer/Core/GlAutoIdIcdObject.hpp"
-
-namespace ashes::gl
-{
-}

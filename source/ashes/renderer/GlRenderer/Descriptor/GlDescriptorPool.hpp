@@ -20,13 +20,13 @@ namespace ashes::gl
 	public:
 		DescriptorPool( VkAllocationCallbacks const * allocInfo
 			, VkDevice device
-			, VkDescriptorPoolCreateInfo createInfo );
-		~DescriptorPool();
+			, VkDescriptorPoolCreateInfo const & createInfo );
+		~DescriptorPool()noexcept;
 
 		VkResult allocate( VkDescriptorSetLayout layout
 			, VkDescriptorSet & set );
-		VkResult reset( VkDescriptorPoolResetFlags flags );
-		VkResult free( ArrayView< VkDescriptorSet const > const & sets );
+		VkResult reset();
+		VkResult freeDescriptors( ArrayView< VkDescriptorSet const > const & sets );
 
 		inline VkDevice getDevice()const
 		{

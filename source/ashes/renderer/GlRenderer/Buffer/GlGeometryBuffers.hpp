@@ -25,8 +25,8 @@ namespace ashes::gl
 				: vbo{ vbo }
 				, offset{ offset }
 				, binding{ binding }
-				, attributes{ attributes }
-				, programAttributes{ programAttributes }
+				, attributes{ std::move( attributes ) }
+				, programAttributes{ std::move( programAttributes ) }
 			{
 			}
 
@@ -62,7 +62,7 @@ namespace ashes::gl
 			, VkIndexType type );
 		~GeometryBuffers()noexcept;
 
-		void initialise( ContextLock & context );
+		void initialise( ContextLock const & context );
 
 		static std::vector< VBO > createVBOs( VboBindings const & vbos
 			, VkPipelineVertexInputStateCreateInfo const & vertexInputState
@@ -90,11 +90,10 @@ namespace ashes::gl
 		}
 
 	private:
-		void enableAttribute( ContextLock & context
+		void enableAttribute( ContextLock const & context
 			, VkVertexInputBindingDescription const & binding
 			, VkVertexInputAttributeDescription const & attribute
-			, VkDeviceSize offset
-			, VkVertexInputAttributeDescription const * programAttribute );
+			, VkDeviceSize offset );
 
 	private:
 		VkDevice m_device;

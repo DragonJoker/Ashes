@@ -14,14 +14,11 @@ namespace ashes
 {
 	inline VkPipelineDynamicStateCreateInfo getDefaultDynamicState()
 	{
-		return
-		{
-			VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
-			nullptr,
-			0u,
-			0u,
-			nullptr,
-		};
+		return { VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO
+			, nullptr
+			, 0u
+			, 0u
+			, nullptr };
 	}
 
 	template< typename ItType >

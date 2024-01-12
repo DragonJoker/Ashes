@@ -39,7 +39,7 @@ namespace ashes::gl
 				, program );
 			auto attribsEnd = vertexInputState.pVertexAttributeDescriptions + vertexInputState.vertexAttributeDescriptionCount;
 
-			for ( auto & input : inputs.vertexAttributeDescriptions )
+			for ( auto const & input : inputs.vertexAttributeDescriptions )
 			{
 				auto it = std::find( vertexInputState.pVertexAttributeDescriptions
 					, attribsEnd
@@ -56,7 +56,7 @@ namespace ashes::gl
 						<< " is used in the shader program, but is not listed in the vertex layouts" << std::endl;
 					context->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
 						, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
-						, 0ull
+						, 0ULL
 						, 0u
 						, VK_ERROR_VALIDATION_FAILED_EXT
 						, "OpenGL"
@@ -66,7 +66,7 @@ namespace ashes::gl
 
 			auto bindingsEnd = vertexInputState.pVertexBindingDescriptions + vertexInputState.vertexBindingDescriptionCount;
 
-			for ( auto & input : inputs.vertexBindingDescriptions )
+			for ( auto const & input : inputs.vertexBindingDescriptions )
 			{
 				auto it = std::find( vertexInputState.pVertexBindingDescriptions
 					, bindingsEnd
@@ -82,7 +82,7 @@ namespace ashes::gl
 						<< " is used in the shader program, but is not listed in the vertex layouts" << std::endl;
 					context->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
 						, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
-						, 0ull
+						, 0ULL
 						, 0u
 						, VK_ERROR_VALIDATION_FAILED_EXT
 						, "OpenGL"
@@ -686,8 +686,7 @@ namespace ashes::gl
 	ShaderDesc getShaderDesc( ContextLock const & context
 		, ConstantsLayout & constants
 		, VkShaderStageFlagBits stage
-		, GLuint programObject
-		, bool separable )
+		, GLuint programObject )
 	{
 		ShaderDesc result{ true
 			, 0u
@@ -705,7 +704,6 @@ namespace ashes::gl
 	}
 
 	void validatePipeline( ContextLock const & context
-		, VkPipelineLayout layout
 		, GLuint program
 		, VkPipelineVertexInputStateCreateInfo const & vertexInputState
 		, VkRenderPass renderPass )

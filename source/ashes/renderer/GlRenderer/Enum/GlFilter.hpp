@@ -38,7 +38,5 @@ namespace ashes::gl
 	*	Le GlFilter.
 	*/
 	GlFilter convert( VkFilter const & filter
-		, VkSamplerMipmapMode mode
-		, float minLod
-		, float maxLod );
+		, VkSamplerMipmapMode mode );
 }

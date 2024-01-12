@@ -69,7 +69,7 @@ namespace ashes::gl
 		m_context->enable();
 	}
 
-	void XcbContext::disable()const
+	void XcbContext::disable()const noexcept
 	{
 		m_context->disable();
 	}

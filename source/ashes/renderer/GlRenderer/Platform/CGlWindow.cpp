@@ -8,8 +8,8 @@ See LICENSE file in root folder
 
 namespace ashes::gl
 {
-	RenderWindow::RenderWindow( int major
-		, int minor
+	RenderWindow::RenderWindow( [[maybe_unused]] int major
+		, [[maybe_unused]] int minor
 		, std::string const & name )
 	{
 		try
@@ -48,10 +48,9 @@ namespace ashes::gl
 		}
 	}
 
-	RenderWindow::~RenderWindow()
+	RenderWindow::~RenderWindow()noexcept
 	{
-		auto errorCode = CGLSetCurrentContext( nullptr );
-		checkCGLErrorCode( errorCode, "CGLSetCurrentContext - nullptr" );
+		CGLSetCurrentContext( nullptr );
 		CGLDestroyContext( m_cglContext );
 	}
 

@@ -56,7 +56,7 @@ namespace ashes::gl
 		m_context->enable();
 	}
 
-	void WaylandContext::disable()const
+	void WaylandContext::disable()const noexcept
 	{
 		m_context->disable();
 	}

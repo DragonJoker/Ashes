@@ -20,11 +20,11 @@ namespace ashes::gl
 			, VkImageType imageType
 			, VkImageCreateFlags flags
 			, VkSampleCountFlagBits samples
-			, uint32_t baseArrayLayer );
+			, uint32_t baseArrayLayer )noexcept;
 	}
 
 	class ImageView
-		: public IcdObject
+		: private IcdObject
 	{
 	private:
 		ImageView( VkAllocationCallbacks const * allocInfo
@@ -39,11 +39,12 @@ namespace ashes::gl
 		ImageView( VkAllocationCallbacks const * allocInfo
 			, VkDevice device
 			, VkImageViewCreateInfo createInfo );
-		~ImageView();
+		~ImageView()noexcept;
 
 		static VkImageViewCreateInfo adjustCreateInfo( VkDevice device
 			, VkImageViewCreateInfo createInfo );
 
+		bool hasInternal()const noexcept;
 		GLuint getInternal()const noexcept;
 
 		GlTextureType getTextureType()const noexcept
@@ -91,22 +92,22 @@ namespace ashes::gl
 			return m_pixelFormat.internal;
 		}
 
-		inline GlFormat getUnpackFormat()const noexcept
+		GlFormat getUnpackFormat()const noexcept
 		{
 			return m_pixelFormat.unpackFormat;
 		}
 
-		inline GlType getUnpackType()const noexcept
+		GlType getUnpackType()const noexcept
 		{
 			return m_pixelFormat.unpackType;
 		}
 
-		inline GlFormat getPackFormat()const noexcept
+		GlFormat getPackFormat()const noexcept
 		{
 			return m_pixelFormat.packFormat;
 		}
 
-		inline GlType getPackType()const noexcept
+		GlType getPackType()const noexcept
 		{
 			return m_pixelFormat.packType;
 		}
@@ -134,11 +135,11 @@ namespace ashes::gl
 		}
 
 	private:
-		VkDevice m_device;
-		VkImageViewCreateInfo const m_createInfo;
-		GlTextureType m_gltextureType;
-		gl4::GlTextureViewType m_glviewType;
-		PixelFormat m_pixelFormat;
+		VkDevice m_device{};
+		VkImageViewCreateInfo const m_createInfo{};
+		GlTextureType m_gltextureType{};
+		gl4::GlTextureViewType m_glviewType{};
+		PixelFormat m_pixelFormat{};
 	};
 }
 

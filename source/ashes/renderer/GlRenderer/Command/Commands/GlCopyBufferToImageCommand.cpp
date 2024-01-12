@@ -237,7 +237,7 @@ namespace ashes::gl
 
 	void buildCopyBufferToImageCommand( ContextStateStack & stack
 		, VkDevice device
-		, VkBufferImageCopy copyInfo
+		, VkBufferImageCopy const & copyInfo
 		, VkBuffer src
 		, VkImage dst
 		, CmdList & list )

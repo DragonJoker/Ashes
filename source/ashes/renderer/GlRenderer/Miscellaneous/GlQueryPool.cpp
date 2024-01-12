@@ -7,11 +7,10 @@
 
 namespace ashes::gl
 {
-	QueryPool::QueryPool( VkAllocationCallbacks const * allocInfo
+	QueryPool::QueryPool( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkDevice device
-		, VkQueryPoolCreateInfo createInfo )
+		, VkQueryPoolCreateInfo const & createInfo )
 		: m_device{ device }
-		, m_flags{ createInfo.flags }
 		, m_queryType{ createInfo.queryType }
 		, m_queryCount{ createInfo.queryCount }
 		, m_pipelineStatistics{ getQueryTypes( createInfo.pipelineStatistics ) }
@@ -29,7 +28,7 @@ namespace ashes::gl
 		registerObject( m_device, *this );
 	}
 
-	QueryPool::~QueryPool()
+	QueryPool::~QueryPool()noexcept
 	{
 		unregisterObject( m_device, *this );
 		auto context = get( m_device )->getContext();
@@ -44,7 +43,6 @@ namespace ashes::gl
 		, uint32_t queryCount
 		, VkDeviceSize stride
 		, VkQueryResultFlags flags
-		, size_t dataSize
 		, void * buffer )const
 	{
 		assert( firstQuery + queryCount <= m_names.size() );

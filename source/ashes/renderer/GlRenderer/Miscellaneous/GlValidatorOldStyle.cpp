@@ -46,11 +46,12 @@ namespace ashes::gl::gl3
 
 		using AttributeFunction = std::function< void( GLuint index, GLsizei maxLength ) >;
 
+		template< typename AttributeFunctionT >
 		void getInterfaceInfos( ContextLock const & context
 			, GLuint program
 			, GlslInterface interfaceName
 			, GlslInterface interfaceMaxLengthName
-			, AttributeFunction func )
+			, AttributeFunctionT func )
 		{
 			GLint count = 0u;
 			glLogCall( context
@@ -80,7 +81,7 @@ namespace ashes::gl::gl3
 	}
 
 	InputsLayout getInputs( ContextLock const & context
-		, VkShaderStageFlagBits stage
+		, VkShaderStageFlagBits
 		, GLuint program )
 	{
 		InputsLayout result;
@@ -95,7 +96,7 @@ namespace ashes::gl::gl3
 				GLsizei nameLength = 0;
 				GLint arraySize = 0;
 				auto offset = 0u;
-				GlslAttributeType attributeType;
+				GlslAttributeType attributeType{};
 				glLogCall( context
 					, glGetActiveAttrib
 					, program
@@ -163,7 +164,7 @@ namespace ashes::gl::gl3
 
 	template< typename FilterT, typename FuncT >
 	void getUniformInfos( ContextLock const & context
-		, VkShaderStageFlagBits stage
+		, VkShaderStageFlagBits
 		, GLuint program
 		, FilterT filter
 		, FuncT func )
@@ -257,18 +258,18 @@ namespace ashes::gl::gl3
 		getUniformInfos( context
 			, stage
 			, program
-			, []( GLuint blockIndex ){ return blockIndex == ~( 0u ); }
+			, []( GLuint blockIndex ){ return blockIndex == ~0u; }
 			, [&constants]( const char * name
 				, GlslAttributeType type
 				, GLuint location
-				, GLuint offset
-				, GLuint arraySize )
+				, GLuint
+				, GLuint )
 			{
 				if ( !isSampler( type )
 					&& !isImage( type )
 					&& !isSamplerBuffer( type )
 					&& !isImageBuffer( type )
-					&& location != ~( 0u ) )
+					&& location != ~0u )
 				{
 					auto it = std::find_if( constants.begin()
 						, constants.end()
@@ -340,9 +341,7 @@ namespace ashes::gl::gl3
 								, getConstantFormat( type )
 								, getSize( type )
 								, arraySize
-								, ( offset == ~( 0u )
-									? 0u
-									: offset ) } );
+								, ( offset == ~0u ? 0u : offset ) } );
 						}
 					} );
 				result.push_back( desc );
@@ -350,9 +349,9 @@ namespace ashes::gl::gl3
 		return result;
 	}
 
-	InterfaceBlocksLayout getStorageBuffers( ContextLock const & context
-		, VkShaderStageFlagBits stage
-		, GLuint program )
+	InterfaceBlocksLayout getStorageBuffers( ContextLock const &
+		, VkShaderStageFlagBits
+		, GLuint )
 	{
 		InterfaceBlocksLayout result;
 		return result;
@@ -366,11 +365,11 @@ namespace ashes::gl::gl3
 		getUniformInfos( context
 			, stage
 			, program
-			, []( GLuint blockIndex ){ return blockIndex == ~( 0u ); }
+			, []( GLuint blockIndex ){ return blockIndex == ~0u; }
 			, [&result, &stage, &program]( const char * name
 				, GlslAttributeType type
 				, GLuint location
-				, GLuint offset
+				, GLuint
 				, GLuint arraySize )
 			{
 				if ( isSamplerBuffer( type ) )
@@ -396,11 +395,11 @@ namespace ashes::gl::gl3
 		getUniformInfos( context
 			, stage
 			, program
-			, []( GLuint blockIndex ){ return blockIndex == ~( 0u ); }
+			, []( GLuint blockIndex ){ return blockIndex == ~0u; }
 			, [&result, &stage, &program]( const char * name
 				, GlslAttributeType type
 				, GLuint location
-				, GLuint offset
+				, GLuint
 				, GLuint arraySize )
 			{
 				if ( isSampler( type ) )
@@ -426,11 +425,11 @@ namespace ashes::gl::gl3
 		getUniformInfos( context
 			, stage
 			, program
-			, []( GLuint blockIndex ){ return blockIndex == ~( 0u ); }
+			, []( GLuint blockIndex ){ return blockIndex == ~0u; }
 			, [&result, &stage, &program]( const char * name
 				, GlslAttributeType type
 				, GLuint location
-				, GLuint offset
+				, GLuint
 				, GLuint arraySize )
 			{
 				if ( isImageBuffer( type ) )
@@ -456,11 +455,11 @@ namespace ashes::gl::gl3
 		getUniformInfos( context
 			, stage
 			, program
-			, []( GLuint blockIndex ){ return blockIndex == ~( 0u ); }
+			, []( GLuint blockIndex ){ return blockIndex == ~0u; }
 			, [&result, &stage, &program]( const char * name
 				, GlslAttributeType type
 				, GLuint location
-				, GLuint offset
+				, GLuint
 				, GLuint arraySize )
 			{
 				if ( isImage( type ) )

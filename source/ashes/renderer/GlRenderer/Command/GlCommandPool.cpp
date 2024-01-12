@@ -13,16 +13,16 @@ namespace ashes::gl
 {
 	CommandPool::CommandPool( VkAllocationCallbacks const * allocInfo
 		, VkDevice device
-		, VkCommandPoolCreateInfo createInfo )
+		, [[maybe_unused]] VkCommandPoolCreateInfo const & createInfo )
 		: m_device{ device }
 		, m_allocInfo{ allocInfo }
 	{
 		registerObject( m_device, *this );
 	}
 
-	CommandPool::~CommandPool()
+	CommandPool::~CommandPool()noexcept
 	{
-		free( m_commandBuffers );
+		freeCommands( m_commandBuffers );
 		unregisterObject( m_device, *this );
 	}
 
@@ -37,7 +37,7 @@ namespace ashes::gl
 		return result;
 	}
 
-	void CommandPool::destroyCommandBuffer( VkCommandBuffer commandBuffer )
+	void CommandPool::destroyCommandBuffer( VkCommandBuffer commandBuffer )noexcept
 	{
 		if ( commandBuffer )
 		{
@@ -50,12 +50,12 @@ namespace ashes::gl
 		}
 	}
 
-	VkResult CommandPool::reset( VkCommandPoolResetFlags flags )
+	VkResult CommandPool::reset( [[maybe_unused]] VkCommandPoolResetFlags flags )const noexcept
 	{
 		return VK_SUCCESS;
 	}
 
-	VkResult CommandPool::free( VkCommandBufferArray commandBuffers )
+	VkResult CommandPool::freeCommands( VkCommandBufferArray const & commandBuffers )noexcept
 	{
 		for ( auto & buffer : commandBuffers )
 		{

@@ -12,22 +12,22 @@ namespace ashes::gl
 		: public ashes::IcdObject
 	{
 	public:
-		PhysicalDevice( VkInstance instance );
+		explicit PhysicalDevice( VkInstance instance );
 
-		VkBool32 getPresentationSupport( uint32_t queueFamilyIndex )const
+		VkBool32 getPresentationSupport( [[maybe_unused]] uint32_t queueFamilyIndex )const noexcept
 		{
 			return true;
 		}
 
-		uint32_t getMemoryTypeBits( VkMemoryPropertyFlags properties )const;
+		uint32_t getMemoryTypeBits( VkMemoryPropertyFlags properties )const noexcept;
 		uint32_t getMemoryTypeBits( VkMemoryPropertyFlags properties1
-			, VkMemoryPropertyFlags properties2 )const;
-		std::vector< VkLayerProperties > enumerateLayerProperties()const;
-		std::vector< VkExtensionProperties > enumerateExtensionProperties( const char * layerName )const;
-		VkPhysicalDeviceProperties const & getProperties()const;
-		VkPhysicalDeviceMemoryProperties const & getMemoryProperties()const;
-		VkPhysicalDeviceFeatures const & getFeatures()const;
-		std::vector< VkQueueFamilyProperties > const & getQueueFamilyProperties()const;
+			, VkMemoryPropertyFlags properties2 )const noexcept;
+		std::vector< VkLayerProperties > const & enumerateLayerProperties()const noexcept;
+		std::vector< VkExtensionProperties > const & enumerateExtensionProperties( const char * layerName )const noexcept;
+		VkPhysicalDeviceProperties const & getProperties()const noexcept;
+		VkPhysicalDeviceMemoryProperties const & getMemoryProperties()const noexcept;
+		VkPhysicalDeviceFeatures const & getFeatures()const noexcept;
+		std::vector< VkQueueFamilyProperties > const & getQueueFamilyProperties()const noexcept;
 		VkFormatProperties const & getFormatProperties( VkFormat fmt )const;
 		VkResult getImageFormatProperties( VkFormat format
 			, VkImageType type
@@ -53,17 +53,17 @@ namespace ashes::gl
 		std::vector< VkDisplayKHR > getDisplayPlaneSupportedDisplays( uint32_t planeIndex )const;
 #endif
 #if VK_KHR_portability_subset
-		VkPhysicalDevicePortabilitySubsetFeaturesKHR getPortabilitySubset()const
+		VkPhysicalDevicePortabilitySubsetFeaturesKHR getPortabilitySubset()const noexcept
 		{
 			return m_portabilityFeatures;
 		}
 #endif
 #if VK_EXT_inline_uniform_block
-		VkPhysicalDeviceInlineUniformBlockFeaturesEXT getInlineUniformBlockFeatures()const
+		VkPhysicalDeviceInlineUniformBlockFeaturesEXT getInlineUniformBlockFeatures()const noexcept
 		{
 			return m_inlineUniformBlockFeatures;
 		}
-		VkPhysicalDeviceInlineUniformBlockPropertiesEXT getInlineUniformBlockProperties()const
+		VkPhysicalDeviceInlineUniformBlockPropertiesEXT getInlineUniformBlockProperties()const noexcept
 		{
 			return m_inlineUniformBlockProperties;
 		}
@@ -75,26 +75,26 @@ namespace ashes::gl
 		int getMajor()const;
 		int getMinor()const;
 
-		VkInstance getInstance()const
+		VkInstance getInstance()const noexcept
 		{
 			return m_instance;
 		}
 		
-		GlPhysicalDeviceFeatures const & getGlFeatures()const
+		GlPhysicalDeviceFeatures const & getGlFeatures()const noexcept
 		{
 			return m_glFeatures;
 		}
 
 	private:
 		void doInitialise();
-		void doInitialiseProperties( ContextLock & context );
-		void doInitialiseFeatures( ContextLock & context );
-		void doInitialiseMemoryProperties( ContextLock & context );
-		void doInitialiseQueueProperties( ContextLock & context );
-		void doInitialiseDisplayProperties( ContextLock & context );
-		void doInitialiseDriverProperties( ContextLock & context );
-		void doInitialisePortability( ContextLock & context );
-		void doInitialiseInlineUniformBlock( ContextLock & context );
+		void doInitialiseProperties( ContextLock const & context );
+		void doInitialiseFeatures( ContextLock const & context );
+		void doInitialiseMemoryProperties( ContextLock const & context );
+		void doInitialiseQueueProperties();
+		void doInitialiseDisplayProperties();
+		void doInitialiseDriverProperties();
+		void doInitialisePortability();
+		void doInitialiseInlineUniformBlock( ContextLock const & context );
 
 	private:
 		VkInstance m_instance;
@@ -124,12 +124,12 @@ namespace ashes::gl
 #endif
 	};
 
-	bool has420PackExtensions( VkPhysicalDevice physicalDevice );
-	bool hasCopyImage( VkPhysicalDevice physicalDevice );
-	bool hasProgramPipelines( VkPhysicalDevice physicalDevice );
-	bool hasSamplerAnisotropy( VkPhysicalDevice physicalDevice );
-	bool hasTextureStorage( VkPhysicalDevice physicalDevice );
-	bool hasTextureViews( VkPhysicalDevice physicalDevice );
-	bool hasViewportArrays( VkPhysicalDevice physicalDevice );
-	bool hasProgramInterfaceQuery( VkPhysicalDevice physicalDevice );
+	bool has420PackExtensions( VkPhysicalDevice physicalDevice )noexcept;
+	bool hasCopyImage( VkPhysicalDevice physicalDevice )noexcept;
+	bool hasProgramPipelines( VkPhysicalDevice physicalDevice )noexcept;
+	bool hasSamplerAnisotropy( VkPhysicalDevice physicalDevice )noexcept;
+	bool hasTextureStorage( VkPhysicalDevice physicalDevice )noexcept;
+	bool hasTextureViews( VkPhysicalDevice physicalDevice )noexcept;
+	bool hasViewportArrays( VkPhysicalDevice physicalDevice )noexcept;
+	bool hasProgramInterfaceQuery( VkPhysicalDevice physicalDevice )noexcept;
 }
