@@ -316,8 +316,8 @@ namespace ashes::gl::gl4
 			}
 		}
 
-		using BufferFunction = std::function< void( std::string, uint32_t, uint32_t, uint32_t, uint32_t ) >;
 		using BufferVariableFunction = std::function< void( std::string, GlslAttributeType, VkDeviceSize, uint32_t ) >;
+		template< typename BufferFunction >
 		void getProgramBufferInfos( ContextLock const & context
 			, uint32_t program
 			, GlslInterface bufferInterface
@@ -340,12 +340,12 @@ namespace ashes::gl::gl4
 				, bufferInterface
 				, GLSL_DATANAME_ACTIVE_RESOURCES
 				, &numBlocks );
-			uint32_t const blockPropertyCount = 2u;
-			GLenum const blockProperties[blockPropertyCount] = { GLSL_PROPERTY_BUFFER_BINDING, GLSL_PROPERTY_BUFFER_DATA_SIZE };
-			GLenum const activeUniformsCount[1] = { GLSL_PROPERTY_NUM_ACTIVE_VARIABLES };
-			GLenum const activeUniforms[1] = { GLSL_PROPERTY_ACTIVE_VARIABLES };
-			uint32_t const uniformPropertyCount = 4u;
-			GLenum const uniformProperties[uniformPropertyCount] = { GLSL_PROPERTY_NAME_LENGTH, GLSL_PROPERTY_TYPE, GLSL_PROPERTY_OFFSET, GLSL_PROPERTY_ARRAY_SIZE };
+			uint32_t constexpr blockPropertyCount = 2u;
+			uint32_t constexpr uniformPropertyCount = 4u;
+			std::array< GLenum, blockPropertyCount > const blockProperties{ GLSL_PROPERTY_BUFFER_BINDING, GLSL_PROPERTY_BUFFER_DATA_SIZE };
+			std::array< GLenum, 1u > const activeUniformsCount{ GLSL_PROPERTY_NUM_ACTIVE_VARIABLES };
+			std::array< GLenum, 1u > const activeUniforms{ GLSL_PROPERTY_ACTIVE_VARIABLES };
+			std::array< GLenum, uniformPropertyCount > const uniformProperties{ GLSL_PROPERTY_NAME_LENGTH, GLSL_PROPERTY_TYPE, GLSL_PROPERTY_OFFSET, GLSL_PROPERTY_ARRAY_SIZE };
 
 			for ( GLuint blockIx = 0; blockIx < GLuint( numBlocks ); ++blockIx )
 			{
@@ -359,17 +359,17 @@ namespace ashes::gl::gl4
 					, &nameLength
 					, buffer.data() );
 				std::string bufferName( buffer.data(), size_t( nameLength ) );
-				GLint blockProps[2];
+				std::array< GLint, 2u > blockProps{};
 				glLogCall( context
 					, glGetProgramResourceiv
 					, program
 					, bufferInterface
 					, blockIx
 					, blockPropertyCount
-					, blockProperties
+					, blockProperties.data()
 					, blockPropertyCount
 					, nullptr
-					, blockProps );
+					, blockProps.data() );
 				GLuint index = glLogNonVoidCall( context
 					, glGetProgramResourceIndex
 					, program
@@ -382,7 +382,7 @@ namespace ashes::gl::gl4
 					, bufferInterface
 					, blockIx
 					, 1
-					, activeUniformsCount
+					, activeUniformsCount.data()
 					, 1
 					, nullptr
 					, &numActiveUnifs );
@@ -402,24 +402,24 @@ namespace ashes::gl::gl4
 						, bufferInterface
 						, blockIx
 						, 1
-						, activeUniforms
+						, activeUniforms.data()
 						, numActiveUnifs
 						, nullptr
 						, blockUnifs.data() );
 
 					for ( GLuint unifIx = 0; unifIx < GLuint( numActiveUnifs) ; ++unifIx )
 					{
-						GLint values[uniformPropertyCount]{};
+						std::array< GLint, uniformPropertyCount > values{};
 						glLogCall( context
 							, glGetProgramResourceiv
 							, program
 							, variableInterface
 							, GLuint( blockUnifs[unifIx] )
 							, GLsizei( uniformPropertyCount )
-							, uniformProperties
+							, uniformProperties.data()
 							, GLsizei( uniformPropertyCount )
 							, nullptr
-							, values );
+							, values.data() );
 
 						if ( values[0] > 0 )
 						{
@@ -450,7 +450,7 @@ namespace ashes::gl::gl4
 			, GlslInterface variableInterface
 			, VarFuncType variableFunction )
 		{
-			static GLenum constexpr properties[]
+			static std::array< GLenum, 6u > constexpr properties
 			{
 				GLSL_PROPERTY_BLOCK_INDEX,
 				GLSL_PROPERTY_TYPE,
@@ -459,7 +459,6 @@ namespace ashes::gl::gl4
 				GLSL_PROPERTY_ARRAY_SIZE,
 				GLSL_PROPERTY_OFFSET
 			};
-			static uint32_t constexpr count = uint32_t( sizeof( properties ) / sizeof( *properties ) );
 			GLint numUniforms = 0;
 			glLogCall( context
 				, glGetProgramInterfaceiv
@@ -470,17 +469,17 @@ namespace ashes::gl::gl4
 
 			for ( GLuint unif = 0; unif < GLuint( numUniforms ); ++unif )
 			{
-				GLint values[count];
+				std::array< GLint, properties.size() > values{};
 				glLogCall( context
 					, glGetProgramResourceiv
 					, program
 					, variableInterface
 					, unif
-					, count
-					, properties
-					, count
+					, GLsizei( properties.size() )
+					, properties.data()
+					, GLsizei( properties.size() )
 					, nullptr
-					, values );
+					, values.data() );
 
 				// Skip any uniforms that are in a block.
 				if ( values[0] == -1 )
@@ -588,7 +587,7 @@ namespace ashes::gl::gl4
 					<< " is used in the shader program, but is not listed in the vertex layouts" << std::endl;
 				context->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
 					, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
-					, 0ull
+					, 0ULL
 					, 0u
 					, VK_ERROR_VALIDATION_FAILED_EXT
 					, "OpenGL"
@@ -644,7 +643,7 @@ namespace ashes::gl::gl4
 				}
 			} );
 
-		for ( auto & attribute : attributes )
+		for ( auto const & attribute : attributes )
 		{
 			std::stringstream stream;
 			stream << "Vertex layout has attribute of type " << ashes::getName( attribute.format )
@@ -652,7 +651,7 @@ namespace ashes::gl::gl4
 				<< ", which is not used by the program";
 			context->reportMessage( VK_DEBUG_REPORT_WARNING_BIT_EXT
 				, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
-				, 0ull
+				, 0ULL
 				, 0u
 				, VK_ERROR_VALIDATION_FAILED_EXT
 				, "OpenGL"
@@ -666,7 +665,7 @@ namespace ashes::gl::gl4
 	{
 		std::set< VkAttachmentDescription const * > attaches;
 
-		for ( auto & reference : get( renderPass )->getFboAttachable() )
+		for ( auto const & reference : get( renderPass )->getFboAttachable() )
 		{
 			attaches.insert( &get( renderPass )->getAttachment( reference ) );
 		}
@@ -683,16 +682,16 @@ namespace ashes::gl::gl4
 			, program
 			, GLSL_INTERFACE_PROGRAM_OUTPUT
 			, { GLSL_PROPERTY_TYPE, GLSL_PROPERTY_ARRAY_SIZE, GLSL_PROPERTY_LOCATION/*, GLSL_PROPERTY_LOCATION_COMPONENT*/ }
-			, [&outputs]( std::string name, std::vector< GLint > const & values )
+			, [&outputs]( std::string const & name, std::vector< GLint > const & values )
 			{
 				outputs.push_back( { name, GlslAttributeType( values[0] ), uint32_t( values[2] ) } );
 			} );
 
-		for ( auto & output : outputs )
+		for ( auto const & output : outputs )
 		{
 			bool found = false;
 
-			if ( output.location != ~( 0u ) )
+			if ( output.location != ~0u )
 			{
 				if ( get( renderPass )->getColourAttaches().size() > output.location )
 				{
@@ -714,30 +713,26 @@ namespace ashes::gl::gl4
 						<< " is used in the shader program, but is not listed in the render pass attachments";
 					context->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
 						, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
-						, 0ull
+						, 0ULL
 						, 0u
 						, VK_ERROR_VALIDATION_FAILED_EXT
 						, "OpenGL"
 						, stream.str().c_str() );
 				}
 			}
-			else
-			{
-				auto it = std::find_if( attaches.begin()
+			else if ( auto it = std::find_if( attaches.begin()
 					, attaches.end()
 					, [&output]( VkAttachmentDescription const * lookup )
 					{
 						return areCompatible( lookup->format, convertFormat( output.type ) );
 					} );
-
-				if ( it != attaches.end() )
-				{
-					attaches.erase( it );
-				}
+				it != attaches.end() )
+			{
+				attaches.erase( it );
 			}
 		}
 
-		for ( auto & attach : attaches )
+		for ( auto const & attach : attaches )
 		{
 			if ( !isDepthOrStencilFormat( attach->format ) )
 			{
@@ -746,7 +741,7 @@ namespace ashes::gl::gl4
 					<< ", which is not used by the program";
 				context->reportMessage( VK_DEBUG_REPORT_WARNING_BIT_EXT
 					, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
-					, 0ull
+					, 0ULL
 					, 0u
 					, VK_ERROR_VALIDATION_FAILED_EXT
 					, "OpenGL"
@@ -762,7 +757,7 @@ namespace ashes::gl::gl4
 			, program
 			, GLSL_INTERFACE_UNIFORM_BLOCK
 			, GLSL_INTERFACE_UNIFORM
-			, []( std::string name
+			, []( std::string const & name
 				, uint32_t point
 				, uint32_t dataSize
 				, uint32_t index
@@ -774,7 +769,7 @@ namespace ashes::gl::gl4
 					<< ", index " << index
 					<< ", active variables " << variables;
 			}
-			, []( std::string name
+			, []( std::string const & name
 				, GlslAttributeType type
 				, VkDeviceSize offset
 				, uint32_t arraySize )
@@ -793,7 +788,7 @@ namespace ashes::gl::gl4
 			, program
 			, GLSL_INTERFACE_SHADER_STORAGE_BLOCK
 			, GLSL_INTERFACE_BUFFER_VARIABLE
-			, []( std::string name
+			, []( std::string const & name
 				, uint32_t point
 				, uint32_t dataSize
 				, uint32_t index
@@ -805,7 +800,7 @@ namespace ashes::gl::gl4
 					<< ", index " << index
 					<< ", active variables " << variables;
 			}
-			, []( std::string name
+			, []( std::string const & name
 				, GlslAttributeType type
 				, VkDeviceSize offset
 				, uint32_t arraySize )
@@ -823,7 +818,7 @@ namespace ashes::gl::gl4
 		getVariableInfos( context
 			, program
 			, GLSL_INTERFACE_UNIFORM
-			, []( std::string name
+			, []( std::string const & name
 				, GlslAttributeType type
 				, GLint location
 				, GLint arraySize
@@ -838,7 +833,7 @@ namespace ashes::gl::gl4
 	}
 
 	InputsLayout getInputs( ContextLock const & context
-		, VkShaderStageFlagBits stage
+		, VkShaderStageFlagBits
 		, GLuint program )
 	{
 		InputsLayout result;
@@ -846,7 +841,7 @@ namespace ashes::gl::gl4
 			, program
 			, GLSL_INTERFACE_PROGRAM_INPUT
 			, { GLSL_PROPERTY_TYPE, GLSL_PROPERTY_ARRAY_SIZE, GLSL_PROPERTY_LOCATION }
-			, [&result]( std::string const & name, std::vector< GLint > const & values )
+			, [&result]( std::string const &, std::vector< GLint > const & values )
 			{
 				auto glslType = GlslAttributeType( values[0] );
 				auto location = uint32_t( values[2] );
@@ -910,11 +905,11 @@ namespace ashes::gl::gl4
 		getVariableInfos( context
 			, program
 			, GLSL_INTERFACE_UNIFORM
-			, [&constants]( std::string name
+			, [&constants]( std::string const & name
 				, GlslAttributeType type
 				, GLint location
-				, GLint arraySize
-				, GLint offset )
+				, GLint
+				, GLint )
 			{
 				if ( !isSampler( type )
 					&& !isImage( type )
@@ -946,11 +941,11 @@ namespace ashes::gl::gl4
 			, program
 			, GLSL_INTERFACE_UNIFORM_BLOCK
 			, GLSL_INTERFACE_UNIFORM
-			, [&result]( std::string name
+			, [&result]( std::string const & name
 				, uint32_t point
 				, uint32_t dataSize
-				, uint32_t index
-				, uint32_t variables )
+				, uint32_t
+				, uint32_t )
 			{
 				result.push_back(
 					{
@@ -960,7 +955,7 @@ namespace ashes::gl::gl4
 						{},
 					} );
 			}
-			, [&result, &stage, &program]( std::string name
+			, [&result, &stage, &program]( std::string const & name
 				, GlslAttributeType type
 				, VkDeviceSize offset
 				, uint32_t arraySize )
@@ -989,11 +984,11 @@ namespace ashes::gl::gl4
 			, program
 			, GLSL_INTERFACE_SHADER_STORAGE_BLOCK
 			, GLSL_INTERFACE_BUFFER_VARIABLE
-			, [&result]( std::string name
+			, [&result]( std::string const & name
 				, uint32_t point
 				, uint32_t dataSize
-				, uint32_t index
-				, uint32_t variables )
+				, uint32_t
+				, uint32_t )
 			{
 				result.push_back(
 					{
@@ -1014,11 +1009,11 @@ namespace ashes::gl::gl4
 		getVariableInfos( context
 			, program
 			, GLSL_INTERFACE_UNIFORM
-			, [&result, &stage, &program]( std::string name
+			, [&result, &stage, &program]( std::string const & name
 				, GlslAttributeType type
 				, GLint location
 				, GLint arraySize
-				, GLint offset )
+				, GLint )
 			{
 				if ( isSamplerBuffer( type ) )
 				{
@@ -1043,11 +1038,11 @@ namespace ashes::gl::gl4
 		getVariableInfos( context
 			, program
 			, GLSL_INTERFACE_UNIFORM
-			, [&result, &stage, &program]( std::string name
+			, [&result, &stage, &program]( std::string const & name
 				, GlslAttributeType type
 				, GLint location
 				, GLint arraySize
-				, GLint offset )
+				, GLint )
 			{
 				if ( isSampler( type ) )
 				{
@@ -1072,11 +1067,11 @@ namespace ashes::gl::gl4
 		getVariableInfos( context
 			, program
 			, GLSL_INTERFACE_UNIFORM
-			, [&result, &stage, &program]( std::string name
+			, [&result, &stage, &program]( std::string const & name
 				, GlslAttributeType type
 				, GLint location
 				, GLint arraySize
-				, GLint offset )
+				, GLint )
 			{
 				if ( isImageBuffer( type ) )
 				{
@@ -1101,11 +1096,11 @@ namespace ashes::gl::gl4
 		getVariableInfos( context
 			, program
 			, GLSL_INTERFACE_UNIFORM
-			, [&result, &stage, &program]( std::string name
+			, [&result, &stage, &program]( std::string const & name
 				, GlslAttributeType type
 				, GLint location
 				, GLint arraySize
-				, GLint offset )
+				, GLint )
 			{
 				if ( isImage( type ) )
 				{

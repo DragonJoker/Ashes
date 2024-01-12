@@ -22,9 +22,8 @@ namespace ashes::gl
 
 			for ( auto & stage : stages )
 			{
-				auto & constants = get( stage.module )->getConstants();
-
-				if ( !constants.empty() )
+				if ( auto & constants = get( stage.module )->getConstants();
+					!constants.empty() )
 				{
 					if ( result.empty() )
 					{
@@ -34,14 +33,13 @@ namespace ashes::gl
 					{
 						for ( auto & constant : constants )
 						{
-							auto it = std::find_if( result.begin()
-								, result.end()
-								, [&constant]( ConstantDesc const & lookup )
-								{
-									return lookup.name == constant.name;
-								} );
-
-							if ( it == result.end() )
+							if ( auto it = std::find_if( result.begin()
+									, result.end()
+									, [&constant]( ConstantDesc const & lookup )
+									{
+										return lookup.name == constant.name;
+									} );
+								it == result.end() )
 							{
 								result.push_back( constant );
 							}
@@ -75,14 +73,13 @@ namespace ashes::gl
 				{
 					for ( auto & constantBuffer : rhs )
 					{
-						auto it = std::find_if( result.begin()
-							, result.end()
-							, [&constantBuffer]( ConstantBufferDesc const & lookup )
-							{
-								return lookup.binding == constantBuffer.binding;
-							} );
-
-						if ( it == result.end() )
+						if ( auto it = std::find_if( result.begin()
+								, result.end()
+								, [&constantBuffer]( ConstantBufferDesc const & lookup )
+								{
+									return lookup.binding == constantBuffer.binding;
+								} );
+							it == result.end() )
 						{
 							result.push_back( constantBuffer );
 						}
@@ -118,15 +115,14 @@ namespace ashes::gl
 					{
 #pragma warning( push )
 #pragma warning( disable:5233 )
-						auto it = std::find_if( result.begin()
-							, result.end()
-							, [&constant]( FormatDescT< FormatT > const & lookup )
-							{
-								return lookup.name == constant.name
-									&& lookup.program == constant.program;
-							} );
-
-						if ( it == result.end() )
+						if ( auto it = std::find_if( result.begin()
+								, result.end()
+								, [&constant]( FormatDescT< FormatT > const & lookup )
+								{
+									return lookup.name == constant.name
+										&& lookup.program == constant.program;
+								} );
+							it == result.end() )
 						{
 							result.push_back( constant );
 						}
@@ -178,7 +174,7 @@ namespace ashes::gl
 	}
 
 	ShaderProgram::ShaderProgram( VkDevice device
-		, ContextState * state
+		, ContextState const * state
 		, VkPipeline pipeline
 		, VkPipelineShaderStageCreateInfoArray stages
 		, VkPipelineLayout layout
@@ -206,15 +202,15 @@ namespace ashes::gl
 		{
 			stageFlags |= stage.stage;
 			ShaderDesc desc{};
-			auto result = get( stage.module )->compile( pipeline
-				, previousStage
-				, stage
-				, layout
-				, createFlags
-				, invertY
-				, desc );
 
-			if ( result != VK_SUCCESS )
+			if ( auto result = get( stage.module )->compile( pipeline
+					, previousStage
+					, stage
+					, layout
+					, createFlags
+					, invertY
+					, desc );
+				result != VK_SUCCESS )
 			{
 				throw Exception{ result, "ShaderModule compilation" };
 			}
@@ -226,9 +222,8 @@ namespace ashes::gl
 		if ( hasProgramPipelines( m_device ) )
 		{
 			doInitProgramPipeline( context
-				, std::move( descs )
+				, descs
 				, layout
-				, createFlags
 				, renderPass
 				, vertexInputState );
 		}
@@ -236,13 +231,11 @@ namespace ashes::gl
 		{
 			doInitShaderProgram( context
 				, pipeline
-				, std::move( descs )
-				, layout
-				, createFlags );
+				, descs );
 		}
 	}
 
-	ShaderProgram::~ShaderProgram()
+	ShaderProgram::~ShaderProgram()noexcept
 	{
 		auto context = get( m_device )->getContext();
 
@@ -257,9 +250,8 @@ namespace ashes::gl
 	}
 
 	void ShaderProgram::doInitProgramPipeline( ContextLock const & context
-		, std::vector< ShaderDesc > descs
+		, std::vector< ShaderDesc > const & descs
 		, VkPipelineLayout layout
-		, VkPipelineCreateFlags createFlags
 		, VkRenderPass renderPass
 		, Optional< VkPipelineVertexInputStateCreateInfo > const & vertexInputState )
 	{
@@ -291,7 +283,7 @@ namespace ashes::gl
 		constantsPcb.stageFlags = program.stageFlags;
 		uint32_t size = 0u;
 
-		for ( auto & constant : program.pcb )
+		for ( auto const & constant : program.pcb )
 		{
 			constantsPcb.constants.push_back( constant );
 			size += constant.size;
@@ -303,7 +295,6 @@ namespace ashes::gl
 			&& renderPass != nullptr )
 		{
 			validatePipeline( context
-				, layout
 				, program.program
 				, vertexInputState.value()
 				, renderPass );
@@ -312,9 +303,7 @@ namespace ashes::gl
 
 	void ShaderProgram::doInitShaderProgram( ContextLock const & context
 		, VkPipeline pipeline
-		, std::vector< ShaderDesc > descs
-		, VkPipelineLayout layout
-		, VkPipelineCreateFlags createFlags )
+		, std::vector< ShaderDesc > const & descs )
 	{
 		auto programObject = glLogNonVoidEmptyCall( context
 			, glCreateProgram );
@@ -333,20 +322,18 @@ namespace ashes::gl
 		glLogCall( context
 			, glLinkProgram
 			, programObject );
-		bool usable = checkLinkErrors( context
+
+		if ( checkLinkErrors( context
 			, pipeline
 			, programObject
 			, int( modules.size() )
-			, "Shader program link" );
-
-		if ( usable )
+			, "Shader program link" ) )
 		{
 			auto constants = mergeConstants( stages );
 			program = getShaderDesc( context
 				, constants
 				, VkShaderStageFlagBits( stageFlags )
-				, programObject
-				, true );
+				, programObject );
 			program.program = programObject;
 			program.stageFlags = stageFlags;
 		}
@@ -363,7 +350,7 @@ namespace ashes::gl
 		}
 	}
 
-	void ShaderProgram::doCleanupProgramPipeline( ContextLock const & context )
+	void ShaderProgram::doCleanupProgramPipeline( ContextLock const & context )noexcept
 	{
 		if ( program.program )
 		{
@@ -374,19 +361,19 @@ namespace ashes::gl
 			program.program = 0;
 		}
 
-		for ( auto & module : modules )
+		for ( auto & shaderModule : modules )
 		{
-			if ( module )
+			if ( shaderModule )
 			{
 				glLogCall( context
 					, glDeleteProgram
-					, module );
-				module = 0;
+					, shaderModule );
+				shaderModule = 0;
 			}
 		}
 	}
 
-	void ShaderProgram::doCleanupShaderProgram( ContextLock const & context )
+	void ShaderProgram::doCleanupShaderProgram( ContextLock const & context )noexcept
 	{
 		if ( program.program )
 		{

@@ -12,9 +12,9 @@ See LICENSE file in root folder.
 namespace ashes::gl
 {
 	void buildBeginSubpassCommand( ContextStateStack & stack
-		, VkRenderPass renderPass
+		, [[maybe_unused]] VkRenderPass renderPass
 		, VkFramebuffer frameBuffer
-		, VkSubpassDescription subpass
+		, VkSubpassDescription const & subpass
 		, CmdList & list )
 	{
 		glLogCommand( list, "BeginSubpassCommand" );

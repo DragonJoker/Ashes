@@ -24,7 +24,7 @@ namespace ashes::gl
 		doInit();
 	}
 
-	ContextState::ContextState( ContextState && rhs )
+	ContextState::ContextState( ContextState && rhs )noexcept
 		: cbStateAttachments{ std::move( rhs.cbStateAttachments ) }
 		, cbState{ std::move( rhs.cbState ) }
 		, dsState{ std::move( rhs.dsState ) }
@@ -42,29 +42,26 @@ namespace ashes::gl
 		doInit();
 	}
 
-	ContextState::ContextState( Optional< VkPipelineColorBlendStateCreateInfo > cbState
-		, Optional< VkPipelineDepthStencilStateCreateInfo > dsState
-		, Optional< VkPipelineMultisampleStateCreateInfo > msState
-		, Optional< VkPipelineTessellationStateCreateInfo > tsState
-		, VkPipelineInputAssemblyStateCreateInfo iaState
-		, VkPipelineViewportStateCreateInfo vpState
-		, VkPipelineRasterizationStateCreateInfo rsState
-		, VkPipelineDynamicStateCreateInfo dyState )
-		: ContextState
-		{
-			cbState ? &cbState.value() : nullptr,
-			dsState ? &dsState.value() : nullptr,
-			msState ? &msState.value() : nullptr,
-			tsState ? &tsState.value() : nullptr,
-			&iaState,
-			&vpState,
-			&rsState,
-			&dyState,
-		}
+	ContextState::ContextState( Optional< VkPipelineColorBlendStateCreateInfo > const & cbState
+		, Optional< VkPipelineDepthStencilStateCreateInfo > const & dsState
+		, Optional< VkPipelineMultisampleStateCreateInfo > const & msState
+		, Optional< VkPipelineTessellationStateCreateInfo > const & tsState
+		, VkPipelineInputAssemblyStateCreateInfo const & iaState
+		, VkPipelineViewportStateCreateInfo const & vpState
+		, VkPipelineRasterizationStateCreateInfo const & rsState
+		, VkPipelineDynamicStateCreateInfo const & dyState )
+		: ContextState{ cbState ? &cbState.value() : nullptr
+			, dsState ? &dsState.value() : nullptr
+			, msState ? &msState.value() : nullptr
+			, tsState ? &tsState.value() : nullptr
+			, &iaState
+			, &vpState
+			, &rsState
+			, &dyState }
 	{
 	}
 
-	ContextState::ContextState( VkPipelineColorBlendStateCreateInfo cbState
+	ContextState::ContextState( VkPipelineColorBlendStateCreateInfo const & cbState
 		, VkPipelineDepthStencilStateCreateInfo const * dsState
 		, VkPipelineMultisampleStateCreateInfo const * msState
 		, VkPipelineTessellationStateCreateInfo const * tsState
@@ -72,17 +69,14 @@ namespace ashes::gl
 		, VkPipelineViewportStateCreateInfo const * vpState
 		, VkPipelineRasterizationStateCreateInfo const * rsState
 		, VkPipelineDynamicStateCreateInfo const * dyState )
-		: ContextState
-		{
-			&cbState,
-			dsState,
-			msState,
-			tsState,
-			iaState,
-			vpState,
-			rsState,
-			dyState,
-		}
+		: ContextState{ &cbState
+			, dsState
+			, msState
+			, tsState
+			, iaState
+			, vpState
+			, rsState
+			, dyState }
 	{
 	}
 
@@ -135,26 +129,25 @@ namespace ashes::gl
 		doInit();
 	}
 
-	ContextState & ContextState::swap( ContextState && rhs )
+	void ContextState::swap( ContextState & lhs, ContextState & rhs )const noexcept
 	{
-		std::swap( rhs.cbStateAttachments, cbStateAttachments );
-		std::swap( rhs.cbState, cbState );
-		std::swap( rhs.dsState, dsState );
-		std::swap( rhs.sampleMask, sampleMask );
-		std::swap( rhs.msState, msState );
-		std::swap( rhs.tsState, tsState );
-		std::swap( rhs.iaState, iaState );
-		std::swap( rhs.viewports, viewports );
-		std::swap( rhs.scissors, scissors );
-		std::swap( rhs.vpState, vpState );
-		std::swap( rhs.rsState, rsState );
-		std::swap( rhs.dynamicStates, dynamicStates );
-		std::swap( rhs.dyState, dyState );
-		doInit();
-		return *this;
+		std::swap( rhs.cbStateAttachments, lhs.cbStateAttachments );
+		std::swap( rhs.cbState, lhs.cbState );
+		std::swap( rhs.dsState, lhs.dsState );
+		std::swap( rhs.sampleMask, lhs.sampleMask );
+		std::swap( rhs.msState, lhs.msState );
+		std::swap( rhs.tsState, lhs.tsState );
+		std::swap( rhs.iaState, lhs.iaState );
+		std::swap( rhs.viewports, lhs.viewports );
+		std::swap( rhs.scissors, lhs.scissors );
+		std::swap( rhs.vpState, lhs.vpState );
+		std::swap( rhs.rsState, lhs.rsState );
+		std::swap( rhs.dynamicStates, lhs.dynamicStates );
+		std::swap( rhs.dyState, lhs.dyState );
+		lhs.doInit();
 	}
 
-	void ContextState::doInit()
+	void ContextState::doInit()noexcept
 	{
 		cbState.pAttachments = cbStateAttachments.data();
 		msState.pSampleMask = bool( sampleMask )

@@ -143,7 +143,7 @@ namespace ashes::gl
 		}
 	}
 
-	ImageMemoryBinding::~ImageMemoryBinding()
+	ImageMemoryBinding::~ImageMemoryBinding()noexcept
 	{
 		m_texture->setMemoryBinding( nullptr );
 	}
@@ -178,7 +178,7 @@ namespace ashes::gl
 
 	void ImageMemoryBinding::upload( ContextLock const & context
 		, ByteArray const & data
-		, BindingRange const & range )const
+		, BindingRange const & range )const noexcept
 	{
 		if ( !range )
 		{

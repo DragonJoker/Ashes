@@ -83,10 +83,6 @@ namespace ashes::gl
 		}
 	}
 
-	PixelFormat::PixelFormat()
-	{
-	}
-
 	PixelFormat::PixelFormat( ContextLock const & context
 		, GlTextureType target
 		, VkFormat format )

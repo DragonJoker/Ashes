@@ -8,7 +8,7 @@
 
 namespace ashes::gl
 {
-	BufferView::BufferView( VkAllocationCallbacks const * allocInfo
+	BufferView::BufferView( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkDevice device
 		, VkBufferViewCreateInfo createInfo )
 		: m_device{ device }
@@ -39,7 +39,7 @@ namespace ashes::gl
 		}
 		else
 		{
-			if ( ( offset > 0 || m_range != get( get( createInfo.buffer )->getMemoryBinding().getParent() )->getSize() ) )
+			if ( offset > 0 || m_range != get( get( createInfo.buffer )->getMemoryBinding().getParent() )->getSize() )
 			{
 				reportError( get( this )
 					, VK_ERROR_VALIDATION_FAILED_EXT
@@ -61,7 +61,7 @@ namespace ashes::gl
 		registerObject( m_device, *this );
 	}
 
-	BufferView::~BufferView()
+	BufferView::~BufferView()noexcept
 	{
 		unregisterObject( m_device, *this );
 		auto context = get( m_device )->getContext();

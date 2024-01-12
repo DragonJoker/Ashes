@@ -169,9 +169,20 @@ namespace ashes::gl
 
 	struct Command
 	{
+		constexpr Command( OpType cmd, size_t size )
+			: op{ cmd, uint16_t( size ) }
+		{
+		}
+
 		Op op;
 		uint32_t dummy{ 0u };
 	};
+
+	template< typename CommandT >
+	constexpr Command makeCommand( OpType op )
+	{
+		return Command{ op, sizeof( CommandT ) / sizeof( uint32_t ) };
+	}
 
 	template< OpType OpT >
 	struct CmdT;
@@ -200,13 +211,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eActiveTexture >
 	{
-		inline CmdT( uint32_t binding )
-			: cmd{ { OpType::eActiveTexture, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, binding{ std::move( binding ) }
+		explicit CmdT( uint32_t binding )
+			: binding{ binding }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eActiveTexture ) };
 		uint32_t binding;
 	};
 	using CmdActiveTexture = CmdT< OpType::eActiveTexture >;
@@ -222,12 +232,11 @@ namespace ashes::gl
 		static uint32_t constexpr MaxElems = 16u;
 		static uint32_t constexpr ElemCount = 2u;
 
-		inline CmdT( uint32_t first
+		explicit CmdT( uint32_t first
 			, uint32_t count
 			, VkViewport const * viewports
 			, size_t viewportsSize )
-			: cmd{ { OpType::eApplyDepthRanges, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, first{ first }
+			: first{ first }
 			, count{ std::min( MaxElems, count ) }
 		{
 			auto it = this->depthRanges.begin();
@@ -243,26 +252,26 @@ namespace ashes::gl
 			}
 		}
 
-		inline CmdT( uint32_t first
+		explicit CmdT( uint32_t first
 			, uint32_t count
 			, std::vector< VkViewport > const & viewports )
 			: CmdT{ first, count, viewports.data(), viewports.size() }
 		{
 		}
 
-		inline CmdT( uint32_t first
+		explicit CmdT( uint32_t first
 			, uint32_t count
 			, ArrayView< VkViewport const > const & viewports )
 			: CmdT{ first, count, viewports.data(), viewports.size() }
 		{
 		}
 
-		inline CmdT( std::vector< VkViewport > const & viewports )
+		explicit CmdT( std::vector< VkViewport > const & viewports )
 			: CmdT{ 0u, uint32_t( viewports.size() ), viewports }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eApplyDepthRanges ) };
 		uint32_t first;
 		uint32_t count;
 		std::array< double, MaxElems * ElemCount > depthRanges;
@@ -277,13 +286,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eApplyScissor >
 	{
-		inline CmdT( VkRect2D const & scissor )
-			: cmd{ { OpType::eApplyScissor, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, scissor{ scissor }
+		explicit CmdT( VkRect2D const & scissor )
+			: scissor{ scissor }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eApplyScissor ) };
 		VkRect2D scissor;
 	};
 	using CmdApplyScissor = CmdT< OpType::eApplyScissor >;
@@ -299,12 +307,11 @@ namespace ashes::gl
 		static uint32_t constexpr MaxElems = 16u;
 		static uint32_t constexpr ElemCount = 4u;
 
-		inline CmdT( uint32_t first
+		explicit CmdT( uint32_t first
 			, uint32_t count
 			, VkRect2D const * scissors
 			, size_t scissorsSize )
-			: cmd{ { OpType::eApplyScissors, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, first{ first }
+			: first{ first }
 			, count{ std::min( MaxElems, count ) }
 		{
 			auto it = this->scissors.begin();
@@ -324,32 +331,32 @@ namespace ashes::gl
 			}
 		}
 
-		inline CmdT( uint32_t first
+		explicit CmdT( uint32_t first
 			, uint32_t count
 			, std::vector< VkRect2D > const & scissors )
 			: CmdT{ first, count, scissors.data(), scissors.size() }
 		{
 		}
 
-		inline CmdT( uint32_t first
+		explicit CmdT( uint32_t first
 			, uint32_t count
 			, ArrayView< VkRect2D const > const & scissors )
 			: CmdT{ first, count, scissors.data(), scissors.size() }
 		{
 		}
 
-		inline CmdT( std::vector< VkRect2D > const & scissors )
+		explicit CmdT( std::vector< VkRect2D > const & scissors )
 			: CmdT{ 0u, uint32_t( scissors.size() ), scissors }
 		{
 		}
 
-		inline CmdT( uint32_t first
+		explicit CmdT( uint32_t first
 			, ArrayView< VkRect2D const > const & scissors )
-			: CmdT{ 0u, uint32_t( scissors.size() ), scissors }
+			: CmdT{ first, uint32_t( scissors.size() ), scissors }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eApplyScissors ) };
 		uint32_t first;
 		uint32_t count;
 		std::array< int, MaxElems * ElemCount > scissors;
@@ -364,14 +371,13 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eApplyViewport >
 	{
-		inline CmdT( VkViewport const & viewport )
-			: cmd{ { OpType::eApplyViewport, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, viewport{ viewport }
+		explicit CmdT( VkViewport const & viewport )
+			: viewport{ viewport }
 		{
 		}
 
-		Command cmd;
-		uint32_t count;
+		Command cmd{ makeCommand< CmdT >( OpType::eApplyViewport ) };
+		uint32_t count{ 1u };
 		VkViewport viewport;
 	};
 	using CmdApplyViewport = CmdT< OpType::eApplyViewport >;
@@ -387,12 +393,11 @@ namespace ashes::gl
 		static uint32_t constexpr MaxElems = 16u;
 		static uint32_t constexpr ElemCount = 4u;
 
-		inline CmdT( uint32_t first
+		explicit CmdT( uint32_t first
 			, uint32_t count
 			, VkViewport const * viewports
 			, size_t viewportsSize )
-			: cmd{ { OpType::eApplyViewports, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, first{ first }
+			: first{ first }
 			, count{ std::min( MaxElems, count ) }
 		{
 			auto it = this->viewports.begin();
@@ -412,32 +417,32 @@ namespace ashes::gl
 			}
 		}
 
-		inline CmdT( uint32_t first
+		explicit CmdT( uint32_t first
 			, uint32_t count
 			, std::vector< VkViewport > const & viewports )
 			: CmdT{ first, count, viewports.data(), viewports.size() }
 		{
 		}
 
-		inline CmdT( uint32_t first
+		explicit CmdT( uint32_t first
 			, uint32_t count
 			, ArrayView< VkViewport const > const & viewports )
 			: CmdT{ first, count, viewports.data(), viewports.size() }
 		{
 		}
 
-		inline CmdT( std::vector< VkViewport > const & viewports )
+		explicit CmdT( std::vector< VkViewport > const & viewports )
 			: CmdT{ 0u, uint32_t( viewports.size() ), viewports }
 		{
 		}
 
-		inline CmdT( uint32_t first
+		explicit CmdT( uint32_t first
 			, ArrayView< VkViewport const > const & viewports )
 			: CmdT{ first, uint32_t( viewports.size() ), viewports }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eApplyViewports ) };
 		uint32_t first;
 		uint32_t count;
 		std::array< float, MaxElems * ElemCount > viewports;
@@ -452,15 +457,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBeginQuery >
 	{
-		inline CmdT( uint32_t target
+		explicit CmdT( uint32_t target
 			, uint32_t query )
-			: cmd{ { OpType::eBeginQuery, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, target{ std::move( target ) }
-			, query{ std::move( query ) }
+			: target{ target }
+			, query{ query }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eBeginQuery ) };
 		uint32_t target;
 		uint32_t query;
 	};
@@ -474,15 +478,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBindBuffer >
 	{
-		inline CmdT( uint32_t target
+		explicit CmdT( uint32_t target
 			, uint32_t name )
-			: cmd{ { OpType::eBindBuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, target{ GlBufferTarget( target ) }
-			, name{ std::move( name ) }
+			: target{ GlBufferTarget( target ) }
+			, name{ name }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eBindBuffer ) };
 		GlBufferTarget target;
 		uint32_t name;
 	};
@@ -496,15 +499,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBindFramebuffer >
 	{
-		inline CmdT( GlFrameBufferTarget target
+		explicit CmdT( GlFrameBufferTarget target
 			, VkFramebuffer fbo )
-			: cmd{ { OpType::eBindFramebuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, target{ std::move( target ) }
+			: target{ target }
 			, fbo{ fbo }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eBindFramebuffer ) };
 		GlFrameBufferTarget target;
 		VkFramebuffer fbo;
 	};
@@ -518,13 +520,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBindSrcFramebuffer >
 	{
-		inline CmdT( GlFrameBufferTarget target )
-			: cmd{ { OpType::eBindSrcFramebuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, target{ std::move( target ) }
+		explicit CmdT( GlFrameBufferTarget target )
+			: target{ target }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eBindSrcFramebuffer ) };
 		GlFrameBufferTarget target;
 	};
 	using CmdBindSrcFramebuffer = CmdT< OpType::eBindSrcFramebuffer >;
@@ -537,13 +538,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBindDstFramebuffer >
 	{
-		inline CmdT( GlFrameBufferTarget target )
-			: cmd{ { OpType::eBindDstFramebuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, target{ std::move( target ) }
+		explicit CmdT( GlFrameBufferTarget target )
+			: target{ target }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eBindDstFramebuffer ) };
 		GlFrameBufferTarget target;
 	};
 	using CmdBindDstFramebuffer = CmdT< OpType::eBindDstFramebuffer >;
@@ -556,21 +556,20 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBindBufferRange >
 	{
-		inline CmdT( uint32_t binding
+		explicit CmdT( uint32_t binding
 			, uint32_t target
 			, uint32_t name
 			, int64_t offset
 			, int64_t range )
-			: cmd{ { OpType::eBindBufferRange, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, binding{ std::move( binding ) }
+			: binding{ binding }
 			, target{ GlBufferTarget( target ) }
-			, name{ std::move( name ) }
-			, offset{ std::move( offset ) }
-			, range{ std::move( range ) }
+			, name{ name }
+			, offset{ offset }
+			, range{ range }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eBindBufferRange ) };
 		uint32_t binding;
 		GlBufferTarget target;
 		uint32_t name;
@@ -587,15 +586,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBindContextState >
 	{
-		inline CmdT( ContextStateStack * stack
+		explicit CmdT( ContextStateStack * stack
 			, ContextState * state )
-			: cmd{ { OpType::eBindContextState, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, stack{ stack }
+			: stack{ stack }
 			, state{ state }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eBindContextState ) };
 		ContextStateStack * stack;
 		ContextState * state;
 	};
@@ -609,23 +607,22 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBindImage >
 	{
-		inline CmdT( uint32_t binding
+		explicit CmdT( uint32_t binding
 			, uint32_t name
 			, uint32_t baseMipLevel
 			, uint32_t layerCount
 			, uint32_t baseArrayLayer
 			, GlInternal internal )
-			: cmd{ { OpType::eBindImage, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, binding{ std::move( binding ) }
-			, name{ std::move( name ) }
-			, baseMipLevel{ std::move( baseMipLevel ) }
-			, layerCount{ std::move( layerCount ) }
-			, baseArrayLayer{ std::move( baseArrayLayer ) }
-			, internal{ std::move( internal ) }
+			: binding{ binding }
+			, name{ name }
+			, baseMipLevel{ baseMipLevel }
+			, layerCount{ layerCount }
+			, baseArrayLayer{ baseArrayLayer }
+			, internal{ internal }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eBindImage ) };
 		uint32_t binding;
 		uint32_t name;
 		uint32_t baseMipLevel;
@@ -643,15 +640,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBindSampler >
 	{
-		inline CmdT( uint32_t binding
+		explicit CmdT( uint32_t binding
 			, uint32_t name )
-			: cmd{ { OpType::eBindSampler, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, binding{ std::move( binding ) }
-			, name{ std::move( name ) }
+			: binding{ binding }
+			, name{ name }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eBindSampler ) };
 		uint32_t binding;
 		uint32_t name;
 	};
@@ -665,15 +661,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBindTexture >
 	{
-		inline CmdT( GlTextureType type
+		explicit CmdT( GlTextureType type
 			, uint32_t name )
-			: cmd{ { OpType::eBindTexture, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, type{ std::move( type ) }
-			, name{ std::move( name ) }
+			: type{ type }
+			, name{ name }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eBindTexture ) };
 		GlTextureType type;
 		uint32_t name;
 	};
@@ -687,13 +682,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBindVextexArray >
 	{
-		inline CmdT( GeometryBuffers const * vao )
-			: cmd{ { OpType::eBindVextexArray, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, vao{ std::move( vao ) }
+		explicit CmdT( GeometryBuffers const * vao )
+			: vao{ vao }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eBindVextexArray ) };
 		GeometryBuffers const * vao;
 	};
 	using CmdBindVextexArray = CmdT< OpType::eBindVextexArray >;
@@ -706,13 +700,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBindVextexArrayObject >
 	{
-		inline CmdT( GLuint vao )
-			: cmd{ { OpType::eBindVextexArrayObject, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, vao{ std::move( vao ) }
+		explicit CmdT( GLuint vao )
+			: vao{ vao }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eBindVextexArrayObject ) };
 		GLuint vao;
 	};
 	using CmdBindVextexArrayObject = CmdT< OpType::eBindVextexArrayObject >;
@@ -725,28 +718,23 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBlendConstants >
 	{
-		inline CmdT( float c0
+		explicit CmdT( float c0
 			, float c1
 			, float c2
 			, float c3 )
-			: cmd{ { OpType::eBlendConstants, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, blendConstant0{ std::move( c0 ) }
-			, blendConstant1{ std::move( c1 ) }
-			, blendConstant2{ std::move( c2 ) }
-			, blendConstant3{ std::move( c3 ) }
+			: blendConstant0{ c0 }
+			, blendConstant1{ c1 }
+			, blendConstant2{ c2 }
+			, blendConstant3{ c3 }
 		{
 		}
 		
-		inline CmdT( float const c[4] )
-			: cmd{ { OpType::eBlendConstants, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, blendConstant0{ c[0] }
-			, blendConstant1{ c[1] }
-			, blendConstant2{ c[2] }
-			, blendConstant3{ c[3] }
+		explicit CmdT( float const c[4] )
+			: CmdT{ c[0], c[1], c[2], c[3] }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eBlendConstants ) };
 		float blendConstant0;
 		float blendConstant1;
 		float blendConstant2;
@@ -762,17 +750,16 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBlendEquation >
 	{
-		inline CmdT( uint32_t index
+		explicit CmdT( uint32_t index
 			, GlBlendOp color
 			, GlBlendOp alpha )
-			: cmd{ { OpType::eBlendEquation, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, index{ std::move( index ) }
-			, color{ std::move( color ) }
-			, alpha{ std::move( alpha ) }
+			: index{ index }
+			, color{ color }
+			, alpha{ alpha }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eBlendEquation ) };
 		uint32_t index;
 		GlBlendOp color;
 		GlBlendOp alpha;
@@ -787,21 +774,20 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBlendFunc >
 	{
-		inline CmdT( uint32_t index
+		explicit CmdT( uint32_t index
 			, GlBlendFactor colorSrc
 			, GlBlendFactor colorDst
 			, GlBlendFactor alphaSrc
 			, GlBlendFactor alphaDst )
-			: cmd{ { OpType::eBlendFunc, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, index{ std::move( index ) }
-			, colorSrc{ std::move( colorSrc ) }
-			, colorDst{ std::move( colorDst ) }
-			, alphaSrc{ std::move( alphaSrc ) }
-			, alphaDst{ std::move( alphaDst ) }
+			: index{ index }
+			, colorSrc{ colorSrc }
+			, colorDst{ colorDst }
+			, alphaSrc{ alphaSrc }
+			, alphaDst{ alphaDst }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eBlendFunc ) };
 		uint32_t index;
 		GlBlendFactor colorSrc;
 		GlBlendFactor colorDst;
@@ -818,7 +804,7 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eBlitFramebuffer >
 	{
-		inline CmdT( int32_t srcL
+		explicit CmdT( int32_t srcL
 			, int32_t srcT
 			, int32_t srcR
 			, int32_t srcB
@@ -828,8 +814,7 @@ namespace ashes::gl
 			, int32_t dstB
 			, GlImageAspectFlags mask
 			, GlFilter filter )
-			: cmd{ { OpType::eBlitFramebuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, srcL{ srcL }
+			: srcL{ srcL }
 			, srcT{ srcT }
 			, srcR{ srcR }
 			, srcB{ srcB }
@@ -842,7 +827,7 @@ namespace ashes::gl
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eBlitFramebuffer ) };
 		int32_t srcL;
 		int32_t srcT;
 		int32_t srcR;
@@ -864,12 +849,9 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eCheckFramebuffer >
 	{
-		inline CmdT()
-			: cmd{ { OpType::eCheckFramebuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
-		{
-		}
+		explicit CmdT() = default;
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eCheckFramebuffer ) };
 	};
 	using CmdCheckFramebuffer = CmdT< OpType::eCheckFramebuffer >;
 
@@ -881,13 +863,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eCleanupFramebuffer >
 	{
-		inline CmdT( GLuint * fbo )
-			: cmd{ { OpType::eCleanupFramebuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, fbo{ fbo }
+		explicit CmdT( GLuint * fbo )
+			: fbo{ fbo }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eCleanupFramebuffer ) };
 		GLuint * fbo;
 	};
 	using CmdCleanupFramebuffer = CmdT< OpType::eCleanupFramebuffer >;
@@ -900,13 +881,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearBack >
 	{
-		inline CmdT( uint32_t mask )
-			: cmd{ { OpType::eClearBack, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, mask{ std::move( mask ) }
+		explicit CmdT( uint32_t mask )
+			: mask{ mask }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eClearBack ) };
 		uint32_t mask;
 	};
 	using CmdClearBack = CmdT< OpType::eClearBack >;
@@ -919,15 +899,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearBackColour >
 	{
-		inline CmdT( VkClearColorValue color
+		explicit CmdT( VkClearColorValue color
 			, uint32_t colourIndex )
-			: cmd{ { OpType::eClearBackColour, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, color{ std::move( color ) }
-			, colourIndex{ std::move( colourIndex ) }
+			: color{ std::move( color ) }
+			, colourIndex{ colourIndex }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eClearBackColour ) };
 		VkClearColorValue color;
 		uint32_t colourIndex;
 	};
@@ -941,13 +920,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearBackDepth >
 	{
-		inline CmdT( float depth )
-			: cmd{ { OpType::eClearBackDepth, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, depth{ std::move( depth ) }
+		explicit CmdT( float depth )
+			: depth{ depth }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eClearBackDepth ) };
 		float depth;
 	};
 	using CmdClearBackDepth = CmdT< OpType::eClearBackDepth >;
@@ -960,15 +938,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearBackDepthStencil >
 	{
-		inline CmdT( float depth
+		explicit CmdT( float depth
 			, int32_t stencil )
-			: cmd{ { OpType::eClearBackDepthStencil, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, depth{ std::move( depth ) }
-			, stencil{ std::move( stencil ) }
+			: depth{ depth }
+			, stencil{ stencil }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eClearBackDepthStencil ) };
 		float depth;
 		int32_t stencil;
 	};
@@ -982,13 +959,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearBackStencil >
 	{
-		inline CmdT( int32_t stencil )
-			: cmd{ { OpType::eClearBackStencil, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, stencil{ std::move( stencil ) }
+		explicit CmdT( int32_t stencil )
+			: stencil{ stencil }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eClearBackStencil ) };
 		int32_t stencil;
 	};
 	using CmdClearBackStencil = CmdT< OpType::eClearBackStencil >;
@@ -1001,15 +977,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearColour >
 	{
-		inline CmdT( VkClearColorValue color
+		explicit CmdT( VkClearColorValue color
 			, uint32_t colourIndex )
-			: cmd{ { OpType::eClearColour, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, color{ std::move( color ) }
-			, colourIndex{ std::move( colourIndex ) }
+			: color{ std::move( color ) }
+			, colourIndex{ colourIndex }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eClearColour ) };
 		VkClearColorValue color;
 		uint32_t colourIndex;
 	};
@@ -1023,13 +998,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearDepth >
 	{
-		inline CmdT( float depth )
-			: cmd{ { OpType::eClearDepth, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, depth{ std::move( depth ) }
+		explicit CmdT( float depth )
+			: depth{ depth }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eClearDepth ) };
 		float depth;
 	};
 	using CmdClearDepth = CmdT< OpType::eClearDepth >;
@@ -1042,13 +1016,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearDepthStencil >
 	{
-		inline CmdT( VkClearDepthStencilValue depthStencil )
-			: cmd{ { OpType::eClearDepthStencil, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, depthStencil{ std::move( depthStencil ) }
+		explicit CmdT( VkClearDepthStencilValue depthStencil )
+			: depthStencil{ std::move( depthStencil ) }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eClearDepthStencil ) };
 		VkClearDepthStencilValue depthStencil;
 	};
 	using CmdClearDepthStencil = CmdT< OpType::eClearDepthStencil >;
@@ -1061,13 +1034,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearStencil >
 	{
-		inline CmdT( int32_t stencil )
-			: cmd{ { OpType::eClearStencil, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, stencil{ std::move( stencil ) }
+		explicit CmdT( int32_t stencil )
+			: stencil{ stencil }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eClearStencil ) };
 		int32_t stencil;
 	};
 	using CmdClearStencil = CmdT< OpType::eClearStencil >;
@@ -1080,31 +1052,29 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearTexColorF >
 	{
-		inline CmdT( uint32_t name
+		explicit CmdT( uint32_t name
 			, uint32_t mipLevel
 			, GlFormat format
 			, std::array< float, 4u > color )
-			: cmd{ { OpType::eClearTexColorF, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, name{ std::move( name ) }
-			, mipLevel{ std::move( mipLevel ) }
-			, format{ std::move( format ) }
+			: name{ name }
+			, mipLevel{ mipLevel }
+			, format{ format }
 			, color{ std::move( color ) }
 		{
 		}
 
-		inline CmdT( uint32_t name
+		explicit CmdT( uint32_t name
 			, uint32_t mipLevel
 			, GlFormat format
 			, float const ( &color )[4] )
-			: cmd{ { OpType::eClearTexColorF, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, name{ std::move( name ) }
-			, mipLevel{ std::move( mipLevel ) }
-			, format{ std::move( format ) }
+			: name{ name }
+			, mipLevel{ mipLevel }
+			, format{ format }
 			, color{ color[0], color[1], color[2], color[3] }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eClearTexColorF ) };
 		uint32_t name;
 		uint32_t mipLevel;
 		GlFormat format;
@@ -1120,31 +1090,29 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearTexColorUI >
 	{
-		inline CmdT( uint32_t name
+		explicit CmdT( uint32_t name
 			, uint32_t mipLevel
 			, GlFormat format
 			, std::array< uint32_t, 4u > color )
-			: cmd{ { OpType::eClearTexColorUI, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, name{ std::move( name ) }
-			, mipLevel{ std::move( mipLevel ) }
-			, format{ std::move( format ) }
+			: name{ name }
+			, mipLevel{ mipLevel }
+			, format{ format }
 			, color{ std::move( color ) }
 		{
 		}
 
-		inline CmdT( uint32_t name
+		explicit CmdT( uint32_t name
 			, uint32_t mipLevel
 			, GlFormat format
 			, uint32_t const ( &color )[4] )
-			: cmd{ { OpType::eClearTexColorUI, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, name{ std::move( name ) }
-			, mipLevel{ std::move( mipLevel ) }
-			, format{ std::move( format ) }
+			: name{ name }
+			, mipLevel{ mipLevel }
+			, format{ format }
 			, color{ color[0], color[1], color[2], color[3] }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eClearTexColorUI ) };
 		uint32_t name;
 		uint32_t mipLevel;
 		GlFormat format;
@@ -1160,31 +1128,29 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearTexColorSI >
 	{
-		inline CmdT( uint32_t name
+		explicit CmdT( uint32_t name
 			, uint32_t mipLevel
 			, GlFormat format
 			, std::array< int32_t, 4u > color )
-			: cmd{ { OpType::eClearTexColorSI, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, name{ std::move( name ) }
-			, mipLevel{ std::move( mipLevel ) }
-			, format{ std::move( format ) }
+			: name{ name }
+			, mipLevel{ mipLevel }
+			, format{ format }
 			, color{ std::move( color ) }
 		{
 		}
 
-		inline CmdT( uint32_t name
+		explicit CmdT( uint32_t name
 			, uint32_t mipLevel
 			, GlFormat format
 			, int32_t const ( &color )[4] )
-			: cmd{ { OpType::eClearTexColorSI, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, name{ std::move( name ) }
-			, mipLevel{ std::move( mipLevel ) }
-			, format{ std::move( format ) }
+			: name{ name }
+			, mipLevel{ mipLevel }
+			, format{ format }
 			, color{ color[0], color[1], color[2], color[3] }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eClearTexColorSI ) };
 		uint32_t name;
 		uint32_t mipLevel;
 		GlFormat format;
@@ -1200,21 +1166,20 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearTexDepth >
 	{
-		inline CmdT( uint32_t name
+		explicit CmdT( uint32_t name
 			, uint32_t mipLevel
 			, uint32_t format
 			, uint32_t type
 			, float depth )
-			: cmd{ { OpType::eClearTexDepth, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, name{ std::move( name ) }
-			, mipLevel{ std::move( mipLevel ) }
-			, format{ std::move( format ) }
-			, type{ std::move( type ) }
-			, depth{ std::move( depth ) }
+			: name{ name }
+			, mipLevel{ mipLevel }
+			, format{ format }
+			, type{ type }
+			, depth{ depth }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eClearTexDepth ) };
 		uint32_t name;
 		uint32_t mipLevel;
 		uint32_t format;
@@ -1231,21 +1196,20 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearTexDepthStencil >
 	{
-		inline CmdT( uint32_t name
+		explicit CmdT( uint32_t name
 			, uint32_t mipLevel
 			, uint32_t format
 			, uint32_t type
 			, VkClearDepthStencilValue depthStencil )
-			: cmd{ { OpType::eClearTexDepthStencil, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, name{ std::move( name ) }
-			, mipLevel{ std::move( mipLevel ) }
-			, format{ std::move( format ) }
-			, type{ std::move( type ) }
+			: name{ name }
+			, mipLevel{ mipLevel }
+			, format{ format }
+			, type{ type }
 			, depthStencil{ std::move( depthStencil ) }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eClearTexDepthStencil ) };
 		uint32_t name;
 		uint32_t mipLevel;
 		uint32_t format;
@@ -1262,21 +1226,20 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eClearTexStencil >
 	{
-		inline CmdT( uint32_t name
+		explicit CmdT( uint32_t name
 			, uint32_t mipLevel
 			, uint32_t format
 			, uint32_t type
 			, int32_t stencil )
-			: cmd{ { OpType::eClearTexStencil, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, name{ std::move( name ) }
-			, mipLevel{ std::move( mipLevel ) }
-			, format{ std::move( format ) }
-			, type{ std::move( type ) }
-			, stencil{ std::move( stencil ) }
+			: name{ name }
+			, mipLevel{ mipLevel }
+			, format{ format }
+			, type{ type }
+			, stencil{ stencil }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eClearTexStencil ) };
 		uint32_t name;
 		uint32_t mipLevel;
 		uint32_t format;
@@ -1293,13 +1256,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eColorMask >
 	{
-		inline CmdT( uint32_t index
+		explicit CmdT( uint32_t index
 			, GLboolean r
 			, GLboolean g
 			, GLboolean b
 			, GLboolean a )
-			: cmd{ { OpType::eColorMask, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, index{ index }
+			: index{ index }
 			, r{ r }
 			, g{ g }
 			, b{ b }
@@ -1307,7 +1269,7 @@ namespace ashes::gl
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eColorMask ) };
 		uint32_t index;
 		GLboolean r;
 		GLboolean g;
@@ -1324,25 +1286,24 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eCompressedTexSubImage1D >
 	{
-		inline CmdT( GlTextureType copyTarget
+		explicit CmdT( GlTextureType copyTarget
 			, uint32_t mipLevel
 			, int32_t x
 			, uint32_t width
 			, GlInternal format
 			, int32_t imageSize
 			, int32_t bufferOffset )
-			: cmd{ { OpType::eCompressedTexSubImage1D, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, copyTarget{ std::move( copyTarget ) }
-			, mipLevel{ std::move( mipLevel ) }
-			, x{ std::move( x ) }
-			, width{ std::move( width ) }
-			, format{ std::move( format ) }
-			, imageSize{ std::move( imageSize ) }
-			, bufferOffset{ std::move( bufferOffset ) }
+			: copyTarget{ copyTarget }
+			, mipLevel{ mipLevel }
+			, x{ x }
+			, width{ width }
+			, format{ format }
+			, imageSize{ imageSize }
+			, bufferOffset{ bufferOffset }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eCompressedTexSubImage1D ) };
 		GlTextureType copyTarget;
 		uint32_t mipLevel;
 		int32_t x;
@@ -1361,7 +1322,7 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eCompressedTexSubImage2D >
 	{
-		inline CmdT( GlTextureType copyTarget
+		explicit CmdT( GlTextureType copyTarget
 			, uint32_t mipLevel
 			, int32_t x
 			, int32_t y
@@ -1370,20 +1331,19 @@ namespace ashes::gl
 			, GlInternal format
 			, int32_t imageSize
 			, int32_t bufferOffset )
-			: cmd{ { OpType::eCompressedTexSubImage2D, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, copyTarget{ std::move( copyTarget ) }
-			, mipLevel{ std::move( mipLevel ) }
-			, x{ std::move( x ) }
-			, y{ std::move( y ) }
-			, width{ std::move( width ) }
-			, height{ std::move( height ) }
-			, format{ std::move( format ) }
-			, imageSize{ std::move( imageSize ) }
-			, bufferOffset{ std::move( bufferOffset ) }
+			: copyTarget{ copyTarget }
+			, mipLevel{ mipLevel }
+			, x{ x }
+			, y{ y }
+			, width{ width }
+			, height{ height }
+			, format{ format }
+			, imageSize{ imageSize }
+			, bufferOffset{ bufferOffset }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eCompressedTexSubImage2D ) };
 		GlTextureType copyTarget;
 		uint32_t mipLevel;
 		int32_t x;
@@ -1404,7 +1364,7 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eCompressedTexSubImage3D >
 	{
-		inline CmdT( GlTextureType copyTarget
+		explicit CmdT( GlTextureType copyTarget
 			, uint32_t mipLevel
 			, int32_t x
 			, int32_t y
@@ -1415,22 +1375,21 @@ namespace ashes::gl
 			, GlInternal format
 			, int32_t imageSize
 			, int32_t bufferOffset )
-			: cmd{ { OpType::eCompressedTexSubImage3D, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, copyTarget{ std::move( copyTarget ) }
-			, mipLevel{ std::move( mipLevel ) }
-			, x{ std::move( x ) }
-			, y{ std::move( y ) }
-			, z{ std::move( z ) }
-			, width{ std::move( width ) }
-			, height{ std::move( height ) }
-			, depth{ std::move( depth ) }
-			, format{ std::move( format ) }
-			, imageSize{ std::move( imageSize ) }
-			, bufferOffset{ std::move( bufferOffset ) }
+			: copyTarget{ copyTarget }
+			, mipLevel{ mipLevel }
+			, x{ x }
+			, y{ y }
+			, z{ z }
+			, width{ width }
+			, height{ height }
+			, depth{ depth }
+			, format{ format }
+			, imageSize{ imageSize }
+			, bufferOffset{ bufferOffset }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eCompressedTexSubImage3D ) };
 		GlTextureType copyTarget;
 		uint32_t mipLevel;
 		int32_t x;
@@ -1453,17 +1412,16 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eCopyBufferSubData >
 	{
-		inline CmdT( uint32_t srcTarget
+		explicit CmdT( uint32_t srcTarget
 			, uint32_t dstTarget
 			, VkBufferCopy copy )
-			: cmd{ { OpType::eCopyBufferSubData, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, srcTarget{ GlBufferTarget( srcTarget ) }
+			: srcTarget{ GlBufferTarget( srcTarget ) }
 			, dstTarget{ GlBufferTarget( dstTarget ) }
 			, copy{ std::move( copy ) }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eCopyBufferSubData ) };
 		GlBufferTarget srcTarget;
 		GlBufferTarget dstTarget;
 		VkBufferCopy copy;
@@ -1478,21 +1436,20 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eCopyImageSubData >
 	{
-		inline CmdT( uint32_t srcName
+		explicit CmdT( uint32_t srcName
 			, GlTextureType srcTarget
 			, uint32_t dstName
 			, GlTextureType dstTarget
 			, VkImageCopy copy )
-			: cmd{ { OpType::eCopyImageSubData, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, srcName{ std::move( srcName ) }
-			, srcTarget{ std::move( srcTarget ) }
-			, dstName{ std::move( dstName ) }
-			, dstTarget{ std::move( dstTarget ) }
+			: srcName{ srcName }
+			, srcTarget{ srcTarget }
+			, dstName{ dstName }
+			, dstTarget{ dstTarget }
 			, copy{ std::move( copy ) }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eCopyImageSubData ) };
 		uint32_t srcName;
 		GlTextureType srcTarget;
 		uint32_t dstName;
@@ -1509,13 +1466,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eCullFace >
 	{
-		inline CmdT( GlCullMode value )
-			: cmd{ { OpType::eCullFace, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, value{ std::move( value ) }
+		explicit CmdT( GlCullMode value )
+			: value{ value }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eCullFace ) };
 		GlCullMode value;
 	};
 	using CmdCullFace = CmdT< OpType::eCullFace >;
@@ -1528,13 +1484,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDepthFunc >
 	{
-		inline CmdT( GlCompareOp value )
-			: cmd{ { OpType::eDepthFunc, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, value{ std::move( value ) }
+		explicit CmdT( GlCompareOp value )
+			: value{ value }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eDepthFunc ) };
 		GlCompareOp value;
 	};
 	using CmdDepthFunc = CmdT< OpType::eDepthFunc >;
@@ -1547,13 +1502,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDepthMask >
 	{
-		inline CmdT( uint32_t value )
-			: cmd{ { OpType::eDepthMask, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, value{ std::move( value ) }
+		explicit CmdT( uint32_t value )
+			: value{ value }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eDepthMask ) };
 		uint32_t value;
 	};
 	using CmdDepthMask = CmdT< OpType::eDepthMask >;
@@ -1566,15 +1520,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDepthRange >
 	{
-		inline CmdT( float min
+		explicit CmdT( float min
 			, float max )
-			: cmd{ { OpType::eDepthRange, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, min{ std::move( min ) }
-			, max{ std::move( max ) }
+			: min{ min }
+			, max{ max }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eDepthRange ) };
 		float min;
 		float max;
 	};
@@ -1588,13 +1541,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDisable >
 	{
-		inline CmdT( GlTweak value )
-			: cmd{ { OpType::eDisable, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, value{ std::move( value ) }
+		explicit CmdT( GlTweak value )
+			: value{ value }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eDisable ) };
 		GlTweak value;
 	};
 	using CmdDisable = CmdT< OpType::eDisable >;
@@ -1607,17 +1559,16 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDispatch >
 	{
-		inline CmdT( uint32_t groupCountX
+		explicit CmdT( uint32_t groupCountX
 			, uint32_t groupCountY
 			, uint32_t groupCountZ )
-			: cmd{ { OpType::eDispatch, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, groupCountX{ std::move( groupCountX ) }
-			, groupCountY{ std::move( groupCountY ) }
-			, groupCountZ{ std::move( groupCountZ ) }
+			: groupCountX{ groupCountX }
+			, groupCountY{ groupCountY }
+			, groupCountZ{ groupCountZ }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eDispatch ) };
 		uint32_t groupCountX;
 		uint32_t groupCountY;
 		uint32_t groupCountZ;
@@ -1632,13 +1583,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDispatchIndirect >
 	{
-		inline CmdT( uint64_t offset )
-			: cmd{ { OpType::eDispatchIndirect, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, offset{ std::move( offset ) }
+		explicit CmdT( uint64_t offset )
+			: offset{ offset }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eDispatchIndirect ) };
 		uint64_t offset;
 	};
 	using CmdDispatchIndirect = CmdT< OpType::eDispatchIndirect >;
@@ -1651,17 +1601,16 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDownloadMemory >
 	{
-		inline CmdT( VkDeviceMemory memory
+		explicit CmdT( VkDeviceMemory memory
 			, VkDeviceSize offset
 			, VkDeviceSize size )
-			: cmd{ { OpType::eDownloadMemory, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, memory{ memory }
+			: memory{ memory }
 			, offset{ offset }
 			, size{ size }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eDownloadMemory ) };
 		VkDeviceMemory memory;
 		VkDeviceSize offset;
 		VkDeviceSize size;
@@ -1676,19 +1625,18 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDraw >
 	{
-		inline CmdT( uint32_t vtxCount
+		explicit CmdT( uint32_t vtxCount
 			, uint32_t instCount
 			, uint32_t firstVertex
 			, GlPrimitiveTopology mode )
-			: cmd{ { OpType::eDraw, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, vtxCount{ std::move( vtxCount ) }
-			, instCount{ std::move( instCount ) }
-			, firstVertex{ std::move( firstVertex ) }
-			, mode{ std::move( mode ) }
+			: vtxCount{ vtxCount }
+			, instCount{ instCount }
+			, firstVertex{ firstVertex }
+			, mode{ mode }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eDraw ) };
 		uint32_t vtxCount;
 		uint32_t instCount;
 		uint32_t firstVertex;
@@ -1704,21 +1652,20 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDrawBaseInstance >
 	{
-		inline CmdT( uint32_t vtxCount
+		explicit CmdT( uint32_t vtxCount
 			, uint32_t instCount
 			, uint32_t firstVertex
 			, uint32_t firstInstance
 			, GlPrimitiveTopology mode )
-			: cmd{ { OpType::eDrawBaseInstance, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, vtxCount{ std::move( vtxCount ) }
-			, instCount{ std::move( instCount ) }
-			, firstVertex{ std::move( firstVertex ) }
-			, firstInstance{ std::move( firstInstance ) }
-			, mode{ std::move( mode ) }
+			: vtxCount{ vtxCount }
+			, instCount{ instCount }
+			, firstVertex{ firstVertex }
+			, firstInstance{ firstInstance }
+			, mode{ mode }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eDrawBaseInstance ) };
 		uint32_t vtxCount;
 		uint32_t instCount;
 		uint32_t firstVertex;
@@ -1735,13 +1682,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDrawBuffer >
 	{
-		inline CmdT( GlAttachmentPoint value )
-			: cmd{ { OpType::eDrawBuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, target{ std::move( value ) }
+		explicit CmdT( GlAttachmentPoint value )
+			: target{ value }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eDrawBuffer ) };
 		GlAttachmentPoint target;
 	};
 	using CmdDrawBuffer = CmdT< OpType::eDrawBuffer >;
@@ -1754,9 +1700,8 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDrawBuffers >
 	{
-		inline CmdT( GlAttachmentPoint target )
-			: cmd{ { OpType::eDrawBuffers, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, count{ 1u }
+		explicit CmdT( GlAttachmentPoint target )
+			: count{ 1u }
 		{
 			assert( target != GL_ATTACHMENT_POINT_DEPTH_STENCIL
 				&& target != GL_ATTACHMENT_POINT_DEPTH
@@ -1765,9 +1710,8 @@ namespace ashes::gl
 		}
 
 		template< size_t N >
-		inline CmdT( GlAttachmentPoint targets[N] )
-			: cmd{ { OpType::eDrawBuffers, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, count{ uint32_t( N ) }
+		explicit CmdT( GlAttachmentPoint targets[N] )
+			: count{ uint32_t( N ) }
 		{
 			static_assert( N <= 16u, "No more that 16 draw buffers" );
 			uint32_t i = 0u;
@@ -1777,14 +1721,14 @@ namespace ashes::gl
 				assert( target != GL_ATTACHMENT_POINT_DEPTH_STENCIL
 					&& target != GL_ATTACHMENT_POINT_DEPTH
 					&& target != GL_ATTACHMENT_POINT_STENCIL );
-				this->targets[i++] = target;
+				this->targets[i] = target;
+				++i;
 			}
 		}
 
 		template< size_t N >
-		inline CmdT( std::array< GlAttachmentPoint, N > targets )
-			: cmd{ { OpType::eDrawBuffers, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, count{ uint32_t( N ) }
+		explicit CmdT( std::array< GlAttachmentPoint, N > const & targets )
+			: count{ uint32_t( N ) }
 		{
 			static_assert( N <= 16u, "No more that 16 draw buffers" );
 			uint32_t i = 0u;
@@ -1794,13 +1738,13 @@ namespace ashes::gl
 				assert( target != GL_ATTACHMENT_POINT_DEPTH_STENCIL
 					&& target != GL_ATTACHMENT_POINT_DEPTH
 					&& target != GL_ATTACHMENT_POINT_STENCIL );
-				this->targets[i++] = target;
+				this->targets[i] = target;
+				++i;
 			}
 		}
 
-		inline CmdT( std::vector< GlAttachmentPoint > targets )
-			: cmd{ { OpType::eDrawBuffers, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, count{ std::min( 16u, uint32_t( targets.size() ) ) }
+		explicit CmdT( std::vector< GlAttachmentPoint > const & targets )
+			: count{ std::min( 16u, uint32_t( targets.size() ) ) }
 		{
 			uint32_t i = 0u;
 
@@ -1811,12 +1755,13 @@ namespace ashes::gl
 					assert( target != GL_ATTACHMENT_POINT_DEPTH_STENCIL
 						&& target != GL_ATTACHMENT_POINT_DEPTH
 						&& target != GL_ATTACHMENT_POINT_STENCIL );
-					this->targets[i++] = target;
+					this->targets[i] = target;
+					++i;
 				}
 			}
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eDrawBuffers ) };
 		uint32_t count;
 		std::array< GlAttachmentPoint, 16u > targets{ GlAttachmentPoint( 0u ) };
 	};
@@ -1830,23 +1775,22 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDrawIndexed >
 	{
-		inline CmdT( uint32_t indexCount
+		explicit CmdT( uint32_t indexCount
 			, uint32_t instCount
 			, uint32_t indexOffset
 			, uint32_t vertexOffset
 			, GlPrimitiveTopology mode
 			, GlIndexType type )
-			: cmd{ { OpType::eDrawIndexed, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, indexCount{ std::move( indexCount ) }
-			, instCount{ std::move( instCount ) }
-			, indexOffset{ std::move( indexOffset ) }
-			, vertexOffset{ std::move( vertexOffset ) }
-			, mode{ std::move( mode ) }
-			, type{ std::move( type ) }
+			: indexCount{ indexCount }
+			, instCount{ instCount }
+			, indexOffset{ indexOffset }
+			, vertexOffset{ vertexOffset }
+			, mode{ mode }
+			, type{ type }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eDrawIndexed ) };
 		uint32_t indexCount;
 		uint32_t instCount;
 		uint32_t indexOffset;
@@ -1864,25 +1808,24 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDrawIndexedBaseInstance >
 	{
-		inline CmdT( uint32_t indexCount
+		explicit CmdT( uint32_t indexCount
 			, uint32_t instCount
 			, uint32_t indexOffset
 			, uint32_t vertexOffset
 			, uint32_t firstInstance
 			, GlPrimitiveTopology mode
 			, GlIndexType type )
-			: cmd{ { OpType::eDrawIndexedBaseInstance, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, indexCount{ std::move( indexCount ) }
-			, instCount{ std::move( instCount ) }
-			, indexOffset{ std::move( indexOffset ) }
-			, vertexOffset{ std::move( vertexOffset ) }
-			, firstInstance{ std::move( firstInstance ) }
-			, mode{ std::move( mode ) }
-			, type{ std::move( type ) }
+			: indexCount{ indexCount }
+			, instCount{ instCount }
+			, indexOffset{ indexOffset }
+			, vertexOffset{ vertexOffset }
+			, firstInstance{ firstInstance }
+			, mode{ mode }
+			, type{ type }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eDrawIndexedBaseInstance ) };
 		uint32_t indexCount;
 		uint32_t instCount;
 		uint32_t indexOffset;
@@ -1901,21 +1844,20 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDrawIndexedIndirect >
 	{
-		inline CmdT( uint64_t offset
+		explicit CmdT( uint64_t offset
 			, uint32_t drawCount
 			, uint32_t stride
 			, GlPrimitiveTopology mode
 			, GlIndexType type )
-			: cmd{ { OpType::eDrawIndexedIndirect, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, offset{ std::move( offset ) }
-			, drawCount{ std::move( drawCount ) }
-			, stride{ std::move( stride ) }
-			, mode{ std::move( mode ) }
-			, type{ std::move( type ) }
+			: offset{ offset }
+			, drawCount{ drawCount }
+			, stride{ stride }
+			, mode{ mode }
+			, type{ type }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eDrawIndexedIndirect ) };
 		uint64_t offset;
 		uint32_t drawCount;
 		uint32_t stride;
@@ -1932,19 +1874,18 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eDrawIndirect >
 	{
-		inline CmdT( uint64_t offset
+		explicit CmdT( uint64_t offset
 			, uint32_t drawCount
 			, uint32_t stride
 			, GlPrimitiveTopology mode )
-			: cmd{ { OpType::eDrawIndirect, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, offset{ std::move( offset ) }
-			, drawCount{ std::move( drawCount ) }
-			, stride{ std::move( stride ) }
-			, mode{ std::move( mode ) }
+			: offset{ offset }
+			, drawCount{ drawCount }
+			, stride{ stride }
+			, mode{ mode }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eDrawIndirect ) };
 		uint64_t offset;
 		uint32_t drawCount;
 		uint32_t stride;
@@ -1960,13 +1901,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eEnable >
 	{
-		inline CmdT( GlTweak value )
-			: cmd{ { OpType::eEnable, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, value{ std::move( value ) }
+		explicit CmdT( GlTweak value )
+			: value{ value }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eEnable ) };
 		GlTweak value;
 	};
 	using CmdEnable = CmdT< OpType::eEnable >;
@@ -1979,13 +1919,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eEndQuery >
 	{
-		inline CmdT( uint32_t target )
-			: cmd{ { OpType::eEndQuery, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, target{ std::move( target ) }
+		explicit CmdT( uint32_t target )
+			: target{ target }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eEndQuery ) };
 		uint32_t target;
 	};
 	using CmdEndQuery = CmdT< OpType::eEndQuery >;
@@ -1998,19 +1937,18 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eFillBuffer >
 	{
-		inline CmdT( VkDeviceMemory memory
+		explicit CmdT( VkDeviceMemory memory
 			, VkDeviceSize memoryOffset
 			, VkDeviceSize dataSize
 			, uint32_t data )
-			: cmd{ { OpType::eFillBuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, memory{ std::move( memory ) }
-			, memoryOffset{ std::move( memoryOffset ) }
-			, dataSize{ std::move( dataSize ) }
-			, data{ std::move( data ) }
+			: memory{ memory }
+			, memoryOffset{ memoryOffset }
+			, dataSize{ dataSize }
+			, data{ data }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eFillBuffer ) };
 		VkDeviceMemory memory;
 		VkDeviceSize memoryOffset;
 		VkDeviceSize dataSize;
@@ -2026,19 +1964,18 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eFramebufferTexture >
 	{
-		inline CmdT( GlFrameBufferTarget target
+		explicit CmdT( GlFrameBufferTarget target
 			, GlAttachmentPoint point
 			, uint32_t object
 			, uint32_t mipLevel )
-			: cmd{ { OpType::eFramebufferTexture, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, target{ target }
+			: target{ target }
 			, point{ point }
 			, object{ object }
 			, mipLevel{ mipLevel }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eFramebufferTexture ) };
 		GlFrameBufferTarget target;
 		GlAttachmentPoint point;
 		uint32_t object;
@@ -2054,13 +1991,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eFramebufferTexture1D >
 	{
-		inline CmdT( GlFrameBufferTarget target
+		explicit CmdT( GlFrameBufferTarget target
 			, GlAttachmentPoint point
 			, GlTextureType texTarget
 			, uint32_t object
 			, uint32_t mipLevel )
-			: cmd{ { OpType::eFramebufferTexture1D, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, target{ target }
+			: target{ target }
 			, point{ point }
 			, texTarget{ texTarget }
 			, object{ object }
@@ -2068,7 +2004,7 @@ namespace ashes::gl
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eFramebufferTexture1D ) };
 		GlFrameBufferTarget target;
 		GlAttachmentPoint point;
 		GlTextureType texTarget;
@@ -2085,13 +2021,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eFramebufferTexture2D >
 	{
-		inline CmdT( GlFrameBufferTarget target
+		explicit CmdT( GlFrameBufferTarget target
 			, GlAttachmentPoint point
 			, GlTextureType texTarget
 			, uint32_t object
 			, uint32_t mipLevel )
-			: cmd{ { OpType::eFramebufferTexture2D, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, target{ target }
+			: target{ target }
 			, point{ point }
 			, texTarget{ texTarget }
 			, object{ object }
@@ -2099,7 +2034,7 @@ namespace ashes::gl
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eFramebufferTexture2D ) };
 		GlFrameBufferTarget target;
 		GlAttachmentPoint point;
 		GlTextureType texTarget;
@@ -2116,14 +2051,13 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eFramebufferTexture3D >
 	{
-		inline CmdT( GlFrameBufferTarget target
+		explicit CmdT( GlFrameBufferTarget target
 			, GlAttachmentPoint point
 			, GlTextureType texTarget
 			, uint32_t object
 			, uint32_t mipLevel
 			, uint32_t slice )
-			: cmd{ { OpType::eFramebufferTexture3D, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, target{ target }
+			: target{ target }
 			, point{ point }
 			, texTarget{ texTarget }
 			, object{ object }
@@ -2132,7 +2066,7 @@ namespace ashes::gl
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eFramebufferTexture3D ) };
 		GlFrameBufferTarget target;
 		GlAttachmentPoint point;
 		GlTextureType texTarget;
@@ -2150,13 +2084,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eFramebufferTextureLayer >
 	{
-		inline CmdT( GlFrameBufferTarget target
+		explicit CmdT( GlFrameBufferTarget target
 			, GlAttachmentPoint point
 			, uint32_t object
 			, uint32_t mipLevel
 			, uint32_t arrayLayer )
-			: cmd{ { OpType::eFramebufferTextureLayer, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, target{ target }
+			: target{ target }
 			, point{ point }
 			, object{ object }
 			, mipLevel{ mipLevel }
@@ -2164,7 +2097,7 @@ namespace ashes::gl
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eFramebufferTextureLayer ) };
 		GlFrameBufferTarget target;
 		GlAttachmentPoint point;
 		uint32_t object;
@@ -2181,13 +2114,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eFrontFace >
 	{
-		inline CmdT( GlFrontFace value )
-			: cmd{ { OpType::eFrontFace, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, value{ std::move( value ) }
+		explicit CmdT( GlFrontFace value )
+			: value{ value }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eFrontFace ) };
 		GlFrontFace value;
 	};
 	using CmdFrontFace = CmdT< OpType::eFrontFace >;
@@ -2200,13 +2132,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eGenerateMipmaps >
 	{
-		inline CmdT( uint32_t target )
-			: cmd{ { OpType::eGenerateMipmaps, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, target{ std::move( target ) }
+		explicit CmdT( uint32_t target )
+			: target{ target }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eGenerateMipmaps ) };
 		uint32_t target;
 	};
 	using CmdGenerateMipmaps = CmdT< OpType::eGenerateMipmaps >;
@@ -2219,17 +2150,16 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eGetCompressedTexImage >
 	{
-		inline CmdT( GlTextureType target
+		explicit CmdT( GlTextureType target
 			, GLint level = 0
 			, intptr_t offset = 0 )
-			: cmd{ { OpType::eGetCompressedTexImage, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, target{ std::move( target ) }
-			, level{ std::move( level ) }
-			, offset{ std::move( offset ) }
+			: target{ target }
+			, level{ level }
+			, offset{ offset }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eGetCompressedTexImage ) };
 		GlTextureType target;
 		GLint level;
 		intptr_t offset;
@@ -2244,14 +2174,13 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eGetQueryResults >
 	{
-		inline CmdT( VkQueryPool queryPool
+		explicit CmdT( VkQueryPool queryPool
 			, uint32_t firstQuery
 			, uint32_t queryCount
 			, VkDeviceSize stride
 			, VkQueryResultFlags flags
 			, VkDeviceSize bufferOffset )
-			: cmd{ { OpType::eGetQueryResults, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, queryPool{ queryPool }
+			: queryPool{ queryPool }
 			, firstQuery{ firstQuery }
 			, queryCount{ queryCount }
 			, stride{ stride }
@@ -2260,7 +2189,7 @@ namespace ashes::gl
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eGetQueryResults ) };
 		VkQueryPool queryPool;
 		uint32_t firstQuery;
 		uint32_t queryCount;
@@ -2278,21 +2207,20 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eGetTexImage >
 	{
-		inline CmdT( GlTextureType target
+		explicit CmdT( GlTextureType target
 			, GlFormat format
 			, GlType type
 			, GLint level = 0
 			, intptr_t offset = 0 )
-			: cmd{ { OpType::eGetTexImage, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, target{ std::move( target ) }
-			, format{ std::move( format ) }
-			, type{ std::move( type ) }
-			, level{ std::move( level ) }
-			, offset{ std::move( offset ) }
+			: target{ target }
+			, format{ format }
+			, type{ type }
+			, level{ level }
+			, offset{ offset }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eGetTexImage ) };
 		GlTextureType target;
 		GlFormat format;
 		GlType type;
@@ -2309,13 +2237,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eLineWidth >
 	{
-		inline CmdT( float value )
-			: cmd{ { OpType::eLineWidth, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, value{ std::move( value ) }
+		explicit CmdT( float value )
+			: value{ value }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eLineWidth ) };
 		float value;
 	};
 	using CmdLineWidth = CmdT< OpType::eLineWidth >;
@@ -2328,13 +2255,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eLogCommand >
 	{
-		inline CmdT( char const * const value )
-			: cmd{ { OpType::eLogCommand, sizeof( CmdT ) / sizeof( uint32_t ) } }
+		explicit CmdT( char const * const value )
 		{
 			strncpy( this->value, value, 63 );
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eLogCommand ) };
 		char value[64];
 	};
 	using CmdLogCommand = CmdT< OpType::eLogCommand >;
@@ -2347,13 +2273,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eLogicOp >
 	{
-		inline CmdT( GlLogicOp value )
-			: cmd{ { OpType::eLogicOp, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, value{ std::move( value ) }
+		explicit CmdT( GlLogicOp value )
+			: value{ value }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eLogicOp ) };
 		GlLogicOp value;
 	};
 	using CmdLogicOp = CmdT< OpType::eLogicOp >;
@@ -2366,13 +2291,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eMemoryBarrier >
 	{
-		inline CmdT( GlMemoryBarrierFlags flags )
-			: cmd{ { OpType::eMemoryBarrier, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, flags{ std::move( flags ) }
+		explicit CmdT( GlMemoryBarrierFlags flags )
+			: flags{ flags }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eMemoryBarrier ) };
 		GlMemoryBarrierFlags flags;
 	};
 	using CmdMemoryBarrier = CmdT< OpType::eMemoryBarrier >;
@@ -2385,13 +2309,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eMinSampleShading >
 	{
-		inline CmdT( float value )
-			: cmd{ { OpType::eMinSampleShading, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, value{ std::move( value ) }
+		explicit CmdT( float value )
+			: value{ value }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eMinSampleShading ) };
 		float value;
 	};
 	using CmdMinSampleShading = CmdT< OpType::eMinSampleShading >;
@@ -2404,15 +2327,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::ePatchParameter >
 	{
-		inline CmdT( PatchParameter param
+		explicit CmdT( PatchParameter param
 			, int value )
-			: cmd{ { OpType::ePatchParameter, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, param{ std::move( param ) }
-			, value{ std::move( value ) }
+			: param{ param }
+			, value{ value }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::ePatchParameter ) };
 		PatchParameter param;
 		int value;
 	};
@@ -2427,15 +2349,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::ePixelStore >
 	{
-		inline CmdT( GlPackAlignment name
+		explicit CmdT( GlPackAlignment name
 			, int32_t param )
-			: cmd{ { OpType::ePixelStore, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, name{ std::move( name ) }
-			, param{ std::move( param ) }
+			: name{ name }
+			, param{ param }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::ePixelStore ) };
 		GlPackAlignment name;
 		int32_t param;
 	};
@@ -2448,13 +2369,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::ePolygonMode >
 	{
-		inline CmdT( GlPolygonMode value )
-			: cmd{ { OpType::ePolygonMode, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, value{ std::move( value ) }
+		explicit CmdT( GlPolygonMode value )
+			: value{ value }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::ePolygonMode ) };
 		GlPolygonMode value;
 	};
 	using CmdPolygonMode = CmdT< OpType::ePolygonMode >;
@@ -2467,17 +2387,16 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::ePolygonOffset >
 	{
-		inline CmdT( float constantFactor
+		explicit CmdT( float constantFactor
 			, float clamp
 			, float slopeFactor )
-			: cmd{ { OpType::ePolygonOffset, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, constantFactor{ std::move( constantFactor ) }
-			, clamp{ std::move( clamp ) }
-			, slopeFactor{ std::move( slopeFactor ) }
+			: constantFactor{ constantFactor }
+			, clamp{ clamp }
+			, slopeFactor{ slopeFactor }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::ePolygonOffset ) };
 		float constantFactor;
 		float clamp;
 		float slopeFactor;
@@ -2492,12 +2411,9 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::ePopDebugGroup >
 	{
-		inline CmdT()
-			: cmd{ { OpType::ePopDebugGroup, sizeof( CmdT ) / sizeof( uint32_t ) } }
-		{
-		}
+		explicit CmdT() = default;
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::ePopDebugGroup ) };
 	};
 	using CmdPopDebugGroup = CmdT< OpType::ePopDebugGroup >;
 
@@ -2509,13 +2425,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::ePrimitiveRestartIndex >
 	{
-		inline CmdT( uint32_t index )
-			: cmd{ { OpType::ePrimitiveRestartIndex, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, index{ std::move( index ) }
+		explicit CmdT( uint32_t index )
+			: index{ index }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::ePrimitiveRestartIndex ) };
 		uint32_t index;
 	};
 	using CmdPrimitiveRestartIndex = CmdT< OpType::ePrimitiveRestartIndex >;
@@ -2528,17 +2443,16 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniform1fv >
 	{
-		inline CmdT( uint32_t program
+		explicit CmdT( uint32_t program
 			, uint32_t location
 			, float const * buffer )
-			: cmd{ { OpType::eProgramUniform1fv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, program{ std::move( program ) }
-			, location{ std::move( location ) }
+			: program{ program }
+			, location{ location }
 			, buffer{ *buffer }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eProgramUniform1fv ) };
 		uint32_t program;
 		uint32_t location;
 		float buffer;
@@ -2553,17 +2467,16 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniform2fv >
 	{
-		inline CmdT( uint32_t program
+		explicit CmdT( uint32_t program
 			, uint32_t location
 			, float const * buffer )
-			: cmd{ { OpType::eProgramUniform2fv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, program{ std::move( program ) }
-			, location{ std::move( location ) }
+			: program{ program }
+			, location{ location }
 			, buffer{ buffer[0], buffer[1] }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eProgramUniform2fv ) };
 		uint32_t program;
 		uint32_t location;
 		float buffer[2];
@@ -2578,17 +2491,16 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniform3fv >
 	{
-		inline CmdT( uint32_t program
+		explicit CmdT( uint32_t program
 			, uint32_t location
 			, float const * buffer )
-			: cmd{ { OpType::eProgramUniform3fv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, program{ std::move( program ) }
-			, location{ std::move( location ) }
+			: program{ program }
+			, location{ location }
 			, buffer{ buffer[0], buffer[1], buffer[2] }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eProgramUniform3fv ) };
 		uint32_t program;
 		uint32_t location;
 		float buffer[3];
@@ -2603,17 +2515,16 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniform4fv >
 	{
-		inline CmdT( uint32_t program
+		explicit CmdT( uint32_t program
 			, uint32_t location
 			, float const * buffer )
-			: cmd{ { OpType::eProgramUniform4fv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, program{ std::move( program ) }
-			, location{ std::move( location ) }
+			: program{ program }
+			, location{ location }
 			, buffer{ buffer[0], buffer[1], buffer[2], buffer[3] }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eProgramUniform4fv ) };
 		uint32_t program;
 		uint32_t location;
 		float buffer[4];
@@ -2628,17 +2539,16 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniform1iv >
 	{
-		inline CmdT( uint32_t program
+		explicit CmdT( uint32_t program
 			, uint32_t location
 			, int32_t const * buffer )
-			: cmd{ { OpType::eProgramUniform1iv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, program{ std::move( program ) }
-			, location{ std::move( location ) }
+			: program{ program }
+			, location{ location }
 			, buffer{ *buffer }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eProgramUniform1iv ) };
 		uint32_t program;
 		uint32_t location;
 		int32_t buffer;
@@ -2653,17 +2563,16 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniform2iv >
 	{
-		inline CmdT( uint32_t program
+		explicit CmdT( uint32_t program
 			, uint32_t location
 			, int32_t const * buffer )
-			: cmd{ { OpType::eProgramUniform2iv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, program{ std::move( program ) }
-			, location{ std::move( location ) }
+			: program{ program }
+			, location{ location }
 			, buffer{ buffer[0], buffer[1] }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eProgramUniform2iv ) };
 		uint32_t program;
 		uint32_t location;
 		int32_t buffer[2];
@@ -2678,17 +2587,16 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniform3iv >
 	{
-		inline CmdT( uint32_t program
+		explicit CmdT( uint32_t program
 			, uint32_t location
 			, int32_t const * buffer )
-			: cmd{ { OpType::eProgramUniform3iv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, program{ std::move( program ) }
-			, location{ std::move( location ) }
+			: program{ program }
+			, location{ location }
 			, buffer{ buffer[0], buffer[1], buffer[2] }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eProgramUniform3iv ) };
 		uint32_t program;
 		uint32_t location;
 		int32_t buffer[3];
@@ -2703,17 +2611,16 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniform4iv >
 	{
-		inline CmdT( uint32_t program
+		explicit CmdT( uint32_t program
 			, uint32_t location
 			, int32_t const * buffer )
-			: cmd{ { OpType::eProgramUniform4iv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, program{ std::move( program ) }
-			, location{ std::move( location ) }
+			: program{ program }
+			, location{ location }
 			, buffer{ buffer[0], buffer[1], buffer[2], buffer[3] }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eProgramUniform4iv ) };
 		uint32_t program;
 		uint32_t location;
 		int32_t buffer[4];
@@ -2728,17 +2635,16 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniform1uiv >
 	{
-		inline CmdT( uint32_t program
+		explicit CmdT( uint32_t program
 			, uint32_t location
 			, uint32_t const * buffer )
-			: cmd{ { OpType::eProgramUniform1uiv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, program{ std::move( program ) }
-			, location{ std::move( location ) }
+			: program{ program }
+			, location{ location }
 			, buffer{ *buffer }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eProgramUniform1uiv ) };
 		uint32_t program;
 		uint32_t location;
 		uint32_t buffer;
@@ -2753,17 +2659,16 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniform2uiv >
 	{
-		inline CmdT( uint32_t program
+		explicit CmdT( uint32_t program
 			, uint32_t location
 			, uint32_t const * buffer )
-			: cmd{ { OpType::eProgramUniform2uiv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, program{ std::move( program ) }
-			, location{ std::move( location ) }
+			: program{ program }
+			, location{ location }
 			, buffer{ buffer[0], buffer[1] }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eProgramUniform2uiv ) };
 		uint32_t program;
 		uint32_t location;
 		uint32_t buffer[2];
@@ -2778,17 +2683,16 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniform3uiv >
 	{
-		inline CmdT( uint32_t program
+		explicit CmdT( uint32_t program
 			, uint32_t location
 			, uint32_t const * buffer )
-			: cmd{ { OpType::eProgramUniform3uiv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, program{ std::move( program ) }
-			, location{ std::move( location ) }
+			: program{ program }
+			, location{ location }
 			, buffer{ buffer[0], buffer[1], buffer[2] }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eProgramUniform3uiv ) };
 		uint32_t program;
 		uint32_t location;
 		uint32_t buffer[3];
@@ -2803,17 +2707,16 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniform4uiv >
 	{
-		inline CmdT( uint32_t program
+		explicit CmdT( uint32_t program
 			, uint32_t location
 			, uint32_t const * buffer )
-			: cmd{ { OpType::eProgramUniform4uiv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, program{ std::move( program ) }
-			, location{ std::move( location ) }
+			: program{ program }
+			, location{ location }
 			, buffer{ buffer[0], buffer[1], buffer[2], buffer[3] }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eProgramUniform4uiv ) };
 		uint32_t program;
 		uint32_t location;
 		uint32_t buffer[4];
@@ -2828,14 +2731,13 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniformMatrix2fv >
 	{
-		inline CmdT( uint32_t program
+		explicit CmdT( uint32_t program
 			, uint32_t location
 			, uint32_t transpose
 			, float const * buffer )
-			: cmd{ { OpType::eProgramUniformMatrix2fv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, program{ std::move( program ) }
-			, location{ std::move( location ) }
-			, transpose{ std::move( transpose ) }
+			: program{ program }
+			, location{ location }
+			, transpose{ transpose }
 			, buffer
 		{
 			buffer[0], buffer[1],
@@ -2844,7 +2746,7 @@ namespace ashes::gl
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eProgramUniformMatrix2fv ) };
 		uint32_t program;
 		uint32_t location;
 		uint32_t transpose;
@@ -2860,14 +2762,13 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniformMatrix3fv >
 	{
-		inline CmdT( uint32_t program
+		explicit CmdT( uint32_t program
 			, uint32_t location
 			, uint32_t transpose
 			, float const * buffer )
-			: cmd{ { OpType::eProgramUniformMatrix3fv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, program{ std::move( program ) }
-			, location{ std::move( location ) }
-			, transpose{ std::move( transpose ) }
+			: program{ program }
+			, location{ location }
+			, transpose{ transpose }
 			, buffer
 		{
 			buffer[0], buffer[1], buffer[2],
@@ -2877,7 +2778,7 @@ namespace ashes::gl
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eProgramUniformMatrix3fv ) };
 		uint32_t program;
 		uint32_t location;
 		uint32_t transpose;
@@ -2893,14 +2794,13 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eProgramUniformMatrix4fv >
 	{
-		inline CmdT( uint32_t program
+		explicit CmdT( uint32_t program
 			, uint32_t location
 			, uint32_t transpose
 			, float const * buffer )
-			: cmd{ { OpType::eProgramUniformMatrix4fv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, program{ std::move( program ) }
-			, location{ std::move( location ) }
-			, transpose{ std::move( transpose ) }
+			: program{ program }
+			, location{ location }
+			, transpose{ transpose }
 			, buffer
 		{
 			buffer[0], buffer[1], buffer[2], buffer[3],
@@ -2911,7 +2811,7 @@ namespace ashes::gl
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eProgramUniformMatrix4fv ) };
 		uint32_t program;
 		uint32_t location;
 		uint32_t transpose;
@@ -2927,12 +2827,11 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::ePushDebugGroup >
 	{
-		inline CmdT( GlDebugSource source
+		explicit CmdT( GlDebugSource source
 			, GLuint id
 			, GLsizei length
 			, const char * message )
-			: cmd{ { OpType::ePushDebugGroup, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, source{ source }
+			: source{ source }
 			, id{ id }
 			, length{ length }
 		{
@@ -2943,7 +2842,7 @@ namespace ashes::gl
 			this->message[this->length] = 0;
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::ePushDebugGroup ) };
 		GlDebugSource source;
 		GLuint id;
 		GLsizei length;
@@ -2959,13 +2858,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eReadBuffer >
 	{
-		inline CmdT( GlAttachmentPoint point )
-			: cmd{ { OpType::eReadBuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, point{ std::move( point ) }
+		explicit CmdT( GlAttachmentPoint point )
+			: point{ point }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eReadBuffer ) };
 		GlAttachmentPoint point;
 	};
 	using CmdReadBuffer = CmdT< OpType::eReadBuffer >;
@@ -2978,23 +2876,22 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eReadPixels >
 	{
-		inline CmdT( int32_t x
+		explicit CmdT( int32_t x
 			, int32_t y
 			, uint32_t width
 			, uint32_t height
 			, GlFormat format
 			, GlType type )
-			: cmd{ { OpType::eReadPixels, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, x{ std::move( x ) }
-			, y{ std::move( y ) }
-			, width{ std::move( width ) }
-			, height{ std::move( height ) }
-			, format{ std::move( format ) }
-			, type{ std::move( type ) }
+			: x{ x }
+			, y{ y }
+			, width{ width }
+			, height{ height }
+			, format{ format }
+			, type{ type }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eReadPixels ) };
 		int32_t x;
 		int32_t y;
 		uint32_t width;
@@ -3012,13 +2909,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eResetEvent >
 	{
-		inline CmdT( VkEvent event )
-			: cmd{ { OpType::eResetEvent, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, event{ std::move( event ) }
+		explicit CmdT( VkEvent event )
+			: event{ event }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eResetEvent ) };
 		VkEvent event;
 	};
 	using CmdResetEvent = CmdT< OpType::eResetEvent >;
@@ -3031,13 +2927,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eSetEvent >
 	{
-		inline CmdT( VkEvent event )
-			: cmd{ { OpType::eSetEvent, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, event{ std::move( event ) }
+		explicit CmdT( VkEvent event )
+			: event{ event }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eSetEvent ) };
 		VkEvent event;
 	};
 	using CmdSetEvent = CmdT< OpType::eSetEvent >;
@@ -3050,13 +2945,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eSetLineWidth >
 	{
-		inline CmdT( float width )
-			: cmd{ { OpType::eSetLineWidth, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, width{ std::move( width ) }
+		explicit CmdT( float width )
+			: width{ width }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eSetLineWidth ) };
 		float width;
 	};
 	using CmdSetLineWidth = CmdT< OpType::eSetLineWidth >;
@@ -3069,19 +2963,18 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eStencilFunc >
 	{
-		inline CmdT( GlCullMode face
+		explicit CmdT( GlCullMode face
 			, GlCompareOp op
 			, uint32_t ref
 			, uint32_t compMask )
-			: cmd{ { OpType::eStencilFunc, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, face{ std::move( face ) }
-			, op{ std::move( op ) }
-			, ref{ std::move( ref ) }
-			, compMask{ std::move( compMask ) }
+			: face{ face }
+			, op{ op }
+			, ref{ ref }
+			, compMask{ compMask }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eStencilFunc ) };
 		GlCullMode face;
 		GlCompareOp op;
 		uint32_t ref;
@@ -3097,15 +2990,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eStencilMask >
 	{
-		inline CmdT( GlCullMode face
+		explicit CmdT( GlCullMode face
 			, uint32_t mask )
-			: cmd{ { OpType::eStencilMask, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, face{ std::move( face ) }
-			, mask{ std::move( mask ) }
+			: face{ face }
+			, mask{ mask }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eStencilMask ) };
 		GlCullMode face;
 		uint32_t mask;
 	};
@@ -3119,19 +3011,18 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eStencilOp >
 	{
-		inline CmdT( GlCullMode face
+		explicit CmdT( GlCullMode face
 			, GlStencilOp fail
 			, GlStencilOp depthFail
 			, GlStencilOp pass )
-			: cmd{ { OpType::eStencilOp, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, face{ std::move( face ) }
-			, fail{ std::move( fail ) }
-			, depthFail{ std::move( depthFail ) }
-			, pass{ std::move( pass ) }
+			: face{ face }
+			, fail{ fail }
+			, depthFail{ depthFail }
+			, pass{ pass }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eStencilOp ) };
 		GlCullMode face;
 		GlStencilOp fail;
 		GlStencilOp depthFail;
@@ -3147,17 +3038,16 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eTexParameteri >
 	{
-		inline CmdT( GlTextureType target
+		explicit CmdT( GlTextureType target
 			, uint32_t name
 			, int32_t param )
-			: cmd{ { OpType::eTexParameteri, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, target{ std::move( target ) }
-			, name{ std::move( name ) }
-			, param{ std::move( param ) }
+			: target{ target }
+			, name{ name }
+			, param{ param }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eTexParameteri ) };
 		GlTextureType target;
 		uint32_t name;
 		int32_t param;
@@ -3172,17 +3062,16 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eTexParameterf >
 	{
-		inline CmdT( GlTextureType target
+		explicit CmdT( GlTextureType target
 			, uint32_t name
 			, float param )
-			: cmd{ { OpType::eTexParameterf, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, target{ std::move( target ) }
-			, name{ std::move( name ) }
-			, param{ std::move( param ) }
+			: target{ target }
+			, name{ name }
+			, param{ param }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eTexParameterf ) };
 		GlTextureType target;
 		uint32_t name;
 		float param;
@@ -3197,25 +3086,24 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eTexSubImage1D >
 	{
-		inline CmdT( GlTextureType copyTarget
+		explicit CmdT( GlTextureType copyTarget
 			, uint32_t mipLevel
 			, int32_t x
 			, uint32_t width
 			, GlFormat format
 			, GlType type
 			, int32_t bufferOffset )
-			: cmd{ { OpType::eTexSubImage1D, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, copyTarget{ std::move( copyTarget ) }
-			, mipLevel{ std::move( mipLevel ) }
-			, x{ std::move( x ) }
-			, width{ std::move( width ) }
-			, format{ std::move( format ) }
-			, type{ std::move( type ) }
-			, bufferOffset{ std::move( bufferOffset ) }
+			: copyTarget{ copyTarget }
+			, mipLevel{ mipLevel }
+			, x{ x }
+			, width{ width }
+			, format{ format }
+			, type{ type }
+			, bufferOffset{ bufferOffset }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eTexSubImage1D ) };
 		GlTextureType copyTarget;
 		uint32_t mipLevel;
 		int32_t x;
@@ -3234,7 +3122,7 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eTexSubImage2D >
 	{
-		inline CmdT( GlTextureType copyTarget
+		explicit CmdT( GlTextureType copyTarget
 			, uint32_t mipLevel
 			, int32_t x
 			, int32_t y
@@ -3243,20 +3131,19 @@ namespace ashes::gl
 			, GlFormat format
 			, GlType type
 			, int32_t bufferOffset )
-			: cmd{ { OpType::eTexSubImage2D, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, copyTarget{ std::move( copyTarget ) }
-			, mipLevel{ std::move( mipLevel ) }
-			, x{ std::move( x ) }
-			, y{ std::move( y ) }
-			, width{ std::move( width ) }
-			, height{ std::move( height ) }
-			, format{ std::move( format ) }
-			, type{ std::move( type ) }
-			, bufferOffset{ std::move( bufferOffset ) }
+			: copyTarget{ copyTarget }
+			, mipLevel{ mipLevel }
+			, x{ x }
+			, y{ y }
+			, width{ width }
+			, height{ height }
+			, format{ format }
+			, type{ type }
+			, bufferOffset{ bufferOffset }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eTexSubImage2D ) };
 		GlTextureType copyTarget;
 		uint32_t mipLevel;
 		int32_t x;
@@ -3277,7 +3164,7 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eTexSubImage3D >
 	{
-		inline CmdT( GlTextureType copyTarget
+		explicit CmdT( GlTextureType copyTarget
 			, uint32_t mipLevel
 			, int32_t x
 			, int32_t y
@@ -3288,22 +3175,21 @@ namespace ashes::gl
 			, GlFormat format
 			, GlType type
 			, int32_t bufferOffset )
-			: cmd{ { OpType::eTexSubImage3D, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, copyTarget{ std::move( copyTarget ) }
-			, mipLevel{ std::move( mipLevel ) }
-			, x{ std::move( x ) }
-			, y{ std::move( y ) }
-			, z{ std::move( z ) }
-			, width{ std::move( width ) }
-			, height{ std::move( height ) }
-			, depth{ std::move( depth ) }
-			, format{ std::move( format ) }
-			, type{ std::move( type ) }
-			, bufferOffset{ std::move( bufferOffset ) }
+			: copyTarget{ copyTarget }
+			, mipLevel{ mipLevel }
+			, x{ x }
+			, y{ y }
+			, z{ z }
+			, width{ width }
+			, height{ height }
+			, depth{ depth }
+			, format{ format }
+			, type{ type }
+			, bufferOffset{ bufferOffset }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eTexSubImage3D ) };
 		GlTextureType copyTarget;
 		uint32_t mipLevel;
 		int32_t x;
@@ -3326,15 +3212,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniform1fv >
 	{
-		inline CmdT( uint32_t location
+		explicit CmdT( uint32_t location
 			, float const * buffer )
-			: cmd{ { OpType::eUniform1fv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, location{ std::move( location ) }
+			: location{ location }
 			, buffer{ *buffer }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eUniform1fv ) };
 		uint32_t location;
 		float buffer;
 	};
@@ -3348,15 +3233,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniform2fv >
 	{
-		inline CmdT( uint32_t location
+		explicit CmdT( uint32_t location
 			, float const * buffer )
-			: cmd{ { OpType::eUniform2fv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, location{ std::move( location ) }
+			: location{ location }
 			, buffer{ buffer[0], buffer[1] }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eUniform2fv ) };
 		uint32_t location;
 		float buffer[2];
 	};
@@ -3370,15 +3254,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniform3fv >
 	{
-		inline CmdT( uint32_t location
+		explicit CmdT( uint32_t location
 			, float const * buffer )
-			: cmd{ { OpType::eUniform3fv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, location{ std::move( location ) }
+			: location{ location }
 			, buffer{ buffer[0], buffer[1], buffer[2] }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eUniform3fv ) };
 		uint32_t location;
 		float buffer[3];
 	};
@@ -3392,15 +3275,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniform4fv >
 	{
-		inline CmdT( uint32_t location
+		explicit CmdT( uint32_t location
 			, float const * buffer )
-			: cmd{ { OpType::eUniform4fv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, location{ std::move( location ) }
+			: location{ location }
 			, buffer{ buffer[0], buffer[1], buffer[2], buffer[3] }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eUniform4fv ) };
 		uint32_t location;
 		float buffer[4];
 	};
@@ -3414,15 +3296,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniform1iv >
 	{
-		inline CmdT( uint32_t location
+		explicit CmdT( uint32_t location
 			, int32_t const * buffer )
-			: cmd{ { OpType::eUniform1iv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, location{ std::move( location ) }
+			: location{ location }
 			, buffer{ *buffer }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eUniform1iv ) };
 		uint32_t location;
 		int32_t buffer;
 	};
@@ -3436,15 +3317,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniform2iv >
 	{
-		inline CmdT( uint32_t location
+		explicit CmdT( uint32_t location
 			, int32_t const * buffer )
-			: cmd{ { OpType::eUniform2iv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, location{ std::move( location ) }
+			: location{ location }
 			, buffer{ buffer[0], buffer[1] }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eUniform2iv ) };
 		uint32_t location;
 		int32_t buffer[2];
 	};
@@ -3458,15 +3338,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniform3iv >
 	{
-		inline CmdT( uint32_t location
+		explicit CmdT( uint32_t location
 			, int32_t const * buffer )
-			: cmd{ { OpType::eUniform3iv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, location{ std::move( location ) }
+			: location{ location }
 			, buffer{ buffer[0], buffer[1], buffer[2] }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eUniform3iv ) };
 		uint32_t location;
 		int32_t buffer[3];
 	};
@@ -3480,15 +3359,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniform4iv >
 	{
-		inline CmdT( uint32_t location
+		explicit CmdT( uint32_t location
 			, int32_t const * buffer )
-			: cmd{ { OpType::eUniform4iv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, location{ std::move( location ) }
+			: location{ location }
 			, buffer{ buffer[0], buffer[1], buffer[2], buffer[3] }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eUniform4iv ) };
 		uint32_t location;
 		int32_t buffer[4];
 	};
@@ -3502,15 +3380,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniform1uiv >
 	{
-		inline CmdT( uint32_t location
+		explicit CmdT( uint32_t location
 			, uint32_t const * buffer )
-			: cmd{ { OpType::eUniform1uiv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, location{ std::move( location ) }
+			: location{ location }
 			, buffer{ *buffer }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eUniform1uiv ) };
 		uint32_t location;
 		uint32_t buffer;
 	};
@@ -3524,15 +3401,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniform2uiv >
 	{
-		inline CmdT( uint32_t location
+		explicit CmdT( uint32_t location
 			, uint32_t const * buffer )
-			: cmd{ { OpType::eUniform2uiv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, location{ std::move( location ) }
+			: location{ location }
 			, buffer{ buffer[0], buffer[1] }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eUniform2uiv ) };
 		uint32_t location;
 		uint32_t buffer[2];
 	};
@@ -3546,15 +3422,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniform3uiv >
 	{
-		inline CmdT( uint32_t location
+		explicit CmdT( uint32_t location
 			, uint32_t const * buffer )
-			: cmd{ { OpType::eUniform3uiv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, location{ std::move( location ) }
+			: location{ location }
 			, buffer{ buffer[0], buffer[1], buffer[2] }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eUniform3uiv ) };
 		uint32_t location;
 		uint32_t buffer[3];
 	};
@@ -3568,15 +3443,14 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniform4uiv >
 	{
-		inline CmdT( uint32_t location
+		explicit CmdT( uint32_t location
 			, uint32_t const * buffer )
-			: cmd{ { OpType::eUniform4uiv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, location{ std::move( location ) }
+			: location{ location }
 			, buffer{ buffer[0], buffer[1], buffer[2], buffer[3] }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eUniform4uiv ) };
 		uint32_t location;
 		uint32_t buffer[4];
 	};
@@ -3590,12 +3464,11 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniformMatrix2fv >
 	{
-		inline CmdT( uint32_t location
+		explicit CmdT( uint32_t location
 			, uint32_t transpose
 			, float const * buffer )
-			: cmd{ { OpType::eUniformMatrix2fv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, location{ std::move( location ) }
-			, transpose{ std::move( transpose ) }
+			: location{ location }
+			, transpose{ transpose }
 			, buffer
 		{
 			buffer[0], buffer[1],
@@ -3604,7 +3477,7 @@ namespace ashes::gl
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eUniformMatrix2fv ) };
 		uint32_t location;
 		uint32_t transpose;
 		float buffer[4];
@@ -3619,12 +3492,11 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniformMatrix3fv >
 	{
-		inline CmdT( uint32_t location
+		explicit CmdT( uint32_t location
 			, uint32_t transpose
 			, float const * buffer )
-			: cmd{ { OpType::eUniformMatrix3fv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, location{ std::move( location ) }
-			, transpose{ std::move( transpose ) }
+			: location{ location }
+			, transpose{ transpose }
 			, buffer
 		{
 			buffer[0], buffer[1], buffer[2],
@@ -3634,7 +3506,7 @@ namespace ashes::gl
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eUniformMatrix3fv ) };
 		uint32_t location;
 		uint32_t transpose;
 		float buffer[9];
@@ -3649,12 +3521,11 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUniformMatrix4fv >
 	{
-		inline CmdT( uint32_t location
+		explicit CmdT( uint32_t location
 			, uint32_t transpose
 			, float const * buffer )
-			: cmd{ { OpType::eUniformMatrix4fv, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, location{ std::move( location ) }
-			, transpose{ std::move( transpose ) }
+			: location{ location }
+			, transpose{ transpose }
 			, buffer
 		{
 			buffer[0], buffer[1], buffer[2], buffer[3],
@@ -3665,7 +3536,7 @@ namespace ashes::gl
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eUniformMatrix4fv ) };
 		uint32_t location;
 		uint32_t transpose;
 		float buffer[16];
@@ -3680,19 +3551,18 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUpdateBuffer >
 	{
-		inline CmdT( VkDeviceMemory memory
+		explicit CmdT( VkDeviceMemory memory
 			, VkDeviceSize memoryOffset
 			, VkDeviceSize dataSize
 			, void * pData )
-			: cmd{ { OpType::eUpdateBuffer, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, memory{ std::move( memory ) }
-			, memoryOffset{ std::move( memoryOffset ) }
-			, dataSize{ std::move( dataSize ) }
-			, pData{ std::move( pData ) }
+			: memory{ memory }
+			, memoryOffset{ memoryOffset }
+			, dataSize{ dataSize }
+			, pData{ pData }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eUpdateBuffer ) };
 		VkDeviceMemory memory;
 		VkDeviceSize memoryOffset;
 		VkDeviceSize dataSize;
@@ -3708,17 +3578,16 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUploadMemory >
 	{
-		inline CmdT( VkDeviceMemory memory
+		explicit CmdT( VkDeviceMemory memory
 			, VkDeviceSize offset
 			, VkDeviceSize size )
-			: cmd{ { OpType::eUploadMemory, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, memory{ memory }
+			: memory{ memory }
 			, offset{ offset }
 			, size{ size }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eUploadMemory ) };
 		VkDeviceMemory memory;
 		VkDeviceSize offset;
 		VkDeviceSize size;
@@ -3733,13 +3602,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUseProgram >
 	{
-		inline CmdT( uint32_t value )
-			: cmd{ { OpType::eUseProgram, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, program{ std::move( value ) }
+		explicit CmdT( uint32_t value )
+			: program{ value }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eUseProgram ) };
 		uint32_t program;
 	};
 	using CmdUseProgram = CmdT< OpType::eUseProgram >;
@@ -3752,13 +3620,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eUseProgramPipeline >
 	{
-		inline CmdT( uint32_t value )
-			: cmd{ { OpType::eUseProgramPipeline, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, program{ std::move( value ) }
+		explicit CmdT( uint32_t value )
+			: program{ value }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eUseProgramPipeline ) };
 		uint32_t program;
 	};
 	using CmdUseProgramPipeline = CmdT< OpType::eUseProgramPipeline >;
@@ -3771,13 +3638,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eWaitEvents >
 	{
-		inline CmdT( VkEventArray events )
-			: cmd{ { OpType::eWaitEvents, uint16_t( sizeof( Command ) + events.size() * 2u ) } }
-			, events{ std::move( events ) }
+		explicit CmdT( VkEventArray events )
+			: events{ std::move( events ) }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eWaitEvents ) };
 		VkEventArray events;
 	};
 	using CmdWaitEvents = CmdT< OpType::eWaitEvents >;
@@ -3790,13 +3656,12 @@ namespace ashes::gl
 	template<>
 	struct alignas( uint64_t ) CmdT< OpType::eWriteTimestamp >
 	{
-		inline CmdT( uint32_t name )
-			: cmd{ { OpType::eWriteTimestamp, sizeof( CmdT ) / sizeof( uint32_t ) } }
-			, name{ std::move( name ) }
+		explicit CmdT( uint32_t name )
+			: name{ name }
 		{
 		}
 
-		Command cmd;
+		Command cmd{ makeCommand< CmdT >( OpType::eWriteTimestamp ) };
 		uint32_t name;
 	};
 	using CmdWriteTimestamp = CmdT< OpType::eWriteTimestamp >;
@@ -3809,7 +3674,7 @@ namespace ashes::gl
 	template< OpType OpT, typename ... ParamsT >
 	CmdBuffer makeCmd( ParamsT && ... params )
 	{
-		CmdT< OpT > cmd{ std::forward< ParamsT && >( params )... };
+		CmdT< OpT > cmd{ std::forward< ParamsT >( params )... };
 		CmdBuffer result;
 		result.resize( cmd.cmd.op.size );
 		auto it = result.begin();
@@ -3882,7 +3747,7 @@ namespace ashes::gl
 
 		if ( result )
 		{
-			Command command;
+			Command command{ makeCommand< CmdT< OpT > >( OpT ) };
 			result = pop( cur, end, command );
 
 			if ( result )

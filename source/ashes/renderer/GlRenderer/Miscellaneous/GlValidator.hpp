@@ -168,11 +168,9 @@ namespace ashes::gl
 	ShaderDesc getShaderDesc( ContextLock const & context
 		, ConstantsLayout & constants
 		, VkShaderStageFlagBits stage
-		, GLuint program
-		, bool separable );
+		, GLuint program );
 
 	void validatePipeline( ContextLock const & context
-		, VkPipelineLayout layout
 		, GLuint program
 		, VkPipelineVertexInputStateCreateInfo const & vertexInputState
 		, VkRenderPass renderPass );

@@ -22,17 +22,14 @@ namespace ashes
 		, PFN_vkUnmapMemory unmapMemory )
 	{
 		auto inlineUbo = std::make_unique< InlineUbo >();
-		VkBufferCreateInfo bufferInfo
-		{
-			VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-			nullptr,
-			0u,
-			inlineUniform.dataSize,
-			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-			VK_SHARING_MODE_EXCLUSIVE,
-			0u,
-			nullptr,
-		};
+		VkBufferCreateInfo bufferInfo{ VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO
+			, nullptr
+			, 0u
+			, inlineUniform.dataSize
+			, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT
+			, VK_SHARING_MODE_EXCLUSIVE
+			, 0u
+			, nullptr };
 
 		if ( auto res = createBuffer( device
 				, &bufferInfo
@@ -47,13 +44,10 @@ namespace ashes
 			auto deduced = deduceMemoryType( requirements.memoryTypeBits
 				, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
 				, memoryProperties );
-			VkMemoryAllocateInfo allocate
-			{
-				VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-				nullptr,
-				requirements.size,
-				deduced
-			};
+			VkMemoryAllocateInfo allocate{ VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO
+				, nullptr
+				, requirements.size
+				, deduced };
 			res = allocateMemory( device
 				, &allocate
 				, nullptr
@@ -70,24 +64,18 @@ namespace ashes
 					if ( mapMemory( device, inlineUbo->memory, 0, requirements.size, 0u, reinterpret_cast< void ** >( &buffer ) ) == VK_SUCCESS )
 					{
 						std::memcpy( buffer, inlineUniform.pData, inlineUniform.dataSize );
-						VkMappedMemoryRange range
-						{
-							VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,
-							nullptr,
-							inlineUbo->memory,
-							0u,
-							requirements.size
-						};
+						VkMappedMemoryRange range{ VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE
+							, nullptr
+							, inlineUbo->memory
+							, 0u
+							, requirements.size };
 						flushMemory( device, 1u, &range );
 						unmapMemory( device, inlineUbo->memory );
 					}
 
-					inlineUbo->info =
-					{
-						inlineUbo->buffer,
-						0u,
-						requirements.size,
-					};
+					inlineUbo->info = { inlineUbo->buffer
+						, 0u
+						, requirements.size };
 				}
 			}
 		}

@@ -21,7 +21,7 @@ namespace ashes::gl
 		static GlTextureType convert( VkImageType type
 			, uint32_t layerCount
 			, VkImageCreateFlags flags
-			, VkSampleCountFlagBits samples )
+			, VkSampleCountFlagBits samples )noexcept
 		{
 			GlTextureType result;
 
@@ -91,8 +91,7 @@ namespace ashes::gl
 	{
 		static GlTextureType convert( VkImageType type
 			, uint32_t layerCount
-			, VkImageCreateFlags flags
-			, VkSampleCountFlagBits samples )
+			, VkSampleCountFlagBits samples )noexcept
 		{
 			GlTextureType result;
 
@@ -155,7 +154,6 @@ namespace ashes::gl
 		{
 			return gl4::convert( type
 				, layerCount
-				, flags
 				, samples );
 		}
 
@@ -222,7 +220,7 @@ namespace ashes::gl
 		registerObject( m_device, *this );
 	}
 
-	Image::~Image()
+	Image::~Image()noexcept
 	{
 		unregisterObject( m_device, *this );
 
@@ -249,17 +247,17 @@ namespace ashes::gl
 		VkResult result = VK_SUCCESS;
 		createInfo = ImageView::adjustCreateInfo( getDevice(), std::move( createInfo ) );
 		auto lock = std::unique_lock< std::mutex >{ m_mtx };
-		auto pair = m_views.emplace( createInfo, VkImageView{} );
+		auto [it, res] = m_views.try_emplace( createInfo );
 
-		if ( pair.second )
+		if ( res )
 		{
-			result = allocate( pair.first->second
+			result = allocate( it->second
 				, m_allocInfo
 				, getDevice()
 				, std::move( createInfo ) );
 		}
 
-		imageView = pair.first->second;
+		imageView = it->second;
 		return result;
 	}
 
@@ -270,13 +268,20 @@ namespace ashes::gl
 		return imageView;
 	}
 
-	void Image::destroyView( VkImageView view )
+	void Image::destroyView( VkImageView view )noexcept
 	{
-		auto lock = std::unique_lock< std::mutex >{ m_mtx };
-		auto it = m_views.find( get( view )->getCreateInfo() );
-		assert( it != m_views.end() );
-		deallocate( it->second, m_allocInfo );
-		m_views.erase( it );
+		try
+		{
+			auto lock = std::unique_lock< std::mutex >{ m_mtx };
+			auto it = m_views.find( get( view )->getCreateInfo() );
+			assert( it != m_views.end() );
+			deallocate( it->second, m_allocInfo );
+			m_views.erase( it );
+		}
+		catch ( ... )
+		{
+			// What to do here ?
+		}
 	}
 
 	VkMemoryRequirements Image::getMemoryRequirements()const

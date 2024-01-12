@@ -932,7 +932,7 @@ namespace ashes::gl
 		, VkPipelineLayout pipelineLayout
 		, ArrayView< uint32_t const > const & dynamicOffsets
 		, uint32_t & dynamicOffsetIndex
-		, VkPipelineBindPoint bindingPoint
+		, [[maybe_unused]] VkPipelineBindPoint bindingPoint
 		, CmdList & list )
 	{
 		assert( get( descriptorSet )->getDynamicBuffers().size() + dynamicOffsetIndex <= dynamicOffsets.size()

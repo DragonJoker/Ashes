@@ -16,9 +16,9 @@ namespace ashes::gl
 			, VkDevice device
 			, VkBuffer buffer
 			, VkDeviceSize memoryOffset );
-		~BufferMemoryBinding()override;
+		~BufferMemoryBinding()noexcept override;
 
 	private:
-		Buffer * m_buffer;
+		Buffer * m_buffer{};
 	};
 }

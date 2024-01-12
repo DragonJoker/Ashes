@@ -12,18 +12,15 @@ namespace ashes
 {
 	inline VkPipelineMultisampleStateCreateInfo getDefaultMultisampleState()
 	{
-		return
-		{
-			VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
-			nullptr,
-			0u,
-			VK_SAMPLE_COUNT_1_BIT,
-			VK_FALSE,
-			1.0f,
-			nullptr,
-			VK_FALSE,
-			VK_FALSE,
-		};
+		return { VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO
+			, nullptr
+			, 0u
+			, VK_SAMPLE_COUNT_1_BIT
+			, VK_FALSE
+			, 1.0f
+			, nullptr
+			, VK_FALSE
+			, VK_FALSE };
 	}
 
 	inline bool operator==( VkPipelineMultisampleStateCreateInfo const & lhs, VkPipelineMultisampleStateCreateInfo const & rhs )

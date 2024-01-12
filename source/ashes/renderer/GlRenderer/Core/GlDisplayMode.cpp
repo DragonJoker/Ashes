@@ -9,7 +9,7 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	DisplayModeKHR::DisplayModeKHR( VkAllocationCallbacks const * allocInfo
+	DisplayModeKHR::DisplayModeKHR( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkDisplayKHR display
 		, VkDisplayModeCreateInfoKHR createInfo )
 		: m_display{ display }
@@ -17,11 +17,7 @@ namespace ashes::gl
 	{
 	}
 
-	DisplayModeKHR::~DisplayModeKHR()
-	{
-	}
-
-	VkDisplayPlaneCapabilitiesKHR DisplayModeKHR::getDisplayPlaneCapabilities( uint32_t planeIndex )
+	VkDisplayPlaneCapabilitiesKHR DisplayModeKHR::getDisplayPlaneCapabilities()
 	{
 		VkExtent2D defaultExt{ get( m_display )->getExtent() };
 		VkOffset2D defaultMinPos{};

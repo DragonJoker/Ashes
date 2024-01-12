@@ -80,8 +80,6 @@ namespace ashes::gl
 	}
 
 	HGLRC createContext( HDC hDC
-		, int reqMajor
-		, int reqMinor
 		, PIXELFORMATDESCRIPTOR & pfd )
 	{
 		pfd.nSize = sizeof( PIXELFORMATDESCRIPTOR );
@@ -119,8 +117,8 @@ namespace ashes::gl
 		return context;
 	}
 
-	RenderWindow::RenderWindow( int major
-		, int minor
+	RenderWindow::RenderWindow( [[maybe_unused]] int major
+		, [[maybe_unused]] int minor
 		, std::string const & name )
 	{
 		try
@@ -129,7 +127,7 @@ namespace ashes::gl
 			m_class = win::registerClass( m_hInstance, name );
 			m_hWnd = win::createWindow( m_hInstance, m_class, name, WS_OVERLAPPEDWINDOW, { 640u, 480u } );
 			m_hDC = ::GetDC( m_hWnd );
-			m_hContext = createContext( m_hDC, major, minor, m_pfd.pfd );
+			m_hContext = createContext( m_hDC, m_pfd.pfd );
 			wglMakeCurrent( m_hDC, m_hContext );
 		}
 		catch ( std::exception & )
@@ -139,13 +137,13 @@ namespace ashes::gl
 		}
 	}
 
-	RenderWindow::~RenderWindow()
+	RenderWindow::~RenderWindow()noexcept
 	{
 		wglMakeCurrent( nullptr, nullptr );
 		doCleanup();
 	}
 
-	void RenderWindow::doCleanup()
+	void RenderWindow::doCleanup()noexcept
 	{
 		if ( m_hContext )
 		{

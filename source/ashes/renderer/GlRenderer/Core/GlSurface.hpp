@@ -36,7 +36,7 @@ namespace ashes::gl
 			, VkInstance instance
 			, VkDisplaySurfaceCreateInfoKHR createInfo );
 #endif
-		~SurfaceKHR();
+		~SurfaceKHR()noexcept;
 
 		VkSurfaceCapabilitiesKHR getCapabilities()
 		{
@@ -54,63 +54,63 @@ namespace ashes::gl
 			return m_surfaceFormats;
 		}
 
-		inline ContextLock getContext()const
+		ContextLock getContext()const
 		{
 			return { *m_context };
 		}
 
 #if _WIN32
 
-		inline VkWin32SurfaceCreateInfoKHR getWin32CreateInfo()const
+		VkWin32SurfaceCreateInfoKHR getWin32CreateInfo()const
 		{
 			return m_win32CreateInfo;
 		}
 
-		inline bool isWin32()const
+		bool isWin32()const
 		{
 			return m_win32CreateInfo.sType != 0;
 		}
 
 #elif __linux__
 
-		inline VkXlibSurfaceCreateInfoKHR getXlibCreateInfo()const
+		VkXlibSurfaceCreateInfoKHR getXlibCreateInfo()const
 		{
 			return m_xlibCreateInfo;
 		}
 
-		inline VkXcbSurfaceCreateInfoKHR getXcbCreateInfo()const
+		VkXcbSurfaceCreateInfoKHR getXcbCreateInfo()const
 		{
 			return m_xcbCreateInfo;
 		}
 
-		inline VkWaylandSurfaceCreateInfoKHR getWaylandCreateInfo()const
+		VkWaylandSurfaceCreateInfoKHR getWaylandCreateInfo()const
 		{
 			return m_waylandCreateInfo;
 		}
 
-		inline bool isXcb()const
+		bool isXcb()const
 		{
 			return m_xcbCreateInfo.sType != 0;
 		}
 
-		inline bool isXlib()const
+		bool isXlib()const
 		{
 			return m_xlibCreateInfo.sType != 0;
 		}
 
-		inline bool isWayland()const
+		bool isWayland()const
 		{
 			return m_waylandCreateInfo.sType != 0;
 		}
 
 #elif __APPLE__
 
-		inline VkMacOSSurfaceCreateInfoMVK getMacOSCreateInfo()const
+		VkMacOSSurfaceCreateInfoMVK getMacOSCreateInfo()const
 		{
 			return m_macOSCreateInfo;
 		}
 
-		inline bool isMacOS()const
+		bool isMacOS()const
 		{
 			return m_macOSCreateInfo.sType != 0;
 		}
@@ -118,19 +118,19 @@ namespace ashes::gl
 #endif
 #ifdef VK_KHR_display
 
-		inline VkDisplaySurfaceCreateInfoKHR getDisplayCreateInfo()const
+		VkDisplaySurfaceCreateInfoKHR getDisplayCreateInfo()const
 		{
 			return m_displayCreateInfo;
 		}
 
-		inline bool isDisplay()const
+		bool isDisplay()const
 		{
 			return m_displayCreateInfo.sType != 0;
 		}
 
 #endif
 
-		inline VkInstance getInstance()const
+		VkInstance getInstance()const
 		{
 			return m_context->getInstance();
 		}

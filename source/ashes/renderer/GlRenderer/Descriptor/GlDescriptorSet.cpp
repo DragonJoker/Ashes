@@ -30,53 +30,53 @@ namespace ashes::gl
 				binding.descriptorType,
 				{}
 			};
-			m_writes.insert( { binding.binding, bindingWrites } );
+			m_writes.try_emplace( binding.binding, bindingWrites );
 		}
 
-		for ( auto & write : m_writes )
+		for ( auto & [_, write] : m_writes )
 		{
-			if ( write.second.descriptorCount )
+			if ( write.descriptorCount )
 			{
-				switch ( write.second.descriptorType )
+				switch ( write.descriptorType )
 				{
 				case VK_DESCRIPTOR_TYPE_SAMPLER:
-					m_samplers.push_back( &write.second );
+					m_samplers.push_back( &write );
 					break;
 				case VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:
-					m_combinedTextureSamplers.push_back( &write.second );
+					m_combinedTextureSamplers.push_back( &write );
 					break;
 				case VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE:
-					m_sampledTextures.push_back( &write.second );
+					m_sampledTextures.push_back( &write );
 					break;
 				case VK_DESCRIPTOR_TYPE_STORAGE_IMAGE:
-					m_storageTextures.push_back( &write.second );
+					m_storageTextures.push_back( &write );
 					break;
 				case VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER:
-					m_texelSamplerBuffers.push_back( &write.second );
+					m_texelSamplerBuffers.push_back( &write );
 					break;
 				case VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER:
-					m_texelImageBuffers.push_back( &write.second );
+					m_texelImageBuffers.push_back( &write );
 					break;
 				case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER:
-					m_uniformBuffers.push_back( &write.second );
+					m_uniformBuffers.push_back( &write );
 					break;
 				case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER:
-					m_storageBuffers.push_back( &write.second );
+					m_storageBuffers.push_back( &write );
 					break;
 				case VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT:
-					m_inputAttachments.push_back( &write.second );
+					m_inputAttachments.push_back( &write );
 					break;
 				case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:
-					m_dynamicUniformBuffers.push_back( &write.second );
-					m_dynamicBuffers.push_back( &write.second );
+					m_dynamicUniformBuffers.push_back( &write );
+					m_dynamicBuffers.push_back( &write );
 					break;
 				case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
-					m_dynamicStorageBuffers.push_back( &write.second );
-					m_dynamicBuffers.push_back( &write.second );
+					m_dynamicStorageBuffers.push_back( &write );
+					m_dynamicBuffers.push_back( &write );
 					break;
 #if VK_EXT_inline_uniform_block
 				case VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT:
-					m_inlineUniforms.push_back( &write.second );
+					m_inlineUniforms.push_back( &write );
 					break;
 #endif
 				default:
@@ -97,11 +97,11 @@ namespace ashes::gl
 		registerObject( m_device, *this );
 	}
 
-	DescriptorSet::~DescriptorSet()
+	DescriptorSet::~DescriptorSet()noexcept
 	{
 		unregisterObject( m_device, *this );
 
-		for ( auto & inlineUbo : m_inlineUbos )
+		for ( auto const & inlineUbo : m_inlineUbos )
 		{
 			deallocate( inlineUbo->buffer
 				, m_allocInfo );
@@ -117,9 +117,8 @@ namespace ashes::gl
 
 #if VK_EXT_inline_uniform_block
 
-		auto inlineUniform = tryGet< VkWriteDescriptorSetInlineUniformBlockEXT >( myWrite.pNext );
-
-		if ( inlineUniform )
+		if ( auto inlineUniform = tryGet< VkWriteDescriptorSetInlineUniformBlockEXT >( myWrite.pNext );
+			inlineUniform )
 		{
 			writes.descriptorCount /= inlineUniform->dataSize;
 			myWrite.descriptorCount /= inlineUniform->dataSize;
@@ -142,19 +141,19 @@ namespace ashes::gl
 
 		if ( myWrite.pBufferInfo )
 		{
-			m_buffersInfos.emplace_back( std::vector< VkDescriptorBufferInfo >{ myWrite.pBufferInfo, myWrite.pBufferInfo + myWrite.descriptorCount } );
+			m_buffersInfos.emplace_back( myWrite.pBufferInfo, myWrite.pBufferInfo + myWrite.descriptorCount );
 			myWrite.pBufferInfo = m_buffersInfos.back().data();
 		}
 
 		if ( myWrite.pImageInfo )
 		{
-			m_imagesInfos.emplace_back( std::vector< VkDescriptorImageInfo >{ myWrite.pImageInfo, myWrite.pImageInfo + myWrite.descriptorCount } );
+			m_imagesInfos.emplace_back( myWrite.pImageInfo, myWrite.pImageInfo + myWrite.descriptorCount );
 			myWrite.pImageInfo = m_imagesInfos.back().data();
 		}
 
 		if ( myWrite.pTexelBufferView )
 		{
-			m_texelBufferViews.emplace_back( std::vector< VkBufferView >{ myWrite.pTexelBufferView, myWrite.pTexelBufferView + myWrite.descriptorCount } );
+			m_texelBufferViews.emplace_back( myWrite.pTexelBufferView, myWrite.pTexelBufferView + myWrite.descriptorCount );
 			myWrite.pTexelBufferView = m_texelBufferViews.back().data();
 		}
 	}
@@ -168,7 +167,7 @@ namespace ashes::gl
 		mergeWrites( it->second, write );
 	}
 
-	void DescriptorSet::update( VkCopyDescriptorSet const & copy )
+	void DescriptorSet::update( VkCopyDescriptorSet const & )
 	{
 		reportUnsupported( get( m_pool )->getDevice(), "VkCopyDescriptorSet" );
 	}

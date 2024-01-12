@@ -13,7 +13,7 @@ namespace ashes::gl
 	struct BindingRange
 	{
 		BindingRange( VkDeviceSize offset = 0u
-			, VkDeviceSize size = 0u )
+			, VkDeviceSize size = 0u )noexcept
 			: m_offset{ offset }
 			, m_size{ size }
 		{
@@ -21,7 +21,7 @@ namespace ashes::gl
 
 		BindingRange( VkDeviceSize offset
 			, VkDeviceSize size
-			, VkDeviceSize maxSize )
+			, VkDeviceSize maxSize )noexcept
 			: m_offset{ offset }
 			, m_size{ size }
 		{
@@ -32,7 +32,7 @@ namespace ashes::gl
 			}
 		}
 
-		BindingRange intersect( BindingRange const & range )const
+		BindingRange intersect( BindingRange const & range )const noexcept
 		{
 			auto rngMin = std::max( range.getMin(), getMin() );
 			auto rngMax = std::min( range.getMax(), getMax() );
@@ -41,27 +41,27 @@ namespace ashes::gl
 				: BindingRange{ 0u, 0u } );
 		}
 
-		operator bool()const
+		operator bool()const noexcept
 		{
 			return getMax() > getMin();
 		}
 
-		VkDeviceSize getOffset()const
+		VkDeviceSize getOffset()const noexcept
 		{
 			return m_offset;
 		}
 
-		VkDeviceSize getSize()const
+		VkDeviceSize getSize()const noexcept
 		{
 			return m_size;
 		}
 
-		VkDeviceSize getMin()const
+		VkDeviceSize getMin()const noexcept
 		{
 			return m_offset;
 		}
 
-		VkDeviceSize getMax()const
+		VkDeviceSize getMax()const noexcept
 		{
 			return m_offset + m_size;
 		}
@@ -80,49 +80,49 @@ namespace ashes::gl
 			, VkDeviceSize memoryOffset
 			, VkMemoryRequirements requirements
 			, void * bound
-			, GLuint boundName );
-		virtual ~DeviceMemoryBinding() = default;
+			, GLuint boundName )noexcept;
+		virtual ~DeviceMemoryBinding()noexcept = default;
 
-		void map( BindingRange const & range );
-		void flush( BindingRange const & range );
-		void invalidate( BindingRange const & range );
-		bool unmap();
+		void map( BindingRange const & range )noexcept;
+		void flush( BindingRange const & range )noexcept;
+		void invalidate( BindingRange const & range )noexcept;
+		bool unmap()noexcept;
 
 		virtual void upload( ContextLock const & context
 			, ByteArray const & data
-			, BindingRange const & range )const;
+			, BindingRange const & range )const noexcept;
 
-		GLuint getInternal()const
+		GLuint getInternal()const noexcept
 		{
 			return m_boundName;
 		}
 
-		void * getBound()const
+		void * getBound()const noexcept
 		{
 			return m_bound;
 		}
 
-		VkDeviceSize getAlignment()const
+		VkDeviceSize getAlignment()const noexcept
 		{
 			return m_requirements.alignment;
 		}
 
-		VkDeviceSize getSize()const
+		VkDeviceSize getSize()const noexcept
 		{
 			return m_range.getSize();
 		}
 
-		VkDeviceSize getOffset()const
+		VkDeviceSize getOffset()const noexcept
 		{
 			return m_range.getOffset();
 		}
 
-		bool isMapped()const
+		bool isMapped()const noexcept
 		{
 			return m_mapped;
 		}
 
-		VkDeviceMemory getParent()const
+		VkDeviceMemory getParent()const noexcept
 		{
 			return m_parent;
 		}

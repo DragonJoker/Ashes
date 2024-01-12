@@ -17,7 +17,7 @@ namespace ashes::gl
 		, VkDevice device
 		, VkImage srcImage
 		, VkImage dstImage
-		, VkImageBlit region
+		, VkImageBlit const & region
 		, VkFilter filter
 		, CmdList & list );
 }

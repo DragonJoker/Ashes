@@ -19,15 +19,14 @@ namespace ashes::gl
 	{
 		void readImagePixels( ContextStateStack & stack
 			, VkDevice device
-			, VkBufferImageCopy srcCopyInfo
+			, VkBufferImageCopy const & copyInfo
 			, VkImage src
 			, GLuint dst
 			, CmdList & list )
 		{
-			auto baseArrayLayer = std::max( srcCopyInfo.imageSubresource.baseArrayLayer
-				, uint32_t( srcCopyInfo.imageOffset.z ) );
+			auto baseArrayLayer = std::max( copyInfo.imageSubresource.baseArrayLayer
+				, uint32_t( copyInfo.imageOffset.z ) );
 
-			auto copyInfo = srcCopyInfo;
 			FboAttachment srcAttach{ device
 				, copyInfo.imageSubresource
 				, src };
@@ -57,7 +56,7 @@ namespace ashes::gl
 		}
 
 		VkDeviceSize getTextureImage( ContextStateStack & stack
-			, VkBufferImageCopy copyInfo
+			, VkBufferImageCopy const & copyInfo
 			, VkImage src
 			, CmdList & list )
 		{
@@ -103,8 +102,7 @@ namespace ashes::gl
 		}
 
 		VkImageViewCreateInfo getViewCreateInfo( VkImage src
-			, VkBufferImageCopy copyInfo
-			, uint32_t arrayLayer )
+			, VkBufferImageCopy const & copyInfo )
 		{
 			return VkImageViewCreateInfo{ VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO
 				, nullptr
@@ -121,7 +119,7 @@ namespace ashes::gl
 		}
 
 		void copyImageFullDataToImgBuffer( ContextStateStack & stack
-			, VkBufferImageCopy copyInfo
+			, VkBufferImageCopy const & copyInfo
 			, VkImage src
 			, ImageMemoryBinding const & srcBinding
 			, CmdList & list )
@@ -135,7 +133,7 @@ namespace ashes::gl
 
 			for ( uint32_t layer = 0u; layer < layerCount; ++layer )
 			{
-				VkImageView layerView = get( src )->createView( getViewCreateInfo( src, copyInfo, layer ) );
+				VkImageView layerView = get( src )->createView( getViewCreateInfo( src, copyInfo ) );
 				list.push_back( makeCmd< OpType::eBindTexture >( get( layerView )->getTextureType(), get( src )->getInternal() ) );
 
 				if ( isCompressedFormat( get( src )->getFormatVk() ) )
@@ -163,7 +161,7 @@ namespace ashes::gl
 				, srcBinding.getSize() ) );
 		}
 
-		void copyImageFullDataToBuffer( VkBufferImageCopy copyInfo
+		void copyImageFullDataToBuffer( VkBufferImageCopy const & copyInfo
 			, VkImage src
 			, GLuint dst
 			, VkDeviceSize srcBufferOffset
@@ -193,7 +191,7 @@ namespace ashes::gl
 				, 0u ) );
 		}
 
-		void copyImagePartialDataToBuffer( VkBufferImageCopy copyInfo
+		void copyImagePartialDataToBuffer( VkBufferImageCopy const & copyInfo
 			, VkImage src
 			, GLuint dst
 			, VkExtent3D mipExtent
@@ -317,7 +315,7 @@ namespace ashes::gl
 
 	void buildCopyImageToBufferCommand( ContextStateStack & stack
 		, VkDevice device
-		, VkBufferImageCopy copyInfo
+		, VkBufferImageCopy const & copyInfo
 		, VkImage src
 		, VkBuffer dst
 		, CmdList & list )

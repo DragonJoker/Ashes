@@ -36,19 +36,19 @@ namespace ashes
 
 	struct ShaderBindings
 	{
-		// UBO bindings
+		//! UBO bindings
 		ShaderBindingMap ubo;
-		// SSBO bindings
+		//! SSBO bindings
 		ShaderBindingMap sbo;
-		// Storage image bindings
+		//! Storage image bindings
 		ShaderBindingMap img;
-		// Sampled image bindings
+		//! Sampled image bindings
 		ShaderBindingMap tex;
-		// Texture buffer bindings
+		//! Texture buffer bindings
 		ShaderBindingMap tbo;
-		// Image buffer bindings
+		//! Image buffer bindings
 		ShaderBindingMap ibo;
-		// Unordered access view bindings
+		//! Unordered access view bindings
 		ShaderBindingMap uav;
 	};
 

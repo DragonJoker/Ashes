@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	void buildWriteTimestampCommand( VkPipelineStageFlagBits pipelineStage
+	void buildWriteTimestampCommand( [[maybe_unused]] VkPipelineStageFlagBits pipelineStage
 		, VkQueryPool pool
 		, uint32_t query
 		, CmdList & list )

@@ -35,8 +35,8 @@ namespace ashes::gl
 
 #if !defined( NDEBUG )
 
-		static uint32_t constexpr ControlValueCount = 64u;
-		static uint8_t constexpr ControlValue = 0xDC;
+		uint32_t constexpr ControlValueCount = 64u;
+		uint8_t constexpr ControlValue = 0xDC;
 
 		void initControlValue( ByteArray & data )
 		{
@@ -77,7 +77,7 @@ namespace ashes::gl
 #endif
 	}
 
-	DeviceMemory::DeviceMemory( VkAllocationCallbacks const * allocInfo
+	DeviceMemory::DeviceMemory( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkDevice device
 		, VkMemoryAllocateInfo allocateInfo )
 		: m_device{ device }
@@ -94,7 +94,7 @@ namespace ashes::gl
 		registerObject( m_device, *this );
 	}
 
-	DeviceMemory::~DeviceMemory()
+	DeviceMemory::~DeviceMemory()noexcept
 	{
 		unregisterObject( m_device, *this );
 		auto context = get( m_device )->getContext();
@@ -102,7 +102,7 @@ namespace ashes::gl
 	}
 
 	VkResult DeviceMemory::bindBuffer( VkBuffer buffer
-		, VkDeviceSize memoryOffset )
+		, VkDeviceSize memoryOffset )noexcept
 	{
 		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
 
@@ -129,9 +129,8 @@ namespace ashes::gl
 					, ptrdiff_t( m_bindings.size() - 1 ) );
 			}
 
-			auto & binding = *it->second;
-
-			if ( !m_data.empty() && binding.isMapped() )
+			if ( auto const & binding = *it->second;
+				!m_data.empty() && binding.isMapped() )
 			{
 				auto context = get( m_device )->getContext();
 				binding.upload( context
@@ -147,13 +146,14 @@ namespace ashes::gl
 		}
 		catch ( ... )
 		{
+			result = VK_ERROR_UNKNOWN;
 		}
 
 		return result;
 	}
 
 	VkResult DeviceMemory::bindImage( VkImage image
-		, VkDeviceSize memoryOffset )
+		, VkDeviceSize memoryOffset )noexcept
 	{
 		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
 
@@ -179,9 +179,8 @@ namespace ashes::gl
 					, ptrdiff_t( m_bindings.size() - 1 ) );
 			}
 
-			auto & binding = *it->second;
-
-			if ( !m_data.empty() && binding.isMapped() )
+			if ( auto const & binding = *it->second;
+				!m_data.empty() && binding.isMapped() )
 			{
 				auto context = get( m_device )->getContext();
 				glLogCall( context
@@ -205,12 +204,13 @@ namespace ashes::gl
 		}
 		catch ( ... )
 		{
+			result = VK_ERROR_UNKNOWN;
 		}
 
 		return result;
 	}
 
-	void DeviceMemory::unbindBuffer( VkBuffer buffer )
+	void DeviceMemory::unbindBuffer( VkBuffer buffer )noexcept
 	{
 		auto it = m_bindings.begin();
 
@@ -227,7 +227,7 @@ namespace ashes::gl
 		}
 	}
 
-	void DeviceMemory::unbindImage( VkImage image )
+	void DeviceMemory::unbindImage( VkImage image )noexcept
 	{
 		auto it = m_bindings.begin();
 
@@ -245,7 +245,7 @@ namespace ashes::gl
 	}
 
 	void DeviceMemory::upload( ContextLock const & context
-		, BindingRange const & range )const
+		, BindingRange const & range )const noexcept
 	{
 		assert( !m_data.empty() );
 		glLogCall( context
@@ -276,9 +276,9 @@ namespace ashes::gl
 			, GL_BUFFER_TARGET_PIXEL_UNPACK
 			, getInternal() );
 
-		for ( auto & binding : m_bindings )
+		for ( auto const & [_, binding] : m_bindings )
 		{
-			binding.second->upload( context
+			binding->upload( context
 				, m_data
 				, range );
 		}
@@ -290,7 +290,7 @@ namespace ashes::gl
 	}
 
 	void DeviceMemory::download( ContextLock const & context
-		, BindingRange const & range )const
+		, BindingRange const & range )const noexcept
 	{
 		assert( !m_data.empty() );
 		glLogCall( context
@@ -318,11 +318,10 @@ namespace ashes::gl
 			, 0u );
 	}
 
-	VkResult DeviceMemory::lock( ContextLock const & context
-		, VkDeviceSize offset
+	VkResult DeviceMemory::lock( VkDeviceSize offset
 		, VkDeviceSize size
-		, VkMemoryMapFlags flags
-		, void ** data )const
+		, [[maybe_unused]] VkMemoryMapFlags flags
+		, void ** data )const noexcept
 	{
 		if ( size == WholeSize )
 		{
@@ -344,7 +343,7 @@ namespace ashes::gl
 
 	VkResult DeviceMemory::flush( ContextLock const & context
 		, VkDeviceSize offset
-		, VkDeviceSize size )const
+		, VkDeviceSize size )const noexcept
 	{
 		BindingRange range{ offset, size, getSize() };
 
@@ -366,7 +365,7 @@ namespace ashes::gl
 
 	VkResult DeviceMemory::invalidate( ContextLock const & context
 		, VkDeviceSize offset
-		, VkDeviceSize size )const
+		, VkDeviceSize size )const noexcept
 	{
 		BindingRange range{ offset, size, getSize() };
 
@@ -386,7 +385,7 @@ namespace ashes::gl
 		return VK_SUCCESS;
 	}
 
-	void DeviceMemory::unlock( ContextLock const & context )const
+	void DeviceMemory::unlock( ContextLock const & context )const noexcept
 	{
 		auto dirty = m_dirty;
 

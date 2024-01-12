@@ -14,7 +14,7 @@ namespace ashes::gl
 			, VkImageType imageType
 			, VkImageCreateFlags flags
 			, VkSampleCountFlagBits samples
-			, uint32_t baseArrayLayer )
+			, uint32_t baseArrayLayer )noexcept
 		{
 			GlTextureType result = gl3::convertViewType( viewType, imageType, samples );
 
@@ -28,7 +28,7 @@ namespace ashes::gl
 		}
 	}
 
-	ImageView::ImageView( VkAllocationCallbacks const * allocInfo
+	ImageView::ImageView( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkDevice device
 		, VkImageViewCreateInfo createInfo
 		, bool createView )
@@ -49,95 +49,93 @@ namespace ashes::gl
 			, GlTextureType( m_glviewType )
 			, m_createInfo.format
 			, getComponents() };
-		auto image = get( m_createInfo.image );
 
-		if ( createView )
-		{
-			// Non initialised textures come from back buffers, ignore them
-			if ( image->hasInternal()
+		// Non initialised textures come from back buffers, ignore them
+		if ( auto image = get( m_createInfo.image );
+			createView
+				&& image->hasInternal()
 				&& hasTextureViews( m_device ) )
+		{
+			glLogCreateCall( context
+				, glGenTextures
+				, 1
+				, &m_internal );
+			glLogCall( context
+				, glTextureView
+				, m_internal
+				, m_glviewType
+				, image->getInternal()
+				, getInternalFormat()
+				, getSubresourceRange().baseMipLevel
+				, getSubresourceRange().levelCount
+				, getSubresourceRange().baseArrayLayer
+				, getSubresourceRange().layerCount );
+			glLogCall( context
+				, glBindTexture
+				, GlTextureType( m_glviewType )
+				, m_internal );
+			m_pixelFormat.applySwizzle( context, GlTextureType( m_glviewType ) );
+
+			int minLevel = 0;
+			glLogCall( context
+				, glGetTexParameteriv
+				, GlTextureType( m_glviewType )
+				, GL_TEX_PARAMETER_VIEW_MIN_LEVEL
+				, &minLevel );
+			if ( minLevel != int( getSubresourceRange().baseMipLevel ) )
 			{
-				glLogCreateCall( context
-					, glGenTextures
-					, 1
-					, &m_internal );
-				glLogCall( context
-					, glTextureView
-					, m_internal
-					, m_glviewType
-					, image->getInternal()
-					, getInternalFormat()
-					, getSubresourceRange().baseMipLevel
-					, getSubresourceRange().levelCount
-					, getSubresourceRange().baseArrayLayer
-					, getSubresourceRange().layerCount );
-				glLogCall( context
-					, glBindTexture
-					, GlTextureType( m_glviewType )
-					, m_internal );
-				m_pixelFormat.applySwizzle( context, GlTextureType( m_glviewType ) );
-
-				int minLevel = 0;
-				glLogCall( context
-					, glGetTexParameteriv
-					, GlTextureType( m_glviewType )
-					, GL_TEX_PARAMETER_VIEW_MIN_LEVEL
-					, &minLevel );
-				if ( minLevel != int( getSubresourceRange().baseMipLevel ) )
-				{
-					reportWarning( get( this )
-						, VK_SUCCESS
-						, "ImageViewStatus"
-						, "Image base mip level doesn't match requested one." );
-				}
-
-				int numLevels = 0;
-				glLogCall( context
-					, glGetTexParameteriv
-					, GlTextureType( m_glviewType )
-					, GL_TEX_PARAMETER_VIEW_NUM_LEVELS
-					, &numLevels );
-				if ( numLevels != int( getSubresourceRange().levelCount ) )
-				{
-					reportWarning( get( this )
-						, VK_SUCCESS
-						, "ImageViewStatus"
-						, "Image mip level count doesn't match requested one." );
-				}
-
-				int minLayer = 0;
-				glLogCall( context
-					, glGetTexParameteriv
-					, GlTextureType( m_glviewType )
-					, GL_TEX_PARAMETER_VIEW_MIN_LAYER
-					, &minLayer );
-				if ( minLayer != int( getSubresourceRange().baseArrayLayer ) )
-				{
-					reportWarning( get( this )
-						, VK_SUCCESS
-						, "ImageViewStatus"
-						, "Image base array layer doesn't match requested one." );
-				}
-
-				int numLayers = 0;
-				glLogCall( context
-					, glGetTexParameteriv
-					, GlTextureType( m_glviewType )
-					, GL_TEX_PARAMETER_VIEW_NUM_LAYERS
-					, &numLayers );
-				if ( numLayers != int( getSubresourceRange().layerCount ) )
-				{
-					reportWarning( get( this )
-						, VK_SUCCESS
-						, "ImageViewStatus"
-						, "Image array layer count doesn't match requested one." );
-				}
-
-				glLogCall( context
-					, glBindTexture
-					, GlTextureType( m_glviewType )
-					, 0u );
+				reportWarning( get( this )
+					, VK_SUCCESS
+					, "ImageViewStatus"
+					, "Image base mip level doesn't match requested one." );
 			}
+
+			int numLevels = 0;
+			glLogCall( context
+				, glGetTexParameteriv
+				, GlTextureType( m_glviewType )
+				, GL_TEX_PARAMETER_VIEW_NUM_LEVELS
+				, &numLevels );
+			if ( numLevels != int( getSubresourceRange().levelCount ) )
+			{
+				reportWarning( get( this )
+					, VK_SUCCESS
+					, "ImageViewStatus"
+					, "Image mip level count doesn't match requested one." );
+			}
+
+			int minLayer = 0;
+			glLogCall( context
+				, glGetTexParameteriv
+				, GlTextureType( m_glviewType )
+				, GL_TEX_PARAMETER_VIEW_MIN_LAYER
+				, &minLayer );
+			if ( minLayer != int( getSubresourceRange().baseArrayLayer ) )
+			{
+				reportWarning( get( this )
+					, VK_SUCCESS
+					, "ImageViewStatus"
+					, "Image base array layer doesn't match requested one." );
+			}
+
+			int numLayers = 0;
+			glLogCall( context
+				, glGetTexParameteriv
+				, GlTextureType( m_glviewType )
+				, GL_TEX_PARAMETER_VIEW_NUM_LAYERS
+				, &numLayers );
+			if ( numLayers != int( getSubresourceRange().layerCount ) )
+			{
+				reportWarning( get( this )
+					, VK_SUCCESS
+					, "ImageViewStatus"
+					, "Image array layer count doesn't match requested one." );
+			}
+
+			glLogCall( context
+				, glBindTexture
+				, GlTextureType( m_glviewType )
+				, 0u );
 		}
 
 		registerObject( m_device, *this );
@@ -170,7 +168,7 @@ namespace ashes::gl
 	{
 	}
 
-	ImageView::~ImageView()
+	ImageView::~ImageView()noexcept
 	{
 		unregisterObject( m_device, *this );
 
@@ -209,6 +207,17 @@ namespace ashes::gl
 		}
 
 		return result;
+	}
+
+	bool ImageView::hasInternal()const noexcept
+	{
+		if ( m_internal != GL_INVALID_INDEX )
+		{
+			return true;
+		}
+
+		assert( m_createInfo.image != nullptr );
+		return get( m_createInfo.image )->hasInternal();
 	}
 
 	GLuint ImageView::getInternal()const noexcept

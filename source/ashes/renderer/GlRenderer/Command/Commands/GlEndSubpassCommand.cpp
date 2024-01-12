@@ -13,7 +13,7 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	void buildEndSubpassCommand( VkDevice device
+	void buildEndSubpassCommand( [[maybe_unused]] VkDevice device
 		, ContextStateStack & stack
 		, VkFramebuffer frameBuffer
 		, VkSubpassDescription const & subpass
@@ -34,7 +34,8 @@ namespace ashes::gl
 			{
 				if ( resolveAttach.attachment != VK_ATTACHMENT_UNUSED )
 				{
-					auto & srcAttach = get( frameBuffer )->getMsColourAttaches()[index++];
+					auto & srcAttach = get( frameBuffer )->getMsColourAttaches()[index];
+					++index;
 					auto & resolveAttaches = get( frameBuffer )->getResolveAttaches();
 					auto resolveIt = std::find_if( resolveAttaches.begin()
 						, resolveAttaches.end()

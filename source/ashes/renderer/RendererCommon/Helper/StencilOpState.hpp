@@ -12,16 +12,13 @@ namespace ashes
 {
 	inline VkStencilOpState getStencilOpState()
 	{
-		return
-		{
-			VK_STENCIL_OP_KEEP,
-			VK_STENCIL_OP_KEEP,
-			VK_STENCIL_OP_KEEP,
-			VK_COMPARE_OP_ALWAYS,
-			0xFFFFFFFFu,
-			0xFFFFFFFFu,
-			0u,
-		};
+		return { VK_STENCIL_OP_KEEP
+			, VK_STENCIL_OP_KEEP
+			, VK_STENCIL_OP_KEEP
+			, VK_COMPARE_OP_ALWAYS
+			, 0xFFFFFFFFu
+			, 0xFFFFFFFFu
+			, 0u };
 	}
 
 	inline bool operator==( VkStencilOpState const & lhs, VkStencilOpState const & rhs )

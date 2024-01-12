@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	Fence::Fence( VkAllocationCallbacks const * allocInfo
+	Fence::Fence( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkDevice device
 		, VkFenceCreateFlags flags )
 		: m_device{ device }
@@ -19,7 +19,7 @@ namespace ashes::gl
 		registerObject( m_device, *this );
 	}
 
-	Fence::~Fence()
+	Fence::~Fence()noexcept
 	{
 		unregisterObject( m_device, *this );
 
@@ -32,7 +32,7 @@ namespace ashes::gl
 		}
 	}
 
-	void Fence::insert( ContextLock & context )
+	void Fence::insert( ContextLock const & context )
 	{
 		if ( !m_fence )
 		{
@@ -44,7 +44,7 @@ namespace ashes::gl
 		}
 	}
 
-	VkResult Fence::wait( ContextLock & context
+	VkResult Fence::wait( ContextLock const & context
 		, uint64_t timeout
 		, bool forceWait
 		, bool ignoreFirst )
@@ -84,7 +84,7 @@ namespace ashes::gl
 				: VK_NOT_READY );
 	}
 
-	void Fence::reset( ContextLock & context )
+	void Fence::reset( ContextLock const & context )
 	{
 		glLogCall( context
 			, glDeleteSync
@@ -93,7 +93,7 @@ namespace ashes::gl
 		m_signaled = false;
 	}
 
-	VkResult Fence::getStatus( ContextLock & context )
+	VkResult Fence::getStatus( ContextLock const & context )
 	{
 		m_firstUse = false;
 

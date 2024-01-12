@@ -56,9 +56,9 @@ namespace ashes::gl
 	bool glCheckOutOfMemory( ContextLock const & context )
 	{
 		bool result = true;
-		auto errorCode = context->glGetError();
 
-		if ( errorCode == GL_ERROR_OUT_OF_MEMORY )
+		if ( auto errorCode = context->glGetError();
+			errorCode == GL_ERROR_OUT_OF_MEMORY )
 		{
 			context->setOutOfMemory();
 			result = false;
@@ -68,13 +68,13 @@ namespace ashes::gl
 	}
 
 	bool glCheckError( ContextLock const & context
-		, std::function< std::string() > stringifier
+		, std::function< std::string() > const & stringifier
 		, bool log )
 	{
 		bool result = true;
-		auto errorCode = context->glGetError();
 
-		if ( errorCode != GL_SUCCESS )
+		if ( auto errorCode = context->glGetError();
+			errorCode != GL_SUCCESS )
 		{
 			if ( errorCode == GL_ERROR_OUT_OF_MEMORY )
 			{
@@ -101,7 +101,7 @@ namespace ashes::gl
 				logError( stream.str().c_str() );
 			}
 
-			errorCode = context->glGetError();
+			context->glGetError();
 			result = false;
 		}
 
@@ -158,11 +158,11 @@ namespace ashes::gl
 
 #else
 
-	void logDebug( char const * const log )
+	void logDebug( char const * const )
 	{
 	}
 
-	void pushDebugBlock( std::string name )
+	void pushDebugBlock( std::string const & )
 	{
 	}
 
@@ -186,9 +186,8 @@ namespace ashes::gl
 	{
 #if !defined( NDEBUG )
 
-		std::ofstream file{ getDebugLogFile(), std::ios::app };
-
-		if ( file )
+		if ( std::ofstream file{ getDebugLogFile(), std::ios::app };
+			file )
 		{
 			file << log << std::endl;
 		}
@@ -203,7 +202,7 @@ namespace ashes::gl
 #endif
 	}
 
-	void logStream( std::stringstream & stream )
+	void logStream( std::stringstream const & stream )
 	{
 		logDebug( stream.str().c_str() );
 	}

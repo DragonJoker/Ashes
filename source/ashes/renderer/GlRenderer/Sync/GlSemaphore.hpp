@@ -14,9 +14,9 @@ namespace ashes::gl
 	public:
 		Semaphore( VkAllocationCallbacks const * allocInfo
 			, VkDevice device );
-		~Semaphore();
+		~Semaphore()noexcept;
 
-		inline VkDevice getDevice()const
+		VkDevice getDevice()const
 		{
 			return m_device;
 		}

@@ -7,16 +7,16 @@
 
 namespace ashes::gl
 {
-	DescriptorPool::DescriptorPool( VkAllocationCallbacks const * allocInfo
+	DescriptorPool::DescriptorPool( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkDevice device
-		, VkDescriptorPoolCreateInfo createInfo )
+		, VkDescriptorPoolCreateInfo const & createInfo )
 		: m_device{ device }
 		, m_flags{ createInfo.flags }
 		, m_maxSets{ createInfo.maxSets }
 		, m_poolSizes{ makeVector( createInfo.pPoolSizes, createInfo.poolSizeCount ) }
 	{
 		m_memory.resize( m_maxSets * sizeof( DescriptorSet ) );
-		DescriptorSet * buffer = reinterpret_cast< DescriptorSet * >( m_memory.data() );
+		auto buffer = reinterpret_cast< DescriptorSet * >( m_memory.data() );
 
 		for ( uint32_t i = 0u; i < m_maxSets; ++i )
 		{
@@ -27,7 +27,7 @@ namespace ashes::gl
 		registerObject( m_device, *this );
 	}
 
-	DescriptorPool::~DescriptorPool()
+	DescriptorPool::~DescriptorPool()noexcept
 	{
 		unregisterObject( m_device, *this );
 
@@ -53,8 +53,8 @@ namespace ashes::gl
 			m_free.erase( m_free.begin() + ptrdiff_t( m_free.size() - 1 ) );
 			new ( set )DescriptorSet{ nullptr, get( this ), layout };
 #if !defined( NDEBUG )
-			auto ires = m_sets.insert( set );
-			assert( ires.second );
+			auto [it, res] = m_sets.insert( set );
+			assert( res );
 #else
 			m_sets.insert( set );
 #endif
@@ -76,7 +76,7 @@ namespace ashes::gl
 		return result;
 	}
 
-	VkResult DescriptorPool::reset( VkDescriptorPoolResetFlags flags )
+	VkResult DescriptorPool::reset()
 	{
 		for ( auto set : m_sets )
 		{
@@ -88,7 +88,7 @@ namespace ashes::gl
 		return VK_SUCCESS;
 	}
 
-	VkResult DescriptorPool::free( ArrayView< VkDescriptorSet const > const & sets )
+	VkResult DescriptorPool::freeDescriptors( ArrayView< VkDescriptorSet const > const & sets )
 	{
 		if ( checkFlag( m_flags, VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT ) )
 		{

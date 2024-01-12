@@ -13,11 +13,11 @@ namespace ashes::gl
 {
 #if _WIN32
 
-	SurfaceKHR::SurfaceKHR( VkAllocationCallbacks const * allocInfo
+	SurfaceKHR::SurfaceKHR( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkInstance instance
 		, VkWin32SurfaceCreateInfoKHR createInfo )
 		: m_instance{ instance }
-		, m_win32CreateInfo{ createInfo }
+		, m_win32CreateInfo{ std::move( createInfo ) }
 	{
 		m_context = get( m_instance )->registerSurface( get( this ) );
 		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
@@ -27,11 +27,11 @@ namespace ashes::gl
 
 #elif __linux__
 
-	SurfaceKHR::SurfaceKHR( VkAllocationCallbacks const * allocInfo
+	SurfaceKHR::SurfaceKHR( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkInstance instance
 		, VkXlibSurfaceCreateInfoKHR createInfo )
 		: m_instance{ instance }
-		, m_xlibCreateInfo{ createInfo }
+		, m_xlibCreateInfo{ std::move( createInfo ) }
 	{
 		m_context = get( m_instance )->registerSurface( get( this ) );
 		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
@@ -39,11 +39,11 @@ namespace ashes::gl
 		updateSurfaceInfos();
 	}
 
-	SurfaceKHR::SurfaceKHR( VkAllocationCallbacks const * allocInfo
+	SurfaceKHR::SurfaceKHR( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkInstance instance
 		, VkXcbSurfaceCreateInfoKHR createInfo )
 		: m_instance{ instance }
-		, m_xcbCreateInfo{ createInfo }
+		, m_xcbCreateInfo{ std::move( createInfo ) }
 	{
 		m_context = get( m_instance )->registerSurface( get( this ) );
 		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
@@ -51,11 +51,11 @@ namespace ashes::gl
 		updateSurfaceInfos();
 	}
 
-	SurfaceKHR::SurfaceKHR( VkAllocationCallbacks const * allocInfo
+	SurfaceKHR::SurfaceKHR( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkInstance instance
 		, VkWaylandSurfaceCreateInfoKHR createInfo )
 		: m_instance{ instance }
-		, m_waylandCreateInfo{ createInfo }
+		, m_waylandCreateInfo{ std::move( createInfo ) }
 	{
 		m_context = get( m_instance )->registerSurface( get( this ) );
 		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
@@ -65,11 +65,11 @@ namespace ashes::gl
 
 #elif __APPLE__
 
-	SurfaceKHR::SurfaceKHR( VkAllocationCallbacks const * allocInfo
+	SurfaceKHR::SurfaceKHR( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkInstance instance
 		, VkMacOSSurfaceCreateInfoMVK createInfo )
 		: m_instance{ instance }
-		, m_macOSCreateInfo{ createInfo }
+		, m_macOSCreateInfo{ std::move( createInfo ) }
 	{
 		m_context = get( m_instance )->registerSurface( get( this ) );
 		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
@@ -80,7 +80,7 @@ namespace ashes::gl
 #endif
 #ifdef VK_KHR_display
 
-	SurfaceKHR::SurfaceKHR( VkAllocationCallbacks const * allocInfo
+	SurfaceKHR::SurfaceKHR( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkInstance instance
 		, VkDisplaySurfaceCreateInfoKHR createInfo )
 		: m_instance{ instance }
@@ -95,7 +95,7 @@ namespace ashes::gl
 
 #endif
 
-	SurfaceKHR::~SurfaceKHR()
+	SurfaceKHR::~SurfaceKHR()noexcept
 	{
 		get( m_instance )->unregisterSurface( get( this ) );
 	}
@@ -112,8 +112,8 @@ namespace ashes::gl
 
 		capabilities.minImageCount = 1u;
 		capabilities.maxImageCount = 1u;
-		capabilities.currentExtent.width = ~( 0u );
-		capabilities.currentExtent.height = ~( 0u );
+		capabilities.currentExtent.width = ~0u;
+		capabilities.currentExtent.height = ~0u;
 		capabilities.minImageExtent = { 1u, 1u };
 		capabilities.maxImageExtent = { 65536u, 65536u };
 		capabilities.maxImageArrayLayers = 1u;

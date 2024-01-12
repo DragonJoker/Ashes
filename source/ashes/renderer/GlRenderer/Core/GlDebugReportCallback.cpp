@@ -12,10 +12,10 @@ namespace ashes::gl
 {
 	namespace
 	{
-		static const uint32_t GL_PIXEL_TRANSFER_IS_SYNC_WITH_RENDERING = 0x00020052;
-		static const uint32_t GL_USE_OF_DEVICE_LOCAL_MEMORY_FOR_CPU_TRANSFERS = 0x00020071;
-		static const uint32_t GL_COPY_BUFFER_FROM_VIDEO_TO_HOST_MEMORY = 0x00020072;
-		static const uint32_t GL_SHADER_PROGRAM_IS_RECOMPILED_BASED_ON_GL_STATE = 0x00020092;
+		constexpr uint32_t GL_PIXEL_TRANSFER_IS_SYNC_WITH_RENDERING = 0x00020052;
+		constexpr uint32_t GL_USE_OF_DEVICE_LOCAL_MEMORY_FOR_CPU_TRANSFERS = 0x00020071;
+		constexpr uint32_t GL_COPY_BUFFER_FROM_VIDEO_TO_HOST_MEMORY = 0x00020072;
+		constexpr uint32_t GL_SHADER_PROGRAM_IS_RECOMPILED_BASED_ON_GL_STATE = 0x00020092;
 
 		char const * convert( GlDebugSource source )
 		{
@@ -156,7 +156,7 @@ namespace ashes::gl
 			, uint32_t severity
 			, int length
 			, const char * message
-			, DebugUtilsMessengerEXT * userParam )
+			, DebugUtilsMessengerEXT const * userParam )noexcept
 		{
 			if ( !isIgnored( id, GlDebugType( type ) ) )
 			{
@@ -180,7 +180,7 @@ namespace ashes::gl
 			, uint32_t severity
 			, int length
 			, const char * message
-			, DebugUtilsMessengerEXT * userParam )
+			, DebugUtilsMessengerEXT const * userParam )noexcept
 		{
 			if ( !isIgnored( id ) )
 			{
@@ -199,7 +199,7 @@ namespace ashes::gl
 		}
 	}
 
-	DebugUtilsMessengerEXT::DebugUtilsMessengerEXT( VkAllocationCallbacks const * callbacks
+	DebugUtilsMessengerEXT::DebugUtilsMessengerEXT( [[maybe_unused]] VkAllocationCallbacks const * callbacks
 		, VkInstance instance
 		, VkDebugUtilsMessengerCreateInfoEXT createInfo )
 		: m_instance{ instance }
@@ -210,14 +210,10 @@ namespace ashes::gl
 		glinstance->registerDebugMessengerAMD( get( this ), PFNGLDEBUGAMDPROC( &messengerDebugLogAMD ), this );
 	}
 
-	DebugUtilsMessengerEXT::~DebugUtilsMessengerEXT()
-	{
-	}
-
 	void DebugUtilsMessengerEXT::submit( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
 		, VkDebugUtilsMessageTypeFlagsEXT messageTypes
 		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData
-		, void * userData )
+		, void * userData )const noexcept
 	{
 		m_createInfo.pfnUserCallback( messageSeverity
 			, messageTypes
@@ -229,8 +225,8 @@ namespace ashes::gl
 		, GlDebugType type
 		, uint32_t id
 		, GlDebugSeverity severity
-		, int length
-		, const char * const message )
+		, [[maybe_unused]] int length
+		, const char * const message )const noexcept
 	{
 		auto layer = convert( source );
 		VkDebugUtilsMessengerCallbackDataEXT data
@@ -257,8 +253,8 @@ namespace ashes::gl
 	void DebugUtilsMessengerEXT::report( uint32_t id
 		, GlDebugCategory category
 		, GlDebugSeverity severity
-		, int length
-		, const char * const message )
+		, [[maybe_unused]] int length
+		, const char * const message )const noexcept
 	{
 		auto layer = convert( category );
 		VkDebugUtilsMessengerCallbackDataEXT data
@@ -356,7 +352,7 @@ namespace ashes::gl
 		}
 	}
 
-	DebugReportCallbackEXT::DebugReportCallbackEXT( VkAllocationCallbacks const * callbacks
+	DebugReportCallbackEXT::DebugReportCallbackEXT( [[maybe_unused]] VkAllocationCallbacks const * callbacks
 		, VkInstance instance
 		, VkDebugReportCallbackCreateInfoEXT createInfo )
 		: m_instance{ instance }
@@ -367,17 +363,13 @@ namespace ashes::gl
 		glinstance->registerDebugMessageCallbackAMD( get( this ), PFNGLDEBUGAMDPROC( &callbackDebugLogAMD ), this );
 	}
 
-	DebugReportCallbackEXT::~DebugReportCallbackEXT()
-	{
-	}
-
 	void DebugReportCallbackEXT::report( VkDebugReportFlagsEXT flags
 		, VkDebugReportObjectTypeEXT objectType
 		, uint64_t object
 		, size_t location
 		, int32_t messageCode
 		, const char * pLayerPrefix
-		, const char * pMessage )
+		, const char * pMessage )const noexcept
 	{
 		m_createInfo.pfnCallback( flags
 			, objectType
@@ -393,15 +385,15 @@ namespace ashes::gl
 		, GlDebugType type
 		, uint32_t id
 		, GlDebugSeverity severity
-		, int length
-		, const char * const message )
+		, [[maybe_unused]] int length
+		, const char * const message )const noexcept
 	{
 		auto layer = convert( source );
 		auto flags = convert( type );
 		flags |= convert( severity );
 		m_createInfo.pfnCallback( flags
 			, VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT
-			, 0ull
+			, 0ULL
 			, 0u
 			, int32_t( id )
 			, layer
@@ -412,14 +404,14 @@ namespace ashes::gl
 	void DebugReportCallbackEXT::report( uint32_t id
 		, GlDebugCategory category
 		, GlDebugSeverity severity
-		, int length
-		, const char * const message )
+		, [[maybe_unused]] int length
+		, const char * const message )const noexcept
 	{
 		auto layer = convert( category );
 		auto flags = convert( severity );
 		m_createInfo.pfnCallback( flags
 			, VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT
-			, 0ull
+			, 0ULL
 			, 0u
 			, int32_t( id )
 			, layer

@@ -107,14 +107,14 @@ namespace ashes::gl
 					, dstBaseArrayLayer + layer
 					, GL_DRAW_FRAMEBUFFER
 					, list );
-				list.push_back( makeCmd< OpType::eBlitFramebuffer >( layerCopy.region.srcOffsets[0].x
-					, layerCopy.region.srcOffsets[0].y
-					, layerCopy.region.srcOffsets[1].x
-					, layerCopy.region.srcOffsets[1].y
-					, layerCopy.region.dstOffsets[0].x
-					, layerCopy.region.dstOffsets[0].y
-					, layerCopy.region.dstOffsets[1].x
-					, layerCopy.region.dstOffsets[1].y
+				list.push_back( makeCmd< OpType::eBlitFramebuffer >( layerCopy.getRegion().srcOffsets[0].x
+					, layerCopy.getRegion().srcOffsets[0].y
+					, layerCopy.getRegion().srcOffsets[1].x
+					, layerCopy.getRegion().srcOffsets[1].y
+					, layerCopy.getRegion().dstOffsets[0].x
+					, layerCopy.getRegion().dstOffsets[0].y
+					, layerCopy.getRegion().dstOffsets[1].x
+					, layerCopy.getRegion().dstOffsets[1].y
 					, getMask( get( srcImage )->getFormatVk() )
 					, GL_FILTER_NEAREST ) );
 				list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER

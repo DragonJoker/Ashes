@@ -19,21 +19,21 @@ namespace ashes::gl
 		Sampler( VkAllocationCallbacks const * allocInfo
 			, VkDevice device
 			, VkSamplerCreateInfo const & createInfo );
-		~Sampler();
+		~Sampler()noexcept;
 
-		inline float getLodBias()const
+		float getLodBias()const
 		{
 			return m_lodBias;
 		}
 
-		inline VkDevice getDevice()const
+		VkDevice getDevice()const
 		{
 			return m_device;
 		}
 
 	private:
-		VkDevice m_device;
-		float m_lodBias;
+		VkDevice m_device{};
+		float m_lodBias{};
 	};
 }
 

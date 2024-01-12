@@ -19,16 +19,17 @@ namespace ashes::gl
 {
 	struct ContextState
 	{
+		~ContextState()noexcept = default;
 		ContextState( ContextState const & rhs );
-		ContextState( ContextState && rhs );
-		ContextState( Optional< VkPipelineColorBlendStateCreateInfo > cbState
-			, Optional< VkPipelineDepthStencilStateCreateInfo > dsState
-			, Optional< VkPipelineMultisampleStateCreateInfo > msState
-			, Optional< VkPipelineTessellationStateCreateInfo > tsState
-			, VkPipelineInputAssemblyStateCreateInfo iaState
-			, VkPipelineViewportStateCreateInfo vpState
-			, VkPipelineRasterizationStateCreateInfo rsState
-			, VkPipelineDynamicStateCreateInfo dyState );
+		ContextState( ContextState && rhs )noexcept;
+		ContextState( Optional< VkPipelineColorBlendStateCreateInfo > const & cbState
+			, Optional< VkPipelineDepthStencilStateCreateInfo > const & dsState
+			, Optional< VkPipelineMultisampleStateCreateInfo > const & msState
+			, Optional< VkPipelineTessellationStateCreateInfo > const & tsState
+			, VkPipelineInputAssemblyStateCreateInfo const & iaState
+			, VkPipelineViewportStateCreateInfo const & vpState
+			, VkPipelineRasterizationStateCreateInfo const & rsState
+			, VkPipelineDynamicStateCreateInfo const & dyState );
 		ContextState( VkPipelineColorBlendStateCreateInfo const * cbState = nullptr
 			, VkPipelineDepthStencilStateCreateInfo const * dsState = nullptr
 			, VkPipelineMultisampleStateCreateInfo const * msState = nullptr
@@ -37,7 +38,7 @@ namespace ashes::gl
 			, VkPipelineViewportStateCreateInfo const * vpState = nullptr
 			, VkPipelineRasterizationStateCreateInfo const * rsState = nullptr
 			, VkPipelineDynamicStateCreateInfo const * dyState = nullptr );
-		ContextState( VkPipelineColorBlendStateCreateInfo cbState
+		ContextState( VkPipelineColorBlendStateCreateInfo const & cbState
 			, VkPipelineDepthStencilStateCreateInfo const * dsState = nullptr
 			, VkPipelineMultisampleStateCreateInfo const * msState = nullptr
 			, VkPipelineTessellationStateCreateInfo const * tsState = nullptr
@@ -46,19 +47,19 @@ namespace ashes::gl
 			, VkPipelineRasterizationStateCreateInfo const * rsState = nullptr
 			, VkPipelineDynamicStateCreateInfo const * dyState = nullptr );
 
-		ContextState & swap( ContextState && rhs );
+		void swap( ContextState & lhs, ContextState & rhs )const noexcept;
 
-		inline ContextState & operator=( ContextState const & rhs )
+		ContextState & operator=( ContextState const & rhs )
 		{
 			ContextState tmp = rhs;
-			swap( std::move( tmp ) );
+			swap( *this, tmp );
 			doInit();
 			return *this;
 		}
 
-		inline ContextState & operator=( ContextState && rhs )
+		ContextState & operator=( ContextState && rhs )noexcept
 		{
-			swap( std::move( rhs ) );
+			swap( *this, rhs );
 			doInit();
 			return *this;
 		}
@@ -95,7 +96,7 @@ namespace ashes::gl
 		int32_t unpackAlign{ 1 };
 
 	private:
-		void doInit();
+		void doInit()noexcept;
 
 	private:
 		VkViewportArray viewports;

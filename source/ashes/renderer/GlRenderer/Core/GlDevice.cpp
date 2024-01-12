@@ -128,7 +128,7 @@ namespace ashes::gl
 		void doCheckEnabledExtensions( VkPhysicalDevice physicalDevice
 			, StringArray const & extensions )
 		{
-			auto available = get( physicalDevice )->enumerateExtensionProperties( nullptr );
+			auto const & available = get( physicalDevice )->enumerateExtensionProperties( nullptr );
 
 			for ( auto & extension : extensions )
 			{
@@ -157,7 +157,7 @@ namespace ashes::gl
 		void doCheckEnabledFeatures( VkPhysicalDevice physicalDevice
 			, VkPhysicalDeviceFeatures const & enabledFeatures )
 		{
-			auto available = get( physicalDevice )->getFeatures();
+			auto const & available = get( physicalDevice )->getFeatures();
 			doCheckEnabledFeature( available.robustBufferAccess, enabledFeatures.robustBufferAccess );
 			doCheckEnabledFeature( available.fullDrawIndexUint32, enabledFeatures.fullDrawIndexUint32 );
 			doCheckEnabledFeature( available.imageCubeArray, enabledFeatures.imageCubeArray );
@@ -251,7 +251,6 @@ namespace ashes::gl
 		, m_callbacks{ callbacks }
 		, m_createInfos{ std::move( createInfos ) }
 		, m_enabledFeatures{ m_createInfos.pEnabledFeatures ? *m_createInfos.pEnabledFeatures : get( m_physicalDevice )->getFeatures() }
-		, m_dyState{ VK_DYNAMIC_STATE_SCISSOR, VK_DYNAMIC_STATE_VIEWPORT }
 	{
 		for ( auto & name : ashes::makeArrayView( m_createInfos.ppEnabledExtensionNames, m_createInfos.enabledExtensionCount ) )
 		{
@@ -267,15 +266,15 @@ namespace ashes::gl
 		doInitialiseContextDependent();
 	}
 
-	Device::~Device()
+	Device::~Device()noexcept
 	{
 		if ( m_currentContext )
 		{
 			auto context = getContext();
 
-			for ( auto creates : m_queues )
+			for ( auto const & [_, creates] : m_queues )
 			{
-				for ( auto queue : creates.second.queues )
+				for ( auto queue : creates.queues )
 				{
 					deallocateNA( queue );
 				}
@@ -296,7 +295,7 @@ namespace ashes::gl
 		get( m_instance )->unregisterDevice( get( this ) );
 	}
 
-	void Device::cleanupContextDependent( Context const & context )
+	void Device::cleanupContextDependent( Context const & context )noexcept
 	{
 		if ( &context == m_currentContext )
 		{
@@ -304,7 +303,7 @@ namespace ashes::gl
 		}
 	}
 
-	void Device::cleanupBlitSrcFbo()
+	void Device::cleanupBlitSrcFbo()noexcept
 	{
 		if ( m_blitFbos[0] )
 		{
@@ -314,7 +313,7 @@ namespace ashes::gl
 		}
 	}
 
-	void Device::cleanupBlitDstFbo()
+	void Device::cleanupBlitDstFbo()noexcept
 	{
 		if ( m_blitFbos[1] )
 		{
@@ -398,21 +397,19 @@ namespace ashes::gl
 			return VK_ERROR_EXTENSION_NOT_PRESENT;
 		}
 
-		if ( nameInfo.objectType != VK_OBJECT_TYPE_FENCE )
+		if ( nameInfo.objectType != VK_OBJECT_TYPE_FENCE
+			&& context->m_glObjectLabel )
 		{
-			if ( context->m_glObjectLabel )
-			{
-				auto name = getObjectName( nameInfo.objectType, nameInfo.objectHandle );
+			auto name = getObjectName( nameInfo.objectType, nameInfo.objectHandle );
 
-				if ( name != GL_INVALID_INDEX )
-				{
-					isOk = glLogCall( context
-						, glObjectLabel
-						, GLenum( convert( nameInfo.objectType ) )
-						, name
-						, GLsizei( strnlen( nameInfo.pObjectName, 256u ) )
-						, nameInfo.pObjectName );
-				}
+			if ( name != GL_INVALID_INDEX )
+			{
+				isOk = glLogCall( context
+					, glObjectLabel
+					, GLenum( convert( nameInfo.objectType ) )
+					, name
+					, GLsizei( strnlen( nameInfo.pObjectName, 256u ) )
+					, nameInfo.pObjectName );
 			}
 		}
 
@@ -421,7 +418,7 @@ namespace ashes::gl
 			: VK_ERROR_INCOMPATIBLE_DRIVER;
 	}
 
-	VkResult Device::setDebugUtilsObjectTag( VkDebugUtilsObjectTagInfoEXT const & tagInfo )const
+	VkResult Device::setDebugUtilsObjectTag( [[maybe_unused]] VkDebugUtilsObjectTagInfoEXT const & tagInfo )const
 	{
 		return VK_SUCCESS;
 	}
@@ -438,7 +435,7 @@ namespace ashes::gl
 #endif
 #if VK_EXT_debug_marker
 
-	VkResult Device::debugMarkerSetObjectTag( VkDebugMarkerObjectTagInfoEXT const & tagInfo )const
+	VkResult Device::debugMarkerSetObjectTag( [[maybe_unused]] VkDebugMarkerObjectTagInfoEXT const & tagInfo )const
 	{
 		return VK_SUCCESS;
 	}
@@ -582,12 +579,12 @@ namespace ashes::gl
 		}
 	}
 
-	void Device::unlink( VkSurfaceKHR surface )
+	void Device::unlink()noexcept
 	{
 		doCleanupContextDependent();
 	}
 
-	ContextLock Device::getContext()const
+	ContextLock Device::getContext()const noexcept
 	{
 		assert( m_currentContext );
 		return { *m_currentContext, get( this ) };
@@ -600,8 +597,7 @@ namespace ashes::gl
 			++itQueue )
 		{
 			auto & queueCreateInfo = *itQueue;
-			auto it = m_queues.emplace( queueCreateInfo.queueFamilyIndex
-				, QueueCreates{ queueCreateInfo, {} } ).first;
+			auto it = m_queues.try_emplace( queueCreateInfo.queueFamilyIndex, queueCreateInfo ).first;
 
 			for ( auto i = 0u; i < queueCreateInfo.queueCount; ++i )
 			{
@@ -646,11 +642,11 @@ namespace ashes::gl
 			get( m_dummyIndexed.indexMemory )->bindBuffer( m_dummyIndexed.indexBuffer, 0u );
 			auto memory = get( m_dummyIndexed.indexMemory );
 			uint8_t * buffer{ nullptr };
-			auto size = count * sizeof( uint32_t );
 
-			if ( memory->lock( context, 0u, size, 0u, reinterpret_cast< void ** >( &buffer ) ) == VK_SUCCESS )
+			if ( auto size = count * sizeof( uint32_t );
+				memory->lock( 0u, size, 0u, reinterpret_cast< void ** >( &buffer ) ) == VK_SUCCESS )
 			{
-				std::memcpy( buffer, gl::dummyIndex, size );
+				std::memcpy( buffer, gl::dummyIndex.data(), size );
 				memory->flush( context, 0, size );
 				memory->unlock( context );
 			}
@@ -702,7 +698,7 @@ namespace ashes::gl
 			} );
 	}
 
-	void Device::doCleanupContextDependent()
+	void Device::doCleanupContextDependent()noexcept
 	{
 		if ( m_sampler )
 		{
@@ -723,74 +719,78 @@ namespace ashes::gl
 #if VK_EXT_debug_utils || VK_EXT_debug_marker
 
 	void Device::doRegisterObject( uint64_t object
-		, uint32_t objectType
+		, [[maybe_unused]] uint32_t objectType
 		, std::string const & typeName )const
 	{
 		std::stringstream stream;
 		stream.imbue( std::locale{ "C" } );
 		stream << "Created " << typeName
 			<< " [0x" << std::hex << std::setw( 8u ) << std::setfill( '0' ) << object << "]";
-		m_allocated.emplace( object
-			, ObjectAllocation{
-				typeName
-			} );
+		m_allocated.try_emplace( object, typeName );
 	}
 
-	void Device::doUnregisterObject( uint64_t object )const
+	void Device::doUnregisterObject( uint64_t object )const noexcept
 	{
 		auto it = m_allocated.find( object );
 		assert( it != m_allocated.end() );
 		m_allocated.erase( it );
 	}
 
-	void Device::doReportRegisteredObjects()const
+	void Device::doReportRegisteredObjects()const noexcept
 	{
-		for ( auto & alloc : m_allocated )
+		try
 		{
-			std::stringstream stream;
-			stream << "Leaked [" << alloc.second.type << "]";
-			logError( stream.str().c_str() );
+			for ( auto const & [_, alloc] : m_allocated )
+			{
+				std::stringstream stream;
+				stream << "Leaked [" << alloc.type << "]";
+				logError( stream.str().c_str() );
+			}
+		}
+		catch ( ... )
+		{
+			// Nothing to do here
 		}
 	}
 
 #endif
 
-	bool has420PackExtensions( VkDevice device )
+	bool has420PackExtensions( VkDevice device )noexcept
 	{
 		return has420PackExtensions( get( device )->getPhysicalDevice() );
 	}
 
-	bool hasCopyImage( VkDevice device )
+	bool hasCopyImage( VkDevice device )noexcept
 	{
 		return hasCopyImage( get( device )->getPhysicalDevice() );
 	}
 
-	bool hasProgramPipelines( VkDevice device )
+	bool hasProgramPipelines( VkDevice device )noexcept
 	{
 		return hasProgramPipelines( get( device )->getPhysicalDevice() );
 	}
 
-	bool hasSamplerAnisotropy( VkDevice device )
+	bool hasSamplerAnisotropy( VkDevice device )noexcept
 	{
 		return hasSamplerAnisotropy( get( device )->getPhysicalDevice() );
 	}
 
-	bool hasTextureStorage( VkDevice device )
+	bool hasTextureStorage( VkDevice device )noexcept
 	{
 		return hasTextureStorage( get( device )->getPhysicalDevice() );
 	}
 
-	bool hasTextureViews( VkDevice device )
+	bool hasTextureViews( VkDevice device )noexcept
 	{
 		return hasTextureViews( get( device )->getPhysicalDevice() );
 	}
 
-	bool hasViewportArrays( VkDevice device )
+	bool hasViewportArrays( VkDevice device )noexcept
 	{
 		return hasViewportArrays( get( device )->getPhysicalDevice() );
 	}
 
-	bool hasProgramInterfaceQuery( VkDevice device )
+	bool hasProgramInterfaceQuery( VkDevice device )noexcept
 	{
 		return hasProgramInterfaceQuery( get( device )->getPhysicalDevice() );
 	}

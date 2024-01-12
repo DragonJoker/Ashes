@@ -42,8 +42,7 @@ namespace ashes::gl
 			, uint32_t arraySize
 			, VkSampleCountFlagBits samples );
 		GlTextureType convert( VkImageType const & mode
-			, uint32_t layerCount
-			, VkImageCreateFlags flags );
+			, uint32_t layerCount );
 	}
 
 	GlTextureType convert( VkDevice device

@@ -28,18 +28,18 @@ namespace ashes::gl
 
 	namespace
 	{
-		enum ContextFlag
+		enum class ContextFlag
 		{
 			GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT = 0x0001,
 			GL_CONTEXT_FLAG_DEBUG_BIT = 0x0002,
 		};
 
-		enum ContextMaskFlag
+		enum class ContextMaskFlag
 		{
 			GL_CONTEXT_CORE_PROFILE_BIT = 0x00000001,
 		};
 
-		enum ContextParameter
+		enum class ContextParameter
 		{
 			WGL_CONTEXT_MAJOR_VERSION_ARB = 0x2091,
 			WGL_CONTEXT_MINOR_VERSION_ARB = 0x2092,
@@ -47,7 +47,7 @@ namespace ashes::gl
 			WGL_CONTEXT_PROFILE_MASK_ARB = 0x9126,
 		};
 
-		enum PixelFormatParameter
+		enum class PixelFormatParameter
 		{
 			WGL_NUMBER_PIXEL_FORMATS_ARB = 0x2000,
 			WGL_DRAW_TO_WINDOW_ARB = 0x2001,
@@ -80,13 +80,13 @@ namespace ashes::gl
 
 #if !defined( NDEBUG )
 
-		static const int GL_CONTEXT_CREATION_DEFAULT_FLAGS =  GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT | GL_CONTEXT_FLAG_DEBUG_BIT;
-		static const int GL_CONTEXT_CREATION_DEFAULT_MASK = GL_CONTEXT_CORE_PROFILE_BIT;
+		constexpr int GL_CONTEXT_CREATION_DEFAULT_FLAGS =  GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT | GL_CONTEXT_FLAG_DEBUG_BIT;
+		constexpr int GL_CONTEXT_CREATION_DEFAULT_MASK = GL_CONTEXT_CORE_PROFILE_BIT;
 
 #else
 
-		static const int GL_CONTEXT_CREATION_DEFAULT_FLAGS = GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT;
-		static const int GL_CONTEXT_CREATION_DEFAULT_MASK = GL_CONTEXT_CORE_PROFILE_BIT;
+		constexpr int GL_CONTEXT_CREATION_DEFAULT_FLAGS = GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT;
+		constexpr int GL_CONTEXT_CREATION_DEFAULT_MASK = GL_CONTEXT_CORE_PROFILE_BIT;
 
 #endif
 
@@ -134,12 +134,12 @@ namespace ashes::gl
 					, 0
 					, nullptr ) != 0 )
 				{
-					int length = WideCharToMultiByte( CP_UTF8, 0u, errorText, -1, nullptr, 0u, 0u, 0u );
+					int length = WideCharToMultiByte( CP_UTF8, 0u, errorText, -1, nullptr, 0u, nullptr, nullptr );
 
 					if ( length > 0 )
 					{
 						std::string converted( size_t( length ), 0 );
-						WideCharToMultiByte( CP_UTF8, 0u, errorText, -1, converted.data(), length, 0u, 0u );
+						WideCharToMultiByte( CP_UTF8, 0u, errorText, -1, converted.data(), length, nullptr, nullptr );
 						replace( converted, "\r", std::string{} );
 						replace( converted, "\n", std::string{} );
 						stream << " (" << converted.c_str() << ")";
@@ -226,27 +226,21 @@ namespace ashes::gl
 
 	MswContext::~MswContext()noexcept
 	{
-		try
+		if ( displayCreateInfo.sType )
 		{
-			if ( displayCreateInfo.sType )
-			{
-				ChangeDisplaySettings( nullptr, 0 );
-			}
-
-			if ( m_hContext )
-			{
-				wglDeleteContext( m_hContext );
-			}
-
-			::ReleaseDC( m_hWnd, m_hDC );
-
-			if ( displayCreateInfo.sType )
-			{
-				::DestroyWindow( m_hWnd );
-			}
+			ChangeDisplaySettings( nullptr, 0 );
 		}
-		catch ( ... )
+
+		if ( m_hContext )
 		{
+			wglDeleteContext( m_hContext );
+		}
+
+		::ReleaseDC( m_hWnd, m_hDC );
+
+		if ( displayCreateInfo.sType )
+		{
+			::DestroyWindow( m_hWnd );
 		}
 	}
 
@@ -276,7 +270,7 @@ namespace ashes::gl
 		doCreateModernContext();
 	}
 
-	void MswContext::doSetFullscreen()
+	void MswContext::doSetFullscreen()const
 	{
 		if ( displayCreateInfo.transform != VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR )
 		{
@@ -315,7 +309,7 @@ namespace ashes::gl
 		wglMakeCurrent( m_hDC, m_hContext );
 	}
 
-	void MswContext::disable()const
+	void MswContext::disable()const noexcept
 	{
 		wglMakeCurrent( nullptr, nullptr );
 	}
@@ -333,9 +327,9 @@ namespace ashes::gl
 		}
 
 		VkExtent2D result{};
-		RECT rect;
 
-		if ( ::GetClientRect( m_hWnd, &rect ) )
+		if ( RECT rect;
+			::GetClientRect( m_hWnd, &rect ) )
 		{
 			result.width = uint32_t( rect.right - rect.left );
 			result.height = uint32_t( rect.bottom - rect.top );
@@ -350,21 +344,21 @@ namespace ashes::gl
 			? m_pfd->pfd
 			: []()
 			{
-				PIXELFORMATDESCRIPTOR pfd{};
-				pfd.nSize = sizeof( PIXELFORMATDESCRIPTOR );
-				pfd.nVersion = 1;
-				pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-				pfd.iPixelType = PFD_TYPE_RGBA;
-				pfd.iLayerType = PFD_MAIN_PLANE;
-				pfd.cColorBits = 24;
-				pfd.cRedBits = 8;
-				pfd.cGreenBits = 8;
-				pfd.cBlueBits = 8;
-				pfd.cAlphaBits = 8;
-				pfd.cDepthBits = 0;
-				pfd.cStencilBits = 0;
-				return pfd;
-			}( ) );
+				PIXELFORMATDESCRIPTOR result{};
+				result.nSize = sizeof( PIXELFORMATDESCRIPTOR );
+				result.nVersion = 1;
+				result.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+				result.iPixelType = PFD_TYPE_RGBA;
+				result.iLayerType = PFD_MAIN_PLANE;
+				result.cColorBits = 24;
+				result.cRedBits = 8;
+				result.cGreenBits = 8;
+				result.cBlueBits = 8;
+				result.cAlphaBits = 8;
+				result.cDepthBits = 0;
+				result.cStencilBits = 0;
+				return result;
+			}() );
 
 		int pixelFormats = ::ChoosePixelFormat( m_hDC, &pfd );
 
@@ -408,10 +402,10 @@ namespace ashes::gl
 	{
 		std::vector< int > attribList
 		{
-			WGL_CONTEXT_MAJOR_VERSION_ARB, m_major,
-			WGL_CONTEXT_MINOR_VERSION_ARB, m_minor,
-			WGL_CONTEXT_FLAGS_ARB, GL_CONTEXT_CREATION_DEFAULT_FLAGS,
-			WGL_CONTEXT_PROFILE_MASK_ARB, GL_CONTEXT_CREATION_DEFAULT_MASK,
+			int( ContextParameter::WGL_CONTEXT_MAJOR_VERSION_ARB ), m_major,
+			int( ContextParameter::WGL_CONTEXT_MINOR_VERSION_ARB ), m_minor,
+			int( ContextParameter::WGL_CONTEXT_FLAGS_ARB ), GL_CONTEXT_CREATION_DEFAULT_FLAGS,
+			int( ContextParameter::WGL_CONTEXT_PROFILE_MASK_ARB ), GL_CONTEXT_CREATION_DEFAULT_MASK,
 			0
 		};
 

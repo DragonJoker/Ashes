@@ -98,23 +98,23 @@ namespace ashes::gl
 			, VkImage image
 			, VkFormat format )
 		{
-			VkImageView result;
-			auto err = allocate( result
-				, allocInfo
-				, device
-				, VkImageViewCreateInfo
-				{
-					VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-					nullptr,
-					0,
-					image,
-					VK_IMAGE_VIEW_TYPE_2D,
-					format,
-					VkComponentMapping{},
-					VkImageSubresourceRange{ VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT, 0u, 1u, 0u, 1u },
-				} );
+			VkImageView result{};
 
-			if ( err != VK_SUCCESS )
+			if ( auto err = allocate( result
+					, allocInfo
+					, device
+					, VkImageViewCreateInfo
+					{
+						VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+						nullptr,
+						0,
+						image,
+						VK_IMAGE_VIEW_TYPE_2D,
+						format,
+						VkComponentMapping{},
+						VkImageSubresourceRange{ VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT, 0u, 1u, 0u, 1u },
+					} );
+				err != VK_SUCCESS )
 			{
 				throw ashes::Exception{ err, "Swapchain image allocation" };
 			}
@@ -142,7 +142,7 @@ namespace ashes::gl
 		, VkSwapchainCreateInfoKHR createInfo )
 		: m_allocInfo{ allocInfo }
 		, m_device{ device }
-		, m_createInfo{ createInfo }
+		, m_createInfo{ std::move( createInfo ) }
 	{
 		get( m_device )->link( m_createInfo.surface );
 		m_createInfo.imageExtent.height = std::max( 1u, m_createInfo.imageExtent.height );
@@ -200,7 +200,7 @@ namespace ashes::gl
 		registerObject( m_device, *this );
 	}
 
-	SwapchainKHR::~SwapchainKHR()
+	SwapchainKHR::~SwapchainKHR()noexcept
 	{
 		unregisterObject( m_device, *this );
 		{
@@ -221,7 +221,7 @@ namespace ashes::gl
 			deallocate( m_image
 				, m_allocInfo );
 		}
-		get( m_device )->unlink( m_createInfo.surface );
+		get( m_device )->unlink();
 	}
 
 	uint32_t SwapchainKHR::getImageCount()const
@@ -236,16 +236,13 @@ namespace ashes::gl
 		return result;
 	}
 
-	VkResult SwapchainKHR::acquireNextImage( uint64_t timeout
-		, VkSemaphore semaphore
-		, VkFence fence
-		, uint32_t & imageIndex )const
+	VkResult SwapchainKHR::acquireNextImage( uint32_t & imageIndex )const
 	{
 		imageIndex = 0u;
 		return VK_SUCCESS;
 	}
 
-	VkResult SwapchainKHR::present( uint32_t imageIndex )const
+	VkResult SwapchainKHR::present()const
 	{
 		auto srcExtent = m_createInfo.imageExtent;
 		auto dstExtent = m_createInfo.imageExtent;

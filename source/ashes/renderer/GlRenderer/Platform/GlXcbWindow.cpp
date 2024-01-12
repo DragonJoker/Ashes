@@ -87,7 +87,7 @@ namespace ashes::gl
 		}
 	}
 
-	RenderWindow::~RenderWindow()
+	RenderWindow::~RenderWindow()noexcept
 	{
 		doCleanup();
 
@@ -128,7 +128,7 @@ namespace ashes::gl
 		};
 	}
 
-	void RenderWindow::doCleanup()
+	void RenderWindow::doCleanup()noexcept
 	{
 		m_context.reset();
 

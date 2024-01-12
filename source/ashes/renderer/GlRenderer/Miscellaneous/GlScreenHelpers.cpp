@@ -91,9 +91,8 @@ namespace ashes::gl
 			{
 				name = displayDevice.DeviceName;
 				data.displayName = name.c_str();
-				auto hdc = ::CreateDCA( "DISPLAY", displayDevice.DeviceName, nullptr, nullptr );
 
-				if ( hdc )
+				if ( auto hdc = ::CreateDCA( "DISPLAY", displayDevice.DeviceName, nullptr, nullptr ) )
 				{
 					int w = ::GetDeviceCaps( hdc, HORZSIZE );
 					int h = ::GetDeviceCaps( hdc, VERTSIZE );
@@ -105,8 +104,6 @@ namespace ashes::gl
 					listScreenResolutions( data, displayModesParams );
 					return true;
 				}
-
-				::DeleteDC( hdc );
 			}
 
 			return false;

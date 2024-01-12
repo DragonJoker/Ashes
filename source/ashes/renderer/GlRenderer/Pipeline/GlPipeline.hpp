@@ -37,11 +37,11 @@ namespace ashes::gl
 		/**@{*/
 		Pipeline( VkAllocationCallbacks const * allocInfo
 			, VkDevice device
-			, VkGraphicsPipelineCreateInfo createInfo );
+			, VkGraphicsPipelineCreateInfo const & createInfo );
 		Pipeline( VkAllocationCallbacks const * allocInfo
 			, VkDevice device
 			, VkComputePipelineCreateInfo createInfo );
-		~Pipeline();
+		~Pipeline()noexcept;
 		GeometryBuffers * findGeometryBuffers( VboBindings const & vbos
 			, IboBinding const & ibo )const;
 		GeometryBuffersRef createGeometryBuffers( VboBindings vbos
@@ -52,59 +52,59 @@ namespace ashes::gl
 		VkDescriptorSetLayoutArray const & getDescriptorsLayouts()const;
 		ShaderBindings const & getDescriptorSetBindings( VkDescriptorSet descriptorSet
 			, uint32_t descriptorSetIndex )const;
-		ConstantsLayout const & getPushConstantsDesc( bool isRtot );
-		ConstantsLayout const & getPushConstantsDesc();
+		ConstantsLayout const & getPushConstantsDesc( bool isRtot )const;
+		ConstantsLayout const & getPushConstantsDesc()const;
 
-		bool isCompute()const
+		bool isCompute()const noexcept
 		{
 			return m_compPipeline != nullptr;
 		}
 
-		ContextState & getBackContextState()const
+		ContextState & getBackContextState()const noexcept
 		{
 			assert( !isCompute() );
 			return m_backContextState;
 		}
 
-		ContextState & getRtotContextState()const
+		ContextState & getRtotContextState()const noexcept
 		{
 			assert( !isCompute() );
 			return m_rtotContextState;
 		}
 
-		GLuint getBackProgram()const
+		GLuint getBackProgram()const noexcept
 		{
 			assert( !isCompute() );
 			assert( m_backPipeline != nullptr );
 			return m_backPipeline->program.program;
 		}
 
-		GLuint getRtotProgram()const
+		GLuint getRtotProgram()const noexcept
 		{
 			assert( !isCompute() );
 			assert( m_rtotPipeline != nullptr );
 			return m_rtotPipeline->program.program;
 		}
 
-		GLuint getCompProgram()const
+		GLuint getCompProgram()const noexcept
 		{
 			assert( isCompute() );
 			return m_compPipeline->modules.front();
 		}
 
-		auto const & getInputAssemblyState()const
+		auto const & getInputAssemblyState()const noexcept
 		{
 			assert( !isCompute() );
 			return m_backContextState.iaState;
 		}
 
-		auto const & getColourBlendState()const
+		auto const & getColourBlendState()const noexcept
 		{
 			assert( !isCompute() );
 			return m_backContextState.cbState;
 		}
 
-		auto const & getRasterisationState( bool isRtot )const
+		auto const & getRasterisationState( bool isRtot )const noexcept
 		{
 			assert( !isCompute() );
 			return isRtot
@@ -112,55 +112,55 @@ namespace ashes::gl
 				: m_backContextState.rsState;
 		}
 
-		auto const & getDepthStencilState()const
+		auto const & getDepthStencilState()const noexcept
 		{
 			assert( !isCompute() );
 			return m_backContextState.dsState;
 		}
 
-		auto const & getMultisampleState()const
+		auto const & getMultisampleState()const noexcept
 		{
 			assert( !isCompute() );
 			return m_backContextState.msState;
 		}
 
-		auto const & getTessellationState()const
+		auto const & getTessellationState()const noexcept
 		{
 			assert( !isCompute() );
 			return m_backContextState.tsState;
 		}
 
-		auto const & getVertexInputState()const
+		auto const & getVertexInputState()const noexcept
 		{
 			assert( !isCompute() );
 			return m_vertexInputState.value();
 		}
 
-		auto const & getViewportState()const
+		auto const & getViewportState()const noexcept
 		{
 			assert( !isCompute() );
 			return m_backContextState.vpState;
 		}
 
-		bool hasViewport()const
+		bool hasViewport()const noexcept
 		{
 			assert( !isCompute() );
 			return m_backContextState.vpState.viewportCount > 0;
 		}
 
-		bool hasScissor()const
+		bool hasScissor()const noexcept
 		{
 			assert( !isCompute() );
 			return m_backContextState.vpState.scissorCount > 0;
 		}
 
-		ArrayView< VkViewport const > const & getViewports()const
+		ArrayView< VkViewport const > const & getViewports()const noexcept
 		{
 			assert( !isCompute() );
 			return m_backContextState.viewportsView;
 		}
 
-		ArrayView< VkRect2D const > const & getScissors()const
+		ArrayView< VkRect2D const > const & getScissors()const noexcept
 		{
 			assert( !isCompute() );
 			return m_backContextState.scissorsView;
@@ -176,17 +176,17 @@ namespace ashes::gl
 				, state );
 		}
 
-		VkPipelineLayout getLayout()const
+		VkPipelineLayout getLayout()const noexcept
 		{
 			return m_layout;
 		}
 
-		VkDevice getDevice()const
+		VkDevice getDevice()const noexcept
 		{
 			return m_device;
 		}
 
-		size_t getVertexInputStateHash()const
+		size_t getVertexInputStateHash()const noexcept
 		{
 			assert( !isCompute() );
 			return m_vertexInputStateHash;
@@ -207,13 +207,13 @@ namespace ashes::gl
 		uint32_t m_subpass{};
 		VkPipeline m_basePipelineHandle{};
 		int32_t m_basePipelineIndex{};
-		ShaderProgramPtr m_backPipeline;
-		ShaderProgramPtr m_rtotPipeline;
-		ShaderProgramPtr m_compPipeline;
+		ShaderProgramPtr m_backPipeline{};
+		ShaderProgramPtr m_rtotPipeline{};
+		ShaderProgramPtr m_compPipeline{};
 		mutable std::vector< std::pair< size_t, GeometryBuffersPtr > > m_geometryBuffers;
 		mutable std::unordered_map< GLuint, DeviceMemoryDestroyConnection > m_connections;
 		mutable std::unordered_map< uint64_t, ShaderBindings > m_dsBindings;
-		size_t m_vertexInputStateHash;
+		size_t m_vertexInputStateHash{};
 	};
 }
 

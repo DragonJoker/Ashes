@@ -21,34 +21,34 @@ namespace ashes::gl
 		Buffer( VkAllocationCallbacks const * allocInfo
 			, VkDevice device
 			, VkBufferCreateInfo createInfo );
-		~Buffer();
+		~Buffer()noexcept;
 
-		VkMemoryRequirements getMemoryRequirements()const;
-		bool isMapped()const;
-		VkDeviceSize getOffset()const;
+		VkMemoryRequirements getMemoryRequirements()const noexcept;
+		bool isMapped()const noexcept;
+		VkDeviceSize getOffset()const noexcept;
 
-		GlBufferTarget getTarget()const
+		GlBufferTarget getTarget()const noexcept
 		{
 			return m_target;
 		}
 
-		void setMemoryBinding( DeviceMemoryBinding const * binding )
+		void setMemoryBinding( DeviceMemoryBinding const * binding )noexcept
 		{
 			m_binding = binding;
 		}
 
-		DeviceMemoryBinding const & getMemoryBinding()const
+		DeviceMemoryBinding const & getMemoryBinding()const noexcept
 		{
 			return *m_binding;
 		}
 
-		VkDevice getDevice()const
+		VkDevice getDevice()const noexcept
 		{
 			return m_device;
 		}
 
 	private:
-		void setInternal( uint32_t v )
+		void setInternal( uint32_t v )noexcept
 		{
 			m_internal = v;
 		}
@@ -57,9 +57,8 @@ namespace ashes::gl
 		VkDevice m_device;
 		UInt32Array m_queueFamilyIndices;
 		VkBufferCreateInfo m_createInfo;
-		GlBufferTarget m_target;
+		GlBufferTarget m_target{};
 		DeviceMemoryBinding const * m_binding{ nullptr };
-		mutable GlBufferTarget m_copyTarget;
 	};
 }
 

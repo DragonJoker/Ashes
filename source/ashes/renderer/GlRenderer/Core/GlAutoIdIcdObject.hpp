@@ -22,9 +22,7 @@ namespace ashes::gl
 			m_internal = getNext();
 		}
 
-		~AutoIdIcdObject()
-		{
-		}
+		~AutoIdIcdObject()noexcept = default;
 
 	private:
 		static uint32_t getNext()

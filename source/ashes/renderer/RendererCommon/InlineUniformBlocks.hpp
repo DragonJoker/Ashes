@@ -22,9 +22,9 @@ namespace ashes
 {
 	struct InlineUbo
 	{
-		VkBuffer buffer;
-		VkDeviceMemory memory;
-		VkDescriptorBufferInfo info;
+		VkBuffer buffer{};
+		VkDeviceMemory memory{};
+		VkDescriptorBufferInfo info{};
 	};
 	using InlineUboPtr = std::unique_ptr< InlineUbo >;
 	using InlineUboArray = std::vector< InlineUboPtr >;

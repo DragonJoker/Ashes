@@ -33,13 +33,13 @@ namespace ashes::gl
 		, std::string const & text
 		, bool log );
 	bool glCheckError( ContextLock const & context
-		, std::function< std::string() > stringifier
+		, std::function< std::string() > const & stringifier
 		, bool log );
 	bool glCheckOutOfMemory( ContextLock const & context );
 	void clearDebugFile();
 	void logDebug( char const * const log );
 	void logError( char const * const log );
 
-	void pushDebugBlock( std::string name );
+	void pushDebugBlock( std::string const & name );
 	void popDebugBlock();
 }

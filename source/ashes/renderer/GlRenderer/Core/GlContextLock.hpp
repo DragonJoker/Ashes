@@ -17,8 +17,8 @@ namespace ashes::gl
 	{
 		using ValueT = int32_t;
 
-		static void get( ContextLock & context, GlValueName name, ValueT * value );
-		static void get( ContextLock & context, GlValueName name, GLint index, ValueT * value );
+		static void get( ContextLock const & context, GlValueName name, ValueT * value );
+		static void get( ContextLock const & context, GlValueName name, GLint index, ValueT * value );
 	};
 
 	template<>
@@ -26,8 +26,8 @@ namespace ashes::gl
 	{
 		using ValueT = int64_t;
 
-		static void get( ContextLock & context, GlValueName name, ValueT * value );
-		static void get( ContextLock & context, GlValueName name, GLint index, ValueT * value );
+		static void get( ContextLock const & context, GlValueName name, ValueT * value );
+		static void get( ContextLock const & context, GlValueName name, GLint index, ValueT * value );
 	};
 
 	template<>
@@ -35,8 +35,8 @@ namespace ashes::gl
 	{
 		using ValueT = float;
 
-		static void get( ContextLock & context, GlValueName name, ValueT * value );
-		static void get( ContextLock & context, GlValueName name, GLint index, ValueT * value );
+		static void get( ContextLock const & context, GlValueName name, ValueT * value );
+		static void get( ContextLock const & context, GlValueName name, GLint index, ValueT * value );
 	};
 
 	template<>
@@ -45,12 +45,12 @@ namespace ashes::gl
 		using ValueT = uint32_t;
 		using SignedT = int32_t;
 
-		static void get( ContextLock & context, GlValueName name, ValueT * value )
+		static void get( ContextLock const & context, GlValueName name, ValueT * value )
 		{
 			ValueGetter< SignedT >::get( context, name, reinterpret_cast< SignedT * >( value ) );
 		}
 
-		static void get( ContextLock & context, GlValueName name, GLint index, ValueT * value )
+		static void get( ContextLock const & context, GlValueName name, GLint index, ValueT * value )
 		{
 			ValueGetter< SignedT >::get( context, name, index, reinterpret_cast< SignedT * >( &value[index] ) );
 		}
@@ -62,12 +62,12 @@ namespace ashes::gl
 		using ValueT = uint64_t;
 		using SignedT = int64_t;
 
-		static void get( ContextLock & context, GlValueName name, ValueT * value )
+		static void get( ContextLock const & context, GlValueName name, ValueT * value )
 		{
 			ValueGetter< SignedT >::get( context, name, reinterpret_cast< SignedT * >( value ) );
 		}
 
-		static void get( ContextLock & context, GlValueName name, GLint index, ValueT * value )
+		static void get( ContextLock const & context, GlValueName name, GLint index, ValueT * value )
 		{
 			ValueGetter< SignedT >::get( context, name, index, reinterpret_cast< SignedT * >( &value[index] ) );
 		}
@@ -79,7 +79,7 @@ namespace ashes::gl
 		ContextLock( ContextLock const & ) = delete;
 		ContextLock & operator=( ContextLock const & ) = delete;
 
-		inline ContextLock( Context & context
+		ContextLock( Context & context
 			, VkDevice device = {} )
 			: m_context{ &context }
 			, m_device{ device }
@@ -91,14 +91,15 @@ namespace ashes::gl
 			}
 		}
 
-		inline ContextLock( ContextLock && rhs )
+		ContextLock( ContextLock && rhs )noexcept
 			: m_context{ rhs.m_context }
+			, m_device{ rhs.m_device }
 			, m_disable{ rhs.m_disable }
 		{
 			rhs.m_context = nullptr;
 		}
 
-		inline ContextLock & operator=( ContextLock && rhs )
+		ContextLock & operator=( ContextLock && rhs )noexcept
 		{
 			m_context = rhs.m_context;
 			m_disable = rhs.m_disable;
@@ -106,7 +107,7 @@ namespace ashes::gl
 			return *this;
 		}
 
-		inline ~ContextLock()
+		~ContextLock()noexcept
 		{
 			if ( m_context && m_disable )
 			{
@@ -132,20 +133,26 @@ namespace ashes::gl
 		}
 
 		template< typename ValueT >
-		ValueT & getValue( GlValueName name, ValueT & value )
+		ValueT & getValue( GlValueName name, ValueT & value )const
 		{
 			ValueGetter< ValueT >::get( *this, name, &value );
 			return value;
 		}
 
 		template< typename ValueT, size_t CountT >
-		void getValues( GlValueName name, ValueT ( & value )[CountT] )
+		void getValues( GlValueName name, ValueT ( & value )[CountT] )const
 		{
 			ValueGetter< ValueT >::get( *this, name, value );
 		}
 
 		template< typename ValueT, size_t CountT >
-		void getValuesI( GlValueName name, ValueT ( & value )[CountT] )
+		void getValues( GlValueName name, std::array< ValueT, CountT > & value )const
+		{
+			ValueGetter< ValueT >::get( *this, name, value.data() );
+		}
+
+		template< typename ValueT, size_t CountT >
+		void getValuesI( GlValueName name, ValueT ( & value )[CountT] )const
 		{
 			for ( GLint i = 0u; i < GLint( CountT ); ++i )
 			{
@@ -153,8 +160,17 @@ namespace ashes::gl
 			}
 		}
 
+		template< typename ValueT, size_t CountT >
+		void getValuesI( GlValueName name, std::array< ValueT, CountT > & value )const
+		{
+			for ( GLint i = 0u; i < GLint( CountT ); ++i )
+			{
+				ValueGetter< ValueT >::get( *this, name, i, value.data() );
+			}
+		}
+
 		template< typename ValueT >
-		ValueT & getValue( GlValueName name, ValueT & value, ValueT const & min )
+		ValueT & getValue( GlValueName name, ValueT & value, ValueT const & min )const
 		{
 			ValueGetter< ValueT >::get( *this, name, &value );
 			value = std::max( value, min );
@@ -162,9 +178,9 @@ namespace ashes::gl
 		}
 
 		template< typename ValueT >
-		ValueT & getBitfieldValue( GlValueName name, ValueT & value, ValueT const & min )
+		ValueT & getBitfieldValue( GlValueName name, ValueT & value, ValueT const & min )const
 		{
-			ValueT bitfield;
+			ValueT bitfield{};
 			ValueGetter< ValueT >::get( *this, name, &bitfield );
 			value = ValueT{};
 
@@ -179,7 +195,7 @@ namespace ashes::gl
 		}
 
 		template< typename ValueT, size_t CountT >
-		void getValues( GlValueName name, ValueT ( & value )[CountT], std::array< ValueT, CountT > const & min )
+		void getValues( GlValueName name, ValueT ( & value )[CountT], std::array< ValueT, CountT > const & min )const
 		{
 			ValueGetter< ValueT >::get( *this, name, value );
 
@@ -190,11 +206,32 @@ namespace ashes::gl
 		}
 
 		template< typename ValueT, size_t CountT >
-		void getValuesI( GlValueName name, ValueT ( & value )[CountT], std::array< ValueT, CountT > const & min )
+		void getValues( GlValueName name, std::array< ValueT, CountT > & value, std::array< ValueT, CountT > const & min )const
+		{
+			ValueGetter< ValueT >::get( *this, name, value.data() );
+
+			for ( size_t i = 0u; i < CountT; ++i )
+			{
+				value[i] = std::max( value[i], min[i] );
+			}
+		}
+
+		template< typename ValueT, size_t CountT >
+		void getValuesI( GlValueName name, ValueT( &value )[CountT], std::array< ValueT, CountT > const & min )const
 		{
 			for ( size_t i = 0u; i < CountT; ++i )
 			{
 				ValueGetter< ValueT >::get( *this, name, GLint( i ), value );
+				value[i] = std::max( value[i], min[i] );
+			}
+		}
+
+		template< typename ValueT, size_t CountT >
+		void getValuesI( GlValueName name, std::array< ValueT, CountT > & value, std::array< ValueT, CountT > const & min )const
+		{
+			for ( size_t i = 0u; i < CountT; ++i )
+			{
+				ValueGetter< ValueT >::get( *this, name, GLint( i ), value.data() );
 				value[i] = std::max( value[i], min[i] );
 			}
 		}

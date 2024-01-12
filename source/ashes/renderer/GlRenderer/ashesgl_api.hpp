@@ -51,7 +51,7 @@ namespace ashes::gl
 	static int constexpr MinMinor = 2;
 	static int constexpr MaxMajor = 10;
 	static int constexpr MaxMinor = 10;
-	static uint32_t constexpr InvalidIndex = ~( 0u );
+	static uint32_t constexpr InvalidIndex = ~0u;
 
 	template< typename T >
 	static constexpr T NonAvailable = std::numeric_limits< T >::max();
@@ -229,7 +229,7 @@ namespace ashes::gl
 		, VkObject object
 		, VkResult result
 		, std::string const & errorName
-		, std::string const & name )
+		, std::string const & name )noexcept
 	{
 		VkInstance instance = object
 			? getInstance( object )
@@ -272,7 +272,7 @@ namespace ashes::gl
 		, VkObject object
 		, VkResult result
 		, std::string const & errorName
-		, std::string const & name )
+		, std::string const & name )noexcept
 	{
 		VkInstance instance = object
 			? getInstance( object )
@@ -313,7 +313,7 @@ namespace ashes::gl
 	inline void reportError( VkObject object
 		, VkResult result
 		, std::string const & errorName
-		, std::string const & name )
+		, std::string const & name )noexcept
 	{
 #if VK_EXT_debug_utils
 		debugUtilsSubmit( VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
@@ -335,7 +335,7 @@ namespace ashes::gl
 	inline void reportWarning( VkObject object
 		, VkResult result
 		, std::string const & errorName
-		, std::string const & name )
+		, std::string const & name )noexcept
 	{
 #if VK_EXT_debug_utils
 		debugUtilsSubmit( VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
@@ -357,7 +357,7 @@ namespace ashes::gl
 	inline void reportInfo( VkObject object
 		, VkResult result
 		, std::string const & errorName
-		, std::string const & name )
+		, std::string const & name )noexcept
 	{
 #if VK_EXT_debug_utils
 		debugUtilsSubmit( VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT
@@ -379,7 +379,7 @@ namespace ashes::gl
 	inline void reportDebug( VkObject object
 		, VkResult result
 		, std::string const & errorName
-		, std::string const & name )
+		, std::string const & name )noexcept
 	{
 #if VK_EXT_debug_utils
 		debugUtilsSubmit( VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
@@ -400,7 +400,7 @@ namespace ashes::gl
 	template< typename VkObject >
 	inline void reportVerbose( VkObject object
 		, std::string const & errorName
-		, std::string const & name )
+		, std::string const & name )noexcept
 	{
 #if VK_EXT_debug_utils
 		debugUtilsSubmit( VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
@@ -420,7 +420,7 @@ namespace ashes::gl
 
 	template< typename VkObject >
 	inline VkResult reportUnsupported( VkObject object
-		, std::string const & name )
+		, std::string const & name )noexcept
 	{
 		reportError( object
 			, VK_ERROR_FEATURE_NOT_PRESENT
@@ -440,7 +440,7 @@ namespace ashes::gl
 		{
 			using Type = typename VkGlTypeTraits< VkType >::Type;
 
-			vkValue = VkType( new Type{ nullptr, std::forward< Params && >( params )... } );
+			vkValue = VkType( new Type{ nullptr, std::forward< Params >( params )... } );
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )
@@ -483,7 +483,7 @@ namespace ashes::gl
 				{
 					try
 					{
-						vkValue = VkType( new( mem )Type{ allocInfo, std::forward< Params && >( params )... } );
+						vkValue = VkType( new( mem )Type{ allocInfo, std::forward< Params >( params )... } );
 						result = VK_SUCCESS;
 					}
 					catch ( Exception & )
@@ -499,7 +499,7 @@ namespace ashes::gl
 			}
 			else
 			{
-				vkValue = VkType( new Type{ allocInfo, std::forward< Params && >( params )... } );
+				vkValue = VkType( new Type{ allocInfo, std::forward< Params >( params )... } );
 				result = VK_SUCCESS;
 			}
 		}
@@ -521,7 +521,7 @@ namespace ashes::gl
 	}
 
 	template< typename VkType >
-	VkResult deallocateNA( VkType & vkValue )
+	VkResult deallocateNA( VkType & vkValue )noexcept
 	{
 		if ( vkValue )
 		{
@@ -534,7 +534,7 @@ namespace ashes::gl
 	}
 
 	template< typename VkType >
-	VkResult deallocate( VkType & vkValue, const VkAllocationCallbacks * allocInfo )
+	VkResult deallocate( VkType & vkValue, const VkAllocationCallbacks * allocInfo )noexcept
 	{
 		if ( vkValue )
 		{
@@ -2955,7 +2955,6 @@ extern "C"
 		, VkSurfaceKHR * pSurface );
 
 #	endif
-// #endif
 #pragma endregion
 #pragma region VK_KHR_wayland_surface
 #	ifdef __linux__

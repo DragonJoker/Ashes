@@ -19,7 +19,7 @@ namespace ashes::gl
 		DescriptorSetLayout( VkAllocationCallbacks const * allocInfo
 			, VkDevice device
 			, VkDescriptorSetLayoutCreateInfo createInfo );
-		~DescriptorSetLayout();
+		~DescriptorSetLayout()noexcept;
 
 		auto begin()const
 		{

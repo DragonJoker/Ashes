@@ -38,9 +38,8 @@ namespace ashes::gl
 		{
 			size_t result{ 0u };
 
-			for ( auto & binding : vbos )
+			for ( auto const & [_, vbo] : vbos )
 			{
-				auto & vbo = binding.second;
 				hashCombine( result, vbo.bo );
 				hashCombine( result, vbo.buffer );
 				hashCombine( result, vbo.offset );
@@ -118,15 +117,15 @@ namespace ashes::gl
 			return value.location;
 		}
 
-		bool checkDesc( VkWriteDescriptorSet const & write
-			, ConstantBufferDesc const & lookup )
+		bool checkDesc( [[maybe_unused]] VkWriteDescriptorSet const & write
+			, [[maybe_unused]] ConstantBufferDesc const & lookup )
 		{
 			return false;
 		}
 
 		template< typename FormatT >
-		bool checkDesc( VkWriteDescriptorSet const & write
-			, FormatDescT< FormatT > const & lookup )
+		bool checkDesc( [[maybe_unused]] VkWriteDescriptorSet const & write
+			, [[maybe_unused]] FormatDescT< FormatT > const & lookup )
 		{
 			return false;
 		}
@@ -146,7 +145,7 @@ namespace ashes::gl
 					bool result = write.dstBinding == getBinding( lookup )
 						|| checkDesc( write, lookup );
 
-					//if ( result )
+					//! if ( result )
 					{
 						bindingIt = bindings.find( makeShaderBindingKey( descriptorSetIndex, write.dstBinding ) );
 					}
@@ -317,9 +316,9 @@ namespace ashes::gl
 		}
 	}
 
-	Pipeline::Pipeline( VkAllocationCallbacks const * allocInfo
+	Pipeline::Pipeline( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkDevice device
-		, VkGraphicsPipelineCreateInfo createInfo )
+		, VkGraphicsPipelineCreateInfo const & createInfo )
 		: m_device{ device }
 		, m_flags{ createInfo.flags }
 		, m_stages{ makeVector( createInfo.pStages, createInfo.stageCount ) }
@@ -366,7 +365,7 @@ namespace ashes::gl
 		registerObject( m_device, *this );
 	}
 
-	Pipeline::Pipeline( VkAllocationCallbacks const * allocInfo
+	Pipeline::Pipeline( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkDevice device
 		, VkComputePipelineCreateInfo createInfo )
 		: m_device{ device }
@@ -380,7 +379,7 @@ namespace ashes::gl
 		registerObject( m_device, *this );
 	}
 
-	Pipeline::~Pipeline()
+	Pipeline::~Pipeline()noexcept
 	{
 		unregisterObject( m_device, *this );
 
@@ -418,10 +417,9 @@ namespace ashes::gl
 				, m_backPipeline->program.inputs
 				, type ) );
 
-		for ( auto & binding : vbos )
+		for ( auto const & [_, vbo] : vbos )
 		{
-			auto & vbo = binding.second;
-			m_connections.emplace( vbo.bo
+			m_connections.try_emplace( vbo.bo
 				, get( get( vbo.buffer )->getMemoryBinding().getParent() )->onDestroy.connect( [this]( GLuint name )
 					{
 						auto it = std::remove_if( m_geometryBuffers.begin()
@@ -512,35 +510,35 @@ namespace ashes::gl
 		if ( m_layout )
 		{
 			auto key = makeDescriptorKey( descriptorSet, descriptorSetIndex );
-			auto pair = m_dsBindings.emplace( key
+			auto [it, res] = m_dsBindings.try_emplace( key
 				, get( m_layout )->getDescriptorSetBindings( descriptorSet, descriptorSetIndex ) );
 
-			if ( pair.second )
+			if ( res )
 			{
 				if ( isCompute() )
 				{
-					pair.first->second = doReworkBindings( pair.first->second
+					it->second = doReworkBindings( it->second
 						, descriptorSet
 						, descriptorSetIndex
 						, m_compPipeline->program );
 				}
 				else
 				{
-					pair.first->second = doReworkBindings( pair.first->second
+					it->second = doReworkBindings( it->second
 						, descriptorSet
 						, descriptorSetIndex
 						, m_backPipeline->program );
 				}
 			}
 
-			return pair.first->second;
+			return it->second;
 		}
 
 		static ShaderBindings const dummy;
 		return dummy;
 	}
 
-	ConstantsLayout const & Pipeline::getPushConstantsDesc( bool isRtot )
+	ConstantsLayout const & Pipeline::getPushConstantsDesc( bool isRtot )const
 	{
 		assert( !m_compPipeline );
 		return ( isRtot
@@ -548,7 +546,7 @@ namespace ashes::gl
 			: m_backPipeline->program.pcb );
 	}
 
-	ConstantsLayout const & Pipeline::getPushConstantsDesc()
+	ConstantsLayout const & Pipeline::getPushConstantsDesc()const
 	{
 		assert( m_compPipeline );
 		return m_compPipeline->program.pcb;
