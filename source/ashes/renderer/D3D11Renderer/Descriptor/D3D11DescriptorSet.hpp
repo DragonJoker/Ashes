@@ -17,6 +17,7 @@
 namespace ashes::d3d11
 {
 	class DescriptorSet
+		: public NonCopyable
 	{
 	public:
 		DescriptorSet( VkDevice device
