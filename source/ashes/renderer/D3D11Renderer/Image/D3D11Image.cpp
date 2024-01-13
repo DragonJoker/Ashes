@@ -13,7 +13,7 @@
 
 namespace ashes::d3d11
 {
-	Image::Image( Image && rhs )
+	Image::Image( Image && rhs )noexcept
 		: m_device{ rhs.m_device }
 		, m_createInfo{ std::move( rhs.m_createInfo ) }
 		, m_image{ rhs.m_image }
@@ -22,7 +22,7 @@ namespace ashes::d3d11
 		rhs.m_image.tex1D = nullptr;
 	}
 
-	Image & Image::operator=( Image && rhs )
+	Image & Image::operator=( Image && rhs )noexcept
 	{
 		m_image = rhs.m_image;
 		m_memoryRequirements = rhs.m_memoryRequirements;
@@ -72,8 +72,7 @@ namespace ashes::d3d11
 		, VkFormat format
 		, VkExtent2D const & dimensions
 		, VkImageUsageFlags usageFlags
-		, VkImageTiling tiling
-		, VkMemoryPropertyFlags memoryFlags )
+		, VkImageTiling tiling )
 		: Image{ device
 			, {
 				VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
@@ -94,10 +93,6 @@ namespace ashes::d3d11
 			} }
 	{
 		doInitialiseMemoryRequirements();
-	}
-
-	Image::~Image()
-	{
 	}
 
 	VkMemoryRequirements Image::getMemoryRequirements()const

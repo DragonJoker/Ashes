@@ -18,10 +18,8 @@ namespace ashes::d3d11
 			, VkWin32SurfaceCreateInfoKHR createInfo );
 		SurfaceKHR( VkInstance instance
 			, VkDisplaySurfaceCreateInfoKHR createInfo );
-		~SurfaceKHR();
 
-		VkBool32 getSupport( VkPhysicalDevice physicalDevice
-			, uint32_t queueFamilyIndex )const;
+		VkBool32 getSupport( VkPhysicalDevice physicalDevice )const;
 		HWND getHwnd()const;
 		DXGI_MODE_DESC const & getDisplayMode()const;
 
@@ -49,22 +47,22 @@ namespace ashes::d3d11
 			return m_instance;
 		}
 
-		inline std::vector< DXGI_MODE_DESC > const & getDescs( VkFormat format )const
+		std::vector< DXGI_MODE_DESC > const & getDescs( VkFormat format )const
 		{
 			return m_descs[format];
 		}
 
-		inline DXGI_MODE_DESC const & getMatchingDesc( VkFormat format )const
+		DXGI_MODE_DESC const & getMatchingDesc( VkFormat format )const
 		{
 			return m_matchingDescs[format];
 		}
 
-		inline bool isWin32()const
+		bool isWin32()const
 		{
 			return m_win32CreateInfo.sType != 0;
 		}
 
-		inline bool isDisplay()const
+		bool isDisplay()const
 		{
 			return m_displayCreateInfo.sType != 0;
 		}
@@ -73,16 +71,16 @@ namespace ashes::d3d11
 		void doUpdate( VkPhysicalDevice physicalDevice )const;
 
 	private:
-		VkInstance m_instance;
+		VkInstance m_instance{};
 		VkWin32SurfaceCreateInfoKHR m_win32CreateInfo{};
 		VkDisplaySurfaceCreateInfoKHR m_displayCreateInfo{};
 		std::string m_type;
-		mutable VkSurfaceFormatArrayKHR m_surfaceFormats;
-		mutable VkSurfaceCapabilitiesKHR m_surfaceCapabilities;
-		mutable VkPresentModeArrayKHR m_presentModes;
+		mutable VkSurfaceFormatArrayKHR m_surfaceFormats{};
+		mutable VkSurfaceCapabilitiesKHR m_surfaceCapabilities{};
+		mutable VkPresentModeArrayKHR m_presentModes{};
 		mutable VkPhysicalDevice m_currentPhysicalDevice{};
-		mutable std::vector< DXGI_MODE_DESC > m_displayModes;
-		mutable std::map< VkFormat, std::vector< DXGI_MODE_DESC > > m_descs;
-		mutable std::map< VkFormat, DXGI_MODE_DESC > m_matchingDescs;
+		mutable std::vector< DXGI_MODE_DESC > m_displayModes{};
+		mutable std::map< VkFormat, std::vector< DXGI_MODE_DESC > > m_descs{};
+		mutable std::map< VkFormat, DXGI_MODE_DESC > m_matchingDescs{};
 	};
 }

@@ -37,7 +37,8 @@ namespace ashes::d3d11
 
 			for ( auto & resolveAttach : makeArrayView( m_subpass.pResolveAttachments, m_subpass.colorAttachmentCount ) )
 			{
-				auto & srcAttach = get( m_frameBuffer )->getMsRTViews()[index++];
+				auto & srcAttach = get( m_frameBuffer )->getMsRTViews()[index];
+				++index;
 				auto & dstAttach = get( m_frameBuffer )->getAllViews()[resolveAttach.attachment];
 
 				context.context->ResolveSubresource( dstAttach->resource

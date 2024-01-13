@@ -29,7 +29,10 @@ namespace ashes::d3d11
 			, ArrayView< VkImageSubresourceRange const > ranges
 			, VkClearDepthStencilValue value );
 		ClearDepthStencilCommand( ClearDepthStencilCommand const & rhs );
-		~ClearDepthStencilCommand()override;
+		ClearDepthStencilCommand & operator=( ClearDepthStencilCommand const & rhs );
+		ClearDepthStencilCommand( ClearDepthStencilCommand && rhs )noexcept = default;
+		ClearDepthStencilCommand & operator=( ClearDepthStencilCommand && rhs )noexcept = default;
+		~ClearDepthStencilCommand()noexcept override;
 
 		void apply( Context const & context )const override;
 		CommandPtr clone()const override;

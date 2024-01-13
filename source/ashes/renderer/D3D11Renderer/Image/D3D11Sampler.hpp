@@ -13,18 +13,19 @@
 namespace ashes::d3d11
 {
 	class Sampler
+		: public NonCopyable
 	{
 	public:
 		Sampler( VkDevice device
 			, VkSamplerCreateInfo createInfo );
-		~Sampler();
+		~Sampler()noexcept;
 
-		inline ID3D11SamplerState * getSampler()const
+		ID3D11SamplerState * getSampler()const
 		{
 			return m_sampler;
 		}
 
-		inline VkDevice getDevice()const
+		VkDevice getDevice()const
 		{
 			return m_device;
 		}

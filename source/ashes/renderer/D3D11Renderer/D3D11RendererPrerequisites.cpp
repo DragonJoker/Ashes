@@ -76,7 +76,8 @@ namespace ashes::d3d11
 
 	bool checkError( VkDevice device, HRESULT hResult, char const * const text )
 	{
-		return !get( device )->onCheckHResultCommand( hResult, text );
+		get( device )->onCheckHResultCommand( hResult, text );
+		return SUCCEEDED( hResult );
 	}
 
 	std::string toString( std::wstring const & text )

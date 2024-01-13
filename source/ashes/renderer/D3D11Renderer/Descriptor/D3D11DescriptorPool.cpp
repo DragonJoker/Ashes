@@ -17,7 +17,7 @@ namespace ashes::d3d11
 		m_createInfos.pPoolSizes = m_poolSizes.data();
 	}
 
-	DescriptorPool::~DescriptorPool()
+	DescriptorPool::~DescriptorPool()noexcept
 	{
 		for ( auto & set : m_sets )
 		{
@@ -35,7 +35,7 @@ namespace ashes::d3d11
 		m_allSets.push_back( set );
 	}
 
-	VkResult DescriptorPool::reset( VkDescriptorPoolResetFlags flags )
+	VkResult DescriptorPool::reset()
 	{
 		for ( auto & set : m_allSets )
 		{
@@ -47,7 +47,7 @@ namespace ashes::d3d11
 		return VK_SUCCESS;
 	}
 
-	VkResult DescriptorPool::free( ArrayView< VkDescriptorSet const > sets )
+	VkResult DescriptorPool::freeDescriptors( ArrayView< VkDescriptorSet const > sets )
 	{
 		if ( checkFlag( m_createInfos.flags, VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT ) )
 		{

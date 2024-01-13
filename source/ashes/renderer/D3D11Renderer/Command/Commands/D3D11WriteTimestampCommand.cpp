@@ -11,7 +11,6 @@ See LICENSE file in root folder.
 namespace ashes::d3d11
 {
 	WriteTimestampCommand::WriteTimestampCommand( VkDevice device
-		, VkPipelineStageFlagBits pipelineStage
 		, VkQueryPool pool
 		, uint32_t query )
 		: CommandBase{ device }

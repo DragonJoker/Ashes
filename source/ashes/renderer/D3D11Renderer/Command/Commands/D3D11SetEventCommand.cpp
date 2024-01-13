@@ -11,8 +11,7 @@ See LICENSE file in root folder.
 namespace ashes::d3d11
 {
 	SetEventCommand::SetEventCommand( VkDevice device
-		, VkEvent event
-		, VkPipelineStageFlags stageFlags )
+		, VkEvent event )
 		: CommandBase{ device }
 		, m_event{ event }
 	{

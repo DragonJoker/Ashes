@@ -29,9 +29,39 @@ namespace ashes::d3d11
 {
 	namespace
 	{
+		inline VkLayerPropertiesArray const LayersProperties{};
+
+		inline VkExtensionPropertiesArray const ExtensionsProperties
+		{
+#if VK_KHR_swapchain
+			VkExtensionProperties{ VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_SWAPCHAIN_SPEC_VERSION },
+#endif
+#if VK_EXT_debug_report
+			VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, VK_EXT_DEBUG_REPORT_SPEC_VERSION },
+#endif
+#if VK_EXT_debug_marker
+			VkExtensionProperties{ VK_EXT_DEBUG_MARKER_EXTENSION_NAME, VK_EXT_DEBUG_MARKER_SPEC_VERSION },
+#endif
+#if VK_EXT_debug_utils
+			VkExtensionProperties{ VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_EXT_DEBUG_UTILS_SPEC_VERSION },
+#endif
+#if VK_EXT_inline_uniform_block
+			VkExtensionProperties{ VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME, VK_EXT_INLINE_UNIFORM_BLOCK_SPEC_VERSION },
+#endif
+#if VK_KHR_maintenance1
+			VkExtensionProperties{ VK_KHR_MAINTENANCE1_EXTENSION_NAME, VK_KHR_MAINTENANCE1_SPEC_VERSION },
+#endif
+#if VK_KHR_get_physical_device_properties2
+			VkExtensionProperties{ VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_SPEC_VERSION },
+#endif
+#if VK_KHR_portability_subset
+			VkExtensionProperties{ VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME, VK_KHR_PORTABILITY_SUBSET_SPEC_VERSION },
+#endif
+		};
+
 		int getBitSize( uint64_t value )
 		{
-			static constexpr int bitPatternToLog2[128]
+			static constexpr std::array< int, 128u > bitPatternToLog2
 			{
 				0, // change to 0 if you want bitSize(0) = 0
 				48, -1, -1, 31, -1, 15, 51, -1, 63, 5, -1, -1, -1, 19, -1,
@@ -43,7 +73,7 @@ namespace ashes::d3d11
 				41, -1, 25, 37, -1, 47, -1, 30, 14, -1, -1, -1, -1, 22, -1, -1,
 				35, 12, -1, -1, -1, 59, 42, -1, -1, 61, 3, 26, 38, 44, -1, 56
 			};
-			static uint64_t constexpr multiplicator = 0x6c04f118e9966f6bull;
+			static uint64_t constexpr multiplicator = 0x6C04F118E9966F6BULL;
 			value |= value >> 1;
 			value |= value >> 2;
 			value |= value >> 4;
@@ -147,7 +177,7 @@ namespace ashes::d3d11
 #endif
 	}
 
-	PhysicalDevice::~PhysicalDevice()
+	PhysicalDevice::~PhysicalDevice()noexcept
 	{
 #if defined( ASHES_D3D11_USE_AMD_AGS )
 		if ( isAMD() )
@@ -171,7 +201,7 @@ namespace ashes::d3d11
 	uint32_t PhysicalDevice::getMemoryTypeBits( VkMemoryPropertyFlags properties )const
 	{
 		uint32_t result{};
-		auto memoryProperties = getMemoryProperties();
+		auto const & memoryProperties = getMemoryProperties();
 
 		for ( auto i = 0u; i < memoryProperties.memoryTypeCount; ++i )
 		{
@@ -192,47 +222,19 @@ namespace ashes::d3d11
 		return result;
 	}
 
-	VkBool32 PhysicalDevice::getPresentationSupport( uint32_t queueFamilyIndex )const
+	VkBool32 PhysicalDevice::getPresentationSupport()const
 	{
 		return getOutput() != nullptr;
 	}
 
-	VkLayerPropertiesArray PhysicalDevice::enumerateLayerProperties()const
+	VkLayerPropertiesArray const & PhysicalDevice::enumerateLayerProperties()const
 	{
-		VkLayerPropertiesArray result;
-		return result;
+		return LayersProperties;
 	}
 
-	VkExtensionPropertiesArray PhysicalDevice::enumerateExtensionProperties( const char * layerName )const
+	VkExtensionPropertiesArray const & PhysicalDevice::enumerateExtensionProperties()const
 	{
-		static VkExtensionPropertiesArray const extensions
-		{
-#if VK_KHR_swapchain
-			VkExtensionProperties{ VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_SWAPCHAIN_SPEC_VERSION },
-#endif
-#if VK_EXT_debug_report
-			VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, VK_EXT_DEBUG_REPORT_SPEC_VERSION },
-#endif
-#if VK_EXT_debug_marker
-			VkExtensionProperties{ VK_EXT_DEBUG_MARKER_EXTENSION_NAME, VK_EXT_DEBUG_MARKER_SPEC_VERSION },
-#endif
-#if VK_EXT_debug_utils
-			VkExtensionProperties{ VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_EXT_DEBUG_UTILS_SPEC_VERSION },
-#endif
-#if VK_EXT_inline_uniform_block
-			VkExtensionProperties{ VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME, VK_EXT_INLINE_UNIFORM_BLOCK_SPEC_VERSION },
-#endif
-#if VK_KHR_maintenance1
-			VkExtensionProperties{ VK_KHR_MAINTENANCE1_EXTENSION_NAME, VK_KHR_MAINTENANCE1_SPEC_VERSION },
-#endif
-#if VK_KHR_get_physical_device_properties2
-			VkExtensionProperties{ VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_SPEC_VERSION },
-#endif
-#if VK_KHR_portability_subset
-			VkExtensionProperties{ VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME, VK_KHR_PORTABILITY_SUBSET_SPEC_VERSION },
-#endif
-		};
-		return extensions;
+		return ExtensionsProperties;
 	}
 
 	VkPhysicalDeviceProperties const & PhysicalDevice::getProperties()const
@@ -240,22 +242,22 @@ namespace ashes::d3d11
 		return m_properties;
 	}
 
-	VkPhysicalDeviceMemoryProperties PhysicalDevice::getMemoryProperties()const
+	VkPhysicalDeviceMemoryProperties const & PhysicalDevice::getMemoryProperties()const
 	{
 		return Instance::getMemoryProperties();
 	}
 
-	VkPhysicalDeviceFeatures PhysicalDevice::getFeatures()const
+	VkPhysicalDeviceFeatures const & PhysicalDevice::getFeatures()const
 	{
 		return m_features;
 	}
 
-	VkQueueFamilyPropertiesArray PhysicalDevice::getQueueFamilyProperties()const
+	VkQueueFamilyPropertiesArray const & PhysicalDevice::getQueueFamilyProperties()const
 	{
 		return m_queueProperties;
 	}
 
-	VkFormatProperties PhysicalDevice::getFormatProperties( VkFormat fmt )const
+	VkFormatProperties const & PhysicalDevice::getFormatProperties( VkFormat fmt )const
 	{
 		return m_formatProperties[fmt];
 	}
@@ -267,7 +269,7 @@ namespace ashes::d3d11
 		, VkImageCreateFlags flags
 		, VkImageFormatProperties & imageProperties )const
 	{
-		auto & formatProperties = m_formatProperties[format];
+		auto const & formatProperties = m_formatProperties[format];
 
 		if ( formatProperties.linearTilingFeatures == 0u )
 		{
@@ -308,8 +310,6 @@ namespace ashes::d3d11
 		if ( tiling != VK_IMAGE_TILING_LINEAR
 			&& type == VK_IMAGE_TYPE_2D
 			&& !checkFlag( flags, VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT )
-			//&& !checkFlag( formatProperties.optimalTilingFeatures, VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT )
-			//&& !checkFlag( formatProperties.optimalTilingFeatures, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT )
 			&& !checkFlag( usage, VK_IMAGE_USAGE_SHADING_RATE_IMAGE_BIT_NV )
 			&& !checkFlag( usage, VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT )
 			&& !isYCBCRFormat( format ) )
@@ -374,12 +374,12 @@ namespace ashes::d3d11
 		return VK_SUCCESS;
 	}
 
-	VkResult PhysicalDevice::getSparseImageFormatProperties( VkFormat format
-		, VkImageType type
-		, VkSampleCountFlagBits samples
-		, VkImageUsageFlags usage
-		, VkImageTiling tiling
-		, std::vector< VkSparseImageFormatProperties > & sparseImageFormatProperties )const
+	VkResult PhysicalDevice::getSparseImageFormatProperties( [[maybe_unused]] VkFormat format
+		, [[maybe_unused]] VkImageType type
+		, [[maybe_unused]] VkSampleCountFlagBits samples
+		, [[maybe_unused]] VkImageUsageFlags usage
+		, [[maybe_unused]] VkImageTiling tiling
+		, [[maybe_unused]] std::vector< VkSparseImageFormatProperties > & sparseImageFormatProperties )const
 	{
 		return VK_ERROR_FORMAT_NOT_SUPPORTED;
 	}
@@ -437,14 +437,11 @@ namespace ashes::d3d11
 
 		if ( result != VK_ERROR_FORMAT_NOT_SUPPORTED )
 		{
-			for ( auto & prop : props )
+			for ( auto const & prop : props )
 			{
-				sparseImageFormatProperties.push_back(
-					{
-						VK_STRUCTURE_TYPE_SPARSE_IMAGE_FORMAT_PROPERTIES_2,
-						nullptr,
-						prop,
-					} );
+				sparseImageFormatProperties.push_back( { VK_STRUCTURE_TYPE_SPARSE_IMAGE_FORMAT_PROPERTIES_2
+					, nullptr
+					, prop } );
 			}
 		}
 
@@ -568,25 +565,19 @@ namespace ashes::d3d11
 		m_properties2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
 		m_properties2.properties = m_properties;
 
-		for ( auto & queueProperty : m_queueProperties )
+		for ( auto const & queueProperty : m_queueProperties )
 		{
-			m_queueProperties2.push_back(
-				{
-					VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2,
-					nullptr,
-					queueProperty,
-				} );
+			m_queueProperties2.push_back( { VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2
+				, nullptr
+				, queueProperty } );
 		}
 
-		for ( auto & formatProperty : m_formatProperties )
+		for ( auto const & [format, properties] : m_formatProperties )
 		{
-			m_formatProperties2.emplace( formatProperty.first
-				, VkFormatProperties2
-				{
-					VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2,
-					nullptr,
-					formatProperty.second,
-				} );
+			m_formatProperties2.try_emplace( format
+				, VkFormatProperties2{ VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2
+				, nullptr
+				, properties } );
 		}
 
 #elif VK_KHR_get_physical_device_properties2
@@ -605,23 +596,17 @@ namespace ashes::d3d11
 
 		for ( auto & queueProperty : m_queueProperties )
 		{
-			m_queueProperties2.push_back(
-				{
-					VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2_KHR,
-					nullptr,
-					queueProperty,
-				} );
+			m_queueProperties2.push_back( { VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2_KHR
+				, nullptr
+				, queueProperty } );
 		}
 
-		for ( auto & formatProperty : m_formatProperties )
+		for ( auto const & [format, properties] : m_formatProperties )
 		{
-			m_formatProperties2.emplace( formatProperty.first
-				, VkFormatProperties2
-				{
-					VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2_KHR,
-					nullptr,
-					formatProperty.second,
-				} );
+			m_formatProperties2.try_emplace( format
+				, VkFormatProperties2{ VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2_KHR
+				, nullptr
+				, properties } );
 		}
 
 #endif
@@ -629,10 +614,8 @@ namespace ashes::d3d11
 
 	void PhysicalDevice::doInitialiseProperties()
 	{
-		DXGI_ADAPTER_DESC2 adapterDesc;
-
-		if ( m_adapterInfo.adapter2
-			&& SUCCEEDED( m_adapterInfo.adapter2->GetDesc2( &adapterDesc ) ) )
+		if ( DXGI_ADAPTER_DESC2 adapterDesc{};
+			m_adapterInfo.adapter2 && SUCCEEDED( m_adapterInfo.adapter2->GetDesc2( &adapterDesc ) ) )
 		{
 			strncpy( m_properties.deviceName
 				, toString( adapterDesc.Description ).c_str()
@@ -712,7 +695,7 @@ namespace ashes::d3d11
 		m_properties.limits.subPixelPrecisionBits = 8u;
 		m_properties.limits.subTexelPrecisionBits = 8u;
 		m_properties.limits.mipmapPrecisionBits = 8u;
-		m_properties.limits.maxDrawIndexedIndexValue = ( 1ull << D3D11_REQ_DRAWINDEXED_INDEX_COUNT_2_TO_EXP ) - 1u;
+		m_properties.limits.maxDrawIndexedIndexValue = ( 1ULL << D3D11_REQ_DRAWINDEXED_INDEX_COUNT_2_TO_EXP ) - 1u;
 		m_properties.limits.maxDrawIndirectCount = 4294967295u;
 		m_properties.limits.maxSamplerLodBias = 15.0f;
 		m_properties.limits.maxSamplerAnisotropy = D3D11_REQ_MAXANISOTROPY - 0.01f;
@@ -778,8 +761,8 @@ namespace ashes::d3d11
 		m_features.fullDrawIndexUint32 = true;
 		m_features.imageCubeArray = true;
 		m_features.independentBlend = true;
-		m_features.geometryShader = false;// m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_10_0;
-		m_features.tessellationShader = false;// m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.geometryShader = false;//! m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_10_0;
+		m_features.tessellationShader = false;//! m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.sampleRateShading = true;
 		m_features.dualSrcBlend = true;
 		m_features.logicOp = true;
@@ -801,7 +784,7 @@ namespace ashes::d3d11
 		m_features.pipelineStatisticsQuery = true;
 		m_features.vertexPipelineStoresAndAtomics = true;
 		m_features.fragmentStoresAndAtomics = true;
-		m_features.shaderTessellationAndGeometryPointSize = false;// m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
+		m_features.shaderTessellationAndGeometryPointSize = false;//! m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.shaderImageGatherExtended = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.shaderStorageImageExtendedFormats = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.shaderStorageImageMultisample = m_adapterInfo.featureLevel >= D3D_FEATURE_LEVEL_11_0;
@@ -860,7 +843,6 @@ namespace ashes::d3d11
 			D3D_FEATURE_LEVEL_9_2,
 			D3D_FEATURE_LEVEL_9_1,
 		};
-		HRESULT hr;
 		UINT flags = 0;
 
 #if !defined( NDEBUG )
@@ -870,7 +852,7 @@ namespace ashes::d3d11
 		D3D_FEATURE_LEVEL supportedFeatureLevel = getFeatureLevel();
 		D3D_FEATURE_LEVEL featureLevel;
 		ID3D11Device * d3dDevice;
-		hr = D3D11CreateDevice( nullptr
+		D3D11CreateDevice( nullptr
 			, D3D_DRIVER_TYPE_HARDWARE
 			, nullptr
 			, flags
@@ -885,7 +867,7 @@ namespace ashes::d3d11
 		{
 			auto fillProps = [&d3dDevice]( VkFormat fmt
 				, VkFormatProperties & props
-				, DXGI_FORMAT( *convertFmt )( VkFormat const & ) )
+				, auto convertFmt )
 			{
 				auto dxgi = convertFmt( fmt );
 
@@ -963,21 +945,21 @@ namespace ashes::d3d11
 
 		m_portabilityFeatures = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_FEATURES_KHR
 			, nullptr
-			, VK_FALSE /* constantAlphaColorBlendFactors; */
-			, VK_FALSE /* events; */
-			, VK_TRUE /* imageViewFormatReinterpretation; */
-			, VK_TRUE /* imageViewFormatSwizzle; */
-			, VK_FALSE /* imageView2DOn3DImage; */
-			, VK_FALSE /* multisampleArrayImage; */
-			, VK_TRUE /* mutableComparisonSamplers; */
-			, VK_TRUE /* pointPolygons; */
-			, VK_TRUE /* samplerMipLodBias; */
-			, VK_FALSE /* separateStencilMaskRef; */
-			, m_features.sampleRateShading /* shaderSampleRateInterpolationFunctions; */
-			, m_features.tessellationShader /* tessellationIsolines; */
-			, m_features.tessellationShader /* tessellationPointMode; */
-			, VK_TRUE /* triangleFans; */
-			, VK_FALSE /* vertexAttributeAccessBeyondStride; */ };
+			, VK_FALSE /* constantAlphaColorBlendFactors */
+			, VK_FALSE /* events */
+			, VK_TRUE /* imageViewFormatReinterpretation */
+			, VK_TRUE /* imageViewFormatSwizzle */
+			, VK_FALSE /* imageView2DOn3DImage */
+			, VK_FALSE /* multisampleArrayImage */
+			, VK_TRUE /* mutableComparisonSamplers */
+			, VK_TRUE /* pointPolygons */
+			, VK_TRUE /* samplerMipLodBias */
+			, VK_FALSE /* separateStencilMaskRef */
+			, m_features.sampleRateShading /* shaderSampleRateInterpolationFunctions */
+			, m_features.tessellationShader /* tessellationIsolines */
+			, m_features.tessellationShader /* tessellationPointMode */
+			, VK_TRUE /* triangleFans */
+			, VK_FALSE /* vertexAttributeAccessBeyondStride */ };
 
 #	endif
 	}
@@ -986,8 +968,8 @@ namespace ashes::d3d11
 
 	struct ExtentFormat
 	{
-		VkExtent2D extent;
-		VkFormat format;
+		VkExtent2D extent{};
+		VkFormat format{};
 	};
 
 	size_t makeKey( VkFormat format
@@ -1018,27 +1000,27 @@ namespace ashes::d3d11
 			std::vector< DXGI_MODE_DESC > displayModes = getDisplayModesList( m_instance, output );
 			std::map< ExtentFormat, std::vector< DXGI_MODE_DESC >, ExtentFormatComp > grouped;
 
-			for ( auto & displayMode : displayModes )
+			for ( auto const & displayMode : displayModes )
 			{
 				ExtentFormat key{ VkExtent2D{ displayMode.Width, displayMode.Height }
 					, getVkFormat( displayMode.Format ) };
-				auto it = grouped.insert( { key, {} } ).first;
-				it->second.push_back( displayMode );
+				auto & modes = grouped.try_emplace( key ).first->second;
+				modes.emplace_back( displayMode );
 			}
 
-			for ( auto & pair : grouped )
+			for ( auto & [extent, descs] : grouped )
 			{
 				VkDisplayKHR display{};
 				allocate( display
 					, nullptr
 					, get( this )
-					, pair.first.extent
-					, pair.first.format
-					, pair.second );
+					, extent.extent
+					, extent.format
+					, descs );
 				m_displays.push_back( { display
 					, "coin"
-					, pair.first.extent
-					, pair.first.extent
+					, extent.extent
+					, extent.extent
 					, VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR
 					, VK_FALSE
 					, VK_TRUE } );

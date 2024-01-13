@@ -23,6 +23,13 @@ namespace ashes::d3d11
 	private:
 		struct LayerResolve
 		{
+			LayerResolve( UINT srcSubresource
+				, UINT dstSubresource )
+				: srcSubresource{ srcSubresource }
+				, dstSubresource{ dstSubresource }
+			{
+			}
+
 			UINT srcSubresource;
 			UINT dstSubresource;
 		};

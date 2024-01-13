@@ -22,10 +22,10 @@ namespace ashes::d3d11
 		DescriptorSet( VkDevice device
 			, VkDescriptorPool pool
 			, VkDescriptorSetLayout layout );
-		~DescriptorSet();
+		~DescriptorSet()noexcept;
 
 		void update( VkWriteDescriptorSet const & write );
-		void update( VkCopyDescriptorSet const & write );
+		void update();
 
 		VkDescriptorSetLayout getLayout()const
 		{

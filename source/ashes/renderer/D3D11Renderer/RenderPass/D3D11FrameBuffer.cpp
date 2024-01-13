@@ -95,9 +95,8 @@ namespace ashes::d3d11
 			, bool msaa )
 		{
 			FboAttach * result{ nullptr };
-			auto attach = doGetDepthStencilAttach( attaches, msaa );
 
-			if ( attach )
+			if ( auto attach = doGetDepthStencilAttach( attaches, msaa ) )
 			{
 				auto view = get( attach->imageView );
 				auto multisampled = get( view->getImage() )->getSamplesCount() > VK_SAMPLE_COUNT_1_BIT;
@@ -153,10 +152,6 @@ namespace ashes::d3d11
 		, m_msDsView{ getDepthStencilView( m_allViews, true ) }
 		, m_dsViewFlags{ getDepthStencilFlags( m_allViews ) }
 		, m_multisampled{ ( !m_msRtViews.empty() ) || ( m_msDsView != nullptr ) }
-	{
-	}
-
-	Framebuffer::~Framebuffer()
 	{
 	}
 }

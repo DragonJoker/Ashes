@@ -26,9 +26,9 @@ namespace ashes::d3d11
 		auto attaches = makeArrayView( m_subpass.pColorAttachments
 			, m_subpass.colorAttachmentCount );
 
-		for ( auto & attach : attaches )
+		for ( auto const & attach : attaches )
 		{
-			m_attaches.push_back( static_cast< ID3D11RenderTargetView * >( allViews[attach.attachment]->view ) );
+			m_attaches.emplace_back( static_cast< ID3D11RenderTargetView * >( allViews[attach.attachment]->view ) );
 		}
 
 		if ( m_subpass.pDepthStencilAttachment )

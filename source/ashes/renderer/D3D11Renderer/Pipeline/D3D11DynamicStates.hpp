@@ -15,9 +15,7 @@ namespace ashes::d3d11
 	class DynamicStates
 	{
 	public:
-		DynamicStates( VkDevice device
-			, VkPipelineDynamicStateCreateInfo const * createInfo );
-		~DynamicStates();
+		explicit DynamicStates( VkPipelineDynamicStateCreateInfo const * createInfo );
 
 		void setLineWidth( Optional< float > const & lineWidth );
 		void setDepthBias( Optional< DepthBias > const & depthBias );

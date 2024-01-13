@@ -24,7 +24,7 @@ namespace ashes::d3d11
 	{
 		auto rp = get( renderPass );
 		assert( clearValues.size() == rp->size() );
-		for ( auto & attach : *rp )
+		for ( auto const & attach : *rp )
 		{
 			auto & clearValue = clearValues[attach.attachment];
 
@@ -45,7 +45,7 @@ namespace ashes::d3d11
 		auto & views = get( m_frameBuffer )->getAllViews();
 		uint32_t clearIndex = 0u;
 
-		for ( auto & reference : *get( m_renderPass ) )
+		for ( auto const & reference : *get( m_renderPass ) )
 		{
 			auto & attachDesc = get( m_renderPass )->getAttachment( reference );
 

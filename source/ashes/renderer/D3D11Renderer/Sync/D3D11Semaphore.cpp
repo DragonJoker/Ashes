@@ -6,12 +6,8 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	Semaphore::Semaphore( VkDevice device )
+	Semaphore::Semaphore( VkDevice device )noexcept
 		: m_device{ device }
-	{
-	}
-
-	Semaphore::~Semaphore()
 	{
 	}
 }

@@ -266,7 +266,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 
 		VkPipeline doCreateBlitPipeline( Device const & device
 			, VkPipelineLayout pipelineLayout
-			, VkShaderModule module )
+			, VkShaderModule shaderModule )
 		{
 			VkPipeline result;
 			allocate( result
@@ -283,7 +283,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 						nullptr,
 						0u,
 						VK_SHADER_STAGE_COMPUTE_BIT,
-						module,
+						shaderModule,
 						"main",
 						nullptr,
 					},
@@ -475,9 +475,9 @@ void main( uint3 threadID : SV_DispatchThreadID )
 			, VkImageUsageFlags requiredUsage )
 		{
 			VkImage result = image;
-			auto createInfo = get( image )->getCreateInfo();
 
-			if ( !checkFlag( createInfo.usage, requiredUsage ) )
+			if ( auto createInfo = get( image )->getCreateInfo();
+				!checkFlag( createInfo.usage, requiredUsage ) )
 			{
 				createInfo.usage = requiredUsage;
 				allocate( result
@@ -619,7 +619,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 	{
 	}
 
-	BlitPipeline::~BlitPipeline()
+	BlitPipeline::~BlitPipeline()noexcept
 	{
 		deallocate( pipeline, get( device )->getAllocationCallbacks() );
 		deallocate( shader, get( device )->getAllocationCallbacks() );
@@ -630,10 +630,9 @@ void main( uint3 threadID : SV_DispatchThreadID )
 	//*********************************************************************************************
 
 	BlitImageCommand::Attachment::Attachment( VkDevice device
-		, VkImageSubresourceLayers & subresource
+		, VkImageSubresourceLayers const & subresource
 		, VkImage image
-		, uint32_t layer
-		, bool dest )
+		, uint32_t layer )
 		: device{ device }
 		, image{ get( image )->getResource() }
 		, subResourceIndex{ D3D11CalcSubresource( subresource.mipLevel
@@ -656,7 +655,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 			} );
 	}
 
-	BlitImageCommand::Attachment::~Attachment()
+	BlitImageCommand::Attachment::~Attachment()noexcept
 	{
 		deallocate( view, get( device )->getAllocationCallbacks() );
 	}
@@ -670,7 +669,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		, VkDeviceSize offset
 		, VkDeviceSize range
 		, VkSampler sampler
-		, VkImageBlit blitRegion
+		, VkImageBlit const & blitRegion
 		, VkImage srcImage
 		, VkImage dstImage
 		, uint32_t layer )
@@ -693,8 +692,8 @@ void main( uint3 threadID : SV_DispatchThreadID )
 			UINT( blitRegion.dstOffsets[0].y + blitRegion.dstOffsets[1].y ),
 			UINT( blitRegion.dstOffsets[0].z + blitRegion.dstOffsets[1].z )
 		}
-		, src{ device, blitRegion.srcSubresource, srcImage, layer, false }
-		, dst{ device, blitRegion.dstSubresource, dstImage, layer, true }
+		, src{ device, blitRegion.srcSubresource, srcImage, layer }
+		, dst{ device, blitRegion.dstSubresource, dstImage, layer }
 		, set{ doCreateDescriptorSet( device
 			, pool
 			, descriptorLayout
@@ -770,11 +769,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 
 		doCreateCommandBuffer( pool
 			, pipeline.pipeline
-			, pipeline.pipelineLayout
-			, srcMinLevel
-			, srcMaxLevel
-			, dstMinLevel
-			, dstMaxLevel );
+			, pipeline.pipelineLayout );
 		get( cb )->executeCommands( makeArrayView( const_cast< VkCommandBuffer const * >( &m_commandBuffer ), 1u ) );
 	}
 
@@ -782,7 +777,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		, uint32_t count )
 	{
 		VkDeviceSize range = 0u;
-		m_ubo = doCreateUbo( m_device, count, m_uboMemory, range );
+		m_ubo = doCreateUbo( getDevice(), count, m_uboMemory, range );
 
 		ashes::VkDescriptorPoolSizeArray poolSizes
 		{
@@ -793,8 +788,8 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		};
 
 		allocate( m_pool
-			, get( m_device )->getAllocationCallbacks()
-			, m_device
+			, get( getDevice() )->getAllocationCallbacks()
+			, getDevice()
 			, VkDescriptorPoolCreateInfo
 			{
 				VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
@@ -814,7 +809,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		{
 			for ( uint32_t layer = 0u; layer < get( m_tmpSrcTexture )->getLayerCount(); ++layer )
 			{
-				m_layerStretches.emplace_back( std::make_shared< BlitImageCommand::LayerCopy >( m_device
+				m_layerStretches.emplace_back( std::make_shared< BlitImageCommand::LayerCopy >( getDevice()
 					, m_pool
 					, descriptorLayout
 					, m_ubo
@@ -849,8 +844,8 @@ void main( uint3 threadID : SV_DispatchThreadID )
 	{
 		if ( count )
 		{
-			m_tmpSrcTexture = doGetSamplable( m_device, m_srcTexture, m_srcMemory );
-			m_tmpDstTexture = doGetStorable( m_device, m_dstTexture, m_dstMemory );
+			m_tmpSrcTexture = doGetSamplable( getDevice(), m_srcTexture, m_srcMemory );
+			m_tmpDstTexture = doGetStorable( getDevice(), m_dstTexture, m_dstMemory );
 			doInitialiseStretchUbo( descriptorLayout, count );
 		}
 	}
@@ -865,9 +860,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		{
 			// Copy source to staging
 			get( m_commandBuffer )->copyImage( m_srcTexture
-				, VK_IMAGE_LAYOUT_UNDEFINED // don't care
 				, m_tmpSrcTexture
-				, VK_IMAGE_LAYOUT_UNDEFINED // don't care
 				, makeArrayView( const_cast< VkImageCopy const * >( m_layerBlitsToTmp.data() )
 					, m_layerBlitsToTmp.size() ) );
 			srcTexture = m_tmpSrcTexture;
@@ -884,9 +877,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		{
 			// Copy staging to destination
 			get( m_commandBuffer )->copyImage( m_tmpDstTexture
-				, VK_IMAGE_LAYOUT_UNDEFINED // don't care
 				, m_dstTexture
-				, VK_IMAGE_LAYOUT_UNDEFINED // don't care
 				, makeArrayView( const_cast< VkImageCopy const * >( m_layerBlitsFromTmp.data() )
 					, m_layerBlitsFromTmp.size() ) );
 		}
@@ -897,29 +888,23 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		if ( !m_layerBlits.empty() )
 		{
 			get( m_commandBuffer )->copyImage( srcTexture
-				, VK_IMAGE_LAYOUT_UNDEFINED
 				, m_dstTexture
-				, VK_IMAGE_LAYOUT_UNDEFINED
 				, makeArrayView( const_cast< VkImageCopy const * >( m_layerBlits.data() )
 					, m_layerBlits.size() ) );
 		}
 	}
 
 	void BlitImageCommand::doAddStretches( VkPipeline pipeline
-		, VkPipelineLayout pipelineLayout
-		, uint32_t srcMinLevel
-		, uint32_t srcMaxLevel
-		, uint32_t dstMinLevel
-		, uint32_t dstMaxLevel )
+		, VkPipelineLayout pipelineLayout )
 	{
 		if ( !m_layerStretches.empty() )
 		{
 			get( m_commandBuffer )->bindPipeline( pipeline, VK_PIPELINE_BIND_POINT_COMPUTE );
 
-			for ( auto & copy : m_layerStretches )
+			for ( auto const & copy : m_layerStretches )
 			{
 				uint32_t srcWidth = copy->srcBox.right - copy->srcBox.left;
-				uint32_t srcHeight = uint32_t( std::abs( int( copy->srcBox.bottom ) - int( copy->srcBox.top ) ) );
+				auto srcHeight = uint32_t( std::abs( int( copy->srcBox.bottom ) - int( copy->srcBox.top ) ) );
 				get( m_commandBuffer )->bindDescriptorSets( VK_PIPELINE_BIND_POINT_COMPUTE
 					, pipelineLayout
 					, 0u
@@ -932,14 +917,10 @@ void main( uint3 threadID : SV_DispatchThreadID )
 
 	void BlitImageCommand::doCreateCommandBuffer( VkCommandPool pool
 		, VkPipeline pipeline
-		, VkPipelineLayout pipelineLayout
-		, uint32_t srcMinLevel
-		, uint32_t srcMaxLevel
-		, uint32_t dstMinLevel
-		, uint32_t dstMaxLevel )
+		, VkPipelineLayout pipelineLayout )
 	{
 		allocateNA( m_commandBuffer
-			, m_device
+			, getDevice()
 			, pool
 			, true );
 		get( m_commandBuffer )->begin( VkCommandBufferBeginInfo
@@ -952,32 +933,28 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		VkImage image = doUpdateTmpSrc();
 		doAddBlits( image );
 		doAddStretches( pipeline
-			, pipelineLayout
-			, srcMinLevel
-			, srcMaxLevel
-			, dstMinLevel
-			, dstMaxLevel );
+			, pipelineLayout );
 		doUpdateTmpDst();
 		get( m_commandBuffer )->end();
 	}
 
-	BlitImageCommand::~BlitImageCommand()
+	BlitImageCommand::~BlitImageCommand()noexcept
 	{
-		deallocate( m_pool, get( m_device )->getAllocationCallbacks() );
-		deallocate( m_uboMemory, get( m_device )->getAllocationCallbacks() );
-		deallocate( m_ubo, get( m_device )->getAllocationCallbacks() );
-		deallocate( m_sampler, get( m_device )->getAllocationCallbacks() );
+		deallocate( m_pool, get( getDevice() )->getAllocationCallbacks() );
+		deallocate( m_uboMemory, get( getDevice() )->getAllocationCallbacks() );
+		deallocate( m_ubo, get( getDevice() )->getAllocationCallbacks() );
+		deallocate( m_sampler, get( getDevice() )->getAllocationCallbacks() );
 
 		if ( m_tmpSrcTexture != m_srcTexture )
 		{
-			deallocate( m_dstMemory, get( m_device )->getAllocationCallbacks() );
-			deallocate( m_tmpDstTexture, get( m_device )->getAllocationCallbacks() );
+			deallocate( m_dstMemory, get( getDevice() )->getAllocationCallbacks() );
+			deallocate( m_tmpDstTexture, get( getDevice() )->getAllocationCallbacks() );
 		}
 
 		if ( m_tmpDstTexture != m_dstTexture )
 		{
-			deallocate( m_srcMemory, get( m_device )->getAllocationCallbacks() );
-			deallocate( m_tmpDstTexture, get( m_device )->getAllocationCallbacks() );
+			deallocate( m_srcMemory, get( getDevice() )->getAllocationCallbacks() );
+			deallocate( m_tmpDstTexture, get( getDevice() )->getAllocationCallbacks() );
 		}
 	}
 

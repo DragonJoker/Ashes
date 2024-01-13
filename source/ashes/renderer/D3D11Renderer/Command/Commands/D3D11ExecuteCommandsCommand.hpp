@@ -14,7 +14,6 @@ namespace ashes::d3d11
 	public:
 		ExecuteCommandsCommand( VkDevice device
 			, VkCommandBuffer commandBuffer );
-		~ExecuteCommandsCommand()override;
 
 		void apply( Context const & context )const override;
 		CommandPtr clone()const override;

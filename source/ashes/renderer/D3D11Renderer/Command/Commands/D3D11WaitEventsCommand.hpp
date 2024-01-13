@@ -13,11 +13,7 @@ namespace ashes::d3d11
 	{
 	public:
 		WaitEventsCommand( VkDevice device
-			, ArrayView< VkEvent const > const & events
-			, VkPipelineStageFlags srcStageMask
-			, VkPipelineStageFlags dstStageMask
-			, ArrayView< VkBufferMemoryBarrier const > const & bufferMemoryBarriers
-			, ArrayView< VkImageMemoryBarrier const > const & imageMemoryBarriers );
+			, ArrayView< VkEvent const > const & events );
 
 		void apply( Context const & context )const override;
 		CommandPtr clone()const override;

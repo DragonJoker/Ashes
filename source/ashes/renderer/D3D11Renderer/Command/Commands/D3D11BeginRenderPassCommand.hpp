@@ -21,10 +21,10 @@ namespace ashes::d3d11
 		CommandPtr clone()const override;
 
 	private:
-		VkRenderPass m_renderPass;
-		VkFramebuffer m_frameBuffer;
-		VkClearValueArray m_rtClearValues;
-		VkClearValue m_dsClearValue;
-		RECT m_scissor;
+		VkRenderPass m_renderPass{};
+		VkFramebuffer m_frameBuffer{};
+		VkClearValueArray m_rtClearValues{};
+		VkClearValue m_dsClearValue{};
+		RECT m_scissor{};
 	};
 }

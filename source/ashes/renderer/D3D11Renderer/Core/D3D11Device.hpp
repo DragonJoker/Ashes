@@ -27,12 +27,14 @@ namespace ashes::d3d11
 	class Device
 		: public ashes::IcdObject
 	{
+		using lock_type = std::unique_lock< std::mutex >;
+
 	public:
 		Device( VkInstance instance
 			, VkPhysicalDevice physicalDevice
 			, VkAllocationCallbacks const * callbacks
 			, VkDeviceCreateInfo createInfos );
-		~Device();
+		~Device()noexcept;
 
 		DeviceContextLock getImmediateContext()const;
 
@@ -64,14 +66,14 @@ namespace ashes::d3d11
 			, size_t location
 			, int32_t messageCode
 			, const char * pLayerPrefix
-			, const char * pMessage );
+			, const char * pMessage )const noexcept;
 		void onReportMessage( VkDebugReportFlagsEXT flags
 			, VkDebugReportObjectTypeEXT objectType
 			, uint64_t object
 			, size_t location
 			, int32_t messageCode
 			, const char * pLayerPrefix
-			, const char * pMessage );
+			, const char * pMessage )const noexcept;
 #endif
 		VkQueue getQueue( uint32_t familyIndex
 			, uint32_t index )const;
@@ -81,12 +83,12 @@ namespace ashes::d3d11
 		*	Layers delegation.
 		*/
 		/**@{*/
-		bool onCopyToImageCommand( VkCommandBuffer cmd
+		void onCopyToImageCommand( VkCommandBuffer cmd
 			, ArrayView< VkBufferImageCopy const > const & copyInfo
 			, VkBuffer src
 			, VkImage dst )const;
-		bool onCheckHResultCommand( HRESULT hresult
-			, std::string message )const;
+		void onCheckHResultCommand( HRESULT hresult
+			, std::string const & message )const;
 		/**@}*/
 		/**
 		*name
@@ -145,11 +147,18 @@ namespace ashes::d3d11
 
 		friend class DeviceContextLock;
 		ID3D11DeviceContext * lockImmediateContext()const;
-		void unlockImmediateContext()const;
+		void unlockImmediateContext()const noexcept;
 
 	private:
 		struct QueueCreates
 		{
+			QueueCreates( VkDeviceQueueCreateInfo createInfo
+				, std::vector< VkQueue > queues = {}  )
+				: createInfo{ std::move( createInfo ) }
+				, queues{ std::move( queues ) }
+			{
+			}
+
 			VkDeviceQueueCreateInfo createInfo;
 			std::vector< VkQueue > queues;
 		};

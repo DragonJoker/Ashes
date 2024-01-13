@@ -427,7 +427,7 @@ namespace ashes::d3d11
 		{
 			using Type = typename VkDxTypeTraits< VkType >::Type;
 
-			vkValue = VkType( new Type{ std::forward< Params && >( params )... } );
+			vkValue = VkType( new Type{ std::forward< Params >( params )... } );
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )
@@ -468,7 +468,7 @@ namespace ashes::d3d11
 
 				if ( mem )
 				{
-					vkValue = VkType( new( mem )Type{ std::forward< Params && >( params )... } );
+					vkValue = VkType( new( mem )Type{ std::forward< Params >( params )... } );
 					result = VK_SUCCESS;
 				}
 				else
@@ -478,7 +478,7 @@ namespace ashes::d3d11
 			}
 			else
 			{
-				vkValue = VkType( new Type{ std::forward< Params && >( params )... } );
+				vkValue = VkType( new Type{ std::forward< Params >( params )... } );
 				result = VK_SUCCESS;
 			}
 		}
@@ -500,7 +500,7 @@ namespace ashes::d3d11
 	}
 
 	template< typename VkType >
-	VkResult deallocateNA( VkType & vkValue )
+	VkResult deallocateNA( VkType & vkValue )noexcept
 	{
 		if ( vkValue )
 		{
@@ -513,7 +513,7 @@ namespace ashes::d3d11
 	}
 
 	template< typename VkType >
-	VkResult deallocateNA( VkType const & vkValue )
+	VkResult deallocateNA( VkType const & vkValue )noexcept
 	{
 		if ( vkValue )
 		{
@@ -525,7 +525,7 @@ namespace ashes::d3d11
 	}
 
 	template< typename VkType >
-	VkResult deallocate( VkType & vkValue, const VkAllocationCallbacks * allocInfo )
+	VkResult deallocate( VkType & vkValue, const VkAllocationCallbacks * allocInfo )noexcept
 	{
 		if ( vkValue )
 		{
@@ -550,7 +550,7 @@ namespace ashes::d3d11
 	}
 
 	template< typename VkType >
-	VkResult deallocate( VkType const & vkValue, const VkAllocationCallbacks * allocInfo )
+	VkResult deallocate( VkType const & vkValue, const VkAllocationCallbacks * allocInfo )noexcept
 	{
 		if ( vkValue )
 		{
@@ -561,7 +561,6 @@ namespace ashes::d3d11
 				using Type = typename VkDxTypeTraits< VkType >::Type;
 
 				value->~Type();
-				auto scope = allocationScopeT< VkType >;
 				allocInfo->pfnFree( allocInfo->pUserData, value );
 			}
 			else

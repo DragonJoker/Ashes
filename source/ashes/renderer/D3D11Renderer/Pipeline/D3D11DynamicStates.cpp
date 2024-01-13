@@ -23,8 +23,7 @@ namespace ashes::d3d11
 		}
 	}
 
-	DynamicStates::DynamicStates( VkDevice device
-		, VkPipelineDynamicStateCreateInfo const * createInfo )
+	DynamicStates::DynamicStates( VkPipelineDynamicStateCreateInfo const * createInfo )
 		: m_dynamicStates{ getStates( createInfo ) }
 		, m_dynamicState{ getState( createInfo ) }
 	{
@@ -78,10 +77,6 @@ namespace ashes::d3d11
 			m_stencilReference[0] = 0u;
 			m_stencilReference[1] = 0u;
 		}
-	}
-
-	DynamicStates::~DynamicStates()
-	{
 	}
 
 	void DynamicStates::setLineWidth( Optional< float > const & lineWidth )

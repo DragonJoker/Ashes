@@ -9,13 +9,14 @@ See LICENSE file in root folder
 namespace ashes::d3d11
 {
 	class DisplayKHR
+		: public NonCopyable
 	{
 	public:
 		DisplayKHR( VkPhysicalDevice physicalDevice
 			, VkExtent2D const & extent
 			, VkFormat format
 			, std::vector< DXGI_MODE_DESC > const & desc );
-		~DisplayKHR();
+		~DisplayKHR()noexcept;
 
 		std::vector< VkDisplayModePropertiesKHR > const & getDisplayModeProperties()const;
 		DXGI_MODE_DESC const & getDesc( VkDisplayModeParametersKHR const & parameters )const;

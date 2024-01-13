@@ -9,24 +9,24 @@ See LICENSE file in root folder
 namespace ashes::d3d11
 {
 	class Event
+		: public NonCopyable
 	{
 	public:
-		Event( VkDevice device );
-		~Event();
+		explicit Event( VkDevice device )noexcept;
 		/**
 		*\copydoc	ashes::Event::getStatus
 		*/
-		VkResult getStatus()const;
+		VkResult getStatus()const noexcept;
 		/**
 		*\copydoc	ashes::Event::getStatus
 		*/
-		VkResult set()const;
+		VkResult set()const noexcept;
 		/**
 		*\copydoc	ashes::Event::getStatus
 		*/
-		VkResult reset()const;
+		VkResult reset()const noexcept;
 
-		inline VkDevice getDevice()const
+		VkDevice getDevice()const noexcept
 		{
 			return m_device;
 		}

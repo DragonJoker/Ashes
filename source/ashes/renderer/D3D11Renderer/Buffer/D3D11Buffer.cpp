@@ -14,7 +14,7 @@ namespace ashes::d3d11
 	{
 	}
 
-	Buffer::~Buffer()
+	Buffer::~Buffer()noexcept
 	{
 		safeRelease( m_unorderedAccessView );
 	}
@@ -47,7 +47,7 @@ namespace ashes::d3d11
 		, D3D11_BOX const & srcBox
 		, UINT dstOffset )const
 	{
-		VkDeviceSize size = srcBox.right - srcBox.left;
+		VkDeviceSize size = VkDeviceSize( srcBox.right ) - srcBox.left;
 		get( m_memory )->updateData( get( src )->m_memory
 			, VkDeviceSize( srcBox.left )
 			, VkDeviceSize( dstOffset )

@@ -139,7 +139,7 @@ namespace ashes::d3d11
 		}
 
 		// Bind program
-		for ( auto & stage : get( m_pipeline )->getShaderStages() )
+		for ( auto const & stage : get( m_pipeline )->getShaderStages() )
 		{
 			switch ( stage.getStage() )
 			{
@@ -332,7 +332,7 @@ namespace ashes::d3d11
 	SetDepthBoundsCommand::SetDepthBoundsCommand( VkDevice device
 		, DepthBounds const & depthBounds )
 		: CommandBase{ device }
-		, m_physicalDevice{ get( m_device )->getPhysicalDevice() }
+		, m_physicalDevice{ get( getDevice() )->getPhysicalDevice() }
 		, m_depthBounds{ depthBounds }
 	{
 	}

@@ -38,8 +38,7 @@ namespace ashes::d3d11
 		}
 		
 		VkDeviceSize doGetBufferSize( VkFormat format
-			, VkBufferImageCopy const & copyInfo
-			, uint32_t mipLevel )
+			, VkBufferImageCopy const & copyInfo )
 		{
 			VkExtent3D bufferPitch
 			{
@@ -55,7 +54,7 @@ namespace ashes::d3d11
 			, uint32_t slice )
 		{
 			auto begin = copyInfo.bufferOffset;
-			auto end = begin + doGetBufferSize( format, copyInfo, 0u );
+			auto end = begin + doGetBufferSize( format, copyInfo );
 			return
 			{
 				UINT( begin ),    // left
@@ -136,14 +135,14 @@ namespace ashes::d3d11
 						srcSlice += srcRowPitch;
 						dstSlice += dstRowPitch;
 					}
+
+					srcLayer += srcDepthPitch;
+					dstLayer += dstDepthPitch;
 				}
 
-				srcLayer += srcDepthPitch;
-				dstLayer += dstDepthPitch;
+				srcData += srcLayerPitch;
+				dstData += dstLayerPitch;
 			}
-
-			srcData += srcLayerPitch;
-			dstData += dstLayerPitch;
 		}
 
 		void doAdjustPitches( uint32_t bufferSize
@@ -295,7 +294,6 @@ namespace ashes::d3d11
 		}
 
 		VkBuffer getStagingBuffer( VkDevice device
-			, VkBuffer buffer
 			, VkDeviceSize size
 			, VkDeviceMemory & memory )
 		{
@@ -341,7 +339,7 @@ namespace ashes::d3d11
 
 			for ( auto & copyInfo : copyInfos )
 			{
-				auto size = doGetBufferSize( format, copyInfo, 0u );
+				auto size = doGetBufferSize( format, copyInfo );
 				minOffset = std::min( minOffset, copyInfo.bufferOffset );
 				maxSize = std::max( maxSize, copyInfo.bufferOffset + size );
 			}
@@ -369,7 +367,6 @@ namespace ashes::d3d11
 				CopyToStagingProcess process;
 				process.copyToStaging = copyToStaging;
 				process.stagingSrc = getStagingBuffer( device
-					, src
 					, process.copyToStaging.size
 					, process.stagingSrcMemory );
 
@@ -427,7 +424,6 @@ namespace ashes::d3d11
 		MapCopyProcess getMapCopyProcess( VkDevice device
 			, VkBuffer src
 			, VkImage dst
-			, Optional< CopyToStagingProcess > const & copyToStaging
 			, ArrayView< VkBufferImageCopy const > const & copyInfos
 			, VkBufferImageCopy const & baseBufferImageCopy
 			, bool dstMappable )
@@ -441,7 +437,7 @@ namespace ashes::d3d11
 
 			for ( auto & copy : copyInfos )
 			{
-				auto copyInfo = copy;
+				VkBufferImageCopy copyInfo = copy;
 				// We process images array level per array level
 				copyInfo.imageSubresource.layerCount = 1u;
 				// We process images depth slice per depth slice
@@ -503,15 +499,10 @@ namespace ashes::d3d11
 			auto mapCopy = getMapCopyProcess( device
 				, src
 				, dst
-				, copyToStaging
 				, copyInfos
 				, baseBufferImageCopy
 				, dstMappable );
-			return BufferToImageCopyProcess
-			{
-				copyToStaging,
-				mapCopy,
-			};
+			return BufferToImageCopyProcess{ copyToStaging, mapCopy };
 		}
 	}
 
@@ -529,12 +520,12 @@ namespace ashes::d3d11
 	{
 	}
 
-	CopyBufferToImageCommand::~CopyBufferToImageCommand()
+	CopyBufferToImageCommand::~CopyBufferToImageCommand()noexcept
 	{
 		if ( m_process.copyToStaging )
 		{
-			deallocate( m_process.copyToStaging->stagingSrcMemory, get( m_device )->getAllocationCallbacks() );
-			deallocate( m_process.copyToStaging->stagingSrc, get( m_device )->getAllocationCallbacks() );
+			deallocate( m_process.copyToStaging->stagingSrcMemory, get( getDevice() )->getAllocationCallbacks() );
+			deallocate( m_process.copyToStaging->stagingSrc, get( getDevice() )->getAllocationCallbacks() );
 		}
 	}
 
@@ -551,7 +542,7 @@ namespace ashes::d3d11
 	void CopyBufferToImageCommand::apply( Context const & context
 		, CopyToStagingProcess const & process )const
 	{
-		CopyBufferCommand command{ m_device
+		CopyBufferCommand command{ getDevice()
 			, process.copyToStaging
 			, m_src
 			, process.stagingSrc };
@@ -561,7 +552,7 @@ namespace ashes::d3d11
 	void CopyBufferToImageCommand::apply( Context const & context
 		, CopyFromStagingProcess const & process )const
 	{
-		CopyImageCommand command{ m_device
+		CopyImageCommand command{ getDevice()
 			, process.copyFromStaging
 			, process.stagingDst
 			, m_dst };
@@ -572,26 +563,24 @@ namespace ashes::d3d11
 		, MapCopyProcess const & process )const
 	{
 		D3D11_MAPPED_SUBRESOURCE srcMapped{};
-		auto & src = get( process.src )->getObjectMemory();
 
-		if ( VK_SUCCESS == src.lock( *context.context
-			, 0u
-			, srcMapped ) )
+		if ( auto & src = get( process.src )->getObjectMemory();
+			VK_SUCCESS == src.lock( *context.context
+				, 0u
+				, srcMapped )
+			&& srcMapped.pData )
 		{
-			if ( srcMapped.pData )
+			for ( auto & mapCopyImage : process.mapCopyImages )
 			{
-				for ( auto & mapCopyImage : process.mapCopyImages )
-				{
-					doMapCopy( context
-						, mapCopyImage
-						, get( mapCopyImage.dst )->getFormat()
-						, srcMapped
-						, get( mapCopyImage.dst )->getObjectMemory() );
+				doMapCopy( context
+					, mapCopyImage
+					, get( mapCopyImage.dst )->getFormat()
+					, srcMapped
+					, get( mapCopyImage.dst )->getObjectMemory() );
 
-					if ( mapCopyImage.copyFromStaging )
-					{
-						apply( context, *mapCopyImage.copyFromStaging );
-					}
+				if ( mapCopyImage.copyFromStaging )
+				{
+					apply( context, *mapCopyImage.copyFromStaging );
 				}
 			}
 
@@ -626,11 +615,10 @@ namespace ashes::d3d11
 			srcMapped.DepthPitch = UINT( imageSize );
 		}
 
-		D3D11_MAPPED_SUBRESOURCE dstMapped{};
-
-		if ( VK_SUCCESS == dst.lock( *context.context
-			, mapCopy.dstSubresource
-			, dstMapped )
+		if ( D3D11_MAPPED_SUBRESOURCE dstMapped{};
+			VK_SUCCESS == dst.lock( *context.context
+				, mapCopy.dstSubresource
+				, dstMapped )
 			&& dstMapped.pData )
 		{
 			doCopyMapped( format
@@ -649,13 +637,8 @@ namespace ashes::d3d11
 		, VkBuffer src
 		, VkBuffer staging )const
 	{
-		CopyBufferCommand command{ m_device
-			, VkBufferCopy
-			{
-				srcOffset,
-				0u,
-				size
-			}
+		CopyBufferCommand command{ getDevice()
+			, VkBufferCopy{ srcOffset, 0u, size }
 			, src
 			, staging };
 		command.apply( context );
@@ -669,15 +652,12 @@ namespace ashes::d3d11
 		VkImageSubresourceLayers stagingSurbresouce{ copyInfo.imageSubresource };
 		stagingSurbresouce.mipLevel = 0u;
 		stagingSurbresouce.baseArrayLayer = 0u;
-		CopyImageCommand command{ m_device
-			, VkImageCopy
-			{
-				stagingSurbresouce,
-				VkOffset3D{},
-				copyInfo.imageSubresource,
-				copyInfo.imageOffset,
-				copyInfo.imageExtent,
-			}
+		CopyImageCommand command{ getDevice()
+			, VkImageCopy{ stagingSurbresouce
+				, VkOffset3D{}
+				, copyInfo.imageSubresource
+				, copyInfo.imageOffset
+				, copyInfo.imageExtent }
 			, staging
 			, dst };
 		command.apply( context );

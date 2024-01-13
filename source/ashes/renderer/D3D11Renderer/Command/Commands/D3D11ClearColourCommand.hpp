@@ -29,7 +29,10 @@ namespace ashes::d3d11
 			, ArrayView< VkImageSubresourceRange const > ranges
 			, VkClearColorValue const & colour );
 		ClearColourCommand( ClearColourCommand  const & rhs );
-		~ClearColourCommand()override;
+		ClearColourCommand & operator=( ClearColourCommand  const & rhs );
+		ClearColourCommand( ClearColourCommand && rhs )noexcept = default;
+		ClearColourCommand & operator=( ClearColourCommand && rhs )noexcept = default;
+		~ClearColourCommand()noexcept override;
 
 		void apply( Context const & context )const override;
 		CommandPtr clone()const override;

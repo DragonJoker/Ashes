@@ -21,11 +21,7 @@ namespace ashes::d3d11
 		*	Constructeur.
 		*/
 		MemoryBarrierCommand( VkDevice device
-			, VkPipelineStageFlags after
-			, VkPipelineStageFlags before
-			, ArrayView< VkMemoryBarrier const > const & memoryBarriers
-			, ArrayView< VkBufferMemoryBarrier const > const & bufferBarriers
-			, ArrayView< VkImageMemoryBarrier const > const & imageBarriers );
+			, ArrayView< VkBufferMemoryBarrier const > const & bufferBarriers );
 
 		void apply( Context const & context )const override;
 		CommandPtr clone()const override;

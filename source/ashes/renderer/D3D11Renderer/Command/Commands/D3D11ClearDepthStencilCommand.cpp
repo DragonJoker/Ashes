@@ -57,31 +57,48 @@ namespace ashes::d3d11
 			| ( isStencilFormat( get( image )->getFormat() )
 				? D3D11_CLEAR_STENCIL
 				: 0u ) }
-		, m_views{ createViews( m_device, m_image, m_ranges ) }
+		, m_views{ createViews( getDevice(), m_image, m_ranges ) }
 	{
 	}
 
 	ClearDepthStencilCommand::ClearDepthStencilCommand( ClearDepthStencilCommand const & rhs )
-		: CommandBase{ rhs.m_device }
+		: CommandBase{ rhs.getDevice() }
 		, m_image{ rhs.m_image }
 		, m_ranges{ rhs.m_ranges }
 		, m_value{ rhs.m_value }
 		, m_flags{ rhs.m_flags }
-		, m_views{ createViews( m_device, m_image, m_ranges ) }
+		, m_views{ createViews( getDevice(), m_image, m_ranges ) }
 	{
 	}
 
-	ClearDepthStencilCommand::~ClearDepthStencilCommand()
+	ClearDepthStencilCommand & ClearDepthStencilCommand::operator=( ClearDepthStencilCommand const & rhs )
 	{
-		for ( auto view : m_views )
+		for ( auto const & view : m_views )
 		{
-			deallocate( view, get( m_device )->getAllocationCallbacks() );
+			deallocate( view, get( getDevice() )->getAllocationCallbacks() );
+		}
+
+		CommandBase::operator=( rhs );
+		m_image = rhs.m_image;
+		m_ranges = rhs.m_ranges;
+		m_value = rhs.m_value;
+		m_flags = rhs.m_flags;
+		m_views = createViews( getDevice(), m_image, m_ranges );
+
+		return *this;
+	}
+
+	ClearDepthStencilCommand::~ClearDepthStencilCommand()noexcept
+	{
+		for ( auto const & view : m_views )
+		{
+			deallocate( view, get( getDevice() )->getAllocationCallbacks() );
 		}
 	}
 
 	void ClearDepthStencilCommand::apply( Context const & context )const
 	{
-		for ( auto & view : m_views )
+		for ( auto const & view : m_views )
 		{
 			context.context->ClearDepthStencilView( get( view )->getDepthStencilView()
 				, m_flags
