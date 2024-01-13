@@ -53,6 +53,7 @@ namespace ashes::d3d11
 	*/
 	class CopyBufferToImageCommand
 		: public CommandBase
+		, public NonCopyable
 	{
 	public:
 		/**
@@ -99,6 +100,7 @@ namespace ashes::d3d11
 	private:
 		VkBuffer m_src;
 		VkImage m_dst;
+		std::vector< VkBufferImageCopy > m_copyInfos;
 		DXGI_FORMAT m_format;
 		bool m_srcMappable;
 		bool m_dstMappable;

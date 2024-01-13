@@ -248,7 +248,7 @@ namespace ashes::d3d11
 		: public ashes::Exception
 	{
 	public:
-		ExtensionNotPresentException( std::string const & name )
+		explicit ExtensionNotPresentException( std::string const & name )
 			: Exception{ VK_ERROR_EXTENSION_NOT_PRESENT, name }
 		{
 		}
