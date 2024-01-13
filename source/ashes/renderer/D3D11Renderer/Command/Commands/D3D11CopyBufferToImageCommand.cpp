@@ -513,6 +513,7 @@ namespace ashes::d3d11
 		: CommandBase{ device }
 		, m_src{ src }
 		, m_dst{ dst }
+		, m_copyInfos{ copyInfos.begin(), copyInfos.end() }
 		, m_format{ getSRVFormat( get( m_dst )->getFormat() ) }
 		, m_srcMappable{ checkFlag( get( get( m_src )->getMemory() )->getMemoryPropertyFlags(), VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) }
 		, m_dstMappable{ checkFlag( get( get( m_dst )->getMemory() )->getMemoryPropertyFlags(), VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) }
@@ -590,7 +591,10 @@ namespace ashes::d3d11
 
 	CommandPtr CopyBufferToImageCommand::clone()const
 	{
-		return std::make_unique< CopyBufferToImageCommand >( *this );
+		return std::make_unique< CopyBufferToImageCommand >( getDevice()
+			, makeArrayView( m_copyInfos.data(), m_copyInfos.size() )
+			, m_src
+			, m_dst );
 	}
 
 	void CopyBufferToImageCommand::doMapCopy( Context const & context

@@ -23,10 +23,8 @@ namespace ashes::d3d11
 		, m_frameBuffer{ frameBuffer }
 	{
 		auto & allViews = get( m_frameBuffer )->getAllViews();
-		auto attaches = makeArrayView( m_subpass.pColorAttachments
-			, m_subpass.colorAttachmentCount );
 
-		for ( auto const & attach : attaches )
+		for ( auto const & attach : makeArrayView( m_subpass.pColorAttachments, m_subpass.colorAttachmentCount ) )
 		{
 			m_attaches.emplace_back( static_cast< ID3D11RenderTargetView * >( allViews[attach.attachment]->view ) );
 		}

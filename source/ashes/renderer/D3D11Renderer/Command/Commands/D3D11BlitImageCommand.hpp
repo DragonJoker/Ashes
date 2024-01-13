@@ -30,6 +30,7 @@ namespace ashes::d3d11
 	{
 	public:
 		struct Attachment
+			: public NonCopyable
 		{
 			Attachment( VkDevice device
 				, VkImageSubresourceLayers const & subresource
