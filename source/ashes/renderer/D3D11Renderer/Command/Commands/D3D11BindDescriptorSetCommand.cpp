@@ -87,7 +87,7 @@ namespace ashes::d3d11
 				context->CSSetUnorderedAccessViews( bindingIndex, 1u, &view, nullptr );
 			}
 			// Storage buffer/image
-			static void gather( UINT bindingIndex, ID3D11UnorderedAccessView * view, std::map< UINT, ID3D11UnorderedAccessView * > * uavs )
+			static void gather( UINT, ID3D11UnorderedAccessView const *, std::map< UINT, ID3D11UnorderedAccessView * > const * )
 			{
 			}
 		};
@@ -277,7 +277,7 @@ namespace ashes::d3d11
 				context->CSSetShaderResources( bindingIndex, 1u, &image );
 			}
 			// Uniform Buffer
-			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT range )
+			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT )
 			{
 				checkOffset( offset );
 				context->CSSetConstantBuffers( bindingIndex, 1u, &buffer );
@@ -288,7 +288,7 @@ namespace ashes::d3d11
 				context->CSSetUnorderedAccessViews( bindingIndex, 1u, &view, nullptr );
 			}
 			// Storage buffer/image
-			static void gather( UINT bindingIndex, ID3D11UnorderedAccessView * view, std::map< UINT, ID3D11UnorderedAccessView * > * uavs )
+			static void gather( UINT, ID3D11UnorderedAccessView const *, std::map< UINT, ID3D11UnorderedAccessView * > const * )
 			{
 			}
 		};
@@ -313,7 +313,7 @@ namespace ashes::d3d11
 				context->VSSetShaderResources( bindingIndex, 1u, &image );
 			}
 			// Uniform Buffer
-			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT range )
+			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT )
 			{
 				checkOffset( offset );
 				context->VSSetConstantBuffers( bindingIndex, 1u, &buffer );
@@ -345,7 +345,7 @@ namespace ashes::d3d11
 				context->GSSetShaderResources( bindingIndex, 1u, &image );
 			}
 			// Uniform Buffer
-			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT range )
+			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT )
 			{
 				checkOffset( offset );
 				context->GSSetConstantBuffers( bindingIndex, 1u, &buffer );
@@ -377,7 +377,7 @@ namespace ashes::d3d11
 				context->HSSetShaderResources( bindingIndex, 1u, &image );
 			}
 			// Uniform Buffer
-			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT range )
+			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT )
 			{
 				checkOffset( offset );
 				context->HSSetConstantBuffers( bindingIndex, 1u, &buffer );
@@ -409,7 +409,7 @@ namespace ashes::d3d11
 				context->DSSetShaderResources( bindingIndex, 1u, &image );
 			}
 			// Uniform Buffer
-			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT range )
+			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT )
 			{
 				checkOffset( offset );
 				context->DSSetConstantBuffers( bindingIndex, 1u, &buffer );
@@ -441,7 +441,7 @@ namespace ashes::d3d11
 				context->PSSetShaderResources( bindingIndex, 1u, &image );
 			}
 			// Uniform Buffer
-			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT range )
+			static void bind( ID3D11DeviceContext * context, UINT bindingIndex, ID3D11Buffer * buffer, UINT offset, UINT )
 			{
 				checkOffset( offset );
 				context->PSSetConstantBuffers( bindingIndex, 1u, &buffer );
@@ -613,7 +613,7 @@ namespace ashes::d3d11
 						, flags
 						, buffer
 						, UINT( write.pBufferInfo[i].offset ) / 16
-						, UINT( ashes::getAlignedSize( range, 256ull ) / 16ull ) );
+						, UINT( ashes::getAlignedSize( range, 256ULL ) / 16ULL ) );
 				}
 			}
 		}
@@ -668,7 +668,7 @@ namespace ashes::d3d11
 						, flags
 						, buffer
 						, UINT( ( offset + write.pBufferInfo[i].offset ) / 16 )
-						, UINT( ashes::getAlignedSize( range, 256ull ) / 16ull ) );
+						, UINT( ashes::getAlignedSize( range, 256ULL ) / 16ULL ) );
 				}
 			}
 		}
@@ -753,7 +753,7 @@ namespace ashes::d3d11
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
-			, uint32_t offset )
+			, uint32_t /*offset*/ )
 		{
 			for ( auto & write : writeBinding.writes )
 			{
@@ -892,7 +892,7 @@ namespace ashes::d3d11
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, std::map< UINT, ID3D11UnorderedAccessView * > & uavs
-			, uint32_t offset )
+			, uint32_t /*offset*/ )
 		{
 			for ( auto & write : writeBinding.writes )
 			{
@@ -921,7 +921,7 @@ namespace ashes::d3d11
 		{
 			for ( auto i = 0u; i < offsets.size(); ++i )
 			{
-				auto & writeBinding = *writes[i];
+				auto const & writeBinding = *writes[i];
 
 				switch ( writeBinding.binding.descriptorType )
 				{
@@ -1062,7 +1062,7 @@ namespace ashes::d3d11
 						, flags
 						, ( ID3D11Buffer * )nullptr
 						, UINT( write.pBufferInfo[i].offset / 16 )
-						, UINT( ashes::getAlignedSize( range, 256ull ) / 16ull ) );
+						, UINT( ashes::getAlignedSize( range, 256ULL ) / 16ULL ) );
 				}
 			}
 		}
@@ -1115,7 +1115,7 @@ namespace ashes::d3d11
 						, flags
 						, ( ID3D11Buffer * )nullptr
 						, UINT( ( offset + write.pBufferInfo[i].offset ) / 16 )
-						, UINT( ashes::getAlignedSize( range, 256ull ) / 16ull ) );
+						, UINT( ashes::getAlignedSize( range, 256ULL ) / 16ULL ) );
 				}
 			}
 		}
@@ -1197,7 +1197,7 @@ namespace ashes::d3d11
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
-			, uint32_t offset )
+			, uint32_t /*offset*/ )
 		{
 			for ( auto & write : writeBinding.writes )
 			{
@@ -1423,23 +1423,22 @@ namespace ashes::d3d11
 			bindAll< false >( context, m_layout, m_descriptorSet, m_dynamicOffsets );
 		}
 
-		auto newUavs = context.uavs;
+		std::map< UINT, ID3D11UnorderedAccessView * > newUavs = context.uavs;
 
-		for ( auto it : m_uavs )
+		for ( auto const & [id, uav] : m_uavs )
 		{
-			newUavs[it.first] = it.second;
+			newUavs[id] = uav;
 		}
 
-		bool dirtyUavs = context.uavs != newUavs;
-
-		if ( dirtyUavs )
+		if ( bool dirtyUavs = context.uavs != newUavs;
+			dirtyUavs )
 		{
 			context.uavs = std::move( newUavs );
 			context.rawUavs.clear();
 
-			for ( auto & uav : context.uavs )
+			for ( auto const & [id, uav] : context.uavs )
 			{
-				context.rawUavs.push_back( uav.second );
+				context.rawUavs.push_back( uav );
 			}
 
 			if ( !context.rawUavs.empty() )

@@ -6,26 +6,21 @@ See LICENSE file in root folder.
 
 namespace ashes::d3d11
 {
-	Fence::Fence( VkDevice device
-		, VkFenceCreateFlags flags )
+	Fence::Fence( VkDevice device )noexcept
 		: m_device{ device }
 	{
 	}
 
-	Fence::~Fence()
-	{
-	}
-
-	VkResult Fence::wait( uint64_t timeout )const
+	VkResult Fence::wait()const noexcept
 	{
 		return VK_SUCCESS;
 	}
 
-	void Fence::reset()const
+	void Fence::reset()const noexcept
 	{
 	}
 
-	VkResult Fence::getStatus()const
+	VkResult Fence::getStatus()const noexcept
 	{
 		return VK_SUCCESS;
 	}

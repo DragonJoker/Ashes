@@ -12,29 +12,27 @@ namespace ashes::d3d11
 {
 	class CommandBuffer
 		: public ashes::IcdObject
+		, public NonCopyable
 	{
 	public:
 		CommandBuffer( VkDevice device
 			, VkCommandPool commandPool
 			, bool primary );
-		~CommandBuffer();
+		~CommandBuffer()noexcept;
 
 		void execute( Context & context )const;
 
 		VkResult begin( VkCommandBufferBeginInfo info )const;
 		VkResult end()const;
-		VkResult reset( VkCommandBufferResetFlags flags )const;
-		void beginRenderPass( VkRenderPassBeginInfo beginInfo
-			, VkSubpassContents contents )const;
-		void nextSubpass( VkSubpassContents contents )const;
+		VkResult reset()const;
+		void beginRenderPass( VkRenderPassBeginInfo beginInfo )const;
+		void nextSubpass()const;
 		void endRenderPass()const;
 		void executeCommands( ArrayView< VkCommandBuffer const > commands )const;
 		void clearColorImage( VkImage image
-			, VkImageLayout imageLayout
 			, VkClearColorValue colour
 			, ArrayView < VkImageSubresourceRange const > ranges )const;
 		void clearDepthStencilImage( VkImage image
-			, VkImageLayout imageLayout
 			, VkClearDepthStencilValue value
 			, ArrayView< VkImageSubresourceRange const > ranges )const;
 		void clearAttachments( ArrayView< VkClearAttachment const > clearAttachments
@@ -75,10 +73,8 @@ namespace ashes::d3d11
 			, uint32_t stride )const;
 		void copyToImage( VkBuffer src
 			, VkImage dst
-			, VkImageLayout dstLayout
 			, ArrayView< VkBufferImageCopy const > copyInfos )const;
 		void copyToBuffer( VkImage src
-			, VkImageLayout srcLayout
 			, VkBuffer dst
 			, ArrayView< VkBufferImageCopy const > copyInfos )const;
 		void updateBuffer( VkBuffer dstBuffer
@@ -92,20 +88,14 @@ namespace ashes::d3d11
 			, VkBuffer dst
 			, ArrayView< VkBufferCopy const > copyInfos )const;
 		void copyImage( VkImage src
-			, VkImageLayout srcLayout
 			, VkImage dst
-			, VkImageLayout dstLayout
 			, ArrayView< VkImageCopy const > copyInfos )const;
 		void blitImage( VkImage srcImage
-			, VkImageLayout srcLayout
 			, VkImage dstImage
-			, VkImageLayout dstLayout
 			, ArrayView< VkImageBlit const > regions
 			, VkFilter filter )const;
 		void resolveImage( VkImage srcImage
-			, VkImageLayout srcLayout
 			, VkImage dstImage
-			, VkImageLayout dstLayout
 			, ArrayView< VkImageResolve const > regions )const;
 		void resetQueryPool( VkQueryPool pool
 			, uint32_t firstQuery
@@ -155,12 +145,10 @@ namespace ashes::d3d11
 		void waitEvents( ArrayView< VkEvent const > events
 			, VkPipelineStageFlags srcStageMask
 			, VkPipelineStageFlags dstStageMask
-			, ArrayView< VkMemoryBarrier const > memoryBarriers
 			, ArrayView< VkBufferMemoryBarrier const > bufferMemoryBarriers
 			, ArrayView< VkImageMemoryBarrier const > imageMemoryBarriers )const;
 		void pipelineBarrier( VkPipelineStageFlags after
 			, VkPipelineStageFlags before
-			, VkDependencyFlags dependencyFlags
 			, ArrayView< VkMemoryBarrier const > memoryBarriers
 			, ArrayView< VkBufferMemoryBarrier const > bufferMemoryBarriers
 			, ArrayView< VkImageMemoryBarrier const > imageMemoryBarriers )const;
@@ -241,22 +229,22 @@ namespace ashes::d3d11
 		mutable std::vector< ResourceIndex > m_mappedResources;
 		struct State
 		{
-			VkCommandBufferBeginInfo beginInfo;
+			VkCommandBufferBeginInfo beginInfo{};
 			VkPipeline currentPipeline{};
 			std::vector< std::pair < VkPipelineLayout, PushConstantsDesc > > pushConstantBuffers;
 			VkPipeline currentComputePipeline{};
 			VkSubpassDescription const * currentSubpass{};
 			VkRenderPass currentRenderPass{};
 			VkFramebuffer currentFrameBuffer{};
-			uint32_t currentSubpassIndex{ 0u };
+			uint32_t currentSubpassIndex{};
 			mutable VbosBindingArray vbos;
-			VkIndexType indexType;
+			VkIndexType indexType{};
 			VkDescriptorSetArray boundDescriptors;
 			VkBuffer newlyBoundIbo{};
-			Optional< float > lineWidth;
-			Optional< DepthBias > depthBias;
-			Optional< std::array< float, 4u > > blendConstants;
-			Optional< DepthBounds > depthBounds;
+			Optional< float > lineWidth{};
+			Optional< DepthBias > depthBias{};
+			Optional< std::array< float, 4u > > blendConstants{};
+			Optional< DepthBounds > depthBounds{};
 			std::array< Optional< uint32_t >, 2u > stencilCompareMask;
 			std::array< Optional< uint32_t >, 2u > stencilWriteMask;
 			std::array< Optional< uint32_t >, 2u > stencilReference;

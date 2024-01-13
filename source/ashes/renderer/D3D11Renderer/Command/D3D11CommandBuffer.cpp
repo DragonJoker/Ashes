@@ -63,10 +63,10 @@ See LICENSE file in root folder.
 
 #include "ashesd3d11_api.hpp"
 
-#define AshesD3D_UseCommandsList 0
-
 namespace ashes::d3d11
 {
+	static bool constexpr UseCommandsList = false;
+
 	//*********************************************************************************************
 
 	namespace
@@ -88,39 +88,38 @@ namespace ashes::d3d11
 		, m_commandPool{ commandPool }
 	{
 		get( commandPool )->registerCommands( get( this ) );
-#if AshesD3D_UseCommandsList
 
-		if ( !primary )
+		if constexpr ( UseCommandsList )
 		{
-			get( m_device )->getDevice()->CreateDeferredContext( 0u, &m_deferredContext );
+			if ( !primary )
+			{
+				get( m_device )->getDevice()->CreateDeferredContext( 0u, &m_deferredContext );
+			}
 		}
-
-#endif
 	}
 
-	CommandBuffer::~CommandBuffer()
+	CommandBuffer::~CommandBuffer()noexcept
 	{
-#if AshesD3D_UseCommandsList
-
-		safeRelease( m_commandList );
-		safeRelease( m_deferredContext );
-
-#endif
+		if constexpr ( UseCommandsList )
+		{
+			safeRelease( m_commandList );
+			safeRelease( m_deferredContext );
+		}
 	}
 
 	void CommandBuffer::execute( Context & context )const
 	{
-		for ( auto & command : m_commands )
+		for ( auto const & command : m_commands )
 		{
 			command->fillContext( context );
 		}
 
-		for ( auto & command : m_commands )
+		for ( auto const & command : m_commands )
 		{
 			command->apply( context );
 		}
 
-		for ( auto & action : m_afterSubmitActions )
+		for ( auto const & action : m_afterSubmitActions )
 		{
 			action( context );
 		}
@@ -140,35 +139,34 @@ namespace ashes::d3d11
 	{
 		m_state.pushConstantBuffers.clear();
 
-#if AshesD3D_UseCommandsList
-
-		if ( m_deferredContext )
+		if constexpr ( UseCommandsList )
 		{
-			safeRelease( m_commandList );
-			Context context{ m_deferredContext };
-			m_deferredContext->AddRef();
-			execute( context );
-			m_deferredContext->FinishCommandList( TRUE, &m_commandList );
+			if ( m_deferredContext )
+			{
+				safeRelease( m_commandList );
+				Context context{ get( m_device )->getFeatureLevel(), m_device, DeviceContextLock{ m_deferredContext } };
+				m_deferredContext->AddRef();
+				execute( context );
+				m_deferredContext->FinishCommandList( TRUE, &m_commandList );
+			}
 		}
-
-#endif
 
 		return VK_SUCCESS;
 	}
 
-	VkResult CommandBuffer::reset( VkCommandBufferResetFlags flags )const
+	VkResult CommandBuffer::reset()const
 	{
 		m_commands.clear();
 		return VK_SUCCESS;
 	}
 
-	void CommandBuffer::beginRenderPass( VkRenderPassBeginInfo beginInfo
-		, VkSubpassContents contents )const
+	void CommandBuffer::beginRenderPass( VkRenderPassBeginInfo beginInfo )const
 	{
 		m_state.currentRenderPass = beginInfo.renderPass;
 		m_state.currentFrameBuffer = beginInfo.framebuffer;
 		m_state.currentSubpassIndex = 0u;
-		m_state.currentSubpass = &get( m_state.currentRenderPass )->getSubpasses()[m_state.currentSubpassIndex++];
+		m_state.currentSubpass = &get( m_state.currentRenderPass )->getSubpasses()[m_state.currentSubpassIndex];
+		++m_state.currentSubpassIndex;
 		m_state.vbos.clear();
 		m_commands.emplace_back( std::make_unique< BeginRenderPassCommand >( m_device
 			, m_state.currentRenderPass
@@ -180,12 +178,13 @@ namespace ashes::d3d11
 			, *m_state.currentSubpass ) );
 	}
 
-	void CommandBuffer::nextSubpass( VkSubpassContents contents )const
+	void CommandBuffer::nextSubpass()const
 	{
 		m_commands.emplace_back( std::make_unique< EndSubpassCommand >( m_device
 			, m_state.currentFrameBuffer
 			, *m_state.currentSubpass ) );
-		m_state.currentSubpass = &get( m_state.currentRenderPass )->getSubpasses()[m_state.currentSubpassIndex++];
+		m_state.currentSubpass = &get( m_state.currentRenderPass )->getSubpasses()[m_state.currentSubpassIndex];
+		++m_state.currentSubpassIndex;
 		m_commands.emplace_back( std::make_unique< BeginSubpassCommand >( m_device
 			, m_state.currentRenderPass
 			, m_state.currentFrameBuffer
@@ -206,34 +205,32 @@ namespace ashes::d3d11
 
 	void CommandBuffer::executeCommands( ArrayView< VkCommandBuffer const > commands )const
 	{
-#if AshesD3D_UseCommandsList
-
-		for ( auto & commandBuffer : commands )
+		if constexpr ( UseCommandsList )
 		{
-			m_commands.emplace_back( std::make_unique< ExecuteCommandsCommand >( m_device
-				, commandBuffer ) );
-		}
-
-#else
-
-		for ( auto & commandBuffer : commands )
-		{
-			auto & dxCommandBuffer = *get( commandBuffer );
-
-			for ( auto & command : dxCommandBuffer.getCommands() )
+			for ( auto & commandBuffer : commands )
 			{
-				m_commands.emplace_back( command->clone() );
+				m_commands.emplace_back( std::make_unique< ExecuteCommandsCommand >( m_device
+					, commandBuffer ) );
 			}
-
-			m_commands.emplace_back( std::make_unique< ExecuteActionsCommand >( m_device
-				, dxCommandBuffer.m_afterSubmitActions ) );
 		}
+		else
+		{
+			for ( auto & commandBuffer : commands )
+			{
+				auto & dxCommandBuffer = *get( commandBuffer );
 
-#endif
+				for ( auto & command : dxCommandBuffer.getCommands() )
+				{
+					m_commands.emplace_back( command->clone() );
+				}
+
+				m_commands.emplace_back( std::make_unique< ExecuteActionsCommand >( m_device
+					, dxCommandBuffer.m_afterSubmitActions ) );
+			}
+		}
 	}
 
 	void CommandBuffer::clearColorImage( VkImage image
-		, VkImageLayout imageLayout
 		, VkClearColorValue colour
 		, ArrayView< VkImageSubresourceRange const > ranges )const
 	{
@@ -244,7 +241,6 @@ namespace ashes::d3d11
 	}
 
 	void CommandBuffer::clearDepthStencilImage( VkImage image
-		, VkImageLayout imageLayout
 		, VkClearDepthStencilValue value
 		, ArrayView< VkImageSubresourceRange const > ranges )const
 	{
@@ -258,7 +254,6 @@ namespace ashes::d3d11
 		, ArrayView< VkClearRect const > clearRects )
 	{
 		m_commands.emplace_back( std::make_unique< ClearAttachmentsCommand >( m_device
-			, m_state.currentRenderPass
 			, *m_state.currentSubpass
 			, m_state.currentFrameBuffer
 			, clearAttachments
@@ -288,10 +283,10 @@ namespace ashes::d3d11
 				, bindingPoint ) );
 			doAddAfterSubmitAction();
 
-			for ( auto & pcb : m_state.pushConstantBuffers )
+			for ( auto const & [layout, desc] : m_state.pushConstantBuffers )
 			{
 				m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
-					, get( m_state.currentPipeline )->findPushConstantBuffer( pcb.second ) ) );
+					, get( m_state.currentPipeline )->findPushConstantBuffer( desc ) ) );
 				doAddAfterSubmitAction();
 			}
 
@@ -305,10 +300,10 @@ namespace ashes::d3d11
 				, bindingPoint ) );
 			doAddAfterSubmitAction();
 
-			for ( auto & pcb : m_state.pushConstantBuffers )
+			for ( auto const & [layout, desc] : m_state.pushConstantBuffers )
 			{
 				m_commands.emplace_back( std::make_unique< PushConstantsCommand >( m_device
-					, get( m_state.currentPipeline )->findPushConstantBuffer( pcb.second ) ) );
+					, get( m_state.currentPipeline )->findPushConstantBuffer( desc ) ) );
 				doAddAfterSubmitAction();
 			}
 
@@ -357,7 +352,7 @@ namespace ashes::d3d11
 		, VkIndexType indexType )const
 	{
 		m_commands.emplace_back( std::make_unique< BindIndexBufferCommand >( m_device
-			, static_cast< VkBuffer >( buffer )
+			, buffer
 			, offset
 			, indexType ) );
 		doAddAfterSubmitAction();
@@ -371,7 +366,7 @@ namespace ashes::d3d11
 		, ArrayView< VkDescriptorSet const > descriptorSets
 		, ArrayView< uint32_t const > dynamicOffsets )const
 	{
-		for ( auto & descriptorSet : descriptorSets )
+		for ( auto & descriptorSet : ashes::makeArrayView( std::next( descriptorSets.begin(), firstSet ), descriptorSets.end() ) )
 		{
 			m_state.boundDescriptors.push_back( descriptorSet );
 			doProcessMappedBoundDescriptorResourcesIn( descriptorSet );
@@ -507,20 +502,16 @@ namespace ashes::d3d11
 
 	void CommandBuffer::copyToImage( VkBuffer src
 		, VkImage dst
-		, VkImageLayout dstLayout
 		, ArrayView< VkBufferImageCopy const > copyInfos )const
 	{
-		if ( !get( m_device )->onCopyToImageCommand( get( this ), copyInfos, src, dst ) )
-		{
-			m_commands.emplace_back( std::make_unique< CopyBufferToImageCommand >( m_device
-				, std::move( copyInfos )
-				, src
-				, dst ) );
-		}
+		get( m_device )->onCopyToImageCommand( get( this ), copyInfos, src, dst );
+		m_commands.emplace_back( std::make_unique< CopyBufferToImageCommand >( m_device
+			, std::move( copyInfos )
+			, src
+			, dst ) );
 	}
 
 	void CommandBuffer::copyToBuffer( VkImage src
-		, VkImageLayout srcLayout
 		, VkBuffer dst
 		, ArrayView< VkBufferImageCopy const > copyInfos )const
 	{
@@ -541,13 +532,12 @@ namespace ashes::d3d11
 	}
 
 	void CommandBuffer::fillBuffer( VkBuffer dstBuffer
-		, VkDeviceSize dstOffset
+		, [[maybe_unused]] VkDeviceSize dstOffset
 		, VkDeviceSize size
 		, uint32_t data )
 	{
 		m_commands.emplace_back( std::make_unique< FillBufferCommand >( m_device
 			, dstBuffer
-			, dstOffset
 			, size
 			, data ) );
 	}
@@ -556,19 +546,17 @@ namespace ashes::d3d11
 		, VkBuffer dst
 		, ArrayView< VkBufferCopy const > copyInfos )const
 	{
-		for ( auto & copyInfo : copyInfos )
+		for ( auto const & copyInfo : copyInfos )
 		{
 			m_commands.emplace_back( std::make_unique< CopyBufferCommand >( m_device
-				, std::move( copyInfo )
+				, copyInfo
 				, src
 				, dst ) );
 		}
 	}
 
 	void CommandBuffer::copyImage( VkImage src
-		, VkImageLayout srcLayout
 		, VkImage dst
-		, VkImageLayout dstLayout
 		, ArrayView< VkImageCopy const > copyInfos )const
 	{
 		for ( auto & copyInfo : copyInfos )
@@ -581,9 +569,7 @@ namespace ashes::d3d11
 	}
 
 	void CommandBuffer::blitImage( VkImage srcImage
-		, VkImageLayout srcLayout
 		, VkImage dstImage
-		, VkImageLayout dstLayout
 		, ArrayView< VkImageBlit const > regions
 		, VkFilter filter )const
 	{
@@ -600,9 +586,7 @@ namespace ashes::d3d11
 	}
 
 	void CommandBuffer::resolveImage( VkImage srcImage
-		, VkImageLayout srcLayout
 		, VkImage dstImage
-		, VkImageLayout dstLayout
 		, ArrayView< VkImageResolve const > regions )const
 	{
 		m_commands.emplace_back( std::make_unique< ResolveImageCommand >( m_device
@@ -611,24 +595,20 @@ namespace ashes::d3d11
 			, regions ) );
 	}
 
-	void CommandBuffer::resetQueryPool( VkQueryPool pool
-		, uint32_t firstQuery
-		, uint32_t queryCount )const
+	void CommandBuffer::resetQueryPool( [[maybe_unused]] VkQueryPool pool
+		, [[maybe_unused]] uint32_t firstQuery
+		, [[maybe_unused]] uint32_t queryCount )const
 	{
-		m_commands.emplace_back( std::make_unique< ResetQueryPoolCommand >( m_device
-			, pool
-			, firstQuery
-			, queryCount ) );
+		m_commands.emplace_back( std::make_unique< ResetQueryPoolCommand >( m_device ) );
 	}
 
 	void CommandBuffer::beginQuery( VkQueryPool pool
 		, uint32_t query
-		, VkQueryControlFlags flags )const
+		, [[maybe_unused]] VkQueryControlFlags flags )const
 	{
 		m_commands.emplace_back( std::make_unique< BeginQueryCommand >( m_device
 			, pool
-			, query
-			, flags ) );
+			, query ) );
 	}
 
 	void CommandBuffer::endQuery( VkQueryPool pool
@@ -639,12 +619,11 @@ namespace ashes::d3d11
 			, query ) );
 	}
 
-	void CommandBuffer::writeTimestamp( VkPipelineStageFlagBits pipelineStage
+	void CommandBuffer::writeTimestamp( [[maybe_unused]] VkPipelineStageFlagBits pipelineStage
 		, VkQueryPool pool
 		, uint32_t query )const
 	{
 		m_commands.emplace_back( std::make_unique< WriteTimestampCommand >( m_device
-			, pipelineStage
 			, pool
 			, query ) );
 	}
@@ -799,49 +778,37 @@ namespace ashes::d3d11
 	}
 
 	void CommandBuffer::setEvent( VkEvent event
-		, VkPipelineStageFlags stageMask )const
+		, [[maybe_unused]] VkPipelineStageFlags stageMask )const
 	{
 		m_commands.emplace_back( std::make_unique< SetEventCommand >( m_device
-			, event
-			, stageMask ) );
+			, event ) );
 	}
 
 	void CommandBuffer::resetEvent( VkEvent event
-		, VkPipelineStageFlags stageMask )const
+		, [[maybe_unused]] VkPipelineStageFlags stageMask )const
 	{
 		m_commands.emplace_back( std::make_unique< ResetEventCommand >( m_device
-			, event
-			, stageMask ) );
+			, event ) );
 	}
 
 	void CommandBuffer::waitEvents( ArrayView< VkEvent const > events
-		, VkPipelineStageFlags srcStageMask
-		, VkPipelineStageFlags dstStageMask
-		, ArrayView< VkMemoryBarrier const > memoryBarriers
-		, ArrayView< VkBufferMemoryBarrier const > bufferMemoryBarriers
-		, ArrayView< VkImageMemoryBarrier const > imageMemoryBarriers )const
+		, [[maybe_unused]] VkPipelineStageFlags srcStageMask
+		, [[maybe_unused]] VkPipelineStageFlags dstStageMask
+		, [[maybe_unused]] ArrayView< VkBufferMemoryBarrier const > bufferMemoryBarriers
+		, [[maybe_unused]] ArrayView< VkImageMemoryBarrier const > imageMemoryBarriers )const
 	{
 		m_commands.emplace_back( std::make_unique< WaitEventsCommand >( m_device
-			, events
-			, srcStageMask
-			, dstStageMask
-			, bufferMemoryBarriers
-			, imageMemoryBarriers ) );
+			, events ) );
 	}
 
-	void CommandBuffer::pipelineBarrier( VkPipelineStageFlags after
-		, VkPipelineStageFlags before
-		, VkDependencyFlags dependencyFlags
-		, ArrayView< VkMemoryBarrier const > memoryBarriers
+	void CommandBuffer::pipelineBarrier( [[maybe_unused]] VkPipelineStageFlags after
+		, [[maybe_unused]] VkPipelineStageFlags before
+		, [[maybe_unused]] ArrayView< VkMemoryBarrier const > memoryBarriers
 		, ArrayView< VkBufferMemoryBarrier const > bufferMemoryBarriers
-		, ArrayView< VkImageMemoryBarrier const > imageMemoryBarriers )const
+		, [[maybe_unused]] ArrayView< VkImageMemoryBarrier const > imageMemoryBarriers )const
 	{
 		m_commands.emplace_back( std::make_unique< MemoryBarrierCommand >( m_device
-			, after
-			, before
-			, memoryBarriers
-			, bufferMemoryBarriers
-			, imageMemoryBarriers ) );
+			, bufferMemoryBarriers ) );
 	}
 
 	void CommandBuffer::generateMipmaps( VkImage texture )const
@@ -921,14 +888,13 @@ namespace ashes::d3d11
 
 			for ( auto i = 0u; i < binding.buffers.size(); ++i )
 			{
-				auto it = std::find_if( state.pVertexBindingDescriptions
-					, bindingsEnd
-					, [startIndex]( ::VkVertexInputBindingDescription const & desc )
-					{
-						return desc.binding == startIndex;
-					} );
-
-				if ( it != bindingsEnd )
+				if ( auto it = std::find_if( state.pVertexBindingDescriptions
+						, bindingsEnd
+						, [startIndex]( ::VkVertexInputBindingDescription const & desc )
+						{
+							return desc.binding == startIndex;
+						} );
+					it != bindingsEnd )
 				{
 					binding.strides.push_back( it->stride );
 				}
@@ -940,8 +906,8 @@ namespace ashes::d3d11
 
 	void CommandBuffer::doAddAfterSubmitAction()const
 	{
-		auto & command = *m_commands.back();
-		m_afterSubmitActions.insert( m_afterSubmitActions.begin()
+		auto const & command = *m_commands.back();
+		m_afterSubmitActions.emplace( m_afterSubmitActions.begin()
 			, [&command]( Context const & context )
 			{
 				command.remove( context );
@@ -952,7 +918,7 @@ namespace ashes::d3d11
 	{
 		for ( auto & writes : get( descriptor )->getDynamicBuffers() )
 		{
-			for ( auto & write : writes->writes )
+			for ( auto const & write : writes->writes )
 			{
 				for ( auto & info : makeArrayView( write.pBufferInfo, write.descriptorCount ) )
 				{
@@ -963,7 +929,7 @@ namespace ashes::d3d11
 
 		for ( auto & writes : get( descriptor )->getStorageBuffers() )
 		{
-			for ( auto & write : writes->writes )
+			for ( auto const & write : writes->writes )
 			{
 				for ( auto & info : makeArrayView( write.pBufferInfo, write.descriptorCount ) )
 				{
@@ -974,7 +940,7 @@ namespace ashes::d3d11
 		
 		for ( auto & writes : get( descriptor )->getStorageTextures() )
 		{
-			for ( auto & write : writes->writes )
+			for ( auto const & write : writes->writes )
 			{
 				for ( auto & info : makeArrayView( write.pImageInfo, write.descriptorCount ) )
 				{
@@ -985,7 +951,7 @@ namespace ashes::d3d11
 
 		for ( auto & writes : get( descriptor )->getUniformBuffers() )
 		{
-			for ( auto & write : writes->writes )
+			for ( auto const & write : writes->writes )
 			{
 				for ( auto & info : makeArrayView( write.pBufferInfo, write.descriptorCount ) )
 				{
@@ -1001,7 +967,7 @@ namespace ashes::d3d11
 		{
 			for ( auto & writes : get( descriptor )->getDynamicStorageBuffers() )
 			{
-				for ( auto & write : writes->writes )
+				for ( auto const & write : writes->writes )
 				{
 					for ( auto & info : makeArrayView( write.pBufferInfo, write.descriptorCount ) )
 					{
@@ -1012,7 +978,7 @@ namespace ashes::d3d11
 
 			for ( auto & writes : get( descriptor )->getStorageBuffers() )
 			{
-				for ( auto & write : writes->writes )
+				for ( auto const & write : writes->writes )
 				{
 					for ( auto & info : makeArrayView( write.pBufferInfo, write.descriptorCount ) )
 					{
@@ -1023,7 +989,7 @@ namespace ashes::d3d11
 
 			for ( auto & writes : get( descriptor )->getStorageTextures() )
 			{
-				for ( auto & write : writes->writes )
+				for ( auto const & write : writes->writes )
 				{
 					for ( auto & info : makeArrayView( write.pImageInfo, write.descriptorCount ) )
 					{
@@ -1036,7 +1002,7 @@ namespace ashes::d3d11
 
 	void CommandBuffer::doProcessMappedBoundVaoBuffersIn()const
 	{
-		for ( auto & vbo : m_state.vbos )
+		for ( auto const & vbo : m_state.vbos )
 		{
 			for ( auto & buffer : vbo.buffers )
 			{
@@ -1066,31 +1032,27 @@ namespace ashes::d3d11
 	void CommandBuffer::doProcessMappedBoundResourceIn( VkImageView image )const
 	{
 		auto img = get( get( image )->getImage() );
+		auto & range = get( image )->getSubResourceRange();
+		auto layerSize = getLevelsSize( img->getDimensions()
+			, img->getFormat()
+			, 0u
+			, img->getMipmapLevels()
+			, uint32_t( img->getMemoryAlignment() ) );
+		auto size = getLevelsSize( img->getDimensions()
+			, img->getFormat()
+			, range.baseMipLevel
+			, range.levelCount
+			, uint32_t( img->getMemoryAlignment() ) );
+		auto offset = img->getMemoryOffset();
 
-		//if ( get( img->getMemory() )->isMapped() )
+		for ( auto layer = range.baseArrayLayer; layer < range.baseArrayLayer + range.layerCount; ++layer )
 		{
-			auto & range = get( image )->getSubResourceRange();
-			auto layerSize = getLevelsSize( img->getDimensions()
-				, img->getFormat()
-				, 0u
-				, img->getMipmapLevels()
-				, uint32_t( img->getMemoryAlignment() ) );
-			auto size = getLevelsSize( img->getDimensions()
-				, img->getFormat()
-				, range.baseMipLevel
-				, range.levelCount
-				, uint32_t( img->getMemoryAlignment() ) );
-			auto offset = img->getMemoryOffset();
-
-			for ( auto layer = range.baseArrayLayer; layer < range.baseArrayLayer + range.layerCount; ++layer )
-			{
-				doAddMappedResource( &img->getObjectMemory()
-					, offset
-					, size
-					, get( image )->getSubresource( layer )
-					, true );
-				offset += layerSize;
-			}
+			doAddMappedResource( &img->getObjectMemory()
+				, offset
+				, size
+				, get( image )->getSubresource( layer )
+				, true );
+			offset += layerSize;
 		}
 	}
 
@@ -1113,31 +1075,27 @@ namespace ashes::d3d11
 	void CommandBuffer::doProcessMappedBoundResourceOut( VkImageView image )const
 	{
 		auto img = get( get( image )->getImage() );
+		auto & range = get( image )->getSubResourceRange();
+		auto layerSize = getLevelsSize( img->getDimensions()
+			, img->getFormat()
+			, 0u
+			, img->getMipmapLevels()
+			, uint32_t( img->getMemoryAlignment() ) );
+		auto size = getLevelsSize( img->getDimensions()
+			, img->getFormat()
+			, range.baseMipLevel
+			, range.levelCount
+			, uint32_t( img->getMemoryAlignment() ) );
+		auto offset = img->getMemoryOffset();
 
-		//if ( get( img->getMemory() )->isMapped() )
+		for ( auto layer = range.baseArrayLayer; layer < range.baseArrayLayer + range.layerCount; ++layer )
 		{
-			auto & range = get( image )->getSubResourceRange();
-			auto layerSize = getLevelsSize( img->getDimensions()
-				, img->getFormat()
-				, 0u
-				, img->getMipmapLevels()
-				, uint32_t( img->getMemoryAlignment() ) );
-			auto size = getLevelsSize( img->getDimensions()
-				, img->getFormat()
-				, range.baseMipLevel
-				, range.levelCount
-				, uint32_t( img->getMemoryAlignment() ) );
-			auto offset = img->getMemoryOffset();
-
-			for ( auto layer = range.baseArrayLayer; layer < range.baseArrayLayer + range.layerCount; ++layer )
-			{
-				doAddMappedResource( &img->getObjectMemory()
-					, offset
-					, size
-					, get( image )->getSubresource( layer )
-					, false );
-				offset += layerSize;
-			}
+			doAddMappedResource( &img->getObjectMemory()
+				, offset
+				, size
+				, get( image )->getSubresource( layer )
+				, false );
+			offset += layerSize;
 		}
 	}
 
@@ -1182,7 +1140,7 @@ namespace ashes::d3d11
 		{
 			result = &m_mappedResources.emplace_back( memory
 				, m_commands.size() - 1u
-				, get( memory->deviceMemory )->onDestroy.connect( [this, memory]( VkDeviceMemory deviceMemory )
+				, get( memory->deviceMemory )->onDestroy.connect( [this, memory]( VkDeviceMemory )
 					{
 						doRemoveMappedResource( memory );
 					} ) );

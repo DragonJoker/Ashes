@@ -30,7 +30,7 @@ namespace ashes::d3d11
 		}
 	}
 
-	PipelineLayout::~PipelineLayout()
+	PipelineLayout::~PipelineLayout()noexcept
 	{
 		for ( auto & pipeline : m_pipelines )
 		{

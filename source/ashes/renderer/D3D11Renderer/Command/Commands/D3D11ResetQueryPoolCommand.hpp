@@ -16,10 +16,7 @@ namespace ashes::d3d11
 		: public CommandBase
 	{
 	public:
-		ResetQueryPoolCommand( VkDevice device
-			, VkQueryPool pool
-			, uint32_t firstQuery
-			, uint32_t queryCount );
+		explicit ResetQueryPoolCommand( VkDevice device );
 
 		void apply( Context const & context )const override;
 		CommandPtr clone()const override;

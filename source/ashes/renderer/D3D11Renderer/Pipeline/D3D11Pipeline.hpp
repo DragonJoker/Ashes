@@ -15,6 +15,7 @@
 namespace ashes::d3d11
 {
 	class Pipeline
+		: public NonCopyable
 	{
 		friend class PipelineLayout;
 
@@ -23,129 +24,129 @@ namespace ashes::d3d11
 			, VkGraphicsPipelineCreateInfo createInfo );
 		Pipeline( VkDevice device
 			, VkComputePipelineCreateInfo createInfo );
-		~Pipeline();
+		~Pipeline()noexcept;
 		PushConstantsBuffer findPushConstantBuffer( PushConstantsDesc const & pushConstants )const;
 		VkDescriptorSetLayoutArray const & getDescriptorsLayouts()const;
 		void update();
 
-		inline VkPipelineInputAssemblyStateCreateInfo const & getInputAssemblyState()const
+		VkPipelineInputAssemblyStateCreateInfo const & getInputAssemblyState()const
 		{
 			return m_inputAssemblyState;
 		}
 
-		inline bool hasVertexLayout()const
+		bool hasVertexLayout()const
 		{
 			return !m_vertexAttributeDescriptions.empty()
 				&& !m_vertexBindingDescriptions.empty();
 		}
 
-		inline std::vector< PushConstantsBuffer > const & getConstantsPcbs()const
+		std::vector< PushConstantsBuffer > const & getConstantsPcbs()const
 		{
 			return m_constantsPcbs;
 		}
 
-		inline ID3D11DepthStencilState * getDSState()const
+		ID3D11DepthStencilState * getDSState()const
 		{
 			return m_dsState;
 		}
 
-		inline ID3D11RasterizerState * getRSState()const
+		ID3D11RasterizerState * getRSState()const
 		{
 			return m_rsState;
 		}
 
-		inline ID3D11InputLayout * getIAState()const
+		ID3D11InputLayout * getIAState()const
 		{
 			return m_iaState;
 		}
 
-		inline ID3D11BlendState * getBDState()const
+		ID3D11BlendState * getBDState()const
 		{
 			return m_bdState;
 		}
 
-		inline VkPipelineVertexInputStateCreateInfo const & getVertexInputState()const
+		VkPipelineVertexInputStateCreateInfo const & getVertexInputState()const
 		{
 			return m_vertexInputState;
 		}
 
-		inline bool hasViewport()const
+		bool hasViewport()const
 		{
 			return !m_viewports.empty();
 		}
 
-		inline bool hasScissor()const
+		bool hasScissor()const
 		{
 			return !m_scissors.empty();
 		}
 
-		inline float const * getBlendFactor()const
+		float const * getBlendFactor()const
 		{
 			return m_colorBlendState.blendConstants;
 		}
 
-		inline UINT getSampleMask()const
+		UINT getSampleMask()const
 		{
 			return m_colorBlendState.attachmentCount == 0u
 				? 0u
 				: m_colorBlendState.pAttachments->colorWriteMask;
 		}
 
-		inline UINT getStencilRef()const
+		UINT getStencilRef()const
 		{
 			return bool( m_depthStencilState )
 				? m_depthStencilState->front.reference
 				: 0u;
 		}
 
-		inline std::vector < D3D11_VIEWPORT > const & getViewports()const
+		std::vector < D3D11_VIEWPORT > const & getViewports()const
 		{
 			assert( !m_viewports.empty() );
 			return m_viewports;
 		}
 
-		inline std::vector< RECT > const & getScissors()const
+		std::vector< RECT > const & getScissors()const
 		{
 			assert( !m_scissors.empty() );
 			return m_scissors;
 		}
 
-		inline std::list< CompiledShaderModule > const & getShaderStages()const
+		std::list< CompiledShaderModule > const & getShaderStages()const
 		{
 			return m_programModules;
 		}
 
-		inline CompiledShaderModule const & getShaderStage()const
+		CompiledShaderModule const & getShaderStage()const
 		{
 			return m_programModules.front();
 		}
 
-		inline ProgramLayout const & getProgramLayout()const
+		ProgramLayout const & getProgramLayout()const
 		{
 			return m_programLayout;
 		}
 
-		inline VkPipelineLayout getLayout()const
+		VkPipelineLayout getLayout()const
 		{
 			return m_layout;
 		}
 
-		inline VkDevice getDevice()const
+		VkDevice getDevice()const
 		{
 			return m_device;
 		}
 
-		inline size_t getVertexInputStateHash()const
+		size_t getVertexInputStateHash()const
 		{
 			return m_vertexInputStateHash;
 		}
 
-		inline DynamicStates & getDynamicStates()
+		DynamicStates & getDynamicStates()
 		{
 			return m_dynamicStates;
 		}
 
-		inline bool hasDynamicStateEnable( VkDynamicState state )const
+		bool hasDynamicStateEnable( VkDynamicState state )const
 		{
 			return m_dynamicStates.hasDynamicStateEnable( state );
 		}

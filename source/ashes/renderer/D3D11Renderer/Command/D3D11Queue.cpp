@@ -27,28 +27,22 @@ namespace ashes::d3d11
 		get( m_device )->getDevice()->CreateQuery( &desc, &m_waitIdleQuery );
 	}
 	
-	Queue::~Queue()
+	Queue::~Queue()noexcept
 	{
 		safeRelease( m_waitIdleQuery );
 	}
 
-	VkResult Queue::submit( ArrayView< VkSubmitInfo const > const & infos
-		, VkFence fence )const
+	VkResult Queue::submit( ArrayView< VkSubmitInfo const > const & infos )const
 	{
 		for ( auto & info : infos )
 		{
-			doSubmit( makeArrayView( info.pCommandBuffers, info.commandBufferCount )
-				, makeArrayView( info.pWaitSemaphores, info.waitSemaphoreCount )
-				, makeArrayView( info.pWaitDstStageMask, info.waitSemaphoreCount )
-				, makeArrayView( info.pSignalSemaphores, info.signalSemaphoreCount )
-				, fence );
+			doSubmit( makeArrayView( info.pCommandBuffers, info.commandBufferCount ) );
 		}
 
 		return VK_SUCCESS;
 	}
 
-	VkResult Queue::bindSparse( ArrayView< VkBindSparseInfo const > values
-		, VkFence fence )const
+	VkResult Queue::bindSparse()const
 	{
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
@@ -63,7 +57,7 @@ namespace ashes::d3d11
 
 			for ( auto & swapChain : makeArrayView( presentInfo.pSwapchains, presentInfo.swapchainCount ) )
 			{
-				*itResult = get( swapChain )->present( *itIndices );
+				*itResult = get( swapChain )->present();
 				++itResult;
 				++itIndices;
 			}
@@ -72,7 +66,7 @@ namespace ashes::d3d11
 		{
 			for ( auto & swapChain : makeArrayView( presentInfo.pSwapchains, presentInfo.swapchainCount ) )
 			{
-				get( swapChain )->present( *itIndices );
+				get( swapChain )->present();
 				++itIndices;
 			}
 		}
@@ -93,7 +87,7 @@ namespace ashes::d3d11
 				, 0u ) )
 			&& !data )
 		{
-			std::this_thread::sleep_for( std::chrono::microseconds{ 1ull } );
+			std::this_thread::sleep_for( std::chrono::microseconds{ 1ULL } );
 		}
 
 		return data
@@ -154,17 +148,13 @@ namespace ashes::d3d11
 
 #endif
 
-	VkResult Queue::doSubmit( ArrayView< VkCommandBuffer const > const & commandBuffers
-		, ArrayView< VkSemaphore const > const & semaphoresToWait
-		, ArrayView< VkPipelineStageFlags const > const & semaphoresStage
-		, ArrayView< VkSemaphore const > const & semaphoresToSignal
-		, VkFence fence )const
+	VkResult Queue::doSubmit( ArrayView< VkCommandBuffer const > const & commandBuffers )const
 	{
 		Context context{ get( m_device )->getFeatureLevel(), m_device };
 
-		for ( auto & commandBuffer : commandBuffers )
+		for ( auto const & commandBuffer : commandBuffers )
 		{
-			auto & dxCommandBuffer = *get( commandBuffer );
+			auto const & dxCommandBuffer = *get( commandBuffer );
 			dxCommandBuffer.execute( context );
 			context.uavs.clear();
 		}

@@ -49,7 +49,7 @@ namespace ashes::d3d11
 	{
 		context.context->IASetPrimitiveTopology( m_mode );
 
-		for ( auto & binding : m_vbos )
+		for ( auto const & binding : m_vbos )
 		{
 			context.context->IASetVertexBuffers( binding.startIndex
 				, UINT( binding.d3dBuffers.size() )

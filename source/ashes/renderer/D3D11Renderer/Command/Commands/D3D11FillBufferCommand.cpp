@@ -14,7 +14,6 @@ namespace ashes::d3d11
 {
 	FillBufferCommand::FillBufferCommand( VkDevice device
 		, VkBuffer buffer
-		, VkDeviceSize bufferOffset
 		, VkDeviceSize size
 		, uint32_t data )
 		: CommandBase{ device }
@@ -27,9 +26,8 @@ namespace ashes::d3d11
 
 	void FillBufferCommand::apply( Context const & context )const
 	{
-		uint32_t * data;
-
-		if ( VK_SUCCESS == get( m_memory )->lock( m_memoryOffset, m_size, 0u, reinterpret_cast< void ** >( &data ) ) )
+		if ( uint32_t * data{};
+			VK_SUCCESS == get( m_memory )->lock( m_memoryOffset, m_size, 0u, reinterpret_cast< void ** >( &data ) ) )
 		{
 			std::fill_n( data, m_size / sizeof( uint32_t ), m_data );
 			get( m_memory )->flush( m_memoryOffset, m_size );

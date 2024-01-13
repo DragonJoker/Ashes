@@ -87,7 +87,7 @@ namespace ashes::d3d11
 		, m_colorBlendState{ ( createInfo.pColorBlendState
 			? deepCopy( *createInfo.pColorBlendState, m_colorBlendStateAttachments )
 			: VkPipelineColorBlendStateCreateInfo{} ) }
-		, m_dynamicStates{ device, createInfo.pDynamicState }
+		, m_dynamicStates{ createInfo.pDynamicState }
 		, m_scissors{ makeScissors( m_stateScissors.begin(), m_stateScissors.end() ) }
 		, m_viewports{ makeViewports( m_stateViewports.begin(), m_stateViewports.end() ) }
 		, m_vertexInputStateHash{ doHash( m_vertexInputState ) }
@@ -116,14 +116,14 @@ namespace ashes::d3d11
 		, VkComputePipelineCreateInfo createInfo )
 		: m_device{ device }
 		, m_layout{ createInfo.layout }
-		, m_dynamicStates{ device, nullptr }
+		, m_dynamicStates{ nullptr }
 	{
 		doCompileProgram( device, { createInfo.stage }, createInfo.flags );
 
 		get( m_layout )->addPipeline( get( this ) );
 	}
 
-	Pipeline::~Pipeline()
+	Pipeline::~Pipeline()noexcept
 	{
 		if ( m_layout )
 		{
@@ -265,9 +265,9 @@ namespace ashes::d3d11
 	{
 		auto d3ddevice = get( device )->getDevice();
 		auto blendDesc = convert( m_colorBlendState );
-		HRESULT hr = d3ddevice->CreateBlendState( &blendDesc, &m_bdState );
 
-		if ( !checkError( device, hr, "CreateBlendState" ) )
+		if ( HRESULT hr = d3ddevice->CreateBlendState( &blendDesc, &m_bdState );
+			!checkError( device, hr, "CreateBlendState" ) )
 		{
 			get( device )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
 				, VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT
@@ -287,9 +287,9 @@ namespace ashes::d3d11
 		auto d3ddevice = get( device )->getDevice();
 		auto rasterizerDesc = convert( m_rasterizationState
 			, m_multisampleState );
-		auto hr = d3ddevice->CreateRasterizerState( &rasterizerDesc, &m_rsState );
 
-		if ( !checkError( device, hr, "CreateRasterizerState" ) )
+		if ( auto hr = d3ddevice->CreateRasterizerState( &rasterizerDesc, &m_rsState );
+			!checkError( device, hr, "CreateRasterizerState" ) )
 		{
 			get( device )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
 				, VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT
@@ -310,9 +310,9 @@ namespace ashes::d3d11
 		{
 			auto d3ddevice = get( device )->getDevice();
 			auto depthStencilDesc = convert( *m_depthStencilState );
-			auto hr = d3ddevice->CreateDepthStencilState( &depthStencilDesc, &m_dsState );
 
-			if ( !checkError( device, hr, "CreateDepthStencilState" ) )
+			if ( auto hr = d3ddevice->CreateDepthStencilState( &depthStencilDesc, &m_dsState );
+				!checkError( device, hr, "CreateDepthStencilState" ) )
 			{
 				get( device )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
 					, VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT
@@ -332,23 +332,23 @@ namespace ashes::d3d11
 		, VkPipelineShaderStageCreateInfoArray const & stages
 		, VkPipelineCreateFlags createFlags )
 	{
-		for ( auto & state : stages )
+		for ( auto const & state : stages )
 		{
-			auto module = get( state.module );
-			m_programModules.push_back( module->compile( state, m_layout, createFlags ) );
-			m_programLayout.emplace( state.stage, m_programModules.back().getLayout() );
+			auto shaderModule = get( state.module );
+			m_programModules.emplace_back( shaderModule->compile( state, m_layout, createFlags ) );
+			m_programLayout.try_emplace( state.stage, m_programModules.back().getLayout() );
 		}
 
-		for ( auto & shaderLayoutIt : m_programLayout )
+		for ( auto const & [stage, desc] : m_programLayout )
 		{
-			for ( auto & blockLayout : shaderLayoutIt.second.interfaceBlockLayout )
+			for ( auto const & blockLayout : desc.interfaceBlockLayout )
 			{
 				PushConstantsBuffer pcb
 				{
 					nullptr,
 					blockLayout.binding,
 					{
-						VkShaderStageFlags( shaderLayoutIt.first ),
+						VkShaderStageFlags( stage ),
 						0u,
 						blockLayout.size
 					},
@@ -395,20 +395,19 @@ namespace ashes::d3d11
 
 		if ( it != m_programLayout.end() )
 		{
-			auto compiled = it->second.module->getCompiled();
-			auto & inputLayout = it->second.inputLayout;
+			auto compiled = it->second.shaderModule->getCompiled();
+			auto const & inputLayout = it->second.inputLayout;
 			auto d3ddevice = get( device )->getDevice();
 			auto inputDesc = convert( m_vertexInputState, inputLayout );
 
 			if ( !inputDesc.empty() )
 			{
-				auto hr = d3ddevice->CreateInputLayout( inputDesc.data()
-					, UINT( inputDesc.size() )
-					, compiled->GetBufferPointer()
-					, compiled->GetBufferSize()
-					, &m_iaState );
-
-				if ( !checkError( device, hr, "CreateInputLayout" ) )
+				if ( auto hr = d3ddevice->CreateInputLayout( inputDesc.data()
+						, UINT( inputDesc.size() )
+						, compiled->GetBufferPointer()
+						, compiled->GetBufferSize()
+						, &m_iaState );
+					!checkError( device, hr, "CreateInputLayout" ) )
 				{
 					get( device )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
 						, VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT

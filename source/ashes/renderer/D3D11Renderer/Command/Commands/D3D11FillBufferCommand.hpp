@@ -14,7 +14,6 @@ namespace ashes::d3d11
 	public:
 		FillBufferCommand( VkDevice device
 			, VkBuffer buffer
-			, VkDeviceSize bufferOffset
 			, VkDeviceSize size
 			, uint32_t data );
 

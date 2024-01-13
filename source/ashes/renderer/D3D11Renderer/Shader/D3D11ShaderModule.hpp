@@ -22,52 +22,52 @@ namespace ashes::d3d11
 		CompiledShaderModule( VkDevice device
 			, VkPipelineLayout pipelineLayout
 			, VkPipelineCreateFlags createFlags
-			, VkShaderModule module
+			, VkShaderModule shaderModule
 			, UInt32Array const & spv
 			, VkPipelineShaderStageCreateInfo const & state );
 		~CompiledShaderModule()noexcept;
 
-		inline ID3D11ComputeShader * getCSShader()const
+		ID3D11ComputeShader * getCSShader()const
 		{
 			return m_shader.compute;
 		}
 
-		inline ID3D11VertexShader * getVSShader()const
+		ID3D11VertexShader * getVSShader()const
 		{
 			return m_shader.vertex;
 		}
 
-		inline ID3D11GeometryShader * getGSShader()const
+		ID3D11GeometryShader * getGSShader()const
 		{
 			return m_shader.geometry;
 		}
 
-		inline ID3D11HullShader * getHSShader()const
+		ID3D11HullShader * getHSShader()const
 		{
 			return m_shader.hull;
 		}
 
-		inline ID3D11DomainShader * getDSShader()const
+		ID3D11DomainShader * getDSShader()const
 		{
 			return m_shader.domain;
 		}
 
-		inline ID3D11PixelShader * getPSShader()const
+		ID3D11PixelShader * getPSShader()const
 		{
 			return m_shader.pixel;
 		}
 
-		inline ID3DBlob * getCompiled()const
+		ID3DBlob * getCompiled()const
 		{
 			return m_compiled;
 		}
 
-		inline VkShaderStageFlagBits getStage()const
+		VkShaderStageFlagBits getStage()const
 		{
 			return m_stage;
 		}
 
-		inline ShaderDesc const & getLayout()const
+		ShaderDesc const & getLayout()const
 		{
 			return m_layout;
 		}
@@ -76,9 +76,9 @@ namespace ashes::d3d11
 		void doRetrieveShader( VkDevice device );
 		ShaderDesc doRetrieveShaderDesc( VkDevice device );
 		InputLayout doRetrieveInputLayout( ID3D11ShaderReflection * reflection
-			, UINT inputParameters );
+			, UINT inputParameters )const;
 		InterfaceBlockLayout doRetrieveInterfaceBlockLayout( ID3D11ShaderReflection * reflection
-			, UINT constantBuffers );
+			, UINT constantBuffers )const;
 
 	private:
 		union
@@ -89,7 +89,7 @@ namespace ashes::d3d11
 			ID3D11HullShader * hull;
 			ID3D11DomainShader * domain;
 			ID3D11PixelShader * pixel;
-		} m_shader;
+		} m_shader{};
 		VkShaderStageFlagBits m_stage;
 		std::string m_source;
 		ID3DBlob * m_compiled{ nullptr };
@@ -101,13 +101,12 @@ namespace ashes::d3d11
 	public:
 		ShaderModule( VkDevice device
 			, VkShaderModuleCreateInfo createInfo );
-		~ShaderModule();
 
 		CompiledShaderModule compile( VkPipelineShaderStageCreateInfo const & state
 			, VkPipelineLayout pipelineLayout
 			, VkPipelineCreateFlags createFlags )const;
 
-		inline VkDevice getDevice()const
+		VkDevice getDevice()const
 		{
 			return m_device;
 		}

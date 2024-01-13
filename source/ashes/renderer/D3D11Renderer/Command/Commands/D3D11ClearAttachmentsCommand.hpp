@@ -10,6 +10,13 @@ namespace ashes::d3d11
 {
 	struct ClearAttachmentView
 	{
+		ClearAttachmentView( VkClearAttachment clear
+			, ID3D11View * view )
+			: clear{ std::move( clear ) }
+			, view{ view }
+		{
+		}
+
 		VkClearAttachment clear;
 		ID3D11View * view;
 	};
@@ -21,7 +28,6 @@ namespace ashes::d3d11
 	{
 	public:
 		ClearAttachmentsCommand( VkDevice device
-			, VkRenderPass renderPass
 			, VkSubpassDescription const & subpass
 			, VkFramebuffer framebuffer
 			, ArrayView< VkClearAttachment const > const & clearAttaches

@@ -21,10 +21,10 @@ namespace ashes::d3d11
 		{
 		}
 
-		VkImageView imageView;
-		ID3D11View * view;
-		ID3D11Resource * resource;
-		UINT subresource;
+		VkImageView imageView{};
+		ID3D11View * view{};
+		ID3D11Resource * resource{};
+		UINT subresource{};
 	};
 	using FboAttachPtr = std::unique_ptr< FboAttach >;
 
@@ -33,49 +33,48 @@ namespace ashes::d3d11
 	public:
 		Framebuffer( VkDevice device
 			, VkFramebufferCreateInfo createInfo );
-		~Framebuffer();
 
-		inline VkExtent2D const & getDimensions()const noexcept
+		VkExtent2D const & getDimensions()const noexcept
 		{
 			return m_dimensions;
 		}
 
-		inline std::vector< FboAttachPtr > const & getAllViews()const
+		std::vector< FboAttachPtr > const & getAllViews()const noexcept
 		{
 			return m_allViews;
 		}
 
-		inline std::vector< FboAttach * > const & getRTViews()const
+		std::vector< FboAttach * > const & getRTViews()const noexcept
 		{
 			return m_rtViews;
 		}
 
-		inline std::vector< FboAttach * > const & getMsRTViews()const
+		std::vector< FboAttach * > const & getMsRTViews()const noexcept
 		{
 			return m_msRtViews;
 		}
 
-		inline FboAttach * getDSView()const
+		FboAttach * getDSView()const noexcept
 		{
 			return m_dsView;
 		}
 
-		inline FboAttach * getMsDSView()const
+		FboAttach * getMsDSView()const noexcept
 		{
 			return m_msDsView;
 		}
 
-		inline UINT getDSViewFlags()const
+		UINT getDSViewFlags()const noexcept
 		{
 			return m_dsViewFlags;
 		}
 
-		bool isMultisampled()const
+		bool isMultisampled()const noexcept
 		{
 			return m_multisampled;
 		}
 
-		VkDevice getDevice()const
+		VkDevice getDevice()const noexcept
 		{
 			return m_device;
 		}

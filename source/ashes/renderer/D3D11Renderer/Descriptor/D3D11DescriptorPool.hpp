@@ -15,15 +15,16 @@
 namespace ashes::d3d11
 {
 	class DescriptorPool
+		: public NonCopyable
 	{
 	public:
 		DescriptorPool( VkDevice device
 			, VkDescriptorPoolCreateInfo createInfos );
-		~DescriptorPool();
+		~DescriptorPool()noexcept;
 
 		void registerSet( VkDescriptorSet set );
-		VkResult reset( VkDescriptorPoolResetFlags flags );
-		VkResult free( ArrayView< VkDescriptorSet const > sets );
+		VkResult reset();
+		VkResult freeDescriptors( ArrayView< VkDescriptorSet const > sets );
 
 		inline VkDevice getDevice()const
 		{

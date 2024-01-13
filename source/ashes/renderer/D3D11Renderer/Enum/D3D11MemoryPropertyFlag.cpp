@@ -20,10 +20,6 @@ namespace ashes::d3d11
 			{
 				result = D3D11_USAGE_DYNAMIC;
 			}
-			else if ( checkFlag( targets, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT )
-				|| checkFlag( targets, VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT ) )
-			{
-			}
 			else if ( checkFlag( targets, VK_BUFFER_USAGE_TRANSFER_SRC_BIT )
 				|| checkFlag( targets, VK_BUFFER_USAGE_TRANSFER_DST_BIT ) )
 			{
@@ -68,19 +64,17 @@ namespace ashes::d3d11
 	{
 		D3D11_USAGE result{ D3D11_USAGE_DEFAULT };
 
-		if ( isHostVisible( flags ) )
+		if ( isHostVisible( flags )
+			&& !isRenderTarget( usage ) )
 		{
-			if ( !isRenderTarget( usage ) )
+			if ( checkFlag( usage, VK_IMAGE_USAGE_TRANSFER_SRC_BIT )
+				|| checkFlag( usage, VK_IMAGE_USAGE_TRANSFER_DST_BIT ) )
 			{
-				if ( checkFlag( usage, VK_IMAGE_USAGE_TRANSFER_SRC_BIT )
-					|| checkFlag( usage, VK_IMAGE_USAGE_TRANSFER_DST_BIT ) )
-				{
-					result = D3D11_USAGE_STAGING;
-				}
-				else
-				{
-					result = D3D11_USAGE_DYNAMIC;
-				}
+				result = D3D11_USAGE_STAGING;
+			}
+			else
+			{
+				result = D3D11_USAGE_DYNAMIC;
 			}
 		}
 

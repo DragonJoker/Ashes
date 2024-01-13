@@ -127,8 +127,7 @@ namespace ashes::d3d11
 			, VkBufferImageCopy const & copyInfo
 			, uint8_t const * srcBuffer
 			, VkSubresourceLayout const & srcLayout
-			, uint8_t * dstBuffer
-			, D3D11_BOX const & dstBox )
+			, uint8_t * dstBuffer )
 		{
 			auto extent = getTexelBlockExtent( format );
 			auto extentCombined = extent.width * extent.height * extent.depth;
@@ -175,7 +174,6 @@ namespace ashes::d3d11
 		}
 
 		VkBuffer getStagingBuffer( VkDevice device
-			, VkBuffer buffer
 			, uint32_t size
 			, VkDeviceMemory & memory )
 		{
@@ -266,8 +264,8 @@ namespace ashes::d3d11
 		, VkImage src
 		, VkBuffer dst )
 		: CommandBase{ device }
-		, m_src{ static_cast< VkImage >( src ) }
-		, m_dst{ static_cast< VkBuffer >( dst ) }
+		, m_src{ src }
+		, m_dst{ dst }
 		, m_copyInfo{ copyInfo.begin(), copyInfo.end() }
 		, m_format{ getSRVFormat( get( m_src )->getFormat() ) }
 		, m_srcLayouts{ doGetSrcLayouts( device, m_src, copyInfo ) }
@@ -302,7 +300,7 @@ namespace ashes::d3d11
 
 		if ( !m_srcMappable )
 		{
-			stagingSrc = getStagingTexture( m_device
+			stagingSrc = getStagingTexture( getDevice()
 				, m_src
 				, copyInfo.imageExtent
 				, stagingSrcMemory );
@@ -315,8 +313,7 @@ namespace ashes::d3d11
 
 		if ( !m_dstMappable )
 		{
-			stagingDst = getStagingBuffer( m_device
-				, m_dst
+			stagingDst = getStagingBuffer( getDevice()
 				, dstBox.right - dstBox.left
 				, stagingDstMemory );
 			dst = &stagingDst;
@@ -340,14 +337,14 @@ namespace ashes::d3d11
 
 		if ( stagingDst )
 		{
-			deallocate( stagingDstMemory, get( m_device )->getAllocationCallbacks() );
-			deallocate( stagingDst, get( m_device )->getAllocationCallbacks() );
+			deallocate( stagingDstMemory, get( getDevice() )->getAllocationCallbacks() );
+			deallocate( stagingDst, get( getDevice() )->getAllocationCallbacks() );
 		}
 
 		if ( stagingSrc )
 		{
-			deallocate( stagingSrcMemory, get( m_device )->getAllocationCallbacks() );
-			deallocate( stagingSrc, get( m_device )->getAllocationCallbacks() );
+			deallocate( stagingSrcMemory, get( getDevice() )->getAllocationCallbacks() );
+			deallocate( stagingSrc, get( getDevice() )->getAllocationCallbacks() );
 		}
 	}
 
@@ -363,28 +360,25 @@ namespace ashes::d3d11
 		, VkDeviceMemory src
 		, VkDeviceMemory dst )const
 	{
-		uint8_t * srcBuffer;
-
-		if ( VK_SUCCESS == get( src )->lock( srcLayout.offset
-			, srcLayout.size
-			, 0u
-			, reinterpret_cast< void ** >( &srcBuffer ) ) )
-		{
-			uint8_t * dstBuffer;
-
-			if ( VK_SUCCESS == get( dst )->lock( dstBox.left
-				, dstBox.right - dstBox.left
+		if ( uint8_t * srcBuffer{};
+			VK_SUCCESS == get( src )->lock( srcLayout.offset
+				, srcLayout.size
 				, 0u
-				, reinterpret_cast< void ** >( &dstBuffer ) ) )
+				, reinterpret_cast< void ** >( &srcBuffer ) ) )
+		{
+			if ( uint8_t * dstBuffer{};
+				VK_SUCCESS == get( dst )->lock( dstBox.left
+					, VkDeviceSize( dstBox.right ) - dstBox.left
+					, 0u
+					, reinterpret_cast< void ** >( &dstBuffer ) ) )
 			{
 				doCopyMapped( format
 					, copyInfo
 					, srcBuffer
 					, srcLayout
-					, dstBuffer
-					, dstBox );
+					, dstBuffer );
 				get( dst )->flush( dstBox.left
-					, dstBox.right - dstBox.left );
+					, VkDeviceSize( dstBox.right ) - dstBox.left );
 				get( dst )->unlock();
 			}
 
@@ -402,7 +396,7 @@ namespace ashes::d3d11
 		VkImageSubresourceLayers stagingSurbresouce{ copyInfo.imageSubresource };
 		stagingSurbresouce.mipLevel = 0u;
 		stagingSurbresouce.baseArrayLayer = 0u;
-		CopyImageCommand command{ m_device
+		CopyImageCommand command{ getDevice()
 			, VkImageCopy
 			{
 				copyInfo.imageSubresource,
@@ -422,7 +416,7 @@ namespace ashes::d3d11
 		, VkBuffer dst
 		, D3D11_BOX const & dstBox )const
 	{
-		CopyBufferCommand command{ m_device
+		CopyBufferCommand command{ getDevice()
 			, VkBufferCopy
 			{
 				0u,

@@ -12,15 +12,15 @@ namespace ashes::d3d11
 	{
 		VkBuffer stagingSrc{};
 		VkDeviceMemory stagingSrcMemory{};
-		VkBufferCopy copyToStaging;
+		VkBufferCopy copyToStaging{};
 	};
 
 	struct CopyFromStagingProcess
 	{
 		VkImage stagingDst{};
 		VkDeviceMemory stagingDstMemory{};
-		UINT stagingDstSubresource;
-		VkImageCopy copyFromStaging;
+		UINT stagingDstSubresource{};
+		VkImageCopy copyFromStaging{};
 	};
 
 	struct MapCopyImage
@@ -28,10 +28,10 @@ namespace ashes::d3d11
 		VkImage dst{};
 		VkDeviceMemory dstMemory{};
 		VkBufferImageCopy mapCopy;
-		D3D11_BOX srcBox;
-		UINT dstSubresource;
-		VkSubresourceLayout dstLayout;
-		Optional< CopyFromStagingProcess > copyFromStaging;
+		D3D11_BOX srcBox{};
+		UINT dstSubresource{};
+		VkSubresourceLayout dstLayout{};
+		Optional< CopyFromStagingProcess > copyFromStaging{};
 	};
 	using MapCopyImageArray = std::vector< MapCopyImage >;
 
@@ -39,13 +39,13 @@ namespace ashes::d3d11
 	{
 		VkBuffer src{};
 		VkDeviceMemory srcMemory{};
-		MapCopyImageArray mapCopyImages;
+		MapCopyImageArray mapCopyImages{};
 	};
 
 	struct BufferToImageCopyProcess
 	{
-		Optional< CopyToStagingProcess > copyToStaging;
-		MapCopyProcess mapCopy;
+		Optional< CopyToStagingProcess > copyToStaging{};
+		MapCopyProcess mapCopy{};
 	};
 	/**
 	*\brief
@@ -69,7 +69,7 @@ namespace ashes::d3d11
 			, ArrayView< VkBufferImageCopy const > const & copyInfo
 			, VkBuffer src
 			, VkImage dst );
-		~CopyBufferToImageCommand()override;
+		~CopyBufferToImageCommand()noexcept override;
 
 		void apply( Context const & context )const override;
 		CommandPtr clone()const override;

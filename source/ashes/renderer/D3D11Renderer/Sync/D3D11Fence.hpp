@@ -9,17 +9,16 @@ See LICENSE file in root folder
 namespace ashes::d3d11
 {
 	class Fence
+		: public NonCopyable
 	{
 	public:
-		Fence( VkDevice device
-			, VkFenceCreateFlags flags = 0 );
-		~Fence();
+		explicit Fence( VkDevice device )noexcept;
 
-		VkResult wait( uint64_t timeout )const;
-		void reset()const;
-		VkResult getStatus()const;
+		VkResult wait()const noexcept;
+		void reset()const noexcept;
+		VkResult getStatus()const noexcept;
 
-		inline VkDevice getDevice()const
+		VkDevice getDevice()const noexcept
 		{
 			return m_device;
 		}

@@ -29,7 +29,7 @@ namespace ashes::d3d11
 		}
 	}
 
-	BufferView::~BufferView()
+	BufferView::~BufferView()noexcept
 	{
 		safeRelease( m_view );
 	}

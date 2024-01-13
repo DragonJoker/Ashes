@@ -13,8 +13,7 @@ namespace ashes::d3d11
 	{
 	public:
 		SetEventCommand( VkDevice device
-			, VkEvent event
-			, VkPipelineStageFlags stageFlags );
+			, VkEvent event );
 
 		void apply( Context const & context )const override;
 		CommandPtr clone()const override;

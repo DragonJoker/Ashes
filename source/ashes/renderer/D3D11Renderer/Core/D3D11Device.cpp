@@ -94,9 +94,9 @@ namespace ashes::d3d11
 		void doCheckEnabledExtensions( VkPhysicalDevice physicalDevice
 			, ashes::ArrayView< char const * const > const & extensions )
 		{
-			auto available = get( physicalDevice )->enumerateExtensionProperties( nullptr );
+			auto const & available = get( physicalDevice )->enumerateExtensionProperties();
 
-			for ( auto & extension : extensions )
+			for ( auto extension : extensions )
 			{
 				if ( available.end() == std::find_if( available.begin()
 					, available.end()
@@ -165,29 +165,35 @@ namespace ashes::d3d11
 			} );
 	}
 
-	Device::~Device()
+	Device::~Device()noexcept
 	{
-		for ( auto creates : m_queues )
+		for ( auto const & [_, creates] : m_queues )
 		{
-			for ( auto queue : creates.second.queues )
+			for ( auto queue : creates.queues )
 			{
 				deallocateNA( queue );
 			}
 		}
 
-		for ( auto & it : m_stagingTextures )
+		for ( auto & [_, staging] : m_stagingTextures )
 		{
-			deallocate( it.second.first, getAllocationCallbacks() );
-			deallocate( it.second.second, getAllocationCallbacks() );
+			deallocate( staging.first, getAllocationCallbacks() );
+			deallocate( staging.second, getAllocationCallbacks() );
 		}
 
 		deallocate( m_sampler, getAllocationCallbacks() );
 		deallocate( m_dummyIndexed.memory, getAllocationCallbacks() );
 		deallocate( m_dummyIndexed.buffer, getAllocationCallbacks() );
 
-		m_mtxDeviceContext.lock();
-		safeRelease( m_deviceContext );
-		m_mtxDeviceContext.unlock();
+		try
+		{
+			lock_type lock{ m_mtxDeviceContext };
+			safeRelease( m_deviceContext );
+		}
+		catch ( ... )
+		{
+			// What to do here ?
+		}
 
 		safeRelease( m_waitIdleQuery );
 		safeRelease( m_d3dDevice );
@@ -211,7 +217,7 @@ namespace ashes::d3d11
 		return m_deviceContext;
 	}
 
-	void Device::unlockImmediateContext()const
+	void Device::unlockImmediateContext()const noexcept
 	{
 		m_mtxDeviceContext.unlock();
 	}
@@ -276,7 +282,7 @@ namespace ashes::d3d11
 					deduced
 				} );
 			get( result )->bindMemory( resMem, 0u );
-			it = m_stagingTextures.emplace( key, std::make_pair( result, resMem ) ).first;
+			it = m_stagingTextures.try_emplace( key, result, resMem ).first;
 		}
 
 		memory = it->second.second;
@@ -291,8 +297,8 @@ namespace ashes::d3d11
 		auto byteSize = getTexelBlockByteSize( extent, get( image )->getFormat() );
 		auto mipWidth = getSubresourceValue( get( image )->getDimensions().width, subresource.mipLevel );
 		auto mipHeight = getSubresourceValue( get( image )->getDimensions().height, subresource.mipLevel );
-		layout.rowPitch = byteSize * mipWidth / ( extent.width * extent.height * extent.depth );
-		layout.arrayPitch = layout.rowPitch * mipHeight * extent.height / ( extent.width * extent.depth );
+		layout.rowPitch = VkDeviceSize( byteSize ) * mipWidth / ( VkDeviceSize( extent.width ) * extent.height * extent.depth );
+		layout.arrayPitch = layout.rowPitch * mipHeight * extent.height / ( VkDeviceSize( extent.width ) * extent.depth );
 		layout.depthPitch = layout.arrayPitch;
 		layout.offset = subresource.arrayLayer * layout.arrayPitch;
 		layout.size = layout.arrayPitch * get( image )->getDimensions().depth;
@@ -302,7 +308,7 @@ namespace ashes::d3d11
 
 	VkResult Device::setDebugUtilsObjectName( VkDebugUtilsObjectNameInfoEXT const & nameInfo )const
 	{
-		HRESULT hr = S_OK;
+		auto hr = S_OK;
 
 		switch ( nameInfo.objectType )
 		{
@@ -346,7 +352,7 @@ namespace ashes::d3d11
 			: VK_ERROR_INVALID_DEVICE_ADDRESS_EXT;
 	}
 
-	VkResult Device::setDebugUtilsObjectTag( VkDebugUtilsObjectTagInfoEXT const & tagInfo )const
+	VkResult Device::setDebugUtilsObjectTag( VkDebugUtilsObjectTagInfoEXT const & )const
 	{
 		return VK_SUCCESS;
 	}
@@ -372,14 +378,14 @@ namespace ashes::d3d11
 #endif
 #if VK_EXT_debug_marker
 
-	VkResult Device::debugMarkerSetObjectTag( VkDebugMarkerObjectTagInfoEXT const & tagInfo )const
+	VkResult Device::debugMarkerSetObjectTag( VkDebugMarkerObjectTagInfoEXT const & )const
 	{
 		return VK_SUCCESS;
 	}
 
 	VkResult Device::debugMarkerSetObjectName( VkDebugMarkerObjectNameInfoEXT const & nameInfo )const
 	{
-		HRESULT hr = S_OK;
+		auto hr = S_OK;
 
 		switch ( nameInfo.objectType )
 		{
@@ -432,7 +438,7 @@ namespace ashes::d3d11
 		, size_t location
 		, int32_t messageCode
 		, const char * pLayerPrefix
-		, const char * pMessage )
+		, const char * pMessage )const noexcept
 	{
 		get( m_instance )->reportMessage( flags
 			, objectType
@@ -449,7 +455,7 @@ namespace ashes::d3d11
 		, size_t location
 		, int32_t messageCode
 		, const char * pLayerPrefix
-		, const char * pMessage )
+		, const char * pMessage )const noexcept
 	{
 		get( m_instance )->onReportMessage( flags
 			, objectType
@@ -507,7 +513,7 @@ namespace ashes::d3d11
 				, 0u ) )
 			&& !data )
 		{
-			std::this_thread::sleep_for( std::chrono::microseconds{ 1ull } );
+			std::this_thread::sleep_for( std::chrono::microseconds{ 1ULL } );
 		}
 
 		return data
@@ -515,7 +521,7 @@ namespace ashes::d3d11
 			: VK_TIMEOUT;
 	}
 
-	bool Device::onCopyToImageCommand( VkCommandBuffer cmd
+	void Device::onCopyToImageCommand( VkCommandBuffer cmd
 		, ArrayView< VkBufferImageCopy const > const & copyInfo
 		, VkBuffer src
 		, VkImage dst )const
@@ -523,10 +529,10 @@ namespace ashes::d3d11
 		return get( m_instance )->onCopyToImageCommand( cmd, copyInfo, src, dst );
 	}
 
-	bool Device::onCheckHResultCommand( HRESULT hresult
-		, std::string message )const
+	void Device::onCheckHResultCommand( HRESULT hresult
+		, std::string const & message )const
 	{
-		return get( m_instance )->onCheckHResultCommand( hresult, std::move( message ) );
+		return get( m_instance )->onCheckHResultCommand( hresult, message );
 	}
 
 	void Device::doCreateD3D11Device()
@@ -541,7 +547,6 @@ namespace ashes::d3d11
 			D3D_FEATURE_LEVEL_9_2,
 			D3D_FEATURE_LEVEL_9_1,
 		};
-		HRESULT hr;
 		UINT flags = 0;
 
 #if !defined( NDEBUG )
@@ -550,8 +555,8 @@ namespace ashes::d3d11
 
 		D3D_FEATURE_LEVEL supportedFeatureLevel = get( m_physicalDevice )->getFeatureLevel();
 		{
-			std::unique_lock< std::mutex > lock{ m_mtxDeviceContext };
-			hr = D3D11CreateDevice( nullptr
+			lock_type lock{ m_mtxDeviceContext };
+			D3D11CreateDevice( nullptr
 				, D3D_DRIVER_TYPE_HARDWARE
 				, nullptr
 				, flags
@@ -611,7 +616,7 @@ namespace ashes::d3d11
 				deduced
 			} );
 		get( m_dummyIndexed.buffer )->bindMemory( m_dummyIndexed.memory, 0u );
-		uint32_t * buffer;
+		uint32_t * buffer{};
 
 		if ( VK_SUCCESS == get( m_dummyIndexed.memory )->lock( 0u
 			, size
@@ -628,17 +633,16 @@ namespace ashes::d3d11
 	{
 		for ( auto & queueCreateInfo : makeArrayView( m_createInfos.pQueueCreateInfos, m_createInfos.queueCreateInfoCount ) )
 		{
-			auto it = m_queues.emplace( queueCreateInfo.queueFamilyIndex
-				, QueueCreates{ queueCreateInfo, {} } ).first;
+			auto & queueCreates = m_queues.try_emplace( queueCreateInfo.queueFamilyIndex, queueCreateInfo ).first->second;
 
 			for ( auto i = 0u; i < queueCreateInfo.queueCount; ++i )
 			{
 				VkQueue queue;
 				allocateNA( queue
 					, get( this )
-					, it->second.createInfo
-					, uint32_t( it->second.queues.size() ) );
-				it->second.queues.emplace_back( queue );
+					, queueCreates.createInfo
+					, uint32_t( queueCreates.queues.size() ) );
+				queueCreates.queues.emplace_back( queue );
 			}
 		}
 	}

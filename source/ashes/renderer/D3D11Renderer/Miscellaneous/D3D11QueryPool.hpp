@@ -9,11 +9,12 @@ See LICENSE file in root folder
 namespace ashes::d3d11
 {
 	class QueryPool
+		: public NonCopyable
 	{
 	public:
 		QueryPool( VkDevice device
 			, VkQueryPoolCreateInfo createInfo );
-		~QueryPool();
+		~QueryPool()noexcept;
 
 		VkResult getResults( uint32_t firstQuery
 			, uint32_t queryCount
@@ -22,17 +23,17 @@ namespace ashes::d3d11
 			, VkDeviceSize dataSize
 			, void * data )const;
 
-		inline auto begin()const
+		auto begin()const noexcept
 		{
 			return m_queries.begin();
 		}
 
-		inline auto end()const
+		auto end()const noexcept
 		{
 			return m_queries.end();
 		}
 
-		inline VkDevice getDevice()const
+		VkDevice getDevice()const noexcept
 		{
 			return m_device;
 		}
@@ -48,7 +49,6 @@ namespace ashes::d3d11
 			, uint32_t queryCount
 			, VkDeviceSize stride
 			, VkQueryResultFlags flags
-			, VkDeviceSize dataSize
 			, void * data )const;
 
 	private:

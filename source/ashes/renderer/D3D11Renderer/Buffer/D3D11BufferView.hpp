@@ -13,18 +13,19 @@
 namespace ashes::d3d11
 {
 	class BufferView
+		: public NonCopyable
 	{
 	public:
 		BufferView( VkDevice device
 			, VkBufferViewCreateInfo createInfo );
-		~BufferView();
+		~BufferView()noexcept;
 
-		inline ID3D11ShaderResourceView * getView()const
+		ID3D11ShaderResourceView * getView()const
 		{
 			return m_view;
 		}
 
-		inline VkDevice getDevice()const
+		VkDevice getDevice()const
 		{
 			return m_device;
 		}

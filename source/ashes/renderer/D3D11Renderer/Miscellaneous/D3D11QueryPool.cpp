@@ -14,13 +14,10 @@ namespace ashes::d3d11
 			{
 			case VK_QUERY_TYPE_OCCLUSION:
 				return D3D11_QUERY_OCCLUSION;
-
 			case VK_QUERY_TYPE_PIPELINE_STATISTICS:
 				return D3D11_QUERY_PIPELINE_STATISTICS;
-
 			case VK_QUERY_TYPE_TIMESTAMP:
 				return D3D11_QUERY_TIMESTAMP;
-
 			default:
 				assert( false );
 				return D3D11_QUERY_TIMESTAMP;
@@ -54,14 +51,13 @@ namespace ashes::d3d11
 				return stats.DSInvocations;
 			case 10:
 				return stats.CSInvocations;
+			default:
+				return 0ULL;
 			}
-
-			return 0ull;
 		}
 
 		uint32_t adjustQueryCount( uint32_t count
-			, VkQueryType type
-			, VkQueryPipelineStatisticFlags pipelineStatistics )
+			, VkQueryType type )
 		{
 			if ( type != VK_QUERY_TYPE_PIPELINE_STATISTICS )
 			{
@@ -77,16 +73,15 @@ namespace ashes::d3d11
 		: m_device{ device }
 		, m_createInfo{ std::move( createInfo ) }
 	{
-		D3D11_QUERY_DESC desc;
+		D3D11_QUERY_DESC desc{};
 		desc.MiscFlags = 0u;
 		desc.Query = convert( m_createInfo.queryType );
-		m_queries.resize( adjustQueryCount( m_createInfo.queryCount, m_createInfo.queryType, m_createInfo.pipelineStatistics ) );
+		m_queries.resize( adjustQueryCount( m_createInfo.queryCount, m_createInfo.queryType ) );
 
 		for ( auto & query : m_queries )
 		{
-			auto hr = get( m_device )->getDevice()->CreateQuery( &desc, &query );
-
-			if ( checkError( m_device, hr, "CreateQuery" ) )
+			if ( auto hr = get( m_device )->getDevice()->CreateQuery( &desc, &query );
+				checkError( m_device, hr, "CreateQuery" ) )
 			{
 				dxDebugName( query, Query );
 			}
@@ -96,11 +91,11 @@ namespace ashes::d3d11
 		{
 		case VK_QUERY_TYPE_OCCLUSION:
 			m_data.resize( sizeof( uint64_t ) );
-			getUint32 = [this]( uint32_t index )
+			getUint32 = [this]( uint32_t )
 			{
 				return uint32_t( *reinterpret_cast< uint64_t * >( m_data.data() ) );
 			};
-			getUint64 = [this]( uint32_t index )
+			getUint64 = [this]( uint32_t )
 			{
 				return *reinterpret_cast< uint64_t * >( m_data.data() );
 			};
@@ -122,11 +117,11 @@ namespace ashes::d3d11
 
 		case VK_QUERY_TYPE_TIMESTAMP:
 			m_data.resize( sizeof( uint64_t ) );
-			getUint32 = [this]( uint32_t index )
+			getUint32 = [this]( uint32_t )
 			{
 				return uint32_t( *reinterpret_cast< uint64_t * >( m_data.data() ) );
 			};
-			getUint64 = [this]( uint32_t index )
+			getUint64 = [this]( uint32_t )
 			{
 				return *reinterpret_cast< uint64_t * >( m_data.data() );
 			};
@@ -137,7 +132,7 @@ namespace ashes::d3d11
 		}
 	}
 
-	QueryPool::~QueryPool()
+	QueryPool::~QueryPool()noexcept
 	{
 		for ( auto & query : m_queries )
 		{
@@ -166,7 +161,6 @@ namespace ashes::d3d11
 			, queryCount
 			, stride
 			, flags
-			, dataSize
 			, data );
 	}
 
@@ -246,7 +240,6 @@ namespace ashes::d3d11
 		, uint32_t queryCount
 		, VkDeviceSize stride
 		, VkQueryResultFlags flags
-		, VkDeviceSize dataSize
 		, void * data )const
 	{
 		auto max = firstQuery + queryCount;

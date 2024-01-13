@@ -23,40 +23,40 @@ namespace ashes::d3d11
 {
 	//*********************************************************************************************
 
-	VkMemoryPropertyFlags getMemoryProperties( uint32_t memoryTypeIndex )
+	namespace mem
 	{
-		assert( memoryTypeIndex < Instance::getMemoryProperties().memoryTypeCount
-			&& "Wrong deduced memory type" );
-		return Instance::getMemoryProperties().memoryTypes[memoryTypeIndex].propertyFlags;
-	}
+		static VkMemoryPropertyFlags getMemoryProperties( uint32_t memoryTypeIndex )
+		{
+			assert( memoryTypeIndex < Instance::getMemoryProperties().memoryTypeCount
+				&& "Wrong deduced memory type" );
+			return Instance::getMemoryProperties().memoryTypes[memoryTypeIndex].propertyFlags;
+		}
 
-	UINT getBindFlags( VkImageCreateInfo const & createInfo
-		, VkMemoryPropertyFlags propertyFlags )
-	{
-		return ( ( isSampled( createInfo.usage )
-				? D3D11_BIND_SHADER_RESOURCE
-				: 0u )
-			| ( isRenderable( createInfo.usage, createInfo.format, createInfo.mipLevels )
-				? ( isHostVisible( propertyFlags )
-					? 0u
-					: ( isDepthOrStencilFormat( createInfo.format )
-						? D3D11_BIND_DEPTH_STENCIL
-						: D3D11_BIND_RENDER_TARGET ) )
-				: 0u )
-			| ( isStorage( createInfo.usage )
-				? D3D11_BIND_UNORDERED_ACCESS
-				: 0 ) );
-	}
+		static UINT getBindFlags( VkImageCreateInfo const & createInfo
+			, VkMemoryPropertyFlags propertyFlags )
+		{
+			return ( ( isSampled( createInfo.usage )
+					? D3D11_BIND_SHADER_RESOURCE
+					: 0u )
+				| ( isRenderable( createInfo.usage, createInfo.format, createInfo.mipLevels )
+					? ( isHostVisible( propertyFlags )
+						? 0u
+						: ( isDepthOrStencilFormat( createInfo.format )
+							? D3D11_BIND_DEPTH_STENCIL
+							: D3D11_BIND_RENDER_TARGET ) )
+					: 0u )
+				| ( isStorage( createInfo.usage )
+					? D3D11_BIND_UNORDERED_ACCESS
+					: 0 ) );
+		}
 
-	UINT getMiscFlags( VkImageCreateInfo const & createInfo )
-	{
-		return 0u
-			//| ( isMipmapped( createInfo.usage, createInfo.format, createInfo.mipLevels )
-			//	? D3D11_RESOURCE_MISC_GENERATE_MIPS
-			//	: 0 )
-			| ( checkFlag( createInfo.flags, VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT )
-				? D3D11_RESOURCE_MISC_TEXTURECUBE
-				: 0u );
+		static UINT getMiscFlags( VkImageCreateInfo const & createInfo )
+		{
+			return 0u
+				| ( checkFlag( createInfo.flags, VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT )
+					? D3D11_RESOURCE_MISC_TEXTURECUBE
+					: 0u );
+		}
 	}
 
 	//*********************************************************************************************
@@ -120,13 +120,12 @@ namespace ashes::d3d11
 		, UINT subresource
 		, D3D11_MAPPED_SUBRESOURCE & data )const
 	{
-		HRESULT hr = context->Map( resource
-			, subresource
-			, mapFlags
-			, 0
-			, &data );
-
-		if ( !checkError( device, hr, "LockMemory" ) )
+		if ( HRESULT hr = context->Map( resource
+				, subresource
+				, mapFlags
+				, 0
+				, &data );
+			!checkError( device, hr, "LockMemory" ) )
 		{
 			return VK_ERROR_MEMORY_MAP_FAILED;
 		}
@@ -166,13 +165,15 @@ namespace ashes::d3d11
 
 		if ( lock( *context, subresource, mapped ) == VK_SUCCESS )
 		{
+			assert( mapped.pData != nullptr );
+			auto dstData = static_cast< uint8_t * >( mapped.pData ) + objectOffset;
+			assert( dstData != nullptr );
+
 			if ( mapped.DepthPitch == subresourceLayout.SysMemSlicePitch
 				|| mapped.RowPitch == subresourceLayout.SysMemPitch )
 			{
 				copySize = std::min( copySize, VkDeviceSize( mapped.DepthPitch ) );
-				std::memcpy( static_cast< uint8_t * >( mapped.pData ) + objectOffset
-					, data + maxOffset
-					, copySize );
+				std::memcpy( dstData, data + maxOffset, copySize );
 			}
 			else
 			{
@@ -181,7 +182,7 @@ namespace ashes::d3d11
 				auto rowSize = std::min( mapped.RowPitch, subresourceLayout.SysMemPitch );
 				assert( mappedSteps == systemSteps );
 				auto src = data + maxOffset;
-				auto dst = static_cast< uint8_t * >( mapped.pData ) + objectOffset;
+				auto dst = dstData;
 
 				for ( UINT step = 0u; step < std::min( mappedSteps, systemSteps ); ++step )
 				{
@@ -222,13 +223,17 @@ namespace ashes::d3d11
 
 		if ( lock( *context, subresource, mapped ) == VK_SUCCESS )
 		{
+			assert( mapped.pData != nullptr );
+			auto srcData = static_cast< uint8_t const * >( mapped.pData ) + objectOffset;
+			assert( srcData != nullptr );
+
 			if ( mapped.RowPitch != subresourceLayout.SysMemPitch )
 			{
 				auto mappedSteps = mapped.DepthPitch / mapped.RowPitch;
 				auto systemSteps = subresourceLayout.SysMemSlicePitch / subresourceLayout.SysMemPitch;
 				auto rowSize = std::min( mapped.RowPitch, subresourceLayout.SysMemPitch );
 				assert( mappedSteps == systemSteps );
-				auto src = static_cast< uint8_t const * >( mapped.pData ) + objectOffset;
+				auto src = srcData;
 				auto dst = data + maxOffset;
 
 				for ( UINT step = 0u; step < std::min( mappedSteps, systemSteps ); ++step )
@@ -241,9 +246,7 @@ namespace ashes::d3d11
 			else
 			{
 				copySize = std::min( copySize, VkDeviceSize( mapped.DepthPitch ) );
-				std::memcpy( data + maxOffset
-					, static_cast< uint8_t * >( mapped.pData ) + objectOffset
-					, copySize );
+				std::memcpy( data + maxOffset, srcData, copySize );
 			}
 
 			unlock( *context, subresource );
@@ -261,15 +264,11 @@ namespace ashes::d3d11
 			, VkMemoryAllocateInfo allocateInfo
 			, VkBufferUsageFlags targets )
 			: m_bufferTargets{ targets }
-			, m_propertyFlags{ getMemoryProperties( allocateInfo.memoryTypeIndex ) }
+			, m_propertyFlags{ mem::getMemoryProperties( allocateInfo.memoryTypeIndex ) }
 			, m_buffer{ doCreateBuffer( device, allocateInfo ) }
 			, memory{ device, parent, m_buffer, offset, std::move( allocateInfo ), getBufferMapFlags( m_propertyFlags, m_bufferTargets ) }
 		{
 			memory.subresources.push_back( { nullptr, UINT( memory.allocateInfo.allocationSize ), UINT( memory.allocateInfo.allocationSize ) } );
-		}
-
-		~BufferDeviceMemory()noexcept
-		{
 		}
 
 		inline ID3D11Buffer * getBuffer()const
@@ -283,9 +282,9 @@ namespace ashes::d3d11
 		{
 			ID3D11Buffer * result{ nullptr };
 			auto d3ddevice = get( device )->getDevice();
-			UINT size = UINT( allocateInfo.allocationSize );
 
-			if ( size > 0 )
+			if ( auto size = UINT( allocateInfo.allocationSize );
+				size > 0 )
 			{
 				D3D11_BUFFER_DESC desc{};
 				desc.ByteWidth = size;
@@ -328,13 +327,13 @@ namespace ashes::d3d11
 			, VkMemoryAllocateInfo allocateInfo
 			, VkImageCreateInfo const & createInfo )
 			: m_usage{ createInfo.usage }
-			, m_propertyFlags{ getMemoryProperties( allocateInfo.memoryTypeIndex ) }
+			, m_propertyFlags{ mem::getMemoryProperties( allocateInfo.memoryTypeIndex ) }
 			, m_texture{ doCreateTexture( device, createInfo ) }
 			, memory{ device, parent, m_texture, offset, std::move( allocateInfo ), getImageMapFlags( m_propertyFlags, m_usage ) }
 		{
 			auto extent = getTexelBlockExtent( createInfo.format );
 			auto byteSize = getTexelBlockByteSize( extent, createInfo.format );
-			memory.subresources.resize( createInfo.arrayLayers * createInfo.mipLevels );
+			memory.subresources.resize( size_t( createInfo.arrayLayers ) * createInfo.mipLevels );
 
 			for ( uint32_t layer = 0u; layer < createInfo.arrayLayers; ++layer )
 			{
@@ -349,10 +348,6 @@ namespace ashes::d3d11
 			}
 		}
 
-		~Texture1DDeviceMemory()noexcept
-		{
-		}
-
 		inline ID3D11Texture1D * getImage()const
 		{
 			return m_texture;
@@ -362,16 +357,16 @@ namespace ashes::d3d11
 		ID3D11Texture1D * doCreateTexture( VkDevice device
 			, VkImageCreateInfo const & createInfo )const
 		{
-			ID3D11Texture1D * result;
+			ID3D11Texture1D * result{};
 			getImageMapFlags( m_propertyFlags, m_usage );
 			auto d3ddevice = get( device )->getDevice();
 			D3D11_TEXTURE1D_DESC desc{};
 			doInitTexDesc( device, createInfo, desc );
-			HRESULT hr = d3ddevice->CreateTexture1D( &desc
-				, nullptr
-				, &result );
 
-			if ( checkError( device, hr, "CreateTexture1D" ) )
+			if ( HRESULT hr = d3ddevice->CreateTexture1D( &desc
+					, nullptr
+					, &result );
+				checkError( device, hr, "CreateTexture1D" ) )
 			{
 				dxDebugName( result, Texture1D );
 			}
@@ -389,12 +384,12 @@ namespace ashes::d3d11
 			desc.Usage = getImageUsage( m_propertyFlags, m_usage );
 			desc.CPUAccessFlags = getCpuImageAccessFlags( m_propertyFlags, m_usage );
 			desc.MipLevels = createInfo.mipLevels;
-			desc.BindFlags = getBindFlags( createInfo, m_propertyFlags );
-			desc.MiscFlags = getMiscFlags( createInfo );
+			desc.BindFlags = mem::getBindFlags( createInfo, m_propertyFlags );
+			desc.MiscFlags = mem::getMiscFlags( createInfo );
 
 			if ( get( device )->getFeatureLevel() < D3D_FEATURE_LEVEL_11_0 )
 			{
-				desc.BindFlags &= ~( D3D11_BIND_UNORDERED_ACCESS );
+				desc.BindFlags &= ~D3D11_BIND_UNORDERED_ACCESS;
 			}
 		}
 
@@ -418,13 +413,13 @@ namespace ashes::d3d11
 			, VkMemoryAllocateInfo allocateInfo
 			, VkImageCreateInfo const & createInfo )
 			: m_usage{ createInfo.usage }
-			, m_propertyFlags{ getMemoryProperties( allocateInfo.memoryTypeIndex ) }
+			, m_propertyFlags{ mem::getMemoryProperties( allocateInfo.memoryTypeIndex ) }
 			, m_texture{ doCreateTexture( device, createInfo ) }
 			, memory{ device, parent, m_texture, offset, std::move( allocateInfo ), getImageMapFlags( m_propertyFlags, m_usage ) }
 		{
 			auto extent = getTexelBlockExtent( createInfo.format );
 			auto byteSize = getTexelBlockByteSize( extent, createInfo.format );
-			memory.subresources.resize( createInfo.arrayLayers * createInfo.mipLevels );
+			memory.subresources.resize( size_t( createInfo.arrayLayers ) * createInfo.mipLevels );
 
 			for ( uint32_t layer = 0u; layer < createInfo.arrayLayers; ++layer )
 			{
@@ -439,10 +434,6 @@ namespace ashes::d3d11
 			}
 		}
 
-		~Texture2DDeviceMemory()noexcept
-		{
-		}
-
 		inline ID3D11Texture2D * getImage()const
 		{
 			return m_texture;
@@ -452,15 +443,15 @@ namespace ashes::d3d11
 		ID3D11Texture2D * doCreateTexture( VkDevice device
 			, VkImageCreateInfo const & createInfo )const
 		{
-			ID3D11Texture2D * result;
+			ID3D11Texture2D * result{};
 			auto d3ddevice = get( device )->getDevice();
 			D3D11_TEXTURE2D_DESC desc{};
 			doInitTexDesc( device, createInfo, desc );
-			HRESULT hr = d3ddevice->CreateTexture2D( &desc
-				, nullptr
-				, &result );
 
-			if ( checkError( device, hr, "CreateTexture2D" ) )
+			if ( HRESULT hr = d3ddevice->CreateTexture2D( &desc
+					, nullptr
+					, &result );
+				checkError( device, hr, "CreateTexture2D" ) )
 			{
 				dxDebugName( result, Texture2D );
 			}
@@ -482,8 +473,8 @@ namespace ashes::d3d11
 			desc.MipLevels = createInfo.mipLevels;
 			desc.SampleDesc.Count = UINT( createInfo.samples );
 			desc.SampleDesc.Quality = 0;
-			desc.BindFlags = getBindFlags( createInfo, m_propertyFlags );
-			desc.MiscFlags = getMiscFlags( createInfo );
+			desc.BindFlags = mem::getBindFlags( createInfo, m_propertyFlags );
+			desc.MiscFlags = mem::getMiscFlags( createInfo );
 
 			if ( desc.SampleDesc.Count > 1 )
 			{
@@ -499,7 +490,7 @@ namespace ashes::d3d11
 
 			if ( get( device )->getFeatureLevel() < D3D_FEATURE_LEVEL_11_0 )
 			{
-				desc.BindFlags &= ~( D3D11_BIND_UNORDERED_ACCESS );
+				desc.BindFlags &= ~D3D11_BIND_UNORDERED_ACCESS;
 			}
 		}
 
@@ -523,13 +514,13 @@ namespace ashes::d3d11
 			, VkMemoryAllocateInfo allocateInfo
 			, VkImageCreateInfo const & createInfo )
 			: m_usage{ createInfo.usage }
-			, m_propertyFlags{ getMemoryProperties( allocateInfo.memoryTypeIndex ) }
+			, m_propertyFlags{ mem::getMemoryProperties( allocateInfo.memoryTypeIndex ) }
 			, m_texture{ doCreateTexture( device, createInfo ) }
 			, memory{ device, parent, m_texture, offset, std::move( allocateInfo ), getImageMapFlags( m_propertyFlags, m_usage ) }
 		{
 			auto extent = getTexelBlockExtent( createInfo.format );
 			auto byteSize = getTexelBlockByteSize( extent, createInfo.format );
-			memory.subresources.resize( createInfo.arrayLayers * createInfo.mipLevels );
+			memory.subresources.resize( size_t( createInfo.arrayLayers ) * createInfo.mipLevels );
 
 			for ( uint32_t layer = 0u; layer < createInfo.arrayLayers; ++layer )
 			{
@@ -544,10 +535,6 @@ namespace ashes::d3d11
 			}
 		}
 
-		~Texture3DDeviceMemory()noexcept
-		{
-		}
-
 		inline ID3D11Texture3D * getImage()const
 		{
 			return m_texture;
@@ -557,15 +544,15 @@ namespace ashes::d3d11
 		ID3D11Texture3D * doCreateTexture( VkDevice device
 			, VkImageCreateInfo const & createInfo )const
 		{
-			ID3D11Texture3D * result;
+			ID3D11Texture3D * result{};
 			auto d3ddevice = get( device )->getDevice();
 			D3D11_TEXTURE3D_DESC desc{};
 			doInitTexDesc( device, createInfo, desc );
-			HRESULT hr = d3ddevice->CreateTexture3D( &desc
-				, nullptr
-				, &result );
 
-			if ( checkError( device, hr, "CreateTexture3D" ) )
+			if ( HRESULT hr = d3ddevice->CreateTexture3D( &desc
+					, nullptr
+					, &result );
+				checkError( device, hr, "CreateTexture3D" ) )
 			{
 				dxDebugName( result, Texture3D );
 			}
@@ -584,12 +571,12 @@ namespace ashes::d3d11
 			desc.Usage = getImageUsage( m_propertyFlags, m_usage );
 			desc.CPUAccessFlags = getCpuImageAccessFlags( m_propertyFlags, m_usage );
 			desc.MipLevels = createInfo.mipLevels;
-			desc.BindFlags = getBindFlags( createInfo, m_propertyFlags );
-			desc.MiscFlags = getMiscFlags( createInfo );
+			desc.BindFlags = mem::getBindFlags( createInfo, m_propertyFlags );
+			desc.MiscFlags = mem::getMiscFlags( createInfo );
 
 			if ( get( device )->getFeatureLevel() < D3D_FEATURE_LEVEL_11_0 )
 			{
-				desc.BindFlags &= ~( D3D11_BIND_UNORDERED_ACCESS );
+				desc.BindFlags &= ~D3D11_BIND_UNORDERED_ACCESS;
 			}
 		}
 
@@ -608,17 +595,18 @@ namespace ashes::d3d11
 		, VkMemoryAllocateInfo allocateInfo )
 		: m_device{ device }
 		, m_allocateInfo{ std::move( allocateInfo ) }
-		, m_propertyFlags{ getMemoryProperties( m_allocateInfo.memoryTypeIndex ) }
+		, m_propertyFlags{ mem::getMemoryProperties( m_allocateInfo.memoryTypeIndex ) }
 	{
 		thread_local uint8_t defaultInitValue = 10u;
 
 		if ( ashes::checkFlag( m_propertyFlags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
 		{
-			m_data.resize( allocateInfo.allocationSize, defaultInitValue++ );
+			m_data.resize( allocateInfo.allocationSize, defaultInitValue );
+			++defaultInitValue;
 		}
 	}
 
-	DeviceMemory::~DeviceMemory()
+	DeviceMemory::~DeviceMemory()noexcept
 	{
 		if ( !m_objects.empty() )
 		{
@@ -644,7 +632,7 @@ namespace ashes::d3d11
 			};
 			m_objects.emplace_back( std::make_unique< ObjectMemory >( std::move( impl.memory ) ) );
 			objectMemory = m_objects.back().get();
-			updateUpload( *objectMemory, 0ull, WholeSize, 0u );
+			updateUpload( *objectMemory, 0ULL, WholeSize, 0u );
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )
@@ -682,7 +670,7 @@ namespace ashes::d3d11
 			};
 			m_objects.emplace_back( std::make_unique< ObjectMemory >( std::move( impl.memory ) ) );
 			objectMemory = m_objects.back().get();
-			updateUpload( *objectMemory, 0ull, WholeSize, 0u );
+			updateUpload( *objectMemory, 0ULL, WholeSize, 0u );
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )
@@ -720,7 +708,7 @@ namespace ashes::d3d11
 			};
 			m_objects.emplace_back( std::make_unique< ObjectMemory >( std::move( impl.memory ) ) );
 			objectMemory = m_objects.back().get();
-			updateUpload( *objectMemory, 0ull, WholeSize, 0u );
+			updateUpload( *objectMemory, 0ULL, WholeSize, 0u );
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )
@@ -758,7 +746,7 @@ namespace ashes::d3d11
 			};
 			m_objects.emplace_back( std::make_unique< ObjectMemory >( std::move( impl.memory ) ) );
 			objectMemory = m_objects.back().get();
-			updateUpload( *objectMemory, 0ull, WholeSize, 0u );
+			updateUpload( *objectMemory, 0ULL, WholeSize, 0u );
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )

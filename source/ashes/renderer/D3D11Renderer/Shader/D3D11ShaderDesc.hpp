@@ -11,27 +11,27 @@ namespace ashes::d3d11
 	struct InputElementDesc
 	{
 		std::string SemanticName;
-		UINT SemanticIndex;
-		UINT BaseSemanticIndex;
-		DXGI_FORMAT Format;
-		UINT InputSlot;
-		UINT AlignedByteOffset;
-		D3D11_INPUT_CLASSIFICATION InputSlotClass;
-		UINT InstanceDataStepRate;
+		UINT SemanticIndex{};
+		UINT BaseSemanticIndex{};
+		DXGI_FORMAT Format{};
+		UINT InputSlot{};
+		UINT AlignedByteOffset{};
+		D3D11_INPUT_CLASSIFICATION InputSlotClass{};
+		UINT InstanceDataStepRate{};
 	};
 
 	struct ConstantDesc
 	{
 		std::string name;
-		UINT offset;
-		UINT size;
+		UINT offset{};
+		UINT size{};
 	};
 
 	struct ConstantBufferDesc
 	{
 		std::string name;
-		UINT binding;
-		UINT size;
+		UINT binding{};
+		UINT size{};
 		std::vector< ConstantDesc > constants;
 	};
 
@@ -42,7 +42,7 @@ namespace ashes::d3d11
 
 	struct ShaderDesc
 	{
-		CompiledShaderModule * module{ nullptr };
+		CompiledShaderModule * shaderModule{ nullptr };
 		InputLayout inputLayout;
 		InterfaceBlockLayout interfaceBlockLayout;
 	};

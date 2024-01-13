@@ -9,15 +9,16 @@ See LICENSE file in root folder
 namespace ashes::d3d11
 {
 	class CommandPool
+		: public NonCopyable
 	{
 	public:
 		CommandPool( VkDevice device
 			, VkCommandPoolCreateInfo createInfo );
-		~CommandPool();
+		~CommandPool()noexcept;
 
 		void registerCommands( VkCommandBuffer commands );
-		VkResult reset( VkCommandPoolResetFlags flags );
-		VkResult free( ArrayView< VkCommandBuffer const > sets );
+		VkResult reset();
+		VkResult freeCommands( ArrayView< VkCommandBuffer const > sets )noexcept;
 
 		VkDevice getDevice()const
 		{

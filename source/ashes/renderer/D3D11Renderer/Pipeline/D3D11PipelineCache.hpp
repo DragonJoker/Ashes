@@ -28,14 +28,14 @@ namespace ashes::d3d11
 			, VkPipelineCacheCreateInfo createInfo );
 		/**@}*/
 
-		VkResult merge( ArrayView< VkPipelineCache const > pipelines );
+		VkResult merge()const;
 
-		inline ByteArray const & getData()const
+		ByteArray const & getData()const
 		{
 			return m_data;
 		}
 
-		inline VkDevice getDevice()const
+		VkDevice getDevice()const
 		{
 			return m_device;
 		}
