@@ -13,11 +13,12 @@
 namespace ashes::d3d11
 {
 	class Buffer
+		: public NonCopyable
 	{
 	public:
 		Buffer( VkDevice device
 			, VkBufferCreateInfo createInfo );
-		~Buffer();
+		~Buffer()noexcept;
 		VkResult bindMemory( VkDeviceMemory memory
 			, VkDeviceSize memoryOffset );
 
@@ -28,54 +29,54 @@ namespace ashes::d3d11
 			, D3D11_BOX const & srcBox
 			, UINT dstOffset )const;
 
-		inline void setDebugName( std::string name )
+		void setDebugName( std::string name )
 		{
 			m_debugName = std::move( name );
 		}
 
-		inline VkDeviceMemory getMemory()const
+		VkDeviceMemory getMemory()const
 		{
 			assert( m_memory != nullptr );
 			return m_memory;
 		}
 
-		inline VkDeviceSize getMemoryOffset()const
+		VkDeviceSize getMemoryOffset()const
 		{
 			return m_memoryOffset;
 		}
 
-		inline ObjectMemory const & getObjectMemory()const
+		ObjectMemory const & getObjectMemory()const
 		{
 			assert( m_objectMemory != nullptr );
 			return *m_objectMemory;
 		}
 
-		inline ID3D11UnorderedAccessView * getUnorderedAccessView()const
+		ID3D11UnorderedAccessView * getUnorderedAccessView()const
 		{
 			return m_unorderedAccessView;
 		}
 
-		inline ID3D11Resource * getResource()const
+		ID3D11Resource * getResource()const
 		{
 			return getObjectMemory().resource;
 		}
 
-		inline ID3D11Buffer * getBuffer()const
+		ID3D11Buffer * getBuffer()const
 		{
 			return &static_cast< ID3D11Buffer & >( *getResource() );
 		}
 
-		inline VkBufferUsageFlags getUsage()const
+		VkBufferUsageFlags getUsage()const
 		{
 			return m_createInfo.usage;
 		}
 
-		inline VkDeviceSize getSize()const
+		VkDeviceSize getSize()const
 		{
 			return m_createInfo.size;
 		}
 
-		inline VkDevice getDevice()const
+		VkDevice getDevice()const
 		{
 			return m_device;
 		}

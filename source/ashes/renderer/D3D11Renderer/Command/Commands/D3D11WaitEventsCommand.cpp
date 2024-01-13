@@ -19,11 +19,7 @@ See LICENSE file in root folder.
 namespace ashes::d3d11
 {
 	WaitEventsCommand::WaitEventsCommand( VkDevice device
-		, ArrayView< VkEvent const > const & events
-		, VkPipelineStageFlags srcStageMask
-		, VkPipelineStageFlags dstStageMask
-		, ArrayView< VkBufferMemoryBarrier const > const & bufferMemoryBarriers
-		, ArrayView< VkImageMemoryBarrier const > const & imageMemoryBarriers )
+		, ArrayView< VkEvent const > const & events )
 		: CommandBase{ device }
 		, m_events{ events.begin(), events.end() }
 	{

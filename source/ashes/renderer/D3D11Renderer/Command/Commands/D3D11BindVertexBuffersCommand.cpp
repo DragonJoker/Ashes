@@ -16,9 +16,9 @@ namespace ashes::d3d11
 		{
 			std::vector< ID3D11Buffer * > result;
 
-			for ( auto & vbo : vbos )
+			for ( auto const & vbo : vbos )
 			{
-				result.push_back( get( vbo )->getBuffer() );
+				result.emplace_back( get( vbo )->getBuffer() );
 			}
 
 			return result;
@@ -28,9 +28,9 @@ namespace ashes::d3d11
 		{
 			std::vector< UINT > result;
 
-			for ( auto & v : array )
+			for ( auto const & v : array )
 			{
-				result.push_back( UINT( v ) );
+				result.emplace_back( UINT( v ) );
 			}
 
 			return result;

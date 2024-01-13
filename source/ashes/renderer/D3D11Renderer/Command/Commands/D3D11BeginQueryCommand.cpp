@@ -12,8 +12,7 @@ namespace ashes::d3d11
 {
 	BeginQueryCommand::BeginQueryCommand( VkDevice device
 		, VkQueryPool pool
-		, uint32_t query
-		, VkQueryControlFlags flags )
+		, uint32_t query )
 		: CommandBase{ device }
 		, m_query{ *( get( pool )->begin() + query ) }
 	{

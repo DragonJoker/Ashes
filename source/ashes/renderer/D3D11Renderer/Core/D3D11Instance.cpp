@@ -24,13 +24,36 @@ namespace ashes::d3d11
 {
 	namespace
 	{
+		inline VkPhysicalDeviceMemoryProperties const MemoryProperties = []()
+		{
+			VkPhysicalDeviceMemoryProperties result{};
+			// Emulate one device local heap
+			result.memoryHeaps[result.memoryHeapCount++] = { ~0ULL, VK_MEMORY_HEAP_DEVICE_LOCAL_BIT };
+			// and one host visible heap
+			result.memoryHeaps[result.memoryHeapCount++] = { ~0ULL, 0u };
+
+			// Emulate all combinations of device local memory types
+			// and all combinations of host visible memory types
+			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 0u };
+			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 1u };
+			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT, 1u };
+
+			return result;
+		}();
+
+		inline VkPhysicalDeviceMemoryProperties2KHR const MemoryProperties2 = []()
+		{
+			VkPhysicalDeviceMemoryProperties2KHR result{};
+			result.memoryProperties = Instance::getMemoryProperties();
+			return result;
+		}();
+
 		IDXGIFactory * createDXGIFactory()
 		{
-			IDXGIFactory * result;
-			HRESULT hr = CreateDXGIFactory( __uuidof( IDXGIFactory )
-				, reinterpret_cast< void ** >( &result ) );
+			IDXGIFactory * result{};
 
-			if ( hr != S_OK )
+			if ( CreateDXGIFactory( __uuidof( IDXGIFactory )
+				, reinterpret_cast< void ** >( &result ) ) != S_OK )
 			{
 				throw ashes::BaseException{ "Can't create Factory object" };
 			}
@@ -38,8 +61,7 @@ namespace ashes::d3d11
 			return result;
 		}
 
-		D3D_FEATURE_LEVEL getSupportedFeatureLevel( IDXGIFactory * factory
-			, IDXGIAdapter * adapter )
+		D3D_FEATURE_LEVEL getSupportedFeatureLevel( IDXGIAdapter * adapter )
 		{
 			static std::vector< D3D_FEATURE_LEVEL > const requestedFeatureLevels
 			{
@@ -51,19 +73,19 @@ namespace ashes::d3d11
 				D3D_FEATURE_LEVEL_9_2,
 				D3D_FEATURE_LEVEL_9_1,
 			};
-			D3D_FEATURE_LEVEL result;
-			auto hr = D3D11CreateDevice( adapter
-				, D3D_DRIVER_TYPE_UNKNOWN
-				, nullptr
-				, 0u
-				, requestedFeatureLevels.data()
-				, UINT( requestedFeatureLevels.size() )
-				, D3D11_SDK_VERSION
-				, nullptr
-				, &result
-				, nullptr );
+			D3D_FEATURE_LEVEL result{};
 
-			if ( !SUCCEEDED( hr ) )
+			if ( auto hr = D3D11CreateDevice( adapter
+					, D3D_DRIVER_TYPE_UNKNOWN
+					, nullptr
+					, 0u
+					, requestedFeatureLevels.data()
+					, UINT( requestedFeatureLevels.size() )
+					, D3D11_SDK_VERSION
+					, nullptr
+					, &result
+					, nullptr );
+				!SUCCEEDED( hr ) )
 			{
 				throw ashes::Exception{ VK_ERROR_INCOMPATIBLE_DRIVER, "Feature level retrieval" };
 			}
@@ -92,7 +114,7 @@ namespace ashes::d3d11
 
 				( void )adapter->EnumOutputs( 0, &info.output );
 
-				info.featureLevel = getSupportedFeatureLevel( factory, adapter );
+				info.featureLevel = getSupportedFeatureLevel( adapter );
 				result.push_back( info );
 
 				++index;
@@ -105,21 +127,65 @@ namespace ashes::d3d11
 		{
 			auto result = D3D_FEATURE_LEVEL_9_1;
 
-			for ( auto adapter : adapters )
+			for ( auto const & adapter : adapters )
 			{
 				result = std::max( adapter.featureLevel, result );
 			}
 
 			return result;
 		}
+
+		void checkEnabledExtensions( ashes::ArrayView< char const * const > const & extensions )
+		{
+			auto & available = getSupportedInstanceExtensions( nullptr );
+
+			for ( auto const & extension : extensions )
+			{
+				if ( available.end() == std::find_if( available.begin()
+					, available.end()
+					, [&extension]( VkExtensionProperties const & lookup )
+					{
+						return lookup.extensionName == std::string{ extension };
+					} ) )
+				{
+					throw ExtensionNotPresentException{ extension };
+				}
+			}
+		}
+
+		bool hasEnabledExtensions( ashes::ArrayView< char const * const > const & extensions )
+		{
+			try
+			{
+				checkEnabledExtensions( extensions );
+				return true;
+			}
+			catch ( ExtensionNotPresentException & )
+			{
+				return false;
+			}
+		}
+
+		VkApplicationInfo getDefaultApplicationInfo()
+		{
+			return
+			{
+				VK_STRUCTURE_TYPE_APPLICATION_INFO,
+				nullptr,
+				nullptr,
+				ashes::makeVersion( 1, 0, 0 ),
+				nullptr,
+				ashes::makeVersion( 1, 0, 0 ),
+				ashes::makeVersion( 1, 0, 0 ),
+			};
+		}
 	}
 
 	D3D_FEATURE_LEVEL getSupportedFeatureLevel()
 	{
 		D3D_FEATURE_LEVEL result = D3D_FEATURE_LEVEL_9_1;
-		auto factory = createDXGIFactory();
 
-		if ( factory )
+		if ( auto factory = createDXGIFactory() )
 		{
 			auto adapters = listAdapters( factory );
 			result = getMaxFeatureLevel( adapters );
@@ -138,54 +204,9 @@ namespace ashes::d3d11
 		return result;
 	}
 
-	void doCheckEnabledExtensions( ashes::ArrayView< char const * const > const & extensions )
-	{
-		auto & available = getSupportedInstanceExtensions( nullptr );
-
-		for ( auto & extension : extensions )
-		{
-			if ( available.end() == std::find_if( available.begin()
-				, available.end()
-				, [&extension]( VkExtensionProperties const & lookup )
-				{
-					return lookup.extensionName == std::string{ extension };
-				} ) )
-			{
-				throw ExtensionNotPresentException{ extension };
-			}
-		}
-	}
-
-	bool doHasEnabledExtensions( ashes::ArrayView< char const * const > const & extensions )
-	{
-		try
-		{
-			doCheckEnabledExtensions( extensions );
-			return true;
-		}
-		catch ( ExtensionNotPresentException & )
-		{
-			return false;
-		}
-	}
-
-	VkApplicationInfo doGetDefaultApplicationInfo()
-	{
-		return
-		{
-			VK_STRUCTURE_TYPE_APPLICATION_INFO,
-			nullptr,
-			nullptr,
-			ashes::makeVersion( 1, 0, 0 ),
-			nullptr,
-			ashes::makeVersion( 1, 0, 0 ),
-			ashes::makeVersion( 1, 0, 0 ),
-		};
-	}
-
-	Instance::Instance( VkInstanceCreateInfo createInfo )
+	Instance::Instance( VkInstanceCreateInfo const & createInfo )
 		: m_flags{ createInfo.flags }
-		, m_applicationInfo{ createInfo.pApplicationInfo ? *createInfo.pApplicationInfo : doGetDefaultApplicationInfo() }
+		, m_applicationInfo{ createInfo.pApplicationInfo ? *createInfo.pApplicationInfo : getDefaultApplicationInfo() }
 		, m_enabledLayerNames{ ashes::convert( CharPtrArray{ createInfo.ppEnabledLayerNames, createInfo.ppEnabledLayerNames + createInfo.enabledLayerCount } ) }
 		, m_enabledExtensions{ ashes::convert( CharPtrArray{ createInfo.ppEnabledExtensionNames, createInfo.ppEnabledExtensionNames + createInfo.enabledExtensionCount } ) }
 		, m_factory{ createDXGIFactory() }
@@ -201,10 +222,10 @@ namespace ashes::d3d11
 		m_features.hasStorageBuffers = m_maxFeatureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.supportsPersistentMapping = false;
 
-		doCheckEnabledExtensions( ashes::makeArrayView( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) );
+		checkEnabledExtensions( ashes::makeArrayView( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) );
 	}
 
-	Instance::~Instance()
+	Instance::~Instance()noexcept
 	{
 		for ( auto & physicalDevice : m_physicalDevices )
 		{
@@ -230,7 +251,7 @@ namespace ashes::d3d11
 	bool Instance::hasExtension( std::string_view extension )const
 	{
 		char const * const version = extension.data();
-		return doHasEnabledExtensions( ashes::makeArrayView( &version, 1u ) );
+		return hasEnabledExtensions( ashes::makeArrayView( &version, 1u ) );
 	}
 
 	VkPhysicalDeviceArray Instance::enumeratePhysicalDevices()const
@@ -298,7 +319,7 @@ namespace ashes::d3d11
 		m_layers.push_back( layer );
 	}
 
-	void Instance::unregisterLayer( Layer * layer )const
+	void Instance::unregisterLayer( Layer * layer )const noexcept
 	{
 		auto it = std::find( m_layers.begin(), m_layers.end(), layer );
 
@@ -308,55 +329,35 @@ namespace ashes::d3d11
 		}
 	}
 
-	bool Instance::onCopyToImageCommand( VkCommandBuffer cmd
+	void Instance::onCopyToImageCommand( VkCommandBuffer cmd
 		, ArrayView< VkBufferImageCopy const > const & copyInfo
 		, VkBuffer src
-		, VkImage dst )const
+		, VkImage dst )const noexcept
 	{
-		try
+		for ( auto & layer : m_layers )
 		{
-			for ( auto & layer : m_layers )
-			{
-				layer->copyToImageCommand( cmd
-					, copyInfo
-					, src
-					, dst );
-			}
+			layer->copyToImageCommand( cmd
+				, copyInfo
+				, src
+				, dst );
 		}
-		catch ( LayerException & exc )
-		{
-			std::cerr << exc.what() << std::endl;
-			return true;
-		}
-
-		return false;
 	}
 
-	bool Instance::onCheckHResultCommand( HRESULT hresult
-		, std::string message )const
+	void Instance::onCheckHResultCommand( HRESULT hresult
+		, std::string const & message )const noexcept
 	{
-		try
+		for ( auto & layer : m_layers )
 		{
-			for ( auto & layer : m_layers )
-			{
-				layer->checkHResultCommand( hresult
-					, message );
-			}
+			layer->checkHResultCommand( hresult
+				, message );
 		}
-		catch ( LayerException & exc )
-		{
-			std::cerr << exc.what() << std::endl;
-			return true;
-		}
-
-		return false;
 	}
 
 #if VK_EXT_debug_utils
 
 	void Instance::submitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
 		, VkDebugUtilsMessageTypeFlagsEXT messageTypes
-		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const
+		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const noexcept
 	{
 		onSubmitDebugUtilsMessenger( messageSeverity
 			, messageTypes
@@ -365,20 +366,13 @@ namespace ashes::d3d11
 
 	void Instance::onSubmitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
 		, VkDebugUtilsMessageTypeFlagsEXT messageTypes
-		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const
+		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const noexcept
 	{
-		try
+		for ( auto & layer : m_layers )
 		{
-			for ( auto & layer : m_layers )
-			{
-				layer->submitDebugUtilsMessenger( messageSeverity
-					, messageTypes
-					, callbackData );
-			}
-		}
-		catch ( LayerException & exc )
-		{
-			std::cerr << exc.what() << std::endl;
+			layer->submitDebugUtilsMessenger( messageSeverity
+				, messageTypes
+				, callbackData );
 		}
 	}
 
@@ -391,7 +385,7 @@ namespace ashes::d3d11
 		, size_t location
 		, int32_t messageCode
 		, const char * pLayerPrefix
-		, const char * pMessage )
+		, const char * pMessage )const noexcept
 	{
 		onReportMessage( flags
 			, objectType
@@ -408,24 +402,17 @@ namespace ashes::d3d11
 		, size_t location
 		, int32_t messageCode
 		, const char * pLayerPrefix
-		, const char * pMessage )
+		, const char * pMessage )const noexcept
 	{
-		try
+		for ( auto & layer : m_layers )
 		{
-			for ( auto & layer : m_layers )
-			{
-				layer->reportMessage( flags
-					, objectType
-					, object
-					, location
-					, messageCode
-					, pLayerPrefix
-					, pMessage );
-			}
-		}
-		catch ( LayerException & exc )
-		{
-			std::cerr << exc.what() << std::endl;
+			layer->reportMessage( flags
+				, objectType
+				, object
+				, location
+				, messageCode
+				, pLayerPrefix
+				, pMessage );
 		}
 	}
 
@@ -442,44 +429,22 @@ namespace ashes::d3d11
 		m_physicalDevices.resize( m_adapters.size() );
 		uint32_t index = 0u;
 
-		for ( auto adapter : m_adapters )
+		for ( auto const & adapter : m_adapters )
 		{
 			allocateNA( m_physicalDevices[index]
 				, get( this )
-				, std::move( adapter ) );
+				, adapter );
 			++index;
 		}
 	}
 
-	VkPhysicalDeviceMemoryProperties const & Instance::getMemoryProperties()
+	VkPhysicalDeviceMemoryProperties const & Instance::getMemoryProperties()noexcept
 	{
-		static VkPhysicalDeviceMemoryProperties const memoryProperties = []()
-		{
-			VkPhysicalDeviceMemoryProperties result{};
-			// Emulate one device local heap
-			result.memoryHeaps[result.memoryHeapCount++] = { ~( 0ull ), VK_MEMORY_HEAP_DEVICE_LOCAL_BIT };
-			// and one host visible heap
-			result.memoryHeaps[result.memoryHeapCount++] = { ~( 0ull ), 0u };
-
-			// Emulate all combinations of device local memory types
-			// and all combinations of host visible memory types
-			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 0u };
-			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 1u };
-			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT, 1u };
-
-			return result;
-		}( );
-		return memoryProperties;
+		return MemoryProperties;
 	}
 
-	VkPhysicalDeviceMemoryProperties2KHR const & Instance::getMemoryProperties2()
+	VkPhysicalDeviceMemoryProperties2KHR const & Instance::getMemoryProperties2()noexcept
 	{
-		static VkPhysicalDeviceMemoryProperties2KHR const memoryProperties2 = []()
-		{
-			VkPhysicalDeviceMemoryProperties2KHR result{};
-			result.memoryProperties = Instance::getMemoryProperties();
-			return result;
-		}( );
-		return memoryProperties2;
+		return MemoryProperties2;
 	}
 }

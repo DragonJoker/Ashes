@@ -12,16 +12,15 @@ namespace ashes::d3d11
 {
 	class Queue
 		: public ashes::IcdObject
+		, public NonCopyable
 	{
 	public:
 		Queue( VkDevice device
 			, VkDeviceQueueCreateInfo createInfo
 			, uint32_t index );
-		~Queue();
-		VkResult submit( ArrayView< VkSubmitInfo const > const & infos
-			, VkFence fence )const;
-		VkResult bindSparse( ArrayView< VkBindSparseInfo const > values
-			, VkFence fence )const;
+		~Queue()noexcept;
+		VkResult submit( ArrayView< VkSubmitInfo const > const & infos )const;
+		VkResult bindSparse()const;
 		VkResult present( VkPresentInfoKHR const & presentInfo )const;
 		VkResult waitIdle()const;
 #if VK_EXT_debug_utils
@@ -41,11 +40,7 @@ namespace ashes::d3d11
 		}
 
 	private:
-		VkResult doSubmit( ArrayView< VkCommandBuffer const > const & commandBuffers
-			, ArrayView< VkSemaphore const > const & semaphoresToWait
-			, ArrayView< VkPipelineStageFlags const > const & semaphoresStage
-			, ArrayView< VkSemaphore const > const & semaphoresToSignal
-			, VkFence fence )const;
+		VkResult doSubmit( ArrayView< VkCommandBuffer const > const & commandBuffers )const;
 
 	private:
 		VkDevice m_device;

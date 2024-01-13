@@ -99,7 +99,7 @@ namespace ashes::d3d11
 
 				if ( !checkError( m_device, hr, "ResizeTarget" ) )
 				{
-					hr = m_swapChain->SetFullscreenState( FALSE, get( get( device )->getPhysicalDevice() )->getOutput() );
+					m_swapChain->SetFullscreenState( FALSE, get( get( device )->getPhysicalDevice() )->getOutput() );
 					throw ashes::BaseException{ "Could not resize the swapchain" };
 				}
 			}
@@ -154,7 +154,7 @@ namespace ashes::d3d11
 		}
 	}
 
-	SwapchainKHR::~SwapchainKHR()
+	SwapchainKHR::~SwapchainKHR()noexcept
 	{
 		deallocate( m_view, get( m_device )->getAllocationCallbacks() );
 		deallocate( m_image, get( m_device )->getAllocationCallbacks() );
@@ -174,7 +174,7 @@ namespace ashes::d3d11
 		return result;
 	}
 
-	VkResult SwapchainKHR::present( uint32_t imageIndex )const
+	VkResult SwapchainKHR::present()const
 	{
 		auto context{ get( m_device )->getImmediateContext() };
 		D3D11_BOX srcBox{};
@@ -194,10 +194,7 @@ namespace ashes::d3d11
 			: VK_ERROR_SURFACE_LOST_KHR;
 	}
 
-	VkResult SwapchainKHR::acquireNextImage( uint64_t timeout
-		, VkSemaphore semaphore
-		, VkFence fence
-		, uint32_t & imageIndex )const
+	VkResult SwapchainKHR::acquireNextImage( uint32_t & imageIndex )const
 	{
 		imageIndex = 0u;
 		return VK_SUCCESS;

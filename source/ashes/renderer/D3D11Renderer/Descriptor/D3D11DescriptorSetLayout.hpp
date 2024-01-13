@@ -17,7 +17,6 @@ namespace ashes::d3d11
 	public:
 		DescriptorSetLayout( VkDevice device
 			, VkDescriptorSetLayoutCreateInfo createInfo );
-		~DescriptorSetLayout();
 
 		VkDescriptorSetLayoutBinding const & getBinding( uint32_t bindingPoint
 			, uint32_t index )const;
@@ -32,7 +31,7 @@ namespace ashes::d3d11
 			return m_bindings.end();
 		}
 
-		inline VkDevice getDevice()const
+		VkDevice getDevice()const
 		{
 			return m_device;
 		}

@@ -13,10 +13,11 @@ namespace ashes::d3d11
 	public:
 		DeviceContextLock( DeviceContextLock const & ) = delete;
 		DeviceContextLock & operator=( DeviceContextLock const & ) = delete;
-		DeviceContextLock( DeviceContextLock && rhs );
-		DeviceContextLock & operator=( DeviceContextLock && rhs );
-		DeviceContextLock( Device const * device );
-		~DeviceContextLock();
+		DeviceContextLock( DeviceContextLock && rhs )noexcept;
+		DeviceContextLock & operator=( DeviceContextLock && rhs )noexcept;
+		explicit DeviceContextLock( Device const * device );
+		explicit DeviceContextLock( ID3D11DeviceContext * context )noexcept;
+		~DeviceContextLock()noexcept;
 
 		ID3D11DeviceContext * operator->()const
 		{
@@ -29,7 +30,7 @@ namespace ashes::d3d11
 		}
 
 	private:
-		Device const * m_device;
-		ID3D11DeviceContext * m_context;
+		Device const * m_device{};
+		ID3D11DeviceContext * m_context{};
 	};
 }

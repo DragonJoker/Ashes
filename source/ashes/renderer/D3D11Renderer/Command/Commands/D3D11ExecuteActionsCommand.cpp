@@ -17,7 +17,7 @@ namespace ashes::d3d11
 
 	void ExecuteActionsCommand::apply( Context const & context )const
 	{
-		for ( auto & action : m_actions )
+		for ( auto const & action : m_actions )
 		{
 			action( context );
 		}

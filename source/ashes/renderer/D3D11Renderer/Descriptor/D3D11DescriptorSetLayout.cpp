@@ -15,10 +15,6 @@ namespace ashes::d3d11
 		m_createInfo.pBindings = m_bindings.data();
 	}
 
-	DescriptorSetLayout::~DescriptorSetLayout()
-	{
-	}
-
 	VkDescriptorSetLayoutBinding const & DescriptorSetLayout::getBinding( uint32_t bindingPoint
 		, uint32_t index )const
 	{

@@ -54,10 +54,6 @@ namespace ashes::d3d11
 		}
 	}
 
-	RenderPass::~RenderPass()
-	{
-	}
-
 	VkAttachmentDescription const * RenderPass::findAttachment( uint32_t referenceIndex )const
 	{
 		if ( referenceIndex >= m_referencedAttachments.size() )
@@ -99,7 +95,7 @@ namespace ashes::d3d11
 
 	void RenderPass::referenceAttaches( VkAttachmentReferenceArray const & values )
 	{
-		for ( auto & value : values )
+		for ( auto const & value : values )
 		{
 			referenceAttaches( value );
 		}

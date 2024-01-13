@@ -19,26 +19,23 @@ namespace ashes::d3d11
 		, m_srcResource{ get( srcImage )->getResource() }
 		, m_dstResource{ get( dstImage )->getResource() }
 	{
-		for ( auto & region : regions )
+		for ( auto const & region : regions )
 		{
 			for ( auto layer = 0u; layer < region.dstSubresource.layerCount; ++layer )
 			{
-				m_layers.push_back(
-					{
-						D3D11CalcSubresource( region.srcSubresource.mipLevel
-							, region.srcSubresource.baseArrayLayer + layer
-							, get( srcImage )->getMipmapLevels() ),
-						D3D11CalcSubresource( region.dstSubresource.mipLevel
-							, region.dstSubresource.baseArrayLayer + layer
-							, get( dstImage )->getMipmapLevels() ),
-					} );
+				m_layers.emplace_back( D3D11CalcSubresource( region.srcSubresource.mipLevel
+						, region.srcSubresource.baseArrayLayer + layer
+						, get( srcImage )->getMipmapLevels() )
+					, D3D11CalcSubresource( region.dstSubresource.mipLevel
+						, region.dstSubresource.baseArrayLayer + layer
+						, get( dstImage )->getMipmapLevels() ) );
 			}
 		}
 	}
 
 	void ResolveImageCommand::apply( Context const & context )const
 	{
-		for ( auto & layer : m_layers )
+		for ( auto const & layer : m_layers )
 		{
 			context.context->ResolveSubresource( m_dstResource
 				, layer.dstSubresource

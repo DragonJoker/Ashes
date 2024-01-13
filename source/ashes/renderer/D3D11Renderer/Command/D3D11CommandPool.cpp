@@ -18,7 +18,7 @@ namespace ashes::d3d11
 	{
 	}
 
-	CommandPool::~CommandPool()
+	CommandPool::~CommandPool()noexcept
 	{
 		for ( auto & command : m_commands )
 		{
@@ -31,7 +31,7 @@ namespace ashes::d3d11
 		m_commands.push_back( commands );
 	}
 
-	VkResult CommandPool::reset( VkCommandPoolResetFlags flags )
+	VkResult CommandPool::reset()
 	{
 		for ( auto & command : m_commands )
 		{
@@ -42,15 +42,14 @@ namespace ashes::d3d11
 		return VK_SUCCESS;
 	}
 
-	VkResult CommandPool::free( ArrayView< VkCommandBuffer const > commands )
+	VkResult CommandPool::freeCommands( ArrayView< VkCommandBuffer const > commands )noexcept
 	{
 		for ( auto & command : commands )
 		{
-			auto it = std::find( m_commands.begin()
-				, m_commands.end()
-				, command );
-
-			if ( it != m_commands.end() )
+			if ( auto it = std::find( m_commands.begin()
+					, m_commands.end()
+					, command );
+				it != m_commands.end() )
 			{
 				deallocateNA( command );
 				m_commands.erase( it );

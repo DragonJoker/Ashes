@@ -9,12 +9,12 @@ See LICENSE file in root folder.
 namespace ashes::d3d11
 {
 	class Semaphore
+		: public NonCopyable
 	{
 	public:
-		explicit Semaphore( VkDevice device );
-		~Semaphore();
+		explicit Semaphore( VkDevice device )noexcept;
 
-		inline VkDevice getDevice()const
+		VkDevice getDevice()const noexcept
 		{
 			return m_device;
 		}

@@ -44,14 +44,14 @@ namespace ashes::d3d11
 			, VkDeviceSize size )const;
 
 	public:
-		VkDevice device;
-		VkDeviceMemory deviceMemory;
-		ID3D11Resource * resource;
-		VkDeviceSize offset;
-		VkDeviceSize size;
-		VkMemoryAllocateInfo allocateInfo;
-		D3D11_MAP mapFlags;
-		std::vector< D3D11_SUBRESOURCE_DATA > subresources;
+		VkDevice device{};
+		VkDeviceMemory deviceMemory{};
+		ID3D11Resource * resource{};
+		VkDeviceSize offset{};
+		VkDeviceSize size{};
+		VkMemoryAllocateInfo allocateInfo{};
+		D3D11_MAP mapFlags{};
+		std::vector< D3D11_SUBRESOURCE_DATA > subresources{};
 	};
 	using ObjectMemoryPtr = std::unique_ptr< ObjectMemory >;
 	/**
@@ -63,7 +63,7 @@ namespace ashes::d3d11
 	public:
 		DeviceMemory( VkDevice device
 			, VkMemoryAllocateInfo allocateInfo );
-		~DeviceMemory();
+		~DeviceMemory()noexcept;
 		VkResult bindToBuffer( VkBuffer buffer
 			, VkDeviceSize memoryOffset
 			, ObjectMemory *& objectMemory );
@@ -106,27 +106,27 @@ namespace ashes::d3d11
 			, VkDeviceSize size )const;
 		void unlock()const;
 
-		inline bool isMapped()const
+		bool isMapped()const
 		{
 			return m_mapped;
 		}
 
-		inline void upload()const
+		void upload()const
 		{
 			upload( m_mappedOffset, m_mappedSize );
 		}
 
-		inline void download()const
+		void download()const
 		{
 			download( m_mappedOffset, m_mappedSize );
 		}
 
-		inline VkMemoryPropertyFlags getMemoryPropertyFlags()const
+		VkMemoryPropertyFlags getMemoryPropertyFlags()const
 		{
 			return m_propertyFlags;
 		}
 
-		inline VkDevice getDevice()const
+		VkDevice getDevice()const
 		{
 			return m_device;
 		}
@@ -155,11 +155,11 @@ namespace ashes::d3d11
 		}
 
 	private:
-		VkDevice m_device;
-		VkMemoryAllocateInfo m_allocateInfo;
-		VkMemoryPropertyFlags m_propertyFlags;
-		VkMemoryRequirements m_requirements;
-		std::vector< ObjectMemoryPtr > m_objects;
+		VkDevice m_device{};
+		VkMemoryAllocateInfo m_allocateInfo{};
+		VkMemoryPropertyFlags m_propertyFlags{};
+		VkMemoryRequirements m_requirements{};
+		std::vector< ObjectMemoryPtr > m_objects{};
 		mutable bool m_dirty{ true };
 		mutable bool m_mapped{ false };
 		mutable VkDeviceSize m_mappedOffset{ 0u };

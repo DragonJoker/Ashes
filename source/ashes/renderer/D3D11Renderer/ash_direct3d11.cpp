@@ -198,7 +198,7 @@ namespace ashes::d3d11
 		uint32_t * pPropertyCount,
 		VkExtensionProperties * pProperties )
 	{
-		auto props = get( physicalDevice )->enumerateExtensionProperties( pLayerName );
+		auto props = get( physicalDevice )->enumerateExtensionProperties();
 		*pPropertyCount = uint32_t( props.size() );
 
 		if ( pProperties )
@@ -269,8 +269,7 @@ namespace ashes::d3d11
 		const VkSubmitInfo * pSubmits,
 		VkFence fence )
 	{
-		return get( queue )->submit( makeArrayView( pSubmits, submitCount )
-			, fence );
+		return get( queue )->submit( makeArrayView( pSubmits, submitCount ) );
 	}
 
 	VkResult VKAPI_CALL vkQueueWaitIdle(
@@ -443,7 +442,7 @@ namespace ashes::d3d11
 
 		if ( pProperties )
 		{
-			for ( auto & prop : props )
+			for ( auto const & prop : props )
 			{
 				*pProperties = prop;
 				++pProperties;
@@ -457,8 +456,7 @@ namespace ashes::d3d11
 		const VkBindSparseInfo * pBindInfo,
 		VkFence fence )
 	{
-		return get( queue )->bindSparse( makeArrayView( pBindInfo, bindInfoCount )
-			, fence );
+		return get( queue )->bindSparse();
 	}
 
 	VkResult VKAPI_CALL vkCreateFence(
@@ -470,8 +468,7 @@ namespace ashes::d3d11
 		assert( pFence );
 		return allocate( *pFence
 			, pAllocator
-			, device
-			, pCreateInfo->flags );
+			, device );
 	}
 
 	void VKAPI_CALL vkDestroyFence(
@@ -511,7 +508,7 @@ namespace ashes::d3d11
 	{
 		for ( uint32_t i = 0u; i < fenceCount; ++i )
 		{
-			get( *pFences )->wait( timeout );
+			get( *pFences )->wait();
 		}
 
 		return VK_SUCCESS;
@@ -777,7 +774,7 @@ namespace ashes::d3d11
 		uint32_t srcCacheCount,
 		const VkPipelineCache * pSrcCaches )
 	{
-		return get( dstCache )->merge( makeArrayView( pSrcCaches, srcCacheCount ) );
+		return get( dstCache )->merge();
 	}
 
 	VkResult VKAPI_CALL vkCreateGraphicsPipelines(
@@ -933,7 +930,7 @@ namespace ashes::d3d11
 		VkDescriptorPool descriptorPool,
 		VkDescriptorPoolResetFlags flags )
 	{
-		return get( descriptorPool )->reset( flags );
+		return get( descriptorPool )->reset();
 	}
 
 	VkResult VKAPI_CALL vkAllocateDescriptorSets(
@@ -966,7 +963,7 @@ namespace ashes::d3d11
 		uint32_t descriptorSetCount,
 		const VkDescriptorSet * pDescriptorSets )
 	{
-		return get( descriptorPool )->free( makeArrayView( pDescriptorSets, descriptorSetCount ) );
+		return get( descriptorPool )->freeDescriptors( makeArrayView( pDescriptorSets, descriptorSetCount ) );
 	}
 
 	void VKAPI_CALL vkUpdateDescriptorSets(
@@ -983,7 +980,7 @@ namespace ashes::d3d11
 
 		for ( auto & copy : makeArrayView( pDescriptorCopies, descriptorCopyCount ) )
 		{
-			get( copy.dstSet )->update( copy );
+			get( copy.dstSet )->update();
 		}
 	}
 
@@ -1063,7 +1060,7 @@ namespace ashes::d3d11
 		VkCommandPool commandPool,
 		VkCommandPoolResetFlags flags )
 	{
-		return get( commandPool )->reset( flags );
+		return get( commandPool )->reset();
 	}
 
 	VkResult VKAPI_CALL vkAllocateCommandBuffers(
@@ -1097,7 +1094,7 @@ namespace ashes::d3d11
 		uint32_t commandBufferCount,
 		const VkCommandBuffer * pCommandBuffers )
 	{
-		get( commandPool )->free( makeArrayView( pCommandBuffers, commandBufferCount ) );
+		get( commandPool )->freeCommands( makeArrayView( pCommandBuffers, commandBufferCount ) );
 	}
 
 	VkResult VKAPI_CALL vkBeginCommandBuffer(
@@ -1117,7 +1114,7 @@ namespace ashes::d3d11
 		VkCommandBuffer commandBuffer,
 		VkCommandBufferResetFlags flags )
 	{
-		return get( commandBuffer )->reset( flags );
+		return get( commandBuffer )->reset();
 	}
 
 	void VKAPI_CALL vkCmdBindPipeline(
@@ -1342,9 +1339,7 @@ namespace ashes::d3d11
 		const VkImageCopy * pRegions )
 	{
 		get( commandBuffer )->copyImage( srcImage
-			, srcImageLayout
 			, dstImage
-			, dstImageLayout
 			, makeArrayView( pRegions, regionCount ) );
 	}
 
@@ -1359,9 +1354,7 @@ namespace ashes::d3d11
 		VkFilter filter )
 	{
 		get( commandBuffer )->blitImage( srcImage
-			, srcImageLayout
 			, dstImage
-			, dstImageLayout
 			, makeArrayView( pRegions, regionCount )
 			, filter );
 	}
@@ -1376,7 +1369,6 @@ namespace ashes::d3d11
 	{
 		get( commandBuffer )->copyToImage( srcBuffer
 			, dstImage
-			, dstImageLayout
 			, makeArrayView( pRegions, regionCount ) );
 	}
 
@@ -1389,7 +1381,6 @@ namespace ashes::d3d11
 		const VkBufferImageCopy * pRegions )
 	{
 		get( commandBuffer )->copyToBuffer( srcImage
-			, srcImageLayout
 			, dstBuffer
 			, makeArrayView( pRegions, regionCount ) );
 	}
@@ -1428,7 +1419,6 @@ namespace ashes::d3d11
 		const VkImageSubresourceRange * pRanges )
 	{
 		get( commandBuffer )->clearColorImage( image
-			, imageLayout
 			, *pColor
 			, makeArrayView( pRanges, rangeCount ) );
 	}
@@ -1442,7 +1432,6 @@ namespace ashes::d3d11
 		const VkImageSubresourceRange * pRanges )
 	{
 		get( commandBuffer )->clearDepthStencilImage( image
-			, imageLayout
 			, *pDepthStencil
 			, makeArrayView( pRanges, rangeCount ) );
 	}
@@ -1468,9 +1457,7 @@ namespace ashes::d3d11
 		const VkImageResolve * pRegions )
 	{
 		get( commandBuffer )->resolveImage( srcImage
-			, srcImageLayout
 			, dstImage
-			, dstImageLayout
 			, makeArrayView( pRegions, regionCount ) );
 	}
 
@@ -1506,7 +1493,6 @@ namespace ashes::d3d11
 		get( commandBuffer )->waitEvents( { pEvents, pEvents + eventCount }
 			, srcStageMask
 			, dstStageMask
-			, makeArrayView( pMemoryBarriers, memoryBarrierCount )
 			, makeArrayView( pBufferMemoryBarriers, bufferMemoryBarrierCount )
 			, makeArrayView( pImageMemoryBarriers, imageMemoryBarrierCount ) );
 	}
@@ -1525,7 +1511,6 @@ namespace ashes::d3d11
 	{
 		get( commandBuffer )->pipelineBarrier( srcStageMask
 			, dstStageMask
-			, dependencyFlags
 			, makeArrayView( pMemoryBarriers, memoryBarrierCount )
 			, makeArrayView( pBufferMemoryBarriers, bufferMemoryBarrierCount )
 			, makeArrayView( pImageMemoryBarriers, imageMemoryBarrierCount ) );
@@ -1612,14 +1597,14 @@ namespace ashes::d3d11
 		const VkRenderPassBeginInfo * pRenderPassBegin,
 		VkSubpassContents contents )
 	{
-		get( commandBuffer )->beginRenderPass( *pRenderPassBegin, contents );
+		get( commandBuffer )->beginRenderPass( *pRenderPassBegin );
 	}
 
 	void VKAPI_CALL vkCmdNextSubpass(
 		VkCommandBuffer commandBuffer,
 		VkSubpassContents contents )
 	{
-		get( commandBuffer )->nextSubpass( contents );
+		get( commandBuffer )->nextSubpass();
 	}
 
 	void VKAPI_CALL vkCmdEndRenderPass(
@@ -2106,7 +2091,7 @@ namespace ashes::d3d11
 		VkSurfaceKHR surface,
 		VkBool32 * pSupported )
 	{
-		*pSupported = get( surface )->getSupport( physicalDevice, queueFamilyIndex );
+		*pSupported = get( surface )->getSupport( physicalDevice );
 		return VK_SUCCESS;
 	}
 
@@ -2216,10 +2201,7 @@ namespace ashes::d3d11
 		VkFence fence,
 		uint32_t * pImageIndex )
 	{
-		return get( swapchain )->acquireNextImage( timeout
-			, semaphore
-			, fence
-			, *pImageIndex );
+		return get( swapchain )->acquireNextImage( *pImageIndex );
 	}
 
 	VkResult VKAPI_CALL vkQueuePresentKHR(
@@ -2372,7 +2354,7 @@ namespace ashes::d3d11
 		uint32_t planeIndex,
 		VkDisplayPlaneCapabilitiesKHR * pCapabilities )
 	{
-		*pCapabilities = get( mode )->getDisplayPlaneCapabilities( planeIndex );
+		*pCapabilities = get( mode )->getDisplayPlaneCapabilities();
 		return VK_SUCCESS;
 	}
 
@@ -4363,7 +4345,7 @@ namespace ashes::d3d11
 		VkPhysicalDevice physicalDevice,
 		uint32_t queueFamilyIndex )
 	{
-		return get( physicalDevice )->getPresentationSupport( queueFamilyIndex );
+		return get( physicalDevice )->getPresentationSupport();
 	}
 
 #	endif
@@ -4397,45 +4379,46 @@ namespace ashes::d3d11
 
 namespace ashes::d3d11
 {
-	std::vector< VkExtensionProperties > const & getSupportedInstanceExtensions( const char * pLayerName )
+	static std::vector< VkExtensionProperties > const SupportedInstanceExtensions
 	{
-		static std::vector< VkExtensionProperties > const extensions
-		{
 #if VK_KHR_surface
-			VkExtensionProperties{ VK_KHR_SURFACE_EXTENSION_NAME, VK_KHR_SURFACE_SPEC_VERSION },
+		VkExtensionProperties{ VK_KHR_SURFACE_EXTENSION_NAME, VK_KHR_SURFACE_SPEC_VERSION },
 #endif
 #if VK_KHR_swapchain
-			VkExtensionProperties{ VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_SWAPCHAIN_SPEC_VERSION },
+		VkExtensionProperties{ VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_SWAPCHAIN_SPEC_VERSION },
 #endif
 #if VK_KHR_win32_surface
-			VkExtensionProperties{ VK_KHR_WIN32_SURFACE_EXTENSION_NAME, VK_KHR_WIN32_SURFACE_SPEC_VERSION },
+		VkExtensionProperties{ VK_KHR_WIN32_SURFACE_EXTENSION_NAME, VK_KHR_WIN32_SURFACE_SPEC_VERSION },
 #endif
 #if VK_EXT_debug_report
-			VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, VK_EXT_DEBUG_REPORT_SPEC_VERSION },
+		VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, VK_EXT_DEBUG_REPORT_SPEC_VERSION },
 #endif
 #if VK_EXT_debug_marker
-			VkExtensionProperties{ VK_EXT_DEBUG_MARKER_EXTENSION_NAME, VK_EXT_DEBUG_MARKER_SPEC_VERSION },
+		VkExtensionProperties{ VK_EXT_DEBUG_MARKER_EXTENSION_NAME, VK_EXT_DEBUG_MARKER_SPEC_VERSION },
 #endif
 #if VK_EXT_debug_utils
-			VkExtensionProperties{ VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_EXT_DEBUG_UTILS_SPEC_VERSION },
+		VkExtensionProperties{ VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_EXT_DEBUG_UTILS_SPEC_VERSION },
 #endif
 #if VK_KHR_get_physical_device_properties2
-			VkExtensionProperties{ VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_SPEC_VERSION },
+		VkExtensionProperties{ VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_SPEC_VERSION },
 #endif
 #if VK_KHR_display
-			VkExtensionProperties{ VK_KHR_DISPLAY_EXTENSION_NAME, VK_KHR_DISPLAY_SPEC_VERSION },
+		VkExtensionProperties{ VK_KHR_DISPLAY_EXTENSION_NAME, VK_KHR_DISPLAY_SPEC_VERSION },
 #endif
 #if VK_KHR_portability_subset
-			VkExtensionProperties{ VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME, VK_KHR_PORTABILITY_SUBSET_SPEC_VERSION },
+		VkExtensionProperties{ VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME, VK_KHR_PORTABILITY_SUBSET_SPEC_VERSION },
 #endif
-		};
-		return extensions;
+	};
+	static std::vector< VkLayerProperties > const InstanceLayerProperties{};
+
+	std::vector< VkExtensionProperties > const & getSupportedInstanceExtensions( const char * pLayerName )
+	{
+		return SupportedInstanceExtensions;
 	}
 
 	std::vector< VkLayerProperties > const & getInstanceLayerProperties()
 	{
-		static std::vector< VkLayerProperties > result;
-		return result;
+		return InstanceLayerProperties;
 	}
 
 	struct Library
@@ -4529,7 +4512,7 @@ namespace ashes::d3d11
 			&& get( device )->hasExtension( extension.data() );
 	}
 
-	using InstanceFunctions = std::map< std::string, PFN_vkVoidFunction >;
+	using InstanceFunctions = std::map< std::string, PFN_vkVoidFunction, std::less<> >;
 
 #pragma warning( push )
 #pragma warning( disable: 4191 )
@@ -4537,13 +4520,13 @@ namespace ashes::d3d11
 	InstanceFunctions const & getFunctions( VkInstance instance )
 	{
 		static std::map< VkInstance, InstanceFunctions > functions;
-		auto it = functions.insert( { instance, {} } );
+		auto [it, res] = functions.try_emplace( instance );
 
-		if ( it.second )
+		if ( res )
 		{
 			if ( instance != nullptr )
 			{
-				it.first->second =
+				it->second =
 				{
 #define VK_LIB_GLOBAL_FUNCTION( v, x )\
 					{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
@@ -4562,7 +4545,7 @@ namespace ashes::d3d11
 			}
 			else
 			{
-				it.first->second =
+				it->second =
 				{
 #define VK_LIB_GLOBAL_FUNCTION( v, x )\
 					{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
@@ -4578,7 +4561,7 @@ namespace ashes::d3d11
 			}
 		}
 
-		return it.first->second;
+		return it->second;
 	}
 
 	PFN_vkVoidFunction VKAPI_CALL vkGetInstanceProcAddr(
@@ -4587,9 +4570,9 @@ namespace ashes::d3d11
 	{
 		PFN_vkVoidFunction result{ nullptr };
 		auto & functions = getFunctions( instance );
-		auto it = functions.find( pName );
 
-		if ( it != functions.end() )
+		if ( auto it = functions.find( pName );
+			it != functions.end() )
 		{
 			result = it->second;
 		}
@@ -4602,7 +4585,7 @@ namespace ashes::d3d11
 		const char* pName )
 	{
 		PFN_vkVoidFunction result{ nullptr };
-		static std::map< std::string, PFN_vkVoidFunction > functions
+		static std::map< std::string, PFN_vkVoidFunction, std::less<> > functions
 		{
 			{ "vkGetDeviceProcAddr", PFN_vkVoidFunction( vkGetDeviceProcAddr ) },
 #define VK_LIB_DEVICE_FUNCTION( v, x )\
@@ -4612,9 +4595,8 @@ namespace ashes::d3d11
 #include <ashes/ashes_functions_list.hpp>
 		};
 
-		auto it = functions.find( pName );
-
-		if ( it != functions.end() )
+		if ( auto it = functions.find( pName );
+			it != functions.end() )
 		{
 			result = it->second;
 		}
@@ -4808,7 +4790,6 @@ extern "C"
 	}
 
 #	endif
-// #endif
 #pragma endregion
 #pragma region VK_KHR_wayland_surface
 #	ifdef __linux__

@@ -10,17 +10,13 @@ See LICENSE file in root folder.
 namespace ashes::d3d11
 {
 	DisplayModeKHR::DisplayModeKHR( VkDisplayKHR display
-		, VkDisplayModeCreateInfoKHR createInfo )
+		, VkDisplayModeCreateInfoKHR const & createInfo )
 		: m_display{ display }
 		, m_desc{ get( m_display )->getDesc( createInfo.parameters ) }
 	{
 	}
 
-	DisplayModeKHR::~DisplayModeKHR()
-	{
-	}
-
-	VkDisplayPlaneCapabilitiesKHR DisplayModeKHR::getDisplayPlaneCapabilities( uint32_t planeIndex )
+	VkDisplayPlaneCapabilitiesKHR DisplayModeKHR::getDisplayPlaneCapabilities()
 	{
 		VkExtent2D defaultExt{ get( m_display )->getExtent() };
 		VkOffset2D defaultMinPos{};

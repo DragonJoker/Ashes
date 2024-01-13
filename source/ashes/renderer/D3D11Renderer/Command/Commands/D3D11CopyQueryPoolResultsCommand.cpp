@@ -50,9 +50,8 @@ namespace ashes::d3d11
 
 		if ( m_mappable )
 		{
-			void * data;
-
-			if ( get( m_dstMemory )->lock( m_dstOffset, m_data.size(), 0u, &data ) == VK_SUCCESS )
+			if ( void * data;
+				get( m_dstMemory )->lock( m_dstOffset, m_data.size(), 0u, &data ) == VK_SUCCESS )
 			{
 				std::memcpy( data, m_data.data(), m_data.size() );
 				get( m_dstMemory )->flush( m_dstOffset, m_data.size() );

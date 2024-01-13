@@ -14,22 +14,23 @@ namespace ashes::d3d11
 {
 	namespace
 	{
+		inline std::vector< VkFormat > const FormatsList = []()
+		{
+			std::vector< VkFormat > result;
+
+			for ( auto i = uint32_t( VK_FORMAT_R4G4_UNORM_PACK8 );
+				i <= uint32_t( VK_FORMAT_E5B9G9R9_UFLOAT_PACK32 );
+				++i )
+			{
+				result.push_back( VkFormat( i ) );
+			}
+
+			return result;
+		}();
+
 		std::vector< VkFormat > const & getFormatsList()
 		{
-			static std::vector< VkFormat > const list = []()
-			{
-				std::vector< VkFormat > result;
-
-				for ( uint32_t i = uint32_t( VK_FORMAT_R4G4_UNORM_PACK8 );
-					i <= uint32_t( VK_FORMAT_E5B9G9R9_UFLOAT_PACK32 );
-					++i )
-				{
-					result.push_back( VkFormat( i ) );
-				}
-
-				return result;
-			}( );
-			return list;
+			return FormatsList;
 		}
 
 		void updateSurfaceCapabilities( std::vector< DXGI_MODE_DESC > const & displayModeList
@@ -40,9 +41,9 @@ namespace ashes::d3d11
 		{
 			capabilities.minImageCount = 1u;
 			capabilities.maxImageCount = 1u;
-			capabilities.currentExtent.width = ~( 0u );
-			capabilities.currentExtent.height = ~( 0u );
-			capabilities.minImageExtent = { ~( 0u ), ~( 0u ) };
+			capabilities.currentExtent.width = ~0u;
+			capabilities.currentExtent.height = ~0u;
+			capabilities.minImageExtent = { ~0u, ~0u };
 			capabilities.maxImageExtent = { 0u, 0u };
 			capabilities.maxImageArrayLayers = 1u;
 			capabilities.supportedTransforms = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
@@ -77,8 +78,8 @@ namespace ashes::d3d11
 					&& displayMode.Height == height )
 				{
 					matchingDisplayModes.push_back( displayMode );
-					auto it = descs.emplace( getVkFormat( displayMode.Format ), std::vector< DXGI_MODE_DESC >{} ).first;
-					it->second.emplace_back( displayMode );
+					auto & modes = descs.try_emplace( getVkFormat( displayMode.Format ) ).first->second;
+					modes.emplace_back( displayMode );
 				}
 			}
 
@@ -106,8 +107,8 @@ namespace ashes::d3d11
 							&& displayMode.Height == size.height )
 						{
 							matchingDisplayModes.push_back( displayMode );
-							auto it = descs.emplace( getVkFormat( displayMode.Format ), std::vector< DXGI_MODE_DESC >{} ).first;
-							it->second.emplace_back( displayMode );
+							auto & datas = descs.try_emplace( getVkFormat( displayMode.Format ) ).first->second;
+							datas.emplace_back( displayMode );
 						}
 					}
 				}
@@ -136,15 +137,15 @@ namespace ashes::d3d11
 				{
 					// Choose the display mode with highest width.
 					matchingDisplayModes.push_back( maxWidth );
-					auto it = descs.emplace( getVkFormat( maxWidth.Format ), std::vector< DXGI_MODE_DESC >{} ).first;
-					it->second.emplace_back( maxWidth );
+					auto & datas = descs.try_emplace( getVkFormat( maxWidth.Format ) ).first->second;
+					datas.emplace_back( maxWidth );
 				}
 				else
 				{
 					// Choose the display mode with highest height.
 					matchingDisplayModes.push_back( maxHeight );
-					auto it = descs.emplace( getVkFormat( maxHeight.Format ), std::vector< DXGI_MODE_DESC >{} ).first;
-					it->second.emplace_back( maxHeight );
+					auto & datas = descs.try_emplace( getVkFormat( maxHeight.Format ) ).first->second;
+					datas.emplace_back( maxHeight );
 				}
 			}
 
@@ -163,9 +164,9 @@ namespace ashes::d3d11
 				capabilities.currentExtent.height = height;
 			}
 
-			for ( auto & desc : descs )
+			for ( auto const & [format, desc] : descs )
 			{
-				matchingDescs.emplace( desc.first, desc.second.front() );
+				matchingDescs.try_emplace( format, desc.front() );
 			}
 		}
 
@@ -200,7 +201,7 @@ namespace ashes::d3d11
 
 			if ( dxgiFormat != DXGI_FORMAT_UNKNOWN )
 			{
-				UINT numModes;
+				UINT numModes{};
 				// Get the number of modes that fit the display format for the adapter output.
 				auto hr = adapterOutput->GetDisplayModeList( dxgiFormat
 					, DXGI_ENUM_MODES_INTERLACED
@@ -266,10 +267,6 @@ namespace ashes::d3d11
 		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
 	}
 
-	SurfaceKHR::~SurfaceKHR()
-	{
-	}
-
 	inline VkFlags & mergeFlags( VkFlags & value
 		, VkFlags const & flag )noexcept
 	{
@@ -314,9 +311,9 @@ namespace ashes::d3d11
 
 				m_surfaceCapabilities.supportedUsageFlags = VK_IMAGE_TYPE_MAX_ENUM;
 
-				for ( auto surfaceFormat : m_surfaceFormats )
+				for ( auto const & surfaceFormat : m_surfaceFormats )
 				{
-					auto props = get( m_currentPhysicalDevice )->getFormatProperties( surfaceFormat.format );
+					auto const & props = get( m_currentPhysicalDevice )->getFormatProperties( surfaceFormat.format );
 					mergeFlags( m_surfaceCapabilities.supportedUsageFlags
 						, getUsageFlags( props.linearTilingFeatures ) );
 				}
@@ -324,8 +321,7 @@ namespace ashes::d3d11
 		}
 	}
 
-	VkBool32 SurfaceKHR::getSupport( VkPhysicalDevice physicalDevice
-		, uint32_t queueFamilyIndex )const
+	VkBool32 SurfaceKHR::getSupport( VkPhysicalDevice physicalDevice )const
 	{
 		m_currentPhysicalDevice = nullptr;
 		doUpdate( physicalDevice );

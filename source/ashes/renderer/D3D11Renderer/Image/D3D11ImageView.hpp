@@ -13,15 +13,16 @@
 namespace ashes::d3d11
 {
 	class ImageView
+		: public NonCopyable
 	{
 	public:
 		ImageView( VkDevice device
 			, VkImageViewCreateInfo createInfo );
-		~ImageView();
+		~ImageView()noexcept;
 
 		UINT getSubresource( uint32_t layer )const;
 
-		inline ID3D11View * getView()const
+		ID3D11View * getView()const
 		{
 			using ViewPtr = ID3D11View*;
 			return m_renderTargetView
@@ -35,37 +36,37 @@ namespace ashes::d3d11
 							: nullptr ) ) );
 		}
 
-		inline ID3D11RenderTargetView * getRenderTargetView()const
+		ID3D11RenderTargetView * getRenderTargetView()const
 		{
 			return m_renderTargetView;
 		}
 
-		inline ID3D11DepthStencilView * getDepthStencilView()const
+		ID3D11DepthStencilView * getDepthStencilView()const
 		{
 			return m_depthStencilView;
 		}
 
-		inline ID3D11UnorderedAccessView * getUnorderedAccessView()const
+		ID3D11UnorderedAccessView * getUnorderedAccessView()const
 		{
 			return m_unorderedAccessView;
 		}
 
-		inline ID3D11ShaderResourceView * getShaderView()const
+		ID3D11ShaderResourceView * getShaderView()const
 		{
 			return m_shaderView;
 		}
 
-		inline VkFormat getFormat()const
+		VkFormat getFormat()const
 		{
 			return m_createInfo.format;
 		}
 
-		inline VkImage getImage()const
+		VkImage getImage()const
 		{
 			return m_createInfo.image;
 		}
 
-		inline VkImageSubresourceRange const & getSubResourceRange()const
+		VkImageSubresourceRange const & getSubResourceRange()const
 		{
 			return m_createInfo.subresourceRange;
 		}

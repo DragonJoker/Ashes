@@ -19,23 +19,24 @@ namespace ashes::d3d11
 
 	class PhysicalDevice
 		: public ashes::IcdObject
+		, public NonCopyable
 	{
 	public:
 		PhysicalDevice( VkInstance instance
 			, AdapterInfo adapterInfo );
-		~PhysicalDevice();
+		~PhysicalDevice()noexcept;
 
 		uint32_t getMemoryTypeBits( VkMemoryPropertyFlags properties )const;
 		uint32_t getMemoryTypeBits( VkMemoryPropertyFlags properties1
 			, VkMemoryPropertyFlags properties2 )const;
-		VkBool32 getPresentationSupport( uint32_t queueFamilyIndex )const;
-		VkLayerPropertiesArray enumerateLayerProperties()const;
-		VkExtensionPropertiesArray enumerateExtensionProperties( const char * layerName )const;
+		VkBool32 getPresentationSupport()const;
+		VkLayerPropertiesArray const & enumerateLayerProperties()const;
+		VkExtensionPropertiesArray const & enumerateExtensionProperties()const;
 		VkPhysicalDeviceProperties const & getProperties()const;
-		VkPhysicalDeviceMemoryProperties getMemoryProperties()const;
-		VkPhysicalDeviceFeatures getFeatures()const;
-		VkQueueFamilyPropertiesArray getQueueFamilyProperties()const;
-		VkFormatProperties getFormatProperties( VkFormat fmt )const;
+		VkPhysicalDeviceMemoryProperties const & getMemoryProperties()const;
+		VkPhysicalDeviceFeatures const & getFeatures()const;
+		VkQueueFamilyPropertiesArray const & getQueueFamilyProperties()const;
+		VkFormatProperties const & getFormatProperties( VkFormat fmt )const;
 		VkResult getImageFormatProperties( VkFormat format
 			, VkImageType type
 			, VkImageTiling tiling

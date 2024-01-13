@@ -216,6 +216,19 @@ DECLARE_GUID( IID_IDXGIFactory, 0x7b7166ec, 0x21c7, 0x44ae, 0xb2, 0x1a, 0xc9, 0x
 
 namespace ashes::d3d11
 {
+	class NonCopyable
+	{
+	private:
+		NonCopyable( NonCopyable const & ) = delete;
+		NonCopyable( NonCopyable && )noexcept = delete;
+		NonCopyable & operator=( NonCopyable const & ) = delete;
+		NonCopyable & operator=( NonCopyable && )noexcept = delete;
+
+	protected:
+		NonCopyable()noexcept = default;
+		~NonCopyable()noexcept = default;
+	};
+
 	struct AdapterInfo
 	{
 		IDXGIAdapter * adapter{ nullptr };
@@ -346,7 +359,7 @@ namespace ashes::d3d11
 	using CommandArray = std::vector< CommandPtr >;
 
 	template< typename T >
-	void safeRelease( T *& toRelease )
+	void safeRelease( T *& toRelease )noexcept
 	{
 		if ( toRelease )
 		{

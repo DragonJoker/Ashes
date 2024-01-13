@@ -51,30 +51,46 @@ namespace ashes::d3d11
 		, m_image{ image }
 		, m_ranges{ ranges.begin(), ranges.end() }
 		, m_colour{ colour }
-		, m_views{ createViews( m_device, m_image, m_ranges ) }
+		, m_views{ createViews( getDevice(), m_image, m_ranges ) }
 	{
 	}
 
 	ClearColourCommand::ClearColourCommand( ClearColourCommand  const & rhs )
-		: CommandBase{ rhs.m_device }
+		: CommandBase{ rhs }
 		, m_image{ rhs.m_image }
 		, m_ranges{ rhs.m_ranges }
 		, m_colour{ rhs.m_colour }
-		, m_views{ createViews( m_device, m_image, m_ranges ) }
+		, m_views{ createViews( getDevice(), m_image, m_ranges ) }
 	{
 	}
 
-	ClearColourCommand::~ClearColourCommand()
+	ClearColourCommand & ClearColourCommand::operator=( ClearColourCommand  const & rhs )
 	{
-		for ( auto view : m_views )
+		for ( auto const & view : m_views )
 		{
-			deallocate( view, get( m_device )->getAllocationCallbacks() );
+			deallocate( view, get( getDevice() )->getAllocationCallbacks() );
+		}
+
+		CommandBase::operator=( rhs );
+		m_image = rhs.m_image;
+		m_ranges = rhs.m_ranges;
+		m_colour = rhs.m_colour;
+		m_views = createViews( getDevice(), m_image, m_ranges );
+
+		return *this;
+	}
+
+	ClearColourCommand::~ClearColourCommand()noexcept
+	{
+		for ( auto const & view : m_views )
+		{
+			deallocate( view, get( getDevice() )->getAllocationCallbacks() );
 		}
 	}
 
 	void ClearColourCommand::apply( Context const & context )const
 	{
-		for ( auto & view : m_views )
+		for ( auto const & view : m_views )
 		{
 			context.context->ClearRenderTargetView( get( view )->getRenderTargetView()
 				, m_colour.float32 );

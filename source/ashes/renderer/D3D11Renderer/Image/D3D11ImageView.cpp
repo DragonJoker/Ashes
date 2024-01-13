@@ -81,7 +81,7 @@ namespace ashes::d3d11
 		}
 	}
 
-	ImageView::~ImageView()
+	ImageView::~ImageView()noexcept
 	{
 		safeRelease( m_renderTargetView );
 		safeRelease( m_depthStencilView );

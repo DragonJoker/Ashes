@@ -12,10 +12,9 @@ namespace ashes::d3d11
 	{
 	public:
 		DisplayModeKHR( VkDisplayKHR display
-			, VkDisplayModeCreateInfoKHR createInfo );
-		~DisplayModeKHR();
+			, VkDisplayModeCreateInfoKHR const & createInfo );
 
-		VkDisplayPlaneCapabilitiesKHR getDisplayPlaneCapabilities( uint32_t planeIndex );
+		VkDisplayPlaneCapabilitiesKHR getDisplayPlaneCapabilities();
 
 		DXGI_MODE_DESC const & getDesc()const
 		{

@@ -42,6 +42,6 @@ namespace ashes::d3d11
 
 	CommandPtr GenerateMipsCommand::clone()const
 	{
-		return std::make_unique< GenerateMipsCommand >( *this );
+		return std::make_unique< GenerateMipsCommand >( getDevice(), m_texture );
 	}
 }

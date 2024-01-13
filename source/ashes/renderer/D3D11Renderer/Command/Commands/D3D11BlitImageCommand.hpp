@@ -12,17 +12,17 @@ namespace ashes::d3d11
 {
 	struct BlitPipeline
 	{
-		VkDevice device;
-		VkDescriptorSetLayout descriptorLayout;
-		VkPipelineLayout pipelineLayout;
-		UInt32Array spirv;
-		VkShaderModule shader;
-		VkPipeline pipeline;
+		VkDevice device{};
+		VkDescriptorSetLayout descriptorLayout{};
+		VkPipelineLayout pipelineLayout{};
+		UInt32Array spirv{};
+		VkShaderModule shader{};
+		VkPipeline pipeline{};
 
 		BlitPipeline( Device const & device
 			, VkFormat src
 			, VkFormat dst );
-		~BlitPipeline();
+		~BlitPipeline()noexcept;
 	};
 
 	class BlitImageCommand
@@ -32,16 +32,15 @@ namespace ashes::d3d11
 		struct Attachment
 		{
 			Attachment( VkDevice device
-				, VkImageSubresourceLayers & subresource
+				, VkImageSubresourceLayers const & subresource
 				, VkImage image
-				, uint32_t layer
-				, bool dest );
-			~Attachment();
+				, uint32_t layer );
+			~Attachment()noexcept;
 
-			VkDevice device;
-			VkImageView view;
-			ID3D11Resource * image;
-			UINT subResourceIndex;
+			VkDevice device{};
+			VkImageView view{};
+			ID3D11Resource * image{};
+			UINT subResourceIndex{};
 		};
 		struct LayerCopy
 		{
@@ -52,24 +51,24 @@ namespace ashes::d3d11
 				, VkDeviceSize offset
 				, VkDeviceSize range
 				, VkSampler sampler
-				, VkImageBlit region
+				, VkImageBlit const & region
 				, VkImage srcImage
 				, VkImage dstImage
 				, uint32_t layer );
 
-			VkOffset3D dstOffset;
-			D3D11_BOX srcBox;
-			D3D11_BOX dstBox;
+			VkOffset3D dstOffset{};
+			D3D11_BOX srcBox{};
+			D3D11_BOX dstBox{};
 			Attachment src;
 			Attachment dst;
-			VkDescriptorSet set;
-			uint8_t * buffer;
+			VkDescriptorSet set{};
+			uint8_t * buffer{};
 			struct BlitBox
 			{
-				std::array< float, 4u > srcBox;
-				std::array< float, 4u > dstBox;
+				std::array< float, 4u > srcBox{};
+				std::array< float, 4u > dstBox{};
 			};
-			BlitBox blitBox;
+			BlitBox blitBox{};
 		};
 
 	public:
@@ -81,7 +80,7 @@ namespace ashes::d3d11
 			, VkImage dstImage
 			, ArrayView< VkImageBlit const > const & regions
 			, VkFilter filter );
-		~BlitImageCommand()override;
+		~BlitImageCommand()noexcept override;
 
 		void apply( Context const & context )const override;
 		CommandPtr clone()const override;
@@ -95,18 +94,10 @@ namespace ashes::d3d11
 		void doUpdateTmpDst();
 		void doAddBlits( VkImage srcTexture );
 		void doAddStretches( VkPipeline pipeline
-			, VkPipelineLayout pipelineLayout
-			, uint32_t srcMinLevel
-			, uint32_t srcMaxLevel
-			, uint32_t dstMinLevel
-			, uint32_t dstMaxLevel );
+			, VkPipelineLayout pipelineLayout );
 		void doCreateCommandBuffer( VkCommandPool pool
 			, VkPipeline pipeline
-			, VkPipelineLayout pipelineLayout
-			, uint32_t srcMinLevel
-			, uint32_t srcMaxLevel
-			, uint32_t dstMinLevel
-			, uint32_t dstMaxLevel );
+			, VkPipelineLayout pipelineLayout );
 
 	private:
 		VkImage m_srcTexture{};

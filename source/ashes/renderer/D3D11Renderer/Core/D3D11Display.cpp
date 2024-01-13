@@ -19,7 +19,7 @@ namespace ashes::d3d11
 		, m_format{ format }
 		, m_descs{ descs }
 	{
-		for ( auto & desc : m_descs )
+		for ( auto const & desc : m_descs )
 		{
 			VkDisplayModeParametersKHR parameters
 			{
@@ -49,7 +49,7 @@ namespace ashes::d3d11
 		}
 	}
 
-	DisplayKHR::~DisplayKHR()
+	DisplayKHR::~DisplayKHR()noexcept
 	{
 		for ( auto & displayMode : m_displayModes )
 		{

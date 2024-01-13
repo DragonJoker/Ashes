@@ -41,7 +41,6 @@ namespace ashes::d3d11
 	}
 
 	ClearAttachmentsCommand::ClearAttachmentsCommand( VkDevice device
-		, VkRenderPass renderPass
 		, VkSubpassDescription const & subpass
 		, VkFramebuffer framebuffer
 		, ArrayView< VkClearAttachment const > const & clearAttaches
@@ -54,11 +53,11 @@ namespace ashes::d3d11
 			if ( checkFlag( attach.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT ) )
 			{
 				auto ref = subpass.pColorAttachments[attach.colorAttachment];
-				m_clearViews.push_back( { attach, get( framebuffer )->getAllViews()[ref.attachment]->view } );
+				m_clearViews.emplace_back( attach, get( framebuffer )->getAllViews()[ref.attachment]->view );
 			}
 			else if ( attach.aspectMask )
 			{
-				m_clearViews.push_back( { attach, get( framebuffer )->getDSView()->view } );
+				m_clearViews.emplace_back( attach, get( framebuffer )->getDSView()->view );
 			}
 		}
 	}

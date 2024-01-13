@@ -18,8 +18,7 @@ namespace ashes::d3d11
 	public:
 		BeginQueryCommand( VkDevice device
 			, VkQueryPool pool
-			, uint32_t query
-			, VkQueryControlFlags flags );
+			, uint32_t query );
 
 		void apply( Context const & context )const override;
 		CommandPtr clone()const override;

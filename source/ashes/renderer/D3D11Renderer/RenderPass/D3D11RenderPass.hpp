@@ -13,47 +13,46 @@ namespace ashes::d3d11
 	public:
 		RenderPass( VkDevice device
 			, VkRenderPassCreateInfo createInfo );
-		~RenderPass();
 
 		VkAttachmentDescription const * findAttachment( uint32_t referenceIndex )const;
 		VkAttachmentDescription const & getAttachment( VkAttachmentReference const & reference )const;
 
-		inline VkSubpassDescriptionArray const & getSubpasses()const
+		VkSubpassDescriptionArray const & getSubpasses()const
 		{
 			return m_subpasses;
 		}
 
-		inline VkExtent2D getRenderAreaGranularity()const
+		VkExtent2D getRenderAreaGranularity()const
 		{
 			return VkExtent2D{ 1u, 1u };
 		}
 
-		inline auto empty()const
+		auto empty()const
 		{
 			return m_referencedAttachments.empty();
 		}
 
-		inline auto size()const
+		auto size()const
 		{
 			return m_referencedAttachments.size();
 		}
 
-		inline auto begin()
+		auto begin()
 		{
 			return m_referencedAttachments.begin();
 		}
 
-		inline auto end()
+		auto end()
 		{
 			return m_referencedAttachments.end();
 		}
 
-		inline auto begin()const
+		auto begin()const
 		{
 			return m_referencedAttachments.begin();
 		}
 
-		inline auto end()const
+		auto end()const
 		{
 			return m_referencedAttachments.end();
 		}

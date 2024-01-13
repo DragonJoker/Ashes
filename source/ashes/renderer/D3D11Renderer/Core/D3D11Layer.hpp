@@ -11,21 +11,21 @@ namespace ashes::d3d11
 	class Layer
 	{
 	public:
-		virtual ~Layer() = default;
+		virtual ~Layer()noexcept = default;
 		bool bufferImageCommand( VkCommandBuffer cmd
 			, VkBufferImageCopy const & copyInfo
 			, VkBuffer buffer
-			, VkImage image )const;
+			, VkImage image )const noexcept;
 		bool copyToImageCommand( VkCommandBuffer cmd
 			, ArrayView< VkBufferImageCopy const > const & copyInfo
 			, VkBuffer src
-			, VkImage dst )const;
+			, VkImage dst )const noexcept;
 		bool checkHResultCommand( HRESULT hresult
-			, std::string message )const;
+			, std::string const & message )const noexcept;
 #if VK_EXT_debug_utils
 		void submitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
 			, VkDebugUtilsMessageTypeFlagsEXT messageTypes
-			, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const;
+			, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const noexcept;
 #endif
 #if VK_EXT_debug_report
 		void reportMessage( VkDebugReportFlagsEXT flags
@@ -34,7 +34,7 @@ namespace ashes::d3d11
 			, size_t location
 			, int32_t messageCode
 			, const char * pLayerPrefix
-			, const char * pMessage )const;
+			, const char * pMessage )const noexcept;
 #endif
 
 	private:
@@ -55,7 +55,7 @@ namespace ashes::d3d11
 		}
 
 		virtual bool onCheckHResultCommand( HRESULT hresult
-			, std::string message )const
+			, std::string const & message )const
 		{
 			return true;
 		}

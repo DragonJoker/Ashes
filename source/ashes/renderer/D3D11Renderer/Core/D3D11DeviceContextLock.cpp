@@ -16,7 +16,12 @@ namespace ashes::d3d11
 	{
 	}
 
-	DeviceContextLock::DeviceContextLock( DeviceContextLock && rhs )
+	DeviceContextLock::DeviceContextLock( ID3D11DeviceContext * context )noexcept
+		: m_context{ context }
+	{
+	}
+
+	DeviceContextLock::DeviceContextLock( DeviceContextLock && rhs )noexcept
 		: m_device{ rhs.m_device }
 		, m_context{ rhs.m_context }
 	{
@@ -24,7 +29,7 @@ namespace ashes::d3d11
 		rhs.m_context = nullptr;
 	}
 
-	DeviceContextLock & DeviceContextLock::operator=( DeviceContextLock && rhs )
+	DeviceContextLock & DeviceContextLock::operator=( DeviceContextLock && rhs )noexcept
 	{
 		m_device = rhs.m_device;
 		m_context = rhs.m_context;
@@ -35,7 +40,7 @@ namespace ashes::d3d11
 		return *this;
 	}
 
-	DeviceContextLock::~DeviceContextLock()
+	DeviceContextLock::~DeviceContextLock()noexcept
 	{
 		if ( m_device )
 		{

@@ -13,23 +13,24 @@ See LICENSE file in root folder
 namespace ashes::d3d11
 {
 	class PipelineLayout
+		: public NonCopyable
 	{
 		friend class Pipeline;
 
 	public:
 		PipelineLayout( VkDevice device
 			, VkPipelineLayoutCreateInfo createInfo );
-		~PipelineLayout();
+		~PipelineLayout()noexcept;
 
 		ShaderBindings const & getShaderBindings()const;
 		uint32_t getDescriptorSetIndex( VkDescriptorSet set )const;
 
-		inline VkDescriptorSetLayoutArray const & getDescriptorsLayouts()const
+		VkDescriptorSetLayoutArray const & getDescriptorsLayouts()const
 		{
 			return m_setLayouts;
 		}
 
-		inline VkDevice getDevice()const
+		VkDevice getDevice()const
 		{
 			return m_device;
 		}

@@ -17,10 +17,6 @@ namespace ashes::d3d11
 	{
 	}
 
-	ExecuteCommandsCommand::~ExecuteCommandsCommand()
-	{
-	}
-
 	void ExecuteCommandsCommand::apply( Context const & context )const
 	{
 		context.context->ExecuteCommandList( get( m_commandBuffer )->getCommandList()
