@@ -14,6 +14,8 @@ namespace ashes::test
 
 	struct MessageData
 	{
+		~MessageData()noexcept = default;
+
 		MessageData( MessageData const & rhs )
 			: messageSeverity{ rhs.messageSeverity }
 			, messageTypes{ rhs.messageTypes }
@@ -106,15 +108,15 @@ namespace ashes::test
 		: public Layer
 	{
 	public:
-		DebugUtilsLayer( DebugUtilsMessengerEXT & callback );
+		explicit DebugUtilsLayer( DebugUtilsMessengerEXT & callback );
 		bool onBufferImageCommand( VkCommandBuffer cmd
 			, VkBufferImageCopy const & copyInfo
 			, VkBuffer buffer
-			, VkImage image )const override;
+			, VkImage image )const noexcept override;
 		bool onCopyToImageCommand( VkCommandBuffer cmd
 			, VkBufferImageCopyArray const & copyInfos
 			, VkBuffer src
-			, VkImage dst )const override;
+			, VkImage dst )const noexcept override;
 #	if VK_EXT_debug_report
 		void onReportMessage( VkDebugReportFlagsEXT flags
 			, VkDebugReportObjectTypeEXT objectType
@@ -122,26 +124,27 @@ namespace ashes::test
 			, size_t location
 			, int32_t messageCode
 			, const char * pLayerPrefix
-			, const char * pMessage )const override;
+			, const char * pMessage )const noexcept override;
 #	endif
 		void onSubmitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
 			, VkDebugUtilsMessageTypeFlagsEXT messageTypes
-			, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const override;
+			, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const noexcept override;
 
 	private:
 		DebugUtilsMessengerEXT & m_callback;
 	};
 
 	class DebugUtilsMessengerEXT
+		: public NonCopyable
 	{
 	public:
 		DebugUtilsMessengerEXT( VkInstance instance
 			, VkDebugUtilsMessengerCreateInfoEXT createInfo );
-		~DebugUtilsMessengerEXT();
+		~DebugUtilsMessengerEXT()noexcept;
 
-		bool report( MessageData report );
+		bool report( MessageData const & report )noexcept;
 
-		DebugUtilsLayer const & getLayer()const
+		DebugUtilsLayer const & getLayer()const noexcept
 		{
 			return m_layer;
 		}
@@ -172,26 +175,26 @@ namespace ashes::test
 		: public Layer
 	{
 	public:
-		DebugReportLayer( DebugReportCallbackEXT & callback );
+		explicit DebugReportLayer( DebugReportCallbackEXT & callback );
 		bool onBufferImageCommand( VkCommandBuffer cmd
 			, VkBufferImageCopy const & copyInfo
 			, VkBuffer buffer
-			, VkImage image )const override;
+			, VkImage image )const noexcept override;
 		bool onCopyToImageCommand( VkCommandBuffer cmd
 			, VkBufferImageCopyArray const & copyInfos
 			, VkBuffer src
-			, VkImage dst )const override;
+			, VkImage dst )const noexcept override;
 		void onReportMessage( VkDebugReportFlagsEXT flags
 			, VkDebugReportObjectTypeEXT objectType
 			, uint64_t object
 			, size_t location
 			, int32_t messageCode
 			, const char * pLayerPrefix
-			, const char * pMessage )const override;
+			, const char * pMessage )const noexcept override;
 #	if VK_EXT_debug_utils
 		void onSubmitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
 			, VkDebugUtilsMessageTypeFlagsEXT messageTypes
-			, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const override;
+			, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const noexcept override;
 #	endif
 
 	private:
@@ -199,15 +202,16 @@ namespace ashes::test
 	};
 
 	class DebugReportCallbackEXT
+		: public NonCopyable
 	{
 	public:
 		DebugReportCallbackEXT( VkInstance instance
 			, VkDebugReportCallbackCreateInfoEXT createInfo );
-		~DebugReportCallbackEXT();
+		~DebugReportCallbackEXT()noexcept;
 
-		bool report( ReportData report );
+		bool report( ReportData const & report )noexcept;
 
-		DebugReportLayer const & getLayer()const
+		DebugReportLayer const & getLayer()const noexcept
 		{
 			return m_layer;
 		}

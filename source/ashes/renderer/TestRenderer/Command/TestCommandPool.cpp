@@ -18,7 +18,7 @@ namespace ashes::test
 	{
 	}
 
-	CommandPool::~CommandPool()
+	CommandPool::~CommandPool()noexcept
 	{
 		for ( auto & command : m_commands )
 		{
@@ -31,7 +31,7 @@ namespace ashes::test
 		m_commands.push_back( commands );
 	}
 
-	VkResult CommandPool::reset( VkCommandPoolResetFlags flags )
+	VkResult CommandPool::reset()
 	{
 		for ( auto & command : m_commands )
 		{
@@ -42,7 +42,7 @@ namespace ashes::test
 		return VK_SUCCESS;
 	}
 
-	VkResult CommandPool::free( VkCommandBufferArray commands )
+	VkResult CommandPool::freeCommands( VkCommandBufferArray commands )
 	{
 		for ( auto & command : commands )
 		{

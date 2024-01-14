@@ -90,7 +90,7 @@ namespace ashes::test
 		void doCheckEnabledExtensions( VkPhysicalDevice physicalDevice
 			, ashes::ArrayView< char const * const > const & extensions )
 		{
-			auto available = get( physicalDevice )->enumerateExtensionProperties( std::string{} );
+			auto available = get( physicalDevice )->enumerateExtensionProperties();
 
 			for ( auto & extension : extensions )
 			{
@@ -146,20 +146,20 @@ namespace ashes::test
 		doCreateQueues();
 	}
 
-	Device::~Device()
+	Device::~Device()noexcept
 	{
-		for ( auto creates : m_queues )
+		for ( auto const & [_, creates] : m_queues )
 		{
-			for ( auto queue : creates.second.queues )
+			for ( auto queue : creates.queues )
 			{
 				deallocate( queue, nullptr );
 			}
 		}
 
-		for ( auto & it : m_stagingTextures )
+		for ( auto & [id, image] : m_stagingTextures )
 		{
-			deallocate( it.second.first, nullptr );
-			deallocate( it.second.second, nullptr );
+			deallocate( image.first, nullptr );
+			deallocate( image.second, nullptr );
 		}
 
 		deallocate( m_dummyIndexed.memory, nullptr );
@@ -227,7 +227,7 @@ namespace ashes::test
 					deduced
 				} );
 			get( result )->bindMemory( resMem, 0u );
-			it = m_stagingTextures.emplace( key, std::make_pair( result, resMem ) ).first;
+			it = m_stagingTextures.try_emplace( key, result, resMem ).first;
 		}
 
 		memory = it->second.second;
@@ -268,7 +268,7 @@ namespace ashes::test
 		return VK_SUCCESS;
 	}
 
-	VkResult Device::setDebugUtilsObjectTag( VkDebugUtilsObjectTagInfoEXT const & tagInfo )const
+	VkResult Device::setDebugUtilsObjectTag( VkDebugUtilsObjectTagInfoEXT const & )const
 	{
 		return VK_SUCCESS;
 	}
@@ -276,7 +276,7 @@ namespace ashes::test
 #endif
 #if VK_EXT_debug_marker
 
-	VkResult Device::debugMarkerSetObjectTag( VkDebugMarkerObjectTagInfoEXT const & tagInfo )const
+	VkResult Device::debugMarkerSetObjectTag( VkDebugMarkerObjectTagInfoEXT const & )const
 	{
 		return VK_SUCCESS;
 	}
@@ -402,7 +402,7 @@ namespace ashes::test
 			, 0u
 			, reinterpret_cast< void ** >( &buffer ) ) )
 		{
-			std::copy( dummyIndex, dummyIndex + count, buffer );
+			std::copy( dummyIndex.data(), dummyIndex.data() + count, buffer );
 			get( m_dummyIndexed.memory )->flush( 0, size );
 			get( m_dummyIndexed.memory )->unlock();
 		}
@@ -412,8 +412,8 @@ namespace ashes::test
 	{
 		for ( auto & queueCreateInfo : makeArrayView( m_createInfos.pQueueCreateInfos, m_createInfos.queueCreateInfoCount ) )
 		{
-			auto it = m_queues.emplace( queueCreateInfo.queueFamilyIndex
-				, QueueCreates{ queueCreateInfo, {} } ).first;
+			auto it = m_queues.try_emplace( queueCreateInfo.queueFamilyIndex
+				, queueCreateInfo ).first;
 
 			for ( auto i = 0u; i < queueCreateInfo.queueCount; ++i )
 			{

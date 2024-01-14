@@ -42,6 +42,16 @@
 
 namespace ashes::test
 {
+	class NonCopyable
+	{
+	protected:
+		NonCopyable() = default;
+		NonCopyable( NonCopyable const & ) = delete;
+		NonCopyable & operator=( NonCopyable const & ) = delete;
+		NonCopyable( NonCopyable && )noexcept = delete;
+		NonCopyable & operator=( NonCopyable && )noexcept = delete;
+	};
+
 	struct DebugLabel
 	{
 		std::array< float, 4u > color;
@@ -169,13 +179,20 @@ namespace ashes::test
 
 	struct LayoutBindingWrites
 	{
+		LayoutBindingWrites( VkDescriptorSetLayoutBinding binding
+			, VkWriteDescriptorSetArray writes )
+			: binding{ std::move( binding ) }
+			, writes{ std::move( writes ) }
+		{
+		}
+
 		VkDescriptorSetLayoutBinding binding;
 		VkWriteDescriptorSetArray writes;
 	};
 	using LayoutBindingWritesArray = std::vector< LayoutBindingWrites * >;
 	using LayoutBindingWritesMap = std::map< uint32_t, LayoutBindingWrites >;
 
-	using DeviceMemoryDestroyFunc = std::function< void( VkDeviceMemory ) >;
+	using DeviceMemoryDestroyFunc = void(*)( VkDeviceMemory )noexcept;
 	using DeviceMemoryDestroySignal = Signal< DeviceMemoryDestroyFunc >;
 	using DeviceMemoryDestroyConnection = SignalConnection< DeviceMemoryDestroySignal >;
 }

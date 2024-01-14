@@ -14,9 +14,9 @@ See LICENSE file in root folder.
 namespace ashes::test
 {
 	BeginRenderPassCommand::BeginRenderPassCommand( VkDevice device
-		, VkRenderPass renderPass
-		, VkFramebuffer frameBuffer
-		, VkClearValueArray const & clearValues )
+		, VkRenderPass
+		, VkFramebuffer
+		, VkClearValueArray const & )
 		: CommandBase{ device }
 	{
 	}

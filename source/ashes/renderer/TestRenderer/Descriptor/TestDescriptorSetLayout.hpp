@@ -17,17 +17,16 @@ namespace ashes::test
 	public:
 		DescriptorSetLayout( VkDevice device
 			, VkDescriptorSetLayoutCreateInfo createInfo );
-		~DescriptorSetLayout();
 
 		VkDescriptorSetLayoutBinding const & getBinding( uint32_t bindingPoint
 			, uint32_t index )const;
 
-		auto begin()const
+		auto begin()const noexcept
 		{
 			return m_bindings.begin();
 		}
 
-		auto end()const
+		auto end()const noexcept
 		{
 			return m_bindings.end();
 		}

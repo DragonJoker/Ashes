@@ -12,7 +12,7 @@
 
 namespace ashes::test
 {
-	DescriptorSet::DescriptorSet( VkDevice device
+	DescriptorSet::DescriptorSet( VkDevice
 		, VkDescriptorPool pool
 		, VkDescriptorSetLayout layout )
 		: m_layout{ layout }
@@ -21,49 +21,45 @@ namespace ashes::test
 
 		for ( auto & binding : *get( layout ) )
 		{
-			LayoutBindingWrites bindingWrites
-			{
-				binding,
-				{},
-			};
-			m_writes.insert( { binding.binding, bindingWrites } );
+			LayoutBindingWrites bindingWrites{ binding, {} };
+			m_writes.try_emplace( binding.binding, bindingWrites );
 		}
 
-		for ( auto & write : m_writes )
+		for ( auto & [binding, write] : m_writes )
 		{
-			switch ( write.second.binding.descriptorType )
+			switch ( write.binding.descriptorType )
 			{
 			case VK_DESCRIPTOR_TYPE_SAMPLER:
-				m_samplers.push_back( &write.second );
+				m_samplers.push_back( &write );
 				break;
 			case VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:
-				m_combinedTextureSamplers.push_back( &write.second );
+				m_combinedTextureSamplers.push_back( &write );
 				break;
 			case VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE:
-				m_sampledTextures.push_back( &write.second );
+				m_sampledTextures.push_back( &write );
 				break;
 			case VK_DESCRIPTOR_TYPE_STORAGE_IMAGE:
-				m_storageTextures.push_back( &write.second );
+				m_storageTextures.push_back( &write );
 				break;
 			case VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER:
-				m_texelBuffers.push_back( &write.second );
+				m_texelBuffers.push_back( &write );
 				break;
 			case VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER:
-				m_texelBuffers.push_back( &write.second );
+				m_texelBuffers.push_back( &write );
 				break;
 			case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER:
-				m_uniformBuffers.push_back( &write.second );
+				m_uniformBuffers.push_back( &write );
 				break;
 			case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER:
-				m_storageBuffers.push_back( &write.second );
+				m_storageBuffers.push_back( &write );
 				break;
 			case VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC:
-				m_dynamicUniformBuffers.push_back( &write.second );
-				m_dynamicBuffers.push_back( &write.second );
+				m_dynamicUniformBuffers.push_back( &write );
+				m_dynamicBuffers.push_back( &write );
 				break;
 			case VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC:
-				m_dynamicStorageBuffers.push_back( &write.second );
-				m_dynamicBuffers.push_back( &write.second );
+				m_dynamicStorageBuffers.push_back( &write );
+				m_dynamicBuffers.push_back( &write );
 				break;
 			case VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT:
 				break;
@@ -87,13 +83,13 @@ namespace ashes::test
 
 		if ( write.pImageInfo )
 		{
-			m_imagesInfos.emplace_back( std::vector< VkDescriptorImageInfo >{ write.pImageInfo, write.pImageInfo + write.descriptorCount } );
+			m_imagesInfos.emplace_back( write.pImageInfo, write.pImageInfo + write.descriptorCount );
 			writes.writes.back().pImageInfo = m_imagesInfos.back().data();
 		}
 
 		if ( write.pBufferInfo )
 		{
-			m_buffersInfos.emplace_back( std::vector< VkDescriptorBufferInfo >{ write.pBufferInfo, write.pBufferInfo + write.descriptorCount } );
+			m_buffersInfos.emplace_back( write.pBufferInfo, write.pBufferInfo + write.descriptorCount );
 			writes.writes.back().pBufferInfo = m_buffersInfos.back().data();
 		}
 	}
@@ -108,9 +104,7 @@ namespace ashes::test
 		mergeWrites( it->second, write );
 	}
 
-	void DescriptorSet::update( VkCopyDescriptorSet const & copy )
+	void DescriptorSet::update( VkCopyDescriptorSet const & )
 	{
-		//m_writes[copy.dstBinding].dstBinding = copy.srcBinding;
-		//m_writes[copy.dstBinding].dstArrayElement = copy.srcArrayElement;
 	}
 }

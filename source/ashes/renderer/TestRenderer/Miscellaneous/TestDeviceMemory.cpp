@@ -74,7 +74,7 @@ namespace ashes::test
 		return VK_SUCCESS;
 	}
 
-	void ObjectMemory::unlock()const
+	void ObjectMemory::unlock()const noexcept
 	{
 	}
 
@@ -221,28 +221,22 @@ namespace ashes::test
 
 		if ( ashes::checkFlag( m_propertyFlags, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) )
 		{
-			m_data.resize( allocateInfo.allocationSize, defaultInitValue++ );
+			m_data.resize( allocateInfo.allocationSize, defaultInitValue );
+			++defaultInitValue;
 		}
 	}
 
-	DeviceMemory::~DeviceMemory()
+	DeviceMemory::~DeviceMemory()noexcept
 	{
 		if ( !m_objects.empty() )
 		{
-			try
-			{
-				onDestroy( get( this ) );
-			}
-			catch ( ... )
-			{
-				// Nothing to do here
-			}
+			onDestroy( get( this ) );
 		}
 	}
 
 	VkResult DeviceMemory::bindToBuffer( VkBuffer buffer
 		, VkDeviceSize memoryOffset
-		, ObjectMemory *& objectMemory )
+		, ObjectMemory *& objectMemory )noexcept
 	{
 		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
 
@@ -258,7 +252,7 @@ namespace ashes::test
 			};
 			m_objects.emplace_back( std::make_unique< ObjectMemory >( std::move( impl.memory ) ) );
 			objectMemory = m_objects.back().get();
-			updateUpload( *objectMemory, 0ull, WholeSize );
+			updateUpload( *objectMemory, 0ULL, WholeSize );
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )
@@ -280,7 +274,7 @@ namespace ashes::test
 
 	VkResult DeviceMemory::bindToImage1D( VkImage image
 		, VkDeviceSize memoryOffset
-		, ObjectMemory *& objectMemory )
+		, ObjectMemory *& objectMemory )noexcept
 	{
 		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
 
@@ -296,7 +290,7 @@ namespace ashes::test
 			};
 			m_objects.emplace_back( std::make_unique< ObjectMemory >( std::move( impl.memory ) ) );
 			objectMemory = m_objects.back().get();
-			updateUpload( *objectMemory, 0ull, WholeSize );
+			updateUpload( *objectMemory, 0ULL, WholeSize );
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )
@@ -318,7 +312,7 @@ namespace ashes::test
 
 	VkResult DeviceMemory::bindToImage2D( VkImage image
 		, VkDeviceSize memoryOffset
-		, ObjectMemory *& objectMemory )
+		, ObjectMemory *& objectMemory )noexcept
 	{
 		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
 
@@ -334,7 +328,7 @@ namespace ashes::test
 			};
 			m_objects.emplace_back( std::make_unique< ObjectMemory >( std::move( impl.memory ) ) );
 			objectMemory = m_objects.back().get();
-			updateUpload( *objectMemory, 0ull, WholeSize );
+			updateUpload( *objectMemory, 0ULL, WholeSize );
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )
@@ -356,7 +350,7 @@ namespace ashes::test
 
 	VkResult DeviceMemory::bindToImage3D( VkImage image
 		, VkDeviceSize memoryOffset
-		, ObjectMemory *& objectMemory )
+		, ObjectMemory *& objectMemory )noexcept
 	{
 		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
 
@@ -372,7 +366,7 @@ namespace ashes::test
 			};
 			m_objects.emplace_back( std::make_unique< ObjectMemory >( std::move( impl.memory ) ) );
 			objectMemory = m_objects.back().get();
-			updateUpload( *objectMemory, 0ull, WholeSize );
+			updateUpload( *objectMemory, 0ULL, WholeSize );
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )
@@ -496,12 +490,12 @@ namespace ashes::test
 
 	VkResult DeviceMemory::lock( VkDeviceSize offset
 		, VkDeviceSize size
-		, VkMemoryMapFlags flags
+		, VkMemoryMapFlags
 		, void ** data )const
 	{
 		assert( !m_mapped && "VkDeviceMemory should not be mapped" );
 		assert( !m_data.empty() && "VkDeviceMemory should be mappable" );
-		size = (size == ~( 0ull )
+		size = (size == ~0ULL
 			? m_allocateInfo.allocationSize
 			: size);
 
@@ -524,7 +518,7 @@ namespace ashes::test
 	{
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
 		assert( !m_data.empty() && "VkDeviceMemory should be mappable" );
-		size = ( size == ~( 0ull )
+		size = ( size == ~0ULL
 			? m_allocateInfo.allocationSize
 			: size );
 
@@ -543,7 +537,7 @@ namespace ashes::test
 	{
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
 		assert( !m_data.empty() && "VkDeviceMemory should be mappable" );
-		size = ( size == ~( 0ull )
+		size = ( size == ~0ULL
 			? m_allocateInfo.allocationSize
 			: size );
 
@@ -557,7 +551,7 @@ namespace ashes::test
 		return VK_SUCCESS;
 	}
 
-	void DeviceMemory::unlock()const
+	void DeviceMemory::unlock()const noexcept
 	{
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
 		assert( !m_data.empty() && "VkDeviceMemory should be mappable" );

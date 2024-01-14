@@ -19,6 +19,7 @@ namespace ashes::test
 		Image & operator=( VkImage ) = delete;
 		Image( Image && rhs )noexcept;
 		Image & operator=( Image && rhs )noexcept;
+		~Image()noexcept = default;
 
 		Image( VkDevice device
 			, VkImageCreateInfo createInfo );
@@ -36,77 +37,77 @@ namespace ashes::test
 		std::vector< VkSparseImageMemoryRequirements > getSparseImageMemoryRequirements()const;
 		void generateMipmaps( VkCommandBuffer commandBuffer )const;
 		VkResult bindMemory( VkDeviceMemory memory
-			, VkDeviceSize memoryOffset );
+			, VkDeviceSize memoryOffset )noexcept;
 		bool isMapped()const;
 
-		inline uint32_t getMipmapLevels()const
+		uint32_t getMipmapLevels()const noexcept
 		{
 			return m_createInfo.mipLevels;
 		}
 
-		inline uint32_t getLayerCount()const
+		uint32_t getLayerCount()const noexcept
 		{
 			return m_createInfo.arrayLayers;
 		}
 
-		inline bool isSamplable()const
+		bool isSamplable()const noexcept
 		{
 			return checkFlag( m_createInfo.usage, VK_IMAGE_USAGE_SAMPLED_BIT );
 		}
 
-		inline bool isStorage()const
+		bool isStorage()const noexcept
 		{
 			return checkFlag( m_createInfo.usage, VK_IMAGE_USAGE_STORAGE_BIT );
 		}
 
-		inline VkDeviceMemory getMemory()const
+		VkDeviceMemory getMemory()const noexcept
 		{
 			assert( m_memory != nullptr );
 			return m_memory;
 		}
 
-		inline VkDeviceSize getMemoryOffset()const
+		VkDeviceSize getMemoryOffset()const noexcept
 		{
 			return m_memoryOffset;
 		}
 
-		inline VkImageCreateInfo const & getCreateInfo()const
+		VkImageCreateInfo const & getCreateInfo()const noexcept
 		{
 			return m_createInfo;
 		}
 
-		inline VkExtent3D const & getDimensions()const
+		VkExtent3D const & getDimensions()const noexcept
 		{
 			return m_createInfo.extent;
 		}
 
-		inline VkImageUsageFlags getUsage()const noexcept
+		VkImageUsageFlags getUsage()const noexcept
 		{
 			return m_createInfo.usage;
 		}
 
-		inline VkFormat getFormat()const
+		VkFormat getFormat()const noexcept
 		{
 			return m_createInfo.format;
 		}
 
-		inline VkSampleCountFlagBits getSamplesCount()const
+		VkSampleCountFlagBits getSamplesCount()const noexcept
 		{
 			return m_createInfo.samples;
 		}
 
-		inline VkImageType getType()const
+		VkImageType getType()const noexcept
 		{
 			return m_createInfo.imageType;
 		}
 
-		inline ObjectMemory const & getObjectMemory()const
+		ObjectMemory const & getObjectMemory()const noexcept
 		{
 			assert( m_objectMemory != nullptr );
 			return *m_objectMemory;
 		}
 
-		inline void setDebugName( std::string name )
+		void setDebugName( std::string name )noexcept
 		{
 			m_debugName = std::move( name );
 		}

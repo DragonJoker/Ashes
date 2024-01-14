@@ -7,9 +7,9 @@ See LICENSE file in root folder.
 namespace ashes::test
 {
 	ResetQueryPoolCommand::ResetQueryPoolCommand( VkDevice device
-		, VkQueryPool pool
-		, uint32_t firstQuery
-		, uint32_t queryCount )
+		, VkQueryPool
+		, uint32_t
+		, uint32_t )
 		: CommandBase{ device }
 	{
 	}

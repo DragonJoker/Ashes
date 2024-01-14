@@ -23,9 +23,10 @@ namespace ashes::test
 			, VkMemoryAllocateInfo allocateInfo );
 		ObjectMemory( ObjectMemory && rhs )noexcept;
 		ObjectMemory & operator=( ObjectMemory && rhs )noexcept;
+		~ObjectMemory()noexcept = default;
 
 		VkResult lock( void ** mapped )const;
-		void unlock()const;
+		void unlock()const noexcept;
 
 	private:
 		void upload( uint8_t const * buffer
@@ -48,25 +49,26 @@ namespace ashes::test
 	*	Class wrapping a storage allocated to a data buffer.
 	*/
 	class DeviceMemory
+		: public NonCopyable
 	{
 		friend class ObjectMemory;
 
 	public:
 		DeviceMemory( VkDevice device
 			, VkMemoryAllocateInfo allocateInfo );
-		~DeviceMemory();
+		~DeviceMemory()noexcept;
 		VkResult bindToBuffer( VkBuffer buffer
 			, VkDeviceSize memoryOffset
-			, ObjectMemory *& objectMemory );
+			, ObjectMemory *& objectMemory )noexcept;
 		VkResult bindToImage1D( VkImage image
 			, VkDeviceSize memoryOffset
-			, ObjectMemory *& objectMemory );
+			, ObjectMemory *& objectMemory )noexcept;
 		VkResult bindToImage2D( VkImage image
 			, VkDeviceSize memoryOffset
-			, ObjectMemory *& objectMemory );
+			, ObjectMemory *& objectMemory )noexcept;
 		VkResult bindToImage3D( VkImage image
 			, VkDeviceSize memoryOffset
-			, ObjectMemory *& objectMemory );
+			, ObjectMemory *& objectMemory )noexcept;
 
 		void updateUpload( ObjectMemory const & memory
 			, VkDeviceSize offset
@@ -91,24 +93,24 @@ namespace ashes::test
 			, VkDeviceSize size )const;
 		VkResult invalidate( VkDeviceSize offset
 			, VkDeviceSize size )const;
-		void unlock()const;
+		void unlock()const noexcept;
 
-		inline bool isMapped()const
+		bool isMapped()const noexcept
 		{
 			return m_mapped;
 		}
 
-		inline void upload()const
+		void upload()const noexcept
 		{
 			upload( m_mappedOffset, m_mappedSize );
 		}
 
-		inline void download()const
+		void download()const noexcept
 		{
 			download( m_mappedOffset, m_mappedSize );
 		}
 
-		inline VkMemoryPropertyFlags getMemoryPropertyFlags()const
+		VkMemoryPropertyFlags getMemoryPropertyFlags()const noexcept
 		{
 			return m_propertyFlags;
 		}

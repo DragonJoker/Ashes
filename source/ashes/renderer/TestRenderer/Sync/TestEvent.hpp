@@ -11,7 +11,7 @@ namespace ashes::test
 	class Event
 	{
 	public:
-		Event( VkDevice device );
+		Event() = default;
 		/**
 		*\copydoc	ashes::Event::getStatus
 		*/

@@ -13,52 +13,51 @@ namespace ashes::test
 	public:
 		RenderPass( VkDevice device
 			, VkRenderPassCreateInfo createInfo );
-		~RenderPass();
 
 		VkAttachmentDescription const * findAttachment( uint32_t referenceIndex )const;
 		VkAttachmentDescription const & getAttachment( VkAttachmentReference const & reference )const;
 
-		inline VkSubpassDescriptionArray const & getSubpasses()const
+		VkSubpassDescriptionArray const & getSubpasses()const noexcept
 		{
 			return m_subpasses;
 		}
 
-		inline VkExtent2D getRenderAreaGranularity()const
+		VkExtent2D getRenderAreaGranularity()const noexcept
 		{
 			return VkExtent2D{ 1u, 1u };
 		}
 
-		inline auto empty()const
+		auto empty()const noexcept
 		{
 			return m_referencedAttachments.empty();
 		}
 
-		inline auto size()const
+		auto size()const noexcept
 		{
 			return m_referencedAttachments.size();
 		}
 
-		inline auto begin()
+		auto begin()noexcept
 		{
 			return m_referencedAttachments.begin();
 		}
 
-		inline auto end()
+		auto end()noexcept
 		{
 			return m_referencedAttachments.end();
 		}
 
-		inline auto begin()const
+		auto begin()const noexcept
 		{
 			return m_referencedAttachments.begin();
 		}
 
-		inline auto end()const
+		auto end()const noexcept
 		{
 			return m_referencedAttachments.end();
 		}
 
-		VkDevice getDevice()const
+		VkDevice getDevice()const noexcept
 		{
 			return m_device;
 		}

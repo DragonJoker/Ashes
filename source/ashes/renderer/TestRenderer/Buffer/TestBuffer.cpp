@@ -14,14 +14,10 @@ namespace ashes::test
 	{
 	}
 
-	Buffer::~Buffer()
-	{
-	}
-
 	VkMemoryRequirements Buffer::getMemoryRequirements()const
 	{
 		VkMemoryRequirements result{};
-		result.memoryTypeBits = ~( 0u );
+		result.memoryTypeBits = ~0u;
 		result.alignment = get( m_device )->getLimits().nonCoherentAtomSize;
 
 		if ( checkFlag( m_createInfo.usage, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT ) )
@@ -51,7 +47,7 @@ namespace ashes::test
 	}
 
 	VkResult Buffer::bindMemory( VkDeviceMemory memory
-		, VkDeviceSize memoryOffset )
+		, VkDeviceSize memoryOffset )noexcept
 	{
 		m_memory = memory;
 		m_memoryOffset = memoryOffset;

@@ -25,17 +25,17 @@ namespace ashes::test
 		*/
 		/**@{*/
 		PipelineCache( VkDevice device
-			, VkPipelineCacheCreateInfo createInfo );
+			, VkPipelineCacheCreateInfo const & createInfo );
 		/**@}*/
 
-		VkResult merge( VkPipelineCacheArray pipelines );
+		VkResult merge( VkPipelineCacheArray const & pipelines );
 
-		inline ByteArray const & getData()const
+		ByteArray const & getData()const noexcept
 		{
 			return m_data;
 		}
 
-		VkDevice getDevice()const
+		VkDevice getDevice()const noexcept
 		{
 			return m_device;
 		}

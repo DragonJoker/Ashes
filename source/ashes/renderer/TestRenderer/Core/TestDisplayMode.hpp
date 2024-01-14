@@ -13,16 +13,15 @@ namespace ashes::test
 	public:
 		DisplayModeKHR( VkDisplayKHR display
 			, VkDisplayModeCreateInfoKHR createInfo );
-		~DisplayModeKHR();
 
-		VkDisplayPlaneCapabilitiesKHR getDisplayPlaneCapabilities( uint32_t planeIndex );
+		VkDisplayPlaneCapabilitiesKHR getDisplayPlaneCapabilities();
 
-		VkDisplayKHR getDisplay()const
+		VkDisplayKHR getDisplay()const noexcept
 		{
 			return m_display;
 		}
 
-		VkDisplayModeParametersKHR const & getParameters()
+		VkDisplayModeParametersKHR const & getParameters()const noexcept
 		{
 			return m_createInfo.parameters;
 		}

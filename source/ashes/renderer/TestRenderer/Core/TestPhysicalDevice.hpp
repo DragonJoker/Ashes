@@ -14,29 +14,18 @@ namespace ashes::test
 		: public ashes::IcdObject
 	{
 	public:
-		PhysicalDevice( VkInstance instance );
-		~PhysicalDevice();
+		explicit PhysicalDevice( VkInstance instance );
 
-		VkBool32 getPresentationSupport( uint32_t queueFamilyIndex )const;
-		VkLayerPropertiesArray enumerateLayerProperties()const;
-		VkExtensionPropertiesArray enumerateExtensionProperties( std::string const & layerName )const;
+		VkBool32 getPresentationSupport()const;
+		VkLayerPropertiesArray const & enumerateLayerProperties()const noexcept;
+		VkExtensionPropertiesArray const & enumerateExtensionProperties()const noexcept;
 		VkPhysicalDeviceProperties const & getProperties()const;
 		VkPhysicalDeviceMemoryProperties getMemoryProperties()const;
 		VkPhysicalDeviceFeatures getFeatures()const;
 		VkQueueFamilyPropertiesArray getQueueFamilyProperties()const;
 		VkFormatProperties getFormatProperties( VkFormat fmt )const;
-		VkResult getImageFormatProperties( VkFormat format
-			, VkImageType type
-			, VkImageTiling tiling
-			, VkImageUsageFlags usage
-			, VkImageCreateFlags flags
-			, VkImageFormatProperties & imageProperties )const;
-		VkResult getSparseImageFormatProperties( VkFormat format
-			, VkImageType type
-			, VkSampleCountFlagBits samples
-			, VkImageUsageFlags usage
-			, VkImageTiling tiling
-			, std::vector< VkSparseImageFormatProperties > & sparseImageFormatProperties )const;
+		VkResult getImageFormatProperties()const;
+		VkResult getSparseImageFormatProperties()const;
 
 #ifdef VK_VERSION_1_1
 		VkPhysicalDeviceFeatures2 const & getFeatures2()const;
@@ -65,7 +54,7 @@ namespace ashes::test
 		std::vector< VkDisplayKHR > getDisplayPlaneSupportedDisplays( uint32_t planeIndex )const;
 #endif
 
-		inline VkInstance getInstance()const
+		VkInstance getInstance()const noexcept
 		{
 			return m_instance;
 		}

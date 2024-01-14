@@ -17,7 +17,6 @@ namespace ashes::test
 	public:
 		BufferView( VkDevice device
 			, VkBufferViewCreateInfo createInfo );
-		~BufferView();
 
 		VkDevice getDevice()const noexcept
 		{

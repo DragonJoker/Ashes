@@ -105,12 +105,7 @@ namespace ashes::test
 		VkImageCreateFlags flags,
 		VkImageFormatProperties* pImageFormatProperties )
 	{
-		return get( physicalDevice )->getImageFormatProperties( format
-			, type
-			, tiling
-			, usage
-			, flags
-			, *pImageFormatProperties );
+		return get( physicalDevice )->getImageFormatProperties();
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceProperties(
@@ -221,7 +216,7 @@ namespace ashes::test
 		uint32_t* pPropertyCount,
 		VkExtensionProperties* pProperties )
 	{
-		auto props = get( physicalDevice )->enumerateExtensionProperties( pLayerName ? std::string{ pLayerName } : std::string{} );
+		auto props = get( physicalDevice )->enumerateExtensionProperties();
 		*pPropertyCount = uint32_t( props.size() );
 
 		if ( pProperties )
@@ -449,12 +444,7 @@ namespace ashes::test
 		VkSparseImageFormatProperties* pProperties )
 	{
 		std::vector< VkSparseImageFormatProperties > props;
-		get( physicalDevice )->getSparseImageFormatProperties( format
-			, type
-			, samples
-			, usage
-			, tiling
-			, props );
+		get( physicalDevice )->getSparseImageFormatProperties();
 		*pPropertyCount = uint32_t( props.size() );
 
 		if ( pProperties )
@@ -540,8 +530,7 @@ namespace ashes::test
 	{
 		assert( pSemaphore );
 		return allocate( *pSemaphore
-			, pAllocator
-			, device );
+			, pAllocator );
 	}
 
 	void VKAPI_CALL vkDestroySemaphore(
@@ -560,8 +549,7 @@ namespace ashes::test
 	{
 		assert( pEvent );
 		return allocate( *pEvent
-			, pAllocator
-			, device );
+			, pAllocator );
 	}
 
 	void VKAPI_CALL vkDestroyEvent(
@@ -1020,7 +1008,7 @@ namespace ashes::test
 		uint32_t descriptorSetCount,
 		const VkDescriptorSet* pDescriptorSets )
 	{
-		return get( descriptorPool )->free( { pDescriptorSets, pDescriptorSets + descriptorSetCount } );
+		return get( descriptorPool )->freeDescriptors( { pDescriptorSets, pDescriptorSets + descriptorSetCount } );
 	}
 
 	void VKAPI_CALL vkUpdateDescriptorSets(
@@ -1117,7 +1105,7 @@ namespace ashes::test
 		VkCommandPool commandPool,
 		VkCommandPoolResetFlags flags )
 	{
-		return get( commandPool )->reset( flags );
+		return get( commandPool )->reset();
 	}
 
 	VkResult VKAPI_CALL vkAllocateCommandBuffers(
@@ -1150,7 +1138,7 @@ namespace ashes::test
 		uint32_t commandBufferCount,
 		const VkCommandBuffer* pCommandBuffers )
 	{
-		get( commandPool )->free( { pCommandBuffers, pCommandBuffers + commandBufferCount } );
+		get( commandPool )->freeCommands( { pCommandBuffers, pCommandBuffers + commandBufferCount } );
 	}
 
 	VkResult VKAPI_CALL vkBeginCommandBuffer(
@@ -1221,7 +1209,7 @@ namespace ashes::test
 		VkCommandBuffer commandBuffer,
 		const float blendConstants[4] )
 	{
-		get( commandBuffer )->setBlendConstants( blendConstants );
+		get( commandBuffer )->setBlendConstants( makeArrayView( blendConstants, 4u ) );
 	}
 
 	void VKAPI_CALL vkCmdSetDepthBounds(
@@ -2149,7 +2137,7 @@ namespace ashes::test
 		VkSurfaceKHR surface,
 		VkBool32* pSupported )
 	{
-		*pSupported = get( physicalDevice )->getPresentationSupport( queueFamilyIndex );
+		*pSupported = get( physicalDevice )->getPresentationSupport();
 		return VK_SUCCESS;
 	}
 
@@ -2412,7 +2400,7 @@ namespace ashes::test
 		uint32_t planeIndex,
 		VkDisplayPlaneCapabilitiesKHR * pCapabilities )
 	{
-		*pCapabilities = get( mode )->getDisplayPlaneCapabilities( planeIndex );
+		*pCapabilities = get( mode )->getDisplayPlaneCapabilities();
 		return VK_SUCCESS;
 	}
 
@@ -4316,7 +4304,7 @@ namespace ashes::test
 		xcb_connection_t* connection,
 		xcb_visualid_t visual_id)
 	{
-		return get( physicalDevice )->getPresentationSupport( queueFamilyIndex );
+		return get( physicalDevice )->getPresentationSupport();
 	}
 
 #	endif
@@ -4344,7 +4332,7 @@ namespace ashes::test
 		Display* dpy,
 		VisualID visualID )
 	{
-		return get( physicalDevice )->getPresentationSupport( queueFamilyIndex );
+		return get( physicalDevice )->getPresentationSupport();
 	}
 
 #	endif
@@ -4372,7 +4360,7 @@ namespace ashes::test
 		uint32_t queueFamilyIndex,
 		struct wl_display* display )
 	{
-		return get( physicalDevice )->getPresentationSupport( queueFamilyIndex );
+		return get( physicalDevice )->getPresentationSupport();
 	}
 
 #	endif
@@ -4399,7 +4387,7 @@ namespace ashes::test
 		VkPhysicalDevice physicalDevice,
 		uint32_t queueFamilyIndex )
 	{
-		return get( physicalDevice )->getPresentationSupport( queueFamilyIndex );
+		return get( physicalDevice )->getPresentationSupport();
 	}
 
 #	endif
@@ -4436,42 +4424,43 @@ namespace ashes::test
 #pragma warning( push )
 #pragma warning( disable: 4191 )
 
-	std::vector< VkExtensionProperties > const & getSupportedInstanceExtensions()
+	static std::vector< VkExtensionProperties > const SupportedInstanceExtensions
 	{
-		static std::vector< VkExtensionProperties > const extensions
-		{
 #if VK_KHR_surface
-			VkExtensionProperties{ VK_KHR_SURFACE_EXTENSION_NAME, VK_KHR_SURFACE_SPEC_VERSION },
+		VkExtensionProperties{ VK_KHR_SURFACE_EXTENSION_NAME, VK_KHR_SURFACE_SPEC_VERSION },
 #endif
 #	if _WIN32
-			VkExtensionProperties{ VK_KHR_WIN32_SURFACE_EXTENSION_NAME, VK_KHR_WIN32_SURFACE_SPEC_VERSION },
+		VkExtensionProperties{ VK_KHR_WIN32_SURFACE_EXTENSION_NAME, VK_KHR_WIN32_SURFACE_SPEC_VERSION },
 #	elif __linux__
-			VkExtensionProperties{ VK_KHR_XLIB_SURFACE_EXTENSION_NAME, VK_KHR_XLIB_SURFACE_SPEC_VERSION },
-			VkExtensionProperties{ VK_KHR_XCB_SURFACE_EXTENSION_NAME, VK_KHR_XCB_SURFACE_SPEC_VERSION },
+		VkExtensionProperties{ VK_KHR_XLIB_SURFACE_EXTENSION_NAME, VK_KHR_XLIB_SURFACE_SPEC_VERSION },
+		VkExtensionProperties{ VK_KHR_XCB_SURFACE_EXTENSION_NAME, VK_KHR_XCB_SURFACE_SPEC_VERSION },
 #	endif
 #if VK_EXT_debug_report
-			VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, VK_EXT_DEBUG_REPORT_SPEC_VERSION },
+		VkExtensionProperties{ VK_EXT_DEBUG_REPORT_EXTENSION_NAME, VK_EXT_DEBUG_REPORT_SPEC_VERSION },
 #endif
 #if VK_EXT_debug_marker
-			VkExtensionProperties{ VK_EXT_DEBUG_MARKER_EXTENSION_NAME, VK_EXT_DEBUG_MARKER_SPEC_VERSION },
+		VkExtensionProperties{ VK_EXT_DEBUG_MARKER_EXTENSION_NAME, VK_EXT_DEBUG_MARKER_SPEC_VERSION },
 #endif
 #if VK_EXT_debug_utils
-			VkExtensionProperties{ VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_EXT_DEBUG_UTILS_SPEC_VERSION },
+		VkExtensionProperties{ VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_EXT_DEBUG_UTILS_SPEC_VERSION },
 #endif
 #if VK_KHR_get_physical_device_properties2
-			VkExtensionProperties{ VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_SPEC_VERSION },
+		VkExtensionProperties{ VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_SPEC_VERSION },
 #endif
 #if VK_KHR_display
-			VkExtensionProperties{ VK_KHR_DISPLAY_EXTENSION_NAME, VK_KHR_DISPLAY_SPEC_VERSION },
+		VkExtensionProperties{ VK_KHR_DISPLAY_EXTENSION_NAME, VK_KHR_DISPLAY_SPEC_VERSION },
 #endif
 #if VK_NV_glsl_shader
-			VkExtensionProperties{ VK_NV_GLSL_SHADER_EXTENSION_NAME, VK_NV_GLSL_SHADER_SPEC_VERSION },
+		VkExtensionProperties{ VK_NV_GLSL_SHADER_EXTENSION_NAME, VK_NV_GLSL_SHADER_SPEC_VERSION },
 #endif
 #if VK_KHR_portability_subset
-			VkExtensionProperties{ VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME, VK_KHR_PORTABILITY_SUBSET_SPEC_VERSION },
+		VkExtensionProperties{ VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME, VK_KHR_PORTABILITY_SUBSET_SPEC_VERSION },
 #endif
-		};
-		return extensions;
+	};
+
+	std::vector< VkExtensionProperties > const & getSupportedInstanceExtensions()
+	{
+		return SupportedInstanceExtensions;
 	}
 
 	struct GlLibrary

@@ -8,10 +8,6 @@ See LICENSE file in root folder.
 
 namespace ashes::test
 {
-	Event::Event( VkDevice device )
-	{
-	}
-
 	VkResult Event::getStatus()const
 	{
 		return m_status;

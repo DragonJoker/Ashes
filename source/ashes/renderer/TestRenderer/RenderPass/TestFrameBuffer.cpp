@@ -21,15 +21,11 @@ namespace ashes::test
 
 			for ( auto & attach : attaches )
 			{
-				auto apiview = get( attach );
-
-				if ( !isDepthOrStencilFormat( apiview->getFormat() ) )
+				if ( auto apiview = get( attach );
+					!isDepthOrStencilFormat( apiview->getFormat() ) )
 				{
-					auto apiimage = get( apiview->getImage() );
-					auto multisampled = apiimage->getSamplesCount() > VK_SAMPLE_COUNT_1_BIT;
-
-					if ( ( msaa && multisampled )
-						|| ( !msaa && !multisampled ) )
+					if ( auto multisampled = get( apiview->getImage() )->getSamplesCount() > VK_SAMPLE_COUNT_1_BIT;
+						( msaa && multisampled ) || ( !msaa && !multisampled ) )
 					{
 						result.push_back( attach );
 					}
@@ -46,15 +42,11 @@ namespace ashes::test
 
 			for ( auto & attach : attaches )
 			{
-				auto apiview = get( attach );
-
-				if ( !result
-					&& isDepthOrStencilFormat( apiview->getFormat() ) )
+				if ( auto apiview = get( attach );
+					!result && isDepthOrStencilFormat( apiview->getFormat() ) )
 				{
-					auto multisampled = get( apiview->getImage() )->getSamplesCount() > VK_SAMPLE_COUNT_1_BIT;
-
-					if ( ( msaa && multisampled )
-						|| ( !msaa && !multisampled ) )
+					if ( auto multisampled = get( apiview->getImage() )->getSamplesCount() > VK_SAMPLE_COUNT_1_BIT;
+						( msaa && multisampled ) || ( !msaa && !multisampled ) )
 					{
 						result = attach;
 					}
@@ -68,15 +60,11 @@ namespace ashes::test
 			, bool msaa )
 		{
 			VkImageView result{};
-			auto attach = doGetDepthStencilAttach( attaches, msaa );
 
-			if ( attach )
+			if ( auto attach = doGetDepthStencilAttach( attaches, msaa ) )
 			{
-				auto view = get( attach );
-				auto multisampled = get( view->getImage() )->getSamplesCount() > VK_SAMPLE_COUNT_1_BIT;
-
-				if ( ( msaa && multisampled )
-					|| ( !msaa && !multisampled ) )
+				if ( auto multisampled = get( get( attach )->getImage() )->getSamplesCount() > VK_SAMPLE_COUNT_1_BIT;
+					( msaa && multisampled ) || ( !msaa && !multisampled ) )
 				{
 					result = attach;
 				}

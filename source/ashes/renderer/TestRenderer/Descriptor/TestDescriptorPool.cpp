@@ -17,7 +17,7 @@ namespace ashes::test
 		m_createInfos.pPoolSizes = m_poolSizes.data();
 	}
 
-	DescriptorPool::~DescriptorPool()
+	DescriptorPool::~DescriptorPool()noexcept
 	{
 		for ( auto & set : m_sets )
 		{
@@ -35,7 +35,7 @@ namespace ashes::test
 		m_allSets.push_back( set );
 	}
 
-	VkResult DescriptorPool::reset( VkDescriptorPoolResetFlags flags )
+	VkResult DescriptorPool::reset( VkDescriptorPoolResetFlags )
 	{
 		for ( auto & set : m_allSets )
 		{
@@ -47,7 +47,7 @@ namespace ashes::test
 		return VK_SUCCESS;
 	}
 
-	VkResult DescriptorPool::free( VkDescriptorSetArray sets )
+	VkResult DescriptorPool::freeDescriptors( VkDescriptorSetArray const & sets )
 	{
 		if ( checkFlag( m_createInfos.flags, VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT ) )
 		{

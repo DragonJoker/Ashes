@@ -23,6 +23,37 @@ namespace ashes::test
 {
 	namespace
 	{
+		inline VkPhysicalDeviceMemoryProperties const MemoryProperties = []()
+		{
+			VkPhysicalDeviceMemoryProperties result{};
+			// Emulate one device local heap
+			result.memoryHeaps[result.memoryHeapCount++] = { ~0ULL, VK_MEMORY_HEAP_DEVICE_LOCAL_BIT };
+			// and one host visible heap
+			result.memoryHeaps[result.memoryHeapCount++] = { ~0ULL, 0u };
+
+			// Emulate all combinations of device local memory types
+			// and all combinations of host visible memory types
+			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 0u };
+			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, 1u };
+			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 1u };
+			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT, 1u };
+			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT, 0u };
+			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_PROTECTED_BIT, 0u };
+#if VK_AMD_device_coherent_memory
+			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD, 0u };
+			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD, 0u };
+#endif
+
+			return result;
+		}();
+
+		inline VkPhysicalDeviceMemoryProperties2KHR const MemoryProperties2 = []()
+		{
+			VkPhysicalDeviceMemoryProperties2KHR result{};
+			result.memoryProperties = Instance::getMemoryProperties();
+			return result;
+		}();
+
 		VkApplicationInfo doGetDefaultApplicationInfo()
 		{
 			return
@@ -73,9 +104,9 @@ namespace ashes::test
 	{
 		VkPhysicalDeviceMemoryProperties result{};
 		// Emulate one device local heap
-		result.memoryHeaps[result.memoryHeapCount++] = { ~( 0ull ), VK_MEMORY_HEAP_DEVICE_LOCAL_BIT };
+		result.memoryHeaps[result.memoryHeapCount++] = { ~0ULL, VK_MEMORY_HEAP_DEVICE_LOCAL_BIT };
 		// and one host visible heap
-		result.memoryHeaps[result.memoryHeapCount++] = { ~( 0ull ), 0u };
+		result.memoryHeaps[result.memoryHeapCount++] = { ~0ULL, 0u };
 
 		// Emulate all combinations of device local memory types
 		// and all combinations of host visible memory types
@@ -85,7 +116,7 @@ namespace ashes::test
 		return result;
 	}();
 
-	Instance::Instance( VkInstanceCreateInfo createInfo )
+	Instance::Instance( VkInstanceCreateInfo const & createInfo )
 		: m_applicationInfo{ createInfo.pApplicationInfo ? *createInfo.pApplicationInfo : doGetDefaultApplicationInfo() }
 		, m_flags{ createInfo.flags }
 		, m_enabledLayerNames{ ashes::convert( CharPtrArray{ createInfo.ppEnabledLayerNames, createInfo.ppEnabledLayerNames + createInfo.enabledLayerCount } ) }
@@ -102,7 +133,7 @@ namespace ashes::test
 		m_features.supportsPersistentMapping = true;
 	}
 
-	Instance::~Instance()
+	Instance::~Instance()noexcept
 	{
 		for ( auto & physicalDevice : m_physicalDevices )
 		{
@@ -150,7 +181,7 @@ namespace ashes::test
 		, float zNear
 		, float zFar )const
 	{
-		float const tanHalfFovy = float( tan( radiansFovY / float( 2 ) ) );
+		auto const tanHalfFovy = float( tan( radiansFovY / float( 2 ) ) );
 
 		std::array< float, 16 > result{ 0.0f };
 		result[0] = 1.0f / ( aspect * tanHalfFovy );
@@ -224,7 +255,7 @@ namespace ashes::test
 
 	void Instance::onSubmitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
 		, VkDebugUtilsMessageTypeFlagsEXT messageTypes
-		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const
+		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const noexcept
 	{
 		try
 		{
@@ -250,7 +281,7 @@ namespace ashes::test
 		, size_t location
 		, int32_t messageCode
 		, const char * pLayerPrefix
-		, const char * pMessage )
+		, const char * pMessage )noexcept
 	{
 		try
 		{
@@ -275,41 +306,12 @@ namespace ashes::test
 
 	VkPhysicalDeviceMemoryProperties const & Instance::getMemoryProperties()
 	{
-		static VkPhysicalDeviceMemoryProperties const memoryProperties = []()
-		{
-			VkPhysicalDeviceMemoryProperties result{};
-			// Emulate one device local heap
-			result.memoryHeaps[result.memoryHeapCount++] = { ~( 0ull ), VK_MEMORY_HEAP_DEVICE_LOCAL_BIT };
-			// and one host visible heap
-			result.memoryHeaps[result.memoryHeapCount++] = { ~( 0ull ), 0u };
-
-			// Emulate all combinations of device local memory types
-			// and all combinations of host visible memory types
-			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 0u };
-			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, 1u };
-			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 1u };
-			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_CACHED_BIT, 1u };
-			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT, 0u };
-			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_PROTECTED_BIT, 0u };
-#if VK_AMD_device_coherent_memory
-			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD, 0u };
-			result.memoryTypes[result.memoryTypeCount++] = { VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD, 0u };
-#endif
-
-			return result;
-		}( );
-		return memoryProperties;
+		return MemoryProperties;
 	}
 
 	VkPhysicalDeviceMemoryProperties2KHR const & Instance::getMemoryProperties2()
 	{
-		static VkPhysicalDeviceMemoryProperties2KHR const memoryProperties2 = []()
-		{
-			VkPhysicalDeviceMemoryProperties2KHR result{};
-			result.memoryProperties = Instance::getMemoryProperties();
-			return result;
-		}( );
-		return memoryProperties2;
+		return MemoryProperties2;
 	}
 
 	void Instance::doInitialisePhysicalDevices()

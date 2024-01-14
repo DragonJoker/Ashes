@@ -12,7 +12,7 @@ namespace ashes::test
 {
 	SetEventCommand::SetEventCommand( VkDevice device
 		, VkEvent event
-		, VkPipelineStageFlags stageFlags )
+		, VkPipelineStageFlags )
 		: CommandBase{ device }
 		, m_event{ event }
 	{

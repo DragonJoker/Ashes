@@ -13,8 +13,4 @@ namespace ashes::test
 		, m_createInfo{ std::move( createInfo ) }
 	{
 	}
-
-	BufferView::~BufferView()
-	{
-	}
 }
