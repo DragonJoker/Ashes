@@ -21,59 +21,59 @@ namespace ashes::test
 			, VkComputePipelineCreateInfo createInfo );
 		VkDescriptorSetLayoutArray const & getDescriptorsLayouts()const;
 
-		inline VkPipelineInputAssemblyStateCreateInfo const & getInputAssemblyState()const
+		VkPipelineInputAssemblyStateCreateInfo const & getInputAssemblyState()const noexcept
 		{
 			return m_inputAssemblyState;
 		}
 
-		inline bool hasVertexLayout()const
+		bool hasVertexLayout()const noexcept
 		{
 			return !m_vertexAttributeDescriptions.empty()
 				&& !m_vertexBindingDescriptions.empty();
 		}
 
-		inline VkPipelineVertexInputStateCreateInfo const & getVertexInputState()const
+		VkPipelineVertexInputStateCreateInfo const & getVertexInputState()const noexcept
 		{
 			return m_vertexInputState;
 		}
 
-		inline float const * getBlendFactor()const
+		float const * getBlendFactor()const noexcept
 		{
 			return m_colorBlendState.blendConstants;
 		}
 
-		inline uint32_t getSampleMask()const
+		uint32_t getSampleMask()const noexcept
 		{
 			return m_colorBlendState.attachmentCount == 0u
 				? 0u
 				: m_colorBlendState.pAttachments->colorWriteMask;
 		}
 
-		inline uint32_t getStencilRef()const
+		uint32_t getStencilRef()const noexcept
 		{
 			return bool( m_depthStencilState )
 				? m_depthStencilState->front.reference
 				: 0u;
 		}
 
-		inline VkPipelineLayout getLayout()const
+		VkPipelineLayout getLayout()const noexcept
 		{
 			return m_layout;
 		}
 
-		inline size_t getVertexInputStateHash()const
+		size_t getVertexInputStateHash()const noexcept
 		{
 			return m_vertexInputStateHash;
 		}
 
-		inline bool hasDynamicStateEnable( VkDynamicState state )const
+		bool hasDynamicStateEnable( VkDynamicState state )const noexcept
 		{
 			return m_dynamicStates.end() != std::find( m_dynamicStates.begin()
 				, m_dynamicStates.end()
 				, state );
 		}
 
-		VkDevice getDevice()const
+		VkDevice getDevice()const noexcept
 		{
 			return m_device;
 		}

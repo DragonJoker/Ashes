@@ -260,7 +260,7 @@ namespace ashes::test
 			VkResult check( DebugUtilsMessengerEXT & callback
 				, MessageData report
 				, bool condition
-				, std::string message )
+				, std::string const & message )noexcept
 			{
 				if ( !condition )
 				{
@@ -276,7 +276,7 @@ namespace ashes::test
 			VkResult checkEqual( DebugUtilsMessengerEXT callback
 				, ReportData report
 				, T const & lhs
-				, T const & rhs )
+				, T const & rhs )noexcept
 			{
 				return check( callback
 					, report
@@ -294,44 +294,44 @@ namespace ashes::test
 	bool DebugUtilsLayer::onBufferImageCommand( VkCommandBuffer cmd
 		, VkBufferImageCopy const & copyInfo
 		, VkBuffer buffer
-		, VkImage image )const
+		, VkImage image )const noexcept
 	{
-		static MessageData const baseMessage
-		{
-			VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
-			VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT,
-			VkDebugUtilsMessengerCallbackDataEXT
-			{
-				VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT,
-				nullptr,
-				0u,
-				"VALIDATION",
-				0u, // messageIdNumber
-				{},	// pMessage
-				{},	// queueLabelCount
-				{},	// pQueueLabels
-				{},	// cmdBufLabelCount
-				{},	// pCmdBufLabels
-				{},	// objectCount
-				{},	// pObjects
-			},
-		};
+		static MessageData const baseMessage{ VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
+			, VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
+			, VkDebugUtilsMessengerCallbackDataEXT{ VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT
+				, nullptr
+				, 0u
+				, "VALIDATION"
+				, 0u /* messageIdNumber */
+				, {}	/* pMessage */
+				, {}	/* queueLabelCount */
+				, {}	/* pQueueLabels */
+				, {}	/* cmdBufLabelCount */
+				, {}	/* pCmdBufLabels */
+				, {}	/* objectCount */
+				, {}	/* pObjects */ } };
 		MessageData message{ baseMessage };
-		message.objects.push_back( 
-			{
-				VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
-				nullptr,
-				VK_OBJECT_TYPE_COMMAND_BUFFER,
-				uint64_t( cmd ),
-				nullptr,
-			} );
+
+		try
+		{
+			message.objects.push_back( { VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT
+				, nullptr
+				, VK_OBJECT_TYPE_COMMAND_BUFFER
+				, uint64_t( cmd )
+				, nullptr } );
+		}
+		catch ( std::bad_alloc & )
+		{
+			// Nothing to do on bad alloc...
+		}
+
 		return !checkValid( m_callback, copyInfo, image, message, du::check );
 	}
 
 	bool DebugUtilsLayer::onCopyToImageCommand( VkCommandBuffer cmd
 		, VkBufferImageCopyArray const & copyInfos
 		, VkBuffer src
-		, VkImage dst )const
+		, VkImage dst )const noexcept
 	{
 		for ( auto & copyInfo : copyInfos )
 		{
@@ -349,37 +349,37 @@ namespace ashes::test
 		, size_t location
 		, int32_t messageCode
 		, const char * pLayerPrefix
-		, const char * pMessage )const
+		, const char * pMessage )const noexcept
 	{
-		static MessageData const baseMessage
-		{
-			dudr::getDebugUtilsSeverity( flags ),
-			VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT,
-			VkDebugUtilsMessengerCallbackDataEXT
-			{
-				VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT,
-				nullptr,
-				0u,
-				pLayerPrefix,
-				messageCode,
-				pMessage,
-				{},	// queueLabelCount
-				{},	// pQueueLabels
-				{},	// cmdBufLabelCount
-				{},	// pCmdBufLabels
-				{},	// objectCount
-				{},	// pObjects
-			},
-		};
+		static MessageData const baseMessage{ dudr::getDebugUtilsSeverity( flags )
+			, VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
+			, VkDebugUtilsMessengerCallbackDataEXT{ VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT
+				, nullptr
+				, 0u
+				, pLayerPrefix
+				, messageCode
+				, pMessage
+				, {}	/* queueLabelCount */
+				, {}	/* pQueueLabels */
+				, {}	/* cmdBufLabelCount */
+				, {}	/* pCmdBufLabels */
+				, {}	/* objectCount */
+				, {}	/* pObjects */ } };
 		MessageData message{ baseMessage };
-		message.objects.push_back(
-			{
-				VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
-				nullptr,
-				dudr::getObjectType( objectType ),
-				object,
-				nullptr,
-			} );
+
+		try
+		{
+			message.objects.push_back( { VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT
+				, nullptr
+				, dudr::getObjectType( objectType )
+				, object
+				, nullptr } );
+		}
+		catch ( std::bad_alloc & )
+		{
+			// Nothing to do on bad alloc...
+		}
+
 		m_callback.report( message );
 	}
 
@@ -387,7 +387,7 @@ namespace ashes::test
 
 	void DebugUtilsLayer::onSubmitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
 		, VkDebugUtilsMessageTypeFlagsEXT messageTypes
-		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const
+		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const noexcept
 	{
 		m_callback.report( MessageData
 			{
@@ -408,12 +408,12 @@ namespace ashes::test
 		get( m_instance )->registerLayer( &m_layer );
 	}
 
-	DebugUtilsMessengerEXT::~DebugUtilsMessengerEXT()
+	DebugUtilsMessengerEXT::~DebugUtilsMessengerEXT()noexcept
 	{
 		get( m_instance )->unregisterLayer( &m_layer );
 	}
 
-	bool DebugUtilsMessengerEXT::report( MessageData report )
+	bool DebugUtilsMessengerEXT::report( MessageData const & report )noexcept
 	{
 		if ( report.messageTypes & m_createInfo.messageType
 			&& m_createInfo.messageSeverity & report.messageSeverity )
@@ -441,7 +441,7 @@ namespace ashes::test
 			VkResult check( DebugReportCallbackEXT & callback
 				, ReportData report
 				, bool condition
-				, std::string message )
+				, std::string const & message )noexcept
 			{
 				if ( !condition )
 				{
@@ -457,7 +457,7 @@ namespace ashes::test
 			VkResult checkEqual( DebugReportCallbackEXT callback
 				, ReportData report
 				, T const & lhs
-				, T const & rhs )
+				, T const & rhs )noexcept
 			{
 				return check( callback
 					, report
@@ -477,7 +477,7 @@ namespace ashes::test
 	bool DebugReportLayer::onBufferImageCommand( VkCommandBuffer cmd
 		, VkBufferImageCopy const & copyInfo
 		, VkBuffer buffer
-		, VkImage image )const
+		, VkImage image )const noexcept
 	{
 		static ReportData const baseReport
 		{
@@ -497,7 +497,7 @@ namespace ashes::test
 	bool DebugReportLayer::onCopyToImageCommand( VkCommandBuffer cmd
 		, VkBufferImageCopyArray const & copyInfos
 		, VkBuffer src
-		, VkImage dst )const
+		, VkImage dst )const noexcept
 	{
 		for ( auto & copyInfo : copyInfos )
 		{
@@ -511,7 +511,7 @@ namespace ashes::test
 
 	void DebugReportLayer::onSubmitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
 		, VkDebugUtilsMessageTypeFlagsEXT messageTypes
-		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const
+		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const noexcept
 	{
 		for ( uint32_t i = 0u; i < callbackData.objectCount; ++i )
 		{
@@ -537,7 +537,7 @@ namespace ashes::test
 		, size_t location
 		, int32_t messageCode
 		, const char * pLayerPrefix
-		, const char * pMessage )const
+		, const char * pMessage )const noexcept
 	{
 		m_callback.report( ReportData
 		{
@@ -562,12 +562,12 @@ namespace ashes::test
 		get( m_instance )->registerLayer( &m_layer );
 	}
 
-	DebugReportCallbackEXT::~DebugReportCallbackEXT()
+	DebugReportCallbackEXT::~DebugReportCallbackEXT()noexcept
 	{
 		get( m_instance )->unregisterLayer( &m_layer );
 	}
 
-	bool DebugReportCallbackEXT::report( ReportData report )
+	bool DebugReportCallbackEXT::report( ReportData const & report )noexcept
 	{
 		if ( report.flags & m_createInfo.flags )
 		{

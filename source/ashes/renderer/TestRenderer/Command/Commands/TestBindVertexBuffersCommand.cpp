@@ -18,7 +18,7 @@ namespace ashes::test
 
 			for ( auto & v : array )
 			{
-				result.push_back( uint32_t( v ) );
+				result.emplace_back( uint32_t( v ) );
 			}
 
 			return result;

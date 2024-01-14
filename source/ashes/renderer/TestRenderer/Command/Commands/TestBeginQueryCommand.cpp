@@ -10,10 +10,7 @@ See LICENSE file in root folder.
 
 namespace ashes::test
 {
-	BeginQueryCommand::BeginQueryCommand( VkDevice device
-		, VkQueryPool pool
-		, uint32_t query
-		, VkQueryControlFlags flags )
+	BeginQueryCommand::BeginQueryCommand( VkDevice device )
 		: CommandBase{ device }
 	{
 	}

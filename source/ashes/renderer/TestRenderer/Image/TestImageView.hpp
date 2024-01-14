@@ -26,22 +26,22 @@ namespace ashes::test
 		ImageView( VkDevice device
 			, VkImageViewCreateInfo createInfo );
 
-		inline VkFormat getFormat()const
+		VkFormat getFormat()const noexcept
 		{
 			return m_createInfo.format;
 		}
 
-		inline VkImage getImage()const
+		VkImage getImage()const noexcept
 		{
 			return m_createInfo.image;
 		}
 
-		inline VkImageSubresourceRange const & getSubResourceRange()const
+		VkImageSubresourceRange const & getSubResourceRange()const noexcept
 		{
 			return m_createInfo.subresourceRange;
 		}
 
-		VkDevice getDevice()const
+		VkDevice getDevice()const noexcept
 		{
 			return m_device;
 		}

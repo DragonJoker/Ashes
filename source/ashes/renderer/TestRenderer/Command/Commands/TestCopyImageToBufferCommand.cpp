@@ -7,9 +7,9 @@ See LICENSE file in root folder.
 namespace ashes::test
 {
 	CopyImageToBufferCommand::CopyImageToBufferCommand( VkDevice device
-		, VkBufferImageCopyArray const & copyInfo
-		, VkImage src
-		, VkBuffer dst )
+		, VkBufferImageCopyArray const &
+		, VkImage
+		, VkBuffer )
 		: CommandBase{ device }
 	{
 	}

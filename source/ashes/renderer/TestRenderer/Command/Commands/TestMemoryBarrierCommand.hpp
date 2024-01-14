@@ -25,6 +25,15 @@ namespace ashes::test
 	private:
 		struct BufferLock
 		{
+			BufferLock( VkDeviceSize offset
+				, VkDeviceSize size
+				, VkBuffer buffer )
+				: offset{ offset }
+				, size{ size }
+				, buffer{ buffer }
+			{
+			}
+
 			VkDeviceSize offset;
 			VkDeviceSize size;
 			VkBuffer buffer;

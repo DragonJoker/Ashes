@@ -18,12 +18,12 @@ namespace ashes::test
 		PipelineLayout( VkDevice device
 			, VkPipelineLayoutCreateInfo createInfo );
 
-		inline VkDescriptorSetLayoutArray const & getDescriptorsLayouts()const
+		VkDescriptorSetLayoutArray const & getDescriptorsLayouts()const noexcept
 		{
 			return m_setLayouts;
 		}
 
-		VkDevice getDevice()const
+		VkDevice getDevice()const noexcept
 		{
 			return m_device;
 		}

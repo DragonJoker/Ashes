@@ -9,8 +9,8 @@ See LICENSE file in root folder.
 namespace ashes::test
 {
 	ScissorCommand::ScissorCommand( VkDevice device
-		, uint32_t first
-		, VkScissorArray const & scissors )
+		, uint32_t
+		, VkScissorArray const & )
 		: CommandBase{ device }
 	{
 	}

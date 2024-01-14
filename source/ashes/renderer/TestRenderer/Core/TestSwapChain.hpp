@@ -11,11 +11,12 @@
 namespace ashes::test
 {
 	class SwapchainKHR
+		: public NonCopyable
 	{
 	public:
 		SwapchainKHR( VkDevice device
 			, VkSwapchainCreateInfoKHR createInfo );
-		~SwapchainKHR();
+		~SwapchainKHR()noexcept;
 
 		uint32_t getImageCount()const;
 		VkImageArray getImages()const;
@@ -25,7 +26,7 @@ namespace ashes::test
 			, uint32_t & imageIndex )const;
 		VkResult present( uint32_t imageIndex )const;
 
-	protected:
+	private:
 		VkDevice m_device;
 		VkSwapchainCreateInfoKHR m_createInfo;
 		VkImage m_image{};

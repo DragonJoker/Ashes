@@ -24,52 +24,52 @@ namespace ashes::test
 		void update( VkWriteDescriptorSet const & write );
 		void update( VkCopyDescriptorSet const & write );
 
-		inline VkDescriptorSetLayout getLayout()const
+		VkDescriptorSetLayout getLayout()const noexcept
 		{
 			return m_layout;
 		}
 
-		inline LayoutBindingWritesArray const & getCombinedTextureSamplers()const
+		LayoutBindingWritesArray const & getCombinedTextureSamplers()const noexcept
 		{
 			return m_combinedTextureSamplers;
 		}
 
-		inline LayoutBindingWritesArray const & getSamplers()const
+		LayoutBindingWritesArray const & getSamplers()const noexcept
 		{
 			return m_samplers;
 		}
 
-		inline LayoutBindingWritesArray const & getSampledTextures()const
+		LayoutBindingWritesArray const & getSampledTextures()const noexcept
 		{
 			return m_sampledTextures;
 		}
 
-		inline LayoutBindingWritesArray const & getStorageTextures()const
+		LayoutBindingWritesArray const & getStorageTextures()const noexcept
 		{
 			return m_storageTextures;
 		}
 
-		inline LayoutBindingWritesArray const & getUniformBuffers()const
+		LayoutBindingWritesArray const & getUniformBuffers()const noexcept
 		{
 			return m_uniformBuffers;
 		}
 
-		inline LayoutBindingWritesArray const & getStorageBuffers()const
+		LayoutBindingWritesArray const & getStorageBuffers()const noexcept
 		{
 			return m_storageBuffers;
 		}
 
-		inline LayoutBindingWritesArray const & getTexelBuffers()const
+		LayoutBindingWritesArray const & getTexelBuffers()const noexcept
 		{
 			return m_texelBuffers;
 		}
 
-		inline LayoutBindingWritesArray const & getDynamicBuffers()const
+		LayoutBindingWritesArray const & getDynamicBuffers()const noexcept
 		{
 			return m_dynamicBuffers;
 		}
 
-		inline LayoutBindingWritesArray const & getDynamicStorageBuffers()const
+		LayoutBindingWritesArray const & getDynamicStorageBuffers()const noexcept
 		{
 			return m_dynamicStorageBuffers;
 		}

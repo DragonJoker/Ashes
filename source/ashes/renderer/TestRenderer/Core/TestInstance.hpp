@@ -16,18 +16,19 @@ namespace ashes::test
 {
 	class Instance
 		: public ashes::IcdObject
+		, public NonCopyable
 	{
 	public:
 		/**
 		*\brief
 		*	Constructeur, initialise l'instance de Vulkan.
 		*/
-		Instance( VkInstanceCreateInfo createInfo );
+		explicit Instance( VkInstanceCreateInfo const & createInfo );
 		/**
 		*\brief
 		*	Destructeur.
 		*/
-		~Instance();
+		~Instance()noexcept;
 
 		uint32_t getApiVersion()const;
 		bool hasExtension( std::string_view extension )const;
@@ -75,7 +76,7 @@ namespace ashes::test
 #if VK_EXT_debug_utils
 		void onSubmitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
 			, VkDebugUtilsMessageTypeFlagsEXT messageTypes
-			, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const;
+			, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const noexcept;
 #endif
 #if VK_EXT_debug_report
 		void onReportMessage( VkDebugReportFlagsEXT flags
@@ -84,7 +85,7 @@ namespace ashes::test
 			, size_t location
 			, int32_t messageCode
 			, const char * pLayerPrefix
-			, const char * pMessage );
+			, const char * pMessage )noexcept;
 #endif
 		/**@}*/
 

@@ -14,42 +14,42 @@ namespace ashes::test
 		Framebuffer( VkDevice device
 			, VkFramebufferCreateInfo createInfo );
 
-		inline VkExtent2D const & getDimensions()const noexcept
+		VkExtent2D const & getDimensions()const noexcept
 		{
 			return m_dimensions;
 		}
 
-		inline VkImageViewArray const & getAllViews()const
+		VkImageViewArray const & getAllViews()const noexcept
 		{
 			return m_views;
 		}
 
-		inline VkImageViewArray const & getRTViews()const
+		VkImageViewArray const & getRTViews()const noexcept
 		{
 			return m_rtViews;
 		}
 
-		inline VkImageViewArray const & getMsRTViews()const
+		VkImageViewArray const & getMsRTViews()const noexcept
 		{
 			return m_msRtViews;
 		}
 
-		inline VkImageView getDSView()const
+		VkImageView getDSView()const noexcept
 		{
 			return m_dsView;
 		}
 
-		inline VkImageView getMsDSView()const
+		VkImageView getMsDSView()const noexcept
 		{
 			return m_msDsView;
 		}
 
-		bool isMultisampled()const
+		bool isMultisampled()const noexcept
 		{
 			return m_multisampled;
 		}
 
-		VkDevice getDevice()const
+		VkDevice getDevice()const noexcept
 		{
 			return m_device;
 		}

@@ -11,9 +11,9 @@ See LICENSE file in root folder.
 namespace ashes::test
 {
 	WriteTimestampCommand::WriteTimestampCommand( VkDevice device
-		, VkPipelineStageFlagBits pipelineStage
-		, VkQueryPool pool
-		, uint32_t query )
+		, VkPipelineStageFlagBits
+		, VkQueryPool
+		, uint32_t )
 		: CommandBase{ device }
 	{
 	}

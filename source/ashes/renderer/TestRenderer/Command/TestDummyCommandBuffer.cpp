@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #include "Command/TestCommandBuffer.hpp"
 
-#if AshesTest_DummyCommandBuffer
+#if defined( AshesTest_DummyCommandBuffer )
 
 #include "ashestest_api.hpp"
 
@@ -12,22 +12,18 @@ namespace ashes::test
 {
 	CommandBuffer::CommandBuffer( VkDevice device
 		, VkCommandPool commandPool
-		, bool primary )
+		, [[maybe_unused]] bool primary )
 		: m_device{ device }
-		, m_commandPool{}
+		, m_commandPool{ commandPool }
 	{
-		get( commandPool )->registerCommands( get( this ) );
-	}
-
-	CommandBuffer::~CommandBuffer()
-	{
+		get( m_commandPool )->registerCommands( get( this ) );
 	}
 
 	void CommandBuffer::execute()const
 	{
 	}
 
-	VkResult CommandBuffer::begin( VkCommandBufferBeginInfo info )const
+	VkResult CommandBuffer::begin( [[maybe_unused]] VkCommandBufferBeginInfo const & info )const
 	{
 		return VK_SUCCESS;
 	}
@@ -37,17 +33,17 @@ namespace ashes::test
 		return VK_SUCCESS;
 	}
 
-	VkResult CommandBuffer::reset( VkCommandBufferResetFlags flags )const
+	VkResult CommandBuffer::reset( [[maybe_unused]] VkCommandBufferResetFlags flags )const
 	{
 		return VK_SUCCESS;
 	}
 
-	void CommandBuffer::beginRenderPass( VkRenderPassBeginInfo beginInfo
-		, VkSubpassContents contents )const
+	void CommandBuffer::beginRenderPass( [[maybe_unused]] VkRenderPassBeginInfo const & beginInfo
+		, [[maybe_unused]] VkSubpassContents contents )const
 	{
 	}
 
-	void CommandBuffer::nextSubpass( VkSubpassContents contents )const
+	void CommandBuffer::nextSubpass( [[maybe_unused]] VkSubpassContents contents )const
 	{
 	}
 
@@ -55,272 +51,272 @@ namespace ashes::test
 	{
 	}
 
-	void CommandBuffer::executeCommands( VkCommandBufferArray commands )const
+	void CommandBuffer::executeCommands( [[maybe_unused]] VkCommandBufferArray const & commands )const
 	{
 	}
 
-	void CommandBuffer::clearColorImage( VkImage image
-		, VkImageLayout imageLayout
-		, VkClearColorValue colour
-		, VkImageSubresourceRangeArray ranges )const
+	void CommandBuffer::clearColorImage( [[maybe_unused]] VkImage image
+		, [[maybe_unused]] VkImageLayout imageLayout
+		, [[maybe_unused]] VkClearColorValue colour
+		, [[maybe_unused]] VkImageSubresourceRangeArray const & ranges )const
 	{
 	}
 
-	void CommandBuffer::clearDepthStencilImage( VkImage image
-		, VkImageLayout imageLayout
-		, VkClearDepthStencilValue value
-		, VkImageSubresourceRangeArray ranges )const
+	void CommandBuffer::clearDepthStencilImage( [[maybe_unused]] VkImage image
+		, [[maybe_unused]] VkImageLayout imageLayout
+		, [[maybe_unused]] VkClearDepthStencilValue value
+		, [[maybe_unused]] VkImageSubresourceRangeArray const & ranges )const
 	{
 	}
 
-	void CommandBuffer::clearAttachments( VkClearAttachmentArray clearAttachments
-		, VkClearRectArray clearRects )
+	void CommandBuffer::clearAttachments( [[maybe_unused]] VkClearAttachmentArray const & clearAttachments
+		, [[maybe_unused]] VkClearRectArray const & clearRects )
 	{
 	}
 
-	void CommandBuffer::bindPipeline( VkPipeline pipeline
-		, VkPipelineBindPoint bindingPoint )const
+	void CommandBuffer::bindPipeline( [[maybe_unused]] VkPipeline pipeline
+		, [[maybe_unused]] VkPipelineBindPoint bindingPoint )const
 	{
 	}
 
-	void CommandBuffer::bindVertexBuffers( uint32_t firstBinding
-		, VkBufferArray buffers
-		, UInt64Array offsets )const
+	void CommandBuffer::bindVertexBuffers( [[maybe_unused]] uint32_t firstBinding
+		, [[maybe_unused]] VkBufferArray const & buffers
+		, [[maybe_unused]] UInt64Array const & offsets )const
 	{
 	}
 
-	void CommandBuffer::bindIndexBuffer( VkBuffer buffer
-		, uint64_t offset
-		, VkIndexType indexType )const
+	void CommandBuffer::bindIndexBuffer( [[maybe_unused]] VkBuffer buffer
+		, [[maybe_unused]] uint64_t offset
+		, [[maybe_unused]] VkIndexType indexType )const
 	{
 	}
 
-	void CommandBuffer::bindDescriptorSets( VkPipelineBindPoint bindingPoint
-		, VkPipelineLayout layout
-		, uint32_t firstSet
-		, VkDescriptorSetArray descriptorSets
-		, UInt32Array dynamicOffsets )const
+	void CommandBuffer::bindDescriptorSets( [[maybe_unused]] VkPipelineBindPoint bindingPoint
+		, [[maybe_unused]] VkPipelineLayout layout
+		, [[maybe_unused]] uint32_t firstSet
+		, [[maybe_unused]] VkDescriptorSetArray const & descriptorSets
+		, [[maybe_unused]] UInt32Array const & dynamicOffsets )const
 	{
 	}
 
-	void CommandBuffer::setViewport( uint32_t firstViewport
-		, VkViewportArray viewports )const
+	void CommandBuffer::setViewport( [[maybe_unused]] uint32_t firstViewport
+		, [[maybe_unused]] VkViewportArray const & viewports )const
 	{
 	}
 
-	void CommandBuffer::setScissor( uint32_t firstScissor
-		, VkScissorArray scissors )const
+	void CommandBuffer::setScissor( [[maybe_unused]] uint32_t firstScissor
+		, [[maybe_unused]] VkScissorArray const & scissors )const
 	{
 	}
 
-	void CommandBuffer::draw( uint32_t vtxCount
-		, uint32_t instCount
-		, uint32_t firstVertex
-		, uint32_t firstInstance )const
+	void CommandBuffer::draw( [[maybe_unused]] uint32_t vtxCount
+		, [[maybe_unused]] uint32_t instCount
+		, [[maybe_unused]] uint32_t firstVertex
+		, [[maybe_unused]] uint32_t firstInstance )const
 	{
 	}
 
-	void CommandBuffer::drawIndexed( uint32_t indexCount
-		, uint32_t instCount
-		, uint32_t firstIndex
-		, uint32_t vertexOffset
-		, uint32_t firstInstance )const
+	void CommandBuffer::drawIndexed( [[maybe_unused]] uint32_t indexCount
+		, [[maybe_unused]] uint32_t instCount
+		, [[maybe_unused]] uint32_t firstIndex
+		, [[maybe_unused]] uint32_t vertexOffset
+		, [[maybe_unused]] uint32_t firstInstance )const
 	{
 	}
 
-	void CommandBuffer::drawIndirect( VkBuffer buffer
-		, VkDeviceSize offset
-		, uint32_t drawCount
-		, uint32_t stride )const
+	void CommandBuffer::drawIndirect( [[maybe_unused]] VkBuffer buffer
+		, [[maybe_unused]] VkDeviceSize offset
+		, [[maybe_unused]] uint32_t drawCount
+		, [[maybe_unused]] uint32_t stride )const
 	{
 	}
 
-	void CommandBuffer::drawIndexedIndirect( VkBuffer buffer
-		, VkDeviceSize offset
-		, uint32_t drawCount
-		, uint32_t stride )const
+	void CommandBuffer::drawIndexedIndirect( [[maybe_unused]] VkBuffer buffer
+		, [[maybe_unused]] VkDeviceSize offset
+		, [[maybe_unused]] uint32_t drawCount
+		, [[maybe_unused]] uint32_t stride )const
 	{
 	}
 
-	void CommandBuffer::copyToImage( VkBuffer src
-		, VkImage dst
-		, VkImageLayout dstLayout
-		, VkBufferImageCopyArray copyInfos )const
+	void CommandBuffer::copyToImage( [[maybe_unused]] VkBuffer src
+		, [[maybe_unused]] VkImage dst
+		, [[maybe_unused]] VkImageLayout dstLayout
+		, [[maybe_unused]] VkBufferImageCopyArray const & copyInfos )const
 	{
 	}
 
-	void CommandBuffer::copyToBuffer( VkImage src
-		, VkImageLayout srcLayout
-		, VkBuffer dst
-		, VkBufferImageCopyArray copyInfos )const
+	void CommandBuffer::copyToBuffer( [[maybe_unused]] VkImage src
+		, [[maybe_unused]] VkImageLayout srcLayout
+		, [[maybe_unused]] VkBuffer dst
+		, [[maybe_unused]] VkBufferImageCopyArray const & copyInfos )const
 	{
 	}
 
-	void CommandBuffer::updateBuffer( VkBuffer dstBuffer
-		, VkDeviceSize dstOffset
-		, ArrayView< uint8_t const > data )
+	void CommandBuffer::updateBuffer( [[maybe_unused]] VkBuffer dstBuffer
+		, [[maybe_unused]] VkDeviceSize dstOffset
+		, [[maybe_unused]] ArrayView< uint8_t const > data )
 	{
 	}
 
-	void CommandBuffer::fillBuffer( VkBuffer dstBuffer
-		, VkDeviceSize dstOffset
-		, VkDeviceSize size
-		, uint32_t data )
+	void CommandBuffer::fillBuffer( [[maybe_unused]] VkBuffer dstBuffer
+		, [[maybe_unused]] VkDeviceSize dstOffset
+		, [[maybe_unused]] VkDeviceSize size
+		, [[maybe_unused]] uint32_t data )
 	{
 	}
 
-	void CommandBuffer::copyBuffer( VkBuffer src
-		, VkBuffer dst
-		, VkBufferCopyArray copyInfos )const
+	void CommandBuffer::copyBuffer( [[maybe_unused]] VkBuffer src
+		, [[maybe_unused]] VkBuffer dst
+		, [[maybe_unused]] VkBufferCopyArray const & copyInfos )const
 	{
 	}
 
-	void CommandBuffer::copyImage( VkImage src
-		, VkImageLayout srcLayout
-		, VkImage dst
-		, VkImageLayout dstLayout
-		, VkImageCopyArray copyInfos )const
+	void CommandBuffer::copyImage( [[maybe_unused]] VkImage src
+		, [[maybe_unused]] VkImageLayout srcLayout
+		, [[maybe_unused]] VkImage dst
+		, [[maybe_unused]] VkImageLayout dstLayout
+		, [[maybe_unused]] VkImageCopyArray const & copyInfos )const
 	{
 	}
 
-	void CommandBuffer::blitImage( VkImage srcImage
-		, VkImageLayout srcLayout
-		, VkImage dstImage
-		, VkImageLayout dstLayout
-		, VkImageBlitArray regions
-		, VkFilter filter )const
+	void CommandBuffer::blitImage( [[maybe_unused]] VkImage srcImage
+		, [[maybe_unused]] VkImageLayout srcLayout
+		, [[maybe_unused]] VkImage dstImage
+		, [[maybe_unused]] VkImageLayout dstLayout
+		, [[maybe_unused]] VkImageBlitArray const & regions
+		, [[maybe_unused]] VkFilter filter )const
 	{
 	}
 
-	void CommandBuffer::resolveImage( VkImage srcImage
-		, VkImageLayout srcLayout
-		, VkImage dstImage
-		, VkImageLayout dstLayout
-		, VkImageResolveArray regions )const
+	void CommandBuffer::resolveImage( [[maybe_unused]] VkImage srcImage
+		, [[maybe_unused]] VkImageLayout srcLayout
+		, [[maybe_unused]] VkImage dstImage
+		, [[maybe_unused]] VkImageLayout dstLayout
+		, [[maybe_unused]] VkImageResolveArray const & regions )const
 	{
 	}
 
-	void CommandBuffer::resetQueryPool( VkQueryPool pool
-		, uint32_t firstQuery
-		, uint32_t queryCount )const
+	void CommandBuffer::resetQueryPool( [[maybe_unused]] VkQueryPool pool
+		, [[maybe_unused]] uint32_t firstQuery
+		, [[maybe_unused]] uint32_t queryCount )const
 	{
 	}
 
-	void CommandBuffer::beginQuery( VkQueryPool pool
-		, uint32_t query
-		, VkQueryControlFlags flags )const
+	void CommandBuffer::beginQuery( [[maybe_unused]] VkQueryPool pool
+		, [[maybe_unused]] uint32_t query
+		, [[maybe_unused]] VkQueryControlFlags flags )const
 	{
 	}
 
-	void CommandBuffer::endQuery( VkQueryPool pool
-		, uint32_t query )const
+	void CommandBuffer::endQuery( [[maybe_unused]] VkQueryPool pool
+		, [[maybe_unused]] uint32_t query )const
 	{
 	}
 
-	void CommandBuffer::writeTimestamp( VkPipelineStageFlagBits pipelineStage
-		, VkQueryPool pool
-		, uint32_t query )const
+	void CommandBuffer::writeTimestamp( [[maybe_unused]] VkPipelineStageFlagBits pipelineStage
+		, [[maybe_unused]] VkQueryPool pool
+		, [[maybe_unused]] uint32_t query )const
 	{
 	}
 
-	void CommandBuffer::copyQueryPoolResults( VkQueryPool queryPool
-		, uint32_t firstQuery
-		, uint32_t queryCount
-		, VkBuffer dstBuffer
-		, VkDeviceSize dstOffset
-		, VkDeviceSize stride
-		, VkQueryResultFlags flags )const
+	void CommandBuffer::copyQueryPoolResults( [[maybe_unused]] VkQueryPool queryPool
+		, [[maybe_unused]] uint32_t firstQuery
+		, [[maybe_unused]] uint32_t queryCount
+		, [[maybe_unused]] VkBuffer dstBuffer
+		, [[maybe_unused]] VkDeviceSize dstOffset
+		, [[maybe_unused]] VkDeviceSize stride
+		, [[maybe_unused]] VkQueryResultFlags flags )const
 	{
 	}
 
-	void CommandBuffer::pushConstants( VkPipelineLayout layout
-		, VkShaderStageFlags stageFlags
-		, uint32_t offset
-		, uint32_t size
-		, void const * data )const
+	void CommandBuffer::pushConstants( [[maybe_unused]] VkPipelineLayout layout
+		, [[maybe_unused]] VkShaderStageFlags stageFlags
+		, [[maybe_unused]] uint32_t offset
+		, [[maybe_unused]] uint32_t size
+		, [[maybe_unused]] void const * data )const
 	{
 	}
 
-	void CommandBuffer::dispatch( uint32_t groupCountX
-		, uint32_t groupCountY
-		, uint32_t groupCountZ )const
+	void CommandBuffer::dispatch( [[maybe_unused]] uint32_t groupCountX
+		, [[maybe_unused]] uint32_t groupCountY
+		, [[maybe_unused]] uint32_t groupCountZ )const
 	{
 	}
 
-	void CommandBuffer::dispatchIndirect( VkBuffer buffer
-		, VkDeviceSize offset )const
+	void CommandBuffer::dispatchIndirect( [[maybe_unused]] VkBuffer buffer
+		, [[maybe_unused]] VkDeviceSize offset )const
 	{
 	}
 
-	void CommandBuffer::setLineWidth( float width )const
+	void CommandBuffer::setLineWidth( [[maybe_unused]] float width )const
 	{
 	}
 
-	void CommandBuffer::setDepthBias( float constantFactor
-		, float clamp
-		, float slopeFactor )const
+	void CommandBuffer::setDepthBias( [[maybe_unused]] float constantFactor
+		, [[maybe_unused]] float clamp
+		, [[maybe_unused]] float slopeFactor )const
 	{
 	}
 
-	void CommandBuffer::setBlendConstants( float const blendConstants[4] )const
+	void CommandBuffer::setBlendConstants( [[maybe_unused]] ArrayView< float const > blendConstants )const
 	{
 	}
 
-	void CommandBuffer::setDepthBounds( float minDepthBounds
-		, float maxDepthBounds )const
+	void CommandBuffer::setDepthBounds( [[maybe_unused]] float minDepthBounds
+		, [[maybe_unused]] float maxDepthBounds )const
 	{
 	}
 
-	void CommandBuffer::setStencilCompareMask( VkStencilFaceFlags faceMask
-		, uint32_t compareMask )const
+	void CommandBuffer::setStencilCompareMask( [[maybe_unused]] VkStencilFaceFlags faceMask
+		, [[maybe_unused]] uint32_t compareMask )const
 	{
 	}
 
-	void CommandBuffer::setStencilWriteMask( VkStencilFaceFlags faceMask
-		, uint32_t writeMask )const
+	void CommandBuffer::setStencilWriteMask( [[maybe_unused]] VkStencilFaceFlags faceMask
+		, [[maybe_unused]] uint32_t writeMask )const
 	{
 	}
 
-	void CommandBuffer::setStencilReference( VkStencilFaceFlags faceMask
-		, uint32_t reference )
+	void CommandBuffer::setStencilReference( [[maybe_unused]] VkStencilFaceFlags faceMask
+		, [[maybe_unused]] uint32_t reference )
 	{
 	}
 
-	void CommandBuffer::setEvent( VkEvent event
-		, VkPipelineStageFlags stageMask )const
+	void CommandBuffer::setEvent( [[maybe_unused]] VkEvent event
+		, [[maybe_unused]] VkPipelineStageFlags stageMask )const
 	{
 	}
 
-	void CommandBuffer::resetEvent( VkEvent event
-		, VkPipelineStageFlags stageMask )const
+	void CommandBuffer::resetEvent( [[maybe_unused]] VkEvent event
+		, [[maybe_unused]] VkPipelineStageFlags stageMask )const
 	{
 	}
 
-	void CommandBuffer::waitEvents( VkEventArray events
-		, VkPipelineStageFlags srcStageMask
-		, VkPipelineStageFlags dstStageMask
-		, VkMemoryBarrierArray memoryBarriers
-		, VkBufferMemoryBarrierArray bufferMemoryBarriers
-		, VkImageMemoryBarrierArray imageMemoryBarriers )const
+	void CommandBuffer::waitEvents( [[maybe_unused]] VkEventArray const & events
+		, [[maybe_unused]] VkPipelineStageFlags srcStageMask
+		, [[maybe_unused]] VkPipelineStageFlags dstStageMask
+		, [[maybe_unused]] VkMemoryBarrierArray const & memoryBarriers
+		, [[maybe_unused]] VkBufferMemoryBarrierArray const & bufferMemoryBarriers
+		, [[maybe_unused]] VkImageMemoryBarrierArray const & imageMemoryBarriers )const
 	{
 	}
 
-	void CommandBuffer::pipelineBarrier( VkPipelineStageFlags after
-		, VkPipelineStageFlags before
-		, VkDependencyFlags dependencyFlags
-		, VkMemoryBarrierArray memoryBarriers
-		, VkBufferMemoryBarrierArray bufferMemoryBarriers
-		, VkImageMemoryBarrierArray imageMemoryBarriers )const
+	void CommandBuffer::pipelineBarrier( [[maybe_unused]] VkPipelineStageFlags after
+		, [[maybe_unused]] VkPipelineStageFlags before
+		, [[maybe_unused]] VkDependencyFlags dependencyFlags
+		, [[maybe_unused]] VkMemoryBarrierArray const & memoryBarriers
+		, [[maybe_unused]] VkBufferMemoryBarrierArray const & bufferMemoryBarriers
+		, [[maybe_unused]] VkImageMemoryBarrierArray const & imageMemoryBarriers )const
 	{
 	}
 
-	void CommandBuffer::generateMipmaps( VkImage texture )const
+	void CommandBuffer::generateMipmaps( [[maybe_unused]] VkImage texture )const
 	{
 	}
 
 #if VK_EXT_debug_utils
 
-	void CommandBuffer::beginDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const
+	void CommandBuffer::beginDebugUtilsLabel( [[maybe_unused]] VkDebugUtilsLabelEXT const & labelInfo )const
 	{
 	}
 
@@ -328,14 +324,14 @@ namespace ashes::test
 	{
 	}
 
-	void CommandBuffer::insertDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const
+	void CommandBuffer::insertDebugUtilsLabel( [[maybe_unused]] VkDebugUtilsLabelEXT const & labelInfo )const
 	{
 	}
 
 #endif
 #if VK_EXT_debug_marker
 
-	void CommandBuffer::debugMarkerBegin( VkDebugMarkerMarkerInfoEXT const & labelInfo )const
+	void CommandBuffer::debugMarkerBegin( [[maybe_unused]] VkDebugMarkerMarkerInfoEXT const & labelInfo )const
 	{
 	}
 
@@ -343,7 +339,7 @@ namespace ashes::test
 	{
 	}
 
-	void CommandBuffer::debugMarkerInsert( VkDebugMarkerMarkerInfoEXT const & labelInfo )const
+	void CommandBuffer::debugMarkerInsert( [[maybe_unused]] VkDebugMarkerMarkerInfoEXT const & labelInfo )const
 	{
 	}
 

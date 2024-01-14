@@ -7,8 +7,8 @@ See LICENSE file in root folder.
 namespace ashes::test
 {
 	EndQueryCommand::EndQueryCommand( VkDevice device
-		, VkQueryPool pool
-		, uint32_t query )
+		, VkQueryPool
+		, uint32_t )
 		: CommandBase{ device }
 	{
 	}

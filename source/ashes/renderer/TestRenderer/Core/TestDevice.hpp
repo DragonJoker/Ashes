@@ -17,12 +17,13 @@ namespace ashes::test
 {
 	class Device
 		: public ashes::IcdObject
+		, public NonCopyable
 	{
 	public:
 		Device( VkInstance instance
 			, VkPhysicalDevice physicalDevice
 			, VkDeviceCreateInfo createInfos );
-		~Device();
+		~Device()noexcept;
 
 		bool hasExtension( std::string_view extension )const;
 		VkPhysicalDeviceLimits const & getLimits()const;
@@ -97,32 +98,18 @@ namespace ashes::test
 			, const char * pLayerPrefix
 			, const char * pMessage );
 		/**@}*/
-		/**
-		*\~french
-		*\return
-		*	L'API de rendu.
-		*\~english
-		*\return
-		*	The rendering API.
-		*/
-		inline VkInstance getInstance()const
+
+		VkInstance getInstance()const noexcept
 		{
 			return m_instance;
 		}
-		/**
-		*\~french
-		*\return
-		*	La connection à l'application.
-		*\~english
-		*\return
-		*	The connection to the application.
-		*/
-		inline VkBuffer getEmptyIndexedVaoIdx()const
+
+		VkBuffer getEmptyIndexedVaoIdx()const noexcept
 		{
 			return m_dummyIndexed.buffer;
 		}
 
-		inline VkPhysicalDevice getGpu()const
+		VkPhysicalDevice getGpu()const noexcept
 		{
 			return m_physicalDevice;
 		}
@@ -134,6 +121,13 @@ namespace ashes::test
 	private:
 		struct QueueCreates
 		{
+			QueueCreates( VkDeviceQueueCreateInfo createInfo
+				, std::vector< VkQueue > queues = {} )
+				: createInfo{ std::move( createInfo ) }
+				, queues{ std::move( queues ) }
+			{
+			}
+
 			VkDeviceQueueCreateInfo createInfo;
 			std::vector< VkQueue > queues;
 		};

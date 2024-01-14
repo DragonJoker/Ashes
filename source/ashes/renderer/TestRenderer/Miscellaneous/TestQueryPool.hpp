@@ -25,7 +25,7 @@ namespace ashes::test
 			, VkQueryResultFlags flags
 			, UInt64Array & data )const;
 
-		inline VkDevice getDevice()const
+		VkDevice getDevice()const noexcept
 		{
 			return m_device;
 		}

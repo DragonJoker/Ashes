@@ -22,7 +22,7 @@ namespace ashes::test
 		ShaderModule( VkDevice device
 			, VkShaderModuleCreateInfo createInfo );
 
-		inline VkDevice getDevice()const
+		VkDevice getDevice()const noexcept
 		{
 			return m_device;
 		}

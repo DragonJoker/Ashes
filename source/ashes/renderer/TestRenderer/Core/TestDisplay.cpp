@@ -34,7 +34,7 @@ namespace ashes::test
 		}
 	}
 
-	DisplayKHR::~DisplayKHR()
+	DisplayKHR::~DisplayKHR()noexcept
 	{
 		for ( auto & displayMode : m_displayModes )
 		{

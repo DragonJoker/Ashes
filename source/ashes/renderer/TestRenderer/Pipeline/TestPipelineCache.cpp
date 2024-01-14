@@ -3,12 +3,12 @@
 namespace ashes::test
 {
 	PipelineCache::PipelineCache( VkDevice device
-		, VkPipelineCacheCreateInfo createInfo )
+		, VkPipelineCacheCreateInfo const & )
 		: m_device{ device }
 	{
 	}
 
-	VkResult PipelineCache::merge( VkPipelineCacheArray pipelines )
+	VkResult PipelineCache::merge( VkPipelineCacheArray const & )
 	{
 		return VK_SUCCESS;
 	}
