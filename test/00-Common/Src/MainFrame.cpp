@@ -54,13 +54,13 @@ namespace common
 			m_panel = doCreatePanel( m_defaultSize, *m_instance );
 
 			wxBoxSizer * sizer{ new wxBoxSizer{ wxVERTICAL } };
-			sizer->Add( m_panel, wxSizerFlags{ 1 }.Expand() );
+			sizer->Add( m_panel.get(), wxSizerFlags{ 1 }.Expand() );
 			sizer->SetSizeHints( this );
 			SetSizer( sizer );
 
 			std::cout << "Main frame initialised successfully." << std::endl;
 		}
-		catch ( std::exception & p_exc )
+		catch ( Exception & p_exc )
 		{
 			wxMessageBox( p_exc.what()
 				, wxMessageBoxCaptionStr
@@ -72,7 +72,8 @@ namespace common
 	{
 		if ( m_panel )
 		{
-			m_panel->Destroy();
+			RemoveChild( m_panel.get() );
+			m_panel.reset();
 		}
 
 		m_instance.reset();
@@ -91,20 +92,20 @@ namespace common
 #ifndef NDEBUG
 		title << " Debug";
 #endif
-		auto averageCpuTime = std::accumulate( m_cpuFramesTimes.begin()
+		auto averageCpuTime = float( std::accumulate( m_cpuFramesTimes.begin()
 			, m_cpuFramesTimes.begin() + count
-			, std::chrono::microseconds{ 0 } ).count() / float( count );
+			, std::chrono::microseconds{ 0 } ).count() ) / float( count );
 		auto cpuAvgMs = averageCpuTime / 1000.0f;
-		auto cpuMs = durationCpu.count() / 1000.0f;
+		auto cpuMs = float( durationCpu.count() ) / 1000.0f;
 		title << " [CPU: I " << std::setw( 6 ) << std::setprecision( 4 ) << cpuMs << " ms";
 		title << ", A " << std::setw( 6 ) << std::setprecision( 4 ) << cpuAvgMs << " ms";
 		title << " (" << std::setw( 5 ) << int( 1000.0f / cpuAvgMs ) << " fps)";
 
-		auto averageGpuTime = std::accumulate( m_gpuFramesTimes.begin()
+		auto averageGpuTime = float( std::accumulate( m_gpuFramesTimes.begin()
 			, m_gpuFramesTimes.begin() + count
-			, std::chrono::microseconds{ 0 } ).count() / float( count );
+			, std::chrono::microseconds{ 0 } ).count() ) / float( count );
 		auto gpuAvgMs = averageGpuTime / 1000.0f;
-		auto gpuMs = durationGpu.count() / 1000.0f;
+		auto gpuMs = float( durationGpu.count() ) / 1000.0f;
 		title << " [GPU: I " << std::setw( 6 ) << std::setprecision( 4 ) << gpuMs << " ms";
 		title << ", A " << std::setw( 6 ) << std::setprecision( 4 ) << gpuAvgMs << " ms";
 		title << " (" << std::setw( 5 ) << int( 1000.0f / gpuAvgMs ) << " fps)";
@@ -117,12 +118,12 @@ namespace common
 		++m_frameCount;
 		m_cpuFramesTimes[m_frameIndex] = duration;
 		auto count = std::min( m_frameCount, m_cpuFramesTimes.size() );
-		auto averageTime = std::accumulate( m_cpuFramesTimes.begin()
+		auto averageTime = float( std::accumulate( m_cpuFramesTimes.begin()
 			, m_cpuFramesTimes.begin() + count
-			, std::chrono::microseconds{ 0 } ).count() / float( count );
+			, std::chrono::microseconds{ 0 } ).count() ) / float( count );
 		m_frameIndex = ++m_frameIndex % FrameSamplesCount;
 		std::stringstream title;
-		auto ms = duration.count() / 1000.0f;
+		auto ms = float( duration.count() ) / 1000.0f;
 		auto avgms = averageTime / 1000.0f;
 #ifndef NDEBUG
 		title << " - Debug";

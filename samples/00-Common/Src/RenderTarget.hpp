@@ -15,18 +15,18 @@ namespace common
 			, VkExtent2D const & size
 			, Scene scene
 			, ImagePtrArray images );
-		virtual ~RenderTarget();
+		virtual ~RenderTarget()noexcept;
 		void resize( VkExtent2D const & size );
 		void update( std::chrono::microseconds const & duration );
 		void draw( ashes::Queue const & queue
-			, std::chrono::microseconds & gpu );
+			, std::chrono::microseconds & gpu )const;
 
-		inline ashes::ImageView getColourView()const
+		ashes::ImageView getColourView()const noexcept
 		{
 			return m_colourView;
 		}
 
-		inline ashes::ImageView getDepthView()const
+		ashes::ImageView getDepthView()const noexcept
 		{
 			return m_depthView;
 		}
@@ -34,20 +34,51 @@ namespace common
 	protected:
 		void doInitialise();
 
-		inline OpaqueRendering const & getOpaqueRendering()const
+		OpaqueRendering const & getOpaqueRendering()const noexcept
 		{
 			assert( m_opaque );
 			return *m_opaque;
 		}
 
-		inline TransparentRendering const & getTransparentRendering()const
+		TransparentRendering const & getTransparentRendering()const noexcept
 		{
 			assert( m_transparent );
 			return *m_transparent;
 		}
 
+		utils::Device const & getDevice()const noexcept
+		{
+			return m_device;
+		}
+
+		ashes::CommandPool const & getCommandPool()const noexcept
+		{
+			return m_commandPool;
+		}
+
+		ashes::Queue const & getTransferQueue()const noexcept
+		{
+			return m_transferQueue;
+		}
+
+		ashes::StagingBuffer & getStagingBuffer()const noexcept
+		{
+			assert( m_stagingBuffer );
+			return *m_stagingBuffer;
+		}
+
+		VkExtent2D const & getSize()const noexcept
+		{
+			return m_size;
+		}
+
+		void setSize( VkExtent2D const & v )noexcept
+		{
+			m_size = v;
+		}
+
 	private:
-		void doCleanup();
+		void doCleanup()noexcept;
 		void doCreateStagingBuffer();
 		void doCreateTextures();
 		void doCreateRenderPass();
@@ -67,24 +98,22 @@ namespace common
 			, Scene const & scene
 			, TextureNodePtrArray const & textureNodes ) = 0;
 
-	protected:
+	private:
 		utils::Device const & m_device;
 		ashes::CommandPool const & m_commandPool;
 		ashes::Queue const & m_transferQueue;
-		ashes::StagingBufferPtr m_stagingBuffer;
-		VkExtent2D m_size;
-
-	private:
-		ImagePtrArray m_images;
-		Scene m_scene;
-		TextureNodePtrArray m_textureNodes;
-		utils::Mat4 m_rotate;
-		ashes::ImagePtr m_colour;
-		ashes::ImageView m_colourView;
-		ashes::ImagePtr m_depth;
-		ashes::ImageView m_depthView;
-		ashes::CommandBufferPtr m_commandBuffer;
-		std::shared_ptr< OpaqueRendering > m_opaque;
-		std::shared_ptr< TransparentRendering > m_transparent;
+		ashes::StagingBufferPtr m_stagingBuffer{};
+		VkExtent2D m_size{};
+		ImagePtrArray m_images{};
+		Scene m_scene{};
+		TextureNodePtrArray m_textureNodes{};
+		utils::Mat4 m_rotate{};
+		ashes::ImagePtr m_colour{};
+		ashes::ImageView m_colourView{};
+		ashes::ImagePtr m_depth{};
+		ashes::ImageView m_depthView{};
+		ashes::CommandBufferPtr m_commandBuffer{};
+		std::shared_ptr< OpaqueRendering > m_opaque{};
+		std::shared_ptr< TransparentRendering > m_transparent{};
 	};
 }

@@ -15,23 +15,23 @@ namespace common
 			, ashes::Queue const & queue
 			, ashes::CommandPool const & commandPool
 			, VkExtent2D const & size );
-		~Gui();
+		~Gui()noexcept;
 		void updateView( ashes::ImageView colourView );
 		void update();
 		void resize( VkExtent2D const & size );
-		void submit( ashes::Queue const & queue );
+		void submit( ashes::Queue const & queue )const;
 
-		bool header( char const * caption );
-		bool checkBox( char const * caption, bool * value );
-		bool checkBox( char const * caption, int32_t * value );
-		bool inputFloat( char const * caption, float * value, float step, uint32_t precision );
-		bool sliderFloat( char const * caption, float * value, float min, float max );
-		bool sliderInt( char const * caption, int32_t * value, int32_t min, int32_t max );
-		bool comboBox( char const * caption, int32_t * itemindex, std::vector< std::string > items );
-		bool button( char const * caption );
-		void text( char const * formatstr, ... );
+		bool header( char const * caption )const;
+		bool checkBox( char const * caption, bool * value )const;
+		bool checkBox( char const * caption, int32_t * value )const;
+		bool inputFloat( char const * caption, float * value, float step, uint32_t precision )const;
+		bool sliderFloat( char const * caption, float * value, float min, float max )const;
+		bool sliderInt( char const * caption, int32_t * value, int32_t min, int32_t max )const;
+		bool comboBox( char const * caption, int32_t * itemindex, std::vector< std::string > const & items )const;
+		bool button( char const * caption )const;
+		void text( char const * formatstr, ... )const;
 
-		inline ashes::ImageView const & getTargetView()const
+		ashes::ImageView const & getTargetView()const
 		{
 			return m_targetView;
 		}

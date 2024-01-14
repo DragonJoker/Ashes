@@ -11,7 +11,7 @@ namespace vkapp
 {
 	namespace
 	{
-		static uint32_t constexpr ObjectCount = 100u;
+		uint32_t constexpr ObjectCount = 100u;
 	}
 
 	RenderPanel::RenderPanel( wxWindow * parent
@@ -64,12 +64,12 @@ namespace vkapp
 			position[0] += 4;
 		}
 
-		m_renderTarget = std::make_unique< RenderTarget >( device
-			, *m_commandPool
-			, *m_graphicsQueue
+		setRenderTarget( std::make_unique< RenderTarget >( device
+			, getCommandPool()
+			, getGraphicsQueue()
 			, size
 			, std::move( scene )
-			, std::move( images ) );
+			, std::move( images ) ) );
 	}
 
 	void RenderPanel::doUpdateOverlays( common::Gui const & overlay )
@@ -78,8 +78,8 @@ namespace vkapp
 
 	void RenderPanel::doUpdate()
 	{
-		auto & renderTarget = static_cast< RenderTarget & >( *m_renderTarget );
-		renderTarget.enableMoveCamera( m_mouse.left );
-		renderTarget.updateMousePosition( m_mouse.position );
+		auto & renderTarget = static_cast< RenderTarget & >( getRenderTarget() );
+		renderTarget.enableMoveCamera( getMouse().left );
+		renderTarget.updateMousePosition( getMouse().position );
 	}
 }

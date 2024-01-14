@@ -31,14 +31,14 @@ namespace vkapp
 			RenderTimer = 42
 		};
 
-		static int const TimerTimeMs = 40;
+		int const TimerTimeMs = 40;
 	}
 
 	RenderPanel::RenderPanel( wxWindow * parent
 		, wxSize const & size
 		, utils::Instance const & instance )
 		: wxPanel{ parent, int( Ids::This ), wxDefaultPosition, size }
-		, m_timer{ new wxTimer{ this, int( Ids::RenderTimer ) } }
+		, m_timer{ this, int( Ids::RenderTimer ) }
 	{
 		try
 		{
@@ -57,27 +57,25 @@ namespace vkapp
 			doPrepareFrames();
 			std::cout << "Frames prepared." << std::endl;
 		}
-		catch ( std::exception & )
+		catch ( common::Exception & )
 		{
 			doCleanup();
 			throw;
 		}
 
-		m_timer->Start( TimerTimeMs );
+		m_timer.Start( TimerTimeMs );
 
 		Connect( int( Ids::RenderTimer ), wxEVT_TIMER, wxTimerEventHandler( RenderPanel::onTimer ), nullptr, this );
 		Connect( wxID_ANY, wxEVT_SIZE, wxSizeEventHandler( RenderPanel::onSize ), nullptr, this );
 	}
 
-	RenderPanel::~RenderPanel()
+	RenderPanel::~RenderPanel()noexcept
 	{
 		doCleanup();
 	}
 
-	void RenderPanel::doCleanup()
+	void RenderPanel::doCleanup()noexcept
 	{
-		delete m_timer;
-
 		if ( m_device )
 		{
 			m_device->getDevice().waitIdle();
@@ -99,7 +97,7 @@ namespace vkapp
 	ashes::SurfacePtr RenderPanel::doCreateSurface( utils::Instance const & instance )
 	{
 		auto handle = common::makeWindowHandle( *this );
-		auto & gpu = instance.getPhysicalDevice( 0u );
+		auto const & gpu = instance.getPhysicalDevice( 0u );
 		return instance.getInstance().createSurface( gpu
 			, std::move( handle ) );
 	}
@@ -108,7 +106,7 @@ namespace vkapp
 		, ashes::Surface const & surface )
 	{
 		m_device = std::make_unique< utils::Device >( instance.getInstance()
-			, std::move( surface ) );
+			, surface );
 		m_graphicsQueue = m_device->getDevice().getQueue( m_device->getGraphicsQueueFamily(), 0u );
 		m_presentQueue = m_device->getDevice().getQueue( m_device->getPresentQueueFamily(), 0u );
 		m_commandPool = m_device->getDevice().createCommandPool( m_device->getGraphicsQueueFamily()
@@ -232,13 +230,12 @@ namespace vkapp
 	void RenderPanel::doCreatePipeline()
 	{
 		m_pipelineLayout = m_device->getDevice().createPipelineLayout();
-		wxSize size{ GetClientSize() };
 		std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
 		if ( !wxFileExists( shadersFolder / "shader.vert" )
 			|| !wxFileExists( shadersFolder / "shader.frag" ) )
 		{
-			throw std::runtime_error{ "Shader files are missing" };
+			throw common::Exception{ "Shader files are missing" };
 		}
 
 		ashes::PipelineVertexInputStateCreateInfo vertexLayout
@@ -254,26 +251,20 @@ namespace vkapp
 		};
 
 		ashes::PipelineShaderStageCreateInfoArray shaderStages;
-		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
-			{
-				0u,
-				VK_SHADER_STAGE_VERTEX_BIT,
-				m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
-					, VK_SHADER_STAGE_VERTEX_BIT
-					, shadersFolder / "shader.vert" ) ),
-				"main",
-				ashes::nullopt,
-			} );
-		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
-			{
-				0u,
-				VK_SHADER_STAGE_FRAGMENT_BIT,
-				m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
-					, VK_SHADER_STAGE_FRAGMENT_BIT
-					, shadersFolder / "shader.frag" ) ),
-				"main",
-				ashes::nullopt,
-			} );
+		shaderStages.emplace_back( 0u
+			, VK_SHADER_STAGE_VERTEX_BIT
+			, m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+				, VK_SHADER_STAGE_VERTEX_BIT
+				, shadersFolder / "shader.vert" ) )
+			, "main"
+			, ashes::nullopt );
+		shaderStages.emplace_back( 0u
+			, VK_SHADER_STAGE_FRAGMENT_BIT
+			, m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+				, VK_SHADER_STAGE_FRAGMENT_BIT
+				, shadersFolder / "shader.frag" ) )
+			, "main"
+			, ashes::nullopt );
 
 		m_pipeline = m_device->getDevice().createPipeline( ashes::GraphicsPipelineCreateInfo
 			{
@@ -305,8 +296,8 @@ namespace vkapp
 
 		for ( size_t i = 0u; i < m_commandBuffers.size() && result; ++i )
 		{
-			auto & frameBuffer = *m_frameBuffers[i];
-			auto & commandBuffer = *m_commandBuffers[i];
+			auto const & frameBuffer = *m_frameBuffers[i];
+			auto const & commandBuffer = *m_commandBuffers[i];
 
 			commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT );
 			commandBuffer.resetQueryPool( *m_queryPool
@@ -356,14 +347,14 @@ namespace vkapp
 				, VK_QUERY_RESULT_WAIT_BIT
 				, values );
 			// Elapsed time in nanoseconds
-			auto elapsed = std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device->getDevice().getTimestampPeriod() ) ) };
+			auto elapsed = std::chrono::nanoseconds{ uint64_t( float( values[1] - values[0] ) / float( m_device->getDevice().getTimestampPeriod() ) ) };
 			auto after = std::chrono::high_resolution_clock::now();
 			wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( elapsed )
 				, std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
 		}
 		else
 		{
-			m_timer->Stop();
+			m_timer.Stop();
 			std::cerr << "Can't render" << std::endl;
 		}
 	}
@@ -378,15 +369,16 @@ namespace vkapp
 		if ( event.GetId() == int( Ids::RenderTimer ) )
 		{
 			doDraw();
+			event.Skip( false );
 		}
 	}
 
 	void RenderPanel::onSize( wxSizeEvent & event )
 	{
-		m_timer->Stop();
+		m_timer.Stop();
 		wxSize size = GetClientSize();
 		m_swapChain->reset( { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
-		m_timer->Start( TimerTimeMs );
+		m_timer.Start( TimerTimeMs );
 		event.Skip();
 	}
 }

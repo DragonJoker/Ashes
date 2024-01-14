@@ -62,7 +62,7 @@ namespace common
 		doPrepareResources( queue, commandPool );
 	}
 
-	Gui::~Gui()
+	Gui::~Gui()noexcept
 	{
 		ImGui::DestroyContext( m_context );
 	}
@@ -84,7 +84,7 @@ namespace common
 
 	void Gui::update()
 	{
-		ImDrawData * imDrawData = ImGui::GetDrawData();
+		ImDrawData const * imDrawData = ImGui::GetDrawData();
 
 		if ( !imDrawData )
 		{
@@ -107,9 +107,8 @@ namespace common
 				updateCmdBuffers = true;
 			}
 
-			auto indexBufferSize = uint32_t( imDrawData->TotalIdxCount );
-
-			if ( !m_indexBuffer || m_indexCount < indexBufferSize )
+			if ( auto indexBufferSize = uint32_t( imDrawData->TotalIdxCount );
+				!m_indexBuffer || m_indexCount < indexBufferSize )
 			{
 				m_indexBuffer.reset();
 				m_indexCount = indexBufferSize;
@@ -120,9 +119,7 @@ namespace common
 				updateCmdBuffers = true;
 			}
 
-			if ( auto vtx = m_vertexBuffer->lock( 0u
-				, m_vertexCount
-				, 0u ) )
+			if ( auto vtx = m_vertexBuffer->lock( 0u, m_vertexCount, 0u ) )
 			{
 				for ( int n = 0; n < imDrawData->CmdListsCount; n++ )
 				{
@@ -169,7 +166,7 @@ namespace common
 		doUpdateCommandBuffers();
 	}
 
-	void Gui::submit( ashes::Queue const & queue )
+	void Gui::submit( ashes::Queue const & queue )const
 	{
 		queue.submit( *m_commandBuffer
 			, m_fence.get() );
@@ -177,17 +174,17 @@ namespace common
 		m_fence->reset();
 	}
 
-	bool Gui::header( const char *caption )
+	bool Gui::header( const char *caption )const
 	{
 		return ImGui::CollapsingHeader( caption, ImGuiTreeNodeFlags_DefaultOpen );
 	}
 
-	bool Gui::checkBox( const char *caption, bool *value )
+	bool Gui::checkBox( const char *caption, bool *value )const
 	{
 		return ImGui::Checkbox( caption, value );
 	}
 
-	bool Gui::checkBox( const char *caption, int32_t *value )
+	bool Gui::checkBox( const char *caption, int32_t *value )const
 	{
 		bool val = ( *value == 1 );
 		bool res = ImGui::Checkbox( caption, &val );
@@ -195,22 +192,22 @@ namespace common
 		return res;
 	}
 
-	bool Gui::inputFloat( const char *caption, float *value, float step, uint32_t precision )
+	bool Gui::inputFloat( const char *caption, float *value, float step, uint32_t precision )const
 	{
 		return ImGui::InputFloat( caption, value, step, step * 10.0f, "%.3f", precision );
 	}
 
-	bool Gui::sliderFloat( char const * caption, float* value, float min, float max )
+	bool Gui::sliderFloat( char const * caption, float* value, float min, float max )const
 	{
 		return ImGui::SliderFloat( caption, value, min, max );
 	}
 
-	bool Gui::sliderInt( char const * caption, int32_t* value, int32_t min, int32_t max )
+	bool Gui::sliderInt( char const * caption, int32_t* value, int32_t min, int32_t max )const
 	{
 		return ImGui::SliderInt( caption, value, min, max );
 	}
 
-	bool Gui::comboBox( const char *caption, int32_t *itemindex, std::vector<std::string> items )
+	bool Gui::comboBox( const char *caption, int32_t *itemindex, std::vector< std::string > const & items )const
 	{
 		if ( items.empty() )
 		{
@@ -219,7 +216,7 @@ namespace common
 
 		std::vector< char const * > charitems;
 		charitems.reserve( items.size() );
-		for ( auto & item : items )
+		for ( auto const & item : items )
 		{
 			charitems.push_back( item.c_str() );
 		}
@@ -228,12 +225,12 @@ namespace common
 		return ImGui::Combo( caption, itemindex, &charitems[0], itemCount, itemCount );
 	}
 
-	bool Gui::button( const char *caption )
+	bool Gui::button( const char *caption )const
 	{
 		return ImGui::Button( caption );
 	}
 
-	void Gui::text( const char *formatstr, ... )
+	void Gui::text( const char * formatstr, ... )const
 	{
 		va_list args;
 		va_start( args, formatstr );
@@ -247,10 +244,10 @@ namespace common
 		ImGuiIO & io = ImGui::GetIO();
 
 		// Create font texture
-		unsigned char* fontData;
-		int texWidth, texHeight;
+		unsigned char * fontData;
+		int texWidth;
+		int texHeight;
 		io.Fonts->GetTexDataAsRGBA32( &fontData, &texWidth, &texHeight );
-		auto uploadSize = uint32_t( texWidth * texHeight * 4u * sizeof( char ) );
 
 		m_fontImage = m_device.createImage(
 			{
@@ -421,49 +418,39 @@ namespace common
 
 		std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
 		ashes::PipelineShaderStageCreateInfoArray shaderStages;
-		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
-			{
-				0u,
-				VK_SHADER_STAGE_VERTEX_BIT,
-				m_device->createShaderModule( dumpShaderFile( m_device
-					, VK_SHADER_STAGE_VERTEX_BIT
-					, shadersFolder / "gui.vert" ) ),
-				"main",
-				ashes::nullopt,
-			} );
-		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
-			{
-				0u,
-				VK_SHADER_STAGE_FRAGMENT_BIT,
-				m_device->createShaderModule( dumpShaderFile( m_device
-					, VK_SHADER_STAGE_FRAGMENT_BIT
-					, shadersFolder / "gui.frag" ) ),
-				"main",
-				ashes::nullopt,
-			} );
+		shaderStages.emplace_back( 0u
+			, VK_SHADER_STAGE_VERTEX_BIT
+			, m_device->createShaderModule( dumpShaderFile( m_device
+				, VK_SHADER_STAGE_VERTEX_BIT
+				, shadersFolder / "gui.vert" ) )
+			, "main"
+			, ashes::nullopt );
+		shaderStages.emplace_back( 0u
+			, VK_SHADER_STAGE_FRAGMENT_BIT
+			, m_device->createShaderModule( dumpShaderFile( m_device
+				, VK_SHADER_STAGE_FRAGMENT_BIT
+				, shadersFolder / "gui.frag" ) )
+			, "main"
+			, ashes::nullopt );
 
-		m_pipeline = m_device->createPipeline( ashes::GraphicsPipelineCreateInfo
-			{
-				0u,
-				std::move( shaderStages ),
-				std::move( vertexLayout ),
-				ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST },
-				ashes::nullopt,
-				ashes::PipelineViewportStateCreateInfo{},
-				ashes::PipelineRasterizationStateCreateInfo{ 0u, VK_FALSE, VK_FALSE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE },
-				ashes::PipelineMultisampleStateCreateInfo{},
-				ashes::PipelineDepthStencilStateCreateInfo{},
-				std::move( cbState ),
-				ashes::PipelineDynamicStateCreateInfo{ 0u, { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR } },
-				*m_pipelineLayout,
-				*m_renderPass,
-			} );
+		m_pipeline = m_device->createPipeline( ashes::GraphicsPipelineCreateInfo{ 0u
+			, std::move( shaderStages )
+			, std::move( vertexLayout )
+			, ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST }
+			, ashes::nullopt
+			, ashes::PipelineViewportStateCreateInfo{}
+			, ashes::PipelineRasterizationStateCreateInfo{ 0u, VK_FALSE, VK_FALSE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE }
+			, ashes::PipelineMultisampleStateCreateInfo{}
+			, ashes::PipelineDepthStencilStateCreateInfo{}
+			, std::move( cbState )
+			, ashes::PipelineDynamicStateCreateInfo{ 0u, { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR } }
+			, *m_pipelineLayout
+			, *m_renderPass } );
 	}
 
 	void Gui::doUpdateCommandBuffers()
 	{
-		size_t index = 0u;
-		ImGuiIO & io = ImGui::GetIO();
+		ImGuiIO const & io = ImGui::GetIO();
 		m_pushConstants.getData()->scale = utils::Vec2{ 2.0f / io.DisplaySize.x, 2.0f / io.DisplaySize.y };
 		m_pushConstants.getData()->translate = utils::Vec2{ -1.0f };
 
@@ -497,7 +484,7 @@ namespace common
 			m_commandBuffer->setViewport( { 0.0f, 0.0f, float( ImGui::GetIO().DisplaySize.x ), float( ImGui::GetIO().DisplaySize.y ), 0.0f, 1.0f } );
 			m_commandBuffer->setScissor( { { 0, 0 }, { uint32_t( ImGui::GetIO().DisplaySize.x ), uint32_t( ImGui::GetIO().DisplaySize.y ) } } );
 			m_commandBuffer->pushConstants( *m_pipelineLayout, m_pushConstants );
-			ImDrawData * imDrawData = ImGui::GetDrawData();
+			ImDrawData const * imDrawData = ImGui::GetDrawData();
 			int32_t vertexOffset = 0;
 			int32_t indexOffset = 0;
 

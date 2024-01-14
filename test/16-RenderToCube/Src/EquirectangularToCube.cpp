@@ -69,11 +69,11 @@ namespace vkapp
 		ashes::UniformBufferPtr doCreateMatrixUbo( utils::Device const & device
 			, ashes::Queue const & queue
 			, ashes::CommandPool const & commandPool
-			, ashes::StagingBuffer & stagingBuffer
+			, ashes::StagingBuffer const & stagingBuffer
 			, std::array< utils::Mat4, 6u > & matrixData )
 		{
-			static Mat4 const projection = utils::Mat4{ device->perspective( float( utils::toRadians( 90.0_degrees ) ), 1.0f, 0.1f, 10.0f ) };
-			matrixData = [&device]()
+			static auto const projection = utils::Mat4{ device->perspective( float( utils::toRadians( 90.0_degrees ) ), 1.0f, 0.1f, 10.0f ) };
+			matrixData = []()
 			{
 				std::array< Mat4, 6u > result
 				{
@@ -84,11 +84,6 @@ namespace vkapp
 					utils::lookAt( Vec3{ 0.0f, 0.0f, 0.0f }, Vec3{ +0.0f, +0.0f, +1.0f }, Vec3{ 0.0f, -1.0f, +0.0f } ),
 					utils::lookAt( Vec3{ 0.0f, 0.0f, 0.0f }, Vec3{ +0.0f, +0.0f, -1.0f }, Vec3{ 0.0f, -1.0f, +0.0f } )
 				};
-
-				//if ( device->getInstance().getName().find( "gl" ) != std::string::npos )
-				//{
-				//	std::swap( result[2], result[3] );
-				//}
 
 				return result;
 			}();
@@ -121,30 +116,24 @@ namespace vkapp
 			if ( !wxFileExists( shadersFolder / "equirectangular.vert" )
 				|| !wxFileExists( shadersFolder / "equirectangular.frag" ) )
 			{
-				throw std::runtime_error{ "Shader files are missing" };
+				throw common::Exception{ "Shader files are missing" };
 			}
 
 			ashes::PipelineShaderStageCreateInfoArray shaderStages;
-			shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
-				{
-					0u,
-					VK_SHADER_STAGE_VERTEX_BIT,
-					device->createShaderModule( common::parseShaderFile( device
+			shaderStages.emplace_back( 0u
+					, VK_SHADER_STAGE_VERTEX_BIT
+					, device->createShaderModule( common::parseShaderFile( device
 						, VK_SHADER_STAGE_VERTEX_BIT
-						, shadersFolder / "equirectangular.vert" ) ),
-					"main",
-					ashes::nullopt,
-				} );
-			shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
-				{
-					0u,
-					VK_SHADER_STAGE_FRAGMENT_BIT,
-					device->createShaderModule( common::parseShaderFile( device
+						, shadersFolder / "equirectangular.vert" ) )
+					, "main"
+					, ashes::nullopt );
+			shaderStages.emplace_back( 0u
+					, VK_SHADER_STAGE_FRAGMENT_BIT
+					, device->createShaderModule( common::parseShaderFile( device
 						, VK_SHADER_STAGE_FRAGMENT_BIT
-						, shadersFolder / "equirectangular.frag" ) ),
-					"main",
-					ashes::nullopt,
-				} );
+						, shadersFolder / "equirectangular.frag" ) )
+					, "main"
+					, ashes::nullopt );
 
 			return shaderStages;
 		}
@@ -152,7 +141,7 @@ namespace vkapp
 		ashes::VertexBufferPtr< VertexData > doCreateVertexBuffer( utils::Device const & device
 			, ashes::Queue const & queue
 			, ashes::CommandPool const & commandPool
-			, ashes::StagingBuffer & stagingBuffer )
+			, ashes::StagingBuffer const & stagingBuffer )
 		{
 			std::vector< VertexData > vertexData
 			{
@@ -178,7 +167,7 @@ namespace vkapp
 			return result;
 		}
 
-		ashes::PipelineVertexInputStateCreateInfo doCreateVertexLayout( utils::Device const & device )
+		ashes::PipelineVertexInputStateCreateInfo doCreateVertexLayout()
 		{
 			ashes::PipelineVertexInputStateCreateInfo result
 			{
@@ -204,8 +193,7 @@ namespace vkapp
 			return device->createDescriptorSetLayout( std::move( bindings ) );
 		}
 
-		ashes::RenderPassPtr doCreateRenderPass( utils::Device const & device
-			, VkFormat format )
+		ashes::RenderPassPtr doCreateRenderPass( utils::Device const & device )
 		{
 			ashes::VkAttachmentDescriptionArray attaches
 			{
@@ -268,7 +256,7 @@ namespace vkapp
 		, utils::Device const & device
 		, ashes::Queue const & queue
 		, ashes::CommandPool const & commandPool
-		, ashes::Image & texture )
+		, ashes::Image const & texture )
 		: m_device{ device }
 		, m_queue{ queue }
 		, m_commandBuffer{ commandPool.createCommandBuffer() }
@@ -279,11 +267,11 @@ namespace vkapp
 		, m_sampler{ doCreateSampler( m_device ) }
 		, m_matrixUbo{ doCreateMatrixUbo( m_device, queue, commandPool, m_stagingBuffer, m_matrixData ) }
 		, m_vertexBuffer{ doCreateVertexBuffer( m_device, queue, commandPool, m_stagingBuffer ) }
-		, m_vertexLayout{ doCreateVertexLayout( m_device ) }
+		, m_vertexLayout{ doCreateVertexLayout() }
 		, m_descriptorLayout{ doCreateDescriptorSetLayout( m_device ) }
 		, m_descriptorPool{ m_descriptorLayout->createPool( 6u ) }
 		, m_pipelineLayout{ m_device->createPipelineLayout( *m_descriptorLayout ) }
-		, m_renderPass{ doCreateRenderPass( m_device, texture.getFormat() ) }
+		, m_renderPass{ doCreateRenderPass( m_device ) }
 	{
 		auto size = VkExtent2D{ texture.getDimensions().width, texture.getDimensions().height };
 		uint32_t face = 0u;
@@ -307,7 +295,7 @@ namespace vkapp
 				{
 					0u,
 					doCreateProgram( m_device ),
-					doCreateVertexLayout( m_device ),
+					doCreateVertexLayout(),
 					ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST },
 					ashes::nullopt,
 					ashes::PipelineViewportStateCreateInfo{ 0u, 1u, { viewport }, 1u, { scissor } },
@@ -333,9 +321,9 @@ namespace vkapp
 		}
 	}
 
-	void EquirectangularToCube::render( ashes::CommandBuffer & commandBuffer )
+	void EquirectangularToCube::render( ashes::CommandBuffer const & commandBuffer )
 	{
-		for ( auto & facePipeline : m_faces )
+		for ( auto const & facePipeline : m_faces )
 		{
 			commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
 				, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
@@ -348,7 +336,7 @@ namespace vkapp
 			commandBuffer.bindDescriptorSet( *facePipeline.descriptorSet
 				, *m_pipelineLayout );
 			commandBuffer.bindVertexBuffer( 0u, m_vertexBuffer->getBuffer(), 0u );
-			commandBuffer.draw( m_vertexBuffer->getCount() );
+			commandBuffer.draw( uint32_t( m_vertexBuffer->getCount() ) );
 			commandBuffer.endRenderPass();
 		}
 

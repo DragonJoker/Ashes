@@ -24,15 +24,15 @@ namespace vkapp
 		void updateCommandBuffer( ashes::CommandBuffer const & commandBuffer );
 		void postUpdateCommandBuffer( ashes::CommandBuffer const & commandBuffer );
 
-		bool header( char const * caption );
-		bool checkBox( char const * caption, bool * value );
-		bool checkBox( char const * caption, int32_t * value );
-		bool inputFloat( char const * caption, float * value, float step, uint32_t precision );
-		bool sliderFloat( char const * caption, float * value, float min, float max );
-		bool sliderInt( char const * caption, int32_t * value, int32_t min, int32_t max );
-		bool comboBox( char const * caption, int32_t * itemindex, std::vector< std::string > items );
-		bool button( char const * caption );
-		void text( char const * formatstr, ... );
+		bool header( char const * caption )const;
+		bool checkBox( char const * caption, bool * value )const;
+		bool checkBox( char const * caption, int32_t * value )const;
+		bool inputFloat( char const * caption, float * value, float step, uint32_t precision )const;
+		bool sliderFloat( char const * caption, float * value, float min, float max )const;
+		bool sliderInt( char const * caption, int32_t * value, int32_t min, int32_t max )const;
+		bool comboBox( char const * caption, int32_t * itemindex, std::vector< std::string > const & items )const;
+		bool button( char const * caption )const;
+		void text( char const * formatstr, ... )const;
 
 	private:
 		void doPrepareResources( ashes::Queue const & queue

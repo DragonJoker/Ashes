@@ -58,19 +58,12 @@ namespace common
 		, m_rndName{ rndName }
 		, m_appName{ appName }
 		, m_appDesc{ appDesc }
-		, m_vertexData
-		{
-			{ { -1.0, -1.0, 0.0, 1.0 }, { 0.0, 0.0 } },
-			{ { -1.0, +1.0, 0.0, 1.0 }, { 0.0, 1.0 } },
-			{ { +1.0, -1.0, 0.0, 1.0 }, { 1.0, 0.0 } },
-			{ { +1.0, +1.0, 0.0, 1.0 }, { 1.0, 1.0 } },
-		}
 	{
 	}
 
-	RenderPanel::~RenderPanel()
+	RenderPanel::~RenderPanel()noexcept
 	{
-		doCleanup();
+		cleanup();
 	}
 
 	void RenderPanel::initialise( utils::Instance const & instance )
@@ -113,9 +106,9 @@ namespace common
 			std::cout << "Main frames prepared." << std::endl;
 			m_ready = true;
 		}
-		catch ( std::exception & )
+		catch ( Exception & )
 		{
-			doCleanup();
+			cleanup();
 			throw;
 		}
 
@@ -161,6 +154,39 @@ namespace common
 			, this );
 	}
 
+	void RenderPanel::cleanup()noexcept
+	{
+		m_ready = false;
+
+		if ( m_device )
+		{
+			m_device->getDevice().waitIdle();
+
+			m_gui.reset();
+
+			m_renderTarget.reset();
+			m_commandBuffers.clear();
+			m_frameBuffers.clear();
+
+			m_descriptorSet.reset();
+			m_descriptorPool.reset();
+			m_descriptorLayout.reset();
+			m_pipeline.reset();
+			m_pipelineLayout.reset();
+
+			m_vertexBuffer.reset();
+			m_renderPass.reset();
+			m_sampler.reset();
+			m_stagingBuffer.reset();
+
+			m_swapChain.reset();
+			m_commandPool.reset();
+			m_presentQueue.reset();
+			m_graphicsQueue.reset();
+			m_device.reset();
+		}
+	}
+
 	void RenderPanel::update()
 	{
 		static utils::Clock::time_point save = utils::Clock::now();
@@ -198,43 +224,10 @@ namespace common
 		}
 	}
 
-	void RenderPanel::doCleanup()
-	{
-		m_ready = false;
-
-		if ( m_device )
-		{
-			m_device->getDevice().waitIdle();
-
-			m_gui.reset();
-
-			m_renderTarget.reset();
-			m_commandBuffers.clear();
-			m_frameBuffers.clear();
-
-			m_descriptorSet.reset();
-			m_descriptorPool.reset();
-			m_descriptorLayout.reset();
-			m_pipeline.reset();
-			m_pipelineLayout.reset();
-
-			m_vertexBuffer.reset();
-			m_renderPass.reset();
-			m_sampler.reset();
-			m_stagingBuffer.reset();
-
-			m_swapChain.reset();
-			m_commandPool.reset();
-			m_presentQueue.reset();
-			m_graphicsQueue.reset();
-			m_device.reset();
-		}
-	}
-
-	ashes::SurfacePtr RenderPanel::doCreateSurface( utils::Instance const & instance )
+	ashes::SurfacePtr RenderPanel::doCreateSurface( utils::Instance const & instance )const
 	{
 		auto handle = common::makeWindowHandle( *this );
-		auto & gpu = instance.getPhysicalDevice( 0u );
+		auto const & gpu = instance.getPhysicalDevice( 0u );
 		return instance.getInstance().createSurface( gpu
 			, std::move( handle ) );
 	}
@@ -364,48 +357,34 @@ namespace common
 
 	void RenderPanel::doCreatePipeline()
 	{
-		wxSize size{ GetClientSize() };
 		std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / "Sample-00-Common" / "Shaders";
 
 		if ( !wxFileExists( shadersFolder / "main.vert" )
 			|| !wxFileExists( shadersFolder / "main.frag" ) )
 		{
-			throw std::runtime_error{ "Shader files are missing" };
+			throw Exception{ "Shader files are missing" };
 		}
 		
-		ashes::PipelineVertexInputStateCreateInfo vertexLayout
-		{
-			0u,
-			{
-				{ 0u, sizeof( TexturedVertexData ), VK_VERTEX_INPUT_RATE_VERTEX },
-			},
-			{
-				{ 0u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof( TexturedVertexData, position ) },
-				{ 1u, 0u, VK_FORMAT_R32G32_SFLOAT, offsetof( TexturedVertexData, uv ) },
-			},
-		};
+		ashes::PipelineVertexInputStateCreateInfo vertexLayout{ 0u
+			, { { 0u, sizeof( TexturedVertexData ), VK_VERTEX_INPUT_RATE_VERTEX } }
+			, { { 0u, 0u, VK_FORMAT_R32G32B32A32_SFLOAT, offsetof( TexturedVertexData, position ) }
+				, { 1u, 0u, VK_FORMAT_R32G32_SFLOAT, offsetof( TexturedVertexData, uv ) } } };
 		
 		ashes::PipelineShaderStageCreateInfoArray shaderStages;
-		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
-			{
-				0u,
-				VK_SHADER_STAGE_VERTEX_BIT,
-				m_device->getDevice().createShaderModule( dumpShaderFile( *m_device
-					, VK_SHADER_STAGE_VERTEX_BIT
-					, shadersFolder / "main.vert" ) ),
-				"main",
-				ashes::nullopt,
-			} );
-		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
-			{
-				0u,
-				VK_SHADER_STAGE_FRAGMENT_BIT,
-				m_device->getDevice().createShaderModule( dumpShaderFile( *m_device
-					, VK_SHADER_STAGE_FRAGMENT_BIT
-					, shadersFolder / "main.frag" ) ),
-				"main",
-				ashes::nullopt,
-			} );
+		shaderStages.emplace_back( 0u
+			, VK_SHADER_STAGE_VERTEX_BIT
+			, m_device->getDevice().createShaderModule( dumpShaderFile( *m_device
+				, VK_SHADER_STAGE_VERTEX_BIT
+				, shadersFolder / "main.vert" ) )
+			, "main"
+			, ashes::nullopt );
+		shaderStages.emplace_back( 0u
+			, VK_SHADER_STAGE_FRAGMENT_BIT
+			, m_device->getDevice().createShaderModule( dumpShaderFile( *m_device
+				, VK_SHADER_STAGE_FRAGMENT_BIT
+				, shadersFolder / "main.frag" ) )
+			, "main"
+			, ashes::nullopt );
 
 		std::vector< VkDynamicState > dynamicStateEnables
 		{
@@ -413,22 +392,19 @@ namespace common
 			VK_DYNAMIC_STATE_SCISSOR
 		};
 
-		m_pipeline = m_device->getDevice().createPipeline( ashes::GraphicsPipelineCreateInfo
-			{
-				0u,
-				std::move( shaderStages ),
-				std::move( vertexLayout ),
-				ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
-				ashes::nullopt,
-				ashes::PipelineViewportStateCreateInfo{},
-				ashes::PipelineRasterizationStateCreateInfo{ 0u, VK_FALSE, VK_FALSE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE },
-				ashes::PipelineMultisampleStateCreateInfo{},
-				ashes::nullopt,
-				ashes::PipelineColorBlendStateCreateInfo{},
-				ashes::PipelineDynamicStateCreateInfo{ 0u, { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR } },
-				*m_pipelineLayout,
-				*m_renderPass,
-			} );
+		m_pipeline = m_device->getDevice().createPipeline( { 0u
+				, std::move( shaderStages )
+				, std::move( vertexLayout )
+				, ashes::PipelineInputAssemblyStateCreateInfo{ 0u, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP }
+				, ashes::nullopt
+				, ashes::PipelineViewportStateCreateInfo{}
+				, ashes::PipelineRasterizationStateCreateInfo{ 0u, VK_FALSE, VK_FALSE, VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE }
+				, ashes::PipelineMultisampleStateCreateInfo{}
+				, ashes::nullopt
+				, ashes::PipelineColorBlendStateCreateInfo{}
+				, ashes::PipelineDynamicStateCreateInfo{ 0u, { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR } }
+				, *m_pipelineLayout
+				, *m_renderPass } );
 	}
 
 	void RenderPanel::doPrepareFrames()
@@ -439,10 +415,8 @@ namespace common
 
 		for ( size_t i = 0u; i < m_frameBuffers.size(); ++i )
 		{
-			auto & frameBuffer = *m_frameBuffers[i];
-			auto & commandBuffer = *m_commandBuffers[i];
-
-			wxSize size{ GetClientSize() };
+			auto const & frameBuffer = *m_frameBuffers[i];
+			auto const & commandBuffer = *m_commandBuffers[i];
 
 			commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT );
 			auto dimensions = m_swapChain->getDimensions();
@@ -468,9 +442,9 @@ namespace common
 		ImGuiIO & io = ImGui::GetIO();
 
 		io.DisplaySize = ImVec2( float( size.GetWidth() ), float( size.GetHeight() ) );
-		io.DeltaTime = std::chrono::duration_cast< std::chrono::milliseconds >( duration ).count() / 1000.0f;
+		io.DeltaTime = float( std::chrono::duration_cast< std::chrono::milliseconds >( duration ).count() ) / 1000.0f;
 
-		io.MousePos = ImVec2( m_mouse.position.x, m_mouse.position.y );
+		io.MousePos = ImVec2( float( m_mouse.position.x ), float( m_mouse.position.y ) );
 		io.MouseDown[0] = m_mouse.left;
 		io.MouseDown[1] = m_mouse.right;
 
@@ -483,11 +457,9 @@ namespace common
 		ImGui::TextUnformatted( getName( m_appDesc, m_rndName ).c_str() );
 		ImGui::TextUnformatted( m_device->getDevice().getProperties().deviceName );
 
-		auto count = std::min( m_frameCount, m_framesTimes.size() );
-
-		if ( count )
+		if ( auto count = std::min( m_frameCount, m_framesTimes.size() ) )
 		{
-			auto instmillis = m_frameTime.count() / 1000.0f;
+			auto instmillis = float( m_frameTime.count() ) / 1000.0f;
 			std::sort( m_framesTimes.begin()
 				, m_framesTimes.begin() + count );
 			auto minGpuTime = *m_framesTimes.begin();
@@ -495,10 +467,10 @@ namespace common
 			auto averageGpuTime = std::accumulate( m_framesTimes.begin()
 				, m_framesTimes.begin() + count
 				, std::chrono::microseconds{ 0 } ) / count;
-			auto avrgmillis = averageGpuTime.count() / 1000.0f;
+			auto avrgmillis = float( averageGpuTime.count() ) / 1000.0f;
 			ImGui::Text( "Instant: %.2f ms/frame (%5d fps)", instmillis, int( 1000.0f / instmillis ) );
 			ImGui::Text( "Average: %.2f ms/frame (%5d fps)", avrgmillis, int( 1000.0f / avrgmillis ) );
-			ImGui::Text( "Min: %.2f ms, Max %.2f ms", ( minGpuTime.count() / 1000.0f ), ( maxGpuTime.count() / 1000.0f ) );
+			ImGui::Text( "Min: %.2f ms, Max %.2f ms", ( float( minGpuTime.count() ) / 1000.0f ), ( float( maxGpuTime.count() ) / 1000.0f ) );
 		}
 
 #if defined( VK_USE_PLATFORM_ANDROID_KHR )
@@ -538,6 +510,7 @@ namespace common
 		m_mouse.left = true;
 		m_mouse.position.x = event.GetPosition().x;
 		m_mouse.position.y = event.GetPosition().y;
+		event.Skip();
 	}
 
 	void RenderPanel::onMouseLUp( wxMouseEvent & event )
@@ -545,6 +518,7 @@ namespace common
 		m_mouse.left = false;
 		m_mouse.position.x = event.GetPosition().x;
 		m_mouse.position.y = event.GetPosition().y;
+		event.Skip();
 	}
 
 	void RenderPanel::onMouseLDClick( wxMouseEvent & event )
@@ -552,6 +526,7 @@ namespace common
 		m_mouse.left = true;
 		m_mouse.position.x = event.GetPosition().x;
 		m_mouse.position.y = event.GetPosition().y;
+		event.Skip();
 	}
 
 	void RenderPanel::onMouseRDown( wxMouseEvent & event )
@@ -559,6 +534,7 @@ namespace common
 		m_mouse.right = true;
 		m_mouse.position.x = event.GetPosition().x;
 		m_mouse.position.y = event.GetPosition().y;
+		event.Skip();
 	}
 
 	void RenderPanel::onMouseRUp( wxMouseEvent & event )
@@ -566,6 +542,7 @@ namespace common
 		m_mouse.right = false;
 		m_mouse.position.x = event.GetPosition().x;
 		m_mouse.position.y = event.GetPosition().y;
+		event.Skip();
 	}
 
 	void RenderPanel::onMouseRDClick( wxMouseEvent & event )
@@ -573,11 +550,13 @@ namespace common
 		m_mouse.right = true;
 		m_mouse.position.x = event.GetPosition().x;
 		m_mouse.position.y = event.GetPosition().y;
+		event.Skip();
 	}
 
 	void RenderPanel::onMouseMove( wxMouseEvent & event )
 	{
 		m_mouse.position.x = event.GetPosition().x;
 		m_mouse.position.y = event.GetPosition().y;
+		event.Skip();
 	}
 }

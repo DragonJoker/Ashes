@@ -28,35 +28,16 @@ namespace vkapp
 		enum class Ids
 		{
 			RenderTimer = 42
-		}	Ids;
+		};
 
-		static int const TimerTimeMs = 40;
+		int const TimerTimeMs = 40;
 	}
 
 	RenderPanel::RenderPanel( wxWindow * parent
 		, wxSize const & size
 		, utils::Instance const & instance )
 		: wxPanel{ parent, wxID_ANY, wxDefaultPosition, size }
-		, m_timer{ new wxTimer{ this, int( Ids::RenderTimer ) } }
-		, m_vertexData{
-		{
-			{
-				{ -1.0f, -1.0f, 0.0f, 1.0f },
-				{ 0.0f, 0.0f },
-			},
-			{
-				{ -1.0f, 1.0f, 0.0f, 1.0f },
-				{ 0.0f, 1.0f },
-			},
-			{
-				{ 1.0f, -1.0f, 0.0f, 1.0f },
-				{ 1.0f, 0.0f },
-			},
-			{
-				{ 1.0f, 1.0f, 0.0f, 1.0f },
-				{ 1.0f, 1.0f },
-			}
-		} }
+		, m_timer{ this, int( Ids::RenderTimer ) }
 	{
 		try
 		{
@@ -87,13 +68,13 @@ namespace vkapp
 			std::cout << "Frames prepared." << std::endl;
 			doUpdateGui();
 		}
-		catch ( std::exception & )
+		catch ( common::Exception & )
 		{
 			doCleanup();
 			throw;
 		}
 
-		m_timer->Start( TimerTimeMs );
+		m_timer.Start( TimerTimeMs );
 
 		Connect( int( Ids::RenderTimer )
 			, wxEVT_TIMER
@@ -147,15 +128,13 @@ namespace vkapp
 			, this );
 	}
 
-	RenderPanel::~RenderPanel()
+	RenderPanel::~RenderPanel()noexcept
 	{
 		doCleanup();
 	}
 
-	void RenderPanel::doCleanup()
+	void RenderPanel::doCleanup()noexcept
 	{
-		delete m_timer;
-
 		if ( m_device )
 		{
 			m_device->getDevice().waitIdle();
@@ -185,7 +164,7 @@ namespace vkapp
 	ashes::SurfacePtr RenderPanel::doCreateSurface( utils::Instance const & instance )
 	{
 		auto handle = common::makeWindowHandle( *this );
-		auto & gpu = instance.getPhysicalDevice( 0u );
+		auto const & gpu = instance.getPhysicalDevice( 0u );
 		return instance.getInstance().createSurface( gpu
 			, std::move( handle ) );
 	}
@@ -276,9 +255,9 @@ namespace vkapp
 	void RenderPanel::doCreateTextureDst( size_t index )
 	{
 		auto format = m_choicesIndex[index];
-		auto it = m_dstTextures.find( format );
 
-		if ( it == m_dstTextures.end() )
+		if ( auto it = m_dstTextures.find( format );
+			it == m_dstTextures.end() )
 		{
 			auto size = m_srcTexture->getDimensions();
 			m_dstTextures[format] = m_device->createImage( ashes::ImageCreateInfo{ 0u
@@ -439,7 +418,6 @@ namespace vkapp
 	void RenderPanel::doCreatePipeline()
 	{
 		m_pipelineLayout = m_device->getDevice().createPipelineLayout( *m_descriptorLayout );
-		wxSize size{ GetClientSize() };
 		std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
 		if ( !wxFileExists( shadersFolder / "shader.vert" )
@@ -461,26 +439,20 @@ namespace vkapp
 		};
 
 		ashes::PipelineShaderStageCreateInfoArray shaderStages;
-		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
-			{
-				0u,
-				VK_SHADER_STAGE_VERTEX_BIT,
-				m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+		shaderStages.emplace_back( 0u
+				, VK_SHADER_STAGE_VERTEX_BIT
+				, m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
 					, VK_SHADER_STAGE_VERTEX_BIT
-					, shadersFolder / "shader.vert" ) ),
-				"main",
-				ashes::nullopt,
-			} );
-		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
-			{
-				0u,
-				VK_SHADER_STAGE_FRAGMENT_BIT,
-				m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+					, shadersFolder / "shader.vert" ) )
+				, "main"
+				, ashes::nullopt );
+		shaderStages.emplace_back( 0u
+				, VK_SHADER_STAGE_FRAGMENT_BIT
+				, m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
 					, VK_SHADER_STAGE_FRAGMENT_BIT
-					, shadersFolder / "shader.frag" ) ),
-				"main",
-				ashes::nullopt,
-			} );
+					, shadersFolder / "shader.frag" ) )
+				, "main"
+				, ashes::nullopt );
 
 		m_pipeline = m_device->getDevice().createPipeline( ashes::GraphicsPipelineCreateInfo
 			{
@@ -516,8 +488,8 @@ namespace vkapp
 
 		for ( size_t i = 0u; i < m_commandBuffers.size(); ++i )
 		{
-			auto & frameBuffer = *m_frameBuffers[i];
-			auto & commandBuffer = *m_commandBuffers[i];
+			auto const & frameBuffer = *m_frameBuffers[i];
+			auto const & commandBuffer = *m_commandBuffers[i];
 
 			commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT );
 			m_gui->preUpdateCommandBuffer( commandBuffer );
@@ -558,9 +530,9 @@ namespace vkapp
 		ImGuiIO & io = ImGui::GetIO();
 
 		io.DisplaySize = ImVec2( float( size.GetWidth() ), float( size.GetHeight() ) );
-		io.DeltaTime = m_frameTime.count() / 1000000.0f;
+		io.DeltaTime = float( m_frameTime.count() ) / 1000000.0f;
 
-		io.MousePos = ImVec2( m_mouse.position.x, m_mouse.position.y );
+		io.MousePos = ImVec2( float( m_mouse.position.x ), float( m_mouse.position.y ) );
 		io.MouseDown[0] = m_mouse.left;
 		io.MouseDown[1] = m_mouse.right;
 
@@ -576,7 +548,7 @@ namespace vkapp
 #endif
 
 		ImGui::PushItemWidth( 400.0f );
-		int32_t index( m_curIndex );
+		auto index = int32_t( m_curIndex );
 		m_gui->comboBox( "Format", &index, m_choices );
 		ImGui::PopItemWidth();
 
@@ -635,14 +607,14 @@ namespace vkapp
 				, VK_QUERY_RESULT_WAIT_BIT
 				, values );
 			// Elapsed time in nanoseconds
-			auto elapsed = std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device->getDevice().getTimestampPeriod() ) ) };
+			auto elapsed = std::chrono::nanoseconds{ uint64_t( float( values[1] - values[0] ) / float( m_device->getDevice().getTimestampPeriod() ) ) };
 			auto after = std::chrono::high_resolution_clock::now();
 			wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( elapsed )
 				, std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
 		}
 		else
 		{
-			m_timer->Stop();
+			m_timer.Stop();
 		}
 	}
 
@@ -656,16 +628,17 @@ namespace vkapp
 		if ( event.GetId() == int( Ids::RenderTimer ) )
 		{
 			doDraw();
+			event.Skip( false );
 		}
 	}
 
 	void RenderPanel::onSize( wxSizeEvent & event )
 	{
-		m_timer->Stop();
+		m_timer.Stop();
 		m_device->getDevice().waitIdle();
 		wxSize size{ GetClientSize() };
 		m_swapChain->reset( { uint32_t( size.GetWidth() ), uint32_t( size.GetHeight() ) } );
-		m_timer->Start( TimerTimeMs );
+		m_timer.Start( TimerTimeMs );
 		event.Skip();
 	}
 
@@ -674,6 +647,7 @@ namespace vkapp
 		m_mouse.left = true;
 		m_mouse.position.x = event.GetPosition().x;
 		m_mouse.position.y = event.GetPosition().y;
+		event.Skip();
 	}
 
 	void RenderPanel::onMouseLUp( wxMouseEvent & event )
@@ -681,6 +655,7 @@ namespace vkapp
 		m_mouse.left = false;
 		m_mouse.position.x = event.GetPosition().x;
 		m_mouse.position.y = event.GetPosition().y;
+		event.Skip();
 	}
 
 	void RenderPanel::onMouseLDClick( wxMouseEvent & event )
@@ -688,6 +663,7 @@ namespace vkapp
 		m_mouse.left = true;
 		m_mouse.position.x = event.GetPosition().x;
 		m_mouse.position.y = event.GetPosition().y;
+		event.Skip();
 	}
 
 	void RenderPanel::onMouseRDown( wxMouseEvent & event )
@@ -695,6 +671,7 @@ namespace vkapp
 		m_mouse.right = true;
 		m_mouse.position.x = event.GetPosition().x;
 		m_mouse.position.y = event.GetPosition().y;
+		event.Skip();
 	}
 
 	void RenderPanel::onMouseRUp( wxMouseEvent & event )
@@ -702,6 +679,7 @@ namespace vkapp
 		m_mouse.right = false;
 		m_mouse.position.x = event.GetPosition().x;
 		m_mouse.position.y = event.GetPosition().y;
+		event.Skip();
 	}
 
 	void RenderPanel::onMouseRDClick( wxMouseEvent & event )
@@ -709,25 +687,26 @@ namespace vkapp
 		m_mouse.right = true;
 		m_mouse.position.x = event.GetPosition().x;
 		m_mouse.position.y = event.GetPosition().y;
+		event.Skip();
 	}
 
 	void RenderPanel::onMouseMove( wxMouseEvent & event )
 	{
 		m_mouse.position.x = event.GetPosition().x;
 		m_mouse.position.y = event.GetPosition().y;
+		event.Skip();
 	}
 
 	void RenderPanel::onKeyUp( wxKeyEvent & event )
 	{
-		auto key = event.GetUnicodeKey();
-
-		if ( key == wxT( 'F' ) )
+		if ( auto key = event.GetUnicodeKey();
+			key == wxT( 'F' )
+				&& m_curIndex < m_choicesIndex.size() - 1u )
 		{
-			if ( m_curIndex < m_choicesIndex.size() - 1u )
-			{
-				doCreateTextureDst( m_curIndex + 1u );
-				doUpdateGui();
-			}
+			doCreateTextureDst( m_curIndex + 1u );
+			doUpdateGui();
 		}
+
+		event.Skip();
 	}
 }

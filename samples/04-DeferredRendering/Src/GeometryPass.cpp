@@ -37,7 +37,7 @@ namespace vkapp
 
 			for ( auto & texture : gbuffer )
 			{
-				result.push_back( texture.view.getFormat() );
+				result.emplace_back( texture.view.getFormat() );
 			}
 
 			return result;
