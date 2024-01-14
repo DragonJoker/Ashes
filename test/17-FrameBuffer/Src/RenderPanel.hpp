@@ -25,7 +25,7 @@ namespace vkapp
 		RenderPanel( wxWindow * parent
 			, wxSize const & size
 			, utils::Instance const & instance );
-		~RenderPanel();
+		~RenderPanel()noexcept override;
 
 	private:
 		/**
@@ -33,7 +33,7 @@ namespace vkapp
 		*	Initialisation.
 		*/
 		/**@{*/
-		void doCleanup();
+		void doCleanup()noexcept;
 		void doUpdateProjection();
 		ashes::SurfacePtr doCreateSurface( utils::Instance const & instance );
 		void doCreateDevice( utils::Instance const & instance
@@ -73,9 +73,33 @@ namespace vkapp
 		/**@}*/
 
 	private:
-		wxTimer * m_timer{ nullptr };
-		std::vector< TexturedVertexData > m_offscreenVertexData;
-		std::vector< TexturedVertexData > m_mainVertexData;
+		wxTimer m_timer;
+		std::vector< TexturedVertexData > m_offscreenVertexData
+		{
+			{
+				{ -200.0f, -200.0f, 0.0f, 1.0f },
+				{ -0.1f, -0.1f },
+			},
+			{
+				{ -200.0f, 200.0f, 0.0f, 1.0f },
+				{ -0.1f, 1.1f },
+			},
+			{
+				{ 200.0f, -200.0f, 0.0f, 1.0f },
+				{ 1.1f, -0.1f },
+			},
+			{
+				{ 200.0f, 200.0f, 0.0f, 1.0f },
+				{ 1.1f, 1.1f },
+			},
+		};
+		std::vector< TexturedVertexData > m_mainVertexData
+		{
+			{ { -1.0, -1.0, 0.0, 1.0 }, { 0.0, 0.0 } },
+			{ { -1.0, +1.0, 0.0, 1.0 }, { 0.0, 1.0 } },
+			{ { +1.0, -1.0, 0.0, 1.0 }, { 1.0, 0.0 } },
+			{ { +1.0, +1.0, 0.0, 1.0 }, { 1.0, 1.0 } },
+		};
 		/**
 		*\name
 		*	Global.
@@ -111,7 +135,10 @@ namespace vkapp
 		ashes::DescriptorSetLayoutPtr m_offscreenDescriptorLayout;
 		ashes::DescriptorSetPoolPtr m_offscreenDescriptorPool;
 		ashes::DescriptorSetPtr m_offscreenDescriptorSet;
-		ashes::UInt16Array m_offscreenIndexData;
+		ashes::UInt16Array m_offscreenIndexData
+		{
+			0, 1, 2, 2, 1, 3,
+		};
 		ashes::QueryPoolPtr m_queryPool;
 		ashes::SemaphorePtr m_offscreenFinished;
 		/**@}*/

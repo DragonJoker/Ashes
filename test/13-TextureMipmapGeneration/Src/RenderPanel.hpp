@@ -22,7 +22,7 @@ namespace vkapp
 		RenderPanel( wxWindow * parent
 			, wxSize const & size
 			, utils::Instance const & instance );
-		~RenderPanel();
+		~RenderPanel()noexcept override;
 
 	private:
 		/**
@@ -30,7 +30,7 @@ namespace vkapp
 		*	Initialisation.
 		*/
 		/**@{*/
-		void doCleanup();
+		void doCleanup()noexcept;
 		ashes::SurfacePtr doCreateSurface( utils::Instance const & instance );
 		void doCreateDevice( utils::Instance const & instance
 			, ashes::Surface const & surface );
@@ -63,8 +63,27 @@ namespace vkapp
 		/**@}*/
 
 	private:
-		wxTimer * m_timer{ nullptr };
-		std::vector< TexturedVertexData > m_vertexData;
+		wxTimer m_timer;
+		std::vector< TexturedVertexData > m_vertexData{
+			{
+				{
+					{ -0.7f, -0.7f, 0.0f, 1.0f },
+					{ -0.0f, -0.0f },
+				},
+				{
+					{ -0.7f, 0.7f, 0.0f, 1.0f },
+					{ -0.0f, 1.0f },
+				},
+				{
+					{ 0.7f, -0.7f, 0.0f, 1.0f },
+					{ 1.0f, -0.0f },
+				},
+				{
+					{ 0.7f, 0.7f, 0.0f, 1.0f },
+					{ 1.0f, 1.0f },
+				}
+			}
+		};
 		struct LodSelect
 		{
 			float src = 0.0f;

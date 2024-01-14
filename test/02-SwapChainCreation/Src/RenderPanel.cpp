@@ -185,7 +185,7 @@ namespace vkapp
 			doPrepareFrames();
 			std::cout << "Frames prepared." << std::endl;
 		}
-		catch ( std::exception & )
+		catch ( common::Exception & )
 		{
 			doCleanup();
 			throw;
@@ -197,12 +197,12 @@ namespace vkapp
 		Connect( wxID_ANY, wxEVT_SIZE, wxSizeEventHandler( RenderPanel::onSize ), nullptr, this );
 	}
 
-	RenderPanel::~RenderPanel()
+	RenderPanel::~RenderPanel()noexcept
 	{
 		doCleanup();
 	}
 
-	void RenderPanel::doCleanup()
+	void RenderPanel::doCleanup()noexcept
 	{
 		if ( m_device )
 		{

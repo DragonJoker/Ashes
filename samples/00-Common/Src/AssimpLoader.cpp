@@ -15,15 +15,24 @@ namespace common
 {
 	namespace
 	{
+		Material const DefaultMaterial
+		{
+			{
+				utils::Vec4{ 1, 1, 1, 1 },
+				utils::Vec4{ 1, 1, 1, 1 },
+				utils::Vec4{ 0, 0, 0, 0 },
+			}
+		};
+
 		bool doLoadTexture( std::string const & folder
 			, aiString const & name
 			, ImagePtr & data
-			, std::map< std::string, ImagePtr > & images )
+			, std::map< std::string, ImagePtr, std::less<> > & images )
 		{
 			bool result = false;
-			auto it = images.find( name.C_Str() );
 
-			if ( it != images.end() )
+			if ( auto it = images.find( std::string{ name.C_Str() } );
+				it != images.end() )
 			{
 				data = it->second;
 				return true;
@@ -32,12 +41,12 @@ namespace common
 			if ( name.length > 0 )
 			{
 				std::string path = name.C_Str();
-				auto index = 0u;
+				uint32_t index = 0u;
 				utils::replace( path, R"(\)", "/" );
 
 				if ( path.find( '/' ) != std::string::npos )
 				{
-					index = path.find_last_of( '/' ) + 1;
+					index = uint32_t( path.find_last_of( '/' ) + 1 );
 					path = path.substr( index );
 				}
 
@@ -49,7 +58,7 @@ namespace common
 					data = std::make_shared< Image >( common::loadImage( path ) );
 					result = true;
 				}
-				catch ( std::runtime_error & )
+				catch ( Exception & )
 				{
 					utils::replace( path, ".tga", ".jpg" );
 					try
@@ -57,7 +66,7 @@ namespace common
 						data = std::make_shared< Image >( common::loadImage( path ) );
 						result = true;
 					}
-					catch ( std::runtime_error & )
+					catch ( Exception & )
 					{
 						utils::replace( path, ".tga", ".png" );
 						try
@@ -65,13 +74,17 @@ namespace common
 							data = std::make_shared< Image >( common::loadImage( path ) );
 							result = true;
 						}
-						catch ( std::runtime_error & )
+						catch ( Exception & exc )
 						{
+							std::cerr << "Couldn't load image: " << exc.what() << std::endl;
 						}
 					}
 				}
 
-				images.insert( { std::string{ name.C_Str() }, data } );
+				if ( result )
+				{
+					images.try_emplace( std::string{ name.C_Str() }, data );
+				}
 			}
 
 			return result;
@@ -189,14 +202,14 @@ namespace common
 
 			if ( shininess > 0 )
 			{
-				material.data.shininess = shininess / 4096.0;
+				material.data.shininess = float( shininess ) / 4096.0f;
 			}
 		}
 
 		void doProcessPassTextures( std::string const & folder
 			, Material & material
 			, aiMaterial const & aiMaterial
-			, std::map< std::string, ImagePtr > & images )
+			, std::map< std::string, ImagePtr, std::less<> > & images )
 		{
 			aiString ambTexName;
 			aiMaterial.Get( AI_MATKEY_TEXTURE( aiTextureType_AMBIENT, 0 ), ambTexName );
@@ -290,6 +303,71 @@ namespace common
 
 			material.data.texturesCount = index;
 		}
+
+		std::pair< Submesh, bool > doLoadMesh( std::string const & folder
+		, aiScene const & aiScene
+			, aiMesh const & aiMesh
+			, std::map< std::string, ImagePtr, std::less<> > & images
+			, utils::Vec3 & min
+			, utils::Vec3 & max )
+		{
+			Submesh submesh{};
+			bool result{};
+
+			if ( aiMesh.HasFaces() && aiMesh.HasPositions() )
+			{
+				if ( aiMesh.mMaterialIndex < aiScene.mNumMaterials )
+				{
+					auto const & aiMaterial = *aiScene.mMaterials[aiMesh.mMaterialIndex];
+					aiString mtlname;
+					aiMaterial.Get( AI_MATKEY_NAME, mtlname );
+					Material material;
+					doProcessPassBaseComponents( material, aiMaterial );
+					doProcessPassTextures( folder, material, aiMaterial, images );
+					submesh.materials.push_back( material );
+				}
+				else
+				{
+					submesh.materials.push_back( DefaultMaterial );
+				}
+
+				submesh.vbo.data = doCreateVertexBuffer( aiMesh, min, max );
+
+				for ( size_t faceIndex = 0u; faceIndex < aiMesh.mNumFaces; ++faceIndex )
+				{
+					if ( auto const & face = aiMesh.mFaces[faceIndex];
+						face.mNumIndices == 3 )
+					{
+						submesh.ibo.data.emplace_back( face.mIndices[0]
+							, face.mIndices[1]
+							, face.mIndices[2] );
+					}
+				}
+
+				if ( submesh.materials[0].hasOpacity )
+				{
+					Material material = submesh.materials[0];
+					auto it = std::find_if( material.data.textureOperators.begin()
+						, material.data.textureOperators.end()
+						, []( TextureOperators const & operators )
+						{
+							return operators.normal != 0;
+						} );
+					material.data.backFace = 1;
+
+					if ( it != material.data.textureOperators.end() )
+					{
+						it->normal = 2;
+					}
+
+					submesh.materials.push_back( material );
+				}
+
+				result = true;
+			}
+
+			return { submesh, result };
+		}
 	}
 
 	Object loadObject( std::string const & folder
@@ -314,75 +392,14 @@ namespace common
 		{
 			utils::Vec3 min{ std::numeric_limits< float >::max() };
 			utils::Vec3 max{ std::numeric_limits< float >::lowest() };
-			static Material const defaultMaterial
-			{
-				{
-					utils::Vec4{ 1, 1, 1, 1 },
-					utils::Vec4{ 1, 1, 1, 1 },
-					utils::Vec4{ 0, 0, 0, 0 },
-				}
-			};
-
-			std::map< std::string, ImagePtr > uniqueImages;
+			std::map< std::string, ImagePtr, std::less<> > uniqueImages;
 
 			for ( size_t meshIndex = 0; meshIndex < aiScene->mNumMeshes; ++meshIndex )
 			{
-				auto & aiMesh = *aiScene->mMeshes[meshIndex];
-				Submesh submesh;
+				auto [submesh, ok] = doLoadMesh( folder, *aiScene, *aiScene->mMeshes[meshIndex], uniqueImages, min, max );
 
-				if ( aiMesh.HasFaces() && aiMesh.HasPositions() )
+				if ( ok )
 				{
-					if ( aiMesh.mMaterialIndex < aiScene->mNumMaterials )
-					{
-						auto & aiMaterial = *aiScene->mMaterials[aiMesh.mMaterialIndex];
-						aiString mtlname;
-						aiMaterial.Get( AI_MATKEY_NAME, mtlname );
-						Material material;
-						doProcessPassBaseComponents( material, aiMaterial );
-						doProcessPassTextures( folder, material, aiMaterial, uniqueImages );
-						submesh.materials.push_back( material );
-					}
-					else
-					{
-						submesh.materials.push_back( defaultMaterial );
-					}
-
-					submesh.vbo.data = doCreateVertexBuffer( aiMesh, min, max );
-
-					for ( size_t faceIndex = 0u; faceIndex < aiMesh.mNumFaces; ++faceIndex )
-					{
-						auto & face = aiMesh.mFaces[faceIndex];
-
-						if ( face.mNumIndices == 3 )
-						{
-							submesh.ibo.data.push_back( Face
-							{
-								face.mIndices[0],
-								face.mIndices[1],
-								face.mIndices[2]
-							} );
-						}
-					}
-
-					if ( submesh.materials[0].hasOpacity )
-					{
-						Material material = submesh.materials[0];
-						auto it = std::find_if( material.data.textureOperators.begin()
-							, material.data.textureOperators.end()
-							, []( TextureOperators const & operators )
-							{
-								return operators.normal != 0;
-							} );
-						material.data.backFace = 1;
-
-						if ( it != material.data.textureOperators.end() )
-						{
-							it->normal = 2;
-						}
-
-						submesh.materials.push_back( material );
-					}
-
 					result.emplace_back( std::move( submesh ) );
 				}
 			}
@@ -404,9 +421,9 @@ namespace common
 				}
 			}
 
-			for ( auto & image : uniqueImages )
+			for ( auto & [name, image] : uniqueImages )
 			{
-				images.emplace_back( std::move( image.second ) );
+				images.emplace_back( std::move( image ) );
 			}
 		}
 

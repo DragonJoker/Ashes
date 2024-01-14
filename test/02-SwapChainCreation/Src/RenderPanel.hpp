@@ -53,7 +53,7 @@ namespace vkapp
 		RenderPanel( wxWindow * parent
 			, wxSize const & size
 			, utils::Instance const & instance );
-		~RenderPanel();
+		~RenderPanel()noexcept override;
 
 	private:
 		/**
@@ -61,7 +61,7 @@ namespace vkapp
 		*	Initialisation.
 		*/
 		/**@{*/
-		void doCleanup();
+		void doCleanup()noexcept;
 		void doCreateSurface( utils::Instance const & instance );
 		void doCreateDevice( utils::Instance const & instance );
 		void doCreateSwapChain();

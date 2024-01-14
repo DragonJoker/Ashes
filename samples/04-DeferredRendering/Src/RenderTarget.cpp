@@ -26,19 +26,16 @@ namespace vkapp
 			, uint32_t( sizeof( common::SceneData ) )
 			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) }
-		, m_sceneData{ 1u }
 		, m_objectUbo{ utils::makeUniformBuffer( device
 			, 1u
 			, uint32_t( sizeof( common::ObjectData ) )
 			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) }
-		, m_objectData{ 1u }
 		, m_lightsUbo{ utils::makeUniformBuffer( device
 			, 1u
 			, uint32_t( sizeof( common::LightsData ) )
 			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) }
-		, m_lightsData{ 1u }
 	{
 		doCreateGBuffer();
 		doInitialise();
@@ -55,11 +52,11 @@ namespace vkapp
 			return result;
 		}();
 		m_rotate = utils::rotate( m_rotate
-			, float( utils::DegreeToRadian ) * ( duration.count() / 20000.0f )
+			, float( utils::DegreeToRadian ) * ( float( duration.count() ) / 20000.0f )
 			, { 0, 1, 0 } );
 		m_objectData[0].mtxModel = originalTranslate * m_rotate;
-		m_stagingBuffer->uploadUniformData( m_transferQueue
-			, m_commandPool
+		getStagingBuffer().uploadUniformData( getTransferQueue()
+			, getCommandPool()
 			, m_objectData
 			, *m_objectUbo
 			, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
@@ -78,8 +75,8 @@ namespace vkapp
 		, common::TextureNodePtrArray const & textureNodes )
 	{
 		return std::make_unique< OpaqueRendering >( std::make_unique< GeometryPass >( device
-				, m_commandPool
-				, m_transferQueue
+				, getCommandPool()
+				, getTransferQueue()
 				, ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "opaque_gp.frag"
 				, m_gbuffer
 				, views[0]->format
@@ -101,8 +98,8 @@ namespace vkapp
 		, common::TextureNodePtrArray const & textureNodes )
 	{
 		return std::make_unique< common::TransparentRendering >( std::make_unique< TransparentRendering >( device
-				, m_commandPool
-				, m_transferQueue
+				, getCommandPool()
+				, getTransferQueue()
 				, ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "transparent.frag"
 				, common::getFormats( views )
 				, *m_sceneUbo
@@ -116,37 +113,14 @@ namespace vkapp
 
 	void RenderTarget::doUpdateMatrixUbo( VkExtent2D const & size )
 	{
-#if 0
-		float halfWidth = static_cast< float >( size[0] ) * 0.5f;
-		float halfHeight = static_cast< float >( size[1] ) * 0.5f;
-		float wRatio = 1.0f;
-		float hRatio = 1.0f;
-
-		if ( halfHeight > halfWidth )
-		{
-			hRatio = halfHeight / halfWidth;
-		}
-		else
-		{
-			wRatio = halfWidth / halfHeight;
-		}
-
-		m_sceneUbo->getData( 0u ).mtxProjection = utils::Mat4{ m_device->getDevice().ortho( -2.0f * wRatio
-			, 2.0f * wRatio
-			, -2.0f * hRatio
-			, 2.0f * hRatio
-			, 0.0f
-			, 10.0f ) };
-#else
 		auto width = float( size.width );
 		auto height = float( size.height );
-		m_sceneData[0].mtxProjection = utils::Mat4{ m_device.getDevice().perspective( float( utils::toRadians( 90.0_degrees ) )
+		m_sceneData[0].mtxProjection = utils::Mat4{ getDevice().getDevice().perspective( float( utils::toRadians( 90.0_degrees ) )
 			, width / height
 			, 0.01f
 			, 100.0f ) };
-#endif
-		m_stagingBuffer->uploadUniformData( m_transferQueue
-			, m_commandPool
+		getStagingBuffer().uploadUniformData( getTransferQueue()
+			, getCommandPool()
 			, m_sceneData
 			, *m_sceneUbo
 			, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
@@ -166,8 +140,8 @@ namespace vkapp
 		};
 		lights.directionalLights[0] = directional;
 
-		m_stagingBuffer->uploadUniformData( m_transferQueue
-			, m_commandPool
+		getStagingBuffer().uploadUniformData( getTransferQueue()
+			, getCommandPool()
 			, m_lightsData
 			, *m_lightsUbo
 			, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT );
@@ -175,7 +149,7 @@ namespace vkapp
 
 	void RenderTarget::doCreateGBuffer()
 	{
-		static VkFormat const formats[]
+		static std::array< VkFormat, 5u > const formats
 		{
 			VK_FORMAT_R32_SFLOAT,
 			VK_FORMAT_R32G32B32A32_SFLOAT,
@@ -184,15 +158,10 @@ namespace vkapp
 			VK_FORMAT_R32G32B32A32_SFLOAT,
 		};
 		size_t index = 0u;
-		VkExtent2D size
-		{
-			getColourView().image->getDimensions().width,
-			getColourView().image->getDimensions().height,
-		};
 
 		for ( auto & texture : m_gbuffer )
 		{
-			texture.texture = m_device.createImage(
+			texture.texture = getDevice().createImage(
 				{
 					0,
 					VK_IMAGE_TYPE_2D,

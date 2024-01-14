@@ -13,9 +13,9 @@ namespace common
 		enum class Ids
 		{
 			RenderTimer = 42
-		}	Ids;
+		};
 
-		static int const TimerTimeMs = 20;
+		int const TimerTimeMs = 20;
 	}
 
 	MainFrame::MainFrame( wxString const & name
@@ -27,16 +27,11 @@ namespace common
 			, wxDefaultPosition
 			, WindowSize
 			, wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN | wxRESIZE_BORDER | wxMAXIMIZE_BOX }
+		, m_timer{ this, int( Ids::RenderTimer ) }
 		, m_name{ name }
 		, m_rendererName{ rendererName }
 		, m_renderers{ renderers }
-		, m_timer{ new wxTimer{ this, int( Ids::RenderTimer ) } }
 	{
-	}
-
-	MainFrame::~MainFrame()
-	{
-		delete m_timer;
 	}
 
 	void MainFrame::initialise()
@@ -67,16 +62,16 @@ namespace common
 				, wxTimerEventHandler( MainFrame::onTimer )
 				, nullptr
 				, this );
-			m_timer->Start( TimerTimeMs );
+			m_timer.Start( TimerTimeMs );
 
 			wxBoxSizer * sizer{ new wxBoxSizer{ wxVERTICAL } };
-			sizer->Add( m_panel, wxSizerFlags{ 1 }.Expand() );
+			sizer->Add( m_panel.get(), wxSizerFlags{ 1 }.Expand() );
 			sizer->SetSizeHints( this );
 			SetSizer( sizer );
 
 			std::cout << "Main frame initialised successfully." << std::endl;
 		}
-		catch ( std::exception & p_exc )
+		catch ( Exception & p_exc )
 		{
 			wxMessageBox( p_exc.what()
 				, wxMessageBoxCaptionStr
@@ -86,11 +81,11 @@ namespace common
 
 	void MainFrame::cleanup()
 	{
-		m_timer->Stop();
+		m_timer.Stop();
 
 		if ( m_panel )
 		{
-			m_panel->Destroy();
+			m_panel->cleanup();
 		}
 
 		m_instance.reset();
@@ -116,13 +111,15 @@ namespace common
 				m_panel->update();
 				m_panel->draw();
 			}
-			catch ( std::exception & exc )
+			catch ( Exception & exc )
 			{
-				m_timer->Stop();
+				m_timer.Stop();
 				wxMessageBox( exc.what()
 					, wxMessageBoxCaptionStr
 					, wxICON_ERROR );
 			}
+
+			event.Skip( false );
 		}
 	}
 

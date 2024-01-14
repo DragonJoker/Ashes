@@ -26,7 +26,7 @@ namespace vkapp
 		RenderPanel( wxWindow * parent
 			, wxSize const & size
 			, utils::Instance const & instance );
-		~RenderPanel();
+		~RenderPanel()noexcept override;
 
 	private:
 		/**
@@ -34,7 +34,7 @@ namespace vkapp
 		*	Initialisation.
 		*/
 		/**@{*/
-		void doCleanup();
+		void doCleanup()noexcept;
 		void doUpdateProjection();
 		ashes::SurfacePtr doCreateSurface( utils::Instance const & instance );
 		void doCreateDevice( utils::Instance const & instance
@@ -80,11 +80,11 @@ namespace vkapp
 	private:
 		struct Configuration
 		{
-			utils::IVec2 textureSize;
-			float roll;
+			utils::IVec2 textureSize{};
+			float roll{};
 		};
 
-		wxTimer * m_timer{ nullptr };
+		wxTimer m_timer;
 		std::array< utils::Mat4, 2u > m_rotate;
 		uint32_t m_frame{ 0u };
 		/**
@@ -113,7 +113,7 @@ namespace vkapp
 		utils::Mat4 m_matrixData;
 		ashes::UniformBufferPtr m_objectUbo;
 		std::array< utils::Mat4, 2u > m_objectData;
-		ashes::PushConstantsBufferTPtr< utils::Vec4 > m_objectPcbs[2];
+		std::array < ashes::PushConstantsBufferTPtr< utils::Vec4 >, 2u > m_objectPcbs;
 		/**@}*/
 		/**
 		*\name
@@ -128,9 +128,55 @@ namespace vkapp
 		ashes::BufferPtr< uint16_t > m_offscreenIndexBuffer;
 		ashes::DescriptorSetLayoutPtr m_offscreenDescriptorLayout;
 		ashes::DescriptorSetPoolPtr m_offscreenDescriptorPool;
-		ashes::DescriptorSetPtr m_offscreenDescriptorSets[2];
-		std::vector< TexturedVertexData > m_offscreenVertexData;
-		ashes::UInt16Array m_offscreenIndexData;
+		std::array< ashes::DescriptorSetPtr, 2u > m_offscreenDescriptorSets;
+		std::vector< TexturedVertexData > m_offscreenVertexData
+		{
+			// Front
+			{ { -1.0, -1.0, +1.0, 1.0 }, { 0.0, 0.0 } },
+			{ { -1.0, +1.0, +1.0, 1.0 }, { 0.0, 1.0 } },
+			{ { +1.0, -1.0, +1.0, 1.0 }, { 1.0, 0.0 } },
+			{ { +1.0, +1.0, +1.0, 1.0 }, { 1.0, 1.0 } },
+			// Top
+			{ { -1.0, +1.0, +1.0, 1.0 }, { 0.0, 0.0 } },
+			{ { -1.0, +1.0, -1.0, 1.0 }, { 0.0, 1.0 } },
+			{ { +1.0, +1.0, +1.0, 1.0 }, { 1.0, 0.0 } },
+			{ { +1.0, +1.0, -1.0, 1.0 }, { 1.0, 1.0 } },
+			// Back
+			{ { -1.0, +1.0, -1.0, 1.0 }, { 1.0, 1.0 } },
+			{ { -1.0, -1.0, -1.0, 1.0 }, { 1.0, 0.0 } },
+			{ { +1.0, +1.0, -1.0, 1.0 }, { 0.0, 1.0 } },
+			{ { +1.0, -1.0, -1.0, 1.0 }, { 0.0, 0.0 } },
+			// Bottom
+			{ { -1.0, -1.0, -1.0, 1.0 }, { 1.0, 1.0 } },
+			{ { -1.0, -1.0, +1.0, 1.0 }, { 1.0, 0.0 } },
+			{ { +1.0, -1.0, -1.0, 1.0 }, { 0.0, 1.0 } },
+			{ { +1.0, -1.0, +1.0, 1.0 }, { 0.0, 0.0 } },
+			// Right
+			{ { +1.0, -1.0, +1.0, 1.0 }, { 0.0, 0.0 } },
+			{ { +1.0, +1.0, +1.0, 1.0 }, { 0.0, 1.0 } },
+			{ { +1.0, -1.0, -1.0, 1.0 }, { 1.0, 0.0 } },
+			{ { +1.0, +1.0, -1.0, 1.0 }, { 1.0, 1.0 } },
+			// Left
+			{ { -1.0, -1.0, -1.0, 1.0 }, { 0.0, 0.0 } },
+			{ { -1.0, +1.0, -1.0, 1.0 }, { 0.0, 1.0 } },
+			{ { -1.0, -1.0, +1.0, 1.0 }, { 1.0, 0.0 } },
+			{ { -1.0, +1.0, +1.0, 1.0 }, { 1.0, 1.0 } },
+		};
+		ashes::UInt16Array m_offscreenIndexData
+		{
+			// Front
+			0, 1, 2, 2, 1, 3,
+			// Top
+			4, 5, 6, 6, 5, 7,
+			// Back
+			8, 9, 10, 10, 9, 11,
+			// Bottom
+			12, 13, 14, 14, 13, 15,
+			// Right
+			16, 17, 18, 18, 17, 19,
+			// Left
+			20, 21, 22, 22, 21, 23,
+		};
 		ashes::QueryPoolPtr m_offscreenQueryPool;
 		/**
 		*\name
@@ -160,7 +206,13 @@ namespace vkapp
 		ashes::DescriptorSetLayoutPtr m_mainDescriptorLayout;
 		ashes::DescriptorSetPoolPtr m_mainDescriptorPool;
 		ashes::DescriptorSetPtr m_mainDescriptorSet;
-		std::vector< TexturedVertexData > m_mainVertexData;
+		std::vector< TexturedVertexData > m_mainVertexData
+		{
+			{ { -1.0, -1.0, 0.0, 1.0 }, { 0.0, 0.0 } },
+			{ { -1.0, +1.0, 0.0, 1.0 }, { 0.0, 1.0 } },
+			{ { +1.0, -1.0, 0.0, 1.0 }, { 1.0, 0.0 } },
+			{ { +1.0, +1.0, 0.0, 1.0 }, { 1.0, 1.0 } },
+		};
 		/**@}*/
 		/**
 		*\name

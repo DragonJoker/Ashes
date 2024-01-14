@@ -10,10 +10,9 @@ namespace common
 		: public wxApp
 	{
 	protected:
-		App( wxString const & name );
+		explicit App( wxString const & name );
 
 	public:
-		virtual ~App() = default;
 		bool OnInit()override;
 		int OnExit()override;
 
@@ -21,23 +20,45 @@ namespace common
 			, std::chrono::microseconds const & durationCpu );
 		void updateFps( std::chrono::microseconds const & duration );
 
-		inline wxString const & getInstanceName()const
+		wxString const & getInstanceName()const
 		{
 			return m_rendererName;
+		}
+
+	protected:
+		wxString const & getName()const noexcept
+		{
+			return m_name;
+		}
+
+		bool isAllocated()const noexcept
+		{
+			return m_allocated;
+		}
+
+		MainFrame & getMainFrame()const noexcept
+		{
+			assert( m_mainFrame );
+			return *m_mainFrame;
+		}
+
+		ashes::RendererList const & getRenderers()const noexcept
+		{
+			return m_renderers;
 		}
 
 	private:
 		bool doParseCommandLine();
 		virtual MainFrame * doCreateMainFrame( wxString const & rendererName ) = 0;
 
-	protected:
+	private:
 		wxString m_name;
 		wxString m_rendererName;
-		bool m_allocated{ false };
-		MainFrame * m_mainFrame{ nullptr };
-		std::streambuf * m_cout{ nullptr };
-		std::streambuf * m_cerr{ nullptr };
-		std::streambuf * m_clog{ nullptr };
+		bool m_allocated{};
+		MainFrame * m_mainFrame{};
+		std::unique_ptr< std::streambuf > m_cout{};
+		std::unique_ptr< std::streambuf > m_cerr{};
+		std::unique_ptr< std::streambuf > m_clog{};
 		ashes::RendererList m_renderers;
 	};
 }

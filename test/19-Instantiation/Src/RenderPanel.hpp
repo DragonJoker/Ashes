@@ -27,7 +27,7 @@ namespace vkapp
 		RenderPanel( wxWindow * parent
 			, wxSize const & size
 			, utils::Instance const & instance );
-		~RenderPanel();
+		~RenderPanel()noexcept override;
 
 	private:
 		/**
@@ -35,7 +35,7 @@ namespace vkapp
 		*	Initialisation.
 		*/
 		/**@{*/
-		void doCleanup();
+		void doCleanup()noexcept;
 		void doUpdateProjection();
 		ashes::SurfacePtr doCreateSurface( utils::Instance const & instance );
 		void doCreateDevice( utils::Instance const & instance
@@ -74,7 +74,7 @@ namespace vkapp
 		/**@}*/
 
 	private:
-		wxTimer * m_timer{ nullptr };
+		wxTimer m_timer;
 		bool m_moveCamera{ false };
 		utils::IVec2 m_previousMousePosition;
 		utils::Mat4 m_projection;

@@ -35,72 +35,17 @@ namespace vkapp
 		enum class Ids
 		{
 			RenderTimer = 42
-		}	Ids;
+		};
 
-		static int const TimerTimeMs = 20;
-		static VkFormat const DepthFormat = VK_FORMAT_D32_SFLOAT;
+		int const TimerTimeMs = 20;
+		VkFormat const DepthFormat = VK_FORMAT_D32_SFLOAT;
 	}
 
 	RenderPanel::RenderPanel( wxWindow * parent
 		, wxSize const & size
 		, utils::Instance const & instance )
 		: wxPanel{ parent, wxID_ANY, wxDefaultPosition, size }
-		, m_timer{ new wxTimer{ this, int( Ids::RenderTimer ) } }
-		, m_offscreenVertexData
-		{
-			// Front
-			{ { -1.0, -1.0, +1.0, 1.0 }, { 0.0, 0.0 } },
-			{ { -1.0, +1.0, +1.0, 1.0 }, { 0.0, 1.0 } },
-			{ { +1.0, -1.0, +1.0, 1.0 }, { 1.0, 0.0 } },
-			{ { +1.0, +1.0, +1.0, 1.0 }, { 1.0, 1.0 } },
-			// Top
-			{ { -1.0, +1.0, +1.0, 1.0 }, { 0.0, 0.0 } },
-			{ { -1.0, +1.0, -1.0, 1.0 }, { 0.0, 1.0 } },
-			{ { +1.0, +1.0, +1.0, 1.0 }, { 1.0, 0.0 } },
-			{ { +1.0, +1.0, -1.0, 1.0 }, { 1.0, 1.0 } },
-			// Back
-			{ { -1.0, +1.0, -1.0, 1.0 }, { 1.0, 1.0 } },
-			{ { -1.0, -1.0, -1.0, 1.0 }, { 1.0, 0.0 } },
-			{ { +1.0, +1.0, -1.0, 1.0 }, { 0.0, 1.0 } },
-			{ { +1.0, -1.0, -1.0, 1.0 }, { 0.0, 0.0 } },
-			// Bottom
-			{ { -1.0, -1.0, -1.0, 1.0 }, { 1.0, 1.0 } },
-			{ { -1.0, -1.0, +1.0, 1.0 }, { 1.0, 0.0 } },
-			{ { +1.0, -1.0, -1.0, 1.0 }, { 0.0, 1.0 } },
-			{ { +1.0, -1.0, +1.0, 1.0 }, { 0.0, 0.0 } },
-			// Right
-			{ { +1.0, -1.0, +1.0, 1.0 }, { 0.0, 0.0 } },
-			{ { +1.0, +1.0, +1.0, 1.0 }, { 0.0, 1.0 } },
-			{ { +1.0, -1.0, -1.0, 1.0 }, { 1.0, 0.0 } },
-			{ { +1.0, +1.0, -1.0, 1.0 }, { 1.0, 1.0 } },
-			// Left
-			{ { -1.0, -1.0, -1.0, 1.0 }, { 0.0, 0.0 } },
-			{ { -1.0, +1.0, -1.0, 1.0 }, { 0.0, 1.0 } },
-			{ { -1.0, -1.0, +1.0, 1.0 }, { 1.0, 0.0 } },
-			{ { -1.0, +1.0, +1.0, 1.0 }, { 1.0, 1.0 } },
-		}
-		, m_offscreenIndexData
-		{
-			// Front
-			0, 1, 2, 2, 1, 3,
-			// Top
-			4, 5, 6, 6, 5, 7,
-			// Back
-			8, 9, 10, 10, 9, 11,
-			// Bottom
-			12, 13, 14, 14, 13, 15,
-			// Right
-			16, 17, 18, 18, 17, 19,
-			// Left
-			20, 21, 22, 22, 21, 23,
-		}
-		, m_mainVertexData
-		{
-			{ { -1.0, -1.0, 0.0, 1.0 }, { 0.0, 0.0 } },
-			{ { -1.0, +1.0, 0.0, 1.0 }, { 0.0, 1.0 } },
-			{ { +1.0, -1.0, 0.0, 1.0 }, { 1.0, 0.0 } },
-			{ { +1.0, +1.0, 0.0, 1.0 }, { 1.0, 1.0 } },
-		}
+		, m_timer{ this, int( Ids::RenderTimer ) }
 	{
 		try
 		{
@@ -140,13 +85,13 @@ namespace vkapp
 			std::cout << "Main pipeline created." << std::endl;
 			doPrepareMainFrames();
 		}
-		catch ( std::exception & )
+		catch ( common::Exception & )
 		{
 			doCleanup();
 			throw;
 		}
 
-		m_timer->Start( TimerTimeMs );
+		m_timer.Start( TimerTimeMs );
 
 		Connect( int( Ids::RenderTimer )
 			, wxEVT_TIMER
@@ -160,15 +105,13 @@ namespace vkapp
 			, this );
 	}
 
-	RenderPanel::~RenderPanel()
+	RenderPanel::~RenderPanel()noexcept
 	{
 		doCleanup();
 	}
 
-	void RenderPanel::doCleanup()
+	void RenderPanel::doCleanup()noexcept
 	{
-		delete m_timer;
-
 		if ( m_device )
 		{
 			m_device->getDevice().waitIdle();
@@ -233,7 +176,7 @@ namespace vkapp
 	ashes::SurfacePtr RenderPanel::doCreateSurface( utils::Instance const & instance )
 	{
 		auto handle = common::makeWindowHandle( *this );
-		auto & gpu = instance.getPhysicalDevice( 0u );
+		auto const & gpu = instance.getPhysicalDevice( 0u );
 		return instance.getInstance().createSurface( gpu
 			, std::move( handle ) );
 	}
@@ -480,13 +423,12 @@ namespace vkapp
 	void RenderPanel::doCreateOffscreenPipeline()
 	{
 		m_offscreenPipelineLayout = m_device->getDevice().createPipelineLayout( ashes::DescriptorSetLayoutCRefArray{ { *m_offscreenDescriptorLayout } } );
-		wxSize size{ GetClientSize() };
 		std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
 		if ( !wxFileExists( shadersFolder / "offscreen.vert" )
 			|| !wxFileExists( shadersFolder / "offscreen.frag" ) )
 		{
-			throw std::runtime_error{ "Shader files are missing" };
+			throw common::Exception{ "Shader files are missing" };
 		}
 		
 		ashes::PipelineVertexInputStateCreateInfo vertexLayouts
@@ -502,35 +444,25 @@ namespace vkapp
 		};
 
 		ashes::PipelineShaderStageCreateInfoArray shaderStages;
-		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
-			{
-				0u,
-				VK_SHADER_STAGE_VERTEX_BIT,
-				m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
-					, VK_SHADER_STAGE_VERTEX_BIT
-					, shadersFolder / "offscreen.vert" ) ),
-				"main",
-				ashes::nullopt,
-			} );
+		shaderStages.emplace_back( 0u
+			, VK_SHADER_STAGE_VERTEX_BIT
+			, m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+				, VK_SHADER_STAGE_VERTEX_BIT
+				, shadersFolder / "offscreen.vert" ) )
+			, "main"
+			, ashes::nullopt );
 		ashes::VkSpecializationMapEntryArray specializationEntries
 		{
 			{ 0u, 0u, 4u }
 		};
 		int dataRed = 0;
-		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
-			{
-				0u,
-				VK_SHADER_STAGE_FRAGMENT_BIT,
-				m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
-					, VK_SHADER_STAGE_FRAGMENT_BIT
-					, shadersFolder / "offscreen.frag" ) ),
-				"main",
-				ashes::SpecializationInfo
-				{
-					specializationEntries,
-					utils::makeByteArray( dataRed ),
-				},
-			} );
+		shaderStages.emplace_back( 0u
+			, VK_SHADER_STAGE_FRAGMENT_BIT
+			, m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+				, VK_SHADER_STAGE_FRAGMENT_BIT
+				, shadersFolder / "offscreen.frag" ) )
+			, "main"
+			, ashes::SpecializationInfo{ specializationEntries, utils::makeByteArray( dataRed ) } );
 
 		m_offscreenPipelines.red = m_device->getDevice().createPipeline( ashes::GraphicsPipelineCreateInfo
 			{
@@ -561,31 +493,22 @@ namespace vkapp
 			},
 		};
 
-		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
-			{
-				0u,
-				VK_SHADER_STAGE_VERTEX_BIT,
-				m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
-					, VK_SHADER_STAGE_VERTEX_BIT
-					, shadersFolder / "offscreen.vert" ) ),
-				"main",
-				ashes::nullopt,
-			} );
+		shaderStages = {};
+		shaderStages.emplace_back( 0u
+			, VK_SHADER_STAGE_VERTEX_BIT
+			, m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+				, VK_SHADER_STAGE_VERTEX_BIT
+				, shadersFolder / "offscreen.vert" ) )
+			, "main"
+			, ashes::nullopt );
 		int dataGreen = 1;
-		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
-			{
-				0u,
-				VK_SHADER_STAGE_FRAGMENT_BIT,
-				m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
-					, VK_SHADER_STAGE_FRAGMENT_BIT
-					, shadersFolder / "offscreen.frag" ) ),
-				"main",
-				ashes::SpecializationInfo
-				{
-					specializationEntries,
-					utils::makeByteArray( dataGreen ),
-				},
-			} );
+		shaderStages.emplace_back( 0u
+			, VK_SHADER_STAGE_FRAGMENT_BIT
+			, m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+				, VK_SHADER_STAGE_FRAGMENT_BIT
+				, shadersFolder / "offscreen.frag" ) )
+			, "main"
+			, ashes::SpecializationInfo{ specializationEntries, utils::makeByteArray( dataGreen ) } );
 
 		m_offscreenPipelines.green = m_device->getDevice().createPipeline( ashes::GraphicsPipelineCreateInfo
 			{
@@ -691,9 +614,8 @@ namespace vkapp
 			, 2u
 			, 0u );
 		m_commandBuffer = m_commandPool->createCommandBuffer();
-		wxSize size{ GetClientSize() };
-		auto & commandBuffer = *m_commandBuffer;
-		auto & frameBuffer = *m_frameBuffer;
+		auto const & commandBuffer = *m_commandBuffer;
+		auto const & frameBuffer = *m_frameBuffer;
 
 		commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT );
 		auto dimensions = m_swapChain->getDimensions();
@@ -752,7 +674,7 @@ namespace vkapp
 		if ( !wxFileExists( shadersFolder / "main.vert" )
 			|| !wxFileExists( shadersFolder / "main.frag" ) )
 		{
-			throw std::runtime_error{ "Shader files are missing" };
+			throw common::Exception{ "Shader files are missing" };
 		}
 
 		ashes::PipelineVertexInputStateCreateInfo vertexLayouts
@@ -768,26 +690,20 @@ namespace vkapp
 		};
 
 		ashes::PipelineShaderStageCreateInfoArray shaderStages;
-		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
-			{
-				0u,
-				VK_SHADER_STAGE_VERTEX_BIT,
-				m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+		shaderStages.emplace_back( 0u
+				, VK_SHADER_STAGE_VERTEX_BIT
+				, m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
 					, VK_SHADER_STAGE_VERTEX_BIT
-					, shadersFolder / "main.vert" ) ),
-				"main",
-				ashes::nullopt,
-			} );
-		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
-			{
-				0u,
-				VK_SHADER_STAGE_FRAGMENT_BIT,
-				m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+					, shadersFolder / "main.vert" ) )
+				, "main"
+				, ashes::nullopt );
+		shaderStages.emplace_back( 0u
+				, VK_SHADER_STAGE_FRAGMENT_BIT
+				, m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
 					, VK_SHADER_STAGE_FRAGMENT_BIT
-					, shadersFolder / "main.frag" ) ),
-				"main",
-				ashes::nullopt,
-			} );
+					, shadersFolder / "main.frag" ) )
+				, "main"
+				, ashes::nullopt );
 
 		m_mainPipeline = m_device->getDevice().createPipeline( ashes::GraphicsPipelineCreateInfo
 			{
@@ -814,10 +730,8 @@ namespace vkapp
 
 		for ( size_t i = 0u; i < m_frameBuffers.size(); ++i )
 		{
-			auto & frameBuffer = *m_frameBuffers[i];
-			auto & commandBuffer = *m_commandBuffers[i];
-
-			wxSize size{ GetClientSize() };
+			auto const & frameBuffer = *m_frameBuffers[i];
+			auto const & commandBuffer = *m_commandBuffers[i];
 
 			commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT );
 			auto dimensions = m_swapChain->getDimensions();
@@ -901,14 +815,14 @@ namespace vkapp
 				, values );
 
 			// Elapsed time in nanoseconds
-			auto elapsed = std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device->getDevice().getTimestampPeriod() ) ) };
+			auto elapsed = std::chrono::nanoseconds{ uint64_t( float( values[1] - values[0] ) / float( m_device->getDevice().getTimestampPeriod() ) ) };
 			auto after = std::chrono::high_resolution_clock::now();
 			wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( elapsed )
 				, std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
 		}
 		else
 		{
-			m_timer->Stop();
+			m_timer.Stop();
 		}
 	}
 
@@ -925,14 +839,15 @@ namespace vkapp
 		{
 			doUpdate();
 			doDraw();
+			event.Skip( false );
 		}
 	}
 
 	void RenderPanel::onSize( wxSizeEvent & event )
 	{
-		m_timer->Stop();
+		m_timer.Stop();
 		doResetSwapChain();
-		m_timer->Start( TimerTimeMs );
+		m_timer.Start( TimerTimeMs );
 		event.Skip();
 	}
 }

@@ -25,8 +25,8 @@ namespace common
 {
 	namespace
 	{
-		static VkFormat const DepthFormat = VK_FORMAT_D24_UNORM_S8_UINT;
-		static VkFormat const ColourFormat = VK_FORMAT_R8G8B8A8_UNORM;
+		VkFormat const DepthFormat = VK_FORMAT_D24_UNORM_S8_UINT;
+		VkFormat const ColourFormat = VK_FORMAT_R8G8B8A8_UNORM;
 	}
 
 	RenderTarget::RenderTarget( utils::Device const & device
@@ -38,9 +38,9 @@ namespace common
 		: m_device{ device }
 		, m_commandPool{ commandPool }
 		, m_transferQueue{ transferQueue }
-		, m_scene{ std::move( scene ) }
-		, m_images{ std::move( images ) }
 		, m_size{ size }
+		, m_images{ std::move( images ) }
+		, m_scene{ std::move( scene ) }
 	{
 		try
 		{
@@ -51,7 +51,7 @@ namespace common
 			doCreateRenderPass();
 			std::cout << "Offscreen render pass created." << std::endl;
 		}
-		catch ( std::exception & )
+		catch ( Exception & )
 		{
 			doCleanup();
 			throw;
@@ -59,7 +59,7 @@ namespace common
 
 	}
 
-	RenderTarget::~RenderTarget()
+	RenderTarget::~RenderTarget()noexcept
 	{
 		doCleanup();
 	}
@@ -82,7 +82,7 @@ namespace common
 	}
 
 	void RenderTarget::draw( ashes::Queue const & queue
-		, std::chrono::microseconds & gpu )
+		, std::chrono::microseconds & gpu )const
 	{
 		std::chrono::nanoseconds opaque;
 		std::chrono::nanoseconds transparent;
@@ -105,7 +105,7 @@ namespace common
 			, m_textureNodes );
 	}
 
-	void RenderTarget::doCleanup()
+	void RenderTarget::doCleanup()noexcept
 	{
 		m_stagingBuffer.reset();
 
@@ -127,24 +127,21 @@ namespace common
 
 	void RenderTarget::doCreateTextures()
 	{
-		for ( auto & image : m_images )
+		for ( auto const & image : m_images )
 		{
-			common::TextureNodePtr textureNode = std::make_shared< common::TextureNode >();
+			auto textureNode = std::make_shared< common::TextureNode >();
 			textureNode->image = image;
-			textureNode->texture = m_device.createImage(
-				{
-					0u,
-					VK_IMAGE_TYPE_2D,
-					image->format,
-					VkExtent3D{ image->size.width, image->size.height, 1u },
-					4u,
-					1u,
-					VK_SAMPLE_COUNT_1_BIT,
-					VK_IMAGE_TILING_OPTIMAL,
-					( VK_IMAGE_USAGE_TRANSFER_SRC_BIT
+			textureNode->texture = m_device.createImage( { 0u
+					, VK_IMAGE_TYPE_2D
+					, image->format
+					, VkExtent3D{ image->size.width, image->size.height, 1u }
+					, 4u
+					, 1u
+					, VK_SAMPLE_COUNT_1_BIT
+					, VK_IMAGE_TILING_OPTIMAL
+					, ( VK_IMAGE_USAGE_TRANSFER_SRC_BIT
 						| VK_IMAGE_USAGE_TRANSFER_DST_BIT
-						| VK_IMAGE_USAGE_SAMPLED_BIT )
-				}
+						| VK_IMAGE_USAGE_SAMPLED_BIT ) }
 				, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 			textureNode->view = textureNode->texture->createView( VkImageViewType( textureNode->texture->getType() )
 				, textureNode->texture->getFormat()
@@ -171,35 +168,29 @@ namespace common
 
 	void RenderTarget::doUpdateRenderViews()
 	{
-		m_colour = m_device.createImage(
-			{
-				0,
-				VK_IMAGE_TYPE_2D,
-				ColourFormat,
-				VkExtent3D{ m_size.width, m_size.height, 1u },
-				1u,
-				1u,
-				VK_SAMPLE_COUNT_1_BIT,
-				VK_IMAGE_TILING_OPTIMAL,
-				( VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
-					| VK_IMAGE_USAGE_SAMPLED_BIT )
-			}
+		m_colour = m_device.createImage( { 0
+				, VK_IMAGE_TYPE_2D
+				, ColourFormat
+				, VkExtent3D{ m_size.width, m_size.height, 1u }
+				, 1u
+				, 1u
+				, VK_SAMPLE_COUNT_1_BIT
+				, VK_IMAGE_TILING_OPTIMAL
+				, ( VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+					| VK_IMAGE_USAGE_SAMPLED_BIT ) }
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 		m_colourView = m_colour->createView( VK_IMAGE_VIEW_TYPE_2D
 			, m_colour->getFormat() );
 
-		m_depth = m_device.createImage(
-			{
-				0,
-				VK_IMAGE_TYPE_2D,
-				DepthFormat,
-				VkExtent3D{ m_size.width, m_size.height, 1u },
-				1u,
-				1u,
-				VK_SAMPLE_COUNT_1_BIT,
-				VK_IMAGE_TILING_OPTIMAL,
-				VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
-			}
+		m_depth = m_device.createImage( { 0
+				, VK_IMAGE_TYPE_2D
+				, DepthFormat
+				, VkExtent3D{ m_size.width, m_size.height, 1u }
+				, 1u
+				, 1u
+				, VK_SAMPLE_COUNT_1_BIT
+				, VK_IMAGE_TILING_OPTIMAL
+				, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT }
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 		m_depthView = m_depth->createView( VK_IMAGE_VIEW_TYPE_2D
 			, m_depth->getFormat() );

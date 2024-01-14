@@ -25,6 +25,11 @@ namespace common
 			using int_type = typename std::basic_streambuf< CharType >::int_type;
 			using traits_type = typename std::basic_streambuf< CharType >::traits_type;
 
+			LogStreambuf( LogStreambuf const & ) = delete;
+			LogStreambuf & operator=( LogStreambuf const & ) = delete;
+			LogStreambuf( LogStreambuf && )noexcept = delete;
+			LogStreambuf & operator=( LogStreambuf && )noexcept = delete;
+
 			LogStreambuf( string_type const & appName, ostream_type & stream )
 				: m_stream( stream )
 				, m_appName{ appName }
@@ -32,7 +37,7 @@ namespace common
 				m_old = m_stream.rdbuf( this );
 			}
 
-			~LogStreambuf()noexcept
+			~LogStreambuf()noexcept override
 			{
 				try
 				{
@@ -120,14 +125,12 @@ namespace common
 			localtime_s( &today, &ttime );
 #else
 			today = *localtime( &ttime );
-#endif			
-			char buffer[33] = { 0 };
-			strftime( buffer, 32, "%Y-%m-%d %H:%M:%S", &today );
-			std::string timeStamp = buffer;
+#endif
+			std::array< char, 33u > buffer{};
+			strftime( buffer.data(), 32, "%Y-%m-%d %H:%M:%S", &today );
+			std::string timeStamp{ buffer.data() };
 
-			std::ofstream file{ logFileName, std::ios::app };
-
-			if ( file )
+			if ( std::ofstream file{ logFileName, std::ios::app } )
 			{
 				file << timeStamp << " - " << log;
 			}
@@ -149,23 +152,24 @@ namespace common
 			using CharType = char;
 			using string_type = std::basic_string< CharType >;
 
+			static inline std::array< std::string, 4u > const logTypeName
+			{
+				"Debug",
+				"Info",
+				"Warning",
+				"Error",
+			};
+			static inline std::array< FILE *, 4u > const stdStream
+			{
+				stdout,
+				stdout,
+				stdout,
+				stderr,
+			};
+
 			static void Log( string_type const & appName
 				, string_type const & text )
 			{
-				static std::string const logTypeName[]
-				{
-					"Debug",
-					"Info",
-					"Warning",
-					"Error",
-				};
-				static FILE * const stdStream[]
-				{
-					stdout,
-					stdout,
-					stdout,
-					stderr,
-				};
 				logDebugString( appName + " - " + logTypeName[size_t( Type )] + ": " + text + "\n"
 					, stdStream[size_t( Type )] );
 			}
@@ -184,11 +188,11 @@ namespace common
 
 	bool App::OnInit()
 	{
-		m_cout = new LogStreambuf< InfoLogStreambufTraits >( m_name.ToStdString()
+		m_cout = std::make_unique< LogStreambuf< InfoLogStreambufTraits > >( m_name.ToStdString()
 			, std::cout );
-		m_cerr = new LogStreambuf< ErrorLogStreambufTraits >( m_name.ToStdString()
+		m_cerr = std::make_unique < LogStreambuf< ErrorLogStreambufTraits > >( m_name.ToStdString()
 			, std::cerr );
-		m_clog = new LogStreambuf< DebugLogStreambufTraits >( m_name.ToStdString()
+		m_clog = std::make_unique < LogStreambuf< DebugLogStreambufTraits > >( m_name.ToStdString()
 			, std::clog );
 
 #if 1//!defined( NDEBUG )
@@ -230,7 +234,7 @@ namespace common
 				result = true;
 			}
 		}
-		catch ( std::exception & exc )
+		catch ( Exception & exc )
 		{
 			std::cerr << exc.what() << std::endl;
 		}
@@ -254,9 +258,9 @@ namespace common
 #	endif
 #endif
 
-		delete m_cout;
-		delete m_cerr;
-		delete m_clog;
+		m_cout.reset();
+		m_cerr.reset();
+		m_clog.reset();
 		return wxApp::OnExit();
 	}
 
@@ -282,9 +286,8 @@ namespace common
 
 		if ( result )
 		{
-			wxString fileName;
-
-			if ( parser.Found( wxT( "l" ), &fileName ) )
+			if ( wxString fileName;
+				parser.Found( wxT( "l" ), &fileName ) )
 			{
 				logFileName = fileName;
 			}
@@ -294,12 +297,10 @@ namespace common
 
 			for ( auto & renderer : m_renderers )
 			{
-				if ( m_rendererName.empty() )
+				if ( m_rendererName.empty()
+					&& parser.Found( renderer.name ) )
 				{
-					if ( parser.Found( renderer.name ) )
-					{
-						m_rendererName = renderer.name;
-					}
+					m_rendererName = renderer.name;
 				}
 			}
 		}

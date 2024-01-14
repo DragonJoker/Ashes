@@ -19,7 +19,7 @@ namespace vkapp
 
 	private:
 		void doUpdate( std::chrono::microseconds const & duration )override;
-		virtual void doResize( VkExtent2D const & size )override;
+		void doResize( VkExtent2D const & size )override;
 		common::OpaqueRenderingPtr doCreateOpaqueRendering( utils::Device const & device
 			, ashes::StagingBuffer & stagingBuffer
 			, ashes::ImageViewArray views
@@ -35,11 +35,11 @@ namespace vkapp
 
 	private:
 		ashes::UniformBufferPtr m_sceneUbo;
-		std::vector< common::SceneData > m_sceneData;
+		std::vector< common::SceneData > m_sceneData{ 1u };
 		ashes::UniformBufferPtr m_objectUbo;
-		std::vector< common::ObjectData > m_objectData;
+		std::vector< common::ObjectData > m_objectData{ 1u };
 		ashes::UniformBufferPtr m_lightsUbo;
-		std::vector< common::LightsData > m_lightsData;
-		utils::Mat4 m_rotate;
+		std::vector< common::LightsData > m_lightsData{ 1u };
+		utils::Mat4 m_rotate{};
 	};
 }
