@@ -7,8 +7,8 @@ See LICENSE file in root folder.
 namespace ashes::test
 {
 	ViewportCommand::ViewportCommand( VkDevice device
-		, uint32_t first
-		, VkViewportArray const & viewports )
+		, uint32_t
+		, VkViewportArray const & )
 		: CommandBase{ device }
 	{
 	}

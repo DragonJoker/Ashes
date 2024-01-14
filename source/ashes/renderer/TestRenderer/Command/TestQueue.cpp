@@ -64,8 +64,8 @@ namespace ashes::test
 		return VK_SUCCESS;
 	}
 
-	VkResult Queue::bindSparse( ArrayView< VkBindSparseInfo const > values
-		, VkFence fence )const
+	VkResult Queue::bindSparse( ArrayView< VkBindSparseInfo const >
+		, VkFence )const
 	{
 		return VK_ERROR_FEATURE_NOT_PRESENT;
 	}
@@ -129,15 +129,15 @@ namespace ashes::test
 #endif
 
 	VkResult Queue::doSubmit( VkCommandBufferArray const & commandBuffers
-		, VkSemaphoreArray const & semaphoresToWait
-		, VkPipelineStageFlagsArray const & semaphoresStage
-		, VkSemaphoreArray const & semaphoresToSignal
-		, VkFence fence )const
+		, VkSemaphoreArray const &
+		, VkPipelineStageFlagsArray const &
+		, VkSemaphoreArray const &
+		, VkFence )const
 	{
 		for ( auto & commandBuffer : commandBuffers )
 		{
-			auto & dxCommandBuffer = *get( commandBuffer );
-			dxCommandBuffer.execute();
+			auto const & cmd = *get( commandBuffer );
+			cmd.execute();
 		}
 
 		return VK_SUCCESS;

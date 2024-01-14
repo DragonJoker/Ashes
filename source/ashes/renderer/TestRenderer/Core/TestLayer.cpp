@@ -14,76 +14,85 @@ namespace ashes::test
 	bool Layer::bufferImageCommand( VkCommandBuffer cmd
 		, VkBufferImageCopy const & copyInfo
 		, VkBuffer buffer
-		, VkImage image )const try
+		, VkImage image )const noexcept
 	{
-		return onBufferImageCommand( cmd
-			, copyInfo
-			, buffer
-			, image );
-	}
-	catch ( LayerException & exc )
-	{
-		std::cerr << "Layer Exception " << exc.what() << std::endl;
-		return false;
-	}
-	catch ( std::exception & exc )
-	{
-		std::cerr << "Std Exception " << exc.what() << std::endl;
-		return false;
-	}
-	catch ( ... )
-	{
-		std::cerr << "Unknown Exception" << std::endl;
-		return false;
+		try
+		{
+			return onBufferImageCommand( cmd
+				, copyInfo
+				, buffer
+				, image );
+		}
+		catch ( LayerException & exc )
+		{
+			std::cerr << "Layer Exception " << exc.what() << std::endl;
+			return false;
+		}
+		catch ( std::exception & exc )
+		{
+			std::cerr << "Std Exception " << exc.what() << std::endl;
+			return false;
+		}
+		catch ( ... )
+		{
+			std::cerr << "Unknown Exception" << std::endl;
+			return false;
+		}
 	}
 
 	bool Layer::copyToImageCommand( VkCommandBuffer cmd
 		, VkBufferImageCopyArray const & copyInfo
 		, VkBuffer src
-		, VkImage dst )const try
+		, VkImage dst )const noexcept
 	{
-		return onCopyToImageCommand( cmd
-			, copyInfo
-			, src
-			, dst );
-	}
-	catch ( LayerException & exc )
-	{
-		std::cerr << "Layer Exception " << exc.what() << std::endl;
-		return false;
-	}
-	catch ( std::exception & exc )
-	{
-		std::cerr << "Std Exception " << exc.what() << std::endl;
-		return false;
-	}
-	catch ( ... )
-	{
-		std::cerr << "Unknown Exception" << std::endl;
-		return false;
+		try
+		{
+			return onCopyToImageCommand( cmd
+				, copyInfo
+				, src
+				, dst );
+		}
+		catch ( LayerException & exc )
+		{
+			std::cerr << "Layer Exception " << exc.what() << std::endl;
+			return false;
+		}
+		catch ( std::exception & exc )
+		{
+			std::cerr << "Std Exception " << exc.what() << std::endl;
+			return false;
+		}
+		catch ( ... )
+		{
+			std::cerr << "Unknown Exception" << std::endl;
+			return false;
+		}
 	}
 
 #if VK_EXT_debug_utils
 
 	void Layer::submitDebugUtilsMessenger( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
 		, VkDebugUtilsMessageTypeFlagsEXT messageTypes
-		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const try
+		, VkDebugUtilsMessengerCallbackDataEXT const & callbackData )const noexcept
 	{
-		onSubmitDebugUtilsMessenger( messageSeverity
-			, messageTypes
-			, callbackData );
-	}
-	catch ( LayerException & exc )
-	{
-		std::cerr << "Layer Exception " << exc.what() << std::endl;
-	}
-	catch ( std::exception & exc )
-	{
-		std::cerr << "Std Exception " << exc.what() << std::endl;
-	}
-	catch ( ... )
-	{
-		std::cerr << "Unknown Exception" << std::endl;
+		try
+		{
+			onSubmitDebugUtilsMessenger( messageSeverity
+				, messageTypes
+				, callbackData );
+		}
+		catch ( LayerException & exc )
+		{
+			std::cerr << "Layer Exception " << exc.what() << std::endl;
+		}
+		catch ( std::exception & exc )
+		{
+			std::cerr << "Std Exception " << exc.what() << std::endl;
+		}
+		catch ( ... )
+		{
+			std::cerr << "Unknown Exception" << std::endl;
+		}
 	}
 
 #endif
@@ -95,27 +104,30 @@ namespace ashes::test
 		, size_t location
 		, int32_t messageCode
 		, const char * pLayerPrefix
-		, const char * pMessage )const try
+		, const char * pMessage )const noexcept
 	{
-		return onReportMessage( flags
-			, objectType
-			, object
-			, location
-			, messageCode
-			, pLayerPrefix
-			, pMessage );
-	}
-	catch ( LayerException & exc )
-	{
-		std::cerr << "Layer Exception " << exc.what() << std::endl;
-	}
-	catch ( std::exception & exc )
-	{
-		std::cerr << "Std Exception " << exc.what() << std::endl;
-	}
-	catch ( ... )
-	{
-		std::cerr << "Unknown Exception" << std::endl;
+		try
+		{
+			return onReportMessage( flags
+				, objectType
+				, object
+				, location
+				, messageCode
+				, pLayerPrefix
+				, pMessage );
+		}
+		catch ( LayerException & exc )
+		{
+			std::cerr << "Layer Exception " << exc.what() << std::endl;
+		}
+		catch ( std::exception & exc )
+		{
+			std::cerr << "Std Exception " << exc.what() << std::endl;
+		}
+		catch ( ... )
+		{
+			std::cerr << "Unknown Exception" << std::endl;
+		}
 	}
 
 #endif

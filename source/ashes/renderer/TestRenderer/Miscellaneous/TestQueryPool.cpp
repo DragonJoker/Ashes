@@ -10,14 +10,14 @@ namespace ashes::test
 	{
 		struct PipelineStatistics
 		{
-			uint64_t IAVertices;
-			uint64_t IAPrimitives;
-			uint64_t VSInvocations;
-			uint64_t GSInvocations;
-			uint64_t GSPrimitives;
-			uint64_t CInvocations;
-			uint64_t CPrimitives;
-			uint64_t PSInvocations;
+			uint64_t IAVertices{};
+			uint64_t IAPrimitives{};
+			uint64_t VSInvocations{};
+			uint64_t GSInvocations{};
+			uint64_t GSPrimitives{};
+			uint64_t CInvocations{};
+			uint64_t CPrimitives{};
+			uint64_t PSInvocations{};
 		};
 
 		uint64_t getPipelineStatistic( uint32_t index
@@ -41,9 +41,9 @@ namespace ashes::test
 				return stats.GSPrimitives;
 			case 7:
 				return stats.GSInvocations;
+			default:
+				return 0ULL;
 			}
-
-			return 0ull;
 		}
 	}
 
@@ -56,11 +56,11 @@ namespace ashes::test
 		{
 		case VK_QUERY_TYPE_OCCLUSION:
 			m_data.resize( sizeof( uint64_t ) );
-			getUint32 = [this]( uint32_t index )
+			getUint32 = [this]( uint32_t )
 			{
 				return uint32_t( *reinterpret_cast< uint64_t * >( m_data.data() ) );
 			};
-			getUint64 = [this]( uint32_t index )
+			getUint64 = [this]( uint32_t )
 			{
 				return *reinterpret_cast< uint64_t * >( m_data.data() );
 			};
@@ -80,11 +80,11 @@ namespace ashes::test
 			break;
 		case VK_QUERY_TYPE_TIMESTAMP:
 			m_data.resize( sizeof( uint64_t ) );
-			getUint32 = [this]( uint32_t index )
+			getUint32 = [this]( uint32_t )
 			{
 				return uint32_t( *reinterpret_cast< uint64_t * >( m_data.data() ) );
 			};
-			getUint64 = [this]( uint32_t index )
+			getUint64 = [this]( uint32_t )
 			{
 				return *reinterpret_cast< uint64_t * >( m_data.data() );
 			};
@@ -96,8 +96,8 @@ namespace ashes::test
 
 	VkResult QueryPool::getResults( uint32_t firstQuery
 		, uint32_t queryCount
-		, VkDeviceSize stride
-		, VkQueryResultFlags flags
+		, VkDeviceSize
+		, VkQueryResultFlags
 		, UInt32Array & datas )const
 	{
 		auto max = firstQuery + queryCount;
@@ -113,8 +113,8 @@ namespace ashes::test
 
 	VkResult QueryPool::getResults( uint32_t firstQuery
 		, uint32_t queryCount
-		, VkDeviceSize stride
-		, VkQueryResultFlags flags
+		, VkDeviceSize
+		, VkQueryResultFlags
 		, UInt64Array & datas )const
 	{
 		auto max = firstQuery + queryCount;

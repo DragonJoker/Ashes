@@ -11,6 +11,6 @@ namespace ashes::test
 	class Semaphore
 	{
 	public:
-		explicit Semaphore( VkDevice device );
+		Semaphore() = default;
 	};
 }

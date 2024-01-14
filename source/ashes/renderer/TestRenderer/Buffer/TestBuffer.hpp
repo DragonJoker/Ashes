@@ -17,9 +17,9 @@ namespace ashes::test
 	public:
 		Buffer( VkDevice device
 			, VkBufferCreateInfo createInfo );
-		~Buffer();
+
 		VkResult bindMemory( VkDeviceMemory memory
-			, VkDeviceSize memoryOffset );
+			, VkDeviceSize memoryOffset )noexcept;
 
 		VkMemoryRequirements getMemoryRequirements()const;
 		bool isMapped()const;
@@ -28,45 +28,44 @@ namespace ashes::test
 			, VkDeviceSize srcSize
 			, VkDeviceSize dstOffset )const;
 
-		inline void setDebugName( std::string name )
+		void setDebugName( std::string name )noexcept
 		{
 			m_debugName = std::move( name );
 		}
 
-		inline VkDeviceMemory getMemory()const
+		VkDeviceMemory getMemory()const noexcept
 		{
 			assert( m_memory != nullptr );
 			return m_memory;
 		}
 
-		inline VkDeviceSize getMemoryOffset()const
+		VkDeviceSize getMemoryOffset()const noexcept
 		{
 			return m_memoryOffset;
 		}
 
-		inline ObjectMemory const & getObjectMemory()const
+		ObjectMemory const & getObjectMemory()const noexcept
 		{
 			assert( m_objectMemory != nullptr );
 			return *m_objectMemory;
 		}
 
-		inline VkBufferUsageFlags getUsage()const
+		VkBufferUsageFlags getUsage()const noexcept
 		{
 			return m_createInfo.usage;
 		}
 
-		inline VkDeviceSize getSize()const
+		VkDeviceSize getSize()const noexcept
 		{
 			return m_createInfo.size;
 		}
 
 	private:
-	private:
 		VkDevice m_device;
 		VkBufferCreateInfo m_createInfo;
 		VkDeviceMemory m_memory{};
-		VkDeviceSize m_memoryOffset{ 0u };
-		ObjectMemory * m_objectMemory{ nullptr };
+		VkDeviceSize m_memoryOffset{};
+		ObjectMemory * m_objectMemory{};
 		std::string m_debugName;
 	};
 }

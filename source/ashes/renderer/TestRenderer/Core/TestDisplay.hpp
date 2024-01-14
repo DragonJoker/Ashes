@@ -9,32 +9,33 @@ See LICENSE file in root folder
 namespace ashes::test
 {
 	class DisplayKHR
+		: public NonCopyable
 	{
 	public:
 		DisplayKHR( VkDisplayPropertiesKHR const & properties
 			, VkFormat format
 			, uint32_t screenIndex
 			, std::vector< VkDisplayModeParametersKHR > const & displayModesParams );
-		~DisplayKHR();
+		~DisplayKHR()noexcept;
 
 		std::vector< VkDisplayModePropertiesKHR > const & getDisplayModeProperties()const;
 
-		VkExtent2D const & getExtent()const
+		VkExtent2D const & getExtent()const noexcept
 		{
 			return m_properties.physicalResolution;
 		}
 
-		char const * getName()const
+		char const * getName()const noexcept
 		{
 			return m_properties.displayName;
 		}
 
-		uint32_t getScreenIndex()const
+		uint32_t getScreenIndex()const noexcept
 		{
 			return m_screenIndex;
 		}
 
-		VkExtent2D getResolution()const
+		VkExtent2D getResolution()const noexcept
 		{
 			return m_properties.physicalResolution;
 		}

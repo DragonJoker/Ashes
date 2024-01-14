@@ -7,9 +7,9 @@ See LICENSE file in root folder.
 namespace ashes::test
 {
 	CopyImageCommand::CopyImageCommand( VkDevice device
-		, VkImageCopy const & copyInfo
-		, VkImage src
-		, VkImage dst )
+		, VkImageCopy const &
+		, VkImage
+		, VkImage )
 		: CommandBase{ device }
 	{
 	}

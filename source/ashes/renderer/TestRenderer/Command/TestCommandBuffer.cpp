@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #include "Command/TestCommandBuffer.hpp"
 
-#if !AshesTest_DummyCommandBuffer
+#if !defined( AshesTest_DummyCommandBuffer )
 
 #include "Buffer/TestBuffer.hpp"
 #include "Command/TestCommandPool.hpp"
@@ -86,10 +86,6 @@ namespace ashes::test
 		get( commandPool )->registerCommands( get( this ) );
 	}
 
-	CommandBuffer::~CommandBuffer()
-	{
-	}
-
 	void CommandBuffer::execute()const
 	{
 		for ( auto & command : m_commands )
@@ -103,7 +99,7 @@ namespace ashes::test
 		}
 	}
 
-	VkResult CommandBuffer::begin( VkCommandBufferBeginInfo info )const
+	VkResult CommandBuffer::begin( VkCommandBufferBeginInfo const & info )const
 	{
 		m_commands.clear();
 		m_mappedResources.clear();
@@ -125,7 +121,7 @@ namespace ashes::test
 		return VK_SUCCESS;
 	}
 
-	void CommandBuffer::beginRenderPass( VkRenderPassBeginInfo beginInfo
+	void CommandBuffer::beginRenderPass( VkRenderPassBeginInfo const & beginInfo
 		, VkSubpassContents contents )const
 	{
 		m_state.currentRenderPass = beginInfo.renderPass;
@@ -167,7 +163,7 @@ namespace ashes::test
 		m_state.vbos.clear();
 	}
 
-	void CommandBuffer::executeCommands( VkCommandBufferArray commands )const
+	void CommandBuffer::executeCommands( VkCommandBufferArray const & commands )const
 	{
 		for ( auto & commandBuffer : commands )
 		{
@@ -186,7 +182,7 @@ namespace ashes::test
 	void CommandBuffer::clearColorImage( VkImage image
 		, VkImageLayout imageLayout
 		, VkClearColorValue colour
-		, VkImageSubresourceRangeArray ranges )const
+		, VkImageSubresourceRangeArray const & ranges )const
 	{
 		m_commands.emplace_back( std::make_unique< ClearColourCommand >( m_device
 			, image
@@ -197,7 +193,7 @@ namespace ashes::test
 	void CommandBuffer::clearDepthStencilImage( VkImage image
 		, VkImageLayout imageLayout
 		, VkClearDepthStencilValue value
-		, VkImageSubresourceRangeArray ranges )const
+		, VkImageSubresourceRangeArray const & ranges )const
 	{
 		m_commands.emplace_back( std::make_unique< ClearDepthStencilCommand >( m_device
 			, image
@@ -205,8 +201,8 @@ namespace ashes::test
 			, value ) );
 	}
 
-	void CommandBuffer::clearAttachments( VkClearAttachmentArray clearAttachments
-		, VkClearRectArray clearRects )
+	void CommandBuffer::clearAttachments( VkClearAttachmentArray const & clearAttachments
+		, VkClearRectArray const & clearRects )
 	{
 		m_commands.emplace_back( std::make_unique< ClearAttachmentsCommand >( m_device
 			, m_state.currentRenderPass
@@ -284,8 +280,8 @@ namespace ashes::test
 	}
 
 	void CommandBuffer::bindVertexBuffers( uint32_t firstBinding
-		, VkBufferArray buffers
-		, UInt64Array offsets )const
+		, VkBufferArray const & buffers
+		, UInt64Array const & offsets )const
 	{
 		assert( buffers.size() == offsets.size() );
 		VbosBinding binding;
@@ -306,7 +302,7 @@ namespace ashes::test
 		, VkIndexType indexType )const
 	{
 		m_commands.emplace_back( std::make_unique< BindIndexBufferCommand >( m_device
-			, static_cast< VkBuffer >( buffer )
+			, buffer
 			, offset
 			, indexType ) );
 		doAddAfterSubmitAction();
@@ -317,8 +313,8 @@ namespace ashes::test
 	void CommandBuffer::bindDescriptorSets( VkPipelineBindPoint bindingPoint
 		, VkPipelineLayout layout
 		, uint32_t firstSet
-		, VkDescriptorSetArray descriptorSets
-		, UInt32Array dynamicOffsets )const
+		, VkDescriptorSetArray const & descriptorSets
+		, UInt32Array const & dynamicOffsets )const
 	{
 		for ( auto & descriptorSet : descriptorSets )
 		{
@@ -334,13 +330,13 @@ namespace ashes::test
 	}
 
 	void CommandBuffer::setViewport( uint32_t firstViewport
-		, VkViewportArray viewports )const
+		, VkViewportArray const & viewports )const
 	{
 		m_commands.emplace_back( std::make_unique< ViewportCommand >( m_device, firstViewport, viewports ) );
 	}
 
 	void CommandBuffer::setScissor( uint32_t firstScissor
-		, VkScissorArray scissors )const
+		, VkScissorArray const & scissors )const
 	{
 		m_commands.emplace_back( std::make_unique< ScissorCommand >( m_device, firstScissor, scissors ) );
 	}
@@ -453,7 +449,7 @@ namespace ashes::test
 	void CommandBuffer::copyToImage( VkBuffer src
 		, VkImage dst
 		, VkImageLayout dstLayout
-		, VkBufferImageCopyArray copyInfos )const
+		, VkBufferImageCopyArray const & copyInfos )const
 	{
 		if ( !get( m_device )->onCopyToImageCommand( get( this ), copyInfos, src, dst ) )
 		{
@@ -467,7 +463,7 @@ namespace ashes::test
 	void CommandBuffer::copyToBuffer( VkImage src
 		, VkImageLayout srcLayout
 		, VkBuffer dst
-		, VkBufferImageCopyArray copyInfos )const
+		, VkBufferImageCopyArray const & copyInfos )const
 	{
 		m_commands.emplace_back( std::make_unique< CopyImageToBufferCommand >( m_device
 			, std::move( copyInfos )
@@ -489,7 +485,7 @@ namespace ashes::test
 
 	void CommandBuffer::copyBuffer( VkBuffer src
 		, VkBuffer dst
-		, VkBufferCopyArray copyInfos )const
+		, VkBufferCopyArray const & copyInfos )const
 	{
 		for ( auto & copyInfo : copyInfos )
 		{
@@ -504,7 +500,7 @@ namespace ashes::test
 		, VkImageLayout srcLayout
 		, VkImage dst
 		, VkImageLayout dstLayout
-		, VkImageCopyArray copyInfos )const
+		, VkImageCopyArray const & copyInfos )const
 	{
 		for ( auto & copyInfo : copyInfos )
 		{
@@ -519,7 +515,7 @@ namespace ashes::test
 		, VkImageLayout srcLayout
 		, VkImage dstImage
 		, VkImageLayout dstLayout
-		, VkImageBlitArray regions
+		, VkImageBlitArray const & regions
 		, VkFilter filter )const
 	{
 		m_commands.emplace_back( std::make_unique< BlitImageCommand >( m_commandPool
@@ -535,7 +531,7 @@ namespace ashes::test
 		, VkImageLayout srcLayout
 		, VkImage dstImage
 		, VkImageLayout dstLayout
-		, VkImageResolveArray regions )const
+		, VkImageResolveArray const & regions )const
 	{
 	}
 
@@ -655,7 +651,7 @@ namespace ashes::test
 			, slopeFactor ) );
 	}
 
-	void CommandBuffer::setBlendConstants( float const blendConstants[4] )const
+	void CommandBuffer::setBlendConstants( ArrayView< float const > blendConstants )const
 	{
 	}
 
@@ -695,12 +691,12 @@ namespace ashes::test
 			, stageMask ) );
 	}
 
-	void CommandBuffer::waitEvents( VkEventArray events
+	void CommandBuffer::waitEvents( VkEventArray const & events
 		, VkPipelineStageFlags srcStageMask
 		, VkPipelineStageFlags dstStageMask
-		, VkMemoryBarrierArray memoryBarriers
-		, VkBufferMemoryBarrierArray bufferMemoryBarriers
-		, VkImageMemoryBarrierArray imageMemoryBarriers )const
+		, VkMemoryBarrierArray const & memoryBarriers
+		, VkBufferMemoryBarrierArray const & bufferMemoryBarriers
+		, VkImageMemoryBarrierArray const & imageMemoryBarriers )const
 	{
 		m_commands.emplace_back( std::make_unique< WaitEventsCommand >( m_device
 			, events
@@ -713,9 +709,9 @@ namespace ashes::test
 	void CommandBuffer::pipelineBarrier( VkPipelineStageFlags after
 		, VkPipelineStageFlags before
 		, VkDependencyFlags dependencyFlags
-		, VkMemoryBarrierArray memoryBarriers
-		, VkBufferMemoryBarrierArray bufferMemoryBarriers
-		, VkImageMemoryBarrierArray imageMemoryBarriers )const
+		, VkMemoryBarrierArray const & memoryBarriers
+		, VkBufferMemoryBarrierArray const & bufferMemoryBarriers
+		, VkImageMemoryBarrierArray const & imageMemoryBarriers )const
 	{
 		m_commands.emplace_back( std::make_unique< MemoryBarrierCommand >( m_device
 			, after

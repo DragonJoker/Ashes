@@ -7,9 +7,9 @@ See LICENSE file in root folder.
 namespace ashes::test
 {
 	ClearColourCommand::ClearColourCommand( VkDevice device
-		, VkImage image
-		, VkImageSubresourceRangeArray ranges
-		, VkClearColorValue const & colour )
+		, VkImage
+		, VkImageSubresourceRangeArray const &
+		, VkClearColorValue const & )
 		: CommandBase{ device }
 	{
 	}

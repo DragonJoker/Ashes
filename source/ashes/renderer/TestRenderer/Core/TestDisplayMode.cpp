@@ -16,11 +16,7 @@ namespace ashes::test
 	{
 	}
 
-	DisplayModeKHR::~DisplayModeKHR()
-	{
-	}
-
-	VkDisplayPlaneCapabilitiesKHR DisplayModeKHR::getDisplayPlaneCapabilities( uint32_t planeIndex )
+	VkDisplayPlaneCapabilitiesKHR DisplayModeKHR::getDisplayPlaneCapabilities()
 	{
 		VkExtent2D defaultExt{ get( m_display )->getExtent() };
 		VkOffset2D defaultMinPos{};

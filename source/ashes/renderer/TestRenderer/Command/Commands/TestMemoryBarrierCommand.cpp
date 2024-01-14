@@ -9,11 +9,11 @@ See LICENSE file in root folder.
 namespace ashes::test
 {
 	MemoryBarrierCommand::MemoryBarrierCommand( VkDevice device
-		, VkPipelineStageFlags after
-		, VkPipelineStageFlags before
-		, VkMemoryBarrierArray const & memoryBarriers
+		, VkPipelineStageFlags
+		, VkPipelineStageFlags
+		, VkMemoryBarrierArray const &
 		, VkBufferMemoryBarrierArray const & bufferBarriers
-		, VkImageMemoryBarrierArray const & imageBarriers )
+		, VkImageMemoryBarrierArray const & )
 		: CommandBase{ device }
 	{
 		for ( auto & barrier : bufferBarriers )
@@ -24,23 +24,17 @@ namespace ashes::test
 					|| checkFlag( barrier.srcAccessMask, VK_ACCESS_HOST_WRITE_BIT )
 					|| checkFlag( barrier.srcAccessMask, VK_ACCESS_TRANSFER_WRITE_BIT ) )
 				{
-					m_uploadBuffers.push_back(
-						{
-							barrier.offset,
-							barrier.size,
-							barrier.buffer,
-						} );
+					m_uploadBuffers.emplace_back( barrier.offset
+						, barrier.size
+						, barrier.buffer );
 				}
 				else if ( checkFlag( barrier.dstAccessMask, VK_ACCESS_TRANSFER_READ_BIT )
 					|| checkFlag( barrier.dstAccessMask, VK_ACCESS_HOST_READ_BIT )
 					|| checkFlag( barrier.dstAccessMask, VK_ACCESS_MEMORY_READ_BIT ) )
 				{
-					m_downloadBuffers.push_back(
-						{
-							barrier.offset,
-							barrier.size,
-							barrier.buffer,
-						} );
+					m_downloadBuffers.emplace_back( barrier.offset
+						, barrier.size
+						, barrier.buffer );
 				}
 			}
 		}

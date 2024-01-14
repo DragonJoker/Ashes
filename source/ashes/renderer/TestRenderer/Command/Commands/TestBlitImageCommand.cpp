@@ -6,13 +6,13 @@ See LICENSE file in root folder.
 
 namespace ashes::test
 {
-	BlitImageCommand::BlitImageCommand( VkCommandPool pool
-		, VkCommandBuffer cb
+	BlitImageCommand::BlitImageCommand( VkCommandPool
+		, VkCommandBuffer
 		, VkDevice device
-		, VkImage srcImage
-		, VkImage dstImage
-		, VkImageBlitArray const & regions
-		, VkFilter filter )
+		, VkImage
+		, VkImage
+		, VkImageBlitArray const &
+		, VkFilter )
 		: CommandBase{ device }
 	{
 	}

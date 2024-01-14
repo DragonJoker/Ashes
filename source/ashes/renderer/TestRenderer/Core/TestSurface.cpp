@@ -13,13 +13,13 @@ namespace ashes::test
 {
 	SurfaceKHR::SurfaceKHR()
 	{
-		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
+		m_presentModes.emplace_back( VK_PRESENT_MODE_FIFO_KHR );
 		m_surfaceFormats.push_back( { VK_FORMAT_R8G8B8A8_UNORM, VK_COLORSPACE_SRGB_NONLINEAR_KHR } );
 
 		m_surfaceCapabilities.minImageCount = 1u;
 		m_surfaceCapabilities.maxImageCount = 1u;
-		m_surfaceCapabilities.currentExtent.width = ~( 0u );
-		m_surfaceCapabilities.currentExtent.height = ~( 0u );
+		m_surfaceCapabilities.currentExtent.width = ~0u;
+		m_surfaceCapabilities.currentExtent.height = ~0u;
 		m_surfaceCapabilities.minImageExtent = m_surfaceCapabilities.currentExtent;
 		m_surfaceCapabilities.maxImageExtent = m_surfaceCapabilities.currentExtent;
 		m_surfaceCapabilities.maxImageArrayLayers = 1u;
@@ -31,36 +31,36 @@ namespace ashes::test
 
 #if _WIN32
 
-	SurfaceKHR::SurfaceKHR( VkInstance instance
-		, VkWin32SurfaceCreateInfoKHR createInfo )
+	SurfaceKHR::SurfaceKHR( VkInstance
+		, VkWin32SurfaceCreateInfoKHR const & )
 		: SurfaceKHR{}
 	{
 	}
 
 #elif __linux__
 
-	SurfaceKHR::SurfaceKHR( VkInstance instance
-		, VkXlibSurfaceCreateInfoKHR createInfo )
+	SurfaceKHR::SurfaceKHR( VkInstance
+		, VkXlibSurfaceCreateInfoKHR const & )
 		: SurfaceKHR{}
 	{
 	}
 
-	SurfaceKHR::SurfaceKHR( VkInstance instance
-		, VkXcbSurfaceCreateInfoKHR createInfo )
+	SurfaceKHR::SurfaceKHR( VkInstance
+		, VkXcbSurfaceCreateInfoKHR const & )
 		: SurfaceKHR{}
 	{
 	}
 
-	SurfaceKHR::SurfaceKHR( VkInstance instance
-		, VkWaylandSurfaceCreateInfoKHR createInfo )
+	SurfaceKHR::SurfaceKHR( VkInstance
+		, VkWaylandSurfaceCreateInfoKHR const & )
 		: SurfaceKHR{}
 	{
 	}
 
 #elif __APPLE__
 
-	SurfaceKHR::SurfaceKHR( VkInstance instance
-		, VkMacOSSurfaceCreateInfoMVK createInfo )
+	SurfaceKHR::SurfaceKHR( VkInstance
+		, VkMacOSSurfaceCreateInfoMVK const & )
 		: SurfaceKHR{}
 	{
 	}
@@ -68,15 +68,15 @@ namespace ashes::test
 #endif
 #if VK_KHR_display
 
-	SurfaceKHR::SurfaceKHR( VkInstance instance
-		, VkDisplaySurfaceCreateInfoKHR createInfo )
+	SurfaceKHR::SurfaceKHR( VkInstance
+		, VkDisplaySurfaceCreateInfoKHR const & )
 		: SurfaceKHR{}
 	{
 	}
 
 #endif
 
-	bool SurfaceKHR::getSupport( uint32_t queueFamilyIndex )const
+	bool SurfaceKHR::getSupport( uint32_t )const
 	{
 		return true;
 	}

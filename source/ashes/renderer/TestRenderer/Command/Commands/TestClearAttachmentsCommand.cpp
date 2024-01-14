@@ -7,11 +7,11 @@ See LICENSE file in root folder.
 namespace ashes::test
 {
 	ClearAttachmentsCommand::ClearAttachmentsCommand( VkDevice device
-		, VkRenderPass renderPass
-		, VkSubpassDescription const & subpass
-		, VkFramebuffer framebuffer
-		, VkClearAttachmentArray const & clearAttaches
-		, VkClearRectArray const & clearRects )
+		, VkRenderPass
+		, VkSubpassDescription const &
+		, VkFramebuffer
+		, VkClearAttachmentArray const &
+		, VkClearRectArray const & )
 		: CommandBase{ device }
 	{
 	}

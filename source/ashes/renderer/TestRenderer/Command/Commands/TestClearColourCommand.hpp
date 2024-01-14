@@ -14,7 +14,7 @@ namespace ashes::test
 	public:
 		ClearColourCommand( VkDevice device
 			, VkImage image
-			, VkImageSubresourceRangeArray ranges
+			, VkImageSubresourceRangeArray const & ranges
 			, VkClearColorValue const & colour );
 
 		void apply()const override;

@@ -8,7 +8,7 @@ See LICENSE file in root folder
 
 #include <renderer/RendererCommon/IcdObject.hpp>
 
-#define AshesTest_DummyCommandBuffer 1
+#define AshesTest_DummyCommandBuffer
 
 namespace ashes::test
 {
@@ -19,45 +19,44 @@ namespace ashes::test
 		CommandBuffer( VkDevice device
 			, VkCommandPool commandPool
 			, bool primary );
-		~CommandBuffer();
 
 		void execute()const;
 
-		VkResult begin( VkCommandBufferBeginInfo info )const;
+		VkResult begin( VkCommandBufferBeginInfo const & info )const;
 		VkResult end()const;
 		VkResult reset( VkCommandBufferResetFlags flags )const;
-		void beginRenderPass( VkRenderPassBeginInfo beginInfo
+		void beginRenderPass( VkRenderPassBeginInfo const & beginInfo
 			, VkSubpassContents contents )const;
 		void nextSubpass( VkSubpassContents contents )const;
 		void endRenderPass()const;
-		void executeCommands( VkCommandBufferArray commands )const;
+		void executeCommands( VkCommandBufferArray const & commands )const;
 		void clearColorImage( VkImage image
 			, VkImageLayout imageLayout
 			, VkClearColorValue colour
-			, VkImageSubresourceRangeArray ranges )const;
+			, VkImageSubresourceRangeArray const & ranges )const;
 		void clearDepthStencilImage( VkImage image
 			, VkImageLayout imageLayout
 			, VkClearDepthStencilValue value
-			, VkImageSubresourceRangeArray ranges )const;
-		void clearAttachments( VkClearAttachmentArray clearAttachments
-			, VkClearRectArray clearRects );
+			, VkImageSubresourceRangeArray const & ranges )const;
+		void clearAttachments( VkClearAttachmentArray const & clearAttachments
+			, VkClearRectArray const & clearRects );
 		void bindPipeline( VkPipeline pipeline
 			, VkPipelineBindPoint bindingPoint )const;
 		void bindVertexBuffers( uint32_t firstBinding
-			, VkBufferArray buffers
-			, VkDeviceSizeArray offsets )const;
+			, VkBufferArray const & buffers
+			, VkDeviceSizeArray const & offsets )const;
 		void bindIndexBuffer( VkBuffer buffer
 			, VkDeviceSize offset
 			, VkIndexType indexType )const;
 		void bindDescriptorSets( VkPipelineBindPoint bindingPoint
 			, VkPipelineLayout layout
 			, uint32_t firstSet
-			, VkDescriptorSetArray descriptorSets
-			, UInt32Array dynamicOffsets )const;
+			, VkDescriptorSetArray const & descriptorSets
+			, UInt32Array const & dynamicOffsets )const;
 		void setViewport( uint32_t firstViewport
-			, VkViewportArray viewports )const;
+			, VkViewportArray const & viewports )const;
 		void setScissor( uint32_t firstScissor
-			, VkScissorArray scissors )const;
+			, VkScissorArray const & scissors )const;
 		void draw( uint32_t vtxCount
 			, uint32_t instCount
 			, uint32_t firstVertex
@@ -78,11 +77,11 @@ namespace ashes::test
 		void copyToImage( VkBuffer src
 			, VkImage dst
 			, VkImageLayout dstLayout
-			, VkBufferImageCopyArray copyInfos )const;
+			, VkBufferImageCopyArray const & copyInfos )const;
 		void copyToBuffer( VkImage src
 			, VkImageLayout srcLayout
 			, VkBuffer dst
-			, VkBufferImageCopyArray copyInfos )const;
+			, VkBufferImageCopyArray const & copyInfos )const;
 		void updateBuffer( VkBuffer dstBuffer
 			, VkDeviceSize dstOffset
 			, ArrayView< uint8_t const > data );
@@ -92,23 +91,23 @@ namespace ashes::test
 			, uint32_t data );
 		void copyBuffer( VkBuffer src
 			, VkBuffer dst
-			, VkBufferCopyArray copyInfos )const;
+			, VkBufferCopyArray const & copyInfos )const;
 		void copyImage( VkImage src
 			, VkImageLayout srcLayout
 			, VkImage dst
 			, VkImageLayout dstLayout
-			, VkImageCopyArray copyInfos )const;
+			, VkImageCopyArray const & copyInfos )const;
 		void blitImage( VkImage srcImage
 			, VkImageLayout srcLayout
 			, VkImage dstImage
 			, VkImageLayout dstLayout
-			, VkImageBlitArray regions
+			, VkImageBlitArray const & regions
 			, VkFilter filter )const;
 		void resolveImage( VkImage srcImage
 			, VkImageLayout srcLayout
 			, VkImage dstImage
 			, VkImageLayout dstLayout
-			, VkImageResolveArray regions )const;
+			, VkImageResolveArray const & regions )const;
 		void resetQueryPool( VkQueryPool pool
 			, uint32_t firstQuery
 			, uint32_t queryCount )const;
@@ -141,7 +140,7 @@ namespace ashes::test
 		void setDepthBias( float constantFactor
 			, float clamp
 			, float slopeFactor )const;
-		void setBlendConstants( float const blendConstants[4] )const;
+		void setBlendConstants( ArrayView< float const > blendConstants )const;
 		void setDepthBounds( float minDepthBounds
 			, float maxDepthBounds )const;
 		void setStencilCompareMask( VkStencilFaceFlags faceMask
@@ -154,18 +153,18 @@ namespace ashes::test
 			, VkPipelineStageFlags stageMask )const;
 		void resetEvent( VkEvent event
 			, VkPipelineStageFlags stageMask )const;
-		void waitEvents( VkEventArray events
+		void waitEvents( VkEventArray const & events
 			, VkPipelineStageFlags srcStageMask
 			, VkPipelineStageFlags dstStageMask
-			, VkMemoryBarrierArray memoryBarriers
-			, VkBufferMemoryBarrierArray bufferMemoryBarriers
-			, VkImageMemoryBarrierArray imageMemoryBarriers )const;
+			, VkMemoryBarrierArray const & memoryBarriers
+			, VkBufferMemoryBarrierArray const & bufferMemoryBarriers
+			, VkImageMemoryBarrierArray const & imageMemoryBarriers )const;
 		void pipelineBarrier( VkPipelineStageFlags after
 			, VkPipelineStageFlags before
 			, VkDependencyFlags dependencyFlags
-			, VkMemoryBarrierArray memoryBarriers
-			, VkBufferMemoryBarrierArray bufferMemoryBarriers
-			, VkImageMemoryBarrierArray imageMemoryBarriers )const;
+			, VkMemoryBarrierArray const & memoryBarriers
+			, VkBufferMemoryBarrierArray const & bufferMemoryBarriers
+			, VkImageMemoryBarrierArray const & imageMemoryBarriers )const;
 		void generateMipmaps( VkImage texture )const;
 #if VK_EXT_debug_utils
 		void beginDebugUtilsLabel( VkDebugUtilsLabelEXT const & labelInfo )const;
@@ -178,12 +177,12 @@ namespace ashes::test
 		void debugMarkerInsert( VkDebugMarkerMarkerInfoEXT const & labelInfo )const;
 #endif
 
-		inline CommandArray const & getCommands()const
+		CommandArray const & getCommands()const
 		{
 			return m_commands;
 		}
 
-		inline VkDevice getDevice()const
+		VkDevice getDevice()const
 		{
 			return m_device;
 		}
@@ -204,7 +203,6 @@ namespace ashes::test
 			size_t index;
 			DeviceMemoryDestroyConnection connection;
 		};
-
 
 	private:
 		void doFillVboStrides()const;

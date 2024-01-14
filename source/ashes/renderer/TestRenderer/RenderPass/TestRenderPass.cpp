@@ -54,10 +54,6 @@ namespace ashes::test
 		}
 	}
 
-	RenderPass::~RenderPass()
-	{
-	}
-
 	VkAttachmentDescription const * RenderPass::findAttachment( uint32_t referenceIndex )const
 	{
 		if ( referenceIndex >= m_referencedAttachments.size() )

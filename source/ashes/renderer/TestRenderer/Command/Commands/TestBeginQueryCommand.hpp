@@ -12,10 +12,7 @@ namespace ashes::test
 		: public CommandBase
 	{
 	public:
-		BeginQueryCommand( VkDevice device
-			, VkQueryPool pool
-			, uint32_t query
-			, VkQueryControlFlags flags );
+		explicit BeginQueryCommand( VkDevice device );
 
 		void apply()const override;
 		CommandPtr clone()const override;

@@ -145,7 +145,7 @@ namespace ashes::test
 
 	template< typename VkType, typename ... Params >
 	VkResult allocate( VkType & vkValue
-		, const VkAllocationCallbacks * allocInfo
+		, const VkAllocationCallbacks *
 		, Params && ... params )
 	{
 		VkResult result = VK_ERROR_INITIALIZATION_FAILED;
@@ -153,7 +153,7 @@ namespace ashes::test
 		try
 		{
 			using Type = typename VkTestTypeTraits< VkType >::Type;
-			vkValue = VkType( new Type{ std::forward< Params && >( params )... } );
+			vkValue = VkType( new Type{ std::forward< Params >( params )... } );
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )
@@ -174,7 +174,7 @@ namespace ashes::test
 	}
 
 	template< typename VkType >
-	VkResult deallocate( VkType & vkValue, const VkAllocationCallbacks * allocInfo )
+	VkResult deallocate( VkType & vkValue, const VkAllocationCallbacks * )noexcept
 	{
 		delete get( vkValue );
 		vkValue = nullptr;
@@ -317,7 +317,7 @@ namespace ashes::test
 	inline void reportError( VkObject object
 		, VkResult result
 		, std::string const & errorName
-		, std::string const & name )
+		, std::string const & name )noexcept
 	{
 		VkInstance instance = getInstance( object );
 #if VK_EXT_debug_utils
@@ -366,7 +366,7 @@ namespace ashes::test
 	inline void reportWarning( VkObject object
 		, VkResult result
 		, std::string const & errorName
-		, std::string const & name )
+		, std::string const & name )noexcept
 	{
 		VkInstance instance = getInstance( object );
 #if VK_EXT_debug_utils
@@ -413,7 +413,7 @@ namespace ashes::test
 
 	template< typename VkObject >
 	inline VkResult reportUnsupported( VkObject object
-		, std::string const & name )
+		, std::string const & name )noexcept
 	{
 		reportError( object
 			, VK_ERROR_FEATURE_NOT_PRESENT

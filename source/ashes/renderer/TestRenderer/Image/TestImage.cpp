@@ -36,25 +36,21 @@ namespace ashes::test
 		, VkFormat format
 		, VkExtent2D const & dimensions )
 		: Image{ device
-			, {
-				VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-				nullptr,
-				0u,
-				VK_IMAGE_TYPE_2D,
-				format,
-				VkExtent3D{ dimensions.width, dimensions.height, 1u },
-				1u,
-				1u,
-				VK_SAMPLE_COUNT_1_BIT,
-				VK_IMAGE_TILING_OPTIMAL,
-				VkImageUsageFlags( isDepthOrStencilFormat( format )
-					? VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
-					: VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT ),
-				VK_SHARING_MODE_EXCLUSIVE,
-				0u,
-				nullptr,
-				VK_IMAGE_LAYOUT_UNDEFINED
-			} }
+			, { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO
+				, nullptr
+				, 0u
+				, VK_IMAGE_TYPE_2D
+				, format
+				, VkExtent3D{ dimensions.width, dimensions.height, 1u }
+				, 1u
+				, 1u
+				, VK_SAMPLE_COUNT_1_BIT
+				, VK_IMAGE_TILING_OPTIMAL
+				, VkImageUsageFlags( isDepthOrStencilFormat( format ) ? VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT : VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT )
+				, VK_SHARING_MODE_EXCLUSIVE
+				, 0u
+				, nullptr
+				, VK_IMAGE_LAYOUT_UNDEFINED } }
 	{
 	}
 
@@ -63,25 +59,23 @@ namespace ashes::test
 		, VkExtent2D const & dimensions
 		, VkImageUsageFlags usageFlags
 		, VkImageTiling tiling
-		, VkMemoryPropertyFlags memoryFlags )
+		, VkMemoryPropertyFlags )
 		: Image{ device
-			, {
-				VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-				nullptr,
-				0u,
-				VK_IMAGE_TYPE_2D,
-				format,
-				VkExtent3D{ dimensions.width, dimensions.height, 1u },
-				1u,
-				1u,
-				VK_SAMPLE_COUNT_1_BIT,
-				tiling,
-				usageFlags,
-				VK_SHARING_MODE_EXCLUSIVE,
-				0u,
-				nullptr,
-				VK_IMAGE_LAYOUT_UNDEFINED
-			} }
+			, { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO
+				, nullptr
+				, 0u
+				, VK_IMAGE_TYPE_2D
+				, format
+				, VkExtent3D{ dimensions.width, dimensions.height, 1u }
+				, 1u
+				, 1u
+				, VK_SAMPLE_COUNT_1_BIT
+				, tiling
+				, usageFlags
+				, VK_SHARING_MODE_EXCLUSIVE
+				, 0u
+				, nullptr
+				, VK_IMAGE_LAYOUT_UNDEFINED } }
 	{
 	}
 
@@ -109,7 +103,7 @@ namespace ashes::test
 	}
 
 	VkResult Image::bindMemory( VkDeviceMemory memory
-		, VkDeviceSize memoryOffset )
+		, VkDeviceSize memoryOffset )noexcept
 	{
 		m_memory = memory;
 		m_memoryOffset = memoryOffset;

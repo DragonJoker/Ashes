@@ -19,7 +19,7 @@ namespace ashes::test
 	}
 
 	PushConstantsCommand::PushConstantsCommand( VkDevice device
-		, PushConstantsDesc const & pcb )
+		, PushConstantsDesc const & )
 		: CommandBase{ device }
 	{
 	}

@@ -6,12 +6,12 @@ See LICENSE file in root folder.
 
 namespace ashes::test
 {
-	Fence::Fence( VkDevice device
-		, VkFenceCreateFlags flags )
+	Fence::Fence( VkDevice
+		, VkFenceCreateFlags )
 	{
 	}
 
-	VkResult Fence::wait( uint64_t timeout )const
+	VkResult Fence::wait( uint64_t )const
 	{
 		return VK_SUCCESS;
 	}

@@ -9,15 +9,16 @@ See LICENSE file in root folder
 namespace ashes::test
 {
 	class CommandPool
+		: public NonCopyable
 	{
 	public:
 		CommandPool( VkDevice device
 			, VkCommandPoolCreateInfo createInfo );
-		~CommandPool();
+		~CommandPool()noexcept;
 
 		void registerCommands( VkCommandBuffer commands );
-		VkResult reset( VkCommandPoolResetFlags flags );
-		VkResult free( VkCommandBufferArray sets );
+		VkResult reset();
+		VkResult freeCommands( VkCommandBufferArray sets );
 
 		VkDevice getDevice()const noexcept
 		{

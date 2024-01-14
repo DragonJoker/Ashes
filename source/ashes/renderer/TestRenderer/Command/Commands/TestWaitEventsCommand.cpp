@@ -16,10 +16,10 @@ namespace ashes::test
 {
 	WaitEventsCommand::WaitEventsCommand( VkDevice device
 		, VkEventArray const & events
-		, VkPipelineStageFlags srcStageMask
-		, VkPipelineStageFlags dstStageMask
-		, VkBufferMemoryBarrierArray const & bufferMemoryBarriers
-		, VkImageMemoryBarrierArray const & imageMemoryBarriers )
+		, VkPipelineStageFlags
+		, VkPipelineStageFlags
+		, VkBufferMemoryBarrierArray const &
+		, VkImageMemoryBarrierArray const & )
 		: CommandBase{ device }
 		, m_events{ events }
 	{

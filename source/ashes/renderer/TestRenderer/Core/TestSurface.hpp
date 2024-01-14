@@ -16,41 +16,41 @@ namespace ashes::test
 	public:
 #if _WIN32
 		SurfaceKHR( VkInstance instance
-			, VkWin32SurfaceCreateInfoKHR createInfo );
+			, VkWin32SurfaceCreateInfoKHR const & createInfo );
 #elif __linux__
 		SurfaceKHR( VkInstance instance
-			, VkXlibSurfaceCreateInfoKHR createInfo );
+			, VkXlibSurfaceCreateInfoKHR const & createInfo );
 		SurfaceKHR( VkInstance instance
-			, VkXcbSurfaceCreateInfoKHR createInfo );
+			, VkXcbSurfaceCreateInfoKHR const & createInfo );
 		SurfaceKHR( VkInstance instance
-			, VkWaylandSurfaceCreateInfoKHR createInfo );
+			, VkWaylandSurfaceCreateInfoKHR const & createInfo );
 #elif __APPLE__
 		SurfaceKHR( VkInstance instance
-			, VkMacOSSurfaceCreateInfoMVK createInfo );
+			, VkMacOSSurfaceCreateInfoMVK const & createInfo );
 #endif
 #if VK_KHR_display
 		SurfaceKHR( VkInstance instance
-			, VkDisplaySurfaceCreateInfoKHR createInfo );
+			, VkDisplaySurfaceCreateInfoKHR const & createInfo );
 #endif
 
 		bool getSupport( uint32_t queueFamilyIndex )const;
 
-		VkSurfaceCapabilitiesKHR getCapabilities()const
+		VkSurfaceCapabilitiesKHR getCapabilities()const noexcept
 		{
 			return m_surfaceCapabilities;
 		}
 
-		VkPresentModeArrayKHR getPresentModes()const
+		VkPresentModeArrayKHR getPresentModes()const noexcept
 		{
 			return m_presentModes;
 		}
 
-		VkSurfaceFormatArrayKHR getFormats()const
+		VkSurfaceFormatArrayKHR getFormats()const noexcept
 		{
 			return m_surfaceFormats;
 		}
 
-		VkInstance getInstance()const
+		VkInstance getInstance()const noexcept
 		{
 			return m_instance;
 		}

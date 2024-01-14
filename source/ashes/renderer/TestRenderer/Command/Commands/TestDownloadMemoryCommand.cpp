@@ -7,7 +7,7 @@ See LICENSE file in root folder.
 namespace ashes::test
 {
 	DownloadMemoryCommand::DownloadMemoryCommand( VkDevice device
-		, ObjectMemory const * memory
+		, ObjectMemory const *
 		, VkDeviceSize offset
 		, VkDeviceSize size )
 		: CommandBase{ device }

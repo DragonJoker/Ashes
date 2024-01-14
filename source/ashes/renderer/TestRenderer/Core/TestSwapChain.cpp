@@ -70,24 +70,24 @@ namespace ashes::test
 	{
 		try
 		{
-			m_image = createImage( device
+			m_image = createImage( m_device
 				, m_createInfo.imageFormat
 				, m_createInfo.imageExtent
 				, m_deviceMemory );
-			m_view = createImageView( device
+			m_view = createImageView( m_device
 				, m_image
 				, m_createInfo.imageFormat );
 		}
-		catch ( std::exception & exc )
+		catch ( ashes::Exception & exc )
 		{
 			deallocate( m_view, nullptr );
 			deallocate( m_image, nullptr );
 
 			std::stringstream stream;
 			stream << "Swapchain creation failed: " << exc.what() << std::endl;
-			get( device )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+			get( m_device )->onReportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
 				, VK_DEBUG_REPORT_OBJECT_TYPE_DEVICE_EXT
-				, uint64_t( device )
+				, uint64_t( m_device )
 				, 0u
 				, VK_ERROR_INCOMPATIBLE_DRIVER
 				, "Test"
@@ -95,7 +95,7 @@ namespace ashes::test
 		}
 	}
 
-	SwapchainKHR::~SwapchainKHR()
+	SwapchainKHR::~SwapchainKHR()noexcept
 	{
 		deallocate( m_view, nullptr );
 		deallocate( m_image, nullptr );
@@ -113,16 +113,16 @@ namespace ashes::test
 		return result;
 	}
 
-	VkResult SwapchainKHR::acquireNextImage( uint64_t timeout
-		, VkSemaphore semaphore
-		, VkFence fence
+	VkResult SwapchainKHR::acquireNextImage( uint64_t
+		, VkSemaphore
+		, VkFence
 		, uint32_t & imageIndex )const
 	{
 		imageIndex = 0u;
 		return VK_SUCCESS;
 	}
 
-	VkResult SwapchainKHR::present( uint32_t imageIndex )const
+	VkResult SwapchainKHR::present( uint32_t )const
 	{
 		return VK_SUCCESS;
 	}
