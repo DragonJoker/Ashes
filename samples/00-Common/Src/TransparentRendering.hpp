@@ -12,17 +12,17 @@ namespace common
 			, ashes::StagingBuffer & stagingBuffer
 			, ashes::ImageViewArray views
 			, common::TextureNodePtrArray const & textureNodes );
-		virtual ~TransparentRendering() = default;
+		virtual ~TransparentRendering()noexcept = default;
 		virtual void update( RenderTarget const & target );
 		virtual void draw( ashes::Queue const & queue
 			, std::chrono::nanoseconds & gpu )const;
 
-		inline ashes::CommandPool const & getCommandPool()const
+		ashes::CommandPool const & getCommandPool()const noexcept
 		{
 			return m_instance->getCommandPool();
 		}
 
-		inline ashes::Queue const & getTransferQueue()const
+		ashes::Queue const & getTransferQueue()const noexcept
 		{
 			return m_instance->getTransferQueue();
 		}

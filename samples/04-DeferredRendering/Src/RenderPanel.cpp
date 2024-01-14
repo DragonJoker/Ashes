@@ -26,22 +26,15 @@ namespace vkapp
 		common::ImagePtrArray images;
 		common::Scene scene;
 		scene.object = common::loadObject( ashes::getPath( ashes::getExecutableDirectory() ) / "share" / "Assets" / "Nyra", "Nyra_pose.fbx", images );
-		m_renderTarget = std::make_unique< RenderTarget >( device
-			, *m_commandPool
-			, *m_graphicsQueue
+		setRenderTarget( std::make_unique< RenderTarget >( device
+			, getCommandPool()
+			, getGraphicsQueue()
 			, size
 			, std::move( scene )
-			, std::move( images ) );
+			, std::move( images ) ) );
 	}
 
 	void RenderPanel::doUpdateOverlays( common::Gui const & overlay )
 	{
-		//if ( overlay.header( "Settings" ) )
-		//{
-		//	if ( overlay.checkBox( "Wireframe", &wireframe ) )
-		//	{
-		//		buildCommandBuffers();
-		//	}
-		//}
 	}
 }

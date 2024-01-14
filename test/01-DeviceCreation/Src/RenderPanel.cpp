@@ -26,19 +26,19 @@ namespace vkapp
 			doCreateDevice( instance );
 			std::cout << "Logical device created." << std::endl;
 		}
-		catch ( std::exception & )
+		catch ( common::Exception & )
 		{
 			doCleanup();
 			throw;
 		}
 	}
 
-	RenderPanel::~RenderPanel()
+	RenderPanel::~RenderPanel()noexcept
 	{
 		doCleanup();
 	}
 
-	void RenderPanel::doCleanup()
+	void RenderPanel::doCleanup()noexcept
 	{
 		if ( m_device )
 		{
@@ -50,7 +50,7 @@ namespace vkapp
 	void RenderPanel::doCreateSurface( utils::Instance const & instance )
 	{
 		auto handle = common::makeWindowHandle( *this );
-		auto & gpu = instance.getPhysicalDevice( 0u );
+		auto const & gpu = instance.getPhysicalDevice( 0u );
 		m_surface = instance.getInstance().createSurface( gpu
 			, std::move( handle ) );
 	}
@@ -65,7 +65,7 @@ namespace vkapp
 			0u,
 			std::move( queueCreateInfos ),
 			instance.getLayerNames(),
-			{},//instance.getExtensionNames(),
+			{},
 			gpu.getFeatures(),
 		};
 		m_device = instance.getInstance().createDevice( gpu

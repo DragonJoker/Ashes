@@ -11,10 +11,10 @@ namespace vkapp
 			, ashes::CommandPool const & commandPool
 			, ashes::Queue const & transferQueue
 			, ashes::UniformBuffer const & lightsUbo
-			, ashes::StagingBuffer & stagingBuffer
+			, ashes::StagingBuffer const & stagingBuffer
 			, ashes::ImageViewArray views );
 		void update( common::SceneData const & sceneData
-			, ashes::StagingBuffer & stagingBuffer
+			, ashes::StagingBuffer const & stagingBuffer
 			, ashes::ImageViewArray views
 			, GeometryPassResult const & geometryBuffers );
 		void draw( ashes::Queue const & queue
@@ -31,7 +31,7 @@ namespace vkapp
 
 		ashes::CommandBufferPtr m_commandBuffer;
 		ashes::UniformBufferPtr m_sceneUbo;
-		std::vector< common::SceneData > m_sceneData;
+		std::vector< common::SceneData > m_sceneData{ 1u };
 		ashes::DescriptorSetLayoutPtr m_uboDescriptorLayout;
 		ashes::DescriptorSetPoolPtr m_uboDescriptorPool;
 		ashes::DescriptorSetPtr m_uboDescriptorSet;

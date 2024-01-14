@@ -28,10 +28,10 @@ namespace vkapp
 			, utils::Device const & device
 			, ashes::Queue const & queue
 			, ashes::CommandPool const & commandPool
-			, ashes::Image & texture );
+			, ashes::Image const & texture );
 
 		void render();
-		void render( ashes::CommandBuffer & commandBuffer );
+		void render( ashes::CommandBuffer const & commandBuffer );
 
 	private:
 		struct FacePipeline

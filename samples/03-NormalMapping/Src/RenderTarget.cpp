@@ -25,19 +25,16 @@ namespace vkapp
 			, uint32_t( sizeof( common::SceneData ) )
 			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) }
-		, m_sceneData{ 1u }
 		, m_objectUbo{ utils::makeUniformBuffer( device
 			, 1u
 			, uint32_t( sizeof( common::ObjectData ) )
 			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) }
-		, m_objectData{ 1u }
 		, m_lightsUbo{ utils::makeUniformBuffer( device
 			, 1u
 			, uint32_t( sizeof( common::LightsData ) )
 			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) }
-		, m_lightsData{ 1u }
 	{
 		doInitialise();
 		doUpdateMatrixUbo( size );
@@ -53,11 +50,11 @@ namespace vkapp
 			return result;
 		}();
 		m_rotate = utils::rotate( m_rotate
-			, float( utils::DegreeToRadian ) * ( duration.count() / 20000.0f )
+			, float( utils::DegreeToRadian ) * ( float( duration.count() ) / 20000.0f )
 			, { 0, 1, 0 } );
 		m_objectData[0].mtxModel = originalTranslate * m_rotate;
-		m_stagingBuffer->uploadUniformData( m_transferQueue
-			, m_commandPool
+		getStagingBuffer().uploadUniformData( getTransferQueue()
+			, getCommandPool()
 			, m_objectData
 			, *m_objectUbo
 			, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
@@ -75,8 +72,8 @@ namespace vkapp
 		, common::TextureNodePtrArray const & textureNodes )
 	{
 		return std::make_unique< common::OpaqueRendering >( std::make_unique< NodesRenderer >( device
-				, m_commandPool
-				, m_transferQueue
+				, getCommandPool()
+				, getTransferQueue()
 				, ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "offscreen.frag"
 				, common::getFormats( views )
 				, true
@@ -97,8 +94,8 @@ namespace vkapp
 		, common::TextureNodePtrArray const & textureNodes )
 	{
 		return std::make_unique< common::TransparentRendering >( std::make_unique< NodesRenderer >( device
-				, m_commandPool
-				, m_transferQueue
+				, getCommandPool()
+				, getTransferQueue()
 				, ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "offscreen.frag"
 				, common::getFormats( views )
 				, false
@@ -116,12 +113,12 @@ namespace vkapp
 	{
 		auto width = float( size.width );
 		auto height = float( size.height );
-		m_sceneData[0u].mtxProjection = utils::Mat4{ m_device.getDevice().perspective( float( utils::toRadians( 90.0_degrees ) )
+		m_sceneData[0u].mtxProjection = utils::Mat4{ getDevice().getDevice().perspective( float( utils::toRadians( 90.0_degrees ) )
 			, width / height
 			, 0.01f
 			, 100.0f ) };
-		m_stagingBuffer->uploadUniformData( m_transferQueue
-			, m_commandPool
+		getStagingBuffer().uploadUniformData( getTransferQueue()
+			, getCommandPool()
 			, m_sceneData
 			, *m_sceneUbo
 			, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
@@ -141,8 +138,8 @@ namespace vkapp
 		};
 		lights.directionalLights[0] = directional;
 
-		m_stagingBuffer->uploadUniformData( m_transferQueue
-			, m_commandPool
+		getStagingBuffer().uploadUniformData( getTransferQueue()
+			, getCommandPool()
 			, m_lightsData
 			, *m_lightsUbo
 			, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT );

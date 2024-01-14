@@ -196,7 +196,7 @@ namespace common
 
 					size_t index1 = face.find( '/' );
 					std::string component = face.substr( 0, index1 );
-					uint16_t iv = atoi( component.c_str() ) - 1;
+					auto iv = uint16_t( atoi( component.c_str() ) - 1 );
 					*vtxit++ = allvtx[iv];
 
 					++index1;
@@ -205,7 +205,7 @@ namespace common
 					if ( index2 > index1 )
 					{
 						component = face.substr( index1, index2 - index1 );
-						uint32_t ivt = atoi( component.c_str() ) - 1;
+						auto ivt = uint32_t( atoi( component.c_str() ) - 1 );
 						texit->x = alltex[ivt].x;
 						texit->y = 1.0f - alltex[ivt].y;
 						++texit;
@@ -213,7 +213,7 @@ namespace common
 
 					++index2;
 					component = face.substr( index2 );
-					uint32_t ivn = atoi( component.c_str() ) - 1;
+					auto ivn = uint32_t( atoi( component.c_str() ) - 1 );
 					*nmlit++ = allnml[ivn];
 
 					*idxit++ = normalsCount;

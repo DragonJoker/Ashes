@@ -13,27 +13,27 @@ namespace common
 	{
 		if ( !wxFileExists( wxString( path ) ) )
 		{
-			throw std::runtime_error{ "Couldn't find image file." };
+			throw Exception{ "Couldn't find image file." };
 		}
 
 		wxImage image{ path };
 
 		if ( !image.IsOk() )
 		{
-			throw std::runtime_error{ "Couldn't load image file." };
+			throw Exception{ "Couldn't load image file." };
 		}
 
-		uint8_t * data = image.GetData();
+		uint8_t const * data = image.GetData();
 		ImageData result;
 		result.format = VK_FORMAT_R8G8B8A8_UNORM;
 		result.size = { uint32_t( image.GetSize().x ), uint32_t( image.GetSize().y ), 1u };
 		uint32_t size = image.GetSize().x * image.GetSize().y;
-		result.data.resize( size * 4 );
+		result.data.resize( size_t( size ) * 4 );
 		auto it = result.data.begin();
 
 		if ( image.HasAlpha() )
 		{
-			uint8_t * alpha = image.GetAlpha();
+			uint8_t const * alpha = image.GetAlpha();
 
 			for ( uint32_t i{ 0u }; i < size; ++i )
 			{
@@ -72,7 +72,7 @@ namespace common
 
 		if ( file.fail() )
 		{
-			throw std::runtime_error{ "Could not open file " + path };
+			throw Exception{ "Could not open file " + path };
 		}
 
 		auto begin = file.tellg();

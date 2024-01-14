@@ -15,10 +15,18 @@
 
 #include <array>
 #include <chrono>
+#include <stdexcept>
 
 namespace common
 {
 	static wxSize const WindowSize{ 800, 600 };
+
+	class Exception
+		: public std::runtime_error
+	{
+		using std::runtime_error::runtime_error;
+	};
+
 	/**
 	*\~english
 	*\brief
@@ -31,13 +39,13 @@ namespace common
 	{
 		//!\~english	The image dimensions.
 		//!\~french		Les dimensions de l'image.
-		VkExtent3D size;
+		VkExtent3D size{};
 		//!\~english	The image buffer.
 		//!\~french		Le tampon de l'image.
-		ashes::ByteArray data;
+		ashes::ByteArray data{};
 		//!\~english	The image pixel format.
 		//!\~french		Les format des pixels de l'image.
-		VkFormat format;
+		VkFormat format{};
 	};
 	/**
 	*\~french
@@ -66,4 +74,16 @@ namespace common
 
 	class Application;
 	class MainFrame;
+
+	template< typename WindowT, typename ... ParamsT >
+	wxWindowPtr< WindowT > wxMakeWindowPtr( ParamsT && ... params )
+	{
+		return wxWindowPtr< WindowT >( new WindowT{ std::forward< ParamsT >( params )... } );
+	}
+
+	template< typename BaseT, typename DerivedT, typename ... ParamsT >
+	wxWindowPtr< BaseT > wxMakeWindowDerivedPtr( ParamsT && ... params )
+	{
+		return wxWindowPtr< BaseT >( new DerivedT{ std::forward< ParamsT >( params )... } );
+	}
 }

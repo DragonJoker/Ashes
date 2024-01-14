@@ -15,7 +15,7 @@ namespace vkapp
 			, common::Scene const & scene
 			, ashes::StagingBuffer & stagingBuffer
 			, GeometryPassResult const & gbuffer
-			, ashes::ImageViewArray views
+			, ashes::ImageViewArray const & views
 			, common::TextureNodePtrArray const & textureNodes
 			, std::vector< common::SceneData > const & sceneData
 			, ashes::UniformBuffer const & lightsUbo );

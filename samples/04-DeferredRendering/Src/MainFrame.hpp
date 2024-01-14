@@ -16,6 +16,6 @@ namespace vkapp
 			, ashes::RendererList const & renderers );
 
 	private:
-		common::RenderPanel * doCreatePanel( wxSize const & size, utils::Instance const & instance )override;
+		wxWindowPtr< common::RenderPanel > doCreatePanel( wxSize const & size, utils::Instance const & instance )override;
 	};
 }

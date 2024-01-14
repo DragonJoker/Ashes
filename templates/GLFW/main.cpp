@@ -37,8 +37,8 @@
 
 struct LayerExtensionList
 {
-	VkLayerProperties layerProperties;
-	ashes::VkExtensionPropertiesArray extensionProperties;
+	VkLayerProperties layerProperties{};
+	ashes::VkExtensionPropertiesArray extensionProperties{};
 };
 using LayerExtensionListArray = std::vector< LayerExtensionList >;
 
@@ -68,31 +68,30 @@ using RenderingResourcesArray = std::vector< RenderingResourcesPtr >;
 
 struct Application
 {
-	uint32_t presentQueueFamilyIndex;
-	uint32_t graphicsQueueFamilyIndex;
-	uint32_t computeQueueFamilyIndex;
-	ashes::SurfacePtr surface;
-	ashes::DevicePtr device;
-	VkExtent2D dimensions;
-	ashes::SwapChainPtr swapChain;
-	ashes::ImageViewArray views;
-	std::vector< ashes::FrameBufferPtr > frameBuffers;
-	ashes::CommandPoolPtr commandPool;
-	ashes::CommandBufferPtrArray commandBuffers;
-	ashes::RenderPassPtr renderPass;
-	VkClearColorValue clearColour;
-	ashes::QueuePtr graphicsQueue;
-	ashes::QueuePtr presentQueue;
-	RenderingResourcesArray renderingResources;
-	uint32_t resourceIndex{ 0u };
+	uint32_t presentQueueFamilyIndex{};
+	uint32_t graphicsQueueFamilyIndex{};
+	uint32_t computeQueueFamilyIndex{};
+	ashes::SurfacePtr surface{};
+	ashes::DevicePtr device{};
+	VkExtent2D dimensions{};
+	ashes::SwapChainPtr swapChain{};
+	ashes::ImageViewArray views{};
+	std::vector< ashes::FrameBufferPtr > frameBuffers{};
+	ashes::CommandPoolPtr commandPool{};
+	ashes::CommandBufferPtrArray commandBuffers{};
+	ashes::RenderPassPtr renderPass{};
+	VkClearColorValue clearColour{};
+	ashes::QueuePtr graphicsQueue{};
+	ashes::QueuePtr presentQueue{};
+	RenderingResourcesArray renderingResources{};
+	uint32_t resourceIndex{};
 };
 
 std::string processCommandLine( int argc, char ** argv );
 std::vector< VkLayerProperties > enumerateLayerProperties( PFN_vkEnumerateInstanceLayerProperties enumLayerProperties );
 std::vector< VkExtensionProperties > enumerateExtensionProperties( PFN_vkEnumerateInstanceExtensionProperties enumInstanceExtensionProperties
 	, std::string const & layerName );
-ashes::DeviceCreateInfo getDeviceCreateInfo( ashes::Instance const & instance
-	, ashes::Surface const & surface
+ashes::DeviceCreateInfo getDeviceCreateInfo( ashes::Surface const & surface
 	, ashes::PhysicalDevice const & gpu
 	, uint32_t & presentQueueFamilyIndex
 	, uint32_t & graphicsQueueFamilyIndex
@@ -151,7 +150,7 @@ int main( int argc, char * argv[] )
 
 	for ( uint32_t i = 0; i < globalLayerProperties.size(); ++i )
 	{
-		VkLayerProperties & srcInfo = globalLayerProperties[i];
+		VkLayerProperties const & srcInfo = globalLayerProperties[i];
 		auto & dstInfo = globalLayers[i];
 		dstInfo.layerProperties = srcInfo;
 
@@ -176,9 +175,9 @@ int main( int argc, char * argv[] )
 	// Get all supported Instance extensions (excl. layer-provided ones)
 	ashes::StringArray instanceExtensions;
 
-	for ( auto & ext : globalExtensions )
+	for ( auto const & ext : globalExtensions )
 	{
-		instanceExtensions.push_back( ext.extensionName );
+		instanceExtensions.emplace_back( ext.extensionName );
 	}
 
 	ashes::InstanceCreateInfo instInfo
@@ -190,7 +189,7 @@ int main( int argc, char * argv[] )
 	};
 
 	// With that informations, we can now create the instance.
-	ashes::InstancePtr instance = std::make_unique< ashes::Instance >( std::move( plugin )
+	auto instance = std::make_unique< ashes::Instance >( std::move( plugin )
 		, nullptr
 		, std::move( instInfo ) );
 
@@ -202,7 +201,7 @@ int main( int argc, char * argv[] )
 		DbgCallback,
 		nullptr,
 	};
-	VkDebugReportCallbackEXT debugReport = instance->createDebugReportCallback( dbg_info );
+	instance->createDebugReportCallback( dbg_info );
 
 	ashes::PhysicalDevicePtrArray gpus = instance->enumeratePhysicalDevices();
 
@@ -237,8 +236,7 @@ int main( int argc, char * argv[] )
 	app.surface = instance->createSurface( *gpus[0], std::move( handle ) );
 
 	// We now create the logical device, using this surface
-	ashes::DeviceCreateInfo deviceInfo = getDeviceCreateInfo( *instance
-		, *app.surface
+	ashes::DeviceCreateInfo deviceInfo = getDeviceCreateInfo( *app.surface
 		, *gpus[0]
 		, app.presentQueueFamilyIndex
 		, app.graphicsQueueFamilyIndex
@@ -281,7 +279,7 @@ int main( int argc, char * argv[] )
 			try
 			{
 				// And we present the frame to the swap chain surface.
-				auto res = app.presentQueue->present( *app.swapChain
+				app.presentQueue->present( *app.swapChain
 					, resources->imageIndex
 					, *resources->finishedRenderingSemaphore );
 			}
@@ -392,8 +390,7 @@ std::vector< VkExtensionProperties > enumerateExtensionProperties( PFN_vkEnumera
 	return result;
 }
 
-void doInitialiseQueueFamilies( ashes::Instance const & instance
-	, ashes::Surface const & surface
+void doInitialiseQueueFamilies( ashes::Surface const & surface
 	, ashes::PhysicalDevice const & gpu
 	, uint32_t & presentQueueFamilyIndex
 	, uint32_t & graphicsQueueFamilyIndex
@@ -441,7 +438,6 @@ void doInitialiseQueueFamilies( ashes::Instance const & instance
 			{
 				computeQueueFamilyIndex = i;
 			}
-
 		}
 
 		++i;
@@ -450,11 +446,11 @@ void doInitialiseQueueFamilies( ashes::Instance const & instance
 	if ( presentQueueFamilyIndex == std::numeric_limits< uint32_t >::max() )
 	{
 		// Pas de file supportant les deux, on a donc 2 files distinctes.
-		for ( size_t i = 0; i < queueProps.size(); ++i )
+		for ( size_t j = 0; j < queueProps.size(); ++j )
 		{
-			if ( supportsPresent[i] )
+			if ( supportsPresent[j] )
 			{
-				presentQueueFamilyIndex = static_cast< uint32_t >( i );
+				presentQueueFamilyIndex = uint32_t( j );
 				break;
 			}
 		}
@@ -470,15 +466,13 @@ void doInitialiseQueueFamilies( ashes::Instance const & instance
 	}
 }
 
-ashes::DeviceCreateInfo getDeviceCreateInfo( ashes::Instance const & instance
-	, ashes::Surface const & surface
+ashes::DeviceCreateInfo getDeviceCreateInfo( ashes::Surface const & surface
 	, ashes::PhysicalDevice const & gpu
 	, uint32_t & presentQueueFamilyIndex
 	, uint32_t & graphicsQueueFamilyIndex
 	, uint32_t & computeQueueFamilyIndex )
 {
-	doInitialiseQueueFamilies( instance
-		, surface
+	doInitialiseQueueFamilies( surface
 		, gpu
 		, presentQueueFamilyIndex
 		, graphicsQueueFamilyIndex
@@ -486,34 +480,25 @@ ashes::DeviceCreateInfo getDeviceCreateInfo( ashes::Instance const & instance
 	ashes::FloatArray queuePriorities = { 1.0f };
 	ashes::DeviceQueueCreateInfoArray queueCreateInfos;
 
-	if ( graphicsQueueFamilyIndex != uint32_t( ~( 0u ) ) )
+	if ( graphicsQueueFamilyIndex != uint32_t( ~0u ) )
 	{
-		queueCreateInfos.push_back(
-			{
-				0u,
-				graphicsQueueFamilyIndex,
-				queuePriorities,
-			} );
+		queueCreateInfos.emplace_back( 0u
+			, graphicsQueueFamilyIndex
+			, queuePriorities );
 	}
 
 	if ( presentQueueFamilyIndex != graphicsQueueFamilyIndex )
 	{
-		queueCreateInfos.push_back(
-			{
-				0u,
-				presentQueueFamilyIndex,
-				queuePriorities,
-			} );
+		queueCreateInfos.emplace_back( 0u
+			, presentQueueFamilyIndex
+			, queuePriorities );
 	}
 
 	if ( computeQueueFamilyIndex != graphicsQueueFamilyIndex )
 	{
-		queueCreateInfos.push_back(
-			{
-				0u,
-				computeQueueFamilyIndex,
-				queuePriorities,
-			} );
+		queueCreateInfos.emplace_back( 0u
+			, computeQueueFamilyIndex
+			, queuePriorities );
 	}
 
 	ashes::StringArray enabledExtensions
@@ -547,12 +532,12 @@ uint32_t doGetImageCount( ashes::Surface const & surface )
 
 VkSurfaceFormatKHR doSelectFormat( ashes::Surface const & surface )
 {
-	VkSurfaceFormatKHR result;
-	auto formats = surface.getFormats();
+	VkSurfaceFormatKHR result{};
 	// Si la liste de formats ne contient qu'une entr�e VK_FORMAT_UNDEFINED,
 	// la surface n'a pas de format préféré. Sinon, au moins un format supporté
 	// sera renvoyé.
-	if ( formats.size() == 1u && formats[0].format == VK_FORMAT_UNDEFINED )
+	if ( auto formats = surface.getFormats();
+		formats.size() == 1u && formats[0].format == VK_FORMAT_UNDEFINED )
 	{
 		result.format = VK_FORMAT_R8G8B8A8_UNORM;
 		result.colorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
@@ -636,7 +621,7 @@ VkSwapchainCreateInfoKHR doGetSwapChainCreateInfo( ashes::Surface const & surfac
 	// nous l'utilisons, sinon nous utiliserons la même transformation que la transformation courante.
 	VkSurfaceTransformFlagBitsKHR preTransform{};
 
-	if ( ( surfaceCaps.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR ) )
+	if ( surfaceCaps.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR )
 	{
 		preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
 	}
@@ -763,16 +748,16 @@ ashes::RenderPassPtr createRenderPass( ashes::Device const & device
 	return device.createRenderPass( std::move( createInfo ) );
 }
 
-ashes::ImageViewCRefArray doPrepareAttaches( Application const & application
+static ashes::ImageViewCRefArray doPrepareAttaches( Application const & application
 	, uint32_t backBuffer
        	, ashes::ImageViewArray & views )
 {
 	ashes::ImageViewCRefArray attaches;
 
-	for ( auto & attach : application.renderPass->getAttachments() )
+	for ( auto const & attach : application.renderPass->getAttachments() )
 	{
 		auto const & image = *application.swapChain->getImages()[backBuffer];
-		views.push_back( image.createView( VkImageViewCreateInfo
+		views.emplace_back( image.createView( VkImageViewCreateInfo
 			{
 				VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
 				nullptr,
@@ -799,7 +784,7 @@ ashes::ImageViewCRefArray doPrepareAttaches( Application const & application
 	return attaches;
 }
 
-void doCreateFrameBuffers( Application & application )
+static void doCreateFrameBuffers( Application & application )
 {
 	application.frameBuffers.resize( application.swapChain->getImageCount() );
 
@@ -811,7 +796,7 @@ void doCreateFrameBuffers( Application & application )
 	}
 }
 
-void doCreateCommandBuffers( Application & application )
+static void doCreateCommandBuffers( Application & application )
 {
 	application.commandBuffers.resize( application.swapChain->getImageCount() );
 
@@ -830,8 +815,8 @@ void prepareFrames( Application & application )
 	// We'll simply clear the swap chain, using its colour defined previously.
 	for ( size_t i = 0u; i < application.commandBuffers.size(); ++i )
 	{
-		auto & frameBuffer = *application.frameBuffers[i];
-		auto & commandBuffer = *application.commandBuffers[i];
+		auto const & frameBuffer = *application.frameBuffers[i];
+		auto const & commandBuffer = *application.commandBuffers[i];
 
 		commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT );
 		commandBuffer.beginRenderPass( *application.renderPass
@@ -846,21 +831,20 @@ void prepareFrames( Application & application )
 RenderingResources * getResources( Application & application )
 {
 	auto & resources = *application.renderingResources[application.resourceIndex];
-	application.resourceIndex = ( application.resourceIndex + 1 ) % application.renderingResources.size();
-	bool res = resources.fence->wait( ashes::MaxTimeout ) == ashes::WaitResult::eSuccess;
+	application.resourceIndex = uint32_t( ( application.resourceIndex + 1ULL ) % application.renderingResources.size() );
 
-	if ( res )
+	if ( resources.fence->wait( ashes::MaxTimeout ) == ashes::WaitResult::eSuccess )
 	{
 		resources.fence->reset();
 		uint32_t imageIndex{ 0u };
-		auto res = application.swapChain->acquireNextImage( std::numeric_limits< uint64_t >::max()
-			, *resources.imageAvailableSemaphore
-			, imageIndex );
 
-		if ( checkNeedReset( application
-			, VkResult( res )
-			, true
-			, "Swap chain image acquisition" ) )
+		if ( auto acq = application.swapChain->acquireNextImage( std::numeric_limits< uint64_t >::max()
+				, *resources.imageAvailableSemaphore
+				, imageIndex );
+			checkNeedReset( application
+				, VkResult( acq )
+				, true
+				, "Swap chain image acquisition" ) )
 		{
 			resources.imageIndex = imageIndex;
 			return &resources;
@@ -925,13 +909,13 @@ void onWindowResized( GLFWwindow * window, int width, int height )
 }
 
 static VkBool32 VKAPI_PTR DbgCallback( VkDebugReportFlagsEXT msgFlags
-	, VkDebugReportObjectTypeEXT objType
-	, uint64_t srcObject
-	, size_t location
+	, VkDebugReportObjectTypeEXT
+	, uint64_t
+	, size_t
 	, int32_t msgCode
 	, const char * pLayerPrefix
 	, const char *pMsg
-	, void *pUserData )
+	, void * )
 {
 	std::cerr << msgFlags << ": [" << pLayerPrefix << "] Code " << msgCode << " : " << pMsg << std::endl;
 

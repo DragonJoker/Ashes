@@ -12,7 +12,7 @@ namespace vkapp
 
 		if ( !file )
 		{
-			throw std::runtime_error{ "Couldn't load file." };
+			throw common::Exception{ "Couldn't load file." };
 		}
 
 		// Holds the luminance buffer

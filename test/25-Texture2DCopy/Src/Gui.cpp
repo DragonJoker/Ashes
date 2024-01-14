@@ -168,7 +168,7 @@ namespace vkapp
 			return;
 		}
 
-		ImGuiIO & io = ImGui::GetIO();
+		ImGuiIO const& io = ImGui::GetIO();
 		m_pushConstants.getData()->scale = utils::Vec2{ 2.0f / io.DisplaySize.x, 2.0f / io.DisplaySize.y };
 		m_pushConstants.getData()->translate = utils::Vec2{ -1.0f };
 
@@ -195,7 +195,7 @@ namespace vkapp
 		commandBuffer.setViewport( { 0.0f, 0.0f, float( ImGui::GetIO().DisplaySize.x ), float( ImGui::GetIO().DisplaySize.y ), 0.0f, 1.0f } );
 		commandBuffer.setScissor( { { 0, 0 }, { uint32_t( ImGui::GetIO().DisplaySize.x ), uint32_t( ImGui::GetIO().DisplaySize.y ) } } );
 		commandBuffer.pushConstants( *m_pipelineLayout, m_pushConstants );
-		ImDrawData * imDrawData = ImGui::GetDrawData();
+		ImDrawData const * imDrawData = ImGui::GetDrawData();
 		int32_t vertexOffset = 0;
 		int32_t indexOffset = 0;
 
@@ -235,17 +235,17 @@ namespace vkapp
 			, m_indexBuffer->getBuffer().makeHostWrite() );
 	}
 
-	bool Gui::header( const char *caption )
+	bool Gui::header( const char * caption )const
 	{
 		return ImGui::CollapsingHeader( caption, ImGuiTreeNodeFlags_DefaultOpen );
 	}
 
-	bool Gui::checkBox( const char *caption, bool *value )
+	bool Gui::checkBox( const char * caption, bool * value )const
 	{
 		return ImGui::Checkbox( caption, value );
 	}
 
-	bool Gui::checkBox( const char *caption, int32_t *value )
+	bool Gui::checkBox( const char * caption, int32_t * value )const
 	{
 		bool val = ( *value == 1 );
 		bool res = ImGui::Checkbox( caption, &val );
@@ -253,22 +253,22 @@ namespace vkapp
 		return res;
 	}
 
-	bool Gui::inputFloat( const char *caption, float *value, float step, uint32_t precision )
+	bool Gui::inputFloat( const char * caption, float * value, float step, uint32_t precision )const
 	{
 		return ImGui::InputFloat( caption, value, step, step * 10.0f, "%.3f", precision );
 	}
 
-	bool Gui::sliderFloat( char const * caption, float* value, float min, float max )
+	bool Gui::sliderFloat( char const * caption, float * value, float min, float max )const
 	{
 		return ImGui::SliderFloat( caption, value, min, max );
 	}
 
-	bool Gui::sliderInt( char const * caption, int32_t* value, int32_t min, int32_t max )
+	bool Gui::sliderInt( char const * caption, int32_t * value, int32_t min, int32_t max )const
 	{
 		return ImGui::SliderInt( caption, value, min, max );
 	}
 
-	bool Gui::comboBox( const char *caption, int32_t *itemindex, std::vector<std::string> items )
+	bool Gui::comboBox( const char * caption, int32_t * itemindex, std::vector< std::string > const & items )const
 	{
 		if ( items.empty() )
 		{
@@ -277,7 +277,7 @@ namespace vkapp
 
 		std::vector< char const * > charitems;
 		charitems.reserve( items.size() );
-		for ( auto & item : items )
+		for ( auto const & item : items )
 		{
 			charitems.push_back( item.c_str() );
 		}
@@ -286,12 +286,12 @@ namespace vkapp
 		return ImGui::Combo( caption, itemindex, &charitems[0], itemCount, itemCount );
 	}
 
-	bool Gui::button( const char *caption )
+	bool Gui::button( const char * caption )const
 	{
 		return ImGui::Button( caption );
 	}
 
-	void Gui::text( const char *formatstr, ... )
+	void Gui::text( const char * formatstr, ... )const
 	{
 		va_list args;
 		va_start( args, formatstr );
@@ -305,10 +305,10 @@ namespace vkapp
 		ImGuiIO & io = ImGui::GetIO();
 
 		// Create font texture
-		unsigned char* fontData;
-		int texWidth, texHeight;
+		unsigned char * fontData{};
+		int texWidth{};
+		int texHeight{};
 		io.Fonts->GetTexDataAsRGBA32( &fontData, &texWidth, &texHeight );
-		auto uploadSize = uint32_t( texWidth * texHeight * 4u * sizeof( char ) );
 
 		m_fontImage = m_device.createImage( { 0u
 				, VK_IMAGE_TYPE_2D
@@ -360,8 +360,6 @@ namespace vkapp
 
 	void Gui::doPreparePipeline()
 	{
-		auto dimensions = m_size;
-		auto size = VkExtent2D{ dimensions.width, dimensions.height };
 		ashes::PipelineColorBlendStateCreateInfo cbState{ 0u
 			, VK_FALSE
 			, VK_LOGIC_OP_COPY
@@ -378,25 +376,24 @@ namespace vkapp
 			, { { 0u, sizeof( ImDrawVert ), VK_VERTEX_INPUT_RATE_VERTEX } }
 			, { { 0u, 0u, VK_FORMAT_R32G32_SFLOAT, offsetof( ImDrawVert, pos ) }
 				, { 1u, 0u, VK_FORMAT_R32G32_SFLOAT, offsetof( ImDrawVert, uv ) }
-				, { 2u, 0u, VK_FORMAT_R8G8B8A8_UNORM, offsetof( ImDrawVert, col ) } },
-		};
+				, { 2u, 0u, VK_FORMAT_R8G8B8A8_UNORM, offsetof( ImDrawVert, col ) } } };
 
 		std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 		ashes::PipelineShaderStageCreateInfoArray shaderStages;
-		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo{ 0u
-			, VK_SHADER_STAGE_VERTEX_BIT
-			, m_device->createShaderModule( utils::compileGlslToSpv( m_device->getProperties()
+		shaderStages.emplace_back( 0u
 				, VK_SHADER_STAGE_VERTEX_BIT
-				, utils::dumpTextFile( shadersFolder / "gui.vert" ) ) )
-			, "main"
-			, ashes::nullopt } );
-		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo{ 0u
-			, VK_SHADER_STAGE_FRAGMENT_BIT
-			, m_device->createShaderModule( utils::compileGlslToSpv( m_device->getProperties()
+				, m_device->createShaderModule( common::parseShaderFile( m_device
+					, VK_SHADER_STAGE_VERTEX_BIT
+					, shadersFolder / "gui.vert" ) )
+				, "main"
+				, ashes::nullopt );
+		shaderStages.emplace_back( 0u
 				, VK_SHADER_STAGE_FRAGMENT_BIT
-				, utils::dumpTextFile( shadersFolder / "gui.frag" ) ) )
-			, "main"
-			, ashes::nullopt } );
+				, m_device->createShaderModule( common::parseShaderFile( m_device
+					, VK_SHADER_STAGE_FRAGMENT_BIT
+					, shadersFolder / "gui.frag" ) )
+				, "main"
+				, ashes::nullopt );
 
 		m_pipeline = m_device->createPipeline( { 0u
 			, std::move( shaderStages )

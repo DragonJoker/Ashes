@@ -34,46 +34,16 @@ namespace vkapp
 		enum class Ids
 		{
 			RenderTimer = 42
-		}	Ids;
+		};
 
-		static int const TimerTimeMs = 40;
+		int const TimerTimeMs = 40;
 	}
 
 	RenderPanel::RenderPanel( wxWindow * parent
 		, wxSize const & size
 		, utils::Instance const & instance )
 		: wxPanel{ parent, wxID_ANY, wxDefaultPosition, size }
-		, m_timer{ new wxTimer{ this, int( Ids::RenderTimer ) } }
-		, m_offscreenVertexData
-		{
-			{
-				{ -200.0f, -200.0f, 0.0f, 1.0f },
-				{ -0.1f, -0.1f },
-			},
-			{
-				{ -200.0f, 200.0f, 0.0f, 1.0f },
-				{ -0.1f, 1.1f },
-			},
-			{
-				{ 200.0f, -200.0f, 0.0f, 1.0f },
-				{ 1.1f, -0.1f },
-			},
-			{
-				{ 200.0f, 200.0f, 0.0f, 1.0f },
-				{ 1.1f, 1.1f },
-			},
-		}
-		, m_offscreenIndexData
-		{
-			0, 1, 2, 2, 1, 3,
-		}
-		, m_mainVertexData
-		{
-			{ { -1.0, -1.0, 0.0, 1.0 }, { 0.0, 0.0 } },
-			{ { -1.0, +1.0, 0.0, 1.0 }, { 0.0, 1.0 } },
-			{ { +1.0, -1.0, 0.0, 1.0 }, { 1.0, 0.0 } },
-			{ { +1.0, +1.0, 0.0, 1.0 }, { 1.0, 1.0 } },
-		}
+		, m_timer{ this, int( Ids::RenderTimer ) }
 	{
 		try
 		{
@@ -113,13 +83,13 @@ namespace vkapp
 			std::cout << "Main pipeline created." << std::endl;
 			doPrepareMainFrames();
 		}
-		catch ( std::exception & )
+		catch ( common::Exception & )
 		{
 			doCleanup();
 			throw;
 		}
 
-		m_timer->Start( TimerTimeMs );
+		m_timer.Start( TimerTimeMs );
 
 		Connect( int( Ids::RenderTimer )
 			, wxEVT_TIMER
@@ -133,15 +103,13 @@ namespace vkapp
 			, this );
 	}
 
-	RenderPanel::~RenderPanel()
+	RenderPanel::~RenderPanel()noexcept
 	{
 		doCleanup();
 	}
 
-	void RenderPanel::doCleanup()
+	void RenderPanel::doCleanup()noexcept
 	{
-		delete m_timer;
-
 		if ( m_device )
 		{
 			m_device->getDevice().waitIdle();
@@ -204,7 +172,7 @@ namespace vkapp
 	ashes::SurfacePtr RenderPanel::doCreateSurface( utils::Instance const & instance )
 	{
 		auto handle = common::makeWindowHandle( *this );
-		auto & gpu = instance.getPhysicalDevice( 0u );
+		auto const & gpu = instance.getPhysicalDevice( 0u );
 		return instance.getInstance().createSurface( gpu
 			, std::move( handle ) );
 	}
@@ -213,7 +181,7 @@ namespace vkapp
 		, ashes::Surface const & surface )
 	{
 		m_device = std::make_unique< utils::Device >( instance.getInstance()
-			, std::move( surface ) );
+			, surface );
 		m_graphicsQueue = m_device->getDevice().getQueue( m_device->getGraphicsQueueFamily(), 0u );
 		m_presentQueue = m_device->getDevice().getQueue( m_device->getPresentQueueFamily(), 0u );
 		m_commandPool = m_device->getDevice().createCommandPool( m_device->getGraphicsQueueFamily()
@@ -412,13 +380,12 @@ namespace vkapp
 	void RenderPanel::doCreateOffscreenPipeline()
 	{
 		m_offscreenPipelineLayout = m_device->getDevice().createPipelineLayout( *m_offscreenDescriptorLayout );
-		wxSize size{ GetClientSize() };
 		std::string shadersFolder = ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders";
 
 		if ( !wxFileExists( shadersFolder / "offscreen.vert" )
 			|| !wxFileExists( shadersFolder / "offscreen.frag" ) )
 		{
-			throw std::runtime_error{ "Shader files are missing" };
+			throw common::Exception{ "Shader files are missing" };
 		}
 
 		ashes::PipelineVertexInputStateCreateInfo vertexLayout
@@ -434,26 +401,20 @@ namespace vkapp
 		};
 
 		ashes::PipelineShaderStageCreateInfoArray shaderStages;
-		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
-			{
-				0u,
-				VK_SHADER_STAGE_VERTEX_BIT,
-				m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+		shaderStages.emplace_back( 0u
+				, VK_SHADER_STAGE_VERTEX_BIT
+				, m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
 					, VK_SHADER_STAGE_VERTEX_BIT
-					, shadersFolder / "offscreen.vert" ) ),
-				"main",
-				ashes::nullopt,
-			} );
-		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
-			{
-				0u,
-				VK_SHADER_STAGE_FRAGMENT_BIT,
-				m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+					, shadersFolder / "offscreen.vert" ) )
+				, "main"
+				, ashes::nullopt );
+		shaderStages.emplace_back( 0u
+				, VK_SHADER_STAGE_FRAGMENT_BIT
+				, m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
 					, VK_SHADER_STAGE_FRAGMENT_BIT
-					, shadersFolder / "offscreen.frag" ) ),
-				"main",
-				ashes::nullopt,
-			} );
+					, shadersFolder / "offscreen.frag" ) )
+				, "main"
+				, ashes::nullopt );
 
 		m_offscreenPipeline = m_device->getDevice().createPipeline( ashes::GraphicsPipelineCreateInfo
 			{
@@ -559,9 +520,8 @@ namespace vkapp
 			, 2u
 			, 0u );
 		m_commandBuffer = m_commandPool->createCommandBuffer();
-		wxSize size{ GetClientSize() };
-		auto & commandBuffer = *m_commandBuffer;
-		auto & frameBuffer = *m_frameBuffer;
+		auto const & commandBuffer = *m_commandBuffer;
+		auto const & frameBuffer = *m_frameBuffer;
 
 		commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT );
 		auto dimensions = m_swapChain->getDimensions();
@@ -610,7 +570,7 @@ namespace vkapp
 		if ( !wxFileExists( shadersFolder / "main.vert" )
 			|| !wxFileExists( shadersFolder / "main.frag" ) )
 		{
-			throw std::runtime_error{ "Shader files are missing" };
+			throw common::Exception{ "Shader files are missing" };
 		}
 
 		ashes::PipelineVertexInputStateCreateInfo vertexLayout
@@ -626,26 +586,20 @@ namespace vkapp
 		};
 
 		ashes::PipelineShaderStageCreateInfoArray shaderStages;
-		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
-			{
-				0u,
-				VK_SHADER_STAGE_VERTEX_BIT,
-				m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+		shaderStages.emplace_back( 0u
+				, VK_SHADER_STAGE_VERTEX_BIT
+				, m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
 					, VK_SHADER_STAGE_VERTEX_BIT
-					, shadersFolder / "main.vert" ) ),
-				"main",
-				ashes::nullopt,
-			} );
-		shaderStages.push_back( ashes::PipelineShaderStageCreateInfo
-			{
-				0u,
-				VK_SHADER_STAGE_FRAGMENT_BIT,
-				m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
+					, shadersFolder / "main.vert" ) )
+				, "main"
+				, ashes::nullopt );
+		shaderStages.emplace_back( 0u
+				, VK_SHADER_STAGE_FRAGMENT_BIT
+				, m_device->getDevice().createShaderModule( common::parseShaderFile( m_device->getDevice()
 					, VK_SHADER_STAGE_FRAGMENT_BIT
-					, shadersFolder / "main.frag" ) ),
-				"main",
-				ashes::nullopt,
-			} );
+					, shadersFolder / "main.frag" ) )
+				, "main"
+				, ashes::nullopt );
 
 		m_mainPipeline = m_device->getDevice().createPipeline( ashes::GraphicsPipelineCreateInfo
 			{
@@ -673,10 +627,8 @@ namespace vkapp
 
 		for ( size_t i = 0u; i < m_frameBuffers.size(); ++i )
 		{
-			auto & frameBuffer = *m_frameBuffers[i];
-			auto & commandBuffer = *m_commandBuffers[i];
-
-			wxSize size{ GetClientSize() };
+			auto const & frameBuffer = *m_frameBuffers[i];
+			auto const & commandBuffer = *m_commandBuffers[i];
 
 			commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT );
 			auto dimensions = m_swapChain->getDimensions();
@@ -722,14 +674,14 @@ namespace vkapp
 				, values );
 
 			// Elapsed time in nanoseconds
-			auto elapsed = std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device->getDevice().getTimestampPeriod() ) ) };
+			auto elapsed = std::chrono::nanoseconds{ uint64_t( float( values[1] - values[0] ) / float( m_device->getDevice().getTimestampPeriod() ) ) };
 			auto after = std::chrono::high_resolution_clock::now();
 			wxGetApp().updateFps( std::chrono::duration_cast< std::chrono::microseconds >( elapsed )
 				, std::chrono::duration_cast< std::chrono::microseconds >( after - before ) );
 		}
 		else
 		{
-			m_timer->Stop();
+			m_timer.Stop();
 		}
 	}
 
@@ -745,14 +697,15 @@ namespace vkapp
 		if ( event.GetId() == int( Ids::RenderTimer ) )
 		{
 			doDraw();
+			event.Skip( false );
 		}
 	}
 
 	void RenderPanel::onSize( wxSizeEvent & event )
 	{
-		m_timer->Stop();
+		m_timer.Stop();
 		doResetSwapChain();
-		m_timer->Start( TimerTimeMs );
+		m_timer.Start( TimerTimeMs );
 		event.Skip();
 	}
 }

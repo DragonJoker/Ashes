@@ -27,7 +27,7 @@ namespace vkapp
 		RenderPanel( wxWindow * parent
 			, wxSize const & size
 			, utils::Instance const & instance );
-		~RenderPanel();
+		~RenderPanel()noexcept override;
 
 	private:
 		/**
@@ -35,7 +35,7 @@ namespace vkapp
 		*	Initialisation.
 		*/
 		/**@{*/
-		void doCleanup();
+		void doCleanup()noexcept;
 		void doUpdateProjection();
 		ashes::SurfacePtr doCreateSurface( utils::Instance const & instance );
 		void doCreateDevice( utils::Instance const & instance
@@ -76,7 +76,7 @@ namespace vkapp
 		/**@}*/
 
 	private:
-		wxTimer * m_timer{ nullptr };
+		wxTimer m_timer;
 		utils::Mat4 m_rotate;
 		utils::Clock::time_point m_time;
 		/**
@@ -134,7 +134,13 @@ namespace vkapp
 		ashes::DescriptorSetLayoutPtr m_mainDescriptorLayout;
 		ashes::DescriptorSetPoolPtr m_mainDescriptorPool;
 		ashes::DescriptorSetPtr m_mainDescriptorSet;
-		std::vector< UVVertexData > m_mainVertexData;
+		std::vector< UVVertexData > m_mainVertexData
+		{
+			{ { -1.0, -1.0, 0.0, 1.0 }, { 0.0, 0.0 } },
+			{ { -1.0, +1.0, 0.0, 1.0 }, { 0.0, 1.0 } },
+			{ { +1.0, -1.0, 0.0, 1.0 }, { 1.0, 0.0 } },
+			{ { +1.0, +1.0, 0.0, 1.0 }, { 1.0, 1.0 } },
+		};
 		/**@}*/
 		/**
 		*\name

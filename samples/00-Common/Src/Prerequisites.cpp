@@ -61,42 +61,11 @@ namespace common
 #endif
 	}
 
-	std::array< float, 16 > getOrthographicProjection( float left
-		, float right
-		, float top
-		, float bottom
-		, float near
-		, float far )
-	{
-		return
-		{
-			2.0f / ( right - left ),
-			0.0f,
-			0.0f,
-			0.0f,
-
-			0.0f,
-			2.0f / ( bottom - top ),
-			0.0f,
-			0.0f,
-
-			0.0f,
-			0.0f,
-			-2.0f / ( far - near ),
-			0.0f,
-
-			-( right + left ) / ( right - left ),
-			-( bottom + top ) / ( bottom - top ),
-			-( far + near ) / ( far - near ),
-			1.0f
-		};
-	}
-
 	std::vector< VkFormat > getFormats( ashes::ImageViewArray const & views )
 	{
 		std::vector< VkFormat > result;
 
-		for ( auto view : views )
+		for ( auto const & view : views )
 		{
 			result.push_back( view->format );
 		}

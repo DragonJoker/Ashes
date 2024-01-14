@@ -33,30 +33,24 @@ namespace vkapp
 			if ( !wxFileExists( shadersFolder / "opaque_lp.vert" )
 				|| !wxFileExists( shadersFolder / "opaque_lp.frag" ) )
 			{
-				throw std::runtime_error{ "Shader files are missing" };
+				throw common::Exception{ "Shader files are missing" };
 			}
 			
 			ashes::PipelineShaderStageCreateInfoArray result;
-			result.push_back( ashes::PipelineShaderStageCreateInfo
-				{
-					0u,
-					VK_SHADER_STAGE_VERTEX_BIT,
-					device.createShaderModule( common::dumpShaderFile( device
-						, VK_SHADER_STAGE_VERTEX_BIT
-						, shadersFolder / "opaque_lp.vert" ) ),
-					"main",
-					ashes::nullopt,
-				} );
-			result.push_back( ashes::PipelineShaderStageCreateInfo
-				{
-					0u,
-					VK_SHADER_STAGE_FRAGMENT_BIT,
-					device.createShaderModule( common::dumpShaderFile( device
-						, VK_SHADER_STAGE_FRAGMENT_BIT
-						, shadersFolder / "opaque_lp.frag" ) ),
-					"main",
-					ashes::nullopt,
-				} );
+			result.emplace_back( 0u
+				, VK_SHADER_STAGE_VERTEX_BIT
+				, device.createShaderModule( common::dumpShaderFile( device
+					, VK_SHADER_STAGE_VERTEX_BIT
+					, shadersFolder / "opaque_lp.vert" ) )
+				, "main"
+				, ashes::nullopt );
+			result.emplace_back( 0u
+				, VK_SHADER_STAGE_FRAGMENT_BIT
+				, device.createShaderModule( common::dumpShaderFile( device
+					, VK_SHADER_STAGE_FRAGMENT_BIT
+					, shadersFolder / "opaque_lp.frag" ) )
+				, "main"
+				, ashes::nullopt );
 			return result;
 		}
 
@@ -101,8 +95,8 @@ namespace vkapp
 		}
 
 		ashes::RenderPassPtr doCreateRenderPass( ashes::Device const & device
-			, ashes::ImageView depthView
-			, ashes::ImageView colourView )
+			, ashes::ImageView const & depthView
+			, ashes::ImageView const & colourView )
 		{
 			auto attaches = doGetAttaches( depthView, colourView );
 			ashes::SubpassDescriptionArray subpasses;
@@ -148,8 +142,8 @@ namespace vkapp
 		}
 
 		ashes::FrameBufferPtr doCreateFrameBuffer( ashes::RenderPass const & renderPass
-			, ashes::ImageView depthView
-			, ashes::ImageView colourView )
+			, ashes::ImageView const & depthView
+			, ashes::ImageView const & colourView )
 		{
 			auto formats = doGetFormats( depthView, colourView );
 			ashes::ImageViewCRefArray attaches;
@@ -202,7 +196,7 @@ namespace vkapp
 		}
 
 		ashes::VertexBufferPtr< common::TexturedVertexData > doCreateVertexBuffer( utils::Device const & device
-			, ashes::StagingBuffer & stagingBuffer
+			, ashes::StagingBuffer const & stagingBuffer
 			, ashes::CommandPool const & commandPool
 			, ashes::Queue const & transferQueue )
 		{
@@ -244,7 +238,7 @@ namespace vkapp
 		, ashes::CommandPool const & commandPool
 		, ashes::Queue const & transferQueue
 		, ashes::UniformBuffer const & lightsUbo
-		, ashes::StagingBuffer & stagingBuffer
+		, ashes::StagingBuffer const & stagingBuffer
 		, ashes::ImageViewArray views )
 		: m_device{ device }
 		, m_commandPool{ commandPool }
@@ -252,12 +246,11 @@ namespace vkapp
 		, m_lightsUbo{ lightsUbo }
 		, m_commandBuffer{ commandPool.createCommandBuffer() }
 		, m_sceneUbo{ utils::makeUniformBuffer( device, 1u, uint32_t( sizeof( common::SceneData ) ), VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) }
-		, m_sceneData{ 1u }
-		, m_gbufferDescriptorLayout{ doCreateGBufferDescriptorLayout( m_device.getDevice() ) }
-		, m_gbufferDescriptorPool{ m_gbufferDescriptorLayout->createPool( 1u, false ) }
 		, m_uboDescriptorLayout{ doCreateUboDescriptorLayout( m_device.getDevice() ) }
 		, m_uboDescriptorPool{ m_uboDescriptorLayout->createPool( 1u ) }
 		, m_uboDescriptorSet{ doCreateUboDescriptorSet( *m_uboDescriptorPool, m_lightsUbo, *m_sceneUbo ) }
+		, m_gbufferDescriptorLayout{ doCreateGBufferDescriptorLayout( m_device.getDevice() ) }
+		, m_gbufferDescriptorPool{ m_gbufferDescriptorLayout->createPool( 1u, false ) }
 		, m_renderPass{ doCreateRenderPass( m_device.getDevice(), views[0], views[1] ) }
 		, m_sampler{ m_device.getDevice().createSampler( VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
 			, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
@@ -288,7 +281,7 @@ namespace vkapp
 	}
 
 	void LightingPass::update( common::SceneData const & sceneData
-		, ashes::StagingBuffer & stagingBuffer
+		, ashes::StagingBuffer const & stagingBuffer
 		, ashes::ImageViewArray views
 		, GeometryPassResult const & geometryBuffers )
 	{
@@ -312,14 +305,14 @@ namespace vkapp
 
 		for ( size_t i = 0; i < gbuffer.size(); ++i )
 		{
-			m_gbufferDescriptorSet->createBinding( m_gbufferDescriptorLayout->getBinding( i )
+			m_gbufferDescriptorSet->createBinding( m_gbufferDescriptorLayout->getBinding( uint32_t( i ) )
 				, gbuffer[i].view
 				, *m_sampler );
 		}
 
 		m_gbufferDescriptorSet->update();
 		m_commandBuffer->reset();
-		auto & commandBuffer = *m_commandBuffer;
+		auto const & commandBuffer = *m_commandBuffer;
 		static VkClearDepthStencilValue const depth{ 1.0, 0 };
 		static VkClearColorValue const colour{ 1.0f, 0.8f, 0.4f, 0.0f };
 
@@ -367,6 +360,6 @@ namespace vkapp
 			, 0u
 			, VK_QUERY_RESULT_WAIT_BIT
 			, values );
-		gpu += std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device.getDevice().getTimestampPeriod() ) ) };
+		gpu += std::chrono::nanoseconds{ uint64_t( float( values[1] - values[0] ) / float( m_device.getDevice().getTimestampPeriod() ) ) };
 	}
 }

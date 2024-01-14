@@ -25,7 +25,6 @@ namespace vkapp
 			, uint32_t( sizeof( common::SceneData ) )
 			, VK_BUFFER_USAGE_TRANSFER_DST_BIT
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT ) }
-		, m_sceneData{ 1u }
 	{
 		doInitialise();
 		doUpdateProjection( size );
@@ -36,7 +35,7 @@ namespace vkapp
 	{
 		auto width = float( size.width );
 		auto height = float( size.height );
-		m_sceneData[0].mtxProjection = utils::Mat4{ m_device.getDevice().perspective( float( utils::toRadians( 90.0_degrees ) )
+		m_sceneData[0].mtxProjection = utils::Mat4{ getDevice().getDevice().perspective( float( utils::toRadians( 90.0_degrees ) )
 			, width / height
 			, 0.01f
 			, 100.0f ) };
@@ -52,8 +51,8 @@ namespace vkapp
 				m_currentMousePosition.y - m_previousMousePosition.y,
 			};
 			auto & result = m_camera.getRotation();
-			result = utils::pitch( result, utils::Radians{ float( -delta.y ) / m_size.width } );
-			result = utils::yaw( result, utils::Radians{ float( delta.x ) / m_size.height } );
+			result = utils::pitch( result, utils::Radians{ float( -delta.y ) / float( getSize().width ) } );
+			result = utils::yaw( result, utils::Radians{ float( delta.x ) / float( getSize().height ) } );
 			m_camera.update();
 		}
 
@@ -62,8 +61,8 @@ namespace vkapp
 		data.mtxView = m_camera.getView();
 		auto & pos = m_camera.getPosition();
 		data.cameraPosition = utils::Vec4{ pos[0], pos[1], pos[2], 0.0f };
-		m_stagingBuffer->uploadUniformData( m_transferQueue
-			, m_commandPool
+		getStagingBuffer().uploadUniformData( getTransferQueue()
+			, getCommandPool()
 			, m_sceneData
 			, *m_sceneUbo
 			, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT );
@@ -81,8 +80,8 @@ namespace vkapp
 		, common::TextureNodePtrArray const & textureNodes )
 	{
 		return std::make_unique< common::OpaqueRendering >( std::make_unique< NodesRenderer >( device
-				, m_commandPool
-				, m_transferQueue
+				, getCommandPool()
+				, getTransferQueue()
 				, ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "offscreen.frag"
 				, common::getFormats( views )
 				, true
@@ -101,8 +100,8 @@ namespace vkapp
 		, common::TextureNodePtrArray const & textureNodes )
 	{
 		return std::make_unique< common::TransparentRendering >( std::make_unique< NodesRenderer >( device
-				, m_commandPool
-				, m_transferQueue
+				, getCommandPool()
+				, getTransferQueue()
 				, ashes::getPath( ashes::getExecutableDirectory() ) / "share" / AppName / "Shaders" / "offscreen.frag"
 				, common::getFormats( views )
 				, false

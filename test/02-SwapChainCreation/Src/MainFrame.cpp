@@ -10,9 +10,9 @@ namespace vkapp
 	{
 	}
 
-	wxPanel * MainFrame::doCreatePanel( wxSize const & size
+	wxWindowPtr< wxPanel > MainFrame::doCreatePanel( wxSize const & size
 		, utils::Instance const & instance )
 	{
-		return new RenderPanel( this, size, instance );
+		return common::wxMakeWindowDerivedPtr< wxPanel, RenderPanel >( this, size, instance );
 	}
 }

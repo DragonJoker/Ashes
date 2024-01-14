@@ -38,30 +38,24 @@ namespace common
 			if ( !wxFileExists( shadersFolder / vertexShaderFile )
 				|| !wxFileExists( fragmentShaderFile ) )
 			{
-				throw std::runtime_error{ "Shader files are missing" };
+				throw Exception{ "Shader files are missing" };
 			}
 
 			ashes::PipelineShaderStageCreateInfoArray result;
-			result.push_back( ashes::PipelineShaderStageCreateInfo
-				{
-					0u,
-					VK_SHADER_STAGE_VERTEX_BIT,
-					device.createShaderModule( dumpShaderFile( device
-						, VK_SHADER_STAGE_VERTEX_BIT
-						, shadersFolder / vertexShaderFile ) ),
-					"main",
-					ashes::nullopt,
-				} );
-			result.push_back( ashes::PipelineShaderStageCreateInfo
-				{
-					0u,
-					VK_SHADER_STAGE_FRAGMENT_BIT,
-					device.createShaderModule( dumpShaderFile( device
-						, VK_SHADER_STAGE_FRAGMENT_BIT
-						, fragmentShaderFile ) ),
-					"main",
-					ashes::nullopt,
-				} );
+			result.emplace_back( 0u
+				, VK_SHADER_STAGE_VERTEX_BIT
+				, device.createShaderModule( dumpShaderFile( device
+					, VK_SHADER_STAGE_VERTEX_BIT
+					, shadersFolder / vertexShaderFile ) )
+				, "main"
+				, ashes::nullopt );
+			result.emplace_back(  0u
+				, VK_SHADER_STAGE_FRAGMENT_BIT
+				, device.createShaderModule( dumpShaderFile( device
+					, VK_SHADER_STAGE_FRAGMENT_BIT
+					, fragmentShaderFile ) )
+				, "main"
+				, ashes::nullopt );
 			return result;
 		}
 
@@ -90,42 +84,28 @@ namespace common
 			{
 				if ( ashes::isDepthOrStencilFormat( format ) )
 				{
-					attaches.push_back( VkAttachmentDescription
-						{
-							0u,
-							format,
-							VK_SAMPLE_COUNT_1_BIT,
-							( clearViews
-								? VK_ATTACHMENT_LOAD_OP_CLEAR
-								: VK_ATTACHMENT_LOAD_OP_DONT_CARE ),
-							VK_ATTACHMENT_STORE_OP_STORE,
-							( ( clearViews && ashes::isStencilFormat( format ) )
-								? VK_ATTACHMENT_LOAD_OP_CLEAR
-								: VK_ATTACHMENT_LOAD_OP_DONT_CARE ),
-							VK_ATTACHMENT_STORE_OP_DONT_CARE,
-							VK_IMAGE_LAYOUT_UNDEFINED,
-							VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
-						} );
+					attaches.push_back( VkAttachmentDescription{ 0u
+						, format
+						, VK_SAMPLE_COUNT_1_BIT
+						, ( clearViews ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_DONT_CARE )
+						, VK_ATTACHMENT_STORE_OP_STORE
+						, ( ( clearViews && ashes::isStencilFormat( format ) ) ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_DONT_CARE )
+						, VK_ATTACHMENT_STORE_OP_DONT_CARE
+						, VK_IMAGE_LAYOUT_UNDEFINED
+						, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL } );
 					depthStencilAttachment = { index, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
 				}
 				else
 				{
-					attaches.push_back(
-						{
-							0u,
-							format,
-							VK_SAMPLE_COUNT_1_BIT,
-							( clearViews
-								? VK_ATTACHMENT_LOAD_OP_CLEAR
-								: VK_ATTACHMENT_LOAD_OP_DONT_CARE ),
-							VK_ATTACHMENT_STORE_OP_STORE,
-							VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-							VK_ATTACHMENT_STORE_OP_DONT_CARE,
-							VK_IMAGE_LAYOUT_UNDEFINED,
-							( clearViews
-								? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-								: VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL )
-						} );
+					attaches.push_back( VkAttachmentDescription{ 0u
+						, format
+						, VK_SAMPLE_COUNT_1_BIT
+						, ( clearViews ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_DONT_CARE )
+						, VK_ATTACHMENT_STORE_OP_STORE
+						, VK_ATTACHMENT_LOAD_OP_DONT_CARE
+						, VK_ATTACHMENT_STORE_OP_DONT_CARE
+						, VK_IMAGE_LAYOUT_UNDEFINED
+						, ( clearViews ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL ) } );
 					colorAttachments.emplace_back( VkAttachmentReference{ index, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL } );
 				}
 
@@ -133,44 +113,32 @@ namespace common
 			}
 			
 			ashes::SubpassDescriptionArray subpasses;
-			subpasses.emplace_back( ashes::SubpassDescription
-				{
-					0u,
-					VK_PIPELINE_BIND_POINT_GRAPHICS,
-					{},
-					std::move( colorAttachments ),
-					{},
-					std::move( depthStencilAttachment ),
-					{},
-				} );
-			ashes::VkSubpassDependencyArray dependencies
-			{
-				{
-					VK_SUBPASS_EXTERNAL,
-					0u,
-					VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-					VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-					VK_ACCESS_SHADER_READ_BIT,
-					VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
-					VK_DEPENDENCY_BY_REGION_BIT,
-				},
-				{
-					0u,
-					VK_SUBPASS_EXTERNAL,
-					VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-					VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-					VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
-					VK_ACCESS_SHADER_READ_BIT,
-					VK_DEPENDENCY_BY_REGION_BIT,
-				}
+			subpasses.emplace_back( 0u
+					, VK_PIPELINE_BIND_POINT_GRAPHICS
+					, ashes::VkAttachmentReferenceArray{}
+					, std::move( colorAttachments )
+					, ashes::VkAttachmentReferenceArray{}
+					, std::move( depthStencilAttachment )
+					, ashes::UInt32Array{} );
+			ashes::VkSubpassDependencyArray dependencies{ { VK_SUBPASS_EXTERNAL
+					, 0u
+					, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+					, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+					, VK_ACCESS_SHADER_READ_BIT
+					, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT
+					, VK_DEPENDENCY_BY_REGION_BIT }
+				, { 0u
+					, VK_SUBPASS_EXTERNAL
+					, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+					, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+					, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT
+					, VK_ACCESS_SHADER_READ_BIT
+					, VK_DEPENDENCY_BY_REGION_BIT }
 			};
-			ashes::RenderPassCreateInfo createInfo
-			{
-				0u,
-				std::move( attaches ),
-				std::move( subpasses ),
-				std::move( dependencies ),
-			};
+			ashes::RenderPassCreateInfo createInfo{ 0u
+				, std::move( attaches )
+				, std::move( subpasses )
+				, std::move( dependencies ) };
 			return device.createRenderPass( std::move( createInfo ) );
 		}
 
@@ -283,11 +251,11 @@ namespace common
 			, 0u
 			, VK_QUERY_RESULT_WAIT_BIT
 			, values );
-		gpu = std::chrono::nanoseconds{ uint64_t( ( values[1] - values[0] ) / float( m_device.getDevice().getTimestampPeriod() ) ) };
+		gpu = std::chrono::nanoseconds{ uint64_t( float( values[1] - values[0] ) / float( m_device.getDevice().getTimestampPeriod() ) ) };
 	}
 
 	void NodesRenderer::initialise( Scene const & scene
-		, ashes::StagingBuffer & stagingBuffer
+		, ashes::StagingBuffer const & stagingBuffer
 		, ashes::ImageViewArray views
 		, common::TextureNodePtrArray const & textureNodes )
 	{
@@ -297,18 +265,15 @@ namespace common
 			, m_objectsCount
 			, m_billboardsCount );
 		m_materialsData.resize( m_objectsCount + m_billboardsCount );
-		m_dummyImage = m_device.createImage( ashes::ImageCreateInfo
-			{
-				0u,
-				VK_IMAGE_TYPE_2D,
-				VK_FORMAT_R8G8B8A8_UNORM,
-				{ 1, 1, 1 },
-				1u,
-				1u,
-				VK_SAMPLE_COUNT_1_BIT,
-				VK_IMAGE_TILING_OPTIMAL,
-				VK_IMAGE_USAGE_SAMPLED_BIT,
-			}
+		m_dummyImage = m_device.createImage( ashes::ImageCreateInfo{ 0u
+				, VK_IMAGE_TYPE_2D
+				, VK_FORMAT_R8G8B8A8_UNORM
+				, { 1, 1, 1 }
+				, 1u
+				, 1u
+				, VK_SAMPLE_COUNT_1_BIT
+				, VK_IMAGE_TILING_OPTIMAL
+				, VK_IMAGE_USAGE_SAMPLED_BIT }
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
 		m_dummyView = m_dummyImage->createView( VK_IMAGE_VIEW_TYPE_2D
 			, VK_FORMAT_R8G8B8A8_UNORM );
@@ -349,7 +314,7 @@ namespace common
 			static VkClearDepthStencilValue const depth{ 1.0, 0 };
 			ashes::VkClearValueArray clearValues;
 
-			for ( auto & view : views )
+			for ( auto const & view : views )
 			{
 				if ( !ashes::isDepthOrStencilFormat( view.createInfo.format ) )
 				{
@@ -363,7 +328,7 @@ namespace common
 
 			m_frameBuffer = doCreateFrameBuffer( *m_renderPass, std::move( views ) );
 			m_commandBuffer->reset();
-			auto & commandBuffer = *m_commandBuffer;
+			auto const & commandBuffer = *m_commandBuffer;
 
 			commandBuffer.begin( VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT );
 			commandBuffer.resetQueryPool( *m_queryPool, 0u, 2u );
@@ -389,7 +354,7 @@ namespace common
 					, *node.pipelineLayout );
 				commandBuffer.bindDescriptorSet( *node.descriptorSetTextures
 					, *node.pipelineLayout );
-				commandBuffer.drawIndexed( node.instance->ibo->getCount() * 3u );
+				commandBuffer.drawIndexed( uint32_t( node.instance->ibo->getCount() * 3ULL ) );
 			}
 
 			for ( BillboardMaterialNode & node : m_billboardRenderNodes )
@@ -404,7 +369,7 @@ namespace common
 					, *node.pipelineLayout );
 				commandBuffer.bindDescriptorSet( *node.descriptorSetTextures
 					, *node.pipelineLayout );
-				commandBuffer.draw( 4u, node.instance->instance->getCount() );
+				commandBuffer.draw( 4u, uint32_t( node.instance->instance->getCount() ) );
 			}
 
 			commandBuffer.endRenderPass();
@@ -416,7 +381,7 @@ namespace common
 	}
 
 	void NodesRenderer::doInitialiseBillboard( Billboard const & billboard
-		, ashes::StagingBuffer & stagingBuffer
+		, ashes::StagingBuffer const & stagingBuffer
 		, TextureNodePtrArray const & textureNodes
 		, uint32_t & matIndex )
 	{
@@ -440,7 +405,7 @@ namespace common
 					{ { 0.0, 0.0, 0.0 }, { 0.0, 0.0, -1.0 }, { 1.0, 0.0, 0.0 }, { 0.0, 1.0, 0.0 }, { +0.5, -0.5 } },
 					{ { 0.0, 0.0, 0.0 }, { 0.0, 0.0, -1.0 }, { 1.0, 0.0, 0.0 }, { 0.0, 1.0, 0.0 }, { +0.5, +0.5 } },
 				};
-				m_billboardNodes.push_back( std::make_shared< BillboardNode >() );
+				m_billboardNodes.emplace_back( std::make_shared< BillboardNode >() );
 				BillboardNodePtr billboardNode = m_billboardNodes.back();
 
 				// Initialise geometry buffers.
@@ -475,7 +440,7 @@ namespace common
 						return lookup->image == texture;
 					} );
 					assert( it != textureNodes.end() );
-					materialNode.textures.push_back( *it );
+					materialNode.textures.emplace_back( *it );
 				}
 
 				m_materialsData[matIndex] = material.data;
@@ -530,7 +495,7 @@ namespace common
 	}
 
 	void NodesRenderer::doInitialiseObject( Object const & object
-		, ashes::StagingBuffer & stagingBuffer
+		, ashes::StagingBuffer const & stagingBuffer
 		, common::TextureNodePtrArray const & textureNodes
 		, uint32_t & matIndex )
 	{
@@ -546,110 +511,111 @@ namespace common
 
 			for ( auto & submesh : object )
 			{
-				std::vector< Material > compatibleMaterials;
+				doInitialiseSubmesh( submesh, stagingBuffer, textureNodes, matIndex );
+			}
+		}
+	}
 
-				for ( auto & material : submesh.materials )
+	void NodesRenderer::doInitialiseSubmesh( Submesh const & submesh
+		, ashes::StagingBuffer const & stagingBuffer
+		, TextureNodePtrArray const & textureNodes
+		, uint32_t & matIndex )
+	{
+		std::vector< Material > compatibleMaterials;
+
+		for ( auto & material : submesh.materials )
+		{
+			if ( material.hasOpacity == !m_opaqueNodes )
+			{
+				compatibleMaterials.emplace_back( material );
+			}
+		}
+
+		if ( !compatibleMaterials.empty() )
+		{
+			m_submeshNodes.emplace_back( std::make_shared< common::SubmeshNode >() );
+			common::SubmeshNodePtr submeshNode = m_submeshNodes.back();
+
+			// Initialise geometry buffers.
+			submeshNode->vbo = utils::makeVertexBuffer< common::Vertex >( m_device
+				, uint32_t( submesh.vbo.data.size() )
+				, VK_BUFFER_USAGE_TRANSFER_DST_BIT
+				, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
+			stagingBuffer.uploadVertexData( m_transferQueue
+				, m_commandPool
+				, submesh.vbo.data
+				, *submeshNode->vbo );
+			submeshNode->ibo = utils::makeBuffer< common::Face >( m_device
+				, uint32_t( submesh.ibo.data.size() )
+				, VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT
+				, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
+			stagingBuffer.uploadBufferData( m_transferQueue
+				, m_commandPool
+				, submesh.ibo.data
+				, *submeshNode->ibo );
+
+			for ( auto & material : compatibleMaterials )
+			{
+				common::SubmeshMaterialNode materialNode{ submeshNode };
+
+				// Initialise material textures.
+				for ( uint32_t index = 0u; index < material.data.texturesCount; ++index )
 				{
-					if ( material.hasOpacity == !m_opaqueNodes )
-					{
-						compatibleMaterials.push_back( material );
-					}
+					auto const & texture = material.textures[index];
+					auto it = std::find_if( textureNodes.begin()
+						, textureNodes.end()
+						, [&texture]( common::TextureNodePtr const & lookup )
+						{
+							return lookup->image == texture;
+						} );
+					assert( it != textureNodes.end() );
+					materialNode.textures.emplace_back( *it );
 				}
 
-				if ( !compatibleMaterials.empty() )
-				{
-					m_submeshNodes.push_back( std::make_shared< common::SubmeshNode >() );
-					common::SubmeshNodePtr submeshNode = m_submeshNodes.back();
+				m_materialsData[matIndex] = material.data;
 
-					// Initialise geometry buffers.
-					submeshNode->vbo = utils::makeVertexBuffer< common::Vertex >( m_device
-						, uint32_t( submesh.vbo.data.size() )
-						, VK_BUFFER_USAGE_TRANSFER_DST_BIT
-						, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
-					stagingBuffer.uploadVertexData( m_transferQueue
-						, m_commandPool
-						, submesh.vbo.data
-						, *submeshNode->vbo );
-					submeshNode->ibo = utils::makeBuffer< common::Face >( m_device
-						, uint32_t( submesh.ibo.data.size() )
-						, VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT
-						, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT );
-					stagingBuffer.uploadBufferData( m_transferQueue
-						, m_commandPool
-						, submesh.ibo.data
-						, *submeshNode->ibo );
+				// Initialise descriptor set for UBOs
+				materialNode.descriptorSetUbos = m_objectDescriptorPool->createDescriptorSet( 0u );
+				materialNode.descriptorSetUbos->createBinding( m_objectDescriptorLayout->getBinding( 0u )
+					, *m_materialsUbo
+					, matIndex
+					, 1u );
+				doFillObjectDescriptorSet( *m_objectDescriptorLayout, *materialNode.descriptorSetUbos );
+				materialNode.descriptorSetUbos->update();
 
-					for ( auto & material : compatibleMaterials )
-					{
-						common::SubmeshMaterialNode materialNode{ submeshNode };
+				// Initialise descriptor set for textures.
+				materialNode.layout = m_device.getDevice().createDescriptorSetLayout( { { 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 6u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr } } );
+				materialNode.pool = materialNode.layout->createPool( 1u );
+				materialNode.descriptorSetTextures = materialNode.pool->createDescriptorSet( 1u );
+				doFillTextures( *materialNode.layout
+					, *materialNode.descriptorSetTextures
+					, materialNode.textures );
+				materialNode.descriptorSetTextures->update();
 
-						// Initialise material textures.
-						for ( uint32_t index = 0u; index < material.data.texturesCount; ++index )
-						{
-							auto & texture = material.textures[index];
-							auto it = std::find_if( textureNodes.begin()
-								, textureNodes.end()
-								, [&texture]( common::TextureNodePtr const & lookup )
-								{
-									return lookup->image == texture;
-								} );
-							assert( it != textureNodes.end() );
-							materialNode.textures.push_back( *it );
-						}
+				// Initialise the pipeline
+				ashes::PipelineVertexInputStateCreateInfo vertexLayout{ 0u
+					, { { 0u, sizeof( Vertex ), VK_VERTEX_INPUT_RATE_VERTEX } }
+					, { { 0u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offsetof( Vertex, position ) }
+					, { 1u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offsetof( Vertex, normal ) }
+					, { 2u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offsetof( Vertex, tangent ) }
+					, { 3u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offsetof( Vertex, bitangent ) }
+				, { 4u, 0u, VK_FORMAT_R32G32_SFLOAT, offsetof( Vertex, texture ) } } };
 
-						m_materialsData[matIndex] = material.data;
-
-						// Initialise descriptor set for UBOs
-						materialNode.descriptorSetUbos = m_objectDescriptorPool->createDescriptorSet( 0u );
-						materialNode.descriptorSetUbos->createBinding( m_objectDescriptorLayout->getBinding( 0u )
-							, *m_materialsUbo
-							, matIndex
-							, 1u );
-						doFillObjectDescriptorSet( *m_objectDescriptorLayout, *materialNode.descriptorSetUbos );
-						materialNode.descriptorSetUbos->update();
-
-						// Initialise descriptor set for textures.
-						materialNode.layout = m_device.getDevice().createDescriptorSetLayout( { { 0u, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 6u, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr } } );
-						materialNode.pool = materialNode.layout->createPool( 1u );
-						materialNode.descriptorSetTextures = materialNode.pool->createDescriptorSet( 1u );
-						doFillTextures( *materialNode.layout
-							, *materialNode.descriptorSetTextures
-							, materialNode.textures );
-						materialNode.descriptorSetTextures->update();
-
-						// Initialise the pipeline
-						ashes::PipelineVertexInputStateCreateInfo vertexLayout
-						{
-							0u,
-							{
-								{ 0u, sizeof( Vertex ), VK_VERTEX_INPUT_RATE_VERTEX },
-							},
-							{
-								{ 0u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offsetof( Vertex, position ) },
-								{ 1u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offsetof( Vertex, normal ) },
-								{ 2u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offsetof( Vertex, tangent ) },
-								{ 3u, 0u, VK_FORMAT_R32G32B32_SFLOAT, offsetof( Vertex, bitangent ) },
-								{ 4u, 0u, VK_FORMAT_R32G32_SFLOAT, offsetof( Vertex, texture ) },
-							},
-						};
-
-						materialNode.pipelineLayout = m_device.getDevice().createPipelineLayout( { *m_objectDescriptorLayout, *materialNode.layout } );
-						materialNode.pipeline = doCreatePipeline( *materialNode.pipelineLayout
-							, doCreateObjectProgram( m_device.getDevice(), m_fragmentShaderFile )
-							, std::move( vertexLayout )
-							, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST
-							, VkCullModeFlagBits( material.data.backFace ? VK_CULL_MODE_FRONT_BIT : VK_CULL_MODE_BACK_BIT ) );
-						m_submeshRenderNodes.emplace_back( std::move( materialNode ) );
-						++matIndex;
-					}
-				}
+				materialNode.pipelineLayout = m_device.getDevice().createPipelineLayout( { *m_objectDescriptorLayout, *materialNode.layout } );
+				materialNode.pipeline = doCreatePipeline( *materialNode.pipelineLayout
+					, doCreateObjectProgram( m_device.getDevice(), m_fragmentShaderFile )
+					, std::move( vertexLayout )
+					, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST
+					, VkCullModeFlagBits( material.data.backFace ? VK_CULL_MODE_FRONT_BIT : VK_CULL_MODE_BACK_BIT ) );
+				m_submeshRenderNodes.emplace_back( std::move( materialNode ) );
+				++matIndex;
 			}
 		}
 	}
 
 	void NodesRenderer::doFillTextures( ashes::DescriptorSetLayout const & layout
 		, ashes::DescriptorSet & descriptorSet
-		, TextureNodePtrArray const & textures )
+		, TextureNodePtrArray const & textures )const
 	{
 		for ( uint32_t index = 0u; index < textures.size(); ++index )
 		{
@@ -660,7 +626,7 @@ namespace common
 				, index );
 		}
 
-		for ( uint32_t index = textures.size(); index < 6u; ++index )
+		for ( auto index = uint32_t( textures.size() ); index < 6u; ++index )
 		{
 			descriptorSet.createBinding( layout.getBinding( 0u, 0u )
 				, m_dummyView
@@ -674,7 +640,7 @@ namespace common
 		, ashes::PipelineShaderStageCreateInfoArray shaderStages
 		, ashes::PipelineVertexInputStateCreateInfo vertexLayout
 		, VkPrimitiveTopology topology
-		, VkCullModeFlagBits cullMode )
+		, VkCullModeFlagBits cullMode )const
 	{
 		ashes::VkPipelineColorBlendAttachmentStateArray bsAttaches;
 
@@ -682,35 +648,29 @@ namespace common
 		{
 			if ( !ashes::isDepthOrStencilFormat( attach.format ) )
 			{
-				bsAttaches.push_back( VkPipelineColorBlendAttachmentState
-					{
-						VK_FALSE,
-						VK_BLEND_FACTOR_ONE,
-						VK_BLEND_FACTOR_ZERO,
-						VK_BLEND_OP_ADD,
-						VK_BLEND_FACTOR_ONE,
-						VK_BLEND_FACTOR_ZERO,
-						VK_BLEND_OP_ADD,
-						VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT
-					} );
+				bsAttaches.push_back( VkPipelineColorBlendAttachmentState{ VK_FALSE
+						, VK_BLEND_FACTOR_ONE
+						, VK_BLEND_FACTOR_ZERO
+						, VK_BLEND_OP_ADD
+						, VK_BLEND_FACTOR_ONE
+						, VK_BLEND_FACTOR_ZERO
+						, VK_BLEND_OP_ADD
+						, VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT } );
 			}
 		}
 
-		return m_device->createPipeline( ashes::GraphicsPipelineCreateInfo
-			{
-				0u,
-				std::move( shaderStages ),
-				std::move( vertexLayout ),
-				ashes::PipelineInputAssemblyStateCreateInfo{ 0u, topology },
-				ashes::nullopt,
-				ashes::PipelineViewportStateCreateInfo{},
-				ashes::PipelineRasterizationStateCreateInfo{ 0u, VK_FALSE, VK_FALSE, VK_POLYGON_MODE_FILL, VkCullModeFlags( cullMode ) },
-				ashes::PipelineMultisampleStateCreateInfo{},
-				ashes::PipelineDepthStencilStateCreateInfo{},
-				ashes::PipelineColorBlendStateCreateInfo{ 0u, VK_FALSE, VK_LOGIC_OP_COPY, std::move( bsAttaches ) },
-				ashes::PipelineDynamicStateCreateInfo{ 0u, { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR } },
-				pipelineLayout,
-				*m_renderPass,
-			} );
+		return m_device->createPipeline( ashes::GraphicsPipelineCreateInfo{ 0u
+			, std::move( shaderStages )
+			, std::move( vertexLayout )
+			, ashes::PipelineInputAssemblyStateCreateInfo{ 0u, topology }
+			, ashes::nullopt
+			, ashes::PipelineViewportStateCreateInfo{}
+			, ashes::PipelineRasterizationStateCreateInfo{ 0u, VK_FALSE, VK_FALSE, VK_POLYGON_MODE_FILL, VkCullModeFlags( cullMode ) }
+			, ashes::PipelineMultisampleStateCreateInfo{}
+			, ashes::PipelineDepthStencilStateCreateInfo{}
+			, ashes::PipelineColorBlendStateCreateInfo{ 0u, VK_FALSE, VK_LOGIC_OP_COPY, std::move( bsAttaches ) }
+			, ashes::PipelineDynamicStateCreateInfo{ 0u, { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR } }
+			, pipelineLayout
+			, *m_renderPass } );
 	}
 }

@@ -17,6 +17,7 @@
 
 #include <array>
 #include <chrono>
+#include <stdexcept>
 
 inline bool operator==( VkExtent2D const & lhs
 	, VkExtent2D const & rhs )
@@ -48,6 +49,12 @@ namespace common
 	static wxSize const WindowSize{ 800, 600 };
 	static uint32_t constexpr MAX_TEXTURES = 6u;
 	static uint32_t constexpr MAX_LIGHTS = 10u;
+
+	class Exception
+		: public std::runtime_error
+	{
+		using std::runtime_error::runtime_error;
+	};
 
 	struct NonTexturedVertex2DData
 	{
@@ -144,6 +151,13 @@ namespace common
 
 	struct Face
 	{
+		Face( uint32_t a
+			, uint32_t b
+			, uint32_t c )
+			: a{ a }, b{ b }, c{ c }
+		{
+		}
+
 		uint32_t a;
 		uint32_t b;
 		uint32_t c;
@@ -283,4 +297,16 @@ namespace common
 	using NodesInstancePtr = std::unique_ptr< NodesRenderer >;
 	using OpaqueRenderingPtr = std::unique_ptr< OpaqueRendering >;
 	using TransparentRenderingPtr = std::unique_ptr< TransparentRendering >;
+
+	template< typename WindowT, typename ... ParamsT >
+	wxWindowPtr< WindowT > wxMakeWindowPtr( ParamsT && ... params )
+	{
+		return wxWindowPtr< WindowT >( new WindowT{ std::forward< ParamsT >( params )... } );
+	}
+
+	template< typename BaseT, typename DerivedT, typename ... ParamsT >
+	wxWindowPtr< BaseT > wxMakeWindowDerivedPtr( ParamsT && ... params )
+	{
+		return wxWindowPtr< BaseT >( new DerivedT{ std::forward< ParamsT >( params )... } );
+	}
 }
