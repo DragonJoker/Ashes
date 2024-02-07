@@ -29,6 +29,14 @@ namespace ashes::vk
 					0u,
 					nullptr,
 				};
+#if defined( __APPLE__ )
+#	if VK_KHR_portability_enumeration
+				char const * extensions = VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME;
+				instanceInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+				instanceInfo.enabledExtensionCount = 1u;
+				instanceInfo.ppEnabledExtensionNames = &extensions;
+#	endif
+#endif
 				VkInstance instance{ nullptr };
 				auto res = description.functions.CreateInstance( &instanceInfo, nullptr, &instance );
 
