@@ -82,6 +82,13 @@ namespace ashes
 		*	Retrieves the given format's properties.
 		*/
 		VkFormatProperties getFormatProperties( VkFormat fmt )const;
+#if VK_VERSION_1_3 || VK_KHR_format_feature_flags2
+		/**
+		*\brief
+		*	Retrieves the given format's properties.
+		*/
+		VkFormatProperties3KHR getFormatProperties3( VkFormat fmt )const;
+#endif
 		/**
 		*\brief
 		*	Retrieves the image format properties.
