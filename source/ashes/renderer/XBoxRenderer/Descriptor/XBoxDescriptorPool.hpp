@@ -1,0 +1,43 @@
+/**
+*\file
+*	DescriptorSetPool.h
+*\author
+*	Sylvain Doremus
+*/
+#ifndef ___XBOXRenderer_DescriptorPool_HPP___
+#define ___XBOXRenderer_DescriptorPool_HPP___
+#pragma once
+
+#include "renderer/XBoxRenderer/XBoxRendererPrerequisites.hpp"
+
+#include <vector>
+
+namespace ashes::xbox
+{
+	class DescriptorPool
+		: public NonCopyable
+	{
+	public:
+		DescriptorPool( VkDevice device
+			, VkDescriptorPoolCreateInfo createInfos );
+		~DescriptorPool()noexcept;
+
+		void registerSet( VkDescriptorSet set );
+		VkResult reset();
+		VkResult freeDescriptors( ArrayView< VkDescriptorSet const > sets );
+
+		inline VkDevice getDevice()const
+		{
+			return m_device;
+		}
+
+	private:
+		VkDevice m_device;
+		VkDescriptorPoolSizeArray m_poolSizes;
+		VkDescriptorPoolCreateInfo m_createInfos;
+		VkDescriptorSetArray m_sets;
+		VkDescriptorSetArray m_allSets;
+	};
+}
+
+#endif
