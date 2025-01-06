@@ -4500,10 +4500,13 @@ namespace ashes::test
 				description.functions.x = vk##x;
 #define VK_LIB_INSTANCE_FUNCTION( v, x )\
 				description.functions.x = vk##x;
+#define VK_LIB_PHYSDEVICE_FUNCTION( v, x )\
+				description.functions.x = vk##x;
 #define VK_LIB_DEVICE_FUNCTION( v, x )\
 				description.functions.x = vk##x;
 #define VK_LIB_GLOBAL_FUNCTION_EXT( v, n, x )
 #define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )
+#define VK_LIB_PHYSDEVICE_FUNCTION_EXT( v, n, x )
 #define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )
 #include <ashes/ashes_functions_list.hpp>
 				result = VK_SUCCESS;
@@ -4562,7 +4565,32 @@ namespace ashes::test
 			{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
 #define VK_LIB_INSTANCE_FUNCTION( v, x )\
 			{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
+#define VK_LIB_PHYSDEVICE_FUNCTION( v, x )\
+			{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
 #define VK_LIB_DEVICE_FUNCTION( v, x )\
+			{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
+#include <ashes/ashes_functions_list.hpp>
+		};
+
+		auto it = functions.find( pName );
+
+		if ( it != functions.end() )
+		{
+			result = it->second;
+		}
+
+		return result;
+	}
+
+	PFN_vkVoidFunction VKAPI_CALL vkGetPhysicalDeviceProcAddr(
+		VkInstance instance,
+		const char* pName )
+	{
+		PFN_vkVoidFunction result{ nullptr };
+		static std::map< std::string, PFN_vkVoidFunction > functions
+		{
+			{ "vkGetDeviceProcAddr", PFN_vkVoidFunction( vkGetDeviceProcAddr ) },
+#define VK_LIB_PHYSDEVICE_FUNCTION( v, x )\
 			{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
 #include <ashes/ashes_functions_list.hpp>
 		};
@@ -4629,7 +4657,7 @@ extern "C"
 	{
 		if ( ashes::test::getLibrary().init( ASHPLUGIN_ICD ) == VK_SUCCESS )
 		{
-			return ashes::test::vkGetInstanceProcAddr( instance, name );
+			return ashes::test::vkGetPhysicalDeviceProcAddr( instance, name );
 		}
 
 		return nullptr;

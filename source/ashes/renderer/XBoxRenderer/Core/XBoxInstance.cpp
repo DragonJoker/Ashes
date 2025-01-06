@@ -52,10 +52,11 @@ namespace ashes::xbox
 		{
 			IDXGIFactory * result{};
 
-			if ( CreateDXGIFactory( __uuidof( IDXGIFactory )
+			if ( CreateDXGIFactory2( 0u
+				, __uuidof( IDXGIFactory2 )
 				, reinterpret_cast< void ** >( &result ) ) != S_OK )
 			{
-				throw ashes::BaseException{ "Can't create Factory object" };
+				throw ashes::BaseException{ "Can't create DXGI Factory object" };
 			}
 
 			return result;

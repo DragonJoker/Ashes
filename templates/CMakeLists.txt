@@ -6,4 +6,6 @@ set( TARGET_INCLUDE_DIRS
 	${Vulkan_INCLUDE_DIR}
 )
 
-add_subdirectory( GLFW )
+if ( NOT ASHES_BUILD_UWP )
+	add_subdirectory( GLFW )
+endif ()

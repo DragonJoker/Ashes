@@ -181,7 +181,8 @@ set( ${PROJECT_NAME}_FOLDER_SRC_FILES
 	Core/D3D11Instance.cpp
 	Core/D3D11Layer.cpp
 	Core/D3D11PhysicalDevice.cpp
-	Core/D3D11Surface.cpp
+	Core/D3D11Win32Surface.cpp
+	Core/D3D11UWPSurface.cpp
 	Core/D3D11SwapChain.cpp
 )
 set( ${PROJECT_NAME}_FOLDER_HDR_FILES

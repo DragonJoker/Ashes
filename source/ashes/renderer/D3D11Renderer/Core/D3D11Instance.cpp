@@ -52,8 +52,14 @@ namespace ashes::d3d11
 		{
 			IDXGIFactory * result{};
 
+#if Ashes_UWP
+			if ( CreateDXGIFactory2( 0u
+				, __uuidof( IDXGIFactory2 )
+				, reinterpret_cast< void ** >( &result ) ) != S_OK )
+#else
 			if ( CreateDXGIFactory( __uuidof( IDXGIFactory )
 				, reinterpret_cast< void ** >( &result ) ) != S_OK )
+#endif
 			{
 				throw ashes::BaseException{ "Can't create Factory object" };
 			}

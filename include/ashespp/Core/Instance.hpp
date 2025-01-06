@@ -210,8 +210,10 @@ namespace ashes
 		/**@}*/
 
 	private:
+		friend class PhysicalDevice;
+
 		void doInitInstance();
-		PFN_vkVoidFunction getInstanceProcAddr( char const * const name );
+		PFN_vkVoidFunction getInstanceProcAddr( char const * const name )const;
 
 	private:
 		PFN_vkGetInstanceProcAddr m_getInstanceProcAddr;

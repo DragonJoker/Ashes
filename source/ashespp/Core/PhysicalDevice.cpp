@@ -8,6 +8,8 @@ See LICENSE file in root folder.
 
 #include <algorithm>
 
+#pragma warning( disable: 4191 ) // warning C4191: 'reinterpret_cast': unsafe conversion from 'PFN_vkVoidFunction' to ...
+
 namespace ashes
 {
 	PhysicalDevice::PhysicalDevice( Instance const & instance
@@ -15,6 +17,11 @@ namespace ashes
 		: m_instance{ instance }
 		, m_gpu{ gpu }
 	{
+#define VK_LIB_PHYSDEVICE_FUNCTION( ver, fun )\
+		vk##fun = reinterpret_cast< PFN_vk##fun >( m_instance.getInstanceProcAddr( "vk"#fun ) );
+#define VK_LIB_PHYSDEVICE_FUNCTION_EXT( ver, ext, fun )\
+		vk##fun = reinterpret_cast< PFN_vk##fun >( m_instance.getInstanceProcAddr( "vk"#fun ) );
+#include <ashes/ashes_functions_list.hpp>
 	}
 
 	VkLayerPropertiesArray PhysicalDevice::enumerateLayerProperties()const
@@ -25,14 +32,14 @@ namespace ashes
 		do
 		{
 			uint32_t layersCount = 0u;
-			res = m_instance.vkEnumerateDeviceLayerProperties( m_gpu
+			res = vkEnumerateDeviceLayerProperties( m_gpu
 				, &layersCount
 				, nullptr );
 
 			if ( layersCount )
 			{
 				result.resize( layersCount );
-				res = m_instance.vkEnumerateDeviceLayerProperties( m_gpu
+				res = vkEnumerateDeviceLayerProperties( m_gpu
 					, &layersCount
 					, result.data() );
 			}
@@ -51,7 +58,7 @@ namespace ashes
 		do
 		{
 			uint32_t extensionsCount;
-			res = m_instance.vkEnumerateDeviceExtensionProperties( m_gpu
+			res = vkEnumerateDeviceExtensionProperties( m_gpu
 				, layerName.empty() ? nullptr : layerName.c_str()
 				, &extensionsCount
 				, nullptr );
@@ -59,7 +66,7 @@ namespace ashes
 			if ( extensionsCount )
 			{
 				result.resize( extensionsCount );
-				res = m_instance.vkEnumerateDeviceExtensionProperties( m_gpu
+				res = vkEnumerateDeviceExtensionProperties( m_gpu
 					, layerName.empty() ? nullptr : layerName.c_str()
 					, &extensionsCount
 					, result.data() );
@@ -74,47 +81,47 @@ namespace ashes
 	VkPhysicalDeviceProperties PhysicalDevice::getProperties()const
 	{
 		VkPhysicalDeviceProperties properties;
-		m_instance.vkGetPhysicalDeviceProperties( m_gpu, &properties );
+		vkGetPhysicalDeviceProperties( m_gpu, &properties );
 		return properties;
 	}
 
 	void PhysicalDevice::getProperties( VkPhysicalDeviceProperties2 & properties )const
 	{
-		m_instance.vkGetPhysicalDeviceProperties2( m_gpu, &properties );
+		vkGetPhysicalDeviceProperties2( m_gpu, &properties );
 	}
 
 	VkPhysicalDeviceMemoryProperties PhysicalDevice::getMemoryProperties()const
 	{
 		VkPhysicalDeviceMemoryProperties memoryProperties;
-		m_instance.vkGetPhysicalDeviceMemoryProperties( m_gpu, &memoryProperties );
+		vkGetPhysicalDeviceMemoryProperties( m_gpu, &memoryProperties );
 		return memoryProperties;
 	}
 
 	void PhysicalDevice::getMemoryProperties( VkPhysicalDeviceMemoryProperties2 & properties )const
 	{
-		m_instance.vkGetPhysicalDeviceMemoryProperties2( m_gpu, &properties );
+		vkGetPhysicalDeviceMemoryProperties2( m_gpu, &properties );
 	}
 
 	VkPhysicalDeviceFeatures PhysicalDevice::getFeatures()const
 	{
 		VkPhysicalDeviceFeatures features;
-		m_instance.vkGetPhysicalDeviceFeatures( m_gpu, &features );
+		vkGetPhysicalDeviceFeatures( m_gpu, &features );
 		return features;
 	}
 
 	void PhysicalDevice::getFeatures( VkPhysicalDeviceFeatures2 & features )const
 	{
-		m_instance.vkGetPhysicalDeviceFeatures2( m_gpu, &features );
+		vkGetPhysicalDeviceFeatures2( m_gpu, &features );
 	}
 
 	VkQueueFamilyPropertiesArray PhysicalDevice::getQueueFamilyProperties()const
 	{
 		uint32_t queueCount{ 0 };
-		m_instance.vkGetPhysicalDeviceQueueFamilyProperties( m_gpu, &queueCount, nullptr );
+		vkGetPhysicalDeviceQueueFamilyProperties( m_gpu, &queueCount, nullptr );
 		assert( queueCount >= 1 );
 
 		std::vector< VkQueueFamilyProperties > queueProperties( queueCount );
-		m_instance.vkGetPhysicalDeviceQueueFamilyProperties( m_gpu, &queueCount, queueProperties.data() );
+		vkGetPhysicalDeviceQueueFamilyProperties( m_gpu, &queueCount, queueProperties.data() );
 		assert( queueCount >= 1 );
 
 		return queueProperties;
@@ -123,7 +130,7 @@ namespace ashes
 	VkFormatProperties PhysicalDevice::getFormatProperties( VkFormat fmt )const
 	{
 		VkFormatProperties props;
-		m_instance.vkGetPhysicalDeviceFormatProperties( m_gpu, fmt, &props );
+		vkGetPhysicalDeviceFormatProperties( m_gpu, fmt, &props );
 		return props;
 	}
 
@@ -132,7 +139,7 @@ namespace ashes
 	{
 		VkFormatProperties3KHR result{ VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_3_KHR, nullptr, {}, {}, {} };
 		VkFormatProperties2KHR props{ VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2_KHR, &result, {} };
-		m_instance.vkGetPhysicalDeviceFormatProperties2KHR( m_gpu
+		vkGetPhysicalDeviceFormatProperties2KHR( m_gpu
 			, fmt
 			, &props );
 		return result;
@@ -146,7 +153,7 @@ namespace ashes
 		, VkImageCreateFlags flags
 		, VkImageFormatProperties & imageProperties )const
 	{
-		return m_instance.vkGetPhysicalDeviceImageFormatProperties( m_gpu
+		return vkGetPhysicalDeviceImageFormatProperties( m_gpu
 			, format
 			, type
 			, tiling

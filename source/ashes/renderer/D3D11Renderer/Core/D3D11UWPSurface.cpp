@@ -2,20 +2,20 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#include "Core/XBoxSurface.hpp"
+#if defined( Ashes_UWP )
 
-#include "Core/XBoxDisplayMode.hpp"
-#include "Core/XBoxPhysicalDevice.hpp"
-#include "Core/XBoxInstance.hpp"
+#include "Core/D3D11Surface.hpp"
 
-#include "ashesxbox_api.hpp"
+#include "Core/D3D11DisplayMode.hpp"
+#include "Core/D3D11PhysicalDevice.hpp"
+#include "Core/D3D11Instance.hpp"
 
-#include <winrt/windows.graphics.display.h>
+#include "ashesd3d11_api.hpp"
+
+#include <winrt/Windows.Graphics.Display.h>
 #include <winrt/windows.ui.core.h>
-#include <winrt/windows.ui.h>
-#include <windows.ui.h>
 
-namespace ashes::xbox
+namespace ashes::d3d11
 {
 	namespace surface
 	{
@@ -28,7 +28,7 @@ namespace ashes::xbox
 			virtual HRESULT STDMETHODCALLTYPE put_MessageHandled( unsigned char value ) = 0;
 		};
 
-		static HWND getWindowHwnd( winrt::Windows::UI::Core::CoreWindow const & window )
+		HWND getWindowHwnd( winrt::Windows::UI::Core::CoreWindow const & window )
 		{
 			HWND result{};
 			winrt::com_ptr< ICoreWindowInterop > interop{};
@@ -51,12 +51,12 @@ namespace ashes::xbox
 			return result;
 		}();
 
-		static std::vector< VkFormat > const & getFormatsList()
+		std::vector< VkFormat > const & getFormatsList()
 		{
 			return FormatsList;
 		}
 
-		static void updateSurfaceCapabilities( std::vector< DXGI_MODE_DESC > const & displayModeList
+		void updateSurfaceCapabilities( std::vector< DXGI_MODE_DESC > const & displayModeList
 			, RECT const & rect
 			, VkSurfaceCapabilitiesKHR & capabilities
 			, std::map< VkFormat, std::vector< DXGI_MODE_DESC > > & descs
@@ -193,7 +193,7 @@ namespace ashes::xbox
 			}
 		}
 
-		static std::vector< VkSurfaceFormatKHR > getSurfaceFormats( std::vector< DXGI_MODE_DESC > const & displayModeList )
+		std::vector< VkSurfaceFormatKHR > getSurfaceFormats( std::vector< DXGI_MODE_DESC > const & displayModeList )
 		{
 			std::vector< VkSurfaceFormatKHR > result;
 			std::set< VkFormat > uniqueFormats;
@@ -312,8 +312,8 @@ namespace ashes::xbox
 				if ( isWin32() )
 				{
 					RECT rect{};
-
-					if ( auto window = winrt::Windows::UI::Core::CoreWindow::GetForCurrentThread() )
+					winrt::Windows::UI::Core::CoreWindow window = winrt::Windows::UI::Core::CoreWindow::GetForCurrentThread();
+					if ( window )
 					{
 						auto bounds = window.Bounds();
 						auto displayInfo = winrt::Windows::Graphics::Display::DisplayInformation::GetForCurrentView();
@@ -326,7 +326,6 @@ namespace ashes::xbox
 						rect.right = width;
 						rect.bottom = height;
 					}
-
 					surface::updateSurfaceCapabilities( m_displayModes
 						, rect
 						, m_surfaceCapabilities
@@ -388,3 +387,5 @@ namespace ashes::xbox
 		return get( m_displayCreateInfo.displayMode )->getDesc();
 	}
 }
+
+#endif
