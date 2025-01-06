@@ -71,11 +71,6 @@ namespace ashes::xbox
 		VkResult getSparseImageFormatProperties2( VkPhysicalDeviceSparseImageFormatInfo2KHR const & formatInfo
 			, std::vector< VkSparseImageFormatProperties2KHR > & sparseImageFormatProperties )const;
 #endif
-#ifdef VK_KHR_display
-		std::vector< VkDisplayPropertiesKHR > const & getDisplayProperties()const;
-		std::vector< VkDisplayPlanePropertiesKHR > getDisplayPlaneProperties()const;
-		std::vector< VkDisplayKHR > getDisplayPlaneSupportedDisplays( uint32_t planeIndex )const;
-#endif
 
 		inline IDXGIAdapter * getAdapter()const
 		{
@@ -130,10 +125,6 @@ namespace ashes::xbox
 		void doInitialiseQueueProperties();
 		void doInitialiseFormatProperties();
 		void doInitialisePortability();
-#ifdef VK_KHR_display
-		void doInitialiseDisplayProperties();
-		void doInitialiseDisplayPlaneProperties();
-#endif
 
 	private:
 		VkInstance m_instance;
@@ -157,10 +148,6 @@ namespace ashes::xbox
 		std::vector< VkQueueFamilyProperties2KHR > m_queueProperties2{};
 		mutable std::map< VkFormat, VkFormatProperties2KHR > m_formatProperties2;
 #	endif
-#endif
-#ifdef VK_KHR_display
-		std::vector< VkDisplayPropertiesKHR > m_displays;
-		std::vector< VkDisplayPlanePropertiesKHR > m_displayPlanes;
 #endif
 		AGSContext * m_AGSContext{ nullptr };
 	};

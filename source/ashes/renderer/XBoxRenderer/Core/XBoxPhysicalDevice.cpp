@@ -191,11 +191,6 @@ namespace ashes::xbox
 			NvAPI_Unload();
 		}
 #endif
-
-		for ( auto & display : m_displays )
-		{
-			deallocate( display.display, nullptr );
-		}
 	}
 
 	uint32_t PhysicalDevice::getMemoryTypeBits( VkMemoryPropertyFlags properties )const
@@ -516,28 +511,6 @@ namespace ashes::xbox
 	}
 
 #endif
-#ifdef VK_KHR_display
-
-	std::vector< VkDisplayPropertiesKHR > const & PhysicalDevice::getDisplayProperties()const
-	{
-		return m_displays;
-	}
-
-	std::vector< VkDisplayPlanePropertiesKHR > PhysicalDevice::getDisplayPlaneProperties()const
-	{
-		return m_displayPlanes;
-	}
-
-	std::vector< VkDisplayKHR > PhysicalDevice::getDisplayPlaneSupportedDisplays( uint32_t planeIndex )const
-	{
-		std::vector< VkDisplayKHR > result
-		{
-			m_displayPlanes[planeIndex].currentDisplay
-		};
-		return result;
-	}
-
-#endif
 
 	void PhysicalDevice::doInitialise()
 	{
@@ -545,12 +518,7 @@ namespace ashes::xbox
 		doInitialiseFeatures();
 		doInitialiseQueueProperties();
 		doInitialiseFormatProperties();
-#ifdef VK_KHR_display
 
-		doInitialiseDisplayProperties();
-		doInitialiseDisplayPlaneProperties();
-
-#endif
 #if VK_VERSION_1_1
 
 #	if VK_KHR_portability_subset
@@ -963,78 +931,4 @@ namespace ashes::xbox
 
 #	endif
 	}
-
-#ifdef VK_KHR_display
-
-	struct ExtentFormat
-	{
-		VkExtent2D extent{};
-		VkFormat format{};
-	};
-
-	size_t makeKey( VkFormat format
-		, VkExtent2D const & extent )
-	{
-		auto result = std::hash< VkFormat >{}( format );
-		ashes::hashCombine( result, extent.width );
-		ashes::hashCombine( result, extent.height );
-		return result;
-	}
-
-	struct ExtentFormatComp
-	{
-		bool operator()( ExtentFormat const & lhs, ExtentFormat const & rhs )const
-		{
-			return makeKey( lhs.format, lhs.extent ) < makeKey( rhs.format, rhs.extent );
-		}
-	};
-
-	void PhysicalDevice::doInitialiseDisplayProperties()
-	{
-		auto output = getOutput();
-
-		if ( output )
-		{
-			DXGI_OUTPUT_DESC desc{};
-			output->GetDesc( &desc );
-			std::vector< DXGI_MODE_DESC > displayModes = getDisplayModesList( m_instance, output );
-			std::map< ExtentFormat, std::vector< DXGI_MODE_DESC >, ExtentFormatComp > grouped;
-
-			for ( auto const & displayMode : displayModes )
-			{
-				ExtentFormat key{ VkExtent2D{ displayMode.Width, displayMode.Height }
-					, getVkFormat( displayMode.Format ) };
-				auto & modes = grouped.try_emplace( key ).first->second;
-				modes.emplace_back( displayMode );
-			}
-
-			for ( auto & [extent, descs] : grouped )
-			{
-				VkDisplayKHR display{};
-				allocate( display
-					, nullptr
-					, get( this )
-					, extent.extent
-					, extent.format
-					, descs );
-				m_displays.push_back( { display
-					, "coin"
-					, extent.extent
-					, extent.extent
-					, VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR
-					, VK_FALSE
-					, VK_TRUE } );
-			}
-		}
-	}
-
-	void PhysicalDevice::doInitialiseDisplayPlaneProperties()
-	{
-		for ( auto & display : m_displays )
-		{
-			m_displayPlanes.push_back( { display.display, 0u } );
-		}
-	}
-
-#endif
 }
