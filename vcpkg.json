@@ -29,6 +29,14 @@
         "spirv-cross"
       ]
     },
+    "xbox": {
+      "description": "Compiles XBox renderer.",
+      "platform": "uwp",
+      "dependencies": [
+        "directxsdk",
+        "spirv-cross"
+      ]
+    },
     "samples": {
       "description": "Sample applications.",
       "dependencies": [

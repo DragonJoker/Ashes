@@ -16,6 +16,7 @@
                 "ASHES_BUILD_RENDERER_PLUGINS": true,
                 "ASHES_BUILD_RENDERER_VKN": true,
                 "ASHES_BUILD_RENDERER_OGL": true,
+                "ASHES_BUILD_RENDERER_XBOX": false,
                 "PROJECTS_OUTPUT_DIR": "${sourceDir}",
                 "PROJECTS_USE_PRECOMPILED_HEADERS": true
             }
@@ -34,6 +35,27 @@
             "cacheVariables": {
                 "VCPKG_MANIFEST_FEATURES": "vulkan;opengl;direct3d11",
                 "ASHES_BUILD_RENDERER_D3D11": true
+            }
+        },
+        {
+            "name": "default-msvc-uwp",
+            "displayName": "Default UWP Visual Studio Config",
+            "description": "Default build configuration using Visual Studio, for UWP",
+            "inherits": "default-base",
+            "generator": "Visual Studio 17 2022",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "cacheVariables": {
+                "CMAKE_SYSTEM_NAME": "WindowsStore",
+                "CMAKE_SYSTEM_VERSION": "10.0",
+                "VCPKG_MANIFEST_FEATURES": "direct3d11;xbox",
+                "ASHES_BUILD_RENDERER_D3D11": true,
+                "ASHES_BUILD_RENDERER_XBOX": true,
+                "ASHES_BUILD_RENDERER_VKN": false,
+                "ASHES_BUILD_RENDERER_OGL": false
             }
         },
         {
@@ -72,6 +94,7 @@
                 "ASHES_BUILD_RENDERER_PLUGINS": true,
                 "ASHES_BUILD_RENDERER_VKN": true,
                 "ASHES_BUILD_RENDERER_OGL": true,
+                "ASHES_BUILD_RENDERER_XBOX": false,
                 "ASHES_BUILD_RENDERER_TEST": true,
                 "ASHES_BUILD_SAMPLES": true,
                 "ASHES_BUILD_TEMPLATES": true,
@@ -94,6 +117,30 @@
             "cacheVariables": {
                 "VCPKG_MANIFEST_FEATURES": "vulkan;opengl;tests;samples;templates;util;direct3d11",
                 "ASHES_BUILD_RENDERER_D3D11": true
+            }
+        },
+        {
+            "name": "dev-msvc-uwp",
+            "displayName": "Developer UWP Visual Studio Config",
+            "description": "Developer build configuration using Visual Studio, for UWP",
+            "inherits": "dev-base",
+            "generator": "Visual Studio 17 2022",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "cacheVariables": {
+                "CMAKE_SYSTEM_NAME": "WindowsStore",
+                "CMAKE_SYSTEM_VERSION": "10.0",
+                "VCPKG_MANIFEST_FEATURES": "util;direct3d11;xbox",
+                "ASHES_BUILD_RENDERER_D3D11": true,
+                "ASHES_BUILD_RENDERER_XBOX": true,
+                "ASHES_BUILD_RENDERER_VKN": false,
+                "ASHES_BUILD_RENDERER_OGL": false,
+                "ASHES_BUILD_SAMPLES": false,
+                "ASHES_BUILD_TEMPLATES": false,
+                "ASHES_BUILD_TESTS": false
             }
         },
         {
@@ -132,6 +179,7 @@
                 "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/external/vcpkg/scripts/buildsystems/vcpkg.cmake",
                 "ASHES_BUILD_RENDERER_VKN": true,
                 "ASHES_BUILD_RENDERER_OGL": true,
+                "ASHES_BUILD_RENDERER_XBOX": false,
                 "ASHES_BUILD_RENDERER_TEST": true,
                 "ASHES_BUILD_SAMPLES": true,
                 "ASHES_BUILD_TEMPLATES": true,
@@ -154,6 +202,30 @@
             "cacheVariables": {
                 "VCPKG_MANIFEST_FEATURES": "vulkan;opengl;tests;samples;templates;util;direct3d11",
                 "ASHES_BUILD_RENDERER_D3D11": true
+            }
+        },
+        {
+            "name": "dev-vcpkg-msvc-uwp",
+            "inherits": "dev-vcpkg-base",
+            "displayName": "Developer UWP Visual Studio Config, using vcpkg",
+            "description": "Developer build configuration using Visual Studio, using vcpkg, for UWP",
+            "generator": "Visual Studio 17 2022",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "cacheVariables": {
+                "CMAKE_SYSTEM_NAME": "WindowsStore",
+                "CMAKE_SYSTEM_VERSION": "10.0",
+                "VCPKG_MANIFEST_FEATURES": "util;direct3d11;xbox",
+                "ASHES_BUILD_RENDERER_D3D11": true,
+                "ASHES_BUILD_RENDERER_XBOX": true,
+                "ASHES_BUILD_RENDERER_VKN": false,
+                "ASHES_BUILD_RENDERER_OGL": false,
+                "ASHES_BUILD_SAMPLES": false,
+                "ASHES_BUILD_TEMPLATES": false,
+                "ASHES_BUILD_TESTS": false
             }
         },
         {

@@ -1,0 +1,10 @@
+/*
+This file belongs to Ashes.
+See LICENSE file in root folder
+*/
+#pragma once
+
+namespace ashes::xbox
+{
+	D3D11_CULL_MODE getCullMode( VkCullModeFlags const & flags );
+}

@@ -1,7 +1,8 @@
 {
-   "file_format_version": "1.0.0",
+   "file_format_version": "1.0.1",
    "ICD": {
       "library_path": "${PATH}${NAME}.${EXT}",
-      "api_version": "1.0.0"
+      "api_version": "1.0.0",
+      "is_portability_driver" : true
    }
 }

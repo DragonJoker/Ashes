@@ -1,0 +1,59 @@
+#include "XBoxRendererPrerequisites.hpp"
+
+namespace ashes::xbox
+{
+	D3D11_BLEND getBlendFactor( VkBlendFactor const & value )
+	{
+		switch ( value )
+		{
+		case VK_BLEND_FACTOR_ZERO:
+			return D3D11_BLEND_ZERO;
+
+		case VK_BLEND_FACTOR_ONE:
+			return D3D11_BLEND_ONE;
+
+		case VK_BLEND_FACTOR_SRC_COLOR:
+			return D3D11_BLEND_SRC_COLOR;
+
+		case VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR:
+			return D3D11_BLEND_INV_SRC_COLOR;
+
+		case VK_BLEND_FACTOR_DST_COLOR:
+			return D3D11_BLEND_DEST_COLOR;
+
+		case VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR:
+			return D3D11_BLEND_INV_DEST_COLOR;
+
+		case VK_BLEND_FACTOR_SRC_ALPHA:
+			return D3D11_BLEND_SRC_ALPHA;
+
+		case VK_BLEND_FACTOR_SRC_ALPHA_SATURATE:
+			return D3D11_BLEND_SRC_ALPHA_SAT;
+
+		case VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA:
+			return D3D11_BLEND_INV_SRC_ALPHA;
+
+		case VK_BLEND_FACTOR_DST_ALPHA:
+			return D3D11_BLEND_DEST_ALPHA;
+
+		case VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA:
+			return D3D11_BLEND_INV_DEST_ALPHA;
+
+		case VK_BLEND_FACTOR_SRC1_COLOR:
+			return D3D11_BLEND_SRC1_COLOR;
+
+		case VK_BLEND_FACTOR_ONE_MINUS_SRC1_COLOR:
+			return D3D11_BLEND_INV_SRC1_COLOR;
+
+		case VK_BLEND_FACTOR_SRC1_ALPHA:
+			return D3D11_BLEND_SRC1_ALPHA;
+
+		case VK_BLEND_FACTOR_ONE_MINUS_SRC1_ALPHA:
+			return D3D11_BLEND_INV_SRC1_ALPHA;
+
+		default:
+			assert( false && "Unsupported blend factor" );
+			return D3D11_BLEND_ONE;
+		}
+	}
+}
