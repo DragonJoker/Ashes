@@ -9,7 +9,7 @@ See LICENSE file in root folder.
 
 #include <cmath>
 
-#pragma warning( disable: 4191 )
+#pragma warning( disable: 4191 ) // warning C4191: 'reinterpret_cast': unsafe conversion from 'PFN_vkVoidFunction' to ...
 #pragma clang diagnostic ignored "-Wimplicit-float-conversion"
 
 namespace ashes
@@ -269,7 +269,7 @@ namespace ashes
 #include <ashes/ashes_functions_list.hpp>
 	}
 
-	PFN_vkVoidFunction Instance::getInstanceProcAddr( char const * const name )
+	PFN_vkVoidFunction Instance::getInstanceProcAddr( char const * const name )const
 	{
 		auto result = m_getInstanceProcAddr( m_instance, name );
 

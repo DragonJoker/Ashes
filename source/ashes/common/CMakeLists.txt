@@ -16,7 +16,12 @@ set( ${PROJECT_NAME}_NVS_FILES
 	ashes_common.natvis
 )
 
-if ( WIN32 )
+if ( ASHES_BUILD_UWP )
+	set( ${PROJECT_NAME}_PLATFORM_SRC_FILES
+		UWP/DynamicLibrary.cpp
+		UWP/FileUtils.cpp
+	)
+elseif ( WIN32 )
 	set( ${PROJECT_NAME}_PLATFORM_SRC_FILES
 		Win32/DynamicLibrary.cpp
 		Win32/FileUtils.cpp
@@ -91,6 +96,12 @@ target_compile_definitions( ${PROJECT_NAME}
 	PUBLIC
 		${TARGET_COMPILE_DEFINITIONS}
 )
+if ( ASHES_BUILD_UWP )
+	target_compile_definitions( ${PROJECT_NAME}
+		PUBLIC
+			Ashes_UWP
+	)
+endif ()
 target_compile_options( ${PROJECT_NAME}
 	PUBLIC
 		${TARGET_COMPILE_OPTIONS}

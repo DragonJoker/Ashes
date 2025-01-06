@@ -113,6 +113,9 @@ namespace ashes
 			return m_gpu;
 		}
 
+#define VK_LIB_PHYSDEVICE_FUNCTION( ver, fun ) PFN_vk##fun vk##fun{ nullptr };
+#	include <ashes/ashes_functions_list.hpp>
+
 	private:
 		Instance const & m_instance;
 		VkPhysicalDevice m_gpu{};

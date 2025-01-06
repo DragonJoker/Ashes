@@ -141,16 +141,21 @@ extern "C"
 		PFN_vk##x x;
 #define VK_LIB_INSTANCE_FUNCTION( v, x )\
 		PFN_vk##x x;
+#define VK_LIB_PHYSDEVICE_FUNCTION( v, x )\
+		PFN_vk##x x;
 #define VK_LIB_DEVICE_FUNCTION( v, x )\
 		PFN_vk##x x;
 #define VK_LIB_GLOBAL_FUNCTION_FALLBACK( x )\
 		PFN_vkVoidFunction x##_unav;
 #define VK_LIB_INSTANCE_FUNCTION_FALLBACK( x )\
 		PFN_vkVoidFunction x##_unav;
+#define VK_LIB_PHYSDEVICE_FUNCTION_FALLBACK( x )\
+		PFN_vkVoidFunction x##_unav;
 #define VK_LIB_DEVICE_FUNCTION_FALLBACK( x )\
 		PFN_vkVoidFunction x##_unav;
 #define VK_LIB_GLOBAL_FUNCTION_EXT( v, n, x )
 #define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )
+#define VK_LIB_PHYSDEVICE_FUNCTION_EXT( v, n, x )
 #define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )
 #include "ashes_functions_list.hpp"
 	} AshPluginStaticFunction;

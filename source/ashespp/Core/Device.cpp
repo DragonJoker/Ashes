@@ -26,7 +26,7 @@ See LICENSE file in root folder.
 
 #include <ashes/common/Exception.hpp>
 
-#pragma warning( disable: 4191 )
+#pragma warning( disable: 4191 ) // warning C4191: 'reinterpret_cast': unsafe conversion from 'PFN_vkVoidFunction' to ...
 
 namespace ashes
 {
@@ -45,7 +45,7 @@ namespace ashes
 	{
 		m_timestampPeriod = m_physicalDevice.getProperties().limits.timestampPeriod;
 		DEBUG_DUMP( m_createInfos );
-		auto res = m_instance.vkCreateDevice( m_physicalDevice
+		auto res = m_physicalDevice.vkCreateDevice( m_physicalDevice
 			, &static_cast< VkDeviceCreateInfo const & >( m_createInfos )
 			, nullptr
 			, &m_internal );
