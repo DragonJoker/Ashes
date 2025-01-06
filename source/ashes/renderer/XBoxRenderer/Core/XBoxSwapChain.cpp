@@ -86,24 +86,6 @@ namespace ashes::xbox
 				throw ashes::BaseException{ "Could not create the swapchain" };
 			}
 
-			if ( get( m_createInfo.surface )->isDisplay() )
-			{
-				hr = m_swapChain->SetFullscreenState( TRUE, get( get( device )->getPhysicalDevice() )->getOutput() );
-
-				if ( !checkError( m_device, hr, "SetFullscreenState" ) )
-				{
-					throw ashes::BaseException{ "Could not set the swapchain to fullscreen mode" };
-				}
-
-				hr = m_swapChain->ResizeTarget( &m_displayMode );
-
-				if ( !checkError( m_device, hr, "ResizeTarget" ) )
-				{
-					m_swapChain->SetFullscreenState( FALSE, get( get( device )->getPhysicalDevice() )->getOutput() );
-					throw ashes::BaseException{ "Could not resize the swapchain" };
-				}
-			}
-
 			dxDebugName( m_swapChain, SwapChain );
 			ID3D11Texture2D * rtTex = nullptr;
 			hr = m_swapChain->GetBuffer( 0
@@ -234,11 +216,6 @@ namespace ashes::xbox
 
 		// Discard the back buffer contents after presenting.
 		result.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-
-		// Set the advanced flags, if surface is a display surface.
-		result.Flags = UINT( get( m_createInfo.surface )->isDisplay()
-			? DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH
-			: 0 );
 
 		m_presentDesc = result;
 	}
