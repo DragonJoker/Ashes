@@ -4456,10 +4456,13 @@ namespace ashes::d3d11
 				description.functions.x = vk##x;
 #define VK_LIB_INSTANCE_FUNCTION( v, x )\
 				description.functions.x = vk##x;
+#define VK_LIB_PHYSDEVICE_FUNCTION( v, x )\
+				description.functions.x = vk##x;
 #define VK_LIB_DEVICE_FUNCTION( v, x )\
 				description.functions.x = vk##x;
 #define VK_LIB_GLOBAL_FUNCTION_EXT( v, n, x )
 #define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )
+#define VK_LIB_PHYSDEVICE_FUNCTION_EXT( v, n, x )
 #define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )
 #include <ashes/ashes_functions_list.hpp>
 				result = VK_SUCCESS;
@@ -4513,6 +4516,8 @@ namespace ashes::d3d11
 	}
 
 	using InstanceFunctions = std::map< std::string, PFN_vkVoidFunction, std::less<> >;
+	using PhysicalDeviceFunctions = std::map< std::string, PFN_vkVoidFunction, std::less<> >;
+	using DeviceFunctions = std::map< std::string, PFN_vkVoidFunction, std::less<> >;
 
 #pragma warning( push )
 #pragma warning( disable: 4191 )
@@ -4536,6 +4541,10 @@ namespace ashes::d3d11
 					{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
 #define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )\
 					{ "vk"#x, checkVersionExt( instance, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#define VK_LIB_PHYSDEVICE_FUNCTION( v, x )\
+					{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#define VK_LIB_PHYSDEVICE_FUNCTION_EXT( v, n, x )\
+					{ "vk"#x, checkVersionExt( instance, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
 #define VK_LIB_DEVICE_FUNCTION( v, x )\
 					{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
 #define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )\
@@ -4549,12 +4558,12 @@ namespace ashes::d3d11
 				{
 #define VK_LIB_GLOBAL_FUNCTION( v, x )\
 					{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
-#define VK_LIB_INSTANCE_FUNCTION( v, x )\
-					{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
-#define VK_LIB_DEVICE_FUNCTION( v, x )\
-					{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
+#define VK_LIB_INSTANCE_FUNCTION( v, x )
+#define VK_LIB_PHYSDEVICE_FUNCTION( v, x )
+#define VK_LIB_DEVICE_FUNCTION( v, x )
 #define VK_LIB_GLOBAL_FUNCTION_EXT( v, n, x )
 #define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )
+#define VK_LIB_PHYSDEVICE_FUNCTION_EXT( v, n, x )
 #define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )
 #include <ashes/ashes_functions_list.hpp>
 				};
@@ -4580,12 +4589,35 @@ namespace ashes::d3d11
 		return result;
 	}
 
+	PFN_vkVoidFunction VKAPI_CALL vkGetPhysicalDeviceProcAddr(
+		VkInstance instance,
+		const char* pName )
+	{
+		PFN_vkVoidFunction result{ nullptr };
+		static PhysicalDeviceFunctions functions
+		{
+#define VK_LIB_PHYSDEVICE_FUNCTION( v, x )\
+			{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#define VK_LIB_PHYSDEVICE_FUNCTION_EXT( v, n, x )\
+			{ "vk"#x, checkVersionExt( instance, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#include <ashes/ashes_functions_list.hpp>
+		};
+
+		if ( auto it = functions.find( pName );
+			it != functions.end() )
+		{
+			result = it->second;
+		}
+
+		return result;
+	}
+
 	PFN_vkVoidFunction VKAPI_CALL vkGetDeviceProcAddr(
 		VkDevice device,
 		const char* pName )
 	{
 		PFN_vkVoidFunction result{ nullptr };
-		static std::map< std::string, PFN_vkVoidFunction, std::less<> > functions
+		static DeviceFunctions functions
 		{
 			{ "vkGetDeviceProcAddr", PFN_vkVoidFunction( vkGetDeviceProcAddr ) },
 #define VK_LIB_DEVICE_FUNCTION( v, x )\
@@ -4630,7 +4662,7 @@ extern "C"
 	{
 		if ( ashes::d3d11::getLibrary().init( ASHPLUGIN_ICD ) == VK_SUCCESS )
 		{
-			return ashes::d3d11::vkGetInstanceProcAddr( instance, name );
+			return ashes::d3d11::vkGetPhysicalDeviceProcAddr( instance, name );
 		}
 
 		return nullptr;

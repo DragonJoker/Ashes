@@ -4456,10 +4456,13 @@ namespace ashes::xbox
 				description.functions.x = vk##x;
 #define VK_LIB_INSTANCE_FUNCTION( v, x )\
 				description.functions.x = vk##x;
+#define VK_LIB_PHYSDEVICE_FUNCTION( v, x )\
+				description.functions.x = vk##x;
 #define VK_LIB_DEVICE_FUNCTION( v, x )\
 				description.functions.x = vk##x;
 #define VK_LIB_GLOBAL_FUNCTION_EXT( v, n, x )
 #define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )
+#define VK_LIB_PHYSDEVICE_FUNCTION_EXT( v, n, x )
 #define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )
 #include <ashes/ashes_functions_list.hpp>
 				result = VK_SUCCESS;
@@ -4536,6 +4539,10 @@ namespace ashes::xbox
 					{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
 #define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )\
 					{ "vk"#x, checkVersionExt( instance, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#define VK_LIB_PHYSDEVICE_FUNCTION( v, x )\
+					{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#define VK_LIB_PHYSDEVICE_FUNCTION_EXT( v, n, x )\
+					{ "vk"#x, checkVersionExt( instance, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
 #define VK_LIB_DEVICE_FUNCTION( v, x )\
 					{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
 #define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )\
@@ -4549,12 +4556,12 @@ namespace ashes::xbox
 				{
 #define VK_LIB_GLOBAL_FUNCTION( v, x )\
 					{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
-#define VK_LIB_INSTANCE_FUNCTION( v, x )\
-					{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
-#define VK_LIB_DEVICE_FUNCTION( v, x )\
-					{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
+#define VK_LIB_INSTANCE_FUNCTION( v, x )
+#define VK_LIB_PHYSDEVICE_FUNCTION( v, x )
+#define VK_LIB_DEVICE_FUNCTION( v, x )
 #define VK_LIB_GLOBAL_FUNCTION_EXT( v, n, x )
 #define VK_LIB_INSTANCE_FUNCTION_EXT( v, n, x )
+#define VK_LIB_PHYSDEVICE_FUNCTION_EXT( v, n, x )
 #define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )
 #include <ashes/ashes_functions_list.hpp>
 				};
@@ -4570,6 +4577,29 @@ namespace ashes::xbox
 	{
 		PFN_vkVoidFunction result{ nullptr };
 		auto & functions = getFunctions( instance );
+
+		if ( auto it = functions.find( pName );
+			it != functions.end() )
+		{
+			result = it->second;
+		}
+
+		return result;
+	}
+
+	PFN_vkVoidFunction VKAPI_CALL vkGetPhysicalDeviceProcAddr(
+		VkInstance instance,
+		const char* pName )
+	{
+		PFN_vkVoidFunction result{ nullptr };
+		static std::map< std::string, PFN_vkVoidFunction, std::less<> > functions
+		{
+#define VK_LIB_PHYSDEVICE_FUNCTION( v, x )\
+			{ "vk"#x, checkVersion( instance, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#define VK_LIB_PHYSDEVICE_FUNCTION_EXT( v, n, x )\
+			{ "vk"#x, checkVersionExt( instance, v, n ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
+#include <ashes/ashes_functions_list.hpp>
+		};
 
 		if ( auto it = functions.find( pName );
 			it != functions.end() )
@@ -4630,7 +4660,7 @@ extern "C"
 	{
 		if ( ashes::xbox::getLibrary().init( ASHPLUGIN_ICD ) == VK_SUCCESS )
 		{
-			return ashes::xbox::vkGetInstanceProcAddr( instance, name );
+			return ashes::xbox::vkGetPhysicalDeviceProcAddr( instance, name );
 		}
 
 		return nullptr;

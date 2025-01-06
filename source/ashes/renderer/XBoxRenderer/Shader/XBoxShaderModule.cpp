@@ -20,7 +20,11 @@ See LICENSE file in root folder.
 #pragma warning( disable: 4365 )
 #pragma warning( disable: 5204 )
 #pragma warning( disable: 5262 )
-#define CreateEvent CreateEventA
+#if defined( _UNICODE )
+#	define CreateEvent CreateEventW
+#else
+#	define CreateEvent CreateEventA
+#endif
 #include <atlbase.h>
 #undef CreateEvent
 

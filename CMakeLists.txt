@@ -46,6 +46,10 @@ endif ()
 set( MAIN_PROJECT_NAME "Ashes" )
 set( BUILD_ASHES 1 )
 
+if ( "${CMAKE_SYSTEM_NAME}" STREQUAL "WindowsStore" )
+	set( ASHES_BUILD_UWP ON )
+endif ()
+
 # Used to look for external modules
 if ( NOT CMAKE_MODULE_PATH )
 	if ( VCPKG_TOOLCHAIN )

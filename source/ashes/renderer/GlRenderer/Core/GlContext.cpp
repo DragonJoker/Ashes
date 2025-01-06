@@ -314,7 +314,14 @@ namespace ashes::gl
 	{
 #pragma warning( push )
 #pragma warning( disable: 4191 )
-#if _WIN32
+#if Ashes_UWP
+#	define GL_LIB_BASE_FUNCTION( fun )\
+		std::stringstream err##fun;\
+		if ( !( getFunction( "gl"#fun, m_gl##fun, err##fun ) ) )\
+		{\
+			throw ashes::BaseException{ std::string{ "Couldn't load base function " } + "gl"#fun + err##fun.str() };\
+		}
+#elif _WIN32
 #	define GL_LIB_BASE_FUNCTION( fun )\
 		m_gl##fun = PFN_gl##fun( &::gl##fun );\
 		if ( !m_gl##fun )\

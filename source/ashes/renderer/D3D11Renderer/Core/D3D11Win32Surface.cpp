@@ -2,6 +2,8 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
+#if !defined( Ashes_UWP )
+
 #include "Core/D3D11Surface.hpp"
 
 #include "Core/D3D11DisplayMode.hpp"
@@ -351,3 +353,5 @@ namespace ashes::d3d11
 		return get( m_displayCreateInfo.displayMode )->getDesc();
 	}
 }
+
+#endif

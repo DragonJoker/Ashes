@@ -10,6 +10,9 @@
 #if defined( CreateEvent )
 #	undef CreateEvent
 #endif
+#if defined( ResetEvent )
+#	undef ResetEvent
+#endif
 
 static PluginLibrary g_library;
 

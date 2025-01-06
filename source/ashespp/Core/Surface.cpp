@@ -33,7 +33,7 @@ namespace ashes
 	bool Surface::getSupport( uint32_t queueFamilyIndex )const
 	{
 		VkBool32 result{};
-		auto res = m_instance.vkGetPhysicalDeviceSurfaceSupportKHR( m_gpu
+		auto res = m_gpu.vkGetPhysicalDeviceSurfaceSupportKHR( m_gpu
 			, queueFamilyIndex
 			, m_internal
 			, &result );
@@ -44,7 +44,7 @@ namespace ashes
 	VkSurfaceCapabilitiesKHR Surface::getCapabilities()const
 	{
 		VkSurfaceCapabilitiesKHR caps{};
-		auto res = m_instance.vkGetPhysicalDeviceSurfaceCapabilitiesKHR( m_gpu
+		auto res = m_gpu.vkGetPhysicalDeviceSurfaceCapabilitiesKHR( m_gpu
 			, m_internal
 			, &caps );
 		checkError( res, "Surface capabilities check" );
@@ -55,7 +55,7 @@ namespace ashes
 	{
 		std::vector < VkPresentModeKHR > result;
 		uint32_t presentModeCount{};
-		auto res = m_instance.vkGetPhysicalDeviceSurfacePresentModesKHR( m_gpu
+		auto res = m_gpu.vkGetPhysicalDeviceSurfacePresentModesKHR( m_gpu
 			, m_internal
 			, &presentModeCount
 			, nullptr );
@@ -64,7 +64,7 @@ namespace ashes
 		if ( presentModeCount )
 		{
 			result.resize( presentModeCount );
-			res = m_instance.vkGetPhysicalDeviceSurfacePresentModesKHR( m_gpu
+			res = m_gpu.vkGetPhysicalDeviceSurfacePresentModesKHR( m_gpu
 				, m_internal
 				, &presentModeCount
 				, result.data() );
@@ -78,7 +78,7 @@ namespace ashes
 	{
 		std::vector< VkSurfaceFormatKHR > result;
 		uint32_t formatCount{ 0u };
-		auto res = m_instance.vkGetPhysicalDeviceSurfaceFormatsKHR( m_gpu
+		auto res = m_gpu.vkGetPhysicalDeviceSurfaceFormatsKHR( m_gpu
 			, m_internal
 			, &formatCount
 			, nullptr );
@@ -87,7 +87,7 @@ namespace ashes
 		if ( formatCount )
 		{
 			result.resize( formatCount );
-			res = m_instance.vkGetPhysicalDeviceSurfaceFormatsKHR( m_gpu
+			res = m_gpu.vkGetPhysicalDeviceSurfaceFormatsKHR( m_gpu
 				, m_internal
 				, &formatCount
 				, result.data() );
