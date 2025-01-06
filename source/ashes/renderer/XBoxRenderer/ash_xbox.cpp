@@ -2258,19 +2258,7 @@ namespace ashes::xbox
 		uint32_t * pPropertyCount,
 		VkDisplayPropertiesKHR * pProperties )
 	{
-		auto props = get( physicalDevice )->getDisplayProperties();
-		*pPropertyCount = uint32_t( props.size() );
-
-		if ( pProperties )
-		{
-			for ( auto & prop : props )
-			{
-				*pProperties = prop;
-				++pProperties;
-			}
-		}
-
-		return VK_SUCCESS;
+		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceDisplayPropertiesKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceDisplayPlanePropertiesKHR(
@@ -2278,19 +2266,7 @@ namespace ashes::xbox
 		uint32_t * pPropertyCount,
 		VkDisplayPlanePropertiesKHR * pProperties )
 	{
-		auto props = get( physicalDevice )->getDisplayPlaneProperties();
-		*pPropertyCount = uint32_t( props.size() );
-
-		if ( pProperties )
-		{
-			for ( auto & prop : props )
-			{
-				*pProperties = prop;
-				++pProperties;
-			}
-		}
-
-		return VK_SUCCESS;
+		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceDisplayPlanePropertiesKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetDisplayPlaneSupportedDisplaysKHR(
@@ -2299,19 +2275,7 @@ namespace ashes::xbox
 		uint32_t * pDisplayCount,
 		VkDisplayKHR * pDisplays )
 	{
-		auto props = get( physicalDevice )->getDisplayPlaneSupportedDisplays( planeIndex );
-		*pDisplayCount = uint32_t( props.size() );
-
-		if ( pDisplays )
-		{
-			for ( auto & prop : props )
-			{
-				*pDisplays = prop;
-				++pDisplays;
-			}
-		}
-
-		return VK_SUCCESS;
+		return reportUnsupported( physicalDevice, "vkGetDisplayPlaneSupportedDisplaysKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetDisplayModePropertiesKHR(
@@ -2320,19 +2284,7 @@ namespace ashes::xbox
 		uint32_t * pPropertyCount,
 		VkDisplayModePropertiesKHR * pProperties )
 	{
-		auto props = get( display )->getDisplayModeProperties();
-		*pPropertyCount = uint32_t( props.size() );
-
-		if ( pProperties )
-		{
-			for ( auto & prop : props )
-			{
-				*pProperties = prop;
-				++pProperties;
-			}
-		}
-
-		return VK_SUCCESS;
+		return reportUnsupported( physicalDevice, "vkGetDisplayModePropertiesKHR" );
 	}
 
 	VkResult VKAPI_CALL vkCreateDisplayModeKHR(
@@ -2342,10 +2294,7 @@ namespace ashes::xbox
 		const VkAllocationCallbacks * pAllocator,
 		VkDisplayModeKHR * pMode )
 	{
-		return allocate( *pMode
-			, pAllocator
-			, display
-			, *pCreateInfo );
+		return reportUnsupported( physicalDevice, "vkCreateDisplayModeKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetDisplayPlaneCapabilitiesKHR(
@@ -2354,8 +2303,7 @@ namespace ashes::xbox
 		uint32_t planeIndex,
 		VkDisplayPlaneCapabilitiesKHR * pCapabilities )
 	{
-		*pCapabilities = get( mode )->getDisplayPlaneCapabilities();
-		return VK_SUCCESS;
+		return reportUnsupported( physicalDevice, "vkGetDisplayPlaneCapabilitiesKHR" );
 	}
 
 	VkResult VKAPI_CALL vkCreateDisplayPlaneSurfaceKHR(
@@ -2364,10 +2312,7 @@ namespace ashes::xbox
 		const VkAllocationCallbacks * pAllocator,
 		VkSurfaceKHR * pSurface )
 	{
-		return allocate( *pSurface
-			, pAllocator
-			, instance
-			, *pCreateInfo );
+		return reportUnsupported( instance, "vkCreateDisplayPlaneSurfaceKHR" );
 	}
 
 #endif
@@ -4401,9 +4346,6 @@ namespace ashes::xbox
 #endif
 #if VK_KHR_get_physical_device_properties2
 		VkExtensionProperties{ VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_SPEC_VERSION },
-#endif
-#if VK_KHR_display
-		VkExtensionProperties{ VK_KHR_DISPLAY_EXTENSION_NAME, VK_KHR_DISPLAY_SPEC_VERSION },
 #endif
 #if VK_KHR_portability_subset
 		VkExtensionProperties{ VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME, VK_KHR_PORTABILITY_SUBSET_SPEC_VERSION },

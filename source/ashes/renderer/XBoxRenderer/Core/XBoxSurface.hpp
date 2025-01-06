@@ -16,12 +16,9 @@ namespace ashes::xbox
 	public:
 		SurfaceKHR( VkInstance instance
 			, VkWin32SurfaceCreateInfoKHR createInfo );
-		SurfaceKHR( VkInstance instance
-			, VkDisplaySurfaceCreateInfoKHR createInfo );
 
 		VkBool32 getSupport( VkPhysicalDevice physicalDevice )const;
 		HWND getHwnd()const;
-		DXGI_MODE_DESC const & getDisplayMode()const;
 
 		VkSurfaceCapabilitiesKHR getCapabilities( VkPhysicalDevice physicalDevice )const
 		{
@@ -57,23 +54,12 @@ namespace ashes::xbox
 			return m_matchingDescs[format];
 		}
 
-		bool isWin32()const
-		{
-			return m_win32CreateInfo.sType != 0;
-		}
-
-		bool isDisplay()const
-		{
-			return m_displayCreateInfo.sType != 0;
-		}
-
 	private:
 		void doUpdate( VkPhysicalDevice physicalDevice )const;
 
 	private:
 		VkInstance m_instance{};
-		VkWin32SurfaceCreateInfoKHR m_win32CreateInfo{};
-		VkDisplaySurfaceCreateInfoKHR m_displayCreateInfo{};
+		VkWin32SurfaceCreateInfoKHR m_createInfo{};
 		std::string m_type;
 		mutable VkSurfaceFormatArrayKHR m_surfaceFormats{};
 		mutable VkSurfaceCapabilitiesKHR m_surfaceCapabilities{};

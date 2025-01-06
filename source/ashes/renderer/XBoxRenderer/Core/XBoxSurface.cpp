@@ -275,16 +275,7 @@ namespace ashes::xbox
 	SurfaceKHR::SurfaceKHR( VkInstance instance
 		, VkWin32SurfaceCreateInfoKHR createInfo )
 		: m_instance{ instance }
-		, m_win32CreateInfo{ std::move( createInfo ) }
-		, m_type{ VK_KHR_WIN32_SURFACE_EXTENSION_NAME }
-	{
-		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
-	}
-
-	SurfaceKHR::SurfaceKHR( VkInstance instance
-		, VkDisplaySurfaceCreateInfoKHR createInfo )
-		: m_instance{ instance }
-		, m_displayCreateInfo{ std::move( createInfo ) }
+		, m_createInfo{ std::move( createInfo ) }
 		, m_type{ VK_KHR_WIN32_SURFACE_EXTENSION_NAME }
 	{
 		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
@@ -309,42 +300,27 @@ namespace ashes::xbox
 				m_displayModes = getDisplayModesList( m_instance, d3dOutput );
 				m_surfaceFormats = surface::getSurfaceFormats( m_displayModes );
 
-				if ( isWin32() )
+				RECT rect{};
+
+				if ( auto window = winrt::Windows::UI::Core::CoreWindow::GetForCurrentThread() )
 				{
-					RECT rect{};
+					auto bounds = window.Bounds();
+					auto displayInfo = winrt::Windows::Graphics::Display::DisplayInformation::GetForCurrentView();
+					double scale = displayInfo.RawPixelsPerViewPixel();
+					auto width = LONG( std::round( bounds.Width * scale ) );
+					auto height = LONG( std::round( bounds.Height * scale ) );
 
-					if ( auto window = winrt::Windows::UI::Core::CoreWindow::GetForCurrentThread() )
-					{
-						auto bounds = window.Bounds();
-						auto displayInfo = winrt::Windows::Graphics::Display::DisplayInformation::GetForCurrentView();
-						double scale = displayInfo.RawPixelsPerViewPixel();
-						auto width = LONG( std::round( bounds.Width * scale ) );
-						auto height = LONG( std::round( bounds.Height * scale ) );
-
-						rect.left = 0;
-						rect.top = 0;
-						rect.right = width;
-						rect.bottom = height;
-					}
-
-					surface::updateSurfaceCapabilities( m_displayModes
-						, rect
-						, m_surfaceCapabilities
-						, m_descs
-						, m_matchingDescs );
-				}
-				else if ( isDisplay() )
-				{
-					RECT rect{};
-					rect.right = LONG( m_displayCreateInfo.imageExtent.width );
-					rect.bottom = LONG( m_displayCreateInfo.imageExtent.height );
-					surface::updateSurfaceCapabilities( m_displayModes
-						, rect
-						, m_surfaceCapabilities
-						, m_descs
-						, m_matchingDescs );
+					rect.left = 0;
+					rect.top = 0;
+					rect.right = width;
+					rect.bottom = height;
 				}
 
+				surface::updateSurfaceCapabilities( m_displayModes
+					, rect
+					, m_surfaceCapabilities
+					, m_descs
+					, m_matchingDescs );
 				m_surfaceCapabilities.supportedUsageFlags = VK_IMAGE_TYPE_MAX_ENUM;
 
 				for ( auto const & surfaceFormat : m_surfaceFormats )
@@ -368,23 +344,6 @@ namespace ashes::xbox
 
 	HWND SurfaceKHR::getHwnd()const
 	{
-		if ( isWin32() )
-		{
-			return m_win32CreateInfo.hwnd;
-		}
-
-		if ( isDisplay() )
-		{
-			winrt::Windows::UI::Core::CoreWindow window = winrt::Windows::UI::Core::CoreWindow::GetForCurrentThread();
-			return surface::getWindowHwnd( window );
-		}
-
-		return nullptr;
-	}
-
-	DXGI_MODE_DESC const & SurfaceKHR::getDisplayMode()const
-	{
-		assert( isDisplay() );
-		return get( m_displayCreateInfo.displayMode )->getDesc();
+		return m_createInfo.hwnd;
 	}
 }
