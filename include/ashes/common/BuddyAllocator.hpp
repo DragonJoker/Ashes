@@ -29,6 +29,11 @@ namespace ashes
 			, uint32_t minBlockSize );
 		~BuddyAllocatorT();
 		/**
+		*\return
+		*	The remaining memory.
+		*/
+		size_t getAvailable()const noexcept;
+		/**
 		*\param[in] size
 		*	The requested memory size.
 		*\return

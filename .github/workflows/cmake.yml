@@ -58,7 +58,7 @@ jobs:
         7z a $GITHUB_WORKSPACE/Ashes-${{ matrix.os[1] }}.zip $GITHUB_WORKSPACE/package/ashes/
     - name: Upload package
       if: github.event_name == 'push'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: Ashes-${{ matrix.os[1] }}.zip
         path: ${{ github.workspace }}/Ashes-${{ matrix.os[1] }}.zip
@@ -107,7 +107,7 @@ jobs:
         7z a $GITHUB_WORKSPACE/Ashes-${{ matrix.os[1] }}.zip $GITHUB_WORKSPACE/package/ashes/
     - name: Upload package
       if: github.event_name == 'push'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: Ashes-${{ matrix.os[1] }}.zip
         path: ${{ github.workspace }}/Ashes-${{ matrix.os[1] }}.zip
@@ -167,7 +167,7 @@ jobs:
         7z a $GITHUB_WORKSPACE/Ashes-${{ matrix.os[1] }}.zip $GITHUB_WORKSPACE/package/ashes/
     - name: Upload package
       if: github.event_name == 'push'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: Ashes-${{ matrix.os[1] }}.zip
         path: ${{ github.workspace }}/Ashes-${{ matrix.os[1] }}.zip
@@ -227,7 +227,7 @@ jobs:
         7z a $GITHUB_WORKSPACE/Ashes-${{ matrix.os[1] }}.zip $GITHUB_WORKSPACE/package/ashes/
     - name: Upload package
       if: github.event_name == 'push'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: Ashes-${{ matrix.os[1] }}.zip
         path: ${{ github.workspace }}/Ashes-${{ matrix.os[1] }}.zip

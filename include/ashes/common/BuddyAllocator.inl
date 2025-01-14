@@ -20,6 +20,19 @@ namespace ashes
 	}
 
 	template< typename TraitsT >
+	inline size_t BuddyAllocatorT< TraitsT >::getAvailable()const noexcept
+	{
+		size_t result{};
+
+		for ( auto const & allocation : m_allocated )
+		{
+			result += doGetLevelSize( allocation.second );
+		}
+
+		return result;
+	}
+
+	template< typename TraitsT >
 	inline bool BuddyAllocatorT< TraitsT >::hasAvailable( size_t size )const
 	{
 		auto level = doGetLevel( size );
