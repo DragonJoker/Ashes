@@ -18,59 +18,61 @@ elseif ( MSVC )
 	endif ()
 endif ()
 
-if ( VCPKG_TOOLCHAIN )
-	set( ASHES_BUILD_SPIRV_CROSS OFF )
-	if ( _VCPKG_INSTALLED_DIR )
-		set( spirv_cross_core_DIR ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/spirv_cross_core )
-		set( spirv_cross_glsl_DIR ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/spirv_cross_glsl )
-		set( spirv_cross_hlsl_DIR ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/spirv_cross_hlsl )
-		set( spirv_cross_reflect_DIR ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/spirv_cross_reflect )
-		set( spirv_cross_util_DIR ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/spirv_cross_util )
-		set( spirv_cross_cpp_DIR ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/spirv_cross_cpp )
-	elseif ( SPIRV_ROOT_DIR )
-		set( spirv_cross_core_DIR ${SPIRV_ROOT_DIR}/share/spirv_cross_core )
-		set( spirv_cross_glsl_DIR ${SPIRV_ROOT_DIR}/share/spirv_cross_glsl )
-		set( spirv_cross_hlsl_DIR ${SPIRV_ROOT_DIR}/share/spirv_cross_hlsl )
-		set( spirv_cross_reflect_DIR ${SPIRV_ROOT_DIR}/share/spirv_cross_reflect )
-		set( spirv_cross_util_DIR ${SPIRV_ROOT_DIR}/share/spirv_cross_util )
-		set( spirv_cross_cpp_DIR ${SPIRV_ROOT_DIR}/share/spirv_cross_cpp )
-	endif ()
-	find_package( spirv_cross_core CONFIG REQUIRED )
-	find_package( spirv_cross_glsl CONFIG REQUIRED )
-	find_package( spirv_cross_hlsl CONFIG REQUIRED )
-	find_package( spirv_cross_reflect CONFIG REQUIRED )
-	find_package( spirv_cross_util CONFIG REQUIRED )
-	find_package( spirv_cross_cpp CONFIG REQUIRED )
-	if ( spirv_cross_core_FOUND
-		AND spirv_cross_glsl_FOUND
-		AND spirv_cross_reflect_FOUND
-		AND spirv_cross_util_FOUND
-		AND spirv_cross_cpp_FOUND )
-		set( spirv-cross_FOUND ON )
-	endif ()
-	if ( spirv-cross_FOUND )
+if ( ASHES_BUILD_RENDERER_D3D11 OR ASHES_BUILD_RENDERER_OGL OR ASHES_BUILD_TESTS )
+	if ( VCPKG_TOOLCHAIN )
+		set( ASHES_BUILD_SPIRV_CROSS OFF )
+		if ( _VCPKG_INSTALLED_DIR )
+			set( spirv_cross_core_DIR ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/spirv_cross_core )
+			set( spirv_cross_glsl_DIR ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/spirv_cross_glsl )
+			set( spirv_cross_hlsl_DIR ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/spirv_cross_hlsl )
+			set( spirv_cross_reflect_DIR ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/spirv_cross_reflect )
+			set( spirv_cross_util_DIR ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/spirv_cross_util )
+			set( spirv_cross_cpp_DIR ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/spirv_cross_cpp )
+		elseif ( SPIRV_ROOT_DIR )
+			set( spirv_cross_core_DIR ${SPIRV_ROOT_DIR}/share/spirv_cross_core )
+			set( spirv_cross_glsl_DIR ${SPIRV_ROOT_DIR}/share/spirv_cross_glsl )
+			set( spirv_cross_hlsl_DIR ${SPIRV_ROOT_DIR}/share/spirv_cross_hlsl )
+			set( spirv_cross_reflect_DIR ${SPIRV_ROOT_DIR}/share/spirv_cross_reflect )
+			set( spirv_cross_util_DIR ${SPIRV_ROOT_DIR}/share/spirv_cross_util )
+			set( spirv_cross_cpp_DIR ${SPIRV_ROOT_DIR}/share/spirv_cross_cpp )
+		endif ()
+		find_package( spirv_cross_core CONFIG REQUIRED )
+		find_package( spirv_cross_glsl CONFIG REQUIRED )
+		find_package( spirv_cross_hlsl CONFIG REQUIRED )
+		find_package( spirv_cross_reflect CONFIG REQUIRED )
+		find_package( spirv_cross_util CONFIG REQUIRED )
+		find_package( spirv_cross_cpp CONFIG REQUIRED )
+		if ( spirv_cross_core_FOUND
+			AND spirv_cross_glsl_FOUND
+			AND spirv_cross_reflect_FOUND
+			AND spirv_cross_util_FOUND
+			AND spirv_cross_cpp_FOUND )
+			set( spirv-cross_FOUND ON )
+		endif ()
+		if ( spirv-cross_FOUND )
+			set( ASHES_HAS_SPIRV_CROSS ON )
+			set( SPIRV_CROSS_LIBRARIES
+				spirv-cross-core
+				spirv-cross-cpp
+				spirv-cross-glsl
+				spirv-cross-reflect
+				spirv-cross-util
+			)
+			set( SPIRV_CROSS_HLSL_LIBRARIES
+				spirv-cross-hlsl
+			)
+		else ()
+			set( ASHES_HAS_SPIRV_CROSS OFF )
+			message( FATAL_ERROR "Couldn't find spirv-cross" )
+		endif ()
+	elseif ( EXISTS ${Ashes_SOURCE_DIR}/external/spirv_cross/spirv_cross.cpp )
+		set( ASHES_BUILD_SPIRV_CROSS ON )
 		set( ASHES_HAS_SPIRV_CROSS ON )
-		set( SPIRV_CROSS_LIBRARIES
-			spirv-cross-core
-			spirv-cross-cpp
-			spirv-cross-glsl
-			spirv-cross-reflect
-			spirv-cross-util
-		)
-		set( SPIRV_CROSS_HLSL_LIBRARIES
-			spirv-cross-hlsl
-		)
+		set( SPIRV_CROSS_INCLUDE_DIR ${Ashes_SOURCE_DIR}/external )
+		set( SPIRV_CROSS_DIR ${SPIRV_CROSS_INCLUDE_DIR}/spirv_cross )
 	else ()
-		set( ASHES_HAS_SPIRV_CROSS OFF )
-		message( FATAL_ERROR "Couldn't find spirv-cross" )
+		find_package( spirv-cross REQUIRED COMPONENTS core cpp glsl hlsl reflect util )
 	endif ()
-elseif ( EXISTS ${Ashes_SOURCE_DIR}/external/spirv_cross/spirv_cross.cpp )
-	set( ASHES_BUILD_SPIRV_CROSS ON )
-	set( ASHES_HAS_SPIRV_CROSS ON )
-	set( SPIRV_CROSS_INCLUDE_DIR ${Ashes_SOURCE_DIR}/external )
-	set( SPIRV_CROSS_DIR ${SPIRV_CROSS_INCLUDE_DIR}/spirv_cross )
-else ()
-	find_package( spirv-cross REQUIRED COMPONENTS core cpp glsl hlsl reflect util )
 endif ()
 
 add_subdirectory( ashes/common )
