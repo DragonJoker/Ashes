@@ -18,9 +18,9 @@ To build it, you can use CMake.
 
 ## Supported platforms
 
-- Windows.
-- Linux.
-- MacOS.
+- Vulkan Renderer: Windows, Linux, MacOS.
+- OpenGL Renderer: Windows, Linux.
+- Direct3D11 Renderer: Windows.
 
 ## How to use it
 
