@@ -130,7 +130,7 @@ namespace ashes
 #if VK_VERSION_1_3 || VK_KHR_format_feature_flags2
 	VkFormatProperties3KHR PhysicalDevice::getFormatProperties3( VkFormat fmt )const
 	{
-		VkFormatProperties3KHR result{ VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_3_KHR };
+		VkFormatProperties3KHR result{ VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_3_KHR, nullptr, {}, {}, {} };
 		VkFormatProperties2KHR props{ VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2_KHR, &result, {} };
 		m_instance.vkGetPhysicalDeviceFormatProperties2KHR( m_gpu
 			, fmt
