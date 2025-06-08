@@ -135,6 +135,8 @@ namespace ashes::gl
 				return compiled != 0;
 			}
 
+#if GlRenderer_USE_SPIRV_CROSS
+
 			void updateUboNames( spirv_cross::CompilerGLSL & compiler
 				, std::string const & postfix )
 			{
@@ -152,6 +154,8 @@ namespace ashes::gl
 					compiler.set_name( ssbo.base_type_id, name + "_" + postfix );
 				}
 			}
+
+#endif
 		}
 	}
 
@@ -159,10 +163,10 @@ namespace ashes::gl
 
 	namespace common
 	{
-#if GlRenderer_USE_SPIRV_CROSS
-
 		namespace
 		{
+#if GlRenderer_USE_SPIRV_CROSS
+
 			spv::ExecutionModel getExecutionModel( VkShaderStageFlagBits stage )
 			{
 				spv::ExecutionModel result{};
@@ -702,10 +706,10 @@ namespace ashes::gl
 							result = compiler.compile();
 						} );
 					doReworkFrontFace( invertY, result );
+					return vkres;
 #else
 					throw ashes::BaseException{ "Can't parse SPIR-V shaders, pull submodule SpirvCross" };
 #endif
-					return vkres;
 				}
 
 				isGlsl = true;
