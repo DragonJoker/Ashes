@@ -4599,7 +4599,10 @@ namespace ashes::gl
 			{
 				it->second =
 				{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-function-type-strict"
 					{ "vkGetDeviceProcAddr", PFN_vkVoidFunction( vkGetDeviceProcAddr ) },
+#pragma clang diagnostic pop
 #define VK_LIB_DEVICE_FUNCTION( v, x )\
 					{ "vk"#x, checkVersion( device, v ) ? PFN_vkVoidFunction( vk##x ) : PFN_vkVoidFunction( nullptr ) },
 #define VK_LIB_DEVICE_FUNCTION_EXT( v, n, x )\

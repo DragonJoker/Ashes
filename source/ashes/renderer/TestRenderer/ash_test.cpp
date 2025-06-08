@@ -4584,7 +4584,10 @@ namespace ashes::test
 		PFN_vkVoidFunction result{ nullptr };
 		static std::map< std::string, PFN_vkVoidFunction > functions
 		{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-function-type-strict"
 			{ "vkGetDeviceProcAddr", PFN_vkVoidFunction( vkGetDeviceProcAddr ) },
+#pragma clang diagnostic pop
 #define VK_LIB_DEVICE_FUNCTION( v, x )\
 			{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
 #include <ashes/ashes_functions_list.hpp>

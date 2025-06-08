@@ -152,12 +152,15 @@ namespace utils
 
 #pragma warning( push )
 #pragma warning( disable: 4191 )
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-function-type-strict"
 		PFN_vkEnumerateInstanceLayerProperties enumLayerProperties;
 		enumLayerProperties = reinterpret_cast< PFN_vkEnumerateInstanceLayerProperties >( plugin.getInstanceProcAddr( nullptr,
 			"vkEnumerateInstanceLayerProperties" ) );
 		PFN_vkEnumerateInstanceExtensionProperties enumInstanceExtensionProperties;
 		enumInstanceExtensionProperties = reinterpret_cast< PFN_vkEnumerateInstanceExtensionProperties >( plugin.getInstanceProcAddr( nullptr,
 			"vkEnumerateInstanceExtensionProperties" ) );
+#pragma clang diagnostic pop
 #pragma warning( pop )
 
 		m_layers = enumerateLayerProperties( enumLayerProperties );
