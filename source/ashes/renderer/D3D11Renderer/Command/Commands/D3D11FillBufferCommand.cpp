@@ -30,8 +30,8 @@ namespace ashes::D3D11_NAMESPACE
 			VK_SUCCESS == get( m_memory )->lock( m_memoryOffset, m_size, 0u, reinterpret_cast< void ** >( &data ) ) )
 		{
 			std::fill_n( data, m_size / sizeof( uint32_t ), m_data );
-			get( m_memory )->flush( m_memoryOffset, m_size );
-			get( m_memory )->unlock();
+			get( m_memory )->flush( context.context, m_memoryOffset, m_size );
+			get( m_memory )->unlock( context.context );
 		}
 	}
 

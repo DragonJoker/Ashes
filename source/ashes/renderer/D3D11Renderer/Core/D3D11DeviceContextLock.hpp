@@ -11,13 +11,8 @@ namespace ashes::D3D11_NAMESPACE
 	class DeviceContextLock
 	{
 	public:
-		DeviceContextLock( DeviceContextLock const & ) = delete;
-		DeviceContextLock & operator=( DeviceContextLock const & ) = delete;
-		DeviceContextLock( DeviceContextLock && rhs )noexcept;
-		DeviceContextLock & operator=( DeviceContextLock && rhs )noexcept;
-		explicit DeviceContextLock( Device const * device );
+		explicit DeviceContextLock( ID3D11DeviceContext * context, std::mutex & mutex );
 		explicit DeviceContextLock( ID3D11DeviceContext * context )noexcept;
-		~DeviceContextLock()noexcept;
 
 		ID3D11DeviceContext * operator->()const
 		{
@@ -30,7 +25,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 	private:
-		Device const * m_device{};
 		ID3D11DeviceContext * m_context{};
+		std::unique_ptr< std::unique_lock< std::mutex > > m_lock;
 	};
 }

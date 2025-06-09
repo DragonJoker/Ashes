@@ -91,9 +91,11 @@ namespace ashes::D3D11_NAMESPACE
 		CommandPtr clone()const override;
 
 	private:
-		void doInitialiseStretchUbo( VkDescriptorSetLayout descriptorLayout
+		void doInitialiseStretchUbo( VkDevice device
+			, VkDescriptorSetLayout descriptorLayout
 			, uint32_t count );
-		void doInitialiseStretches( VkDescriptorSetLayout descriptorLayout
+		void doInitialiseStretches( VkDevice device
+			, VkDescriptorSetLayout descriptorLayout
 			, uint32_t count );
 		VkImage doUpdateTmpSrc();
 		void doUpdateTmpDst();

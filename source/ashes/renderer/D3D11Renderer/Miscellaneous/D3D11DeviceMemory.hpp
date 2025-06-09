@@ -10,6 +10,8 @@ See LICENSE file in root folder
 
 namespace ashes::D3D11_NAMESPACE
 {
+	class DeviceContextLock;
+
 	class ObjectMemory
 	{
 		friend class DeviceMemory;
@@ -34,11 +36,13 @@ namespace ashes::D3D11_NAMESPACE
 			, UINT subresource )const;
 
 	private:
-		void upload( uint8_t const * data
+		void upload( DeviceContextLock const & context
+			, uint8_t const * data
 			, UINT subresource
 			, VkDeviceSize offset
 			, VkDeviceSize size )const;
-		void download( uint8_t * data
+		void download( DeviceContextLock const & context
+			, uint8_t * data
 			, UINT subresource
 			, VkDeviceSize offset
 			, VkDeviceSize size )const;
@@ -77,18 +81,22 @@ namespace ashes::D3D11_NAMESPACE
 			, VkDeviceSize memoryOffset
 			, ObjectMemory *& objectMemory );
 
-		void updateUpload( ObjectMemory const & memory
+		void updateUpload( DeviceContextLock const & context
+			, ObjectMemory const & memory
 			, VkDeviceSize offset
 			, VkDeviceSize size
 			, UINT subresource )const;
-		void updateDownload( ObjectMemory const & memory
+		void updateDownload( DeviceContextLock const & context
+			, ObjectMemory const & memory
 			, VkDeviceSize offset
 			, VkDeviceSize size
 			, UINT subresource )const;
-		void updateUpload( VkDeviceSize offset
+		void updateUpload( DeviceContextLock const & context
+			, VkDeviceSize offset
 			, VkDeviceSize size
 			, UINT subresource )const;
-		void updateDownload( VkDeviceSize offset
+		void updateDownload( DeviceContextLock const & context
+			, VkDeviceSize offset
 			, VkDeviceSize size
 			, UINT subresource )const;
 		void updateData( VkDeviceMemory src
@@ -100,25 +108,27 @@ namespace ashes::D3D11_NAMESPACE
 			, VkDeviceSize size
 			, VkMemoryMapFlags flags // Effectively expects the D3D11 Subresource index
 			, void ** data )const;
-		VkResult flush( VkDeviceSize offset
+		VkResult flush( DeviceContextLock const & context
+			, VkDeviceSize offset
 			, VkDeviceSize size )const;
-		VkResult invalidate( VkDeviceSize offset
+		VkResult invalidate( DeviceContextLock const & context
+			, VkDeviceSize offset
 			, VkDeviceSize size )const;
-		void unlock()const;
+		void unlock( DeviceContextLock const & context )const;
 
 		bool isMapped()const
 		{
 			return m_mapped;
 		}
 
-		void upload()const
+		void upload( DeviceContextLock const & context )const
 		{
-			upload( m_mappedOffset, m_mappedSize );
+			upload( context, m_mappedOffset, m_mappedSize );
 		}
 
-		void download()const
+		void download( DeviceContextLock const & context )const
 		{
-			download( m_mappedOffset, m_mappedSize );
+			download( context, m_mappedOffset, m_mappedSize );
 		}
 
 		VkMemoryPropertyFlags getMemoryPropertyFlags()const
@@ -135,23 +145,27 @@ namespace ashes::D3D11_NAMESPACE
 		mutable DeviceMemoryDestroySignal onDestroy;
 
 	private:
-		void upload( VkDeviceSize offset
+		void upload( DeviceContextLock const & context
+			, VkDeviceSize offset
 			, VkDeviceSize size
 			, UINT subresource )const;
-		void download( VkDeviceSize offset
+		void download( DeviceContextLock const & context
+			, VkDeviceSize offset
 			, VkDeviceSize size
 			, UINT subresource )const;
 
-		void upload( VkDeviceSize offset
+		void upload( DeviceContextLock const & context
+			, VkDeviceSize offset
 			, VkDeviceSize size )const
 		{
-			upload( offset, size, m_mappedSubresource );
+			upload( context, offset, size, m_mappedSubresource );
 		}
 
-		void download( VkDeviceSize offset
+		void download( DeviceContextLock const & context
+			, VkDeviceSize offset
 			, VkDeviceSize size )const
 		{
-			download( offset, size, m_mappedSubresource );
+			download( context, offset, size, m_mappedSubresource );
 		}
 
 	private:

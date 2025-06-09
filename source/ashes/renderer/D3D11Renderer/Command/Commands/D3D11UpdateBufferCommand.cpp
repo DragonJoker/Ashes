@@ -37,8 +37,8 @@ namespace ashes::D3D11_NAMESPACE
 				VK_SUCCESS == get( m_memory )->lock( m_memoryOffset, m_data.size(), 0u, &data ) )
 			{
 				std::memcpy( data, m_data.data(), m_data.size() );
-				get( m_memory )->flush( m_memoryOffset, m_data.size() );
-				get( m_memory )->unlock();
+				get( m_memory )->flush( context.context, m_memoryOffset, m_data.size() );
+				get( m_memory )->unlock( context.context );
 			}
 		}
 		else

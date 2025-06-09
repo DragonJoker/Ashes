@@ -319,7 +319,8 @@ namespace ashes::D3D11_NAMESPACE
 			dst = &stagingDst;
 		}
 
-		doMapCopy( copyInfo
+		doMapCopy( context
+			, copyInfo
 			, srcLayout
 			, dstBox
 			, get( *src )->getFormat()
@@ -353,7 +354,8 @@ namespace ashes::D3D11_NAMESPACE
 		return std::make_unique< CopyImageToBufferCommand >( *this );
 	}
 
-	void CopyImageToBufferCommand::doMapCopy( VkBufferImageCopy const & copyInfo
+	void CopyImageToBufferCommand::doMapCopy( Context const & context
+		, VkBufferImageCopy const & copyInfo
 		, VkSubresourceLayout const & srcLayout
 		, D3D11_BOX const & dstBox
 		, VkFormat format
@@ -377,14 +379,16 @@ namespace ashes::D3D11_NAMESPACE
 					, srcBuffer
 					, srcLayout
 					, dstBuffer );
-				get( dst )->flush( dstBox.left
+				get( dst )->flush( context.context
+					, dstBox.left
 					, VkDeviceSize( dstBox.right ) - dstBox.left );
-				get( dst )->unlock();
+				get( dst )->unlock( context.context );
 			}
 
-			get( src )->flush( srcLayout.offset
+			get( src )->flush( context.context
+				, srcLayout.offset
 				, srcLayout.size );
-			get( src )->unlock();
+			get( src )->unlock( context.context );
 		}
 	}
 

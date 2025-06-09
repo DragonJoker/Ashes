@@ -208,18 +208,7 @@ namespace ashes::D3D11_NAMESPACE
 
 	DeviceContextLock Device::getImmediateContext()const
 	{
-		return DeviceContextLock{ this };
-	}
-
-	ID3D11DeviceContext * Device::lockImmediateContext()const
-	{
-		m_mtxDeviceContext.lock();
-		return m_deviceContext;
-	}
-
-	void Device::unlockImmediateContext()const noexcept
-	{
-		m_mtxDeviceContext.unlock();
+		return DeviceContextLock{ m_deviceContext, m_mtxDeviceContext };
 	}
 
 	bool Device::hasExtension( std::string_view extension )const
@@ -624,8 +613,9 @@ namespace ashes::D3D11_NAMESPACE
 			, reinterpret_cast< void ** >( &buffer ) ) )
 		{
 			std::copy( dummyIndex.begin(), std::next( dummyIndex.begin(), ptrdiff_t( count ) ), buffer );
-			get( m_dummyIndexed.memory )->flush( 0, size );
-			get( m_dummyIndexed.memory )->unlock();
+			auto context = getImmediateContext();
+			get( m_dummyIndexed.memory )->flush( context, 0, size );
+			get( m_dummyIndexed.memory )->unlock( context );
 		}
 	}
 

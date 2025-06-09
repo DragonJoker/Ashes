@@ -24,7 +24,8 @@ namespace ashes::D3D11_NAMESPACE
 
 	void UploadMemoryCommand::apply( Context const & context )const
 	{
-		get( m_memory->deviceMemory )->updateUpload( *m_memory
+		get( m_memory->deviceMemory )->updateUpload( context.context
+			, *m_memory
 			, m_range.first
 			, m_range.second
 			, m_subresource );
