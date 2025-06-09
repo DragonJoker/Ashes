@@ -139,7 +139,8 @@ namespace ashes::D3D11_NAMESPACE
 		context->Unmap( resource, subresource );
 	}
 
-	void ObjectMemory::upload( uint8_t const * data
+	void ObjectMemory::upload( DeviceContextLock const & context
+		, uint8_t const * data
 		, UINT subresource
 		, VkDeviceSize poffset
 		, VkDeviceSize psize )const
@@ -160,7 +161,6 @@ namespace ashes::D3D11_NAMESPACE
 			copySize = allocateInfo.allocationSize - objectOffset;
 		}
 
-		auto context{ get( device )->getImmediateContext() };
 		D3D11_MAPPED_SUBRESOURCE mapped{};
 
 		if ( lock( *context, subresource, mapped ) == VK_SUCCESS )
@@ -196,7 +196,8 @@ namespace ashes::D3D11_NAMESPACE
 		}
 	}
 
-	void ObjectMemory::download( uint8_t * data
+	void ObjectMemory::download( DeviceContextLock const & context
+		, uint8_t * data
 		, UINT subresource
 		, VkDeviceSize poffset
 		, VkDeviceSize psize )const
@@ -218,7 +219,6 @@ namespace ashes::D3D11_NAMESPACE
 			copySize = allocateInfo.allocationSize - objectOffset;
 		}
 
-		auto context{ get( device )->getImmediateContext() };
 		D3D11_MAPPED_SUBRESOURCE mapped{};
 
 		if ( lock( *context, subresource, mapped ) == VK_SUCCESS )
@@ -632,7 +632,8 @@ namespace ashes::D3D11_NAMESPACE
 			};
 			m_objects.emplace_back( std::make_unique< ObjectMemory >( std::move( impl.memory ) ) );
 			objectMemory = m_objects.back().get();
-			updateUpload( *objectMemory, 0ULL, WholeSize, 0u );
+			auto context{ get( m_device )->getImmediateContext() };
+			updateUpload( context, *objectMemory, 0ULL, WholeSize, 0u );
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )
@@ -670,7 +671,8 @@ namespace ashes::D3D11_NAMESPACE
 			};
 			m_objects.emplace_back( std::make_unique< ObjectMemory >( std::move( impl.memory ) ) );
 			objectMemory = m_objects.back().get();
-			updateUpload( *objectMemory, 0ULL, WholeSize, 0u );
+			auto context{ get( m_device )->getImmediateContext() };
+			updateUpload( context, *objectMemory, 0ULL, WholeSize, 0u );
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )
@@ -708,7 +710,8 @@ namespace ashes::D3D11_NAMESPACE
 			};
 			m_objects.emplace_back( std::make_unique< ObjectMemory >( std::move( impl.memory ) ) );
 			objectMemory = m_objects.back().get();
-			updateUpload( *objectMemory, 0ULL, WholeSize, 0u );
+			auto context{ get( m_device )->getImmediateContext() };
+			updateUpload( context, *objectMemory, 0ULL, WholeSize, 0u );
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )
@@ -746,7 +749,8 @@ namespace ashes::D3D11_NAMESPACE
 			};
 			m_objects.emplace_back( std::make_unique< ObjectMemory >( std::move( impl.memory ) ) );
 			objectMemory = m_objects.back().get();
-			updateUpload( *objectMemory, 0ULL, WholeSize, 0u );
+			auto context{ get( m_device )->getImmediateContext() };
+			updateUpload( context, *objectMemory, 0ULL, WholeSize, 0u );
 			result = VK_SUCCESS;
 		}
 		catch ( Exception & exc )
@@ -766,14 +770,16 @@ namespace ashes::D3D11_NAMESPACE
 		return result;
 	}
 
-	void DeviceMemory::updateUpload( ObjectMemory const & memory
+	void DeviceMemory::updateUpload( DeviceContextLock const & context
+		, ObjectMemory const & memory
 		, VkDeviceSize offset
 		, VkDeviceSize size
 		, UINT subresource )const
 	{
 		if ( !m_data.empty() )
 		{
-			memory.upload( m_data.data()
+			memory.upload( context
+				, m_data.data()
 				, subresource
 				, ( ( size == WholeSize && offset == 0u )
 					? 0u
@@ -782,14 +788,16 @@ namespace ashes::D3D11_NAMESPACE
 		}
 	}
 
-	void DeviceMemory::updateDownload( ObjectMemory const & memory
+	void DeviceMemory::updateDownload( DeviceContextLock const & context
+		, ObjectMemory const & memory
 		, VkDeviceSize offset
 		, VkDeviceSize size
 		, UINT subresource )const
 	{
 		if ( !m_data.empty() )
 		{
-			memory.download( m_data.data()
+			memory.download( context
+				, m_data.data()
 				, subresource
 				, ( ( size == WholeSize && offset == 0u )
 					? 0u
@@ -798,7 +806,8 @@ namespace ashes::D3D11_NAMESPACE
 		}
 	}
 
-	void DeviceMemory::updateUpload( VkDeviceSize offset
+	void DeviceMemory::updateUpload( DeviceContextLock const & context
+		, VkDeviceSize offset
 		, VkDeviceSize size
 		, UINT subresource )const
 	{
@@ -819,7 +828,8 @@ namespace ashes::D3D11_NAMESPACE
 				if ( objectSize > 0u
 					&& paramOffset + paramSize > objectOffset )
 				{
-					object->upload( m_data.data()
+					object->upload( context
+						, m_data.data()
 						, subresource
 						, offset
 						, size );
@@ -830,7 +840,8 @@ namespace ashes::D3D11_NAMESPACE
 		}
 	}
 
-	void DeviceMemory::updateDownload( VkDeviceSize offset
+	void DeviceMemory::updateDownload( DeviceContextLock const & context
+		, VkDeviceSize offset
 		, VkDeviceSize size
 		, UINT subresource )const
 	{
@@ -851,7 +862,8 @@ namespace ashes::D3D11_NAMESPACE
 				if ( objectSize > 0u
 					&& paramOffset + paramSize > objectOffset )
 				{
-					object->download( m_data.data()
+					object->download( context
+						, m_data.data()
 						, subresource
 						, offset
 						, size );
@@ -902,7 +914,8 @@ namespace ashes::D3D11_NAMESPACE
 		return VK_SUCCESS;
 	}
 
-	VkResult DeviceMemory::flush( VkDeviceSize offset
+	VkResult DeviceMemory::flush( DeviceContextLock const & context
+		, VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
@@ -917,11 +930,12 @@ namespace ashes::D3D11_NAMESPACE
 			return VK_ERROR_OUT_OF_DEVICE_MEMORY;
 		}
 
-		updateUpload( offset, size, m_mappedSubresource );
+		updateUpload( context, offset, size, m_mappedSubresource );
 		return VK_SUCCESS;
 	}
 
-	VkResult DeviceMemory::invalidate( VkDeviceSize offset
+	VkResult DeviceMemory::invalidate( DeviceContextLock const & context
+		, VkDeviceSize offset
 		, VkDeviceSize size )const
 	{
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
@@ -937,30 +951,32 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		m_dirty = true;
-		updateDownload( offset, size, m_mappedSubresource );
+		updateDownload( context, offset, size, m_mappedSubresource );
 		return VK_SUCCESS;
 	}
 
-	void DeviceMemory::unlock()const
+	void DeviceMemory::unlock( DeviceContextLock const & context )const
 	{
 		assert( m_mapped && "VkDeviceMemory should be mapped" );
 		assert( !m_data.empty() && "VkDeviceMemory should be mappable" );
 		m_mapped = false;
-		updateUpload( m_mappedOffset, m_mappedSize, m_mappedSubresource );
+		updateUpload( context, m_mappedOffset, m_mappedSize, m_mappedSubresource );
 	}
 
-	void DeviceMemory::upload( VkDeviceSize offset
+	void DeviceMemory::upload( DeviceContextLock const & context
+		, VkDeviceSize offset
 		, VkDeviceSize size
 		, UINT subresource )const
 	{
-		updateUpload( offset, size, subresource );
+		updateUpload( context, offset, size, subresource );
 	}
 
-	void DeviceMemory::download( VkDeviceSize offset
+	void DeviceMemory::download( DeviceContextLock const & context
+		, VkDeviceSize offset
 		, VkDeviceSize size
 		, UINT subresource )const
 	{
-		updateDownload( offset, size, subresource );
+		updateDownload( context, offset, size, subresource );
 	}
 
 	//*********************************************************************************************

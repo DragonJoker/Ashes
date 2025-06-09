@@ -765,7 +765,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 			m_layerBlitsFromTmp.push_back( makeImageCopy( region, 2u ) );
 		}
 
-		doInitialiseStretches( pipeline.descriptorLayout, count );
+		doInitialiseStretches( device, pipeline.descriptorLayout, count );
 
 		doCreateCommandBuffer( pool
 			, pipeline.pipeline
@@ -773,7 +773,8 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		get( cb )->executeCommands( makeArrayView( const_cast< VkCommandBuffer const * >( &m_commandBuffer ), 1u ) );
 	}
 
-	void BlitImageCommand::doInitialiseStretchUbo( VkDescriptorSetLayout descriptorLayout
+	void BlitImageCommand::doInitialiseStretchUbo( VkDevice device
+		, VkDescriptorSetLayout descriptorLayout
 		, uint32_t count )
 	{
 		VkDeviceSize range = 0u;
@@ -834,19 +835,21 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		if ( gpu )
 		{
 			std::memcpy( gpu, data.data(), offset );
-			get( m_uboMemory )->flush( 0u, offset );
-			get( m_uboMemory )->unlock();
+			auto context = get( device )->getImmediateContext();
+			get( m_uboMemory )->flush( context, 0u, offset );
+			get( m_uboMemory )->unlock( context );
 		}
 	}
 
-	void BlitImageCommand::doInitialiseStretches( VkDescriptorSetLayout descriptorLayout
+	void BlitImageCommand::doInitialiseStretches( VkDevice device
+		, VkDescriptorSetLayout descriptorLayout
 		, uint32_t count )
 	{
 		if ( count )
 		{
 			m_tmpSrcTexture = doGetSamplable( getDevice(), m_srcTexture, m_srcMemory );
 			m_tmpDstTexture = doGetStorable( getDevice(), m_dstTexture, m_dstMemory );
-			doInitialiseStretchUbo( descriptorLayout, count );
+			doInitialiseStretchUbo( device, descriptorLayout, count );
 		}
 	}
 

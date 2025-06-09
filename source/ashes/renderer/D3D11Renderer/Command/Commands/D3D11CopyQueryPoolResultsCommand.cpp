@@ -54,8 +54,8 @@ namespace ashes::D3D11_NAMESPACE
 				get( m_dstMemory )->lock( m_dstOffset, m_data.size(), 0u, &data ) == VK_SUCCESS )
 			{
 				std::memcpy( data, m_data.data(), m_data.size() );
-				get( m_dstMemory )->flush( m_dstOffset, m_data.size() );
-				get( m_dstMemory )->unlock();
+				get( m_dstMemory )->flush( context.context, m_dstOffset, m_data.size() );
+				get( m_dstMemory )->unlock( context.context );
 			}
 		}
 		else

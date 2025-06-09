@@ -320,10 +320,10 @@ namespace ashes::D3D11_NAMESPACE
 	}
 
 	void VKAPI_CALL vkUnmapMemory(
-		[[maybe_unused]] VkDevice device,
+		VkDevice device,
 		VkDeviceMemory memory )
 	{
-		get( memory )->unlock();
+		get( memory )->unlock( get( device )->getImmediateContext() );
 	}
 
 	VkResult VKAPI_CALL vkFlushMappedMemoryRanges(
@@ -335,7 +335,8 @@ namespace ashes::D3D11_NAMESPACE
 
 		for ( uint32_t i = 0u; i < memoryRangeCount; ++i )
 		{
-			result = get( pMemoryRanges->memory )->flush( pMemoryRanges->offset
+			result = get( pMemoryRanges->memory )->flush( get( device )->getImmediateContext()
+				, pMemoryRanges->offset
 				, pMemoryRanges->size );
 			++pMemoryRanges;
 		}
@@ -352,7 +353,8 @@ namespace ashes::D3D11_NAMESPACE
 
 		for ( uint32_t i = 0u; i < memoryRangeCount; ++i )
 		{
-			result = get( pMemoryRanges->memory )->invalidate( pMemoryRanges->offset
+			result = get( pMemoryRanges->memory )->invalidate( get( device )->getImmediateContext()
+				, pMemoryRanges->offset
 				, pMemoryRanges->size );
 			++pMemoryRanges;
 		}

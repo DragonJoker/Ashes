@@ -46,14 +46,16 @@ namespace ashes::D3D11_NAMESPACE
 	{
 		for ( auto & buffer : m_uploadBuffers )
 		{
-			get( get( buffer.buffer )->getMemory() )->updateUpload( buffer.offset
+			get( get( buffer.buffer )->getMemory() )->updateUpload( context.context
+				, buffer.offset
 				, buffer.size
 				, 0u );
 		}
 
 		for ( auto & buffer : m_downloadBuffers )
 		{
-			get( get( buffer.buffer )->getMemory() )->updateDownload( buffer.offset
+			get( get( buffer.buffer )->getMemory() )->updateDownload( context.context
+				, buffer.offset
 				, buffer.size
 				, 0u );
 		}

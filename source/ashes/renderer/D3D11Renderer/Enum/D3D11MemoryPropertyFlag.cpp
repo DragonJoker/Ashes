@@ -72,7 +72,7 @@ namespace ashes::D3D11_NAMESPACE
 			{
 				result = D3D11_USAGE_STAGING;
 			}
-			else
+			else if ( !checkFlag( usage, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT ) )
 			{
 				result = D3D11_USAGE_DYNAMIC;
 			}

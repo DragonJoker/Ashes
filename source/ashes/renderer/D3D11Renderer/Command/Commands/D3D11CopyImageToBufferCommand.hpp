@@ -39,7 +39,8 @@ namespace ashes::D3D11_NAMESPACE
 			, VkBufferImageCopy const & copyInfo
 			, VkSubresourceLayout const & srcLayout
 			, D3D11_BOX const & dstBox )const;
-		void doMapCopy( VkBufferImageCopy const & copyInfo
+		void doMapCopy( Context const & context
+			, VkBufferImageCopy const & copyInfo
 			, VkSubresourceLayout const & srcLayout
 			, D3D11_BOX const & dstBox
 			, VkFormat format

@@ -146,8 +146,6 @@ namespace ashes::D3D11_NAMESPACE
 		void doCreateQueues();
 
 		friend class DeviceContextLock;
-		ID3D11DeviceContext * lockImmediateContext()const;
-		void unlockImmediateContext()const noexcept;
 
 	private:
 		struct QueueCreates

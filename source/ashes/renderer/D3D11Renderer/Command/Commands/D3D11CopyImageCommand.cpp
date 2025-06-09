@@ -71,7 +71,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		auto dstMemory = get( m_dst )->getMemory();
-		get( dstMemory )->updateDownload( 0u, get( m_dst )->getMemoryRequirements().size, 0u );
+		get( dstMemory )->updateDownload( context.context, 0u, get( m_dst )->getMemoryRequirements().size, 0u );
 	}
 
 	CommandPtr CopyImageCommand::clone()const
