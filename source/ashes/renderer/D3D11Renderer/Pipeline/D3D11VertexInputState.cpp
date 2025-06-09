@@ -1,6 +1,6 @@
 #include "Pipeline/D3D11VertexInputState.hpp"
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	std::vector< D3D11_INPUT_ELEMENT_DESC > convert( VkPipelineVertexInputStateCreateInfo const & state
 		, InputLayout const & inputLayout )

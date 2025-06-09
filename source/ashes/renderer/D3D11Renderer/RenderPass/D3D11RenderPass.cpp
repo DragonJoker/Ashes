@@ -12,7 +12,7 @@ See LICENSE file in root folder.
 
 #include <algorithm>
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	RenderPass::RenderPass( VkDevice device
 		, VkRenderPassCreateInfo createInfo )

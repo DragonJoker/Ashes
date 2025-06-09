@@ -11,7 +11,7 @@ See LICENSE file in root folder.
 
 #include "ashesd3d11_api.hpp"
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	BeginRenderPassCommand::BeginRenderPassCommand( VkDevice device
 		, VkRenderPass renderPass

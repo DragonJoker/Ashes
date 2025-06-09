@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "renderer/D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	struct InputElementDesc
 	{

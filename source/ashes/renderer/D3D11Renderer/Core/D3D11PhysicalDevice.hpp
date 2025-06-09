@@ -13,7 +13,7 @@ See LICENSE file in root folder
 
 struct AGSContext;
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	VkImageUsageFlags getUsageFlags( VkFormatFeatureFlags flags );
 
@@ -71,7 +71,7 @@ namespace ashes::d3d11
 		VkResult getSparseImageFormatProperties2( VkPhysicalDeviceSparseImageFormatInfo2KHR const & formatInfo
 			, std::vector< VkSparseImageFormatProperties2KHR > & sparseImageFormatProperties )const;
 #endif
-#ifdef VK_KHR_display
+#ifdef VK_KHR_display && !defined( Ashes_D3D11_XBox )
 		std::vector< VkDisplayPropertiesKHR > const & getDisplayProperties()const;
 		std::vector< VkDisplayPlanePropertiesKHR > getDisplayPlaneProperties()const;
 		std::vector< VkDisplayKHR > getDisplayPlaneSupportedDisplays( uint32_t planeIndex )const;
@@ -130,7 +130,7 @@ namespace ashes::d3d11
 		void doInitialiseQueueProperties();
 		void doInitialiseFormatProperties();
 		void doInitialisePortability();
-#ifdef VK_KHR_display
+#ifdef VK_KHR_display && !defined( Ashes_D3D11_XBox )
 		void doInitialiseDisplayProperties();
 		void doInitialiseDisplayPlaneProperties();
 #endif
@@ -158,7 +158,7 @@ namespace ashes::d3d11
 		mutable std::map< VkFormat, VkFormatProperties2KHR > m_formatProperties2;
 #	endif
 #endif
-#ifdef VK_KHR_display
+#ifdef VK_KHR_display && !defined( Ashes_D3D11_XBox )
 		std::vector< VkDisplayPropertiesKHR > m_displays;
 		std::vector< VkDisplayPlanePropertiesKHR > m_displayPlanes;
 #endif

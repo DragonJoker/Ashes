@@ -1,6 +1,6 @@
 #include "D3D11RendererPrerequisites.hpp"
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	D3D11_PRIMITIVE_TOPOLOGY getPrimitiveTopology( VkPrimitiveTopology const & topology )
 	{

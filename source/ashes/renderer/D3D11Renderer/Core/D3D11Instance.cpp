@@ -20,7 +20,7 @@
 #include <locale>
 #pragma warning( pop )
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	namespace
 	{
@@ -52,7 +52,7 @@ namespace ashes::d3d11
 		{
 			IDXGIFactory * result{};
 
-#if Ashes_UWP
+#if Ashes_UWP || defined( Ashes_D3D11_XBox )
 			if ( CreateDXGIFactory2( 0u
 				, __uuidof( IDXGIFactory2 )
 				, reinterpret_cast< void ** >( &result ) ) != S_OK )

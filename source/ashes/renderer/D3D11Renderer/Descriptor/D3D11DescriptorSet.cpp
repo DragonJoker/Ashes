@@ -12,7 +12,7 @@
 
 #include <ashes/common/VkTypeTraits.hpp>
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	DescriptorSet::DescriptorSet( VkDevice device
 		, VkDescriptorPool pool
@@ -120,13 +120,13 @@ namespace ashes::d3d11
 			auto inlineUbo = createInlineUbo( device
 				, *inlineUniform
 				, Instance::getMemoryProperties()
-				, ashes::d3d11::vkCreateBuffer
-				, ashes::d3d11::vkGetBufferMemoryRequirements
-				, ashes::d3d11::vkAllocateMemory
-				, ashes::d3d11::vkBindBufferMemory
-				, ashes::d3d11::vkMapMemory
-				, ashes::d3d11::vkFlushMappedMemoryRanges
-				, ashes::d3d11::vkUnmapMemory );
+				, ashes::D3D11_NAMESPACE::vkCreateBuffer
+				, ashes::D3D11_NAMESPACE::vkGetBufferMemoryRequirements
+				, ashes::D3D11_NAMESPACE::vkAllocateMemory
+				, ashes::D3D11_NAMESPACE::vkBindBufferMemory
+				, ashes::D3D11_NAMESPACE::vkMapMemory
+				, ashes::D3D11_NAMESPACE::vkFlushMappedMemoryRanges
+				, ashes::D3D11_NAMESPACE::vkUnmapMemory );
 			myWrite.pBufferInfo = &inlineUbo->info;
 			m_inlineUbos.emplace_back( std::move( inlineUbo ) );
 		}

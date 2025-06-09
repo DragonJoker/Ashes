@@ -52,7 +52,7 @@ DEFINE_GUID( IID_IDXGIFactory, 0x7b7166ec, 0x21c7, 0x44ae, 0xb2, 0x1a, 0xc9, 0xa
 
 #include "ashesd3d11_api.hpp"
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	std::string getLastErrorText()
 	{

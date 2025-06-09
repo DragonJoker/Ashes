@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #include "D3D11RendererPrerequisites.hpp"
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	D3D11_RASTERIZER_DESC convert( VkPipelineRasterizationStateCreateInfo const & state
 		, VkPipelineMultisampleStateCreateInfo const & ms )

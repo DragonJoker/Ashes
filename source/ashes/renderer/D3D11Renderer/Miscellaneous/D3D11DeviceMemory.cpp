@@ -19,7 +19,7 @@ See LICENSE file in root folder
 #include <iostream>
 #pragma warning( pop )
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	//*********************************************************************************************
 

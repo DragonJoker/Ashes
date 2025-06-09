@@ -6,9 +6,9 @@ See LICENSE file in root folder.
 
 #include "Core/D3D11Device.hpp"
 
-#include <D3DCommon.h>
+#include <d3dcommon.h>
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	DeviceContextLock::DeviceContextLock( Device const * device )
 		: m_device{ device }

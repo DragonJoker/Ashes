@@ -5,7 +5,7 @@
 
 #include "ashesd3d11_api.hpp"
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	PipelineLayout::PipelineLayout( VkDevice device
 		, VkPipelineLayoutCreateInfo createInfo )

@@ -10,7 +10,7 @@ See LICENSE file in root folder
 
 #include <unordered_set>
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	class PipelineLayout
 		: public NonCopyable

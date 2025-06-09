@@ -27,7 +27,7 @@ See LICENSE file in root folder.
 
 #include "ashesd3d11_api.hpp"
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	//*************************************************************************
 
@@ -100,25 +100,25 @@ namespace ashes::d3d11
 
 	void BindPipelineCommand::apply( Context const & context )const
 	{
-		ashes::d3d11::apply( *context.context
+		ashes::D3D11_NAMESPACE::apply( *context.context
 			, get( m_pipeline )->getIAState() );
 
 		if ( !m_dynamicStencil )
 		{
-			ashes::d3d11::apply( *context.context
+			ashes::D3D11_NAMESPACE::apply( *context.context
 				, get( m_pipeline )->getDSState()
 				, get( m_pipeline )->getStencilRef() );
 		}
 
 		if ( !m_dynamicDepthBias )
 		{
-			ashes::d3d11::apply( *context.context
+			ashes::D3D11_NAMESPACE::apply( *context.context
 				, get( m_pipeline )->getRSState() );
 		}
 
 		if ( !m_dynamicBlendFactor )
 		{
-			ashes::d3d11::apply( *context.context
+			ashes::D3D11_NAMESPACE::apply( *context.context
 				, get( m_pipeline )->getBDState()
 				, get( m_pipeline )->getBlendFactor()
 				, get( m_pipeline )->getSampleMask() );
@@ -127,14 +127,14 @@ namespace ashes::d3d11
 		if ( !m_dynamicViewport )
 		{
 			assert( get( m_pipeline )->hasViewport() );
-			ashes::d3d11::apply( *context.context
+			ashes::D3D11_NAMESPACE::apply( *context.context
 				, get( m_pipeline )->getViewports() );
 		}
 
 		if ( !m_dynamicScissor )
 		{
 			assert( get( m_pipeline )->hasScissor() );
-			ashes::d3d11::apply( *context.context
+			ashes::D3D11_NAMESPACE::apply( *context.context
 				, get( m_pipeline )->getScissors() );
 		}
 
@@ -182,25 +182,25 @@ namespace ashes::d3d11
 
 	void BindPipelineCommand::remove( Context const & context )const
 	{
-		ashes::d3d11::apply( *context.context
+		ashes::D3D11_NAMESPACE::apply( *context.context
 			, ( ID3D11InputLayout * )nullptr );
 
 		if ( !m_dynamicStencil )
 		{
-			ashes::d3d11::apply( *context.context
+			ashes::D3D11_NAMESPACE::apply( *context.context
 				, ( ID3D11DepthStencilState * )nullptr
 				, get( m_pipeline )->getStencilRef() );
 		}
 
 		if ( !m_dynamicDepthBias )
 		{
-			ashes::d3d11::apply( *context.context
+			ashes::D3D11_NAMESPACE::apply( *context.context
 				, ( ID3D11RasterizerState * )nullptr );
 		}
 
 		if ( !m_dynamicBlendFactor )
 		{
-			ashes::d3d11::apply( *context.context
+			ashes::D3D11_NAMESPACE::apply( *context.context
 				, nullptr
 				, get( m_pipeline )->getBlendFactor()
 				, get( m_pipeline )->getSampleMask() );
@@ -252,14 +252,14 @@ namespace ashes::d3d11
 
 	void BindDepthStencilStateCommand::apply( Context const & context )const
 	{
-		ashes::d3d11::apply( *context.context
+		ashes::D3D11_NAMESPACE::apply( *context.context
 			, get( m_pipeline )->getDSState()
 			, get( m_pipeline )->getDynamicStates().getBackStencilReference() );
 	}
 
 	void BindDepthStencilStateCommand::remove( Context const & context )const
 	{
-		ashes::d3d11::apply( *context.context
+		ashes::D3D11_NAMESPACE::apply( *context.context
 			, ( ID3D11DepthStencilState * )nullptr
 			, get( m_pipeline )->getDynamicStates().getBackStencilReference() );
 	}
@@ -280,13 +280,13 @@ namespace ashes::d3d11
 
 	void BindRasterizerStateCommand::apply( Context const & context )const
 	{
-		ashes::d3d11::apply( *context.context
+		ashes::D3D11_NAMESPACE::apply( *context.context
 			, get( m_pipeline )->getRSState() );
 	}
 
 	void BindRasterizerStateCommand::remove( Context const & context )const
 	{
-		ashes::d3d11::apply( *context.context
+		ashes::D3D11_NAMESPACE::apply( *context.context
 			, ( ID3D11RasterizerState * )nullptr );
 	}
 
@@ -308,7 +308,7 @@ namespace ashes::d3d11
 
 	void BindBlendStateCommand::apply( Context const & context )const
 	{
-		ashes::d3d11::apply( *context.context
+		ashes::D3D11_NAMESPACE::apply( *context.context
 			, get( m_pipeline )->getBDState()
 			, m_blendConstants.data()
 			, get( m_pipeline )->getSampleMask() );
@@ -316,7 +316,7 @@ namespace ashes::d3d11
 
 	void BindBlendStateCommand::remove( Context const & context )const
 	{
-		ashes::d3d11::apply( *context.context
+		ashes::D3D11_NAMESPACE::apply( *context.context
 			, nullptr
 			, m_blendConstants.data()
 			, get( m_pipeline )->getSampleMask() );

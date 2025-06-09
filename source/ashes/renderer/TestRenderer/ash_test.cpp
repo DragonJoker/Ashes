@@ -146,7 +146,7 @@ namespace ashes::test
 		const VkAllocationCallbacks* pAllocator,
 		VkDevice* pDevice )
 	{
-		auto & gpu = *get( physicalDevice );
+		auto const & gpu = *get( physicalDevice );
 		auto instance = gpu.getInstance();
 		assert( pDevice );
 		return allocate( *pDevice
@@ -191,7 +191,7 @@ namespace ashes::test
 #if VK_KHR_get_physical_device_properties2
 			VkExtensionProperties{ VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_SPEC_VERSION },
 #endif
-#if VK_KHR_display
+#if defined( VK_KHR_display ) && !defined( Ashes_D3D11_XBox )
 			VkExtensionProperties{ VK_KHR_DISPLAY_EXTENSION_NAME, VK_KHR_DISPLAY_SPEC_VERSION },
 #endif
 		};
@@ -4572,9 +4572,8 @@ namespace ashes::test
 #include <ashes/ashes_functions_list.hpp>
 		};
 
-		auto it = functions.find( pName );
-
-		if ( it != functions.end() )
+		if ( auto it = functions.find( pName );
+			it != functions.end() )
 		{
 			result = it->second;
 		}
@@ -4595,9 +4594,8 @@ namespace ashes::test
 #include <ashes/ashes_functions_list.hpp>
 		};
 
-		auto it = functions.find( pName );
-
-		if ( it != functions.end() )
+		if ( auto it = functions.find( pName );
+			it != functions.end() )
 		{
 			result = it->second;
 		}
@@ -4621,9 +4619,8 @@ namespace ashes::test
 #include <ashes/ashes_functions_list.hpp>
 		};
 
-		auto it = functions.find( pName );
-
-		if ( it != functions.end() )
+		if ( auto it = functions.find( pName );
+			it != functions.end() )
 		{
 			result = it->second;
 		}
@@ -4817,7 +4814,6 @@ extern "C"
 	}
 
 #	endif
-// #endif
 #pragma endregion
 #pragma region VK_KHR_wayland_surface
 #	ifdef __linux__

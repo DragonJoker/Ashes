@@ -31,14 +31,14 @@ See LICENSE file in root folder.
 
 #include <ashes/common/Hash.hpp>
 
-#include <D3DCommon.h>
+#include <d3dcommon.h>
 
 #pragma warning( push )
 #pragma warning( disable: 5262 )
 #include <iomanip>
 #pragma warning( pop )
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	VkExtent3D getTexelBlockExtent( VkFormat format )
 	{
@@ -623,7 +623,7 @@ namespace ashes::d3d11
 			, 0u
 			, reinterpret_cast< void ** >( &buffer ) ) )
 		{
-			std::copy( dummyIndex, dummyIndex + count, buffer );
+			std::copy( dummyIndex.begin(), std::next( dummyIndex.begin(), ptrdiff_t( count ) ), buffer );
 			get( m_dummyIndexed.memory )->flush( 0, size );
 			get( m_dummyIndexed.memory )->unlock();
 		}

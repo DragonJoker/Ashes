@@ -25,7 +25,7 @@ See LICENSE file in root folder.
 
 #include "ashesd3d11_api.hpp"
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	namespace
 	{
@@ -191,11 +191,12 @@ namespace ashes::d3d11
 			NvAPI_Unload();
 		}
 #endif
-
+#if !defined( Ashes_D3D11_XBox )
 		for ( auto & display : m_displays )
 		{
 			deallocate( display.display, nullptr );
 		}
+#endif
 	}
 
 	uint32_t PhysicalDevice::getMemoryTypeBits( VkMemoryPropertyFlags properties )const
@@ -516,7 +517,7 @@ namespace ashes::d3d11
 	}
 
 #endif
-#ifdef VK_KHR_display
+#if defined( VK_KHR_display ) && !defined( Ashes_D3D11_XBox )
 
 	std::vector< VkDisplayPropertiesKHR > const & PhysicalDevice::getDisplayProperties()const
 	{
@@ -545,7 +546,7 @@ namespace ashes::d3d11
 		doInitialiseFeatures();
 		doInitialiseQueueProperties();
 		doInitialiseFormatProperties();
-#ifdef VK_KHR_display
+#if defined( VK_KHR_display ) && !defined( Ashes_D3D11_XBox )
 
 		doInitialiseDisplayProperties();
 		doInitialiseDisplayPlaneProperties();
@@ -617,11 +618,15 @@ namespace ashes::d3d11
 		if ( DXGI_ADAPTER_DESC2 adapterDesc{};
 			m_adapterInfo.adapter2 && SUCCEEDED( m_adapterInfo.adapter2->GetDesc2( &adapterDesc ) ) )
 		{
-			strncpy( m_properties.deviceName
+			strncpy_s( m_properties.deviceName
 				, toString( adapterDesc.Description ).c_str()
 				, sizeof( m_properties.deviceName ) - 1u );
-			strncat( m_properties.deviceName
+			strncat_s( m_properties.deviceName
+#if defined( Ashes_D3D11_XBox )
+				, " (xbox)"
+#else
 				, " (d3d11)"
+#endif
 				, sizeof( m_properties.deviceName ) - 1u );
 			m_properties.deviceID = adapterDesc.DeviceId;
 			m_properties.vendorID = adapterDesc.VendorId;
@@ -964,7 +969,7 @@ namespace ashes::d3d11
 #	endif
 	}
 
-#ifdef VK_KHR_display
+#if defined( VK_KHR_display ) && !defined( Ashes_D3D11_XBox )
 
 	struct ExtentFormat
 	{

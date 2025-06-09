@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 
 #include <algorithm>
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	UpdateBufferCommand::UpdateBufferCommand( VkDevice device
 		, VkBuffer buffer

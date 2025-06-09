@@ -14,9 +14,12 @@
 #pragma warning( push )
 #pragma warning( disable: 5262 )
 #include <sstream>
+#if defined( Ashes_D3D11_XBox )
+#include <winrt/windows.ui.core.h>
+#endif
 #pragma warning( pop )
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	namespace
 	{
@@ -76,6 +79,23 @@ namespace ashes::d3d11
 			doInitPresentParameters();
 			auto factory = get( get( m_device )->getInstance() )->getDXGIFactory();
 			auto d3ddevice = get( m_device )->getDevice();
+#if defined( Ashes_D3D11_XBox )
+
+			auto window = winrt::Windows::UI::Core::CoreWindow::GetForCurrentThread();
+			HRESULT hr = static_cast< IDXGIFactory2 * >( factory )->CreateSwapChainForCoreWindow( d3ddevice
+				, static_cast< IUnknown * >( winrt::get_abi( window ) )
+				, &m_presentDesc
+				, nullptr
+				, reinterpret_cast< IDXGISwapChain1 ** >( &m_swapChain ) );
+
+			if ( !checkError( m_device, hr, "CreateSwapChain" )
+				|| !m_swapChain )
+			{
+				throw ashes::BaseException{ "Could not create the swapchain" };
+			}
+
+#else
+
 			HRESULT hr = factory->CreateSwapChain( d3ddevice
 				, &m_presentDesc
 				, &m_swapChain );
@@ -104,6 +124,7 @@ namespace ashes::d3d11
 				}
 			}
 
+#endif
 			dxDebugName( m_swapChain, SwapChain );
 			ID3D11Texture2D * rtTex = nullptr;
 			hr = m_swapChain->GetBuffer( 0
@@ -205,6 +226,31 @@ namespace ashes::d3d11
 		auto caps = get( m_createInfo.surface )->getCapabilities( get( m_device )->getPhysicalDevice() );
 		m_windowExtent = caps.maxImageExtent;
 		m_displayMode = get( m_createInfo.surface )->getMatchingDesc( m_createInfo.imageFormat );
+#if defined( Ashes_D3D11_XBox )
+
+		// Initialize the swap chain description.
+		auto result = DXGI_SWAP_CHAIN_DESC1{};
+
+		// Use triple buffering.
+		result.BufferCount = 3;
+
+		// Set the back buffer format and size.
+		result.Width = m_createInfo.imageExtent.width;
+		result.Height = m_createInfo.imageExtent.height;
+		result.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		result.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+
+		// Turn multisampling off.
+		result.SampleDesc.Count = 1;
+		result.SampleDesc.Quality = 0;
+
+		result.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+		result.Scaling = DXGI_SCALING_STRETCH;
+		result.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
+		result.Flags = 0;
+
+#else
+
 		auto hWnd = get( m_createInfo.surface )->getHwnd();
 
 		// Initialize the swap chain description.
@@ -239,6 +285,8 @@ namespace ashes::d3d11
 		result.Flags = UINT( get( m_createInfo.surface )->isDisplay()
 			? DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH
 			: 0 );
+
+#endif
 
 		m_presentDesc = result;
 	}

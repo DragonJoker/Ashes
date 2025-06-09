@@ -8,7 +8,7 @@ See LICENSE file in root folder
 
 #include <array>
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	struct BlitPipeline
 	{
@@ -22,6 +22,10 @@ namespace ashes::d3d11
 		BlitPipeline( Device const & device
 			, VkFormat src
 			, VkFormat dst );
+		BlitPipeline( BlitPipeline const & ) = delete;
+		BlitPipeline( BlitPipeline && )noexcept = delete;
+		BlitPipeline & operator=( BlitPipeline const & ) = delete;
+		BlitPipeline & operator=( BlitPipeline && )noexcept = delete;
 		~BlitPipeline()noexcept;
 	};
 

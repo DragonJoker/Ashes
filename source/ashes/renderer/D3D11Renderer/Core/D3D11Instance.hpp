@@ -12,7 +12,7 @@
 
 #include <array>
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	D3D_FEATURE_LEVEL getSupportedFeatureLevel();
 
