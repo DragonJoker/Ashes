@@ -585,10 +585,10 @@ namespace ashes::xbox
 		if ( DXGI_ADAPTER_DESC2 adapterDesc{};
 			m_adapterInfo.adapter2 && SUCCEEDED( m_adapterInfo.adapter2->GetDesc2( &adapterDesc ) ) )
 		{
-			strncpy( m_properties.deviceName
+			strncpy_s( m_properties.deviceName
 				, toString( adapterDesc.Description ).c_str()
 				, sizeof( m_properties.deviceName ) - 1u );
-			strncat( m_properties.deviceName
+			strncat_s( m_properties.deviceName
 				, " (xbox)"
 				, sizeof( m_properties.deviceName ) - 1u );
 			m_properties.deviceID = adapterDesc.DeviceId;

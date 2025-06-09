@@ -77,9 +77,9 @@ namespace ashes
 	{
 		::SetLastError( ERROR_SUCCESS );
 		auto result = ( void * )::GetProcAddress( static_cast< HMODULE >( m_library ), name.c_str() );
-		auto error = ::GetLastError();
 		
-		if ( error != ERROR_SUCCESS && !result )
+		if ( auto error = ::GetLastError();
+			error != ERROR_SUCCESS && !result )
 		{
 			std::stringstream stream;
 			stream << "Couldn't load function [" + name + "]: ";

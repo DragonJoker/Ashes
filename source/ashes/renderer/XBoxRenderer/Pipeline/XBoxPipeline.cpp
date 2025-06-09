@@ -22,7 +22,7 @@ namespace ashes::xbox
 			uint64_t b = ( seed ^ a ) * kMul;
 			b ^= ( b >> 47 );
 
-			seed = static_cast< std::size_t >( b * kMul );
+			seed = std::size_t( b * kMul );
 		}
 
 		size_t doHash( VkVertexInputAttributeDescription const & desc )

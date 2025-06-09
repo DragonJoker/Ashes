@@ -194,7 +194,7 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkEnumerateDeviceExtensionProperties(
 		VkPhysicalDevice physicalDevice,
-		const char * pLayerName,
+		[[maybe_unused]] const char * pLayerName,
 		uint32_t * pPropertyCount,
 		VkExtensionProperties * pProperties )
 	{
@@ -267,7 +267,7 @@ namespace ashes::xbox
 		VkQueue queue,
 		uint32_t submitCount,
 		const VkSubmitInfo * pSubmits,
-		VkFence fence )
+		[[maybe_unused]] VkFence fence )
 	{
 		return get( queue )->submit( makeArrayView( pSubmits, submitCount ) );
 	}
@@ -298,7 +298,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkFreeMemory(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkDeviceMemory memory,
 		const VkAllocationCallbacks * pAllocator )
 	{
@@ -306,7 +306,7 @@ namespace ashes::xbox
 	}
 
 	VkResult VKAPI_CALL vkMapMemory(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkDeviceMemory memory,
 		VkDeviceSize offset,
 		VkDeviceSize size,
@@ -320,14 +320,14 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkUnmapMemory(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkDeviceMemory memory )
 	{
 		get( memory )->unlock();
 	}
 
 	VkResult VKAPI_CALL vkFlushMappedMemoryRanges(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		uint32_t memoryRangeCount,
 		const VkMappedMemoryRange * pMemoryRanges )
 	{
@@ -344,7 +344,7 @@ namespace ashes::xbox
 	}
 
 	VkResult VKAPI_CALL vkInvalidateMappedMemoryRanges(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		uint32_t memoryRangeCount,
 		const VkMappedMemoryRange * pMemoryRanges )
 	{
@@ -361,15 +361,15 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkGetDeviceMemoryCommitment(
-		VkDevice device,
-		VkDeviceMemory memory,
+		[[maybe_unused]] VkDevice device,
+		[[maybe_unused]] VkDeviceMemory memory,
 		VkDeviceSize * pCommittedMemoryInBytes )
 	{
 		*pCommittedMemoryInBytes = 0;
 	}
 
 	VkResult VKAPI_CALL vkBindBufferMemory(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkBuffer buffer,
 		VkDeviceMemory memory,
 		VkDeviceSize memoryOffset )
@@ -378,7 +378,7 @@ namespace ashes::xbox
 	}
 
 	VkResult VKAPI_CALL vkBindImageMemory(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkImage image,
 		VkDeviceMemory memory,
 		VkDeviceSize memoryOffset )
@@ -387,7 +387,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkGetBufferMemoryRequirements(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkBuffer buffer,
 		VkMemoryRequirements * pMemoryRequirements )
 	{
@@ -395,7 +395,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkGetImageMemoryRequirements(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkImage image,
 		VkMemoryRequirements * pMemoryRequirements )
 	{
@@ -403,7 +403,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkGetImageSparseMemoryRequirements(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkImage image,
 		uint32_t * pSparseMemoryRequirementCount,
 		VkSparseImageMemoryRequirements * pSparseMemoryRequirements )
@@ -452,16 +452,16 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkQueueBindSparse(
 		VkQueue queue,
-		uint32_t bindInfoCount,
-		const VkBindSparseInfo * pBindInfo,
-		VkFence fence )
+		[[maybe_unused]] uint32_t bindInfoCount,
+		[[maybe_unused]] const VkBindSparseInfo * pBindInfo,
+		[[maybe_unused]] VkFence fence )
 	{
 		return get( queue )->bindSparse();
 	}
 
 	VkResult VKAPI_CALL vkCreateFence(
 		VkDevice device,
-		const VkFenceCreateInfo * pCreateInfo,
+		[[maybe_unused]] const VkFenceCreateInfo * pCreateInfo,
 		const VkAllocationCallbacks * pAllocator,
 		VkFence * pFence )
 	{
@@ -472,7 +472,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkDestroyFence(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkFence fence,
 		const VkAllocationCallbacks * pAllocator )
 	{
@@ -480,7 +480,7 @@ namespace ashes::xbox
 	}
 
 	VkResult VKAPI_CALL vkResetFences(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		uint32_t fenceCount,
 		const VkFence * pFences )
 	{
@@ -493,18 +493,18 @@ namespace ashes::xbox
 	}
 
 	VkResult VKAPI_CALL vkGetFenceStatus(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkFence fence )
 	{
 		return get( fence )->getStatus();
 	}
 
 	VkResult VKAPI_CALL vkWaitForFences(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		uint32_t fenceCount,
 		const VkFence * pFences,
-		VkBool32 waitAll,
-		uint64_t timeout )
+		[[maybe_unused]] VkBool32 waitAll,
+		[[maybe_unused]] uint64_t timeout )
 	{
 		for ( uint32_t i = 0u; i < fenceCount; ++i )
 		{
@@ -516,7 +516,7 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkCreateSemaphore(
 		VkDevice device,
-		const VkSemaphoreCreateInfo * pCreateInfo,
+		[[maybe_unused]] const VkSemaphoreCreateInfo * pCreateInfo,
 		const VkAllocationCallbacks * pAllocator,
 		VkSemaphore * pSemaphore )
 	{
@@ -527,7 +527,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkDestroySemaphore(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkSemaphore semaphore,
 		const VkAllocationCallbacks * pAllocator )
 	{
@@ -536,7 +536,7 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkCreateEvent(
 		VkDevice device,
-		const VkEventCreateInfo * pCreateInfo,
+		[[maybe_unused]] const VkEventCreateInfo * pCreateInfo,
 		const VkAllocationCallbacks * pAllocator,
 		VkEvent * pEvent )
 	{
@@ -547,7 +547,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkDestroyEvent(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkEvent event,
 		const VkAllocationCallbacks * pAllocator )
 	{
@@ -555,21 +555,21 @@ namespace ashes::xbox
 	}
 
 	VkResult VKAPI_CALL vkGetEventStatus(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkEvent event )
 	{
 		return get( event )->getStatus();
 	}
 
 	VkResult VKAPI_CALL vkSetEvent(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkEvent event )
 	{
 		return get( event )->set();
 	}
 
 	VkResult VKAPI_CALL vkResetEvent(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkEvent event )
 	{
 		return get( event )->reset();
@@ -589,7 +589,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkDestroyQueryPool(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkQueryPool queryPool,
 		const VkAllocationCallbacks * pAllocator )
 	{
@@ -597,7 +597,7 @@ namespace ashes::xbox
 	}
 
 	VkResult VKAPI_CALL vkGetQueryPoolResults(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkQueryPool queryPool,
 		uint32_t firstQuery,
 		uint32_t queryCount,
@@ -628,7 +628,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkDestroyBuffer(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkBuffer buffer,
 		const VkAllocationCallbacks * pAllocator )
 	{
@@ -649,7 +649,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkDestroyBufferView(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkBufferView bufferView,
 		const VkAllocationCallbacks * pAllocator )
 	{
@@ -670,7 +670,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkDestroyImage(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkImage image,
 		const VkAllocationCallbacks * pAllocator )
 	{
@@ -702,7 +702,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkDestroyImageView(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkImageView imageView,
 		const VkAllocationCallbacks * pAllocator )
 	{
@@ -723,7 +723,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkDestroyShaderModule(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkShaderModule shaderModule,
 		const VkAllocationCallbacks * pAllocator )
 	{
@@ -744,7 +744,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkDestroyPipelineCache(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkPipelineCache pipelineCache,
 		const VkAllocationCallbacks * pAllocator )
 	{
@@ -752,7 +752,7 @@ namespace ashes::xbox
 	}
 
 	VkResult VKAPI_CALL vkGetPipelineCacheData(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkPipelineCache pipelineCache,
 		size_t * pDataSize,
 		void * pData )
@@ -769,17 +769,17 @@ namespace ashes::xbox
 	}
 
 	VkResult VKAPI_CALL vkMergePipelineCaches(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkPipelineCache dstCache,
-		uint32_t srcCacheCount,
-		const VkPipelineCache * pSrcCaches )
+		[[maybe_unused]] uint32_t srcCacheCount,
+		[[maybe_unused]] const VkPipelineCache * pSrcCaches )
 	{
 		return get( dstCache )->merge();
 	}
 
 	VkResult VKAPI_CALL vkCreateGraphicsPipelines(
 		VkDevice device,
-		VkPipelineCache pipelineCache,
+		[[maybe_unused]] VkPipelineCache pipelineCache,
 		uint32_t createInfoCount,
 		const VkGraphicsPipelineCreateInfo * pCreateInfos,
 		const VkAllocationCallbacks * pAllocator,
@@ -807,7 +807,7 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkCreateComputePipelines(
 		VkDevice device,
-		VkPipelineCache pipelineCache,
+		[[maybe_unused]] VkPipelineCache pipelineCache,
 		uint32_t createInfoCount,
 		const VkComputePipelineCreateInfo * pCreateInfos,
 		const VkAllocationCallbacks * pAllocator,
@@ -834,7 +834,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkDestroyPipeline(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkPipeline pipeline,
 		const VkAllocationCallbacks * pAllocator )
 	{
@@ -855,7 +855,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkDestroyPipelineLayout(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkPipelineLayout pipelineLayout,
 		const VkAllocationCallbacks * pAllocator )
 	{
@@ -876,7 +876,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkDestroySampler(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkSampler sampler,
 		const VkAllocationCallbacks * pAllocator )
 	{
@@ -897,7 +897,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkDestroyDescriptorSetLayout(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkDescriptorSetLayout descriptorSetLayout,
 		const VkAllocationCallbacks * pAllocator )
 	{
@@ -918,7 +918,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkDestroyDescriptorPool(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkDescriptorPool descriptorPool,
 		const VkAllocationCallbacks * pAllocator )
 	{
@@ -926,9 +926,9 @@ namespace ashes::xbox
 	}
 
 	VkResult VKAPI_CALL vkResetDescriptorPool(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkDescriptorPool descriptorPool,
-		VkDescriptorPoolResetFlags flags )
+		[[maybe_unused]] VkDescriptorPoolResetFlags flags )
 	{
 		return get( descriptorPool )->reset();
 	}
@@ -958,7 +958,7 @@ namespace ashes::xbox
 	}
 
 	VkResult VKAPI_CALL vkFreeDescriptorSets(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkDescriptorPool descriptorPool,
 		uint32_t descriptorSetCount,
 		const VkDescriptorSet * pDescriptorSets )
@@ -967,7 +967,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkUpdateDescriptorSets(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		uint32_t descriptorWriteCount,
 		const VkWriteDescriptorSet * pDescriptorWrites,
 		uint32_t descriptorCopyCount,
@@ -998,7 +998,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkDestroyFramebuffer(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkFramebuffer framebuffer,
 		const VkAllocationCallbacks * pAllocator )
 	{
@@ -1019,7 +1019,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkDestroyRenderPass(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkRenderPass renderPass,
 		const VkAllocationCallbacks * pAllocator )
 	{
@@ -1027,7 +1027,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkGetRenderAreaGranularity(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkRenderPass renderPass,
 		VkExtent2D * pGranularity )
 	{
@@ -1048,7 +1048,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkDestroyCommandPool(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkCommandPool commandPool,
 		const VkAllocationCallbacks * pAllocator )
 	{
@@ -1056,9 +1056,9 @@ namespace ashes::xbox
 	}
 
 	VkResult VKAPI_CALL vkResetCommandPool(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkCommandPool commandPool,
-		VkCommandPoolResetFlags flags )
+		[[maybe_unused]] VkCommandPoolResetFlags flags )
 	{
 		return get( commandPool )->reset();
 	}
@@ -1089,7 +1089,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkFreeCommandBuffers(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkCommandPool commandPool,
 		uint32_t commandBufferCount,
 		const VkCommandBuffer * pCommandBuffers )
@@ -1112,7 +1112,7 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkResetCommandBuffer(
 		VkCommandBuffer commandBuffer,
-		VkCommandBufferResetFlags flags )
+		[[maybe_unused]] VkCommandBufferResetFlags flags )
 	{
 		return get( commandBuffer )->reset();
 	}
@@ -1332,9 +1332,9 @@ namespace ashes::xbox
 	void VKAPI_CALL vkCmdCopyImage(
 		VkCommandBuffer commandBuffer,
 		VkImage srcImage,
-		VkImageLayout srcImageLayout,
+		[[maybe_unused]] VkImageLayout srcImageLayout,
 		VkImage dstImage,
-		VkImageLayout dstImageLayout,
+		[[maybe_unused]] VkImageLayout dstImageLayout,
 		uint32_t regionCount,
 		const VkImageCopy * pRegions )
 	{
@@ -1346,9 +1346,9 @@ namespace ashes::xbox
 	void VKAPI_CALL vkCmdBlitImage(
 		VkCommandBuffer commandBuffer,
 		VkImage srcImage,
-		VkImageLayout srcImageLayout,
+		[[maybe_unused]] VkImageLayout srcImageLayout,
 		VkImage dstImage,
-		VkImageLayout dstImageLayout,
+		[[maybe_unused]] VkImageLayout dstImageLayout,
 		uint32_t regionCount,
 		const VkImageBlit * pRegions,
 		VkFilter filter )
@@ -1363,7 +1363,7 @@ namespace ashes::xbox
 		VkCommandBuffer commandBuffer,
 		VkBuffer srcBuffer,
 		VkImage dstImage,
-		VkImageLayout dstImageLayout,
+		[[maybe_unused]] VkImageLayout dstImageLayout,
 		uint32_t regionCount,
 		const VkBufferImageCopy * pRegions )
 	{
@@ -1375,7 +1375,7 @@ namespace ashes::xbox
 	void VKAPI_CALL vkCmdCopyImageToBuffer(
 		VkCommandBuffer commandBuffer,
 		VkImage srcImage,
-		VkImageLayout srcImageLayout,
+		[[maybe_unused]] VkImageLayout srcImageLayout,
 		VkBuffer dstBuffer,
 		uint32_t regionCount,
 		const VkBufferImageCopy * pRegions )
@@ -1413,7 +1413,7 @@ namespace ashes::xbox
 	void VKAPI_CALL vkCmdClearColorImage(
 		VkCommandBuffer commandBuffer,
 		VkImage image,
-		VkImageLayout imageLayout,
+		[[maybe_unused]] VkImageLayout imageLayout,
 		const VkClearColorValue * pColor,
 		uint32_t rangeCount,
 		const VkImageSubresourceRange * pRanges )
@@ -1426,7 +1426,7 @@ namespace ashes::xbox
 	void VKAPI_CALL vkCmdClearDepthStencilImage(
 		VkCommandBuffer commandBuffer,
 		VkImage image,
-		VkImageLayout imageLayout,
+		[[maybe_unused]] VkImageLayout imageLayout,
 		const VkClearDepthStencilValue * pDepthStencil,
 		uint32_t rangeCount,
 		const VkImageSubresourceRange * pRanges )
@@ -1450,9 +1450,9 @@ namespace ashes::xbox
 	void VKAPI_CALL vkCmdResolveImage(
 		VkCommandBuffer commandBuffer,
 		VkImage srcImage,
-		VkImageLayout srcImageLayout,
+		[[maybe_unused]] VkImageLayout srcImageLayout,
 		VkImage dstImage,
-		VkImageLayout dstImageLayout,
+		[[maybe_unused]] VkImageLayout dstImageLayout,
 		uint32_t regionCount,
 		const VkImageResolve * pRegions )
 	{
@@ -1483,8 +1483,8 @@ namespace ashes::xbox
 		const VkEvent * pEvents,
 		VkPipelineStageFlags srcStageMask,
 		VkPipelineStageFlags dstStageMask,
-		uint32_t memoryBarrierCount,
-		const VkMemoryBarrier * pMemoryBarriers,
+		[[maybe_unused]] uint32_t memoryBarrierCount,
+		[[maybe_unused]] const VkMemoryBarrier * pMemoryBarriers,
 		uint32_t bufferMemoryBarrierCount,
 		const VkBufferMemoryBarrier * pBufferMemoryBarriers,
 		uint32_t imageMemoryBarrierCount,
@@ -1501,7 +1501,7 @@ namespace ashes::xbox
 		VkCommandBuffer commandBuffer,
 		VkPipelineStageFlags srcStageMask,
 		VkPipelineStageFlags dstStageMask,
-		VkDependencyFlags dependencyFlags,
+		[[maybe_unused]] VkDependencyFlags dependencyFlags,
 		uint32_t memoryBarrierCount,
 		const VkMemoryBarrier * pMemoryBarriers,
 		uint32_t bufferMemoryBarrierCount,
@@ -1595,14 +1595,14 @@ namespace ashes::xbox
 	void VKAPI_CALL vkCmdBeginRenderPass(
 		VkCommandBuffer commandBuffer,
 		const VkRenderPassBeginInfo * pRenderPassBegin,
-		VkSubpassContents contents )
+		[[maybe_unused]] VkSubpassContents contents )
 	{
 		get( commandBuffer )->beginRenderPass( *pRenderPassBegin );
 	}
 
 	void VKAPI_CALL vkCmdNextSubpass(
 		VkCommandBuffer commandBuffer,
-		VkSubpassContents contents )
+		[[maybe_unused]] VkSubpassContents contents )
 	{
 		get( commandBuffer )->nextSubpass();
 	}
@@ -1634,7 +1634,7 @@ namespace ashes::xbox
 	}
 
 	VkResult VKAPI_CALL vkBindBufferMemory2(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		uint32_t bindInfoCount,
 		const VkBindBufferMemoryInfo * pBindInfos )
 	{
@@ -1653,7 +1653,7 @@ namespace ashes::xbox
 	}
 
 	VkResult VKAPI_CALL vkBindImageMemory2(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		uint32_t bindInfoCount,
 		const VkBindImageMemoryInfo * pBindInfos )
 	{
@@ -1673,9 +1673,9 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkGetDeviceGroupPeerMemoryFeatures(
 		VkDevice device,
-		uint32_t heapIndex,
-		uint32_t localDeviceIndex,
-		uint32_t remoteDeviceIndex,
+		[[maybe_unused]] uint32_t heapIndex,
+		[[maybe_unused]] uint32_t localDeviceIndex,
+		[[maybe_unused]] uint32_t remoteDeviceIndex,
 		VkPeerMemoryFeatureFlags * pPeerMemoryFeatures )
 	{
 		reportUnsupported( device, "vkGetDeviceGroupPeerMemoryFeatures" );
@@ -1684,52 +1684,52 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkCmdSetDeviceMask(
 		VkCommandBuffer commandBuffer,
-		uint32_t deviceMask )
+		[[maybe_unused]] uint32_t deviceMask )
 	{
 		reportUnsupported( commandBuffer, "vkCmdSetDeviceMask" );
 	}
 
 	void VKAPI_CALL vkCmdDispatchBase(
 		VkCommandBuffer commandBuffer,
-		uint32_t baseGroupX,
-		uint32_t baseGroupY,
-		uint32_t baseGroupZ,
-		uint32_t groupCountX,
-		uint32_t groupCountY,
-		uint32_t groupCountZ )
+		[[maybe_unused]] uint32_t baseGroupX,
+		[[maybe_unused]] uint32_t baseGroupY,
+		[[maybe_unused]] uint32_t baseGroupZ,
+		[[maybe_unused]] uint32_t groupCountX,
+		[[maybe_unused]] uint32_t groupCountY,
+		[[maybe_unused]] uint32_t groupCountZ )
 	{
 		reportUnsupported( commandBuffer, "vkCmdDispatchBase" );
 	}
 
 	VkResult VKAPI_CALL vkEnumeratePhysicalDeviceGroups(
 		VkInstance instance,
-		uint32_t * pPhysicalDeviceGroupCount,
-		VkPhysicalDeviceGroupProperties * pPhysicalDeviceGroupProperties )
+		[[maybe_unused]] uint32_t * pPhysicalDeviceGroupCount,
+		[[maybe_unused]] VkPhysicalDeviceGroupProperties * pPhysicalDeviceGroupProperties )
 	{
 		return reportUnsupported( instance, "vkEnumeratePhysicalDeviceGroups" );
 	}
 
 	void VKAPI_CALL vkGetImageMemoryRequirements2(
 		VkDevice device,
-		const VkImageMemoryRequirementsInfo2 * pInfo,
-		VkMemoryRequirements2 * pMemoryRequirements )
+		[[maybe_unused]] const VkImageMemoryRequirementsInfo2 * pInfo,
+		[[maybe_unused]] VkMemoryRequirements2 * pMemoryRequirements )
 	{
 		reportUnsupported( device, "vkGetImageMemoryRequirements2" );
 	}
 
 	void VKAPI_CALL vkGetBufferMemoryRequirements2(
 		VkDevice device,
-		const VkBufferMemoryRequirementsInfo2 * pInfo,
-		VkMemoryRequirements2 * pMemoryRequirements )
+		[[maybe_unused]] const VkBufferMemoryRequirementsInfo2 * pInfo,
+		[[maybe_unused]] VkMemoryRequirements2 * pMemoryRequirements )
 	{
 		reportUnsupported( device, "vkGetBufferMemoryRequirements2" );
 	}
 
 	void VKAPI_CALL vkGetImageSparseMemoryRequirements2(
 		VkDevice device,
-		const VkImageSparseMemoryRequirementsInfo2 * pInfo,
-		uint32_t * pSparseMemoryRequirementCount,
-		VkSparseImageMemoryRequirements2 * pSparseMemoryRequirements )
+		[[maybe_unused]] const VkImageSparseMemoryRequirementsInfo2 * pInfo,
+		[[maybe_unused]] uint32_t * pSparseMemoryRequirementCount,
+		[[maybe_unused]] VkSparseImageMemoryRequirements2 * pSparseMemoryRequirements )
 	{
 		reportUnsupported( device, "vkGetImageSparseMemoryRequirements2" );
 	}
@@ -1810,91 +1810,91 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkTrimCommandPool(
-		VkDevice device,
-		VkCommandPool commandPool,
-		VkCommandPoolTrimFlags flags )
+		[[maybe_unused]] VkDevice device,
+		[[maybe_unused]] VkCommandPool commandPool,
+		[[maybe_unused]] VkCommandPoolTrimFlags flags )
 	{
 	}
 
 	void VKAPI_CALL vkGetDeviceQueue2(
 		VkDevice device,
-		const VkDeviceQueueInfo2 * pQueueInfo,
-		VkQueue * pQueue )
+		[[maybe_unused]] const VkDeviceQueueInfo2 * pQueueInfo,
+		[[maybe_unused]] VkQueue * pQueue )
 	{
 		reportUnsupported( device, "vkGetDeviceQueue2" );
 	}
 
 	VkResult VKAPI_CALL vkCreateSamplerYcbcrConversion(
 		VkDevice device,
-		const VkSamplerYcbcrConversionCreateInfo * pCreateInfo,
-		const VkAllocationCallbacks * pAllocator,
-		VkSamplerYcbcrConversion * pYcbcrConversion )
+		[[maybe_unused]] const VkSamplerYcbcrConversionCreateInfo * pCreateInfo,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator,
+		[[maybe_unused]] VkSamplerYcbcrConversion * pYcbcrConversion )
 	{
 		return reportUnsupported( device, "vkCreateSamplerYcbcrConversion" );
 	}
 
 	void VKAPI_CALL vkDestroySamplerYcbcrConversion(
 		VkDevice device,
-		VkSamplerYcbcrConversion ycbcrConversion,
-		const VkAllocationCallbacks * pAllocator )
+		[[maybe_unused]] VkSamplerYcbcrConversion ycbcrConversion,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator )
 	{
 		reportUnsupported( device, "vkDestroySamplerYcbcrConversion" );
 	}
 
 	VkResult VKAPI_CALL vkCreateDescriptorUpdateTemplate(
 		VkDevice device,
-		const VkDescriptorUpdateTemplateCreateInfo * pCreateInfo,
-		const VkAllocationCallbacks * pAllocator,
-		VkDescriptorUpdateTemplate * pDescriptorUpdateTemplate )
+		[[maybe_unused]] const VkDescriptorUpdateTemplateCreateInfo * pCreateInfo,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator,
+		[[maybe_unused]] VkDescriptorUpdateTemplate * pDescriptorUpdateTemplate )
 	{
 		return reportUnsupported( device, "vkCreateDescriptorUpdateTemplate" );
 	}
 
 	void VKAPI_CALL vkDestroyDescriptorUpdateTemplate(
 		VkDevice device,
-		VkDescriptorUpdateTemplate descriptorUpdateTemplate,
-		const VkAllocationCallbacks * pAllocator )
+		[[maybe_unused]] VkDescriptorUpdateTemplate descriptorUpdateTemplate,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator )
 	{
 		reportUnsupported( device, "vkDestroyDescriptorUpdateTemplate" );
 	}
 
 	void VKAPI_CALL vkUpdateDescriptorSetWithTemplate(
 		VkDevice device,
-		VkDescriptorSet descriptorSet,
-		VkDescriptorUpdateTemplate descriptorUpdateTemplate,
-		const void * pData )
+		[[maybe_unused]] VkDescriptorSet descriptorSet,
+		[[maybe_unused]] VkDescriptorUpdateTemplate descriptorUpdateTemplate,
+		[[maybe_unused]] const void * pData )
 	{
 		reportUnsupported( device, "vkUpdateDescriptorSetWithTemplate" );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceExternalBufferProperties(
 		VkPhysicalDevice physicalDevice,
-		const VkPhysicalDeviceExternalBufferInfo * pExternalBufferInfo,
-		VkExternalBufferProperties * pExternalBufferProperties )
+		[[maybe_unused]] const VkPhysicalDeviceExternalBufferInfo * pExternalBufferInfo,
+		[[maybe_unused]] VkExternalBufferProperties * pExternalBufferProperties )
 	{
 		reportUnsupported( physicalDevice, "vkGetPhysicalDeviceExternalBufferProperties" );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceExternalFenceProperties(
 		VkPhysicalDevice physicalDevice,
-		const VkPhysicalDeviceExternalFenceInfo * pExternalFenceInfo,
-		VkExternalFenceProperties * pExternalFenceProperties )
+		[[maybe_unused]] const VkPhysicalDeviceExternalFenceInfo * pExternalFenceInfo,
+		[[maybe_unused]] VkExternalFenceProperties * pExternalFenceProperties )
 	{
 		reportUnsupported( physicalDevice, "vkGetPhysicalDeviceExternalFenceProperties" );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceExternalSemaphoreProperties(
 		VkPhysicalDevice physicalDevice,
-		const VkPhysicalDeviceExternalSemaphoreInfo * pExternalSemaphoreInfo,
-		VkExternalSemaphoreProperties * pExternalSemaphoreProperties )
+		[[maybe_unused]] const VkPhysicalDeviceExternalSemaphoreInfo * pExternalSemaphoreInfo,
+		[[maybe_unused]] VkExternalSemaphoreProperties * pExternalSemaphoreProperties )
 	{
 		reportUnsupported( physicalDevice, "vkGetPhysicalDeviceExternalSemaphoreProperties" );
 	}
 
 	void VKAPI_CALL vkGetDescriptorSetLayoutSupport(
 		VkDevice device,
-		const VkDescriptorSetLayoutCreateInfo * pCreateInfo,
-		VkDescriptorSetLayoutSupport * pSupport )
+		[[maybe_unused]] const VkDescriptorSetLayoutCreateInfo * pCreateInfo,
+		[[maybe_unused]] VkDescriptorSetLayoutSupport * pSupport )
 	{
 		reportUnsupported( device, "vkGetDescriptorSetLayoutSupport" );
 	}
@@ -1906,95 +1906,95 @@ namespace ashes::xbox
 
 	VKAPI_ATTR void VKAPI_CALL vkCmdDrawIndirectCount(
 		VkCommandBuffer commandBuffer,
-		VkBuffer buffer,
-		VkDeviceSize offset,
-		VkBuffer countBuffer,
-		VkDeviceSize countBufferOffset,
-		uint32_t maxDrawCount,
-		uint32_t stride )
+		[[maybe_unused]] VkBuffer buffer,
+		[[maybe_unused]] VkDeviceSize offset,
+		[[maybe_unused]] VkBuffer countBuffer,
+		[[maybe_unused]] VkDeviceSize countBufferOffset,
+		[[maybe_unused]] uint32_t maxDrawCount,
+		[[maybe_unused]] uint32_t stride )
 	{
 		reportUnsupported( commandBuffer, "vkCmdDrawIndirectCount" );
 	}
 
 	VKAPI_ATTR void VKAPI_CALL vkCmdDrawIndexedIndirectCount(
 		VkCommandBuffer commandBuffer,
-		VkBuffer buffer,
-		VkDeviceSize offset,
-		VkBuffer countBuffer,
-		VkDeviceSize countBufferOffset,
-		uint32_t maxDrawCount,
-		uint32_t stride )
+		[[maybe_unused]] VkBuffer buffer,
+		[[maybe_unused]] VkDeviceSize offset,
+		[[maybe_unused]] VkBuffer countBuffer,
+		[[maybe_unused]] VkDeviceSize countBufferOffset,
+		[[maybe_unused]] uint32_t maxDrawCount,
+		[[maybe_unused]] uint32_t stride )
 	{
 		reportUnsupported( commandBuffer, "vkCmdDrawIndexedIndirectCount" );
 	}
 
 	VKAPI_ATTR VkResult VKAPI_CALL vkCreateRenderPass2(
 		VkDevice device,
-		const VkRenderPassCreateInfo2 * pCreateInfo,
-		const VkAllocationCallbacks * pAllocator,
-		VkRenderPass * pRenderPass )
+		[[maybe_unused]] const VkRenderPassCreateInfo2 * pCreateInfo,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator,
+		[[maybe_unused]] VkRenderPass * pRenderPass )
 	{
 		return reportUnsupported( device, "vkCreateRenderPass2" );
 	}
 
 	VKAPI_ATTR void VKAPI_CALL vkCmdBeginRenderPass2(
 		VkCommandBuffer commandBuffer,
-		const VkRenderPassBeginInfo * pRenderPassBegin,
-		const VkSubpassBeginInfo * pSubpassBeginInfo )
+		[[maybe_unused]] const VkRenderPassBeginInfo * pRenderPassBegin,
+		[[maybe_unused]] const VkSubpassBeginInfo * pSubpassBeginInfo )
 	{
 		reportUnsupported( commandBuffer, "vkCmdBeginRenderPass2" );
 	}
 
 	VKAPI_ATTR void VKAPI_CALL vkCmdNextSubpass2(
 		VkCommandBuffer commandBuffer,
-		const VkSubpassBeginInfo * pSubpassBeginInfo,
-		const VkSubpassEndInfo * pSubpassEndInfo )
+		[[maybe_unused]] const VkSubpassBeginInfo * pSubpassBeginInfo,
+		[[maybe_unused]] const VkSubpassEndInfo * pSubpassEndInfo )
 	{
 		reportUnsupported( commandBuffer, "vkCmdNextSubpass2" );
 	}
 
 	VKAPI_ATTR void VKAPI_CALL vkCmdEndRenderPass2(
 		VkCommandBuffer commandBuffer,
-		const VkSubpassEndInfo * pSubpassEndInfo )
+		[[maybe_unused]] const VkSubpassEndInfo * pSubpassEndInfo )
 	{
 		reportUnsupported( commandBuffer, "vkCmdEndRenderPass2" );
 	}
 
 	VKAPI_ATTR void VKAPI_CALL vkResetQueryPool(
 		VkDevice device,
-		VkQueryPool queryPool,
-		uint32_t firstQuery,
-		uint32_t queryCount )
+		[[maybe_unused]] VkQueryPool queryPool,
+		[[maybe_unused]] uint32_t firstQuery,
+		[[maybe_unused]] uint32_t queryCount )
 	{
 		reportUnsupported( device, "vkResetQueryPool" );
 	}
 
 	VKAPI_ATTR VkResult VKAPI_CALL vkGetSemaphoreCounterValue(
 		VkDevice device,
-		VkSemaphore semaphore,
-		uint64_t * pValue )
+		[[maybe_unused]] VkSemaphore semaphore,
+		[[maybe_unused]] uint64_t * pValue )
 	{
 		return reportUnsupported( device, "vkGetSemaphoreCounterValue" );
 	}
 
 	VKAPI_ATTR VkResult VKAPI_CALL vkWaitSemaphores(
 		VkDevice device,
-		const VkSemaphoreWaitInfo * pWaitInfo,
-		uint64_t timeout )
+		[[maybe_unused]] const VkSemaphoreWaitInfo * pWaitInfo,
+		[[maybe_unused]] uint64_t timeout )
 	{
 		return reportUnsupported( device, "vkWaitSemaphores" );
 	}
 
 	VKAPI_ATTR VkResult VKAPI_CALL vkSignalSemaphore(
 		VkDevice device,
-		const VkSemaphoreSignalInfo * pSignalInfo )
+		[[maybe_unused]] const VkSemaphoreSignalInfo * pSignalInfo )
 	{
 		return reportUnsupported( device, "vkSignalSemaphore" );
 	}
 
 	VKAPI_ATTR VkDeviceAddress VKAPI_CALL vkGetBufferDeviceAddress(
 		VkDevice device,
-		const VkBufferDeviceAddressInfo * pInfo )
+		[[maybe_unused]] const VkBufferDeviceAddressInfo * pInfo )
 	{
 		reportUnsupported( device, "vkGetBufferDeviceAddress" );
 		return 0u;
@@ -2002,7 +2002,7 @@ namespace ashes::xbox
 
 	VKAPI_ATTR uint64_t VKAPI_CALL vkGetBufferOpaqueCaptureAddress(
 		VkDevice device,
-		const VkBufferDeviceAddressInfo * pInfo )
+		[[maybe_unused]] const VkBufferDeviceAddressInfo * pInfo )
 	{
 		reportUnsupported( device, "vkGetBufferOpaqueCaptureAddress" );
 		return 0u;
@@ -2010,7 +2010,7 @@ namespace ashes::xbox
 
 	VKAPI_ATTR uint64_t VKAPI_CALL vkGetDeviceMemoryOpaqueCaptureAddress(
 		VkDevice device,
-		const VkDeviceMemoryOpaqueCaptureAddressInfo * pInfo )
+		[[maybe_unused]] const VkDeviceMemoryOpaqueCaptureAddressInfo * pInfo )
 	{
 		reportUnsupported( device, "vkGetDeviceMemoryOpaqueCaptureAddress" );
 		return 0u;
@@ -2023,23 +2023,23 @@ namespace ashes::xbox
 
 	VKAPI_ATTR VkResult VKAPI_CALL vkGetSemaphoreCounterValueKHR(
 		VkDevice device,
-		VkSemaphore semaphore,
-		uint64_t * pValue )
+		[[maybe_unused]] VkSemaphore semaphore,
+		[[maybe_unused]] uint64_t * pValue )
 	{
 		return reportUnsupported( device, "vkGetSemaphoreCounterValueKHR" );
 	}
 
 	VKAPI_ATTR VkResult VKAPI_CALL vkWaitSemaphoresKHR(
 		VkDevice device,
-		const VkSemaphoreWaitInfoKHR * pWaitInfo,
-		uint64_t timeout )
+		[[maybe_unused]] const VkSemaphoreWaitInfoKHR * pWaitInfo,
+		[[maybe_unused]] uint64_t timeout )
 	{
 		return reportUnsupported( device, "vkWaitSemaphoresKHR" );
 	}
 
 	VKAPI_ATTR VkResult VKAPI_CALL vkSignalSemaphoreKHR(
 		VkDevice device,
-		const VkSemaphoreSignalInfoKHR * pSignalInfo )
+		[[maybe_unused]] const VkSemaphoreSignalInfoKHR * pSignalInfo )
 	{
 		return reportUnsupported( device, "vkSignalSemaphoreKHR" );
 	}
@@ -2050,7 +2050,7 @@ namespace ashes::xbox
 
 	VKAPI_ATTR VkDeviceAddress VKAPI_CALL vkGetBufferDeviceAddressKHR(
 		VkDevice device,
-		const VkBufferDeviceAddressInfoKHR * pInfo )
+		[[maybe_unused]] const VkBufferDeviceAddressInfoKHR * pInfo )
 	{
 		reportUnsupported( device, "vkGetBufferDeviceAddressKHR" );
 		return 0u;
@@ -2058,7 +2058,7 @@ namespace ashes::xbox
 
 	VKAPI_ATTR uint64_t VKAPI_CALL vkGetBufferOpaqueCaptureAddressKHR(
 		VkDevice device,
-		const VkBufferDeviceAddressInfoKHR * pInfo )
+		[[maybe_unused]] const VkBufferDeviceAddressInfoKHR * pInfo )
 	{
 		reportUnsupported( device, "vkGetBufferOpaqueCaptureAddressKHR" );
 		return 0u;
@@ -2066,7 +2066,7 @@ namespace ashes::xbox
 
 	VKAPI_ATTR uint64_t VKAPI_CALL vkGetDeviceMemoryOpaqueCaptureAddressKHR(
 		VkDevice device,
-		const VkDeviceMemoryOpaqueCaptureAddressInfoKHR * pInfo )
+		[[maybe_unused]] const VkDeviceMemoryOpaqueCaptureAddressInfoKHR * pInfo )
 	{
 		reportUnsupported( device, "vkGetDeviceMemoryOpaqueCaptureAddressKHR" );
 		return 0u;
@@ -2078,7 +2078,7 @@ namespace ashes::xbox
 #ifdef VK_KHR_surface
 
 	void VKAPI_CALL vkDestroySurfaceKHR(
-		VkInstance instance,
+		[[maybe_unused]] VkInstance instance,
 		VkSurfaceKHR surface,
 		const VkAllocationCallbacks * pAllocator )
 	{
@@ -2087,7 +2087,7 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceSurfaceSupportKHR(
 		VkPhysicalDevice physicalDevice,
-		uint32_t queueFamilyIndex,
+		[[maybe_unused]] uint32_t queueFamilyIndex,
 		VkSurfaceKHR surface,
 		VkBool32 * pSupported )
 	{
@@ -2165,7 +2165,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkDestroySwapchainKHR(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkSwapchainKHR swapchain,
 		const VkAllocationCallbacks * pAllocator )
 	{
@@ -2173,7 +2173,7 @@ namespace ashes::xbox
 	}
 
 	VkResult VKAPI_CALL vkGetSwapchainImagesKHR(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkSwapchainKHR swapchain,
 		uint32_t * pSwapchainImageCount,
 		VkImage * pSwapchainImages )
@@ -2194,11 +2194,11 @@ namespace ashes::xbox
 	}
 
 	VkResult VKAPI_CALL vkAcquireNextImageKHR(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		VkSwapchainKHR swapchain,
-		uint64_t timeout,
-		VkSemaphore semaphore,
-		VkFence fence,
+		[[maybe_unused]] uint64_t timeout,
+		[[maybe_unused]] VkSemaphore semaphore,
+		[[maybe_unused]] VkFence fence,
 		uint32_t * pImageIndex )
 	{
 		return get( swapchain )->acquireNextImage( *pImageIndex );
@@ -2218,32 +2218,32 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkGetDeviceGroupPresentCapabilitiesKHR(
 		VkDevice device,
-		VkDeviceGroupPresentCapabilitiesKHR * pDeviceGroupPresentCapabilities )
+		[[maybe_unused]] VkDeviceGroupPresentCapabilitiesKHR * pDeviceGroupPresentCapabilities )
 	{
 		return reportUnsupported( device, "vkGetDeviceGroupPresentCapabilitiesKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetDeviceGroupSurfacePresentModesKHR(
 		VkDevice device,
-		VkSurfaceKHR surface,
-		VkDeviceGroupPresentModeFlagsKHR * pModes )
+		[[maybe_unused]] VkSurfaceKHR surface,
+		[[maybe_unused]] VkDeviceGroupPresentModeFlagsKHR * pModes )
 	{
 		return reportUnsupported( device, "vkGetDeviceGroupSurfacePresentModesKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetPhysicalDevicePresentRectanglesKHR(
 		VkPhysicalDevice physicalDevice,
-		VkSurfaceKHR surface,
-		uint32_t * pRectCount,
-		VkRect2D * pRects )
+		[[maybe_unused]] VkSurfaceKHR surface,
+		[[maybe_unused]] uint32_t * pRectCount,
+		[[maybe_unused]] VkRect2D * pRects )
 	{
 		return reportUnsupported( physicalDevice, "vkGetPhysicalDevicePresentRectanglesKHR" );
 	}
 
 	VkResult VKAPI_CALL vkAcquireNextImage2KHR(
 		VkDevice device,
-		const VkAcquireNextImageInfoKHR * pAcquireInfo,
-		uint32_t * pImageIndex )
+		[[maybe_unused]] const VkAcquireNextImageInfoKHR * pAcquireInfo,
+		[[maybe_unused]] uint32_t * pImageIndex )
 	{
 		return reportUnsupported( device, "vkAcquireNextImage2KHR" );
 	}
@@ -2255,62 +2255,62 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceDisplayPropertiesKHR(
 		VkPhysicalDevice physicalDevice,
-		uint32_t * pPropertyCount,
-		VkDisplayPropertiesKHR * pProperties )
+		[[maybe_unused]] uint32_t * pPropertyCount,
+		[[maybe_unused]] VkDisplayPropertiesKHR * pProperties )
 	{
 		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceDisplayPropertiesKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceDisplayPlanePropertiesKHR(
 		VkPhysicalDevice physicalDevice,
-		uint32_t * pPropertyCount,
-		VkDisplayPlanePropertiesKHR * pProperties )
+		[[maybe_unused]] uint32_t * pPropertyCount,
+		[[maybe_unused]] VkDisplayPlanePropertiesKHR * pProperties )
 	{
 		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceDisplayPlanePropertiesKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetDisplayPlaneSupportedDisplaysKHR(
 		VkPhysicalDevice physicalDevice,
-		uint32_t planeIndex,
-		uint32_t * pDisplayCount,
-		VkDisplayKHR * pDisplays )
+		[[maybe_unused]] uint32_t planeIndex,
+		[[maybe_unused]] uint32_t * pDisplayCount,
+		[[maybe_unused]] VkDisplayKHR * pDisplays )
 	{
 		return reportUnsupported( physicalDevice, "vkGetDisplayPlaneSupportedDisplaysKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetDisplayModePropertiesKHR(
 		VkPhysicalDevice physicalDevice,
-		VkDisplayKHR display,
-		uint32_t * pPropertyCount,
-		VkDisplayModePropertiesKHR * pProperties )
+		[[maybe_unused]] VkDisplayKHR display,
+		[[maybe_unused]] uint32_t * pPropertyCount,
+		[[maybe_unused]] VkDisplayModePropertiesKHR * pProperties )
 	{
 		return reportUnsupported( physicalDevice, "vkGetDisplayModePropertiesKHR" );
 	}
 
 	VkResult VKAPI_CALL vkCreateDisplayModeKHR(
 		VkPhysicalDevice physicalDevice,
-		VkDisplayKHR display,
-		const VkDisplayModeCreateInfoKHR * pCreateInfo,
-		const VkAllocationCallbacks * pAllocator,
-		VkDisplayModeKHR * pMode )
+		[[maybe_unused]] VkDisplayKHR display,
+		[[maybe_unused]] const VkDisplayModeCreateInfoKHR * pCreateInfo,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator,
+		[[maybe_unused]] VkDisplayModeKHR * pMode )
 	{
 		return reportUnsupported( physicalDevice, "vkCreateDisplayModeKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetDisplayPlaneCapabilitiesKHR(
 		VkPhysicalDevice physicalDevice,
-		VkDisplayModeKHR mode,
-		uint32_t planeIndex,
-		VkDisplayPlaneCapabilitiesKHR * pCapabilities )
+		[[maybe_unused]] VkDisplayModeKHR mode,
+		[[maybe_unused]] uint32_t planeIndex,
+		[[maybe_unused]] VkDisplayPlaneCapabilitiesKHR * pCapabilities )
 	{
 		return reportUnsupported( physicalDevice, "vkGetDisplayPlaneCapabilitiesKHR" );
 	}
 
 	VkResult VKAPI_CALL vkCreateDisplayPlaneSurfaceKHR(
 		VkInstance instance,
-		const VkDisplaySurfaceCreateInfoKHR * pCreateInfo,
-		const VkAllocationCallbacks * pAllocator,
-		VkSurfaceKHR * pSurface )
+		[[maybe_unused]] const VkDisplaySurfaceCreateInfoKHR * pCreateInfo,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator,
+		[[maybe_unused]] VkSurfaceKHR * pSurface )
 	{
 		return reportUnsupported( instance, "vkCreateDisplayPlaneSurfaceKHR" );
 	}
@@ -2403,29 +2403,29 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkGetDeviceGroupPeerMemoryFeaturesKHR(
 		VkDevice device,
-		uint32_t heapIndex,
-		uint32_t localDeviceIndex,
-		uint32_t remoteDeviceIndex,
-		VkPeerMemoryFeatureFlags * pPeerMemoryFeatures )
+		[[maybe_unused]] uint32_t heapIndex,
+		[[maybe_unused]] uint32_t localDeviceIndex,
+		[[maybe_unused]] uint32_t remoteDeviceIndex,
+		[[maybe_unused]] VkPeerMemoryFeatureFlags * pPeerMemoryFeatures )
 	{
 		reportUnsupported( device, "vkGetDeviceGroupPeerMemoryFeaturesKHR" );
 	}
 
 	void VKAPI_CALL vkCmdSetDeviceMaskKHR(
 		VkCommandBuffer commandBuffer,
-		uint32_t deviceMask )
+		[[maybe_unused]] uint32_t deviceMask )
 	{
 		reportUnsupported( commandBuffer, "vkCmdSetDeviceMaskKHR" );
 	}
 
 	void VKAPI_CALL vkCmdDispatchBaseKHR(
 		VkCommandBuffer commandBuffer,
-		uint32_t baseGroupX,
-		uint32_t baseGroupY,
-		uint32_t baseGroupZ,
-		uint32_t groupCountX,
-		uint32_t groupCountY,
-		uint32_t groupCountZ )
+		[[maybe_unused]] uint32_t baseGroupX,
+		[[maybe_unused]] uint32_t baseGroupY,
+		[[maybe_unused]] uint32_t baseGroupZ,
+		[[maybe_unused]] uint32_t groupCountX,
+		[[maybe_unused]] uint32_t groupCountY,
+		[[maybe_unused]] uint32_t groupCountZ )
 	{
 		reportUnsupported( commandBuffer, "vkCmdDispatchBaseKHR" );
 	}
@@ -2437,9 +2437,10 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkTrimCommandPoolKHR(
 		VkDevice device,
-		VkCommandPool commandPool,
-		VkCommandPoolTrimFlagsKHR flags )
+		[[maybe_unused]] VkCommandPool commandPool,
+		[[maybe_unused]] VkCommandPoolTrimFlagsKHR flags )
 	{
+		reportUnsupported( device, "vkTrimCommandPoolKHR" );
 	}
 
 #endif
@@ -2449,8 +2450,8 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkEnumeratePhysicalDeviceGroupsKHR(
 		VkInstance instance,
-		uint32_t * pPhysicalDeviceGroupCount,
-		VkPhysicalDeviceGroupProperties * pPhysicalDeviceGroupProperties )
+		[[maybe_unused]] uint32_t * pPhysicalDeviceGroupCount,
+		[[maybe_unused]] VkPhysicalDeviceGroupProperties * pPhysicalDeviceGroupProperties )
 	{
 		return reportUnsupported( instance, "vkEnumeratePhysicalDeviceGroupsKHR" );
 	}
@@ -2462,8 +2463,8 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkGetPhysicalDeviceExternalBufferPropertiesKHR(
 		VkPhysicalDevice physicalDevice,
-		const VkPhysicalDeviceExternalBufferInfo * pExternalBufferInfo,
-		VkExternalBufferProperties * pExternalBufferProperties )
+		[[maybe_unused]] const VkPhysicalDeviceExternalBufferInfo * pExternalBufferInfo,
+		[[maybe_unused]] VkExternalBufferProperties * pExternalBufferProperties )
 	{
 		reportUnsupported( physicalDevice, "vkGetPhysicalDeviceExternalBufferPropertiesKHR" );
 	}
@@ -2475,17 +2476,17 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkGetMemoryFdKHR(
 		VkDevice device,
-		const VkMemoryGetFdInfoKHR * pGetFdInfo,
-		int * pFd )
+		[[maybe_unused]] const VkMemoryGetFdInfoKHR * pGetFdInfo,
+		[[maybe_unused]] int * pFd )
 	{
 		return reportUnsupported( device, "vkGetMemoryFdKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetMemoryFdPropertiesKHR(
 		VkDevice device,
-		VkExternalMemoryHandleTypeFlagBits handleType,
-		int fd,
-		VkMemoryFdPropertiesKHR * pMemoryFdProperties )
+		[[maybe_unused]] VkExternalMemoryHandleTypeFlagBits handleType,
+		[[maybe_unused]] int fd,
+		[[maybe_unused]] VkMemoryFdPropertiesKHR * pMemoryFdProperties )
 	{
 		return reportUnsupported( device, "vkGetMemoryFdPropertiesKHR" );
 	}
@@ -2497,8 +2498,8 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkGetPhysicalDeviceExternalSemaphorePropertiesKHR(
 		VkPhysicalDevice physicalDevice,
-		const VkPhysicalDeviceExternalSemaphoreInfo * pExternalSemaphoreInfo,
-		VkExternalSemaphoreProperties * pExternalSemaphoreProperties )
+		[[maybe_unused]] const VkPhysicalDeviceExternalSemaphoreInfo * pExternalSemaphoreInfo,
+		[[maybe_unused]] VkExternalSemaphoreProperties * pExternalSemaphoreProperties )
 	{
 		reportUnsupported( physicalDevice, "vkGetPhysicalDeviceExternalSemaphorePropertiesKHR" );
 	}
@@ -2510,15 +2511,15 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkImportSemaphoreFdKHR(
 		VkDevice device,
-		const VkImportSemaphoreFdInfoKHR * pImportSemaphoreFdInfo )
+		[[maybe_unused]] const VkImportSemaphoreFdInfoKHR * pImportSemaphoreFdInfo )
 	{
 		return reportUnsupported( device, "vkImportSemaphoreFdKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetSemaphoreFdKHR(
 		VkDevice device,
-		const VkSemaphoreGetFdInfoKHR * pGetFdInfo,
-		int * pFd )
+		[[maybe_unused]] const VkSemaphoreGetFdInfoKHR * pGetFdInfo,
+		[[maybe_unused]] int * pFd )
 	{
 		return reportUnsupported( device, "vkGetSemaphoreFdKHR" );
 	}
@@ -2530,21 +2531,21 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkCmdPushDescriptorSetKHR(
 		VkCommandBuffer commandBuffer,
-		VkPipelineBindPoint pipelineBindPoint,
-		VkPipelineLayout layout,
-		uint32_t set,
-		uint32_t descriptorWriteCount,
-		const VkWriteDescriptorSet * pDescriptorWrites )
+		[[maybe_unused]] VkPipelineBindPoint pipelineBindPoint,
+		[[maybe_unused]] VkPipelineLayout layout,
+		[[maybe_unused]] uint32_t set,
+		[[maybe_unused]] uint32_t descriptorWriteCount,
+		[[maybe_unused]] const VkWriteDescriptorSet * pDescriptorWrites )
 	{
 		reportUnsupported( commandBuffer, "vkCmdPushDescriptorSetKHR" );
 	}
 
 	void VKAPI_CALL vkCmdPushDescriptorSetWithTemplateKHR(
 		VkCommandBuffer commandBuffer,
-		VkDescriptorUpdateTemplate descriptorUpdateTemplate,
-		VkPipelineLayout layout,
-		uint32_t set,
-		const void * pData )
+		[[maybe_unused]] VkDescriptorUpdateTemplate descriptorUpdateTemplate,
+		[[maybe_unused]] VkPipelineLayout layout,
+		[[maybe_unused]] uint32_t set,
+		[[maybe_unused]] const void * pData )
 	{
 		reportUnsupported( commandBuffer, "vkCmdPushDescriptorSetWithTemplateKHR" );
 	}
@@ -2556,26 +2557,26 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkCreateDescriptorUpdateTemplateKHR(
 		VkDevice device,
-		const VkDescriptorUpdateTemplateCreateInfo * pCreateInfo,
-		const VkAllocationCallbacks * pAllocator,
-		VkDescriptorUpdateTemplate * pDescriptorUpdateTemplate )
+		[[maybe_unused]] const VkDescriptorUpdateTemplateCreateInfo * pCreateInfo,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator,
+		[[maybe_unused]] VkDescriptorUpdateTemplate * pDescriptorUpdateTemplate )
 	{
 		return reportUnsupported( device, "vkCreateDescriptorUpdateTemplateKHR" );
 	}
 
 	void VKAPI_CALL vkDestroyDescriptorUpdateTemplateKHR(
 		VkDevice device,
-		VkDescriptorUpdateTemplate descriptorUpdateTemplate,
-		const VkAllocationCallbacks * pAllocator )
+		[[maybe_unused]] VkDescriptorUpdateTemplate descriptorUpdateTemplate,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator )
 	{
 		reportUnsupported( device, "vkDestroyDescriptorUpdateTemplateKHR" );
 	}
 
 	void VKAPI_CALL vkUpdateDescriptorSetWithTemplateKHR(
 		VkDevice device,
-		VkDescriptorSet descriptorSet,
-		VkDescriptorUpdateTemplate descriptorUpdateTemplate,
-		const void * pData )
+		[[maybe_unused]] VkDescriptorSet descriptorSet,
+		[[maybe_unused]] VkDescriptorUpdateTemplate descriptorUpdateTemplate,
+		[[maybe_unused]] const void * pData )
 	{
 		reportUnsupported( device, "vkUpdateDescriptorSetWithTemplateKHR" );
 	}
@@ -2587,32 +2588,32 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkCreateRenderPass2KHR(
 		VkDevice device,
-		const VkRenderPassCreateInfo2KHR * pCreateInfo,
-		const VkAllocationCallbacks * pAllocator,
-		VkRenderPass * pRenderPass )
+		[[maybe_unused]] const VkRenderPassCreateInfo2KHR * pCreateInfo,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator,
+		[[maybe_unused]] VkRenderPass * pRenderPass )
 	{
 		return reportUnsupported( device, "vkCreateRenderPass2KHR" );
 	}
 
 	void VKAPI_CALL vkCmdBeginRenderPass2KHR(
 		VkCommandBuffer commandBuffer,
-		const VkRenderPassBeginInfo * pRenderPassBegin,
-		const VkSubpassBeginInfoKHR * pSubpassBeginInfo )
+		[[maybe_unused]] const VkRenderPassBeginInfo * pRenderPassBegin,
+		[[maybe_unused]] const VkSubpassBeginInfoKHR * pSubpassBeginInfo )
 	{
 		reportUnsupported( commandBuffer, "vkCmdBeginRenderPass2KHR" );
 	}
 
 	void VKAPI_CALL vkCmdNextSubpass2KHR(
 		VkCommandBuffer commandBuffer,
-		const VkSubpassBeginInfoKHR * pSubpassBeginInfo,
-		const VkSubpassEndInfoKHR * pSubpassEndInfo )
+		[[maybe_unused]] const VkSubpassBeginInfoKHR * pSubpassBeginInfo,
+		[[maybe_unused]] const VkSubpassEndInfoKHR * pSubpassEndInfo )
 	{
 		reportUnsupported( commandBuffer, "vkCmdNextSubpass2KHR" );
 	}
 
 	void VKAPI_CALL vkCmdEndRenderPass2KHR(
 		VkCommandBuffer commandBuffer,
-		const VkSubpassEndInfoKHR * pSubpassEndInfo )
+		[[maybe_unused]] const VkSubpassEndInfoKHR * pSubpassEndInfo )
 	{
 		reportUnsupported( commandBuffer, "vkCmdEndRenderPass2KHR" );
 	}
@@ -2624,7 +2625,7 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkGetSwapchainStatusKHR(
 		VkDevice device,
-		VkSwapchainKHR swapchain )
+		[[maybe_unused]] VkSwapchainKHR swapchain )
 	{
 		return reportUnsupported( device, "vkImportFenceFdKHR" );
 	}
@@ -2636,8 +2637,8 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkGetPhysicalDeviceExternalFencePropertiesKHR(
 		VkPhysicalDevice physicalDevice,
-		const VkPhysicalDeviceExternalFenceInfo * pExternalFenceInfo,
-		VkExternalFenceProperties * pExternalFenceProperties )
+		[[maybe_unused]] const VkPhysicalDeviceExternalFenceInfo * pExternalFenceInfo,
+		[[maybe_unused]] VkExternalFenceProperties * pExternalFenceProperties )
 	{
 		reportUnsupported( physicalDevice, "vkGetPhysicalDeviceExternalFencePropertiesKHR" );
 	}
@@ -2649,15 +2650,15 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkImportFenceFdKHR(
 		VkDevice device,
-		const VkImportFenceFdInfoKHR * pImportFenceFdInfo )
+		[[maybe_unused]] const VkImportFenceFdInfoKHR * pImportFenceFdInfo )
 	{
 		return reportUnsupported( device, "vkImportFenceFdKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetFenceFdKHR(
 		VkDevice device,
-		const VkFenceGetFdInfoKHR * pGetFdInfo,
-		int * pFd )
+		[[maybe_unused]] const VkFenceGetFdInfoKHR * pGetFdInfo,
+		[[maybe_unused]] int * pFd )
 	{
 		return reportUnsupported( device, "vkGetFenceFdKHR" );
 	}
@@ -2669,17 +2670,17 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceSurfaceCapabilities2KHR(
 		VkPhysicalDevice physicalDevice,
-		const VkPhysicalDeviceSurfaceInfo2KHR * pSurfaceInfo,
-		VkSurfaceCapabilities2KHR * pSurfaceCapabilities )
+		[[maybe_unused]] const VkPhysicalDeviceSurfaceInfo2KHR * pSurfaceInfo,
+		[[maybe_unused]] VkSurfaceCapabilities2KHR * pSurfaceCapabilities )
 	{
 		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceSurfaceCapabilities2KHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceSurfaceFormats2KHR(
 		VkPhysicalDevice physicalDevice,
-		const VkPhysicalDeviceSurfaceInfo2KHR * pSurfaceInfo,
-		uint32_t * pSurfaceFormatCount,
-		VkSurfaceFormat2KHR * pSurfaceFormats )
+		[[maybe_unused]] const VkPhysicalDeviceSurfaceInfo2KHR * pSurfaceInfo,
+		[[maybe_unused]] uint32_t * pSurfaceFormatCount,
+		[[maybe_unused]] VkSurfaceFormat2KHR * pSurfaceFormats )
 	{
 		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceSurfaceFormats2KHR" );
 	}
@@ -2691,33 +2692,33 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceDisplayProperties2KHR(
 		VkPhysicalDevice physicalDevice,
-		uint32_t * pPropertyCount,
-		VkDisplayProperties2KHR * pProperties )
+		[[maybe_unused]] uint32_t * pPropertyCount,
+		[[maybe_unused]] VkDisplayProperties2KHR * pProperties )
 	{
 		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceDisplayProperties2KHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceDisplayPlaneProperties2KHR(
 		VkPhysicalDevice physicalDevice,
-		uint32_t * pPropertyCount,
-		VkDisplayPlaneProperties2KHR * pProperties )
+		[[maybe_unused]] uint32_t * pPropertyCount,
+		[[maybe_unused]] VkDisplayPlaneProperties2KHR * pProperties )
 	{
 		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceDisplayPlaneProperties2KHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetDisplayModeProperties2KHR(
 		VkPhysicalDevice physicalDevice,
-		VkDisplayKHR display,
-		uint32_t * pPropertyCount,
-		VkDisplayModeProperties2KHR * pProperties )
+		[[maybe_unused]] VkDisplayKHR display,
+		[[maybe_unused]] uint32_t * pPropertyCount,
+		[[maybe_unused]] VkDisplayModeProperties2KHR * pProperties )
 	{
 		return reportUnsupported( physicalDevice, "vkGetDisplayModeProperties2KHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetDisplayPlaneCapabilities2KHR(
 		VkPhysicalDevice physicalDevice,
-		const VkDisplayPlaneInfo2KHR * pDisplayPlaneInfo,
-		VkDisplayPlaneCapabilities2KHR * pCapabilities )
+		[[maybe_unused]] const VkDisplayPlaneInfo2KHR * pDisplayPlaneInfo,
+		[[maybe_unused]] VkDisplayPlaneCapabilities2KHR * pCapabilities )
 	{
 		return reportUnsupported( physicalDevice, "vkGetDisplayPlaneCapabilities2KHR" );
 	}
@@ -2729,25 +2730,25 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkGetImageMemoryRequirements2KHR(
 		VkDevice device,
-		const VkImageMemoryRequirementsInfo2 * pInfo,
-		VkMemoryRequirements2 * pMemoryRequirements )
+		[[maybe_unused]] const VkImageMemoryRequirementsInfo2 * pInfo,
+		[[maybe_unused]] VkMemoryRequirements2 * pMemoryRequirements )
 	{
 		reportUnsupported( device, "vkGetImageMemoryRequirements2KHR" );
 	}
 
 	void VKAPI_CALL vkGetBufferMemoryRequirements2KHR(
 		VkDevice device,
-		const VkBufferMemoryRequirementsInfo2 * pInfo,
-		VkMemoryRequirements2 * pMemoryRequirements )
+		[[maybe_unused]] const VkBufferMemoryRequirementsInfo2 * pInfo,
+		[[maybe_unused]] VkMemoryRequirements2 * pMemoryRequirements )
 	{
 		reportUnsupported( device, "vkGetBufferMemoryRequirements2KHR" );
 	}
 
 	void VKAPI_CALL vkGetImageSparseMemoryRequirements2KHR(
 		VkDevice device,
-		const VkImageSparseMemoryRequirementsInfo2 * pInfo,
-		uint32_t * pSparseMemoryRequirementCount,
-		VkSparseImageMemoryRequirements2 * pSparseMemoryRequirements )
+		[[maybe_unused]] const VkImageSparseMemoryRequirementsInfo2 * pInfo,
+		[[maybe_unused]] uint32_t * pSparseMemoryRequirementCount,
+		[[maybe_unused]] VkSparseImageMemoryRequirements2 * pSparseMemoryRequirements )
 	{
 		reportUnsupported( device, "vkGetImageSparseMemoryRequirements2KHR" );
 	}
@@ -2759,17 +2760,17 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkCreateSamplerYcbcrConversionKHR(
 		VkDevice device,
-		const VkSamplerYcbcrConversionCreateInfo * pCreateInfo,
-		const VkAllocationCallbacks * pAllocator,
-		VkSamplerYcbcrConversion * pYcbcrConversion )
+		[[maybe_unused]] const VkSamplerYcbcrConversionCreateInfo * pCreateInfo,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator,
+		[[maybe_unused]] VkSamplerYcbcrConversion * pYcbcrConversion )
 	{
 		return reportUnsupported( device, "vkCreateSamplerYcbcrConversionKHR" );
 	}
 
 	void VKAPI_CALL vkDestroySamplerYcbcrConversionKHR(
 		VkDevice device,
-		VkSamplerYcbcrConversion ycbcrConversion,
-		const VkAllocationCallbacks * pAllocator )
+		[[maybe_unused]] VkSamplerYcbcrConversion ycbcrConversion,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator )
 	{
 		reportUnsupported( device, "vkDestroySamplerYcbcrConversionKHR" );
 	}
@@ -2780,7 +2781,7 @@ namespace ashes::xbox
 #ifdef VK_KHR_bind_memory2
 
 	VkResult VKAPI_CALL vkBindBufferMemory2KHR(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		uint32_t bindInfoCount,
 		const VkBindBufferMemoryInfo * pBindInfos )
 	{
@@ -2799,7 +2800,7 @@ namespace ashes::xbox
 	}
 
 	VkResult VKAPI_CALL vkBindImageMemory2KHR(
-		VkDevice device,
+		[[maybe_unused]] VkDevice device,
 		uint32_t bindInfoCount,
 		const VkBindImageMemoryInfo * pBindInfos )
 	{
@@ -2824,8 +2825,8 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkGetDescriptorSetLayoutSupportKHR(
 		VkDevice device,
-		const VkDescriptorSetLayoutCreateInfo * pCreateInfo,
-		VkDescriptorSetLayoutSupport * pSupport )
+		[[maybe_unused]] const VkDescriptorSetLayoutCreateInfo * pCreateInfo,
+		[[maybe_unused]] VkDescriptorSetLayoutSupport * pSupport )
 	{
 		reportUnsupported( device, "vkGetDescriptorSetLayoutSupportKHR" );
 	}
@@ -2837,24 +2838,24 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkCmdDrawIndirectCountKHR(
 		VkCommandBuffer commandBuffer,
-		VkBuffer buffer,
-		VkDeviceSize offset,
-		VkBuffer countBuffer,
-		VkDeviceSize countBufferOffset,
-		uint32_t maxDrawCount,
-		uint32_t stride )
+		[[maybe_unused]] VkBuffer buffer,
+		[[maybe_unused]] VkDeviceSize offset,
+		[[maybe_unused]] VkBuffer countBuffer,
+		[[maybe_unused]] VkDeviceSize countBufferOffset,
+		[[maybe_unused]] uint32_t maxDrawCount,
+		[[maybe_unused]] uint32_t stride )
 	{
 		reportUnsupported( commandBuffer, "vkCmdDrawIndirectCountKHR" );
 	}
 
 	void VKAPI_CALL vkCmdDrawIndexedIndirectCountKHR(
 		VkCommandBuffer commandBuffer,
-		VkBuffer buffer,
-		VkDeviceSize offset,
-		VkBuffer countBuffer,
-		VkDeviceSize countBufferOffset,
-		uint32_t maxDrawCount,
-		uint32_t stride )
+		[[maybe_unused]] VkBuffer buffer,
+		[[maybe_unused]] VkDeviceSize offset,
+		[[maybe_unused]] VkBuffer countBuffer,
+		[[maybe_unused]] VkDeviceSize countBufferOffset,
+		[[maybe_unused]] uint32_t maxDrawCount,
+		[[maybe_unused]] uint32_t stride )
 	{
 		reportUnsupported( commandBuffer, "vkCmdDrawIndexedIndirectCountKHR" );
 	}
@@ -2878,7 +2879,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkDestroyDebugReportCallbackEXT(
-		VkInstance instance,
+		[[maybe_unused]] VkInstance instance,
 		VkDebugReportCallbackEXT callback,
 		const VkAllocationCallbacks * pAllocator )
 	{
@@ -2950,62 +2951,62 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkCmdBindTransformFeedbackBuffersEXT(
 		VkCommandBuffer commandBuffer,
-		uint32_t firstBinding,
-		uint32_t bindingCount,
-		const VkBuffer * pBuffers,
-		const VkDeviceSize * pOffsets,
-		const VkDeviceSize * pSizes )
+		[[maybe_unused]] uint32_t firstBinding,
+		[[maybe_unused]] uint32_t bindingCount,
+		[[maybe_unused]] const VkBuffer * pBuffers,
+		[[maybe_unused]] const VkDeviceSize * pOffsets,
+		[[maybe_unused]] const VkDeviceSize * pSizes )
 	{
 		reportUnsupported( commandBuffer, "vkCmdBindTransformFeedbackBuffersEXT" );
 	}
 
 	void VKAPI_CALL vkCmdBeginTransformFeedbackEXT(
 		VkCommandBuffer commandBuffer,
-		uint32_t firstCounterBuffer,
-		uint32_t counterBufferCount,
-		const VkBuffer * pCounterBuffers,
-		const VkDeviceSize * pCounterBufferOffsets )
+		[[maybe_unused]] uint32_t firstCounterBuffer,
+		[[maybe_unused]] uint32_t counterBufferCount,
+		[[maybe_unused]] const VkBuffer * pCounterBuffers,
+		[[maybe_unused]] const VkDeviceSize * pCounterBufferOffsets )
 	{
 		reportUnsupported( commandBuffer, "vkCmdBeginTransformFeedbackEXT" );
 	}
 
 	void VKAPI_CALL vkCmdEndTransformFeedbackEXT(
 		VkCommandBuffer commandBuffer,
-		uint32_t firstCounterBuffer,
-		uint32_t counterBufferCount,
-		const VkBuffer * pCounterBuffers,
-		const VkDeviceSize * pCounterBufferOffsets )
+		[[maybe_unused]] uint32_t firstCounterBuffer,
+		[[maybe_unused]] uint32_t counterBufferCount,
+		[[maybe_unused]] const VkBuffer * pCounterBuffers,
+		[[maybe_unused]] const VkDeviceSize * pCounterBufferOffsets )
 	{
 		reportUnsupported( commandBuffer, "vkCmdEndTransformFeedbackEXT" );
 	}
 
 	void VKAPI_CALL vkCmdBeginQueryIndexedEXT(
 		VkCommandBuffer commandBuffer,
-		VkQueryPool queryPool,
-		uint32_t query,
-		VkQueryControlFlags flags,
-		uint32_t index )
+		[[maybe_unused]] VkQueryPool queryPool,
+		[[maybe_unused]] uint32_t query,
+		[[maybe_unused]] VkQueryControlFlags flags,
+		[[maybe_unused]] uint32_t index )
 	{
 		reportUnsupported( commandBuffer, "vkCmdBeginQueryIndexedEXT" );
 	}
 
 	void VKAPI_CALL vkCmdEndQueryIndexedEXT(
 		VkCommandBuffer commandBuffer,
-		VkQueryPool queryPool,
-		uint32_t query,
-		uint32_t index )
+		[[maybe_unused]] VkQueryPool queryPool,
+		[[maybe_unused]] uint32_t query,
+		[[maybe_unused]] uint32_t index )
 	{
 		reportUnsupported( commandBuffer, "vkCmdEndQueryIndexedEXT" );
 	}
 
 	void VKAPI_CALL vkCmdDrawIndirectByteCountEXT(
 		VkCommandBuffer commandBuffer,
-		uint32_t instanceCount,
-		uint32_t firstInstance,
-		VkBuffer counterBuffer,
-		VkDeviceSize counterBufferOffset,
-		uint32_t counterOffset,
-		uint32_t vertexStride )
+		[[maybe_unused]] uint32_t instanceCount,
+		[[maybe_unused]] uint32_t firstInstance,
+		[[maybe_unused]] VkBuffer counterBuffer,
+		[[maybe_unused]] VkDeviceSize counterBufferOffset,
+		[[maybe_unused]] uint32_t counterOffset,
+		[[maybe_unused]] uint32_t vertexStride )
 	{
 		reportUnsupported( commandBuffer, "vkCmdDrawIndirectByteCountEXT" );
 	}
@@ -3017,24 +3018,24 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkCmdDrawIndirectCountAMD(
 		VkCommandBuffer commandBuffer,
-		VkBuffer buffer,
-		VkDeviceSize offset,
-		VkBuffer countBuffer,
-		VkDeviceSize countBufferOffset,
-		uint32_t maxDrawCount,
-		uint32_t stride )
+		[[maybe_unused]] VkBuffer buffer,
+		[[maybe_unused]] VkDeviceSize offset,
+		[[maybe_unused]] VkBuffer countBuffer,
+		[[maybe_unused]] VkDeviceSize countBufferOffset,
+		[[maybe_unused]] uint32_t maxDrawCount,
+		[[maybe_unused]] uint32_t stride )
 	{
 		reportUnsupported( commandBuffer, "vkCmdDrawIndirectCountAMD" );
 	}
 
 	void VKAPI_CALL vkCmdDrawIndexedIndirectCountAMD(
 		VkCommandBuffer commandBuffer,
-		VkBuffer buffer,
-		VkDeviceSize offset,
-		VkBuffer countBuffer,
-		VkDeviceSize countBufferOffset,
-		uint32_t maxDrawCount,
-		uint32_t stride )
+		[[maybe_unused]] VkBuffer buffer,
+		[[maybe_unused]] VkDeviceSize offset,
+		[[maybe_unused]] VkBuffer countBuffer,
+		[[maybe_unused]] VkDeviceSize countBufferOffset,
+		[[maybe_unused]] uint32_t maxDrawCount,
+		[[maybe_unused]] uint32_t stride )
 	{
 		reportUnsupported( commandBuffer, "vkCmdDrawIndexedIndirectCountAMD" );
 	}
@@ -3046,11 +3047,11 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkGetShaderInfoAMD(
 		VkDevice device,
-		VkPipeline pipeline,
-		VkShaderStageFlagBits shaderStage,
-		VkShaderInfoTypeAMD infoType,
-		size_t * pInfoSize,
-		void * pInfo )
+		[[maybe_unused]] VkPipeline pipeline,
+		[[maybe_unused]] VkShaderStageFlagBits shaderStage,
+		[[maybe_unused]] VkShaderInfoTypeAMD infoType,
+		[[maybe_unused]] size_t * pInfoSize,
+		[[maybe_unused]] void * pInfo )
 	{
 		return reportUnsupported( device, "vkGetShaderInfoAMD" );
 	}
@@ -3062,13 +3063,13 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceExternalImageFormatPropertiesNV(
 		VkPhysicalDevice physicalDevice,
-		VkFormat format,
-		VkImageType type,
-		VkImageTiling tiling,
-		VkImageUsageFlags usage,
-		VkImageCreateFlags flags,
-		VkExternalMemoryHandleTypeFlagsNV externalHandleType,
-		VkExternalImageFormatPropertiesNV * pExternalImageFormatProperties )
+		[[maybe_unused]] VkFormat format,
+		[[maybe_unused]] VkImageType type,
+		[[maybe_unused]] VkImageTiling tiling,
+		[[maybe_unused]] VkImageUsageFlags usage,
+		[[maybe_unused]] VkImageCreateFlags flags,
+		[[maybe_unused]] VkExternalMemoryHandleTypeFlagsNV externalHandleType,
+		[[maybe_unused]] VkExternalImageFormatPropertiesNV * pExternalImageFormatProperties )
 	{
 		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceExternalImageFormatPropertiesNV" );
 	}
@@ -3080,7 +3081,7 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkCmdBeginConditionalRenderingEXT(
 		VkCommandBuffer commandBuffer,
-		const VkConditionalRenderingBeginInfoEXT * pConditionalRenderingBegin )
+		[[maybe_unused]] const VkConditionalRenderingBeginInfoEXT * pConditionalRenderingBegin )
 	{
 		reportUnsupported( commandBuffer, "vkCmdBeginConditionalRenderingEXT" );
 	}
@@ -3098,76 +3099,76 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkCmdProcessCommandsNVX(
 		VkCommandBuffer commandBuffer,
-		const VkCmdProcessCommandsInfoNVX * pProcessCommandsInfo )
+		[[maybe_unused]] const VkCmdProcessCommandsInfoNVX * pProcessCommandsInfo )
 	{
 		reportUnsupported( commandBuffer, "vkCmdProcessCommandsNVX" );
 	}
 
 	void VKAPI_CALL vkCmdReserveSpaceForCommandsNVX(
 		VkCommandBuffer commandBuffer,
-		const VkCmdReserveSpaceForCommandsInfoNVX * pReserveSpaceInfo )
+		[[maybe_unused]] const VkCmdReserveSpaceForCommandsInfoNVX * pReserveSpaceInfo )
 	{
 		reportUnsupported( commandBuffer, "vkCmdReserveSpaceForCommandsNVX" );
 	}
 
 	VkResult VKAPI_CALL vkCreateIndirectCommandsLayoutNVX(
 		VkDevice device,
-		const VkIndirectCommandsLayoutCreateInfoNVX * pCreateInfo,
-		const VkAllocationCallbacks * pAllocator,
-		VkIndirectCommandsLayoutNVX * pIndirectCommandsLayout )
+		[[maybe_unused]] const VkIndirectCommandsLayoutCreateInfoNVX * pCreateInfo,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator,
+		[[maybe_unused]] VkIndirectCommandsLayoutNVX * pIndirectCommandsLayout )
 	{
 		return reportUnsupported( device, "vkCreateIndirectCommandsLayoutNVX" );
 	}
 
 	void VKAPI_CALL vkDestroyIndirectCommandsLayoutNVX(
 		VkDevice device,
-		VkIndirectCommandsLayoutNVX indirectCommandsLayout,
-		const VkAllocationCallbacks * pAllocator )
+		[[maybe_unused]] VkIndirectCommandsLayoutNVX indirectCommandsLayout,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator )
 	{
 		reportUnsupported( device, "vkDestroyIndirectCommandsLayoutNVX" );
 	}
 
 	VkResult VKAPI_CALL vkCreateObjectTableNVX(
 		VkDevice device,
-		const VkObjectTableCreateInfoNVX * pCreateInfo,
-		const VkAllocationCallbacks * pAllocator,
-		VkObjectTableNVX * pObjectTable )
+		[[maybe_unused]] const VkObjectTableCreateInfoNVX * pCreateInfo,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator,
+		[[maybe_unused]] VkObjectTableNVX * pObjectTable )
 	{
 		return reportUnsupported( device, "vkCreateObjectTableNVX" );
 	}
 
 	void VKAPI_CALL vkDestroyObjectTableNVX(
 		VkDevice device,
-		VkObjectTableNVX objectTable,
-		const VkAllocationCallbacks * pAllocator )
+		[[maybe_unused]] VkObjectTableNVX objectTable,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator )
 	{
 		reportUnsupported( device, "vkDestroyObjectTableNVX" );
 	}
 
 	VkResult VKAPI_CALL vkRegisterObjectsNVX(
 		VkDevice device,
-		VkObjectTableNVX objectTable,
-		uint32_t objectCount,
-		const VkObjectTableEntryNVX * const * ppObjectTableEntries,
-		const uint32_t * pObjectIndices )
+		[[maybe_unused]] VkObjectTableNVX objectTable,
+		[[maybe_unused]] uint32_t objectCount,
+		[[maybe_unused]] const VkObjectTableEntryNVX * const * ppObjectTableEntries,
+		[[maybe_unused]] const uint32_t * pObjectIndices )
 	{
 		return reportUnsupported( device, "vkRegisterObjectsNVX" );
 	}
 
 	VkResult VKAPI_CALL vkUnregisterObjectsNVX(
 		VkDevice device,
-		VkObjectTableNVX objectTable,
-		uint32_t objectCount,
-		const VkObjectEntryTypeNVX * pObjectEntryTypes,
-		const uint32_t * pObjectIndices )
+		[[maybe_unused]] VkObjectTableNVX objectTable,
+		[[maybe_unused]] uint32_t objectCount,
+		[[maybe_unused]] const VkObjectEntryTypeNVX * pObjectEntryTypes,
+		[[maybe_unused]] const uint32_t * pObjectIndices )
 	{
 		return reportUnsupported( device, "vkUnregisterObjectsNVX" );
 	}
 
 	void VKAPI_CALL vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX(
 		VkPhysicalDevice physicalDevice,
-		VkDeviceGeneratedCommandsFeaturesNVX * pFeatures,
-		VkDeviceGeneratedCommandsLimitsNVX * pLimits )
+		[[maybe_unused]] VkDeviceGeneratedCommandsFeaturesNVX * pFeatures,
+		[[maybe_unused]] VkDeviceGeneratedCommandsLimitsNVX * pLimits )
 	{
 		reportUnsupported( physicalDevice, "vkGetPhysicalDeviceGeneratedCommandsPropertiesNVX" );
 	}
@@ -3179,9 +3180,9 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkCmdSetViewportWScalingNV(
 		VkCommandBuffer commandBuffer,
-		uint32_t firstViewport,
-		uint32_t viewportCount,
-		const VkViewportWScalingNV * pViewportWScalings )
+		[[maybe_unused]] uint32_t firstViewport,
+		[[maybe_unused]] uint32_t viewportCount,
+		[[maybe_unused]] const VkViewportWScalingNV * pViewportWScalings )
 	{
 		reportUnsupported( commandBuffer, "vkCmdSetViewportWScalingNV" );
 	}
@@ -3193,7 +3194,7 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkReleaseDisplayEXT(
 		VkPhysicalDevice physicalDevice,
-		VkDisplayKHR display )
+		[[maybe_unused]] VkDisplayKHR display )
 	{
 		return reportUnsupported( physicalDevice, "vkReleaseDisplayEXT" );
 	}
@@ -3205,8 +3206,8 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceSurfaceCapabilities2EXT(
 		VkPhysicalDevice physicalDevice,
-		VkSurfaceKHR surface,
-		VkSurfaceCapabilities2EXT * pSurfaceCapabilities )
+		[[maybe_unused]] VkSurfaceKHR surface,
+		[[maybe_unused]] VkSurfaceCapabilities2EXT * pSurfaceCapabilities )
 	{
 		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceSurfaceCapabilities2EXT" );
 	}
@@ -3218,36 +3219,36 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkDisplayPowerControlEXT(
 		VkDevice device,
-		VkDisplayKHR display,
-		const VkDisplayPowerInfoEXT * pDisplayPowerInfo )
+		[[maybe_unused]] VkDisplayKHR display,
+		[[maybe_unused]] const VkDisplayPowerInfoEXT * pDisplayPowerInfo )
 	{
 		return reportUnsupported( device, "vkDisplayPowerControlEXT" );
 	}
 
 	VkResult VKAPI_CALL vkRegisterDeviceEventEXT(
 		VkDevice device,
-		const VkDeviceEventInfoEXT * pDeviceEventInfo,
-		const VkAllocationCallbacks * pAllocator,
-		VkFence * pFence )
+		[[maybe_unused]] const VkDeviceEventInfoEXT * pDeviceEventInfo,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator,
+		[[maybe_unused]] VkFence * pFence )
 	{
 		return reportUnsupported( device, "vkRegisterDeviceEventEXT" );
 	}
 
 	VkResult VKAPI_CALL vkRegisterDisplayEventEXT(
 		VkDevice device,
-		VkDisplayKHR display,
-		const VkDisplayEventInfoEXT * pDisplayEventInfo,
-		const VkAllocationCallbacks * pAllocator,
-		VkFence * pFence )
+		[[maybe_unused]] VkDisplayKHR display,
+		[[maybe_unused]] const VkDisplayEventInfoEXT * pDisplayEventInfo,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator,
+		[[maybe_unused]] VkFence * pFence )
 	{
 		return reportUnsupported( device, "vkRegisterDisplayEventEXT" );
 	}
 
 	VkResult VKAPI_CALL vkGetSwapchainCounterEXT(
 		VkDevice device,
-		VkSwapchainKHR swapchain,
-		VkSurfaceCounterFlagBitsEXT counter,
-		uint64_t * pCounterValue )
+		[[maybe_unused]] VkSwapchainKHR swapchain,
+		[[maybe_unused]] VkSurfaceCounterFlagBitsEXT counter,
+		[[maybe_unused]] uint64_t * pCounterValue )
 	{
 		return reportUnsupported( device, "vkGetSwapchainCounterEXT" );
 	}
@@ -3259,17 +3260,17 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkGetRefreshCycleDurationGOOGLE(
 		VkDevice device,
-		VkSwapchainKHR swapchain,
-		VkRefreshCycleDurationGOOGLE * pDisplayTimingProperties )
+		[[maybe_unused]] VkSwapchainKHR swapchain,
+		[[maybe_unused]] VkRefreshCycleDurationGOOGLE * pDisplayTimingProperties )
 	{
 		return reportUnsupported( device, "vkGetRefreshCycleDurationGOOGLE" );
 	}
 
 	VkResult VKAPI_CALL vkGetPastPresentationTimingGOOGLE(
 		VkDevice device,
-		VkSwapchainKHR swapchain,
-		uint32_t * pPresentationTimingCount,
-		VkPastPresentationTimingGOOGLE * pPresentationTimings )
+		[[maybe_unused]] VkSwapchainKHR swapchain,
+		[[maybe_unused]] uint32_t * pPresentationTimingCount,
+		[[maybe_unused]] VkPastPresentationTimingGOOGLE * pPresentationTimings )
 	{
 		return reportUnsupported( device, "vkGetPastPresentationTimingGOOGLE" );
 	}
@@ -3281,9 +3282,9 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkCmdSetDiscardRectangleEXT(
 		VkCommandBuffer commandBuffer,
-		uint32_t firstDiscardRectangle,
-		uint32_t discardRectangleCount,
-		const VkRect2D * pDiscardRectangles )
+		[[maybe_unused]] uint32_t firstDiscardRectangle,
+		[[maybe_unused]] uint32_t discardRectangleCount,
+		[[maybe_unused]] const VkRect2D * pDiscardRectangles )
 	{
 		reportUnsupported( commandBuffer, "vkCmdSetDiscardRectangleEXT" );
 	}
@@ -3295,9 +3296,9 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkSetHdrMetadataEXT(
 		VkDevice device,
-		uint32_t swapchainCount,
-		const VkSwapchainKHR * pSwapchains,
-		const VkHdrMetadataEXT * pMetadata )
+		[[maybe_unused]] uint32_t swapchainCount,
+		[[maybe_unused]] const VkSwapchainKHR * pSwapchains,
+		[[maybe_unused]] const VkHdrMetadataEXT * pMetadata )
 	{
 		reportUnsupported( device, "vkSetHdrMetadataEXT" );
 	}
@@ -3375,7 +3376,7 @@ namespace ashes::xbox
 	}
 
 	void VKAPI_CALL vkDestroyDebugUtilsMessengerEXT(
-		VkInstance instance,
+		[[maybe_unused]] VkInstance instance,
 		VkDebugUtilsMessengerEXT messenger,
 		const VkAllocationCallbacks * pAllocator )
 	{
@@ -3400,7 +3401,7 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkCmdSetSampleLocationsEXT(
 		VkCommandBuffer commandBuffer,
-		const VkSampleLocationsInfoEXT * pSampleLocationsInfo )
+		[[maybe_unused]] const VkSampleLocationsInfoEXT * pSampleLocationsInfo )
 	{
 		reportUnsupported( commandBuffer, "vkCmdSetSampleLocationsEXT" );
 	}
@@ -3408,7 +3409,7 @@ namespace ashes::xbox
 	void VKAPI_CALL vkGetPhysicalDeviceMultisamplePropertiesEXT(
 		VkPhysicalDevice physicalDevice,
 		VkSampleCountFlagBits samples,
-		VkMultisamplePropertiesEXT * pMultisampleProperties )
+		[[maybe_unused]] VkMultisamplePropertiesEXT * pMultisampleProperties )
 	{
 		reportUnsupported( physicalDevice, "vkGetPhysicalDeviceMultisamplePropertiesEXT" );
 	}
@@ -3420,8 +3421,8 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkGetImageDrmFormatModifierPropertiesEXT(
 		VkDevice device,
-		VkImage image,
-		VkImageDrmFormatModifierPropertiesEXT * pProperties )
+		[[maybe_unused]] VkImage image,
+		[[maybe_unused]] VkImageDrmFormatModifierPropertiesEXT * pProperties )
 	{
 		return reportUnsupported( device, "vkGetImageDrmFormatModifierPropertiesEXT" );
 	}
@@ -3433,35 +3434,35 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkCreateValidationCacheEXT(
 		VkDevice device,
-		const VkValidationCacheCreateInfoEXT * pCreateInfo,
-		const VkAllocationCallbacks * pAllocator,
-		VkValidationCacheEXT * pValidationCache )
+		[[maybe_unused]] const VkValidationCacheCreateInfoEXT * pCreateInfo,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator,
+		[[maybe_unused]] VkValidationCacheEXT * pValidationCache )
 	{
 		return reportUnsupported( device, "vkCreateValidationCacheEXT" );
 	}
 
 	void VKAPI_CALL vkDestroyValidationCacheEXT(
 		VkDevice device,
-		VkValidationCacheEXT validationCache,
-		const VkAllocationCallbacks * pAllocator )
+		[[maybe_unused]] VkValidationCacheEXT validationCache,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator )
 	{
 		reportUnsupported( device, "vkDestroyValidationCacheEXT" );
 	}
 
 	VkResult VKAPI_CALL vkMergeValidationCachesEXT(
 		VkDevice device,
-		VkValidationCacheEXT dstCache,
-		uint32_t srcCacheCount,
-		const VkValidationCacheEXT * pSrcCaches )
+		[[maybe_unused]] VkValidationCacheEXT dstCache,
+		[[maybe_unused]] uint32_t srcCacheCount,
+		[[maybe_unused]] const VkValidationCacheEXT * pSrcCaches )
 	{
 		return reportUnsupported( device, "vkMergeValidationCachesEXT" );
 	}
 
 	VkResult VKAPI_CALL vkGetValidationCacheDataEXT(
 		VkDevice device,
-		VkValidationCacheEXT validationCache,
-		size_t * pDataSize,
-		void * pData )
+		[[maybe_unused]] VkValidationCacheEXT validationCache,
+		[[maybe_unused]] size_t * pDataSize,
+		[[maybe_unused]] void * pData )
 	{
 		return reportUnsupported( device, "vkGetValidationCacheDataEXT" );
 	}
@@ -3473,26 +3474,26 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkCmdBindShadingRateImageNV(
 		VkCommandBuffer commandBuffer,
-		VkImageView imageView,
-		VkImageLayout imageLayout )
+		[[maybe_unused]] VkImageView imageView,
+		[[maybe_unused]] VkImageLayout imageLayout )
 	{
 		reportUnsupported( commandBuffer, "vkCmdBindShadingRateImageNV" );
 	}
 
 	void VKAPI_CALL vkCmdSetViewportShadingRatePaletteNV(
 		VkCommandBuffer commandBuffer,
-		uint32_t firstViewport,
-		uint32_t viewportCount,
-		const VkShadingRatePaletteNV * pShadingRatePalettes )
+		[[maybe_unused]] uint32_t firstViewport,
+		[[maybe_unused]] uint32_t viewportCount,
+		[[maybe_unused]] const VkShadingRatePaletteNV * pShadingRatePalettes )
 	{
 		reportUnsupported( commandBuffer, "vkCmdSetViewportShadingRatePaletteNV" );
 	}
 
 	void VKAPI_CALL vkCmdSetCoarseSampleOrderNV(
 		VkCommandBuffer commandBuffer,
-		VkCoarseSampleOrderTypeNV sampleOrderType,
-		uint32_t customSampleOrderCount,
-		const VkCoarseSampleOrderCustomNV * pCustomSampleOrders )
+		[[maybe_unused]] VkCoarseSampleOrderTypeNV sampleOrderType,
+		[[maybe_unused]] uint32_t customSampleOrderCount,
+		[[maybe_unused]] const VkCoarseSampleOrderCustomNV * pCustomSampleOrders )
 	{
 		reportUnsupported( commandBuffer, "vkCmdSetCoarseSampleOrderNV" );
 	}
@@ -3504,126 +3505,126 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkCreateAccelerationStructureNV(
 		VkDevice device,
-		const VkAccelerationStructureCreateInfoNV * pCreateInfo,
-		const VkAllocationCallbacks * pAllocator,
-		VkAccelerationStructureNV * pAccelerationStructure )
+		[[maybe_unused]] const VkAccelerationStructureCreateInfoNV * pCreateInfo,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator,
+		[[maybe_unused]] VkAccelerationStructureNV * pAccelerationStructure )
 	{
 		return reportUnsupported( device, "vkCreateAccelerationStructureNV" );
 	}
 
 	void VKAPI_CALL vkDestroyAccelerationStructureNV(
 		VkDevice device,
-		VkAccelerationStructureNV accelerationStructure,
-		const VkAllocationCallbacks * pAllocator )
+		[[maybe_unused]] VkAccelerationStructureNV accelerationStructure,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator )
 	{
 		reportUnsupported( device, "vkDestroyAccelerationStructureNV" );
 	}
 
 	void VKAPI_CALL vkGetAccelerationStructureMemoryRequirementsNV(
 		VkDevice device,
-		const VkAccelerationStructureMemoryRequirementsInfoNV * pInfo,
-		VkMemoryRequirements2KHR * pMemoryRequirements )
+		[[maybe_unused]] const VkAccelerationStructureMemoryRequirementsInfoNV * pInfo,
+		[[maybe_unused]] VkMemoryRequirements2KHR * pMemoryRequirements )
 	{
 		reportUnsupported( device, "vkGetAccelerationStructureMemoryRequirementsNV" );
 	}
 
 	VkResult VKAPI_CALL vkBindAccelerationStructureMemoryNV(
 		VkDevice device,
-		uint32_t bindInfoCount,
-		const VkBindAccelerationStructureMemoryInfoNV * pBindInfos )
+		[[maybe_unused]] uint32_t bindInfoCount,
+		[[maybe_unused]] const VkBindAccelerationStructureMemoryInfoNV * pBindInfos )
 	{
 		return reportUnsupported( device, "vkBindAccelerationStructureMemoryNV" );
 	}
 
 	void VKAPI_CALL vkCmdBuildAccelerationStructureNV(
 		VkCommandBuffer commandBuffer,
-		const VkAccelerationStructureInfoNV * pInfo,
-		VkBuffer instanceData,
-		VkDeviceSize instanceOffset,
-		VkBool32 update,
-		VkAccelerationStructureNV dst,
-		VkAccelerationStructureNV src,
-		VkBuffer scratch,
-		VkDeviceSize scratchOffset )
+		[[maybe_unused]] const VkAccelerationStructureInfoNV * pInfo,
+		[[maybe_unused]] VkBuffer instanceData,
+		[[maybe_unused]] VkDeviceSize instanceOffset,
+		[[maybe_unused]] VkBool32 update,
+		[[maybe_unused]] VkAccelerationStructureNV dst,
+		[[maybe_unused]] VkAccelerationStructureNV src,
+		[[maybe_unused]] VkBuffer scratch,
+		[[maybe_unused]] VkDeviceSize scratchOffset )
 	{
 		reportUnsupported( commandBuffer, "vkCmdBuildAccelerationStructureNV" );
 	}
 
 	void VKAPI_CALL vkCmdCopyAccelerationStructureNV(
 		VkCommandBuffer commandBuffer,
-		VkAccelerationStructureNV dst,
-		VkAccelerationStructureNV src,
-		VkCopyAccelerationStructureModeNV mode )
+		[[maybe_unused]] VkAccelerationStructureNV dst,
+		[[maybe_unused]] VkAccelerationStructureNV src,
+		[[maybe_unused]] VkCopyAccelerationStructureModeNV mode )
 	{
 		reportUnsupported( commandBuffer, "vkCmdCopyAccelerationStructureNV" );
 	}
 
 	void VKAPI_CALL vkCmdTraceRaysNV(
 		VkCommandBuffer commandBuffer,
-		VkBuffer raygenShaderBindingTableBuffer,
-		VkDeviceSize raygenShaderBindingOffset,
-		VkBuffer missShaderBindingTableBuffer,
-		VkDeviceSize missShaderBindingOffset,
-		VkDeviceSize missShaderBindingStride,
-		VkBuffer hitShaderBindingTableBuffer,
-		VkDeviceSize hitShaderBindingOffset,
-		VkDeviceSize hitShaderBindingStride,
-		VkBuffer callableShaderBindingTableBuffer,
-		VkDeviceSize callableShaderBindingOffset,
-		VkDeviceSize callableShaderBindingStride,
-		uint32_t width,
-		uint32_t height,
-		uint32_t depth )
+		[[maybe_unused]] VkBuffer raygenShaderBindingTableBuffer,
+		[[maybe_unused]] VkDeviceSize raygenShaderBindingOffset,
+		[[maybe_unused]] VkBuffer missShaderBindingTableBuffer,
+		[[maybe_unused]] VkDeviceSize missShaderBindingOffset,
+		[[maybe_unused]] VkDeviceSize missShaderBindingStride,
+		[[maybe_unused]] VkBuffer hitShaderBindingTableBuffer,
+		[[maybe_unused]] VkDeviceSize hitShaderBindingOffset,
+		[[maybe_unused]] VkDeviceSize hitShaderBindingStride,
+		[[maybe_unused]] VkBuffer callableShaderBindingTableBuffer,
+		[[maybe_unused]] VkDeviceSize callableShaderBindingOffset,
+		[[maybe_unused]] VkDeviceSize callableShaderBindingStride,
+		[[maybe_unused]] uint32_t width,
+		[[maybe_unused]] uint32_t height,
+		[[maybe_unused]] uint32_t depth )
 	{
 		reportUnsupported( commandBuffer, "vkCmdTraceRaysNV" );
 	}
 
 	VkResult VKAPI_CALL vkCreateRayTracingPipelinesNV(
 		VkDevice device,
-		VkPipelineCache pipelineCache,
-		uint32_t createInfoCount,
-		const VkRayTracingPipelineCreateInfoNV * pCreateInfos,
-		const VkAllocationCallbacks * pAllocator,
-		VkPipeline * pPipelines )
+		[[maybe_unused]] VkPipelineCache pipelineCache,
+		[[maybe_unused]] uint32_t createInfoCount,
+		[[maybe_unused]] const VkRayTracingPipelineCreateInfoNV * pCreateInfos,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator,
+		[[maybe_unused]] VkPipeline * pPipelines )
 	{
 		return reportUnsupported( device, "vkCreateRayTracingPipelinesNV" );
 	}
 
 	VkResult VKAPI_CALL vkGetRayTracingShaderGroupHandlesNV(
 		VkDevice device,
-		VkPipeline pipeline,
-		uint32_t firstGroup,
-		uint32_t groupCount,
-		size_t dataSize,
-		void * pData )
+		[[maybe_unused]] VkPipeline pipeline,
+		[[maybe_unused]] uint32_t firstGroup,
+		[[maybe_unused]] uint32_t groupCount,
+		[[maybe_unused]] size_t dataSize,
+		[[maybe_unused]] void * pData )
 	{
 		return reportUnsupported( device, "vkGetRayTracingShaderGroupHandlesNV" );
 	}
 
 	VkResult VKAPI_CALL vkGetAccelerationStructureHandleNV(
 		VkDevice device,
-		VkAccelerationStructureNV accelerationStructure,
-		size_t dataSize,
-		void * pData )
+		[[maybe_unused]] VkAccelerationStructureNV accelerationStructure,
+		[[maybe_unused]] size_t dataSize,
+		[[maybe_unused]] void * pData )
 	{
 		return reportUnsupported( device, "vkGetAccelerationStructureHandleNV" );
 	}
 
 	void VKAPI_CALL vkCmdWriteAccelerationStructuresPropertiesNV(
 		VkCommandBuffer commandBuffer,
-		uint32_t accelerationStructureCount,
-		const VkAccelerationStructureNV * pAccelerationStructures,
-		VkQueryType queryType,
-		VkQueryPool queryPool,
-		uint32_t firstQuery )
+		[[maybe_unused]] uint32_t accelerationStructureCount,
+		[[maybe_unused]] const VkAccelerationStructureNV * pAccelerationStructures,
+		[[maybe_unused]] VkQueryType queryType,
+		[[maybe_unused]] VkQueryPool queryPool,
+		[[maybe_unused]] uint32_t firstQuery )
 	{
 		reportUnsupported( commandBuffer, "vkCmdWriteAccelerationStructuresPropertiesNV" );
 	}
 
 	VkResult VKAPI_CALL vkCompileDeferredNV(
 		VkDevice device,
-		VkPipeline pipeline,
-		uint32_t shader )
+		[[maybe_unused]] VkPipeline pipeline,
+		[[maybe_unused]] uint32_t shader )
 	{
 		return reportUnsupported( device, "vkCompileDeferredNV" );
 	}
@@ -3635,9 +3636,9 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkGetMemoryHostPointerPropertiesEXT(
 		VkDevice device,
-		VkExternalMemoryHandleTypeFlagBits handleType,
-		const void * pHostPointer,
-		VkMemoryHostPointerPropertiesEXT * pMemoryHostPointerProperties )
+		[[maybe_unused]] VkExternalMemoryHandleTypeFlagBits handleType,
+		[[maybe_unused]] const void * pHostPointer,
+		[[maybe_unused]] VkMemoryHostPointerPropertiesEXT * pMemoryHostPointerProperties )
 	{
 		return reportUnsupported( device, "vkGetMemoryHostPointerPropertiesEXT" );
 	}
@@ -3649,10 +3650,10 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkCmdWriteBufferMarkerAMD(
 		VkCommandBuffer commandBuffer,
-		VkPipelineStageFlagBits pipelineStage,
-		VkBuffer dstBuffer,
-		VkDeviceSize dstOffset,
-		uint32_t marker )
+		[[maybe_unused]] VkPipelineStageFlagBits pipelineStage,
+		[[maybe_unused]] VkBuffer dstBuffer,
+		[[maybe_unused]] VkDeviceSize dstOffset,
+		[[maybe_unused]] uint32_t marker )
 	{
 		reportUnsupported( commandBuffer, "vkCmdWriteBufferMarkerAMD" );
 	}
@@ -3664,18 +3665,18 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceCalibrateableTimeDomainsEXT(
 		VkPhysicalDevice physicalDevice,
-		uint32_t * pTimeDomainCount,
-		VkTimeDomainEXT * pTimeDomains )
+		[[maybe_unused]] uint32_t * pTimeDomainCount,
+		[[maybe_unused]] VkTimeDomainEXT * pTimeDomains )
 	{
 		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceCalibrateableTimeDomainsEXT" );
 	}
 
 	VkResult VKAPI_CALL vkGetCalibratedTimestampsEXT(
 		VkDevice device,
-		uint32_t timestampCount,
-		const VkCalibratedTimestampInfoEXT * pTimestampInfos,
-		uint64_t * pTimestamps,
-		uint64_t * pMaxDeviation )
+		[[maybe_unused]] uint32_t timestampCount,
+		[[maybe_unused]] const VkCalibratedTimestampInfoEXT * pTimestampInfos,
+		[[maybe_unused]] uint64_t * pTimestamps,
+		[[maybe_unused]] uint64_t * pMaxDeviation )
 	{
 		return reportUnsupported( device, "vkGetCalibratedTimestampsEXT" );
 	}
@@ -3687,31 +3688,31 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkCmdDrawMeshTasksEXT(
 		VkCommandBuffer commandBuffer,
-		uint32_t groupCountX,
-		uint32_t groupCountY,
-		uint32_t groupCountZ )
+		[[maybe_unused]] uint32_t groupCountX,
+		[[maybe_unused]] uint32_t groupCountY,
+		[[maybe_unused]] uint32_t groupCountZ )
 	{
 		reportUnsupported( commandBuffer, "vkCmdDrawMeshTasksEXT" );
 	}
 
 	void VKAPI_CALL vkCmdDrawMeshTasksIndirectEXT(
 		VkCommandBuffer commandBuffer,
-		VkBuffer buffer,
-		VkDeviceSize offset,
-		uint32_t drawCount,
-		uint32_t stride )
+		[[maybe_unused]] VkBuffer buffer,
+		[[maybe_unused]] VkDeviceSize offset,
+		[[maybe_unused]] uint32_t drawCount,
+		[[maybe_unused]] uint32_t stride )
 	{
 		reportUnsupported( commandBuffer, "vkCmdDrawMeshTasksIndirectEXT" );
 	}
 
 	void VKAPI_CALL vkCmdDrawMeshTasksIndirectCountEXT(
 		VkCommandBuffer commandBuffer,
-		VkBuffer buffer,
-		VkDeviceSize offset,
-		VkBuffer countBuffer,
-		VkDeviceSize countBufferOffset,
-		uint32_t maxDrawCount,
-		uint32_t stride )
+		[[maybe_unused]] VkBuffer buffer,
+		[[maybe_unused]] VkDeviceSize offset,
+		[[maybe_unused]] VkBuffer countBuffer,
+		[[maybe_unused]] VkDeviceSize countBufferOffset,
+		[[maybe_unused]] uint32_t maxDrawCount,
+		[[maybe_unused]] uint32_t stride )
 	{
 		reportUnsupported( commandBuffer, "vkCmdDrawMeshTasksIndirectCountEXT" );
 	}
@@ -3723,30 +3724,30 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkCmdDrawMeshTasksNV(
 		VkCommandBuffer commandBuffer,
-		uint32_t taskCount,
-		uint32_t firstTask )
+		[[maybe_unused]] uint32_t taskCount,
+		[[maybe_unused]] uint32_t firstTask )
 	{
 		reportUnsupported( commandBuffer, "vkCmdDrawMeshTasksNV" );
 	}
 
 	void VKAPI_CALL vkCmdDrawMeshTasksIndirectNV(
 		VkCommandBuffer commandBuffer,
-		VkBuffer buffer,
-		VkDeviceSize offset,
-		uint32_t drawCount,
-		uint32_t stride )
+		[[maybe_unused]] VkBuffer buffer,
+		[[maybe_unused]] VkDeviceSize offset,
+		[[maybe_unused]] uint32_t drawCount,
+		[[maybe_unused]] uint32_t stride )
 	{
 		reportUnsupported( commandBuffer, "vkCmdDrawMeshTasksIndirectNV" );
 	}
 
 	void VKAPI_CALL vkCmdDrawMeshTasksIndirectCountNV(
 		VkCommandBuffer commandBuffer,
-		VkBuffer buffer,
-		VkDeviceSize offset,
-		VkBuffer countBuffer,
-		VkDeviceSize countBufferOffset,
-		uint32_t maxDrawCount,
-		uint32_t stride )
+		[[maybe_unused]] VkBuffer buffer,
+		[[maybe_unused]] VkDeviceSize offset,
+		[[maybe_unused]] VkBuffer countBuffer,
+		[[maybe_unused]] VkDeviceSize countBufferOffset,
+		[[maybe_unused]] uint32_t maxDrawCount,
+		[[maybe_unused]] uint32_t stride )
 	{
 		reportUnsupported( commandBuffer, "vkCmdDrawMeshTasksIndirectCountNV" );
 	}
@@ -3758,9 +3759,9 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkCmdSetExclusiveScissorNV(
 		VkCommandBuffer commandBuffer,
-		uint32_t firstExclusiveScissor,
-		uint32_t exclusiveScissorCount,
-		const VkRect2D * pExclusiveScissors )
+		[[maybe_unused]] uint32_t firstExclusiveScissor,
+		[[maybe_unused]] uint32_t exclusiveScissorCount,
+		[[maybe_unused]] const VkRect2D * pExclusiveScissors )
 	{
 		reportUnsupported( commandBuffer, "vkCmdSetExclusiveScissorNV" );
 	}
@@ -3772,15 +3773,15 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkCmdSetCheckpointNV(
 		VkCommandBuffer commandBuffer,
-		const void * pCheckpointMarker )
+		[[maybe_unused]] const void * pCheckpointMarker )
 	{
 		reportUnsupported( commandBuffer, "vkCmdSetCheckpointNV" );
 	}
 
 	void VKAPI_CALL vkGetQueueCheckpointDataNV(
 		VkQueue queue,
-		uint32_t * pCheckpointDataCount,
-		VkCheckpointDataNV * pCheckpointData )
+		[[maybe_unused]] uint32_t * pCheckpointDataCount,
+		[[maybe_unused]] VkCheckpointDataNV * pCheckpointData )
 	{
 		reportUnsupported( queue, "vkGetQueueCheckpointDataNV" );
 	}
@@ -3792,7 +3793,7 @@ namespace ashes::xbox
 
 	VkDeviceAddress VKAPI_CALL vkGetBufferDeviceAddressEXT(
 		VkDevice device,
-		const VkBufferDeviceAddressInfoEXT * pInfo )
+		[[maybe_unused]] const VkBufferDeviceAddressInfoEXT * pInfo )
 	{
 		return reportUnsupported( device, "vkGetBufferDeviceAddressEXT" );
 	}
@@ -3804,8 +3805,8 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkGetPhysicalDeviceCooperativeMatrixPropertiesNV(
 		VkPhysicalDevice physicalDevice,
-		uint32_t * pPropertyCount,
-		VkCooperativeMatrixPropertiesNV * pProperties )
+		[[maybe_unused]] uint32_t * pPropertyCount,
+		[[maybe_unused]] VkCooperativeMatrixPropertiesNV * pProperties )
 	{
 		return reportUnsupported( physicalDevice, "vkGetPhysicalDeviceCooperativeMatrixPropertiesNV" );
 	}
@@ -3817,23 +3818,23 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkCreateDeferredOperationKHR(
 		VkDevice device,
-		const VkAllocationCallbacks * pAllocator,
-		VkDeferredOperationKHR * pDeferredOperation )
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator,
+		[[maybe_unused]] VkDeferredOperationKHR * pDeferredOperation )
 	{
 		return reportUnsupported( device, "vkCreateDeferredOperationKHR" );
 	}
 
 	void VKAPI_CALL vkDestroyDeferredOperationKHR(
 		VkDevice device,
-		VkDeferredOperationKHR operation,
-		const VkAllocationCallbacks * pAllocator )
+		[[maybe_unused]] VkDeferredOperationKHR operation,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator )
 	{
 		reportUnsupported( device, "vkDestroyDeferredOperationKHR" );
 	}
 
 	uint32_t VKAPI_CALL vkGetDeferredOperationMaxConcurrencyKHR(
 		VkDevice device,
-		VkDeferredOperationKHR operation )
+		[[maybe_unused]] VkDeferredOperationKHR operation )
 	{
 		reportUnsupported( device, "vkGetDeferredOperationMaxConcurrencyKHR" );
 		return 0u;
@@ -3841,14 +3842,14 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkGetDeferredOperationResultKHR(
 		VkDevice device,
-		VkDeferredOperationKHR operation )
+		[[maybe_unused]] VkDeferredOperationKHR operation )
 	{
 		return reportUnsupported( device, "vkGetDeferredOperationResultKHR" );
 	}
 
 	VkResult VKAPI_CALL vkDeferredOperationJoinKHR(
 		VkDevice device,
-		VkDeferredOperationKHR operation )
+		[[maybe_unused]] VkDeferredOperationKHR operation )
 	{
 		return reportUnsupported( device, "vkDeferredOperationJoinKHR" );
 	}
@@ -3860,56 +3861,56 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkCmdTraceRaysKHR(
 		VkCommandBuffer commandBuffer,
-		const VkStridedDeviceAddressRegionKHR * pRaygenShaderBindingTable,
-		const VkStridedDeviceAddressRegionKHR * pMissShaderBindingTable,
-		const VkStridedDeviceAddressRegionKHR * pHitShaderBindingTable,
-		const VkStridedDeviceAddressRegionKHR * pCallableShaderBindingTable,
-		uint32_t width,
-		uint32_t height,
-		uint32_t depth )
+		[[maybe_unused]] const VkStridedDeviceAddressRegionKHR * pRaygenShaderBindingTable,
+		[[maybe_unused]] const VkStridedDeviceAddressRegionKHR * pMissShaderBindingTable,
+		[[maybe_unused]] const VkStridedDeviceAddressRegionKHR * pHitShaderBindingTable,
+		[[maybe_unused]] const VkStridedDeviceAddressRegionKHR * pCallableShaderBindingTable,
+		[[maybe_unused]] uint32_t width,
+		[[maybe_unused]] uint32_t height,
+		[[maybe_unused]] uint32_t depth )
 	{
 		reportUnsupported( commandBuffer, "vkCmdTraceRaysKHR" );
 	}
 
 	VkResult VKAPI_CALL vkCreateRayTracingPipelinesKHR(
 		VkDevice device,
-		VkDeferredOperationKHR deferredOperation,
-		VkPipelineCache pipelineCache,
-		uint32_t createInfoCount,
-		const VkRayTracingPipelineCreateInfoKHR * pCreateInfos,
-		const VkAllocationCallbacks * pAllocator,
-		VkPipeline * pPipelines )
+		[[maybe_unused]] VkDeferredOperationKHR deferredOperation,
+		[[maybe_unused]] VkPipelineCache pipelineCache,
+		[[maybe_unused]] uint32_t createInfoCount,
+		[[maybe_unused]] const VkRayTracingPipelineCreateInfoKHR * pCreateInfos,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator,
+		[[maybe_unused]] VkPipeline * pPipelines )
 	{
 		return reportUnsupported( device, "vkCreateRayTracingPipelinesKHR" );
 	}
 
 	VkResult VKAPI_CALL vkGetRayTracingCaptureReplayShaderGroupHandlesKHR(
 		VkDevice device,
-		VkPipeline pipeline,
-		uint32_t firstGroup,
-		uint32_t groupCount,
-		size_t dataSize,
-		void * pData )
+		[[maybe_unused]] VkPipeline pipeline,
+		[[maybe_unused]] uint32_t firstGroup,
+		[[maybe_unused]] uint32_t groupCount,
+		[[maybe_unused]] size_t dataSize,
+		[[maybe_unused]] void * pData )
 	{
 		return reportUnsupported( device, "vkGetRayTracingCaptureReplayShaderGroupHandlesKHR" );
 	}
 
 	void VKAPI_CALL vkCmdTraceRaysIndirectKHR(
 		VkCommandBuffer commandBuffer,
-		const VkStridedDeviceAddressRegionKHR * pRaygenShaderBindingTable,
-		const VkStridedDeviceAddressRegionKHR * pMissShaderBindingTable,
-		const VkStridedDeviceAddressRegionKHR * pHitShaderBindingTable,
-		const VkStridedDeviceAddressRegionKHR * pCallableShaderBindingTable,
-		VkDeviceAddress indirectDeviceAddress )
+		[[maybe_unused]] const VkStridedDeviceAddressRegionKHR * pRaygenShaderBindingTable,
+		[[maybe_unused]] const VkStridedDeviceAddressRegionKHR * pMissShaderBindingTable,
+		[[maybe_unused]] const VkStridedDeviceAddressRegionKHR * pHitShaderBindingTable,
+		[[maybe_unused]] const VkStridedDeviceAddressRegionKHR * pCallableShaderBindingTable,
+		[[maybe_unused]] VkDeviceAddress indirectDeviceAddress )
 	{
 		reportUnsupported( commandBuffer, "vkCmdTraceRaysIndirectKHR" );
 	}
 
 	VkDeviceSize VKAPI_CALL vkGetRayTracingShaderGroupStackSizeKHR(
 		VkDevice device,
-		VkPipeline pipeline,
-		uint32_t group,
-		VkShaderGroupShaderKHR groupShader )
+		[[maybe_unused]] VkPipeline pipeline,
+		[[maybe_unused]] uint32_t group,
+		[[maybe_unused]] VkShaderGroupShaderKHR groupShader )
 	{
 		reportUnsupported( device, "vkGetRayTracingShaderGroupStackSizeKHR" );
 		return 0u;
@@ -3917,7 +3918,7 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkCmdSetRayTracingPipelineStackSizeKHR(
 		VkCommandBuffer commandBuffer,
-		uint32_t pipelineStackSize )
+		[[maybe_unused]] uint32_t pipelineStackSize )
 	{
 		reportUnsupported( commandBuffer, "vkCmdSetRayTracingPipelineStackSizeKHR" );
 	}
@@ -3929,111 +3930,111 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkCreateAccelerationStructureKHR(
 		VkDevice device,
-		const VkAccelerationStructureCreateInfoKHR * pCreateInfo,
-		const VkAllocationCallbacks * pAllocator,
-		VkAccelerationStructureKHR * pAccelerationStructure )
+		[[maybe_unused]] const VkAccelerationStructureCreateInfoKHR * pCreateInfo,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator,
+		[[maybe_unused]] VkAccelerationStructureKHR * pAccelerationStructure )
 	{
 		return reportUnsupported( device, "vkCreateAccelerationStructureKHR" );
 	}
 
 	void VKAPI_CALL vkDestroyAccelerationStructureKHR(
 		VkDevice device,
-		VkAccelerationStructureKHR accelerationStructure,
-		const VkAllocationCallbacks * pAllocator )
+		[[maybe_unused]] VkAccelerationStructureKHR accelerationStructure,
+		[[maybe_unused]] const VkAllocationCallbacks * pAllocator )
 	{
 		reportUnsupported( device, "vkDestroyAccelerationStructureKHR" );
 	}
 
 	void VKAPI_CALL vkCmdBuildAccelerationStructuresKHR(
 		VkCommandBuffer commandBuffer,
-		uint32_t infoCount,
-		const VkAccelerationStructureBuildGeometryInfoKHR * pInfos,
-		const VkAccelerationStructureBuildRangeInfoKHR * const * ppBuildRangeInfos )
+		[[maybe_unused]] uint32_t infoCount,
+		[[maybe_unused]] const VkAccelerationStructureBuildGeometryInfoKHR * pInfos,
+		[[maybe_unused]] const VkAccelerationStructureBuildRangeInfoKHR * const * ppBuildRangeInfos )
 	{
 		reportUnsupported( commandBuffer, "vkCmdBuildAccelerationStructuresKHR" );
 	}
 
 	void VKAPI_CALL vkCmdBuildAccelerationStructuresIndirectKHR(
 		VkCommandBuffer commandBuffer,
-		uint32_t infoCount,
-		const VkAccelerationStructureBuildGeometryInfoKHR * pInfos,
-		const VkDeviceAddress * pIndirectDeviceAddresses,
-		const uint32_t * pIndirectStrides,
-		const uint32_t * const * ppMaxPrimitiveCounts )
+		[[maybe_unused]] uint32_t infoCount,
+		[[maybe_unused]] const VkAccelerationStructureBuildGeometryInfoKHR * pInfos,
+		[[maybe_unused]] const VkDeviceAddress * pIndirectDeviceAddresses,
+		[[maybe_unused]] const uint32_t * pIndirectStrides,
+		[[maybe_unused]] const uint32_t * const * ppMaxPrimitiveCounts )
 	{
 		reportUnsupported( commandBuffer, "vkCmdBuildAccelerationStructuresIndirectKHR" );
 	}
 
 	VkResult VKAPI_CALL vkBuildAccelerationStructuresKHR(
 		VkDevice device,
-		VkDeferredOperationKHR deferredOperation,
-		uint32_t infoCount,
-		const VkAccelerationStructureBuildGeometryInfoKHR * pInfos,
-		const VkAccelerationStructureBuildRangeInfoKHR * const * ppBuildRangeInfos )
+		[[maybe_unused]] VkDeferredOperationKHR deferredOperation,
+		[[maybe_unused]] uint32_t infoCount,
+		[[maybe_unused]] const VkAccelerationStructureBuildGeometryInfoKHR * pInfos,
+		[[maybe_unused]] const VkAccelerationStructureBuildRangeInfoKHR * const * ppBuildRangeInfos )
 	{
 		return reportUnsupported( device, "vkBuildAccelerationStructuresKHR" );
 	}
 
 	VkResult VKAPI_CALL vkCopyAccelerationStructureKHR(
 		VkDevice device,
-		VkDeferredOperationKHR deferredOperation,
-		const VkCopyAccelerationStructureInfoKHR * pInfo )
+		[[maybe_unused]] VkDeferredOperationKHR deferredOperation,
+		[[maybe_unused]] const VkCopyAccelerationStructureInfoKHR * pInfo )
 	{
 		return reportUnsupported( device, "vkCopyAccelerationStructureKHR" );
 	}
 
 	VkResult VKAPI_CALL vkCopyAccelerationStructureToMemoryKHR(
 		VkDevice device,
-		VkDeferredOperationKHR deferredOperation,
-		const VkCopyAccelerationStructureToMemoryInfoKHR * pInfo )
+		[[maybe_unused]] VkDeferredOperationKHR deferredOperation,
+		[[maybe_unused]] const VkCopyAccelerationStructureToMemoryInfoKHR * pInfo )
 	{
 		return reportUnsupported( device, "vkCopyAccelerationStructureToMemoryKHR" );
 	}
 
 	VkResult VKAPI_CALL vkCopyMemoryToAccelerationStructureKHR(
 		VkDevice device,
-		VkDeferredOperationKHR deferredOperation,
-		const VkCopyMemoryToAccelerationStructureInfoKHR * pInfo )
+		[[maybe_unused]] VkDeferredOperationKHR deferredOperation,
+		[[maybe_unused]] const VkCopyMemoryToAccelerationStructureInfoKHR * pInfo )
 	{
 		return reportUnsupported( device, "vkCopyMemoryToAccelerationStructureKHR" );
 	}
 
 	VkResult VKAPI_CALL vkWriteAccelerationStructuresPropertiesKHR(
 		VkDevice device,
-		uint32_t accelerationStructureCount,
-		const VkAccelerationStructureKHR * pAccelerationStructures,
-		VkQueryType queryType,
-		size_t dataSize,
-		void * pData,
-		size_t stride )
+		[[maybe_unused]] uint32_t accelerationStructureCount,
+		[[maybe_unused]] const VkAccelerationStructureKHR * pAccelerationStructures,
+		[[maybe_unused]] VkQueryType queryType,
+		[[maybe_unused]] size_t dataSize,
+		[[maybe_unused]] void * pData,
+		[[maybe_unused]] size_t stride )
 	{
 		return reportUnsupported( device, "vkWriteAccelerationStructuresPropertiesKHR" );
 	}
 
 	void VKAPI_CALL vkCmdCopyAccelerationStructureKHR(
 		VkCommandBuffer commandBuffer,
-		const VkCopyAccelerationStructureInfoKHR * pInfo )
+		[[maybe_unused]] const VkCopyAccelerationStructureInfoKHR * pInfo )
 	{
 		reportUnsupported( commandBuffer, "vkCmdCopyAccelerationStructureKHR" );
 	}
 
 	void VKAPI_CALL vkCmdCopyAccelerationStructureToMemoryKHR(
 		VkCommandBuffer commandBuffer,
-		const VkCopyAccelerationStructureToMemoryInfoKHR * pInfo )
+		[[maybe_unused]] const VkCopyAccelerationStructureToMemoryInfoKHR * pInfo )
 	{
 		reportUnsupported( commandBuffer, "vkCmdCopyAccelerationStructureToMemoryKHR" );
 	}
 
 	void VKAPI_CALL vkCmdCopyMemoryToAccelerationStructureKHR(
 		VkCommandBuffer commandBuffer,
-		const VkCopyMemoryToAccelerationStructureInfoKHR * pInfo )
+		[[maybe_unused]] const VkCopyMemoryToAccelerationStructureInfoKHR * pInfo )
 	{
 		reportUnsupported( commandBuffer, "vkCmdCopyMemoryToAccelerationStructureKHR" );
 	}
 
 	VkDeviceAddress VKAPI_CALL vkGetAccelerationStructureDeviceAddressKHR(
 		VkDevice device,
-		const VkAccelerationStructureDeviceAddressInfoKHR * pInfo )
+		[[maybe_unused]] const VkAccelerationStructureDeviceAddressInfoKHR * pInfo )
 	{
 		reportUnsupported( device, "vkGetAccelerationStructureDeviceAddressKHR" );
 		return 0u;
@@ -4041,29 +4042,29 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkCmdWriteAccelerationStructuresPropertiesKHR(
 		VkCommandBuffer commandBuffer,
-		uint32_t accelerationStructureCount,
-		const VkAccelerationStructureKHR * pAccelerationStructures,
-		VkQueryType queryType,
-		VkQueryPool queryPool,
-		uint32_t firstQuery )
+		[[maybe_unused]] uint32_t accelerationStructureCount,
+		[[maybe_unused]] const VkAccelerationStructureKHR * pAccelerationStructures,
+		[[maybe_unused]] VkQueryType queryType,
+		[[maybe_unused]] VkQueryPool queryPool,
+		[[maybe_unused]] uint32_t firstQuery )
 	{
 		reportUnsupported( commandBuffer, "vkCmdWriteAccelerationStructuresPropertiesKHR" );
 	}
 
 	void VKAPI_CALL vkGetDeviceAccelerationStructureCompatibilityKHR(
 		VkDevice device,
-		const VkAccelerationStructureVersionInfoKHR * pVersionInfo,
-		VkAccelerationStructureCompatibilityKHR * pCompatibility )
+		[[maybe_unused]] const VkAccelerationStructureVersionInfoKHR * pVersionInfo,
+		[[maybe_unused]] VkAccelerationStructureCompatibilityKHR * pCompatibility )
 	{
 		reportUnsupported( device, "vkGetDeviceAccelerationStructureCompatibilityKHR" );
 	}
 
 	void VKAPI_CALL vkGetAccelerationStructureBuildSizesKHR(
 		VkDevice device,
-		VkAccelerationStructureBuildTypeKHR buildType,
-		const VkAccelerationStructureBuildGeometryInfoKHR * pBuildInfo,
-		const uint32_t * pMaxPrimitiveCounts,
-		VkAccelerationStructureBuildSizesInfoKHR * pSizeInfo )
+		[[maybe_unused]] VkAccelerationStructureBuildTypeKHR buildType,
+		[[maybe_unused]] const VkAccelerationStructureBuildGeometryInfoKHR * pBuildInfo,
+		[[maybe_unused]] const uint32_t * pMaxPrimitiveCounts,
+		[[maybe_unused]] VkAccelerationStructureBuildSizesInfoKHR * pSizeInfo )
 	{
 		reportUnsupported( device, "vkGetAccelerationStructureBuildSizesKHR" );
 	}
@@ -4075,8 +4076,8 @@ namespace ashes::xbox
 
 	void VKAPI_CALL vkGetDeviceFaultInfoEXT(
 		VkDevice device,
-		VkDeviceFaultCountsEXT * pFaultCounts,
-		VkDeviceFaultInfoEXT * pFaultInfo )
+		[[maybe_unused]] VkDeviceFaultCountsEXT * pFaultCounts,
+		[[maybe_unused]] VkDeviceFaultInfoEXT * pFaultInfo )
 	{
 		reportUnsupported( device, "vkGetDeviceFaultInfoEXT" );
 	}
@@ -4202,11 +4203,11 @@ namespace ashes::xbox
 
 	VkBool32 VKAPI_CALL vkGetPhysicalDeviceXcbPresentationSupportKHR(
 		VkPhysicalDevice physicalDevice,
-		uint32_t queueFamilyIndex,
-		xcb_connection_t * connection,
-		xcb_visualid_t visual_id )
+		[[maybe_unused]] uint32_t queueFamilyIndex,
+		[[maybe_unused]] xcb_connection_t * connection,
+		[[maybe_unused]] xcb_visualid_t visual_id )
 	{
-		return get( physicalDevice )->getPresentationSupport( queueFamilyIndex );
+		return get( physicalDevice )->getPresentationSupport();
 	}
 
 #	endif
@@ -4231,11 +4232,11 @@ namespace ashes::xbox
 
 	VkBool32 VKAPI_CALL vkGetPhysicalDeviceXlibPresentationSupportKHR(
 		VkPhysicalDevice physicalDevice,
-		uint32_t queueFamilyIndex,
-		Display * dpy,
-		VisualID visualID )
+		[[maybe_unused]] uint32_t queueFamilyIndex,
+		[[maybe_unused]] Display * dpy,
+		[[maybe_unused]] VisualID visualID )
 	{
-		return get( physicalDevice )->getPresentationSupport( queueFamilyIndex );
+		return get( physicalDevice )->getPresentationSupport();
 	}
 
 #	endif
@@ -4260,10 +4261,10 @@ namespace ashes::xbox
 
 	VkBool32 VKAPI_CALL vkGetPhysicalDeviceWaylandPresentationSupportKHR(
 		VkPhysicalDevice physicalDevice,
-		uint32_t queueFamilyIndex,
-		struct wl_display * display )
+		[[maybe_unused]] uint32_t queueFamilyIndex,
+		[[maybe_unused]] struct wl_display * display )
 	{
-		return get( physicalDevice )->getPresentationSupport( queueFamilyIndex );
+		return get( physicalDevice )->getPresentationSupport();
 	}
 
 #	endif
@@ -4288,7 +4289,7 @@ namespace ashes::xbox
 
 	VkBool32 VKAPI_CALL vkGetPhysicalDeviceWin32PresentationSupportKHR(
 		VkPhysicalDevice physicalDevice,
-		uint32_t queueFamilyIndex )
+		[[maybe_unused]] uint32_t queueFamilyIndex )
 	{
 		return get( physicalDevice )->getPresentationSupport();
 	}
@@ -4302,17 +4303,17 @@ namespace ashes::xbox
 
 	VkResult VKAPI_CALL vkAcquireXlibDisplayEXT(
 		VkPhysicalDevice physicalDevice,
-		Display * dpy,
-		VkDisplayKHR display )
+		[[maybe_unused]] Display * dpy,
+		[[maybe_unused]] VkDisplayKHR display )
 	{
 		return reportUnsupported( physicalDevice, "vkAcquireXlibDisplayEXT" );
 	}
 
 	VkResult VKAPI_CALL vkGetRandROutputDisplayEXT(
 		VkPhysicalDevice physicalDevice,
-		Display * dpy,
-		RROutput rrOutput,
-		VkDisplayKHR * pDisplay )
+		[[maybe_unused]] Display * dpy,
+		[[maybe_unused]] RROutput rrOutput,
+		[[maybe_unused]] VkDisplayKHR * pDisplay )
 	{
 		return reportUnsupported( physicalDevice, "vkGetRandROutputDisplayEXT" );
 	}
@@ -4440,7 +4441,7 @@ namespace ashes::xbox
 		, std::string_view extension )
 	{
 		return checkVersion( instance, version )
-			&& get( instance )->hasExtension( extension.data() );
+			&& get( instance )->hasExtension( extension );
 	}
 	
 	bool checkVersion( VkDevice device
@@ -4454,7 +4455,7 @@ namespace ashes::xbox
 		, std::string_view extension )
 	{
 		return checkVersion( getInstance( device ), version )
-			&& get( device )->hasExtension( extension.data() );
+			&& get( device )->hasExtension( extension );
 	}
 
 	using InstanceFunctions = std::map< std::string, PFN_vkVoidFunction, std::less<> >;

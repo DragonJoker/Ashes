@@ -34,7 +34,7 @@ See LICENSE file in root folder.
 #include <sstream>
 #pragma warning( pop )
 
-#include <D3DCompiler.h>
+#include <d3dcompiler.h>
 
 namespace ashes::xbox
 {
@@ -602,7 +602,7 @@ namespace ashes::xbox
 		switch ( m_stage )
 		{
 		case VK_SHADER_STAGE_VERTEX_BIT:
-			hr = dxDevice->CreateVertexShader( reinterpret_cast< DWORD * >( m_compiled->GetBufferPointer() )
+			hr = dxDevice->CreateVertexShader( static_cast< DWORD * >( m_compiled->GetBufferPointer() )
 				, m_compiled->GetBufferSize()
 				, nullptr
 				, &m_shader.vertex );
@@ -610,7 +610,7 @@ namespace ashes::xbox
 			break;
 
 		case VK_SHADER_STAGE_GEOMETRY_BIT:
-			hr = dxDevice->CreateGeometryShader( reinterpret_cast< DWORD * >( m_compiled->GetBufferPointer() )
+			hr = dxDevice->CreateGeometryShader( static_cast< DWORD * >( m_compiled->GetBufferPointer() )
 				, m_compiled->GetBufferSize()
 				, nullptr
 				, &m_shader.geometry );
@@ -618,7 +618,7 @@ namespace ashes::xbox
 			break;
 
 		case VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT:
-			hr = dxDevice->CreateHullShader( reinterpret_cast< DWORD * >( m_compiled->GetBufferPointer() )
+			hr = dxDevice->CreateHullShader( static_cast< DWORD * >( m_compiled->GetBufferPointer() )
 				, m_compiled->GetBufferSize()
 				, nullptr
 				, &m_shader.hull );
@@ -626,7 +626,7 @@ namespace ashes::xbox
 			break;
 
 		case VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT:
-			hr = dxDevice->CreateDomainShader( reinterpret_cast< DWORD * >( m_compiled->GetBufferPointer() )
+			hr = dxDevice->CreateDomainShader( static_cast< DWORD * >( m_compiled->GetBufferPointer() )
 				, m_compiled->GetBufferSize()
 				, nullptr
 				, &m_shader.domain );
@@ -634,7 +634,7 @@ namespace ashes::xbox
 			break;
 
 		case VK_SHADER_STAGE_FRAGMENT_BIT:
-			hr = dxDevice->CreatePixelShader( reinterpret_cast< DWORD * >( m_compiled->GetBufferPointer() )
+			hr = dxDevice->CreatePixelShader( static_cast< DWORD * >( m_compiled->GetBufferPointer() )
 				, m_compiled->GetBufferSize()
 				, nullptr
 				, &m_shader.pixel );
@@ -642,7 +642,7 @@ namespace ashes::xbox
 			break;
 
 		case VK_SHADER_STAGE_COMPUTE_BIT:
-			hr = dxDevice->CreateComputeShader( reinterpret_cast< DWORD * >( m_compiled->GetBufferPointer() )
+			hr = dxDevice->CreateComputeShader( static_cast< DWORD * >( m_compiled->GetBufferPointer() )
 				, m_compiled->GetBufferSize()
 				, nullptr
 				, &m_shader.compute );

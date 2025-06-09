@@ -193,7 +193,7 @@ namespace ashes::xbox
 			}
 		}
 
-		static std::vector< VkSurfaceFormatKHR > getSurfaceFormats( std::vector< DXGI_MODE_DESC > const & displayModeList )
+		static std::vector< VkSurfaceFormatKHR > getSurfaceFormats()
 		{
 			std::vector< VkSurfaceFormatKHR > result;
 			result.push_back( { VK_FORMAT_R8G8B8A8_UNORM, VK_COLORSPACE_SRGB_NONLINEAR_KHR } );
@@ -286,7 +286,7 @@ namespace ashes::xbox
 			if ( d3dOutput )
 			{
 				m_displayModes = getDisplayModesList( m_instance, d3dOutput );
-				m_surfaceFormats = surface::getSurfaceFormats( m_displayModes );
+				m_surfaceFormats = surface::getSurfaceFormats();
 
 				RECT rect{};
 

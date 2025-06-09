@@ -22,6 +22,10 @@ namespace ashes::xbox
 		BlitPipeline( Device const & device
 			, VkFormat src
 			, VkFormat dst );
+		BlitPipeline( BlitPipeline const & ) = delete;
+		BlitPipeline( BlitPipeline && )noexcept = delete;
+		BlitPipeline & operator=( BlitPipeline const & ) = delete;
+		BlitPipeline & operator=( BlitPipeline && )noexcept = delete;
 		~BlitPipeline()noexcept;
 	};
 

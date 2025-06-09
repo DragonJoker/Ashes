@@ -4537,7 +4537,7 @@ namespace ashes::test
 		, std::string_view extension )
 	{
 		return checkVersion( instance, version )
-			&& get( instance )->hasExtension( extension.data() );
+			&& get( instance )->hasExtension( extension );
 	}
 
 	bool checkVersion( VkDevice device
@@ -4551,7 +4551,7 @@ namespace ashes::test
 		, std::string_view extension )
 	{
 		return checkVersion( getInstance( device ), version )
-			&& get( device )->hasExtension( extension.data() );
+			&& get( device )->hasExtension( extension );
 	}
 
 	PFN_vkVoidFunction VKAPI_CALL vkGetInstanceProcAddr(
@@ -4559,7 +4559,7 @@ namespace ashes::test
 		const char* pName )
 	{
 		PFN_vkVoidFunction result{ nullptr };
-		static std::map< std::string, PFN_vkVoidFunction > functions
+		static std::map< std::string, PFN_vkVoidFunction, std::less<> > functions
 		{
 #define VK_LIB_GLOBAL_FUNCTION( v, x )\
 			{ "vk"#x, PFN_vkVoidFunction( vk##x ) },
@@ -4587,7 +4587,7 @@ namespace ashes::test
 		const char* pName )
 	{
 		PFN_vkVoidFunction result{ nullptr };
-		static std::map< std::string, PFN_vkVoidFunction > functions
+		static std::map< std::string, PFN_vkVoidFunction, std::less<> > functions
 		{
 			{ "vkGetDeviceProcAddr", PFN_vkVoidFunction( vkGetDeviceProcAddr ) },
 #define VK_LIB_PHYSDEVICE_FUNCTION( v, x )\
@@ -4610,7 +4610,7 @@ namespace ashes::test
 		const char* pName )
 	{
 		PFN_vkVoidFunction result{ nullptr };
-		static std::map< std::string, PFN_vkVoidFunction > functions
+		static std::map< std::string, PFN_vkVoidFunction, std::less<> > functions
 		{
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wcast-function-type-strict"

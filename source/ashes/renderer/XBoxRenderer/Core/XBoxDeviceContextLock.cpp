@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "Core/XBoxDevice.hpp"
 
-#include <D3DCommon.h>
+#include <d3dcommon.h>
 
 namespace ashes::xbox
 {

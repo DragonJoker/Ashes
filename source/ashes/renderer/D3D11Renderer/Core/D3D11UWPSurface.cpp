@@ -12,7 +12,7 @@ See LICENSE file in root folder.
 
 #include "ashesd3d11_api.hpp"
 
-#include <winrt/Windows.Graphics.Display.h>
+#include <winrt/windows.graphics.display.h>
 #include <winrt/windows.ui.core.h>
 
 namespace ashes::d3d11
@@ -312,8 +312,7 @@ namespace ashes::d3d11
 				if ( isWin32() )
 				{
 					RECT rect{};
-					winrt::Windows::UI::Core::CoreWindow window = winrt::Windows::UI::Core::CoreWindow::GetForCurrentThread();
-					if ( window )
+					if ( winrt::Windows::UI::Core::CoreWindow window = winrt::Windows::UI::Core::CoreWindow::GetForCurrentThread() )
 					{
 						auto bounds = window.Bounds();
 						auto displayInfo = winrt::Windows::Graphics::Display::DisplayInformation::GetForCurrentView();
