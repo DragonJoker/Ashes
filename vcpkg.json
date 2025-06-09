@@ -31,7 +31,7 @@
     },
     "xbox": {
       "description": "Compiles XBox renderer.",
-      "platform": "uwp",
+      "supports": "uwp",
       "dependencies": [
         "directxsdk",
         "spirv-cross"

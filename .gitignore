@@ -16,6 +16,7 @@ bld/
 [Dd]oc/[Aa]shes*/**/
 
 # Other folders
+.vs/
 .vscode/
 vcpkg_installed/
 

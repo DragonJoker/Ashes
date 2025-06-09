@@ -21,6 +21,7 @@ To build it, you can use CMake.
 - Vulkan Renderer: Windows, Linux, MacOS.
 - OpenGL Renderer: Windows, Linux.
 - Direct3D11 Renderer: Windows.
+- XBox Renderer: XBox.
 
 ## How to use it
 

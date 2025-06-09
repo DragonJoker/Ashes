@@ -14,6 +14,7 @@
 #pragma warning( push )
 #pragma warning( disable: 5262 )
 #include <sstream>
+#include <winrt/windows.ui.core.h>
 #pragma warning( pop )
 
 namespace ashes::xbox
@@ -76,9 +77,12 @@ namespace ashes::xbox
 			doInitPresentParameters();
 			auto factory = get( get( m_device )->getInstance() )->getDXGIFactory();
 			auto d3ddevice = get( m_device )->getDevice();
-			HRESULT hr = factory->CreateSwapChain( d3ddevice
+			winrt::Windows::UI::Core::CoreWindow window = winrt::Windows::UI::Core::CoreWindow::GetForCurrentThread();
+			HRESULT hr = static_cast< IDXGIFactory2 * >( factory )->CreateSwapChainForCoreWindow( d3ddevice
+				, reinterpret_cast< IUnknown * >( winrt::get_abi( window ) )
 				, &m_presentDesc
-				, &m_swapChain );
+				, nullptr
+				, reinterpret_cast< IDXGISwapChain1 ** >( &m_swapChain ) );
 
 			if ( !checkError( m_device, hr, "CreateSwapChain" )
 				|| !m_swapChain )
@@ -187,35 +191,26 @@ namespace ashes::xbox
 		auto caps = get( m_createInfo.surface )->getCapabilities( get( m_device )->getPhysicalDevice() );
 		m_windowExtent = caps.maxImageExtent;
 		m_displayMode = get( m_createInfo.surface )->getMatchingDesc( m_createInfo.imageFormat );
-		auto hWnd = get( m_createInfo.surface )->getHwnd();
-
 		// Initialize the swap chain description.
-		auto result = DXGI_SWAP_CHAIN_DESC{};
+		auto result = DXGI_SWAP_CHAIN_DESC1{};
 
-		// Set to a single back buffer.
-		result.BufferCount = 1;
+		// Use triple buffering.
+		result.BufferCount = 3;
 
-		// Set the back buffer desc to the surface matching one.
-		result.BufferDesc = m_displayMode;
-		// Except for the dimensions.
-		result.BufferDesc.Width = m_createInfo.imageExtent.width;
-		result.BufferDesc.Height = m_createInfo.imageExtent.height;
-
-		// Set the usage of the back buffer.
+		// Set the back buffer format and size.
+		result.Width = m_createInfo.imageExtent.width;
+		result.Height = m_createInfo.imageExtent.height;
+		result.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		result.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-
-		// Set the handle for the window to render to.
-		result.OutputWindow = hWnd;
 
 		// Turn multisampling off.
 		result.SampleDesc.Count = 1;
 		result.SampleDesc.Quality = 0;
 
-		// Set to windowed mode.
-		result.Windowed = TRUE;
-
-		// Discard the back buffer contents after presenting.
-		result.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+		result.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+		result.Scaling = DXGI_SCALING_STRETCH;
+		result.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
+		result.Flags = 0;
 
 		m_presentDesc = result;
 	}
