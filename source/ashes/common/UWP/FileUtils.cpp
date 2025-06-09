@@ -18,8 +18,8 @@
 #include <sys/stat.h>
 
 #include <direct.h>
-#include <Shlobj.h>
-#include <windows.h>
+#include <ShlObj.h>
+#include <Windows.h>
 #pragma warning( pop )
 
 namespace ashes

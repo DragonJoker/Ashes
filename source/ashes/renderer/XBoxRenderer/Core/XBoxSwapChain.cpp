@@ -79,7 +79,7 @@ namespace ashes::xbox
 			auto d3ddevice = get( m_device )->getDevice();
 			winrt::Windows::UI::Core::CoreWindow window = winrt::Windows::UI::Core::CoreWindow::GetForCurrentThread();
 			HRESULT hr = static_cast< IDXGIFactory2 * >( factory )->CreateSwapChainForCoreWindow( d3ddevice
-				, reinterpret_cast< IUnknown * >( winrt::get_abi( window ) )
+				, static_cast< IUnknown * >( winrt::get_abi( window ) )
 				, &m_presentDesc
 				, nullptr
 				, reinterpret_cast< IDXGISwapChain1 ** >( &m_swapChain ) );

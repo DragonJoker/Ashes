@@ -31,7 +31,7 @@ See LICENSE file in root folder.
 
 #include <ashes/common/Hash.hpp>
 
-#include <D3DCommon.h>
+#include <d3dcommon.h>
 
 #pragma warning( push )
 #pragma warning( disable: 5262 )
