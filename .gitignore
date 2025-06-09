@@ -23,3 +23,4 @@ vcpkg_installed/
 source/premake5.exe
 .DS_Store
 imgui.ini
+.vs
