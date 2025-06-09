@@ -1,4 +1,8 @@
-set( _PROJECT_NAME D3D11Renderer )
+if ( D3D11_XBOX )
+	set( _PROJECT_NAME XBoxRenderer )
+else ()
+	set( _PROJECT_NAME D3D11Renderer )
+endif ()
 project( ashes${_PROJECT_NAME} )
 
 set( ${PROJECT_NAME}_VERSION_MAJOR 1 )
@@ -489,7 +493,7 @@ target_include_directories( ${PROJECT_NAME}
 	PRIVATE
 		${CMAKE_CURRENT_BINARY_DIR}
 		${Ashes_SOURCE_DIR}/source/ashes
-		${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}
+		${Ashes_SOURCE_DIR}/source/ashes/renderer/D3D11Renderer
 )
 target_include_directories( ${PROJECT_NAME}
 	SYSTEM PRIVATE
@@ -511,6 +515,16 @@ target_compile_definitions( ${PROJECT_NAME} PRIVATE
 	${_PROJECT_NAME}_EXPORTS
 	${TARGET_CXX_DEFINITIONS}
 )
+if ( D3D11_XBOX )
+	target_compile_definitions( ${PROJECT_NAME} PRIVATE
+		Ashes_D3D11_XBox
+		D3D11_NAMESPACE=xbox
+	)
+else ()
+	target_compile_definitions( ${PROJECT_NAME} PRIVATE
+		D3D11_NAMESPACE=d3d11
+	)
+endif ()
 target_compile_options( ${PROJECT_NAME} PRIVATE
 	${TARGET_CXX_OPTIONS}
 )
@@ -525,8 +539,8 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 )
 add_target_precompiled_header_ex( ${PROJECT_NAME}
 	ashes/renderer
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/${_PROJECT_NAME}Pch.hpp
-	${Ashes_SOURCE_DIR}/source/ashes/renderer/${_PROJECT_NAME}/${_PROJECT_NAME}Pch.cpp
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/D3D11Renderer/D3D11RendererPch.hpp
+	${Ashes_SOURCE_DIR}/source/ashes/renderer/D3D11Renderer/D3D11RendererPch.cpp
 	"${CMAKE_CXX_FLAGS}"
 	${${PROJECT_NAME}_SRC_FILES}
 )

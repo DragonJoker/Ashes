@@ -9,6 +9,6 @@ See LICENSE file in root folder
 
 #include <list>
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 }

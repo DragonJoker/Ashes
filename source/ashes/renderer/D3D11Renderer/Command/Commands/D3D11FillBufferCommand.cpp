@@ -10,7 +10,7 @@ See LICENSE file in root folder.
 
 #include <cstring>
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	FillBufferCommand::FillBufferCommand( VkDevice device
 		, VkBuffer buffer

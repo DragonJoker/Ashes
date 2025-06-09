@@ -1,6 +1,6 @@
 #include "Pipeline/D3D11PipelineCache.hpp"
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	PipelineCache::PipelineCache( VkDevice device
 		, VkPipelineCacheCreateInfo createInfo )

@@ -12,7 +12,7 @@
 #include "renderer/D3D11Renderer/Shader/D3D11ShaderModule.hpp"
 #include "renderer/D3D11Renderer/Pipeline/D3D11DynamicStates.hpp"
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	class Pipeline
 		: public NonCopyable

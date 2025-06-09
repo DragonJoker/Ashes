@@ -115,14 +115,26 @@ typedef uint8_t UINT8;
 #include <string>
 #include <vector>
 
-#if defined( _WIN32 ) && !defined( D3D11Renderer_STATIC )
-#	ifdef D3D11Renderer_EXPORTS
-#		define D3D11Renderer_API __declspec( dllexport )
+#if defined( Ashes_D3D11_XBox )
+#	if defined( _WIN32 ) && !defined( D3D11Renderer_STATIC )
+#		ifdef XBoxRenderer_EXPORTS
+#			define D3D11Renderer_API __declspec( dllexport )
+#		else
+#			define D3D11Renderer_API __declspec( dllimport )
+#		endif
 #	else
-#		define D3D11Renderer_API __declspec( dllimport )
+#		define D3D11Renderer_API
 #	endif
 #else
-#	define D3D11Renderer_API
+#	if defined( _WIN32 ) && !defined( D3D11Renderer_STATIC )
+#		ifdef D3D11Renderer_EXPORTS
+#			define D3D11Renderer_API __declspec( dllexport )
+#		else
+#			define D3D11Renderer_API __declspec( dllimport )
+#		endif
+#	else
+#		define D3D11Renderer_API
+#	endif
 #endif
 
 #ifdef min
@@ -214,7 +226,7 @@ DECLARE_GUID( IID_IDXGIFactory, 0x7b7166ec, 0x21c7, 0x44ae, 0xb2, 0x1a, 0xc9, 0x
 #	define dxDebugName( obj, type )
 #endif
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	class NonCopyable
 	{

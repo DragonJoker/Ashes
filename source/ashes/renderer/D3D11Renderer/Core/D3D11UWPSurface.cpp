@@ -2,7 +2,7 @@
 This file belongs to Ashes.
 See LICENSE file in root folder.
 */
-#if defined( Ashes_UWP )
+#if defined( Ashes_UWP ) || defined( Ashes_D3D11_XBox )
 
 #include "Core/D3D11Surface.hpp"
 
@@ -14,8 +14,10 @@ See LICENSE file in root folder.
 
 #include <winrt/windows.graphics.display.h>
 #include <winrt/windows.ui.core.h>
+#include <winrt/windows.ui.h>
+#include <windows.ui.h>
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	namespace surface
 	{
@@ -28,7 +30,8 @@ namespace ashes::d3d11
 			virtual HRESULT STDMETHODCALLTYPE put_MessageHandled( unsigned char value ) = 0;
 		};
 
-		HWND getWindowHwnd( winrt::Windows::UI::Core::CoreWindow const & window )
+#if !defined( Ashes_D3D11_XBox )
+		static HWND getWindowHwnd( winrt::Windows::UI::Core::CoreWindow const & window )
 		{
 			HWND result{};
 			winrt::com_ptr< ICoreWindowInterop > interop{};
@@ -36,6 +39,7 @@ namespace ashes::d3d11
 			winrt::check_hresult( interop->get_WindowHandle( &result ) );
 			return result;
 		}
+#endif
 
 		inline std::vector< VkFormat > const FormatsList = []()
 		{
@@ -51,12 +55,12 @@ namespace ashes::d3d11
 			return result;
 		}();
 
-		std::vector< VkFormat > const & getFormatsList()
+		static std::vector< VkFormat > const & getFormatsList()
 		{
 			return FormatsList;
 		}
 
-		void updateSurfaceCapabilities( std::vector< DXGI_MODE_DESC > const & displayModeList
+		static void updateSurfaceCapabilities( std::vector< DXGI_MODE_DESC > const & displayModeList
 			, RECT const & rect
 			, VkSurfaceCapabilitiesKHR & capabilities
 			, std::map< VkFormat, std::vector< DXGI_MODE_DESC > > & descs
@@ -193,9 +197,12 @@ namespace ashes::d3d11
 			}
 		}
 
-		std::vector< VkSurfaceFormatKHR > getSurfaceFormats( std::vector< DXGI_MODE_DESC > const & displayModeList )
+		std::vector< VkSurfaceFormatKHR > getSurfaceFormats( [[maybe_unused]] std::vector< DXGI_MODE_DESC > const & displayModeList )
 		{
 			std::vector< VkSurfaceFormatKHR > result;
+#if defined( Ashes_D3D11_XBox )
+			result.push_back( { VK_FORMAT_R8G8B8A8_UNORM, VK_COLORSPACE_SRGB_NONLINEAR_KHR } );
+#else
 			std::set< VkFormat > uniqueFormats;
 
 			for ( auto & displayMode : displayModeList )
@@ -208,7 +215,7 @@ namespace ashes::d3d11
 					uniqueFormats.insert( fmt );
 				}
 			}
-
+#endif
 			return result;
 		}
 	}
@@ -281,6 +288,7 @@ namespace ashes::d3d11
 		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
 	}
 
+#if !defined( Ashes_D3D11_XBox )
 	SurfaceKHR::SurfaceKHR( VkInstance instance
 		, VkDisplaySurfaceCreateInfoKHR createInfo )
 		: m_instance{ instance }
@@ -289,6 +297,7 @@ namespace ashes::d3d11
 	{
 		m_presentModes.push_back( VK_PRESENT_MODE_FIFO_KHR );
 	}
+#endif
 
 	inline VkFlags & mergeFlags( VkFlags & value
 		, VkFlags const & flag )noexcept
@@ -312,7 +321,7 @@ namespace ashes::d3d11
 				if ( isWin32() )
 				{
 					RECT rect{};
-					if ( winrt::Windows::UI::Core::CoreWindow window = winrt::Windows::UI::Core::CoreWindow::GetForCurrentThread() )
+					if ( auto window = winrt::Windows::UI::Core::CoreWindow::GetForCurrentThread() )
 					{
 						auto bounds = window.Bounds();
 						auto displayInfo = winrt::Windows::Graphics::Display::DisplayInformation::GetForCurrentView();
@@ -325,12 +334,14 @@ namespace ashes::d3d11
 						rect.right = width;
 						rect.bottom = height;
 					}
+
 					surface::updateSurfaceCapabilities( m_displayModes
 						, rect
 						, m_surfaceCapabilities
 						, m_descs
 						, m_matchingDescs );
 				}
+#if !defined( Ashes_D3D11_XBox )
 				else if ( isDisplay() )
 				{
 					RECT rect{};
@@ -342,6 +353,7 @@ namespace ashes::d3d11
 						, m_descs
 						, m_matchingDescs );
 				}
+#endif
 
 				m_surfaceCapabilities.supportedUsageFlags = VK_IMAGE_TYPE_MAX_ENUM;
 
@@ -370,21 +382,25 @@ namespace ashes::d3d11
 		{
 			return m_win32CreateInfo.hwnd;
 		}
-
+		
+#if !defined( Ashes_D3D11_XBox )
 		if ( isDisplay() )
 		{
 			winrt::Windows::UI::Core::CoreWindow window = winrt::Windows::UI::Core::CoreWindow::GetForCurrentThread();
 			return surface::getWindowHwnd( window );
 		}
+#endif
 
 		return nullptr;
 	}
-
+	
+#if !defined( Ashes_D3D11_XBox )
 	DXGI_MODE_DESC const & SurfaceKHR::getDisplayMode()const
 	{
 		assert( isDisplay() );
 		return get( m_displayCreateInfo.displayMode )->getDesc();
 	}
+#endif
 }
 
 #endif

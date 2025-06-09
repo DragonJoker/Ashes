@@ -34,9 +34,9 @@ See LICENSE file in root folder.
 #include <sstream>
 #pragma warning( pop )
 
-#include <D3DCompiler.h>
+#include <d3dcompiler.h>
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	//*************************************************************************
 

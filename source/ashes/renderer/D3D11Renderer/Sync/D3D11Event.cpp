@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "Core/D3D11Device.hpp"
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	Event::Event( VkDevice device )noexcept
 		: m_device{ device }

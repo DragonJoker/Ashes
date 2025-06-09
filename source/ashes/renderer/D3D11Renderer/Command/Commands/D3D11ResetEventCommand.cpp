@@ -6,7 +6,7 @@ See LICENSE file in root folder.
 
 #include "Sync/D3D11Event.hpp"
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	ResetEventCommand::ResetEventCommand( VkDevice device
 		, VkEvent event )

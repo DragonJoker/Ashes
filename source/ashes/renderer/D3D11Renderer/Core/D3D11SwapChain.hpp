@@ -8,7 +8,7 @@
 
 #include "renderer/D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	class SwapchainKHR
 		: public NonCopyable
@@ -39,7 +39,11 @@ namespace ashes::d3d11
 	private:
 		VkDevice m_device;
 		VkSwapchainCreateInfoKHR m_createInfo;
+#if defined( Ashes_D3D11_XBox )
+		DXGI_SWAP_CHAIN_DESC1 m_presentDesc{};
+#else
 		DXGI_SWAP_CHAIN_DESC m_presentDesc;
+#endif
 		DXGI_MODE_DESC m_displayMode;
 		uint32_t m_currentBuffer{};
 		IDXGISwapChain * m_swapChain{ nullptr };

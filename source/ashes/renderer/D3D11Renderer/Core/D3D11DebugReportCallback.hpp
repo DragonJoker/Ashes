@@ -8,7 +8,7 @@
 
 #include "renderer/D3D11Renderer/Core/D3D11Layer.hpp"
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 #if VK_EXT_debug_utils
 

@@ -12,7 +12,7 @@ See LICENSE file in root folder
 
 #include <renderer/RendererCommon/IcdObject.hpp>
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	VkExtent3D getTexelBlockExtent( VkFormat format );
 	uint32_t getTexelBlockByteSize( VkExtent3D const & texelBlockExtent

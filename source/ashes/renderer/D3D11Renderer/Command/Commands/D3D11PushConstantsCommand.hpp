@@ -8,7 +8,7 @@ See LICENSE file in root folder
 
 #include "renderer/D3D11Renderer/Shader/D3D11ShaderDesc.hpp"
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	/**
 	*\brief

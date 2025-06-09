@@ -10,7 +10,7 @@
 
 #include "renderer/D3D11Renderer/D3D11RendererPrerequisites.hpp"
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	class Image
 	{
@@ -66,7 +66,7 @@ namespace ashes::d3d11
 
 		bool isRenderTarget()const noexcept
 		{
-			return ashes::d3d11::isRenderTarget( m_createInfo.usage );
+			return ashes::D3D11_NAMESPACE::isRenderTarget( m_createInfo.usage );
 		}
 
 		uint32_t getMipmapLevels()const noexcept

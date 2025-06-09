@@ -4,7 +4,7 @@ See LICENSE file in root folder
 */
 #pragma once
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	bool isPipelineBindable( VkBufferUsageFlags const & targets );
 	UINT getBindFlags( VkBufferUsageFlags const & targets );

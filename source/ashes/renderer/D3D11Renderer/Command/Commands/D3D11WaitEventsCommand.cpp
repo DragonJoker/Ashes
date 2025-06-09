@@ -16,7 +16,7 @@ See LICENSE file in root folder.
 #include <thread>
 #pragma warning( pop )
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	WaitEventsCommand::WaitEventsCommand( VkDevice device
 		, ArrayView< VkEvent const > const & events )

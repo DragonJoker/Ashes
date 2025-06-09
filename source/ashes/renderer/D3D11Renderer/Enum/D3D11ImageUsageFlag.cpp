@@ -1,6 +1,6 @@
 #include "D3D11RendererPrerequisites.hpp"
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	bool isRenderTarget( VkImageUsageFlags const & flags )noexcept
 	{

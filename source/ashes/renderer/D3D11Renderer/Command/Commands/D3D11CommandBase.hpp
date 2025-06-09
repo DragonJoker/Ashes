@@ -6,7 +6,7 @@ See LICENSE file in root folder
 
 #include "renderer/D3D11Renderer/Core/D3D11DeviceContextLock.hpp"
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	struct Context
 		: public NonCopyable

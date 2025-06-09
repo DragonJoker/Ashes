@@ -4,7 +4,7 @@ See LICENSE file in root folder.
 */
 #include "Command/Commands/D3D11DispatchCommand.hpp"
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	DispatchCommand::DispatchCommand( VkDevice device
 		, uint32_t groupCountX

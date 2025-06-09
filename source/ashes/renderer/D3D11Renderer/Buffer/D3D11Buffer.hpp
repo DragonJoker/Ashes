@@ -10,7 +10,7 @@
 
 #include "renderer/D3D11Renderer/Miscellaneous/D3D11DeviceMemory.hpp"
 
-namespace ashes::d3d11
+namespace ashes::D3D11_NAMESPACE
 {
 	class Buffer
 		: public NonCopyable
