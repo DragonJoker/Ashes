@@ -196,19 +196,7 @@ namespace ashes::xbox
 		static std::vector< VkSurfaceFormatKHR > getSurfaceFormats( std::vector< DXGI_MODE_DESC > const & displayModeList )
 		{
 			std::vector< VkSurfaceFormatKHR > result;
-			std::set< VkFormat > uniqueFormats;
-
-			for ( auto & displayMode : displayModeList )
-			{
-				auto fmt = getVkFormat( displayMode.Format );
-
-				if ( uniqueFormats.find( fmt ) == uniqueFormats.end() )
-				{
-					result.push_back( { fmt, VK_COLORSPACE_SRGB_NONLINEAR_KHR } );
-					uniqueFormats.insert( fmt );
-				}
-			}
-
+			result.push_back( { VK_FORMAT_R8G8B8A8_UNORM, VK_COLORSPACE_SRGB_NONLINEAR_KHR } );
 			return result;
 		}
 	}
