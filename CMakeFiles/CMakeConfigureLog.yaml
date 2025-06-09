@@ -1,0 +1,519 @@
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineSystem.cmake:200 (message)"
+      - "CMakeLists.txt:74 (project)"
+    message: |
+      The target system is: WindowsStore - 10.0 - 
+      The host system is: Windows - 10.0.26100 - AMD64
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:74 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+      Compiler:  
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      MSBuild version 17.13.6+bfea91c5f for .NET Framework
+      Build started 6/8/2025 6:12:06 PM.
+      
+      Project "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\3.31.5\\CompilerIdC\\CompilerIdC.vcxproj" on node 1 (default targets).
+      PrepareForBuild:
+        Creating directory "Debug\\".
+      C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VC\\v170\\Microsoft.CppBuild.targets(522,5): warning MSB8021: The value 'MultiByte' of the variable 'CharacterSet' is incompatible with the value 'true' of the variable 'WindowsAppContainer'. [C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\3.31.5\\CompilerIdC\\CompilerIdC.vcxproj]
+        Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+        Creating directory "Debug\\CompilerIdC.tlog\\".
+        Creating directory "Generated Files\\".
+      InitializeBuildStatus:
+        Creating "Debug\\CompilerIdC.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        Touching "Debug\\CompilerIdC.tlog\\unsuccessfulbuild".
+      ClCompile:
+        C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\VC\\Tools\\MSVC\\14.43.34618\\bin\\HostX64\\x64\\CL.exe /c /IC:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\3.31.5\\CompilerIdC\\ /I"Generated Files\\\\" /IDebug\\ /nologo /W0 /WX- /diagnostics:column /sdl /MP /Od /Oi /Oy- /D _UNICODE /D UNICODE /D __WRL_NO_DEFAULT_LIB__ /Gm- /EHsc /RTC1 /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\\\" /Fd"Debug\\vc143.pdb" /external:W0 /Gd /TC /FU"C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\VC\\Tools\\MSVC\\14.43.34618\\lib\\x86\\store\\references\\platform.winmd" /analyze- /FC /errorReport:queue CMakeCCompilerId.c
+        CMakeCCompilerId.c
+      Link:
+        C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\VC\\Tools\\MSVC\\14.43.34618\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:".\\CompilerIdC.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib /MANIFEST /MANIFESTUAC:NO /manifest:embed /PDB:".\\CompilerIdC.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /TLBID:1 /APPCONTAINER /DYNAMICBASE /NXCOMPAT /IMPLIB:".\\CompilerIdC.lib" /MACHINE:X64 Debug\\CMakeCCompilerId.obj
+        CompilerIdC.vcxproj -> C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\3.31.5\\CompilerIdC\\CompilerIdC.exe
+      PostBuildEvent:
+        for %%i in (cl.exe) do @echo CMAKE_C_COMPILER=%%~$PATH:i
+        :VCEnd
+        CMAKE_C_COMPILER=C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\VC\\Tools\\MSVC\\14.43.34618\\bin\\Hostx64\\x64\\cl.exe
+      FinalizeBuildStatus:
+        Deleting file "Debug\\CompilerIdC.tlog\\unsuccessfulbuild".
+        Touching "Debug\\CompilerIdC.tlog\\CompilerIdC.lastbuildstate".
+      Done Building Project "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\3.31.5\\CompilerIdC\\CompilerIdC.vcxproj" (default targets).
+      
+      Build succeeded.
+      
+      "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\3.31.5\\CompilerIdC\\CompilerIdC.vcxproj" (default target) (1) ->
+      (PrepareForBuild target) -> 
+        C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VC\\v170\\Microsoft.CppBuild.targets(522,5): warning MSB8021: The value 'MultiByte' of the variable 'CharacterSet' is incompatible with the value 'true' of the variable 'WindowsAppContainer'. [C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\3.31.5\\CompilerIdC\\CompilerIdC.vcxproj]
+      
+          1 Warning(s)
+          0 Error(s)
+      
+      Time Elapsed 00:00:02.20
+      
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.exe"
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.vcxproj"
+      
+      The C compiler identification is MSVC, found in:
+        C:/Users/Naalf/Documents/Ashes/CMakeFiles/3.31.5/CompilerIdC/CompilerIdC.exe
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:74 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler:  
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      MSBuild version 17.13.6+bfea91c5f for .NET Framework
+      Build started 6/8/2025 6:12:09 PM.
+      
+      Project "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\3.31.5\\CompilerIdCXX\\CompilerIdCXX.vcxproj" on node 1 (default targets).
+      PrepareForBuild:
+        Creating directory "Debug\\".
+      C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VC\\v170\\Microsoft.CppBuild.targets(522,5): warning MSB8021: The value 'MultiByte' of the variable 'CharacterSet' is incompatible with the value 'true' of the variable 'WindowsAppContainer'. [C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\3.31.5\\CompilerIdCXX\\CompilerIdCXX.vcxproj]
+        Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+        Creating directory "Debug\\CompilerIdCXX.tlog\\".
+        Creating directory "Generated Files\\".
+      InitializeBuildStatus:
+        Creating "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        Touching "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild".
+      ClCompile:
+        C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\VC\\Tools\\MSVC\\14.43.34618\\bin\\HostX64\\x64\\CL.exe /c /IC:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\3.31.5\\CompilerIdCXX\\ /I"Generated Files\\\\" /IDebug\\ /nologo /W0 /WX- /diagnostics:column /sdl /MP /Od /Oi /Oy- /D _UNICODE /D UNICODE /D __WRL_NO_DEFAULT_LIB__ /Gm- /EHsc /RTC1 /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\\\" /Fd"Debug\\vc143.pdb" /external:W0 /Gd /TP /FU"C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\VC\\Tools\\MSVC\\14.43.34618\\lib\\x86\\store\\references\\platform.winmd" /analyze- /FC /errorReport:queue CMakeCXXCompilerId.cpp
+        CMakeCXXCompilerId.cpp
+      Link:
+        C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\VC\\Tools\\MSVC\\14.43.34618\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:".\\CompilerIdCXX.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib /MANIFEST /MANIFESTUAC:NO /manifest:embed /PDB:".\\CompilerIdCXX.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /TLBID:1 /APPCONTAINER /DYNAMICBASE /NXCOMPAT /IMPLIB:".\\CompilerIdCXX.lib" /MACHINE:X64 Debug\\CMakeCXXCompilerId.obj
+        CompilerIdCXX.vcxproj -> C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\3.31.5\\CompilerIdCXX\\CompilerIdCXX.exe
+      PostBuildEvent:
+        for %%i in (cl.exe) do @echo CMAKE_CXX_COMPILER=%%~$PATH:i
+        :VCEnd
+        CMAKE_CXX_COMPILER=C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\VC\\Tools\\MSVC\\14.43.34618\\bin\\Hostx64\\x64\\cl.exe
+      FinalizeBuildStatus:
+        Deleting file "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild".
+        Touching "Debug\\CompilerIdCXX.tlog\\CompilerIdCXX.lastbuildstate".
+      Done Building Project "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\3.31.5\\CompilerIdCXX\\CompilerIdCXX.vcxproj" (default targets).
+      
+      Build succeeded.
+      
+      "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\3.31.5\\CompilerIdCXX\\CompilerIdCXX.vcxproj" (default target) (1) ->
+      (PrepareForBuild target) -> 
+        C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VC\\v170\\Microsoft.CppBuild.targets(522,5): warning MSB8021: The value 'MultiByte' of the variable 'CharacterSet' is incompatible with the value 'true' of the variable 'WindowsAppContainer'. [C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\3.31.5\\CompilerIdCXX\\CompilerIdCXX.vcxproj]
+      
+          1 Warning(s)
+          0 Error(s)
+      
+      Time Elapsed 00:00:00.92
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.exe"
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.vcxproj"
+      
+      The CXX compiler identification is MSVC, found in:
+        C:/Users/Naalf/Documents/Ashes/CMakeFiles/3.31.5/CompilerIdCXX/CompilerIdCXX.exe
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:74 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:74 (project)"
+    checks:
+      - "Detecting C compiler ABI info"
+    directories:
+      source: "C:/Users/Naalf/Documents/Ashes/CMakeFiles/CMakeScratch/TryCompile-brm972"
+      binary: "C:/Users/Naalf/Documents/Ashes/CMakeFiles/CMakeScratch/TryCompile-brm972"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3 /DUNICODE /D_UNICODE"
+      CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Naalf/Documents/Ashes/CMake;C:/Users/Naalf/Documents/Ashes/CMake/Modules;C:/Users/Naalf/Documents/Ashes/CMake/Modules/Traditional;C:/Users/Naalf/Documents/Ashes/CMake/Toolchains"
+      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
+    buildResult:
+      variable: "CMAKE_C_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Naalf/Documents/Ashes/CMakeFiles/CMakeScratch/TryCompile-brm972'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Preview/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_71f14.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        MSBuild version 17.13.6+bfea91c5f for .NET Framework
+        Build started 6/8/2025 6:12:11 PM.
+        
+        Project "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\cmTC_71f14.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_71f14.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\Debug\\".
+          Creating directory "cmTC_71f14.dir\\Debug\\cmTC_71f14.tlog\\".
+          Creating directory "Generated Files\\".
+        GetInstalledSDKLocations:
+          Searching for SDKs targeting "UAP, 10.0.26100.0".
+          Searching for SDKs targeting "Windows, 8.1".
+        ResolveSDKReferences:
+            Reading SDK manifest file "C:\\Program Files (x86)\\Microsoft SDKs\\Windows Kits\\10\\ExtensionSDKs\\Microsoft.VCLibs\\14.0\\SDKManifest.xml".
+            Targeted configuration and architecture "Debug|x64"
+            Could not find "FrameworkIdentity" attribute "FrameworkIdentity-Debug-x64" in the SDK manifest. 
+            Found "FrameworkIdentity" attribute "Name = Microsoft.VCLibs.140.00.Debug, MinVersion = 14.0.33519.0, Publisher = 'CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US'" in the SDK manifest.
+            Found "APPX" location attribute "AppX-Debug-x86=.\\AppX\\Debug\\x86\\Microsoft.VCLibs.x86.Debug.14.00.appx" in the SDK manifest.
+            Found "APPX" location attribute "AppX-Debug-x64=.\\AppX\\Debug\\x64\\Microsoft.VCLibs.x64.Debug.14.00.appx" in the SDK manifest.
+            Found "APPX" location attribute "AppX-Debug-ARM=.\\AppX\\Debug\\ARM\\Microsoft.VCLibs.ARM.Debug.14.00.appx" in the SDK manifest.
+            Found "APPX" location attribute "AppX-Debug-ARM64=.\\AppX\\Debug\\ARM64\\Microsoft.VCLibs.ARM64.Debug.14.00.appx" in the SDK manifest.
+        ExpandSDKReferences:
+          Enumerating SDK Reference "Microsoft.VCLibs, Version=14.0" from "C:\\Program Files (x86)\\Microsoft SDKs\\Windows Kits\\10\\ExtensionSDKs\\Microsoft.VCLibs\\14.0\\".
+        InitializeBuildStatus:
+          Creating "cmTC_71f14.dir\\Debug\\cmTC_71f14.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_71f14.dir\\Debug\\cmTC_71f14.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\VC\\Tools\\MSVC\\14.43.34618\\bin\\HostX64\\x64\\CL.exe /c /I"C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\\\" /I"Generated Files\\\\" /IcmTC_71f14.dir\\Debug\\ /Zi /W3 /WX- /diagnostics:column /sdl /MP /Od /Ob0 /Oy- /D _UNICODE /D UNICODE /D _DEBUG /D WINAPI_FAMILY=WINAPI_FAMILY_APP /D __WRL_NO_DEFAULT_LIB__ /D WIN32 /D _WINDOWS /D UNICODE /D _UNICODE /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_71f14.dir\\Debug\\\\" /Fd"cmTC_71f14.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /FU"C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\VC\\Tools\\MSVC\\14.43.34618\\lib\\x86\\store\\references\\platform.winmd" /analyze- /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.31\\Modules\\CMakeCCompilerABI.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34618 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /I"C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\\\" /I"Generated Files\\\\" /IcmTC_71f14.dir\\Debug\\ /Zi /W3 /WX- /diagnostics:column /sdl /MP /Od /Ob0 /Oy- /D _UNICODE /D UNICODE /D _DEBUG /D WINAPI_FAMILY=WINAPI_FAMILY_APP /D __WRL_NO_DEFAULT_LIB__ /D WIN32 /D _WINDOWS /D UNICODE /D _UNICODE /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_71f14.dir\\Debug\\\\" /Fd"cmTC_71f14.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /FU"C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\VC\\Tools\\MSVC\\14.43.34618\\lib\\x86\\store\\references\\platform.winmd" /analyze- /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.31\\Modules\\CMakeCCompilerABI.c"
+          CMakeCCompilerABI.c
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\VC\\Tools\\MSVC\\14.43.34618\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\Debug\\cmTC_71f14.exe" /INCREMENTAL /ILK:"cmTC_71f14.dir\\Debug\\cmTC_71f14.ilk" /NOLOGO WindowsApp.lib /MANIFEST /ManifestFile:"cmTC_71f14.dir\\Debug\\cmTC_71f14.exe.intermediate.manifest" /MANIFESTUAC:NO /DEBUG /PDB:"C:/Users/Naalf/Documents/Ashes/CMakeFiles/CMakeScratch/TryCompile-brm972/Debug/cmTC_71f14.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /APPCONTAINER /WINMD:NO /WINMDFILE:"C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\Debug\\cmTC_71f14.winmd" /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Naalf/Documents/Ashes/CMakeFiles/CMakeScratch/TryCompile-brm972/Debug/cmTC_71f14.lib" /MACHINE:X64  /machine:x64 cmTC_71f14.dir\\Debug\\CMakeCCompilerABI.obj
+          cmTC_71f14.vcxproj -> C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\Debug\\cmTC_71f14.exe
+        Manifest:
+          C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\x64\\mt.exe /nologo /verbose /out:"C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\Debug\\cmTC_71f14.manifest" /manifest cmTC_71f14.dir\\Debug\\cmTC_71f14.exe.intermediate.manifest
+        ComputeProcessXamlFiles:
+          (Out) ProcessedXamlFiles == 
+        CustomOutputGroupForPackaging:
+          (Out) Project='cmTC_71f14' ProcessedXamlFiles == 
+          (Out) XamlPackagingRootFolder == C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\Debug\\\\
+          (Out) ProcessedXamlFilesFullPath == 
+          (Out) Project='cmTC_71f14' CustomOutputGroupForPackagingOutput == 
+        _AddVCLibs140UniversalCrtDebugReference:
+            Reading SDK manifest file "C:\\Program Files (x86)\\Microsoft SDKs\\Windows Kits\\10\\ExtensionSDKs\\Microsoft.UniversalCRT.Debug\\10.0.26100.0\\SDKManifest.xml".
+            Targeted configuration and architecture "Debug|X64"
+            No FrameworkIdentity attributes were found in the SDK manifest, treating this SDK as a non-framework SDK.
+            No "APPX" attributes indicating app package locations were found in the SDK manifest. If an app package is required at runtime the project may not run.
+        _GenerateProjectPriFileCore:
+          C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\x64\\MakePri.exe New -ProjectRoot C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\ -ConfigXml cmTC_71f14.dir\\Debug\\priconfig.xml -OutputFile C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\cmTC_71f14.dir\\resources.pri -IndexName 458CAF81-6332-3BE2-BE50-E8881D789298 -Verbose -Overwrite  
+        C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Microsoft.AppXPackage.Targets(2836,5): warning : Publisher name (CN=CMake) does not match signing certificate subject: CN=CMake Test Cert. Updating Publisher name. [C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\cmTC_71f14.vcxproj]
+          cmTC_71f14 -> C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\Debug\\cmTC_71f14.dir\\AppxManifest.xml
+        CheckForUnsupportedScenarios:
+          The specified XPath query did not capture any nodes.
+        _GenerateAppxPackageRecipeFile:
+          cmTC_71f14 -> C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\Debug\\cmTC_71f14.dir\\cmTC_71f14.build.appxrecipe
+        _GenerateAppxPackageFile:
+          C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\x64\\MakeAppx.exe pack /l /h sha256 /f cmTC_71f14.dir\\Debug\\package.map.txt /o /p C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\cmTC_71f14_1.0.0.0_x64_Debug.msix  
+          cmTC_71f14 -> C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\cmTC_71f14_1.0.0.0_x64_Debug.msix
+          cmTC_71f14 -> C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\cmTC_71f14_1.0.0.0_x64_Debug.cer
+          cmTC_71f14 -> F63AAC84A0884CDB0126C3CDEA991E36DF064B3E
+        _GenerateAppxSymbolPackage:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\\\x64\\mspdbcmf.exe /check C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\Debug\\cmTC_71f14.pdb 
+          Microsoft (R) FastLink To Full PDB Converter Version 14.39.33523.0
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          
+           [Non FASTLINK] The input PDB file was not generated by the linker with /DEBUG:fastlink.
+          cmTC_71f14 -> cmTC_71f14.dir\\Debug\\Symbols\\cmTC_71f14_1.0.0.0_x64_Debug.appxsym
+        _CreateTestLayout:
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Dependencies\\ARM".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Dependencies\\x86".
+          Copying file from "C:\\Program Files (x86)\\Microsoft SDKs\\Windows Kits\\10\\ExtensionSDKs\\Microsoft.VCLibs\\14.0\\AppX\\Debug\\ARM\\Microsoft.VCLibs.ARM.Debug.14.00.appx" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Dependencies\\ARM\\Microsoft.VCLibs.ARM.Debug.14.00.appx".
+          Copying file from "C:\\Program Files (x86)\\Microsoft SDKs\\Windows Kits\\10\\ExtensionSDKs\\Microsoft.VCLibs\\14.0\\AppX\\Debug\\x86\\Microsoft.VCLibs.x86.Debug.14.00.appx" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Dependencies\\x86\\Microsoft.VCLibs.x86.Debug.14.00.appx".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Dependencies\\ARM64".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Dependencies\\x64".
+          Copying file from "C:\\Program Files (x86)\\Microsoft SDKs\\Windows Kits\\10\\ExtensionSDKs\\Microsoft.VCLibs\\14.0\\AppX\\Debug\\ARM64\\Microsoft.VCLibs.ARM64.Debug.14.00.appx" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Dependencies\\ARM64\\Microsoft.VCLibs.ARM64.Debug.14.00.appx".
+          Copying file from "C:\\Program Files (x86)\\Microsoft SDKs\\Windows Kits\\10\\ExtensionSDKs\\Microsoft.VCLibs\\14.0\\AppX\\Debug\\x64\\Microsoft.VCLibs.x64.Debug.14.00.appx" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Dependencies\\x64\\Microsoft.VCLibs.x64.Debug.14.00.appx".
+          Copying file from "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\cmTC_71f14.dir\\Debug\\Symbols\\cmTC_71f14_1.0.0.0_x64_Debug.appxsym" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\cmTC_71f14_1.0.0.0_x64_Debug.appxsym".
+        _AddWindowsInstallScriptToTestLayout:
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.ps1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.ps1".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\Add-AppDevPackage.psd1".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\cs-CZ".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\de-DE".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\cs-CZ\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\cs-CZ\\Add-AppDevPackage.psd1".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\de-DE\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\de-DE\\Add-AppDevPackage.psd1".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\en-US".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\en-US\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\en-US\\Add-AppDevPackage.psd1".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\es-ES".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\es-ES\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\es-ES\\Add-AppDevPackage.psd1".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\fr-FR".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\fr-FR\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\fr-FR\\Add-AppDevPackage.psd1".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\it-IT".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\it-IT\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\it-IT\\Add-AppDevPackage.psd1".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\ja-JP".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\ja-JP\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\ja-JP\\Add-AppDevPackage.psd1".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\ko-KR".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\pl-PL".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\pl-PL\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\pl-PL\\Add-AppDevPackage.psd1".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\ko-KR\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\ko-KR\\Add-AppDevPackage.psd1".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\pt-BR".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\ru-RU".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\pt-BR\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\pt-BR\\Add-AppDevPackage.psd1".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\ru-RU\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\ru-RU\\Add-AppDevPackage.psd1".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\tr-TR".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\tr-TR\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\tr-TR\\Add-AppDevPackage.psd1".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\zh-CN".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\zh-TW".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\zh-CN\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\zh-CN\\Add-AppDevPackage.psd1".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\zh-TW\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\zh-TW\\Add-AppDevPackage.psd1".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Install.ps1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\Install.ps1".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\TelemetryDependencies".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\TelemetryDependencies".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\LogSideloadingTelemetry.ps1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\TelemetryDependencies\\LogSideloadingTelemetry.ps1".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Microsoft.Diagnostics.Tracing.EventSource.dll" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\TelemetryDependencies\\Microsoft.Diagnostics.Tracing.EventSource.dll".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Microsoft.VisualStudio.Telemetry.dll" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\TelemetryDependencies\\Microsoft.VisualStudio.Telemetry.dll".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Microsoft.VisualStudio.RemoteControl.dll" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\TelemetryDependencies\\Microsoft.VisualStudio.RemoteControl.dll".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Microsoft.VisualStudio.Utilities.Internal.dll" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\TelemetryDependencies\\Microsoft.VisualStudio.Utilities.Internal.dll".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Newtonsoft.Json.dll" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\TelemetryDependencies\\Newtonsoft.Json.dll".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\System.Runtime.CompilerServices.Unsafe.dll" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\AppPackages\\cmTC_71f14\\cmTC_71f14_1.0.0.0_x64_Debug_Test\\TelemetryDependencies\\System.Runtime.CompilerServices.Unsafe.dll".
+        FinalizeBuildStatus:
+          Deleting file "cmTC_71f14.dir\\Debug\\cmTC_71f14.tlog\\unsuccessfulbuild".
+          Touching "cmTC_71f14.dir\\Debug\\cmTC_71f14.tlog\\cmTC_71f14.lastbuildstate".
+        Done Building Project "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\cmTC_71f14.vcxproj" (default targets).
+        
+        Build succeeded.
+        
+        "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\cmTC_71f14.vcxproj" (default target) (1) ->
+        (_GenerateCurrentProjectAppxManifest target) -> 
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Microsoft.AppXPackage.Targets(2836,5): warning : Publisher name (CN=CMake) does not match signing certificate subject: CN=CMake Test Cert. Updating Publisher name. [C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-brm972\\cmTC_71f14.vcxproj]
+        
+            1 Warning(s)
+            0 Error(s)
+        
+        Time Elapsed 00:00:04.35
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:218 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:74 (project)"
+    message: |
+      Parsed C implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?))("|,| |$)]
+        linker tool for 'C': C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Tools/MSVC/14.43.34618/bin/HostX64/x64/link.exe
+        implicit libs: []
+        implicit objs: []
+        implicit dirs: []
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:255 (cmake_determine_linker_id)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:74 (project)"
+    message: |
+      Running the C compiler's linker: "C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Tools/MSVC/14.43.34618/bin/HostX64/x64/link.exe" "-v"
+      Microsoft (R) Incremental Linker Version 14.43.34618.0
+      Copyright (C) Microsoft Corporation.  All rights reserved.
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:74 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:74 (project)"
+    checks:
+      - "Detecting CXX compiler ABI info"
+    directories:
+      source: "C:/Users/Naalf/Documents/Ashes/CMakeFiles/CMakeScratch/TryCompile-2khqt1"
+      binary: "C:/Users/Naalf/Documents/Ashes/CMakeFiles/CMakeScratch/TryCompile-2khqt1"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /W3 /DUNICODE /D_UNICODE /GR /EHsc"
+      CMAKE_CXX_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od"
+      CMAKE_CXX_SCAN_FOR_MODULES: "OFF"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Users/Naalf/Documents/Ashes/CMake;C:/Users/Naalf/Documents/Ashes/CMake/Modules;C:/Users/Naalf/Documents/Ashes/CMake/Modules/Traditional;C:/Users/Naalf/Documents/Ashes/CMake/Toolchains"
+      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
+    buildResult:
+      variable: "CMAKE_CXX_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/Naalf/Documents/Ashes/CMakeFiles/CMakeScratch/TryCompile-2khqt1'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Preview/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_500be.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        MSBuild version 17.13.6+bfea91c5f for .NET Framework
+        Build started 6/8/2025 6:12:16 PM.
+        
+        Project "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\cmTC_500be.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_500be.dir\\Debug\\".
+          Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\Debug\\".
+          Creating directory "cmTC_500be.dir\\Debug\\cmTC_500be.tlog\\".
+          Creating directory "Generated Files\\".
+        GetInstalledSDKLocations:
+          Searching for SDKs targeting "UAP, 10.0.26100.0".
+          Searching for SDKs targeting "Windows, 8.1".
+        ResolveSDKReferences:
+            Reading SDK manifest file "C:\\Program Files (x86)\\Microsoft SDKs\\Windows Kits\\10\\ExtensionSDKs\\Microsoft.VCLibs\\14.0\\SDKManifest.xml".
+            Targeted configuration and architecture "Debug|x64"
+            Could not find "FrameworkIdentity" attribute "FrameworkIdentity-Debug-x64" in the SDK manifest. 
+            Found "FrameworkIdentity" attribute "Name = Microsoft.VCLibs.140.00.Debug, MinVersion = 14.0.33519.0, Publisher = 'CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US'" in the SDK manifest.
+            Found "APPX" location attribute "AppX-Debug-x86=.\\AppX\\Debug\\x86\\Microsoft.VCLibs.x86.Debug.14.00.appx" in the SDK manifest.
+            Found "APPX" location attribute "AppX-Debug-x64=.\\AppX\\Debug\\x64\\Microsoft.VCLibs.x64.Debug.14.00.appx" in the SDK manifest.
+            Found "APPX" location attribute "AppX-Debug-ARM=.\\AppX\\Debug\\ARM\\Microsoft.VCLibs.ARM.Debug.14.00.appx" in the SDK manifest.
+            Found "APPX" location attribute "AppX-Debug-ARM64=.\\AppX\\Debug\\ARM64\\Microsoft.VCLibs.ARM64.Debug.14.00.appx" in the SDK manifest.
+        ExpandSDKReferences:
+          Enumerating SDK Reference "Microsoft.VCLibs, Version=14.0" from "C:\\Program Files (x86)\\Microsoft SDKs\\Windows Kits\\10\\ExtensionSDKs\\Microsoft.VCLibs\\14.0\\".
+        InitializeBuildStatus:
+          Creating "cmTC_500be.dir\\Debug\\cmTC_500be.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_500be.dir\\Debug\\cmTC_500be.tlog\\unsuccessfulbuild".
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\VC\\Tools\\MSVC\\14.43.34618\\bin\\HostX64\\x64\\CL.exe /c /I"C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\\\" /I"Generated Files\\\\" /IcmTC_500be.dir\\Debug\\ /Zi /W3 /WX- /diagnostics:column /sdl /MP /Od /Ob0 /Oy- /D _UNICODE /D UNICODE /D _DEBUG /D WINAPI_FAMILY=WINAPI_FAMILY_APP /D __WRL_NO_DEFAULT_LIB__ /D WIN32 /D _WINDOWS /D UNICODE /D _UNICODE /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_500be.dir\\Debug\\\\" /Fd"cmTC_500be.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TP /FU"C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\VC\\Tools\\MSVC\\14.43.34618\\lib\\x86\\store\\references\\platform.winmd" /analyze- /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.31\\Modules\\CMakeCXXCompilerABI.cpp"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.43.34618 for x64
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /I"C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\\\" /I"Generated Files\\\\" /IcmTC_500be.dir\\Debug\\ /Zi /W3 /WX- /diagnostics:column /sdl /MP /Od /Ob0 /Oy- /D _UNICODE /D UNICODE /D _DEBUG /D WINAPI_FAMILY=WINAPI_FAMILY_APP /D __WRL_NO_DEFAULT_LIB__ /D WIN32 /D _WINDOWS /D UNICODE /D _UNICODE /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_500be.dir\\Debug\\\\" /Fd"cmTC_500be.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TP /FU"C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\VC\\Tools\\MSVC\\14.43.34618\\lib\\x86\\store\\references\\platform.winmd" /analyze- /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.31\\Modules\\CMakeCXXCompilerABI.cpp"
+          CMakeCXXCompilerABI.cpp
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\VC\\Tools\\MSVC\\14.43.34618\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\Debug\\cmTC_500be.exe" /INCREMENTAL /ILK:"cmTC_500be.dir\\Debug\\cmTC_500be.ilk" /NOLOGO WindowsApp.lib /MANIFEST /ManifestFile:"cmTC_500be.dir\\Debug\\cmTC_500be.exe.intermediate.manifest" /MANIFESTUAC:NO /DEBUG /PDB:"C:/Users/Naalf/Documents/Ashes/CMakeFiles/CMakeScratch/TryCompile-2khqt1/Debug/cmTC_500be.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /APPCONTAINER /WINMD:NO /WINMDFILE:"C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\Debug\\cmTC_500be.winmd" /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/Naalf/Documents/Ashes/CMakeFiles/CMakeScratch/TryCompile-2khqt1/Debug/cmTC_500be.lib" /MACHINE:X64  /machine:x64 cmTC_500be.dir\\Debug\\CMakeCXXCompilerABI.obj
+          cmTC_500be.vcxproj -> C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\Debug\\cmTC_500be.exe
+        Manifest:
+          C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\x64\\mt.exe /nologo /verbose /out:"C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\Debug\\cmTC_500be.manifest" /manifest cmTC_500be.dir\\Debug\\cmTC_500be.exe.intermediate.manifest
+        ComputeProcessXamlFiles:
+          (Out) ProcessedXamlFiles == 
+        CustomOutputGroupForPackaging:
+          (Out) Project='cmTC_500be' ProcessedXamlFiles == 
+          (Out) XamlPackagingRootFolder == C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\Debug\\\\
+          (Out) ProcessedXamlFilesFullPath == 
+          (Out) Project='cmTC_500be' CustomOutputGroupForPackagingOutput == 
+        _AddVCLibs140UniversalCrtDebugReference:
+            Reading SDK manifest file "C:\\Program Files (x86)\\Microsoft SDKs\\Windows Kits\\10\\ExtensionSDKs\\Microsoft.UniversalCRT.Debug\\10.0.26100.0\\SDKManifest.xml".
+            Targeted configuration and architecture "Debug|X64"
+            No FrameworkIdentity attributes were found in the SDK manifest, treating this SDK as a non-framework SDK.
+            No "APPX" attributes indicating app package locations were found in the SDK manifest. If an app package is required at runtime the project may not run.
+        _GenerateProjectPriFileCore:
+          C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\x64\\MakePri.exe New -ProjectRoot C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\ -ConfigXml cmTC_500be.dir\\Debug\\priconfig.xml -OutputFile C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\cmTC_500be.dir\\resources.pri -IndexName D54DE124-6702-33A4-8ACD-36B0A10580E7 -Verbose -Overwrite  
+        C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Microsoft.AppXPackage.Targets(2836,5): warning : Publisher name (CN=CMake) does not match signing certificate subject: CN=CMake Test Cert. Updating Publisher name. [C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\cmTC_500be.vcxproj]
+          cmTC_500be -> C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\Debug\\cmTC_500be.dir\\AppxManifest.xml
+        CheckForUnsupportedScenarios:
+          The specified XPath query did not capture any nodes.
+        _GenerateAppxPackageRecipeFile:
+          cmTC_500be -> C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\Debug\\cmTC_500be.dir\\cmTC_500be.build.appxrecipe
+        _GenerateAppxPackageFile:
+          C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\x64\\MakeAppx.exe pack /l /h sha256 /f cmTC_500be.dir\\Debug\\package.map.txt /o /p C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\cmTC_500be_1.0.0.0_x64_Debug.msix  
+          cmTC_500be -> C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\cmTC_500be_1.0.0.0_x64_Debug.msix
+          cmTC_500be -> C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\cmTC_500be_1.0.0.0_x64_Debug.cer
+          cmTC_500be -> F63AAC84A0884CDB0126C3CDEA991E36DF064B3E
+        _GenerateAppxSymbolPackage:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\\\x64\\mspdbcmf.exe /check C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\Debug\\cmTC_500be.pdb 
+          Microsoft (R) FastLink To Full PDB Converter Version 14.39.33523.0
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          
+           [Non FASTLINK] The input PDB file was not generated by the linker with /DEBUG:fastlink.
+          cmTC_500be -> cmTC_500be.dir\\Debug\\Symbols\\cmTC_500be_1.0.0.0_x64_Debug.appxsym
+        _CreateTestLayout:
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Dependencies\\x86".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Dependencies\\ARM".
+          Copying file from "C:\\Program Files (x86)\\Microsoft SDKs\\Windows Kits\\10\\ExtensionSDKs\\Microsoft.VCLibs\\14.0\\AppX\\Debug\\x86\\Microsoft.VCLibs.x86.Debug.14.00.appx" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Dependencies\\x86\\Microsoft.VCLibs.x86.Debug.14.00.appx".
+          Copying file from "C:\\Program Files (x86)\\Microsoft SDKs\\Windows Kits\\10\\ExtensionSDKs\\Microsoft.VCLibs\\14.0\\AppX\\Debug\\ARM\\Microsoft.VCLibs.ARM.Debug.14.00.appx" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Dependencies\\ARM\\Microsoft.VCLibs.ARM.Debug.14.00.appx".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Dependencies\\x64".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Dependencies\\ARM64".
+          Copying file from "C:\\Program Files (x86)\\Microsoft SDKs\\Windows Kits\\10\\ExtensionSDKs\\Microsoft.VCLibs\\14.0\\AppX\\Debug\\x64\\Microsoft.VCLibs.x64.Debug.14.00.appx" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Dependencies\\x64\\Microsoft.VCLibs.x64.Debug.14.00.appx".
+          Copying file from "C:\\Program Files (x86)\\Microsoft SDKs\\Windows Kits\\10\\ExtensionSDKs\\Microsoft.VCLibs\\14.0\\AppX\\Debug\\ARM64\\Microsoft.VCLibs.ARM64.Debug.14.00.appx" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Dependencies\\ARM64\\Microsoft.VCLibs.ARM64.Debug.14.00.appx".
+          Copying file from "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\cmTC_500be.dir\\Debug\\Symbols\\cmTC_500be_1.0.0.0_x64_Debug.appxsym" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\cmTC_500be_1.0.0.0_x64_Debug.appxsym".
+        _AddWindowsInstallScriptToTestLayout:
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.ps1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.ps1".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\Add-AppDevPackage.psd1".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\cs-CZ".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\de-DE".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\cs-CZ\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\cs-CZ\\Add-AppDevPackage.psd1".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\de-DE\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\de-DE\\Add-AppDevPackage.psd1".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\en-US".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\es-ES".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\en-US\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\en-US\\Add-AppDevPackage.psd1".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\es-ES\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\es-ES\\Add-AppDevPackage.psd1".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\fr-FR".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\fr-FR\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\fr-FR\\Add-AppDevPackage.psd1".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\it-IT".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\ja-JP".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\ja-JP\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\ja-JP\\Add-AppDevPackage.psd1".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\it-IT\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\it-IT\\Add-AppDevPackage.psd1".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\pl-PL".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\pl-PL\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\pl-PL\\Add-AppDevPackage.psd1".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\pt-BR".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\pt-BR\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\pt-BR\\Add-AppDevPackage.psd1".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\ru-RU".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\ru-RU\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\ru-RU\\Add-AppDevPackage.psd1".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\tr-TR".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\tr-TR\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\tr-TR\\Add-AppDevPackage.psd1".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\ko-KR".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\ko-KR\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\ko-KR\\Add-AppDevPackage.psd1".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\zh-CN".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\zh-TW".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\zh-CN\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\zh-CN\\Add-AppDevPackage.psd1".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Add-AppDevPackage.resources\\zh-TW\\Add-AppDevPackage.psd1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Add-AppDevPackage.resources\\zh-TW\\Add-AppDevPackage.psd1".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Install.ps1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\Install.ps1".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\TelemetryDependencies".
+          Creating directory "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\TelemetryDependencies".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Microsoft.Diagnostics.Tracing.EventSource.dll" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\TelemetryDependencies\\Microsoft.Diagnostics.Tracing.EventSource.dll".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Microsoft.VisualStudio.Telemetry.dll" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\TelemetryDependencies\\Microsoft.VisualStudio.Telemetry.dll".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\LogSideloadingTelemetry.ps1" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\TelemetryDependencies\\LogSideloadingTelemetry.ps1".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Microsoft.VisualStudio.RemoteControl.dll" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\TelemetryDependencies\\Microsoft.VisualStudio.RemoteControl.dll".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Microsoft.VisualStudio.Utilities.Internal.dll" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\TelemetryDependencies\\Microsoft.VisualStudio.Utilities.Internal.dll".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Newtonsoft.Json.dll" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\TelemetryDependencies\\Newtonsoft.Json.dll".
+          Copying file from "C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\System.Runtime.CompilerServices.Unsafe.dll" to "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\AppPackages\\cmTC_500be\\cmTC_500be_1.0.0.0_x64_Debug_Test\\TelemetryDependencies\\System.Runtime.CompilerServices.Unsafe.dll".
+        FinalizeBuildStatus:
+          Deleting file "cmTC_500be.dir\\Debug\\cmTC_500be.tlog\\unsuccessfulbuild".
+          Touching "cmTC_500be.dir\\Debug\\cmTC_500be.tlog\\cmTC_500be.lastbuildstate".
+        Done Building Project "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\cmTC_500be.vcxproj" (default targets).
+        
+        Build succeeded.
+        
+        "C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\cmTC_500be.vcxproj" (default target) (1) ->
+        (_GenerateCurrentProjectAppxManifest target) -> 
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Microsoft\\VisualStudio\\v17.0\\AppxPackage\\Microsoft.AppXPackage.Targets(2836,5): warning : Publisher name (CN=CMake) does not match signing certificate subject: CN=CMake Test Cert. Updating Publisher name. [C:\\Users\\Naalf\\Documents\\Ashes\\CMakeFiles\\CMakeScratch\\TryCompile-2khqt1\\cmTC_500be.vcxproj]
+        
+            1 Warning(s)
+            0 Error(s)
+        
+        Time Elapsed 00:00:03.35
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:218 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:74 (project)"
+    message: |
+      Parsed CXX implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?))("|,| |$)]
+        linker tool for 'CXX': C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Tools/MSVC/14.43.34618/bin/HostX64/x64/link.exe
+        implicit libs: []
+        implicit objs: []
+        implicit dirs: []
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:255 (cmake_determine_linker_id)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:74 (project)"
+    message: |
+      Running the CXX compiler's linker: "C:/Program Files/Microsoft Visual Studio/2022/Preview/VC/Tools/MSVC/14.43.34618/bin/HostX64/x64/link.exe" "-v"
+      Microsoft (R) Incremental Linker Version 14.43.34618.0
+      Copyright (C) Microsoft Corporation.  All rights reserved.
+...

@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\common\Common.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\common\Format.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\common\UWP\DynamicLibrary.cpp">
+      <Filter>Source Files\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\common\UWP\FileUtils.cpp">
+      <Filter>Source Files\Platform</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\include\ashes\common\ArrayView.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\include\ashes\common\BuddyAllocator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\include\ashes\common\BuddyAllocator.inl">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\include\ashes\common\ConstantFormat.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\include\ashes\common\DeviceAllocator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\include\ashes\common\DynamicLibrary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\include\ashes\common\Exception.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\include\ashes\common\FileUtils.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\include\ashes\common\FlagCombination.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\include\ashes\common\Format.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\include\ashes\common\Hash.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\include\ashes\common\Optional.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\include\ashes\common\Signal.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\include\ashes\common\VkTypeTraits.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Naalf\Documents\Ashes\source\ashes\common\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="C:\Users\Naalf\Documents\Ashes\source\ashes\common\ashes_common.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\Naalf\Documents\Ashes\.editorconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{B6CAD37E-94FB-3989-8C92-8ACD62975A64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{DF4F2EBD-25F1-3CA7-96ED-A0A308FD2F4A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Platform">
+      <UniqueIdentifier>{43B94405-BDE0-3849-92A2-D55ACA2AE06B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

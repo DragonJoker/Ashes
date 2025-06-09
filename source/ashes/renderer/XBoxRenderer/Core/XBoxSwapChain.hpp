@@ -39,7 +39,7 @@ namespace ashes::xbox
 	private:
 		VkDevice m_device;
 		VkSwapchainCreateInfoKHR m_createInfo;
-		DXGI_SWAP_CHAIN_DESC m_presentDesc;
+                DXGI_SWAP_CHAIN_DESC1 m_presentDesc{};
 		DXGI_MODE_DESC m_displayMode;
 		uint32_t m_currentBuffer{};
 		IDXGISwapChain * m_swapChain{ nullptr };

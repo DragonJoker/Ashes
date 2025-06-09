@@ -1,0 +1,767 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\CMakeFiles\ashesXBoxRenderer.dir\cmake_pch.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\ash_xbox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\XBoxRendererPch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\XBoxRendererPrerequisites.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Buffer\XBoxBuffer.cpp">
+      <Filter>Source Files\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Buffer\XBoxBufferView.cpp">
+      <Filter>Source Files\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\XBoxCommandBuffer.cpp">
+      <Filter>Source Files\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\XBoxCommandPool.cpp">
+      <Filter>Source Files\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\XBoxQueue.cpp">
+      <Filter>Source Files\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxCommandBase.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBeginQueryCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBeginRenderPassCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBeginSubpassCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBindComputePipelineCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBindDescriptorSetCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBindIndexBufferCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBindPipelineCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBindVertexBuffersCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBlitImageCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxClearAttachmentsCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxClearColourCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxClearDepthStencilCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxCopyBufferCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxCopyBufferToImageCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxCopyImageCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxCopyImageToBufferCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxCopyQueryPoolResultsCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDispatchCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDispatchIndirectCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDownloadMemoryCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDrawCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDrawIndexedCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDrawIndexedIndirectCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDrawIndirectCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxEndQueryCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxEndRenderPassCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxEndSubpassCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxExecuteActionsCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxExecuteCommandsCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxFillBufferCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxGenerateMipsCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxMemoryBarrierCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxPushConstantsCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxResetEventCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxResetQueryPoolCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxResolveImageCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxScissorCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxSetDepthBiasCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxSetEventCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxSetLineWidthCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxUpdateBufferCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxUploadMemoryCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxViewportCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxWaitEventsCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxWriteTimestampCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxDebugReportCallback.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxDevice.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxDeviceContextLock.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxDisplay.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxDisplayMode.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxInstance.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxLayer.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxPhysicalDevice.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxSurface.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxSwapChain.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Descriptor\XBoxDescriptorPool.cpp">
+      <Filter>Source Files\Descriptor</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Descriptor\XBoxDescriptorSet.cpp">
+      <Filter>Source Files\Descriptor</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Descriptor\XBoxDescriptorSetLayout.cpp">
+      <Filter>Source Files\Descriptor</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Descriptor\XBoxWriteDescriptorSet.cpp">
+      <Filter>Source Files\Descriptor</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxBlendFactor.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxBlendOp.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxBufferTarget.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxCompareOp.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxCullModeFlag.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxFilter.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxFormat.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxImageUsageFlag.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxIndexType.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxMemoryMapFlag.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxMemoryPropertyFlag.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxPolygonMode.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxPrimitiveTopology.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxStencilOp.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxVertexInputRate.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Image\XBoxImage.cpp">
+      <Filter>Source Files\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Image\XBoxImageView.cpp">
+      <Filter>Source Files\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Image\XBoxSampler.cpp">
+      <Filter>Source Files\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Miscellaneous\XBoxDeviceMemory.cpp">
+      <Filter>Source Files\Miscellaneous</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Miscellaneous\XBoxQueryPool.cpp">
+      <Filter>Source Files\Miscellaneous</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxColourBlendState.cpp">
+      <Filter>Source Files\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxComputePipeline.cpp">
+      <Filter>Source Files\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxDepthStencilState.cpp">
+      <Filter>Source Files\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxDynamicStates.cpp">
+      <Filter>Source Files\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxPipeline.cpp">
+      <Filter>Source Files\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxPipelineCache.cpp">
+      <Filter>Source Files\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxPipelineLayout.cpp">
+      <Filter>Source Files\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxRasterisationState.cpp">
+      <Filter>Source Files\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxScissor.cpp">
+      <Filter>Source Files\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxSpecialisationInfo.cpp">
+      <Filter>Source Files\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxStencilOpState.cpp">
+      <Filter>Source Files\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxVertexInputState.cpp">
+      <Filter>Source Files\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxViewport.cpp">
+      <Filter>Source Files\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\RenderPass\XBoxFrameBuffer.cpp">
+      <Filter>Source Files\RenderPass</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\RenderPass\XBoxRenderPass.cpp">
+      <Filter>Source Files\RenderPass</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Shader\XBoxShaderModule.cpp">
+      <Filter>Source Files\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Sync\XBoxEvent.cpp">
+      <Filter>Source Files\Sync</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Sync\XBoxFence.cpp">
+      <Filter>Source Files\Sync</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Sync\XBoxSemaphore.cpp">
+      <Filter>Source Files\Sync</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\ashesxbox_api.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\XBoxRendererPch.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\XBoxRendererPrerequisites.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Buffer\XBoxBuffer.hpp">
+      <Filter>Header Files\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Buffer\XBoxBufferView.hpp">
+      <Filter>Header Files\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\XBoxCommandBuffer.hpp">
+      <Filter>Header Files\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\XBoxCommandPool.hpp">
+      <Filter>Header Files\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\XBoxQueue.hpp">
+      <Filter>Header Files\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxCommandBase.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBeginQueryCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBeginRenderPassCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBeginSubpassCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBindComputePipelineCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBindDescriptorSetCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBindIndexBufferCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBindPipelineCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBindVertexBuffersCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBlitImageCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxClearAttachmentsCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxClearColourCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxClearDepthStencilCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxCopyBufferCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxCopyBufferToImageCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxCopyImageCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxCopyImageToBufferCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxCopyQueryPoolResultsCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDispatchCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDispatchIndirectCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDownloadMemoryCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDrawCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDrawIndexedCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDrawIndexedIndirectCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDrawIndirectCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxEndQueryCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxEndRenderPassCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxEndSubpassCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxExecuteActionsCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxExecuteCommandsCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxFillBufferCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxGenerateMipsCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxMemoryBarrierCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxPushConstantsCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxResetEventCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxResetQueryPoolCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxResolveImageCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxScissorCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxSetDepthBiasCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxSetEventCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxSetLineWidthCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxUpdateBufferCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxUploadMemoryCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxViewportCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxWaitEventsCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxWriteTimestampCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxDebugReportCallback.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxDevice.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxDeviceContextLock.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxDisplay.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxDisplayMode.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxDummyIndexBuffer.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxInstance.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxLayer.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxPhysicalDevice.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxSurface.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxSwapChain.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Descriptor\XBoxDescriptorPool.hpp">
+      <Filter>Header Files\Descriptor</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Descriptor\XBoxDescriptorSet.hpp">
+      <Filter>Header Files\Descriptor</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Descriptor\XBoxDescriptorSetLayout.hpp">
+      <Filter>Header Files\Descriptor</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Descriptor\XBoxWriteDescriptorSet.hpp">
+      <Filter>Header Files\Descriptor</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxBlendFactor.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxBlendOp.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxBufferTarget.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxCompareOp.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxCullModeFlag.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxFilter.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxFormat.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxImageUsageFlag.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxIndexType.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxMemoryMapFlag.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxMemoryPropertyFlag.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxPolygonMode.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxPrimitiveTopology.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxStencilOp.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxVertexInputRate.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Image\XBoxImage.hpp">
+      <Filter>Header Files\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Image\XBoxImageView.hpp">
+      <Filter>Header Files\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Image\XBoxSampler.hpp">
+      <Filter>Header Files\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Miscellaneous\XBoxDeviceMemory.hpp">
+      <Filter>Header Files\Miscellaneous</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Miscellaneous\XBoxQueryPool.hpp">
+      <Filter>Header Files\Miscellaneous</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxColourBlendState.hpp">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxComputePipeline.hpp">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxDepthStencilState.hpp">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxDynamicStates.hpp">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxPipeline.hpp">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxPipelineCache.hpp">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxPipelineLayout.hpp">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxRasterisationState.hpp">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxScissor.hpp">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxSpecialisationInfo.hpp">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxStencilOpState.hpp">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxVertexInputState.hpp">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxViewport.hpp">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\RenderPass\XBoxFrameBuffer.hpp">
+      <Filter>Header Files\RenderPass</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\RenderPass\XBoxRenderPass.hpp">
+      <Filter>Header Files\RenderPass</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Shader\XBoxShaderDesc.hpp">
+      <Filter>Header Files\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Shader\XBoxShaderModule.hpp">
+      <Filter>Header Files\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Sync\XBoxEvent.hpp">
+      <Filter>Header Files\Sync</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Sync\XBoxFence.hpp">
+      <Filter>Header Files\Sync</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Sync\XBoxSemaphore.hpp">
+      <Filter>Header Files\Sync</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\CMakeFiles\ashesXBoxRenderer.dir\Debug\cmake_pch.hxx">
+      <Filter>Precompile Header File</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\CMakeFiles\ashesXBoxRenderer.dir\Release\cmake_pch.hxx">
+      <Filter>Precompile Header File</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\CMakeFiles\ashesXBoxRenderer.dir\MinSizeRel\cmake_pch.hxx">
+      <Filter>Precompile Header File</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\CMakeFiles\ashesXBoxRenderer.dir\RelWithDebInfo\cmake_pch.hxx">
+      <Filter>Precompile Header File</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\XBoxRenderer.natvis">
+      <Filter>Natvis Files</Filter>
+    </Natvis>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\Naalf\Documents\Ashes\.editorconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{B6CAD37E-94FB-3989-8C92-8ACD62975A64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Buffer">
+      <UniqueIdentifier>{080CF56B-CAE0-3316-851A-10879D595817}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Command">
+      <UniqueIdentifier>{C5266DAE-82CA-334D-8C6C-689C443233B6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Command\Commands">
+      <UniqueIdentifier>{21ECAA15-570A-321A-A95D-757AF171CA15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core">
+      <UniqueIdentifier>{705D585C-C1DD-3583-87AD-DCF054710DBD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Descriptor">
+      <UniqueIdentifier>{E24C0E42-4EEE-3235-8576-474AEF220CD5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Enum">
+      <UniqueIdentifier>{FB3E0FE0-0D49-3BB0-B8B5-F666541E4984}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Image">
+      <UniqueIdentifier>{40F068A5-D80C-367B-8B72-73A10191A395}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Miscellaneous">
+      <UniqueIdentifier>{6A73D421-09E6-3604-A15B-8A6EBF032794}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Pipeline">
+      <UniqueIdentifier>{3721BDCE-5663-3817-9EC3-C175D7C19C0C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\RenderPass">
+      <UniqueIdentifier>{35060648-FD6A-3F92-A89C-A7CAEE296D93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Shader">
+      <UniqueIdentifier>{8B2299D7-65D1-3FBD-B1C3-E742385CAC12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Sync">
+      <UniqueIdentifier>{1CA78F38-85F6-3A40-8DEC-0CC28DEAB88F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Natvis Files">
+      <UniqueIdentifier>{97D34B17-C722-3EAE-B453-082E2315E9C3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Precompile Header File">
+      <UniqueIdentifier>{0A707226-766C-3001-AE38-F464BFA8CBD8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{DF4F2EBD-25F1-3CA7-96ED-A0A308FD2F4A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Buffer">
+      <UniqueIdentifier>{345590A6-0500-317D-A064-90AE8A3D04D8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Command">
+      <UniqueIdentifier>{AE919BF4-3899-304B-99FE-52884756F739}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Command\Commands">
+      <UniqueIdentifier>{72D03A54-04B9-31B8-ACA4-D4A5E398E133}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{FDDF5F02-FCC4-37DE-B714-04C08148D7E3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Descriptor">
+      <UniqueIdentifier>{3A7CB6E2-E093-3254-B524-03D4912063F9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Enum">
+      <UniqueIdentifier>{D33D9E43-A537-368C-A980-8F748B6C44D2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Image">
+      <UniqueIdentifier>{072A5C79-ED79-3F34-89A8-8DAEE7DE368D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Miscellaneous">
+      <UniqueIdentifier>{8B59F752-D820-3091-8134-281D4D66AFC9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Pipeline">
+      <UniqueIdentifier>{91BD2D2C-2F75-3946-970D-C67BF492637A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\RenderPass">
+      <UniqueIdentifier>{96C82453-47ED-3FEF-84AA-B6735E3A072B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shader">
+      <UniqueIdentifier>{9823B559-158D-3BCE-B488-90016C163AD4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Sync">
+      <UniqueIdentifier>{864AC84E-1335-3F22-905F-117DF785B89D}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

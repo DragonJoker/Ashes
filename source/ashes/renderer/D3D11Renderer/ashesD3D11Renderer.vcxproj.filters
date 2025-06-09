@@ -1,0 +1,770 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\CMakeFiles\ashesD3D11Renderer.dir\cmake_pch.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\ash_direct3d11.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\D3D11RendererPch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\D3D11RendererPrerequisites.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Buffer\D3D11Buffer.cpp">
+      <Filter>Source Files\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Buffer\D3D11BufferView.cpp">
+      <Filter>Source Files\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\D3D11CommandBuffer.cpp">
+      <Filter>Source Files\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\D3D11CommandPool.cpp">
+      <Filter>Source Files\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\D3D11Queue.cpp">
+      <Filter>Source Files\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11CommandBase.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11BeginQueryCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11BeginRenderPassCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11BeginSubpassCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11BindComputePipelineCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11BindDescriptorSetCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11BindIndexBufferCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11BindPipelineCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11BindVertexBuffersCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11BlitImageCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11ClearAttachmentsCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11ClearColourCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11ClearDepthStencilCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11CopyBufferCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11CopyBufferToImageCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11CopyImageCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11CopyImageToBufferCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11CopyQueryPoolResultsCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11DispatchCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11DispatchIndirectCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11DownloadMemoryCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11DrawCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11DrawIndexedCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11DrawIndexedIndirectCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11DrawIndirectCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11EndQueryCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11EndRenderPassCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11EndSubpassCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11ExecuteActionsCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11ExecuteCommandsCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11FillBufferCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11GenerateMipsCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11MemoryBarrierCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11PushConstantsCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11ResetEventCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11ResetQueryPoolCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11ResolveImageCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11ScissorCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11SetDepthBiasCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11SetEventCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11SetLineWidthCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11UpdateBufferCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11UploadMemoryCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11ViewportCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11WaitEventsCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11WriteTimestampCommand.cpp">
+      <Filter>Source Files\Command\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Core\D3D11DebugReportCallback.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Core\D3D11Device.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Core\D3D11DeviceContextLock.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Core\D3D11Display.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Core\D3D11DisplayMode.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Core\D3D11Instance.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Core\D3D11Layer.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Core\D3D11PhysicalDevice.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Core\D3D11Win32Surface.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Core\D3D11UWPSurface.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Core\D3D11SwapChain.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Descriptor\D3D11DescriptorPool.cpp">
+      <Filter>Source Files\Descriptor</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Descriptor\D3D11DescriptorSet.cpp">
+      <Filter>Source Files\Descriptor</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Descriptor\D3D11DescriptorSetLayout.cpp">
+      <Filter>Source Files\Descriptor</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Descriptor\D3D11WriteDescriptorSet.cpp">
+      <Filter>Source Files\Descriptor</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11BlendFactor.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11BlendOp.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11BufferTarget.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11CompareOp.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11CullModeFlag.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11Filter.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11Format.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11ImageUsageFlag.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11IndexType.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11MemoryMapFlag.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11MemoryPropertyFlag.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11PolygonMode.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11PrimitiveTopology.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11StencilOp.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11VertexInputRate.cpp">
+      <Filter>Source Files\Enum</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Image\D3D11Image.cpp">
+      <Filter>Source Files\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Image\D3D11ImageView.cpp">
+      <Filter>Source Files\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Image\D3D11Sampler.cpp">
+      <Filter>Source Files\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Miscellaneous\D3D11DeviceMemory.cpp">
+      <Filter>Source Files\Miscellaneous</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Miscellaneous\D3D11QueryPool.cpp">
+      <Filter>Source Files\Miscellaneous</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Pipeline\D3D11ColourBlendState.cpp">
+      <Filter>Source Files\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Pipeline\D3D11ComputePipeline.cpp">
+      <Filter>Source Files\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Pipeline\D3D11DepthStencilState.cpp">
+      <Filter>Source Files\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Pipeline\D3D11DynamicStates.cpp">
+      <Filter>Source Files\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Pipeline\D3D11Pipeline.cpp">
+      <Filter>Source Files\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Pipeline\D3D11PipelineCache.cpp">
+      <Filter>Source Files\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Pipeline\D3D11PipelineLayout.cpp">
+      <Filter>Source Files\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Pipeline\D3D11RasterisationState.cpp">
+      <Filter>Source Files\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Pipeline\D3D11Scissor.cpp">
+      <Filter>Source Files\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Pipeline\D3D11SpecialisationInfo.cpp">
+      <Filter>Source Files\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Pipeline\D3D11StencilOpState.cpp">
+      <Filter>Source Files\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Pipeline\D3D11VertexInputState.cpp">
+      <Filter>Source Files\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Pipeline\D3D11Viewport.cpp">
+      <Filter>Source Files\Pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\RenderPass\D3D11FrameBuffer.cpp">
+      <Filter>Source Files\RenderPass</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\RenderPass\D3D11RenderPass.cpp">
+      <Filter>Source Files\RenderPass</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Shader\D3D11ShaderModule.cpp">
+      <Filter>Source Files\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Sync\D3D11Event.cpp">
+      <Filter>Source Files\Sync</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Sync\D3D11Fence.cpp">
+      <Filter>Source Files\Sync</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Sync\D3D11Semaphore.cpp">
+      <Filter>Source Files\Sync</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\ashesd3d11_api.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\D3D11RendererPch.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\D3D11RendererPrerequisites.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Buffer\D3D11Buffer.hpp">
+      <Filter>Header Files\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Buffer\D3D11BufferView.hpp">
+      <Filter>Header Files\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\D3D11CommandBuffer.hpp">
+      <Filter>Header Files\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\D3D11CommandPool.hpp">
+      <Filter>Header Files\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\D3D11Queue.hpp">
+      <Filter>Header Files\Command</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11CommandBase.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11BeginQueryCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11BeginRenderPassCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11BeginSubpassCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11BindComputePipelineCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11BindDescriptorSetCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11BindIndexBufferCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11BindPipelineCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11BindVertexBuffersCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11BlitImageCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11ClearAttachmentsCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11ClearColourCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11ClearDepthStencilCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11CopyBufferCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11CopyBufferToImageCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11CopyImageCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11CopyImageToBufferCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11CopyQueryPoolResultsCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11DispatchCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11DispatchIndirectCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11DownloadMemoryCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11DrawCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11DrawIndexedCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11DrawIndexedIndirectCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11DrawIndirectCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11EndQueryCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11EndRenderPassCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11EndSubpassCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11ExecuteActionsCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11ExecuteCommandsCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11FillBufferCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11GenerateMipsCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11MemoryBarrierCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11PushConstantsCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11ResetEventCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11ResetQueryPoolCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11ResolveImageCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11ScissorCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11SetDepthBiasCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11SetEventCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11SetLineWidthCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11UpdateBufferCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11UploadMemoryCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11ViewportCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11WaitEventsCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Command\Commands\D3D11WriteTimestampCommand.hpp">
+      <Filter>Header Files\Command\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Core\D3D11DebugReportCallback.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Core\D3D11Device.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Core\D3D11DeviceContextLock.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Core\D3D11Display.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Core\D3D11DisplayMode.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Core\D3D11DummyIndexBuffer.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Core\D3D11Instance.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Core\D3D11Layer.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Core\D3D11PhysicalDevice.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Core\D3D11Surface.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Core\D3D11SwapChain.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Descriptor\D3D11DescriptorPool.hpp">
+      <Filter>Header Files\Descriptor</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Descriptor\D3D11DescriptorSet.hpp">
+      <Filter>Header Files\Descriptor</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Descriptor\D3D11DescriptorSetLayout.hpp">
+      <Filter>Header Files\Descriptor</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Descriptor\D3D11WriteDescriptorSet.hpp">
+      <Filter>Header Files\Descriptor</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11BlendFactor.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11BlendOp.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11BufferTarget.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11CompareOp.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11CullModeFlag.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11Filter.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11Format.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11ImageUsageFlag.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11IndexType.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11MemoryMapFlag.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11MemoryPropertyFlag.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11PolygonMode.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11PrimitiveTopology.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11StencilOp.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Enum\D3D11VertexInputRate.hpp">
+      <Filter>Header Files\Enum</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Image\D3D11Image.hpp">
+      <Filter>Header Files\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Image\D3D11ImageView.hpp">
+      <Filter>Header Files\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Image\D3D11Sampler.hpp">
+      <Filter>Header Files\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Miscellaneous\D3D11DeviceMemory.hpp">
+      <Filter>Header Files\Miscellaneous</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Miscellaneous\D3D11QueryPool.hpp">
+      <Filter>Header Files\Miscellaneous</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Pipeline\D3D11ColourBlendState.hpp">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Pipeline\D3D11ComputePipeline.hpp">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Pipeline\D3D11DepthStencilState.hpp">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Pipeline\D3D11DynamicStates.hpp">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Pipeline\D3D11Pipeline.hpp">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Pipeline\D3D11PipelineCache.hpp">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Pipeline\D3D11PipelineLayout.hpp">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Pipeline\D3D11RasterisationState.hpp">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Pipeline\D3D11Scissor.hpp">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Pipeline\D3D11SpecialisationInfo.hpp">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Pipeline\D3D11StencilOpState.hpp">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Pipeline\D3D11VertexInputState.hpp">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Pipeline\D3D11Viewport.hpp">
+      <Filter>Header Files\Pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\RenderPass\D3D11FrameBuffer.hpp">
+      <Filter>Header Files\RenderPass</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\RenderPass\D3D11RenderPass.hpp">
+      <Filter>Header Files\RenderPass</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Shader\D3D11ShaderDesc.hpp">
+      <Filter>Header Files\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Shader\D3D11ShaderModule.hpp">
+      <Filter>Header Files\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Sync\D3D11Event.hpp">
+      <Filter>Header Files\Sync</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Sync\D3D11Fence.hpp">
+      <Filter>Header Files\Sync</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\Sync\D3D11Semaphore.hpp">
+      <Filter>Header Files\Sync</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\CMakeFiles\ashesD3D11Renderer.dir\Debug\cmake_pch.hxx">
+      <Filter>Precompile Header File</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\CMakeFiles\ashesD3D11Renderer.dir\Release\cmake_pch.hxx">
+      <Filter>Precompile Header File</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\CMakeFiles\ashesD3D11Renderer.dir\MinSizeRel\cmake_pch.hxx">
+      <Filter>Precompile Header File</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\CMakeFiles\ashesD3D11Renderer.dir\RelWithDebInfo\cmake_pch.hxx">
+      <Filter>Precompile Header File</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\D3D11Renderer\D3D11Renderer.natvis">
+      <Filter>Natvis Files</Filter>
+    </Natvis>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\Naalf\Documents\Ashes\.editorconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{B6CAD37E-94FB-3989-8C92-8ACD62975A64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Buffer">
+      <UniqueIdentifier>{080CF56B-CAE0-3316-851A-10879D595817}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Command">
+      <UniqueIdentifier>{C5266DAE-82CA-334D-8C6C-689C443233B6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Command\Commands">
+      <UniqueIdentifier>{21ECAA15-570A-321A-A95D-757AF171CA15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core">
+      <UniqueIdentifier>{705D585C-C1DD-3583-87AD-DCF054710DBD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Descriptor">
+      <UniqueIdentifier>{E24C0E42-4EEE-3235-8576-474AEF220CD5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Enum">
+      <UniqueIdentifier>{FB3E0FE0-0D49-3BB0-B8B5-F666541E4984}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Image">
+      <UniqueIdentifier>{40F068A5-D80C-367B-8B72-73A10191A395}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Miscellaneous">
+      <UniqueIdentifier>{6A73D421-09E6-3604-A15B-8A6EBF032794}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Pipeline">
+      <UniqueIdentifier>{3721BDCE-5663-3817-9EC3-C175D7C19C0C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\RenderPass">
+      <UniqueIdentifier>{35060648-FD6A-3F92-A89C-A7CAEE296D93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Shader">
+      <UniqueIdentifier>{8B2299D7-65D1-3FBD-B1C3-E742385CAC12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Sync">
+      <UniqueIdentifier>{1CA78F38-85F6-3A40-8DEC-0CC28DEAB88F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Natvis Files">
+      <UniqueIdentifier>{97D34B17-C722-3EAE-B453-082E2315E9C3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Precompile Header File">
+      <UniqueIdentifier>{0A707226-766C-3001-AE38-F464BFA8CBD8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{DF4F2EBD-25F1-3CA7-96ED-A0A308FD2F4A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Buffer">
+      <UniqueIdentifier>{345590A6-0500-317D-A064-90AE8A3D04D8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Command">
+      <UniqueIdentifier>{AE919BF4-3899-304B-99FE-52884756F739}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Command\Commands">
+      <UniqueIdentifier>{72D03A54-04B9-31B8-ACA4-D4A5E398E133}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{FDDF5F02-FCC4-37DE-B714-04C08148D7E3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Descriptor">
+      <UniqueIdentifier>{3A7CB6E2-E093-3254-B524-03D4912063F9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Enum">
+      <UniqueIdentifier>{D33D9E43-A537-368C-A980-8F748B6C44D2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Image">
+      <UniqueIdentifier>{072A5C79-ED79-3F34-89A8-8DAEE7DE368D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Miscellaneous">
+      <UniqueIdentifier>{8B59F752-D820-3091-8134-281D4D66AFC9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Pipeline">
+      <UniqueIdentifier>{91BD2D2C-2F75-3946-970D-C67BF492637A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\RenderPass">
+      <UniqueIdentifier>{96C82453-47ED-3FEF-84AA-B6735E3A072B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shader">
+      <UniqueIdentifier>{9823B559-158D-3BCE-B488-90016C163AD4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Sync">
+      <UniqueIdentifier>{864AC84E-1335-3F22-905F-117DF785B89D}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

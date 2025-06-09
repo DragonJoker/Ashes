@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\external\spirv_cross\spirv_cross.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\external\spirv_cross\spirv_cross_parsed_ir.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\external\spirv_cross\spirv_cfg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\external\spirv_cross\spirv_glsl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\external\spirv_cross\spirv_parser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\external\spirv_cross\spirv_hlsl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\external\spirv_cross\GLSL.std.450.h">
+      <Filter>Header Files\SPIRV-Cross</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\external\spirv_cross\spirv_common.hpp">
+      <Filter>Header Files\SPIRV-Cross</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\external\spirv_cross\spirv.hpp">
+      <Filter>Header Files\SPIRV-Cross</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\external\spirv_cross\spirv_cross.hpp">
+      <Filter>Header Files\SPIRV-Cross</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\external\spirv_cross\spirv_cross_parsed_ir.hpp">
+      <Filter>Header Files\SPIRV-Cross</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\external\spirv_cross\spirv_cfg.hpp">
+      <Filter>Header Files\SPIRV-Cross</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\external\spirv_cross\spirv_glsl.hpp">
+      <Filter>Header Files\SPIRV-Cross</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\external\spirv_cross\spirv_parser.hpp">
+      <Filter>Header Files\SPIRV-Cross</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\external\spirv_cross\spirv_hlsl.hpp">
+      <Filter>Header Files\SPIRV-Cross</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\RendererCommon\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{B6CAD37E-94FB-3989-8C92-8ACD62975A64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\SPIRV-Cross">
+      <UniqueIdentifier>{0AD1F91B-3531-325A-AFDD-54D3866C0E0D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{DF4F2EBD-25F1-3CA7-96ED-A0A308FD2F4A}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

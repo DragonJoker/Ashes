@@ -1,0 +1,1236 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{DB8B11FF-29CE-3F42-A14D-B92542DAEB09}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <ApplicationType>Windows Store</ApplicationType>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.26100.0</WindowsTargetPlatformMinVersion>
+    <Platform>x64</Platform>
+    <ProjectName>ashesXBoxRenderer</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\Naalf\Documents\Ashes\binaries\x64\Debug\bin\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ashesXBoxRenderer.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ashesXBoxRendererd</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\Naalf\Documents\Ashes\binaries\x64\Release\bin\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ashesXBoxRenderer.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ashesXBoxRenderer</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">ashesXBoxRenderer.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">ashesXBoxRenderer</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\Naalf\Documents\Ashes\binaries\x64\RelWithDebInfo\bin\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">ashesXBoxRenderer.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">ashesXBoxRenderer</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer;C:\Users\Naalf\Documents\Ashes\source\ashes;C:\Users\Naalf\Documents\Ashes\include\ashes;C:\Users\Naalf\Documents\Ashes\source\ashes\renderer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "C:/Users/Naalf/Documents/Ashes/external/Vulkan-Headers/include" /external:I "C:/Users/Naalf/Documents/Ashes/external/spirv_cross" /external:I "C:/Users/Naalf/Documents/Ashes/include" /external:I "C:/Users/Naalf/Documents/Ashes/external/AGS_SDK/ags_lib/inc" /external:I "C:/Users/Naalf/Documents/Ashes/external" /utf-8</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <ConformanceMode>true</ConformanceMode>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DisableSpecificWarnings>4619;4061;4068;4100;4263;4264;4266;4505;4571;4623;4625;4626;4866;4868;5045;5246;4355;4514;4548;4668;4710;4711;4774;4820;5026;5027;5039;5220;5264;4599</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/ashesXBoxRenderer.dir/Debug/cmake_pch.pch</PrecompiledHeaderOutputFile>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;UNICODE;_UNICODE;XBoxRenderer_USE_SPIRV_CROSS=1;XBoxRenderer_EXPORTS;ASHES_XBox_USE_AMD_AGS;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;NOMINMAX;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_ENFORCE_MATCHING_ALLOCATORS=0;VK_ENABLE_BETA_EXTENSIONS;Ashes_UWP;CMAKE_INTDIR="Debug";ashesXBoxRenderer_EXPORTS</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;UNICODE;_UNICODE;XBoxRenderer_USE_SPIRV_CROSS=1;XBoxRenderer_EXPORTS;ASHES_XBox_USE_AMD_AGS;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;NOMINMAX;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_ENFORCE_MATCHING_ALLOCATORS=0;VK_ENABLE_BETA_EXTENSIONS;Ashes_UWP;CMAKE_INTDIR=\"Debug\";ashesXBoxRenderer_EXPORTS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer;C:\Users\Naalf\Documents\Ashes\source\ashes;C:\Users\Naalf\Documents\Ashes\include\ashes;C:\Users\Naalf\Documents\Ashes\source\ashes\renderer;C:\Users\Naalf\Documents\Ashes\external\Vulkan-Headers\include;C:\Users\Naalf\Documents\Ashes\external\spirv_cross;C:\Users\Naalf\Documents\Ashes\include;C:\Users\Naalf\Documents\Ashes\external\AGS_SDK\ags_lib\inc;C:\Users\Naalf\Documents\Ashes\external;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer;C:\Users\Naalf\Documents\Ashes\source\ashes;C:\Users\Naalf\Documents\Ashes\include\ashes;C:\Users\Naalf\Documents\Ashes\source\ashes\renderer;C:\Users\Naalf\Documents\Ashes\external\Vulkan-Headers\include;C:\Users\Naalf\Documents\Ashes\external\spirv_cross;C:\Users\Naalf\Documents\Ashes\include;C:\Users\Naalf\Documents\Ashes\external\AGS_SDK\ags_lib\inc;C:\Users\Naalf\Documents\Ashes\external;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PreBuildEvent>
+      <Message></Message>
+      <Command>setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different     C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/ashesXBoxRenderer_icd.json.debug C:/Users/Naalf/Documents/Ashes/binaries/x64/Debug/bin/ashesXBoxRendererd_icd.json
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PreBuildEvent>
+    <Link>
+      <AdditionalDependencies>..\..\..\..\binaries\x64\Debug\lib\ashesRendererCommond.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;..\..\..\..\external\AGS_SDK\ags_lib\lib\amd_ags_x64_2017_MDd.lib;..\..\..\..\binaries\x64\Debug\lib\ashesd-1.lib;..\..\..\..\binaries\x64\Debug\lib\ashesSpirVCrossd.lib;..\..\..\..\binaries\x64\Debug\lib\ashesCommond.lib;WindowsApp.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64 /IGNORE:4099</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/Naalf/Documents/Ashes/binaries/x64/Debug/lib/ashesXBoxRendererd.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/Naalf/Documents/Ashes/binaries/x64/Debug/bin/ashesXBoxRendererd.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer;C:\Users\Naalf\Documents\Ashes\source\ashes;C:\Users\Naalf\Documents\Ashes\include\ashes;C:\Users\Naalf\Documents\Ashes\source\ashes\renderer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "C:/Users/Naalf/Documents/Ashes/external/Vulkan-Headers/include" /external:I "C:/Users/Naalf/Documents/Ashes/external/spirv_cross" /external:I "C:/Users/Naalf/Documents/Ashes/include" /external:I "C:/Users/Naalf/Documents/Ashes/external/AGS_SDK/ags_lib/inc" /external:I "C:/Users/Naalf/Documents/Ashes/external" /utf-8</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <ConformanceMode>true</ConformanceMode>
+      <DisableSpecificWarnings>4619;4061;4068;4100;4263;4264;4266;4505;4571;4623;4625;4626;4866;4868;5045;5246;4355;4514;4548;4668;4710;4711;4774;4820;5026;5027;5039;5220;5264;4599</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/ashesXBoxRenderer.dir/Release/cmake_pch.pch</PrecompiledHeaderOutputFile>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;UNICODE;_UNICODE;NDEBUG;XBoxRenderer_USE_SPIRV_CROSS=1;XBoxRenderer_EXPORTS;ASHES_XBox_USE_AMD_AGS;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;NOMINMAX;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_ENFORCE_MATCHING_ALLOCATORS=0;VK_ENABLE_BETA_EXTENSIONS;Ashes_UWP;CMAKE_INTDIR="Release";ashesXBoxRenderer_EXPORTS</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;UNICODE;_UNICODE;NDEBUG;XBoxRenderer_USE_SPIRV_CROSS=1;XBoxRenderer_EXPORTS;ASHES_XBox_USE_AMD_AGS;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;NOMINMAX;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_ENFORCE_MATCHING_ALLOCATORS=0;VK_ENABLE_BETA_EXTENSIONS;Ashes_UWP;CMAKE_INTDIR=\"Release\";ashesXBoxRenderer_EXPORTS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer;C:\Users\Naalf\Documents\Ashes\source\ashes;C:\Users\Naalf\Documents\Ashes\include\ashes;C:\Users\Naalf\Documents\Ashes\source\ashes\renderer;C:\Users\Naalf\Documents\Ashes\external\Vulkan-Headers\include;C:\Users\Naalf\Documents\Ashes\external\spirv_cross;C:\Users\Naalf\Documents\Ashes\include;C:\Users\Naalf\Documents\Ashes\external\AGS_SDK\ags_lib\inc;C:\Users\Naalf\Documents\Ashes\external;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer;C:\Users\Naalf\Documents\Ashes\source\ashes;C:\Users\Naalf\Documents\Ashes\include\ashes;C:\Users\Naalf\Documents\Ashes\source\ashes\renderer;C:\Users\Naalf\Documents\Ashes\external\Vulkan-Headers\include;C:\Users\Naalf\Documents\Ashes\external\spirv_cross;C:\Users\Naalf\Documents\Ashes\include;C:\Users\Naalf\Documents\Ashes\external\AGS_SDK\ags_lib\inc;C:\Users\Naalf\Documents\Ashes\external;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PreBuildEvent>
+      <Message></Message>
+      <Command>setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/ashesXBoxRenderer_icd.json.release C:/Users/Naalf/Documents/Ashes/binaries/x64/Release/bin/ashesXBoxRenderer_icd.json    
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PreBuildEvent>
+    <Link>
+      <AdditionalDependencies>..\..\..\..\binaries\x64\Release\lib\ashesRendererCommon.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;..\..\..\..\external\AGS_SDK\ags_lib\lib\amd_ags_x64_2017_MD.lib;..\..\..\..\binaries\x64\Release\lib\ashes-1.lib;..\..\..\..\binaries\x64\Release\lib\ashesSpirVCross.lib;..\..\..\..\binaries\x64\Release\lib\ashesCommon.lib;WindowsApp.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64 /IGNORE:4099</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/Naalf/Documents/Ashes/binaries/x64/Release/lib/ashesXBoxRenderer.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/Naalf/Documents/Ashes/binaries/x64/Release/bin/ashesXBoxRenderer.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer;C:\Users\Naalf\Documents\Ashes\source\ashes;C:\Users\Naalf\Documents\Ashes\include\ashes;C:\Users\Naalf\Documents\Ashes\source\ashes\renderer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "C:/Users/Naalf/Documents/Ashes/external/Vulkan-Headers/include" /external:I "C:/Users/Naalf/Documents/Ashes/external/spirv_cross" /external:I "C:/Users/Naalf/Documents/Ashes/include" /external:I "C:/Users/Naalf/Documents/Ashes/external/AGS_SDK/ags_lib/inc" /external:I "C:/Users/Naalf/Documents/Ashes/external" /utf-8</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <ConformanceMode>true</ConformanceMode>
+      <DisableSpecificWarnings>4619;4061;4068;4100;4263;4264;4266;4505;4571;4623;4625;4626;4866;4868;5045;5246;4355;4514;4548;4668;4710;4711;4774;4820;5026;5027;5039;5220;5264;4599</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.pch</PrecompiledHeaderOutputFile>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;UNICODE;_UNICODE;NDEBUG;XBoxRenderer_USE_SPIRV_CROSS=1;XBoxRenderer_EXPORTS;ASHES_XBox_USE_AMD_AGS;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;NOMINMAX;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_ENFORCE_MATCHING_ALLOCATORS=0;VK_ENABLE_BETA_EXTENSIONS;Ashes_UWP;CMAKE_INTDIR="MinSizeRel";ashesXBoxRenderer_EXPORTS</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;UNICODE;_UNICODE;NDEBUG;XBoxRenderer_USE_SPIRV_CROSS=1;XBoxRenderer_EXPORTS;ASHES_XBox_USE_AMD_AGS;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;NOMINMAX;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_ENFORCE_MATCHING_ALLOCATORS=0;VK_ENABLE_BETA_EXTENSIONS;Ashes_UWP;CMAKE_INTDIR=\"MinSizeRel\";ashesXBoxRenderer_EXPORTS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer;C:\Users\Naalf\Documents\Ashes\source\ashes;C:\Users\Naalf\Documents\Ashes\include\ashes;C:\Users\Naalf\Documents\Ashes\source\ashes\renderer;C:\Users\Naalf\Documents\Ashes\external\Vulkan-Headers\include;C:\Users\Naalf\Documents\Ashes\external\spirv_cross;C:\Users\Naalf\Documents\Ashes\include;C:\Users\Naalf\Documents\Ashes\external\AGS_SDK\ags_lib\inc;C:\Users\Naalf\Documents\Ashes\external;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer;C:\Users\Naalf\Documents\Ashes\source\ashes;C:\Users\Naalf\Documents\Ashes\include\ashes;C:\Users\Naalf\Documents\Ashes\source\ashes\renderer;C:\Users\Naalf\Documents\Ashes\external\Vulkan-Headers\include;C:\Users\Naalf\Documents\Ashes\external\spirv_cross;C:\Users\Naalf\Documents\Ashes\include;C:\Users\Naalf\Documents\Ashes\external\AGS_SDK\ags_lib\inc;C:\Users\Naalf\Documents\Ashes\external;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PreBuildEvent>
+      <Message></Message>
+      <Command>setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different      
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PreBuildEvent>
+    <Link>
+      <AdditionalDependencies>..\RendererCommon\MinSizeRel\ashesRendererCommon.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;..\..\..\..\external\AGS_SDK\ags_lib\lib\amd_ags_x64_2017_MD.lib;..\..\MinSizeRel\ashes.lib;..\RendererCommon\MinSizeRel\ashesSpirVCross.lib;..\..\common\MinSizeRel\ashesCommon.lib;WindowsApp.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64 /IGNORE:4099</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/MinSizeRel/ashesXBoxRenderer.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/MinSizeRel/ashesXBoxRenderer.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer;C:\Users\Naalf\Documents\Ashes\source\ashes;C:\Users\Naalf\Documents\Ashes\include\ashes;C:\Users\Naalf\Documents\Ashes\source\ashes\renderer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "C:/Users/Naalf/Documents/Ashes/external/Vulkan-Headers/include" /external:I "C:/Users/Naalf/Documents/Ashes/external/spirv_cross" /external:I "C:/Users/Naalf/Documents/Ashes/include" /external:I "C:/Users/Naalf/Documents/Ashes/external/AGS_SDK/ags_lib/inc" /external:I "C:/Users/Naalf/Documents/Ashes/external" /utf-8</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <ConformanceMode>true</ConformanceMode>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4619;4061;4068;4100;4263;4264;4266;4505;4571;4623;4625;4626;4866;4868;5045;5246;4355;4514;4548;4668;4710;4711;4774;4820;5026;5027;5039;5220;5264;4599</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.pch</PrecompiledHeaderOutputFile>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;UNICODE;_UNICODE;NDEBUG;XBoxRenderer_USE_SPIRV_CROSS=1;XBoxRenderer_EXPORTS;ASHES_XBox_USE_AMD_AGS;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;NOMINMAX;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_ENFORCE_MATCHING_ALLOCATORS=0;VK_ENABLE_BETA_EXTENSIONS;Ashes_UWP;CMAKE_INTDIR="RelWithDebInfo";ashesXBoxRenderer_EXPORTS</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;UNICODE;_UNICODE;NDEBUG;XBoxRenderer_USE_SPIRV_CROSS=1;XBoxRenderer_EXPORTS;ASHES_XBox_USE_AMD_AGS;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;NOMINMAX;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_ENFORCE_MATCHING_ALLOCATORS=0;VK_ENABLE_BETA_EXTENSIONS;Ashes_UWP;CMAKE_INTDIR=\"RelWithDebInfo\";ashesXBoxRenderer_EXPORTS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer;C:\Users\Naalf\Documents\Ashes\source\ashes;C:\Users\Naalf\Documents\Ashes\include\ashes;C:\Users\Naalf\Documents\Ashes\source\ashes\renderer;C:\Users\Naalf\Documents\Ashes\external\Vulkan-Headers\include;C:\Users\Naalf\Documents\Ashes\external\spirv_cross;C:\Users\Naalf\Documents\Ashes\include;C:\Users\Naalf\Documents\Ashes\external\AGS_SDK\ags_lib\inc;C:\Users\Naalf\Documents\Ashes\external;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer;C:\Users\Naalf\Documents\Ashes\source\ashes;C:\Users\Naalf\Documents\Ashes\include\ashes;C:\Users\Naalf\Documents\Ashes\source\ashes\renderer;C:\Users\Naalf\Documents\Ashes\external\Vulkan-Headers\include;C:\Users\Naalf\Documents\Ashes\external\spirv_cross;C:\Users\Naalf\Documents\Ashes\include;C:\Users\Naalf\Documents\Ashes\external\AGS_SDK\ags_lib\inc;C:\Users\Naalf\Documents\Ashes\external;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <PreBuildEvent>
+      <Message></Message>
+      <Command>setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different   C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/ashesXBoxRenderer_icd.json.relwithdebinfo C:/Users/Naalf/Documents/Ashes/binaries/x64/RelWithDebInfo/bin/ashesXBoxRenderer_icd.json  
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+    </PreBuildEvent>
+    <Link>
+      <AdditionalDependencies>..\..\..\..\binaries\x64\RelWithDebInfo\lib\ashesRendererCommon.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;..\..\..\..\external\AGS_SDK\ags_lib\lib\amd_ags_x64_2017_MD.lib;..\..\..\..\binaries\x64\RelWithDebInfo\lib\ashes-1.lib;..\..\..\..\binaries\x64\RelWithDebInfo\lib\ashesSpirVCross.lib;..\..\..\..\binaries\x64\RelWithDebInfo\lib\ashesCommon.lib;WindowsApp.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64 /IGNORE:4099</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/Naalf/Documents/Ashes/binaries/x64/RelWithDebInfo/lib/ashesXBoxRenderer.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/Naalf/Documents/Ashes/binaries/x64/RelWithDebInfo/bin/ashesXBoxRenderer.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Naalf/Documents/Ashes -BC:/Users/Naalf/Documents/Ashes --check-stamp-file C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-3.31\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindPackageMessage.cmake;C:\Users\Naalf\Documents\Ashes\CMake\Modules\FindNVAPI.cmake;C:\Users\Naalf\Documents\Ashes\source\ashes\ashes_icd.json.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Naalf/Documents/Ashes -BC:/Users/Naalf/Documents/Ashes --check-stamp-file C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-3.31\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindPackageMessage.cmake;C:\Users\Naalf\Documents\Ashes\CMake\Modules\FindNVAPI.cmake;C:\Users\Naalf\Documents\Ashes\source\ashes\ashes_icd.json.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Naalf/Documents/Ashes -BC:/Users/Naalf/Documents/Ashes --check-stamp-file C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files\CMake\share\cmake-3.31\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindPackageMessage.cmake;C:\Users\Naalf\Documents\Ashes\CMake\Modules\FindNVAPI.cmake;C:\Users\Naalf\Documents\Ashes\source\ashes\ashes_icd.json.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Naalf/Documents/Ashes -BC:/Users/Naalf/Documents/Ashes --check-stamp-file C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files\CMake\share\cmake-3.31\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\FindPackageMessage.cmake;C:\Users\Naalf\Documents\Ashes\CMake\Modules\FindNVAPI.cmake;C:\Users\Naalf\Documents\Ashes\source\ashes\ashes_icd.json.in;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\CMakeFiles\ashesXBoxRenderer.dir\cmake_pch.cxx">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/ashesXBoxRenderer.dir/Debug/cmake_pch.pch</PrecompiledHeaderOutputFile>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/ashesXBoxRenderer.dir/Release/cmake_pch.pch</PrecompiledHeaderOutputFile>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.pch</PrecompiledHeaderOutputFile>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\ash_xbox.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\XBoxRendererPch.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\XBoxRendererPrerequisites.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Buffer\XBoxBuffer.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Buffer\XBoxBufferView.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\XBoxCommandBuffer.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\XBoxCommandPool.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\XBoxQueue.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxCommandBase.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBeginQueryCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBeginRenderPassCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBeginSubpassCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBindComputePipelineCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBindDescriptorSetCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBindIndexBufferCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBindPipelineCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBindVertexBuffersCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBlitImageCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxClearAttachmentsCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxClearColourCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxClearDepthStencilCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxCopyBufferCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxCopyBufferToImageCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxCopyImageCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxCopyImageToBufferCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxCopyQueryPoolResultsCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDispatchCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDispatchIndirectCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDownloadMemoryCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDrawCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDrawIndexedCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDrawIndexedIndirectCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDrawIndirectCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxEndQueryCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxEndRenderPassCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxEndSubpassCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxExecuteActionsCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxExecuteCommandsCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxFillBufferCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxGenerateMipsCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxMemoryBarrierCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxPushConstantsCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxResetEventCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxResetQueryPoolCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxResolveImageCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxScissorCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxSetDepthBiasCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxSetEventCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxSetLineWidthCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxUpdateBufferCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxUploadMemoryCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxViewportCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxWaitEventsCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxWriteTimestampCommand.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxDebugReportCallback.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxDevice.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxDeviceContextLock.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxDisplay.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxDisplayMode.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxInstance.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxLayer.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxPhysicalDevice.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxSurface.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxSwapChain.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Descriptor\XBoxDescriptorPool.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Descriptor\XBoxDescriptorSet.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Descriptor\XBoxDescriptorSetLayout.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Descriptor\XBoxWriteDescriptorSet.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxBlendFactor.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxBlendOp.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxBufferTarget.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxCompareOp.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxCullModeFlag.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxFilter.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxFormat.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxImageUsageFlag.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxIndexType.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxMemoryMapFlag.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxMemoryPropertyFlag.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxPolygonMode.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxPrimitiveTopology.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxStencilOp.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxVertexInputRate.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Image\XBoxImage.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Image\XBoxImageView.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Image\XBoxSampler.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Miscellaneous\XBoxDeviceMemory.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Miscellaneous\XBoxQueryPool.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxColourBlendState.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxComputePipeline.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxDepthStencilState.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxDynamicStates.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxPipeline.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxPipelineCache.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxPipelineLayout.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxRasterisationState.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxScissor.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxSpecialisationInfo.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxStencilOpState.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxVertexInputState.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxViewport.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\RenderPass\XBoxFrameBuffer.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\RenderPass\XBoxRenderPass.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Shader\XBoxShaderModule.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Sync\XBoxEvent.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Sync\XBoxFence.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Sync\XBoxSemaphore.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/MinSizeRel/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/Naalf/Documents/Ashes/source/ashes/renderer/XBoxRenderer/CMakeFiles/ashesXBoxRenderer.dir/RelWithDebInfo/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\ashesxbox_api.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\XBoxRendererPch.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\XBoxRendererPrerequisites.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Buffer\XBoxBuffer.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Buffer\XBoxBufferView.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\XBoxCommandBuffer.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\XBoxCommandPool.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\XBoxQueue.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxCommandBase.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBeginQueryCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBeginRenderPassCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBeginSubpassCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBindComputePipelineCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBindDescriptorSetCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBindIndexBufferCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBindPipelineCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBindVertexBuffersCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxBlitImageCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxClearAttachmentsCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxClearColourCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxClearDepthStencilCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxCopyBufferCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxCopyBufferToImageCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxCopyImageCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxCopyImageToBufferCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxCopyQueryPoolResultsCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDispatchCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDispatchIndirectCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDownloadMemoryCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDrawCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDrawIndexedCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDrawIndexedIndirectCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxDrawIndirectCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxEndQueryCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxEndRenderPassCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxEndSubpassCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxExecuteActionsCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxExecuteCommandsCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxFillBufferCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxGenerateMipsCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxMemoryBarrierCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxPushConstantsCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxResetEventCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxResetQueryPoolCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxResolveImageCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxScissorCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxSetDepthBiasCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxSetEventCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxSetLineWidthCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxUpdateBufferCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxUploadMemoryCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxViewportCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxWaitEventsCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Command\Commands\XBoxWriteTimestampCommand.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxDebugReportCallback.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxDevice.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxDeviceContextLock.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxDisplay.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxDisplayMode.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxDummyIndexBuffer.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxInstance.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxLayer.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxPhysicalDevice.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxSurface.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Core\XBoxSwapChain.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Descriptor\XBoxDescriptorPool.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Descriptor\XBoxDescriptorSet.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Descriptor\XBoxDescriptorSetLayout.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Descriptor\XBoxWriteDescriptorSet.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxBlendFactor.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxBlendOp.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxBufferTarget.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxCompareOp.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxCullModeFlag.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxFilter.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxFormat.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxImageUsageFlag.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxIndexType.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxMemoryMapFlag.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxMemoryPropertyFlag.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxPolygonMode.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxPrimitiveTopology.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxStencilOp.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Enum\XBoxVertexInputRate.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Image\XBoxImage.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Image\XBoxImageView.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Image\XBoxSampler.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Miscellaneous\XBoxDeviceMemory.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Miscellaneous\XBoxQueryPool.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxColourBlendState.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxComputePipeline.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxDepthStencilState.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxDynamicStates.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxPipeline.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxPipelineCache.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxPipelineLayout.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxRasterisationState.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxScissor.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxSpecialisationInfo.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxStencilOpState.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxVertexInputState.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Pipeline\XBoxViewport.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\RenderPass\XBoxFrameBuffer.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\RenderPass\XBoxRenderPass.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Shader\XBoxShaderDesc.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Shader\XBoxShaderModule.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Sync\XBoxEvent.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Sync\XBoxFence.hpp" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\Sync\XBoxSemaphore.hpp" />
+    <Natvis Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\XBoxRenderer.natvis">
+    </Natvis>
+    <None Include="C:\Users\Naalf\Documents\Ashes\.editorconfig">
+    </None>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\CMakeFiles\ashesXBoxRenderer.dir\Debug\cmake_pch.hxx" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\CMakeFiles\ashesXBoxRenderer.dir\Release\cmake_pch.hxx" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\CMakeFiles\ashesXBoxRenderer.dir\MinSizeRel\cmake_pch.hxx" />
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\XBoxRenderer\CMakeFiles\ashesXBoxRenderer.dir\RelWithDebInfo\cmake_pch.hxx" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="C:\Users\Naalf\Documents\Ashes\ZERO_CHECK.vcxproj">
+      <Project>{6AD343A2-E4FD-37F9-A97A-E8B6DB3CA05E}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\Naalf\Documents\Ashes\source\ashes\ashes.vcxproj">
+      <Project>{1A003152-354F-3127-A4BF-E0777A510087}</Project>
+      <Name>ashes</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\Naalf\Documents\Ashes\source\ashes\common\ashesCommon.vcxproj">
+      <Project>{D67A1CC0-DD53-363A-ABBD-0E1B6B4504BF}</Project>
+      <Name>ashesCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\RendererCommon\ashesRendererCommon.vcxproj">
+      <Project>{F0010EF4-D9CE-3064-B3CB-C18BA513DD9E}</Project>
+      <Name>ashesRendererCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\RendererCommon\ashesSpirVCross.vcxproj">
+      <Project>{228E4A3E-5B44-3306-9320-2CDF9C2B3618}</Project>
+      <Name>ashesSpirVCross</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

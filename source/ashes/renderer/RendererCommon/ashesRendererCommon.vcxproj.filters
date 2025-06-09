@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\RendererCommon\AshesRendererPrerequisites.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\RendererCommon\IcdObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\RendererCommon\InlineUniformBlocks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\RendererCommon\ShaderBindings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\RendererCommon\AshesRendererPrerequisites.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\RendererCommon\IcdObject.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\RendererCommon\InlineUniformBlocks.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\RendererCommon\ShaderBindings.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\RendererCommon\Helper\ColourBlendState.hpp">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\RendererCommon\Helper\ColourBlendStateAttachment.hpp">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\RendererCommon\Helper\ConstantFormat.hpp">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\RendererCommon\Helper\DepthStencilState.hpp">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\RendererCommon\Helper\DynamicState.hpp">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\RendererCommon\Helper\InputAssemblyState.hpp">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\RendererCommon\Helper\MultisampleState.hpp">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\RendererCommon\Helper\RasterisationState.hpp">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\RendererCommon\Helper\ShaderStageState.hpp">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\RendererCommon\Helper\StencilOpState.hpp">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\RendererCommon\Helper\TessellationState.hpp">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\RendererCommon\Helper\VertexInputState.hpp">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\RendererCommon\Helper\ViewportState.hpp">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Naalf\Documents\Ashes\source\ashes\renderer\RendererCommon\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\Naalf\Documents\Ashes\.editorconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{B6CAD37E-94FB-3989-8C92-8ACD62975A64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Helper">
+      <UniqueIdentifier>{61CE3863-C612-359C-BAC4-C11EF5420281}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{DF4F2EBD-25F1-3CA7-96ED-A0A308FD2F4A}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
