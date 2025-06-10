@@ -365,18 +365,38 @@ namespace ashes::gl
 		, PFNGLDEBUGPROC callback
 		, void * userParam )const
 	{
-		auto context = ContextLock{ *m_context };
-
-		if ( context->hasDebugMessageCallback() )
+		if ( m_context )
 		{
-			m_debugMessengers.push_back( { messenger, callback, userParam } );
-			glLogCall( context
-				, glDebugMessageCallback
-				, callback
-				, userParam );
-			glLogCall( context
-				, glEnable
-				, GL_DEBUG_OUTPUT_SYNC );
+			auto context = ContextLock{ *m_context };
+
+			if ( context->hasDebugMessageCallback() )
+			{
+				m_debugMessengers.push_back( { messenger, callback, userParam } );
+				glLogCall( context
+					, glDebugMessageCallback
+					, callback
+					, userParam );
+				glLogCall( context
+					, glEnable
+					, GL_DEBUG_OUTPUT_SYNC );
+			}
+		}
+
+		for ( auto surface : m_surfaces )
+		{
+			auto context = get( surface )->getContext();
+
+			if ( context->hasDebugMessageCallback() )
+			{
+				m_debugMessengers.push_back( { messenger, callback, userParam } );
+				glLogCall( context
+					, glDebugMessageCallback
+					, callback
+					, userParam );
+				glLogCall( context
+					, glEnable
+					, GL_DEBUG_OUTPUT_SYNC );
+			}
 		}
 	}
 
@@ -384,18 +404,38 @@ namespace ashes::gl
 		, PFNGLDEBUGAMDPROC callback
 		, void * userParam )const
 	{
-		auto context = ContextLock{ *m_context };
-
-		if ( context->hasDebugMessageCallbackAMD() )
+		if ( m_context )
 		{
-			m_debugAMDMessengers.push_back( { messenger, callback, userParam } );
-			glLogCall( context
-				, glDebugMessageCallbackAMD
-				, callback
-				, userParam );
-			glLogCall( context
-				, glEnable
-				, GL_DEBUG_OUTPUT_SYNC );
+			auto context = ContextLock{ *m_context };
+
+			if ( context->hasDebugMessageCallbackAMD() )
+			{
+				m_debugAMDMessengers.push_back( { messenger, callback, userParam } );
+				glLogCall( context
+					, glDebugMessageCallbackAMD
+					, callback
+					, userParam );
+				glLogCall( context
+					, glEnable
+					, GL_DEBUG_OUTPUT_SYNC );
+			}
+		}
+
+		for ( auto surface : m_surfaces )
+		{
+			auto context = get( surface )->getContext();
+
+			if ( context->hasDebugMessageCallbackAMD() )
+			{
+				m_debugAMDMessengers.push_back( { messenger, callback, userParam } );
+				glLogCall( context
+					, glDebugMessageCallbackAMD
+					, callback
+					, userParam );
+				glLogCall( context
+					, glEnable
+					, GL_DEBUG_OUTPUT_SYNC );
+			}
 		}
 	}
 
@@ -427,18 +467,38 @@ namespace ashes::gl
 		, PFNGLDEBUGPROC callback
 		, void * userParam )const
 	{
-		auto context = ContextLock{ *m_context };
-
-		if ( context->m_glDebugMessageCallback )
+		if ( m_context )
 		{
-			m_debugCallbacks.push_back( { report, callback, userParam } );
-			glLogCall( context
-				, glDebugMessageCallback
-				, callback
-				, userParam );
-			glLogCall( context
-				, glEnable
-				, GL_DEBUG_OUTPUT_SYNC );
+			auto context = ContextLock{ *m_context };
+
+			if ( context->m_glDebugMessageCallback )
+			{
+				m_debugCallbacks.push_back( { report, callback, userParam } );
+				glLogCall( context
+					, glDebugMessageCallback
+					, callback
+					, userParam );
+				glLogCall( context
+					, glEnable
+					, GL_DEBUG_OUTPUT_SYNC );
+			}
+		}
+
+		for ( auto surface : m_surfaces )
+		{
+			auto context = get( surface )->getContext();
+
+			if ( context->m_glDebugMessageCallback )
+			{
+				m_debugCallbacks.push_back( { report, callback, userParam } );
+				glLogCall( context
+					, glDebugMessageCallback
+					, callback
+					, userParam );
+				glLogCall( context
+					, glEnable
+					, GL_DEBUG_OUTPUT_SYNC );
+			}
 		}
 	}
 
@@ -446,18 +506,38 @@ namespace ashes::gl
 		, PFNGLDEBUGAMDPROC callback
 		, void * userParam )const
 	{
-		auto context = ContextLock{ *m_context };
-
-		if ( context->m_glDebugMessageCallbackAMD )
+		if ( m_context )
 		{
-			m_debugAMDCallbacks.push_back( { report, callback, userParam } );
-			glLogCall( context
-				, glDebugMessageCallbackAMD
-				, callback
-				, userParam );
-			glLogCall( context
-				, glEnable
-				, GL_DEBUG_OUTPUT_SYNC );
+			auto context = ContextLock{ *m_context };
+
+			if ( context->m_glDebugMessageCallbackAMD )
+			{
+				m_debugAMDCallbacks.push_back( { report, callback, userParam } );
+				glLogCall( context
+					, glDebugMessageCallbackAMD
+					, callback
+					, userParam );
+				glLogCall( context
+					, glEnable
+					, GL_DEBUG_OUTPUT_SYNC );
+			}
+		}
+
+		for ( auto surface : m_surfaces )
+		{
+			auto context = get( surface )->getContext();
+
+			if ( context->m_glDebugMessageCallbackAMD )
+			{
+				m_debugAMDCallbacks.push_back( { report, callback, userParam } );
+				glLogCall( context
+					, glDebugMessageCallbackAMD
+					, callback
+					, userParam );
+				glLogCall( context
+					, glEnable
+					, GL_DEBUG_OUTPUT_SYNC );
+			}
 		}
 	}
 

@@ -547,8 +547,7 @@ namespace ashes::D3D11_NAMESPACE
 				std::stringstream stream;
 				stream << reinterpret_cast< char * >( errors->GetBufferPointer() ) << std::endl;
 				stream << m_source << std::endl;
-				reportWarning( shaderModule
-					, VK_ERROR_VALIDATION_FAILED_EXT
+				reportInfo( shaderModule
 					, "Shader compilation succeeded with messages"
 					, stream.str() );
 			}
