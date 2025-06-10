@@ -302,17 +302,19 @@ namespace ashes::D3D11_NAMESPACE
 	}
 
 	template< typename VkObject >
-	inline void reportError( VkObject object
-		, VkResult result
+	inline void reportMessage( VkObject object
 		, std::string const & errorName
-		, std::string const & name )
-	{
-		VkInstance instance = object
-			? getInstance( object )
-			: nullptr;
-
+		, std::string const & name
 #if VK_EXT_debug_utils
-		if ( instance )
+		, VkDebugUtilsMessageSeverityFlagBitsEXT severity
+#endif
+#if VK_EXT_debug_report
+		, VkDebugReportFlagBitsEXT report
+#endif
+		, VkResult result )
+	{
+		VkInstance instance = getInstance( object );
+#if VK_EXT_debug_utils
 		{
 			VkDebugUtilsObjectNameInfoEXT info
 			{
@@ -322,7 +324,7 @@ namespace ashes::D3D11_NAMESPACE
 				uint64_t( object ),
 				ashes::VkTypeTraits< VkObject >::getName().c_str(),
 			};
-			get( instance )->submitDebugUtilsMessenger( VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
+			get( instance )->submitDebugUtilsMessenger( severity
 				, VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
 				, {
 					VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT,
@@ -341,10 +343,9 @@ namespace ashes::D3D11_NAMESPACE
 		}
 #endif
 #if VK_EXT_debug_report
-		if ( instance )
 		{
 			std::string text = errorName + ": " + name;
-			get( instance )->reportMessage( VK_DEBUG_REPORT_ERROR_BIT_EXT
+			get( instance )->reportMessage( report
 				, ashes::VkTypeTraits< VkObject >::ReportValue
 				, uint64_t( object )
 				, 0u
@@ -356,52 +357,49 @@ namespace ashes::D3D11_NAMESPACE
 	}
 
 	template< typename VkObject >
-	inline void reportWarning( VkObject object
+	inline void reportError( VkObject object
 		, VkResult result
 		, std::string const & errorName
 		, std::string const & name )
 	{
-		VkInstance instance = getInstance( object );
+		reportMessage( object, errorName, name
 #if VK_EXT_debug_utils
-		{
-			VkDebugUtilsObjectNameInfoEXT info
-			{
-				VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
-				nullptr,
-				ashes::VkTypeTraits< VkObject >::UtilsValue,
-				uint64_t( object ),
-				ashes::VkTypeTraits< VkObject >::getName().c_str(),
-			};
-			get( instance )->submitDebugUtilsMessenger( VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
-				, VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
-				, {
-					VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT,
-					nullptr,
-					0u,
-					errorName.c_str(),
-					result,
-					name.c_str(),
-					0u,
-					nullptr,
-					0u,
-					nullptr,
-					1u,
-					& info,
-				} );
-		}
+			, VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
 #endif
 #if VK_EXT_debug_report
-		{
-			std::string text = errorName + ": " + name;
-			get( instance )->reportMessage( VK_DEBUG_REPORT_WARNING_BIT_EXT
-				, ashes::VkTypeTraits< VkObject >::ReportValue
-				, uint64_t( object )
-				, 0u
-				, result
-				, "Direct3D 11"
-				, text.c_str() );
-		}
+			, VK_DEBUG_REPORT_ERROR_BIT_EXT
 #endif
+			, result );
+	}
+
+	template< typename VkObject >
+	inline void reportWarning( VkObject object
+		, std::string const & errorName
+		, std::string const & name )
+	{
+		reportMessage( object, errorName, name
+#if VK_EXT_debug_utils
+			, VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
+#endif
+#if VK_EXT_debug_report
+			, VK_DEBUG_REPORT_WARNING_BIT_EXT
+#endif
+			, VK_SUCCESS );
+	}
+
+	template< typename VkObject >
+	inline void reportInfo( VkObject object
+		, std::string const & errorName
+		, std::string const & name )
+	{
+		reportMessage( object, errorName, name
+#if VK_EXT_debug_utils
+			, VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT
+#endif
+#if VK_EXT_debug_report
+			, VK_DEBUG_REPORT_INFORMATION_BIT_EXT
+#endif
+			, VK_SUCCESS );
 	}
 
 	template< typename VkObject >

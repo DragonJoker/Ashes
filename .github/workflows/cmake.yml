@@ -164,13 +164,13 @@ jobs:
       shell: bash
       run: |
         cmake --install . --config ${{ matrix.buildType }}|
-        7z a $GITHUB_WORKSPACE/Ashes-${{ matrix.os[1] }}.zip $GITHUB_WORKSPACE/package/ashes/
+        7z a $GITHUB_WORKSPACE/Ashes-${{ matrix.os[1] }}-gcc.zip $GITHUB_WORKSPACE/package/ashes/
     - name: Upload package
       if: github.event_name == 'push'
       uses: actions/upload-artifact@v4
       with:
-        name: Ashes-${{ matrix.os[1] }}.zip
-        path: ${{ github.workspace }}/Ashes-${{ matrix.os[1] }}.zip
+        name: Ashes-${{ matrix.os[1] }}-gcc.zip
+        path: ${{ github.workspace }}/Ashes-${{ matrix.os[1] }}-gcc.zip
 
   build-linux-clang:
     strategy:
@@ -224,10 +224,10 @@ jobs:
       shell: bash
       run: |
         cmake --install . --config ${{ matrix.buildType }}|
-        7z a $GITHUB_WORKSPACE/Ashes-${{ matrix.os[1] }}.zip $GITHUB_WORKSPACE/package/ashes/
+        7z a $GITHUB_WORKSPACE/Ashes-${{ matrix.os[1] }}-clang.zip $GITHUB_WORKSPACE/package/ashes/
     - name: Upload package
       if: github.event_name == 'push'
       uses: actions/upload-artifact@v4
       with:
-        name: Ashes-${{ matrix.os[1] }}.zip
-        path: ${{ github.workspace }}/Ashes-${{ matrix.os[1] }}.zip
+        name: Ashes-${{ matrix.os[1] }}-clang.zip
+        path: ${{ github.workspace }}/Ashes-${{ matrix.os[1] }}-clang.zip
