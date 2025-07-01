@@ -26,7 +26,7 @@ See LICENSE file in root folder.
 
 #include <ashes/common/Exception.hpp>
 
-#pragma warning( disable: 4191 ) // warning C4191: 'reinterpret_cast': unsafe conversion from 'PFN_vkVoidFunction' to ...
+#pragma warning( disable: 4191 )
 
 namespace ashes
 {
@@ -607,17 +607,36 @@ namespace ashes
 
 #endif
 #if VK_EXT_device_fault
-	std::pair< VkDeviceFaultCountsEXT, VkDeviceFaultInfoEXT > Device::getDeviceFaultInfo()const
+	DeviceFaultInfo Device::getDeviceFaultInfo()const
 	{
-		VkDeviceFaultCountsEXT counts{};
-		VkDeviceFaultInfoEXT info{};
+		DeviceFaultInfo result;
 
 		if ( vkGetDeviceFaultInfoEXT )
 		{
+			VkDeviceFaultCountsEXT counts{};
+			vkGetDeviceFaultInfoEXT( m_internal, &counts, nullptr );
+
+			VkDeviceFaultInfoEXT info{};
+			if ( counts.addressInfoCount )
+			{
+				result.addressInfos.resize( counts.addressInfoCount );
+				info.pAddressInfos = result.addressInfos.data();
+			}
+			if ( counts.vendorInfoCount )
+			{
+				result.vendorInfos.resize( counts.vendorInfoCount );
+				info.pVendorInfos = result.vendorInfos.data();
+			}
+			if ( counts.vendorBinarySize )
+			{
+				result.vendorBinaryData.resize( counts.vendorBinarySize );
+				info.pVendorBinaryData = result.vendorBinaryData.data();
+			}
 			vkGetDeviceFaultInfoEXT( m_internal, &counts, &info );
+			result.description = info.description;
 		}
 
-		return { counts, info };
+		return result;
 	}
 #endif
 

@@ -800,6 +800,17 @@ namespace ashes
 	};
 
 #endif
+#if VK_EXT_device_fault
+
+	struct DeviceFaultInfo
+	{
+		std::string description;
+		std::vector< VkDeviceFaultAddressInfoEXT > addressInfos;
+		std::vector< VkDeviceFaultVendorInfoEXT > vendorInfos;
+		std::vector< uint8_t > vendorBinaryData;
+	};
+
+#endif
 
 	/**
 	*\brief
@@ -1476,7 +1487,7 @@ namespace ashes
 		*\brief
 		*	Retrieves device fault info on VK_ERROR_DEVICE_LOST error.
 		*/
-		std::pair< VkDeviceFaultCountsEXT, VkDeviceFaultInfoEXT > getDeviceFaultInfo()const;
+		DeviceFaultInfo getDeviceFaultInfo()const;
 
 #endif
 #if VK_EXT_debug_utils
