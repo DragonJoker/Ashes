@@ -491,6 +491,7 @@ namespace ashes
 		
 		if ( ins )
 		{
+			createInfo.image = m_internal;
 			auto res = m_device->vkCreateImageView( *m_device
 				, &createInfo
 				, m_device->getAllocationCallbacks()
