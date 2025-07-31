@@ -1,29 +1,36 @@
 Ashes
 =====
-Ashes is a drop-in replacement to Vulkan.  
+Ashes is a drop-in replacement or ICD to Vulkan.  
 It allows to write Vulkan code, and to select the rendering API that will be used.  
-  
-It is still a WIP, the library is far from complete!!  
+It also comes with ashespp, a C++ wrapper for Vulkan.  
   
 To build it, you can use CMake.
 
 ## Renderers available
 
 - Vulkan: Ashes is a passthrough, when using Vulkan rendering API, and it has no additional cost if dynamic loader is used.
-- OpenGL 3.X
-- OpenGL 4.X
-- Direct3D 11.
+- OpenGL: From OpenGL 3.3 to OpenGL 4.6 (Core profile), it can be used directly as an ICD.
+- Direct3D 11: From feature level 11.0.
+
+## Supported platforms
+
+- Vulkan Renderer: Windows, Linux, MacOS.
+- OpenGL Renderer: Windows, Linux.
+- Direct3D11 Renderer: Windows.
+- XBox Renderer: XBox.
 
 ## How to use it
 
-Two workflows are possible:
+Three workflows are possible:
 
-### Automatic mode
+### ICD mode
+
+Just set the environment variable VK_ICD_FILENAMES to one of the jsons in Ashes' install dir, and you're done. 
+
+### Drop-in replacement mode
 
 You load Ashes' shared library instead of Vulkan's, and you're done.  
 The API selection will be done on first call of `vkGetInstanceProcAddr` (for dynamic loader), or on first Vulkan API call (for static loader).  
-  
-With this mode, the only change you have to make is the dynamic library's name (ashes.so.1/ashes-1.dll instead of libvulkan.so.1/vulkan-1.dll).
 
 ### Manual mode
 
@@ -49,6 +56,10 @@ typedef struct AshPluginFeatures
 	VkBool32 hasComputeShaders;
 	// Whether or not the plugin supports shader storage buffers.
 	VkBool32 hasStorageBuffers;
+	// Whether or not the plugin supports persistent mapping.
+	VkBool32 supportsPersistentMapping;
+	// The plugin's maximum supported shader language version.
+	uint32_t maxShaderLanguageVersion;
 } AshPluginFeatures;
 
 typedef struct AshPluginSupport
@@ -156,13 +167,27 @@ int main( int argc, char ** argv )
 }
 ```
 
+## Building Ashes from source
+
+Ashes relies on CMake as project generator.
+The easiest way to build it is to use the presets already defined:
+- dev-msvc: Visual Studio build, you need to provide the necessary libraries.
+- dev-ninja-debug, dev-ninja-release]: Ninja build, you need to provide the necessary libraries.
+- dev-vcpkg-msvc: Visual Studio build, using vcpkg to fetch the dependencies.
+- dev-vcpkg-ninja-debug, dev-vcpkg-ninja-release]: Ninja build, using vcpkg to fetch the dependencies.
+
 ## Contact
 
 You can reach me on the Discord server dedicated to my projects: [DragonJoker's Lair](https://discord.gg/yVmaAvQ)
 
+## Validation
+
+Ashes is validated using Sascha Willems' Vulkan examples repository.  
+I've forked it, to be able to test the drivers.
+
 ## Test applications
 
-These applications are used to validate the basic functionalities of the library.
+These applications are used to validate the basic functionalities of the ashespp library.
 
 ### Device creation
 
