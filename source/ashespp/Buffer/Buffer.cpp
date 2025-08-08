@@ -5,6 +5,7 @@ See LICENSE file in root folder.
 #include "ashespp/Buffer/Buffer.hpp"
 
 #include "ashespp/Core/Device.hpp"
+#include "ashespp/Miscellaneous/DeviceMemory.hpp"
 
 #include <ashes/common/Exception.hpp>
 
@@ -49,12 +50,51 @@ namespace ashes
 	{
 	}
 
+	BufferBase::BufferBase( Device const & device
+		, VkBuffer buffer
+		, VkDeviceMemory storage )
+		: BufferBase{ device
+			, buffer
+			, storage
+			, { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO, nullptr, 0u
+				, 0u
+				, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
+				, VK_SHARING_MODE_EXCLUSIVE
+				, 0u, {} } }
+	{
+	}
+
+	BufferBase::BufferBase( Device const & device
+		, VkBuffer buffer
+		, VkDeviceMemory storage
+		, VkBufferCreateInfo createInfo )
+		: BufferBase{ device, "Buffer", buffer, storage, std::move( createInfo ) }
+	{
+	}
+
+	BufferBase::BufferBase( Device const & device
+		, std::string const & debugName
+		, VkBuffer buffer
+		, VkDeviceMemory storage
+		, VkBufferCreateInfo createInfo )
+		: VkObject{ debugName }
+		, m_device{ device }
+		, m_createInfo{ std::move( createInfo ) }
+		, m_internal{ buffer }
+		, m_storage{ std::make_unique< DeviceMemory >( device, debugName, storage ) }
+		, m_ownInternal{ false }
+	{
+	}
+
 	BufferBase::~BufferBase()noexcept
 	{
-		unregisterObject( m_device, *this );
-		m_device.vkDestroyBuffer( m_device
-			, m_internal
-			, m_device.getAllocationCallbacks() );
+		if ( m_ownInternal )
+		{
+			unregisterObject( m_device, *this );
+			m_device.vkDestroyBuffer( m_device
+				, m_internal
+				, m_device.getAllocationCallbacks() );
+		}
 	}
 
 	VkMemoryRequirements BufferBase::getMemoryRequirements()const
