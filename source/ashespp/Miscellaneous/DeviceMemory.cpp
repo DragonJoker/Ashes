@@ -21,6 +21,7 @@ namespace ashes
 		: VkObject{ debugName }
 		, m_device{ device }
 		, m_allocateInfo{ std::move( allocateInfo ) }
+		, m_ownInternal{ true }
 	{
 		DEBUG_DUMP( m_allocateInfo );
 		auto res = m_device.vkAllocateMemory( m_device
@@ -31,12 +32,25 @@ namespace ashes
 		registerObject( m_device, debugName, *this );
 	}
 
+	DeviceMemory::DeviceMemory( Device const & device
+		, std::string const & debugName
+		, VkDeviceMemory memory )
+		: VkObject{ debugName }
+		, m_device{ device }
+		, m_internal{ memory }
+		, m_ownInternal{ false }
+	{
+	}
+
 	DeviceMemory::~DeviceMemory()noexcept
 	{
-		unregisterObject( m_device, *this );
-		m_device.vkFreeMemory( m_device
-			, m_internal
-			, m_device.getAllocationCallbacks() );
+		if ( m_ownInternal )
+		{
+			unregisterObject( m_device, *this );
+			m_device.vkFreeMemory( m_device
+				, m_internal
+				, m_device.getAllocationCallbacks() );
+		}
 	}
 
 	uint8_t * DeviceMemory::lock( VkDeviceSize offset

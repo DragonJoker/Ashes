@@ -25,6 +25,9 @@ namespace ashes
 		DeviceMemory( Device const & device
 			, std::string const & debugName
 			, VkMemoryAllocateInfo allocateInfo );
+		DeviceMemory( Device const & device
+			, std::string const & debugName
+			, VkDeviceMemory memory );
 		~DeviceMemory()noexcept;
 		/**
 		*\brief
@@ -87,8 +90,9 @@ namespace ashes
 
 	private:
 		Device const & m_device;
-		VkMemoryAllocateInfo m_allocateInfo;
+		VkMemoryAllocateInfo m_allocateInfo{};
 		VkDeviceMemory m_internal{};
+		bool m_ownInternal{};
 	};
 }
 

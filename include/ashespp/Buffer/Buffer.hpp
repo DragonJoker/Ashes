@@ -90,6 +90,42 @@ namespace ashes
 			, QueueShare const & sharingMode = {} );
 		/**
 		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] buffer
+		*	The buffer.
+		*/
+		BufferBase( Device const & device
+			, VkBuffer buffer
+			, VkDeviceMemory storage );
+		/**
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] buffer
+		*	The buffer.
+		*/
+		BufferBase( Device const & device
+			, VkBuffer buffer
+			, VkDeviceMemory storage
+			, VkBufferCreateInfo createInfo );
+		/**
+		*\brief
+		*	Constructor.
+		*\param[in] device
+		*	The logical device.
+		*\param[in] buffer
+		*	The buffer.
+		*/
+		BufferBase( Device const & device
+			, std::string const & debugName
+			, VkBuffer buffer
+			, VkDeviceMemory storage
+			, VkBufferCreateInfo createInfo );
+		/**
+		*\brief
 		*	Destructor.
 		*/
 		~BufferBase()noexcept;
@@ -291,6 +327,7 @@ namespace ashes
 		VkBufferCreateInfo m_createInfo;
 		VkBuffer m_internal{};
 		DeviceMemoryPtr m_storage;
+		bool m_ownInternal{ true };
 		mutable VkAccessFlags m_currentAccessFlags{ VK_ACCESS_MEMORY_WRITE_BIT };
 		mutable VkPipelineStageFlags m_compatibleStageFlags{ VK_PIPELINE_STAGE_HOST_BIT };
 	};
