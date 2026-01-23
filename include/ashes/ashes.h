@@ -28,8 +28,11 @@ See LICENSE file in root folder.
 #	ifndef NOMINMAX
 #		define NOMINMAX
 #	endif
+#pragma warning( push )
+#pragma warning( disable: 4865 )
 #	include <Windows.h>
 #	include <vulkan/vulkan_win32.h>
+#pragma warning( pop )
 #elif( __APPLE__ )
 #	include <TargetConditionals.h>
 #	if TARGET_IPHONE_SIMULATOR
