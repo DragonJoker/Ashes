@@ -15,9 +15,9 @@ See LICENSE file in root folder.
 
 namespace utils
 {
-	namespace
+	namespace device
 	{
-		void doInitialiseQueueFamilies( ashes::Surface const & surface
+		static void doInitialiseQueueFamilies( ashes::Surface const & surface
 			, ashes::PhysicalDevice const & gpu
 			, uint32_t & presentQueueFamilyIndex
 			, uint32_t & graphicsQueueFamilyIndex
@@ -94,7 +94,7 @@ namespace utils
 			}
 		}
 
-		ashes::DeviceCreateInfo doGetDeviceCreateInfo( ashes::Instance const & instance
+		static ashes::DeviceCreateInfo doGetDeviceCreateInfo( ashes::Instance const & instance
 			, ashes::Surface const & surface
 			, ashes::PhysicalDevice const & gpu
 			, uint32_t & presentQueueFamilyIndex
@@ -136,7 +136,7 @@ namespace utils
 		, ashes::Surface const & surface )
 		: m_gpu{ surface.getGpu() }
 		, m_memoryProperties{ m_gpu.getMemoryProperties() }
-		, m_createInfos{ doGetDeviceCreateInfo( instance
+		, m_createInfos{ device::doGetDeviceCreateInfo( instance
 			, surface
 			, m_gpu
 			, m_presentQueueFamilyIndex

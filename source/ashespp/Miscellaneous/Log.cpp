@@ -9,9 +9,9 @@
 
 namespace ashes
 {
-	namespace
+	namespace log
 	{
-		void doLog( std::string const & message
+		static void doLog( std::string const & message
 			, bool newLine
 			, std::ostream & stream )
 		{
@@ -26,10 +26,10 @@ namespace ashes
 
 	Logger::Logger()
 		: m_trace{ []( std::string const &, bool ){} }
-		, m_debug{ []( std::string const & msg, bool newLine ){ doLog( msg, newLine, std::clog ); } }
-		, m_info{ []( std::string const & msg, bool newLine ){ doLog( msg, newLine, std::cout ); } }
-		, m_warning{ []( std::string const & msg, bool newLine ){ doLog( msg, newLine, std::cout ); } }
-		, m_error{ []( std::string const & msg, bool newLine ){ doLog( msg, newLine, std::cerr ); } }
+		, m_debug{ []( std::string const & msg, bool newLine ){ log::doLog( msg, newLine, std::clog ); } }
+		, m_info{ []( std::string const & msg, bool newLine ){ log::doLog( msg, newLine, std::cout ); } }
+		, m_warning{ []( std::string const & msg, bool newLine ){ log::doLog( msg, newLine, std::cout ); } }
+		, m_error{ []( std::string const & msg, bool newLine ){ log::doLog( msg, newLine, std::cerr ); } }
 	{
 	}
 

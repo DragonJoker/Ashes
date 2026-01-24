@@ -8,9 +8,9 @@
 
 namespace ashes
 {
-	namespace
+	namespace bindings
 	{
-		void copyBinding( uint32_t key
+		static void copy( uint32_t key
 			, ShaderBindingMap const & srcBindings
 			, ShaderBindingMap & dstBindings )
 		{
@@ -122,27 +122,27 @@ namespace ashes
 
 		if ( isUniformBuffer( binding.descriptorType ) )
 		{
-			copyBinding( key, srcBindings.ubo, dstBindings.ubo );
+			bindings::copy( key, srcBindings.ubo, dstBindings.ubo );
 		}
 		else if ( isStorageBuffer( binding.descriptorType ) )
 		{
-			copyBinding( key, srcBindings.sbo, dstBindings.sbo );
+			bindings::copy( key, srcBindings.sbo, dstBindings.sbo );
 		}
 		else if ( isStorageImage( binding.descriptorType ) )
 		{
-			copyBinding( key, srcBindings.img, dstBindings.img );
+			bindings::copy( key, srcBindings.img, dstBindings.img );
 		}
 		else if ( isSampledImage( binding.descriptorType ) )
 		{
-			copyBinding( key, srcBindings.tex, dstBindings.tex );
+			bindings::copy( key, srcBindings.tex, dstBindings.tex );
 		}
 		else if ( isSamplerBuffer( binding.descriptorType ) )
 		{
-			copyBinding( key, srcBindings.tbo, dstBindings.tbo );
+			bindings::copy( key, srcBindings.tbo, dstBindings.tbo );
 		}
 		else if ( isImageBuffer( binding.descriptorType ) )
 		{
-			copyBinding( key, srcBindings.ibo, dstBindings.ibo );
+			bindings::copy( key, srcBindings.ibo, dstBindings.ibo );
 		}
 	}
 }

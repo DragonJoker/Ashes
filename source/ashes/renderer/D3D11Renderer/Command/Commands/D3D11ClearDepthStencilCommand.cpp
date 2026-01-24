@@ -10,9 +10,9 @@ See LICENSE file in root folder.
 
 namespace ashes::D3D11_NAMESPACE
 {
-	namespace
+	namespace clrds
 	{
-		VkImageViewArray createViews( VkDevice device
+		static VkImageViewArray createViews( VkDevice device
 			, VkImage image
 			, VkImageSubresourceRangeArray ranges )
 		{
@@ -57,7 +57,7 @@ namespace ashes::D3D11_NAMESPACE
 			| ( isStencilFormat( get( image )->getFormat() )
 				? D3D11_CLEAR_STENCIL
 				: 0u ) }
-		, m_views{ createViews( getDevice(), m_image, m_ranges ) }
+		, m_views{ clrds::createViews( getDevice(), m_image, m_ranges ) }
 	{
 	}
 
@@ -67,7 +67,7 @@ namespace ashes::D3D11_NAMESPACE
 		, m_ranges{ rhs.m_ranges }
 		, m_value{ rhs.m_value }
 		, m_flags{ rhs.m_flags }
-		, m_views{ createViews( getDevice(), m_image, m_ranges ) }
+		, m_views{ clrds::createViews( getDevice(), m_image, m_ranges ) }
 	{
 	}
 
@@ -83,7 +83,7 @@ namespace ashes::D3D11_NAMESPACE
 		m_ranges = rhs.m_ranges;
 		m_value = rhs.m_value;
 		m_flags = rhs.m_flags;
-		m_views = createViews( getDevice(), m_image, m_ranges );
+		m_views = clrds::createViews( getDevice(), m_image, m_ranges );
 
 		return *this;
 	}

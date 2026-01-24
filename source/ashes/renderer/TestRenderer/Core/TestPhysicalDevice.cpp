@@ -13,7 +13,7 @@ See LICENSE file in root folder.
 
 namespace ashes::test
 {
-	namespace
+	namespace physdev
 	{
 		inline VkLayerPropertiesArray const LayerProperties{};
 
@@ -59,12 +59,12 @@ namespace ashes::test
 
 	VkLayerPropertiesArray const & PhysicalDevice::enumerateLayerProperties()const noexcept
 	{
-		return LayerProperties;
+		return physdev::LayerProperties;
 	}
 
 	VkExtensionPropertiesArray const & PhysicalDevice::enumerateExtensionProperties()const noexcept
 	{
-		return ExtensionsProperties;
+		return physdev::ExtensionsProperties;
 	}
 
 	VkPhysicalDeviceProperties const & PhysicalDevice::getProperties()const

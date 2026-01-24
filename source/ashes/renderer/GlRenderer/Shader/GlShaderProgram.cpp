@@ -14,9 +14,9 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	namespace
+	namespace shader
 	{
-		ConstantsLayout mergeConstants( VkPipelineShaderStageCreateInfoArray const & stages )
+		static ConstantsLayout mergeConstants( VkPipelineShaderStageCreateInfoArray const & stages )
 		{
 			ConstantsLayout result;
 
@@ -58,7 +58,7 @@ namespace ashes::gl
 			return result;
 		}
 
-		InterfaceBlocksLayout merge( InterfaceBlocksLayout const & lhs
+		static InterfaceBlocksLayout merge( InterfaceBlocksLayout const & lhs
 			, InterfaceBlocksLayout const & rhs )
 		{
 			InterfaceBlocksLayout result{ lhs };
@@ -98,7 +98,7 @@ namespace ashes::gl
 		}
 
 		template< typename FormatT >
-		DescLayoutT< FormatT > merge( DescLayoutT< FormatT > const & lhs
+		static DescLayoutT< FormatT > merge( DescLayoutT< FormatT > const & lhs
 			, DescLayoutT< FormatT > const & rhs )
 		{
 			DescLayoutT< FormatT > result{ lhs };
@@ -141,7 +141,7 @@ namespace ashes::gl
 			return result;
 		}
 
-		ShaderDesc merge( std::vector< ShaderDesc > const & descs )
+		static ShaderDesc merge( std::vector< ShaderDesc > const & descs )
 		{
 			ShaderDesc result{};
 
@@ -255,7 +255,7 @@ namespace ashes::gl
 		, VkRenderPass renderPass
 		, Optional< VkPipelineVertexInputStateCreateInfo > const & vertexInputState )
 	{
-		program = merge( descs );
+		program = shader::merge( descs );
 		glLogCreateCall( context
 			, glGenProgramPipelines
 			, 1
@@ -329,7 +329,7 @@ namespace ashes::gl
 			, int( modules.size() )
 			, "Shader program link" ) )
 		{
-			auto constants = mergeConstants( stages );
+			auto constants = shader::mergeConstants( stages );
 			program = getShaderDesc( context
 				, constants
 				, VkShaderStageFlagBits( stageFlags )

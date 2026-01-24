@@ -14,7 +14,6 @@ See LICENSE file in root folder.
 
 #include "ashesd3d11_api.hpp"
 
-
 #pragma warning( push )
 #pragma warning( disable: 4191 )
 #pragma warning( disable: 4365 )
@@ -40,7 +39,7 @@ namespace ashes::D3D11_NAMESPACE
 {
 	//*************************************************************************
 
-	namespace
+	namespace shader
 	{
 		inline uint32_t constexpr OpCodeSPIRV = 0x07230203;
 
@@ -78,7 +77,7 @@ namespace ashes::D3D11_NAMESPACE
 
 #if D3D11Renderer_USE_SPIRV_CROSS
 
-		spv::ExecutionModel getExecutionModel( VkShaderStageFlagBits stage )
+		static spv::ExecutionModel getExecutionModel( VkShaderStageFlagBits stage )
 		{
 			spv::ExecutionModel result{};
 
@@ -110,7 +109,7 @@ namespace ashes::D3D11_NAMESPACE
 			return result;
 		}
 
-		void doFillConstant( VkSpecializationInfo const & specialisationInfo
+		static void doFillConstant( VkSpecializationInfo const & specialisationInfo
 			, VkSpecializationMapEntry const & entry
 			, spirv_cross::SPIRType const & type
 			, spirv_cross::SPIRConstant & constant )
@@ -130,7 +129,7 @@ namespace ashes::D3D11_NAMESPACE
 			}
 		}
 
-		void doProcessSpecializationConstants( VkPipelineShaderStageCreateInfo const & state
+		static void doProcessSpecializationConstants( VkPipelineShaderStageCreateInfo const & state
 			, spirv_cross::CompilerHLSL & compiler )
 		{
 			if ( state.pSpecializationInfo )
@@ -159,7 +158,7 @@ namespace ashes::D3D11_NAMESPACE
 			}
 		}
 
-		void doSetEntryPoint( VkShaderStageFlagBits stage
+		static void doSetEntryPoint( VkShaderStageFlagBits stage
 			, spirv_cross::CompilerHLSL & compiler )
 		{
 			auto model = getExecutionModel( stage );
@@ -181,7 +180,7 @@ namespace ashes::D3D11_NAMESPACE
 			compiler.set_entry_point( entryPoint, model );
 		}
 
-		void doSetupOptions( spirv_cross::CompilerHLSL & compiler )
+		static void doSetupOptions( spirv_cross::CompilerHLSL & compiler )
 		{
 			spirv_cross::CompilerGLSL::Options options = compiler.get_common_options();
 			options.es = false;
@@ -193,7 +192,7 @@ namespace ashes::D3D11_NAMESPACE
 			compiler.set_common_options( options );
 		}
 
-		void doSetupHlslOptions( spirv_cross::CompilerHLSL & compiler )
+		static void doSetupHlslOptions( spirv_cross::CompilerHLSL & compiler )
 		{
 			spirv_cross::CompilerHLSL::Options hlslOptions = compiler.get_hlsl_options();
 			hlslOptions.shader_model = 50;
@@ -202,7 +201,7 @@ namespace ashes::D3D11_NAMESPACE
 			compiler.set_hlsl_options( hlslOptions );
 		}
 
-		void reportMissingBinding( VkShaderModule shaderModule
+		static void reportMissingBinding( VkShaderModule shaderModule
 			, std::string const & typeName
 			, uint32_t binding
 			, uint32_t set )
@@ -217,7 +216,7 @@ namespace ashes::D3D11_NAMESPACE
 				, stream.str() );
 		}
 
-		void doReworkBindings( VkShaderModule shaderModule
+		static void doReworkBindings( VkShaderModule shaderModule
 			, std::string const & typeName
 			, spirv_cross::CompilerGLSL & compiler
 			, spirv_cross::SmallVector< spirv_cross::Resource > const & resources
@@ -256,7 +255,7 @@ namespace ashes::D3D11_NAMESPACE
 			}
 		}
 
-		void doReworkUavBindings( VkShaderModule shaderModule
+		static void doReworkUavBindings( VkShaderModule shaderModule
 			, std::string const & typeName
 			, spirv_cross::CompilerGLSL & compiler
 			, spirv_cross::SmallVector< spirv_cross::Resource > const & resources
@@ -301,7 +300,7 @@ namespace ashes::D3D11_NAMESPACE
 			}
 		}
 
-		void doReworkOutputs( spirv_cross::CompilerGLSL const & compiler
+		static void doReworkOutputs( spirv_cross::CompilerGLSL const & compiler
 			, spirv_cross::SmallVector< spirv_cross::Resource > const & resources
 			, uint32_t & index )
 		{
@@ -312,7 +311,7 @@ namespace ashes::D3D11_NAMESPACE
 			}
 		}
 
-		void doReworkBindings( VkPipelineLayout pipelineLayout
+		static void doReworkBindings( VkPipelineLayout pipelineLayout
 			, VkPipelineCreateFlags createFlags
 			, VkShaderModule shaderModule
 			, VkShaderStageFlagBits stage
@@ -342,7 +341,7 @@ namespace ashes::D3D11_NAMESPACE
 
 #endif
 
-		std::string compileSpvToHlsl( VkPipelineLayout pipelineLayout
+		static std::string compileSpvToHlsl( VkPipelineLayout pipelineLayout
 			, VkPipelineCreateFlags createFlags
 			, VkShaderModule shaderModule
 			, UInt32Array const & shader
@@ -382,7 +381,7 @@ namespace ashes::D3D11_NAMESPACE
 			return std::string( hlslCode.data(), hlslCode.data() + strnlen( hlslCode.data(), hlslCode.size() ) );
 		}
 
-		uint32_t extractLocation( InputElementDesc const & desc )
+		static uint32_t extractLocation( InputElementDesc const & desc )
 		{
 			uint32_t result{ 0u };
 
@@ -398,7 +397,7 @@ namespace ashes::D3D11_NAMESPACE
 			return result;
 		}
 
-		void normalise( InputElementDesc & desc )
+		static void normalise( InputElementDesc & desc )
 		{
 			if ( desc.InputSlotClass == D3D11_INPUT_PER_INSTANCE_DATA )
 			{
@@ -510,7 +509,7 @@ namespace ashes::D3D11_NAMESPACE
 			}
 		};
 
-		m_source = compileSpvToHlsl( pipelineLayout
+		m_source = shader::compileSpvToHlsl( pipelineLayout
 			, createFlags
 			, shaderModule
 			, spv
@@ -724,7 +723,7 @@ namespace ashes::D3D11_NAMESPACE
 			}
 
 			//save element desc
-			normalise( elementDesc );
+			shader::normalise( elementDesc );
 			result.push_back( elementDesc );
 		}
 

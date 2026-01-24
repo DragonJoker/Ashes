@@ -10,9 +10,9 @@ See LICENSE file in root folder.
 
 namespace ashes::test
 {
-	namespace
+	namespace bindvtx
 	{
-		std::vector< uint32_t > convert( UInt64Array const & array )
+		static std::vector< uint32_t > convert( UInt64Array const & array )
 		{
 			std::vector< uint32_t > result;
 
@@ -31,7 +31,7 @@ namespace ashes::test
 		, UInt64Array const & offsets )
 		: CommandBase{ device }
 		, m_vbos{ buffers }
-		, m_offsets{ convert( offsets ) }
+		, m_offsets{ bindvtx::convert( offsets ) }
 		, m_strides( m_offsets.size(), 24u )
 	{
 	}

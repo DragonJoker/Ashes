@@ -37,9 +37,9 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	namespace
+	namespace device
 	{
-		GLuint getObjectName( VkDebugReportObjectTypeEXT const & value
+		static GLuint getObjectName( VkDebugReportObjectTypeEXT const & value
 			, uint64_t object )
 		{
 			GLuint result = 0;
@@ -67,7 +67,7 @@ namespace ashes::gl
 			return result;
 		}
 
-		GLuint getObjectName( VkObjectType const & value
+		static GLuint getObjectName( VkObjectType const & value
 			, uint64_t object )
 		{
 			GLuint result = 0;
@@ -96,18 +96,18 @@ namespace ashes::gl
 		}
 
 		template< typename T, typename U >
-		T getAligned( T value, U align )
+		static T getAligned( T value, U align )
 		{
 			return T( ( value + align - 1 ) & ~( align - 1 ) );
 		}
 
 		template< typename T >
-		T getSubresourceValue( T value, uint32_t mipLevel )
+		static T getSubresourceValue( T value, uint32_t mipLevel )
 		{
 			return T( value >> mipLevel );
 		}
 
-		VkExtent3D getTexelBlockExtent( VkFormat format )
+		static VkExtent3D getTexelBlockExtent( VkFormat format )
 		{
 			VkExtent3D texelBlockExtent{ 1u, 1u, 1u };
 
@@ -125,7 +125,7 @@ namespace ashes::gl
 			return texelBlockExtent;
 		}
 
-		void doCheckEnabledExtensions( VkPhysicalDevice physicalDevice
+		static void doCheckEnabledExtensions( VkPhysicalDevice physicalDevice
 			, StringArray const & extensions )
 		{
 			auto const & available = get( physicalDevice )->enumerateExtensionProperties( nullptr );
@@ -144,7 +144,7 @@ namespace ashes::gl
 			}
 		}
 
-		void doCheckEnabledFeature( VkBool32 available
+		static void doCheckEnabledFeature( VkBool32 available
 			, VkBool32 enabled )
 		{
 			if ( enabled && !available )
@@ -154,7 +154,7 @@ namespace ashes::gl
 			}
 		}
 
-		void doCheckEnabledFeatures( VkPhysicalDevice physicalDevice
+		static void doCheckEnabledFeatures( VkPhysicalDevice physicalDevice
 			, VkPhysicalDeviceFeatures const & enabledFeatures )
 		{
 			auto const & available = get( physicalDevice )->getFeatures();
@@ -216,7 +216,7 @@ namespace ashes::gl
 
 		}
 
-		bool doHasEnabledExtensions( StringArray const & available
+		static bool doHasEnabledExtensions( StringArray const & available
 			, ashes::ArrayView< char const * const > const & extensions )
 		{
 			try
@@ -258,9 +258,9 @@ namespace ashes::gl
 		}
 
 		m_currentContext = get( m_instance )->registerDevice( get( this ) );
-		doCheckEnabledExtensions( m_physicalDevice
+		device::doCheckEnabledExtensions( m_physicalDevice
 			, m_enabledExtensions );
-		doCheckEnabledFeatures( m_physicalDevice
+		device::doCheckEnabledFeatures( m_physicalDevice
 			, m_enabledFeatures );
 		doInitialiseQueues();
 		doInitialiseContextDependent();
@@ -326,7 +326,7 @@ namespace ashes::gl
 	bool Device::hasExtension( std::string_view extension )const
 	{
 		char const * const version = extension.data();
-		return doHasEnabledExtensions( m_enabledExtensions
+		return device::doHasEnabledExtensions( m_enabledExtensions
 			, ashes::makeArrayView( &version, 1u ) );
 	}
 
@@ -351,16 +351,16 @@ namespace ashes::gl
 		int w = 0;
 		int h = 0;
 		int d = 0;
-		context->glGetTexLevelParameteriv( target, int( subresource.mipLevel ), GL_TEXTURE_WIDTH, &w );
-		context->glGetTexLevelParameteriv( target, int( subresource.mipLevel ), GL_TEXTURE_HEIGHT, &h );
-		context->glGetTexLevelParameteriv( target, int( subresource.mipLevel ), GL_TEXTURE_DEPTH, &d );
+		context->glGetTexLevelParameteriv( target, int( subresource.mipLevel ), GLenum( GL_TEXTURE_WIDTH ), &w );
+		context->glGetTexLevelParameteriv( target, int( subresource.mipLevel ), GLenum( GL_TEXTURE_HEIGHT ), &h );
+		context->glGetTexLevelParameteriv( target, int( subresource.mipLevel ), GLenum( GL_TEXTURE_DEPTH ), &d );
 		glLogCall( context
 			, glBindTexture
 			, target
 			, 0 );
-		auto extent = getTexelBlockExtent( get( image )->getFormatVk() );
-		layout.rowPitch = extent.width * getAligned( std::max( w, 1 ), extent.width );
-		layout.arrayPitch = layout.rowPitch * getAligned( std::max( h, 1 ), extent.height );
+		auto extent = device::getTexelBlockExtent( get( image )->getFormatVk() );
+		layout.rowPitch = extent.width * device::getAligned( std::max( w, 1 ), extent.width );
+		layout.arrayPitch = layout.rowPitch * device::getAligned( std::max( h, 1 ), extent.height );
 		layout.depthPitch = layout.arrayPitch;
 		layout.offset = subresource.arrayLayer * layout.arrayPitch;
 		layout.size = layout.arrayPitch * std::max( d, 1 );
@@ -400,7 +400,7 @@ namespace ashes::gl
 		if ( nameInfo.objectType != VK_OBJECT_TYPE_FENCE
 			&& context->m_glObjectLabel )
 		{
-			auto name = getObjectName( nameInfo.objectType, nameInfo.objectHandle );
+			auto name = device::getObjectName( nameInfo.objectType, nameInfo.objectHandle );
 
 			if ( name != GL_INVALID_INDEX )
 			{
@@ -472,7 +472,7 @@ namespace ashes::gl
 		{
 			if ( context->m_glObjectLabel )
 			{
-				auto name = getObjectName( nameInfo.objectType, nameInfo.object );
+				auto name = device::getObjectName( nameInfo.objectType, nameInfo.object );
 
 				if ( name != GL_INVALID_INDEX )
 				{

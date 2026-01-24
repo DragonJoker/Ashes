@@ -14,9 +14,9 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	namespace
+	namespace image
 	{
-		VkImageMemoryBarrier makeTransition( VkImage image
+		static VkImageMemoryBarrier makeTransition( VkImage image
 			, VkImageLayout srcLayout
 			, VkImageLayout dstLayout
 			, VkImageSubresourceRange mipSubRange
@@ -47,7 +47,7 @@ namespace ashes
 			};
 		}
 
-		VkImageMemoryBarrier makeTransition( VkImage image
+		static VkImageMemoryBarrier makeTransition( VkImage image
 			, VkImageLayout prv
 			, VkImageLayout cur
 			, VkImageSubresourceRange mipSubRange
@@ -558,7 +558,7 @@ namespace ashes
 		, uint32_t srcQueueFamily
 		, uint32_t dstQueueFamily )const
 	{
-		return ashes::makeTransition( *this
+		return image::makeTransition( *this
 			, srcLayout
 			, dstLayout
 			, mipSubRange
@@ -573,7 +573,7 @@ namespace ashes
 		, uint32_t srcQueueFamily
 		, uint32_t dstQueueFamily )const
 	{
-		return ashes::makeTransition( *this
+		return image::makeTransition( *this
 			, srcLayout
 			, dstLayout
 			, mipSubRange

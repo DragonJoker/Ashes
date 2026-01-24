@@ -26,7 +26,7 @@ namespace ashes::gl
 		return reinterpret_cast< PFN_vkVoidFunction >( wglGetProcAddress( name ) );
 	}
 
-	namespace
+	namespace msw
 	{
 		enum class ContextFlag
 		{
@@ -80,17 +80,17 @@ namespace ashes::gl
 
 #if !defined( NDEBUG )
 
-		constexpr int GL_CONTEXT_CREATION_DEFAULT_FLAGS =  GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT | GL_CONTEXT_FLAG_DEBUG_BIT;
-		constexpr int GL_CONTEXT_CREATION_DEFAULT_MASK = GL_CONTEXT_CORE_PROFILE_BIT;
+		static constexpr int GL_CONTEXT_CREATION_DEFAULT_FLAGS =  GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT | GL_CONTEXT_FLAG_DEBUG_BIT;
+		static constexpr int GL_CONTEXT_CREATION_DEFAULT_MASK = GL_CONTEXT_CORE_PROFILE_BIT;
 
 #else
 
-		constexpr int GL_CONTEXT_CREATION_DEFAULT_FLAGS = GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT;
-		constexpr int GL_CONTEXT_CREATION_DEFAULT_MASK = GL_CONTEXT_CORE_PROFILE_BIT;
+		static constexpr int GL_CONTEXT_CREATION_DEFAULT_FLAGS = GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT;
+		static constexpr int GL_CONTEXT_CREATION_DEFAULT_MASK = GL_CONTEXT_CORE_PROFILE_BIT;
 
 #endif
 
-		std::string & replace( std::string & text
+		static std::string & replace( std::string & text
 			, std::string const & lookup
 			, std::string const & replacement )
 		{
@@ -114,7 +114,7 @@ namespace ashes::gl
 			return text;
 		}
 
-		std::string getLastErrorText()
+		static std::string getLastErrorText()
 		{
 			uint32_t errorCode = ::GetLastError();
 			std::stringstream stream;
@@ -161,7 +161,7 @@ namespace ashes::gl
 			return result;
 		}
 
-		HWND createFullscreenWindow( VkDisplaySurfaceCreateInfoKHR const & createInfo )
+		static HWND createFullscreenWindow( VkDisplaySurfaceCreateInfoKHR const & createInfo )
 		{
 			auto hInstance = ::GetModuleHandleA( nullptr );
 			auto name = "fullscreen_" + std::to_string( uint64_t( createInfo.displayMode ) );
@@ -218,7 +218,7 @@ namespace ashes::gl
 		: ContextImpl{ instance }
 		, displayCreateInfo{ std::move( createInfo ) }
 		, m_pfd{ getPfd( reinterpret_cast< VkStructure const * >( &displayCreateInfo ) ) }
-		, m_hWnd{ createFullscreenWindow( displayCreateInfo ) }
+		, m_hWnd{ msw::createFullscreenWindow( displayCreateInfo ) }
 		, m_hDC{ ::GetDC( m_hWnd ) }
 		, m_mainContext{ static_cast< MswContext const * >( mainContext ) }
 	{
@@ -254,7 +254,7 @@ namespace ashes::gl
 
 		if ( !m_hContext )
 		{
-			throw ashes::BaseException{ "Couldn't create preliminary context: " + getLastErrorText() };
+			throw ashes::BaseException{ "Couldn't create preliminary context: " + msw::getLastErrorText() };
 		}
 
 		doLoadSystemFunctions();
@@ -364,12 +364,12 @@ namespace ashes::gl
 
 		if ( !pixelFormats )
 		{
-			throw ashes::BaseException{ "Couldn't choose a pixel format: " + getLastErrorText() };
+			throw ashes::BaseException{ "Couldn't choose a pixel format: " + msw::getLastErrorText() };
 		}
 
 		if ( !::SetPixelFormat( m_hDC, pixelFormats, &pfd ) )
 		{
-			throw ashes::BaseException{ "Couldn't set pixel format: " + getLastErrorText() };
+			throw ashes::BaseException{ "Couldn't set pixel format: " + msw::getLastErrorText() };
 		}
 	}
 
@@ -402,10 +402,10 @@ namespace ashes::gl
 	{
 		std::vector< int > attribList
 		{
-			int( ContextParameter::WGL_CONTEXT_MAJOR_VERSION_ARB ), m_major,
-			int( ContextParameter::WGL_CONTEXT_MINOR_VERSION_ARB ), m_minor,
-			int( ContextParameter::WGL_CONTEXT_FLAGS_ARB ), GL_CONTEXT_CREATION_DEFAULT_FLAGS,
-			int( ContextParameter::WGL_CONTEXT_PROFILE_MASK_ARB ), GL_CONTEXT_CREATION_DEFAULT_MASK,
+			int( msw::ContextParameter::WGL_CONTEXT_MAJOR_VERSION_ARB ), m_major,
+			int( msw::ContextParameter::WGL_CONTEXT_MINOR_VERSION_ARB ), m_minor,
+			int( msw::ContextParameter::WGL_CONTEXT_FLAGS_ARB ), msw::GL_CONTEXT_CREATION_DEFAULT_FLAGS,
+			int( msw::ContextParameter::WGL_CONTEXT_PROFILE_MASK_ARB ), msw::GL_CONTEXT_CREATION_DEFAULT_MASK,
 			0
 		};
 

@@ -6,9 +6,9 @@ See LICENSE file in root folder.
 
 namespace ashes::D3D11_NAMESPACE
 {
-	namespace
+	namespace drawidx
 	{
-		uint32_t getSize( VkIndexType type )
+		static uint32_t getSize( VkIndexType type )
 		{
 			switch ( type )
 			{
@@ -40,7 +40,7 @@ namespace ashes::D3D11_NAMESPACE
 		, m_firstInstance{ firstInstance }
 		, m_mode{ getPrimitiveTopology( mode ) }
 		, m_type{ getIndexFormat( type ) }
-		, m_size{ getSize( type ) }
+		, m_size{ drawidx::getSize( type ) }
 		, m_vbos{ vbos }
 	{
 	}

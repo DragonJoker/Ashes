@@ -18,9 +18,9 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	namespace
+	namespace blitimg
 	{
-		GlImageAspectFlags getMask( VkFormat format )
+		static GlImageAspectFlags getMask( VkFormat format )
 		{
 			GlImageAspectFlags result = 0u;
 
@@ -43,7 +43,7 @@ namespace ashes::gl
 			return result;
 		}
 
-		VkBufferImageCopy getImageToBufferCopy( VkImageBlit const & copyInfo
+		static VkBufferImageCopy getImageToBufferCopy( VkImageBlit const & copyInfo
 			, VkImage dstImage )
 		{
 			VkBufferImageCopy result{};
@@ -110,7 +110,7 @@ namespace ashes::gl
 				, layerCopy.getRegion().dstOffsets[0].y
 				, layerCopy.getRegion().dstOffsets[1].x
 				, layerCopy.getRegion().dstOffsets[1].y
-				, getMask( get( srcImage )->getFormatVk() )
+				, blitimg::getMask( get( srcImage )->getFormatVk() )
 				, convert( filter ) ) );
 			list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
 				, nullptr ) );
@@ -127,7 +127,7 @@ namespace ashes::gl
 		{
 			buildCopyImageToBufferCommand( stack
 				, device
-				, getImageToBufferCopy( region, dstImage )
+				, blitimg::getImageToBufferCopy( region, dstImage )
 				, dstImage
 				, get( dstImage )->getMemoryBinding()
 				, list );

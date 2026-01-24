@@ -10,9 +10,9 @@ See LICENSE file in root folder.
 
 namespace ashes::D3D11_NAMESPACE
 {
-	namespace
+	namespace genmips
 	{
-		VkImageViewCreateInfo getCreateInfos( VkImage texture )
+		static VkImageViewCreateInfo getCreateInfos( VkImage texture )
 		{
 			VkImageViewCreateInfo result{};
 			result.image = texture;
@@ -31,7 +31,7 @@ namespace ashes::D3D11_NAMESPACE
 		, VkImage texture )
 		: CommandBase{ device }
 		, m_texture{ texture }
-		, m_view{ device, getCreateInfos( texture ) }
+		, m_view{ device, genmips::getCreateInfos( texture ) }
 	{
 	}
 

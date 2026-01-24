@@ -6,9 +6,9 @@
 
 namespace ashes::D3D11_NAMESPACE
 {
-	namespace
+	namespace qurypool
 	{
-		D3D11_QUERY convert( VkQueryType type )
+		static D3D11_QUERY convert( VkQueryType type )
 		{
 			switch ( type )
 			{
@@ -24,7 +24,7 @@ namespace ashes::D3D11_NAMESPACE
 			}
 		}
 
-		UINT64 getPipelineStatistic( uint32_t index
+		static UINT64 getPipelineStatistic( uint32_t index
 			, D3D11_QUERY_DATA_PIPELINE_STATISTICS const & stats )
 		{
 			switch ( index )
@@ -56,7 +56,7 @@ namespace ashes::D3D11_NAMESPACE
 			}
 		}
 
-		uint32_t adjustQueryCount( uint32_t count
+		static uint32_t adjustQueryCount( uint32_t count
 			, VkQueryType type )
 		{
 			if ( type != VK_QUERY_TYPE_PIPELINE_STATISTICS )
@@ -75,8 +75,8 @@ namespace ashes::D3D11_NAMESPACE
 	{
 		D3D11_QUERY_DESC desc{};
 		desc.MiscFlags = 0u;
-		desc.Query = convert( m_createInfo.queryType );
-		m_queries.resize( adjustQueryCount( m_createInfo.queryCount, m_createInfo.queryType ) );
+		desc.Query = qurypool::convert( m_createInfo.queryType );
+		m_queries.resize( qurypool::adjustQueryCount( m_createInfo.queryCount, m_createInfo.queryType ) );
 
 		for ( auto & query : m_queries )
 		{
@@ -106,12 +106,12 @@ namespace ashes::D3D11_NAMESPACE
 			getUint32 = [this]( uint32_t index )
 			{
 				D3D11_QUERY_DATA_PIPELINE_STATISTICS data = *reinterpret_cast< D3D11_QUERY_DATA_PIPELINE_STATISTICS * >( m_data.data() );
-				return uint32_t( getPipelineStatistic( index, data ) );
+				return uint32_t( qurypool::getPipelineStatistic( index, data ) );
 			};
 			getUint64 = [this]( uint32_t index )
 			{
 				D3D11_QUERY_DATA_PIPELINE_STATISTICS data = *reinterpret_cast< D3D11_QUERY_DATA_PIPELINE_STATISTICS * >( m_data.data() );
-				return getPipelineStatistic( index, data );
+				return qurypool::getPipelineStatistic( index, data );
 			};
 			break;
 

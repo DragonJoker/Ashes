@@ -8,7 +8,7 @@ namespace ashes::D3D11_NAMESPACE
 {
 	namespace spl
 	{
-		D3D11_TEXTURE_ADDRESS_MODE convert( VkSamplerAddressMode mode )
+		static D3D11_TEXTURE_ADDRESS_MODE convert( VkSamplerAddressMode mode )
 		{
 			switch ( mode )
 			{
@@ -33,7 +33,7 @@ namespace ashes::D3D11_NAMESPACE
 			}
 		}
 
-		void convert( VkBorderColor colour
+		static void convert( VkBorderColor colour
 			, float output[4] )
 		{
 			switch ( colour )
@@ -64,7 +64,7 @@ namespace ashes::D3D11_NAMESPACE
 			}
 		}
 
-		D3D11_FILTER convert( VkFilter min
+		static D3D11_FILTER convert( VkFilter min
 			, VkFilter mag
 			, VkSamplerMipmapMode mip
 			, float maxAnisotropy )

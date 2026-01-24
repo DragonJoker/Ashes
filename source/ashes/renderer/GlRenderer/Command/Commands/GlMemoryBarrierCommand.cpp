@@ -10,9 +10,9 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	namespace
+	namespace membarr
 	{
-		bool bindPreBarrier( DeviceMemoryBinding const & binding
+		static bool bindPreBarrier( DeviceMemoryBinding const & binding
 			, VkAccessFlags srcAccessMask
 			, VkAccessFlags dstAccessMask
 			, VkDeviceMemorySet & downloads
@@ -44,7 +44,7 @@ namespace ashes::gl
 			return result;
 		}
 
-		bool bindPostBarrier( DeviceMemoryBinding const & binding
+		static bool bindPostBarrier( DeviceMemoryBinding const & binding
 			, VkAccessFlags srcAccessMask
 			, VkAccessFlags dstAccessMask
 			, VkDeviceMemorySet & downloads
@@ -92,7 +92,7 @@ namespace ashes::gl
 
 		for ( auto & barrier : bufferMemoryBarriers )
 		{
-			hasMapped = bindPreBarrier( get( barrier.buffer )->getMemoryBinding()
+			hasMapped = membarr::bindPreBarrier( get( barrier.buffer )->getMemoryBinding()
 				, barrier.srcAccessMask
 				, barrier.dstAccessMask
 				, downloads 
@@ -102,7 +102,7 @@ namespace ashes::gl
 
 		for ( auto & barrier : imageMemoryBarriers )
 		{
-			hasMapped = bindPreBarrier( get( barrier.image )->getMemoryBinding()
+			hasMapped = membarr::bindPreBarrier( get( barrier.image )->getMemoryBinding()
 				, barrier.srcAccessMask
 				, barrier.dstAccessMask
 				, downloads
@@ -117,7 +117,7 @@ namespace ashes::gl
 
 		for ( auto & barrier : bufferMemoryBarriers )
 		{
-			bindPostBarrier( get( barrier.buffer )->getMemoryBinding()
+			membarr::bindPostBarrier( get( barrier.buffer )->getMemoryBinding()
 				, barrier.srcAccessMask
 				, barrier.dstAccessMask
 				, downloads
@@ -127,7 +127,7 @@ namespace ashes::gl
 
 		for ( auto & barrier : imageMemoryBarriers )
 		{
-			bindPostBarrier( get( barrier.image )->getMemoryBinding()
+			membarr::bindPostBarrier( get( barrier.image )->getMemoryBinding()
 				, barrier.srcAccessMask
 				, barrier.dstAccessMask
 				, downloads

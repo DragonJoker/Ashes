@@ -14,16 +14,16 @@ using ashes::operator!=;
 
 namespace ashes::gl
 {
-	namespace
+	namespace ctxt
 	{
-		thread_local ContextState initialState = []()
+		static thread_local ContextState initialState = []()
 		{
 			VkPipelineColorBlendAttachmentStateArray cbStateAttachments{ 1u, getColourBlendStateAttachment() };
 			VkPipelineColorBlendStateCreateInfo cbState{ getDefaultColorBlendState( cbStateAttachments ) };
 			return ContextState{ cbState };
 		}( );
 
-		bool doApplyEnable( CmdList & list
+		static bool doApplyEnable( CmdList & list
 			, uint32_t value
 			, bool enable )
 		{
@@ -39,7 +39,7 @@ namespace ashes::gl
 			return enable;
 		}
 
-		void doApplyTopology( CmdList & list
+		static void doApplyTopology( CmdList & list
 			, VkPipelineInputAssemblyStateCreateInfo const & state )
 		{
 			doApplyEnable( list
@@ -47,7 +47,7 @@ namespace ashes::gl
 				, state.topology == VK_PRIMITIVE_TOPOLOGY_POINT_LIST );
 		}
 
-		void doApplyPrimitiveRestart( CmdList & list
+		static void doApplyPrimitiveRestart( CmdList & list
 			, VkPipelineInputAssemblyStateCreateInfo const & state )
 		{
 			doApplyEnable( list
@@ -55,7 +55,7 @@ namespace ashes::gl
 				, state.primitiveRestartEnable != 0 );
 		}
 
-		void doApplyLogicOp( CmdList & list
+		static void doApplyLogicOp( CmdList & list
 			, VkPipelineColorBlendStateCreateInfo const & state )
 		{
 			if ( state.logicOpEnable )
@@ -68,7 +68,7 @@ namespace ashes::gl
 			}
 		}
 
-		void doApplyBlendConstants( CmdList & list
+		static void doApplyBlendConstants( CmdList & list
 			, VkPipelineColorBlendStateCreateInfo const & state )
 		{
 			auto & blendConstants = state.blendConstants;
@@ -78,7 +78,7 @@ namespace ashes::gl
 				, blendConstants[3] ) );
 		}
 
-		bool doApplyBlendAttach( CmdList & list
+		static bool doApplyBlendAttach( CmdList & list
 			, VkPipelineColorBlendAttachmentState const & state
 			, uint32_t index
 			, bool force )
@@ -103,7 +103,7 @@ namespace ashes::gl
 			return state.blendEnable != 0;
 		}
 
-		bool doApplyBlendAttaches( CmdList & list
+		static bool doApplyBlendAttaches( CmdList & list
 			, VkPipelineColorBlendStateCreateInfo const & state
 			, bool force )
 		{
@@ -120,7 +120,7 @@ namespace ashes::gl
 			return result;
 		}
 
-		void doApplyBlending( CmdList & list
+		static void doApplyBlending( CmdList & list
 			, bool enable )
 		{
 			doApplyEnable( list
@@ -128,13 +128,13 @@ namespace ashes::gl
 				, enable );
 		}
 
-		void doApplyPolygonMode( CmdList & list
+		static void doApplyPolygonMode( CmdList & list
 			, VkPipelineRasterizationStateCreateInfo const & state )
 		{
 			list.emplace_back( makeCmd< OpType::ePolygonMode >( convert( state.polygonMode ) ) );
 		}
 
-		void doApplyLineWidth( CmdList & list
+		static void doApplyLineWidth( CmdList & list
 			, VkPipelineRasterizationStateCreateInfo const & rasterState
 			, VkPipelineDynamicStateCreateInfo const & dynamicState )
 		{
@@ -147,7 +147,7 @@ namespace ashes::gl
 			}
 		}
 
-		void doApplyDepthBias( CmdList & list
+		static void doApplyDepthBias( CmdList & list
 			, VkPipelineRasterizationStateCreateInfo const & rasterState
 			, VkPipelineDynamicStateCreateInfo const & dynamicState )
 		{
@@ -188,7 +188,7 @@ namespace ashes::gl
 			}
 		}
 
-		void doApplyDepthClamp( CmdList & list
+		static void doApplyDepthClamp( CmdList & list
 			, VkPipelineRasterizationStateCreateInfo const & state )
 		{
 			doApplyEnable( list
@@ -196,7 +196,7 @@ namespace ashes::gl
 				, state.depthClampEnable != 0 );
 		}
 
-		void doApplyRasterizerDiscard( CmdList & list
+		static void doApplyRasterizerDiscard( CmdList & list
 			, VkPipelineRasterizationStateCreateInfo const & state )
 		{
 			doApplyEnable( list
@@ -204,7 +204,7 @@ namespace ashes::gl
 				, state.rasterizerDiscardEnable != 0 );
 		}
 
-		void doApplyAlphaToCoverage( CmdList & list
+		static void doApplyAlphaToCoverage( CmdList & list
 			, VkPipelineMultisampleStateCreateInfo const & state )
 		{
 			doApplyEnable( list
@@ -212,7 +212,7 @@ namespace ashes::gl
 				, state.alphaToCoverageEnable != 0 );
 		}
 
-		void doApplyAlphaToOne( CmdList & list
+		static void doApplyAlphaToOne( CmdList & list
 			, VkPipelineMultisampleStateCreateInfo const & state )
 		{
 			doApplyEnable( list
@@ -220,7 +220,7 @@ namespace ashes::gl
 				, state.alphaToOneEnable != 0 );
 		}
 
-		void doApplySampleShading( CmdList & list
+		static void doApplySampleShading( CmdList & list
 			, VkPipelineMultisampleStateCreateInfo const & state )
 		{
 			if ( doApplyEnable( list
@@ -231,7 +231,7 @@ namespace ashes::gl
 			}
 		}
 
-		void doApplyMultisampling( CmdList & list
+		static void doApplyMultisampling( CmdList & list
 			, VkPipelineMultisampleStateCreateInfo const & state )
 		{
 			doApplyEnable( list
@@ -239,15 +239,13 @@ namespace ashes::gl
 				, state.rasterizationSamples != VK_SAMPLE_COUNT_1_BIT );
 		}
 
-		void doApplyDepthWrite( CmdList & list
+		static void doApplyDepthWrite( CmdList & list
 			, VkPipelineDepthStencilStateCreateInfo const & state )
 		{
-			list.emplace_back( makeCmd< OpType::eDepthMask >( state.depthWriteEnable
-				? GL_TRUE
-				: GL_FALSE ) );
+			list.emplace_back( makeCmd< OpType::eDepthMask >( uint32_t( state.depthWriteEnable ? GL_TRUE : GL_FALSE ) ) );
 		}
 
-		void doApplyDepthTest( CmdList & list
+		static void doApplyDepthTest( CmdList & list
 			, VkPipelineDepthStencilStateCreateInfo const & state )
 		{
 			if ( doApplyEnable( list
@@ -258,7 +256,7 @@ namespace ashes::gl
 			}
 		}
 
-		void doApplyStencilWrite( CmdList & list
+		static void doApplyStencilWrite( CmdList & list
 			, uint32_t const & state
 			, uint32_t & save
 			, GlCullMode face )
@@ -268,7 +266,7 @@ namespace ashes::gl
 			save = state;
 		}
 
-		void doApplyDepthBias( CmdList & list
+		static void doApplyDepthBias( CmdList & list
 			, VkPolygonMode polygonMode
 			, VkBool32 const & newEnable
 			, VkBool32 & saveEnable
@@ -313,7 +311,7 @@ namespace ashes::gl
 			saveSlopeFactor = newSlopeFactor;
 		}
 
-		void doApplyStencilFunc( CmdList & list
+		static void doApplyStencilFunc( CmdList & list
 			, VkCompareOp const & newCompareOp
 			, VkCompareOp & saveCompareOp
 			, uint32_t const & newReference
@@ -331,7 +329,7 @@ namespace ashes::gl
 			saveCompareMask = newCompareMask;
 		}
 
-		void doApplyStencilOp( CmdList & list
+		static void doApplyStencilOp( CmdList & list
 			, VkStencilOp const & newFailOp
 			, VkStencilOp & saveFailOp
 			, VkStencilOp const & newDepthFailOp
@@ -349,7 +347,7 @@ namespace ashes::gl
 			savePassOp = newPassOp;
 		}
 
-		void doApplyStencilOpState( CmdList & list
+		static void doApplyStencilOpState( CmdList & list
 			, VkStencilOpState const & state
 			, VkStencilOpState & save
 			, GlCullMode face )
@@ -376,7 +374,7 @@ namespace ashes::gl
 				, face );
 		}
 
-		void doApplyStencilTest( CmdList & list
+		static void doApplyStencilTest( CmdList & list
 			, VkPipelineDepthStencilStateCreateInfo const & state
 			, VkPipelineDepthStencilStateCreateInfo & save )
 		{
@@ -389,7 +387,7 @@ namespace ashes::gl
 			}
 		}
 
-		void doApplyDepthBoundsTest( CmdList & list
+		static void doApplyDepthBoundsTest( CmdList & list
 			, VkPipelineDepthStencilStateCreateInfo const & state )
 		{
 			if ( doApplyEnable( list
@@ -402,7 +400,7 @@ namespace ashes::gl
 			}
 		}
 
-		void doApplyPathControlPoints( CmdList & list
+		static void doApplyPathControlPoints( CmdList & list
 			, VkPipelineTessellationStateCreateInfo const & state )
 		{
 			if ( state.patchControlPoints )
@@ -420,14 +418,14 @@ namespace ashes::gl
 			int h;
 		};
 
-		void adjust( MocVkScissor & value
+		static void adjust( MocVkScissor & value
 			, VkExtent2D const & renderArea )
 		{
 			auto vkbottom = value.y + value.h;
 			value.y = int( renderArea.height ) - vkbottom;
 		}
 
-		void adjust( ashes::ArrayView< MocVkScissor > const & values
+		static void adjust( ashes::ArrayView< MocVkScissor > const & values
 			, VkExtent2D const & renderArea )
 		{
 			for ( auto & value : values )
@@ -436,7 +434,7 @@ namespace ashes::gl
 			}
 		}
 
-		VkRect2D adjust( VkRect2D const & value
+		static VkRect2D adjust( VkRect2D const & value
 			, VkExtent2D const & renderArea )
 		{
 			auto vkbottom = value.offset.y + value.extent.height;
@@ -447,7 +445,7 @@ namespace ashes::gl
 			};
 		}
 
-		VkScissorArray adjust( ArrayView< VkRect2D const > const & values
+		static VkScissorArray adjust( ArrayView< VkRect2D const > const & values
 			, VkExtent2D const & renderArea )
 		{
 			VkScissorArray result;
@@ -469,14 +467,14 @@ namespace ashes::gl
 			float h;
 		};
 
-		void adjust( MocVkViewport & value
+		static void adjust( MocVkViewport & value
 			, VkExtent2D const & renderArea )
 		{
 			auto vkbottom = value.y + value.h;
 			value.y = float( renderArea.height ) - vkbottom;
 		}
 
-		void adjust( ashes::ArrayView< MocVkViewport > const & values
+		static void adjust( ashes::ArrayView< MocVkViewport > const & values
 			, VkExtent2D const & renderArea )
 		{
 			for ( auto & value : values )
@@ -485,7 +483,7 @@ namespace ashes::gl
 			}
 		}
 
-		VkViewport adjust( VkViewport const & value
+		static VkViewport adjust( VkViewport const & value
 			, VkExtent2D const & renderArea )
 		{
 			auto vkbottom = value.y + std::min( value.height, float( renderArea.height ) );
@@ -497,7 +495,7 @@ namespace ashes::gl
 			};
 		}
 
-		VkViewportArray adjust( ArrayView< VkViewport const > const & values
+		static VkViewportArray adjust( ArrayView< VkViewport const > const & values
 			, VkExtent2D const & renderArea )
 		{
 			VkViewportArray result;
@@ -583,8 +581,8 @@ namespace ashes::gl
 								{
 									assert( pCmd->op.type == OpType::eApplyViewports );
 									CmdApplyViewports & oldCmd = map< OpType::eApplyViewports >( *pCmd );
-									adjust( ashes::makeArrayView( reinterpret_cast< MocVkViewport * >( oldCmd.viewports.data() )
-										, reinterpret_cast< MocVkViewport * >( oldCmd.viewports.data() ) + oldCmd.count )
+									ctxt::adjust( ashes::makeArrayView( reinterpret_cast< ctxt::MocVkViewport * >( oldCmd.viewports.data() )
+										, reinterpret_cast< ctxt::MocVkViewport * >( oldCmd.viewports.data() ) + oldCmd.count )
 										, stack.m_renderArea );
 								}
 							} );
@@ -593,7 +591,7 @@ namespace ashes::gl
 					{
 						list.push_back( makeCmd< OpType::eApplyViewports >( firstViewport
 							, uint32_t( viewports.size() )
-							, adjust( viewports, m_renderArea ) ) );
+							, ctxt::adjust( viewports, m_renderArea ) ) );
 					}
 
 					list.push_back( makeCmd< OpType::eApplyDepthRanges >( firstViewport
@@ -614,13 +612,13 @@ namespace ashes::gl
 							{
 								assert( pCmd->op.type == OpType::eApplyViewport );
 								CmdApplyViewport const & oldCmd = map< OpType::eApplyViewport >( *pCmd );
-								adjust( oldCmd.viewport, stack.m_renderArea );
+								ctxt::adjust( oldCmd.viewport, stack.m_renderArea );
 							}
 						} );
 				}
 				else
 				{
-					list.push_back( makeCmd< OpType::eApplyViewport >( adjust( viewports.front(), m_renderArea ) ) );
+					list.push_back( makeCmd< OpType::eApplyViewport >( ctxt::adjust( viewports.front(), m_renderArea ) ) );
 				}
 			}
 			else if ( m_renderArea == VkExtent2D{ ~0u, ~0u } )
@@ -665,7 +663,7 @@ namespace ashes::gl
 
 		if ( force || getCurrentScissors() != scissors )
 		{
-			doApplyEnable( list
+			ctxt::doApplyEnable( list
 				, GL_SCISSOR_TEST
 				, !scissors.empty() );
 
@@ -691,8 +689,8 @@ namespace ashes::gl
 									{
 										assert( pCmd->op.type == OpType::eApplyScissors );
 										CmdApplyScissors & oldCmd = map< OpType::eApplyScissors >( *pCmd );
-										adjust( ashes::makeArrayView( reinterpret_cast< MocVkScissor * >( oldCmd.scissors.data() )
-											, reinterpret_cast< MocVkScissor * >( oldCmd.scissors.data() ) + oldCmd.count )
+										ctxt::adjust( ashes::makeArrayView( reinterpret_cast< ctxt::MocVkScissor * >( oldCmd.scissors.data() )
+											, reinterpret_cast< ctxt::MocVkScissor * >( oldCmd.scissors.data() ) + oldCmd.count )
 											, stack.m_renderArea );
 									}
 								}
@@ -702,7 +700,7 @@ namespace ashes::gl
 					{
 						list.push_back( makeCmd< OpType::eApplyScissors >( firstScissor
 							, uint32_t( scissors.size() )
-							, adjust( scissors, m_renderArea ) ) );
+							, ctxt::adjust( scissors, m_renderArea ) ) );
 					}
 					else
 					{
@@ -738,7 +736,7 @@ namespace ashes::gl
 				}
 				else if ( isRtot() )
 				{
-					list.push_back( makeCmd< OpType::eApplyScissor >( adjust( scissors.front(), m_renderArea ) ) );
+					list.push_back( makeCmd< OpType::eApplyScissor >( ctxt::adjust( scissors.front(), m_renderArea ) ) );
 				}
 				else
 				{
@@ -822,7 +820,7 @@ namespace ashes::gl
 	void ContextStateStack::applyDisableBlend( CmdList & list )
 	{
 		doCheckSave();
-		doApply( list, initialState.cbState, true );
+		doApply( list, ctxt::initialState.cbState, true );
 	}
 
 	void ContextStateStack::applyDepthBias( CmdList & list
@@ -832,7 +830,7 @@ namespace ashes::gl
 	{
 		doCheckSave();
 		auto & save = m_save->rsState;
-		doApplyDepthBias( list
+		ctxt::doApplyDepthBias( list
 			, save.polygonMode
 			, VK_TRUE
 			, save.depthBiasEnable
@@ -853,7 +851,7 @@ namespace ashes::gl
 
 		if ( faceFlags & VK_STENCIL_FACE_FRONT_BIT )
 		{
-			doApplyStencilFunc( list
+			ctxt::doApplyStencilFunc( list
 				, save.front.compareOp
 				, save.front.compareOp
 				, save.front.reference
@@ -865,7 +863,7 @@ namespace ashes::gl
 
 		if ( faceFlags & VK_STENCIL_FACE_BACK_BIT )
 		{
-			doApplyStencilFunc( list
+			ctxt::doApplyStencilFunc( list
 				, save.back.compareOp
 				, save.back.compareOp
 				, save.back.reference
@@ -885,7 +883,7 @@ namespace ashes::gl
 
 		if ( faceFlags & VK_STENCIL_FACE_FRONT_BIT )
 		{
-			doApplyStencilWrite( list
+			ctxt::doApplyStencilWrite( list
 				, writeMask
 				, save.front.writeMask
 				, GL_CULL_MODE_FRONT );
@@ -893,7 +891,7 @@ namespace ashes::gl
 
 		if ( faceFlags & VK_STENCIL_FACE_BACK_BIT )
 		{
-			doApplyStencilWrite( list
+			ctxt::doApplyStencilWrite( list
 				, writeMask
 				, save.back.writeMask
 				, GL_CULL_MODE_BACK );
@@ -909,7 +907,7 @@ namespace ashes::gl
 
 		if ( faceFlags & VK_STENCIL_FACE_FRONT_BIT )
 		{
-			doApplyStencilFunc( list
+			ctxt::doApplyStencilFunc( list
 				, save.front.compareOp
 				, save.front.compareOp
 				, reference
@@ -921,7 +919,7 @@ namespace ashes::gl
 
 		if ( faceFlags & VK_STENCIL_FACE_BACK_BIT )
 		{
-			doApplyStencilFunc( list
+			ctxt::doApplyStencilFunc( list
 				, save.back.compareOp
 				, save.back.compareOp
 				, reference
@@ -950,12 +948,12 @@ namespace ashes::gl
 
 		if ( force || newState.topology != save.topology )
 		{
-			doApplyTopology( list, newState );
+			ctxt::doApplyTopology( list, newState );
 		}
 
 		if ( force || newState.primitiveRestartEnable != save.primitiveRestartEnable )
 		{
-			doApplyPrimitiveRestart( list, newState );
+			ctxt::doApplyPrimitiveRestart( list, newState );
 		}
 	}
 
@@ -969,7 +967,7 @@ namespace ashes::gl
 
 		if ( force || newState.logicOp != save.logicOp )
 		{
-			doApplyLogicOp( list, newState );
+			ctxt::doApplyLogicOp( list, newState );
 		}
 
 		if ( force
@@ -978,14 +976,14 @@ namespace ashes::gl
 			|| newState.blendConstants[2] != save.blendConstants[2]
 			|| newState.blendConstants[3] != save.blendConstants[3] )
 		{
-			doApplyBlendConstants( list, newState );
+			ctxt::doApplyBlendConstants( list, newState );
 		}
 
-		bool blend = doApplyBlendAttaches( list, newState, force );
+		bool blend = ctxt::doApplyBlendAttaches( list, newState, force );
 
 		if ( force || hadBlend != blend )
 		{
-			doApplyBlending( list, blend );
+			ctxt::doApplyBlending( list, blend );
 			hadBlend = blend;
 		}
 	}
@@ -1001,7 +999,7 @@ namespace ashes::gl
 
 		if ( force || newState.cullMode != save.cullMode )
 		{
-			doApplyEnable( list
+			ctxt::doApplyEnable( list
 				, GL_CULL_FACE
 				, enableCulling );
 		}
@@ -1019,27 +1017,27 @@ namespace ashes::gl
 
 		if ( force || newState.polygonMode != save.polygonMode )
 		{
-			doApplyPolygonMode( list, newState );
+			ctxt::doApplyPolygonMode( list, newState );
 		}
 
 		if ( force
 			|| newState.depthBiasEnable != save.depthBiasEnable
 			|| newState.polygonMode != save.polygonMode )
 		{
-			doApplyDepthBias( list, newState, newDyState );
+			ctxt::doApplyDepthBias( list, newState, newDyState );
 		}
 
 		if ( force || newState.depthClampEnable != save.depthClampEnable )
 		{
-			doApplyDepthClamp( list, newState );
+			ctxt::doApplyDepthClamp( list, newState );
 		}
 
 		if ( force || newState.rasterizerDiscardEnable != save.rasterizerDiscardEnable )
 		{
-			doApplyRasterizerDiscard( list, newState );
+			ctxt::doApplyRasterizerDiscard( list, newState );
 		}
 
-		doApplyLineWidth( list, newState, newDyState );
+		ctxt::doApplyLineWidth( list, newState, newDyState );
 	}
 
 	void ContextStateStack::doApply( CmdList & list
@@ -1050,22 +1048,22 @@ namespace ashes::gl
 
 		if ( force || newState.rasterizationSamples != save.rasterizationSamples )
 		{
-			doApplyMultisampling( list, newState );
+			ctxt::doApplyMultisampling( list, newState );
 		}
 
 		if ( force || newState.rasterizationSamples != VK_SAMPLE_COUNT_1_BIT )
 		{
 			if ( force || newState.alphaToCoverageEnable != save.alphaToCoverageEnable )
 			{
-				doApplyAlphaToCoverage( list, newState );
+				ctxt::doApplyAlphaToCoverage( list, newState );
 			}
 
 			if ( force || newState.alphaToOneEnable != save.alphaToOneEnable )
 			{
-				doApplyAlphaToOne( list, newState );
+				ctxt::doApplyAlphaToOne( list, newState );
 			}
 
-			doApplySampleShading( list, newState );
+			ctxt::doApplySampleShading( list, newState );
 		}
 	}
 
@@ -1077,12 +1075,12 @@ namespace ashes::gl
 
 		if ( force || newState.depthWriteEnable != save.depthWriteEnable )
 		{
-			doApplyDepthWrite( list, newState );
+			ctxt::doApplyDepthWrite( list, newState );
 		}
 
 		if ( force || newState.depthTestEnable != save.depthTestEnable )
 		{
-			doApplyDepthTest( list, newState );
+			ctxt::doApplyDepthTest( list, newState );
 		}
 
 		if ( force
@@ -1091,7 +1089,7 @@ namespace ashes::gl
 				&& ( newState.back != save.back
 					|| newState.front != save.front ) ) )
 		{
-			doApplyStencilTest( list, newState, save );
+			ctxt::doApplyStencilTest( list, newState, save );
 		}
 
 		if ( force
@@ -1100,7 +1098,7 @@ namespace ashes::gl
 				&& ( newState.minDepthBounds != save.minDepthBounds
 					|| newState.maxDepthBounds != save.maxDepthBounds ) ) )
 		{
-			doApplyDepthBoundsTest( list, newState );
+			ctxt::doApplyDepthBoundsTest( list, newState );
 		}
 	}
 
@@ -1112,7 +1110,7 @@ namespace ashes::gl
 
 		if ( force || newState.patchControlPoints != save.patchControlPoints )
 		{
-			doApplyPathControlPoints( list, newState );
+			ctxt::doApplyPathControlPoints( list, newState );
 		}
 	}
 
@@ -1145,7 +1143,7 @@ namespace ashes::gl
 			}
 			else
 			{
-				m_ownInitial = std::make_unique< ContextState >( initialState );
+				m_ownInitial = std::make_unique< ContextState >( ctxt::initialState );
 				m_save = m_ownInitial.get();
 			}
 

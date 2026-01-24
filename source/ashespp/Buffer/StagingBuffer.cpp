@@ -14,21 +14,21 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	namespace
+	namespace stgbuf
 	{
 		template< typename T, typename U >
-		T getAligned( T value, U align )
+		static T getAligned( T value, U align )
 		{
 			return T( ( value + align - 1 ) & ~( align - 1 ) );
 		}
 
 		template< typename T >
-		T getSubresourceValue( T value, uint32_t mipLevel )
+		static T getSubresourceValue( T value, uint32_t mipLevel )
 		{
 			return T( value >> mipLevel );
 		}
 
-		VkMemoryAllocateInfo getAllocateInfo( Device const & device
+		static VkMemoryAllocateInfo getAllocateInfo( Device const & device
 			, BufferBase const & buffer )
 		{
 			auto requirements = buffer.getMemoryRequirements();
@@ -43,7 +43,7 @@ namespace ashes
 			};
 		}
 
-		VkBufferImageCopy makeValidCopyInfo( Image const & image
+		static VkBufferImageCopy makeValidCopyInfo( Image const & image
 			, VkExtent2D const & size
 			, VkOffset3D offset
 			, VkImageSubresourceLayers const & subresourceLayers )
@@ -121,7 +121,7 @@ namespace ashes
 			};
 		}
 
-		ashes::VkBufferImageCopyArray makeValidCopyInfos( ImageView const & view
+		static ashes::VkBufferImageCopyArray makeValidCopyInfos( ImageView const & view
 			, VkImageSubresourceLayers subresourceLayers
 			, VkExtent2D const & size
 			, VkOffset3D const & offset )
@@ -153,7 +153,7 @@ namespace ashes
 			, size
 			, usage | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT
 			, sharingMode ) }
-		, m_storage{ device.allocateMemory( debugName, getAllocateInfo( device, *m_buffer ) ) }
+		, m_storage{ device.allocateMemory( debugName, stgbuf::getAllocateInfo( device, *m_buffer ) ) }
 	{
 		m_buffer->bindMemory( m_storage );
 	}
@@ -547,7 +547,7 @@ namespace ashes
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
 			, VK_PIPELINE_STAGE_TRANSFER_BIT
 			, view.makeTransferDestination( VK_IMAGE_LAYOUT_UNDEFINED ) );
-		commandBuffer.copyToImage( makeValidCopyInfos( view, subresourceLayers, size, offset )
+		commandBuffer.copyToImage( stgbuf::makeValidCopyInfos( view, subresourceLayers, size, offset )
 			, getBuffer()
 			, *view.image );
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT
@@ -661,7 +661,7 @@ namespace ashes
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
 			, VK_PIPELINE_STAGE_TRANSFER_BIT
 			, getBuffer().makeTransferDestination() );
-		commandBuffer.copyToBuffer( makeValidCopyInfos( view, subresourceLayers, size, offset )
+		commandBuffer.copyToBuffer( stgbuf::makeValidCopyInfos( view, subresourceLayers, size, offset )
 			, *view.image
 			, getBuffer() );
 		commandBuffer.memoryBarrier( VK_PIPELINE_STAGE_TRANSFER_BIT

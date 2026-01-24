@@ -22,7 +22,7 @@
 
 namespace ashes::D3D11_NAMESPACE
 {
-	namespace
+	namespace instance
 	{
 		inline VkPhysicalDeviceMemoryProperties const MemoryProperties = []()
 		{
@@ -48,7 +48,7 @@ namespace ashes::D3D11_NAMESPACE
 			return result;
 		}();
 
-		IDXGIFactory * createDXGIFactory()
+		static IDXGIFactory * createDXGIFactory()
 		{
 			IDXGIFactory * result{};
 
@@ -67,7 +67,7 @@ namespace ashes::D3D11_NAMESPACE
 			return result;
 		}
 
-		D3D_FEATURE_LEVEL getSupportedFeatureLevel( IDXGIAdapter * adapter )
+		static D3D_FEATURE_LEVEL getSupportedFeatureLevel( IDXGIAdapter * adapter )
 		{
 			static std::vector< D3D_FEATURE_LEVEL > const requestedFeatureLevels
 			{
@@ -99,7 +99,7 @@ namespace ashes::D3D11_NAMESPACE
 			return result;
 		}
 
-		std::vector< AdapterInfo > listAdapters( IDXGIFactory * factory )
+		static std::vector< AdapterInfo > listAdapters( IDXGIFactory * factory )
 		{
 			std::vector< AdapterInfo > result;
 			UINT index = 0;
@@ -129,7 +129,7 @@ namespace ashes::D3D11_NAMESPACE
 			return result;
 		}
 
-		D3D_FEATURE_LEVEL getMaxFeatureLevel( std::vector< AdapterInfo > const & adapters )
+		static D3D_FEATURE_LEVEL getMaxFeatureLevel( std::vector< AdapterInfo > const & adapters )
 		{
 			auto result = D3D_FEATURE_LEVEL_9_1;
 
@@ -141,7 +141,7 @@ namespace ashes::D3D11_NAMESPACE
 			return result;
 		}
 
-		void checkEnabledExtensions( ashes::ArrayView< char const * const > const & extensions )
+		static void checkEnabledExtensions( ashes::ArrayView< char const * const > const & extensions )
 		{
 			auto & available = getSupportedInstanceExtensions( nullptr );
 
@@ -159,7 +159,7 @@ namespace ashes::D3D11_NAMESPACE
 			}
 		}
 
-		bool hasEnabledExtensions( ashes::ArrayView< char const * const > const & extensions )
+		static bool hasEnabledExtensions( ashes::ArrayView< char const * const > const & extensions )
 		{
 			try
 			{
@@ -172,7 +172,7 @@ namespace ashes::D3D11_NAMESPACE
 			}
 		}
 
-		VkApplicationInfo getDefaultApplicationInfo()
+		static VkApplicationInfo getDefaultApplicationInfo()
 		{
 			return
 			{
@@ -191,10 +191,10 @@ namespace ashes::D3D11_NAMESPACE
 	{
 		D3D_FEATURE_LEVEL result = D3D_FEATURE_LEVEL_9_1;
 
-		if ( auto factory = createDXGIFactory() )
+		if ( auto factory = instance::createDXGIFactory() )
 		{
-			auto adapters = listAdapters( factory );
-			result = getMaxFeatureLevel( adapters );
+			auto adapters = instance::listAdapters( factory );
+			result = instance::getMaxFeatureLevel( adapters );
 
 			for ( auto & adapter : adapters )
 			{
@@ -212,10 +212,10 @@ namespace ashes::D3D11_NAMESPACE
 
 	Instance::Instance( VkInstanceCreateInfo const & createInfo )
 		: m_flags{ createInfo.flags }
-		, m_applicationInfo{ createInfo.pApplicationInfo ? *createInfo.pApplicationInfo : getDefaultApplicationInfo() }
+		, m_applicationInfo{ createInfo.pApplicationInfo ? *createInfo.pApplicationInfo : instance::getDefaultApplicationInfo() }
 		, m_enabledLayerNames{ ashes::convert( CharPtrArray{ createInfo.ppEnabledLayerNames, createInfo.ppEnabledLayerNames + createInfo.enabledLayerCount } ) }
 		, m_enabledExtensions{ ashes::convert( CharPtrArray{ createInfo.ppEnabledExtensionNames, createInfo.ppEnabledExtensionNames + createInfo.enabledExtensionCount } ) }
-		, m_factory{ createDXGIFactory() }
+		, m_factory{ instance::createDXGIFactory() }
 	{
 		doLoadAdapters();
 		doInitialisePhysicalDevices();
@@ -228,7 +228,7 @@ namespace ashes::D3D11_NAMESPACE
 		m_features.hasStorageBuffers = m_maxFeatureLevel >= D3D_FEATURE_LEVEL_11_0;
 		m_features.supportsPersistentMapping = false;
 
-		checkEnabledExtensions( ashes::makeArrayView( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) );
+		instance::checkEnabledExtensions( ashes::makeArrayView( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) );
 	}
 
 	Instance::~Instance()noexcept
@@ -257,7 +257,7 @@ namespace ashes::D3D11_NAMESPACE
 	bool Instance::hasExtension( std::string_view extension )const
 	{
 		char const * const version = extension.data();
-		return hasEnabledExtensions( ashes::makeArrayView( &version, 1u ) );
+		return instance::hasEnabledExtensions( ashes::makeArrayView( &version, 1u ) );
 	}
 
 	VkPhysicalDeviceArray Instance::enumeratePhysicalDevices()const
@@ -426,8 +426,8 @@ namespace ashes::D3D11_NAMESPACE
 
 	void Instance::doLoadAdapters()
 	{
-		m_adapters = listAdapters( m_factory );
-		m_maxFeatureLevel = getMaxFeatureLevel( m_adapters );
+		m_adapters = instance::listAdapters( m_factory );
+		m_maxFeatureLevel = instance::getMaxFeatureLevel( m_adapters );
 	}
 
 	void Instance::doInitialisePhysicalDevices()
@@ -446,11 +446,11 @@ namespace ashes::D3D11_NAMESPACE
 
 	VkPhysicalDeviceMemoryProperties const & Instance::getMemoryProperties()noexcept
 	{
-		return MemoryProperties;
+		return instance::MemoryProperties;
 	}
 
 	VkPhysicalDeviceMemoryProperties2KHR const & Instance::getMemoryProperties2()noexcept
 	{
-		return MemoryProperties2;
+		return instance::MemoryProperties2;
 	}
 }

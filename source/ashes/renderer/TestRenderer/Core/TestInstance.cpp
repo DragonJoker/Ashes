@@ -21,7 +21,7 @@
 
 namespace ashes::test
 {
-	namespace
+	namespace instance
 	{
 		inline VkPhysicalDeviceMemoryProperties const MemoryProperties = []()
 		{
@@ -54,7 +54,7 @@ namespace ashes::test
 			return result;
 		}();
 
-		VkApplicationInfo doGetDefaultApplicationInfo()
+		static VkApplicationInfo doGetDefaultApplicationInfo()
 		{
 			return
 			{
@@ -68,7 +68,7 @@ namespace ashes::test
 			};
 		}
 
-		void doCheckEnabledExtensions( ashes::ArrayView< char const * const > const & extensions )
+		static void doCheckEnabledExtensions( ashes::ArrayView< char const * const > const & extensions )
 		{
 			auto & available = getSupportedInstanceExtensions();
 
@@ -86,7 +86,7 @@ namespace ashes::test
 			}
 		}
 
-		bool doHasEnabledExtensions( ashes::ArrayView< char const * const > const & extensions )
+		static bool doHasEnabledExtensions( ashes::ArrayView< char const * const > const & extensions )
 		{
 			try
 			{
@@ -117,7 +117,7 @@ namespace ashes::test
 	}();
 
 	Instance::Instance( VkInstanceCreateInfo const & createInfo )
-		: m_applicationInfo{ createInfo.pApplicationInfo ? *createInfo.pApplicationInfo : doGetDefaultApplicationInfo() }
+		: m_applicationInfo{ createInfo.pApplicationInfo ? *createInfo.pApplicationInfo : instance::doGetDefaultApplicationInfo() }
 		, m_flags{ createInfo.flags }
 		, m_enabledLayerNames{ ashes::convert( CharPtrArray{ createInfo.ppEnabledLayerNames, createInfo.ppEnabledLayerNames + createInfo.enabledLayerCount } ) }
 		, m_enabledExtensions{ ashes::convert( CharPtrArray{ createInfo.ppEnabledExtensionNames, createInfo.ppEnabledExtensionNames + createInfo.enabledExtensionCount } ) }
@@ -149,7 +149,7 @@ namespace ashes::test
 	bool Instance::hasExtension( std::string_view extension )const
 	{
 		char const * const version = extension.data();
-		return doHasEnabledExtensions( ashes::makeArrayView( &version, 1u ) );
+		return instance::doHasEnabledExtensions( ashes::makeArrayView( &version, 1u ) );
 	}
 
 	VkPhysicalDeviceArray Instance::enumeratePhysicalDevices()const
@@ -306,12 +306,12 @@ namespace ashes::test
 
 	VkPhysicalDeviceMemoryProperties const & Instance::getMemoryProperties()
 	{
-		return MemoryProperties;
+		return instance::MemoryProperties;
 	}
 
 	VkPhysicalDeviceMemoryProperties2KHR const & Instance::getMemoryProperties2()
 	{
-		return MemoryProperties2;
+		return instance::MemoryProperties2;
 	}
 
 	void Instance::doInitialisePhysicalDevices()

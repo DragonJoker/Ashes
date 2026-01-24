@@ -6,10 +6,10 @@ namespace ashes::gl
 {
 	//*********************************************************************************************
 
-	namespace
+	namespace details
 	{
 		template< typename VkObjectT >
-		void assertReport( VkObjectT object
+		static void assertReport( VkObjectT object
 			, bool condition
 			, char const * msg )
 		{
@@ -22,14 +22,14 @@ namespace ashes::gl
 			}
 		}
 
-		VkOffset3D operator+( VkOffset3D const & lhs, VkExtent3D const & rhs )
+		static VkOffset3D operator+( VkOffset3D const & lhs, VkExtent3D const & rhs )
 		{
 			return VkOffset3D{ lhs.x + int32_t( rhs.width )
 				, lhs.x + int32_t( rhs.height )
 				, lhs.x + int32_t( rhs.depth ) };
 		}
 
-		VkExtent3D getExtent( VkExtent3D const & src
+		static VkExtent3D getExtent( VkExtent3D const & src
 			, uint32_t mipDiff )
 		{
 			return VkExtent3D{ src.width << mipDiff
@@ -37,7 +37,7 @@ namespace ashes::gl
 				, src.depth << mipDiff };
 		}
 
-		VkImageBlit convert( VkImageCopy const & src )
+		static VkImageBlit convert( VkImageCopy const & src )
 		{
 			if ( src.dstSubresource.mipLevel == src.srcSubresource.mipLevel )
 			{
@@ -90,25 +90,25 @@ namespace ashes::gl
 
 	//*********************************************************************************************
 
-	namespace
+	namespace details
 	{
-		bool isCube( VkImage image )
+		static bool isCube( VkImage image )
 		{
 			return checkFlag( get( image )->getCreateFlags()
 				, VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT );
 		}
 
-		bool isCube( VkImageView view )
+		static bool isCube( VkImageView view )
 		{
 			return isCube( get( view )->getImage() );
 		}
 
-		bool isMultisampled( VkImage image )
+		static bool isMultisampled( VkImage image )
 		{
 			return get( image )->getSamples() > VK_SAMPLE_COUNT_1_BIT;
 		}
 
-		bool isMultisampled( VkImageView view )
+		static bool isMultisampled( VkImageView view )
 		{
 			return isMultisampled( get( view )->getImage() );
 		}
@@ -134,10 +134,10 @@ namespace ashes::gl
 			? GL_TEXTURE_3D
 			: ( get( get( view )->getImage() )->getType() == VK_IMAGE_TYPE_2D
 				? ( viewLayerCount > 1u
-					? ( isMultisampled( view )
+					? ( details::isMultisampled( view )
 						? GL_TEXTURE_2D_MULTISAMPLE_ARRAY
 						: GL_TEXTURE_2D_ARRAY )
-					: ( isMultisampled( view )
+					: ( details::isMultisampled( view )
 						? GL_TEXTURE_2D_MULTISAMPLE
 						: GL_TEXTURE_2D ) )
 				: ( viewLayerCount > 1u
@@ -145,14 +145,14 @@ namespace ashes::gl
 					: GL_TEXTURE_1D ) ) ) }
 		, baseArrayLayer{ ( hasTextureViews( device )
 			? 0
-			: ( ( ( !isCube( view ) && imgLayerCount > 1u ) || ( isCube( view ) && imgLayerCount > 6u ) )
+			: ( ( ( !details::isCube( view ) && imgLayerCount > 1u ) || ( details::isCube( view ) && imgLayerCount > 6u ) )
 				? get( view )->getSubresourceRange().baseArrayLayer
 				: 0u ) ) }
 		, originalMipLevel{ get( view )->getSubresourceRange().baseMipLevel }
 		, mipLevel{ originalMipLevel }
 		, isSrgb{ isSRGBFormat( get( get( view )->getImage() )->getFormatVk() ) }
 	{
-		multisampled = isMultisampled( view );
+		multisampled = details::isMultisampled( view );
 	}
 
 	FboAttachment::FboAttachment( VkDevice device
@@ -173,10 +173,10 @@ namespace ashes::gl
 			? GL_TEXTURE_3D
 			: ( get( image )->getType() == VK_IMAGE_TYPE_2D
 				? ( viewLayerCount > 1u
-					? ( isMultisampled( image )
+					? ( details::isMultisampled( image )
 						? GL_TEXTURE_2D_MULTISAMPLE_ARRAY
 						: GL_TEXTURE_2D_ARRAY )
-					: ( isMultisampled( image )
+					: ( details::isMultisampled( image )
 						? GL_TEXTURE_2D_MULTISAMPLE
 						: GL_TEXTURE_2D ) )
 				: ( viewLayerCount > 1u
@@ -464,7 +464,7 @@ namespace ashes::gl
 		, VkImageCopy const & origRegion
 		, VkImage srcImage
 		, VkImage dstImage )
-		: LayerCopy{ device, convert( origRegion ), srcImage, dstImage }
+		: LayerCopy{ device, details::convert( origRegion ), srcImage, dstImage }
 	{
 	}
 

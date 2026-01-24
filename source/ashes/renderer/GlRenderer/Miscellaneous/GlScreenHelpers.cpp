@@ -11,11 +11,11 @@
 
 namespace ashes::gl
 {
-	namespace
+	namespace helpers
 	{
 #if _WIN32
 
-		size_t makeKey( uint32_t width
+		static size_t makeKey( uint32_t width
 			, uint32_t height
 			, uint32_t refreshRate )
 		{
@@ -25,12 +25,12 @@ namespace ashes::gl
 			return result;
 		}
 
-		uint32_t countDisplays()
+		static uint32_t countDisplays()
 		{
 			return uint32_t( ::GetSystemMetrics( SM_CMONITORS ) );
 		}
 
-		void listScreenResolutions( VkDisplayPropertiesKHR & displayProps
+		static void listScreenResolutions( VkDisplayPropertiesKHR & displayProps
 			, std::vector< VkDisplayModeParametersKHR > & params )
 		{
 			DWORD modeIndex = 0;
@@ -79,7 +79,7 @@ namespace ashes::gl
 			}
 		}
 
-		bool getScreenData( uint32_t index
+		static bool getScreenData( uint32_t index
 			, VkDisplayPropertiesKHR & data
 			, std::string & name
 			, std::vector< VkDisplayModeParametersKHR > & displayModesParams )
@@ -111,7 +111,7 @@ namespace ashes::gl
 
 #elif __linux__
 
-		size_t makeKey( uint32_t width
+		static size_t makeKey( uint32_t width
 			, uint32_t height
 			, uint32_t refreshRate )
 		{
@@ -121,7 +121,7 @@ namespace ashes::gl
 			return result;
 		}
 
-		uint32_t countDisplays()
+		static uint32_t countDisplays()
 		{
 			auto dpy = ::XOpenDisplay( nullptr );
 			auto result = uint32_t( ::XScreenCount( dpy ) );
@@ -129,7 +129,7 @@ namespace ashes::gl
 			return result;
 		}
 
-		void listScreenResolutions( Display * dpy
+		static void listScreenResolutions( Display * dpy
 			, uint32_t index
 			, VkDisplayPropertiesKHR & displayProps
 			, std::vector< VkDisplayModeParametersKHR > & params )
@@ -188,7 +188,7 @@ namespace ashes::gl
 			XRRFreeScreenConfigInfo( sc );
 		}
 
-		bool getScreenData( uint32_t index
+		static bool getScreenData( uint32_t index
 			, VkDisplayPropertiesKHR & data
 			, std::string & name
 			, std::vector< VkDisplayModeParametersKHR > & params )
@@ -220,12 +220,12 @@ namespace ashes::gl
 
 #elif __APPLE__
 
-		uint32_t countDisplays()
+		static uint32_t countDisplays()
 		{
 			return 0u;
 		}
 
-		bool getScreenData( uint32_t index
+		static bool getScreenData( uint32_t index
 			, VkDisplayPropertiesKHR & data
 			, std::string & name
 			, std::vector< VkDisplayModeParametersKHR > & displayModesParams )
@@ -238,7 +238,7 @@ namespace ashes::gl
 
 	uint32_t getScreenCount()
 	{
-		return countDisplays();
+		return helpers::countDisplays();
 	}
 
 	void getScreenDesc( uint32_t index
@@ -246,7 +246,7 @@ namespace ashes::gl
 		, VkDisplayPropertiesKHR & displayProps
 		, std::vector< VkDisplayModeParametersKHR > & displayModesParams )
 	{
-		getScreenData( index
+		helpers::getScreenData( index
 			, displayProps
 			, name
 			, displayModesParams );

@@ -12,7 +12,7 @@ See LICENSE file in root folder.
 
 namespace utils
 {
-	namespace
+	namespace instance
 	{
 #if !defined( NDEBUG )
 		bool constexpr LoadValidationLayers = true;
@@ -20,7 +20,7 @@ namespace utils
 		bool constexpr LoadValidationLayers = false;
 #endif
 
-		bool isValidationLayer( std::string const & name )
+		static bool isValidationLayer( std::string const & name )
 		{
 			static std::set< std::string, std::less<> > const validNames
 			{
@@ -29,7 +29,7 @@ namespace utils
 			return validNames.find( name ) != validNames.end();
 		}
 
-		void addOptionalValidationLayer( std::string const & layer
+		static void addOptionalValidationLayer( std::string const & layer
 			, ashes::StringArray & names )
 		{
 			if constexpr ( LoadValidationLayers )
@@ -41,7 +41,7 @@ namespace utils
 			}
 		}
 
-		void addOptionalDebugReportLayer( ashes::StringArray & names )
+		static void addOptionalDebugReportLayer( ashes::StringArray & names )
 		{
 			if constexpr ( LoadValidationLayers )
 			{
@@ -54,7 +54,7 @@ namespace utils
 			}
 		}
 
-		void checkExtensionsAvailability( std::vector< VkExtensionProperties > const & available
+		static void checkExtensionsAvailability( std::vector< VkExtensionProperties > const & available
 			, ashes::StringArray const & requested )
 		{
 			for ( auto const & name : requested )
@@ -71,7 +71,7 @@ namespace utils
 			}
 		}
 
-		ashes::VkLayerPropertiesArray enumerateLayerProperties( PFN_vkEnumerateInstanceLayerProperties enumLayerProperties )
+		static ashes::VkLayerPropertiesArray enumerateLayerProperties( PFN_vkEnumerateInstanceLayerProperties enumLayerProperties )
 		{
 			if ( !enumLayerProperties )
 			{
@@ -102,7 +102,7 @@ namespace utils
 			return result;
 		}
 
-		ashes::VkExtensionPropertiesArray enumerateExtensionProperties( PFN_vkEnumerateInstanceExtensionProperties enumInstanceExtensionProperties
+		static ashes::VkExtensionPropertiesArray enumerateExtensionProperties( PFN_vkEnumerateInstanceExtensionProperties enumInstanceExtensionProperties
 			, std::string const & layerName )
 		{
 			if ( !enumInstanceExtensionProperties )
@@ -163,15 +163,15 @@ namespace utils
 #pragma clang diagnostic pop
 #pragma warning( pop )
 
-		m_layers = enumerateLayerProperties( enumLayerProperties );
-		m_globalLayerExtensions = enumerateExtensionProperties( enumInstanceExtensionProperties
+		m_layers = instance::enumerateLayerProperties( enumLayerProperties );
+		m_globalLayerExtensions = instance::enumerateExtensionProperties( enumInstanceExtensionProperties
 			, m_globalLayer.layerName );
 
 		// On récupère la liste d'extensions pour chaque couche de l'instance.
 		for ( auto const & layerProperties : m_layers )
 		{
 			m_layersExtensions.try_emplace( layerProperties.layerName
-				, enumerateExtensionProperties( enumInstanceExtensionProperties
+				, instance::enumerateExtensionProperties( enumInstanceExtensionProperties
 					, layerProperties.layerName ) );
 		}
 
@@ -208,8 +208,8 @@ namespace utils
 #if defined( VK_USE_PLATFORM_WIN32_KHR )
 		m_extensionNames.emplace_back( VK_KHR_WIN32_SURFACE_EXTENSION_NAME );
 #endif
-		addOptionalDebugReportLayer( m_extensionNames );
-		checkExtensionsAvailability( m_globalLayerExtensions, m_extensionNames );
+		instance::addOptionalDebugReportLayer( m_extensionNames );
+		instance::checkExtensionsAvailability( m_globalLayerExtensions, m_extensionNames );
 		ashes::InstanceCreateInfo createInfo
 		{
 			0u,
@@ -221,7 +221,7 @@ namespace utils
 			, nullptr
 			, std::move( createInfo ) );
 
-		if constexpr ( LoadValidationLayers )
+		if constexpr ( instance::LoadValidationLayers )
 		{
 			m_debugCallback = setupDebugging( *m_instance, this );
 		}
@@ -231,7 +231,7 @@ namespace utils
 
 	Instance::~Instance()noexcept
 	{
-		if constexpr ( LoadValidationLayers )
+		if constexpr ( instance::LoadValidationLayers )
 		{
 #	if VK_EXT_debug_utils
 			m_instance->vkDestroyDebugUtilsMessengerEXT( *m_instance, m_debugCallback, nullptr );
@@ -245,7 +245,7 @@ namespace utils
 	{
 		for ( auto const & props : m_layers )
 		{
-			addOptionalValidationLayer( props.layerName, names );
+			instance::addOptionalValidationLayer( props.layerName, names );
 		}
 	}
 }

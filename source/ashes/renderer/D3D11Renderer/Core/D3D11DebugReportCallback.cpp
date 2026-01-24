@@ -15,10 +15,10 @@ namespace ashes::D3D11_NAMESPACE
 {
 	//*************************************************************************
 	
-	namespace
+	namespace debugcb
 	{
 		template< typename T >
-		std::string toString( T const & value )
+		static std::string toString( T const & value )
 		{
 			std::stringstream stream;
 			stream.imbue( std::locale{ "C" } );
@@ -26,7 +26,7 @@ namespace ashes::D3D11_NAMESPACE
 			return stream.str();
 		}
 
-		bool isOneBitSet( uint32_t flags )
+		static bool isOneBitSet( uint32_t flags )
 		{
 			static std::set< uint32_t > const flagsRegister
 			{
@@ -45,7 +45,7 @@ namespace ashes::D3D11_NAMESPACE
 		template< typename CheckFuncT
 			, typename DataT
 			, typename CallbackT >
-		bool checkValid( CallbackT & callback
+		static bool checkValid( CallbackT & callback
 			, VkBufferImageCopy const & copyInfo
 			, VkImage image
 			, DataT & data
@@ -240,7 +240,7 @@ namespace ashes::D3D11_NAMESPACE
 			{ S_OK, { "No error occurred.", VK_SUCCESS } },
 		};
 
-		ErrorsMap const & getErrors()
+		static ErrorsMap const & getErrors()
 		{
 			return Errors;
 		}
@@ -253,7 +253,7 @@ namespace ashes::D3D11_NAMESPACE
 
 	namespace dudr
 	{
-		VkDebugUtilsMessageSeverityFlagBitsEXT getDebugUtilsSeverity( VkDebugReportFlagsEXT flags )
+		static VkDebugUtilsMessageSeverityFlagBitsEXT getDebugUtilsSeverity( VkDebugReportFlagsEXT flags )
 		{
 			switch ( flags )
 			{
@@ -272,7 +272,7 @@ namespace ashes::D3D11_NAMESPACE
 			}
 		}
 		
-		VkDebugReportFlagsEXT getDebugUtilsSeverity( VkDebugUtilsMessageSeverityFlagBitsEXT flags )
+		static VkDebugReportFlagsEXT getDebugUtilsSeverity( VkDebugUtilsMessageSeverityFlagBitsEXT flags )
 		{
 			switch ( flags )
 			{
@@ -289,12 +289,12 @@ namespace ashes::D3D11_NAMESPACE
 			}
 		}
 
-		VkObjectType getObjectType( VkDebugReportObjectTypeEXT type )
+		static VkObjectType getObjectType( VkDebugReportObjectTypeEXT type )
 		{
 			return VkObjectType( type );
 		}
 
-		VkDebugReportObjectTypeEXT getObjectType( VkObjectType type )
+		static VkDebugReportObjectTypeEXT getObjectType( VkObjectType type )
 		{
 			return VkDebugReportObjectTypeEXT( type );
 		}
@@ -304,7 +304,7 @@ namespace ashes::D3D11_NAMESPACE
 
 	namespace du
 	{
-		VkResult check( DebugUtilsMessengerEXT & callback
+		static VkResult check( DebugUtilsMessengerEXT & callback
 			, MessageData report
 			, bool condition
 			, std::string const & message )
@@ -320,7 +320,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< typename T >
-		VkResult checkEqual( DebugUtilsMessengerEXT callback
+		static VkResult checkEqual( DebugUtilsMessengerEXT callback
 			, ReportData report
 			, T const & lhs
 			, T const & rhs )
@@ -364,7 +364,7 @@ namespace ashes::D3D11_NAMESPACE
 				uint64_t( cmd ),
 				nullptr,
 			} );
-		return !checkValid( m_callback, copyInfo, image, message, du::check );
+		return !debugcb::checkValid( m_callback, copyInfo, image, message, du::check );
 	}
 
 	bool DebugUtilsLayer::onCopyToImageCommand( VkCommandBuffer cmd
@@ -405,8 +405,8 @@ namespace ashes::D3D11_NAMESPACE
 			stream.imbue( std::locale{ "C" } );
 			stream << "Error calling [" << message << "]: " << std::hex << hresult;
 
-			if ( auto it = getErrors().find( hresult );
-				it != getErrors().end() )
+			if ( auto it = debugcb::getErrors().find( hresult );
+				it != debugcb::getErrors().end() )
 			{
 				stream << "\n    Direct3D: " << it->second.name;
 			}
@@ -515,7 +515,7 @@ namespace ashes::D3D11_NAMESPACE
 
 	namespace dr
 	{
-		VkResult check( DebugReportCallbackEXT & callback
+		static VkResult check( DebugReportCallbackEXT & callback
 			, ReportData report
 			, bool condition
 			, std::string const & message )
@@ -531,7 +531,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< typename T >
-		VkResult checkEqual( DebugReportCallbackEXT callback
+		static VkResult checkEqual( DebugReportCallbackEXT callback
 			, ReportData report
 			, T const & lhs
 			, T const & rhs )
@@ -566,7 +566,7 @@ namespace ashes::D3D11_NAMESPACE
 		};
 		ReportData report{ baseReport };
 		report.object = uint64_t( &cmd );
-		return !checkValid( m_callback, copyInfo, image, report, dr::check );
+		return !debugcb::checkValid( m_callback, copyInfo, image, report, dr::check );
 	}
 
 	bool DebugReportLayer::onCopyToImageCommand( VkCommandBuffer cmd
@@ -603,8 +603,8 @@ namespace ashes::D3D11_NAMESPACE
 			stream.imbue( std::locale{ "C" } );
 			stream << "Error calling [" << message << "]: " << std::hex << hresult;
 
-			if ( auto it = getErrors().find( hresult );
-				it != getErrors().end() )
+			if ( auto it = debugcb::getErrors().find( hresult );
+				it != debugcb::getErrors().end() )
 			{
 				stream << "\n    Direct3D: " << it->second.name;
 			}

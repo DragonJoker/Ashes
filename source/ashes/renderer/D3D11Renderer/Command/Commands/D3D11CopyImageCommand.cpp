@@ -11,9 +11,9 @@ See LICENSE file in root folder.
 
 namespace ashes::D3D11_NAMESPACE
 {
-	namespace
+	namespace copyimg
 	{
-		D3D11_BOX doGetSrcBox( VkImageCopy const & copyInfo )
+		static D3D11_BOX doGetSrcBox( VkImageCopy const & copyInfo )
 		{
 			return
 			{
@@ -35,7 +35,7 @@ namespace ashes::D3D11_NAMESPACE
 		, m_src{ src }
 		, m_dst{ dst }
 		, m_copyInfo{ copyInfo }
-		, m_srcBox{ doGetSrcBox( m_copyInfo ) }
+		, m_srcBox{ copyimg::doGetSrcBox( m_copyInfo ) }
 		, m_srcSubresource{ D3D11CalcSubresource( m_copyInfo.srcSubresource.mipLevel
 			, m_copyInfo.srcSubresource.baseArrayLayer
 			, get( m_src )->getMipmapLevels() ) }

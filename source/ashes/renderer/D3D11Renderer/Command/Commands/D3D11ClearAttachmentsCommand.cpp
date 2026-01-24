@@ -12,9 +12,9 @@ See LICENSE file in root folder.
 
 namespace ashes::D3D11_NAMESPACE
 {
-	namespace
+	namespace clratt
 	{
-		void doClear( Context const & context
+		static void doClear( Context const & context
 			, ClearAttachmentView const & clearAttach )
 		{
 			if ( ashes::checkFlag( clearAttach.clear.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT ) )
@@ -76,7 +76,7 @@ namespace ashes::D3D11_NAMESPACE
 					LONG( rect.rect.extent.height ),
 				};
 				context.context->RSSetScissorRects( 1u, &scissor );
-				doClear( context, clearAttach );
+				clratt::doClear( context, clearAttach );
 			}
 		}
 	}

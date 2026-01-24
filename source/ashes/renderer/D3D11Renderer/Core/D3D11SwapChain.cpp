@@ -21,9 +21,9 @@
 
 namespace ashes::D3D11_NAMESPACE
 {
-	namespace
+	namespace swapchain
 	{
-		VkImage createImage( VkDevice device
+		static VkImage createImage( VkDevice device
 			, VkFormat format
 			, VkExtent2D dimensions
 			, VkDeviceMemory & deviceMemory )
@@ -46,7 +46,7 @@ namespace ashes::D3D11_NAMESPACE
 			return result;
 		}
 
-		VkImageView createImageView( VkDevice device
+		static VkImageView createImageView( VkDevice device
 			, VkImage image
 			, VkFormat format )
 		{
@@ -146,12 +146,12 @@ namespace ashes::D3D11_NAMESPACE
 			dxDebugName( get( m_swapChainImage )->getResource(), SwapChainImage );
 
 			m_windowExtent = m_createInfo.imageExtent;
-			m_image = createImage( device
+			m_image = swapchain::createImage( device
 				, m_createInfo.imageFormat
 				, m_windowExtent
 				, m_deviceMemory );
 			dxDebugName( get( m_image )->getResource(), SwapChainFakeImage );
-			m_view = createImageView( device
+			m_view = swapchain::createImageView( device
 				, m_image
 				, m_createInfo.imageFormat );
 			dxDebugName( get( m_view )->getRenderTargetView(), SwapChainFakeImageView );

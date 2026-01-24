@@ -20,10 +20,10 @@ See LICENSE file in root folder
 
 namespace ashes::gl::gl4
 {
-	namespace
+	namespace val
 	{
-		std::string const ValidationError = "VALIDATION ERROR: ";
-		std::string const ValidationWarning = "VALIDATION WARNING: ";
+		static std::string const ValidationError = "VALIDATION ERROR: ";
+		static std::string const ValidationWarning = "VALIDATION WARNING: ";
 
 		enum GlslInterface
 			: GLenum
@@ -97,7 +97,7 @@ namespace ashes::gl::gl4
 			eActiveUniforms,
 		};
 
-		bool areCompatible( VkFormat lhs, VkFormat rhs )
+		static bool areCompatible( VkFormat lhs, VkFormat rhs )
 		{
 			if ( lhs == rhs )
 			{
@@ -175,7 +175,7 @@ namespace ashes::gl::gl4
 			}
 		}
 
-		VkFormat convertFormat( GlslAttributeType type )
+		static VkFormat convertFormat( GlslAttributeType type )
 		{
 			switch ( type )
 			{
@@ -193,7 +193,7 @@ namespace ashes::gl::gl4
 			}
 		}
 
-		bool areCompatibleInputs( VkFormat lhs, VkFormat rhs )
+		static bool areCompatibleInputs( VkFormat lhs, VkFormat rhs )
 		{
 			if ( lhs == rhs )
 			{
@@ -260,7 +260,7 @@ namespace ashes::gl::gl4
 		}
 
 		template< typename FuncType >
-		void getProgramInterfaceInfos( ContextLock const & context
+		static void getProgramInterfaceInfos( ContextLock const & context
 			, uint32_t program
 			, GlslInterface interface
 			, std::vector< GlslProperty > const & properties
@@ -318,7 +318,7 @@ namespace ashes::gl::gl4
 
 		using BufferVariableFunction = std::function< void( std::string, GlslAttributeType, VkDeviceSize, uint32_t ) >;
 		template< typename BufferFunction >
-		void getProgramBufferInfos( ContextLock const & context
+		static void getProgramBufferInfos( ContextLock const & context
 			, uint32_t program
 			, GlslInterface bufferInterface
 			, GlslInterface variableInterface
@@ -445,7 +445,7 @@ namespace ashes::gl::gl4
 		}
 
 		template< typename VarFuncType >
-		void getVariableInfos( ContextLock const & context
+		static void getVariableInfos( ContextLock const & context
 			, uint32_t program
 			, GlslInterface variableInterface
 			, VarFuncType variableFunction )
@@ -506,7 +506,7 @@ namespace ashes::gl::gl4
 		}
 
 		template< typename FuncType >
-		void getUnnamedProgramInterfaceInfos( ContextLock const & context
+		static void getUnnamedProgramInterfaceInfos( ContextLock const & context
 			, uint32_t program
 			, GlslInterface interface
 			, GlslProperty property
@@ -570,7 +570,7 @@ namespace ashes::gl::gl4
 				, attributes.end()
 				, [&glslType, &location]( AttrSpec const & lookup )
 				{
-					return areCompatibleInputs( lookup.format, getAttributeFormat( glslType ) )
+					return val::areCompatibleInputs( lookup.format, getAttributeFormat( glslType ) )
 						&& lookup.location == location;
 				} );
 
@@ -595,10 +595,10 @@ namespace ashes::gl::gl4
 			}
 		};
 
-		getProgramInterfaceInfos( context
+		val::getProgramInterfaceInfos( context
 			, program
-			, GLSL_INTERFACE_PROGRAM_INPUT
-			, { GLSL_PROPERTY_TYPE, GLSL_PROPERTY_ARRAY_SIZE, GLSL_PROPERTY_LOCATION/*, GLSL_PROPERTY_LOCATION_COMPONENT*/ }
+			, val::GLSL_INTERFACE_PROGRAM_INPUT
+			, { val::GLSL_PROPERTY_TYPE, val::GLSL_PROPERTY_ARRAY_SIZE, val::GLSL_PROPERTY_LOCATION/*, GLSL_PROPERTY_LOCATION_COMPONENT*/ }
 			, [&findAttribute]( std::string const & name, std::vector< GLint > const & values )
 			{
 				auto glslType = GlslAttributeType( values[0] );
@@ -678,10 +678,10 @@ namespace ashes::gl::gl4
 		};
 		std::vector< GlslOutput > outputs;
 
-		getProgramInterfaceInfos( context
+		val::getProgramInterfaceInfos( context
 			, program
-			, GLSL_INTERFACE_PROGRAM_OUTPUT
-			, { GLSL_PROPERTY_TYPE, GLSL_PROPERTY_ARRAY_SIZE, GLSL_PROPERTY_LOCATION/*, GLSL_PROPERTY_LOCATION_COMPONENT*/ }
+			, val::GLSL_INTERFACE_PROGRAM_OUTPUT
+			, { val::GLSL_PROPERTY_TYPE, val::GLSL_PROPERTY_ARRAY_SIZE, val::GLSL_PROPERTY_LOCATION/*, GLSL_PROPERTY_LOCATION_COMPONENT*/ }
 			, [&outputs]( std::string const & name, std::vector< GLint > const & values )
 			{
 				outputs.push_back( { name, GlslAttributeType( values[0] ), uint32_t( values[2] ) } );
@@ -697,7 +697,7 @@ namespace ashes::gl::gl4
 				{
 					auto & attach = get( renderPass )->getColourAttaches()[output.location];
 
-					if ( areCompatible( attach.attach.get().format, convertFormat( output.type ) ) )
+					if ( val::areCompatible( attach.attach.get().format, val::convertFormat( output.type ) ) )
 					{
 						found = true;
 						attaches.erase( &attach.attach.get() );
@@ -724,7 +724,7 @@ namespace ashes::gl::gl4
 					, attaches.end()
 					, [&output]( VkAttachmentDescription const * lookup )
 					{
-						return areCompatible( lookup->format, convertFormat( output.type ) );
+						return val::areCompatible( lookup->format, val::convertFormat( output.type ) );
 					} );
 				it != attaches.end() )
 			{
@@ -753,10 +753,10 @@ namespace ashes::gl::gl4
 	void validateUbos( ContextLock const & context
 		, GLuint program )
 	{
-		getProgramBufferInfos( context
+		val::getProgramBufferInfos( context
 			, program
-			, GLSL_INTERFACE_UNIFORM_BLOCK
-			, GLSL_INTERFACE_UNIFORM
+			, val::GLSL_INTERFACE_UNIFORM_BLOCK
+			, val::GLSL_INTERFACE_UNIFORM
 			, []( std::string const & name
 				, uint32_t point
 				, uint32_t dataSize
@@ -784,10 +784,10 @@ namespace ashes::gl::gl4
 	void validateSsbos( ContextLock const & context
 		, GLuint program )
 	{
-		getProgramBufferInfos( context
+		val::getProgramBufferInfos( context
 			, program
-			, GLSL_INTERFACE_SHADER_STORAGE_BLOCK
-			, GLSL_INTERFACE_BUFFER_VARIABLE
+			, val::GLSL_INTERFACE_SHADER_STORAGE_BLOCK
+			, val::GLSL_INTERFACE_BUFFER_VARIABLE
 			, []( std::string const & name
 				, uint32_t point
 				, uint32_t dataSize
@@ -815,9 +815,9 @@ namespace ashes::gl::gl4
 	void validateUniforms( ContextLock const & context
 		, GLuint program )
 	{
-		getVariableInfos( context
+		val::getVariableInfos( context
 			, program
-			, GLSL_INTERFACE_UNIFORM
+			, val::GLSL_INTERFACE_UNIFORM
 			, []( std::string const & name
 				, GlslAttributeType type
 				, GLint location
@@ -837,10 +837,10 @@ namespace ashes::gl::gl4
 		, GLuint program )
 	{
 		InputsLayout result;
-		getProgramInterfaceInfos( context
+		val::getProgramInterfaceInfos( context
 			, program
-			, GLSL_INTERFACE_PROGRAM_INPUT
-			, { GLSL_PROPERTY_TYPE, GLSL_PROPERTY_ARRAY_SIZE, GLSL_PROPERTY_LOCATION }
+			, val::GLSL_INTERFACE_PROGRAM_INPUT
+			, { val::GLSL_PROPERTY_TYPE, val::GLSL_PROPERTY_ARRAY_SIZE, val::GLSL_PROPERTY_LOCATION }
 			, [&result]( std::string const &, std::vector< GLint > const & values )
 			{
 				auto glslType = GlslAttributeType( values[0] );
@@ -902,9 +902,9 @@ namespace ashes::gl::gl4
 		, VkShaderStageFlagBits stage
 		, GLuint program )
 	{
-		getVariableInfos( context
+		val::getVariableInfos( context
 			, program
-			, GLSL_INTERFACE_UNIFORM
+			, val::GLSL_INTERFACE_UNIFORM
 			, [&constants]( std::string const & name
 				, GlslAttributeType type
 				, GLint location
@@ -937,10 +937,10 @@ namespace ashes::gl::gl4
 		, GLuint program )
 	{
 		InterfaceBlocksLayout result;
-		getProgramBufferInfos( context
+		val::getProgramBufferInfos( context
 			, program
-			, GLSL_INTERFACE_UNIFORM_BLOCK
-			, GLSL_INTERFACE_UNIFORM
+			, val::GLSL_INTERFACE_UNIFORM_BLOCK
+			, val::GLSL_INTERFACE_UNIFORM
 			, [&result]( std::string const & name
 				, uint32_t point
 				, uint32_t dataSize
@@ -980,10 +980,10 @@ namespace ashes::gl::gl4
 		, GLuint program )
 	{
 		InterfaceBlocksLayout result;
-		getProgramBufferInfos( context
+		val::getProgramBufferInfos( context
 			, program
-			, GLSL_INTERFACE_SHADER_STORAGE_BLOCK
-			, GLSL_INTERFACE_BUFFER_VARIABLE
+			, val::GLSL_INTERFACE_SHADER_STORAGE_BLOCK
+			, val::GLSL_INTERFACE_BUFFER_VARIABLE
 			, [&result]( std::string const & name
 				, uint32_t point
 				, uint32_t dataSize
@@ -1006,9 +1006,9 @@ namespace ashes::gl::gl4
 		, GLuint program )
 	{
 		SamplersLayout result;
-		getVariableInfos( context
+		val::getVariableInfos( context
 			, program
-			, GLSL_INTERFACE_UNIFORM
+			, val::GLSL_INTERFACE_UNIFORM
 			, [&result, &stage, &program]( std::string const & name
 				, GlslAttributeType type
 				, GLint location
@@ -1035,9 +1035,9 @@ namespace ashes::gl::gl4
 		, GLuint program )
 	{
 		SamplersLayout result;
-		getVariableInfos( context
+		val::getVariableInfos( context
 			, program
-			, GLSL_INTERFACE_UNIFORM
+			, val::GLSL_INTERFACE_UNIFORM
 			, [&result, &stage, &program]( std::string const & name
 				, GlslAttributeType type
 				, GLint location
@@ -1064,9 +1064,9 @@ namespace ashes::gl::gl4
 		, GLuint program )
 	{
 		ImagesLayout result;
-		getVariableInfos( context
+		val::getVariableInfos( context
 			, program
-			, GLSL_INTERFACE_UNIFORM
+			, val::GLSL_INTERFACE_UNIFORM
 			, [&result, &stage, &program]( std::string const & name
 				, GlslAttributeType type
 				, GLint location
@@ -1093,9 +1093,9 @@ namespace ashes::gl::gl4
 		, GLuint program )
 	{
 		ImagesLayout result;
-		getVariableInfos( context
+		val::getVariableInfos( context
 			, program
-			, GLSL_INTERFACE_UNIFORM
+			, val::GLSL_INTERFACE_UNIFORM
 			, [&result, &stage, &program]( std::string const & name
 				, GlslAttributeType type
 				, GLint location

@@ -15,10 +15,10 @@ namespace ashes::test
 {
 	//*************************************************************************
 	
-	namespace
+	namespace debugcb
 	{
 		template< typename T >
-		std::string toString( T const & value )
+		static std::string toString( T const & value )
 		{
 			std::stringstream stream;
 			stream.imbue( std::locale{ "C" } );
@@ -26,7 +26,7 @@ namespace ashes::test
 			return stream.str();
 		}
 
-		bool isOneBitSet( uint32_t flags )
+		static bool isOneBitSet( uint32_t flags )
 		{
 			static std::set< uint32_t > const flagsRegister
 			{
@@ -45,7 +45,7 @@ namespace ashes::test
 		template< typename CheckFuncT
 			, typename DataT
 			, typename CallbackT >
-		bool checkValid( CallbackT & callback
+		static bool checkValid( CallbackT & callback
 			, VkBufferImageCopy const & copyInfo
 			, VkImage image
 			, DataT & data
@@ -201,53 +201,50 @@ namespace ashes::test
 
 	namespace dudr
 	{
-		namespace
+		static VkDebugUtilsMessageSeverityFlagBitsEXT getDebugUtilsSeverity( VkDebugReportFlagsEXT flags )
 		{
-			VkDebugUtilsMessageSeverityFlagBitsEXT getDebugUtilsSeverity( VkDebugReportFlagsEXT flags )
+			switch ( flags )
 			{
-				switch ( flags )
-				{
-				case VK_DEBUG_REPORT_INFORMATION_BIT_EXT:
-					return VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT;
-				case VK_DEBUG_REPORT_WARNING_BIT_EXT:
-					return VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
-				case VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT:
-					return VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
-				case VK_DEBUG_REPORT_ERROR_BIT_EXT:
-					return VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-				case VK_DEBUG_REPORT_DEBUG_BIT_EXT:
-					return VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
-				default:
-					return VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
-				}
+			case VK_DEBUG_REPORT_INFORMATION_BIT_EXT:
+				return VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT;
+			case VK_DEBUG_REPORT_WARNING_BIT_EXT:
+				return VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
+			case VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT:
+				return VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
+			case VK_DEBUG_REPORT_ERROR_BIT_EXT:
+				return VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+			case VK_DEBUG_REPORT_DEBUG_BIT_EXT:
+				return VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
+			default:
+				return VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
 			}
+		}
 		
-			VkDebugReportFlagsEXT getDebugUtilsSeverity( VkDebugUtilsMessageSeverityFlagBitsEXT flags )
+		static VkDebugReportFlagsEXT getDebugUtilsSeverity( VkDebugUtilsMessageSeverityFlagBitsEXT flags )
+		{
+			switch ( flags )
 			{
-				switch ( flags )
-				{
-				case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
-					return VK_DEBUG_REPORT_INFORMATION_BIT_EXT;
-				case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-					return VK_DEBUG_REPORT_WARNING_BIT_EXT;
-				case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-					return VK_DEBUG_REPORT_ERROR_BIT_EXT;
-				case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
-					return VK_DEBUG_REPORT_DEBUG_BIT_EXT;
-				default:
-					return VK_DEBUG_REPORT_DEBUG_BIT_EXT;
-				}
+			case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+				return VK_DEBUG_REPORT_INFORMATION_BIT_EXT;
+			case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+				return VK_DEBUG_REPORT_WARNING_BIT_EXT;
+			case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+				return VK_DEBUG_REPORT_ERROR_BIT_EXT;
+			case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
+				return VK_DEBUG_REPORT_DEBUG_BIT_EXT;
+			default:
+				return VK_DEBUG_REPORT_DEBUG_BIT_EXT;
 			}
+		}
 
-			VkObjectType getObjectType( VkDebugReportObjectTypeEXT type )
-			{
-				return VkObjectType( type );
-			}
+		static VkObjectType getObjectType( VkDebugReportObjectTypeEXT type )
+		{
+			return VkObjectType( type );
+		}
 
-			VkDebugReportObjectTypeEXT getObjectType( VkObjectType type )
-			{
-				return VkDebugReportObjectTypeEXT( type );
-			}
+		static VkDebugReportObjectTypeEXT getObjectType( VkObjectType type )
+		{
+			return VkDebugReportObjectTypeEXT( type );
 		}
 	}
 
@@ -255,34 +252,31 @@ namespace ashes::test
 
 	namespace du
 	{
-		namespace
+		static VkResult check( DebugUtilsMessengerEXT & callback
+			, MessageData report
+			, bool condition
+			, std::string const & message )noexcept
 		{
-			VkResult check( DebugUtilsMessengerEXT & callback
-				, MessageData report
-				, bool condition
-				, std::string const & message )noexcept
+			if ( !condition )
 			{
-				if ( !condition )
-				{
-					report.message += "Condition failed: " + message + " | ";
-					callback.report( report );
-					return VkResult( report.callbackData.messageIdNumber );
-				}
-
-				return VK_SUCCESS;
+				report.message += "Condition failed: " + message + " | ";
+				callback.report( report );
+				return VkResult( report.callbackData.messageIdNumber );
 			}
 
-			template< typename T >
-			VkResult checkEqual( DebugUtilsMessengerEXT callback
-				, ReportData report
-				, T const & lhs
-				, T const & rhs )noexcept
-			{
-				return check( callback
-					, report
-					, !( lhs == rhs )
-					, toString( lhs ) + " != " + toString( rhs ) );
-			}
+			return VK_SUCCESS;
+		}
+
+		template< typename T >
+		static VkResult checkEqual( DebugUtilsMessengerEXT callback
+			, ReportData report
+			, T const & lhs
+			, T const & rhs )noexcept
+		{
+			return check( callback
+				, report
+				, !( lhs == rhs )
+				, toString( lhs ) + " != " + toString( rhs ) );
 		}
 	}
 
@@ -325,7 +319,7 @@ namespace ashes::test
 			// Nothing to do on bad alloc...
 		}
 
-		return !checkValid( m_callback, copyInfo, image, message, du::check );
+		return !debugcb::checkValid( m_callback, copyInfo, image, message, du::check );
 	}
 
 	bool DebugUtilsLayer::onCopyToImageCommand( VkCommandBuffer cmd
@@ -491,7 +485,7 @@ namespace ashes::test
 		};
 		ReportData report{ baseReport };
 		report.object = uint64_t( &cmd );
-		return !checkValid( m_callback, copyInfo, image, report, dr::check );
+		return !debugcb::checkValid( m_callback, copyInfo, image, report, dr::check );
 	}
 
 	bool DebugReportLayer::onCopyToImageCommand( VkCommandBuffer cmd

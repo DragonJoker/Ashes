@@ -15,9 +15,9 @@ using ashes::operator!=;
 
 namespace ashes::gl
 {
-	namespace
+	namespace begrdpass
 	{
-		void clearAttach( VkAttachmentReference const & reference
+		static void clearAttach( VkAttachmentReference const & reference
 			, VkRenderPass renderPass
 			, VkClearValueArray rtClearValues
 			, VkClearValue dsClearValue
@@ -116,7 +116,7 @@ namespace ashes::gl
 				if ( attach.point )
 				{
 					attach.bindDraw( stack, 0u, GL_FRAMEBUFFER, list );
-					clearAttach( reference, renderPass, rtClearValues, dsClearValue, list, clearIndex );
+					begrdpass::clearAttach( reference, renderPass, rtClearValues, dsClearValue, list, clearIndex );
 				}
 			}
 		}

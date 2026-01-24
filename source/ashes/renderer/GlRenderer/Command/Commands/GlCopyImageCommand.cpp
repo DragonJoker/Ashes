@@ -13,9 +13,9 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	namespace
+	namespace copyimg
 	{
-		GlImageAspectFlags getMask( VkFormat format )
+		static GlImageAspectFlags getMask( VkFormat format )
 		{
 			GlImageAspectFlags result = 0u;
 
@@ -38,7 +38,7 @@ namespace ashes::gl
 			return result;
 		}
 
-		VkBufferImageCopy getBufferImageCopy( VkImageCopy const & copyInfo
+		static VkBufferImageCopy getBufferImageCopy( VkImageCopy const & copyInfo
 			, VkImage dstImage )
 		{
 			VkBufferImageCopy result{};
@@ -115,7 +115,7 @@ namespace ashes::gl
 					, layerCopy.getRegion().dstOffsets[0].y
 					, layerCopy.getRegion().dstOffsets[1].x
 					, layerCopy.getRegion().dstOffsets[1].y
-					, getMask( get( srcImage )->getFormatVk() )
+					, copyimg::getMask( get( srcImage )->getFormatVk() )
 					, GL_FILTER_NEAREST ) );
 				list.push_back( makeCmd< OpType::eBindFramebuffer >( GL_READ_FRAMEBUFFER
 					, nullptr ) );
@@ -133,7 +133,7 @@ namespace ashes::gl
 		{
 			buildCopyImageToBufferCommand( stack
 				, device
-				, getBufferImageCopy( copyInfo, dstImage )
+				, copyimg::getBufferImageCopy( copyInfo, dstImage )
 				, dstImage
 				, get( dstImage )->getMemoryBinding()
 				, list );

@@ -14,7 +14,7 @@ See LICENSE file in root folder.
 
 namespace ashes::D3D11_NAMESPACE
 {
-	namespace
+	namespace surf
 	{
 		inline std::vector< VkFormat > const FormatsList = []()
 		{
@@ -30,12 +30,12 @@ namespace ashes::D3D11_NAMESPACE
 			return result;
 		}();
 
-		std::vector< VkFormat > const & getFormatsList()
+		static std::vector< VkFormat > const & getFormatsList()
 		{
 			return FormatsList;
 		}
 
-		void updateSurfaceCapabilities( std::vector< DXGI_MODE_DESC > const & displayModeList
+		static void updateSurfaceCapabilities( std::vector< DXGI_MODE_DESC > const & displayModeList
 			, RECT const & rect
 			, VkSurfaceCapabilitiesKHR & capabilities
 			, std::map< VkFormat, std::vector< DXGI_MODE_DESC > > & descs
@@ -172,7 +172,7 @@ namespace ashes::D3D11_NAMESPACE
 			}
 		}
 
-		std::vector< VkSurfaceFormatKHR > getSurfaceFormats( std::vector< DXGI_MODE_DESC > const & displayModeList )
+		static std::vector< VkSurfaceFormatKHR > getSurfaceFormats( std::vector< DXGI_MODE_DESC > const & displayModeList )
 		{
 			std::vector< VkSurfaceFormatKHR > result;
 			std::set< VkFormat > uniqueFormats;
@@ -197,7 +197,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 		std::vector< DXGI_MODE_DESC > result;
 
-		for ( auto & format : getFormatsList() )
+		for ( auto & format : surf::getFormatsList() )
 		{
 			auto dxgiFormat = getDxgiFormat( format );
 
@@ -286,14 +286,14 @@ namespace ashes::D3D11_NAMESPACE
 			if ( d3dOutput )
 			{
 				m_displayModes = getDisplayModesList( m_instance, d3dOutput );
-				m_surfaceFormats = getSurfaceFormats( m_displayModes );
+				m_surfaceFormats = surf::getSurfaceFormats( m_displayModes );
 
 				if ( isWin32() )
 				{
 					auto hWnd = m_win32CreateInfo.hwnd;
 					RECT rect{};
 					::GetWindowRect( hWnd, &rect );
-					updateSurfaceCapabilities( m_displayModes
+					surf::updateSurfaceCapabilities( m_displayModes
 						, rect
 						, m_surfaceCapabilities
 						, m_descs
@@ -304,7 +304,7 @@ namespace ashes::D3D11_NAMESPACE
 					RECT rect{};
 					rect.right = LONG( m_displayCreateInfo.imageExtent.width );
 					rect.bottom = LONG( m_displayCreateInfo.imageExtent.height );
-					updateSurfaceCapabilities( m_displayModes
+					surf::updateSurfaceCapabilities( m_displayModes
 						, rect
 						, m_surfaceCapabilities
 						, m_descs

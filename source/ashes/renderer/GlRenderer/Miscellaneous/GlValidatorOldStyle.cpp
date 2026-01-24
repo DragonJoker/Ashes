@@ -16,7 +16,7 @@
 
 namespace ashes::gl::gl3
 {
-	namespace
+	namespace val
 	{
 		enum GlslInterface
 			: GLenum
@@ -47,7 +47,7 @@ namespace ashes::gl::gl3
 		using AttributeFunction = std::function< void( GLuint index, GLsizei maxLength ) >;
 
 		template< typename AttributeFunctionT >
-		void getInterfaceInfos( ContextLock const & context
+		static void getInterfaceInfos( ContextLock const & context
 			, GLuint program
 			, GlslInterface interfaceName
 			, GlslInterface interfaceMaxLengthName
@@ -85,10 +85,10 @@ namespace ashes::gl::gl3
 		, GLuint program )
 	{
 		InputsLayout result;
-		getInterfaceInfos( context
+		val::getInterfaceInfos( context
 			, program
-			, GL_ACTIVE_ATTRIBUTES
-			, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH
+			, val::GL_ACTIVE_ATTRIBUTES
+			, val::GL_ACTIVE_ATTRIBUTE_MAX_LENGTH
 			, [&result, &context, &program]( GLuint index, GLsizei maxLength )
 			{
 				std::vector< char > nameBuf;
@@ -173,7 +173,7 @@ namespace ashes::gl::gl3
 		glLogCall( context
 			, glGetProgramiv
 			, program
-			, GL_ACTIVE_UNIFORMS
+			, val::GL_ACTIVE_UNIFORMS
 			, reinterpret_cast< GLint * >( &uniformCount ) );
 		std::vector< std::array< char, 256 > > uniformNamesData;
 		std::vector< const char * > uniformNames;
@@ -207,7 +207,7 @@ namespace ashes::gl::gl3
 			, program
 			, GLsizei( uniformCount )
 			, uniformIndices.data()
-			, GL_UNIFORM_BLOCK_INDEX
+			, val::GL_UNIFORM_BLOCK_INDEX
 			, reinterpret_cast< GLint * >( uniformBlockIndices.data() ) );
 		std::vector< GlslAttributeType > uniformTypes;
 		uniformTypes.resize( uniformCount );
@@ -216,7 +216,7 @@ namespace ashes::gl::gl3
 			, program
 			, GLsizei( uniformCount )
 			, uniformIndices.data()
-			, GL_UNIFORM_TYPE
+			, val::GL_UNIFORM_TYPE
 			, reinterpret_cast< GLint * >( uniformTypes.data() ) );
 		std::vector< GLuint > uniformArraySizes;
 		uniformArraySizes.resize( uniformCount );
@@ -225,7 +225,7 @@ namespace ashes::gl::gl3
 			, program
 			, GLsizei( uniformCount )
 			, uniformIndices.data()
-			, GL_UNIFORM_SIZE
+			, val::GL_UNIFORM_SIZE
 			, reinterpret_cast< GLint * >( uniformArraySizes.data() ) );
 		std::vector< GLuint > uniformOffsets;
 		uniformOffsets.resize( uniformCount );
@@ -234,7 +234,7 @@ namespace ashes::gl::gl3
 			, program
 			, GLsizei( uniformCount )
 			, uniformIndices.data()
-			, GL_UNIFORM_OFFSET
+			, val::GL_UNIFORM_OFFSET
 			, reinterpret_cast< GLint * >( uniformOffsets.data() ) );
 
 		for ( uint32_t index = 0; index < uniformCount; ++index )
@@ -291,10 +291,10 @@ namespace ashes::gl::gl3
 		, GLuint program )
 	{
 		InterfaceBlocksLayout result;
-		getInterfaceInfos( context
+		val::getInterfaceInfos( context
 			, program
-			, GL_ACTIVE_UNIFORM_BLOCKS
-			, GL_ACTIVE_UNIFORM_BLOCK_NAME_LENGTH
+			, val::GL_ACTIVE_UNIFORM_BLOCKS
+			, val::GL_ACTIVE_UNIFORM_BLOCK_NAME_LENGTH
 			, [&result, &context, &program, &stage]( GLuint index, GLsizei maxLength )
 			{
 				ConstantBufferDesc desc;
@@ -302,13 +302,13 @@ namespace ashes::gl::gl3
 					, glGetActiveUniformBlockiv
 					, program
 					, index
-					, GL_UNIFORM_BLOCK_BINDING
+					, val::GL_UNIFORM_BLOCK_BINDING
 					, reinterpret_cast< GLint * >( &desc.binding ) );
 				glLogCall( context
 					, glGetActiveUniformBlockiv
 					, program
 					, index
-					, GL_UNIFORM_BLOCK_DATA_SIZE
+					, val::GL_UNIFORM_BLOCK_DATA_SIZE
 					, reinterpret_cast< GLint * >( &desc.size ) );
 				std::vector< char > nameBuf;
 				nameBuf.resize( size_t( maxLength ) );

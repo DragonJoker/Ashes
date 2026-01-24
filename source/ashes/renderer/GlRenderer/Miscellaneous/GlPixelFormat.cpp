@@ -3,9 +3,9 @@
 
 namespace ashes::gl
 {
-	namespace
+	namespace pxlfmt
 	{
-		void getFormatAndType( ContextLock const & context
+		static void getFormatAndType( ContextLock const & context
 			, GlTextureType target
 			, VkFormat vkformat
 			, GlInternal internal
@@ -47,7 +47,7 @@ namespace ashes::gl
 		, unpackType{ getType( vkformat ) }
 		, swizzle{ std::move( swizzle ) }
 	{
-		getFormatAndType( context
+		pxlfmt::getFormatAndType( context
 			, target
 			, vkformat
 			, internal
@@ -67,7 +67,7 @@ namespace ashes::gl
 		if ( support != GL_FORMAT_PROPERTY_UNSUPPORTED )
 		{
 			readSupport = true;
-			getFormatAndType( context
+			pxlfmt::getFormatAndType( context
 				, target
 				, vkformat
 				, internal

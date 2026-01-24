@@ -14,9 +14,9 @@
 
 namespace ashes::gl
 {
-	namespace
+	namespace val
 	{
-		std::string getName( VkVertexInputRate value )
+		static std::string getName( VkVertexInputRate value )
 		{
 			switch ( value )
 			{
@@ -30,7 +30,7 @@ namespace ashes::gl
 			}
 		}
 
-		void validateInputs( ContextLock const & context
+		static void validateInputs( ContextLock const & context
 			, GLuint program
 			, VkPipelineVertexInputStateCreateInfo const & vertexInputState )
 		{
@@ -91,7 +91,7 @@ namespace ashes::gl
 			}
 		}
 
-		void validateOutputs( ContextLock const & context
+		static void validateOutputs( ContextLock const & context
 			, GLuint program
 			, VkRenderPass renderPass )
 		{
@@ -708,7 +708,7 @@ namespace ashes::gl
 		, VkPipelineVertexInputStateCreateInfo const & vertexInputState
 		, VkRenderPass renderPass )
 	{
-		validateInputs( context, program, vertexInputState );
-		validateOutputs( context, program, renderPass );
+		val::validateInputs( context, program, vertexInputState );
+		val::validateOutputs( context, program, renderPass );
 	}
 }

@@ -10,9 +10,9 @@
 
 namespace ashes::gl
 {
-	namespace
+	namespace swapchain
 	{
-		VkImage createImage( VkDevice device
+		static VkImage createImage( VkDevice device
 			, VkAllocationCallbacks const * allocInfo
 			, VkFormat format
 			, VkExtent2D dimensions
@@ -93,7 +93,7 @@ namespace ashes::gl
 			return result;
 		}
 
-		VkImageView createImageView( VkDevice device
+		static VkImageView createImageView( VkDevice device
 			, VkAllocationCallbacks const * allocInfo
 			, VkImage image
 			, VkFormat format )
@@ -148,7 +148,7 @@ namespace ashes::gl
 		m_createInfo.imageExtent.height = std::max( 1u, m_createInfo.imageExtent.height );
 		m_createInfo.imageExtent.width = std::max( 1u, m_createInfo.imageExtent.width );
 
-		m_image = createImage( device
+		m_image = swapchain::createImage( device
 			, m_allocInfo
 			, m_createInfo.imageFormat
 			, m_createInfo.imageExtent
@@ -158,7 +158,7 @@ namespace ashes::gl
 		{
 			try
 			{
-				m_view = createImageView( device
+				m_view = swapchain::createImageView( device
 					, m_allocInfo
 					, m_image
 					, m_createInfo.imageFormat );

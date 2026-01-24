@@ -50,9 +50,9 @@ namespace ashes::gl
 {
 	//*************************************************************************
 
-	namespace
+	namespace ctxt
 	{
-		GLuint allocateBuffer( ContextLock const & context
+		static GLuint allocateBuffer( ContextLock const & context
 			, GLuint result
 			, GlBufferTarget target
 			, GLsizeiptr size
@@ -258,7 +258,7 @@ namespace ashes::gl
 			std::stringstream err;
 			err << "Buffer " << result << " is being reused";
 			reportWarning( m_instance, VK_SUCCESS, "Buffer memory", err.str() );
-			allocateBuffer( context, it->name, it->target, it->size, it->flags );
+			ctxt::allocateBuffer( context, it->name, it->target, it->size, it->flags );
 			glLogCreateCall( context
 				, glGenBuffers
 				, 1u
@@ -267,7 +267,7 @@ namespace ashes::gl
 		}
 
 		assert( isEnabled() );
-		allocateBuffer( context, result, target, size, flags );
+		ctxt::allocateBuffer( context, result, target, size, flags );
 		GLint realSize = getBufferSize( context, target, result );
 		assert( isEnabled() );
 		assert( realSize >= size );

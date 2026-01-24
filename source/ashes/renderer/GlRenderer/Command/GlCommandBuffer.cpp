@@ -76,9 +76,9 @@ static bool operator==( VkPushConstantRange const & lhs
 
 namespace ashes::gl
 {
-	namespace
+	namespace cmdbuf
 	{
-		void mergeList( CmdList const & list
+		static void mergeList( CmdList const & list
 			, CmdBuffer & cmds )
 		{
 			size_t totalSize = std::accumulate( list.begin()
@@ -104,13 +104,13 @@ namespace ashes::gl
 			}
 		}
 
-		bool areCompatible( VkPushConstantRangeArray const & lhs
+		static bool areCompatible( VkPushConstantRangeArray const & lhs
 			, VkPushConstantRangeArray const & rhs )
 		{
 			return lhs == rhs;
 		}
 
-		bool areCompatible( VkDescriptorSetLayoutBinding const & lhs
+		static bool areCompatible( VkDescriptorSetLayoutBinding const & lhs
 			, VkDescriptorSetLayoutBinding const & rhs )
 		{
 			return lhs.binding == rhs.binding
@@ -119,7 +119,7 @@ namespace ashes::gl
 				&& lhs.stageFlags == rhs.stageFlags;
 		}
 
-		bool areCompatible( VkDescriptorSetLayout lhs
+		static bool areCompatible( VkDescriptorSetLayout lhs
 			, VkDescriptorSetLayout rhs )
 		{
 			auto lhsIt = get( lhs )->begin();
@@ -138,7 +138,7 @@ namespace ashes::gl
 			return result;
 		}
 
-		uint32_t areCompatible( VkDescriptorSetLayoutArray const & lhs
+		static uint32_t areCompatible( VkDescriptorSetLayoutArray const & lhs
 			, VkDescriptorSetLayoutArray const & rhs )
 		{
 			auto size = std::min( lhs.size(), rhs.size() );
@@ -157,7 +157,7 @@ namespace ashes::gl
 			return result;
 		}
 
-		ByteArray doInitialisePcb( VkPipelineLayout layout )
+		static ByteArray doInitialisePcb( VkPipelineLayout layout )
 		{
 			auto & pushConstants = get( layout )->getPushConstants();
 			uint32_t size = 0u;
@@ -248,8 +248,8 @@ namespace ashes::gl
 
 		if ( m_level == VK_COMMAND_BUFFER_LEVEL_PRIMARY )
 		{
-			mergeList( m_cmdList, m_cmds );
-			mergeList( m_cmdAfterSubmit, m_cmdsAfterSubmit );
+			cmdbuf::mergeList( m_cmdList, m_cmds );
+			cmdbuf::mergeList( m_cmdAfterSubmit, m_cmdsAfterSubmit );
 		}
 
 		return VK_SUCCESS;
@@ -335,8 +335,8 @@ namespace ashes::gl
 				, glCommandBuffer->m_state.vaos.end() );
 			glCommandBuffer->m_state.vaos.clear();
 			glCommandBuffer->doApplyPreExecuteCommands( *m_state.stack );
-			mergeList( glCommandBuffer->m_cmdList, glCommandBuffer->m_cmds );
-			mergeList( glCommandBuffer->m_cmdAfterSubmit, glCommandBuffer->m_cmdsAfterSubmit );
+			cmdbuf::mergeList( glCommandBuffer->m_cmdList, glCommandBuffer->m_cmds );
+			cmdbuf::mergeList( glCommandBuffer->m_cmdAfterSubmit, glCommandBuffer->m_cmdsAfterSubmit );
 			m_cmdList.insert( m_cmdList.end()
 				, glCommandBuffer->m_cmdList.begin()
 				, glCommandBuffer->m_cmdList.end() );
@@ -1454,20 +1454,20 @@ namespace ashes::gl
 		{
 			if ( layout )
 			{
-				m_state.currentPushConstantsBuffer = doInitialisePcb( layout );
+				m_state.currentPushConstantsBuffer = cmdbuf::doInitialisePcb( layout );
 			}
 		}
 		else if ( currentLayout != layout )
 		{
 			// Check push constants compatibility.
-			if ( !areCompatible( get( currentLayout )->getPushConstants()
+			if ( !cmdbuf::areCompatible( get( currentLayout )->getPushConstants()
 				, get( layout )->getPushConstants() ) )
 			{
-				m_state.currentPushConstantsBuffer = doInitialisePcb( layout );
+				m_state.currentPushConstantsBuffer = cmdbuf::doInitialisePcb( layout );
 				m_state.boundDescriptors.clear();
 				m_state.pushConstantBuffers.clear();
 			}
-			else if ( uint32_t count = areCompatible( get( currentLayout )->getDescriptorsLayouts()
+			else if ( uint32_t count = cmdbuf::areCompatible( get( currentLayout )->getDescriptorsLayouts()
 				, get( layout )->getDescriptorsLayouts() ) )
 			{
 				auto it = m_state.boundDescriptors.begin();
