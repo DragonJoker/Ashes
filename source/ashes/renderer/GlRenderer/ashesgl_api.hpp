@@ -564,6 +564,9 @@ namespace ashes::gl
 	PFN_vkVoidFunction VKAPI_CALL vkGetInstanceProcAddr(
 		VkInstance instance,
 		const char * pName );
+	PFN_vkVoidFunction VKAPI_CALL vkGetPhysicalDeviceProcAddr(
+		VkInstance instance,
+		const char * pName );
 	PFN_vkVoidFunction VKAPI_CALL vkGetDeviceProcAddr(
 		VkDevice device,
 		const char * pName );

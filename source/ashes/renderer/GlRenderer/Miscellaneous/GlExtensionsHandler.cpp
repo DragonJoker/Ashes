@@ -21,7 +21,7 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	namespace
+	namespace exthdr
 	{
 		enum GlThings
 		{
@@ -42,11 +42,11 @@ namespace ashes::gl
 		using PFN_glGetString = const GLubyte *( GLAPIENTRY * )( GLenum name );
 		using PFN_glGetIntegerv = void ( GLAPIENTRY * )( GLenum pname, GLint * data );
 
-		PFN_glGetStringi getStringi;
-		PFN_glGetString getString;
-		PFN_glGetIntegerv getIntegerv;
+		static PFN_glGetStringi getStringi;
+		static PFN_glGetString getString;
+		static PFN_glGetIntegerv getIntegerv;
 
-		bool isInCore( uint32_t value )
+		static bool isInCore( uint32_t value )
 		{
 			static uint32_t constexpr notInCore = makeVersion( NotInCore, NotInCore, 0 );
 			return value == notInCore;
@@ -64,17 +64,17 @@ namespace ashes::gl
 #endif
 
 		std::stringstream errStream;
-		getFunction( "glGetStringi", getStringi, errStream );
+		getFunction( "glGetStringi", exthdr::getStringi, errStream );
 
 #ifndef _WIN32
-		getFunction( "glGetString", getString, errStream );
-		getFunction( "glGetIntegerv", getIntegerv, errStream );
+		getFunction( "glGetString", exthdr::getString, errStream );
+		getFunction( "glGetIntegerv", exthdr::getIntegerv, errStream );
 #else
-		getString = glGetString;
-		getIntegerv = glGetIntegerv;
+		exthdr::getString = glGetString;
+		exthdr::getIntegerv = glGetIntegerv;
 #endif
 
-		if ( auto const cversion = reinterpret_cast< char const * >( getString( GL_INFO_VERSION ) ) )
+		if ( auto const cversion = reinterpret_cast< char const * >( exthdr::getString( GL_INFO_VERSION ) ) )
 		{
 			std::string sversion = cversion;
 			std::stringstream stream( sversion );
@@ -104,7 +104,7 @@ namespace ashes::gl
 			}
 		}
 
-		if ( auto const * cextensions = reinterpret_cast< char const * >( getString( GL_INFO_EXTENSIONS ) ) )
+		if ( auto const * cextensions = reinterpret_cast< char const * >( exthdr::getString( GL_INFO_EXTENSIONS ) ) )
 		{
 			std::string extensions = cextensions;
 			std::istringstream stream{ extensions };
@@ -115,21 +115,21 @@ namespace ashes::gl
 		else
 		{
 			int max = 0;
-			getIntegerv( GL_INFO_NUM_EXTENSIONS, &max );
+			exthdr::getIntegerv( GL_INFO_NUM_EXTENSIONS, &max );
 
 			for ( GLuint i = 0; i < GLuint( max ); ++i )
 			{
-				m_deviceExtensionNames.emplace_back( reinterpret_cast< char const * >( getStringi( GL_INFO_EXTENSIONS, i ) ) );
+				m_deviceExtensionNames.emplace_back( reinterpret_cast< char const * >( exthdr::getStringi( GL_INFO_EXTENSIONS, i ) ) );
 			}
 		}
 		
 
 		int numSpirvExtensions = 0;
-		getIntegerv( GL_SPIRV_NUM_SPIR_V_EXTENSIONS, &numSpirvExtensions );
+		exthdr::getIntegerv( exthdr::GL_SPIRV_NUM_SPIR_V_EXTENSIONS, &numSpirvExtensions );
 
 		for ( GLuint index = 0; index < GLuint( numSpirvExtensions ); ++index )
 		{
-			auto const * cspirvext = reinterpret_cast< char const * >( getStringi( GL_SPIRV_SPIR_V_EXTENSIONS, index ) );
+			auto const * cspirvext = reinterpret_cast< char const * >( exthdr::getStringi( exthdr::GL_SPIRV_SPIR_V_EXTENSIONS, index ) );
 
 			if ( cspirvext )
 			{
@@ -138,12 +138,12 @@ namespace ashes::gl
 		}
 
 		int numBinaryFormats = 0;
-		getIntegerv( GL_SPIRV_NUM_SHADER_BINARY_FORMATS, &numBinaryFormats );
+		exthdr::getIntegerv( exthdr::GL_SPIRV_NUM_SHADER_BINARY_FORMATS, &numBinaryFormats );
 
 		if ( numBinaryFormats > 0 )
 		{
 			m_shaderBinaryFormats.resize( size_t( numBinaryFormats ) );
-			getIntegerv( GL_SPIRV_SHADER_BINARY_FORMATS, reinterpret_cast< int * >( m_shaderBinaryFormats.data() ) );
+			exthdr::getIntegerv( exthdr::GL_SPIRV_SHADER_BINARY_FORMATS, reinterpret_cast< int * >( m_shaderBinaryFormats.data() ) );
 		}
 
 #pragma GCC diagnostic push
@@ -166,7 +166,7 @@ namespace ashes::gl
 
 	bool ExtensionsHandler::find( VkExtensionProperties const & extension )const
 	{
-		return ( isInCore( extension.specVersion ) && ( m_version >= extension.specVersion ) )
+		return ( exthdr::isInCore( extension.specVersion ) && ( m_version >= extension.specVersion ) )
 			|| ( m_deviceExtensionNames.end() != std::find( m_deviceExtensionNames.begin()
 				, m_deviceExtensionNames.end()
 				, extension.extensionName ) );

@@ -16,28 +16,28 @@ See LICENSE file in root folder.
 
 namespace ashes::D3D11_NAMESPACE
 {
-	namespace
+	namespace copybuftoimg
 	{
-		uint32_t getBufferRowPitch( VkBufferImageCopy const & copyInfo )
+		static uint32_t getBufferRowPitch( VkBufferImageCopy const & copyInfo )
 		{
 			return ( copyInfo.bufferRowLength
 				? copyInfo.bufferRowLength
 				: copyInfo.imageExtent.width );
 		}
 		
-		uint32_t getBufferHeightPitch( VkBufferImageCopy const & copyInfo )
+		static uint32_t getBufferHeightPitch( VkBufferImageCopy const & copyInfo )
 		{
 			return ( copyInfo.bufferImageHeight
 				? copyInfo.bufferImageHeight
 				: copyInfo.imageExtent.height );
 		}
 
-		uint32_t getBufferDepthPitch( VkBufferImageCopy const & copyInfo )
+		static uint32_t getBufferDepthPitch( VkBufferImageCopy const & copyInfo )
 		{
 			return copyInfo.imageExtent.depth;
 		}
 		
-		VkDeviceSize doGetBufferSize( VkFormat format
+		static VkDeviceSize doGetBufferSize( VkFormat format
 			, VkBufferImageCopy const & copyInfo )
 		{
 			VkExtent3D bufferPitch
@@ -49,7 +49,7 @@ namespace ashes::D3D11_NAMESPACE
 			return getSize( bufferPitch, format );
 		}
 
-		D3D11_BOX doGetSrcBox( VkFormat format
+		static D3D11_BOX doGetSrcBox( VkFormat format
 			, VkBufferImageCopy const & copyInfo
 			, uint32_t slice )
 		{
@@ -66,7 +66,7 @@ namespace ashes::D3D11_NAMESPACE
 			};
 		}
 
-		VkSubresourceLayout doGetDstLayout( VkDevice device
+		static VkSubresourceLayout doGetDstLayout( VkDevice device
 			, VkImage image
 			, VkBufferImageCopy const & copyInfo )
 		{
@@ -88,7 +88,7 @@ namespace ashes::D3D11_NAMESPACE
 			return layout;
 		}
 
-		uint32_t getTexelBlockByteSize( VkExtent3D const & texelBlockExtent
+		static uint32_t getTexelBlockByteSize( VkExtent3D const & texelBlockExtent
 			, VkFormat format )
 		{
 			VkDeviceSize texelBlockSize;
@@ -105,7 +105,7 @@ namespace ashes::D3D11_NAMESPACE
 			return uint32_t( texelBlockSize );
 		}
 
-		void doCopy( uint8_t const * srcData
+		static void doCopy( uint8_t const * srcData
 			, uint8_t * dstData
 			, uint32_t layers
 			, VkDeviceSize srcLayerPitch
@@ -145,7 +145,7 @@ namespace ashes::D3D11_NAMESPACE
 			}
 		}
 
-		void doAdjustPitches( uint32_t bufferSize
+		static void doAdjustPitches( uint32_t bufferSize
 			, uint32_t height
 			, UINT & srcRowPitch
 			, UINT & dstRowPitch
@@ -187,7 +187,7 @@ namespace ashes::D3D11_NAMESPACE
 			}
 		}
 
-		void doCopyMapped( VkFormat format
+		static void doCopyMapped( VkFormat format
 			, VkBufferImageCopy const & copyInfo
 			, D3D11_MAPPED_SUBRESOURCE srcBuffer
 			, D3D11_BOX const & srcBox
@@ -293,7 +293,7 @@ namespace ashes::D3D11_NAMESPACE
 			}
 		}
 
-		VkBuffer getStagingBuffer( VkDevice device
+		static VkBuffer getStagingBuffer( VkDevice device
 			, VkDeviceSize size
 			, VkDeviceMemory & memory )
 		{
@@ -329,7 +329,7 @@ namespace ashes::D3D11_NAMESPACE
 			return result;
 		}
 
-		VkBufferCopy doGetCopyToStaging( VkFormat format
+		static VkBufferCopy doGetCopyToStaging( VkFormat format
 			, ArrayView< VkBufferImageCopy const > const & copyInfos )
 		{
 			static auto constexpr MaxValue = std::numeric_limits< VkDeviceSize >::max();
@@ -352,7 +352,7 @@ namespace ashes::D3D11_NAMESPACE
 			};
 		}
 
-		Optional< CopyToStagingProcess > getCopyToStagingProcess( VkDevice device
+		static Optional< CopyToStagingProcess > getCopyToStagingProcess( VkDevice device
 			, VkImage dst
 			, ArrayView< VkBufferImageCopy const > const & copyInfos
 			, bool srcMappable
@@ -382,7 +382,7 @@ namespace ashes::D3D11_NAMESPACE
 			return result;
 		}
 
-		void getCopyFromStagingProcess( VkDevice device
+		static void getCopyFromStagingProcess( VkDevice device
 			, VkImage image
 			, bool dstMappable
 			, VkBufferImageCopy bufferImageCopy
@@ -421,7 +421,7 @@ namespace ashes::D3D11_NAMESPACE
 			}
 		}
 
-		MapCopyProcess getMapCopyProcess( VkDevice device
+		static MapCopyProcess getMapCopyProcess( VkDevice device
 			, VkBuffer src
 			, VkImage dst
 			, ArrayView< VkBufferImageCopy const > const & copyInfos
@@ -481,7 +481,7 @@ namespace ashes::D3D11_NAMESPACE
 			return result;
 		}
 
-		BufferToImageCopyProcess buildProcess( VkDevice device
+		static BufferToImageCopyProcess buildProcess( VkDevice device
 			, ArrayView< VkBufferImageCopy const > const & copyInfos
 			, VkBuffer src
 			, VkImage dst
@@ -517,7 +517,7 @@ namespace ashes::D3D11_NAMESPACE
 		, m_format{ getSRVFormat( get( m_dst )->getFormat() ) }
 		, m_srcMappable{ checkFlag( get( get( m_src )->getMemory() )->getMemoryPropertyFlags(), VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) }
 		, m_dstMappable{ checkFlag( get( get( m_dst )->getMemory() )->getMemoryPropertyFlags(), VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ) }
-		, m_process{ buildProcess ( device, copyInfos, src, dst, m_srcMappable, m_dstMappable ) }
+		, m_process{ copybuftoimg::buildProcess ( device, copyInfos, src, dst, m_srcMappable, m_dstMappable ) }
 	{
 	}
 
@@ -625,7 +625,7 @@ namespace ashes::D3D11_NAMESPACE
 				, dstMapped )
 			&& dstMapped.pData )
 		{
-			doCopyMapped( format
+			copybuftoimg::doCopyMapped( format
 				, mapCopy.mapCopy
 				, srcMapped
 				, mapCopy.srcBox

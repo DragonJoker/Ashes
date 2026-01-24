@@ -10,9 +10,9 @@ See LICENSE file in root folder.
 
 namespace utils
 {
-	namespace
+	namespace debug
 	{
-		void print( std::ostream & stream
+		static void print( std::ostream & stream
 			, std::string const & name
 			, char const * value
 			, std::string const & lineEnd
@@ -119,9 +119,9 @@ namespace utils
 			}
 
 			stream << lineEnd;
-			print( stream, "Message ID", pCallbackData->pMessageIdName, lineEnd, lineBegin );
+			debug::print( stream, "Message ID", pCallbackData->pMessageIdName, lineEnd, lineBegin );
 			stream << lineBegin << "Code: 0x" << std::hex << pCallbackData->messageIdNumber << lineEnd;
-			print( stream, "Message", pCallbackData->pMessage, lineEnd, lineBegin );
+			debug::print( stream, "Message", pCallbackData->pMessage, lineEnd, lineBegin );
 			print( stream, "Objects", pCallbackData->objectCount, pCallbackData->pObjects, lineEnd, lineBegin );
 			print( stream, "Queue Labels", pCallbackData->queueLabelCount, pCallbackData->pQueueLabels, lineEnd, lineBegin );
 			print( stream, "CommmandBuffer Labels", pCallbackData->cmdBufLabelCount, pCallbackData->pCmdBufLabels, lineEnd, lineBegin );

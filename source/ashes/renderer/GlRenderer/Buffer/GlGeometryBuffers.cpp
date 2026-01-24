@@ -13,9 +13,9 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	namespace
+	namespace geombuf
 	{
-		VkVertexInputAttributeDescriptionArray getAttributes( VkVertexInputAttributeDescription const * begin
+		static VkVertexInputAttributeDescriptionArray getAttributes( VkVertexInputAttributeDescription const * begin
 			, VkVertexInputAttributeDescription const * end
 			, uint32_t bindingSlot )
 		{
@@ -32,7 +32,7 @@ namespace ashes::gl
 			return result;
 		}
 
-		bool isNormalized( VkFormat format )noexcept
+		static bool isNormalized( VkFormat format )noexcept
 		{
 			return format == VK_FORMAT_R4G4_UNORM_PACK8
 				|| format == VK_FORMAT_R4G4B4A4_UNORM_PACK16
@@ -145,7 +145,7 @@ namespace ashes::gl
 			;
 		}
 
-		bool isInteger( VkFormat format )noexcept
+		static bool isInteger( VkFormat format )noexcept
 		{
 			return format != VK_FORMAT_R8G8B8A8_UNORM
 				&& format != VK_FORMAT_R16_SFLOAT
@@ -212,7 +212,7 @@ namespace ashes::gl
 				, glEnableVertexAttribArray
 				, attribute.location );
 
-			if ( isInteger( attribute.format ) )
+			if ( geombuf::isInteger( attribute.format ) )
 			{
 				glLogCall( context
 					, glVertexAttribIPointer
@@ -229,7 +229,7 @@ namespace ashes::gl
 					, attribute.location
 					, GLint( ashes::getCount( attribute.format ) )	
 					, getType( attribute.format )
-					, isNormalized( attribute.format ) ? GL_TRUE : GL_FALSE
+					, geombuf::isNormalized( attribute.format ) ? GL_TRUE : GL_FALSE
 					, GLsizei( binding.stride )
 					, getBufferOffset( intptr_t( offset + attribute.offset ) ) );
 			}
@@ -338,10 +338,10 @@ namespace ashes::gl
 				result.emplace_back( vbo.buffer
 					, vbo.offset
 					, *it
-					, getAttributes( vertexInputState.pVertexAttributeDescriptions
+					, geombuf::getAttributes( vertexInputState.pVertexAttributeDescriptions
 						, vertexInputState.pVertexAttributeDescriptions + vertexInputState.vertexAttributeDescriptionCount
 						, it->binding )
-					, getAttributes( inputLayout.vertexAttributeDescriptions.data()
+					, geombuf::getAttributes( inputLayout.vertexAttributeDescriptions.data()
 						, inputLayout.vertexAttributeDescriptions.data() + inputLayout.vertexAttributeDescriptions.size()
 						, it->binding ) );
 			}

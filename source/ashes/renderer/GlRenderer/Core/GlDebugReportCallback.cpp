@@ -10,14 +10,14 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	namespace
+	namespace debugcb
 	{
 		constexpr uint32_t GL_PIXEL_TRANSFER_IS_SYNC_WITH_RENDERING = 0x00020052;
 		constexpr uint32_t GL_USE_OF_DEVICE_LOCAL_MEMORY_FOR_CPU_TRANSFERS = 0x00020071;
 		constexpr uint32_t GL_COPY_BUFFER_FROM_VIDEO_TO_HOST_MEMORY = 0x00020072;
 		constexpr uint32_t GL_SHADER_PROGRAM_IS_RECOMPILED_BASED_ON_GL_STATE = 0x00020092;
 
-		char const * convert( GlDebugSource source )
+		static char const * convert( GlDebugSource source )
 		{
 			switch ( source )
 			{
@@ -38,7 +38,7 @@ namespace ashes::gl
 			}
 		}
 
-		char const * convert( GlDebugCategory category )
+		static char const * convert( GlDebugCategory category )
 		{
 			switch ( category )
 			{
@@ -63,7 +63,7 @@ namespace ashes::gl
 			}
 		}
 
-		bool isIgnored( uint32_t id )
+		static bool isIgnored( uint32_t id )
 		{
 			static const std::set< uint32_t > ignoredIds
 			{
@@ -75,7 +75,7 @@ namespace ashes::gl
 			return ignoredIds.end() != ignoredIds.find( id );
 		}
 
-		bool isIgnored( GlDebugType type )
+		static bool isIgnored( GlDebugType type )
 		{
 			static const std::set< GlDebugType > ignoredTypes
 			{
@@ -86,7 +86,7 @@ namespace ashes::gl
 			return ignoredTypes.end() != ignoredTypes.find( type );
 		}
 
-		bool isIgnored( uint32_t id
+		static bool isIgnored( uint32_t id
 			, GlDebugType type )
 		{
 			return isIgnored( id )
@@ -96,9 +96,9 @@ namespace ashes::gl
 
 #if VK_EXT_debug_utils
 
-	namespace
+	namespace debugcb
 	{
-		VkDebugUtilsMessageTypeFlagsEXT getTypeFlags( GlDebugType type )
+		static VkDebugUtilsMessageTypeFlagsEXT getTypeFlags( GlDebugType type )
 		{
 			switch ( type )
 			{
@@ -115,7 +115,7 @@ namespace ashes::gl
 			}
 		}
 
-		VkDebugUtilsMessageTypeFlagsEXT getTypeFlags( GlDebugCategory type )
+		static VkDebugUtilsMessageTypeFlagsEXT getTypeFlags( GlDebugCategory type )
 		{
 			switch ( type )
 			{
@@ -135,7 +135,7 @@ namespace ashes::gl
 			}
 		}
 
-		VkDebugUtilsMessageSeverityFlagBitsEXT getSeverityFlag( GlDebugSeverity severity )
+		static VkDebugUtilsMessageSeverityFlagBitsEXT getSeverityFlag( GlDebugSeverity severity )
 		{
 			switch ( severity )
 			{
@@ -150,7 +150,7 @@ namespace ashes::gl
 			}
 		}
 
-		void GLAPIENTRY messengerDebugLog( uint32_t source
+		static void GLAPIENTRY messengerDebugLog( uint32_t source
 			, uint32_t type
 			, uint32_t id
 			, uint32_t severity
@@ -158,7 +158,7 @@ namespace ashes::gl
 			, const char * message
 			, DebugUtilsMessengerEXT const * userParam )noexcept
 		{
-			if ( !isIgnored( id, GlDebugType( type ) ) )
+			if ( !debugcb::isIgnored( id, GlDebugType( type ) ) )
 			{
 				userParam->report( GlDebugSource( source )
 					, GlDebugType( type )
@@ -175,14 +175,14 @@ namespace ashes::gl
 			}
 		}
 
-		void GLAPIENTRY messengerDebugLogAMD( uint32_t id
+		static void GLAPIENTRY messengerDebugLogAMD( uint32_t id
 			, uint32_t category
 			, uint32_t severity
 			, int length
 			, const char * message
 			, DebugUtilsMessengerEXT const * userParam )noexcept
 		{
-			if ( !isIgnored( id ) )
+			if ( !debugcb::isIgnored( id ) )
 			{
 				userParam->report( id
 					, GlDebugCategory( category )
@@ -206,8 +206,8 @@ namespace ashes::gl
 		, m_createInfo{ std::move( createInfo ) }
 	{
 		auto glinstance = get( m_instance );
-		glinstance->registerDebugMessenger( get( this ), PFNGLDEBUGPROC( &messengerDebugLog ), this );
-		glinstance->registerDebugMessengerAMD( get( this ), PFNGLDEBUGAMDPROC( &messengerDebugLogAMD ), this );
+		glinstance->registerDebugMessenger( get( this ), PFNGLDEBUGPROC( &debugcb::messengerDebugLog ), this );
+		glinstance->registerDebugMessengerAMD( get( this ), PFNGLDEBUGAMDPROC( &debugcb::messengerDebugLogAMD ), this );
 	}
 
 	void DebugUtilsMessengerEXT::submit( VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity
@@ -228,7 +228,7 @@ namespace ashes::gl
 		, [[maybe_unused]] int length
 		, const char * const message )const noexcept
 	{
-		auto layer = convert( source );
+		auto layer = debugcb::convert( source );
 		VkDebugUtilsMessengerCallbackDataEXT data
 		{
 			VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT,
@@ -244,8 +244,8 @@ namespace ashes::gl
 			0u,
 			nullptr,
 		};
-		m_createInfo.pfnUserCallback( getSeverityFlag( severity )
-			, getTypeFlags( type )
+		m_createInfo.pfnUserCallback( debugcb::getSeverityFlag( severity )
+			, debugcb::getTypeFlags( type )
 			, &data
 			, m_createInfo.pUserData );
 	}
@@ -256,7 +256,7 @@ namespace ashes::gl
 		, [[maybe_unused]] int length
 		, const char * const message )const noexcept
 	{
-		auto layer = convert( category );
+		auto layer = debugcb::convert( category );
 		VkDebugUtilsMessengerCallbackDataEXT data
 		{
 			VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT,
@@ -272,8 +272,8 @@ namespace ashes::gl
 			0u,
 			nullptr,
 		};
-		m_createInfo.pfnUserCallback( getSeverityFlag( severity )
-			, getTypeFlags( category )
+		m_createInfo.pfnUserCallback( debugcb::getSeverityFlag( severity )
+			, debugcb::getTypeFlags( category )
 			, &data
 			, m_createInfo.pUserData );
 	}
@@ -281,9 +281,9 @@ namespace ashes::gl
 #endif
 #if VK_EXT_debug_report
 
-	namespace
+	namespace debugcb
 	{
-		void GLAPIENTRY callbackDebugLog( uint32_t source
+		static void GLAPIENTRY callbackDebugLog( uint32_t source
 			, uint32_t type
 			, uint32_t id
 			, uint32_t severity
@@ -302,7 +302,7 @@ namespace ashes::gl
 			}
 		}
 
-		void GLAPIENTRY callbackDebugLogAMD( uint32_t id
+		static void GLAPIENTRY callbackDebugLogAMD( uint32_t id
 			, uint32_t category
 			, uint32_t severity
 			, int length
@@ -319,7 +319,7 @@ namespace ashes::gl
 			}
 		}
 
-		VkDebugReportFlagsEXT convert( GlDebugType type )
+		static VkDebugReportFlagsEXT convert( GlDebugType type )
 		{
 			switch ( type )
 			{
@@ -336,7 +336,7 @@ namespace ashes::gl
 			}
 		}
 
-		VkDebugReportFlagsEXT convert( GlDebugSeverity severity )
+		static VkDebugReportFlagsEXT convert( GlDebugSeverity severity )
 		{
 			switch ( severity )
 			{
@@ -359,8 +359,8 @@ namespace ashes::gl
 		, m_createInfo{ std::move( createInfo ) }
 	{
 		auto glinstance = get( m_instance );
-		glinstance->registerDebugMessageCallback( get( this ), PFNGLDEBUGPROC( &callbackDebugLog ), this );
-		glinstance->registerDebugMessageCallbackAMD( get( this ), PFNGLDEBUGAMDPROC( &callbackDebugLogAMD ), this );
+		glinstance->registerDebugMessageCallback( get( this ), PFNGLDEBUGPROC( &debugcb::callbackDebugLog ), this );
+		glinstance->registerDebugMessageCallbackAMD( get( this ), PFNGLDEBUGAMDPROC( &debugcb::callbackDebugLogAMD ), this );
 	}
 
 	void DebugReportCallbackEXT::report( VkDebugReportFlagsEXT flags
@@ -388,9 +388,9 @@ namespace ashes::gl
 		, [[maybe_unused]] int length
 		, const char * const message )const noexcept
 	{
-		auto layer = convert( source );
-		auto flags = convert( type );
-		flags |= convert( severity );
+		auto layer = debugcb::convert( source );
+		auto flags = debugcb::convert( type );
+		flags |= debugcb::convert( severity );
 		m_createInfo.pfnCallback( flags
 			, VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT
 			, 0ULL
@@ -407,8 +407,8 @@ namespace ashes::gl
 		, [[maybe_unused]] int length
 		, const char * const message )const noexcept
 	{
-		auto layer = convert( category );
-		auto flags = convert( severity );
+		auto layer = debugcb::convert( category );
+		auto flags = debugcb::convert( severity );
 		m_createInfo.pfnCallback( flags
 			, VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT
 			, 0ULL

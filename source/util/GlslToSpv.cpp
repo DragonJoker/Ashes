@@ -33,7 +33,7 @@ See LICENSE file in root folder.
 
 namespace utils
 {
-	namespace
+	namespace glsltospv
 	{
 		struct BlockLocale
 		{
@@ -62,7 +62,7 @@ namespace utils
 			std::locale m_prvLoc{ std::locale( "" ) };
 		};
 
-		void doInitResources( VkPhysicalDeviceProperties const & props
+		static void doInitResources( VkPhysicalDeviceProperties const & props
 			, TBuiltInResource & resources )
 		{
 			auto & limits = props.limits;
@@ -161,7 +161,7 @@ namespace utils
 			resources.minProgramTexelOffset = -8;
 		}
 
-		EShLanguage doGetLanguage( VkShaderStageFlagBits stage )
+		static EShLanguage doGetLanguage( VkShaderStageFlagBits stage )
 		{
 			switch ( stage )
 			{
@@ -204,13 +204,13 @@ namespace utils
 		, VkShaderStageFlagBits stage
 		, std::string const & shader )
 	{
-		BlockLocale guard;
+		glsltospv::BlockLocale guard;
 		TBuiltInResource resources{};
-		doInitResources( props, resources );
+		glsltospv::doInitResources( props, resources );
 
 		// Enable SPIR-V and Vulkan rules when parsing GLSL
 		auto messages = EShMessages( EShMsgSpvRules | EShMsgVulkanRules );
-		auto glstage = doGetLanguage( stage );
+		auto glstage = glsltospv::doGetLanguage( stage );
 
 		std::string source = shader;
 

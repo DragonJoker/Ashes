@@ -7,10 +7,10 @@
 
 namespace ashes::test
 {
-	namespace
+	namespace pipe
 	{
 		template<typename T>
-		void doHashCombine( size_t & seed, T const & v )
+		static void doHashCombine( size_t & seed, T const & v )
 		{
 			const uint64_t kMul = 0x9ddfea08eb382d69ULL;
 
@@ -24,7 +24,7 @@ namespace ashes::test
 			seed = ( b * kMul );
 		}
 
-		size_t doHash( VkVertexInputAttributeDescription const & desc )
+		static size_t doHash( VkVertexInputAttributeDescription const & desc )
 		{
 			size_t result = 0u;
 			doHashCombine( result, desc.binding );
@@ -34,7 +34,7 @@ namespace ashes::test
 			return result;
 		}
 
-		size_t doHash( VkVertexInputBindingDescription const & desc )
+		static size_t doHash( VkVertexInputBindingDescription const & desc )
 		{
 			size_t result = 0u;
 			doHashCombine( result, desc.binding );
@@ -43,7 +43,7 @@ namespace ashes::test
 			return result;
 		}
 
-		size_t doHash( VkPipelineVertexInputStateCreateInfo const & state )
+		static size_t doHash( VkPipelineVertexInputStateCreateInfo const & state )
 		{
 			size_t result = 0u;
 
@@ -89,7 +89,7 @@ namespace ashes::test
 		, m_dynamicState{ ( createInfo.pDynamicState
 			? deepCopy( *createInfo.pDynamicState, m_dynamicStates )
 			: VkPipelineDynamicStateCreateInfo{} ) }
-		, m_vertexInputStateHash{ doHash( m_vertexInputState ) }
+		, m_vertexInputStateHash{ pipe::doHash( m_vertexInputState ) }
 	{
 	}
 

@@ -49,9 +49,9 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	namespace
+	namespace queue
 	{
-		void applyCmd( ContextLock const & lock, Command const & cmd )
+		static void applyCmd( ContextLock const & lock, Command const & cmd )
 		{
 			switch ( cmd.op.type )
 			{
@@ -473,7 +473,7 @@ namespace ashes::gl
 			if ( map( it, cmdBuf.end(), pCmd ) )
 			{
 				auto & cmd = *pCmd;
-				applyCmd( lock, cmd );
+				queue::applyCmd( lock, cmd );
 			}
 		}
 	}
@@ -489,7 +489,7 @@ namespace ashes::gl
 		{
 			auto & cmd = *pCmd;
 			it += cmd.op.size;
-			applyCmd( lock, cmd );
+			queue::applyCmd( lock, cmd );
 		}
 	}
 

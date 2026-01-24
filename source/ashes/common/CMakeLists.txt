@@ -112,6 +112,7 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_EXTENSIONS OFF
 	FOLDER "${Ashes_BASE_DIR}/Core"
 	DEBUG_POSTFIX "d"
+	UNITY_BUILD "${PROJECTS_UNITY_BUILD}"
 )
 
 source_group( "Source Files\\Platform" FILES ${${PROJECT_NAME}_PLATFORM_SRC_FILES} )

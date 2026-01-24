@@ -6,7 +6,7 @@
 
 namespace ashes::test
 {
-	namespace
+	namespace querypool
 	{
 		struct PipelineStatistics
 		{
@@ -20,7 +20,7 @@ namespace ashes::test
 			uint64_t PSInvocations{};
 		};
 
-		uint64_t getPipelineStatistic( uint32_t index
+		static uint64_t getPipelineStatistic( uint32_t index
 			, PipelineStatistics const & stats )
 		{
 			switch ( index )
@@ -66,15 +66,15 @@ namespace ashes::test
 			};
 			break;
 		case VK_QUERY_TYPE_PIPELINE_STATISTICS:
-			m_data.resize( sizeof( PipelineStatistics ) );
+			m_data.resize( sizeof( querypool::PipelineStatistics ) );
 			getUint32 = [this]( uint32_t index )
 			{
-				PipelineStatistics data = *reinterpret_cast< PipelineStatistics * >( m_data.data() );
+				auto data = *reinterpret_cast< querypool::PipelineStatistics * >( m_data.data() );
 				return uint32_t( getPipelineStatistic( index, data ) );
 			};
 			getUint64 = [this]( uint32_t index )
 			{
-				PipelineStatistics data = *reinterpret_cast< PipelineStatistics * >( m_data.data() );
+				auto data = *reinterpret_cast< querypool::PipelineStatistics * >( m_data.data() );
 				return getPipelineStatistic( index, data );
 			};
 			break;

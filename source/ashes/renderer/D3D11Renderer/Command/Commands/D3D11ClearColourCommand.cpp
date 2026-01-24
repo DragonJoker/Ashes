@@ -10,9 +10,9 @@ See LICENSE file in root folder.
 
 namespace ashes::D3D11_NAMESPACE
 {
-	namespace
+	namespace clrcol
 	{
-		VkImageViewArray createViews( VkDevice device
+		static VkImageViewArray createViews( VkDevice device
 			, VkImage image
 			, VkImageSubresourceRangeArray ranges )
 		{
@@ -51,7 +51,7 @@ namespace ashes::D3D11_NAMESPACE
 		, m_image{ image }
 		, m_ranges{ ranges.begin(), ranges.end() }
 		, m_colour{ colour }
-		, m_views{ createViews( getDevice(), m_image, m_ranges ) }
+		, m_views{ clrcol::createViews( getDevice(), m_image, m_ranges ) }
 	{
 	}
 
@@ -60,7 +60,7 @@ namespace ashes::D3D11_NAMESPACE
 		, m_image{ rhs.m_image }
 		, m_ranges{ rhs.m_ranges }
 		, m_colour{ rhs.m_colour }
-		, m_views{ createViews( getDevice(), m_image, m_ranges ) }
+		, m_views{ clrcol::createViews( getDevice(), m_image, m_ranges ) }
 	{
 	}
 
@@ -75,7 +75,7 @@ namespace ashes::D3D11_NAMESPACE
 		m_image = rhs.m_image;
 		m_ranges = rhs.m_ranges;
 		m_colour = rhs.m_colour;
-		m_views = createViews( getDevice(), m_image, m_ranges );
+		m_views = clrcol::createViews( getDevice(), m_image, m_ranges );
 
 		return *this;
 	}

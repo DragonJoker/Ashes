@@ -51,9 +51,9 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	namespace
+	namespace physdev
 	{
-		size_t makeKey( VkFormat format
+		static size_t makeKey( VkFormat format
 			, VkImageType type
 			, VkImageTiling tiling
 			, VkImageUsageFlags usage
@@ -67,7 +67,7 @@ namespace ashes::gl
 			return hash;
 		}
 
-		uint32_t doGetVendorID( std::string vendorName )
+		static uint32_t doGetVendorID( std::string vendorName )
 		{
 			uint32_t result = 0u;
 			std::transform( vendorName.begin()
@@ -98,7 +98,7 @@ namespace ashes::gl
 			return result;
 		}
 
-		GlInternal getCompressedFormatSupport( VkPhysicalDeviceFeatures const & features
+		static GlInternal getCompressedFormatSupport( VkPhysicalDeviceFeatures const & features
 			, VkFormat fmt
 			, GlInternal internal )
 		{
@@ -124,8 +124,8 @@ namespace ashes::gl
 			return internal;
 		}
 
-		std::vector< VkLayerProperties > const SupportedLayers{};
-		std::vector< VkExtensionProperties > const SupportedExtensions
+		static std::vector< VkLayerProperties > const SupportedLayers{};
+		static std::vector< VkExtensionProperties > const SupportedExtensions
 		{
 #if VK_KHR_swapchain
 			VkExtensionProperties{ VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_SWAPCHAIN_SPEC_VERSION },
@@ -183,12 +183,12 @@ namespace ashes::gl
 
 	std::vector< VkLayerProperties > const & PhysicalDevice::enumerateLayerProperties()const  noexcept
 	{
-		return SupportedLayers;
+		return physdev::SupportedLayers;
 	}
 
 	std::vector < VkExtensionProperties > const & PhysicalDevice::enumerateExtensionProperties( [[maybe_unused]] const char * layerName )const noexcept
 	{
-		return SupportedExtensions;
+		return physdev::SupportedExtensions;
 	}
 
 	VkPhysicalDeviceProperties const & PhysicalDevice::getProperties()const noexcept
@@ -248,7 +248,7 @@ namespace ashes::gl
 
 				if ( isCompressedFormat( fmt ) )
 				{
-					internal = getCompressedFormatSupport( m_features, fmt, internal );
+					internal = physdev::getCompressedFormatSupport( m_features, fmt, internal );
 				}
 
 				if ( internal != GL_INTERNAL_UNSUPPORTED )
@@ -645,7 +645,7 @@ namespace ashes::gl
 		, [[maybe_unused]] VkImageCreateFlags flags
 		, VkImageFormatProperties & imageProperties )const
 	{
-		auto [it, res] = m_imageFormatProperties.try_emplace( makeKey( format
+		auto [it, res] = m_imageFormatProperties.try_emplace( physdev::makeKey( format
 			, type
 			, VkImageTiling{}
 			, VkImageUsageFlags{}
@@ -986,7 +986,7 @@ namespace ashes::gl
 			, " (gl)"
 			, VK_MAX_PHYSICAL_DEVICE_NAME_SIZE - 1 );
 		std::memset( m_properties.pipelineCacheUUID, 0u, sizeof( m_properties.pipelineCacheUUID ) );
-		m_properties.vendorID = doGetVendorID( reinterpret_cast< char const * >( context->glGetString( GL_INFO_VENDOR ) ) );
+		m_properties.vendorID = physdev::doGetVendorID( reinterpret_cast< char const * >( context->glGetString( GL_INFO_VENDOR ) ) );
 		m_properties.deviceType = VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
 		m_properties.driverVersion = 0;
 		uint32_t shaderStages = 3;

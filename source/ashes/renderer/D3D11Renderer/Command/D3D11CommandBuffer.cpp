@@ -69,9 +69,9 @@ namespace ashes::D3D11_NAMESPACE
 
 	//*********************************************************************************************
 
-	namespace
+	namespace cmdbuf
 	{
-		uint64_t makeHash( VkFormat src
+		static uint64_t makeHash( VkFormat src
 			, VkFormat dst )
 		{
 			return ( uint64_t( src ) << 32 )
@@ -1178,7 +1178,7 @@ namespace ashes::D3D11_NAMESPACE
 
 	BlitPipeline const & CommandBuffer::doGetBlitPipeline( VkFormat src, VkFormat dst )const
 	{
-		auto hash = makeHash( src, dst );
+		auto hash = cmdbuf::makeHash( src, dst );
 		auto it = m_blitPipelines.find( hash );
 
 		if ( it == m_blitPipelines.end() )

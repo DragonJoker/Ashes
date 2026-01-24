@@ -8,9 +8,9 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	namespace
+	namespace drawidx
 	{
-		uint32_t getSize( VkIndexType type )
+		static uint32_t getSize( VkIndexType type )
 		{
 			switch ( type )
 			{
@@ -40,7 +40,7 @@ namespace ashes::gl
 		{
 			list.push_back( makeCmd< OpType::eDrawIndexedBaseInstance >( indexCount
 				, instCount
-				, firstIndex * getSize( type )
+				, firstIndex * drawidx::getSize( type )
 				, vertexOffset
 				, firstInstance
 				, convert( mode )
@@ -50,7 +50,7 @@ namespace ashes::gl
 		{
 			list.push_back( makeCmd< OpType::eDrawIndexed >( indexCount
 				, instCount
-				, firstIndex * getSize( type )
+				, firstIndex * drawidx::getSize( type )
 				, vertexOffset
 				, convert( mode )
 				, convert( type ) ) );

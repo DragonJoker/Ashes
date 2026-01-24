@@ -20,9 +20,9 @@ namespace ashes::test
 {
 	//*********************************************************************************************
 
-	namespace
+	namespace mem
 	{
-		VkMemoryPropertyFlags getMemoryProperties( uint32_t memoryTypeIndex )
+		static VkMemoryPropertyFlags getMemoryProperties( uint32_t memoryTypeIndex )
 		{
 			assert( memoryTypeIndex < Instance::getMemoryProperties().memoryTypeCount
 				&& "Wrong deduced memory type" );
@@ -215,7 +215,7 @@ namespace ashes::test
 		, VkMemoryAllocateInfo allocateInfo )
 		: m_device{ device }
 		, m_allocateInfo{ std::move( allocateInfo ) }
-		, m_propertyFlags{ getMemoryProperties( m_allocateInfo.memoryTypeIndex ) }
+		, m_propertyFlags{ mem::getMemoryProperties( m_allocateInfo.memoryTypeIndex ) }
 	{
 		thread_local uint8_t defaultInitValue = 10u;
 

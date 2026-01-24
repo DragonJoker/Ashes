@@ -27,7 +27,7 @@ See LICENSE file in root folder.
 
 namespace ashes::D3D11_NAMESPACE
 {
-	namespace
+	namespace physdev
 	{
 		inline VkLayerPropertiesArray const LayersProperties{};
 
@@ -59,7 +59,7 @@ namespace ashes::D3D11_NAMESPACE
 #endif
 		};
 
-		int getBitSize( uint64_t value )
+		static int getBitSize( uint64_t value )
 		{
 			static constexpr std::array< int, 128u > bitPatternToLog2
 			{
@@ -83,18 +83,18 @@ namespace ashes::D3D11_NAMESPACE
 			return bitPatternToLog2[( value * multiplicator ) >> 57];
 		}
 
-		int getBitSize( uint32_t value )
+		static int getBitSize( uint32_t value )
 		{
 			return getBitSize( uint64_t( value ) );
 		}
 
-		uint32_t getMaxMipLevels( uint32_t minDim )
+		static uint32_t getMaxMipLevels( uint32_t minDim )
 		{
 			return uint32_t( getBitSize( minDim ) );
 		}
 
 		template< typename FlagType >
-		inline VkFlags & addFlag( VkFlags & value
+		static VkFlags & addFlag( VkFlags & value
 			, FlagType const & flag )noexcept
 		{
 			value |= flag;
@@ -230,12 +230,12 @@ namespace ashes::D3D11_NAMESPACE
 
 	VkLayerPropertiesArray const & PhysicalDevice::enumerateLayerProperties()const
 	{
-		return LayersProperties;
+		return physdev::LayersProperties;
 	}
 
 	VkExtensionPropertiesArray const & PhysicalDevice::enumerateExtensionProperties()const
 	{
-		return ExtensionsProperties;
+		return physdev::ExtensionsProperties;
 	}
 
 	VkPhysicalDeviceProperties const & PhysicalDevice::getProperties()const
@@ -317,24 +317,24 @@ namespace ashes::D3D11_NAMESPACE
 		{
 			if ( checkFlag( usage, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT ) )
 			{
-				addFlag( imageProperties.sampleCounts, m_properties.limits.framebufferColorSampleCounts );
+				physdev::addFlag( imageProperties.sampleCounts, m_properties.limits.framebufferColorSampleCounts );
 			}
 
 			if ( checkFlag( usage, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT ) )
 			{
 				if ( isDepthStencilFormat( format ) )
 				{
-					addFlag( imageProperties.sampleCounts
+					physdev::addFlag( imageProperties.sampleCounts
 						, std::min( m_properties.limits.framebufferDepthSampleCounts
 							, m_properties.limits.framebufferStencilSampleCounts ) );
 				}
 				else if ( isDepthFormat( format ) )
 				{
-					addFlag( imageProperties.sampleCounts, m_properties.limits.framebufferDepthSampleCounts );
+					physdev::addFlag( imageProperties.sampleCounts, m_properties.limits.framebufferDepthSampleCounts );
 				}
 				else if ( isStencilFormat( format ) )
 				{
-					addFlag( imageProperties.sampleCounts, m_properties.limits.framebufferStencilSampleCounts );
+					physdev::addFlag( imageProperties.sampleCounts, m_properties.limits.framebufferStencilSampleCounts );
 				}
 			}
 
@@ -342,31 +342,31 @@ namespace ashes::D3D11_NAMESPACE
 			{
 				if ( isDepthStencilFormat( format ) )
 				{
-					addFlag( imageProperties.sampleCounts
+					physdev::addFlag( imageProperties.sampleCounts
 						, std::min( m_properties.limits.sampledImageDepthSampleCounts
 							, m_properties.limits.sampledImageStencilSampleCounts ) );
 				}
 				else if ( isDepthFormat( format ) )
 				{
-					addFlag( imageProperties.sampleCounts, m_properties.limits.sampledImageDepthSampleCounts );
+					physdev::addFlag( imageProperties.sampleCounts, m_properties.limits.sampledImageDepthSampleCounts );
 				}
 				else if ( isStencilFormat( format ) )
 				{
-					addFlag( imageProperties.sampleCounts, m_properties.limits.sampledImageStencilSampleCounts );
+					physdev::addFlag( imageProperties.sampleCounts, m_properties.limits.sampledImageStencilSampleCounts );
 				}
 				else
 				{
-					addFlag( imageProperties.sampleCounts, m_properties.limits.sampledImageColorSampleCounts );
+					physdev::addFlag( imageProperties.sampleCounts, m_properties.limits.sampledImageColorSampleCounts );
 				}
 			}
 
 			if ( checkFlag( usage, VK_IMAGE_USAGE_STORAGE_BIT ) )
 			{
-				addFlag( imageProperties.sampleCounts, m_properties.limits.storageImageSampleCounts );
+				physdev::addFlag( imageProperties.sampleCounts, m_properties.limits.storageImageSampleCounts );
 			}
 		}
 
-		imageProperties.maxMipLevels = getMaxMipLevels( imageProperties.maxExtent.width );
+		imageProperties.maxMipLevels = physdev::getMaxMipLevels( imageProperties.maxExtent.width );
 		imageProperties.maxResourceSize = imageProperties.maxArrayLayers * ashes::getLevelsSize( imageProperties.maxExtent
 			, format
 			, 0u

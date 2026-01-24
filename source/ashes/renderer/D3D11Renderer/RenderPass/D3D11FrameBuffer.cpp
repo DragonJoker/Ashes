@@ -12,9 +12,9 @@ See LICENSE file in root folder.
 
 namespace ashes::D3D11_NAMESPACE
 {
-	namespace
+	namespace frame
 	{
-		std::vector< FboAttachPtr > getAllAttaches( VkImageViewArray const & views )
+		static std::vector< FboAttachPtr > getAllAttaches( VkImageViewArray const & views )
 		{
 			std::vector< FboAttachPtr > result;
 
@@ -41,7 +41,7 @@ namespace ashes::D3D11_NAMESPACE
 			return result;
 		}
 
-		std::vector< FboAttach * > getRenderTargetViews( std::vector< FboAttachPtr > const & attaches
+		static std::vector< FboAttach * > getRenderTargetViews( std::vector< FboAttachPtr > const & attaches
 			, bool msaa )
 		{
 			std::vector< FboAttach * > result;
@@ -66,7 +66,7 @@ namespace ashes::D3D11_NAMESPACE
 			return result;
 		}
 
-		FboAttach * doGetDepthStencilAttach( std::vector< FboAttachPtr > const & attaches
+		static FboAttach * doGetDepthStencilAttach( std::vector< FboAttachPtr > const & attaches
 			, bool msaa )
 		{
 			FboAttach * result{ nullptr };
@@ -91,7 +91,7 @@ namespace ashes::D3D11_NAMESPACE
 			return result;
 		}
 
-		FboAttach * getDepthStencilView( std::vector< FboAttachPtr > const & attaches
+		static FboAttach * getDepthStencilView( std::vector< FboAttachPtr > const & attaches
 			, bool msaa )
 		{
 			FboAttach * result{ nullptr };
@@ -111,7 +111,7 @@ namespace ashes::D3D11_NAMESPACE
 			return result;
 		}
 
-		UINT getDepthStencilFlags( std::vector< FboAttachPtr > const & attaches )
+		static UINT getDepthStencilFlags( std::vector< FboAttachPtr > const & attaches )
 		{
 			UINT result{ 0u };
 			auto attach = doGetDepthStencilAttach( attaches, false );
@@ -145,12 +145,12 @@ namespace ashes::D3D11_NAMESPACE
 		, m_createInfo{ std::move( createInfo ) }
 		, m_views{ m_createInfo.pAttachments, m_createInfo.pAttachments + m_createInfo.attachmentCount }
 		, m_dimensions{ m_createInfo.width, m_createInfo.height }
-		, m_allViews{ getAllAttaches( m_views ) }
-		, m_rtViews{ getRenderTargetViews( m_allViews, false ) }
-		, m_msRtViews{ getRenderTargetViews( m_allViews, true ) }
-		, m_dsView{ getDepthStencilView( m_allViews, false ) }
-		, m_msDsView{ getDepthStencilView( m_allViews, true ) }
-		, m_dsViewFlags{ getDepthStencilFlags( m_allViews ) }
+		, m_allViews{ frame::getAllAttaches( m_views ) }
+		, m_rtViews{ frame::getRenderTargetViews( m_allViews, false ) }
+		, m_msRtViews{ frame::getRenderTargetViews( m_allViews, true ) }
+		, m_dsView{ frame::getDepthStencilView( m_allViews, false ) }
+		, m_msDsView{ frame::getDepthStencilView( m_allViews, true ) }
+		, m_dsViewFlags{ frame::getDepthStencilFlags( m_allViews ) }
 		, m_multisampled{ ( !m_msRtViews.empty() ) || ( m_msDsView != nullptr ) }
 	{
 	}

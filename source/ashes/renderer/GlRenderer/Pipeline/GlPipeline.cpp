@@ -31,9 +31,9 @@
 
 namespace ashes::gl
 {
-	namespace
+	namespace pipe
 	{
-		size_t doHash( VboBindings const & vbos
+		static size_t doHash( VboBindings const & vbos
 			, IboBinding const & ibo )
 		{
 			size_t result{ 0u };
@@ -55,7 +55,7 @@ namespace ashes::gl
 			return result;
 		}
 
-		size_t doHash( VkVertexInputAttributeDescription const & desc )
+		static size_t doHash( VkVertexInputAttributeDescription const & desc )
 		{
 			size_t result = 0u;
 			hashCombine( result, desc.binding );
@@ -65,7 +65,7 @@ namespace ashes::gl
 			return result;
 		}
 
-		size_t doHash( VkVertexInputBindingDescription const & desc )
+		static size_t doHash( VkVertexInputBindingDescription const & desc )
 		{
 			size_t result = 0u;
 			hashCombine( result, desc.binding );
@@ -74,7 +74,7 @@ namespace ashes::gl
 			return result;
 		}
 
-		size_t doHash( VkPipelineVertexInputStateCreateInfo const & state )
+		static size_t doHash( VkPipelineVertexInputStateCreateInfo const & state )
 		{
 			size_t result = 0u;
 			auto const endAttribs = state.pVertexAttributeDescriptions + state.vertexAttributeDescriptionCount;
@@ -94,7 +94,7 @@ namespace ashes::gl
 			return result;
 		}
 
-		Optional< VkPipelineRasterizationStateCreateInfo > invertFrontFace( VkPipelineRasterizationStateCreateInfo const * state )
+		static Optional< VkPipelineRasterizationStateCreateInfo > invertFrontFace( VkPipelineRasterizationStateCreateInfo const * state )
 		{
 			if ( state )
 			{
@@ -106,32 +106,32 @@ namespace ashes::gl
 			return Optional< VkPipelineRasterizationStateCreateInfo >{};
 		}
 
-		uint32_t getBinding( ConstantBufferDesc const & value )
+		static uint32_t getBinding( ConstantBufferDesc const & value )
 		{
 			return value.binding;
 		}
 
 		template< typename FormatT >
-		uint32_t getBinding( FormatDescT< FormatT > const & value )
+		static uint32_t getBinding( FormatDescT< FormatT > const & value )
 		{
 			return value.location;
 		}
 
-		bool checkDesc( [[maybe_unused]] VkWriteDescriptorSet const & write
+		static bool checkDesc( [[maybe_unused]] VkWriteDescriptorSet const & write
 			, [[maybe_unused]] ConstantBufferDesc const & lookup )
 		{
 			return false;
 		}
 
 		template< typename FormatT >
-		bool checkDesc( [[maybe_unused]] VkWriteDescriptorSet const & write
+		static bool checkDesc( [[maybe_unused]] VkWriteDescriptorSet const & write
 			, [[maybe_unused]] FormatDescT< FormatT > const & lookup )
 		{
 			return false;
 		}
 
 		template< typename DescT >
-		DescT const * findDesc( VkWriteDescriptorSet const & write
+		static DescT const * findDesc( VkWriteDescriptorSet const & write
 			, uint32_t descriptorSetIndex
 			, std::vector< DescT > const & descLayout
 			, ShaderBindingMap const & bindings
@@ -161,7 +161,7 @@ namespace ashes::gl
 			return &( *it );
 		}
 
-		VkDescriptorSetLayoutBinding convert( VkDescriptorType descriptorType
+		static VkDescriptorSetLayoutBinding convert( VkDescriptorType descriptorType
 			, uint32_t descriptorCount
 			, uint32_t binding )
 		{
@@ -175,8 +175,7 @@ namespace ashes::gl
 			};
 		}
 
-
-		void addReplaceBinding( uint32_t set
+		static void addReplaceBinding( uint32_t set
 			, uint32_t srcBinding
 			, VkDescriptorSetLayoutBinding const & dstBinding
 			, ShaderBindings & bindings )
@@ -221,7 +220,7 @@ namespace ashes::gl
 		}
 
 		template< typename DescContT >
-		void doReworkWrites( uint32_t descriptorSetIndex
+		static void doReworkWrites( uint32_t descriptorSetIndex
 			, LayoutBindingWritesArray const & writesArray
 			, DescContT const & descs
 			, ShaderBindingMap & resultMap
@@ -251,7 +250,7 @@ namespace ashes::gl
 			}
 		}
 
-		ShaderBindings doReworkBindings( ShaderBindings const & srcBindings
+		static ShaderBindings doReworkBindings( ShaderBindings const & srcBindings
 			, VkDescriptorSet descriptorSet
 			, uint32_t descriptorSetIndex
 			, ShaderDesc const & programLayout )
@@ -336,7 +335,7 @@ namespace ashes::gl
 			createInfo.pRasterizationState,
 			createInfo.pDynamicState,
 		}
-		, m_rtotRasterizationState{ invertFrontFace( createInfo.pRasterizationState ) }
+		, m_rtotRasterizationState{ pipe::invertFrontFace( createInfo.pRasterizationState ) }
 		, m_rtotContextState
 		{
 			createInfo.pColorBlendState,
@@ -358,7 +357,7 @@ namespace ashes::gl
 		, m_backPipeline{ std::make_unique< ShaderProgram >( m_device, &m_backContextState, get( this ), m_stages, m_layout, createInfo.flags, m_renderPass, m_vertexInputState, true ) }
 		, m_rtotPipeline{ std::make_unique< ShaderProgram >( m_device, &m_rtotContextState, get( this ), m_stages, m_layout, createInfo.flags, m_renderPass, m_vertexInputState, false ) }
 		, m_vertexInputStateHash{ ( m_vertexInputState
-			? doHash( m_vertexInputState.value() )
+			? pipe::doHash( m_vertexInputState.value() )
 			: 0u ) }
 	{
 		get( m_layout )->addPipeline( get( this ) );
@@ -392,7 +391,7 @@ namespace ashes::gl
 	GeometryBuffers * Pipeline::findGeometryBuffers( VboBindings const & vbos
 		, IboBinding const & ibo )const
 	{
-		size_t hash = doHash( vbos, ibo );
+		size_t hash = pipe::doHash( vbos, ibo );
 		auto it = std::find_if( m_geometryBuffers.begin()
 			, m_geometryBuffers.end()
 			, [&hash]( std::pair< size_t, GeometryBuffersPtr > const & pair )
@@ -408,7 +407,7 @@ namespace ashes::gl
 		, IboBinding const & ibo
 		, VkIndexType type )const
 	{
-		size_t hash = doHash( vbos, ibo );
+		size_t hash = pipe::doHash( vbos, ibo );
 		m_geometryBuffers.emplace_back( hash
 			, std::make_unique< GeometryBuffers >( m_device
 				, vbos
@@ -517,14 +516,14 @@ namespace ashes::gl
 			{
 				if ( isCompute() )
 				{
-					it->second = doReworkBindings( it->second
+					it->second = pipe::doReworkBindings( it->second
 						, descriptorSet
 						, descriptorSetIndex
 						, m_compPipeline->program );
 				}
 				else
 				{
-					it->second = doReworkBindings( it->second
+					it->second = pipe::doReworkBindings( it->second
 						, descriptorSet
 						, descriptorSetIndex
 						, m_backPipeline->program );

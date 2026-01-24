@@ -10,9 +10,9 @@ See LICENSE file in root folder.
 
 namespace ashes::D3D11_NAMESPACE
 {
-	namespace
+	namespace bindvtx
 	{
-		std::vector< ID3D11Buffer * > convert( VkBufferArray const & vbos )
+		static std::vector< ID3D11Buffer * > convert( VkBufferArray const & vbos )
 		{
 			std::vector< ID3D11Buffer * > result;
 
@@ -24,7 +24,7 @@ namespace ashes::D3D11_NAMESPACE
 			return result;
 		}
 
-		std::vector< UINT > convert( UInt64Array const & array )
+		static std::vector< UINT > convert( UInt64Array const & array )
 		{
 			std::vector< UINT > result;
 
@@ -44,8 +44,8 @@ namespace ashes::D3D11_NAMESPACE
 		: CommandBase{ device }
 		, m_firstBinding{ firstBinding }
 		, m_vbos{ buffers }
-		, m_buffers{ convert( m_vbos ) }
-		, m_offsets{ convert( offsets ) }
+		, m_buffers{ bindvtx::convert( m_vbos ) }
+		, m_offsets{ bindvtx::convert( offsets ) }
 		, m_strides( m_offsets.size(), 24u )
 	{
 	}

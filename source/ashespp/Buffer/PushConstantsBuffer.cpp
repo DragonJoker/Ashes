@@ -10,9 +10,9 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	namespace
+	namespace push
 	{
-		uint32_t deduceOffset( PushConstantArray & variables )
+		static uint32_t deduceOffset( PushConstantArray & variables )
 		{
 			std::sort( variables.begin()
 				, variables.end()
@@ -23,7 +23,7 @@ namespace ashes
 			return variables[0].offset;
 		}
 
-		uint32_t deduceSize( PushConstantArray const & variables
+		static uint32_t deduceSize( PushConstantArray const & variables
 			, uint32_t baseOffset )
 		{
 			auto offset = baseOffset;
@@ -46,8 +46,8 @@ namespace ashes
 		, PushConstantArray const & variables )
 		: m_stageFlags{ stageFlags }
 		, m_variables{ variables }
-		, m_offset{ deduceOffset( m_variables ) }
-		, m_data( deduceSize( m_variables, m_offset ) )
+		, m_offset{ push::deduceOffset( m_variables ) }
+		, m_data( push::deduceSize( m_variables, m_offset ) )
 	{
 		assert( ( m_offset % 4 ) == 0 );
 		assert( ( m_data.size() % 4 ) == 0 );

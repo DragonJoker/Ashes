@@ -22,9 +22,9 @@ namespace ashes::gl
 {
 	//************************************************************************************************
 
-	namespace
+	namespace mem
 	{
-		VkMemoryPropertyFlags getFlags( VkDevice device
+		static VkMemoryPropertyFlags getFlags( VkDevice device
 			, uint32_t memoryTypeIndex )
 		{
 			auto & memProps = get( get( device )->getPhysicalDevice() )->getMemoryProperties();
@@ -35,10 +35,10 @@ namespace ashes::gl
 
 #if !defined( NDEBUG )
 
-		uint32_t constexpr ControlValueCount = 64u;
-		uint8_t constexpr ControlValue = 0xDC;
+		static uint32_t constexpr ControlValueCount = 64u;
+		static uint8_t constexpr ControlValue = 0xDC;
 
-		void initControlValue( ByteArray & data )
+		static void initControlValue( ByteArray & data )
 		{
 			auto it = std::next( data.begin()
 				, ptrdiff_t( data.size() - ControlValueCount ) );
@@ -50,7 +50,7 @@ namespace ashes::gl
 			}
 		}
 
-		void checkControlValue( ByteArray const & data )
+		static void checkControlValue( ByteArray const & data )
 		{
 			auto it = std::next( data.begin()
 				, ptrdiff_t( data.size() - ControlValueCount ) );
@@ -66,11 +66,11 @@ namespace ashes::gl
 
 		static uint32_t constexpr ControlValueCount = 0u;
 
-		void initControlValue( ByteArray const & data )
+		static void initControlValue( ByteArray const & data )
 		{
 		}
 
-		void checkControlValue( ByteArray const & data )
+		static void checkControlValue( ByteArray const & data )
 		{
 		}
 
@@ -82,10 +82,10 @@ namespace ashes::gl
 		, VkMemoryAllocateInfo allocateInfo )
 		: m_device{ device }
 		, m_allocateInfo{ std::move( allocateInfo ) }
-		, m_flags{ getFlags( m_device, m_allocateInfo.memoryTypeIndex ) }
+		, m_flags{ mem::getFlags( m_device, m_allocateInfo.memoryTypeIndex ) }
 	{
-		m_data.resize( allocateInfo.allocationSize + ControlValueCount );
-		initControlValue( m_data );
+		m_data.resize( allocateInfo.allocationSize + mem::ControlValueCount );
+		mem::initControlValue( m_data );
 		// Create the buffer effectively owning the data
 		auto context = get( m_device )->getContext();
 		m_internal = context->createBuffer( GL_BUFFER_TARGET_COPY_WRITE
@@ -353,7 +353,7 @@ namespace ashes::gl
 		}
 
 		m_dirty = false;
-		checkControlValue( m_data );
+		mem::checkControlValue( m_data );
 
 		if ( size != 0 )
 		{
@@ -375,7 +375,7 @@ namespace ashes::gl
 		}
 
 		m_dirty = true;
-		checkControlValue( m_data );
+		mem::checkControlValue( m_data );
 
 		if ( size != 0 )
 		{

@@ -8,10 +8,10 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	namespace
+	namespace pushconst
 	{
 		template< OpType OpT, typename T >
-		void buildPushProgramUniformMtxCommand( ConstantDesc const & constant
+		static void buildPushProgramUniformMtxCommand( ConstantDesc const & constant
 			, uint8_t const *& buffer
 			, CmdList & list )
 		{
@@ -28,7 +28,7 @@ namespace ashes::gl
 		}
 
 		template< OpType OpT, typename T >
-		void buildPushProgramUniformCommand( ConstantDesc const & constant
+		static void buildPushProgramUniformCommand( ConstantDesc const & constant
 			, uint8_t const *& buffer
 			, CmdList & list )
 		{
@@ -44,7 +44,7 @@ namespace ashes::gl
 		}
 
 		template< OpType OpTypeT, typename DataT >
-		void buildPushUniformMtxCommand( ConstantDesc const & constant
+		static void buildPushUniformMtxCommand( ConstantDesc const & constant
 			, uint8_t const *& buffer
 			, CmdList & list )
 		{
@@ -60,7 +60,7 @@ namespace ashes::gl
 		}
 
 		template< OpType OpTypeT, typename DataT >
-		void buildPushUniformCommand( ConstantDesc const & constant
+		static void buildPushUniformCommand( ConstantDesc const & constant
 			, uint8_t const *& buffer
 			, CmdList & list )
 		{
@@ -74,7 +74,7 @@ namespace ashes::gl
 			}
 		}
 
-		void buildPushProgramUniformsCommands( VkShaderStageFlags stageFlags
+		static void buildPushProgramUniformsCommands( VkShaderStageFlags stageFlags
 			, ConstantsLayout const & constants
 			, ByteArray const & data
 			, CmdList & list )
@@ -162,7 +162,7 @@ namespace ashes::gl
 			}
 		}
 
-		void buildPushUniformsCommands( VkShaderStageFlags stageFlags
+		static void buildPushUniformsCommands( VkShaderStageFlags stageFlags
 			, ConstantsLayout const & constants
 			, ByteArray const & data
 			, CmdList & list )
@@ -262,11 +262,11 @@ namespace ashes::gl
 
 		if ( hasProgramPipelines( device ) )
 		{
-			buildPushProgramUniformsCommands( stageFlags, constants, data, list );
+			pushconst::buildPushProgramUniformsCommands( stageFlags, constants, data, list );
 		}
 		else
 		{
-			buildPushUniformsCommands( stageFlags, constants, data, list );
+			pushconst::buildPushUniformsCommands( stageFlags, constants, data, list );
 		}
 	}
 }

@@ -18,9 +18,9 @@ void * CGLGetProcAddress( const char * name );
 
 namespace ashes::gl
 {
-	namespace
+	namespace cgl
 	{
-		std::string getName( CGLError error )
+		static std::string getName( CGLError error )
 		{
 			switch ( error )
 			{
@@ -77,7 +77,7 @@ namespace ashes::gl
 	{
 		if (error != kCGLNoError)
 		{
-			throw ashes::BaseException{ name + ": " + getName( error ) };
+			throw ashes::BaseException{ name + ": " + cgl::getName( error ) };
 		}
 	}
 

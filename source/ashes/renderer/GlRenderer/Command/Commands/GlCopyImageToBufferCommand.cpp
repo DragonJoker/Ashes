@@ -15,9 +15,9 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	namespace
+	namespace copyimgtobuf
 	{
-		void readImagePixels( ContextStateStack & stack
+		static void readImagePixels( ContextStateStack & stack
 			, VkDevice device
 			, VkBufferImageCopy const & copyInfo
 			, VkImage src
@@ -55,7 +55,7 @@ namespace ashes::gl
 			}
 		}
 
-		VkDeviceSize getTextureImage( ContextStateStack & stack
+		static VkDeviceSize getTextureImage( ContextStateStack & stack
 			, VkBufferImageCopy const & copyInfo
 			, VkImage src
 			, CmdList & list )
@@ -86,7 +86,7 @@ namespace ashes::gl
 			return srcBufferOffset;
 		}
 
-		VkImageViewType getLayerViewType( VkImageType src )
+		static VkImageViewType getLayerViewType( VkImageType src )
 		{
 			switch ( src )
 			{
@@ -101,7 +101,7 @@ namespace ashes::gl
 			}
 		}
 
-		VkImageViewCreateInfo getViewCreateInfo( VkImage src
+		static VkImageViewCreateInfo getViewCreateInfo( VkImage src
 			, VkBufferImageCopy const & copyInfo )
 		{
 			return VkImageViewCreateInfo{ VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO
@@ -118,7 +118,7 @@ namespace ashes::gl
 					, copyInfo.imageSubresource.layerCount } };
 		}
 
-		void copyImageFullDataToImgBuffer( ContextStateStack & stack
+		static void copyImageFullDataToImgBuffer( ContextStateStack & stack
 			, VkBufferImageCopy const & copyInfo
 			, VkImage src
 			, ImageMemoryBinding const & srcBinding
@@ -161,7 +161,7 @@ namespace ashes::gl
 				, srcBinding.getSize() ) );
 		}
 
-		void copyImageFullDataToBuffer( VkBufferImageCopy const & copyInfo
+		static void copyImageFullDataToBuffer( VkBufferImageCopy const & copyInfo
 			, VkImage src
 			, GLuint dst
 			, VkDeviceSize srcBufferOffset
@@ -191,7 +191,7 @@ namespace ashes::gl
 				, 0u ) );
 		}
 
-		void copyImagePartialDataToBuffer( VkBufferImageCopy const & copyInfo
+		static void copyImagePartialDataToBuffer( VkBufferImageCopy const & copyInfo
 			, VkImage src
 			, GLuint dst
 			, VkExtent3D mipExtent
@@ -265,7 +265,7 @@ namespace ashes::gl
 			&& layerCount == 1u
 			&& !isCompressedFormat( get( src )->getFormatVk() ) )
 		{
-			readImagePixels( stack
+			copyimgtobuf::readImagePixels( stack
 				, device
 				, copyInfo
 				, src
@@ -274,7 +274,7 @@ namespace ashes::gl
 		}
 		else if ( &srcBinding == &dst )
 		{
-			copyImageFullDataToImgBuffer( stack
+			copyimgtobuf::copyImageFullDataToImgBuffer( stack
 				, copyInfo
 				, src
 				, srcBinding
@@ -282,7 +282,7 @@ namespace ashes::gl
 		}
 		else
 		{
-			auto srcBufferOffset = getTextureImage( stack, copyInfo, src, list );
+			auto srcBufferOffset = copyimgtobuf::getTextureImage( stack, copyInfo, src, list );
 			auto mipExtent = getSubresourceDimensions( get( src )->getDimensions(), copyInfo.imageSubresource.mipLevel );
 			auto mipLayerSize = srcBinding.getMipLevelLayerSize( copyInfo.imageSubresource.mipLevel );
 			auto baseArrayLayer = std::max( copyInfo.imageSubresource.baseArrayLayer
@@ -293,7 +293,7 @@ namespace ashes::gl
 				&& ( copyInfo.bufferRowLength == 0 || copyInfo.bufferRowLength == copyInfo.imageExtent.width )
 				&& ( copyInfo.bufferImageHeight == 0 || copyInfo.bufferImageHeight == copyInfo.imageExtent.height ) )
 			{
-				copyImageFullDataToBuffer( copyInfo
+				copyimgtobuf::copyImageFullDataToBuffer( copyInfo
 					, src
 					, get( dst.getParent() )->getInternal()
 					, srcBufferOffset
@@ -302,7 +302,7 @@ namespace ashes::gl
 			}
 			else
 			{
-				copyImagePartialDataToBuffer( copyInfo
+				copyimgtobuf::copyImagePartialDataToBuffer( copyInfo
 					, src
 					, get( dst.getParent() )->getInternal()
 					, mipExtent

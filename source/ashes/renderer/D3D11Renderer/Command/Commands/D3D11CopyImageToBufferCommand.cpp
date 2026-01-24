@@ -15,28 +15,28 @@ See LICENSE file in root folder.
 
 namespace ashes::D3D11_NAMESPACE
 {
-	namespace
+	namespace copyimgtobuf
 	{
-		uint32_t getBufferRowPitch( VkBufferImageCopy const & copyInfo )
+		static uint32_t getBufferRowPitch( VkBufferImageCopy const & copyInfo )
 		{
 			return ( copyInfo.bufferRowLength
 				? copyInfo.bufferRowLength
 				: copyInfo.imageExtent.width );
 		}
 
-		uint32_t getBufferHeightPitch( VkBufferImageCopy const & copyInfo )
+		static uint32_t getBufferHeightPitch( VkBufferImageCopy const & copyInfo )
 		{
 			return ( copyInfo.bufferImageHeight
 				? copyInfo.bufferImageHeight
 				: copyInfo.imageExtent.height );
 		}
 
-		uint32_t getBufferDepthPitch( VkBufferImageCopy const & copyInfo )
+		static uint32_t getBufferDepthPitch( VkBufferImageCopy const & copyInfo )
 		{
 			return copyInfo.imageExtent.depth;
 		}
 
-		std::vector< D3D11_BOX > doGetDstBoxes( VkImage image
+		static std::vector< D3D11_BOX > doGetDstBoxes( VkImage image
 			, ArrayView< VkBufferImageCopy const > const & copyInfos )
 		{
 			std::vector< D3D11_BOX > result;
@@ -65,7 +65,7 @@ namespace ashes::D3D11_NAMESPACE
 			return result;
 		}
 
-		std::vector< VkSubresourceLayout > doGetSrcLayouts( VkDevice device
+		static std::vector< VkSubresourceLayout > doGetSrcLayouts( VkDevice device
 			, VkImage image
 			, ArrayView< VkBufferImageCopy const > const & copyInfos )
 		{
@@ -88,7 +88,7 @@ namespace ashes::D3D11_NAMESPACE
 			return result;
 		}
 
-		VkExtent3D getTexelBlockExtent( VkFormat format )
+		static VkExtent3D getTexelBlockExtent( VkFormat format )
 		{
 			VkExtent3D texelBlockExtent{ 1u, 1u, 1u };
 
@@ -106,7 +106,7 @@ namespace ashes::D3D11_NAMESPACE
 			return texelBlockExtent;
 		}
 
-		uint32_t getTexelBlockByteSize( VkExtent3D const & texelBlockExtent
+		static uint32_t getTexelBlockByteSize( VkExtent3D const & texelBlockExtent
 			, VkFormat format )
 		{
 			VkDeviceSize texelBlockSize;
@@ -123,7 +123,7 @@ namespace ashes::D3D11_NAMESPACE
 			return uint32_t( texelBlockSize );
 		}
 
-		void doCopyMapped( VkFormat format
+		static void doCopyMapped( VkFormat format
 			, VkBufferImageCopy const & copyInfo
 			, uint8_t const * srcBuffer
 			, VkSubresourceLayout const & srcLayout
@@ -173,7 +173,7 @@ namespace ashes::D3D11_NAMESPACE
 			}
 		}
 
-		VkBuffer getStagingBuffer( VkDevice device
+		static VkBuffer getStagingBuffer( VkDevice device
 			, uint32_t size
 			, VkDeviceMemory & memory )
 		{
@@ -209,7 +209,7 @@ namespace ashes::D3D11_NAMESPACE
 			return result;
 		}
 
-		VkImage getStagingTexture( VkDevice device
+		static VkImage getStagingTexture( VkDevice device
 			, VkImage image
 			, VkExtent3D dimensions
 			, VkDeviceMemory & memory )
@@ -268,8 +268,8 @@ namespace ashes::D3D11_NAMESPACE
 		, m_dst{ dst }
 		, m_copyInfo{ copyInfo.begin(), copyInfo.end() }
 		, m_format{ getSRVFormat( get( m_src )->getFormat() ) }
-		, m_srcLayouts{ doGetSrcLayouts( device, m_src, copyInfo ) }
-		, m_dstBoxes{ doGetDstBoxes( m_src, copyInfo ) }
+		, m_srcLayouts{ copyimgtobuf::doGetSrcLayouts( device, m_src, copyInfo ) }
+		, m_dstBoxes{ copyimgtobuf::doGetDstBoxes( m_src, copyInfo ) }
 		, m_srcMappable{ get( m_src )->getMemoryRequirements().memoryTypeBits == VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT }
 		, m_dstMappable{ get( m_dst )->getMemoryRequirements().memoryTypeBits == VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT }
 	{
@@ -300,7 +300,7 @@ namespace ashes::D3D11_NAMESPACE
 
 		if ( !m_srcMappable )
 		{
-			stagingSrc = getStagingTexture( getDevice()
+			stagingSrc = copyimgtobuf::getStagingTexture( getDevice()
 				, m_src
 				, copyInfo.imageExtent
 				, stagingSrcMemory );
@@ -313,7 +313,7 @@ namespace ashes::D3D11_NAMESPACE
 
 		if ( !m_dstMappable )
 		{
-			stagingDst = getStagingBuffer( getDevice()
+			stagingDst = copyimgtobuf::getStagingBuffer( getDevice()
 				, dstBox.right - dstBox.left
 				, stagingDstMemory );
 			dst = &stagingDst;
@@ -374,7 +374,7 @@ namespace ashes::D3D11_NAMESPACE
 					, 0u
 					, reinterpret_cast< void ** >( &dstBuffer ) ) )
 			{
-				doCopyMapped( format
+				copyimgtobuf::doCopyMapped( format
 					, copyInfo
 					, srcBuffer
 					, srcLayout

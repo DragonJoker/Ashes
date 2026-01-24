@@ -12,10 +12,10 @@
 
 namespace ashes::gl
 {
-	namespace
+	namespace details
 	{
 		template< typename PropT >
-		VkResult getCountedProps( std::vector< PropT > const & props
+		static VkResult getCountedProps( std::vector< PropT > const & props
 			, uint32_t * pPropertyCount
 			, PropT * pProperties )noexcept
 		{
@@ -82,7 +82,7 @@ namespace ashes::gl
 		uint32_t* pPhysicalDeviceCount,
 		VkPhysicalDevice* pPhysicalDevices )
 	{
-		return getCountedProps( get( instance )->enumeratePhysicalDevices()
+		return details::getCountedProps( get( instance )->enumeratePhysicalDevices()
 			, pPhysicalDeviceCount
 			, pPhysicalDevices );
 	}
@@ -179,7 +179,7 @@ namespace ashes::gl
 		uint32_t* pPropertyCount,
 		VkExtensionProperties* pProperties )
 	{
-		return getCountedProps( getSupportedInstanceExtensions()
+		return details::getCountedProps( getSupportedInstanceExtensions()
 			, pPropertyCount
 			, pProperties );
 	}
@@ -190,7 +190,7 @@ namespace ashes::gl
 		uint32_t* pPropertyCount,
 		VkExtensionProperties* pProperties )
 	{
-		return getCountedProps( get( physicalDevice )->enumerateExtensionProperties( pLayerName )
+		return details::getCountedProps( get( physicalDevice )->enumerateExtensionProperties( pLayerName )
 			, pPropertyCount
 			, pProperties );
 	}
@@ -199,7 +199,7 @@ namespace ashes::gl
 		uint32_t* pPropertyCount,
 		VkLayerProperties* pProperties )
 	{
-		return getCountedProps( getInstanceLayerProperties()
+		return details::getCountedProps( getInstanceLayerProperties()
 			, pPropertyCount
 			, pProperties );
 	}
@@ -209,7 +209,7 @@ namespace ashes::gl
 		uint32_t* pPropertyCount,
 		VkLayerProperties* pProperties )
 	{
-		return getCountedProps( get( physicalDevice )->enumerateLayerProperties()
+		return details::getCountedProps( get( physicalDevice )->enumerateLayerProperties()
 			, pPropertyCount
 			, pProperties );
 	}
@@ -2169,7 +2169,7 @@ namespace ashes::gl
 		uint32_t* pSurfaceFormatCount,
 		VkSurfaceFormatKHR* pSurfaceFormats )
 	{
-		return getCountedProps( get( surface )->getFormats()
+		return details::getCountedProps( get( surface )->getFormats()
 			, pSurfaceFormatCount
 			, pSurfaceFormats );
 	}
@@ -2180,7 +2180,7 @@ namespace ashes::gl
 		uint32_t* pPresentModeCount,
 		VkPresentModeKHR* pPresentModes )
 	{
-		return getCountedProps( get( surface )->getPresentModes()
+		return details::getCountedProps( get( surface )->getPresentModes()
 			, pPresentModeCount
 			, pPresentModes );
 	}
@@ -2217,7 +2217,7 @@ namespace ashes::gl
 		uint32_t* pSwapchainImageCount,
 		VkImage* pSwapchainImages )
 	{
-		return getCountedProps( get( swapchain )->getImages()
+		return details::getCountedProps( get( swapchain )->getImages()
 			, pSwapchainImageCount
 			, pSwapchainImages );
 	}
@@ -2287,7 +2287,7 @@ namespace ashes::gl
 		uint32_t * pPropertyCount,
 		VkDisplayPropertiesKHR * pProperties )
 	{
-		return getCountedProps( get( physicalDevice )->getDisplayProperties()
+		return details::getCountedProps( get( physicalDevice )->getDisplayProperties()
 			, pPropertyCount
 			, pProperties );
 	}
@@ -2297,7 +2297,7 @@ namespace ashes::gl
 		uint32_t * pPropertyCount,
 		VkDisplayPlanePropertiesKHR * pProperties )
 	{
-		return getCountedProps( get( physicalDevice )->getDisplayPlaneProperties()
+		return details::getCountedProps( get( physicalDevice )->getDisplayPlaneProperties()
 			, pPropertyCount
 			, pProperties );
 	}
@@ -2308,7 +2308,7 @@ namespace ashes::gl
 		uint32_t * pDisplayCount,
 		VkDisplayKHR * pDisplays )
 	{
-		return getCountedProps( get( physicalDevice )->getDisplayPlaneSupportedDisplays( planeIndex )
+		return details::getCountedProps( get( physicalDevice )->getDisplayPlaneSupportedDisplays( planeIndex )
 			, pDisplayCount
 			, pDisplays );
 	}
@@ -2319,7 +2319,7 @@ namespace ashes::gl
 		uint32_t * pPropertyCount,
 		VkDisplayModePropertiesKHR * pProperties )
 	{
-		return getCountedProps( get( display )->getDisplayModeProperties()
+		return details::getCountedProps( get( display )->getDisplayModeProperties()
 			, pPropertyCount
 			, pProperties );
 	}

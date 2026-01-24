@@ -8,7 +8,7 @@
 
 namespace ashes
 {
-	namespace
+	namespace common
 	{
 		struct Folder
 		{
@@ -36,7 +36,7 @@ namespace ashes
 #endif
 		};
 
-		std::vector< Folder > const & getSystemFolders()
+		static std::vector< Folder > const & getSystemFolders()
 		{
 			return SystemFolders;
 		}
@@ -53,7 +53,7 @@ namespace ashes
 				return tmp;
 			}();
 
-		std::vector< Folder > const & getSearchFolders()
+		static std::vector< Folder > const & getSearchFolders()
 		{
 			return SearchFolders;
 		}
@@ -115,7 +115,7 @@ namespace ashes
 	{
 		StringArray files;
 
-		for ( auto & folder : getSearchFolders() )
+		for ( auto & folder : common::getSearchFolders() )
 		{
 			if ( files.empty() )
 			{

@@ -15,9 +15,9 @@
 
 namespace ashes::test
 {
-	namespace
+	namespace swapchain
 	{
-		VkImage createImage( VkDevice device
+		static VkImage createImage( VkDevice device
 			, VkFormat format
 			, VkExtent2D dimensions
 			, VkDeviceMemory & deviceMemory )
@@ -40,7 +40,7 @@ namespace ashes::test
 			return result;
 		}
 
-		VkImageView createImageView( VkDevice device
+		static VkImageView createImageView( VkDevice device
 			, VkImage image
 			, VkFormat format )
 		{
@@ -70,11 +70,11 @@ namespace ashes::test
 	{
 		try
 		{
-			m_image = createImage( m_device
+			m_image = swapchain::createImage( m_device
 				, m_createInfo.imageFormat
 				, m_createInfo.imageExtent
 				, m_deviceMemory );
-			m_view = createImageView( m_device
+			m_view = swapchain::createImageView( m_device
 				, m_image
 				, m_createInfo.imageFormat );
 		}

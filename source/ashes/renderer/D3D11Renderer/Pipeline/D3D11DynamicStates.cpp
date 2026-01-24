@@ -6,16 +6,16 @@
 
 namespace ashes::D3D11_NAMESPACE
 {
-	namespace
+	namespace dynstat
 	{
-		VkDynamicStateArray getStates( VkPipelineDynamicStateCreateInfo const * createInfo )
+		static VkDynamicStateArray getStates( VkPipelineDynamicStateCreateInfo const * createInfo )
 		{
 			return createInfo
 				? makeVector( createInfo->pDynamicStates, createInfo->dynamicStateCount )
 				: VkDynamicStateArray{};
 		}
 
-		VkPipelineDynamicStateCreateInfo getState( VkPipelineDynamicStateCreateInfo const * createInfo )
+		static VkPipelineDynamicStateCreateInfo getState( VkPipelineDynamicStateCreateInfo const * createInfo )
 		{
 			return ( createInfo
 				? *createInfo
@@ -24,8 +24,8 @@ namespace ashes::D3D11_NAMESPACE
 	}
 
 	DynamicStates::DynamicStates( VkPipelineDynamicStateCreateInfo const * createInfo )
-		: m_dynamicStates{ getStates( createInfo ) }
-		, m_dynamicState{ getState( createInfo ) }
+		: m_dynamicStates{ dynstat::getStates( createInfo ) }
+		, m_dynamicState{ dynstat::getState( createInfo ) }
 	{
 		m_dynamicState.pDynamicStates = m_dynamicStates.data();
 

@@ -65,18 +65,6 @@ namespace ashes::test
 {
 	//*********************************************************************************************
 
-	namespace
-	{
-		uint64_t makeHash( VkFormat src
-			, VkFormat dst )
-		{
-			return ( uint64_t( src ) << 32 )
-				| ( uint64_t( dst ) << 0 );
-		}
-	}
-
-	//*********************************************************************************************
-
 	CommandBuffer::CommandBuffer( VkDevice device
 		, VkCommandPool commandPool
 		, bool primary )

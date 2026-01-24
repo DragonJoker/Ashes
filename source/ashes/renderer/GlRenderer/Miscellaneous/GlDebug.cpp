@@ -19,9 +19,9 @@
 
 namespace ashes::gl
 {
-	namespace
+	namespace debug
 	{
-		std::string getDebugLogFile()
+		static std::string getDebugLogFile()
 		{
 			static std::string const debugLogBaseName = "CallLogGL.log";
 			return  debugLogBaseName + toString( std::this_thread::get_id() ) + ".log";
@@ -140,7 +140,7 @@ namespace ashes::gl
 
 	void logDebug( char const * const log )
 	{
-		std::ofstream file{ getDebugLogFile(), std::ios::app };
+		std::ofstream file{ debug::getDebugLogFile(), std::ios::app };
 
 		if ( file )
 		{
@@ -176,9 +176,9 @@ namespace ashes::gl
 	{
 		struct stat buffer;
 
-		if ( stat( getDebugLogFile().c_str(), &buffer ) == 0 )
+		if ( stat( debug::getDebugLogFile().c_str(), &buffer ) == 0 )
 		{
-			remove( getDebugLogFile().c_str() );
+			remove( debug::getDebugLogFile().c_str() );
 		}
 	}
 
@@ -186,7 +186,7 @@ namespace ashes::gl
 	{
 #if !defined( NDEBUG )
 
-		if ( std::ofstream file{ getDebugLogFile(), std::ios::app };
+		if ( std::ofstream file{ debug::getDebugLogFile(), std::ios::app };
 			file )
 		{
 			file << log << std::endl;

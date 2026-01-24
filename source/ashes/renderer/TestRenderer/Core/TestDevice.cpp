@@ -38,21 +38,21 @@ See LICENSE file in root folder.
 
 namespace ashes::test
 {
-	namespace
+	namespace device
 	{
 		template< typename T, typename U >
-		T getAligned( T value, U align )
+		static T getAligned( T value, U align )
 		{
 			return T( ( value + align - 1 ) & ~( align - 1 ) );
 		}
 
 		template< typename T >
-		T getSubresourceValue( T value, uint32_t mipLevel )
+		static T getSubresourceValue( T value, uint32_t mipLevel )
 		{
 			return T( value >> mipLevel );
 		}
 
-		VkExtent3D getTexelBlockExtent( VkFormat format )
+		static VkExtent3D getTexelBlockExtent( VkFormat format )
 		{
 			VkExtent3D texelBlockExtent{ 1u, 1u, 1u };
 
@@ -70,7 +70,7 @@ namespace ashes::test
 			return texelBlockExtent;
 		}
 
-		uint32_t getTexelBlockByteSize( VkExtent3D const & texelBlockExtent
+		static uint32_t getTexelBlockByteSize( VkExtent3D const & texelBlockExtent
 			, VkFormat format )
 		{
 			VkDeviceSize texelBlockSize;
@@ -87,7 +87,7 @@ namespace ashes::test
 			return uint32_t( texelBlockSize );
 		}
 
-		void doCheckEnabledExtensions( VkPhysicalDevice physicalDevice
+		static void doCheckEnabledExtensions( VkPhysicalDevice physicalDevice
 			, ashes::ArrayView< char const * const > const & extensions )
 		{
 			auto available = get( physicalDevice )->enumerateExtensionProperties();
@@ -106,7 +106,7 @@ namespace ashes::test
 			}
 		}
 
-		bool doHasEnabledExtensions( VkPhysicalDevice physicalDevice
+		static bool doHasEnabledExtensions( VkPhysicalDevice physicalDevice
 			, ashes::ArrayView< char const * const > const & extensions )
 		{
 			try
@@ -120,7 +120,7 @@ namespace ashes::test
 			}
 		}
 
-		size_t makeKey( VkImageType type
+		static size_t makeKey( VkImageType type
 			, VkFormat format
 			, VkExtent3D const & extent
 			, uint32_t mipLevels )
@@ -174,14 +174,14 @@ namespace ashes::test
 	bool Device::hasExtension( std::string_view extension )const
 	{
 		char const * const version = extension.data();
-		return doHasEnabledExtensions( m_physicalDevice
+		return device::doHasEnabledExtensions( m_physicalDevice
 			, ashes::makeArrayView( &version, 1u ) );
 	}
 
 	VkImage Device::getStagingImage( VkImage image
 		, VkDeviceMemory & memory )
 	{
-		auto key = makeKey( get( image )->getType()
+		auto key = device::makeKey( get( image )->getType()
 			, get( image )->getFormat()
 			, get( image )->getDimensions()
 			, get( image )->getMipmapLevels() );
@@ -238,10 +238,10 @@ namespace ashes::test
 		, VkImageSubresource const & subresource
 		, VkSubresourceLayout & layout )const
 	{
-		auto extent = getTexelBlockExtent( get( image )->getFormat() );
-		auto byteSize = getTexelBlockByteSize( extent, get( image )->getFormat() );
-		auto mipWidth = getSubresourceValue( get( image )->getDimensions().width, subresource.mipLevel );
-		auto mipHeight = getSubresourceValue( get( image )->getDimensions().height, subresource.mipLevel );
+		auto extent = device::getTexelBlockExtent( get( image )->getFormat() );
+		auto byteSize = device::getTexelBlockByteSize( extent, get( image )->getFormat() );
+		auto mipWidth = device::getSubresourceValue( get( image )->getDimensions().width, subresource.mipLevel );
+		auto mipHeight = device::getSubresourceValue( get( image )->getDimensions().height, subresource.mipLevel );
 		layout.rowPitch = byteSize * mipWidth / ( extent.width * extent.height * extent.depth );
 		layout.arrayPitch = layout.rowPitch * mipHeight * extent.height / ( extent.width * extent.depth );
 		layout.depthPitch = layout.arrayPitch;

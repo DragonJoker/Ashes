@@ -18,9 +18,9 @@ See LICENSE file in root folder.
 
 namespace utils
 {
-	namespace
+	namespace swapchain
 	{
-		uint32_t doGetImageCount( ashes::Surface const & surface )
+		static uint32_t doGetImageCount( ashes::Surface const & surface )
 		{
 			auto surfaceCaps = surface.getCapabilities();
 			uint32_t desiredNumberOfSwapChainImages{ surfaceCaps.minImageCount + 1 };
@@ -35,7 +35,7 @@ namespace utils
 			return desiredNumberOfSwapChainImages;
 		}
 
-		VkSurfaceFormatKHR doSelectFormat( ashes::Surface const & surface )
+		static VkSurfaceFormatKHR doSelectFormat( ashes::Surface const & surface )
 		{
 			VkSurfaceFormatKHR result{};
 			// Si la liste de formats ne contient qu'une entr�e VK_FORMAT_UNDEFINED,
@@ -70,7 +70,7 @@ namespace utils
 			return result;
 		}
 
-		VkPresentModeKHR doSelectPresentMode( ashes::Surface const & surface )
+		static VkPresentModeKHR doSelectPresentMode( ashes::Surface const & surface )
 		{
 			auto presentModes = surface.getPresentModes();
 			// Si le mode boîte aux lettres est disponible, on utilise celui-là, car c'est celui avec le
@@ -97,7 +97,7 @@ namespace utils
 			return result;
 		}
 
-		ashes::SwapChainCreateInfo doGetSwapChainCreateInfo( ashes::Surface const & surface
+		static ashes::SwapChainCreateInfo doGetSwapChainCreateInfo( ashes::Surface const & surface
 			, VkSurfaceCapabilitiesKHR const & surfaceCaps )
 		{
 			// Parfois, les images doivent être transformées avant d'être présentées (lorsque l'orientation
@@ -140,7 +140,7 @@ namespace utils
 			};
 		}
 
-		ashes::SwapChainCreateInfo doGetSwapChainResetInfo( ashes::Surface const & surface
+		static ashes::SwapChainCreateInfo doGetSwapChainResetInfo( ashes::Surface const & surface
 			, VkExtent2D const & size )
 		{
 			static uint32_t constexpr invalidSize = ~0u;
@@ -160,7 +160,7 @@ namespace utils
 			return doGetSwapChainCreateInfo( surface, surfaceCaps );
 		}
 
-		ashes::SwapChainCreateInfo doGetSwapChainCreateInfo( ashes::Surface const & surface
+		static ashes::SwapChainCreateInfo doGetSwapChainCreateInfo( ashes::Surface const & surface
 			, VkExtent2D const & size )
 		{
 			auto surfaceCaps = surface.getCapabilities();
@@ -190,7 +190,7 @@ namespace utils
 		, m_commandPool{ commandPool }
 		, m_surface{ std::move( surface ) }
 		, m_dimensions{ size }
-		, m_swapChain{ device.createSwapChain( doGetSwapChainCreateInfo( *m_surface, size ) ) }
+		, m_swapChain{ device.createSwapChain( swapchain::doGetSwapChainCreateInfo( *m_surface, size ) ) }
 	{
 		for ( uint32_t i = 0u; i < m_swapChain->getImageCount(); ++i )
 		{
@@ -387,7 +387,7 @@ namespace utils
 		m_device.waitIdle();
 		m_renderingResources.clear();
 		m_swapChain.reset();
-		m_swapChain = m_device.createSwapChain( doGetSwapChainResetInfo( *m_surface, m_dimensions ) );
+		m_swapChain = m_device.createSwapChain( swapchain::doGetSwapChainResetInfo( *m_surface, m_dimensions ) );
 
 		for ( uint32_t i = 0u; i < m_swapChain->getImageCount(); ++i )
 		{

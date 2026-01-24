@@ -12,9 +12,9 @@ See LICENSE file in root folder.
 
 namespace ashes::test
 {
-	namespace
+	namespace frame
 	{
-		VkImageViewArray getRenderTargetViews( VkImageViewArray const & attaches
+		static VkImageViewArray getRenderTargetViews( VkImageViewArray const & attaches
 			, bool msaa )
 		{
 			VkImageViewArray result;
@@ -35,7 +35,7 @@ namespace ashes::test
 			return result;
 		}
 
-		VkImageView doGetDepthStencilAttach( VkImageViewArray const & attaches
+		static VkImageView doGetDepthStencilAttach( VkImageViewArray const & attaches
 			, bool msaa )
 		{
 			VkImageView result{};
@@ -56,7 +56,7 @@ namespace ashes::test
 			return result;
 		}
 
-		VkImageView getDepthStencilView( VkImageViewArray const & attaches
+		static VkImageView getDepthStencilView( VkImageViewArray const & attaches
 			, bool msaa )
 		{
 			VkImageView result{};
@@ -80,10 +80,10 @@ namespace ashes::test
 		, m_createInfo{ std::move( createInfo ) }
 		, m_views{ m_createInfo.pAttachments, m_createInfo.pAttachments + m_createInfo.attachmentCount }
 		, m_dimensions{ m_createInfo.width, m_createInfo.height }
-		, m_rtViews{ getRenderTargetViews( m_views, false ) }
-		, m_msRtViews{ getRenderTargetViews( m_views, true ) }
-		, m_dsView{ getDepthStencilView( m_views, false ) }
-		, m_msDsView{ getDepthStencilView( m_views, true ) }
+		, m_rtViews{ frame::getRenderTargetViews( m_views, false ) }
+		, m_msRtViews{ frame::getRenderTargetViews( m_views, true ) }
+		, m_dsView{ frame::getDepthStencilView( m_views, false ) }
+		, m_msDsView{ frame::getDepthStencilView( m_views, true ) }
 		, m_multisampled{ ( !m_msRtViews.empty() ) || ( m_msDsView != nullptr ) }
 	{
 	}

@@ -17,14 +17,14 @@
 
 namespace ashes::gl
 {
-	namespace
+	namespace instance
 	{
-		std::string convert( const char * ptr )
+		static std::string convert( const char * ptr )
 		{
 			return std::string{ ptr };
 		}
 
-		StringArray convert( const char * const * ptr
+		static StringArray convert( const char * const * ptr
 			, uint32_t count )
 		{
 			StringArray result;
@@ -37,7 +37,7 @@ namespace ashes::gl
 			return result;
 		}
 
-		bool doCheckEnabledExtensions( VkInstance instance
+		static bool doCheckEnabledExtensions( VkInstance instance
 			, bool report
 			, ashes::ArrayView< char const * const > const & extensions )
 		{
@@ -79,13 +79,13 @@ namespace ashes::gl
 			return false;
 		}
 
-		bool doHasEnabledExtensions( VkInstance instance
+		static bool doHasEnabledExtensions( VkInstance instance
 			, ashes::ArrayView< char const * const > const & extensions )
 		{
 			return doCheckEnabledExtensions( instance, false, extensions );
 		}
 
-		VkApplicationInfo doGetDefaultApplicationInfo()
+		static VkApplicationInfo doGetDefaultApplicationInfo()
 		{
 			return
 			{
@@ -102,9 +102,9 @@ namespace ashes::gl
 
 	Instance::Instance( [[maybe_unused]] VkAllocationCallbacks const * allocInfo
 		, VkInstanceCreateInfo const & createInfo )
-		: m_applicationInfo{ createInfo.pApplicationInfo ? *createInfo.pApplicationInfo : doGetDefaultApplicationInfo() }
-		, m_enabledLayerNames{ convert( createInfo.ppEnabledLayerNames, createInfo.enabledLayerCount ) }
-		, m_enabledExtensions{ convert( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) }
+		: m_applicationInfo{ createInfo.pApplicationInfo ? *createInfo.pApplicationInfo : instance::doGetDefaultApplicationInfo() }
+		, m_enabledLayerNames{ instance::convert( createInfo.ppEnabledLayerNames, createInfo.enabledLayerCount ) }
+		, m_enabledExtensions{ instance::convert( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) }
 		, m_window{ new gl::RenderWindow( MinMajor, MinMinor, "GlInstance" ) }
 	{
 		m_extensions.initialise();
@@ -124,7 +124,7 @@ namespace ashes::gl
 		glCheckError( context, "ContextInitialisation", true );
 		m_physicalDevices.emplace_back( VkPhysicalDevice( new PhysicalDevice{ VkInstance( this ) } ) );
 
-		doCheckEnabledExtensions( get( this )
+		instance::doCheckEnabledExtensions( get( this )
 			, true
 			, ashes::makeArrayView( createInfo.ppEnabledExtensionNames, createInfo.enabledExtensionCount ) );
 	}
@@ -148,7 +148,7 @@ namespace ashes::gl
 	bool Instance::hasExtension( std::string_view extension )const
 	{
 		char const * const version = extension.data();
-		return doHasEnabledExtensions( get( this )
+		return instance::doHasEnabledExtensions( get( this )
 			, ashes::makeArrayView( &version, 1u ) );
 	}
 

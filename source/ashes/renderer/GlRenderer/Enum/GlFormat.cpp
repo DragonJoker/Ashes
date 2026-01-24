@@ -2,9 +2,9 @@
 
 namespace ashes::gl
 {
-	namespace
+	namespace format
 	{
-		void udpateSwizzle( VkComponentSwizzle swizzle
+		static void udpateSwizzle( VkComponentSwizzle swizzle
 			, GlComponentMapping source
 			, GlComponentSwizzle & result )
 		{
@@ -33,7 +33,7 @@ namespace ashes::gl
 			}
 		}
 
-		bool isCompatible8( GlInternal value )
+		static bool isCompatible8( GlInternal value )
 		{
 			return value == GL_INTERNAL_R8_UNORM
 				|| value == GL_INTERNAL_R8_SNORM
@@ -41,7 +41,7 @@ namespace ashes::gl
 				|| value == GL_INTERNAL_R8_SINT;
 		}
 
-		bool isCompatible16( GlInternal value )
+		static bool isCompatible16( GlInternal value )
 		{
 			return value == GL_INTERNAL_R16_SFLOAT
 				|| value == GL_INTERNAL_R16_SINT
@@ -54,7 +54,7 @@ namespace ashes::gl
 				|| value == GL_INTERNAL_R8G8_SINT;
 		}
 
-		bool isCompatible24( GlInternal value )
+		static bool isCompatible24( GlInternal value )
 		{
 			return value == GL_INTERNAL_R8G8B8_UNORM
 				|| value == GL_INTERNAL_R8G8B8_SNORM
@@ -63,7 +63,7 @@ namespace ashes::gl
 				|| value == GL_INTERNAL_R8G8B8_SRGB;
 		}
 
-		bool isCompatible32( GlInternal value )
+		static bool isCompatible32( GlInternal value )
 		{
 			return value == GL_INTERNAL_R8G8B8A8_UNORM
 				|| value == GL_INTERNAL_R8G8B8A8_SNORM
@@ -84,7 +84,7 @@ namespace ashes::gl
 				|| value == GL_INTERNAL_E5B9G9R9_UFLOAT_PACK32;
 		}
 
-		bool isCompatible48( GlInternal value )
+		static bool isCompatible48( GlInternal value )
 		{
 			return value == GL_INTERNAL_R16G16B16_SFLOAT
 				|| value == GL_INTERNAL_R16G16B16_SINT
@@ -93,7 +93,7 @@ namespace ashes::gl
 				|| value == GL_INTERNAL_R16G16B16_UNORM;
 		}
 
-		bool isCompatible64( GlInternal value )
+		static bool isCompatible64( GlInternal value )
 		{
 			return value == GL_INTERNAL_R16G16B16A16_SFLOAT
 				|| value == GL_INTERNAL_R16G16B16A16_SINT
@@ -107,14 +107,14 @@ namespace ashes::gl
 				|| value == GL_INTERNAL_BC4_SNORM_BLOCK;
 		}
 
-		bool isCompatible96( GlInternal value )
+		static bool isCompatible96( GlInternal value )
 		{
 			return value == GL_INTERNAL_R32G32B32_SFLOAT
 				|| value == GL_INTERNAL_R32G32B32_SINT
 				|| value == GL_INTERNAL_R32G32B32_UINT;
 		}
 
-		bool isCompatible128( GlInternal value )
+		static bool isCompatible128( GlInternal value )
 		{
 			return value == GL_INTERNAL_R32G32B32A32_SFLOAT
 				|| value == GL_INTERNAL_R32G32B32A32_SINT
@@ -1263,10 +1263,10 @@ namespace ashes::gl
 	{
 		GlComponentMapping source = getSwizzle( format );
 		GlComponentMapping result = source;
-		udpateSwizzle( components.r, source, result.r );
-		udpateSwizzle( components.g, source, result.g );
-		udpateSwizzle( components.b, source, result.b );
-		udpateSwizzle( components.a, source, result.a );
+		format::udpateSwizzle( components.r, source, result.r );
+		format::udpateSwizzle( components.g, source, result.g );
+		format::udpateSwizzle( components.b, source, result.b );
+		format::udpateSwizzle( components.a, source, result.a );
 		return result;
 	}
 
@@ -1288,35 +1288,35 @@ namespace ashes::gl
 
 			if ( size == 1u )
 			{
-				result = isCompatible8( lhsInternal ) && isCompatible8( rhsInternal );
+				result = format::isCompatible8( lhsInternal ) && format::isCompatible8( rhsInternal );
 			}
 			else if ( size == 2u )
 			{
-				result = isCompatible16( lhsInternal ) && isCompatible16( rhsInternal );
+				result = format::isCompatible16( lhsInternal ) && format::isCompatible16( rhsInternal );
 			}
 			else if ( size == 3u )
 			{
-				result = isCompatible24( lhsInternal ) && isCompatible24( rhsInternal );
+				result = format::isCompatible24( lhsInternal ) && format::isCompatible24( rhsInternal );
 			}
 			else if ( size == 4u )
 			{
-				result = isCompatible32( lhsInternal ) && isCompatible32( rhsInternal );
+				result = format::isCompatible32( lhsInternal ) && format::isCompatible32( rhsInternal );
 			}
 			else if ( size == 6u )
 			{
-				result = isCompatible48( lhsInternal ) && isCompatible48( rhsInternal );
+				result = format::isCompatible48( lhsInternal ) && format::isCompatible48( rhsInternal );
 			}
 			else if ( size == 8u )
 			{
-				result = isCompatible64( lhsInternal ) && isCompatible64( rhsInternal );
+				result = format::isCompatible64( lhsInternal ) && format::isCompatible64( rhsInternal );
 			}
 			else if ( size == 12u )
 			{
-				result = isCompatible96( lhsInternal ) && isCompatible96( rhsInternal );
+				result = format::isCompatible96( lhsInternal ) && format::isCompatible96( rhsInternal );
 			}
 			else if ( size == 16u )
 			{
-				result = isCompatible128( lhsInternal ) && isCompatible128( rhsInternal );
+				result = format::isCompatible128( lhsInternal ) && format::isCompatible128( rhsInternal );
 			}
 			else
 			{

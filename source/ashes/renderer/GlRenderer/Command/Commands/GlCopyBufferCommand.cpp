@@ -10,9 +10,9 @@ See LICENSE file in root folder.
 
 namespace ashes::gl
 {
-	namespace
+	namespace copybuf
 	{
-		void adjustCopyInfo( DeviceMemoryBinding const & binding
+		static void adjustCopyInfo( DeviceMemoryBinding const & binding
 			, VkDeviceSize & offset )
 		{
 			offset += binding.getOffset();
@@ -25,8 +25,8 @@ namespace ashes::gl
 		, CmdList & list )
 	{
 		glLogCommand( list, "CopyBufferCommand" );
-		adjustCopyInfo( get( src )->getMemoryBinding(), copyInfo.srcOffset );
-		adjustCopyInfo( get( dst )->getMemoryBinding(), copyInfo.dstOffset );
+		copybuf::adjustCopyInfo( get( src )->getMemoryBinding(), copyInfo.srcOffset );
+		copybuf::adjustCopyInfo( get( dst )->getMemoryBinding(), copyInfo.dstOffset );
 
 		if ( copyInfo.size == WholeSize )
 		{

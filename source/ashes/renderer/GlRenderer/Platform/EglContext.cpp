@@ -13,9 +13,9 @@ See LICENSE file in root folder
 
 namespace ashes::gl
 {
-	namespace
+	namespace egl
 	{
-		std::string getEGLError( std::string const & text )
+		static std::string getEGLError( std::string const & text )
 		{
 			auto error = eglGetError();
 
@@ -39,6 +39,7 @@ namespace ashes::gl
 			}
 		}
 	}
+
 	ContextEgl::ContextEgl( Display * display
 		, uint64_t window
 		, int reqMajor
@@ -51,14 +52,14 @@ namespace ashes::gl
 
 			if ( !ok )
 			{
-				throw ashes::BaseException{ getEGLError( "Couldn't bind EGL API")  };
+				throw ashes::BaseException{ egl::getEGLError( "Couldn't bind EGL API")  };
 			}
 
 			m_display = eglGetDisplay( display );
 
 			if ( m_display == EGL_NO_DISPLAY )
 			{
-				throw ashes::BaseException{ getEGLError( "Couldn't get EGL display" ) };
+				throw ashes::BaseException{ egl::getEGLError( "Couldn't get EGL display" ) };
 			}
 
 			EGLint major = 0;
@@ -67,7 +68,7 @@ namespace ashes::gl
 
 			if ( !ok )
 			{
-				throw ashes::BaseException{ getEGLError( "Couldn't initialise EGL" ) };
+				throw ashes::BaseException{ egl::getEGLError( "Couldn't initialise EGL" ) };
 			}
 
 			const EGLint eglConfigAttribs[]
@@ -102,12 +103,12 @@ namespace ashes::gl
 
 			if ( !ok )
 			{
-				throw ashes::BaseException{ getEGLError( "Couldn't choose EGL config" ) };
+				throw ashes::BaseException{ egl::getEGLError( "Couldn't choose EGL config" ) };
 			}
 
 			if ( numConfigs == 0 )
 			{
-				throw ashes::BaseException{ getEGLError( "Failed to find suitable EGLConfig" ) };
+				throw ashes::BaseException{ egl::getEGLError( "Failed to find suitable EGLConfig" ) };
 			}
 
 			EGLConfig config{ nullptr };
@@ -129,7 +130,7 @@ namespace ashes::gl
 
 			if ( !m_surface )
 			{
-				throw ashes::BaseException{ getEGLError( "EGL Surface creation failed" ) };
+				throw ashes::BaseException{ egl::getEGLError( "EGL Surface creation failed" ) };
 			}
 
 			const EGLint eglContextAttribs[]
@@ -151,14 +152,14 @@ namespace ashes::gl
 
 			if ( !m_context )
 			{
-				throw ashes::BaseException{ getEGLError( "EGL Context creation failed" ) };
+				throw ashes::BaseException{ egl::getEGLError( "EGL Context creation failed" ) };
 			}
 
 			ok = enable();
 
 			if ( !ok )
 			{
-				throw ashes::BaseException{ getEGLError( "eglMakeCurrent() failed" ) };
+				throw ashes::BaseException{ egl::getEGLError( "eglMakeCurrent() failed" ) };
 			}
 
 			eglSwapInterval( m_display, 0 );

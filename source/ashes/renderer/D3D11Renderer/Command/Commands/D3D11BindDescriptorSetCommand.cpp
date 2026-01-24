@@ -16,39 +16,39 @@ See LICENSE file in root folder.
 
 namespace ashes::D3D11_NAMESPACE
 {
-	namespace
+	namespace binddesc
 	{
-		ID3D11ShaderResourceView * getView( VkWriteDescriptorSet const & write, uint32_t index )
+		static ID3D11ShaderResourceView * getView( VkWriteDescriptorSet const & write, uint32_t index )
 		{
 			assert( index < write.descriptorCount );
 			return get( write.pImageInfo[index].imageView )->getShaderView();
 		}
 		
-		ID3D11ShaderResourceView * getBufferView( VkWriteDescriptorSet const & write, uint32_t index )
+		static ID3D11ShaderResourceView * getBufferView( VkWriteDescriptorSet const & write, uint32_t index )
 		{
 			assert( index < write.descriptorCount );
 			return get( write.pTexelBufferView[index] )->getView();
 		}
 		
-		ID3D11UnorderedAccessView * getImageUAV( VkWriteDescriptorSet const & write, uint32_t index )
+		static ID3D11UnorderedAccessView * getImageUAV( VkWriteDescriptorSet const & write, uint32_t index )
 		{
 			assert( index < write.descriptorCount );
 			return get( write.pImageInfo[index].imageView )->getUnorderedAccessView();
 		}
 
-		ID3D11SamplerState * getSampler( VkWriteDescriptorSet const & write, uint32_t index )
+		static ID3D11SamplerState * getSampler( VkWriteDescriptorSet const & write, uint32_t index )
 		{
 			assert( index < write.descriptorCount );
 			return get( write.pImageInfo[index].sampler )->getSampler();
 		}
 
-		ID3D11Buffer * getBuffer( VkWriteDescriptorSet const & write, uint32_t index )
+		static ID3D11Buffer * getBuffer( VkWriteDescriptorSet const & write, uint32_t index )
 		{
 			assert( index < write.descriptorCount );
 			return get( write.pBufferInfo[index].buffer )->getBuffer();
 		}
 
-		ID3D11UnorderedAccessView * getBufferUAV( VkWriteDescriptorSet const & write, uint32_t index )
+		static ID3D11UnorderedAccessView * getBufferUAV( VkWriteDescriptorSet const & write, uint32_t index )
 		{
 			assert( index < write.descriptorCount );
 			return get( write.pBufferInfo[index].buffer )->getUnorderedAccessView();
@@ -247,7 +247,7 @@ namespace ashes::D3D11_NAMESPACE
 			}
 		};
 
-		inline void checkOffset( uint32_t offset )
+		static void checkOffset( uint32_t offset )
 		{
 #ifndef NDEBUG
 			if ( offset != 0u )
@@ -454,7 +454,7 @@ namespace ashes::D3D11_NAMESPACE
 		};
 
 		template< VkShaderStageFlagBits Flag, bool Supports11_1, typename ... Params >
-		void tryBindOne( ID3D11DeviceContext1 * context
+		static void tryBindOne( ID3D11DeviceContext1 * context
 			, UINT bindingIndex
 			, VkShaderStageFlags const & flags
 			, Params ... params )
@@ -468,7 +468,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< bool Supports11_1, typename ... Params >
-		void tryBind( ID3D11DeviceContext1 * context
+		static void tryBind( ID3D11DeviceContext1 * context
 			, UINT bindingIndex
 			, VkShaderStageFlags const & flags
 			, Params ... params )
@@ -500,7 +500,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< bool Supports11_1 >
-		void bindCombinedSampler( ID3D11DeviceContext1 * context
+		static void bindCombinedSampler( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex )
@@ -523,7 +523,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 		
 		template< bool Supports11_1 >
-		void bindInputAttachment( ID3D11DeviceContext1 * context
+		static void bindInputAttachment( ID3D11DeviceContext1 * context
 			, VkSampler sampler
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
@@ -546,7 +546,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< bool Supports11_1 >
-		void bindSampler( ID3D11DeviceContext1 * context
+		static void bindSampler( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex )
@@ -568,7 +568,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< bool Supports11_1 >
-		void bindSampledTexture( ID3D11DeviceContext1 * context
+		static void bindSampledTexture( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex )
@@ -590,7 +590,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< bool Supports11_1 >
-		void bindUniformBuffer( ID3D11DeviceContext1 * context
+		static void bindUniformBuffer( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex )
@@ -619,7 +619,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< bool Supports11_1 >
-		void bindUniformTexelBuffer( ID3D11DeviceContext1 * context
+		static void bindUniformTexelBuffer( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex )
@@ -644,7 +644,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< bool Supports11_1 >
-		void bindDynamicUniformBuffer( ID3D11DeviceContext1 * context
+		static void bindDynamicUniformBuffer( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
@@ -674,7 +674,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< bool Supports11_1 >
-		void bindStorageImage( ID3D11DeviceContext1 * context
+		static void bindStorageImage( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex )
@@ -699,7 +699,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< bool Supports11_1 >
-		void bindStorageTexelBuffer( ID3D11DeviceContext1 * context
+		static void bindStorageTexelBuffer( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex )
@@ -724,7 +724,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< bool Supports11_1 >
-		void bindStorageBuffer( ID3D11DeviceContext1 * context
+		static void bindStorageBuffer( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex )
@@ -749,7 +749,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< bool Supports11_1 >
-		void bindDynamicStorageBuffer( ID3D11DeviceContext1 * context
+		static void bindDynamicStorageBuffer( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
@@ -775,7 +775,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< bool Supports11_1 >
-		void bindDynamicBuffers( ID3D11DeviceContext1 * context
+		static void bindDynamicBuffers( ID3D11DeviceContext1 * context
 			, LayoutBindingWritesArray const & writes
 			, ShaderBindings const & bindings
 			, uint32_t setIndex
@@ -804,7 +804,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< VkShaderStageFlagBits Flag, typename ... Params >
-		void tryGatherOne( UINT bindingIndex
+		static void tryGatherOne( UINT bindingIndex
 			, VkShaderStageFlags const & flags
 			, Params ... params )
 		{
@@ -816,7 +816,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< typename ... Params >
-		void tryGather( UINT bindingIndex
+		static void tryGather( UINT bindingIndex
 			, VkShaderStageFlags const & flags
 			, Params ... params )
 		{
@@ -840,7 +840,7 @@ namespace ashes::D3D11_NAMESPACE
 				, params... );
 		}
 
-		inline void gatherStorageImage( LayoutBindingWrites const & writeBinding
+		static void gatherStorageImage( LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, std::map< UINT, ID3D11UnorderedAccessView * > & uavs )
@@ -864,7 +864,7 @@ namespace ashes::D3D11_NAMESPACE
 			}
 		}
 
-		inline void gatherStorageBuffer( LayoutBindingWrites const & writeBinding
+		static void gatherStorageBuffer( LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, std::map< UINT, ID3D11UnorderedAccessView * > & uavs )
@@ -888,7 +888,7 @@ namespace ashes::D3D11_NAMESPACE
 			}
 		}
 
-		inline void gatherDynamicStorageBuffer( LayoutBindingWrites const & writeBinding
+		static void gatherDynamicStorageBuffer( LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
 			, std::map< UINT, ID3D11UnorderedAccessView * > & uavs
@@ -913,7 +913,7 @@ namespace ashes::D3D11_NAMESPACE
 			}
 		}
 
-		inline void gatherDynamicBuffers( LayoutBindingWritesArray const & writes
+		static void gatherDynamicBuffers( LayoutBindingWritesArray const & writes
 			, ShaderBindings const & bindings
 			, uint32_t setIndex
 			, std::map< UINT, ID3D11UnorderedAccessView * > & uavs
@@ -942,7 +942,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< bool Supports11_1 >
-		void unbindCombinedSampler( ID3D11DeviceContext1 * context
+		static void unbindCombinedSampler( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex )
@@ -967,7 +967,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 		
 		template< bool Supports11_1 >
-		void unbindInputAttachment( ID3D11DeviceContext1 * context
+		static void unbindInputAttachment( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex )
@@ -992,7 +992,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< bool Supports11_1 >
-		void unbindSampler( ID3D11DeviceContext1 * context
+		static void unbindSampler( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex )
@@ -1016,7 +1016,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< bool Supports11_1 >
-		void unbindSampledTexture( ID3D11DeviceContext1 * context
+		static void unbindSampledTexture( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex )
@@ -1040,7 +1040,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< bool Supports11_1 >
-		void unbindUniformBuffer( ID3D11DeviceContext1 * context
+		static void unbindUniformBuffer( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex )
@@ -1068,7 +1068,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< bool Supports11_1 >
-		void unbindUniformTexelBuffer( ID3D11DeviceContext1 * context
+		static void unbindUniformTexelBuffer( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex )
@@ -1092,7 +1092,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< bool Supports11_1 >
-		void unbindDynamicUniformBuffer( ID3D11DeviceContext1 * context
+		static void unbindDynamicUniformBuffer( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
@@ -1121,7 +1121,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< bool Supports11_1 >
-		void unbindStorageImage( ID3D11DeviceContext1 * context
+		static void unbindStorageImage( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex )
@@ -1145,7 +1145,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< bool Supports11_1 >
-		void unbindStorageTexelBuffer( ID3D11DeviceContext1 * context
+		static void unbindStorageTexelBuffer( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex )
@@ -1169,7 +1169,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< bool Supports11_1 >
-		void unbindStorageBuffer( ID3D11DeviceContext1 * context
+		static void unbindStorageBuffer( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex )
@@ -1193,7 +1193,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< bool Supports11_1 >
-		void unbindDynamicStorageBuffer( ID3D11DeviceContext1 * context
+		static void unbindDynamicStorageBuffer( ID3D11DeviceContext1 * context
 			, LayoutBindingWrites const & writeBinding
 			, ShaderBindingMap const & bindings
 			, uint32_t setIndex
@@ -1218,7 +1218,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< bool Supports11_1 >
-		void unbindDynamicBuffers( ID3D11DeviceContext1 * context
+		static void unbindDynamicBuffers( ID3D11DeviceContext1 * context
 			, LayoutBindingWritesArray const & writes
 			, ShaderBindings const & bindings
 			, uint32_t setIndex
@@ -1247,7 +1247,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< bool Supports11_1 >
-		void bindAll( Context const & context
+		static void bindAll( Context const & context
 			, VkPipelineLayout pipelineLayout
 			, VkDescriptorSet descriptorSet
 			, UInt32Array const & dynamicOffsets )
@@ -1310,7 +1310,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 		template< bool Supports11_1 >
-		void unbindAll( Context const & context
+		static void unbindAll( Context const & context
 			, VkPipelineLayout pipelineLayout
 			, VkDescriptorSet descriptorSet
 			, UInt32Array const & dynamicOffsets )
@@ -1372,7 +1372,7 @@ namespace ashes::D3D11_NAMESPACE
 			unbindDynamicBuffers< Supports11_1 >( context.context1, d3dDescriptorSet->getDynamicBuffers(), bindings, setIndex, dynamicOffsets );
 		}
 
-		std::map< UINT, ID3D11UnorderedAccessView * > gatherUavs( VkDescriptorSet descriptorSet
+		static std::map< UINT, ID3D11UnorderedAccessView * > gatherUavs( VkDescriptorSet descriptorSet
 			, VkPipelineLayout pipelineLayout
 			, UInt32Array const & dynamicOffsets )
 		{
@@ -1406,7 +1406,7 @@ namespace ashes::D3D11_NAMESPACE
 		, m_layout{ layout }
 		, m_bindingPoint{ bindingPoint }
 		, m_dynamicOffsets{ dynamicOffsets.begin(), dynamicOffsets.end() }
-		, m_uavs{ gatherUavs( m_descriptorSet, m_layout, m_dynamicOffsets ) }
+		, m_uavs{ binddesc::gatherUavs( m_descriptorSet, m_layout, m_dynamicOffsets ) }
 	{
 		assert( get( m_descriptorSet )->getDynamicBuffers().size() == m_dynamicOffsets.size()
 			&& "Dynamic descriptors and dynamic offsets sizes must match." );
@@ -1416,11 +1416,11 @@ namespace ashes::D3D11_NAMESPACE
 	{
 		if ( context.featureLevel >= D3D_FEATURE_LEVEL_11_1 )
 		{
-			bindAll< true >( context, m_layout, m_descriptorSet, m_dynamicOffsets );
+			binddesc::bindAll< true >( context, m_layout, m_descriptorSet, m_dynamicOffsets );
 		}
 		else
 		{
-			bindAll< false >( context, m_layout, m_descriptorSet, m_dynamicOffsets );
+			binddesc::bindAll< false >( context, m_layout, m_descriptorSet, m_dynamicOffsets );
 		}
 
 		std::map< UINT, ID3D11UnorderedAccessView * > newUavs = context.uavs;
@@ -1458,11 +1458,11 @@ namespace ashes::D3D11_NAMESPACE
 	{
 		if ( context.featureLevel >= D3D_FEATURE_LEVEL_11_1 )
 		{
-			unbindAll< true >( context, m_layout, m_descriptorSet, m_dynamicOffsets );
+			binddesc::unbindAll< true >( context, m_layout, m_descriptorSet, m_dynamicOffsets );
 		}
 		else
 		{
-			unbindAll< false >( context, m_layout, m_descriptorSet, m_dynamicOffsets );
+			binddesc::unbindAll< false >( context, m_layout, m_descriptorSet, m_dynamicOffsets );
 		}
 	}
 

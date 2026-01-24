@@ -20,9 +20,9 @@ namespace ashes::D3D11_NAMESPACE
 {
 	//*********************************************************************************************
 	
-	namespace
+	namespace blitimg
 	{
-		std::string getImgFmtName( VkFormat fmt )
+		static std::string getImgFmtName( VkFormat fmt )
 		{
 			switch ( fmt )
 			{
@@ -162,7 +162,7 @@ namespace ashes::D3D11_NAMESPACE
 			}
 		}
 
-		ashes::UInt32Array getBlitShaderCode( VkFormat src
+		static ashes::UInt32Array getBlitShaderCode( VkFormat src
 			, VkFormat dst )
 		{
 			auto srcName = getImgFmtName( src );
@@ -199,7 +199,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 			return result;
 		}
 
-		VkDescriptorSetLayout doCreateBlitDescriptorLayout( Device const & device )
+		static VkDescriptorSetLayout doCreateBlitDescriptorLayout( Device const & device )
 		{
 			VkDescriptorSetLayoutBindingArray bindings
 			{
@@ -223,7 +223,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 			return result;
 		}
 
-		VkPipelineLayout doCreateBlitPipelineLayout( Device const & device
+		static VkPipelineLayout doCreateBlitPipelineLayout( Device const & device
 			, VkDescriptorSetLayout descriptorLayout )
 		{
 			VkPipelineLayout result;
@@ -243,7 +243,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 			return result;
 		}
 
-		VkShaderModule doCreateShaderModule( Device const & device
+		static VkShaderModule doCreateShaderModule( Device const & device
 			, VkFormat src
 			, VkFormat dst
 			, UInt32Array & spirv )
@@ -264,7 +264,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 			return result;
 		}
 
-		VkPipeline doCreateBlitPipeline( Device const & device
+		static VkPipeline doCreateBlitPipeline( Device const & device
 			, VkPipelineLayout pipelineLayout
 			, VkShaderModule shaderModule )
 		{
@@ -294,7 +294,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 			return result;
 		}
 
-		VkSampler doCreateSampler( VkDevice device
+		static VkSampler doCreateSampler( VkDevice device
 			, VkFilter filter
 			, uint32_t mipLevels )
 		{
@@ -326,7 +326,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 			return result;
 		}
 
-		VkBuffer doCreateUbo( VkDevice device
+		static VkBuffer doCreateUbo( VkDevice device
 			, uint32_t count
 			, VkDeviceMemory & memory
 			, VkDeviceSize & range )
@@ -370,7 +370,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 			return result;
 		}
 
-		VkDescriptorSet doCreateDescriptorSet( VkDevice device
+		static VkDescriptorSet doCreateDescriptorSet( VkDevice device
 			, VkDescriptorPool pool
 			, VkDescriptorSetLayout descriptorLayout
 			, VkBuffer ubo
@@ -469,7 +469,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 			return result;
 		}
 
-		VkImage doGetImage( VkDevice device
+		static VkImage doGetImage( VkDevice device
 			, VkImage image
 			, VkDeviceMemory & memory
 			, VkImageUsageFlags requiredUsage )
@@ -503,7 +503,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 			return result;
 		}
 
-		VkImage doGetSamplable( VkDevice device
+		static VkImage doGetSamplable( VkDevice device
 			, VkImage image
 			, VkDeviceMemory & memory )
 		{
@@ -513,7 +513,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 				, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT );
 		}
 
-		VkImage doGetStorable( VkDevice device
+		static VkImage doGetStorable( VkDevice device
 			, VkImage image
 			, VkDeviceMemory & memory )
 		{
@@ -523,12 +523,12 @@ void main( uint3 threadID : SV_DispatchThreadID )
 				, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_STORAGE_BIT );
 		}
 
-		bool areInSameGroup( DXGI_FORMAT src, DXGI_FORMAT dst )
+		static bool areInSameGroup( DXGI_FORMAT src, DXGI_FORMAT dst )
 		{
 			return getDxgiFormatGroup( src ) == getDxgiFormatGroup( dst );
 		}
 
-		bool areBlitCompatible( VkFormat src, VkFormat dst )
+		static bool areBlitCompatible( VkFormat src, VkFormat dst )
 		{
 			if ( src == dst
 				|| areInSameGroup( getDxgiFormat( src ), getDxgiFormat( dst ) ) )
@@ -587,7 +587,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 			}
 		}
 
-		VkImageCopy makeImageCopy( VkImageBlit const & region
+		static VkImageCopy makeImageCopy( VkImageBlit const & region
 			, int direction )
 		{
 			return VkImageCopy
@@ -612,10 +612,10 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		, VkFormat src
 		, VkFormat dst )
 		: device{ get( &device ) }
-		, descriptorLayout{ doCreateBlitDescriptorLayout( device ) }
-		, pipelineLayout{ doCreateBlitPipelineLayout( device, descriptorLayout ) }
-		, shader{ doCreateShaderModule( device, src, dst, spirv ) }
-		, pipeline{ doCreateBlitPipeline( device, pipelineLayout, shader ) }
+		, descriptorLayout{ blitimg::doCreateBlitDescriptorLayout( device ) }
+		, pipelineLayout{ blitimg::doCreateBlitPipelineLayout( device, descriptorLayout ) }
+		, shader{ blitimg::doCreateShaderModule( device, src, dst, spirv ) }
+		, pipeline{ blitimg::doCreateBlitPipeline( device, pipelineLayout, shader ) }
 	{
 	}
 
@@ -694,7 +694,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		}
 		, src{ device, blitRegion.srcSubresource, srcImage, layer }
 		, dst{ device, blitRegion.dstSubresource, dstImage, layer }
-		, set{ doCreateDescriptorSet( device
+		, set{ blitimg::doCreateDescriptorSet( device
 			, pool
 			, descriptorLayout
 			, ubo
@@ -734,7 +734,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		: CommandBase{ device }
 		, m_srcTexture{ srcImage }
 		, m_dstTexture{ dstImage }
-		, m_sampler{ doCreateSampler( device, filter, get( m_srcTexture )->getMipmapLevels() ) }
+		, m_sampler{ blitimg::doCreateSampler( device, filter, get( m_srcTexture )->getMipmapLevels() ) }
 	{
 		uint32_t count = 0u;
 		uint32_t srcMinLevel = std::numeric_limits< uint32_t >::max();
@@ -747,9 +747,9 @@ void main( uint3 threadID : SV_DispatchThreadID )
 			assert( region.srcSubresource.layerCount == region.dstSubresource.layerCount );
 
 			if ( region.dstOffsets[1] == region.srcOffsets[1]
-				&& areBlitCompatible( get( srcImage )->getFormat(), get( dstImage )->getFormat() ) )
+				&& blitimg::areBlitCompatible( get( srcImage )->getFormat(), get( dstImage )->getFormat() ) )
 			{
-				m_layerBlits.push_back( makeImageCopy( region, 0u ) );
+				m_layerBlits.push_back( blitimg::makeImageCopy( region, 0u ) );
 			}
 			else
 			{
@@ -761,8 +761,8 @@ void main( uint3 threadID : SV_DispatchThreadID )
 				dstMaxLevel = std::max( dstMaxLevel, region.dstSubresource.mipLevel );
 			}
 
-			m_layerBlitsToTmp.push_back( makeImageCopy( region, 1u ) );
-			m_layerBlitsFromTmp.push_back( makeImageCopy( region, 2u ) );
+			m_layerBlitsToTmp.push_back( blitimg::makeImageCopy( region, 1u ) );
+			m_layerBlitsFromTmp.push_back( blitimg::makeImageCopy( region, 2u ) );
 		}
 
 		doInitialiseStretches( device, pipeline.descriptorLayout, count );
@@ -778,7 +778,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		, uint32_t count )
 	{
 		VkDeviceSize range = 0u;
-		m_ubo = doCreateUbo( getDevice(), count, m_uboMemory, range );
+		m_ubo = blitimg::doCreateUbo( getDevice(), count, m_uboMemory, range );
 
 		ashes::VkDescriptorPoolSizeArray poolSizes
 		{
@@ -847,8 +847,8 @@ void main( uint3 threadID : SV_DispatchThreadID )
 	{
 		if ( count )
 		{
-			m_tmpSrcTexture = doGetSamplable( getDevice(), m_srcTexture, m_srcMemory );
-			m_tmpDstTexture = doGetStorable( getDevice(), m_dstTexture, m_dstMemory );
+			m_tmpSrcTexture = blitimg::doGetSamplable( getDevice(), m_srcTexture, m_srcMemory );
+			m_tmpDstTexture = blitimg::doGetStorable( getDevice(), m_dstTexture, m_dstMemory );
 			doInitialiseStretchUbo( device, descriptorLayout, count );
 		}
 	}

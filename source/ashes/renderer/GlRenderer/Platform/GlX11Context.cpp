@@ -22,7 +22,7 @@ See LICENSE file in root folder
 
 namespace ashes::gl
 {
-	namespace
+	namespace ctxt
 	{
 #if !defined( NDEBUG )
 
@@ -36,7 +36,7 @@ namespace ashes::gl
 
 #endif
 
-		XVisualInfo * createVisualInfoWithoutFBConfig( Display * dpy
+		static XVisualInfo * createVisualInfoWithoutFBConfig( Display * dpy
 			, std::vector< int > arrayAttribs
 			, int screen )
 		{
@@ -50,7 +50,7 @@ namespace ashes::gl
 			return result;
 		}
 
-		XVisualInfo * createVisualInfoWithFBConfig( Display * dpy
+		static XVisualInfo * createVisualInfoWithFBConfig( Display * dpy
 			, std::vector< int > arrayAttribs
 			, int screen
 			, GLXFBConfig & fbConfig )
@@ -169,7 +169,7 @@ namespace ashes::gl
 		};
 
 		attribList.push_back( 0 );
-		m_visualInfo = createVisualInfoWithFBConfig( m_display, attribList, m_screenIndex, m_fbConfig );
+		m_visualInfo = ctxt::createVisualInfoWithFBConfig( m_display, attribList, m_screenIndex, m_fbConfig );
 
 		if ( !m_visualInfo )
 		{
@@ -336,8 +336,8 @@ namespace ashes::gl
 		{
 			GLX_CONTEXT_MAJOR_VERSION_ARB, m_major,
 			GLX_CONTEXT_MINOR_VERSION_ARB, m_minor,
-			GLX_CONTEXT_FLAGS_ARB, GL_CONTEXT_CREATION_DEFAULT_FLAGS,
-			GLX_CONTEXT_PROFILE_MASK_ARB, GL_CONTEXT_CREATION_DEFAULT_MASK,
+			GLX_CONTEXT_FLAGS_ARB, ctxt::GL_CONTEXT_CREATION_DEFAULT_FLAGS,
+			GLX_CONTEXT_PROFILE_MASK_ARB, ctxt::GL_CONTEXT_CREATION_DEFAULT_MASK,
 			0
 		};
 

@@ -11,9 +11,9 @@ See LICENSE file in root folder.
 
 namespace ashes
 {
-	namespace
+	namespace descpool
 	{
-		VkDescriptorPoolSizeArray convert( VkDescriptorSetLayoutBindingArray const & bindings
+		static VkDescriptorPoolSizeArray convert( VkDescriptorSetLayoutBindingArray const & bindings
 			, uint32_t maxSets )
 		{
 			VkDescriptorPoolSizeArray result;
@@ -46,7 +46,7 @@ namespace ashes
 				? VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT
 				: VkDescriptorPoolCreateFlagBits( 0u ) )
 			, maxSets
-			, convert( layout.getBindings(), maxSets ) ) }
+			, descpool::convert( layout.getBindings(), maxSets ) ) }
 	{
 	}
 

@@ -19,6 +19,7 @@ bld/
 .vs/
 .vscode/
 vcpkg_installed/
+SDL-UWP/
 
 # Specific files
 source/premake5.exe
