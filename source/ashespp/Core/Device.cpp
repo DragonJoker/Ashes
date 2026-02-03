@@ -613,10 +613,10 @@ namespace ashes
 
 		if ( vkGetDeviceFaultInfoEXT )
 		{
-			VkDeviceFaultCountsEXT counts{};
+			VkDeviceFaultCountsEXT counts{ VK_STRUCTURE_TYPE_DEVICE_FAULT_COUNTS_EXT, nullptr, {}, {}, {} };
 			vkGetDeviceFaultInfoEXT( m_internal, &counts, nullptr );
 
-			VkDeviceFaultInfoEXT info{};
+			VkDeviceFaultInfoEXT info{ VK_STRUCTURE_TYPE_DEVICE_FAULT_INFO_EXT, nullptr, {}, {}, {}, {} };
 			if ( counts.addressInfoCount )
 			{
 				result.addressInfos.resize( counts.addressInfoCount );

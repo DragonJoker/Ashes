@@ -6,7 +6,10 @@ See LICENSE file in root folder.
 #define ___Ashes_C_H___
 #pragma once
 
+#pragma warning( push )
+#pragma warning( disable: 4865 )
 #include <vulkan/vulkan.h>
+#pragma warning( pop )
 
 #if __linux__
 #pragma clang diagnostic push
