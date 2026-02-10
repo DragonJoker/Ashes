@@ -14,8 +14,10 @@ namespace ashes
 	{
 		~QueueShare()noexcept = default;
 
-		explicit QueueShare( UInt32Array pqueueFamilyIndices )
+		explicit QueueShare( UInt32Array pqueueFamilyIndices
+			, VkSharingMode psharingMode = VK_SHARING_MODE_EXCLUSIVE )
 			: queueFamilyIndices{ std::move( pqueueFamilyIndices ) }
+			, sharingMode{ psharingMode }
 		{
 			doInit();
 		}
@@ -27,12 +29,14 @@ namespace ashes
 
 		QueueShare( QueueShare const & rhs )
 			: queueFamilyIndices{ rhs.queueFamilyIndices }
+			, sharingMode{ rhs.sharingMode }
 		{
 			doInit();
 		}
-		
+
 		QueueShare( QueueShare && rhs )noexcept
 			: queueFamilyIndices{ std::move( rhs.queueFamilyIndices ) }
+			, sharingMode{ rhs.sharingMode }
 		{
 			rhs.queueFamilyIndexCount = 0u;
 			rhs.pQueueFamilyIndices = nullptr;
@@ -42,6 +46,7 @@ namespace ashes
 		QueueShare & operator=( QueueShare const & rhs )
 		{
 			queueFamilyIndices = rhs.queueFamilyIndices;
+			sharingMode = rhs.sharingMode;
 			doInit();
 			return *this;
 		}
@@ -49,6 +54,7 @@ namespace ashes
 		QueueShare & operator=( QueueShare && rhs )noexcept
 		{
 			queueFamilyIndices = std::move( rhs.queueFamilyIndices );
+			sharingMode = rhs.sharingMode;
 			rhs.queueFamilyIndexCount = 0u;
 			rhs.pQueueFamilyIndices = nullptr;
 			doInit();
@@ -68,9 +74,6 @@ namespace ashes
 			auto count = ( end == queueFamilyIndices.end() )
 				? int( queueFamilyIndices.size() )
 				: int( std::distance( queueFamilyIndices.begin(), end ) );
-			sharingMode = ( count > 1 )
-				? VK_SHARING_MODE_CONCURRENT
-				: VK_SHARING_MODE_EXCLUSIVE;
 			queueFamilyIndexCount = uint32_t( count );
 			pQueueFamilyIndices = ( count == 0u )
 				? nullptr
