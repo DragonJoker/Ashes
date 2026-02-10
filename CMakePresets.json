@@ -266,7 +266,8 @@
                 "ASHES_BUILD_SAMPLES": false,
                 "ASHES_BUILD_TEMPLATES": false,
                 "ASHES_BUILD_TESTS": false,
-                "PROJECTS_USE_PRECOMPILED_HEADERS": true,
+                "ASHES_UNITY_BUILD": true,
+                "PROJECTS_USE_PRECOMPILED_HEADERS": false,
                 "PROJECTS_WARNINGS_AS_ERRORS": false,
                 "VCPKG_MANIFEST_FEATURES": "vulkan;opengl;test"
             }

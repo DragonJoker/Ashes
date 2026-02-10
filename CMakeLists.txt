@@ -97,13 +97,14 @@ endif ()
 if ( NOT DEFINED ASHES_BUILD_SAMPLES )
 	option( ASHES_BUILD_SAMPLES "Build Ashes sample applications" OFF )
 endif ()
+if ( NOT DEFINED ASHES_UNITY_BUILD )
+	option( ASHES_UNITY_BUILD "Build Ashes using Unity (Jumbo) build method" OFF )
+endif ()
 if ( ASHES_BUILD_SAMPLES )
 	set( ASHES_BUILD_SPL ON )
 else ()
 	set( ASHES_BUILD_SPL OFF )
 endif ()
-
-set( ASHES_UNITY_BUILD OFF )
 
 # Organize projects into folders
 set_property( GLOBAL PROPERTY USE_FOLDERS ON )

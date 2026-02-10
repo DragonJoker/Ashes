@@ -142,7 +142,7 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 	CXX_EXTENSIONS OFF
 	FOLDER "${Ashes_BASE_DIR}/Renderer"
 	DEBUG_POSTFIX "d"
-	UNITY_BUILD "${PROJECTS_UNITY_BUILD}"
+	UNITY_BUILD "${ASHES_UNITY_BUILD}"
 )
 
 parse_subdir_files_ex( "${Ashes_SOURCE_DIR}" ashes/renderer Helper "Helper" )
