@@ -39,7 +39,7 @@ namespace ashes
 		VkLayerPropertiesArray enumerateLayerProperties()const;
 		/**
 		*\brief
-		*	Enumerates the extension for the given device layer.
+		*	Enumerates the physical device extensions for the given device layer.
 		*/
 		VkExtensionPropertiesArray enumerateExtensionProperties( std::string const & layerName )const;
 		/**
