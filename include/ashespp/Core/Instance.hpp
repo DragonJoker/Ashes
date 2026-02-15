@@ -50,6 +50,11 @@ namespace ashes
 		PhysicalDevicePtrArray enumeratePhysicalDevices()const;
 		/**
 		*\brief
+		*	Enumerates the instance extension for the given device layer.
+		*/
+		VkExtensionPropertiesArray enumerateExtensionProperties( std::string const & layerName )const;
+		/**
+		*\brief
 		*	Creates a logical device.
 		*\param[in] surface
 		*	The presentation surface.

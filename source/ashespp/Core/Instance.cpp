@@ -162,6 +162,32 @@ namespace ashes
 		return result;
 	}
 
+	VkExtensionPropertiesArray Instance::enumerateExtensionProperties( std::string const & layerName )const
+	{
+		VkExtensionPropertiesArray result;
+		VkResult res;
+
+		do
+		{
+			uint32_t extensionsCount;
+			res = vkEnumerateInstanceExtensionProperties( layerName.empty() ? nullptr : layerName.c_str()
+				, &extensionsCount
+				, nullptr );
+
+			if ( extensionsCount )
+			{
+				result.resize( extensionsCount );
+				res = vkEnumerateInstanceExtensionProperties( layerName.empty() ? nullptr : layerName.c_str()
+					, &extensionsCount
+					, result.data() );
+			}
+		}
+		while ( res == VK_INCOMPLETE );
+
+		checkError( res, "Instance layer extensions retrieval" );
+		return result;
+	}
+
 	DevicePtr Instance::createDevice( PhysicalDevice const & physicalDevice
 		, ashes::DeviceCreateInfo createInfos )const
 	{
