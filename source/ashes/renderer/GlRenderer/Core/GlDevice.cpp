@@ -733,7 +733,8 @@ namespace ashes::gl
 	{
 		auto it = m_allocated.find( object );
 		assert( it != m_allocated.end() );
-		m_allocated.erase( it );
+		if ( it != m_allocated.end() )
+			m_allocated.erase( it );
 	}
 
 	void Device::doReportRegisteredObjects()const noexcept

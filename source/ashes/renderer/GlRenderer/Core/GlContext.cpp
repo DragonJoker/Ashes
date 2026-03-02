@@ -310,6 +310,8 @@ namespace ashes::gl
 		}
 	}
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdisabled-optimization"
 	void Context::loadBaseFunctions()
 	{
 #pragma warning( push )
@@ -359,6 +361,7 @@ namespace ashes::gl
 #include "Miscellaneous/OpenGLFunctionsList.inl"
 #pragma warning( pop )
 	}
+#pragma GCC diagnostic pop
 
 	void Context::initialiseThreadState()
 	{

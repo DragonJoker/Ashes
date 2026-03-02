@@ -41,6 +41,7 @@
       "description": "Sample applications.",
       "dependencies": [
         "assimp",
+        "glslang",
         {
           "name": "wxwidgets",
           "platform": "!linux"
@@ -56,6 +57,7 @@
     "tests": {
       "description": "Test applications.",
       "dependencies": [
+        "glslang",
         {
           "name": "wxwidgets",
           "platform": "!linux"

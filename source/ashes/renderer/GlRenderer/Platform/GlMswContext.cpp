@@ -11,12 +11,6 @@ See LICENSE file in root folder
 #include <iostream>
 #include <sstream>
 
-#if _WIN32
-#	define GLAPIENTRY __stdcall
-#else
-#	define GLAPIENTRY
-#endif
-
 #pragma warning( disable: 4191 )
 
 namespace ashes::gl
@@ -28,54 +22,12 @@ namespace ashes::gl
 
 	namespace msw
 	{
-		enum class ContextFlag
-		{
-			GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT = 0x0001,
-			GL_CONTEXT_FLAG_DEBUG_BIT = 0x0002,
-		};
-
-		enum class ContextMaskFlag
-		{
-			GL_CONTEXT_CORE_PROFILE_BIT = 0x00000001,
-		};
-
 		enum class ContextParameter
 		{
 			WGL_CONTEXT_MAJOR_VERSION_ARB = 0x2091,
 			WGL_CONTEXT_MINOR_VERSION_ARB = 0x2092,
 			WGL_CONTEXT_FLAGS_ARB = 0x2094,
 			WGL_CONTEXT_PROFILE_MASK_ARB = 0x9126,
-		};
-
-		enum class PixelFormatParameter
-		{
-			WGL_NUMBER_PIXEL_FORMATS_ARB = 0x2000,
-			WGL_DRAW_TO_WINDOW_ARB = 0x2001,
-			WGL_ACCELERATION_ARB = 0x2003,
-			WGL_NEED_PALETTE_ARB = 0x2004,
-			WGL_NEED_SYSTEM_PALETTE_ARB = 0x2005,
-			WGL_TRANSPARENT_ARB = 0x200A,
-			WGL_SUPPORT_OPENGL_ARB = 0x2010,
-			WGL_PIXEL_TYPE_ARB = 0x2013,
-			WGL_COLOR_BITS_ARB = 2014,
-			WGL_RED_BITS_ARB = 0x2015,
-			WGL_GREEN_BITS_ARB = 0x2017,
-			WGL_BLUE_BITS_ARB = 0x2019,
-			WGL_NO_ACCELERATION_ARB = 0x2025,
-			WGL_GENERIC_ACCELERATION_ARB = 0x2026,
-			WGL_FULL_ACCELERATION_ARB = 0x2027,
-			WGL_ALPHA_BITS_ARB = 0x201B,
-			WGL_DEPTH_BITS_ARB = 0x2022,
-			WGL_STENCIL_BITS_ARB = 0x2023,
-			WGL_TYPE_RGBA_ARB = 0x202B,
-			WGL_DRAW_TO_PBUFFER_ARB = 0x202D,
-			WGL_MAX_PBUFFER_PIXELS_ARB = 0x202E,
-			WGL_MAX_PBUFFER_WIDTH_ARB = 0x202F,
-			WGL_MAX_PBUFFER_HEIGHT_ARB = 0x2030,
-			WGL_PBUFFER_LARGEST_ARB = 0x2033,
-			WGL_PBUFFER_WIDTH_ARB = 0x2034,
-			WGL_PBUFFER_HEIGHT_ARB = 0x2035,
-			WGL_PBUFFER_LOST_ARB = 0x2036,
 		};
 
 #if !defined( NDEBUG )
@@ -181,7 +133,7 @@ namespace ashes::gl
 		VkStructure const * pNext;
 	};
 
-	VkWin32PixelFormatDescriptorASH const * getPfd( VkStructure const * rhs )
+	static VkWin32PixelFormatDescriptorASH const * getPfd( VkStructure const * rhs )
 	{
 		VkWin32PixelFormatDescriptorASH const * result{ nullptr };
 

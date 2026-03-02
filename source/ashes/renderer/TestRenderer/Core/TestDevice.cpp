@@ -417,7 +417,7 @@ namespace ashes::test
 
 			for ( auto i = 0u; i < queueCreateInfo.queueCount; ++i )
 			{
-				VkQueue queue;
+				VkQueue queue{};
 				allocate( queue
 					, nullptr
 					, get( this )

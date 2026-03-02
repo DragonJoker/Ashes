@@ -26,47 +26,6 @@ namespace ashes
 {
 	static char constexpr PathSeparator = '\\';
 
-	std::string getLastErrorText()
-	{
-		uint32_t errorCode = ::GetLastError();
-		std::stringstream stream;
-		stream.imbue( std::locale{ "C" } );
-		stream << "Error Code: 0x" << std::setw( 8u ) << std::hex << errorCode << ":" << std::endl;
-
-		if ( errorCode == ERROR_SUCCESS )
-		{
-			stream << " (no error)";
-		}
-		else
-		{
-			LPWSTR errorText = nullptr;
-
-			if ( ::FormatMessageW( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM
-				, nullptr
-				, errorCode
-				, 0
-				, LPWSTR( &errorText )
-				, 0
-				, nullptr ) == 0 )
-			{
-				int length = WideCharToMultiByte( CP_UTF8, 0u, errorText, -1, nullptr, 0u, nullptr, nullptr );
-
-				if ( length > 0 )
-				{
-					std::string converted( size_t( length ), 0 );
-					WideCharToMultiByte( CP_UTF8, 0u, errorText, -1, converted.data(), length, nullptr, nullptr );
-					stream << converted.c_str() << std::endl;
-				}
-			}
-			else
-			{
-				stream << " (Unable to retrieve error text)";
-			}
-		}
-
-		return stream.str();
-	}
-
 	bool traverseDirectory( std::string const & folderPath
 		, TraverseDirFunction const & directoryFunction
 		, HitFileFunction const & fileFunction )

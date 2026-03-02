@@ -73,10 +73,10 @@ namespace ashes
 		m_library = nullptr;
 	}
 
-	void * DynamicLibrary::doGetFunction( std::string const & name )noexcept
+	DynamicLibrary::LibProc DynamicLibrary::doGetFunction( std::string const & name )noexcept
 	{
 		::SetLastError( ERROR_SUCCESS );
-		auto result = ( void * )::GetProcAddress( static_cast< HMODULE >( m_library ), name.c_str() );
+		auto result = LibProc( ::GetProcAddress( static_cast< HMODULE >( m_library ), name.c_str() ) );
 		
 		if ( auto error = ::GetLastError();
 			error != ERROR_SUCCESS && !result )

@@ -13,6 +13,8 @@
 #pragma warning( disable:4311 )
 #pragma warning( disable:4312 )
 
+#include <cstdint>
+
 #if defined __GNUG__
 #   define __in
 #   define __inout

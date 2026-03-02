@@ -12,7 +12,7 @@ namespace ashes::gl
 {
 	namespace win
 	{
-		LRESULT CALLBACK DummyWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+		static LRESULT CALLBACK DummyWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 		{
 			switch ( message )
 			{
@@ -79,7 +79,7 @@ namespace ashes::gl
 		}
 	}
 
-	HGLRC createContext( HDC hDC
+	static HGLRC createContext( HDC hDC
 		, PIXELFORMATDESCRIPTOR & pfd )
 	{
 		pfd.nSize = sizeof( PIXELFORMATDESCRIPTOR );

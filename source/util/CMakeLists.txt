@@ -4,15 +4,13 @@ project( ashesUtil )
 if ( NOT TARGET glslang )
 	if ( VCPKG_TOOLCHAIN )
 		find_package( Threads REQUIRED )
-		find_package( glslang CONFIG REQUIRED glslang OSDependent OGLCompiler SPIRV HLSL )
+		find_package( glslang CONFIG REQUIRED glslang OSDependent SPIRV )
 		if ( ${glslang_FOUND} )
 			set( GLSLANG_FOUND ON )
 			set( glslang_LIBRARIES
 				glslang::OSDependent
 				glslang::glslang
-				glslang::OGLCompiler
-				glslang::SPIRV
-				glslang::HLSL )
+				glslang::SPIRV )
 			set( glslang_INCLUDE_DIR
 				${Ashes_SOURCE_DIR}/external/glslang
 			)
@@ -29,15 +27,14 @@ if ( NOT TARGET glslang )
 		set( ENABLE_AMD_EXTENSIONS FALSE CACHE BOOL "Enables support of AMD-specific extensions" FORCE )
 		set( ENABLE_NV_EXTENSIONS FALSE CACHE BOOL "Enables support of Nvidia-specific extensions" FORCE )
 		set( ENABLE_HLSL FALSE CACHE BOOL "Enables HLSL input support" FORCE )
+		set( ENABLE_OPT FALSE CACHE BOOL "Enables opt" FORCE )
 		set( BUILD_TESTING OFF )
 		set( BUILD_EXTERNAL OFF )
 		set( SKIP_GLSLANG_INSTALL ON )
 		add_subdirectory( ${Ashes_SOURCE_DIR}/external/glslang external/glslang )
 		set( glslang_LIBRARIES
 			glslang
-			OGLCompiler
 			OSDependent
-			SPVRemapper
 			SPIRV
 		)
 		set( glslang_INCLUDE_DIR

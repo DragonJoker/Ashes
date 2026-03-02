@@ -62,10 +62,10 @@ namespace ashes
 		dlclose( m_library );
 	}
 
-	void * DynamicLibrary::doGetFunction( std::string const & name )noexcept
+	DynamicLibrary::LibProc DynamicLibrary::doGetFunction( std::string const & name )noexcept
 	{
 		dlerror();
-		void * result = dlsym( m_library, name.c_str() );
+		auto result = LibProc( dlsym( m_library, name.c_str() ) );
 		auto error = dlerror();
 
 		if ( error && !result )
