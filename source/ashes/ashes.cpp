@@ -47,7 +47,11 @@ namespace details
 #endif
 #if defined( _WIN32 )
 		static inline std::string const SharedLibExt{ R"(.dll)" };
+#	if defined( __MINGW32__ )
+		static inline std::string const Prefix{ R"(libashes)" };
+#	else
 		static inline std::string const Prefix{ R"(ashes)" };
+#	endif
 #elif defined( __APPLE__ )
 		static inline std::string const SharedLibExt{ R"(.dylib)" };
 		static inline std::string const Prefix{ R"(libashes)" };

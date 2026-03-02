@@ -193,7 +193,7 @@ namespace ashes::gl
 	bool checkPointerAccess( VkStructureType type
 		, StructTypeAccessT access )
 	{
-#if defined( WIN32 )
+#if defined( WIN32 ) && defined( _MSC_VER )
 
 		__try
 		{

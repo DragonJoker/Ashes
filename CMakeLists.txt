@@ -43,6 +43,10 @@ if ( VCPKG_TARGET_TRIPLET )
 	endif ()
 endif ()
 
+if ( MINGW )
+	set( ASHES_BUILD_RENDERER_D3D11 OFF )
+endif ()
+
 set( MAIN_PROJECT_NAME "Ashes" )
 set( BUILD_ASHES 1 )
 

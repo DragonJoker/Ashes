@@ -10,7 +10,10 @@ See LICENSE file in root folder.
 #include "Miscellaneous/GlValidator.hpp"
 
 #include <iostream>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Walloc-zero"
 #include <regex>
+#pragma GCC diagnostic pop
 
 #if GlRenderer_USE_SPIRV_CROSS
 #	pragma GCC diagnostic push
@@ -641,7 +644,8 @@ namespace ashes::gl
 		template< typename CompileT >
 		static VkResult compileChecked( CompileT comp )
 		{
-#if _WIN32
+#if defined( _WIN32 ) && defined( _MSC_VER )
+
 			__try
 			{
 				comp();

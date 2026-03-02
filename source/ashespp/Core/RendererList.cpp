@@ -13,10 +13,18 @@ namespace ashes
 	namespace lib
 	{
 #if defined( _WIN32 )
-#	if defined( NDEBUG )
-		static std::string const libraryName = "ashes-1.dll";
+#	if defined( __MINGW32__ )
+#		if defined( NDEBUG )
+		static std::string const libraryName = "libashes-1.dll";
+#		else
+		static std::string const libraryName = "libashesd-1.dll";
+#		endif
 #	else
+#		if defined( NDEBUG )
+		static std::string const libraryName = "ashes-1.dll";
+#		else
 		static std::string const libraryName = "ashesd-1.dll";
+#		endif
 #	endif
 #elif defined( __linux__ )
 #	if defined( NDEBUG )

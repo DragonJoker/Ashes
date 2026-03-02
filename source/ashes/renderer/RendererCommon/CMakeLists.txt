@@ -8,53 +8,55 @@ set( ${PROJECT_NAME}_VERSION_BUILD 0 )
 set( PROJECT_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}" )
 set( PROJECT_SOVERSION "${${PROJECT_NAME}_VERSION_BUILD}" )
 
-if ( ASHES_BUILD_SPIRV_CROSS )
-	set( ${PROJECT_NAME}_SPIRV_CROSS_SRC_FILES
-		${SPIRV_CROSS_DIR}/spirv_cross.cpp
-		${SPIRV_CROSS_DIR}/spirv_cross_parsed_ir.cpp
-		${SPIRV_CROSS_DIR}/spirv_cfg.cpp
-		${SPIRV_CROSS_DIR}/spirv_glsl.cpp
-		${SPIRV_CROSS_DIR}/spirv_parser.cpp
-	)
-	set( ${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES
-		${SPIRV_CROSS_DIR}/GLSL.std.450.h
-		${SPIRV_CROSS_DIR}/spirv_common.hpp
-		${SPIRV_CROSS_DIR}/spirv.hpp
-		${SPIRV_CROSS_DIR}/spirv_cross.hpp
-		${SPIRV_CROSS_DIR}/spirv_cross_parsed_ir.hpp
-		${SPIRV_CROSS_DIR}/spirv_cfg.hpp
-		${SPIRV_CROSS_DIR}/spirv_glsl.hpp
-		${SPIRV_CROSS_DIR}/spirv_parser.hpp
-	)
-	if ( ASHES_BUILD_RENDERER_D3D11 )
+if ( ASHES_BUILD_RENDERER_D3D11 OR ASHES_BUILD_RENDERER_OGL )
+	if ( ASHES_BUILD_SPIRV_CROSS )
 		set( ${PROJECT_NAME}_SPIRV_CROSS_SRC_FILES
-			${${PROJECT_NAME}_SPIRV_CROSS_SRC_FILES}
-			${SPIRV_CROSS_DIR}/spirv_hlsl.cpp
+			${SPIRV_CROSS_DIR}/spirv_cross.cpp
+			${SPIRV_CROSS_DIR}/spirv_cross_parsed_ir.cpp
+			${SPIRV_CROSS_DIR}/spirv_cfg.cpp
+			${SPIRV_CROSS_DIR}/spirv_glsl.cpp
+			${SPIRV_CROSS_DIR}/spirv_parser.cpp
 		)
 		set( ${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES
+			${SPIRV_CROSS_DIR}/GLSL.std.450.h
+			${SPIRV_CROSS_DIR}/spirv_common.hpp
+			${SPIRV_CROSS_DIR}/spirv.hpp
+			${SPIRV_CROSS_DIR}/spirv_cross.hpp
+			${SPIRV_CROSS_DIR}/spirv_cross_parsed_ir.hpp
+			${SPIRV_CROSS_DIR}/spirv_cfg.hpp
+			${SPIRV_CROSS_DIR}/spirv_glsl.hpp
+			${SPIRV_CROSS_DIR}/spirv_parser.hpp
+		)
+		if ( ASHES_BUILD_RENDERER_D3D11 )
+			set( ${PROJECT_NAME}_SPIRV_CROSS_SRC_FILES
+				${${PROJECT_NAME}_SPIRV_CROSS_SRC_FILES}
+				${SPIRV_CROSS_DIR}/spirv_hlsl.cpp
+			)
+			set( ${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES
+				${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
+				${SPIRV_CROSS_DIR}/spirv_hlsl.hpp
+			)
+		endif ()
+		add_library( ashesSpirVCross STATIC
+			${${PROJECT_NAME}_SPIRV_CROSS_SRC_FILES}
 			${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
-			${SPIRV_CROSS_DIR}/spirv_hlsl.hpp
+		)
+		add_library( ashes::SpirVCross
+			ALIAS
+			ashesSpirVCross
+		)
+		target_include_directories( ashesSpirVCross
+			PUBLIC
+				${SPIRV_CROSS_DIR}
+		)
+		set( SPIRV_CROSS_LIBRARIES ashes::SpirVCross )
+		set_target_properties( ashesSpirVCross
+			PROPERTIES
+				CXX_STANDARD 17
+				CXX_EXTENSIONS OFF
+				FOLDER "${Ashes_BASE_DIR}/Renderer"
 		)
 	endif ()
-	add_library( ashesSpirVCross STATIC
-		${${PROJECT_NAME}_SPIRV_CROSS_SRC_FILES}
-		${${PROJECT_NAME}_SPIRV_CROSS_HDR_FILES}
-	)
-	add_library( ashes::SpirVCross
-		ALIAS
-		ashesSpirVCross
-	)
-	target_include_directories( ashesSpirVCross
-		PUBLIC
-			${SPIRV_CROSS_DIR}
-	)
-	set( SPIRV_CROSS_LIBRARIES ashes::SpirVCross )
-	set_target_properties( ashesSpirVCross
-		PROPERTIES
-			CXX_STANDARD 17
-			CXX_EXTENSIONS OFF
-			FOLDER "${Ashes_BASE_DIR}/Renderer"
-	)
 endif ()
 
 set( ${PROJECT_NAME}_SRC_FILES
@@ -109,7 +111,6 @@ target_link_libraries( ${PROJECT_NAME}
 	PUBLIC
 		ashes::ashes
 		${Ashes_BINARY_LIBRARIES}
-		${SPIRV_CROSS_LIBRARIES}
 		${RendererDependencies}
 )
 target_include_directories( ${PROJECT_NAME}
@@ -126,10 +127,19 @@ target_include_directories( ${PROJECT_NAME}
 target_include_directories( ${PROJECT_NAME}
 	SYSTEM PUBLIC
 		${Vulkan_INCLUDE_DIR}
-		${SPIRV_CROSS_DIR}
-		${SPIRV_CROSS_INCLUDE_DIR}
 		${TARGET_INCLUDE_DIRS}
 )
+if ( ASHES_BUILD_RENDERER_D3D11 OR ASHES_BUILD_RENDERER_OGL )
+	target_link_libraries( ${PROJECT_NAME}
+		PUBLIC
+			${SPIRV_CROSS_LIBRARIES}
+	)
+	target_include_directories( ${PROJECT_NAME}
+		SYSTEM PUBLIC
+			${SPIRV_CROSS_DIR}
+			${SPIRV_CROSS_INCLUDE_DIR}
+	)
+endif ()
 target_compile_definitions( ${PROJECT_NAME} PUBLIC
 	${TARGET_CXX_DEFINITIONS}
 )
