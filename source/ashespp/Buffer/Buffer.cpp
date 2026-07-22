@@ -148,8 +148,9 @@ namespace ashes
 		VkBufferDeviceAddressInfoKHR info{ VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO_KHR
 			, nullptr
 			, m_internal };
-		return m_device.vkGetBufferDeviceAddressKHR( m_device
-			, &info );
+		return m_device.vkGetBufferDeviceAddress
+			? m_device.vkGetBufferDeviceAddress( m_device, &info )
+			: m_device.vkGetBufferDeviceAddressKHR( m_device, &info );
 	}
 
 	uint64_t BufferBase::getOpaqueCaptureAddress()const
@@ -157,8 +158,9 @@ namespace ashes
 		VkBufferDeviceAddressInfoKHR info{ VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO_KHR
 			, nullptr
 			, m_internal };
-		return m_device.vkGetBufferOpaqueCaptureAddressKHR( m_device
-			, &info );
+		return m_device.vkGetBufferOpaqueCaptureAddress
+			? m_device.vkGetBufferOpaqueCaptureAddress( m_device, &info )
+			: m_device.vkGetBufferOpaqueCaptureAddressKHR( m_device, &info );
 	}
 
 #endif
