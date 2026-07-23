@@ -275,7 +275,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void CopyImageToBufferCommand::apply( Context const & context )const
+	void CopyImageToBufferCommand::apply( Context & context )const
 	{
 		for ( auto i = 0u; i < m_copyInfo.size(); ++i )
 		{
@@ -286,7 +286,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 	}
 
-	void CopyImageToBufferCommand::applyOne( Context const & context
+	void CopyImageToBufferCommand::applyOne( Context & context
 		, VkBufferImageCopy const & copyInfo
 		, VkSubresourceLayout const & srcLayout
 		, D3D11_BOX const & dstBox )const
@@ -392,7 +392,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 	}
 
-	void CopyImageToBufferCommand::doCopyToStaging( Context const & context
+	void CopyImageToBufferCommand::doCopyToStaging( Context & context
 		, VkBufferImageCopy const & copyInfo
 		, VkImage src
 		, VkImage staging )const
@@ -414,7 +414,7 @@ namespace ashes::D3D11_NAMESPACE
 		command.apply( context );
 	}
 
-	void CopyImageToBufferCommand::doCopyFromStaging( Context const & context
+	void CopyImageToBufferCommand::doCopyFromStaging( Context & context
 		, VkBufferImageCopy const & copyInfo
 		, VkBuffer staging
 		, VkBuffer dst

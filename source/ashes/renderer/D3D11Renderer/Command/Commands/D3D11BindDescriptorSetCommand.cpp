@@ -1412,7 +1412,7 @@ namespace ashes::D3D11_NAMESPACE
 			&& "Dynamic descriptors and dynamic offsets sizes must match." );
 	}
 
-	void BindDescriptorSetCommand::apply( Context const & context )const
+	void BindDescriptorSetCommand::apply( Context & context )const
 	{
 		if ( context.featureLevel >= D3D_FEATURE_LEVEL_11_1 )
 		{

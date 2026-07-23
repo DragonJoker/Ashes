@@ -21,7 +21,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void BindIndexBufferCommand::apply( Context const & context )const
+	void BindIndexBufferCommand::apply( Context & context )const
 	{
 		context.context->IASetIndexBuffer( get( m_ibo )->getBuffer()
 			, m_indexType

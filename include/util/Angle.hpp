@@ -200,79 +200,75 @@ namespace utils
 	private:
 		//! La valeur de l'angle.
 		RadiansT< T > m_radians;
+
+	private:
+		/**
+		*\name Opérateurs de comparaison.
+		*/
+		/**\{*/
+		friend bool operator==( AngleT< T > const & lhs, AngleT< T > const & rhs )noexcept
+		{
+			return RadiansT< T >( lhs ) == RadiansT< T >( rhs );
+		}
+
+		friend bool operator!=( AngleT< T > const & lhs, AngleT< T > const & rhs )noexcept
+		{
+			return !( lhs == rhs );
+		}
+
+		friend bool operator<( AngleT< T > const & lhs, AngleT< T > const & rhs )noexcept
+		{
+			return RadiansT< T >( lhs ) < RadiansT< T >( rhs );
+		}
+
+		friend bool operator>=( AngleT< T > const & lhs, AngleT< T > const & rhs )noexcept
+		{
+			return !( lhs < rhs );
+		}
+
+		friend bool operator>( AngleT< T > const & lhs, AngleT< T > const & rhs )noexcept
+		{
+			return RadiansT< T >( lhs ) > RadiansT< T >( rhs );
+		}
+
+		friend bool operator<=( AngleT< T > const & lhs, AngleT< T > const & rhs )noexcept
+		{
+			return !( lhs > rhs );
+		}
+		/**\}*/
+		/**
+		*\name Opérateurs arithmétiques.
+		*/
+		/**\{*/
+		friend AngleT< T > operator+( AngleT< T > const & lhs, AngleT< T > const & rhs )noexcept
+		{
+			AngleT< T > tmp{ lhs };
+			tmp += rhs;
+			return tmp;
+		}
+
+		friend AngleT< T > operator-( AngleT< T > const & lhs, AngleT< T > const & rhs )noexcept
+		{
+			AngleT< T > tmp{ lhs };
+			tmp -= rhs;
+			return tmp;
+		}
+
+		friend AngleT< T > operator*( AngleT< T > const & lhs, float rhs )noexcept
+		{
+			AngleT< T > tmp{ lhs };
+			tmp *= rhs;
+			return tmp;
+		}
+
+		friend AngleT< T > operator/( AngleT< T > const & lhs, float rhs )noexcept
+		{
+			AngleT< T > tmp{ lhs };
+			tmp /= rhs;
+			return tmp;
+		}
+		/**\}*/
 	};
-	/**
-	*\name Opérateurs de comparaison.
-	*/
-	/**\{*/
-	template< typename T >
-	inline bool operator==( AngleT< T > const & lhs, AngleT< T > const & rhs )noexcept
-	{
-		return RadiansT< T >( lhs ) == RadiansT< T >( rhs );
-	}
-
-	template< typename T >
-	inline bool operator!=( AngleT< T > const & lhs, AngleT< T > const & rhs )noexcept
-	{
-		return !( lhs == rhs );
-	}
-
-	template< typename T >
-	inline bool operator<( AngleT< T > const & lhs, AngleT< T > const & rhs )noexcept
-	{
-		return RadiansT< T >( lhs ) < RadiansT< T >( rhs );
-	}
-
-	template< typename T >
-	inline bool operator>=( AngleT< T > const & lhs, AngleT< T > const & rhs )noexcept
-	{
-		return !( lhs < rhs );
-	}
-
-	template< typename T >
-	inline bool operator>( AngleT< T > const & lhs, AngleT< T > const & rhs )noexcept
-	{
-		return RadiansT< T >( lhs ) > RadiansT< T >( rhs );
-	}
-
-	template< typename T >
-	inline bool operator<=( AngleT< T > const & lhs, AngleT< T > const & rhs )noexcept
-	{
-		return !( lhs > rhs );
-	}
-	/**\}*/
-	/**
-	*\name Opérateurs arithmétiques.
-	*/
-	/**\{*/
-	template< typename T >
-	inline AngleT< T > operator+( AngleT< T > const & lhs, AngleT< T > const & rhs )noexcept
-	{
-		AngleT< T > tmp{ lhs };
-		return tmp += rhs;
-	}
-
-	template< typename T >
-	inline AngleT< T > operator-( AngleT< T > const & lhs, AngleT< T > const & rhs )noexcept
-	{
-		AngleT< T > tmp{ lhs };
-		return tmp -= rhs;
-	}
-
-	template< typename T >
-	inline AngleT< T > operator*( AngleT< T > const & lhs, float rhs )noexcept
-	{
-		AngleT< T > tmp{ lhs };
-		return tmp *= rhs;
-	}
-
-	template< typename T >
-	inline AngleT< T > operator/( AngleT< T > const & lhs, float rhs )noexcept
-	{
-		AngleT< T > tmp{ lhs };
-		return tmp /= rhs;
-	}
-	/**\}*/
 	/**
 	*\name Surcharges des fonctions trigonométriques de base.
 	*/

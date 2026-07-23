@@ -33,7 +33,7 @@ namespace ashes::D3D11_NAMESPACE
 			, ArrayView< VkClearAttachment const > const & clearAttaches
 			, ArrayView< VkClearRect const > const & clearRects );
 
-		void apply( Context const & context )const override;
+		void apply( Context & context )const override;
 		CommandPtr clone()const override;
 
 	private:

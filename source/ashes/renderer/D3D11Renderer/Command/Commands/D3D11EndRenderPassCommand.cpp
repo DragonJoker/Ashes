@@ -15,7 +15,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void EndRenderPassCommand::apply( Context const & context )const
+	void EndRenderPassCommand::apply( Context & context )const
 	{
 		context.context->RSSetScissorRects( 0u, nullptr );
 	}

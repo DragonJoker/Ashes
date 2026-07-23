@@ -325,7 +325,8 @@ namespace ashes::gl
 
 	bool Device::hasExtension( std::string_view extension )const
 	{
-		char const * const version = extension.data();
+		std::string strExt{ extension };
+		char const * const version = strExt.data();
 		return device::doHasEnabledExtensions( m_enabledExtensions
 			, ashes::makeArrayView( &version, 1u ) );
 	}
@@ -587,7 +588,7 @@ namespace ashes::gl
 	ContextLock Device::getContext()const noexcept
 	{
 		assert( m_currentContext );
-		return { *m_currentContext, get( this ) };
+		return ContextLock{ *m_currentContext, get( this ) };
 	}
 
 	void Device::doInitialiseQueues()

@@ -29,7 +29,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void DrawIndexedIndirectCommand::apply( Context const & context )const
+	void DrawIndexedIndirectCommand::apply( Context & context )const
 	{
 		context.context->IASetPrimitiveTopology( m_mode );
 

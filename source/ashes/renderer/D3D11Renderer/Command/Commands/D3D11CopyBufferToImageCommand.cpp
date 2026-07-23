@@ -530,7 +530,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 	}
 
-	void CopyBufferToImageCommand::apply( Context const & context )const
+	void CopyBufferToImageCommand::apply( Context & context )const
 	{
 		if ( m_process.copyToStaging )
 		{
@@ -540,7 +540,7 @@ namespace ashes::D3D11_NAMESPACE
 		apply( context, m_process.mapCopy );
 	}
 
-	void CopyBufferToImageCommand::apply( Context const & context
+	void CopyBufferToImageCommand::apply( Context & context
 		, CopyToStagingProcess const & process )const
 	{
 		CopyBufferCommand command{ getDevice()
@@ -550,7 +550,7 @@ namespace ashes::D3D11_NAMESPACE
 		command.apply( context );
 	}
 
-	void CopyBufferToImageCommand::apply( Context const & context
+	void CopyBufferToImageCommand::apply( Context & context
 		, CopyFromStagingProcess const & process )const
 	{
 		CopyImageCommand command{ getDevice()
@@ -560,7 +560,7 @@ namespace ashes::D3D11_NAMESPACE
 		command.apply( context );
 	}
 
-	void CopyBufferToImageCommand::apply( Context const & context
+	void CopyBufferToImageCommand::apply( Context & context
 		, MapCopyProcess const & process )const
 	{
 		D3D11_MAPPED_SUBRESOURCE srcMapped{};
@@ -635,7 +635,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 	}
 
-	void CopyBufferToImageCommand::doCopyToStaging( Context const & context
+	void CopyBufferToImageCommand::doCopyToStaging( Context & context
 		, VkDeviceSize srcOffset
 		, VkDeviceSize size
 		, VkBuffer src
@@ -648,7 +648,7 @@ namespace ashes::D3D11_NAMESPACE
 		command.apply( context );
 	}
 
-	void CopyBufferToImageCommand::doCopyFromStaging( Context const & context
+	void CopyBufferToImageCommand::doCopyFromStaging( Context & context
 		, VkBufferImageCopy const & copyInfo
 		, VkImage staging
 		, VkImage dst )const

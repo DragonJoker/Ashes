@@ -14,7 +14,7 @@ namespace ashes
 	{
 		~PipelineColorBlendStateCreateInfo()noexcept = default;
 
-		PipelineColorBlendStateCreateInfo( VkPipelineColorBlendStateCreateFlags flags = 0u
+		explicit PipelineColorBlendStateCreateInfo( VkPipelineColorBlendStateCreateFlags flags = 0u
 			, VkBool32 logicOpEnable = VK_FALSE
 			, VkLogicOp logicOp = VK_LOGIC_OP_COPY
 			, VkPipelineColorBlendAttachmentStateArray pattachments = { { VK_FALSE

@@ -337,12 +337,7 @@ namespace ashes
 		, uint32_t range
 		, uint32_t index )
 	{
-
-		m_writes.emplace_back( layoutBinding.binding
-			, index
-			, 1u
-			, layoutBinding.descriptorType );
-		m_writes.back().bufferInfo.push_back( VkDescriptorBufferInfo{ buffer, offset, range } );
+		createBinding( layoutBinding, buffer, offset, range, index );
 	}
 
 	void DescriptorSet::createDynamicBinding( VkDescriptorSetLayoutBinding const & layoutBinding

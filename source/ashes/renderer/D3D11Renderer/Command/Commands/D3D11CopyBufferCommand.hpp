@@ -31,7 +31,7 @@ namespace ashes::D3D11_NAMESPACE
 			, VkBuffer src
 			, VkBuffer dst );
 
-		void apply( Context const & context )const override;
+		void apply( Context & context )const override;
 		CommandPtr clone()const override;
 
 	private:

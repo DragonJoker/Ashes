@@ -42,7 +42,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 	}
 
-	void MemoryBarrierCommand::apply( Context const & context )const
+	void MemoryBarrierCommand::apply( Context & context )const
 	{
 		for ( auto & buffer : m_uploadBuffers )
 		{

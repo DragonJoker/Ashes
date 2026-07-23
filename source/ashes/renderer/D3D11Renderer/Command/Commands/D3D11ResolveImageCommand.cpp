@@ -33,7 +33,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 	}
 
-	void ResolveImageCommand::apply( Context const & context )const
+	void ResolveImageCommand::apply( Context & context )const
 	{
 		for ( auto const & layer : m_layers )
 		{

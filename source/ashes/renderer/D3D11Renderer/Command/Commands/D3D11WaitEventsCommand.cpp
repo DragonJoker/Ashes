@@ -25,7 +25,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void WaitEventsCommand::apply( Context const & context )const
+	void WaitEventsCommand::apply( Context & context )const
 	{
 		auto count = 0u;
 

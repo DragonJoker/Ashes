@@ -17,7 +17,7 @@ namespace ashes::D3D11_NAMESPACE
 			, VkBufferArray const & buffers
 			, UInt64Array const & offsets );
 
-		void apply( Context const & context )const override;
+		void apply( Context & context )const override;
 		void remove( Context const & context )const override;
 		CommandPtr clone()const override;
 

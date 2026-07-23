@@ -16,7 +16,7 @@ namespace ashes::D3D11_NAMESPACE
 			, VkPipeline pipeline
 			, VkPipelineBindPoint bindingPoint );
 
-		void apply( Context const & context )const override;
+		void apply( Context & context )const override;
 		void remove( Context const & context )const override;
 		CommandPtr clone()const override;
 
@@ -39,7 +39,7 @@ namespace ashes::D3D11_NAMESPACE
 		BindDepthStencilStateCommand( VkDevice device
 			, VkPipeline pipeline );
 
-		void apply( Context const & context )const override;
+		void apply( Context & context )const override;
 		void remove( Context const & context )const override;
 		CommandPtr clone()const override;
 
@@ -54,7 +54,7 @@ namespace ashes::D3D11_NAMESPACE
 		BindRasterizerStateCommand( VkDevice device
 			, VkPipeline pipeline );
 
-		void apply( Context const & context )const override;
+		void apply( Context & context )const override;
 		void remove( Context const & context )const override;
 		CommandPtr clone()const override;
 
@@ -70,7 +70,7 @@ namespace ashes::D3D11_NAMESPACE
 			, VkPipeline pipeline
 			, std::array< float, 4u > const & blendConstants );
 
-		void apply( Context const & context )const override;
+		void apply( Context & context )const override;
 		void remove( Context const & context )const override;
 		CommandPtr clone()const override;
 
@@ -86,7 +86,7 @@ namespace ashes::D3D11_NAMESPACE
 		SetDepthBoundsCommand( VkDevice device
 			, DepthBounds const & depthBounds );
 
-		void apply( Context const & context )const override;
+		void apply( Context & context )const override;
 		void remove( Context const & context )const override;
 		CommandPtr clone()const override;
 

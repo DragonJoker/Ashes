@@ -135,7 +135,7 @@ namespace ashes::gl
 				auto context = get( m_device )->getContext();
 				binding.upload( context
 					, m_data
-					, { 0u, m_data.size() } );
+					, BindingRange{ 0u, m_data.size() } );
 			}
 
 			result = VK_SUCCESS;
@@ -189,7 +189,7 @@ namespace ashes::gl
 					, getInternal() );
 				binding.upload( context
 					, m_data
-					, { 0u, m_data.size() } );
+					, BindingRange{ 0u, m_data.size() } );
 				glLogCall( context
 					, glBindBuffer
 					, GL_BUFFER_TARGET_PIXEL_UNPACK
@@ -329,7 +329,7 @@ namespace ashes::gl
 			size = m_allocateInfo.allocationSize;
 		}
 
-		m_mappedRange = { offset, size };
+		m_mappedRange = BindingRange{ offset, size };
 
 		for ( auto & [key, binding] : m_bindings )
 		{
@@ -399,7 +399,7 @@ namespace ashes::gl
 			upload( context, m_mappedRange.getOffset(), m_mappedRange.getSize() );
 		}
 
-		m_mappedRange = {};
+		m_mappedRange = BindingRange{};
 	}
 
 	//************************************************************************************************

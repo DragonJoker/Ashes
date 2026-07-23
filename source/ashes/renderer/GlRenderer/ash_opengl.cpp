@@ -4522,7 +4522,7 @@ namespace ashes::gl
 			, std::string_view extension )
 		{
 			return checkVersion( instance, version )
-				&& get( instance )->hasExtension( extension.data() );
+				&& get( instance )->hasExtension( extension );
 		}
 
 		bool checkVersion( VkDevice device
@@ -4536,7 +4536,7 @@ namespace ashes::gl
 			, std::string_view extension )
 		{
 			return checkVersion( getInstance( device ), version )
-				&& get( device )->hasExtension( extension.data() );
+				&& get( device )->hasExtension( extension );
 		}
 
 		using ObjectFunctions = std::map< std::string, PFN_vkVoidFunction, std::less<> >;

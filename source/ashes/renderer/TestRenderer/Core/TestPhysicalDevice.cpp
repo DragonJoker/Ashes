@@ -242,7 +242,7 @@ namespace ashes::test
 
 	void PhysicalDevice::doInitialise()
 	{
-		std::string_view name{ "Test" };
+		std::string name{ "Test" };
 		strncpy( m_properties.deviceName
 			, name.data()
 			, std::min( name.size() + 1u, size_t( VK_MAX_PHYSICAL_DEVICE_NAME_SIZE - 1u ) ) );

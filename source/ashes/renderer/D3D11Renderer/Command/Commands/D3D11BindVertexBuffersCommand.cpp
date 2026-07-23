@@ -62,7 +62,7 @@ namespace ashes::D3D11_NAMESPACE
 			, offsets.data() );
 	}
 
-	void BindVertexBuffersCommand::apply( Context const & context )const
+	void BindVertexBuffersCommand::apply( Context & context )const
 	{
 		context.context->IASetVertexBuffers( m_firstBinding
 			, UINT( m_buffers.size() )

@@ -30,7 +30,7 @@ namespace ashes::gl
 			, VkPipelineViewportStateCreateInfo const & vpState
 			, VkPipelineRasterizationStateCreateInfo const & rsState
 			, VkPipelineDynamicStateCreateInfo const & dyState );
-		ContextState( VkPipelineColorBlendStateCreateInfo const * cbState = nullptr
+		explicit ContextState( VkPipelineColorBlendStateCreateInfo const * cbState = nullptr
 			, VkPipelineDepthStencilStateCreateInfo const * dsState = nullptr
 			, VkPipelineMultisampleStateCreateInfo const * msState = nullptr
 			, VkPipelineTessellationStateCreateInfo const * tsState = nullptr
@@ -38,7 +38,7 @@ namespace ashes::gl
 			, VkPipelineViewportStateCreateInfo const * vpState = nullptr
 			, VkPipelineRasterizationStateCreateInfo const * rsState = nullptr
 			, VkPipelineDynamicStateCreateInfo const * dyState = nullptr );
-		ContextState( VkPipelineColorBlendStateCreateInfo const & cbState
+		explicit ContextState( VkPipelineColorBlendStateCreateInfo const & cbState
 			, VkPipelineDepthStencilStateCreateInfo const * dsState = nullptr
 			, VkPipelineMultisampleStateCreateInfo const * msState = nullptr
 			, VkPipelineTessellationStateCreateInfo const * tsState = nullptr

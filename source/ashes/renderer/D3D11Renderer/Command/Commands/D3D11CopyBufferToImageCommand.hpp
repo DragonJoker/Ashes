@@ -72,27 +72,27 @@ namespace ashes::D3D11_NAMESPACE
 			, VkImage dst );
 		~CopyBufferToImageCommand()noexcept override;
 
-		void apply( Context const & context )const override;
+		void apply( Context & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		void apply( Context const & context
+		void apply( Context & context
 			, CopyToStagingProcess const & process )const;
-		void apply( Context const & context
+		void apply( Context & context
 			, CopyFromStagingProcess const & process )const;
-		void apply( Context const & context
+		void apply( Context & context
 			, MapCopyProcess const & process )const;
 		void doMapCopy( Context const & context
 			, MapCopyImage const & mapCopy
 			, VkFormat format
 			, D3D11_MAPPED_SUBRESOURCE srcMapped
 			, ObjectMemory const & dst )const;
-		void doCopyToStaging( Context const & context
+		void doCopyToStaging( Context & context
 			, VkDeviceSize srcOffset
 			, VkDeviceSize size
 			, VkBuffer src
 			, VkBuffer staging )const;
-		void doCopyFromStaging( Context const & context
+		void doCopyFromStaging( Context & context
 			, VkBufferImageCopy const & copyInfo
 			, VkImage staging
 			, VkImage dst )const;

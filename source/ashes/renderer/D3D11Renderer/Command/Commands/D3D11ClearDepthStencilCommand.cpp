@@ -96,7 +96,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 	}
 
-	void ClearDepthStencilCommand::apply( Context const & context )const
+	void ClearDepthStencilCommand::apply( Context & context )const
 	{
 		for ( auto const & view : m_views )
 		{

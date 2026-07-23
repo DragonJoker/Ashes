@@ -67,7 +67,7 @@ namespace ashes::gl
 		}
 
 	public:
-		mutable DeviceMemoryDestroySignal onDestroy;
+		DeviceMemoryDestroySignal onDestroy;
 
 	private:
 		VkDevice m_device;

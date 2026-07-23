@@ -98,7 +98,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void BindPipelineCommand::apply( Context const & context )const
+	void BindPipelineCommand::apply( Context & context )const
 	{
 		bindpipe::apply( *context.context
 			, get( m_pipeline )->getIAState() );
@@ -250,7 +250,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void BindDepthStencilStateCommand::apply( Context const & context )const
+	void BindDepthStencilStateCommand::apply( Context & context )const
 	{
 		bindpipe::apply( *context.context
 			, get( m_pipeline )->getDSState()
@@ -278,7 +278,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void BindRasterizerStateCommand::apply( Context const & context )const
+	void BindRasterizerStateCommand::apply( Context & context )const
 	{
 		bindpipe::apply( *context.context
 			, get( m_pipeline )->getRSState() );
@@ -306,7 +306,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void BindBlendStateCommand::apply( Context const & context )const
+	void BindBlendStateCommand::apply( Context & context )const
 	{
 		bindpipe::apply( *context.context
 			, get( m_pipeline )->getBDState()
@@ -337,7 +337,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void SetDepthBoundsCommand::apply( Context const & context )const
+	void SetDepthBoundsCommand::apply( Context & context )const
 	{
 #if ASHES_D3D11_USE_NVAPI
 		if ( get( m_physicalDevice )->isNVIDIA() )

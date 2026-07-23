@@ -29,7 +29,7 @@ namespace ashes::D3D11_NAMESPACE
 		m_dstBox.back = 1u;
 	}
 
-	void UpdateBufferCommand::apply( Context const & context )const
+	void UpdateBufferCommand::apply( Context & context )const
 	{
 		if ( m_mappable )
 		{

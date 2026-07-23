@@ -27,7 +27,7 @@ namespace ashes::D3D11_NAMESPACE
 			, uint32_t groupCountY
 			, uint32_t groupCountZ );
 
-		void apply( Context const & context )const override;
+		void apply( Context & context )const override;
 		CommandPtr clone()const override;
 
 	private:

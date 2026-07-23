@@ -22,7 +22,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void CopyBufferCommand::apply( Context const & context )const
+	void CopyBufferCommand::apply( Context & context )const
 	{
 		get( m_dst )->copyFrom( *context.context
 			, m_src

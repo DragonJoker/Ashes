@@ -18,7 +18,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void PushConstantsCommand::apply( Context const & context )const
+	void PushConstantsCommand::apply( Context & context )const
 	{
 		if ( m_pcb.ubo )
 		{

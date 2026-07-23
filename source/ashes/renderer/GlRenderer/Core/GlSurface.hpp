@@ -56,7 +56,7 @@ namespace ashes::gl
 
 		ContextLock getContext()const
 		{
-			return { *m_context };
+			return ContextLock{ *m_context };
 		}
 
 #if _WIN32

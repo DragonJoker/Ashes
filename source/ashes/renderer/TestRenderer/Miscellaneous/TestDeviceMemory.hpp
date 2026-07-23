@@ -116,7 +116,7 @@ namespace ashes::test
 		}
 
 	public:
-		mutable DeviceMemoryDestroySignal onDestroy;
+		DeviceMemoryDestroySignal onDestroy;
 
 	private:
 		void upload( VkDeviceSize offset

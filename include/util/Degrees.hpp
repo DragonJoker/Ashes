@@ -85,79 +85,75 @@ namespace utils
 
 	private:
 		T m_value;
+
+	private:
+		/**
+		*\name Opérateurs de comparaison.
+		*/
+		/**\{*/
+		friend bool operator==( DegreesT< T > const & lhs, DegreesT< T > const & rhs )noexcept
+		{
+			return std::abs( T( lhs ) - T( rhs ) ) < std::numeric_limits< T >::epsilon();
+		}
+
+		friend bool operator!=( DegreesT< T > const & lhs, DegreesT< T > const & rhs )noexcept
+		{
+			return !( lhs == rhs );
+		}
+
+		friend bool operator>( DegreesT< T > const & lhs, DegreesT< T > const & rhs )noexcept
+		{
+			return T( lhs ) > T( rhs );
+		}
+
+		friend bool operator<( DegreesT< T > const & lhs, DegreesT< T > const & rhs )noexcept
+		{
+			return T( lhs ) < T( rhs );
+		}
+
+		friend bool operator>=( DegreesT< T > const & lhs, DegreesT< T > const & rhs )noexcept
+		{
+			return !( lhs < rhs );
+		}
+
+		friend bool operator<=( DegreesT< T > const & lhs, DegreesT< T > const & rhs )noexcept
+		{
+			return !( lhs < rhs );
+		}
+		/**\}*/
+		/**
+		*\name Opérateurs arithmétiques.
+		*/
+		/**\{*/
+		friend DegreesT< T > operator+( DegreesT< T > const & lhs, DegreesT< T > const & rhs )noexcept
+		{
+			DegreesT< T > tmp{ lhs };
+			tmp += rhs;
+			return tmp;
+		}
+
+		friend DegreesT< T > operator-( DegreesT< T > const & lhs, DegreesT< T > const & rhs )noexcept
+		{
+			DegreesT< T > tmp{ lhs };
+			tmp -= rhs;
+			return tmp;
+		}
+
+		friend DegreesT< T > operator*( DegreesT< T > const & lhs, T rhs )noexcept
+		{
+			DegreesT< T > tmp{ lhs };
+			tmp *= rhs;
+			return tmp;
+		}
+
+		friend DegreesT< T > operator/( DegreesT< T > const & lhs, T rhs )noexcept
+		{
+			DegreesT< T > tmp{ lhs };
+			tmp /= rhs;
+			return tmp;
+		}
+		/**\}*/
 	};
-	/**
-	*\name Opérateurs de comparaison.
-	*/
-	/**\{*/
-	template< typename T >
-	inline bool operator==( DegreesT< T > const & lhs, DegreesT< T > const & rhs )noexcept
-	{
-		return std::abs( T( lhs ) - T( rhs ) ) < std::numeric_limits< T >::epsilon();
-	}
-
-	template< typename T >
-	inline bool operator!=( DegreesT< T > const & lhs, DegreesT< T > const & rhs )noexcept
-	{
-		return !( lhs == rhs );
-	}
-
-	template< typename T >
-	inline bool operator>( DegreesT< T > const & lhs, DegreesT< T > const & rhs )noexcept
-	{
-		return T( lhs ) > T( rhs );
-	}
-
-	template< typename T >
-	inline bool operator<( DegreesT< T > const & lhs, DegreesT< T > const & rhs )noexcept
-	{
-		return T( lhs ) < T( rhs );
-	}
-
-	template< typename T >
-	inline bool operator>=( DegreesT< T > const & lhs, DegreesT< T > const & rhs )noexcept
-	{
-		return !( lhs < rhs );
-	}
-
-	template< typename T >
-	inline bool operator<=( DegreesT< T > const & lhs, DegreesT< T > const & rhs )noexcept
-	{
-		return !( lhs < rhs );
-	}
-	/**\}*/
-	/**
-	*\name Opérateurs arithmétiques.
-	*/
-	/**\{*/
-	template< typename T >
-	inline DegreesT< T > operator+( DegreesT< T > const & lhs, DegreesT< T > const & rhs )noexcept
-	{
-		DegreesT< T > tmp{ lhs };
-		return tmp += rhs;
-	}
-
-	template< typename T >
-	inline DegreesT< T > operator-( DegreesT< T > const & lhs, DegreesT< T > const & rhs )noexcept
-	{
-		DegreesT< T > tmp{ lhs };
-		return tmp -= rhs;
-	}
-
-	template< typename T >
-	inline DegreesT< T > operator*( DegreesT< T > const & lhs, T rhs )noexcept
-	{
-		DegreesT< T > tmp{ lhs };
-		return tmp *= rhs;
-	}
-
-	template< typename T >
-	inline DegreesT< T > operator/( DegreesT< T > const & lhs, T rhs )noexcept
-	{
-		DegreesT< T > tmp{ lhs };
-		return tmp /= rhs;
-	}
-	/**\}*/
 	using Degrees = DegreesT< float >;
 }
 /**

@@ -161,17 +161,17 @@ namespace common
 				"Warning",
 				"Error",
 			};
-			static inline std::array< FILE *, 4u > const stdStream
-			{
-				stdout,
-				stdout,
-				stdout,
-				stderr,
-			};
-
 			static void Log( string_type const & appName
 				, string_type const & text )
 			{
+				static std::array< FILE *, 4u > const stdStream
+				{
+					stdout,
+					stdout,
+					stdout,
+					stderr,
+				};
+
 				logDebugString( appName + " - " + logTypeName[size_t( Type )] + ": " + text + "\n"
 					, stdStream[size_t( Type )] );
 			}

@@ -79,7 +79,7 @@ namespace ashes::gl
 		ContextLock( ContextLock const & ) = delete;
 		ContextLock & operator=( ContextLock const & ) = delete;
 
-		ContextLock( Context & context
+		explicit ContextLock( Context & context
 			, VkDevice device = {} )
 			: m_context{ &context }
 			, m_device{ device }

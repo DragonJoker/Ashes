@@ -142,7 +142,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 
 	public:
-		mutable DeviceMemoryDestroySignal onDestroy;
+		DeviceMemoryDestroySignal onDestroy;
 
 	private:
 		void upload( DeviceContextLock const & context

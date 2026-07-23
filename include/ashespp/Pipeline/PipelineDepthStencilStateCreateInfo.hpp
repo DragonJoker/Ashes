@@ -12,7 +12,7 @@ namespace ashes
 {
 	struct PipelineDepthStencilStateCreateInfo
 	{
-		PipelineDepthStencilStateCreateInfo( VkPipelineDepthStencilStateCreateFlags flags = 0u
+		explicit PipelineDepthStencilStateCreateInfo( VkPipelineDepthStencilStateCreateFlags flags = 0u
 			, VkBool32 depthTestEnable = VK_TRUE
 			, VkBool32 depthWriteEnable = VK_TRUE
 			, VkCompareOp depthCompareOp = VK_COMPARE_OP_LESS

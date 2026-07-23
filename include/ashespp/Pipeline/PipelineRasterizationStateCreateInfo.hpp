@@ -12,7 +12,7 @@ namespace ashes
 {
 	struct PipelineRasterizationStateCreateInfo
 	{
-		PipelineRasterizationStateCreateInfo( VkPipelineRasterizationStateCreateFlags flags = 0u
+		explicit PipelineRasterizationStateCreateInfo( VkPipelineRasterizationStateCreateFlags flags = 0u
 			, VkBool32 depthClampEnable = VK_FALSE
 			, VkBool32 rasterizerDiscardEnable = VK_FALSE
 			, VkPolygonMode polygonMode = VK_POLYGON_MODE_FILL

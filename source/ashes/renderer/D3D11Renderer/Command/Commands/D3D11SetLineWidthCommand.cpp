@@ -13,7 +13,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void SetLineWidthCommand::apply( Context const & context )const
+	void SetLineWidthCommand::apply( Context & context )const
 	{
 	}
 

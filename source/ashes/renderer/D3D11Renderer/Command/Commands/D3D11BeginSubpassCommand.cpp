@@ -36,7 +36,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 	}
 
-	void BeginSubpassCommand::apply( Context const & context )const
+	void BeginSubpassCommand::apply( Context & context )const
 	{
 		auto uavStart = UINT( m_attaches.size() );
 		context.context->OMSetRenderTargetsAndUnorderedAccessViews( UINT( m_attaches.size() )

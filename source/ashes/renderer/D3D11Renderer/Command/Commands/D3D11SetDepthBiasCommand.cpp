@@ -17,7 +17,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void SetDepthBiasCommand::apply( Context const & context )const
+	void SetDepthBiasCommand::apply( Context & context )const
 	{
 	}
 

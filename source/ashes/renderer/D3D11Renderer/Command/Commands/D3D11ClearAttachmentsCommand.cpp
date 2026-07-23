@@ -62,7 +62,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 	}
 
-	void ClearAttachmentsCommand::apply( Context const & context )const
+	void ClearAttachmentsCommand::apply( Context & context )const
 	{
 		for ( auto & clearAttach : m_clearViews )
 		{

@@ -255,6 +255,44 @@
                 "CMAKE_BUILD_TYPE": "Release"
             }
         },
+		{
+			"name": "dev-mingw-base",
+			"hidden": true,
+			"displayName": "Developer MinGW Config",
+			"description": "Developer build configuration using Ninja, on MinGW",
+			"generator": "Ninja",
+			"inherits": "default-base",
+			"cacheVariables": {
+                "ASHES_BUILD_RENDERER_D3D11": false,
+                "ASHES_BUILD_RENDERER_OGL": true,
+                "ASHES_BUILD_RENDERER_TEST": true,
+                "ASHES_BUILD_RENDERER_VKN": true,
+                "ASHES_BUILD_RENDERER_XBOX": false,
+                "ASHES_BUILD_SAMPLES": true,
+                "ASHES_BUILD_TEMPLATES": true,
+                "ASHES_BUILD_TESTS": true,
+                "PROJECTS_USE_PRECOMPILED_HEADERS": true,
+				"PROJECTS_WARNINGS_AS_ERRORS": true
+			}
+		},
+		{
+			"name": "dev-mingw-debug",
+			"displayName": "Developer MinGW Config, Debug",
+			"description": "Developer build configuration using Ninja, on MinGW, Debug",
+			"inherits": "dev-mingw-base",
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Debug"
+			}
+		},
+		{
+			"name": "dev-mingw-release",
+			"displayName": "Developer MinGW Config, Release",
+			"description": "Developer build configuration using Ninja, on MinGW, Release",
+			"inherits": "dev-mingw-base",
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Release"
+			}
+		},
         {
             "name": "ci-vcpkg",
             "installDir": "${sourceDir}/package/Ashes",

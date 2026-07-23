@@ -14,7 +14,7 @@ namespace ashes
 	{
 		~PipelineDynamicStateCreateInfo()noexcept = default;
 
-		PipelineDynamicStateCreateInfo( VkPipelineDynamicStateCreateFlags flags = 0u
+		explicit PipelineDynamicStateCreateInfo( VkPipelineDynamicStateCreateFlags flags = 0u
 			, VkDynamicStateArray pdynamicStates = {} )
 			: dynamicStates{ std::move( pdynamicStates ) }
 			, vk{ VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO

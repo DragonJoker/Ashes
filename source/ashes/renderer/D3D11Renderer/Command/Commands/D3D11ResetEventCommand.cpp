@@ -15,7 +15,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void ResetEventCommand::apply( Context const & context )const
+	void ResetEventCommand::apply( Context & context )const
 	{
 	}
 

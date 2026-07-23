@@ -273,33 +273,38 @@ namespace ashes::D3D11_NAMESPACE
 		float constantFactor;
 		float clamp;
 		float slopeFactor;
+
+	private:
+		friend bool operator==( DepthBias const & lhs, DepthBias const & rhs )
+		{
+			return lhs.constantFactor == rhs.constantFactor
+				&& lhs.clamp == rhs.clamp
+				&& lhs.slopeFactor == rhs.slopeFactor;
+		}
+
+		friend bool operator!=( DepthBias const & lhs, DepthBias const & rhs )
+		{
+			return !( lhs == rhs );
+		}
 	};
-	inline bool operator==( DepthBias const & lhs, DepthBias const & rhs )
-	{
-		return lhs.constantFactor == rhs.constantFactor
-			&& lhs.clamp == rhs.clamp
-			&& lhs.slopeFactor == rhs.slopeFactor;
-	}
-	inline bool operator!=( DepthBias const & lhs, DepthBias const & rhs )
-	{
-		return !( lhs == rhs );
-	}
 
 	struct DepthBounds
 	{
 		float minBound;
 		float maxBound;
-	};
-	inline bool operator==( DepthBounds const & lhs, DepthBounds const & rhs )
-	{
-		return lhs.minBound == rhs.minBound
-			&& lhs.maxBound == rhs.maxBound;
-	}
-	inline bool operator!=( DepthBounds const & lhs, DepthBounds const & rhs )
-	{
-		return !( lhs == rhs );
-	}
 
+	private:
+		friend bool operator==( DepthBounds const & lhs, DepthBounds const & rhs )
+		{
+			return lhs.minBound == rhs.minBound
+				&& lhs.maxBound == rhs.maxBound;
+		}
+
+		friend bool operator!=( DepthBounds const & lhs, DepthBounds const & rhs )
+		{
+			return !( lhs == rhs );
+		}
+	};
 	struct Context;
 
 	class Attribute;

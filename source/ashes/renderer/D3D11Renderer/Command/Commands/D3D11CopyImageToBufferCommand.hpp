@@ -31,11 +31,11 @@ namespace ashes::D3D11_NAMESPACE
 			, VkImage src
 			, VkBuffer dst );
 
-		void apply( Context const & context )const override;
+		void apply( Context & context )const override;
 		CommandPtr clone()const override;
 
 	private:
-		void applyOne( Context const & context
+		void applyOne( Context & context
 			, VkBufferImageCopy const & copyInfo
 			, VkSubresourceLayout const & srcLayout
 			, D3D11_BOX const & dstBox )const;
@@ -46,11 +46,11 @@ namespace ashes::D3D11_NAMESPACE
 			, VkFormat format
 			, VkDeviceMemory src
 			, VkDeviceMemory dst )const;
-		void doCopyToStaging( Context const & context
+		void doCopyToStaging( Context & context
 			, VkBufferImageCopy const & copyInfo
 			, VkImage src
 			, VkImage staging )const;
-		void doCopyFromStaging( Context const & context
+		void doCopyFromStaging( Context & context
 			, VkBufferImageCopy const & copyInfo
 			, VkBuffer staging
 			, VkBuffer dst

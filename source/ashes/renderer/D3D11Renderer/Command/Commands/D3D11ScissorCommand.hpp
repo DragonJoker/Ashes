@@ -26,7 +26,7 @@ namespace ashes::D3D11_NAMESPACE
 			, uint32_t first
 			, ArrayView< VkRect2D const > const & scissors );
 
-		void apply( Context const & context )const override;
+		void apply( Context & context )const override;
 		CommandPtr clone()const override;
 
 	private:

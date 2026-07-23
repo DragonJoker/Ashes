@@ -40,7 +40,7 @@ namespace ashes::D3D11_NAMESPACE
 			, VkIndexType type
 			, VbosBindingArray const & vbos );
 
-		void apply( Context const & context )const override;
+		void apply( Context & context )const override;
 		CommandPtr clone()const override;
 
 	private:

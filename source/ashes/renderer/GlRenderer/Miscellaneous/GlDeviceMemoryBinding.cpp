@@ -40,7 +40,7 @@ namespace ashes::gl
 
 	bool DeviceMemoryBinding::unmap()noexcept
 	{
-		m_mappedRange = {};
+		m_mappedRange = BindingRange{};
 		m_mapped = false;
 		auto dirty = m_dirty;
 		m_dirty = false;
