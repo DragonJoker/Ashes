@@ -17,7 +17,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void ExecuteCommandsCommand::apply( Context const & context )const
+	void ExecuteCommandsCommand::apply( Context & context )const
 	{
 		context.context->ExecuteCommandList( get( m_commandBuffer )->getCommandList()
 			, FALSE );

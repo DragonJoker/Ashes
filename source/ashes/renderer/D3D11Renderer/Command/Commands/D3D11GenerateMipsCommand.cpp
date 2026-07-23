@@ -35,7 +35,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void GenerateMipsCommand::apply( Context const & context )const
+	void GenerateMipsCommand::apply( Context & context )const
 	{
 		context.context->GenerateMips( m_view.getShaderView() );
 	}

@@ -127,23 +127,4 @@ namespace utils
 
 		return result;
 	}
-
-	bool operator==( PlaneEquation const & lhs, PlaneEquation const & rhs )
-	{
-		bool result = false;
-
-		if ( lhs.parallel( rhs ) )
-		{
-			float ratioA = lhs.m_normal[0] / rhs.m_normal[0];
-			float ratioD = lhs.m_d / rhs.m_d;
-			result = ratioA == ratioD;
-		}
-
-		return result;
-	}
-
-	bool operator!=( PlaneEquation const & a, PlaneEquation const & b )
-	{
-		return ( !( a == b ) );
-	}
 }

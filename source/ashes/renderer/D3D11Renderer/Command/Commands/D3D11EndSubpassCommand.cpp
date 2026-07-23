@@ -21,7 +21,7 @@ namespace ashes::D3D11_NAMESPACE
 		m_attaches.resize( m_subpass.colorAttachmentCount );
 	}
 
-	void EndSubpassCommand::apply( Context const & context )const
+	void EndSubpassCommand::apply( Context & context )const
 	{
 		context.context->OMSetRenderTargetsAndUnorderedAccessViews( UINT( m_attaches.size() )
 			, m_attaches.data()

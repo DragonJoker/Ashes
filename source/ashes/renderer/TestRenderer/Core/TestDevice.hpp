@@ -121,7 +121,7 @@ namespace ashes::test
 	private:
 		struct QueueCreates
 		{
-			QueueCreates( VkDeviceQueueCreateInfo createInfo
+			explicit QueueCreates( VkDeviceQueueCreateInfo createInfo
 				, std::vector< VkQueue > queues = {} )
 				: createInfo{ std::move( createInfo ) }
 				, queues{ std::move( queues ) }

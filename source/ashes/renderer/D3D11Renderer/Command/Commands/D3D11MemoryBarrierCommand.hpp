@@ -23,7 +23,7 @@ namespace ashes::D3D11_NAMESPACE
 		MemoryBarrierCommand( VkDevice device
 			, ArrayView< VkBufferMemoryBarrier const > const & bufferBarriers );
 
-		void apply( Context const & context )const override;
+		void apply( Context & context )const override;
 		CommandPtr clone()const override;
 
 	private:

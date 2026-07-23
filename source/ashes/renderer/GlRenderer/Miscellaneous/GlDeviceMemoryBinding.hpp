@@ -12,7 +12,7 @@ namespace ashes::gl
 {
 	struct BindingRange
 	{
-		BindingRange( VkDeviceSize offset = 0u
+		explicit BindingRange( VkDeviceSize offset = 0u
 			, VkDeviceSize size = 0u )noexcept
 			: m_offset{ offset }
 			, m_size{ size }

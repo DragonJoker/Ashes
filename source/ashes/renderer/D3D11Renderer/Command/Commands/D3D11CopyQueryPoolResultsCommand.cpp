@@ -39,7 +39,7 @@ namespace ashes::D3D11_NAMESPACE
 		m_dstBox.back = 1u;
 	}
 
-	void CopyQueryPoolResultsCommand::apply( Context const & context )const
+	void CopyQueryPoolResultsCommand::apply( Context & context )const
 	{
 		get( m_queryPool )->getResults( m_firstQuery
 			, m_queryCount

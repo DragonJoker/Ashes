@@ -18,7 +18,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void EndQueryCommand::apply( Context const & context )const
+	void EndQueryCommand::apply( Context & context )const
 	{
 		context.context->End( m_query );
 	}

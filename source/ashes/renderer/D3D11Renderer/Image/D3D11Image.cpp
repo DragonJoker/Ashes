@@ -45,8 +45,7 @@ namespace ashes::D3D11_NAMESPACE
 		, VkExtent2D const & dimensions
 		, ID3D11Texture2D * image )
 		: Image{ device
-			, {
-				VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+			, { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
 				nullptr,
 				0u,
 				VK_IMAGE_TYPE_2D,
@@ -62,8 +61,7 @@ namespace ashes::D3D11_NAMESPACE
 				VK_SHARING_MODE_EXCLUSIVE,
 				0u,
 				nullptr,
-				VK_IMAGE_LAYOUT_UNDEFINED
-			} }
+				VK_IMAGE_LAYOUT_UNDEFINED } }
 	{
 		m_image.tex2D = image;
 	}
@@ -74,8 +72,7 @@ namespace ashes::D3D11_NAMESPACE
 		, VkImageUsageFlags usageFlags
 		, VkImageTiling tiling )
 		: Image{ device
-			, {
-				VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+			, { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
 				nullptr,
 				0u,
 				VK_IMAGE_TYPE_2D,
@@ -89,8 +86,7 @@ namespace ashes::D3D11_NAMESPACE
 				VK_SHARING_MODE_EXCLUSIVE,
 				0u,
 				nullptr,
-				VK_IMAGE_LAYOUT_UNDEFINED
-			} }
+				VK_IMAGE_LAYOUT_UNDEFINED } }
 	{
 		doInitialiseMemoryRequirements();
 	}

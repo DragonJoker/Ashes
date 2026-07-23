@@ -38,9 +38,9 @@ namespace ashes::D3D11_NAMESPACE
 		DeviceContextLock context;
 		ID3D11DeviceContext1 * context1{};
 		D3D_FEATURE_LEVEL featureLevel{};
-		mutable std::map< UINT, ID3D11UnorderedAccessView * > uavs{};
-		mutable std::vector< ID3D11UnorderedAccessView * > rawUavs{};
-		mutable UINT uavStart{};
+		std::map< UINT, ID3D11UnorderedAccessView * > uavs{};
+		std::vector< ID3D11UnorderedAccessView * > rawUavs{};
+		UINT uavStart{};
 
 	private:
 		static DeviceContextLock getImmediateContext( VkDevice device );
@@ -57,7 +57,7 @@ namespace ashes::D3D11_NAMESPACE
 		explicit CommandBase( VkDevice device );
 		virtual ~CommandBase()noexcept = default;
 
-		virtual void apply( Context const & context )const = 0;
+		virtual void apply( Context & context )const = 0;
 		virtual void remove( Context const & context )const
 		{
 		}

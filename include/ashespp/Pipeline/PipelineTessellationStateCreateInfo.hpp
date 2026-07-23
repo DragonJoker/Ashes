@@ -12,7 +12,7 @@ namespace ashes
 {
 	struct PipelineTessellationStateCreateInfo
 	{
-		PipelineTessellationStateCreateInfo( VkPipelineTessellationStateCreateFlags flags = 0u
+		explicit PipelineTessellationStateCreateInfo( VkPipelineTessellationStateCreateFlags flags = 0u
 			, uint32_t patchControlPoints = 0u )
 			: vk{ VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO
 				, nullptr

@@ -17,7 +17,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void DispatchCommand::apply( Context const & context )const
+	void DispatchCommand::apply( Context & context )const
 	{
 		context.context->Dispatch( m_groupCountX, m_groupCountY, m_groupCountZ );
 	}

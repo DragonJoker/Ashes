@@ -15,7 +15,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void ExecuteActionsCommand::apply( Context const & context )const
+	void ExecuteActionsCommand::apply( Context & context )const
 	{
 		for ( auto const & action : m_actions )
 		{

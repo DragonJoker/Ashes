@@ -240,7 +240,7 @@ namespace ashes::test
 			VkRenderPass currentRenderPass{};
 			VkFramebuffer currentFrameBuffer{};
 			uint32_t currentSubpassIndex{ 0u };
-			mutable VbosBindingArray vbos;
+			VbosBindingArray vbos;
 			VkIndexType indexType{};
 			VkDescriptorSetArray boundDescriptors;
 			VkBuffer newlyBoundIbo{};

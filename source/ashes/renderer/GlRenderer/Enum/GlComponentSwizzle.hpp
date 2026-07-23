@@ -36,8 +36,16 @@ namespace ashes::gl
 		GlComponentSwizzle g;
 		GlComponentSwizzle b;
 		GlComponentSwizzle a;
+
+	private:
+		friend bool operator==( GlComponentMapping const & lhs, GlComponentMapping const & rhs )
+		{
+			return lhs.r == rhs.r
+				&& lhs.g == rhs.g
+				&& lhs.b == rhs.b
+				&& lhs.a == rhs.a;
+		}
 	};
-	bool operator==( GlComponentMapping const & lhs, GlComponentMapping const & rhs );
 	std::string getName( GlComponentSwizzle value );
 	inline std::string toString( GlComponentSwizzle value ) { return getName( value ); }
 	GlComponentSwizzle convertComponentSwizzle( VkComponentSwizzle const & value );

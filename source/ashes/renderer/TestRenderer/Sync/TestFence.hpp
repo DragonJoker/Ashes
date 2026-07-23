@@ -11,7 +11,7 @@ namespace ashes::test
 	class Fence
 	{
 	public:
-		Fence( VkDevice device
+		explicit Fence( VkDevice device
 			, VkFenceCreateFlags flags = 0 );
 
 		VkResult wait( uint64_t timeout )const;

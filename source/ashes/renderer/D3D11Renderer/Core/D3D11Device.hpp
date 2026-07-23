@@ -150,7 +150,7 @@ namespace ashes::D3D11_NAMESPACE
 	private:
 		struct QueueCreates
 		{
-			QueueCreates( VkDeviceQueueCreateInfo createInfo
+			explicit QueueCreates( VkDeviceQueueCreateInfo createInfo
 				, std::vector< VkQueue > queues = {}  )
 				: createInfo{ std::move( createInfo ) }
 				, queues{ std::move( queues ) }

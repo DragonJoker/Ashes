@@ -19,7 +19,7 @@ namespace ashes::D3D11_NAMESPACE
 		ResetEventCommand( VkDevice device
 			, VkEvent event );
 
-		void apply( Context const & context )const override;
+		void apply( Context & context )const override;
 		CommandPtr clone()const override;
 
 	private:

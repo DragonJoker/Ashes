@@ -15,20 +15,21 @@ namespace ashes::gl
 	{
 		VkVertexInputBindingDescriptionArray vertexBindingDescriptions;
 		VkVertexInputAttributeDescriptionArray vertexAttributeDescriptions;
+
+	private:
+		friend bool operator==( InputsLayout const & lhs
+			, InputsLayout const & rhs )
+		{
+			return lhs.vertexBindingDescriptions == rhs.vertexBindingDescriptions
+				&& lhs.vertexAttributeDescriptions == rhs.vertexAttributeDescriptions;
+		}
+
+		friend bool operator!=( InputsLayout const & lhs
+			, InputsLayout const & rhs )
+		{
+			return !operator==( lhs, rhs );
+		}
 	};
-
-	inline bool operator==( InputsLayout const & lhs
-		, InputsLayout const & rhs )
-	{
-		return lhs.vertexBindingDescriptions == rhs.vertexBindingDescriptions
-			&& lhs.vertexAttributeDescriptions == rhs.vertexAttributeDescriptions;
-	}
-
-	inline bool operator!=( InputsLayout const & lhs
-		, InputsLayout const & rhs )
-	{
-		return !operator==( lhs, rhs );
-	}
 
 	enum class ImageFormat
 	{
@@ -122,27 +123,26 @@ namespace ashes::gl
 		uint32_t size{ 0u };
 		uint32_t arraySize{ 1u };
 		uint32_t offset{ 0u };
+
+	private:
+		friend bool operator==( FormatDescT< FormatT > const & lhs
+			, FormatDescT< FormatT > const & rhs )
+		{
+			return lhs.name == rhs.name
+				&& lhs.stageFlag == rhs.stageFlag
+				&& lhs.location == rhs.location
+				&& lhs.format == rhs.format
+				&& lhs.size == rhs.size
+				&& lhs.arraySize == rhs.arraySize
+				&& lhs.offset == rhs.offset;
+		}
+
+		friend bool operator!=( FormatDescT< FormatT > const & lhs
+			, FormatDescT< FormatT > const & rhs )
+		{
+			return !operator==( lhs, rhs );
+		}
 	};
-
-	template< typename FormatT >
-	inline bool operator==( FormatDescT< FormatT > const & lhs
-		, FormatDescT< FormatT > const & rhs )
-	{
-		return lhs.name == rhs.name
-			&& lhs.stageFlag == rhs.stageFlag
-			&& lhs.location == rhs.location
-			&& lhs.format == rhs.format
-			&& lhs.size == rhs.size
-			&& lhs.arraySize == rhs.arraySize
-			&& lhs.offset == rhs.offset;
-	}
-
-	template< typename FormatT >
-	inline bool operator!=( FormatDescT< FormatT > const & lhs
-		, FormatDescT< FormatT > const & rhs )
-	{
-		return !operator==( lhs, rhs );
-	}
 
 	template< typename FormatT >
 	using DescLayoutT = std::vector< FormatDescT< FormatT > >;
@@ -161,22 +161,23 @@ namespace ashes::gl
 		uint32_t binding{ 0u };
 		uint32_t size{ 0u };
 		ConstantsLayout constants;
+
+	private:
+		friend bool operator==( ConstantBufferDesc const & lhs
+			, ConstantBufferDesc const & rhs )
+		{
+			return lhs.name == rhs.name
+				&& lhs.binding == rhs.binding
+				&& lhs.size == rhs.size
+				&& lhs.constants == rhs.constants;
+		}
+
+		friend bool operator!=( ConstantBufferDesc const & lhs
+			, ConstantBufferDesc const & rhs )
+		{
+			return !operator==( lhs, rhs );
+		}
 	};
-
-	inline bool operator==( ConstantBufferDesc const & lhs
-		, ConstantBufferDesc const & rhs )
-	{
-		return lhs.name == rhs.name
-			&& lhs.binding == rhs.binding
-			&& lhs.size == rhs.size
-			&& lhs.constants == rhs.constants;
-	}
-
-	inline bool operator!=( ConstantBufferDesc const & lhs
-		, ConstantBufferDesc const & rhs )
-	{
-		return !operator==( lhs, rhs );
-	}
 
 	using InterfaceBlocksLayout = std::vector< ConstantBufferDesc >;
 
@@ -218,25 +219,26 @@ namespace ashes::gl
 		SamplersLayout tex{};
 		ImagesLayout ibo{};
 		ImagesLayout img{};
+
+	private:
+		friend bool operator==( ShaderDesc const & lhs, ShaderDesc const & rhs )
+		{
+			return lhs.stageFlags == rhs.stageFlags
+				&& lhs.inputs == rhs.inputs
+				&& lhs.pcb == rhs.pcb
+				&& lhs.ubo == rhs.ubo
+				&& lhs.sbo == rhs.sbo
+				&& lhs.tbo == rhs.tbo
+				&& lhs.tex == rhs.tex
+				&& lhs.ibo == rhs.ibo
+				&& lhs.img == rhs.img;
+		}
+
+		friend bool operator!=( ShaderDesc const & lhs, ShaderDesc const & rhs )
+		{
+			return !operator==( lhs, rhs );
+		}
 	};
-
-	inline bool operator==( ShaderDesc const & lhs, ShaderDesc const & rhs )
-	{
-		return lhs.stageFlags == rhs.stageFlags
-			&& lhs.inputs == rhs.inputs
-			&& lhs.pcb == rhs.pcb
-			&& lhs.ubo == rhs.ubo
-			&& lhs.sbo == rhs.sbo
-			&& lhs.tbo == rhs.tbo
-			&& lhs.tex == rhs.tex
-			&& lhs.ibo == rhs.ibo
-			&& lhs.img == rhs.img;
-	}
-
-	inline bool operator!=( ShaderDesc const & lhs, ShaderDesc const & rhs )
-	{
-		return !operator==( lhs, rhs );
-	}
 
 	using ProgramLayout = std::vector< ShaderDesc >;
 
@@ -247,19 +249,20 @@ namespace ashes::gl
 		uint32_t size{ 0u };
 		ConstantsLayout constants;
 		std::vector< uint8_t > data;
+
+	private:
+		friend bool operator==( PushConstantsDesc const & lhs, PushConstantsDesc const & rhs )
+		{
+			return lhs.stageFlags == rhs.stageFlags
+				&& lhs.offset == rhs.offset
+				&& lhs.size == rhs.size
+				&& lhs.constants == rhs.constants
+				&& lhs.data == rhs.data;
+		}
+
+		friend bool operator!=( PushConstantsDesc const & lhs, PushConstantsDesc const & rhs )
+		{
+			return !operator==( lhs, rhs );
+		}
 	};
-
-	inline bool operator==( PushConstantsDesc const & lhs, PushConstantsDesc const & rhs )
-	{
-		return lhs.stageFlags == rhs.stageFlags
-			&& lhs.offset == rhs.offset
-			&& lhs.size == rhs.size
-			&& lhs.constants == rhs.constants
-			&& lhs.data == rhs.data;
-	}
-
-	inline bool operator!=( PushConstantsDesc const & lhs, PushConstantsDesc const & rhs )
-	{
-		return !operator==( lhs, rhs );
-	}
 }

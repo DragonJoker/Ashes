@@ -772,7 +772,7 @@ namespace ashes::gl
 	private:
 		struct QueueCreates
 		{
-			QueueCreates( VkDeviceQueueCreateInfo pcreateInfo
+			explicit QueueCreates( VkDeviceQueueCreateInfo pcreateInfo
 				, std::vector< VkQueue > pqueues = {} )
 				: createInfo{ std::move( pcreateInfo ) }
 				, queues{ std::move( pqueues ) }

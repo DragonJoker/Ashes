@@ -19,7 +19,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void DispatchIndirectCommand::apply( Context const & context )const
+	void DispatchIndirectCommand::apply( Context & context )const
 	{
 		context.context->DispatchIndirect( get( m_buffer )->getBuffer(), m_offset );
 	}

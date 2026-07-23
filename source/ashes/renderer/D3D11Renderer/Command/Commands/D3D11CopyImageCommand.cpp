@@ -45,7 +45,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void CopyImageCommand::apply( Context const & context )const
+	void CopyImageCommand::apply( Context & context )const
 	{
 		if ( isDepthOrStencilFormat( get( m_src )->getFormat() ) )
 		{

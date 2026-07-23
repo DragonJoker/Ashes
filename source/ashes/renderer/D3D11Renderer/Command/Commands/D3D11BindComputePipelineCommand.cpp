@@ -27,7 +27,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void BindComputePipelineCommand::apply( Context const & context )const
+	void BindComputePipelineCommand::apply( Context & context )const
 	{
 		context.context->CSSetShader( m_program.getCSShader()
 			, nullptr

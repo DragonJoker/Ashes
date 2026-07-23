@@ -16,7 +16,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void ScissorCommand::apply( Context const & context )const
+	void ScissorCommand::apply( Context & context )const
 	{
 		context.context->RSSetScissorRects( UINT( m_scissors.size() )
 			, m_scissors.data() );

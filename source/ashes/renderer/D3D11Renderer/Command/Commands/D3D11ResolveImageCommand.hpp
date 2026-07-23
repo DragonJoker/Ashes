@@ -17,7 +17,7 @@ namespace ashes::D3D11_NAMESPACE
 			, VkImage dstImage
 			, ArrayView< VkImageResolve const > regions );
 
-		void apply( Context const & context )const override;
+		void apply( Context & context )const override;
 		CommandPtr clone()const override;
 
 	private:

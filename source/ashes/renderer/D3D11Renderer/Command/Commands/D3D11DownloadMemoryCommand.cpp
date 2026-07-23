@@ -22,7 +22,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void DownloadMemoryCommand::apply( Context const & context )const
+	void DownloadMemoryCommand::apply( Context & context )const
 	{
 		get( m_memory->deviceMemory )->updateDownload( context.context
 			, *m_memory

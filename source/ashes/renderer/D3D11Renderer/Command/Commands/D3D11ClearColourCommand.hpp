@@ -34,7 +34,7 @@ namespace ashes::D3D11_NAMESPACE
 		ClearColourCommand & operator=( ClearColourCommand && rhs )noexcept = default;
 		~ClearColourCommand()noexcept override;
 
-		void apply( Context const & context )const override;
+		void apply( Context & context )const override;
 		CommandPtr clone()const override;
 
 	private:

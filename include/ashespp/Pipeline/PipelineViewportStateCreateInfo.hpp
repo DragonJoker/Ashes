@@ -34,7 +34,7 @@ namespace ashes
 		{
 		}
 
-		PipelineViewportStateCreateInfo( VkPipelineViewportStateCreateFlags flags = 0u
+		explicit PipelineViewportStateCreateInfo( VkPipelineViewportStateCreateFlags flags = 0u
 			, VkViewportArray const & pviewports = {}
 			, VkScissorArray const & pscissors = {} )
 			: PipelineViewportStateCreateInfo{ flags

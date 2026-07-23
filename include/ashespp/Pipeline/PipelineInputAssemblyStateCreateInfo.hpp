@@ -12,7 +12,7 @@ namespace ashes
 {
 	struct PipelineInputAssemblyStateCreateInfo
 	{
-		PipelineInputAssemblyStateCreateInfo( VkPipelineInputAssemblyStateCreateFlags flags = 0u
+		explicit PipelineInputAssemblyStateCreateInfo( VkPipelineInputAssemblyStateCreateFlags flags = 0u
 			, VkPrimitiveTopology topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST
 			, VkBool32 primitiveRestartEnable = VK_FALSE )
 			: vk{ VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO

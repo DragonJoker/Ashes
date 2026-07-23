@@ -55,7 +55,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	ClearColourCommand::ClearColourCommand( ClearColourCommand  const & rhs )
+	ClearColourCommand::ClearColourCommand( ClearColourCommand const & rhs )
 		: CommandBase{ rhs }
 		, m_image{ rhs.m_image }
 		, m_ranges{ rhs.m_ranges }
@@ -88,7 +88,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 	}
 
-	void ClearColourCommand::apply( Context const & context )const
+	void ClearColourCommand::apply( Context & context )const
 	{
 		for ( auto const & view : m_views )
 		{

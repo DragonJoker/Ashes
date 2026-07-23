@@ -91,7 +91,7 @@ namespace ashes
 		}
 
 	public:
-		mutable OnWaitEndSignal onWaitEnd;
+		OnWaitEndSignal onWaitEnd;
 
 	private:
 		Device const & m_device;

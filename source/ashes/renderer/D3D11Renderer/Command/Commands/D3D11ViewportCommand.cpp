@@ -16,7 +16,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void ViewportCommand::apply( Context const & context )const
+	void ViewportCommand::apply( Context & context )const
 	{
 		context.context->RSSetViewports( UINT( m_viewports.size() )
 			, m_viewports.data() );

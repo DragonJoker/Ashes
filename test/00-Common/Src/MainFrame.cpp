@@ -43,7 +43,7 @@ namespace common
 				, m_rendererName.ToStdString()
 				, ashes::ApplicationInfo
 				{
-					m_name.c_str(),
+					m_name,
 					ashes::makeVersion( 1, 0, 0 ),
 					"Ashes",
 					ashes::makeVersion( 1, 0, 0 ),

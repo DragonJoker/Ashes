@@ -25,7 +25,7 @@ namespace ashes::D3D11_NAMESPACE
 			, uint64_t offset
 			, VkIndexType indexType );
 
-		void apply( Context const & context )const override;
+		void apply( Context & context )const override;
 		void remove( Context const & context )const override;
 		CommandPtr clone()const override;
 

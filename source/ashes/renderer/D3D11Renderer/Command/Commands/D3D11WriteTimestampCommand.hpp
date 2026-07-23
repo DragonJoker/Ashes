@@ -20,7 +20,7 @@ namespace ashes::D3D11_NAMESPACE
 			, VkQueryPool pool
 			, uint32_t query );
 
-		void apply( Context const & context )const override;
+		void apply( Context & context )const override;
 		CommandPtr clone()const override;
 
 	private:

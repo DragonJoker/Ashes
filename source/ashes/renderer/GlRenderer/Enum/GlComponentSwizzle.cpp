@@ -83,14 +83,6 @@ namespace ashes::gl
 		}
 	}
 
-	bool operator==( GlComponentMapping const & lhs, GlComponentMapping const & rhs )
-	{
-		return lhs.r == rhs.r
-			&& lhs.g == rhs.g
-			&& lhs.b == rhs.b
-			&& lhs.a == rhs.a;
-	}
-
 	static GlComponentMapping const SwizzleIdentity
 	{
 		GlComponentSwizzle::GL_COMPONENT_SWIZZLE_RED,

@@ -39,7 +39,7 @@ namespace ashes::D3D11_NAMESPACE
 		}
 	}
 
-	void BeginRenderPassCommand::apply( Context const & context )const
+	void BeginRenderPassCommand::apply( Context & context )const
 	{
 		context.context->RSSetScissorRects( 1u, &m_scissor );
 		auto & views = get( m_frameBuffer )->getAllViews();

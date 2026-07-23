@@ -197,69 +197,65 @@ namespace ashes
 
 	private:
 		BaseType m_value;
+
+	private:
+		/**
+		*\name
+		*	Comparison operators.
+		*/
+		/**\{*/
+		friend bool operator==( FlagCombination< FlagType > const & lhs
+			, FlagCombination< FlagType > const & rhs )noexcept
+		{
+			using Type = typename FlagCombination< FlagType >::BaseType;
+			return Type( lhs ) == Type( rhs );
+		}
+
+		friend bool operator==( FlagCombination< FlagType > const & lhs
+			, FlagType const & rhs )noexcept
+		{
+			using Type = typename FlagCombination< FlagType >::BaseType;
+			return Type( lhs ) == Type( rhs );
+		}
+		/**\}*/
+		/**
+		*\name
+		*	Binary operators.
+		*/
+		/**\{*/
+		friend FlagCombination< FlagType > operator&( FlagCombination< FlagType > const & lhs
+			, FlagType const & rhs )noexcept
+		{
+			FlagCombination< FlagType > result{ lhs };
+			result &= rhs;
+			return result;
+		}
+
+		friend FlagCombination< FlagType > operator|( FlagCombination< FlagType > const & lhs
+			, FlagType const & rhs )noexcept
+		{
+			FlagCombination< FlagType > result{ lhs };
+			result |= rhs;
+			return result;
+		}
+
+		friend FlagCombination< FlagType > operator&( FlagCombination< FlagType > const & lhs
+			, typename FlagCombination< FlagType >::BaseType const & rhs )noexcept
+		{
+			FlagCombination< FlagType > result{ lhs };
+			result &= rhs;
+			return result;
+		}
+
+		friend FlagCombination< FlagType > operator|( FlagCombination< FlagType > const & lhs
+			, typename FlagCombination< FlagType >::BaseType const & rhs )noexcept
+		{
+			FlagCombination< FlagType > result{ lhs };
+			result |= rhs;
+			return result;
+		}
+		/**\}*/
 	};
-	/**
-	*\name
-	*	Comparison operators.
-	*/
-	/**\{*/
-	template< typename FlagType >
-	inline bool operator==( FlagCombination< FlagType > const & lhs
-		, FlagCombination< FlagType > const & rhs )noexcept
-	{
-		using Type = typename FlagCombination< FlagType >::BaseType;
-		return Type( lhs ) == Type( rhs );
-	}
-
-	template< typename FlagType >
-	inline bool operator==( FlagCombination< FlagType > const & lhs
-		, FlagType const & rhs )noexcept
-	{
-		using Type = typename FlagCombination< FlagType >::BaseType;
-		return Type( lhs ) == Type( rhs );
-	}
-	/**\}*/
-	/**
-	*\name
-	*	Binary operators.
-	*/
-	/**\{*/
-	template< typename FlagType >
-	inline FlagCombination< FlagType > operator&
-		( FlagCombination< FlagType > const & lhs
-		, FlagType const & rhs )noexcept
-	{
-		FlagCombination< FlagType > result{ lhs };
-		return result &= rhs;
-	}
-
-	template< typename FlagType >
-	inline FlagCombination< FlagType > operator|
-		( FlagCombination< FlagType > const & lhs
-		, FlagType const & rhs )noexcept
-	{
-		FlagCombination< FlagType > result{ lhs };
-		return result |= rhs;
-	}
-
-	template< typename FlagType >
-	inline FlagCombination< FlagType > operator&
-		( FlagCombination< FlagType > const & lhs
-		, typename FlagCombination< FlagType >::BaseType const & rhs )noexcept
-	{
-		FlagCombination< FlagType > ret{ lhs };
-		return ret &= rhs;
-	}
-
-	template< typename FlagType >
-	inline FlagCombination< FlagType > operator|
-		( FlagCombination< FlagType > const & lhs
-		, typename FlagCombination< FlagType >::BaseType const & rhs )noexcept
-	{
-		FlagCombination< FlagType > ret{ lhs };
-		return ret |= rhs;
-	}
-	/**\}*/
 	/**
 	*\brief
 	*	Checks if the given flag is part of the given combination.

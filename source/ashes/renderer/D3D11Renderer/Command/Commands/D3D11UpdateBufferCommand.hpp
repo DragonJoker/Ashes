@@ -17,7 +17,7 @@ namespace ashes::D3D11_NAMESPACE
 			, VkDeviceSize bufferOffset
 			, ArrayView< uint8_t const > const & data );
 
-		void apply( Context const & context )const override;
+		void apply( Context & context )const override;
 		CommandPtr clone()const override;
 
 	private:

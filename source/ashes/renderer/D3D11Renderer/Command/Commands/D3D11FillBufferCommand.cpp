@@ -24,7 +24,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void FillBufferCommand::apply( Context const & context )const
+	void FillBufferCommand::apply( Context & context )const
 	{
 		if ( uint32_t * data{};
 			VK_SUCCESS == get( m_memory )->lock( m_memoryOffset, m_size, 0u, reinterpret_cast< void ** >( &data ) ) )

@@ -14,7 +14,7 @@ namespace ashes
 	{
 		~PipelineMultisampleStateCreateInfo()noexcept = default;
 
-		PipelineMultisampleStateCreateInfo( VkPipelineMultisampleStateCreateFlags flags = 0u
+		explicit PipelineMultisampleStateCreateInfo( VkPipelineMultisampleStateCreateFlags flags = 0u
 			, VkSampleCountFlagBits rasterizationSamples = VK_SAMPLE_COUNT_1_BIT
 			, VkBool32 sampleShadingEnable = VK_FALSE
 			, float minSampleShading = 1.0f
@@ -28,7 +28,7 @@ namespace ashes
 				, rasterizationSamples
 				, sampleShadingEnable
 				, minSampleShading
-				, ( bool( sampleMask ) ? &sampleMask.value() : nullptr )
+				, ( sampleMask.has_value() ? &sampleMask.value() : nullptr )
 				, alphaToCoverageEnable
 				, alphaToOneEnable }
 		{
@@ -42,7 +42,7 @@ namespace ashes
 				, rhs.vk.rasterizationSamples
 				, rhs.vk.sampleShadingEnable
 				, rhs.vk.minSampleShading
-				, ( bool( sampleMask ) ? &sampleMask.value() : nullptr )
+				, ( sampleMask.has_value() ? &sampleMask.value() : nullptr )
 				, rhs.vk.alphaToCoverageEnable
 				, rhs.vk.alphaToOneEnable }
 		{
@@ -56,7 +56,7 @@ namespace ashes
 				, rhs.vk.rasterizationSamples
 				, rhs.vk.sampleShadingEnable
 				, rhs.vk.minSampleShading
-				, ( bool( sampleMask ) ? &sampleMask.value() : nullptr )
+				, ( sampleMask.has_value() ? &sampleMask.value() : nullptr )
 				, rhs.vk.alphaToCoverageEnable
 				, rhs.vk.alphaToOneEnable }
 		{
@@ -71,7 +71,7 @@ namespace ashes
 				, rhs.vk.rasterizationSamples
 				, rhs.vk.sampleShadingEnable
 				, rhs.vk.minSampleShading
-				, ( bool( sampleMask ) ? &sampleMask.value() : nullptr )
+				, ( sampleMask.has_value() ? &sampleMask.value() : nullptr )
 				, rhs.vk.alphaToCoverageEnable
 				, rhs.vk.alphaToOneEnable };
 			return *this;
@@ -86,7 +86,7 @@ namespace ashes
 				, rhs.vk.rasterizationSamples
 				, rhs.vk.sampleShadingEnable
 				, rhs.vk.minSampleShading
-				, ( bool( sampleMask ) ? &sampleMask.value() : nullptr )
+				, ( sampleMask.has_value() ? &sampleMask.value() : nullptr )
 				, rhs.vk.alphaToCoverageEnable
 				, rhs.vk.alphaToOneEnable };
 			return *this;

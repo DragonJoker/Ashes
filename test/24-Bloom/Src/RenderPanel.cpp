@@ -71,7 +71,8 @@ namespace vkapp
 				, std::begin( result )
 				, [&sum]( float & value )
 				{
-					return value /= sum;
+					value /= sum;
+					return value;
 				} );
 
 			return result;

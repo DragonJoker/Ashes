@@ -961,7 +961,7 @@ void main( uint3 threadID : SV_DispatchThreadID )
 		}
 	}
 
-	void BlitImageCommand::apply( Context const & context )const
+	void BlitImageCommand::apply( Context & context )const
 	{
 	}
 

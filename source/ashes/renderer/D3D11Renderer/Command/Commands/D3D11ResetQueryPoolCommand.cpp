@@ -11,7 +11,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void ResetQueryPoolCommand::apply( Context const & context )const
+	void ResetQueryPoolCommand::apply( Context & context )const
 	{
 	}
 

@@ -146,19 +146,34 @@ namespace utils
 		//! Le coefficient.
 		float m_d{};
 
-		friend bool operator==( PlaneEquation const &, PlaneEquation const & );
+	private:
+		/**
+		*\brief
+		*	Vérifie si un plan est égal à un autre.
+		*\remarks
+		*	Deux plans sont égaux si ils sont parallèles et si leurs normales et
+		*	coeff sont égaux.
+		*/
+		friend bool operator==( PlaneEquation const & lhs, PlaneEquation const & rhs )
+		{
+			bool result = false;
+
+			if ( lhs.parallel( rhs ) )
+			{
+				float ratioA = lhs.m_normal[0] / rhs.m_normal[0];
+				float ratioD = lhs.m_d / rhs.m_d;
+				result = ratioA == ratioD;
+			}
+
+			return result;
+		}
+		/**
+		*\brief
+		*	Vérifie si ce plan est différent d'un autre.
+		*/
+		friend bool operator!=( PlaneEquation const & a, PlaneEquation const & b )
+		{
+			return ( !( a == b ) );
+		}
 	};
-	/**
-	*\brief
-	*	Vérifie si un plan est égal à un autre.
-	*\remarks
-	*	Deux plans sont égaux si ils sont parallèles et si leurs normales et
-	*	coeff sont égaux.
-	*/
-	bool operator==( PlaneEquation const & lhs, PlaneEquation const & rhs );
-	/**
-	*\brief
-	*	Vérifie si ce plan est différent d'un autre.
-	*/
-	bool operator!=( PlaneEquation const & lhs, PlaneEquation const & rhs );
 }

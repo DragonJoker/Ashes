@@ -18,7 +18,7 @@ namespace ashes::D3D11_NAMESPACE
 	{
 	}
 
-	void WriteTimestampCommand::apply( Context const & context )const
+	void WriteTimestampCommand::apply( Context & context )const
 	{
 		context.context->End( m_query );
 	}
