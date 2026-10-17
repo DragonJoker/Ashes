@@ -76,12 +76,18 @@ namespace ashes
 		{
 			auto v = BaseType{ 1u };
 
-			do
+			while ( m_index < sizeof( BaseType ) * 8 )
 			{
 				m_value = FlagType( m_initialValue & ( v << m_index ) );
 				++m_index;
+
+				if ( m_value != FlagType( 0 ) )
+				{
+					return;
+				}
 			}
-			while ( m_value == FlagType( 0 ) && m_index < sizeof( BaseType ) * 8 );
+
+			m_initialValue = 0u;
 		}
 
 	private:
